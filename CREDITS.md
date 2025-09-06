@@ -564,6 +564,7 @@ This page lists all the individual contributions to the project by their author.
   - Linked superweapons tweak
   - Randomized anims for several behaviors
   - Fixed customized `WarpAway` anim's wrong definition
+  - Shield respawn animation and weapon
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:

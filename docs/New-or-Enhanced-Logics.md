@@ -325,6 +325,10 @@ SelfHealing.RestartInCombatDelay=0          ; integer, game frames
 SelfHealing.EnabledBy=                      ; List of BuildingTypes
 Respawn=0.0                                 ; floating point value, percents or absolute
 Respawn.Rate=0.0                            ; floating point value, ingame minutes
+Respawn.RestartInCombat=true                ; boolean
+Respawn.RestartInCombatDelay=0              ; integer, game frames
+Respawn.Anim=                               ; list of Animation
+Respawn.Weapon=                             ; WeaponType
 BracketDelta=0                              ; integer - pixels
 Pips=-1,-1,-1                               ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
 Pips.Building=-1,-1,-1                      ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
@@ -379,7 +383,11 @@ Shield.ReceivedDamage.MaxMultiplier=1.0     ; floating point value
 Shield.Respawn.Duration=0                   ; integer, game frames
 Shield.Respawn.Amount=0.0                   ; floating point value, percents or absolute
 Shield.Respawn.Rate=-1.0                    ; floating point value, ingame minutes
+Shield.Respawn.RestartInCombat=             ; boolean
+Shield.Respawn.RestartInCombatDelay=-1      ; integer, game frames
 Shield.Respawn.RestartTimer=false           ; boolean
+Shield.Respawn.Anim=                        ; list of Animation
+Shield.Respawn.Weapon=                      ; WeaponType
 Shield.SelfHealing.Duration=0               ; integer, game frames
 Shield.SelfHealing.Amount=0.0               ; floating point value, percents or absolute
 Shield.SelfHealing.Rate=-1.0                ; floating point value, ingame minutes
@@ -418,8 +426,11 @@ Shield.InheritStateOnReplace=false          ; boolean
 - `SelfHealing` and `Respawn` respect the following settings: 0.0 disables the feature, 1%-100% recovers/respawns the shield strength in percentage, other number recovers/respawns the shield strength directly. Specially, `SelfHealing` with a negative number deducts the shield strength.
   - If you want shield recovers/respawns 1 HP per time, currently you need to set tag value to any number between 1 and 2, like `1.1`.
   - If `SelfHealing.RestartInCombat` is set, self-healing timer pauses and then resumes after `SelfHealing.RestartInCombatDelay` frames have passed when the shield gets damaged.
+  - If `Respawn.RestartInCombat` is set, respawn timer pauses and then resumes after `Respawn.RestartInCombatDelay` frames have passed when the TechnoType has a shield that's under respawn process.
 - `SelfHealing.Rate` and `Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other values determine the frequency of shield recovers/respawns in ingame minutes.
-- `SelfHealing.EnabledBy` can be used to control the self-heal of the shield. If the owner has no structures from this list then the shield won't self-heal.
+- `Respawn.Anim`, if set, will be played when the shield respawns. If more than one animation is listed, a random one is selected.
+- `Respawn.Weapon`, if set, will be fired at the TechnoType once the shield respawns.
+- `SelfHealing.EnabledBy` can be used to control the self-heal and respawn of the shield. If the owner has no structures from this list then the shield won't self-heal or respawn.
 - `IdleAnim`, if set, will be played while the shield is intact. This animation is automatically set to loop indefinitely.
   - `IdleAnim.ConditionYellow` and `IdleAnim.ConditionRed` can be used to set different animations for when shield health is at or below the percentage defined in `[AudioVisual] -> ConditionYellow/ConditionRed`, respectively. If `IdleAnim.ConditionRed` is not set it falls back to `IdleAnim.ConditionYellow`, which in turn falls back to `IdleAnim`.
   - `IdleAnimDamaged`, `IdleAnimDamaged.ConditionYellow` and `IdleAnimDamaged.ConditionRed` are used in an identical manner, but only when health of the object the shield is attached to is at or below `[AudioVisual] -> ConditionYellow`. Follows similar fallback sequence to regular `IdleAnim` variants and if none are set, falls back to the regular `IdleAnim` or variants thereof.
@@ -457,7 +468,8 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `Shield.PassPercent` overrides the `PassPercent` value set in the ShieldType that is being damaged.
   - `Shield.ReceivedDamage.Minimum` & `Shield.ReceivedDamage.Maximum` override the values set in in the ShieldType that is being damaged.
     - `Shield.ReceivedDamage.MinMultiplier` and `Shield.ReceivedDamage.MinMultiplier` are multipliers to the effective `Shield.ReceivedDamage.Minimum` and `Shield.ReceivedDamage.Maximum` respectively that are applied when the Warhead deals damage to a shield.
-  - `Shield.Respawn.Rate` & `Shield.Respawn.Amount` override ShieldType `Respawn.Rate` and `Respawn.Amount` for duration of `Shield.Respawn.Duration` amount of frames. Negative rate & zero or lower amount default to ShieldType values. If `Shield.Respawn.RestartTimer` is set, currently running shield respawn timer is reset, otherwise the timer's duration is adjusted in proportion to the new `Shield.Respawn.Rate` (e.g timer will be same percentage through before and after) without restarting the timer. If the effect expires while respawn timer is running, remaining time is adjusted to proportionally match ShieldType `Respawn.Rate`. Re-applying the effect resets the duration to `Shield.Respawn.Duration`
+  - `Shield.Respawn.Rate`, `Shield.Respawn.Amount`, `Shield.Respawn.Anims` and `Shield.Respawn.Weapon` override ShieldType `Respawn.Rate`, `Respawn.Amount`, `Respawn.Anim` and `Respawn.Weapon` for duration of `Shield.Respawn.Duration` amount of frames. Negative rate & zero or lower amount default to ShieldType values. If `Shield.Respawn.RestartTimer` is set, currently running shield respawn timer is reset, otherwise the timer's duration is adjusted in proportion to the new `Shield.Respawn.Rate` (e.g timer will be same percentage through before and after) without restarting the timer. If the effect expires while respawn timer is running, remaining time is adjusted to proportionally match ShieldType `Respawn.Rate`. Re-applying the effect resets the duration to `Shield.Respawn.Duration`
+    - Additionally `Shield.Respawn.RestartInCombat` & `Shield.Respawn.RestartInCombatDelay` can be used to override ShieldType settings.
   - `Shield.SelfHealing.Rate` & `Shield.SelfHealing.Amount` override ShieldType `SelfHealing.Rate` and `SelfHealing.Amount` for duration of `Shield.SelfHealing.Duration` amount of frames. Negative rate & zero or lower amount default to ShieldType values. If `Shield.SelfHealing.RestartTimer` is set, currently running self-healing timer is restarted, otherwise timer's duration is adjusted in proportion to the new `Shield.SelfHealing.Rate` (e.g timer will be same percentage through before and after) without restarting the timer. If the effect expires while self-healing timer is running, remaining time is adjusted to proportionally match ShieldType `SelfHealing.Rate`. Re-applying the effect resets the duration to `Shield.SelfHealing.Duration`.
     - Additionally `Shield.SelfHealing.RestartInCombat` & `Shield.SelfHealing.RestartInCombatDelay` can be used to override ShieldType settings.
   - `Shield.AffectTypes` allows listing which ShieldTypes can be affected by any of the effects listed above. If none are listed, all ShieldTypes are affected.
