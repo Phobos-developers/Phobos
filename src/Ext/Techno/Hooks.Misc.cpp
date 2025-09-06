@@ -81,7 +81,7 @@ DEFINE_HOOK(0x6B7265, SpawnManagerClass_AI_UpdateTimer, 0x6)
 }
 
 // Fix Jumpjets can not spawn missiles in air.
-DEFINE_HOOK(0x6B72FE, SpawnerManagerClass_Update_MissileCheck, 0x9)
+DEFINE_HOOK(0x6B72FE, SpawnerManagerClass_AI_MissileCheck, 0x9)
 {
 	enum { SpawnMissile = 0x6B735C, NoSpawn = 0x6B795A };
 
@@ -90,8 +90,8 @@ DEFINE_HOOK(0x6B72FE, SpawnerManagerClass_Update_MissileCheck, 0x9)
 	auto pLoco = ((FootClass*)pThis->Owner)->Locomotor; // Ares has already handled the building case.
 	auto pLocoInterface = pLoco.GetInterfacePtr();
 
-	return (pLocoInterface->Is_Moving_Now() ||
-		locomotion_cast<JumpjetLocomotionClass*>(pLoco) ? false : pLocoInterface->Is_Moving()) // Jumpjet should only check Is_Moving_Now.
+	return (pLocoInterface->Is_Moving_Now()
+		|| (!locomotion_cast<JumpjetLocomotionClass*>(pLoco) && pLocoInterface->Is_Moving())) // Jumpjet should only check Is_Moving_Now.
 		? NoSpawn : SpawnMissile;
 }
 
