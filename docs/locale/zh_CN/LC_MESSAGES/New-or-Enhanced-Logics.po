@@ -7416,7 +7416,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:2022
 msgid "Automatic deploy and blocking deploying based on ammo"
-msgstr ""
+msgstr "基于弹药量的自动部署与禁用部署"
 
 #: ../../New-or-Enhanced-Logics.md:2024
 msgid ""
@@ -7424,6 +7424,7 @@ msgid ""
 "`IsSimpleDeployer` and those that have passengers) to automatically "
 "deploy or prevent deploying based on their current ammo."
 msgstr ""
+"现可为可部署（`DeploysInto`、`DeployFire`、`IsSimpleDeployer` 以及那些有乘客的）载具设定根据当前弹药量自动部署或禁用部署"
 
 #: ../../New-or-Enhanced-Logics.md:2025
 msgid ""
@@ -7431,13 +7432,15 @@ msgid ""
 " minimum and maximum ammo the vehicle should have for it to automatically"
 " deploy. Negative values disable the check."
 msgstr ""
+"`Ammo.AutoDeployMinimumAmount` & `Ammo.AutoDeployMaximumAmount` 分别设定载具自动部署所需的最低与最高弹药量阈值，负值表示禁用检查。"
 
 #: ../../New-or-Enhanced-Logics.md:2026
 msgid ""
-"`Ammo.DeployUnlockMinimumAmount` & `Ammo.AutoDeployMaximumAmount` "
+"`Ammo.DeployUnlockMinimumAmount` & `Ammo.DeployUnlockMaximumAmount` "
 "determine minimum and maximum ammo the vehicle should have for deploying "
 "to be available in general. Negative values disable the check."
 msgstr ""
+"`Ammo.DeployUnlockMinimumAmount` & `Ammo.DeployUnlockMaximumAmount` 分别设定载具启用部署功能所需的最低与最高弹药量阈值，负值表示禁用检查。"
 
 #: ../../New-or-Enhanced-Logics.md:2029
 msgid ""
@@ -7447,6 +7450,11 @@ msgid ""
 "Ammo.DeployUnlockMinimumAmount=-1  ; integer\n"
 "Ammo.DeployUnlockMaximumAmount=-1  ; integer\n"
 msgstr ""
+"[SOMEVEHICLE]                      ; VehicleType\n"
+"Ammo.AutoDeployMinimumAmount=-1    ; integer\n"
+"Ammo.AutoDeployMaximumAmount=-1    ; integer\n"
+"Ammo.DeployUnlockMinimumAmount=-1  ; integer\n"
+"Ammo.DeployUnlockMaximumAmount=-1  ; integer\n"
 
 #: ../../New-or-Enhanced-Logics.md:2037
 msgid "Damaged unit image changes"

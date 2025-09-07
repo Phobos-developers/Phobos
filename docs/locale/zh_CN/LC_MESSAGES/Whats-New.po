@@ -1943,9 +1943,9 @@ msgstr ""
 #: ../../Whats-New.md:443
 msgid ""
 "[Ammo-based deploy customizations for vehicles expanded to non-"
-"IsSimpleDeployer deploy functions](New-or-Enhancerd-Logics.md#Automatic-"
-"deploy-and-blocking-deploying-based on-ammo) (by Starkku)"
+"IsSimpleDeployer deploy functions](New-or-Enhanced-Logics.md#automatic-deploy-and-blocking-deploying-based-on-ammo) (by Starkku)"
 msgstr ""
+"[基于弹药量的自动部署与禁用部署扩展至非 IsSimpleDeployer 部署功能](New-or-Enhanced-Logics.md#automatic-deploy-and-blocking-deploying-based-on-ammo)（by Starkku）"
 
 #: ../../Whats-New.md:444
 msgid "Randomized anims for several behaviors (by Ollerus)"
@@ -4247,7 +4247,7 @@ msgstr "现在所有单位转换形式（包括 Ares 的）在运输工具被转
 msgid ""
 "Infantry type conversion from `Deployer=yes` to `no` now correctly update"
 " the sequence anim (by Trsdy)"
-msgstr "现在从由于类型转换导致 `Deployer=yes` 变为 `no` 的步兵能够正确更新序列动画（by Trsdy）"
+msgstr "现在从由于单位转换导致 `Deployer=yes` 变为 `no` 的步兵能够正确更新序列动画（by Trsdy）"
 
 #: ../../Whats-New.md:859
 msgid ""

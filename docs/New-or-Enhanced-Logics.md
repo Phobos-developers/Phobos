@@ -2023,7 +2023,7 @@ AmphibiousUnload=        ; boolean, default to [General] -> AmphibiousUnload
 
 - It is now possible for deployable vehicles (`DeploysInto`, `DeployFire`, `IsSimpleDeployer` and those that have passengers) to automatically deploy or prevent deploying based on their current ammo.
   - `Ammo.AutoDeployMinimumAmount` & `Ammo.AutoDeployMaximumAmount` determine minimum and maximum ammo the vehicle should have for it to automatically deploy. Negative values disable the check.
-  - `Ammo.DeployUnlockMinimumAmount` & `Ammo.AutoDeployMaximumAmount` determine minimum and maximum ammo the vehicle should have for deploying to be available in general. Negative values disable the check.
+  - `Ammo.DeployUnlockMinimumAmount` & `Ammo.DeployUnlockMaximumAmount` determine minimum and maximum ammo the vehicle should have for deploying to be available in general. Negative values disable the check.
 
 In `rulesmd.ini`:
 ```ini

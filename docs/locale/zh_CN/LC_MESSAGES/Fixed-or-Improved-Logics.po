@@ -6141,6 +6141,7 @@ msgid ""
 " (in case the deploy results in type conversion, type is the one after "
 "the conversion)."
 msgstr ""
+"弹药数不得低于 0 或高于该载具类型的最大弹药量（若部署操作导致单位转换则以转换后的量为准）。"
 
 #: ../../Fixed-or-Improved-Logics.md:1743
 msgid ""
