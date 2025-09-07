@@ -1602,7 +1602,7 @@ msgstr "`DeployingAnim` 使用单位绘制方式时现可跟随单位一起染�
 
 #: ../../Fixed-or-Improved-Logics.md:265
 msgid "Fixed an issue that jumpjets in air can not correctly spawn missiles."
-msgstr ""
+msgstr "修复了 Jumpjet 单位在空中时无法生成导弹子机的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:267
 msgid "Fixes / interactions with other extensions"

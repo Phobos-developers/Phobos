@@ -2081,7 +2081,7 @@ msgstr ""
 
 #: ../../Whats-New.md:465
 msgid "Jumpjets in air now can correctly spawn missiles (by TaranDahl)"
-msgstr ""
+msgstr "现在 Jumpjet 单位在空中可以正确地生成导弹子机（by TaranDahl）"
 
 #: ../../Whats-New.md:467 ../../Whats-New.md:798 ../../Whats-New.md:881
 #: ../../Whats-New.md:1045 ../../Whats-New.md:1086 ../../Whats-New.md:1098

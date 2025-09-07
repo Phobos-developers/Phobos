@@ -2520,8 +2520,8 @@ msgstr ""
 "修复了 Ares 的单位转换不会通过 `FireAngle` 重设炮管方向的问题"
 
 #: ../../../CREDITS.md:612
-msgid "Fix an issue that jumpjets in air can  not correctly spawn missiles"
-msgstr ""
+msgid "Fix an issue that jumpjets in air can not correctly spawn missiles"
+msgstr "修复了 Jumpjet 单位在空中时无法生成导弹子机的问题"
 
 #: ../../../CREDITS.md:613
 msgid "**solar-III (凤九歌)**"

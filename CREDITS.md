@@ -608,7 +608,7 @@ This page lists all the individual contributions to the project by their author.
   - Use `SkipCrushSlowdown=true` to avoid the bug related to `Accelerates=true` and `MovementZone=CrushAll`
   - Auto deploy for GI-like infantry
   - Fix an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle`
-  - Fix an issue that jumpjets in air can  not correctly spawn missiles
+  - Fix an issue that jumpjets in air can not correctly spawn missiles
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
