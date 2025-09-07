@@ -2331,7 +2331,7 @@ msgstr "修复了自定义 `WarpAway` 动画的错误定义"
 
 #: ../../../CREDITS.md:568
 msgid "Shield respawn animation and weapon"
-msgstr ""
+msgstr "护盾重生动画与武器"
 
 #: ../../../CREDITS.md:569
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"

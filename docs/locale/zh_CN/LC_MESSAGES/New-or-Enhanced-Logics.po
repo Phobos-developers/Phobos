@@ -1763,14 +1763,13 @@ msgstr ""
 "`SelfHealing.RestartInCombatDelay` 指定的帧数后。"
 
 #: ../../New-or-Enhanced-Logics.md:429
-#, fuzzy
 msgid ""
 "If `Respawn.RestartInCombat` is set, respawn timer pauses and then "
 "resumes after `Respawn.RestartInCombatDelay` frames have passed when the "
 "TechnoType has a shield that's under respawn process."
 msgstr ""
-"如果设置了 `SelfHealing.RestartInCombat` 当护盾受到伤害时其恢复计时器将被暂停直至 "
-"`SelfHealing.RestartInCombatDelay` 指定的帧数后。"
+"如果设置了 `Respawn.RestartInCombat` 当科技类型的护盾处于重生过程中时其重生计时器将被暂停直至 "
+"`Respawn.RestartInCombatDelay` 指定的帧数后。"
 
 #: ../../New-or-Enhanced-Logics.md:430
 msgid ""
@@ -1785,22 +1784,20 @@ msgstr ""
 msgid ""
 "`Respawn.Anim`, if set, will be played when the shield respawns. If more "
 "than one animation is listed, a random one is selected."
-msgstr "`BreakAnim` 如果设置则会在护盾被击碎时播放。如果列出了多个动画，则将随机选择一个。"
+msgstr "`Respawn.Anim` 如果设置则会在护盾重生时播放。如果列出了多个动画，则将随机选择一个。"
 
 #: ../../New-or-Enhanced-Logics.md:432
-#, fuzzy
 msgid ""
 "`Respawn.Weapon`, if set, will be fired at the TechnoType once the shield"
 " respawns."
-msgstr "`BreakWeapon` 如果设置则将在护盾被击碎时向科技类型发射。"
+msgstr "`Respawn.Weapon` 如果设置则将在护盾重生时向科技类型发射一次。"
 
 #: ../../New-or-Enhanced-Logics.md:433
-#, fuzzy
 msgid ""
 "`SelfHealing.EnabledBy` can be used to control the self-heal and respawn "
 "of the shield. If the owner has no structures from this list then the "
 "shield won't self-heal or respawn."
-msgstr "`SelfHealing.EnabledBy` 可用于控制护盾自愈行为。只有拥有此列表中的建筑时才可以自愈。"
+msgstr "`SelfHealing.EnabledBy` 可用于控制护盾自愈和重生行为。只有拥有此列表中的建筑时才可以自愈或重生。"
 
 #: ../../New-or-Enhanced-Logics.md:434
 msgid ""
@@ -1890,7 +1887,7 @@ msgstr ""
 msgid ""
 "`BreakWeapon`, if set, will be fired at the TechnoType once the shield "
 "breaks."
-msgstr "`BreakWeapon` 如果设置则将在护盾被击碎时向科技类型发射。"
+msgstr "`BreakWeapon` 如果设置则将在护盾被击碎时向科技类型发射一次。"
 
 #: ../../New-or-Enhanced-Logics.md:444
 msgid ""
@@ -2119,7 +2116,6 @@ msgstr ""
 "用于被杀伤护盾计算弹头所造成伤害的倍率。"
 
 #: ../../New-or-Enhanced-Logics.md:471
-#, fuzzy
 msgid ""
 "`Shield.Respawn.Rate`, `Shield.Respawn.Amount`, `Shield.Respawn.Anims` "
 "and `Shield.Respawn.Weapon` override ShieldType `Respawn.Rate`, "
@@ -2134,22 +2130,21 @@ msgid ""
 "match ShieldType `Respawn.Rate`. Re-applying the effect resets the "
 "duration to `Shield.Respawn.Duration`"
 msgstr ""
-"`Shield.Respawn.Rate` 和 `Shield.Respawn.Amount` 会在 "
-"`Shield.Respawn.Duration` 的帧数内覆盖护盾的 `Respawn.Rate` 和 `Respawn.Amount`。负值和"
+"`Shield.Respawn.Rate`、`Shield.Respawn.Amount`、`Shield.Respawn.Anims` 和 `Shield.Respawn.Weapon` 会在 "
+"`Shield.Respawn.Duration` 的帧数内覆盖护盾的 `Respawn.Rate`、`Respawn.Amount`、`Respawn.Anim` 和 `Respawn.Weapon`。负值和"
 " 0 会默认使用护盾类型自身的值。如果设置了 `Shield.Respawn.RestartTimer` "
 "当前正在使用的护盾重生计时器将被重置否则计时器将被根据新的 `Shield.Respawn.Rate` "
 "按比例进行调整（例如计时器在前后保持相同百分比的进度）而不会重置。如果效果在重生计时器运作状态中失效，剩余时间也同样会按比例调整为护盾自身的`Respawn.Rate`。重新应用效果会将持续时间重置为"
 " `Shield.Respawn.Duration`"
 
 #: ../../New-or-Enhanced-Logics.md:472
-#, fuzzy
 msgid ""
 "Additionally `Shield.Respawn.RestartInCombat` & "
 "`Shield.Respawn.RestartInCombatDelay` can be used to override ShieldType "
 "settings."
 msgstr ""
-"此外 `Shield.SelfHealing.RestartInCombat` 和 "
-"`Shield.SelfHealing.RestartInCombatDelay` 可用于覆盖护盾类型上的同类设置。"
+"此外 `Shield.Respawn.RestartInCombat` 和 "
+"`Shield.Respawn.RestartInCombatDelay` 可用于覆盖护盾类型上的同类设置。"
 
 #: ../../New-or-Enhanced-Logics.md:473
 msgid ""

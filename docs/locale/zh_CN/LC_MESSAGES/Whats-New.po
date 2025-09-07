@@ -1953,9 +1953,8 @@ msgid "Randomized anims for several behaviors (by Ollerus)"
 msgstr "几种行为的随机动画（by Ollerus）"
 
 #: ../../Whats-New.md:445
-#, fuzzy
 msgid "Shield respawn animation and weapon (by Ollerus)"
-msgstr "自定义护盾继承单位护甲（by Ollerus）"
+msgstr "护盾重生动画与武器（by Ollerus）"
 
 #: ../../Whats-New.md:447 ../../Whats-New.md:652 ../../Whats-New.md:1009
 #: ../../Whats-New.md:1118 ../../Whats-New.md:1143 ../../Whats-New.md:1182
