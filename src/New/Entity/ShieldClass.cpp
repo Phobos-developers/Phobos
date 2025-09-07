@@ -107,6 +107,10 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->SelfHealing_RestartInCombatDelay_Warhead)
 		.Process(this->Respawn_Warhead)
 		.Process(this->Respawn_Rate_Warhead)
+		.Process(this->Respawn_RestartInCombat_Warhead)
+		.Process(this->Respawn_RestartInCombatDelay_Warhead)
+		.Process(this->Respawn_Anim_Warhead)
+		.Process(this->Respawn_Weapon_Warhead)
 		.Process(this->LastBreakFrame)
 		.Process(this->LastTechnoHealthRatio)
 		.Process(this->IsSelfHealingEnabled)
@@ -215,8 +219,8 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	const int originalShieldDamage = shieldDamage;
 	const int min = pWHExt->Shield_ReceivedDamage_Minimum.Get(pType->ReceivedDamage_Minimum);
 	const int max = pWHExt->Shield_ReceivedDamage_Maximum.Get(pType->ReceivedDamage_Maximum);
-	const int minDmg = static_cast<int>(min * pWHExt->Shield_ReceivedDamage_MinMultiplier);
-	const int maxDmg = static_cast<int>(max * pWHExt->Shield_ReceivedDamage_MaxMultiplier);
+	const int minDmg = GeneralUtils::SafeMultiply(min, pWHExt->Shield_ReceivedDamage_MinMultiplier);
+	const int maxDmg = GeneralUtils::SafeMultiply(max, pWHExt->Shield_ReceivedDamage_MaxMultiplier);
 	shieldDamage = Math::clamp(shieldDamage, minDmg, maxDmg);
 
 	if (Phobos::DisplayDamageNumbers && shieldDamage != 0)
@@ -242,6 +246,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 				this->Timers.SelfHealing.Start(rate); // when attacked, restart the timer
 			}
 		}
+
 		if (!pWHExt->Nonprovocative)
 			this->ResponseAttack();
 
@@ -345,20 +350,13 @@ void ShieldClass::ResponseAttack()
 	}
 }
 
-void ShieldClass::WeaponNullifyAnim(AnimTypeClass* pHitAnim)
+void ShieldClass::WeaponNullifyAnim(const std::vector<AnimTypeClass*>& pHitAnim)
 {
 	if (this->AreAnimsHidden)
 		return;
 
 	const auto pTechno = this->Techno;
-	const auto pAnimType = pHitAnim ? pHitAnim : this->Type->HitAnim;
-
-	if (pAnimType)
-	{
-		auto const pAnim = GameCreate<AnimClass>(pAnimType, pTechno->GetCoords());
-		AnimExt::SetAnimOwnerHouseKind(pAnim, pTechno->Owner, nullptr, false, true);
-		AnimExt::ExtMap.Find(pAnim)->SetInvoker(pTechno);
-	}
+	AnimExt::CreateRandomAnim((pHitAnim.empty() ? this->Type->HitAnim : pHitAnim), pTechno->GetCoords(), pTechno, nullptr, true, true);
 }
 
 bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon) const
@@ -504,7 +502,7 @@ void ShieldClass::EnabledByCheck()
 
 	for (auto const pBuilding : this->Techno->Owner->Buildings)
 	{
-		bool isActive = !(pBuilding->Deactivated || pBuilding->IsUnderEMP()) && pBuilding->IsPowerOnline();
+		const bool isActive = !(pBuilding->Deactivated || pBuilding->IsUnderEMP()) && pBuilding->IsPowerOnline();
 
 		if (enabledBy.Contains(pBuilding->Type) && isActive)
 		{
@@ -683,8 +681,15 @@ void ShieldClass::SelfHealing()
 		return;
 
 	const auto pType = this->Type;
-	const auto timer = &this->Timers.SelfHealing;
 	const auto timerWHModifier = &this->Timers.SelfHealing_WHModifier;
+	const auto timer = &this->Timers.SelfHealing;
+
+	if (timerCombatRestart->Completed())
+	{
+		const int rate = timerWHModifier->InProgress() ? this->SelfHealing_Rate_Warhead : pType->SelfHealing_Rate;
+		timer->Start(rate);
+		timerCombatRestart->Stop();
+	}
 
 	if (timerCombatRestart->Completed())
 	{
@@ -724,7 +729,8 @@ void ShieldClass::SelfHealing()
 			}
 			else if (health <= 0)
 			{
-				this->BreakShield();
+				std::vector<AnimTypeClass*> nothing;
+				this->BreakShield(nothing);
 			}
 		}
 	}
@@ -741,7 +747,7 @@ int ShieldClass::GetPercentageAmount(double iStatus)
 	return (int)std::trunc(iStatus);
 }
 
-void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreakWeapon)
+void ShieldClass::BreakShield(const std::vector<AnimTypeClass*>& pBreakAnim, WeaponTypeClass* pBreakWeapon)
 {
 	this->HP = 0;
 	auto const pType = this->Type;
@@ -754,17 +760,7 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 	this->KillAnim();
 
 	if (!this->AreAnimsHidden)
-	{
-		const auto pAnimType = pBreakAnim ? pBreakAnim : pType->BreakAnim;
-
-		if (pAnimType)
-		{
-			auto const pAnim = GameCreate<AnimClass>(pAnimType, pTechno->Location);
-			pAnim->SetOwnerObject(pTechno);
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pTechno->Owner, nullptr, false, true);
-			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pTechno);
-		}
-	}
+		AnimExt::CreateRandomAnim(pBreakAnim.empty() ? pType->BreakAnim : pBreakAnim, pTechno->Location, pTechno, nullptr, true, true);
 
 	const auto pWeaponType = pBreakWeapon ? pBreakWeapon : pType->BreakWeapon;
 	this->LastBreakFrame = Unsorted::CurrentFrame;
@@ -776,8 +772,21 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 
 void ShieldClass::RespawnShield()
 {
-	const auto timer = &this->Timers.Respawn;
+	const auto timerCombatRestart = &this->Timers.Respawn_CombatRestart;
+
+	if (timerCombatRestart->InProgress())
+		return;
+
+	const auto pType = this->Type;
 	const auto timerWHModifier = &this->Timers.Respawn_WHModifier;
+	const auto timer = &this->Timers.Respawn;
+
+	if (timerCombatRestart->Completed())
+	{
+		const int rate = timerWHModifier->InProgress() ? this->Respawn_Rate_Warhead : pType->Respawn_Rate;
+		timer->Start(rate);
+		timerCombatRestart->Stop();
+	}
 
 	if (this->HP <= 0 && timer->Completed())
 	{
@@ -785,33 +794,75 @@ void ShieldClass::RespawnShield()
 		const double amount = timerWHModifier->InProgress() ? Respawn_Warhead : this->Type->Respawn;
 		this->HP = this->GetPercentageAmount(amount);
 		this->UpdateTint();
+		const auto pAnimList = timerWHModifier->InProgress() ? this->Respawn_Anim_Warhead : pType->Respawn_Anim;
+		const auto pWeapon = timerWHModifier->InProgress() ? this->Respawn_Weapon_Warhead : pType->Respawn_Weapon;
+		const auto pTechno = this->Techno;
+
+		AnimExt::CreateRandomAnim(pAnimList, pTechno->Location, pTechno, pTechno->Owner, true, true);
+
+		if (pWeapon)
+			TechnoExt::FireWeaponAtSelf(pTechno, pWeapon);
 	}
 	else if (timerWHModifier->Completed() && timer->InProgress())
 	{
-		const double mult = this->Respawn_Rate_Warhead > 0 ? this->Type->Respawn_Rate / this->Respawn_Rate_Warhead : 1.0;
+		const double mult = this->Respawn_Rate_Warhead > 0 ? pType->Respawn_Rate / this->Respawn_Rate_Warhead : 1.0;
 		timer->TimeLeft = static_cast<int>(timer->GetTimeLeft() * mult);
 	}
 }
 
-void ShieldClass::SetRespawn(int duration, double amount, int rate, bool resetTimer)
+void ShieldClass::SetRespawn(int duration, double amount, int rate, bool restartInCombat, int restartInCombatDelay, bool resetTimer, std::vector<AnimTypeClass*> anim, WeaponTypeClass* weapon)
 {
 	const auto timer = &this->Timers.Respawn;
 	const auto timerWHModifier = &this->Timers.Respawn_WHModifier;
+	const auto pType = this->Type;
 
 	const bool modifierTimerInProgress = timerWHModifier->InProgress();
 	this->Respawn_Warhead = amount;
-	this->Respawn_Rate_Warhead = rate >= 0 ? rate : Type->Respawn_Rate;
+	this->Respawn_Rate_Warhead = rate >= 0 ? rate : pType->Respawn_Rate;
+	this->Respawn_RestartInCombat_Warhead = restartInCombat;
+	this->Respawn_RestartInCombatDelay_Warhead = restartInCombatDelay >= 0 ? restartInCombatDelay : pType->Respawn_RestartInCombatDelay;
+	this->Respawn_Anim_Warhead = anim;
+	this->Respawn_Weapon_Warhead = weapon ? weapon : pType->Respawn_Weapon;
 
 	timerWHModifier->Start(duration);
 
-	if (this->HP <= 0 && Respawn_Rate_Warhead >= 0 && resetTimer)
+	if (this->HP > 0)
+		return;
+
+	if (resetTimer)
 	{
-		timer->Start(Respawn_Rate_Warhead);
+		timer->Start(this->Respawn_Rate_Warhead);
 	}
-	else if (timer->InProgress() && !modifierTimerInProgress && this->Respawn_Rate_Warhead != Type->Respawn_Rate)
+	else if (timer->InProgress() && !modifierTimerInProgress && this->Respawn_Rate_Warhead != pType->Respawn_Rate)
 	{
-		const double mult = Type->Respawn_Rate > 0 ? this->Respawn_Rate_Warhead / Type->Respawn_Rate : 1.0;
+		const double mult = pType->Respawn_Rate > 0 ? this->Respawn_Rate_Warhead / pType->Respawn_Rate : 1.0;
 		timer->TimeLeft = static_cast<int>(timer->GetTimeLeft() * mult);
+	}
+}
+
+void ShieldClass::SetRespawnRestartInCombat()
+{
+	if (this->Timers.Respawn.HasStarted())
+	{
+		const auto pType = this->Type;
+		const bool whModifiersApplied = this->Timers.Respawn_WHModifier.InProgress();
+		const bool restart = whModifiersApplied ? this->Respawn_RestartInCombat_Warhead : pType->Respawn_RestartInCombat;
+
+		if (restart)
+		{
+			const int delay = whModifiersApplied ? this->Respawn_RestartInCombatDelay_Warhead : pType->Respawn_RestartInCombatDelay;
+
+			if (delay > 0)
+			{
+				this->Timers.Respawn_CombatRestart.Start(delay);
+				this->Timers.Respawn.Stop();
+			}
+			else
+			{
+				const int rate = whModifiersApplied ? this->Respawn_Rate_Warhead : pType->Respawn_Rate;
+				this->Timers.Respawn.Start(rate); // when attacked, restart the timer
+			}
+		}
 	}
 }
 

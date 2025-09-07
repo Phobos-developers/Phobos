@@ -256,6 +256,13 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective.
 - Fixed an issue that barrel anim data will be incorrectly overwritten by turret anim data if the techno's section exists in the map file.
 - Fixed pathfinding crashes (EIP 0x42A525, 0x42C507, 0x42C554) that happened on bigger maps due to too small pathfinding node buffer.
+- `IsSimpleDeployer` `BalloonHover=true` units with `DeployToLand=false` are no longer forced to land when hovering.
+- If `DeployingAnim` with `Shadow=true` is played for unit currently in air its shadow will now be drawn on ground.
+- `DeployingAnim` now supports both `Normalized=true` and `Reverse=true`. Keep in mind `Reverse` uses `LoopEnd` for frame amount instead of `End` even without `LoopCount` > 1.
+- `DeployingAnim` using unit drawer now also tint accordingly with the unit.
+- Fixed the bug that armor multiplier of new attacheffect will have extra take effect once if restricted warheads.
+- Fixed an issue that units' `LaserTrails` will always lags behind by one frame.
+- Fixed an issue that jumpjets in air can not correctly spawn missiles.
 
 ## Fixes / interactions with other extensions
 
@@ -263,6 +270,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Weapons fired by EMPulse superweapons *(Ares feature)* without `EMPulse.TargetSelf=true` can now create radiation.
 - Weapons fired by EMPulse superweapons *(Ares feature)* now respect `Floater` and Phobos-added `Gravity` setting.
 - `IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no longer get stuck after deploying or play their move sound indefinitely.
+- `Convert.Deploy` displays 'no deploy' cursor if the new type is not allowed to move to the cell due to `SpeedType` etc
 - All forms of type conversion (including Ares') now correctly update the warp-in delay if unit with teleport `Locomotor` was converted while the delay was active.
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed.
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.
@@ -281,7 +289,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - 1000 save files are supported, from `SVGM_000.NET` to `SVGM_999.NET`. When the limit is reached, the game will overwrite the latest save file.
   - The previous `SVGM_XXX.NET` files are cleaned up before first copy if it's a new game, otherwise the highest numbered `SVGM_XXX.NET` file is found and the index is incremented, if possible.
   - The game also automatically copies `spawn.ini` to the save folder as `spawnSG.ini` when saving a game.
-
+- Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle`.
 
 ```{note}
 The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
@@ -400,7 +408,7 @@ AttachedAnimPosition=default ; Attached animation position enumeration (default|
 
 - `ExplodeOnWater` can be set to true to make the animation explode on impact with water. `ExpireAnim` will be played and `Warhead` is detonated or used to deal damage / generate light flash.
 - `Warhead.Detonate`, if set to true, makes the `Warhead` fully detonate instead of simply being used to deal damage and generate light flash if it has `Bright=true`.
-- `WakeAnim` contains a wake animation to play if `ExplodeOnWater` is not set and the animation impacts with water. Defaults to `[General] -> Wake` if `IsMeteor` is not set to true, otherwise no animation.
+- `WakeAnim` contains wake animations to play if `ExplodeOnWater` is not set and the animation impacts with water. Defaults to `[General] -> Wake` if `IsMeteor` is not set to true, otherwise no animation. If more than one animation is listed, a random one is selected.
 - `SplashAnims` contains list of splash animations used if `ExplodeOnWater` is not set and the animation impacts with water.
   - If `SplashAnims.PickRandom` is set to true, picks a random animation from `SplashAnims` to use on each impact with water. Otherwise last listed animation from `SplashAnims` is used.
 - `ExtraShadow` can be set to false to disable the display of shadows on the ground.
@@ -410,8 +418,8 @@ In `artmd.ini`:
 [SOMEANIM]                    ; AnimationType
 ExplodeOnWater=false          ; boolean
 Warhead.Detonate=false        ; boolean
-WakeAnim=                     ; AnimationType
-SplashAnims=                  ; List of AnimationTypes, default to [CombatDamage] -> SplashList
+WakeAnim=                     ; list of Animation
+SplashAnims=                  ; List of Animation, default to [CombatDamage] -> SplashList
 SplashAnims.PickRandom=false  ; boolean
 ExtraShadow=true              ; boolean
 ```
@@ -1027,14 +1035,15 @@ TargetZoneScanType=same  ; target zone scan enumeration (same|any|inrange)
 *Chrono Legionnaire and Ronco using different teleportation settings in [YR: New War](https://www.moddb.com/mods/yuris-revenge-new-war)*
 
 - You can now specify Teleport/Chrono Locomotor settings per TechnoType to override default rules values. Unfilled values default to values in `[General]`.
-- Only applicable to Techno that have Teleport/Chrono Locomotor attached.
+- Applicable to Techno that have Teleport/Chrono Locomotor attached, or being chronowarped by chronosphere.
+- If more than one animation is listed in `WarpOut`, `WarpIn` or `WarpAway`, a random one is selected.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]            ; TechnoType
-WarpOut=                ; Anim (played when Techno warping out)
-WarpIn=                 ; Anim (played when Techno warping in)
-WarpAway=               ; Anim (played when Techno chronowarped by chronosphere)
+WarpOut=                ; list of Animation (played when Techno warping out), default to [General] WarpOut
+WarpIn=                 ; list of Animation (played when Techno warping in), default to [General] WarpIn
+WarpAway=               ; list of Animation (played when Techno being erased by `Temporal=yes` warhead), default to [General] WarpAway
 ChronoTrigger=          ; boolean, if yes then delay varies by distance, if no it is a constant
 ChronoDistanceFactor=   ; integer, amount to divide the distance to destination by to get the warped out delay
 ChronoMinimumDelay=     ; integer, the minimum delay for teleporting, no matter how short the distance
@@ -1727,50 +1736,29 @@ DestroyAnim.Random=true                ; boolean
 
 ### `IsSimpleDeployer` vehicle ammo change on deploy
 
-- `Ammo.AddOnDeploy` determines the number of ammo added or substracted on unit deploy.
-
+- `Ammo.AddOnDeploy` determines the number of ammo added or subtracted after the vehicle has deployed or undeployed.
+  - Ammo count cannot go below 0 or above the maximum ammo for vehicle's type (in case the deploy results in type conversion, type is the one after the conversion).
+ 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]           ; VehicleType
-Ammo.AddOnDeploy=0      ; integer
+[SOMEVEHICLE]       ; VehicleType
+Ammo.AddOnDeploy=0  ; integer
 ```
 
-```{warning}
-Due to technical constraints, units that use `Convert.Deploy` from [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type with `Ammo.AddOnDeploy` will add or substract ammo despite of convertion success. This will also happen when unit exits tank bunker.
-```
+### IsSimpleDeployer facing and animation customization
 
-### `IsSimpleDeployer` vehicle auto-deploy / deploy block on ammo change
-
-- Vehicle deployment can now be affected by ammo count.
-  - `Ammo.AutoDeployMinimumAmount` determines the minimal number of ammo at which a vehicle converts/deploys automatically.
-  - `Ammo.DeployUnlockMinimumAmount` determines the minimal number of ammo that unlocks issuing vehicle converting/deploying command.
-    - `Ammo.AutoDeployMaximumAmount` and `Ammo.DeployUnlockMaximumAmount` behave analogically.
-    - Setting a negative number will disable ammo count check.
-
-In `rulesmd.ini`:
-```ini
-[SOMEVEHICLE]                        ; VehicleType
-Ammo.AutoDeployMinimumAmount=-1      ; integer
-Ammo.AutoDeployMaximumAmount=-1      ; integer
-Ammo.DeployUnlockMinimumAmount=-1    ; integer
-Ammo.DeployUnlockMaximumAmount=-1    ; integer
-```
-
-```{warning}
-Auto-deploy feature requires `Convert.Deploy` from [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type. Unit without it will constantly use deploy command on self until ammo is changed.
-```
-
-### IsSimpleDeployer vehicle deploy animation / direction customization
-
-- `DeployingAnim.AllowAnyDirection` if set, disables any direction constraints for deployers with `DeployingAnim` set. Only works for ground units.
-- `DeployingAnim.KeepUnitVisible` determines if the unit is **not** hidden while the animation is playing.
-- `DeployingAnim.ReverseForUndeploy` controls whether or not the animation is played in reverse for undeploying.
-- `DeployingAnim.UseUnitDrawer` controls whether or not the animation is displayed in the unit's palette and team colours or regular animation palette, including a potential custom palette.
+- In vanilla game only units with `DeployingAnim` were constrained to a specific deploy facing and it was not customizable per unit. `DeployDir` can be set to override this per unit (defaults to `[AudioVisual]` -> `DeployDir`), including using value of -1 to disable the facing restriction.
+- Multiple new options for deploy animations:
+  - `DeployingAnims` can be used instead of `DeployingAnim` (if both are set, `DeployingAnims` takes precedence) to define a list of direction-specific deploy animations to play. Largest power of 2 the number of listed animations falls to is used as number of directions/animations. Less than 8 animations listed results in only first listed one being used.
+  - `DeployingAnim.KeepUnitVisible` determines if the unit is **not** hidden while the animation is playing.
+  - `DeployingAnim.ReverseForUndeploy` controls whether or not the animation is played in reverse for undeploying.
+  - `DeployingAnim.UseUnitDrawer` controls whether or not the animation is displayed in the unit's palette and team colours or regular animation palette, including a potential custom palette.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEVEHICLE]                          ; VehicleType
-DeployingAnim.AllowAnyDirection=false  ; boolean
+DeployDir=                             ; Facing type (integers from 0-7 or -1)
+DeployingAnims=                        ; List of AnimationTypes
 DeployingAnim.KeepUnitVisible=false    ; boolean
 DeployingAnim.ReverseForUndeploy=true  ; boolean
 DeployingAnim.UseUnitDrawer=true       ; boolean

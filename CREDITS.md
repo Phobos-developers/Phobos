@@ -166,7 +166,7 @@ This page lists all the individual contributions to the project by their author.
   - `AreaFire` targeting customization
   - `CreateUnit` improvements
   - Attached animation & jumpjet unit layer customization
-  - `IsSimpleDeployer` improvements
+  - `IsSimpleDeployer` improvements & additions
   - Shield modification warheads
   - Warhead decloaking toggle
   - `Warp(In/Out)Weapon`
@@ -443,6 +443,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that Locomotor warhead won't stop working when firer (except for vehicle) stop firing
   - Fix the bug that hover vehicle will sink if destroyed on bridge
   - Customize squid grapple animation
+  - Fix the bug that armor multiplier of new attacheffect will have extra take effect once if restricted warheads
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -541,6 +542,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that barrel anim data will be incorrectly overwritten by turret anim data if the techno's section exists in the map file
   - Jumpjet Climbing Logic Enhancement
   - Fix for pathfinding crashes on big maps due to too small pathfinding node buffer
+  - Fix an issue that units' `LaserTrails` will always lags behind by one frame
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -560,6 +562,9 @@ This page lists all the individual contributions to the project by their author.
   - Display banner improvement and doc
   - Damage multiplier for health percentage
   - Linked superweapons tweak
+  - Randomized anims for several behaviors
+  - Fixed customized `WarpAway` anim's wrong definition
+  - Shield respawn animation and weapon
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
@@ -602,6 +607,8 @@ This page lists all the individual contributions to the project by their author.
   - Force techno targeting in distributed frames to improve performance
   - Use `SkipCrushSlowdown=true` to avoid the bug related to `Accelerates=true` and `MovementZone=CrushAll`
   - Auto deploy for GI-like infantry
+  - Fix an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle`
+  - Fix an issue that jumpjets in air can  not correctly spawn missiles
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

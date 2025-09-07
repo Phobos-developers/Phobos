@@ -84,7 +84,7 @@ public:
 		Valueable<int> Ammo_DeployUnlockMaximumAmount;
 
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
-		Valueable<AnimTypeClass*> AutoDeath_VanishAnimation;
+		ValueableVector<AnimTypeClass*> AutoDeath_VanishAnimation;
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
 		Valueable<int> AutoDeath_AfterDelay;
 		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosDontExist;
@@ -111,9 +111,9 @@ public:
 		NullableIdx<VocClass> VoiceCreated;
 		NullableIdx<VocClass> VoicePickup; // Used by carryalls instead of VoiceMove if set.
 
-		Nullable<AnimTypeClass*> WarpOut;
-		Nullable<AnimTypeClass*> WarpIn;
-		Nullable<AnimTypeClass*> WarpAway;
+		ValueableVector<AnimTypeClass*> WarpOut;
+		ValueableVector<AnimTypeClass*> WarpIn;
+		ValueableVector<AnimTypeClass*> WarpAway;
 		Nullable<bool> ChronoTrigger;
 		Nullable<int> ChronoDistanceFactor;
 		Nullable<int> ChronoMinimumDelay;
@@ -166,7 +166,8 @@ public:
 		Valueable<bool> JumpjetRotateOnCrash;
 		Nullable<int> ShadowSizeCharacteristicHeight;
 
-		Valueable<bool> DeployingAnim_AllowAnyDirection;
+		Nullable<FacingType> DeployDir;
+		ValueableVector<AnimTypeClass*> DeployingAnims;
 		Valueable<bool> DeployingAnim_KeepUnitVisible;
 		Valueable<bool> DeployingAnim_ReverseForUndeploy;
 		Valueable<bool> DeployingAnim_UseUnitDrawer;
@@ -259,6 +260,7 @@ public:
 		Nullable<int> SpawnHeight;
 		Nullable<int> LandingDir;
 
+		Valueable<TechnoTypeClass*> Convert_Deploy; // Ares
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
 		Valueable<bool> Convert_ResetMindControl;
@@ -336,7 +338,7 @@ public:
 		ValueableVector<AircraftTypeClass*> Spawns_Queue;
 
 		Valueable<Leptons> Spawner_RecycleRange;
-		Valueable<AnimTypeClass*> Spawner_RecycleAnim;
+		ValueableVector<AnimTypeClass*> Spawner_RecycleAnim;
 		Valueable<CoordStruct> Spawner_RecycleCoord;
 		Valueable<bool> Spawner_RecycleOnTurret;
 
@@ -347,8 +349,8 @@ public:
 		Nullable<double> ProneSpeed;
 		Nullable<double> DamagedSpeed;
 
-		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
-		Nullable<AnimTypeClass*> Promote_EliteAnimation;
+		ValueableVector<AnimTypeClass*> Promote_VeteranAnimation;
+		ValueableVector<AnimTypeClass*> Promote_EliteAnimation;
 
 		Nullable<AffectedHouse> RadarInvisibleToHouse;
 
@@ -512,7 +514,8 @@ public:
 			, NoAmmoAmount { 0 }
 			, JumpjetRotateOnCrash { true }
 			, ShadowSizeCharacteristicHeight { }
-			, DeployingAnim_AllowAnyDirection { false }
+			, DeployDir {}
+			, DeployingAnims {}
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
@@ -651,6 +654,7 @@ public:
 			, DroppodType {}
 			, TiberiumEaterType {}
 
+			, Convert_Deploy { }
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
 			, Convert_ResetMindControl { false }
