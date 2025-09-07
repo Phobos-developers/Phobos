@@ -1579,12 +1579,14 @@ msgid ""
 "`IsSimpleDeployer` `BalloonHover=true` units with `DeployToLand=false` "
 "are no longer forced to land when hovering."
 msgstr ""
+"拥有 `BalloonHover=true` 和 `IsSimpleDeployer=true` 但 `DeployToLand=false` 的单位现在在悬停时不会强制着陆。"
 
 #: ../../Fixed-or-Improved-Logics.md:260
 msgid ""
 "If `DeployingAnim` with `Shadow=true` is played for unit currently in air"
 " its shadow will now be drawn on ground."
 msgstr ""
+"如果当前处于空中的单位通过 `DeployingAnim` 播放带有 `Shadow=true` 的动画则动画的影子现在会绘制在地面上。"
 
 #: ../../Fixed-or-Improved-Logics.md:261
 msgid ""
@@ -1592,10 +1594,11 @@ msgid ""
 "Keep in mind `Reverse` uses `LoopEnd` for frame amount instead of `End` "
 "even without `LoopCount` > 1."
 msgstr ""
+"`DeployingAnim` 现已支持 `Normalized=true` 与 `Reverse=true`。注意：即便不是 `LoopCount > 1` 的情况 `Reverse` 也会使用 `LoopEnd` 而不是 `End` 来控制帧数。"
 
 #: ../../Fixed-or-Improved-Logics.md:262
 msgid "`DeployingAnim` using unit drawer now also tint accordingly with the unit."
-msgstr ""
+msgstr "`DeployingAnim` 使用单位绘制方式时现可跟随单位一起染色。"
 
 #: ../../Fixed-or-Improved-Logics.md:263
 msgid ""
@@ -1646,8 +1649,9 @@ msgstr "拥有 Hover 运动模式的 `IsSimpleDeployer` 且 `DeployToLand` 的�
 #: ../../Fixed-or-Improved-Logics.md:273
 msgid ""
 "`Convert.Deploy` displays 'NoDeploy' cursor if the new type is not "
-"allowed to move to the cell due to `SpeedType` etc"
+"allowed to move to the cell due to `SpeedType` etc."
 msgstr ""
+"当 `Convert.Deploy` 转换的目标单位由于 `SpeedType` 等原因无法移动到目标单元格时将会显示 `NoDeploy` 光标。"
 
 #: ../../Fixed-or-Improved-Logics.md:274
 msgid ""
@@ -6160,14 +6164,17 @@ msgstr "自定义 IsSimpleDeployer 载具部署朝向与动画"
 msgid ""
 "In vanilla game only units with `DeployingAnim` were constrained to a "
 "specific deploy facing and it was not customizable per unit. `DeployDir` "
-"can be set to override this per unit (defaults to `[AudioVisual]` -> "
-"`DeployDir`), including using value of -1 to disable the facing "
+"can be set to override this per unit (defaults to `[AudioVisual] -> "
+"DeployDir`), including using value of -1 to disable the facing "
 "restriction."
 msgstr ""
+"在原版游戏中仅拥有 `DeployingAnim` 的单位会被限制使用特定的部署朝向且无法为每个单位自定义。"
+"Ares 允许通过 `DeployDir`（默认为 `[AudioVisual] -> DeployDir`）来为每个单位单独设定，"
+"Phobos 允许使用特殊值 -1 来解除朝向限制。"
 
 #: ../../Fixed-or-Improved-Logics.md:1751
 msgid "Multiple new options for deploy animations:"
-msgstr ""
+msgstr "部署动画相关的多个新增选项："
 
 #: ../../Fixed-or-Improved-Logics.md:1752
 msgid ""
@@ -6178,6 +6185,8 @@ msgid ""
 "Less than 8 animations listed results in only first listed one being "
 "used."
 msgstr ""
+"可使用 `DeployingAnims` 代替 `DeployingAnim`（当都被设置时优先使用前者）来定义一组与方向对应的部署动画。"
+"根据所列动画的最大数量取 2 的幂值作为方向数／动画数。若少于 8 个则仅适用列出的第一个动画。"
 
 #: ../../Fixed-or-Improved-Logics.md:1753
 msgid ""

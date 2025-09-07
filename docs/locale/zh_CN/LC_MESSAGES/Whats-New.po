@@ -50,8 +50,9 @@ msgstr "由原版"
 msgid ""
 "`IsSimpleDeployer` units now obey deploying facing constraint even "
 "without deploying animation. To disable this, set `DeployDir` (defaults "
-"to `[AudioVisual]` -> `DeployDir`) to -1."
+"to `[AudioVisual] -> DeployDir`) to -1."
 msgstr ""
+"`IsSimpleDeployer` 的单位现在即使没有部署动画也会遵守部署朝向约束。要禁用此功能请将 `DeployDir`（默认为 `[AudioVisual] -> DeployDir`）设为 -1。"
 
 #: ../../Whats-New.md:14
 msgid ""
@@ -335,6 +336,7 @@ msgid ""
 "`DeployingAnim.AllowAnyDirection` has been superceded by `DeployDir`. Use"
 " value of -1 to re-enable the no facing restriction."
 msgstr ""
+"`DeployingAnim.AllowAnyDirection` 已被 `DeployDir` 取代。使用 -1 即可重新启用无朝向限制效果。"
 
 #: ../../Whats-New.md:51
 msgid ""
@@ -1930,13 +1932,12 @@ msgid "Health bar permanently displayed (by FlyStar)"
 msgstr "血条恒显（by FlyStar）"
 
 #: ../../Whats-New.md:442
-#, fuzzy
 msgid ""
 "[`IsSimpleDeployer` facing customization & directional deploy animations"
 "](Fixed-or-Improved-Logics.md#issimpleDeployer-facing-and-animation-"
 "customization) (by Starkku)"
 msgstr ""
-"[追加的附着动画位置定义项](Fixed-or-Improved-Logics.md#attached-animation-position-"
+"[自定义 IsSimpleDeployer 载具部署朝向与动画](Fixed-or-Improved-Logics.md#issimpleDeployer-facing-and-animation-"
 "customization)（by Starkku）"
 
 #: ../../Whats-New.md:443
@@ -2055,24 +2056,28 @@ msgid ""
 "`IsSimpleDeployer` `BalloonHover=true` units with `DeployToLand=false` "
 "are no longer forced to land when hovering (by Starkku)"
 msgstr ""
+"拥有 `BalloonHover=true` 和 `IsSimpleDeployer=true` 但 `DeployToLand=false` 的单位现在在悬停时不会强制着陆（by Starkku）"
 
 #: ../../Whats-New.md:462
 msgid ""
 "If `DeployingAnim` with `Shadow=true` is played for unit currently in air"
 " its shadow will now be drawn on ground (by Starkku)"
 msgstr ""
+"如果当前处于空中的单位通过 `DeployingAnim` 播放带有 `Shadow=true` 的动画则动画的影子现在会绘制在地面上（by Starkku）"
 
 #: ../../Whats-New.md:463
 msgid ""
 "`DeployingAnim` now supports both `Normalized=true` and `Reverse=true` "
 "(by Starkku)"
 msgstr ""
+"`DeployingAnim` 现已支持 `Normalized=true` 与 `Reverse=true`（by Starkku）"
 
 #: ../../Whats-New.md:464
 msgid ""
 "`DeployingAnim` using unit drawer now also tint accordingly with the unit"
 " (by Starkku)"
 msgstr ""
+"`DeployingAnim` 使用单位绘制方式时现可跟随单位一起染色（by Starkku）"
 
 #: ../../Whats-New.md:465
 msgid "Jumpjets in air now can correctly spawn missiles (by TaranDahl)"
@@ -2131,6 +2136,7 @@ msgid ""
 "`Convert.Deploy` displays 'NoDeploy' cursor if the new type is not "
 "allowed to move to the cell due to `SpeedType` etc. (by Starkku)"
 msgstr ""
+"当 `Convert.Deploy` 转换的目标单位由于 `SpeedType` 等原因无法移动到目标单元格时将会显示 `NoDeploy` 光标（by Starkku）"
 
 #: ../../Whats-New.md:477
 msgid ""
