@@ -9263,6 +9263,7 @@ msgid ""
 " that all `Strafing.Shots` can be dropped. That is, the `Strafing` will "
 "not be interrupted by the premature death of the target."
 msgstr ""
+"`Strafing.TargetCell` 控制战机是否会在第一发后将目标切换为地板以确保与 `Strafing.Shots` 设定的次数一致。也就是扫射不再会由于目标被摧毁而中断。"
 
 #: ../../New-or-Enhanced-Logics.md:2650
 msgid ""
