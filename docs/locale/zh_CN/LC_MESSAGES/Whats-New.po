@@ -2625,7 +2625,7 @@ msgstr "现在所有单位转换形式（包括 Ares 的）在运输工具被转
 msgid ""
 "Infantry type conversion from `Deployer=yes` to `no` now correctly update"
 " the sequence anim (by Trsdy)"
-msgstr "现在从由于类型转换导致 `Deployer=yes` 变为 `no` 的步兵能够正确更新序列动画（by Trsdy）"
+msgstr "现在从由于单位转换导致 `Deployer=yes` 变为 `no` 的步兵能够正确更新序列动画（by Trsdy）"
 
 #: ../../Whats-New.md:685
 msgid ""
