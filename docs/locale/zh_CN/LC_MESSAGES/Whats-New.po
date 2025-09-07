@@ -322,10 +322,11 @@ msgstr ""
 
 #: ../../Whats-New.md:46
 msgid ""
-"Units' `LaserTrails` will no longer lags behind by one frame, So it needs"
+"Units' `LaserTrails` will no longer lag behind by one frame, so it needs"
 " to be repositioned (Previously, units with faster speeds may need to be "
 "positioned further ahead)."
 msgstr ""
+"单位的 `LaserTrails` 将不再滞后一帧，因此需要重新定位（先前在一些移速较快的单位上可能会使用较超前的位置）。"
 
 #: ../../Whats-New.md:48
 msgid "From 0.3"
@@ -2123,6 +2124,7 @@ msgid ""
 "Fixed an issue that units' `LaserTrails` will always lags behind by one "
 "frame (by CrimRecya)"
 msgstr ""
+"修复了单位的 `LaserTrails` 总会滞后一帧的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:473
 msgid "Fixed customized `WarpAway` anim's wrong definition (by Ollerus)"
@@ -2156,6 +2158,7 @@ msgid ""
 "Fixed an issue that Ares' Type Conversion not resetting barrel's "
 "direction by `FireAngle` (by TaranDahl)"
 msgstr ""
+"修复了 Ares 的单位转换不会通过 `FireAngle` 重设炮管方向的问题（by TaranDahl）"
 
 #: ../../Whats-New.md:482
 msgid "0.4"

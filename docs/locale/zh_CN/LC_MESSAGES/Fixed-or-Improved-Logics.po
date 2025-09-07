@@ -1600,12 +1600,6 @@ msgstr ""
 msgid "`DeployingAnim` using unit drawer now also tint accordingly with the unit."
 msgstr "`DeployingAnim` 使用单位绘制方式时现可跟随单位一起染色。"
 
-#: ../../Fixed-or-Improved-Logics.md:264
-msgid ""
-"Fixed an issue that units' `LaserTrails` will always lags behind by one "
-"frame."
-msgstr ""
-
 #: ../../Fixed-or-Improved-Logics.md:265
 msgid "Fixed an issue that jumpjets in air can not correctly spawn missiles."
 msgstr ""
@@ -1771,6 +1765,7 @@ msgid ""
 "Fixed an issue that Ares' Type Conversion not resetting barrel's "
 "direction by `FireAngle`."
 msgstr ""
+"修复了 Ares 的单位转换不会通过 `FireAngle` 重设炮管方向的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:295
 msgid ""

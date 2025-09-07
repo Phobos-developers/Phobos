@@ -260,7 +260,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - If `DeployingAnim` with `Shadow=true` is played for unit currently in air its shadow will now be drawn on ground.
 - `DeployingAnim` now supports both `Normalized=true` and `Reverse=true`. Keep in mind `Reverse` uses `LoopEnd` for frame amount instead of `End` even without `LoopCount` > 1.
 - `DeployingAnim` using unit drawer now also tint accordingly with the unit.
-- Fixed an issue that units' `LaserTrails` will always lags behind by one frame.
 - Fixed an issue that jumpjets in air can not correctly spawn missiles.
 
 ## Fixes / interactions with other extensions
