@@ -1600,12 +1600,6 @@ msgstr ""
 msgid "`DeployingAnim` using unit drawer now also tint accordingly with the unit."
 msgstr "`DeployingAnim` 使用单位绘制方式时现可跟随单位一起染色。"
 
-#: ../../Fixed-or-Improved-Logics.md:263
-msgid ""
-"Fixed the bug that armor multiplier of new attacheffect will have extra "
-"take effect once if restricted warheads."
-msgstr ""
-
 #: ../../Fixed-or-Improved-Logics.md:264
 msgid ""
 "Fixed an issue that units' `LaserTrails` will always lags behind by one "
