@@ -2,6 +2,7 @@
 
 #include <SpawnManagerClass.h>
 #include <TunnelLocomotionClass.h>
+#include <JumpjetLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
 
@@ -77,6 +78,21 @@ DEFINE_HOOK(0x6B7265, SpawnManagerClass_AI_UpdateTimer, 0x6)
 	}
 
 	return 0;
+}
+
+// Fix Jumpjets can not spawn missiles in air.
+DEFINE_HOOK(0x6B72FE, SpawnerManagerClass_AI_MissileCheck, 0x9)
+{
+	enum { SpawnMissile = 0x6B735C, NoSpawn = 0x6B795A };
+
+	GET(SpawnManagerClass*, pThis, ESI);
+
+	auto pLoco = ((FootClass*)pThis->Owner)->Locomotor; // Ares has already handled the building case.
+	auto pLocoInterface = pLoco.GetInterfacePtr();
+
+	return (pLocoInterface->Is_Moving_Now()
+		|| (!locomotion_cast<JumpjetLocomotionClass*>(pLoco) && pLocoInterface->Is_Moving())) // Jumpjet should only check Is_Moving_Now.
+		? NoSpawn : SpawnMissile;
 }
 
 DEFINE_HOOK_AGAIN(0x6B73BE, SpawnManagerClass_AI_SpawnTimer, 0x6)

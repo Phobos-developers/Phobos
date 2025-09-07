@@ -462,6 +462,7 @@ Vanilla fixes:
 - If `DeployingAnim` with `Shadow=true` is played for unit currently in air its shadow will now be drawn on ground (by Starkku)
 - `DeployingAnim` now supports both `Normalized=true` and `Reverse=true` (by Starkku)
 - `DeployingAnim` using unit drawer now also tint accordingly with the unit (by Starkku)
+- Jumpjets in air now can correctly spawn missiles (by TaranDahl)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
