@@ -260,8 +260,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - If `DeployingAnim` with `Shadow=true` is played for unit currently in air its shadow will now be drawn on ground.
 - `DeployingAnim` now supports both `Normalized=true` and `Reverse=true`. Keep in mind `Reverse` uses `LoopEnd` for frame amount instead of `End` even without `LoopCount` > 1.
 - `DeployingAnim` using unit drawer now also tint accordingly with the unit.
-- Fixed the bug that armor multiplier of new attacheffect will have extra take effect once if restricted warheads.
-- Fixed an issue that units' `LaserTrails` will always lags behind by one frame.
 - Fixed an issue that jumpjets in air can not correctly spawn missiles.
 
 ## Fixes / interactions with other extensions
@@ -270,7 +268,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Weapons fired by EMPulse superweapons *(Ares feature)* without `EMPulse.TargetSelf=true` can now create radiation.
 - Weapons fired by EMPulse superweapons *(Ares feature)* now respect `Floater` and Phobos-added `Gravity` setting.
 - `IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no longer get stuck after deploying or play their move sound indefinitely.
-- `Convert.Deploy` displays 'no deploy' cursor if the new type is not allowed to move to the cell due to `SpeedType` etc
+- `Convert.Deploy` displays 'NoDeploy' cursor if the new type is not allowed to move to the cell due to `SpeedType` etc.
 - All forms of type conversion (including Ares') now correctly update the warp-in delay if unit with teleport `Locomotor` was converted while the delay was active.
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed.
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.
@@ -418,8 +416,8 @@ In `artmd.ini`:
 [SOMEANIM]                    ; AnimationType
 ExplodeOnWater=false          ; boolean
 Warhead.Detonate=false        ; boolean
-WakeAnim=                     ; list of Animation
-SplashAnims=                  ; List of Animation, default to [CombatDamage] -> SplashList
+WakeAnim=                     ; List of AnimationTypes
+SplashAnims=                  ; List of AnimationTypes, default to [CombatDamage] -> SplashList
 SplashAnims.PickRandom=false  ; boolean
 ExtraShadow=true              ; boolean
 ```
@@ -1041,9 +1039,9 @@ TargetZoneScanType=same  ; target zone scan enumeration (same|any|inrange)
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]            ; TechnoType
-WarpOut=                ; list of Animation (played when Techno warping out), default to [General] WarpOut
-WarpIn=                 ; list of Animation (played when Techno warping in), default to [General] WarpIn
-WarpAway=               ; list of Animation (played when Techno being erased by `Temporal=yes` warhead), default to [General] WarpAway
+WarpOut=                ; List of AnimationTypes (played when Techno warping out), default to [General] -> WarpOut
+WarpIn=                 ; List of AnimationTypes (played when Techno warping in), default to [General] -> WarpIn
+WarpAway=               ; List of AnimationTypes (played when Techno being erased by `Temporal=yes` warhead), default to [General] -> WarpAway
 ChronoTrigger=          ; boolean, if yes then delay varies by distance, if no it is a constant
 ChronoDistanceFactor=   ; integer, amount to divide the distance to destination by to get the warped out delay
 ChronoMinimumDelay=     ; integer, the minimum delay for teleporting, no matter how short the distance
@@ -1738,7 +1736,7 @@ DestroyAnim.Random=true                ; boolean
 
 - `Ammo.AddOnDeploy` determines the number of ammo added or subtracted after the vehicle has deployed or undeployed.
   - Ammo count cannot go below 0 or above the maximum ammo for vehicle's type (in case the deploy results in type conversion, type is the one after the conversion).
- 
+
 In `rulesmd.ini`:
 ```ini
 [SOMEVEHICLE]       ; VehicleType
@@ -1747,7 +1745,7 @@ Ammo.AddOnDeploy=0  ; integer
 
 ### IsSimpleDeployer facing and animation customization
 
-- In vanilla game only units with `DeployingAnim` were constrained to a specific deploy facing and it was not customizable per unit. `DeployDir` can be set to override this per unit (defaults to `[AudioVisual]` -> `DeployDir`), including using value of -1 to disable the facing restriction.
+- In vanilla game only units with `DeployingAnim` were constrained to a specific deploy facing and it was not customizable per unit. `DeployDir` can be set to override this per unit (defaults to `[AudioVisual] -> DeployDir`), including using value of -1 to disable the facing restriction.
 - Multiple new options for deploy animations:
   - `DeployingAnims` can be used instead of `DeployingAnim` (if both are set, `DeployingAnims` takes precedence) to define a list of direction-specific deploy animations to play. Largest power of 2 the number of listed animations falls to is used as number of directions/animations. Less than 8 animations listed results in only first listed one being used.
   - `DeployingAnim.KeepUnitVisible` determines if the unit is **not** hidden while the animation is playing.

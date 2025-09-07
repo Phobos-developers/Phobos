@@ -10,7 +10,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From vanilla
 
-- `IsSimpleDeployer` units now obey deploying facing constraint even without deploying animation. To disable this, set `DeployDir` (defaults to `[AudioVisual]` -> `DeployDir` to -1.
+- `IsSimpleDeployer` units now obey deploying facing constraint even without deploying animation. To disable this, set `DeployDir` (defaults to `[AudioVisual] -> DeployDir`) to -1.
 - `Vertical=true` projectiles now default to completely downwards initial trajectory/facing regardless of if their projectile image has `Voxel=true` or not. This behavior can be reverted by setting `VerticalInitialFacing=false` on projectile in `rulesmd.ini`.
 - `Vertical=true` projectiles no longer move horizontally if fired by aircraft by default. To re-enable this behaviour set `Vertical.AircraftFix=false` on the projectile.
 - Weapons with `Airstrike=true` on Warhead will now check target eligibility for airstrikes regardless of weapon slot. Use `AirstrikeTargets=all` on `Primary` airstrike weapon Warhead to restore previous behaviour.
@@ -43,7 +43,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `AnimList.ShowOnZeroDamage` has been renamed to `CreateAnimsOnZeroDamage` to make it more clear it applies to both `AnimList` and splash animations.
 - INI inclusion and inheritance are now turned off by default and need to be turned on via command line flags `-Include` and `-Inheritance`.
 - `Level=true` projectiles no longer attempt to do reposition against targets that are behind non-water tiles by default. Use `SubjectToLand=true` to re-enable this behaviour.
-- Units' `LaserTrails` will no longer lags behind by one frame, So it needs to be repositioned (Previously, units with faster speeds may need to be positioned further ahead).
+- Units' `LaserTrails` will no longer lag behind by one frame, so it needs to be repositioned (Previously, units with faster speeds may need to be positioned further ahead).
 
 #### From 0.3
 
@@ -440,7 +440,7 @@ New:
 - [Customize hardcoded projectile initial facing behavior](Fixed-or-Improved-Logics.md#customizing-initial-facing-behavior) (by Starkku)
 - Health bar permanently displayed (by FlyStar)
 - [`IsSimpleDeployer` facing customization & directional deploy animations](Fixed-or-Improved-Logics.md#issimpleDeployer-facing-and-animation-customization) (by Starkku)
-- [Ammo-based deploy customizations for vehicles expanded to non-IsSimpleDeployer deploy functions](New-or-Enhancerd-Logics.md#Automatic-deploy-and-blocking-deploying-based on-ammo) (by Starkku)
+- [Ammo-based deploy customizations for vehicles expanded to non-IsSimpleDeployer deploy functions](New-or-Enhanced-Logics.md#automatic-deploy-and-blocking-deploying-based-on-ammo) (by Starkku)
 - Randomized anims for several behaviors (by Ollerus)
 - Shield respawn animation and weapon (by Ollerus)
 
@@ -473,7 +473,7 @@ Phobos fixes:
 - Fixed customized `WarpAway` anim's wrong definition (by Ollerus)
 
 Fixes / interactions with other extensions:
-- `Convert.Deploy` displays 'no deploy' cursor if the new type is not allowed to move to the cell due to `SpeedType` etc. (by Starkku)
+- `Convert.Deploy` displays 'NoDeploy' cursor if the new type is not allowed to move to the cell due to `SpeedType` etc. (by Starkku)
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
 - Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle` (by TaranDahl)

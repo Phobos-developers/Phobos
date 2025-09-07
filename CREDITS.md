@@ -563,7 +563,7 @@ This page lists all the individual contributions to the project by their author.
   - Damage multiplier for health percentage
   - Linked superweapons tweak
   - Randomized anims for several behaviors
-  - Fixed customized `WarpAway` anim's wrong definition
+  - Fix customized `WarpAway` anim's wrong definition
   - Shield respawn animation and weapon
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
@@ -608,7 +608,7 @@ This page lists all the individual contributions to the project by their author.
   - Use `SkipCrushSlowdown=true` to avoid the bug related to `Accelerates=true` and `MovementZone=CrushAll`
   - Auto deploy for GI-like infantry
   - Fix an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle`
-  - Fix an issue that jumpjets in air can  not correctly spawn missiles
+  - Fix an issue that jumpjets in air can not correctly spawn missiles
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
