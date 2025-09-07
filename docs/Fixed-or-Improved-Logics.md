@@ -270,7 +270,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Weapons fired by EMPulse superweapons *(Ares feature)* without `EMPulse.TargetSelf=true` can now create radiation.
 - Weapons fired by EMPulse superweapons *(Ares feature)* now respect `Floater` and Phobos-added `Gravity` setting.
 - `IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no longer get stuck after deploying or play their move sound indefinitely.
-- `Convert.Deploy` displays 'no deploy' cursor if the new type is not allowed to move to the cell due to `SpeedType` etc
+- `Convert.Deploy` displays 'NoDeploy' cursor if the new type is not allowed to move to the cell due to `SpeedType` etc
 - All forms of type conversion (including Ares') now correctly update the warp-in delay if unit with teleport `Locomotor` was converted while the delay was active.
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed.
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.
@@ -418,8 +418,8 @@ In `artmd.ini`:
 [SOMEANIM]                    ; AnimationType
 ExplodeOnWater=false          ; boolean
 Warhead.Detonate=false        ; boolean
-WakeAnim=                     ; list of Animation
-SplashAnims=                  ; List of Animation, default to [CombatDamage] -> SplashList
+WakeAnim=                     ; List of AnimationTypes
+SplashAnims=                  ; List of AnimationTypes, default to [CombatDamage] -> SplashList
 SplashAnims.PickRandom=false  ; boolean
 ExtraShadow=true              ; boolean
 ```
@@ -1041,9 +1041,9 @@ TargetZoneScanType=same  ; target zone scan enumeration (same|any|inrange)
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]            ; TechnoType
-WarpOut=                ; list of Animation (played when Techno warping out), default to [General] WarpOut
-WarpIn=                 ; list of Animation (played when Techno warping in), default to [General] WarpIn
-WarpAway=               ; list of Animation (played when Techno being erased by `Temporal=yes` warhead), default to [General] WarpAway
+WarpOut=                ; List of AnimationTypes (played when Techno warping out), default to [General] -> WarpOut
+WarpIn=                 ; List of AnimationTypes (played when Techno warping in), default to [General] -> WarpIn
+WarpAway=               ; List of AnimationTypes (played when Techno being erased by `Temporal=yes` warhead), default to [General] -> WarpAway
 ChronoTrigger=          ; boolean, if yes then delay varies by distance, if no it is a constant
 ChronoDistanceFactor=   ; integer, amount to divide the distance to destination by to get the warped out delay
 ChronoMinimumDelay=     ; integer, the minimum delay for teleporting, no matter how short the distance
@@ -1738,7 +1738,7 @@ DestroyAnim.Random=true                ; boolean
 
 - `Ammo.AddOnDeploy` determines the number of ammo added or subtracted after the vehicle has deployed or undeployed.
   - Ammo count cannot go below 0 or above the maximum ammo for vehicle's type (in case the deploy results in type conversion, type is the one after the conversion).
- 
+
 In `rulesmd.ini`:
 ```ini
 [SOMEVEHICLE]       ; VehicleType

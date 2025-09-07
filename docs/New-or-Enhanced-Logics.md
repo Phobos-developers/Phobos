@@ -327,7 +327,7 @@ Respawn=0.0                                 ; floating point value, percents or 
 Respawn.Rate=0.0                            ; floating point value, ingame minutes
 Respawn.RestartInCombat=true                ; boolean
 Respawn.RestartInCombatDelay=0              ; integer, game frames
-Respawn.Anim=                               ; list of Animation
+Respawn.Anim=                               ; List of AnimationTypes
 Respawn.Weapon=                             ; WeaponType
 BracketDelta=0                              ; integer - pixels
 Pips=-1,-1,-1                               ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
@@ -343,8 +343,8 @@ IdleAnimDamaged.ConditionYellow=            ; AnimationType
 IdleAnimDamaged.ConditionRed=               ; AnimationType
 IdleAnim.OfflineAction=Hides                ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 IdleAnim.TemporalAction=Hides               ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
-BreakAnim=                                  ; list of Animation
-HitAnim=                                    ; list of Animation
+BreakAnim=                                  ; List of AnimationTypes
+HitAnim=                                    ; List of AnimationTypes
 HitFlash=false                              ; boolean
 HitFlash.FixedSize=                         ; integer
 HitFlash.Red=true                           ; boolean
@@ -369,8 +369,8 @@ ShieldType=SOMESHIELDTYPE                   ; ShieldType; none by default
 [SOMEWARHEAD]                               ; WarheadType
 Shield.Penetrate=false                      ; boolean
 Shield.Break=false                          ; boolean
-Shield.BreakAnim=                           ; list of Animation
-Shield.HitAnim=                             ; list of Animation
+Shield.BreakAnim=                           ; List of AnimationTypes
+Shield.HitAnim=                             ; List of AnimationTypes
 Shield.SkipHitAnim=false                    ; boolean
 Shield.HitFlash=true                        ; boolean
 Shield.BreakWeapon=                         ; WeaponType
@@ -386,7 +386,7 @@ Shield.Respawn.Rate=-1.0                    ; floating point value, ingame minut
 Shield.Respawn.RestartInCombat=             ; boolean
 Shield.Respawn.RestartInCombatDelay=-1      ; integer, game frames
 Shield.Respawn.RestartTimer=false           ; boolean
-Shield.Respawn.Anim=                        ; list of Animation
+Shield.Respawn.Anim=                        ; List of AnimationTypes
 Shield.Respawn.Weapon=                      ; WeaponType
 Shield.SelfHealing.Duration=0               ; integer, game frames
 Shield.SelfHealing.Amount=0.0               ; floating point value, percents or absolute
@@ -535,7 +535,7 @@ CreateUnit.InheritTurretFacings=false  ; boolean
 CreateUnit.AlwaysSpawnOnGround=false   ; boolean
 CreateUnit.SpawnParachutedInAir=false  ; boolean
 CreateUnit.ConsiderPathfinding=false   ; boolean
-CreateUnit.SpawnAnim=                  ; list of Animation
+CreateUnit.SpawnAnim=                  ; List of AnimationTypes
 CreateUnit.SpawnHeight=-1              ; integer, height in leptons
 ```
 
@@ -1321,7 +1321,7 @@ Spawner.DelayFrames=               ; integer, game frames
 Spawner.AttackImmediately=false    ; boolean
 Spawner.UseTurretFacing=false      ; boolean
 Spawner.RecycleRange=-1            ; float, range in cells
-Spawner.RecycleAnim=               ; list of Animation
+Spawner.RecycleAnim=               ; List of AnimationTypes
 Spawner.RecycleCoord=0,0,0         ; integer - Forward,Lateral,Height
 Spawner.RecycleOnTurret=false      ; boolean
 ```
@@ -1364,7 +1364,7 @@ PassengerDeletion.DisplaySoylent=false          ; boolean
 PassengerDeletion.DisplaySoylentToHouses=All    ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 PassengerDeletion.DisplaySoylentOffset=0,0      ; X,Y, pixels relative to default
 PassengerDeletion.ReportSound=                  ; Sound entry
-PassengerDeletion.Anim=                         ; list of Animation
+PassengerDeletion.Anim=                         ; List of AnimationTypes
 PassengerDeletion.UnderEMP=false                ; boolean
 ```
 
@@ -1662,7 +1662,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                   ; TechnoType
 AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell), default not set
-AutoDeath.VanishAnimation=                     ; list of Animation
+AutoDeath.VanishAnimation=                     ; List of AnimationTypes
 AutoDeath.OnAmmoDepletion=no                   ; boolean
 AutoDeath.AfterDelay=0                         ; positive integer
 AutoDeath.TechnosDontExist=                    ; List of TechnoTypes
@@ -1804,12 +1804,12 @@ Promote.IncludeSpawns=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-Promote.VeteranAnimation=         ; list of Animation
-Promote.EliteAnimation=           ; list of Animation
+Promote.VeteranAnimation=         ; List of AnimationTypes
+Promote.EliteAnimation=           ; List of AnimationTypes
 
 [SOMETECHNO]
-Promote.VeteranAnimation=         ; list of Animation, default to Promote.VeteranAnimation in [AudioVisual]
-Promote.EliteAnimation=           ; list of Animation, default to Promote.EliteAnimation in [AudioVisual]
+Promote.VeteranAnimation=         ; List of AnimationTypes, default to Promote.VeteranAnimation in [AudioVisual]
+Promote.EliteAnimation=           ; List of AnimationTypes, default to Promote.EliteAnimation in [AudioVisual]
 ```
 
 ### Raise alert when technos are taking damage
@@ -1998,7 +1998,7 @@ WarpOutWeapon=                          ; WeaponType
 In `rulesmd.ini`:
 ```ini
 [SOMETERRAINTYPE]  ; TerrainType
-DestroyAnim=       ; list of Animation
+DestroyAnim=       ; List of AnimationTypes
 DestroySound=      ; Sound entry
 ```
 
