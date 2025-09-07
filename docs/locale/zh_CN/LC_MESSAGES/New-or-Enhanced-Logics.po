@@ -7367,6 +7367,7 @@ msgid ""
 "If more than one animation is listed in `DestroyAnim`, a random one is "
 "selected."
 msgstr ""
+"如果 `DestroyAnim` 中列出了多个动画，则将随机选择一个。"
 
 #: ../../New-or-Enhanced-Logics.md:1999
 msgid ""

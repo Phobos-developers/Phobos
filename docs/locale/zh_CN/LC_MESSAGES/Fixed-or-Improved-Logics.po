@@ -4069,6 +4069,7 @@ msgid ""
 "If more than one animation is listed in `WarpOut`, `WarpIn` or "
 "`WarpAway`, a random one is selected."
 msgstr ""
+"如果 `WarpOut`、`WarpIn` 或 `WarpAway` 中列出了多个动画，则将随机选择一个。"
 
 #: ../../Fixed-or-Improved-Logics.md:1042
 msgid ""

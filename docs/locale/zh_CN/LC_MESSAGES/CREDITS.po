@@ -2323,11 +2323,11 @@ msgstr "对联动超武的调整"
 
 #: ../../../CREDITS.md:566
 msgid "Randomized anims for several behaviors"
-msgstr ""
+msgstr "几种行为的随机动画"
 
 #: ../../../CREDITS.md:567
-msgid "Fixed customized `WarpAway` anim's wrong definition"
-msgstr ""
+msgid "Fix customized `WarpAway` anim's wrong definition"
+msgstr "修复了自定义 `WarpAway` 动画的错误定义"
 
 #: ../../../CREDITS.md:568
 msgid "Shield respawn animation and weapon"

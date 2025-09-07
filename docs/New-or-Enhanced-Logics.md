@@ -1807,7 +1807,7 @@ In `rulesmd.ini`:
 Promote.VeteranAnimation=         ; List of AnimationTypes
 Promote.EliteAnimation=           ; List of AnimationTypes
 
-[SOMETECHNO]
+[SOMETECHNO]                      ; TechnoType
 Promote.VeteranAnimation=         ; List of AnimationTypes, default to Promote.VeteranAnimation in [AudioVisual]
 Promote.EliteAnimation=           ; List of AnimationTypes, default to Promote.EliteAnimation in [AudioVisual]
 ```

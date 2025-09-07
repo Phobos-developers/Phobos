@@ -1950,7 +1950,7 @@ msgstr ""
 
 #: ../../Whats-New.md:444
 msgid "Randomized anims for several behaviors (by Ollerus)"
-msgstr ""
+msgstr "几种行为的随机动画（by Ollerus）"
 
 #: ../../Whats-New.md:445
 #, fuzzy
@@ -2128,7 +2128,7 @@ msgstr ""
 
 #: ../../Whats-New.md:473
 msgid "Fixed customized `WarpAway` anim's wrong definition (by Ollerus)"
-msgstr ""
+msgstr "修复了自定义 `WarpAway` 动画的错误定义（by Ollerus）"
 
 #: ../../Whats-New.md:475 ../../Whats-New.md:851 ../../Whats-New.md:1074
 msgid "Fixes / interactions with other extensions:"
