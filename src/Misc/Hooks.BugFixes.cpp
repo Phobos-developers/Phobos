@@ -2542,3 +2542,40 @@ DEFINE_PATCH(0x42C36B, 0xB7);
 // movsx eax, word ptr [eax+esi*2] -> movzx eax, word ptr [eax+esi*2]
 
 #pragma endregion
+
+#pragma region FixPlanningNodeConnect
+
+DEFINE_NAKED_HOOK(0x638F1E, PlanningNodeClass_UpdateHoverNode_FixCheckValidity)
+{
+	// Use:
+	// esi -> current planning node , no change
+	// eax -> PlanningNodeClass::PlanningModeActive, PlanningNodeClass::HoverNode and returnAddress , will be covered later
+	__asm
+	{
+		mov al, [0xAC4CF4]
+		test al, al
+		jnz CHECK_VALIDITY
+
+		mov eax, [0xAC4CCC]
+		cmp esi, eax
+		jz CHECK_VALIDITY
+
+		pop edi
+		pop ebp
+		pop ebx
+
+		mov eax, 0x638F81
+		jmp eax
+
+	CHECK_VALIDITY:
+
+		pop edi
+		pop ebp
+		pop ebx
+
+		mov eax, 0x638F2A
+		jmp eax
+	}
+}
+
+#pragma endregion
