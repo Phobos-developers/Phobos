@@ -206,12 +206,25 @@ DEFINE_HOOK(0x6F85AB, TechnoClass_CanAutoTargetObject_AggressiveAttackMove, 0x6)
 	if (!pThis->Owner->IsControlledByHuman())
 		return CanTarget;
 
-	if (!pThis->MegaMissionIsAttackMove())
-		return ContinueCheck;
+	GET(TechnoClass*, pTarget, ESI);
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (pTarget->WhatAmI() == AbstractType::Building)
+	{
+		// Fallback to unmodded behavior if the building is an exempt of aggressive stance.
+		if (BuildingTypeExt::ExtMap.Find(static_cast<BuildingClass*>(pTarget)->Type)->AggressiveModeExempt)
+			return ContinueCheck;
 
-	return pExt->TypeExtData->AttackMove_Aggressive.Get(RulesExt::Global()->AttackMove_Aggressive) ? CanTarget : ContinueCheck;
+		if (TechnoExt::ExtMap.Find(pThis)->GetPassiveAcquireMode() == PassiveAcquireMode::Aggressive)
+			return CanTarget;
+	}
+
+	if (pThis->MegaMissionIsAttackMove())
+	{
+		if (TechnoExt::ExtMap.Find(pThis)->TypeExtData->AttackMove_Aggressive.Get(RulesExt::Global()->AttackMove_Aggressive))
+			return CanTarget;
+	}
+
+	return ContinueCheck;
 }
 
 #pragma endregion
@@ -377,9 +390,9 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB0CC, InfantryClass__WhatAction_Wrapper)
 
 #pragma endregion
 
-#pragma region CeaseFireStance
+#pragma region PassiveAcquireMode
 
-DEFINE_HOOK(0x6F8E1F, TechnoClass_SelectAutoTarget_CeaseFireStance, 0x6)
+DEFINE_HOOK(0x6F8E1F, TechnoClass_SelectAutoTarget_CeaseFireMode, 0x6)
 {
 	GET(TechnoTypeClass*, pType, EAX);
 	GET(TechnoClass*, pThis, ESI);
@@ -387,7 +400,7 @@ DEFINE_HOOK(0x6F8E1F, TechnoClass_SelectAutoTarget_CeaseFireStance, 0x6)
 	return R->Origin() + 0x6;
 }
 
-DEFINE_HOOK(0x7087DD, TechnoClass_CanRetaliateToAttacker_CeaseFireStance, 0x6)
+DEFINE_HOOK(0x7087DD, TechnoClass_CanRetaliateToAttacker_CeaseFireMode, 0x6)
 {
 	GET(TechnoTypeClass*, pType, EAX);
 	GET(TechnoClass*, pThis, ESI);

@@ -3,6 +3,7 @@
 #include <AnimClass.h>
 
 #include <Ext/TechnoType/Body.h>
+#include <Ext/BuildingType/Body.h>
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>

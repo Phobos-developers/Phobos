@@ -99,6 +99,8 @@ public:
 
 		ValueableVector<bool> HasPowerUpAnim;
 
+		Valueable<bool> AggressiveModeExempt;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -161,6 +163,7 @@ public:
 			, BuildingRepairedSound {}
 			, Refinery_UseNormalActiveAnim { false }
 			, HasPowerUpAnim {}
+			, AggressiveModeExempt{}
 		{ }
 
 		// Ares 0.A functions
