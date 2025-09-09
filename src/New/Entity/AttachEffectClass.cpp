@@ -311,6 +311,19 @@ void AttachEffectClass::AnimCheck()
 				this->CreateAnim();
 		}
 	}
+
+	if (this->Animation && this->Type->Animation_DrawOffsets.size() > 0)
+	{
+		auto const pAnimExt = AnimExt::ExtMap.Find(this->Animation);
+		auto const pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
+		pAnimExt->AEDrawOffset = Point2D::Empty;
+
+		for (auto const& drawOffset : this->Type->Animation_DrawOffsets)
+		{
+			if (drawOffset.RequiredTypes.size() < 1 || pTechnoExt->HasAttachedEffects(drawOffset.RequiredTypes, false, false, nullptr, nullptr, nullptr, nullptr))
+				pAnimExt->AEDrawOffset += drawOffset.Offset;
+		}
+	}
 }
 
 void AttachEffectClass::OnlineCheck()

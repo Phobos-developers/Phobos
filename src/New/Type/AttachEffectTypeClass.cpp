@@ -164,6 +164,17 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	// Groups
 	exINI.ParseStringList(this->Groups, pSection, "Groups");
 	AddToGroupsMap();
+
+	// Animation draw offsets.
+	for (int i = 0; i < INT32_MAX; i++)
+	{
+		AnimationDrawOffsetClass offset;
+
+		if (offset.LoadFromINI(pINI, pSection, i))
+			this->Animation_DrawOffsets.emplace_back(offset);
+		else
+			break;
+	}
 }
 
 template <typename T>
@@ -230,6 +241,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Unkillable)
 		.Process(this->LaserTrail_Type)
 		.Process(this->Groups)
+		.Process(this->Animation_DrawOffsets)
 		;
 }
 
@@ -431,6 +443,48 @@ bool AEAttachInfoTypeClass::Load(PhobosStreamReader& stm, bool registerForChange
 bool AEAttachInfoTypeClass::Save(PhobosStreamWriter& stm) const
 {
 	return const_cast<AEAttachInfoTypeClass*>(this)->Serialize(stm);
+}
+
+#pragma endregion(save/load)
+
+// AnimationDrawOffsetClass
+
+bool AnimationDrawOffsetClass::LoadFromINI(CCINIClass* pINI, const char* pSection, int index)
+{
+	INI_EX exINI(pINI);
+	char tempBuffer[48];
+
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "Animation.DrawOffset%d", index);
+	this->Offset.Read(exINI, pSection, tempBuffer);
+
+	if (this->Offset.Get() == Point2D::Empty)
+		return false;
+
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "Animation.DrawOffset%d.RequiredTypes", index);
+	this->RequiredTypes.Read(exINI, pSection, tempBuffer);
+
+	return true;
+}
+
+#pragma region(save/load)
+
+template <class T>
+bool AnimationDrawOffsetClass::Serialize(T& stm)
+{
+	return stm
+		.Process(this->Offset)
+		.Process(this->RequiredTypes)
+		.Success();
+}
+
+bool AnimationDrawOffsetClass::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return this->Serialize(stm);
+}
+
+bool AnimationDrawOffsetClass::Save(PhobosStreamWriter& stm) const
+{
+	return const_cast<AnimationDrawOffsetClass*>(this)->Serialize(stm);
 }
 
 #pragma endregion(save/load)
