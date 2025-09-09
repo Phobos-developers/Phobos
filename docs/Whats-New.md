@@ -10,6 +10,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From vanilla
 
+- Map trigger action `125 Build At...` now plays buildup by default if available, this can be toggled off using the third parameter (values other than 0). See [required changes for `fadata.ini`](#for-map-editor-final-alert-2) on how to enable the parameter in map editor. 
 - `IsSimpleDeployer` units now obey deploying facing constraint even without deploying animation. To disable this, set `DeployDir` (defaults to `[AudioVisual] -> DeployDir`) to -1.
 - `Vertical=true` projectiles now default to completely downwards initial trajectory/facing regardless of if their projectile image has `Voxel=true` or not. This behavior can be reverted by setting `VerticalInitialFacing=false` on projectile in `rulesmd.ini`.
 - `Vertical=true` projectiles no longer move horizontally if fired by aircraft by default. To re-enable this behaviour set `Vertical.AircraftFix=false` on the projectile.
@@ -129,6 +130,7 @@ HideLightFlashEffects=false      ; boolean
   102=Horizontal position,0
   103=Vertical position,0
   104=Banner ID,0
+  105=No buildup,0
 
   [EventsRA2]
   500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
@@ -176,7 +178,7 @@ HideLightFlashEffects=false      ; boolean
 
   [ActionsRA2]
   41=Play animation at a waypoint...,0,25,69,0,0,0,1,0,0,[LONG DESC].,0,1,41
-  125=Build at...,-10,47,0,65,0,0,1,0,0,[LONG DESC],0,1,125
+  125=Build at...,-10,47,105,65,0,0,1,0,0,[LONG DESC],0,1,125
   500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
   501=Edit variable,0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1
   502=Generate random number,0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1

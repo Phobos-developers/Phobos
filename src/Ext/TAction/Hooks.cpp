@@ -28,8 +28,11 @@ DEFINE_HOOK(0x6DD8B0, TActionClass_Execute, 0x6)
 	return handled ? 0x6DD910 : 0;
 }
 
-// TODO: Sometimes Buildup anims plays while the building image is already there in faster gamespeed.
 // Bugfix: TAction 125 Build At could neither display the buildups nor be AI-repairable in singleplayer mode
+// Sep 9, 2025 - Starkku: Fixed issues with buildups potentially ending up in infinite loops etc.
+// A separate issue remains where buildup sequence will interrupt if building's house changes mid-buildup,
+// but this applies to all buildings and not just ones created through the trigger.
+// Also restored Param3 to control the buildup display, only this time it is inverted (set to >0 to disable buildups).
 DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 {
 	GET(TActionClass*, pThis, ESI);
@@ -37,32 +40,26 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 	GET(HouseClass*, pHouse, EDI);
 	REF_STACK(CoordStruct, coord, STACK_OFFSET(0x24, -0x18));
 
-	const bool bPlayBuildUp = pBldType->LoadBuildup();
-	//Param3 can be used for other purposes in the future
+	const bool bPlayBuildUp = pThis->Param3 == 0 && pBldType->LoadBuildup();
 	bool bCreated = false;
+
 	if (auto pBld = static_cast<BuildingClass*>(pBldType->CreateObject(pHouse)))
 	{
-		if (bPlayBuildUp)
-		{
-			pBld->BeginMode(BStateType::Construction);
-			pBld->QueueMission(Mission::Construction, false);
-		}
-		else
-		{
-			pBld->BeginMode(BStateType::Idle);
-			pBld->QueueMission(Mission::Guard, false);
-		}
-
 		if (!pBld->ForceCreate(coord))
 		{
 			pBld->UnInit();
 		}
 		else
 		{
-			if (!bPlayBuildUp)
+			if (bPlayBuildUp)
+			{
+				pBld->ForceMission(Mission::Construction);
+			}
+			else
+			{
+				pBld->EnterIdleMode(false, false);
 				pBld->Place(false);
-
-			pBld->IsReadyToCommence = true;
+			}
 
 			if (SessionClass::IsCampaign() && !pHouse->IsControlledByHuman())
 				pBld->ShouldRebuild = pThis->Param4 > 0;
