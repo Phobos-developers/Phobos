@@ -36,39 +36,42 @@ DEFINE_HOOK(0x6DD8B0, TActionClass_Execute, 0x6)
 DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 {
 	GET(TActionClass*, pThis, ESI);
-	GET(BuildingTypeClass*, pBldType, ECX);
+	GET(BuildingTypeClass*, pBuildingType, ECX);
 	GET(HouseClass*, pHouse, EDI);
 	REF_STACK(CoordStruct, coord, STACK_OFFSET(0x24, -0x18));
 
-	const bool bPlayBuildUp = pThis->Param3 == 0 && pBldType->LoadBuildup();
-	bool bCreated = false;
+	const bool playBuildup = pThis->Param3 == 0 && pBuildingType->LoadBuildup();
+	bool created = false;
 
-	if (auto pBld = static_cast<BuildingClass*>(pBldType->CreateObject(pHouse)))
+	if (auto pBuilding = static_cast<BuildingClass*>(pBuildingType->CreateObject(pHouse)))
 	{
-		if (!pBld->ForceCreate(coord))
+		// Set before unlimbo cause otherwise it will call BuildingClass::Place.
+		pBuilding->QueueMission(Mission::Construction, false);
+		pBuilding->NextMission();
+
+		if (!pBuilding->ForceCreate(coord))
 		{
-			pBld->UnInit();
+			pBuilding->UnInit();
 		}
 		else
 		{
-			if (bPlayBuildUp)
+			// Reset mission and build state if we're not going to play buildup afterwards.
+			if (!playBuildup)
 			{
-				pBld->ForceMission(Mission::Construction);
-			}
-			else
-			{
-				pBld->EnterIdleMode(false, false);
-				pBld->Place(false);
+				pBuilding->BeginMode(BStateType::Idle);
+				pBuilding->QueueMission(Mission::Guard, false);
+				pBuilding->NextMission();
+				pBuilding->Place(false); // Manually call this now.
 			}
 
 			if (SessionClass::IsCampaign() && !pHouse->IsControlledByHuman())
-				pBld->ShouldRebuild = pThis->Param4 > 0;
+				pBuilding->ShouldRebuild = pThis->Param4 > 0;
 
-			bCreated = true;
+			created = true;
 		}
 	}
 
-	R->AL(bCreated);
+	R->AL(created);
 	return 0x6E42C1;
 }
 
