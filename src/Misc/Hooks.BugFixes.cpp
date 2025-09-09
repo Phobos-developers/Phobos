@@ -2566,5 +2566,11 @@ DEFINE_HOOK(0x638F1E, PlanningNodeClass_UpdateHoverNode_FixCheckValidity, 0x5)
 		? (int)_PlanningNodeClass_UpdateHoverNode_FixCheckValidity_RET_CHECK_VALIDITY
 		: (int)_PlanningNodeClass_UpdateHoverNode_FixCheckValidity_RET_SKIP_CHECK;
 }
+DEFINE_HOOK(0x638F70, PlanningNodeClass_UpdateHoverNode_SkipDuplicateLog, 0x8)
+{
+	enum { SkipGameCode = 0x638F81 };
+	GET(const PlanningNodeClass* const, pNode, ESI);
+	return (pNode != Make_Global<const PlanningNodeClass* const>(0xAC4CCC)) ? 0 : SkipGameCode;
+}
 
 #pragma endregion
