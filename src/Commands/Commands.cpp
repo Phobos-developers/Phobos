@@ -12,8 +12,7 @@
 #include "SaveVariablesToFile.h"
 #include "ToggleSWSidebar.h"
 #include "FireTacticalSW.h"
-#include "AggressiveStance.h"
-#include "CeaseFireStance.h"
+#include "PassiveAcquireMode.h"
 
 #include <CCINIClass.h>
 #include <InputManagerClass.h>
@@ -31,8 +30,8 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<QuickSaveCommandClass>();
 	MakeCommand<ToggleDigitalDisplayCommandClass>();
 	MakeCommand<ToggleDesignatorRangeCommandClass>();
-	MakeCommand<AggressiveStanceClass>();
-	MakeCommand<CeaseFireStanceClass>();
+	MakeCommand<AggressiveModeClass>();
+	MakeCommand<CeaseFireModeClass>();
 	MakeCommand<ToggleSWSidebar>();
 
 	if (Phobos::Config::SuperWeaponSidebarCommands)
