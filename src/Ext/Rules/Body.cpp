@@ -578,8 +578,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackMove_IgnoreWeaponCheck)
 		.Process(this->AttackMove_StopWhenTargetAcquired)
 		.Process(this->Parasite_GrappleAnim)
-		.Process(this->GatherWhenMCVDeploy)
 		.Process(this->InfantryAutoDeploy)
+		.Process(this->EnablePassiveAcquireMode)
 		;
 }
 

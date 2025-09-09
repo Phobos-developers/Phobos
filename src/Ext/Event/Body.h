@@ -16,10 +16,9 @@ enum class EventTypeExt : uint8_t
 	// Ares used Events 0x60 and 0x61
 
 	TogglePassiveAcquireMode = 0x81,
-	ToggleCeaseFireMode = 0x82,
 
 	FIRST = TogglePassiveAcquireMode,
-	LAST = ToggleCeaseFireMode
+	LAST = TogglePassiveAcquireMode
 };
 
 #pragma pack(push, 1)
