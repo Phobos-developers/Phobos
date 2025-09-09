@@ -52,6 +52,14 @@ std::vector<AttachEffectTypeClass*> AttachEffectTypeClass::GetTypesFromGroups(co
 	return std::vector<AttachEffectTypeClass*>(types.begin(), types.end());
 }
 
+bool AttachEffectTypeClass::HasAnim() const
+{
+	if (this->Cumulative)
+		return this->CumulativeAnimations.size() > 0 || this->Animation != nullptr;
+	else
+		return this->Animation != nullptr;
+}
+
 void AttachEffectTypeClass::HandleEvent(TechnoClass* pTarget)
 {
 	if (const auto pTag = pTarget->AttachedTag)

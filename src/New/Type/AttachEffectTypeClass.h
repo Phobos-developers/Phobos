@@ -101,7 +101,7 @@ public:
 	Nullable<int> ReflectDamage_Override;
 	Valueable<bool> ReflectDamage_UseInvokerAsOwner;
 	Valueable<bool> DisableWeapons;
-	Valueable<bool> Unkillable;
+	Valueable<bool> Unkillable;bool HasAnim() const;
 	ValueableIdx<LaserTrailTypeClass> LaserTrail_Type;
 
 	std::vector<std::string> Groups;
@@ -178,6 +178,7 @@ public:
 
 	bool HasGroup(const std::string& groupID) const;
 	bool HasGroups(const std::vector<std::string>& groupIDs, bool requireAll) const;
+	bool HasAnim() const;
 
 	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const
 	{

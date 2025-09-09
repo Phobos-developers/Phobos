@@ -18,8 +18,10 @@ public:
 
 	void AI();
 	void AI_Temporal();
+	void UpdateAnimLogic();
 	void KillAnim();
 	void CreateAnim();
+	bool HasAnim();
 	void UpdateCumulativeAnim();
 	void TransferCumulativeAnim(AttachEffectClass* pSource);
 
@@ -62,7 +64,6 @@ public:
 private:
 	void OnlineCheck();
 	void CloakCheck();
-	void AnimCheck();
 
 	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, TechnoTypeClass* pTargetType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
 		AbstractClass* pSource, AEAttachParams const& attachInfo, bool checkCumulative = true);
