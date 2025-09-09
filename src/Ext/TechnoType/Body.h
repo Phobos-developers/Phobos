@@ -84,7 +84,7 @@ public:
 		Valueable<int> Ammo_DeployUnlockMaximumAmount;
 
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
-		Valueable<AnimTypeClass*> AutoDeath_VanishAnimation;
+		ValueableVector<AnimTypeClass*> AutoDeath_VanishAnimation;
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
 		Valueable<int> AutoDeath_AfterDelay;
 		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosDontExist;
@@ -111,9 +111,9 @@ public:
 		NullableIdx<VocClass> VoiceCreated;
 		NullableIdx<VocClass> VoicePickup; // Used by carryalls instead of VoiceMove if set.
 
-		Nullable<AnimTypeClass*> WarpOut;
-		Nullable<AnimTypeClass*> WarpIn;
-		Nullable<AnimTypeClass*> WarpAway;
+		ValueableVector<AnimTypeClass*> WarpOut;
+		ValueableVector<AnimTypeClass*> WarpIn;
+		ValueableVector<AnimTypeClass*> WarpAway;
 		Nullable<bool> ChronoTrigger;
 		Nullable<int> ChronoDistanceFactor;
 		Nullable<int> ChronoMinimumDelay;
@@ -338,7 +338,7 @@ public:
 		ValueableVector<AircraftTypeClass*> Spawns_Queue;
 
 		Valueable<Leptons> Spawner_RecycleRange;
-		Valueable<AnimTypeClass*> Spawner_RecycleAnim;
+		ValueableVector<AnimTypeClass*> Spawner_RecycleAnim;
 		Valueable<CoordStruct> Spawner_RecycleCoord;
 		Valueable<bool> Spawner_RecycleOnTurret;
 
@@ -349,8 +349,8 @@ public:
 		Nullable<double> ProneSpeed;
 		Nullable<double> DamagedSpeed;
 
-		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
-		Nullable<AnimTypeClass*> Promote_EliteAnimation;
+		ValueableVector<AnimTypeClass*> Promote_VeteranAnimation;
+		ValueableVector<AnimTypeClass*> Promote_EliteAnimation;
 
 		Nullable<AffectedHouse> RadarInvisibleToHouse;
 

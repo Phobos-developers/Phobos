@@ -3,6 +3,7 @@
 #include <AircraftClass.h>
 #include <HouseClass.h>
 #include <ScenarioClass.h>
+#include <JumpjetLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/House/Body.h>
@@ -316,10 +317,10 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 		if (AresFunctions::ConvertTypeTo(pThis, pToType))
 		{
 			// Fixed an issue where morphing could result in -1 health.
-			double ratio = static_cast<double>(pToType->Strength) / pType->Strength;
+			const double ratio = static_cast<double>(pToType->Strength) / pType->Strength;
 			pThis->Health = static_cast<int>(oldHealth * ratio + 0.5);
 
-			auto const pTypeExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis));
+			auto const pTypeExt = TechnoExt::ExtMap.Find(pThis);
 			pTypeExt->UpdateTypeData(pToType);
 			pTypeExt->UpdateTypeData_Foot();
 			return true;
@@ -417,7 +418,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	if (pToType->BalloonHover && pToType->DeployToLand && prevType->Locomotor != jjLoco && toLoco == jjLoco)
 		pThis->Locomotor->Move_To(pThis->Location);
 
-	auto const pTypeExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis));
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis);
 	pTypeExt->UpdateTypeData(pToType);
 	pTypeExt->UpdateTypeData_Foot();
 	return true;
@@ -738,7 +739,7 @@ bool TechnoExt::CannotMove(UnitClass* pThis)
 	if (pType->Speed == 0)
 		return true;
 
-	if (!pThis->IsInAir())
+	if (!locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 	{
 		LandType landType = pThis->GetCell()->LandType;
 		const LandType movementRestrictedTo = pType->MovementRestrictedTo;
