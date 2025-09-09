@@ -1303,12 +1303,8 @@ DEFINE_HOOK(0x71A8BD, TemporalClass_Update_WarpAwayAnim, 0x5)
 	if (pExt->WarpAway.size() > 0)
 	{
 		AnimExt::CreateRandomAnim(pExt->WarpAway, pTarget->Location, nullptr, pTarget->Owner);
+		return 0x71A90E;
 	}
-	else if (auto const pWarpAway = RulesClass::Instance->WarpAway)
-	{
-		auto const pAnim = GameCreate<AnimClass>(pWarpAway, pTarget->Location);
-		AnimExt::SetAnimOwnerHouseKind(pAnim, pTarget->Owner, nullptr, false, true);
-	}
-
-	return 0x71A90E;
+	
+	return 0;
 }
