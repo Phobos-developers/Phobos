@@ -2545,32 +2545,30 @@ DEFINE_PATCH(0x42C36B, 0xB7);
 
 #pragma region FixPlanningNodeConnect
 
-void NAKED _PlanningNodeClass_UpdateHoverNode_FixCheckValidity_RET_CHECK_VALIDITY()
+// Restore the original three pop to prevent stack imbalance
+void NAKED _PlanningNodeClass_UpdateHoverNode_FixCheckValidity_RET()
 {
 	POP_REG(EDI);
 	POP_REG(EBP);
 	POP_REG(EBX);
 	JMP(0x638F2A);
 }
-void NAKED _PlanningNodeClass_UpdateHoverNode_FixCheckValidity_RET_SKIP_CHECK()
-{
-	POP_REG(EDI);
-	POP_REG(EBP);
-	POP_REG(EBX);
-	JMP(0x638F81);
-}
 DEFINE_HOOK(0x638F1E, PlanningNodeClass_UpdateHoverNode_FixCheckValidity, 0x5)
 {
-	GET(const PlanningNodeClass* const, pNode, ESI);
-	return (PlanningNodeClass::PlanningModeActive || pNode != Make_Global<const PlanningNodeClass* const>(0xAC4CCC)) // HoverNode
-		? (int)_PlanningNodeClass_UpdateHoverNode_FixCheckValidity_RET_CHECK_VALIDITY
-		: (int)_PlanningNodeClass_UpdateHoverNode_FixCheckValidity_RET_SKIP_CHECK;
+	// Newly added checks to prevent not in-time updates
+	return PlanningNodeClass::PlanningModeActive ? (int)_PlanningNodeClass_UpdateHoverNode_FixCheckValidity_RET : 0;
 }
+
 DEFINE_HOOK(0x638F70, PlanningNodeClass_UpdateHoverNode_SkipDuplicateLog, 0x8)
 {
-	enum { SkipGameCode = 0x638F81 };
-	GET(const PlanningNodeClass* const, pNode, ESI);
-	return (pNode != Make_Global<const PlanningNodeClass* const>(0xAC4CCC)) ? 0 : SkipGameCode;
+	enum { SkipLogString = 0x638F81 };
+
+	GET(const PlanningNodeClass* const, pCurrentNode, ESI);
+
+	const auto& pHoveringNode = Make_Global<const PlanningNodeClass* const>(0xAC4CCC);
+
+	// Only output logs when they are not the same, to avoid outputting every frame
+	return (pCurrentNode != pHoveringNode) ? 0 : SkipLogString;
 }
 
 #pragma endregion
