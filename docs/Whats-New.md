@@ -439,7 +439,7 @@ New:
 - [Restore turret recoil effect](Fixed-or-Improved-Logics.md#turret-recoil) (by CrimRecya)
 - [Customize hardcoded projectile initial facing behavior](Fixed-or-Improved-Logics.md#customizing-initial-facing-behavior) (by Starkku)
 - Health bar permanently displayed (by FlyStar)
-- [`IsSimpleDeployer` facing customization & directional deploy animations](Fixed-or-Improved-Logics.md#issimpleDeployer-facing-and-animation-customization) (by Starkku)
+- [`IsSimpleDeployer` facing customization & directional deploy animations](Fixed-or-Improved-Logics.md#issimpledeployer-facing-and-animation-customization) (by Starkku)
 - [Ammo-based deploy customizations for vehicles expanded to non-IsSimpleDeployer deploy functions](New-or-Enhanced-Logics.md#automatic-deploy-and-blocking-deploying-based-on-ammo) (by Starkku)
 - Randomized anims for several behaviors (by Ollerus)
 - Shield respawn animation and weapon (by Ollerus)
@@ -472,6 +472,13 @@ Phobos fixes:
 - Fixed the bug that armor multiplier of new attacheffect will have extra take effect once if restricted warheads (by NetsuNegi)
 - Fixed an issue that units' `LaserTrails` will always lags behind by one frame (by CrimRecya)
 - Fixed customized `WarpAway` anim's wrong definition (by Ollerus)
+- Fixed parsing of DropPodTrailer from INI (by Starkku)
+- Fixed issue with ReturnWeapon not always firing off correctly (by CrimRecya)
+- Fixed animation damage logic applying invoker/owner inconsistently between weapon & warhead (by Ollerus & Starkku)
+- Fixed an edge-case issue with Phobos' selection handling code crashing with Veinholes (by Starkku)
+- Fixed `AmbientDamage.Warhead` not working for waves (by Starkku)
+- Fixed `SkirmishUnlimitedColors` not being checked if Phobos runs without Ares active (by Starkku)
+- Fixed number of `*.ApplyFirepowerMult` options (f.ex anim damage, crit) ignoring veterancy firepower modifier (by Starkku)
 
 Fixes / interactions with other extensions:
 - `Convert.Deploy` displays 'NoDeploy' cursor if the new type is not allowed to move to the cell due to `SpeedType` etc. (by Starkku)
