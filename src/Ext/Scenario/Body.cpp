@@ -168,6 +168,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->DefaultLS800BkgdName)
 		.Process(this->DefaultLS800BkgdPal)
 		.Process(this->LimboLaunchers)
+		.Process(this->TriggerTypePlayerAtXOwners)
 		.Process(this->UndergroundTracker)
 		.Process(this->SpecialTracker)
 		.Process(this->FallingDownTracker)
@@ -198,6 +199,7 @@ DEFINE_HOOK(0x683549, ScenarioClass_CTOR, 0x9)
 	ScenarioExt::Global()->Waypoints.clear();
 	ScenarioExt::Global()->Variables[0].clear();
 	ScenarioExt::Global()->Variables[1].clear();
+	ScenarioExt::Global()->TriggerTypePlayerAtXOwners.clear();
 
 	return 0;
 }

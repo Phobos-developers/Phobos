@@ -467,6 +467,7 @@ New:
 - CellSpread in cylinder shape (by TaranDahl)
 - CellSpread damage check if victim is in air or on floor (by TaranDahl)
 - OpenTopped range bonus and damage multiplier customization for passengers (by Ollerus)
+- `<Player @ X>` can now be used as owner for triggers on skirmish and multiplayer maps (by Starkku)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
