@@ -2545,37 +2545,26 @@ DEFINE_PATCH(0x42C36B, 0xB7);
 
 #pragma region FixPlanningNodeConnect
 
-DEFINE_NAKED_HOOK(0x638F1E, PlanningNodeClass_UpdateHoverNode_FixCheckValidity)
+void NAKED _PlanningNodeClass_UpdateHoverNode_FixCheckValidity_RET_CHECK_VALIDITY()
 {
-	// Use:
-	// esi -> current planning node , no change
-	// eax -> PlanningNodeClass::PlanningModeActive, PlanningNodeClass::HoverNode and returnAddress , will be covered later
-	__asm
-	{
-		mov al, [0xAC4CF4]
-		test al, al
-		jnz CHECK_VALIDITY
-
-		mov eax, [0xAC4CCC]
-		cmp esi, eax
-		jz CHECK_VALIDITY
-
-		pop edi
-		pop ebp
-		pop ebx
-
-		mov eax, 0x638F81
-		jmp eax
-
-	CHECK_VALIDITY:
-
-		pop edi
-		pop ebp
-		pop ebx
-
-		mov eax, 0x638F2A
-		jmp eax
-	}
+	POP_REG(EDI);
+	POP_REG(EBP);
+	POP_REG(EBX);
+	JMP(0x638F2A);
+}
+void NAKED _PlanningNodeClass_UpdateHoverNode_FixCheckValidity_RET_SKIP_CHECK()
+{
+	POP_REG(EDI);
+	POP_REG(EBP);
+	POP_REG(EBX);
+	JMP(0x638F81);
+}
+DEFINE_HOOK(0x638F1E, PlanningNodeClass_UpdateHoverNode_FixCheckValidity, 0x5)
+{
+	GET(const PlanningNodeClass* const, pNode, ESI);
+	return (PlanningNodeClass::PlanningModeActive || pNode != Make_Global<const PlanningNodeClass* const>(0xAC4CCC)) // HoverNode
+		? (int)_PlanningNodeClass_UpdateHoverNode_FixCheckValidity_RET_CHECK_VALIDITY
+		: (int)_PlanningNodeClass_UpdateHoverNode_FixCheckValidity_RET_SKIP_CHECK;
 }
 
 #pragma endregion
