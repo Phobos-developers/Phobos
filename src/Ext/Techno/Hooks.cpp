@@ -1273,19 +1273,9 @@ DEFINE_HOOK(0x7010C1, TechnoClass_CanShowDeployCursor_UnitsAndAircraft, 0x5)
 		if (!TechnoExt::HasAmmoToDeploy(pUnit))
 			return DoNotAllowDeploy;
 
-		// IsSimpleDeployer + type conversion
-		if (pUnit->Type->IsSimpleDeployer && AresFunctions::ConvertTypeTo)
-		{
-			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->Type);
-
-			if (auto const pTypeConvert = pTypeExt->Convert_Deploy)
-			{
-				auto const pCell = pUnit->GetCell();
-
-				if (!pCell->IsClearToMove(pTypeConvert->SpeedType, true, true, -1, pTypeConvert->MovementZone, -1, pCell->ContainsBridge()))
-					return DoNotAllowDeploy;
-			}
-		}
+		// IsSimpleDeployer and type conversion
+		if (!TechnoExt::SimpleDeployerAllowedToDeploy(pUnit, true, false))
+			return DoNotAllowDeploy;
 	}
 
 	return 0;
