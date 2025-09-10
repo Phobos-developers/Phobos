@@ -496,7 +496,7 @@ bool BulletExt::ExtData::FireDisperseWeapon(TechnoClass* pFirer, const CoordStru
 		}
 
 		// When WeaponTendency=false, if no suitable target can be found, attempt to attack the original target once
-		if (validTargets.empty() && pTarget && !burstNow)
+		if (validTargets.empty() && pTarget && !burstNow && pType->DisperseForceFire)
 			validTargets.push_back(pTarget);
 
 		for (const auto& pNewTarget : validTargets)
