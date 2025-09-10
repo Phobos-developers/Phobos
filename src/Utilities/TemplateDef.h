@@ -335,7 +335,7 @@ namespace detail
 			auto const pValue = parser.value();
 			std::string Result = pValue;
 
-			if (!strstr(pValue, ".shp"))
+			if (Result.size() < 4 || !std::equal(Result.end() - 4, Result.end(), ".shp", [](char input, char expected) { return std::tolower(input) == expected; }))
 				Result += ".shp";
 
 			if (auto const pImage = FileSystem::LoadSHPFile(Result.c_str()))
