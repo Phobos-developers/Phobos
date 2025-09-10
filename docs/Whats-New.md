@@ -443,6 +443,7 @@ New:
 - [Ammo-based deploy customizations for vehicles expanded to non-IsSimpleDeployer deploy functions](New-or-Enhanced-Logics.md#automatic-deploy-and-blocking-deploying-based-on-ammo) (by Starkku)
 - Randomized anims for several behaviors (by Ollerus)
 - Shield respawn animation and weapon (by Ollerus)
+- Passive acquire mode (by TaranDahl & Aephiex)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

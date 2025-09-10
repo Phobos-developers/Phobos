@@ -1,6 +1,9 @@
-#pragma once
+﻿#pragma once
 #include <InfantryClass.h>
 #include <AnimClass.h>
+
+#include <Ext/TechnoType/Body.h>
+#include <Ext/BuildingType/Body.h>
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
@@ -94,6 +97,8 @@ public:
 
 		int AttackMoveFollowerTempCount;
 
+		PassiveAcquireMode PassiveAquireMode;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -153,6 +158,7 @@ public:
 			, TintIntensityAllies { 0 }
 			, TintIntensityEnemies { 0 }
 			, AttackMoveFollowerTempCount { 0 }
+			, PassiveAquireMode{ PassiveAcquireMode::Normal }
 		{ }
 
 		void OnEarlyUpdate();
@@ -195,6 +201,11 @@ public:
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+
+		void InitPassiveAcquireMode();
+		PassiveAcquireMode GetPassiveAcquireMode() const;
+		void TogglePassiveAcquireMode(PassiveAcquireMode mode);
+		bool CanTogglePassiveAcquireMode();
 
 	private:
 		template <typename T>

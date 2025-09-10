@@ -219,6 +219,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Refinery_UseNormalActiveAnim.Read(exArtINI, pArtSection, "Refinery.UseNormalActiveAnim");
 
+	this->AggressiveModeExempt.Read(exINI, pSection, "AggressiveModeExempt");
+
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array.Count > 0)
@@ -334,6 +336,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingRepairedSound)
 		.Process(this->Refinery_UseNormalActiveAnim)
 		.Process(this->HasPowerUpAnim)
+		.Process(this->AggressiveModeExempt)
 		;
 }
 

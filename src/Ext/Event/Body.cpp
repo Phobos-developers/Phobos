@@ -1,4 +1,4 @@
-/*
+
 #include "Body.h"
 
 #include <Helpers/Macro.h>
@@ -13,9 +13,34 @@ void EventExt::RespondEvent()
 {
 	switch (this->Type)
 	{
-	case EventTypeExt::Sample:
-		// Place the handler here
+	case EventTypeExt::TogglePassiveAcquireMode:
+		this->RespondToTogglePassiveAcquireMode();
 		break;
+	}
+}
+
+void EventExt::RaiseTogglePassiveAcquireMode(TechnoClass* pTechno, PassiveAcquireMode mode)
+{
+	EventExt eventExt {};
+	eventExt.Type = EventTypeExt::TogglePassiveAcquireMode;
+	eventExt.HouseIndex = static_cast<char>(pTechno->Owner->ArrayIndex);
+	eventExt.Frame = Unsorted::CurrentFrame;
+	eventExt.TogglePassiveAcquireMode.Who = TargetClass(pTechno);
+	eventExt.TogglePassiveAcquireMode.Mode = mode;
+	eventExt.AddEvent();
+}
+
+void EventExt::RespondToTogglePassiveAcquireMode()
+{
+	if (const auto pTechno = this->TogglePassiveAcquireMode.Who.As_Techno())
+	{
+		if (pTechno->IsAlive && !pTechno->Berzerk)
+		{
+			const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+
+			if (pTechnoExt->CanTogglePassiveAcquireMode())
+				pTechnoExt->TogglePassiveAcquireMode(this->TogglePassiveAcquireMode.Mode);
+		}
 	}
 }
 
@@ -23,8 +48,8 @@ size_t EventExt::GetDataSize(EventTypeExt type)
 {
 	switch (type)
 	{
-	case EventTypeExt::Sample:
-		return sizeof(EventExt::Sample);
+	case EventTypeExt::TogglePassiveAcquireMode:
+		return sizeof(EventExt::TogglePassiveAcquireMode);
 	}
 
 	return 0;
@@ -98,4 +123,3 @@ DEFINE_HOOK(0x64C30E, sub_64BDD0_GetEventSize2, 0x6)
 
 	return 0;
 }
-*/

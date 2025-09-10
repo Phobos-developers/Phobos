@@ -1,4 +1,4 @@
-#include "Body.h"
+﻿#include "Body.h"
 #include <Ext/Side/Body.h>
 #include <Utilities/TemplateDef.h>
 #include <FPSCounter.h>
@@ -313,6 +313,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->InfantryAutoDeploy.Read(exINI, GameStrings::General, "InfantryAutoDeploy");
 
+	this->EnablePassiveAcquireMode.Read(exINI, GameStrings::General, "EnablePassiveAcquireMode");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -577,6 +579,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackMove_StopWhenTargetAcquired)
 		.Process(this->Parasite_GrappleAnim)
 		.Process(this->InfantryAutoDeploy)
+		.Process(this->EnablePassiveAcquireMode)
 		;
 }
 

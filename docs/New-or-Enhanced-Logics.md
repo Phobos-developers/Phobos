@@ -1794,6 +1794,32 @@ In `rulesmd.ini`:
 Promote.IncludeSpawns=false  ; boolean
 ```
 
+### Passive acquire mode
+
+- Now you can order the units to enter "Ceasefire Mode" or "Aggressive Mode", just like in RA3.
+  - In ceasefire mode, units will only attack the targets specified by the player.
+  - In aggressive mode, units will automatically attack all enemies, including buildings without weapons.
+  - In normal mode, units will auto-target like usual.
+- You can use [two](User-Interface#ceasefire-mode) [hotkeys](User-Interface#aggressive-mode) to switch between these two modes if  `[General] -> EnablePassiveAcquireMode` is set to `true`. When you press one of these hotkeys:
+  - If all selected units are in that mode, they will switch to the normal mode. Otherwise, they will enter that mode. Units that cannot switch modes are not counted.
+  - If any unit successfully switches its mode, a sound effect will be emitted. This sound can be customized through `[TechnoType] -> Voice(Enter/Exit)(Aggressive/Ceasefire)Mode`.
+- You can use `[TechnoType] -> PassiveAcquireMode.Togglable` to specify whether the unit can toggle its mode.
+- You can use `[TechnoType] -> PassiveAcquireMode` to specify the unit's initial mode.
+
+In `rulesmd.ini`:
+```ini
+[General]
+EnablePassiveAcquireMode=false        ; boolean
+
+[SOMETECHNO]                          ; TechnoType
+PassiveAcquireMode=Normal             ; passive acquire mode, Normal / Aggressive / Ceasefire
+PassiveAcquireMode.Togglable=true     ; boolean
+VoiceEnterAggressiveMode=             ; Sound entry, default to VoiceAttack or VoiceMove
+VoiceExitAggressiveMode=              ; Sound entry, default to VoiceMove or VoiceSelect
+VoiceEnterCeasefireMode=              ; Sound entry, default to VoiceSelect or VoiceMove
+VoiceExitCeasefireMode=               ; Sound entry, default to VoiceAttack or VoiceMove
+```
+
 ### Promotion animation
 
 - You can now specify an animation on the unit or structure promotion.
