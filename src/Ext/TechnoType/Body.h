@@ -113,6 +113,8 @@ public:
 
 		ValueableVector<AnimTypeClass*> WarpOut;
 		ValueableVector<AnimTypeClass*> WarpIn;
+		ValueableVector<AnimTypeClass*> Chronoshift_WarpOut;
+		ValueableVector<AnimTypeClass*> Chronoshift_WarpIn;
 		ValueableVector<AnimTypeClass*> WarpAway;
 		Nullable<bool> ChronoTrigger;
 		Nullable<int> ChronoDistanceFactor;
@@ -470,6 +472,8 @@ public:
 
 			, WarpOut {}
 			, WarpIn {}
+			, Chronoshift_WarpOut {}
+			, Chronoshift_WarpIn {}
 			, WarpAway {}
 			, ChronoTrigger {}
 			, ChronoDistanceFactor {}

@@ -1034,6 +1034,8 @@ TargetZoneScanType=same  ; target zone scan enumeration (same|any|inrange)
 
 - You can now specify Teleport/Chrono Locomotor settings per TechnoType to override default rules values. Unfilled values default to values in `[General]`.
 - Applicable to Techno that have Teleport/Chrono Locomotor attached, or being chronowarped by chronosphere.
+  - `Chronoshift.WarpOut` and `Chronoshift.WarpIn` will override `WarpOut` and `WarpIn` respectively when the techno is being chronowarped by chronosphere, if set.
+- `WarpAway` specify the anim when the techno is being erased by `Temporal=yes` warhead. Will override Ares' `Temporal.WarpAway` tag on warhead, if set.
 - If more than one animation is listed in `WarpOut`, `WarpIn` or `WarpAway`, a random one is selected.
 
 In `rulesmd.ini`:
@@ -1041,6 +1043,8 @@ In `rulesmd.ini`:
 [SOMETECHNO]            ; TechnoType
 WarpOut=                ; List of AnimationTypes (played when Techno warping out), default to [General] -> WarpOut
 WarpIn=                 ; List of AnimationTypes (played when Techno warping in), default to [General] -> WarpIn
+Chronoshift.WarpOut=    ; List of AnimationTypes (played when Techno warping out by chronosphere), default to WarpOut
+Chronoshift.WarpIn=     ; List of AnimationTypes (played when Techno warping in by chronosphere), default to WarpIn
 WarpAway=               ; List of AnimationTypes (played when Techno being erased by `Temporal=yes` warhead), default to [General] -> WarpAway
 ChronoTrigger=          ; boolean, if yes then delay varies by distance, if no it is a constant
 ChronoDistanceFactor=   ; integer, amount to divide the distance to destination by to get the warped out delay
