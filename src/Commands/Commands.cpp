@@ -31,7 +31,7 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<ToggleDigitalDisplayCommandClass>();
 	MakeCommand<ToggleDesignatorRangeCommandClass>();
 	MakeCommand<AggressiveModeClass>();
-	MakeCommand<CeaseFireModeClass>();
+	MakeCommand<CeasefireModeClass>();
 	MakeCommand<ToggleSWSidebar>();
 
 	if (Phobos::Config::SuperWeaponSidebarCommands)

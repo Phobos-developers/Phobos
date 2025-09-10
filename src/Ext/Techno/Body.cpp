@@ -830,9 +830,9 @@ void TechnoExt::ExtData::TogglePassiveAcquireMode(PassiveAcquireMode newMode)
 
 	if (newMode == PassiveAcquireMode::Normal)
 	{
-		if (previousMode == PassiveAcquireMode::CeaseFire)
+		if (previousMode == PassiveAcquireMode::Ceasefire)
 		{
-			voiceIndex = this->TypeExtData->VoiceExitCeaseFireMode.Get();
+			voiceIndex = this->TypeExtData->VoiceExitCeasefireMode.Get();
 
 			if (voiceIndex < 0)
 			{
@@ -856,10 +856,10 @@ void TechnoExt::ExtData::TogglePassiveAcquireMode(PassiveAcquireMode newMode)
 			}
 		}
 	}
-	else if (newMode == PassiveAcquireMode::CeaseFire)
+	else if (newMode == PassiveAcquireMode::Ceasefire)
 	{
 		pThis->SetTarget(nullptr);
-		voiceIndex = this->TypeExtData->VoiceEnterCeaseFireMode.Get();
+		voiceIndex = this->TypeExtData->VoiceEnterCeasefireMode.Get();
 
 		if (voiceIndex < 0)
 		{

@@ -13,7 +13,7 @@ public:
 	virtual void Execute(WWKey eInput) const override;
 };
 
-class CeaseFireModeClass : public CommandClass
+class CeasefireModeClass : public CommandClass
 {
 public:
 	// CommandClass

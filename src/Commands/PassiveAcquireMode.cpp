@@ -106,36 +106,36 @@ void AggressiveModeClass::Execute(WWKey eInput) const
 	}
 }
 
-const char* CeaseFireModeClass::GetName() const
+const char* CeasefireModeClass::GetName() const
 {
-	return "CeaseFireMode";
+	return "CeasefireMode";
 }
 
-const wchar_t* CeaseFireModeClass::GetUIName() const
+const wchar_t* CeasefireModeClass::GetUIName() const
 {
-	return GeneralUtils::LoadStringUnlessMissing("TXT_CEASEFIRE_MODE", L"Cease Fire Mode");
+	return GeneralUtils::LoadStringUnlessMissing("TXT_CEASEFIRE_MODE", L"Ceasefire Mode");
 }
 
-const wchar_t* CeaseFireModeClass::GetUICategory() const
+const wchar_t* CeasefireModeClass::GetUICategory() const
 {
 	return CATEGORY_CONTROL;
 }
 
-const wchar_t* CeaseFireModeClass::GetUIDescription() const
+const wchar_t* CeasefireModeClass::GetUIDescription() const
 {
-	return GeneralUtils::LoadStringUnlessMissing("TXT_CEASEFIRE_MODE_DESC", L"Cease Fire Mode");
+	return GeneralUtils::LoadStringUnlessMissing("TXT_CEASEFIRE_MODE_DESC", L"Ceasefire Mode");
 }
 
-void CeaseFireModeClass::Execute(WWKey eInput) const
+void CeasefireModeClass::Execute(WWKey eInput) const
 {
-	std::vector<TechnoClass*> TechnoVectorCeaseFire;
-	std::vector<TechnoClass*> TechnoVectorNonCeaseFire;
+	std::vector<TechnoClass*> TechnoVectorCeasefire;
+	std::vector<TechnoClass*> TechnoVectorNonCeasefire;
 
 	// Get current selected units.
-	// If all selected units are at CeaseFire mode, we should cancel their CeaseFire mode.
-	// Otherwise, we should turn them into CeaseFire mode.
+	// If all selected units are at Ceasefire mode, we should cancel their Ceasefire mode.
+	// Otherwise, we should turn them into Ceasefire mode.
 	bool isAnySelectedUnitTogglable = false;
-	bool isAllSelectedUnitCeaseFireMode = true;
+	bool isAllSelectedUnitCeasefireMode = true;
 
 	auto processATechno = [&](TechnoClass* pTechno)
 		{
@@ -147,14 +147,14 @@ void CeaseFireModeClass::Execute(WWKey eInput) const
 
 			isAnySelectedUnitTogglable = true;
 
-			if (pTechnoExt->GetPassiveAcquireMode() == PassiveAcquireMode::CeaseFire)
+			if (pTechnoExt->GetPassiveAcquireMode() == PassiveAcquireMode::Ceasefire)
 			{
-				TechnoVectorCeaseFire.push_back(pTechno);
+				TechnoVectorCeasefire.push_back(pTechno);
 			}
 			else
 			{
-				isAllSelectedUnitCeaseFireMode = false;
-				TechnoVectorNonCeaseFire.push_back(pTechno);
+				isAllSelectedUnitCeasefireMode = false;
+				TechnoVectorNonCeasefire.push_back(pTechno);
 			}
 			return;
 		};
@@ -186,24 +186,24 @@ void CeaseFireModeClass::Execute(WWKey eInput) const
 	// If this boolean is false, then none of the selected units are togglable, meaning this hotket doesn't need to do anything.
 	if (isAnySelectedUnitTogglable)
 	{
-		// If all selected units are CeaseFire mode, then cancel their CeaseFire mode;
-		// otherwise, make all selected units CeaseFire mode.
-		if (isAllSelectedUnitCeaseFireMode)
+		// If all selected units are Ceasefire mode, then cancel their Ceasefire mode;
+		// otherwise, make all selected units Ceasefire mode.
+		if (isAllSelectedUnitCeasefireMode)
 		{
-			for (const auto& pTechno : TechnoVectorCeaseFire)
+			for (const auto& pTechno : TechnoVectorCeasefire)
 				EventExt::RaiseTogglePassiveAcquireMode(pTechno, PassiveAcquireMode::Normal);
 
 			wchar_t buffer[0x100];
-			swprintf_s(buffer, GeneralUtils::LoadStringUnlessMissing("MSG:CEASEFIRE_MODE_OFF", L"%i unit(s) ceased Cease Fire Mode."), TechnoVectorCeaseFire.size());
+			swprintf_s(buffer, GeneralUtils::LoadStringUnlessMissing("MSG:CEASEFIRE_MODE_OFF", L"%i unit(s) ceased Ceasefire Mode."), TechnoVectorCeasefire.size());
 			MessageListClass::Instance.PrintMessage(buffer);
 		}
 		else
 		{
-			for (const auto& pTechno : TechnoVectorNonCeaseFire)
-				EventExt::RaiseTogglePassiveAcquireMode(pTechno, PassiveAcquireMode::CeaseFire);
+			for (const auto& pTechno : TechnoVectorNonCeasefire)
+				EventExt::RaiseTogglePassiveAcquireMode(pTechno, PassiveAcquireMode::Ceasefire);
 
 			wchar_t buffer[0x100];
-			swprintf_s(buffer, GeneralUtils::LoadStringUnlessMissing("MSG:CEASEFIRE_MODE_ON", L"%i unit(s) entered Cease Fire Mode."), TechnoVectorNonCeaseFire.size());
+			swprintf_s(buffer, GeneralUtils::LoadStringUnlessMissing("MSG:CEASEFIRE_MODE_ON", L"%i unit(s) entered Ceasefire Mode."), TechnoVectorNonCeasefire.size());
 			MessageListClass::Instance.PrintMessage(buffer);
 		}
 	}

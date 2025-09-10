@@ -20,7 +20,7 @@ enum class PassiveAcquireMode : BYTE
 {
 	Normal = 0,
 	Aggressive = 1,
-	CeaseFire = 2,
+	Ceasefire = 2,
 };
 
 class Matrix3D;
@@ -436,8 +436,8 @@ public:
 		Valueable<bool> PassiveAcquireMode_Togglable;
 		ValueableIdx<VocClass> VoiceEnterAggressiveMode;
 		ValueableIdx<VocClass> VoiceExitAggressiveMode;
-		ValueableIdx<VocClass> VoiceEnterCeaseFireMode;
-		ValueableIdx<VocClass> VoiceExitCeaseFireMode;
+		ValueableIdx<VocClass> VoiceEnterCeasefireMode;
+		ValueableIdx<VocClass> VoiceExitCeasefireMode;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -818,8 +818,8 @@ public:
 			, PassiveAcquireMode_Togglable { true }
 			, VoiceEnterAggressiveMode { -1 }
 			, VoiceExitAggressiveMode { -1 }
-			, VoiceEnterCeaseFireMode { -1 }
-			, VoiceExitCeaseFireMode { -1 }
+			, VoiceEnterCeasefireMode { -1 }
+			, VoiceExitCeasefireMode { -1 }
 
 		{ }
 

@@ -479,6 +479,16 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
   - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
   - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`.
 
+### `[ ]` Ceasefire Mode
+
+- Order the selected units to enter or exit the ceasefire mode. See [this](New-or-Enhanced-Logics#passive-acquire-mode) for details.
+- For localization add `TXT_CEASEFIRE_MODE`, `TXT_CEASEFIRE_MODE_DESC`, `MSG:CEASEFIRE_MODE_ON` and `MSG:CEASEFIRE_MODE_OFF` into your `.csf` file.
+
+### `[ ]` Aggressive Mode
+
+- Order the selected units to enter or exit the aggressive mode. See [this](New-or-Enhanced-Logics#passive-acquire-mode) for details.
+- For localization add `TXT_AGGRESSIVE_MODE`, `TXT_AGGRESSIVE_MODE_DESC`, `MSG:AGGRESSIVE_MODE_ON` and `MSG:AGGRESSIVE_MODE_OFF` into your `.csf` file.
+
 ## Loading screen
 
 - PCX files can now be used as loadscreen images.

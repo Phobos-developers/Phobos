@@ -961,8 +961,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PassiveAcquireMode_Togglable.Read(exINI, pSection, "PassiveAcquireMode.Togglable");
 	this->VoiceEnterAggressiveMode.Read(exINI, pSection, "VoiceEnterAggressiveMode");
 	this->VoiceExitAggressiveMode.Read(exINI, pSection, "VoiceExitAggressiveMode");
-	this->VoiceEnterCeaseFireMode.Read(exINI, pSection, "VoiceEnterCeaseFireMode");
-	this->VoiceExitCeaseFireMode.Read(exINI, pSection, "VoiceExitCeaseFireMode");
+	this->VoiceEnterCeasefireMode.Read(exINI, pSection, "VoiceEnterCeasefireMode");
+	this->VoiceExitCeasefireMode.Read(exINI, pSection, "VoiceExitCeasefireMode");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -1612,8 +1612,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassiveAcquireMode_Togglable)
 		.Process(this->VoiceEnterAggressiveMode)
 		.Process(this->VoiceExitAggressiveMode)
-		.Process(this->VoiceEnterCeaseFireMode)
-		.Process(this->VoiceExitCeaseFireMode)
+		.Process(this->VoiceEnterCeasefireMode)
+		.Process(this->VoiceExitCeasefireMode)
 
 		;
 }
@@ -1735,9 +1735,9 @@ namespace detail
 			{
 				value = PassiveAcquireMode::Aggressive;
 			}
-			else if (_strcmpi(str, "CeaseFire") == 0)
+			else if (_strcmpi(str, "Ceasefire") == 0)
 			{
-				value = PassiveAcquireMode::CeaseFire;
+				value = PassiveAcquireMode::Ceasefire;
 			}
 			else
 			{

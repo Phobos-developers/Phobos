@@ -392,19 +392,19 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB0CC, InfantryClass__WhatAction_Wrapper)
 
 #pragma region PassiveAcquireMode
 
-DEFINE_HOOK(0x6F8E1F, TechnoClass_SelectAutoTarget_CeaseFireMode, 0x6)
+DEFINE_HOOK(0x6F8E1F, TechnoClass_SelectAutoTarget_CeasefireMode, 0x6)
 {
 	GET(TechnoTypeClass*, pType, EAX);
 	GET(TechnoClass*, pThis, ESI);
-	R->CL(pType->NoAutoFire || (TechnoExt::ExtMap.Find(pThis)->GetPassiveAcquireMode()) == PassiveAcquireMode::CeaseFire);
+	R->CL(pType->NoAutoFire || (TechnoExt::ExtMap.Find(pThis)->GetPassiveAcquireMode()) == PassiveAcquireMode::Ceasefire);
 	return R->Origin() + 0x6;
 }
 
-DEFINE_HOOK(0x7087DD, TechnoClass_CanRetaliateToAttacker_CeaseFireMode, 0x6)
+DEFINE_HOOK(0x7087DD, TechnoClass_CanRetaliateToAttacker_CeasefireMode, 0x6)
 {
 	GET(TechnoTypeClass*, pType, EAX);
 	GET(TechnoClass*, pThis, ESI);
-	R->CL(pType->CanRetaliate && (TechnoExt::ExtMap.Find(pThis)->GetPassiveAcquireMode() != PassiveAcquireMode::CeaseFire));
+	R->CL(pType->CanRetaliate && (TechnoExt::ExtMap.Find(pThis)->GetPassiveAcquireMode() != PassiveAcquireMode::Ceasefire));
 	return R->Origin() + 0x6;
 }
 
