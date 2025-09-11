@@ -231,6 +231,8 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 		pThis->TargetingTimer.Start(ScenarioClass::Instance->Random.RandomRanged(0, 15));
 	}
 
+	pExt->InitPassiveAcquireMode();
+
 	return 0;
 }
 
