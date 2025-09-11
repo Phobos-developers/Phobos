@@ -164,11 +164,12 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 		const bool bulletWasIntercepted = pBulletExt && (pBulletExt->InterceptedStatus & InterceptedStatus::Intercepted);
 		const float cellSpread = this->OwnerObject()->CellSpread;
+		const int damage = pBullet->Health;
 
 		if (cellSpread)
 		{
 			for (auto const pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, true))
-				this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
+				this->DetonateOnOneUnit(pHouse, pTarget, coords, damage, pOwner, bulletWasIntercepted);
 		}
 		else if (pBullet)
 		{
@@ -177,18 +178,18 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				// Jun 2, 2024 - Starkku: We should only detonate on the target if the bullet, at the moment of detonation is within acceptable distance of the target.
 				// Ares uses 64 leptons / quarter of a cell as a tolerance, so for sake of consistency we're gonna do the same here.
 				if (pBullet->DistanceFrom(pTarget) < Unsorted::LeptonsPerCell / 4.0)
-					this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
+					this->DetonateOnOneUnit(pHouse, pTarget, coords, damage, pOwner, bulletWasIntercepted);
 			}
 		}
 		else if (this->DamageAreaTarget)
 		{
 			if (coords.DistanceFrom(this->DamageAreaTarget->GetCoords()) < Unsorted::LeptonsPerCell / 4.0)
-				this->DetonateOnOneUnit(pHouse, this->DamageAreaTarget, pOwner, bulletWasIntercepted);
+				this->DetonateOnOneUnit(pHouse, this->DamageAreaTarget, coords, damage, pOwner, bulletWasIntercepted);
 		}
 	}
 }
 
-void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, bool bulletWasIntercepted)
+void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, const CoordStruct& coords, int damage, TechnoClass* pOwner, bool bulletWasIntercepted)
 {
 	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking || pTarget->BeingWarpedOut)
 		return;
@@ -215,6 +216,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->BuildingSell || this->BuildingUndeploy)
 		this->ApplyBuildingUndeploy(pTarget);
+
+	if (this->PenetratesGarrison)
+		this->ApplyPenetratesGarrison(pHouse, pTarget, pOwner, damage, coords);
 
 	if (this->ReverseEngineer)
 		this->ApplyReverseEngineer(pHouse, pTarget);
@@ -671,4 +675,81 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
 	}
 
 	return critChance + extraChance;
+}
+
+void WarheadTypeExt::ExtData::ApplyPenetratesGarrison(HouseClass* pInvokerHouse, TechnoClass* pTarget, TechnoClass* pInvoker, int damage, const CoordStruct& coords)
+{
+	auto const pBuilding = abstract_cast<BuildingClass*, true>(pTarget);
+
+	if (!pBuilding || !pBuilding->Occupants.Count)
+		return;
+
+	auto const pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->Type);
+
+	if (!pTargetTypeExt->PenetratesGarrison_Allowed)
+		return;
+
+	auto const pWH = this->OwnerObject();
+	auto const& location = pTarget->GetCenterCoords();
+	const int occupantIndex = this->PenetratesGarrison_RandomTarget ? ScenarioClass::Instance->Random.RandomRanged(0, pBuilding->Occupants.Count - 1) : -1;
+	const int distance = static_cast<int>(location.DistanceFrom(coords));
+	damage = static_cast<int>(damage * GeneralUtils::GetRangedRandomOrSingleValue(this->PenetratesGarrison_DamageMultiplier));
+
+	auto doDamage = [=](InfantryClass* pPassenger)
+		{
+			auto const pType = pPassenger->Type;
+			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+			if (!pTypeExt->PenetratesGarrison_Allowed)
+				return;
+
+			const int totalDamage = MapClass::GetTotalDamage(damage, pWH, pType->Armor, distance);
+			pPassenger->Health = std::clamp(pPassenger->Health - totalDamage, 0, pType->Strength);
+
+			if (!pPassenger->Health)
+			{
+				pPassenger->IsAlive = false;
+
+				if (pType->VoiceDie.Count)
+				{
+					// Play a new death sound.
+					const int soundIndex = pType->VoiceDie[Randomizer::Global.Random() % pType->VoiceDie.Count];
+					VocClass::PlayAt(soundIndex, location);
+				}
+				else if (pType->DieSound.Count)
+				{
+					// Play a new fallback death sound.
+					const int soundIndex = pType->DieSound[Randomizer::Global.Random() % pType->DieSound.Count];
+					VocClass::PlayAt(soundIndex, location);
+				}
+
+				pInvoker->KillPassengers(pPassenger);
+				pInvoker->RegisterDestruction(pPassenger);
+				pPassenger->UnInit();
+			}
+		};
+
+	// Victim's death sound
+	if (occupantIndex < 0)
+	{
+		for (int i = 0; i < pBuilding->Occupants.Count; i++)
+		{
+			auto const pPassenger = pBuilding->Occupants.GetItem(i);
+			doDamage(pPassenger);
+		}
+	}
+	else
+	{
+		auto const pPassenger = pBuilding->Occupants.GetItem(occupantIndex);
+		doDamage(pPassenger);
+	}
+
+	// Building fully cleaned!
+	if (!pBuilding->Occupants.Count)
+	{
+		pBuilding->Mark(MarkType::Change);
+
+		if (this->PenetratesGarrison_CleanSound.isset())
+			VocClass::PlayAt(this->PenetratesGarrison_CleanSound.Get(), location);
+	}
 }

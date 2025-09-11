@@ -397,6 +397,8 @@ public:
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
 
+		Valueable<bool> PenetratesGarrison_Allowed;
+
 		Valueable<bool> FiringForceScatter;
 
 		Valueable<int> FireUp;
@@ -773,6 +775,8 @@ public:
 
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
+
+			, PenetratesGarrison_Allowed { true }
 
 			, FiringForceScatter { true }
 

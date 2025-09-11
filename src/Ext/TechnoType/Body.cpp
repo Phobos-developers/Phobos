@@ -957,6 +957,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackMove_StopWhenTargetAcquired.Read(exINI, pSection, "AttackMove.StopWhenTargetAcquired");
 	this->AttackMove_PursuitTarget.Read(exINI, pSection, "AttackMove.PursuitTarget");
 
+	this->PenetratesGarrison_Allowed.Read(exINI, pSection, "PenetratesGarrison.Allowed");
+
 	this->InfantryAutoDeploy.Read(exINI, pSection, "InfantryAutoDeploy");
 	
 	// Ares 0.2
@@ -1573,6 +1575,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->FallingDownDamage)
 		.Process(this->FallingDownDamage_Water)
+
+		.Process(this->PenetratesGarrison_Allowed)
 
 		.Process(this->FiringForceScatter)
 
