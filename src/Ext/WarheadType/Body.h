@@ -74,8 +74,8 @@ public:
 
 		Valueable<bool> Shield_Penetrate;
 		Valueable<bool> Shield_Break;
-		Valueable<AnimTypeClass*> Shield_BreakAnim;
-		Valueable<AnimTypeClass*> Shield_HitAnim;
+		ValueableVector<AnimTypeClass*> Shield_BreakAnim;
+		ValueableVector<AnimTypeClass*> Shield_HitAnim;
 		Valueable<bool> Shield_SkipHitAnim;
 		Valueable<bool> Shield_HitFlash;
 		Nullable<WeaponTypeClass*> Shield_BreakWeapon;
@@ -90,7 +90,11 @@ public:
 		Valueable<int> Shield_Respawn_Duration;
 		Nullable<double> Shield_Respawn_Amount;
 		Valueable<int> Shield_Respawn_Rate;
+		Nullable<bool> Shield_Respawn_RestartInCombat;
+		Valueable<int> Shield_Respawn_RestartInCombatDelay;
 		Valueable<bool> Shield_Respawn_RestartTimer;
+		ValueableVector<AnimTypeClass*> Shield_Respawn_Anim;
+		Nullable<WeaponTypeClass*> Shield_Respawn_Weapon;
 		Valueable<int> Shield_SelfHealing_Duration;
 		Nullable<double> Shield_SelfHealing_Amount;
 		Valueable<int> Shield_SelfHealing_Rate;
@@ -144,6 +148,7 @@ public:
 		Valueable<bool> RemoveInflictedLocomotor;
 
 		Valueable<AffectedTarget> Parasite_CullingTarget;
+		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
 
 		Valueable<bool> Nonprovocative;
 
@@ -186,6 +191,10 @@ public:
 		Valueable<double> AffectsAbovePercent;
 		Valueable<bool> AffectsNeutral;
 
+		Valueable<bool> ReverseEngineer;
+
+		Valueable<bool> CanKill;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -204,8 +213,6 @@ public:
 		bool PossibleCellSpreadDetonate;
 		bool HealthCheck;
 		TechnoClass* DamageAreaTarget;
-
-		Valueable<bool> CanKill;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
@@ -279,10 +286,14 @@ public:
 			, Shield_ReceivedDamage_MaxMultiplier { 1.0 }
 
 			, Shield_Respawn_Duration { 0 }
-			, Shield_Respawn_Amount { 0.0 }
+			, Shield_Respawn_Amount { }
 			, Shield_Respawn_Rate { -1 }
 			, Shield_Respawn_Rate_InMinutes { -1.0 }
+			, Shield_Respawn_RestartInCombat {}
+			, Shield_Respawn_RestartInCombatDelay { -1 }
 			, Shield_Respawn_RestartTimer { false }
+			, Shield_Respawn_Anim { }
+			, Shield_Respawn_Weapon { }
 			, Shield_SelfHealing_Duration { 0 }
 			, Shield_SelfHealing_Amount { }
 			, Shield_SelfHealing_Rate { -1 }
@@ -336,6 +347,7 @@ public:
 			, RemoveInflictedLocomotor { false }
 
 			, Parasite_CullingTarget { AffectedTarget::Infantry }
+			, Parasite_GrappleAnim {}
 
 			, Nonprovocative { false }
 
@@ -396,6 +408,8 @@ public:
 			, KillWeapon_OnFirer_AffectsHouses { AffectedHouse::All }
 			, KillWeapon_Affects { AffectedTarget::All }
 			, KillWeapon_OnFirer_Affects { AffectedTarget::All }
+
+			, ReverseEngineer { false }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
@@ -431,6 +445,7 @@ public:
 		void ApplyShieldModifiers(TechnoClass* pTarget);
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
 		void ApplyBuildingUndeploy(TechnoClass* pTarget);
+		void ApplyReverseEngineer(HouseClass* pHouse, TechnoClass* pTarget);
 		double GetCritChance(TechnoClass* pFirer) const;
 	};
 

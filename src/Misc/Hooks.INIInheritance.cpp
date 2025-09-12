@@ -195,11 +195,11 @@ DEFINE_HOOK(0x528BAC, INIClass_GetString_Inheritance_NoEntry, 0xA)
 {
 	const int stackOffset = 0x1C;
 	GET(CCINIClass*, ini, EBP);
-	GET_STACK(int, length, STACK_OFFSET(stackOffset, 0x14));
+	GET_STACK(const int, length, STACK_OFFSET(stackOffset, 0x14));
 	GET_STACK(char*, buffer, STACK_OFFSET(stackOffset, 0x10));
 	GET_STACK(const char*, defaultValue, STACK_OFFSET(stackOffset, 0xC));
-	GET_STACK(int, entryCRC, STACK_OFFSET(stackOffset, 0x8));
-	GET_STACK(int, sectionCRC, STACK_OFFSET(stackOffset, 0x4));
+	GET_STACK(const int, entryCRC, STACK_OFFSET(stackOffset, 0x8));
+	GET_STACK(const int, sectionCRC, STACK_OFFSET(stackOffset, 0x4));
 
 	// if we're in a different CCINIClass now, clear old data
 	if (ini != INIInheritance::LastINIFile)

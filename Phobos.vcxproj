@@ -26,6 +26,7 @@
     <ClCompile Include="src\Ext\Unit\Hooks.Firing.cpp" />
     <ClCompile Include="src\Ext\EBolt\Body.cpp" />
     <ClCompile Include="src\Ext\EBolt\Hooks.cpp" />
+    <ClCompile Include="src\Ext\Unit\Hooks.SimpleDeployer.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\CreateUnitTypeClass.cpp" />
     <ClCompile Include="src\Blowfish\blowfish.cpp" />
     <ClCompile Include="src\Blowfish\Hooks.Blowfish.cpp" />
@@ -44,6 +45,8 @@
     <ClCompile Include="src\New\Entity\AttachEffectClass.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\TiberiumEaterTypeClass.cpp" />
     <ClCompile Include="src\New\Type\AttachEffectTypeClass.cpp" />
+    <ClCompile Include="src\Misc\MessageColumn.cpp" />
+    <ClCompile Include="src\Commands\ToggleMessageList.cpp" />
     <ClCompile Include="src\Commands\Commands.cpp" />
     <ClCompile Include="src\Commands\DamageDisplay.cpp" />
     <ClCompile Include="src\Commands\FrameByFrame.cpp" />
@@ -162,7 +165,6 @@
     <ClCompile Include="src\Ext\Unit\Hooks.DisallowMoving.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.DeploysInto.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Jumpjet.cpp" />
-    <ClCompile Include="src\Ext\Unit\Hooks.Unload.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Detonate.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.WeaponEffects.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Tint.cpp" />
@@ -181,6 +183,7 @@
     <ClCompile Include="src\Utilities\Debug.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Hooks.cpp" />
+    <ClCompile Include="src\Ext\BuildingType\Hooks.Placing.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Body.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Hooks.cpp" />
     <ClCompile Include="src\Misc\FlyingStrings.cpp" />
@@ -190,17 +193,17 @@
     <ClCompile Include="src\Misc\Hooks.LaserDraw.cpp" />
     <ClCompile Include="src\Misc\Hooks.Timers.cpp" />
     <ClCompile Include="src\Misc\Hooks.INIInheritance.cpp" />
-    <ClCompile Include="src\Misc\Hooks.SkirmishColors.cpp" />
     <ClCompile Include="src\Misc\Hooks.Overlay.cpp" />
-    <ClCompile Include="src\Misc\Hooks.Message.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\TypeConvertGroup.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Hooks.Upgrade.cpp" />
     <ClCompile Include="src\Phobos.COM.cpp" />
     <ClCompile Include="src\Phobos.CRT.cpp" />
     <ClCompile Include="src\Phobos.Ext.cpp" />
     <ClCompile Include="src\Phobos.INI.cpp" />
+    <ClCompile Include="src\Phobos.Save.cpp" />
     <ClCompile Include="src\Phobos.cpp" />
     <ClCompile Include="src\Utilities\ShapeTextPrinter.cpp" />
+    <ClCompile Include="src\Utilities\SpawnerHelper.cpp" />
     <ClCompile Include="src\Utilities\Stream.cpp" />
     <ClCompile Include="src\Utilities\Constructs.cpp" />
     <ClCompile Include="src\Utilities\EnumFunctions.cpp" />
@@ -225,6 +228,8 @@
     <ClInclude Include="src\New\Entity\AttachEffectClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\TiberiumEaterTypeClass.h" />
     <ClInclude Include="src\New\Type\AttachEffectTypeClass.h" />
+    <ClInclude Include="src\Misc\MessageColumn.h" />
+    <ClInclude Include="src\Commands\ToggleMessageList.h" />
     <ClInclude Include="src\Commands\FrameByFrame.h" />
     <ClInclude Include="src\Commands\FrameStep.h" />
     <ClInclude Include="src\Commands\NextIdleHarvester.h" />
@@ -294,6 +299,7 @@
     <ClInclude Include="src\Utilities\Savegame.h" />
     <ClInclude Include="src\Utilities\SavegameDef.h" />
     <ClInclude Include="src\Utilities\ShapeTextPrinter.h" />
+    <ClInclude Include="src\Utilities\SpawnerHelper.h" />
     <ClInclude Include="src\Utilities\Stream.h" />
     <ClInclude Include="src\Utilities\Swizzle.h" />
     <ClInclude Include="src\Phobos.COM.h" />

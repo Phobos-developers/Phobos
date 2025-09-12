@@ -40,10 +40,10 @@ void ScenarioExt::ExtData::ReadVariables(bool bIsGlobal, CCINIClass* pINI)
 	else if (Global()->Variables[true].size() != 0) // Global variables had been loaded, DO NOT CHANGE THEM
 		return;
 
-	int nCount = pINI->GetKeyCount("VariableNames");
+	const int nCount = pINI->GetKeyCount("VariableNames");
 	for (int i = 0; i < nCount; ++i)
 	{
-		auto pKey = pINI->GetKeyName("VariableNames", i);
+		const auto pKey = pINI->GetKeyName("VariableNames", i);
 		int nIndex;
 		if (sscanf_s(pKey, "%d", &nIndex) == 1)
 		{
@@ -163,7 +163,11 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->TransportReloaders)
 		.Process(this->SWSidebar_Enable)
 		.Process(this->SWSidebar_Indices)
-//		.Process(this->NewMessageList); // Should not S/L
+		.Process(this->RecordMessages)
+		.Process(this->DefaultLS640BkgdName)
+		.Process(this->DefaultLS800BkgdName)
+		.Process(this->DefaultLS800BkgdPal)
+		.Process(this->MasterDetonationBullet)
 		;
 }
 

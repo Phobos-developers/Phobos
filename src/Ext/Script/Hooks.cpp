@@ -22,7 +22,7 @@ DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8)
 			pTeam->Focus = nullptr;
 			pTeam->QueuedFocus = nullptr;
 			//pTeamData->selectedTarget; // TO-DO When a specific PR is merged
-			ScriptExt::Log("AI Scripts - Team Update: [%s] [%s](line: %d = %d,%d): Jump to the same line -> (Reason: Timed Jump loop)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
+			//ScriptExt::Log("AI Scripts - Team Update: [%s] [%s](line: %d = %d,%d): Jump to the same line -> (Reason: Timed Jump loop)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
 
 			if (pTeamData->ForceJump_InitialCountdown > 0)
 			{
@@ -33,7 +33,7 @@ DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8)
 		else
 		{
 			pTeamData->ForceJump_InitialCountdown = -1;
-			ScriptExt::Log("AI Scripts - Team Update: [%s] [%s](line: %d = %d,%d): Jump to line: %d = %d,%d -> (Reason: Timed Jump)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
+			//ScriptExt::Log("AI Scripts - Team Update: [%s] [%s](line: %d = %d,%d): Jump to line: %d = %d,%d -> (Reason: Timed Jump)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
 		}
 
 		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
@@ -62,7 +62,7 @@ DEFINE_HOOK(0x6E95B3, TeamClass_AI_MoveToCell, 0x6)
 	if (!R->BL())
 		return 0x6E95A4;
 
-	GET(int, nCoord, ECX);
+	GET(const int, nCoord, ECX);
 	REF_STACK(CellStruct, cell, STACK_OFFSET(0x38, -0x28));
 
 	// if ( NewINIFormat < 4 ) then divide 128

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <CCINIClass.h>
 #include <RulesClass.h>
@@ -132,6 +132,7 @@ public:
 		Valueable<double> ForceShield_ExtraTintIntensity;
 		Valueable<bool> ColorAddUse8BitRGB;
 		Valueable<ColorStruct> AirstrikeLineColor;
+		Valueable<int> AirstrikeLineZAdjust;
 
 		Valueable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<ColorStruct> ToolTip_Background_Color;
@@ -169,8 +170,11 @@ public:
 		Nullable<BuildingSelectBracketPosition> DrawInsignia_AdjustPos_BuildingsAnchor;
 		Valueable<Point2D> DrawInsignia_AdjustPos_Units;
 		Valueable<bool> DrawInsignia_UsePixelSelectionBracketDelta;
-		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
-		Valueable<AnimTypeClass*> Promote_EliteAnimation;
+		ValueableVector<AnimTypeClass*> Promote_VeteranAnimation;
+		ValueableVector<AnimTypeClass*> Promote_EliteAnimation;
+
+		Valueable<bool> JumpjetClimbPredictHeight;
+		Valueable<bool> JumpjetClimbWithoutCutOut;
 
 		Valueable<double> DamageOwnerMultiplier;
 		Valueable<double> DamageAlliesMultiplier;
@@ -195,6 +199,13 @@ public:
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
+
+		Valueable<bool> AIAutoDeployMCV;
+		Valueable<bool> AISetBaseCenter;
+		Valueable<bool> AIBiasSpawnCell;
+		Valueable<bool> AIForbidConYard;
+		Valueable<bool> AINodeWallsOnly;
+		Valueable<bool> AICleanWallNode;
 
 		Valueable<bool> AttackMove_Aggressive;
 		Valueable<bool> AttackMove_UpdateTarget;
@@ -244,13 +255,17 @@ public:
 		Valueable<bool> AttackMove_IgnoreWeaponCheck;
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
 
-		Valueable<int> AdjacentWallDamage;
+		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
 
 		// cache tint color
 		int TintColorIronCurtain;
 		int TintColorForceShield;
 		int TintColorBerserk;
 
+		Valueable<bool> InfantryAutoDeploy;
+
+		Valueable<int> AdjacentWallDamage;
+		
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -342,6 +357,7 @@ public:
 			, AllowWeaponSelectAgainstWalls { false }
 			, ColorAddUse8BitRGB { false }
 			, AirstrikeLineColor { { 255, 0, 0 } }
+			, AirstrikeLineZAdjust { 0 }
 			, ROF_RandomDelay { { 0 ,2 } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
@@ -378,6 +394,8 @@ public:
 			, DropPodTrailer { }
 			, DropPodDefaultTrailer { }
 			, PodImage { }
+			, JumpjetClimbPredictHeight { false }
+			, JumpjetClimbWithoutCutOut { false }
 			, DamageOwnerMultiplier { 1.0 }
 			, DamageAlliesMultiplier { 1.0 }
 			, DamageEnemiesMultiplier { 1.0 }
@@ -399,6 +417,12 @@ public:
 			, CombatAlert_UseAttackVoice { true }
 			, CombatAlert_UseEVA { true }
 			, UseFixedVoxelLighting { false }
+			, AIAutoDeployMCV { true }
+			, AISetBaseCenter { true }
+			, AIBiasSpawnCell { false }
+			, AIForbidConYard { false }
+			, AINodeWallsOnly { false }
+			, AICleanWallNode { false }
 			, AttackMove_Aggressive { false }
 			, AttackMove_UpdateTarget { false }
 			, MindControl_ThreatDelay { 0 }
@@ -444,6 +468,8 @@ public:
 			, AttackMove_IgnoreWeaponCheck { false }
 			, AttackMove_StopWhenTargetAcquired { }
 
+			, Parasite_GrappleAnim {}
+			, InfantryAutoDeploy { false }
 			, AdjacentWallDamage { 200 }
 		{ }
 

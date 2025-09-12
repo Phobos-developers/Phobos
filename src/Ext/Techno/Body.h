@@ -19,6 +19,7 @@ public:
 
 	static constexpr DWORD Canary = 0x55555555;
 	static constexpr size_t ExtPointerOffset = 0x34C;
+	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
 	class ExtData final : public Extension<TechnoClass>
 	{
@@ -41,6 +42,7 @@ public:
 		AnimTypeClass* MindControlRingAnimType;
 		int DamageNumberOffset;
 		int Strafe_BombsDroppedThisRound;
+		CellClass* Strafe_TargetCell;
 		int CurrentAircraftWeaponIndex;
 		bool IsInTunnel;
 		bool IsBurrowed;
@@ -78,6 +80,10 @@ public:
 
 		CDTimerClass FiringAnimationTimer;
 
+		// Replaces use of TechnoClass->Animation StageClass timer for IsSimpleDeployer to simplify
+		// the deploy animation timer calcs and eliminate possibility of outside interference.
+		CDTimerClass SimpleDeployerAnimationTimer;
+
 		// cache tint values
 		int TintColorOwner;
 		int TintColorAllies;
@@ -107,6 +113,7 @@ public:
 			, MindControlRingAnimType { nullptr }
 			, DamageNumberOffset { INT32_MIN }
 			, Strafe_BombsDroppedThisRound { 0 }
+			, Strafe_TargetCell { nullptr }
 			, CurrentAircraftWeaponIndex {}
 			, IsInTunnel { false }
 			, IsBurrowed { false }
@@ -133,6 +140,7 @@ public:
 			, TiberiumEater_Timer {}
 			, AirstrikeTargetingMe { nullptr }
 			, FiringAnimationTimer {}
+			, SimpleDeployerAnimationTimer {}
 			, DelayedFireSequencePaused { false }
 			, DelayedFireWeaponIndex { -1 }
 			, DelayedFireTimer {}
@@ -233,10 +241,11 @@ public:
 	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
 
 	static void ChangeOwnerMissionFix(FootClass* pThis);
-	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation, bool isInLimbo = false);
+	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, const std::vector<AnimTypeClass*>& pVanishAnimation, bool isInLimbo = false);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
+	static double GetCurrentFirepowerMultiplier(TechnoClass* pThis);
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
@@ -263,6 +272,10 @@ public:
 	static bool IsHealthInThreshold(TechnoClass* pObject, double min, double max);
 	static UnitTypeClass* GetUnitTypeExtra(UnitClass* pUnit);
 	static AircraftTypeClass* GetAircraftTypeExtra(AircraftClass* pAircraft);
+	static bool CannotMove(UnitClass* pThis);
+	static bool HasAmmoToDeploy(TechnoClass* pThis);
+	static void HandleOnDeployAmmoChange(TechnoClass* pThis, int maxAmmoOverride = -1);
+	static bool SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue, bool alwaysCheckLandTypes);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);

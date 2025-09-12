@@ -48,9 +48,11 @@ DEFINE_HOOK(0x701881, TechnoClass_ChangeHouse_Passenger_SyncOwner, 0x5)
 	{
 		if (TechnoExt::ExtMap.Find(pThis)->TypeExtData->Passengers_SyncOwner)
 		{
+			const auto pOwner = pThis->Owner;
+
 			do
 			{
-				pPassenger->SetOwningHouse(pThis->Owner, false);
+				pPassenger->SetOwningHouse(pOwner, false);
 				pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 			}
 			while (pPassenger);
@@ -105,8 +107,9 @@ DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 			vec.erase(std::remove(vec.begin(), vec.end(), pExt), vec.end());
 		}
 
-		if (pTransTypeExt->Passengers_SyncOwner && pTransTypeExt->Passengers_SyncOwner_RevertOnExit &&
-			pExt->OriginalPassengerOwner)
+		if (pTransTypeExt->Passengers_SyncOwner
+			&& pTransTypeExt->Passengers_SyncOwner_RevertOnExit
+			&& pExt->OriginalPassengerOwner)
 		{
 			pPassenger->SetOwningHouse(pExt->OriginalPassengerOwner, false);
 		}
@@ -313,11 +316,15 @@ static inline void DoEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 	pPassenger->Undiscover();
 }
 
-// The core part of the fast enter action
-DEFINE_HOOK(0x4DA8A0, FootClass_Update_FastEnter, 0x6)
+// Update after unit location update
+DEFINE_HOOK(0x4DA8A0, FootClass_Update_AfterLocomotorProcess, 0x6)
 {
 	GET(FootClass* const, pThis, ESI);
 
+	// Update laser trails after locomotor process, to ensure that the updated position is not the previous frame's position
+	TechnoExt::ExtMap.Find(pThis)->UpdateLaserTrails();
+
+	// The core part of the fast enter action
 	if (const auto pDest = abstract_cast<UnitClass*>(pThis->CurrentMission == Mission::Enter ? pThis->GetNthLink() : pThis->QueueUpToEnter))
 	{
 		const auto pType = pDest->Type;
@@ -335,7 +342,7 @@ DEFINE_HOOK(0x4DA8A0, FootClass_Update_FastEnter, 0x6)
 				&& !pDest->OnBridge && !pDest->Destination)
 			{
 				auto cell = CellStruct::Empty;
-				reinterpret_cast<CellStruct*(__thiscall*)(FootClass*, CellStruct*, AbstractClass*)>(0x703590)(pThis, &cell, pDest);
+				pThis->NearbyLocation(&cell, pDest);
 
 				if (cell != CellStruct::Empty)
 				{
@@ -393,9 +400,10 @@ DEFINE_HOOK(0x73DC9C, UnitClass_Mission_Unload_NoQueueUpToUnloadBreak, 0xA)
 	if (TransportUnloadTemp::ShouldPlaySound) // Only when NoQueueUpToUnload enabled
 	{
 		TransportUnloadTemp::ShouldPlaySound = false;
+		const auto pType = pThis->Type;
 
-		if (TechnoTypeExt::ExtMap.Find(pThis->Type)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
-			VoxClass::PlayAtPos(pThis->Type->LeaveTransportSound, &pThis->Location);
+		if (TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
+			VoxClass::PlayAtPos(pType->LeaveTransportSound, &pThis->Location);
 	}
 
 	return SkipGameCode;

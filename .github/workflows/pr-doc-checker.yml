@@ -14,8 +14,8 @@ env:
 jobs:
   Changelog-Check:
     name: Changelog Mention
-    # If the Minor label is set, then workflow will not be executed
-    if: false == contains(github.event.pull_request.labels.*.name, 'Minor')
+    # If the No Documentation Needed label is set, then workflow will not be executed
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'No Documentation Needed') }}
     runs-on: ubuntu-latest
 
     steps:
@@ -35,8 +35,8 @@ jobs:
 
   Credits-Check:
     name: Credits List Mention
-    # If the Minor label is set, then workflow will not be executed
-    if: false == contains(github.event.pull_request.labels.*.name, 'Minor')
+    # If the No Documentation Needed or Bugfix label is set, then workflow will not be executed
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'No Documentation Needed') && !contains(github.event.pull_request.labels.*.name, 'Bugfix') }}
     runs-on: ubuntu-latest
 
     steps:
@@ -56,8 +56,8 @@ jobs:
 
   Documentation-Check:
     name: Documentation for Changes
-    # If the Minor label is set, then workflow will not be executed
-    if: false == contains(github.event.pull_request.labels.*.name, 'Minor')
+    # If the No Documentation Needed or Bugfix label is set, then workflow will not be executed
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'No Documentation Needed') && !contains(github.event.pull_request.labels.*.name, 'Bugfix') }}
     runs-on: ubuntu-latest
 
     steps:
