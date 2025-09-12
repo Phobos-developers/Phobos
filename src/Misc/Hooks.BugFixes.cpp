@@ -2572,3 +2572,46 @@ DEFINE_HOOK(0x638F70, PlanningNodeClass_UpdateHoverNode_SkipDuplicateLog, 0x8)
 }
 
 #pragma endregion
+
+#pragma region JumpjetSetDestFix
+
+// Fix JJ infantries stop incorrectly when assigned a target out of range.
+DEFINE_HOOK(0x51AB5C, InfantryClass_SetDestination_JJInfFix, 0x6)
+{
+	enum { FuncRet = 0x51B1D7 };
+
+	GET(InfantryClass* const, pThis, EBP);
+	GET(AbstractClass* const, pDest, EBX);
+
+	auto pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor);
+
+	if (pThis->Type->BalloonHover && !pDest && pThis->Destination && pJumpjetLoco && pThis->Target)
+	{
+		if (pThis->IsCloseEnoughToAttack(pThis->Target))
+		{
+			pThis->StopMoving();
+		}
+
+		pThis->ForceMission(Mission::Attack);
+		return FuncRet;
+	}
+
+	return 0;
+}
+
+// Fix JJ vehicles can not stop correctly when assigned a target in range.
+DEFINE_HOOK(0x741A66, UnitClass_SetDestination_JJVehFix, 0x5)
+{
+	GET(UnitClass* const, pThis, EBP);
+
+	auto pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor);
+
+	if (pJumpjetLoco && pThis->IsCloseEnoughToAttack(pThis->Target))
+	{
+		pThis->StopMoving();
+	}
+
+	return 0;
+}
+
+#pragma endregion
