@@ -207,6 +207,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->Crit_CurrentChance > 0.0 && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
 		this->ApplyCrit(pHouse, pTarget, pOwner);
 
+	if (this->Ammo != 0)
+		this->ApplyAmmoModifier(pTarget);
+
 	if (this->Convert_Pairs.size() > 0)
 		this->ApplyConvert(pHouse, pTarget);
 
@@ -671,4 +674,13 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
 	}
 
 	return critChance + extraChance;
+}
+
+void WarheadTypeExt::ExtData::ApplyAmmoModifier(TechnoClass* pTarget)
+{
+	int maxAmmo = pTarget->GetTechnoType()->Ammo;
+	int newCurrentAmmo = this->Ammo + pTarget->Ammo;
+
+	newCurrentAmmo = newCurrentAmmo < 0 ? 0 : newCurrentAmmo;
+	pTarget->Ammo = newCurrentAmmo > maxAmmo ? maxAmmo : newCurrentAmmo;
 }

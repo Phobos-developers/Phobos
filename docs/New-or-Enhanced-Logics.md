@@ -2385,6 +2385,16 @@ LaunchSW.DisplayMoney.Offset=0,0  ; X,Y, pixels relative to default
 Due to the nature of some superweapon types, not all superweapons are suitable for launch. **Please use with caution!**
 ```
 
+### Modify Ammo on impact
+
+- Warheads can now modify ammo of the affected objects.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]   ; Warhead
+Ammo=0  ; integer
+```
+
 ### Parasite removal
 
 - By default if unit takes negative damage from a Warhead (before `Verses` are calculated), any parasites infecting it are removed and deleted. This behaviour can now be customized to disable the removal for negative damage, or enable it for any arbitrary warhead.
