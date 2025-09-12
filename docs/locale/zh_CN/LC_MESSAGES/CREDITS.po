@@ -1091,8 +1091,8 @@ msgid ""
 msgstr "更改／修复了 `Vertical` 抛射体逻辑并使得抛射体初始方向可自定义"
 
 #: ../../../CREDITS.md:281
-msgid "Bugfixes to map trigger action `125 Create Building At`"
-msgstr ""
+msgid "Bugfixes to map trigger action `125 Build At...`"
+msgstr "地图触发结果 `125 将建筑建于...` 相关的 Bug 修复"
 
 #: ../../../CREDITS.md:282
 msgid "**Morton (MortonPL)**:"

@@ -53,6 +53,8 @@ msgid ""
 "other than 0). See [required changes for `fadata.ini`](#for-map-editor-"
 "final-alert-2) on how to enable the parameter in map editor."
 msgstr ""
+"地图触发结果 `125 将建筑建于...` 现在默认播放建筑建造动画，可通过将第三个参数设为非 0 值来禁用。参见 [对地图编辑器（Final Alert 2）的更改](#for-map-editor-"
+"final-alert-2) 以了解如何在地图编辑器中启用该参数。"
 
 #: ../../Whats-New.md:14
 msgid ""
@@ -2192,11 +2194,10 @@ msgstr ""
 "修复了若干 `*.ApplyFirepowerMult` 选项（如动画伤害、暴击）忽略老兵火力修正的问题（by Starkku）"
 
 #: ../../Whats-New.md:485
-#, fuzzy
 msgid ""
 "Fixed map trigger action `125 Build At...` not always playing buildups "
 "correctly (by Starkku)"
-msgstr "修复了触发结果 `125 将建筑建于...` 不播放建造动画的 Bug（by secsome）"
+msgstr "修复了触发结果 `125 将建筑建于...` 有时不能正确播放建造动画的 Bug（by Starkku）"
 
 #: ../../Whats-New.md:487 ../../Whats-New.md:863 ../../Whats-New.md:1086
 msgid "Fixes / interactions with other extensions:"
