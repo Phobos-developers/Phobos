@@ -10,7 +10,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From vanilla
 
-- Map trigger action `125 Build At...` now plays buildup by default if available, this can be toggled off using the third parameter (values other than 0). See [required changes for `fadata.ini`](#for-map-editor-final-alert-2) on how to enable the parameter in map editor. 
+- Map trigger action `125 Build At...` now plays buildup by default if available, this can be toggled off using the third parameter (values other than 0). See [required changes for `fadata.ini`](#for-map-editor-final-alert-2) on how to enable the parameter in map editor.
 - `IsSimpleDeployer` units now obey deploying facing constraint even without deploying animation. To disable this, set `DeployDir` (defaults to `[AudioVisual] -> DeployDir`) to -1.
 - `Vertical=true` projectiles now default to completely downwards initial trajectory/facing regardless of if their projectile image has `Voxel=true` or not. This behavior can be reverted by setting `VerticalInitialFacing=false` on projectile in `rulesmd.ini`.
 - `Vertical=true` projectiles no longer move horizontally if fired by aircraft by default. To re-enable this behaviour set `Vertical.AircraftFix=false` on the projectile.
@@ -475,8 +475,8 @@ Phobos fixes:
 - Fixed the bug that armor multiplier of new attacheffect will have extra take effect once if restricted warheads (by NetsuNegi)
 - Fixed an issue that units' `LaserTrails` will always lags behind by one frame (by CrimRecya)
 - Fixed customized `WarpAway` anim's wrong definition (by Ollerus)
-- Fixed parsing of DropPodTrailer from INI (by Starkku)
-- Fixed issue with ReturnWeapon not always firing off correctly (by CrimRecya)
+- Fixed parsing of `DropPodTrailer` from INI (by Starkku)
+- Fixed issue with `ReturnWeapon` not always firing off correctly (by CrimRecya)
 - Fixed animation damage logic applying invoker/owner inconsistently between weapon & warhead (by Ollerus & Starkku)
 - Fixed an edge-case issue with Phobos' selection handling code crashing with Veinholes (by Starkku)
 - Fixed `AmbientDamage.Warhead` not working for waves (by Starkku)

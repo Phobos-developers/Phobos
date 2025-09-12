@@ -2149,44 +2149,47 @@ msgid "Fixed customized `WarpAway` anim's wrong definition (by Ollerus)"
 msgstr "修复了自定义 `WarpAway` 动画的错误定义（by Ollerus）"
 
 #: ../../Whats-New.md:478
-#, fuzzy
-msgid "Fixed parsing of DropPodTrailer from INI (by Starkku)"
-msgstr "修复了 `[BuildingType] -> PlacementPreview` 未从 INI 解析的问题（by Starkku）"
+msgid "Fixed parsing of `DropPodTrailer` from INI (by Starkku)"
+msgstr "修复了 `DropPodTrailer` 未从 INI 解析的问题（by Starkku）"
 
 #: ../../Whats-New.md:479
 msgid ""
-"Fixed issue with ReturnWeapon not always firing off correctly (by "
+"Fixed issue with `ReturnWeapon` not always firing off correctly (by "
 "CrimRecya)"
 msgstr ""
+"修复了 `ReturnWeapon` 有时不能正确触发的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:480
 msgid ""
 "Fixed animation damage logic applying invoker/owner inconsistently "
 "between weapon & warhead (by Ollerus & Starkku)"
 msgstr ""
+"修复了动画在使用武器与弹头造成伤害时的调用者／所属方不一致问题（by Ollerus & Starkku）"
 
 #: ../../Whats-New.md:481
 msgid ""
 "Fixed an edge-case issue with Phobos' selection handling code crashing "
 "with Veinholes (by Starkku)"
 msgstr ""
+"修复了一个 Phobos 的选取代码在处理泰伯利亚藤蔓洞时崩溃的罕见问题（by Starkku）"
 
 #: ../../Whats-New.md:482
-#, fuzzy
 msgid "Fixed `AmbientDamage.Warhead` not working for waves (by Starkku)"
-msgstr "自定义 `AmbientDamage` 弹头和忽略直接目标（by Starkku）"
+msgstr "修复了 `AmbientDamage.Warhead` 对波逻辑无效的问题（by Starkku）"
 
 #: ../../Whats-New.md:483
 msgid ""
 "Fixed `SkirmishUnlimitedColors` not being checked if Phobos runs without "
 "Ares active (by Starkku)"
 msgstr ""
+"修复了 `SkirmishUnlimitedColors` 在无 Ares 下运行 Phobos 不会被检查的问题（by Starkku）"
 
 #: ../../Whats-New.md:484
 msgid ""
 "Fixed number of `*.ApplyFirepowerMult` options (f.ex anim damage, crit) "
 "ignoring veterancy firepower modifier (by Starkku)"
 msgstr ""
+"修复了若干 `*.ApplyFirepowerMult` 选项（如动画伤害、暴击）忽略老兵火力修正的问题（by Starkku）"
 
 #: ../../Whats-New.md:485
 #, fuzzy
