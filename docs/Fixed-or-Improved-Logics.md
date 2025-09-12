@@ -261,6 +261,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `DeployingAnim` now supports both `Normalized=true` and `Reverse=true`. Keep in mind `Reverse` uses `LoopEnd` for frame amount instead of `End` even without `LoopCount` > 1.
 - `DeployingAnim` using unit drawer now also tint accordingly with the unit.
 - Fixed an issue that jumpjets in air can not correctly spawn missiles.
+- Fixed an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos.
 
 ## Fixes / interactions with other extensions
 
@@ -761,6 +762,19 @@ ProneSpeed.NoCrawls=1.5       ; floating point value, multiplier
 ProneSpeed=                   ; floating point value, multiplier, by default, use the corresponding global value according to Crawls
 ```
 
+## Overlays
+
+### Customize the chained damage of the wall
+
+- In vanilla, when the wall is damaged, it will deal 200 damage to the walls in the 4 nearby cells. This makes connected walls more vulnerable to damage compared to single walls. 
+- Now you can customize that damage by using the following flag.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+AdjacentWallDamage=200  ; integer
+```
+
 ## Particle systems
 
 ### Fire particle target coordinate adjustment when firer rotates
@@ -1034,6 +1048,8 @@ TargetZoneScanType=same  ; target zone scan enumeration (same|any|inrange)
 
 - You can now specify Teleport/Chrono Locomotor settings per TechnoType to override default rules values. Unfilled values default to values in `[General]`.
 - Applicable to Techno that have Teleport/Chrono Locomotor attached, or being chronowarped by chronosphere.
+  - `Chronoshift.WarpOut` and `Chronoshift.WarpIn` will override `WarpOut` and `WarpIn` respectively when the techno is being chronowarped by chronosphere, if set.
+- `WarpAway` specify the anim when the techno is being erased by `Temporal=yes` warhead. Will override Ares' `Temporal.WarpAway` tag on warhead, if set.
 - If more than one animation is listed in `WarpOut`, `WarpIn` or `WarpAway`, a random one is selected.
 
 In `rulesmd.ini`:
@@ -1041,6 +1057,8 @@ In `rulesmd.ini`:
 [SOMETECHNO]            ; TechnoType
 WarpOut=                ; List of AnimationTypes (played when Techno warping out), default to [General] -> WarpOut
 WarpIn=                 ; List of AnimationTypes (played when Techno warping in), default to [General] -> WarpIn
+Chronoshift.WarpOut=    ; List of AnimationTypes (played when Techno warping out by chronosphere), default to WarpOut
+Chronoshift.WarpIn=     ; List of AnimationTypes (played when Techno warping in by chronosphere), default to WarpIn
 WarpAway=               ; List of AnimationTypes (played when Techno being erased by `Temporal=yes` warhead), default to [General] -> WarpAway
 ChronoTrigger=          ; boolean, if yes then delay varies by distance, if no it is a constant
 ChronoDistanceFactor=   ; integer, amount to divide the distance to destination by to get the warped out delay
@@ -1743,8 +1761,10 @@ In `rulesmd.ini`:
 Ammo.AddOnDeploy=0  ; integer
 ```
 
-### IsSimpleDeployer facing and animation customization
+### IsSimpleDeployer customizations
 
+- It is possible to enable checking if the deployed unit (if type conversion is in use, the conversion result will be used for these checks) is allowed to deploy on the cell which will also affect deploy cursor availability by setting `IsSimpleDeployer.ConsiderPathfinding` to true.
+  - You can explicitly disable deploying on cells of specified land types using `IsSimpleDeployer.DisallowedLandTypes`. Defaults to `water,beach` for units with Jumpjet or Hover locomotor with `DeployToLand=true`, `none` for others.
 - In vanilla game only units with `DeployingAnim` were constrained to a specific deploy facing and it was not customizable per unit. `DeployDir` can be set to override this per unit (defaults to `[AudioVisual] -> DeployDir`), including using value of -1 to disable the facing restriction.
 - Multiple new options for deploy animations:
   - `DeployingAnims` can be used instead of `DeployingAnim` (if both are set, `DeployingAnims` takes precedence) to define a list of direction-specific deploy animations to play. Largest power of 2 the number of listed animations falls to is used as number of directions/animations. Less than 8 animations listed results in only first listed one being used.
@@ -1754,12 +1774,14 @@ Ammo.AddOnDeploy=0  ; integer
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]                          ; VehicleType
-DeployDir=                             ; Facing type (integers from 0-7 or -1)
-DeployingAnims=                        ; List of AnimationTypes
-DeployingAnim.KeepUnitVisible=false    ; boolean
-DeployingAnim.ReverseForUndeploy=true  ; boolean
-DeployingAnim.UseUnitDrawer=true       ; boolean
+[SOMEVEHICLE]                               ; VehicleType
+IsSimpleDeployer.ConsiderPathfinding=false  ; boolean
+IsSimpleDeployer.DisallowedLandTypes=       ; List of LandTypes (none | clear | road | water | rock | wall | tiberium | beach | rough | ice | railroad | tunnel | weeds)
+DeployDir=                                  ; Facing type (integers from 0-7 or -1)
+DeployingAnims=                             ; List of AnimationTypes
+DeployingAnim.KeepUnitVisible=false         ; boolean
+DeployingAnim.ReverseForUndeploy=true       ; boolean
+DeployingAnim.UseUnitDrawer=true            ; boolean
 ```
 
 ### Make harvesters do addtional scan after unload

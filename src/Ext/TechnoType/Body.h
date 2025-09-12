@@ -113,6 +113,8 @@ public:
 
 		ValueableVector<AnimTypeClass*> WarpOut;
 		ValueableVector<AnimTypeClass*> WarpIn;
+		ValueableVector<AnimTypeClass*> Chronoshift_WarpOut;
+		ValueableVector<AnimTypeClass*> Chronoshift_WarpIn;
 		ValueableVector<AnimTypeClass*> WarpAway;
 		Nullable<bool> ChronoTrigger;
 		Nullable<int> ChronoDistanceFactor;
@@ -166,6 +168,8 @@ public:
 		Valueable<bool> JumpjetRotateOnCrash;
 		Nullable<int> ShadowSizeCharacteristicHeight;
 
+		Valueable<bool> IsSimpleDeployer_ConsiderPathfinding;
+		Nullable<LandTypeFlags> IsSimpleDeployer_DisallowedLandTypes;
 		Nullable<FacingType> DeployDir;
 		ValueableVector<AnimTypeClass*> DeployingAnims;
 		Valueable<bool> DeployingAnim_KeepUnitVisible;
@@ -470,6 +474,8 @@ public:
 
 			, WarpOut {}
 			, WarpIn {}
+			, Chronoshift_WarpOut {}
+			, Chronoshift_WarpIn {}
 			, WarpAway {}
 			, ChronoTrigger {}
 			, ChronoDistanceFactor {}
@@ -514,6 +520,9 @@ public:
 			, NoAmmoAmount { 0 }
 			, JumpjetRotateOnCrash { true }
 			, ShadowSizeCharacteristicHeight { }
+
+			, IsSimpleDeployer_ConsiderPathfinding { false }
+			, IsSimpleDeployer_DisallowedLandTypes {}
 			, DeployDir {}
 			, DeployingAnims {}
 			, DeployingAnim_KeepUnitVisible { false }

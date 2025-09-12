@@ -40,7 +40,7 @@ public:
 		bool SWSidebar_Enable;
 		std::vector<int> SWSidebar_Indices;
 
-		std::unique_ptr<MessageListClass> NewMessageList;
+		std::vector<std::wstring> RecordMessages;
 
 		PhobosFixedString<64u> DefaultLS640BkgdName;
 		PhobosFixedString<64u> DefaultLS800BkgdName;
@@ -57,7 +57,7 @@ public:
 			, TransportReloaders {}
 			, SWSidebar_Enable { true }
 			, SWSidebar_Indices {}
-			, NewMessageList {}
+			, RecordMessages {}
 			, DefaultLS640BkgdName {}
 			, DefaultLS800BkgdName {}
 			, DefaultLS800BkgdPal {}

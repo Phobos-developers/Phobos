@@ -115,7 +115,7 @@ DEFINE_HOOK(0x4180F4, AircraftClass_Mission_Attack_WeaponRange, 0x5)
 
 	GET(AircraftClass*, pThis, ESI);
 
-	R->EAX(pThis->GetWeapon(TechnoExt::ExtMap.Find(pThis)->CurrentAircraftWeaponIndex)->WeaponType);
+	R->EAX(pThis->GetWeapon(TechnoExt::ExtMap.Find(pThis)->CurrentAircraftWeaponIndex));
 
 	return SkipGameCode;
 }

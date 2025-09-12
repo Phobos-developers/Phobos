@@ -1273,19 +1273,9 @@ DEFINE_HOOK(0x7010C1, TechnoClass_CanShowDeployCursor_UnitsAndAircraft, 0x5)
 		if (!TechnoExt::HasAmmoToDeploy(pUnit))
 			return DoNotAllowDeploy;
 
-		// IsSimpleDeployer + type conversion
-		if (pUnit->Type->IsSimpleDeployer && AresFunctions::ConvertTypeTo)
-		{
-			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->Type);
-
-			if (auto const pTypeConvert = pTypeExt->Convert_Deploy)
-			{
-				auto const pCell = pUnit->GetCell();
-
-				if (!pCell->IsClearToMove(pTypeConvert->SpeedType, true, true, -1, pTypeConvert->MovementZone, -1, pCell->ContainsBridge()))
-					return DoNotAllowDeploy;
-			}
-		}
+		// IsSimpleDeployer and type conversion
+		if (!TechnoExt::SimpleDeployerAllowedToDeploy(pUnit, true, false))
+			return DoNotAllowDeploy;
 	}
 
 	return 0;
@@ -1303,12 +1293,8 @@ DEFINE_HOOK(0x71A8BD, TemporalClass_Update_WarpAwayAnim, 0x5)
 	if (pExt->WarpAway.size() > 0)
 	{
 		AnimExt::CreateRandomAnim(pExt->WarpAway, pTarget->Location, nullptr, pTarget->Owner);
+		return 0x71A90E;
 	}
-	else if (auto const pWarpAway = RulesClass::Instance->WarpAway)
-	{
-		auto const pAnim = GameCreate<AnimClass>(pWarpAway, pTarget->Location);
-		AnimExt::SetAnimOwnerHouseKind(pAnim, pTarget->Owner, nullptr, false, true);
-	}
-
-	return 0x71A90E;
+	
+	return 0;
 }
