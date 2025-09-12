@@ -1609,7 +1609,7 @@ msgstr "修复了 Jumpjet 单位在空中时无法生成导弹子机的问题。
 msgid ""
 "Fixed an issue that the currently hovered planning node not update up-to-"
 "date, such as using hotkeys to select technos."
-msgstr ""
+msgstr "修复了所谓的高等路径学。"
 
 #: ../../Fixed-or-Improved-Logics.md:266
 msgid "Fixes / interactions with other extensions"

@@ -2104,7 +2104,7 @@ msgstr "现在 Jumpjet 单位在空中可以正确地生成导弹子机（by Tar
 msgid ""
 "Fixed an issue that the currently hovered planning node not update up-to-"
 "date, such as using hotkeys to select technos (by CrimRecya)"
-msgstr ""
+msgstr "修复了所谓的高等路径学（by CrimRecya）"
 
 #: ../../Whats-New.md:471 ../../Whats-New.md:809 ../../Whats-New.md:893
 #: ../../Whats-New.md:1057 ../../Whats-New.md:1098 ../../Whats-New.md:1110

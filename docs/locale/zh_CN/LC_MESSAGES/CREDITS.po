@@ -2263,7 +2263,7 @@ msgstr "修复了单位的 `LaserTrails` 总会滞后一帧的问题"
 msgid ""
 "Fix an issue that the currently hovered planning node not update up-to-"
 "date, such as using hotkeys to select technos"
-msgstr ""
+msgstr "修复了所谓的高等路径学"
 
 #: ../../../CREDITS.md:549
 msgid "**Ollerus**:"
