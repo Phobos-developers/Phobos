@@ -3,6 +3,7 @@
 #include <AircraftClass.h>
 #include <HouseClass.h>
 #include <ScenarioClass.h>
+#include <JumpjetLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/House/Body.h>
@@ -316,10 +317,10 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 		if (AresFunctions::ConvertTypeTo(pThis, pToType))
 		{
 			// Fixed an issue where morphing could result in -1 health.
-			double ratio = static_cast<double>(pToType->Strength) / pType->Strength;
-			pThis->Health = static_cast<int>(oldHealth * ratio  + 0.5);
+			const double ratio = static_cast<double>(pToType->Strength) / pType->Strength;
+			pThis->Health = static_cast<int>(oldHealth * ratio + 0.5);
 
-			auto const pTypeExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis));
+			auto const pTypeExt = TechnoExt::ExtMap.Find(pThis);
 			pTypeExt->UpdateTypeData(pToType);
 			pTypeExt->UpdateTypeData_Foot();
 			return true;
@@ -417,7 +418,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	if (pToType->BalloonHover && pToType->DeployToLand && prevType->Locomotor != jjLoco && toLoco == jjLoco)
 		pThis->Locomotor->Move_To(pThis->Location);
 
-	auto const pTypeExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis));
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis);
 	pTypeExt->UpdateTypeData(pToType);
 	pTypeExt->UpdateTypeData_Foot();
 	return true;
@@ -738,7 +739,7 @@ bool TechnoExt::CannotMove(UnitClass* pThis)
 	if (pType->Speed == 0)
 		return true;
 
-	if (!pThis->IsInAir())
+	if (!locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 	{
 		LandType landType = pThis->GetCell()->LandType;
 		const LandType movementRestrictedTo = pType->MovementRestrictedTo;
@@ -758,6 +759,100 @@ bool TechnoExt::CannotMove(UnitClass* pThis)
 	}
 
 	return false;
+}
+
+bool TechnoExt::HasAmmoToDeploy(TechnoClass* pThis)
+{
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+
+	const int min = pTypeExt->Ammo_DeployUnlockMinimumAmount;
+	const int max = pTypeExt->Ammo_DeployUnlockMaximumAmount;
+
+	if (min < 0 && max < 0)
+		return true;
+
+	const int ammo = pThis->Ammo;
+
+	if ((min < 0 || ammo >= min) && (max < 0 || ammo <= max))
+		return true;
+
+	return false;
+}
+
+void TechnoExt::HandleOnDeployAmmoChange(TechnoClass* pThis, int maxAmmoOverride)
+{
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	int add = pTypeExt->Ammo_AddOnDeploy;
+
+	if (add != 0)
+	{
+		int maxAmmo = pTypeExt->OwnerObject()->Ammo;
+
+		if (maxAmmoOverride >= 0)
+			maxAmmo = maxAmmoOverride;
+
+		int originalAmmo = pThis->Ammo;
+		pThis->Ammo = std::clamp(pThis->Ammo + add, 0, maxAmmo);
+
+		if (originalAmmo != pThis->Ammo)
+		{
+			pThis->StartReloading();
+			pThis->Mark(MarkType::Change);
+		}
+	}
+}
+
+bool TechnoExt::SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue, bool alwaysCheckLandTypes)
+{
+	auto const pType = pThis->Type;
+
+	if (!pType->IsSimpleDeployer)
+		return defaultValue;
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const pTypeConvert = pTypeExt->Convert_Deploy;
+	bool enabledChecks = alwaysCheckLandTypes || pTypeExt->IsSimpleDeployer_ConsiderPathfinding;
+
+	if (enabledChecks)
+	{
+		bool isHover = pType->Locomotor == LocomotionClass::CLSIDs::Hover;
+		bool isJumpjet = pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet;
+		bool isLander = pType->DeployToLand && (isJumpjet || isHover);
+		auto const defaultLandTypes = isLander ? (LandTypeFlags)(LandTypeFlags::Water | LandTypeFlags::Beach) : LandTypeFlags::None;
+		auto const disallowedLandTypes = pTypeExt->IsSimpleDeployer_DisallowedLandTypes.Get(defaultLandTypes);
+
+		if (IsLandTypeInFlags(disallowedLandTypes, pThis->GetCell()->LandType))
+			return false;
+
+		if (alwaysCheckLandTypes && !pTypeExt->IsSimpleDeployer_ConsiderPathfinding)
+			return true;
+	}
+	else
+	{
+		return defaultValue;
+	}
+
+	SpeedType speed = SpeedType::None;
+	MovementZone mZone = MovementZone::None;
+
+	if (AresFunctions::ConvertTypeTo && pTypeConvert)
+	{
+		speed = pTypeConvert->SpeedType;
+		mZone = pTypeConvert->MovementZone;
+	}
+	else
+	{
+		speed = pType->SpeedType;
+		mZone = pType->MovementZone;
+	}
+
+	if (speed != SpeedType::None && mZone != MovementZone::None)
+	{
+		auto const pCell = pThis->GetCell();
+		return pCell->IsClearToMove(speed, true, true, -1, mZone, -1, pCell->ContainsBridge());
+	}
+
+	return true;
 }
 
 // =============================
@@ -784,6 +879,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->DamageNumberOffset)
 		.Process(this->Strafe_BombsDroppedThisRound)
+		.Process(this->Strafe_TargetCell)
 		.Process(this->CurrentAircraftWeaponIndex)
 		.Process(this->IsInTunnel)
 		.Process(this->IsBurrowed)
@@ -810,6 +906,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TiberiumEater_Timer)
 		.Process(this->AirstrikeTargetingMe)
 		.Process(this->FiringAnimationTimer)
+		.Process(this->SimpleDeployerAnimationTimer)
 		.Process(this->DelayedFireSequencePaused)
 		.Process(this->DelayedFireTimer)
 		.Process(this->DelayedFireWeaponIndex)

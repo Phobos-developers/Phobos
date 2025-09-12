@@ -713,9 +713,9 @@ In `rulesmd.ini`:
 0=SOMEBANNER
 
 [SOMEBANNER]                ; BannerType
-PCX=                        ; filename - excluding the .pcx extension
+PCX=                        ; filename - including the .pcx extension
 SHP=                        ; filename - excluding the .shp extension
-SHP.Palette=palette.pal     ; filename - excluding the .pal extension
+SHP.Palette=palette.pal     ; filename - including the .pal extension
 SHP.RefreshAfterDelay=false ; boolean
 CSF=                        ; CSF entry key
 CSF.Color=                  ; integer - R,G,B, defaults to MessageTextColor of the owner Side

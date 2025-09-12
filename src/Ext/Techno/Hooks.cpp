@@ -148,27 +148,18 @@ DEFINE_HOOK(0x6F9FA9, TechnoClass_AI_PromoteAnim, 0x6)
 	auto aresProcess = [pType]() { return (pType->Turret) ? 0x6F9FB7 : 0x6FA054; };
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	auto const pVeteranAnim = pTypeExt->Promote_VeteranAnimation.Get(RulesExt::Global()->Promote_VeteranAnimation);
-	auto const pEliteAnim = pTypeExt->Promote_EliteAnimation.Get(RulesExt::Global()->Promote_EliteAnimation);
+	auto const pVeteranAnim = !pTypeExt->Promote_VeteranAnimation.empty() ? pTypeExt->Promote_VeteranAnimation : RulesExt::Global()->Promote_VeteranAnimation;
+	auto const pEliteAnim = !pTypeExt->Promote_EliteAnimation.empty() ? pTypeExt->Promote_EliteAnimation : RulesExt::Global()->Promote_EliteAnimation;
 
-	if (!pVeteranAnim && !pEliteAnim)
+	if (pVeteranAnim.empty() && pEliteAnim.empty())
 		return aresProcess();
 
 	if (pThis->CurrentRanking != pThis->Veterancy.GetRemainingLevel() && pThis->CurrentRanking != Rank::Invalid && (pThis->Veterancy.GetRemainingLevel() != Rank::Rookie))
 	{
-		AnimClass* promAnim = nullptr;
-
-		if (pThis->Veterancy.GetRemainingLevel() == Rank::Veteran && pVeteranAnim)
-			promAnim = GameCreate<AnimClass>(pVeteranAnim, pThis->GetCenterCoords());
-		else if (pEliteAnim)
-			promAnim = GameCreate<AnimClass>(pEliteAnim, pThis->GetCenterCoords());
-
-		if (promAnim)
-		{
-			promAnim->SetOwnerObject(pThis);
-			AnimExt::SetAnimOwnerHouseKind(promAnim, pThis->Owner, nullptr, false, true);
-			AnimExt::ExtMap.Find(promAnim)->SetInvoker(pThis);
-		}
+		if (pThis->Veterancy.GetRemainingLevel() == Rank::Veteran && !pVeteranAnim.empty())
+			AnimExt::CreateRandomAnim(pVeteranAnim, pThis->GetCenterCoords(), pThis, pThis->Owner, true, true);
+		else if (!pEliteAnim.empty())
+			AnimExt::CreateRandomAnim(pEliteAnim, pThis->GetCenterCoords(), pThis, pThis->Owner, true, true);
 	}
 
 	return aresProcess();
@@ -1109,19 +1100,25 @@ DEFINE_HOOK(0x4DF410, FootClass_UpdateAttackMove_TargetAcquired, 0x6)
 DEFINE_HOOK(0x4DF4DB, TechnoClass_RefreshMegaMission_CheckMissionFix, 0xA)
 {
 	enum { ClearMegaMission = 0x4DF4F9, ContinueMegaMission = 0x4DF4CF };
+
 	GET(FootClass* const, pThis, ESI);
 
 	auto const pType = pThis->GetTechnoType();
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	auto const mission = pThis->GetCurrentMission();
-	return (pTypeExt->AttackMove_StopWhenTargetAcquired.Get(RulesExt::Global()->AttackMove_StopWhenTargetAcquired.Get(!pType->OpportunityFire))
-		? (!(mission == Mission::Move && pThis->MegaDestination && pThis->DistanceFrom(pThis->MegaDestination) > 256) && mission != Mission::Guard) : mission != Mission::Guard)
-		? ClearMegaMission : ContinueMegaMission;
+	bool stopWhenTargetAcquired = pTypeExt->AttackMove_StopWhenTargetAcquired.Get(RulesExt::Global()->AttackMove_StopWhenTargetAcquired.Get(!pType->OpportunityFire));
+	bool clearMegaMission = mission != Mission::Guard;
+
+	if (stopWhenTargetAcquired && clearMegaMission)
+		clearMegaMission = !(mission == Mission::Move && pThis->MegaDestination && pThis->DistanceFrom(pThis->MegaDestination) > 256);
+
+	return clearMegaMission ? ClearMegaMission : ContinueMegaMission;
 }
 
 DEFINE_HOOK(0x711E90, TechnoTypeClass_CanAttackMove_IgnoreWeapon, 0x6)
 {
 	enum { SkipGameCode = 0x711E9A };
+
 	return RulesExt::Global()->AttackMove_IgnoreWeaponCheck ? SkipGameCode : 0;
 }
 
@@ -1135,7 +1132,24 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 
 	// Refresh mega mission if mission is somehow changed to incorrect missions.
 	if (mission != Mission::Attack && mission != Mission::Move)
-		pThis->ContinueMegaMission();
+	{
+		bool continueMission = true;
+
+		// Aug 30, 2025 - Starkku: SimpleDeployer needs special handling here.
+		// Without this if you interrupt waypoint mode path with deploy command
+		// it will not execute properly as it interrupts it with movement.
+		if (mission == Mission::Unload)
+		{
+			if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+			{
+				if (pUnit->Type->IsSimpleDeployer)
+					continueMission = false;
+			}
+		}
+
+		if (continueMission)
+			pThis->ContinueMegaMission();
+	}
 
 	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
@@ -1238,5 +1252,49 @@ DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
 			return SkipResponse;
 	}
 
+	return 0;
+}
+
+// Handle disabling deploy action & cursor for vehicles and aircraft.
+// Possible hook locations for other types in same function: Building: 0x700E3F, Infantry: 0x700E2C
+DEFINE_HOOK(0x7010C1, TechnoClass_CanShowDeployCursor_UnitsAndAircraft, 0x5)
+{
+	enum { DoNotAllowDeploy = 0x700DCE };
+
+	GET(FootClass*, pThis, ESI);
+
+	if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+	{
+		// If in tank bunker skip rest of the checks.
+		if (pThis->BunkerLinkedItem)
+			return 0;
+
+		// Ammo-based deploy blocking.
+		if (!TechnoExt::HasAmmoToDeploy(pUnit))
+			return DoNotAllowDeploy;
+
+		// IsSimpleDeployer and type conversion
+		if (!TechnoExt::SimpleDeployerAllowedToDeploy(pUnit, true, false))
+			return DoNotAllowDeploy;
+	}
+
+	return 0;
+}
+
+// Handle customized WarpAway
+DEFINE_HOOK(0x71A8BD, TemporalClass_Update_WarpAwayAnim, 0x5)
+{
+	GET(TemporalClass*, pThis, ESI);
+
+	// Target must exist here
+	auto const pTarget = pThis->Target;
+	auto const pExt = TechnoExt::ExtMap.Find(pTarget)->TypeExtData;
+
+	if (pExt->WarpAway.size() > 0)
+	{
+		AnimExt::CreateRandomAnim(pExt->WarpAway, pTarget->Location, nullptr, pTarget->Owner);
+		return 0x71A90E;
+	}
+	
 	return 0;
 }

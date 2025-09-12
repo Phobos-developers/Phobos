@@ -10,6 +10,8 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From vanilla
 
+- Map trigger action `125 Build At...` now plays buildup by default if available, this can be toggled off using the third parameter (values other than 0). See [required changes for `fadata.ini`](#for-map-editor-final-alert-2) on how to enable the parameter in map editor. 
+- `IsSimpleDeployer` units now obey deploying facing constraint even without deploying animation. To disable this, set `DeployDir` (defaults to `[AudioVisual] -> DeployDir`) to -1.
 - `Vertical=true` projectiles now default to completely downwards initial trajectory/facing regardless of if their projectile image has `Voxel=true` or not. This behavior can be reverted by setting `VerticalInitialFacing=false` on projectile in `rulesmd.ini`.
 - `Vertical=true` projectiles no longer move horizontally if fired by aircraft by default. To re-enable this behaviour set `Vertical.AircraftFix=false` on the projectile.
 - Weapons with `Airstrike=true` on Warhead will now check target eligibility for airstrikes regardless of weapon slot. Use `AirstrikeTargets=all` on `Primary` airstrike weapon Warhead to restore previous behaviour.
@@ -42,9 +44,11 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `AnimList.ShowOnZeroDamage` has been renamed to `CreateAnimsOnZeroDamage` to make it more clear it applies to both `AnimList` and splash animations.
 - INI inclusion and inheritance are now turned off by default and need to be turned on via command line flags `-Include` and `-Inheritance`.
 - `Level=true` projectiles no longer attempt to do reposition against targets that are behind non-water tiles by default. Use `SubjectToLand=true` to re-enable this behaviour.
+- Units' `LaserTrails` will no longer lag behind by one frame, so it needs to be repositioned (Previously, units with faster speeds may need to be positioned further ahead).
 
 #### From 0.3
 
+- `DeployingAnim.AllowAnyDirection` has been superceded by `DeployDir`. Use value of -1 to re-enable the no facing restriction.
 - Phobos-introduced Warhead effects like shield modifiers, critical hits, disguise & mind control removal now require Warhead `Verses` to affect target to apply unless `EffectsRequireVerses` is set to false. Shield armor type is used if target has an active shield that cannot be penetrated by the Warhead.
 - `Trajectory=Straight` projectiles can now snap on targets within 0.5 cells from their detonation point, this distance can be customized via `Trajectory.Straight.TargetSnapDistance`.
 - `LaunchSW.RealLaunch=false` now checks if firing house has enough credits to satisfy SW's `Money.Amount` in order to be fired.
@@ -126,6 +130,7 @@ HideLightFlashEffects=false      ; boolean
   102=Horizontal position,0
   103=Vertical position,0
   104=Banner ID,0
+  105=No buildup,0
 
   [EventsRA2]
   500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
@@ -173,7 +178,7 @@ HideLightFlashEffects=false      ; boolean
 
   [ActionsRA2]
   41=Play animation at a waypoint...,0,25,69,0,0,0,1,0,0,[LONG DESC].,0,1,41
-  125=Build at...,-10,47,0,65,0,0,1,0,0,[LONG DESC],0,1,125
+  125=Build at...,-10,47,105,65,0,0,1,0,0,[LONG DESC],0,1,125
   500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
   501=Edit variable,0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1
   502=Generate random number,0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
@@ -436,6 +441,10 @@ New:
 - [Restore turret recoil effect](Fixed-or-Improved-Logics.md#turret-recoil) (by CrimRecya)
 - [Customize hardcoded projectile initial facing behavior](Fixed-or-Improved-Logics.md#customizing-initial-facing-behavior) (by Starkku)
 - Health bar permanently displayed (by FlyStar)
+- [`IsSimpleDeployer` facing and deploy check, customization & directional deploy animations](Fixed-or-Improved-Logics.md#issimpledeployer-customizations) (by Starkku)
+- [Ammo-based deploy customizations for vehicles expanded to non-IsSimpleDeployer deploy functions](New-or-Enhanced-Logics.md#automatic-deploy-and-blocking-deploying-based-on-ammo) (by Starkku)
+- Randomized anims for several behaviors (by Ollerus)
+- Shield respawn animation and weapon (by Ollerus)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -451,14 +460,32 @@ Vanilla fixes:
 - Projectiles with `Vertical=true` now drop straight down if fired off by AircraftTypes instead of behaving erratically (by Starkku)
 - When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective (by FlyStar)
 - Fixed an issue that barrel anim data will be incorrectly overwritten by turret anim data if the techno's section exists in the map file (by CrimRecya)
+- `IsSimpleDeployer` `BalloonHover=true` units with `DeployToLand=false` are no longer forced to land when hovering (by Starkku)
+- If `DeployingAnim` with `Shadow=true` is played for unit currently in air its shadow will now be drawn on ground (by Starkku)
+- `DeployingAnim` now supports both `Normalized=true` and `Reverse=true` (by Starkku)
+- `DeployingAnim` using unit drawer now also tint accordingly with the unit (by Starkku)
+- Jumpjets in air now can correctly spawn missiles (by TaranDahl)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
 - Fixed an issue that `FireAngle` was not taken into account when drawing barrel in `TurretShadow` (by CrimRecya)
+- Fixed a bug that sometimes caused weapon/warhead detonations from features such as `ExtraWarheads`, animation damage or `Crit.Warhead` to unintentionally move from its intended position (by Starkku)
+- Fixed the bug that armor multiplier of new attacheffect will have extra take effect once if restricted warheads (by NetsuNegi)
+- Fixed an issue that units' `LaserTrails` will always lags behind by one frame (by CrimRecya)
+- Fixed customized `WarpAway` anim's wrong definition (by Ollerus)
+- Fixed parsing of DropPodTrailer from INI (by Starkku)
+- Fixed issue with ReturnWeapon not always firing off correctly (by CrimRecya)
+- Fixed animation damage logic applying invoker/owner inconsistently between weapon & warhead (by Ollerus & Starkku)
+- Fixed an edge-case issue with Phobos' selection handling code crashing with Veinholes (by Starkku)
+- Fixed `AmbientDamage.Warhead` not working for waves (by Starkku)
+- Fixed `SkirmishUnlimitedColors` not being checked if Phobos runs without Ares active (by Starkku)
+- Fixed number of `*.ApplyFirepowerMult` options (f.ex anim damage, crit) ignoring veterancy firepower modifier (by Starkku)
+- Fixed map trigger action `125 Build At...` not always playing buildups correctly (by Starkku)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
+- Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle` (by TaranDahl)
 ```
 
 ### 0.4
@@ -829,6 +856,7 @@ Phobos fixes:
 - Fixed `AltNextScenario` not taking effect (by FlyStar)
 - Fixed `DefaultDisguise` showing wrong house colors for different players (by NetsuNegi & Ollerus)
 - `600 The shield of the attached object is broken` bug fix for the triggered event (by FlyStar)
+- Fixed a read bug when setting the SHP file name in INI (By Noble_Fish)
 
 Fixes / interactions with other extensions:
 - Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH (by Starkku)
