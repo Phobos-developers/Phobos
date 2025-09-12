@@ -376,11 +376,7 @@ void AnimExt::CreateRandomAnim(const std::vector<AnimTypeClass*>& AnimList, Coor
 		return;
 
 	auto const pAnim = GameCreate<AnimClass>(pAnimType, coords);
-
-	if (!pTechno)
-		return;
-
-	AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse ? pHouse : pTechno->Owner, nullptr, false, true);
+	AnimExt::SetAnimOwnerHouseKind(pAnim, (pHouse ? pHouse : (pTechno ? pTechno->Owner : nullptr)), nullptr, false, true);
 
 	if (ownedObject)
 		pAnim->SetOwnerObject(pTechno);

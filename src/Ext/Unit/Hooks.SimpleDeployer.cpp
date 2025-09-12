@@ -247,6 +247,20 @@ DEFINE_HOOK(0x54C76D, JumpjetLocomotionClass_Descending_DeployDir, 0x7)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x54C58E, JumpjetLocomotionClass_Descending_PathfindingChecks, 0x7)
+{
+	enum { SkipGameCode = 0x54C65F };
+
+	GET(JumpjetLocomotionClass*, pThis, ESI);
+
+	auto const pUnit = abstract_cast<UnitClass*>(pThis->LinkedTo);
+
+	if (pUnit && pUnit->CurrentMission == Mission::Unload && TechnoExt::SimpleDeployerAllowedToDeploy(pUnit, false, true))
+		return SkipGameCode;
+
+	return 0;
+}
+
 // Disable DeployToLand=no forcing landing when idle due to what appears to be
 // a code oversight and no need for DeployToLand=no to work in vanilla game.
 DEFINE_HOOK(0x54BED4, JumpjetLocomotionClass_Hovering_DeployToLand, 0x7)
@@ -329,18 +343,17 @@ DEFINE_HOOK(0x514A2A, HoverLocomotionClass_Process_DeployToLand, 0x8)
 	GET(bool, isMoving, EAX);
 
 	auto const pLinkedTo = static_cast<LocomotionClass*>(pThis)->LinkedTo;
+	auto const pUnit = abstract_cast<UnitClass*>(pLinkedTo);
 
-	if (pLinkedTo->InAir)
+	if (pUnit && pUnit->InAir)
 	{
-		auto const pType = pLinkedTo->GetTechnoType();
+		auto const pType = pUnit->GetTechnoType();
 
 		if (pType->DeployToLand)
 		{
-			auto const landType = pLinkedTo->GetCell()->LandType;
-
-			if (landType == LandType::Water || landType == LandType::Beach)
+			if (!TechnoExt::SimpleDeployerAllowedToDeploy(pUnit, false, true))
 			{
-				pLinkedTo->InAir = false;
+				pUnit->InAir = false;
 				pLinkedTo->QueueMission(Mission::Guard, true);
 			}
 

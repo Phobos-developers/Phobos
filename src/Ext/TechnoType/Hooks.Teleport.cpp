@@ -102,11 +102,15 @@ DEFINE_HOOK(0x719742, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 0x
 	return 0x719796;
 }
 
-DEFINE_HOOK(0x719827, TeleportLocomotionClass_ILocomotion_Process_WarpOutChronoshiftAnim, 0x5)
+DEFINE_HOOK(0x719827, TeleportLocomotionClass_ILocomotion_Process_ChronoshiftWarpOutAnim, 0x5)
 {
 	GET_LOCO(ESI);
 
-	if (pExt->WarpOut.size() > 0)
+	if (pExt->Chronoshift_WarpOut.size() > 0)
+	{
+		AnimExt::CreateRandomAnim(pExt->Chronoshift_WarpOut, pLinked->Location, nullptr, pLinked->Owner);
+	}
+	else if (pExt->WarpOut.size() > 0)
 	{
 		AnimExt::CreateRandomAnim(pExt->WarpOut, pLinked->Location, nullptr, pLinked->Owner);
 	}
@@ -119,11 +123,15 @@ DEFINE_HOOK(0x719827, TeleportLocomotionClass_ILocomotion_Process_WarpOutChronos
 	return 0x719878;
 }
 
-DEFINE_HOOK(0x719B1E, TeleportLocomotionClass_ILocomotion_Process_WarpInChronoshiftAnim, 0x5)
+DEFINE_HOOK(0x719B1E, TeleportLocomotionClass_ILocomotion_Process_ChronoshiftWarpInAnim, 0x5)
 {
 	GET_LOCO(ESI);
 
-	if (pExt->WarpIn.size() > 0)
+	if (pExt->Chronoshift_WarpIn.size() > 0)
+	{
+		AnimExt::CreateRandomAnim(pExt->Chronoshift_WarpIn, pLinked->Location, nullptr, pLinked->Owner);
+	}
+	else if (pExt->WarpIn.size() > 0)
 	{
 		AnimExt::CreateRandomAnim(pExt->WarpIn, pLinked->Location, nullptr, pLinked->Owner);
 	}
