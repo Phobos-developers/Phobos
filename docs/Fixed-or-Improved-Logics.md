@@ -261,6 +261,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `DeployingAnim` now supports both `Normalized=true` and `Reverse=true`. Keep in mind `Reverse` uses `LoopEnd` for frame amount instead of `End` even without `LoopCount` > 1.
 - `DeployingAnim` using unit drawer now also tint accordingly with the unit.
 - Fixed an issue that jumpjets in air can not correctly spawn missiles.
+- Fixed an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos.
 
 ## Fixes / interactions with other extensions
 
@@ -1747,8 +1748,10 @@ In `rulesmd.ini`:
 Ammo.AddOnDeploy=0  ; integer
 ```
 
-### IsSimpleDeployer facing and animation customization
+### IsSimpleDeployer customizations
 
+- It is possible to enable checking if the deployed unit (if type conversion is in use, the conversion result will be used for these checks) is allowed to deploy on the cell which will also affect deploy cursor availability by setting `IsSimpleDeployer.ConsiderPathfinding` to true.
+  - You can explicitly disable deploying on cells of specified land types using `IsSimpleDeployer.DisallowedLandTypes`. Defaults to `water,beach` for units with Jumpjet or Hover locomotor with `DeployToLand=true`, `none` for others.
 - In vanilla game only units with `DeployingAnim` were constrained to a specific deploy facing and it was not customizable per unit. `DeployDir` can be set to override this per unit (defaults to `[AudioVisual] -> DeployDir`), including using value of -1 to disable the facing restriction.
 - Multiple new options for deploy animations:
   - `DeployingAnims` can be used instead of `DeployingAnim` (if both are set, `DeployingAnims` takes precedence) to define a list of direction-specific deploy animations to play. Largest power of 2 the number of listed animations falls to is used as number of directions/animations. Less than 8 animations listed results in only first listed one being used.
@@ -1758,12 +1761,14 @@ Ammo.AddOnDeploy=0  ; integer
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]                          ; VehicleType
-DeployDir=                             ; Facing type (integers from 0-7 or -1)
-DeployingAnims=                        ; List of AnimationTypes
-DeployingAnim.KeepUnitVisible=false    ; boolean
-DeployingAnim.ReverseForUndeploy=true  ; boolean
-DeployingAnim.UseUnitDrawer=true       ; boolean
+[SOMEVEHICLE]                               ; VehicleType
+IsSimpleDeployer.ConsiderPathfinding=false  ; boolean
+IsSimpleDeployer.DisallowedLandTypes=       ; List of LandTypes (none | clear | road | water | rock | wall | tiberium | beach | rough | ice | railroad | tunnel | weeds)
+DeployDir=                                  ; Facing type (integers from 0-7 or -1)
+DeployingAnims=                             ; List of AnimationTypes
+DeployingAnim.KeepUnitVisible=false         ; boolean
+DeployingAnim.ReverseForUndeploy=true       ; boolean
+DeployingAnim.UseUnitDrawer=true            ; boolean
 ```
 
 ### Make harvesters do addtional scan after unload
