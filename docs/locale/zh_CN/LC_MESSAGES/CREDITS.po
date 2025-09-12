@@ -2014,6 +2014,8 @@ msgid ""
 " Chinese docs, took over and completely rewrite the Official Chinese docs"
 " during Build#46"
 msgstr ""
+"**Noble Fish** - 一些小改进与修复、文档维护者（官方英文文档维护、创建了社区中文文档、在 Build#46 "
+"接管并完全重写了官方中文文档）"
 
 #: ../../../CREDITS.md:490
 msgid ""
