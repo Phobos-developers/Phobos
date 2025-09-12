@@ -762,6 +762,19 @@ ProneSpeed.NoCrawls=1.5       ; floating point value, multiplier
 ProneSpeed=                   ; floating point value, multiplier, by default, use the corresponding global value according to Crawls
 ```
 
+## Overlays
+
+### Customize the chained damage of the wall
+
+- In vanilla, when the wall is damaged, it will deal 200 damage to the walls in the 4 nearby cells. This makes connected walls more vulnerable to damage compared to single walls. 
+- Now you can customize that damage by using the following flag.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+AdjacentWallDamage=200  ; integer
+```
+
 ## Particle systems
 
 ### Fire particle target coordinate adjustment when firer rotates
