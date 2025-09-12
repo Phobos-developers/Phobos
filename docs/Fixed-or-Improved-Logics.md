@@ -289,6 +289,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - The previous `SVGM_XXX.NET` files are cleaned up before first copy if it's a new game, otherwise the highest numbered `SVGM_XXX.NET` file is found and the index is incremented, if possible.
   - The game also automatically copies `spawn.ini` to the save folder as `spawnSG.ini` when saving a game.
 - Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle`.
+- Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range.
+- Fixed an issue that jumpjet infantries stop incorrectly when assigned a target out of range.
 
 ```{note}
 The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
