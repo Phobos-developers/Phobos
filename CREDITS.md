@@ -277,6 +277,7 @@ This page lists all the individual contributions to the project by their author.
   - Restored parabombs
   - Delayed fire weapons
   - Changes / fixes to `Vertical` projectile logic and customizing projectile initial facing behavior
+  - Bugfixes to map trigger action `125 Create Building At`
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
