@@ -4105,6 +4105,7 @@ msgid ""
 "and `WarpIn` respectively when the techno is being chronowarped by "
 "chronosphere, if set."
 msgstr ""
+"当单位被 `Type=ChronoSphere` 的超级武器传送时 `Chronoshift.WarpOut` 和 `Chronoshift.WarpIn` 会分别替代 `WarpOut` 和  `WarpIn` 使用。"
 
 #: ../../Fixed-or-Improved-Logics.md:1052
 msgid ""
@@ -4112,6 +4113,7 @@ msgid ""
 "`Temporal=yes` warhead. Will override Ares' `Temporal.WarpAway` tag on "
 "warhead, if set."
 msgstr ""
+"单位上的 `[TechnoType] -> WarpAway` 会在其被 `Temporal=yes` 的弹头抹除时覆盖 Ares 引入的 `[WarheadType] -> Temporal.WarpAway=` 生效。"
 
 #: ../../Fixed-or-Improved-Logics.md:1053
 msgid ""
