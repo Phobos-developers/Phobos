@@ -4262,9 +4262,8 @@ msgid ""
 msgstr "对 `600 对象护盾被摧毁...` 触发条件的修复（by FlyStar）"
 
 #: ../../Whats-New.md:861
-#, fuzzy
 msgid "Fixed a read bug when setting the SHP file name in INI (By Noble_Fish)"
-msgstr "修复了执行停止命令时游戏崩溃的 Bug（by Uranusian）"
+msgstr "修复了一个在 INI 中设置 SHP 文件名的读取 Bug（by Noble_Fish）"
 
 #: ../../Whats-New.md:864
 msgid ""
