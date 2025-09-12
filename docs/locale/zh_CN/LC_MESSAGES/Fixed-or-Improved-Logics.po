@@ -6207,9 +6207,8 @@ msgstr ""
 "Ammo.AddOnDeploy=0  ; integer\n"
 
 #: ../../Fixed-or-Improved-Logics.md:1764
-#, fuzzy
 msgid "IsSimpleDeployer customizations"
-msgstr "自定义 IsSimpleDeployer 载具部署朝向与动画"
+msgstr "自定义 IsSimpleDeployer"
 
 #: ../../Fixed-or-Improved-Logics.md:1766
 msgid ""
@@ -6219,6 +6218,7 @@ msgid ""
 "cursor availability by setting `IsSimpleDeployer.ConsiderPathfinding` to "
 "true."
 msgstr ""
+"现在可以通过 `IsSimpleDeployer.ConsiderPathfinding=true` 来开启对将部署的单位（若使用单位转换则检查作为转换目标的单位）是否允许在当前单元格上部署的检查，部署光标也会跟随变化。"
 
 #: ../../Fixed-or-Improved-Logics.md:1767
 msgid ""
@@ -6227,6 +6227,8 @@ msgid ""
 "for units with Jumpjet or Hover locomotor with `DeployToLand=true`, "
 "`none` for others."
 msgstr ""
+"你可以使用 `IsSimpleDeployer.DisallowedLandTypes` 来指定单位不能在哪些土地类型上部署。"
+"对于 `Locomotor=Jumpjet` 或 `Locomotor=Hover` 且拥有 `DeployToLand=true` 的单位默认为 `water,beach`；对于其他单位则默认为 `none`。"
 
 #: ../../Fixed-or-Improved-Logics.md:1768
 msgid ""

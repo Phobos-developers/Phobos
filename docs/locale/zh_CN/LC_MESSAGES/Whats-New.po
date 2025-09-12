@@ -5787,12 +5787,3 @@ msgstr "解除了拓展工具条字符数量小得愚蠢的上限（by Belonit�
 #~ "Logics.md#bomb-parachute-anim-deglobalization)（by"
 #~ " TaranDahl）"
 
-#~ msgid ""
-#~ "`Convert.Deploy` displays 'NoDeploy' cursor if"
-#~ " the new type is not allowed to"
-#~ " move to the cell due to "
-#~ "`SpeedType` etc. (by Starkku)"
-#~ msgstr ""
-#~ "当 `Convert.Deploy` 转换的目标单位由于 `SpeedType` "
-#~ "等原因无法移动到目标单元格时将会显示 `NoDeploy` 光标（by Starkku）"
-
