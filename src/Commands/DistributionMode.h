@@ -49,8 +49,11 @@ public:
 	virtual bool ExtraTriggerCondition(WWKey eInput) const override;
 	virtual void Execute(WWKey eInput) const override;
 
+	static void DistributionModeOn();
+	static void DistributionModeOff();
 	static void DistributionSpreadModeExpand();
 	static void DistributionSpreadModeReduce();
+
 	static void __fastcall ClickedWaypoint(ObjectClass* pSelect, int idxPath, signed char idxWP);
 	static void __fastcall ClickedTargetAction(ObjectClass* pSelect, Action action, ObjectClass* pTarget);
 	static void __fastcall ClickedCellAction(ObjectClass* pSelect, Action action, CellStruct* pCell, CellStruct* pSecondCell);

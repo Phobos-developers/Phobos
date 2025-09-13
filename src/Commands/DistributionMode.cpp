@@ -5,6 +5,7 @@
 #include <Helpers/Macro.h>
 
 #include <HouseClass.h>
+#include <ShapeButtonClass.h>
 
 bool DistributionModeHoldDownCommandClass::Enabled = false;
 bool DistributionModeHoldDownCommandClass::OnMessageShowed = false;
@@ -116,30 +117,58 @@ bool DistributionModeHoldDownCommandClass::ExtraTriggerCondition(WWKey eInput) c
 void DistributionModeHoldDownCommandClass::Execute(WWKey eInput) const
 {
 	if (eInput & WWKey::Release)
+		DistributionModeHoldDownCommandClass::DistributionModeOff();
+	else
+		DistributionModeHoldDownCommandClass::DistributionModeOn();
+}
+
+void DistributionModeHoldDownCommandClass::DistributionModeOn()
+{
+	if (DistributionModeHoldDownCommandClass::Enabled)
+		return;
+
+	if (SessionClass::Instance.MultiplayerObserver)
+		return;
+
+	DistributionModeHoldDownCommandClass::Enabled = true;
+
+	if (const auto pButton = reinterpret_cast<ShapeButtonClass*(__fastcall*)(int)>(0x6CFD40)(ShapeButtonHelper::NewButtonIndexes[0]))
 	{
-		DistributionModeHoldDownCommandClass::Enabled = false;
-
-		if (HouseClass::IsCurrentPlayerObserver() || SessionClass::Instance.MultiplayerObserver)
-			return;
-
-		VocClass::PlayGlobal(RulesExt::Global()->EndDistributionModeSound, 0x2000, 1.0);
-
-		if (!DistributionModeHoldDownCommandClass::OffMessageShowed)
-		{
-			DistributionModeHoldDownCommandClass::OffMessageShowed = true;
-			MessageListClass::Instance.PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:DistributionModeOff", L"Distribution mode unabled."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
-		}
+		if (!pButton->IsOn)
+			pButton->TurnOn();
 	}
-	else if (!HouseClass::IsCurrentPlayerObserver() && !SessionClass::Instance.MultiplayerObserver)
-	{
-		DistributionModeHoldDownCommandClass::Enabled = true;
-		VocClass::PlayGlobal(RulesExt::Global()->StartDistributionModeSound, 0x2000, 1.0);
 
-		if (!DistributionModeHoldDownCommandClass::OnMessageShowed)
-		{
-			DistributionModeHoldDownCommandClass::OnMessageShowed = true;
-			MessageListClass::Instance.PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:DistributionModeOn", L"Distribution mode enabled."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
-		}
+	VocClass::PlayGlobal(RulesExt::Global()->StartDistributionModeSound, 0x2000, 1.0);
+
+	if (!DistributionModeHoldDownCommandClass::OnMessageShowed)
+	{
+		DistributionModeHoldDownCommandClass::OnMessageShowed = true;
+		MessageListClass::Instance.PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:DistributionModeOn", L"Distribution mode enabled."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+	}
+}
+
+void DistributionModeHoldDownCommandClass::DistributionModeOff()
+{
+	if (!DistributionModeHoldDownCommandClass::Enabled)
+		return;
+
+	DistributionModeHoldDownCommandClass::Enabled = false;
+
+	if (const auto pButton = reinterpret_cast<ShapeButtonClass*(__fastcall*)(int)>(0x6CFD40)(ShapeButtonHelper::NewButtonIndexes[0]))
+	{
+		if (pButton->IsOn)
+			pButton->TurnOff();
+	}
+
+	if (SessionClass::Instance.MultiplayerObserver)
+		return;
+
+	VocClass::PlayGlobal(RulesExt::Global()->EndDistributionModeSound, 0x2000, 1.0);
+
+	if (!DistributionModeHoldDownCommandClass::OffMessageShowed)
+	{
+		DistributionModeHoldDownCommandClass::OffMessageShowed = true;
+		MessageListClass::Instance.PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:DistributionModeOff", L"Distribution mode unabled."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
 	}
 }
 
