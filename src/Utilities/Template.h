@@ -218,7 +218,7 @@ public:
 		this->HasValue = false;
 	}
 
-	template<bool Allocate = false>
+	template<bool allocate = false, bool allowNone = false>
 	inline void Read(INI_EX& parser, const char* pSection, const char* pKey);
 
 	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);

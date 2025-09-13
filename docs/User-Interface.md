@@ -246,20 +246,19 @@ PrioritySelectionFiltering=true  ; boolean
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
+PlacementPreview=no                     ; boolean
+PlacementPreview.Translucency=75        ; translucency level (0/25/50/75)
 PlacementGrid.Translucency=0            ; translucency level (0/25/50/75)
 PlacementGrid.TranslucencyWithPreview=  ; translucency level (0/25/50/75), defaults to [AudioVisual] -> PlacementGrid.Translucency
 
-PlacementPreview=no                  ; boolean
-PlacementPreview.Translucency=75     ; translucency level (0/25/50/75)
-
-[SOMEBUILDING]                       ; BuildingType
-PlacementPreview=yes                 ; boolean
-PlacementPreview.Shape=              ; filename - including the .shp extension. If not set uses building's artmd.ini Buildup SHP (based on Building's Image)
-PlacementPreview.ShapeFrame=         ; integer, zero-based frame index used for displaying the preview
-PlacementPreview.Offset=0,-15,1      ; integer, expressed in X,Y,Z used to alter position preview
-PlacementPreview.Remap=yes           ; boolean, does this preview use player remap colors
-PlacementPreview.Palette=            ; filename - including the .pal extension
-PlacementPreview.Translucency=       ; translucency level (0/25/50/75), defaults to [AudioVisual] -> PlacementPreview.Translucency
+[SOMEBUILDING]                          ; BuildingType
+PlacementPreview=yes                    ; boolean
+PlacementPreview.Shape=                 ; filename - including the .shp extension. If not set uses building's artmd.ini Buildup SHP (based on Building's Image)
+PlacementPreview.ShapeFrame=            ; integer, zero-based frame index used for displaying the preview
+PlacementPreview.Offset=0,-15,1         ; integer, expressed in X,Y,Z used to alter position preview
+PlacementPreview.Remap=yes              ; boolean, does this preview use player remap colors
+PlacementPreview.Palette=               ; filename - including the .pal extension
+PlacementPreview.Translucency=          ; translucency level (0/25/50/75), defaults to [AudioVisual] -> PlacementPreview.Translucency
 ```
 
 ```{note}
@@ -378,17 +377,23 @@ ShowTimer.Priority=0  ; integer
 
 ### Task subtitles display in the middle of the screen
 
-![Message Display In Center](_static/images/messagedisplayincenter.png)
+![Message Display In Center](_static/images/messagedisplayincenter.gif)
+*Taking a campaign in [Mental Omega](https://www.mentalomega.com) as an example to display messages in center*
 
 - Now you can set `MessageApplyHoverState` to true，to make the upper left messages not disappear while mouse hovering over the top of display area.
-- You can also let task subtitles (created by trigger 11) to display directly in the middle area of the screen instead of the upper left corner, with a semi transparent background, by setting `MessageDisplayInCenter` to true.
-  - If you also set `MessageApplyHoverState` to true, when the mouse hovers over the subtitle area (simply judged as a rectangle), its opacity will increase and it will not disappear during this period.
+- You can also let task subtitles (created by trigger 11) to display directly in the middle area of the screen instead of the upper left corner, with a semi transparent background, by setting `MessageDisplayInCenter` to true. In this case, all messages within this game can be saved, even after being s/l. The storage capacity of messages can reach thousands.
+  - If you also set `MessageApplyHoverState` to true, when the mouse hovers over the subtitle area (simply judged as a rectangle), its opacity will increase and it will not disappear during this period. If the area is expanded, disabling this option will not prevent mouse clicking behavior from being restricted to this area.
+  - `MessageDisplayInCenter.LabelsCount` controls the maximum number of subtitle labels that can automatically pop up at a same time in the middle area of the screen. At least 1.
+  - `MessageDisplayInCenter.RecordsCount` controls the maximum number of historical messages displayed when this middle area is expanded (not the maximum number that can be stored). At least 4, and it is 8 in the demonstration gif.
+  - The label can be toggled by ["Toggle Message Label" hotkey](#toggle-message-label) in "Interface" category.
 
 In `RA2MD.INI`:
 ```ini
 [Phobos]
-MessageApplyHoverState=false  ; boolean
-MessageDisplayInCenter=false  ; boolean
+MessageApplyHoverState=false            ; boolean
+MessageDisplayInCenter=false            ; boolean
+MessageDisplayInCenter.LabelsCount=6    ; integer
+MessageDisplayInCenter.RecordsCount=12  ; integer
 ```
 
 ### Type select for buildings
@@ -518,6 +523,11 @@ DefaultApplyNoMoveCommand=true                  ; boolean
 DefaultDistributionSpreadMode=2                 ; integer, 0 - r=0 , 1 - r=4 , 2 - r=8 , 3 - r=16
 DefaultDistributionFilterMode=2                 ; integer, 0 - None , 1 - Like , 2 - Type , 3 - Name
 ```
+
+### `[ ]` Toggle Message Label
+
+- Switches on/off [Task subtitles' label in the middle of the screen](#task-subtitles-display-in-the-middle-of-the-screen).
+- For localization add `TXT_TOGGLE_MESSAGE` and `TXT_TOGGLE_MESSAGE_DESC` into your `.csf` file.
 
 ## Loading screen
 

@@ -12,9 +12,13 @@
 #include "DistributionMode.h"
 #include "ToggleSWSidebar.h"
 #include "FireTacticalSW.h"
+#include "ToggleMessageList.h"
+
 #include <CCINIClass.h>
+
 #include <Utilities/Macro.h>
 #include <Ext/Sidebar/SWSidebar/SWSidebarClass.h>
+#include <Misc/MessageColumn.h>
 
 DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 {
@@ -24,6 +28,7 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<QuickSaveCommandClass>();
 	MakeCommand<ToggleDigitalDisplayCommandClass>();
 	MakeCommand<ToggleDesignatorRangeCommandClass>();
+	MakeCommand<ToggleMessageListCommandClass>();
 	MakeCommand<ToggleSWSidebar>();
 
 	if (Phobos::Config::SuperWeaponSidebarCommands)
@@ -73,18 +78,20 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 
 static void MouseWheelDownCommand()
 {
-//	Debug::LogAndMessage("[Frame: %d] Mouse Wheel Down", Unsorted::CurrentFrame());
-
 	if (DistributionModeHoldDownCommandClass::Enabled && Phobos::Config::AllowDistributionCommand_SpreadModeScroll)
 		DistributionModeHoldDownCommandClass::DistributionSpreadModeReduce();
+
+	if (MessageColumnClass::Instance.IsHovering())
+		MessageColumnClass::Instance.ScrollDown();
 }
 
 static void MouseWheelUpCommand()
 {
-//	Debug::LogAndMessage("[Frame: %d] Mouse Wheel Up", Unsorted::CurrentFrame());
-
 	if (DistributionModeHoldDownCommandClass::Enabled && Phobos::Config::AllowDistributionCommand_SpreadModeScroll)
 		DistributionModeHoldDownCommandClass::DistributionSpreadModeExpand();
+
+	if (MessageColumnClass::Instance.IsHovering())
+		MessageColumnClass::Instance.ScrollUp();
 }
 
 DEFINE_HOOK(0x777998, Game_WndProc_ScrollMouseWheel, 0x6)
@@ -101,7 +108,8 @@ DEFINE_HOOK(0x777998, Game_WndProc_ScrollMouseWheel, 0x6)
 
 static inline bool CheckSkipScrollSidebar()
 {
-	return DistributionModeHoldDownCommandClass::Enabled;
+	return DistributionModeHoldDownCommandClass::Enabled
+		|| MessageColumnClass::Instance.IsHovering();
 }
 
 DEFINE_HOOK(0x533F50, Game_ScrollSidebar_Skip, 0x5)

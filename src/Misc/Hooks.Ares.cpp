@@ -85,6 +85,9 @@ void Apply_Ares3_0_Patches()
 	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4C0C6, { 0x5E }); // pop esi
 	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4C0C7, { 0x33, 0xC0 }); // xor eax, eax
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x4C0A9, AresHelper::AresBaseAddress + 0x4C0C6);
+
+	// Skip DeployDir parsing on Ares side cause we reimplement it and Ares' parser whines about -1.
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3F38A, AresHelper::AresBaseAddress + 0x3F3A0);
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -129,4 +132,7 @@ void Apply_Ares3_0p1_Patches()
 	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4CD26, { 0x5E }); // pop esi
 	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4CD27, { 0x33, 0xC0 }); // xor eax, eax
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x4CD09, AresHelper::AresBaseAddress + 0x4CD26);
+
+	// Skip DeployDir parsing on Ares side cause we reimplement it and Ares' parser whines about -1.
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3FFEA, AresHelper::AresBaseAddress + 0x40000);
 }
