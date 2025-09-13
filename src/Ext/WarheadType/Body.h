@@ -196,7 +196,7 @@ public:
 		Valueable<bool> CanKill;
 
 		Valueable<bool> UnlimboDetonate;
-		Valueable<bool> UnlimboDetonate_Force;
+		Valueable<bool> UnlimboDetonate_ForceLocation;
 		Valueable<bool> UnlimboDetonate_KeepTarget;
 		Valueable<bool> UnlimboDetonate_KeepSelected;
 
@@ -417,7 +417,7 @@ public:
 			, ReverseEngineer { false }
 
 			, UnlimboDetonate { false }
-			, UnlimboDetonate_Force { false }
+			, UnlimboDetonate_ForceLocation { false }
 			, UnlimboDetonate_KeepTarget { true }
 			, UnlimboDetonate_KeepSelected { true }
 		{ }

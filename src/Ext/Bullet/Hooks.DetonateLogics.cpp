@@ -435,10 +435,10 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 	{
 		CoordStruct location = *coords;
 		const auto pTarget = pThis->Target;
-		bool isInAir = pTarget && pTarget->AbstractFlags & AbstractFlags::Foot ? static_cast<FootClass*>(pTarget)->IsInAir() : false;
+		const bool isInAir = pTarget && pTarget->AbstractFlags & AbstractFlags::Foot ? static_cast<FootClass*>(pTarget)->IsInAir() : false;
 		bool success = false;
 
-		if (!pWHExt->UnlimboDetonate_Force)
+		if (!pWHExt->UnlimboDetonate_ForceLocation)
 		{
 			const auto pType = pTechno->GetTechnoType();
 			const auto nCell = MapClass::Instance.NearByLocation(CellClass::Coord2Cell(location),
@@ -500,7 +500,6 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			{
 				auto& vec = ScenarioExt::Global()->LimboLaunchers;
 				vec.erase(std::remove(vec.begin(), vec.end(), pTechnoExt), vec.end());
-
 				pTechno->Select();
 				pTechnoExt->IsSelected = false;
 			}

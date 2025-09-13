@@ -293,7 +293,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ReverseEngineer.Read(exINI, pSection, "ReverseEngineer");
 
 	this->UnlimboDetonate.Read(exINI, pSection, "UnlimboDetonate");
-	this->UnlimboDetonate_Force.Read(exINI, pSection, "UnlimboDetonate.Force");
+	this->UnlimboDetonate_ForceLocation.Read(exINI, pSection, "UnlimboDetonate.ForceLocation");
 	this->UnlimboDetonate_KeepTarget.Read(exINI, pSection, "UnlimboDetonate.KeepTarget");
 	this->UnlimboDetonate_KeepSelected.Read(exINI, pSection, "UnlimboDetonate.KeepSelected");
 
@@ -571,7 +571,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ReverseEngineer)
 
 		.Process(this->UnlimboDetonate)
-		.Process(this->UnlimboDetonate_Force)
+		.Process(this->UnlimboDetonate_ForceLocation)
 		.Process(this->UnlimboDetonate_KeepTarget)
 		.Process(this->UnlimboDetonate_KeepSelected)
 
