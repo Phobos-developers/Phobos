@@ -4,6 +4,7 @@
 #include <Ext/TerrainType/Body.h>
 #include <Ext/CaptureManager/Body.h>
 #include <Ext/WarheadType/Body.h>
+#include <Ext/Building/Body.h>
 
 static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
 {
@@ -248,6 +249,21 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 	}
 
 	return CanExistHere; // Continue check the overlays .etc
+}
+
+
+DEFINE_HOOK(0x7396D2, UnitClass_TryToDeploy_Transfer, 0x5)
+{
+	GET(UnitClass*, pUnit, EBP);
+	GET(BuildingClass*, pStructure, EBX);
+
+	if (pUnit->Type->DeployToFire && pUnit->Target)
+		pStructure->LastTarget = pUnit->Target;
+
+	const auto pStructureExt = BuildingExt::ExtMap.Find(pStructure);
+	pStructureExt->DeployedTechno = true;
+
+	return 0;
 }
 
 #pragma endregion

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <CCINIClass.h>
 #include <RulesClass.h>
@@ -170,8 +170,8 @@ public:
 		Nullable<BuildingSelectBracketPosition> DrawInsignia_AdjustPos_BuildingsAnchor;
 		Valueable<Point2D> DrawInsignia_AdjustPos_Units;
 		Valueable<bool> DrawInsignia_UsePixelSelectionBracketDelta;
-		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
-		Valueable<AnimTypeClass*> Promote_EliteAnimation;
+		ValueableVector<AnimTypeClass*> Promote_VeteranAnimation;
+		ValueableVector<AnimTypeClass*> Promote_EliteAnimation;
 
 		Valueable<bool> JumpjetClimbPredictHeight;
 		Valueable<bool> JumpjetClimbWithoutCutOut;
@@ -264,6 +264,8 @@ public:
 
 		Valueable<bool> InfantryAutoDeploy;
 
+		Valueable<int> AdjacentWallDamage;
+		
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -468,6 +470,7 @@ public:
 
 			, Parasite_GrappleAnim {}
 			, InfantryAutoDeploy { false }
+			, AdjacentWallDamage { 200 }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -392,8 +392,16 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 				{
 					pShield->SetHP((int)(shieldType->Strength * ratio));
 
-					if (pShield->GetHP() == 0)
-						pShield->SetRespawn(shieldType->Respawn_Rate, shieldType->Respawn, shieldType->Respawn_Rate, true);
+					if (this->Shield_ReplaceOnly && this->Shield_InheritStateOnReplace)
+					{
+						pShield->SetHP((int)(shieldType->Strength * ratio));
+
+						if (pShield->GetHP() == 0)
+						{
+							pShield->SetRespawn(shieldType->Respawn_Rate, shieldType->Respawn, shieldType->Respawn_Rate,
+								shieldType->Respawn_RestartInCombat, -1, true, shieldType->Respawn_Anim);
+						}
+					}
 				}
 			}
 		}
@@ -412,13 +420,17 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 		if (this->Shield_Break && pShield->IsActive() && isShieldTypeEligible(this->Shield_Break_Types.GetElements(this->Shield_AffectTypes)))
 			pShield->BreakShield(this->Shield_BreakAnim, this->Shield_BreakWeapon);
 
-		if (this->Shield_Respawn_Duration > 0 && isShieldTypeEligible(this->Shield_Respawn_Types.GetElements(this->Shield_AffectTypes)))
+		if ((this->Shield_Respawn_Duration > 0 || this->Shield_Respawn_RestartTimer) && isShieldTypeEligible(this->Shield_Respawn_Types.GetElements(this->Shield_AffectTypes)))
 		{
 			const double amount = this->Shield_Respawn_Amount.Get(shieldType->Respawn);
-			pShield->SetRespawn(this->Shield_Respawn_Duration, amount, this->Shield_Respawn_Rate, this->Shield_Respawn_RestartTimer);
+
+			pShield->SetRespawn(this->Shield_Respawn_Duration, amount, this->Shield_Respawn_Rate,
+				this->Shield_Respawn_RestartInCombat.Get(shieldType->Respawn_RestartInCombat),
+				this->Shield_Respawn_RestartInCombatDelay, this->Shield_Respawn_RestartTimer,
+				this->Shield_Respawn_Anim, this->Shield_Respawn_Weapon);
 		}
 
-		if (this->Shield_SelfHealing_Duration > 0 && isShieldTypeEligible(this->Shield_SelfHealing_Types.GetElements(this->Shield_AffectTypes)))
+		if ((this->Shield_SelfHealing_Duration > 0 || this->Shield_SelfHealing_RestartTimer) && isShieldTypeEligible(this->Shield_SelfHealing_Types.GetElements(this->Shield_AffectTypes)))
 		{
 			const double amount = this->Shield_SelfHealing_Amount.Get(shieldType->SelfHealing);
 

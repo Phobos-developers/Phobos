@@ -148,27 +148,18 @@ DEFINE_HOOK(0x6F9FA9, TechnoClass_AI_PromoteAnim, 0x6)
 	auto aresProcess = [pType]() { return (pType->Turret) ? 0x6F9FB7 : 0x6FA054; };
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	auto const pVeteranAnim = pTypeExt->Promote_VeteranAnimation.Get(RulesExt::Global()->Promote_VeteranAnimation);
-	auto const pEliteAnim = pTypeExt->Promote_EliteAnimation.Get(RulesExt::Global()->Promote_EliteAnimation);
+	auto const pVeteranAnim = !pTypeExt->Promote_VeteranAnimation.empty() ? pTypeExt->Promote_VeteranAnimation : RulesExt::Global()->Promote_VeteranAnimation;
+	auto const pEliteAnim = !pTypeExt->Promote_EliteAnimation.empty() ? pTypeExt->Promote_EliteAnimation : RulesExt::Global()->Promote_EliteAnimation;
 
-	if (!pVeteranAnim && !pEliteAnim)
+	if (pVeteranAnim.empty() && pEliteAnim.empty())
 		return aresProcess();
 
 	if (pThis->CurrentRanking != pThis->Veterancy.GetRemainingLevel() && pThis->CurrentRanking != Rank::Invalid && (pThis->Veterancy.GetRemainingLevel() != Rank::Rookie))
 	{
-		AnimClass* promAnim = nullptr;
-
-		if (pThis->Veterancy.GetRemainingLevel() == Rank::Veteran && pVeteranAnim)
-			promAnim = GameCreate<AnimClass>(pVeteranAnim, pThis->GetCenterCoords());
-		else if (pEliteAnim)
-			promAnim = GameCreate<AnimClass>(pEliteAnim, pThis->GetCenterCoords());
-
-		if (promAnim)
-		{
-			promAnim->SetOwnerObject(pThis);
-			AnimExt::SetAnimOwnerHouseKind(promAnim, pThis->Owner, nullptr, false, true);
-			AnimExt::ExtMap.Find(promAnim)->SetInvoker(pThis);
-		}
+		if (pThis->Veterancy.GetRemainingLevel() == Rank::Veteran && !pVeteranAnim.empty())
+			AnimExt::CreateRandomAnim(pVeteranAnim, pThis->GetCenterCoords(), pThis, pThis->Owner, true, true);
+		else if (!pEliteAnim.empty())
+			AnimExt::CreateRandomAnim(pEliteAnim, pThis->GetCenterCoords(), pThis, pThis->Owner, true, true);
 	}
 
 	return aresProcess();
@@ -1261,5 +1252,49 @@ DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
 			return SkipResponse;
 	}
 
+	return 0;
+}
+
+// Handle disabling deploy action & cursor for vehicles and aircraft.
+// Possible hook locations for other types in same function: Building: 0x700E3F, Infantry: 0x700E2C
+DEFINE_HOOK(0x7010C1, TechnoClass_CanShowDeployCursor_UnitsAndAircraft, 0x5)
+{
+	enum { DoNotAllowDeploy = 0x700DCE };
+
+	GET(FootClass*, pThis, ESI);
+
+	if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+	{
+		// If in tank bunker skip rest of the checks.
+		if (pThis->BunkerLinkedItem)
+			return 0;
+
+		// Ammo-based deploy blocking.
+		if (!TechnoExt::HasAmmoToDeploy(pUnit))
+			return DoNotAllowDeploy;
+
+		// IsSimpleDeployer and type conversion
+		if (!TechnoExt::SimpleDeployerAllowedToDeploy(pUnit, true, false))
+			return DoNotAllowDeploy;
+	}
+
+	return 0;
+}
+
+// Handle customized WarpAway
+DEFINE_HOOK(0x71A8BD, TemporalClass_Update_WarpAwayAnim, 0x5)
+{
+	GET(TemporalClass*, pThis, ESI);
+
+	// Target must exist here
+	auto const pTarget = pThis->Target;
+	auto const pExt = TechnoExt::ExtMap.Find(pTarget)->TypeExtData;
+
+	if (pExt->WarpAway.size() > 0)
+	{
+		AnimExt::CreateRandomAnim(pExt->WarpAway, pTarget->Location, nullptr, pTarget->Owner);
+		return 0x71A90E;
+	}
+	
 	return 0;
 }

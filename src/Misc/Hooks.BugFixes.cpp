@@ -2505,7 +2505,7 @@ DEFINE_HOOK(0x6FC8F5, TechnoClass_CanFire_SkipROF, 0x6)
 
 #pragma region AStarBuffer
 
-// AStarClass_CTOR
+// AStarClass::CTOR
 // Path queue nodes buffer doubled
 
 // 42A74F: 68 04 00 04 00
@@ -2527,5 +2527,88 @@ DEFINE_PATCH(0x42A7E3, 0x20);
 // Set the loops count of initialization
 DEFINE_PATCH(0x42A7FA, 0x02);
 // mov edx, 10000h (65536) -> mov edx, 20000h (131072)
+
+// AStarClass::FindHierarchicalPath
+// Replace sign-extend to zero-extend
+
+// 42C34A: 0F BF 1C 70
+// To avoid incorrect negative int index
+DEFINE_PATCH(0x42C34B, 0xB7);
+// movsx ebx, word ptr [eax+esi*2] -> movzx ebx, word ptr [eax+esi*2]
+
+// 42C36A: 0F BF 04 70
+// To avoid incorrect negative int index
+DEFINE_PATCH(0x42C36B, 0xB7);
+// movsx eax, word ptr [eax+esi*2] -> movzx eax, word ptr [eax+esi*2]
+
+#pragma endregion
+
+#pragma region FixPlanningNodeConnect
+
+// Restore the original three pop to prevent stack imbalance
+void NAKED _PlanningNodeClass_UpdateHoverNode_FixCheckValidity_RET()
+{
+	POP_REG(EDI);
+	POP_REG(EBP);
+	POP_REG(EBX);
+	JMP(0x638F2A);
+}
+DEFINE_HOOK(0x638F1E, PlanningNodeClass_UpdateHoverNode_FixCheckValidity, 0x5)
+{
+	// Newly added checks to prevent not in-time updates
+	return PlanningNodeClass::PlanningModeActive ? (int)_PlanningNodeClass_UpdateHoverNode_FixCheckValidity_RET : 0;
+}
+
+DEFINE_HOOK(0x638F70, PlanningNodeClass_UpdateHoverNode_SkipDuplicateLog, 0x8)
+{
+	enum { SkipLogString = 0x638F81 };
+
+	GET(const PlanningNodeClass* const, pCurrentNode, ESI);
+
+	const auto& pHoveringNode = Make_Global<const PlanningNodeClass* const>(0xAC4CCC);
+
+	// Only output logs when they are not the same, to avoid outputting every frame
+	return (pCurrentNode != pHoveringNode) ? 0 : SkipLogString;
+}
+
+#pragma endregion
+
+#pragma region JumpjetSetDestFix
+
+// Fix JJ infantries stop incorrectly when assigned a target out of range.
+DEFINE_HOOK(0x51AB5C, InfantryClass_SetDestination_JJInfFix, 0x6)
+{
+	enum { FuncRet = 0x51B1D7 };
+
+	GET(InfantryClass* const, pThis, EBP);
+	GET(AbstractClass* const, pDest, EBX);
+
+	if (!pDest && pThis->Type->BalloonHover && pThis->Destination && pThis->Target)
+	{
+		if (auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+		{
+			if (pThis->IsCloseEnoughToAttack(pThis->Target))
+				pThis->StopMoving();
+
+			pThis->ForceMission(Mission::Attack);
+			return FuncRet;
+		}
+	}
+
+	return 0;
+}
+
+// Fix JJ vehicles can not stop correctly when assigned a target in range.
+DEFINE_HOOK(0x741A66, UnitClass_SetDestination_JJVehFix, 0x5)
+{
+	GET(UnitClass* const, pThis, EBP);
+
+	auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor);
+
+	if (pJumpjetLoco && pThis->IsCloseEnoughToAttack(pThis->Target))
+		pThis->StopMoving();
+
+	return 0;
+}
 
 #pragma endregion

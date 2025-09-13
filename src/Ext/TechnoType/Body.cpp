@@ -493,12 +493,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 				if (secondaryFacing)
 					pTechno->SecondaryFacing.SetCurrent(DirStruct(*secondaryFacing));
 
-				if (pCreateUnit->SpawnAnim)
-				{
-					auto const pAnim = GameCreate<AnimClass>(pCreateUnit->SpawnAnim, location);
-					AnimExt::SetAnimOwnerHouseKind(pAnim, pInvokerHouse, nullptr, false, true);
-					AnimExt::ExtMap.Find(pAnim)->SetInvoker(pInvoker, pInvokerHouse);
-				}
+				AnimExt::CreateRandomAnim(pCreateUnit->SpawnAnim, location, pInvoker, pInvokerHouse, true);
 
 				if (!pTechno->InLimbo)
 				{
@@ -669,6 +664,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->WarpOut.Read(exINI, pSection, "WarpOut");
 	this->WarpIn.Read(exINI, pSection, "WarpIn");
+	this->Chronoshift_WarpOut.Read(exINI, pSection, "Chronoshift.WarpOut");
+	this->Chronoshift_WarpIn.Read(exINI, pSection, "Chronoshift.WarpIn");
 	this->WarpAway.Read(exINI, pSection, "WarpAway");
 	this->ChronoTrigger.Read(exINI, pSection, "ChronoTrigger");
 	this->ChronoDistanceFactor.Read(exINI, pSection, "ChronoDistanceFactor");
@@ -714,7 +711,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->JumpjetRotateOnCrash.Read(exINI, pSection, "JumpjetRotateOnCrash");
 	this->ShadowSizeCharacteristicHeight.Read(exINI, pSection, "ShadowSizeCharacteristicHeight");
 
-	this->DeployingAnim_AllowAnyDirection.Read(exINI, pSection, "DeployingAnim.AllowAnyDirection");
+	this->IsSimpleDeployer_ConsiderPathfinding.Read(exINI, pSection, "IsSimpleDeployer.ConsiderPathfinding");
+	this->IsSimpleDeployer_DisallowedLandTypes.Read<false, true>(exINI, pSection, "IsSimpleDeployer.DisallowedLandTypes");
+	this->DeployDir.Read(exINI, pSection, "DeployDir");
+	this->DeployingAnims.Read(exINI, pSection, "DeployingAnims");
 	this->DeployingAnim_KeepUnitVisible.Read(exINI, pSection, "DeployingAnim.KeepUnitVisible");
 	this->DeployingAnim_ReverseForUndeploy.Read(exINI, pSection, "DeployingAnim.ReverseForUndeploy");
 	this->DeployingAnim_UseUnitDrawer.Read(exINI, pSection, "DeployingAnim.UseUnitDrawer");
@@ -832,6 +832,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnHeight.Read(exINI, pSection, "SpawnHeight");
 	this->LandingDir.Read(exINI, pSection, "LandingDir");
 
+	this->Convert_Deploy.Read(exINI, pSection, "Convert.Deploy");
 	this->Convert_HumanToComputer.Read(exINI, pSection, "Convert.HumanToComputer");
 	this->Convert_ComputerToHuman.Read(exINI, pSection, "Convert.ComputerToHuman");
 	this->Convert_ResetMindControl.Read(exINI, pSection, "Convert.ResetMindControl");
@@ -1303,6 +1304,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
+		.Process(this->Chronoshift_WarpOut)
+		.Process(this->Chronoshift_WarpIn)
 		.Process(this->WarpAway)
 		.Process(this->ChronoTrigger)
 		.Process(this->ChronoDistanceFactor)
@@ -1349,7 +1352,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoAmmoAmount)
 		.Process(this->JumpjetRotateOnCrash)
 		.Process(this->ShadowSizeCharacteristicHeight)
-		.Process(this->DeployingAnim_AllowAnyDirection)
+
+		.Process(this->IsSimpleDeployer_ConsiderPathfinding)
+		.Process(this->IsSimpleDeployer_DisallowedLandTypes)
+		.Process(this->DeployDir)
+		.Process(this->DeployingAnims)
 		.Process(this->DeployingAnim_KeepUnitVisible)
 		.Process(this->DeployingAnim_ReverseForUndeploy)
 		.Process(this->DeployingAnim_UseUnitDrawer)
@@ -1456,6 +1463,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->TiberiumEaterType)
 
+		.Process(this->Convert_Deploy)
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
 		.Process(this->Convert_ResetMindControl)
