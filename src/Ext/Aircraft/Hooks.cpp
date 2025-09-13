@@ -756,7 +756,7 @@ DEFINE_HOOK(0x414DA8, AircraftClass_Update_UnlandableDamage, 0x6) // After FootC
 		}
 		else if (pThis->IsInAir())
 		{
-			int damage = TechnoTypeExt::ExtMap.Find(pThis->Type)->ExtendedAircraftMissions_UnlandDamage.Get(extendedMissions ? 1 : -1);
+			int damage = TechnoTypeExt::ExtMap.Find(pThis->Type)->ExtendedAircraftMissions_UnlandDamage.Get(RulesExt::Global()->ExtendedAircraftMissions_UnlandDamage);
 
 			if (damage > 0)
 			{
@@ -1018,7 +1018,7 @@ DEFINE_HOOK(0x4179F7, AircraftClass_EnterIdleMode_NoCrash, 0x6)
 	if (pThis->Airstrike || pThis->Spawned)
 		return 0;
 
-	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->ExtendedAircraftMissions_UnlandDamage.Get(RulesExt::Global()->ExtendedAircraftMissions ? 1 : -1) < 0)
+	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->ExtendedAircraftMissions_UnlandDamage.Get(RulesExt::Global()->ExtendedAircraftMissions_UnlandDamage) < 0)
 		return 0;
 
 	if (!pThis->Team && (pThis->CurrentMission != Mission::Area_Guard || !pThis->ArchiveTarget))
