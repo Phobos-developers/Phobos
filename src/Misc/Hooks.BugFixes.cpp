@@ -2583,17 +2583,16 @@ DEFINE_HOOK(0x51AB5C, InfantryClass_SetDestination_JJInfFix, 0x6)
 	GET(InfantryClass* const, pThis, EBP);
 	GET(AbstractClass* const, pDest, EBX);
 
-	auto pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor);
-
-	if (pThis->Type->BalloonHover && !pDest && pThis->Destination && pJumpjetLoco && pThis->Target)
+	if (!pDest && pThis->Type->BalloonHover && pThis->Destination && pThis->Target)
 	{
-		if (pThis->IsCloseEnoughToAttack(pThis->Target))
+		if (auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 		{
-			pThis->StopMoving();
-		}
+			if (pThis->IsCloseEnoughToAttack(pThis->Target))
+				pThis->StopMoving();
 
-		pThis->ForceMission(Mission::Attack);
-		return FuncRet;
+			pThis->ForceMission(Mission::Attack);
+			return FuncRet;
+		}
 	}
 
 	return 0;
@@ -2604,12 +2603,10 @@ DEFINE_HOOK(0x741A66, UnitClass_SetDestination_JJVehFix, 0x5)
 {
 	GET(UnitClass* const, pThis, EBP);
 
-	auto pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor);
+	auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor);
 
 	if (pJumpjetLoco && pThis->IsCloseEnoughToAttack(pThis->Target))
-	{
 		pThis->StopMoving();
-	}
 
 	return 0;
 }
