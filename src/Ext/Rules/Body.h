@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <CCINIClass.h>
 #include <RulesClass.h>
@@ -265,6 +265,8 @@ public:
 
 		Valueable<bool> InfantryAutoDeploy;
 
+		Valueable<int> AdjacentWallDamage;
+		
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -470,6 +472,7 @@ public:
 
 			, Parasite_GrappleAnim {}
 			, InfantryAutoDeploy { false }
+			, AdjacentWallDamage { 200 }
 		{ }
 
 		virtual ~ExtData() = default;

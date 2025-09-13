@@ -289,6 +289,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - The previous `SVGM_XXX.NET` files are cleaned up before first copy if it's a new game, otherwise the highest numbered `SVGM_XXX.NET` file is found and the index is incremented, if possible.
   - The game also automatically copies `spawn.ini` to the save folder as `spawnSG.ini` when saving a game.
 - Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle`.
+- Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range.
+- Fixed an issue that jumpjet infantries stop incorrectly when assigned a target out of range.
 
 ```{note}
 The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
@@ -765,6 +767,19 @@ ProneSpeed.NoCrawls=1.5       ; floating point value, multiplier
 
 [SOMEINFANTRY]                ; InfantryType
 ProneSpeed=                   ; floating point value, multiplier, by default, use the corresponding global value according to Crawls
+```
+
+## Overlays
+
+### Customize the chained damage of the wall
+
+- In vanilla, when the wall is damaged, it will deal 200 damage to the walls in the 4 nearby cells. This makes connected walls more vulnerable to damage compared to single walls. 
+- Now you can customize that damage by using the following flag.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+AdjacentWallDamage=200  ; integer
 ```
 
 ## Particle systems
@@ -2101,7 +2116,7 @@ Conventional.IgnoreUnits=false  ; boolean
 
 ### Customizable Warhead trigger conditions
 
-- It is now possible to make warheads only trigger when target's (TechnoTypes only) HP is above/below or equal to certain percentage. Both conditions need to evaluate to true in order for the warhead to trigger.
+- `AffectsBelowPercent` and `AffectsAbovePercent` can be used to set the health percentage thresholds that target needs to be below/equal and/or above of for the Warhead to detonate. If target has zero health left this check is bypassed.
 - If set to `false`, `AffectsNeutral` makes the warhead can't damage or affect target that belongs to neutral house.
 - If set to `false`, `EffectsRequireVerses` makes the Phobos-introduced warhead effects trigger even if it can't damage the target because of it's current ArmorType (e.g. 0% in `Verses`).
 
