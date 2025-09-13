@@ -10,7 +10,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From vanilla
 
-- Map trigger action `125 Build At...` now plays buildup by default if available, this can be toggled off using the third parameter (values other than 0). See [required changes for `fadata.ini`](#for-map-editor-final-alert-2) on how to enable the parameter in map editor. 
+- Map trigger action `125 Build At...` now plays buildup by default if available, this can be toggled off using the third parameter (values other than 0). See [required changes for `fadata.ini`](#for-map-editor-final-alert-2) on how to enable the parameter in map editor.
 - `IsSimpleDeployer` units now obey deploying facing constraint even without deploying animation. To disable this, set `DeployDir` (defaults to `[AudioVisual] -> DeployDir`) to -1.
 - `Vertical=true` projectiles now default to completely downwards initial trajectory/facing regardless of if their projectile image has `Voxel=true` or not. This behavior can be reverted by setting `VerticalInitialFacing=false` on projectile in `rulesmd.ini`.
 - `Vertical=true` projectiles no longer move horizontally if fired by aircraft by default. To re-enable this behaviour set `Vertical.AircraftFix=false` on the projectile.
@@ -446,6 +446,7 @@ New:
 - Randomized anims for several behaviors (by Ollerus)
 - Shield respawn animation and weapon (by Ollerus)
 - Customize the chained damage of the wall (by TaranDahl)
+- Allow the aircraft to enter area guard mission and not crash immediately without any airport (by CrimRecya)
 - Unlimbo Detonate warhead (by FlyStar)
 
 Vanilla fixes:
