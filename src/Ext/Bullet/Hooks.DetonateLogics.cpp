@@ -6,6 +6,7 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/Scenario/Body.h>
 #include <Utilities/Helpers.Alex.h>
 
 #include <VoxelAnimClass.h>
@@ -425,7 +426,97 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 		}
 	}
 
-	WarheadTypeExt::ExtMap.Find(pThis->WH)->InDamageArea = true;
+	// Unlimbo Detonate
+	const auto pWH = pThis->WH;
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	pWHExt->InDamageArea = true;
+
+	if (pTechno && pTechno->InLimbo && !pWH->Parasite && pWHExt->UnlimboDetonate)
+	{
+		CoordStruct location = *coords;
+		const auto pTarget = pThis->Target;
+		const bool isInAir = pTarget && pTarget->AbstractFlags & AbstractFlags::Foot ? static_cast<FootClass*>(pTarget)->IsInAir() : false;
+		bool success = false;
+
+		if (!pWHExt->UnlimboDetonate_ForceLocation)
+		{
+			const auto pType = pTechno->GetTechnoType();
+			const auto nCell = MapClass::Instance.NearByLocation(CellClass::Coord2Cell(location),
+									pType->SpeedType, -1, pType->MovementZone, false, 1, 1, true,
+									false, false, true, CellStruct::Empty, false, false);
+
+			const auto pCell = MapClass::Instance.TryGetCellAt(nCell);
+
+			if (pCell)
+			{
+				pTechno->OnBridge = pCell->ContainsBridge();
+				location = pCell->GetCoordsWithBridge();
+			}
+			else
+			{
+				pTechno->OnBridge = false;
+			}
+
+			if (isInAir)
+				location.Z = coords->Z;
+
+			success = pTechno->Unlimbo(location, pTechno->PrimaryFacing.Current().GetDir());
+		}
+		else
+		{
+			const auto pCell = MapClass::Instance.TryGetCellAt(location);
+
+			if (pCell)
+				pTechno->OnBridge = pCell->ContainsBridge();
+			else
+				pTechno->OnBridge = false;
+
+			++Unsorted::ScenarioInit;
+			success = pTechno->Unlimbo(location, pTechno->PrimaryFacing.Current().GetDir());
+			--Unsorted::ScenarioInit;
+		}
+
+		const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+
+		if (success)
+		{
+			if (isInAir)
+			{
+				pTechno->IsFallingDown = true;
+				pTechno->FallRate = 0;
+			}
+
+			if (pWHExt->UnlimboDetonate_KeepTarget
+				&& pTarget && pTarget->AbstractFlags & AbstractFlags::Object)
+			{
+				pTechno->SetTarget(pTarget);
+			}
+			else
+			{
+				pTechno->SetTarget(nullptr);
+			}
+
+			if (pTechnoExt->IsSelected)
+			{
+				auto& vec = ScenarioExt::Global()->LimboLaunchers;
+				vec.erase(std::remove(vec.begin(), vec.end(), pTechnoExt), vec.end());
+				pTechno->Select();
+				pTechnoExt->IsSelected = false;
+			}
+		}
+		else
+		{
+			if (pTechnoExt->IsSelected)
+			{
+				auto& vec = ScenarioExt::Global()->LimboLaunchers;
+				vec.erase(std::remove(vec.begin(), vec.end(), pTechnoExt), vec.end());
+				pTechnoExt->IsSelected = false;
+			}
+
+			pTechno->SetLocation(location);
+			pTechno->ReceiveDamage(&pTechno->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pTechno->Owner);
+		}
+	}
 
 	return 0;
 }

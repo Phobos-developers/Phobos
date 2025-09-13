@@ -292,6 +292,11 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ReverseEngineer.Read(exINI, pSection, "ReverseEngineer");
 
+	this->UnlimboDetonate.Read(exINI, pSection, "UnlimboDetonate");
+	this->UnlimboDetonate_ForceLocation.Read(exINI, pSection, "UnlimboDetonate.ForceLocation");
+	this->UnlimboDetonate_KeepTarget.Read(exINI, pSection, "UnlimboDetonate.KeepTarget");
+	this->UnlimboDetonate_KeepSelected.Read(exINI, pSection, "UnlimboDetonate.KeepSelected");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -564,6 +569,11 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CanKill)
 
 		.Process(this->ReverseEngineer)
+
+		.Process(this->UnlimboDetonate)
+		.Process(this->UnlimboDetonate_ForceLocation)
+		.Process(this->UnlimboDetonate_KeepTarget)
+		.Process(this->UnlimboDetonate_KeepSelected)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

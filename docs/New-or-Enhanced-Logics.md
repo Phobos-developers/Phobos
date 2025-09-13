@@ -2491,6 +2491,29 @@ In `rulesmd.ini`:
 CanKill=true   ; boolean
 ```
 
+### Unlimbo Detonate
+
+![Unlimbo Detonate](_static/images/unlimbodetonate.gif)
+*Unlimbo Detonate used in **The Call of the Panic Spear** by @[Octagonal prism](https://space.bilibili.com/360577336)*
+
+- `UnlimboDetonate` allows units that have fired weapons with `LimboLaunch=yes` to reappear.
+  - `UnlimboDetonate.ForceLocation` allows units to forcefully appear at the projectile explosion location, otherwise they will search for other available cells.
+  - `UnlimboDetonate.KeepTarget` allows units to retain their original attack target when they reappear.
+  - `UnlimboDetonate.KeepSelected` allows units to retain their original selected state when they appear.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                          ; WarheadType
+UnlimboDetonate=false                  ; boolean
+UnlimboDetonate.ForceLocation=false    ; boolean
+UnlimboDetonate.KeepTarget=false       ; boolean
+UnlimboDetonate.KeepSelected=false     ; boolean
+```
+
+```{warning}
+`UnlimboDetonate` cannot be used in conjunction with `Parasite`.
+```
+
 ## Weapons
 
 ### AreaFire target customization

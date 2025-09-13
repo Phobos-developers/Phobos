@@ -80,6 +80,8 @@ public:
 
 		CDTimerClass FiringAnimationTimer;
 
+		bool IsSelected;
+
 		// Replaces use of TechnoClass->Animation StageClass timer for IsSimpleDeployer to simplify
 		// the deploy animation timer calcs and eliminate possibility of outside interference.
 		CDTimerClass SimpleDeployerAnimationTimer;
@@ -146,6 +148,7 @@ public:
 			, DelayedFireTimer {}
 			, CurrentDelayedFireAnim { nullptr }
 			, AttachedEffectInvokerCount { 0 }
+			, IsSelected { false }
 			, TintColorOwner { 0 }
 			, TintColorAllies { 0 }
 			, TintColorEnemies { 0 }
