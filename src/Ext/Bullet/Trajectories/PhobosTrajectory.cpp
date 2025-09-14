@@ -450,6 +450,9 @@ void PhobosTrajectory::OnPreDetonate()
 	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 	const auto pBulletTypeExt = pBulletExt->TypeExtData;
 
+	// Set detonate coords
+	pBullet->Data.Location = pBullet->Location;
+
 	// Special circumstances, similar to airburst behavior
 	if (pBulletTypeExt->DisperseEffectiveRange.Get() < 0)
 		pBulletExt->PrepareDisperseWeapon();
@@ -969,6 +972,8 @@ DEFINE_HOOK(0x46B5A4, BulletClass_SetTarget_SetTrajectoryTarget, 0x6)
 	{
 		if (pTarget)
 			pTraj->SetBulletNewTarget(pTarget);
+		else
+			pThis->Target = nullptr;
 
 		return SkipGameCode;
 	}
