@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-18 02:00+0800\n"
+"POT-Creation-Date: 2025-09-12 20:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1843,8 +1843,7 @@ msgstr "修复了 Ares 的 `Convert.Deploy` 会在单位转向或移动中反复
 msgid ""
 "Fix for pathfinding crashes on big maps due to too small pathfinding node"
 " buffer"
-msgstr ""
-"修复了在较大的地图中由于寻路节点缓冲区过小而引发的寻路崩溃问题"
+msgstr "修复了在较大的地图中由于寻路节点缓冲区过小而引发的寻路崩溃问题"
 
 #: ../../../CREDITS.md:451
 msgid "**Ollerus**:"
@@ -2011,34 +2010,43 @@ msgstr "**Chasheen (Chasheenburg)** - Build#24 的中文文档协助"
 
 #: ../../../CREDITS.md:489
 msgid ""
+"**Noble Fish** - some minor improvements and fixes, established Community"
+" Chinese docs, took over and completely rewrite the Official Chinese docs"
+" during Build#46"
+msgstr ""
+"**Noble Fish** - 一些小改进与修复、文档维护者（官方英文文档维护、创建了社区中文文档、在 Build#46 "
+"接管并完全重写了官方中文文档）"
+
+#: ../../../CREDITS.md:490
+msgid ""
 "**tomsons26** - all-around help, assistance and guidance in reverse-"
 "engineering, YR binary mappings"
 msgstr "**tomsons26** - 全方位协助，逆向工程方面的协助与指导、YR 二进制映射"
 
-#: ../../../CREDITS.md:490
+#: ../../../CREDITS.md:491
 msgid ""
 "**CCHyper** - all-around help, current project logo, assistance and "
 "guidance in reverse-engineering, YR binary mappings, custom locomotors "
 "example implementation"
 msgstr "**CCHyper** - 全方位协助，当前项目 Logo 设计、逆向工程方面的协助与指导、YR 二进制映射、自定义运动模式示例实现"
 
-#: ../../../CREDITS.md:491
+#: ../../../CREDITS.md:492
 msgid "**AlexB** - Original FlyingStrings implementation"
 msgstr "**AlexB** - 原始 FlyingStrings 实现"
 
-#: ../../../CREDITS.md:492
+#: ../../../CREDITS.md:493
 msgid "**Joshy** - Original FlyingStrings implementation"
 msgstr "**Joshy** - 原始 FlyingStrings 实现"
 
-#: ../../../CREDITS.md:493
+#: ../../../CREDITS.md:494
 msgid "**CnCVK** - Original custom locomotors experiment"
 msgstr "**CnCVK** - 原始的自定义运动模式尝试"
 
-#: ../../../CREDITS.md:494
+#: ../../../CREDITS.md:495
 msgid "**ZΞPHYɌUS** - win/lose themes code"
 msgstr "**ZΞPHYɌUS** - 胜利／失败主题音乐代码"
 
-#: ../../../CREDITS.md:495
+#: ../../../CREDITS.md:496
 msgid ""
 "**Neargye (Daniil Goncharov)** - [nameof "
 "library](https://github.com/Neargye/nameof) (MIT)"
@@ -2046,33 +2054,33 @@ msgstr ""
 "**Neargye (Daniil Goncharov)** - [nameof "
 "库](https://github.com/Neargye/nameof)（MIT）"
 
-#: ../../../CREDITS.md:496
+#: ../../../CREDITS.md:497
 msgid "**ayylmao** - help with docs, extensive and thorough testing"
 msgstr "**ayylmao** - 文档协助，广泛且深入的测试"
 
-#: ../../../CREDITS.md:497
+#: ../../../CREDITS.md:498
 msgid "**SMxReaver** - help with docs, extensive and thorough testing"
 msgstr "**SMxReaver** - 文档协助，广泛且深入的测试"
 
-#: ../../../CREDITS.md:498
+#: ../../../CREDITS.md:499
 msgid "**4SG** - help with docs"
 msgstr "**4SG** - 文档协助"
 
-#: ../../../CREDITS.md:499
+#: ../../../CREDITS.md:500
 msgid ""
 "**thomassneddon** - general assistance, knowledge about voxel lighting "
 "model"
 msgstr "**thomassneddon** - 一般性协助、Voxel 照明模型知识"
 
-#: ../../../CREDITS.md:500
+#: ../../../CREDITS.md:501
 msgid "**Xkein** - general assistance, YRpp edits"
 msgstr "**Xkein** - 一般性协助、YRpp 编辑"
 
-#: ../../../CREDITS.md:501
+#: ../../../CREDITS.md:502
 msgid "**mevitar** - honorary shield tester *triple* award"
 msgstr "**mevitar** - 荣誉护盾测试员 **三重** 奖章"
 
-#: ../../../CREDITS.md:502
+#: ../../../CREDITS.md:503
 msgid ""
 "**Phobos CN Tester Group (Reedom, Mantis, Swim Wing, Takitoru, Examon, "
 "AKB, Pusheen, ZQ, Claptrap, BunkerGeneral, Big J, Skywalker, "
@@ -2086,27 +2094,15 @@ msgstr ""
 "Yumeri_Rei, Nacho, Zhuzi, Ika_Aru, EUSiegfried, HanpiBaozi, Nxusbot, "
 "TientsinWind)** - 广泛且深入的测试"
 
-#: ../../../CREDITS.md:503
+#: ../../../CREDITS.md:504
 msgid "**Damfoos** - extensive and thorough testing"
 msgstr "**Damfoos** - 广泛且深入的测试"
 
-#: ../../../CREDITS.md:504
+#: ../../../CREDITS.md:505
 msgid "**Dmitry Volkov** - extensive and thorough testing"
 msgstr "**Dmitry Volkov** - 广泛且深入的测试"
 
-#: ../../../CREDITS.md:505
+#: ../../../CREDITS.md:506
 msgid "**Rise of the East community** - extensive playtesting of in-dev features"
 msgstr "**东方崛起社区** - 对开发功能的广泛测试"
-
-#~ msgid "`Arcing` elevation inaccuracy fix"
-#~ msgstr "`Arcing` 高差打偏问题修复"
-
-#~ msgid ""
-#~ "Fix the bug that a unit can "
-#~ "overlap with `Teleport` units after it's"
-#~ " been damaged by a fallen unit "
-#~ "lifted by `IsLocomotor=yes` warheads"
-#~ msgstr ""
-#~ "修复了一个单位被另一个由 `IsLocomotor=yes` 弹头吊起的单位砸过后其所在单元格可以被一个 "
-#~ "`Teleport` 运动模式的单位作为超时空移动的目的地的问题"
 
