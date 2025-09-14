@@ -1773,18 +1773,16 @@ msgid ""
 msgstr "修复了 Ares 的单位转换不会通过 `FireAngle` 重设炮管方向的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:292
-#, fuzzy
 msgid ""
 "Fixed an issue that jumpjet vehicles can not stop correctly when assigned"
 " a target in range."
-msgstr "修复了 Jumpjet 单位在空中时无法生成导弹子机的问题。"
+msgstr "修复了 Jumpjet 载具在指定射程内目标时无法正确停止的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:293
-#, fuzzy
 msgid ""
 "Fixed an issue that jumpjet infantries stop incorrectly when assigned a "
 "target out of range."
-msgstr "修复了 Jumpjet 单位在空中时无法生成导弹子机的问题。"
+msgstr "修复了 Jumpjet 步兵在指定超出射程的目标时停止不正确的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:296
 msgid ""

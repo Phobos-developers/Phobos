@@ -2212,14 +2212,16 @@ msgstr "修复了触发结果 `125 将建筑建于...` 有时不能正确播放�
 #: ../../Whats-New.md:488
 msgid ""
 "Fixed an issue that jumpjet vehicles can not stop correctly when assigned"
-" a target in range. (by TaranDahl)"
+" a target in range (by TaranDahl)"
 msgstr ""
+"修复了 Jumpjet 载具在指定射程内目标时无法正确停止的问题（by TaranDahl）"
 
 #: ../../Whats-New.md:489
 msgid ""
 "Fixed an issue that jumpjet infantries stop incorrectly when assigned a "
-"target out of range. (by TaranDahl)"
+"target out of range (by TaranDahl)"
 msgstr ""
+"修复了 Jumpjet 步兵在指定超出射程的目标时停止不正确的问题（by TaranDahl）"
 
 #: ../../Whats-New.md:491 ../../Whats-New.md:867 ../../Whats-New.md:1090
 msgid "Fixes / interactions with other extensions:"

@@ -485,8 +485,8 @@ Phobos fixes:
 - Fixed `SkirmishUnlimitedColors` not being checked if Phobos runs without Ares active (by Starkku)
 - Fixed number of `*.ApplyFirepowerMult` options (f.ex anim damage, crit) ignoring veterancy firepower modifier (by Starkku)
 - Fixed map trigger action `125 Build At...` not always playing buildups correctly (by Starkku)
-- Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range. (by TaranDahl)
-- Fixed an issue that jumpjet infantries stop incorrectly when assigned a target out of range. (by TaranDahl)
+- Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range (by TaranDahl)
+- Fixed an issue that jumpjet infantries stop incorrectly when assigned a target out of range (by TaranDahl)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)

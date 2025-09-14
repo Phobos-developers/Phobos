@@ -2545,18 +2545,16 @@ msgid "Customize the chained damage of the wall"
 msgstr "自定义墙的连锁伤害"
 
 #: ../../../CREDITS.md:618
-#, fuzzy
 msgid ""
 "Fix an issue that jumpjet vehicles can not stop correctly when assigned a"
 " target in range"
-msgstr "修复了 Jumpjet 单位在空中时无法生成导弹子机的问题"
+msgstr "修复了 Jumpjet 载具在指定射程内目标时无法正确停止的问题"
 
 #: ../../../CREDITS.md:619
-#, fuzzy
 msgid ""
 "Fix an issue that jumpjet infantries stop incorrectly when assigned a "
 "target out of range"
-msgstr "修复了 Jumpjet 单位在空中时无法生成导弹子机的问题"
+msgstr "修复了 Jumpjet 步兵在指定超出射程的目标时停止不正确的问题"
 
 #: ../../../CREDITS.md:620
 msgid "**solar-III (凤九歌)**"
