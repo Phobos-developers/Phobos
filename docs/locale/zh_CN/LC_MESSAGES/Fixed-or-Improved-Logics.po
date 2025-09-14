@@ -3227,12 +3227,11 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:765
 msgid "Overlays"
-msgstr ""
+msgstr "覆盖物"
 
 #: ../../Fixed-or-Improved-Logics.md:767
-#, fuzzy
 msgid "Customize the chained damage of the wall"
-msgstr "自定义桥上坠落伤害"
+msgstr "自定义墙的连锁伤害"
 
 #: ../../Fixed-or-Improved-Logics.md:769
 msgid ""
@@ -3240,11 +3239,11 @@ msgid ""
 "walls in the 4 nearby cells. This makes connected walls more vulnerable "
 "to damage compared to single walls."
 msgstr ""
+"原版中当围墙受到伤害时会对周围 4 个单元格内的墙体造成 200 点伤害。这使得相连的墙体比单独矗立的墙体更容易被损伤（这就是打完剩下的单格墙体更能抗伤的原因）。"
 
 #: ../../Fixed-or-Improved-Logics.md:770
-#, fuzzy
 msgid "Now you can customize that damage by using the following flag."
-msgstr "现在你可以使用下面的标签实现上述逻辑。"
+msgstr "现在你可以使用下面的标签自定义这个杀伤值。"
 
 #: ../../Fixed-or-Improved-Logics.md:773
 msgid ""

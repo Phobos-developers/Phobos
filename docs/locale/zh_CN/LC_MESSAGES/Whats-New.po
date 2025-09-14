@@ -1970,8 +1970,8 @@ msgid "Shield respawn animation and weapon (by Ollerus)"
 msgstr "护盾重生动画与武器（by Ollerus）"
 
 #: ../../Whats-New.md:448
-msgid "Customize the chained damage of the wall (by TaranDahl)"
-msgstr ""
+msgid "[Customize the chained damage of the wall](Fixed-or-Improved-Logics.md#customize-the-chained-damage-of-the-wall) (by TaranDahl)"
+msgstr "[自定义墙的连锁伤害](Fixed-or-Improved-Logics.md#customize-the-chained-damage-of-the-wall)（by TaranDahl）"
 
 #: ../../Whats-New.md:450 ../../Whats-New.md:663 ../../Whats-New.md:1021
 #: ../../Whats-New.md:1130 ../../Whats-New.md:1155 ../../Whats-New.md:1194

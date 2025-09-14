@@ -2531,9 +2531,8 @@ msgid "Fix an issue that jumpjets in air can not correctly spawn missiles"
 msgstr "修复了 Jumpjet 单位在空中时无法生成导弹子机的问题"
 
 #: ../../../CREDITS.md:615
-#, fuzzy
 msgid "Customize the chained damage of the wall"
-msgstr "自定义桥上坠落伤害"
+msgstr "自定义墙的连锁伤害"
 
 #: ../../../CREDITS.md:616
 msgid "**solar-III (凤九歌)**"
