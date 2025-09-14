@@ -69,11 +69,12 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 		pThis->UnInit();
 
 		const auto pTechno = pThis->Owner;
+		const auto pWeapon = pThis->WeaponType;
 
 		if (pTechno
 			&& pTechno->InLimbo
-			&& pThis->WeaponType
-			&& pThis->WeaponType->LimboLaunch)
+			&& pWeapon
+			&& pWeapon->LimboLaunch)
 		{
 			pThis->SetTarget(nullptr);
 			auto damage = pTechno->Health * 2;

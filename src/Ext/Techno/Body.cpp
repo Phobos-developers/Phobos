@@ -36,6 +36,12 @@ TechnoExt::ExtData::~ExtData()
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
+	if (this->IsSelected)
+	{
+		auto& vec = ScenarioExt::Global()->LimboLaunchers;
+		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
+	}
+
 	if (this->AnimRefCount > 0)
 		AnimExt::InvalidateTechnoPointers(pThis);
 
@@ -728,8 +734,11 @@ bool TechnoExt::HandleDelayedFireWithPauseSequence(TechnoClass* pThis, int weapo
 
 bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max)
 {
+	if (!pObject->Health && !pObject->GetType()->Strength)
+		return true;
+
 	const double hp = pObject->GetHealthPercentage();
-	return hp <= max && hp >= min;
+	return (hp > 0 ? hp > min : hp >= min) && hp <= max;
 }
 
 bool TechnoExt::CannotMove(UnitClass* pThis)
@@ -914,6 +923,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->DelayedFireWeaponIndex)
 		.Process(this->CurrentDelayedFireAnim)
 		.Process(this->AttachedEffectInvokerCount)
+		.Process(this->IsSelected)
 		.Process(this->TintColorOwner)
 		.Process(this->TintColorAllies)
 		.Process(this->TintColorEnemies)

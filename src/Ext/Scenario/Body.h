@@ -47,6 +47,7 @@ public:
 		PhobosFixedString<64u> DefaultLS800BkgdPal;
 
 		BulletClass* MasterDetonationBullet; // Used to do warhead/weapon detonations on spot without having to create new BulletClass instance every time.
+		std::vector<TechnoExt::ExtData*> LimboLaunchers;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
@@ -62,6 +63,7 @@ public:
 			, DefaultLS800BkgdName {}
 			, DefaultLS800BkgdPal {}
 			, MasterDetonationBullet {}
+			, LimboLaunchers {}
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
