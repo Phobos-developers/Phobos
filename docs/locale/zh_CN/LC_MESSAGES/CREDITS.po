@@ -1571,7 +1571,7 @@ msgstr "血条恒显"
 
 #: ../../../CREDITS.md:395
 msgid "Unlimbo Detonate warhead"
-msgstr ""
+msgstr "去虚拟化引爆弹头"
 
 #: ../../../CREDITS.md:396
 msgid "**NetsuNegi**:"

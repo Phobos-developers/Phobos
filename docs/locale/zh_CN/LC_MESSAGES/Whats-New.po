@@ -1985,9 +1985,8 @@ msgstr ""
 "允许战机执行区域警戒任务且在无机场的情况下不会立即坠毁（by CrimRecya）"
 
 #: ../../Whats-New.md:450
-#, fuzzy
-msgid "Unlimbo Detonate warhead (by FlyStar)"
-msgstr "非挑衅弹头（by Starkku）"
+msgid "[Unlimbo Detonate warhead](New-or-Enhanced-Logics.md#unlimbo-detonate-warhead) (by FlyStar)"
+msgstr "[去虚拟化引爆弹头](New-or-Enhanced-Logics.md#unlimbo-detonate-warhead)（by Starkku）"
 
 #: ../../Whats-New.md:452 ../../Whats-New.md:667 ../../Whats-New.md:1025
 #: ../../Whats-New.md:1134 ../../Whats-New.md:1159 ../../Whats-New.md:1198

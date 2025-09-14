@@ -8731,8 +8731,8 @@ msgstr ""
 "CanKill=true   ; boolean\n"
 
 #: ../../New-or-Enhanced-Logics.md:2494 ../../New-or-Enhanced-Logics.md:2496
-msgid "Unlimbo Detonate"
-msgstr ""
+msgid "Unlimbo detonate warhead"
+msgstr "去虚拟化引爆弹头"
 
 #: ../../New-or-Enhanced-Logics.md:2496
 msgid ""
@@ -8740,12 +8740,14 @@ msgid ""
 " used in **The Call of the Panic Spear** by @[Octagonal "
 "prism](https://space.bilibili.com/360577336)*"
 msgstr ""
+"![去虚拟化引爆](_static/images/unlimbodetonate.gif) *@[八棱彩](https://space.bilibili.com/360577336) 在 **恐慌之矛的召唤** 中使用的去虚拟化引爆*"
 
 #: ../../New-or-Enhanced-Logics.md:2499
 msgid ""
 "`UnlimboDetonate` allows units that have fired weapons with "
 "`LimboLaunch=yes` to reappear."
 msgstr ""
+"`UnlimboDetonate` 允许发射了拥有 `LimboLaunch=yes` 的武器的单位在弹头引爆后重新刷出（退出 Limbo 状态）。"
 
 #: ../../New-or-Enhanced-Logics.md:2500
 msgid ""
@@ -8753,18 +8755,21 @@ msgid ""
 "projectile explosion location, otherwise they will search for other "
 "available cells."
 msgstr ""
+"`UnlimboDetonate.ForceLocation` 允许单位强制出现在抛射体爆炸的位置，否则它们会检索其他可用的单元格。"
 
 #: ../../New-or-Enhanced-Logics.md:2501
 msgid ""
 "`UnlimboDetonate.KeepTarget` allows units to retain their original attack"
 " target when they reappear."
 msgstr ""
+"`UnlimboDetonate.KeepTarget` 允许单位进出 Limbo 状态前后保留原先的目标。"
 
 #: ../../New-or-Enhanced-Logics.md:2502
 msgid ""
 "`UnlimboDetonate.KeepSelected` allows units to retain their original "
 "selected state when they appear."
 msgstr ""
+"`UnlimboDetonate.KeepSelected` 允许单位进出 Limbo 状态前保留原先选中状态。"
 
 #: ../../New-or-Enhanced-Logics.md:2505
 msgid ""
@@ -8782,7 +8787,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:2514
 msgid "`UnlimboDetonate` cannot be used in conjunction with `Parasite`."
-msgstr ""
+msgstr "`UnlimboDetonate` 不能与 `Parasite` 共用。"
 
 #: ../../New-or-Enhanced-Logics.md:2517
 msgid "Weapons"
