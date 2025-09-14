@@ -7777,7 +7777,6 @@ msgid ""
 msgstr "`Crit.AffectsHouses` 可用于自定义此弹头可暴击的目标所属。"
 
 #: ../../New-or-Enhanced-Logics.md:2150
-#, fuzzy
 msgid ""
 "`Crit.AffectBelowPercent` and `Crit.AffectsAbovePercent` can be used to "
 "set the health percentage that targets must be above and/or below/equal "
@@ -7785,7 +7784,7 @@ msgid ""
 "health left this check is bypassed."
 msgstr ""
 "`Crit.AffectBelowPercent` 和 `Crit.AffectsAbovePercent` "
-"用于设置可被暴击影响的单位其当前血量所占百分比必须低于或高于的限制。"
+"用于设置可被暴击影响的单位其当前血量所占百分比必须高于和／或低于／等于的限制。若目标血量为 0 则跳过该检查。"
 
 #: ../../New-or-Enhanced-Logics.md:2151
 msgid ""
@@ -9436,7 +9435,6 @@ msgid ""
 msgstr "现在你可以指定武器可以开火的目标或所属方。这还会影响武器选择，除了某些特殊情况下的固定选择。"
 
 #: ../../New-or-Enhanced-Logics.md:2711
-#, fuzzy
 msgid ""
 "`CanTarget.MaxHealth` and `CanTarget.MinHealth` set health percentage "
 "thresholds for allowed targets (TechnoTypes only) that the target's "
@@ -9444,7 +9442,7 @@ msgid ""
 "zero health left this check is bypassed."
 msgstr ""
 "`CanTarget.MaxHealth` 和 `CanTarget.MinHealth` "
-"用于设置可被攻击的（仅单位）目标所需的血量阈值，分别对应上／下限。"
+"用于设置可被攻击的（仅单位）目标所需的血量阈值，分别要求目标血量必须高于和／或低于／等于的限制。若目标血量为 0 则跳过检查。"
 
 #: ../../New-or-Enhanced-Logics.md:2714
 msgid ""

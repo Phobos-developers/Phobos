@@ -7204,6 +7204,7 @@ msgid ""
 "above of for the Warhead to detonate. If target has zero health left this"
 " check is bypassed."
 msgstr ""
+"`AffectsBelowPercent` 和 `AffectsAbovePercent` 可用于设置目标被弹头作用所需的血量百分比必须高于和／或低于／等于的限制。若目标血量为 0 则跳过该检查。"
 
 #: ../../Fixed-or-Improved-Logics.md:2120
 msgid ""
