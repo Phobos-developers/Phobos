@@ -391,6 +391,7 @@ This page lists all the individual contributions to the project by their author.
   - When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective
   - When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body
   - Health bar permanently displayed
+  - Unlimbo Detonate warhead
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -545,6 +546,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix for pathfinding crashes on big maps due to too small pathfinding node buffer
   - Fix an issue that units' `LaserTrails` will always lags behind by one frame
   - Fix an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos
+  - Allow the aircraft to enter area guard mission and not crash immediately without any airport
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -612,6 +614,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle`
   - Fix an issue that jumpjets in air can not correctly spawn missiles
   - Customize the chained damage of the wall
+  - Fix an issue that jumpjet vehicles can not stop correctly when assigned a target in range
+  - Fix an issue that jumpjet infantries stop incorrectly when assigned a target out of range
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

@@ -1263,6 +1263,11 @@ msgid ""
 "MessageDisplayInCenter.LabelsCount=6    ; integer\n"
 "MessageDisplayInCenter.RecordsCount=12  ; integer\n"
 msgstr ""
+"[Phobos]\n"
+"MessageApplyHoverState=false            ; boolean\n"
+"MessageDisplayInCenter=false            ; boolean\n"
+"MessageDisplayInCenter.LabelsCount=6    ; integer\n"
+"MessageDisplayInCenter.RecordsCount=12  ; integer\n"
 
 #: ../../User-Interface.md:399
 msgid "Type select for buildings"

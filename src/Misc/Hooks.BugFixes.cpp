@@ -1256,6 +1256,8 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 
 	if (commonAircraft)
 	{
+		pAircraft->SetArchiveTarget(nullptr);
+
 		if (pAircraft->Type->AirportBound)
 		{
 			// To avoid `AirportBound=yes` aircraft with ammo at low altitudes cannot correctly receive stop command and queue Mission::Guard with a `Destination`.
@@ -1282,9 +1284,9 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 	{
 		const auto pFoot = abstract_cast<FootClass*, true>(pTechno);
 
-		// Clear archive target for infantries and vehicles like receive a mega mission
-		if (pFoot && !pAircraft)
-			pTechno->SetArchiveTarget(nullptr);
+		// Clear archive target for foots like receive a mega mission
+		if (pFoot)
+			pFoot->SetArchiveTarget(nullptr);
 
 		// Only stop when it is not under the bridge (meeting the original conditions which has been skipped)
 		if (!pTechno->vt_entry_2B0() || pTechno->OnBridge || pTechno->IsInAir() || pTechno->GetCell()->SlopeIndex)
@@ -2569,6 +2571,46 @@ DEFINE_HOOK(0x638F70, PlanningNodeClass_UpdateHoverNode_SkipDuplicateLog, 0x8)
 
 	// Only output logs when they are not the same, to avoid outputting every frame
 	return (pCurrentNode != pHoveringNode) ? 0 : SkipLogString;
+}
+
+#pragma endregion
+
+#pragma region JumpjetSetDestFix
+
+// Fix JJ infantries stop incorrectly when assigned a target out of range.
+DEFINE_HOOK(0x51AB5C, InfantryClass_SetDestination_JJInfFix, 0x6)
+{
+	enum { FuncRet = 0x51B1D7 };
+
+	GET(InfantryClass* const, pThis, EBP);
+	GET(AbstractClass* const, pDest, EBX);
+
+	if (!pDest && pThis->Type->BalloonHover && pThis->Destination && pThis->Target)
+	{
+		if (auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+		{
+			if (pThis->IsCloseEnoughToAttack(pThis->Target))
+				pThis->StopMoving();
+
+			pThis->ForceMission(Mission::Attack);
+			return FuncRet;
+		}
+	}
+
+	return 0;
+}
+
+// Fix JJ vehicles can not stop correctly when assigned a target in range.
+DEFINE_HOOK(0x741A66, UnitClass_SetDestination_JJVehFix, 0x5)
+{
+	GET(UnitClass* const, pThis, EBP);
+
+	auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor);
+
+	if (pJumpjetLoco && pThis->IsCloseEnoughToAttack(pThis->Target))
+		pThis->StopMoving();
+
+	return 0;
 }
 
 #pragma endregion

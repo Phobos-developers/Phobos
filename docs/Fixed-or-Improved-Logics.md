@@ -289,6 +289,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - The previous `SVGM_XXX.NET` files are cleaned up before first copy if it's a new game, otherwise the highest numbered `SVGM_XXX.NET` file is found and the index is incremented, if possible.
   - The game also automatically copies `spawn.ini` to the save folder as `spawnSG.ini` when saving a game.
 - Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle`.
+- Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range.
+- Fixed an issue that jumpjet infantries stop incorrectly when assigned a target out of range.
 
 ```{note}
 The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
@@ -323,24 +325,29 @@ FiringForceScatter=true   ; boolean
 ### Extended Aircraft Missions
 
 - Aircraft will now be able to use waypoints.
-- When a `guard` command (`[G]` by default) is issued, the aircraft will search for targets around the current location and return immediately when target is not found, target is destroyed or ammos are depleted.
-  - If the target is destroyed but ammos are not depleted yet, it will also return because the aircraft's command is one-time.
+- When a `guard` command (`[G]` by default) or a `area guard` command (`[Ctrl]+[Alt]`) is issued, the aircraft will search for targets around the position (for `guard` is the current location, for `area guard` is the target position) and return immediately when ammos are depleted.
+  - If the target is not found, or if there is still ammo when the target is destroyed, it will continue to hover over the guarded area.
 - When an `attack move` command (`[Ctrl]+[Shift]`) is issued, the aircraft will move towards the destination and search for nearby targets on the route for attack. Once ammo is depleted or the destination is reached, it will return.
   - If the automatically selected target is destroyed but ammo is not depleted yet during the process, the aircraft will continue flying to the destination.
 - In addition, the actions of aircraft are also changed.
   - `ExtendedAircraftMissions.SmoothMoving` controls whether the aircraft will return to the airport when the distance to the destination is less than half of `SlowdownDistance` or its turning radius.
   - `ExtendedAircraftMissions.EarlyDescend` controls whether the aircraft not have to fly directly above the airport before starting to descend when the distance between the aircraft and the landing point is less than `SlowdownDistance` (also work for aircraft spawned by aircraft carriers).
   - `ExtendedAircraftMissions.RearApproach` controls whether the aircraft should start landing at the airport from the opposite direction of `LandingDir`.
+  - `ExtendedAircraftMissions.FastScramble` controls whether the aircraft can scramble when its airport has been destroyed.
+  - `ExtendedAircraftMissions.UnlandDamage` controls the damage suffered by the aircraft every 4 frames when there is no airport for the aircraft to land. If the value is negative, it will crash immediately. Not recommended to use when `ExtendedAircraftMissions` is not enabled.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-ExtendedAircraftMissions=false          ; boolean
+ExtendedAircraftMissions=false            ; boolean
+ExtendedAircraftMissions.UnlandDamage=-1  ; integer
 
-[SOMEAIRCRAFT]                          ; AircraftType
-ExtendedAircraftMissions.SmoothMoving=  ; boolean, default to [General] -> ExtendedAircraftMissions
-ExtendedAircraftMissions.EarlyDescend=  ; boolean, default to [General] -> ExtendedAircraftMissions
-ExtendedAircraftMissions.RearApproach=  ; boolean, default to [General] -> ExtendedAircraftMissions
+[SOMEAIRCRAFT]                            ; AircraftType
+ExtendedAircraftMissions.SmoothMoving=    ; boolean, default to [General] -> ExtendedAircraftMissions
+ExtendedAircraftMissions.EarlyDescend=    ; boolean, default to [General] -> ExtendedAircraftMissions
+ExtendedAircraftMissions.RearApproach=    ; boolean, default to [General] -> ExtendedAircraftMissions
+ExtendedAircraftMissions.FastScramble=    ; boolean, default to [General] -> ExtendedAircraftMissions
+ExtendedAircraftMissions.UnlandDamage=    ; integer, default to [General] -> ExtendedAircraftMissions.UnlandDamage
 ```
 
 ### Fixed spawn distance & spawn height for airstrike / SpyPlane aircraft
@@ -2109,7 +2116,7 @@ Conventional.IgnoreUnits=false  ; boolean
 
 ### Customizable Warhead trigger conditions
 
-- It is now possible to make warheads only trigger when target's (TechnoTypes only) HP is above/below or equal to certain percentage. Both conditions need to evaluate to true in order for the warhead to trigger.
+- `AffectsBelowPercent` and `AffectsAbovePercent` can be used to set the health percentage thresholds that target needs to be below/equal and/or above of for the Warhead to detonate. If target has zero health left this check is bypassed.
 - If set to `false`, `AffectsNeutral` makes the warhead can't damage or affect target that belongs to neutral house.
 - If set to `false`, `EffectsRequireVerses` makes the Phobos-introduced warhead effects trigger even if it can't damage the target because of it's current ArmorType (e.g. 0% in `Verses`).
 
