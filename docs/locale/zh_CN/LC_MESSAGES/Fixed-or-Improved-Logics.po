@@ -1948,19 +1948,19 @@ msgid "Aircraft will now be able to use waypoints."
 msgstr "战机现在将能够使用路径点。"
 
 #: ../../Fixed-or-Improved-Logics.md:328
-#, fuzzy
 msgid ""
 "When a `guard` command (`[G]` by default) or a `area guard` command "
 "(`[Ctrl]+[Alt]`) is issued, the aircraft will search for targets around "
 "the position (for `guard` is the current location, for `area guard` is "
 "the target position) and return immediately when ammos are depleted."
-msgstr "当发出 `guard` 命令（默认为 `[G]`）时战机将在当前位置周围搜素目标并在未找到目标、目标被摧毁或弹药耗尽时立即返回。"
+msgstr "当发出 `guard` 命令（默认为 `[G]`）或 `area guard` 命令（`[Ctrl]+[Alt]`）时战机将根据位置（`guard` 为当前位置，`area guard` 为目标位置）周围搜素目标并在弹药耗尽时立即返回。"
 
 #: ../../Fixed-or-Improved-Logics.md:329
 msgid ""
 "If the target is not found, or if there is still ammo when the target is "
 "destroyed, it will continue to hover over the guarded area."
 msgstr ""
+"若未发现目标，或摧毁目标后仍有弹药，则继续在警戒区域上方巡游。"
 
 #: ../../Fixed-or-Improved-Logics.md:330
 msgid ""
@@ -2012,13 +2012,11 @@ msgstr ""
 "相反的方向飞入，即下降时向 `LandingDir` 的方向飞行并着陆。"
 
 #: ../../Fixed-or-Improved-Logics.md:336
-#, fuzzy
 msgid ""
 "`ExtendedAircraftMissions.FastScramble` controls whether the aircraft can"
 " scramble when its airport has been destroyed."
 msgstr ""
-"`ExtendedAircraftMissions.RearApproach` 控制战机返回机场时是否应从与 `LandingDir` "
-"相反的方向飞入，即下降时向 `LandingDir` 的方向飞行并着陆。"
+"`ExtendedAircraftMissions.FastScramble` 控制战机在所属的机场被摧毁后是否仍能紧急升空。"
 
 #: ../../Fixed-or-Improved-Logics.md:337
 msgid ""
@@ -2027,6 +2025,7 @@ msgid ""
 "land. If the value is negative, it will crash immediately. Not "
 "recommended to use when `ExtendedAircraftMissions` is not enabled."
 msgstr ""
+"`ExtendedAircraftMissions.UnlandDamage` 控制战机在无机场可降落时每 4 帧受到的损伤。若为负则立即坠毁。未启用 `ExtendedAircraftMissions` 时不建议使用此参数。"
 
 #: ../../Fixed-or-Improved-Logics.md:340
 msgid ""

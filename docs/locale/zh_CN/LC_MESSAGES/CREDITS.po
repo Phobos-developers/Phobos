@@ -2274,6 +2274,7 @@ msgid ""
 "Allow the aircraft to enter area guard mission and not crash immediately "
 "without any airport"
 msgstr ""
+"允许战机执行区域警戒任务且在无机场的情况下不会立即坠毁"
 
 #: ../../../CREDITS.md:551
 msgid "**Ollerus**:"
