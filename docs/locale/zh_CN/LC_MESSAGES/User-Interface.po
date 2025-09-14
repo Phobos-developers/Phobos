@@ -1139,8 +1139,8 @@ msgid ""
 "`ShowDesignatorRange` in `RA2MD.INI` or with [\"Toggle Designator Range\""
 " hotkey](#toggle-designator-range) in \"Interface\" category."
 msgstr ""
-"此功能可以 **由玩家** 通过在 `RA2MD.INI` 中设置 `ShowDesignatorRange` 或 “界面” 类别中的 "
-"[“开启指示者范围显示” 快捷键](#toggle-designator-range)来切换（如果在 mod 中启用）。"
+"此功能可以 **由玩家** 通过在 `RA2MD.INI` 中设置 `ShowDesignatorRange` 或「界面」类别中的 "
+"[「开启指示者范围显示」快捷键](#toggle-designator-range) 来切换（如果在 mod 中启用）。"
 
 #: ../../User-Interface.md:354
 msgid ""
@@ -1192,10 +1192,12 @@ msgid ""
 "*Taking a campaign in [Mental Omega](https://www.mentalomega.com) as an "
 "example to display messages in center*"
 msgstr ""
+"![字幕居中](_static/images/messagedisplayincenter.gif) "
+"*以 [心灵终结](https://www.mentalomega.com) 中的一个战役为例展示字幕居中*"
 
 #: ../../User-Interface.md:380
 msgid "Message Display In Center"
-msgstr "显示在中间的任务信心"
+msgstr "字幕居中"
 
 #: ../../User-Interface.md:383
 msgid ""
@@ -1204,7 +1206,6 @@ msgid ""
 msgstr "现在你可以通过将 `MessageApplyHoverState` 设为 true 来让任务信息在光标悬浮于显示区域上时不会消失。"
 
 #: ../../User-Interface.md:384
-#, fuzzy
 msgid ""
 "You can also let task subtitles (created by trigger 11) to display "
 "directly in the middle area of the screen instead of the upper left "
@@ -1214,10 +1215,10 @@ msgid ""
 " can reach thousands."
 msgstr ""
 "你还可以设置 `MessageDisplayInCenter` 为 true 以使得（由 `11 文本触发事件...` "
-"创建的）任务消息直接显示在屏幕中间而不是左上角，并自带半透明背景。"
+"创建的）任务信息直接显示在屏幕中间而不是左上角，并自带半透明背景。"
+"这种情况下游戏中的所有字幕均可被保留，即便在存读档后。存储上限可达几千条。"
 
 #: ../../User-Interface.md:385
-#, fuzzy
 msgid ""
 "If you also set `MessageApplyHoverState` to true, when the mouse hovers "
 "over the subtitle area (simply judged as a rectangle), its opacity will "
@@ -1226,7 +1227,8 @@ msgid ""
 "from being restricted to this area."
 msgstr ""
 "若你同时设置了 `MessageApplyHoverState` 为 true "
-"那么当鼠标选停在消息区域时（系统会将其按矩形范围判定），其不透明度会提高且在此期间不会消失。"
+"那么当鼠标选停在字幕区域时（系统会将其按矩形范围判定），其不透明度会提高且在此期间不会消失。"
+"若该区域被展开为列表，禁用此选项也不会阻止鼠标点击行为被限制在该区域内。"
 
 #: ../../User-Interface.md:386
 msgid ""
@@ -1234,6 +1236,7 @@ msgid ""
 "subtitle labels that can automatically pop up at a same time in the "
 "middle area of the screen. At least 1."
 msgstr ""
+"`MessageDisplayInCenter.LabelsCount` 控制屏幕中央区域可同时自动弹出的字幕条数上限。至少为 1。"
 
 #: ../../User-Interface.md:387
 msgid ""
@@ -1242,12 +1245,15 @@ msgid ""
 "maximum number that can be stored). At least 4, and it is 8 in the "
 "demonstration gif."
 msgstr ""
+"`MessageDisplayInCenter.RecordsCount` 控制展开中央区域后可显示的历史字幕条数上限（不是存储数量上限）。至少为 4，GIF 中使用了 8。"
 
 #: ../../User-Interface.md:388
 msgid ""
 "The label can be toggled by [\"Toggle Message Label\" hotkey](#toggle-"
 "message-label) in \"Interface\" category."
 msgstr ""
+"可通过「界面」类别中的 [「开关字幕居中」快捷键](#toggle-"
+"message-label) 来切换标签的显示状态。"
 
 #: ../../User-Interface.md:391
 msgid ""
@@ -1466,7 +1472,7 @@ msgstr "`[ ]` 开关数字化显示"
 
 #: ../../User-Interface.md:468
 msgid "Switches on/off [digital display types](#digital-display)."
-msgstr "开关[数字化显示类型](#digital-display)。"
+msgstr "开关 [数字化显示类型](#digital-display)。"
 
 #: ../../User-Interface.md:469
 msgid ""
@@ -1535,23 +1541,22 @@ msgid ""
 msgstr "保存的文件名应当类似于 `Allied Mission 25: Esther's Money - QuickSaved`。"
 
 #: ../../User-Interface.md:488
-#, fuzzy
 msgid "`[ ]` Toggle Message Label"
-msgstr "`[ ]` 开关逐帧模式"
+msgstr "`[ ]` 开关字幕居中"
 
 #: ../../User-Interface.md:490
 msgid ""
 "Switches on/off [Task subtitles' label in the middle of the screen"
 "](#task-subtitles-display-in-the-middle-of-the-screen)."
 msgstr ""
+"开关 [字幕居中](#task-subtitles-display-in-the-middle-of-the-screen) 显示。"
 
 #: ../../User-Interface.md:491
-#, fuzzy
 msgid ""
 "For localization add `TXT_TOGGLE_MESSAGE` and `TXT_TOGGLE_MESSAGE_DESC` "
 "into your `.csf` file."
 msgstr ""
-"为了本地化请将 `TXT_NEXT_IDLE_HARVESTER` 和 `TXT_NEXT_IDLE_HARVESTER_DESC` 添加到你的 "
+"为了本地化请将 `TXT_TOGGLE_MESSAGE` 和 `TXT_TOGGLE_MESSAGE_DESC` 添加到你的 "
 "`.csf` 文件。"
 
 #: ../../User-Interface.md:493
