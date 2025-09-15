@@ -2505,10 +2505,11 @@ DEFINE_HOOK(0x6FC8F5, TechnoClass_CanFire_SkipROF, 0x6)
 
 #pragma endregion
 
-#pragma region AStarBuffer
+#pragma region AStarFix
+
+// Path queue nodes buffer doubled
 
 // AStarClass::CTOR
-// Path queue nodes buffer doubled
 
 // 42A74F: 68 04 00 04 00
 // For `new` to use (sizeof(Node*) == 4)
@@ -2530,8 +2531,39 @@ DEFINE_PATCH(0x42A7E3, 0x20);
 DEFINE_PATCH(0x42A7FA, 0x02);
 // mov edx, 10000h (65536) -> mov edx, 20000h (131072)
 
-// AStarClass::FindHierarchicalPath
+// 42A80A: 89 98 00 00 10 00
+// Set new Count offset
+DEFINE_PATCH(0x42A80E, 0x20);
+// mov [eax+100000h], ebx -> mov [eax+200000h], ebx
+
+// 42A840: 89 98 00 00 10 00
+// Set new Count offset
+DEFINE_PATCH(0x42A844, 0x20);
+// mov [eax+100000h], ebx -> mov [eax+200000h], ebx
+
+// AStarClass::CleanUp
+
+// 42A5C3: 89 B2 00 00 10 00
+// Set new Count offset
+DEFINE_PATCH(0x42A5C7, 0x20);
+// mov [edx+100000h], esi -> mov [edx+200000h], esi
+
+// AStarClass::CreatePathNode
+
+// 42A466: 8B 90 00 00 10 00
+// Set new Count offset
+DEFINE_PATCH(0x42A46A, 0x20);
+// mov edx, [eax+100000h] -> mov edx, [eax+200000h]
+
+// 42A479: 89 90 00 00 10 00
+// Set new Count offset
+DEFINE_PATCH(0x42A47D, 0x20);
+// mov [eax+100000h], edx -> mov [eax+200000h], edx
+
+
 // Replace sign-extend to zero-extend
+
+// AStarClass::FindHierarchicalPath
 
 // 42C34A: 0F BF 1C 70
 // To avoid incorrect negative int index
