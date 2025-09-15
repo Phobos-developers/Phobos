@@ -164,6 +164,7 @@ private:
 	inline void RemoveTextLabel(MessageLabelClass* pLabel);
 	inline int GetLabelCount() const;
 	inline MessageLabelClass* GetLastLabel() const;
+	template <bool check = false>
 	inline int GetMaxScroll() const;
 
 	MessageLabelClass* LabelList { nullptr };
