@@ -200,6 +200,8 @@ public:
 		Valueable<bool> UnlimboDetonate_KeepTarget;
 		Valueable<bool> UnlimboDetonate_KeepSelected;
 
+		Valueable<bool> AffectsUnderground;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -420,6 +422,8 @@ public:
 			, UnlimboDetonate_ForceLocation { false }
 			, UnlimboDetonate_KeepTarget { true }
 			, UnlimboDetonate_KeepSelected { true }
+
+			, AffectsUnderground { false }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);

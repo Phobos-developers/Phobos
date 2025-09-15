@@ -297,6 +297,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->UnlimboDetonate_KeepTarget.Read(exINI, pSection, "UnlimboDetonate.KeepTarget");
 	this->UnlimboDetonate_KeepSelected.Read(exINI, pSection, "UnlimboDetonate.KeepSelected");
 
+	this->AffectsUnderground.Read(exINI, pSection, "AffectsUnderground");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -574,6 +576,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->UnlimboDetonate_ForceLocation)
 		.Process(this->UnlimboDetonate_KeepTarget)
 		.Process(this->UnlimboDetonate_KeepSelected)
+
+		.Process(this->AffectsUnderground)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)
