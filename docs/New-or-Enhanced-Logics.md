@@ -2295,7 +2295,7 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]                         ; WarheadType
 AffectsUnderground=false              ; boolean
 PlayAnimUnderground=true              ; boolean
-PlayAnimAboveSurface=false            ; boolean,
+PlayAnimAboveSurface=false            ; boolean
 ```
 
 ### Detonate Warhead on all objects on map
