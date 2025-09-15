@@ -145,10 +145,14 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 	{
 		if (pShield->IsActive())
 		{
-			const auto secondary = pThis->GetWeapon(1)->WeaponType;
-			const bool secondaryIsAA = pTargetTechno && pTargetTechno->IsInAir() && secondary && secondary->Projectile->AA;
+			const auto pSecondary = pThis->GetWeapon(1)->WeaponType;
 
-			if (secondary && (allowFallback || (allowAAFallback && secondaryIsAA) || TechnoExt::CanFireNoAmmoWeapon(pThis, 1)))
+			if (pSecondary
+				&& (allowFallback
+					|| (pTargetTechno
+						&& ((allowAAFallback && pTargetTechno->IsInAir() && pSecondary->Projectile->AA)
+							|| (pTargetTechno->InWhichLayer() == Layer::Underground && BulletTypeExt::ExtMap.Find(pSecondary->Projectile)->AU)))
+					|| TechnoExt::CanFireNoAmmoWeapon(pThis, 1)))
 			{
 				if (!pShield->CanBeTargeted(pThis->GetWeapon(0)->WeaponType))
 					return Secondary;
@@ -171,12 +175,22 @@ DEFINE_HOOK(0x6F37EB, TechnoClass_WhatWeaponShouldIUse_AntiAir, 0x6)
 	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x18, -0x4));
 	GET(WeaponTypeClass*, pSecWeapon, EAX);
 
-	if (!pWeapon->Projectile->AA && pSecWeapon->Projectile->AA)
+	if (const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
 	{
-		const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
+		const auto pPrimaryProj = pWeapon->Projectile;
+		const auto pSecondaryProj = pSecWeapon->Projectile;
 
-		if (pTargetTechno && pTargetTechno->IsInAir())
-			return Secondary;
+		if (!pPrimaryProj->AA && pSecondaryProj->AA)
+		{
+			if (pTargetTechno->IsInAir())
+				return Secondary;
+		}
+
+		if (BulletTypeExt::ExtMap.Find(pSecondaryProj)->AU && !BulletTypeExt::ExtMap.Find(pPrimaryProj)->AU)
+		{
+			if (pTargetTechno->InWhichLayer() == Layer::Underground)
+				return Secondary;
+		}
 	}
 
 	return Primary;
@@ -220,6 +234,11 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 			if (GeneralUtils::GetWarheadVersusArmor(pWeaponOdd->Warhead, pTargetTechno->GetTechnoType()->Armor) == 0.0)
 			{
 				chosenWeaponIndex = evenWeaponIndex;
+			}
+			else if (pTargetTechno->InWhichLayer() == Layer::Underground)
+			{
+				if (BulletTypeExt::ExtMap.Find(pWeaponEven->Projectile)->AU && !BulletTypeExt::ExtMap.Find(pWeaponOdd->Projectile)->AU)
+					chosenWeaponIndex = evenWeaponIndex;
 			}
 			else
 			{
@@ -426,6 +445,26 @@ DEFINE_HOOK(0x6FCBE6, TechnoClass_CanFire_BridgeAAFix, 0x6)
 		return SkipChecks;
 
 	return 0;
+}
+
+DEFINE_HOOK(0x6FC749, TechnoClass_GetFireError_AntiUnderground, 0x5)
+{
+	enum { Illegal = 0x6FC86A, GoOtherChecks = 0x6FC762 };
+
+	GET(Layer, layer, EAX);
+	//GET(TechnoClass*, pThis, EBX);
+	GET(WeaponTypeClass*, pWeapon, EDI);
+
+	auto const pProj = pWeapon->Projectile;
+	auto const pProjExt = BulletTypeExt::ExtMap.Find(pProj);
+
+	if (layer == Layer::Underground && !pProjExt->AU)
+		return Illegal;
+
+	if ((layer == Layer::Air || layer == Layer::Top) && !pProj->AA)
+		return Illegal;
+
+	return GoOtherChecks;
 }
 
 #pragma endregion

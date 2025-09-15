@@ -320,7 +320,7 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 				if (!pType)
 					continue;
 
-				auto animCoords = *coords;
+				auto animCoords = newCrds;
 
 				if (allowScatter)
 				{
