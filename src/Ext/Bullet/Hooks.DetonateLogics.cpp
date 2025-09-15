@@ -260,6 +260,15 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 	if (pAnimType)
 	{
 		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
+		int cellHeight = MapClass::Instance.GetCellFloorHeight(*coords);
+		auto newCrds = pWHExt->PlayAnimAboveSurface ? CoordStruct{ coords->X, coords->Y, Math::max(cellHeight, coords->Z) } : *coords;
+
+		if (cellHeight > newCrds.Z && !pWHExt->PlayAnimUnderground)
+		{
+			R->EAX(createdAnim);
+			return SkipGameCode;
+		}
+
 		auto const pOwner = pThis->Owner;
 		const bool splashed = pWHExt->Splashed;
 		const int creationInterval = splashed ? pWHExt->SplashList_CreationInterval : pWHExt->AnimList_CreationInterval;

@@ -201,6 +201,8 @@ public:
 		Valueable<bool> UnlimboDetonate_KeepSelected;
 
 		Valueable<bool> AffectsUnderground;
+		Valueable<bool> PlayAnimUnderground;
+		Valueable<bool> PlayAnimAboveSurface;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -424,6 +426,8 @@ public:
 			, UnlimboDetonate_KeepSelected { true }
 
 			, AffectsUnderground { false }
+			, PlayAnimUnderground { true }
+			, PlayAnimAboveSurface { false }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
