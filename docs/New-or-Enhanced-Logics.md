@@ -747,6 +747,17 @@ OnlyUseLandSequences=false  ; boolean
 
 ## Projectiles
 
+### Attack technos underground
+
+- Now, you can enable projectiles to attack technos underground.
+  - To actually damage the technos, you need [AffectsUnderground](#damage-technos-underground).
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]      ; Projectile
+AU=false              ; boolean
+```
+
 ### Parabombs
 
 - Restored feature from Red Alert 1 (also partially implemented in Ares but undocumented, if used together Phobos' version takes priority) that allows projectiles to be parachuted down to ground if fired by an aerial unit.
@@ -2269,6 +2280,22 @@ DamageTargetHealthMultiplier=0.0                ; floating point value
 
 ```{note}
 `DamageAlliesMultiplier` won't affect your own units like `AffectsAllies` did.
+```
+
+### Damage technos underground
+
+- 现在你可以让弹头伤害位于地下的technos了！
+  - To allow weapons to target underground technos, you need [AU](#attack-technos-underground).
+- 注意到，如果抛射体在地下引爆，其动画效果可能看上去奇怪。
+  - 你可以使用 `[SOMEWARHEAD] -> PlayAnimUnderground=false` 让抛射体在地下引爆时不播放弹头动画。
+  - 你也可以使用 `[SOMEWARHEAD] -> PlayAnimAboveSurface=true` 让抛射体在地下引爆时在正上方的地面播放弹头动画。
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                         ; WarheadType
+AffectsUnderground=false              ; boolean
+PlayAnimUnderground=true              ; boolean
+PlayAnimAboveSurface=false            ; boolean,
 ```
 
 ### Detonate Warhead on all objects on map

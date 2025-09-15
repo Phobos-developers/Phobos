@@ -448,6 +448,7 @@ New:
 - Customize the chained damage of the wall (by TaranDahl)
 - Allow the aircraft to enter area guard mission and not crash immediately without any airport (by CrimRecya)
 - Unlimbo Detonate warhead (by FlyStar)
+- Attack and damage technos underground (by TaranDahl)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
