@@ -234,11 +234,11 @@ bool PhobosTrajectory::OnEarlyUpdate()
 	if (pBulletExt->LifeDurationTimer.Completed())
 		return true;
 
-	// Check if the firer's target can be synchronized
+	// Check if the firer's target can be synchronized, the target may have been changed here
 	if (pBulletExt->CheckSynchronize())
 		return true;
 
-	// Check if the target needs to be changed
+	// Check if the target needs to be changed, the target may have been changed here
 	if (pBulletExt->TypeExtData->RetargetRadius && pBulletExt->BulletRetargetTechno())
 		return true;
 
@@ -250,14 +250,14 @@ bool PhobosTrajectory::OnEarlyUpdate()
 	if (this->OnVelocityCheck())
 		return true;
 
-	// Rotate orientation
+	// Based on the new target location, rotate the bullet orientation
 	this->OnFacingUpdate();
 
-	// Fire weapons or warheads
+	// Fire weapons or warheads after the new velocity update is completed, ensure that it will not attack the wrong location
 	if (pBulletExt->FireAdditionals())
 		return true;
 
-	// Detonate extra warhead on the obstacle
+	// Detonate extra warhead on the obstacle after the pass through check is completed
 	pBulletExt->DetonateOnObstacle();
 	return false;
 }

@@ -93,12 +93,12 @@ public:
 		, CountOfBurst { 0 }
 	{ }
 
-	BulletClass* Bullet;
-	BulletVelocity MovingVelocity;
-	double MovingSpeed;
-	int RemainingDistance;
-	int CurrentBurst;
-	int CountOfBurst;
+	BulletClass* Bullet; // Bullet attached to
+	BulletVelocity MovingVelocity; // The vector used for calculating speed
+	double MovingSpeed; // The current speed value
+	int RemainingDistance; // Remaining distance from the self explosion location
+	int CurrentBurst; // Current burst index, mirror is required for negative numbers
+	int CountOfBurst; // Upper limit of burst counts
 
 	virtual ~PhobosTrajectory() noexcept = default;
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange);

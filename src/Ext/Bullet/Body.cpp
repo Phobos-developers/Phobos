@@ -114,11 +114,11 @@ bool BulletExt::ExtData::CheckOnEarlyUpdate()
 	if (this->LifeDurationTimer.Completed())
 		return true;
 
-	// Check if the firer's target can be synchronized
+	// Check if the firer's target can be synchronized, the target may have been changed here
 	if (this->CheckSynchronize())
 		return true;
 
-	// Check if the target needs to be changed
+	// Check if the target needs to be changed, the target may have been changed here
 	if (this->TypeExtData->RetargetRadius && this->BulletRetargetTechno())
 		return true;
 
@@ -130,7 +130,7 @@ bool BulletExt::ExtData::CheckOnEarlyUpdate()
 	if (this->FireAdditionals())
 		return true;
 
-	// Detonate extra warhead on the obstacle
+	// Detonate extra warhead on the obstacle after the pass through check is completed
 	this->DetonateOnObstacle();
 	return false;
 }
