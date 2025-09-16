@@ -3591,7 +3591,7 @@ In `rulesmd.ini`:
 CanKill=true   ; boolean
 ```
 
-### Unlimbo Detonate
+### Unlimbo detonate warhead
 
 ![Unlimbo Detonate](_static/images/unlimbodetonate.gif)
 *Unlimbo Detonate used in **The Call of the Panic Spear** by @[Octagonal prism](https://space.bilibili.com/360577336)*
