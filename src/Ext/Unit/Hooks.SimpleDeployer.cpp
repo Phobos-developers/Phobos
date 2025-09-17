@@ -207,7 +207,7 @@ DEFINE_HOOK(0x739CD0, UnitClass_SimpleDeployer_Undeploy, 0x6)
 		{
 			if (HasDeployingAnim(pType))
 			{
-				CreateDeployingAnim(pThis, true);
+				CreateDeployingAnim(pThis, false);
 				pThis->Undeploying = true;
 			}
 			else
