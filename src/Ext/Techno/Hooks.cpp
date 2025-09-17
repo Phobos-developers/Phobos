@@ -820,7 +820,7 @@ DEFINE_HOOK(0x6298CC, ParasiteClass_AI_GrippleAnim, 0x5)
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x68, -0x4C));
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
-	R->EAX(pWHExt->Parasite_GrappleAnim.Get(RulesExt::Global()->Parasite_GrappleAnim.Get(AnimTypeClass::FindIndex("SQDG"))));
+	R->EAX(pWHExt->Parasite_GrappleAnim.Get(RulesExt::Global()->Parasite_GrappleAnim.isset() ? RulesExt::Global()->Parasite_GrappleAnim.Get() : AnimTypeClass::FindIndex("SQDG")));
 	return SkipGameCode;
 }
 
