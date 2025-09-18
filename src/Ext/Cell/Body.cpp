@@ -15,6 +15,7 @@ void CellExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->RadSites)
 		.Process(this->RadLevels)
+		.Process(this->FoggedObjects)
 		;
 }
 
@@ -70,7 +71,7 @@ DEFINE_HOOK(0x47BDA1, CellClass_CTOR, 0x5)
 {
 	GET(CellClass*, pItem, ESI);
 
-	CellExt::ExtMap.Allocate(pItem);
+	CellExt::ExtMap.FindOrAllocate(pItem);
 
 	return 0;
 }
