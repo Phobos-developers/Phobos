@@ -758,6 +758,10 @@ In `rulesmd.ini`:
 AU=false              ; boolean
 ```
 
+```{note}
+Only vanilla projectiles with `Inviso=yes` set or [Phobos projectiles](#projectile-trajectories) with `SubjectToGround=yes` enabled can go beneath the ground. Otherwise, the projectile will be forced to detonate upon hitting the ground.
+```
+
 ### Parabombs
 
 - Restored feature from Red Alert 1 (also partially implemented in Ares but undocumented, if used together Phobos' version takes priority) that allows projectiles to be parachuted down to ground if fired by an aerial unit.
