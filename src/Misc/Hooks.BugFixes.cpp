@@ -2581,6 +2581,11 @@ DEFINE_PATCH(0x42C34B, 0xB7);
 DEFINE_PATCH(0x42C36B, 0xB7);
 // movsx eax, word ptr [eax+esi*2] -> movzx eax, word ptr [eax+esi*2]
 
+// 429E9A: 0F BF 08
+// To avoid incorrect negative int index
+DEFINE_PATCH(0x429E9B, 0xB7);
+// movsx ecx, word ptr [eax] -> movzx ecx, word ptr [eax]
+
 #pragma endregion
 
 #pragma region FixPlanningNodeConnect
