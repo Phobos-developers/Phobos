@@ -15,93 +15,26 @@
 #include <InfantryClass.h>
 #include <InfantryTypeClass.h>
 
-// Safe fog proxy deletion helper - called from reveal sites where pCell is guaranteed valid
-static inline void ClearCellFogProxies(CellClass* cell) {
-	if (auto* ext = CellExt::ExtMap.Find(cell)) {
-		// steal then clear
-		DynamicVectorClass<FoggedObject*> local;
-		local.Reserve(ext->FoggedObjects.Count);
-		for (auto* fo : ext->FoggedObjects) {
-			if (fo) local.AddItem(fo);
-		}
-		ext->FoggedObjects.Clear();
+// Burst-reveal detection for viewport refresh
+static int  g_RevealedCellsThisFrame = 0;
+static bool g_NeedViewportRefresh    = false;
 
-		// delete outside of the list
-		for (auto* fo : local) {
-			GameDelete(fo);
-		}
+// SpySat state tracking
+static bool g_SpySatWasActive = false;
+
+static inline void ForceUnfreezeAllFogProxiesForSpySat() {
+	// snapshot to avoid invalidation while deleting
+	DynamicVectorClass<FoggedObject*> snap;
+	snap.Reserve(FoggedObject::FoggedObjects.Count);
+	for (auto* fo : FoggedObject::FoggedObjects) {
+		if (fo) { snap.AddItem(fo); }
+	}
+	for (auto* fo : snap) {
+		GameDelete(fo); // FoggedObject dtor should thaw real building & restore footprint
 	}
 }
 
-// Track buildings we've already dirtied this frame to avoid duplication
-static DynamicVectorClass<BuildingClass*> g_DirtiedBldsThisFrame;
 
-static inline bool WasDirtiedThisFrame(BuildingClass* b) {
-	for (int i = 0; i < g_DirtiedBldsThisFrame.Count; ++i) {
-		if (g_DirtiedBldsThisFrame[i] == b) return true;
-	}
-	return false;
-}
-
-// Dirty the full building footprint and request an immediate redraw with height adjustment
-// No ExtMap usage, proper sprite coverage for tall buildings
-static inline void MarkBuildingFootprintDirty(BuildingClass* bld)
-{
-	if (!bld) return;
-
-	// Force sprite cache rebuild - this is the key
-	bld->NeedsRedraw = true;
-	
-	// Try additional invalidation methods
-	bld->Mark(MarkType::Up);
-	
-	RectangleStruct unionRect{0,0,0,0};
-
-	CellStruct origin = bld->GetMapCoords();
-	for (auto f = bld->Type->GetFoundationData(false);
-		 f->X != 0x7FFF || f->Y != 0x7FFF; ++f)
-	{
-		CellStruct cs{
-			static_cast<short>(origin.X + f->X),
-			static_cast<short>(origin.Y + f->Y)
-		};
-
-		if (CellClass* c = MapClass::Instance.TryGetCellAt(cs)) {
-			// keep occlusion tables in sync
-			TacticalClass::Instance->RegisterCellAsVisible(c);
-
-			CoordStruct world = c->GetCoords();
-			auto [pt, visible] = TacticalClass::Instance->CoordsToClient(world);
-
-			RectangleStruct cellRect{
-				DSurface::ViewBounds.X + pt.X - 30,
-				DSurface::ViewBounds.Y + pt.Y,
-				60, 60
-			};
-			unionRect = FoggedObject::Union(unionRect, cellRect);
-		}
-	}
-
-	if (unionRect.Width > 0 && unionRect.Height > 0) {
-		// inflate upward to cover tall building sprites
-		const int extraTop = 96;  // adjust if you still see tops cut off
-		if (unionRect.Y > extraTop) {
-			unionRect.Y -= extraTop;
-			unionRect.Height += extraTop;
-		} else {
-			unionRect.Height += unionRect.Y; // snap to top
-			unionRect.Y = 0;
-		}
-		TacticalClass::Instance->RegisterDirtyArea(unionRect, true);
-	}
-}
-
-static inline void MarkBuildingFootprintDirtyOnce(BuildingClass* bld) {
-	if (!bld) return;
-	if (WasDirtiedThisFrame(bld)) return;
-	g_DirtiedBldsThisFrame.AddItem(bld);
-	MarkBuildingFootprintDirty(bld);
-}
 
 // ===== FoggedObject GC =====
 // Requirements:
@@ -191,9 +124,10 @@ DEFINE_HOOK(0x5F4B3E, ObjectClass_DrawIfVisible, 0x6)
 	if (!ScenarioClass::Instance->SpecialFlags.FogOfWar)
 		return 0x5F4B48;
 
-	// SpySat reveals everything, so bypass fog checks when SpySat is active
-	if (HouseClass::CurrentPlayer && HouseClass::CurrentPlayer->SpySatActive)
-		return 0x5F4B48;
+	// SpySat: bypass all fog gating (no ExtMap access, just draw)
+	if (HouseClass::CurrentPlayer && HouseClass::CurrentPlayer->SpySatActive) {
+		return 0x5F4B48; // draw normally
+	}
 
 	switch (pThis->WhatAmI())
 	{
@@ -204,16 +138,37 @@ DEFINE_HOOK(0x5F4B3E, ObjectClass_DrawIfVisible, 0x6)
 
 	case AbstractType::Unit:
 	case AbstractType::Cell:
-	case AbstractType::Building:  // Allow buildings to be processed for fog
+	case AbstractType::Building:  // Buildings participate in fog gating
 		break;
 
 	default:
 		return 0x5F4B48;
 	}
 
-	if (!MapClass::Instance.IsLocationFogged(pThis->GetCoords()))
-		return 0x5F4B48;
+	bool fogged = false;
 
+	if (pThis->WhatAmI() == AbstractType::Building) {
+		auto* bld = static_cast<BuildingClass*>(pThis);
+
+		// Own/aligned buildings: always draw (YR behavior)
+		if (bld->Owner &&
+			(bld->Owner->IsControlledByCurrentPlayer() ||
+			 (RulesClass::Instance->AllyReveal && bld->Owner->IsAlliedWith(HouseClass::CurrentPlayer)))) {
+			return 0x5F4B48; // draw
+		}
+
+		// Enemy/neutral buildings: hide only if entire footprint is fogged
+		fogged = bld->IsAllFogged();
+	} else {
+		// Units, anims, terrain, cells, etc. – single-cell check is fine
+		fogged = MapClass::Instance.IsLocationFogged(pThis->GetCoords());
+	}
+
+	if (!fogged) {
+		return 0x5F4B48;  // normal draw
+	}
+
+	// Fogged: skip draw this frame (don't keep forcing redraw while fogged)
 	pThis->NeedsRedraw = false;
 	return 0x5F4D06;
 }
@@ -367,32 +322,19 @@ DEFINE_HOOK(0x4A9CA0, MapClass_RevealFogShroud, 0x8)
 	}
 
 	if (bShouldCleanFog) {
-		pCell->CleanFog();
-		// ClearCellFogProxies(pCell); // DISABLED - extension system returns invalid pointers during large reveals
-		
-		// Mark all objects in this cell for redraw when fog is cleared
-		bool hadBuilding = false;
-		for (ObjectClass* obj = pCell->FirstObject; obj; obj = obj->NextObject) {
-			obj->NeedsRedraw = true;
-			if (auto bld = abstract_cast<BuildingClass*>(obj)) {
-				hadBuilding = true;
-				// Only dirty when it was fully fogged and is transitioning to visible
-				if (bld->IsAllFogged()) {
-					MarkBuildingFootprintDirtyOnce(bld);
-				}
-			}
+		++g_RevealedCellsThisFrame;
+		// Heuristic: 64 cells ~ a modest burst. Tweak if needed.
+		if (g_RevealedCellsThisFrame >= 64) {
+			g_NeedViewportRefresh = true;
 		}
 		
-		// Only register 60x60 cell rect if no building was present (building footprint covers it)
-		if (!hadBuilding) {
-			auto loc = pCell->GetCoords();
-			auto [pt, visible] = TacticalClass::Instance->CoordsToClient(loc);
-			RectangleStruct cellRect{
-				DSurface::ViewBounds.X + pt.X - 30,
-				DSurface::ViewBounds.Y + pt.Y,
-				60, 60
-			};
-			TacticalClass::Instance->RegisterDirtyArea(cellRect, true);
+		pCell->CleanFog();
+		
+		// Just set buildings in this cell to redraw - let the fog gate handle visibility
+		for (ObjectClass* pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject) {
+			if (auto pBuilding = abstract_cast<BuildingClass*>(pObject)) {
+				pBuilding->NeedsRedraw = true;
+			}
 		}
 	}
 
@@ -403,8 +345,8 @@ DEFINE_HOOK(0x4A9CA0, MapClass_RevealFogShroud, 0x8)
 
 DEFINE_HOOK(0x486C50, CellClass_ClearFoggedObjects, 0x6)
 {
-	// Let the engine continue. We do our FoggedObject deletion
-	// from reveal hooks where 'pCell' is guaranteed valid.
+	// No deletion work here; avoid re-entrancy / bad ECX.
+	// Let our Ext-free GC handle deletions safely from the draw pass.
 	return 0x486D8A;
 }
 
@@ -412,22 +354,9 @@ DEFINE_HOOK(0x486A70, CellClass_FogCell, 0x5)
 {
 	GET(CellClass*, pThis, ECX);
 
-	// SpySat reveals everything for the owning player, so actively remove fog instead of adding it
-	if (HouseClass::CurrentPlayer && HouseClass::CurrentPlayer->SpySatActive)
-	{
-		// Clear fog from this cell and surrounding area
-		auto location = pThis->MapCoords;
-		for (int i = 1; i < 15; i += 2)
-		{
-			CellClass* pCell = MapClass::Instance.GetCellAt(location);
-			if (pCell->Flags & CellFlags::Fogged)
-			{
-				pCell->Flags &= ~CellFlags::Fogged;
-				// Also clear fogged objects from this cell
-				CellExt::ExtMap.Find(pCell)->FoggedObjects.Clear();
-			}
-		}
-		return 0x486BE6; // Skip normal fog processing
+	// SpySat => do not fog cells at all
+	if (HouseClass::CurrentPlayer && HouseClass::CurrentPlayer->SpySatActive) {
+		return 0x486BE6; // skip fogging loop
 	}
 
 	if (ScenarioClass::Instance->SpecialFlags.FogOfWar)
@@ -502,38 +431,17 @@ DEFINE_HOOK(0x457AA0, BuildingClass_FreezeInFog, 0x5)
 	GET_STACK(CellClass*, pCell, 0x8);
 	GET_STACK(bool, IsVisible, 0xC);
 
-	// SpySat reveals everything, so don't freeze buildings in fog when SpySat is active
-	if (HouseClass::CurrentPlayer && HouseClass::CurrentPlayer->SpySatActive)
-	{
-		// When SpySat is active, clear all existing fogged buildings (one-time cleanup)
-		static bool hasUnfrozen = false;
-		if (!hasUnfrozen) {
-			hasUnfrozen = true;
-			
-			// Iterate through all cells and properly unfreeze buildings using CleanFog
-			LTRBStruct bounds = MapClass::Instance.MapCoordBounds;
-			for (int y = bounds.Top; y < bounds.Bottom; y++) {
-				for (int x = bounds.Left; x < bounds.Right; x++) {
-					CellStruct cellCoord { static_cast<short>(x), static_cast<short>(y) };
-					if (auto pCurrentCell = MapClass::Instance.TryGetCellAt(cellCoord)) {
-						// Clear fog flag
-						pCurrentCell->Flags &= ~CellFlags::Fogged;
-						
-						// Don't call CleanFog during mass SpySat cleanup - it triggers extension crashes
-						// pCurrentCell->CleanFog();
-					}
-				}
-			}
-		}
-		
-		// Reset flag when SpySat goes offline
-		static bool wasActive = true;
-		if (!HouseClass::CurrentPlayer->SpySatActive && wasActive) {
-			hasUnfrozen = false;
-		}
-		wasActive = HouseClass::CurrentPlayer->SpySatActive;
-		
-		return 0x457C80; // Skip fog freezing
+	// 1) Do not freeze buildings the player should always see
+	if (pThis->Owner && (
+		 pThis->Owner->IsControlledByCurrentPlayer() ||
+		 (RulesClass::Instance->AllyReveal && pThis->Owner->IsAlliedWith(HouseClass::CurrentPlayer))
+	)) {
+		return 0x457C80; // skip engine freeze
+	}
+
+	// 2) Do not freeze anything while SpySat is active (global reveal)
+	if (HouseClass::CurrentPlayer && HouseClass::CurrentPlayer->SpySatActive) {
+		return 0x457C80; // skip engine freeze
 	}
 
 	if (!pCell)
@@ -541,7 +449,7 @@ DEFINE_HOOK(0x457AA0, BuildingClass_FreezeInFog, 0x5)
 
 	pThis->Deselect();
 
-	// helper to add an independent FoggedObject to a specific cell
+	// Per-cell fog proxies (one FoggedObject per footprint cell)
 	auto addToCell = [&](CellClass* dst) {
 		auto* fo = GameCreate<FoggedObject>(pThis, IsVisible);
 		CellExt::ExtMap.Find(dst)->FoggedObjects.AddItem(fo);
@@ -550,7 +458,7 @@ DEFINE_HOOK(0x457AA0, BuildingClass_FreezeInFog, 0x5)
 	// owner cell
 	addToCell(pCell);
 
-	// every other foundation cell gets its own FoggedObject instance, too
+	// every other foundation cell gets its own FoggedObject instance
 	auto MapCoords = pThis->GetMapCoords();
 	for (auto pFoundation = pThis->Type->GetFoundationData(false);
 		pFoundation->X != 0x7FFF || pFoundation->Y != 0x7FFF;
@@ -645,9 +553,26 @@ DEFINE_HOOK(0x6D3470, TacticalClass_DrawFoggedObject, 0x8)
 
 	// Clean up orphans BEFORE computing finalRect or rendering
 	SafeCleanupOrphanedFoggedObjects();
-	
-	// Clear building deduplication list once per frame
-	g_DirtiedBldsThisFrame.Clear();
+
+	// SpySat edge-triggered thaw
+	const bool spyNow = (HouseClass::CurrentPlayer && HouseClass::CurrentPlayer->SpySatActive);
+	if (spyNow && !g_SpySatWasActive) {
+		ForceUnfreezeAllFogProxiesForSpySat();
+		g_NeedViewportRefresh = true; // force same-frame repaint
+	}
+	g_SpySatWasActive = spyNow;
+
+	// One-shot viewport repaint if we had a burst
+	if (g_NeedViewportRefresh) {
+		// Mark the whole tactical viewport dirty once
+		RectangleStruct vb = DSurface::ViewBounds;
+		TacticalClass::Instance->RegisterDirtyArea(vb, /*force*/true);
+
+		g_NeedViewportRefresh = false;
+	}
+
+	// Reset per-frame counter
+	g_RevealedCellsThisFrame = 0;
 
 	// SpySat reveals everything, so don't draw fogged objects when SpySat is active
 	if (HouseClass::CurrentPlayer && HouseClass::CurrentPlayer->SpySatActive)
@@ -740,32 +665,19 @@ DEFINE_HOOK(0x577EBF, MapClass_Reveal, 0x6)
 	pCell->Flags |= CellFlags::Revealed;
 
 	// Extra process
-	pCell->CleanFog();
-	// ClearCellFogProxies(pCell); // DISABLED - extension system returns invalid pointers during large reveals
-	
-	// Mark all objects in this cell for redraw when revealed
-	bool hadBuilding = false;
-	for (ObjectClass* obj = pCell->FirstObject; obj; obj = obj->NextObject) {
-		obj->NeedsRedraw = true;
-		if (auto bld = abstract_cast<BuildingClass*>(obj)) {
-			hadBuilding = true;
-			// Only dirty when it was fully fogged and is transitioning to visible
-			if (bld->IsAllFogged()) {
-				MarkBuildingFootprintDirtyOnce(bld);
-			}
-		}
+	++g_RevealedCellsThisFrame;
+	// Heuristic: 64 cells ~ a modest burst. Tweak if needed.
+	if (g_RevealedCellsThisFrame >= 64) {
+		g_NeedViewportRefresh = true;
 	}
 	
-	// Only register 60x60 cell rect if no building was present (building footprint covers it)
-	if (!hadBuilding) {
-		auto loc = pCell->GetCoords();
-		auto [pt, visible] = TacticalClass::Instance->CoordsToClient(loc);
-		RectangleStruct cellRect{
-			DSurface::ViewBounds.X + pt.X - 30,
-			DSurface::ViewBounds.Y + pt.Y,
-			60, 60
-		};
-		TacticalClass::Instance->RegisterDirtyArea(cellRect, true);
+	pCell->CleanFog();
+	
+	// Just set buildings in this cell to redraw - let the fog gate handle visibility
+	for (ObjectClass* pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject) {
+		if (auto pBuilding = abstract_cast<BuildingClass*>(pObject)) {
+			pBuilding->NeedsRedraw = true;
+		}
 	}
 
 	return 0x577EE9;
