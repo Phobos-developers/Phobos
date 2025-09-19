@@ -41,6 +41,7 @@ public:
 		std::vector<RadSiteClass*> RadSites {};
 		std::vector<RadLevel> RadLevels { };
 		DynamicVectorClass<FoggedObject*> FoggedObjects;
+		int InCleanFog { 0 };
 
 		ExtData(CellClass* OwnerObject) : Extension<CellClass>(OwnerObject),
 			FoggedObjects {}

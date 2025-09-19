@@ -15,6 +15,153 @@
 #include <InfantryClass.h>
 #include <InfantryTypeClass.h>
 
+// Safe fog proxy deletion helper - called from reveal sites where pCell is guaranteed valid
+static inline void ClearCellFogProxies(CellClass* cell) {
+	if (auto* ext = CellExt::ExtMap.Find(cell)) {
+		// steal then clear
+		DynamicVectorClass<FoggedObject*> local;
+		local.Reserve(ext->FoggedObjects.Count);
+		for (auto* fo : ext->FoggedObjects) {
+			if (fo) local.AddItem(fo);
+		}
+		ext->FoggedObjects.Clear();
+
+		// delete outside of the list
+		for (auto* fo : local) {
+			GameDelete(fo);
+		}
+	}
+}
+
+// Track buildings we've already dirtied this frame to avoid duplication
+static DynamicVectorClass<BuildingClass*> g_DirtiedBldsThisFrame;
+
+static inline bool WasDirtiedThisFrame(BuildingClass* b) {
+	for (int i = 0; i < g_DirtiedBldsThisFrame.Count; ++i) {
+		if (g_DirtiedBldsThisFrame[i] == b) return true;
+	}
+	return false;
+}
+
+// Dirty the full building footprint and request an immediate redraw with height adjustment
+// No ExtMap usage, proper sprite coverage for tall buildings
+static inline void MarkBuildingFootprintDirty(BuildingClass* bld)
+{
+	if (!bld) return;
+
+	// Force sprite cache rebuild - this is the key
+	bld->NeedsRedraw = true;
+	
+	// Try additional invalidation methods
+	bld->Mark(MarkType::Up);
+	
+	RectangleStruct unionRect{0,0,0,0};
+
+	CellStruct origin = bld->GetMapCoords();
+	for (auto f = bld->Type->GetFoundationData(false);
+		 f->X != 0x7FFF || f->Y != 0x7FFF; ++f)
+	{
+		CellStruct cs{
+			static_cast<short>(origin.X + f->X),
+			static_cast<short>(origin.Y + f->Y)
+		};
+
+		if (CellClass* c = MapClass::Instance.TryGetCellAt(cs)) {
+			// keep occlusion tables in sync
+			TacticalClass::Instance->RegisterCellAsVisible(c);
+
+			CoordStruct world = c->GetCoords();
+			auto [pt, visible] = TacticalClass::Instance->CoordsToClient(world);
+
+			RectangleStruct cellRect{
+				DSurface::ViewBounds.X + pt.X - 30,
+				DSurface::ViewBounds.Y + pt.Y,
+				60, 60
+			};
+			unionRect = FoggedObject::Union(unionRect, cellRect);
+		}
+	}
+
+	if (unionRect.Width > 0 && unionRect.Height > 0) {
+		// inflate upward to cover tall building sprites
+		const int extraTop = 96;  // adjust if you still see tops cut off
+		if (unionRect.Y > extraTop) {
+			unionRect.Y -= extraTop;
+			unionRect.Height += extraTop;
+		} else {
+			unionRect.Height += unionRect.Y; // snap to top
+			unionRect.Y = 0;
+		}
+		TacticalClass::Instance->RegisterDirtyArea(unionRect, true);
+	}
+}
+
+static inline void MarkBuildingFootprintDirtyOnce(BuildingClass* bld) {
+	if (!bld) return;
+	if (WasDirtiedThisFrame(bld)) return;
+	g_DirtiedBldsThisFrame.AddItem(bld);
+	MarkBuildingFootprintDirty(bld);
+}
+
+// ===== FoggedObject GC =====
+// Requirements:
+// - NO CellExt::ExtMap usage here.
+// - Two-phase: collect pointers to kill, then delete.
+// - Called before the fog proxy render loop each frame (or every N frames).
+
+static void SafeCleanupOrphanedFoggedObjects()
+{
+	static int frameCounter = 0;
+
+	// Run every 15 frames to avoid performance issues during mass reveals
+	if ((++frameCounter % 15) != 0) {
+		return;
+	}
+
+	auto& live = FoggedObject::FoggedObjects; // global container
+	if (live.Count <= 0) {
+		return;
+	}
+
+	// Collect candidates first to avoid mutating 'live' while scanning it.
+	DynamicVectorClass<FoggedObject*> toDelete;
+	// Guard reserve to something sane to avoid wild counts if memory is corrupt.
+	const int cap = (live.Count > 0 && live.Count < 1000000) ? live.Count : 0;
+	if (cap > 0) { toDelete.Reserve(cap); }
+
+	for (int i = 0; i < live.Count; ++i) {
+		FoggedObject* fo = live[i];
+		if (!fo) { continue; }
+
+		// Find the cell by coordinates; DO NOT use ExtMap.
+		CellStruct cellCoords = CellClass::Coord2Cell(fo->Location);
+		CellClass* cell = MapClass::Instance.TryGetCellAt(cellCoords);
+		if (!cell) {
+			// Cell missing → definitely orphaned
+			toDelete.AddItem(fo);
+			continue;
+		}
+
+		// Orphan rule: if the cell is *not covered* anymore (no fog & no shroud),
+		// keeping a fog proxy makes no sense; schedule for deletion.
+		const bool shrouded = !(cell->Flags & CellFlags::EdgeRevealed);
+		const bool fogged   = (cell->Foggedness != -1) || (cell->Flags & CellFlags::Fogged);
+
+		if (!shrouded && !fogged) {
+			toDelete.AddItem(fo);
+		}
+	}
+
+	// Now actually remove and free.
+	// GameDelete() auto-removes from 'live', so we can skip Remove(fo).
+	for (int i = 0; i < toDelete.Count; ++i) {
+		FoggedObject* fo = toDelete[i];
+		// Ensure it is gone from the render list before dealloc (defensive).
+		FoggedObject::FoggedObjects.Remove(fo);
+		GameDelete(fo);
+	}
+}
+
 DEFINE_HOOK(0x6B8E7A, ScenarioClass_LoadSpecialFlags, 0x5)
 {
 	ScenarioClass::Instance->SpecialFlags.FogOfWar =
@@ -219,46 +366,45 @@ DEFINE_HOOK(0x4A9CA0, MapClass_RevealFogShroud, 0x8)
 		pThis->RevealCheck(pCell, pHouse, bWasRevealed);
 	}
 
-	if (bShouldCleanFog)
+	if (bShouldCleanFog) {
 		pCell->CleanFog();
+		// ClearCellFogProxies(pCell); // DISABLED - extension system returns invalid pointers during large reveals
+		
+		// Mark all objects in this cell for redraw when fog is cleared
+		bool hadBuilding = false;
+		for (ObjectClass* obj = pCell->FirstObject; obj; obj = obj->NextObject) {
+			obj->NeedsRedraw = true;
+			if (auto bld = abstract_cast<BuildingClass*>(obj)) {
+				hadBuilding = true;
+				// Only dirty when it was fully fogged and is transitioning to visible
+				if (bld->IsAllFogged()) {
+					MarkBuildingFootprintDirtyOnce(bld);
+				}
+			}
+		}
+		
+		// Only register 60x60 cell rect if no building was present (building footprint covers it)
+		if (!hadBuilding) {
+			auto loc = pCell->GetCoords();
+			auto [pt, visible] = TacticalClass::Instance->CoordsToClient(loc);
+			RectangleStruct cellRect{
+				DSurface::ViewBounds.X + pt.X - 30,
+				DSurface::ViewBounds.Y + pt.Y,
+				60, 60
+			};
+			TacticalClass::Instance->RegisterDirtyArea(cellRect, true);
+		}
+	}
 
 	R->EAX(bRevealed);
 
 	return 0x4A9DC6;
 }
 
-// CellClass_CleanFog
 DEFINE_HOOK(0x486C50, CellClass_ClearFoggedObjects, 0x6)
 {
-	GET(CellClass*, pThis, ECX);
-
-	auto pExt = CellExt::ExtMap.Find(pThis);
-	for (auto const pObject : pExt->FoggedObjects)
-	{
-		if (pObject->CoveredType == FoggedObject::CoveredType::Building)
-		{
-			CellClass* pRealCell = MapClass::Instance.GetCellAt(pObject->Location);
-
-			for (auto pFoundation = pObject->BuildingData.Type->GetFoundationData(false);
-				pFoundation->X != 0x7FFF || pFoundation->Y != 0x7FFF;
-				++pFoundation)
-			{
-				CellStruct mapCoord =
-				{
-					pRealCell->MapCoords.X + pFoundation->X,
-					pRealCell->MapCoords.Y + pFoundation->Y
-				};
-
-				CellClass* pCell = MapClass::Instance.GetCellAt(mapCoord);
-				if (pCell != pThis)
-					CellExt::ExtMap.Find(pCell)->FoggedObjects.Remove(pObject);
-			}
-
-		}
-		GameDelete(pObject);
-	}
-	pExt->FoggedObjects.Clear();
-
+	// Let the engine continue. We do our FoggedObject deletion
+	// from reveal hooks where 'pCell' is guaranteed valid.
 	return 0x486D8A;
 }
 
@@ -373,8 +519,8 @@ DEFINE_HOOK(0x457AA0, BuildingClass_FreezeInFog, 0x5)
 						// Clear fog flag
 						pCurrentCell->Flags &= ~CellFlags::Fogged;
 						
-						// Properly clean fog from this cell (this should restore building animations)
-						pCurrentCell->CleanFog();
+						// Don't call CleanFog during mass SpySat cleanup - it triggers extension crashes
+						// pCurrentCell->CleanFog();
 					}
 				}
 			}
@@ -394,19 +540,29 @@ DEFINE_HOOK(0x457AA0, BuildingClass_FreezeInFog, 0x5)
 		pCell = pThis->GetCell();
 
 	pThis->Deselect();
-	FoggedObject* pFoggedBld = GameCreate<FoggedObject>(pThis, IsVisible);
-	CellExt::ExtMap.Find(pCell)->FoggedObjects.AddItem(pFoggedBld);
 
+	// helper to add an independent FoggedObject to a specific cell
+	auto addToCell = [&](CellClass* dst) {
+		auto* fo = GameCreate<FoggedObject>(pThis, IsVisible);
+		CellExt::ExtMap.Find(dst)->FoggedObjects.AddItem(fo);
+	};
+
+	// owner cell
+	addToCell(pCell);
+
+	// every other foundation cell gets its own FoggedObject instance, too
 	auto MapCoords = pThis->GetMapCoords();
-
 	for (auto pFoundation = pThis->Type->GetFoundationData(false);
 		pFoundation->X != 0x7FFF || pFoundation->Y != 0x7FFF;
 		++pFoundation)
 	{
-		CellStruct currentMapCoord { MapCoords.X + pFoundation->X,MapCoords.Y + pFoundation->Y };
-		CellClass* pCurrentCell = MapClass::Instance.GetCellAt(currentMapCoord);
-		if (pCurrentCell != pCell)
-			CellExt::ExtMap.Find(pCurrentCell)->FoggedObjects.AddItem(pFoggedBld);
+		CellStruct cs { static_cast<short>(MapCoords.X + pFoundation->X),
+						static_cast<short>(MapCoords.Y + pFoundation->Y) };
+		if (CellClass* other = MapClass::Instance.GetCellAt(cs)) {
+			if (other != pCell) {
+				addToCell(other);
+			}
+		}
 	}
 
 	return 0x457C80;
@@ -486,6 +642,12 @@ DEFINE_HOOK(0x6D3470, TacticalClass_DrawFoggedObject, 0x8)
 	GET_STACK(RectangleStruct*, pRect1, 0x4);
 	GET_STACK(RectangleStruct*, pRect2, 0x8);
 	GET_STACK(bool, bForceViewBounds, 0xC);
+
+	// Clean up orphans BEFORE computing finalRect or rendering
+	SafeCleanupOrphanedFoggedObjects();
+	
+	// Clear building deduplication list once per frame
+	g_DirtiedBldsThisFrame.Clear();
 
 	// SpySat reveals everything, so don't draw fogged objects when SpySat is active
 	if (HouseClass::CurrentPlayer && HouseClass::CurrentPlayer->SpySatActive)
@@ -579,6 +741,32 @@ DEFINE_HOOK(0x577EBF, MapClass_Reveal, 0x6)
 
 	// Extra process
 	pCell->CleanFog();
+	// ClearCellFogProxies(pCell); // DISABLED - extension system returns invalid pointers during large reveals
+	
+	// Mark all objects in this cell for redraw when revealed
+	bool hadBuilding = false;
+	for (ObjectClass* obj = pCell->FirstObject; obj; obj = obj->NextObject) {
+		obj->NeedsRedraw = true;
+		if (auto bld = abstract_cast<BuildingClass*>(obj)) {
+			hadBuilding = true;
+			// Only dirty when it was fully fogged and is transitioning to visible
+			if (bld->IsAllFogged()) {
+				MarkBuildingFootprintDirtyOnce(bld);
+			}
+		}
+	}
+	
+	// Only register 60x60 cell rect if no building was present (building footprint covers it)
+	if (!hadBuilding) {
+		auto loc = pCell->GetCoords();
+		auto [pt, visible] = TacticalClass::Instance->CoordsToClient(loc);
+		RectangleStruct cellRect{
+			DSurface::ViewBounds.X + pt.X - 30,
+			DSurface::ViewBounds.Y + pt.Y,
+			60, 60
+		};
+		TacticalClass::Instance->RegisterDirtyArea(cellRect, true);
+	}
 
 	return 0x577EE9;
 }
