@@ -6,6 +6,7 @@
 #include <New/Entity/FoggedObject.h>
 
 #include <Misc/MapRevealer.h>
+#include <Misc/FogOfWar.h>
 
 #include <AnimClass.h>
 #include <TerrainClass.h>
@@ -707,4 +708,36 @@ DEFINE_HOOK(0x4FC1FF, HouseClass_PlayerDefeated_MapReveal, 0x6)
 	MapClass::Instance.Reveal(pHouse);
 
 	return 0x4FC214;
+}
+
+// Check if building placement should be allowed at location (respects fog like shroud)
+bool CanPlaceBuildingInFog(const CoordStruct& coords, BuildingTypeClass* pBuildingType) {
+	// If fog of war is disabled, allow placement
+	if (!ScenarioClass::Instance->SpecialFlags.FogOfWar) {
+		return true;
+	}
+
+	// Check if any part of the building foundation is fogged
+	if (pBuildingType) {
+		CellStruct baseCell = CellClass::Coord2Cell(coords);
+
+		// Check each foundation cell using the new safe helpers
+		for (int x = 0; x < pBuildingType->GetFoundationWidth(); x++) {
+			for (int y = 0; y < pBuildingType->GetFoundationHeight(false); y++) {
+				CellStruct foundationCell = {
+					static_cast<short>(baseCell.X + x),
+					static_cast<short>(baseCell.Y + y)
+				};
+
+				CoordStruct cellCoords = CellClass::Cell2Coord(foundationCell);
+
+				// If any foundation cell is fogged, disallow placement
+				if (!Fog::ShouldShowActiveAt(cellCoords)) {
+					return false;
+				}
+			}
+		}
+	}
+
+	return true; // All foundation cells are clear
 }
