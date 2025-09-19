@@ -23,6 +23,7 @@ public:
 
 		Valueable<int> Reveal;
 		Valueable<int> CreateGap;
+		Valueable<int> RemoveShroudOnly;
 		Valueable<int> TransactMoney;
 		Valueable<bool> TransactMoney_Display;
 		Valueable<AffectedHouse> TransactMoney_Display_Houses;
