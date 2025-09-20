@@ -11,6 +11,9 @@ DEFINE_HOOK(0x73B05B, UnitClass_PerCellProcess_TiltWhenCrushes, 0x6)
 {
 	enum { SkipGameCode = 0x73B074 };
 
+	GET(CellClass*, pCell, EDI);
+	reinterpret_cast<void(__thiscall*)(AbstractClass*)>(0x70D4A0)(pCell);// pCell->BecomeUntargetable();
+
 	GET(UnitClass*, pThis, EBP);
 
 	auto const pType = pThis->Type;

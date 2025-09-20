@@ -2657,3 +2657,30 @@ DEFINE_HOOK(0x741A66, UnitClass_SetDestination_JJVehFix, 0x5)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x445B62, BuildingClass_Limbo_WallTower_AdjacentWallDamage, 0x5)
+{
+	enum { SkipGameCode = 0x445B6E };
+
+	GET(CellClass*, pThis, EDI);
+	pThis->DamageWall(200);
+
+	if (pThis->OverlayTypeIndex == -1)
+		reinterpret_cast<void(__thiscall*)(AbstractClass*)>(0x70D4A0)(pThis);// pThis->BecomeUntargetable();
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x75F474, WaveClass_DamageCell_Wall, 0x8)
+{
+	enum { SkipGameCode = 0x75F47C };
+
+	GET(CellClass*, pCell, EDI);
+	GET(int, damage, ECX);
+	pCell->DamageWall(damage);
+
+	if (pCell->OverlayTypeIndex == -1)
+		reinterpret_cast<void(__thiscall*)(AbstractClass*)>(0x70D4A0)(pCell);// pCell->BecomeUntargetable();
+
+	return SkipGameCode;
+}
