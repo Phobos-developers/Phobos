@@ -282,7 +282,10 @@ DEFINE_HOOK(0x4D962B, FootClass_SetDestination_RecycleFLH, 0x5)
 		&& !(pThis->GetCurrentMission() == Mission::Enter || pThis->QueuedMission == Mission::Enter))
 	{
 		GET(CoordStruct*, pDestCrd, EAX);
-		*pDestCrd = pThis->Destination->GetCoords();
+		auto crd = pThis->Destination->GetCoords();
+		crd.X = ((crd.X >> 8) << 8) + 128;
+		crd.Y = ((crd.Y >> 8) << 8) + 128;
+		*pDestCrd = crd;
 	}
 
 	return 0;
