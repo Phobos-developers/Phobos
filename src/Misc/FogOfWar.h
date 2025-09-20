@@ -30,5 +30,22 @@ namespace Fog {
 	inline bool ShouldShowPassiveAt(const CoordStruct& c) { return !IsShrouded(c); }
 }
 
+// Helper for creation-time particle gates
+namespace FoW {
+	inline bool EnemyTechnoUnderFog(AbstractClass* owner) {
+		if (!(ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.FogOfWar)) return false;
+		if (!HouseClass::CurrentPlayer || !owner) return false;
+
+		TechnoClass* t = abstract_cast<TechnoClass*>(owner);
+		if (!t) { if (auto* b = abstract_cast<BuildingClass*>(owner)) t = b; }
+		if (!t || !t->Owner) return false;
+		if (HouseClass::CurrentPlayer->IsAlliedWith(t->Owner)) return false;
+
+		const auto cs = CellClass::Coord2Cell(t->GetCoords());
+		const auto* cell = MapClass::Instance.TryGetCellAt(cs);
+		return !cell || !(cell->Flags & CellFlags::EdgeRevealed);
+	}
+}
+
 // Check if building placement should be allowed at location (respects fog like shroud)
 bool CanPlaceBuildingInFog(const CoordStruct& coords, BuildingTypeClass* pBuildingType);
