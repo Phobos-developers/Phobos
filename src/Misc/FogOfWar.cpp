@@ -181,6 +181,7 @@ DEFINE_HOOK(0x6F5190, TechnoClass_DrawExtras_CheckFog, 0x6)
 	return MapClass::Instance.IsLocationFogged(pThis->GetCoords()) ? 0x6F5EEC : 0;
 }
 
+
 DEFINE_HOOK(0x6D6EDA, TacticalClass_Overlay_CheckFog1, 0xA)
 {
 	GET(CellClass*, pCell, EAX);
@@ -493,7 +494,7 @@ DEFINE_HOOK(0x70076E, TechnoClass_GetCursorOverCell_OverFog, 0x5)
 				nOvlIdx = pObject->OverlayData.Overlay;
 			else if (pObject->CoveredType == FoggedObject::CoveredType::Building)
 			{
-				if (HouseClass::CurrentPlayer->IsAlliedWith(pObject->BuildingData.Owner) && pObject->BuildingData.Type->LegalTarget)
+				if (pObject->BuildingData.Owner && HouseClass::CurrentPlayer && HouseClass::CurrentPlayer->IsAlliedWith(pObject->BuildingData.Owner) && pObject->BuildingData.Type->LegalTarget)
 					R->Stack<bool>(STACK_OFFSET(0x2C, 0x19), true);
 			}
 		}
