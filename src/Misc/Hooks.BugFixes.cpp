@@ -2662,5 +2662,5 @@ DEFINE_HOOK(0x5194EF, InfantryClass_DrawIt_DrawShadow, 0x5)
 {
 	enum { SkipDraw = 0x51958A };
 	GET(InfantryClass*, pThis, EBP);
-	return pThis->VisualCharacter(0, 0) == VisualType::Hidden ? SkipDraw : 0;
+	return pThis->CloakState ? SkipDraw : 0;
 }
