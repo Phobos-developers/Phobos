@@ -486,16 +486,28 @@ DEFINE_HOOK(0x70076E, TechnoClass_GetCursorOverCell_OverFog, 0x5)
 	auto const pExt = CellExt::ExtMap.Find(pCell);
 
 	int nOvlIdx = -1;
-	for (auto const pObject : pExt->FoggedObjects)
-	{
-		if (pObject->Visible)
+	if (pExt && pExt->FoggedObjects.Count > 0) {
+		for (auto const pObject : pExt->FoggedObjects)
 		{
-			if (pObject->CoveredType == FoggedObject::CoveredType::Overlay)
-				nOvlIdx = pObject->OverlayData.Overlay;
-			else if (pObject->CoveredType == FoggedObject::CoveredType::Building)
+			// Safety check: ensure pObject is valid
+			if (!pObject) continue;
+
+			if (pObject->Visible)
 			{
-				if (pObject->BuildingData.Owner && HouseClass::CurrentPlayer && HouseClass::CurrentPlayer->IsAlliedWith(pObject->BuildingData.Owner) && pObject->BuildingData.Type->LegalTarget)
-					R->Stack<bool>(STACK_OFFSET(0x2C, 0x19), true);
+				if (pObject->CoveredType == FoggedObject::CoveredType::Overlay)
+					nOvlIdx = pObject->OverlayData.Overlay;
+				else if (pObject->CoveredType == FoggedObject::CoveredType::Building)
+				{
+					// Multiple safety checks before calling IsAlliedWith
+					if (pObject->BuildingData.Owner &&
+						pObject->BuildingData.Type &&
+						HouseClass::CurrentPlayer &&
+						pObject->BuildingData.Owner->ArrayIndex >= 0 &&
+						pObject->BuildingData.Owner->ArrayIndex < HouseClass::Array.Count &&
+						HouseClass::CurrentPlayer->IsAlliedWith(pObject->BuildingData.Owner) &&
+						pObject->BuildingData.Type->LegalTarget)
+						R->Stack<bool>(STACK_OFFSET(0x2C, 0x19), true);
+				}
 			}
 		}
 	}
@@ -505,6 +517,41 @@ DEFINE_HOOK(0x70076E, TechnoClass_GetCursorOverCell_OverFog, 0x5)
 
 	return 0x700815;
 }
+
+// 0x62F310 address causes crashes - disabling particle update hooks
+// Falling back to stable two-layer producer-side + OnEarlyUpdate approach
+
+// TODO: Refinery smoke hook at 0x7E4324 - disabled due to invalid memory access
+// Need to investigate correct registers and skip address
+/*
+DEFINE_HOOK(0x7E4324, RefinerySmoke_FogGate, 0x6)
+{
+	// SpySat bypass - if SpySat is active, show everything
+	if (HouseClass::CurrentPlayer && HouseClass::CurrentPlayer->SpySatActive)
+		return 0;
+
+	// Check if we're in fog of war mode
+	if (ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.FogOfWar && HouseClass::CurrentPlayer)
+	{
+		// This will need adjustment based on what registers/stack are available
+		// Making educated guesses about common refinery smoke function parameters
+
+		// Try to get building/techno from common registers
+		GET(TechnoClass*, pTechno, ESI);  // Common for techno operations
+		if (!pTechno) {
+			GET(BuildingClass*, pBuilding, ESI);
+			pTechno = pBuilding;
+		}
+
+		if (pTechno && FoW::EnemyTechnoUnderFog(pTechno)) {
+			// Skip refinery smoke creation/update for enemy under fog
+			return 0x7E4380; // Estimated skip address - may need adjustment
+		}
+	}
+
+	return 0; // Continue normal execution
+}
+*/
 
 DEFINE_HOOK(0x51F95F, InfantryClass_GetCursorOverCell_OverFog, 0x6)
 {

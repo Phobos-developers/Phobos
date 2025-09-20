@@ -38,6 +38,11 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 		// Use the helper added for the NaturalParticleSystem gate
 		if (FoW::EnemyTechnoUnderFog(pThis)) {
 			// Clean up all particle systems that could leak info
+			if (auto* ps = pThis->NaturalParticleSystem) {
+				Debug::Log("DEBUG: Destroying NaturalParticleSystem for enemy %s under fog\n", pThis->GetTechnoType()->ID);
+				ps->UnInit();
+				pThis->NaturalParticleSystem = nullptr;
+			}
 			if (auto* ps = pThis->DamageParticleSystem) {
 				Debug::Log("DEBUG: Destroying DamageParticleSystem for enemy %s under fog\n", pThis->GetTechnoType()->ID);
 				ps->UnInit();

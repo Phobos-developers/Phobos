@@ -32,6 +32,14 @@ namespace Fog {
 
 // Helper for creation-time particle gates
 namespace FoW {
+	inline bool IsUnrevealedForLocal(const CoordStruct& c) {
+		if (!(ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.FogOfWar && HouseClass::CurrentPlayer))
+			return false;
+		const auto cs = CellClass::Coord2Cell(c);
+		const auto* cc = MapClass::Instance.TryGetCellAt(cs);
+		return !cc || !(cc->Flags & CellFlags::EdgeRevealed);
+	}
+
 	inline bool EnemyTechnoUnderFog(AbstractClass* owner) {
 		if (!(ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.FogOfWar)) return false;
 		if (!HouseClass::CurrentPlayer || !owner) return false;
@@ -41,9 +49,7 @@ namespace FoW {
 		if (!t || !t->Owner) return false;
 		if (HouseClass::CurrentPlayer->IsAlliedWith(t->Owner)) return false;
 
-		const auto cs = CellClass::Coord2Cell(t->GetCoords());
-		const auto* cell = MapClass::Instance.TryGetCellAt(cs);
-		return !cell || !(cell->Flags & CellFlags::EdgeRevealed);
+		return IsUnrevealedForLocal(t->GetCoords());
 	}
 }
 
