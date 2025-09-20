@@ -616,6 +616,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize the chained damage of the wall
   - Fix an issue that jumpjet vehicles can not stop correctly when assigned a target in range
   - Fix an issue that jumpjet infantries stop incorrectly when assigned a target out of range
+  - Fix an issue that jumpjet infantries' shadow is always drawn even if they are cloaked
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
