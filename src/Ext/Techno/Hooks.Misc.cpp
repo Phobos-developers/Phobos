@@ -278,6 +278,12 @@ DEFINE_HOOK(0x4D962B, FootClass_SetDestination_RecycleFLH, 0x5)
 			*pDestCrd += TechnoExt::GetFLHAbsoluteCoords(pCarrier, FLH, pCarrierTypeExt->Spawner_RecycleOnTurret) - pCarrier->GetCoords();
 		}
 	}
+	else if (pThis->Destination->WhatAmI() == AbstractType::Building 
+		&& !(pThis->GetCurrentMission() == Mission::Enter || pThis->QueuedMission == Mission::Enter))
+	{
+		GET(CoordStruct*, pDestCrd, EAX);
+		*pDestCrd = pThis->Destination->GetCoords();
+	}
 
 	return 0;
 }

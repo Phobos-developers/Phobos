@@ -469,6 +469,7 @@ Vanilla fixes:
 - `DeployingAnim` using unit drawer now also tint accordingly with the unit (by Starkku)
 - Jumpjets in air now can correctly spawn missiles (by TaranDahl)
 - Fixed an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos (by CrimRecya)
+- Fixed an issue that technos head to building's dock even they are not going to dock (by TaranDahl)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
