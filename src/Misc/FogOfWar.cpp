@@ -498,24 +498,34 @@ DEFINE_HOOK(0x70076E, TechnoClass_GetCursorOverCell_OverFog, 0x5)
 					nOvlIdx = pObject->OverlayData.Overlay;
 				else if (pObject->CoveredType == FoggedObject::CoveredType::Building)
 				{
-					// Owner-free, visibility-only approach to avoid crashes
-					if (HouseClass::CurrentPlayer &&
-						pObject->BuildingData.Type &&
-						pObject->BuildingData.Type->LegalTarget) {
+					// Enhanced safety: wrap all potentially dangerous accesses
+					__try {
+						// Owner-free, visibility-only approach to avoid crashes
+						if (HouseClass::CurrentPlayer &&
+							pObject->BuildingData.Type &&
+							pObject->BuildingData.Type->LegalTarget) {
 
-						if (HouseClass::CurrentPlayer->SpySatActive) {
-							R->Stack<bool>(STACK_OFFSET(0x2C, 0x19), true);
-						} else {
-							// Use current visibility, not "ever seen"
-							if (!Fog::IsFogged(pObject->Location)) {
+							if (HouseClass::CurrentPlayer->SpySatActive) {
 								R->Stack<bool>(STACK_OFFSET(0x2C, 0x19), true);
 							} else {
-								R->Stack<bool>(STACK_OFFSET(0x2C, 0x19), false); // make intent explicit
-								static int logCount = 0;
-								if (logCount++ < 5) {
-									Debug::Log("DEBUG: Blocked cursor targeting - building under fog\n");
+								// Use current visibility, not "ever seen"
+								if (!Fog::IsFogged(pObject->Location)) {
+									R->Stack<bool>(STACK_OFFSET(0x2C, 0x19), true);
+								} else {
+									R->Stack<bool>(STACK_OFFSET(0x2C, 0x19), false); // make intent explicit
+									static int logCount = 0;
+									if (logCount++ < 5) {
+										Debug::Log("DEBUG: Blocked cursor targeting - building under fog\n");
+									}
 								}
 							}
+						}
+					}
+					__except (EXCEPTION_EXECUTE_HANDLER) {
+						// Any access violation - just skip this fogged object entirely
+						static int crashLog = 0;
+						if (crashLog++ < 3) {
+							Debug::Log("DEBUG: Caught cursor access violation - skipping fogged building\n");
 						}
 					}
 				}
@@ -659,6 +669,16 @@ DEFINE_HOOK(0x73E37E, UnitClass_Unload_RefinerySmoke_FoWGate, 0x6)
 
 	return 0; // run original call
 }
+
+// Infantry refinery smoke: DISABLED - incorrect hook location/parameters
+// Leaving this disabled to avoid breaking pathfinding or other infantry behavior
+/*
+DEFINE_HOOK(0x522D75, InfantryClass_UnloadAt_Building_RefinerySmoke_FoWGate, 0x6)
+{
+	// This hook was not working correctly - disabling for stability
+	return 0;
+}
+*/
 
 // 0x62F310 address causes crashes - disabling particle update hooks
 // Falling back to stable two-layer producer-side + OnEarlyUpdate approach

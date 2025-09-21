@@ -28,18 +28,16 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	auto* const pThis = this->OwnerObject();
 	auto const pType = pThis->GetTechnoType();
 
-	// Hide enemy particles under fog (client-side only)
+	// Hide particles under fog (client-side only) - now includes all technos, not just enemies
 	if (ScenarioClass::Instance
 		&& ScenarioClass::Instance->SpecialFlags.FogOfWar
-		&& HouseClass::CurrentPlayer
-		&& pThis && pThis->Owner
-		&& !HouseClass::CurrentPlayer->IsAlliedWith(pThis->Owner))
+		&& HouseClass::CurrentPlayer && pThis)
 	{
-		// Use the helper added for the NaturalParticleSystem gate
-		if (FoW::EnemyTechnoUnderFog(pThis)) {
+		// Use current visibility check (same as working refinery smoke hooks)
+		if (Fog::IsFogged(pThis->GetCoords())) {
 			// Clean up all particle systems that could leak info
 			if (auto* ps = pThis->NaturalParticleSystem) {
-				Debug::Log("DEBUG: Destroying NaturalParticleSystem for enemy %s under fog\n", pThis->GetTechnoType()->ID);
+				Debug::Log("DEBUG: Destroying NaturalParticleSystem for %s under fog\n", pThis->GetTechnoType()->ID);
 				ps->UnInit();
 				pThis->NaturalParticleSystem = nullptr;
 			}
