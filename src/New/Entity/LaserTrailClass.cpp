@@ -23,23 +23,23 @@ bool LaserTrailClass::Update(CoordStruct location)
 		{
 			if (pType->DrawType == LaserTrailDrawType::Laser)
 			{
-				// FOG CHECK: Only create laser if both endpoints are visible
+				// FOG CHECK: Only create laser if both endpoints are visible (updated method)
 				bool sourceVisible = true;
 				bool targetVisible = true;
 
 				// Check if fog of war is enabled and we have valid instances
 				if (ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.FogOfWar &&
-					&MapClass::Instance && TacticalClass::Instance) {
+					HouseClass::CurrentPlayer && !HouseClass::CurrentPlayer->SpySatActive) {
 
-					// Check source location
+					// Check source location using cell-based fog (matches EBolt method)
 					auto sourceCs = CellClass::Coord2Cell(this->LastLocation.Get());
-					auto* sourceCell = MapClass::Instance.TryGetCellAt(sourceCs);
-					sourceVisible = sourceCell && (sourceCell->Flags & CellFlags::EdgeRevealed);
+					auto* sourceCell = MapClass::Instance.GetCellAt(sourceCs);
+					sourceVisible = sourceCell && !sourceCell->IsFogged();
 
-					// Check target location
+					// Check target location using cell-based fog
 					auto targetCs = CellClass::Coord2Cell(location);
-					auto* targetCell = MapClass::Instance.TryGetCellAt(targetCs);
-					targetVisible = targetCell && (targetCell->Flags & CellFlags::EdgeRevealed);
+					auto* targetCell = MapClass::Instance.GetCellAt(targetCs);
+					targetVisible = targetCell && !targetCell->IsFogged();
 				}
 
 				// Only create laser if both endpoints are visible
@@ -62,17 +62,17 @@ bool LaserTrailClass::Update(CoordStruct location)
 
 				// Check if fog of war is enabled and we have valid instances
 				if (ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.FogOfWar &&
-					&MapClass::Instance && TacticalClass::Instance) {
+					HouseClass::CurrentPlayer && !HouseClass::CurrentPlayer->SpySatActive) {
 
-					// Check source location
+					// Check source location using cell-based fog (matches EBolt method)
 					auto sourceCs = CellClass::Coord2Cell(this->LastLocation.Get());
-					auto* sourceCell = MapClass::Instance.TryGetCellAt(sourceCs);
-					sourceVisible = sourceCell && (sourceCell->Flags & CellFlags::EdgeRevealed);
+					auto* sourceCell = MapClass::Instance.GetCellAt(sourceCs);
+					sourceVisible = sourceCell && !sourceCell->IsFogged();
 
-					// Check target location
+					// Check target location using cell-based fog
 					auto targetCs = CellClass::Coord2Cell(location);
-					auto* targetCell = MapClass::Instance.TryGetCellAt(targetCs);
-					targetVisible = targetCell && (targetCell->Flags & CellFlags::EdgeRevealed);
+					auto* targetCell = MapClass::Instance.GetCellAt(targetCs);
+					targetVisible = targetCell && !targetCell->IsFogged();
 				}
 
 				// Only create EBolt if both endpoints are visible
@@ -111,17 +111,17 @@ bool LaserTrailClass::Update(CoordStruct location)
 
 				// Check if fog of war is enabled and we have valid instances
 				if (ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.FogOfWar &&
-					&MapClass::Instance && TacticalClass::Instance) {
+					HouseClass::CurrentPlayer && !HouseClass::CurrentPlayer->SpySatActive) {
 
-					// Check source location
+					// Check source location using cell-based fog (matches EBolt method)
 					auto sourceCs = CellClass::Coord2Cell(this->LastLocation.Get());
-					auto* sourceCell = MapClass::Instance.TryGetCellAt(sourceCs);
-					sourceVisible = sourceCell && (sourceCell->Flags & CellFlags::EdgeRevealed);
+					auto* sourceCell = MapClass::Instance.GetCellAt(sourceCs);
+					sourceVisible = sourceCell && !sourceCell->IsFogged();
 
-					// Check target location
+					// Check target location using cell-based fog
 					auto targetCs = CellClass::Coord2Cell(location);
-					auto* targetCell = MapClass::Instance.TryGetCellAt(targetCs);
-					targetVisible = targetCell && (targetCell->Flags & CellFlags::EdgeRevealed);
+					auto* targetCell = MapClass::Instance.GetCellAt(targetCs);
+					targetVisible = targetCell && !targetCell->IsFogged();
 				}
 
 				// Only create RadBeam if both endpoints are visible

@@ -5,6 +5,9 @@
 #include <Utilities/Debug.h>
 #include <Utilities/Macro.h>
 #include <Utilities/GeneralUtils.h>
+#include <Misc/FogOfWar.h>
+
+#define LASER_FOW_DEBUG 0
 
 namespace LaserDrawTemp
 {
