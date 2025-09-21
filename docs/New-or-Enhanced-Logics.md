@@ -820,8 +820,8 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
     - In `Trajectory=Tracing`, if set to zero, use weapon's `ROF`-10 as the duration. At least 1 frame. If it is negative, do not time it.
   - `NoTargetLifeTime` controls how long the projectile will live after losing the target. If it is 0, it will detonate instantly when switching targets.
   - `CreateCapacity` controls the capacity that this type of trajectory projectile can be fired. When it is set to a non negative number, the trajectory projectile can only be fired when number of this trajectory type fired by the firer on the map is less than this value, namely effective. That is, every firer can have this number of projectiles.
-  - `PeacefulVanish` controls whether the projectile disappears directly when it is about to detonate, without producing animation or causing damage. The default value is `Trajectory=Engrave` or `ProximityImpact` not equal to 0 or `DisperseCycle` not equal to 0.
-  - `ApplyRangeModifiers` controls whether any applicable weapon range modifiers from the firer are applied to the projectile. Effective options include `LifeDuration`, `Trajectory.DetonationDistance` and `Trajectory.EdgeAttenuation`.
+  - `PeacefulVanish` controls whether the projectile disappears directly when it is about to detonate, without producing animation or causing damage. Default to true if `Trajectory=Engrave` or `ProximityImpact` not equal to 0 or `DisperseCycle` not equal to 0.
+  - `ApplyRangeModifiers` controls whether any applicable weapon range modifiers from the firer are applied to the projectile. Effective options include `LifeDuration`, `DamageEdgeAttenuation` and `Trajectory.DetonationDistance`.
 
 In `rulesmd.ini`:
 ```ini
