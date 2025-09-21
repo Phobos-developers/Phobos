@@ -282,13 +282,21 @@ CoordStruct BombardTrajectory::CalculateMiddleCoords()
 	else
 	{
 		const double vectorModule = sqrt(vectorX * vectorX + vectorY * vectorY);
-		scatterX = vectorY / vectorModule * length;
-		scatterY = -(vectorX / vectorModule * length);
 
-		if (ScenarioClass::Instance->Random.RandomRanged(0, 1))
+		if (vectorModule <= BulletExt::Epsilon)
 		{
-			scatterX = -scatterX;
-			scatterY = -scatterY;
+			scatterX = 0.0;
+			scatterY = 0.0;
+		}
+		else
+		{
+			scatterX = vectorY / vectorModule * length;
+			scatterY = vectorX / vectorModule * length;
+
+			if (ScenarioClass::Instance->Random.RandomRanged(0, 1))
+				scatterX = -scatterX;
+			else
+				scatterY = -scatterY;
 		}
 	}
 
@@ -342,7 +350,7 @@ CoordStruct BombardTrajectory::CalculateBulletLeadTime()
 				const auto lastSourceCoord = source - this->LastTargetCoord;
 
 				if (pType->FreeFallOnTarget)
-					return extraOffsetCoord * this->GetLeadTime(std::round(sqrt(2 * (this->Height - target.Z) / BulletTypeExt::GetAdjustedGravity(pBullet->Type))));
+					return extraOffsetCoord * this->GetLeadTime(std::round(sqrt(std::abs(2 * (this->Height - target.Z) / BulletTypeExt::GetAdjustedGravity(pBullet->Type)))));
 
 				if (pType->NoLaunch)
 					return extraOffsetCoord * this->GetLeadTime(std::round((this->Height - target.Z) / pType->FallSpeed.Get(pType->Speed)));
@@ -477,7 +485,7 @@ void BombardTrajectory::RefreshBulletLineTrail()
 
 	if (const auto pLineTrailer = pBullet->LineTrailer)
 	{
-		pLineTrailer->~LineTrail();
+		pLineTrailer->~LineTrail(); // Should not use GameDelete(pLineTrailer);
 		pBullet->LineTrailer = nullptr;
 	}
 

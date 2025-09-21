@@ -14,11 +14,29 @@ std::vector<CellClass*> BulletExt::ExtData::GetCellsInProximityRadius()
 	const auto walkCoord = pTraj ? Vector2D<double>{ pTraj->MovingVelocity.X, pTraj->MovingVelocity.Y } : Vector2D<double>{ pBullet->Velocity.X, pBullet->Velocity.Y };
 	const double walkDistance = walkCoord.Magnitude();
 	const auto radius = this->TypeExtData->ProximityRadius.Get();
+	const auto thisCell = CellClass::Coord2Cell(pBullet->Location);
+
+	// Special case of zero speed
+	if (walkDistance <= BulletExt::Epsilon)
+	{
+		const double range = radius / static_cast<double>(Unsorted::LeptonsPerCell);
+		std::vector<CellClass*> cirCellClass;
+		const auto roundRange = static_cast<size_t>(range + 0.99);
+		cirCellClass.reserve(roundRange * roundRange);
+
+		for (CellSpreadEnumerator checkCell(roundRange); checkCell; ++checkCell)
+		{
+			if (const auto pCirCell = MapClass::Instance.TryGetCellAt(*checkCell + thisCell))
+				cirCellClass.push_back(pCirCell);
+		}
+
+		return cirCellClass;
+	}
+
 	const double sideMult = radius / walkDistance;
 
 	const CoordStruct cor1Coord { static_cast<int>(walkCoord.Y * sideMult), static_cast<int>((-walkCoord.X) * sideMult), 0 };
 	const CoordStruct cor4Coord { static_cast<int>((-walkCoord.Y) * sideMult), static_cast<int>(walkCoord.X * sideMult), 0 };
-	const auto thisCell = CellClass::Coord2Cell(pBullet->Location);
 
 	auto cor1Cell = CellClass::Coord2Cell(pBullet->Location + cor1Coord);
 	auto cor4Cell = CellClass::Coord2Cell(pBullet->Location + cor4Coord);
@@ -58,7 +76,7 @@ std::vector<CellClass*> BulletExt::ExtData::GetCellsInProximityRadius()
 
 	for (const auto& pCells : recCells)
 	{
-		if (CellClass* pRecCell = MapClass::Instance.TryGetCellAt(pCells))
+		if (const auto pRecCell = MapClass::Instance.TryGetCellAt(pCells))
 			recCellClass.push_back(pRecCell);
 	}
 
@@ -675,15 +693,21 @@ int BulletExt::ExtData::GetTrueDamage(int damage, bool self)
 double BulletExt::ExtData::GetExtraDamageMultiplier()
 {
 	const auto pBullet = this->OwnerObject();
-	double damageMult = 1.0;
 	const double distance = pBullet->Location.DistanceFrom(pBullet->SourceCoords);
 
-	if (this->AttenuationRange < static_cast<int>(distance))
+	// Directly use edge value if the distance is too far
+	if (this->AttenuationRange <= static_cast<int>(distance))
 		return this->TypeExtData->DamageEdgeAttenuation;
 
 	// Remove the first cell distance for calculation
-	if (distance > 256.0)
-		damageMult += (this->TypeExtData->DamageEdgeAttenuation - 1.0) * ((distance - 256.0) / (this->AttenuationRange - Unsorted::LeptonsPerCell));
+	const double calculateDistance = distance - static_cast<double>(Unsorted::LeptonsPerCell);
 
-	return damageMult;
+	// Directly use original value if the distance is too close
+	if (calculateDistance <= 0.0)
+		return 1.0;
+
+	// this->AttenuationRange > distance > Unsorted::LeptonsPerCell -> deltaRange > 0
+	const double deltaMult = this->TypeExtData->DamageEdgeAttenuation - 1.0;
+	const int deltaRange = this->AttenuationRange - Unsorted::LeptonsPerCell;
+	return 1.0 + deltaMult * (calculateDistance / deltaRange);
 }

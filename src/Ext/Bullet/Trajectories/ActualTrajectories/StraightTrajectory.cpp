@@ -107,7 +107,7 @@ bool StraightTrajectory::OnVelocityCheck()
 	const auto pType = this->Type;
 
 	// Hover
-	if (pType->Speed < 256.0 && pType->ConfineAtHeight > 0 && this->PassAndConfineAtHeight())
+	if (pType->Speed < static_cast<double>(Unsorted::LeptonsPerCell) && pType->ConfineAtHeight > 0 && this->PassAndConfineAtHeight())
 		return true;
 
 	return this->PhobosTrajectory::OnVelocityCheck();
@@ -121,7 +121,7 @@ TrajectoryCheckReturnType StraightTrajectory::OnDetonateUpdate(const CoordStruct
 		return TrajectoryCheckReturnType::Detonate;
 
 	const auto pType = this->Type;
-	const auto distance = pType->Speed < 256.0 && pType->ConfineAtHeight > 0 ? BulletExt::Get2DVelocity(this->MovingVelocity) : this->MovingSpeed;
+	const auto distance = (pType->Speed < static_cast<double>(Unsorted::LeptonsPerCell) && pType->ConfineAtHeight > 0) ? BulletExt::Get2DVelocity(this->MovingVelocity) : this->MovingSpeed;
 	this->RemainingDistance -= static_cast<int>(distance);
 
 	// Check the remaining travel distance of the bullet
@@ -196,7 +196,7 @@ void StraightTrajectory::FireTrajectory()
 	pBullet->TargetCoords = target;
 	this->MovingVelocity.X = static_cast<double>(target.X - source.X);
 	this->MovingVelocity.Y = static_cast<double>(target.Y - source.Y);
-	this->MovingVelocity.Z = (pType->Speed < 256.0 && pType->ConfineAtHeight > 0 && BulletTypeExt::ExtMap.Find(pBullet->Type)->PassDetonateLocal) ? 0 : static_cast<double>(this->GetVelocityZ());
+	this->MovingVelocity.Z = (pType->Speed < static_cast<double>(Unsorted::LeptonsPerCell) && pType->ConfineAtHeight > 0 && BulletTypeExt::ExtMap.Find(pBullet->Type)->PassDetonateLocal) ? 0 : static_cast<double>(this->GetVelocityZ());
 
 	// Substitute the speed to calculate velocity
 	if (this->CalculateBulletVelocity(pType->Speed))
@@ -329,6 +329,10 @@ bool StraightTrajectory::PassAndConfineAtHeight()
 
 	// To prevent twitching and floating up and down, it is necessary to maintain a fixed distance when predicting the position
 	const double horizontalVelocity = BulletExt::Get2DVelocity(this->MovingVelocity);
+
+	if (horizontalVelocity <= BulletExt::Epsilon)
+		return false;
+
 	const double ratio = pType->Speed / horizontalVelocity;
 	auto velocityCoords = BulletExt::Vector2Coord(this->MovingVelocity);
 	velocityCoords.X = static_cast<int>(velocityCoords.X * ratio);

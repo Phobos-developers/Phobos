@@ -280,11 +280,10 @@ bool TracingTrajectory::ChangeVelocity()
 				if ((radius * 1.2) > BulletExt::Get2DDistance(distanceCoords))
 				{
 					// Recalculate
-					this->RotateRadian = Math::atan2(distanceCoords.Y, distanceCoords.X);
+					const double currentRadian = Math::atan2(distanceCoords.Y, distanceCoords.X);
 
 					// The arc of rotation per frame can be determined by the radius and speed
-					if (std::abs(radius) > BulletExt::Epsilon)
-						this->RotateRadian = cw ? (this->RotateRadian + pType->Speed / radius) : (this->RotateRadian - pType->Speed / radius);
+					this->RotateRadian = cw ? (currentRadian + pType->Speed / radius) : (currentRadian - pType->Speed / radius);
 				}
 			}
 			else

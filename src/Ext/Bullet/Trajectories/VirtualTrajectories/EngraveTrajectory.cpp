@@ -149,6 +149,9 @@ bool EngraveTrajectory::CalculateBulletVelocity(const double speed)
 	{
 		if (const auto pWeapon = pBullet->WeaponType)
 			velocityLength = static_cast<double>(WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer, static_cast<int>(velocityLength)));
+
+		if (velocityLength < BulletExt::Epsilon)
+			return true;
 	}
 
 	// Automatically calculate duration
