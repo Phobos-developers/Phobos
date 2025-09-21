@@ -498,15 +498,26 @@ DEFINE_HOOK(0x70076E, TechnoClass_GetCursorOverCell_OverFog, 0x5)
 					nOvlIdx = pObject->OverlayData.Overlay;
 				else if (pObject->CoveredType == FoggedObject::CoveredType::Building)
 				{
-					// Multiple safety checks before calling IsAlliedWith
-					if (pObject->BuildingData.Owner &&
+					// Owner-free, visibility-only approach to avoid crashes
+					if (HouseClass::CurrentPlayer &&
 						pObject->BuildingData.Type &&
-						HouseClass::CurrentPlayer &&
-						pObject->BuildingData.Owner->ArrayIndex >= 0 &&
-						pObject->BuildingData.Owner->ArrayIndex < HouseClass::Array.Count &&
-						HouseClass::CurrentPlayer->IsAlliedWith(pObject->BuildingData.Owner) &&
-						pObject->BuildingData.Type->LegalTarget)
-						R->Stack<bool>(STACK_OFFSET(0x2C, 0x19), true);
+						pObject->BuildingData.Type->LegalTarget) {
+
+						if (HouseClass::CurrentPlayer->SpySatActive) {
+							R->Stack<bool>(STACK_OFFSET(0x2C, 0x19), true);
+						} else {
+							// Use current visibility, not "ever seen"
+							if (!Fog::IsFogged(pObject->Location)) {
+								R->Stack<bool>(STACK_OFFSET(0x2C, 0x19), true);
+							} else {
+								R->Stack<bool>(STACK_OFFSET(0x2C, 0x19), false); // make intent explicit
+								static int logCount = 0;
+								if (logCount++ < 5) {
+									Debug::Log("DEBUG: Blocked cursor targeting - building under fog\n");
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -516,6 +527,137 @@ DEFINE_HOOK(0x70076E, TechnoClass_GetCursorOverCell_OverFog, 0x5)
 		R->Stack<OverlayTypeClass*>(STACK_OFFSET(0x2C, 0x18), OverlayTypeClass::Array.GetItem(nOvlIdx));
 
 	return 0x700815;
+}
+
+// TODO: Clean up invalid fog proxies - disabled due to wrong address/register causing crashes
+/*
+DEFINE_HOOK(0x486C50, CellClass_ClearFoggedObjects_CleanupInvalid, 0x6)
+{
+	GET(CellClass*, pCell, ESI);
+	auto const pExt = CellExt::ExtMap.Find(pCell);
+
+	if (pExt && pExt->FoggedObjects.Count > 0) {
+		// Clean up invalid building proxies (when real building no longer exists)
+		for (int i = pExt->FoggedObjects.Count - 1; i >= 0; i--) {
+			auto* pObject = pExt->FoggedObjects[i];
+			if (pObject && pObject->CoveredType == FoggedObject::CoveredType::Building) {
+				// Check if the real building still exists at this location
+				auto* pRealBuilding = pCell->GetBuilding();
+				if (!pRealBuilding ||
+					pRealBuilding->Type != pObject->BuildingData.Type ||
+					pRealBuilding->Owner != pObject->BuildingData.Owner) {
+					// Real building is gone or different - delete the proxy
+					pExt->FoggedObjects.RemoveItem(i);
+					GameDelete(pObject);
+				}
+			}
+		}
+	}
+
+	return 0; // Continue normal execution
+}
+*/
+
+// Universal particle gate causing crashes - disabling
+/*
+DEFINE_HOOK(0x62CEC0, ParticleClass_Draw_FoWGate, 0x5)
+{
+	GET(ParticleClass*, pThis, ECX);
+
+	// show-all bypass (existing behaviour)
+	if (HouseClass::CurrentPlayer && HouseClass::CurrentPlayer->SpySatActive) {
+		return 0; // run original draw
+	}
+
+	if (ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.FogOfWar && HouseClass::CurrentPlayer) {
+		const auto cs = CellClass::Coord2Cell(pThis->GetCoords());
+		const auto* c = MapClass::Instance.TryGetCellAt(cs);
+
+		// If this cell was never revealed, skip drawing this particle
+		if (!c || !(c->Flags & CellFlags::EdgeRevealed)) {
+			return 0x62D295; // safe tail of ParticleClass::Draw (from gamemd.json)
+		}
+	}
+	return 0; // run original
+}
+*/
+
+// Disabling all new hooks - back to stable approach only
+/*
+DEFINE_HOOK(0x41C000, TechnoClass_UpdateRefinerySmokeSystems_FoWGate, 0x5)
+{
+	GET(TechnoClass*, pThis, ECX);
+
+	if (HouseClass::CurrentPlayer && HouseClass::CurrentPlayer->SpySatActive) {
+		return 0; // allow normal smoke if spysat is on
+	}
+
+	if (ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.FogOfWar && HouseClass::CurrentPlayer) {
+		const auto cs = CellClass::Coord2Cell(pThis->GetCoords());
+		const auto* c = MapClass::Instance.TryGetCellAt(cs);
+		if (!c || !(c->Flags & CellFlags::EdgeRevealed)) {
+			// TODO: Need to find the actual epilogue address for this function
+			// For now, let's try a minimal skip
+			return 0x41C001; // Temporary - need actual function end address
+		}
+	}
+	return 0; // run original
+}
+*/
+
+// Gate refinery smoke at call-site - disabling for stability testing
+/*
+DEFINE_HOOK(0x7E3C94, Skip_RefinerySmoke_Call_UnitUnload, 0x5)
+{
+	GET(TechnoClass*, pThis, ECX); // Assuming ECX holds the techno at this call site
+
+	if (HouseClass::CurrentPlayer && HouseClass::CurrentPlayer->SpySatActive) {
+		return 0; // allow normal smoke if spysat is on
+	}
+
+	if (ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.FogOfWar && HouseClass::CurrentPlayer) {
+		const auto cs = CellClass::Coord2Cell(pThis->GetCoords());
+		const auto* c = MapClass::Instance.TryGetCellAt(cs);
+		if (!c || !(c->Flags & CellFlags::EdgeRevealed)) {
+			return 0x7E3C99; // Skip past the call (5 bytes = call instruction size)
+		}
+	}
+	return 0; // perform the original call
+}
+*/
+
+// Refinery smoke gate with proper visibility checking
+DEFINE_HOOK(0x73E37E, UnitClass_Unload_RefinerySmoke_FoWGate, 0x6)
+{
+	if (!(ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.FogOfWar))
+		return 0;
+
+	if (HouseClass::CurrentPlayer && HouseClass::CurrentPlayer->SpySatActive)
+		return 0;
+
+	// Best-effort visibility test: use the unit doing the unload.
+	// (On this path the harvester is at/inside the refinery cell.)
+#if defined(REF_SMOKE_USE_EDI)
+	GET(UnitClass*, pUnit, EDI);
+#else
+	GET(UnitClass*, pUnit, ESI); // Default: try ESI first
+#endif
+
+	if (pUnit && Fog::IsFogged(pUnit->GetCoords())) {
+		static int logCount = 0;
+		if (logCount++ < 10) {
+			Debug::Log("DEBUG: Blocking RefinerySmokeParticleSystem for %s under fog\n", pUnit->GetTechnoType()->ID);
+		}
+		return 0x73E38E; // skip the virtual smoke update when the unload cell is fogged
+	}
+
+	// Optional: log allows to prove visibility path works
+	static int allowLog = 0;
+	if (pUnit && allowLog++ < 5) {
+		Debug::Log("DEBUG: Allow RefinerySmokeParticleSystem for %s (visible now)\n", pUnit->GetTechnoType()->ID);
+	}
+
+	return 0; // run original call
 }
 
 // 0x62F310 address causes crashes - disabling particle update hooks
