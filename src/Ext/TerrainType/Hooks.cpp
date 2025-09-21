@@ -29,7 +29,7 @@ DEFINE_HOOK(0x71C84D, TerrainClass_AI_Animated, 0x6)
 	{
 		auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pType);
 
-		if (pThis->Animation.Value == pTypeExt->AnimationLength.isset() ? pTypeExt->AnimationLength.Get() : (pType->GetImage()->Frames / (2 * (pTypeExt->HasDamagedFrames + 1))))
+		if (pThis->Animation.Value == (pTypeExt->AnimationLength.isset() ? pTypeExt->AnimationLength.Get() : (pType->GetImage()->Frames / (2 * (pTypeExt->HasDamagedFrames + 1)))))
 		{
 			pThis->Animation.Value = 0;
 			pThis->Animation.Start(0);

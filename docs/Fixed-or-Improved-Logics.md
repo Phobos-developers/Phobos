@@ -773,7 +773,7 @@ ProneSpeed=                   ; floating point value, multiplier, by default, us
 
 ### Customize the chained damage of the wall
 
-- In vanilla, when the wall is damaged, it will deal 200 damage to the walls in the 4 nearby cells. This makes connected walls more vulnerable to damage compared to single walls. 
+- In vanilla, when the wall is damaged, it will deal 200 damage to the walls in the 4 nearby cells. This makes connected walls more vulnerable to damage compared to single walls.
 - Now you can customize that damage by using the following flag.
 
 In `rulesmd.ini`:
@@ -1011,12 +1011,12 @@ ChronoSparkleBuildingDisplayPositions=occupantslots  ; List of chrono sparkle po
 In `rulesmd.ini`:
 ```ini
 [General]
-ChronoSphereDelay=60    ; integer, game frames
-ChronoSpherePreDelay=0  ; integer, game frames
+ChronoSphereDelay=0     ; integer, game frames
+ChronoSpherePreDelay=60 ; integer, game frames
 
 [SOMETECHNO]            ; TechnoType
-ChronoSphereDelay=      ; integer, game frames
-ChronoSpherePreDelay=   ; integer, game frames
+ChronoSphereDelay=      ; integer, game frames, default to [General] -> ChronoSphereDelay
+ChronoSpherePreDelay=   ; integer, game frames, default to [General] -> ChronoSpherePreDelay
 ```
 
 ```{warning}
