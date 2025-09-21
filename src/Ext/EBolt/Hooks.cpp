@@ -8,14 +8,8 @@
 #include <Helpers/Macro.h>
 #include <Misc/FogOfWar.h>
 
-#define FOW_DEBUG 1
+#define FOW_DEBUG 0
 
-// Static initializer to confirm this DLL is loaded
-namespace {
-	struct _EBoltInitPing {
-		_EBoltInitPing() { Debug::Log("[FOW] EBolt hooks compiled into this build.\n"); }
-	} _eboltInitPing;
-}
 
 namespace BoltTemp
 {
@@ -54,11 +48,6 @@ DWORD _cdecl EBoltExt::_EBolt_Draw_Colors(REGISTERS* R)
 {
 	enum { SkipGameCode = 0x4C1F66 };
 
-	// Always log first few calls to confirm hook is running
-	static int hookCount = 0;
-	if (hookCount < 3) {
-		Debug::Log("[FOW] _EBolt_Draw_Colors hook running (call #%d)\n", ++hookCount);
-	}
 
 	GET(EBolt*, pThis, ECX);
 	if (!pThis || !*(void**)pThis) return SkipGameCode;
@@ -72,10 +61,6 @@ DWORD _cdecl EBoltExt::_EBolt_Draw_Colors(REGISTERS* R)
 	// DESYNC SAFETY: Only apply fog gating for local player's view
 	// This is purely visual and must not affect game simulation or synchronized state
 	if (ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.FogOfWar) {
-		static int fogCheckCount = 0;
-		if (fogCheckCount++ < 3) {
-			Debug::Log("[FOW] FogOfWar is enabled, checking conditions (call #%d)\n", fogCheckCount);
-		}
 		if (auto* me = HouseClass::CurrentPlayer; me && !me->SpySatActive) {
 			// Owner-only fog gate: if you can see the shooter, you can see their bolt
 			if (pThis->Owner) {
@@ -100,8 +85,6 @@ DWORD _cdecl EBoltExt::_EBolt_Draw_Colors(REGISTERS* R)
 				}
 				#endif
 
-				// Try different fog checking methods to find what matches visual fog
-				bool foggedByCoord = Fog::IsFogged(ownerWorld);
 				bool foggedByCell = false;
 
 				// Try direct cell fog check
@@ -134,10 +117,6 @@ DWORD _cdecl EBoltExt::_EBolt_Draw_Colors(REGISTERS* R)
 
 DEFINE_HOOK(0x4C1F33, EBolt_Draw_Colors, 0x7)
 {
-	static int hookTest = 0;
-	if (hookTest++ < 3) {
-		Debug::Log("[FOW] EBolt_Draw_Colors hook entry (call #%d)\n", hookTest);
-	}
 	return EBoltExt::_EBolt_Draw_Colors(R);
 }
 
@@ -145,12 +124,6 @@ DEFINE_HOOK(0x4C20BC, EBolt_DrawArcs, 0xB)
 {
 	enum { DoLoop = 0x4C20C7, Break = 0x4C2400 };
 
-	// Reduced logging to prevent performance issues
-	static int arcTest = 0;
-	if (arcTest < 2) {
-		arcTest++;
-		Debug::Log("[FOW] EBolt_DrawArcs: FogHidden=%d\n", BoltTemp::FogHidden ? 1 : 0);
-	}
 
 	GET_STACK(int, plotIndex, STACK_OFFSET(0x408, -0x3E0));
 	const int arcCount = BoltTemp::ExtData->Arcs;
@@ -161,12 +134,6 @@ DEFINE_HOOK(0x4C20BC, EBolt_DrawArcs, 0xB)
 DEFINE_JUMP(LJMP, 0x4C24BE, 0x4C24C3)// Disable Ares's hook EBolt_Draw_Color1
 DEFINE_HOOK(0x4C24C3, EBolt_DrawFirst_Color, 0x9)
 {
-	// TRIPWIRE: If this executes you will SEE magenta bolts briefly
-	static int trip = 0;
-	if (trip++ < 3) {
-		R->EAX(Drawing::RGB_To_Int(ColorStruct{255, 0, 255})); // Bright magenta
-		return 0x4C24E4; // continue with forced color
-	}
 
 	#if FOW_DEBUG
 	static int c=0;
