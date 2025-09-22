@@ -1064,9 +1064,9 @@ In `rulesmd.ini`:
 [SOMETECHNO]            ; TechnoType
 WarpOut=                ; List of AnimationTypes (played when Techno warping out), default to [General] -> WarpOut
 WarpIn=                 ; List of AnimationTypes (played when Techno warping in), default to [General] -> WarpIn
-Chronoshift.WarpOut=    ; List of AnimationTypes (played when Techno warping out by chronosphere), default to WarpOut
-Chronoshift.WarpIn=     ; List of AnimationTypes (played when Techno warping in by chronosphere), default to WarpIn
-WarpAway=               ; List of AnimationTypes (played when Techno being erased by `Temporal=yes` warhead), default to [General] -> WarpAway
+Chronoshift.WarpOut=    ; List of AnimationTypes (played when Techno warping out by chronosphere), default to [TechnoType] -> WarpOut
+Chronoshift.WarpIn=     ; List of AnimationTypes (played when Techno warping in by chronosphere), default to [TechnoType] -> WarpIn
+WarpAway=               ; List of AnimationTypes (played when Techno being erased by Temporal=yes warhead), default to [General] -> WarpAway
 ChronoTrigger=          ; boolean, if yes then delay varies by distance, if no it is a constant
 ChronoDistanceFactor=   ; integer, amount to divide the distance to destination by to get the warped out delay
 ChronoMinimumDelay=     ; integer, the minimum delay for teleporting, no matter how short the distance
