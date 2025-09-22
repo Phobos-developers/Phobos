@@ -101,7 +101,7 @@ long __stdcall AircraftClass_IFlyControl_IsStrafe(IFlyControl const* ifly)
 	{
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 		auto const pBulletType = pWeapon->Projectile;
-		return pWeaponExt->Strafing.Get(pBulletType->ROT <= 1 && !pBulletType->Inviso && !BulletTypeExt::ExtMap.Find(pBulletType)->TrajectoryType);
+		return pWeaponExt->Strafing.isset() ? pWeaponExt->Strafing.Get() : (pBulletType->ROT <= 1 && !pBulletType->Inviso && !BulletTypeExt::ExtMap.Find(pBulletType)->TrajectoryType);
 	}
 
 	return false;
@@ -220,7 +220,7 @@ static int GetDelay(AircraftClass* pThis, bool isLastShot)
 	{
 		pExt->Strafe_TargetCell = nullptr;
 		pThis->MissionStatus = (int)AirAttackStatus::FlyToPosition;
-		delay = pWeaponExt->Strafing_EndDelay.Get((pWeapon->Range + (Unsorted::LeptonsPerCell * 4)) / pThis->Type->Speed);
+		delay = pWeaponExt->Strafing_EndDelay.isset() ? pWeaponExt->Strafing_EndDelay.Get() : ((pWeapon->Range + (Unsorted::LeptonsPerCell * 4)) / pThis->Type->Speed);
 	}
 
 	return delay;
