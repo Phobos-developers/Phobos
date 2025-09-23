@@ -15,6 +15,7 @@
 #include <OverlayTypeClass.h>
 #include <InfantryClass.h>
 #include <InfantryTypeClass.h>
+#include <algorithm>
 
 // Burst-reveal detection for viewport refresh
 static int  g_RevealedCellsThisFrame = 0;
@@ -45,27 +46,36 @@ static inline void ForceUnfreezeAllFogProxiesForSpySat() {
 
 static void SafeCleanupOrphanedFoggedObjects()
 {
-	static int frameCounter = 0;
-
-	// Run every 15 frames to avoid performance issues during mass reveals
-	if ((++frameCounter % 15) != 0) {
-		return;
-	}
-
-	auto& live = FoggedObject::FoggedObjects; // global container
+	auto& live = FoggedObject::FoggedObjects;
 	if (live.Count <= 0) {
 		return;
 	}
 
-	// Collect candidates first to avoid mutating 'live' while scanning it.
-	DynamicVectorClass<FoggedObject*> toDelete;
-	// Guard reserve to something sane to avoid wild counts if memory is corrupt.
-	const int cap = (live.Count > 0 && live.Count < 1000000) ? live.Count : 0;
-	if (cap > 0) { toDelete.Reserve(cap); }
+	// Batch processing to improve performance
+	const int maxBatchSize = 50; // Process max 50 objects per cleanup call
+	const int totalObjects = live.Count;
+	const int batchSize = std::min(maxBatchSize, totalObjects);
 
-	for (int i = 0; i < live.Count; ++i) {
-		FoggedObject* fo = live[i];
-		if (!fo) { continue; }
+	static int nextIndex = 0;
+	if (nextIndex >= totalObjects) {
+		nextIndex = 0; // Wrap around
+	}
+
+	DynamicVectorClass<FoggedObject*> toDelete;
+	toDelete.Reserve(batchSize);
+
+	// Process a batch of objects
+	for (int processed = 0; processed < batchSize && nextIndex < totalObjects; ++processed, ++nextIndex) {
+		FoggedObject* fo = live[nextIndex];
+		if (!fo) {
+			continue;
+		}
+
+		// Quick validity check - skip expensive cell lookups if possible
+		if (fo->Location.X < 0 || fo->Location.Y < 0) {
+			toDelete.AddItem(fo);
+			continue;
+		}
 
 		// Find the cell by coordinates; DO NOT use ExtMap.
 		CellStruct cellCoords = CellClass::Coord2Cell(fo->Location);
@@ -86,13 +96,13 @@ static void SafeCleanupOrphanedFoggedObjects()
 		}
 	}
 
-	// Now actually remove and free.
-	// GameDelete() auto-removes from 'live', so we can skip Remove(fo).
+	// Remove and free collected objects
 	for (int i = 0; i < toDelete.Count; ++i) {
 		FoggedObject* fo = toDelete[i];
-		// Ensure it is gone from the render list before dealloc (defensive).
-		FoggedObject::FoggedObjects.Remove(fo);
-		GameDelete(fo);
+		if (fo) {
+			FoggedObject::FoggedObjects.Remove(fo);
+			GameDelete(fo);
+		}
 	}
 }
 
@@ -166,10 +176,15 @@ DEFINE_HOOK(0x5F4B3E, ObjectClass_DrawIfVisible, 0x6)
 	}
 
 	if (!fogged) {
+		// Clear any previous redraw flag to avoid unnecessary redraws
+		if (pThis->NeedsRedraw) {
+			pThis->NeedsRedraw = false;
+		}
 		return 0x5F4B48;  // normal draw
 	}
 
-	// Fogged: skip draw this frame (don't keep forcing redraw while fogged)
+	// Fogged: skip draw this frame and stop redraw cycling
+	// Only clear NeedsRedraw if we're actually fogged to prevent flashing
 	pThis->NeedsRedraw = false;
 	return 0x5F4D06;
 }
@@ -763,24 +778,37 @@ DEFINE_HOOK(0x6D3470, TacticalClass_DrawFoggedObject, 0x8)
 	GET_STACK(RectangleStruct*, pRect2, 0x8);
 	GET_STACK(bool, bForceViewBounds, 0xC);
 
-	// Clean up orphans BEFORE computing finalRect or rendering
-	SafeCleanupOrphanedFoggedObjects();
+	// Performance optimization: track camera movement
+	static RectangleStruct lastViewBounds = {0, 0, 0, 0};
+	static int cleanupFrameCounter = 0;
+	static bool needsFullRedraw = false;
+
+	const RectangleStruct currentViewBounds = DSurface::ViewBounds;
+	const bool cameraMoving = (lastViewBounds.X != currentViewBounds.X ||
+	                          lastViewBounds.Y != currentViewBounds.Y ||
+	                          lastViewBounds.Width != currentViewBounds.Width ||
+	                          lastViewBounds.Height != currentViewBounds.Height);
+
+	// Only run expensive cleanup every 30 frames when camera is stationary, or every 5 frames when moving
+	const int cleanupInterval = cameraMoving ? 5 : 30;
+	if ((++cleanupFrameCounter % cleanupInterval) == 0) {
+		SafeCleanupOrphanedFoggedObjects();
+	}
 
 	// SpySat edge-triggered thaw
 	const bool spyNow = (HouseClass::CurrentPlayer && HouseClass::CurrentPlayer->SpySatActive);
 	if (spyNow && !g_SpySatWasActive) {
 		ForceUnfreezeAllFogProxiesForSpySat();
-		g_NeedViewportRefresh = true; // force same-frame repaint
+		needsFullRedraw = true;
 	}
 	g_SpySatWasActive = spyNow;
 
-	// One-shot viewport repaint if we had a burst
-	if (g_NeedViewportRefresh) {
-		// Mark the whole tactical viewport dirty once
+	// Viewport refresh logic - reduce frequency
+	if (g_NeedViewportRefresh || needsFullRedraw || cameraMoving) {
 		RectangleStruct vb = DSurface::ViewBounds;
 		TacticalClass::Instance->RegisterDirtyArea(vb, /*force*/true);
-
 		g_NeedViewportRefresh = false;
+		needsFullRedraw = false;
 	}
 
 	// Reset per-frame counter
@@ -788,54 +816,32 @@ DEFINE_HOOK(0x6D3470, TacticalClass_DrawFoggedObject, 0x8)
 
 	// SpySat reveals everything, so don't draw fogged objects when SpySat is active
 	if (HouseClass::CurrentPlayer && HouseClass::CurrentPlayer->SpySatActive)
-		return 0x6D3650; // Skip fogged object rendering
+		return 0x6D3650;
 
-	RectangleStruct finalRect { 0,0,0,0 };
-	if (bForceViewBounds && DSurface::ViewBounds.Width > 0 && DSurface::ViewBounds.Height > 0)
-		finalRect = std::move(FoggedObject::Union(finalRect, DSurface::ViewBounds));
-	else
+	// Simplified and more stable render bounds calculation
+	RectangleStruct finalRect = DSurface::ViewBounds;
+
+	// Expand bounds slightly to handle edge cases and reduce flickering
+	const int expandMargin = 128; // leptons
+	finalRect.X = std::max(finalRect.X - expandMargin, 0);
+	finalRect.Y = std::max(finalRect.Y - expandMargin, 0);
+	finalRect.Width = std::min(finalRect.Width + (expandMargin * 2), DSurface::ViewBounds.Width);
+	finalRect.Height = std::min(finalRect.Height + (expandMargin * 2), DSurface::ViewBounds.Height);
+
+	// Only render fogged objects if we have a valid rect and objects exist
+	if (finalRect.Width > 0 && finalRect.Height > 0 && FoggedObject::FoggedObjects.Count > 0)
 	{
-		if (pRect1->Width > 0 && pRect1->Height > 0)
-			finalRect = std::move(FoggedObject::Union(finalRect, *pRect1));
-		if (pRect2->Width > 0 && pRect2->Height > 0)
-			finalRect = std::move(FoggedObject::Union(finalRect, *pRect2));
-
-		if (const auto nVisibleCellCount = pThis->VisibleCellCount)
+		// Performance optimization: only render objects that might be visible
+		for (const auto pObject : FoggedObject::FoggedObjects)
 		{
-			RectangleStruct buffer;
-			buffer.Width = buffer.Height = 60;
-
-			for (int i = 0; i < nVisibleCellCount; ++i)
-			{
-				auto const pCell = pThis->VisibleCells[i];
-				auto location = pCell->GetCoords();
-				auto [point, visible] = TacticalClass::Instance->CoordsToClient(location);
-				buffer.X = DSurface::ViewBounds.X + point.X - 30;
-				buffer.Y = DSurface::ViewBounds.Y + point.Y;
-				finalRect = std::move(FoggedObject::Union(finalRect, buffer));
+			if (pObject && pObject->Visible) {
+				pObject->Render(finalRect);
 			}
 		}
-
-		// TODO: Fix Drawing::DirtyAreas() access - may not exist in current Phobos
-		//for (int i = 0; i < Drawing::DirtyAreas().Count; i++)
-		//{
-		//	RectangleStruct buffer = Drawing::DirtyAreas()[i].Rect;
-		//	buffer.Y += DSurface::ViewBounds.Y;
-		//	if (buffer.Width > 0 && buffer.Height > 0)
-		//		finalRect = std::move(FoggedObject::Union(finalRect, buffer));
-		//}
 	}
 
-	if (finalRect.Width > 0 && finalRect.Height > 0)
-	{
-		finalRect.X = std::max(finalRect.X, 0);
-		finalRect.Y = std::max(finalRect.Y, 0);
-		finalRect.Width = std::min(finalRect.Width, DSurface::ViewBounds.Width - finalRect.X);
-		finalRect.Height = std::min(finalRect.Height, DSurface::ViewBounds.Height - finalRect.Y);
-
-		for (const auto pObject : FoggedObject::FoggedObjects)
-			pObject->Render(finalRect);
-	}
+	// Update tracking
+	lastViewBounds = currentViewBounds;
 
 	return 0x6D3650;
 }
