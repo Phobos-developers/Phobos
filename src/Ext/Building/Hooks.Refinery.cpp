@@ -52,7 +52,19 @@ DEFINE_HOOK(0x522E4F, InfantryClass_SlaveGiveMoney_CheckBalanceAfter, 0x6)
 	else if (auto const pBldTypeExt = BuildingTypeExt::ExtMap.TryFind(slaveMiner->GetTechnoType()->DeploysInto))
 	{
 		if (pBldTypeExt->DisplayIncome.Get(RulesExt::Global()->DisplayIncome.Get()))
-			FlyingStrings::AddMoneyString(money, slaveMiner->Owner, RulesExt::Global()->DisplayIncome_Houses.Get(), slaveMiner->Location);
+		{
+			// Only show flying strings if slave miner location is visible (not fogged)
+			if (auto const pCell = MapClass::Instance.TryGetCellAt(slaveMiner->Location))
+			{
+				if (!pCell->IsFogged() && !pCell->IsShrouded())
+				{
+					FlyingStrings::AddMoneyString(
+						money, slaveMiner->Owner,
+						RulesExt::Global()->DisplayIncome_Houses.Get(),
+						slaveMiner->Location);
+				}
+			}
+		}
 	}
 
 	return 0;

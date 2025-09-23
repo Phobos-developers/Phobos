@@ -735,7 +735,8 @@ DEFINE_HOOK(0x51F95F, InfantryClass_GetCursorOverCell_OverFog, 0x6)
 			{
 				pType = pObject->BuildingData.Type;
 
-				if (pThis->Type->Engineer && pThis->Owner->IsControlledByCurrentPlayer())
+				// Safety check: Ensure pType is valid before accessing its members
+				if (pType && pThis->Type->Engineer && pThis->Owner->IsControlledByCurrentPlayer())
 				{
 					if (pType->BridgeRepairHut)
 					{

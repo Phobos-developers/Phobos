@@ -8,6 +8,7 @@
 #include <ScenarioClass.h>
 #include <BitFont.h>
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/Debug.h>
 
 std::vector<FlyingStrings::Item> FlyingStrings::Data;
 
@@ -21,6 +22,10 @@ bool FlyingStrings::DrawAllowed(CoordStruct& nCoords)
 
 void FlyingStrings::Add(const wchar_t* text, const CoordStruct& coords, ColorStruct color, Point2D pixelOffset)
 {
+	// Debug: Log all flying strings being added
+	Debug::Log("[PHOBOS_FLYINGSTRINGS] Adding string '%ls' at (%d,%d,%d)\n",
+		text, coords.X, coords.Y, coords.Z);
+
 	Item item {};
 	item.Location = coords;
 	item.PixelOffset = pixelOffset;
@@ -32,6 +37,10 @@ void FlyingStrings::Add(const wchar_t* text, const CoordStruct& coords, ColorStr
 
 void FlyingStrings::AddMoneyString(int amount, HouseClass* owner, AffectedHouse displayToHouses, const CoordStruct& coords, Point2D pixelOffset)
 {
+	// Debug: Log all money strings being added
+	Debug::Log("[PHOBOS_FLYINGSTRINGS] AddMoneyString amount=%d at (%d,%d,%d)\n",
+		amount, coords.X, coords.Y, coords.Z);
+
 	if (amount
 		&& (displayToHouses == AffectedHouse::All
 			|| owner && EnumFunctions::CanTargetHouse(displayToHouses, owner, HouseClass::CurrentPlayer)))
@@ -62,17 +71,26 @@ void FlyingStrings::UpdateAll()
 
 		point += dataItem.PixelOffset;
 
-		RectangleStruct bound = DSurface::Temp->GetRect();
-		bound.Height -= 32;
+		// Only draw if location is not fogged/shrouded
+		bool canDraw = DrawAllowed(dataItem.Location);
+		Debug::Log("[PHOBOS_FLYINGSTRINGS] UpdateAll: string '%ls' at (%d,%d,%d) canDraw=%s\n",
+			dataItem.Text, dataItem.Location.X, dataItem.Location.Y, dataItem.Location.Z,
+			canDraw ? "YES" : "NO");
 
-		if (Unsorted::CurrentFrame > dataItem.CreationFrame + Duration - 70)
+		if (canDraw)
 		{
-			point.Y -= (Unsorted::CurrentFrame - dataItem.CreationFrame);
-			DSurface::Temp->DrawText(dataItem.Text, &bound, &point, dataItem.Color, 0, TextPrintType::NoShadow);
-		}
-		else
-		{
-			DSurface::Temp->DrawText(dataItem.Text, &bound, &point, dataItem.Color, 0, TextPrintType::NoShadow);
+			RectangleStruct bound = DSurface::Temp->GetRect();
+			bound.Height -= 32;
+
+			if (Unsorted::CurrentFrame > dataItem.CreationFrame + Duration - 70)
+			{
+				point.Y -= (Unsorted::CurrentFrame - dataItem.CreationFrame);
+				DSurface::Temp->DrawText(dataItem.Text, &bound, &point, dataItem.Color, 0, TextPrintType::NoShadow);
+			}
+			else
+			{
+				DSurface::Temp->DrawText(dataItem.Text, &bound, &point, dataItem.Color, 0, TextPrintType::NoShadow);
+			}
 		}
 
 		if (Unsorted::CurrentFrame > dataItem.CreationFrame + Duration || Unsorted::CurrentFrame < dataItem.CreationFrame)

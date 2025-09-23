@@ -170,7 +170,15 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			if (this->TransactMoney_Display)
 			{
 				auto displayCoords = this->TransactMoney_Display_AtFirer ? (pOwner ? pOwner->Location : coords) : coords;
-				FlyingStrings::AddMoneyString(this->TransactMoney, pHouse, this->TransactMoney_Display_Houses, displayCoords, this->TransactMoney_Display_Offset);
+
+				// Only show flying strings if location is visible (not fogged)
+				if (auto const pCell = MapClass::Instance.TryGetCellAt(displayCoords))
+				{
+					if (!pCell->IsFogged() && !pCell->IsShrouded())
+					{
+						FlyingStrings::AddMoneyString(this->TransactMoney, pHouse, this->TransactMoney_Display_Houses, displayCoords, this->TransactMoney_Display_Offset);
+					}
+				}
 			}
 		}
 
