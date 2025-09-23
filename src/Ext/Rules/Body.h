@@ -98,6 +98,8 @@ public:
 		Valueable<double> HeightShadowScaling_MinScale;
 		double AirShadowBaseScale_log;
 
+		Valueable<bool> RemoveShroudGlobally;
+
 		Valueable<bool> ExtendedAircraftMissions;
 		Valueable<int> ExtendedAircraftMissions_UnlandDamage;
 		Valueable<bool> AmphibiousEnter;
@@ -523,4 +525,6 @@ public:
 	{
 		Global()->InvalidatePointer(ptr, removed);
 	}
+
+	static void ApplyRemoveShroudGlobally();
 };

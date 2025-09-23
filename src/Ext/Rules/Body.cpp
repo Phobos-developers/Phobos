@@ -16,6 +16,11 @@
 #include <New/Type/InsigniaTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
 #include <Utilities/Patch.h>
+#include <MapClass.h>
+#include <CellClass.h>
+#include <TacticalClass.h>
+#include <Utilities/Debug.h>
+#include <Helpers/Enumerators.h>
 
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
 
@@ -156,6 +161,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	if (AirShadowBaseScale.isset() && AirShadowBaseScale.Get() > 0.98 && this->HeightShadowScaling.Get())
 		this->HeightShadowScaling = false;
 	this->HeightShadowScaling_MinScale.Read(exINI, GameStrings::AudioVisual, "HeightShadowScaling.MinScale");
+
+	this->RemoveShroudGlobally.Read(exINI, GameStrings::General, "RemoveShroudGlobally");
 
 	this->ExtendedAircraftMissions.Read(exINI, GameStrings::General, "ExtendedAircraftMissions");
 	this->ExtendedAircraftMissions_UnlandDamage.Read(exINI, GameStrings::General, "ExtendedAircraftMissions.UnlandDamage");
@@ -451,6 +458,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AirShadowBaseScale_log)
 		.Process(this->HeightShadowScaling)
 		.Process(this->HeightShadowScaling_MinScale)
+		.Process(this->RemoveShroudGlobally)
 		.Process(this->ExtendedAircraftMissions)
 		.Process(this->ExtendedAircraftMissions_UnlandDamage)
 		.Process(this->AmphibiousEnter)
@@ -771,3 +779,62 @@ DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
 
 // skip vanilla JumpjetControls and make it earlier load
 // DEFINE_JUMP(LJMP, 0x668EB5, 0x668EBD); // RulesClass_Process_SkipJumpjetControls // Really necessary? won't hurt to read again
+
+void RulesExt::ApplyRemoveShroudGlobally()
+{
+	if (!RulesExt::Global() || !RulesExt::Global()->RemoveShroudGlobally)
+	{
+		Debug::Log("RemoveShroudGlobally: Not enabled or RulesExt not available\n");
+		return;
+	}
+
+	Debug::Log("RemoveShroudGlobally: Starting shroud removal process\n");
+
+	// Global shroud removal - use CellRangeIterator like the warhead does
+	auto const& mapRect = MapClass::Instance.MapRect;
+	int cellsProcessed = 0;
+
+	// Calculate map center
+	CellStruct mapCenter = {
+		static_cast<short>(mapRect.X + mapRect.Width / 2),
+		static_cast<short>(mapRect.Y + mapRect.Height / 2)
+	};
+
+	// Use a very large radius to cover entire map (max map size is around 200x200)
+	const int radius = 200;
+
+	Debug::Log("RemoveShroudGlobally: Using CellRangeIterator with center (%d,%d) and radius %d\n",
+		mapCenter.X, mapCenter.Y, radius);
+
+	CellRangeIterator<CellClass>{}(mapCenter, radius + 0.5, [&cellsProcessed](CellClass* pCell)
+	{
+		if (pCell)
+		{
+			cellsProcessed++;
+			// Use the exact same logic as the RemoveShroudOnly warhead
+			while (pCell->ShroudCounter > 0)
+			{
+				pCell->ReduceShroudCounter();
+			}
+
+			// Clear gap coverage
+			pCell->GapsCoveringThisCell = 0;
+
+			// Update visibility without touching fog
+			char visibility = TacticalClass::Instance->GetOcclusion(pCell->MapCoords, false);
+			if (pCell->Visibility != visibility)
+			{
+				pCell->Visibility = visibility;
+				TacticalClass::Instance->RegisterCellAsVisible(pCell);
+			}
+		}
+		return true;
+	});
+
+	Debug::Log("RemoveShroudGlobally: Processed %d cells, forcing redraw\n", cellsProcessed);
+
+	// Force full map redraw
+	MapClass::Instance.MarkNeedsRedraw(2);
+
+	Debug::Log("RemoveShroudGlobally: Shroud removal completed\n");
+}
