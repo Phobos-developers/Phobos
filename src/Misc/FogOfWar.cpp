@@ -24,6 +24,42 @@ static bool g_NeedViewportRefresh    = false;
 // SpySat state tracking
 static bool g_SpySatWasActive = false;
 
+// Forward declaration for force cleanup function
+static void ForceCleanupFogProxiesAt(const CoordStruct& coords, BuildingTypeClass* pBuildingType = nullptr);
+
+// Force cleanup of fog proxies for a specific building type at a location
+static void ForceCleanupFogProxiesAt(const CoordStruct& coords, BuildingTypeClass* pBuildingType)
+{
+	auto& live = FoggedObject::FoggedObjects;
+	DynamicVectorClass<FoggedObject*> toDelete;
+
+	for (int i = 0; i < live.Count; ++i) {
+		FoggedObject* fo = live[i];
+		if (!fo || fo->CoveredType != FoggedObject::CoveredType::Building) {
+			continue;
+		}
+
+		// Check if this proxy is at the specified location
+		const int tolerance = 256; // leptons tolerance for building footprint
+		if (abs(fo->Location.X - coords.X) <= tolerance &&
+			abs(fo->Location.Y - coords.Y) <= tolerance) {
+			// If building type specified, only remove matching proxies
+			if (!pBuildingType || fo->BuildingData.Type == pBuildingType) {
+				toDelete.AddItem(fo);
+			}
+		}
+	}
+
+	// Remove matching proxies
+	for (int i = 0; i < toDelete.Count; ++i) {
+		FoggedObject* fo = toDelete[i];
+		if (fo) {
+			FoggedObject::FoggedObjects.Remove(fo);
+			GameDelete(fo);
+		}
+	}
+}
+
 static inline void ForceUnfreezeAllFogProxiesForSpySat() {
 	// snapshot to avoid invalidation while deleting
 	DynamicVectorClass<FoggedObject*> snap;
@@ -51,33 +87,24 @@ static void SafeCleanupOrphanedFoggedObjects()
 		return;
 	}
 
-	// Batch processing to improve performance
-	const int maxBatchSize = 50; // Process max 50 objects per cleanup call
-	const int totalObjects = live.Count;
-	const int batchSize = std::min(maxBatchSize, totalObjects);
-
-	static int nextIndex = 0;
-	if (nextIndex >= totalObjects) {
-		nextIndex = 0; // Wrap around
-	}
-
 	DynamicVectorClass<FoggedObject*> toDelete;
-	toDelete.Reserve(batchSize);
+	toDelete.Reserve(live.Count);
 
-	// Process a batch of objects
-	for (int processed = 0; processed < batchSize && nextIndex < totalObjects; ++processed, ++nextIndex) {
-		FoggedObject* fo = live[nextIndex];
+	// Check all objects for immediate cleanup of revealed areas
+	for (int i = 0; i < live.Count; ++i) {
+		FoggedObject* fo = live[i];
 		if (!fo) {
+			toDelete.AddItem(fo);
 			continue;
 		}
 
-		// Quick validity check - skip expensive cell lookups if possible
+		// Quick validity check - remove objects with invalid coordinates
 		if (fo->Location.X < 0 || fo->Location.Y < 0) {
 			toDelete.AddItem(fo);
 			continue;
 		}
 
-		// Find the cell by coordinates; DO NOT use ExtMap.
+		// Find the cell by coordinates
 		CellStruct cellCoords = CellClass::Coord2Cell(fo->Location);
 		CellClass* cell = MapClass::Instance.TryGetCellAt(cellCoords);
 		if (!cell) {
@@ -86,13 +113,41 @@ static void SafeCleanupOrphanedFoggedObjects()
 			continue;
 		}
 
-		// Orphan rule: if the cell is *not covered* anymore (no fog & no shroud),
-		// keeping a fog proxy makes no sense; schedule for deletion.
-		const bool shrouded = !(cell->Flags & CellFlags::EdgeRevealed);
-		const bool fogged   = (cell->Foggedness != -1) || (cell->Flags & CellFlags::Fogged);
+		// Check if the cell is revealed (no longer needs fog proxy)
+		const bool revealed = !!(cell->Flags & CellFlags::EdgeRevealed);
+		const bool notFogged = (cell->Foggedness == -1) && !(cell->Flags & CellFlags::Fogged);
 
-		if (!shrouded && !fogged) {
+		// If revealed and not fogged, remove the proxy immediately
+		if (revealed && notFogged) {
 			toDelete.AddItem(fo);
+			continue;
+		}
+
+		// For building proxies, check if the real building still exists
+		if (fo->CoveredType == FoggedObject::CoveredType::Building) {
+			// More aggressive cleanup - if cell is revealed, always remove building proxy
+			if (revealed && notFogged) {
+				toDelete.AddItem(fo);
+				continue;
+			}
+
+			// Check if there's a real building at this location
+			bool realBuildingExists = false;
+			for (ObjectClass* pObj = cell->FirstObject; pObj; pObj = pObj->NextObject) {
+				if (auto pBuilding = abstract_cast<BuildingClass*>(pObj)) {
+					if (pBuilding->Type == fo->BuildingData.Type &&
+						!pBuilding->InLimbo && pBuilding->IsAlive && pBuilding->Health > 0) {
+						realBuildingExists = true;
+						break;
+					}
+				}
+			}
+
+			// If no real building exists, remove proxy
+			if (!realBuildingExists) {
+				toDelete.AddItem(fo);
+				continue;
+			}
 		}
 	}
 
@@ -344,9 +399,12 @@ DEFINE_HOOK(0x4A9CA0, MapClass_RevealFogShroud, 0x8)
 		if (g_RevealedCellsThisFrame >= 64) {
 			g_NeedViewportRefresh = true;
 		}
-		
+
 		pCell->CleanFog();
-		
+
+		// Force immediate cleanup of fog proxies in this revealed cell
+		ForceCleanupFogProxiesAt(CellClass::Cell2Coord(*pMapCoords), nullptr);
+
 		// Just set buildings in this cell to redraw - let the fog gate handle visibility
 		for (ObjectClass* pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject) {
 			if (auto pBuilding = abstract_cast<BuildingClass*>(pObject)) {
@@ -789,8 +847,8 @@ DEFINE_HOOK(0x6D3470, TacticalClass_DrawFoggedObject, 0x8)
 	                          lastViewBounds.Width != currentViewBounds.Width ||
 	                          lastViewBounds.Height != currentViewBounds.Height);
 
-	// Only run expensive cleanup every 30 frames when camera is stationary, or every 5 frames when moving
-	const int cleanupInterval = cameraMoving ? 5 : 30;
+	// More aggressive cleanup when areas are being revealed or camera is moving
+	const int cleanupInterval = (cameraMoving || g_RevealedCellsThisFrame > 0) ? 1 : 10;
 	if ((++cleanupFrameCounter % cleanupInterval) == 0) {
 		SafeCleanupOrphanedFoggedObjects();
 	}
@@ -888,9 +946,12 @@ DEFINE_HOOK(0x577EBF, MapClass_Reveal, 0x6)
 	if (g_RevealedCellsThisFrame >= 64) {
 		g_NeedViewportRefresh = true;
 	}
-	
+
 	pCell->CleanFog();
-	
+
+	// Force immediate cleanup of fog proxies in this revealed cell
+	ForceCleanupFogProxiesAt(pCell->GetCoords(), nullptr);
+
 	// Just set buildings in this cell to redraw - let the fog gate handle visibility
 	for (ObjectClass* pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject) {
 		if (auto pBuilding = abstract_cast<BuildingClass*>(pObject)) {
@@ -926,6 +987,10 @@ DEFINE_HOOK(0x4FC1FF, HouseClass_PlayerDefeated_MapReveal, 0x6)
 
 	return 0x4FC214;
 }
+
+
+// Building destruction cleanup disabled - was causing crashes during destruction
+// The regular cleanup process will handle orphaned building proxies
 
 // Check if building placement should be allowed at location (respects fog like shroud)
 bool CanPlaceBuildingInFog(const CoordStruct& coords, BuildingTypeClass* pBuildingType) {
