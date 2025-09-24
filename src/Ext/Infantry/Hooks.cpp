@@ -5,6 +5,7 @@
 #include <InputManagerClass.h>
 #include <WarheadTypeClass.h>
 
+#include <Ext/BuildingType/Body.h>
 #include <Ext/TechnoType/Body.h>
 
 DEFINE_HOOK(0x51B2BD, InfantryClass_UpdateTarget_IsControlledByHuman, 0x6)
@@ -67,8 +68,17 @@ DEFINE_HOOK(0x51E4FB, InfantryClass_WhatAction_ObjectClass_EnigneerEnterBuilding
 
 	if (!bridgeRepairHut && pThis->Owner->IsAlliedWith(pBuilding->Owner))
 	{
-		if (WhatActionObjectTemp::Move || pBuilding->Health >= pBuildingType->Strength)
+		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
+
+		if (WhatActionObjectTemp::Move)
+		{
 			return Skip;
+		}
+		else if (pBuilding->Health >= pBuildingType->Strength
+			&& !pTypeExt->RubbleIntact && !pTypeExt->RubbleIntactRemove)
+		{
+			return Skip;
+		}
 	}
 
 	R->CL(bridgeRepairHut);
