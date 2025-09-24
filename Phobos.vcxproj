@@ -31,7 +31,6 @@
     <ClCompile Include="src\Blowfish\blowfish.cpp" />
     <ClCompile Include="src\Blowfish\Hooks.Blowfish.cpp" />
     <ClCompile Include="src\Ext\Cell\Body.cpp" />
-    <ClCompile Include="src\Ext\HouseType\Body.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.ForceEnemy.cpp" />
     <ClCompile Include="src\Commands\ToggleSWSidebar.cpp" />
     <ClCompile Include="src\Ext\Sidebar\SWSidebar\SWColumnClass.cpp" />
@@ -44,9 +43,6 @@
     <ClCompile Include="src\Ext\Unit\Hooks.Sinking.cpp" />
     <ClCompile Include="src\Misc\Hooks.AlphaImage.cpp" />
     <ClCompile Include="src\New\Entity\AttachEffectClass.cpp" />
-    <ClCompile Include="src\New\AnonymousType\GiftBox.cpp" />
-    <ClCompile Include="src\New\AnonymousType\GiftBoxData.cpp" />
-    <ClCompile Include="src\New\AnonymousType\GiftBoxFunctional.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\TiberiumEaterTypeClass.cpp" />
     <ClCompile Include="src\New\Type\AttachEffectTypeClass.cpp" />
     <ClCompile Include="src\Misc\MessageColumn.cpp" />
@@ -61,7 +57,6 @@
     <ClCompile Include="src\Commands\ToggleDesignatorRange.cpp" />
     <ClCompile Include="src\Commands\ToggleDigitalDisplay.cpp" />
     <ClCompile Include="src\Commands\SaveVariablesToFile.cpp" />
-    <ClCompile Include="src\Commands\ShowTechnoNames.cpp" />
     <ClCompile Include="src\Ext\Anim\Body.cpp" />
     <ClCompile Include="src\Ext\Anim\Hooks.cpp" />
     <ClCompile Include="src\Ext\Anim\Hooks.AnimCreateUnit.cpp" />
@@ -98,7 +93,6 @@
     <ClCompile Include="src\Locomotion\TestLocomotionClass.cpp" />
     <ClCompile Include="src\Misc\Hooks.Gamespeed.cpp" />
     <ClCompile Include="src\Misc\Hooks.Ares.cpp" />
-    <ClCompile Include="src\Misc\Debug.CrashDiagnostics.cpp" />
     <ClCompile Include="src\Misc\Hooks.Crates.cpp" />
     <ClCompile Include="src\Misc\Hooks.LightEffects.cpp" />
     <ClCompile Include="src\Misc\Hooks.VeinholeMonster.cpp" />
@@ -192,10 +186,8 @@
     <ClCompile Include="src\Ext\BuildingType\Hooks.Placing.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Body.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Hooks.cpp" />
-    <ClCompile Include="src\Ext\WarheadType\Transact.cpp" />
     <ClCompile Include="src\Misc\FlyingStrings.cpp" />
     <ClCompile Include="src\Misc\Hooks.BugFixes.cpp" />
-    <ClCompile Include="src\Misc\Hooks.Otamaa.cpp" />
     <ClCompile Include="src\Misc\Hooks.PCX.cpp" />
     <ClCompile Include="src\Misc\Hooks.UI.cpp" />
     <ClCompile Include="src\Misc\Hooks.LaserDraw.cpp" />
@@ -237,11 +229,7 @@
     <ClInclude Include="src\Ext\Sidebar\SWSidebar\SWSidebarClass.h" />
     <ClInclude Include="src\Ext\Sidebar\SWSidebar\SWButtonClass.h" />
     <ClInclude Include="src\Ext\Sidebar\SWSidebar\ToggleSWButtonClass.h" />
-    <ClInclude Include="src\Ext\HouseType\Body.h" />
     <ClInclude Include="src\New\Entity\AttachEffectClass.h" />
-    <ClInclude Include="src\New\AnonymousType\GiftBox.h" />
-    <ClInclude Include="src\New\AnonymousType\GiftBoxData.h" />
-    <ClInclude Include="src\New\AnonymousType\GiftBoxFunctional.h" />
     <ClInclude Include="src\New\Type\Affiliated\TiberiumEaterTypeClass.h" />
     <ClInclude Include="src\New\Type\AttachEffectTypeClass.h" />
     <ClInclude Include="src\Misc\MessageColumn.h" />
@@ -257,7 +245,6 @@
     <ClInclude Include="src\Commands\ToggleDesignatorRange.h" />
     <ClInclude Include="src\Commands\ToggleDigitalDisplay.h" />
     <ClInclude Include="src\Commands\SaveVariablesToFile.h" />
-    <ClInclude Include="src\Commands\ShowTechnoNames.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\BombardTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\PhobosTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\StraightTrajectory.h" />

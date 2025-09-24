@@ -28,7 +28,6 @@ wchar_t Phobos::wideBuffer[Phobos::readLength];
 const char* Phobos::AppIconPath = nullptr;
 
 bool Phobos::DisplayDamageNumbers = false;
-bool Phobos::DisplayTechnoNames = false;
 bool Phobos::IsLoadingSaveGame = false;
 
 bool Phobos::Optimizations::Applied = false;
