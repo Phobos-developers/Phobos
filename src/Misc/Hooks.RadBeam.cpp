@@ -1,4 +1,5 @@
 // src/Misc/Hooks.RadBeam.cpp
+#include "Hooks.RadBeam.h"
 #include <YRPP.h>
 #include <Helpers/Macro.h>
 
@@ -9,7 +10,7 @@
 #include <RadBeam.h>
 #include <Utilities/Debug.h>
 
-#define RADBEAM_FOW_DEBUG 1
+#define RADBEAM_FOW_DEBUG 0
 
 // "either-endpoint visible" to match Laser feel; fail closed.
 static __forceinline bool EitherEndVisible(const CoordStruct& a, const CoordStruct& b) {
@@ -101,18 +102,26 @@ static bool PatchCALL(uintptr_t callSite, void* newTarget) {
 }
 
 // Call this once during DLL init, after Ares has done its own patches.
+// This function is called from Phobos.cpp ScenarioClass_Start_Optimizations hook
 void Install_RadBeamFogGate() {
+    Debug::Log("[RADBEAM_FOW] Install_RadBeamFogGate() called\n");
+
     // Verified CALL site to RadBeam::Draw inside DrawAll:
     const uintptr_t site = 0x6592C6;   // next instruction is 0x6592CB
 
+    Debug::Log("[RADBEAM_FOW] Checking address 0x%08X for CALL instruction\n", site);
+    uint8_t byteAtSite = *reinterpret_cast<uint8_t*>(site);
+    Debug::Log("[RADBEAM_FOW] Byte at 0x%08X = 0x%02X (expected 0xE8 for CALL)\n", site, byteAtSite);
+
     // Must be CALL (0xE8). If a previous JMP hook sits here, bail.
-    if(*reinterpret_cast<uint8_t*>(site) != 0xE8) {
-#if RADBEAM_FOW_DEBUG
-        Debug::Log("[RADBEAM_FOW] ERROR: 0x%08X is not CALL (byte=%02X)\n",
-                   site, *reinterpret_cast<uint8_t*>(site));
-#endif
+    if(byteAtSite != 0xE8) {
+        Debug::Log("[RADBEAM_FOW] ERROR: Address 0x%08X is not CALL instruction (found 0x%02X instead of 0xE8)\n",
+                   site, byteAtSite);
+        Debug::Log("[RADBEAM_FOW] RadBeam fog gating will NOT work - hook installation FAILED\n");
         return;
     }
+
+    Debug::Log("[RADBEAM_FOW] Found CALL instruction, proceeding with hook installation\n");
 
     // Capture original target (this may be Ares' wrapper — that's fine)
     void* target = ResolveCallTarget(site);
@@ -124,15 +133,15 @@ void Install_RadBeamFogGate() {
     if(!RadBeam_Draw_Orig) return;
 
     // Redirect that CALL to our gate
-    PatchCALL(site, reinterpret_cast<void*>(&RadBeam_Draw_Gate));
-#if RADBEAM_FOW_DEBUG
-    Debug::Log("[RADBEAM_FOW] Patched CALL at 0x%08X to gate\n", site);
-#endif
+    bool patchSuccess = PatchCALL(site, reinterpret_cast<void*>(&RadBeam_Draw_Gate));
+    if (patchSuccess) {
+        Debug::Log("[RADBEAM_FOW] SUCCESS: Patched CALL at 0x%08X to gate function\n", site);
+        Debug::Log("[RADBEAM_FOW] RadBeam fog gating is now ACTIVE - you should see gate messages when RadBeams are drawn\n");
+    } else {
+        Debug::Log("[RADBEAM_FOW] ERROR: Failed to patch CALL at 0x%08X\n", site);
+        Debug::Log("[RADBEAM_FOW] RadBeam fog gating will NOT work - patch installation FAILED\n");
+    }
 }
 
-// Install the patch during initialization - use a different hook point
-DEFINE_HOOK(0x685659, Scenario_ClearClasses_RadBeamInit, 0xA)
-{
-    Install_RadBeamFogGate();
-    return 0;
-}
+// RadBeam fog installation is called from ScenarioClass_Start_Optimizations hook
+// This ensures proper initialization timing after other systems are ready
