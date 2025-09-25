@@ -1102,6 +1102,19 @@ msgstr ""
 "EnableSelectBox=false                   ; boolean\n"
 
 #: ../../User-Interface.md:347
+msgid ""
+"For your shp to work properly, you need to save it in `Force Compression "
+"3` mode, otherwise it might be incorrectly rendered as something similar "
+"to AlphaImage."
+msgstr ""
+"为了让你的 shp 正常工作，你需要将它以 `用于步兵建筑` 的模式来保存，否则它可能会错误地绘制为类似于 AlphaImage 的东西。"
+
+msgid ""
+"For ImageShaper users, you need to choose a mode other than "
+"`Uncompressed` or `Uncompressed_Full_Frame` to create `*.shp` files."
+msgstr ""
+"对于 ImageShaper 用户，则是需要选择 `Uncompressed` 或 `Uncompressed_Full_Frame` 以外的模式来创建 `*.shp` 文件。"
+
 #: ../../User-Interface.md:350
 msgid "Show designator & inhibitor range"
 msgstr "显示指示者和抑制者范围"
