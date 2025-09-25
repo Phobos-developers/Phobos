@@ -8732,7 +8732,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:2494
 msgid "Unlimbo detonate warhead"
-msgstr "去虚拟化引爆弹头"
+msgstr "去虚拟化弹头"
 
 #: ../../New-or-Enhanced-Logics.md:2496
 msgid ""
@@ -8740,12 +8740,12 @@ msgid ""
 " used in **The Call of the Panic Spear** by @[Octagonal "
 "prism](https://space.bilibili.com/360577336)*"
 msgstr ""
-"![去虚拟化引爆](_static/images/unlimbodetonate.gif) "
-"*@[八棱彩](https://space.bilibili.com/360577336) 在 **恐慌之矛的召唤** 中使用的去虚拟化引爆*"
+"![去虚拟化弹头](_static/images/unlimbodetonate.gif) "
+"*@[八棱彩](https://space.bilibili.com/360577336) 在 **恐慌之矛的召唤** 中使用的去虚拟化弹头*"
 
 #: ../../New-or-Enhanced-Logics.md:2496
 msgid "Unlimbo Detonate"
-msgstr "去虚拟化引爆弹头"
+msgstr "去虚拟化弹头"
 
 #: ../../New-or-Enhanced-Logics.md:2499
 msgid ""

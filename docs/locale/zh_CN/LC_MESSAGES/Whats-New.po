@@ -2004,7 +2004,7 @@ msgstr ""
 
 #: ../../Whats-New.md:450
 msgid "[Unlimbo Detonate warhead](New-or-Enhanced-Logics.md#unlimbo-detonate-warhead) (by FlyStar)"
-msgstr "[去虚拟化引爆弹头](New-or-Enhanced-Logics.md#unlimbo-detonate-warhead)（by Starkku）"
+msgstr "[去虚拟化弹头](New-or-Enhanced-Logics.md#unlimbo-detonate-warhead)（by Starkku）"
 
 #: ../../Whats-New.md:452 ../../Whats-New.md:667 ../../Whats-New.md:1025
 #: ../../Whats-New.md:1134 ../../Whats-New.md:1159 ../../Whats-New.md:1198
