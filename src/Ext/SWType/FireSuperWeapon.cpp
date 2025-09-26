@@ -49,26 +49,32 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 	const auto pTags = &pHouse->RelatedTags;
 	if (pTags->Count > 0)
 	{
-		int index = 0;
-		int TagCount = pTags->Count;
-
-		while (TagCount > 0 && index < TagCount)
+		auto RaiseEvent = [pTags](int nEvent, TechnoClass* pSource)
 		{
-			const auto pTag = pTags->GetItem(index);
+			int index = 0;
+			int TagCount = pTags->Count;
 
-			// don't be confused as to why (TechnoClass*)(pSW) is there, it's something very much needed..
-			if (pTag->RaiseEvent(static_cast<TriggerEvent>(77), nullptr, CellStruct::Empty, false, (TechnoClass*)(pSW))
-				|| pTag->RaiseEvent(static_cast<TriggerEvent>(75), nullptr, CellStruct::Empty, false, (TechnoClass*)(pSW)))
+			while (TagCount > 0 && index < TagCount)
 			{
-				if (TagCount != pTags->Count)
-				{
-					TagCount = pTags->Count;
-					continue;
-				}
-			}
+				const auto pTag = pTags->Items[index];
 
-			++index;
-		}
+				if (pTag->RaiseEvent(static_cast<TriggerEvent>(nEvent), nullptr, CellStruct::Empty, false, pSource))
+				{
+					if (TagCount != pTags->Count)
+					{
+						TagCount = pTags->Count;
+						continue;
+					}
+				}
+
+				++index;
+			}
+		};
+
+		std::pair<SuperClass*, CellStruct> pass{ pSW, cell };
+
+		RaiseEvent(77, reinterpret_cast<TechnoClass*>(&pass));
+		RaiseEvent(75, reinterpret_cast<TechnoClass*>(pSW));
 	}
 }
 
