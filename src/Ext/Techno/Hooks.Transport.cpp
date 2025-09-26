@@ -720,7 +720,10 @@ DEFINE_HOOK(0x51EE36, InfantryClass_MouseOvetObject_NoQueueUpToEnter, 0x5)
 
 	if (pObject->WhatAmI() == AbstractType::Building)
 	{
-		if (TechnoTypeExt::ExtMap.Find(static_cast<BuildingClass*>(pObject)->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter))
+		const auto pType = static_cast<BuildingClass*>(pObject)->Type;
+
+		if (TechnoTypeExt::ExtMap.Find(static_cast<BuildingClass*>(pObject)->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter) &&
+			pType->InfantryAbsorb)
 		{
 			R->EBP(Action::Repair);
 			return NewAction;
@@ -737,7 +740,10 @@ DEFINE_HOOK(0x740375, UnitClass_MouseOvetObject_NoQueueUpToEnter, 0x5)
 
 	if (pObject->WhatAmI() == AbstractType::Building)
 	{
-		if (TechnoTypeExt::ExtMap.Find(static_cast<BuildingClass*>(pObject)->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter))
+		const auto pType = static_cast<BuildingClass*>(pObject)->Type;
+
+		if (TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter) &&
+			pType->UnitAbsorb && !pType->Bunker && !pType->UnitRepair)
 		{
 			R->EBX(Action::Repair);
 			return NewAction;
