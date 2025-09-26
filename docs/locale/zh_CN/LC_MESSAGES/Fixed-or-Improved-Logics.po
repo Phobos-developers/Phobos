@@ -2738,6 +2738,19 @@ msgid "Only applicable to Techno that have Teleport/Chrono Locomotor attached."
 msgstr "仅对使用超时空运动方式的科技类型有效。"
 
 #: ../../Fixed-or-Improved-Logics.md:766
+msgid ""
+"Originally, `[General] -> WarpOut=` would play at two locations when a "
+"Techno is chronowarped by chronosphere. Now, `[TechnoType] -> WarpAway=` "
+"replaces it at the *source* location, but the *destination* location "
+"*still* uses the animation specified by `[General] -> WarpOut=`. This has"
+" been further extended and supported in the [*nightly* builds](General-"
+"Info.md#build-types), but the current release version still follows this "
+"rule."
+msgstr ""
+"原先当单位被 **超时空传送超武** 移动时 `[General] -> WarpOut=` 所指定的动画会在 **两个位置** 播放，"
+"现在 `[TechnoType] -> WarpAway=` 会在传送 **起始点** 替代它，但传送 **目标点** 仍然使用 `[General] -> WarpOut=` 指定的动画。"
+"这已在 [**自动构建版本**](General-Info.md#build-types) 中被进一步拓展和支持，但当前稳定版本仍然遵循这一规则。"
+
 #: ../../Fixed-or-Improved-Logics.md:769
 msgid "Customizable unit image in art"
 msgstr "在 art 中自定义单位图像"
