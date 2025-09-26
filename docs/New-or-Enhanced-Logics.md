@@ -1393,6 +1393,25 @@ AutoFire=false             ; boolean
 AutoFire.TargetSelf=false  ; boolean
 ```
 
+### Amphibious access vehicle/structure
+
+- Now you can let amphibious infantry or vehicle passengers enter or leave amphibious transport vehicles/structures on water surface.
+  - The structure allows passengers to step directly onto the water surface without requiring `AmphibiousUnload`.
+  - Whether passengers can enter the building from the water surface depends on whether their `Naval` attribute is the same. Amphibious movement is not restricted by the `Naval` attribute.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AmphibiousEnter=false           ; boolean
+AmphibiousUnload=false          ; boolean
+
+[SOMEVEHICLE/SOMEBUILDING]      ; VehicleType/BuildingType, transport
+AmphibiousEnter=                ; boolean, default to [General] -> AmphibiousEnter
+
+[SOMEVEHICLE]                   ; VehicleType, transport
+AmphibiousUnload=               ; boolean, default to [General] -> AmphibiousUnload
+```
+
 ### Build limit group
 
 - You can now make different technos share build limit in a group.
@@ -1609,6 +1628,21 @@ ForceAAWeapon.Aircraft=-1                       ; integer, -1 to disable
 
 ```{note}
 Specifically, if a position has `Force(AA)Weapon.InRange` set to -1 and `Force(AA)Weapon.InRange.Overrides` set to a positive value, it'll use default weapon selection logic once satisfied.
+```
+
+### Fast access vehicle/structure
+
+- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles/structures without queuing.
+
+In `rulesmd.ini`:
+```ini
+[General]
+NoQueueUpToEnter=false          ; boolean
+NoQueueUpToUnload=false         ; boolean
+
+[SOMEVEHICLE/SOMEBUILDING]      ; VehicleType/BuildingType, transport
+NoQueueUpToEnter=               ; boolean, default to [General] -> NoQueueUpToEnter
+NoQueueUpToUnload=              ; boolean, default to [General] -> NoQueueUpToUnload
 ```
 
 ### Initial spawns number
@@ -2004,21 +2038,6 @@ DestroySound=      ; Sound entry
 
 ## Vehicles
 
-### Amphibious access vehicle
-
-- Now you can let amphibious infantry or vehicle passengers enter or leave amphibious transport vehicles on water surface.
-
-In `rulesmd.ini`:
-```ini
-[General]
-AmphibiousEnter=false    ; boolean
-AmphibiousUnload=false   ; boolean
-
-[SOMEVEHICLE]            ; VehicleType, transport
-AmphibiousEnter=         ; boolean, default to [General] -> AmphibiousEnter
-AmphibiousUnload=        ; boolean, default to [General] -> AmphibiousUnload
-```
-
 ### Automatic deploy and blocking deploying based on ammo
 
 - It is now possible for deployable vehicles (`DeploysInto`, `DeployFire`, `IsSimpleDeployer` and those that have passengers) to automatically deploy or prevent deploying based on their current ammo.
@@ -2051,21 +2070,6 @@ WaterImage.ConditionRed=              ; VehicleType entry
 
 ```{warning}
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
-```
-
-### Fast access vehicle
-
-- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing.
-
-In `rulesmd.ini`:
-```ini
-[General]
-NoQueueUpToEnter=false    ; boolean
-NoQueueUpToUnload=false   ; boolean
-
-[SOMEVEHICLE]             ; VehicleType, transport
-NoQueueUpToEnter=         ; boolean, default to [General] -> NoQueueUpToEnter
-NoQueueUpToUnload=        ; boolean, default to [General] -> NoQueueUpToUnload
 ```
 
 ### Jumpjet Tilts While Moving
