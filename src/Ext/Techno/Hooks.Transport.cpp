@@ -753,7 +753,7 @@ DEFINE_HOOK(0x740375, UnitClass_MouseOvetObject_NoQueueUpToEnter, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x519790, InfantryClass_UpdatePosition_NoQueueUpToEnter, 0x5)
+DEFINE_HOOK(0x519776, InfantryClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 {
 	GET(InfantryClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EBX);
@@ -767,6 +767,9 @@ DEFINE_HOOK(0x519790, InfantryClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 	{
 		if (pThis->SendCommand(RadioCommand::QueryCanEnter, pBuilding) == RadioCommand::AnswerPositive)
 		{
+			if (const auto pTag = pBuilding->AttachedTag)
+				pTag->RaiseEvent(TriggerEvent::EnteredBy, pThis, CellStruct::Empty);
+
 			R->EBP(0);
 			R->EDI(pBuilding);
 			return EnterBuilding;
@@ -793,17 +796,14 @@ DEFINE_HOOK(0x739FA2, UnitClassClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 	{
 		if (pThis->SendCommand(RadioCommand::QueryCanEnter, pBuilding) == RadioCommand::AnswerPositive)
 		{
+			if (const auto pTag = pBuilding->AttachedTag)
+				pTag->RaiseEvent(TriggerEvent::EnteredBy, pThis, CellStruct::Empty);
+
 			if (pTunnel)
 			{
-				if (const auto pTag = pBuilding->AttachedTag)
-					pTag->RaiseEvent(TriggerEvent::EnteredBy, pThis, CellStruct::Empty);
-
 				AresFunctions::AddPassengerFromTunnel(pTunnel, pBuilding, pThis);
 				return SkipGameCode;
 			}
-
-			if (const auto pTag = pBuilding->AttachedTag)
-				pTag->RaiseEvent(TriggerEvent::EnteredBy, pThis, CellStruct::Empty);
 
 			return EnterBuilding;
 		}
