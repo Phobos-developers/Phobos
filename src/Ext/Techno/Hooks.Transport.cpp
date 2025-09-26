@@ -2,6 +2,9 @@
 
 #include <Ext/Scenario/Body.h>
 
+#include <Utilities/AresHelper.h>
+#include <Utilities/AresFunctions.h>
+
 DEFINE_HOOK_AGAIN(0x6FA33C, TechnoClass_ThreatEvals_OpenToppedOwner, 0x6) // TechnoClass::AI
 DEFINE_HOOK_AGAIN(0x6F89F4, TechnoClass_ThreatEvals_OpenToppedOwner, 0x6) // TechnoClass::EvaluateCell
 DEFINE_HOOK_AGAIN(0x6F7EC2, TechnoClass_ThreatEvals_OpenToppedOwner, 0x6) // TechnoClass::EvaluateObject
@@ -704,6 +707,155 @@ DEFINE_HOOK(0x73DAD8, UnitClass_Mission_Unload_PassengerLeavePosition, 0x5)
 	}
 
 	return 0;
+}
+
+#pragma endregion
+
+#pragma region BuildingEnterExtension
+
+DEFINE_HOOK(0x51EE36, InfantryClass_MouseOvetObject_NoQueueUpToEnter, 0x5)
+{
+	GET(ObjectClass*, pObject, ESI);
+	enum { NewAction = 0x51EE3B };
+
+	if (pObject->WhatAmI() == AbstractType::Building)
+	{
+		if (TechnoTypeExt::ExtMap.Find(static_cast<BuildingClass*>(pObject)->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter))
+		{
+			R->EBP(Action::Repair);
+			return NewAction;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x740375, UnitClass_MouseOvetObject_NoQueueUpToEnter, 0x5)
+{
+	GET(ObjectClass*, pObject, EDI);
+	enum { NewAction = 0x74037A };
+
+	if (pObject->WhatAmI() == AbstractType::Building)
+	{
+		if (TechnoTypeExt::ExtMap.Find(static_cast<BuildingClass*>(pObject)->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter))
+		{
+			R->EBX(Action::Repair);
+			return NewAction;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x519790, InfantryClass_UpdatePosition_NoQueueUpToEnter, 0x5)
+{
+	GET(InfantryClass*, pThis, ESI);
+	GET(BuildingClass*, pBuilding, EBX);
+	enum { EnterBuilding = 0x51A2AD, CannotEnter = 0x51A488 };
+
+	const auto pType = pBuilding->Type;
+	const auto pTunnel = AresHelper::CanUseAres ?
+		AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pThis->Owner) : nullptr;
+
+	if (pType->Passengers > 0 || pTunnel)
+	{
+		if (pThis->SendCommand(RadioCommand::QueryCanEnter, pBuilding) == RadioCommand::AnswerPositive)
+		{
+			R->EBP(0);
+			R->EDI(pBuilding);
+			return EnterBuilding;
+		}
+
+		R->EBP(0);
+		return CannotEnter;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x739FA2, UnitClassClass_UpdatePosition_NoQueueUpToEnter, 0x5)
+{
+	GET(UnitClass*, pThis, EBP);
+	GET(BuildingClass*, pBuilding, EBX);
+	enum { EnterBuilding = 0x73A28A, CannotEnter = 0x73A796, SkipGameCode = 0x73A315 };
+
+	const auto pType = pBuilding->Type;
+	const auto pTunnel = AresHelper::CanUseAres ?
+		AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pThis->Owner) : nullptr;
+
+	if (pType->Passengers > 0 || pTunnel)
+	{
+		if (pThis->SendCommand(RadioCommand::QueryCanEnter, pBuilding) == RadioCommand::AnswerPositive)
+		{
+			if (pTunnel)
+			{
+				if (const auto pTag = pBuilding->AttachedTag)
+					pTag->RaiseEvent(TriggerEvent::EnteredBy, pThis, CellStruct::Empty);
+
+				AresFunctions::AddPassengerFromTunnel(pTunnel, pBuilding, pThis);
+				return SkipGameCode;
+			}
+
+			if (const auto pTag = pBuilding->AttachedTag)
+				pTag->RaiseEvent(TriggerEvent::EnteredBy, pThis, CellStruct::Empty);
+
+			return EnterBuilding;
+		}
+		else
+		{
+			return CannotEnter;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x73F63F, UnitClass_IsCellOccupied_NoQueueUpToEnter, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+	enum { SkipGameCode = 0x73F64F };
+
+	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter))
+		return SkipGameCode;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x43C3A0, BuildingClass_ReceiveCommand_AmphibiousEnter, 0xA)
+{
+	GET(BuildingClass* const, pThis, ESI);
+	enum { SkipGameCode = 0x43C3FF };
+
+	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->AmphibiousEnter.Get(RulesExt::Global()->AmphibiousEnter))
+		return SkipGameCode;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x44DCB1, BuildingClass_Mi_Unload_NoQueueUpToUnload, 0x7)
+{
+	GET(BuildingClass*, pThis, EBP);
+	enum { SkipGameCode = 0x44DCB1 };
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
+		R->EAX(0);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4DFC83, FootClass_EnterBioReactor_NoQueueUpToUnload, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+	GET(BuildingClass*, pBuilding, EDI);
+	enum { SkipGameCode = 0x4DFC91 };
+
+	const Mission mission = TechnoTypeExt::ExtMap.Find(pBuilding->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter) ?
+		Mission::Eaten : Mission::Enter;
+
+	pThis->QueueMission(mission, false);
+	return SkipGameCode;
 }
 
 #pragma endregion
