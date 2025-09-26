@@ -1393,25 +1393,6 @@ AutoFire=false             ; boolean
 AutoFire.TargetSelf=false  ; boolean
 ```
 
-### Amphibious access vehicle/structure
-
-- Now you can let amphibious infantry or vehicle passengers enter or leave amphibious transport vehicles/structures on water surface.
-  - The structure allows passengers to step directly onto the water surface without requiring `AmphibiousUnload`.
-  - Whether passengers can enter the building from the water surface depends on whether their `Naval` attribute is the same. Amphibious movement is not restricted by the `Naval` attribute.
-
-In `rulesmd.ini`:
-```ini
-[General]
-AmphibiousEnter=false           ; boolean
-AmphibiousUnload=false          ; boolean
-
-[SOMEVEHICLE/SOMEBUILDING]      ; VehicleType/BuildingType, transport
-AmphibiousEnter=                ; boolean, default to [General] -> AmphibiousEnter
-
-[SOMEVEHICLE]                   ; VehicleType, transport
-AmphibiousUnload=               ; boolean, default to [General] -> AmphibiousUnload
-```
-
 ### Build limit group
 
 - You can now make different technos share build limit in a group.
@@ -2037,6 +2018,20 @@ DestroySound=      ; Sound entry
 ```
 
 ## Vehicles
+
+### Amphibious access vehicle
+
+- Now you can let amphibious infantry or vehicle passengers enter or leave amphibious transport vehicles on water surface.
+In `rulesmd.ini`:
+```ini
+[General]
+AmphibiousEnter=false       ; boolean
+AmphibiousUnload=false      ; boolean
+
+[SOMEVEHICLE]               ; VehicleType, transport
+AmphibiousEnter=            ; boolean, default to [General] -> AmphibiousEnter
+AmphibiousUnload=           ; boolean, default to [General] -> AmphibiousUnload
+```
 
 ### Automatic deploy and blocking deploying based on ammo
 

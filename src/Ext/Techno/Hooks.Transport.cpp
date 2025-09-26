@@ -827,21 +827,6 @@ DEFINE_HOOK(0x73F63F, UnitClass_IsCellOccupied_NoQueueUpToEnter, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x43C3A0, BuildingClass_ReceiveCommand_AmphibiousEnter, 0xA)
-{
-	GET(BuildingClass* const, pThis, ESI);
-	GET(TechnoClass* const, pSender, EDI);
-	enum { AnswerNegative = 0x43C3F0, Continue = 0x43C3FF };
-
-	const auto pType = pThis->Type;
-
-	if (TechnoTypeExt::ExtMap.Find(pType)->AmphibiousEnter.Get(RulesExt::Global()->AmphibiousEnter))
-		return Continue;
-
-	// This judgment is rather peculiar, so I've decided to modify it.
-	return (pType->Naval != pSender->GetTechnoType()->Naval) ? AnswerNegative : Continue;
-}
-
 DEFINE_HOOK(0x44DCB1, BuildingClass_Mi_Unload_NoQueueUpToUnload, 0x7)
 {
 	GET(BuildingClass*, pThis, EBP);

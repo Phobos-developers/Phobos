@@ -452,7 +452,6 @@ New:
 - [Customize the chained damage of the wall](Fixed-or-Improved-Logics.md#customize-the-chained-damage-of-the-wall) (by TaranDahl)
 - Allow the aircraft to enter area guard mission and not crash immediately without any airport (by CrimRecya)
 - [Unlimbo Detonate warhead](New-or-Enhanced-Logics.md#unlimbo-detonate-warhead) (by FlyStar)
-- Amphibious access structure (by FlyStar)
 - Fast access structure (by FlyStar)
 
 Vanilla fixes:
