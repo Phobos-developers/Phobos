@@ -2434,15 +2434,6 @@ DEFINE_HOOK(0x6F7666, TechnoClass_TriggersCellInset_DeployWeapon, 0x8)
 
 DEFINE_JUMP(LJMP, 0x6FBC0B, 0x6FBC80) // TechnoClass::UpdateCloak
 
-DEFINE_HOOK(0x457DEB, BuildingClass_ClearOccupants_Redraw, 0xA)
-{
-	GET(BuildingClass*, pThis, ESI);
-
-	pThis->Mark(MarkType::Change);
-
-	return 0;
-}
-
 #pragma region BuildingUnloadFix
 
 DEFINE_HOOK(0x458180, BuildingClass_RemoveOccupants_CheckWhenNoPlaceToUnload, 0x9)
@@ -2455,11 +2446,26 @@ DEFINE_HOOK(0x458180, BuildingClass_RemoveOccupants_CheckWhenNoPlaceToUnload, 0x
 	// If it is called from Mission_Unload, then skip execution if there is not enough space
 	// Remain unchanged in other cases like dead when receive damage or neutral ones get red
 	if (retnAddr != 0x44D8A1)
+	{
 		pThis->KillOccupants(nullptr);
+		pThis->Mark(MarkType::Change); // Force redraw if occupant status changes.
+	}
 	else
+	{
 		pThis->SetTarget(nullptr);
+	}
 
 	return SkipGameCode;
+}
+
+// Force redraw if occupant status changes - code path where they are not killed.
+DEFINE_HOOK(0x458060, BuildingClass_ClearOccupants_Redraw, 0x5)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	pThis->Mark(MarkType::Change);
+
+	return 0;
 }
 
 DEFINE_PATCH(0x501504, 0x01); // HouseClass::All_To_Hunt
@@ -2574,6 +2580,11 @@ DEFINE_PATCH(0x42C34B, 0xB7);
 // To avoid incorrect negative int index
 DEFINE_PATCH(0x42C36B, 0xB7);
 // movsx eax, word ptr [eax+esi*2] -> movzx eax, word ptr [eax+esi*2]
+
+// 429E9A: 0F BF 08
+// To avoid incorrect negative int index
+DEFINE_PATCH(0x429E9B, 0xB7);
+// movsx ecx, word ptr [eax] -> movzx ecx, word ptr [eax]
 
 #pragma endregion
 

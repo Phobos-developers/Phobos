@@ -351,7 +351,9 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 			if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pWHExt->AirstrikeTargets))
 				return CannotFire;
 
-			if (!TechnoExt::ExtMap.Find(pTargetTechno)->TypeExtData->AllowAirstrike.Get(pTargetTechno->AbstractFlags & AbstractFlags::Foot ? true : static_cast<BuildingClass*>(pTargetTechno)->Type->CanC4))
+			const auto pTypeExt = TechnoExt::ExtMap.Find(pTargetTechno)->TypeExtData;
+
+			if (pTypeExt->AllowAirstrike.isset() ? !pTypeExt->AllowAirstrike.Get() : (pTargetTechno->AbstractFlags & AbstractFlags::Foot ? false : !static_cast<BuildingClass*>(pTargetTechno)->Type->CanC4))
 				return CannotFire;
 		}
 	}

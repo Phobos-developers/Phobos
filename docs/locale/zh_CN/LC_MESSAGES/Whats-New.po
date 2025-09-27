@@ -168,6 +168,24 @@ msgid "From older Phobos versions"
 msgstr "由旧版本 Phobos"
 
 #: ../../Whats-New.md:27
+msgid "From 0.4"
+msgstr "由 0.4"
+
+#: ../../Whats-New.md:29
+msgid ""
+"`[TechnoType] -> WarpAway=` has now been changed to set the animation "
+"when units are erased to maintain semantic consistency with `[General] ->"
+" WarpAway=`. The animation that was originally controlled by "
+"`[TechnoType] -> WarpAway=`, which played instead of `[TechnoType] -> "
+"WarpOut=` when a Techno is chronowarped by chronosphere, now needs to be "
+"specified using `[TechnoType] -> Chronoshift.WarpOut=`, which defaults to "
+"the value of `[TechnoType] -> WarpOut=`."
+msgstr ""
+"`[TechnoType] -> WarpAway=` 现已改为用于设置单位被抹除时的动画，以与 `[General] -> WarpAway=` 保持语义一致。"
+"原先由 `[TechnoType] -> WarpAway=` 指定的动画用于单位被超时空传送超武移动时替代 `[TechnoType] -> WarpOut=` 播放，"
+"现在它需要使用 `[TechnoType] -> Chronoshift.WarpOut=` 语句来指定，其默认为 `[TechnoType] -> WarpOut=` 的值。"
+
+#: ../../Whats-New.md:27
 msgid "From post-0.3 devbuilds"
 msgstr "由 post-0.3 开发版"
 

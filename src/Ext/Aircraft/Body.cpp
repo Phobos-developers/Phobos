@@ -71,7 +71,7 @@ bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CellStruct ed
 	const bool result = pThis->Unlimbo(coords, DirType::North);
 	--Unsorted::ScenarioInit;
 
-	pThis->SetHeight(pTypeExt->SpawnHeight.Get(pType->GetFlightLevel()));
+	pThis->SetHeight(pTypeExt->SpawnHeight.isset() ? pTypeExt->SpawnHeight.Get() : pType->GetFlightLevel());
 
 	if (pTarget)
 		pThis->PrimaryFacing.SetDesired(pThis->GetTargetDirection(pTarget));
