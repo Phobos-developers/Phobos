@@ -1309,7 +1309,7 @@ DEFINE_HOOK(0x70023B, TechnoClass_MouseOverObject_AttackUnderGround, 0x5)
 
 	GET(ObjectClass*, pObject, EDI);
 	GET(TechnoClass*, pThis, ESI);
-	GET(int, wpIdx, EAX);
+	GET(const int, wpIdx, EAX);
 
 	if (pObject->IsSurfaced())
 		return FireIsOK;
@@ -1326,7 +1326,7 @@ DEFINE_HOOK(0x728F9A, TunnelLocomotionClass_Process_Track, 0x7)
 	GET(ILocomotion*, pThis, ESI);
 
 	const auto pLoco = static_cast<TunnelLocomotionClass*>(pThis);
-	auto pTechno = pLoco->LinkedTo;
+	const auto pTechno = pLoco->LinkedTo;
 	ScenarioExt::Global()->UndergroundTracker.AddUnique(pTechno);
 	TechnoExt::ExtMap.Find(pTechno)->UndergroundTracked = true;
 
@@ -1346,7 +1346,7 @@ DEFINE_HOOK(0x7297F6, TunnelLocomotionClass_ProcessDigging_Track, 0x7)
 DEFINE_HOOK(0x772AB3, WeaponTypeClass_AllowedThreats_AU, 0x5)
 {
 	GET(BulletTypeClass* const, pType, ECX);
-	GET(ThreatType, flags, EAX);
+	GET(const ThreatType, flags, EAX);
 
 	if (BulletTypeExt::ExtMap.Find(pType)->AU)
 		R->EAX(static_cast<unsigned int>(flags) | 0x20000u);
@@ -1361,7 +1361,7 @@ namespace SelectAutoTarget_Context
 
 DEFINE_HOOK(0x6F8DF0, TechnoClass_SelectAutoTarget_Start_AU, 0x9)
 {
-	GET_STACK(unsigned int, flags, 0x4);
+	GET_STACK(const unsigned int, flags, 0x4);
 	SelectAutoTarget_Context::AU = (flags & 0x20000u) != 0;
 	return 0;
 }
@@ -1453,7 +1453,7 @@ DEFINE_HOOK(0x6F7E1E, TechnoClass_CanAutoTargetObject_AU, 0x6)
 	enum { Continue = 0x6F7E24, ReturnFalse = 0x6F894F };
 
 	GET(TechnoClass*, pTarget, ESI);
-	GET(int, height, EAX);
+	GET(const int, height, EAX);
 
 	return height >= -20 || SelectAutoTarget_Context::AU || TechnoExt::ExtMap.Find(pTarget)->SpecialTracked ? Continue : ReturnFalse;
 }

@@ -453,18 +453,23 @@ DEFINE_HOOK(0x6FC749, TechnoClass_GetFireError_AntiUnderground, 0x5)
 {
 	enum { Illegal = 0x6FC86A, GoOtherChecks = 0x6FC762 };
 
-	GET(Layer, layer, EAX);
-	//GET(TechnoClass*, pThis, EBX);
+	GET(const Layer, layer, EAX);
 	GET(WeaponTypeClass*, pWeapon, EDI);
 
-	auto const pProj = pWeapon->Projectile;
-	auto const pProjExt = BulletTypeExt::ExtMap.Find(pProj);
-
-	if (layer == Layer::Underground && !pProjExt->AU)
-		return Illegal;
-
-	if ((layer == Layer::Air || layer == Layer::Top) && !pProj->AA)
-		return Illegal;
+	switch (layer)
+	{
+	case Layer::Air:
+	case Layer::Top:
+		if (!pWeapon->Projectile->AA)
+			return Illegal;
+		break;
+	case Layer::Underground:
+		if (!BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->AU)
+			return Illegal;
+		break;
+	default:
+		break;
+	}
 
 	return GoOtherChecks;
 }
