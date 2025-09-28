@@ -262,6 +262,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `DeployingAnim` using unit drawer now also tint accordingly with the unit.
 - Fixed an issue that jumpjets in air can not correctly spawn missiles.
 - Fixed an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos.
+- Fixed `OpenTopped` to work with buildings.
+- Fixed buildings giving an order to attack self when unloading (manifested with opentopped buildings and garrisons leaving buildings sometimes).
 
 ## Fixes / interactions with other extensions
 
