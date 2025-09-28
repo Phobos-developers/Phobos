@@ -752,14 +752,18 @@ TargetZoneScanType=same  ; target zone scan enumeration (same|any|inrange)
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]            ; TechnoType
-WarpOut=                ; Anim (played when Techno warping out), default to [General] WarpOut
-WarpIn=                 ; Anim (played when Techno warping in), default to [General] WarpIn
-WarpAway=               ; Anim (played when Techno chronowarped by chronosphere), default to [General] WarpOut
+WarpOut=                ; Anim (played when Techno warping out), default to [General] -> WarpOut
+WarpIn=                 ; Anim (played when Techno warping in), default to [General] -> WarpIn
+WarpAway=               ; Anim (played when Techno chronowarped by chronosphere), default to [General] -> WarpOut
 ChronoTrigger=          ; boolean, if yes then delay varies by distance, if no it is a constant
 ChronoDistanceFactor=   ; integer, amount to divide the distance to destination by to get the warped out delay
 ChronoMinimumDelay=     ; integer, the minimum delay for teleporting, no matter how short the distance
 ChronoRangeMinimum=     ; integer, can be used to set a small range within which the delay is constant
 ChronoDelay=            ; integer, delay after teleport for chronosphere
+```
+
+```{note}
+Originally, `[General] -> WarpOut=` would play at two locations when a Techno is chronowarped by chronosphere. Now, `[TechnoType] -> WarpAway=` replaces it at the *source* location, but the *destination* location *still* uses the animation specified by `[General] -> WarpOut=`. This has been further extended and supported in the [*nightly* builds](General-Info.md#build-types), but the current release version still follows this rule.
 ```
 
 ### Customizable unit image in art
