@@ -491,6 +491,8 @@ Phobos fixes:
 - Fixed map trigger action `125 Build At...` not always playing buildups correctly (by Starkku)
 - Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range (by TaranDahl)
 - Fixed an issue that jumpjet infantries stop incorrectly when assigned a target out of range (by TaranDahl)
+- Fixed an issue where the 77 trigger event in Ares was not functioning properly (by NetsuNegi)
+- Fixed an interaction error between the engineer and the Ares rubble (by FlyStar)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
