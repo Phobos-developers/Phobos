@@ -47,22 +47,23 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 	sw_ext.ShotCount++;
 
 	const auto pTags = &pHouse->RelatedTags;
+
 	if (pTags->Count > 0)
 	{
 		auto RaiseEvent = [pTags](int nEvent, TechnoClass* pSource)
 		{
 			int index = 0;
-			int TagCount = pTags->Count;
+			int tagCount = pTags->Count;
 
-			while (TagCount > 0 && index < TagCount)
+			while (tagCount > 0 && index < tagCount)
 			{
 				const auto pTag = pTags->Items[index];
 
 				if (pTag->RaiseEvent(static_cast<TriggerEvent>(nEvent), nullptr, CellStruct::Empty, false, pSource))
 				{
-					if (TagCount != pTags->Count)
+					if (tagCount != pTags->Count)
 					{
-						TagCount = pTags->Count;
+						tagCount = pTags->Count;
 						continue;
 					}
 				}
