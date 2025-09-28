@@ -2246,12 +2246,14 @@ msgid ""
 "Fixed an issue where the 77 trigger event in Ares was not functioning "
 "properly (by NetsuNegi)"
 msgstr ""
+"修复了 Ares 的 77 号触发无法正常运作的问题（by NetsuNegi）"
 
 #: ../../Whats-New.md:495
 msgid ""
 "Fixed an interaction error between the engineer and the Ares rubble (by "
 "FlyStar)"
 msgstr ""
+"修复了工程师和 Ares 废墟逻辑的交互错误（FlyStar）"
 
 #: ../../Whats-New.md:497 ../../Whats-New.md:873 ../../Whats-New.md:1096
 msgid "Fixes / interactions with other extensions:"
