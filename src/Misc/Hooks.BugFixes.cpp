@@ -2657,3 +2657,76 @@ DEFINE_HOOK(0x741A66, UnitClass_SetDestination_JJVehFix, 0x5)
 }
 
 #pragma endregion
+
+#pragma region OpenTopped on buildings
+
+DEFINE_HOOK(0x51A320, InfantryClass_PerCellProcess_SubmitToOpenToppedOnBuildingEnter, 0x7)
+{
+	GET(BuildingClass* const, pBuilding, EDI);
+	GET(InfantryClass* const, pThis, ESI);
+
+	if (pBuilding->Type->OpenTopped)
+		pBuilding->EnteredOpenTopped(pThis);
+
+	// there's no opentopped infantry... yet :P
+	if (pThis->Type->OpenTopped)
+		pThis->SetTargetForPassengers(nullptr);
+
+	// where's Multfinite's cncnet5 cli... erm, I mean, fixup of the stolen relative address instructions???
+	// return 0;
+
+	R->EAX(pBuilding->IsAbsorbAllowed());
+	return 0x51A327;
+}
+
+DEFINE_HOOK(0x73A2F4, UnitClass_PerCellProcess_SubmitToOpenToppedOnBuildingEnter, 0x6)
+{
+	GET(UnitClass* const, pThis, EBP);
+	GET(BuildingClass* const, pBuilding, EBX);
+
+	if (pBuilding->Type->OpenTopped)
+		pBuilding->EnteredOpenTopped(pThis);
+
+	if (pThis->Type->OpenTopped)
+		pThis->SetTargetForPassengers(nullptr);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x44DBA9, BuildingClass_MissionUnload_DisableOpenToppedForUnloading, 0x6)
+{
+	GET(BuildingClass* const, pThis, EBP);
+	GET(FootClass* const, pFoot, ESI);
+
+	if (pThis->Type->OpenTopped)
+		pThis->ExitedOpenTopped(pFoot);
+
+	if (pThis->Type->OpenTopped && pFoot->Owner != pThis->Owner)
+		pFoot->SetTarget(nullptr);
+
+	return 0;
+}
+
+// misleading WW name, Drop_Debris also handles survivors
+DEFINE_HOOK(0x442D97, BuildingClass_DropDebris_DisableOpenTopped, 0x6)
+{
+	GET(BuildingClass* const, pThis, ECX);
+
+	if (pThis->Type->OpenTopped)
+		pThis->MarkPassengersAsExited();
+
+	return 0;
+}
+
+#pragma endregion
+
+// previously the building was given as a target for the unload order, unlike unit unload order which uses null target
+DEFINE_HOOK_AGAIN(0x443557, BuildingClass_ActiveClickWith_NullTargetForUnload, 0x0)
+DEFINE_HOOK(0x443534, BuildingClass_ActiveClickWith_NullTargetForUnload, 0x0)
+{
+	GET(BuildingClass* const, pThis, EBX);
+
+	R->EAX(pThis->ClickedMission(Mission::Unload, nullptr, nullptr, nullptr));
+
+	return R->Origin() + 17;
+}

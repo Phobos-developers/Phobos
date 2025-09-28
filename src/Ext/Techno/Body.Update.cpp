@@ -1130,6 +1130,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 
 	// Update open topped state of potential passengers if transport's OpenTopped value changes.
 	// OpenTopped does not work properly with buildings to begin with which is why this is here rather than in the Techno update one.
+	// TODO move to non-foot since we now have proper building open-topped support
 	if (pThis->Passengers.NumPassengers > 0)
 	{
 		const bool toOpenTopped = pCurrentType->OpenTopped;
