@@ -2024,15 +2024,16 @@ DestroySound=      ; Sound entry
 ### Amphibious access vehicle
 
 - Now you can let amphibious infantry or vehicle passengers enter or leave amphibious transport vehicles on water surface.
+- 
 In `rulesmd.ini`:
 ```ini
 [General]
-AmphibiousEnter=false       ; boolean
-AmphibiousUnload=false      ; boolean
+AmphibiousEnter=false    ; boolean
+AmphibiousUnload=false   ; boolean
 
-[SOMEVEHICLE]               ; VehicleType, transport
-AmphibiousEnter=            ; boolean, default to [General] -> AmphibiousEnter
-AmphibiousUnload=           ; boolean, default to [General] -> AmphibiousUnload
+[SOMEVEHICLE]            ; VehicleType, transport
+AmphibiousEnter=         ; boolean, default to [General] -> AmphibiousEnter
+AmphibiousUnload=        ; boolean, default to [General] -> AmphibiousUnload
 ```
 
 ### Automatic deploy and blocking deploying based on ammo
