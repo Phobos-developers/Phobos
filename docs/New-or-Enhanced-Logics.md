@@ -1620,6 +1620,8 @@ In `rulesmd.ini`:
 [General]
 NoQueueUpToEnter=false          ; boolean
 NoQueueUpToUnload=false         ; boolean
+NoQueueUpToEnter.Buildings=     ; boolean, default to NoQueueUpToEnter
+NoQueueUpToUnload.Buildings=    ; boolean, default to NoQueueUpToUnload
 
 [SOMEVEHICLE/SOMEBUILDING]      ; VehicleType/BuildingType, transport
 NoQueueUpToEnter=               ; boolean, default to [General] -> NoQueueUpToEnter

@@ -725,10 +725,12 @@ DEFINE_HOOK(0x51EE36, InfantryClass_MouseOvetObject_NoQueueUpToEnter, 0x5)
 
 	if (pObject->WhatAmI() == AbstractType::Building)
 	{
+		const auto RulesExt = RulesExt::Global();
 		const auto pType = static_cast<BuildingClass*>(pObject)->Type;
 
 		if (pType->InfantryAbsorb
-			&& TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter_Buildings))
+			&& TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToEnter.Get(
+				RulesExt->NoQueueUpToEnter_Buildings.Get(RulesExt->NoQueueUpToEnter)))
 		{
 			R->EBP(Action::Repair);
 			return NewAction;
@@ -745,10 +747,12 @@ DEFINE_HOOK(0x740375, UnitClass_MouseOvetObject_NoQueueUpToEnter, 0x5)
 
 	if (pObject->WhatAmI() == AbstractType::Building)
 	{
+		const auto RulesExt = RulesExt::Global();
 		const auto pType = static_cast<BuildingClass*>(pObject)->Type;
 
 		if (pType->UnitAbsorb
-			&& TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter_Buildings))
+			&& TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToEnter.Get(
+				RulesExt->NoQueueUpToEnter_Buildings.Get(RulesExt->NoQueueUpToEnter)))
 		{
 			R->EBX(Action::Repair);
 			return NewAction;
@@ -763,23 +767,15 @@ DEFINE_HOOK(0x73F63F, UnitClass_IsCellOccupied_NoQueueUpToEnter, 0x6)
 	GET(BuildingClass*, pThis, ESI);
 	enum { SkipGameCode = 0x73F64F };
 
+	const auto RulesExt = RulesExt::Global();
 	const auto pType = pThis->Type;
 
 	if (pType->UnitAbsorb
-		&& TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter_Buildings))
+		&& TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToEnter.Get(
+			RulesExt->NoQueueUpToEnter_Buildings.Get(RulesExt->NoQueueUpToEnter)))
 	{
 		return SkipGameCode;
 	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x44DCB1, BuildingClass_Mi_Unload_NoQueueUpToUnload, 0x7)
-{
-	GET(BuildingClass*, pThis, EBP);
-
-	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload_Buildings))
-		R->EAX(0);
 
 	return 0;
 }
@@ -790,11 +786,28 @@ DEFINE_HOOK(0x4DFC83, FootClass_EnterBioReactor_NoQueueUpToUnload, 0x6)
 	GET(BuildingClass*, pBuilding, EDI);
 	enum { SkipGameCode = 0x4DFC91 };
 
-	const Mission mission = TechnoTypeExt::ExtMap.Find(pBuilding->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter_Buildings)
+	const auto RulesExt = RulesExt::Global();
+	const Mission mission = TechnoTypeExt::ExtMap.Find(pBuilding->Type)->NoQueueUpToEnter.Get(
+		RulesExt->NoQueueUpToEnter_Buildings.Get(RulesExt->NoQueueUpToEnter))
 		? Mission::Eaten : Mission::Enter;
 
 	pThis->QueueMission(mission, false);
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x44DCB1, BuildingClass_Mi_Unload_NoQueueUpToUnload, 0x7)
+{
+	GET(BuildingClass*, pThis, EBP);
+
+	const auto RulesExt = RulesExt::Global();
+
+	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->NoQueueUpToUnload.Get(
+		RulesExt->NoQueueUpToUnload_Buildings.Get(RulesExt->NoQueueUpToUnload)))
+	{
+		R->EAX(0);
+	}
+
+	return 0;
 }
 
 DEFINE_HOOK(0x519776, InfantryClass_UpdatePosition_NoQueueUpToEnter, 0x5)

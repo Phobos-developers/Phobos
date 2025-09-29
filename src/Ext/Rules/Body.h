@@ -104,8 +104,8 @@ public:
 		Valueable<bool> AmphibiousUnload;
 		Valueable<bool> NoQueueUpToEnter;
 		Valueable<bool> NoQueueUpToUnload;
-		Valueable<bool> NoQueueUpToEnter_Buildings;
-		Valueable<bool> NoQueueUpToUnload_Buildings;
+		Nullable<bool> NoQueueUpToEnter_Buildings;
+		Nullable<bool> NoQueueUpToUnload_Buildings;
 
 		Valueable<bool> BuildingProductionQueue;
 
@@ -338,8 +338,8 @@ public:
 			, AmphibiousUnload { false }
 			, NoQueueUpToEnter { false }
 			, NoQueueUpToUnload { false }
-			, NoQueueUpToEnter_Buildings { false }
-			, NoQueueUpToUnload_Buildings { false }
+			, NoQueueUpToEnter_Buildings {}
+			, NoQueueUpToUnload_Buildings {}
 
 			, BuildingProductionQueue { false }
 
