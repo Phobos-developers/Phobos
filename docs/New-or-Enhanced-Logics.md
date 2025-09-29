@@ -2024,7 +2024,7 @@ DestroySound=      ; Sound entry
 ### Amphibious access vehicle
 
 - Now you can let amphibious infantry or vehicle passengers enter or leave amphibious transport vehicles on water surface.
-- 
+
 In `rulesmd.ini`:
 ```ini
 [General]
