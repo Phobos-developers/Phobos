@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <CCINIClass.h>
 #include <RulesClass.h>
@@ -104,6 +104,8 @@ public:
 		Valueable<bool> AmphibiousUnload;
 		Valueable<bool> NoQueueUpToEnter;
 		Valueable<bool> NoQueueUpToUnload;
+		Valueable<bool> NoQueueUpToEnter_Buildings;
+		Valueable<bool> NoQueueUpToUnload_Buildings;
 
 		Valueable<bool> BuildingProductionQueue;
 
@@ -336,6 +338,8 @@ public:
 			, AmphibiousUnload { false }
 			, NoQueueUpToEnter { false }
 			, NoQueueUpToUnload { false }
+			, NoQueueUpToEnter_Buildings { false }
+			, NoQueueUpToUnload_Buildings { false }
 
 			, BuildingProductionQueue { false }
 

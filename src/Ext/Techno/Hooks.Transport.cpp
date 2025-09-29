@@ -275,7 +275,7 @@ static inline bool CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 }
 
 // Rewrite from 0x51A21B/0x73A6D1
-static inline void DoEnterNow(UnitClass* pTransport, FootClass* pPassenger)
+static inline void DoEnterNow(UnitClass* pTransport, FootClass* pPassenger, TechnoExt::ExtData* pExt)
 {
 	// Vanilla only for infantry, but why
 	if (const auto pTag = pTransport->AttachedTag)
@@ -296,27 +296,17 @@ static inline void DoEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 	pPassenger->FrozenStill = true; // Added, to prevent the vehicles from stacking together when unloading
 	pPassenger->SetSpeedPercentage(0.0); // Added, to stop the passengers and let OpenTopped work normally
 
-	const auto pPassengerType = pPassenger->GetTechnoType();
-
-	// Reinstalling Locomotor can avoid various issues such as teleportation, ignoring commands, and automatic return
-	while (LocomotionClass::End_Piggyback(pPassenger->Locomotor));
-
-	if (const auto pNewLoco = LocomotionClass::CreateInstance(pPassengerType->Locomotor))
-	{
-		pPassenger->Locomotor = std::move(pNewLoco);
-		pPassenger->Locomotor->Link_To_Object(pPassenger);
-	}
-
 	pTransport->AddPassenger(pPassenger); // Don't swap order casually, very very important
 	pPassenger->Transporter = pTransport;
 
 	if (pTransport->Type->OpenTopped)
 		pTransport->EnteredOpenTopped(pPassenger);
 
-	if (pPassengerType->OpenTopped)
+	if (pPassenger->GetTechnoType()->OpenTopped)
 		pPassenger->SetTargetForPassengers(nullptr);
 
 	pPassenger->Undiscover();
+	pExt->ResetLocomotor = true;
 }
 
 // Update after unit location update
@@ -325,7 +315,8 @@ DEFINE_HOOK(0x4DA8A0, FootClass_Update_AfterLocomotorProcess, 0x6)
 	GET(FootClass* const, pThis, ESI);
 
 	// Update laser trails after locomotor process, to ensure that the updated position is not the previous frame's position
-	TechnoExt::ExtMap.Find(pThis)->UpdateLaserTrails();
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->UpdateLaserTrails();
 
 	// The core part of the fast enter action
 	if (const auto pDest = abstract_cast<UnitClass*>(pThis->CurrentMission == Mission::Enter ? pThis->GetNthLink() : pThis->QueueUpToEnter))
@@ -339,7 +330,7 @@ DEFINE_HOOK(0x4DA8A0, FootClass_Update_AfterLocomotorProcess, 0x6)
 				const auto absType = pThis->WhatAmI();
 
 				if ((absType == AbstractType::Infantry || absType == AbstractType::Unit) && CanEnterNow(pDest, pThis))
-					DoEnterNow(pDest, pThis);
+					DoEnterNow(pDest, pThis, pExt);
 			}
 			else if (!pThis->Destination // Move to enter position, prevent other passengers from waiting for call and not moving early
 				&& !pDest->OnBridge && !pDest->Destination)
@@ -355,6 +346,20 @@ DEFINE_HOOK(0x4DA8A0, FootClass_Update_AfterLocomotorProcess, 0x6)
 				}
 			}
 		}
+	}
+
+	if (pExt->ResetLocomotor)
+	{
+		// Reinstalling Locomotor can avoid various issues such as teleportation, ignoring commands, and automatic return
+		while (LocomotionClass::End_Piggyback(pThis->Locomotor));
+
+		if (const auto pNewLoco = LocomotionClass::CreateInstance(pThis->GetTechnoType()->Locomotor))
+		{
+			pThis->Locomotor = std::move(pNewLoco);
+			pThis->Locomotor->Link_To_Object(pThis);
+		}
+
+		pExt->ResetLocomotor = false;
 	}
 
 	return 0;
@@ -722,8 +727,8 @@ DEFINE_HOOK(0x51EE36, InfantryClass_MouseOvetObject_NoQueueUpToEnter, 0x5)
 	{
 		const auto pType = static_cast<BuildingClass*>(pObject)->Type;
 
-		if (TechnoTypeExt::ExtMap.Find(static_cast<BuildingClass*>(pObject)->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter) &&
-			pType->InfantryAbsorb)
+		if (pType->InfantryAbsorb
+			&& TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter_Buildings))
 		{
 			R->EBP(Action::Repair);
 			return NewAction;
@@ -742,8 +747,8 @@ DEFINE_HOOK(0x740375, UnitClass_MouseOvetObject_NoQueueUpToEnter, 0x5)
 	{
 		const auto pType = static_cast<BuildingClass*>(pObject)->Type;
 
-		if (TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter) &&
-			pType->UnitAbsorb && !pType->Bunker && !pType->UnitRepair)
+		if (pType->UnitAbsorb
+			&& TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter_Buildings))
 		{
 			R->EBX(Action::Repair);
 			return NewAction;
@@ -753,6 +758,45 @@ DEFINE_HOOK(0x740375, UnitClass_MouseOvetObject_NoQueueUpToEnter, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x73F63F, UnitClass_IsCellOccupied_NoQueueUpToEnter, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+	enum { SkipGameCode = 0x73F64F };
+
+	const auto pType = pThis->Type;
+
+	if (pType->UnitAbsorb
+		&& TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter_Buildings))
+	{
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x44DCB1, BuildingClass_Mi_Unload_NoQueueUpToUnload, 0x7)
+{
+	GET(BuildingClass*, pThis, EBP);
+
+	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload_Buildings))
+		R->EAX(0);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4DFC83, FootClass_EnterBioReactor_NoQueueUpToUnload, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+	GET(BuildingClass*, pBuilding, EDI);
+	enum { SkipGameCode = 0x4DFC91 };
+
+	const Mission mission = TechnoTypeExt::ExtMap.Find(pBuilding->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter_Buildings)
+		? Mission::Eaten : Mission::Enter;
+
+	pThis->QueueMission(mission, false);
+	return SkipGameCode;
+}
+
 DEFINE_HOOK(0x519776, InfantryClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 {
 	GET(InfantryClass*, pThis, ESI);
@@ -760,6 +804,9 @@ DEFINE_HOOK(0x519776, InfantryClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 	enum { EnterBuilding = 0x51A2AD, CannotEnter = 0x51A488 };
 
 	const auto pType = pBuilding->Type;
+	if (!pType->InfantryAbsorb)
+		return 0;
+
 	const auto pTunnel = AresHelper::CanUseAres ?
 		AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pBuilding->Owner) : nullptr;
 
@@ -789,6 +836,9 @@ DEFINE_HOOK(0x739FA2, UnitClassClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 	enum { EnterBuilding = 0x73A28A, CannotEnter = 0x73A796, SkipGameCode = 0x73A315 };
 
 	const auto pType = pBuilding->Type;
+	if (!pType->UnitAbsorb)
+		return 0;
+
 	const auto pTunnel = AresHelper::CanUseAres ?
 		AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pBuilding->Owner) : nullptr;
 
@@ -798,6 +848,9 @@ DEFINE_HOOK(0x739FA2, UnitClassClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 		{
 			if (const auto pTag = pBuilding->AttachedTag)
 				pTag->RaiseEvent(TriggerEvent::EnteredBy, pThis, CellStruct::Empty);
+
+			// This might fix a bug where hover vehicles enter tunnels.
+			TechnoExt::ExtMap.Find(pThis)->ResetLocomotor = true;
 
 			if (pTunnel)
 			{
@@ -814,43 +867,6 @@ DEFINE_HOOK(0x739FA2, UnitClassClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 	}
 
 	return 0;
-}
-
-DEFINE_HOOK(0x73F63F, UnitClass_IsCellOccupied_NoQueueUpToEnter, 0x6)
-{
-	GET(BuildingClass*, pThis, ESI);
-	enum { SkipGameCode = 0x73F64F };
-
-	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter))
-		return SkipGameCode;
-
-	return 0;
-}
-
-DEFINE_HOOK(0x44DCB1, BuildingClass_Mi_Unload_NoQueueUpToUnload, 0x7)
-{
-	GET(BuildingClass*, pThis, EBP);
-	enum { SkipGameCode = 0x44DCB1 };
-
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-
-	if (pTypeExt->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
-		R->EAX(0);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x4DFC83, FootClass_EnterBioReactor_NoQueueUpToUnload, 0x6)
-{
-	GET(FootClass*, pThis, ESI);
-	GET(BuildingClass*, pBuilding, EDI);
-	enum { SkipGameCode = 0x4DFC91 };
-
-	const Mission mission = TechnoTypeExt::ExtMap.Find(pBuilding->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter)
-		? Mission::Eaten : Mission::Enter;
-
-	pThis->QueueMission(mission, false);
-	return SkipGameCode;
 }
 
 #pragma endregion
