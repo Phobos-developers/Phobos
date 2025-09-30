@@ -4,6 +4,7 @@
 #include <InfantryClass.h>
 #include <HouseClass.h>
 #include <Unsorted.h>
+#include <ScriptClass.h>
 
 #include <Utilities/Debug.h>
 #include <Utilities/Macro.h>
