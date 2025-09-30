@@ -167,12 +167,14 @@ public:
 		Valueable<int> CombatLightDetailLevel;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
+		Valueable<bool> UseRetintFix;
+
 		// cache tint color
 		int TintColorIronCurtain;
 		int TintColorForceShield;
 		int TintColorBerserk;
 		int TintColorAirstrike;
-		
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -294,6 +296,7 @@ public:
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
 			, LightFlashAlphaImageDetailLevel { 0 }
+			, UseRetintFix { true }
 
 			, TintColorIronCurtain { 0 }
 			, TintColorForceShield { 0 }
