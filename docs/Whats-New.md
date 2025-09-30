@@ -674,7 +674,6 @@ Phobos fixes:
 - Fixed `DefaultDisguise` showing wrong house colors for different players (by NetsuNegi & Ollerus)
 - `600 The shield of the attached object is broken` bug fix for the triggered event (by FlyStar)
 - Fixed a read bug when setting the SHP file name in INI (By Noble_Fish)
-- Fixed the bug that armor multiplier of new attacheffect will have extra take effect once if restricted warheads (by NetsuNegi)
 
 Fixes / interactions with other extensions:
 - Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH (by Starkku)
