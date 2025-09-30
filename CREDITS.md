@@ -51,6 +51,7 @@ This page lists all the individual contributions to the project by their author.
   - Warhead activation target health thresholds
   - MP saves support for quicksave command and savegame trigger action
   - Ported XNA CnCNet Client MP save handling
+  - Retint fix toggle
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
