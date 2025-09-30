@@ -8,7 +8,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that light tint created by buildings can never be removed (light tint persists even if the building is destroyed/sold) after loading a game
 - Fixed the bug when reading a map which puts `Preview(Pack)` after `Map` lead to the game fail to draw the preview
 - Fixed the bug when retinting map lighting with a map action corrupted light sources.
-  - Due to performance considerations, this fix may be disabled by setting `[General] -> UseRetintFix=no` in `rulesmd.ini`.
+  - Due to performance considerations, this fix may be disabled by setting `[AudioVisual] -> UseRetintFix=no` in `rulesmd.ini`.
 - Fixed the bug when deploying mindcontrolled vehicle into a building permanently transferred the control to the house which mindcontrolled it.
 - Fixed the bug when capturing a mind-controlled building with an engineer fail to break the mind-control link.
 - Removed the `EVA_BuildingCaptured` event when capturing a building considered as a vehicle.
