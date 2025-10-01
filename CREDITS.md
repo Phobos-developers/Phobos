@@ -51,6 +51,7 @@ This page lists all the individual contributions to the project by their author.
   - Warhead activation target health thresholds
   - MP saves support for quicksave command and savegame trigger action
   - Ported XNA CnCNet Client MP save handling
+  - Retint fix toggle
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -616,6 +617,8 @@ This page lists all the individual contributions to the project by their author.
   - Customize the chained damage of the wall
   - Fix an issue that jumpjet vehicles can not stop correctly when assigned a target in range
   - Fix an issue that jumpjet infantries stop incorrectly when assigned a target out of range
+  - Fix an issue that jumpjet infantries' shadow is always drawn even if they are cloaked
+  - Fix an issue that technos head to building's dock even they are not going to dock
   - Fix an issue that the jumpjet vehicles cannot stop correctly after going berserk
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
