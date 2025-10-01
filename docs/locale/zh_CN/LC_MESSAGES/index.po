@@ -1,4 +1,9 @@
-
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025, The Phobos Contributors
+# This file is distributed under the same license as the Phobos package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
