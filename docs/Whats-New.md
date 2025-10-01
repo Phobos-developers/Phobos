@@ -24,6 +24,10 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From older Phobos versions
 
+#### From 0.4
+
+- `[TechnoType] -> WarpAway=` has now been changed to set the animation when units are erased to maintain semantic consistency with `[General] -> WarpAway=`. The animation that was originally controlled by `[TechnoType] -> WarpAway=`, which played instead of `[General] -> WarpOut=` when a Techno is chronowarped by chronosphere, now needs to be specified using `[TechnoType] -> Chronoshift.WarpOut=`, which defaults to the value of `[TechnoType] -> WarpOut=`.
+
 #### From post-0.3 devbuilds
 
 - `UseCenterCoordsWhenAttached` has been replaced by enumeration key `AttachedAnimPosition`. Set `AttachedAnimPosition=center` to replicate effects of `UseCenterCoordsWhenAttached=true`.
@@ -469,13 +473,13 @@ Vanilla fixes:
 - `DeployingAnim` using unit drawer now also tint accordingly with the unit (by Starkku)
 - Jumpjets in air now can correctly spawn missiles (by TaranDahl)
 - Fixed an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos (by CrimRecya)
+- Fixed an issue that jumpjet infantries' shadow is always drawn even if they are cloaked (by TaranDahl)
 - Fixed an issue that technos head to building's dock even they are not going to dock (by TaranDahl)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
 - Fixed an issue that `FireAngle` was not taken into account when drawing barrel in `TurretShadow` (by CrimRecya)
 - Fixed a bug that sometimes caused weapon/warhead detonations from features such as `ExtraWarheads`, animation damage or `Crit.Warhead` to unintentionally move from its intended position (by Starkku)
-- Fixed the bug that armor multiplier of new attacheffect will have extra take effect once if restricted warheads (by NetsuNegi)
 - Fixed an issue that units' `LaserTrails` will always lags behind by one frame (by CrimRecya)
 - Fixed customized `WarpAway` anim's wrong definition (by Ollerus)
 - Fixed parsing of `DropPodTrailer` from INI (by Starkku)
@@ -488,6 +492,8 @@ Phobos fixes:
 - Fixed map trigger action `125 Build At...` not always playing buildups correctly (by Starkku)
 - Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range (by TaranDahl)
 - Fixed an issue that jumpjet infantries stop incorrectly when assigned a target out of range (by TaranDahl)
+- Fixed an issue where the 77 trigger event in Ares was not functioning properly (by NetsuNegi)
+- Fixed an interaction error between the engineer and the Ares rubble (by FlyStar)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
@@ -664,6 +670,7 @@ New:
 - Unit `Speed` setting now accepts floating point values (by Starkku)
 - `Strafing` is now disabled by default when using `Trajectory` (by CrimRecya)
 - Skip target scanning function calling for unarmed technos (by TaranDahl & solar-III)
+- Allow retint fix to be disabled with `[AudioVisual] -> UseRetintFix=no` in `rulesmd.ini` due to performance considerations (by Kerbiter)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

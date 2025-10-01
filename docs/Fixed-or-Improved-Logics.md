@@ -8,6 +8,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that light tint created by buildings can never be removed (light tint persists even if the building is destroyed/sold) after loading a game
 - Fixed the bug when reading a map which puts `Preview(Pack)` after `Map` lead to the game fail to draw the preview
 - Fixed the bug when retinting map lighting with a map action corrupted light sources.
+  - Due to performance considerations, this fix may be disabled by setting `[AudioVisual] -> UseRetintFix=no` in `rulesmd.ini`.
 - Fixed the bug when deploying mindcontrolled vehicle into a building permanently transferred the control to the house which mindcontrolled it.
 - Fixed the bug when capturing a mind-controlled building with an engineer fail to break the mind-control link.
 - Removed the `EVA_BuildingCaptured` event when capturing a building considered as a vehicle.
@@ -291,6 +292,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle`.
 - Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range.
 - Fixed an issue that jumpjet infantries stop incorrectly when assigned a target out of range.
+- Fixed an issue that jumpjet infantries' shadow is always drawn even if they are cloaked.
 - Fixed an issue that technos head to building's dock even they are not going to dock.
 
 ```{note}
@@ -1065,9 +1067,9 @@ In `rulesmd.ini`:
 [SOMETECHNO]            ; TechnoType
 WarpOut=                ; List of AnimationTypes (played when Techno warping out), default to [General] -> WarpOut
 WarpIn=                 ; List of AnimationTypes (played when Techno warping in), default to [General] -> WarpIn
-Chronoshift.WarpOut=    ; List of AnimationTypes (played when Techno warping out by chronosphere), default to WarpOut
-Chronoshift.WarpIn=     ; List of AnimationTypes (played when Techno warping in by chronosphere), default to WarpIn
-WarpAway=               ; List of AnimationTypes (played when Techno being erased by `Temporal=yes` warhead), default to [General] -> WarpAway
+Chronoshift.WarpOut=    ; List of AnimationTypes (played when Techno warping out by chronosphere), default to [TechnoType] -> WarpOut
+Chronoshift.WarpIn=     ; List of AnimationTypes (played when Techno warping in by chronosphere), default to [TechnoType] -> WarpIn
+WarpAway=               ; List of AnimationTypes (played when Techno being erased by Temporal=yes warhead), default to [General] -> WarpAway
 ChronoTrigger=          ; boolean, if yes then delay varies by distance, if no it is a constant
 ChronoDistanceFactor=   ; integer, amount to divide the distance to destination by to get the warped out delay
 ChronoMinimumDelay=     ; integer, the minimum delay for teleporting, no matter how short the distance

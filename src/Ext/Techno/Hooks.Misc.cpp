@@ -279,7 +279,7 @@ DEFINE_HOOK(0x4D962B, FootClass_SetDestination_RecycleFLH, 0x5)
 		}
 	}
 	else if (pThis->Destination->WhatAmI() == AbstractType::Building 
-		&& !(pThis->GetCurrentMission() == Mission::Enter || pThis->QueuedMission == Mission::Enter))
+		&& pThis->QueuedMission != Mission::Enter && pThis->GetCurrentMission() != Mission::Enter)
 	{
 		GET(CoordStruct*, pDestCrd, EAX);
 		auto crd = pThis->Destination->GetCoords();
