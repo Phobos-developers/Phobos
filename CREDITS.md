@@ -618,6 +618,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that jumpjet vehicles can not stop correctly when assigned a target in range
   - Fix an issue that jumpjet infantries stop incorrectly when assigned a target out of range
   - Fix an issue that jumpjet infantries' shadow is always drawn even if they are cloaked
+  - Fix an issue that technos head to building's dock even they are not going to dock
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
