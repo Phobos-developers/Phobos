@@ -57,6 +57,12 @@ TechnoExt::ExtData::~ExtData()
 	}
 
 	this->ElectricBolts.clear();
+
+	if (this->UndergroundTracked)
+		ScenarioExt::Global()->UndergroundTracker.Remove(pThis);
+
+	if (this->SpecialTracked)
+		ScenarioExt::Global()->SpecialTracker.Remove(pThis);
 }
 
 bool TechnoExt::IsActiveIgnoreEMP(TechnoClass* pThis)
@@ -988,12 +994,6 @@ DEFINE_HOOK(0x6F3260, TechnoClass_CTOR, 0x5)
 DEFINE_HOOK(0x6F4500, TechnoClass_DTOR, 0x5)
 {
 	GET(TechnoClass*, pItem, ECX);
-
-	if (TechnoExt::ExtMap.Find(pItem)->UndergroundTracked)
-		ScenarioExt::Global()->UndergroundTracker.Remove(pItem);
-
-	if (TechnoExt::ExtMap.Find(pItem)->SpecialTracked)
-		ScenarioExt::Global()->SpecialTracker.Remove(pItem);
 
 	TechnoExt::ExtMap.Remove(pItem);
 
