@@ -2664,3 +2664,10 @@ DEFINE_HOOK(0x5194EF, InfantryClass_DrawIt_DrawShadow, 0x5)
 	GET(InfantryClass*, pThis, EBP);
 	return pThis->CloakState != CloakState::Uncloaked ? SkipDraw : 0;
 }
+
+// Fix the issue that the jumpjet vehicles cannot stop correctly after going berserk
+DEFINE_HOOK(0x74431F, UnitClass_ReadyToNextMission_HuntCheck, 0x6)
+{
+	GET(UnitClass*, pThis, ESI);
+	return pThis->GetCurrentMission() != Mission::Hunt ? 0 : 0x744329;
+}
