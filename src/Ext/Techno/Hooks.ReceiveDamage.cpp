@@ -39,7 +39,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	{
 		double multiplier = 1.0;
 
-		if (!pSourceHouse || !pTargetHouse || !pSourceHouse->IsAlliedWith(pTargetHouse))
+		if (!pSourceHouse || !pTargetHouse || !pSourceHouse->IsAlliedWith(pTargetHouse) || args->Attacker && args->Attacker->Berzerk && pWHExt->DamageEnemiesMultiplier_UsedForAllTargetInBerzerk.Get(RulesExt::Global()->DamageEnemiesMultiplier_UsedForAllTargetInBerzerk))
 			multiplier = pWHExt->DamageEnemiesMultiplier.Get(RulesExt::Global()->DamageEnemiesMultiplier);
 		else if (pSourceHouse != pTargetHouse)
 			multiplier = pWHExt->DamageAlliesMultiplier.Get(!pWHExt->AffectsEnemies ? RulesExt::Global()->DamageAlliesMultiplier_NotAffectsEnemies.Get(RulesExt::Global()->DamageAlliesMultiplier) : RulesExt::Global()->DamageAlliesMultiplier);

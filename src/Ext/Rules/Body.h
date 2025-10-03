@@ -182,6 +182,7 @@ public:
 		Valueable<double> DamageEnemiesMultiplier;
 		Nullable<double> DamageOwnerMultiplier_NotAffectsEnemies;
 		Nullable<double> DamageAlliesMultiplier_NotAffectsEnemies;
+		Valueable<bool> DamageEnemiesMultiplier_UsedForAllTargetInBerzerk;
 
 		Valueable<double> AircraftLevelLightMultiplier;
 		Valueable<double> JumpjetLevelLightMultiplier;
@@ -405,6 +406,7 @@ public:
 			, DamageEnemiesMultiplier { 1.0 }
 			, DamageOwnerMultiplier_NotAffectsEnemies {}
 			, DamageAlliesMultiplier_NotAffectsEnemies {}
+			, DamageEnemiesMultiplier_UsedForAllTargetInBerzerk { false }
 			, AircraftLevelLightMultiplier { 1.0 }
 			, JumpjetLevelLightMultiplier { 0.0 }
 			, VoxelLightSource { }

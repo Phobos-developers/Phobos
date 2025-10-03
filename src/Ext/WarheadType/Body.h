@@ -160,6 +160,7 @@ public:
 		Nullable<double> DamageOwnerMultiplier;
 		Nullable<double> DamageAlliesMultiplier;
 		Nullable<double> DamageEnemiesMultiplier;
+		Nullable<bool> DamageEnemiesMultiplier_UsedForAllTargetInBerzerk;
 		Valueable<double> DamageSourceHealthMultiplier;
 		Valueable<double> DamageTargetHealthMultiplier;
 
@@ -364,6 +365,7 @@ public:
 			, DamageOwnerMultiplier {}
 			, DamageAlliesMultiplier {}
 			, DamageEnemiesMultiplier {}
+			, DamageEnemiesMultiplier_UsedForAllTargetInBerzerk {}
 			, DamageSourceHealthMultiplier { 0.0 }
 			, DamageTargetHealthMultiplier { 0.0 }
 
