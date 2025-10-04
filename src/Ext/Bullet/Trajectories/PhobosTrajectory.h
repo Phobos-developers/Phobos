@@ -12,10 +12,7 @@ enum class TrajectoryFlag : int
 	Invalid = -1,
 	Straight = 0,
 	Bombard = 1,
-	Missile = 2,
-	Engrave = 3,
-	Parabola = 4,
-	Tracing = 5
+	Parabola = 4
 };
 
 enum class TrajectoryCheckReturnType : int
@@ -90,7 +87,6 @@ public:
 		, MovingSpeed { 0 }
 		, RemainingDistance { 1 }
 		, CurrentBurst { 0 }
-		, CountOfBurst { 0 }
 	{ }
 
 	BulletClass* Bullet; // Bullet attached to
@@ -98,7 +94,6 @@ public:
 	double MovingSpeed; // The current speed value
 	int RemainingDistance; // Remaining distance from the self explosion location
 	int CurrentBurst; // Current burst index, mirror is required for negative numbers
-	int CountOfBurst; // Upper limit of burst counts
 
 	virtual ~PhobosTrajectory() noexcept = default;
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
@@ -113,7 +108,6 @@ public:
 	virtual const PhobosTrajectoryType* GetType() const = 0;
 	virtual void OpenFire();
 	virtual bool GetCanHitGround() const { return true; }
-	virtual CoordStruct GetRetargetCenter() const { return this->Bullet->TargetCoords; }
 	virtual void SetBulletNewTarget(AbstractClass* const pTarget);
 	virtual bool CalculateBulletVelocity(const double speed);
 	virtual void MultiplyBulletVelocity(const double ratio, const bool shouldDetonate);
@@ -121,7 +115,6 @@ public:
 	static void RotateVector(BulletVelocity& vector, const BulletVelocity& aim, const double turningRadian);
 	static void RotateAboutTheAxis(BulletVelocity& vector, BulletVelocity& axis, const double radian);
 
-	bool OnFacingCheck();
 	void OnFacingUpdate();
 
 private:

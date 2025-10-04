@@ -97,9 +97,7 @@ void StraightTrajectory::OnUnlimbo()
 		}
 	}
 
-	// Waiting for launch trigger
-	if (!pBulletExt->DispersedTrajectory)
-		this->OpenFire();
+	this->OpenFire();
 }
 
 bool StraightTrajectory::OnVelocityCheck()
@@ -201,10 +199,6 @@ void StraightTrajectory::FireTrajectory()
 	// Substitute the speed to calculate velocity
 	if (this->CalculateBulletVelocity(pType->Speed))
 		BulletExt::ExtMap.Find(pBullet)->Status |= TrajectoryStatus::Detonate;
-
-	// Rotate the selected angle
-	if (std::abs(pType->RotateCoord) > BulletExt::Epsilon && this->CountOfBurst > 1)
-		this->DisperseBurstSubstitution(rotateRadian);
 }
 
 CoordStruct StraightTrajectory::CalculateBulletLeadTime()
