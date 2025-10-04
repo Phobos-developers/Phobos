@@ -14,20 +14,6 @@
 
 BulletExt::ExtContainer BulletExt::ExtMap;
 
-BulletExt::ExtData::~ExtData()
-{
-	if (this->GroupIndex != -1)
-	{
-		if (const auto pMap = this->TrajectoryGroup)
-		{
-			auto& groupData = (*pMap)[this->TypeExtData->OwnerObject()];
-			auto& vec = groupData.Bullets;
-			vec.erase(std::remove(vec.begin(), vec.end(), this->OwnerObject()->UniqueID), vec.end());
-			groupData.ShouldUpdate = true;
-		}
-	}
-}
-
 void BulletExt::ExtData::InitializeOnUnlimbo()
 {
 	const auto pBullet = this->OwnerObject();
@@ -42,7 +28,6 @@ void BulletExt::ExtData::InitializeOnUnlimbo()
 
 	// Set additional warhead and weapon count
 	pBulletExt->ProximityImpact = pBulletTypeExt->ProximityImpact;
-	pBulletExt->DisperseCycle = pBulletTypeExt->DisperseCycle;
 
 	// Record the status of the target
 	pBulletExt->TargetIsTechno = (pTarget->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None;
@@ -53,10 +38,6 @@ void BulletExt::ExtData::InitializeOnUnlimbo()
 	if (const auto pWeapon = pBullet->WeaponType)
 	{
 		pBulletExt->AttenuationRange = pWeapon->Range;
-
-		if (pBulletTypeExt->ApplyRangeModifiers && pFirer)
-			pBulletExt->AttenuationRange = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer);
-
 		damage = pWeapon->Damage;
 	}
 
@@ -66,64 +47,23 @@ void BulletExt::ExtData::InitializeOnUnlimbo()
 
 	// Record some information of firer
 	if (pFirer)
-	{
 		pBulletExt->FirepowerMult = TechnoExt::GetCurrentFirepowerMultiplier(pFirer);
-
-		// Obtain the launch location
-		pBulletExt->GetTechnoFLHCoord();
-
-		// Check trajectory capacity
-		if (pBulletTypeExt->CreateCapacity >= 0)
-			BulletExt::CheckExceededCapacity(pFirer, pBullet->Type, pBulletExt);
-	}
 	else
-	{
 		pBulletExt->NotMainWeapon = true;
-
-		if (pBulletTypeExt->CreateCapacity >= 0)
-			pBulletExt->Status |= TrajectoryStatus::Vanish;
-	}
 
 	// Initialize additional warheads
 	if (pBulletTypeExt->PassDetonate)
 		pBulletExt->PassDetonateTimer.Start(pBulletTypeExt->PassDetonateInitialDelay);
-
-	// Initialize additional weapons
-	if (!pBulletTypeExt->DisperseWeapons.empty() && !pBulletTypeExt->DisperseCounts.empty() && pBulletExt->DisperseCycle)
-	{
-		pBulletExt->DisperseCount = pBulletTypeExt->DisperseCounts[0];
-		pBulletExt->DisperseTimer.Start(pBulletTypeExt->DisperseInitialDelay);
-	}
 }
 
 bool BulletExt::ExtData::CheckOnEarlyUpdate()
 {
-	// Update group index for members by themselves
-	if (this->TrajectoryGroup)
-		this->UpdateGroupIndex();
-
 	// In the phase of playing PreImpactAnim
 	if (this->OwnerObject()->SpawnNextAnim)
 		return false;
 
 	// The previous check requires detonation at this time
 	if (this->Status & (TrajectoryStatus::Detonate | TrajectoryStatus::Vanish))
-		return true;
-
-	// Check the remaining existence time
-	if (this->LifeDurationTimer.Completed())
-		return true;
-
-	// Check if the firer's target can be synchronized, the target may have been changed here
-	if (this->CheckSynchronize())
-		return true;
-
-	// Check if the target needs to be changed, the target may have been changed here
-	if (this->TypeExtData->RetargetRadius && this->BulletRetargetTechno())
-		return true;
-
-	// After the new target is confirmed, check if the tolerance time has ended
-	if (this->CheckNoTargetLifeTime())
 		return true;
 
 	// Fire weapons or warheads
@@ -138,28 +78,9 @@ bool BulletExt::ExtData::CheckOnEarlyUpdate()
 void BulletExt::ExtData::CheckOnPreDetonate()
 {
 	const auto pBullet = this->OwnerObject();
-	const auto pBulletTypeExt = this->TypeExtData;
 
-	// Special circumstances, similar to airburst behavior
-	if (pBulletTypeExt->DisperseEffectiveRange.Get() < 0)
-		this->PrepareDisperseWeapon();
-
-	if (!(this->Status & TrajectoryStatus::Vanish))
-	{
-		if (!pBulletTypeExt->PeacefulVanish.Get(pBulletTypeExt->ProximityImpact || pBulletTypeExt->DisperseCycle))
-		{
-			// Calculate the current damage
-			pBullet->Health = this->GetTrueDamage(pBullet->Health, true);
-			return;
-		}
-
-		this->Status |= TrajectoryStatus::Vanish;
-	}
-
-	// To skip all extra effects, no damage, no anims...
-	pBullet->Health = 0;
-	pBullet->Limbo();
-	pBullet->UnInit();
+	// Calculate the current damage
+	pBullet->Health = this->GetTrueDamage(pBullet->Health, true);
 }
 
 // Launch additional weapons and warheads
@@ -175,20 +96,7 @@ bool BulletExt::ExtData::FireAdditionals()
 	if (this->ProximityImpact != 0 && pType->ProximityRadius.Get() > 0)
 		this->PrepareForDetonateAt();
 
-	// Launch additional weapons towards the target
-	if (!this->DisperseTimer.Completed())
-		return false;
-
-	const auto pBullet = this->OwnerObject();
-	const auto range = pType->DisperseEffectiveRange.Get();
-
-	// Weapons can only be fired when the distance is close enough
-	if (range && pBullet->TargetCoords.DistanceFrom(pBullet->Location) > range)
-		return false;
-
-	// Fire after checking the orientation
-	const auto pTraj = this->Trajectory.get();
-	return (!pTraj || pTraj->OnFacingCheck()) && this->PrepareDisperseWeapon();
+	return false;
 }
 
 // Detonate a extra warhead on the obstacle then detonate bullet itself
@@ -227,127 +135,6 @@ void BulletExt::ExtData::DetonateOnObstacle()
 	const auto pFirer = pBullet->Owner;
 	const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 	this->ProximityDetonateAt(pOwner, pDetonateAt);
-}
-
-// Synchronization target inspection
-bool BulletExt::ExtData::CheckSynchronize()
-{
-	const auto pBullet = this->OwnerObject();
-	const auto pType = this->TypeExtData;
-
-	// Find the outermost transporter
-	const auto pFirer = BulletExt::GetSurfaceFirer(pBullet->Owner);
-
-	// Synchronize to the target of the firer
-	if (pType->Synchronize && pFirer)
-	{
-		auto pTarget = pFirer->Target;
-
-		// Check should detonate when changing target
-		if (pBullet->Target != pTarget && !pType->NoTargetLifeTime)
-			return true;
-
-		// Check if the target can be synchronized
-		if (pTarget && (pTarget->IsInAir() != this->TargetIsInAir))
-			pTarget = nullptr;
-
-		// Replace with a new target
-		pBullet->SetTarget(pTarget);
-	}
-
-	return false;
-}
-
-// Tolerance timer inspection
-bool BulletExt::ExtData::CheckNoTargetLifeTime()
-{
-	const auto pBullet = this->OwnerObject();
-	const auto pType = this->TypeExtData;
-
-	// Check should detonate when no target
-	if (!pBullet->Target && !pType->NoTargetLifeTime)
-		return true;
-
-	// Update timer
-	if (pBullet->Target)
-	{
-		this->NoTargetLifeTimer.Stop();
-	}
-	else if (pType->NoTargetLifeTime > 0)
-	{
-		if (this->NoTargetLifeTimer.Completed())
-			return true;
-		else if (!this->NoTargetLifeTimer.IsTicking())
-			this->NoTargetLifeTimer.Start(pType->NoTargetLifeTime);
-	}
-
-	return false;
-}
-
-// Update trajectory capacity group index
-void BulletExt::ExtData::UpdateGroupIndex()
-{
-	const auto pBullet = this->OwnerObject();
-	auto& groupData = (*this->TrajectoryGroup)[pBullet->Type];
-
-	// Should update group index
-	if (groupData.ShouldUpdate)
-	{
-		if (const int size = static_cast<int>(groupData.Bullets.size()))
-		{
-			for (int i = 0; i < size; ++i)
-			{
-				if (groupData.Bullets[i] == pBullet->UniqueID)
-				{
-					this->GroupIndex = i;
-					break;
-				}
-			}
-
-			// If is the last member, reset flag to false
-			if (this->GroupIndex == size - 1)
-				groupData.ShouldUpdate = false;
-		}
-		else
-		{
-			groupData.ShouldUpdate = false;
-		}
-	}
-
-	return;
-}
-
-// Check and set the group
-bool BulletExt::CheckExceededCapacity(TechnoClass* pTechno, BulletTypeClass* pBulletType, BulletExt::ExtData* pBulletExt)
-{
-	const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
-
-	if (!pTechnoExt->TrajectoryGroup)
-		pTechnoExt->TrajectoryGroup = std::make_shared<PhobosMap<BulletTypeClass*, BulletGroupData>>();
-
-	// Get shared container
-	auto& group = (*pTechnoExt->TrajectoryGroup)[pBulletType].Bullets;
-	const auto size = static_cast<int>(group.size());
-
-	if (!pBulletExt)
-		return size >= BulletTypeExt::ExtMap.Find(pBulletType)->CreateCapacity;
-
-	pBulletExt->TrajectoryGroup = pTechnoExt->TrajectoryGroup;
-
-	// Check trajectory capacity
-	if (size >= pBulletExt->TypeExtData->CreateCapacity)
-	{
-		// Peaceful vanish
-		pBulletExt->Status |= TrajectoryStatus::Vanish;
-		return true;
-	}
-	else
-	{
-		// Increase trajectory count
-		pBulletExt->GroupIndex = size;
-		group.push_back(pBulletExt->OwnerObject()->UniqueID);
-		return false;
-	}
 }
 
 void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, BulletClass* pInterceptor)
@@ -543,14 +330,6 @@ inline void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pH
 
 	if (!pWeapon->IsLaser)
 		return;
-
-	if (const auto pTrajType = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->TrajectoryType.get())
-	{
-		const auto flag = pTrajType->Flag();
-
-		if (flag == TrajectoryFlag::Engrave || flag == TrajectoryFlag::Tracing)
-			return;
-	}
 
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
@@ -792,29 +571,18 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->ParabombFallRate)
 
 		.Process(this->Trajectory)
-		.Process(this->DispersedTrajectory)
-		.Process(this->LifeDurationTimer)
-		.Process(this->NoTargetLifeTimer)
-		.Process(this->RetargetTimer)
 		.Process(this->FirepowerMult)
 		.Process(this->AttenuationRange)
 		.Process(this->TargetIsInAir)
 		.Process(this->TargetIsTechno)
 		.Process(this->NotMainWeapon)
 		.Process(this->Status)
-		.Process(this->FLHCoord)
-		.Process(this->TrajectoryGroup)
-		.Process(this->GroupIndex)
 		.Process(this->PassDetonateDamage)
 		.Process(this->PassDetonateTimer)
 		.Process(this->ProximityImpact)
 		.Process(this->ProximityDamage)
 		.Process(this->ExtraCheck)
 		.Process(this->Casualty)
-		.Process(this->DisperseIndex)
-		.Process(this->DisperseCount)
-		.Process(this->DisperseCycle)
-		.Process(this->DisperseTimer)
 		;
 }
 
@@ -828,26 +596,6 @@ void BulletExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Extension<BulletClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
-}
-
-bool BulletGroupData::Load(PhobosStreamReader& stm, bool registerForChange)
-{
-	return this->Serialize(stm);
-}
-
-bool BulletGroupData::Save(PhobosStreamWriter& stm) const
-{
-	return const_cast<BulletGroupData*>(this)->Serialize(stm);
-}
-
-template <typename T>
-bool BulletGroupData::Serialize(T& stm)
-{
-	return stm
-		.Process(this->Bullets)
-		.Process(this->Angle)
-		.Process(this->ShouldUpdate)
-		.Success();
 }
 
 // =============================

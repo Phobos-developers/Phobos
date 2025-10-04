@@ -347,10 +347,7 @@ constexpr bool CheckTrajectoryCanNotAlwaysSnap(const TrajectoryFlag flag)
 	return flag != TrajectoryFlag::Invalid;
 /*	return flag == TrajectoryFlag::Straight
 		|| flag == TrajectoryFlag::Bombard
-		|| flag == TrajectoryFlag::Missile
-		|| flag == TrajectoryFlag::Engrave
-		|| flag == TrajectoryFlag::Parabola
-		|| flag == TrajectoryFlag::Tracing;*/
+		|| flag == TrajectoryFlag::Parabola;*/
 }
 
 DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)
