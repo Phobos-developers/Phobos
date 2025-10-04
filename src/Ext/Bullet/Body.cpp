@@ -78,12 +78,9 @@ bool BulletExt::ExtData::CheckOnEarlyUpdate()
 void BulletExt::ExtData::CheckOnPreDetonate()
 {
 	const auto pBullet = this->OwnerObject();
-	const auto pBulletTypeExt = this->TypeExtData;
 
-	// To skip all extra effects, no damage, no anims...
-	pBullet->Health = 0;
-	pBullet->Limbo();
-	pBullet->UnInit();
+	// Calculate the current damage
+	pBullet->Health = this->GetTrueDamage(pBullet->Health, true);
 }
 
 // Launch additional weapons and warheads
