@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <AircraftTrackerClass.h>
+
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/RadSite/Body.h>
@@ -64,6 +66,14 @@ bool BulletExt::ExtData::CheckOnEarlyUpdate()
 
 	// The previous check requires detonation at this time
 	if (this->Status & (TrajectoryStatus::Detonate | TrajectoryStatus::Vanish))
+		return true;
+
+	// Check if the firer's target can be synchronized, the target may have been changed here
+	if (this->CheckSynchronize())
+		return true;
+
+	// Check if the target needs to be changed, the target may have been changed here
+	if (this->TypeExtData->RetargetRadius && this->BulletRetargetTechno())
 		return true;
 
 	// Fire weapons or warheads
@@ -135,6 +145,127 @@ void BulletExt::ExtData::DetonateOnObstacle()
 	const auto pFirer = pBullet->Owner;
 	const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 	this->ProximityDetonateAt(pOwner, pDetonateAt);
+}
+
+// Synchronization target inspection
+bool BulletExt::ExtData::CheckSynchronize()
+{
+	const auto pBullet = this->OwnerObject();
+	const auto pType = this->TypeExtData;
+
+	// Find the outermost transporter
+	const auto pFirer = BulletExt::GetSurfaceFirer(pBullet->Owner);
+
+	// Synchronize to the target of the firer
+	if (pType->Synchronize && pFirer)
+	{
+		auto pTarget = pFirer->Target;
+
+		// Check if the target can be synchronized
+		if (pTarget && (pTarget->IsInAir() != this->TargetIsInAir))
+			pTarget = nullptr;
+
+		// Replace with a new target
+		pBullet->SetTarget(pTarget);
+	}
+
+	return false;
+}
+
+bool BulletExt::ExtData::BulletRetargetTechno()
+{
+	const auto pBullet = this->OwnerObject();
+	const auto pType = this->TypeExtData;
+	bool check = false;
+
+	// Will only attempt to search for a new target when the original target is a techno, in order to adapt to thermal decoys
+	if (this->TargetIsTechno)
+	{
+		const auto pTarget = pBullet->Target;
+
+		if (!pTarget)
+			check = true;
+		else if (const auto pTargetTechno = abstract_cast<TechnoClass*, true>(pTarget))
+			check = BulletExt::CheckTechnoIsInvalid(pTargetTechno);
+	}
+
+	// It has not lost its target
+	if (!check)
+		return false;
+
+	// Check whether need to detonate directly after the target was lost
+	if (pType->RetargetRadius < 0)
+		return true;
+
+	// Check the timer
+	if (this->RetargetTimer.HasTimeLeft())
+		return false;
+
+	const auto pFirer = pBullet->Owner;
+	auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
+
+	// Replace with neutral house when the firer house does not exist
+	if (!pOwner || pOwner->Defeated)
+	{
+		if (const auto pNeutral = HouseClass::FindNeutral())
+			pOwner = pNeutral;
+		else
+			return true;
+	}
+
+	// The central location and radius for searching for enemies
+	const auto pTraj = this->Trajectory.get();
+	const auto retargetCoords = pTraj ? pTraj->GetRetargetCenter() : pBullet->TargetCoords;
+	const double retargetRange = pType->RetargetRadius * Unsorted::LeptonsPerCell;
+	const auto pWeapon = pBullet->WeaponType;
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon);
+
+	// Find the first target
+	if (!this->TargetIsInAir) // Only get same type (on ground / in air)
+	{
+		const int range = pWeapon ? pWeapon->Range : 0;
+		const auto retargetCell = CellClass::Coord2Cell(retargetCoords);
+
+		for (CellSpreadEnumerator thisCell(static_cast<size_t>(pType->RetargetRadius + 0.99)); thisCell; ++thisCell)
+		{
+			if (const auto pCell = MapClass::Instance.TryGetCellAt(*thisCell + retargetCell))
+			{
+				for (auto pObject = pCell->GetContent(); pObject; pObject = pObject->NextObject)
+				{
+					const auto pTechno = abstract_cast<TechnoClass*, true>(pObject);
+
+					if (pTechno
+						&& !BulletExt::CheckTechnoIsInvalid(pTechno)
+						&& (pTechno->WhatAmI() != AbstractType::Building || !static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
+						&& BulletExt::CheckCanRetarget(pTechno, pOwner, pType->RetargetHouses, retargetCoords, retargetRange, range, pBullet, pWeapon, pWeaponExt, pFirer))
+					{
+						pBullet->SetTarget(pTechno);
+						return false;
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		const int range = (pWeapon ? pWeapon->Range : 0) + (pFirer ? pFirer->GetTechnoType()->AirRangeBonus : 0);
+		const auto airTracker = &AircraftTrackerClass::Instance;
+		airTracker->FillCurrentVector(MapClass::Instance.GetCellAt(retargetCoords), Game::F2I(pType->RetargetRadius));
+
+		for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
+		{
+			if (!BulletExt::CheckTechnoIsInvalid(pTechno)
+				&& BulletExt::CheckCanRetarget(pTechno, pOwner, pType->RetargetHouses, retargetCoords, retargetRange, range, pBullet, pWeapon, pWeaponExt, pFirer))
+			{
+				pBullet->SetTarget(pTechno);
+				return false;
+			}
+		}
+	}
+
+	// If not found, next time wait for so long first
+	this->RetargetTimer.Start(pType->RetargetInterval);
+	return false;
 }
 
 void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, BulletClass* pInterceptor)
@@ -571,6 +702,7 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->ParabombFallRate)
 
 		.Process(this->Trajectory)
+		.Process(this->RetargetTimer)
 		.Process(this->FirepowerMult)
 		.Process(this->AttenuationRange)
 		.Process(this->TargetIsInAir)
@@ -596,6 +728,26 @@ void BulletExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Extension<BulletClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
+}
+
+bool BulletGroupData::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return this->Serialize(stm);
+}
+
+bool BulletGroupData::Save(PhobosStreamWriter& stm) const
+{
+	return const_cast<BulletGroupData*>(this)->Serialize(stm);
+}
+
+template <typename T>
+bool BulletGroupData::Serialize(T& stm)
+{
+	return stm
+		.Process(this->Bullets)
+		.Process(this->Angle)
+		.Process(this->ShouldUpdate)
+		.Success();
 }
 
 // =============================

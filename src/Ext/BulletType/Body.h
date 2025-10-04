@@ -32,6 +32,10 @@ public:
 
 		TrajectoryTypePointer TrajectoryType;
 
+		Valueable<int> RetargetInterval;
+		Valueable<double> RetargetRadius;
+		Valueable<AffectedHouse> RetargetHouses;
+		Valueable<bool> Synchronize;
 		Valueable<bool> ApplyRangeModifiers;
 
 		Valueable<bool> PassDetonate;
@@ -110,6 +114,10 @@ public:
 			, Vertical_AircraftFix { true }
 			, VerticalInitialFacing {}
 			, TrajectoryType { }
+			, RetargetInterval { 1 }
+			, RetargetRadius { 0 }
+			, RetargetHouses { AffectedHouse::Enemies }
+			, Synchronize { false }
 			, ApplyRangeModifiers { false }
 			, PassDetonate { false }
 			, PassDetonateLocal { false }

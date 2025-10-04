@@ -148,6 +148,12 @@ bool SampleTrajectory::GetCanHitGround() const
 	return true;
 }
 
+// If need to research a target, where is the search center
+CoordStruct SampleTrajectory::GetRetargetCenter() const
+{
+	return this->Bullet->TargetCoords;
+}
+
 // How to calculate when inputting velocity values after updating the velocity vector each time
 bool SampleTrajectory::CalculateBulletVelocity(const double speed)
 {

@@ -40,6 +40,11 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->TrajectoryType.LoadFromINI(pINI, pSection);
 
+	this->RetargetInterval.Read(exINI, pSection, "RetargetInterval");
+	this->RetargetInterval = Math::max(1, this->RetargetInterval);
+	this->RetargetRadius.Read(exINI, pSection, "RetargetRadius");
+	this->RetargetHouses.Read(exINI, pSection, "RetargetHouses");
+	this->Synchronize.Read(exINI, pSection, "Synchronize");
 	this->ApplyRangeModifiers.Read(exINI, pSection, "ApplyRangeModifiers");
 
 	this->PassDetonate.Read(exINI, pSection, "PassDetonate");
@@ -183,6 +188,10 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->TrajectoryType)
 
+		.Process(this->RetargetInterval)
+		.Process(this->RetargetRadius)
+		.Process(this->RetargetHouses)
+		.Process(this->Synchronize)
 		.Process(this->ApplyRangeModifiers)
 
 		.Process(this->PassDetonate)

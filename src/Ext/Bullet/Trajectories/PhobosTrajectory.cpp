@@ -198,6 +198,14 @@ bool PhobosTrajectory::OnEarlyUpdate()
 	if (pBulletExt->Status & (TrajectoryStatus::Detonate | TrajectoryStatus::Vanish))
 		return true;
 
+	// Check if the firer's target can be synchronized, the target may have been changed here
+	if (pBulletExt->CheckSynchronize())
+		return true;
+
+	// Check if the target needs to be changed, the target may have been changed here
+	if (pBulletExt->TypeExtData->RetargetRadius && pBulletExt->BulletRetargetTechno())
+		return true;
+
 	// Based on the new target location, check how to change bullet velocity
 	if (this->OnVelocityCheck())
 		return true;

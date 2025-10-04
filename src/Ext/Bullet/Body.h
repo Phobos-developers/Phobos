@@ -9,6 +9,22 @@
 #include <New/Entity/LaserTrailClass.h>
 #include "Trajectories/PhobosTrajectory.h"
 
+struct BulletGroupData
+{
+	std::vector<DWORD> Bullets {}; // <UniqueID>, Capacity
+	double Angle { 0.0 }; // Tracing.StableRotation use this value to update the angle
+	bool ShouldUpdate { true }; // Remind members to update themselves
+
+	BulletGroupData() = default;
+
+	bool Load(PhobosStreamReader& stm, bool registerForChange);
+	bool Save(PhobosStreamWriter& stm) const;
+
+private:
+	template <typename T>
+	bool Serialize(T& stm);
+};
+
 class BulletExt
 {
 public:
@@ -32,6 +48,7 @@ public:
 		int ParabombFallRate;
 
 		TrajectoryPointer Trajectory;
+		CDTimerClass RetargetTimer;
 		double FirepowerMult;
 		int AttenuationRange;
 		bool TargetIsInAir;
@@ -58,6 +75,7 @@ public:
 			, ParabombFallRate { 0 }
 
 			, Trajectory { nullptr }
+			, RetargetTimer {}
 			, FirepowerMult { 1.0 }
 			, AttenuationRange { 0 }
 			, TargetIsInAir { false }
@@ -88,6 +106,7 @@ public:
 		void CheckOnPreDetonate();
 		bool FireAdditionals();
 		void DetonateOnObstacle();
+		bool CheckSynchronize();
 
 		std::vector<CellClass*> GetCellsInProximityRadius();
 		bool CheckThroughAndSubjectInCell(CellClass* pCell, HouseClass* pOwner);
@@ -97,6 +116,8 @@ public:
 		void ProximityDetonateAt(HouseClass* pOwner, TechnoClass* pTarget);
 		int GetTrueDamage(int damage, bool self);
 		double GetExtraDamageMultiplier();
+
+		bool BulletRetargetTechno();
 
 	private:
 		template <typename T>
@@ -154,9 +175,49 @@ public:
 	{
 		return BulletVelocity { coords.X * Math::cos(radian) + coords.Y * Math::sin(radian), coords.X * Math::sin(radian) - coords.Y * Math::cos(radian), static_cast<double>(coords.Z) };
 	}
+	static inline double GetDistanceFrom(const CoordStruct& source, const TechnoClass* const pTarget)
+	{
+		auto distance = source.DistanceFrom(pTarget->GetCoords());
+
+		if (const auto pBuilding = abstract_cast<const BuildingClass*, true>(pTarget))
+		{
+			const auto pType = pBuilding->Type;
+			distance = Math::max(0, distance - 64 * (pType->GetFoundationHeight(false) + pType->GetFoundationWidth()));
+		}
+
+		return distance;
+	}
 	static inline bool CheckTechnoIsInvalid(const TechnoClass* const pTechno)
 	{
 		return (!pTechno->IsAlive || !pTechno->IsOnMap || pTechno->InLimbo || pTechno->IsSinking || pTechno->Health <= 0);
+	}
+	static inline bool CheckWeaponCanTarget(const WeaponTypeExt::ExtData* const pWeaponExt, TechnoClass* const pFirer, TechnoClass* const pTarget)
+	{
+		return !pWeaponExt || (EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget) && pWeaponExt->IsHealthInThreshold(pTarget) && pWeaponExt->HasRequiredAttachedEffects(pTarget, pFirer));
+	}
+	static inline bool CheckWeaponValidness(HouseClass* const pHouse, const TechnoClass* const pTechno, const CellClass* const pCell, const AffectedHouse flags)
+	{
+		if (pHouse == pTechno->Owner)
+			return (flags & AffectedHouse::Owner) != AffectedHouse::None;
+		else if (pHouse->IsAlliedWith(pTechno->Owner) || pTechno->IsDisguisedAs(pHouse))
+			return (flags & AffectedHouse::Allies) != AffectedHouse::None;
+		else if ((flags & AffectedHouse::Enemies) == AffectedHouse::None)
+			return false;
+
+		return pTechno->CloakState != CloakState::Cloaked || pCell->Sensors_InclHouse(pHouse->ArrayIndex);
+	}
+	static inline bool CheckCanRetarget(TechnoClass* const pTechno, HouseClass* const pOwner, const AffectedHouse retargetHouses, const CoordStruct& center, const double retargetRange, const int range,
+		const BulletClass* const pBullet, const WeaponTypeClass* const pWeapon, const WeaponTypeExt::ExtData* const pWeaponExt, TechnoClass* const pFirer)
+	{
+		const auto pTechnoType = pTechno->GetTechnoType();
+
+		return pTechnoType->LegalTarget
+			&& !pTechno->IsBeingWarpedOut()
+			&& BulletExt::CheckWeaponValidness(pOwner, pTechno, pTechno->GetCell(), retargetHouses)
+			&& BulletExt::GetDistanceFrom(center, pTechno) <= retargetRange
+			&& MapClass::GetTotalDamage(100, pBullet->WH, pTechnoType->Armor, 0) != 0
+			&& (!pWeapon || BulletExt::GetDistanceFrom(pFirer ? pFirer->GetCoords() : pBullet->SourceCoords, pTechno) <= range)
+			&& BulletExt::CheckWeaponCanTarget(pWeaponExt, pFirer, pTechno);
 	}
 	static inline void SetNewDamage(int& damage, const double ratio)
 	{
@@ -167,6 +228,13 @@ public:
 			else
 				damage = Math::sgn(damage);
 		}
+	}
+	static inline TechnoClass* GetSurfaceFirer(TechnoClass* pFirer)
+	{
+		for (auto pTrans = pFirer; pTrans; pTrans = pTrans->Transporter)
+			pFirer = pTrans;
+
+		return pFirer;
 	}
 	static std::vector<CellStruct> GetCellsInRectangle(const CellStruct bottomStaCell, const CellStruct leftMidCell, const CellStruct rightMidCell, const CellStruct topEndCell);
 };
