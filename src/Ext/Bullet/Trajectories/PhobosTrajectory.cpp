@@ -1,10 +1,7 @@
 #include "PhobosTrajectory.h"
 #include "ActualTrajectories/StraightTrajectory.h"
 #include "ActualTrajectories/BombardTrajectory.h"
-#include "ActualTrajectories/MissileTrajectory.h"
-#include "VirtualTrajectories/EngraveTrajectory.h"
 #include "ActualTrajectories/ParabolaTrajectory.h"
-#include "VirtualTrajectories/TracingTrajectory.h"
 
 #include <OverlayTypeClass.h>
 
@@ -21,17 +18,8 @@ TrajectoryTypePointer::TrajectoryTypePointer(TrajectoryFlag flag)
 	case TrajectoryFlag::Bombard:
 		_ptr = std::make_unique<BombardTrajectoryType>();
 		return;
-	case TrajectoryFlag::Missile:
-		_ptr = std::make_unique<MissileTrajectoryType>();
-		return;
-	case TrajectoryFlag::Engrave:
-		_ptr = std::make_unique<EngraveTrajectoryType>();
-		return;
 	case TrajectoryFlag::Parabola:
 		_ptr = std::make_unique<ParabolaTrajectoryType>();
-		return;
-	case TrajectoryFlag::Tracing:
-		_ptr = std::make_unique<TracingTrajectoryType>();
 		return;
 	}
 	_ptr.reset();
@@ -48,10 +36,7 @@ namespace detail
 			{
 				{"Straight", TrajectoryFlag::Straight},
 				{"Bombard" ,TrajectoryFlag::Bombard},
-				{"Missile", TrajectoryFlag::Missile},
-				{"Engrave" ,TrajectoryFlag::Engrave},
 				{"Parabola", TrajectoryFlag::Parabola},
-				{"Tracing" ,TrajectoryFlag::Tracing},
 			};
 			for (auto [name, flag] : FlagNames)
 			{
@@ -155,17 +140,8 @@ bool TrajectoryPointer::Load(PhobosStreamReader& Stm, bool registerForChange)
 		case TrajectoryFlag::Bombard:
 			_ptr = std::make_unique<BombardTrajectory>(noinit_t {});
 			break;
-		case TrajectoryFlag::Missile:
-			_ptr = std::make_unique<MissileTrajectory>(noinit_t {});
-			break;
-		case TrajectoryFlag::Engrave:
-			_ptr = std::make_unique<EngraveTrajectory>(noinit_t {});
-			break;
 		case TrajectoryFlag::Parabola:
 			_ptr = std::make_unique<ParabolaTrajectory>(noinit_t {});
-			break;
-		case TrajectoryFlag::Tracing:
-			_ptr = std::make_unique<TracingTrajectory>(noinit_t {});
 			break;
 		default:
 			_ptr.reset();
@@ -200,10 +176,6 @@ void PhobosTrajectory::OnUnlimbo()
 {
 	const auto pBullet = this->Bullet;
 
-	// Record some information of weapon
-	if (const auto pWeapon = pBullet->WeaponType)
-		this->CountOfBurst = pWeapon->Burst;
-
 	// Due to various ways of firing weapons, the true firer may have already died
 	if (const auto pFirer = pBullet->Owner)
 	{
@@ -218,32 +190,12 @@ bool PhobosTrajectory::OnEarlyUpdate()
 	const auto pBullet = this->Bullet;
 	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 
-	// Update group index for members by themselves
-	if (pBulletExt->TrajectoryGroup)
-		pBulletExt->UpdateGroupIndex();
-
 	// In the phase of playing PreImpactAnim
 	if (pBullet->SpawnNextAnim)
 		return false;
 
 	// The previous check requires detonation at this time
 	if (pBulletExt->Status & (TrajectoryStatus::Detonate | TrajectoryStatus::Vanish))
-		return true;
-
-	// Check the remaining existence time
-	if (pBulletExt->LifeDurationTimer.Completed())
-		return true;
-
-	// Check if the firer's target can be synchronized, the target may have been changed here
-	if (pBulletExt->CheckSynchronize())
-		return true;
-
-	// Check if the target needs to be changed, the target may have been changed here
-	if (pBulletExt->TypeExtData->RetargetRadius && pBulletExt->BulletRetargetTechno())
-		return true;
-
-	// After the new target is confirmed, check if the tolerance time has ended
-	if (pBulletExt->CheckNoTargetLifeTime())
 		return true;
 
 	// Based on the new target location, check how to change bullet velocity
@@ -453,26 +405,8 @@ void PhobosTrajectory::OnPreDetonate()
 	// Set detonate coords
 	pBullet->Data.Location = pBullet->Location;
 
-	// Special circumstances, similar to airburst behavior
-	if (pBulletTypeExt->DisperseEffectiveRange.Get() < 0)
-		pBulletExt->PrepareDisperseWeapon();
-
-	if (!(pBulletExt->Status & TrajectoryStatus::Vanish))
-	{
-		if (!pBulletTypeExt->PeacefulVanish.Get(this->Flag() == TrajectoryFlag::Engrave || pBulletTypeExt->ProximityImpact || pBulletTypeExt->DisperseCycle))
-		{
-			// Calculate the current damage
-			pBullet->Health = pBulletExt->GetTrueDamage(pBullet->Health, true);
-			return;
-		}
-
-		pBulletExt->Status |= TrajectoryStatus::Vanish;
-	}
-
-	// To skip all extra effects, no damage, no anims...
-	pBullet->Health = 0;
-	pBullet->Limbo();
-	pBullet->UnInit();
+	// Calculate the current damage
+	pBullet->Health = pBulletExt->GetTrueDamage(pBullet->Health, true);
 }
 
 // Something that needs to be done when the projectile is actually launched
@@ -624,33 +558,6 @@ void PhobosTrajectory::RotateAboutTheAxis(BulletVelocity& vector, BulletVelocity
 	vector = (vector * cosRotate) + (axis * ((1 - cosRotate) * (vector * axis))) + (axis.CrossProduct(vector) * Math::sin(radian));
 }
 
-// Inspection of projectile orientation
-bool PhobosTrajectory::OnFacingCheck()
-{
-	const auto pBullet = this->Bullet;
-	const auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
-	const auto pType = this->GetType();
-
-	if (!pBulletTypeExt->DisperseFaceCheck)
-		return true;
-
-	const auto facing = pType->BulletFacing;
-
-	if (facing == TrajectoryFacing::Velocity || facing == TrajectoryFacing::Spin)
-		return true;
-
-	const auto flag = this->Flag();
-
-	if (pBulletTypeExt->DisperseFromFirer.Get(flag == TrajectoryFlag::Engrave || flag == TrajectoryFlag::Tracing))
-		return true;
-
-	const auto targetDir = DirStruct { BulletExt::Get2DOpRadian(pBullet->Location, pBullet->TargetCoords) };
-	const auto bulletDir = DirStruct { Math::atan2(pBullet->Velocity.Y, pBullet->Velocity.X) };
-
-	// Their directions Y are all opposite, so they can still be used
-	return std::abs(static_cast<short>(static_cast<short>(targetDir.Raw) - static_cast<short>(bulletDir.Raw))) <= (2048 + (pType->BulletROT << 8));
-}
-
 // Update of projectile facing direction
 void PhobosTrajectory::OnFacingUpdate()
 {
@@ -785,7 +692,6 @@ void PhobosTrajectory::Serialize(T& Stm)
 		.Process(this->MovingSpeed)
 		.Process(this->RemainingDistance)
 		.Process(this->CurrentBurst)
-		.Process(this->CountOfBurst)
 		;
 }
 
@@ -805,10 +711,6 @@ DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_Trajectories, 0x5)
 	{
 		pExt->Trajectory = pTrajType->CreateInstance(pThis);
 		pExt->Trajectory->OnUnlimbo();
-	}
-	else if (pExt->TypeExtData->LifeDuration > 0)
-	{
-		pExt->LifeDurationTimer.Start(pExt->TypeExtData->LifeDuration);
 	}
 
 	return 0;
@@ -938,24 +840,6 @@ DEFINE_HOOK(0x415F25, AircraftClass_Fire_TrajectorySkipInertiaEffect, 0x6)
 
 	if (BulletExt::ExtMap.Find(pThis)->Trajectory)
 		return SkipCheck;
-
-	return 0;
-}
-
-// Engrave laser using the unique logic
-DEFINE_HOOK(0x6FD217, TechnoClass_CreateLaser_EngraveDrawNoLaser, 0x5)
-{
-	enum { SkipCreate = 0x6FD456 };
-
-	GET(WeaponTypeClass*, pWeapon, EAX);
-
-	if (const auto pTrajType = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->TrajectoryType.get())
-	{
-		const auto flag = pTrajType->Flag();
-
-		if (flag == TrajectoryFlag::Engrave || flag == TrajectoryFlag::Tracing)
-			return SkipCreate;
-	}
 
 	return 0;
 }

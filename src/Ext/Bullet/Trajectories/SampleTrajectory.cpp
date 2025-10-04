@@ -73,9 +73,7 @@ void SampleTrajectory::OnUnlimbo()
 	const auto pBullet = this->Bullet;
 	this->RemainingDistance += static_cast<int>(pBullet->SourceCoords.DistanceFrom(pBullet->TargetCoords));
 
-	// Waiting for launch trigger
-	if (!BulletExt::ExtMap.Find(pBullet)->DispersedTrajectory)
-		this->OpenFire();
+	this->OpenFire();
 }
 
 // Some checks here, returns whether or not to detonate the bullet.
@@ -148,12 +146,6 @@ void SampleTrajectory::OpenFire()
 bool SampleTrajectory::GetCanHitGround() const
 {
 	return true;
-}
-
-// If need to research a target, where is the search center
-CoordStruct SampleTrajectory::GetRetargetCenter() const
-{
-	return this->Bullet->TargetCoords;
 }
 
 // How to calculate when inputting velocity values after updating the velocity vector each time

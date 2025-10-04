@@ -342,9 +342,6 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		}
 	}
 
-	if (pBulletTypeExt->CreateCapacity >= 0 && BulletExt::CheckExceededCapacity(pThis, pBulletType))
-		return (pWeapon->Damage >= 0 || (pTargetTechno && pTargetTechno->GetHealthPercentage() < RulesClass::Instance->unknown_double_16F8)) ? TemporarilyCannotFire : CannotFire;
-
 	return 0;
 }
 
@@ -821,8 +818,6 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 			if (pThis->CurrentBurstIndex % 2 != 0)
 				flh.Y = -flh.Y;
 		}
-
-		TechnoExt::ExtMap.Find(pThis)->LastWeaponFLH = flh;
 	}
 	else
 	{
@@ -834,14 +829,6 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 
 		if (!pTypeExt->AlternateFLH_OnTurret)
 			allowOnTurret = false;
-
-		auto pCurrentPassenger = pThis->Passengers.GetFirstPassenger();
-
-		for (int i = 0; i < index && pCurrentPassenger; i++)
-			pCurrentPassenger = abstract_cast<FootClass*>(pCurrentPassenger->NextObject);
-
-		if (pCurrentPassenger)
-			TechnoExt::ExtMap.Find(pCurrentPassenger)->LastWeaponFLH = flh;
 	}
 
 	*pCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, allowOnTurret);
