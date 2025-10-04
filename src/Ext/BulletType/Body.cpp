@@ -40,6 +40,10 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->TrajectoryType.LoadFromINI(pINI, pSection);
 
+	this->LifeDuration.Read(exINI, pSection, "LifeDuration");
+	this->NoTargetLifeTime.Read(exINI, pSection, "NoTargetLifeTime");
+	this->CreateCapacity.Read(exINI, pSection, "CreateCapacity");
+	this->PeacefulVanish.Read(exINI, pSection, "PeacefulVanish");
 	this->ApplyRangeModifiers.Read(exINI, pSection, "ApplyRangeModifiers");
 
 	this->PassDetonate.Read(exINI, pSection, "PassDetonate");
@@ -183,6 +187,10 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->TrajectoryType)
 
+		.Process(this->LifeDuration)
+		.Process(this->NoTargetLifeTime)
+		.Process(this->CreateCapacity)
+		.Process(this->PeacefulVanish)
 		.Process(this->ApplyRangeModifiers)
 
 		.Process(this->PassDetonate)

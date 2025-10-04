@@ -32,6 +32,10 @@ public:
 
 		TrajectoryTypePointer TrajectoryType;
 
+		Valueable<int> LifeDuration;
+		Valueable<int> NoTargetLifeTime;
+		Valueable<int> CreateCapacity;
+		Nullable<bool> PeacefulVanish;
 		Valueable<bool> ApplyRangeModifiers;
 
 		Valueable<bool> PassDetonate;
@@ -110,6 +114,10 @@ public:
 			, Vertical_AircraftFix { true }
 			, VerticalInitialFacing {}
 			, TrajectoryType { }
+			, LifeDuration { 0 }
+			, NoTargetLifeTime { -1 }
+			, CreateCapacity { -1 }
+			, PeacefulVanish {}
 			, ApplyRangeModifiers { false }
 			, PassDetonate { false }
 			, PassDetonateLocal { false }

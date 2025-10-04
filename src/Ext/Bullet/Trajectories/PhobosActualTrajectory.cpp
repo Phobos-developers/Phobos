@@ -81,6 +81,10 @@ void ActualTrajectory::OnUnlimbo()
 	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 	const auto pBulletTypeExt = pBulletExt->TypeExtData;
 	this->LastTargetCoord = pBullet->TargetCoords;
+
+	// Survival time
+	if (pBulletTypeExt->LifeDuration > 0)
+		pBulletExt->LifeDurationTimer.Start(pBulletTypeExt->LifeDuration);
 }
 
 bool ActualTrajectory::OnEarlyUpdate()

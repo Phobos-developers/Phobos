@@ -9,6 +9,22 @@
 #include <New/Entity/LaserTrailClass.h>
 #include "Trajectories/PhobosTrajectory.h"
 
+struct BulletGroupData
+{
+	std::vector<DWORD> Bullets {}; // <UniqueID>, Capacity
+	double Angle { 0.0 }; // Tracing.StableRotation use this value to update the angle
+	bool ShouldUpdate { true }; // Remind members to update themselves
+
+	BulletGroupData() = default;
+
+	bool Load(PhobosStreamReader& stm, bool registerForChange);
+	bool Save(PhobosStreamWriter& stm) const;
+
+private:
+	template <typename T>
+	bool Serialize(T& stm);
+};
+
 class BulletExt
 {
 public:
@@ -32,12 +48,17 @@ public:
 		int ParabombFallRate;
 
 		TrajectoryPointer Trajectory;
+		bool DispersedTrajectory;
+		CDTimerClass LifeDurationTimer;
+		CDTimerClass NoTargetLifeTimer;
 		double FirepowerMult;
 		int AttenuationRange;
 		bool TargetIsInAir;
 		bool TargetIsTechno;
 		bool NotMainWeapon;
 		TrajectoryStatus Status;
+		std::shared_ptr<PhobosMap<BulletTypeClass*, BulletGroupData>> TrajectoryGroup;
+		int GroupIndex;
 		int PassDetonateDamage;
 		CDTimerClass PassDetonateTimer;
 		int ProximityImpact;
@@ -58,12 +79,17 @@ public:
 			, ParabombFallRate { 0 }
 
 			, Trajectory { nullptr }
+			, DispersedTrajectory { false }
+			, LifeDurationTimer {}
+			, NoTargetLifeTimer {}
 			, FirepowerMult { 1.0 }
 			, AttenuationRange { 0 }
 			, TargetIsInAir { false }
 			, TargetIsTechno { false }
 			, NotMainWeapon { false }
 			, Status { TrajectoryStatus::None }
+			, TrajectoryGroup {}
+			, GroupIndex { -1 }
 			, PassDetonateDamage { 0 }
 			, PassDetonateTimer {}
 			, ProximityImpact { 0 }
@@ -72,7 +98,7 @@ public:
 			, Casualty {}
 		{ }
 
-		virtual ~ExtData() = default;
+		virtual ~ExtData() override;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
@@ -88,6 +114,8 @@ public:
 		void CheckOnPreDetonate();
 		bool FireAdditionals();
 		void DetonateOnObstacle();
+		bool CheckNoTargetLifeTime();
+		void UpdateGroupIndex();
 
 		std::vector<CellClass*> GetCellsInProximityRadius();
 		bool CheckThroughAndSubjectInCell(CellClass* pCell, HouseClass* pOwner);
@@ -168,5 +196,6 @@ public:
 				damage = Math::sgn(damage);
 		}
 	}
+	static bool CheckExceededCapacity(TechnoClass* pTechno, BulletTypeClass* pBulletType, BulletExt::ExtData* pBulletExt = nullptr);
 	static std::vector<CellStruct> GetCellsInRectangle(const CellStruct bottomStaCell, const CellStruct leftMidCell, const CellStruct rightMidCell, const CellStruct topEndCell);
 };

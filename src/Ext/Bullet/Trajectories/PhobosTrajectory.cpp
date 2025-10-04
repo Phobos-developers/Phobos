@@ -190,12 +190,24 @@ bool PhobosTrajectory::OnEarlyUpdate()
 	const auto pBullet = this->Bullet;
 	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 
+	// Update group index for members by themselves
+	if (pBulletExt->TrajectoryGroup)
+		pBulletExt->UpdateGroupIndex();
+
 	// In the phase of playing PreImpactAnim
 	if (pBullet->SpawnNextAnim)
 		return false;
 
 	// The previous check requires detonation at this time
 	if (pBulletExt->Status & (TrajectoryStatus::Detonate | TrajectoryStatus::Vanish))
+		return true;
+
+	// Check the remaining existence time
+	if (pBulletExt->LifeDurationTimer.Completed())
+		return true;
+
+	// After the new target is confirmed, check if the tolerance time has ended
+	if (pBulletExt->CheckNoTargetLifeTime())
 		return true;
 
 	// Based on the new target location, check how to change bullet velocity
@@ -405,8 +417,22 @@ void PhobosTrajectory::OnPreDetonate()
 	// Set detonate coords
 	pBullet->Data.Location = pBullet->Location;
 
-	// Calculate the current damage
-	pBullet->Health = pBulletExt->GetTrueDamage(pBullet->Health, true);
+	if (!(pBulletExt->Status & TrajectoryStatus::Vanish))
+	{
+		if (!pBulletTypeExt->PeacefulVanish.Get(pBulletTypeExt->ProximityImpact))
+		{
+			// Calculate the current damage
+			pBullet->Health = pBulletExt->GetTrueDamage(pBullet->Health, true);
+			return;
+		}
+
+		pBulletExt->Status |= TrajectoryStatus::Vanish;
+	}
+
+	// To skip all extra effects, no damage, no anims...
+	pBullet->Health = 0;
+	pBullet->Limbo();
+	pBullet->UnInit();
 }
 
 // Something that needs to be done when the projectile is actually launched
@@ -711,6 +737,10 @@ DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_Trajectories, 0x5)
 	{
 		pExt->Trajectory = pTrajType->CreateInstance(pThis);
 		pExt->Trajectory->OnUnlimbo();
+	}
+	else if (pExt->TypeExtData->LifeDuration > 0)
+	{
+		pExt->LifeDurationTimer.Start(pExt->TypeExtData->LifeDuration);
 	}
 
 	return 0;

@@ -14,6 +14,20 @@
 
 BulletExt::ExtContainer BulletExt::ExtMap;
 
+BulletExt::ExtData::~ExtData()
+{
+	if (this->GroupIndex != -1)
+	{
+		if (const auto pMap = this->TrajectoryGroup)
+		{
+			auto& groupData = (*pMap)[this->TypeExtData->OwnerObject()];
+			auto& vec = groupData.Bullets;
+			vec.erase(std::remove(vec.begin(), vec.end(), this->OwnerObject()->UniqueID), vec.end());
+			groupData.ShouldUpdate = true;
+		}
+	}
+}
+
 void BulletExt::ExtData::InitializeOnUnlimbo()
 {
 	const auto pBullet = this->OwnerObject();
@@ -38,6 +52,10 @@ void BulletExt::ExtData::InitializeOnUnlimbo()
 	if (const auto pWeapon = pBullet->WeaponType)
 	{
 		pBulletExt->AttenuationRange = pWeapon->Range;
+
+		if (pBulletTypeExt->ApplyRangeModifiers && pFirer)
+			pBulletExt->AttenuationRange = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer);
+
 		damage = pWeapon->Damage;
 	}
 
@@ -47,9 +65,20 @@ void BulletExt::ExtData::InitializeOnUnlimbo()
 
 	// Record some information of firer
 	if (pFirer)
+	{
 		pBulletExt->FirepowerMult = TechnoExt::GetCurrentFirepowerMultiplier(pFirer);
+
+		// Check trajectory capacity
+		if (pBulletTypeExt->CreateCapacity >= 0)
+			BulletExt::CheckExceededCapacity(pFirer, pBullet->Type, pBulletExt);
+	}
 	else
+	{
 		pBulletExt->NotMainWeapon = true;
+
+		if (pBulletTypeExt->CreateCapacity >= 0)
+			pBulletExt->Status |= TrajectoryStatus::Vanish;
+	}
 
 	// Initialize additional warheads
 	if (pBulletTypeExt->PassDetonate)
@@ -58,12 +87,24 @@ void BulletExt::ExtData::InitializeOnUnlimbo()
 
 bool BulletExt::ExtData::CheckOnEarlyUpdate()
 {
+	// Update group index for members by themselves
+	if (this->TrajectoryGroup)
+		this->UpdateGroupIndex();
+
 	// In the phase of playing PreImpactAnim
 	if (this->OwnerObject()->SpawnNextAnim)
 		return false;
 
 	// The previous check requires detonation at this time
 	if (this->Status & (TrajectoryStatus::Detonate | TrajectoryStatus::Vanish))
+		return true;
+
+	// Check the remaining existence time
+	if (this->LifeDurationTimer.Completed())
+		return true;
+
+	// After the new target is confirmed, check if the tolerance time has ended
+	if (this->CheckNoTargetLifeTime())
 		return true;
 
 	// Fire weapons or warheads
@@ -78,9 +119,24 @@ bool BulletExt::ExtData::CheckOnEarlyUpdate()
 void BulletExt::ExtData::CheckOnPreDetonate()
 {
 	const auto pBullet = this->OwnerObject();
+	const auto pBulletTypeExt = this->TypeExtData;
 
-	// Calculate the current damage
-	pBullet->Health = this->GetTrueDamage(pBullet->Health, true);
+	if (!(this->Status & TrajectoryStatus::Vanish))
+	{
+		if (!pBulletTypeExt->PeacefulVanish.Get(pBulletTypeExt->ProximityImpact || pBulletTypeExt->DisperseCycle))
+		{
+			// Calculate the current damage
+			pBullet->Health = this->GetTrueDamage(pBullet->Health, true);
+			return;
+		}
+
+		this->Status |= TrajectoryStatus::Vanish;
+	}
+
+	// To skip all extra effects, no damage, no anims...
+	pBullet->Health = 0;
+	pBullet->Limbo();
+	pBullet->UnInit();
 }
 
 // Launch additional weapons and warheads
@@ -135,6 +191,98 @@ void BulletExt::ExtData::DetonateOnObstacle()
 	const auto pFirer = pBullet->Owner;
 	const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 	this->ProximityDetonateAt(pOwner, pDetonateAt);
+}
+
+// Tolerance timer inspection
+bool BulletExt::ExtData::CheckNoTargetLifeTime()
+{
+	const auto pBullet = this->OwnerObject();
+	const auto pType = this->TypeExtData;
+
+	// Check should detonate when no target
+	if (!pBullet->Target && !pType->NoTargetLifeTime)
+		return true;
+
+	// Update timer
+	if (pBullet->Target)
+	{
+		this->NoTargetLifeTimer.Stop();
+	}
+	else if (pType->NoTargetLifeTime > 0)
+	{
+		if (this->NoTargetLifeTimer.Completed())
+			return true;
+		else if (!this->NoTargetLifeTimer.IsTicking())
+			this->NoTargetLifeTimer.Start(pType->NoTargetLifeTime);
+	}
+
+	return false;
+}
+
+// Update trajectory capacity group index
+void BulletExt::ExtData::UpdateGroupIndex()
+{
+	const auto pBullet = this->OwnerObject();
+	auto& groupData = (*this->TrajectoryGroup)[pBullet->Type];
+
+	// Should update group index
+	if (groupData.ShouldUpdate)
+	{
+		if (const int size = static_cast<int>(groupData.Bullets.size()))
+		{
+			for (int i = 0; i < size; ++i)
+			{
+				if (groupData.Bullets[i] == pBullet->UniqueID)
+				{
+					this->GroupIndex = i;
+					break;
+				}
+			}
+
+			// If is the last member, reset flag to false
+			if (this->GroupIndex == size - 1)
+				groupData.ShouldUpdate = false;
+		}
+		else
+		{
+			groupData.ShouldUpdate = false;
+		}
+	}
+
+	return;
+}
+
+// Check and set the group
+bool BulletExt::CheckExceededCapacity(TechnoClass* pTechno, BulletTypeClass* pBulletType, BulletExt::ExtData* pBulletExt)
+{
+	const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+
+	if (!pTechnoExt->TrajectoryGroup)
+		pTechnoExt->TrajectoryGroup = std::make_shared<PhobosMap<BulletTypeClass*, BulletGroupData>>();
+
+	// Get shared container
+	auto& group = (*pTechnoExt->TrajectoryGroup)[pBulletType].Bullets;
+	const auto size = static_cast<int>(group.size());
+
+	if (!pBulletExt)
+		return size >= BulletTypeExt::ExtMap.Find(pBulletType)->CreateCapacity;
+
+	pBulletExt->TrajectoryGroup = pTechnoExt->TrajectoryGroup;
+
+	// Check trajectory capacity
+	if (size >= pBulletExt->TypeExtData->CreateCapacity)
+	{
+		// Peaceful vanish
+		pBulletExt->Status |= TrajectoryStatus::Vanish;
+		return true;
+	}
+	else
+	{
+		// Increase trajectory count
+		pBulletExt->GroupIndex = size;
+		group.push_back(pBulletExt->OwnerObject()->UniqueID);
+		return false;
+	}
 }
 
 void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, BulletClass* pInterceptor)
@@ -571,12 +719,17 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->ParabombFallRate)
 
 		.Process(this->Trajectory)
+		.Process(this->DispersedTrajectory)
+		.Process(this->LifeDurationTimer)
+		.Process(this->NoTargetLifeTimer)
 		.Process(this->FirepowerMult)
 		.Process(this->AttenuationRange)
 		.Process(this->TargetIsInAir)
 		.Process(this->TargetIsTechno)
 		.Process(this->NotMainWeapon)
 		.Process(this->Status)
+		.Process(this->TrajectoryGroup)
+		.Process(this->GroupIndex)
 		.Process(this->PassDetonateDamage)
 		.Process(this->PassDetonateTimer)
 		.Process(this->ProximityImpact)
@@ -596,6 +749,26 @@ void BulletExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Extension<BulletClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
+}
+
+bool BulletGroupData::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return this->Serialize(stm);
+}
+
+bool BulletGroupData::Save(PhobosStreamWriter& stm) const
+{
+	return const_cast<BulletGroupData*>(this)->Serialize(stm);
+}
+
+template <typename T>
+bool BulletGroupData::Serialize(T& stm)
+{
+	return stm
+		.Process(this->Bullets)
+		.Process(this->Angle)
+		.Process(this->ShouldUpdate)
+		.Success();
 }
 
 // =============================
