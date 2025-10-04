@@ -609,26 +609,6 @@ void BulletExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
-bool BulletGroupData::Load(PhobosStreamReader& stm, bool registerForChange)
-{
-	return this->Serialize(stm);
-}
-
-bool BulletGroupData::Save(PhobosStreamWriter& stm) const
-{
-	return const_cast<BulletGroupData*>(this)->Serialize(stm);
-}
-
-template <typename T>
-bool BulletGroupData::Serialize(T& stm)
-{
-	return stm
-		.Process(this->Bullets)
-		.Process(this->Angle)
-		.Process(this->ShouldUpdate)
-		.Success();
-}
-
 // =============================
 // container
 
