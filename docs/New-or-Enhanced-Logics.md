@@ -1095,7 +1095,7 @@ Trajectory.AllowFirerTurning=true     ; boolean
 | `DisperseWeapons` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 
 ```{note}
-- `SubjectToGround` can cause the projectile with `Trajectory=Straight` during the entire process or the projectile with `Trajectory=Bombard` during the ascent phase to detonate prematurely due to impact with the ground.
+- `SubjectToGround` can cause the projectile with `Trajectory=Straight` during the entire process or the projectile with `Trajectory=Bombard` during the ascent phase to detonate prematurely due to impact with the ground. For other trajectory types, only its original function of checking the launch position is available.
 - Setting `Trajectory.Missile.UniqueCurve` will ignore all of these settings except of `PassDetonate`, `ProximityImpact` and `DisperseWeapons`.
 ```
 
@@ -1201,7 +1201,7 @@ Trajectory.Engrave.UpdateDirection=false   ; boolean
 
 ```{note}
 - It's best not to let it be intercepted.
-- In this type, the `IsLaser` of the weapon will continuously connect the firing position of the firer and the position of the bullet.
+- In this type, the `IsLaser` of the weapon will continuously connect the firing position of the firer and the position of the bullet. Similarly, the laser will be removed after the duration defined by `LaserDuration`.
 ```
 
 ```{hint}
@@ -1281,7 +1281,7 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
 ```{note}
 - `Trajectory.Tracing.StableRotation` need to cooperate with `CreateCapacity` records to take effect.
-- In this type, the `IsLaser` of the weapon will continuously connect the firing position of the firer and the position of the bullet.
+- In this type, the `IsLaser` of the weapon will continuously connect the firing position of the firer and the position of the bullet. Similarly, the laser will be removed after the duration defined by `LaserDuration`.
 ```
 
 #### Trajectory demo
