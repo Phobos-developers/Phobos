@@ -102,7 +102,6 @@ public:
 	bool BulletPrepareCheck();
 	CoordStruct GetOnlyStableOffsetCoords(const double rotateRadian);
 	CoordStruct GetInaccurateTargetCoords(const CoordStruct& baseCoord, const double distance);
-	void DisperseBurstSubstitution(const double baseRadian);
 
 private:
 	template <typename T>
