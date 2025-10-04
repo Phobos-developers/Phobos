@@ -45,7 +45,6 @@ public:
 	virtual const PhobosTrajectoryType* GetType() const override { return this->Type; }
 	virtual void OpenFire() override;
 	virtual bool GetCanHitGround() const override;
-	virtual CoordStruct GetRetargetCenter() const override;
 	virtual void SetBulletNewTarget(AbstractClass* const pTarget) override;
 	virtual bool CalculateBulletVelocity(const double speed) override;
 
