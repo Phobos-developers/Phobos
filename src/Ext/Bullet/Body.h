@@ -9,6 +9,22 @@
 #include <New/Entity/LaserTrailClass.h>
 #include "Trajectories/PhobosTrajectory.h"
 
+struct BulletGroupData
+{
+	std::vector<DWORD> Bullets {}; // <UniqueID>, Capacity
+	double Angle { 0.0 }; // Tracing.StableRotation use this value to update the angle
+	bool ShouldUpdate { true }; // Remind members to update themselves
+
+	BulletGroupData() = default;
+
+	bool Load(PhobosStreamReader& stm, bool registerForChange);
+	bool Save(PhobosStreamWriter& stm) const;
+
+private:
+	template <typename T>
+	bool Serialize(T& stm);
+};
+
 class BulletExt
 {
 public:
@@ -32,12 +48,16 @@ public:
 		int ParabombFallRate;
 
 		TrajectoryPointer Trajectory;
+		CDTimerClass LifeDurationTimer;
 		double FirepowerMult;
 		int AttenuationRange;
 		bool TargetIsInAir;
 		bool TargetIsTechno;
 		bool NotMainWeapon;
 		TrajectoryStatus Status;
+		CoordStruct FLHCoord;
+		std::shared_ptr<PhobosMap<BulletTypeClass*, BulletGroupData>> TrajectoryGroup;
+		int GroupIndex;
 		int PassDetonateDamage;
 		CDTimerClass PassDetonateTimer;
 		int ProximityImpact;
@@ -58,12 +78,16 @@ public:
 			, ParabombFallRate { 0 }
 
 			, Trajectory { nullptr }
+			, LifeDurationTimer {}
 			, FirepowerMult { 1.0 }
 			, AttenuationRange { 0 }
 			, TargetIsInAir { false }
 			, TargetIsTechno { false }
 			, NotMainWeapon { false }
 			, Status { TrajectoryStatus::None }
+			, FLHCoord { CoordStruct::Empty }
+			, TrajectoryGroup {}
+			, GroupIndex { -1 }
 			, PassDetonateDamage { 0 }
 			, PassDetonateTimer {}
 			, ProximityImpact { 0 }
@@ -72,7 +96,7 @@ public:
 			, Casualty {}
 		{ }
 
-		virtual ~ExtData() = default;
+		virtual ~ExtData() override;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
@@ -88,6 +112,8 @@ public:
 		void CheckOnPreDetonate();
 		bool FireAdditionals();
 		void DetonateOnObstacle();
+		void UpdateGroupIndex();
+		void GetTechnoFLHCoord();
 
 		std::vector<CellClass*> GetCellsInProximityRadius();
 		bool CheckThroughAndSubjectInCell(CellClass* pCell, HouseClass* pOwner);
@@ -154,6 +180,18 @@ public:
 	{
 		return BulletVelocity { coords.X * Math::cos(radian) + coords.Y * Math::sin(radian), coords.X * Math::sin(radian) - coords.Y * Math::cos(radian), static_cast<double>(coords.Z) };
 	}
+	static inline Point2D Coord2Point(const CoordStruct& coords)
+	{
+		return Point2D { coords.X, coords.Y };
+	}
+	static inline CoordStruct Point2Coord(const Point2D& point, const int z = 0)
+	{
+		return CoordStruct { point.X, point.Y, z };
+	}
+	static inline Point2D PointRotate(const Point2D& point, const double radian)
+	{
+		return Point2D { static_cast<int>(point.X * Math::cos(radian) + point.Y * Math::sin(radian)), static_cast<int>(point.X * Math::sin(radian) - point.Y * Math::cos(radian)) };
+	}
 	static inline bool CheckTechnoIsInvalid(const TechnoClass* const pTechno)
 	{
 		return (!pTechno->IsAlive || !pTechno->IsOnMap || pTechno->InLimbo || pTechno->IsSinking || pTechno->Health <= 0);
@@ -167,6 +205,13 @@ public:
 			else
 				damage = Math::sgn(damage);
 		}
+	}
+	static inline TechnoClass* GetSurfaceFirer(TechnoClass* pFirer)
+	{
+		for (auto pTrans = pFirer; pTrans; pTrans = pTrans->Transporter)
+			pFirer = pTrans;
+
+		return pFirer;
 	}
 	static std::vector<CellStruct> GetCellsInRectangle(const CellStruct bottomStaCell, const CellStruct leftMidCell, const CellStruct rightMidCell, const CellStruct topEndCell);
 };

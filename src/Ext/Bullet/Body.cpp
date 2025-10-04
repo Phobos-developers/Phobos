@@ -14,6 +14,20 @@
 
 BulletExt::ExtContainer BulletExt::ExtMap;
 
+BulletExt::ExtData::~ExtData()
+{
+	if (this->GroupIndex != -1)
+	{
+		if (const auto pMap = this->TrajectoryGroup)
+		{
+			auto& groupData = (*pMap)[this->TypeExtData->OwnerObject()];
+			auto& vec = groupData.Bullets;
+			vec.erase(std::remove(vec.begin(), vec.end(), this->OwnerObject()->UniqueID), vec.end());
+			groupData.ShouldUpdate = true;
+		}
+	}
+}
+
 void BulletExt::ExtData::InitializeOnUnlimbo()
 {
 	const auto pBullet = this->OwnerObject();
@@ -47,9 +61,16 @@ void BulletExt::ExtData::InitializeOnUnlimbo()
 
 	// Record some information of firer
 	if (pFirer)
+	{
 		pBulletExt->FirepowerMult = TechnoExt::GetCurrentFirepowerMultiplier(pFirer);
+
+		// Obtain the launch location
+		pBulletExt->GetTechnoFLHCoord();
+	}
 	else
+	{
 		pBulletExt->NotMainWeapon = true;
+	}
 
 	// Initialize additional warheads
 	if (pBulletTypeExt->PassDetonate)
@@ -58,6 +79,10 @@ void BulletExt::ExtData::InitializeOnUnlimbo()
 
 bool BulletExt::ExtData::CheckOnEarlyUpdate()
 {
+	// Update group index for members by themselves
+	if (this->TrajectoryGroup)
+		this->UpdateGroupIndex();
+
 	// In the phase of playing PreImpactAnim
 	if (this->OwnerObject()->SpawnNextAnim)
 		return false;
@@ -135,6 +160,52 @@ void BulletExt::ExtData::DetonateOnObstacle()
 	const auto pFirer = pBullet->Owner;
 	const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 	this->ProximityDetonateAt(pOwner, pDetonateAt);
+}
+
+// Update trajectory capacity group index
+void BulletExt::ExtData::UpdateGroupIndex()
+{
+	const auto pBullet = this->OwnerObject();
+	auto& groupData = (*this->TrajectoryGroup)[pBullet->Type];
+
+	// Should update group index
+	if (groupData.ShouldUpdate)
+	{
+		if (const int size = static_cast<int>(groupData.Bullets.size()))
+		{
+			for (int i = 0; i < size; ++i)
+			{
+				if (groupData.Bullets[i] == pBullet->UniqueID)
+				{
+					this->GroupIndex = i;
+					break;
+				}
+			}
+
+			// If is the last member, reset flag to false
+			if (this->GroupIndex == size - 1)
+				groupData.ShouldUpdate = false;
+		}
+		else
+		{
+			groupData.ShouldUpdate = false;
+		}
+	}
+
+	return;
+}
+
+void BulletExt::ExtData::GetTechnoFLHCoord()
+{
+	const auto pBullet = this->OwnerObject();
+	const auto pTechno = pBullet->Owner;
+	const auto pExt = TechnoExt::ExtMap.TryFind(pTechno);
+
+	// Record the launch location, the building has an additional offset
+	if (!pExt || !pExt->LastWeaponType || pExt->LastWeaponType->Projectile != pBullet->Type)
+		this->NotMainWeapon = true;
+	else
+		this->FLHCoord = pExt->LastWeaponFLH;
 }
 
 void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, BulletClass* pInterceptor)
@@ -330,6 +401,14 @@ inline void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pH
 
 	if (!pWeapon->IsLaser)
 		return;
+
+	if (const auto pTrajType = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->TrajectoryType.get())
+	{
+		const auto flag = pTrajType->Flag();
+
+		if (flag == TrajectoryFlag::Engrave || flag == TrajectoryFlag::Tracing)
+			return;
+	}
 
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
@@ -571,12 +650,16 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->ParabombFallRate)
 
 		.Process(this->Trajectory)
+		.Process(this->LifeDurationTimer)
 		.Process(this->FirepowerMult)
 		.Process(this->AttenuationRange)
 		.Process(this->TargetIsInAir)
 		.Process(this->TargetIsTechno)
 		.Process(this->NotMainWeapon)
 		.Process(this->Status)
+		.Process(this->FLHCoord)
+		.Process(this->TrajectoryGroup)
+		.Process(this->GroupIndex)
 		.Process(this->PassDetonateDamage)
 		.Process(this->PassDetonateTimer)
 		.Process(this->ProximityImpact)

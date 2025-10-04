@@ -1,7 +1,10 @@
 #include "PhobosTrajectory.h"
 #include "ActualTrajectories/StraightTrajectory.h"
 #include "ActualTrajectories/BombardTrajectory.h"
+#include "ActualTrajectories/MissileTrajectory.h"
+#include "VirtualTrajectories/EngraveTrajectory.h"
 #include "ActualTrajectories/ParabolaTrajectory.h"
+#include "VirtualTrajectories/TracingTrajectory.h"
 
 #include <OverlayTypeClass.h>
 
@@ -18,8 +21,17 @@ TrajectoryTypePointer::TrajectoryTypePointer(TrajectoryFlag flag)
 	case TrajectoryFlag::Bombard:
 		_ptr = std::make_unique<BombardTrajectoryType>();
 		return;
+	case TrajectoryFlag::Missile:
+		_ptr = std::make_unique<MissileTrajectoryType>();
+		return;
+	case TrajectoryFlag::Engrave:
+		_ptr = std::make_unique<EngraveTrajectoryType>();
+		return;
 	case TrajectoryFlag::Parabola:
 		_ptr = std::make_unique<ParabolaTrajectoryType>();
+		return;
+	case TrajectoryFlag::Tracing:
+		_ptr = std::make_unique<TracingTrajectoryType>();
 		return;
 	}
 	_ptr.reset();
@@ -36,7 +48,10 @@ namespace detail
 			{
 				{"Straight", TrajectoryFlag::Straight},
 				{"Bombard" ,TrajectoryFlag::Bombard},
+				{"Missile", TrajectoryFlag::Missile},
+				{"Engrave" ,TrajectoryFlag::Engrave},
 				{"Parabola", TrajectoryFlag::Parabola},
+				{"Tracing" ,TrajectoryFlag::Tracing},
 			};
 			for (auto [name, flag] : FlagNames)
 			{
@@ -140,8 +155,17 @@ bool TrajectoryPointer::Load(PhobosStreamReader& Stm, bool registerForChange)
 		case TrajectoryFlag::Bombard:
 			_ptr = std::make_unique<BombardTrajectory>(noinit_t {});
 			break;
+		case TrajectoryFlag::Missile:
+			_ptr = std::make_unique<MissileTrajectory>(noinit_t {});
+			break;
+		case TrajectoryFlag::Engrave:
+			_ptr = std::make_unique<EngraveTrajectory>(noinit_t {});
+			break;
 		case TrajectoryFlag::Parabola:
 			_ptr = std::make_unique<ParabolaTrajectory>(noinit_t {});
+			break;
+		case TrajectoryFlag::Tracing:
+			_ptr = std::make_unique<TracingTrajectory>(noinit_t {});
 			break;
 		default:
 			_ptr.reset();
@@ -189,6 +213,10 @@ bool PhobosTrajectory::OnEarlyUpdate()
 {
 	const auto pBullet = this->Bullet;
 	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+
+	// Update group index for members by themselves
+	if (pBulletExt->TrajectoryGroup)
+		pBulletExt->UpdateGroupIndex();
 
 	// In the phase of playing PreImpactAnim
 	if (pBullet->SpawnNextAnim)
@@ -840,6 +868,24 @@ DEFINE_HOOK(0x415F25, AircraftClass_Fire_TrajectorySkipInertiaEffect, 0x6)
 
 	if (BulletExt::ExtMap.Find(pThis)->Trajectory)
 		return SkipCheck;
+
+	return 0;
+}
+
+// Engrave laser using the unique logic
+DEFINE_HOOK(0x6FD217, TechnoClass_CreateLaser_EngraveDrawNoLaser, 0x5)
+{
+	enum { SkipCreate = 0x6FD456 };
+
+	GET(WeaponTypeClass*, pWeapon, EAX);
+
+	if (const auto pTrajType = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->TrajectoryType.get())
+	{
+		const auto flag = pTrajType->Flag();
+
+		if (flag == TrajectoryFlag::Engrave || flag == TrajectoryFlag::Tracing)
+			return SkipCreate;
+	}
 
 	return 0;
 }

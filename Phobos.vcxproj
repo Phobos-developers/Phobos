@@ -64,9 +64,13 @@
     <ClCompile Include="src\Ext\Bullet\AdditionalWarheads.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\PhobosTrajectory.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\PhobosActualTrajectory.cpp" />
+    <ClCompile Include="src\Ext\Bullet\Trajectories\PhobosVirtualTrajectory.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\ActualTrajectories\StraightTrajectory.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\ActualTrajectories\BombardTrajectory.cpp" />
+    <ClCompile Include="src\Ext\Bullet\Trajectories\ActualTrajectories\MissileTrajectory.cpp" />
+    <ClCompile Include="src\Ext\Bullet\Trajectories\VirtualTrajectories\EngraveTrajectory.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\ActualTrajectories\ParabolaTrajectory.cpp" />
+    <ClCompile Include="src\Ext\Bullet\Trajectories\VirtualTrajectories\TracingTrajectory.cpp" />
     <ClCompile Include="src\Ext\CaptureManager\Hooks.cpp" />
     <ClCompile Include="src\Ext\CaptureManager\Body.cpp" />
     <ClCompile Include="src\Ext\OverlayType\Body.cpp" />
@@ -245,9 +249,13 @@
     <ClInclude Include="src\Commands\SaveVariablesToFile.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\PhobosTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\PhobosActualTrajectory.h" />
+    <ClInclude Include="src\Ext\Bullet\Trajectories\PhobosVirtualTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\ActualTrajectories\StraightTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\ActualTrajectories\BombardTrajectory.h" />
+    <ClInclude Include="src\Ext\Bullet\Trajectories\ActualTrajectories\MissileTrajectory.h" />
+    <ClInclude Include="src\Ext\Bullet\Trajectories\VirtualTrajectories\EngraveTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\ActualTrajectories\ParabolaTrajectory.h" />
+    <ClInclude Include="src\Ext\Bullet\Trajectories\VirtualTrajectories\TracingTrajectory.h" />
     <ClInclude Include="src\Ext\OverlayType\Body.h" />
     <ClInclude Include="src\Ext\ParticleType\Body.h" />
     <ClInclude Include="src\Ext\Sidebar\Body.h" />
