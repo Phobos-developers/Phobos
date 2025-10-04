@@ -41,6 +41,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TrajectoryType.LoadFromINI(pINI, pSection);
 
 	this->ApplyRangeModifiers.Read(exINI, pSection, "ApplyRangeModifiers");
+	this->UseDisperseCoord.Read(exINI, pSection, "UseDisperseCoord");
 
 	this->PassDetonate.Read(exINI, pSection, "PassDetonate");
 	this->PassDetonateLocal.Read(exINI, pSection, "PassDetonateLocal");
@@ -64,6 +65,26 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DamageEdgeAttenuation = Math::max(0.0, this->DamageEdgeAttenuation);
 	this->DamageCountAttenuation.Read(exINI, pSection, "DamageCountAttenuation");
 	this->DamageCountAttenuation = Math::max(0.0, this->DamageCountAttenuation);
+
+	this->DisperseWeapons.Read(exINI, pSection, "DisperseWeapons");
+	this->DisperseBursts.Read(exINI, pSection, "DisperseBursts");
+	this->DisperseCounts.Read(exINI, pSection, "DisperseCounts");
+	this->DisperseDelays.Read(exINI, pSection, "DisperseDelays");
+	this->DisperseCycle.Read(exINI, pSection, "DisperseCycle");
+	this->DisperseInitialDelay.Read(exINI, pSection, "DisperseInitialDelay");
+	this->DisperseEffectiveRange.Read(exINI, pSection, "DisperseEffectiveRange");
+	this->DisperseSeparate.Read(exINI, pSection, "DisperseSeparate");
+	this->DisperseRetarget.Read(exINI, pSection, "DisperseRetarget");
+	this->DisperseLocation.Read(exINI, pSection, "DisperseLocation");
+	this->DisperseTendency.Read(exINI, pSection, "DisperseTendency");
+	this->DisperseHolistic.Read(exINI, pSection, "DisperseHolistic");
+	this->DisperseMarginal.Read(exINI, pSection, "DisperseMarginal");
+	this->DisperseDoRepeat.Read(exINI, pSection, "DisperseDoRepeat");
+	this->DisperseSuicide.Read(exINI, pSection, "DisperseSuicide");
+	this->DisperseFromFirer.Read(exINI, pSection, "DisperseFromFirer");
+	this->DisperseFaceCheck.Read(exINI, pSection, "DisperseFaceCheck");
+	this->DisperseForceFire.Read(exINI, pSection, "DisperseForceFire");
+	this->DisperseCoord.Read(exINI, pSection, "DisperseCoord");
 
 	this->Shrapnel_AffectsGround.Read(exINI, pSection, "Shrapnel.AffectsGround");
 	this->Shrapnel_AffectsBuildings.Read(exINI, pSection, "Shrapnel.AffectsBuildings");
@@ -184,6 +205,7 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TrajectoryType)
 
 		.Process(this->ApplyRangeModifiers)
+		.Process(this->UseDisperseCoord)
 
 		.Process(this->PassDetonate)
 		.Process(this->PassDetonateLocal)
@@ -203,6 +225,26 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ThroughBuilding)
 		.Process(this->DamageEdgeAttenuation)
 		.Process(this->DamageCountAttenuation)
+
+		.Process(this->DisperseWeapons)
+		.Process(this->DisperseBursts)
+		.Process(this->DisperseCounts)
+		.Process(this->DisperseDelays)
+		.Process(this->DisperseCycle)
+		.Process(this->DisperseInitialDelay)
+		.Process(this->DisperseEffectiveRange)
+		.Process(this->DisperseSeparate)
+		.Process(this->DisperseRetarget)
+		.Process(this->DisperseLocation)
+		.Process(this->DisperseTendency)
+		.Process(this->DisperseHolistic)
+		.Process(this->DisperseMarginal)
+		.Process(this->DisperseDoRepeat)
+		.Process(this->DisperseSuicide)
+		.Process(this->DisperseFromFirer)
+		.Process(this->DisperseFaceCheck)
+		.Process(this->DisperseForceFire)
+		.Process(this->DisperseCoord)
 
 		.Process(this->Shrapnel_AffectsGround)
 		.Process(this->Shrapnel_AffectsBuildings)

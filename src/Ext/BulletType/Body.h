@@ -33,6 +33,7 @@ public:
 		TrajectoryTypePointer TrajectoryType;
 
 		Valueable<bool> ApplyRangeModifiers;
+		Valueable<bool> UseDisperseCoord;
 
 		Valueable<bool> PassDetonate;
 		Valueable<bool> PassDetonateLocal;
@@ -52,6 +53,26 @@ public:
 		Valueable<bool> ThroughBuilding;
 		Valueable<double> DamageEdgeAttenuation;
 		Valueable<double> DamageCountAttenuation;
+
+		ValueableVector<WeaponTypeClass*> DisperseWeapons;
+		ValueableVector<int> DisperseBursts;
+		ValueableVector<int> DisperseCounts;
+		ValueableVector<int> DisperseDelays;
+		Valueable<int> DisperseCycle;
+		Valueable<int> DisperseInitialDelay;
+		Valueable<Leptons> DisperseEffectiveRange;
+		Valueable<bool> DisperseSeparate;
+		Valueable<bool> DisperseRetarget;
+		Valueable<bool> DisperseLocation;
+		Valueable<bool> DisperseTendency;
+		Valueable<bool> DisperseHolistic;
+		Valueable<bool> DisperseMarginal;
+		Valueable<bool> DisperseDoRepeat;
+		Valueable<bool> DisperseSuicide;
+		Nullable<bool> DisperseFromFirer;
+		Valueable<bool> DisperseFaceCheck;
+		Valueable<bool> DisperseForceFire;
+		Valueable<CoordStruct> DisperseCoord;
 
 		Valueable<bool> Shrapnel_AffectsGround;
 		Valueable<bool> Shrapnel_AffectsBuildings;
@@ -111,6 +132,7 @@ public:
 			, VerticalInitialFacing {}
 			, TrajectoryType { }
 			, ApplyRangeModifiers { false }
+			, UseDisperseCoord { false }
 			, PassDetonate { false }
 			, PassDetonateLocal { false }
 			, PassDetonateWarhead {}
@@ -129,6 +151,25 @@ public:
 			, ThroughBuilding { true }
 			, DamageEdgeAttenuation { 1.0 }
 			, DamageCountAttenuation { 1.0 }
+			, DisperseWeapons {}
+			, DisperseBursts {}
+			, DisperseCounts {}
+			, DisperseDelays {}
+			, DisperseCycle { 0 }
+			, DisperseInitialDelay { 0 }
+			, DisperseEffectiveRange { Leptons(0) }
+			, DisperseSeparate { false }
+			, DisperseRetarget { false }
+			, DisperseLocation { false }
+			, DisperseTendency { false }
+			, DisperseHolistic { false }
+			, DisperseMarginal { false }
+			, DisperseDoRepeat { false }
+			, DisperseSuicide { true }
+			, DisperseFromFirer {}
+			, DisperseFaceCheck { false }
+			, DisperseForceFire { true }
+			, DisperseCoord { CoordStruct::Empty }
 			, Shrapnel_AffectsGround { false }
 			, Shrapnel_AffectsBuildings { false }
 			, Shrapnel_UseWeaponTargeting { false }

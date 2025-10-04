@@ -130,7 +130,9 @@ void BombardTrajectory::OnUnlimbo()
 		}
 	}
 
-	this->OpenFire();
+	// Waiting for launch trigger
+	if (!BulletExt::ExtMap.Find(pBullet)->DispersedTrajectory)
+		this->OpenFire();
 }
 
 bool BombardTrajectory::OnVelocityCheck()
@@ -195,6 +197,10 @@ void BombardTrajectory::FireTrajectory()
 
 		if (this->CalculateBulletVelocity(pType->Speed))
 			BulletExt::ExtMap.Find(pBullet)->Status |= TrajectoryStatus::Detonate;
+
+		// Rotate the selected angle
+		if (std::abs(pType->RotateCoord) > BulletExt::Epsilon && this->CountOfBurst > 1)
+			this->DisperseBurstSubstitution(this->RotateRadian);
 	}
 	else
 	{
@@ -212,6 +218,10 @@ void BombardTrajectory::FireTrajectory()
 
 			if (this->CalculateBulletVelocity(fallSpeed))
 				pBulletExt->Status |= TrajectoryStatus::Detonate;
+
+			// Rotate the selected angle
+			if (std::abs(pType->RotateCoord) > BulletExt::Epsilon && this->CountOfBurst > 1)
+				this->DisperseBurstSubstitution(this->RotateRadian);
 		}
 		else
 		{
@@ -416,6 +426,10 @@ bool BombardTrajectory::BulletVelocityChange()
 
 				if (this->CalculateBulletVelocity(fallSpeed))
 					return true;
+
+				// Rotate the selected angle
+				if (std::abs(pType->RotateCoord) > BulletExt::Epsilon && this->CountOfBurst > 1)
+					this->DisperseBurstSubstitution(this->RotateRadian);
 
 				this->RemainingDistance += static_cast<int>(pBullet->TargetCoords.DistanceFrom(middleLocation));
 			}

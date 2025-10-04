@@ -87,6 +87,7 @@ public:
 		, MovingSpeed { 0 }
 		, RemainingDistance { 1 }
 		, CurrentBurst { 0 }
+		, CountOfBurst { 0 }
 	{ }
 
 	BulletClass* Bullet; // Bullet attached to
@@ -94,6 +95,7 @@ public:
 	double MovingSpeed; // The current speed value
 	int RemainingDistance; // Remaining distance from the self explosion location
 	int CurrentBurst; // Current burst index, mirror is required for negative numbers
+	int CountOfBurst; // Upper limit of burst counts
 
 	virtual ~PhobosTrajectory() noexcept = default;
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
@@ -115,6 +117,7 @@ public:
 	static void RotateVector(BulletVelocity& vector, const BulletVelocity& aim, const double turningRadian);
 	static void RotateAboutTheAxis(BulletVelocity& vector, BulletVelocity& axis, const double radian);
 
+	bool OnFacingCheck();
 	void OnFacingUpdate();
 
 private:

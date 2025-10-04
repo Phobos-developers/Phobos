@@ -818,6 +818,8 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 			if (pThis->CurrentBurstIndex % 2 != 0)
 				flh.Y = -flh.Y;
 		}
+
+		TechnoExt::ExtMap.Find(pThis)->LastWeaponFLH = flh;
 	}
 	else
 	{
@@ -829,6 +831,14 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 
 		if (!pTypeExt->AlternateFLH_OnTurret)
 			allowOnTurret = false;
+
+		auto pCurrentPassenger = pThis->Passengers.GetFirstPassenger();
+
+		for (int i = 0; i < index && pCurrentPassenger; i++)
+			pCurrentPassenger = abstract_cast<FootClass*>(pCurrentPassenger->NextObject);
+
+		if (pCurrentPassenger)
+			TechnoExt::ExtMap.Find(pCurrentPassenger)->LastWeaponFLH = flh;
 	}
 
 	*pCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, allowOnTurret);

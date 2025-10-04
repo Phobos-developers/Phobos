@@ -176,6 +176,10 @@ void PhobosTrajectory::OnUnlimbo()
 {
 	const auto pBullet = this->Bullet;
 
+	// Record some information of weapon
+	if (const auto pWeapon = pBullet->WeaponType)
+		this->CountOfBurst = pWeapon->Burst;
+
 	// Due to various ways of firing weapons, the true firer may have already died
 	if (const auto pFirer = pBullet->Owner)
 	{
@@ -405,6 +409,10 @@ void PhobosTrajectory::OnPreDetonate()
 	// Set detonate coords
 	pBullet->Data.Location = pBullet->Location;
 
+	// Special circumstances, similar to airburst behavior
+	if (pBulletTypeExt->DisperseEffectiveRange.Get() < 0)
+		pBulletExt->PrepareDisperseWeapon();
+
 	// Calculate the current damage
 	pBullet->Health = pBulletExt->GetTrueDamage(pBullet->Health, true);
 }
@@ -558,6 +566,33 @@ void PhobosTrajectory::RotateAboutTheAxis(BulletVelocity& vector, BulletVelocity
 	vector = (vector * cosRotate) + (axis * ((1 - cosRotate) * (vector * axis))) + (axis.CrossProduct(vector) * Math::sin(radian));
 }
 
+// Inspection of projectile orientation
+bool PhobosTrajectory::OnFacingCheck()
+{
+	const auto pBullet = this->Bullet;
+	const auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+	const auto pType = this->GetType();
+
+	if (!pBulletTypeExt->DisperseFaceCheck)
+		return true;
+
+	const auto facing = pType->BulletFacing;
+
+	if (facing == TrajectoryFacing::Velocity || facing == TrajectoryFacing::Spin)
+		return true;
+
+	const auto flag = this->Flag();
+
+	if (pBulletTypeExt->DisperseFromFirer.Get(false))
+		return true;
+
+	const auto targetDir = DirStruct { BulletExt::Get2DOpRadian(pBullet->Location, pBullet->TargetCoords) };
+	const auto bulletDir = DirStruct { Math::atan2(pBullet->Velocity.Y, pBullet->Velocity.X) };
+
+	// Their directions Y are all opposite, so they can still be used
+	return std::abs(static_cast<short>(static_cast<short>(targetDir.Raw) - static_cast<short>(bulletDir.Raw))) <= (2048 + (pType->BulletROT << 8));
+}
+
 // Update of projectile facing direction
 void PhobosTrajectory::OnFacingUpdate()
 {
@@ -692,6 +727,7 @@ void PhobosTrajectory::Serialize(T& Stm)
 		.Process(this->MovingSpeed)
 		.Process(this->RemainingDistance)
 		.Process(this->CurrentBurst)
+		.Process(this->CountOfBurst)
 		;
 }
 

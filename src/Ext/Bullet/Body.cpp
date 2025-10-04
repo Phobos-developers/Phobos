@@ -28,6 +28,7 @@ void BulletExt::ExtData::InitializeOnUnlimbo()
 
 	// Set additional warhead and weapon count
 	pBulletExt->ProximityImpact = pBulletTypeExt->ProximityImpact;
+	pBulletExt->DisperseCycle = pBulletTypeExt->DisperseCycle;
 
 	// Record the status of the target
 	pBulletExt->TargetIsTechno = (pTarget->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None;
@@ -47,13 +48,27 @@ void BulletExt::ExtData::InitializeOnUnlimbo()
 
 	// Record some information of firer
 	if (pFirer)
+	{
 		pBulletExt->FirepowerMult = TechnoExt::GetCurrentFirepowerMultiplier(pFirer);
+
+		// Obtain the launch location
+		pBulletExt->GetTechnoFLHCoord();
+	}
 	else
+	{
 		pBulletExt->NotMainWeapon = true;
+	}
 
 	// Initialize additional warheads
 	if (pBulletTypeExt->PassDetonate)
 		pBulletExt->PassDetonateTimer.Start(pBulletTypeExt->PassDetonateInitialDelay);
+
+	// Initialize additional weapons
+	if (!pBulletTypeExt->DisperseWeapons.empty() && !pBulletTypeExt->DisperseCounts.empty() && pBulletExt->DisperseCycle)
+	{
+		pBulletExt->DisperseCount = pBulletTypeExt->DisperseCounts[0];
+		pBulletExt->DisperseTimer.Start(pBulletTypeExt->DisperseInitialDelay);
+	}
 }
 
 bool BulletExt::ExtData::CheckOnEarlyUpdate()
@@ -78,6 +93,11 @@ bool BulletExt::ExtData::CheckOnEarlyUpdate()
 void BulletExt::ExtData::CheckOnPreDetonate()
 {
 	const auto pBullet = this->OwnerObject();
+	const auto pBulletTypeExt = this->TypeExtData;
+
+	// Special circumstances, similar to airburst behavior
+	if (pBulletTypeExt->DisperseEffectiveRange.Get() < 0)
+		this->PrepareDisperseWeapon();
 
 	// Calculate the current damage
 	pBullet->Health = this->GetTrueDamage(pBullet->Health, true);
@@ -96,7 +116,20 @@ bool BulletExt::ExtData::FireAdditionals()
 	if (this->ProximityImpact != 0 && pType->ProximityRadius.Get() > 0)
 		this->PrepareForDetonateAt();
 
-	return false;
+	// Launch additional weapons towards the target
+	if (!this->DisperseTimer.Completed())
+		return false;
+
+	const auto pBullet = this->OwnerObject();
+	const auto range = pType->DisperseEffectiveRange.Get();
+
+	// Weapons can only be fired when the distance is close enough
+	if (range && pBullet->TargetCoords.DistanceFrom(pBullet->Location) > range)
+		return false;
+
+	// Fire after checking the orientation
+	const auto pTraj = this->Trajectory.get();
+	return (!pTraj || pTraj->OnFacingCheck()) && this->PrepareDisperseWeapon();
 }
 
 // Detonate a extra warhead on the obstacle then detonate bullet itself
@@ -571,18 +604,24 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->ParabombFallRate)
 
 		.Process(this->Trajectory)
+		.Process(this->DispersedTrajectory)
 		.Process(this->FirepowerMult)
 		.Process(this->AttenuationRange)
 		.Process(this->TargetIsInAir)
 		.Process(this->TargetIsTechno)
 		.Process(this->NotMainWeapon)
 		.Process(this->Status)
+		.Process(this->FLHCoord)
 		.Process(this->PassDetonateDamage)
 		.Process(this->PassDetonateTimer)
 		.Process(this->ProximityImpact)
 		.Process(this->ProximityDamage)
 		.Process(this->ExtraCheck)
 		.Process(this->Casualty)
+		.Process(this->DisperseIndex)
+		.Process(this->DisperseCount)
+		.Process(this->DisperseCycle)
+		.Process(this->DisperseTimer)
 		;
 }
 

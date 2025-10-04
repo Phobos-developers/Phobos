@@ -73,7 +73,9 @@ void SampleTrajectory::OnUnlimbo()
 	const auto pBullet = this->Bullet;
 	this->RemainingDistance += static_cast<int>(pBullet->SourceCoords.DistanceFrom(pBullet->TargetCoords));
 
-	this->OpenFire();
+	// Waiting for launch trigger
+	if (!BulletExt::ExtMap.Find(pBullet)->DispersedTrajectory)
+		this->OpenFire();
 }
 
 // Some checks here, returns whether or not to detonate the bullet.

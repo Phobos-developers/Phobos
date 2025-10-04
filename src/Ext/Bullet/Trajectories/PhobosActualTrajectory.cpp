@@ -176,3 +176,31 @@ CoordStruct ActualTrajectory::GetInaccurateTargetCoords(const CoordStruct& baseC
 	// Substitute to calculate random coordinates
 	return MapClass::GetRandomCoordsNear(baseCoord, offsetDistance, false);
 }
+
+void ActualTrajectory::DisperseBurstSubstitution(const double baseRadian)
+{
+	const auto pType = static_cast<const ActualTrajectoryType*>(this->GetType());
+	const auto axis = pType->AxisOfRotation.Get();
+
+	// Calculate the actual rotation axis
+	auto rotationAxis = BulletExt::HorizontalRotate(axis, baseRadian);
+	double extraRotate = 0.0;
+	const int burst = (this->CurrentBurst < 0) ? (-this->CurrentBurst - 1) : this->CurrentBurst;
+
+	// Symmetry and initial direction can be calculated separately
+	if (pType->MirrorCoord)
+	{
+		if (this->CurrentBurst < 0)
+			rotationAxis *= -1;
+
+		// Rotate half the angle in the opposite direction
+		extraRotate = Math::Pi * (pType->RotateCoord * ((burst / 2) / (this->CountOfBurst - 1.0) - 0.5)) / 180;
+	}
+	else
+	{
+		extraRotate = Math::Pi * (pType->RotateCoord * (burst / (this->CountOfBurst - 1.0) - 0.5)) / 180;
+	}
+
+	// Rotate the selected angle
+	PhobosTrajectory::RotateAboutTheAxis(this->MovingVelocity, rotationAxis, extraRotate);
+}

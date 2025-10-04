@@ -149,7 +149,9 @@ void ParabolaTrajectory::OnUnlimbo()
 		}
 	}
 
-	this->OpenFire();
+	// Waiting for launch trigger
+	if (!BulletExt::ExtMap.Find(pBullet)->DispersedTrajectory)
+		this->OpenFire();
 }
 
 bool ParabolaTrajectory::OnVelocityCheck()
@@ -428,6 +430,10 @@ void ParabolaTrajectory::FireTrajectory()
 		this->CalculateBulletVelocityRightNow(source, gravity);
 
 	this->MovingSpeed = this->MovingVelocity.Magnitude();
+
+	// Rotate the selected angle
+	if (std::abs(pType->RotateCoord) > BulletExt::Epsilon && this->CountOfBurst > 1)
+		this->DisperseBurstSubstitution(rotateRadian);
 }
 
 void ParabolaTrajectory::MultiplyBulletVelocity(const double ratio, const bool shouldDetonate)
