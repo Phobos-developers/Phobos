@@ -334,14 +334,6 @@ inline void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pH
 	if (!pWeapon->IsLaser)
 		return;
 
-	if (const auto pTrajType = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->TrajectoryType.get())
-	{
-		const auto flag = pTrajType->Flag();
-
-		if (flag == TrajectoryFlag::Engrave || flag == TrajectoryFlag::Tracing)
-			return;
-	}
-
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
 	if (pWeapon->IsHouseColor || pWeaponExt->Laser_IsSingleColor)

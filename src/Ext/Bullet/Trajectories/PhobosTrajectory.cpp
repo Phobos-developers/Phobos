@@ -36,10 +36,7 @@ namespace detail
 			{
 				{"Straight", TrajectoryFlag::Straight},
 				{"Bombard" ,TrajectoryFlag::Bombard},
-				{"Missile", TrajectoryFlag::Missile},
-				{"Engrave" ,TrajectoryFlag::Engrave},
 				{"Parabola", TrajectoryFlag::Parabola},
-				{"Tracing" ,TrajectoryFlag::Tracing},
 			};
 			for (auto [name, flag] : FlagNames)
 			{
@@ -843,24 +840,6 @@ DEFINE_HOOK(0x415F25, AircraftClass_Fire_TrajectorySkipInertiaEffect, 0x6)
 
 	if (BulletExt::ExtMap.Find(pThis)->Trajectory)
 		return SkipCheck;
-
-	return 0;
-}
-
-// Engrave laser using the unique logic
-DEFINE_HOOK(0x6FD217, TechnoClass_CreateLaser_EngraveDrawNoLaser, 0x5)
-{
-	enum { SkipCreate = 0x6FD456 };
-
-	GET(WeaponTypeClass*, pWeapon, EAX);
-
-	if (const auto pTrajType = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->TrajectoryType.get())
-	{
-		const auto flag = pTrajType->Flag();
-
-		if (flag == TrajectoryFlag::Engrave || flag == TrajectoryFlag::Tracing)
-			return SkipCreate;
-	}
 
 	return 0;
 }
