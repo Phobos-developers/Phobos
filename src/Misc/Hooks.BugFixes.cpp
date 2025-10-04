@@ -2674,7 +2674,7 @@ DEFINE_HOOK(0x74431F, UnitClass_ReadyToNextMission_HuntCheck, 0x6)
 }
 
 #pragma region InfBlockTreeFix
-
+/*
 DEFINE_HOOK(0x47E91F, CellClass_AddContent_CountInfantry, 0x6)
 {
 	GET(CellClass*, pThis, EBX);
@@ -2710,6 +2710,25 @@ DEFINE_HOOK(0x5218C2, InfantryClass_UnmarkAllOccupationBits_ResetOwnerIdx, 0x6)
 	// Vanilla check only the flag to decide if the InfantryOwnerIndex should be reset. 
 	// But the tree take one of the flag bit. So if a infantry walk through a cell with a tree, the InfantryOwnerIndex won't be reset.
 	return (newFlag & 0x1C) == 0 || CellExt::ExtMap.Find(pThis)->InfantryCount <= 1 ? Reset : NoReset;
+}
+*/
+
+DEFINE_HOOK(0x71C17B, TerrainClass_MarkAllOccupationBits_Mark, 0x5)
+{
+	enum { SkipGameCode = 0x71C193 };
+	GET(CellClass*, pCell, EAX);
+	pCell->OccupationFlags |= 0x2;
+	R->BL(0);
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x71C0DB, TerrainClass_UnarkAllOccupationBits_Mark, 0x5)
+{
+	enum { SkipGameCode = 0x71C0F3 };
+	GET(CellClass*, pCell, EAX);
+	pCell->OccupationFlags &= ~0x2u;
+	R->BL(0);
+	return SkipGameCode;
 }
 
 #pragma endregion
