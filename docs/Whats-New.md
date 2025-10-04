@@ -49,8 +49,6 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - INI inclusion and inheritance are now turned off by default and need to be turned on via command line flags `-Include` and `-Inheritance`.
 - `Level=true` projectiles no longer attempt to do reposition against targets that are behind non-water tiles by default. Use `SubjectToLand=true` to re-enable this behaviour.
 - Units' `LaserTrails` will no longer lag behind by one frame, so it needs to be repositioned (Previously, units with faster speeds may need to be positioned further ahead).
-- Aircraft's weapon with `Trajectory` projectile will no longer make `Strafing` default to true.
-- `Trajectory.Straight.TargetSnapDistance` and other similar keys have been renamed to some more universal name like `Trajectory.TargetSnapDistance`. You can view detailed content in [Projectile trajectories](New-or-Enhanced-Logics.md#Projectile-trajectories).
 
 #### From 0.3
 
@@ -454,12 +452,6 @@ New:
 - [Customize the chained damage of the wall](Fixed-or-Improved-Logics.md#customize-the-chained-damage-of-the-wall) (by TaranDahl)
 - Allow the aircraft to enter area guard mission and not crash immediately without any airport (by CrimRecya)
 - [Unlimbo Detonate warhead](New-or-Enhanced-Logics.md#unlimbo-detonate-warhead) (by FlyStar)
-- New Missile trajectory (by CrimRecya)
-- New Engrave trajectory (by CrimRecya)
-- New Tracing trajectory (by CrimRecya)
-- New trajectory system with general functions (by CrimRecya)
-- Projectile life cycle logic and retargeting logic (by CrimRecya)
-- Projectile release warheads and weapons (by CrimRecya)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
