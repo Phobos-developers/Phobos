@@ -265,7 +265,7 @@ DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
 #pragma region TechnoClass_GetFireError
 DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 {
-	enum { CannotFire = 0x6FCB7E };
+	enum { CannotFire = 0x6FCB7E, TemporarilyCannotFire = 0x6FCD0E };
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
@@ -280,9 +280,12 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
 		return CannotFire;
 
+	const auto pBulletType = pWeapon->Projectile;
+	const auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
+
 	// AAOnly doesn't need to be checked if LandTargeting=1.
-	if (pThis->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK && pWeapon->Projectile->AA
-		&& pTarget && !pTarget->IsInAir() && BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->AAOnly)
+	if (pThis->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK && pBulletType->AA
+		&& pTarget && !pTarget->IsInAir() && pBulletTypeExt->AAOnly)
 	{
 		return CannotFire;
 	}
@@ -338,6 +341,9 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 				return CannotFire;
 		}
 	}
+
+	if (pBulletTypeExt->CreateCapacity >= 0 && BulletExt::CheckExceededCapacity(pThis, pBulletType))
+		return (pWeapon->Damage >= 0 || (pTargetTechno && pTargetTechno->GetHealthPercentage() < RulesClass::Instance->unknown_double_16F8)) ? TemporarilyCannotFire : CannotFire;
 
 	return 0;
 }
@@ -797,13 +803,13 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 	GET_STACK(CoordStruct*, pCoords, STACK_OFFSET(0xD8, 0x4));
 
 	bool allowOnTurret = true;
-	bool useBurstMirroring = true;
 	CoordStruct flh = CoordStruct::Empty;
 
 	if (weaponIndex >= 0)
 	{
 		bool found = false;
 		flh = TechnoExt::GetBurstFLH(pThis, weaponIndex, found);
+
 		if (!found)
 		{
 			if (auto const pInf = abstract_cast<InfantryClass*>(pThis))
@@ -811,16 +817,16 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 
 			if (!found)
 				flh = pThis->GetWeapon(weaponIndex)->FLH;
+
+			if (pThis->CurrentBurstIndex % 2 != 0)
+				flh.Y = -flh.Y;
 		}
-		else
-		{
-			useBurstMirroring = false;
-		}
+
+		TechnoExt::ExtMap.Find(pThis)->LastWeaponFLH = flh;
 	}
 	else
 	{
-		int index = -weaponIndex - 1;
-		useBurstMirroring = false;
+		const int index = -weaponIndex - 1;
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 		if (index < static_cast<int>(pTypeExt->AlternateFLHs.size()))
@@ -828,10 +834,15 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 
 		if (!pTypeExt->AlternateFLH_OnTurret)
 			allowOnTurret = false;
-	}
 
-	if (useBurstMirroring && pThis->CurrentBurstIndex % 2 != 0)
-		flh.Y = -flh.Y;
+		auto pCurrentPassenger = pThis->Passengers.GetFirstPassenger();
+
+		for (int i = 0; i < index && pCurrentPassenger; i++)
+			pCurrentPassenger = abstract_cast<FootClass*>(pCurrentPassenger->NextObject);
+
+		if (pCurrentPassenger)
+			TechnoExt::ExtMap.Find(pCurrentPassenger)->LastWeaponFLH = flh;
+	}
 
 	*pCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, allowOnTurret);
 	R->EAX(pCoords);

@@ -1,16 +1,21 @@
 #pragma once
 
+#include <BulletClass.h>
+
+#include <Ext/WeaponType/Body.h>
+#include <Utilities/EnumFunctions.h>
 #include <Utilities/TemplateDef.h>
 #include <Utilities/Savegame.h>
-
-#include <BulletClass.h>
 
 enum class TrajectoryFlag : int
 {
 	Invalid = -1,
 	Straight = 0,
 	Bombard = 1,
-	Parabola = 4
+	Missile = 2,
+	Engrave = 3,
+	Parabola = 4,
+	Tracing = 5
 };
 
 enum class TrajectoryCheckReturnType : int
@@ -20,40 +25,108 @@ enum class TrajectoryCheckReturnType : int
 	SatisfyGameCheck = 2,
 	Detonate = 3
 };
+
+enum class TrajectoryFacing : unsigned char
+{
+	Velocity = 0,
+	Spin = 1,
+	Stable = 2,
+	Target = 3,
+	Destination = 4,
+	FirerBody = 5,
+	FirerTurret = 6
+};
+
+enum class TrajectoryStatus : unsigned char
+{
+	None = 0x0,
+	Detonate = 0x1,
+	Vanish = 0x2,
+	Bounce = 0x4
+};
+MAKE_ENUM_FLAGS(TrajectoryStatus);
+
 class PhobosTrajectory;
 class PhobosTrajectoryType
 {
 public:
-	PhobosTrajectoryType() { }
+	PhobosTrajectoryType() :
+		Speed { 100.0 }
+		, BulletROT { 0 }
+		, BulletFacing { TrajectoryFacing::Velocity }
+		, BulletFacingOnPlane { false }
+		, MirrorCoord { true }
+		, Ranged { false }
+	{ }
+
+	Valueable<double> Speed; // The speed that a projectile should reach
+	Valueable<int> BulletROT; // The rotational speed of the projectile image that does not affect the direction of movement
+	Valueable<TrajectoryFacing> BulletFacing; // Image facing
+	Valueable<bool> BulletFacingOnPlane; // Image facing only on horizontal plane
+	Valueable<bool> MirrorCoord; // Should mirror offset
+	bool Ranged; // Auto set
 
 	virtual ~PhobosTrajectoryType() noexcept = default;
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	virtual bool Save(PhobosStreamWriter& Stm) const;
-	virtual TrajectoryFlag Flag() const = 0;
-	virtual void Read(CCINIClass* const pINI, const char* pSection) = 0;
-	[[nodiscard]] virtual std::unique_ptr<PhobosTrajectory> CreateInstance() const = 0;
+	virtual TrajectoryFlag Flag() const { return TrajectoryFlag::Invalid; }
+	virtual void Read(CCINIClass* const pINI, const char* pSection);
+	[[nodiscard]] virtual std::unique_ptr<PhobosTrajectory> CreateInstance(BulletClass* pBullet) const = 0;
 
-	static std::vector<CellClass*> GetCellsInProximityRadius(BulletClass* pBullet, Leptons trajectoryProximityRange);
 private:
-	static std::vector<CellStruct> GetCellsInRectangle(CellStruct bottomStaCell, CellStruct leftMidCell, CellStruct rightMidCell, CellStruct topEndCell);
-
-public:
-	Valueable<double> Trajectory_Speed { 100.0 };
+	template <typename T>
+	void Serialize(T& Stm);
 };
 
 class PhobosTrajectory
 {
 public:
+	static constexpr double LowSpeedOffset = 32.0;
+
+	PhobosTrajectory() { }
+	PhobosTrajectory(PhobosTrajectoryType const* pTrajType, BulletClass* pBullet) :
+		Bullet { pBullet }
+		, MovingVelocity { BulletVelocity::Empty }
+		, MovingSpeed { 0 }
+		, RemainingDistance { 1 }
+		, CurrentBurst { 0 }
+		, CountOfBurst { 0 }
+	{ }
+
+	BulletClass* Bullet; // Bullet attached to
+	BulletVelocity MovingVelocity; // The vector used for calculating speed
+	double MovingSpeed; // The current speed value
+	int RemainingDistance; // Remaining distance from the self explosion location
+	int CurrentBurst; // Current burst index, mirror is required for negative numbers
+	int CountOfBurst; // Upper limit of burst counts
+
 	virtual ~PhobosTrajectory() noexcept = default;
-	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) = 0;
-	virtual bool Save(PhobosStreamWriter& Stm) const = 0;
-	virtual TrajectoryFlag Flag() const = 0;
-	virtual void OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity) = 0;
-	virtual bool OnAI(BulletClass* pBullet) = 0;
-	virtual void OnAIPreDetonate(BulletClass* pBullet) = 0;
-	virtual void OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition) = 0;
-	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) = 0;
-	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) = 0;
+	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
+	virtual bool Save(PhobosStreamWriter& Stm) const;
+	virtual TrajectoryFlag Flag() const { return TrajectoryFlag::Invalid; }
+	virtual void OnUnlimbo();
+	virtual bool OnEarlyUpdate();
+	virtual bool OnVelocityCheck();
+	virtual void OnVelocityUpdate(BulletVelocity* pSpeed, BulletVelocity* pPosition);
+	virtual TrajectoryCheckReturnType OnDetonateUpdate(const CoordStruct& position);
+	virtual void OnPreDetonate();
+	virtual const PhobosTrajectoryType* GetType() const = 0;
+	virtual void OpenFire();
+	virtual bool GetCanHitGround() const { return true; }
+	virtual CoordStruct GetRetargetCenter() const { return this->Bullet->TargetCoords; }
+	virtual void SetBulletNewTarget(AbstractClass* const pTarget);
+	virtual bool CalculateBulletVelocity(const double speed);
+	virtual void MultiplyBulletVelocity(const double ratio, const bool shouldDetonate);
+
+	static void RotateVector(BulletVelocity& vector, const BulletVelocity& aim, const double turningRadian);
+	static void RotateAboutTheAxis(BulletVelocity& vector, BulletVelocity& axis, const double radian);
+
+	bool OnFacingCheck();
+	void OnFacingUpdate();
+
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 };
 
 /*
