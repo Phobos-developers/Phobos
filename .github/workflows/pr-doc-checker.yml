@@ -29,7 +29,7 @@ jobs:
             exit 0
           else
             echo "It looks like you forgot to update the Changelog! 🧐"
-            echo "Please, mention your changes in 'docs/Whats-New.md' or use [Minor] label for your Pull Request."
+            echo "Please, mention your changes in 'docs/Whats-New.md' or use [No Documentation Needed] label for your Pull Request."
             exit 1
           fi
 
@@ -50,7 +50,7 @@ jobs:
             exit 0
           else
             echo "It looks like you forgot to update the Credits List! 🧐"
-            echo "Please, mention your contribution in 'CREDITS.md' or use [Minor] label for your Pull Request."
+            echo "Please, mention your contribution in 'CREDITS.md' or use [No Documentation Needed] label for your Pull Request."
             exit 1
           fi
 
@@ -78,6 +78,6 @@ jobs:
             exit 0
           else
             echo "It looks like you forgot to add your changes to the docs! 🧐"
-            echo "Please, document your changes or use [Minor] label for your Pull Request."
+            echo "Please, document your changes or use [No Documentation Needed] label for your Pull Request."
             exit 1
           fi
