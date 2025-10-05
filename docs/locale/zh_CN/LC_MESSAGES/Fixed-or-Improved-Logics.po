@@ -1810,6 +1810,7 @@ msgid ""
 "Fixed an issue that the jumpjet vehicles cannot stop correctly after "
 "going berserk."
 msgstr ""
+"修复了被混乱的 Jumpjet 载具无法正确停止的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:300
 msgid ""

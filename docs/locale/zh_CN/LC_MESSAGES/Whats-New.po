@@ -2159,6 +2159,7 @@ msgid ""
 "Fixed an issue that the jumpjet vehicles cannot stop correctly after "
 "going berserk (by TaranDahl)"
 msgstr ""
+"修复了被混乱的 Jumpjet 载具无法正确停止的问题（by TaranDahl）"
 
 #: ../../Whats-New.md:480 ../../Whats-New.md:822 ../../Whats-New.md:906
 #: ../../Whats-New.md:1070 ../../Whats-New.md:1111 ../../Whats-New.md:1123

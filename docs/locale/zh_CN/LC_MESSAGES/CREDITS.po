@@ -2579,6 +2579,7 @@ msgid ""
 "Fix an issue that the jumpjet vehicles cannot stop correctly after going "
 "berserk"
 msgstr ""
+"修复了被混乱的 Jumpjet 载具无法正确停止的问题"
 
 #: ../../../CREDITS.md:624
 msgid "**solar-III (凤九歌)**"
