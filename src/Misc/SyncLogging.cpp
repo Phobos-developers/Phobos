@@ -4,6 +4,7 @@
 #include <InfantryClass.h>
 #include <HouseClass.h>
 #include <Unsorted.h>
+#include <ScriptClass.h>
 
 #include <Utilities/Debug.h>
 #include <Utilities/Macro.h>
@@ -13,6 +14,10 @@
 int SyncLogger::AnimCreations_HighestX = 0;
 int SyncLogger::AnimCreations_HighestY = 0;
 int SyncLogger::AnimCreations_HighestZ = 0;
+int SyncLogger::TeamTypeClass_MaxIDLength = 0;
+int SyncLogger::ScriptTypeClass_MaxIDLength = 0;
+int SyncLogger::HouseTypeClass_MaxIDLength = 0;
+int SyncLogger::HouseName_MaxIDLength = 0;
 
 SyncLogEventBuffer<RNGCallSyncLogEvent, RNGCalls_Size> SyncLogger::RNGCalls;
 SyncLogEventBuffer<FacingChangeSyncLogEvent, FacingChanges_Size> SyncLogger::FacingChanges;
@@ -128,6 +133,7 @@ void SyncLogger::WriteSyncLog(const char* logFilename)
 		WriteTargetChanges(pLogFile, frameDigits);
 		WriteDestinationChanges(pLogFile, frameDigits);
 		WriteAnimCreations(pLogFile, frameDigits);
+		WriteTeams(pLogFile);
 
 		fclose(pLogFile);
 	}
@@ -256,6 +262,90 @@ void SyncLogger::WriteAnimCreations(FILE* const pLogFile, int frameDigits)
 	}
 
 	fprintf(pLogFile, "\n");
+}
+
+void SyncLogger::WriteTeams(FILE* const pLogFile)
+{
+	if (TeamClass::Array.Count < 1)
+		return;
+
+	fprintf(pLogFile, "AI Teams:\n");
+	char buffer[0x20];
+	size_t count = 0;
+
+	// Set padding for values.
+	for (auto const& pTeam : TeamClass::Array)
+	{
+		SyncLogger::SetTeamLoggingPadding(pTeam);
+		count++;
+	}
+
+	for (size_t i = 0; i < count; i++)
+	{
+		auto const pTeam = TeamClass::Array[i];
+
+		fprintf(pLogFile, "#%05d: Type: %*s",
+		i, SyncLogger::TeamTypeClass_MaxIDLength, pTeam->Type->get_ID());
+
+		if (pTeam->CurrentScript && pTeam->CurrentScript->Type)
+		{
+			sprintf_s(buffer, sizeof(buffer), "%d", pTeam->CurrentScript->CurrentMission);
+			fprintf(pLogFile, " | Script: %*s | Line: %2s", SyncLogger::ScriptTypeClass_MaxIDLength, pTeam->CurrentScript->Type->get_ID(), buffer);
+		}
+
+		if (pTeam->Owner)
+		{
+			sprintf_s(buffer, sizeof(buffer), "(%s)", pTeam->Owner->PlainName);
+			fprintf(pLogFile, " | Owner: %d %*s | OwnerHouse: %*s", pTeam->Owner->ArrayIndex,
+				SyncLogger::HouseName_MaxIDLength, buffer,SyncLogger::HouseTypeClass_MaxIDLength, pTeam->Owner->Type->get_ID());
+		}
+
+		if (pTeam->Focus)
+		{
+			auto const rtti = pTeam->Focus->WhatAmI();
+			fprintf(pLogFile, " | TargetRTTI: %d (%s) | TargetID: %08d", rtti, AbstractClass::GetRTTIName(rtti), pTeam->Focus->UniqueID);
+		}
+
+		if (pTeam->QueuedFocus)
+		{
+			auto const rtti = pTeam->QueuedFocus->WhatAmI();
+			fprintf(pLogFile, " | MissionTargetRTTI: %d (%s) | MissionTargetID: %08d", rtti,AbstractClass::GetRTTIName(rtti),
+				pTeam->QueuedFocus->UniqueID);
+		}
+
+		fprintf(pLogFile, "\n");
+	}
+
+	fprintf(pLogFile, "\n");
+}
+
+void SyncLogger::SetTeamLoggingPadding(TeamClass* pTeam)
+{
+	int length = strlen(pTeam->Type->get_ID());
+
+	if (length <= 24 && SyncLogger::TeamTypeClass_MaxIDLength < length)
+		SyncLogger::TeamTypeClass_MaxIDLength = length;
+
+	if (pTeam->Type->ScriptType)
+	{
+		length = strlen(pTeam->Type->ScriptType->get_ID());
+
+		if (length <= 24 && SyncLogger::ScriptTypeClass_MaxIDLength < length)
+			SyncLogger::ScriptTypeClass_MaxIDLength = length;
+	}
+
+	if (pTeam->Owner)
+	{
+		length = strlen(pTeam->Owner->Type->get_ID());
+
+		if (length <= 24 && SyncLogger::HouseTypeClass_MaxIDLength < length)
+			SyncLogger::HouseTypeClass_MaxIDLength = length;
+
+		length = strlen(pTeam->Owner->PlainName);
+
+		if (length <= 21 && SyncLogger::HouseName_MaxIDLength < length)
+			SyncLogger::HouseName_MaxIDLength = length;
+	}
 }
 
 // Hooks. Anim contructor logging is in Ext/Anim/Body.cpp to reduce duplicate hooks
