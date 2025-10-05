@@ -211,7 +211,7 @@ msgstr "移植了 XNA CNCNet Client 的多人游戏存档处理"
 
 #: ../../../CREDITS.md:55
 msgid "Retint fix toggle"
-msgstr ""
+msgstr "为地图光照重绘时的建筑光源问题修复添加开关"
 
 #: ../../../CREDITS.md:56
 msgid "**Uranusian (Thrifinesma)**:"
