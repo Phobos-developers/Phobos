@@ -1718,10 +1718,6 @@ MultiWeapon.IsSecondary=        ; List of integers
 MultiWeapon.SelectCount=2       ; integer
 ```
 
-```{hint}
-The `X` in `(Elite)WeapnoX` is an integer starting from `1`.
-```
-
 ### Multi VoiceAttack
 
 - Units can customize the attack voice that plays when using more weapons.
