@@ -2152,6 +2152,7 @@ msgid ""
 "Fixed an issue that technos head to building's dock even they are not "
 "going to dock (by TaranDahl)"
 msgstr ""
+"修复了单位不执行停靠命令的情况下也会前往停靠位置的问题（by TaranDahl）"
 
 #: ../../Whats-New.md:478
 msgid ""
