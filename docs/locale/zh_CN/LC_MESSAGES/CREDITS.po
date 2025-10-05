@@ -207,7 +207,7 @@ msgstr "移植了 XNA CNCNet Client 的多人游戏存档处理"
 
 #: ../../../CREDITS.md:54
 msgid "Retint fix toggle"
-msgstr ""
+msgstr "为地图光照重绘时的建筑光源问题修复添加开关"
 
 #: ../../../CREDITS.md:55
 msgid "**Uranusian (Thrifinesma)**:"
@@ -1606,6 +1606,7 @@ msgid ""
 "Fix the bug that armor multiplier of new attacheffect will have extra "
 "take effect once if restricted warheads"
 msgstr ""
+"修复了新 AE 的护甲倍率在使用了 限制护甲倍率 的情况下会额外计算一次的 Bug"
 
 #: ../../../CREDITS.md:398
 msgid "**Apollo** - Translucent SHP drawing patches"

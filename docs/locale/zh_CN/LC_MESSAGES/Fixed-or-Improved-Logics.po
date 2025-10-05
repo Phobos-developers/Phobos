@@ -61,6 +61,7 @@ msgid ""
 "Due to performance considerations, this fix may be disabled by setting "
 "`[AudioVisual] -> UseRetintFix=no` in `rulesmd.ini`."
 msgstr ""
+"出于性能考量，此修复可通过在 `rulesmd.ini` 中设置 `[AudioVisual] -> UseRetintFix=no` 来禁用。"
 
 #: ../../Fixed-or-Improved-Logics.md:12
 msgid ""

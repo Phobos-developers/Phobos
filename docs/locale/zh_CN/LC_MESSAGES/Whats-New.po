@@ -1353,6 +1353,7 @@ msgid ""
 "Allow retint fix to be disabled with `[AudioVisual] -> UseRetintFix=no` "
 "in `rulesmd.ini` due to performance considerations (by Kerbiter)"
 msgstr ""
+"允许通过在 `rulesmd.ini` 中设置 `[AudioVisual] -> UseRetintFix=no` 来禁用地图光照重绘时的建筑光源问题修复以优化性能（by Kerbiter）"
 
 #: ../../Whats-New.md:482 ../../Whats-New.md:835 ../../Whats-New.md:944
 #: ../../Whats-New.md:969 ../../Whats-New.md:1007 ../../Whats-New.md:1052
