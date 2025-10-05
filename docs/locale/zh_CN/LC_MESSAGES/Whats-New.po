@@ -4686,7 +4686,7 @@ msgstr "现在单位的拓展工具条会显示生产时间（by secsome）"
 
 #: ../../Whats-New.md:955
 msgid "Customizable tooltip background color and opacity (by secsome)"
-msgstr "可自定义的拓展工具条背景颜色和透明度（by secsome）"
+msgstr "可自定义的拓展工具条背景颜色和不透明度（by secsome）"
 
 #: ../../Whats-New.md:956
 msgid "FrameByFrame & FrameStep hotkey command (by secsome)"
