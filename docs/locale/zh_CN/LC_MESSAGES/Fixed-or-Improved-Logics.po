@@ -1795,6 +1795,7 @@ msgid ""
 "Fixed an issue that jumpjet infantries' shadow is always drawn even if "
 "they are cloaked."
 msgstr ""
+"修复了 Jumpjet 步兵隐形时依然绘制影子的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:296
 msgid ""

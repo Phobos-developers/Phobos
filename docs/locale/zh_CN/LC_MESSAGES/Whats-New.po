@@ -2145,7 +2145,7 @@ msgstr "修复了所谓的高等路径学（by CrimRecya）"
 msgid ""
 "Fixed an issue that jumpjet infantries' shadow is always drawn even if "
 "they are cloaked (by TaranDahl)"
-msgstr ""
+msgstr "修复了 Jumpjet 步兵隐形时依然绘制影子的问题（by TaranDahl）"
 
 #: ../../Whats-New.md:477
 msgid ""
