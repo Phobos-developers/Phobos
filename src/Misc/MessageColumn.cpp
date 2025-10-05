@@ -298,7 +298,7 @@ void MessageScrollClass::DrawShape() const
 			auto color = MessageColumnClass::Instance.GetColor();
 			MessageColumnClass::Instance.DecreaseBrightness(color, 3);
 
-			DSurface::Composite->FillRectTrans(&drawRect, &color, MessageColumnClass::LowOpacity);
+			DSurface::Composite->FillRectTrans(&drawRect, &color, Phobos::Config::MessageDisplayInCenter_BoardOpacity);
 		}
 	}
 	else // Scroll_Bar
@@ -1111,7 +1111,7 @@ DEFINE_HOOK(0x623A9F, DSurface_sub_623880_DrawBitFontStrings, 0x5)
 	{
 		auto color = MessageColumnClass::Instance.GetColor();
 		MessageColumnClass::Instance.DecreaseBrightness(color, 3);
-		pSurface->FillRectTrans(pRect, &color, MessageColumnClass::LowOpacity);
+		pSurface->FillRectTrans(pRect, &color, Phobos::Config::MessageDisplayInCenter_BoardOpacity);
 	}
 
 	return SkipGameCode;

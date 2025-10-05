@@ -388,6 +388,7 @@ ShowTimer.Priority=0  ; integer
 - Now you can set `MessageApplyHoverState` to true，to make the upper left messages not disappear while mouse hovering over the top of display area.
 - You can also let task subtitles (created by trigger 11) to display directly in the middle area of the screen instead of the upper left corner, with a semi transparent background, by setting `MessageDisplayInCenter` to true. In this case, all messages within this game can be saved, even after being s/l. The storage capacity of messages can reach thousands.
   - If you also set `MessageApplyHoverState` to true, when the mouse hovers over the subtitle area (simply judged as a rectangle), its opacity will increase and it will not disappear during this period. If the area is expanded, disabling this option will not prevent mouse clicking behavior from being restricted to this area.
+  - `MessageDisplayInCenter.BoardOpacity` controls the opacity of the background.
   - `MessageDisplayInCenter.LabelsCount` controls the maximum number of subtitle labels that can automatically pop up at a same time in the middle area of the screen. At least 1.
   - `MessageDisplayInCenter.RecordsCount` controls the maximum number of historical messages displayed when this middle area is expanded (not the maximum number that can be stored). At least 4, and it is 8 in the demonstration gif.
   - The label can be toggled by ["Toggle Message Label" hotkey](#toggle-message-label) in "Interface" category.
@@ -397,6 +398,7 @@ In `RA2MD.INI`:
 [Phobos]
 MessageApplyHoverState=false            ; boolean
 MessageDisplayInCenter=false            ; boolean
+MessageDisplayInCenter.BoardOpacity=30  ; integer
 MessageDisplayInCenter.LabelsCount=6    ; integer
 MessageDisplayInCenter.RecordsCount=12  ; integer
 ```

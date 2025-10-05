@@ -1,6 +1,8 @@
 #include "Body.h"
 
 #include <Ext/Anim/Body.h>
+#include <Ext/Rules/Body.h>
+
 #include <Helpers/Macro.h>
 
 #include <HouseClass.h>
@@ -89,7 +91,7 @@ DEFINE_HOOK_AGAIN(0x6E2EF7, TActionClass_Retint_LightSourceFix, 0x3) // Green
 DEFINE_HOOK(0x6E2EA7, TActionClass_Retint_LightSourceFix, 0x3) // Red
 {
 	// Flag the light sources to update, actually do it later and only once to prevent redundancy.
-	RetintTemp::UpdateLightSources = true;
+	RetintTemp::UpdateLightSources = RulesExt::Global()->UseRetintFix;
 
 	return 0;
 }
