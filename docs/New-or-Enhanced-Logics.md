@@ -759,7 +759,7 @@ AU=false              ; boolean
 ```
 
 ```{note}
-Only vanilla projectiles with `Inviso=yes` set or [Phobos projectiles](#projectile-trajectories) with `SubjectToGround=yes` enabled can go beneath the ground. Otherwise, the projectile will be forced to detonate upon hitting the ground.
+Only vanilla projectiles with `Inviso=yes` set or [Phobos projectiles](#projectile-trajectories) `Straight` with `Trajectory.Straight.SubjectToGround=false` enabled and `Bombard` with `Trajectory.Bombard.SubjectToGround=false` enabled can go beneath the ground. Otherwise, the projectile will be forced to detonate upon hitting the ground.
 ```
 
 ### Parabombs
