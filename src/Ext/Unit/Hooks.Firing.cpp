@@ -20,29 +20,28 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 	// SHP vehicles have no secondary action frames, so it does not need SecondaryFire.
 	const auto pTypeExt = pExt->TypeExtData;
 	const int fireUp = pTypeExt->FireUp;
-	CDTimerClass& timer = pExt->FiringAnimationTimer;
 
 	if (fireUp >= 0 && !pType->OpportunityFire && pThis->Locomotor->Is_Really_Moving_Now())
 	{
-		if (timer.InProgress())
-			timer.Stop();
+		if (pThis->CurrentFiringFrame != -1)
+			pThis->CurrentFiringFrame = -1;
 
 		return SkipFiring;
 	}
 
-	const int frames = pType->FiringFrames;
+	const int firingFrames = pType->FiringFrames;
+	const int frames = 2 * firingFrames - 1;
 
-	if (!timer.InProgress() && frames >= 1)
-	{
-		pThis->CurrentFiringFrame = 2 * frames - 1;
-		timer.Start(pThis->CurrentFiringFrame);
-	}
+	if (frames >= 0 && pThis->CurrentFiringFrame == -1)
+		pThis->CurrentFiringFrame = frames;
 
-	if (fireUp >= 0 && frames >= 1)
+	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+	if (fireUp >= 0)
 	{
 		int cumulativeDelay = 0;
 		int projectedDelay = 0;
-		auto const pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pThis->GetWeapon(weaponIndex)->WeaponType);
 		const bool allowBurst = pWeaponExt && pWeaponExt->Burst_FireWithinSequence;
 		const int currentBurstIndex = pThis->CurrentBurstIndex;
 		auto& random = ScenarioClass::Instance->Random;
@@ -66,15 +65,13 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 			}
 		}
 
-		if (TechnoExt::HandleDelayedFireWithPauseSequence(pThis, weaponIndex, fireUp + cumulativeDelay))
+		const int frame = (frames - pThis->CurrentFiringFrame) / 2;
+		const int firingFrame = fireUp + cumulativeDelay;
+
+		if (TechnoExt::HandleDelayedFireWithPauseSequence(pThis, pWeapon, weaponIndex, frame, firingFrame))
 			return SkipFiring;
 
-		int frame = (timer.TimeLeft - timer.GetTimeLeft());
-
-		if (frame % 2 != 0)
-			return SkipFiring;
-
-		if (frame / 2 != fireUp + cumulativeDelay)
+		if (frame != firingFrame)
 		{
 			return SkipFiring;
 		}
@@ -84,6 +81,10 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 			if (fireUp + projectedDelay > frames)
 				pExt->ForceFullRearmDelay = true;
 		}
+	}
+	else if (TechnoExt::HandleDelayedFireWithPauseSequence(pThis, pWeapon, weaponIndex, 0, -1))
+	{
+		return SkipFiring;
 	}
 
 	return 0;

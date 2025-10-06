@@ -88,7 +88,7 @@ DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI, 0x6)
 	enum { Continue = 0x5209CD, ReturnFromFunction = 0x520AD9 };
 
 	GET(InfantryClass*, pThis, EBP);
-	GET(int, firingFrame, EDX);
+	GET(int, fireUp, EDX);
 
 	int cumulativeDelay = 0;
 	int projectedDelay = 0;
@@ -115,17 +115,20 @@ DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI, 0x6)
 		}
 	}
 
-	if (TechnoExt::HandleDelayedFireWithPauseSequence(pThis, weaponIndex, firingFrame + cumulativeDelay))
+	const int frame = pThis->Animation.Value;
+	const int firingFrame = fireUp + cumulativeDelay;
+
+	if (TechnoExt::HandleDelayedFireWithPauseSequence(pThis, FiringAITemp::WeaponType, weaponIndex, frame, firingFrame))
 		return ReturnFromFunction;
 
-	if (pThis->Animation.Value == firingFrame + cumulativeDelay)
+	if (frame == firingFrame)
 	{
 		if (allowBurst)
 		{
 			int frameCount = pThis->Type->Sequence->GetSequence(pThis->SequenceAnim).CountFrames;
 
 			// If projected frame for firing next shot goes beyond the sequence frame count, cease firing after this shot and start rearm timer.
-			if (firingFrame + projectedDelay > frameCount)
+			if (fireUp + projectedDelay > frameCount)
 				TechnoExt::ExtMap.Find(pThis)->ForceFullRearmDelay = true;
 		}
 

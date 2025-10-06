@@ -31,6 +31,18 @@ DEFINE_JUMP(VTABLE, 0x7F5CF4, 0x741490) // UnitClass_GetTechnoType -> UnitClass_
 
 #pragma region Update
 
+DEFINE_HOOK(0x7363C9, UnitClass_AI_AnimationPaused, 0x6)
+{
+	enum { SkipGameCode = 0x7363DE };
+
+	GET(UnitClass*, pThis, ESI);
+	
+	if (TechnoExt::ExtMap.Find(pThis)->DelayedFireSequencePaused)
+		return SkipGameCode;
+
+	return 0;
+}
+
 // Early, before ObjectClass_AI
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 {
@@ -982,7 +994,7 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 				|| !pThis->IsCloseEnough(pTarget, pThis->SelectWeapon(pTarget)))
 			{
 				pUnit->CurrentFiringFrame = -1;
-				pExt->FiringAnimationTimer.Stop();
+				pExt->ResetDelayedFireTimer();
 			}
 		}
 	}
