@@ -96,6 +96,9 @@ public:
 
 		int AttackMoveFollowerTempCount;
 
+		bool UndergroundTracked;
+		bool SpecialTracked;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -156,6 +159,8 @@ public:
 			, TintIntensityAllies { 0 }
 			, TintIntensityEnemies { 0 }
 			, AttackMoveFollowerTempCount { 0 }
+			, UndergroundTracked { false }
+			, SpecialTracked { false }
 		{ }
 
 		void OnEarlyUpdate();
