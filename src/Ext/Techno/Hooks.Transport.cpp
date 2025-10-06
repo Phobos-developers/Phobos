@@ -725,12 +725,12 @@ DEFINE_HOOK(0x51EE36, InfantryClass_MouseOvetObject_NoQueueUpToEnter, 0x5)
 
 	if (pObject->WhatAmI() == AbstractType::Building)
 	{
-		const auto RulesExt = RulesExt::Global();
+		const auto pRulesExt = RulesExt::Global();
 		const auto pType = static_cast<BuildingClass*>(pObject)->Type;
 
 		if (pType->InfantryAbsorb
 			&& TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToEnter.Get(
-				RulesExt->NoQueueUpToEnter_Buildings.Get(RulesExt->NoQueueUpToEnter)))
+				pRulesExt->NoQueueUpToEnter_Buildings.Get(pRulesExt->NoQueueUpToEnter)))
 		{
 			R->EBP(Action::Repair);
 			return NewAction;
@@ -747,12 +747,12 @@ DEFINE_HOOK(0x740375, UnitClass_MouseOvetObject_NoQueueUpToEnter, 0x5)
 
 	if (pObject->WhatAmI() == AbstractType::Building)
 	{
-		const auto RulesExt = RulesExt::Global();
+		const auto pRulesExt = RulesExt::Global();
 		const auto pType = static_cast<BuildingClass*>(pObject)->Type;
 
 		if (pType->UnitAbsorb
 			&& TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToEnter.Get(
-				RulesExt->NoQueueUpToEnter_Buildings.Get(RulesExt->NoQueueUpToEnter)))
+				pRulesExt->NoQueueUpToEnter_Buildings.Get(pRulesExt->NoQueueUpToEnter)))
 		{
 			R->EBX(Action::Repair);
 			return NewAction;
@@ -767,12 +767,12 @@ DEFINE_HOOK(0x73F63F, UnitClass_IsCellOccupied_NoQueueUpToEnter, 0x6)
 	GET(BuildingClass*, pThis, ESI);
 	enum { SkipGameCode = 0x73F64F };
 
-	const auto RulesExt = RulesExt::Global();
+	const auto pRulesExt = RulesExt::Global();
 	const auto pType = pThis->Type;
 
 	if (pType->UnitAbsorb
 		&& TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToEnter.Get(
-			RulesExt->NoQueueUpToEnter_Buildings.Get(RulesExt->NoQueueUpToEnter)))
+			pRulesExt->NoQueueUpToEnter_Buildings.Get(pRulesExt->NoQueueUpToEnter)))
 	{
 		return SkipGameCode;
 	}
@@ -799,10 +799,10 @@ DEFINE_HOOK(0x44DCB1, BuildingClass_Mi_Unload_NoQueueUpToUnload, 0x7)
 {
 	GET(BuildingClass*, pThis, EBP);
 
-	const auto RulesExt = RulesExt::Global();
+	const auto pRulesExt = RulesExt::Global();
 
 	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->NoQueueUpToUnload.Get(
-		RulesExt->NoQueueUpToUnload_Buildings.Get(RulesExt->NoQueueUpToUnload)))
+		pRulesExt->NoQueueUpToUnload_Buildings.Get(pRulesExt->NoQueueUpToUnload)))
 	{
 		R->EAX(0);
 	}
@@ -820,8 +820,8 @@ DEFINE_HOOK(0x519776, InfantryClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 	if (!pType->InfantryAbsorb)
 		return 0;
 
-	const auto pTunnel = AresHelper::CanUseAres ?
-		AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pBuilding->Owner) : nullptr;
+	const auto pTunnel = AresHelper::CanUseAres
+		? AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pBuilding->Owner) : nullptr;
 
 	if (pType->Passengers > 0 || pTunnel)
 	{
@@ -852,8 +852,8 @@ DEFINE_HOOK(0x739FA2, UnitClassClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 	if (!pType->UnitAbsorb)
 		return 0;
 
-	const auto pTunnel = AresHelper::CanUseAres ?
-		AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pBuilding->Owner) : nullptr;
+	const auto pTunnel = AresHelper::CanUseAres
+		? AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pBuilding->Owner) : nullptr;
 
 	if (pType->Passengers > 0 || pTunnel)
 	{
