@@ -477,6 +477,7 @@ Vanilla fixes:
 - Fixed an issue that jumpjet infantries' shadow is always drawn even if they are cloaked (by TaranDahl)
 - Fixed an issue that technos head to building's dock even they are not going to dock (by TaranDahl)
 - Fixed an issue that the jumpjet vehicles cannot stop correctly after going berserk (by TaranDahl)
+- Fixed an issue that the techno with weapon with `AA=yes` and `AG=no` would not auto targeting units that are falling, such as paratroopers (by TaranDahl)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
