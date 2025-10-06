@@ -2262,7 +2262,7 @@ SplashList.PickRandom=false  ; boolean
 
 - Warheads are now able to define the extra damage multiplier for owner house, ally houses and enemy houses.
   - `DamageOwnerMultiplier.NotAffectsEnemies` and `DamageAlliesMultiplier.NotAffectsEnemies` is used as the default value if `AffectsEnemies=false` is set on the warhead.
-  - `DamageEnemiesMultiplier.UsedForAllTargetInBerzerk` determine whether to use `DamageEnemiesMultiplier` on all targets when the unit goes berserk.
+  - `DamageEnemiesMultiplier.UsedForAllTargetInBerzerk` determines whether to use `DamageEnemiesMultiplier` on all targets when the unit goes berserk.
 - An extra damage multiplier based on the firer or target's health percentage will be added to the total multiplier. To be elaborate: the damage multiplier will firstly increased by the firer's health percentage multiplies `DamageSourceHealthMultiplier`, then increased by the target's health percentage multiplies `DamageTargetHealthMultiplier`.
 - These multipliers will not affect damage with ignore defenses like `Suicide`.etc .
 
