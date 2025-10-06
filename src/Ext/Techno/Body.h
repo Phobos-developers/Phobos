@@ -98,6 +98,7 @@ public:
 
 		bool UndergroundTracked;
 		bool SpecialTracked;
+		bool FallingDownTracked;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -161,6 +162,7 @@ public:
 			, AttackMoveFollowerTempCount { 0 }
 			, UndergroundTracked { false }
 			, SpecialTracked { false }
+			, FallingDownTracked { false }
 		{ }
 
 		void OnEarlyUpdate();

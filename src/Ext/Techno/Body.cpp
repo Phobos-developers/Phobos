@@ -63,6 +63,9 @@ TechnoExt::ExtData::~ExtData()
 
 	if (this->SpecialTracked)
 		ScenarioExt::Global()->SpecialTracker.Remove(pThis);
+
+	if (this->FallingDownTracked)
+		ScenarioExt::Global()->FallingDownTracker.Remove(pThis);
 }
 
 bool TechnoExt::IsActiveIgnoreEMP(TechnoClass* pThis)
@@ -939,6 +942,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackMoveFollowerTempCount)
 		.Process(this->UndergroundTracked)
 		.Process(this->SpecialTracked)
+		.Process(this->FallingDownTracked)
 		;
 }
 
