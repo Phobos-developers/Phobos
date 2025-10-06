@@ -12,7 +12,7 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 
 	const auto pType = pThis->Type;
 
-	if (pType->Turret || pType->Voxel)
+	if (pType->Turret || pType->Voxel || pThis->InLimbo)
 		return 0;
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
