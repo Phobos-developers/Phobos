@@ -10,6 +10,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From vanilla
 
+- Map trigger action `125 Build At...` now plays buildup by default if available, this can be toggled off using the third parameter (values other than 0). See [required changes for `fadata.ini`](#for-map-editor-final-alert-2) on how to enable the parameter in map editor. 
 - `PowerUpNAnim` is now used instead of the upgrade building's image file for upgrade animation if set. Note that displaying a damaged version will still require setting `PowerUpNDamagedAnim` explicitly in all cases, as the fallback to upgrade building image does not extend to it, nor would it be safe to add. `PowersUpToLevel=-1` upgrades still do not work correctly `PowerUpNAnim` and such buildings should forgo using explicit upgrade animations.
 - `[CrateRules] -> FreeMCV` now controls whether or not player is forced to receive unit from `[General] -> BaseUnit` from goodie crate if they own no buildings or any existing `[General] -> BaseUnit` vehicles and own more than `[CrateRules] -> FreeMCV.CreditsThreshold` (defaults to 1500) credits.
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini -> [General] -> FixTransparencyBlitters=no`.
@@ -117,6 +118,7 @@ HideLightFlashEffects=false      ; boolean
   68=House,1,2
   69=Non-inert,10
   70=AITargetTypes index,0
+  105=No buildup,0
 
   [EventsRA2]
   500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
@@ -163,7 +165,7 @@ HideLightFlashEffects=false      ; boolean
 
   [ActionsRA2]
   41=Play animation at a waypoint...,0,25,69,0,0,0,1,0,0,[LONG DESC].,0,1,41
-  125=Build at...,-10,47,0,65,0,0,1,0,0,[LONG DESC],0,1,125
+  125=Build at...,-10,47,105,65,0,0,1,0,0,[LONG DESC],0,1,125
   500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
   501=Edit variable,0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1
   502=Generate random number,0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
@@ -675,6 +677,7 @@ Phobos fixes:
 - Fixed `DefaultDisguise` showing wrong house colors for different players (by NetsuNegi & Ollerus)
 - `600 The shield of the attached object is broken` bug fix for the triggered event (by FlyStar)
 - Fixed a read bug when setting the SHP file name in INI (By Noble_Fish)
+- Fixed map trigger action `125 Build At...` not always playing buildups correctly (by Starkku)
 
 Fixes / interactions with other extensions:
 - Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH (by Starkku)
