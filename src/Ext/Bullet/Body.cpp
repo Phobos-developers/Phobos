@@ -233,16 +233,77 @@ inline void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pH
 // Make sure pBullet and pBullet->WeaponType is not empty before call
 inline void BulletExt::SimulatedFiringElectricBolt(BulletClass* pBullet)
 {
+	// Debug logging for shrapnel EBolt creation
+	static int shrapnelCount = 0;
+	if (shrapnelCount++ < 5) {
+		Debug::Log("[FOW] SimulatedFiringElectricBolt called (shrapnel #%d)\n", shrapnelCount);
+	}
+
 	// Can not use 0x6FD460 because the firer may die
 	const auto pWeapon = pBullet->WeaponType;
 
-	if (!pWeapon->IsElectricBolt)
+	if (!pWeapon->IsElectricBolt) {
+		if (shrapnelCount <= 5) {
+			Debug::Log("[FOW] Not IsElectricBolt weapon, skipping\n");
+		}
 		return;
+	}
+
+	if (shrapnelCount <= 5) {
+		Debug::Log("[FOW] IsElectricBolt=true, proceeding with fog check\n");
+	}
+
+	const auto targetCoords = pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords;
+
+	// FOG CHECK: Only create EBolt if either source or target is visible
+	if (ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.FogOfWar) {
+		if (shrapnelCount <= 5) {
+			Debug::Log("[FOW] Fog of war enabled, checking visibility\n");
+		}
+		if (HouseClass::CurrentPlayer && !HouseClass::CurrentPlayer->SpySatActive) {
+			// Check source location using cell-based fog (consistent with other EBolt fog checks)
+			bool sourceVisible = true;
+			bool targetVisible = true;
+
+			auto sourceCs = CellClass::Coord2Cell(pBullet->SourceCoords);
+			if (auto* sourceCell = MapClass::Instance.GetCellAt(sourceCs)) {
+				sourceVisible = !sourceCell->IsFogged();
+			}
+
+			auto targetCs = CellClass::Coord2Cell(targetCoords);
+			if (auto* targetCell = MapClass::Instance.GetCellAt(targetCs)) {
+				targetVisible = !targetCell->IsFogged();
+			}
+
+			if (shrapnelCount <= 5) {
+				Debug::Log("[FOW] Source visible: %d, Target visible: %d\n", sourceVisible ? 1 : 0, targetVisible ? 1 : 0);
+			}
+
+			// Only create EBolt if either endpoint is visible
+			if (!sourceVisible && !targetVisible) {
+				if (shrapnelCount <= 5) {
+					Debug::Log("[FOW] Both endpoints fogged, SKIPPING EBolt creation\n");
+				}
+				return; // Both fogged, skip creating EBolt entirely
+			} else {
+				if (shrapnelCount <= 5) {
+					Debug::Log("[FOW] At least one endpoint visible, creating EBolt\n");
+				}
+			}
+		} else {
+			if (shrapnelCount <= 5) {
+				Debug::Log("[FOW] SpySat active or no current player, creating EBolt\n");
+			}
+		}
+	} else {
+		if (shrapnelCount <= 5) {
+			Debug::Log("[FOW] No fog of war, creating EBolt\n");
+		}
+	}
 
 	const auto pBolt = EBoltExt::CreateEBolt(pWeapon);
 	pBolt->AlternateColor = pWeapon->IsAlternateColor;
 
-	const auto targetCoords = pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords;
 	pBolt->Fire(pBullet->SourceCoords, targetCoords, 0);
 
 	if (const auto particle = WeaponTypeExt::ExtMap.Find(pWeapon)->Bolt_ParticleSystem.Get(RulesClass::Instance->DefaultSparkSystem))
@@ -257,12 +318,38 @@ inline void BulletExt::SimulatedFiringRadBeam(BulletClass* pBullet, HouseClass* 
 	if (!pWeapon->IsRadBeam)
 		return;
 
+	const auto targetCoords = pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords;
+
+	// FOG CHECK: Only create RadBeam if either source or target is visible
+	if (ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.FogOfWar) {
+		if (HouseClass::CurrentPlayer && !HouseClass::CurrentPlayer->SpySatActive) {
+			// Check source location using cell-based fog (consistent with other fog checks)
+			bool sourceVisible = true;
+			bool targetVisible = true;
+
+			auto sourceCs = CellClass::Coord2Cell(pBullet->SourceCoords);
+			if (auto* sourceCell = MapClass::Instance.GetCellAt(sourceCs)) {
+				sourceVisible = !sourceCell->IsFogged();
+			}
+
+			auto targetCs = CellClass::Coord2Cell(targetCoords);
+			if (auto* targetCell = MapClass::Instance.GetCellAt(targetCs)) {
+				targetVisible = !targetCell->IsFogged();
+			}
+
+			// Only create RadBeam if either endpoint is visible
+			if (!sourceVisible && !targetVisible) {
+				return; // Both fogged, skip creating RadBeam entirely
+			}
+		}
+	}
+
 	const auto pWH = pWeapon->Warhead;
 	const bool isTemporal = pWH && pWH->Temporal;
 	const auto pRadBeam = RadBeam::Allocate(isTemporal ? RadBeamType::Temporal : RadBeamType::RadBeam);
 
 	pRadBeam->SetCoordsSource(pBullet->SourceCoords);
-	pRadBeam->SetCoordsTarget((pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords));
+	pRadBeam->SetCoordsTarget(targetCoords);
 
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 

@@ -71,10 +71,30 @@ DEFINE_HOOK(0x4721E6, CaptureManagerClass_DrawLinkToVictim, 0x6)
 
 	if (EnumFunctions::CanTargetHouse(pExt->MindControlLink_VisibleToHouse, pAttacker->Owner, HouseClass::CurrentPlayer))
 	{
-		auto nVictimCoord = pVictim->Location;
-		nVictimCoord.Z += pVictim->GetTechnoType()->LeptonMindControlOffset;
-		auto const nFLH = pAttacker->GetFLH(-1 - nNodeCount % 5, CoordStruct::Empty);
-		DrawALinkTo(nFLH, nVictimCoord, pAttacker->Owner->Color);
+		// Fog of war gating: only draw if both attacker and victim are visible
+		bool attackerVisible = true;
+		bool victimVisible = true;
+
+		if (ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.FogOfWar &&
+			HouseClass::CurrentPlayer && !HouseClass::CurrentPlayer->SpySatActive)
+		{
+			auto attackerCell = CellClass::Coord2Cell(pAttacker->Location);
+			auto victimCell = CellClass::Coord2Cell(pVictim->Location);
+
+			if (auto* cell = MapClass::Instance.GetCellAt(attackerCell))
+				attackerVisible = !cell->IsFogged();
+
+			if (auto* cell = MapClass::Instance.GetCellAt(victimCell))
+				victimVisible = !cell->IsFogged();
+		}
+
+		if (attackerVisible && victimVisible)
+		{
+			auto nVictimCoord = pVictim->Location;
+			nVictimCoord.Z += pVictim->GetTechnoType()->LeptonMindControlOffset;
+			auto const nFLH = pAttacker->GetFLH(-1 - nNodeCount % 5, CoordStruct::Empty);
+			DrawALinkTo(nFLH, nVictimCoord, pAttacker->Owner->Color);
+		}
 	}
 
 	R->EBP(nNodeCount);

@@ -10,6 +10,33 @@
 #include <Ext/WarheadType/Body.h>
 #include <TacticalClass.h>
 #include <PlanningTokenClass.h>
+#include <Misc/FogOfWar.h>
+#include <algorithm> // swap-erase helper
+
+// stable, single-pass erase of the first matching pointer; preserves order
+template<typename T>
+static __forceinline void stable_erase_first(std::vector<T*>& v, T* value)
+{
+	for (size_t i = 0, n = v.size(); i < n; ++i)
+	{
+		if (v[i] == value) { v.erase(v.begin() + i); return; }
+	}
+}
+
+// 🔧 Optimized: Small deterministic swap-erase. Order is not semantically used for RestrictedFactoryPlants.
+template<typename TCont, typename TValue>
+__forceinline void swap_erase_first(TCont& v, const TValue& value)
+{
+	for (size_t i = 0, n = v.size(); i < n; ++i)
+	{
+		if (v[i] == value)
+		{
+			if (i + 1 != n) { std::swap(v[i], v[n - 1]); }
+			v.pop_back();
+			return;
+		}
+	}
+}
 
 #pragma region Update
 
@@ -316,7 +343,18 @@ DEFINE_HOOK(0x440EBB, BuildingClass_Unlimbo_NaturalParticleSystem_CampaignSkip, 
 {
 	enum { DoNotCreateParticle = 0x440F61 };
 	GET(BuildingClass* const, pThis, ESI);
-	return BuildingExt::ExtMap.Find(pThis)->IsCreatedFromMapFile ? DoNotCreateParticle : 0;
+
+	// Skip for map-placed buildings
+	if (BuildingExt::ExtMap.Find(pThis)->IsCreatedFromMapFile) {
+		return DoNotCreateParticle;
+	}
+
+	// Skip for enemy buildings under fog to prevent information leaks
+	if (FoW::EnemyTechnoUnderFog(pThis)) {
+		return DoNotCreateParticle;
+	}
+
+	return 0;
 }
 
 DEFINE_HOOK(0x4519A2, BuildingClass_UpdateAnim_SetParentBuilding, 0x6)

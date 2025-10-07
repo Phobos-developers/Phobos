@@ -9,6 +9,12 @@
 #include <Utilities/Macro.h>
 #include "Utilities/AresHelper.h"
 #include "Utilities/Parser.h"
+#include <Ext/TechnoType/Body.h>
+#include <Ext/Rules/Body.h>
+
+#include <Windows.h>
+#include <RadBeam.h>
+#include "Misc/Hooks.RadBeam.h"
 
 #ifndef IS_RELEASE_VER
 bool HideWarning = false;
@@ -223,14 +229,22 @@ DEFINE_HOOK(0x67E68A, LoadGame_UnsetFlag, 0x5)
 {
 	Phobos::IsLoadingSaveGame = false;
 	Phobos::ApplyOptimizations();
+	
 	return 0;
 }
 
 DEFINE_HOOK(0x683E7F, ScenarioClass_Start_Optimizations, 0x7)
 {
 	Phobos::ApplyOptimizations();
+	RulesExt::ApplyRemoveShroudGlobally();
+
+	// Initialize RadBeam fog gating after other systems are ready
+	Install_RadBeamFogGate();
+
 	return 0;
 }
+
+
 
 #ifndef IS_RELEASE_VER
 DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)

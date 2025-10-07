@@ -5,10 +5,45 @@
 #include <Utilities/Debug.h>
 #include <Utilities/Macro.h>
 #include <Utilities/GeneralUtils.h>
+#include <Misc/FogOfWar.h>
+#include <ScenarioClass.h>
+#include <HouseClass.h>
+#include <MapClass.h>
+#include <CellClass.h>
+
+#define LASER_FOW_DEBUG 0
 
 namespace LaserDrawTemp
 {
 	ColorStruct maxColor;
+	bool FogHidden = false; // Flag to track if current laser should be hidden due to fog
+}
+
+// Simple fog gate for vanilla lasers - basic working version
+DEFINE_HOOK(0x550260, LaserDrawClass_Draw_FogGate, 0x6)
+{
+    enum { SkipDrawing = 0x5509D2 };
+
+    GET(LaserDrawClass*, pThis, ECX);
+    if(!pThis) return 0;
+
+    // Treat (0,0) source as fogged to avoid a single startup frame
+    if((pThis->Source.X | pThis->Source.Y) == 0) return SkipDrawing;
+
+    // Simple fog check using source coordinates
+    if(ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.FogOfWar) {
+        if(HouseClass::CurrentPlayer && !HouseClass::CurrentPlayer->SpySatActive) {
+            const CoordStruct from = pThis->Source;
+            const CellStruct cell = CellClass::Coord2Cell(from);
+            if(auto* c = MapClass::Instance.GetCellAt(cell)) {
+                if(c->IsFogged()) {
+                    return SkipDrawing;
+                }
+            }
+        }
+    }
+
+    return 0;
 }
 
 DEFINE_HOOK(0x550D1F, LaserDrawClass_DrawInHouseColor_Context_Set, 0x6)
@@ -46,3 +81,4 @@ DEFINE_HOOK(0x550F47, LaserDrawClass_DrawInHouseColor_BetterDrawing, 0x0)
 
 	return 0x550F9D;
 }
+

@@ -92,6 +92,77 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			MapClass::Instance.Reveal(pHouse);
 		}
 
+		const int removeShroudOnly = this->RemoveShroudOnly;
+
+		if (removeShroudOnly > 0)
+		{
+			// Custom shroud-only removal - doesn't touch fog at all
+			auto const center = CellClass::Coord2Cell(coords);
+			
+			// Remove shroud in radius without affecting fog
+			CellRangeIterator<CellClass>{}(center, removeShroudOnly + 0.5, [pHouse](CellClass* pCell) 
+			{
+				if (pCell && pHouse)
+				{
+					// Reduce shroud counter to reveal the cell
+					while (pCell->ShroudCounter > 0)
+					{
+						pCell->ReduceShroudCounter();
+					}
+					
+					// Clear gap coverage
+					pCell->GapsCoveringThisCell = 0;
+					
+					// Update visibility without touching fog
+					char visibility = TacticalClass::Instance->GetOcclusion(pCell->MapCoords, false);
+					if (pCell->Visibility != visibility)
+					{
+						pCell->Visibility = visibility;
+						TacticalClass::Instance->RegisterCellAsVisible(pCell);
+					}
+				}
+				return true;
+			});
+			
+			// Force redraw to show shroud changes
+			MapClass::Instance.MarkNeedsRedraw(2);
+		}
+		else if (removeShroudOnly < 0)
+		{
+			// Global shroud removal - remove shroud from entire map without touching fog
+			auto const& mapRect = MapClass::Instance.MapRect;
+			
+			for (int y = mapRect.Y; y < mapRect.Y + mapRect.Height; y++)
+			{
+				for (int x = mapRect.X; x < mapRect.X + mapRect.Width; x++)
+				{
+					CellStruct cellCoord = { static_cast<short>(x), static_cast<short>(y) };
+					if (auto pCell = MapClass::Instance.TryGetCellAt(cellCoord))
+					{
+						// Reduce shroud counter to reveal the cell
+						while (pCell->ShroudCounter > 0)
+						{
+							pCell->ReduceShroudCounter();
+						}
+						
+						// Clear gap coverage
+						pCell->GapsCoveringThisCell = 0;
+						
+						// Update visibility without touching fog
+						char visibility = TacticalClass::Instance->GetOcclusion(pCell->MapCoords, false);
+						if (pCell->Visibility != visibility)
+						{
+							pCell->Visibility = visibility;
+							TacticalClass::Instance->RegisterCellAsVisible(pCell);
+						}
+					}
+				}
+			}
+			
+			// Force full map redraw
+			MapClass::Instance.MarkNeedsRedraw(2);
+		}
+
 		if (this->TransactMoney)
 		{
 			pHouse->TransactMoney(this->TransactMoney);
@@ -99,7 +170,15 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			if (this->TransactMoney_Display)
 			{
 				auto displayCoords = this->TransactMoney_Display_AtFirer ? (pOwner ? pOwner->Location : coords) : coords;
-				FlyingStrings::AddMoneyString(this->TransactMoney, pHouse, this->TransactMoney_Display_Houses, displayCoords, this->TransactMoney_Display_Offset);
+
+				// Only show flying strings if location is visible (not fogged)
+				if (auto const pCell = MapClass::Instance.TryGetCellAt(displayCoords))
+				{
+					if (!pCell->IsFogged() && !pCell->IsShrouded())
+					{
+						FlyingStrings::AddMoneyString(this->TransactMoney, pHouse, this->TransactMoney_Display_Houses, displayCoords, this->TransactMoney_Display_Offset);
+					}
+				}
 			}
 		}
 

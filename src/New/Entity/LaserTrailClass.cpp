@@ -23,18 +23,61 @@ bool LaserTrailClass::Update(CoordStruct location)
 		{
 			if (pType->DrawType == LaserTrailDrawType::Laser)
 			{
-				const auto pLaser = GameCreate<LaserDrawClass>(
-					this->LastLocation.Get(), location,
-					this->CurrentColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 },
-					pType->FadeDuration.Get(64));
+				// FOG CHECK: Only create laser if both endpoints are visible (updated method)
+				bool sourceVisible = true;
+				bool targetVisible = true;
 
-				pLaser->Thickness = pType->Thickness;
-				pLaser->IsHouseColor = true;
-				pLaser->IsSupported = pType->IsIntense;
+				// Check if fog of war is enabled and we have valid instances
+				if (ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.FogOfWar &&
+					HouseClass::CurrentPlayer && !HouseClass::CurrentPlayer->SpySatActive) {
+
+					// Check source location using cell-based fog (matches EBolt method)
+					auto sourceCs = CellClass::Coord2Cell(this->LastLocation.Get());
+					auto* sourceCell = MapClass::Instance.GetCellAt(sourceCs);
+					sourceVisible = sourceCell && !sourceCell->IsFogged();
+
+					// Check target location using cell-based fog
+					auto targetCs = CellClass::Coord2Cell(location);
+					auto* targetCell = MapClass::Instance.GetCellAt(targetCs);
+					targetVisible = targetCell && !targetCell->IsFogged();
+				}
+
+				// Only create laser if both endpoints are visible
+				if (sourceVisible && targetVisible) {
+					const auto pLaser = GameCreate<LaserDrawClass>(
+						this->LastLocation.Get(), location,
+						this->CurrentColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 },
+						pType->FadeDuration.Get(64));
+
+					pLaser->Thickness = pType->Thickness;
+					pLaser->IsHouseColor = true;
+					pLaser->IsSupported = pType->IsIntense;
+				}
 			}
 			else if (pType->DrawType == LaserTrailDrawType::EBolt)
 			{
-				const auto pBolt = GameCreate<EBolt>();
+				// FOG CHECK: Only create EBolt if both endpoints are visible
+				bool sourceVisible = true;
+				bool targetVisible = true;
+
+				// Check if fog of war is enabled and we have valid instances
+				if (ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.FogOfWar &&
+					HouseClass::CurrentPlayer && !HouseClass::CurrentPlayer->SpySatActive) {
+
+					// Check source location using cell-based fog (matches EBolt method)
+					auto sourceCs = CellClass::Coord2Cell(this->LastLocation.Get());
+					auto* sourceCell = MapClass::Instance.GetCellAt(sourceCs);
+					sourceVisible = sourceCell && !sourceCell->IsFogged();
+
+					// Check target location using cell-based fog
+					auto targetCs = CellClass::Coord2Cell(location);
+					auto* targetCell = MapClass::Instance.GetCellAt(targetCs);
+					targetVisible = targetCell && !targetCell->IsFogged();
+				}
+
+				// Only create EBolt if both endpoints are visible
+				if (sourceVisible && targetVisible) {
+					const auto pBolt = GameCreate<EBolt>();
 				const auto pBoltExt = EBoltExt::ExtMap.Find(pBolt);
 				const auto& boltDisable = pType->Bolt_Disable;
 				const auto& boltColor = pType->Bolt_Color;
@@ -53,22 +96,45 @@ bool LaserTrailClass::Update(CoordStruct location)
 						pBoltExt->Color[idx] = Drawing::Int_To_RGB(idx < 2 ? defaultAlternate : defaultWhite);
 				}
 
-				pBoltExt->Arcs = pType->Bolt_Arcs;
-				pBolt->Lifetime = 1 << (std::clamp(pType->FadeDuration.Get(17), 1, 31) - 1);
-				pBolt->AlternateColor = pType->IsAlternateColor;
+					pBoltExt->Arcs = pType->Bolt_Arcs;
+					pBolt->Lifetime = 1 << (std::clamp(pType->FadeDuration.Get(17), 1, 31) - 1);
+					pBolt->AlternateColor = pType->IsAlternateColor;
 
-				pBolt->Fire(this->LastLocation, location, 0);
+					pBolt->Fire(this->LastLocation, location, 0);
+				}
 			}
 			else if (pType->DrawType == LaserTrailDrawType::RadBeam)
 			{
-				const auto pRadBeam = RadBeam::Allocate(RadBeamType::RadBeam);
-				pRadBeam->SetCoordsSource(this->LastLocation);
-				pRadBeam->SetCoordsTarget(location);
-				pRadBeam->Period = pType->FadeDuration.Get(15);
-				pRadBeam->Amplitude = pType->Beam_Amplitude;
+				// FOG CHECK: Only create RadBeam if both endpoints are visible
+				bool sourceVisible = true;
+				bool targetVisible = true;
 
-				const ColorStruct beamColor = pType->Beam_Color.Get(RulesClass::Instance->RadColor);
-				pRadBeam->SetColor(beamColor);
+				// Check if fog of war is enabled and we have valid instances
+				if (ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.FogOfWar &&
+					HouseClass::CurrentPlayer && !HouseClass::CurrentPlayer->SpySatActive) {
+
+					// Check source location using cell-based fog (matches EBolt method)
+					auto sourceCs = CellClass::Coord2Cell(this->LastLocation.Get());
+					auto* sourceCell = MapClass::Instance.GetCellAt(sourceCs);
+					sourceVisible = sourceCell && !sourceCell->IsFogged();
+
+					// Check target location using cell-based fog
+					auto targetCs = CellClass::Coord2Cell(location);
+					auto* targetCell = MapClass::Instance.GetCellAt(targetCs);
+					targetVisible = targetCell && !targetCell->IsFogged();
+				}
+
+				// Only create RadBeam if both endpoints are visible
+				if (sourceVisible && targetVisible) {
+					const auto pRadBeam = RadBeam::Allocate(RadBeamType::RadBeam);
+					pRadBeam->SetCoordsSource(this->LastLocation);
+					pRadBeam->SetCoordsTarget(location);
+					pRadBeam->Period = pType->FadeDuration.Get(15);
+					pRadBeam->Amplitude = pType->Beam_Amplitude;
+
+					const ColorStruct beamColor = pType->Beam_Color.Get(RulesClass::Instance->RadColor);
+					pRadBeam->SetColor(beamColor);
+				}
 			}
 
 			result = true;

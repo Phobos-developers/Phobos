@@ -6,6 +6,10 @@
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
 
+#include <New/Entity/FoggedObject.h>
+
+class FoggedObject;
+
 class CellExt
 {
 public:
@@ -36,8 +40,11 @@ public:
 	public:
 		std::vector<RadSiteClass*> RadSites {};
 		std::vector<RadLevel> RadLevels { };
+		DynamicVectorClass<FoggedObject*> FoggedObjects;
+		int InCleanFog { 0 };
 
-		ExtData(CellClass* OwnerObject) : Extension<CellClass>(OwnerObject)
+		ExtData(CellClass* OwnerObject) : Extension<CellClass>(OwnerObject),
+			FoggedObjects {}
 		{ }
 
 		virtual ~ExtData() = default;

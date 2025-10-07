@@ -18,13 +18,66 @@
 #include <Ext/Scenario/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
+#include <Misc/FogOfWar.h>
 
 
 // TechnoClass_AI_0x6F9E50
 // It's not recommended to do anything more here it could have a better place for performance consideration
 void TechnoExt::ExtData::OnEarlyUpdate()
 {
-	auto const pType = this->OwnerObject()->GetTechnoType();
+	auto* const pThis = this->OwnerObject();
+	auto const pType = pThis->GetTechnoType();
+
+	// Hide particles under fog (client-side only) - now includes all technos, not just enemies
+	if (ScenarioClass::Instance
+		&& ScenarioClass::Instance->SpecialFlags.FogOfWar
+		&& HouseClass::CurrentPlayer && pThis)
+	{
+		// Use current visibility check (same as working refinery smoke hooks)
+		if (Fog::IsFogged(pThis->GetCoords())) {
+			// Clean up all particle systems that could leak info
+			if (auto* ps = pThis->NaturalParticleSystem) {
+				Debug::Log("DEBUG: Destroying NaturalParticleSystem for %s under fog\n", pThis->GetTechnoType()->ID);
+				ps->UnInit();
+				pThis->NaturalParticleSystem = nullptr;
+			}
+			if (auto* ps = pThis->DamageParticleSystem) {
+				Debug::Log("DEBUG: Destroying DamageParticleSystem for enemy %s under fog\n", pThis->GetTechnoType()->ID);
+				ps->UnInit();
+				pThis->DamageParticleSystem = nullptr;
+			}
+			if (auto* ps = pThis->FireParticleSystem) {
+				Debug::Log("DEBUG: Destroying FireParticleSystem for enemy %s under fog\n", pThis->GetTechnoType()->ID);
+				ps->UnInit();
+				pThis->FireParticleSystem = nullptr;
+			}
+			if (auto* ps = pThis->SparkParticleSystem) {
+				Debug::Log("DEBUG: Destroying SparkParticleSystem for enemy %s under fog\n", pThis->GetTechnoType()->ID);
+				ps->UnInit();
+				pThis->SparkParticleSystem = nullptr;
+			}
+			if (auto* ps = pThis->RailgunParticleSystem) {
+				Debug::Log("DEBUG: Destroying RailgunParticleSystem for enemy %s under fog\n", pThis->GetTechnoType()->ID);
+				ps->UnInit();
+				pThis->RailgunParticleSystem = nullptr;
+			}
+			if (auto* ps = pThis->FiringParticleSystem) {
+				Debug::Log("DEBUG: Destroying FiringParticleSystem for enemy %s under fog\n", pThis->GetTechnoType()->ID);
+				ps->UnInit();
+				pThis->FiringParticleSystem = nullptr;
+			}
+			if (auto* ps = pThis->unk1ParticleSystem) {
+				Debug::Log("DEBUG: Destroying unk1ParticleSystem for enemy %s under fog\n", pThis->GetTechnoType()->ID);
+				ps->UnInit();
+				pThis->unk1ParticleSystem = nullptr;
+			}
+			if (auto* ps = pThis->unk2ParticleSystem) {
+				Debug::Log("DEBUG: Destroying unk2ParticleSystem for enemy %s under fog\n", pThis->GetTechnoType()->ID);
+				ps->UnInit();
+				pThis->unk2ParticleSystem = nullptr;
+			}
+		}
+	}
 
 	// Set only if unset or type is changed
 	// Notice that Ares may handle type conversion in the same hook here, which is executed right before this one thankfully

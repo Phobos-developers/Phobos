@@ -191,9 +191,13 @@
     <ClCompile Include="src\Misc\Hooks.PCX.cpp" />
     <ClCompile Include="src\Misc\Hooks.UI.cpp" />
     <ClCompile Include="src\Misc\Hooks.LaserDraw.cpp" />
+    <ClCompile Include="src\Misc\Hooks.RadBeam.cpp" />
     <ClCompile Include="src\Misc\Hooks.Timers.cpp" />
     <ClCompile Include="src\Misc\Hooks.INIInheritance.cpp" />
     <ClCompile Include="src\Misc\Hooks.Overlay.cpp" />
+    <ClCompile Include="src\Misc\FogOfWar.cpp" />
+    <ClCompile Include="src\Misc\MapRevealer.cpp" />
+    <ClCompile Include="src\New\Entity\FoggedObject.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\TypeConvertGroup.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Hooks.Upgrade.cpp" />
     <ClCompile Include="src\Phobos.COM.cpp" />
@@ -260,6 +264,9 @@
     <ClInclude Include="src\Misc\FlyingStrings.h" />
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
     <ClInclude Include="src\Misc\SyncLogging.h" />
+    <ClInclude Include="src\Misc\MapRevealer.h" />
+    <ClInclude Include="src\Misc\Hooks.RadBeam.h" />
+    <ClInclude Include="src\New\Entity\FoggedObject.h" />
     <ClInclude Include="src\New\Entity\BannerClass.h" />
     <ClInclude Include="src\New\Type\BannerTypeClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\TypeConvertGroup.h" />

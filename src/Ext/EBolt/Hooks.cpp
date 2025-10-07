@@ -6,11 +6,26 @@
 #include <Utilities/Macro.h>
 #include <Utilities/AresHelper.h>
 #include <Helpers/Macro.h>
+#include <Misc/FogOfWar.h>
+
+#define FOW_DEBUG 0
+
+
+// stable, single-pass erase of the first matching pointer; preserves order
+template<typename T>
+static __forceinline void stable_erase_first(std::vector<T*>& v, T* value)
+{
+	for (size_t i = 0, n = v.size(); i < n; ++i)
+	{
+		if (v[i] == value) { v.erase(v.begin() + i); return; }
+	}
+}
 
 namespace BoltTemp
 {
 	EBoltExt::ExtData* ExtData = nullptr;
 	int Color[3];
+	bool FogHidden = false; // Flag to track if current bolt should be hidden due to fog
 }
 
 // Skip create particlesystem in EBolt::Fire
@@ -43,12 +58,132 @@ DWORD _cdecl EBoltExt::_EBolt_Draw_Colors(REGISTERS* R)
 {
 	enum { SkipGameCode = 0x4C1F66 };
 
-	GET(EBolt*, pThis, ECX);
-	const auto pExt = BoltTemp::ExtData = EBoltExt::ExtMap.Find(pThis);
-	const auto& color = pExt->Color;
 
-	for (int idx = 0; idx < 3; ++idx)
-		BoltTemp::Color[idx] = Drawing::RGB_To_Int(color[idx]);
+	GET(EBolt*, pThis, ECX);
+	if (!pThis || !*(void**)pThis) return SkipGameCode;
+
+	auto* pExt = EBoltExt::ExtMap.Find(pThis);
+	if (!pExt) return SkipGameCode;
+
+	BoltTemp::ExtData = pExt;
+	BoltTemp::FogHidden = false;
+
+	#if FOW_DEBUG
+	static int totalBolts = 0;
+	if (totalBolts++ < 10) {
+		Debug::Log("[FOW] EBolt fog check: ScenarioClass=%p FogOfWar=%d Owner=%p\n",
+			ScenarioClass::Instance,
+			(ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.FogOfWar) ? 1 : 0,
+			pThis->Owner);
+	}
+	#endif
+
+	// DESYNC SAFETY: Only apply fog gating for local player's view
+	// This is purely visual and must not affect game simulation or synchronized state
+	if (ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.FogOfWar) {
+		#if FOW_DEBUG
+		if (totalBolts <= 10) {
+			Debug::Log("[FOW] EBolt in fog mode: CurrentPlayer=%p SpySat=%d\n",
+				HouseClass::CurrentPlayer,
+				HouseClass::CurrentPlayer ? (HouseClass::CurrentPlayer->SpySatActive ? 1 : 0) : -1);
+		}
+		#endif
+		if (auto* me = HouseClass::CurrentPlayer; me && !me->SpySatActive) {
+			// Owner-only fog gate: if you can see the shooter, you can see their bolt
+			#if FOW_DEBUG
+			if (totalBolts <= 10) {
+				Debug::Log("[FOW] EBolt owner check: Owner=%p\n", pThis->Owner);
+			}
+			#endif
+			if (pThis->Owner) {
+				// Convert to cell → back to the cell center; clamp Z to 0 so height can't bite us
+				CoordStruct ownerWorld = pThis->Owner->GetCoords();
+				const CellStruct ownerCell = CellClass::Coord2Cell(ownerWorld);
+				ownerWorld = CellClass::Cell2Coord(ownerCell);
+				ownerWorld.Z = 0;
+
+				#if FOW_DEBUG
+				static int debugCount = 0;
+				if (debugCount++ < 20) {
+					CoordStruct originalOwner = pThis->Owner->GetCoords();
+					Debug::Log("[FOW] EBolt coord compare: original(%d,%d,%d) cell(%d,%d) cellCenter(%d,%d,0) fogged=%d\n",
+						originalOwner.X, originalOwner.Y, originalOwner.Z,
+						ownerCell.X, ownerCell.Y, ownerWorld.X, ownerWorld.Y,
+						Fog::IsFogged(ownerWorld) ? 1 : 0);
+
+					// Also test the original coordinates for comparison
+					Debug::Log("[FOW] Original coord fogged=%d, cell center fogged=%d\n",
+						Fog::IsFogged(originalOwner) ? 1 : 0, Fog::IsFogged(ownerWorld) ? 1 : 0);
+				}
+				#endif
+
+				bool foggedByCell = false;
+
+				// Try direct cell fog check
+				auto* cellObj = MapClass::Instance.GetCellAt(ownerCell);
+				if (cellObj) {
+					foggedByCell = cellObj->IsFogged();
+				}
+
+				#if FOW_DEBUG
+				if (debugCount <= 20) {
+					Debug::Log("[FOW] Fog methods: cell=%d\n", foggedByCell ? 1 : 0);
+				}
+				#endif
+
+				// Use cell-based method since coord-based is giving wrong results
+				if (foggedByCell) {
+					BoltTemp::FogHidden = true;
+				}
+			} else {
+				#if FOW_DEBUG
+				if (totalBolts <= 10) {
+					Debug::Log("[FOW] EBolt has no owner - using source/target coords for fog check\n");
+				}
+				#endif
+
+				// Fallback for EBolts without owners (like shrapnel) - check source and target
+				bool sourceVisible = false, targetVisible = false;
+
+				// Check source coordinates (Point1)
+				CoordStruct sourceCoords = pThis->Point1;
+				CellStruct sourceCell = CellClass::Coord2Cell(sourceCoords);
+				if (auto* sourceCellObj = MapClass::Instance.GetCellAt(sourceCell)) {
+					sourceVisible = !sourceCellObj->IsFogged();
+				}
+
+				// Check target coordinates (Point2)
+				CoordStruct targetCoords = pThis->Point2;
+				CellStruct targetCell = CellClass::Coord2Cell(targetCoords);
+				if (auto* targetCellObj = MapClass::Instance.GetCellAt(targetCell)) {
+					targetVisible = !targetCellObj->IsFogged();
+				}
+
+				#if FOW_DEBUG
+				if (totalBolts <= 10) {
+					Debug::Log("[FOW] EBolt endpoint fog check: source(%d,%d)=%s target(%d,%d)=%s\n",
+						sourceCell.X, sourceCell.Y, sourceVisible ? "visible" : "fogged",
+						targetCell.X, targetCell.Y, targetVisible ? "visible" : "fogged");
+				}
+				#endif
+
+				// Hide EBolt if both endpoints are fogged (either-endpoint visible policy)
+				if (!sourceVisible && !targetVisible) {
+					BoltTemp::FogHidden = true;
+					#if FOW_DEBUG
+					if (totalBolts <= 10) {
+						Debug::Log("[FOW] EBolt both endpoints fogged - hiding\n");
+					}
+					#endif
+				}
+			}
+		}
+	}
+
+	// Always populate colors; some code expects them even if we end up hidden
+	const auto& color = pExt->Color;
+	for (int i = 0; i < 3; ++i)
+		BoltTemp::Color[i] = Drawing::RGB_To_Int(color[i]);
 
 	return SkipGameCode;
 }
@@ -62,6 +197,7 @@ DEFINE_HOOK(0x4C20BC, EBolt_DrawArcs, 0xB)
 {
 	enum { DoLoop = 0x4C20C7, Break = 0x4C2400 };
 
+
 	GET_STACK(int, plotIndex, STACK_OFFSET(0x408, -0x3E0));
 	const int arcCount = BoltTemp::ExtData->Arcs;
 
@@ -71,7 +207,23 @@ DEFINE_HOOK(0x4C20BC, EBolt_DrawArcs, 0xB)
 DEFINE_JUMP(LJMP, 0x4C24BE, 0x4C24C3)// Disable Ares's hook EBolt_Draw_Color1
 DEFINE_HOOK(0x4C24C3, EBolt_DrawFirst_Color, 0x9)
 {
-	if (BoltTemp::ExtData->Disable[0])
+	// TRIPWIRE: If this executes you will SEE magenta bolts briefly
+	static int trip = 0;
+	if (trip++ < 3) {
+		Debug::Log("[FOW] TRIPWIRE: EBolt hook running - you should see magenta bolt!\n");
+		R->EAX(Drawing::RGB_To_Int(ColorStruct{255, 0, 255})); // Bright magenta
+		return 0x4C24E4; // continue with forced color
+	}
+
+	#if FOW_DEBUG
+	static int c=0;
+	if (c++ < 5) {
+		Debug::Log("[FOW] EBolt_DrawFirst_Color: FogHidden=%d Disable[0]=%d\n",
+			BoltTemp::FogHidden ? 1 : 0, BoltTemp::ExtData->Disable[0] ? 1 : 0);
+	}
+	#endif
+
+	if (BoltTemp::FogHidden || BoltTemp::ExtData->Disable[0])
 		return 0x4C2515;
 
 	R->EAX(BoltTemp::Color[0]);
@@ -81,7 +233,7 @@ DEFINE_HOOK(0x4C24C3, EBolt_DrawFirst_Color, 0x9)
 DEFINE_JUMP(LJMP, 0x4C25CB, 0x4C25D0)// Disable Ares's hook EBolt_Draw_Color2
 DEFINE_HOOK(0x4C25D0, EBolt_DrawSecond_Color, 0x6)
 {
-	if (BoltTemp::ExtData->Disable[1])
+	if (BoltTemp::FogHidden || BoltTemp::ExtData->Disable[1])
 		return 0x4C262A;
 
 	R->Stack(STACK_OFFSET(0x424, -0x40C), BoltTemp::Color[1]);
@@ -91,7 +243,7 @@ DEFINE_HOOK(0x4C25D0, EBolt_DrawSecond_Color, 0x6)
 DEFINE_JUMP(LJMP, 0x4C26CF, 0x4C26D5)// Disable Ares's hook EBolt_Draw_Color3
 DEFINE_HOOK(0x4C26D5, EBolt_DrawThird_Color, 0x6)
 {
-	if (BoltTemp::ExtData->Disable[2])
+	if (BoltTemp::FogHidden || BoltTemp::ExtData->Disable[2])
 		return 0x4C2710;
 
 	R->EAX(BoltTemp::Color[2]);
@@ -129,7 +281,7 @@ void EBoltFake::_RemoveFromOwner()
 {
 	auto const pExt = TechnoExt::ExtMap.Find(this->Owner);
 	auto& vec = pExt->ElectricBolts;
-	vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
+	stable_erase_first(vec, static_cast<EBolt*>(this)); // Performance optimization: was erase(remove(...))
 	this->Owner = nullptr;
 }
 
