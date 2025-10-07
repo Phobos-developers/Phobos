@@ -489,7 +489,6 @@ Phobos fixes:
 - Fixed `AmbientDamage.Warhead` not working for waves (by Starkku)
 - Fixed `SkirmishUnlimitedColors` not being checked if Phobos runs without Ares active (by Starkku)
 - Fixed number of `*.ApplyFirepowerMult` options (f.ex anim damage, crit) ignoring veterancy firepower modifier (by Starkku)
-- Fixed map trigger action `125 Build At...` not always playing buildups correctly (by Starkku)
 - Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range (by TaranDahl)
 - Fixed an issue that jumpjet infantries stop incorrectly when assigned a target out of range (by TaranDahl)
 - Fixed an issue where the 77 trigger event in Ares was not functioning properly (by NetsuNegi)
@@ -871,6 +870,7 @@ Phobos fixes:
 - Fixed `DefaultDisguise` showing wrong house colors for different players (by NetsuNegi & Ollerus)
 - `600 The shield of the attached object is broken` bug fix for the triggered event (by FlyStar)
 - Fixed a read bug when setting the SHP file name in INI (By Noble_Fish)
+- Fixed map trigger action `125 Build At...` not always playing buildups correctly (by Starkku)
 
 Fixes / interactions with other extensions:
 - Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH (by Starkku)
