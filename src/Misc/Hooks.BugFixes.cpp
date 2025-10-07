@@ -2674,24 +2674,24 @@ DEFINE_HOOK(0x74431F, UnitClass_ReadyToNextMission_HuntCheck, 0x6)
 
 namespace TechnoClass_DrawShapeTemp
 {
-	bool DisableIntensity = false;
+	bool DisableTint = false;
 }
 
-DEFINE_HOOK(0x7060D6, TechnoClass_DrawShape_DisguiseIntensity_SetContext, 0x5)
+DEFINE_HOOK(0x7060D6, TechnoClass_DrawShape_DisguiseTint_SetContext, 0x5)
 {
-	TechnoClass_DrawShapeTemp::DisableIntensity = true;
+	TechnoClass_DrawShapeTemp::DisableTint = true;
 	return 0;
 }
 
-DEFINE_HOOK(0x70632E, TechnoClass_DrawShape_DisguiseIntensity, 0x6)
+DEFINE_HOOK(0x70632E, TechnoClass_DrawShape_DisguiseTint, 0x6)
 {
-	enum { SkipIntensity = 0x706389 };
+	enum { SkipTint = 0x7063E0 };
 
-	if (TechnoClass_DrawShapeTemp::DisableIntensity)
+	if (TechnoClass_DrawShapeTemp::DisableTint)
 	{
-		TechnoClass_DrawShapeTemp::DisableIntensity = false;
+		TechnoClass_DrawShapeTemp::DisableTint = false;
 		R->EBP(R->EAX());
-		return SkipIntensity;
+		return SkipTint;
 	}
 
 	return 0;

@@ -263,7 +263,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `DeployingAnim` using unit drawer now also tint accordingly with the unit.
 - Fixed an issue that jumpjets in air can not correctly spawn missiles.
 - Fixed an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos.
-- Fixed the bug that techno unit will draw with ironcurtain and airstrike intensity who disguised as terrain or overlay.
+- Fixed the bug that techno unit will draw with ironcurtain and airstrike color and intensity who disguised as terrain or overlay.
 
 ## Fixes / interactions with other extensions
 
