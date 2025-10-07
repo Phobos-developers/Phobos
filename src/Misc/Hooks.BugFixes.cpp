@@ -2675,26 +2675,10 @@ DEFINE_HOOK(0x74431F, UnitClass_ReadyToNextMission_HuntCheck, 0x6)
 
 #pragma region InfBlockTreeFix
 
-DEFINE_HOOK(0x47E91F, CellClass_AddContent_CountInfantry, 0x6)
+DEFINE_HOOK(0x52182A, InfantryClass_MarkAllOccupationBits_SetOwnerIdx, 0x6)
 {
-	GET(CellClass*, pThis, EBX);
-	GET(ObjectClass*, pContent, EBP);
-
-	if (pContent->WhatAmI() == AbstractType::Infantry)
-		CellExt::ExtMap.Find(pThis)->InfantryCount++;
-
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x47EAEA, CellClass_RemoveContent_CountInfantry, 0x6);
-DEFINE_HOOK(0x47EACF, CellClass_RemoveContent_CountInfantry, 0x6)
-{
-	GET(CellClass*, pThis, EDI);
-	GET(ObjectClass*, pContent, ESI);
-
-	if (pContent->WhatAmI() == AbstractType::Infantry)
-		CellExt::ExtMap.Find(pThis)->InfantryCount--;
-
+	GET(CellClass*, pCell, ESI);
+	CellExt::ExtMap.Find(pCell)->InfantryCount++;
 	return 0;
 }
 
@@ -2702,14 +2686,16 @@ DEFINE_HOOK(0x5218C2, InfantryClass_UnmarkAllOccupationBits_ResetOwnerIdx, 0x6)
 {
 	enum { Reset = 0x5218CC, NoReset = 0x5218D3 };
 
-	GET(CellClass*, pThis, ESI);
+	GET(CellClass*, pCell, ESI);
 	GET(DWORD, newFlag, ECX);
 
-	pThis->OccupationFlags = newFlag;
+	pCell->OccupationFlags = newFlag;
+	auto pExt = CellExt::ExtMap.Find(pCell);
+	pExt->InfantryCount--;
 
 	// Vanilla check only the flag to decide if the InfantryOwnerIndex should be reset. 
 	// But the tree take one of the flag bit. So if a infantry walk through a cell with a tree, the InfantryOwnerIndex won't be reset.
-	return (newFlag & 0x1C) == 0 || CellExt::ExtMap.Find(pThis)->InfantryCount == 0 ? Reset : NoReset;
+	return (newFlag & 0x1C) == 0 || pExt->InfantryCount == 0 ? Reset : NoReset;
 }
 
 #pragma endregion
