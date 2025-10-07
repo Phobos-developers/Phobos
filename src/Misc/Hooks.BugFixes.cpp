@@ -1,4 +1,4 @@
-#include <AircraftClass.h>
+﻿#include <AircraftClass.h>
 #include <AircraftTrackerClass.h>
 #include <AnimClass.h>
 #include <BuildingClass.h>
@@ -2709,7 +2709,7 @@ DEFINE_HOOK(0x5218C2, InfantryClass_UnmarkAllOccupationBits_ResetOwnerIdx, 0x6)
 
 	// Vanilla check only the flag to decide if the InfantryOwnerIndex should be reset. 
 	// But the tree take one of the flag bit. So if a infantry walk through a cell with a tree, the InfantryOwnerIndex won't be reset.
-	return (newFlag & 0x1C) == 0 || CellExt::ExtMap.Find(pThis)->InfantryCount <= 1 ? Reset : NoReset;
+	return (newFlag & 0x1C) == 0 || CellExt::ExtMap.Find(pThis)->InfantryCount == 0 ? Reset : NoReset;
 }
 
 #pragma endregion
