@@ -2671,28 +2671,3 @@ DEFINE_HOOK(0x74431F, UnitClass_ReadyToNextMission_HuntCheck, 0x6)
 	GET(UnitClass*, pThis, ESI);
 	return pThis->GetCurrentMission() != Mission::Hunt ? 0 : 0x744329;
 }
-
-namespace TechnoClass_DrawShapeTemp
-{
-	bool DisableTint = false;
-}
-
-DEFINE_HOOK(0x7060D6, TechnoClass_DrawShape_DisguiseTint_SetContext, 0x5)
-{
-	TechnoClass_DrawShapeTemp::DisableTint = true;
-	return 0;
-}
-
-DEFINE_HOOK(0x70632E, TechnoClass_DrawShape_DisguiseTint, 0x6)
-{
-	enum { SkipTint = 0x7063E0 };
-
-	if (TechnoClass_DrawShapeTemp::DisableTint)
-	{
-		TechnoClass_DrawShapeTemp::DisableTint = false;
-		R->EBP(R->EAX());
-		return SkipTint;
-	}
-
-	return 0;
-}
