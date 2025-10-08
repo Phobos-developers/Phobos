@@ -119,6 +119,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exINI(pINI);
 
 	// Miscs
+	this->Flash_Duration.Read(exINI, pSection, "Flash.Duration");
 	this->Reveal.Read(exINI, pSection, "Reveal");
 	this->CreateGap.Read(exINI, pSection, "CreateGap");
 	this->TransactMoney.Read(exINI, pSection, "TransactMoney");
@@ -402,6 +403,7 @@ template <typename T>
 void WarheadTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->Flash_Duration)
 		.Process(this->Reveal)
 		.Process(this->CreateGap)
 		.Process(this->TransactMoney)
