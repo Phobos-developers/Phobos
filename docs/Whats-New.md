@@ -475,6 +475,7 @@ Vanilla fixes:
 - Fixed an issue that jumpjet infantries' shadow is always drawn even if they are cloaked (by TaranDahl)
 - Fixed an issue that technos head to building's dock even they are not going to dock (by TaranDahl)
 - Fixed an issue that the jumpjet vehicles cannot stop correctly after going berserk (by TaranDahl)
+- Fixed an issue that infantry walking through a cell containing a tree would cause it to be impassable to other houses (by TaranDahl)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

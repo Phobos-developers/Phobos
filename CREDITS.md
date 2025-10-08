@@ -621,6 +621,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that technos head to building's dock even they are not going to dock
   - Fix an issue that the jumpjet vehicles cannot stop correctly after going berserk
   - Attack and damage technos underground
+  - Fix an issue that infantry walking through a cell containing a tree would cause it to be impassable to other houses
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
