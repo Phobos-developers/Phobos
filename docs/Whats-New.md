@@ -451,6 +451,7 @@ New:
 - Allow the aircraft to enter area guard mission and not crash immediately without any airport (by CrimRecya)
 - [Unlimbo Detonate warhead](New-or-Enhanced-Logics.md#unlimbo-detonate-warhead) (by FlyStar)
 - Attack and damage technos underground (by TaranDahl)
+- New ScriptTypeActions `19017, 19018, 19020, 19024, 19025, 19026, 19027, 19046, 19047, 19051, 19056, 19058` that require ID as argument (by FS-21)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

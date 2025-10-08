@@ -1,9 +1,18 @@
 #include "Body.h"
 
 #include <MapClass.h>
+#include <ThemeClass.h>
 
 #include <Ext/House/Body.h>
 #include <Helpers/Macro.h>
+
+enum class BuildingWithProperty : unsigned int
+{
+	LeastThreat = 0,
+	HighestThreat = 65536,
+	Nearest = 131072,
+	Farthest = 196608
+};
 
 DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8)
 {
@@ -102,4 +111,145 @@ DEFINE_HOOK(0x6F01B0, TMission_ChronoShiftToTarget_SuperWeapons, 0x6)
 	R->EBX(pSuperCSphere);
 
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x723CA1, TeamMissionClass_FillIn_StringsSupport_and_id_masks, 0xB)
+{
+	enum { SkipCode = 0x723CD2 };
+
+	GET(ScriptActionNode*, node, ECX);
+	GET_STACK(char*, scriptActionLine, 0x8);
+
+	int action = 0;
+	int argument = 0;
+	char* endptr;
+
+	if (sscanf(scriptActionLine, "%d,%s", &action, Phobos::readBuffer) != 2)
+	{
+		node->Action = action;
+		node->Argument = argument;
+		R->ECX(node);
+
+		return SkipCode;
+	}
+
+	long val = strtol(Phobos::readBuffer, &endptr, 10);
+
+	if (*endptr == '\0'
+		&& val >= std::numeric_limits<int>::min()
+		&& val <= std::numeric_limits<int>::max())
+	{
+		// Integer case (the classic).
+		argument = static_cast<int>(val);
+	}
+	else
+	{
+		// New strings case
+		char textArgument[sizeof(Phobos::readBuffer)] = { 0 };
+
+		action = action;
+		strcpy_s(textArgument, Phobos::readBuffer);
+
+		// Action masks: These actions translate IDs into indices while preserving the original action values.
+		// The reason for using these masks is that some ScriptType actions rely on fixed indices rather than ID labels.
+		// When these lists change, there's a high probability of breaking the original index of the pointed element
+		char id[sizeof(AbstractTypeClass::ID)] = { 0 };
+		char bwp[20] = { 0 };
+		char* context = nullptr;
+		int index = 0;
+		int prefixIndex = 0;
+
+		switch (static_cast<PhobosScripts>(action))
+		{
+		case PhobosScripts::ChangeToScriptByID:
+			action = 17;
+			index = ScriptTypeClass::FindIndex(textArgument);
+			break;
+		case PhobosScripts::ChangeToTeamTypeByID:
+			action = 18;
+			index = TeamTypeClass::FindIndex(textArgument);
+			break;
+		case PhobosScripts::ChangeToHouseByID:
+			action = 20;
+			index = HouseClass::FindIndexByName(textArgument);
+			break;
+		case PhobosScripts::PlaySpeechByID: // Note: PR 1900 needs to be merged into develop
+			action = static_cast<int>(PhobosScripts::PlaySpeech);
+			index = VoxClass::FindIndex(textArgument);
+			break;
+		case PhobosScripts::PlaySoundByID:
+			action = 25;
+			index = VocClass::FindIndex(textArgument);
+			break;
+		case PhobosScripts::PlayMovieByID:
+			// Note: action "26" is currently impossible without an expert Phobos developer declaring the Movies class... in that case I could code the right FindIndex(textArgument) so sadly I'll skip "26" for now :-(
+			action = 26;
+			index = 0;
+			break;
+		case PhobosScripts::PlayThemeByID:
+			action = 27;
+			index = ThemeClass::Instance.FindIndex(textArgument);
+			break;
+		case PhobosScripts::PlayAnimationByID:
+			action = 51;
+			index = AnimTypeClass::FindIndex(textArgument);
+			break;
+		case PhobosScripts::AttackEnemyStructureByID:
+		case PhobosScripts::MoveToEnemyStructureByID:
+		case PhobosScripts::ChronoshiftTaskForceToStructureByID:
+		case PhobosScripts::MoveToFriendlyStructureByID:
+			if (PhobosScripts::AttackEnemyStructureByID == static_cast<PhobosScripts>(action))
+				action = 46;
+			else if (PhobosScripts::MoveToEnemyStructureByID == static_cast<PhobosScripts>(action))
+				action = 47;
+			else if (PhobosScripts::ChronoshiftTaskForceToStructureByID == static_cast<PhobosScripts>(action))
+				action = 56;
+			else if (PhobosScripts::MoveToFriendlyStructureByID == static_cast<PhobosScripts>(action))
+				action = 58;
+
+			/* BwP check:
+			Information from https://modenc.renegadeprojects.com/ScriptTypes/ScriptActions
+			Computed Value                           Description
+			-------------------------------------		-------------------------------------------------------
+			0 (Hex 0x0) + Building Index          -> Index of the instance of the building with least threat
+			65536 (Hex 0x10000) + Building Index  -> Index of the instance of the building with highest threat
+			131072 (Hex 0x20000) + Building Index -> Index of the instance of the building which is nearest
+			196608 (Hex 0x30000) + Building Index -> Index of the instance of the building which is farthest
+			*/
+
+			//strcpy_s(id, strtok_s(textArgument, ",", &context));
+			//_snprintf_s(bwp, sizeof(bwp), context);
+			//strcpy_s(bwp, context);
+			//context = nullptr;
+			//strcpy_s(bwp, strtok_s(textArgument, ",", &context));
+
+			if (sscanf(textArgument, "%[^,],%s", id, bwp) == 2)
+			{
+				index = BuildingTypeClass::FindIndex(id);
+
+				if (index >= 0)
+				{
+					if (_strcmpi(bwp, "highestthreat") == 0)
+						prefixIndex = static_cast<int>(BuildingWithProperty::HighestThreat);
+					else if (_strcmpi(bwp, "nearest") == 0)
+						prefixIndex = static_cast<int>(BuildingWithProperty::Nearest);
+					else if (_strcmpi(bwp, "farthest") == 0)
+						prefixIndex = static_cast<int>(BuildingWithProperty::Farthest);
+				}
+			}
+			break;
+		default:
+			index = 0;
+			break;
+		}
+
+		if (index >= 0)
+			argument = prefixIndex + index;
+	}
+
+	node->Action = action;
+	node->Argument = argument;
+	R->ECX(node);
+
+	return SkipCode;
 }

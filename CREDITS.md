@@ -152,6 +152,7 @@ This page lists all the individual contributions to the project by their author.
   - Warhead activation target health thresholds enhancements
   - Event 606: AttachEffect is attaching to a Techno
   - Linked superweapons
+  - New ScriptTypeActions `19017, 19018, 19020, 19024, 19025, 19026, 19027, 19046, 19047, 19051, 19056, 19058` that require ID as argument
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
