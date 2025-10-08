@@ -40,7 +40,17 @@ public:
 		bool SWSidebar_Enable;
 		std::vector<int> SWSidebar_Indices;
 
-		std::unique_ptr<MessageListClass> NewMessageList;
+		std::vector<std::wstring> RecordMessages;
+
+		PhobosFixedString<64u> DefaultLS640BkgdName;
+		PhobosFixedString<64u> DefaultLS800BkgdName;
+		PhobosFixedString<64u> DefaultLS800BkgdPal;
+
+		BulletClass* MasterDetonationBullet; // Used to do warhead/weapon detonations on spot without having to create new BulletClass instance every time.
+		std::vector<TechnoExt::ExtData*> LimboLaunchers;
+
+		DynamicVectorClass<TechnoClass*> UndergroundTracker;
+		DynamicVectorClass<TechnoClass*> SpecialTracker;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
@@ -51,7 +61,14 @@ public:
 			, TransportReloaders {}
 			, SWSidebar_Enable { true }
 			, SWSidebar_Indices {}
-			, NewMessageList {}
+			, RecordMessages {}
+			, DefaultLS640BkgdName {}
+			, DefaultLS800BkgdName {}
+			, DefaultLS800BkgdPal {}
+			, MasterDetonationBullet {}
+			, LimboLaunchers {}
+			, UndergroundTracker {}
+			, SpecialTracker {}
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);

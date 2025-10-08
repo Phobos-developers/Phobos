@@ -49,7 +49,7 @@ RepairBaseNodes=                   ; List of 3 booleans indicating whether AI re
 
 ### Default loading screen and briefing offsets
 
-- It is now possible to set defaults for singleplayer map loading screen briefing pixel offsets and the loading screen images and palette that are used if there are no values defined for the map itself.
+- It is now possible to set defaults for singleplayer map loading screen briefing pixel offsets and the loading screen images and palette that are used if there are no values defined for the map itself or in case of loading screens and palette, if the files are missing.
 
 In `missionmd.ini`:
 ```ini
@@ -713,9 +713,9 @@ In `rulesmd.ini`:
 0=SOMEBANNER
 
 [SOMEBANNER]                ; BannerType
-PCX=                        ; filename - excluding the .pcx extension
+PCX=                        ; filename - including the .pcx extension
 SHP=                        ; filename - excluding the .shp extension
-SHP.Palette=palette.pal     ; filename - excluding the .pal extension
+SHP.Palette=palette.pal     ; filename - including the .pal extension
 SHP.RefreshAfterDelay=false ; boolean
 CSF=                        ; CSF entry key
 CSF.Color=                  ; integer - R,G,B, defaults to MessageTextColor of the owner Side

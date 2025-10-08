@@ -51,6 +51,7 @@ This page lists all the individual contributions to the project by their author.
   - Warhead activation target health thresholds
   - MP saves support for quicksave command and savegame trigger action
   - Ported XNA CnCNet Client MP save handling
+  - Retint fix toggle
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -166,7 +167,7 @@ This page lists all the individual contributions to the project by their author.
   - `AreaFire` targeting customization
   - `CreateUnit` improvements
   - Attached animation & jumpjet unit layer customization
-  - `IsSimpleDeployer` improvements
+  - `IsSimpleDeployer` improvements & additions
   - Shield modification warheads
   - Warhead decloaking toggle
   - `Warp(In/Out)Weapon`
@@ -276,6 +277,8 @@ This page lists all the individual contributions to the project by their author.
   - Airstrike flare visual customizations & fixes
   - Restored parabombs
   - Delayed fire weapons
+  - Changes / fixes to `Vertical` projectile logic and customizing projectile initial facing behavior
+  - Bugfixes to map trigger action `125 Build At...`
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -388,6 +391,8 @@ This page lists all the individual contributions to the project by their author.
   - Units can customize the attack voice that plays when using more weapons
   - When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective
   - When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body
+  - Health bar permanently displayed
+  - Unlimbo Detonate warhead
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -436,11 +441,12 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that vehicle owned by computer will scatter when cloaking
   - Fix the bug that submarine always turn left after changed owner by map event
   - Fix the bug that occupyable structure won't redraw when press deploy hotkey to release all occupants
-  - Fix the bug that Locomotor warhead won’t stop working when the attacker is being affected by `Temporal=yes` warhead
+  - Fix the bug that Locomotor warhead won't stop working when the attacker is being affected by `Temporal=yes` warhead
   - Fix the bug that `IsLocomotor=yes` warhead rendering hover units unselectable and undamageable on elevated bridge
   - Fix the bug that Locomotor warhead won't stop working when firer (except for vehicle) stop firing
   - Fix the bug that hover vehicle will sink if destroyed on bridge
   - Customize squid grapple animation
+  - Fix the bug that armor multiplier of new attacheffect will have extra take effect once if restricted warheads
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -532,6 +538,16 @@ This page lists all the individual contributions to the project by their author.
   - Burst without delay
   - Fix an issue that if the garrison unload occupants when there is no open space around it would result in the disappearance of the occupants
   - Fix an issue where Ares' `Convert.Deploy` triggers repeatedly when the unit is turning or moving
+  - Reverse engineer warhead
+  - AI base construction modification
+  - Restore turret recoil effect
+  - Fix an issue that `FireAngle` was not taken into account when drawing barrel in `TurretShadow`
+  - Fix an issue that barrel anim data will be incorrectly overwritten by turret anim data if the techno's section exists in the map file
+  - Jumpjet Climbing Logic Enhancement
+  - Fix for pathfinding crashes on big maps due to too small pathfinding node buffer
+  - Fix an issue that units' `LaserTrails` will always lags behind by one frame
+  - Fix an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos
+  - Allow the aircraft to enter area guard mission and not crash immediately without any airport
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -551,6 +567,9 @@ This page lists all the individual contributions to the project by their author.
   - Display banner improvement and doc
   - Damage multiplier for health percentage
   - Linked superweapons tweak
+  - Randomized anims for several behaviors
+  - Fix customized `WarpAway` anim's wrong definition
+  - Shield respawn animation and weapon
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
@@ -593,6 +612,16 @@ This page lists all the individual contributions to the project by their author.
   - Force techno targeting in distributed frames to improve performance
   - Use `SkipCrushSlowdown=true` to avoid the bug related to `Accelerates=true` and `MovementZone=CrushAll`
   - Auto deploy for GI-like infantry
+  - Fix an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle`
+  - Fix an issue that jumpjets in air can not correctly spawn missiles
+  - Customize the chained damage of the wall
+  - Fix an issue that jumpjet vehicles can not stop correctly when assigned a target in range
+  - Fix an issue that jumpjet infantries stop incorrectly when assigned a target out of range
+  - Fix an issue that jumpjet infantries' shadow is always drawn even if they are cloaked
+  - Fix an issue that technos head to building's dock even they are not going to dock
+  - Fix an issue that the jumpjet vehicles cannot stop correctly after going berserk
+  - Attack and damage technos underground
+  - Fix an issue that infantry walking through a cell containing a tree would cause it to be impassable to other houses
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
@@ -609,12 +638,12 @@ This page lists all the individual contributions to the project by their author.
   - Superweapon launch site & availability code
   - AI vehicle production update code
   - parts of TechnoType conversion placeholder code
-- **ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung** - Digital Display
+- **ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, CrimRecya** - Digital Display
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
 - **Chasheen (Chasheenburg)** - CN docs help for Build#24
-- **Noble Fish** - some minor fixes, established Community Chinese docs, took over and completely rewrite the Official Chinese docs during Build#46
+- **Noble Fish** - some minor improvements and fixes, established Community Chinese docs, took over and completely rewrite the Official Chinese docs during Build#46
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings, custom locomotors example implementation
 - **AlexB** - Original FlyingStrings implementation

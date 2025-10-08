@@ -81,7 +81,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 			const auto pBuilding = abstract_cast<BuildingClass*>(pThis);
 
-			if (RulesExt::Global()->CombatAlert_IgnoreBuilding && pBuilding && !pTypeExt->CombatAlert_NotBuilding.Get(pBuilding->Type->IsVehicle()))
+			if (RulesExt::Global()->CombatAlert_IgnoreBuilding && pBuilding && (pTypeExt->CombatAlert_NotBuilding.isset() ? !pTypeExt->CombatAlert_NotBuilding.Get() : !pBuilding->Type->IsVehicle()))
 				return;
 
 			const auto coordInMap = pThis->GetCoords();
@@ -136,6 +136,10 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 				if (nDamageLeft == 0)
 					ReceiveDamageTemp::SkipLowDamageCheck = true;
+			}
+			else if (!pShieldData->IsAvailable() || pShieldData->GetHP() <= 0)
+			{
+				pShieldData->SetRespawnRestartInCombat();
 			}
 		}
 
