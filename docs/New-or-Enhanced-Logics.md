@@ -1626,6 +1626,23 @@ ForceAAWeapon.Aircraft=-1                       ; integer, -1 to disable
 Specifically, if a position has `Force(AA)Weapon.InRange` set to -1 and `Force(AA)Weapon.InRange.Overrides` set to a positive value, it'll use default weapon selection logic once satisfied.
 ```
 
+### Fast access vehicle/structure
+
+- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles/structures without queuing.
+
+In `rulesmd.ini`:
+```ini
+[General]
+NoQueueUpToEnter=false          ; boolean
+NoQueueUpToUnload=false         ; boolean
+NoQueueUpToEnter.Buildings=     ; boolean, default to NoQueueUpToEnter
+NoQueueUpToUnload.Buildings=    ; boolean, default to NoQueueUpToUnload
+
+[SOMEVEHICLE/SOMEBUILDING]      ; VehicleType/BuildingType, transport
+NoQueueUpToEnter=               ; boolean, default to [General] -> NoQueueUpToEnter/NoQueueUpToEnter.Buildings
+NoQueueUpToUnload=              ; boolean, default to [General] -> NoQueueUpToUnload/NoQueueUpToUnload.Buildings
+```
+
 ### Initial spawns number
 - It is now possible to set the initial amount of spawnees for a spawner, instead of always being filled. Won't work if it's larger than `SpawnsNumber`.
 
@@ -2066,21 +2083,6 @@ WaterImage.ConditionRed=              ; VehicleType entry
 
 ```{warning}
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
-```
-
-### Fast access vehicle
-
-- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing.
-
-In `rulesmd.ini`:
-```ini
-[General]
-NoQueueUpToEnter=false    ; boolean
-NoQueueUpToUnload=false   ; boolean
-
-[SOMEVEHICLE]             ; VehicleType, transport
-NoQueueUpToEnter=         ; boolean, default to [General] -> NoQueueUpToEnter
-NoQueueUpToUnload=        ; boolean, default to [General] -> NoQueueUpToUnload
 ```
 
 ### Jumpjet Tilts While Moving
