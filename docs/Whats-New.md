@@ -128,11 +128,11 @@ HideLightFlashEffects=false      ; boolean
   68=House,1,2
   69=Non-inert,10
   70=AITargetTypes index,0
-  104=Banner ID,0
-  103=Vertical position,0
-  102=Horizontal position,0
-  101=BannerType,0
   71=AttachEffectType,0
+  101=BannerType,0
+  102=Horizontal position,0
+  103=Vertical position,0
+  104=Banner ID,0
 
   [EventsRA2]
   500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
