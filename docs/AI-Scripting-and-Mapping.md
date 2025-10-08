@@ -492,7 +492,15 @@ x=i,n             ; where 18048 <= i <= 18071, n is made up of two parts, the lo
 
 ### `19000-19999` Miscellanous/Uncategorized
 
-This category is empty for now.
+#### `19000` Play speech
+
+- Given a speech index, the game will play it. Just like action 24 from Tiberian Sun.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=19000,n
+```
 
 ## Trigger Actions
 

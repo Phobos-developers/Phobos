@@ -150,9 +150,10 @@ enum class PhobosScripts : unsigned int
 	GlobalVariableReverseByGlobal = 18068,
 	GlobalVariableXorByGlobal = 18069,
 	GlobalVariableOrByGlobal = 18070,
-	GlobalVariableAndByGlobal = 18071
+	GlobalVariableAndByGlobal = 18071,
 
 	// Range 19000-19999 are miscellanous/uncategorized actions
+		PlaySpeech = 19000
 };
 
 class ScriptExt
@@ -217,6 +218,7 @@ public:
 	static void VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate);
 	static bool IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed);
 	static void Log(const char* pFormat, ...);
+	static void PlaySpeech(TeamClass* pTeam);
 
 	// Mission.Attack.cpp
 	static void Mission_Attack(TeamClass* pTeam, int calcThreatMode = 0, bool repeatAction = true, int attackAITargetType = -1, int idxAITargetTypeItem = -1);
