@@ -492,7 +492,131 @@ x=i,n             ; where 18048 <= i <= 18071, n is made up of two parts, the lo
 
 ### `19000-19999` Miscellanous/Uncategorized
 
-This category is empty for now.
+#### `19017` Change Script
+
+- Similar to action 17, but uses a string ID from the `[ScriptTypes]` list instead of an index.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=19017,ID        ; text
+```
+
+#### `19018` Change TeamType
+
+- Similar to action 18, but uses a string ID from the `[TeamTypes]` list instead of an index.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=19018,ID        ; text
+```
+
+#### `19020` Change House
+
+- Similar to action 20, but uses a string ID from the `[Houses]` list instead of an index.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=19020,ID        ; text
+```
+
+#### `19024` Play Speech
+
+- Similar to action 19000, but uses a string ID from the `[DialogList]` list instead of an index.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=19024,ID        ; text
+```
+
+#### `19025` Play Sound
+
+- Similar to action 25, but uses a string ID from the `[SoundList]` list instead of an index.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=19025,ID        ; text
+```
+
+#### `19027` Play Theme
+
+- Similar to action 27, but uses a string ID from the `[Themes]` list instead of an index.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=19027,ID        ; text
+```
+
+#### `19051` Play Animation
+
+- Similar to action 51, but uses a string ID from the `[Animations]` list instead of an index.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=19051,ID        ; text
+```
+
+#### `19046` Attack Enemy Structure
+
+- Similar to action 46, but uses a string ID from the `[BuildingTypes]` list instead of an index.
+- The last parameter is the BwP. Check below the possible strings.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=19046,ID,BwP    ; text
+```
+
+| *BwP values*  | *Description*                                             |
+|--------------:|:----------------------------------------------------------|
+| LeastThreat   | Index of the instance of the building with least threat   |
+| HighestThreat | Index of the instance of the building with highest threat |
+| Nearest       | Index of the instance of the building which is nearest    |
+| Farthest      | Index of the instance of the building which is farthest   |
+
+```{note}
+More BwP information in https://modenc.renegadeprojects.com/ScriptTypes/ScriptActions
+For this action to work in multiplayer - you need to use a version of [Script Actions information at Modenc](https://modenc.renegadeprojects.com/ScriptTypes/ScriptActions).
+```
+
+#### `19047` Move To Enemy Structure
+
+- Similar to action 47, but uses a string ID from the `[BuildingTypes]` list instead of an index.
+- The last parameter is the BwP. Check the table of the action `19046`.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=19047,ID,BwP    ; text
+```
+
+#### `19056` Chronoshift TaskForce To Structure
+
+- Similar to action 56, but uses a string ID from the `[BuildingTypes]` list instead of an index.
+- The last parameter is the BwP. Check the table of the action `19046`.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=19056,ID,BwP    ; text
+```
+
+#### `19058` Move To Friendly Structure
+
+- Similar to action 58, but uses a string ID from the `[BuildingTypes]` list instead of an index.
+- The last parameter is the BwP. Check the table of the action `19046`.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=19058,ID,BwP    ; text
+```
 
 ## Trigger Actions
 
