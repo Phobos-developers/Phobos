@@ -10,7 +10,6 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From vanilla
 
-- Map trigger action `125 Build At...` now plays buildup by default if available, this can be toggled off using the third parameter (values other than 0). See [required changes for `fadata.ini`](#for-map-editor-final-alert-2) on how to enable the parameter in map editor.
 - `IsSimpleDeployer` units now obey deploying facing constraint even without deploying animation. To disable this, set `DeployDir` (defaults to `[AudioVisual] -> DeployDir`) to -1.
 - `Vertical=true` projectiles now default to completely downwards initial trajectory/facing regardless of if their projectile image has `Voxel=true` or not. This behavior can be reverted by setting `VerticalInitialFacing=false` on projectile in `rulesmd.ini`.
 - `Vertical=true` projectiles no longer move horizontally if fired by aircraft by default. To re-enable this behaviour set `Vertical.AircraftFix=false` on the projectile.
@@ -129,12 +128,11 @@ HideLightFlashEffects=false      ; boolean
   68=House,1,2
   69=Non-inert,10
   70=AITargetTypes index,0
-  71=AttachEffectType,0
-  101=BannerType,0
-  102=Horizontal position,0
-  103=Vertical position,0
   104=Banner ID,0
-  105=No buildup,0
+  103=Vertical position,0
+  102=Horizontal position,0
+  101=BannerType,0
+  71=AttachEffectType,0
 
   [EventsRA2]
   500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
@@ -182,7 +180,7 @@ HideLightFlashEffects=false      ; boolean
 
   [ActionsRA2]
   41=Play animation at a waypoint...,0,25,69,0,0,0,1,0,0,[LONG DESC].,0,1,41
-  125=Build at...,-10,47,105,65,0,0,1,0,0,[LONG DESC],0,1,125
+  125=Build at...,-10,47,0,65,0,0,1,0,0,[LONG DESC],0,1,125
   500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
   501=Edit variable,0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1
   502=Generate random number,0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
@@ -477,6 +475,7 @@ Vanilla fixes:
 - Fixed an issue that jumpjet infantries' shadow is always drawn even if they are cloaked (by TaranDahl)
 - Fixed an issue that technos head to building's dock even they are not going to dock (by TaranDahl)
 - Fixed an issue that the jumpjet vehicles cannot stop correctly after going berserk (by TaranDahl)
+- Fixed an issue that infantry walking through a cell containing a tree would cause it to be impassable to other houses (by TaranDahl)
 - Fixed the bug that techno unit will draw with ironcurtain and airstrike color and intensity who disguised as terrain or overlay (by NetsuNegi)
 
 Phobos fixes:
@@ -492,7 +491,6 @@ Phobos fixes:
 - Fixed `AmbientDamage.Warhead` not working for waves (by Starkku)
 - Fixed `SkirmishUnlimitedColors` not being checked if Phobos runs without Ares active (by Starkku)
 - Fixed number of `*.ApplyFirepowerMult` options (f.ex anim damage, crit) ignoring veterancy firepower modifier (by Starkku)
-- Fixed map trigger action `125 Build At...` not always playing buildups correctly (by Starkku)
 - Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range (by TaranDahl)
 - Fixed an issue that jumpjet infantries stop incorrectly when assigned a target out of range (by TaranDahl)
 - Fixed an issue where the 77 trigger event in Ares was not functioning properly (by NetsuNegi)
@@ -874,6 +872,7 @@ Phobos fixes:
 - Fixed `DefaultDisguise` showing wrong house colors for different players (by NetsuNegi & Ollerus)
 - `600 The shield of the attached object is broken` bug fix for the triggered event (by FlyStar)
 - Fixed a read bug when setting the SHP file name in INI (By Noble_Fish)
+- Fixed map trigger action `125 Build At...` not always playing buildups correctly (by Starkku)
 
 Fixes / interactions with other extensions:
 - Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH (by Starkku)
