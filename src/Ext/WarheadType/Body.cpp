@@ -119,7 +119,6 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exINI(pINI);
 
 	// Miscs
-	this->Flash_Duration.Read(exINI, pSection, "Flash.Duration");
 	this->Reveal.Read(exINI, pSection, "Reveal");
 	this->CreateGap.Read(exINI, pSection, "CreateGap");
 	this->TransactMoney.Read(exINI, pSection, "TransactMoney");
@@ -337,6 +336,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
 	this->EffectsRequireVerses.Read(exINI, pSection, "EffectsRequireVerses");
 	this->Malicious.Read(exINI, pSection, "Malicious");
+	this->Flash_Duration.Read(exINI, pSection, "Flash.Duration");
 
 	// List all Warheads here that respect CellSpread
 	// Used in WarheadTypeExt::ExtData::Detonate
@@ -403,7 +403,6 @@ template <typename T>
 void WarheadTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->Flash_Duration)
 		.Process(this->Reveal)
 		.Process(this->CreateGap)
 		.Process(this->TransactMoney)
@@ -590,6 +589,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AffectsOwner)
 		.Process(this->EffectsRequireVerses)
 		.Process(this->Malicious)
+		.Process(this->Flash_Duration)
 
 		.Process(this->WasDetonatedOnAllMapObjects)
 		.Process(this->RemainingAnimCreationInterval)

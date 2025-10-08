@@ -21,7 +21,6 @@ public:
 	{
 	public:
 
-		Nullable<int> Flash_Duration;
 		Valueable<int> Reveal;
 		Valueable<int> CreateGap;
 		Valueable<int> TransactMoney;
@@ -211,6 +210,7 @@ public:
 		Nullable<bool> AffectsOwner;
 		Valueable<bool> EffectsRequireVerses;
 		Valueable<bool> Malicious;
+		Nullable<int> Flash_Duration;
 
 		double Crit_RandomBuffer;
 		double Crit_CurrentChance;
@@ -230,7 +230,6 @@ public:
 
 	public:
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject)
-			, Flash_Duration { 0 }
 			, Reveal { 0 }
 			, CreateGap { 0 }
 			, TransactMoney { 0 }
@@ -398,6 +397,7 @@ public:
 			, AffectsOwner {}
 			, EffectsRequireVerses { true }
 			, Malicious { true }
+			, Flash_Duration {}
 
 			, Crit_RandomBuffer { 0.0 }
 			, Crit_CurrentChance { 0.0 }
