@@ -727,6 +727,11 @@ DEFINE_HOOK(0x679CAF, RulesData_LoadAfterTypeData, 0x5)
 
 	RulesExt::LoadAfterTypeData(pItem, pINI);
 
+	for (const auto pTechnoType : TechnoTypeClass::Array)
+	{
+		TechnoTypeExt::ExtMap.Find(pTechnoType)->ParseCombatDamageAndThreatType(pINI);
+	}
+
 	return 0;
 }
 

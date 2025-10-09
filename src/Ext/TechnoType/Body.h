@@ -422,6 +422,8 @@ public:
 		ValueableVector<bool> MultiWeapon_IsSecondary;
 		Valueable<int> MultiWeapon_SelectCount;
 		bool ReadMultiWeapon;
+		Vector2D<ThreatType> ThreatTypes;
+		Vector2D<int> CombatDamages;
 
 		ValueableIdx<VocClass> VoiceIFVRepair;
 		ValueableVector<int> VoiceWeaponAttacks;
@@ -804,6 +806,8 @@ public:
 			, MultiWeapon_IsSecondary {}
 			, MultiWeapon_SelectCount { 2 }
 			, ReadMultiWeapon { false }
+			, ThreatTypes { ThreatType::Normal,ThreatType::Normal }
+			, CombatDamages { 0,0 }
 
 			, VoiceIFVRepair { -1 }
 			, VoiceWeaponAttacks {}
@@ -831,6 +835,8 @@ public:
 
 		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget);
 		int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget);
+
+		void ParseCombatDamageAndThreatType(CCINIClass* const pINI);
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;

@@ -362,6 +362,68 @@ void TechnoTypeExt::ExtData::ParseVoiceWeaponAttacks(INI_EX& exINI, const char* 
 	}
 }
 
+void TechnoTypeExt::ExtData::ParseCombatDamageAndThreatType(CCINIClass* const pINI)
+{
+	int Num = 0;
+	int EliteNum = 0;
+
+	this->ThreatTypes = { ThreatType::Normal,ThreatType::Normal };
+	this->CombatDamages = { 0,0 };
+
+	const auto pThis = this->OwnerObject();
+	int Count = 2;
+
+	if (this->MultiWeapon && !pThis->IsGattling && (!pThis->HasMultipleTurrets() || !pThis->Gunner))
+	{
+		Count = Math::min(this->MultiWeapon_SelectCount, pThis->WeaponCount);
+	}
+
+	for (int index = 0; index < Count; index++)
+	{
+		const auto pWeapon = pThis->GetWeapon(index)->WeaponType;
+		auto pEliteWeapon = pThis->GetEliteWeapon(index)->WeaponType;
+
+		if (!pEliteWeapon)
+			pEliteWeapon = pWeapon;
+
+		if (pWeapon)
+		{
+			if (const auto pBulletType = pWeapon->Projectile)
+			{
+				if (pBulletType->AA)
+					this->ThreatTypes.X |= ThreatType::Air;
+
+				if (pBulletType->AG && !BulletTypeExt::ExtMap.Find(pBulletType)->AAOnly)
+					this->ThreatTypes.X |= static_cast<ThreatType>(ThreatType::Infantry | ThreatType::Vehicles | ThreatType::Buildings | ThreatType::Boats);
+			}
+
+			this->CombatDamages.X += (pWeapon->Damage + pWeapon->AmbientDamage);
+			Num++;
+		}
+
+		if (pEliteWeapon)
+		{
+			if (const auto pBulletType = pEliteWeapon->Projectile)
+			{
+				if (pBulletType->AA)
+					this->ThreatTypes.X |= ThreatType::Air;
+
+				if (pBulletType->AG && !BulletTypeExt::ExtMap.Find(pBulletType)->AAOnly)
+					this->ThreatTypes.X |= (ThreatType::Infantry | ThreatType::Vehicles | ThreatType::Buildings | ThreatType::Boats);
+			}
+
+			this->CombatDamages.Y += (pEliteWeapon->Damage + pEliteWeapon->AmbientDamage);
+			EliteNum++;
+		}
+	}
+
+	if (Num > 0)
+		this->CombatDamages.X /= Num;
+
+	if (EliteNum > 0)
+		this->CombatDamages.Y /= EliteNum;
+}
+
 void TechnoTypeExt::ExtData::CalculateSpawnerRange()
 {
 	const auto pThis = this->OwnerObject();
