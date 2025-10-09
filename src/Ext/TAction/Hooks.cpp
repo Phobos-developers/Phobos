@@ -42,7 +42,7 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 	GET(HouseClass*, pHouse, EDI);
 	REF_STACK(CoordStruct, coord, STACK_OFFSET(0x24, -0x18));
 
-	const bool playBuildup = pThis->Param3 == 0 && pBuildingType->LoadBuildup();
+	const bool playBuildup = pBuildingType->LoadBuildup();
 	bool created = false;
 
 	if (auto pBuilding = static_cast<BuildingClass*>(pBuildingType->CreateObject(pHouse)))
