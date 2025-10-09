@@ -182,7 +182,7 @@ DEFINE_HOOK(0x6F39F4, TechnoClass_CombatDamage_MultiWeapon, 0x6)
 DEFINE_HOOK(0x707ED0, TechnoClass_GetGuardRange_MultiWeapon, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
-	enum { NewRange = 0x707F08 };
+	enum { ReturnRange = 0x707F08 };
 
 	const auto pType = pThis->GetTechnoType();
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
@@ -202,7 +202,7 @@ DEFINE_HOOK(0x707ED0, TechnoClass_GetGuardRange_MultiWeapon, 0x6)
 		}
 
 		R->EAX(range);
-		return NewRange;
+		return ReturnRange;
 	}
 
 	return 0;
