@@ -389,48 +389,14 @@ void TechnoTypeExt::ExtData::ParseCombatDamageAndThreatType(CCINIClass* const pI
 
 		if (pWeapon)
 		{
-			if (const auto pBulletType = pWeapon->Projectile)
-			{
-				const auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
-				const bool AAOnly = pBulletTypeExt->AAOnly;
-
-				if (pBulletType->AA || AAOnly)
-					this->ThreatTypes.X |= ThreatType::Air;
-
-				if (!AAOnly)
-				{
-					if (pBulletType->AG)
-						this->ThreatTypes.X |= static_cast<ThreatType>(ThreatType::Infantry | ThreatType::Vehicles | ThreatType::Buildings | ThreatType::Boats);
-
-					if (pBulletTypeExt->AU)
-						this->ThreatTypes.X |= static_cast<ThreatType>(0x20000u);
-				}
-			}
-
+			this->ThreatTypes.X |= pWeapon->AllowedThreats();
 			this->CombatDamages.X += (pWeapon->Damage + pWeapon->AmbientDamage);
 			Num++;
 		}
 
 		if (pEliteWeapon)
 		{
-			if (const auto pBulletType = pEliteWeapon->Projectile)
-			{
-				const auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
-				const bool AAOnly = pBulletTypeExt->AAOnly;
-
-				if (pBulletType->AA || AAOnly)
-					this->ThreatTypes.Y |= ThreatType::Air;
-
-				if (!AAOnly)
-				{
-					if (pBulletType->AG)
-						this->ThreatTypes.Y |= static_cast<ThreatType>(ThreatType::Infantry | ThreatType::Vehicles | ThreatType::Buildings | ThreatType::Boats);
-
-					if (pBulletTypeExt->AU)
-						this->ThreatTypes.Y |= static_cast<ThreatType>(0x20000u);
-				}
-			}
-
+			this->ThreatTypes.Y |= pEliteWeapon->AllowedThreats();
 			this->CombatDamages.Y += (pEliteWeapon->Damage + pEliteWeapon->AmbientDamage);
 			EliteNum++;
 		}
