@@ -19,6 +19,8 @@
 
 enum class PhobosScripts : unsigned int
 {
+	PlaySpeech = 24,
+
 	// Range 10000-10999 are team (aka ingame) actions
 	// Sub-range 10000-10049 is for "attack" actions
 	RepeatAttackCloser = 10000,
@@ -150,10 +152,9 @@ enum class PhobosScripts : unsigned int
 	GlobalVariableReverseByGlobal = 18068,
 	GlobalVariableXorByGlobal = 18069,
 	GlobalVariableOrByGlobal = 18070,
-	GlobalVariableAndByGlobal = 18071,
+	GlobalVariableAndByGlobal = 18071
 
 	// Range 19000-19999 are miscellanous/uncategorized actions
-	PlaySpeech = 24
 };
 
 class ScriptExt
