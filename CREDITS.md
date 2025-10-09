@@ -394,6 +394,7 @@ This page lists all the individual contributions to the project by their author.
   - When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body
   - Health bar permanently displayed
   - Unlimbo Detonate warhead
+  - Fast access structure
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -448,6 +449,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that hover vehicle will sink if destroyed on bridge
   - Customize squid grapple animation
   - Fix the bug that armor multiplier of new attacheffect will have extra take effect once if restricted warheads
+  - Fix the bug that techno unit will draw with ironcurtain and airstrike color and intensity who disguised as terrain or overlay
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

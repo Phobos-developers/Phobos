@@ -153,7 +153,7 @@ enum class PhobosScripts : unsigned int
 	GlobalVariableAndByGlobal = 18071,
 
 	// Range 19000-19999 are miscellanous/uncategorized actions
-		PlaySpeech = 19000
+	PlaySpeech = 24
 };
 
 class ScriptExt

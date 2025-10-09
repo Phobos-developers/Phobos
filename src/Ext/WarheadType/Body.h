@@ -210,6 +210,7 @@ public:
 		Nullable<bool> AffectsOwner;
 		Valueable<bool> EffectsRequireVerses;
 		Valueable<bool> Malicious;
+		Nullable<int> Flash_Duration;
 
 		double Crit_RandomBuffer;
 		double Crit_CurrentChance;
@@ -396,6 +397,7 @@ public:
 			, AffectsOwner {}
 			, EffectsRequireVerses { true }
 			, Malicious { true }
+			, Flash_Duration {}
 
 			, Crit_RandomBuffer { 0.0 }
 			, Crit_CurrentChance { 0.0 }
