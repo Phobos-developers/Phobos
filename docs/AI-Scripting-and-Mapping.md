@@ -524,7 +524,7 @@ x=19020,ID        ; text
 
 #### `19024` Play Speech
 
-- Similar to action 19000, but uses a string ID from the `[DialogList]` list instead of an index.
+- Similar to action 24, but uses a string ID from the `[DialogList]` list instead of an index.
 
 In `aimd.ini`:
 ```ini

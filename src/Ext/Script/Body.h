@@ -153,7 +153,6 @@ enum class PhobosScripts : unsigned int
 	GlobalVariableAndByGlobal = 18071,
 
 	// Range 19000-19999 are miscellanous/uncategorized actions
-	PlaySpeech = 19000, // Reserved! PR 1900 needs to be merged
 	ChangeToScriptByID = 19017,
 	ChangeToTeamTypeByID = 19018,
 	ChangeToHouseByID = 19020,
