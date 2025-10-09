@@ -149,50 +149,32 @@ ThreatType __forceinline GetThreatType(TechnoClass* pThis, TechnoTypeExt::ExtDat
 }
 
 DEFINE_HOOK_AGAIN(0x51E2CF, InfantryClass_SelectAutoTarget_MultiWeapon, 0x6)	// InfantryClass_SelectAutoTarget
-DEFINE_HOOK(0x7431D4, UnitClass_SelectAutoTarget_MultiWeapon, 0x6)				// UnitClass_SelectAutoTarget
+DEFINE_HOOK(0x743203, UnitClass_SelectAutoTarget_MultiWeapon, 0x6)				// UnitClass_SelectAutoTarget
 {
 	GET(FootClass*, pThis, ESI);
 	GET(ThreatType, result, EDI);
-	enum { InfantryReturn = 0x51E31B, UnitReturn = 0x74324F, GunnerReturn = 0x7431E4 };
+	enum { InfantryReturn = 0x51E31B, UnitReturn = 0x74324F };
 
-	const auto pType = pThis->GetTechnoType();
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	const bool isUnit = R->Origin() == 0x7431D4;
-
-	if (isUnit && !pType->IsGattling
-		&& (pType->Gunner || (pType->IsChargeTurret && !pTypeExt->MultiWeapon)))
-	{
-		return GunnerReturn;
-	}
-
-	R->EDI(GetThreatType(pThis, pTypeExt, result));
-	return isUnit ? UnitReturn : InfantryReturn;
+	R->EDI(GetThreatType(pThis, TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()), result));
+	return R->Origin() == 0x743203 ? UnitReturn : InfantryReturn;
 }
 
 DEFINE_HOOK(0x445F04, BuildingClass_SelectAutoTarget_MultiWeapon, 0xA)
 {
 	GET(BuildingClass*, pThis, ESI);
 	GET_STACK(ThreatType, result, STACK_OFFSET(0x8, 0x4));
-	enum { ReturnFlag = 0x445F58 };
+	enum { ReturnThreatType = 0x445F58 };
 
 	R->EDI(GetThreatType(pThis, TechnoTypeExt::ExtMap.Find(pThis->Type), result));
-	return ReturnFlag;
+	return ReturnThreatType;
 }
 
-DEFINE_HOOK(0x6F39A3, TechnoClass_CombatDamage_MultiWeapon, 0x6)
+DEFINE_HOOK(0x6F39F4, TechnoClass_CombatDamage_MultiWeapon, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET(TechnoTypeClass*, pType, EAX);
-	enum { ReturnDamage = 0x6F3ABB, GunnerDamage = 0x6F39AD };
+	enum { ReturnDamage = 0x6F3ABB };
 
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-
-	if (pThis->WhatAmI() == AbstractType::Unit && !pType->IsGattling
-		&& (pType->Gunner || (pType->IsChargeTurret && !pTypeExt->MultiWeapon)))
-	{
-		return GunnerDamage;
-	}
-
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	R->EAX(pThis->Veterancy.IsElite() ? pTypeExt->CombatDamages.Y : pTypeExt->CombatDamages.X);
 	return ReturnDamage;
 }
@@ -208,7 +190,7 @@ DEFINE_HOOK(0x707ED0, TechnoClass_GetGuardRange_MultiWeapon, 0x6)
 	if (pTypeExt->MultiWeapon
 		&& (!pType->IsGattling && (!pType->HasMultipleTurrets() || !pType->Gunner)))
 	{
-		const int selectCount = Math::min(pTypeExt->MultiWeapon_SelectCount, pType->WeaponCount);
+		const int selectCount = Math::min(pType->WeaponCount, pTypeExt->MultiWeapon_SelectCount);
 		int range = 0;
 
 		for (int index = selectCount - 1; index >= 0; --index)
