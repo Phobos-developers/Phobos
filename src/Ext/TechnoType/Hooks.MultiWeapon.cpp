@@ -159,8 +159,8 @@ DEFINE_HOOK(0x7431D4, UnitClass_SelectAutoTarget_MultiWeapon, 0x6)				// UnitCla
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	const bool isUnit = R->Origin() == 0x7431D4;
 
-	if (isUnit && !pType->IsGattling &&
-		(pType->Gunner || (pType->IsChargeTurret && !pTypeExt->MultiWeapon)))
+	if (isUnit && !pType->IsGattling
+		&& (pType->Gunner || (pType->IsChargeTurret && !pTypeExt->MultiWeapon)))
 	{
 		return GunnerReturn;
 	}
@@ -187,12 +187,41 @@ DEFINE_HOOK(0x6F39A3, TechnoClass_CombatDamage_MultiWeapon, 0x6)
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	if (pThis->WhatAmI() == AbstractType::Unit && !pType->IsGattling &&
-		(pType->Gunner || (pType->IsChargeTurret && !pTypeExt->MultiWeapon)))
+	if (pThis->WhatAmI() == AbstractType::Unit && !pType->IsGattling
+		&& (pType->Gunner || (pType->IsChargeTurret && !pTypeExt->MultiWeapon)))
 	{
 		return GunnerDamage;
 	}
 
 	R->EAX(pThis->Veterancy.IsElite() ? pTypeExt->CombatDamages.Y : pTypeExt->CombatDamages.X);
 	return ReturnDamage;
+}
+
+DEFINE_HOOK(0x707ED0, TechnoClass_GetGuardRange_MultiWeapon, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	enum { NewRange = 0x707F08 };
+
+	const auto pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+	if (pTypeExt->MultiWeapon
+		&& (!pType->IsGattling && (!pType->HasMultipleTurrets() || !pType->Gunner)))
+	{
+		const int selectCount = Math::min(pTypeExt->MultiWeapon_SelectCount, pType->WeaponCount);
+		int range = 0;
+
+		for (int index = selectCount - 1; index >= 0; --index)
+		{
+			const auto weaponRange = pThis->GetWeaponRange(index);
+
+			if (weaponRange > range)
+				range = weaponRange;
+		}
+
+		R->EAX(range);
+		return NewRange;
+	}
+
+	return 0;
 }
