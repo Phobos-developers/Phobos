@@ -376,7 +376,7 @@ void TechnoTypeExt::ExtData::ParseCombatDamageAndThreatType(CCINIClass* const pI
 	if (this->MultiWeapon
 		&& (!pThis->IsGattling && (!pThis->HasMultipleTurrets() || !pThis->Gunner)))
 	{
-		Count = Math::min(pThis->WeaponCount, this->MultiWeapon_SelectCount);
+		Count = pThis->WeaponCount;
 	}
 
 	for (int index = 0; index < Count; index++)
