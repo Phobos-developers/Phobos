@@ -2590,6 +2590,7 @@ msgid ""
 "Fixed map trigger action `125 Build At...` not always playing buildups "
 "correctly (by Starkku)"
 msgstr ""
+"修复了触发结果 `125 将建筑建于...` 有时不能正确播放建造动画的 Bug（by Starkku）"
 
 #: ../../Whats-New.md:680 ../../Whats-New.md:901
 msgid "Fixes / interactions with other extensions:"
