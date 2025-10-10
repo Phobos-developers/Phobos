@@ -30,50 +30,50 @@ DEFINE_HOOK(0x6DD8B0, TActionClass_Execute, 0x6)
 	return handled ? 0x6DD910 : 0;
 }
 
-// TODO: Sometimes Buildup anims plays while the building image is already there in faster gamespeed.
 // Bugfix: TAction 125 Build At could neither display the buildups nor be AI-repairable in singleplayer mode
+// Sep 9, 2025 - Starkku: Fixed issues with buildups potentially ending up in infinite loops etc.
+// A separate issue remains where buildup sequence will interrupt if building's house changes mid-buildup,
+// but this applies to all buildings and not just ones created through the trigger.
+// Also restored Param3 to control the buildup display, only this time it is inverted (set to >0 to disable buildups).
 DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 {
 	GET(TActionClass*, pThis, ESI);
-	GET(BuildingTypeClass*, pBldType, ECX);
+	GET(BuildingTypeClass*, pBuildingType, ECX);
 	GET(HouseClass*, pHouse, EDI);
 	REF_STACK(CoordStruct, coord, STACK_OFFSET(0x24, -0x18));
 
-	bool bPlayBuildUp = pBldType->LoadBuildup();
-	//Param3 can be used for other purposes in the future
-	bool bCreated = false;
-	if (auto pBld = static_cast<BuildingClass*>(pBldType->CreateObject(pHouse)))
+	const bool playBuildup = pBuildingType->LoadBuildup();
+	bool created = false;
+
+	if (auto pBuilding = static_cast<BuildingClass*>(pBuildingType->CreateObject(pHouse)))
 	{
-		if (bPlayBuildUp)
+		// Set before unlimbo cause otherwise it will call BuildingClass::Place.
+		pBuilding->QueueMission(Mission::Construction, false);
+		pBuilding->NextMission();
+
+		if (!pBuilding->ForceCreate(coord))
 		{
-			pBld->BeginMode(BStateType::Construction);
-			pBld->QueueMission(Mission::Construction, false);
+			pBuilding->UnInit();
 		}
 		else
 		{
-			pBld->BeginMode(BStateType::Idle);
-			pBld->QueueMission(Mission::Guard, false);
-		}
-
-		if (!pBld->ForceCreate(coord))
-		{
-			pBld->UnInit();
-		}
-		else
-		{
-			if (!bPlayBuildUp)
-				pBld->Place(false);
-
-			pBld->IsReadyToCommence = true;
+			// Reset mission and build state if we're not going to play buildup afterwards.
+			if (!playBuildup)
+			{
+				pBuilding->BeginMode(BStateType::Idle);
+				pBuilding->QueueMission(Mission::Guard, false);
+				pBuilding->NextMission();
+				pBuilding->Place(false); // Manually call this now.
+			}
 
 			if (SessionClass::IsCampaign() && !pHouse->IsControlledByHuman())
-				pBld->ShouldRebuild = pThis->Param4 > 0;
+				pBuilding->ShouldRebuild = pThis->Param4 > 0;
 
-			bCreated = true;
+			created = true;
 		}
 	}
 
-	R->AL(bCreated);
+	R->AL(created);
 	return 0x6E42C1;
 }
 
