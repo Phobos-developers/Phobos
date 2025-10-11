@@ -79,6 +79,7 @@ public:
 		AirstrikeClass* AirstrikeTargetingMe;
 
 		bool IsSelected;
+		bool ResetLocomotor;
 
 		// Replaces use of TechnoClass->Animation StageClass timer for IsSimpleDeployer to simplify
 		// the deploy animation timer calcs and eliminate possibility of outside interference.
@@ -93,6 +94,9 @@ public:
 		int TintIntensityEnemies;
 
 		int AttackMoveFollowerTempCount;
+
+		bool UndergroundTracked;
+		bool SpecialTracked;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -146,6 +150,7 @@ public:
 			, CurrentDelayedFireAnim { nullptr }
 			, AttachedEffectInvokerCount { 0 }
 			, IsSelected { false }
+			, ResetLocomotor { false }
 			, TintColorOwner { 0 }
 			, TintColorAllies { 0 }
 			, TintColorEnemies { 0 }
@@ -153,6 +158,8 @@ public:
 			, TintIntensityAllies { 0 }
 			, TintIntensityEnemies { 0 }
 			, AttackMoveFollowerTempCount { 0 }
+			, UndergroundTracked { false }
+			, SpecialTracked { false }
 		{ }
 
 		void OnEarlyUpdate();
