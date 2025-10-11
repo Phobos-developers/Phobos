@@ -122,6 +122,8 @@ public:
 		Nullable<int> Parachuted_MaxFallRate;
 		Nullable<AnimTypeClass*> BombParachute;
 
+		Valueable<bool> AU;
+
 		// Ares 0.1
 		Valueable<bool> SubjectToSolid;
 
@@ -223,6 +225,7 @@ public:
 			, Parachuted_FallRate { 1 }
 			, Parachuted_MaxFallRate {}
 			, BombParachute {}
+			, AU { false }
 		{ }
 
 		virtual ~ExtData() = default;
