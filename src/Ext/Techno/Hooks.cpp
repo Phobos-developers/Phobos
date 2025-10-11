@@ -1481,8 +1481,9 @@ DEFINE_HOOK(0x6F7E30, TechnoClass_CanAutoTarget_SetContent, 0x6)
 
 DEFINE_HOOK(0x6F85AB, TechnoClass_CanAutoTarget_AttackFriendlies_Building, 0x6)
 {
-	GET(TechnoClass*, pThis, EDI);
 	enum { CanAttack = 0x6F8604, Continue = 0x6F85BA };
+
+	GET(TechnoClass*, pThis, EDI);
 
 	const bool canAttack = CanAutoTargetTemp::WeaponExt->AttackNoThreatBuildings.Get(
 		CanAutoTargetTemp::TypeExtData->AutoTarget_NoThreatBuildings.Get(pThis->Owner->IsControlledByHuman()
