@@ -270,7 +270,9 @@ public:
 		Valueable<bool> InfantryAutoDeploy;
 
 		Valueable<int> AdjacentWallDamage;
-		
+
+		Valueable<bool> IgnoreCenterMinorRadarEvent;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -480,6 +482,8 @@ public:
 			, Parasite_GrappleAnim {}
 			, InfantryAutoDeploy { false }
 			, AdjacentWallDamage { 200 }
+
+			, IgnoreCenterMinorRadarEvent { false }
 		{ }
 
 		virtual ~ExtData() = default;

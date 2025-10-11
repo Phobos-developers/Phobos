@@ -550,6 +550,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that units' `LaserTrails` will always lags behind by one frame
   - Fix an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos
   - Allow the aircraft to enter area guard mission and not crash immediately without any airport
+  - Ignore center to minor radar event position
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

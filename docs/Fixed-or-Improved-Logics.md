@@ -2376,3 +2376,14 @@ DropPod.Weapon.HitLandOnly=   ; boolean, default to no
 ```{note}
 `[General] -> DropPodTrailer` is [Ares feature](https://ares-developers.github.io/Ares-docs/new/droppod.html).
 ```
+
+## Radar event
+
+In vanilla game, any type of radar event will establish a new event position which can be centered when the hotkey is pressed.
+Now, by setting `IgnoreCenterMinorRadarEvent` to true, it is possible to skip setting some active and minor event positions (unit produced, unit repaired, building infiltrated, building captured, bridge repaired and garrison abandoned), while passive events are not affected (base attacked, ally base attacked, harvester attacked, superweapon detected, superweapon activated, unit lost, enemy sensed .etc).
+
+In `rulesmd.ini`:
+```ini
+[General]
+IgnoreCenterMinorRadarEvent=false  ; boolean
+```
