@@ -1460,7 +1460,7 @@ DEFINE_HOOK(0x6F7E1E, TechnoClass_CanAutoTargetObject_AU, 0x6)
 
 #pragma endregion
 
-#pragma region AttackFriendliesExtension
+#pragma region AutoTargetExtension
 
 DEFINE_JUMP(LJMP, 0x700387, 0x7003BD)
 
