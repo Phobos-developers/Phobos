@@ -11,6 +11,7 @@
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/WeaponType/Body.h>
 #include <New/Type/InsigniaTypeClass.h>
 
 #include <Utilities/GeneralUtils.h>
@@ -257,6 +258,50 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 	}
 
 	return 0;
+}
+
+void TechnoTypeExt::ExtData::UpdateAdditionalAttributes()
+{
+	const auto pThis = this->OwnerObject();
+	this->AttackFriendlies = pThis->AttackFriendlies;
+
+	if (!AttackFriendlies)
+	{
+		int Count = 2;
+
+		if (this->MultiWeapon
+			&& (!pThis->IsGattling && (!pThis->HasMultipleTurrets() || !pThis->Gunner)))
+		{
+			Count = pThis->WeaponCount;
+		}
+
+		for (int index = 0; index < Count; index++)
+		{
+			const auto pWeapon = pThis->GetWeapon(index)->WeaponType;
+			auto pEliteWeapon = pThis->GetEliteWeapon(index)->WeaponType;
+
+			if (!pEliteWeapon)
+				pEliteWeapon = pWeapon;
+
+			if (pWeapon)
+			{
+				if (WeaponTypeExt::ExtMap.Find(pWeapon)->AttackFriendlies.Get(false))
+				{
+					this->AttackFriendlies = true;
+					return;
+				}
+			}
+
+			if (pEliteWeapon)
+			{
+				if (WeaponTypeExt::ExtMap.Find(pWeapon)->AttackFriendlies.Get(false))
+				{
+					this->AttackFriendlies = true;
+					return;
+				}
+			}
+		}
+	}
 }
 
 // Ares 0.A source

@@ -431,6 +431,8 @@ public:
 
 		Nullable<bool> TurretResponse;
 
+		bool AttackFriendlies;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, HealthBar_HidePips { false }
@@ -812,6 +814,8 @@ public:
 			, InfantryAutoDeploy {}
 
 			, TurretResponse {}
+
+			, AttackFriendlies { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -831,6 +835,8 @@ public:
 
 		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget);
 		int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget);
+
+		void UpdateAdditionalAttributes();
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;
