@@ -1,4 +1,4 @@
-﻿#include <AircraftClass.h>
+#include <AircraftClass.h>
 #include <AircraftTrackerClass.h>
 #include <AnimClass.h>
 #include <BuildingClass.h>
@@ -2696,6 +2696,21 @@ DEFINE_HOOK(0x5218C2, InfantryClass_UnmarkAllOccupationBits_ResetOwnerIdx, 0x6)
 	// Vanilla check only the flag to decide if the InfantryOwnerIndex should be reset. 
 	// But the tree take one of the flag bit. So if a infantry walk through a cell with a tree, the InfantryOwnerIndex won't be reset.
 	return (newFlag & 0x1C) == 0 || pExt->InfantryCount == 0 ? Reset : NoReset;
+}
+
+#pragma endregion
+
+#pragma region CanAutoTargetFix
+
+DEFINE_JUMP(LJMP, 0x6F7D88, 0x6F7DA9)	// They should be placed at the front.
+
+DEFINE_HOOK(0x6F7CB7, TechnoClass_CanAutoTargetObject_IsAlive, 0x7)
+{
+	enum { ReturnFalse = 0x6F894F };
+
+	GET(TechnoClass*, pTarget, ESI);
+
+	return (!pTarget || !pTarget->IsAlive || pTarget->Health <= 0 || pTarget->InLimbo) ? ReturnFalse : 0;
 }
 
 #pragma endregion
