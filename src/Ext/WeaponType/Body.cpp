@@ -153,6 +153,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DelayedFire_OnlyOnInitialBurst.Read(exINI, pSection, "DelayedFire.OnlyOnInitialBurst");
 	this->DelayedFire_AnimOffset.Read(exINI, pSection, "DelayedFire.AnimOffset");
 	this->DelayedFire_AnimOnTurret.Read(exINI, pSection, "DelayedFire.AnimOnTurret");
+	this->AttackNoThreatBuildings.Read(exINI, pSection, "AttackNoThreatBuildings");
 
 	// handle SkipWeaponPicking
 	if (this->CanTarget != AffectedTarget::All || this->CanTargetHouses != AffectedHouse::All
@@ -237,6 +238,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DelayedFire_OnlyOnInitialBurst)
 		.Process(this->DelayedFire_AnimOffset)
 		.Process(this->DelayedFire_AnimOnTurret)
+		.Process(this->AttackNoThreatBuildings)
 		;
 };
 

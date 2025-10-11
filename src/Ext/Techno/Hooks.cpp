@@ -1459,3 +1459,36 @@ DEFINE_HOOK(0x6F7E1E, TechnoClass_CanAutoTargetObject_AU, 0x6)
 }
 
 #pragma endregion
+
+#pragma region AutoTargetExtension
+
+namespace CanAutoTargetTemp
+{
+	TechnoTypeExt::ExtData* TypeExtData;
+	WeaponTypeExt::ExtData* WeaponExt;
+}
+
+DEFINE_HOOK(0x6F7E30, TechnoClass_CanAutoTarget_SetContent, 0x6)
+{
+	GET(TechnoClass*, pThis, EDI);
+	GET(WeaponTypeClass*, pWeapon, EBP);
+
+	CanAutoTargetTemp::TypeExtData = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	CanAutoTargetTemp::WeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F85AB, TechnoClass_CanAutoTarget_AttackFriendlies_Building, 0x6)
+{
+	GET(TechnoClass*, pThis, EDI);
+	enum { CanAttack = 0x6F8604, Continue = 0x6F85BA };
+
+	const bool canAttack = CanAutoTargetTemp::WeaponExt->AttackNoThreatBuildings.Get(
+		CanAutoTargetTemp::TypeExtData->AutoTarget_NoThreatBuildings.Get(pThis->Owner->IsControlledByHuman()
+			? RulesExt::Global()->AutoTarget_NoThreatBuildings : RulesExt::Global()->AutoTargetAI_NoThreatBuildings));
+
+	return canAttack ? CanAttack : Continue;
+}
+
+#pragma endregion
