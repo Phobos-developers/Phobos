@@ -533,7 +533,7 @@ DEFINE_HOOK(0x454174, BuildingClass_Load_LightSource, 0xA)
 {
 	GET(BuildingClass*, pThis, EDI);
 
-	SwizzleManagerClass::Instance.Swizzle((void**)&pThis->LightSource);
+	SWIZZLE(pThis->LightSource);
 
 	return 0x45417E;
 }

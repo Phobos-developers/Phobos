@@ -81,6 +81,7 @@ public:
 		CDTimerClass FiringAnimationTimer;
 
 		bool IsSelected;
+		bool ResetLocomotor;
 
 		// Replaces use of TechnoClass->Animation StageClass timer for IsSimpleDeployer to simplify
 		// the deploy animation timer calcs and eliminate possibility of outside interference.
@@ -152,6 +153,7 @@ public:
 			, CurrentDelayedFireAnim { nullptr }
 			, AttachedEffectInvokerCount { 0 }
 			, IsSelected { false }
+			, ResetLocomotor { false }
 			, TintColorOwner { 0 }
 			, TintColorAllies { 0 }
 			, TintColorEnemies { 0 }

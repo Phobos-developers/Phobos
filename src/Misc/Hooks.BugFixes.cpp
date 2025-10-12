@@ -1,4 +1,4 @@
-﻿#include <AircraftClass.h>
+#include <AircraftClass.h>
 #include <AircraftTrackerClass.h>
 #include <AnimClass.h>
 #include <BuildingClass.h>
@@ -2700,6 +2700,18 @@ DEFINE_HOOK(0x5218C2, InfantryClass_UnmarkAllOccupationBits_ResetOwnerIdx, 0x6)
 
 #pragma endregion
 
+// Vanilla won't swizzle owner house of Particle System when loading, which was fine before
+// But now it might trigger a crash since DamageAllies/Enemies/OwnerMultiplier will check its house
+// Fix it at here for now. If we extend ParticleSystemClass in the future this should be moved to there
+DEFINE_HOOK(0x62FFBB, ParticleSystemClass_Load_OwnerHouse, 0x8)
+{
+	GET(ParticleSystemClass*, pThis, EDI);
+
+	SWIZZLE(pThis->OwnerHouse);
+
+	return 0;
+}
+
 #pragma region LATimeFix
 
 // Skip the LATime set code in wrong place.
@@ -2709,18 +2721,18 @@ DEFINE_JUMP(LJMP, 0x44227E, 0x4422C1);
 DEFINE_HOOK(0x44242A, BuildingClass_ReceiveDamage_SetLATime, 0x8)
 {
 	GET(BuildingClass* const, pThis, ESI);
-	GET(DamageState, state, EAX);
+	GET(const DamageState, state, EAX);
 	GET(TechnoClass*, pAttacker, EBP);
 	GET_STACK(HouseClass*, pAttackerHouse, STACK_OFFSET(0x9C, 0x1C));
 
-	auto pFromHouse = pAttacker ? pAttacker->GetOwningHouse() : pAttackerHouse;
+	auto const pFromHouse = pAttacker ? pAttacker->GetOwningHouse() : pAttackerHouse;
 
 	if (pFromHouse
-		&& !pThis->IsStrange()
 		&& state != DamageState::Unaffected
+		&& !pThis->IsStrange()
 		&& !pThis->Owner->IsAlliedWith(pFromHouse))
 	{
-		auto pOwner = pThis->Owner;
+		auto const pOwner = pThis->Owner;
 		pOwner->LATime = Unsorted::CurrentFrame;
 		pOwner->LAEnemy = pFromHouse->ArrayIndex;
 
