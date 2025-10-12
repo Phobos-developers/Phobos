@@ -2170,6 +2170,7 @@ msgid ""
 "Fixed the bug that techno unit will draw with ironcurtain and airstrike "
 "color and intensity who disguised as terrain or overlay (by NetsuNegi)"
 msgstr ""
+"修复了单位在伪装成地形对象或覆盖物时铁幕与空袭染色强度绘制错误的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:481
 msgid ""
