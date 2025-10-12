@@ -2178,6 +2178,7 @@ msgid ""
 "receiving damage from friendly units or damage not greater than 0 (by "
 "TaranDahl)"
 msgstr ""
+"修复了 AI 在建筑受到的伤害即便来自友军单位或不大于 0 点也依然进入防御状态的问题（by TaranDahl）"
 
 #: ../../Whats-New.md:482
 msgid ""

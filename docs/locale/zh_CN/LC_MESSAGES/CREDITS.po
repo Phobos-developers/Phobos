@@ -2605,6 +2605,7 @@ msgid ""
 "Fix an issue that the AI would enter a combat state when its building "
 "receiving damage from friendly units or damage not greater than 0"
 msgstr ""
+"修复了 AI 在建筑受到的伤害即便来自友军单位或不大于 0 点也依然进入防御状态的问题"
 
 #: ../../../CREDITS.md:629
 msgid ""
