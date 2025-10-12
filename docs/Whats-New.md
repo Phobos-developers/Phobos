@@ -452,6 +452,7 @@ New:
 - [Unlimbo Detonate warhead](New-or-Enhanced-Logics.md#unlimbo-detonate-warhead) (by FlyStar)
 - Attack and damage technos underground (by TaranDahl)
 - Fast access structure (by FlyStar)
+- Attack non-threatening structures extensions (by FlyStar)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

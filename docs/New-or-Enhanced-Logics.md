@@ -1312,6 +1312,21 @@ In `rulesmd.ini`:
 AttackMove.IgnoreWeaponCheck=false    ; boolean
 ```
 
+### Attack non-threatening structures
+
+- You can now freely configure whether units can automatically target non-threatening structures.
+  - `AutoTarget.NoThreatBuildings` affects player-controlled units, `AutoTargetAI.NoThreatBuildings` affects other units..
+
+In `rulesmd.ini`:
+```ini
+[General]
+AutoTarget.NoThreatBuildings=false      ; boolean
+AutoTargetAI.NoThreatBuildings=true     ; boolean
+
+[SOMETECHNO]                            ; TechnoType
+AttackNoThreatBuildings=                ; boolean, default to [General] -> AutoTarget.NoThreatBuildings/AutoTargetAI.NoThreatBuildings.
+```
+
 ### Aircraft spawner customizations
 
 ![image](_static/images/spawnrange-01.gif)
@@ -2559,6 +2574,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]         ; WeaponType
 AreaFire.Target=base ; AreaFire Target Enumeration (base|self|random)
+```
+
+### Attack non-threatening structures
+
+- `AttackNoThreatBuildings` permits shooters to attack non-threatening structures. This setting overrides other configurations.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                ; WeaponType
+AttackNoThreatBuildings=    ; boolean
 ```
 
 ### Burst delay customizations
