@@ -733,6 +733,7 @@ DEFINE_HOOK(0x679CAF, RulesData_LoadAfterTypeData, 0x5)
 
 	RulesExt::LoadAfterTypeData(pItem, pINI);
 
+	return 0;
 }
 
 DEFINE_HOOK(0x668F6A, RulesData_InitializeAfterAllLoaded, 0x5)
