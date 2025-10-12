@@ -1,4 +1,4 @@
-﻿#include <AircraftClass.h>
+#include <AircraftClass.h>
 #include <AircraftTrackerClass.h>
 #include <AnimClass.h>
 #include <BuildingClass.h>
@@ -2699,3 +2699,15 @@ DEFINE_HOOK(0x5218C2, InfantryClass_UnmarkAllOccupationBits_ResetOwnerIdx, 0x6)
 }
 
 #pragma endregion
+
+// Vanilla won't swizzle owner house of Particle System when loading, which was fine before
+// But now it might trigger a crash since DamageAllies/Enemies/OwnerMultiplier will check its house
+// Fix it at here for now. If we extend ParticleSystemClass in the future this should be moved to there
+DEFINE_HOOK(0x62FFBB, ParticleSystemClass_Load_OwnerHouse, 0x8)
+{
+	GET(ParticleSystemClass*, pThis, EDI);
+
+	SWIZZLE(pThis->OwnerHouse);
+
+	return 0;
+}
