@@ -265,6 +265,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos.
 - Fixed an issue that infantry walking through a cell containing a tree would cause it to be impassable to other houses.
 - Fixed the bug that techno unit will draw with ironcurtain and airstrike color and intensity who disguised as terrain or overlay.
+- Fixed an issue that the AI would enter a combat state when its building receiving damage from friendly units or damage not greater than 0.
 
 ## Fixes / interactions with other extensions
 

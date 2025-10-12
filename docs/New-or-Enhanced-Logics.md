@@ -2264,24 +2264,31 @@ SplashList.PickRandom=false  ; boolean
 
 - Warheads are now able to define the extra damage multiplier for owner house, ally houses and enemy houses.
   - `DamageOwnerMultiplier.NotAffectsEnemies` and `DamageAlliesMultiplier.NotAffectsEnemies` is used as the default value if `AffectsEnemies=false` is set on the warhead.
+  - `DamageOwnerMultiplier.Berzerk` , `DamageAlliesMultiplier.Berzerk` and `DamageEnemiesMultiplier.Berzerk` is used when the techno is in berzerk.
 - An extra damage multiplier based on the firer or target's health percentage will be added to the total multiplier. To be elaborate: the damage multiplier will firstly increased by the firer's health percentage multiplies `DamageSourceHealthMultiplier`, then increased by the target's health percentage multiplies `DamageTargetHealthMultiplier`.
 - These multipliers will not affect damage with ignore defenses like `Suicide`.etc .
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-DamageOwnerMultiplier=1.0                       ; floating point value
-DamageAlliesMultiplier=1.0                      ; floating point value
-DamageEnemiesMultiplier=1.0                     ; floating point value
-DamageOwnerMultiplier.NotAffectsEnemies=        ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
-DamageAlliesMultiplier.NotAffectsEnemies=       ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
+DamageOwnerMultiplier=1.0                                  ; floating point value
+DamageAlliesMultiplier=1.0                                 ; floating point value
+DamageEnemiesMultiplier=1.0                                ; floating point value
+DamageOwnerMultiplier.NotAffectsEnemies=                   ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
+DamageAlliesMultiplier.NotAffectsEnemies=                  ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
+DamageOwnerMultiplier.Berzerk=                             ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
+DamageAlliesMultiplier.Berzerk=                            ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
+DamageEnemiesMultiplier.Berzerk=                           ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
 
-[SOMEWARHEAD]                                   ; WarheadType
-DamageOwnerMultiplier=                          ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier or [CombatDamage] -> DamageOwnerMultiplier.NotAffectsEnemies, depending on AffectsEnemies
-DamageAlliesMultiplier=                         ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier or [CombatDamage] -> DamageAlliesMultiplier.NotAffectsEnemies, depending on AffectsEnemies
-DamageEnemiesMultiplier=                        ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
-DamageSourceHealthMultiplier=0.0                ; floating point value
-DamageTargetHealthMultiplier=0.0                ; floating point value
+[SOMEWARHEAD]                                              ; WarheadType
+DamageOwnerMultiplier=                                     ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier or [CombatDamage] -> DamageOwnerMultiplier.NotAffectsEnemies, depending on AffectsEnemies
+DamageAlliesMultiplier=                                    ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier or [CombatDamage] -> DamageAlliesMultiplier.NotAffectsEnemies, depending on AffectsEnemies
+DamageEnemiesMultiplier=                                   ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
+DamageOwnerMultiplier.Berzerk=                             ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier.Berzerk
+DamageAlliesMultiplier.Berzerk=                            ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier.Berzerk
+DamageEnemiesMultiplier.Berzerk=                           ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier.Berzerk
+DamageSourceHealthMultiplier=0.0                           ; floating point value
+DamageTargetHealthMultiplier=0.0                           ; floating point value
 ```
 
 ```{note}
