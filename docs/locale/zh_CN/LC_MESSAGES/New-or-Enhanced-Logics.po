@@ -6280,16 +6280,14 @@ msgstr ""
 "`Force(AA)Weapon.InRange.Overrides` 为正值，那么在满足条件时使用默认的武器选取规则。"
 
 #: ../../New-or-Enhanced-Logics.md:1629
-#, fuzzy
 msgid "Fast access vehicle/structure"
-msgstr "快速上车"
+msgstr "快速进入载具／建筑"
 
 #: ../../New-or-Enhanced-Logics.md:1631
-#, fuzzy
 msgid ""
 "Now you can let infantry or vehicle passengers quickly enter or leave the"
 " transport vehicles/structures without queuing."
-msgstr "现在你可以让步兵或载具类载员无需排队地快速进入或离开运输载具。"
+msgstr "现在你可以让步兵或载具类载员无需排队地快速进入或离开运输载具／建筑。"
 
 #: ../../New-or-Enhanced-Logics.md:1634
 msgid ""
@@ -6301,9 +6299,9 @@ msgid ""
 "\n"
 "[SOMEVEHICLE/SOMEBUILDING]      ; VehicleType/BuildingType, transport\n"
 "NoQueueUpToEnter=               ; boolean, default to [General] -> "
-"NoQueueUpToEnter/NoQueueUpToEnter.Buildings\n"
+"NoQueueUpToEnter.Buildings\n"
 "NoQueueUpToUnload=              ; boolean, default to [General] -> "
-"NoQueueUpToUnload/NoQueueUpToUnload.Buildings\n"
+"NoQueueUpToUnload.Buildings\n"
 msgstr ""
 "[General]\n"
 "NoQueueUpToEnter=false          ; boolean\n"
@@ -6313,9 +6311,12 @@ msgstr ""
 "\n"
 "[SOMEVEHICLE/SOMEBUILDING]      ; VehicleType/BuildingType, transport\n"
 "NoQueueUpToEnter=               ; boolean, default to [General] -> "
-"NoQueueUpToEnter/NoQueueUpToEnter.Buildings\n"
+"NoQueueUpToEnter.Buildings\n"
 "NoQueueUpToUnload=              ; boolean, default to [General] -> "
-"NoQueueUpToUnload/NoQueueUpToUnload.Buildings\n"
+"NoQueueUpToUnload.Buildings\n"
+
+msgid "Note that this logic is used for [Passenger](https://modenc.renegadeprojects.com/Passengers) logic, which is different from [Occupier](https://modenc.renegadeprojects.com/Occupier)."
+msgstr "注意该逻辑用于 [乘客](https://modenc.renegadeprojects.com/Passengers) 逻辑，这与 [驻军](https://modenc.renegadeprojects.com/Occupier) 是两个不同的东西。"
 
 #: ../../New-or-Enhanced-Logics.md:1646
 msgid "Initial spawns number"

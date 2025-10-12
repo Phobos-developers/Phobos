@@ -2005,7 +2005,7 @@ msgstr "<a href=\"New-or-Enhanced-Logics.html#attack-technos-underground\">攻�
 
 #: ../../Whats-New.md:454
 msgid "Fast access structure (by FlyStar)"
-msgstr ""
+msgstr "快速进楼（by FlyStar）"
 
 #: ../../Whats-New.md:456 ../../Whats-New.md:680 ../../Whats-New.md:1039
 #: ../../Whats-New.md:1148 ../../Whats-New.md:1173 ../../Whats-New.md:1212

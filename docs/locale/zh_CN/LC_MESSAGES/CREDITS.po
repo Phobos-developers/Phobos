@@ -1578,9 +1578,8 @@ msgid "Unlimbo Detonate warhead"
 msgstr "去虚拟化弹头"
 
 #: ../../../CREDITS.md:397
-#, fuzzy
 msgid "Fast access structure"
-msgstr "快速上车"
+msgstr "快速进楼"
 
 #: ../../../CREDITS.md:398
 msgid "**NetsuNegi**:"

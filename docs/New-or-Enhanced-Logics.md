@@ -1639,8 +1639,12 @@ NoQueueUpToEnter.Buildings=     ; boolean, default to NoQueueUpToEnter
 NoQueueUpToUnload.Buildings=    ; boolean, default to NoQueueUpToUnload
 
 [SOMEVEHICLE/SOMEBUILDING]      ; VehicleType/BuildingType, transport
-NoQueueUpToEnter=               ; boolean, default to [General] -> NoQueueUpToEnter/NoQueueUpToEnter.Buildings
-NoQueueUpToUnload=              ; boolean, default to [General] -> NoQueueUpToUnload/NoQueueUpToUnload.Buildings
+NoQueueUpToEnter=               ; boolean, default to [General] -> NoQueueUpToEnter.Buildings
+NoQueueUpToUnload=              ; boolean, default to [General] -> NoQueueUpToUnload.Buildings
+```
+
+```{note}
+Note that this logic is used for [Passenger](https://modenc.renegadeprojects.com/Passengers) logic, which is different from [Occupier](https://modenc.renegadeprojects.com/Occupier).
 ```
 
 ### Initial spawns number
