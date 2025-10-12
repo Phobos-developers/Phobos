@@ -57,6 +57,8 @@ void RulesExt::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
 			// Spawner range
 			if (pTechnoTypeExt->Spawner_LimitRange)
 				pTechnoTypeExt->CalculateSpawnerRange();
+
+			pTechnoTypeExt->UpdateAdditionalAttributes();
 		}
 	}
 
@@ -731,12 +733,6 @@ DEFINE_HOOK(0x679CAF, RulesData_LoadAfterTypeData, 0x5)
 
 	RulesExt::LoadAfterTypeData(pItem, pINI);
 
-	for (const auto pTechnoType : TechnoTypeClass::Array)
-	{
-		TechnoTypeExt::ExtMap.Find(pTechnoType)->UpdateAdditionalAttributes();
-	}
-
-	return 0;
 }
 
 DEFINE_HOOK(0x668F6A, RulesData_InitializeAfterAllLoaded, 0x5)
