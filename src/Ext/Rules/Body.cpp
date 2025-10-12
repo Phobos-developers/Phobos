@@ -733,7 +733,7 @@ DEFINE_HOOK(0x679CAF, RulesData_LoadAfterTypeData, 0x5)
 
 	for (const auto pTechnoType : TechnoTypeClass::Array)
 	{
-		TechnoTypeExt::ExtMap.Find(pTechnoType)->ParseCombatDamageAndThreatType(pINI);
+		TechnoTypeExt::ExtMap.Find(pTechnoType)->UpdateAdditionalAttributes();
 	}
 
 	return 0;
