@@ -1315,7 +1315,7 @@ AttackMove.IgnoreWeaponCheck=false    ; boolean
 ### Attack non-threatening structures
 
 - You can now freely configure whether units can automatically target non-threatening structures.
-  - `AutoTarget.NoThreatBuildings` affects player-controlled units, `AutoTargetAI.NoThreatBuildings` affects other units..
+  - `AutoTarget.NoThreatBuildings` affects player-controlled units, `AutoTargetAI.NoThreatBuildings` affects other units.
 
 In `rulesmd.ini`:
 ```ini
