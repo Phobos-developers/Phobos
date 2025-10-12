@@ -692,15 +692,12 @@ msgstr "Phobos 是一个非官方的开源社区合作项目，旨在扩展《�
 #: ../../../README.md:152
 msgid ""
 "As a modification, the project complies with [EA C&C modding "
-"guidelines](https://www.ea.com/games/command-and-conquer/command-and-"
-"conquer-remastered/modding-faq); should there be conflict between the "
+"guidelines](https://www.ea.com/games/command-and-conquer/modding-faq); should there be conflict between the "
 "project's license and modding guidelines - the rules imposed by "
 "guidelines shall take precedence (for example, the project should not be "
 "commercial or used to make money)."
 msgstr ""
-"作为一项修改，该项目符合 [EA C&C 修改指南](https://www.ea.com/games/command-and-conquer"
-"/command-and-conquer-remastered/modding-"
-"faq)；如果项目许可与修改指南之间存在冲突，则以指南中的规则为准（例如，该项目不应用于商业用途或用于盈利）。"
+"作为一项修改，该项目符合 [EA C&C 修改指南](https://www.ea.com/games/command-and-conquer/modding-faq)；如果项目许可与修改指南之间存在冲突，则以指南中的规则为准（例如，该项目不应用于商业用途或用于盈利）。"
 
 #: ../../../README.md:154
 msgid ""

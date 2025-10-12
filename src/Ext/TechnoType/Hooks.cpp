@@ -1,6 +1,7 @@
 #include "Body.h"
 #include <Ext/House/Body.h>
 #include <Ext/AnimType/Body.h>
+#include <Ext/WarheadType/Body.h>
 
 DEFINE_HOOK(0x73D223, UnitClass_DrawIt_OreGath, 0x6)
 {
