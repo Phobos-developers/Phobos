@@ -139,7 +139,7 @@ bool TechnoTypeExt::ExtData::IsSecondary(int nWeaponIndex)
 
 int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget)
 {
-	if (!pTarget || !this->MultiWeapon.Get())
+	if (!pTarget || !this->MultiWeapon)
 		return -1;
 
 	const auto pType = this->OwnerObject();
@@ -147,18 +147,18 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 	if (pType->IsGattling || (pType->HasMultipleTurrets() && pType->Gunner))
 		return -1;
 
-	const int weaponCount = Math::min(pType->WeaponCount, this->MultiWeapon_SelectCount.Get());
+	const int weaponCount = Math::min(pType->WeaponCount, this->MultiWeapon_SelectCount);
+	const bool noSecondary = this->NoSecondaryWeaponFallback;
 
 	if (weaponCount < 2)
 		return 0;
-	else if (weaponCount == 2)
+	else if (weaponCount == 2 && !noSecondary)
 		return -1;
 
 	std::vector<bool> secondaryCanTargets {};
 	secondaryCanTargets.resize(weaponCount, false);
 
 	const bool isElite = pThis->Veterancy.IsElite();
-	const bool noSecondary = this->NoSecondaryWeaponFallback.Get();
 
 	if (const auto pTargetTechno = abstract_cast<TechnoClass*, true>(pTarget))
 	{
