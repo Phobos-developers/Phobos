@@ -587,6 +587,7 @@ New:
 - Airstrike & spy plane fixed spawn distance & height (by Starkku)
 - Allow enabling application of `Verses` and `PercentAtMax` for negative damage (by Starkku)
 - In addition to `PlacementGrid.Translucency`, allow to set the transparency of the grid when `PlacementPreview` is enabled, using the `PlacementGrid.TranslucencyWithPreview` tag (by Belonit)
+- `RandomTarget` for assigning a new target in each projectile (by FS-21)
 - Show briefing screen on singleplayer mission start (by Starkku)
 - Allow setting mission par times and related messages in `missionmd.ini` (by Starkku)
 - Allow setting default singleplayer map loading screen and briefing offsets (by Starkku)

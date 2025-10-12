@@ -6,9 +6,11 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 #include <Utilities/Macro.h>
+#include <Utilities/EnumFunctions.h>
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Entity/AttachEffectClass.h>
+#include <Ext/Event/Body.h>
 
 class BulletClass;
 
@@ -60,6 +62,10 @@ public:
 		DWORD LastTargetID;
 		int AccumulatedGattlingValue;
 		bool ShouldUpdateGattlingValue;
+		int OriginalTargetWeaponIndex;
+		AbstractClass* OriginalTarget;
+		bool ResetRandomTarget;
+		TechnoClass* CurrentRandomTarget;
 		int AttachedEffectInvokerCount;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
@@ -145,6 +151,10 @@ public:
 			, LastSensorsMapCoords { CellStruct::Empty }
 			, TiberiumEater_Timer {}
 			, AirstrikeTargetingMe { nullptr }
+			, OriginalTarget { nullptr }
+			, ResetRandomTarget { false }
+			, CurrentRandomTarget { nullptr }
+			, OriginalTargetWeaponIndex { -1 }
 			, FiringAnimationTimer {}
 			, SimpleDeployerAnimationTimer {}
 			, DelayedFireSequencePaused { false }
@@ -198,11 +208,14 @@ public:
 		void InitializeDisplayInfo();
 		void ApplyMindControlRangeLimit();
 		int ApplyForceWeaponInRange(AbstractClass* pTarget);
+		void UpdateRandomTargets();
 		void ResetDelayedFireTimer();
 		void UpdateTintValues();
 
 		virtual ~ExtData() override;
+
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
+
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
@@ -275,6 +288,10 @@ public:
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
 	static void DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds, bool drawBefore = false);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
+	static void NewRandomTarget(TechnoClass* pThis = nullptr);
+	static TechnoClass* FindRandomTarget(TechnoClass* pThis = nullptr);
+	static bool IsValidTechno(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed = true);
+	static bool IsValidTechno(AbstractClass* pObject, bool checkIfInTransportOrAbsorbed = true);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue, int infoIndex);
 	static void GetDigitalDisplayFakeHealth(TechnoClass* pThis, int& value, int& maxValue);
 	static void CreateDelayedFireAnim(TechnoClass* pThis, AnimTypeClass* pAnimType, int weaponIndex, bool attach, bool center, bool removeOnNoDelay, bool onTurret, CoordStruct firingCoords);
@@ -299,4 +316,7 @@ public:
 	static void ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 	static void ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 	static bool MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType);
+
+	static void SendStopRandomTargetTarNav(TechnoClass* pThis);
+	static void HandleStopRandomTargetTarNav(EventExt* event);
 };

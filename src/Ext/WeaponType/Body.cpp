@@ -65,6 +65,22 @@ int WeaponTypeExt::ExtData::GetBurstDelay(int burstIndex) const
 	return burstDelay;
 }
 
+bool WeaponTypeExt::ExtData::CanOnlyTargetTheseTechnos(TechnoTypeClass* pType) const
+{
+	if (!pType)
+		return false;
+
+	if (this->OnlyTargetTechnos.size() > 0)
+	{
+		if (this->OnlyTargetTechnos.Contains(pType))
+			return true;
+		else
+			return false;
+	}
+
+	return true;
+}
+
 // =============================
 // load / save
 
@@ -153,6 +169,9 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DelayedFire_OnlyOnInitialBurst.Read(exINI, pSection, "DelayedFire.OnlyOnInitialBurst");
 	this->DelayedFire_AnimOffset.Read(exINI, pSection, "DelayedFire.AnimOffset");
 	this->DelayedFire_AnimOnTurret.Read(exINI, pSection, "DelayedFire.AnimOnTurret");
+	this->RandomTarget.Read(exINI, pSection, "RandomTarget");
+	//this->RandomTarget_DistributeBurst.Read(exINI, pSection, "RandomTarget.DistributeBurst");
+	this->RandomTarget_Spawners_MultipleTargets.Read(exINI, pSection, "RandomTarget.Spawners.MultipleTargets");
 
 	// handle SkipWeaponPicking
 	if (this->CanTarget != AffectedTarget::All || this->CanTargetHouses != AffectedHouse::All
@@ -225,6 +244,9 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Beam_Amplitude)
 		.Process(this->Beam_IsHouseColor)
 		.Process(this->LaserThickness)
+		.Process(this->RandomTarget)
+		//.Process(this->RandomTarget_DistributeBurst)
+		.Process(this->RandomTarget_Spawners_MultipleTargets)
 		.Process(this->SkipWeaponPicking)
 		.Process(this->DelayedFire_Duration)
 		.Process(this->DelayedFire_SkipInTransport)

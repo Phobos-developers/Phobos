@@ -338,6 +338,8 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 
 			for (auto pFoot = pFirstUnit; pFoot && !bForceNextAction; pFoot = pFoot->NextTeamMember)
 			{
+				auto const pTechnoType = pFoot->GetTechnoType();
+
 				if (ScriptExt::IsUnitAvailable(pFoot, true))
 				{
 					const auto pTechnoType = pFoot->GetTechnoType();

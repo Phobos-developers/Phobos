@@ -9,6 +9,7 @@
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Script/Body.h>
 
 #include <Utilities/AresFunctions.h>
 
@@ -575,6 +576,28 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
+bool TechnoExt::IsValidTechno(AbstractClass* pObject, bool checkIfInTransportOrAbsorbed)
+{
+	const auto pTechno = abstract_cast<TechnoClass*>(pObject);
+	return pTechno ? IsValidTechno(pTechno, checkIfInTransportOrAbsorbed) : false;
+}
+
+bool TechnoExt::IsValidTechno(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed)
+{
+	if (!pTechno)
+		return false;
+
+	bool isValid = !pTechno->Dirty
+		&& ScriptExt::IsUnitAvailable(pTechno, checkIfInTransportOrAbsorbed)
+		&& pTechno->Owner
+		&& (pTechno->WhatAmI() == AbstractType::Infantry
+			|| pTechno->WhatAmI() == AbstractType::Unit
+			|| pTechno->WhatAmI() == AbstractType::Building
+			|| pTechno->WhatAmI() == AbstractType::Aircraft);
+
+	return isValid;
+}
+
 UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit)
 {
 	if (pUnit->IsGreenHP())
@@ -922,6 +945,10 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastSensorsMapCoords)
 		.Process(this->TiberiumEater_Timer)
 		.Process(this->AirstrikeTargetingMe)
+		.Process(this->OriginalTargetWeaponIndex)
+		.Process(this->OriginalTarget)
+		.Process(this->ResetRandomTarget)
+		.Process(this->CurrentRandomTarget)
 		.Process(this->FiringAnimationTimer)
 		.Process(this->SimpleDeployerAnimationTimer)
 		.Process(this->DelayedFireSequencePaused)
@@ -946,6 +973,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 {
 	AnnounceInvalidPointer(this->AirstrikeTargetingMe, ptr);
+	AnnounceInvalidPointer(OriginalPassengerOwner, ptr);
+	AnnounceInvalidPointer(CurrentRandomTarget, ptr);
+	AnnounceInvalidPointer(OriginalTarget, ptr);
 }
 
 void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
