@@ -171,10 +171,10 @@ DEFINE_HOOK(0x723CA1, TeamMissionClass_FillIn_StringsSupport_and_id_masks, 0xB)
 			break;
 		case PhobosScripts::ChangeToHouseByID:
 			action = 20;
-			index = HouseClass::FindIndexByName(textArgument);
+			index = HouseTypeClass::FindIndexOfName(textArgument);
 
 			if (index < 0)
-				ScriptExt::Log("AI Scripts - TeamMissionClass_FillIn_StringsSupport: Invalid House [%s]\n", textArgument);
+				ScriptExt::Log("AI Scripts - TeamMissionClass_FillIn_StringsSupport: Invalid Country string [%s]\n", textArgument);
 			break;
 		case PhobosScripts::PlaySpeechByID: // Note: PR 1900 needs to be merged into develop
 			action = static_cast<int>(PhobosScripts::PlaySpeech);
