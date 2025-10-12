@@ -2591,7 +2591,7 @@ msgstr "修复了被混乱的 Jumpjet 载具无法正确停止的问题"
 
 #: ../../../CREDITS.md:626
 msgid "Attack and damage technos underground"
-msgstr ""
+msgstr "攻击和杀伤地下单位"
 
 #: ../../../CREDITS.md:627
 msgid ""

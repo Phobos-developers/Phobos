@@ -2995,17 +2995,19 @@ msgstr "抛射体"
 
 #: ../../New-or-Enhanced-Logics.md:750
 msgid "Attack technos underground"
-msgstr ""
+msgstr "攻击地下单位"
 
 #: ../../New-or-Enhanced-Logics.md:752
 msgid "Now, you can enable projectiles to attack technos underground."
-msgstr ""
+msgstr "现在你可以允许抛射体对处于地下的单位发动攻击。"
 
 #: ../../New-or-Enhanced-Logics.md:753
 msgid ""
 "To actually damage the technos, you need [AffectsUnderground](#damage-"
 "technos-underground)."
 msgstr ""
+"若要实际造成杀伤，你还需要设置 [作用于地下单位](#damage-"
+"technos-underground)。"
 
 #: ../../New-or-Enhanced-Logics.md:756
 msgid ""
@@ -3024,6 +3026,7 @@ msgid ""
 "ground. Otherwise, the projectile will be forced to detonate upon hitting"
 " the ground."
 msgstr ""
+"仅原版 `Inviso=yes` 类抛射体或启用了 `Trajectory.(Straight/Bombard).SubjectToGround=false` 的 [Phobos 直线轨迹](New-or-Enhanced-Logics.md#straight-trajectory) 和 [Phobos 轰击轨迹](New-or-Enhanced-Logics.md#bombard-trajectory) 可穿透地表。除此之外的抛射体在接触地面时将会强制引爆。"
 
 #: ../../New-or-Enhanced-Logics.md:765
 msgid "Parabombs"
@@ -8183,36 +8186,41 @@ msgstr "`DamageAlliesMultiplier` 不会像旧有的 `AffectsAllies` 那样作用
 
 #: ../../New-or-Enhanced-Logics.md:2298
 msgid "Damage technos underground"
-msgstr ""
+msgstr "杀伤地下单位"
 
 #: ../../New-or-Enhanced-Logics.md:2300
 msgid "Now you can make the warhead damage technos underground!"
-msgstr ""
+msgstr "现在你可以让弹头对处于地下的单位造成伤害！"
 
 #: ../../New-or-Enhanced-Logics.md:2301
 msgid ""
 "To allow weapons to target underground technos, you need [AU](#attack-"
 "technos-underground)."
 msgstr ""
+"若需允许武器瞄准地下单位，你需要在抛射体上将 [AU](#attack-"
+"technos-underground) 设为 `yes`。"
 
 #: ../../New-or-Enhanced-Logics.md:2302
 msgid ""
 "Notice that if the projectile detonates underground, its animation effect"
 " may look strange."
 msgstr ""
+"注意如果弹头在地下引爆其动画效果可能显示异常。"
 
 #: ../../New-or-Enhanced-Logics.md:2303
 msgid ""
-"You can use `[SOMEWARHEAD] -> PlayAnimUnderground=false` to prevent the "
+"You can use `[WarheadType] -> PlayAnimUnderground=false` to prevent the "
 "warhead animation from playing when the projectile detonates underground."
 msgstr ""
+"你可以使用 `[WarheadType] -> PlayAnimUnderground=false` 来阻止弹头在地下引爆时播放动画。"
 
 #: ../../New-or-Enhanced-Logics.md:2304
 msgid ""
-"You can also use `[SOMEWARHEAD] -> PlayAnimAboveSurface=true` to make the"
+"You can also use `[WarheadType] -> PlayAnimAboveSurface=true` to make the"
 " warhead animation play on the ground directly above when the projectile "
 "detonates underground."
 msgstr ""
+"你也可以使用 `[WarheadType] -> PlayAnimAboveSurface=true` 来使弹头在地下引爆时在其正上方地表处播放弹头动画。"
 
 #: ../../New-or-Enhanced-Logics.md:2307
 msgid ""

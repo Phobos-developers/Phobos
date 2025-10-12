@@ -2300,8 +2300,8 @@ DamageTargetHealthMultiplier=0.0                           ; floating point valu
 - Now you can make the warhead damage technos underground!
   - To allow weapons to target underground technos, you need [AU](#attack-technos-underground).
 - Notice that if the projectile detonates underground, its animation effect may look strange.
-  - You can use `[SOMEWARHEAD] -> PlayAnimUnderground=false` to prevent the warhead animation from playing when the projectile detonates underground.
-  - You can also use `[SOMEWARHEAD] -> PlayAnimAboveSurface=true` to make the warhead animation play on the ground directly above when the projectile detonates underground.
+  - You can use `[WarheadType] -> PlayAnimUnderground=false` to prevent the warhead animation from playing when the projectile detonates underground.
+  - You can also use `[WarheadType] -> PlayAnimAboveSurface=true` to make the warhead animation play on the ground directly above when the projectile detonates underground.
 
 In `rulesmd.ini`:
 ```ini

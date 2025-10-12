@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-13 00:29+0800\n"
+"POT-Creation-Date: 2025-10-13 00:32+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1997,8 +1997,11 @@ msgid ""
 msgstr "[去虚拟化弹头](New-or-Enhanced-Logics.md#unlimbo-detonate-warhead)（by Starkku）"
 
 #: ../../Whats-New.md:453
-msgid "Attack and damage technos underground (by TaranDahl)"
-msgstr ""
+msgid ""
+"[Attack](New-or-Enhanced-Logics.md#attack-technos-underground) and "
+"[damage](New-or-Enhanced-Logics.md#damage-technos-underground) technos "
+"underground (by TaranDahl)"
+msgstr "<a href=\"New-or-Enhanced-Logics.html#attack-technos-underground\">攻击</a> 和 [杀伤](New-or-Enhanced-Logics.md#damage-technos-underground) 地下单位（by TaranDahl）"
 
 #: ../../Whats-New.md:454
 msgid "Fast access structure (by FlyStar)"
@@ -5909,4 +5912,7 @@ msgstr "解除了拓展工具条字符数量小得愚蠢的上限（by Belonit�
 #~ "地图触发结果 `125 将建筑建于...` 现在默认播放建筑建造动画，可通过将第三个参数设为非 "
 #~ "0 值来禁用。参见 [对地图编辑器（Final Alert 2）的更改](#for-"
 #~ "map-editor-final-alert-2) 以了解如何在地图编辑器中启用该参数。"
+
+#~ msgid "Attack and damage technos underground (by TaranDahl)"
+#~ msgstr ""
 
