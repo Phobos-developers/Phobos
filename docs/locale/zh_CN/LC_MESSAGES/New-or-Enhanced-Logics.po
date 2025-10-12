@@ -3026,7 +3026,7 @@ msgid ""
 "ground. Otherwise, the projectile will be forced to detonate upon hitting"
 " the ground."
 msgstr ""
-"仅原版 `Inviso=yes` 类抛射体或启用了 `Trajectory.(Straight/Bombard).SubjectToGround=false` 的 [Phobos 直线轨迹](New-or-Enhanced-Logics.md#straight-trajectory) 和 [Phobos 轰击轨迹](New-or-Enhanced-Logics.md#bombard-trajectory) 可穿透地表。除此之外的抛射体在接触地面时将会强制引爆。"
+"仅原版 `Inviso=yes` 类抛射体或启用了 `Trajectory.(Straight/Bombard).SubjectToGround=false` 的 [Phobos 直线弹道](New-or-Enhanced-Logics.md#straight-trajectory) 和 [Phobos 轰击弹道](New-or-Enhanced-Logics.md#bombard-trajectory) 可穿透地表。除此之外的抛射体在接触地面时将会强制引爆。"
 
 #: ../../New-or-Enhanced-Logics.md:765
 msgid "Parabombs"
@@ -3276,11 +3276,11 @@ msgstr "目前如果拦截武器的开火者提前死亡那么没有 `Inviso=tru
 
 #: ../../New-or-Enhanced-Logics.md:830
 msgid "Projectile trajectories"
-msgstr "抛射体轨迹"
+msgstr "抛射体弹道"
 
 #: ../../New-or-Enhanced-Logics.md:832
 msgid "Projectiles can now have customizable trajectories."
-msgstr "抛射体现在可以有自定义的轨迹。"
+msgstr "抛射体现在可以有自定义的弹道。"
 
 #: ../../New-or-Enhanced-Logics.md:833
 msgid ""
@@ -3330,7 +3330,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:845
 msgid "Straight trajectory"
-msgstr "直线轨迹"
+msgstr "直线弹道"
 
 #: ../../New-or-Enhanced-Logics.md:847
 msgid ""
@@ -3338,15 +3338,15 @@ msgid ""
 "trajectory used to make blasters in a private mod by @brsajo#9745*"
 msgstr ""
 "![Straigh trajectory blasters](_static/images/straight.gif) *@brsajo#9745"
-" 在其个人 mod 中使用直线轨迹制作的爆能枪*"
+" 在其个人 mod 中使用直线弹道制作的爆能枪*"
 
 #: ../../New-or-Enhanced-Logics.md:847
 msgid "Straigh trajectory blasters"
-msgstr "直线轨迹爆能枪"
+msgstr "直线弹道爆能枪"
 
 #: ../../New-or-Enhanced-Logics.md:850
 msgid "Self-explanatory, is a straight-shot trajectory."
-msgstr "不言自明，这是一种直线射击轨迹。"
+msgstr "不言自明，这是一种直线射击弹道。"
 
 #: ../../New-or-Enhanced-Logics.md:851
 msgid ""
@@ -3628,7 +3628,7 @@ msgid ""
 "negative integer."
 msgstr ""
 "`Trajectory.Straight.EdgeAttenuation` "
-"控制抛射体杀伤的边缘衰减比例（包括轨迹添加的所有伤害类型），即实际造成的伤害是将此值乘以当前距离与武器射程的比值。不能设为负整数。"
+"控制抛射体杀伤的边缘衰减比例（包括弹道添加的所有伤害类型），即实际造成的伤害是将此值乘以当前距离与武器射程的比值。不能设为负整数。"
 
 #: ../../New-or-Enhanced-Logics.md:877
 msgid ""
@@ -3638,7 +3638,7 @@ msgid ""
 " damage just caused. Can NOT be set to a negative integer."
 msgstr ""
 "`Trajectory.Straight.CountAttenuation` "
-"控制抛射体杀伤的衰减系数（包括轨迹添加的所有伤害类型），即每次造成伤害后的下一次伤害会翻多少倍。不能设为负整数。"
+"控制抛射体杀伤的衰减系数（包括弹道添加的所有伤害类型），即每次造成伤害后的下一次伤害会翻多少倍。不能设为负整数。"
 
 #: ../../New-or-Enhanced-Logics.md:880
 msgid ""
@@ -3729,7 +3729,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:920
 msgid "Bombard trajectory"
-msgstr "轰击轨迹"
+msgstr "轰击弹道"
 
 #: ../../New-or-Enhanced-Logics.md:922
 msgid ""
@@ -3988,14 +3988,14 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:970
 msgid "Parabola trajectory"
-msgstr "抛物线轨迹"
+msgstr "抛物线弹道"
 
 #: ../../New-or-Enhanced-Logics.md:972
 msgid ""
 "As the name says, this is a completely reset `Arcing` with different "
 "enhanced functions. Without doubt, It supported linkage with "
 "`Trajectory=Disperse`."
-msgstr "顾名思义，这是一种完全重置且拥有不同增强功能的类 `Arcing` 轨迹，它支持与 `Trajectory=Disperse` 的联动。"
+msgstr "顾名思义，这是一种完全重置且拥有不同增强功能的类 `Arcing` 弹道，它支持与 `Trajectory=Disperse` 的联动。"
 
 #: ../../New-or-Enhanced-Logics.md:973
 msgid ""
@@ -4084,7 +4084,7 @@ msgid ""
 "conditions, i.e. the trajectory will be permanently fixed."
 msgstr ""
 "SpeedAndAngle - 固定水平速度和开火角度模式，使用 `Trajectory.Speed` 和 "
-"`Trajectory.Parabola.LaunchAngle` 作为计算条件，即抛射体轨迹恒定。"
+"`Trajectory.Parabola.LaunchAngle` 作为计算条件，即抛射体弹道恒定。"
 
 #: ../../New-or-Enhanced-Logics.md:982
 msgid ""
@@ -4295,7 +4295,7 @@ msgstr "与原有的 `Arcing` 相比，它还可以用于战机和空爆武器�
 
 #: ../../New-or-Enhanced-Logics.md:1024
 msgid "Certainly, `Gravity` can also affect the trajectory."
-msgstr "当然，`Gravity` 仍会影响轨迹。"
+msgstr "当然，`Gravity` 仍会影响弹道。"
 
 #: ../../New-or-Enhanced-Logics.md:1027
 msgid "Projectiles blocked by land or water"

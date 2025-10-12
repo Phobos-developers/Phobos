@@ -924,7 +924,7 @@ msgstr "在运输工具内重装填弹药"
 
 #: ../../../CREDITS.md:240
 msgid "Straight projectile trajectory additions"
-msgstr "直线抛射体轨迹补充"
+msgstr "直线抛射体弹道补充"
 
 #: ../../../CREDITS.md:241
 msgid "Airstrike & spy plane fixed spawn distance & height"
@@ -2014,7 +2014,7 @@ msgstr "EMP 或超时空停止 CD"
 
 #: ../../../CREDITS.md:497
 msgid "Enhanced Straight trajectory"
-msgstr "增强的直线轨迹"
+msgstr "增强的直线弹道"
 
 #: ../../../CREDITS.md:498
 msgid "Enable Building Production Queue"
@@ -2026,11 +2026,11 @@ msgstr "修复侧边栏在生产暂停时未能更新预购单位订单数量的
 
 #: ../../../CREDITS.md:500
 msgid "New Parabola trajectory"
-msgstr "新的抛物线轨迹"
+msgstr "新的抛物线弹道"
 
 #: ../../../CREDITS.md:501 ../../../CREDITS.md:559
 msgid "Enhanced Bombard trajectory"
-msgstr "增强的轰击轨迹"
+msgstr "增强的轰击弹道"
 
 #: ../../../CREDITS.md:502 ../../../CREDITS.md:589
 msgid "No turret unit turn to the target"
@@ -2368,7 +2368,7 @@ msgstr "护盾重生动画与武器"
 
 #: ../../../CREDITS.md:576
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
-msgstr "**NaotoYuuki** - 垂直和流星轨迹雏形"
+msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
 
 #: ../../../CREDITS.md:577
 msgid "**handama** - AI script action to `16005 Jump Back To Previous Script`"
