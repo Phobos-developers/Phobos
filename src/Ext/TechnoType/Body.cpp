@@ -1654,6 +1654,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InfantryAutoDeploy)
 
 		.Process(this->TurretResponse)
+
+		.Process(this->AttackFriendlies)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

@@ -1470,7 +1470,6 @@ DEFINE_HOOK(0x700358, TechnoClass_MouseOverObject_AttackFriendlies, 0x6)
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EBP);
-	GET(ObjectClass*, pObject, EDI);
 	GET_STACK(const bool, IvanBomb, STACK_OFFSET(0x1C, -0xC));
 
 	const auto pType = pThis->GetTechnoType();
