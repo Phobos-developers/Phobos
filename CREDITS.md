@@ -394,6 +394,7 @@ This page lists all the individual contributions to the project by their author.
   - Health bar permanently displayed
   - Unlimbo Detonate warhead
   - Fast access structure
+  - The target of death is excluded from automatic target selection
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
