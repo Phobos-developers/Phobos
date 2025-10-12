@@ -624,6 +624,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the jumpjet vehicles cannot stop correctly after going berserk
   - Attack and damage technos underground
   - Fix an issue that infantry walking through a cell containing a tree would cause it to be impassable to other houses
+  - Fix an issue that the AI would enter a combat state when its building receiving damage from friendly units or damage not greater than 0
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
