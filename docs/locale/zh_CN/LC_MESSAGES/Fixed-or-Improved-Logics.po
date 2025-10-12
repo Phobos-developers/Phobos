@@ -2480,8 +2480,7 @@ msgid ""
 "height. We suggest to use `Straight` Trajectory instead. See [here](New-"
 "or-Enhanced-Logics.md#projectile-trajectories)."
 msgstr ""
-"由于 `Gravity=0` 会导致抛射体向后飞行并且无法击中不在相同高度的目标因此不推荐设置 `Gravity=0` 。我们建议使用 "
-"`Straight` 轨迹替代。见[这里](New-or-Enhanced-Logics.md#projectile-trajectories)。"
+"由于 `Gravity=0` 会导致抛射体向后飞行并且无法击中不在相同高度的目标因此不推荐设置 `Gravity=0` 。我们建议使用 [直线弹道](New-or-Enhanced-Logics.md#projectile-trajectories) 替代。"
 
 #: ../../Fixed-or-Improved-Logics.md:628
 msgid "FlakScatter distance customization"

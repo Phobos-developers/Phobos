@@ -872,7 +872,7 @@ msgstr "在运输工具内重装填弹药"
 
 #: ../../../CREDITS.md:227
 msgid "Straight projectile trajectory additions"
-msgstr "直线抛射体轨迹补充"
+msgstr "直线抛射体弹道补充"
 
 #: ../../../CREDITS.md:228
 msgid "Airstrike & spy plane fixed spawn distance & height"
@@ -1870,7 +1870,7 @@ msgstr "建造限制组增强"
 
 #: ../../../CREDITS.md:458
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
-msgstr "**NaotoYuuki** - 垂直和流星轨迹雏形"
+msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
 
 #: ../../../CREDITS.md:459
 msgid "**handama** - AI script action to `16005 Jump Back To Previous Script`"

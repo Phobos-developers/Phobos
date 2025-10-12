@@ -1950,11 +1950,11 @@ msgstr "目前如果拦截武器的开火者提前死亡那么没有 `Inviso=tru
 
 #: ../../New-or-Enhanced-Logics.md:711
 msgid "Projectile trajectories"
-msgstr "抛射体轨迹"
+msgstr "抛射体弹道"
 
 #: ../../New-or-Enhanced-Logics.md:713
 msgid "Projectiles can now have customizable trajectories."
-msgstr "抛射体现在可以有自定义的轨迹。"
+msgstr "抛射体现在可以有自定义的弹道。"
 
 #: ../../New-or-Enhanced-Logics.md:714
 msgid ""
@@ -1977,7 +1977,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:723
 msgid "Straight trajectory"
-msgstr "直线轨迹"
+msgstr "直线弹道"
 
 #: ../../New-or-Enhanced-Logics.md:725
 msgid ""
@@ -1985,15 +1985,15 @@ msgid ""
 "trajectory used to make blasters in a private mod by @brsajo#9745*"
 msgstr ""
 "![Straigh trajectory blasters](_static/images/straight.gif) *@brsajo#9745"
-" 在私人 mod 中使用直线轨迹制作的爆能枪*"
+" 在其个人 mod 中使用直线弹道制作的爆能枪*"
 
 #: ../../New-or-Enhanced-Logics.md:725
 msgid "Straigh trajectory blasters"
-msgstr "直线轨迹爆能枪"
+msgstr "直线弹道爆能枪"
 
 #: ../../New-or-Enhanced-Logics.md:728
 msgid "Self-explanatory, is a straight-shot trajectory."
-msgstr "不言自明，这是一种直线射击轨迹。"
+msgstr "不言自明，这是一种直线射击弹道。"
 
 #: ../../New-or-Enhanced-Logics.md:729
 msgid ""
@@ -2035,7 +2035,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:743
 msgid "Bombard trajectory"
-msgstr "轰击轨迹"
+msgstr "轰击弹道"
 
 #: ../../New-or-Enhanced-Logics.md:745
 msgid ""

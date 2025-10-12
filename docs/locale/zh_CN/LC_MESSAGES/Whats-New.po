@@ -404,8 +404,7 @@ msgid ""
 "height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-"
 "Logics.md#straight-trajectory)."
 msgstr ""
-"由于 `Gravity=0` 会导致抛射体向后飞行并且无法击中不在同一高度的目标因此它已不再被支持，请使用 `Straight` 轨迹替代。参见 "
-"[此处](New-or-Enhanced-Logics.md#straight-trajectory)。"
+"由于 `Gravity=0` 会导致抛射体向后飞行并且无法击中不在同一高度的目标因此它已不再被支持，请使用 [直线弹道](New-or-Enhanced-Logics.md#straight-trajectory) 替代。"
 
 #: ../../Whats-New.md:61
 msgid ""
@@ -890,7 +889,7 @@ msgstr ""
 msgid ""
 "Customizable straight trajectory detonation & snap distance and pass-"
 "through option (by Starkku)"
-msgstr "自定义直线轨迹引爆和瞬移距离以及穿透选项（by Starkku）"
+msgstr "自定义直线弹道引爆和瞬移距离以及穿透选项（by Starkku）"
 
 #: ../../Whats-New.md:390
 msgid "Airstrike & spy plane fixed spawn distance & height (by Starkku)"
@@ -3183,7 +3182,7 @@ msgstr "单色激光（by Starkku）"
 
 #: ../../Whats-New.md:811
 msgid "Customizable projectile trajectory (by secsome)"
-msgstr "自定义抛射体轨迹（by secsome）"
+msgstr "自定义抛射体弹道（by secsome）"
 
 #: ../../Whats-New.md:812
 msgid "Display damage numbers debug hotkey command (by Starkku)"
