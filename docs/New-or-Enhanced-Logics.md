@@ -747,6 +747,21 @@ OnlyUseLandSequences=false  ; boolean
 
 ## Projectiles
 
+### Attack technos underground
+
+- Now, you can enable projectiles to attack technos underground.
+  - To actually damage the technos, you need [AffectsUnderground](#damage-technos-underground).
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]      ; Projectile
+AU=false              ; boolean
+```
+
+```{note}
+Only vanilla projectiles with `Inviso=yes` set or [Phobos projectiles](#projectile-trajectories) `Straight` with `Trajectory.Straight.SubjectToGround=false` enabled and `Bombard` with `Trajectory.Bombard.SubjectToGround=false` enabled can go beneath the ground. Otherwise, the projectile will be forced to detonate upon hitting the ground.
+```
+
 ### Parabombs
 
 - Restored feature from Red Alert 1 (also partially implemented in Ares but undocumented, if used together Phobos' version takes priority) that allows projectiles to be parachuted down to ground if fired by an aerial unit.
@@ -1611,6 +1626,23 @@ ForceAAWeapon.Aircraft=-1                       ; integer, -1 to disable
 Specifically, if a position has `Force(AA)Weapon.InRange` set to -1 and `Force(AA)Weapon.InRange.Overrides` set to a positive value, it'll use default weapon selection logic once satisfied.
 ```
 
+### Fast access vehicle/structure
+
+- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles/structures without queuing.
+
+In `rulesmd.ini`:
+```ini
+[General]
+NoQueueUpToEnter=false          ; boolean
+NoQueueUpToUnload=false         ; boolean
+NoQueueUpToEnter.Buildings=     ; boolean, default to NoQueueUpToEnter
+NoQueueUpToUnload.Buildings=    ; boolean, default to NoQueueUpToUnload
+
+[SOMEVEHICLE/SOMEBUILDING]      ; VehicleType/BuildingType, transport
+NoQueueUpToEnter=               ; boolean, default to [General] -> NoQueueUpToEnter/NoQueueUpToEnter.Buildings
+NoQueueUpToUnload=              ; boolean, default to [General] -> NoQueueUpToUnload/NoQueueUpToUnload.Buildings
+```
+
 ### Initial spawns number
 - It is now possible to set the initial amount of spawnees for a spawner, instead of always being filled. Won't work if it's larger than `SpawnsNumber`.
 
@@ -2053,21 +2085,6 @@ WaterImage.ConditionRed=              ; VehicleType entry
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
 ```
 
-### Fast access vehicle
-
-- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing.
-
-In `rulesmd.ini`:
-```ini
-[General]
-NoQueueUpToEnter=false    ; boolean
-NoQueueUpToUnload=false   ; boolean
-
-[SOMEVEHICLE]             ; VehicleType, transport
-NoQueueUpToEnter=         ; boolean, default to [General] -> NoQueueUpToEnter
-NoQueueUpToUnload=        ; boolean, default to [General] -> NoQueueUpToUnload
-```
-
 ### Jumpjet Tilts While Moving
 
 ![image](_static/images/jumpjet-tilt.gif)
@@ -2247,28 +2264,51 @@ SplashList.PickRandom=false  ; boolean
 
 - Warheads are now able to define the extra damage multiplier for owner house, ally houses and enemy houses.
   - `DamageOwnerMultiplier.NotAffectsEnemies` and `DamageAlliesMultiplier.NotAffectsEnemies` is used as the default value if `AffectsEnemies=false` is set on the warhead.
+  - `DamageOwnerMultiplier.Berzerk` , `DamageAlliesMultiplier.Berzerk` and `DamageEnemiesMultiplier.Berzerk` is used when the techno is in berzerk.
 - An extra damage multiplier based on the firer or target's health percentage will be added to the total multiplier. To be elaborate: the damage multiplier will firstly increased by the firer's health percentage multiplies `DamageSourceHealthMultiplier`, then increased by the target's health percentage multiplies `DamageTargetHealthMultiplier`.
 - These multipliers will not affect damage with ignore defenses like `Suicide`.etc .
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-DamageOwnerMultiplier=1.0                       ; floating point value
-DamageAlliesMultiplier=1.0                      ; floating point value
-DamageEnemiesMultiplier=1.0                     ; floating point value
-DamageOwnerMultiplier.NotAffectsEnemies=        ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
-DamageAlliesMultiplier.NotAffectsEnemies=       ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
+DamageOwnerMultiplier=1.0                                  ; floating point value
+DamageAlliesMultiplier=1.0                                 ; floating point value
+DamageEnemiesMultiplier=1.0                                ; floating point value
+DamageOwnerMultiplier.NotAffectsEnemies=                   ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
+DamageAlliesMultiplier.NotAffectsEnemies=                  ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
+DamageOwnerMultiplier.Berzerk=                             ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
+DamageAlliesMultiplier.Berzerk=                            ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
+DamageEnemiesMultiplier.Berzerk=                           ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
 
-[SOMEWARHEAD]                                   ; WarheadType
-DamageOwnerMultiplier=                          ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier or [CombatDamage] -> DamageOwnerMultiplier.NotAffectsEnemies, depending on AffectsEnemies
-DamageAlliesMultiplier=                         ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier or [CombatDamage] -> DamageAlliesMultiplier.NotAffectsEnemies, depending on AffectsEnemies
-DamageEnemiesMultiplier=                        ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
-DamageSourceHealthMultiplier=0.0                ; floating point value
-DamageTargetHealthMultiplier=0.0                ; floating point value
+[SOMEWARHEAD]                                              ; WarheadType
+DamageOwnerMultiplier=                                     ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier or [CombatDamage] -> DamageOwnerMultiplier.NotAffectsEnemies, depending on AffectsEnemies
+DamageAlliesMultiplier=                                    ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier or [CombatDamage] -> DamageAlliesMultiplier.NotAffectsEnemies, depending on AffectsEnemies
+DamageEnemiesMultiplier=                                   ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
+DamageOwnerMultiplier.Berzerk=                             ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier.Berzerk
+DamageAlliesMultiplier.Berzerk=                            ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier.Berzerk
+DamageEnemiesMultiplier.Berzerk=                           ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier.Berzerk
+DamageSourceHealthMultiplier=0.0                           ; floating point value
+DamageTargetHealthMultiplier=0.0                           ; floating point value
 ```
 
 ```{note}
 `DamageAlliesMultiplier` won't affect your own units like `AffectsAllies` did.
+```
+
+### Damage technos underground
+
+- Now you can make the warhead damage technos underground!
+  - To allow weapons to target underground technos, you need [AU](#attack-technos-underground).
+- Notice that if the projectile detonates underground, its animation effect may look strange.
+  - You can use `[SOMEWARHEAD] -> PlayAnimUnderground=false` to prevent the warhead animation from playing when the projectile detonates underground.
+  - You can also use `[SOMEWARHEAD] -> PlayAnimAboveSurface=true` to make the warhead animation play on the ground directly above when the projectile detonates underground.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                         ; WarheadType
+AffectsUnderground=false              ; boolean
+PlayAnimUnderground=true              ; boolean
+PlayAnimAboveSurface=false            ; boolean
 ```
 
 ### Detonate Warhead on all objects on map
