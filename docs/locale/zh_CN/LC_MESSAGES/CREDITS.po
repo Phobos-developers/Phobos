@@ -2612,6 +2612,7 @@ msgid ""
 "Fix an issue that the techno with weapon with `AA=yes` and `AG=no` would "
 "not auto targeting units that are falling, such as paratroopers"
 msgstr ""
+"修复了所用武器 `AA=yes` 且 `AG=no` 的单位不会主动攻击坠落中的单位（例如伞兵）的问题"
 
 #: ../../../CREDITS.md:630
 msgid "**solar-III (凤九歌)**"

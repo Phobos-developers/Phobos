@@ -2186,6 +2186,7 @@ msgid ""
 "would not auto targeting units that are falling, such as paratroopers (by"
 " TaranDahl)"
 msgstr ""
+"修复了所用武器 `AA=yes` 且 `AG=no` 的单位不会主动攻击坠落中的单位（例如伞兵）的问题（by TaranDahl）"
 
 #: ../../Whats-New.md:484 ../../Whats-New.md:826 ../../Whats-New.md:911
 #: ../../Whats-New.md:1075 ../../Whats-New.md:1116 ../../Whats-New.md:1128
