@@ -170,7 +170,7 @@ DEFINE_HOOK(0x7431C9, FootClass_SelectAutoTarget_MultiWeapon, 0x7)			// UnitClas
 	}
 
 	R->EDI(GetThreatType(pThis, TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()), result));
-	return R->Origin() == 0x743203 ? UnitReturn : InfantryReturn;
+	return isUnit ? UnitReturn : InfantryReturn;
 }
 
 DEFINE_HOOK(0x445F04, BuildingClass_SelectAutoTarget_MultiWeapon, 0xA)
