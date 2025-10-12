@@ -625,6 +625,7 @@ This page lists all the individual contributions to the project by their author.
   - Attack and damage technos underground
   - Fix an issue that infantry walking through a cell containing a tree would cause it to be impassable to other houses
   - Fix an issue that the AI would enter a combat state when its building receiving damage from friendly units or damage not greater than 0
+  - Fix an issue that the techno with weapon with `AA=yes` and `AG=no` would not auto targeting units that are falling, such as paratroopers
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
