@@ -8074,6 +8074,7 @@ msgid ""
 "`DamageOwnerMultiplier.Berzerk` , `DamageAlliesMultiplier.Berzerk` and "
 "`DamageEnemiesMultiplier.Berzerk` is used when the techno is in berzerk."
 msgstr ""
+"`DamageOwnerMultiplier.Berzerk`、`DamageAlliesMultiplier.Berzerk` 和 `DamageEnemiesMultiplier.Berzerk` 在单位处于狂暴状态时被使用。"
 
 #: ../../New-or-Enhanced-Logics.md:2268
 msgid ""
