@@ -514,7 +514,7 @@ x=19018,ID        ; text
 
 #### `19020` Change House
 
-- Similar to action 20, but uses a string ID from the `[Houses]` list instead of an index.
+- Similar to action 20, but uses a string ID from the `[Countries]` list instead of an index.
 
 In `aimd.ini`:
 ```ini
