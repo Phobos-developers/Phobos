@@ -836,7 +836,7 @@ public:
 		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget);
 		int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget);
 
-		void ParseCombatDamageAndThreatType(CCINIClass* const pINI);
+		void UpdateAdditionalAttributes();
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;

@@ -362,7 +362,7 @@ void TechnoTypeExt::ExtData::ParseVoiceWeaponAttacks(INI_EX& exINI, const char* 
 	}
 }
 
-void TechnoTypeExt::ExtData::ParseCombatDamageAndThreatType(CCINIClass* const pINI)
+void TechnoTypeExt::ExtData::UpdateAdditionalAttributes()
 {
 	int Num = 0;
 	int EliteNum = 0;
