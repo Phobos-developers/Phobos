@@ -1622,6 +1622,7 @@ msgid ""
 "Fixed an issue that infantry walking through a cell containing a tree "
 "would cause it to be impassable to other houses."
 msgstr ""
+"修复了步兵占据包含树木的单元格会导致该单元格对其他所属方不可通行的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:267
 msgid ""
