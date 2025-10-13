@@ -364,22 +364,22 @@ void TechnoTypeExt::ExtData::ParseVoiceWeaponAttacks(INI_EX& exINI, const char* 
 
 void TechnoTypeExt::ExtData::UpdateAdditionalAttributes()
 {
-	int Num = 0;
-	int EliteNum = 0;
+	int num = 0;
+	int eliteNum = 0;
 
 	this->ThreatTypes = { ThreatType::Normal,ThreatType::Normal };
 	this->CombatDamages = { 0,0 };
 
 	const auto pThis = this->OwnerObject();
-	int Count = 2;
+	int count = 2;
 
 	if (this->MultiWeapon
 		&& (!pThis->IsGattling && (!pThis->HasMultipleTurrets() || !pThis->Gunner)))
 	{
-		Count = pThis->WeaponCount;
+		count = pThis->WeaponCount;
 	}
 
-	for (int index = 0; index < Count; index++)
+	for (int index = 0; index < count; index++)
 	{
 		const auto pWeapon = pThis->GetWeapon(index)->WeaponType;
 		auto pEliteWeapon = pThis->GetEliteWeapon(index)->WeaponType;
@@ -391,22 +391,22 @@ void TechnoTypeExt::ExtData::UpdateAdditionalAttributes()
 		{
 			this->ThreatTypes.X |= pWeapon->AllowedThreats();
 			this->CombatDamages.X += (pWeapon->Damage + pWeapon->AmbientDamage);
-			Num++;
+			num++;
 		}
 
 		if (pEliteWeapon)
 		{
 			this->ThreatTypes.Y |= pEliteWeapon->AllowedThreats();
 			this->CombatDamages.Y += (pEliteWeapon->Damage + pEliteWeapon->AmbientDamage);
-			EliteNum++;
+			eliteNum++;
 		}
 	}
 
-	if (Num > 0)
-		this->CombatDamages.X /= Num;
+	if (num > 0)
+		this->CombatDamages.X /= num;
 
-	if (EliteNum > 0)
-		this->CombatDamages.Y /= EliteNum;
+	if (eliteNum > 0)
+		this->CombatDamages.Y /= eliteNum;
 }
 
 void TechnoTypeExt::ExtData::CalculateSpawnerRange()

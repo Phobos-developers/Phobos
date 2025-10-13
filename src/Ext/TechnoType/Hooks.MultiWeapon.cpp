@@ -146,7 +146,7 @@ DEFINE_HOOK(0x7090A0, TechnoClass_VoiceAttack, 0x7)
 
 ThreatType __forceinline GetThreatType(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, ThreatType result)
 {
-	ThreatType flags = pThis->Veterancy.IsElite() ? pTypeExt->ThreatTypes.Y : pTypeExt->ThreatTypes.X;
+	const ThreatType flags = pThis->Veterancy.IsElite() ? pTypeExt->ThreatTypes.Y : pTypeExt->ThreatTypes.X;
 	return result | flags;
 }
 
@@ -156,11 +156,11 @@ DEFINE_HOOK(0x7431C9, FootClass_SelectAutoTarget_MultiWeapon, 0x7)			// UnitClas
 	enum { InfantryReturn = 0x51E31B, UnitReturn = 0x74324F, UnitGunner = 0x7431E4 };
 
 	GET(FootClass*, pThis, ESI);
-	GET(ThreatType, result, EDI);
+	GET(const ThreatType, result, EDI);
 
 	const bool isUnit = R->Origin() == 0x7431C9;
-	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
-	const auto pType = pTypeExt->OwnerObject();
+	const auto pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	if (isUnit
 		&& !pType->IsGattling && pType->TurretCount > 0
@@ -169,7 +169,7 @@ DEFINE_HOOK(0x7431C9, FootClass_SelectAutoTarget_MultiWeapon, 0x7)			// UnitClas
 		return UnitGunner;
 	}
 
-	R->EDI(GetThreatType(pThis, TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()), result));
+	R->EDI(GetThreatType(pThis, pTypeExt, result));
 	return isUnit ? UnitReturn : InfantryReturn;
 }
 
@@ -178,7 +178,7 @@ DEFINE_HOOK(0x445F04, BuildingClass_SelectAutoTarget_MultiWeapon, 0xA)
 	enum { ReturnThreatType = 0x445F58, Continue = 0x445F0E };
 
 	GET(BuildingClass*, pThis, ESI);
-	GET_STACK(ThreatType, result, STACK_OFFSET(0x8, 0x4));
+	GET_STACK(const ThreatType, result, STACK_OFFSET(0x8, 0x4));
 
 	if (pThis->UpgradeLevel > 0 || pThis->CanOccupyFire())
 	{
@@ -206,8 +206,8 @@ DEFINE_HOOK(0x6F398E, TechnoClass_CombatDamage_MultiWeapon, 0x7)
 			return Continue;
 	}
 
-	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
-	const auto pType = pTypeExt->OwnerObject();
+	const auto pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	if (rtti == AbstractType::Unit
 		&& !pType->IsGattling && pType->TurretCount > 0
@@ -227,16 +227,18 @@ DEFINE_HOOK(0x707ED0, TechnoClass_GetGuardRange_MultiWeapon, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 
 	const auto pType = pThis->GetTechnoType();
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	const bool specialWeapon = !pType->IsGattling && (!pType->HasMultipleTurrets() || !pType->Gunner);
 
-	if (pThis->WhatAmI() == AbstractType::Unit
-		&& !pType->IsGattling && pType->TurretCount > 0
-		&& (pType->Gunner || !specialWeapon))
+	if (!pType->IsGattling && pType->TurretCount > 0
+		&& (pType->Gunner || !specialWeapon)
+		&& pThis->WhatAmI() == AbstractType::Unit)
 	{
 		R->EAX(pThis->GetWeaponRange(pThis->CurrentWeaponNumber));
 		return ReturnRange;
 	}
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
 	if (pTypeExt->MultiWeapon && specialWeapon)
 	{
 		const int selectCount = Math::min(pType->WeaponCount, pTypeExt->MultiWeapon_SelectCount);
