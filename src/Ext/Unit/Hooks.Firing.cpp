@@ -7,8 +7,8 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 {
 	enum { SkipFiring = 0x737063 };
 
-	GET(UnitClass*, pThis, ESI);
-	GET(int, weaponIndex, EDI);
+	GET(UnitClass* const, pThis, ESI);
+	GET(const int, weaponIndex, EDI);
 
 	const auto pType = pThis->Type;
 
@@ -18,8 +18,7 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	// SHP vehicles have no secondary action frames, so it does not need SecondaryFire.
-	const auto pTypeExt = pExt->TypeExtData;
-	const int fireUp = pTypeExt->FireUp;
+	const int fireUp = pExt->TypeExtData->FireUp;
 
 	if (fireUp >= 0 && !pType->OpportunityFire && pThis->Locomotor->Is_Really_Moving_Now())
 	{
@@ -36,13 +35,13 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 		pThis->CurrentFiringFrame = frames;
 
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
 	if (fireUp >= 0)
 	{
 		int cumulativeDelay = 0;
 		int projectedDelay = 0;
-		const bool allowBurst = pWeaponExt && pWeaponExt->Burst_FireWithinSequence;
+		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+		const bool allowBurst = pWeaponExt->Burst_FireWithinSequence;
 		const int currentBurstIndex = pThis->CurrentBurstIndex;
 		auto& random = ScenarioClass::Instance->Random;
 
@@ -95,26 +94,26 @@ DEFINE_HOOK(0x736F67, UnitClass_UpdateFiring_BurstNoDelay, 0x6)
 	enum { SkipVanillaFire = 0x737063 };
 
 	GET(UnitClass* const, pThis, ESI);
-	GET(const int, wpIdx, EDI);
+	GET(const int, weaponIndex, EDI);
 	GET(AbstractClass* const, pTarget, EAX);
 
-	if (const auto pWeapon = pThis->GetWeapon(wpIdx)->WeaponType)
+	if (const auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType)
 	{
 		if (pWeapon->Burst > 1)
 		{
-			const auto pExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+			const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-			if (pExt->Burst_NoDelay && (!pExt->DelayedFire_Duration.isset() || pExt->DelayedFire_OnlyOnInitialBurst))
+			if (pWeaponExt->Burst_NoDelay && (!pWeaponExt->DelayedFire_Duration.isset() || pWeaponExt->DelayedFire_OnlyOnInitialBurst))
 			{
-				if (pThis->Fire(pTarget, wpIdx))
+				if (pThis->Fire(pTarget, weaponIndex))
 				{
 					if (!pThis->CurrentBurstIndex)
 						return SkipVanillaFire;
 
-					auto rof = pThis->RearmTimer.TimeLeft;
+					int rof = pThis->RearmTimer.TimeLeft;
 					pThis->RearmTimer.Start(0);
 
-					for (auto i = pThis->CurrentBurstIndex; i < pWeapon->Burst && pThis->GetFireError(pTarget, wpIdx, true) == FireError::OK && pThis->Fire(pTarget, wpIdx); ++i)
+					for (int i = pThis->CurrentBurstIndex; i < pWeapon->Burst && pThis->GetFireError(pTarget, weaponIndex, true) == FireError::OK && pThis->Fire(pTarget, weaponIndex); ++i)
 					{
 						rof = pThis->RearmTimer.TimeLeft;
 						pThis->RearmTimer.Start(0);

@@ -87,8 +87,8 @@ DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI, 0x6)
 {
 	enum { Continue = 0x5209CD, ReturnFromFunction = 0x520AD9 };
 
-	GET(InfantryClass*, pThis, EBP);
-	GET(int, fireUp, EDX);
+	GET(InfantryClass* const, pThis, EBP);
+	GET(const int, fireUp, EDX);
 
 	int cumulativeDelay = 0;
 	int projectedDelay = 0;
@@ -125,7 +125,7 @@ DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI, 0x6)
 	{
 		if (allowBurst)
 		{
-			int frameCount = pThis->Type->Sequence->GetSequence(pThis->SequenceAnim).CountFrames;
+			const int frameCount = pThis->Type->Sequence->GetSequence(pThis->SequenceAnim).CountFrames;
 
 			// If projected frame for firing next shot goes beyond the sequence frame count, cease firing after this shot and start rearm timer.
 			if (fireUp + projectedDelay > frameCount)
@@ -180,26 +180,26 @@ DEFINE_HOOK(0x5209EE, InfantryClass_UpdateFiring_BurstNoDelay, 0x5)
 	enum { SkipVanillaFire = 0x520A57 };
 
 	GET(InfantryClass* const, pThis, EBP);
-	GET(const int, wpIdx, ESI);
+	GET(const int, weaponIndex, ESI);
 	GET(AbstractClass* const, pTarget, EAX);
 
-	if (const auto pWeapon = pThis->GetWeapon(wpIdx)->WeaponType)
+	if (const auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType)
 	{
 		if (pWeapon->Burst > 1)
 		{
-			const auto pExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+			const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-			if (pExt->Burst_NoDelay && (!pExt->DelayedFire_Duration.isset() || pExt->DelayedFire_OnlyOnInitialBurst))
+			if (pWeaponExt->Burst_NoDelay && (!pWeaponExt->DelayedFire_Duration.isset() || pWeaponExt->DelayedFire_OnlyOnInitialBurst))
 			{
-				if (pThis->Fire(pTarget, wpIdx))
+				if (pThis->Fire(pTarget, weaponIndex))
 				{
 					if (!pThis->CurrentBurstIndex)
 						return SkipVanillaFire;
 
-					auto rof = pThis->RearmTimer.TimeLeft;
+					int rof = pThis->RearmTimer.TimeLeft;
 					pThis->RearmTimer.Start(0);
 
-					for (auto i = pThis->CurrentBurstIndex; i < pWeapon->Burst && pThis->GetFireError(pTarget, wpIdx, true) == FireError::OK && pThis->Fire(pTarget, wpIdx); ++i)
+					for (int i = pThis->CurrentBurstIndex; i < pWeapon->Burst && pThis->GetFireError(pTarget, weaponIndex, true) == FireError::OK && pThis->Fire(pTarget, weaponIndex); ++i)
 					{
 						rof = pThis->RearmTimer.TimeLeft;
 						pThis->RearmTimer.Start(0);
