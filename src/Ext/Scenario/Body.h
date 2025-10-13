@@ -49,8 +49,9 @@ public:
 		BulletClass* MasterDetonationBullet; // Used to do warhead/weapon detonations on spot without having to create new BulletClass instance every time.
 		std::vector<TechnoExt::ExtData*> LimboLaunchers;
 
-		DynamicVectorClass<TechnoClass*> UndergroundTracker;
-		DynamicVectorClass<TechnoClass*> SpecialTracker;
+		DynamicVectorClass<TechnoClass*> UndergroundTracker; // Technos that are underground.
+		DynamicVectorClass<TechnoClass*> SpecialTracker; // For special purposes, like tracking technos that are forced moving. Currently unused.
+		DynamicVectorClass<TechnoClass*> FallingDownTracker; // Technos that are falling down, parachutes and land technos falling from bridge.
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
@@ -69,6 +70,7 @@ public:
 			, LimboLaunchers {}
 			, UndergroundTracker {}
 			, SpecialTracker {}
+			, FallingDownTracker {}
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
