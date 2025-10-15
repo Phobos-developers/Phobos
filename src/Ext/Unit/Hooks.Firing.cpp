@@ -36,21 +36,22 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 
 	if (frames >= 0)
 	{
-		bool keepFrame = false;
+		bool updateFiringFrame = true;
 
 		if (!pTypeExt->IsSecondary(weaponIndex))
 		{
-			int syncFrame = -1;
 			const int value = pThis->CurrentBurstIndex % pWeapon->Burst;
+			const int syncFrame = value >= 2 ? -1
+				: (value == 0 ? pType->FiringSyncFrame0 : pType->FiringSyncFrame1);
 
-			if (value < 2)
-				syncFrame = *(&pType->FiringSyncFrame0 + value);	// It doesn't seem to be an integer, right?
-
-			keepFrame = pThis->CurrentFiringFrame != -1 && syncFrame != -1;
+			updateFiringFrame = syncFrame == -1;
 		}
 
-		if (pThis->CurrentFiringFrame == -1 || (fireUp < 0 && !keepFrame))
+		if (pThis->CurrentFiringFrame == -1
+			|| (fireUp < 0 && updateFiringFrame))
+		{
 			pThis->CurrentFiringFrame = frames;
+		}
 	}
 
 	if (fireUp >= 0)
