@@ -28,7 +28,9 @@ DEFINE_HOOK(0x6F348F, TechnoClass_WhatWeaponShouldIUse_Airstrike, 0x7)
 	if (pTargetTechno->AbstractFlags & AbstractFlags::Foot)
 		return pTargetTypeExt->AllowAirstrike.Get(true) ? Secondary : Primary;
 
-	return pTargetTypeExt->AllowAirstrike.Get(static_cast<BuildingTypeClass*>(pTargetType)->CanC4) && (!pTargetType->ResourceDestination || !pTargetType->ResourceGatherer) ? Secondary : Primary;
+	return (pTargetTypeExt->AllowAirstrike.isset() ? pTargetTypeExt->AllowAirstrike.Get()
+		: (static_cast<BuildingTypeClass*>(pTargetType)->CanC4) && (!pTargetType->ResourceDestination || !pTargetType->ResourceGatherer))
+		? Secondary : Primary;
 }
 
 DEFINE_HOOK(0x41D97B, AirstrikeClass_Fire_SetAirstrike, 0x7)

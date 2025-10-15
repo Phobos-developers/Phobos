@@ -74,8 +74,8 @@ public:
 
 		Valueable<bool> Shield_Penetrate;
 		Valueable<bool> Shield_Break;
-		Valueable<AnimTypeClass*> Shield_BreakAnim;
-		Valueable<AnimTypeClass*> Shield_HitAnim;
+		ValueableVector<AnimTypeClass*> Shield_BreakAnim;
+		ValueableVector<AnimTypeClass*> Shield_HitAnim;
 		Valueable<bool> Shield_SkipHitAnim;
 		Valueable<bool> Shield_HitFlash;
 		Nullable<WeaponTypeClass*> Shield_BreakWeapon;
@@ -90,7 +90,11 @@ public:
 		Valueable<int> Shield_Respawn_Duration;
 		Nullable<double> Shield_Respawn_Amount;
 		Valueable<int> Shield_Respawn_Rate;
+		Nullable<bool> Shield_Respawn_RestartInCombat;
+		Valueable<int> Shield_Respawn_RestartInCombatDelay;
 		Valueable<bool> Shield_Respawn_RestartTimer;
+		ValueableVector<AnimTypeClass*> Shield_Respawn_Anim;
+		Nullable<WeaponTypeClass*> Shield_Respawn_Weapon;
 		Valueable<int> Shield_SelfHealing_Duration;
 		Nullable<double> Shield_SelfHealing_Amount;
 		Valueable<int> Shield_SelfHealing_Rate;
@@ -156,6 +160,9 @@ public:
 		Nullable<double> DamageOwnerMultiplier;
 		Nullable<double> DamageAlliesMultiplier;
 		Nullable<double> DamageEnemiesMultiplier;
+		Nullable<double> DamageOwnerMultiplier_Berzerk;
+		Nullable<double> DamageAlliesMultiplier_Berzerk;
+		Nullable<double> DamageEnemiesMultiplier_Berzerk;
 		Valueable<double> DamageSourceHealthMultiplier;
 		Valueable<double> DamageTargetHealthMultiplier;
 
@@ -191,12 +198,22 @@ public:
 
 		Valueable<bool> CanKill;
 
+		Valueable<bool> UnlimboDetonate;
+		Valueable<bool> UnlimboDetonate_ForceLocation;
+		Valueable<bool> UnlimboDetonate_KeepTarget;
+		Valueable<bool> UnlimboDetonate_KeepSelected;
+
+		Valueable<bool> AffectsUnderground;
+		Valueable<bool> PlayAnimUnderground;
+		Valueable<bool> PlayAnimAboveSurface;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
 		Nullable<bool> AffectsOwner;
 		Valueable<bool> EffectsRequireVerses;
 		Valueable<bool> Malicious;
+		Nullable<int> Flash_Duration;
 
 		double Crit_RandomBuffer;
 		double Crit_CurrentChance;
@@ -282,10 +299,14 @@ public:
 			, Shield_ReceivedDamage_MaxMultiplier { 1.0 }
 
 			, Shield_Respawn_Duration { 0 }
-			, Shield_Respawn_Amount { 0.0 }
+			, Shield_Respawn_Amount { }
 			, Shield_Respawn_Rate { -1 }
 			, Shield_Respawn_Rate_InMinutes { -1.0 }
+			, Shield_Respawn_RestartInCombat {}
+			, Shield_Respawn_RestartInCombatDelay { -1 }
 			, Shield_Respawn_RestartTimer { false }
+			, Shield_Respawn_Anim { }
+			, Shield_Respawn_Weapon { }
 			, Shield_SelfHealing_Duration { 0 }
 			, Shield_SelfHealing_Amount { }
 			, Shield_SelfHealing_Rate { -1 }
@@ -351,6 +372,9 @@ public:
 			, DamageOwnerMultiplier {}
 			, DamageAlliesMultiplier {}
 			, DamageEnemiesMultiplier {}
+			, DamageOwnerMultiplier_Berzerk {}
+			, DamageAlliesMultiplier_Berzerk {}
+			, DamageEnemiesMultiplier_Berzerk {}
 			, DamageSourceHealthMultiplier { 0.0 }
 			, DamageTargetHealthMultiplier { 0.0 }
 
@@ -379,6 +403,7 @@ public:
 			, AffectsOwner {}
 			, EffectsRequireVerses { true }
 			, Malicious { true }
+			, Flash_Duration {}
 
 			, Crit_RandomBuffer { 0.0 }
 			, Crit_CurrentChance { 0.0 }
@@ -402,6 +427,15 @@ public:
 			, KillWeapon_OnFirer_Affects { AffectedTarget::All }
 
 			, ReverseEngineer { false }
+
+			, UnlimboDetonate { false }
+			, UnlimboDetonate_ForceLocation { false }
+			, UnlimboDetonate_KeepTarget { true }
+			, UnlimboDetonate_KeepSelected { true }
+
+			, AffectsUnderground { false }
+			, PlayAnimUnderground { true }
+			, PlayAnimAboveSurface { false }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);

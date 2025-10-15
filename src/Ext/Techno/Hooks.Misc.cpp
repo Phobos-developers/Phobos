@@ -2,6 +2,7 @@
 
 #include <SpawnManagerClass.h>
 #include <TunnelLocomotionClass.h>
+#include <JumpjetLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
 
@@ -77,6 +78,21 @@ DEFINE_HOOK(0x6B7265, SpawnManagerClass_AI_UpdateTimer, 0x6)
 	}
 
 	return 0;
+}
+
+// Fix Jumpjets can not spawn missiles in air.
+DEFINE_HOOK(0x6B72FE, SpawnerManagerClass_AI_MissileCheck, 0x9)
+{
+	enum { SpawnMissile = 0x6B735C, NoSpawn = 0x6B795A };
+
+	GET(SpawnManagerClass*, pThis, ESI);
+
+	auto pLoco = ((FootClass*)pThis->Owner)->Locomotor; // Ares has already handled the building case.
+	auto pLocoInterface = pLoco.GetInterfacePtr();
+
+	return (pLocoInterface->Is_Moving_Now()
+		|| (!locomotion_cast<JumpjetLocomotionClass*>(pLoco) && pLocoInterface->Is_Moving())) // Jumpjet should only check Is_Moving_Now.
+		? NoSpawn : SpawnMissile;
 }
 
 DEFINE_HOOK_AGAIN(0x6B73BE, SpawnManagerClass_AI_SpawnTimer, 0x6)
@@ -236,15 +252,7 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 
 	if (shouldRecycleSpawned())
 	{
-		if (pCarrierTypeExt->Spawner_RecycleAnim)
-		{
-			auto const pRecycleAnim = GameCreate<AnimClass>(pCarrierTypeExt->Spawner_RecycleAnim, spawnerCrd);
-			auto const pAnimExt = AnimExt::ExtMap.Find(pRecycleAnim);
-			auto const pSpawnOwner = pSpawner->Owner;
-			pAnimExt->SetInvoker(pSpawner);
-			AnimExt::SetAnimOwnerHouseKind(pRecycleAnim, pSpawnOwner, pSpawnOwner, false, true);
-		}
-
+		AnimExt::CreateRandomAnim(pCarrierTypeExt->Spawner_RecycleAnim, spawnerCrd, pSpawner, pSpawner->Owner, true);
 		pSpawner->SetLocation(pCarrier->GetCoords());
 		return Recycle;
 	}
@@ -258,8 +266,9 @@ DEFINE_HOOK(0x4D962B, FootClass_SetDestination_RecycleFLH, 0x5)
 	GET(FootClass* const, pThis, EBP);
 
 	auto const pCarrier = pThis->SpawnOwner;
+	auto const pDest = pThis->Destination;
 
-	if (pCarrier && pCarrier == pThis->Destination) // This is a spawner returning to its carrier.
+	if (pCarrier && pCarrier == pDest) // This is a spawner returning to its carrier.
 	{
 		auto const pCarrierTypeExt = TechnoExt::ExtMap.Find(pCarrier)->TypeExtData;
 		auto const& FLH = pCarrierTypeExt->Spawner_RecycleCoord;
@@ -269,6 +278,15 @@ DEFINE_HOOK(0x4D962B, FootClass_SetDestination_RecycleFLH, 0x5)
 			GET(CoordStruct*, pDestCrd, EAX);
 			*pDestCrd += TechnoExt::GetFLHAbsoluteCoords(pCarrier, FLH, pCarrierTypeExt->Spawner_RecycleOnTurret) - pCarrier->GetCoords();
 		}
+	}
+	else if (pDest->WhatAmI() == AbstractType::Building
+		&& pThis->SendCommand(RadioCommand::QueryCanEnter, static_cast<BuildingClass*>(pDest)) != RadioCommand::AnswerPositive)
+	{
+		GET(CoordStruct*, pDestCrd, EAX);
+		auto crd = pDest->GetCoords();
+		crd.X = ((crd.X >> 8) << 8) + 128;
+		crd.Y = ((crd.Y >> 8) << 8) + 128;
+		*pDestCrd = crd;
 	}
 
 	return 0;

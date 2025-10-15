@@ -29,6 +29,7 @@
 #include <Ext/AnimType/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/WarheadType/Body.h>
+#include <Ext/Cell/Body.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
@@ -1256,6 +1257,8 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 
 	if (commonAircraft)
 	{
+		pAircraft->SetArchiveTarget(nullptr);
+
 		if (pAircraft->Type->AirportBound)
 		{
 			// To avoid `AirportBound=yes` aircraft with ammo at low altitudes cannot correctly receive stop command and queue Mission::Guard with a `Destination`.
@@ -1282,9 +1285,9 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 	{
 		const auto pFoot = abstract_cast<FootClass*, true>(pTechno);
 
-		// Clear archive target for infantries and vehicles like receive a mega mission
-		if (pFoot && !pAircraft)
-			pTechno->SetArchiveTarget(nullptr);
+		// Clear archive target for foots like receive a mega mission
+		if (pFoot)
+			pFoot->SetArchiveTarget(nullptr);
 
 		// Only stop when it is not under the bridge (meeting the original conditions which has been skipped)
 		if (!pTechno->vt_entry_2B0() || pTechno->OnBridge || pTechno->IsInAir() || pTechno->GetCell()->SlopeIndex)
@@ -2432,15 +2435,6 @@ DEFINE_HOOK(0x6F7666, TechnoClass_TriggersCellInset_DeployWeapon, 0x8)
 
 DEFINE_JUMP(LJMP, 0x6FBC0B, 0x6FBC80) // TechnoClass::UpdateCloak
 
-DEFINE_HOOK(0x457DEB, BuildingClass_ClearOccupants_Redraw, 0xA)
-{
-	GET(BuildingClass*, pThis, ESI);
-
-	pThis->Mark(MarkType::Change);
-
-	return 0;
-}
-
 #pragma region BuildingUnloadFix
 
 DEFINE_HOOK(0x458180, BuildingClass_RemoveOccupants_CheckWhenNoPlaceToUnload, 0x9)
@@ -2453,11 +2447,26 @@ DEFINE_HOOK(0x458180, BuildingClass_RemoveOccupants_CheckWhenNoPlaceToUnload, 0x
 	// If it is called from Mission_Unload, then skip execution if there is not enough space
 	// Remain unchanged in other cases like dead when receive damage or neutral ones get red
 	if (retnAddr != 0x44D8A1)
+	{
 		pThis->KillOccupants(nullptr);
+		pThis->Mark(MarkType::Change); // Force redraw if occupant status changes.
+	}
 	else
+	{
 		pThis->SetTarget(nullptr);
+	}
 
 	return SkipGameCode;
+}
+
+// Force redraw if occupant status changes - code path where they are not killed.
+DEFINE_HOOK(0x458060, BuildingClass_ClearOccupants_Redraw, 0x5)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	pThis->Mark(MarkType::Change);
+
+	return 0;
 }
 
 DEFINE_PATCH(0x501504, 0x01); // HouseClass::All_To_Hunt
@@ -2503,10 +2512,11 @@ DEFINE_HOOK(0x6FC8F5, TechnoClass_CanFire_SkipROF, 0x6)
 
 #pragma endregion
 
-#pragma region AStarBuffer
+#pragma region AStarFix
 
-// AStarClass_CTOR
 // Path queue nodes buffer doubled
+
+// AStarClass::CTOR
 
 // 42A74F: 68 04 00 04 00
 // For `new` to use (sizeof(Node*) == 4)
@@ -2527,5 +2537,210 @@ DEFINE_PATCH(0x42A7E3, 0x20);
 // Set the loops count of initialization
 DEFINE_PATCH(0x42A7FA, 0x02);
 // mov edx, 10000h (65536) -> mov edx, 20000h (131072)
+
+// 42A80A: 89 98 00 00 10 00
+// Set new Count offset
+DEFINE_PATCH(0x42A80E, 0x20);
+// mov [eax+100000h], ebx -> mov [eax+200000h], ebx
+
+// 42A840: 89 98 00 00 10 00
+// Set new Count offset
+DEFINE_PATCH(0x42A844, 0x20);
+// mov [eax+100000h], ebx -> mov [eax+200000h], ebx
+
+// AStarClass::CleanUp
+
+// 42A5C3: 89 B2 00 00 10 00
+// Set new Count offset
+DEFINE_PATCH(0x42A5C7, 0x20);
+// mov [edx+100000h], esi -> mov [edx+200000h], esi
+
+// AStarClass::CreatePathNode
+
+// 42A466: 8B 90 00 00 10 00
+// Set new Count offset
+DEFINE_PATCH(0x42A46A, 0x20);
+// mov edx, [eax+100000h] -> mov edx, [eax+200000h]
+
+// 42A479: 89 90 00 00 10 00
+// Set new Count offset
+DEFINE_PATCH(0x42A47D, 0x20);
+// mov [eax+100000h], edx -> mov [eax+200000h], edx
+
+
+// Replace sign-extend to zero-extend
+
+// AStarClass::FindHierarchicalPath
+
+// 42C34A: 0F BF 1C 70
+// To avoid incorrect negative int index
+DEFINE_PATCH(0x42C34B, 0xB7);
+// movsx ebx, word ptr [eax+esi*2] -> movzx ebx, word ptr [eax+esi*2]
+
+// 42C36A: 0F BF 04 70
+// To avoid incorrect negative int index
+DEFINE_PATCH(0x42C36B, 0xB7);
+// movsx eax, word ptr [eax+esi*2] -> movzx eax, word ptr [eax+esi*2]
+
+// 429E9A: 0F BF 08
+// To avoid incorrect negative int index
+DEFINE_PATCH(0x429E9B, 0xB7);
+// movsx ecx, word ptr [eax] -> movzx ecx, word ptr [eax]
+
+#pragma endregion
+
+#pragma region FixPlanningNodeConnect
+
+// Restore the original three pop to prevent stack imbalance
+void NAKED _PlanningNodeClass_UpdateHoverNode_FixCheckValidity_RET()
+{
+	POP_REG(EDI);
+	POP_REG(EBP);
+	POP_REG(EBX);
+	JMP(0x638F2A);
+}
+DEFINE_HOOK(0x638F1E, PlanningNodeClass_UpdateHoverNode_FixCheckValidity, 0x5)
+{
+	// Newly added checks to prevent not in-time updates
+	return PlanningNodeClass::PlanningModeActive ? (int)_PlanningNodeClass_UpdateHoverNode_FixCheckValidity_RET : 0;
+}
+
+DEFINE_HOOK(0x638F70, PlanningNodeClass_UpdateHoverNode_SkipDuplicateLog, 0x8)
+{
+	enum { SkipLogString = 0x638F81 };
+
+	GET(const PlanningNodeClass* const, pCurrentNode, ESI);
+
+	const auto& pHoveringNode = Make_Global<const PlanningNodeClass* const>(0xAC4CCC);
+
+	// Only output logs when they are not the same, to avoid outputting every frame
+	return (pCurrentNode != pHoveringNode) ? 0 : SkipLogString;
+}
+
+#pragma endregion
+
+#pragma region JumpjetSetDestFix
+
+// Fix JJ infantries stop incorrectly when assigned a target out of range.
+DEFINE_HOOK(0x51AB5C, InfantryClass_SetDestination_JJInfFix, 0x6)
+{
+	enum { FuncRet = 0x51B1D7 };
+
+	GET(InfantryClass* const, pThis, EBP);
+	GET(AbstractClass* const, pDest, EBX);
+
+	if (!pDest && pThis->Type->BalloonHover && pThis->Destination && pThis->Target)
+	{
+		if (auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+		{
+			if (pThis->IsCloseEnoughToAttack(pThis->Target))
+				pThis->StopMoving();
+
+			pThis->ForceMission(Mission::Attack);
+			return FuncRet;
+		}
+	}
+
+	return 0;
+}
+
+// Fix JJ vehicles can not stop correctly when assigned a target in range.
+DEFINE_HOOK(0x741A66, UnitClass_SetDestination_JJVehFix, 0x5)
+{
+	GET(UnitClass* const, pThis, EBP);
+
+	auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor);
+
+	if (pJumpjetLoco && pThis->IsCloseEnoughToAttack(pThis->Target))
+		pThis->StopMoving();
+
+	return 0;
+}
+
+#pragma endregion
+
+DEFINE_HOOK(0x5194EF, InfantryClass_DrawIt_DrawShadow, 0x5)
+{
+	enum { SkipDraw = 0x51958A };
+	GET(InfantryClass*, pThis, EBP);
+	return pThis->CloakState != CloakState::Uncloaked ? SkipDraw : 0;
+}
+
+// Fix the issue that the jumpjet vehicles cannot stop correctly after going berserk
+DEFINE_HOOK(0x74431F, UnitClass_ReadyToNextMission_HuntCheck, 0x6)
+{
+	GET(UnitClass*, pThis, ESI);
+	return pThis->GetCurrentMission() != Mission::Hunt ? 0 : 0x744329;
+}
+
+#pragma region InfBlockTreeFix
+
+DEFINE_HOOK(0x52182A, InfantryClass_MarkAllOccupationBits_SetOwnerIdx, 0x6)
+{
+	GET(CellClass*, pCell, ESI);
+	CellExt::ExtMap.Find(pCell)->InfantryCount++;
+	return 0;
+}
+
+DEFINE_HOOK(0x5218C2, InfantryClass_UnmarkAllOccupationBits_ResetOwnerIdx, 0x6)
+{
+	enum { Reset = 0x5218CC, NoReset = 0x5218D3 };
+
+	GET(CellClass*, pCell, ESI);
+	GET(DWORD, newFlag, ECX);
+
+	pCell->OccupationFlags = newFlag;
+	auto pExt = CellExt::ExtMap.Find(pCell);
+	pExt->InfantryCount--;
+
+	// Vanilla check only the flag to decide if the InfantryOwnerIndex should be reset. 
+	// But the tree take one of the flag bit. So if a infantry walk through a cell with a tree, the InfantryOwnerIndex won't be reset.
+	return (newFlag & 0x1C) == 0 || pExt->InfantryCount == 0 ? Reset : NoReset;
+}
+
+#pragma endregion
+
+// Vanilla won't swizzle owner house of Particle System when loading, which was fine before
+// But now it might trigger a crash since DamageAllies/Enemies/OwnerMultiplier will check its house
+// Fix it at here for now. If we extend ParticleSystemClass in the future this should be moved to there
+DEFINE_HOOK(0x62FFBB, ParticleSystemClass_Load_OwnerHouse, 0x8)
+{
+	GET(ParticleSystemClass*, pThis, EDI);
+
+	SWIZZLE(pThis->OwnerHouse);
+
+	return 0;
+}
+
+#pragma region LATimeFix
+
+// Skip the LATime set code in wrong place.
+DEFINE_JUMP(LJMP, 0x44227E, 0x4422C1);
+
+// Set the LATime when the building is actually damaged.
+DEFINE_HOOK(0x44242A, BuildingClass_ReceiveDamage_SetLATime, 0x8)
+{
+	GET(BuildingClass* const, pThis, ESI);
+	GET(const DamageState, state, EAX);
+	GET(TechnoClass*, pAttacker, EBP);
+	GET_STACK(HouseClass*, pAttackerHouse, STACK_OFFSET(0x9C, 0x1C));
+
+	auto const pFromHouse = pAttacker ? pAttacker->GetOwningHouse() : pAttackerHouse;
+
+	if (pFromHouse
+		&& state != DamageState::Unaffected
+		&& !pThis->IsStrange()
+		&& !pThis->Owner->IsAlliedWith(pFromHouse))
+	{
+		auto const pOwner = pThis->Owner;
+		pOwner->LATime = Unsorted::CurrentFrame;
+		pOwner->LAEnemy = pFromHouse->ArrayIndex;
+
+		if (pAttacker)
+			pThis->BaseIsAttacked(pAttacker);
+	}
+
+	return 0;
+}
 
 #pragma endregion

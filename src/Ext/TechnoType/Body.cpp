@@ -330,37 +330,34 @@ void TechnoTypeExt::ExtData::ParseVoiceWeaponAttacks(INI_EX& exINI, const char* 
 	const auto pThis = this->OwnerObject();
 	const auto weaponCount = Math::max(pThis->WeaponCount, 0);
 
-	while (int(voice.size()) > weaponCount)
-	{
-		voice.erase(voice.begin() + int(voice.size()) - 1);
-	}
+	while (static_cast<int>(voice.size()) > weaponCount)
+		voice.erase(voice.begin() + voice.size() - 1);
 
-	while (int(voiceElite.size()) > weaponCount)
-	{
-		voiceElite.erase(voiceElite.begin() + int(voiceElite.size()) - 1);
-	}
+	while (static_cast<int>(voiceElite.size()) > weaponCount)
+		voiceElite.erase(voiceElite.begin() + voiceElite.size() - 1);
 
 	char tempBuff[64];
-	for (int index = 0; index < weaponCount; index++)
+
+	for (int idx = 0; idx < weaponCount; idx++)
 	{
-		NullableIdx<VocClass> VoiceAttack;
-		_snprintf_s(tempBuff, sizeof(tempBuff), "VoiceWeapon%dAttack", index + 1);
-		VoiceAttack.Read(exINI, pSection, tempBuff);
+		NullableIdx<VocClass> voiceAttack;
+		_snprintf_s(tempBuff, sizeof(tempBuff), "VoiceWeapon%dAttack", idx + 1);
+		voiceAttack.Read(exINI, pSection, tempBuff);
 
-		NullableIdx<VocClass> VoiceEliteAttack;
-		_snprintf_s(tempBuff, sizeof(tempBuff), "VoiceEliteWeapon%dAttack", index + 1);
-		VoiceAttack.Read(exINI, pSection, tempBuff);
+		NullableIdx<VocClass> voiceEliteAttack;
+		_snprintf_s(tempBuff, sizeof(tempBuff), "VoiceEliteWeapon%dAttack", idx + 1);
+		voiceEliteAttack.Read(exINI, pSection, tempBuff);
 
-		if (int(voice.size()) > index)
+		if (static_cast<int>(voice.size()) > idx)
 		{
-			voice[index] = VoiceAttack.Get(voice[index]);
-			voiceElite[index] = VoiceEliteAttack.Get(voiceElite[index]);
+			voice[idx] = voiceAttack.Get(voice[idx]);
+			voiceElite[idx] = voiceEliteAttack.Get(voiceElite[idx]);
 		}
 		else
 		{
-			const int voiceAttack = VoiceAttack.Get(-1);
-			voice.push_back(voiceAttack);
-			voiceElite.push_back(VoiceEliteAttack.Get(voiceAttack));
+			const int voiceAttackIdx = voiceAttack.Get(-1);
+			voice.emplace_back(voiceAttackIdx);
+			voiceElite.emplace_back(voiceEliteAttack.Get(voiceAttackIdx));
 		}
 	}
 }
@@ -493,12 +490,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 				if (secondaryFacing)
 					pTechno->SecondaryFacing.SetCurrent(DirStruct(*secondaryFacing));
 
-				if (pCreateUnit->SpawnAnim)
-				{
-					auto const pAnim = GameCreate<AnimClass>(pCreateUnit->SpawnAnim, location);
-					AnimExt::SetAnimOwnerHouseKind(pAnim, pInvokerHouse, nullptr, false, true);
-					AnimExt::ExtMap.Find(pAnim)->SetInvoker(pInvoker, pInvokerHouse);
-				}
+				AnimExt::CreateRandomAnim(pCreateUnit->SpawnAnim, location, pInvoker, pInvokerHouse, true);
 
 				if (!pTechno->InLimbo)
 				{
@@ -669,6 +661,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->WarpOut.Read(exINI, pSection, "WarpOut");
 	this->WarpIn.Read(exINI, pSection, "WarpIn");
+	this->Chronoshift_WarpOut.Read(exINI, pSection, "Chronoshift.WarpOut");
+	this->Chronoshift_WarpIn.Read(exINI, pSection, "Chronoshift.WarpIn");
 	this->WarpAway.Read(exINI, pSection, "WarpAway");
 	this->ChronoTrigger.Read(exINI, pSection, "ChronoTrigger");
 	this->ChronoDistanceFactor.Read(exINI, pSection, "ChronoDistanceFactor");
@@ -714,6 +708,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->JumpjetRotateOnCrash.Read(exINI, pSection, "JumpjetRotateOnCrash");
 	this->ShadowSizeCharacteristicHeight.Read(exINI, pSection, "ShadowSizeCharacteristicHeight");
 
+	this->IsSimpleDeployer_ConsiderPathfinding.Read(exINI, pSection, "IsSimpleDeployer.ConsiderPathfinding");
+	this->IsSimpleDeployer_DisallowedLandTypes.Read<false, true>(exINI, pSection, "IsSimpleDeployer.DisallowedLandTypes");
 	this->DeployDir.Read(exINI, pSection, "DeployDir");
 	this->DeployingAnims.Read(exINI, pSection, "DeployingAnims");
 	this->DeployingAnim_KeepUnitVisible.Read(exINI, pSection, "DeployingAnim.KeepUnitVisible");
@@ -943,6 +939,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ExtendedAircraftMissions_SmoothMoving.Read(exINI, pSection, "ExtendedAircraftMissions.SmoothMoving");
 	this->ExtendedAircraftMissions_EarlyDescend.Read(exINI, pSection, "ExtendedAircraftMissions.EarlyDescend");
 	this->ExtendedAircraftMissions_RearApproach.Read(exINI, pSection, "ExtendedAircraftMissions.RearApproach");
+	this->ExtendedAircraftMissions_FastScramble.Read(exINI, pSection, "ExtendedAircraftMissions.FastScramble");
+	this->ExtendedAircraftMissions_UnlandDamage.Read(exINI, pSection, "ExtendedAircraftMissions.UnlandDamage");
 
 	this->FallingDownDamage.Read(exINI, pSection, "FallingDownDamage");
 	this->FallingDownDamage_Water.Read(exINI, pSection, "FallingDownDamage.Water");
@@ -1305,6 +1303,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
+		.Process(this->Chronoshift_WarpOut)
+		.Process(this->Chronoshift_WarpIn)
 		.Process(this->WarpAway)
 		.Process(this->ChronoTrigger)
 		.Process(this->ChronoDistanceFactor)
@@ -1351,6 +1351,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoAmmoAmount)
 		.Process(this->JumpjetRotateOnCrash)
 		.Process(this->ShadowSizeCharacteristicHeight)
+
+		.Process(this->IsSimpleDeployer_ConsiderPathfinding)
+		.Process(this->IsSimpleDeployer_DisallowedLandTypes)
 		.Process(this->DeployDir)
 		.Process(this->DeployingAnims)
 		.Process(this->DeployingAnim_KeepUnitVisible)
@@ -1571,6 +1574,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtendedAircraftMissions_SmoothMoving)
 		.Process(this->ExtendedAircraftMissions_EarlyDescend)
 		.Process(this->ExtendedAircraftMissions_RearApproach)
+		.Process(this->ExtendedAircraftMissions_FastScramble)
+		.Process(this->ExtendedAircraftMissions_UnlandDamage)
 
 		.Process(this->FallingDownDamage)
 		.Process(this->FallingDownDamage_Water)
