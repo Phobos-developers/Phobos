@@ -44,7 +44,7 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 			const int value = pThis->CurrentBurstIndex % pWeapon->Burst;
 
 			if (value < 2)
-				syncFrame = pType->FiringSyncFrame0 + value;
+				syncFrame = *(&pType->FiringSyncFrame0 + value);	// It doesn't seem to be an integer, right?
 
 			keepFrame = pThis->CurrentFiringFrame != -1 && syncFrame != -1;
 		}
