@@ -267,6 +267,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that techno unit will draw with ironcurtain and airstrike color and intensity who disguised as terrain or overlay.
 - Fixed an issue that the AI would enter a combat state when its building receiving damage from friendly units or damage not greater than 0.
 - Fixed an issue that the techno with weapon with `AA=yes` and `AG=no` would not auto targeting units that are falling, such as paratroopers.
+- Fixed an issue where vehicles equipped with turrets and set to `Voxel=no` could not be colored by Iron Curtain/Custom Tint.
 
 ## Fixes / interactions with other extensions
 
