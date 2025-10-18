@@ -1583,7 +1583,7 @@ msgstr "快速进楼"
 
 #: ../../../CREDITS.md:398 ../../../CREDITS.md:454
 msgid "Iron Curtain/Custom Tint Support for SHP Turreted Vehicles"
-msgstr ""
+msgstr "修复了铁幕／自定义染色不支持 SHP 有炮塔载具的问题"
 
 #: ../../../CREDITS.md:399
 msgid "**NetsuNegi**:"

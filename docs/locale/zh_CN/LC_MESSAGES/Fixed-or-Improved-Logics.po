@@ -1643,7 +1643,7 @@ msgstr "修复了所用武器 `AA=yes` 且 `AG=no` 的单位不会主动攻击�
 
 #: ../../Fixed-or-Improved-Logics.md:270
 msgid "Iron Curtain/Custom Tint Support for SHP Turreted Vehicles."
-msgstr ""
+msgstr "修复了铁幕／自定义染色无法将 SHP 有炮塔载具染色的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:272
 msgid "Fixes / interactions with other extensions"

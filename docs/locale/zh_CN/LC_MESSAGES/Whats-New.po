@@ -2189,9 +2189,10 @@ msgstr "修复了所用武器 `AA=yes` 且 `AG=no` 的单位不会主动攻击�
 
 #: ../../Whats-New.md:483
 msgid ""
-"Iron Curtain/Custom Tint Support for SHP Turreted Vehicles (by NetsuNegi,"
+"Iron Curtain/Custom Tint Support for SHP Turreted Vehicles (by NetsuNegi &"
 " FlyStar)"
 msgstr ""
+"修复了铁幕／自定义染色无法将 SHP 有炮塔载具染色的问题（by NetsuNegi & FlyStar）"
 
 #: ../../Whats-New.md:485 ../../Whats-New.md:828 ../../Whats-New.md:913
 #: ../../Whats-New.md:1077 ../../Whats-New.md:1118 ../../Whats-New.md:1130
