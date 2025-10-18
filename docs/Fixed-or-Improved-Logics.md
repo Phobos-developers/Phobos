@@ -8,6 +8,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that light tint created by buildings can never be removed (light tint persists even if the building is destroyed/sold) after loading a game
 - Fixed the bug when reading a map which puts `Preview(Pack)` after `Map` lead to the game fail to draw the preview
 - Fixed the bug when retinting map lighting with a map action corrupted light sources.
+  - Due to performance considerations, this fix may be disabled by setting `[AudioVisual] -> UseRetintFix=no` in `rulesmd.ini`.
 - Fixed the bug when deploying mindcontrolled vehicle into a building permanently transferred the control to the house which mindcontrolled it.
 - Fixed the bug when capturing a mind-controlled building with an engineer fail to break the mind-control link.
 - Removed the `EVA_BuildingCaptured` event when capturing a building considered as a vehicle.
@@ -262,6 +263,11 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `DeployingAnim` using unit drawer now also tint accordingly with the unit.
 - Fixed an issue that jumpjets in air can not correctly spawn missiles.
 - Fixed an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos.
+- Fixed an issue that infantry walking through a cell containing a tree would cause it to be impassable to other houses.
+- Fixed the bug that techno unit will draw with ironcurtain and airstrike color and intensity who disguised as terrain or overlay.
+- Fixed an issue that the AI would enter a combat state when its building receiving damage from friendly units or damage not greater than 0.
+- Fixed an issue that the techno with weapon with `AA=yes` and `AG=no` would not auto targeting units that are falling, such as paratroopers.
+- Iron Curtain/Custom Tint Support for SHP Turreted Vehicles.
 
 ## Fixes / interactions with other extensions
 
@@ -291,6 +297,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle`.
 - Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range.
 - Fixed an issue that jumpjet infantries stop incorrectly when assigned a target out of range.
+- Fixed an issue that jumpjet infantries' shadow is always drawn even if they are cloaked.
+- Fixed an issue that technos head to building's dock even they are not going to dock.
+- Fixed an issue that the jumpjet vehicles cannot stop correctly after going berserk.
+- Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect.
 
 ```{note}
 The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
@@ -325,24 +335,29 @@ FiringForceScatter=true   ; boolean
 ### Extended Aircraft Missions
 
 - Aircraft will now be able to use waypoints.
-- When a `guard` command (`[G]` by default) is issued, the aircraft will search for targets around the current location and return immediately when target is not found, target is destroyed or ammos are depleted.
-  - If the target is destroyed but ammos are not depleted yet, it will also return because the aircraft's command is one-time.
+- When a `guard` command (`[G]` by default) or a `area guard` command (`[Ctrl]+[Alt]`) is issued, the aircraft will search for targets around the position (for `guard` is the current location, for `area guard` is the target position) and return immediately when ammos are depleted.
+  - If the target is not found, or if there is still ammo when the target is destroyed, it will continue to hover over the guarded area.
 - When an `attack move` command (`[Ctrl]+[Shift]`) is issued, the aircraft will move towards the destination and search for nearby targets on the route for attack. Once ammo is depleted or the destination is reached, it will return.
   - If the automatically selected target is destroyed but ammo is not depleted yet during the process, the aircraft will continue flying to the destination.
 - In addition, the actions of aircraft are also changed.
   - `ExtendedAircraftMissions.SmoothMoving` controls whether the aircraft will return to the airport when the distance to the destination is less than half of `SlowdownDistance` or its turning radius.
   - `ExtendedAircraftMissions.EarlyDescend` controls whether the aircraft not have to fly directly above the airport before starting to descend when the distance between the aircraft and the landing point is less than `SlowdownDistance` (also work for aircraft spawned by aircraft carriers).
   - `ExtendedAircraftMissions.RearApproach` controls whether the aircraft should start landing at the airport from the opposite direction of `LandingDir`.
+  - `ExtendedAircraftMissions.FastScramble` controls whether the aircraft can scramble when its airport has been destroyed.
+  - `ExtendedAircraftMissions.UnlandDamage` controls the damage suffered by the aircraft every 4 frames when there is no airport for the aircraft to land. If the value is negative, it will crash immediately. Not recommended to use when `ExtendedAircraftMissions` is not enabled.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-ExtendedAircraftMissions=false          ; boolean
+ExtendedAircraftMissions=false            ; boolean
+ExtendedAircraftMissions.UnlandDamage=-1  ; integer
 
-[SOMEAIRCRAFT]                          ; AircraftType
-ExtendedAircraftMissions.SmoothMoving=  ; boolean, default to [General] -> ExtendedAircraftMissions
-ExtendedAircraftMissions.EarlyDescend=  ; boolean, default to [General] -> ExtendedAircraftMissions
-ExtendedAircraftMissions.RearApproach=  ; boolean, default to [General] -> ExtendedAircraftMissions
+[SOMEAIRCRAFT]                            ; AircraftType
+ExtendedAircraftMissions.SmoothMoving=    ; boolean, default to [General] -> ExtendedAircraftMissions
+ExtendedAircraftMissions.EarlyDescend=    ; boolean, default to [General] -> ExtendedAircraftMissions
+ExtendedAircraftMissions.RearApproach=    ; boolean, default to [General] -> ExtendedAircraftMissions
+ExtendedAircraftMissions.FastScramble=    ; boolean, default to [General] -> ExtendedAircraftMissions
+ExtendedAircraftMissions.UnlandDamage=    ; integer, default to [General] -> ExtendedAircraftMissions.UnlandDamage
 ```
 
 ### Fixed spawn distance & spawn height for airstrike / SpyPlane aircraft
@@ -768,7 +783,7 @@ ProneSpeed=                   ; floating point value, multiplier, by default, us
 
 ### Customize the chained damage of the wall
 
-- In vanilla, when the wall is damaged, it will deal 200 damage to the walls in the 4 nearby cells. This makes connected walls more vulnerable to damage compared to single walls. 
+- In vanilla, when the wall is damaged, it will deal 200 damage to the walls in the 4 nearby cells. This makes connected walls more vulnerable to damage compared to single walls.
 - Now you can customize that damage by using the following flag.
 
 In `rulesmd.ini`:
@@ -1006,12 +1021,12 @@ ChronoSparkleBuildingDisplayPositions=occupantslots  ; List of chrono sparkle po
 In `rulesmd.ini`:
 ```ini
 [General]
-ChronoSphereDelay=60    ; integer, game frames
-ChronoSpherePreDelay=0  ; integer, game frames
+ChronoSphereDelay=0     ; integer, game frames
+ChronoSpherePreDelay=60 ; integer, game frames
 
 [SOMETECHNO]            ; TechnoType
-ChronoSphereDelay=      ; integer, game frames
-ChronoSpherePreDelay=   ; integer, game frames
+ChronoSphereDelay=      ; integer, game frames, default to [General] -> ChronoSphereDelay
+ChronoSpherePreDelay=   ; integer, game frames, default to [General] -> ChronoSpherePreDelay
 ```
 
 ```{warning}
@@ -1059,9 +1074,9 @@ In `rulesmd.ini`:
 [SOMETECHNO]            ; TechnoType
 WarpOut=                ; List of AnimationTypes (played when Techno warping out), default to [General] -> WarpOut
 WarpIn=                 ; List of AnimationTypes (played when Techno warping in), default to [General] -> WarpIn
-Chronoshift.WarpOut=    ; List of AnimationTypes (played when Techno warping out by chronosphere), default to WarpOut
-Chronoshift.WarpIn=     ; List of AnimationTypes (played when Techno warping in by chronosphere), default to WarpIn
-WarpAway=               ; List of AnimationTypes (played when Techno being erased by `Temporal=yes` warhead), default to [General] -> WarpAway
+Chronoshift.WarpOut=    ; List of AnimationTypes (played when Techno warping out by chronosphere), default to [TechnoType] -> WarpOut
+Chronoshift.WarpIn=     ; List of AnimationTypes (played when Techno warping in by chronosphere), default to [TechnoType] -> WarpIn
+WarpAway=               ; List of AnimationTypes (played when Techno being erased by Temporal=yes warhead), default to [General] -> WarpAway
 ChronoTrigger=          ; boolean, if yes then delay varies by distance, if no it is a constant
 ChronoDistanceFactor=   ; integer, amount to divide the distance to destination by to get the warped out delay
 ChronoMinimumDelay=     ; integer, the minimum delay for teleporting, no matter how short the distance

@@ -298,7 +298,7 @@ void MessageScrollClass::DrawShape() const
 			auto color = MessageColumnClass::Instance.GetColor();
 			MessageColumnClass::Instance.DecreaseBrightness(color, 3);
 
-			DSurface::Composite->FillRectTrans(&drawRect, &color, MessageColumnClass::LowOpacity);
+			DSurface::Composite->FillRectTrans(&drawRect, &color, Phobos::Config::MessageDisplayInCenter_BoardOpacity);
 		}
 	}
 	else // Scroll_Bar
@@ -738,7 +738,7 @@ void MessageColumnClass::PackUp(bool clear)
 	}
 
 	this->Expanded = false;
-	this->ScrollIndex = this->GetMaxScroll();
+	this->ScrollIndex = this->GetMaxScroll<true>();
 
 	if (const auto pButton = this->Button_Up)
 		pButton->Disabled = true;
@@ -1002,8 +1002,15 @@ inline MessageLabelClass* MessageColumnClass::GetLastLabel() const
 	return pLabel;
 }
 
+template <bool check>
 int MessageColumnClass::GetMaxScroll() const
 {
+	if constexpr (check)
+	{
+		if (!ScenarioExt::Global())
+			return 0;
+	}
+
 	return Math::max(0, static_cast<int>(ScenarioExt::Global()->RecordMessages.size()) - this->MaxRecord);
 }
 
@@ -1104,7 +1111,7 @@ DEFINE_HOOK(0x623A9F, DSurface_sub_623880_DrawBitFontStrings, 0x5)
 	{
 		auto color = MessageColumnClass::Instance.GetColor();
 		MessageColumnClass::Instance.DecreaseBrightness(color, 3);
-		pSurface->FillRectTrans(pRect, &color, MessageColumnClass::LowOpacity);
+		pSurface->FillRectTrans(pRect, &color, Phobos::Config::MessageDisplayInCenter_BoardOpacity);
 	}
 
 	return SkipGameCode;

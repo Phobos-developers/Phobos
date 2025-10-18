@@ -468,7 +468,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `Shield.PassPercent` overrides the `PassPercent` value set in the ShieldType that is being damaged.
   - `Shield.ReceivedDamage.Minimum` & `Shield.ReceivedDamage.Maximum` override the values set in in the ShieldType that is being damaged.
     - `Shield.ReceivedDamage.MinMultiplier` and `Shield.ReceivedDamage.MinMultiplier` are multipliers to the effective `Shield.ReceivedDamage.Minimum` and `Shield.ReceivedDamage.Maximum` respectively that are applied when the Warhead deals damage to a shield.
-  - `Shield.Respawn.Rate`, `Shield.Respawn.Amount`, `Shield.Respawn.Anims` and `Shield.Respawn.Weapon` override ShieldType `Respawn.Rate`, `Respawn.Amount`, `Respawn.Anim` and `Respawn.Weapon` for duration of `Shield.Respawn.Duration` amount of frames. Negative rate & zero or lower amount default to ShieldType values. If `Shield.Respawn.RestartTimer` is set, currently running shield respawn timer is reset, otherwise the timer's duration is adjusted in proportion to the new `Shield.Respawn.Rate` (e.g timer will be same percentage through before and after) without restarting the timer. If the effect expires while respawn timer is running, remaining time is adjusted to proportionally match ShieldType `Respawn.Rate`. Re-applying the effect resets the duration to `Shield.Respawn.Duration`
+  - `Shield.Respawn.Rate`, `Shield.Respawn.Amount`, `Shield.Respawn.Anim` and `Shield.Respawn.Weapon` override ShieldType `Respawn.Rate`, `Respawn.Amount`, `Respawn.Anim` and `Respawn.Weapon` for duration of `Shield.Respawn.Duration` amount of frames. Negative rate & zero or lower amount default to ShieldType values. If `Shield.Respawn.RestartTimer` is set, currently running shield respawn timer is reset, otherwise the timer's duration is adjusted in proportion to the new `Shield.Respawn.Rate` (e.g timer will be same percentage through before and after) without restarting the timer. If the effect expires while respawn timer is running, remaining time is adjusted to proportionally match ShieldType `Respawn.Rate`. Re-applying the effect resets the duration to `Shield.Respawn.Duration`
     - Additionally `Shield.Respawn.RestartInCombat` & `Shield.Respawn.RestartInCombatDelay` can be used to override ShieldType settings.
   - `Shield.SelfHealing.Rate` & `Shield.SelfHealing.Amount` override ShieldType `SelfHealing.Rate` and `SelfHealing.Amount` for duration of `Shield.SelfHealing.Duration` amount of frames. Negative rate & zero or lower amount default to ShieldType values. If `Shield.SelfHealing.RestartTimer` is set, currently running self-healing timer is restarted, otherwise timer's duration is adjusted in proportion to the new `Shield.SelfHealing.Rate` (e.g timer will be same percentage through before and after) without restarting the timer. If the effect expires while self-healing timer is running, remaining time is adjusted to proportionally match ShieldType `SelfHealing.Rate`. Re-applying the effect resets the duration to `Shield.SelfHealing.Duration`.
     - Additionally `Shield.SelfHealing.RestartInCombat` & `Shield.SelfHealing.RestartInCombatDelay` can be used to override ShieldType settings.
@@ -746,6 +746,21 @@ OnlyUseLandSequences=false  ; boolean
 ```
 
 ## Projectiles
+
+### Attack technos underground
+
+- Now, you can enable projectiles to attack technos underground.
+  - To actually damage the technos, you need [AffectsUnderground](#damage-technos-underground).
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]      ; Projectile
+AU=false              ; boolean
+```
+
+```{note}
+Only vanilla projectiles with `Inviso=yes` set or [Phobos projectiles](#projectile-trajectories) `Straight` with `Trajectory.Straight.SubjectToGround=false` enabled and `Bombard` with `Trajectory.Bombard.SubjectToGround=false` enabled can go beneath the ground. Otherwise, the projectile will be forced to detonate upon hitting the ground.
+```
 
 ### Parabombs
 
@@ -1611,6 +1626,27 @@ ForceAAWeapon.Aircraft=-1                       ; integer, -1 to disable
 Specifically, if a position has `Force(AA)Weapon.InRange` set to -1 and `Force(AA)Weapon.InRange.Overrides` set to a positive value, it'll use default weapon selection logic once satisfied.
 ```
 
+### Fast access vehicle/structure
+
+- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles/structures without queuing.
+
+In `rulesmd.ini`:
+```ini
+[General]
+NoQueueUpToEnter=false          ; boolean
+NoQueueUpToUnload=false         ; boolean
+NoQueueUpToEnter.Buildings=     ; boolean, default to NoQueueUpToEnter
+NoQueueUpToUnload.Buildings=    ; boolean, default to NoQueueUpToUnload
+
+[SOMEVEHICLE/SOMEBUILDING]      ; VehicleType/BuildingType, transport
+NoQueueUpToEnter=               ; boolean, default to [General] -> NoQueueUpToEnter.Buildings
+NoQueueUpToUnload=              ; boolean, default to [General] -> NoQueueUpToUnload.Buildings
+```
+
+```{note}
+Note that this logic is used for [Passenger](https://modenc.renegadeprojects.com/Passengers) logic, which is different from [Occupier](https://modenc.renegadeprojects.com/Occupier).
+```
+
 ### Initial spawns number
 - It is now possible to set the initial amount of spawnees for a spawner, instead of always being filled. Won't work if it's larger than `SpawnsNumber`.
 
@@ -2053,21 +2089,6 @@ WaterImage.ConditionRed=              ; VehicleType entry
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
 ```
 
-### Fast access vehicle
-
-- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing.
-
-In `rulesmd.ini`:
-```ini
-[General]
-NoQueueUpToEnter=false    ; boolean
-NoQueueUpToUnload=false   ; boolean
-
-[SOMEVEHICLE]             ; VehicleType, transport
-NoQueueUpToEnter=         ; boolean, default to [General] -> NoQueueUpToEnter
-NoQueueUpToUnload=        ; boolean, default to [General] -> NoQueueUpToUnload
-```
-
 ### Jumpjet Tilts While Moving
 
 ![image](_static/images/jumpjet-tilt.gif)
@@ -2247,28 +2268,51 @@ SplashList.PickRandom=false  ; boolean
 
 - Warheads are now able to define the extra damage multiplier for owner house, ally houses and enemy houses.
   - `DamageOwnerMultiplier.NotAffectsEnemies` and `DamageAlliesMultiplier.NotAffectsEnemies` is used as the default value if `AffectsEnemies=false` is set on the warhead.
+  - `DamageOwnerMultiplier.Berzerk` , `DamageAlliesMultiplier.Berzerk` and `DamageEnemiesMultiplier.Berzerk` is used when the techno is in berzerk.
 - An extra damage multiplier based on the firer or target's health percentage will be added to the total multiplier. To be elaborate: the damage multiplier will firstly increased by the firer's health percentage multiplies `DamageSourceHealthMultiplier`, then increased by the target's health percentage multiplies `DamageTargetHealthMultiplier`.
 - These multipliers will not affect damage with ignore defenses like `Suicide`.etc .
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-DamageOwnerMultiplier=1.0                       ; floating point value
-DamageAlliesMultiplier=1.0                      ; floating point value
-DamageEnemiesMultiplier=1.0                     ; floating point value
-DamageOwnerMultiplier.NotAffectsEnemies=        ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
-DamageAlliesMultiplier.NotAffectsEnemies=       ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
+DamageOwnerMultiplier=1.0                                  ; floating point value
+DamageAlliesMultiplier=1.0                                 ; floating point value
+DamageEnemiesMultiplier=1.0                                ; floating point value
+DamageOwnerMultiplier.NotAffectsEnemies=                   ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
+DamageAlliesMultiplier.NotAffectsEnemies=                  ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
+DamageOwnerMultiplier.Berzerk=                             ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
+DamageAlliesMultiplier.Berzerk=                            ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
+DamageEnemiesMultiplier.Berzerk=                           ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
 
-[SOMEWARHEAD]                                   ; WarheadType
-DamageOwnerMultiplier=                          ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier or [CombatDamage] -> DamageOwnerMultiplier.NotAffectsEnemies, depending on AffectsEnemies
-DamageAlliesMultiplier=                         ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier or [CombatDamage] -> DamageAlliesMultiplier.NotAffectsEnemies, depending on AffectsEnemies
-DamageEnemiesMultiplier=                        ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
-DamageSourceHealthMultiplier=0.0                ; floating point value
-DamageTargetHealthMultiplier=0.0                ; floating point value
+[SOMEWARHEAD]                                              ; WarheadType
+DamageOwnerMultiplier=                                     ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier or [CombatDamage] -> DamageOwnerMultiplier.NotAffectsEnemies, depending on AffectsEnemies
+DamageAlliesMultiplier=                                    ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier or [CombatDamage] -> DamageAlliesMultiplier.NotAffectsEnemies, depending on AffectsEnemies
+DamageEnemiesMultiplier=                                   ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
+DamageOwnerMultiplier.Berzerk=                             ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier.Berzerk
+DamageAlliesMultiplier.Berzerk=                            ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier.Berzerk
+DamageEnemiesMultiplier.Berzerk=                           ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier.Berzerk
+DamageSourceHealthMultiplier=0.0                           ; floating point value
+DamageTargetHealthMultiplier=0.0                           ; floating point value
 ```
 
 ```{note}
 `DamageAlliesMultiplier` won't affect your own units like `AffectsAllies` did.
+```
+
+### Damage technos underground
+
+- Now you can make the warhead damage technos underground!
+  - To allow weapons to target underground technos, you need [AU](#attack-technos-underground).
+- Notice that if the projectile detonates underground, its animation effect may look strange.
+  - You can use `[WarheadType] -> PlayAnimUnderground=false` to prevent the warhead animation from playing when the projectile detonates underground.
+  - You can also use `[WarheadType] -> PlayAnimAboveSurface=true` to make the warhead animation play on the ground directly above when the projectile detonates underground.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                         ; WarheadType
+AffectsUnderground=false              ; boolean
+PlayAnimUnderground=true              ; boolean
+PlayAnimAboveSurface=false            ; boolean
 ```
 
 ### Detonate Warhead on all objects on map
@@ -2489,6 +2533,29 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; WarheadType
 CanKill=true   ; boolean
+```
+
+### Unlimbo detonate warhead
+
+![Unlimbo Detonate](_static/images/unlimbodetonate.gif)
+*Unlimbo Detonate used in **The Call of the Panic Spear** by @[Octagonal prism](https://space.bilibili.com/360577336)*
+
+- `UnlimboDetonate` allows units that have fired weapons with `LimboLaunch=yes` to reappear.
+  - `UnlimboDetonate.ForceLocation` allows units to forcefully appear at the projectile explosion location, otherwise they will search for other available cells.
+  - `UnlimboDetonate.KeepTarget` allows units to retain their original attack target when they reappear.
+  - `UnlimboDetonate.KeepSelected` allows units to retain their original selected state when they appear.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                          ; WarheadType
+UnlimboDetonate=false                  ; boolean
+UnlimboDetonate.ForceLocation=false    ; boolean
+UnlimboDetonate.KeepTarget=false       ; boolean
+UnlimboDetonate.KeepSelected=false     ; boolean
+```
+
+```{warning}
+`UnlimboDetonate` cannot be used in conjunction with `Parasite`.
 ```
 
 ## Weapons

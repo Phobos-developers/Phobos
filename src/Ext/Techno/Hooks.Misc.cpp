@@ -266,8 +266,9 @@ DEFINE_HOOK(0x4D962B, FootClass_SetDestination_RecycleFLH, 0x5)
 	GET(FootClass* const, pThis, EBP);
 
 	auto const pCarrier = pThis->SpawnOwner;
+	auto const pDest = pThis->Destination;
 
-	if (pCarrier && pCarrier == pThis->Destination) // This is a spawner returning to its carrier.
+	if (pCarrier && pCarrier == pDest) // This is a spawner returning to its carrier.
 	{
 		auto const pCarrierTypeExt = TechnoExt::ExtMap.Find(pCarrier)->TypeExtData;
 		auto const& FLH = pCarrierTypeExt->Spawner_RecycleCoord;
@@ -277,6 +278,15 @@ DEFINE_HOOK(0x4D962B, FootClass_SetDestination_RecycleFLH, 0x5)
 			GET(CoordStruct*, pDestCrd, EAX);
 			*pDestCrd += TechnoExt::GetFLHAbsoluteCoords(pCarrier, FLH, pCarrierTypeExt->Spawner_RecycleOnTurret) - pCarrier->GetCoords();
 		}
+	}
+	else if (pDest->WhatAmI() == AbstractType::Building
+		&& pThis->SendCommand(RadioCommand::QueryCanEnter, static_cast<BuildingClass*>(pDest)) != RadioCommand::AnswerPositive)
+	{
+		GET(CoordStruct*, pDestCrd, EAX);
+		auto crd = pDest->GetCoords();
+		crd.X = ((crd.X >> 8) << 8) + 128;
+		crd.Y = ((crd.Y >> 8) << 8) + 128;
+		*pDestCrd = crd;
 	}
 
 	return 0;

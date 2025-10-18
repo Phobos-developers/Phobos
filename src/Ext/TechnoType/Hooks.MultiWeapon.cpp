@@ -89,22 +89,28 @@ int GetVoiceAttack(TechnoTypeClass* pType, int weaponIndex, bool isElite, Weapon
 	{
 		voiceAttack = pTypeExt->VoiceIFVRepair;
 
-		if (voiceAttack < 0)
+		if (voiceAttack == -1)
 			voiceAttack = !strcmp(pType->ID, "FV") ? RulesClass::Instance->VoiceIFVRepair : -1; // It's hardcoded like this in vanilla
 
-		if (voiceAttack >= 0)
+		if (voiceAttack != -1)
 			return voiceAttack;
 	}
 
 	if (weaponIndex >= 0 && int(pTypeExt->VoiceWeaponAttacks.size()) > weaponIndex)
 		voiceAttack = isElite ? pTypeExt->VoiceEliteWeaponAttacks[weaponIndex] : pTypeExt->VoiceWeaponAttacks[weaponIndex];
 
-	if (voiceAttack < 0)
+	if (voiceAttack == -1)
 	{
 		if (pTypeExt->IsSecondary(weaponIndex))
-			voiceAttack = isElite ? pType->VoiceSecondaryEliteWeaponAttack : pType->VoiceSecondaryWeaponAttack;
+		{
+			const int eliteVoice = pType->VoiceSecondaryEliteWeaponAttack;
+			voiceAttack = isElite && eliteVoice != -1 ? eliteVoice : pType->VoiceSecondaryWeaponAttack;
+		}
 		else
-			voiceAttack = isElite ? pType->VoicePrimaryEliteWeaponAttack : pType->VoicePrimaryWeaponAttack;
+		{
+			const int eliteVoice = pType->VoicePrimaryEliteWeaponAttack;
+			voiceAttack = isElite && eliteVoice != -1 ? eliteVoice : pType->VoicePrimaryWeaponAttack;
+		}
 	}
 
 	return voiceAttack;

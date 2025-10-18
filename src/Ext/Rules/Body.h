@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <CCINIClass.h>
 #include <RulesClass.h>
@@ -99,10 +99,13 @@ public:
 		double AirShadowBaseScale_log;
 
 		Valueable<bool> ExtendedAircraftMissions;
+		Valueable<int> ExtendedAircraftMissions_UnlandDamage;
 		Valueable<bool> AmphibiousEnter;
 		Valueable<bool> AmphibiousUnload;
 		Valueable<bool> NoQueueUpToEnter;
 		Valueable<bool> NoQueueUpToUnload;
+		Nullable<bool> NoQueueUpToEnter_Buildings;
+		Nullable<bool> NoQueueUpToUnload_Buildings;
 
 		Valueable<bool> BuildingProductionQueue;
 
@@ -181,6 +184,9 @@ public:
 		Valueable<double> DamageEnemiesMultiplier;
 		Nullable<double> DamageOwnerMultiplier_NotAffectsEnemies;
 		Nullable<double> DamageAlliesMultiplier_NotAffectsEnemies;
+		Nullable<double> DamageOwnerMultiplier_Berzerk;
+		Nullable<double> DamageAlliesMultiplier_Berzerk;
+		Nullable<double> DamageEnemiesMultiplier_Berzerk;
 
 		Valueable<double> AircraftLevelLightMultiplier;
 		Valueable<double> JumpjetLevelLightMultiplier;
@@ -232,6 +238,8 @@ public:
 		Valueable<bool> WarheadParticleAlphaImageIsLightFlash;
 		Valueable<int> CombatLightDetailLevel;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
+
+		Valueable<bool> UseRetintFix;
 
 		Nullable<int> AINormalTargetingDelay;
 		Nullable<int> PlayerNormalTargetingDelay;
@@ -334,10 +342,13 @@ public:
 			, AirShadowBaseScale_log { 0.693376137 }
 
 			, ExtendedAircraftMissions { false }
+			, ExtendedAircraftMissions_UnlandDamage { -1 }
 			, AmphibiousEnter { false }
 			, AmphibiousUnload { false }
 			, NoQueueUpToEnter { false }
 			, NoQueueUpToUnload { false }
+			, NoQueueUpToEnter_Buildings {}
+			, NoQueueUpToUnload_Buildings {}
 
 			, BuildingProductionQueue { false }
 
@@ -405,6 +416,9 @@ public:
 			, DamageEnemiesMultiplier { 1.0 }
 			, DamageOwnerMultiplier_NotAffectsEnemies {}
 			, DamageAlliesMultiplier_NotAffectsEnemies {}
+			, DamageOwnerMultiplier_Berzerk {}
+			, DamageAlliesMultiplier_Berzerk {}
+			, DamageEnemiesMultiplier_Berzerk {}
 			, AircraftLevelLightMultiplier { 1.0 }
 			, JumpjetLevelLightMultiplier { 0.0 }
 			, VoxelLightSource { }
@@ -447,6 +461,7 @@ public:
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
 			, LightFlashAlphaImageDetailLevel { 0 }
+			, UseRetintFix { true }
 			, AINormalTargetingDelay {}
 			, PlayerNormalTargetingDelay {}
 			, AIGuardAreaTargetingDelay {}

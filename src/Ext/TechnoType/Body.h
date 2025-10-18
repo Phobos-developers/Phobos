@@ -396,6 +396,8 @@ public:
 		Nullable<bool> ExtendedAircraftMissions_SmoothMoving;
 		Nullable<bool> ExtendedAircraftMissions_EarlyDescend;
 		Nullable<bool> ExtendedAircraftMissions_RearApproach;
+		Nullable<bool> ExtendedAircraftMissions_FastScramble;
+		Nullable<int> ExtendedAircraftMissions_UnlandDamage;
 
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
@@ -777,6 +779,8 @@ public:
 			, ExtendedAircraftMissions_SmoothMoving {}
 			, ExtendedAircraftMissions_EarlyDescend {}
 			, ExtendedAircraftMissions_RearApproach {}
+			, ExtendedAircraftMissions_FastScramble {}
+			, ExtendedAircraftMissions_UnlandDamage {}
 
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
