@@ -17,7 +17,7 @@ DEFINE_HOOK(0x73C7AC, UnitClass_DrawAsSHP_DrawTurret_TintFix, 0x6)
 
 	GET(UnitTypeClass*, pType, ECX);
 	GET(SHPStruct*, pShape, EDI);
-	GET(int, bodyFrameIdx, EBX);
+	GET(const int, bodyFrameIdx, EBX);
 	REF_STACK(Point2D, location, STACK_OFFSET(0x128, 0x4));
 	REF_STACK(RectangleStruct, bounds, STACK_OFFSET(0x128, 0xC));
 	GET_STACK(const int, extraLight, STACK_OFFSET(0x128, 0x1C));
