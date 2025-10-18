@@ -2298,6 +2298,7 @@ msgid ""
 "Fixed the projection location of selectbox when over elevated bridge (by "
 "NetsuNegi)"
 msgstr ""
+"修复了处于高架桥上时的选择框投影位置不正确的问题（by NetsuNegi）"
 
 #: ../../Whats-New.md:504 ../../Whats-New.md:883 ../../Whats-New.md:1106
 msgid "Fixes / interactions with other extensions:"
