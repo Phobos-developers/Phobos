@@ -154,11 +154,13 @@ DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_InfiltrateBuilding, 0x6)
 	GET(BuildingClass*, pBuilding, EDI);
 
 	if (const auto pTag = pBuilding->AttachedTag)
-	{
 		pTag->RaiseEvent(TriggerEvent::SpiedBy, pThis, CellStruct::Empty);
+
+	if (const auto pTag = pBuilding->AttachedTag)
 		pTag->RaiseEvent(TriggerEvent::SpyAsHouse, pThis, CellStruct::Empty);
+
+	if (const auto pTag = pBuilding->AttachedTag)
 		pTag->RaiseEvent(TriggerEvent::SpyAsInfantry, pThis, CellStruct::Empty);
-	}
 
 	return 0;
 }
