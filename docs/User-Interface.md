@@ -497,31 +497,43 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
     - `Type` - only targets of the same type (like infantries, vehicles or buildings) will be selected among the targets allocated in the range. At this time, a yellow ring will be displayed.
     - `Name` - only targets of the same name (or with the same `GroupAs`) will be selected among the targets allocated in the range. At this time, a red ring will be displayed.
 - `AllowDistributionCommand.AffectsAllies` & `AllowDistributionCommand.AffectsEnemies` allow the distribution command to work on allies (including owner) or enemies target. If picking a target that's not eligible, it'll fallback to vanilla command.
-- For localization add `TXT_SWITCH_NOMOVE`, `TXT_DISTR_SPREAD`, `TXT_DISTR_FILTER`, `TXT_DISTR_HOLDDOWN`, `TXT_SWITCH_NOMOVE_DESC`, `TXT_DISTR_SPREAD_DESC`, `TXT_DISTR_FILTER_DESC`, `TXT_DISTR_HOLDDOWN_DESC`, `MSG:DistributionModeOn`, `MSG:DistributionModeOff` into your `.csf` file.
+- It's possible to add a button for distribution mode in the bottom bar by adding `DistributionMode` in the `ButtonList` of `AdvancedCommandBar` and `MultiplayerAdvancedCommandBar`.
+  - The positions of each button are hardcoded, so it'll only decide whether enable this button or not. Distribute Mode button is now always listed after all the vanilla ones.
+  - The asset of these buttons should be added in `sidec0x.mix` files which correspond to different sides, with the name `button12.shp`.
+- For localization add `TXT_SWITCH_NOMOVE`, `TXT_DISTR_SPREAD`, `TXT_DISTR_FILTER`, `TXT_DISTR_HOLDDOWN`, `TXT_SWITCH_NOMOVE_DESC`, `TXT_DISTR_SPREAD_DESC`, `TXT_DISTR_FILTER_DESC`, `TXT_DISTR_HOLDDOWN_DESC`, `MSG:DistributionModeOn`, `MSG:DistributionModeOff`, `TIP:DistributionMode` into your `.csf` file.
 
 In `rulesmd.ini`:
 ```ini
 [GlobalControls]
-AllowSwitchNoMoveCommand=false                  ; boolean
-AllowDistributionCommand=false                  ; boolean
-AllowDistributionCommand.SpreadMode=true        ; boolean
-AllowDistributionCommand.SpreadModeScroll=true  ; boolean
-AllowDistributionCommand.FilterMode=true        ; boolean
-AllowDistributionCommand.AffectsAllies=true     ; boolean
-AllowDistributionCommand.AffectsEnemies=true    ; boolean
+AllowSwitchNoMoveCommand=false                      ; boolean
+AllowDistributionCommand=false                      ; boolean
+AllowDistributionCommand.SpreadMode=true            ; boolean
+AllowDistributionCommand.SpreadModeScroll=true      ; boolean
+AllowDistributionCommand.FilterMode=true            ; boolean
+AllowDistributionCommand.AffectsAllies=true         ; boolean
+AllowDistributionCommand.AffectsEnemies=true        ; boolean
 
 [AudioVisual]
-StartDistributionModeSound=                     ; sound entry
-EndDistributionModeSound=                       ; sound entry
-AddDistributionModeCommandSound=                ; sound entry
+StartDistributionModeSound=                         ; sound entry
+EndDistributionModeSound=                           ; sound entry
+AddDistributionModeCommandSound=                    ; sound entry
 ```
 
 In `ra2md.ini`:
 ```ini
 [Phobos]
-DefaultApplyNoMoveCommand=true                  ; boolean
-DefaultDistributionSpreadMode=2                 ; integer, 0 - r=0 , 1 - r=4 , 2 - r=8 , 3 - r=16
-DefaultDistributionFilterMode=2                 ; integer, 0 - None , 1 - Like , 2 - Type , 3 - Name
+DefaultApplyNoMoveCommand=true                      ; boolean
+DefaultDistributionSpreadMode=2                     ; integer, 0 - r=0 , 1 - r=4 , 2 - r=8 , 3 - r=16
+DefaultDistributionFilterMode=2                     ; integer, 0 - None , 1 - Like , 2 - Type , 3 - Name
+```
+
+In `uimd.ini`:
+```ini
+[AdvancedCommandBar]
+ButtonList=[Button1],DistributionMode,[ButtonX]     ; List of button entry
+
+[MultiplayerAdvancedCommandBar]
+ButtonList=[Button1],DistributionMode,[ButtonX]     ; List of button entry
 ```
 
 ### `[ ]` Toggle Message Label
