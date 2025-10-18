@@ -78,8 +78,6 @@ public:
 
 		AirstrikeClass* AirstrikeTargetingMe;
 
-		CDTimerClass FiringAnimationTimer;
-
 		bool IsSelected;
 		bool ResetLocomotor;
 
@@ -146,7 +144,6 @@ public:
 			, LastSensorsMapCoords { CellStruct::Empty }
 			, TiberiumEater_Timer {}
 			, AirstrikeTargetingMe { nullptr }
-			, FiringAnimationTimer {}
 			, SimpleDeployerAnimationTimer {}
 			, DelayedFireSequencePaused { false }
 			, DelayedFireWeaponIndex { -1 }
@@ -280,7 +277,7 @@ public:
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue, int infoIndex);
 	static void GetDigitalDisplayFakeHealth(TechnoClass* pThis, int& value, int& maxValue);
 	static void CreateDelayedFireAnim(TechnoClass* pThis, AnimTypeClass* pAnimType, int weaponIndex, bool attach, bool center, bool removeOnNoDelay, bool onTurret, CoordStruct firingCoords);
-	static bool HandleDelayedFireWithPauseSequence(TechnoClass* pThis, int weaponIndex, int firingFrame);
+	static bool HandleDelayedFireWithPauseSequence(TechnoClass* pThis, WeaponTypeClass* pWeapon, int weaponIndex, int frame, int firingFrame);
 	static bool IsHealthInThreshold(TechnoClass* pObject, double min, double max);
 	static UnitTypeClass* GetUnitTypeExtra(UnitClass* pUnit);
 	static AircraftTypeClass* GetAircraftTypeExtra(AircraftClass* pAircraft);

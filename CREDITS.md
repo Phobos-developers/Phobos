@@ -394,6 +394,7 @@ This page lists all the individual contributions to the project by their author.
   - Health bar permanently displayed
   - Unlimbo Detonate warhead
   - Fast access structure
+  - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -449,6 +450,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize squid grapple animation
   - Fix the bug that armor multiplier of new attacheffect will have extra take effect once if restricted warheads
   - Fix the bug that techno unit will draw with ironcurtain and airstrike color and intensity who disguised as terrain or overlay
+  - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
