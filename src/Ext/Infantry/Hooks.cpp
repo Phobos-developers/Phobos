@@ -147,3 +147,18 @@ DEFINE_HOOK(0x522373, InfantryClass_ApproachTarget_InfantryAutoDeploy, 0x5)
 	GET(InfantryClass*, pThis, ESI);
 	return TechnoTypeExt::ExtMap.Find(pThis->Type)->InfantryAutoDeploy.Get(RulesExt::Global()->InfantryAutoDeploy) ? Deploy : 0;
 }
+
+DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_InfiltrateBuilding, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+	GET(BuildingClass*, pBuilding, EDI);
+
+	if (const auto pTag = pBuilding->AttachedTag)
+	{
+		pTag->RaiseEvent(TriggerEvent::SpiedBy, pThis, CellStruct::Empty);
+		pTag->RaiseEvent(TriggerEvent::SpyAsHouse, pThis, CellStruct::Empty);
+		pTag->RaiseEvent(TriggerEvent::SpyAsInfantry, pThis, CellStruct::Empty);
+	}
+
+	return 0;
+}
