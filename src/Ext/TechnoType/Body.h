@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -474,6 +474,7 @@ public:
 
 		Nullable<Mission> ParadropMission;
 		Nullable<Mission> AIParadropMission;
+		Nullable<bool> JumpjetClimbIgnoreBuilding;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -903,6 +904,7 @@ public:
 
 			, ParadropMission {}
 			, AIParadropMission {}
+			, JumpjetClimbIgnoreBuilding {}
 		{ }
 
 		virtual ~ExtData() = default;

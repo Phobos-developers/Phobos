@@ -252,15 +252,16 @@ int JumpjetRushHelpers::JumpjetLocomotionPredictHeight(JumpjetLocomotionClass* p
 {
 	const auto pFoot = pThis->LinkedTo;
 	const auto pLocation = &pFoot->Location;
+	const bool ignoreOccupy = TechnoTypeExt::ExtMap.Find(pThis->LinkedTo->GetTechnoType())->JumpjetClimbIgnoreBuilding.Get(RulesExt::Global()->JumpjetClimbIgnoreBuilding);
 
 	constexpr int shift = 8; // >> shift -> / Unsorted::LeptonsPerCell
 	constexpr auto point2Cell = [](const Point2D& point) -> CellStruct
 	{
 		return CellStruct { static_cast<short>(point.X >> shift), static_cast<short>(point.Y >> shift) };
 	};
-	auto getJumpjetHeight = [](const CellClass* const pCell, const Point2D& point) -> int
+	auto getJumpjetHeight = [ignoreOccupy](const CellClass* const pCell, const Point2D& point) -> int
 	{
-		return pCell->GetFloorHeight(Point2D { point.X, point.Y }) + JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(pCell);
+			return pCell->GetFloorHeight(Point2D { point.X, point.Y }) + (ignoreOccupy ? 0 : JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(pCell));
 	};
 
 	// Initialize
