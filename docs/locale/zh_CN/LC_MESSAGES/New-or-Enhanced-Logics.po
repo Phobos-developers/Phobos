@@ -2374,6 +2374,16 @@ msgstr "Next"
 
 #: ../../New-or-Enhanced-Logics.md:900
 msgid ""
+"![image](_static/images/swnext.gif) *Use `SW.Next` to link multiple "
+"ChronoSphere and ChronoWarp superweapons into a chained SuperWeapon "
+"system in [Cylearun](https://www.moddb.com/mods/Cylearun)*"
+msgstr ""
+"![image](_static/images/swnext.gif) "
+"*[虚幻](https://www.moddb.com/mods/Cylearun) 中通过 `SW.Next` 将多个 ChronoSphere"
+" 与 ChronoWarp 类型的超武组成链式超武系统*"
+
+#: ../../New-or-Enhanced-Logics.md:900
+msgid ""
 "Superweapons can now launch other superweapons at the same target. "
 "Launched types can be additionally randomized using the same rules as "
 "with LimboDelivery (see above)."
