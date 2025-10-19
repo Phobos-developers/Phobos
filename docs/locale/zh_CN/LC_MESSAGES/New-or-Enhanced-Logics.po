@@ -4869,7 +4869,7 @@ msgstr "Next"
 
 #: ../../New-or-Enhanced-Logics.md:1206
 msgid ""
-"![image](_static/images/swnext.gif) *Use `SW.Next` to link multiple "
+"![image](_static/images/swnext.gif) *Use of `SW.Next` to link multiple "
 "ChronoSphere and ChronoWarp superweapons into a chained SuperWeapon "
 "system in [Cylearun](https://www.moddb.com/mods/Cylearun)*"
 msgstr ""
