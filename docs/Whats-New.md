@@ -480,6 +480,8 @@ Vanilla fixes:
 - Fixed the bug that techno unit will draw with ironcurtain and airstrike color and intensity who disguised as terrain or overlay (by NetsuNegi)
 - Fixed an issue that the AI would enter a combat state when its building receiving damage from friendly units or damage not greater than 0 (by TaranDahl)
 - Fixed an issue that the techno with weapon with `AA=yes` and `AG=no` would not auto targeting units that are falling, such as paratroopers (by TaranDahl)
+- Iron Curtain/Custom Tint Support for SHP Turreted Vehicles (by NetsuNegi, FlyStar)
+- Reactivate unused trigger events 2, 53, and 54 (by FlyStar)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -498,6 +500,7 @@ Phobos fixes:
 - Fixed an issue that jumpjet infantries stop incorrectly when assigned a target out of range (by TaranDahl)
 - Fixed an issue where the 77 trigger event in Ares was not functioning properly (by NetsuNegi)
 - Fixed an interaction error between the engineer and the Ares rubble (by FlyStar)
+- Fixed the projection location of selectbox when over elevated bridge (by NetsuNegi)
 - Fixed an issue where the game would only use `Weapon1` and `Weapon2` for auto-targeting even when `MultiWeapon=yes` was set (by FlyStar)
 
 Fixes / interactions with other extensions:
