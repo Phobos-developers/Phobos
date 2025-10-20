@@ -2308,6 +2308,7 @@ msgid ""
 "Fixed an issue where the game would only use `Weapon1` and `Weapon2` for "
 "auto-targeting even when `MultiWeapon=yes` was set (by FlyStar)"
 msgstr ""
+"修复了即便设置了 `MultiWeapon=yes` 游戏也仍然只会使用 `Weapon1`、`Weapon2` 进行自动索敌的问题（by FlyStar）"
 
 #: ../../Whats-New.md:506 ../../Whats-New.md:885 ../../Whats-New.md:1108
 msgid "Fixes / interactions with other extensions:"
