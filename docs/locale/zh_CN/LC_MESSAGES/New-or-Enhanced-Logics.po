@@ -3257,13 +3257,12 @@ msgid "Revenge weapon"
 msgstr "复仇武器"
 
 #: ../../New-or-Enhanced-Logics.md:1291
-#, fuzzy
 msgid ""
 "![Revenge Weapon](_static/images/revengeweapon.gif) *Revenge Weapon usage"
 " in [RA2: Reboot](https://www.moddb.com/mods/reboot)*"
 msgstr ""
-"![image](_static/images/remove-mc.gif) *[RA2: "
-"Reboot](https://www.moddb.com/mods/reboot) 中的心控解除弹头*"
+"![image](_static/images/revengeweapon.gif) *[RA2: "
+"Reboot](https://www.moddb.com/mods/reboot) 中的复仇武器*"
 
 #: ../../New-or-Enhanced-Logics.md:1291
 msgid "Revenge Weapon"
