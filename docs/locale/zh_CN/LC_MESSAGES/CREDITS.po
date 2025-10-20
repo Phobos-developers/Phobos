@@ -1586,8 +1586,8 @@ msgid "Iron Curtain/Custom Tint Support for SHP Turreted Vehicles"
 msgstr "修复了铁幕／自定义染色不支持 SHP 有炮塔载具的问题"
 
 #: ../../../CREDITS.md:399
-msgid "Reactivate unused trigger events 2, 53, and 54."
-msgstr ""
+msgid "Reactivate unused trigger events 2, 53, and 54"
+msgstr "重新激活无效的 2、53 和 54 号触发条件"
 
 #: ../../../CREDITS.md:400
 msgid "**NetsuNegi**:"
