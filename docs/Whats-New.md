@@ -480,7 +480,7 @@ Vanilla fixes:
 - Fixed the bug that techno unit will draw with ironcurtain and airstrike color and intensity who disguised as terrain or overlay (by NetsuNegi)
 - Fixed an issue that the AI would enter a combat state when its building receiving damage from friendly units or damage not greater than 0 (by TaranDahl)
 - Fixed an issue that the techno with weapon with `AA=yes` and `AG=no` would not auto targeting units that are falling, such as paratroopers (by TaranDahl)
-- Iron Curtain/Custom Tint Support for SHP Turreted Vehicles (by NetsuNegi, FlyStar)
+- Iron Curtain/Custom Tint Support for SHP Turreted Vehicles (by NetsuNegi & FlyStar)
 - Reactivate unused trigger events 2, 53, and 54 (by FlyStar)
 
 Phobos fixes:
