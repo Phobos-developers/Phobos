@@ -188,12 +188,14 @@ HealthBar.Permanent=false            ; boolean
 HealthBar.Permanent.PipScale=false   ; boolean
 ```
 
-### Light flash effect toggling
+### Visual effects toggling
 
 - It is possible to toggle certain light flash effects off. These light flash effects include:
   - Combat light effects (`Bright=true`) and everything that uses same functionality e.g Iron Curtain / Force Field impact flashes.
   - Alpha images attached to ParticleSystems or Particles that are generated through a Warhead's `Particle` if `[AudioVisual] -> WarheadParticleAlphaImageIsLightFlash` or on Warhead `Particle.AlphaImageIsLightFlash` is set to true, latter defaults to former.
     - Additionally these alpha images are not created if `[AudioVisual] -> LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting.
+- It is possible to toggle shake screen effects (`ShakeX/Ylo/hi`) off.
+- Phobos's [Laser Trail effects](New-or-Enhanced-Logics.md#laser-trails) can also be toggled off.
 
 In `rulesmd.ini`:
 ```ini
@@ -209,6 +211,8 @@ In `RA2MD.INI`:
 ```ini
 [Phobos]
 HideLightFlashEffects=false  ; boolean
+HideLaserTrailEffects=false  ; boolean
+HideShakeEffects=false       ; boolean
 ```
 
 ### Low priority for box selection
