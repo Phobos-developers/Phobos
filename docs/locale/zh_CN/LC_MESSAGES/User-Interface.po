@@ -606,8 +606,8 @@ msgstr ""
 "ShowFlashOnSelecting=false  ; boolean\n"
 
 #: ../../User-Interface.md:172
-msgid "Hide health bars"
-msgstr "隐藏血条"
+msgid "Custom health bars display"
+msgstr "自定义血条显示"
 
 #: ../../User-Interface.md:174
 msgid ""
