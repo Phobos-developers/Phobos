@@ -134,6 +134,19 @@ ShowBriefing=true  ; boolean
 
 ## Script Actions
 
+### Below `10000`
+
+#### `24` Play speech
+
+- Restored functionality.
+- Given a speech index, the game will play it. Just like action 24 from Tiberian Sun.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=24,n
+```
+
 ### `10000-10999` Ingame Actions
 
 #### `10000-10049` Attack Actions

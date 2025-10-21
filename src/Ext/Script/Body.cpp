@@ -215,6 +215,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		// Chronoshift to enemy base, argument is additional distance modifier
 		ScriptExt::ChronoshiftToEnemyBase(pTeam, argument);
 		break;
+	case PhobosScripts::PlaySpeech:
+		ScriptExt::PlaySpeech(pTeam);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		if (action > 70 && !ScriptExt::IsExtVariableAction(action))
@@ -1246,4 +1249,12 @@ void ScriptExt::Log(const char* pFormat, ...)
 	va_start(args, pFormat);
 	Debug::LogWithVArgs(pFormat, args);
 	va_end(args);
+}
+
+// Works like the old Tiberian Sun ScriptType Action "24"
+void ScriptExt::PlaySpeech(TeamClass* pTeam)
+{
+	int index = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
+	VoxClass::PlayIndex(index);
+	pTeam->StepCompleted = true;
 }

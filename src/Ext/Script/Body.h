@@ -19,6 +19,8 @@
 
 enum class PhobosScripts : unsigned int
 {
+	PlaySpeech = 24,
+
 	// Range 10000-10999 are team (aka ingame) actions
 	// Sub-range 10000-10049 is for "attack" actions
 	RepeatAttackCloser = 10000,
@@ -217,6 +219,7 @@ public:
 	static void VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate);
 	static bool IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed);
 	static void Log(const char* pFormat, ...);
+	static void PlaySpeech(TeamClass* pTeam);
 
 	// Mission.Attack.cpp
 	static void Mission_Attack(TeamClass* pTeam, int calcThreatMode = 0, bool repeatAction = true, int attackAITargetType = -1, int idxAITargetTypeItem = -1);
