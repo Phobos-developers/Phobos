@@ -107,6 +107,8 @@ ToolTipDescriptions=true         ; boolean
 ToolTipBlur=false                ; boolean
 SaveGameOnScenarioStart=true     ; boolean
 HideLightFlashEffects=false      ; boolean
+HideLaserTrailEffects=false      ; boolean
+HideShakeEffects=false           ; boolean
 ```
 
 ### For Map Editor (Final Alert 2)
@@ -452,6 +454,7 @@ New:
 - [Unlimbo Detonate warhead](New-or-Enhanced-Logics.md#unlimbo-detonate-warhead) (by FlyStar)
 - [Attack](New-or-Enhanced-Logics.md#attack-technos-underground) and [damage](New-or-Enhanced-Logics.md#damage-technos-underground) technos underground (by TaranDahl)
 - Fast access structure (by FlyStar)
+- Toggle off laser trail and shake effects (by Ollerus)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
