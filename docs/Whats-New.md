@@ -505,6 +505,7 @@ Phobos fixes:
 - Fixed an interaction error between the engineer and the Ares rubble (by FlyStar)
 - Fixed the projection location of selectbox when over elevated bridge (by NetsuNegi)
 - Fixed an issue where the game would only use `Weapon1` and `Weapon2` for auto-targeting even when `MultiWeapon=yes` was set (by FlyStar)
+- Fixed a game load crash caused by `MultiWeapon.IsSecondary=-1` or non-projectile weapons (by FlyStar)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
