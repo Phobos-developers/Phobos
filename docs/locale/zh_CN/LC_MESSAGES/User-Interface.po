@@ -695,18 +695,21 @@ msgid ""
 "It is possible to toggle shake screen effects (`ShakeX/Ylo/hi`) off by "
 "setting `HideShakeEffects=true`."
 msgstr ""
+"可以通过设置 `HideShakeEffects=true` 来关闭屏幕抖动（`ShakeX/Ylo/hi`）效果。"
 
 #: ../../User-Interface.md:198
 msgid ""
 "Phobos's [Laser Trail effects](New-or-Enhanced-Logics.md#laser-trails) "
 "can also be toggled off."
 msgstr ""
+"Phobos 的 [激光尾焰效果](New-or-Enhanced-Logics.md#laser-trails) 也可以被关闭。"
 
 #: ../../User-Interface.md:199
 msgid ""
 "If a LaserTrailType has `CanBeHidden=false`, it can't be toggled off by "
 "setting `HideLaserTrailEffects=true`."
 msgstr ""
+"如果某个激光尾迹类型拥有 `CanBeHidden=false`，那么它将无法通过设置 `HideLaserTrailEffects=true` 来关闭。"
 
 #: ../../User-Interface.md:202
 msgid ""

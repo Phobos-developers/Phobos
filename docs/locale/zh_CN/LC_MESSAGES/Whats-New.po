@@ -2016,7 +2016,7 @@ msgstr "快速进楼（by FlyStar）"
 
 #: ../../Whats-New.md:457
 msgid "Toggle off laser trail and shake effects (by Ollerus)"
-msgstr ""
+msgstr "关闭激光尾焰与屏幕抖动效果（by Ollerus）"
 
 #: ../../Whats-New.md:459 ../../Whats-New.md:688 ../../Whats-New.md:1047
 #: ../../Whats-New.md:1156 ../../Whats-New.md:1181 ../../Whats-New.md:1220

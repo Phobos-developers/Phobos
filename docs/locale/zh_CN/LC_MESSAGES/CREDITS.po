@@ -2375,7 +2375,7 @@ msgstr "护盾重生动画与武器"
 
 #: ../../../CREDITS.md:579
 msgid "Toggle off laser trail and shake effects"
-msgstr ""
+msgstr "关闭激光尾焰与屏幕抖动效果"
 
 #: ../../../CREDITS.md:580
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
