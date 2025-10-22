@@ -709,7 +709,7 @@ msgid ""
 "If a LaserTrailType has `CanBeHidden=false`, it can't be toggled off by "
 "setting `HideLaserTrailEffects=true`."
 msgstr ""
-"如果某个激光尾迹类型拥有 `CanBeHidden=false`，那么它将无法通过设置 `HideLaserTrailEffects=true` 来关闭。"
+"如果某个激光尾焰类型拥有 `CanBeHidden=false`，那么它将无法通过设置 `HideLaserTrailEffects=true` 来关闭。"
 
 #: ../../User-Interface.md:202
 msgid ""

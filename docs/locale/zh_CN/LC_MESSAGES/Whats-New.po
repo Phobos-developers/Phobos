@@ -2324,6 +2324,7 @@ msgid ""
 "Fixed a game load crash caused by `MultiWeapon.IsSecondary=-1` or non-"
 "projectile weapons (by FlyStar)"
 msgstr ""
+"修复了游戏加载过程中由于 `MultiWeapon.IsSecondary=-1` 或武器没有抛射体导致的崩溃问题（by FlyStar）"
 
 #: ../../Whats-New.md:510 ../../Whats-New.md:889 ../../Whats-New.md:1112
 msgid "Fixes / interactions with other extensions:"
