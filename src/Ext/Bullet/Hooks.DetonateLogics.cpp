@@ -31,6 +31,9 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 	}
 
 	// Check for ScreenShake
+	if (Phobos::Config::HideShakeEffects)
+		return SkipShaking;
+
 	auto&& [_, visible] = TacticalClass::Instance->CoordsToClient(*pCoords);
 
 	if (pExt->ShakeIsLocal && !visible)
