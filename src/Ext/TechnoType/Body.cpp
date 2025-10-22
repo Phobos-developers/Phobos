@@ -389,14 +389,18 @@ void TechnoTypeExt::ExtData::UpdateAdditionalAttributes()
 
 		if (pWeapon)
 		{
-			this->ThreatTypes.X |= pWeapon->AllowedThreats();
+			if (pWeapon->Projectile)
+				this->ThreatTypes.X |= pWeapon->AllowedThreats();
+
 			this->CombatDamages.X += (pWeapon->Damage + pWeapon->AmbientDamage);
 			num++;
 		}
 
 		if (pEliteWeapon)
 		{
-			this->ThreatTypes.Y |= pEliteWeapon->AllowedThreats();
+			if (pEliteWeapon->Projectile)
+				this->ThreatTypes.Y |= pEliteWeapon->AllowedThreats();
+
 			this->CombatDamages.Y += (pEliteWeapon->Damage + pEliteWeapon->AmbientDamage);
 			eliteNum++;
 		}
