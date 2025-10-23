@@ -987,15 +987,20 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 	{
 		const auto pUnitType = pUnit->Type;
 
-		if (!pUnitType->Turret && !pUnitType->Voxel)
+		if (!pUnitType->Turret && pUnit->CurrentFiringFrame != -1)
 		{
 			const auto pTypeExt = pExt->TypeExtData;
+			const bool inROF = pThis->RearmTimer.InProgress();
 
-			if (!pTarget || pTypeExt->FireUp < 0 || pTypeExt->FireUp_ResetInRetarget
+			if (!pTarget)
+			{
+				if (!inROF)
+					pUnit->CurrentFiringFrame = -1;
+			}
+			else if (pTypeExt->FireUp_ResetInRetarget
 				|| !pThis->IsCloseEnough(pTarget, pThis->SelectWeapon(pTarget)))
 			{
 				pUnit->CurrentFiringFrame = -1;
-				pExt->ResetDelayedFireTimer();
 			}
 		}
 	}
@@ -1003,7 +1008,7 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 	pThis->Target = pTarget;
 	pExt->UpdateGattlingRateDownReset();
 
-	if (!pThis->Target)
+	if (!pTarget)
 		pExt->ResetDelayedFireTimer();
 
 	return 0x6FCF44;

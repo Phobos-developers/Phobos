@@ -147,3 +147,16 @@ DEFINE_HOOK(0x736F67, UnitClass_UpdateFiring_BurstNoDelay, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x741A96, UnitClass_SetDestination_ResetFiringFrame, 0x6)
+{
+	GET(UnitClass* const, pThis, EBP);
+
+	if (!pThis->Target && !pThis->Type->Turret
+		&& pThis->CurrentFiringFrame != -1)
+	{
+		pThis->CurrentFiringFrame = -1;
+	}
+
+	return 0;
+}
