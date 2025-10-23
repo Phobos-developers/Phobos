@@ -1754,7 +1754,7 @@ msgstr "现在你可以为任何科技类型／超级武器类型指定图标优
 
 #: ../../User-Interface.md:563
 msgid ""
-"The Cameo Priority is checked just before evevything vanilla. Greater "
+"The Cameo Priority is checked just before everything vanilla. Greater "
 "`CameoPriority` wins."
 msgstr "图标优先级在原版所有内容之前检查。更高的 `CameoPriority` 具有更高优先级。"
 
