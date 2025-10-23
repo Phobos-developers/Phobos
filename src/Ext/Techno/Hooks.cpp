@@ -998,7 +998,7 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 					pUnit->CurrentFiringFrame = -1;
 			}
 			else if (pTypeExt->FireUp_ResetInRetarget
-				|| !pThis->IsCloseEnough(pTarget, pThis->SelectWeapon(pTarget)))
+				|| !inROF || !pThis->IsCloseEnough(pTarget, pThis->SelectWeapon(pTarget)))
 			{
 				pUnit->CurrentFiringFrame = -1;
 			}
