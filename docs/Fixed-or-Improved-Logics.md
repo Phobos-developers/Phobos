@@ -267,6 +267,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that techno unit will draw with ironcurtain and airstrike color and intensity who disguised as terrain or overlay.
 - Fixed an issue that the AI would enter a combat state when its building receiving damage from friendly units or damage not greater than 0.
 - Fixed an issue that the techno with weapon with `AA=yes` and `AG=no` would not auto targeting units that are falling, such as paratroopers.
+- Iron Curtain/Custom Tint Support for SHP Turreted Vehicles.
+- Reactivate unused trigger events 2, 53, and 54.
 
 ## Fixes / interactions with other extensions
 
@@ -300,6 +302,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that technos head to building's dock even they are not going to dock.
 - Fixed an issue that the jumpjet vehicles cannot stop correctly after going berserk.
 - Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect.
+- Fixed an issue where the game would only use `Weapon1` and `Weapon2` for auto-targeting even when `MultiWeapon=yes` was set.
 
 ```{note}
 The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.

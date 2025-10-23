@@ -139,7 +139,7 @@ bool TechnoTypeExt::ExtData::IsSecondary(int nWeaponIndex)
 
 int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget)
 {
-	if (!pTarget || !this->MultiWeapon.Get())
+	if (!pTarget || !this->MultiWeapon)
 		return -1;
 
 	const auto pType = this->OwnerObject();
@@ -147,18 +147,18 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 	if (pType->IsGattling || (pType->HasMultipleTurrets() && pType->Gunner))
 		return -1;
 
-	const int weaponCount = Math::min(pType->WeaponCount, this->MultiWeapon_SelectCount.Get());
+	const int weaponCount = Math::min(pType->WeaponCount, this->MultiWeapon_SelectCount);
+	const bool noSecondary = this->NoSecondaryWeaponFallback;
 
 	if (weaponCount < 2)
 		return 0;
-	else if (weaponCount == 2)
+	else if (weaponCount == 2 && !noSecondary)
 		return -1;
 
 	std::vector<bool> secondaryCanTargets {};
 	secondaryCanTargets.resize(weaponCount, false);
 
 	const bool isElite = pThis->Veterancy.IsElite();
-	const bool noSecondary = this->NoSecondaryWeaponFallback.Get();
 
 	if (const auto pTargetTechno = abstract_cast<TechnoClass*, true>(pTarget))
 	{
@@ -360,6 +360,57 @@ void TechnoTypeExt::ExtData::ParseVoiceWeaponAttacks(INI_EX& exINI, const char* 
 			voiceElite.emplace_back(voiceEliteAttack.Get(voiceAttackIdx));
 		}
 	}
+}
+
+void TechnoTypeExt::ExtData::UpdateAdditionalAttributes()
+{
+	int num = 0;
+	int eliteNum = 0;
+
+	this->ThreatTypes = { ThreatType::Normal,ThreatType::Normal };
+	this->CombatDamages = { 0,0 };
+
+	const auto pThis = this->OwnerObject();
+	int count = 2;
+
+	if (this->MultiWeapon
+		&& (!pThis->IsGattling && (!pThis->HasMultipleTurrets() || !pThis->Gunner)))
+	{
+		count = pThis->WeaponCount;
+	}
+
+	for (int index = 0; index < count; index++)
+	{
+		const auto pWeapon = pThis->GetWeapon(index)->WeaponType;
+		auto pEliteWeapon = pThis->GetEliteWeapon(index)->WeaponType;
+
+		if (!pEliteWeapon)
+			pEliteWeapon = pWeapon;
+
+		if (pWeapon)
+		{
+			if (pWeapon->Projectile)
+				this->ThreatTypes.X |= pWeapon->AllowedThreats();
+
+			this->CombatDamages.X += (pWeapon->Damage + pWeapon->AmbientDamage);
+			num++;
+		}
+
+		if (pEliteWeapon)
+		{
+			if (pEliteWeapon->Projectile)
+				this->ThreatTypes.Y |= pEliteWeapon->AllowedThreats();
+
+			this->CombatDamages.Y += (pEliteWeapon->Damage + pEliteWeapon->AmbientDamage);
+			eliteNum++;
+		}
+	}
+
+	if (num > 0)
+		this->CombatDamages.X /= num;
+
+	if (eliteNum > 0)
+		this->CombatDamages.Y /= eliteNum;
 }
 
 void TechnoTypeExt::ExtData::CalculateSpawnerRange()

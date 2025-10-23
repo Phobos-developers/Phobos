@@ -1204,7 +1204,7 @@ EVA.LinkedSWAcquired=        ; EVA entry
 ### Next
 
 ![image](_static/images/swnext.gif)
-*Use `SW.Next` to link multiple ChronoSphere and ChronoWarp superweapons into a chained SuperWeapon system in [Cylearun](https://www.moddb.com/mods/Cylearun)*
+*Use of `SW.Next` to link multiple ChronoSphere and ChronoWarp superweapons into a chained SuperWeapon system in [Cylearun](https://www.moddb.com/mods/Cylearun)*
 
 - Superweapons can now launch other superweapons at the same target. Launched types can be additionally randomized using the same rules as with LimboDelivery (see above).
   - `SW.Next.RealLaunch` controls whether the owner who fired the initial superweapon must own all listed superweapons and sufficient funds to support `Money.Amout`. Otherwise they will be launched forcibly.
@@ -1920,6 +1920,9 @@ Convert.ResetMindControl=false          ; boolean
 ```
 
 ### Revenge weapon
+
+![Revenge Weapon](_static/images/revengeweapon.gif)
+*Revenge Weapon usage in [RA2: Reboot](https://www.moddb.com/mods/reboot)*
 
 - Similar to `DeathWeapon` in that it is fired after a TechnoType is killed, but with the difference that it will be fired on whoever dealt the damage that killed the TechnoType. If TechnoType died of sources other than direct damage dealt by another TechnoType, `RevengeWeapon` will not be fired.
   - `RevengeWeapon.AffectsHouses` can be used to filter which houses the damage that killed the TechnoType is allowed to come from to fire the weapon.
