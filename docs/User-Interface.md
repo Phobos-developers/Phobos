@@ -196,7 +196,7 @@ HealthBar.Permanent.PipScale=false   ; boolean
     - Additionally these alpha images are not created if `[AudioVisual] -> LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting.
 - It is possible to toggle shake screen effects (`ShakeX/Ylo/hi`) off by setting `HideShakeEffects=true`.
 - Phobos's [Laser Trail effects](New-or-Enhanced-Logics.md#laser-trails) can also be toggled off.
-  - If a LaserTrailType has `CanBeHidden=false`, it can't be toggled off by setting `HideLaserTrailEffects=true`.
+  - If a LaserTrailType has `IsHideable=false`, it can't be toggled off by setting `HideLaserTrailEffects=true`.
 
 In `rulesmd.ini`:
 ```ini
@@ -211,7 +211,7 @@ Particle.AlphaImageIsLightFlash=             ; boolean
 In `artmd.ini`:
 ```ini
 [SOMETRAIL]                  ; LaserTrailType name
-CanBeHidden=true             ; boolean
+IsHideable=true              ; boolean
 ```
 
 In `RA2MD.INI`:
