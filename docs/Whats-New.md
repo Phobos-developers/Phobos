@@ -506,6 +506,7 @@ Phobos fixes:
 - Fixed the projection location of selectbox when over elevated bridge (by NetsuNegi)
 - Fixed an issue where the game would only use `Weapon1` and `Weapon2` for auto-targeting even when `MultiWeapon=yes` was set (by FlyStar)
 - Fixed a game load crash caused by `MultiWeapon.IsSecondary=-1` or non-projectile weapons (by FlyStar)
+- Fixed a crash that would occur with `CreateUnit` if `AlwaysSpawnOnGround=false` and spawned unit was a `BalloonHover=true` jumpjet unit and was destroyed over a bridge (by Starkku)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)

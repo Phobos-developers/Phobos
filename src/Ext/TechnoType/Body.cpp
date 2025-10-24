@@ -565,14 +565,10 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 
 							if (pType->BalloonHover)
 							{
-								// Makes the jumpjet think it is hovering without actually moving.
-								pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+								// Order BalloonHover jumpjets to ascend.
 								pJJLoco->IsMoving = true;
-								pJJLoco->DestinationCoords = location;
-								pJJLoco->CurrentHeight = pType->JumpjetHeight;
-
-								if (!inAir)
-									AircraftTrackerClass::Instance.Add(pTechno);
+								pJJLoco->DestinationCoords = pTechno->GetCoords();
+								TechnoExt::ExtMap.Find(pTechno)->JumpjetStraightAscend = true;
 							}
 							else if (inAir)
 							{
