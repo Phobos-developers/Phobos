@@ -992,14 +992,9 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 	}
 	else if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
 	{
-		const auto pUnitType = pUnit->Type;
-
-		if (!pUnitType->Turret && pUnit->CurrentFiringFrame != -1)
+		if (!pUnit->Type->Turret && pUnit->CurrentFiringFrame != -1)
 		{
-			const auto pTypeExt = pExt->TypeExtData;
-			const bool inROF = pThis->RearmTimer.InProgress();
-
-			if (pTypeExt->FireUp_ResetInRetarget || !pThis->IsCloseEnough(pTarget, pThis->SelectWeapon(pTarget)))
+			if (pExt->TypeExtData->FireUp_ResetInRetarget || !pThis->IsCloseEnough(pTarget, pThis->SelectWeapon(pTarget)))
 			{
 				pUnit->CurrentFiringFrame = -1;
 			}
