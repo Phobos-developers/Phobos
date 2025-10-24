@@ -978,12 +978,19 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 	GET(AbstractClass*, pTarget, EDI);
 
+	pThis->Target = pTarget;
+
 	if (pThis->LocomotorTarget != pTarget)
 		pThis->ReleaseLocomotor(true);
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->UpdateGattlingRateDownReset();
 
-	if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
+	if (!pTarget)
+	{
+		pExt->ResetDelayedFireTimer();
+	}
+	else if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
 	{
 		const auto pUnitType = pUnit->Type;
 
@@ -992,24 +999,12 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 			const auto pTypeExt = pExt->TypeExtData;
 			const bool inROF = pThis->RearmTimer.InProgress();
 
-			if (!pTarget)
-			{
-				if (!inROF)
-					pUnit->CurrentFiringFrame = -1;
-			}
-			else if (pTypeExt->FireUp_ResetInRetarget
-				|| !inROF || !pThis->IsCloseEnough(pTarget, pThis->SelectWeapon(pTarget)))
+			if (pTypeExt->FireUp_ResetInRetarget || !pThis->IsCloseEnough(pTarget, pThis->SelectWeapon(pTarget)))
 			{
 				pUnit->CurrentFiringFrame = -1;
 			}
 		}
 	}
-
-	pThis->Target = pTarget;
-	pExt->UpdateGattlingRateDownReset();
-
-	if (!pTarget)
-		pExt->ResetDelayedFireTimer();
 
 	return 0x6FCF44;
 }
