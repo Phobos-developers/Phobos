@@ -942,6 +942,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->UndergroundTracked)
 		.Process(this->SpecialTracked)
 		.Process(this->FallingDownTracked)
+		.Process(this->JumpjetStraightAscend)
 		;
 }
 

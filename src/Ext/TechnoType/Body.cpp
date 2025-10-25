@@ -565,14 +565,10 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 
 							if (pType->BalloonHover)
 							{
-								// Makes the jumpjet think it is hovering without actually moving.
-								pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+								// Order BalloonHover jumpjets to ascend.
 								pJJLoco->IsMoving = true;
-								pJJLoco->DestinationCoords = location;
-								pJJLoco->CurrentHeight = pType->JumpjetHeight;
-
-								if (!inAir)
-									AircraftTrackerClass::Instance.Add(pTechno);
+								pJJLoco->DestinationCoords = pTechno->GetCoords();
+								TechnoExt::ExtMap.Find(pTechno)->JumpjetStraightAscend = true;
 							}
 							else if (inAir)
 							{
@@ -1165,6 +1161,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
 	this->AlternateFLH_OnTurret.Read(exArtINI, pArtSection, "AlternateFLH.OnTurret");
+	this->AlternateFLH_ApplyVehicle.Read(exArtINI, pArtSection, "AlternateFLH.ApplyVehicle");
 
 	for (size_t i = 0; ; i++)
 	{
@@ -1384,6 +1381,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EliteWeaponBurstFLHs)
 		.Process(this->AlternateFLHs)
 		.Process(this->AlternateFLH_OnTurret)
+		.Process(this->AlternateFLH_ApplyVehicle)
 
 		.Process(this->OpenTopped_RangeBonus)
 		.Process(this->OpenTopped_DamageMultiplier)

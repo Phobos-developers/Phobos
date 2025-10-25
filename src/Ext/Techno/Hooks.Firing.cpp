@@ -824,11 +824,40 @@ DEFINE_HOOK(0x6FF29E, TechnoClass_FireAt_ChargeTurret2, 0x6)
 #pragma endregion
 
 #pragma region TechnoClass_GetFLH
-// Feature: Allow Units using AlternateFLHs - by Trsdy
-// I don't want to rewrite something new, so I use the Infantry one directly
-// afaik it has no check for infantry-specific stuff here so far
-// and neither Ares nor Phobos has touched it, even that crawling flh one was in TechnoClass
-DEFINE_JUMP(VTABLE, 0x7F5D20, 0x523250);// Redirect UnitClass::GetFLH to InfantryClass::GetFLH (used to be TechnoClass::GetFLH)
+
+namespace GetFLHTemp
+{
+	class UnitClassFake final : public UnitClass
+	{
+		CoordStruct* _GetFLH(CoordStruct* outBuffer, int weaponIdx, CoordStruct offset);
+	};
+}
+
+CoordStruct* GetFLHTemp::UnitClassFake::_GetFLH(CoordStruct* outBuffer, int weaponIdx, CoordStruct offset)
+{
+	const auto pThis = static_cast<UnitClass*>(this);
+
+	do
+	{
+		const auto pTransporter = pThis->Transporter;
+
+		if (pThis->InOpenToppedTransport && pTransporter && TechnoTypeExt::ExtMap.Find(pTransporter->GetTechnoType())->AlternateFLH_ApplyVehicle)
+		{
+			if (const int idx = pTransporter->Passengers.IndexOf(pThis))
+			{
+				*outBuffer = pTransporter->GetFLH(-idx, CoordStruct::Empty);
+				break;
+			}
+		}
+
+		auto TechnoClass_GetFLH = reinterpret_cast<CoordStruct*(__thiscall*)(TechnoClass*, CoordStruct*, int, CoordStruct)>(0x6F3AD0);
+		TechnoClass_GetFLH(pThis, outBuffer, weaponIdx, CoordStruct::Empty);
+	}
+	while (false);
+
+	return outBuffer;
+}
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5D20, GetFLHTemp::UnitClassFake::_GetFLH)
 
 // Apr 4, 2025 - Starkku: Consolidated all the FLH hooks into single one & using TechnoExt::GetFLHAbsoluteCoord() to get the actual coordinate.
 DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
