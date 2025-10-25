@@ -26,11 +26,11 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 #### From 0.4
 
 - `[TechnoType] -> WarpAway=` has now been changed to set the animation when units are erased to maintain semantic consistency with `[General] -> WarpAway=`. The animation that was originally controlled by `[TechnoType] -> WarpAway=`, which played instead of `[General] -> WarpOut=` when a Techno is chronowarped by chronosphere, now needs to be specified using `[TechnoType] -> Chronoshift.WarpOut=`, which defaults to the value of `[TechnoType] -> WarpOut=`.
+- `UseCenterCoordsIfAttached` has been replaced by enumeration key `AttachedAnimPosition`. Set `AttachedAnimPosition=center` to replicate effects of `UseCenterCoordsIfAttached=true`.
 
 #### From post-0.3 devbuilds
 
 - `AlternateFLH` no longer affects vehicle passengers by default. To re-enable it, set `AlternateFLH.ApplyVehicle=true` on the transport unit.
-- `UseCenterCoordsWhenAttached` has been replaced by enumeration key `AttachedAnimPosition`. Set `AttachedAnimPosition=center` to replicate effects of `UseCenterCoordsWhenAttached=true`.
 - Parsing priority of `ShowBriefing` and `BriefingTheme` between map file and `missionmd.ini` has been switched (from latter taking priority over former to vice-versa) due to technical limitations and compatibility issues with spawner DLL.
 - Game will now produce fatal error with an error message if any of the files listed in `[$Include]` in any INI file do not exist.
 - Aircraft with weapons that have `Strafing.Shots` < 5 will now keep flying after last shot like those with `Strafing.Shots` >= 5 do. This delay can now be customized explicitly by setting `Strafing.EndDelay` on the weapon.
@@ -508,7 +508,6 @@ Phobos fixes:
 - Fixed the projection location of selectbox when over elevated bridge (by NetsuNegi)
 - Fixed an issue where the game would only use `Weapon1` and `Weapon2` for auto-targeting even when `MultiWeapon=yes` was set (by FlyStar)
 - Fixed a game load crash caused by `MultiWeapon.IsSecondary=-1` or non-projectile weapons (by FlyStar)
-- Fixed a crash that would occur with `CreateUnit` if `AlwaysSpawnOnGround=false` and spawned unit was a `BalloonHover=true` jumpjet unit and was destroyed over a bridge (by Starkku)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
