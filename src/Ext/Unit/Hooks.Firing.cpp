@@ -16,9 +16,10 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 		return 0;
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pTypeExt = pExt->TypeExtData;
 
 	// SHP vehicles have no secondary action frames, so it does not need SecondaryFire.
-	const int fireUp = pExt->TypeExtData->FireUp;
+	const int fireUp = pTypeExt->FireUp;
 
 	if (fireUp >= 0 && !pType->OpportunityFire && pThis->Locomotor->Is_Really_Moving_Now())
 	{
@@ -31,10 +32,27 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 	const int firingFrames = pType->FiringFrames;
 	const int frames = 2 * firingFrames - 1;
 
-	if (frames >= 0 && pThis->CurrentFiringFrame == -1)
-		pThis->CurrentFiringFrame = frames;
-
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+
+	if (frames >= 0)
+	{
+		bool updateFiringFrame = true;
+
+		if (!pTypeExt->IsSecondary(weaponIndex))
+		{
+			const int value = pThis->CurrentBurstIndex % pWeapon->Burst;
+			const int syncFrame = value >= 2 ? -1
+				: (value == 0 ? pType->FiringSyncFrame0 : pType->FiringSyncFrame1);
+
+			updateFiringFrame = syncFrame == -1;
+		}
+
+		if (pThis->CurrentFiringFrame == -1
+			|| (fireUp < 0 && updateFiringFrame))
+		{
+			pThis->CurrentFiringFrame = frames;
+		}
+	}
 
 	if (fireUp >= 0)
 	{
@@ -125,6 +143,19 @@ DEFINE_HOOK(0x736F67, UnitClass_UpdateFiring_BurstNoDelay, 0x6)
 				return SkipVanillaFire;
 			}
 		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x741A96, UnitClass_SetDestination_ResetFiringFrame, 0x6)
+{
+	GET(UnitClass* const, pThis, EBP);
+
+	if (!pThis->Target && !pThis->Type->Turret
+		&& pThis->CurrentFiringFrame != -1)
+	{
+		pThis->CurrentFiringFrame = -1;
 	}
 
 	return 0;
