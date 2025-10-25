@@ -895,6 +895,10 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			pParasiteImUsing = nullptr;
 		}
 	}
+
+	// handle AutoFire
+	if (pOldTypeExt->AutoFire && !pNewTypeExt->AutoFire)
+		pThis->SetTarget(nullptr);
 }
 
 void TechnoExt::ExtData::UpdateTypeData_Foot()
