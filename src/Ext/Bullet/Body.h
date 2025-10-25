@@ -30,6 +30,7 @@ public:
 		bool SnappedToTarget; // Used for custom trajectory projectile target snap checks
 		int DamageNumberOffset;
 		int ParabombFallRate;
+		bool IsInstantDetonation;
 
 		TrajectoryPointer Trajectory;
 
@@ -45,6 +46,7 @@ public:
 			, SnappedToTarget { false }
 			, DamageNumberOffset { INT32_MIN }
 			, ParabombFallRate { 0 }
+			, IsInstantDetonation { false }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -395,6 +395,7 @@ This page lists all the individual contributions to the project by their author.
   - Unlimbo Detonate warhead
   - Fast access structure
   - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles
+  - Reactivate unused trigger events 2, 53, and 54
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -451,6 +452,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that armor multiplier of new attacheffect will have extra take effect once if restricted warheads
   - Fix the bug that techno unit will draw with ironcurtain and airstrike color and intensity who disguised as terrain or overlay
   - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles
+  - Allow setting whether AlternateFLH applies to vehicle passengers in the transport unit
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -574,6 +576,7 @@ This page lists all the individual contributions to the project by their author.
   - Randomized anims for several behaviors
   - Fix customized `WarpAway` anim's wrong definition
   - Shield respawn animation and weapon
+  - Toggle off laser trail and shake effects
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:

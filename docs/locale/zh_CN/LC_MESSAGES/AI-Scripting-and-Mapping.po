@@ -234,7 +234,7 @@ msgstr "尽管标签名为 `DefaultLS800BkgdPal`，但实际上就像原本游�
 
 #: ../../AI-Scripting-and-Mapping.md:70
 msgid "MCV redeploying"
-msgstr "基地车重部署"
+msgstr "基地车重新部署"
 
 #: ../../AI-Scripting-and-Mapping.md:72
 msgid ""
