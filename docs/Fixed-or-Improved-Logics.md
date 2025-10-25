@@ -961,12 +961,14 @@ AirstrikeTargets=buildings  ; List of Affected Target Enumeration (none|infantry
 
 ### Alternate FLH customizations
 
-- `AlternateFLH.OnTurret` can be used to customize whether or not `AlternateFLHN` used for `OpenTopped` transport firing coordinates, multiple mind control link offsets etc. is calculated relative to the unit's turret if available or body.
+- `AlternateFLH.OnTurret` can be used to customize whether or not `AlternateFLH` used for `OpenTopped` transport firing coordinates, multiple mind control link offsets etc. is calculated relative to the unit's turret if available or body.
+- `AlternateFLH.ApplyVehicle` can be used to customize whether or not a transport applies its `AlternateFLH` to passengers of the VehicleType, who by default use their own FLH, as opposed to passengers of the InfantryType who adhere to `AlternateFLH`.
 
 In `artmd.ini`:
 ```ini
-[SOMETECHNO]                ; TechnoType
-AlternateFLH.OnTurret=true  ; boolean
+[SOMETECHNO]                     ; TechnoType
+AlternateFLH.OnTurret=true       ; boolean
+AlternateFLH.ApplyVehicle=false  ; boolean
 ```
 
 ### Building-provided self-healing customization
