@@ -1613,9 +1613,10 @@ msgstr "修复了新 AE 的护甲倍率在使用了 限制护甲倍率 的情况
 
 #: ../../../CREDITS.md:399
 msgid ""
-"Allow setting whether AlternateFLH applies to vehicle passengers in the "
+"Allow setting whether `AlternateFLH` applies to vehicle passengers in the "
 "transport unit"
 msgstr ""
+"允许设定 `AlternateFLH` 是否作用于运输工具中的载具类载员"
 
 #: ../../../CREDITS.md:400
 msgid "**Apollo** - Translucent SHP drawing patches"

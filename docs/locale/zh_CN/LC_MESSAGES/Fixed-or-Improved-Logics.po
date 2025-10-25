@@ -2547,9 +2547,8 @@ msgid "Technos"
 msgstr "科技类型"
 
 #: ../../Fixed-or-Improved-Logics.md:658
-#, fuzzy
 msgid "Alternate FLH customizations"
-msgstr "自定义战斗闪光"
+msgstr "自定义 `AlternateFLH`"
 
 #: ../../Fixed-or-Improved-Logics.md:660
 msgid ""
@@ -2558,6 +2557,7 @@ msgid ""
 "who by default use their own FLH, as opposed to passengers of the "
 "InfantryType who adhere to `AlternateFLH`."
 msgstr ""
+"`AlternateFLH.ApplyVehicle` 可用于自定义运输工具的 `AlternateFLH` 是否作用于载具类载员，它们默认使用自身的 FLH 而不像步兵类载员那样遵照 `AlternateFLH`。"
 
 #: ../../Fixed-or-Improved-Logics.md:668
 msgid "Building-provided self-healing customization"
