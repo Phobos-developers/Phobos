@@ -2025,8 +2025,8 @@ msgid "Toggle off laser trail and shake effects (by Ollerus)"
 msgstr "关闭激光尾焰与屏幕抖动效果（by Ollerus）"
 
 #: ../../Whats-New.md:459
-msgid "Dehardcode the `ZAdjust` of warhead anim (by TaranDahl)"
-msgstr ""
+msgid "[Dehardcode the `ZAdjust` of warhead anim](Fixed-or-Improved-Logics.md#dehardcode-the-zadjust-of-warhead-anim) (by TaranDahl)"
+msgstr "[弹头动画 `ZAdjust` 去硬编码](Fixed-or-Improved-Logics.md#dehardcode-the-zadjust-of-warhead-anim)（by TaranDahl）"
 
 #: ../../Whats-New.md:461 ../../Whats-New.md:690 ../../Whats-New.md:1049
 #: ../../Whats-New.md:1158 ../../Whats-New.md:1183 ../../Whats-New.md:1222

@@ -2631,7 +2631,7 @@ msgstr "修复了所用武器 `AA=yes` 且 `AG=no` 的单位不会主动攻击�
 
 #: ../../../CREDITS.md:635
 msgid "Dehardcode the `ZAdjust` of warhead anim"
-msgstr ""
+msgstr "弹头动画 `ZAdjust` 去硬编码"
 
 #: ../../../CREDITS.md:636
 msgid "**solar-III (凤九歌)**"
