@@ -175,14 +175,13 @@ msgstr ""
 "语句来指定，其默认为 `[TechnoType] -> WarpOut=` 的值。"
 
 #: ../../Whats-New.md:29
-#, fuzzy
 msgid ""
 "`UseCenterCoordsIfAttached` has been replaced by enumeration key "
 "`AttachedAnimPosition`. Set `AttachedAnimPosition=center` to replicate "
 "effects of `UseCenterCoordsIfAttached=true`."
 msgstr ""
-"语句 `UseCenterCoordsWhenAttached` 现已被替换为 `AttachedAnimPosition`。你需要通过设置 "
-"`AttachedAnimPosition=center` 以达到原先 `UseCenterCoordsWhenAttached=true` "
+"语句 `UseCenterCoordsIfAttached` 现已被替换为 `AttachedAnimPosition`。你需要通过设置 "
+"`AttachedAnimPosition=center` 以达到原先 `UseCenterCoordsIfAttached=true` "
 "的效果。"
 
 #: ../../Whats-New.md:31
