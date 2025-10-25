@@ -456,6 +456,7 @@ New:
 - [Attack](New-or-Enhanced-Logics.md#attack-technos-underground) and [damage](New-or-Enhanced-Logics.md#damage-technos-underground) technos underground (by TaranDahl)
 - Fast access structure (by FlyStar)
 - Toggle off laser trail and shake effects (by Ollerus)
+- Dehardcode the `ZAdjust` of warhead anim (by TaranDahl)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
