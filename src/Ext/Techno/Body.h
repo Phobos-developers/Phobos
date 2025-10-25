@@ -71,6 +71,8 @@ public:
 		int TintIntensityAllies;
 		int TintIntensityEnemies;
 
+		bool JumpjetStraightAscend; // Is set to true jumpjet units will ascend straight and do not adjust rotation or position during it.
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -114,6 +116,7 @@ public:
 			, TintIntensityOwner { 0 }
 			, TintIntensityAllies { 0 }
 			, TintIntensityEnemies { 0 }
+			, JumpjetStraightAscend { false }
 		{ }
 
 		void OnEarlyUpdate();
