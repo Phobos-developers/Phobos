@@ -194,6 +194,7 @@ msgid ""
 "`AlternateFLH` no longer affects vehicle passengers by default. To re-"
 "enable it, set `AlternateFLH.ApplyVehicle=true` on the transport unit."
 msgstr ""
+"`AlternateFLH` 已经不再默认对载具类载员生效，你可以通过在运输工具上设置 `AlternateFLH.ApplyVehicle=true` 来手动重新启用它。"
 
 #: ../../Whats-New.md:34
 msgid ""
@@ -3190,11 +3191,11 @@ msgid ""
 msgstr "允许 AI 在单人任务中修复由基地节点／125 号触发结果／超级武器所投送的建筑（by Trsdy）"
 
 #: ../../Whats-New.md:692
-#, fuzzy, python-format
 msgid ""
 "Allow setting whether `AlternateFLH` applies to vehicle passengers in the"
 " transport unit (by Trsdy & NetsuNegi)"
-msgstr "令载具在 `OpenTopped` 运输工具中使用**运输工具的** `AlternateFLH%d`（by Trsdy）"
+msgstr ""
+"允许设定 `AlternateFLH` 是否作用于运输工具中的载具类载员（by Trsdy & NetsuNegi）"
 
 #: ../../Whats-New.md:693
 msgid ""

@@ -1853,9 +1853,10 @@ msgstr "修复了单位在伪装成地形对象或覆盖物时铁幕与空袭染
 
 #: ../../../CREDITS.md:456
 msgid ""
-"Allow setting whether AlternateFLH applies to vehicle passengers in the "
+"Allow setting whether `AlternateFLH` applies to vehicle passengers in the "
 "transport unit"
 msgstr ""
+"允许设定 `AlternateFLH` 是否作用于运输工具中的载具类载员"
 
 #: ../../../CREDITS.md:457
 msgid "**Apollo** - Translucent SHP drawing patches"

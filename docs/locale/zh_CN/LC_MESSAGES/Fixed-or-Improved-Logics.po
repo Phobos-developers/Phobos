@@ -3864,14 +3864,13 @@ msgid "Alternate FLH customizations"
 msgstr "跟随炮塔旋转的 `AlternateFLH`"
 
 #: ../../Fixed-or-Improved-Logics.md:963
-#, fuzzy
 msgid ""
 "`AlternateFLH.OnTurret` can be used to customize whether or not "
 "`AlternateFLH` used for `OpenTopped` transport firing coordinates, "
 "multiple mind control link offsets etc. is calculated relative to the "
 "unit's turret if available or body."
 msgstr ""
-"`AlternateFLH.OnTurret` 可自定义 `AlternateFLHN` 用于 `OpenTopped` "
+"`AlternateFLH.OnTurret` 可自定义 `AlternateFLH` 用于 `OpenTopped` "
 "运输工具的开火坐标、多重心控链接偏移等逻辑时其位置是否相对于炮塔而非车体。"
 
 #: ../../Fixed-or-Improved-Logics.md:964
@@ -3881,6 +3880,7 @@ msgid ""
 "who by default use their own FLH, as opposed to passengers of the "
 "InfantryType who adhere to `AlternateFLH`."
 msgstr ""
+"`AlternateFLH.ApplyVehicle` 可用于自定义运输工具的 `AlternateFLH` 是否作用于载具类载员，它们默认使用自身的 FLH 而不像步兵类载员那样遵照 `AlternateFLH`。"
 
 #: ../../Fixed-or-Improved-Logics.md:967
 msgid ""
