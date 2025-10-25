@@ -6354,7 +6354,6 @@ msgstr ""
 "`water,beach`；对于其他单位则默认为 `none`。"
 
 #: ../../Fixed-or-Improved-Logics.md:1788
-#, fuzzy
 msgid ""
 "In vanilla game only units with `DeployingAnim` were constrained to a "
 "specific deploy facing and it was not customizable per unit. `DeployDir` "
@@ -6363,7 +6362,7 @@ msgid ""
 " value of -1 to disable the facing restriction."
 msgstr ""
 "在原版游戏中仅拥有 `DeployingAnim` 的单位会被限制使用特定的部署朝向且无法为每个单位自定义。Ares 允许通过 "
-"`DeployDir`（默认为 `[AudioVisual] -> DeployDir`）来为每个单位单独设定，Phobos 允许使用特殊值 -1"
+"`DeployDir`（对于拥有 `DeployingAnim` 的单位默认为 `[AudioVisual] -> DeployDir`，否则为 -1）来为每个单位单独设定，Phobos 允许使用特殊值 -1"
 " 来解除朝向限制。"
 
 #: ../../Fixed-or-Improved-Logics.md:1789

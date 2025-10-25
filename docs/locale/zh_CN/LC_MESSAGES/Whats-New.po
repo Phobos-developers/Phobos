@@ -47,13 +47,11 @@ msgid "From vanilla"
 msgstr "由原版"
 
 #: ../../Whats-New.md:13
-#, fuzzy
 msgid ""
 "`IsSimpleDeployer` units now obey deploying facing constraint even "
 "without deploying animation if `DeployDir` is explicitly set on the unit."
 msgstr ""
-"`IsSimpleDeployer` 的单位现在即使没有部署动画也会遵守部署朝向约束。要禁用此功能请将 `DeployDir`（默认为 "
-"`[AudioVisual] -> DeployDir`）设为 -1。"
+"现在 `IsSimpleDeployer` 的单位只要设置了 `DeployDir` 那么即便没有部署动画也会遵守部署朝向的约束。"
 
 #: ../../Whats-New.md:14
 msgid ""
