@@ -7,7 +7,7 @@
 // Returns true if drawn, false otherwise.
 bool LaserTrailClass::Update(CoordStruct location)
 {
-	if (Phobos::Config::HideLaserTrailEffects && this->Type->CanBeHidden)
+	if (Phobos::Config::HideLaserTrailEffects && this->Type->IsHideable)
 		return false;
 
 	bool result = false;

@@ -140,6 +140,7 @@ public:
 		std::vector<std::vector<CoordStruct>> EliteWeaponBurstFLHs;
 		std::vector<CoordStruct> AlternateFLHs;
 		Valueable<bool> AlternateFLH_OnTurret;
+		Valueable<bool> AlternateFLH_ApplyVehicle;
 
 		Valueable<bool> DestroyAnim_Random;
 		Valueable<bool> NotHuman_RandomDeathSequence;
@@ -501,6 +502,7 @@ public:
 			, OreGathering_FramesPerDir {}
 			, LaserTrailData {}
 			, AlternateFLH_OnTurret { true }
+			, AlternateFLH_ApplyVehicle { false }
 			, DestroyAnim_Random { true }
 			, NotHuman_RandomDeathSequence { false }
 

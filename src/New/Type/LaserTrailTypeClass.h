@@ -23,7 +23,7 @@ public:
 	Valueable<bool> CloakVisible;
 	Valueable<bool> CloakVisible_DetectedOnly;
 	Valueable<bool> DroppodOnly;
-	Valueable<bool> CanBeHidden;
+	Valueable<bool> IsHideable;
 
 	LaserTrailTypeClass(const char* pTitle = NONE_STR) : Enumerable<LaserTrailTypeClass>(pTitle)
 		, DrawType { LaserTrailDrawType::Laser }
@@ -43,7 +43,7 @@ public:
 		, CloakVisible { false }
 		, CloakVisible_DetectedOnly { false }
 		, DroppodOnly { false }
-		, CanBeHidden { true }
+		, IsHideable { true }
 	{ }
 
 	void LoadFromINI(CCINIClass* pINI);

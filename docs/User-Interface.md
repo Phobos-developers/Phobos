@@ -196,7 +196,7 @@ HealthBar.Permanent.PipScale=false   ; boolean
     - Additionally these alpha images are not created if `[AudioVisual] -> LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting.
 - It is possible to toggle shake screen effects (`ShakeX/Ylo/hi`) off by setting `HideShakeEffects=true`.
 - Phobos's [Laser Trail effects](New-or-Enhanced-Logics.md#laser-trails) can also be toggled off.
-  - If a LaserTrailType has `CanBeHidden=false`, it can't be toggled off by setting `HideLaserTrailEffects=true`.
+  - If a LaserTrailType has `IsHideable=false`, it can't be toggled off by setting `HideLaserTrailEffects=true`.
 
 In `rulesmd.ini`:
 ```ini
@@ -211,7 +211,7 @@ Particle.AlphaImageIsLightFlash=             ; boolean
 In `artmd.ini`:
 ```ini
 [SOMETRAIL]                  ; LaserTrailType name
-CanBeHidden=true             ; boolean
+IsHideable=true              ; boolean
 ```
 
 In `RA2MD.INI`:
@@ -307,7 +307,6 @@ RealTimeTimers.Adaptive=false   ; boolean
 
 - Now you can use and customize select box for infantry, vehicle and aircraft. No select box for buildings in default case, but you still can specific for some building if you want.
   - `Frames` can be used to list frames of `Shape` file that'll be drawn as a select box when the TechnoType's health is at or below full health/the percentage defined in `[AudioVisual] -> ConditionYellow/ConditionRed`, respectively.
-  - If `Grounded` set to true, the select box will be drawn on the ground below the TechnoType.
   - Select box's translucency setting can be adjusted via `Translucency`.
   - `VisibleToHouses` and `VisibleToHouses.Observer` can limit visibility to specific players.
   - `DrawAboveTechno` specific whether the select box will be drawn before drawing the TechnoType. If set to false, the select box can be obscured by the TechnoType, and the draw location will ignore `PixelSelectionBracketDelta`.

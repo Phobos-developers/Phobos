@@ -7,6 +7,11 @@
 #include <Utilities/AresFunctions.h>
 #include <Utilities/Macro.h>
 
+static bool HasDeployingAnim(TechnoTypeClass* pType)
+{
+	return pType->DeployingAnim || TechnoTypeExt::ExtMap.Find(pType)->DeployingAnims.size() > 0;
+}
+
 static bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 {
 	// Movement restrictions.
@@ -33,7 +38,7 @@ static bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 	auto const defaultFacing = (FacingType)(RulesClass::Instance->DeployDir >> 5);
 	auto const facing = pTypeExt->DeployDir.Get(defaultFacing);
 
-	if (facing == FacingType::None)
+	if (facing == FacingType::None || (!pTypeExt->DeployDir.isset() && !HasDeployingAnim(pUnit->GetTechnoType())))
 		return false;
 
 	if (facing != (FacingType)currentDir->Current().GetFacing<8>())
@@ -59,11 +64,6 @@ static bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 	}
 
 	return false;
-}
-
-static bool HasDeployingAnim(UnitTypeClass* pUnitType)
-{
-	return pUnitType->DeployingAnim || TechnoTypeExt::ExtMap.Find(pUnitType)->DeployingAnims.size() > 0;
 }
 
 static void CreateDeployingAnim(UnitClass* pUnit, bool isDeploying)
