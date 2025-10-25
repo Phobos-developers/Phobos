@@ -655,6 +655,16 @@ Shrapnel.UseWeaponTargeting=false  ; boolean
 
 ## Technos
 
+### Alternate FLH customizations
+
+- `AlternateFLH.ApplyVehicle` can be used to customize whether or not a transport applies its `AlternateFLH` to passengers of the VehicleType, who by default use their own FLH, as opposed to passengers of the InfantryType who adhere to `AlternateFLH`.
+
+In `artmd.ini`:
+```ini
+[SOMETECHNO]                     ; TechnoType
+AlternateFLH.ApplyVehicle=false  ; boolean
+```
+
 ### Building-provided self-healing customization
 
 - It is now possible to set a global cap for the effects of `InfantryGainSelfHeal` and `UnitsGainSelfHeal` by setting `InfantryGainSelfHealCap` & `UnitsGainSelfHealCap` under `[General]`, respectively.
