@@ -395,7 +395,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that Locomotor warhead won't stop working when firer (except for vehicle) stop firing
   - Fix the bug that hover vehicle will sink if destroyed on bridge
   - Fix the bug that armor multiplier of new attacheffect will have extra take effect once if restricted warheads
-  - Allow setting whether AlternateFLH applies to vehicle passengers in the transport unit
+  - Allow setting whether `AlternateFLH` applies to vehicle passengers in the transport unit
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

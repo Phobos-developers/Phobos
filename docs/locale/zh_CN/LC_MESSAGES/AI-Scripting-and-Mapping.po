@@ -81,10 +81,9 @@ msgstr "脚本动作 `部署` 现在会让拥有 `DeploysInto` 的载具自动�
 #: ../../AI-Scripting-and-Mapping.md:13
 msgid ""
 "Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic"
-" normally. `InitialPayload` logic from Ares is not supported yet."
+" normally."
 msgstr ""
-"由触发结果 7、80、107 生成的小队现在可以正常使用 IFV 和 OpenTopped 逻辑。Ares 的 `InitialPayload` "
-"逻辑暂不支持。"
+"由触发结果 7、80、107 生成的小队现在可以正常使用 IFV 和 OpenTopped 逻辑。"
 
 #: ../../AI-Scripting-and-Mapping.md:14
 msgid ""
