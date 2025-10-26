@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include <FactoryClass.h>
 
 #include <Ext/Techno/Body.h>

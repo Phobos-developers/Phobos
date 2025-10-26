@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include <Utilities\Macro.h>
 
 // Allow message entry in Skirmish

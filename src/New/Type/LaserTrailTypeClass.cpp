@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include "LaserTrailTypeClass.h"
 
 #include <Utilities/TemplateDef.h>

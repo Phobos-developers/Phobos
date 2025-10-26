@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include <AircraftClass.h>
 #include <InfantryClass.h>
 #include <JumpjetLocomotionClass.h>

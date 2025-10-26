@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #pragma once
 #include <Phobos.version.h>
 #include <Windows.h>
@@ -12,9 +13,8 @@ constexpr auto NONE_STR2 = "none";
 constexpr auto SIDEBAR_SECTION = "Sidebar";
 constexpr auto UISETTINGS_SECTION = "UISettings";
 
-class Phobos
+struct Phobos
 {
-public:
 	static void CmdLineParse(char**, int);
 
 	static void ExeRun();
@@ -41,9 +41,8 @@ public:
 #endif
 	static void ApplyOptimizations();
 
-	class UI
+	struct UI
 	{
-	public:
 		static bool DisableEmptySpawnPositions;
 		static bool ExtendedToolTips;
 		static int MaxToolTipWidth;
@@ -75,9 +74,8 @@ public:
 		static char ShowBriefingResumeButtonStatusLabel[0x20];
 	};
 
-	class Config
+	struct Config
 	{
-	public:
 		static bool ToolTipDescriptions;
 		static bool ToolTipBlur;
 		static bool PrioritySelectionFiltering;
@@ -113,18 +111,16 @@ public:
 		static int SuperWeaponSidebar_RequiredSignificance;
 	};
 
-	class Misc
+	struct Misc
 	{
-	public:
 		static bool CustomGS;
 		static int CustomGS_ChangeInterval[7];
 		static int CustomGS_ChangeDelay[7];
 		static int CustomGS_DefaultDelay[7];
 	};
 
-	class Optimizations
+	struct Optimizations
 	{
-	public:
 		static bool Applied;
 		static bool DisableRadDamageOnBuildings;
 		static bool DisableSyncLogging;

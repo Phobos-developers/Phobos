@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include <DriveLocomotionClass.h>
 #include <ShipLocomotionClass.h>
 #include <UnitClass.h>

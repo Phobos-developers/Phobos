@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include <Ext/Scenario/Body.h>
 #include <Helpers/Macro.h>
 #include <Utilities/Debug.h>

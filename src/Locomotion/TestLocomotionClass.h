@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #pragma once
 
 // This file (and the corresponding .cpp one) contains an example implementation

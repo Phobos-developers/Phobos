@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 

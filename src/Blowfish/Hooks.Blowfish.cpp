@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include "blowfish.h"
 #include <Utilities/Macro.h>
 #include <Memory.h>

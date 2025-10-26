@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include "FlyingStrings.h"
 #include <Phobos.h>
 #include <MapClass.h>

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include <Helpers/Macro.h>
 #include <CCINIClass.h>
 #include <ScenarioClass.h>

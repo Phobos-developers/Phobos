@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include "SWButtonClass.h"
 #include "SWSidebarClass.h"
 #include <EventClass.h>

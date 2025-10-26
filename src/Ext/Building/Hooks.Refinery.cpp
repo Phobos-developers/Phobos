@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include "Body.h"
 
 // The method of calculating the income is subject to each specific situation,

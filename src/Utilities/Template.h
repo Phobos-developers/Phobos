@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #pragma region Ares Copyrights
 /*
  *Copyright (c) 2008+, All Ares Contributors

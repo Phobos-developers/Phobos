@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 // methods used in TechnoClass_AI hooks or anything similar
 #include "Body.h"
 

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*FlyingStrings.h
 Useable to get out messages from units
 Used to output Bounty messages

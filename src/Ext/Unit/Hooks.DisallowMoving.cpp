@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 // Issue #5 Permanently stationary units
 // Author: Starkku
 

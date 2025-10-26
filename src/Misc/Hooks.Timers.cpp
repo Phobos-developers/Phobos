@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include <ColorScheme.h>
 #include <GameOptionsClass.h>
 #include <FPSCounter.h>

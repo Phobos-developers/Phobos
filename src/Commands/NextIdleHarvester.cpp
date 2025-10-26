@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include "NextIdleHarvester.h"
 
 #include <BuildingTypeClass.h>

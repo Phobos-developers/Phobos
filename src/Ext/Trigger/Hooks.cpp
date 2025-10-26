@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include <TriggerClass.h>
 
 #include <Helpers/Macro.h>

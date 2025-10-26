@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include "SampleTrajectory.h"
 
 #include <Ext/Bullet/Body.h>

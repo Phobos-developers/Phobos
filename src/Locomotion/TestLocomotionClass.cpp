@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include "TestLocomotionClass.h"
 
 #ifdef CUSTOM_LOCO_EXAMPLE_ENABLED // Define functions

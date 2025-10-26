@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 ﻿#include "Body.h"
 #include <Ext/Side/Body.h>
 #include <Utilities/TemplateDef.h>

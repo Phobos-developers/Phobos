@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include "Body.h"
 
 DEFINE_HOOK(0x5047D0, HouseClass_UpdateAngerNodes_SetForceEnemy, 0x6)

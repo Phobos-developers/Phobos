@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include "ToggleSWButtonClass.h"
 #include "SWSidebarClass.h"
 #include <GameOptionsClass.h>
