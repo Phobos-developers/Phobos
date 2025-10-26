@@ -302,7 +302,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that technos head to building's dock even they are not going to dock.
 - Fixed an issue that the jumpjet vehicles cannot stop correctly after going berserk.
 - Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect.
-- Fixed an issue where the game would only use `Weapon1` and `Weapon2` for auto-targeting even when `MultiWeapon=yes` was set.
 
 ```{note}
 The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
