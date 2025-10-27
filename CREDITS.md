@@ -453,7 +453,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that armor multiplier of new attacheffect will have extra take effect once if restricted warheads
   - Fix the bug that techno unit will draw with ironcurtain and airstrike color and intensity who disguised as terrain or overlay
   - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles
-  - Allow setting whether AlternateFLH applies to vehicle passengers in the transport unit
+  - Allow setting whether `AlternateFLH` applies to vehicle passengers in the transport unit
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

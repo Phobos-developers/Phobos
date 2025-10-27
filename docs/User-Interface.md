@@ -169,7 +169,7 @@ In `RA2MD.INI`:
 ShowFlashOnSelecting=false  ; boolean
 ```
 
-### Hide health bars
+### Custom health bars display
 
 ![image](_static/images/healthbar.hide-01.png)
 *Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
@@ -559,7 +559,7 @@ When the building becomes ready to be placed, the next building's construction w
 ### Cameo Sorting
 
 - You can now specify Cameo Priority for any TechnoType/SuperWeaponType. Vanilla sorting rules are [here](https://modenc.renegadeprojects.com/Cameo_Sorting).
-  - The Cameo Priority is checked just before evevything vanilla. Greater `CameoPriority` wins.
+  - The Cameo Priority is checked just before everything vanilla. Greater `CameoPriority` wins.
 
 In `rulesmd.ini`:
 ```ini
