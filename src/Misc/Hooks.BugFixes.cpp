@@ -830,10 +830,19 @@ DEFINE_HOOK(0x6B75AC, SpawnManagerClass_AI_SetDestinationForMissiles, 0x5)
 	GET(SpawnManagerClass*, pSpawnManager, ESI);
 	GET(TechnoClass*, pSpawnTechno, EDI);
 
-	CoordStruct coord = pSpawnManager->Target->GetCenterCoords();
-	CellClass* pCellDestination = MapClass::Instance.TryGetCellAt(coord);
+	auto const pTarget = pSpawnManager->Target;
 
-	pSpawnTechno->SetDestination(pCellDestination, true);
+	// Oct 27, 2025 - Starkku: Restore old behaviour for building destinations to eliminate inaccuracy issues.
+	if (pTarget->WhatAmI() == AbstractType::Building)
+	{
+		pSpawnTechno->SetDestination(pTarget, true);
+	}
+	else
+	{
+		const CoordStruct coord = pSpawnManager->Target->GetCenterCoords();
+		CellClass* pCellDestination = MapClass::Instance.TryGetCellAt(coord);
+		pSpawnTechno->SetDestination(pCellDestination, true);
+	}
 
 	return 0x6B75BC;
 }
