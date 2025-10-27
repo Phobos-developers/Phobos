@@ -2753,3 +2753,48 @@ DEFINE_HOOK(0x44242A, BuildingClass_ReceiveDamage_SetLATime, 0x8)
 }
 
 #pragma endregion
+
+#pragma region ClearTargetOnOwnerChanged
+
+DEFINE_HOOK(0x701681, TechnoClass_SetOwningHouse_ClearManagerTarget, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	for (const auto pTemporal : TemporalClass::Array)
+	{
+		if (pTemporal->Target == pThis)
+			pTemporal->LetGo();
+	}
+
+	for (const auto pAirstrike : AirstrikeClass::Array)
+	{
+		if (pAirstrike->Target == pThis)
+			pAirstrike->ResetTarget();
+	}
+
+	for (const auto pSpawn : SpawnManagerClass::Array)
+	{
+		if (pSpawn->Target == pThis)
+			pSpawn->ResetTarget();
+	}
+
+	pThis->LastTarget = nullptr;
+	if (auto pFoot = abstract_cast<FootClass*>(pThis))
+		pFoot->LastDestination = nullptr;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x70D4FD, ObjectClass_ClearTargetToMe_ClearLastTarget, 0x6)
+{
+	GET(TechnoClass*, pTechno, ESI);
+	GET(bool, shouldClear, ECX);
+	GET(ObjectClass*, pThis, EBP);
+
+	if (pTechno->LastTarget == pThis && shouldClear)
+	{
+		pTechno->LastTarget = nullptr;
+	}
+}
+
+#pragma endregion

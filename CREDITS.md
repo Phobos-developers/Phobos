@@ -632,6 +632,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the AI would enter a combat state when its building receiving damage from friendly units or damage not greater than 0
   - Fix an issue that the techno with weapon with `AA=yes` and `AG=no` would not auto targeting units that are falling, such as paratroopers
   - Dehardcode the `ZAdjust` of warhead anim
+  - Fix an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

@@ -269,6 +269,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that the techno with weapon with `AA=yes` and `AG=no` would not auto targeting units that are falling, such as paratroopers.
 - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles.
 - Reactivate unused trigger events 2, 53, and 54.
+- Fixed an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner.
 
 ## Fixes / interactions with other extensions
 
