@@ -138,26 +138,6 @@ DEFINE_HOOK(0x42EB8E, BaseClass_GetBaseNodeIndex_CheckValidBaseNode, 0x6)
 	return reinterpret_cast<bool(__thiscall*)(HouseClass*, BaseNodeClass*)>(0x50CAD0)(pBase->Owner, pBaseNode) ? Valid : Invalid;
 }
 
-// AIConstructionYard Hook #4-3 -> sub_7393C0 - Prohibit AI from building construction yard.
-DEFINE_HOOK(0x7397F4, UnitClass_TryToDeploy_SkipSetShouldRebuild, 0x7)
-{
-	enum { SkipRebuildFlag = 0x7397FB };
-
-	GET(BuildingClass* const, pBuilding, EBX);
-
-	return (pBuilding->Type->ConstructionYard && RulesExt::Global()->AIForbidConYard) ? SkipRebuildFlag : 0;
-}
-
-// AIConstructionYard Hook #4-4 -> sub_440580 - Prohibit AI from building construction yard.
-DEFINE_HOOK(0x440B7A, BuildingClass_Unlimbo_SkipSetShouldRebuild, 0x7)
-{
-	enum { SkipRebuildFlag = 0x440B81 };
-
-	GET(BuildingClass* const, pBuilding, ESI);
-
-	return (pBuilding->Type->ConstructionYard && RulesExt::Global()->AIForbidConYard) ? SkipRebuildFlag : 0;
-}
-
 // AIConstructionYard Hook #5-1 -> sub_588570 - Only expand walls on nodes.
 DEFINE_HOOK(0x5885D1, MapClass_BuildingToFirestormWall_SkipExtraWalls, 0x6)
 {
