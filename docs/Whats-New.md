@@ -457,6 +457,7 @@ New:
 - Fast access structure (by FlyStar)
 - Toggle off laser trail and shake effects (by Ollerus)
 - Dehardcode the `ZAdjust` of warhead anim (by TaranDahl)
+- New map actions in the 19000 range that are copies of the original actions but using ID entries instead of indexes (by FS-21)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
