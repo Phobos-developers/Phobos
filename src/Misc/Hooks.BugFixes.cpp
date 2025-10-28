@@ -2799,7 +2799,7 @@ DEFINE_HOOK(0x54CC9C, JumpjetLocomotionClass_ProcessCrashing_DropFix, 0x5)
 		{
 			const auto pTerrain = static_cast<TerrainClass*>(*object);
 
-			if (pTerrain->Type->SpawnsTiberium || pTerrain->Type->Immune)
+			if (pTerrain->Type->Immune)
 				continue;
 		}
 
