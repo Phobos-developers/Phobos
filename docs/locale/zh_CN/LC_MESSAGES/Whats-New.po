@@ -5529,12 +5529,12 @@ msgid ""
 msgstr "修复了拓展的建筑加载物逻辑与 Ares 的 BuildLimit 检查交互异常的问题（by Uranusian）"
 
 #: ../../Whats-New.md:1130
-msgid "Fix more random crashes for `CameoPriority` (by Uranusian)"
+msgid "Fixed more random crashes for `CameoPriority` (by Uranusian)"
 msgstr "修复了更多由 `CameoPriority` 导致的随机崩溃问题（by Uranusian）"
 
 #: ../../Whats-New.md:1131
 msgid ""
-"Fix aircraft weapons causing game freeze when burst index was not "
+"Fixed aircraft weapons causing game freeze when burst index was not "
 "correctly reset after firing (by Starkku)"
 msgstr "修复了战机开火后 Burst 索引未能正确重置导致的游戏卡死问题（by Starkku）"
 
@@ -5788,7 +5788,7 @@ msgstr "修复了由于确实管理员权限导致 `Blowfish.dll` 无法正确�
 
 #: ../../Whats-New.md:1227
 msgid ""
-"Fix to take Burst into account for aircraft weapon shots beyond the first"
+"Fixed to take Burst into account for aircraft weapon shots beyond the first"
 " one (by Starkku)"
 msgstr "修复了战机扫射武器仅有第一发考虑 `Burst` 的问题（by Starkku）"
 
