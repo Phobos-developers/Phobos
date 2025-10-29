@@ -202,6 +202,10 @@ public:
 		Valueable<bool> CombatAlert_UseAttackVoice;
 		Valueable<bool> CombatAlert_UseEVA;
 
+		ValueableIdx<VocClass> StartDistributionModeSound;
+		ValueableIdx<VocClass> EndDistributionModeSound;
+		ValueableIdx<VocClass> AddDistributionModeCommandSound;
+
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
@@ -432,6 +436,9 @@ public:
 			, CombatAlert_UseFeedbackVoice { true }
 			, CombatAlert_UseAttackVoice { true }
 			, CombatAlert_UseEVA { true }
+			, StartDistributionModeSound { -1 }
+			, EndDistributionModeSound { -1 }
+			, AddDistributionModeCommandSound { -1 }
 			, UseFixedVoxelLighting { false }
 			, AIAutoDeployMCV { true }
 			, AISetBaseCenter { true }
