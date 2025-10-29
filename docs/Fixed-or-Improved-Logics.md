@@ -1373,7 +1373,7 @@ This may subject to further changes.
 
 ### Kill spawns on low power
 
-- `Powered=yes` structures that spawns aircraft like Aircraft Carrier will stop targeting the enemy if low power.
+- `Powered=yes` structures that spawn aircraft like Aircraft Carriers will stop targeting the enemy if low power.
 - Spawned aircraft self-destruct if they are flying.
 
 In `rulesmd.ini`:

@@ -5168,7 +5168,7 @@ msgstr "断电时击杀子机"
 
 #: ../../Fixed-or-Improved-Logics.md:1376
 msgid ""
-"`Powered=yes` structures that spawns aircraft like Aircraft Carrier "
+"`Powered=yes` structures that spawn aircraft like Aircraft Carriers "
 "will stop targeting the enemy if low power."
 msgstr "拥有 `Powered=yes` 的建筑航母在断电时将会停止攻击敌人。"
 
