@@ -277,6 +277,8 @@ public:
 		Valueable<bool> InfantryAutoDeploy;
 
 		Valueable<int> AdjacentWallDamage;
+
+		Valueable<int> WarheadAnimZAdjust;
 		
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -493,6 +495,8 @@ public:
 			, Parasite_GrappleAnim {}
 			, InfantryAutoDeploy { false }
 			, AdjacentWallDamage { 200 }
+
+			, WarheadAnimZAdjust { -15 }
 		{ }
 
 		virtual ~ExtData() = default;

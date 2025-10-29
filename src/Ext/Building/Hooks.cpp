@@ -631,45 +631,32 @@ DEFINE_HOOK(0x4C9C7B, FactoryClass_QueueProduction_ForceCheckBuilding, 0x7)
 	return RulesExt::Global()->BuildingProductionQueue ? SkipGameCode : 0;
 }
 
+DEFINE_JUMP(LJMP, 0x4FABEE, 0x4FAB3D)
+
 DEFINE_HOOK(0x4FAAD8, HouseClass_AbandonProduction_RewriteForBuilding, 0x8)
 {
-	enum { CheckSame = 0x4FAB3D, SkipCheck = 0x4FAB64, Return = 0x4FAC9B };
+	enum { CheckSame = 0x4FAB3D, Return = 0x4FAC9B };
 
 	GET_STACK(const bool, all, STACK_OFFSET(0x18, 0x10));
 	GET(const int, index, EBX);
-	GET(const BuildCat, buildCat, ECX);
 	GET(const AbstractType, absType, EBP);
 	GET(FactoryClass* const, pFactory, ESI);
 
-	if (buildCat == BuildCat::DontCare || all)
+	const auto pType = TechnoTypeClass::GetByTypeAndIndex(absType, index);
+	const auto firstRemoved = pFactory->RemoveOneFromQueue(pType);
+
+	if (firstRemoved)
 	{
-		const auto pType = TechnoTypeClass::GetByTypeAndIndex(absType, index);
-		const auto firstRemoved = pFactory->RemoveOneFromQueue(pType);
+		SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
+		SidebarClass::Instance.RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
 
-		if (firstRemoved)
-		{
-			SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
-			SidebarClass::Instance.RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
-
-			if (all)
-				while (pFactory->RemoveOneFromQueue(pType));
-			else
-				return Return;
-		}
-
-		return CheckSame;
+		if (all)
+			while (pFactory->RemoveOneFromQueue(pType));
+		else
+			return Return;
 	}
 
-	if (!pFactory->Object)
-		return SkipCheck;
-
-	if (!pFactory->RemoveOneFromQueue(TechnoTypeClass::GetByTypeAndIndex(absType, index)))
-		return CheckSame;
-
-	SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
-	SidebarClass::Instance.RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
-
-	return Return;
+	return CheckSame;
 }
 
 DEFINE_HOOK(0x6A9C54, StripClass_DrawStrip_FindFactoryDehardCode, 0x6)

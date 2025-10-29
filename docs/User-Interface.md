@@ -169,7 +169,7 @@ In `RA2MD.INI`:
 ShowFlashOnSelecting=false  ; boolean
 ```
 
-### Hide health bars
+### Custom health bars display
 
 ![image](_static/images/healthbar.hide-01.png)
 *Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
@@ -188,12 +188,15 @@ HealthBar.Permanent=false            ; boolean
 HealthBar.Permanent.PipScale=false   ; boolean
 ```
 
-### Light flash effect toggling
+### Visual effects toggling
 
 - It is possible to toggle certain light flash effects off. These light flash effects include:
   - Combat light effects (`Bright=true`) and everything that uses same functionality e.g Iron Curtain / Force Field impact flashes.
   - Alpha images attached to ParticleSystems or Particles that are generated through a Warhead's `Particle` if `[AudioVisual] -> WarheadParticleAlphaImageIsLightFlash` or on Warhead `Particle.AlphaImageIsLightFlash` is set to true, latter defaults to former.
     - Additionally these alpha images are not created if `[AudioVisual] -> LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting.
+- It is possible to toggle shake screen effects (`ShakeX/Ylo/hi`) off by setting `HideShakeEffects=true`.
+- Phobos's [Laser Trail effects](New-or-Enhanced-Logics.md#laser-trails) can also be toggled off.
+  - If a LaserTrailType has `IsHideable=false`, it can't be toggled off by setting `HideLaserTrailEffects=true`.
 
 In `rulesmd.ini`:
 ```ini
@@ -205,10 +208,18 @@ LightFlashAlphaImageDetailLevel=0            ; integer
 Particle.AlphaImageIsLightFlash=             ; boolean
 ```
 
+In `artmd.ini`:
+```ini
+[SOMETRAIL]                  ; LaserTrailType name
+IsHideable=true              ; boolean
+```
+
 In `RA2MD.INI`:
 ```ini
 [Phobos]
 HideLightFlashEffects=false  ; boolean
+HideLaserTrailEffects=false  ; boolean
+HideShakeEffects=false       ; boolean
 ```
 
 ### Low priority for box selection
@@ -296,7 +307,6 @@ RealTimeTimers.Adaptive=false   ; boolean
 
 - Now you can use and customize select box for infantry, vehicle and aircraft. No select box for buildings in default case, but you still can specific for some building if you want.
   - `Frames` can be used to list frames of `Shape` file that'll be drawn as a select box when the TechnoType's health is at or below full health/the percentage defined in `[AudioVisual] -> ConditionYellow/ConditionRed`, respectively.
-  - If `Grounded` set to true, the select box will be drawn on the ground below the TechnoType.
   - Select box's translucency setting can be adjusted via `Translucency`.
   - `VisibleToHouses` and `VisibleToHouses.Observer` can limit visibility to specific players.
   - `DrawAboveTechno` specific whether the select box will be drawn before drawing the TechnoType. If set to false, the select box can be obscured by the TechnoType, and the draw location will ignore `PixelSelectionBracketDelta`.
@@ -600,7 +610,7 @@ When the building becomes ready to be placed, the next building's construction w
 ### Cameo Sorting
 
 - You can now specify Cameo Priority for any TechnoType/SuperWeaponType. Vanilla sorting rules are [here](https://modenc.renegadeprojects.com/Cameo_Sorting).
-  - The Cameo Priority is checked just before evevything vanilla. Greater `CameoPriority` wins.
+  - The Cameo Priority is checked just before everything vanilla. Greater `CameoPriority` wins.
 
 In `rulesmd.ini`:
 ```ini

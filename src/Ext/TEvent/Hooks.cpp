@@ -71,3 +71,15 @@ DEFINE_HOOK(0x726577, TEventClass_Persistable, 0x7)
 
 	return 0x72657E;
 }
+
+DEFINE_HOOK_AGAIN(0x71ED5E, TriggerClass_SpyAsInfantryOrHouse, 0x8)		// SpyAsHouse
+DEFINE_HOOK(0x71ECE1, TriggerClass_SpyAsInfantryOrHouse, 0x8)			// SpyAsInfantry
+{
+	GET(const int, iEvent, ESI);
+
+	// This might form a unique condition that specifies the Country and InfantryType.
+	if (iEvent == 53 || iEvent == 54)
+		return R->Origin() + 0x8;
+
+	return 0x71F163;
+}
