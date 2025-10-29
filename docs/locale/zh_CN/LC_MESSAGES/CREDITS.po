@@ -1507,7 +1507,7 @@ msgstr "有 `ElectricAssault=yes` 的副武不再会无条件地攻击己方 `Ov
 
 #: ../../../CREDITS.md:383 ../../../CREDITS.md:468
 msgid "Fix the issue where some units crashed after the deployment transformation"
-msgstr ""
+msgstr "修复了某些单位部署变形后崩溃的问题"
 
 #: ../../../CREDITS.md:384
 msgid "Turretless vehicles with `Voxel=no` support use `FireUp` like infantry"
