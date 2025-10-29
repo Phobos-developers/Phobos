@@ -603,7 +603,7 @@ msgid "Allow random crates to be generated only on lands (by Trsdy)"
 msgstr "允许随机工具箱仅生成在陆地（by Trsdy）"
 
 #: ../../Whats-New.md:330
-msgid "Iron-curtain effects on infantries and organic units (by ststl)"
+msgid "Iron-curtain effects on infantry and organic units (by ststl)"
 msgstr "允许在步兵和生物单位上使用铁幕效果（by ststl）"
 
 #: ../../Whats-New.md:331
@@ -1701,7 +1701,7 @@ msgstr "现在生成的子机在降落时会与其母舰的朝向对正（by Sta
 
 #: ../../Whats-New.md:538
 msgid ""
-"Fixed infantries attempted to entering buildings when waypointing "
+"Fixed infantry attempted to entering buildings when waypointing "
 "together with engineer/agent/occupier/etc (by Trsdy)"
 msgstr "修复了步兵在与间谍／工程师／可驻军步兵等一起进入路径点时会尝试进入建筑的 Bug（by Trsdy）"
 
@@ -1815,7 +1815,7 @@ msgstr "修复了核弹和心灵支配的光照等级未应用于战机类别的
 #: ../../Whats-New.md:556
 msgid ""
 "Removed the 0 damage effect from `InfDeath=9` warheads to in-air "
-"infantries (by Trsdy)"
+"infantry (by Trsdy)"
 msgstr "移除了 `InfDeath=9` 的弹头对 Jumpjet 步兵只能造成 0 伤害的效果（by Trsdy）"
 
 #: ../../Whats-New.md:557
@@ -3086,7 +3086,7 @@ msgstr "自定义被伤害目标解除隐形（by Starkku）"
 
 #: ../../Whats-New.md:789
 msgid ""
-"`DeployFireWeapon=-1` now allows the deployed infantries using both "
+"`DeployFireWeapon=-1` now allows the deployed infantry using both "
 "weapons as undeployed (by Uranusian)"
 msgstr "现在 `DeployFireWeapon=-1` 可以让部署状态的步兵像未部署的步兵那样使用两种武器（by Uranusian）"
 

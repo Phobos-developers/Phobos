@@ -139,7 +139,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed units with Teleport, Tunnel or Fly locomotor being unable to be visually flipped like other locomotors do.
 - Aircraft docking on buildings now respect `[AudioVisual] -> PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction.
 - Spawned aircraft now align with the spawner's facing when landing.
-- Fixed the bug that waypointing unarmed infantries with agent/engineer/occupier to a spyable/capturable/occupiable building triggers `EnteredBy` event by executing capture mission.
+- Fixed the bug that waypointing unarmed infantry with agent/engineer/occupier to a spyable/capturable/occupiable building triggers `EnteredBy` event by executing capture mission.
 - `PowerUpN` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
 - Fixed a desync potentially caused by displaying of cursor over selected `DeploysInto` units.
 - Skipped drawing rally point line when undeploying a factory.
@@ -160,7 +160,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `Temporal=true` Warheads potentially crashing game if used to attack `Slaved=true` infantry.
 - Fixed some locomotors (Tunnel, Walk, Mech) getting stuck when moving too fast.
 - Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them.
-- Removed 0 damage effect on jumpjet infantries from `InfDeath=9` warhead.
+- Removed 0 damage effect on jumpjet infantry from `InfDeath=9` warhead.
 - Fixed Nuke & Dominator Level lighting not applying to AircraftTypes.
 - Skip target scanning function calling for unarmed technos.
 - Projectiles created from `AirburstWeapon` now remember the WeaponType and can apply radiation etc.
@@ -967,8 +967,8 @@ This may subject to further changes.
 
 ### Kill spawns on low power
 
-- `Powered=yes` structures that spawns aircraft like Aircrafts Carriers will stop targeting the enemy if low power.
-- Spawned aircrafts self-destruct if they are flying.
+- `Powered=yes` structures that spawn aircraft like Aircraft Carriers will stop targeting the enemy if low power.
+- Spawned aircraft self-destruct if they are flying.
 
 In `rulesmd.ini`:
 ```ini

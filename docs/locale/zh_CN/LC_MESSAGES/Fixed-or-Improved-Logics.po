@@ -867,7 +867,7 @@ msgstr "现在生成的子机在降落时会与其母舰的朝向对正。"
 
 #: ../../Fixed-or-Improved-Logics.md:142
 msgid ""
-"Fixed the bug that waypointing unarmed infantries with "
+"Fixed the bug that waypointing unarmed infantry with "
 "agent/engineer/occupier to a spyable/capturable/occupiable building "
 "triggers `EnteredBy` event by executing capture mission."
 msgstr "修复了在路径点中为间谍／工程师／可驻军步兵设置目标为可渗透／占领／驻军的建筑执行行为时会触发 `被...进入` 条件的 Bug。"
@@ -1003,7 +1003,7 @@ msgid ""
 msgstr "现在使用 `MakeInfantry` 和 `UseNormalLight=false` 并使用单位色盘绘制的动画将正常应用单元格的亮度变化。"
 
 #: ../../Fixed-or-Improved-Logics.md:163
-msgid "Removed 0 damage effect on jumpjet infantries from `InfDeath=9` warhead."
+msgid "Removed 0 damage effect on jumpjet infantry from `InfDeath=9` warhead."
 msgstr "移除了 `InfDeath=9` 的弹头对 Jumpjet 步兵只能造成 0 伤害的效果。"
 
 #: ../../Fixed-or-Improved-Logics.md:164
@@ -3072,12 +3072,12 @@ msgstr "断电时击杀子机"
 
 #: ../../Fixed-or-Improved-Logics.md:970
 msgid ""
-"`Powered=yes` structures that spawns aircraft like Aircrafts Carriers "
+"`Powered=yes` structures that spawn aircraft like Aircraft Carriers "
 "will stop targeting the enemy if low power."
 msgstr "像航空母舰那样生成子机的 `Powered=yes` 结构将在断电时停止攻击敌人。"
 
 #: ../../Fixed-or-Improved-Logics.md:971
-msgid "Spawned aircrafts self-destruct if they are flying."
+msgid "Spawned aircraft self-destruct if they are flying."
 msgstr "被生成的战机如果正在飞行那么会自毁。"
 
 #: ../../Fixed-or-Improved-Logics.md:979

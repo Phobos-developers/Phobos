@@ -1258,7 +1258,7 @@ msgid "The option to allow `DieSound/VoiceDie` being played when grinding"
 msgstr "允许在被回收时播放 `DieSound/VoiceDie`"
 
 #: ../../../CREDITS.md:325
-msgid "Allow iron-curtain effects on infantries"
+msgid "Allow iron-curtain effects on infantry"
 msgstr "允许在步兵上使用铁幕效果"
 
 #: ../../../CREDITS.md:326
@@ -1631,7 +1631,7 @@ msgid "Customizable `ShowTimer` priority of superweapons"
 msgstr "自定义超武 `ShowTimer` 优先级"
 
 #: ../../../CREDITS.md:403
-msgid "Iron Curtain effects customization on infantries and organic units"
+msgid "Iron Curtain effects customization on infantry and organic units"
 msgstr "自定义对步兵和有机体的铁幕效果"
 
 #: ../../../CREDITS.md:404
