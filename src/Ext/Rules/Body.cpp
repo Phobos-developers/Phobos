@@ -1,4 +1,4 @@
-﻿#include "Body.h"
+#include "Body.h"
 #include <Ext/Side/Body.h>
 #include <Utilities/TemplateDef.h>
 #include <FPSCounter.h>
@@ -331,6 +331,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->WarheadAnimZAdjust.Read(exINI, GameStrings::AudioVisual, "WarheadAnimZAdjust");
 
+	this->SortCameoByName.Read(exINI, GameStrings::General, "SortCameoByName");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -607,6 +609,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->InfantryAutoDeploy)
 		.Process(this->AdjacentWallDamage)
 		.Process(this->WarheadAnimZAdjust)
+		.Process(this->SortCameoByName)
 		;
 }
 

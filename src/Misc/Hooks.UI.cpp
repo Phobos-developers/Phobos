@@ -224,6 +224,42 @@ DEFINE_HOOK(0x6A8463, StripClass_OperatorLessThan_CameoPriority, 0x5)
 	return rtti1 == AbstractType::Special ? 0x6A8477 : 0x6A8468;
 }
 
+DEFINE_HOOK(0x6A84DB, StripClass_OperatorLessThan_SortCameoByNameSW, 0x3)
+{
+	enum { rTrue = 0x6A8692, rFalse = 0x6A86A0 };
+
+	GET(SuperWeaponTypeClass*, pLeftSW, EAX);
+	GET(SuperWeaponTypeClass*, pRightSW, EAX);
+
+	if (RulesExt::Global()->SortCameoByName)
+	{
+		if (pLeftSW->Name < pRightSW->Name)
+			return rTrue;
+		else if (pLeftSW->Name > pRightSW->Name)
+			return rFalse;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6A86ED, StripClass_OperatorLessThan_SortCameoByNameTechno, 0x3)
+{
+	enum { rTrue = 0x6A8692, rFalse = 0x6A86A0 };
+
+	GET(TechnoTypeClass*, pLeft, EDI);
+	GET(TechnoTypeClass*, pRight, EBP);
+
+	if (RulesExt::Global()->SortCameoByName)
+	{
+		if (pLeft->Name < pRight->Name)
+			return rTrue;
+		else if (pLeft->Name > pRight->Name)
+			return rFalse;
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x6D4684, TacticalClass_Draw_FlyingStrings, 0x6)
 {
 	FlyingStrings::UpdateAll();

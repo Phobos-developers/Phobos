@@ -279,6 +279,8 @@ public:
 		Valueable<int> AdjacentWallDamage;
 
 		Valueable<int> WarheadAnimZAdjust;
+
+		Valueable<bool> SortCameoByName;
 		
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -497,6 +499,8 @@ public:
 			, AdjacentWallDamage { 200 }
 
 			, WarheadAnimZAdjust { -15 }
+
+			, SortCameoByName { false }
 		{ }
 
 		virtual ~ExtData() = default;
