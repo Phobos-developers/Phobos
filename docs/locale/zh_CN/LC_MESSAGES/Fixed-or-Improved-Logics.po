@@ -860,7 +860,7 @@ msgstr "现在生成的子机在降落时会与其母舰的朝向对正。"
 
 #: ../../Fixed-or-Improved-Logics.md:141
 msgid ""
-"Fixed the bug that waypointing unarmed infantries with "
+"Fixed the bug that waypointing unarmed infantry with "
 "agent/engineer/occupier to a spyable/capturable/occupiable building "
 "triggers `EnteredBy` event by executing capture mission."
 msgstr "修复了在路径点中为间谍／工程师／可驻军步兵设置目标为可渗透／占领／驻军的建筑执行行为时会触发 `被...进入` 条件的 Bug。"
@@ -996,7 +996,7 @@ msgid ""
 msgstr "现在使用 `MakeInfantry` 和 `UseNormalLight=false` 并使用单位色盘绘制的动画将正常应用单元格的亮度变化。"
 
 #: ../../Fixed-or-Improved-Logics.md:162
-msgid "Removed 0 damage effect on jumpjet infantries from `InfDeath=9` warhead."
+msgid "Removed 0 damage effect on jumpjet infantry from `InfDeath=9` warhead."
 msgstr "移除了 `InfDeath=9` 的弹头对 Jumpjet 步兵只能造成 0 伤害的效果。"
 
 #: ../../Fixed-or-Improved-Logics.md:163
@@ -1651,7 +1651,7 @@ msgstr "重新激活无效的 2、53 和 54 号触发条件。"
 
 #: ../../Fixed-or-Improved-Logics.md:272
 msgid ""
-"Fixed the bug that vehicle fall on infantries will make all cell content "
+"Fixed the bug that vehicle fall on infantry will make all cell content "
 "has been removed."
 msgstr ""
 "修复了载具落到有步兵的单元格上时会将格内所有对象全部移除的 Bug"
@@ -1825,13 +1825,13 @@ msgstr "修复了 Jumpjet 载具在指定射程内目标时无法正确停止的
 
 #: ../../Fixed-or-Improved-Logics.md:301
 msgid ""
-"Fixed an issue that jumpjet infantries stop incorrectly when assigned a "
+"Fixed an issue that jumpjet infantry stop incorrectly when assigned a "
 "target out of range."
 msgstr "修复了 Jumpjet 步兵在指定超出射程的目标时停止不正确的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:302
 msgid ""
-"Fixed an issue that jumpjet infantries' shadow is always drawn even if "
+"Fixed an issue that jumpjet infantry' shadow is always drawn even if "
 "they are cloaked."
 msgstr "修复了 Jumpjet 步兵隐形时依然绘制影子的问题。"
 
@@ -5168,12 +5168,12 @@ msgstr "断电时击杀子机"
 
 #: ../../Fixed-or-Improved-Logics.md:1376
 msgid ""
-"`Powered=yes` structures that spawns aircraft like Aircrafts Carriers "
+"`Powered=yes` structures that spawns aircraft like Aircraft Carrier "
 "will stop targeting the enemy if low power."
 msgstr "拥有 `Powered=yes` 的建筑航母在断电时将会停止攻击敌人。"
 
 #: ../../Fixed-or-Improved-Logics.md:1377
-msgid "Spawned aircrafts self-destruct if they are flying."
+msgid "Spawned aircraft self-destruct if they are flying."
 msgstr "被生成的战机如果正在飞行那么会自毁。"
 
 #: ../../Fixed-or-Improved-Logics.md:1380

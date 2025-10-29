@@ -1342,7 +1342,7 @@ msgstr "护盾"
 
 #: ../../New-or-Enhanced-Logics.md:294
 msgid ""
-"![image](_static/images/technoshield-01.gif) *Buildings, Infantries and "
+"![image](_static/images/technoshield-01.gif) *Buildings, Infantry and "
 "Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods"
 "/fantasy-adventure)*"
 msgstr ""
@@ -3577,7 +3577,7 @@ msgstr "`Trajectory.Straight.ProximityFlight` 控制是否考虑空中的单位�
 #: ../../New-or-Enhanced-Logics.md:872
 msgid ""
 "`Trajectory.Straight.ThroughVehicles` controls whether the projectile "
-"will not be obstructed by vehicles or aircrafts on the ground. When it is"
+"will not be obstructed by vehicles or aircraft on the ground. When it is"
 " obstructed, it will be directly detonated at its location. If it still "
 "have `Trajectory.Straight.ProximityImpact` times, it will also detonate a"
 " `Trajectory.Straight.ProximityImpact` at the location of the obstacle."
@@ -4290,7 +4290,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:1023
 msgid ""
-"Compared to vanilla `Arcing`, this can also be used for aircrafts and "
+"Compared to vanilla `Arcing`, this can also be used for aircraft and "
 "airburst weapon."
 msgstr "与原有的 `Arcing` 相比，它还可以用于战机和空爆武器。"
 
@@ -9080,7 +9080,7 @@ msgstr "无间隔连发"
 
 #: ../../New-or-Enhanced-Logics.md:2597
 msgid ""
-"In vanilla, vehicles and infantries will only fire once in one frame, "
+"In vanilla, vehicles and infantry will only fire once in one frame, "
 "even if their `ROF` or `BurstDelay` is set to 0. Now you can force units "
 "to fire all bursts in one frame by setting the `Burst.NoDelay` to true."
 msgstr ""

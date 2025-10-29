@@ -1344,7 +1344,7 @@ msgid "The option to allow `DieSound/VoiceDie` being played when grinding"
 msgstr "允许在被回收时播放 `DieSound/VoiceDie`"
 
 #: ../../../CREDITS.md:346
-msgid "Allow iron-curtain effects on infantries"
+msgid "Allow iron-curtain effects on infantry"
 msgstr "允许在步兵上使用铁幕效果"
 
 #: ../../../CREDITS.md:347
@@ -1859,7 +1859,7 @@ msgstr "允许设定 `AlternateFLH` 是否作用于运输工具中的载具类�
 
 #: ../../../CREDITS.md:457
 msgid ""
-"Fix the bug that vehicle fall on infantries will make all cell content "
+"Fix the bug that vehicle fall on infantry will make all cell content "
 "has been removed"
 msgstr ""
 "修复了载具落到有步兵的单元格上时会将格内所有对象全部移除的 Bug"
@@ -1877,7 +1877,7 @@ msgid "Customizable `ShowTimer` priority of superweapons"
 msgstr "自定义超武 `ShowTimer` 优先级"
 
 #: ../../../CREDITS.md:461
-msgid "Iron Curtain effects customization on infantries and organic units"
+msgid "Iron Curtain effects customization on infantry and organic units"
 msgstr "自定义对步兵和有机体的铁幕效果"
 
 #: ../../../CREDITS.md:462
@@ -2591,13 +2591,13 @@ msgstr "修复了 Jumpjet 载具在指定射程内目标时无法正确停止的
 
 #: ../../../CREDITS.md:628
 msgid ""
-"Fix an issue that jumpjet infantries stop incorrectly when assigned a "
+"Fix an issue that jumpjet infantry stop incorrectly when assigned a "
 "target out of range"
 msgstr "修复了 Jumpjet 步兵在指定超出射程的目标时停止不正确的问题"
 
 #: ../../../CREDITS.md:629
 msgid ""
-"Fix an issue that jumpjet infantries' shadow is always drawn even if they"
+"Fix an issue that jumpjet infantry' shadow is always drawn even if they"
 " are cloaked"
 msgstr "修复了 Jumpjet 步兵隐形时依然绘制影子的问题"
 
