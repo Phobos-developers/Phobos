@@ -1,4 +1,4 @@
-﻿#include "Body.h"
+#include "Body.h"
 #include <Ext/Side/Body.h>
 #include <Utilities/TemplateDef.h>
 #include <FPSCounter.h>
@@ -263,6 +263,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->StartDistributionModeSound.Read(exINI, GameStrings::AudioVisual, "StartDistributionModeSound");
 	this->EndDistributionModeSound.Read(exINI, GameStrings::AudioVisual, "EndDistributionModeSound");
 	this->AddDistributionModeCommandSound.Read(exINI, GameStrings::AudioVisual, "AddDistributionModeCommandSound");
+	this->DistributionMode_AllowActions.Read(exINI, GameStrings::General, "DistributionMode.AllowActions");
+	this->DistributionMode_DisallowActions.Read(exINI, GameStrings::General, "DistributionMode.DisallowActions");
+	this->DistributionMode_SpreadRanges.Read(exINI, GameStrings::General, "DistributionMode.SpreadRanges");
 
 	this->ReplaceVoxelLightSources();
 
@@ -558,6 +561,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->StartDistributionModeSound)
 		.Process(this->EndDistributionModeSound)
 		.Process(this->AddDistributionModeCommandSound)
+		.Process(this->DistributionMode_AllowActions)
+		.Process(this->DistributionMode_DisallowActions)
+		.Process(this->DistributionMode_SpreadRanges)
 		.Process(this->UseFixedVoxelLighting)
 		.Process(this->AIAutoDeployMCV)
 		.Process(this->AISetBaseCenter)

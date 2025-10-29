@@ -509,11 +509,14 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
 - `AllowDistributionCommand.SpreadMode` & `AllowDistributionCommand.FilterMode` allow you to set spread range and target filter by hotkeys, which default to `DefaultDistributionSpreadMode` and `DefaultDistributionFilterMode`.
   - When the range is 0, it is the original default behavior of the game. The range can be adjusted to 4, 8 or 16 cells by another shortcut key. You can also adjust this by using the mouse wheel while holding down the specific hotkey if `AllowDistributionCommand.SpreadModeScroll` set to true;
     - The targets within the range will be allocated equally to the selected technos. Only when the behavior to be performed by the current techno is the same as that displayed by the mouse will it be allocated. Otherwise, it will return to the original default behavior of the game (it will not be effective for technos in the air). This will display a range ring.
+    - You can also set a list of integers in `DistributionMode.SpreadRanges`. In this case, the range of each step will follow these settings instead of being 0, 4, 8 and 16.
   - When the filter is `None`, it is the default behavior of the game. If the range is not zero at this time, a green ring will be displayed. You can adjust the filter mode to:
     - `Like` - only targets with the same armor type (Completely identical `Armor`) will be selected among the targets allocated in the range. At this time, a blue ring will be displayed.
     - `Type` - only targets of the same type (like infantries, vehicles or buildings) will be selected among the targets allocated in the range. At this time, a yellow ring will be displayed.
     - `Name` - only targets of the same name (or with the same `GroupAs`) will be selected among the targets allocated in the range. At this time, a red ring will be displayed.
 - `AllowDistributionCommand.AffectsAllies` & `AllowDistributionCommand.AffectsEnemies` allow the distribution command to work on allies (including owner) or enemies target. If picking a target that's not eligible, it'll fallback to vanilla command.
+- `DistributionMode.AllowActions` & `DistributionMode.DisallowActions` determine the missions that can or can't be used for distribution command. If picking a target that's not eligible, it'll fallback to vanilla command.
+  - By default `DistributionMode.AllowActions` is an empty list, which means all missions are eligible for distribution command unless listed in `DistributionMode.DisallowActions`.
 - It's possible to add a button for distribution mode in the bottom bar by adding `DistributionMode` in the `ButtonList` of `AdvancedCommandBar` and `MultiplayerAdvancedCommandBar`.
   - The positions of each button are hardcoded, so it'll only decide whether enable this button or not. Distribute Mode button is now always listed after all the vanilla ones.
   - The asset of these buttons should be added in `sidec0x.mix` files which correspond to different sides, with the name `button12.shp`.
@@ -530,6 +533,11 @@ AllowDistributionCommand.FilterMode=true            ; boolean
 AllowDistributionCommand.AffectsAllies=true         ; boolean
 AllowDistributionCommand.AffectsEnemies=true        ; boolean
 
+[General]
+DistributionMode.AllowActions=                      ; list of Action
+DistributionMode.DisallowActions=                   ; list of Action
+DistributionMode.SpreadRanges=0,4,8,16              ; list of integer
+
 [AudioVisual]
 StartDistributionModeSound=                         ; sound entry
 EndDistributionModeSound=                           ; sound entry
@@ -540,7 +548,7 @@ In `ra2md.ini`:
 ```ini
 [Phobos]
 DefaultApplyNoMoveCommand=true                      ; boolean
-DefaultDistributionSpreadMode=2                     ; integer, 0 - r=0 , 1 - r=4 , 2 - r=8 , 3 - r=16
+DefaultDistributionSpreadMode=2                     ; integer, index of values in DistributionMode.SpreadRanges
 DefaultDistributionFilterMode=2                     ; integer, 0 - None , 1 - Like , 2 - Type , 3 - Name
 ```
 

@@ -205,6 +205,9 @@ public:
 		ValueableIdx<VocClass> StartDistributionModeSound;
 		ValueableIdx<VocClass> EndDistributionModeSound;
 		ValueableIdx<VocClass> AddDistributionModeCommandSound;
+		ValueableVector<Action> DistributionMode_AllowActions;
+		ValueableVector<Action> DistributionMode_DisallowActions;
+		ValueableVector<int> DistributionMode_SpreadRanges;
 
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
@@ -439,6 +442,9 @@ public:
 			, StartDistributionModeSound { -1 }
 			, EndDistributionModeSound { -1 }
 			, AddDistributionModeCommandSound { -1 }
+			, DistributionMode_AllowActions { }
+			, DistributionMode_DisallowActions { }
+			, DistributionMode_SpreadRanges { }
 			, UseFixedVoxelLighting { false }
 			, AIAutoDeployMCV { true }
 			, AISetBaseCenter { true }

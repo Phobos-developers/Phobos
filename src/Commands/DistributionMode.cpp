@@ -59,7 +59,8 @@ const wchar_t* DistributionModeSpreadCommandClass::GetUIDescription() const
 
 void DistributionModeSpreadCommandClass::Execute(WWKey eInput) const
 {
-	Phobos::Config::DistributionSpreadMode = ((Phobos::Config::DistributionSpreadMode + 1) & 3);
+	const int size = RulesExt::Global()->DistributionMode_SpreadRanges.size() > 0 ? RulesExt::Global()->DistributionMode_SpreadRanges.size() - 1 : 3;
+	Phobos::Config::DistributionSpreadMode = ((Phobos::Config::DistributionSpreadMode + 1) & size);
 	DistributionModeHoldDownCommandClass::ShowTime = SystemTimer::GetTime();
 }
 
@@ -174,7 +175,8 @@ void DistributionModeHoldDownCommandClass::DistributionModeOff()
 
 void DistributionModeHoldDownCommandClass::DistributionSpreadModeExpand()
 {
-	Phobos::Config::DistributionSpreadMode = std::min(3, Phobos::Config::DistributionSpreadMode + 1);
+	const int size = RulesExt::Global()->DistributionMode_SpreadRanges.size() > 0 ? RulesExt::Global()->DistributionMode_SpreadRanges.size() - 1 : 3;
+	Phobos::Config::DistributionSpreadMode = std::min(size, Phobos::Config::DistributionSpreadMode + 1);
 }
 
 void DistributionModeHoldDownCommandClass::DistributionSpreadModeReduce()
@@ -238,7 +240,7 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 
 			// Distribution mode main
 			if (DistributionModeHoldDownCommandClass::Enabled
-				&& spreadMode
+				&& (spreadMode || RulesExt::Global()->DistributionMode_SpreadRanges.size() > 0)
 				&& count > 1
 				&& action != Action::NoMove
 				&& !PlanningNodeClass::PlanningModeActive
@@ -246,12 +248,17 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 				&& !pTechno->IsInAir()
 				&& (HouseClass::CurrentPlayer->IsAlliedWith(pTechno->Owner)
 					? Phobos::Config::AllowDistributionCommand_AffectsAllies
-					: Phobos::Config::AllowDistributionCommand_AffectsEnemies))
+					: Phobos::Config::AllowDistributionCommand_AffectsEnemies)
+				&& (RulesExt::Global()->DistributionMode_AllowActions.size() > 0
+					&& std::any_of(RulesExt::Global()->DistributionMode_AllowActions.begin(), RulesExt::Global()->DistributionMode_AllowActions.end(),
+						[=](Action listedAction) { return action == listedAction; }))
+				&& !std::any_of(RulesExt::Global()->DistributionMode_DisallowActions.begin(), RulesExt::Global()->DistributionMode_DisallowActions.end(),
+					[=](Action listedAction) { return action == listedAction; }))
 			{
 				VocClass::PlayGlobal(RulesExt::Global()->AddDistributionModeCommandSound, 0x2000, 1.0);
 				const bool targetIsNeutral = pTechno->Owner->IsNeutral();
 				const auto pType = pTechno->GetTechnoType();
-				const int range = (2 << spreadMode);
+				const int range = RulesExt::Global()->DistributionMode_SpreadRanges.size() > 0 ? RulesExt::Global()->DistributionMode_SpreadRanges[spreadMode] : (2 << spreadMode);
 				const auto center = pTechno->GetCoords();
 				const auto pItems = Helpers::Alex::getCellSpreadItems(center, range);
 
@@ -410,16 +417,17 @@ DEFINE_HOOK(0x6DBE74, TacticalClass_DrawAllRadialIndicators_DrawDistributionRang
 	if (!DistributionModeHoldDownCommandClass::Enabled && SystemTimer::GetTime() - DistributionModeHoldDownCommandClass::ShowTime > 30)
 		return 0;
 
-	const auto spreadMode = Phobos::Config::DistributionSpreadMode;
-	const auto filterMode = Phobos::Config::DistributionFilterMode;
+	const int spreadMode = Phobos::Config::DistributionSpreadMode;
+	const int filterMode = Phobos::Config::DistributionFilterMode;
 
-	if (spreadMode || filterMode)
+	if (spreadMode || RulesExt::Global()->DistributionMode_SpreadRanges.size() > 0 || filterMode)
 	{
 		const auto pCell = MapClass::Instance.GetCellAt(DisplayClass::Instance.CurrentFoundation_CenterCell);
 		const auto color = (filterMode > 1)
 			? ((filterMode == 3) ? ColorStruct { 255, 0, 0 } : ColorStruct { 200, 200, 0 })
 			: ((filterMode == 1) ? ColorStruct { 0, 100, 255 } : ColorStruct { 0, 255, 50 });
-		Game::DrawRadialIndicator(false, true, pCell->GetCoords(), color, static_cast<float>(spreadMode ? (2 << spreadMode) : 0.5), false, true);
+		Game::DrawRadialIndicator(false, true, pCell->GetCoords(), color, static_cast<float>(RulesExt::Global()->DistributionMode_SpreadRanges.size() > 0
+			? RulesExt::Global()->DistributionMode_SpreadRanges[spreadMode] : (spreadMode ? (2 << spreadMode) : 0.5)), false, true);
 	}
 
 	return 0;
