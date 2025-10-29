@@ -352,7 +352,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix `AltNextScenario` not taking effect
   - Fix `Hospital=yes` building can't kick out infantry after loading a save
   - `600 The shield of the attached object is broken` bug fix for the triggered event
-  - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully
+  - Fix an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully
   - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`
   - Fix the issue where some units crashed after the deployment transformation
   - Engineers can enter buildings normally when they don't need to be repaired (or you can force it by pressing Alt)

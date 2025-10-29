@@ -799,12 +799,12 @@ msgid ""
 msgstr "修复了 `Powered`／`PoweredSpecial` 的建筑在被敌人占领时其受电力影响的动画不再更新的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:129
-msgid "Fix a glitch related to incorrect target setting for missiles."
+msgid "Fixed a glitch related to incorrect target setting for missiles."
 msgstr "修复了有关于导弹目标设置不正确的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:130
 msgid ""
-"Fix [EIP "
+"Fixed [EIP "
 "00529A14](https://modenc.renegadeprojects.com/Internal_Error/YR#eip_00529A14)"
 " when attempting to read `[Header]` section of campaign maps."
 msgstr ""
