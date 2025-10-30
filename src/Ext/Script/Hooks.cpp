@@ -8,10 +8,10 @@
 
 enum class BuildingWithProperty : unsigned int
 {
-	LeastThreat = 0,
-	HighestThreat = 65536,
-	Nearest = 131072,
-	Farthest = 196608
+	LeastThreat = 0 << 16,
+	HighestThreat = 1 << 16,
+	Nearest = 2 << 16,
+	Farthest = 3 << 16
 };
 
 DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8)
@@ -135,9 +135,7 @@ DEFINE_HOOK(0x723CA1, TeamMissionClass_FillIn_StringsSupport_and_id_masks, 0xB)
 
 	long val = strtol(Phobos::readBuffer, &endptr, 10);
 
-	if (*endptr == '\0'
-		&& val >= std::numeric_limits<int>::min()
-		&& val <= std::numeric_limits<int>::max())
+	if (*endptr == '\0')
 	{
 		// Integer case (the classic).
 		argument = static_cast<int>(val);
@@ -176,7 +174,7 @@ DEFINE_HOOK(0x723CA1, TeamMissionClass_FillIn_StringsSupport_and_id_masks, 0xB)
 			if (index < 0)
 				ScriptExt::Log("AI Scripts - TeamMissionClass_FillIn_StringsSupport: Invalid Country string [%s]\n", textArgument);
 			break;
-		case PhobosScripts::PlaySpeechByID: // Note: PR 1900 needs to be merged into develop
+		case PhobosScripts::PlaySpeechByID:
 			action = static_cast<int>(PhobosScripts::PlaySpeech);
 			index = VoxClass::FindIndex(textArgument);
 			break;
@@ -219,12 +217,6 @@ DEFINE_HOOK(0x723CA1, TeamMissionClass_FillIn_StringsSupport_and_id_masks, 0xB)
 			131072 (Hex 0x20000) + Building Index -> Index of the instance of the building which is nearest
 			196608 (Hex 0x30000) + Building Index -> Index of the instance of the building which is farthest
 			*/
-
-			//strcpy_s(id, strtok_s(textArgument, ",", &context));
-			//_snprintf_s(bwp, sizeof(bwp), context);
-			//strcpy_s(bwp, context);
-			//context = nullptr;
-			//strcpy_s(bwp, strtok_s(textArgument, ",", &context));
 
 			if (sscanf(textArgument, "%[^,],%s", id, bwp) == 2)
 			{
