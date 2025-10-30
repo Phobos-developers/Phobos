@@ -229,7 +229,7 @@ DEFINE_HOOK(0x6A84DB, StripClass_OperatorLessThan_SortCameoByNameSW, 0x3)
 	enum { rTrue = 0x6A8692, rFalse = 0x6A86A0 };
 
 	GET(SuperWeaponTypeClass*, pLeftSW, EAX);
-	GET(SuperWeaponTypeClass*, pRightSW, EAX);
+	GET(SuperWeaponTypeClass*, pRightSW, ECX);
 
 	if (RulesExt::Global()->SortCameoByName)
 	{
