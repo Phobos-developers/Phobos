@@ -64,22 +64,21 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 	GET(HouseClass*, pHouse, ESI);
 
-	bool houseIsHuman = pHouse->IsHumanPlayer;
+	if (!RulesExt::Global()->NewTeamsSelector)
+		return UseOriginalSelector;
 
+	bool houseIsHuman = pHouse->IsHumanPlayer;
 	bool isCampaign = SessionClass::IsCampaign();
 
 	if (isCampaign)
 		houseIsHuman = pHouse->IsHumanPlayer || pHouse->IsInPlayerControl;
 
-	if (houseIsHuman || pHouse->Type->MultiplayPassive)
+	if (houseIsHuman || pHouse->Type->MultiplayPassive || !pHouse->AITriggersActive)
 		return SkipCode;
 
 	auto pHouseTypeExt = HouseTypeExt::ExtMap.Find(pHouse->Type);
 	if (!pHouseTypeExt)
 		return SkipCode;
-
-	if (!RulesExt::Global()->NewTeamsSelector)
-		return UseOriginalSelector;
 
 	// Reset Team selection countdown
 	int countdown = RulesClass::Instance->TeamDelays[(int)pHouse->AIDifficulty];
@@ -190,6 +189,32 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 					// If the sum of all percentages is less than 100% then that empty space will work like "no categories"
 					splitTriggersByCategory = false;
 				}
+			}
+		}
+
+		if (splitTriggersByCategory)
+		{
+			switch (validCategory)
+			{
+			case teamCategory::Ground:
+				Debug::Log("AITeamsSelector - This time only GROUND teams will be picked.\n");
+				break;
+
+			case teamCategory::Unclassified:
+				Debug::Log("AITeamsSelector - This time only MIXED teams will be picked.\n");
+				break;
+
+			case teamCategory::Naval:
+				Debug::Log("AITeamsSelector - This time only NAVAL teams will be picked.\n");
+				break;
+
+			case teamCategory::Air:
+				Debug::Log("AITeamsSelector - This time only AIR teams will be picked.\n");
+				break;
+
+			default:
+				Debug::Log("AITeamsSelector - This time teams categories are DISABLED. Anyone can be picked\n");
+				break;
 			}
 		}
 
@@ -329,6 +354,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		bool ignoreGlobalAITriggers = ScenarioClass::Instance->IgnoreGlobalAITriggers;
 
 		const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+		double maxPriority = 5000.0;
 
 		// Gather all the trigger candidates into one place for posterior fast calculations
 		//for (auto const pTrigger : *AITriggerTypeClass::Array)
@@ -340,7 +366,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 				continue;
 
 			// Ignore offensive teams if the next trigger must be defensive
-			if (onlyPickDefensiveTeams && !pTrigger->IsForBaseDefense)
+			if ((onlyPickDefensiveTeams && !pTrigger->IsForBaseDefense) || (hasReachedMaxDefensiveTeamsLimit && pTrigger->IsForBaseDefense))
 				continue;
 
 			int triggerHouse = pTrigger->HouseIndex;
@@ -584,10 +610,10 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 					}
 
-					// All triggers below 5000 in current weight will get discarded if this mode is enabled
+					// All triggers below maxPriority (usually 5000) in current weight will get discarded if this mode is enabled
 					if (onlyCheckImportantTriggers)
 					{
-						if (pTrigger->Weight_Current < 5000)
+						if (pTrigger->Weight_Current < maxPriority)
 							continue;
 					}
 
@@ -682,6 +708,9 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 							//Debug::Log("DEBUG: MIXED category forced to work as category %d.\n", mergeUnclassifiedCategoryWith);
 							teamIsCategory = (teamCategory)mergeUnclassifiedCategoryWith;
 						}
+
+						if (validCategory != teamIsCategory)
+							continue;
 					}
 
 					bool allObjectsCanBeBuiltOrRecruited = true;
@@ -693,7 +722,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 							if (!entry.Type)
 								continue;
 
-							// Check if each unit in the taskforce meets the structure prerequisites
+							// Check if each unit in the taskforce meets the tech level & structure prerequisites
 							if (entry.Amount > 0)
 							{
 								TechnoTypeClass* object = entry.Type;
@@ -743,9 +772,9 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 					if (!allObjectsCanBeBuiltOrRecruited)
 						continue;
 
-					// Special case: triggers become very important if they reach the max priority (value 5000).
-					// They get stored in a elitist list and all previous triggers are discarded
-					if (pTrigger->Weight_Current >= 5000 && !onlyCheckImportantTriggers)
+					// Special case: triggers become very important if they reach the max priority (usually 5000, see maxPriority).
+					// They get stored in an elitist list and all previous triggers are discarded
+					if (pTrigger->Weight_Current >= maxPriority && !onlyCheckImportantTriggers)
 					{
 						// First time only
 						if (validTriggerCandidates.Count > 0)
@@ -832,32 +861,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 					}
 				}
-			}
-		}
-
-		if (splitTriggersByCategory)
-		{
-			switch (validCategory)
-			{
-			case teamCategory::Ground:
-				Debug::Log("AITeamsSelector - This time only will be picked GROUND teams.\n");
-				break;
-
-			case teamCategory::Unclassified:
-				Debug::Log("AITeamsSelector - This time only will be picked MIXED teams.\n");
-				break;
-
-			case teamCategory::Naval:
-				Debug::Log("AITeamsSelector - This time only will be picked NAVAL teams.\n");
-				break;
-
-			case teamCategory::Air:
-				Debug::Log("AITeamsSelector - This time only will be picked AIR teams.\n");
-				break;
-
-			default:
-				Debug::Log("AITeamsSelector - This time teams categories are DISABLED.\n");
-				break;
 			}
 		}
 
@@ -1013,11 +1016,11 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			return SkipCode;
 		}
 
-		if (selectedTrigger->Weight_Current >= 5000.0
-			&& selectedTrigger->Weight_Minimum <= 4999.0)
+		if (selectedTrigger->Weight_Current >= maxPriority
+			&& selectedTrigger->Weight_Minimum <= (maxPriority - 1))
 		{
 			// Next time this trigger will be out of the elitist triggers list
-			selectedTrigger->Weight_Current = 4999.0;
+			selectedTrigger->Weight_Current = maxPriority - 1;
 		}
 
 		// We have a winner trigger here
