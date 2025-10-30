@@ -2795,6 +2795,8 @@ DEFINE_HOOK(0x70D4FD, ObjectClass_ClearTargetToMe_ClearLastTarget, 0x6)
 	{
 		pTechno->LastTarget = nullptr;
 	}
+
+	return 0;
 }
 
 #pragma endregion
