@@ -453,6 +453,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that techno unit will draw with ironcurtain and airstrike color and intensity who disguised as terrain or overlay
   - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles
   - Allow setting whether `AlternateFLH` applies to vehicle passengers in the transport unit
+  - Fix the bug that vehicle fall on infantries will make all cell content has been removed
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -554,10 +555,11 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that units' `LaserTrails` will always lags behind by one frame
   - Fix an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos
   - Allow the aircraft to enter area guard mission and not crash immediately without any airport
+  - Distribution click action mode
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
-  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
+<!--  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades  -->
   - Type select for buildings (doc)
   - Enhanced Bombard trajectory
   - Shield armor inheritance customization
