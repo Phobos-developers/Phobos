@@ -399,29 +399,31 @@ void BulletExt::ApplyArcingFix(BulletClass* pThis, const CoordStruct& sourceCoor
 void BulletExt::Detonate(const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse, AbstractClass* pTarget, bool isBright, WeaponTypeClass* pWeapon, WarheadTypeClass* pWarhead)
 {
 	auto pBullet = ScenarioExt::Global()->MasterDetonationBullet;
+	auto const pType = pWeapon ? pWeapon->Projectile : BulletTypeExt::GetDefaultBulletType();
 
-	if (pWeapon)
+	// Oct 24, 2025 - Starkku: If the warhead is supposed to detonate on all map objects we actually need to create new BulletClass instance.
+	// Otherwise the master bullet instance can have its properties overwritten prematurely and cause weird issues.
+	if (WarheadTypeExt::ExtMap.Find(pWarhead)->DetonateOnAllMapObjects)
 	{
-		pBullet->Type = pWeapon->Projectile;
-		pBullet->SetWeaponType(pWeapon);
+		pBullet = pType->CreateBullet(pTarget, pOwner, damage, pWarhead, 100, isBright);
+		pBullet->WeaponType = pWeapon;
 	}
 	else
 	{
-		pBullet->Type = BulletTypeExt::GetDefaultBulletType();
-		pBullet->SetWeaponType(nullptr);
+		pBullet->Type = pType;
+		pBullet->WeaponType = pWeapon;
+		pBullet->Owner = pOwner;
+		pBullet->Health = damage;
+		pBullet->Target = pTarget;
+		pBullet->WH = pWarhead;
+		pBullet->Bright = isBright;
 	}
 
-	pBullet->Owner = pOwner;
-	pBullet->Health = damage;
-	pBullet->Target = pTarget;
-	pBullet->WH = pWarhead;
-	pBullet->Bright = isBright;
+	auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	pBulletExt->IsInstantDetonation = true;
 
 	if (pFiringHouse)
-	{
-		auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
 		pBulletExt->FirerHouse = pFiringHouse;
-	}
 
 	pBullet->SetLocation(coords);
 	pBullet->Explode(true);
@@ -445,6 +447,7 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->SnappedToTarget)
 		.Process(this->DamageNumberOffset)
 		.Process(this->ParabombFallRate)
+		.Process(this->IsInstantDetonation)
 
 		.Process(this->Trajectory) // Keep this shit at last
 		;

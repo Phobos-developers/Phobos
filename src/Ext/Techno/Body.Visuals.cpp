@@ -365,9 +365,13 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 
 	if ((pGroundShape || pSelectBox->GroundLine) && whatAmI != BuildingClass::AbsID && (pSelectBox->Ground_AlwaysDraw || pThis->IsInAir()))
 	{
-		CoordStruct coords = pThis->GetCenterCoords();
-		coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
-		auto [point, visible] = TacticalClass::Instance->CoordsToClient(coords);
+		auto [point, visible] = TacticalClass::Instance->CoordsToClient(pThis->GetRenderCoords());
+		const auto pFoot = static_cast<FootClass*>(pThis);
+
+		if (!pFoot->Locomotor)
+			Game::RaiseError(E_POINTER);
+
+		point += pFoot->Locomotor->Shadow_Point();
 
 		if (visible && pGroundShape)
 		{

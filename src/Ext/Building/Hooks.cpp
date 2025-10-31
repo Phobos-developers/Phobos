@@ -641,35 +641,25 @@ DEFINE_HOOK(0x4FAAD8, HouseClass_AbandonProduction_RewriteForBuilding, 0x8)
 	GET(const AbstractType, absType, EBP);
 	GET(FactoryClass* const, pFactory, ESI);
 
-	if (buildCat == BuildCat::DontCare || all)
-	{
-		const auto pType = TechnoTypeClass::GetByTypeAndIndex(absType, index);
-		const auto firstRemoved = pFactory->RemoveOneFromQueue(pType);
-
-		if (firstRemoved)
-		{
-			SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
-			SidebarClass::Instance.RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
-
-			if (all)
-				while (pFactory->RemoveOneFromQueue(pType));
-			else
-				return Return;
-		}
-
-		return CheckSame;
-	}
-
-	if (!pFactory->Object)
+	// After placing the building, the factory will be in this state
+	if (buildCat != BuildCat::DontCare && !all && !pFactory->Object)
 		return SkipCheck;
 
-	if (!pFactory->RemoveOneFromQueue(TechnoTypeClass::GetByTypeAndIndex(absType, index)))
-		return CheckSame;
+	const auto pType = TechnoTypeClass::GetByTypeAndIndex(absType, index);
+	const auto firstRemoved = pFactory->RemoveOneFromQueue(pType);
 
-	SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
-	SidebarClass::Instance.RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
+	if (firstRemoved)
+	{
+		SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
+		SidebarClass::Instance.RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
 
-	return Return;
+		if (all)
+			while (pFactory->RemoveOneFromQueue(pType));
+		else
+			return Return;
+	}
+
+	return CheckSame;
 }
 
 DEFINE_HOOK(0x6A9C54, StripClass_DrawStrip_FindFactoryDehardCode, 0x6)

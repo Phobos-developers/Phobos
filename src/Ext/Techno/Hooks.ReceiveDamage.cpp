@@ -409,16 +409,12 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 
 	return 0;
 }
-DEFINE_HOOK(0x5F547E, ObjectClass_ReceiveDamage_FlashDuration, 0x6)
+DEFINE_HOOK(0x5F5480, ObjectClass_ReceiveDamage_FlashDuration, 0x6)
 {
 	enum { SkipGameCode = 0x5F545C };
 
 	GET(ObjectClass*, pThis, ESI);
-	GET(const int, nNewHealth, EDX);
 	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFSET(0x24, 0x4));
-
-	if (pThis->Health == nNewHealth)
-		return SkipGameCode;
 
 	int nFlashDuration = 7;
 
