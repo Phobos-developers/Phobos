@@ -457,7 +457,6 @@ New:
 - Fast access structure (by FlyStar)
 - Toggle off laser trail and shake effects (by Ollerus)
 - [Dehardcode the `ZAdjust` of warhead anim](Fixed-or-Improved-Logics.md#dehardcode-the-zadjust-of-warhead-anim) (by TaranDahl)
-- Distribution click action mode (by CrimRecya)
 - Fixed an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner (by TaranDahl)
 
 Vanilla fixes:
