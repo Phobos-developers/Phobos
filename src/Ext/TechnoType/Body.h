@@ -434,7 +434,7 @@ public:
 
 		Nullable<bool> TurretResponse;
 
-		bool AttackFriendlies;
+		Vector2D<bool> AttackFriendlies;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -821,7 +821,7 @@ public:
 
 			, TurretResponse {}
 
-			, AttackFriendlies { false }
+			, AttackFriendlies { false,false }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -260,50 +260,6 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 	return 0;
 }
 
-void TechnoTypeExt::ExtData::UpdateAdditionalAttributes()
-{
-	const auto pThis = this->OwnerObject();
-	this->AttackFriendlies = pThis->AttackFriendlies;
-
-	if (!AttackFriendlies)
-	{
-		int Count = 2;
-
-		if (this->MultiWeapon
-			&& (!pThis->IsGattling && (!pThis->HasMultipleTurrets() || !pThis->Gunner)))
-		{
-			Count = pThis->WeaponCount;
-		}
-
-		for (int index = 0; index < Count; index++)
-		{
-			const auto pWeapon = pThis->GetWeapon(index)->WeaponType;
-			auto pEliteWeapon = pThis->GetEliteWeapon(index)->WeaponType;
-
-			if (!pEliteWeapon)
-				pEliteWeapon = pWeapon;
-
-			if (pWeapon)
-			{
-				if (WeaponTypeExt::ExtMap.Find(pWeapon)->AttackFriendlies.Get(false))
-				{
-					this->AttackFriendlies = true;
-					return;
-				}
-			}
-
-			if (pEliteWeapon)
-			{
-				if (WeaponTypeExt::ExtMap.Find(pWeapon)->AttackFriendlies.Get(false))
-				{
-					this->AttackFriendlies = true;
-					return;
-				}
-			}
-		}
-	}
-}
-
 // Ares 0.A source
 const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
 {
@@ -418,11 +374,49 @@ void TechnoTypeExt::ExtData::UpdateAdditionalAttributes()
 	const auto pThis = this->OwnerObject();
 	int count = 2;
 
+	const bool attackFriendlies = pThis->AttackFriendlies;
+	this->AttackFriendlies = { attackFriendlies ,attackFriendlies };
+
 	if (this->MultiWeapon
 		&& (!pThis->IsGattling && (!pThis->HasMultipleTurrets() || !pThis->Gunner)))
 	{
 		count = pThis->WeaponCount;
 	}
+
+	auto WeaponCheck = [&](WeaponTypeClass* const pWeapon, const bool isElite)
+	{
+		if (!pWeapon)
+			return;
+
+		if (isElite)
+		{
+			if (pWeapon->Projectile)
+				this->ThreatTypes.Y |= pWeapon->AllowedThreats();
+
+			this->CombatDamages.Y += (pWeapon->Damage + pWeapon->AmbientDamage);
+			eliteNum++;
+
+			if (!this->AttackFriendlies.Y
+				&& WeaponTypeExt::ExtMap.Find(pWeapon)->AttackFriendlies.Get(false))
+			{
+				this->AttackFriendlies.Y = true;
+			}
+		}
+		else
+		{
+			if (pWeapon->Projectile)
+				this->ThreatTypes.X |= pWeapon->AllowedThreats();
+
+			this->CombatDamages.X += (pWeapon->Damage + pWeapon->AmbientDamage);
+			num++;
+
+			if (!this->AttackFriendlies.X
+				&& WeaponTypeExt::ExtMap.Find(pWeapon)->AttackFriendlies.Get(false))
+			{
+				this->AttackFriendlies.X = true;
+			}
+		}
+	};
 
 	for (int index = 0; index < count; index++)
 	{
@@ -432,23 +426,8 @@ void TechnoTypeExt::ExtData::UpdateAdditionalAttributes()
 		if (!pEliteWeapon)
 			pEliteWeapon = pWeapon;
 
-		if (pWeapon)
-		{
-			if (pWeapon->Projectile)
-				this->ThreatTypes.X |= pWeapon->AllowedThreats();
-
-			this->CombatDamages.X += (pWeapon->Damage + pWeapon->AmbientDamage);
-			num++;
-		}
-
-		if (pEliteWeapon)
-		{
-			if (pEliteWeapon->Projectile)
-				this->ThreatTypes.Y |= pEliteWeapon->AllowedThreats();
-
-			this->CombatDamages.Y += (pEliteWeapon->Damage + pEliteWeapon->AmbientDamage);
-			eliteNum++;
-		}
+		WeaponCheck(pWeapon, false);
+		WeaponCheck(pEliteWeapon, true);
 	}
 
 	if (num > 0)
