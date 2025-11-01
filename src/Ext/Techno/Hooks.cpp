@@ -1568,8 +1568,8 @@ DEFINE_HOOK(0x700358, TechnoClass_MouseOverObject_AttackFriendlies, 0x6)
 	const auto pType = pThis->GetTechnoType();
 	const auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-	if (pWeaponTypeExt->AttackFriendlies.Get(pType->AttackFriendlies) ||
-		(pWeaponTypeExt->AttackCursorOnFriendlies.Get(pType->AttackCursorOnFriendlies) && !IvanBomb))
+	if (pWeaponTypeExt->AttackFriendlies.Get(pType->AttackFriendlies)
+		|| (pWeaponTypeExt->AttackCursorOnFriendlies.Get(pType->AttackCursorOnFriendlies) && !IvanBomb))
 	{
 		return CanAttack;
 	}
@@ -1586,8 +1586,8 @@ DEFINE_HOOK(0x6F8A92, TechnoClass_CheckAutoTarget_AttackFriendlies, 0xA)
 	GET(TechnoClass*, pThis, ESI);
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	R->CL(pThis->Veterancy.IsElite() ? pTypeExt->AttackFriendlies.Y : pTypeExt->AttackFriendlies.X);
 
+	R->CL(pThis->Veterancy.IsElite() ? pTypeExt->AttackFriendlies.Y : pTypeExt->AttackFriendlies.X);
 	return R->Origin() + 0x10;
 }
 
@@ -1612,9 +1612,11 @@ DEFINE_HOOK(0x6F7EF4, TechnoClass_CanAutoTarget_AttackFriendlies, 0xA)
 {
 	enum { SkipGameCode = 0x6F7F04 };
 
-	R->CL(CanAutoTargetTemp::WeaponExt->AttackFriendlies.Get(
-		CanAutoTargetTemp::TypeExtData->OwnerObject()->AttackFriendlies));
+	const bool attackFriendlies = CanAutoTargetTemp::WeaponExt->AttackFriendlies.isset()
+		? CanAutoTargetTemp::WeaponExt->AttackFriendlies
+		: CanAutoTargetTemp::TypeExtData->OwnerObject()->AttackFriendlies;
 
+	R->CL(attackFriendlies);
 	return SkipGameCode;
 }
 
