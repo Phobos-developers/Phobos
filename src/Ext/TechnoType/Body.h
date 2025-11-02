@@ -434,6 +434,8 @@ public:
 
 		Nullable<bool> TurretResponse;
 
+		SHPStruct* TurretShape;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, HealthBar_HidePips { false }
@@ -818,6 +820,8 @@ public:
 			, InfantryAutoDeploy {}
 
 			, TurretResponse {}
+
+			, TurretShape { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;

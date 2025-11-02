@@ -396,6 +396,7 @@ This page lists all the individual contributions to the project by their author.
   - Fast access structure
   - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles
   - Reactivate unused trigger events 2, 53, and 54
+  - SHP turret vehicles support the use of `*tur.shp` files
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
