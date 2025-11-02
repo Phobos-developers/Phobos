@@ -1474,7 +1474,7 @@ DEFINE_HOOK(0x6F7E30, TechnoClass_CanAutoTarget_SetContent, 0x6)
 	GET(WeaponTypeClass*, pWeapon, EBP);
 
 	CanAutoTargetTemp::TypeExtData = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
-	CanAutoTargetTemp::WeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	CanAutoTargetTemp::WeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon);
 
 	return 0;
 }
@@ -1488,9 +1488,11 @@ DEFINE_HOOK(0x6F85AB, TechnoClass_CanAutoTargetObject_AggressiveAttackMove, 0x6)
 	if (!pThis->MegaMissionIsAttackMove())
 		return ContinueCheck;
 
-	const bool canAttack = CanAutoTargetTemp::WeaponExt->AttackNoThreatBuildings.Get(
-		CanAutoTargetTemp::TypeExtData->AutoTarget_NoThreatBuildings.Get(pThis->Owner->IsControlledByHuman()
-			? RulesExt::Global()->AutoTarget_NoThreatBuildings : RulesExt::Global()->AutoTargetAI_NoThreatBuildings));
+	bool canAttack = pThis->Owner->IsControlledByHuman()
+		? RulesExt::Global()->AutoTarget_NoThreatBuildings : RulesExt::Global()->AutoTargetAI_NoThreatBuildings;
+
+	if (const auto pWeaponExt = CanAutoTargetTemp::WeaponExt)
+		canAttack = pWeaponExt->AttackNoThreatBuildings.Get(canAttack);
 
 	if (!canAttack)
 		return ContinueCheck;
