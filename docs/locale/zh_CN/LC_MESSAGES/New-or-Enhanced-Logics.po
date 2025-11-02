@@ -7696,7 +7696,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:2131
 msgid "`Voxel=no` turretless vehicles now support the use of `FireUp`."
-msgstr "现在 `Voxel=no` 的无炮塔载具现在已经支持 `FireUp`。"
+msgstr "现在 `Voxel=no` 的无炮塔载具已经支持 `FireUp`。"
 
 #: ../../New-or-Enhanced-Logics.md:2132
 msgid ""
