@@ -1614,10 +1614,7 @@ DEFINE_HOOK(0x6F7EF4, TechnoClass_CanAutoTarget_AttackFriendlies, 0xA)
 	bool attackFriendlies = pThis->GetTechnoType()->AttackFriendlies;
 
 	if (const auto pWeaponExt = CanAutoTargetTemp::WeaponExt)
-	{
-		attackFriendlies = pWeaponExt->AttackFriendlies.isset()
-			? pWeaponExt->AttackFriendlies : attackFriendlies;
-	}
+		attackFriendlies = pWeaponExt->AttackFriendlies.Get(attackFriendlies);
 
 	R->CL(attackFriendlies);
 	return SkipGameCode;
