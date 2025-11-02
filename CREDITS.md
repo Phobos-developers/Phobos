@@ -558,7 +558,7 @@ This page lists all the individual contributions to the project by their author.
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
-  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
+<!--  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades  -->
   - Type select for buildings (doc)
   - Enhanced Bombard trajectory
   - Shield armor inheritance customization
