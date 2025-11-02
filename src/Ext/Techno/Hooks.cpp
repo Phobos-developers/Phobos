@@ -1497,9 +1497,7 @@ DEFINE_HOOK(0x6F85AB, TechnoClass_CanAutoTargetObject_AggressiveAttackMove, 0x6)
 	if (!canAttack)
 		return ContinueCheck;
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	return pExt->TypeExtData->AttackMove_Aggressive.Get(RulesExt::Global()->AttackMove_Aggressive) ? CanTarget : ContinueCheck;
+	return CanAutoTargetTemp::TypeExtData->AttackMove_Aggressive.Get(RulesExt::Global()->AttackMove_Aggressive) ? CanTarget : ContinueCheck;
 }
 
 #pragma endregion
