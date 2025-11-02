@@ -96,8 +96,6 @@ DEFINE_HOOK(0x44A03C, BuildingClass_Mi_Selling_Transfer, 0x6)
 	TechnoExt::SyncInvulnerability(pStructure, pUnit);
 	AttachEffectClass::TransferAttachedEffects(pStructure, pUnit);
 
-	pUnit->QueueMission(Mission::Hunt, true);
-	//Why?
 	return 0;
 }
 
