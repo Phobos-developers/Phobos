@@ -786,7 +786,7 @@ msgstr "护盾"
 
 #: ../../New-or-Enhanced-Logics.md:264
 msgid ""
-"![image](_static/images/technoshield-01.gif) *Buildings, Infantries and "
+"![image](_static/images/technoshield-01.gif) *Buildings, Infantry and "
 "Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods"
 "/fantasy-adventure)*"
 msgstr ""

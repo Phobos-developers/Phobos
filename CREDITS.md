@@ -321,7 +321,7 @@ This page lists all the individual contributions to the project by their author.
   - `ImmuneToCrit` for shields
   - Forbidding parallel AI queues by type
   - The option to allow `DieSound/VoiceDie` being played when grinding
-  - Allow iron-curtain effects on infantries
+  - Allow iron-curtain effects on infantry
   - Break the mindcontrol link when capturing a mind-controlled building with engineer
   - Remove sound events when mind-controlled vehicles deploy into buildings or when buildings considered as vehicles get captured
   - Building LightSource tint S/L fix
@@ -352,7 +352,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix `AltNextScenario` not taking effect
   - Fix `Hospital=yes` building can't kick out infantry after loading a save
   - `600 The shield of the attached object is broken` bug fix for the triggered event
-  - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully
+  - Fix an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully
   - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`
   - Fix the issue where some units crashed after the deployment transformation
   - Engineers can enter buildings normally when they don't need to be repaired (or you can force it by pressing Alt)
@@ -399,7 +399,7 @@ This page lists all the individual contributions to the project by their author.
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
-  - Iron Curtain effects customization on infantries and organic units
+  - Iron Curtain effects customization on infantry and organic units
   - Use `CustomPalette` for animations with `Tiled=yes`
   - Unlimited `AlternateFLH` entries
   - Build limit group
