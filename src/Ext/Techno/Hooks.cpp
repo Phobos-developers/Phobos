@@ -1609,7 +1609,7 @@ DEFINE_HOOK(0x6F7EF4, TechnoClass_CanAutoTarget_AttackFriendlies, 0xA)
 {
 	enum { SkipGameCode = 0x6F7F04 };
 
-	GET(TechnoClass*, pThis, ESI);
+	GET(TechnoClass*, pThis, EDI);
 
 	bool attackFriendlies = pThis->GetTechnoType()->AttackFriendlies;
 
