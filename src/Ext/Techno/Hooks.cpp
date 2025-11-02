@@ -1593,17 +1593,14 @@ DEFINE_HOOK(0x6F8A92, TechnoClass_CheckAutoTarget_AttackFriendlies, 0xA)
 
 namespace CanAutoTargetTemp
 {
-	TechnoTypeExt::ExtData* TypeExtData;
 	WeaponTypeExt::ExtData* WeaponExt;
 }
 
 DEFINE_HOOK(0x6F7E30, TechnoClass_CanAutoTarget_SetContent, 0x6)
 {
-	GET(TechnoClass*, pThis, EDI);
 	GET(WeaponTypeClass*, pWeapon, EBP);
 
-	CanAutoTargetTemp::TypeExtData = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
-	CanAutoTargetTemp::WeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	CanAutoTargetTemp::WeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon);
 
 	return 0;
 }
@@ -1612,9 +1609,15 @@ DEFINE_HOOK(0x6F7EF4, TechnoClass_CanAutoTarget_AttackFriendlies, 0xA)
 {
 	enum { SkipGameCode = 0x6F7F04 };
 
-	const bool attackFriendlies = CanAutoTargetTemp::WeaponExt->AttackFriendlies.isset()
-		? CanAutoTargetTemp::WeaponExt->AttackFriendlies
-		: CanAutoTargetTemp::TypeExtData->OwnerObject()->AttackFriendlies;
+	GET(TechnoClass*, pThis, ESI);
+
+	bool attackFriendlies = pThis->GetTechnoType()->AttackFriendlies;
+
+	if (const auto pWeaponExt = CanAutoTargetTemp::WeaponExt)
+	{
+		attackFriendlies = pWeaponExt->AttackFriendlies.isset()
+			? pWeaponExt->AttackFriendlies : attackFriendlies;
+	}
 
 	R->CL(attackFriendlies);
 	return SkipGameCode;
