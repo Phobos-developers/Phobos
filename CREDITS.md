@@ -394,6 +394,8 @@ This page lists all the individual contributions to the project by their author.
   - Health bar permanently displayed
   - Unlimbo Detonate warhead
   - Fast access structure
+  - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles
+  - Reactivate unused trigger events 2, 53, and 54
   - Attack non-threatening structures extensions
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
@@ -450,6 +452,9 @@ This page lists all the individual contributions to the project by their author.
   - Customize squid grapple animation
   - Fix the bug that armor multiplier of new attacheffect will have extra take effect once if restricted warheads
   - Fix the bug that techno unit will draw with ironcurtain and airstrike color and intensity who disguised as terrain or overlay
+  - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles
+  - Allow setting whether `AlternateFLH` applies to vehicle passengers in the transport unit
+  - Fix the bug that vehicle fall on infantries will make all cell content has been removed
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -554,7 +559,7 @@ This page lists all the individual contributions to the project by their author.
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
-  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
+<!--  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades  -->
   - Type select for buildings (doc)
   - Enhanced Bombard trajectory
   - Shield armor inheritance customization
@@ -573,6 +578,7 @@ This page lists all the individual contributions to the project by their author.
   - Randomized anims for several behaviors
   - Fix customized `WarpAway` anim's wrong definition
   - Shield respawn animation and weapon
+  - Toggle off laser trail and shake effects
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
@@ -626,6 +632,8 @@ This page lists all the individual contributions to the project by their author.
   - Attack and damage technos underground
   - Fix an issue that infantry walking through a cell containing a tree would cause it to be impassable to other houses
   - Fix an issue that the AI would enter a combat state when its building receiving damage from friendly units or damage not greater than 0
+  - Fix an issue that the techno with weapon with `AA=yes` and `AG=no` would not auto targeting units that are falling, such as paratroopers
+  - Dehardcode the `ZAdjust` of warhead anim
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
