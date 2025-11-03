@@ -2826,11 +2826,13 @@ DEFINE_HOOK(0x701681, TechnoClass_SetOwningHouse_ClearManagerTarget, 0x6)
 			pTemporal->LetGo();
 	}
 
-	for (const auto pAirstrike : AirstrikeClass::Array)
-	{
-		if (pAirstrike->Target == pThis)
-			pAirstrike->ResetTarget();
-	}
+	// WW don't clear target if the techno has airstrike manager.
+	// No idea why, but for now we respect it and don't handle the airstrike target.
+	//for (const auto pAirstrike : AirstrikeClass::Array)
+	//{
+	//	if (pAirstrike->Target == pThis)
+	//		pAirstrike->ClearTarget();
+	//}
 
 	for (const auto pSpawn : SpawnManagerClass::Array)
 	{
