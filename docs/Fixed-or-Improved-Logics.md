@@ -296,14 +296,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - 1000 save files are supported, from `SVGM_000.NET` to `SVGM_999.NET`. When the limit is reached, the game will overwrite the latest save file.
   - The previous `SVGM_XXX.NET` files are cleaned up before first copy if it's a new game, otherwise the highest numbered `SVGM_XXX.NET` file is found and the index is incremented, if possible.
   - The game also automatically copies `spawn.ini` to the save folder as `spawnSG.ini` when saving a game.
-- Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle`.
-- Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range.
-- Fixed an issue that jumpjet infantry stop incorrectly when assigned a target out of range.
-- Fixed an issue that jumpjet infantry' shadow is always drawn even if they are cloaked.
-- Fixed an issue that technos head to building's dock even they are not going to dock.
-- Fixed an issue that the jumpjet vehicles cannot stop correctly after going berserk.
-- Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect.
-- Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state.
 
 ```{note}
 The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
@@ -312,6 +304,15 @@ The described behavior is a replica of and is compliant with XNA CnCNet Client's
 ```{note}
 At the moment this is only useful if you use a version of [YRpp Spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support (along with [XNA CnCNet Client](https://github.com/CnCNet/xna-cncnet-client)).
 ```
+
+- Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle`.
+- Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range.
+- Fixed an issue that jumpjet infantry stop incorrectly when assigned a target out of range.
+- Fixed an issue that jumpjet infantry' shadow is always drawn even if they are cloaked.
+- Fixed an issue that technos head to building's dock even they are not going to dock.
+- Fixed an issue that the jumpjet vehicles cannot stop correctly after going berserk.
+- Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect.
+- Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state.
 
 ## Aircraft
 
