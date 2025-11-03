@@ -80,6 +80,8 @@ public:
 
 		ValueableVector<bool> HasPowerUpAnim;
 
+		Valueable<bool> UndeploysInto_Sellable;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -129,6 +131,7 @@ public:
 			, Adjacent_Allowed {}
 			, Adjacent_Disallowed {}
 			, HasPowerUpAnim {}
+			, UndeploysInto_Sellable { false }
 		{ }
 
 		// Ares 0.A functions
