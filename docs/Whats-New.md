@@ -488,7 +488,6 @@ Vanilla fixes:
 - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles (by NetsuNegi & FlyStar)
 - Reactivate unused trigger events 2, 53, and 54 (by FlyStar)
 - Fixed the bug that vehicle fall on infantry will make all cell content has been removed (by NetsuNegi)
-- Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state (by Starkku)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -834,6 +833,7 @@ Vanilla fixes:
 - Fixed the bug that hover vehicle will sink if destroyed on bridge (by NetsuNegi)
 - Fixed the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target (by FlyStar)
 - Fixed pathfinding crashes (EIP 0x42A525, 0x42C507, 0x42C554) that happened on bigger maps due to too small pathfinding node buffer (by CrimRecya)
+- Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
