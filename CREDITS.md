@@ -279,6 +279,7 @@ This page lists all the individual contributions to the project by their author.
   - Delayed fire weapons
   - Changes / fixes to `Vertical` projectile logic and customizing projectile initial facing behavior
   - Bugfixes to map trigger action `125 Build At...`
+  - Owner change during buildup bugfix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -342,7 +343,7 @@ This page lists all the individual contributions to the project by their author.
   - `ImmuneToCrit` for shields
   - Forbidding parallel AI queues by type
   - The option to allow `DieSound/VoiceDie` being played when grinding
-  - Allow iron-curtain effects on infantries
+  - Allow iron-curtain effects on infantry
   - Break the mindcontrol link when capturing a mind-controlled building with engineer
   - Remove sound events when mind-controlled vehicles deploy into buildings or when buildings considered as vehicles get captured
   - Building LightSource tint S/L fix
@@ -453,11 +454,11 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that techno unit will draw with ironcurtain and airstrike color and intensity who disguised as terrain or overlay
   - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles
   - Allow setting whether `AlternateFLH` applies to vehicle passengers in the transport unit
-  - Fix the bug that vehicle fall on infantries will make all cell content has been removed
+  - Fix the bug that vehicle fall on infantry will make all cell content has been removed
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
-  - Iron Curtain effects customization on infantries and organic units
+  - Iron Curtain effects customization on infantry and organic units
   - Use `CustomPalette` for animations with `Tiled=yes`
   - Unlimited `AlternateFLH` entries
   - Build limit group
@@ -624,8 +625,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that jumpjets in air can not correctly spawn missiles
   - Customize the chained damage of the wall
   - Fix an issue that jumpjet vehicles can not stop correctly when assigned a target in range
-  - Fix an issue that jumpjet infantries stop incorrectly when assigned a target out of range
-  - Fix an issue that jumpjet infantries' shadow is always drawn even if they are cloaked
+  - Fix an issue that jumpjet infantry stop incorrectly when assigned a target out of range
+  - Fix an issue that jumpjet infantry' shadow is always drawn even if they are cloaked
   - Fix an issue that technos head to building's dock even they are not going to dock
   - Fix an issue that the jumpjet vehicles cannot stop correctly after going berserk
   - Attack and damage technos underground
