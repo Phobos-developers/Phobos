@@ -253,6 +253,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DamageOwnerMultiplier.Read(exINI, pSection, "DamageOwnerMultiplier");
 	this->DamageAlliesMultiplier.Read(exINI, pSection, "DamageAlliesMultiplier");
 	this->DamageEnemiesMultiplier.Read(exINI, pSection, "DamageEnemiesMultiplier");
+	this->DamageOwnerMultiplier_Berzerk.Read(exINI, pSection, "DamageOwnerMultiplier.Berzerk");
+	this->DamageAlliesMultiplier_Berzerk.Read(exINI, pSection, "DamageAlliesMultiplier.Berzerk");
+	this->DamageEnemiesMultiplier_Berzerk.Read(exINI, pSection, "DamageEnemiesMultiplier.Berzerk");
 	this->DamageSourceHealthMultiplier.Read(exINI, pSection, "DamageSourceHealthMultiplier");
 	this->DamageTargetHealthMultiplier.Read(exINI, pSection, "DamageTargetHealthMultiplier");
 
@@ -300,6 +303,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AffectsUnderground.Read(exINI, pSection, "AffectsUnderground");
 	this->PlayAnimUnderground.Read(exINI, pSection, "PlayAnimUnderground");
 	this->PlayAnimAboveSurface.Read(exINI, pSection, "PlayAnimAboveSurface");
+
+	this->AnimZAdjust.Read(exINI, pSection, "AnimZAdjust");
 
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
@@ -540,6 +545,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DamageOwnerMultiplier)
 		.Process(this->DamageAlliesMultiplier)
 		.Process(this->DamageEnemiesMultiplier)
+		.Process(this->DamageOwnerMultiplier_Berzerk)
+		.Process(this->DamageAlliesMultiplier_Berzerk)
+		.Process(this->DamageEnemiesMultiplier_Berzerk)
 		.Process(this->DamageSourceHealthMultiplier)
 		.Process(this->DamageTargetHealthMultiplier)
 
@@ -583,6 +591,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AffectsUnderground)
 		.Process(this->PlayAnimUnderground)
 		.Process(this->PlayAnimAboveSurface)
+
+		.Process(this->AnimZAdjust)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

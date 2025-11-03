@@ -385,7 +385,9 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 
 	GET(BulletClass*, pThis, ESI);
 
-	if (pThis == ScenarioExt::Global()->MasterDetonationBullet)
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (pExt->IsInstantDetonation)
 		return SkipChecks;
 
 	auto const pType = pThis->Type;
@@ -400,8 +402,6 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 	{
 		return 0;
 	}
-
-	auto const pExt = BulletExt::ExtMap.Find(pThis);
 
 	if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
 	{
@@ -418,7 +418,9 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 
 	GET(BulletClass*, pThis, ESI);
 
-	if (pThis == ScenarioExt::Global()->MasterDetonationBullet)
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (pExt->IsInstantDetonation)
 		return SkipChecks;
 
 	auto const pType = pThis->Type;
@@ -436,8 +438,6 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 
 	// Do not force Trajectory=Straight projectiles to detonate at target coordinates under certain circumstances.
 	// Fixes issues with walls etc.
-	auto const pExt = BulletExt::ExtMap.Find(pThis);
-
 	if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
 		return SkipSetCoordinate;
 

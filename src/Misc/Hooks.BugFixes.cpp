@@ -1,4 +1,4 @@
-﻿#include <AircraftClass.h>
+#include <AircraftClass.h>
 #include <AircraftTrackerClass.h>
 #include <AnimClass.h>
 #include <BuildingClass.h>
@@ -878,10 +878,19 @@ DEFINE_HOOK(0x6B75AC, SpawnManagerClass_AI_SetDestinationForMissiles, 0x5)
 	GET(SpawnManagerClass*, pSpawnManager, ESI);
 	GET(TechnoClass*, pSpawnTechno, EDI);
 
-	const CoordStruct coord = pSpawnManager->Target->GetCenterCoords();
-	CellClass* pCellDestination = MapClass::Instance.TryGetCellAt(coord);
+	auto const pTarget = pSpawnManager->Target;
 
-	pSpawnTechno->SetDestination(pCellDestination, true);
+	// Oct 27, 2025 - Starkku: Restore old behaviour for building destinations to eliminate inaccuracy issues.
+	if (pTarget->WhatAmI() == AbstractType::Building)
+	{
+		pSpawnTechno->SetDestination(pTarget, true);
+	}
+	else
+	{
+		const CoordStruct coord = pSpawnManager->Target->GetCenterCoords();
+		CellClass* pCellDestination = MapClass::Instance.TryGetCellAt(coord);
+		pSpawnTechno->SetDestination(pCellDestination, true);
+	}
 
 	return 0x6B75BC;
 }
@@ -2699,3 +2708,108 @@ DEFINE_HOOK(0x5218C2, InfantryClass_UnmarkAllOccupationBits_ResetOwnerIdx, 0x6)
 }
 
 #pragma endregion
+
+// Vanilla won't swizzle owner house of Particle System when loading, which was fine before
+// But now it might trigger a crash since DamageAllies/Enemies/OwnerMultiplier will check its house
+// Fix it at here for now. If we extend ParticleSystemClass in the future this should be moved to there
+DEFINE_HOOK(0x62FFBB, ParticleSystemClass_Load_OwnerHouse, 0x8)
+{
+	GET(ParticleSystemClass*, pThis, EDI);
+
+	SWIZZLE(pThis->OwnerHouse);
+
+	return 0;
+}
+
+#pragma region LATimeFix
+
+// Skip the LATime set code in wrong place.
+DEFINE_JUMP(LJMP, 0x44227E, 0x4422C1);
+
+// Set the LATime when the building is actually damaged.
+DEFINE_HOOK(0x44242A, BuildingClass_ReceiveDamage_SetLATime, 0x8)
+{
+	GET(BuildingClass* const, pThis, ESI);
+	GET(const DamageState, state, EAX);
+	GET(TechnoClass*, pAttacker, EBP);
+	GET_STACK(HouseClass*, pAttackerHouse, STACK_OFFSET(0x9C, 0x1C));
+
+	auto const pFromHouse = pAttacker ? pAttacker->GetOwningHouse() : pAttackerHouse;
+
+	if (pFromHouse
+		&& state != DamageState::Unaffected
+		&& !pThis->IsStrange()
+		&& !pThis->Owner->IsAlliedWith(pFromHouse))
+	{
+		auto const pOwner = pThis->Owner;
+		pOwner->LATime = Unsorted::CurrentFrame;
+		pOwner->LAEnemy = pFromHouse->ArrayIndex;
+
+		if (pAttacker)
+			pThis->BaseIsAttacked(pAttacker);
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
+DEFINE_HOOK(0x54CC9C, JumpjetLocomotionClass_ProcessCrashing_DropFix, 0x5)
+{
+	enum { SkipGameCode = 0x54CDC3, SkipGameCode2 = 0x54CFB7 };
+
+	GET(ObjectClass* const, pObject, ESI);
+	GET(JumpjetLocomotionClass*, pLoco, EDI);
+	const auto pLinkedTo = pLoco->LinkedTo;
+	bool fallOnSomething = false;
+
+	for (NextObject object(pObject); object; ++object)
+	{
+		if (*object == pLinkedTo)
+			continue;
+
+		const auto whatAmObject = object->WhatAmI();
+
+		if (whatAmObject == UnitClass::AbsID || whatAmObject == BuildingClass::AbsID || whatAmObject == AircraftClass::AbsID)
+		{
+			fallOnSomething = true;
+			continue;
+		}
+
+		if (whatAmObject == InfantryClass::AbsID)
+		{
+			const auto pInfantry = static_cast<InfantryClass*>(*object);
+
+			VocClass::PlayAt(object->GetType()->CrushSound, object->Location);
+
+			if (const auto pManipulater = pLinkedTo->BeingManipulatedBy)
+				pInfantry->RegisterDestruction(pManipulater);
+			else if (const auto pSourceHouse = pLinkedTo->ChronoWarpedByHouse)
+				pInfantry->RegisterKill(pSourceHouse);
+			else
+				pInfantry->RegisterDestruction(pLinkedTo);
+
+			pInfantry->Mark(MarkType::Up);
+			pInfantry->Limbo();
+			pInfantry->UnInit();
+			continue;
+		}
+
+		if (whatAmObject == TerrainClass::AbsID)
+		{
+			const auto pTerrain = static_cast<TerrainClass*>(*object);
+
+			if (pTerrain->Type->Immune)
+				continue;
+		}
+
+		if (const auto pManipulater = pLinkedTo->BeingManipulatedBy)
+			object->ReceiveDamage(&object->Health, 0, RulesClass::Instance->CrushWarhead, pManipulater, true, false, pManipulater->Owner);
+		else if (const auto pSourceHouse = pLinkedTo->ChronoWarpedByHouse)
+			object->ReceiveDamage(&object->Health, 0, RulesClass::Instance->CrushWarhead, pLinkedTo, true, false, pSourceHouse);
+		else
+			object->ReceiveDamage(&object->Health, 0, RulesClass::Instance->CrushWarhead, pLinkedTo, true, false, pLinkedTo->Owner);
+	}
+
+	return fallOnSomething ? SkipGameCode2 : SkipGameCode;
+}

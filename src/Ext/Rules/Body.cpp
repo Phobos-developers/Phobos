@@ -1,4 +1,4 @@
-#include "Body.h"
+﻿#include "Body.h"
 #include <Ext/Side/Body.h>
 #include <Utilities/TemplateDef.h>
 #include <FPSCounter.h>
@@ -57,6 +57,8 @@ void RulesExt::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
 			// Spawner range
 			if (pTechnoTypeExt->Spawner_LimitRange)
 				pTechnoTypeExt->CalculateSpawnerRange();
+
+			pTechnoTypeExt->UpdateAdditionalAttributes();
 		}
 	}
 
@@ -237,7 +239,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DamageEnemiesMultiplier.Read(exINI, GameStrings::CombatDamage, "DamageEnemiesMultiplier");
 	this->DamageOwnerMultiplier_NotAffectsEnemies.Read(exINI, GameStrings::CombatDamage, "DamageOwnerMultiplier.NotAffectsEnemies");
 	this->DamageAlliesMultiplier_NotAffectsEnemies.Read(exINI, GameStrings::CombatDamage, "DamageAlliesMultiplier.NotAffectsEnemies");
-
+	this->DamageOwnerMultiplier_Berzerk.Read(exINI, GameStrings::CombatDamage, "DamageOwnerMultiplier.Berzerk");
+	this->DamageAlliesMultiplier_Berzerk.Read(exINI, GameStrings::CombatDamage, "DamageAlliesMultiplier.Berzerk");
+	this->DamageEnemiesMultiplier_Berzerk.Read(exINI, GameStrings::CombatDamage, "DamageEnemiesMultiplier.Berzerk");
+		
 	this->AircraftLevelLightMultiplier.Read(exINI, GameStrings::AudioVisual, "AircraftLevelLightMultiplier");
 	this->JumpjetLevelLightMultiplier.Read(exINI, GameStrings::AudioVisual, "JumpjetLevelLightMultiplier");
 
@@ -319,6 +324,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->InfantryAutoDeploy.Read(exINI, GameStrings::General, "InfantryAutoDeploy");
 
 	this->AdjacentWallDamage.Read(exINI, GameStrings::CombatDamage, "AdjacentWallDamage");
+
+	this->WarheadAnimZAdjust.Read(exINI, GameStrings::AudioVisual, "WarheadAnimZAdjust");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -526,6 +533,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DamageEnemiesMultiplier)
 		.Process(this->DamageOwnerMultiplier_NotAffectsEnemies)
 		.Process(this->DamageAlliesMultiplier_NotAffectsEnemies)
+		.Process(this->DamageOwnerMultiplier_Berzerk)
+		.Process(this->DamageAlliesMultiplier_Berzerk)
+		.Process(this->DamageEnemiesMultiplier_Berzerk)
 		.Process(this->AircraftLevelLightMultiplier)
 		.Process(this->JumpjetLevelLightMultiplier)
 		.Process(this->VoxelLightSource)
@@ -589,6 +599,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Parasite_GrappleAnim)
 		.Process(this->InfantryAutoDeploy)
 		.Process(this->AdjacentWallDamage)
+		.Process(this->WarheadAnimZAdjust)
 		;
 }
 

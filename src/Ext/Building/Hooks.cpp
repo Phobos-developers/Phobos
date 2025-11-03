@@ -641,35 +641,25 @@ DEFINE_HOOK(0x4FAAD8, HouseClass_AbandonProduction_RewriteForBuilding, 0x8)
 	GET(const AbstractType, absType, EBP);
 	GET(FactoryClass* const, pFactory, ESI);
 
-	if (buildCat == BuildCat::DontCare || all)
-	{
-		const auto pType = TechnoTypeClass::GetByTypeAndIndex(absType, index);
-		const auto firstRemoved = pFactory->RemoveOneFromQueue(pType);
-
-		if (firstRemoved)
-		{
-			SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
-			SidebarClass::Instance.RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
-
-			if (all)
-				while (pFactory->RemoveOneFromQueue(pType));
-			else
-				return Return;
-		}
-
-		return CheckSame;
-	}
-
-	if (!pFactory->Object)
+	// After placing the building, the factory will be in this state
+	if (buildCat != BuildCat::DontCare && !all && !pFactory->Object)
 		return SkipCheck;
 
-	if (!pFactory->RemoveOneFromQueue(TechnoTypeClass::GetByTypeAndIndex(absType, index)))
-		return CheckSame;
+	const auto pType = TechnoTypeClass::GetByTypeAndIndex(absType, index);
+	const auto firstRemoved = pFactory->RemoveOneFromQueue(pType);
 
-	SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
-	SidebarClass::Instance.RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
+	if (firstRemoved)
+	{
+		SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
+		SidebarClass::Instance.RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
 
-	return Return;
+		if (all)
+			while (pFactory->RemoveOneFromQueue(pType));
+		else
+			return Return;
+	}
+
+	return CheckSame;
 }
 
 DEFINE_HOOK(0x6A9C54, StripClass_DrawStrip_FindFactoryDehardCode, 0x6)
@@ -909,3 +899,31 @@ DEFINE_HOOK(0x4555E4, BuildingClass_IsPowerOnline_Overpower, 0x6)
 
 	return overPower < keepOnline ? LowPower : (R->Origin() == 0x4555E4 ? Continue1 : Continue2);
 }
+
+#pragma region OwnerChangeBuildupFix
+
+void __fastcall BuildingClass_Place_Wrapper(BuildingClass* pThis, void*, bool captured)
+{
+	// Skip calling Place() here if we're in middle of buildup.
+	if (pThis->CurrentMission != Mission::Construction || pThis->BState != (int)BStateType::Construction)
+		pThis->Place(captured);
+}
+
+DEFINE_FUNCTION_JUMP(CALL6, 0x448CEF, BuildingClass_Place_Wrapper);
+
+DEFINE_HOOK(0x44939F, BuildingClass_Captured_BuildupFix, 0x7)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	// If we're supposed to be playing buildup during/after owner change reset any changes to mission or BState made during owner change. 
+	if (pThis->CurrentMission == Mission::Construction && pThis->BState == (int)BStateType::Construction)
+	{
+		pThis->IsReadyToCommence = false;
+		pThis->QueueBState = (int)BStateType::None;
+		pThis->QueuedMission = Mission::None;
+	}
+
+	return 0;
+}
+
+#pragma endregion

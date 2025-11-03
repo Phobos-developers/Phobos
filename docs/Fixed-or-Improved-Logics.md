@@ -101,7 +101,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `NavalTargeting=7` and/or `LandTargeting=2` resulting in still targeting TerrainTypes (trees etc.) on land with `Primary` weapon.
 - Fixed infantry without `C4=true` being killed in water if paradropped, chronoshifted etc. even if they can normally enter water.
 - Allowed MCV to redeploy in campaigns using a new toggle different from `[MultiplayerDialogSettings] -> MCVRedeploys`.
-- Fixed buildings with `UndeploysInto` but `Unsellable=no` & `ConstructionYard=no` unable to be sold normally. Restored `EVA_StructureSold` for buildings with `UndeploysInto` when being selled.
+- Fixed buildings with `UndeploysInto` but `Unsellable=no` & `ConstructionYard=no` unable to be sold normally, by using `UndeploysInto.Sellable=true`. Restored `EVA_StructureSold` for buildings with `UndeploysInto` when being selled.
 - Fixed `WaterBound=true` buildings with `UndeploysInto` not correctly setting the location for the vehicle to move into when undeployed.
 - `CanC4=false` on building makes building take atleast 1 point of damage **if** the raw damage is non-zero but is lowered to below 1 by `Verses` etc. `CanC4.AllowZeroDamage=true` disables this. Negative damage (that is, after `Verses` etc have been applied) also now bypasses this check entirely without having to enable anything.
 - Buildings with primary weapon that has `AG=false` projectile now have attack cursor when selected.
@@ -125,8 +125,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead.
 - Attached animations on flying units now have their layer updated immediately after the parent unit, if on same layer they always draw above the parent.
 - Fixed an issue where the powered anims of `Powered` / `PoweredSpecial` buildings cease to update when being captured by enemies.
-- Fix a glitch related to incorrect target setting for missiles.
-- Fix [EIP 00529A14](https://modenc.renegadeprojects.com/Internal_Error/YR#eip_00529A14) when attempting to read `[Header]` section of campaign maps.
+- Fixed a glitch related to incorrect target setting for missiles.
+- Fixed [EIP 00529A14](https://modenc.renegadeprojects.com/Internal_Error/YR#eip_00529A14) when attempting to read `[Header]` section of campaign maps.
 - Units will no longer rotate its turret under EMP.
 - Jumpjets will no longer wobble under EMP.
 - Removed jumpjet units' deceleration when crashing onto buildings.
@@ -138,7 +138,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed units with Teleport, Tunnel or Fly locomotor being unable to be visually flipped like other locomotors do.
 - Aircraft docking on buildings now respect `[AudioVisual] -> PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction.
 - Spawned aircraft now align with the spawner's facing when landing.
-- Fixed the bug that waypointing unarmed infantries with agent/engineer/occupier to a spyable/capturable/occupiable building triggers `EnteredBy` event by executing capture mission.
+- Fixed the bug that waypointing unarmed infantry with agent/engineer/occupier to a spyable/capturable/occupiable building triggers `EnteredBy` event by executing capture mission.
 - `PowerUpN` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
 - Fixed a desync potentially caused by displaying of cursor over selected `DeploysInto` units.
 - Skipped drawing rally point line when undeploying a factory.
@@ -159,7 +159,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `Temporal=true` Warheads potentially crashing game if used to attack `Slaved=true` infantry.
 - Fixed some locomotors (Tunnel, Walk, Mech) getting stuck when moving too fast.
 - Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them.
-- Removed 0 damage effect on jumpjet infantries from `InfDeath=9` warhead.
+- Removed 0 damage effect on jumpjet infantry from `InfDeath=9` warhead.
 - Fixed Nuke & Dominator Level lighting not applying to AircraftTypes.
 - Skip target scanning function calling for unarmed technos.
 - Projectiles created from `AirburstWeapon` now remember the WeaponType and can apply radiation etc.
@@ -184,7 +184,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `AirburstWeapon` now supports `IsLaser`, `IsElectricBolt`, `IsRadBeam`, and `AttachedParticleSystem`.
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc.
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby.
-- Allowed `AuxBuilding` to count building upgrades.
+<!--  - Allowed `AuxBuilding` to count building upgrades.  -->
 - Fixed the bug that parasite will vanish if it missed its target when its previous cell is occupied.
 - Prevent the units with locomotors that cause problems from entering the tank bunker.
 - Fixed an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct.
@@ -265,6 +265,11 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos.
 - Fixed an issue that infantry walking through a cell containing a tree would cause it to be impassable to other houses.
 - Fixed the bug that techno unit will draw with ironcurtain and airstrike color and intensity who disguised as terrain or overlay.
+- Fixed an issue that the AI would enter a combat state when its building receiving damage from friendly units or damage not greater than 0.
+- Fixed an issue that the techno with weapon with `AA=yes` and `AG=no` would not auto targeting units that are falling, such as paratroopers.
+- Iron Curtain/Custom Tint Support for SHP Turreted Vehicles.
+- Reactivate unused trigger events 2, 53, and 54.
+- Fixed the bug that vehicle fall on infantry will make all cell content has been removed.
 
 ## Fixes / interactions with other extensions
 
@@ -281,7 +286,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (typically begin with `[Developer fatal]Pointer 00000000 declared change to both`).
 - Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares feature)* of vehicles built from a war factory.
 - Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions.
-- Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
+<!--  - Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.  -->
 - Taking over Ares' AlphaImage respawn logic to make it not recreate in every frame for buildings, static techno and techno without turret, in order to reduce lags from it.
 - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully.
 - Fixed an issue where some units crashed after the deployment transformation.
@@ -293,11 +298,12 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - The game also automatically copies `spawn.ini` to the save folder as `spawnSG.ini` when saving a game.
 - Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle`.
 - Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range.
-- Fixed an issue that jumpjet infantries stop incorrectly when assigned a target out of range.
-- Fixed an issue that jumpjet infantries' shadow is always drawn even if they are cloaked.
+- Fixed an issue that jumpjet infantry stop incorrectly when assigned a target out of range.
+- Fixed an issue that jumpjet infantry' shadow is always drawn even if they are cloaked.
 - Fixed an issue that technos head to building's dock even they are not going to dock.
 - Fixed an issue that the jumpjet vehicles cannot stop correctly after going berserk.
 - Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect.
+- Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state.
 
 ```{note}
 The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
@@ -956,12 +962,14 @@ AirstrikeTargets=buildings  ; List of Affected Target Enumeration (none|infantry
 
 ### Alternate FLH customizations
 
-- `AlternateFLH.OnTurret` can be used to customize whether or not `AlternateFLHN` used for `OpenTopped` transport firing coordinates, multiple mind control link offsets etc. is calculated relative to the unit's turret if available or body.
+- `AlternateFLH.OnTurret` can be used to customize whether or not `AlternateFLH` used for `OpenTopped` transport firing coordinates, multiple mind control link offsets etc. is calculated relative to the unit's turret if available or body.
+- `AlternateFLH.ApplyVehicle` can be used to customize whether or not a transport applies its `AlternateFLH` to passengers of the VehicleType, who by default use their own FLH, as opposed to passengers of the InfantryType who adhere to `AlternateFLH`.
 
 In `artmd.ini`:
 ```ini
-[SOMETECHNO]                ; TechnoType
-AlternateFLH.OnTurret=true  ; boolean
+[SOMETECHNO]                     ; TechnoType
+AlternateFLH.OnTurret=true       ; boolean
+AlternateFLH.ApplyVehicle=false  ; boolean
 ```
 
 ### Building-provided self-healing customization
@@ -1366,8 +1374,8 @@ This may subject to further changes.
 
 ### Kill spawns on low power
 
-- `Powered=yes` structures that spawns aircraft like Aircrafts Carriers will stop targeting the enemy if low power.
-- Spawned aircrafts self-destruct if they are flying.
+- `Powered=yes` structures that spawn aircraft like Aircraft Carriers will stop targeting the enemy if low power.
+- Spawned aircraft self-destruct if they are flying.
 
 In `rulesmd.ini`:
 ```ini
@@ -1779,7 +1787,7 @@ Ammo.AddOnDeploy=0  ; integer
 
 - It is possible to enable checking if the deployed unit (if type conversion is in use, the conversion result will be used for these checks) is allowed to deploy on the cell which will also affect deploy cursor availability by setting `IsSimpleDeployer.ConsiderPathfinding` to true.
   - You can explicitly disable deploying on cells of specified land types using `IsSimpleDeployer.DisallowedLandTypes`. Defaults to `water,beach` for units with Jumpjet or Hover locomotor with `DeployToLand=true`, `none` for others.
-- In vanilla game only units with `DeployingAnim` were constrained to a specific deploy facing and it was not customizable per unit. `DeployDir` can be set to override this per unit (defaults to `[AudioVisual] -> DeployDir`), including using value of -1 to disable the facing restriction.
+- In vanilla game only units with `DeployingAnim` were constrained to a specific deploy facing and it was not customizable per unit. `DeployDir` can be set to override this per unit (defaults to `[AudioVisual] -> DeployDir` for units with `DeployingAnim`, -1 otherwise), including using value of -1 to disable the facing restriction.
 - Multiple new options for deploy animations:
   - `DeployingAnims` can be used instead of `DeployingAnim` (if both are set, `DeployingAnims` takes precedence) to define a list of direction-specific deploy animations to play. Largest power of 2 the number of listed animations falls to is used as number of directions/animations. Less than 8 animations listed results in only first listed one being used.
   - `DeployingAnim.KeepUnitVisible` determines if the unit is **not** hidden while the animation is playing.
@@ -2159,6 +2167,20 @@ Parasite.GrappleAnim=             ; animation
 [SOMEWARHEAD]                     ; WarheadType
 Parasite.CullingTarget=infantry   ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
 Parasite.GrappleAnim=             ; animation
+```
+
+### Dehardcode the `ZAdjust` of warhead anim
+
+- In vanilla, the animations generated by `AnimList` have a hard-coded `ZAdjust=-15`. Now you can customize it in the following ways.
+  - If these flags are set to 0, the `ZAdjust` defined by the anim will be used.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+WarheadAnimZAdjust=-15           ; Integer
+
+[SOMEWARHEAD]                    ; WarheadType
+AnimZAdjust=                     ; Integer, default to [AudioVisual] -> WarheadAnimZAdjust
 ```
 
 ### Delay automatic attack on the controlled unit

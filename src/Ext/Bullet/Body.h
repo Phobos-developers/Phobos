@@ -46,6 +46,7 @@ public:
 		bool SnappedToTarget; // Used for custom trajectory projectile target snap checks
 		int DamageNumberOffset;
 		int ParabombFallRate;
+		bool IsInstantDetonation;
 
 		TrajectoryPointer Trajectory;
 		bool DispersedTrajectory;

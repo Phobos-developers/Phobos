@@ -10,7 +10,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From vanilla
 
-- `IsSimpleDeployer` units now obey deploying facing constraint even without deploying animation. To disable this, set `DeployDir` (defaults to `[AudioVisual] -> DeployDir`) to -1.
+- `IsSimpleDeployer` units now obey deploying facing constraint even without deploying animation if `DeployDir` is explicitly set on the unit.
 - `Vertical=true` projectiles now default to completely downwards initial trajectory/facing regardless of if their projectile image has `Voxel=true` or not. This behavior can be reverted by setting `VerticalInitialFacing=false` on projectile in `rulesmd.ini`.
 - `Vertical=true` projectiles no longer move horizontally if fired by aircraft by default. To re-enable this behaviour set `Vertical.AircraftFix=false` on the projectile.
 - Weapons with `Airstrike=true` on Warhead will now check target eligibility for airstrikes regardless of weapon slot. Use `AirstrikeTargets=all` on `Primary` airstrike weapon Warhead to restore previous behaviour.
@@ -26,10 +26,11 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 #### From 0.4
 
 - `[TechnoType] -> WarpAway=` has now been changed to set the animation when units are erased to maintain semantic consistency with `[General] -> WarpAway=`. The animation that was originally controlled by `[TechnoType] -> WarpAway=`, which played instead of `[General] -> WarpOut=` when a Techno is chronowarped by chronosphere, now needs to be specified using `[TechnoType] -> Chronoshift.WarpOut=`, which defaults to the value of `[TechnoType] -> WarpOut=`.
+- `UseCenterCoordsIfAttached` has been replaced by enumeration key `AttachedAnimPosition`. Set `AttachedAnimPosition=center` to replicate effects of `UseCenterCoordsIfAttached=true`.
 
 #### From post-0.3 devbuilds
 
-- `UseCenterCoordsWhenAttached` has been replaced by enumeration key `AttachedAnimPosition`. Set `AttachedAnimPosition=center` to replicate effects of `UseCenterCoordsWhenAttached=true`.
+- `AlternateFLH` no longer affects vehicle passengers by default. To re-enable it, set `AlternateFLH.ApplyVehicle=true` on the transport unit.
 - Parsing priority of `ShowBriefing` and `BriefingTheme` between map file and `missionmd.ini` has been switched (from latter taking priority over former to vice-versa) due to technical limitations and compatibility issues with spawner DLL.
 - Game will now produce fatal error with an error message if any of the files listed in `[$Include]` in any INI file do not exist.
 - Aircraft with weapons that have `Strafing.Shots` < 5 will now keep flying after last shot like those with `Strafing.Shots` >= 5 do. This delay can now be customized explicitly by setting `Strafing.EndDelay` on the weapon.
@@ -109,6 +110,8 @@ ToolTipDescriptions=true         ; boolean
 ToolTipBlur=false                ; boolean
 SaveGameOnScenarioStart=true     ; boolean
 HideLightFlashEffects=false      ; boolean
+HideLaserTrailEffects=false      ; boolean
+HideShakeEffects=false           ; boolean
 ```
 
 ### For Map Editor (Final Alert 2)
@@ -452,8 +455,10 @@ New:
 - [Customize the chained damage of the wall](Fixed-or-Improved-Logics.md#customize-the-chained-damage-of-the-wall) (by TaranDahl)
 - Allow the aircraft to enter area guard mission and not crash immediately without any airport (by CrimRecya)
 - [Unlimbo Detonate warhead](New-or-Enhanced-Logics.md#unlimbo-detonate-warhead) (by FlyStar)
-- Attack and damage technos underground (by TaranDahl)
+- [Attack](New-or-Enhanced-Logics.md#attack-technos-underground) and [damage](New-or-Enhanced-Logics.md#damage-technos-underground) technos underground (by TaranDahl)
 - Fast access structure (by FlyStar)
+- Toggle off laser trail and shake effects (by Ollerus)
+- [Dehardcode the `ZAdjust` of warhead anim](Fixed-or-Improved-Logics.md#dehardcode-the-zadjust-of-warhead-anim) (by TaranDahl)
 - New Missile trajectory (by CrimRecya)
 - New Engrave trajectory (by CrimRecya)
 - New Tracing trajectory (by CrimRecya)
@@ -481,11 +486,17 @@ Vanilla fixes:
 - `DeployingAnim` using unit drawer now also tint accordingly with the unit (by Starkku)
 - Jumpjets in air now can correctly spawn missiles (by TaranDahl)
 - Fixed an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos (by CrimRecya)
-- Fixed an issue that jumpjet infantries' shadow is always drawn even if they are cloaked (by TaranDahl)
+- Fixed an issue that jumpjet infantry' shadow is always drawn even if they are cloaked (by TaranDahl)
 - Fixed an issue that technos head to building's dock even they are not going to dock (by TaranDahl)
 - Fixed an issue that the jumpjet vehicles cannot stop correctly after going berserk (by TaranDahl)
 - Fixed an issue that infantry walking through a cell containing a tree would cause it to be impassable to other houses (by TaranDahl)
 - Fixed the bug that techno unit will draw with ironcurtain and airstrike color and intensity who disguised as terrain or overlay (by NetsuNegi)
+- Fixed an issue that the AI would enter a combat state when its building receiving damage from friendly units or damage not greater than 0 (by TaranDahl)
+- Fixed an issue that the techno with weapon with `AA=yes` and `AG=no` would not auto targeting units that are falling, such as paratroopers (by TaranDahl)
+- Iron Curtain/Custom Tint Support for SHP Turreted Vehicles (by NetsuNegi & FlyStar)
+- Reactivate unused trigger events 2, 53, and 54 (by FlyStar)
+- Fixed the bug that vehicle fall on infantry will make all cell content has been removed (by NetsuNegi)
+- Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state (by Starkku)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -501,14 +512,18 @@ Phobos fixes:
 - Fixed `SkirmishUnlimitedColors` not being checked if Phobos runs without Ares active (by Starkku)
 - Fixed number of `*.ApplyFirepowerMult` options (f.ex anim damage, crit) ignoring veterancy firepower modifier (by Starkku)
 - Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range (by TaranDahl)
-- Fixed an issue that jumpjet infantries stop incorrectly when assigned a target out of range (by TaranDahl)
+- Fixed an issue that jumpjet infantry stop incorrectly when assigned a target out of range (by TaranDahl)
 - Fixed an issue where the 77 trigger event in Ares was not functioning properly (by NetsuNegi)
 - Fixed an interaction error between the engineer and the Ares rubble (by FlyStar)
+- Fixed the projection location of selectbox when over elevated bridge (by NetsuNegi)
+- Fixed an issue where the game would only use `Weapon1` and `Weapon2` for auto-targeting even when `MultiWeapon=yes` was set (by FlyStar)
+- Fixed a game load crash caused by `MultiWeapon.IsSecondary=-1` or non-projectile weapons (by FlyStar)
 
 Fixes / interactions with other extensions:
-- Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
+<!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
 - Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle` (by TaranDahl)
+- Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect (by Sovietianqi, based on knowledge of DeathFish)
 ```
 
 ### 0.4
@@ -529,7 +544,7 @@ New:
 - Shields can inherit Techno ArmorType (by Starkku)
 - Income money flying-string display when harvesters or slaves are docking to refineries or when spies steal credits (by Trsdy)
 - Allow random crates to be generated only on lands (by Trsdy)
-- Iron-curtain effects on infantries and organic units (by ststl)
+- Iron-curtain effects on infantry and organic units (by ststl)
 - Custom `SlavesFreeSound` (by TwinkleStar)
 - Allows jumpjet to crash without rotation (by TwinkleStar)
 - Customizable priority of superweapons timer sorting(by ststl)
@@ -684,7 +699,7 @@ New:
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
-- Allow usage of `AlternateFLH%d` of vehicles in `OpenTopped` transport. (by Trsdy)
+- Allow setting whether `AlternateFLH` applies to vehicle passengers in the transport unit (by Trsdy & NetsuNegi)
 - Improved the statistic distribution of the spawned crates over the visible area of the map. (by Trsdy, based on TwinkleStar's work)
 - Teams spawned by trigger action 7,80,107 can use IFV and `OpenTopped` logic normally (by Trsdy)
 - Prevented units from retaining previous order after ownership change (by Trsdy)
@@ -737,7 +752,7 @@ Vanilla fixes:
 - Fixed teleport and drill units being unable to be visually flipped (by Trsdy)
 - Aircraft docking on buildings now respect `[AudioVisual] -> PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction (by Starkku)
 - Spawned aircraft now align with the spawner's facing when landing (by Starkku)
-- Fixed infantries attempted to entering buildings when waypointing together with engineer/agent/occupier/etc (by Trsdy)
+- Fixed infantry attempted to entering buildings when waypointing together with engineer/agent/occupier/etc (by Trsdy)
 - Fixed jumpjet crash speed when crashing onto buildings (by NetsuNegi)
 - Fixed a desync potentially caused by displaying of cursor over selected `DeploysInto` units (by Starkku)
 - Skipped drawing the rally point line when undeploying a factory (by Trsdy)
@@ -755,7 +770,7 @@ Vanilla fixes:
 - Fixed some locomotors (Tunnel, Walk, Mech) getting stuck when moving too fast (by NetsuNegi)
 - Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them (by Starkku)
 - Fixed Nuke & Dominator Level lighting not applying to AircraftTypes (by Starkku)
-- Removed the 0 damage effect from `InfDeath=9` warheads to in-air infantries (by Trsdy)
+- Removed the 0 damage effect from `InfDeath=9` warheads to in-air infantry (by Trsdy)
 - Projectiles created from `AirburstWeapon` now remember their WeaponType and can apply radiation etc. (by Starkku)
 - Fixed damaged aircraft not repairing on `UnitReload=true` docks unless they land on the dock first (by Starkku)
 - Certain global tileset indices (`ShorePieces`, `WaterSet`, `CliffSet`, `WaterCliffs`, `WaterBridge`, `BridgeSet` and `WoodBridgeSet`) can now be toggled to be parsed for lunar theater (by Starkku)
@@ -992,7 +1007,7 @@ New:
 - Customizable projectile gravity (by secsome)
 - Gates can now link with walls correctly via `NSGates` or `EWGates` (by Uranusian)
 - Per-warhead toggle for decloak of damaged targets (by Starkku)
-- `DeployFireWeapon=-1` now allows the deployed infantries using both weapons as undeployed (by Uranusian)
+- `DeployFireWeapon=-1` now allows the deployed infantry using both weapons as undeployed (by Uranusian)
 - Power delta (surplus) counter for sidebar (by Morton)
 - Added Production and Money to Dump Object Info command (by FS-21)
 - `EnemyUIName=` Now also works for other TechnoTypes (by Otamaa)
@@ -1121,8 +1136,8 @@ Non-DLL:
 Phobos fixes:
 - Fixed shield type info not saving properly (by Uranusian)
 - Fixed extended building upgrades logic not properly interacting with Ares' BuildLimit check (by Uranusian)
-- Fix more random crashes for `CameoPriority` (by Uranusian)
-- Fix aircraft weapons causing game freeze when burst index was not correctly reset after firing (by Starkku)
+- Fixed more random crashes for `CameoPriority` (by Uranusian)
+- Fixed aircraft weapons causing game freeze when burst index was not correctly reset after firing (by Starkku)
 
 ```
 
@@ -1218,7 +1233,7 @@ Vanilla fixes:
 - Map previews with zero size won't crash the game anymore (by Kerbiter & Belonit)
 - Tileset 255+ bridge fix (by E1 Elite)
 - Fixed fatal errors when `Blowfish.dll` couldn't be registered in the system properly due to missing admin rights (by Belonit)
-- Fix to take Burst into account for aircraft weapon shots beyond the first one (by Starkku)
+- Fixed to take Burst into account for aircraft weapon shots beyond the first one (by Starkku)
 - Fixed the bug when units are already dead but still in map (for sinking, crashing, dying animation, etc.), they could die again (by Uranusian)
 - Fixed the bug when cloaked Desolator was unable to fire his deploy weapon (by Otamaa)
 - Fixed the bug when `InfiniteMindControl` with `Damage=1` will auto-release the victim to control new one (by Uranusian)

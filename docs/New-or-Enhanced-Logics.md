@@ -292,7 +292,7 @@ Laser trails are very resource intensive! Due to the game not utilizing GPU havi
 ### Shields
 
 ![image](_static/images/technoshield-01.gif)
-*Buildings, Infantries and Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+*Buildings, Infantry and Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 In `rulesmd.ini`:
 ```ini
@@ -2304,7 +2304,7 @@ EVA.LinkedSWAcquired=        ; EVA entry
 ### Next
 
 ![image](_static/images/swnext.gif)
-*Use `SW.Next` to link multiple ChronoSphere and ChronoWarp superweapons into a chained SuperWeapon system in [Cylearun](https://www.moddb.com/mods/Cylearun)*
+*Use of `SW.Next` to link multiple ChronoSphere and ChronoWarp superweapons into a chained SuperWeapon system in [Cylearun](https://www.moddb.com/mods/Cylearun)*
 
 - Superweapons can now launch other superweapons at the same target. Launched types can be additionally randomized using the same rules as with LimboDelivery (see above).
   - `SW.Next.RealLaunch` controls whether the owner who fired the initial superweapon must own all listed superweapons and sufficient funds to support `Money.Amout`. Otherwise they will be launched forcibly.
@@ -2739,8 +2739,12 @@ NoQueueUpToEnter.Buildings=     ; boolean, default to NoQueueUpToEnter
 NoQueueUpToUnload.Buildings=    ; boolean, default to NoQueueUpToUnload
 
 [SOMEVEHICLE/SOMEBUILDING]      ; VehicleType/BuildingType, transport
-NoQueueUpToEnter=               ; boolean, default to [General] -> NoQueueUpToEnter/NoQueueUpToEnter.Buildings
-NoQueueUpToUnload=              ; boolean, default to [General] -> NoQueueUpToUnload/NoQueueUpToUnload.Buildings
+NoQueueUpToEnter=               ; boolean, default to [General] -> NoQueueUpToEnter.Buildings
+NoQueueUpToUnload=              ; boolean, default to [General] -> NoQueueUpToUnload.Buildings
+```
+
+```{note}
+Note that this logic is used for [Passenger](https://modenc.renegadeprojects.com/Passengers) logic, which is different from [Occupier](https://modenc.renegadeprojects.com/Occupier).
 ```
 
 ### Initial spawns number
@@ -3016,6 +3020,9 @@ Convert.ResetMindControl=false          ; boolean
 ```
 
 ### Revenge weapon
+
+![Revenge Weapon](_static/images/revengeweapon.gif)
+*Revenge Weapon usage in [RA2: Reboot](https://www.moddb.com/mods/reboot)*
 
 - Similar to `DeathWeapon` in that it is fired after a TechnoType is killed, but with the difference that it will be fired on whoever dealt the damage that killed the TechnoType. If TechnoType died of sources other than direct damage dealt by another TechnoType, `RevengeWeapon` will not be fired.
   - `RevengeWeapon.AffectsHouses` can be used to filter which houses the damage that killed the TechnoType is allowed to come from to fire the weapon.
@@ -3364,24 +3371,31 @@ SplashList.PickRandom=false  ; boolean
 
 - Warheads are now able to define the extra damage multiplier for owner house, ally houses and enemy houses.
   - `DamageOwnerMultiplier.NotAffectsEnemies` and `DamageAlliesMultiplier.NotAffectsEnemies` is used as the default value if `AffectsEnemies=false` is set on the warhead.
+  - `DamageOwnerMultiplier.Berzerk` , `DamageAlliesMultiplier.Berzerk` and `DamageEnemiesMultiplier.Berzerk` is used when the techno is in berzerk.
 - An extra damage multiplier based on the firer or target's health percentage will be added to the total multiplier. To be elaborate: the damage multiplier will firstly increased by the firer's health percentage multiplies `DamageSourceHealthMultiplier`, then increased by the target's health percentage multiplies `DamageTargetHealthMultiplier`.
 - These multipliers will not affect damage with ignore defenses like `Suicide`.etc .
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-DamageOwnerMultiplier=1.0                       ; floating point value
-DamageAlliesMultiplier=1.0                      ; floating point value
-DamageEnemiesMultiplier=1.0                     ; floating point value
-DamageOwnerMultiplier.NotAffectsEnemies=        ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
-DamageAlliesMultiplier.NotAffectsEnemies=       ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
+DamageOwnerMultiplier=1.0                                  ; floating point value
+DamageAlliesMultiplier=1.0                                 ; floating point value
+DamageEnemiesMultiplier=1.0                                ; floating point value
+DamageOwnerMultiplier.NotAffectsEnemies=                   ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
+DamageAlliesMultiplier.NotAffectsEnemies=                  ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
+DamageOwnerMultiplier.Berzerk=                             ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
+DamageAlliesMultiplier.Berzerk=                            ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
+DamageEnemiesMultiplier.Berzerk=                           ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
 
-[SOMEWARHEAD]                                   ; WarheadType
-DamageOwnerMultiplier=                          ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier or [CombatDamage] -> DamageOwnerMultiplier.NotAffectsEnemies, depending on AffectsEnemies
-DamageAlliesMultiplier=                         ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier or [CombatDamage] -> DamageAlliesMultiplier.NotAffectsEnemies, depending on AffectsEnemies
-DamageEnemiesMultiplier=                        ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
-DamageSourceHealthMultiplier=0.0                ; floating point value
-DamageTargetHealthMultiplier=0.0                ; floating point value
+[SOMEWARHEAD]                                              ; WarheadType
+DamageOwnerMultiplier=                                     ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier or [CombatDamage] -> DamageOwnerMultiplier.NotAffectsEnemies, depending on AffectsEnemies
+DamageAlliesMultiplier=                                    ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier or [CombatDamage] -> DamageAlliesMultiplier.NotAffectsEnemies, depending on AffectsEnemies
+DamageEnemiesMultiplier=                                   ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
+DamageOwnerMultiplier.Berzerk=                             ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier.Berzerk
+DamageAlliesMultiplier.Berzerk=                            ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier.Berzerk
+DamageEnemiesMultiplier.Berzerk=                           ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier.Berzerk
+DamageSourceHealthMultiplier=0.0                           ; floating point value
+DamageTargetHealthMultiplier=0.0                           ; floating point value
 ```
 
 ```{note}
@@ -3393,8 +3407,8 @@ DamageTargetHealthMultiplier=0.0                ; floating point value
 - Now you can make the warhead damage technos underground!
   - To allow weapons to target underground technos, you need [AU](#attack-technos-underground).
 - Notice that if the projectile detonates underground, its animation effect may look strange.
-  - You can use `[SOMEWARHEAD] -> PlayAnimUnderground=false` to prevent the warhead animation from playing when the projectile detonates underground.
-  - You can also use `[SOMEWARHEAD] -> PlayAnimAboveSurface=true` to make the warhead animation play on the ground directly above when the projectile detonates underground.
+  - You can use `[WarheadType] -> PlayAnimUnderground=false` to prevent the warhead animation from playing when the projectile detonates underground.
+  - You can also use `[WarheadType] -> PlayAnimAboveSurface=true` to make the warhead animation play on the ground directly above when the projectile detonates underground.
 
 In `rulesmd.ini`:
 ```ini
@@ -3680,7 +3694,7 @@ Burst.FireWithinSequence=false  ; boolean
 
 ### Burst without delay
 
-- In vanilla, vehicles and infantries will only fire once in one frame, even if their `ROF` or `BurstDelay` is set to 0. Now you can force units to fire all bursts in one frame by setting the `Burst.NoDelay` to true.
+- In vanilla, vehicles and infantry will only fire once in one frame, even if their `ROF` or `BurstDelay` is set to 0. Now you can force units to fire all bursts in one frame by setting the `Burst.NoDelay` to true.
 
 In `rulesmd.ini`:
 ```ini
