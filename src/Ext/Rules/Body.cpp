@@ -1,4 +1,4 @@
-﻿#include "Body.h"
+#include "Body.h"
 #include <Ext/Side/Body.h>
 #include <Utilities/TemplateDef.h>
 #include <FPSCounter.h>
@@ -389,9 +389,6 @@ void RulesExt::ExtData::InitializeAfterAllLoaded()
 	this->TintColorIronCurtain = GeneralUtils::GetColorFromColorAdd(pRules->IronCurtainColor);
 	this->TintColorForceShield = GeneralUtils::GetColorFromColorAdd(pRules->ForceShieldColor);
 	this->TintColorBerserk = GeneralUtils::GetColorFromColorAdd(pRules->BerserkColor);
-
-	// Init master bullet
-	ScenarioExt::Global()->MasterDetonationBullet = BulletTypeExt::GetDefaultBulletType()->CreateBullet(nullptr, nullptr, 0, nullptr, 0, false);
 }
 
 // =============================
