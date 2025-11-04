@@ -2004,12 +2004,9 @@ msgstr ""
 #: ../../Whats-New.md:455
 msgid ""
 "Allow the aircraft to enter area guard mission and not crash immediately "
-"without any airport. And now when `ExtendedAircraftMissions` is enabled, "
-"aircraft that can land at the airport will check at any time to see if "
-"they have a dock. Therefore, if there are aircraft in your mission that "
-"require dock and you have not provided enough or not disabled the "
-"feature, they will crash immediately (by CrimRecya)"
+"without any airport (by CrimRecya)"
 msgstr ""
+"允许战机执行区域警戒任务且在无机场的情况下不会立即坠毁（by CrimRecya）"
 
 #: ../../Whats-New.md:456
 msgid ""

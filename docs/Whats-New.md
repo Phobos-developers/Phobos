@@ -452,7 +452,7 @@ New:
 - Randomized anims for several behaviors (by Ollerus)
 - Shield respawn animation and weapon (by Ollerus)
 - [Customize the chained damage of the wall](Fixed-or-Improved-Logics.md#customize-the-chained-damage-of-the-wall) (by TaranDahl)
-- Allow the aircraft to enter area guard mission and not crash immediately without any airport. And now when `ExtendedAircraftMissions` is enabled, aircraft that can land at the airport will check at any time to see if they have a dock. Therefore, if there are aircraft in your mission that require dock and you have not provided enough or not disabled the feature, they will crash immediately (by CrimRecya)
+- Allow the aircraft to enter area guard mission and not crash immediately without any airport (by CrimRecya)
 - [Unlimbo Detonate warhead](New-or-Enhanced-Logics.md#unlimbo-detonate-warhead) (by FlyStar)
 - [Attack](New-or-Enhanced-Logics.md#attack-technos-underground) and [damage](New-or-Enhanced-Logics.md#damage-technos-underground) technos underground (by TaranDahl)
 - Fast access structure (by FlyStar)

@@ -363,6 +363,10 @@ ExtendedAircraftMissions.FastScramble=    ; boolean, default to [General] -> Ext
 ExtendedAircraftMissions.UnlandDamage=    ; integer, default to [General] -> ExtendedAircraftMissions.UnlandDamage
 ```
 
+```{note}
+And now when `ExtendedAircraftMissions` is enabled, aircraft that can land at the airport will check at any time to see if they have a dock. Therefore, if there are aircraft in your mission that require dock and you have not provided enough or not disabled the feature, they will crash immediately
+```
+
 ### Fixed spawn distance & spawn height for airstrike / SpyPlane aircraft
 
 - It is now possible to have aircraft spawned from `(Elite)AirstrikeTeamType` or `Type=SpyPlane` superweapons to be created at fixed distance from their intended target/destination instead of from edge of the map by setting `SpawnDistanceFromTarget`.

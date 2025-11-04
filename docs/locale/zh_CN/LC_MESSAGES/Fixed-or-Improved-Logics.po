@@ -2131,6 +2131,15 @@ msgstr ""
 "ExtendedAircraftMissions.UnlandDamage=    ; integer, default to [General]"
 " -> ExtendedAircraftMissions.UnlandDamage\n"
 
+msgid "And now when `ExtendedAircraftMissions` is enabled, "
+"aircraft that can land at the airport will check at any time "
+"to see if they have a dock. Therefore, if there are aircraft "
+"in your mission that require dock and you have not provided "
+"enough or not disabled the feature, they will crash immediately"
+msgstr ""
+"目前当 `ExtendedAircraftMissions` 被启用时，能够降落到机场的战机会始终检查自身是否拥有用于停靠的机位。"
+"因此若你的任务中需要存在能够降落到机场的战机但没有提供足够的空余机位也没有禁用该功能，那么这些战机将立即坠毁。"
+
 #: ../../Fixed-or-Improved-Logics.md:366
 msgid "Fixed spawn distance & spawn height for airstrike / SpyPlane aircraft"
 msgstr "空袭战机和侦察机的生成距离和生成高度"
