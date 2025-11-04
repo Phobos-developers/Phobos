@@ -87,7 +87,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed railgun particles being drawn to wrong coordinate against buildings with non-default `TargetCoordOffset` or when force-firing on bridges.
 - Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines.
 - In singleplayer missions, the player can now see cloaked objects owned by allied houses.
-- IvanBomb images now display and the bombs detonate at center of buildings instead of in top-leftmost cell of the building foundation.
+- IvanBomb images can now display and the bombs detonate at center of buildings instead of in top-leftmost cell of the building foundation if `[CombatDamage]` -> `IvanBombAttachToCenter` is set to true.
 - Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations.
 - Animation with `Tiled=yes` now supports `CustomPalette`.
 - Attempted to avoid units from retaining previous orders (attack,grind,garrison,etc) after changing ownership (mind-control,abduction,etc).
@@ -102,7 +102,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `NavalTargeting=7` and/or `LandTargeting=2` resulting in still targeting TerrainTypes (trees etc.) on land with `Primary` weapon.
 - Fixed infantry without `C4=true` being killed in water if paradropped, chronoshifted etc. even if they can normally enter water.
 - Allowed MCV to redeploy in campaigns using a new toggle different from `[MultiplayerDialogSettings] -> MCVRedeploys`.
-- Fixed buildings with `UndeploysInto` but `Unsellable=no` & `ConstructionYard=no` unable to be sold normally. Restored `EVA_StructureSold` for buildings with `UndeploysInto` when being selled.
+- Fixed buildings with `UndeploysInto` but `Unsellable=no` & `ConstructionYard=no` unable to be sold normally, by using `UndeploysInto.Sellable=true`. Restored `EVA_StructureSold` for buildings with `UndeploysInto` when being selled.
 - Fixed `WaterBound=true` buildings with `UndeploysInto` not correctly setting the location for the vehicle to move into when undeployed.
 - `CanC4=false` on building makes building take atleast 1 point of damage **if** the raw damage is non-zero but is lowered to below 1 by `Verses` etc. `CanC4.AllowZeroDamage=true` disables this. Negative damage (that is, after `Verses` etc have been applied) also now bypasses this check entirely without having to enable anything.
 - Buildings with primary weapon that has `AG=false` projectile now have attack cursor when selected.
@@ -264,6 +264,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - 1000 save files are supported, from `SVGM_000.NET` to `SVGM_999.NET`. When the limit is reached, the game will overwrite the latest save file.
   - The previous `SVGM_XXX.NET` files are cleaned up before first copy if it's a new game, otherwise the highest numbered `SVGM_XXX.NET` file is found and the index is incremented, if possible.
   - The game also automatically copies `spawn.ini` to the save folder as `spawnSG.ini` when saving a game.
+- Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state.
 
 
 ```{note}

@@ -206,6 +206,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
+	this->UndeploysInto_Sellable.Read(exINI, pSection, "UndeploysInto.Sellable");
 
 	// PlacementPreview
 	{
@@ -281,6 +282,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Adjacent_Allowed)
 		.Process(this->Adjacent_Disallowed)
 		.Process(this->HasPowerUpAnim)
+		.Process(this->UndeploysInto_Sellable)
 		;
 }
 

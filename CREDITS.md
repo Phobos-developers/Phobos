@@ -259,7 +259,8 @@ This page lists all the individual contributions to the project by their author.
   - `<Player @ X>` as owner for pre-placed objects
   - `IsSonic` wave drawing crash fix
   - Customizable electric bolt duration and electric bolt-related fixes
-  - Bugfixes to map trigger action `125 Create Building At`
+  - Bugfixes to map trigger action `125 Build At...`
+  - Owner change during buildup bugfix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

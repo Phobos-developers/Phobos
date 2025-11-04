@@ -216,6 +216,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->UseRetintFix.Read(exINI, GameStrings::AudioVisual, "UseRetintFix");
 
+	this->IvanBombAttachToCenter.Read(exINI, GameStrings::CombatDamage, "IvanBombAttachToCenter");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -411,6 +413,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->TintColorForceShield)
 		.Process(this->TintColorBerserk)
 		.Process(this->TintColorAirstrike)
+		.Process(this->IvanBombAttachToCenter)
 		;
 }
 
