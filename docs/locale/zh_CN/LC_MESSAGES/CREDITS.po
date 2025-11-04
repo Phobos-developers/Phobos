@@ -1099,9 +1099,8 @@ msgid "Bugfixes to map trigger action `125 Build At...`"
 msgstr "地图触发结果 `125 将建筑建于...` 相关的 Bug 修复"
 
 #: ../../../CREDITS.md:283
-#, fuzzy
 msgid "Owner change during buildup bugfix"
-msgstr "建筑拔起期间绘制 `BibShape` 的修复"
+msgstr "建筑拔起期间变更所属相关 Bug 的修复"
 
 #: ../../../CREDITS.md:284
 msgid "**Morton (MortonPL)**:"
