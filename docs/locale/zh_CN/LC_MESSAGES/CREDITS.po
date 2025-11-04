@@ -1295,7 +1295,7 @@ msgstr "触发结果所生成小队中 IFV／OpenTopped 逻辑的修复"
 #: ../../../CREDITS.md:333
 msgid ""
 "Singleplayer Campaign AI's base node/SW-delivered/trigger action `125 "
-"Create Building At...`'s auto-repairability dehardcode"
+"Build At...`'s auto-repairability dehardcode"
 msgstr "单人战役 AI 的基地节点／超武 Deliver 所创建建筑／触发结果 `125 将建筑建于...` 所创建建筑其自动维修行为的去硬编码化"
 
 #: ../../../CREDITS.md:334
