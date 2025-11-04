@@ -408,7 +408,7 @@ In `RA2MD.INI`:
 [Phobos]
 MessageApplyHoverState=false            ; boolean
 MessageDisplayInCenter=false            ; boolean
-MessageDisplayInCenter.BoardOpacity=30  ; integer
+MessageDisplayInCenter.BoardOpacity=40  ; integer
 MessageDisplayInCenter.LabelsCount=6    ; integer
 MessageDisplayInCenter.RecordsCount=12  ; integer
 ```
