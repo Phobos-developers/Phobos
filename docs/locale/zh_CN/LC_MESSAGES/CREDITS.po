@@ -1017,7 +1017,6 @@ msgid "Customizable electric bolt duration and electric bolt-related fixes"
 msgstr "自定义 EBolt 持续时间和 EBolt 相关修复"
 
 #: ../../../CREDITS.md:263
-#, fuzzy
 msgid "Bugfixes to map trigger action `125 Build At...`"
 msgstr "地图触发结果 `125 将建筑建于...` 相关的 Bug 修复"
 
@@ -1210,7 +1209,7 @@ msgstr "触发结果所生成小队中 IFV／OpenTopped 逻辑的修复"
 #: ../../../CREDITS.md:312
 msgid ""
 "Singleplayer Campaign AI's base node/SW-delivered/trigger action `125 "
-"Create Building At...`'s auto-repairability dehardcode"
+"Build At...`'s auto-repairability dehardcode"
 msgstr "单人战役 AI 的基地节点／超武 Deliver 所创建建筑／触发结果 `125 将建筑建于...` 所创建建筑其自动维修行为的去硬编码化"
 
 #: ../../../CREDITS.md:313
