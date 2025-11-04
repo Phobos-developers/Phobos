@@ -86,7 +86,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed railgun particles being drawn to wrong coordinate against buildings with non-default `TargetCoordOffset` or when force-firing on bridges.
 - Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines.
 - In singleplayer missions, the player can now see cloaked objects owned by allied houses.
-- IvanBomb images now display and the bombs detonate at center of buildings instead of in top-leftmost cell of the building foundation.
+- IvanBomb images can now display and the bombs detonate at center of buildings instead of in top-leftmost cell of the building foundation if `[CombatDamage]` -> `IvanBombAttachToCenter` is set to true.
 - Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations.
 - Animation with `Tiled=yes` now supports `CustomPalette`.
 - Attempted to avoid units from retaining previous orders (attack,grind,garrison,etc) after changing ownership (mind-control,abduction,etc).
@@ -296,15 +296,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - 1000 save files are supported, from `SVGM_000.NET` to `SVGM_999.NET`. When the limit is reached, the game will overwrite the latest save file.
   - The previous `SVGM_XXX.NET` files are cleaned up before first copy if it's a new game, otherwise the highest numbered `SVGM_XXX.NET` file is found and the index is incremented, if possible.
   - The game also automatically copies `spawn.ini` to the save folder as `spawnSG.ini` when saving a game.
-
-```{note}
-The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
-```
-
-```{note}
-At the moment this is only useful if you use a version of [YRpp Spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support (along with [XNA CnCNet Client](https://github.com/CnCNet/xna-cncnet-client)).
-```
-
 - Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle`.
 - Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range.
 - Fixed an issue that jumpjet infantry stop incorrectly when assigned a target out of range.
@@ -313,6 +304,14 @@ At the moment this is only useful if you use a version of [YRpp Spawner](https:/
 - Fixed an issue that the jumpjet vehicles cannot stop correctly after going berserk.
 - Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect.
 - Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state.
+
+```{note}
+The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
+```
+
+```{note}
+At the moment this is only useful if you use a version of [YRpp Spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support (along with [XNA CnCNet Client](https://github.com/CnCNet/xna-cncnet-client)).
+```
 
 ## Aircraft
 

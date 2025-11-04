@@ -327,6 +327,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->WarheadAnimZAdjust.Read(exINI, GameStrings::AudioVisual, "WarheadAnimZAdjust");
 
+	this->IvanBombAttachToCenter.Read(exINI, GameStrings::CombatDamage, "IvanBombAttachToCenter");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -597,6 +599,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->InfantryAutoDeploy)
 		.Process(this->AdjacentWallDamage)
 		.Process(this->WarheadAnimZAdjust)
+		.Process(this->IvanBombAttachToCenter)
 		;
 }
 

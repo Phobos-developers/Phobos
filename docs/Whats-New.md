@@ -30,6 +30,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From post-0.3 devbuilds
 
+- Ivan bombs no longer automatically center on building when attached. Set `[CombatDamage]` -> `IvanBombAttachToCenter` to true to restore this behaviour. Due to technical constraints this cannot be customized per WeaponType.
 - `AlternateFLH` no longer affects vehicle passengers by default. To re-enable it, set `AlternateFLH.ApplyVehicle=true` on the transport unit.
 - Parsing priority of `ShowBriefing` and `BriefingTheme` between map file and `missionmd.ini` has been switched (from latter taking priority over former to vice-versa) due to technical limitations and compatibility issues with spawner DLL.
 - Game will now produce fatal error with an error message if any of the files listed in `[$Include]` in any INI file do not exist.
@@ -488,6 +489,7 @@ Vanilla fixes:
 - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles (by NetsuNegi & FlyStar)
 - Reactivate unused trigger events 2, 53, and 54 (by FlyStar)
 - Fixed the bug that vehicle fall on infantry will make all cell content has been removed (by NetsuNegi)
+- Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state (by Starkku)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -527,7 +529,7 @@ New:
 - Super Weapons launching other Super Weapons (by Morton)
 - Launching Super Weapons on building infiltration (by Morton)
 - Building airstrike target eligibility customization (by Starkku)
-- IvanBomb detonation & image display centered on buildings (by Starkku)
+- IvanBomb detonation & image display optionally centered on buildings (by Starkku)
 - Forcing specific weapon against cloaked or disguised targets (by Starkku)
 - Customizable ROF random delay (by Starkku)
 - Animation with `Tiled=yes` now supports `CustomPalette` (by ststl)
@@ -833,7 +835,6 @@ Vanilla fixes:
 - Fixed the bug that hover vehicle will sink if destroyed on bridge (by NetsuNegi)
 - Fixed the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target (by FlyStar)
 - Fixed pathfinding crashes (EIP 0x42A525, 0x42C507, 0x42C554) that happened on bigger maps due to too small pathfinding node buffer (by CrimRecya)
-- Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

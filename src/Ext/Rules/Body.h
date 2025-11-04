@@ -275,6 +275,8 @@ public:
 		Valueable<int> AdjacentWallDamage;
 
 		Valueable<int> WarheadAnimZAdjust;
+
+		Valueable<bool> IvanBombAttachToCenter;
 		
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -490,6 +492,8 @@ public:
 			, AdjacentWallDamage { 200 }
 
 			, WarheadAnimZAdjust { -15 }
+
+			, IvanBombAttachToCenter { false }
 		{ }
 
 		virtual ~ExtData() = default;
