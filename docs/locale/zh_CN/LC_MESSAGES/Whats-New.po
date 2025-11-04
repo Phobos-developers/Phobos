@@ -2275,6 +2275,7 @@ msgid ""
 "Fixed buildings that have their owner changed during buildup skipping "
 "buildup and sometimes not correctly clearing the state (by Starkku)"
 msgstr ""
+"修复了建筑拔起过程中发生所属变更会跳过建造阶段且有时无法正确清除状态的问题（by Starkku）"
 
 #: ../../Whats-New.md:628 ../../Whats-New.md:713 ../../Whats-New.md:875
 #: ../../Whats-New.md:916 ../../Whats-New.md:928 ../../Whats-New.md:951
