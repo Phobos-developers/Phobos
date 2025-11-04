@@ -511,12 +511,11 @@ msgid ""
 msgstr "在单人任务中，玩家现在可以看到盟友所属方的隐形对象。"
 
 #: ../../Fixed-or-Improved-Logics.md:90
-#, fuzzy
 msgid ""
 "IvanBomb images can now display and the bombs detonate at center of "
 "buildings instead of in top-leftmost cell of the building foundation if "
-"`[CombatDamage]` -> `IvanBombAttachToCenter` is set to true."
-msgstr "现在伊文炸弹的图像显示和炸弹引爆位置都位于建筑中心而不再是建筑占地左上角的单元格。"
+"`[CombatDamage] -> IvanBombAttachToCenter` is set to true."
+msgstr "现在伊文炸弹的图像显示位置和炸弹引爆位置可以通过设置 `[CombatDamage] -> IvanBombAttachToCenter=true` 来改为建筑中心而不再是建筑占地左上角的单元格。"
 
 #: ../../Fixed-or-Improved-Logics.md:91
 msgid ""
