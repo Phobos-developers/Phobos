@@ -205,4 +205,28 @@ DEFINE_HOOK(0x740949, UnitClass_Mission_Guard_SubterraneanHarvester, 0x6)
 	return 0;
 }
 
+// Fix an edge case issue stemming from subterranean unit nav queue handling leading
+// to harvesters becoming idle randomly while harvesting.
+DEFINE_HOOK(0x738A3E, UnitClass_EnterIdleMode_SubterraneanHarvester, 0x5)
+{
+	enum { ReturnFromFunction = 0x738D21 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+	{
+		auto const pType = pUnit->Type;
+
+		if ((pType->Harvester || pType->Weeder) && pType->MovementZone == MovementZone::Subterrannean)
+		{
+			auto const mission = pUnit->CurrentMission;
+
+			if (mission == Mission::Unload || mission == Mission::Harvest)
+				return ReturnFromFunction;
+		}
+	}
+
+	return 0;
+}
+
 #pragma endregion
