@@ -1,5 +1,4 @@
 #include <Ext/Techno/Body.h>
-#include <Ext/Techno/Body.h>
 
 #pragma region EnterRefineryFix
 
@@ -172,7 +171,7 @@ DEFINE_HOOK(0x4DDB23, FootClass_FindWeeds_SubterraneanHarvester, 0x5)
 	return 0;
 }
 
-// Set rally point.
+// Set flag on factory exit to mark the harvester as having just exited factory.
 DEFINE_HOOK(0x44459A, BuildingClass_ExitObject_SubterraneanHarvester, 0x5)
 {
 	GET(TechnoClass*, pThis, EDI);
@@ -184,91 +183,26 @@ DEFINE_HOOK(0x44459A, BuildingClass_ExitObject_SubterraneanHarvester, 0x5)
 		if ((pType->Harvester || pType->Weeder) && pType->MovementZone == MovementZone::Subterrannean)
 		{
 			auto const pExt = TechnoExt::ExtMap.Find(pUnit);
-			pExt->SubterraneanHarvFreshFromFactory = true;
-			pExt->SubterraneanHarvRallyDest = pUnit->ArchiveTarget;
+			pExt->SubterraneanHarvStatus = 1;
+			pExt->SubterraneanHarvRallyPoint = pThis->ArchiveTarget;
+			pThis->ArchiveTarget = nullptr;
 		}
 	}
 
 	return 0;
 }
 
-// Handle rally point once idle.
-DEFINE_HOOK(0x7389B1, UnitClass_EnterIdleMode_SubterraneanHarvester, 0x6)
+// Apply same special rules on idle to player-owned subterranean harvesters as to Teleporter=yes ones.
+DEFINE_HOOK(0x740949, UnitClass_Mission_Guard_SubterraneanHarvester, 0x6)
 {
-	enum { ReturnFromFunction = 0x738D21 };
+	enum { Continue = 0x740957 };
 
-	GET(UnitClass*, pThis, ESI);
+	GET(UnitTypeClass*, pType, ECX);
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pExt->SubterraneanHarvFreshFromFactory)
-	{
-		pThis->SetArchiveTarget(nullptr);
-		pThis->ClearNavigationList();
-		pThis->SetDestination(pExt->SubterraneanHarvRallyDest, false);
-		pExt->SubterraneanHarvFreshFromFactory = false;
-		pExt->SubterraneanHarvRallyDest = nullptr;
-
-		return ReturnFromFunction;
-	}
+	if (pType->MovementZone == MovementZone::Subterrannean)
+		return Continue;
 
 	return 0;
 }
 
 #pragma endregion
-
-DEFINE_HOOK(0x740943, UnitClass_Mission_Guard_PlayerHarvester, 0x6)
-{
-	enum { SkipGameCode = 0x7408C7, ReturnFromFunction = 0x7409EF };
-
-	GET(UnitClass*, pThis, ESI);
-
-	if (pThis->Type->Teleporter || pThis->Type->MovementZone == MovementZone::Subterrannean)
-	{
-		auto const pCell = pThis->GetCell();
-		int cellIndex = 0;
-
-		while (true)
-		{
-			auto const pAdjCell = pCell->GetNeighbourCell((FacingType)cellIndex);
-			auto const pBuilding = pAdjCell->GetBuilding();
-
-			if (pBuilding)
-			{
-				if (pBuilding->Type->Refinery && pBuilding->Owner == pThis->Owner)
-				{
-					pThis->QueueMission(Mission::Harvest, false);
-					return ReturnFromFunction;
-				}
-			}
-
-			if (++cellIndex >= (int)FacingType::Count)
-			{
-				double percentage = pThis->GetStoragePercentage();
-
-				if (pThis->ArchiveTarget && percentage > 0.0)
-				{
-					pThis->QueueMission(Mission::Harvest, false);
-					return ReturnFromFunction;
-				}
-				else if (percentage != 1.0 && percentage > 0.0)
-				{
-					return SkipGameCode;
-				}
-				else if (percentage == 0.0)
-				{
-					return SkipGameCode;
-				}
-
-				if (!pThis->Locomotor->Is_Moving())
-					return SkipGameCode;
-
-				pThis->QueueMission(Mission::Harvest, false);
-				return ReturnFromFunction;
-			}
-		}
-	}
-
-	return SkipGameCode;
-}
-
