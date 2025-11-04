@@ -11,6 +11,8 @@
 
 #include <Utilities/SavegameDef.h>
 #include <Utilities/SpawnerHelper.h>
+#include <TriggerTypeClass.h>
+#include <TriggerClass.h>
 #include <Ext/House/Body.h>
 
 //Static init
@@ -71,6 +73,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 
 	case PhobosTriggerAction::ToggleMCVRedeploy:
 		return TActionExt::ToggleMCVRedeploy(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetDropCrate:
+		return TActionExt::SetDropCrate(pThis, pHouse, pObject, pTrigger, location);
 
 	case PhobosTriggerAction::EditAngerNode:
 		return TActionExt::EditAngerNode(pThis, pHouse, pObject, pTrigger, location);
@@ -514,6 +518,42 @@ bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 	{
 		pHouseExt->SetForceEnemyIndex(-1);
 		pHouse->UpdateAngerNodes(0, pHouse);
+	}
+
+	return true;
+}
+
+bool TActionExt::SetDropCrate(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	for (auto pTechno : TechnoClass::Array)
+	{
+		const auto pAttachedTag = pTechno->AttachedTag;
+
+		if (!pAttachedTag)
+			continue;
+
+		bool foundTrigger = false;
+		auto pAttachedTrigger = pAttachedTag->FirstTrigger;
+
+		// A tag can link multiple triggers
+		do
+		{
+			if (_stricmp(pAttachedTrigger->Type->ID, pTrigger->Type->ID) == 0)
+				foundTrigger = true;
+
+			pAttachedTrigger = pAttachedTrigger->NextTrigger;
+		}
+		while (pAttachedTrigger && !foundTrigger);
+
+		if (!foundTrigger)
+			continue;
+
+		// Overwrite the default techno's crate properties
+		auto pExt = TechnoExt::ExtMap.Find(pTechno);
+		pExt->DropCrate = pThis->Value;
+
+		if (pExt->DropCrate == 1)
+			pExt->DropCrateType = static_cast<Powerup>(pThis->Param3);
 	}
 
 	return true;

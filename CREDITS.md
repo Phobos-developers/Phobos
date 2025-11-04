@@ -149,6 +149,8 @@ This page lists all the individual contributions to the project by their author.
   - Map Events 604 & 605 for checking if a specific Techno enters in a cell
   - Warhead that can not kill
   - `Pips.HideIfNoStrength` and `SelfHealing.EnabledBy` additions for shields
+  - Map Action 600 for overwriting DropCrate behaviour in attached Technos
+  - `DropCrate` for setting what crate drop when Techno is destroyed
   - Warhead activation target health thresholds enhancements
   - Event 606: AttachEffect is attaching to a Techno
   - Linked superweapons

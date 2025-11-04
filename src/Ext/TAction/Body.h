@@ -19,7 +19,7 @@ enum class PhobosTriggerAction : unsigned int
 	RunSuperWeaponAtLocation = 505,
 	RunSuperWeaponAtWaypoint = 506,
 	ToggleMCVRedeploy = 510,
-
+	SetDropCrate = 600, // Only change this number if the PR is merged into develop!
 	EditAngerNode = 606,
 	ClearAngerNode = 607,
 	SetForceEnemy = 608,
@@ -71,6 +71,7 @@ public:
 	ACTION_FUNC(RunSuperWeaponAtLocation);
 	ACTION_FUNC(RunSuperWeaponAtWaypoint);
 	ACTION_FUNC(ToggleMCVRedeploy);
+	ACTION_FUNC(SetDropCrate);
 
 	ACTION_FUNC(EditAngerNode);
 	ACTION_FUNC(ClearAngerNode);

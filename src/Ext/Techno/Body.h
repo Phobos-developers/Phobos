@@ -81,6 +81,9 @@ public:
 		bool IsSelected;
 		bool ResetLocomotor;
 
+		int DropCrate; // Drop crate on death, modified by map action
+		Powerup DropCrateType;
+
 		// Replaces use of TechnoClass->Animation StageClass timer for IsSimpleDeployer to simplify
 		// the deploy animation timer calcs and eliminate possibility of outside interference.
 		CDTimerClass SimpleDeployerAnimationTimer;
@@ -151,6 +154,8 @@ public:
 			, DelayedFireWeaponIndex { -1 }
 			, DelayedFireTimer {}
 			, CurrentDelayedFireAnim { nullptr }
+			, DropCrate { -1 }
+			, DropCrateType { Powerup::Money }
 			, AttachedEffectInvokerCount { 0 }
 			, IsSelected { false }
 			, ResetLocomotor { false }
@@ -277,6 +282,7 @@ public:
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
 	static void DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds, bool drawBefore = false);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
+	static int GetDropCrateIndex(TechnoClass* pThis);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue, int infoIndex);
 	static void GetDigitalDisplayFakeHealth(TechnoClass* pThis, int& value, int& maxValue);
 	static void CreateDelayedFireAnim(TechnoClass* pThis, AnimTypeClass* pAnimType, int weaponIndex, bool attach, bool center, bool removeOnNoDelay, bool onTurret, CoordStruct firingCoords);
@@ -300,5 +306,6 @@ public:
 	static int GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* pWallOverlayType);
 	static void ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 	static void ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
+	static bool TryToCreateCrate(CoordStruct location, Powerup selectedPowerup = Powerup::Money, int maxCellRange = 10);
 	static bool MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType);
 };

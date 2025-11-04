@@ -578,6 +578,83 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
+// Check adjacent cells from the center
+// The current MapClass::Instance.PlacePowerupCrate(...) doesn't like slopes and maybe other cases
+bool TechnoExt::TryToCreateCrate(CoordStruct location, Powerup selectedPowerup, int maxCellRange)
+{
+	CellStruct centerCell = CellClass::Coord2Cell(location);
+	short currentRange = 0;
+	bool placed = false;
+
+	do
+	{
+		short x = -currentRange;
+		short y = -currentRange;
+
+		CellStruct checkedCell;
+		checkedCell.Y = centerCell.Y + y;
+
+		// Check upper line
+		for (short i = -currentRange; i <= currentRange; i++)
+		{
+			checkedCell.X = centerCell.X + i;
+
+			if (placed = MapClass::Instance.PlacePowerupCrate(checkedCell, selectedPowerup))
+				break;
+		}
+
+		if (placed)
+			break;
+
+		checkedCell.Y = centerCell.Y + (int)std::abs(y);
+
+		// Check lower line
+		for (short i = -currentRange; i <= currentRange; i++)
+		{
+			checkedCell.X = centerCell.X + i;
+
+			if (placed = MapClass::Instance.PlacePowerupCrate(checkedCell, selectedPowerup))
+				break;
+		}
+
+		if (placed)
+			break;
+
+		checkedCell.X = centerCell.X + x;
+
+		// Check left line
+		for (short j = -currentRange + 1; j < currentRange; j++)
+		{
+			checkedCell.Y = centerCell.Y + j;
+
+			if (placed = MapClass::Instance.PlacePowerupCrate(checkedCell, selectedPowerup))
+				break;
+		}
+
+		if (placed)
+			break;
+
+		checkedCell.X = centerCell.X + (int)std::abs(x);
+
+		// Check right line
+		for (short j = -currentRange + 1; j < currentRange; j++)
+		{
+			checkedCell.Y = centerCell.Y + j;
+
+			if (placed = MapClass::Instance.PlacePowerupCrate(checkedCell, selectedPowerup))
+				break;
+		}
+
+		currentRange++;
+	}
+	while (!placed && currentRange < (short)maxCellRange);
+
+	if (!placed)
+		Debug::Log(__FUNCTION__": Failed to place a crate in the cell (%d,%d) and around that location.\n", centerCell.X, centerCell.Y, maxCellRange);
+
+	return placed;
+}
+
 UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit)
 {
 	if (pUnit->IsGreenHP())
@@ -929,6 +1006,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->DelayedFireTimer)
 		.Process(this->DelayedFireWeaponIndex)
 		.Process(this->CurrentDelayedFireAnim)
+		.Process(this->DropCrate)
+		.Process(this->DropCrateType)
 		.Process(this->AttachedEffectInvokerCount)
 		.Process(this->IsSelected)
 		.Process(this->ResetLocomotor)

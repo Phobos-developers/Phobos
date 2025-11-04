@@ -132,6 +132,7 @@ HideShakeEffects=false           ; boolean
   68=House,1,2
   69=Non-inert,10
   70=AITargetTypes index,0
+  71=DropCrate Behavior,0
   71=AttachEffectType,0
   101=BannerType,0
   102=Horizontal position,0
@@ -193,6 +194,7 @@ HideShakeEffects=false           ; boolean
   505=Fire Super Weapon at specified location (Phobos),0,0,20,2,21,22,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified location. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,505
   506=Fire Super Weapon at specified waypoint (Phobos),0,0,20,2,30,0,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,506
   510=Toggle MCV Redeployablility (Phobos),0,0,15,0,0,0,0,0,0, Set MCVRedeploys to the given value,0,1,510
+  600=Configure dropped crate (Phobos),0,71,31,0,0,0,0,0,0,Set or overwrite what crate is dropped when they die. Only functions when used as attached triggers within objects. Behaviour -1=default. 1=Overwrites current crate. 0=Clear current crate,0,1,600
   606=Edit hate-value (Phobos),0,2,55,6,0,0,0,0,0, Edit the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,606
   607=Clear hate-value (Phobos),0,2,0,0,0,0,0,0,0, Clear the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,607
   608=Set force enemy (Phobos),0,0,2,0,0,0,0,0,0, Force an enemy, it will not change with the change of hate-value. -1 will remove the forced enemy, -2 will never have any enemies.,0,1,608
