@@ -1,26 +1,26 @@
 #pragma once
 
-#include <Phobos.CRT.h>
 #include "Savegame.h"
 #include "Constructs.h"
 
 #include <algorithm>
-#include <memory>
 #include <vector>
 
-#include <ArrayClasses.h>
 #include <CCINIClass.h>
+#include "Swizzle.h"
 
 template <typename T> class Enumerable
 {
-	typedef std::vector<std::unique_ptr<T>> container_t;
-
 public:
-	static container_t Array;
+	// The array gets eventually expanded due to multiple ini parsing
+	// non-index references in other classes become dangling pointers
+	// therefore we need to prevent reallocation of the instances
+	// + contigous storage of type classes has virtually no performance improvement
+	inline static std::vector<std::unique_ptr<T>> Array;
 
 	static int FindIndex(const char* Title)
 	{
-		auto result = std::find_if(Array.begin(), Array.end(), [Title](std::unique_ptr<T>& Item)
+		auto result = std::find_if(Array.begin(), Array.end(), [Title](const std::unique_ptr<T>& Item)
 			{
 				return !_strcmpi(Item->Name, Title);
 			});
@@ -39,11 +39,9 @@ public:
 
 	static T* FindOrAllocate(const char* Title)
 	{
-		if (T* find = Find(Title))
-			return find;
-
-		Array.push_back(std::make_unique<T>(Title));
-
+		if (T* found = Find(Title))
+			return found;
+		Array.emplace_back(std::make_unique<T>(Title));
 		return Array.back().get();
 	}
 
@@ -63,7 +61,7 @@ public:
 				FindOrAllocate(Phobos::readBuffer);
 		}
 
-		for (const auto& item : Array)
+		for (auto const& item : Array)
 			item->LoadFromINI(pINI);
 	}
 
@@ -75,8 +73,9 @@ public:
 		if (!Stm.Load(Count))
 			return false;
 
-
-		for (size_t i = 0; i < Count; ++i) {
+		Array.reserve(Count);
+		for (size_t i = 0; i < Count; ++i)
+		{
 			void* oldPtr = nullptr;
 			decltype(Name) name;
 
@@ -84,7 +83,7 @@ public:
 				return false;
 
 			auto newPtr = FindOrAllocate(name);
-			PhobosSwizzle::Instance.RegisterChange(oldPtr, newPtr);
+			PhobosSwizzle::RegisterChange(oldPtr, newPtr);
 
 			newPtr->LoadFromStream(Stm);
 		}
@@ -96,7 +95,7 @@ public:
 	{
 		Stm.Save(Array.size());
 
-		for (const auto& item : Array)
+		for (auto const& item : Array)
 		{
 			// write old pointer and name, then delegate
 			Stm.Save(item.get());
@@ -114,13 +113,11 @@ public:
 		this->Name = Title;
 	}
 
-	virtual ~Enumerable() = default;
+	void LoadFromINI(CCINIClass* pINI) = delete;
 
-	virtual void LoadFromINI(CCINIClass* pINI) { }
+	void LoadFromStream(PhobosStreamReader& Stm) = delete;
 
-	virtual void LoadFromStream(PhobosStreamReader& Stm) = 0;
-
-	virtual void SaveToStream(PhobosStreamWriter& Stm) = 0;
+	void SaveToStream(PhobosStreamWriter& Stm) = delete;
 
 	PhobosFixedString<32> Name;
 };

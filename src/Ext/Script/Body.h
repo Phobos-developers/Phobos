@@ -57,6 +57,7 @@ enum class PhobosScripts : unsigned int
 	WaitUntilFullAmmo = 10101,
 	GatherAroundLeader = 10102,
 	LoadIntoTransports = 10103,
+	ChronoshiftToEnemyBase = 10104,
 
 	// Range 12000-12999 are suplementary/setup pre-actions
 	WaitIfNoTarget = 12000,
@@ -75,6 +76,7 @@ enum class PhobosScripts : unsigned int
 	StopForceJumpCountdown = 16002,
 	RandomSkipNextAction = 16003,
 	PickRandomScript = 16004,
+	JumpBackToPreviousScript = 16005,
 
 	// Range 18000-18999 are variable actions
 	LocalVariableSet = 18000,
@@ -158,6 +160,8 @@ class ScriptExt
 public:
 	using base_type = ScriptClass;
 
+	static constexpr DWORD Canary = 0x3B3B3B3B;
+
 	class ExtData final : public Extension<ScriptClass>
 	{
 	public:
@@ -169,47 +173,41 @@ public:
 
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm);
-		virtual void SaveToStream(PhobosStreamWriter& Stm);
+		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 	};
 
-	class ExtContainer final : public Container<ScriptExt> {
+	class ExtContainer final : public Container<ScriptExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();
 	};
 
-	static void ProcessAction(TeamClass * pTeam);
-	static void ExecuteTimedAreaGuardAction(TeamClass * pTeam);
-	static void LoadIntoTransports(TeamClass * pTeam);
-	static void WaitUntilFullAmmoAction(TeamClass * pTeam);
-	static void Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown);
-	static void Mission_Attack(TeamClass* pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType, int IdxAITargetTypeItem);
-	static TechnoClass* GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode, HouseClass* onlyTargetThisHouseEnemy, int attackAITargetType, int idxAITargetTypeItem, bool agentMode);
-	static bool EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attackAITargetType, int idxAITargetTypeItem, TechnoClass *pTeamLeader);
+	static ExtContainer ExtMap;
 
-	static void DecreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
-	static void IncreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
-	static void WaitIfNoTarget(TeamClass *pTeam, int attempts);
-	static void TeamWeightReward(TeamClass *pTeam, double award);
-	static void PickRandomScript(TeamClass * pTeam, int idxScriptsList);
-	static void Mission_Move(TeamClass* pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType, int idxAITargetTypeItem);
-	static TechnoClass* FindBestObject(TechnoClass *pTechno, int method, int calcThreatMode, bool pickAllies, int attackAITargetType, int idxAITargetTypeItem);
-	static void UnregisterGreatSuccess(TeamClass * pTeam);
-
-	static void Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
-	static void Mission_Attack_List1Random(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
-	static void Mission_Move_List(TeamClass *pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType);
-	static void Mission_Move_List1Random(TeamClass *pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType, int idxAITargetTypeItem);
-	static void SetCloseEnoughDistance(TeamClass *pTeam, double distance);
-	static void SetMoveMissionEndMode(TeamClass* pTeam, int mode);
-	static void SkipNextAction(TeamClass* pTeam, int successPercentage);
+	static void ProcessAction(TeamClass* pTeam);
+	static void ExecuteTimedAreaGuardAction(TeamClass* pTeam);
+	static void LoadIntoTransports(TeamClass* pTeam);
+	static void WaitUntilFullAmmoAction(TeamClass* pTeam);
+	static void Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -1);
+	static void DecreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine = true, double modifier = 0);
+	static void IncreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine = true, double modifier = 0);
+	static void WaitIfNoTarget(TeamClass* pTeam, int attempts = -1);
+	static void TeamWeightReward(TeamClass* pTeam, double award = 0);
+	static void PickRandomScript(TeamClass* pTeam, int idxScriptsList = -1);
+	static void UnregisterGreatSuccess(TeamClass* pTeam);
+	static void SetCloseEnoughDistance(TeamClass* pTeam, double distance = -1);
+	static void SetMoveMissionEndMode(TeamClass* pTeam, int mode = -1);
+	static void SkipNextAction(TeamClass* pTeam, int successPercentage = -1);
 	static FootClass* FindTheTeamLeader(TeamClass* pTeam);
-	static void Set_ForceJump_Countdown(TeamClass *pTeam, bool repeatLine, int count);
-	static void Stop_ForceJump_Countdown(TeamClass *pTeam);
+	static void Set_ForceJump_Countdown(TeamClass* pTeam, bool repeatLine = false, int count = -1);
+	static void Stop_ForceJump_Countdown(TeamClass* pTeam);
+	static void JumpBackToPreviousScript(TeamClass* pTeam);
+	static void ChronoshiftToEnemyBase(TeamClass* pTeam, int extraDistance);
 
 	static bool IsExtVariableAction(int action);
 	static void VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nArg);
@@ -217,11 +215,27 @@ public:
 	static void VariableOperationHandler(TeamClass* pTeam, int nVariable, int Number);
 	template<bool IsSrcGlobal, bool IsGlobal, class _Pr>
 	static void VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate);
+	static bool IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed);
+	static void Log(const char* pFormat, ...);
 
+	// Mission.Attack.cpp
+	static void Mission_Attack(TeamClass* pTeam, int calcThreatMode = 0, bool repeatAction = true, int attackAITargetType = -1, int idxAITargetTypeItem = -1);
+	static TechnoClass* GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode = 0, HouseClass* onlyTargetThisHouseEnemy = nullptr, int attackAITargetType = -1, int idxAITargetTypeItem = -1, bool agentMode = false);
+	static bool EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attackAITargetType = -1, int idxAITargetTypeItem = -1, TechnoClass* pTeamLeader = nullptr);
+	static void Mission_Attack_List(TeamClass* pTeam, int calcThreatMode = 0, bool repeatAction = true, int attackAITargetType = -1);
+	static void Mission_Attack_List1Random(TeamClass* pTeam, int calcThreatMode = 0, bool repeatAction = true, int attackAITargetType = -1);
+	static bool CheckUnitTargetingCapability(TechnoClass* pTechno, bool targetInAir, bool agentMode);
+	static bool IsUnitArmed(TechnoClass* pTechno);
+	static bool IsMindControlledByEnemy(HouseClass* pHouse, TechnoClass* pTechno);
 
-	static ExtContainer ExtMap;
+	// Mission.Move.cpp
+	static void Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pickAllies = false, int attackAITargetType = -1, int idxAITargetTypeItem = -1);
+	static TechnoClass* FindBestObject(TechnoClass* pTechno, int method, int calcThreatMode = 0, bool pickAllies = false, int attackAITargetType = -1, int idxAITargetTypeItem = -1);
+	static void Mission_Move_List(TeamClass* pTeam, int calcThreatMode = 0, bool pickAllies = false, int attackAITargetType = -1);
+	static void Mission_Move_List1Random(TeamClass* pTeam, int calcThreatMode = 0, bool pickAllies = false, int attackAITargetType = -1, int idxAITargetTypeItem = -1);
 
 private:
-	static void ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
-	static bool MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, FootClass* pLeader, int mode);
+	static void ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine = true, double modifier = 0);
+	static bool MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, FootClass* pLeader = nullptr, int mode = 0);
+	static void ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLeader, AbstractClass* pTarget);
 };

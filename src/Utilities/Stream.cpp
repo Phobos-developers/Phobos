@@ -89,8 +89,9 @@ bool PhobosStreamReader::RegisterChange(void* newPtr)
 	static_assert(sizeof(long) == sizeof(void*), "long and void* need to be of same size.");
 
 	long oldPtr = 0;
-	if (this->Load(oldPtr)) {
-		if (SUCCEEDED(SwizzleManagerClass::Instance().Here_I_Am(oldPtr, newPtr)))
+	if (this->Load(oldPtr))
+	{
+		if (SUCCEEDED(SwizzleManagerClass::Instance.Here_I_Am(oldPtr, newPtr)))
 			return true;
 
 		this->EmitSwizzleWarning(oldPtr, newPtr, stream_debugging_t());
@@ -101,22 +102,22 @@ bool PhobosStreamReader::RegisterChange(void* newPtr)
 
 void PhobosStreamReader::EmitExpectEndOfBlockWarning(std::true_type) const
 {
-	Debug::Log("[PhobosStreamReader] Read %X bytes instead of %X!\n",
+	Debug::Log("PhobosStreamReader - Read %X bytes instead of %X!\n",
 		this->stream->Offset(), this->stream->Size());
 }
 
 void PhobosStreamReader::EmitLoadWarning(size_t size, std::true_type) const
 {
-	Debug::Log("[PhobosStreamReader] Could not read data of length %u at %X of %X.\n",
+	Debug::Log("PhobosStreamReader - Could not read data of length %u at %X of %X.\n",
 		size, this->stream->Offset() - size, this->stream->Size());
 }
 
 void PhobosStreamReader::EmitExpectWarning(unsigned int found, unsigned int expect, std::true_type) const
 {
-	Debug::Log("[PhobosStreamReader] Found %X, expected %X\n", found, expect);
+	Debug::Log("PhobosStreamReader - Found %X, expected %X\n", found, expect);
 }
 
 void PhobosStreamReader::EmitSwizzleWarning(long id, void* pointer, std::true_type) const
 {
-	Debug::Log("[PhobosStreamReader] Could not register change from %X to %p\n", id, pointer);
+	Debug::Log("PhobosStreamReader - Could not register change from %X to %p\n", id, pointer);
 }

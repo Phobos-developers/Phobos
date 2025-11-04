@@ -1,9 +1,11 @@
 #include "QuickSave.h"
-#include <GameStrings.h>
+
 #include <ScenarioClass.h>
 #include <HouseClass.h>
 #include <SessionClass.h>
+#include <EventClass.h>
 #include <Utilities/GeneralUtils.h>
+#include <Utilities/SpawnerHelper.h>
 
 const char* QuickSaveCommandClass::GetName() const
 {
@@ -22,14 +24,14 @@ const wchar_t* QuickSaveCommandClass::GetUICategory() const
 
 const wchar_t* QuickSaveCommandClass::GetUIDescription() const
 {
-	return GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_DESC", L"Save the current game (Singleplayer only).");
+	return GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_DESC", L"Save the current game.");
 }
 
 void QuickSaveCommandClass::Execute(WWKey eInput) const
 {
 	auto PrintMessage = [](const wchar_t* pMessage)
 	{
-		MessageListClass::Instance->PrintMessage(
+		MessageListClass::Instance.PrintMessage(
 			pMessage,
 			RulesClass::Instance->MessageDelay,
 			HouseClass::CurrentPlayer->ColorSchemeIndex,
@@ -37,33 +39,17 @@ void QuickSaveCommandClass::Execute(WWKey eInput) const
 		);
 	};
 
-	if (SessionClass::Instance->GameMode == GameMode::Campaign || SessionClass::Instance->GameMode == GameMode::Skirmish)
+	if (SessionClass::IsSingleplayer())
 	{
-		char fName[0x80];
-
-		SYSTEMTIME time;
-		GetLocalTime(&time);
-
-		_snprintf_s(fName, 0x7F, "Map.%04u%02u%02u-%02u%02u%02u-%05u.sav",
-			time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, time.wMilliseconds);
-
-		PrintMessage(StringTable::LoadString(GameStrings::TXT_SAVING_GAME));
-
-		wchar_t fDescription[0x80] = { 0 };
-		if (SessionClass::Instance->GameMode == GameMode::Campaign)
-			wcscpy_s(fDescription, ScenarioClass::Instance->UINameLoaded);
-		else
-			wcscpy_s(fDescription, ScenarioClass::Instance->Name);
-		wcscat_s(fDescription, L" - ");
-		wcscat_s(fDescription, GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_SUFFIX", L"Quicksaved"));
-
-		if (ScenarioClass::SaveGame(fName, fDescription))
-			PrintMessage(StringTable::LoadString(GameStrings::TXT_GAME_WAS_SAVED));
-		else
-			PrintMessage(StringTable::LoadString(GameStrings::TXT_ERROR_SAVING_GAME));
+		Phobos::ScheduleGameSave(GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_SUFFIX", L"Quicksaved"));
+	}
+	else if (SpawnerHelper::IsSaveGameEventHooked())
+	{
+		// Relinquish handling of the save game to spawner
+		EventClass::OutList.Add(EventClass { HouseClass::CurrentPlayer->ArrayIndex, EventType::SaveGame });
 	}
 	else
 	{
-		PrintMessage(StringTable::LoadString("MSG:NotAvailableInMultiplayer"));
+		PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:NotAvailableInMultiplayer", L"QuickSave is not available in multiplayer"));
 	}
 }

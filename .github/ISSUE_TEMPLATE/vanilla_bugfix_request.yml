@@ -6,28 +6,12 @@ body:
   - type: markdown
     attributes:
       value: |
+        > **Warning**
+        > Before posting a suggestion, please read the **checklist at the bottom**.
+
         Thanks for taking the time to fill out this bug report! If you need real-time help, join us on the [C&C Mod Haven Discord](https://discord.gg/an3bDxtksM) server in the __#phobos-chat__ channel.
 
         Please make sure you follow these instructions and fill in every question with as much detail as possible.
-
-  - type: checkboxes
-    id: checks
-    attributes:
-      label: First check
-      description: Please confirm and check all the following options;
-      options:
-        - label: The issue is not introduced by Phobos or any other engine extension, such as Ares, Kratos etc.
-          required: true
-        - label: The issue wasn't fixed in the most recent version of Ares/Phobos yet.
-          required: true
-        - label: I agree to elaborate the details if requested and provide thorough testing if the bugfix is implemented.
-          required: true
-        - label: I added a very descriptive title to this issue.
-          required: true
-        - label: I used the GitHub search and read the issue list to find a similar issue and didn't find it.
-          required: true
-        - label: I have attached as much information as possible *(screenshots, gifs, videos, debug and exception logs, etc)*.
-          required: true
 
   - type: textarea
     id: description
@@ -99,3 +83,22 @@ body:
         - a savegame file with used mod to reproduce the exact conditions;
         - a debug log, crash dump and exception file (mandatory if you're submitting a crash report);
         - sync logs, crash dumps for all the players (mandatory in case you're submitting a desync report).
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      description: Please read and ensure you followed all the following options.
+      options:
+        - label: The issue is not introduced by Phobos or any other engine extension, such as Ares, Kratos etc.
+          required: true
+        - label: The issue wasn't fixed in the most recent version of Ares/Phobos yet.
+          required: true
+        - label: I agree to elaborate the details if requested and provide thorough testing if the bugfix is implemented.
+          required: true
+        - label: I added a very descriptive title to this issue.
+          required: true
+        - label: I used the GitHub search and read the issue list to find a similar issue and didn't find it.
+          required: true
+        - label: I have attached as much information as possible *(screenshots, gifs, videos, debug and exception logs, etc)*.
+          required: true

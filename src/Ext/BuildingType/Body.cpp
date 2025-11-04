@@ -2,9 +2,44 @@
 
 #include <Ext/House/Body.h>
 #include <Utilities/GeneralUtils.h>
+#include <Ext/SWType/Body.h>
 
-template<> const DWORD Extension<BuildingTypeClass>::Canary = 0x11111111;
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
+
+// Assuming SuperWeapon & SuperWeapon2 are used (for the moment)
+int BuildingTypeExt::ExtData::GetSuperWeaponCount() const
+{
+	// The user should only use SuperWeapon and SuperWeapon2 if the attached sw count isn't bigger than 2
+	return 2 + this->SuperWeapons.size();
+}
+
+int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index, HouseClass* pHouse) const
+{
+	auto idxSW = this->GetSuperWeaponIndex(index);
+
+	if (auto pSuper = pHouse->Supers.GetItemOrDefault(idxSW))
+	{
+		auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+
+		if (!pExt->IsAvailable(pHouse))
+			return -1;
+	}
+
+	return idxSW;
+}
+
+int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
+{
+	const auto pThis = this->OwnerObject();
+
+	// 2 = SuperWeapon & SuperWeapon2
+	if (index < 2)
+		return !index ? pThis->SuperWeapon : pThis->SuperWeapon2;
+	else if (index - 2 < (int)this->SuperWeapons.size())
+		return this->SuperWeapons[index - 2];
+
+	return -1;
+}
 
 int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse)
 {
@@ -13,14 +48,13 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 
 	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
-	for (const auto pair : pHouseExt->BuildingCounter)
+	for (const auto& [bTypeIdx, nCount] : pHouseExt->PowerPlantEnhancers)
 	{
-		const auto& pExt = pair.first;
-		const auto& nCount = pair.second;
-		if (pExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
+		auto bTypeExt = BuildingTypeExt::ExtMap.Find(BuildingTypeClass::Array[bTypeIdx]);
+		if (bTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
 		{
-			fFactor *= std::pow(pExt->PowerPlantEnhancer_Factor.Get(1.0f), nCount);
-			nAmount += pExt->PowerPlantEnhancer_Amount.Get(0) * nCount;
+			fFactor *= std::powf(bTypeExt->PowerPlantEnhancer_Factor, static_cast<float>(nCount));
+			nAmount += bTypeExt->PowerPlantEnhancer_Amount * nCount;
 		}
 	}
 
@@ -65,8 +99,7 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 }
 
 void BuildingTypeExt::ExtData::Initialize()
-{
-}
+{ }
 
 // =============================
 // load / save
@@ -76,11 +109,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
 	const char* pArtSection = pThis->ImageFile;
-	auto pArtINI = &CCINIClass::INI_Art();
-
-	if (!pINI->GetSection(pSection))
-		return;
-
+	auto pArtINI = &CCINIClass::INI_Art;
 	INI_EX exINI(pINI);
 	INI_EX exArtINI(pArtINI);
 
@@ -94,41 +123,71 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
 		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
 
+	this->AllowAirstrike.Read(exINI, pSection, "AllowAirstrike");
+	this->CanC4_AllowZeroDamage.Read(exINI, pSection, "CanC4.AllowZeroDamage");
+
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
+	this->ExcludeFromMultipleFactoryBonus.Read(exINI, pSection, "ExcludeFromMultipleFactoryBonus");
 
 	this->Grinding_AllowAllies.Read(exINI, pSection, "Grinding.AllowAllies");
 	this->Grinding_AllowOwner.Read(exINI, pSection, "Grinding.AllowOwner");
 	this->Grinding_AllowTypes.Read(exINI, pSection, "Grinding.AllowTypes");
 	this->Grinding_DisallowTypes.Read(exINI, pSection, "Grinding.DisallowTypes");
 	this->Grinding_Sound.Read(exINI, pSection, "Grinding.Sound");
-	this->Grinding_Weapon.Read(exINI, pSection, "Grinding.Weapon", true);
-	this->Grinding_DisplayRefund.Read(exINI, pSection, "Grinding.DisplayRefund");
-	this->Grinding_DisplayRefund_Houses.Read(exINI, pSection, "Grinding.DisplayRefund.Houses");
-	this->Grinding_DisplayRefund_Offset.Read(exINI, pSection, "Grinding.DisplayRefund.Offset");
+	this->Grinding_PlayDieSound.Read(exINI, pSection, "Grinding.PlayDieSound");
+	this->Grinding_Weapon.Read<true>(exINI, pSection, "Grinding.Weapon");
+	this->Grinding_Weapon_RequiredCredits.Read(exINI, pSection, "Grinding.Weapon.RequiredCredits");
 
+	this->DisplayIncome.Read(exINI, pSection, "DisplayIncome");
+	this->DisplayIncome_Houses.Read(exINI, pSection, "DisplayIncome.Houses");
+	this->DisplayIncome_Offset.Read(exINI, pSection, "DisplayIncome.Offset");
 
-	// Ares SuperWeapons tag
-	pINI->ReadString(pSection, "SuperWeapons", "", Phobos::readBuffer);
-	//char* super_weapons_list = Phobos::readBuffer;
-	if (strlen(Phobos::readBuffer) > 0 && SuperWeaponTypeClass::Array->Count > 0)
+	this->ConsideredVehicle.Read(exINI, pSection, "ConsideredVehicle");
+	this->SellBuildupLength.Read(exINI, pSection, "SellBuildupLength");
+	this->IsDestroyableObstacle.Read(exINI, pSection, "IsDestroyableObstacle");
+
+	this->FactoryPlant_AllowTypes.Read(exINI, pSection, "FactoryPlant.AllowTypes");
+	this->FactoryPlant_DisallowTypes.Read(exINI, pSection, "FactoryPlant.DisallowTypes");
+
+	this->Units_RepairRate.Read(exINI, pSection, "Units.RepairRate");
+	this->Units_RepairStep.Read(exINI, pSection, "Units.RepairStep");
+	this->Units_RepairPercent.Read(exINI, pSection, "Units.RepairPercent");
+	this->Units_UseRepairCost.Read(exINI, pSection, "Units.UseRepairCost");
+
+	this->NoBuildAreaOnBuildup.Read(exINI, pSection, "NoBuildAreaOnBuildup");
+	this->Adjacent_Allowed.Read(exINI, pSection, "Adjacent.Allowed");
+	this->Adjacent_Disallowed.Read(exINI, pSection, "Adjacent.Disallowed");
+
+	if (pThis->NumberOfDocks > 0)
 	{
-		//DynamicVectorClass<SuperWeaponTypeClass*> objectsList;
-		char* context = nullptr;
+		this->AircraftDockingDirs.clear();
+		this->AircraftDockingDirs.resize(pThis->NumberOfDocks);
 
-		//pINI->ReadString(pSection, pINI->GetKeyName(pSection, i), "", Phobos::readBuffer);
-		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		Nullable<DirType> nLandingDir;
+		nLandingDir.Read(exINI, pSection, "AircraftDockingDir");
+
+		if (nLandingDir.isset())
+			this->AircraftDockingDirs[0] = nLandingDir.Get();
+
+		for (int i = 0; i < pThis->NumberOfDocks; ++i)
 		{
-			SuperWeaponTypeClass* buffer;
-			if (Parser<SuperWeaponTypeClass*>::TryParse(cur, &buffer))
-			{
-				//Debug::Log("DEBUG: [%s]: Parsed SW [%s]\n", pSection, cur);
-				this->SuperWeapons.AddItem(buffer);
-			}
-			else
-			{
-				Debug::Log("DEBUG: [%s]: Error parsing SuperWeapons= [%s]\n", pSection, cur);
-			}
+			char tempBuffer[32];
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "AircraftDockingDir%d", i);
+			nLandingDir.Read(exINI, pSection, tempBuffer);
+
+			if (nLandingDir.isset())
+				this->AircraftDockingDirs[i] = nLandingDir.Get();
 		}
+	}
+
+	// Ares tag
+	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
+	if (SuperWeaponTypeClass::Array.Count > 0)
+	{
+		this->SuperWeapons.Read(exINI, pSection, "SuperWeapons");
+
+		this->SpyEffect_VictimSuperWeapon.Read(exINI, pSection, "SpyEffect.VictimSuperWeapon");
+		this->SpyEffect_InfiltratorSuperWeapon.Read(exINI, pSection, "SpyEffect.InfiltratorSuperWeapon");
 	}
 
 	if (pThis->MaxNumberOccupants > 10)
@@ -147,9 +206,11 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
+	this->UndeploysInto_Sellable.Read(exINI, pSection, "UndeploysInto.Sellable");
 
 	// PlacementPreview
 	{
+		this->PlacementPreview.Read(exINI, pSection, "PlacementPreview");
 		this->PlacementPreview_Shape.Read(exINI, pSection, "PlacementPreview.Shape");
 		this->PlacementPreview_ShapeFrame.Read(exINI, pSection, "PlacementPreview.ShapeFrame");
 		this->PlacementPreview_Offset.Read(exINI, pSection, "PlacementPreview.Offset");
@@ -157,6 +218,9 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->PlacementPreview_Palette.LoadFromINI(pINI, pSection, "PlacementPreview.Palette");
 		this->PlacementPreview_Translucency.Read(exINI, pSection, "PlacementPreview.Translucency");
 	}
+
+	// Art
+	this->ZShapePointMove_OnBuildup.Read(exArtINI, pArtSection, "ZShapePointMove.OnBuildup");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -177,17 +241,22 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SuperWeapons)
 		.Process(this->OccupierMuzzleFlashes)
 		.Process(this->Powered_KillSpawns)
+		.Process(this->AllowAirstrike)
+		.Process(this->CanC4_AllowZeroDamage)
 		.Process(this->InitialStrength_Cloning)
+		.Process(this->ExcludeFromMultipleFactoryBonus)
 		.Process(this->Refinery_UseStorage)
 		.Process(this->Grinding_AllowAllies)
 		.Process(this->Grinding_AllowOwner)
 		.Process(this->Grinding_AllowTypes)
 		.Process(this->Grinding_DisallowTypes)
 		.Process(this->Grinding_Sound)
+		.Process(this->Grinding_PlayDieSound)
 		.Process(this->Grinding_Weapon)
-		.Process(this->Grinding_DisplayRefund)
-		.Process(this->Grinding_DisplayRefund_Houses)
-		.Process(this->Grinding_DisplayRefund_Offset)
+		.Process(this->Grinding_Weapon_RequiredCredits)
+		.Process(this->DisplayIncome)
+		.Process(this->DisplayIncome_Houses)
+		.Process(this->DisplayIncome_Offset)
 		.Process(this->PlacementPreview)
 		.Process(this->PlacementPreview_Shape)
 		.Process(this->PlacementPreview_ShapeFrame)
@@ -195,6 +264,25 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlacementPreview_Remap)
 		.Process(this->PlacementPreview_Palette)
 		.Process(this->PlacementPreview_Translucency)
+		.Process(this->SpyEffect_Custom)
+		.Process(this->SpyEffect_VictimSuperWeapon)
+		.Process(this->SpyEffect_InfiltratorSuperWeapon)
+		.Process(this->ConsideredVehicle)
+		.Process(this->ZShapePointMove_OnBuildup)
+		.Process(this->SellBuildupLength)
+		.Process(this->AircraftDockingDirs)
+		.Process(this->FactoryPlant_AllowTypes)
+		.Process(this->FactoryPlant_DisallowTypes)
+		.Process(this->IsDestroyableObstacle)
+		.Process(this->Units_RepairRate)
+		.Process(this->Units_RepairStep)
+		.Process(this->Units_RepairPercent)
+		.Process(this->Units_UseRepairCost)
+		.Process(this->NoBuildAreaOnBuildup)
+		.Process(this->Adjacent_Allowed)
+		.Process(this->Adjacent_Disallowed)
+		.Process(this->HasPowerUpAnim)
+		.Process(this->UndeploysInto_Sellable)
 		;
 }
 
@@ -243,7 +331,8 @@ DEFINE_HOOK(0x45E50C, BuildingTypeClass_CTOR, 0x6)
 {
 	GET(BuildingTypeClass*, pItem, EAX);
 
-	BuildingTypeExt::ExtMap.FindOrAllocate(pItem);
+	BuildingTypeExt::ExtMap.TryAllocate(pItem);
+
 	return 0;
 }
 
@@ -278,7 +367,7 @@ DEFINE_HOOK(0x46536A, BuildingTypeClass_Save_Suffix, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x464A56, BuildingTypeClass_LoadFromINI, 0xA)
+//DEFINE_HOOK_AGAIN(0x464A56, BuildingTypeClass_LoadFromINI, 0xA)// Section dont exist!
 DEFINE_HOOK(0x464A49, BuildingTypeClass_LoadFromINI, 0xA)
 {
 	GET(BuildingTypeClass*, pItem, EBP);

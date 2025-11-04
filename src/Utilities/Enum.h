@@ -32,7 +32,7 @@
 
 #pragma once
 
-#include <Phobos.h>
+#include <GeneralDefinitions.h>
 
 enum class AttachedAnimFlag
 {
@@ -64,6 +64,33 @@ enum class SuperWeaponAITargetingMode
 	HunterSeeker = 13,
 	EnemyBase = 14
 };
+
+enum class LandTypeFlags : unsigned short
+{
+	None = 0,
+	Clear = 1 << (char)LandType::Clear,
+	Road = 1 << (char)LandType::Road,
+	Water = 1 << (char)LandType::Water,
+	Rock = 1 << (char)LandType::Rock,
+	Wall = 1 << (char)LandType::Wall,
+	Tiberium = 1 << (char)LandType::Tiberium,
+	Beach = 1 << (char)LandType::Beach,
+	Rough = 1 << (char)LandType::Rough,
+	Ice = 1 << (char)LandType::Ice,
+	Railroad = 1 << (char)LandType::Railroad,
+	Tunnel = 1 << (char)LandType::Tunnel,
+	Weeds = 1 << (char)LandType::Weeds,
+
+	All = 0xFFFF,
+	DefaultDisallowed = Water | Rock | Ice | Beach
+};
+
+MAKE_ENUM_FLAGS(LandTypeFlags);
+
+constexpr bool IsLandTypeInFlags(LandTypeFlags flags, LandType type)
+{
+	return (bool)((LandTypeFlags)(1 << (char)type) & flags);
+}
 
 enum class AffectedTarget : unsigned char
 {
@@ -151,17 +178,20 @@ enum class AutoDeathBehavior
 
 enum class SelfHealGainType
 {
-	None = 0,
+	NoHeal = 0,
 	Infantry = 1,
 	Units = 2
 };
 
-enum class InterceptedStatus
+enum class InterceptedStatus : unsigned char
 {
-	None = 0,
-	Targeted = 1,
-	Intercepted = 2
+	None = 0x0,
+	Targeted = 0x1,
+	Intercepted = 0x2,
+	Locked = 0x4
 };
+
+MAKE_ENUM_FLAGS(InterceptedStatus);
 
 enum class PhobosAction
 {
@@ -179,6 +209,78 @@ enum class TextAlign : int
 };
 
 MAKE_ENUM_FLAGS(TextAlign);
+
+enum class IronCurtainEffect : BYTE
+{
+	Kill = 0,
+	Invulnerable = 1,
+	Ignore = 2
+};
+
+enum class TargetZoneScanType
+{
+	Same = 0,
+	Any = 1,
+	InRange = 2
+};
+
+enum class DamageDisplayType
+{
+	Regular = 0,
+	Shield = 1,
+	Intercept = 2
+};
+
+enum class ChronoSparkleDisplayPosition : unsigned char
+{
+	None = 0x0,
+	Building = 0x1,
+	Occupants = 0x2,
+	OccupantSlots = 0x4,
+
+	All = 0xFF,
+};
+
+MAKE_ENUM_FLAGS(ChronoSparkleDisplayPosition);
+
+enum class HorizontalPosition : BYTE
+{
+	Left = 0,
+	Center = 1,
+	Right = 2
+};
+
+enum class VerticalPosition : BYTE
+{
+	Top = 0,
+	Center = 1,
+	Bottom = 2
+};
+
+//hexagon
+enum class BuildingSelectBracketPosition :BYTE
+{
+	Top = 0,
+	LeftTop = 1,
+	LeftBottom = 2,
+	Bottom = 3,
+	RightBottom = 4,
+	RightTop = 5
+};
+
+enum class DisplayInfoType : BYTE
+{
+	Health = 0,
+	Shield = 1,
+	Ammo = 2,
+	MindControl = 3,
+	Spawns = 4,
+	Passengers = 5,
+	Tiberium = 6,
+	Experience = 7,
+	Occupants = 8,
+	GattlingStage = 9
+};
 
 class MouseCursorHotSpotX
 {

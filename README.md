@@ -2,16 +2,28 @@
 
 [![Github All Releases](https://img.shields.io/github/downloads/Phobos-developers/Phobos/total.svg)](https://github.com/Phobos-developers/Phobos/releases)
 [![Docs status](https://readthedocs.org/projects/phobos/badge/?version=latest)](https://phobos.readthedocs.io/en/latest/?badge=latest)
-[![Workflow](https://img.shields.io/github/workflow/status/Phobos-developers/Phobos/Nightly%20Build.svg)](https://github.com/Phobos-developers/Phobos/actions)
+[![Workflow](https://img.shields.io/github/actions/workflow/status/Phobos-developers/Phobos/nightly.yml?branch=develop)](https://github.com/Phobos-developers/Phobos/actions)
 [![EditorConfig](https://github.com/Phobos-developers/Phobos/workflows/EditorConfig/badge.svg)](https://github.com/Phobos-developers/Phobos/actions?query=workflow%3AEditorConfig)
 [![license](https://img.shields.io/github/license/Phobos-developers/Phobos.svg)](https://www.gnu.org/licenses/lgpl-3.0.en.html)
 
+> **Warning**
+> The project is currently not maintained actively enough and thus we are looking for active maintainers at the moment. Please message us [in Discord channel](https://discord.gg/sZeMzz6qVg) (or PM Kerbiter directly).
+
 # Phobos
+
 ...is a community engine extension project providing a set of new features and fixes for Yuri's Revenge based on [modified YRpp](https://github.com/Metadorius/YRpp) and [Syringe](https://github.com/Ares-Developers/Syringe) to allow injecting code. It's meant to accompany [Ares](https://github.com/Ares-Developers/Ares) rather than replace it, thus it won't introduce incompatibilities.
 
 While Phobos is independent of Ares and does NOT require Ares specifically to function, Phobos complements some of the features found in Ares and vice versa.
 
-You can discuss the project at a dedicated [channel on C&C Mod Haven](https://discord.gg/sZeMzz6qVg).
+EA has not endorsed and does not support this product.
+
+Community
+---------
+
+As the project is international and English is currently studied the most commonly as a second language, it's the main project language. We do not limit the creation of language-specific community groups though, because we understand that many may not know English as well as their native language and/or may have trouble accessing Discord.
+
+- **[🌐 International Discord channel on C&C Mod Haven](https://discord.gg/sZeMzz6qVg)**
+- [🇨🇳 Chinese QQ Phobos group](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=f_h7TZoVX_8--ZedVFBMmjRrLBIzjMKJ&authKey=QfNyW4DZUFqL3ZKzGL5PgLUWTnISj0myWn4WGtPPQmi3F%2FP3vfnuBd3YjLFk%2BU94&noverify=0&group_code=630590659) (630590659)
 
 Downloads
 ---------
@@ -45,9 +57,9 @@ Documentation
 
 - [Official docs](https://phobos.readthedocs.io) (also available in [Chinese](https://phobos.readthedocs.io/zh_CN/latest))
 
-You can switch between versions (displays latest develop nightly version by default) in the bottom left corner, as well as download a PDF version.
+You can switch between versions (displays latest develop nightly version by default) in the bottom right corner, as well as download a PDF version.
 
-The documentation is split by a few major categories, each represented with a page on the sidebar. Each page has its contents grouped into multiple subcategories, be it buildings, technotypes, infantries, superweapons or something else.
+The documentation is split by a few major categories, each represented with a page on the sidebar. Each page has its contents grouped into multiple subcategories, be it buildings, technotypes, infantry, superweapons or something else.
 
 ### How to read code snippets
 
@@ -58,6 +70,9 @@ The documentation is split by a few major categories, each represented with a pa
 [SOMENAME]           ; BuildingType
 ; KeyName=DefaultValue ; accepted type with optional explanation
 ; if there's nothing to the right of equals sign - the default value is empty/absent
+; if these keys have had their value set, they can only be set to their default
+; unset state again by setting the value to <default>, <none> or none
+; for list of values only <default> clears the entire list
 ; if the default value is not static - it's written and explained in a comment
 UIDescription=<none> ; CSF entry key
 ```
@@ -65,7 +80,7 @@ UIDescription=<none> ; CSF entry key
 Building manually
 -----------------
 
-0. Install **Visual Studio** (2019 is recommended, 2017 is minimum) with the dependencies listed in `.vsconfig` (it will prompt you to install missing dependences when you open the project, or you can run VS installer and import the config). If you prefer to use **Visual Studio Code** you may install **VS Build Tools** with the dependencies from `.vsconfig` instead. Not using a code editor or IDE and building via **command line scripts** included with the project is also an option.
+0. Install **Visual Studio** (2022 is minimum) with the dependencies listed in `.vsconfig` (it will prompt you to install missing dependences when you open the project, or you can run VS installer and import the config). If you prefer to use **Visual Studio Code** you may install **VS Build Tools** with the dependencies from `.vsconfig` instead. Not using a code editor or IDE and building via **command line scripts** included with the project is also an option.
 1. Clone this repo recursively via your favorite git client (that will also clone YRpp).
 2. To build the extension:
    - in Visual Studio: open the solution file in VS and build it (`Debug` build config is recommended);
@@ -76,20 +91,53 @@ Building manually
 Credits
 -------
 
-### Developers
-- **Belonit (Gluk-v48)** - project author
-- **Kerbiter (Metadorius)** - project co-author, current maintainer ([Patreon](https://patreon.com/kerbiter))
-- **Starkku** - co-maintainer, developer ([Patreon](https://www.patreon.com/Starkku))
-- **Uranusian (Thrifinesma)** - developer, CN community ambassador ([Patreon](https://www.patreon.com/uranusian), [AliPay](http://tiebapic.baidu.com/forum/w%3D580/sign=4b04b953307f9e2f70351d002f31e962/b3f89909b3de9c823bd7f23a7b81800a18d84371.jpg))
-- **secsome (SEC-SOME)** - developer
-- **Otamaa (Fahroni, BoredEXE)** - developer ([PayPal](https://paypal.me/GeneralOtama))
-- **FS-21** - developer
-- **Morton (MortonPL)** - developer
-- **Trsdy (chaserli)** - developer
+This project was founded by [@Belonit](https://github.com/Belonit) (Gluk-v48) and [@Metadorius](https://github.com/Metadorius) (Kerbiter) in 2020, with the first public stable release in 2021. Since then it has grown into a large community project with many contributors and maintainers.
 
-For all contributions see [full credits list](CREDITS.md).
+### Maintenance crew
 
-Thanks to everyone who uses Phobos, tests changes and reports bugs! You can show your appreciation and help project by displaying the logo (monochrome version can be found [here](https://github.com/Phobos-developers/Phobos/blob/develop/logo-mono.png)) in your client/launcher (make it open Phobos GitHub page for extra fanciness), linking to Phobos repository, contributing or donating to us via the links above.
+Maintenance crew consists of experienced Phobos contributors who are recognized and given the permission to maintain and shape the project to the extent of their permissions.
+
+Every maintenance crew member is welcome to put a donation link to their entry in the list below.
+
+- **Kerbiter ([@Metadorius](https://github.com/Metadorius))** - T3 maintainer (lead)
+  - [Patreon](https://www.patreon.com/kerbiter) · PayPal (preferable because of no fees) on request
+- **[@Starkku](https://github.com/Starkku)** - T2 maintainer
+  - [Patreon](https://www.patreon.com/Starkku)
+- **[@CrimRecya](https://github.com/CrimRecya) (绯红热茶)** - T2 maintainer
+  - [Alipay](https://i2.hdslb.com/bfs/new_dyn/8de77b17b8fc2e005613821b62008e37362533219.jpg)
+- **[@ZivDero](https://github.com/ZivDero)** - T2 maintainer
+  - [Patreon](https://www.patreon.com/c/ZivDero)
+- **Ollerus ([@Coronia](https://github.com/Coronia))** - T1 maintainer
+  - [Alipay](https://i2.hdslb.com/bfs/new_dyn/7c5f82c5530c88dc076a6f1ca2c02b46362533219.jpg)
+- **[@NetsuNegi](https://github.com/NetsuNegi)** - T1 maintainer
+  - [Alipay](https://i2.hdslb.com/bfs/new_dyn/cb69d2b5eb08c13d03bc79664e68b6c2362533219.png)
+- **[@TaranDahl](https://github.com/TaranDahl) (航味麻酱)** - T1 maintainer
+  - [WeChatPay](https://i2.hdslb.com/bfs/new_dyn/ffd5d36cc5efcdd83d93138062ec116e362533219.jpg)
+- **Noble_Fish ([@DeathFishAtEase](https://github.com/DeathFishAtEase))** - triage, doc maintainer
+  - [Alipay](https://i2.hdslb.com/bfs/new_dyn/b080641faea49ae3e10b4728679ef2e5362533219.jpg)
+- **FlyStar ([@Fly-Star-him](https://github.com/Fly-Star-him))** - triage
+- **[@Fryone](https://github.com/Fryone)** - triage
+
+#### Inactive
+
+*Please note that being put here just means that you seem to be currently inactive as a part of maintenance crew. You are always welcome to return to the active crew if you want to help out again!*
+
+- **Gluk-v48 ([@Belonit](https://github.com/Belonit))** - lead in the past
+- **Uranusian ([@Thrifinesma](https://github.com/Thrifinesma))** - T2 maintainer, CN community ambassador, doc maintainer
+- **[@secsome](https://github.com/secsome)** - maintainer
+- **[@Otamaa](https://github.com/Otamaa) (Fahroni, BoredEXE)** - maintainer
+- **[@FS-21](https://github.com/FS-21)** - inactive as a maintainer specifically
+- **Morton ([@MortonPL](https://github.com/FS-21))** - T2 maintainer
+- **Trsdy ([@chaserli](https://github.com/chaserli))** - T2 maintainer
+
+The project is so big that listing here all the help we receive or received will make the size of the readme explode, so please see the [full credits list](CREDITS.md) for that. We appreciate your help, contributions and support regardless!
+
+Attribution
+-----
+
+You can show your appreciation and help project's publicity by displaying the logo (monochrome version can be found [here](https://github.com/Phobos-developers/Phobos/blob/develop/logo-mono.png)) in your client/launcher (make it a button that opens Phobos GitHub page for extra fanciness). To fit with the mod styling, you are allowed to stylize the monochrome logo in a non-intrusive way (for example, recolor it to match the mod theme) without otherwise changing it. If unsure - ask us first.
+
+When promoting features of your mod that you implemented using Phobos, please give credit to Phobos and it's contributors. A good promotion for Phobos is concise and specific to features that are being showcased, for example: "This feature is made possible by Phobos", "Implemented using XYZ from Phobos", etc. This helps end users understand the nature of Phobos and its role in the modding community, and gives the needed recognition to the project and its contributors.
 
 Legal and License
 -----
@@ -97,5 +145,7 @@ Legal and License
 [![LGPL v3](https://www.gnu.org/graphics/lgplv3-147x51.png)](https://opensource.org/licenses/LGPL-3.0)
 
 The Phobos project is an unofficial open-source community collaboration project to extend the Red Alert 2 Yuri's Revenge engine for modding and compatibility purposes.
+
+As a modification, the project complies with [EA C&C modding guidelines](https://www.ea.com/games/command-and-conquer/command-and-conquer-remastered/modding-faq); should there be conflict between the project's license and modding guidelines - the rules imposed by guidelines shall take precedence (for example, the project should not be commercial or used to make money).
 
 This project has no direct affiliation with Electronic Arts Inc. Command & Conquer, Command & Conquer Red Alert 2, Command & Conquer Yuri's Revenge are registered trademarks of Electronic Arts Inc. All Rights Reserved.

@@ -26,21 +26,21 @@ __forceinline T* Make_Pointer(const uintptr_t address)
 #pragma warning(push)
 #pragma warning( disable : 4324)
 
-#define LJMP_LETTER 0xE9
-#define CALL_LETTER 0xE8
-#define NOP_LETTER  0x90
+#define LJMP_OPCODE 0xE9
+#define CALL_OPCODE 0xE8
+#define NOP_OPCODE  0x90
 
 typedef void JumpType;
 
 typedef JumpType LJMP;
 struct _LJMP
 {
-	byte command;
+	byte opcode;
 	DWORD pointer;
 
 	constexpr
 		_LJMP(DWORD offset, DWORD pointer) :
-		command(LJMP_LETTER),
+		opcode(LJMP_OPCODE),
 		pointer(pointer - offset - 5)
 	{ };
 };
@@ -48,12 +48,12 @@ struct _LJMP
 typedef JumpType CALL;
 struct _CALL
 {
-	byte command;
+	byte opcode;
 	DWORD pointer;
 
 	constexpr
 		_CALL(DWORD offset, DWORD pointer) :
-		command(CALL_LETTER),
+		opcode(CALL_OPCODE),
 		pointer(pointer - offset - 5)
 	{ };
 };
@@ -61,15 +61,15 @@ struct _CALL
 typedef JumpType CALL6;
 struct _CALL6
 {
-	byte command;
+	byte opcode;
 	DWORD pointer;
 	byte nop;
 
 	constexpr
 		_CALL6(DWORD offset, DWORD pointer) :
-		command(CALL_LETTER),
+		opcode(CALL_OPCODE),
 		pointer(pointer - offset - 5),
-		nop(NOP_LETTER)
+		nop(NOP_OPCODE)
 	{ };
 };
 
@@ -83,6 +83,9 @@ struct _VTABLE
 		pointer(pointer)
 	{ };
 };
+
+typedef JumpType OFFSET;
+typedef _VTABLE _OFFSET;
 
 #pragma warning(pop)
 #pragma pack(pop)
@@ -99,12 +102,15 @@ struct _VTABLE
 		Patch patch = {offset, size, (byte*)data};                \
 	}
 
-#define DEFINE_PATCH(offset, ...)                                 \
+#define DEFINE_PATCH_TYPED(type, offset, ...)                     \
 	namespace STATIC_PATCH##offset                                \
 	{                                                             \
-		const byte data[] = {__VA_ARGS__};                        \
+		const type data[] = {__VA_ARGS__};                        \
 	}                                                             \
 	_ALLOCATE_STATIC_PATCH(offset, sizeof(data), data);
+
+#define DEFINE_PATCH(offset, ...)                                 \
+	DEFINE_PATCH_TYPED(byte, offset, __VA_ARGS__);
 
 #define DEFINE_JUMP(jumpType, offset, pointer)                    \
 	namespace STATIC_PATCH##offset                                \
@@ -112,6 +118,12 @@ struct _VTABLE
 		const _##jumpType data (offset, pointer);                 \
 	}                                                             \
 	_ALLOCATE_STATIC_PATCH(offset, sizeof(data), &data);
+
+#define DEFINE_NAKED_HOOK(hook, funcname)                         \
+	void funcname();                                              \
+	DEFINE_FUNCTION_JUMP(LJMP, hook, funcname)                 \
+	void NAKED funcname()
+
 #pragma endregion Static Patch
 
 #pragma region Dynamic Patch
@@ -122,12 +134,15 @@ struct _VTABLE
 	}                                                             \
 	Patch* const name = &DYNAMIC_PATCH_##name::patch;
 
-#define DEFINE_DYNAMIC_PATCH(name, offset, ...)                   \
+#define DEFINE_DYNAMIC_PATCH_TYPED(type, name, offset, ...)       \
 	namespace DYNAMIC_PATCH_##name                                \
 	{                                                             \
-		const byte data[] = {__VA_ARGS__};                        \
+		const type data[] = {__VA_ARGS__};                        \
 	}                                                             \
 	_ALLOCATE_DYNAMIC_PATCH(name, offset, sizeof(data), data);
+
+#define DEFINE_DYNAMIC_PATCH(name, offset, ...)                   \
+	DEFINE_DYNAMIC_PATCH_TYPED(byte, name, offset, __VA_ARGS__)
 
 #define DEFINE_DYNAMIC_JUMP(jumpType, name, offset, pointer)      \
 	namespace DYNAMIC_PATCH_##name                                \
@@ -136,6 +151,24 @@ struct _VTABLE
 	}                                                             \
 	_ALLOCATE_DYNAMIC_PATCH(name, offset, sizeof(data), &data);
 #pragma endregion Dynamic Patch
+
+#pragma region Thiscall Patch
+#define _GET_FUNCTION_ADDRESS(function, getterName)               \
+	static constexpr __forceinline uintptr_t getterName()         \
+	{                                                             \
+		uintptr_t addr;                                           \
+		{ _asm mov eax, function }                                \
+		{ _asm mov addr, eax }                                    \
+		return addr;                                              \
+	}
+
+#define DEFINE_FUNCTION_JUMP(jumpType, offset, function)          \
+	namespace NAMESPACE_THISCALL_JUMP##offset                     \
+	{                                                             \
+		_GET_FUNCTION_ADDRESS(function, GetAddr)                  \
+		DEFINE_JUMP(jumpType, offset, GetAddr())                  \
+	}
+#pragma endregion
 
 #pragma endregion Macros
 #pragma endregion Patch Macros

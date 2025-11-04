@@ -2,8 +2,9 @@
 
 #include <Utilities/Container.h>
 #include <Utilities/Template.h>
-
 #include <Helpers/Template.h>
+
+#include <optional>
 
 #include <TEventClass.h>
 
@@ -49,6 +50,10 @@ enum PhobosTriggerEvent
 	GlobalVariableAndIsTrueGlobalVariable = 535,
 
 	ShieldBroken = 600,
+	HouseOwnsTechnoType = 601,
+	HouseDoesntOwnTechnoType = 602,
+	CellHasTechnoType = 604,
+	CellHasAnyTechnoTypeFromList = 605,
 
 	_DummyMaximum,
 };
@@ -57,6 +62,8 @@ class TEventExt
 {
 public:
 	using base_type = TEventClass;
+
+	static constexpr DWORD Canary = 0x91919191;
 
 	class ExtData final : public Extension<TEventClass>
 	{
@@ -76,13 +83,22 @@ public:
 		void Serialize(T& Stm);
 	};
 
-	static bool Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, ObjectClass* pObject,
-					CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource, bool& bHandled);
+	static int GetFlags(int iEvent);
+
+	static std::optional<bool> Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse,
+		ObjectClass* pObject, CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource);
 
 	template<bool IsGlobal, typename _Pr>
 	static bool VariableCheck(TEventClass* pThis);
 	template<bool IsSrcGlobal, bool IsGlobal, typename _Pr>
 	static bool VariableCheckBinary(TEventClass* pThis);
+
+	static bool HouseOwnsTechnoTypeTEvent(TEventClass* pThis);
+	static bool HouseDoesntOwnTechnoTypeTEvent(TEventClass* pThis);
+
+	static bool CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectClass* pObject, HouseClass* pHouse);
+	static bool CellHasTechnoTypeTEvent(TEventClass* pThis, ObjectClass* pObject, HouseClass* pHouse);
+
 
 	class ExtContainer final : public Container<TEventExt>
 	{

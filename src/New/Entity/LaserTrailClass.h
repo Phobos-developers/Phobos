@@ -1,18 +1,17 @@
 #pragma once
 
 #include <GeneralStructures.h>
-#include <LaserDrawClass.h>
 #include <HouseClass.h>
 
 #include <New/Type/LaserTrailTypeClass.h>
 
-#include <vector>
 
 class LaserTrailClass
 {
 public:
 	LaserTrailTypeClass* Type;
 	bool Visible;
+	bool Cloaked;
 	CoordStruct FLH;
 	bool IsOnTurret;
 	ColorStruct CurrentColor;
@@ -20,24 +19,26 @@ public:
 
 	LaserTrailClass(LaserTrailTypeClass* pTrailType, HouseClass* pHouse = nullptr,
 		CoordStruct flh = { 0, 0, 0 }, bool isOnTurret = false) :
-		Type(pTrailType)
-		, Visible(true)
-		, FLH(flh)
-		, IsOnTurret(isOnTurret)
-		, CurrentColor(pTrailType->Color)
-		, LastLocation()
+		Type { pTrailType }
+		, Visible { true }
+		, Cloaked { false }
+		, FLH { flh }
+		, IsOnTurret { isOnTurret }
+		, CurrentColor { pTrailType->Color }
+		, LastLocation {}
 	{
 		if (this->Type->IsHouseColor && pHouse)
 			this->CurrentColor = pHouse->LaserColor;
 	}
 
 	LaserTrailClass() :
-		Type(),
-		Visible(),
-		FLH(),
-		IsOnTurret(),
-		CurrentColor(),
-		LastLocation()
+		Type {},
+		Visible {},
+		Cloaked {},
+		FLH {},
+		IsOnTurret {},
+		CurrentColor {},
+		LastLocation {}
 	{ }
 
 	bool Update(CoordStruct location);

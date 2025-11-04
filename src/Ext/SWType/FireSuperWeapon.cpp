@@ -7,9 +7,70 @@
 
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/GeneralUtils.h>
-#include "Ext/Building/Body.h"
-#include "Ext/House/Body.h"
 
+#include "Ext/House/Body.h"
+#include "Ext/WarheadType/Body.h"
+#include "Ext/WeaponType/Body.h"
+#include <Ext/Scenario/Body.h>
+
+// ============= New SuperWeapon Effects================
+
+void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
+{
+	const auto pHouse = pSW->Owner;
+	const auto pType = pSW->Type;
+	auto const pTypeExt = SWTypeExt::ExtMap.Find(pType);
+
+	if (pTypeExt->LimboDelivery_Types.size() > 0)
+		pTypeExt->ApplyLimboDelivery(pHouse);
+
+	if (pTypeExt->LimboKill_IDs.size() > 0)
+		pTypeExt->ApplyLimboKill(pHouse);
+
+	if (pTypeExt->Detonate_Warhead || pTypeExt->Detonate_Weapon)
+		pTypeExt->ApplyDetonation(pHouse, cell);
+
+	if (pTypeExt->SW_Next.size() > 0)
+		pTypeExt->ApplySWNext(pSW, cell);
+
+	if (pTypeExt->Convert_Pairs.size() > 0)
+		pTypeExt->ApplyTypeConversion(pSW);
+
+	if (static_cast<int>(pType->Type) == 28 && !pTypeExt->EMPulse_TargetSelf) // Ares' Type=EMPulse SW
+		pTypeExt->HandleEMPulseLaunch(pSW, cell);
+
+	auto& sw_ext = HouseExt::ExtMap.Find(pHouse)->SuperExts[pType->ArrayIndex];
+	sw_ext.ShotCount++;
+
+	const auto pTags = &pHouse->RelatedTags;
+	if (pTags->Count > 0)
+	{
+		int index = 0;
+		int TagCount = pTags->Count;
+
+		while (TagCount > 0 && index < TagCount)
+		{
+			const auto pTag = pTags->GetItem(index);
+
+			// don't be confused as to why (TechnoClass*)(pSW) is there, it's something very much needed..
+			if (pTag->RaiseEvent(static_cast<TriggerEvent>(77), nullptr, CellStruct::Empty, false, (TechnoClass*)(pSW))
+				|| pTag->RaiseEvent(static_cast<TriggerEvent>(75), nullptr, CellStruct::Empty, false, (TechnoClass*)(pSW)))
+			{
+				if (TagCount != pTags->Count)
+				{
+					TagCount = pTags->Count;
+					continue;
+				}
+			}
+
+			++index;
+		}
+	}
+}
+
+// ====================================================
+
+#pragma region LimboDelivery
 inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 {
 	// BuildLimit check goes before creation
@@ -32,20 +93,18 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		pBuilding->IsAlive = true;
 		pBuilding->IsOnMap = true;
 
-		// For reasons beyond my comprehension, the discovery logic is checked for certain logics like power drain/output in campaign only.
+		// Jun 3, 2023 - Starkku: For reasons beyond my comprehension, the discovery logic is checked for certain logics like power drain/output in campaign only.
 		// Normally on unlimbo the buildings are revealed to current player if unshrouded or if game is a campaign and to non-player houses always.
 		// Because of the unique nature of LimboDelivered buildings, this has been adjusted to always reveal to the current player in singleplayer
-		// and to the owner of the building regardless, removing the shroud check from the equation since they don't physically exist - Starkku
-		if (SessionClass::Instance->GameMode == GameMode::Campaign)
+		// and to the owner of the building regardless, removing the shroud check from the equation since they don't physically exist
+		if (SessionClass::IsCampaign())
 			pBuilding->DiscoveredBy(HouseClass::CurrentPlayer);
 
 		pBuilding->DiscoveredBy(pOwner);
 
 		pOwner->RegisterGain(pBuilding, false);
-		pOwner->UpdatePower();
 		pOwner->RecheckTechTree = true;
 		pOwner->RecheckPower = true;
-		pOwner->RecheckRadar = true;
 		pOwner->Buildings.AddItem(pBuilding);
 
 		// Different types of building logics
@@ -55,94 +114,45 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		if (pType->SecretLab)
 			pOwner->SecretLabs.AddItem(pBuilding);
 
+		auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
+		auto const pOwnerExt = HouseExt::ExtMap.Find(pOwner);
+
 		if (pType->FactoryPlant)
 		{
-			pOwner->FactoryPlants.AddItem(pBuilding);
-			pOwner->CalculateCostMultipliers();
-		}
-
-		if (pType->OrePurifier)
-			pOwner->NumOrePurifiers++;
-
-		// BuildingClass::Place is where Ares hooks secret lab expansion
-		// pTechnoBuilding->Place(false);
-		// even with it no bueno yet, plus new issues
-		// probably should just port it from Ares 0.A and be done
-
-		auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
-
-		if (pBuildingExt)
-		{
-			// LimboKill ID
-			pBuildingExt->LimboID = ID;
-
-			if (auto pOwnerExt = HouseExt::ExtMap.Find(pOwner))
+			if (pBuildingExt->TypeExtData->FactoryPlant_AllowTypes.size() > 0 || pBuildingExt->TypeExtData->FactoryPlant_DisallowTypes.size() > 0)
 			{
-				// Add building to list of owned limbo buildings
-				pOwnerExt->OwnedLimboDeliveredBuildings.insert({ pBuilding, pBuildingExt });
-
-				auto pTechExt = TechnoExt::ExtMap.Find(pBuilding);
-
-				if (pTechExt->TypeExtData->AutoDeath_Behavior.isset() && pTechExt->TypeExtData->AutoDeath_AfterDelay > 0)
-				{
-					pTechExt->AutoDeathTimer.Start(pTechExt->TypeExtData->AutoDeath_AfterDelay);
-					pOwnerExt->OwnedTimedAutoDeathObjects.push_back(pTechExt);
-				}
+				pOwnerExt->RestrictedFactoryPlants.push_back(pBuilding);
+			}
+			else
+			{
+				pOwner->FactoryPlants.AddItem(pBuilding);
+				pOwner->CalculateCostMultipliers();
 			}
 		}
-	}
-}
 
-inline void LimboDelete(BuildingClass* pBuilding, HouseClass* pTargetHouse)
-{
-	BuildingTypeClass* pType = pBuilding->Type;
+		// BuildingClass::Place is already called in DiscoveredBy
+		// it added OrePurifier and xxxGainSelfHeal to House counter already
 
-	auto pOwnerExt = HouseExt::ExtMap.Find(pTargetHouse);
+		// LimboKill ID
+		pBuildingExt->LimboID = ID;
 
-	// Remove building from list of owned limbo buildings
-	if (pOwnerExt)
-		pOwnerExt->OwnedLimboDeliveredBuildings.erase(pBuilding);
+		// Add building to list of owned limbo buildings
+		pOwnerExt->OwnedLimboDeliveredBuildings.push_back(pBuilding);
 
-	// Mandatory
-	pBuilding->InLimbo = true;
-	pBuilding->IsAlive = false;
-	pBuilding->IsOnMap = false;
-	pTargetHouse->RegisterLoss(pBuilding, false);
-	pTargetHouse->UpdatePower();
-	pTargetHouse->RecheckTechTree = true;
-	pTargetHouse->RecheckPower = true;
-	pTargetHouse->RecheckRadar = true;
-	pTargetHouse->Buildings.Remove(pBuilding);
+		if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
+			pOwnerExt->AddToLimboTracking(pBuilding->Type);
 
-	// Building logics
-	if (pType->ConstructionYard)
-		pTargetHouse->ConYards.Remove(pBuilding);
+		auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
+		auto const pTechnoTypeExt = pTechnoExt->TypeExtData;
 
-	if (pType->SecretLab)
-		pTargetHouse->SecretLabs.Remove(pBuilding);
+		if (pTechnoTypeExt->AutoDeath_Behavior.isset())
+		{
+			ScenarioExt::Global()->AutoDeathObjects.push_back(pTechnoExt);
 
-	if (pType->FactoryPlant)
-	{
-		pTargetHouse->FactoryPlants.Remove(pBuilding);
-		pTargetHouse->CalculateCostMultipliers();
-	}
+			if (pTechnoTypeExt->AutoDeath_AfterDelay > 0)
+				pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
+		}
 
-	if (pType->OrePurifier)
-		pTargetHouse->NumOrePurifiers--;
-
-	// Remove completely
-	pBuilding->UnInit();
-}
-
-void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
-{
-	if (auto const pTypeExt = SWTypeExt::ExtMap.Find(pSW->Type))
-	{
-		if (pTypeExt->LimboDelivery_Types.size() > 0)
-			pTypeExt->ApplyLimboDelivery(pSW->Owner);
-
-		if (pTypeExt->LimboKill_IDs.size() > 0)
-			pTypeExt->ApplyLimboKill(pSW->Owner);
 	}
 }
 
@@ -151,50 +161,25 @@ void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
 	// random mode
 	if (this->LimboDelivery_RandomWeightsData.size())
 	{
-		bool rollOnce = false;
 		int id = -1;
-		size_t rolls = this->LimboDelivery_RollChances.size();
-		size_t weights = this->LimboDelivery_RandomWeightsData.size();
-		int ids = (int)this->LimboDelivery_IDs.size();
-
-		// if no RollChances are supplied, do only one roll
-		if (rolls == 0)
+		size_t idsSize = this->LimboDelivery_IDs.size();
+		auto results = this->WeightedRollsHandler(&this->LimboDelivery_RollChances, &this->LimboDelivery_RandomWeightsData, this->LimboDelivery_Types.size());
+		for (size_t result : results)
 		{
-			rolls = 1;
-			rollOnce = true;
-		}
+			if (result < idsSize)
+				id = this->LimboDelivery_IDs[result];
 
-		for (size_t i = 0; i < rolls; i++)
-		{
-			this->RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
-			if (!rollOnce && this->RandomBuffer > this->LimboDelivery_RollChances[i])
-				continue;
-
-			size_t j = rolls > weights ? weights : i;
-			int index = GeneralUtils::ChooseOneWeighted(this->RandomBuffer, &this->LimboDelivery_RandomWeightsData[j]);
-
-			// extra weights are bound to automatically fail
-			if (index >= (int)this->LimboDelivery_Types.size())
-				index = -1;
-
-			if (index != -1)
-			{
-				if (index < ids)
-					id = this->LimboDelivery_IDs[index];
-
-				LimboCreate(this->LimboDelivery_Types[index], pHouse, id);
-			}
+			LimboCreate(this->LimboDelivery_Types[result], pHouse, id);
 		}
 	}
 	// no randomness mode
 	else
 	{
 		int id = -1;
-		size_t ids = this->LimboDelivery_IDs.size();
-
+		size_t idsSize = this->LimboDelivery_IDs.size();
 		for (size_t i = 0; i < this->LimboDelivery_Types.size(); i++)
 		{
-			if (i < ids)
+			if (i < idsSize)
 				id = this->LimboDelivery_IDs[i];
 
 			LimboCreate(this->LimboDelivery_Types[i], pHouse, id);
@@ -206,16 +191,34 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 {
 	for (int limboKillID : this->LimboKill_IDs)
 	{
-		for (HouseClass* pTargetHouse : *HouseClass::Array)
+		for (HouseClass* pTargetHouse : HouseClass::Array)
 		{
 			if (EnumFunctions::CanTargetHouse(this->LimboKill_Affected, pHouse, pTargetHouse))
 			{
-				if (auto const pHouseExt = HouseExt::ExtMap.Find(pTargetHouse))
+				auto const pHouseExt = HouseExt::ExtMap.Find(pTargetHouse);
+				auto& vec = pHouseExt->OwnedLimboDeliveredBuildings;
+
+				for (auto it = vec.begin(); it != vec.end(); )
 				{
-					for (const auto& [pBuilding, pBuildingExt] : pHouseExt->OwnedLimboDeliveredBuildings)
+					BuildingClass* const pBuilding = *it;
+					auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
+
+					if (pBuildingExt->LimboID == limboKillID)
 					{
-						if (pBuildingExt->LimboID == limboKillID)
-							LimboDelete(pBuildingExt->OwnerObject(), pTargetHouse);
+						it = vec.erase(it);
+
+						// Remove limbo buildings' tracking here because their are not truely InLimbo
+						if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
+							HouseExt::ExtMap.Find(pBuilding->Owner)->RemoveFromLimboTracking(pBuilding->Type);
+
+						pBuilding->Stun();
+						pBuilding->Limbo();
+						pBuilding->RegisterDestruction(nullptr);
+						pBuilding->UnInit();
+					}
+					else
+					{
+						++it;
 					}
 				}
 			}
@@ -223,102 +226,144 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 	}
 }
 
-// =============================
-// Ares 0.A helpers
-// Inhibitors check
-bool SWTypeExt::ExtData::IsInhibitor(HouseClass* pOwner, TechnoClass* pTechno) const
+#pragma endregion
+
+void SWTypeExt::ExtData::ApplyDetonation(HouseClass* pHouse, const CellStruct& cell)
 {
-	if (pTechno->IsAlive && pTechno->Health && !pTechno->InLimbo && !pTechno->Deactivated)
+	auto coords = MapClass::Instance.GetCellAt(cell)->GetCoords();
+	BuildingClass* pFirer = nullptr;
+
+	for (auto const& pBld : pHouse->Buildings)
 	{
-		if (!pOwner->IsAlliedWith(pTechno))
+		if (this->IsLaunchSiteEligible(cell, pBld, false))
 		{
-			if (auto pBld = abstract_cast<BuildingClass*>(pTechno))
+			pFirer = pBld;
+			break;
+		}
+	}
+
+	if (this->Detonate_AtFirer)
+		coords = pFirer ? pFirer->GetCenterCoords() : CoordStruct::Empty;
+
+	const auto pWeapon = this->Detonate_Weapon;
+	auto const mapCoords = CellClass::Coord2Cell(coords);
+
+	if (!MapClass::Instance.CoordinatesLegal(mapCoords))
+	{
+		auto const ID = pWeapon ? pWeapon->get_ID() : this->Detonate_Warhead->get_ID();
+		Debug::Log("ApplyDetonation: Superweapon [%s] failed to detonate [%s] - cell at %d, %d is invalid.\n", this->OwnerObject()->get_ID(), ID, mapCoords.X, mapCoords.Y);
+		return;
+	}
+
+	if (pWeapon)
+		WeaponTypeExt::DetonateAt(pWeapon, coords, pFirer, this->Detonate_Damage.Get(pWeapon->Damage), pHouse);
+	else
+	{
+		if (this->Detonate_Warhead_Full)
+			WarheadTypeExt::DetonateAt(this->Detonate_Warhead, coords, pFirer, this->Detonate_Damage.Get(0), pHouse);
+		else
+			MapClass::DamageArea(coords, this->Detonate_Damage.Get(0), pFirer, this->Detonate_Warhead, true, pHouse);
+	}
+}
+
+void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
+{
+	// SW.Next proper launching mechanic
+	auto LaunchTheSW = [=](const int swIdxToLaunch)
+		{
+			HouseClass* pHouse = pSW->Owner;
+			if (const auto pSuper = pHouse->Supers.GetItem(swIdxToLaunch))
 			{
-				if (!pBld->IsPowerOnline())
-					return false;
+				const auto pNextTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+				if (!this->SW_Next_RealLaunch ||
+					(pSuper->IsPresent && pSuper->IsReady && !pSuper->IsSuspended && pHouse->CanTransactMoney(pNextTypeExt->Money_Amount)))
+				{
+					if ((this->SW_Next_IgnoreInhibitors || !pNextTypeExt->HasInhibitor(pHouse, cell))
+						&& (this->SW_Next_IgnoreDesignators || pNextTypeExt->HasDesignator(pHouse, cell)))
+					{
+						int oldstart = pSuper->RechargeTimer.StartTime;
+						int oldleft = pSuper->RechargeTimer.TimeLeft;
+						pSuper->SetReadiness(true);
+						pSuper->Launch(cell, pHouse->IsCurrentPlayer());
+						pSuper->Reset();
+						if (!this->SW_Next_RealLaunch)
+						{
+							pSuper->RechargeTimer.StartTime = oldstart;
+							pSuper->RechargeTimer.TimeLeft = oldleft;
+						}
+					}
+				}
+			}
+		};
+
+	// random mode
+	if (this->SW_Next_RandomWeightsData.size())
+	{
+		auto results = this->WeightedRollsHandler(&this->SW_Next_RollChances, &this->SW_Next_RandomWeightsData, this->SW_Next.size());
+		for (int result : results)
+			LaunchTheSW(this->SW_Next[result]);
+	}
+	// no randomness mode
+	else
+	{
+		for (const auto swType : this->SW_Next)
+			LaunchTheSW(swType);
+	}
+}
+
+void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
+{
+	for (const auto pTargetFoot : FootClass::Array)
+		TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
+}
+
+void SWTypeExt::ExtData::HandleEMPulseLaunch(SuperClass* pSW, const CellStruct& cell) const
+{
+	auto const& pBuildings = this->GetEMPulseCannons(pSW->Owner, cell);
+	auto const count = this->SW_MaxCount >= 0 ? static_cast<size_t>(this->SW_MaxCount) : std::numeric_limits<size_t>::max();
+
+	for (size_t i = 0; i < pBuildings.size(); i++)
+	{
+		auto const pBuilding = pBuildings[i];
+		auto const pExt = BuildingExt::ExtMap.Find(pBuilding);
+		pExt->EMPulseSW = pSW;
+
+		if (i + 1 == count)
+			break;
+	}
+
+	if (this->EMPulse_SuspendOthers)
+	{
+		auto const pHouseExt = HouseExt::ExtMap.Find(pSW->Owner);
+
+		for (auto const& pSuper : pSW->Owner->Supers)
+		{
+			if (static_cast<int>(pSuper->Type->Type) != 28 || pSuper == pSW)
+				continue;
+
+			auto const pTypeExt = SWTypeExt::ExtMap.Find(pSW->Type);
+			bool suspend = false;
+
+			if (this->EMPulse_Cannons.empty() && pTypeExt->EMPulse_Cannons.empty())
+			{
+				suspend = true;
+			}
+			else
+			{
+				// Suspend if the two cannon lists share common items.
+				suspend = std::find_first_of(this->EMPulse_Cannons.begin(), this->EMPulse_Cannons.end(),
+					pTypeExt->EMPulse_Cannons.begin(), pTypeExt->EMPulse_Cannons.end()) != this->EMPulse_Cannons.end();
 			}
 
-			return this->SW_AnyInhibitor || this->SW_Inhibitors.Contains(pTechno->GetTechnoType());
+			if (suspend)
+			{
+				pSuper->IsSuspended = true;
+
+				if (pHouseExt->SuspendedEMPulseSWs.count(pSW->Type->ArrayIndex))
+					pHouseExt->SuspendedEMPulseSWs[pSW->Type->ArrayIndex].push_back(pSuper->Type->ArrayIndex);
+				else
+					pHouseExt->SuspendedEMPulseSWs.insert({ pSW->Type->ArrayIndex, std::vector<int>{pSuper->Type->ArrayIndex} });
+			}
 		}
 	}
-	return false;
 }
-
-bool SWTypeExt::ExtData::IsInhibitorEligible(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno) const
-{
-	if (this->IsInhibitor(pOwner, pTechno))
-	{
-		const auto pType = pTechno->GetTechnoType();
-		const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
-
-		// get the inhibitor's center
-		auto center = pTechno->GetCoords();
-		if (auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
-		{
-			//center = pBuilding->GetCoords();
-			center.X += pBuilding->Type->GetFoundationWidth() / 2;
-			center.Y += pBuilding->Type->GetFoundationHeight(false) / 2;
-		}
-
-		// has to be closer than the inhibitor range (which defaults to Sight)
-		return coords.DistanceFrom(CellClass::Coord2Cell(center)) <= pExt->InhibitorRange.Get(pType->Sight);
-	}
-
-	return false;
-}
-
-bool SWTypeExt::ExtData::HasInhibitor(HouseClass* pOwner, const CellStruct& coords) const
-{
-	// does not allow inhibitors
-	if (this->SW_Inhibitors.empty() && !this->SW_AnyInhibitor)
-		return false;
-
-	// a single inhibitor in range suffices
-	return std::any_of(TechnoClass::Array->begin(), TechnoClass::Array->end(), [=, &coords](TechnoClass* pTechno)
-		{ return this->IsInhibitorEligible(pOwner, coords, pTechno); }
-	);
-}
-
-// Designators check
-bool SWTypeExt::ExtData::IsDesignator(HouseClass* pOwner, TechnoClass* pTechno) const
-{
-	if (pTechno->Owner == pOwner && pTechno->IsAlive && pTechno->Health && !pTechno->InLimbo && !pTechno->Deactivated)
-		return this->SW_AnyDesignator || this->SW_Designators.Contains(pTechno->GetTechnoType());
-
-	return false;
-}
-
-bool SWTypeExt::ExtData::IsDesignatorEligible(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno) const
-{
-	if (this->IsDesignator(pOwner, pTechno))
-	{
-		const auto pType = pTechno->GetTechnoType();
-		const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
-
-		// get the designator's center
-		auto center = pTechno->GetCoords();
-		if (auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
-		{
-			//center = pBuilding->GetCoords();
-			center.X += pBuilding->Type->GetFoundationWidth() / 2;
-			center.Y += pBuilding->Type->GetFoundationHeight(false) / 2;
-		}
-
-		// has to be closer than the designator range (which defaults to Sight)
-		return coords.DistanceFrom(CellClass::Coord2Cell(center)) <= pExt->DesignatorRange.Get(pType->Sight);
-	}
-
-	return false;
-}
-
-bool SWTypeExt::ExtData::HasDesignator(HouseClass* pOwner, const CellStruct& coords) const
-{
-	// does not require designators
-	if (this->SW_Designators.empty() && !this->SW_AnyDesignator)
-		return true;
-
-	// a single designator in range suffices
-	return std::any_of(TechnoClass::Array->begin(), TechnoClass::Array->end(), [=, &coords](TechnoClass* pTechno)
-		{ return this->IsDesignatorEligible(pOwner, coords, pTechno); });
-}
-

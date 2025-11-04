@@ -2,7 +2,6 @@
 
 #include <ThemeClass.h>
 
-template<> const DWORD Extension<SideClass>::Canary = 0x05B10501;
 SideExt::ExtContainer SideExt::ExtMap;
 
 void SideExt::ExtData::Initialize()
@@ -18,9 +17,8 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
 
-	if (!pINI->GetSection(pSection)) {
+	if (!pINI->GetSection(pSection))
 		return;
-	}
 
 	INI_EX exINI(pINI);
 	this->Sidebar_GDIPositions.Read(exINI, pSection, "Sidebar.GDIPositions");
@@ -29,6 +27,8 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->Sidebar_HarvesterCounter_Offset.Read(exINI, pSection, "Sidebar.HarvesterCounter.Offset");
 	this->Sidebar_HarvesterCounter_Yellow.Read(exINI, pSection, "Sidebar.HarvesterCounter.ColorYellow");
 	this->Sidebar_HarvesterCounter_Red.Read(exINI, pSection, "Sidebar.HarvesterCounter.ColorRed");
+	this->Sidebar_WeedsCounter_Offset.Read(exINI, pSection, "Sidebar.WeedsCounter.Offset");
+	this->Sidebar_WeedsCounter_Color.Read(exINI, pSection, "Sidebar.WeedsCounter.Color");
 	this->Sidebar_ProducingProgress_Offset.Read(exINI, pSection, "Sidebar.ProducingProgress.Offset");
 	this->Sidebar_PowerDelta_Offset.Read(exINI, pSection, "Sidebar.PowerDelta.Offset");
 	this->Sidebar_PowerDelta_Green.Read(exINI, pSection, "Sidebar.PowerDelta.ColorGreen");
@@ -39,6 +39,7 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->ToolTip_Background_Color.Read(exINI, pSection, "ToolTip.Background.Color");
 	this->ToolTip_Background_Opacity.Read(exINI, pSection, "ToolTip.Background.Opacity");
 	this->ToolTip_Background_BlurSize.Read(exINI, pSection, "ToolTip.Background.BlurSize");
+	this->BriefingTheme = pINI->ReadTheme(pSection, "BriefingTheme", this->BriefingTheme);
 }
 
 // =============================
@@ -53,6 +54,8 @@ void SideExt::ExtData::Serialize(T& Stm)
 		.Process(this->Sidebar_HarvesterCounter_Offset)
 		.Process(this->Sidebar_HarvesterCounter_Yellow)
 		.Process(this->Sidebar_HarvesterCounter_Red)
+		.Process(this->Sidebar_WeedsCounter_Offset)
+		.Process(this->Sidebar_WeedsCounter_Color)
 		.Process(this->Sidebar_ProducingProgress_Offset)
 		.Process(this->Sidebar_PowerDelta_Offset)
 		.Process(this->Sidebar_PowerDelta_Green)
@@ -65,6 +68,7 @@ void SideExt::ExtData::Serialize(T& Stm)
 		.Process(this->ToolTip_Background_BlurSize)
 		.Process(this->IngameScore_WinTheme)
 		.Process(this->IngameScore_LoseTheme)
+		.Process(this->BriefingTheme)
 		;
 }
 
@@ -93,7 +97,7 @@ bool SideExt::SaveGlobals(PhobosStreamWriter& Stm)
 // =============================
 // container
 
-SideExt::ExtContainer::ExtContainer() : Container("SideClass") {}
+SideExt::ExtContainer::ExtContainer() : Container("SideClass") { }
 SideExt::ExtContainer::~ExtContainer() = default;
 
 // =============================
@@ -103,7 +107,8 @@ DEFINE_HOOK(0x6A4609, SideClass_CTOR, 0x7)
 {
 	GET(SideClass*, pItem, ESI);
 
-	SideExt::ExtMap.FindOrAllocate(pItem);
+	SideExt::ExtMap.TryAllocate(pItem);
+
 	return 0;
 }
 
@@ -112,6 +117,7 @@ DEFINE_HOOK(0x6A499F, SideClass_SDDTOR, 0x6)
 	GET(SideClass*, pItem, ESI);
 
 	SideExt::ExtMap.Remove(pItem);
+
 	return 0;
 }
 
@@ -141,7 +147,9 @@ DEFINE_HOOK(0x6A48FC, SideClass_Save_Suffix, 0x5)
 DEFINE_HOOK(0x679A10, SideClass_LoadAllFromINI, 0x5)
 {
 	GET_STACK(CCINIClass*, pINI, 0x4);
-	SideExt::ExtMap.LoadAllFromINI(pINI); // bwahaha
+
+	for (auto const pSide : SideClass::Array)
+		SideExt::ExtMap.Find(pSide)->LoadFromINI(pINI);
 
 	return 0;
 }

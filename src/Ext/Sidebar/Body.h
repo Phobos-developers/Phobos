@@ -13,6 +13,8 @@ class SidebarExt
 public:
 	using base_type = SidebarClass;
 
+	static constexpr DWORD Canary = 0x51DEBA12;
+
 	class ExtData final : public Extension<SidebarClass>
 	{
 	public:
@@ -49,14 +51,11 @@ public:
 
 	static void Clear()
 	{
-		Allocate(SidebarClass::Instance);
+		Allocate(&SidebarClass::Instance);
 	}
 
 	static void PointerGotInvalid(void* ptr, bool removed)
 	{
 		Global()->InvalidatePointer(ptr, removed);
 	}
-
-	static bool LoadGlobals(PhobosStreamReader& Stm);
-	static bool SaveGlobals(PhobosStreamWriter& Stm);
 };

@@ -4,11 +4,7 @@
 
 int GetSection(const char* sectionName, void** pVirtualAddress)
 {
-	char buf[MAX_PATH + 1] = { 0 };
-	GetModuleFileName(NULL, buf, sizeof(buf));
-
 	auto hInstance = Phobos::hInstance;
-
 	auto pHeader = reinterpret_cast<PIMAGE_NT_HEADERS>(((PIMAGE_DOS_HEADER)hInstance)->e_lfanew + (long)hInstance);
 
 	for (int i = 0; i < pHeader->FileHeader.NumberOfSections; i++)
@@ -46,13 +42,9 @@ void Patch::Apply()
 	DWORD protect_flag;
 	VirtualProtect(pAddress, this->size, PAGE_EXECUTE_READWRITE, &protect_flag);
 	memcpy(pAddress, this->pData, this->size);
-	VirtualProtect(pAddress, this->size, protect_flag, NULL);
-}
-
-void Patch::Apply_RAW(DWORD offset, std::initializer_list<byte> data)
-{
-	Patch patch = { offset, data.size(), const_cast<byte*>(data.begin()) };
-	patch.Apply();
+	VirtualProtect(pAddress, this->size, protect_flag, &protect_flag);
+	// NOTE: Instruction cache flush isn't required on x86. This is just to conform with Win32 API docs.
+	FlushInstructionCache(GetCurrentProcess(), pAddress, this->size);
 }
 
 void Patch::Apply_LJMP(DWORD offset, DWORD pointer)
@@ -72,13 +64,6 @@ void Patch::Apply_CALL(DWORD offset, DWORD pointer)
 void Patch::Apply_CALL6(DWORD offset, DWORD pointer)
 {
 	const _CALL6 data(offset, pointer);
-	Patch patch = { offset, sizeof(data), (byte*)&data };
-	patch.Apply();
-}
-
-void Patch::Apply_VTABLE(DWORD offset, DWORD pointer)
-{
-	const _VTABLE data(offset, pointer);
 	Patch patch = { offset, sizeof(data), (byte*)&data };
 	patch.Apply();
 }

@@ -2,57 +2,67 @@
 
 #include <Ext/BulletType/Body.h>
 
+std::unique_ptr<PhobosTrajectory> BombardTrajectoryType::CreateInstance() const
+{
+	return std::make_unique<BombardTrajectory>(this);
+}
+
+template<typename T>
+void BombardTrajectoryType::Serialize(T& Stm)
+{
+	Stm.Process(this->Height);
+}
+
 bool BombardTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	this->PhobosTrajectoryType::Load(Stm, false);
-	Stm.Process(this->Height, false);
+	this->Serialize(Stm);
 	return true;
 }
 
 bool BombardTrajectoryType::Save(PhobosStreamWriter& Stm) const
 {
 	this->PhobosTrajectoryType::Save(Stm);
-	Stm.Process(this->Height);
+	const_cast<BombardTrajectoryType*>(this)->Serialize(Stm);
 	return true;
 }
 
 void BombardTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
-	this->Height = pINI->ReadDouble(pSection, "Trajectory.Bombard.Height", 0.0);
+	INI_EX exINI(pINI);
+	this->Height.Read(exINI, pSection, "Trajectory.Bombard.Height");
+}
+
+template<typename T>
+void BombardTrajectory::Serialize(T& Stm)
+{
+	Stm
+		.Process(this->IsFalling)
+		.Process(this->Height)
+		.Process(this->Speed)
+		;
 }
 
 bool BombardTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
-	this->PhobosTrajectory::Load(Stm, false);
-
-	Stm
-		.Process(this->IsFalling)
-		.Process(this->Height)
-		;
-
+	this->Serialize(Stm);
 	return true;
 }
 
 bool BombardTrajectory::Save(PhobosStreamWriter& Stm) const
 {
-	this->PhobosTrajectory::Save(Stm);
-
-	Stm
-		.Process(this->IsFalling)
-		.Process(this->Height)
-		;
-
+	const_cast<BombardTrajectory*>(this)->Serialize(Stm);
 	return true;
 }
 
 void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
-	this->Height = this->GetTrajectoryType<BombardTrajectoryType>(pBullet)->Height + pBullet->TargetCoords.Z;
+	this->Height += pBullet->TargetCoords.Z;
 
 	pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X);
 	pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y);
 	pBullet->Velocity.Z = static_cast<double>(this->Height - pBullet->SourceCoords.Z);
-	pBullet->Velocity *= this->GetTrajectorySpeed(pBullet) / pBullet->Velocity.Magnitude();
+	pBullet->Velocity *= this->Speed / pBullet->Velocity.Magnitude();
 }
 
 bool BombardTrajectory::OnAI(BulletClass* pBullet)

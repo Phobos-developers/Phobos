@@ -7,9 +7,9 @@
 #include <InfantryClass.h>
 #include <UnitClass.h>
 #include <AircraftClass.h>
+#include <HouseClass.h>
 
 //Static init
-template<> const DWORD Extension<TEventClass>::Canary = 0x91919191;
 TEventExt::ExtContainer TEventExt::ExtMap;
 
 // =============================
@@ -33,12 +33,38 @@ void TEventExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
-bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, ObjectClass* pObject,
-	CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource, bool& bHandled)
+// by Fly-Star
+int TEventExt::GetFlags(int iEvent)
 {
-	bHandled = true;
-	switch (static_cast<PhobosTriggerEvent>(pThis->EventKind))
+	// 0x0 : If it has to have an AttachedObject in order to use it, then let it return 0.
+	// 0x4 : In MapClass, ZoneEntryBy uses it. borrowed from 0x684D61.
+	// 0x8 : In HouseClass, It will be added to the RelatedTags of the specified house. Ares' TriggerEvent 75/77 uses it. borrowed from 0x684E34.
+	// 0x10 : In LogicClass. borrowed from 0x684DCA.
+	switch (static_cast<PhobosTriggerEvent>(iEvent))
 	{
+	case PhobosTriggerEvent::ShieldBroken:
+		return 0;
+	//case
+	//	return 0x4;
+	//case
+	//	return 0x8;
+	default:
+		return 0x10;
+	}
+}
+
+std::optional<bool> TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse,
+	ObjectClass* pObject, CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource)
+{
+	const auto eventKind = static_cast<PhobosTriggerEvent>(pThis->EventKind);
+
+	// They must be the same, but for other triggers to take effect normally, this cannot be judged outside case.
+	auto isSameEvent = [&]() { return eventKind == static_cast<PhobosTriggerEvent>(iEvent); };
+
+	switch (eventKind)
+	{
+	// The triggering conditions that need to be checked at any time are written here
+
 		// helper struct
 		struct and_with { bool operator()(int a, int b) { return a & b; } };
 
@@ -117,12 +143,29 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 	case PhobosTriggerEvent::GlobalVariableAndIsTrueGlobalVariable:
 		return TEventExt::VariableCheckBinary<true, true, and_with>(pThis);
 
+	case PhobosTriggerEvent::HouseOwnsTechnoType:
+		return TEventExt::HouseOwnsTechnoTypeTEvent(pThis);
+	case PhobosTriggerEvent::HouseDoesntOwnTechnoType:
+		return TEventExt::HouseDoesntOwnTechnoTypeTEvent(pThis);
+	case PhobosTriggerEvent::CellHasTechnoType:
+		return TEventExt::CellHasTechnoTypeTEvent(pThis, pObject, pHouse);
+	case PhobosTriggerEvent::CellHasAnyTechnoTypeFromList:
+		return TEventExt::CellHasAnyTechnoTypeFromListTEvent(pThis, pObject, pHouse);
+
+
+	// If it requires an additional object as like mapping events 7 or 48, please fill it in here.
+
+	// SomeTriggerAttachedToObject needs to be restricted to situations where ...
+//	case PhobosTriggerEvent::SomeTriggerAttachedToObject:
+//		return isSameEvent() && ...::ThisAttachedToObjectTEvent(pObject, ...);
+
+	// ShieldBroken needs to be restricted to situations where the shield is being attacked.
 	case PhobosTriggerEvent::ShieldBroken:
-		return ShieldClass::ShieldIsBrokenTEvent(pObject);
+		return isSameEvent() && ShieldClass::ShieldIsBrokenTEvent(pObject);
+
 
 	default:
-		bHandled = false;
-		return true;
+		return std::nullopt;
 	};
 }
 
@@ -159,6 +202,110 @@ bool TEventExt::VariableCheckBinary(TEventClass* pThis)
 	return false;
 }
 
+bool TEventExt::HouseOwnsTechnoTypeTEvent(TEventClass* pThis)
+{
+	auto pType = TechnoTypeClass::Find(pThis->String);
+	if (!pType)
+		return false;
+
+	auto pHouse = HouseClass::Index_IsMP(pThis->Value) ? HouseClass::FindByIndex(pThis->Value) : HouseClass::FindByCountryIndex(pThis->Value);
+	if (!pHouse)
+		return false;
+
+	return pHouse->CountOwnedNow(pType) > 0;
+}
+
+bool TEventExt::HouseDoesntOwnTechnoTypeTEvent(TEventClass* pThis)
+{
+	return !TEventExt::HouseOwnsTechnoTypeTEvent(pThis);
+}
+
+bool TEventExt::CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectClass* pObject, HouseClass* pEventHouse)
+{
+	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+
+	if (!pTechno)
+		return false;
+
+	int desiredListIdx = -1;
+
+	if (sscanf_s(pThis->String, "%d", &desiredListIdx) <= 0 || desiredListIdx < 0)
+	{
+		Debug::Log("Error in event %d. The parameter 2 '%s' isn't a valid index value for [AITargetTypes]\n", static_cast<PhobosTriggerEvent>(pThis->EventKind), pThis->String);
+		return false;
+	}
+
+	if (RulesExt::Global()->AITargetTypesLists.size() == 0
+		|| RulesExt::Global()->AITargetTypesLists[desiredListIdx].size() == 0)
+	{
+		return false;
+	}
+
+	auto const pTechnoType = pTechno->GetTechnoType();
+	bool found = false;
+
+	for (auto const pDesiredItem : RulesExt::Global()->AITargetTypesLists[desiredListIdx])
+	{
+		if (pDesiredItem == pTechnoType)
+		{
+			HouseClass* pHouse = nullptr;
+
+			if (pThis->Value <= -2)
+				pHouse = pEventHouse;
+			else if (pThis->Value >= 0)
+				pHouse = HouseClass::Index_IsMP(pThis->Value) ? HouseClass::FindByIndex(pThis->Value) : HouseClass::FindByCountryIndex(pThis->Value);
+
+			if (pHouse && pTechno->Owner != pHouse)
+				break;
+
+			found = true;
+			break;
+		}
+	}
+
+	return found;
+}
+
+bool TEventExt::CellHasTechnoTypeTEvent(TEventClass* pThis, ObjectClass* pObject, HouseClass* pEventHouse)
+{
+	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+
+	if (!pTechno)
+		return false;
+
+	auto pDesiredType = TechnoTypeClass::Find(pThis->String);
+
+	if (!pDesiredType)
+	{
+		Debug::Log("Error in event %d. The parameter 2 '%s' isn't a valid Techno ID\n", static_cast<PhobosTriggerEvent>(pThis->EventKind), pThis->String);
+		return false;
+	}
+
+	auto const pTechnoType = pTechno->GetTechnoType();
+
+	if (pDesiredType == pTechnoType)
+	{
+		HouseClass* pHouse = nullptr;
+
+		if (pThis->Value <= -2)
+			pHouse = pEventHouse;
+		else if (pThis->Value >= 0)
+			pHouse = HouseClass::Index_IsMP(pThis->Value) ? HouseClass::FindByIndex(pThis->Value) : HouseClass::FindByCountryIndex(pThis->Value);
+
+		if (pHouse)
+		{
+			if (pTechno->Owner == pHouse)
+				return true;
+
+			return false;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
 // =============================
 // container
 
@@ -174,7 +321,7 @@ DEFINE_HOOK(0x6DD176, TActionClass_CTOR, 0x5)
 {
 	GET(TActionClass*, pItem, ESI);
 
-	TActionExt::ExtMap.FindOrAllocate(pItem);
+	TActionExt::ExtMap.TryAllocate(pItem);
 	return 0;
 }
 

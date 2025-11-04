@@ -8,6 +8,12 @@ end_of_line = crlf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
+[*.sh]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
 [.gitattributes]
 charset = utf-8
 end_of_line = unset
@@ -20,7 +26,7 @@ indent_style = tab
 indent_size = 4
 
 # Json Code Style settings
-[*.{json,vsconfig}]
+[*.json]
 indent_style = space
 indent_size = 2
 
@@ -48,6 +54,9 @@ insert_final_newline = unset
 trim_trailing_whitespace = unset
 indent_style = unset
 indent_size = unset
+
+[.vsconfig]
+generated_code = true
 
 # C++ Code Style settings
 [*.{c++,cc,cpp,cppm,cxx,h,h++,hh,hpp,hxx,inl,ipp,ixx,tlh,tli}]

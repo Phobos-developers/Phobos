@@ -1,5 +1,6 @@
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
+#include <GameStrings.h>
 
 HRESULT __stdcall Blowfish_Loader(
 	REFCLSID  rclsid,
@@ -18,7 +19,7 @@ HRESULT __stdcall Blowfish_Loader(
 	if (SUCCEEDED(result))
 		return result;
 
-	HMODULE hDll = LoadLibrary((const char*)0x840A78 /*"Blowfish.dll"*/);
+	HMODULE hDll = LoadLibrary(GameStrings::BLOWFISH_DLL);
 	if (hDll)
 	{
 		auto GetClassObject = (pDllGetClassObject)GetProcAddress(hDll, "DllGetClassObject");
@@ -40,13 +41,11 @@ HRESULT __stdcall Blowfish_Loader(
 	{
 		FreeLibrary(hDll);
 
-		const char* Message = "File Blowfish.dll was not found\n";
-		MessageBox(0, Message, "Fatal error ", MB_ICONERROR);
-		Debug::FatalErrorAndExit(Message);
+		Debug::FatalErrorAndExit("File Blowfish.dll was not found\n");
 	}
 
 	return result;
 }
 
-DEFINE_JUMP(CALL6, 0x6BEDDD, GET_OFFSET(Blowfish_Loader))
-DEFINE_JUMP(CALL6, 0x437F6E, GET_OFFSET(Blowfish_Loader))
+DEFINE_FUNCTION_JUMP(CALL6, 0x6BEDDD, Blowfish_Loader)
+DEFINE_FUNCTION_JUMP(CALL6, 0x437F6E, Blowfish_Loader)
