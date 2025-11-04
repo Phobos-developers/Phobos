@@ -604,7 +604,6 @@ msgid ""
 msgstr "允许在战役中使用一个与 `[MultiplayerDialogSettings] -> MCVRedeploys` 不同的新开关设置重部署 MCV。"
 
 #: ../../Fixed-or-Improved-Logics.md:104
-#, fuzzy
 msgid ""
 "Fixed buildings with `UndeploysInto` but `Unsellable=no` & "
 "`ConstructionYard=no` unable to be sold normally, by using "
@@ -612,7 +611,7 @@ msgid ""
 " with `UndeploysInto` when being selled."
 msgstr ""
 "修复了拥有 `UndeploysInto` 但 `Unsellable=no` 且 `ConstructionYard=no` "
-"的建筑无法正常出售的问题。并且复原了在 `UndeploysInto` 的建筑被出售时应有的 `EVA_StructureSold` 播报语音。"
+"的建筑无法正常出售的问题，需要设置 `UndeploysInto.Sellable=true`。并且复原了在 `UndeploysInto` 的建筑被出售时应有的 `EVA_StructureSold` 播报语音。"
 
 #: ../../Fixed-or-Improved-Logics.md:105
 msgid ""
