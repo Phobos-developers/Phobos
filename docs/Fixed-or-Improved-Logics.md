@@ -240,6 +240,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that hover vehicle will sink if destroyed on bridge.
 - Fixed the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target.
 - Fixed pathfinding crashes (EIP 0x42A525, 0x42C507, 0x42C554) that happened on bigger maps due to too small pathfinding node buffer.
+- Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state.
 
 ## Fixes / interactions with other extensions
 
@@ -264,7 +265,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - 1000 save files are supported, from `SVGM_000.NET` to `SVGM_999.NET`. When the limit is reached, the game will overwrite the latest save file.
   - The previous `SVGM_XXX.NET` files are cleaned up before first copy if it's a new game, otherwise the highest numbered `SVGM_XXX.NET` file is found and the index is incremented, if possible.
   - The game also automatically copies `spawn.ini` to the save folder as `spawnSG.ini` when saving a game.
-- Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state.
 
 
 ```{note}
