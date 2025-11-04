@@ -189,10 +189,11 @@ msgstr "由 post-0.3 开发版"
 #: ../../Whats-New.md:33
 msgid ""
 "Ivan bombs no longer automatically center on building when attached. Set "
-"`[CombatDamage]` -> `IvanBombAttachToCenter` to true to restore this "
+"`[CombatDamage] -> IvanBombAttachToCenter` to true to restore this "
 "behaviour. Due to technical constraints this cannot be customized per "
 "WeaponType."
 msgstr ""
+"伊文炸弹不再自动将位置设为建筑中心。可以通过设置 `[CombatDamage] -> IvanBombAttachToCenter=true` 以恢复该行为。由于技术限制，这无法在每种武器上微观定义。"
 
 #: ../../Whats-New.md:34
 msgid ""
@@ -2411,11 +2412,10 @@ msgid "Building airstrike target eligibility customization (by Starkku)"
 msgstr "自定义建筑能否作为空袭目标（by Starkku）"
 
 #: ../../Whats-New.md:532
-#, fuzzy
 msgid ""
 "IvanBomb detonation & image display optionally centered on buildings (by "
 "Starkku)"
-msgstr "伊文炸弹引爆与图像显示于建筑中心（by Starkku）"
+msgstr "伊文炸弹爆点和图像的位置可以设设置成建筑中心（by Starkku）"
 
 #: ../../Whats-New.md:533
 msgid "Forcing specific weapon against cloaked or disguised targets (by Starkku)"
