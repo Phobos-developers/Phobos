@@ -3202,7 +3202,7 @@ msgstr "多重心控单位现在可以达到控制上限而又要控制一个新
 
 #: ../../New-or-Enhanced-Logics.md:1252
 msgid "No Manual Move"
-msgstr "禁止手动改移动"
+msgstr "禁止手动移动"
 
 #: ../../New-or-Enhanced-Logics.md:1254
 msgid ""
