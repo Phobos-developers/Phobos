@@ -1182,7 +1182,7 @@ msgid ""
 "permission](https://github.com/Phobos-"
 "developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):"
 msgstr ""
-"**ChrisLv_CN**（授权见[此处](https://github.com/Phobos-"
+"**ChrisLv_CN**（授权见 [此处](https://github.com/Phobos-"
 "developers/Phobos/blob/develop/images/ChrisLv-relicense.png)）："
 
 #: ../../../CREDITS.md:306

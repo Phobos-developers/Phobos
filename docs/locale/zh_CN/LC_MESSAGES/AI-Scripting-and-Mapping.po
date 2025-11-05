@@ -52,7 +52,7 @@ msgid ""
 "to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2))."
 msgstr ""
 "地图触发结果 `41 播放动画在...` 现在可以更完善地创建可以播放音效、造成杀伤以及使用设置了 `TiberiumChainReaction`"
-" 参数的动画（需要[修改 `FAData.ini`](Whats-New.md#for-map-editor-final-alert-2)）。"
+" 参数的动画（需要 [修改 `FAData.ini`](Whats-New.md#for-map-editor-final-alert-2)）。"
 
 #: ../../AI-Scripting-and-Mapping.md:10
 msgid ""

@@ -6926,7 +6926,7 @@ msgstr "废矿矿车可以像超时空矿车一样使用 Teleport 运动模式�
 msgid ""
 "Total amount of weeds in storage can be displayed on sidebar, see [Weeds "
 "counter](User-Interface.md#weeds-counter)."
-msgstr "储存的废矿总量可以在侧边栏上显示，参见[废矿计数器](User-Interface.md#weeds-counter)。"
+msgstr "储存的废矿总量可以在侧边栏上显示，参见 [废矿计数器](User-Interface.md#weeds-counter)。"
 
 #: ../../Fixed-or-Improved-Logics.md:2003
 msgid "Weed-consuming superweapons"

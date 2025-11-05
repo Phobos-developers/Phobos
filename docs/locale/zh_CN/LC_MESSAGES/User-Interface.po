@@ -1472,7 +1472,7 @@ msgstr "`[ ]` 开关逐帧模式"
 
 #: ../../User-Interface.md:470
 msgid "Switches on/off [frame by frame mode](Miscellanous.md#frame-step-in)."
-msgstr "开关[逐帧模式](Miscellanous.md#frame-step-in)。"
+msgstr "开关 [逐帧模式](Miscellanous.md#frame-step-in)。"
 
 #: ../../User-Interface.md:471
 msgid ""
@@ -1743,7 +1743,7 @@ msgid ""
 "You can now specify Cameo Priority for any TechnoType/SuperWeaponType. "
 "Vanilla sorting rules are "
 "[here](https://modenc.renegadeprojects.com/Cameo_Sorting)."
-msgstr "现在你可以为任何科技类型／超级武器类型指定图标优先级。原版排序规则可见[此处](https://modenc.renegadeprojects.com/Cameo_Sorting)。"
+msgstr "现在你可以为任何科技类型／超级武器类型指定图标优先级。原版排序规则可见 [此处](https://modenc.renegadeprojects.com/Cameo_Sorting)。"
 
 #: ../../User-Interface.md:562
 msgid ""
@@ -1920,7 +1920,7 @@ msgstr ""
 msgid ""
 "Additionally, default position for harvester counter overlaps with [weeds"
 " counter](#weeds-counter)."
-msgstr "此外，默认的矿车计数器位置与[废矿计数器](#weeds-counter)重叠。"
+msgstr "此外，默认的矿车计数器位置与 [废矿计数器](#weeds-counter) 重叠。"
 
 #: ../../User-Interface.md:635
 msgid "Power delta counter"
@@ -2388,7 +2388,7 @@ msgstr ""
 msgid ""
 "Default position for weeds counter overlaps with [harvester counter"
 "](#harvester-counter)."
-msgstr "默认的废矿计数器位置与[矿车计数器](#harvester-counter)重叠。"
+msgstr "默认的废矿计数器位置与 [矿车计数器](#harvester-counter) 重叠。"
 
 #: ../../User-Interface.md:812
 msgid "Tooltips"
