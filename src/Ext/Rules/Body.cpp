@@ -327,7 +327,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->WarheadAnimZAdjust.Read(exINI, GameStrings::AudioVisual, "WarheadAnimZAdjust");
 
-	this->AutoTarget_NoThreatBuildings.Read(exINI, GameStrings::General, "AutoTarget.NoThreatBuildings");
+	this->IvanBombAttachToCenter.Read(exINI, GameStrings::CombatDamage, "IvanBombAttachToCenter");
+	
+  this->AutoTarget_NoThreatBuildings.Read(exINI, GameStrings::General, "AutoTarget.NoThreatBuildings");
 	this->AutoTargetAI_NoThreatBuildings.Read(exINI, GameStrings::General, "AutoTargetAI.NoThreatBuildings");
 
 	// Section AITargetTypes
@@ -392,9 +394,6 @@ void RulesExt::ExtData::InitializeAfterAllLoaded()
 	this->TintColorIronCurtain = GeneralUtils::GetColorFromColorAdd(pRules->IronCurtainColor);
 	this->TintColorForceShield = GeneralUtils::GetColorFromColorAdd(pRules->ForceShieldColor);
 	this->TintColorBerserk = GeneralUtils::GetColorFromColorAdd(pRules->BerserkColor);
-
-	// Init master bullet
-	ScenarioExt::Global()->MasterDetonationBullet = BulletTypeExt::GetDefaultBulletType()->CreateBullet(nullptr, nullptr, 0, nullptr, 0, false);
 }
 
 // =============================
@@ -603,7 +602,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->InfantryAutoDeploy)
 		.Process(this->AdjacentWallDamage)
 		.Process(this->WarheadAnimZAdjust)
-		.Process(this->AutoTarget_NoThreatBuildings)
+		.Process(this->IvanBombAttachToCenter)
+    .Process(this->AutoTarget_NoThreatBuildings)
 		.Process(this->AutoTargetAI_NoThreatBuildings)
 		;
 }

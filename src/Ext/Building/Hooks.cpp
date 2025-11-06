@@ -899,3 +899,31 @@ DEFINE_HOOK(0x4555E4, BuildingClass_IsPowerOnline_Overpower, 0x6)
 
 	return overPower < keepOnline ? LowPower : (R->Origin() == 0x4555E4 ? Continue1 : Continue2);
 }
+
+#pragma region OwnerChangeBuildupFix
+
+void __fastcall BuildingClass_Place_Wrapper(BuildingClass* pThis, void*, bool captured)
+{
+	// Skip calling Place() here if we're in middle of buildup.
+	if (pThis->CurrentMission != Mission::Construction || pThis->BState != (int)BStateType::Construction)
+		pThis->Place(captured);
+}
+
+DEFINE_FUNCTION_JUMP(CALL6, 0x448CEF, BuildingClass_Place_Wrapper);
+
+DEFINE_HOOK(0x44939F, BuildingClass_Captured_BuildupFix, 0x7)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	// If we're supposed to be playing buildup during/after owner change reset any changes to mission or BState made during owner change. 
+	if (pThis->CurrentMission == Mission::Construction && pThis->BState == (int)BStateType::Construction)
+	{
+		pThis->IsReadyToCommence = false;
+		pThis->QueueBState = (int)BStateType::None;
+		pThis->QueuedMission = Mission::None;
+	}
+
+	return 0;
+}
+
+#pragma endregion

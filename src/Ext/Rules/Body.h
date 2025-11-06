@@ -275,6 +275,8 @@ public:
 		Valueable<int> AdjacentWallDamage;
 
 		Valueable<int> WarheadAnimZAdjust;
+
+		Valueable<bool> IvanBombAttachToCenter;
 		
 		Valueable<bool> AutoTarget_NoThreatBuildings;
 		Valueable<bool> AutoTargetAI_NoThreatBuildings;
@@ -493,7 +495,9 @@ public:
 			, AdjacentWallDamage { 200 }
 
 			, WarheadAnimZAdjust { -15 }
-    
+
+			, IvanBombAttachToCenter { false }
+
 			, AutoTarget_NoThreatBuildings { false }
 			, AutoTargetAI_NoThreatBuildings { true }
 		{ }
