@@ -1322,9 +1322,6 @@ In `rulesmd.ini`:
 [General]
 AutoTarget.NoThreatBuildings=false      ; boolean
 AutoTargetAI.NoThreatBuildings=true     ; boolean
-
-[SOMETECHNO]                            ; TechnoType
-AttackNoThreatBuildings=                ; boolean, default to [General] -> AutoTarget.NoThreatBuildings/AutoTargetAI.NoThreatBuildings.
 ```
 
 ### Aircraft spawner customizations

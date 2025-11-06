@@ -1572,25 +1572,23 @@ DEFINE_HOOK(0x6F7E30, TechnoClass_CanAutoTarget_SetContent, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x6F85AB, TechnoClass_CanAutoTargetObject_AggressiveAttackMove, 0x6)
+DEFINE_HOOK(0x6F85CF, TechnoClass_CanAutoTarget_AttackNoThreatBuildings, 0xA)
 {
-	enum { ContinueCheck = 0x6F85BA, CanTarget = 0x6F8604 };
+	enum { CanAttack = 0x6F8604, Continue = 0x6F85D9 };
 
-	GET(TechnoClass* const, pThis, EDI);
+	GET(TechnoClass*, pThis, EDI);
+	GET(TechnoClass*, pTarget, ESI);
 
-	if (!pThis->MegaMissionIsAttackMove())
-		return ContinueCheck;
-
-	bool canAttack = pThis->Owner->IsControlledByHuman()
-		? RulesExt::Global()->AutoTarget_NoThreatBuildings : RulesExt::Global()->AutoTargetAI_NoThreatBuildings;
+	bool canAttack = pThis->Owner->IsControlledByHuman() ? RulesExt::Global()->AutoTarget_NoThreatBuildings : RulesExt::Global()->AutoTargetAI_NoThreatBuildings;
 
 	if (const auto pWeaponExt = CanAutoTargetTemp::WeaponExt)
 		canAttack = pWeaponExt->AttackNoThreatBuildings.Get(canAttack);
 
-	if (!canAttack)
-		return ContinueCheck;
+	if (canAttack)
+		return CanAttack;
 
-	return CanAutoTargetTemp::TypeExtData->AttackMove_Aggressive.Get(RulesExt::Global()->AttackMove_Aggressive) ? CanTarget : ContinueCheck;
+	R->EAX(pTarget->GetTurretWeapon());
+	return Continue;
 }
 
 #pragma endregion

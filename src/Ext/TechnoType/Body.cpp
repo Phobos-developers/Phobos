@@ -1246,8 +1246,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// VoiceIFVRepair from Ares 0.2
 	this->VoiceIFVRepair.Read(exINI, pSection, "VoiceIFVRepair");
 	this->ParseVoiceWeaponAttacks(exINI, pSection, this->VoiceWeaponAttacks, this->VoiceEliteWeaponAttacks);
-
-	this->AutoTarget_NoThreatBuildings.Read(exINI, pSection, "AutoTarget.NoThreatBuildings");
 }
 
 void TechnoTypeExt::ExtData::LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSection, INI_EX& exArtINI, const char* pArtSection)
@@ -1660,8 +1658,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InfantryAutoDeploy)
 
 		.Process(this->TurretResponse)
-
-		.Process(this->AutoTarget_NoThreatBuildings)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
