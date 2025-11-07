@@ -1545,7 +1545,7 @@ DEFINE_HOOK(0x6F85CF, TechnoClass_CanAutoTarget_AttackNoThreatBuildings, 0xA)
 	enum { CanAttack = 0x6F8604, Continue = 0x6F85D9 };
 
 	GET(TechnoClass*, pThis, EDI);
-	GET(TechnoClass*, pTarget, ESI);
+	GET(BuildingClass*, pTarget, ESI);
 
 	bool canAttack = pThis->Owner->IsControlledByHuman() ? RulesExt::Global()->AutoTarget_NoThreatBuildings : RulesExt::Global()->AutoTargetAI_NoThreatBuildings;
 
