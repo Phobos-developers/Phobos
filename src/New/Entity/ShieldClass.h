@@ -64,7 +64,8 @@ public:
 	ArmorType GetArmorType(TechnoTypeClass* pTechnoType = nullptr) const;
 	int GetFramesSinceLastBroken() const;
 	void SetAnimationVisibility(bool visible);
-	void UpdateTint(bool forceUpdate = false);
+	void UpdateTint();
+	void ConvertCheck(TechnoTypeClass* pTechnoType);
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
 	static bool ShieldIsBrokenTEvent(ObjectClass* pAttached);
@@ -82,8 +83,6 @@ private:
 	template <typename T>
 	bool Serialize(T& Stm);
 
-	void UpdateType();
-
 	void SelfHealing();
 	int GetPercentageAmount(double iStatus);
 
@@ -99,7 +98,6 @@ private:
 	void CloakCheck();
 	void OnlineCheck();
 	void TemporalCheck();
-	bool ConvertCheck();
 	void EnabledByCheck();
 
 	int DrawShieldBar_Pip(const bool isBuilding) const;
