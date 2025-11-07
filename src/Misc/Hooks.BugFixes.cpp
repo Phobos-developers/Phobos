@@ -2816,9 +2816,9 @@ DEFINE_HOOK(0x54CC9C, JumpjetLocomotionClass_ProcessCrashing_DropFix, 0x5)
 
 #pragma region ClearTargetOnOwnerChanged
 
-DEFINE_HOOK(0x701681, TechnoClass_SetOwningHouse_ClearManagerTarget, 0x6)
+DEFINE_HOOK(0x70D4A0, AbstractClass_ClearTargetToMe_ClearManagerTarget, 0x5)
 {
-	GET(TechnoClass*, pThis, ESI);
+	GET(AbstractClass*, pThis, ECX);
 
 	for (const auto pTemporal : TemporalClass::Array)
 	{
@@ -2840,23 +2840,23 @@ DEFINE_HOOK(0x701681, TechnoClass_SetOwningHouse_ClearManagerTarget, 0x6)
 			pSpawn->ResetTarget();
 	}
 
-	pThis->LastTarget = nullptr;
+	if (auto pTechno = abstract_cast<TechnoClass*>(pThis))
+		pTechno->LastTarget = nullptr;
+
 	if (auto pFoot = abstract_cast<FootClass*>(pThis))
 		pFoot->LastDestination = nullptr;
 
 	return 0;
 }
 
-DEFINE_HOOK(0x70D4FD, ObjectClass_ClearTargetToMe_ClearLastTarget, 0x6)
+DEFINE_HOOK(0x70D4FD, AbstractClass_ClearTargetToMe_ClearLastTarget, 0x6)
 {
 	GET(TechnoClass*, pTechno, ESI);
 	GET(bool, shouldClear, ECX);
-	GET(ObjectClass*, pThis, EBP);
+	GET(AbstractClass*, pThis, EBP);
 
 	if (pTechno->LastTarget == pThis && shouldClear)
-	{
 		pTechno->LastTarget = nullptr;
-	}
 
 	return 0;
 }
