@@ -44,7 +44,8 @@ bool __forceinline BuildingExt::CanUndeployOnSell(BuildingClass* pThis)
 	}
 
 	// Move ArchiveTarget check outside Conyard check to allow generic Unsellable=no buildings to be sold
-	return pThis->ArchiveTarget;
+	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+	return pTypeExt->UndeploysInto_Sellable ? pThis->ArchiveTarget != nullptr : true;
 }
 
 // Skip SessionClass::IsCampaign() checks, where inlined not exactly the function above but sth similar

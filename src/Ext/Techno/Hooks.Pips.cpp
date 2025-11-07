@@ -29,7 +29,7 @@ DEFINE_HOOK(0x6F5E37, TechnoClass_DrawExtras_DrawHealthBar, 0x6)
 
 	GET(TechnoClass*, pThis, EBP);
 
-	if ((pThis->IsMouseHovering || TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_Permanent)
+	if (pThis && (pThis->IsMouseHovering || TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_Permanent)
 		&& !MapClass::Instance.IsLocationShrouded(pThis->GetCoords()))
 	{
 		return Permanent;

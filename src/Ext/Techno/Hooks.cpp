@@ -1,7 +1,6 @@
 #include "Body.h"
 
 #include <AircraftClass.h>
-#include <EventClass.h>
 #include <ScenarioClass.h>
 #include <TunnelLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
@@ -31,6 +30,18 @@ DEFINE_JUMP(VTABLE, 0x7F5CF4, 0x741490) // UnitClass_GetTechnoType -> UnitClass_
 #pragma endregion
 
 #pragma region Update
+
+DEFINE_HOOK(0x7363C9, UnitClass_AI_AnimationPaused, 0x6)
+{
+	enum { SkipGameCode = 0x7363DE };
+
+	GET(UnitClass*, pThis, ESI);
+	
+	if (TechnoExt::ExtMap.Find(pThis)->DelayedFireSequencePaused)
+		return SkipGameCode;
+
+	return 0;
+}
 
 // Early, before ObjectClass_AI
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
@@ -66,6 +77,7 @@ DEFINE_HOOK(0x736480, UnitClass_AI, 0x6)
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	pExt->UpdateKeepTargetOnMove();
 	pExt->DepletedAmmoActions();
+	pExt->UpdateSubterraneanHarvester();
 
 	return 0;
 }
@@ -215,12 +227,13 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	pExt->TypeExtData = pTypeExt;
 
-	pExt->CurrentShieldType = pTypeExt->ShieldType;
+	auto const pShieldType = pTypeExt->ShieldType;
+	pExt->CurrentShieldType = pShieldType;
 	pExt->InitializeAttachEffects();
 	pExt->InitializeDisplayInfo();
 	pExt->InitializeLaserTrails();
 
-	if (!pExt->AE.HasTint && !pExt->CurrentShieldType)
+	if (!pExt->AE.HasTint && (!pShieldType || !pShieldType->HasTint() || pShieldType->Strength <= 0))
 		pExt->UpdateTintValues();
 
 	if (pTypeExt->Harvester_Counted)
@@ -704,39 +717,6 @@ DEFINE_HOOK(0x414665, AircraftClass_Draw_ExtraSHP, 0x6)
 	return Continue;
 }
 
-// Do not explicitly reset target for KeepTargetOnMove vehicles when issued move command.
-DEFINE_HOOK(0x4C7462, EventClass_Execute_KeepTargetOnMove, 0x5)
-{
-	enum { SkipGameCode = 0x4C74C0 };
-
-	GET(TechnoClass*, pTechno, EDI);
-
-	if (pTechno->WhatAmI() != AbstractType::Unit)
-		return 0;
-
-	GET(EventClass*, pThis, ESI);
-	auto const mission = static_cast<Mission>(pThis->MegaMission.Mission);
-	auto const pExt = TechnoExt::ExtMap.Find(pTechno);
-
-	if (mission == Mission::Move && pExt->TypeExtData->KeepTargetOnMove && pTechno->Target)
-	{
-		GET(AbstractClass*, pTarget, EBX);
-
-		if (!pTarget && pTechno->IsCloseEnoughToAttack(pTechno->Target))
-		{
-			auto const pDestination = pThis->MegaMission.Destination.As_Abstract();
-			pTechno->SetDestination(pDestination, true);
-			pExt->KeepTargetOnMove = true;
-
-			return SkipGameCode;
-		}
-	}
-
-	pExt->KeepTargetOnMove = false;
-
-	return 0;
-}
-
 #pragma region BuildingTypeSelectable
 
 namespace BuildingTypeSelectable
@@ -966,33 +946,28 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 	GET(AbstractClass*, pTarget, EDI);
 
+	pThis->Target = pTarget;
+
 	if (pThis->LocomotorTarget != pTarget)
 		pThis->ReleaseLocomotor(true);
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->UpdateGattlingRateDownReset();
 
-	if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
+	if (!pTarget)
 	{
-		const auto pUnitType = pUnit->Type;
-
-		if (!pUnitType->Turret && !pUnitType->Voxel)
+		pExt->ResetDelayedFireTimer();
+	}
+	else if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
+	{
+		if (!pUnit->Type->Turret && pUnit->CurrentFiringFrame != -1)
 		{
-			const auto pTypeExt = pExt->TypeExtData;
-
-			if (!pTarget || pTypeExt->FireUp < 0 || pTypeExt->FireUp_ResetInRetarget
-				|| !pThis->IsCloseEnough(pTarget, pThis->SelectWeapon(pTarget)))
+			if (pExt->TypeExtData->FireUp_ResetInRetarget || !pThis->IsCloseEnough(pTarget, pThis->SelectWeapon(pTarget)))
 			{
 				pUnit->CurrentFiringFrame = -1;
-				pExt->FiringAnimationTimer.Stop();
 			}
 		}
 	}
-
-	pThis->Target = pTarget;
-	pExt->UpdateGattlingRateDownReset();
-
-	if (!pThis->Target)
-		pExt->ResetDelayedFireTimer();
 
 	return 0x6FCF44;
 }
@@ -1456,6 +1431,92 @@ DEFINE_HOOK(0x6F7E1E, TechnoClass_CanAutoTargetObject_AU, 0x6)
 	GET(const int, height, EAX);
 
 	return height >= -20 || SelectAutoTarget_Context::AU || TechnoExt::ExtMap.Find(pTarget)->SpecialTracked ? Continue : ReturnFalse;
+}
+
+#pragma endregion
+
+#pragma region FallingDown
+
+DEFINE_HOOK(0x5F4160, ObjectClass_DropAsBomb_Track, 0x6)
+{
+	GET(TechnoClass*, pThis, ECX);
+	if ((pThis->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
+	{
+		ScenarioExt::Global()->FallingDownTracker.AddUnique(pThis);
+		TechnoExt::ExtMap.Find(pThis)->FallingDownTracked = true;
+	}
+	return 0;
+}
+
+DEFINE_HOOK(0x5F5965, ObjectClass_SpawnParachuted_Track, 0x7)
+{
+	GET(TechnoClass*, pThis, ESI);
+	if ((pThis->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
+	{
+		ScenarioExt::Global()->FallingDownTracker.AddUnique(pThis);
+		TechnoExt::ExtMap.Find(pThis)->FallingDownTracked = true;
+	}
+	return 0;
+}
+
+DEFINE_HOOK(0x5F3F86, ObjectClass_Update_Track, 0x7)
+{
+	GET(TechnoClass*, pThis, ESI);
+	if ((pThis->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
+	{
+		ScenarioExt::Global()->FallingDownTracker.Remove(pThis);
+		TechnoExt::ExtMap.Find(pThis)->FallingDownTracked = false;
+	}
+	return 0;
+}
+
+DEFINE_HOOK(0x6F9398, TechnoClass_SelectAutoTarget_Scan_FallingDown, 0x9)
+{
+	enum { FuncRet = 0x6F9DA1, Continue = 0x6F93A1 };
+
+	REF_STACK(const TechnoClass*, pBestTarget, STACK_OFFSET(0x6C, -0x4C));
+	REF_STACK(int, bestThreat, STACK_OFFSET(0x6C, -0x50));
+	GET_STACK(const bool, transportMCed, STACK_OFFSET(0x6C, -0x59));
+	GET_STACK(const bool, onlyTargetEnemyHouse, STACK_OFFSET(0x6C, 0xC));
+	GET_STACK(int, canTargetWhatAmI, STACK_OFFSET(0x6C, -0x58));
+	GET_STACK(const int, wantedDist, STACK_OFFSET(0x6C, -0x40));
+	GET_STACK(const ThreatType, flags, STACK_OFFSET(0x6C, 0x4));
+	GET(TechnoClass* const, pThis, ESI);
+
+	if ((int)flags != 5)
+		return Continue;
+
+	const auto pType = pThis->GetTechnoType();
+	const auto pOwner = pThis->Owner;
+	const bool targetFriendly = pType->AttackFriendlies || pThis->Berzerk || transportMCed || pThis->CombatDamage(-1) < 0;
+
+	int threatBuffer = 0;
+	canTargetWhatAmI |= 1 << (int)InfantryClass::AbsID;
+	canTargetWhatAmI |= 1 << (int)UnitClass::AbsID;
+	canTargetWhatAmI |= 1 << (int)AircraftClass::AbsID;
+	auto tempCrd = CoordStruct::Empty;
+
+	for (const auto pCurrent : ScenarioExt::Global()->FallingDownTracker)
+	{
+		if ((!pOwner->IsAlliedWith(pCurrent) || targetFriendly)
+			&& (!onlyTargetEnemyHouse || pCurrent->Owner->ArrayIndex == pThis->Owner->EnemyHouseIndex)
+			&& pThis->CanAutoTargetObject(flags, canTargetWhatAmI, wantedDist, pCurrent, &threatBuffer, UINT_MAX, &tempCrd))
+		{
+			if (pType->DistributedFire)
+			{
+				pThis->CurrentTargets.AddItem(pCurrent);
+				pThis->CurrentTargetThreatValues.AddItem(threatBuffer);
+			}
+
+			if (threatBuffer > bestThreat)
+			{
+				pBestTarget = pCurrent;
+				bestThreat = threatBuffer;
+			}
+		}
+	}
+
+	return FuncRet;
 }
 
 #pragma endregion

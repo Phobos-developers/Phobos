@@ -99,6 +99,8 @@ public:
 
 		ValueableVector<bool> HasPowerUpAnim;
 
+		Valueable<bool> UndeploysInto_Sellable;
+
 		// Ares 0.A
 		Valueable<BuildingTypeClass*> RubbleIntact;
 		Valueable<bool> RubbleIntactRemove;
@@ -165,6 +167,7 @@ public:
 			, BuildingRepairedSound {}
 			, Refinery_UseNormalActiveAnim { false }
 			, HasPowerUpAnim {}
+			, UndeploysInto_Sellable { false }
 
 			// Ares 0.A
 			, RubbleIntact { nullptr }
