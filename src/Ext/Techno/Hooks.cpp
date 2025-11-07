@@ -227,12 +227,13 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	pExt->TypeExtData = pTypeExt;
 
-	pExt->CurrentShieldType = pTypeExt->ShieldType;
+	auto const pShieldType = pTypeExt->ShieldType;
+	pExt->CurrentShieldType = pShieldType;
 	pExt->InitializeAttachEffects();
 	pExt->InitializeDisplayInfo();
 	pExt->InitializeLaserTrails();
 
-	if (!pExt->AE.HasTint && !pExt->CurrentShieldType)
+	if (!pExt->AE.HasTint && (!pShieldType || !pShieldType->HasTint() || pShieldType->Strength <= 0))
 		pExt->UpdateTintValues();
 
 	if (pTypeExt->Harvester_Counted)
