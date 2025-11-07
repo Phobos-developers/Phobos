@@ -1525,8 +1525,8 @@ DEFINE_HOOK(0x6F9398, TechnoClass_SelectAutoTarget_Scan_FallingDown, 0x9)
 
 namespace CanAutoTargetTemp
 {
-	TechnoTypeExt::ExtData* TypeExtData;
-	WeaponTypeExt::ExtData* WeaponExt;
+	TechnoTypeExt::ExtData* TypeExtData = nullptr;
+	WeaponTypeExt::ExtData* WeaponExt = nullptr;
 }
 
 DEFINE_HOOK(0x6F7E30, TechnoClass_CanAutoTarget_SetContent, 0x6)
