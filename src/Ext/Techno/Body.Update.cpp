@@ -225,6 +225,63 @@ void TechnoExt::ExtData::DepletedAmmoActions()
 	}
 }
 
+// Subterranean harvester factory exit state machine.
+void TechnoExt::ExtData::UpdateSubterraneanHarvester()
+{
+	auto const pThis = static_cast<UnitClass*>(this->OwnerObject());
+
+	// Unnecessary for AI players.
+	if (!pThis->Owner->IsControlledByHuman())
+		return;
+
+	switch (this->SubterraneanHarvStatus)
+	{
+	case 0: // No state to handle.
+		break;
+	case 1: // Unit has been created.
+		// If we're still in the factory do not advance.
+		if (pThis->HasAnyLink())
+			break;
+
+		pThis->ClearNavigationList();
+
+		// If we have rally point available, move to it and advance to next state, otherwise end here.
+		if (this->SubterraneanHarvRallyPoint)
+		{
+			pThis->SetDestination(this->SubterraneanHarvRallyPoint, false);
+			pThis->QueueMission(Mission::Move, true);
+			this->SubterraneanHarvRallyPoint = nullptr;
+			this->SubterraneanHarvStatus = 2;
+			break;
+		}
+		else
+		{
+			this->SubterraneanHarvStatus = 0;
+		}
+
+		break;
+	case 2: // Out of factory and on move.
+		// If we're still moving don't start harvesting.
+		if (pThis->Destination || pThis->CurrentMission == Mission::Move)
+			break;
+
+		// If harvester stops moving and becomes anything except idle, reset the state machine.
+		if (pThis->CurrentMission != Mission::Guard)
+		{
+			this->SubterraneanHarvStatus = 0;
+			break;
+		}
+
+		// Go harvest ore.
+		pThis->ClearNavigationList();
+		pThis->QueueMission(Mission::Harvest, true);
+		this->SubterraneanHarvStatus = 0;
+		break;
+	default:
+		break;
+	}
+}
+
 // TODO : Merge into new AttachEffects
 bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 {
