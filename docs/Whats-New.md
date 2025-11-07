@@ -491,6 +491,7 @@ Vanilla fixes:
 - Fixed the bug that vehicle fall on infantry will make all cell content has been removed (by NetsuNegi)
 - Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state (by Starkku)
 - Fixed `MovementZone=Subterannean` harvesters being unable to find docks if in area enclosed by water, cliffs etc.
+- The target of death is excluded from automatic target selection (by FlyStar)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

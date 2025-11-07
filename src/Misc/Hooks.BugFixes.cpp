@@ -2818,3 +2818,36 @@ DEFINE_HOOK(0x54CC9C, JumpjetLocomotionClass_ProcessCrashing_DropFix, 0x5)
 
 	return fallOnSomething ? SkipGameCode2 : SkipGameCode;
 }
+
+#pragma region CanAutoTargetFix
+
+DEFINE_JUMP(LJMP, 0x6F7D88, 0x6F7DA9)	// They should be placed at the front.
+
+DEFINE_HOOK_AGAIN(0x6F8B56, TechnoClass_CheckAutoTargetObject_OnMap, 0x5)	// TechnoClass::TryAutoTargetObject
+DEFINE_HOOK_AGAIN(0x6F9C89, TechnoClass_CheckAutoTargetObject_OnMap, 0x8)	// TechnoClass::SelectAutoTargetObject_TechnoClass.Array
+DEFINE_HOOK_AGAIN(0x6F9B9C, TechnoClass_CheckAutoTargetObject_OnMap, 0x8)	// TechnoClass::SelectAutoTargetObject_AircraftClass.Array
+DEFINE_HOOK(0x6F91F2, TechnoClass_CheckAutoTargetObject_OnMap, 0x9)			// TechnoClass::SelectAutoTargetObject_AircraftTrackerClass
+{
+	const DWORD address = R->Origin();
+	TechnoClass* const pTarget = (address == 0x6F91F2 || address == 0x6F8B56) ?
+		R->EBP<TechnoClass*>() : R->EDI<TechnoClass*>();
+
+	if (!pTarget->IsAlive || pTarget->Health <= 0 || pTarget->InLimbo)
+	{
+		switch (address)
+		{
+		case 0x6F91F2:
+			return 0x6F9377;
+		case 0x6F9B9C:
+			return 0x6F9C48;
+		case 0x6F8B56:
+			return 0x6F8C07;
+		default:
+			return 0x6F9D93;
+		}
+	}
+
+	return 0;
+}
+
+#pragma endregion
