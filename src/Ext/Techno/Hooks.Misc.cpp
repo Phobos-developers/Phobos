@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <EventClass.h>
 #include <SpawnManagerClass.h>
 #include <TunnelLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
@@ -846,13 +847,78 @@ DEFINE_HOOK(0x73D6E6, UnitClass_Unload_Subterranean, 0x6)
 
 	GET(UnitClass*, pThis, ESI);
 
-	if (pThis->Type->Locomotor == LocomotionClass::CLSIDs::Tunnel)
+	if (auto const pLoco = locomotion_cast<TunnelLocomotionClass*>(pThis->Locomotor))
 	{
-		auto const pLoco = static_cast<TunnelLocomotionClass*>(pThis->Locomotor.GetInterfacePtr());
-
 		if (pLoco->State != TunnelLocomotionClass::State::Idle)
 			return ReturnFromFunction;
 	}
 
 	return 0;
 }
+
+#pragma region Events
+
+DEFINE_HOOK(0x4C7512, EventClass_Execute_StopCommand, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+
+	if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+	{
+		// issue #112 Make FireOnce=yes work on other TechnoType
+		// Author: Starkku
+		if (pUnit->CurrentMission == Mission::Unload && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer)
+		{
+			pUnit->SetTarget(nullptr);
+			pThis->QueueMission(Mission::Guard, true);
+		}
+
+		// Explicit stop command should reset subterranean harvester state machine.
+		auto const pExt = TechnoExt::ExtMap.Find(pUnit);
+		pExt->SubterraneanHarvStatus = 0;
+		pExt->SubterraneanHarvRallyPoint = nullptr;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4C7462, EventClass_Execute_MegaMission_MoveCommand, 0x5)
+{
+	enum { SkipGameCode = 0x4C74C0 };
+
+	GET(TechnoClass*, pTechno, EDI);
+
+	if (pTechno->WhatAmI() != AbstractType::Unit)
+		return 0;
+
+	GET(EventClass*, pThis, ESI);
+	auto const mission = static_cast<Mission>(pThis->MegaMission.Mission);
+	auto const pExt = TechnoExt::ExtMap.Find(pTechno);
+
+	if (mission == Mission::Move)
+	{
+		// Explicitly reset subterranean harvester state machine.
+		pExt->SubterraneanHarvStatus = 0;
+		pExt->SubterraneanHarvRallyPoint = nullptr;
+
+		// Do not explicitly reset target for KeepTargetOnMove vehicles when issued move command.
+		if (pExt->TypeExtData->KeepTargetOnMove && pTechno->Target)
+		{
+			GET(AbstractClass*, pTarget, EBX);
+
+			if (!pTarget && pTechno->IsCloseEnoughToAttack(pTechno->Target))
+			{
+				auto const pDestination = pThis->MegaMission.Destination.As_Abstract();
+				pTechno->SetDestination(pDestination, true);
+				pExt->KeepTargetOnMove = true;
+
+				return SkipGameCode;
+			}
+		}
+	}
+
+	pExt->KeepTargetOnMove = false;
+
+	return 0;
+}
+
+#pragma endregion

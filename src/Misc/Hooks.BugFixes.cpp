@@ -563,17 +563,19 @@ namespace FetchBomb
 	BombClass* pThisBomb;
 }
 
-// Fetch the BombClass context From earlier adress
+// Fetch the BombClass context From earlier address.
 DEFINE_HOOK(0x438771, BombClass_Detonate_SetContext, 0x6)
 {
 	GET(BombClass*, pThis, ESI);
 
 	FetchBomb::pThisBomb = pThis;
 
-	// Also adjust detonation coordinate.
-	CoordStruct coords = pThis->Target->GetCenterCoords();
+	if (RulesExt::Global()->IvanBombAttachToCenter)
+	{
+		CoordStruct coords = pThis->Target->GetCenterCoords();
+		R->EDX(&coords);
+	}
 
-	R->EDX(&coords);
 	return 0;
 }
 
@@ -609,16 +611,6 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 	return nDamageAreaResult;
 }
 
-DEFINE_HOOK(0x6F5201, TechnoClass_DrawExtras_IvanBombImage, 0x6)
-{
-	GET(TechnoClass*, pThis, EBP);
-
-	auto coords = pThis->GetCenterCoords();
-
-	R->EAX(&coords);
-	return 0;
-}
-
 // skip the Explosion Anim block and clean up the context
 DEFINE_HOOK(0x4387A8, BombClass_Detonate_ExplosionAnimHandled, 0x5)
 {
@@ -628,6 +620,19 @@ DEFINE_HOOK(0x4387A8, BombClass_Detonate_ExplosionAnimHandled, 0x5)
 
 // redirect MapClass::DamageArea call to our dll for additional functionality and checks
 DEFINE_FUNCTION_JUMP(CALL, 0x4387A3, _BombClass_Detonate_DamageArea);
+
+DEFINE_HOOK(0x6F5201, TechnoClass_DrawExtras_IvanBombImage, 0x6)
+{
+	GET(TechnoClass*, pThis, EBP);
+
+	if (RulesExt::Global()->IvanBombAttachToCenter)
+	{
+		auto coords = pThis->GetCenterCoords();
+		R->EAX(&coords);
+	}
+
+	return 0;
+}
 
 // Oct 20, 2022 - Starkku: BibShape checks for BuildingClass::BState which needs to not be 0 (constructing) for bib to draw.
 // It is possible for BState to be 1 early during construction for frame or two which can result in BibShape being drawn during buildup, which somehow depends on length of buildup.
@@ -2840,10 +2845,10 @@ DEFINE_HOOK(0x70D4A0, AbstractClass_ClearTargetToMe_ClearManagerTarget, 0x5)
 			pSpawn->ResetTarget();
 	}
 
-	if (auto pTechno = abstract_cast<TechnoClass*>(pThis))
+	if (const auto pTechno = abstract_cast<TechnoClass*>(pThis))
 		pTechno->LastTarget = nullptr;
 
-	if (auto pFoot = abstract_cast<FootClass*>(pThis))
+	if (const auto pFoot = abstract_cast<FootClass*>(pThis))
 		pFoot->LastDestination = nullptr;
 
 	return 0;
@@ -2852,7 +2857,7 @@ DEFINE_HOOK(0x70D4A0, AbstractClass_ClearTargetToMe_ClearManagerTarget, 0x5)
 DEFINE_HOOK(0x70D4FD, AbstractClass_ClearTargetToMe_ClearLastTarget, 0x6)
 {
 	GET(TechnoClass*, pTechno, ESI);
-	GET(bool, shouldClear, ECX);
+	GET(const bool, shouldClear, ECX);
 	GET(AbstractClass*, pThis, EBP);
 
 	if (pTechno->LastTarget == pThis && shouldClear)

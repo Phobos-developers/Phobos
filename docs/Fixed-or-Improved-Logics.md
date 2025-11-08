@@ -86,7 +86,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed railgun particles being drawn to wrong coordinate against buildings with non-default `TargetCoordOffset` or when force-firing on bridges.
 - Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines.
 - In singleplayer missions, the player can now see cloaked objects owned by allied houses.
-- IvanBomb images now display and the bombs detonate at center of buildings instead of in top-leftmost cell of the building foundation.
+- IvanBomb images can now display and the bombs detonate at center of buildings instead of in top-leftmost cell of the building foundation if `[CombatDamage]` -> `IvanBombAttachToCenter` is set to true.
 - Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations.
 - Animation with `Tiled=yes` now supports `CustomPalette`.
 - Attempted to avoid units from retaining previous orders (attack,grind,garrison,etc) after changing ownership (mind-control,abduction,etc).
@@ -270,6 +270,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles.
 - Reactivate unused trigger events 2, 53, and 54.
 - Fixed the bug that vehicle fall on infantry will make all cell content has been removed.
+- Fixed `MovementZone=Subterannean` harvesters being unable to find docks if in area enclosed by water, cliffs etc.
 - Fixed an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner.
 
 ## Fixes / interactions with other extensions
