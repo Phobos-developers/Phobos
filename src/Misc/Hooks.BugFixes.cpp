@@ -2818,3 +2818,52 @@ DEFINE_HOOK(0x54CC9C, JumpjetLocomotionClass_ProcessCrashing_DropFix, 0x5)
 
 	return fallOnSomething ? SkipGameCode2 : SkipGameCode;
 }
+
+#pragma region ClearTargetOnOwnerChanged
+
+DEFINE_HOOK(0x70D4A0, AbstractClass_ClearTargetToMe_ClearManagerTarget, 0x5)
+{
+	GET(AbstractClass*, pThis, ECX);
+
+	for (const auto pTemporal : TemporalClass::Array)
+	{
+		if (pTemporal->Target == pThis)
+			pTemporal->LetGo();
+	}
+
+	// WW don't clear target if the techno has airstrike manager.
+	// No idea why, but for now we respect it and don't handle the airstrike target.
+	//for (const auto pAirstrike : AirstrikeClass::Array)
+	//{
+	//	if (pAirstrike->Target == pThis)
+	//		pAirstrike->ClearTarget();
+	//}
+
+	for (const auto pSpawn : SpawnManagerClass::Array)
+	{
+		if (pSpawn->Target == pThis)
+			pSpawn->ResetTarget();
+	}
+
+	if (const auto pTechno = abstract_cast<TechnoClass*>(pThis))
+		pTechno->LastTarget = nullptr;
+
+	if (const auto pFoot = abstract_cast<FootClass*>(pThis))
+		pFoot->LastDestination = nullptr;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x70D4FD, AbstractClass_ClearTargetToMe_ClearLastTarget, 0x6)
+{
+	GET(TechnoClass*, pTechno, ESI);
+	GET(const bool, shouldClear, ECX);
+	GET(AbstractClass*, pThis, EBP);
+
+	if (pTechno->LastTarget == pThis && shouldClear)
+		pTechno->LastTarget = nullptr;
+
+	return 0;
+}
+
+#pragma endregion

@@ -271,6 +271,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Reactivate unused trigger events 2, 53, and 54.
 - Fixed the bug that vehicle fall on infantry will make all cell content has been removed.
 - Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state.
+- Fixed `MovementZone=Subterannean` harvesters being unable to find docks if in area enclosed by water, cliffs etc.
+- Fixed an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner.
 
 ## Fixes / interactions with other extensions
 
