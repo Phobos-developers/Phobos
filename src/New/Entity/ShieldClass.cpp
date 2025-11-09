@@ -141,7 +141,9 @@ void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 
 		// handle shield conversion and tint
 		pToExt->Shield->ConvertCheck(pToExt->TypeExtData->OwnerObject());
-		pToExt->Shield->UpdateTint();
+
+		if (pToExt->Shield)
+			pToExt->Shield->UpdateTint();
 
 		if (pFrom->WhatAmI() == AbstractType::Building)
 			pFromExt->Shield = nullptr;
