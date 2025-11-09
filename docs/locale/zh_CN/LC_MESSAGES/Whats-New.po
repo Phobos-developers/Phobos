@@ -2045,6 +2045,7 @@ msgid ""
 "Fixed an issue where some effects pointing to a unit were not properly "
 "cleared when the unit changed its owner (by TaranDahl)"
 msgstr ""
+"修复了指向某个某个单位的部分效果在该单位变更所属时未能正确清除的问题（by TaranDahl）"
 
 #: ../../Whats-New.md:463 ../../Whats-New.md:695 ../../Whats-New.md:1054
 #: ../../Whats-New.md:1163 ../../Whats-New.md:1188 ../../Whats-New.md:1227

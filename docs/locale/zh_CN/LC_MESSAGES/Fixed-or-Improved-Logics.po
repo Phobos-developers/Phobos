@@ -1674,6 +1674,7 @@ msgid ""
 "Fixed an issue where some effects pointing to a unit were not properly "
 "cleared when the unit changed its owner."
 msgstr ""
+"修复了指向某个某个单位的部分效果在该单位变更所属时未能正确清除的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:277
 msgid "Fixes / interactions with other extensions"
