@@ -2248,8 +2248,9 @@ msgstr "修复了建筑拔起过程中发生所属变更会跳过建造阶段且
 #: ../../Whats-New.md:494
 msgid ""
 "Fixed `MovementZone=Subterannean` harvesters being unable to find docks "
-"if in area enclosed by water, cliffs etc."
+"if in area enclosed by water, cliffs etc. (by Starkku)"
 msgstr ""
+"修复了 `MovementZone=Subterannean` 的矿车无法跨越封闭的水域、悬崖等区域找到停靠点的问题（by Starkku）"
 
 #: ../../Whats-New.md:496 ../../Whats-New.md:841 ../../Whats-New.md:926
 #: ../../Whats-New.md:1090 ../../Whats-New.md:1131 ../../Whats-New.md:1143

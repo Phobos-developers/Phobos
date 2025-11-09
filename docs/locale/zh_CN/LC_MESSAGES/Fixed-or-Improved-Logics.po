@@ -1667,6 +1667,7 @@ msgid ""
 "Fixed `MovementZone=Subterannean` harvesters being unable to find docks "
 "if in area enclosed by water, cliffs etc."
 msgstr ""
+"修复了 `MovementZone=Subterannean` 的矿车无法跨越封闭的水域、悬崖等区域找到停靠点的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:275
 msgid ""

@@ -491,7 +491,7 @@ Vanilla fixes:
 - Reactivate unused trigger events 2, 53, and 54 (by FlyStar)
 - Fixed the bug that vehicle fall on infantry will make all cell content has been removed (by NetsuNegi)
 - Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state (by Starkku)
-- Fixed `MovementZone=Subterannean` harvesters being unable to find docks if in area enclosed by water, cliffs etc.
+- Fixed `MovementZone=Subterannean` harvesters being unable to find docks if in area enclosed by water, cliffs etc. (by Starkku)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

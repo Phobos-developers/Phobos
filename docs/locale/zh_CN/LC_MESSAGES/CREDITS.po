@@ -1104,7 +1104,7 @@ msgstr "建筑拔起期间变更所属相关 Bug 的修复"
 
 #: ../../../CREDITS.md:284
 msgid "Subterranean harvester pathfinding fix"
-msgstr ""
+msgstr "潜地矿车寻路问题修复"
 
 #: ../../../CREDITS.md:285
 msgid "**Morton (MortonPL)**:"
