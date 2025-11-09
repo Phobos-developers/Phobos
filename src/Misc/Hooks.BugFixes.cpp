@@ -521,14 +521,12 @@ namespace FetchBomb
 DEFINE_HOOK(0x438771, BombClass_Detonate_SetContext, 0x6)
 {
 	GET(BombClass*, pThis, ESI);
+	GET(CoordStruct*, pCoords, EDX);
 
 	FetchBomb::pThisBomb = pThis;
 
 	if (RulesExt::Global()->IvanBombAttachToCenter)
-	{
-		CoordStruct coords = pThis->Target->GetCenterCoords();
-		R->EDX(&coords);
-	}
+		*pCoords = pThis->Target->GetCenterCoords();
 
 	return 0;
 }
@@ -582,12 +580,10 @@ DEFINE_FUNCTION_JUMP(CALL, 0x4387A3, _BombClass_Detonate_DamageArea);
 DEFINE_HOOK(0x6F5201, TechnoClass_DrawExtras_IvanBombImage, 0x6)
 {
 	GET(TechnoClass*, pThis, EBP);
+	GET(CoordStruct*, pCoords, EAX);
 
 	if (RulesExt::Global()->IvanBombAttachToCenter)
-	{
-		auto coords = pThis->GetCenterCoords();
-		R->EAX(&coords);
-	}
+		*pCoords = pThis->GetCenterCoords();
 
 	return 0;
 }
@@ -611,12 +607,10 @@ DEFINE_HOOK(0x43D874, BuildingClass_Draw_BuildupBibShape, 0x6)
 DEFINE_HOOK(0x70BCE6, TechnoClass_GetTargetCoords_BuildingFix, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
+	GET(CoordStruct*, pCoords, EAX);
 
 	if (const auto pBuilding = abstract_cast<BuildingClass*>(pThis->Target))
-	{
-		const auto coords = pBuilding->GetTargetCoords();
-		R->EAX(&coords);
-	}
+		*pCoords = pBuilding->GetTargetCoords();
 
 	return 0;
 }

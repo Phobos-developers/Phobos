@@ -108,15 +108,13 @@ DEFINE_HOOK(0x62D685, ParticleSystemClass_Fire_Coords, 0x5)
 DEFINE_HOOK(0x70C6B5, TechnoClass_Railgun_TargetCoords, 0x5)
 {
 	GET(AbstractClass*, pTarget, EBX);
-
-	auto coords = pTarget->GetCenterCoords();
+	GET(CoordStruct*, pCoords, EAX);
 
 	if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pTarget))
-		coords = pBuilding->GetTargetCoords();
+		*pCoords = pBuilding->GetTargetCoords();
 	else if (const auto pCell = abstract_cast<CellClass*, true>(pTarget))
-		coords = pCell->GetCoordsWithBridge();
+		*pCoords = pCell->GetCoordsWithBridge();
 
-	R->EAX(&coords);
 	return 0;
 }
 
@@ -222,13 +220,9 @@ DEFINE_HOOK(0x6FD38D, TechnoClass_LaserZap_Obstacles, 0x7)
 {
 	GET(CoordStruct*, pTargetCoords, EAX);
 
-	auto coords = *pTargetCoords;
-	auto const pObstacleCell = FireAtTemp::pObstacleCell;
+	if (auto const pObstacleCell = FireAtTemp::pObstacleCell)
+		*pTargetCoords = pObstacleCell->GetCoordsWithBridge();
 
-	if (pObstacleCell)
-		coords = pObstacleCell->GetCoordsWithBridge();
-
-	R->EAX(&coords);
 	return 0;
 }
 
