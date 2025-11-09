@@ -518,15 +518,15 @@ namespace FetchBomb
 }
 
 // Fetch the BombClass context From earlier address.
-DEFINE_HOOK(0x438771, BombClass_Detonate_SetContext, 0x6)
+DEFINE_HOOK(0x43878E, BombClass_Detonate_SetContext, 0x6)
 {
 	GET(BombClass*, pThis, ESI);
-	GET(CoordStruct*, pCoords, EDX);
+	REF_STACK(CoordStruct, pCoords, STACK_OFFSET(0x40, -0xC));
 
 	FetchBomb::pThisBomb = pThis;
 
 	if (RulesExt::Global()->IvanBombAttachToCenter)
-		*pCoords = pThis->Target->GetCenterCoords();
+		pCoords = pThis->Target->GetCenterCoords();
 
 	return 0;
 }
