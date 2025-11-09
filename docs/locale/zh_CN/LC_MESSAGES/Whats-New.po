@@ -3060,7 +3060,7 @@ msgstr "允许 `[ColorAdd]` 使用 8 位 RGB 而非 RGB565（by Starkku）"
 msgid ""
 "Customizing height and speed at which subterranean units travel (by "
 "Starkku)"
-msgstr "自定义钻地单位的地下水平移动高度和速度（by Starkku）"
+msgstr "自定义潜地单位的地下水平移动高度和速度（by Starkku）"
 
 #: ../../Whats-New.md:661
 msgid ""
@@ -3532,7 +3532,7 @@ msgstr "修复了超时空运动模式的单位无法在斜坡上视觉性倾斜
 msgid ""
 "Fixed teleport and drill units being unable to be visually flipped (by "
 "Trsdy)"
-msgstr "修复了超时空和钻地单位无法视觉翻转的问题（by Trsdy）"
+msgstr "修复了超时空和潜地单位无法视觉翻转的问题（by Trsdy）"
 
 #: ../../Whats-New.md:748
 msgid ""
@@ -3632,7 +3632,7 @@ msgid ""
 "will instead emerge first like they do for transport unloading (by "
 "Starkku)"
 msgstr ""
-"现在钻地单位在钻地或正在钻地时不再允许执行例如发射武器或 `IsSimpleDeployer` "
+"现在潜地单位在下潜或正在潜地移动时不再允许执行例如发射武器或 `IsSimpleDeployer` "
 "那样的部署功能，现在它们会先像运输工具释放乘客那样先钻出地面（by Starkku）"
 
 #: ../../Whats-New.md:764
@@ -3734,7 +3734,7 @@ msgstr "现在作为小队成员的空中单位将使用 2D 距离而不是 3D �
 msgid ""
 "Subterranean movement now benefits from speed multipliers from all "
 "sources such as veterancy, AttachEffect etc. (by Starkku)"
-msgstr "现在钻地运动方式享受来自升级、AttachEffect 等所有来源的速度加成（by Starkku）"
+msgstr "现在潜地运动方式享受来自升级、AttachEffect 等所有来源的速度加成（by Starkku）"
 
 #: ../../Whats-New.md:779
 msgid ""

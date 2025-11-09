@@ -962,7 +962,7 @@ msgid ""
 " firing weapons or `IsSimpleDeployer` while burrowed or burrowing, they "
 "will instead emerge first like they do for transport unloading."
 msgstr ""
-"现在钻地单位在钻地或正在钻地时不再允许执行例如发射武器或 `IsSimpleDeployer` "
+"现在潜地单位在下潜或正在潜地移动时不再允许执行例如发射武器或 `IsSimpleDeployer` "
 "那样的部署功能，现在它们会先像运输工具释放乘客那样先钻出地面。"
 
 #: ../../Fixed-or-Improved-Logics.md:157
@@ -1141,7 +1141,7 @@ msgstr ""
 msgid ""
 "Subterranean movement now benefits from speed multipliers from all "
 "sources such as veterancy, AttachEffect etc."
-msgstr "现在钻地运动方式享受来自升级、AttachEffect 等所有来源的速度加成。"
+msgstr "现在潜地运动方式享受来自升级、AttachEffect 等所有来源的速度加成。"
 
 #: ../../Fixed-or-Improved-Logics.md:186
 msgid ""
@@ -5566,13 +5566,13 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:1496
 msgid "Subterranean unit travel height and speed"
-msgstr "钻地单位移动高度和速度"
+msgstr "潜地单位移动高度和速度"
 
 #: ../../Fixed-or-Improved-Logics.md:1498
 msgid ""
 "It is now possible to control the height at which units with subterranean"
 " (Tunnel) `Locomotor` travel, globally or per TechnoType."
-msgstr "现在可以控制拥有钻地（Tunnel）`Locomotor` 的单位移动的高度，可以在全局和每个科技类型上定义。"
+msgstr "现在可以控制拥有潜地（Tunnel）`Locomotor` 的单位移动的高度，可以在全局和每个科技类型上定义。"
 
 #: ../../Fixed-or-Improved-Logics.md:1499
 msgid ""
@@ -5582,7 +5582,7 @@ msgid ""
 "when burrowing which is determined by `Speed` multiplied by `[General] ->"
 " TunnelSpeed`."
 msgstr ""
-"钻地移动速度现在也可以自定义，同样拥有全局和微观标签。如果微观标签的值为负数则使用全局值。这不会影响单位在钻地时的垂直移动速度。该速度由 "
+"潜地移动速度现在也可以自定义，同样拥有全局和微观标签。如果微观标签的值为负数则使用全局值。这不会影响单位在潜地时的垂直移动速度。该速度由 "
 "`Speed` * `[General] -> TunnelSpeed` 决定。"
 
 #: ../../Fixed-or-Improved-Logics.md:1502
