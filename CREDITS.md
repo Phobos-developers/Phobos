@@ -330,7 +330,7 @@ This page lists all the individual contributions to the project by their author.
   - `AlternateFLH` of vehicles in `OpenTopped` transport
   - Slaves' house customization when owner is killed
   - Trigger Action spawned team IFV/OpenTopped logic fix
-  - Singleplayer Campaign AI's base node/SW-delivered/trigger action `125 Create Building At...`'s auto-repairability dehardcode
+  - Singleplayer Campaign AI's base node/SW-delivered/trigger action `125 Build At...`'s auto-repairability dehardcode
   - Power delta counter : blackout indication mark
   - Harvester counter
   - Income money string indication upon ore dump
