@@ -854,15 +854,9 @@ bool __fastcall BuildingClass_SetOwningHouse_Wrapper(BuildingClass* pThis, void*
 		const auto pType = pThis->Type;
 
 		if (pType->Powered || pType->PoweredSpecial)
-		{
-			const bool on = pThis->IsPowerOnline();
-			if (on != pThis->WasOnline)
-			{
-				reinterpret_cast<void(__thiscall*)(BuildingClass*)>(0x4549B0)(pThis);
-				pThis->WasOnline = on;
-			}
-		}
+			reinterpret_cast<void(__thiscall*)(BuildingClass*)>(0x4549B0)(pThis);
 	}
+
 	return res;
 }
 
