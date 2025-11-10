@@ -1,4 +1,5 @@
 #include "Body.h"
+#include "Trajectories\PhobosVirtualTrajectory.h"
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
@@ -24,6 +25,20 @@ BulletExt::ExtData::~ExtData()
 			auto& vec = groupData.Bullets;
 			vec.erase(std::remove(vec.begin(), vec.end(), this->OwnerObject()->UniqueID), vec.end());
 			groupData.ShouldUpdate = true;
+		}
+	}
+
+	if (const auto pTraj = this->Trajectory.get())
+	{
+		const auto flag = pTraj->Flag();
+
+		if (flag == TrajectoryFlag::Engrave || flag == TrajectoryFlag::Tracing)
+		{
+			if (auto& pLaser = static_cast<VirtualTrajectory*>(pTraj)->Laser)
+			{
+				pLaser->Duration = 0;
+				pLaser = nullptr;
+			}
 		}
 	}
 }

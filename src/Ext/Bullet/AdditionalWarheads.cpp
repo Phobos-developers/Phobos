@@ -405,19 +405,92 @@ void BulletExt::ExtData::PassWithDetonateAt()
 		detonateCoords.Z = MapClass::Instance.GetCellFloorHeight(detonateCoords);
 
 	const auto pFirer = pBullet->Owner;
-	const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
+	const auto pOwner = pFirer ? pFirer->Owner : this->FirerHouse;
 	const int damage = this->GetTrueDamage(this->PassDetonateDamage, false);
 	WarheadTypeExt::DetonateAt(pWH, detonateCoords, pBullet->Owner, damage, pOwner);
 	this->CalculateNewDamage();
 }
 
-// Select suitable targets and choose the closer targets then attack each target only once.
-void BulletExt::ExtData::PrepareForDetonateAt()
+template<bool sphere, bool checkBuilding>
+static inline bool TargetInRange(TechnoClass* pTechno, BulletClass* pBullet, const CoordStruct& velocityCrd, const double& velocity, const Leptons radius)
+{
+	// For building use
+	int distanceOffset = 0;
+	bool isBuilding = false;
+
+	if constexpr (checkBuilding)
+	{
+		isBuilding = pTechno->WhatAmI() == AbstractType::Building;
+
+		if (isBuilding && static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
+			return false;
+	}
+
+	// Check distance within the range of half capsule shape
+	auto distanceCrd = pTechno->GetCoords() - pBullet->Location;
+
+	auto getDotProduct = [](const CoordStruct& a, const CoordStruct& b) -> double
+	{
+		if constexpr (sphere)
+			return a * b;
+		else
+			return static_cast<double>(a.X * b.X + a.Y * b.Y);
+	};
+
+	// Should be in front of the bullet's current position
+	if (getDotProduct(distanceCrd, velocityCrd) < 0)
+		return false;
+
+	if constexpr (checkBuilding)
+	{
+		if (isBuilding)
+		{
+			// Building type have an extra bonus to distance (0x5F6403)
+			const auto pBldType = static_cast<BuildingClass*>(pTechno)->Type;
+			distanceOffset = 64 * (pBldType->GetFoundationHeight(false) + pBldType->GetFoundationWidth());
+		}
+	}
+
+	auto getMagnitude = [&getDotProduct](const CoordStruct& a) -> double
+	{
+		if constexpr (!sphere)
+			return std::hypot(a.X, a.Y);
+		else
+			return std::hypot(a.X, a.Y, a.Z);
+	};
+	auto getRadius = [radius, distanceOffset]() -> int
+	{
+		if constexpr (checkBuilding)
+			return radius + distanceOffset;
+		else
+			return static_cast<int>(radius);
+	};
+
+	const auto nextDistanceCrd = distanceCrd - velocityCrd;
+
+	// Should be behind the bullet's next frame position, otherwise, at least within the spherical range of future position
+	if (getDotProduct(nextDistanceCrd, velocityCrd) > 0 && static_cast<int>(getMagnitude(nextDistanceCrd)) > getRadius())
+		return false;
+
+	// Calculate the distance between the point and the line
+	auto getDistance = [&velocity, &distanceCrd, &nextDistanceCrd]()
+	{
+		if constexpr (sphere)
+			return (velocity > BulletExt::Epsilon) ? (distanceCrd.CrossProduct(nextDistanceCrd).Magnitude() / velocity) : distanceCrd.Magnitude();
+		else
+			return (velocity > BulletExt::Epsilon) ? (std::abs(distanceCrd.X * nextDistanceCrd.Y - distanceCrd.Y * nextDistanceCrd.X) / velocity) : std::hypot(distanceCrd.X, distanceCrd.Y);
+	};
+
+	// Should be in the center cylinder
+	return static_cast<int>(getDistance()) <= getRadius();
+}
+
+template<bool allies, bool sphere>
+std::vector<TechnoClass*> BulletExt::ExtData::GetTargetsInProximityRadius(HouseClass* pOwner)
 {
 	const auto pType = this->TypeExtData;
 	const auto pBullet = this->OwnerObject();
-	const auto pFirer = pBullet->Owner;
-	const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
+	const auto pTarget = pBullet->Target;
 	const auto radius = pType->ProximityRadius.Get();
 	auto pWH = pType->ProximityWarhead.Get();
 
@@ -428,74 +501,56 @@ void BulletExt::ExtData::PrepareForDetonateAt()
 
 	// Step 1: Find valid targets on the ground within range.
 	std::vector<CellClass*> recCellClass = this->GetCellsInProximityRadius();
-
-	const auto pTraj = this->Trajectory.get();
-	const auto velocityCrd = BulletExt::Vector2Coord(pTraj ? pTraj->MovingVelocity : pBullet->Velocity);
-	const double velocity = pTraj ? pTraj->MovingSpeed : pBullet->Velocity.Magnitude();
-	const auto pTarget = pBullet->Target;
-
 	std::vector<TechnoClass*> validTechnos;
 	validTechnos.reserve(recCellClass.size() * 2);
 
-	auto checkCellContent = [pType, pBullet, pTarget, pOwner, radius, velocity, pWHExt,
-		&velocityCrd, &validTechnos](ObjectClass* pFirstObject)
+	const auto pTraj = this->Trajectory.get();
+
+	auto getVelocityCrd = [pTraj, pBullet]()
+	{
+		auto velocityCrd = BulletExt::Vector2Coord(pTraj ? pTraj->MovingVelocity : pBullet->Velocity);
+
+		if constexpr (!sphere)
+			velocityCrd.Z = 0;
+
+		return velocityCrd;
+	};
+	const auto velocityCrd = getVelocityCrd();
+
+	auto getVelocity = [pTraj, pBullet, &velocityCrd]()
+	{
+		if constexpr (sphere)
+			return pTraj ? pTraj->MovingSpeed : pBullet->Velocity.Magnitude();
+		else
+			return BulletExt::Get2DDistance(velocityCrd);
+	};
+	const double velocity = getVelocity();
+
+	auto checkTechno = [pOwner, pTarget, pWHExt](TechnoClass* pTechno) -> bool
+	{
+		if (BulletExt::CheckTechnoIsInvalid(pTechno))
+			return false;
+
+		if constexpr (!allies)
 		{
-			for (auto pObject = pFirstObject; pObject; pObject = pObject->NextObject)
+			if (pOwner && pOwner->IsAlliedWith(pTechno->Owner) && pTechno != pTarget)
+				return false;
+		}
+
+		return !pTechno->IsBeingWarpedOut() && pWHExt->IsHealthInThreshold(pTechno);
+	};
+
+	auto checkCellContent = [pBullet, radius, &velocityCrd, &velocity, &checkTechno, &validTechnos](ObjectClass* pFirstObject)
+	{
+		for (auto pObject = pFirstObject; pObject; pObject = pObject->NextObject)
+		{
+			if (const auto pTechno = abstract_cast<TechnoClass*, true>(pObject))
 			{
-				const auto pTechno = abstract_cast<TechnoClass*, true>(pObject);
-
-				if (!pTechno || BulletExt::CheckTechnoIsInvalid(pTechno))
-					continue;
-
-				// Not directly harming friendly forces
-				if (!pType->ProximityAllies && pOwner && pOwner->IsAlliedWith(pTechno->Owner) && pTechno != pTarget)
-					continue;
-
-				if (pTechno->IsBeingWarpedOut() || !pWHExt->IsHealthInThreshold(pTechno))
-					continue;
-
-				const bool isBuilding = pTechno->WhatAmI() == AbstractType::Building;
-
-				if (isBuilding && static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
-					continue;
-
-				// Check distance within the range of half capsule shape
-				const auto targetCrd = pTechno->GetCoords();
-				const auto distanceCrd = targetCrd - pBullet->Location;
-
-				// Should be in front of the bullet's current position
-				if (distanceCrd * velocityCrd < 0)
-					continue;
-
-				int distanceOffset = 0;
-
-				// Building type have an extra bonus to distance (0x5F6403)
-				if (isBuilding)
-				{
-					const auto pBldType = static_cast<BuildingClass*>(pTechno)->Type;
-					distanceOffset = 64 * (pBldType->GetFoundationHeight(false) + pBldType->GetFoundationWidth());
-				}
-
-				const auto nextDistanceCrd = distanceCrd - velocityCrd;
-
-				// Should be behind the bullet's next frame position
-				if (nextDistanceCrd * velocityCrd > 0)
-				{
-					// Otherwise, at least within the spherical range of future position
-					if (static_cast<int>(nextDistanceCrd.Magnitude()) > (radius + distanceOffset))
-						continue;
-				}
-
-				// Calculate the distance between the point and the line
-				const double distance = (velocity > BulletExt::Epsilon) ? (distanceCrd.CrossProduct(nextDistanceCrd).Magnitude() / velocity) : distanceCrd.Magnitude();
-
-				// Should be in the center cylinder
-				if (distance > (radius + distanceOffset))
-					continue;
-
-				validTechnos.push_back(pTechno);
+				if (checkTechno(pTechno) && TargetInRange<sphere, true>(pTechno, pBullet, velocityCrd, velocity, radius))
+					validTechnos.push_back(pTechno);
 			}
-		};
+		}
+	};
 
 	for (const auto& pRecCell : recCellClass)
 	{
@@ -513,44 +568,31 @@ void BulletExt::ExtData::PrepareForDetonateAt()
 
 		for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 		{
-			if (BulletExt::CheckTechnoIsInvalid(pTechno))
-				continue;
-
-			// Not directly harming friendly forces
-			if (!pType->ProximityAllies && pOwner && pOwner->IsAlliedWith(pTechno->Owner) && pTechno != pTarget)
-				continue;
-
-			if (pTechno->IsBeingWarpedOut() || !pWHExt->IsHealthInThreshold(pTechno))
-				continue;
-
-			// Check distance within the range of half capsule shape
-			const auto targetCrd = pTechno->GetCoords();
-			const auto distanceCrd = targetCrd - pBullet->Location;
-
-			// Should be in front of the bullet's current position
-			if (distanceCrd * velocityCrd < 0)
-				continue;
-
-			const auto nextDistanceCrd = distanceCrd - velocityCrd;
-
-			// Should be behind the bullet's next frame position
-			if (nextDistanceCrd * velocityCrd > 0)
-			{
-				// Otherwise, at least within the spherical range of future position
-				if (nextDistanceCrd.Magnitude() > radius)
-					continue;
-			}
-
-			// Calculate the distance between the point and the line
-			const double distance = (velocity > BulletExt::Epsilon) ? (distanceCrd.CrossProduct(nextDistanceCrd).Magnitude() / velocity) : distanceCrd.Magnitude();
-
-			// Should be in the center cylinder
-			if (distance > radius)
-				continue;
-
-			validTechnos.push_back(pTechno);
+			if (checkTechno(pTechno) && TargetInRange<sphere, false>(pTechno, pBullet, velocityCrd, velocity, radius))
+				validTechnos.push_back(pTechno);
 		}
 	}
+
+	return validTechnos;
+}
+
+// Select suitable targets and choose the closer targets then attack each target only once.
+void BulletExt::ExtData::PrepareForDetonateAt()
+{
+	const auto pType = this->TypeExtData;
+	const auto pBullet = this->OwnerObject();
+	const auto pFirer = pBullet->Owner;
+	const auto pOwner = pFirer ? pFirer->Owner : this->FirerHouse;
+
+	auto getTargets = [this, pType, pOwner]() -> std::vector<TechnoClass*>
+	{
+		if (pType->ProximityAllies)
+			return pType->ProximitySphere ? this->GetTargetsInProximityRadius<true, true>(pOwner) : this->GetTargetsInProximityRadius<true, false>(pOwner);
+
+		return pType->ProximitySphere ? this->GetTargetsInProximityRadius<false, true>(pOwner) : this->GetTargetsInProximityRadius<false, false>(pOwner);
+	};
+
+	std::vector<TechnoClass*> validTechnos = getTargets();
 
 	// Step 3: Record each target without repetition.
 	std::vector<int> casualtyChecked;

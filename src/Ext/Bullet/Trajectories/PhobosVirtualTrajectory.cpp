@@ -112,11 +112,11 @@ void VirtualTrajectory::OnPreDetonate()
 {
 	this->PhobosTrajectory::OnPreDetonate();
 
-	if (const auto pLaser = this->Laser)
+	if (auto& pLaser = this->Laser)
 	{
 		// Auto free
 		pLaser->Duration = 0;
-		this->Laser = nullptr;
+		pLaser = nullptr;
 	}
 }
 

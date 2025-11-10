@@ -68,6 +68,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ProximityMedial.Read(exINI, pSection, "ProximityMedial");
 	this->ProximityAllies.Read(exINI, pSection, "ProximityAllies");
 	this->ProximityFlight.Read(exINI, pSection, "ProximityFlight");
+	this->ProximitySphere.Read(exINI, pSection, "ProximitySphere");
 	this->ThroughVehicles.Read(exINI, pSection, "PassThroughVehicles");
 	this->ThroughBuilding.Read(exINI, pSection, "PassThroughBuilding");
 	this->DamageEdgeAttenuation.Read(exINI, pSection, "DamageEdgeAttenuation");
@@ -239,6 +240,7 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ProximityMedial)
 		.Process(this->ProximityAllies)
 		.Process(this->ProximityFlight)
+		.Process(this->ProximitySphere)
 		.Process(this->ThroughVehicles)
 		.Process(this->ThroughBuilding)
 		.Process(this->DamageEdgeAttenuation)

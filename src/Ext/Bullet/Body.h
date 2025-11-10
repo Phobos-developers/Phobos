@@ -135,6 +135,8 @@ public:
 		bool CheckThroughAndSubjectInCell(CellClass* pCell, HouseClass* pOwner);
 		void CalculateNewDamage();
 		void PassWithDetonateAt();
+		template<bool allies, bool sphere>
+		std::vector<TechnoClass*> GetTargetsInProximityRadius(HouseClass* pOwner);
 		void PrepareForDetonateAt();
 		void ProximityDetonateAt(HouseClass* pOwner, TechnoClass* pTarget);
 		int GetTrueDamage(int damage, bool self);

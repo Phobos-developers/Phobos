@@ -869,6 +869,7 @@ This feature has been tested against [Trajectory](#projectile-trajectories) syst
     - `ProximityMedial` controls whether to detonate `ProximityWarhead` at the bullet's location rather than the proximity target's location. If `ProximityDirect` is set to true, this will only affect the calculation result of `DamageEdgeAttenuation`.
     - `ProximityAllies` controls whether allies will also trigger the proximity fuse.
     - `ProximityFlight` controls whether to count units in the air.
+    - `ProximitySphere` controls whether to ignore height differences when calculating `ProximityRadius`.
   - `PassThroughVehicles` controls whether the projectile will not be obstructed by vehicles or aircrafts on the ground. When it is obstructed, it will be directly detonated at its location. If it still have `ProximityImpact` times, it will also detonate a `ProximityWarhead` at the location of the obstacle. Before the projectile being blocked, `ProximityImpact` will also not cause damage to vehicles or aircrafts.
   - `PassThroughBuilding` controls whether the projectile will not be obstructed by buildings. When it is obstructed, it will be directly detonated at its location. If it still have `ProximityImpact` times, it will also detonate a `ProximityImpact` at the location of the obstacle. Before the projectile being blocked, `ProximityImpact` will also not cause damage to buildings.
   - `DamageEdgeAttenuation` controls the edge attenuation ratio of projectile damage (includes all types of the trajectory's damage), that is, the actual damage caused will be this value multiplied by the ratio of the current distance to the weapon's range. Can NOT be set to a negative value.
@@ -891,6 +892,7 @@ ProximityDirect=false       ; boolean
 ProximityMedial=false       ; boolean
 ProximityAllies=false       ; boolean
 ProximityFlight=false       ; boolean
+ProximitySphere=true        ; boolean
 PassThroughVehicles=true    ; boolean
 PassThroughBuilding=true    ; boolean
 DamageEdgeAttenuation=1.0   ; floating point value

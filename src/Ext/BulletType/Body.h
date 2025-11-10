@@ -57,6 +57,7 @@ public:
 		Valueable<bool> ProximityMedial;
 		Valueable<bool> ProximityAllies;
 		Valueable<bool> ProximityFlight;
+		Valueable<bool> ProximitySphere;
 		Valueable<bool> ThroughVehicles;
 		Valueable<bool> ThroughBuilding;
 		Valueable<double> DamageEdgeAttenuation;
@@ -165,6 +166,7 @@ public:
 			, ProximityMedial { false }
 			, ProximityAllies { false }
 			, ProximityFlight { false }
+			, ProximitySphere { true }
 			, ThroughVehicles { true }
 			, ThroughBuilding { true }
 			, DamageEdgeAttenuation { 1.0 }

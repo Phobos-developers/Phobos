@@ -193,7 +193,6 @@ void StraightTrajectory::FireTrajectory()
 		this->RemainingDistance = INT_MAX;
 
 	// Determine the firing velocity vector of the bullet
-	pBullet->TargetCoords = target;
 	this->MovingVelocity.X = static_cast<double>(target.X - source.X);
 	this->MovingVelocity.Y = static_cast<double>(target.Y - source.Y);
 	this->MovingVelocity.Z = (pType->Speed < static_cast<double>(Unsorted::LeptonsPerCell) && pType->ConfineAtHeight > 0 && BulletTypeExt::ExtMap.Find(pBullet->Type)->PassDetonateLocal) ? 0 : static_cast<double>(this->GetVelocityZ());
