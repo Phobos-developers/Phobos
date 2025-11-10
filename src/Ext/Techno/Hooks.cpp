@@ -1,7 +1,6 @@
 #include "Body.h"
 
 #include <AircraftClass.h>
-#include <EventClass.h>
 #include <ScenarioClass.h>
 #include <TunnelLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
@@ -78,6 +77,7 @@ DEFINE_HOOK(0x736480, UnitClass_AI, 0x6)
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	pExt->UpdateKeepTargetOnMove();
 	pExt->DepletedAmmoActions();
+	pExt->UpdateSubterraneanHarvester();
 
 	return 0;
 }
@@ -227,12 +227,13 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	pExt->TypeExtData = pTypeExt;
 
-	pExt->CurrentShieldType = pTypeExt->ShieldType;
+	auto const pShieldType = pTypeExt->ShieldType;
+	pExt->CurrentShieldType = pShieldType;
 	pExt->InitializeAttachEffects();
 	pExt->InitializeDisplayInfo();
 	pExt->InitializeLaserTrails();
 
-	if (!pExt->AE.HasTint && !pExt->CurrentShieldType)
+	if (!pExt->AE.HasTint && (!pShieldType || !pShieldType->HasTint() || pShieldType->Strength <= 0))
 		pExt->UpdateTintValues();
 
 	if (pTypeExt->Harvester_Counted)
@@ -714,39 +715,6 @@ DEFINE_HOOK(0x414665, AircraftClass_Draw_ExtraSHP, 0x6)
 	R->EAX<AircraftTypeClass*>(TechnoExt::GetAircraftTypeExtra(pThis));
 
 	return Continue;
-}
-
-// Do not explicitly reset target for KeepTargetOnMove vehicles when issued move command.
-DEFINE_HOOK(0x4C7462, EventClass_Execute_KeepTargetOnMove, 0x5)
-{
-	enum { SkipGameCode = 0x4C74C0 };
-
-	GET(TechnoClass*, pTechno, EDI);
-
-	if (pTechno->WhatAmI() != AbstractType::Unit)
-		return 0;
-
-	GET(EventClass*, pThis, ESI);
-	auto const mission = static_cast<Mission>(pThis->MegaMission.Mission);
-	auto const pExt = TechnoExt::ExtMap.Find(pTechno);
-
-	if (mission == Mission::Move && pExt->TypeExtData->KeepTargetOnMove && pTechno->Target)
-	{
-		GET(AbstractClass*, pTarget, EBX);
-
-		if (!pTarget && pTechno->IsCloseEnoughToAttack(pTechno->Target))
-		{
-			auto const pDestination = pThis->MegaMission.Destination.As_Abstract();
-			pTechno->SetDestination(pDestination, true);
-			pExt->KeepTargetOnMove = true;
-
-			return SkipGameCode;
-		}
-	}
-
-	pExt->KeepTargetOnMove = false;
-
-	return 0;
 }
 
 #pragma region BuildingTypeSelectable

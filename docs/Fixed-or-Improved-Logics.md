@@ -86,7 +86,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed railgun particles being drawn to wrong coordinate against buildings with non-default `TargetCoordOffset` or when force-firing on bridges.
 - Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines.
 - In singleplayer missions, the player can now see cloaked objects owned by allied houses.
-- IvanBomb images now display and the bombs detonate at center of buildings instead of in top-leftmost cell of the building foundation.
+- IvanBomb images can now display and the bombs detonate at center of buildings instead of in top-leftmost cell of the building foundation if `[CombatDamage] -> IvanBombAttachToCenter` is set to true.
 - Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations.
 - Animation with `Tiled=yes` now supports `CustomPalette`.
 - Attempted to avoid units from retaining previous orders (attack,grind,garrison,etc) after changing ownership (mind-control,abduction,etc).
@@ -270,6 +270,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles.
 - Reactivate unused trigger events 2, 53, and 54.
 - Fixed the bug that vehicle fall on infantry will make all cell content has been removed.
+- Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state.
+- Fixed `MovementZone=Subterannean` harvesters being unable to find docks if in area enclosed by water, cliffs etc.
+- Fixed an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner.
 
 ## Fixes / interactions with other extensions
 
@@ -303,7 +306,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that technos head to building's dock even they are not going to dock.
 - Fixed an issue that the jumpjet vehicles cannot stop correctly after going berserk.
 - Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect.
-- Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state.
 
 ```{note}
 The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
@@ -361,6 +363,10 @@ ExtendedAircraftMissions.EarlyDescend=    ; boolean, default to [General] -> Ext
 ExtendedAircraftMissions.RearApproach=    ; boolean, default to [General] -> ExtendedAircraftMissions
 ExtendedAircraftMissions.FastScramble=    ; boolean, default to [General] -> ExtendedAircraftMissions
 ExtendedAircraftMissions.UnlandDamage=    ; integer, default to [General] -> ExtendedAircraftMissions.UnlandDamage
+```
+
+```{note}
+And now when `ExtendedAircraftMissions` is enabled, aircraft that can land at the airport will check at any time to see if they have a dock. Therefore, if there are aircraft in your mission that require dock and you have not provided enough or not disabled the feature, they will crash immediately
 ```
 
 ### Fixed spawn distance & spawn height for airstrike / SpyPlane aircraft

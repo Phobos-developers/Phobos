@@ -280,6 +280,7 @@ This page lists all the individual contributions to the project by their author.
   - Changes / fixes to `Vertical` projectile logic and customizing projectile initial facing behavior
   - Bugfixes to map trigger action `125 Build At...`
   - Owner change during buildup bugfix
+  - Subterranean harvester pathfinding fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -329,7 +330,7 @@ This page lists all the individual contributions to the project by their author.
   - `AlternateFLH` of vehicles in `OpenTopped` transport
   - Slaves' house customization when owner is killed
   - Trigger Action spawned team IFV/OpenTopped logic fix
-  - Singleplayer Campaign AI's base node/SW-delivered/trigger action `125 Create Building At...`'s auto-repairability dehardcode
+  - Singleplayer Campaign AI's base node/SW-delivered/trigger action `125 Build At...`'s auto-repairability dehardcode
   - Power delta counter : blackout indication mark
   - Harvester counter
   - Income money string indication upon ore dump
@@ -636,6 +637,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the AI would enter a combat state when its building receiving damage from friendly units or damage not greater than 0
   - Fix an issue that the techno with weapon with `AA=yes` and `AG=no` would not auto targeting units that are falling, such as paratroopers
   - Dehardcode the `ZAdjust` of warhead anim
+  - Fix an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

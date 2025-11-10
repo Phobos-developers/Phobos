@@ -2739,8 +2739,8 @@ NoQueueUpToEnter.Buildings=     ; boolean, default to NoQueueUpToEnter
 NoQueueUpToUnload.Buildings=    ; boolean, default to NoQueueUpToUnload
 
 [SOMEVEHICLE/SOMEBUILDING]      ; VehicleType/BuildingType, transport
-NoQueueUpToEnter=               ; boolean, default to [General] -> NoQueueUpToEnter.Buildings
-NoQueueUpToUnload=              ; boolean, default to [General] -> NoQueueUpToUnload.Buildings
+NoQueueUpToEnter=               ; boolean, default to [General] -> NoQueueUpToEnter(.Buildings)
+NoQueueUpToUnload=              ; boolean, default to [General] -> NoQueueUpToUnload(.Buildings)
 ```
 
 ```{note}

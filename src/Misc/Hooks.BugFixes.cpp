@@ -563,17 +563,17 @@ namespace FetchBomb
 	BombClass* pThisBomb;
 }
 
-// Fetch the BombClass context From earlier adress
-DEFINE_HOOK(0x438771, BombClass_Detonate_SetContext, 0x6)
+// Fetch the BombClass context From earlier address.
+DEFINE_HOOK(0x43878E, BombClass_Detonate_SetContext, 0x6)
 {
 	GET(BombClass*, pThis, ESI);
+	REF_STACK(CoordStruct, pCoords, STACK_OFFSET(0x40, -0xC));
 
 	FetchBomb::pThisBomb = pThis;
 
-	// Also adjust detonation coordinate.
-	CoordStruct coords = pThis->Target->GetCenterCoords();
+	if (RulesExt::Global()->IvanBombAttachToCenter)
+		pCoords = pThis->Target->GetCenterCoords();
 
-	R->EDX(&coords);
 	return 0;
 }
 
@@ -609,16 +609,6 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 	return nDamageAreaResult;
 }
 
-DEFINE_HOOK(0x6F5201, TechnoClass_DrawExtras_IvanBombImage, 0x6)
-{
-	GET(TechnoClass*, pThis, EBP);
-
-	auto coords = pThis->GetCenterCoords();
-
-	R->EAX(&coords);
-	return 0;
-}
-
 // skip the Explosion Anim block and clean up the context
 DEFINE_HOOK(0x4387A8, BombClass_Detonate_ExplosionAnimHandled, 0x5)
 {
@@ -628,6 +618,17 @@ DEFINE_HOOK(0x4387A8, BombClass_Detonate_ExplosionAnimHandled, 0x5)
 
 // redirect MapClass::DamageArea call to our dll for additional functionality and checks
 DEFINE_FUNCTION_JUMP(CALL, 0x4387A3, _BombClass_Detonate_DamageArea);
+
+DEFINE_HOOK(0x6F5201, TechnoClass_DrawExtras_IvanBombImage, 0x6)
+{
+	GET(TechnoClass*, pThis, EBP);
+	GET(CoordStruct*, pCoords, EAX);
+
+	if (RulesExt::Global()->IvanBombAttachToCenter)
+		*pCoords = pThis->GetCenterCoords();
+
+	return 0;
+}
 
 // Oct 20, 2022 - Starkku: BibShape checks for BuildingClass::BState which needs to not be 0 (constructing) for bib to draw.
 // It is possible for BState to be 1 early during construction for frame or two which can result in BibShape being drawn during buildup, which somehow depends on length of buildup.
@@ -648,12 +649,10 @@ DEFINE_HOOK(0x43D874, BuildingClass_Draw_BuildupBibShape, 0x6)
 DEFINE_HOOK(0x70BCE6, TechnoClass_GetTargetCoords_BuildingFix, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
+	GET(CoordStruct*, pCoords, EAX);
 
 	if (const auto pBuilding = abstract_cast<BuildingClass*>(pThis->Target))
-	{
-		const auto coords = pBuilding->GetTargetCoords();
-		R->EAX(&coords);
-	}
+		*pCoords = pBuilding->GetTargetCoords();
 
 	return 0;
 }
@@ -2813,3 +2812,52 @@ DEFINE_HOOK(0x54CC9C, JumpjetLocomotionClass_ProcessCrashing_DropFix, 0x5)
 
 	return fallOnSomething ? SkipGameCode2 : SkipGameCode;
 }
+
+#pragma region ClearTargetOnOwnerChanged
+
+DEFINE_HOOK(0x70D4A0, AbstractClass_ClearTargetToMe_ClearManagerTarget, 0x5)
+{
+	GET(AbstractClass*, pThis, ECX);
+
+	for (const auto pTemporal : TemporalClass::Array)
+	{
+		if (pTemporal->Target == pThis)
+			pTemporal->LetGo();
+	}
+
+	// WW don't clear target if the techno has airstrike manager.
+	// No idea why, but for now we respect it and don't handle the airstrike target.
+	//for (const auto pAirstrike : AirstrikeClass::Array)
+	//{
+	//	if (pAirstrike->Target == pThis)
+	//		pAirstrike->ClearTarget();
+	//}
+
+	for (const auto pSpawn : SpawnManagerClass::Array)
+	{
+		if (pSpawn->Target == pThis)
+			pSpawn->ResetTarget();
+	}
+
+	if (const auto pTechno = abstract_cast<TechnoClass*>(pThis))
+		pTechno->LastTarget = nullptr;
+
+	if (const auto pFoot = abstract_cast<FootClass*>(pThis))
+		pFoot->LastDestination = nullptr;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x70D4FD, AbstractClass_ClearTargetToMe_ClearLastTarget, 0x6)
+{
+	GET(TechnoClass*, pTechno, ESI);
+	GET(const bool, shouldClear, ECX);
+	GET(AbstractClass*, pThis, EBP);
+
+	if (pTechno->LastTarget == pThis && shouldClear)
+		pTechno->LastTarget = nullptr;
+
+	return 0;
+}
+
+#pragma endregion

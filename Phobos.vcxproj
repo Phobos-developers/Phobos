@@ -40,7 +40,6 @@
     <ClCompile Include="src\Ext\Sidebar\SWSidebar\ToggleSWButtonClass.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hooks.MatrixOp.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Airstrike.cpp" />
-    <ClCompile Include="src\Ext\Unit\Hooks.Harvester.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Sinking.cpp" />
     <ClCompile Include="src\Misc\Hooks.AlphaImage.cpp" />
     <ClCompile Include="src\New\Entity\AttachEffectClass.cpp" />
@@ -98,6 +97,7 @@
     <ClCompile Include="src\Ext\TEvent\Body.cpp" />
     <ClCompile Include="src\Ext\Trigger\Hooks.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Crushing.cpp" />
+    <ClCompile Include="src\Ext\Unit\Hooks.Harvester.cpp" />
     <ClCompile Include="src\Locomotion\TestLocomotionClass.cpp" />
     <ClCompile Include="src\Misc\Hooks.Gamespeed.cpp" />
     <ClCompile Include="src\Misc\Hooks.Ares.cpp" />
