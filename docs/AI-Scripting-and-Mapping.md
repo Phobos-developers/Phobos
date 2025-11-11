@@ -735,6 +735,342 @@ ID=ActionCount,[Action1],802,0,[Unique ID],0,0,0,0,A,[ActionX]
 ...
 ```
 
+### `19001` Winner Is... by ID
+
+- Similar to map action 1, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19001,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19002` Loser Is... by ID
+
+- Similar to map action 2, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19002,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19003` Production Begins... by ID
+
+- Similar to map action 3, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19003,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19006` All to Hunt... by ID
+
+- Similar to map action 6, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19006,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19009` Fire Sale... by ID
+
+- Similar to map action 9, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19009,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19013` Autocreate Begins... by ID
+
+- Similar to map action 13, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19013,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19014` Change House... by ID
+
+- Similar to map action 14, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19014,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19020` Play Music Theme... by ID
+
+- Similar to map action 20, but uses a string ID from the `[Themes]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19020,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19033` Add One-Time Special Weapon... by ID
+
+- Similar to map action 33, but uses a string ID from the `[SuperWeaponTypes]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19033,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19034` Add Repeating Special Weapon... by ID
+
+- Similar to map action 34, but uses a string ID from the `[SuperWeaponTypes]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19034,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19036` All Change House... by ID
+
+- Similar to map action 36, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19036,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19037` Make Ally... by ID
+
+- Similar to map action 37, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19037,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19038` Make Enemy... by ID
+
+- Similar to map action 38, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19038,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19041` Play Anim at... by ID
+
+- Similar to map action 41, but uses a string ID from the `[Animations]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19041,4,[Unique ID],0,0,0,0,[WaypointIndex],[ActionX]
+...
+```
+
+### `19042` Do Explosion at... by ID
+
+- Similar to map action 42, but uses a string ID from the `[Weapons]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19042,4,[Unique ID],0,0,0,0,[WaypointIndex],[ActionX]
+...
+```
+
+### `19043` Create VoxelAnim at... by ID
+
+- Similar to map action 43, but uses a string ID from the `[VoxelAnims]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19043,4,[Unique ID],0,0,0,0,[WaypointIndex],[ActionX]
+...
+```
+
+### `19074` AI Triggers Begin... by ID
+
+- Similar to map action 74, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19074,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19075` AI Triggers Stop... by ID
+
+- Similar to map action 75, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19075,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19088` ParticleSystem Anim at... by ID
+
+- Similar to map action 88, but uses a string ID from the `[ParticleSystems]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19088,4,[Unique ID],0,0,0,0,[WaypointIndex],[ActionX]
+...
+```
+
+### `19113` Make House Cheer... by ID
+
+- Similar to map action 113, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19113,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19119` Destroy All of... by ID
+
+- Similar to map action 119, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19119,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19120` Destroy All Buildings of... by ID
+
+- Similar to map action 120, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19120,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19121` Destroy All Land Units of... by ID
+
+- Similar to map action 121, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19121,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19122` Destroy All Naval Units of... by ID
+
+- Similar to map action 122, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19122,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19123` Mind Control Base of... by ID
+
+- Similar to map action 123, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19123,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19124` Restore Mind Controlled Base to... by ID
+
+- Similar to map action 124, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19124,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19126` Restore Starting Technos of... by ID
+
+- Similar to map action 126, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19126,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
+### `19130` Restore Starting Buildings of... by ID
+
+- Similar to map action 130, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],19130,4,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
 ## Trigger events
 
 ### `500-511` Variable comparation

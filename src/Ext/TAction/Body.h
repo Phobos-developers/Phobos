@@ -27,6 +27,35 @@ enum class PhobosTriggerAction : unsigned int
 	CreateBannerLocal = 800, // any banner w/ local variable
 	CreateBannerGlobal = 801, // any banner w/ global variable
 	DeleteBanner = 802,
+
+	WinByID = 19001,
+	LoseByID = 19002,
+	ProductionBeginsByID = 19003,
+	AllToHuntByID = 19006,
+	FireSaleByID = 19009,
+	AutocreateBeginsByID = 19013,
+	ChangeHouseByID = 19014,
+	PlayMusicThemeByID = 19020,
+	AddOneTimeSuperWeaponByID = 19033,
+	AddRepeatingSuperWeaponByID = 19034,
+	AllChangeHouseByID = 19036,
+	MakeAllyByID = 19037,
+	MakeEnemyByID = 19038,
+	PlayAnimAtByID = 19041,
+	DoExplosionAtByID = 19042,
+	CreateVoxelAnimByID = 19043,
+	AITriggersBeginByID = 19074,
+	AITriggersStopByID = 19075,
+	ParticleAnimByID = 19088,
+	MakeHouseCheerByID = 19113,
+	DestroyAllByID = 19119,
+	DestroyAllBuildingsByID = 19120,
+	DestroyAllLandUnitsByID = 19121,
+	DestroyAllNavalUnitsByID = 19122,
+	MindControlBaseByID = 19123,
+	RestoreMindControlledBaseByID = 19124,
+	RestoreStartingUnitsByID = 19126,
+	RestoreStartingBuildingsByID = 19130,
 };
 
 class TActionExt
