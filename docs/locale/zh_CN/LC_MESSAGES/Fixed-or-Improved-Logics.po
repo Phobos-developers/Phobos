@@ -1589,7 +1589,7 @@ msgid ""
 " Client and saving too frequently."
 msgstr ""
 "游戏现在在保存时会自动将存档文件名从 `SAVEGAME.NET` 改为 `SVGM_XXX.NET`（此处 `XXX` 为数字）以防止在 "
-"Phobos 与 XNA CNCNet Client 共用切保存过于频繁时偶尔覆盖存档文件。"
+"Phobos 与 XNA CNCNet Client 共用且保存过于频繁时偶尔覆盖存档文件。"
 
 #: ../../Fixed-or-Improved-Logics.md:264
 msgid ""
