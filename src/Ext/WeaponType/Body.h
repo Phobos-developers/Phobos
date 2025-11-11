@@ -91,6 +91,8 @@ public:
 		Valueable<bool> DelayedFire_OnlyOnInitialBurst;
 		Nullable<CoordStruct> DelayedFire_AnimOffset;
 		Valueable<bool> DelayedFire_AnimOnTurret;
+		Nullable<bool> AttackFriendlies;
+		Nullable<bool> AttackCursorOnFriendlies;
 
 		bool SkipWeaponPicking;
 
@@ -164,6 +166,8 @@ public:
 			, DelayedFire_OnlyOnInitialBurst { false }
 			, DelayedFire_AnimOffset {}
 			, DelayedFire_AnimOnTurret { true }
+			, AttackFriendlies {}
+			, AttackCursorOnFriendlies {}
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;

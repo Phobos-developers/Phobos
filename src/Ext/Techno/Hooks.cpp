@@ -1520,3 +1520,72 @@ DEFINE_HOOK(0x6F9398, TechnoClass_SelectAutoTarget_Scan_FallingDown, 0x9)
 }
 
 #pragma endregion
+
+#pragma region AutoTargetExtension
+
+DEFINE_JUMP(LJMP, 0x700387, 0x7003BD)
+
+DEFINE_HOOK(0x700358, TechnoClass_MouseOverObject_AttackFriendlies, 0x6)
+{
+	enum { CanAttack = 0x700381, Continue = 0x700385 };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(WeaponTypeClass*, pWeapon, EBP);
+	GET_STACK(const bool, IvanBomb, STACK_OFFSET(0x1C, -0xC));
+
+	const auto pType = pThis->GetTechnoType();
+	const auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+	if (pWeaponTypeExt->AttackFriendlies.Get(pType->AttackFriendlies)
+		|| (pWeaponTypeExt->AttackCursorOnFriendlies.Get(pType->AttackCursorOnFriendlies) && !IvanBomb))
+	{
+		return CanAttack;
+	}
+
+	return Continue;
+}
+
+DEFINE_HOOK_AGAIN(0x6F9CE9, TechnoClass_CheckAutoTarget_AttackFriendlies, 0xA)	// TechnoClass::SelectAutoTarget
+DEFINE_HOOK_AGAIN(0x6F9BAE, TechnoClass_CheckAutoTarget_AttackFriendlies, 0xA)
+DEFINE_HOOK_AGAIN(0x6F9204, TechnoClass_CheckAutoTarget_AttackFriendlies, 0xA)
+DEFINE_HOOK_AGAIN(0x6F8BBC, TechnoClass_CheckAutoTarget_AttackFriendlies, 0xA)	// TechnoClass::TryAutoTargetObject
+DEFINE_HOOK(0x6F8A92, TechnoClass_CheckAutoTarget_AttackFriendlies, 0xA)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	R->CL(pThis->Veterancy.IsElite() ? pTypeExt->AttackFriendlies.Y : pTypeExt->AttackFriendlies.X);
+	return R->Origin() + 0x10;
+}
+
+namespace CanAutoTargetTemp
+{
+	WeaponTypeExt::ExtData* WeaponExt;
+}
+
+DEFINE_HOOK(0x6F7E30, TechnoClass_CanAutoTarget_SetContent, 0x6)
+{
+	GET(WeaponTypeClass*, pWeapon, EBP);
+
+	CanAutoTargetTemp::WeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F7EF4, TechnoClass_CanAutoTarget_AttackFriendlies, 0xA)
+{
+	enum { SkipGameCode = 0x6F7F04 };
+
+	GET(TechnoClass*, pThis, EDI);
+
+	bool attackFriendlies = pThis->GetTechnoType()->AttackFriendlies;
+
+	if (const auto pWeaponExt = CanAutoTargetTemp::WeaponExt)
+		attackFriendlies = pWeaponExt->AttackFriendlies.Get(attackFriendlies);
+
+	R->CL(attackFriendlies);
+	return SkipGameCode;
+}
+
+#pragma endregion
