@@ -1439,40 +1439,58 @@ DEFINE_HOOK(0x6F7E1E, TechnoClass_CanAutoTargetObject_AU, 0x6)
 
 DEFINE_HOOK(0x5F4160, ObjectClass_DropAsBomb_Track, 0x6)
 {
+	if (!RulesExt::Global()->FallingDownTargetingFix)
+		return 0;
+
 	GET(TechnoClass*, pThis, ECX);
+
 	if ((pThis->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 	{
 		ScenarioExt::Global()->FallingDownTracker.AddUnique(pThis);
 		TechnoExt::ExtMap.Find(pThis)->FallingDownTracked = true;
 	}
+
 	return 0;
 }
 
 DEFINE_HOOK(0x5F5965, ObjectClass_SpawnParachuted_Track, 0x7)
 {
+	if (!RulesExt::Global()->FallingDownTargetingFix)
+		return 0;
+
 	GET(TechnoClass*, pThis, ESI);
+
 	if ((pThis->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 	{
 		ScenarioExt::Global()->FallingDownTracker.AddUnique(pThis);
 		TechnoExt::ExtMap.Find(pThis)->FallingDownTracked = true;
 	}
+
 	return 0;
 }
 
 DEFINE_HOOK(0x5F3F86, ObjectClass_Update_Track, 0x7)
 {
+	if (!RulesExt::Global()->FallingDownTargetingFix)
+		return 0;
+
 	GET(TechnoClass*, pThis, ESI);
+
 	if ((pThis->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 	{
 		ScenarioExt::Global()->FallingDownTracker.Remove(pThis);
 		TechnoExt::ExtMap.Find(pThis)->FallingDownTracked = false;
 	}
+
 	return 0;
 }
 
 DEFINE_HOOK(0x6F9398, TechnoClass_SelectAutoTarget_Scan_FallingDown, 0x9)
 {
 	enum { FuncRet = 0x6F9DA1, Continue = 0x6F93A1 };
+
+	if (!RulesExt::Global()->FallingDownTargetingFix)
+		return 0;
 
 	REF_STACK(const TechnoClass*, pBestTarget, STACK_OFFSET(0x6C, -0x4C));
 	REF_STACK(int, bestThreat, STACK_OFFSET(0x6C, -0x50));
