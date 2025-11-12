@@ -1489,8 +1489,14 @@ DEFINE_HOOK(0x6F9398, TechnoClass_SelectAutoTarget_Scan_FallingDown, 0x9)
 {
 	enum { FuncRet = 0x6F9DA1, Continue = 0x6F93A1 };
 
+	GET_STACK(const ThreatType, flags, STACK_OFFSET(0x6C, 0x4));
+
+	bool skip = flags != (ThreatType::Air | ThreatType::Range);
+
 	if (!RulesExt::Global()->FallingDownTargetingFix)
-		return 0;
+		return skip ? Continue : FuncRet;
+	else if (skip)
+		return Continue;
 
 	REF_STACK(const TechnoClass*, pBestTarget, STACK_OFFSET(0x6C, -0x4C));
 	REF_STACK(int, bestThreat, STACK_OFFSET(0x6C, -0x50));
@@ -1498,11 +1504,7 @@ DEFINE_HOOK(0x6F9398, TechnoClass_SelectAutoTarget_Scan_FallingDown, 0x9)
 	GET_STACK(const bool, onlyTargetEnemyHouse, STACK_OFFSET(0x6C, 0xC));
 	GET_STACK(int, canTargetWhatAmI, STACK_OFFSET(0x6C, -0x58));
 	GET_STACK(const int, wantedDist, STACK_OFFSET(0x6C, -0x40));
-	GET_STACK(const ThreatType, flags, STACK_OFFSET(0x6C, 0x4));
 	GET(TechnoClass* const, pThis, ESI);
-
-	if ((int)flags != 5)
-		return Continue;
 
 	const auto pType = pThis->GetTechnoType();
 	const auto pOwner = pThis->Owner;
