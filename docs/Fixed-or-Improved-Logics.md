@@ -273,6 +273,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state.
 - Fixed `MovementZone=Subterannean` harvesters being unable to find docks if in area enclosed by water, cliffs etc.
 - Fixed an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner.
+- Fixed an issue where the vanilla script ignores jumpjets. Enable it through `[General] -> AIAirTargetingFix=true`.
 
 ## Fixes / interactions with other extensions
 
