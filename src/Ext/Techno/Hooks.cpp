@@ -151,31 +151,19 @@ DEFINE_HOOK(0x6FA793, TechnoClass_AI_SelfHealGain, 0x5)
 	return SkipGameSelfHeal;
 }
 
-// Can't hook where unit promotion happens in vanilla because of Ares - Fryone, Kerbiter
-DEFINE_HOOK(0x6F9FA9, TechnoClass_AI_PromoteAnim, 0x6)
+// Handle promote animations in cases where Ares is not available.
+DEFINE_HOOK(0x6FA07A, TechnoClass_AI_PromoteAnim, 0x5)
 {
-	GET(TechnoClass*, pThis, ECX);
+	enum { SkipGameCode = 0x6FA07F };
 
-	auto const pType = pThis->GetTechnoType();
+	GET(TechnoClass*, pThis, ESI);
+	GET(VeterancyStruct*, pVet, ECX);
 
-	auto aresProcess = [pType]() { return (pType->Turret) ? 0x6F9FB7 : 0x6FA054; };
+	TechnoExt::ShowPromoteAnim(pThis);
 
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	auto const pVeteranAnim = !pTypeExt->Promote_VeteranAnimation.empty() ? pTypeExt->Promote_VeteranAnimation : RulesExt::Global()->Promote_VeteranAnimation;
-	auto const pEliteAnim = !pTypeExt->Promote_EliteAnimation.empty() ? pTypeExt->Promote_EliteAnimation : RulesExt::Global()->Promote_EliteAnimation;
-
-	if (pVeteranAnim.empty() && pEliteAnim.empty())
-		return aresProcess();
-
-	if (pThis->CurrentRanking != pThis->Veterancy.GetRemainingLevel() && pThis->CurrentRanking != Rank::Invalid && (pThis->Veterancy.GetRemainingLevel() != Rank::Rookie))
-	{
-		if (pThis->Veterancy.GetRemainingLevel() == Rank::Veteran && !pVeteranAnim.empty())
-			AnimExt::CreateRandomAnim(pVeteranAnim, pThis->GetCenterCoords(), pThis, pThis->Owner, true, true);
-		else if (!pEliteAnim.empty())
-			AnimExt::CreateRandomAnim(pEliteAnim, pThis->GetCenterCoords(), pThis, pThis->Owner, true, true);
-	}
-
-	return aresProcess();
+	// Restore overridden instructions.
+	R->EAX(pVet->GetRemainingLevel());
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x6FA540, TechnoClass_AI_ChargeTurret, 0x6)

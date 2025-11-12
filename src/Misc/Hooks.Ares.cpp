@@ -35,6 +35,14 @@ bool __stdcall ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
 	return false;
 }
 
+// Technically this replaces GetTechnoType() call.
+TechnoTypeClass* __fastcall PromoteAnimWrapper(TechnoClass* pThis)
+{
+	TechnoExt::ShowPromoteAnim(pThis);
+
+	return pThis->GetTechnoType();
+}
+
 EBolt* __stdcall CreateEBolt(WeaponTypeClass** pWeaponData)
 {
 	return EBoltExt::CreateEBolt(*pWeaponData);
@@ -88,6 +96,9 @@ void Apply_Ares3_0_Patches()
 
 	// Skip DeployDir parsing on Ares side cause we reimplement it and Ares' parser whines about -1.
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3F38A, AresHelper::AresBaseAddress + 0x3F3A0);
+
+	// Handle promote animations within Ares code if Ares is available.
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x46B44, &PromoteAnimWrapper);
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -135,4 +146,7 @@ void Apply_Ares3_0p1_Patches()
 
 	// Skip DeployDir parsing on Ares side cause we reimplement it and Ares' parser whines about -1.
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3FFEA, AresHelper::AresBaseAddress + 0x40000);
+
+	// Handle promote animations within Ares code if Ares is available.
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x476E4, &PromoteAnimWrapper);
 }

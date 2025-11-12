@@ -5,6 +5,7 @@
 #include <SpawnManagerClass.h>
 #include <FactoryClass.h>
 #include <SuperClass.h>
+#include <Ext/Anim/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/House/Body.h>
 #include <Utilities/EnumFunctions.h>
@@ -863,4 +864,17 @@ void TechnoExt::GetDigitalDisplayFakeHealth(TechnoClass* pThis, int& value, int&
 			maxValue = newMaxValue;
 		}
 	}
+}
+
+void TechnoExt::ShowPromoteAnim(TechnoClass* pThis)
+{
+	auto const pType = pThis->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const& veteranAnims = !pTypeExt->Promote_VeteranAnimation.empty() ? pTypeExt->Promote_VeteranAnimation : RulesExt::Global()->Promote_VeteranAnimation;
+	auto const& eliteAnims = !pTypeExt->Promote_EliteAnimation.empty() ? pTypeExt->Promote_EliteAnimation : RulesExt::Global()->Promote_EliteAnimation;
+
+	if (pThis->Veterancy.GetRemainingLevel() == Rank::Veteran && !veteranAnims.empty())
+		AnimExt::CreateRandomAnim(veteranAnims, pThis->GetCenterCoords(), pThis, pThis->Owner, true, true);
+	else if (!eliteAnims.empty())
+		AnimExt::CreateRandomAnim(eliteAnims, pThis->GetCenterCoords(), pThis, pThis->Owner, true, true);
 }
