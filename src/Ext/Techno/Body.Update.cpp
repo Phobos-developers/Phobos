@@ -52,7 +52,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	const auto pTypeExt = this->TypeExtData;
 	const auto pInterceptorType = pTypeExt->InterceptorType.get();
 
-	if (!pInterceptorType)
+	if (!pInterceptorType || Unsorted::CurrentFrame % pInterceptorType->TargetingDelay != 0)
 		return;
 
 	const auto pThis = this->OwnerObject();
@@ -69,39 +69,36 @@ void TechnoExt::ExtData::ApplyInterceptor()
 			return;
 	}
 
-	const int count = BulletClass::Array.Count;
-
-	if (this->IsBurrowed || !count)
+	if (this->IsBurrowed || !BulletClass::Array.Count)
 		return;
 
-	BulletClass* pTargetBullet = nullptr;
+	BulletClass* pOptionalTarget = nullptr;
 	const double guardRange = pInterceptorType->GuardRange.Get(pThis);
 	const double guardRangeSq = guardRange * guardRange;
-	const double minguardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
-	const double minguardRangeSq = minguardRange * minguardRange;
+	const double minGuardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
 	const auto pOwner = pThis->Owner;
 	const auto location = pThis->Location;
-	const auto canTargetHouses = pInterceptorType->CanTargetHouses;
-	// Interceptor weapon is always fixed
-	const auto pWeapon = pThis->GetWeapon(pInterceptorType->Weapon)->WeaponType;
+	const double minGuardRangeSq = minGuardRange * minGuardRange;
+	const auto pWeapon = pThis->GetWeapon(pInterceptorType->Weapon)->WeaponType; // Interceptor weapon is always fixed
 	const auto pWH = pWeapon->Warhead;
 
-	// DO NOT iterate BulletExt::ExtMap here, the order of items is not deterministic
-	// so it can differ across players throwing target management out of sync.
-	int i = 0;
-
-	for ( ; i < count; ++i)
+	for (auto const pBullet : BulletClass::Array)
 	{
-		const auto& pBullet = BulletClass::Array.GetItem(i);
 		const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 		const auto pBulletTypeExt = pBulletExt->TypeExtData;
 
 		if (!pBulletTypeExt->Interceptable || pBullet->SpawnNextAnim)
 			continue;
 
-		const auto distanceSq = pBullet->Location.DistanceFromSquared(location);
+		bool isTargetedOrLocked = static_cast<bool>(pBulletExt->InterceptedStatus & (InterceptedStatus::Targeted | InterceptedStatus::Locked));
 
-		if (distanceSq > guardRangeSq || distanceSq < minguardRangeSq)
+		// If we already have an optional target skip ones that are already being targeted etc.
+		if (pOptionalTarget && isTargetedOrLocked)
+			continue;
+
+		const auto distanceSq = pBullet->Location.DistanceFromSquared(pThis->Location);
+
+		if (distanceSq > guardRangeSq || distanceSq < minGuardRangeSq)
 			continue;
 
 		if (pBulletTypeExt->Armor.isset())
@@ -114,14 +111,13 @@ void TechnoExt::ExtData::ApplyInterceptor()
 
 		const auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
 
-		if (!EnumFunctions::CanTargetHouse(canTargetHouses, pOwner, bulletOwner))
+		if (!EnumFunctions::CanTargetHouse(pInterceptorType->CanTargetHouses, pThis->Owner, bulletOwner))
 			continue;
 
-		if (pBulletExt->InterceptedStatus & (InterceptedStatus::Targeted | InterceptedStatus::Locked))
+		if (!pOptionalTarget && isTargetedOrLocked)
 		{
-			// Set as optional target
-			pTargetBullet = pBullet;
-			break;
+			pOptionalTarget = pBullet;  // Set as optional target
+			continue;
 		}
 
 		// Establish target
@@ -129,50 +125,8 @@ void TechnoExt::ExtData::ApplyInterceptor()
 		return;
 	}
 
-	// Loop ends and there is no target
-	if (!pTargetBullet)
-		return;
-
-	// There is an optional target, but it is still possible to continue checking for more suitable target
-	for ( ; i < count; ++i)
-	{
-		const auto& pBullet = BulletClass::Array.GetItem(i);
-		const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
-
-		if (pBulletExt->InterceptedStatus & (InterceptedStatus::Targeted | InterceptedStatus::Locked))
-			continue;
-
-		const auto pBulletTypeExt = pBulletExt->TypeExtData;
-
-		if (!pBulletTypeExt->Interceptable || pBullet->SpawnNextAnim)
-			continue;
-
-		const auto distanceSq = pBullet->Location.DistanceFromSquared(location);
-
-		if (distanceSq > guardRangeSq || distanceSq < minguardRangeSq)
-			continue;
-
-		if (pBulletTypeExt->Armor.isset())
-		{
-			const double versus = GeneralUtils::GetWarheadVersusArmor(pWH, pBulletTypeExt->Armor.Get());
-
-			if (versus == 0.0)
-				continue;
-		}
-
-		const auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
-
-		if (!EnumFunctions::CanTargetHouse(canTargetHouses, pOwner, bulletOwner))
-			continue;
-
-		// Establish target
-		pThis->SetTarget(pBullet);
-		return;
-	}
-
-	// There is no more suitable target, establish optional target
-	if (pTargetBullet)
-		pThis->SetTarget(pTargetBullet);
+	if (pOptionalTarget)
+		pThis->SetTarget(pOptionalTarget);  // There is no more suitable target, establish optional target
 }
 
 void TechnoExt::ExtData::DepletedAmmoActions()
