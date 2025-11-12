@@ -910,26 +910,17 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 #pragma endregion
 
 // Basically a hack to make game and Ares pick laser properties from non-Primary weapons.
-DEFINE_HOOK(0x70E1A0, TechnoClass_GetTurretWeapon_LaserWeapon, 0x5)
+static WeaponStruct* __fastcall  BuildingClass_GetPrimaryWeapon_Wrapper(BuildingClass* pThis)
 {
-	enum { ReturnResult = 0x70E1C8 };
+	auto const pExt = BuildingExt::ExtMap.Find(pThis);
 
-	GET(TechnoClass* const, pThis, ECX);
+	if (pExt->CurrentLaserWeaponIndex.has_value())
+		return pThis->GetWeapon(pExt->CurrentLaserWeaponIndex.value());
 
-	if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
-	{
-		auto const pExt = BuildingExt::ExtMap.Find(pBuilding);
-
-		if (pExt->CurrentLaserWeaponIndex.has_value())
-		{
-			auto const weaponStruct = pThis->GetWeapon(*pExt->CurrentLaserWeaponIndex);
-			R->EAX(weaponStruct);
-			return ReturnResult;
-		}
-	}
-
-	return 0;
+	return pThis->GetPrimaryWeapon();
 }
+
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E42B0, BuildingClass_GetPrimaryWeapon_Wrapper) // Also called GetTurretWeapon on YRpp virtuals
 
 DEFINE_HOOK(0x6FCFE0, TechnoClass_RearmDelay_CanCloakDuringRearm, 0x6)
 {
