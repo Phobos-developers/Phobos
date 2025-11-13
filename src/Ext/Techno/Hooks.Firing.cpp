@@ -925,27 +925,16 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 
 #pragma endregion
 
-// Basically a hack to make game and Ares pick laser properties from non-Primary weapons.
-DEFINE_HOOK(0x70E1A0, TechnoClass_GetTurretWeapon_LaserWeapon, 0x5)
+// Fix laser weapons always using characteristics from primary.
+// This particular patch only applies if Ares is not present (fixed separately for Ares elsewhere).
+static WeaponStruct* __fastcall  BuildingClass_GetPrimaryWeapon_Wrapper(BuildingClass* pThis)
 {
-	enum { ReturnResult = 0x70E1C8 };
-
-	GET(TechnoClass* const, pThis, ECX);
-
-	if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
-	{
-		auto const pExt = BuildingExt::ExtMap.Find(pBuilding);
-
-		if (pExt->CurrentLaserWeaponIndex.has_value())
-		{
-			auto const weaponStruct = pThis->GetWeapon(*pExt->CurrentLaserWeaponIndex);
-			R->EAX(weaponStruct);
-			return ReturnResult;
-		}
-	}
-
-	return 0;
+	return BuildingExt::GetLaserWeapon(pThis);
 }
+
+DEFINE_FUNCTION_JUMP(CALL6, 0x6FF4EA, BuildingClass_GetPrimaryWeapon_Wrapper)
+
+DEFINE_PATCH(0x6FF4DE, 0xFF, 0x52, 0x2C, 0x83, 0xF8, 0x6);
 
 DEFINE_HOOK(0x6FCFE0, TechnoClass_RearmDelay_CanCloakDuringRearm, 0x6)
 {

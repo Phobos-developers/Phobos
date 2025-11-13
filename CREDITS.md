@@ -368,6 +368,7 @@ This page lists all the individual contributions to the project by their author.
   - Suppress Ares' swizzle warning when parsing tags and taskforces
   - Better fix for Ares academy not working on the initial payloads of vehicles built from a war factory
   - Fix Ares' InitialPayload for teams spawned by trigger actions
+  - Allow Reveal Crate to take effect when picking up by another player controlled house in campaign
   - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**:
   - Campaign load screen PCX support
