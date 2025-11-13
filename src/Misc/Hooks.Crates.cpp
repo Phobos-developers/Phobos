@@ -98,3 +98,17 @@ DEFINE_HOOK(0x4821BD, CellClass_GoodieCheck_CrateGoodie, 0x6)
 
 	return SkipGameCode;
 }
+
+DEFINE_HOOK(0x481F9D, CellClass_SpringCrate_RevealMap, 0x8)
+{
+	GET_BASE(FootClass*, pFoot, 0x8);
+
+	auto pOwner = pFoot->Owner;
+
+	if (SessionClass::IsCampaign() && (pOwner->IsHumanPlayer || pOwner->IsInPlayerControl))
+		pOwner = HouseClass::CurrentPlayer;
+
+	MapClass::Instance.Reveal(pOwner);
+
+	return 0x481FC8;
+}

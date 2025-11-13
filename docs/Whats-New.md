@@ -493,6 +493,7 @@ Vanilla fixes:
 - Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state (by Starkku)
 - Fixed `MovementZone=Subterannean` harvesters being unable to find docks if in area enclosed by water, cliffs etc. (by Starkku)
 - Fixed an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner (by TaranDahl)
+- Allow Reveal Crate to take effect when picking up by another player controlled house in campaign (by Trsdy)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

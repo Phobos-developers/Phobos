@@ -76,7 +76,6 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	const double guardRange = pInterceptorType->GuardRange.Get(pThis);
 	const double guardRangeSq = guardRange * guardRange;
 	const double minGuardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
-	const auto pOwner = pThis->Owner;
 	const auto location = pThis->Location;
 	const double minGuardRangeSq = minGuardRange * minGuardRange;
 	const auto pWeapon = pThis->GetWeapon(pInterceptorType->Weapon)->WeaponType; // Interceptor weapon is always fixed
