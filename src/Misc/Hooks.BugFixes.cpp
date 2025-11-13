@@ -1584,7 +1584,7 @@ DEFINE_HOOK(0x688F8C, ScenarioClass_ScanPlaceUnit_CheckMovement, 0x5)
 
 	const auto pCell = MapClass::Instance.GetCellAt(*pCoords);
 	const auto pTechnoType = pTechno->GetTechnoType();
-	
+
 	return pCell->IsClearToMove(pTechnoType->SpeedType, pTechno->WhatAmI() == InfantryClass::AbsID, false, -1, pTechnoType->MovementZone, -1, 1) ? 0 : NotUsableArea;
 }
 
