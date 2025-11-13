@@ -1479,7 +1479,7 @@ DEFINE_HOOK(0x6F9398, TechnoClass_SelectAutoTarget_Scan_FallingDown, 0x9)
 
 	GET_STACK(const ThreatType, flags, STACK_OFFSET(0x6C, 0x4));
 
-	bool skip = flags != (ThreatType::Air | ThreatType::Range);
+	const bool skip = flags != (ThreatType::Air | ThreatType::Range);
 
 	if (!RulesExt::Global()->FallingDownTargetingFix)
 		return skip ? Continue : FuncRet;

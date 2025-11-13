@@ -16,7 +16,7 @@ DEFINE_HOOK(0x56BD8B, MapClass_PlaceRandomCrate_Sampling, 0x5)
 	const int YP = 2 * MapClass::Instance.VisibleRect.Y + MapClass::Instance.MapRect.Width
 		+ ScenarioClass::Instance->Random.RandomRanged(0, 2 * MapClass::Instance.VisibleRect.Height + 2);
 
-	CellStruct candidate { (short)((XP + YP) / 2),(short)((YP - XP) / 2) };
+	const CellStruct candidate { (short)((XP + YP) / 2),(short)((YP - XP) / 2) };
 	const auto pCell = MapClass::Instance.TryGetCellAt(candidate);
 
 	if (!pCell)
