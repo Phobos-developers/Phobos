@@ -48,6 +48,7 @@ bool InterceptorTypeClass::Serialize(T& stm)
 {
 	return stm
 		.Process(this->OwnerType)
+		.Process(this->TargetingDelay)
 		.Process(this->CanTargetHouses)
 		.Process(this->GuardRange)
 		.Process(this->MinimumGuardRange)

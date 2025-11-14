@@ -274,6 +274,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `MovementZone=Subterannean` harvesters being unable to find docks if in area enclosed by water, cliffs etc.
 - Fixed an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner.
 - Allow Reveal Crate to take effect when picking up by another player controlled house in campaign.
+- Fixed an issue where the vanilla script ignores jumpjets. Enable it through `[General] -> AIAirTargetingFix=true`.
 
 ## Fixes / interactions with other extensions
 
