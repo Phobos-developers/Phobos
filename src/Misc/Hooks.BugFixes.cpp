@@ -2494,18 +2494,18 @@ DEFINE_HOOK(0x700536, TechnoClass_WhatAction_Object_AllowAttack, 0x6)
 {
 	enum { CanAttack = 0x70055D, Continue = 0x700548 };
 
-	GET_STACK(bool, canEnter, STACK_OFFSET(0x1C, 0x4));
-	GET_STACK(bool, ignoreForce, STACK_OFFSET(0x1C, 0x8));
+	GET_STACK(const bool, canEnter, STACK_OFFSET(0x1C, 0x4));
+	GET_STACK(const bool, ignoreForce, STACK_OFFSET(0x1C, 0x8));
 
 	if (canEnter || ignoreForce)
 		return CanAttack;
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(ObjectClass*, pObject, EDI);
-	GET_STACK(int, WeaponIndex, STACK_OFFSET(0x1C, -0x8));
+	GET_STACK(const int, weaponIndex, STACK_OFFSET(0x1C, -0x8));
 
 	WhatActionObjectTemp::Skip = true;
-	R->EAX(pThis->GetFireError(pObject, WeaponIndex, true));
+	R->EAX(pThis->GetFireError(pObject, weaponIndex, true));
 	WhatActionObjectTemp::Skip = false;
 
 	return Continue;
@@ -2693,7 +2693,7 @@ DEFINE_HOOK(0x5218C2, InfantryClass_UnmarkAllOccupationBits_ResetOwnerIdx, 0x6)
 	enum { Reset = 0x5218CC, NoReset = 0x5218D3 };
 
 	GET(CellClass*, pCell, ESI);
-	GET(DWORD, newFlag, ECX);
+	GET(const DWORD, newFlag, ECX);
 
 	pCell->OccupationFlags = newFlag;
 	auto pExt = CellExt::ExtMap.Find(pCell);
@@ -2856,6 +2856,35 @@ DEFINE_HOOK(0x70D4FD, AbstractClass_ClearTargetToMe_ClearLastTarget, 0x6)
 		pTechno->LastTarget = nullptr;
 
 	return 0;
+}
+
+#pragma endregion
+
+#pragma region AIAirTargetingFix
+
+DEFINE_HOOK(0x6F9B7E, TechnoClass_SelectAutoTarget_AIAirTargetingFix1, 0x5)
+{
+	return RulesExt::Global()->AIAirTargetingFix ? 0x6F9C56 : 0;
+}
+
+DEFINE_HOOK(0x6F9D13, TechnoClass_SelectAutoTarget_AIAirTargetingFix2, 0x7)
+{
+	enum { Ok = 0x6F9D1C, NotOK = 0x6F9D93 };
+
+	if (!RulesExt::Global()->AIAirTargetingFix)
+		return 0;
+
+	GET_STACK(const int, canTargetRtti, STACK_OFFSET(0x6C, -0x58));
+	GET(TechnoClass*, pTarget, EDI);
+
+	bool canTarget = false;
+
+	if ((canTargetRtti & 4) != 0)
+		canTarget = pTarget->LastLayer != Layer::Underground;
+	else
+		canTarget = pTarget->LastLayer == Layer::Ground;
+
+	return canTarget ? Ok : NotOK;
 }
 
 #pragma endregion
