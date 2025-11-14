@@ -877,6 +877,12 @@ DEFINE_HOOK(0x4555E4, BuildingClass_IsPowerOnline_Overpower, 0x6)
 {
 	enum { LowPower = 0x4556BE, Continue1 = 0x4555F0, Continue2 = 0x455643 };
 
+	GET(int, threshold, EDI);
+
+	// Battery.KeepOnline activated
+	if (!threshold)
+		return R->Origin() == 0x4555E4 ? Continue1 : Continue2;
+
 	GET(BuildingClass*, pThis, ESI);
 	const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 	const int keepOnline = pBuildingTypeExt->Overpower_KeepOnline;
