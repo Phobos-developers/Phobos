@@ -604,7 +604,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->WarheadAnimZAdjust)
 		.Process(this->IvanBombAttachToCenter)
 		.Process(this->FallingDownTargetingFix)
-		.Process(this->FallingDownTargetingFix)
+		.Process(this->AIAirTargetingFix)
 		;
 }
 
