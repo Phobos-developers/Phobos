@@ -97,7 +97,7 @@ DEFINE_HOOK(0x5F53AA, ObjectClass_ReceiveDamage_DyingFix, 0x6)
 DEFINE_HOOK(0x4D7431, FootClass_ReceiveDamage_DyingFix, 0x5)
 {
 	GET(FootClass*, pThis, ESI);
-	GET(DamageState, result, EAX);
+	GET(const DamageState, result, EAX);
 
 	if (result != DamageState::PostMortem && (pThis->IsSinking || (!pThis->IsAttackedByLocomotor && pThis->IsCrashing)))
 		R->EAX(DamageState::PostMortem);
@@ -108,7 +108,7 @@ DEFINE_HOOK(0x4D7431, FootClass_ReceiveDamage_DyingFix, 0x5)
 DEFINE_HOOK(0x737D57, UnitClass_ReceiveDamage_DyingFix, 0x7)
 {
 	GET(UnitClass*, pThis, ESI);
-	GET(DamageState, result, EAX);
+	GET(const DamageState, result, EAX);
 
 	// Immediately release locomotor warhead's hold on a crashable unit if it dies while attacked by one.
 	if (result == DamageState::NowDead && pThis->IsAttackedByLocomotor && pThis->Type->Crashable)
@@ -248,7 +248,7 @@ DEFINE_HOOK(0x4438B4, BuildingClass_SetRallyPoint_Naval, 0x6)
 	REF_STACK(SpeedType, spdtp, STACK_OFFSET(0xA4, -0x84));
 	if (!playEVA)// assuming the hook above is the only place where it's set to false when UndeploysInto
 	{
-		if (auto pInto = pBuildingType->UndeploysInto)// r u sure this is not too OP?
+		if (const auto pInto = pBuildingType->UndeploysInto)// r u sure this is not too OP?
 		{
 			R->ESI(pInto->MovementZone);
 			spdtp = pInto->SpeedType;
@@ -424,7 +424,7 @@ DEFINE_HOOK(0x73B2A2, UnitClass_DrawObject_DrawerBlitterFix, 0x6)
 	enum { SkipGameCode = 0x73B2C3 };
 
 	GET(UnitClass* const, pThis, ESI);
-	GET(BlitterFlags, blitterFlags, EDI);
+	GET(const BlitterFlags, blitterFlags, EDI);
 
 	R->EAX(pThis->GetDrawer()->SelectPlainBlitter(blitterFlags));
 
@@ -621,7 +621,7 @@ DEFINE_HOOK(0x51A996, InfantryClass_PerCellProcess_KillOnImpassable, 0x5)
 	enum { ContinueChecks = 0x51A9A0, SkipKilling = 0x51A9EB };
 
 	GET(InfantryClass*, pThis, ESI);
-	GET(LandType, landType, EBX);
+	GET(const LandType, landType, EBX);
 
 	if (landType == LandType::Rock)
 		return ContinueChecks;
@@ -1106,7 +1106,7 @@ DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
 {
 	enum { SkipGameCode = 0x7436AC };
 
-	REF_STACK(TypeList<int>, followers, STACK_OFFSET(0xCC, -0xC0));
+	REF_STACK(const TypeList<int>, followers, STACK_OFFSET(0xCC, -0xC0));
 	auto& units = UnitParseTemp::ParsedUnits;
 
 	for (size_t i = 0; i < units.size(); i++)
