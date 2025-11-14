@@ -334,7 +334,7 @@ DEFINE_HOOK(0x43D6E5, BuildingClass_Draw_ZShapePointMove, 0x5)
 {
 	enum { Apply = 0x43D6EF, Skip = 0x43D712 };
 
-	GET(Mission, mission, EAX);
+	GET(const Mission, mission, EAX);
 
 	if ((mission != Mission::Selling && mission != Mission::Construction))
 		return Apply;
@@ -813,7 +813,7 @@ DEFINE_HOOK(0x4AE95E, DisplayClass_sub_4AE750_DisallowBuildingNonAttackPlanning,
 	GET(ObjectClass* const, pObject, ECX);
 	LEA_STACK(CellStruct*, pCell, STACK_OFFSET(0x20, 0x8));
 
-	auto action = pObject->MouseOverCell(pCell);
+	const auto action = pObject->MouseOverCell(pCell);
 
 	if (!PlanningNodeClass::PlanningModeActive || pObject->WhatAmI() != AbstractType::Building || action == Action::Attack)
 		pObject->CellClickedAction(action, pCell, pCell, false);
@@ -877,7 +877,7 @@ DEFINE_HOOK(0x4555E4, BuildingClass_IsPowerOnline_Overpower, 0x6)
 {
 	enum { LowPower = 0x4556BE, Continue1 = 0x4555F0, Continue2 = 0x455643 };
 
-	GET(int, threshold, EDI);
+	GET(const int, threshold, EDI);
 
 	// Battery.KeepOnline activated
 	if (!threshold)
