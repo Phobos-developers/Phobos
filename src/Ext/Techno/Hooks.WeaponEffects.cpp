@@ -114,17 +114,13 @@ DEFINE_HOOK(0x62D685, ParticleSystemClass_Fire_Coords, 0x5)
 DEFINE_HOOK(0x70C6B5, TechnoClass_Railgun_TargetCoords, 0x5)
 {
 	GET(AbstractClass*, pTarget, EBX);
-
-	CoordStruct coords;
+	GET(CoordStruct*, pCoords, EAX);
 
 	if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pTarget))
-		coords = pBuilding->GetTargetCoords();
+		*pCoords = pBuilding->GetTargetCoords();
 	else if (const auto pCell = abstract_cast<CellClass*, true>(pTarget))
-		coords = pCell->GetCoordsWithBridge();
-	else
-		coords = pTarget->GetCenterCoords();
+		*pCoords = pCell->GetCoordsWithBridge();
 
-	R->EAX(&coords);
 	return 0;
 }
 

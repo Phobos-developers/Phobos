@@ -5,6 +5,7 @@
 
 InterceptorTypeClass::InterceptorTypeClass(TechnoTypeClass* OwnedBy)
 	: OwnerType { OwnedBy }
+	, TargetingDelay { 1 }
 	, CanTargetHouses { AffectedHouse::Enemies }
 	, GuardRange {}
 	, MinimumGuardRange {}
@@ -21,6 +22,7 @@ void InterceptorTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 {
 	INI_EX exINI(pINI);
 
+	this->TargetingDelay.Read(exINI, pSection, "Interceptor.TargetingDelay");
 	this->CanTargetHouses.Read(exINI, pSection, "Interceptor.CanTargetHouses");
 	this->GuardRange.Read(exINI, pSection, "Interceptor.%sGuardRange");
 	this->MinimumGuardRange.Read(exINI, pSection, "Interceptor.%sMinimumGuardRange");
@@ -31,6 +33,12 @@ void InterceptorTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	this->WeaponReplaceProjectile.Read(exINI, pSection, "Interceptor.WeaponReplaceProjectile");
 	this->WeaponCumulativeDamage.Read(exINI, pSection, "Interceptor.WeaponCumulativeDamage");
 	this->KeepIntact.Read(exINI, pSection, "Interceptor.KeepIntact");
+
+	if (!this->TargetingDelay)
+	{
+		Debug::Log("[Developer warning] [%s] Interceptor.TargetingDelay is set 0 which would cause a crash, set to 1 instead.\n", pSection);
+		this->TargetingDelay = 1;
+	}
 }
 
 #pragma region(save/load)

@@ -564,17 +564,15 @@ namespace FetchBomb
 }
 
 // Fetch the BombClass context From earlier address.
-DEFINE_HOOK(0x438771, BombClass_Detonate_SetContext, 0x6)
+DEFINE_HOOK(0x43878E, BombClass_Detonate_SetContext, 0x6)
 {
 	GET(BombClass*, pThis, ESI);
+	REF_STACK(CoordStruct, pCoords, STACK_OFFSET(0x40, -0xC));
 
 	FetchBomb::pThisBomb = pThis;
 
 	if (RulesExt::Global()->IvanBombAttachToCenter)
-	{
-		CoordStruct coords = pThis->Target->GetCenterCoords();
-		R->EDX(&coords);
-	}
+		pCoords = pThis->Target->GetCenterCoords();
 
 	return 0;
 }
@@ -624,12 +622,10 @@ DEFINE_FUNCTION_JUMP(CALL, 0x4387A3, _BombClass_Detonate_DamageArea);
 DEFINE_HOOK(0x6F5201, TechnoClass_DrawExtras_IvanBombImage, 0x6)
 {
 	GET(TechnoClass*, pThis, EBP);
+	GET(CoordStruct*, pCoords, EAX);
 
 	if (RulesExt::Global()->IvanBombAttachToCenter)
-	{
-		auto coords = pThis->GetCenterCoords();
-		R->EAX(&coords);
-	}
+		*pCoords = pThis->GetCenterCoords();
 
 	return 0;
 }
@@ -653,12 +649,10 @@ DEFINE_HOOK(0x43D874, BuildingClass_Draw_BuildupBibShape, 0x6)
 DEFINE_HOOK(0x70BCE6, TechnoClass_GetTargetCoords_BuildingFix, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
+	GET(CoordStruct*, pCoords, EAX);
 
 	if (const auto pBuilding = abstract_cast<BuildingClass*>(pThis->Target))
-	{
-		const auto coords = pBuilding->GetTargetCoords();
-		R->EAX(&coords);
-	}
+		*pCoords = pBuilding->GetTargetCoords();
 
 	return 0;
 }
@@ -860,15 +854,9 @@ bool __fastcall BuildingClass_SetOwningHouse_Wrapper(BuildingClass* pThis, void*
 		const auto pType = pThis->Type;
 
 		if (pType->Powered || pType->PoweredSpecial)
-		{
-			const bool on = pThis->IsPowerOnline();
-			if (on != pThis->WasOnline)
-			{
-				reinterpret_cast<void(__thiscall*)(BuildingClass*)>(0x4549B0)(pThis);
-				pThis->WasOnline = on;
-			}
-		}
+			reinterpret_cast<void(__thiscall*)(BuildingClass*)>(0x4549B0)(pThis);
 	}
+
 	return res;
 }
 
@@ -1591,13 +1579,15 @@ DEFINE_HOOK(0x688F8C, ScenarioClass_ScanPlaceUnit_CheckMovement, 0x5)
 	GET(TechnoClass*, pTechno, EBX);
 	LEA_STACK(CoordStruct*, pCoords, STACK_OFFSET(0x6C, -0x30));
 
-	if (pTechno->WhatAmI() == BuildingClass::AbsID)
+	const auto absType = pTechno->WhatAmI();
+
+	if (absType == BuildingClass::AbsID)
 		return 0;
 
 	const auto pCell = MapClass::Instance.GetCellAt(*pCoords);
 	const auto pTechnoType = pTechno->GetTechnoType();
 
-	return pCell->IsClearToMove(pTechnoType->SpeedType, false, false, -1, pTechnoType->MovementZone, -1, 1) ? 0 : NotUsableArea;
+	return pCell->IsClearToMove(pTechnoType->SpeedType, absType == InfantryClass::AbsID, false, -1, pTechnoType->MovementZone, -1, 1) ? 0 : NotUsableArea;
 }
 
 DEFINE_HOOK(0x68927B, ScenarioClass_ScanPlaceUnit_CheckMovement2, 0x5)
@@ -1607,13 +1597,15 @@ DEFINE_HOOK(0x68927B, ScenarioClass_ScanPlaceUnit_CheckMovement2, 0x5)
 	GET(TechnoClass*, pTechno, EDI);
 	LEA_STACK(CoordStruct*, pCoords, STACK_OFFSET(0x6C, -0xC));
 
-	if (pTechno->WhatAmI() == BuildingClass::AbsID)
+	const auto absType = pTechno->WhatAmI();
+
+	if (absType == BuildingClass::AbsID)
 		return 0;
 
 	const auto pCell = MapClass::Instance.GetCellAt(*pCoords);
 	const auto pTechnoType = pTechno->GetTechnoType();
 
-	return pCell->IsClearToMove(pTechnoType->SpeedType, false, false, -1, pTechnoType->MovementZone, -1, 1) ? 0 : NotUsableArea;
+	return pCell->IsClearToMove(pTechnoType->SpeedType, absType == InfantryClass::AbsID, false, -1, pTechnoType->MovementZone, -1, 1) ? 0 : NotUsableArea;
 }
 
 DEFINE_HOOK(0x446BF4, BuildingClass_Place_FreeUnit_NearByLocation, 0x6)
@@ -2502,18 +2494,18 @@ DEFINE_HOOK(0x700536, TechnoClass_WhatAction_Object_AllowAttack, 0x6)
 {
 	enum { CanAttack = 0x70055D, Continue = 0x700548 };
 
-	GET_STACK(bool, canEnter, STACK_OFFSET(0x1C, 0x4));
-	GET_STACK(bool, ignoreForce, STACK_OFFSET(0x1C, 0x8));
+	GET_STACK(const bool, canEnter, STACK_OFFSET(0x1C, 0x4));
+	GET_STACK(const bool, ignoreForce, STACK_OFFSET(0x1C, 0x8));
 
 	if (canEnter || ignoreForce)
 		return CanAttack;
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(ObjectClass*, pObject, EDI);
-	GET_STACK(int, WeaponIndex, STACK_OFFSET(0x1C, -0x8));
+	GET_STACK(const int, weaponIndex, STACK_OFFSET(0x1C, -0x8));
 
 	WhatActionObjectTemp::Skip = true;
-	R->EAX(pThis->GetFireError(pObject, WeaponIndex, true));
+	R->EAX(pThis->GetFireError(pObject, weaponIndex, true));
 	WhatActionObjectTemp::Skip = false;
 
 	return Continue;
@@ -2701,7 +2693,7 @@ DEFINE_HOOK(0x5218C2, InfantryClass_UnmarkAllOccupationBits_ResetOwnerIdx, 0x6)
 	enum { Reset = 0x5218CC, NoReset = 0x5218D3 };
 
 	GET(CellClass*, pCell, ESI);
-	GET(DWORD, newFlag, ECX);
+	GET(const DWORD, newFlag, ECX);
 
 	pCell->OccupationFlags = newFlag;
 	auto pExt = CellExt::ExtMap.Find(pCell);
@@ -2818,3 +2810,81 @@ DEFINE_HOOK(0x54CC9C, JumpjetLocomotionClass_ProcessCrashing_DropFix, 0x5)
 
 	return fallOnSomething ? SkipGameCode2 : SkipGameCode;
 }
+
+#pragma region ClearTargetOnOwnerChanged
+
+DEFINE_HOOK(0x70D4A0, AbstractClass_ClearTargetToMe_ClearManagerTarget, 0x5)
+{
+	GET(AbstractClass*, pThis, ECX);
+
+	for (const auto pTemporal : TemporalClass::Array)
+	{
+		if (pTemporal->Target == pThis)
+			pTemporal->LetGo();
+	}
+
+	// WW don't clear target if the techno has airstrike manager.
+	// No idea why, but for now we respect it and don't handle the airstrike target.
+	//for (const auto pAirstrike : AirstrikeClass::Array)
+	//{
+	//	if (pAirstrike->Target == pThis)
+	//		pAirstrike->ClearTarget();
+	//}
+
+	for (const auto pSpawn : SpawnManagerClass::Array)
+	{
+		if (pSpawn->Target == pThis)
+			pSpawn->ResetTarget();
+	}
+
+	if (const auto pTechno = abstract_cast<TechnoClass*>(pThis))
+		pTechno->LastTarget = nullptr;
+
+	if (const auto pFoot = abstract_cast<FootClass*>(pThis))
+		pFoot->LastDestination = nullptr;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x70D4FD, AbstractClass_ClearTargetToMe_ClearLastTarget, 0x6)
+{
+	GET(TechnoClass*, pTechno, ESI);
+	GET(const bool, shouldClear, ECX);
+	GET(AbstractClass*, pThis, EBP);
+
+	if (pTechno->LastTarget == pThis && shouldClear)
+		pTechno->LastTarget = nullptr;
+
+	return 0;
+}
+
+#pragma endregion
+
+#pragma region AIAirTargetingFix
+
+DEFINE_HOOK(0x6F9B7E, TechnoClass_SelectAutoTarget_AIAirTargetingFix1, 0x5)
+{
+	return RulesExt::Global()->AIAirTargetingFix ? 0x6F9C56 : 0;
+}
+
+DEFINE_HOOK(0x6F9D13, TechnoClass_SelectAutoTarget_AIAirTargetingFix2, 0x7)
+{
+	enum { Ok = 0x6F9D1C, NotOK = 0x6F9D93 };
+
+	if (!RulesExt::Global()->AIAirTargetingFix)
+		return 0;
+
+	GET_STACK(const int, canTargetRtti, STACK_OFFSET(0x6C, -0x58));
+	GET(TechnoClass*, pTarget, EDI);
+
+	bool canTarget = false;
+
+	if ((canTargetRtti & 4) != 0)
+		canTarget = pTarget->LastLayer != Layer::Underground;
+	else
+		canTarget = pTarget->LastLayer == Layer::Ground;
+
+	return canTarget ? Ok : NotOK;
+}
+
+#pragma endregion
