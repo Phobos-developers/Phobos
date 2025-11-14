@@ -62,7 +62,7 @@ DEFINE_HOOK(0x4C20BC, EBolt_DrawArcs, 0xB)
 {
 	enum { DoLoop = 0x4C20C7, Break = 0x4C2400 };
 
-	GET_STACK(int, plotIndex, STACK_OFFSET(0x408, -0x3E0));
+	GET_STACK(const int, plotIndex, STACK_OFFSET(0x408, -0x3E0));
 	const int arcCount = BoltTemp::ExtData->Arcs;
 
 	return plotIndex < arcCount ? DoLoop : Break;
@@ -157,7 +157,7 @@ DEFINE_HOOK(0x4C285D, EBolt_DrawAll_BurstIndex, 0x5)
 	GET_STACK(EBolt*, pThis, STACK_OFFSET(0x34, -0x24));
 	LEA_STACK(CoordStruct*, pCoords, STACK_OFFSET(0x34, -0xC));
 
-	int burstIndex = pTechno->CurrentBurstIndex;
+	const int burstIndex = pTechno->CurrentBurstIndex;
 	pTechno->CurrentBurstIndex = EBoltExt::ExtMap.Find(pThis)->BurstIndex;
 	pTechno->GetFLH(pCoords, pThis->WeaponSlot, CoordStruct::Empty);
 	pTechno->CurrentBurstIndex = burstIndex;

@@ -278,6 +278,7 @@ public:
 
 		Valueable<bool> IvanBombAttachToCenter;
 
+		Valueable<bool> FallingDownTargetingFix;
 		Valueable<bool> AIAirTargetingFix;
 		
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
@@ -497,6 +498,7 @@ public:
 
 			, IvanBombAttachToCenter { false }
 
+			, FallingDownTargetingFix { false }
 			, AIAirTargetingFix { false }
 		{ }
 
