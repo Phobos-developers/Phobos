@@ -1528,3 +1528,44 @@ DEFINE_HOOK(0x6F9398, TechnoClass_SelectAutoTarget_Scan_FallingDown, 0x9)
 }
 
 #pragma endregion
+
+#pragma region AutoTargetExtension
+
+namespace CanAutoTargetTemp
+{
+	TechnoTypeExt::ExtData* TypeExtData = nullptr;
+	WeaponTypeExt::ExtData* WeaponExt = nullptr;
+}
+
+DEFINE_HOOK(0x6F7E30, TechnoClass_CanAutoTarget_SetContent, 0x6)
+{
+	GET(TechnoClass*, pThis, EDI);
+	GET(WeaponTypeClass*, pWeapon, EBP);
+
+	CanAutoTargetTemp::TypeExtData = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	CanAutoTargetTemp::WeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F85CF, TechnoClass_CanAutoTarget_AttackNoThreatBuildings, 0xA)
+{
+	enum { CanAttack = 0x6F8604, Continue = 0x6F85D9 };
+
+	GET(TechnoClass*, pThis, EDI);
+	GET(BuildingClass*, pTarget, ESI);
+
+	bool canAttack = pThis->Owner->IsControlledByHuman() ? RulesExt::Global()->AutoTarget_NoThreatBuildings : RulesExt::Global()->AutoTargetAI_NoThreatBuildings;
+
+	if (const auto pWeaponExt = CanAutoTargetTemp::WeaponExt)
+		canAttack = pWeaponExt->AttackNoThreatBuildings.Get(canAttack);
+
+	if (canAttack)
+		return CanAttack;
+
+	R->EAX(pTarget->GetTurretWeapon());
+	return Continue;
+}
+
+#pragma endregion
+

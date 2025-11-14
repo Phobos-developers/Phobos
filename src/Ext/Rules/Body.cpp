@@ -331,6 +331,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->FallingDownTargetingFix.Read(exINI, GameStrings::General, "FallingDownTargetingFix");
 	this->AIAirTargetingFix.Read(exINI, GameStrings::General, "AIAirTargetingFix");
+	this->AutoTarget_NoThreatBuildings.Read(exINI, GameStrings::General, "AutoTarget.NoThreatBuildings");
+	this->AutoTargetAI_NoThreatBuildings.Read(exINI, GameStrings::General, "AutoTargetAI.NoThreatBuildings");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -605,6 +607,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->IvanBombAttachToCenter)
 		.Process(this->FallingDownTargetingFix)
 		.Process(this->AIAirTargetingFix)
+		.Process(this->AutoTarget_NoThreatBuildings)
+		.Process(this->AutoTargetAI_NoThreatBuildings)
 		;
 }
 

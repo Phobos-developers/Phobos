@@ -281,6 +281,9 @@ public:
 		Valueable<bool> FallingDownTargetingFix;
 		Valueable<bool> AIAirTargetingFix;
 		
+		Valueable<bool> AutoTarget_NoThreatBuildings;
+		Valueable<bool> AutoTargetAI_NoThreatBuildings;
+    
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -500,6 +503,8 @@ public:
 
 			, FallingDownTargetingFix { false }
 			, AIAirTargetingFix { false }
+			, AutoTarget_NoThreatBuildings { false }
+			, AutoTargetAI_NoThreatBuildings { true }
 		{ }
 
 		virtual ~ExtData() = default;

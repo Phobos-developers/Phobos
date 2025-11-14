@@ -203,8 +203,10 @@ DEFINE_HOOK(0x6F85AB, TechnoClass_CanAutoTargetObject_AggressiveAttackMove, 0x6)
 
 	GET(TechnoClass* const, pThis, EDI);
 
-	if (!pThis->Owner->IsControlledByHuman())
-		return CanTarget;
+	// Now, it is possible to customize which types of national active attacks on non-threatening buildings, so this part has been commented out.
+	// The new judgment code is in TechnoClass_CanAutoTarget_AttackNoThreatBuildings of Hook.cpp.
+	// if (!pThis->Owner->IsControlledByHuman())
+	//	return CanTarget;
 
 	if (!pThis->MegaMissionIsAttackMove())
 		return ContinueCheck;
