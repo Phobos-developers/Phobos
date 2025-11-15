@@ -280,6 +280,8 @@ public:
 
 		Valueable<bool> FallingDownTargetingFix;
 		Valueable<bool> AIAirTargetingFix;
+
+		Valueable<bool> SortCameoByName;
 		
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -500,6 +502,8 @@ public:
 
 			, FallingDownTargetingFix { false }
 			, AIAirTargetingFix { false }
+
+			, SortCameoByName { false }
 		{ }
 
 		virtual ~ExtData() = default;
