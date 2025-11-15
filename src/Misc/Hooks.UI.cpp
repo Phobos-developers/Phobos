@@ -198,8 +198,8 @@ DEFINE_HOOK(0x6A8463, StripClass_OperatorLessThan_CameoPriority, 0x5)
 	GET_STACK(TechnoTypeClass*, pRight, STACK_OFFSET(0x1C, -0x4));
 	GET_STACK(const int, idxLeft, STACK_OFFSET(0x1C, 0x8));
 	GET_STACK(const int, idxRight, STACK_OFFSET(0x1C, 0x10));
-	GET_STACK(AbstractType, rttiLeft, STACK_OFFSET(0x1C, 0x4));
-	GET_STACK(AbstractType, rttiRight, STACK_OFFSET(0x1C, 0xC));
+	GET_STACK(const AbstractType, rttiLeft, STACK_OFFSET(0x1C, 0x4));
+	GET_STACK(const AbstractType, rttiRight, STACK_OFFSET(0x1C, 0xC));
 	const auto pLeftTechnoExt = TechnoTypeExt::ExtMap.TryFind(pLeft);
 	const auto pRightTechnoExt = TechnoTypeExt::ExtMap.TryFind(pRight);
 	const auto pLeftSWExt = (rttiLeft == AbstractType::Special || rttiLeft == AbstractType::Super || rttiLeft == AbstractType::SuperWeaponType)
@@ -220,11 +220,11 @@ DEFINE_HOOK(0x6A8463, StripClass_OperatorLessThan_CameoPriority, 0x5)
 	}
 
 	// Restore overridden instructions
-	GET(AbstractType, rtti1, ESI);
+	GET(const AbstractType, rtti1, ESI);
 	return rtti1 == AbstractType::Special ? 0x6A8477 : 0x6A8468;
 }
 
-DEFINE_HOOK(0x6A84DB, StripClass_OperatorLessThan_SortCameoByNameSW, 0x3)
+DEFINE_HOOK(0x6A84DB, StripClass_OperatorLessThan_SortCameoByNameSW, 0x5)
 {
 	enum { rTrue = 0x6A8692, rFalse = 0x6A86A0 };
 
@@ -233,16 +233,18 @@ DEFINE_HOOK(0x6A84DB, StripClass_OperatorLessThan_SortCameoByNameSW, 0x3)
 
 	if (RulesExt::Global()->SortCameoByName)
 	{
-		if (pLeftSW->Name < pRightSW->Name)
+		const int result = strcmp(pLeftSW->Name, pRightSW->Name);
+
+		if (result < 0)
 			return rTrue;
-		else if (pLeftSW->Name > pRightSW->Name)
+		else if (result > 0)
 			return rFalse;
 	}
 
-	return 0;
+	return wcscmp(pLeftSW->UIName, pRightSW->UIName) <= 0 ? rTrue : rFalse;
 }
 
-DEFINE_HOOK(0x6A86ED, StripClass_OperatorLessThan_SortCameoByNameTechno, 0x3)
+DEFINE_HOOK(0x6A86ED, StripClass_OperatorLessThan_SortCameoByNameTechno, 0x5)
 {
 	enum { rTrue = 0x6A8692, rFalse = 0x6A86A0 };
 
@@ -251,13 +253,15 @@ DEFINE_HOOK(0x6A86ED, StripClass_OperatorLessThan_SortCameoByNameTechno, 0x3)
 
 	if (RulesExt::Global()->SortCameoByName)
 	{
-		if (pLeft->Name < pRight->Name)
+		const int result = strcmp(pLeft->Name, pRight->Name);
+
+		if (result < 0)
 			return rTrue;
-		else if (pLeft->Name > pRight->Name)
+		else if (result > 0)
 			return rFalse;
 	}
 
-	return 0;
+	return wcscmp(pLeft->UIName, pRight->UIName) <= 0 ? rTrue : rFalse;
 }
 
 DEFINE_HOOK(0x6D4684, TacticalClass_Draw_FlyingStrings, 0x6)

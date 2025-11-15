@@ -279,6 +279,8 @@ This page lists all the individual contributions to the project by their author.
   - Delayed fire weapons
   - Changes / fixes to `Vertical` projectile logic and customizing projectile initial facing behavior
   - Bugfixes to map trigger action `125 Build At...`
+  - Owner change during buildup bugfix
+  - Subterranean harvester pathfinding fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -328,7 +330,7 @@ This page lists all the individual contributions to the project by their author.
   - `AlternateFLH` of vehicles in `OpenTopped` transport
   - Slaves' house customization when owner is killed
   - Trigger Action spawned team IFV/OpenTopped logic fix
-  - Singleplayer Campaign AI's base node/SW-delivered/trigger action `125 Create Building At...`'s auto-repairability dehardcode
+  - Singleplayer Campaign AI's base node/SW-delivered/trigger action `125 Build At...`'s auto-repairability dehardcode
   - Power delta counter : blackout indication mark
   - Harvester counter
   - Income money string indication upon ore dump
@@ -342,7 +344,7 @@ This page lists all the individual contributions to the project by their author.
   - `ImmuneToCrit` for shields
   - Forbidding parallel AI queues by type
   - The option to allow `DieSound/VoiceDie` being played when grinding
-  - Allow iron-curtain effects on infantries
+  - Allow iron-curtain effects on infantry
   - Break the mindcontrol link when capturing a mind-controlled building with engineer
   - Remove sound events when mind-controlled vehicles deploy into buildings or when buildings considered as vehicles get captured
   - Building LightSource tint S/L fix
@@ -366,6 +368,7 @@ This page lists all the individual contributions to the project by their author.
   - Suppress Ares' swizzle warning when parsing tags and taskforces
   - Better fix for Ares academy not working on the initial payloads of vehicles built from a war factory
   - Fix Ares' InitialPayload for teams spawned by trigger actions
+  - Allow Reveal Crate to take effect when picking up by another player controlled house in campaign
   - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**:
   - Campaign load screen PCX support
@@ -453,11 +456,11 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that techno unit will draw with ironcurtain and airstrike color and intensity who disguised as terrain or overlay
   - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles
   - Allow setting whether `AlternateFLH` applies to vehicle passengers in the transport unit
-  - Fix the bug that vehicle fall on infantries will make all cell content has been removed
+  - Fix the bug that vehicle fall on infantry will make all cell content has been removed
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
-  - Iron Curtain effects customization on infantries and organic units
+  - Iron Curtain effects customization on infantry and organic units
   - Use `CustomPalette` for animations with `Tiled=yes`
   - Unlimited `AlternateFLH` entries
   - Build limit group
@@ -555,11 +558,10 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that units' `LaserTrails` will always lags behind by one frame
   - Fix an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos
   - Allow the aircraft to enter area guard mission and not crash immediately without any airport
-  - Distribution click action mode
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
-  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
+<!--  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades  -->
   - Type select for buildings (doc)
   - Enhanced Bombard trajectory
   - Shield armor inheritance customization
@@ -625,8 +627,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that jumpjets in air can not correctly spawn missiles
   - Customize the chained damage of the wall
   - Fix an issue that jumpjet vehicles can not stop correctly when assigned a target in range
-  - Fix an issue that jumpjet infantries stop incorrectly when assigned a target out of range
-  - Fix an issue that jumpjet infantries' shadow is always drawn even if they are cloaked
+  - Fix an issue that jumpjet infantry stop incorrectly when assigned a target out of range
+  - Fix an issue that jumpjet infantry' shadow is always drawn even if they are cloaked
   - Fix an issue that technos head to building's dock even they are not going to dock
   - Fix an issue that the jumpjet vehicles cannot stop correctly after going berserk
   - Attack and damage technos underground
@@ -634,6 +636,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the AI would enter a combat state when its building receiving damage from friendly units or damage not greater than 0
   - Fix an issue that the techno with weapon with `AA=yes` and `AG=no` would not auto targeting units that are falling, such as paratroopers
   - Dehardcode the `ZAdjust` of warhead anim
+  - Fix an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner
+  - Fix an issue where the vanilla script ignores jumpjets.
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

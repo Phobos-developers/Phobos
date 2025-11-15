@@ -1,7 +1,6 @@
 #include "Body.h"
 
 #include <AircraftClass.h>
-#include <EventClass.h>
 #include <ScenarioClass.h>
 #include <TunnelLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
@@ -78,6 +77,7 @@ DEFINE_HOOK(0x736480, UnitClass_AI, 0x6)
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	pExt->UpdateKeepTargetOnMove();
 	pExt->DepletedAmmoActions();
+	pExt->UpdateSubterraneanHarvester();
 
 	return 0;
 }
@@ -151,31 +151,19 @@ DEFINE_HOOK(0x6FA793, TechnoClass_AI_SelfHealGain, 0x5)
 	return SkipGameSelfHeal;
 }
 
-// Can't hook where unit promotion happens in vanilla because of Ares - Fryone, Kerbiter
-DEFINE_HOOK(0x6F9FA9, TechnoClass_AI_PromoteAnim, 0x6)
+// Handle promote animations in cases where Ares is not available.
+DEFINE_HOOK(0x6FA07A, TechnoClass_AI_PromoteAnim, 0x5)
 {
-	GET(TechnoClass*, pThis, ECX);
+	enum { SkipGameCode = 0x6FA07F };
 
-	auto const pType = pThis->GetTechnoType();
+	GET(TechnoClass*, pThis, ESI);
+	GET(VeterancyStruct*, pVet, ECX);
 
-	auto aresProcess = [pType]() { return (pType->Turret) ? 0x6F9FB7 : 0x6FA054; };
+	TechnoExt::ShowPromoteAnim(pThis);
 
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	auto const pVeteranAnim = !pTypeExt->Promote_VeteranAnimation.empty() ? pTypeExt->Promote_VeteranAnimation : RulesExt::Global()->Promote_VeteranAnimation;
-	auto const pEliteAnim = !pTypeExt->Promote_EliteAnimation.empty() ? pTypeExt->Promote_EliteAnimation : RulesExt::Global()->Promote_EliteAnimation;
-
-	if (pVeteranAnim.empty() && pEliteAnim.empty())
-		return aresProcess();
-
-	if (pThis->CurrentRanking != pThis->Veterancy.GetRemainingLevel() && pThis->CurrentRanking != Rank::Invalid && (pThis->Veterancy.GetRemainingLevel() != Rank::Rookie))
-	{
-		if (pThis->Veterancy.GetRemainingLevel() == Rank::Veteran && !pVeteranAnim.empty())
-			AnimExt::CreateRandomAnim(pVeteranAnim, pThis->GetCenterCoords(), pThis, pThis->Owner, true, true);
-		else if (!pEliteAnim.empty())
-			AnimExt::CreateRandomAnim(pEliteAnim, pThis->GetCenterCoords(), pThis, pThis->Owner, true, true);
-	}
-
-	return aresProcess();
+	// Restore overridden instructions.
+	R->EAX(pVet->GetRemainingLevel());
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x6FA540, TechnoClass_AI_ChargeTurret, 0x6)
@@ -227,12 +215,13 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	pExt->TypeExtData = pTypeExt;
 
-	pExt->CurrentShieldType = pTypeExt->ShieldType;
+	auto const pShieldType = pTypeExt->ShieldType;
+	pExt->CurrentShieldType = pShieldType;
 	pExt->InitializeAttachEffects();
 	pExt->InitializeDisplayInfo();
 	pExt->InitializeLaserTrails();
 
-	if (!pExt->AE.HasTint && !pExt->CurrentShieldType)
+	if (!pExt->AE.HasTint && (!pShieldType || !pShieldType->HasTint() || pShieldType->Strength <= 0))
 		pExt->UpdateTintValues();
 
 	if (pTypeExt->Harvester_Counted)
@@ -714,39 +703,6 @@ DEFINE_HOOK(0x414665, AircraftClass_Draw_ExtraSHP, 0x6)
 	R->EAX<AircraftTypeClass*>(TechnoExt::GetAircraftTypeExtra(pThis));
 
 	return Continue;
-}
-
-// Do not explicitly reset target for KeepTargetOnMove vehicles when issued move command.
-DEFINE_HOOK(0x4C7462, EventClass_Execute_KeepTargetOnMove, 0x5)
-{
-	enum { SkipGameCode = 0x4C74C0 };
-
-	GET(TechnoClass*, pTechno, EDI);
-
-	if (pTechno->WhatAmI() != AbstractType::Unit)
-		return 0;
-
-	GET(EventClass*, pThis, ESI);
-	auto const mission = static_cast<Mission>(pThis->MegaMission.Mission);
-	auto const pExt = TechnoExt::ExtMap.Find(pTechno);
-
-	if (mission == Mission::Move && pExt->TypeExtData->KeepTargetOnMove && pTechno->Target)
-	{
-		GET(AbstractClass*, pTarget, EBX);
-
-		if (!pTarget && pTechno->IsCloseEnoughToAttack(pTechno->Target))
-		{
-			auto const pDestination = pThis->MegaMission.Destination.As_Abstract();
-			pTechno->SetDestination(pDestination, true);
-			pExt->KeepTargetOnMove = true;
-
-			return SkipGameCode;
-		}
-	}
-
-	pExt->KeepTargetOnMove = false;
-
-	return 0;
 }
 
 #pragma region BuildingTypeSelectable
@@ -1471,34 +1427,49 @@ DEFINE_HOOK(0x6F7E1E, TechnoClass_CanAutoTargetObject_AU, 0x6)
 
 DEFINE_HOOK(0x5F4160, ObjectClass_DropAsBomb_Track, 0x6)
 {
+	if (!RulesExt::Global()->FallingDownTargetingFix)
+		return 0;
+
 	GET(TechnoClass*, pThis, ECX);
+
 	if ((pThis->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 	{
 		ScenarioExt::Global()->FallingDownTracker.AddUnique(pThis);
 		TechnoExt::ExtMap.Find(pThis)->FallingDownTracked = true;
 	}
+
 	return 0;
 }
 
 DEFINE_HOOK(0x5F5965, ObjectClass_SpawnParachuted_Track, 0x7)
 {
+	if (!RulesExt::Global()->FallingDownTargetingFix)
+		return 0;
+
 	GET(TechnoClass*, pThis, ESI);
+
 	if ((pThis->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 	{
 		ScenarioExt::Global()->FallingDownTracker.AddUnique(pThis);
 		TechnoExt::ExtMap.Find(pThis)->FallingDownTracked = true;
 	}
+
 	return 0;
 }
 
 DEFINE_HOOK(0x5F3F86, ObjectClass_Update_Track, 0x7)
 {
+	if (!RulesExt::Global()->FallingDownTargetingFix)
+		return 0;
+
 	GET(TechnoClass*, pThis, ESI);
+
 	if ((pThis->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 	{
 		ScenarioExt::Global()->FallingDownTracker.Remove(pThis);
 		TechnoExt::ExtMap.Find(pThis)->FallingDownTracked = false;
 	}
+
 	return 0;
 }
 
@@ -1506,17 +1477,22 @@ DEFINE_HOOK(0x6F9398, TechnoClass_SelectAutoTarget_Scan_FallingDown, 0x9)
 {
 	enum { FuncRet = 0x6F9DA1, Continue = 0x6F93A1 };
 
+	GET_STACK(const ThreatType, flags, STACK_OFFSET(0x6C, 0x4));
+
+	const bool skip = flags != (ThreatType::Air | ThreatType::Range);
+
+	if (!RulesExt::Global()->FallingDownTargetingFix)
+		return skip ? Continue : FuncRet;
+	else if (skip)
+		return Continue;
+
 	REF_STACK(const TechnoClass*, pBestTarget, STACK_OFFSET(0x6C, -0x4C));
 	REF_STACK(int, bestThreat, STACK_OFFSET(0x6C, -0x50));
 	GET_STACK(const bool, transportMCed, STACK_OFFSET(0x6C, -0x59));
 	GET_STACK(const bool, onlyTargetEnemyHouse, STACK_OFFSET(0x6C, 0xC));
 	GET_STACK(int, canTargetWhatAmI, STACK_OFFSET(0x6C, -0x58));
 	GET_STACK(const int, wantedDist, STACK_OFFSET(0x6C, -0x40));
-	GET_STACK(const ThreatType, flags, STACK_OFFSET(0x6C, 0x4));
 	GET(TechnoClass* const, pThis, ESI);
-
-	if ((int)flags != 5)
-		return Continue;
 
 	const auto pType = pThis->GetTechnoType();
 	const auto pOwner = pThis->Owner;

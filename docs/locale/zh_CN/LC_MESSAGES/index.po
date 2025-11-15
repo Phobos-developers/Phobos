@@ -376,7 +376,7 @@ msgstr "你可以在右下角切换版本（默认显示开发分支最新一次
 msgid ""
 "The documentation is split by a few major categories, each represented "
 "with a page on the sidebar. Each page has its contents grouped into "
-"multiple subcategories, be it buildings, technotypes, infantries, "
+"multiple subcategories, be it buildings, technotypes, infantry, "
 "superweapons or something else."
 msgstr "文档分为几个大类，每类在侧边栏上都有一个页面。每个页面的内容又分为多个子类别，包括建筑、科技类型（四大类通用）、步兵、超级武器或其他。"
 
