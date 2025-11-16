@@ -1759,6 +1759,7 @@ msgid ""
 "They'll be compared after all the other rules but before comparing the "
 "CSF text of `UIName`."
 msgstr ""
+"你也可以使用单位／超级武器的 `Name` 来排列图标。它们将在所有其他规则之后、`UIName` 的 CSF 文本前被比较。"
 
 #: ../../User-Interface.md:564
 msgid ""
@@ -1766,6 +1767,7 @@ msgid ""
 "accidentally, like when you're using a translation pack of different "
 "language."
 msgstr ""
+"这用于避免图标顺序因 CSF 变更而被意外打乱，例如当你使用不同语言的翻译包时。"
 
 #: ../../User-Interface.md:567
 msgid ""
