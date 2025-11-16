@@ -6,8 +6,18 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Building/Body.h>
 
-// Allow deploy controlled mcv
-DEFINE_JUMP(LJMP, 0x700EC2, 0x700EDE)
+DEFINE_HOOK(0x700EC2, UnitClass_CanDeploySlashUnload_ControlledMCV, 0xA)
+{
+	enum { CannotDeploy = 0x700DCE, ContinueCheck = 0x700EDE };
+
+	GET(UnitClass*, pThis, ESI);
+	GET(BuildingTypeClass*, pDeploysInto, EAX);
+
+	if (pDeploysInto->ConstructionYard && pThis->MindControlledBy)
+		return RulesExt::Global()->AllowDeployControlledMCV ? ContinueCheck : CannotDeploy;
+
+	return ContinueCheck;
+}
 
 static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
 {
