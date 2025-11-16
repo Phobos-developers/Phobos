@@ -2266,8 +2266,9 @@ msgstr ""
 "允许在战役模式中由其他被玩家控制的所属方拾取到的开全图工具箱效果生效（by Trsdy）"
 
 #: ../../Whats-New.md:497
-msgid "Fixed an issue where the vanilla script ignores jumpjets. (by TaranDahl)"
+msgid "Fixed an issue where the vanilla script ignores jumpjets (by TaranDahl)"
 msgstr ""
+"修复了原版脚本会忽略 Jumpjet 单位的问题（by TaranDahl）"
 
 #: ../../Whats-New.md:499 ../../Whats-New.md:845 ../../Whats-New.md:930
 #: ../../Whats-New.md:1094 ../../Whats-New.md:1135 ../../Whats-New.md:1147

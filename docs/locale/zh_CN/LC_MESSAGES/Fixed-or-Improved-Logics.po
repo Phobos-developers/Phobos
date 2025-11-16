@@ -1687,6 +1687,7 @@ msgid ""
 "Fixed an issue where the vanilla script ignores jumpjets. Enable it "
 "through `[General] -> AIAirTargetingFix=true`."
 msgstr ""
+"修复了原版脚本会忽略 Jumpjet 单位的问题，需要通过 `[General] -> AIAirTargetingFix=true` 来启用。"
 
 #: ../../Fixed-or-Improved-Logics.md:279
 msgid "Fixes / interactions with other extensions"
