@@ -1828,16 +1828,6 @@ HarvesterScanAfterUnload=false     ; boolean
 HarvesterScanAfterUnload=          ; boolean, default to [General] -> HarvesterScanAfterUnload
 ```
 
-### Allow deploy controlled MCV
-
-- In vanilla, you cannot deploy a controlled vehicle to `ConstructionYard=true` building. Now you can customize it.
-
-In `rulesmd.ini`:
-```ini
-[General]
-AllowDeployControlledMCV=false   ; boolean
-```
-
 ### Preserve Iron Curtain / Force Shield status on type conversion
 
 ![image](_static/images/preserve-ic.gif)
@@ -2348,6 +2338,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]         ; WeaponType
 IsSingleColor=false  ; boolean
+```
+
+## Allow deploy controlled MCV
+
+In vanilla, you cannot deploy a controlled vehicle to `ConstructionYard=true` building. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AllowDeployControlledMCV=false   ; boolean
 ```
 
 ## RadialIndicator visibility
