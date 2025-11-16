@@ -2395,6 +2395,7 @@ msgid ""
 "Fixed an issue that caused Ares's `Battery.KeepOnline` cannot keep "
 "defense buildings works fine (by NetsuNegi)"
 msgstr ""
+"修复了一个导致 Ares 的 `Battery.KeepOnline` 无法保持防御建筑正常运作的问题（by NetsuNegi）"
 
 #: ../../Whats-New.md:521 ../../Whats-New.md:900 ../../Whats-New.md:1123
 msgid "Fixes / interactions with other extensions:"
