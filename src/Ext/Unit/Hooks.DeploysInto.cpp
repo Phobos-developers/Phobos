@@ -6,18 +6,49 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Building/Body.h>
 
-DEFINE_HOOK(0x700EC2, UnitClass_CanDeploySlashUnload_ControlledMCV, 0xA)
+#pragma region AllowDeployControlledMCV
+
+DEFINE_HOOK(0x700ED0, UnitClass_CanDeploySlashUnload_MindControlled, 0xA)
 {
-	enum { CannotDeploy = 0x700DCE, ContinueCheck = 0x700EDE };
-
-	GET(UnitClass*, pThis, ESI);
-	GET(BuildingTypeClass*, pDeploysInto, EAX);
-
-	if (pDeploysInto->ConstructionYard && pThis->MindControlledBy)
-		return RulesExt::Global()->AllowDeployControlledMCV ? ContinueCheck : CannotDeploy;
-
-	return ContinueCheck;
+	return RulesExt::Global()->AllowDeployControlledMCV ? 0x700EDE : 0;
 }
+
+DEFINE_HOOK(0x44F614, BuildingClass_IsControllable_MindControlled, 0x6)
+{
+	return RulesExt::Global()->AllowDeployControlledMCV ? 0x44F622 : 0;
+}
+
+DEFINE_HOOK(0x443AB0, BuildingClass_SetRallyPoint_MindControlled, 0x6)
+{
+	return RulesExt::Global()->AllowDeployControlledMCV ? 0x443ABE : 0;
+}
+
+DEFINE_HOOK(0x443770, BuildingClass_CellClickedAction_MindControlled, 0x6)
+{
+	return RulesExt::Global()->AllowDeployControlledMCV ? 0x44377E : 0;
+}
+
+DEFINE_HOOK(0x449D50, BuildingClass_Mission_Selling_MindControlled, 0x6)
+{
+	return RulesExt::Global()->AllowDeployControlledMCV ? 0x449D5E : 0;
+}
+
+DEFINE_HOOK(0x44A81D, BuildingClass_Mission_Selling_MindControlled2, 0x6)
+{
+	return RulesExt::Global()->AllowDeployControlledMCV ? 0x44A85B : 0;
+}
+
+DEFINE_HOOK(0x44A92D, BuildingClass_Mission_Selling_MindControlled3, 0x6)
+{
+	return RulesExt::Global()->AllowDeployControlledMCV ? 0x44A937 : 0;
+}
+
+DEFINE_HOOK(0x44A9C0, BuildingClass_Mission_Selling_MindControlled4, 0x6)
+{
+	return RulesExt::Global()->AllowDeployControlledMCV ? 0x44A9CA : 0;
+}
+
+#pragma endregion
 
 static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
 {
