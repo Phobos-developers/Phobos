@@ -8,7 +8,7 @@
 
 #pragma region AllowDeployControlledMCV
 
-DEFINE_HOOK(0x700ED0, UnitClass_CanDeploySlashUnload_MindControlled, 0xA)
+DEFINE_HOOK(0x700ED0, UnitClass_CanDeploySlashUnload_MindControlled, 0x6)
 {
 	return RulesExt::Global()->AllowDeployControlledMCV ? 0x700EDE : 0;
 }
