@@ -1637,12 +1637,11 @@ msgid ""
 msgstr "修复了 AI 在建筑受到的伤害即便来自友军单位或不大于 0 点也依然进入防御状态的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:269
-#, fuzzy
 msgid ""
 "If `[General] -> FallingDownTargetingFix` is set to true, the techno with"
 " weapon with `AA=yes` and `AG=no` will auto targeting units that are "
 "falling, such as paratroopers."
-msgstr "修复了所用武器 `AA=yes` 且 `AG=no` 的单位不会主动攻击坠落中的单位（例如伞兵）的问题。"
+msgstr "如果 `[General] -> FallingDownTargetingFix` 设为 true 则所用武器 `AA=yes` 且 `AG=no` 的单位将会主动攻击坠落中的单位（例如伞兵）。"
 
 #: ../../Fixed-or-Improved-Logics.md:270
 msgid "Iron Curtain/Custom Tint Support for SHP Turreted Vehicles."
