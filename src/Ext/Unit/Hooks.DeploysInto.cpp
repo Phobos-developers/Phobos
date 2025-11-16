@@ -6,6 +6,18 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Building/Body.h>
 
+#pragma region AllowDeployControlledMCV
+
+DEFINE_HOOK_AGAIN(0x443770, TechnoClass_AllowDeployControlledMCV, 0x6)// BuildingClass::CellClickedAction
+DEFINE_HOOK_AGAIN(0x443AB0, TechnoClass_AllowDeployControlledMCV, 0x6)// BuildingClass::SetRallyPoint
+DEFINE_HOOK_AGAIN(0x44F614, TechnoClass_AllowDeployControlledMCV, 0x6)// BuildingClass::IsControllable
+DEFINE_HOOK(0x700ED0, TechnoClass_AllowDeployControlledMCV, 0x6)// UnitClass::CanDeploySlashUnload
+{
+	return RulesExt::Global()->AllowDeployControlledMCV ? R->Origin() + 0xE : 0;
+}
+
+#pragma endregion
+
 static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
 {
 	const auto pAnimType = pTechnoFrom->MindControlRingAnim

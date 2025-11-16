@@ -39,7 +39,7 @@ bool __forceinline BuildingExt::CanUndeployOnSell(BuildingClass* pThis)
 		if (!GameModeOptionsClass::Instance.MCVRedeploy)
 			return false;
 		// or MindControlledBy YURIX (why? for balance?)
-		if (pThis->MindControlledBy)
+		if (!RulesExt::Global()->AllowDeployControlledMCV && pThis->MindControlledBy)
 			return false;
 	}
 	else
