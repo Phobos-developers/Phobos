@@ -495,7 +495,7 @@ Vanilla fixes:
 - Fixed an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner (by TaranDahl)
 - Allow Reveal Crate to take effect when picking up by another player controlled house in campaign (by Trsdy)
 - Fixed an issue where the vanilla script ignores jumpjets. (by TaranDahl)
-- Fixed the issue where trigger conditions 2, 53, and 54 would take effect unconditionally after being activated in persistent type triggers (by FlyStar)
+- Fixed the issue where trigger events 2, 53 and 54 in persistent type triggering could be activated unconditionally after activation (by FlyStar)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
