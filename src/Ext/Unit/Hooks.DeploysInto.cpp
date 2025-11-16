@@ -8,24 +8,12 @@
 
 #pragma region AllowDeployControlledMCV
 
-DEFINE_HOOK(0x700ED0, UnitClass_CanDeploySlashUnload_MindControlled, 0x6)
+DEFINE_HOOK_AGAIN(0x443770, TechnoClass_AllowDeployControlledMCV, 0x6)// BuildingClass::CellClickedAction
+DEFINE_HOOK_AGAIN(0x443AB0, TechnoClass_AllowDeployControlledMCV, 0x6)// BuildingClass::SetRallyPoint
+DEFINE_HOOK_AGAIN(0x44F614, TechnoClass_AllowDeployControlledMCV, 0x6)// BuildingClass::IsControllable
+DEFINE_HOOK(0x700ED0, TechnoClass_AllowDeployControlledMCV, 0x6)// UnitClass::CanDeploySlashUnload
 {
-	return RulesExt::Global()->AllowDeployControlledMCV ? 0x700EDE : 0;
-}
-
-DEFINE_HOOK(0x44F614, BuildingClass_IsControllable_MindControlled, 0x6)
-{
-	return RulesExt::Global()->AllowDeployControlledMCV ? 0x44F622 : 0;
-}
-
-DEFINE_HOOK(0x443AB0, BuildingClass_SetRallyPoint_MindControlled, 0x6)
-{
-	return RulesExt::Global()->AllowDeployControlledMCV ? 0x443ABE : 0;
-}
-
-DEFINE_HOOK(0x443770, BuildingClass_CellClickedAction_MindControlled, 0x6)
-{
-	return RulesExt::Global()->AllowDeployControlledMCV ? 0x44377E : 0;
+	return RulesExt::Global()->AllowDeployControlledMCV ? R->Origin() + 0xE : 0;
 }
 
 #pragma endregion
