@@ -3140,6 +3140,7 @@ msgid ""
 "Delay cannot be set to 0, this will change the delay to 1 and outputs a "
 "developer warning to log."
 msgstr ""
+"`Interceptor.TargetingDelay` 决定拦截者单位扫描可被拦截抛射体的频率（单位：帧）。间隔越小越能提升拦截者工作效率，但会降低游戏运行效率。该间隔不得设为 0，否则希望将会自动调整为 1 并在日志中输出开发者警告。"
 
 #: ../../New-or-Enhanced-Logics.md:790
 msgid ""

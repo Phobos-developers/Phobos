@@ -2041,11 +2041,11 @@ msgstr ""
 "of-warhead-anim)（by TaranDahl）"
 
 #: ../../Whats-New.md:461
-#, fuzzy
 msgid ""
 "[Interceptor target scan delay customization](New-or-Enhanced-Logics.md"
 "#projectile-interception-logic) (by Starkku)"
-msgstr "[延迟开火](New-or-Enhanced-Logics.md#delayed-firing)（by Starkku）"
+msgstr "[自定义拦截者目标扫描间隔](New-or-Enhanced-Logics.md"
+"#projectile-interception-logic)（by Starkku）"
 
 #: ../../Whats-New.md:463 ../../Whats-New.md:699 ../../Whats-New.md:1058
 #: ../../Whats-New.md:1167 ../../Whats-New.md:1192 ../../Whats-New.md:1231
