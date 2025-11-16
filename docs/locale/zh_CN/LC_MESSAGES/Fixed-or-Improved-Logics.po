@@ -1680,6 +1680,7 @@ msgid ""
 "Allow Reveal Crate to take effect when picking up by another player "
 "controlled house in campaign."
 msgstr ""
+"允许在战役模式中由其他被玩家控制的所属方拾取到的开全图工具箱效果生效。"
 
 #: ../../Fixed-or-Improved-Logics.md:277
 msgid ""
