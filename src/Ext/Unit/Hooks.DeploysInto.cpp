@@ -28,26 +28,6 @@ DEFINE_HOOK(0x443770, BuildingClass_CellClickedAction_MindControlled, 0x6)
 	return RulesExt::Global()->AllowDeployControlledMCV ? 0x44377E : 0;
 }
 
-DEFINE_HOOK(0x449D50, BuildingClass_Mission_Selling_MindControlled, 0x6)
-{
-	return RulesExt::Global()->AllowDeployControlledMCV ? 0x449D5E : 0;
-}
-
-DEFINE_HOOK(0x44A81D, BuildingClass_Mission_Selling_MindControlled2, 0x6)
-{
-	return RulesExt::Global()->AllowDeployControlledMCV ? 0x44A85B : 0;
-}
-
-DEFINE_HOOK(0x44A92D, BuildingClass_Mission_Selling_MindControlled3, 0x6)
-{
-	return RulesExt::Global()->AllowDeployControlledMCV ? 0x44A937 : 0;
-}
-
-DEFINE_HOOK(0x44A9C0, BuildingClass_Mission_Selling_MindControlled4, 0x6)
-{
-	return RulesExt::Global()->AllowDeployControlledMCV ? 0x44A9CA : 0;
-}
-
 #pragma endregion
 
 static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
