@@ -457,6 +457,7 @@ This page lists all the individual contributions to the project by their author.
   - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles
   - Allow setting whether `AlternateFLH` applies to vehicle passengers in the transport unit
   - Fix the bug that vehicle fall on infantry will make all cell content has been removed
+  - Allow deploy controlled vehicle to `ConstructionYard=true` building
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

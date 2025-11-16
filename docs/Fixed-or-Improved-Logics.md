@@ -275,6 +275,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner.
 - Allow Reveal Crate to take effect when picking up by another player controlled house in campaign.
 - Fixed an issue where the vanilla script ignores jumpjets. Enable it through `[General] -> AIAirTargetingFix=true`.
+- Allow deploy controlled vehicle to `ConstructionYard=true` building.
 
 ## Fixes / interactions with other extensions
 

@@ -6,6 +6,9 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Building/Body.h>
 
+// Allow deploy controlled mcv
+DEFINE_JUMP(LJMP, 0x700EC2, 0x700EDE)
+
 static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
 {
 	const auto pAnimType = pTechnoFrom->MindControlRingAnim
