@@ -292,7 +292,7 @@ Laser trails are very resource intensive! Due to the game not utilizing GPU havi
 ### Shields
 
 ![image](_static/images/technoshield-01.gif)
-*Buildings, Infantries and Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+*Buildings, Infantry and Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 In `rulesmd.ini`:
 ```ini
@@ -786,6 +786,7 @@ BombParachute=           ; AnimationType, default to [General] -> BombParachute
 - Projectiles can now be made interceptable by certain TechnoTypes by setting `Interceptable=true` on them. The TechnoType scans for interceptable projectiles within a range if it has no other target and will use one of its weapons to shoot at them. Projectiles can define `Armor` and `Strength`. Weapons that cannot target the projectile's armor type will not attempt to intercept it. On interception, if the projectile has `Armor` set, an amount equaling to the intercepting weapon's `Damage` adjusted by Warhead `Verses` is deducted from the projectile's current strength. Regardless of if the current projectile strength was reduced or not, if it sits at 0 or below after interception, the projectile is detonated.
   - `Interceptor.Weapon` determines the weapon (0 = `Primary`, 1 = `Secondary`) to be used for intercepting projectiles.
     - The interceptor weapon may need `AG` and/or `AA` set to true on its projectile to be able to target projectiles depending on their elevation from ground. If you don't set those then the weapon won't be able to target low-flying or high-flying projectiles respectively.
+  - `Interceptor.TargetingDelay` determines how often (in frames) interceptor TechnoType scans for suitable projectiles to intercept. Smaller delay is better for interceptor's capabilities but worse for game performance. Delay cannot be set to 0, this will change the delay to 1 and outputs a developer warning to log.
   - `Interceptor.CanTargetHouses` controls which houses the projectiles (or rather their firers) can belong to be eligible for interception.
   - `Interceptor.GuardRange` (and `Interceptor.(Rookie|Veteran|EliteGuardRange)`) is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
   - `Interceptor.MinimumGuardRange` (and `Interceptor.(Rookie|Veteran|EliteMinimumGuardRange)`) is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
@@ -801,6 +802,7 @@ In `rulesmd.ini`:
 [SOMETECHNO]                               ; TechnoType
 Interceptor=false                          ; boolean
 Interceptor.Weapon=0                       ; integer, weapon slot index (0 or 1)
+Interceptor.TargetingDelay=1               ; integer, game frames
 Interceptor.CanTargetHouses=enemies        ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 Interceptor.GuardRange=0.0                 ; floating point value
 Interceptor.VeteranGuardRange=             ; floating point value
@@ -869,7 +871,7 @@ Trajectory.Speed=100.0  ; floating point value
     - `Trajectory.Straight.ProximityMedial` controls whether to detonate `Trajectory.Straight.ProximityWarhead` at the bullet's location rather than the proximity target's location. If `Trajectory.Straight.ProximityDirect` is set to true, this will only affect the calculation result of `Trajectory.Straight.EdgeAttenuation`.
     - `Trajectory.Straight.ProximityAllies` controls whether allies will also trigger the proximity fuse.
     - `Trajectory.Straight.ProximityFlight` controls whether to count units in the air.
-  - `Trajectory.Straight.ThroughVehicles` controls whether the projectile will not be obstructed by vehicles or aircrafts on the ground. When it is obstructed, it will be directly detonated at its location. If it still have `Trajectory.Straight.ProximityImpact` times, it will also detonate a `Trajectory.Straight.ProximityImpact` at the location of the obstacle.
+  - `Trajectory.Straight.ThroughVehicles` controls whether the projectile will not be obstructed by vehicles or aircraft on the ground. When it is obstructed, it will be directly detonated at its location. If it still have `Trajectory.Straight.ProximityImpact` times, it will also detonate a `Trajectory.Straight.ProximityImpact` at the location of the obstacle.
   - `Trajectory.Straight.ThroughBuilding` controls whether the projectile will not be obstructed by buildings. When it is obstructed, it will be directly detonated at its location. If it still have `Trajectory.Straight.ProximityImpact` times, it will also detonate a `Trajectory.Straight.ProximityImpact` at the location of the obstacle.
   - `Trajectory.Straight.SubjectToGround` controls whether the projectile should explode when it hits the ground. Note that this will not make AI search for suitable attack locations.
   - `Trajectory.Straight.ConfineAtHeight` controls the height above ground that projectile will try to travel as it can. It can not move down from the cliff by setting `SubjectToCliffs=true`. It can be cancelled by setting as a non positive integer. It will be forcibly cancelled by setting `Trajectory.Speed` above 256.
@@ -1020,7 +1022,7 @@ Trajectory.Parabola.AxisOfRotation=0,0,1        ; integer - Forward,Lateral,Heig
 ```
 
 ```{note}
-- Compared to vanilla `Arcing`, this can also be used for aircrafts and airburst weapon.
+- Compared to vanilla `Arcing`, this can also be used for aircraft and airburst weapon.
 - Certainly, `Gravity` can also affect the trajectory.
 ```
 
@@ -1639,8 +1641,8 @@ NoQueueUpToEnter.Buildings=     ; boolean, default to NoQueueUpToEnter
 NoQueueUpToUnload.Buildings=    ; boolean, default to NoQueueUpToUnload
 
 [SOMEVEHICLE/SOMEBUILDING]      ; VehicleType/BuildingType, transport
-NoQueueUpToEnter=               ; boolean, default to [General] -> NoQueueUpToEnter.Buildings
-NoQueueUpToUnload=              ; boolean, default to [General] -> NoQueueUpToUnload.Buildings
+NoQueueUpToEnter=               ; boolean, default to [General] -> NoQueueUpToEnter(.Buildings)
+NoQueueUpToUnload=              ; boolean, default to [General] -> NoQueueUpToUnload(.Buildings)
 ```
 
 ```{note}
@@ -2594,7 +2596,7 @@ Burst.FireWithinSequence=false  ; boolean
 
 ### Burst without delay
 
-- In vanilla, vehicles and infantries will only fire once in one frame, even if their `ROF` or `BurstDelay` is set to 0. Now you can force units to fire all bursts in one frame by setting the `Burst.NoDelay` to true.
+- In vanilla, vehicles and infantry will only fire once in one frame, even if their `ROF` or `BurstDelay` is set to 0. Now you can force units to fire all bursts in one frame by setting the `Burst.NoDelay` to true.
 
 In `rulesmd.ini`:
 ```ini

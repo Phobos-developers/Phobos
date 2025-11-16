@@ -376,7 +376,7 @@ msgstr "`Crit.AllowWarheads` 和 `Crit.DisallowWarheads` 可分别列出哪些�
 msgid ""
 "`RevengeWeapon` can be used to temporarily grant the specified weapon as "
 "a [revenge weapon](#revenge-weapon) for the attached object."
-msgstr "`RevengeWeapon` 可用于通过 AE 为被附加对象设置一个临时的[复仇武器](#revenge-weapon)。"
+msgstr "`RevengeWeapon` 可用于通过 AE 为被附加对象设置一个临时的 [复仇武器](#revenge-weapon)。"
 
 #: ../../New-or-Enhanced-Logics.md:50
 msgid ""
@@ -1037,7 +1037,7 @@ msgstr "图像"
 msgid ""
 "Any weapon can now have a custom radiation type. More details on "
 "radiation [here](https://www.modenc.renegadeprojects.com/Radiation)."
-msgstr "现在任何武器都可以拥有自定义的辐射类。有关辐射的更多详细信息请参见[此处](https://www.modenc.renegadeprojects.com/Radiation)。"
+msgstr "现在任何武器都可以拥有自定义的辐射类。有关辐射的更多详细信息请参见 [此处](https://www.modenc.renegadeprojects.com/Radiation)。"
 
 #: ../../New-or-Enhanced-Logics.md:190
 msgid "There are several new properties available to all radiation types."
@@ -1342,7 +1342,7 @@ msgstr "护盾"
 
 #: ../../New-or-Enhanced-Logics.md:294
 msgid ""
-"![image](_static/images/technoshield-01.gif) *Buildings, Infantries and "
+"![image](_static/images/technoshield-01.gif) *Buildings, Infantry and "
 "Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods"
 "/fantasy-adventure)*"
 msgstr ""
@@ -2334,7 +2334,7 @@ msgid ""
 "animations), animations from Warhead `AnimList/SplashList` and map "
 "trigger action `41 Play Anim At` will have the owner set correctly."
 msgstr ""
-"载具[摧毁动画](Fixed-or-Improved-Logics.md#destroy-animations)、弹头 "
+"载具 [摧毁动画](Fixed-or-Improved-Logics.md#destroy-animations)、弹头 "
 "`AnimList/SplashList` 的动画以及地图触发结果 `41 播放动画在...` 将拥有正确的所有者。"
 
 #: ../../New-or-Enhanced-Logics.md:511
@@ -3577,7 +3577,7 @@ msgstr "`Trajectory.Straight.ProximityFlight` 控制是否考虑空中的单位�
 #: ../../New-or-Enhanced-Logics.md:872
 msgid ""
 "`Trajectory.Straight.ThroughVehicles` controls whether the projectile "
-"will not be obstructed by vehicles or aircrafts on the ground. When it is"
+"will not be obstructed by vehicles or aircraft on the ground. When it is"
 " obstructed, it will be directly detonated at its location. If it still "
 "have `Trajectory.Straight.ProximityImpact` times, it will also detonate a"
 " `Trajectory.Straight.ProximityImpact` at the location of the obstacle."
@@ -4290,7 +4290,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:1023
 msgid ""
-"Compared to vanilla `Arcing`, this can also be used for aircrafts and "
+"Compared to vanilla `Arcing`, this can also be used for aircraft and "
 "airburst weapon."
 msgstr "与原有的 `Arcing` 相比，它还可以用于战机和空爆武器。"
 
@@ -5709,7 +5709,7 @@ msgstr ""
 msgid ""
 "Tint effects can also be applied by [attached effects](#attached-effects)"
 " and on [shields](#shields)."
-msgstr "染色效果也可以通过 [Attach Effect](#attached-effects) 和[护盾](#shields)应用。"
+msgstr "染色效果也可以通过 [Attach Effect](#attached-effects) 和 [护盾](#shields) 应用。"
 
 #: ../../New-or-Enhanced-Logics.md:1459
 msgid ""
@@ -6300,9 +6300,9 @@ msgid ""
 "\n"
 "[SOMEVEHICLE/SOMEBUILDING]      ; VehicleType/BuildingType, transport\n"
 "NoQueueUpToEnter=               ; boolean, default to [General] -> "
-"NoQueueUpToEnter.Buildings\n"
+"NoQueueUpToEnter(.Buildings)\n"
 "NoQueueUpToUnload=              ; boolean, default to [General] -> "
-"NoQueueUpToUnload.Buildings\n"
+"NoQueueUpToUnload(.Buildings)\n"
 msgstr ""
 "[General]\n"
 "NoQueueUpToEnter=false          ; boolean\n"
@@ -6312,9 +6312,9 @@ msgstr ""
 "\n"
 "[SOMEVEHICLE/SOMEBUILDING]      ; VehicleType/BuildingType, transport\n"
 "NoQueueUpToEnter=               ; boolean, default to [General] -> "
-"NoQueueUpToEnter.Buildings\n"
+"NoQueueUpToEnter(.Buildings)\n"
 "NoQueueUpToUnload=              ; boolean, default to [General] -> "
-"NoQueueUpToUnload.Buildings\n"
+"NoQueueUpToUnload(.Buildings)\n"
 
 #: ../../New-or-Enhanced-Logics.md:1647
 msgid ""
@@ -7696,7 +7696,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:2131
 msgid "`Voxel=no` turretless vehicles now support the use of `FireUp`."
-msgstr "现在 `Voxel=no` 的无炮塔载具现在已经支持 `FireUp`。"
+msgstr "现在 `Voxel=no` 的无炮塔载具已经支持 `FireUp`。"
 
 #: ../../New-or-Enhanced-Logics.md:2132
 msgid ""
@@ -9080,7 +9080,7 @@ msgstr "无间隔连发"
 
 #: ../../New-or-Enhanced-Logics.md:2597
 msgid ""
-"In vanilla, vehicles and infantries will only fire once in one frame, "
+"In vanilla, vehicles and infantry will only fire once in one frame, "
 "even if their `ROF` or `BurstDelay` is set to 0. Now you can force units "
 "to fire all bursts in one frame by setting the `Burst.NoDelay` to true."
 msgstr ""

@@ -1650,6 +1650,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MultiWeapon_IsSecondary)
 		.Process(this->MultiWeapon_SelectCount)
 		.Process(this->ReadMultiWeapon)
+		.Process(this->ThreatTypes)
+		.Process(this->CombatDamages)
 
 		.Process(this->VoiceIFVRepair)
 		.Process(this->VoiceWeaponAttacks)
