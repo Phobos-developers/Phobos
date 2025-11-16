@@ -103,9 +103,10 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 // Wrapper for MapClass::DamageArea() that sets a pointer in WarheadTypeExt::ExtData that is used to figure 'intended' target of the Warhead detonation, if set and there's no CellSpread.
 DamageAreaResult WarheadTypeExt::ExtData::DamageAreaWithTarget(const CoordStruct& coords, int damage, TechnoClass* pSource, WarheadTypeClass* pWH, bool affectsTiberium, HouseClass* pSourceHouse, TechnoClass* pTarget)
 {
-	this->DamageAreaTarget = pTarget;
-	auto const result = MapClass::DamageArea(coords, damage, pSource, pWH, true, pSourceHouse);
-	this->DamageAreaTarget = nullptr;
+	auto const pWarheadTypeExt = WarheadTypeExt::ExtMap.Find(pWH);
+	pWarheadTypeExt->DamageAreaTarget = pTarget;
+	auto const result = MapClass::DamageArea(coords, damage, pSource, pWH, affectsTiberium, pSourceHouse);
+	pWarheadTypeExt->DamageAreaTarget = nullptr;
 	return result;
 }
 

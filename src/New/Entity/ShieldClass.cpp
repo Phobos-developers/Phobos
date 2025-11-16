@@ -85,8 +85,10 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->Techno)
 		.Process(this->TechnoID)
 		.Process(this->IdleAnim)
+		.Process(this->Timers.SelfHealing_CombatRestart)
 		.Process(this->Timers.SelfHealing)
 		.Process(this->Timers.SelfHealing_WHModifier)
+		.Process(this->Timers.Respawn_CombatRestart)
 		.Process(this->Timers.Respawn)
 		.Process(this->Timers.Respawn_WHModifier)
 		.Process(this->HP)
@@ -141,7 +143,9 @@ void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 
 		// handle shield conversion and tint
 		pToExt->Shield->ConvertCheck(pToExt->TypeExtData->OwnerObject());
-		pToExt->Shield->UpdateTint();
+
+		if (pToExt->Shield)
+			pToExt->Shield->UpdateTint();
 
 		if (pFrom->WhatAmI() == AbstractType::Building)
 			pFromExt->Shield = nullptr;

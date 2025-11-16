@@ -438,6 +438,16 @@ const std::vector<CellStruct> BuildingExt::GetFoundationCells(BuildingClass* con
 	return foundationCells;
 }
 
+WeaponStruct* BuildingExt::GetLaserWeapon(BuildingClass* pThis)
+{
+	auto const pExt = BuildingExt::ExtMap.Find(pThis);
+
+	if (pExt->CurrentLaserWeaponIndex.has_value())
+		return pThis->GetWeapon(pExt->CurrentLaserWeaponIndex.value());
+
+	return pThis->GetPrimaryWeapon();
+}
+
 // =============================
 // load / save
 

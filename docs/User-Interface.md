@@ -560,9 +560,14 @@ When the building becomes ready to be placed, the next building's construction w
 
 - You can now specify Cameo Priority for any TechnoType/SuperWeaponType. Vanilla sorting rules are [here](https://modenc.renegadeprojects.com/Cameo_Sorting).
   - The Cameo Priority is checked just before everything vanilla. Greater `CameoPriority` wins.
+- You can also use `Name` of TechnoType/SuperWeaponType to sort the cameo. They'll be compared after all the other rules but before comparing the CSF text of `UIName`.
+  - This is to prevent cameo order being disrupted by CSF change accidentally, like when you're using a translation pack of different language.
 
 In `rulesmd.ini`:
 ```ini
+[General]
+SortCameoByName=false  ; boolean
+
 [SOMENAME]             ; TechnoType / SuperWeaponType
 CameoPriority=0        ; integer
 ```
