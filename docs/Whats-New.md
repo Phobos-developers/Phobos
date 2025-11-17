@@ -495,7 +495,7 @@ Vanilla fixes:
 - Fixed `MovementZone=Subterannean` harvesters being unable to find docks if in area enclosed by water, cliffs etc. (by Starkku)
 - Fixed an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner (by TaranDahl)
 - Allow Reveal Crate to take effect when picking up by another player controlled house in campaign (by Trsdy)
-- Fixed an issue where the vanilla script ignores jumpjets. (by TaranDahl)
+- Fixed an issue where the vanilla script ignores jumpjets (by TaranDahl)
 - Fixed the issue where trigger events 2, 53 and 54 in persistent type triggers would be activated unconditionally after activation (by FlyStar)
 
 Phobos fixes:
