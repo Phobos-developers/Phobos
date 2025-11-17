@@ -2278,6 +2278,7 @@ msgid ""
 "Fixed the issue where trigger events 2, 53 and 54 in persistent type "
 "triggers would be activated unconditionally after activation (by FlyStar)"
 msgstr ""
+"修复 2、53 和 54 号触发条件在重复类触发器中只要激活过就会被无条件激活的问题（by FlyStar）"
 
 #: ../../Whats-New.md:501 ../../Whats-New.md:847 ../../Whats-New.md:932
 #: ../../Whats-New.md:1096 ../../Whats-New.md:1137 ../../Whats-New.md:1149
