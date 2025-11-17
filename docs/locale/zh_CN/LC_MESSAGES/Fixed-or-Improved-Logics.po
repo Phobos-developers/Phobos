@@ -7799,6 +7799,22 @@ msgstr ""
 "IsSingleColor=false  ; boolean\n"
 
 #: ../../Fixed-or-Improved-Logics.md:2343
+msgid "Allow deploy controlled MCV"
+msgstr "允许部署被心控的 MCV"
+
+#: ../../Fixed-or-Improved-Logics.md:2345
+msgid "In vanilla, you cannot deploy a controlled vehicle to `ConstructionYard=true` building. Now you can customize it."
+msgstr "在原版中你不能将一个被心灵控制的载具部署为 `ConstructionYard=true` 的建筑。现在你可以自定义了。"
+
+#: ../../Fixed-or-Improved-Logics.md:2348
+msgid "[General]\n"
+"AllowDeployControlledMCV=false   ; boolean\n"
+""
+msgstr "[General]\n"
+"AllowDeployControlledMCV=false   ; boolean\n"
+""
+
+#: ../../Fixed-or-Improved-Logics.md:2343
 msgid "RadialIndicator visibility"
 msgstr "范围指示环可见性"
 

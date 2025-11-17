@@ -72,6 +72,23 @@ DEFINE_HOOK(0x726577, TEventClass_Persistable, 0x7)
 	return 0x72657E;
 }
 
+DEFINE_HOOK(0x71F9C0, TEventClass_GetStateB_SpyEvent, 0x6)
+{
+	enum { ReturnFalse = 0x71F9DA };
+
+	GET(TEventClass* const, pThis, ECX);
+
+	switch (pThis->EventKind)
+	{
+	case TriggerEvent::SpiedBy:
+	case TriggerEvent::SpyAsHouse:
+	case TriggerEvent::SpyAsInfantry:
+		return ReturnFalse;
+	default:
+		return 0;
+	}
+}
+
 DEFINE_HOOK_AGAIN(0x71ED5E, TriggerClass_SpyAsInfantryOrHouse, 0x8)		// SpyAsHouse
 DEFINE_HOOK(0x71ECE1, TriggerClass_SpyAsInfantryOrHouse, 0x8)			// SpyAsInfantry
 {
