@@ -21,6 +21,22 @@ private:
 	bool Serialize(T& stm);
 };
 
+struct BulletGroupData
+{
+	std::vector<DWORD> Bullets {}; // <UniqueID>, Capacity
+	double Angle { 0.0 }; // Tracing.StableRotation use this value to update the angle
+	bool ShouldUpdate { true }; // Remind members to update themselves
+
+	BulletGroupData() = default;
+
+	bool Load(PhobosStreamReader& stm, bool registerForChange);
+	bool Save(PhobosStreamWriter& stm) const;
+
+private:
+	template <typename T>
+	bool Serialize(T& stm);
+};
+
 class BulletExt
 {
 public:
@@ -80,6 +96,7 @@ public:
 			, SnappedToTarget { false }
 			, DamageNumberOffset { INT32_MIN }
 			, ParabombFallRate { 0 }
+			, IsInstantDetonation { false }
 
 			, Trajectory { nullptr }
 			, DispersedTrajectory { false }

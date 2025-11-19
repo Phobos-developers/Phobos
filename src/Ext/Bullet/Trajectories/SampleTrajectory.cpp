@@ -1,4 +1,4 @@
-#include "SampleTrajectory.h"
+﻿#include "SampleTrajectory.h"
 
 // Create
 std::unique_ptr<PhobosTrajectory> SampleTrajectoryType::CreateInstance(BulletClass* pBullet) const
@@ -64,6 +64,7 @@ bool SampleTrajectory::Save(PhobosStreamWriter& Stm) const
 
 // Record some information for your bullet.
 void SampleTrajectory::OnUnlimbo()
+<<<<<<< HEAD
 {
 	this->PhobosTrajectory::OnUnlimbo();
 
@@ -111,6 +112,55 @@ TrajectoryCheckReturnType SampleTrajectory::OnDetonateUpdate(const CoordStruct& 
 	if (this->RemainingDistance < 0)
 		return TrajectoryCheckReturnType::Detonate;
 
+=======
+{
+	this->PhobosTrajectory::OnUnlimbo();
+
+	// Sample
+	const auto pBullet = this->Bullet;
+	this->RemainingDistance += static_cast<int>(pBullet->SourceCoords.DistanceFrom(pBullet->TargetCoords));
+
+	// Waiting for launch trigger
+	if (!BulletExt::ExtMap.Find(pBullet)->DispersedTrajectory)
+		this->OpenFire();
+}
+
+// Some checks here, returns whether or not to detonate the bullet.
+// You can change the bullet's true velocity or set its location here. If you modify them here, it will affect the incoming parameters in OnVelocityUpdate().
+bool SampleTrajectory::OnEarlyUpdate()
+{
+	return this->PhobosTrajectory::OnEarlyUpdate();
+}
+
+// What needs to be done before launching the weapon after calculating the new speed.
+bool SampleTrajectory::OnVelocityCheck()
+{
+	return this->PhobosTrajectory::OnVelocityCheck();
+}
+
+// Where you can update the bullet's speed and position. But I would recommend that you complete the calculation at OnEarlyUpdate().
+// pSpeed: From the basic `Velocity` of the bullet plus gravity. It is only used in the calculation of this frame and will not be retained to the next frame.
+// pPosition: From the current `Location` of the bullet, then the bullet will be set location to (*pSpeed + *pPosition). So don't use SetLocation here.
+// You can also do additional processing here so that the position of the bullet will not change with its true velocity.
+void SampleTrajectory::OnVelocityUpdate(BulletVelocity* pSpeed, BulletVelocity* pPosition)
+{
+	this->PhobosTrajectory::OnVelocityUpdate(pSpeed, pPosition);
+}
+
+// Where additional checks based on bullet reaching its target coordinate can be done.
+// Vanilla code will do additional checks regarding buildings on target coordinate and Vertical projectiles and will detonate the projectile if they pass.
+// Return value determines what is done regards to the game checks: they can be skipped, executed as normal or treated as if the condition is already satisfied.
+TrajectoryCheckReturnType SampleTrajectory::OnDetonateUpdate(const CoordStruct& position)
+{
+	if (this->PhobosTrajectory::OnDetonateUpdate(position) == TrajectoryCheckReturnType::Detonate)
+		return TrajectoryCheckReturnType::Detonate;
+
+	this->RemainingDistance -= static_cast<int>(this->MovingSpeed);
+
+	if (this->RemainingDistance < 0)
+		return TrajectoryCheckReturnType::Detonate;
+
+>>>>>>> 05bb3bf30 (MO: merge New Trajectory System)
 	return TrajectoryCheckReturnType::SkipGameCheck;
 }
 

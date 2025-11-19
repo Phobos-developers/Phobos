@@ -1,4 +1,4 @@
-#include "BombardTrajectory.h"
+﻿#include "BombardTrajectory.h"
 
 #include <LineTrail.h>
 #include <AnimClass.h>

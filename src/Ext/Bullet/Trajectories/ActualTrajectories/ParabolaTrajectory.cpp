@@ -1,4 +1,4 @@
-#include "ParabolaTrajectory.h"
+﻿#include "ParabolaTrajectory.h"
 
 #include <OverlayTypeClass.h>
 

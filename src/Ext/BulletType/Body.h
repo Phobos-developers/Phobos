@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <BulletTypeClass.h>
 
 #include <Utilities/Container.h>
@@ -99,6 +99,15 @@ public:
 		Valueable<bool> ReturnWeapon_ApplyFirepowerMult;
 
 		Valueable<bool> SubjectToGround;
+
+		Valueable<bool> BallisticScatter_IncreaseByRange;
+		Nullable<Leptons> BallisticScatter_MinRange;
+		Nullable<Leptons> BallisticScatter_MaxRange;
+		Nullable<Leptons> BallisticScatter_Min_InMinRange;
+		Nullable<Leptons> BallisticScatter_Min_InMaxRange;
+		Nullable<Leptons> BallisticScatter_Max_InMinRange;
+		Nullable<Leptons> BallisticScatter_Max_InMaxRange;
+		Valueable<double> BallisticScatter_Chance;
 
 		Valueable<bool> Splits;
 		Valueable<double> AirburstSpread;
@@ -206,6 +215,14 @@ public:
 			, ReturnWeapon_ApplyFirepowerMult { false }
 			, SubjectToSolid { false }
 			, SubjectToGround { false }
+			, BallisticScatter_IncreaseByRange { false }
+			, BallisticScatter_MinRange {}
+			, BallisticScatter_MaxRange {}
+			, BallisticScatter_Min_InMinRange {}
+			, BallisticScatter_Min_InMaxRange {}
+			, BallisticScatter_Max_InMinRange {}
+			, BallisticScatter_Max_InMaxRange {}
+			, BallisticScatter_Chance { 1.0 }
 			, Splits { false }
 			, AirburstSpread { 1.5 }
 			, RetargetAccuracy { 0.0 }

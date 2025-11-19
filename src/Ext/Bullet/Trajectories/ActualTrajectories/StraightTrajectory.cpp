@@ -1,4 +1,4 @@
-#include "StraightTrajectory.h"
+﻿#include "StraightTrajectory.h"
 
 #include <Ext/Bullet/Body.h>
 #include <Ext/WeaponType/Body.h>

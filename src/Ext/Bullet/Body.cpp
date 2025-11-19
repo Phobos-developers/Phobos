@@ -868,7 +868,9 @@ DEFINE_HOOK(0x4664BA, BulletClass_CTOR, 0x5)
 DEFINE_HOOK(0x4665E9, BulletClass_DTOR, 0xA)
 {
 	GET(BulletClass*, pItem, ESI);
+
 	BulletExt::ExtMap.Remove(pItem);
+
 	return 0;
 }
 

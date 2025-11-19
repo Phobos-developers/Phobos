@@ -1,4 +1,6 @@
-#include "Body.h"
+﻿#include "Body.h"
+
+#include <Ext/Bullet/Trajectories/PhobosActualTrajectory.h>
 
 #include <Ext/Bullet/Trajectories/PhobosActualTrajectory.h>
 
@@ -111,6 +113,15 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ReturnWeapon_ApplyFirepowerMult.Read(exINI, pSection, "ReturnWeapon.ApplyFirepowerMult");
 	this->SubjectToSolid.Read(exINI, pSection, "SubjectToBuildings");
 	this->SubjectToGround.Read(exINI, pSection, "SubjectToGround");
+
+	this->BallisticScatter_IncreaseByRange.Read(exINI, pSection, "BallisticScatter.IncreaseByRange");
+	this->BallisticScatter_MinRange.Read(exINI, pSection, "BallisticScatter.MinRange");
+	this->BallisticScatter_MaxRange.Read(exINI, pSection, "BallisticScatter.MaxRange");
+	this->BallisticScatter_Min_InMinRange.Read(exINI, pSection, "BallisticScatter.Min.InMinRange");
+	this->BallisticScatter_Min_InMaxRange.Read(exINI, pSection, "BallisticScatter.Min.InMaxRange");
+	this->BallisticScatter_Max_InMinRange.Read(exINI, pSection, "BallisticScatter.Max.InMinRange");
+	this->BallisticScatter_Max_InMaxRange.Read(exINI, pSection, "BallisticScatter.Max.InMaxRange");
+	this->BallisticScatter_Chance.Read(exINI, pSection, "BallisticScatter.Chance");
 
 	this->Splits.Read(exINI, pSection, "Splits");
 	this->AirburstSpread.Read(exINI, pSection, "AirburstSpread");
@@ -283,6 +294,14 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ReturnWeapon_ApplyFirepowerMult)
 		.Process(this->SubjectToSolid)
 		.Process(this->SubjectToGround)
+		.Process(this->BallisticScatter_IncreaseByRange)
+		.Process(this->BallisticScatter_MinRange)
+		.Process(this->BallisticScatter_MaxRange)
+		.Process(this->BallisticScatter_Min_InMinRange)
+		.Process(this->BallisticScatter_Min_InMaxRange)
+		.Process(this->BallisticScatter_Max_InMinRange)
+		.Process(this->BallisticScatter_Max_InMaxRange)
+		.Process(this->BallisticScatter_Chance)
 		.Process(this->Splits)
 		.Process(this->AirburstSpread)
 		.Process(this->RetargetAccuracy)
