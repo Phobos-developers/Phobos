@@ -88,8 +88,8 @@ DEFINE_HOOK(0x6B72FE, SpawnerManagerClass_AI_MissileCheck, 0x9)
 
 	GET(SpawnManagerClass*, pThis, ESI);
 
-	auto pLoco = ((FootClass*)pThis->Owner)->Locomotor; // Ares has already handled the building case.
-	auto pLocoInterface = pLoco.GetInterfacePtr();
+	const auto pLoco = ((FootClass*)pThis->Owner)->Locomotor; // Ares has already handled the building case.
+	const auto pLocoInterface = pLoco.GetInterfacePtr();
 
 	return (pLocoInterface->Is_Moving_Now()
 		|| (!locomotion_cast<JumpjetLocomotionClass*>(pLoco) && pLocoInterface->Is_Moving())) // Jumpjet should only check Is_Moving_Now.
@@ -777,7 +777,7 @@ DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
 	enum { Continue= 0x51D7EC, SkipWaterSequences = 0x51D842, UseSwim = 0x51D83D, UseWetAttack = 0x51D82F };
 
 	GET(InfantryClass*, pThis, ESI);
-	GET(Sequence, sequence, EDI);
+	GET(const Sequence, sequence, EDI);
 
 	R->EBP(0); // Restore overridden instructions.
 

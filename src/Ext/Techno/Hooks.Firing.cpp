@@ -372,7 +372,7 @@ DEFINE_HOOK(0x6FC0C5, TechnoClass_CanFire_DisableWeapons, 0x6)
 	enum { OutOfRange = 0x6FC0DF, Illegal = 0x6FC86A, Continue = 0x6FC0D3 };
 
 	GET(TechnoClass*, pThis, ESI);
-	GET_STACK(int, weaponIndex, STACK_OFFSET(0x20, 0x8));
+	GET_STACK(const int, weaponIndex, STACK_OFFSET(0x20, 0x8));
 
 	if (pThis->SlaveOwner)
 		return Illegal;
@@ -391,7 +391,7 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(TechnoClass*, pTransport, EAX);
-	GET_STACK(int, weaponIndex, STACK_OFFSET(0x20, 0x8));
+	GET_STACK(const int, weaponIndex, STACK_OFFSET(0x20, 0x8));
 
 	auto const pTypeExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData;
 
@@ -543,7 +543,7 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_BeforeTruelyFire, 0x6)
 	GET(TechnoClass* const, pThis, ESI);
 //	GET(AbstractClass* const, pTarget, EDI);
 	GET(WeaponTypeClass* const, pWeapon, EBX);
-	GET_BASE(int, weaponIndex, 0xC);
+	GET_BASE(const int, weaponIndex, 0xC);
 
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
