@@ -10,12 +10,8 @@
 
 void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 {
-	auto weaponIndex = TechnoExt::ExtMap.Find(pThis)->CurrentAircraftWeaponIndex;
-
-	if (weaponIndex < 0)
-		weaponIndex = pThis->SelectWeapon(pTarget);
-
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	int weaponIndex = pExt->CurrentAircraftWeaponIndex;
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	const int burstCount = pWeapon->Burst;
@@ -75,7 +71,7 @@ bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CellStruct ed
 	const bool result = pThis->Unlimbo(coords, DirType::North);
 	--Unsorted::ScenarioInit;
 
-	pThis->SetHeight(pTypeExt->SpawnHeight.Get(pType->GetFlightLevel()));
+	pThis->SetHeight(pTypeExt->SpawnHeight.isset() ? pTypeExt->SpawnHeight.Get() : pType->GetFlightLevel());
 
 	if (pTarget)
 		pThis->PrimaryFacing.SetDesired(pThis->GetTargetDirection(pTarget));

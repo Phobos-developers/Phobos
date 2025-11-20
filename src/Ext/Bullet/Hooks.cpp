@@ -2,6 +2,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/BulletType/Body.h>
+#include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/Macro.h>
@@ -66,11 +67,12 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 		pThis->UnInit();
 
 		const auto pTechno = pThis->Owner;
+		const auto pWeapon = pThis->WeaponType;
 
 		if (pTechno
 			&& pTechno->InLimbo
-			&& pThis->WeaponType
-			&& pThis->WeaponType->LimboLaunch)
+			&& pWeapon
+			&& pWeapon->LimboLaunch)
 		{
 			pThis->SetTarget(nullptr);
 			auto damage = pTechno->Health * 2;
@@ -364,9 +366,14 @@ DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)
 
 DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 {
-	enum { SkipChecks = 0x468E7B };
+	enum { Snap = 0x468E7B, SkipChecks = 0x468FF4 };
 
 	GET(BulletClass*, pThis, ESI);
+
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (pExt->IsInstantDetonation)
+		return SkipChecks;
 
 	auto const pType = pThis->Type;
 
@@ -374,19 +381,17 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 	if (pType->Inviso)
 	{
 		R->EAX(pType);
-		return SkipChecks;
+		return Snap;
 	}
 	else if (pType->Arcing || pType->ROT > 0)
 	{
 		return 0;
 	}
 
-	auto const pExt = BulletExt::ExtMap.Find(pThis);
-
 	if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
 	{
 		R->EAX(pType);
-		return SkipChecks;
+		return Snap;
 	}
 
 	return 0;
@@ -394,9 +399,14 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 
 DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 {
-	enum { SkipInitialChecks = 0x468EC7, SkipSetCoordinate = 0x468F23 };
+	enum { SkipInitialChecksOnly = 0x468EC7, SkipSetCoordinate = 0x468F23, SkipChecks = 0x468FF4 };
 
 	GET(BulletClass*, pThis, ESI);
+
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (pExt->IsInstantDetonation)
+		return SkipChecks;
 
 	auto const pType = pThis->Type;
 
@@ -404,7 +414,7 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 	if (pType->Inviso)
 	{
 		R->EAX(pType);
-		return SkipInitialChecks;
+		return SkipInitialChecksOnly;
 	}
 	else if (pType->Arcing || pType->ROT > 0)
 	{
@@ -413,8 +423,6 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 
 	// Do not force Trajectory=Straight projectiles to detonate at target coordinates under certain circumstances.
 	// Fixes issues with walls etc.
-	auto const pExt = BulletExt::ExtMap.Find(pThis);
-
 	if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
 		return SkipSetCoordinate;
 

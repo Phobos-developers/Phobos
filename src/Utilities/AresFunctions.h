@@ -25,6 +25,7 @@ public:
 	static void InitAres3_0();
 	static void InitAres3_0p1();
 	static void InitNoAres();
+
 	// TechnoExt
 	static bool(__stdcall* ConvertTypeTo)(TechnoClass* pFoot, TechnoTypeClass* pConvertTo);
 
@@ -32,11 +33,17 @@ public:
 
 	static void(__stdcall* SpawnSurvivors)(FootClass* pThis, TechnoClass* pKiller, bool Select, bool IgnoreDefenses);
 
+	static bool(__thiscall* ReverseEngineer)(void* pAresHouseExt, TechnoTypeClass* pType);
+
 	static bool(__thiscall* IsTargetConstraintsEligible)(void*, HouseClass*, bool);
 
 	static std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> SWTypeExtMap_Find;
 
 	static PhobosMap<ObjectClass*, AlphaShapeClass*>* AlphaExtMap;
+
+	// BuildingTypeExt::ExtData
+	static void* (__thiscall* GetTunnel)(void*, HouseClass*);
+	static void(__thiscall* AddPassengerFromTunnel)(void*, BuildingClass*, FootClass*);
 private:
 
 	static constexpr bool _maybe = false;
