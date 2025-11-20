@@ -542,7 +542,7 @@ DEFINE_HOOK(0x74691D, UnitClass_UpdateDisguise_EMP, 0x6)
 	return 0x746931;
 }
 
-DEFINE_HOOK(0x7466DC, UnitClass_DisguiseAs_DisguiseAsVehicle, 0x6)
+DEFINE_HOOK(0x7466D8, UnitClass_DisguiseAs_DisguiseAsVehicle, 0xA)
 {
 	enum { SkipGameCode = 0x746712 };
 
@@ -587,21 +587,24 @@ DEFINE_HOOK(0x74659B, UnitClass_RemoveGunner_ClearDisguise, 0x6)
 
 #pragma region UnitClass DrawSHP
 
+static ObjectTypeClass* _GetUnitDisguiseAs(UnitClass* pThis)
+{
+	if (!pThis->IsDisguised() || pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+		return nullptr;
+
+	return abstract_cast<UnitTypeClass*>(pThis->GetDisguise(true));
+}
+
 DEFINE_HOOK(0x73C655, UnitClass_DrawSHP_TechnoType, 0x6)
 {
 	enum { ApplyDisguiseType = 0x73C65B };
 
 	GET(UnitClass*, pThis, EBP);
 
-	if (pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+	if (const auto pDisguise = _GetUnitDisguiseAs(pThis))
 	{
-		const auto pTargetType = pThis->GetDisguise(true);
-
-		if (pTargetType && pTargetType->WhatAmI() == UnitTypeClass::AbsID)
-		{
-			R->ECX(pTargetType);
-			return ApplyDisguiseType;
-		}
+		R->ECX(pDisguise);
+		return ApplyDisguiseType;
 	}
 
 	return 0;
@@ -613,15 +616,10 @@ DEFINE_HOOK(0x73C69D, UnitClass_DrawSHP_TechnoType2, 0x6)
 
 	GET(UnitClass*, pThis, EBP);
 
-	if (pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+	if (const auto pDisguise = _GetUnitDisguiseAs(pThis))
 	{
-		const auto pTargetType = pThis->GetDisguise(true);
-
-		if (pTargetType && pTargetType->WhatAmI() == UnitTypeClass::AbsID)
-		{
-			R->ECX(pThis->GetDisguise(true));
-			return ApplyDisguiseType;
-		}
+		R->ECX(pDisguise);
+		return ApplyDisguiseType;
 	}
 
 	return 0;
@@ -633,21 +631,16 @@ DEFINE_HOOK(0x73C702, UnitClass_DrawSHP_TechnoType3, 0x6)
 
 	GET(UnitClass*, pThis, EBP);
 
-	if (pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+	if (const auto pDisguise = _GetUnitDisguiseAs(pThis))
 	{
-		const auto pTargetType = pThis->GetDisguise(true);
-
-		if (pTargetType && pTargetType->WhatAmI() == UnitTypeClass::AbsID)
-		{
-			R->ECX(pThis->GetDisguise(true));
-			return ApplyDisguiseType;
-		}
+		R->ECX(pDisguise);
+		return ApplyDisguiseType;
 	}
 
 	return 0;
 }
 
-DEFINE_HOOK(0x73C725, UnitClass_DrawSHP_HasTurret, 0x5)
+DEFINE_HOOK(0x73C725, UnitClass_DrawSHP_HasTurret, 0x6)
 {
 	enum { SkipDrawTurret = 0x73CE0D };
 
@@ -655,9 +648,7 @@ DEFINE_HOOK(0x73C725, UnitClass_DrawSHP_HasTurret, 0x5)
 
 	if (pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
 	{
-		const auto pDisguise = pThis->GetDisguise(true);
-
-		if (pDisguise)
+		if (const auto pDisguise = pThis->GetDisguise(true))
 		{
 			const auto pTargetType = TechnoTypeExt::GetTechnoType(pDisguise);
 
@@ -699,20 +690,10 @@ DEFINE_HOOK(0x73B8E3, UnitClass_DrawVoxel_HasChargeTurret, 0x5)
 	GET(UnitClass*, pThis, EBP);
 	GET(UnitTypeClass*, pType, EBX);
 
-	if (pType != pThis->Type)
-	{
-		if (pType->TurretCount > 0 && !pType->IsGattling)
-			return 0x73B8EC;
-		else
-			return 0x73B92F;
-	}
-	else
-	{
-		if (!pType->HasMultipleTurrets() || pType->IsGattling)
-			return 0x73B92F;
-		else
-			return 0x73B8FC;
-	}
+	if (!pType->HasMultipleTurrets() || pType->IsGattling)
+		return 0x73B92F;
+
+	return pType != pThis->Type ? 0x73B8EC : 0x73B8FC;
 }
 
 DEFINE_HOOK(0x73BC28, UnitClass_DrawVoxel_HasChargeTurret2, 0x5)
@@ -720,27 +701,18 @@ DEFINE_HOOK(0x73BC28, UnitClass_DrawVoxel_HasChargeTurret2, 0x5)
 	GET(UnitClass*, pThis, EBP);
 	GET(UnitTypeClass*, pType, EBX);
 
+	if (!pType->HasMultipleTurrets() || pType->IsGattling)
+		return 0x73BD79;
+
 	if (pType != pThis->Type)
 	{
-		if (pType->TurretCount > 0 && !pType->IsGattling)
-		{
-			if (pThis->CurrentTurretNumber < 0)
-				R->Stack<int>(0x1C, 0);
+		if (pThis->CurrentTurretNumber == -1)
+			R->Stack<int>(0x1C, 0);
 
-			return 0x73BC35;
-		}
-		else
-		{
-			return 0x73BD79;
-		}
+		return 0x73BC35;
 	}
-	else
-	{
-		if (!pType->HasMultipleTurrets() || pType->IsGattling)
-			return 0x73BD79;
-		else
-			return 0x73BC49;
-	}
+
+	return 0x73BC49;
 }
 
 DEFINE_HOOK(0x73BA63, UnitClass_DrawVoxel_TurretOffset, 0x5)
@@ -750,17 +722,13 @@ DEFINE_HOOK(0x73BA63, UnitClass_DrawVoxel_TurretOffset, 0x5)
 
 	if (pType != pThis->Type)
 	{
-		if (pType->TurretCount > 0 && !pType->IsGattling)
-		{
-			if (pThis->CurrentTurretNumber < 0)
-				R->Stack<int>(0x1C, 0);
-
-			return 0x73BC35;
-		}
-		else
-		{
+		if (!pType->HasMultipleTurrets() || pType->IsGattling)
 			return 0x73BD79;
-		}
+
+		if (pThis->CurrentTurretNumber == -1)
+			R->Stack<int>(0x1C, 0);
+
+		return 0x73BC35;
 	}
 
 	return 0;
