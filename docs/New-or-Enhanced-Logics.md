@@ -292,7 +292,7 @@ Laser trails are very resource intensive! Due to the game not utilizing GPU havi
 ### Shields
 
 ![image](_static/images/technoshield-01.gif)
-*Buildings, Infantries and Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+*Buildings, Infantry and Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 In `rulesmd.ini`:
 ```ini
@@ -747,6 +747,21 @@ OnlyUseLandSequences=false  ; boolean
 
 ## Projectiles
 
+### Attack technos underground
+
+- Now, you can enable projectiles to attack technos underground.
+  - To actually damage the technos, you need [AffectsUnderground](#damage-technos-underground).
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]      ; Projectile
+AU=false              ; boolean
+```
+
+```{note}
+Only vanilla projectiles with `Inviso=yes` set or [Phobos projectiles](#projectile-trajectories) `Straight` with `Trajectory.Straight.SubjectToGround=false` enabled and `Bombard` with `Trajectory.Bombard.SubjectToGround=false` enabled can go beneath the ground. Otherwise, the projectile will be forced to detonate upon hitting the ground.
+```
+
 ### Parabombs
 
 - Restored feature from Red Alert 1 (also partially implemented in Ares but undocumented, if used together Phobos' version takes priority) that allows projectiles to be parachuted down to ground if fired by an aerial unit.
@@ -771,6 +786,7 @@ BombParachute=           ; AnimationType, default to [General] -> BombParachute
 - Projectiles can now be made interceptable by certain TechnoTypes by setting `Interceptable=true` on them. The TechnoType scans for interceptable projectiles within a range if it has no other target and will use one of its weapons to shoot at them. Projectiles can define `Armor` and `Strength`. Weapons that cannot target the projectile's armor type will not attempt to intercept it. On interception, if the projectile has `Armor` set, an amount equaling to the intercepting weapon's `Damage` adjusted by Warhead `Verses` is deducted from the projectile's current strength. Regardless of if the current projectile strength was reduced or not, if it sits at 0 or below after interception, the projectile is detonated.
   - `Interceptor.Weapon` determines the weapon (0 = `Primary`, 1 = `Secondary`) to be used for intercepting projectiles.
     - The interceptor weapon may need `AG` and/or `AA` set to true on its projectile to be able to target projectiles depending on their elevation from ground. If you don't set those then the weapon won't be able to target low-flying or high-flying projectiles respectively.
+  - `Interceptor.TargetingDelay` determines how often (in frames) interceptor TechnoType scans for suitable projectiles to intercept. Smaller delay is better for interceptor's capabilities but worse for game performance. Delay cannot be set to 0, this will change the delay to 1 and outputs a developer warning to log.
   - `Interceptor.CanTargetHouses` controls which houses the projectiles (or rather their firers) can belong to be eligible for interception.
   - `Interceptor.GuardRange` (and `Interceptor.(Rookie|Veteran|EliteGuardRange)`) is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
   - `Interceptor.MinimumGuardRange` (and `Interceptor.(Rookie|Veteran|EliteMinimumGuardRange)`) is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
@@ -786,6 +802,7 @@ In `rulesmd.ini`:
 [SOMETECHNO]                               ; TechnoType
 Interceptor=false                          ; boolean
 Interceptor.Weapon=0                       ; integer, weapon slot index (0 or 1)
+Interceptor.TargetingDelay=1               ; integer, game frames
 Interceptor.CanTargetHouses=enemies        ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 Interceptor.GuardRange=0.0                 ; floating point value
 Interceptor.VeteranGuardRange=             ; floating point value
@@ -854,7 +871,7 @@ Trajectory.Speed=100.0  ; floating point value
     - `Trajectory.Straight.ProximityMedial` controls whether to detonate `Trajectory.Straight.ProximityWarhead` at the bullet's location rather than the proximity target's location. If `Trajectory.Straight.ProximityDirect` is set to true, this will only affect the calculation result of `Trajectory.Straight.EdgeAttenuation`.
     - `Trajectory.Straight.ProximityAllies` controls whether allies will also trigger the proximity fuse.
     - `Trajectory.Straight.ProximityFlight` controls whether to count units in the air.
-  - `Trajectory.Straight.ThroughVehicles` controls whether the projectile will not be obstructed by vehicles or aircrafts on the ground. When it is obstructed, it will be directly detonated at its location. If it still have `Trajectory.Straight.ProximityImpact` times, it will also detonate a `Trajectory.Straight.ProximityImpact` at the location of the obstacle.
+  - `Trajectory.Straight.ThroughVehicles` controls whether the projectile will not be obstructed by vehicles or aircraft on the ground. When it is obstructed, it will be directly detonated at its location. If it still have `Trajectory.Straight.ProximityImpact` times, it will also detonate a `Trajectory.Straight.ProximityImpact` at the location of the obstacle.
   - `Trajectory.Straight.ThroughBuilding` controls whether the projectile will not be obstructed by buildings. When it is obstructed, it will be directly detonated at its location. If it still have `Trajectory.Straight.ProximityImpact` times, it will also detonate a `Trajectory.Straight.ProximityImpact` at the location of the obstacle.
   - `Trajectory.Straight.SubjectToGround` controls whether the projectile should explode when it hits the ground. Note that this will not make AI search for suitable attack locations.
   - `Trajectory.Straight.ConfineAtHeight` controls the height above ground that projectile will try to travel as it can. It can not move down from the cliff by setting `SubjectToCliffs=true`. It can be cancelled by setting as a non positive integer. It will be forcibly cancelled by setting `Trajectory.Speed` above 256.
@@ -1005,7 +1022,7 @@ Trajectory.Parabola.AxisOfRotation=0,0,1        ; integer - Forward,Lateral,Heig
 ```
 
 ```{note}
-- Compared to vanilla `Arcing`, this can also be used for aircrafts and airburst weapon.
+- Compared to vanilla `Arcing`, this can also be used for aircraft and airburst weapon.
 - Certainly, `Gravity` can also affect the trajectory.
 ```
 
@@ -1189,7 +1206,7 @@ EVA.LinkedSWAcquired=        ; EVA entry
 ### Next
 
 ![image](_static/images/swnext.gif)
-*Use `SW.Next` to link multiple ChronoSphere and ChronoWarp superweapons into a chained SuperWeapon system in [Cylearun](https://www.moddb.com/mods/Cylearun)*
+*Use of `SW.Next` to link multiple ChronoSphere and ChronoWarp superweapons into a chained SuperWeapon system in [Cylearun](https://www.moddb.com/mods/Cylearun)*
 
 - Superweapons can now launch other superweapons at the same target. Launched types can be additionally randomized using the same rules as with LimboDelivery (see above).
   - `SW.Next.RealLaunch` controls whether the owner who fired the initial superweapon must own all listed superweapons and sufficient funds to support `Money.Amout`. Otherwise they will be launched forcibly.
@@ -1611,6 +1628,27 @@ ForceAAWeapon.Aircraft=-1                       ; integer, -1 to disable
 Specifically, if a position has `Force(AA)Weapon.InRange` set to -1 and `Force(AA)Weapon.InRange.Overrides` set to a positive value, it'll use default weapon selection logic once satisfied.
 ```
 
+### Fast access vehicle/structure
+
+- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles/structures without queuing.
+
+In `rulesmd.ini`:
+```ini
+[General]
+NoQueueUpToEnter=false          ; boolean
+NoQueueUpToUnload=false         ; boolean
+NoQueueUpToEnter.Buildings=     ; boolean, default to NoQueueUpToEnter
+NoQueueUpToUnload.Buildings=    ; boolean, default to NoQueueUpToUnload
+
+[SOMEVEHICLE/SOMEBUILDING]      ; VehicleType/BuildingType, transport
+NoQueueUpToEnter=               ; boolean, default to [General] -> NoQueueUpToEnter(.Buildings)
+NoQueueUpToUnload=              ; boolean, default to [General] -> NoQueueUpToUnload(.Buildings)
+```
+
+```{note}
+Note that this logic is used for [Passenger](https://modenc.renegadeprojects.com/Passengers) logic, which is different from [Occupier](https://modenc.renegadeprojects.com/Occupier).
+```
+
 ### Initial spawns number
 - It is now possible to set the initial amount of spawnees for a spawner, instead of always being filled. Won't work if it's larger than `SpawnsNumber`.
 
@@ -1885,6 +1923,9 @@ Convert.ResetMindControl=false          ; boolean
 
 ### Revenge weapon
 
+![Revenge Weapon](_static/images/revengeweapon.gif)
+*Revenge Weapon usage in [RA2: Reboot](https://www.moddb.com/mods/reboot)*
+
 - Similar to `DeathWeapon` in that it is fired after a TechnoType is killed, but with the difference that it will be fired on whoever dealt the damage that killed the TechnoType. If TechnoType died of sources other than direct damage dealt by another TechnoType, `RevengeWeapon` will not be fired.
   - `RevengeWeapon.AffectsHouses` can be used to filter which houses the damage that killed the TechnoType is allowed to come from to fire the weapon.
   - It is possible to grant revenge weapons through [attached effects](#attached-effects) as well.
@@ -2051,21 +2092,6 @@ WaterImage.ConditionRed=              ; VehicleType entry
 
 ```{warning}
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
-```
-
-### Fast access vehicle
-
-- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing.
-
-In `rulesmd.ini`:
-```ini
-[General]
-NoQueueUpToEnter=false    ; boolean
-NoQueueUpToUnload=false   ; boolean
-
-[SOMEVEHICLE]             ; VehicleType, transport
-NoQueueUpToEnter=         ; boolean, default to [General] -> NoQueueUpToEnter
-NoQueueUpToUnload=        ; boolean, default to [General] -> NoQueueUpToUnload
 ```
 
 ### Jumpjet Tilts While Moving
@@ -2247,28 +2273,51 @@ SplashList.PickRandom=false  ; boolean
 
 - Warheads are now able to define the extra damage multiplier for owner house, ally houses and enemy houses.
   - `DamageOwnerMultiplier.NotAffectsEnemies` and `DamageAlliesMultiplier.NotAffectsEnemies` is used as the default value if `AffectsEnemies=false` is set on the warhead.
+  - `DamageOwnerMultiplier.Berzerk` , `DamageAlliesMultiplier.Berzerk` and `DamageEnemiesMultiplier.Berzerk` is used when the techno is in berzerk.
 - An extra damage multiplier based on the firer or target's health percentage will be added to the total multiplier. To be elaborate: the damage multiplier will firstly increased by the firer's health percentage multiplies `DamageSourceHealthMultiplier`, then increased by the target's health percentage multiplies `DamageTargetHealthMultiplier`.
 - These multipliers will not affect damage with ignore defenses like `Suicide`.etc .
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-DamageOwnerMultiplier=1.0                       ; floating point value
-DamageAlliesMultiplier=1.0                      ; floating point value
-DamageEnemiesMultiplier=1.0                     ; floating point value
-DamageOwnerMultiplier.NotAffectsEnemies=        ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
-DamageAlliesMultiplier.NotAffectsEnemies=       ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
+DamageOwnerMultiplier=1.0                                  ; floating point value
+DamageAlliesMultiplier=1.0                                 ; floating point value
+DamageEnemiesMultiplier=1.0                                ; floating point value
+DamageOwnerMultiplier.NotAffectsEnemies=                   ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
+DamageAlliesMultiplier.NotAffectsEnemies=                  ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
+DamageOwnerMultiplier.Berzerk=                             ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
+DamageAlliesMultiplier.Berzerk=                            ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
+DamageEnemiesMultiplier.Berzerk=                           ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
 
-[SOMEWARHEAD]                                   ; WarheadType
-DamageOwnerMultiplier=                          ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier or [CombatDamage] -> DamageOwnerMultiplier.NotAffectsEnemies, depending on AffectsEnemies
-DamageAlliesMultiplier=                         ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier or [CombatDamage] -> DamageAlliesMultiplier.NotAffectsEnemies, depending on AffectsEnemies
-DamageEnemiesMultiplier=                        ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
-DamageSourceHealthMultiplier=0.0                ; floating point value
-DamageTargetHealthMultiplier=0.0                ; floating point value
+[SOMEWARHEAD]                                              ; WarheadType
+DamageOwnerMultiplier=                                     ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier or [CombatDamage] -> DamageOwnerMultiplier.NotAffectsEnemies, depending on AffectsEnemies
+DamageAlliesMultiplier=                                    ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier or [CombatDamage] -> DamageAlliesMultiplier.NotAffectsEnemies, depending on AffectsEnemies
+DamageEnemiesMultiplier=                                   ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
+DamageOwnerMultiplier.Berzerk=                             ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier.Berzerk
+DamageAlliesMultiplier.Berzerk=                            ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier.Berzerk
+DamageEnemiesMultiplier.Berzerk=                           ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier.Berzerk
+DamageSourceHealthMultiplier=0.0                           ; floating point value
+DamageTargetHealthMultiplier=0.0                           ; floating point value
 ```
 
 ```{note}
 `DamageAlliesMultiplier` won't affect your own units like `AffectsAllies` did.
+```
+
+### Damage technos underground
+
+- Now you can make the warhead damage technos underground!
+  - To allow weapons to target underground technos, you need [AU](#attack-technos-underground).
+- Notice that if the projectile detonates underground, its animation effect may look strange.
+  - You can use `[WarheadType] -> PlayAnimUnderground=false` to prevent the warhead animation from playing when the projectile detonates underground.
+  - You can also use `[WarheadType] -> PlayAnimAboveSurface=true` to make the warhead animation play on the ground directly above when the projectile detonates underground.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                         ; WarheadType
+AffectsUnderground=false              ; boolean
+PlayAnimUnderground=true              ; boolean
+PlayAnimAboveSurface=false            ; boolean
 ```
 
 ### Detonate Warhead on all objects on map
@@ -2547,7 +2596,7 @@ Burst.FireWithinSequence=false  ; boolean
 
 ### Burst without delay
 
-- In vanilla, vehicles and infantries will only fire once in one frame, even if their `ROF` or `BurstDelay` is set to 0. Now you can force units to fire all bursts in one frame by setting the `Burst.NoDelay` to true.
+- In vanilla, vehicles and infantry will only fire once in one frame, even if their `ROF` or `BurstDelay` is set to 0. Now you can force units to fire all bursts in one frame by setting the `Burst.NoDelay` to true.
 
 In `rulesmd.ini`:
 ```ini

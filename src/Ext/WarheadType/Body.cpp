@@ -103,9 +103,10 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 // Wrapper for MapClass::DamageArea() that sets a pointer in WarheadTypeExt::ExtData that is used to figure 'intended' target of the Warhead detonation, if set and there's no CellSpread.
 DamageAreaResult WarheadTypeExt::ExtData::DamageAreaWithTarget(const CoordStruct& coords, int damage, TechnoClass* pSource, WarheadTypeClass* pWH, bool affectsTiberium, HouseClass* pSourceHouse, TechnoClass* pTarget)
 {
-	this->DamageAreaTarget = pTarget;
-	auto const result = MapClass::DamageArea(coords, damage, pSource, pWH, true, pSourceHouse);
-	this->DamageAreaTarget = nullptr;
+	auto const pWarheadTypeExt = WarheadTypeExt::ExtMap.Find(pWH);
+	pWarheadTypeExt->DamageAreaTarget = pTarget;
+	auto const result = MapClass::DamageArea(coords, damage, pSource, pWH, affectsTiberium, pSourceHouse);
+	pWarheadTypeExt->DamageAreaTarget = nullptr;
 	return result;
 }
 
@@ -253,6 +254,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DamageOwnerMultiplier.Read(exINI, pSection, "DamageOwnerMultiplier");
 	this->DamageAlliesMultiplier.Read(exINI, pSection, "DamageAlliesMultiplier");
 	this->DamageEnemiesMultiplier.Read(exINI, pSection, "DamageEnemiesMultiplier");
+	this->DamageOwnerMultiplier_Berzerk.Read(exINI, pSection, "DamageOwnerMultiplier.Berzerk");
+	this->DamageAlliesMultiplier_Berzerk.Read(exINI, pSection, "DamageAlliesMultiplier.Berzerk");
+	this->DamageEnemiesMultiplier_Berzerk.Read(exINI, pSection, "DamageEnemiesMultiplier.Berzerk");
 	this->DamageSourceHealthMultiplier.Read(exINI, pSection, "DamageSourceHealthMultiplier");
 	this->DamageTargetHealthMultiplier.Read(exINI, pSection, "DamageTargetHealthMultiplier");
 
@@ -297,6 +301,12 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->UnlimboDetonate_KeepTarget.Read(exINI, pSection, "UnlimboDetonate.KeepTarget");
 	this->UnlimboDetonate_KeepSelected.Read(exINI, pSection, "UnlimboDetonate.KeepSelected");
 
+	this->AffectsUnderground.Read(exINI, pSection, "AffectsUnderground");
+	this->PlayAnimUnderground.Read(exINI, pSection, "PlayAnimUnderground");
+	this->PlayAnimAboveSurface.Read(exINI, pSection, "PlayAnimAboveSurface");
+
+	this->AnimZAdjust.Read(exINI, pSection, "AnimZAdjust");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -332,6 +342,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
 	this->EffectsRequireVerses.Read(exINI, pSection, "EffectsRequireVerses");
 	this->Malicious.Read(exINI, pSection, "Malicious");
+	this->Flash_Duration.Read(exINI, pSection, "Flash.Duration");
 
 	// List all Warheads here that respect CellSpread
 	// Used in WarheadTypeExt::ExtData::Detonate
@@ -535,6 +546,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DamageOwnerMultiplier)
 		.Process(this->DamageAlliesMultiplier)
 		.Process(this->DamageEnemiesMultiplier)
+		.Process(this->DamageOwnerMultiplier_Berzerk)
+		.Process(this->DamageAlliesMultiplier_Berzerk)
+		.Process(this->DamageEnemiesMultiplier_Berzerk)
 		.Process(this->DamageSourceHealthMultiplier)
 		.Process(this->DamageTargetHealthMultiplier)
 
@@ -575,11 +589,18 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->UnlimboDetonate_KeepTarget)
 		.Process(this->UnlimboDetonate_KeepSelected)
 
+		.Process(this->AffectsUnderground)
+		.Process(this->PlayAnimUnderground)
+		.Process(this->PlayAnimAboveSurface)
+
+		.Process(this->AnimZAdjust)
+
 		// Ares tags
 		.Process(this->AffectsEnemies)
 		.Process(this->AffectsOwner)
 		.Process(this->EffectsRequireVerses)
 		.Process(this->Malicious)
+		.Process(this->Flash_Duration)
 
 		.Process(this->WasDetonatedOnAllMapObjects)
 		.Process(this->RemainingAnimCreationInterval)

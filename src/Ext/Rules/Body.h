@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <CCINIClass.h>
 #include <RulesClass.h>
@@ -104,6 +104,8 @@ public:
 		Valueable<bool> AmphibiousUnload;
 		Valueable<bool> NoQueueUpToEnter;
 		Valueable<bool> NoQueueUpToUnload;
+		Nullable<bool> NoQueueUpToEnter_Buildings;
+		Nullable<bool> NoQueueUpToUnload_Buildings;
 
 		Valueable<bool> BuildingProductionQueue;
 
@@ -119,6 +121,8 @@ public:
 		Valueable<bool> DisplayIncome;
 		Valueable<bool> DisplayIncome_AllowAI;
 		Valueable<AffectedHouse> DisplayIncome_Houses;
+
+		Valueable<bool> AllowDeployControlledMCV;
 
 		Valueable<bool> IronCurtain_KeptOnDeploy;
 		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
@@ -182,6 +186,9 @@ public:
 		Valueable<double> DamageEnemiesMultiplier;
 		Nullable<double> DamageOwnerMultiplier_NotAffectsEnemies;
 		Nullable<double> DamageAlliesMultiplier_NotAffectsEnemies;
+		Nullable<double> DamageOwnerMultiplier_Berzerk;
+		Nullable<double> DamageAlliesMultiplier_Berzerk;
+		Nullable<double> DamageEnemiesMultiplier_Berzerk;
 
 		Valueable<double> AircraftLevelLightMultiplier;
 		Valueable<double> JumpjetLevelLightMultiplier;
@@ -230,6 +237,8 @@ public:
 		Valueable<int> CombatLightDetailLevel;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
+		Valueable<bool> UseRetintFix;
+
 		Nullable<int> AINormalTargetingDelay;
 		Nullable<int> PlayerNormalTargetingDelay;
 		Nullable<int> AIGuardAreaTargetingDelay;
@@ -266,6 +275,15 @@ public:
 		Valueable<bool> InfantryAutoDeploy;
 
 		Valueable<int> AdjacentWallDamage;
+
+		Valueable<int> WarheadAnimZAdjust;
+
+		Valueable<bool> IvanBombAttachToCenter;
+
+		Valueable<bool> FallingDownTargetingFix;
+		Valueable<bool> AIAirTargetingFix;
+
+		Valueable<bool> SortCameoByName;
 		
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -336,6 +354,8 @@ public:
 			, AmphibiousUnload { false }
 			, NoQueueUpToEnter { false }
 			, NoQueueUpToUnload { false }
+			, NoQueueUpToEnter_Buildings {}
+			, NoQueueUpToUnload_Buildings {}
 
 			, BuildingProductionQueue { false }
 
@@ -347,6 +367,8 @@ public:
 			, ForbidParallelAIQueues_Vehicle { false }
 
 			, EnablePowerSurplus { false }
+
+			, AllowDeployControlledMCV { false }
 
 			, IronCurtain_KeptOnDeploy { true }
 			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
@@ -403,6 +425,9 @@ public:
 			, DamageEnemiesMultiplier { 1.0 }
 			, DamageOwnerMultiplier_NotAffectsEnemies {}
 			, DamageAlliesMultiplier_NotAffectsEnemies {}
+			, DamageOwnerMultiplier_Berzerk {}
+			, DamageAlliesMultiplier_Berzerk {}
+			, DamageEnemiesMultiplier_Berzerk {}
 			, AircraftLevelLightMultiplier { 1.0 }
 			, JumpjetLevelLightMultiplier { 0.0 }
 			, VoxelLightSource { }
@@ -442,6 +467,7 @@ public:
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
 			, LightFlashAlphaImageDetailLevel { 0 }
+			, UseRetintFix { true }
 			, AINormalTargetingDelay {}
 			, PlayerNormalTargetingDelay {}
 			, AIGuardAreaTargetingDelay {}
@@ -473,6 +499,15 @@ public:
 			, Parasite_GrappleAnim {}
 			, InfantryAutoDeploy { false }
 			, AdjacentWallDamage { 200 }
+
+			, WarheadAnimZAdjust { -15 }
+
+			, IvanBombAttachToCenter { false }
+
+			, FallingDownTargetingFix { false }
+			, AIAirTargetingFix { false }
+
+			, SortCameoByName { false }
 		{ }
 
 		virtual ~ExtData() = default;

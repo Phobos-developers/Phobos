@@ -39,12 +39,18 @@ bool __forceinline BuildingExt::CanUndeployOnSell(BuildingClass* pThis)
 		if (!GameModeOptionsClass::Instance.MCVRedeploy)
 			return false;
 		// or MindControlledBy YURIX (why? for balance?)
-		if (pThis->MindControlledBy)
+		if (!RulesExt::Global()->AllowDeployControlledMCV && pThis->MindControlledBy)
 			return false;
+	}
+	else
+	{
+		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+		if (!pTypeExt->UndeploysInto_Sellable)
+			return true;
 	}
 
 	// Move ArchiveTarget check outside Conyard check to allow generic Unsellable=no buildings to be sold
-	return pThis->ArchiveTarget;
+	return pThis->ArchiveTarget != nullptr;
 }
 
 // Skip SessionClass::IsCampaign() checks, where inlined not exactly the function above but sth similar

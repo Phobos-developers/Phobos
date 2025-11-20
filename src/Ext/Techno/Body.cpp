@@ -57,6 +57,15 @@ TechnoExt::ExtData::~ExtData()
 	}
 
 	this->ElectricBolts.clear();
+
+	if (this->UndergroundTracked)
+		ScenarioExt::Global()->UndergroundTracker.Remove(pThis);
+
+	if (this->SpecialTracked)
+		ScenarioExt::Global()->SpecialTracker.Remove(pThis);
+
+	if (this->FallingDownTracked)
+		ScenarioExt::Global()->FallingDownTracker.Remove(pThis);
 }
 
 bool TechnoExt::IsActiveIgnoreEMP(TechnoClass* pThis)
@@ -678,11 +687,10 @@ void TechnoExt::CreateDelayedFireAnim(TechnoClass* pThis, AnimTypeClass* pAnimTy
 	}
 }
 
-bool TechnoExt::HandleDelayedFireWithPauseSequence(TechnoClass* pThis, int weaponIndex, int firingFrame)
+bool TechnoExt::HandleDelayedFireWithPauseSequence(TechnoClass* pThis, WeaponTypeClass* pWeapon, int weaponIndex, int frame, int firingFrame)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto& timer = pExt->DelayedFireTimer;
-	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
 	if (pExt->DelayedFireWeaponIndex >= 0 && pExt->DelayedFireWeaponIndex != weaponIndex)
@@ -695,7 +703,7 @@ bool TechnoExt::HandleDelayedFireWithPauseSequence(TechnoClass* pThis, int weapo
 	{
 		if (pWeapon->Burst <= 1 || !pWeaponExt->DelayedFire_OnlyOnInitialBurst || pThis->CurrentBurstIndex == 0)
 		{
-			if (pThis->Animation.Value == firingFrame)
+			if (frame == firingFrame)
 				pExt->DelayedFireSequencePaused = true;
 
 			if (!timer.HasStarted())
@@ -878,6 +886,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->AE)
 		.Process(this->PreviousType)
 		.Process(this->AnimRefCount)
+		.Process(this->SubterraneanHarvStatus)
+		.Process(this->SubterraneanHarvRallyPoint)
 		.Process(this->ReceiveDamage)
 		.Process(this->LastKillWasTeamTarget)
 		.Process(this->PassengerDeletionTimer)
@@ -914,7 +924,6 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastSensorsMapCoords)
 		.Process(this->TiberiumEater_Timer)
 		.Process(this->AirstrikeTargetingMe)
-		.Process(this->FiringAnimationTimer)
 		.Process(this->SimpleDeployerAnimationTimer)
 		.Process(this->DelayedFireSequencePaused)
 		.Process(this->DelayedFireTimer)
@@ -922,6 +931,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentDelayedFireAnim)
 		.Process(this->AttachedEffectInvokerCount)
 		.Process(this->IsSelected)
+		.Process(this->ResetLocomotor)
 		.Process(this->TintColorOwner)
 		.Process(this->TintColorAllies)
 		.Process(this->TintColorEnemies)
@@ -929,6 +939,10 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TintIntensityAllies)
 		.Process(this->TintIntensityEnemies)
 		.Process(this->AttackMoveFollowerTempCount)
+		.Process(this->UndergroundTracked)
+		.Process(this->SpecialTracked)
+		.Process(this->FallingDownTracked)
+		.Process(this->JumpjetStraightAscend)
 		;
 }
 

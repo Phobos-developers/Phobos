@@ -1,4 +1,4 @@
-﻿#include "Body.h"
+#include "Body.h"
 #include <Ext/Side/Body.h>
 #include <Utilities/TemplateDef.h>
 #include <FPSCounter.h>
@@ -57,6 +57,8 @@ void RulesExt::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
 			// Spawner range
 			if (pTechnoTypeExt->Spawner_LimitRange)
 				pTechnoTypeExt->CalculateSpawnerRange();
+
+			pTechnoTypeExt->UpdateAdditionalAttributes();
 		}
 	}
 
@@ -163,6 +165,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AmphibiousUnload.Read(exINI, GameStrings::General, "AmphibiousUnload");
 	this->NoQueueUpToEnter.Read(exINI, GameStrings::General, "NoQueueUpToEnter");
 	this->NoQueueUpToUnload.Read(exINI, GameStrings::General, "NoQueueUpToUnload");
+	this->NoQueueUpToEnter_Buildings.Read(exINI, GameStrings::General, "NoQueueUpToEnter.Buildings");
+	this->NoQueueUpToUnload_Buildings.Read(exINI, GameStrings::General, "NoQueueUpToUnload.Buildings");
 
 	this->BuildingProductionQueue.Read(exINI, GameStrings::General, "BuildingProductionQueue");
 
@@ -174,6 +178,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ForbidParallelAIQueues_Vehicle.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Vehicle");
 
 	this->EnablePowerSurplus.Read(exINI, GameStrings::AI, "EnablePowerSurplus");
+
+	this->AllowDeployControlledMCV.Read(exINI, GameStrings::General, "AllowDeployControlledMCV");
 
 	this->IronCurtain_KeptOnDeploy.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KeptOnDeploy");
 	this->IronCurtain_EffectOnOrganics.Read(exINI, GameStrings::CombatDamage, "IronCurtain.EffectOnOrganics");
@@ -235,7 +241,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DamageEnemiesMultiplier.Read(exINI, GameStrings::CombatDamage, "DamageEnemiesMultiplier");
 	this->DamageOwnerMultiplier_NotAffectsEnemies.Read(exINI, GameStrings::CombatDamage, "DamageOwnerMultiplier.NotAffectsEnemies");
 	this->DamageAlliesMultiplier_NotAffectsEnemies.Read(exINI, GameStrings::CombatDamage, "DamageAlliesMultiplier.NotAffectsEnemies");
-
+	this->DamageOwnerMultiplier_Berzerk.Read(exINI, GameStrings::CombatDamage, "DamageOwnerMultiplier.Berzerk");
+	this->DamageAlliesMultiplier_Berzerk.Read(exINI, GameStrings::CombatDamage, "DamageAlliesMultiplier.Berzerk");
+	this->DamageEnemiesMultiplier_Berzerk.Read(exINI, GameStrings::CombatDamage, "DamageEnemiesMultiplier.Berzerk");
+		
 	this->AircraftLevelLightMultiplier.Read(exINI, GameStrings::AudioVisual, "AircraftLevelLightMultiplier");
 	this->JumpjetLevelLightMultiplier.Read(exINI, GameStrings::AudioVisual, "JumpjetLevelLightMultiplier");
 
@@ -287,6 +296,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->LightFlashAlphaImageDetailLevel.Read(exINI, GameStrings::AudioVisual, "LightFlashAlphaImageDetailLevel");
 	this->BuildingTypeSelectable.Read(exINI, GameStrings::General, "BuildingTypeSelectable");
 
+	this->UseRetintFix.Read(exINI, GameStrings::AudioVisual, "UseRetintFix");
+
 	this->ProneSpeed_Crawls.Read(exINI, GameStrings::General, "ProneSpeed.Crawls");
 	this->ProneSpeed_NoCrawls.Read(exINI, GameStrings::General, "ProneSpeed.NoCrawls");
 
@@ -315,6 +326,15 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->InfantryAutoDeploy.Read(exINI, GameStrings::General, "InfantryAutoDeploy");
 
 	this->AdjacentWallDamage.Read(exINI, GameStrings::CombatDamage, "AdjacentWallDamage");
+
+	this->WarheadAnimZAdjust.Read(exINI, GameStrings::AudioVisual, "WarheadAnimZAdjust");
+
+	this->IvanBombAttachToCenter.Read(exINI, GameStrings::CombatDamage, "IvanBombAttachToCenter");
+
+	this->FallingDownTargetingFix.Read(exINI, GameStrings::General, "FallingDownTargetingFix");
+	this->AIAirTargetingFix.Read(exINI, GameStrings::General, "AIAirTargetingFix");
+
+	this->SortCameoByName.Read(exINI, GameStrings::General, "SortCameoByName");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -378,9 +398,6 @@ void RulesExt::ExtData::InitializeAfterAllLoaded()
 	this->TintColorIronCurtain = GeneralUtils::GetColorFromColorAdd(pRules->IronCurtainColor);
 	this->TintColorForceShield = GeneralUtils::GetColorFromColorAdd(pRules->ForceShieldColor);
 	this->TintColorBerserk = GeneralUtils::GetColorFromColorAdd(pRules->BerserkColor);
-
-	// Init master bullet
-	ScenarioExt::Global()->MasterDetonationBullet = BulletTypeExt::GetDefaultBulletType()->CreateBullet(nullptr, nullptr, 0, nullptr, 0, false);
 }
 
 // =============================
@@ -457,6 +474,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AmphibiousUnload)
 		.Process(this->NoQueueUpToEnter)
 		.Process(this->NoQueueUpToUnload)
+		.Process(this->NoQueueUpToEnter_Buildings)
+		.Process(this->NoQueueUpToUnload_Buildings)
 		.Process(this->BuildingProductionQueue)
 		.Process(this->AllowParallelAIQueues)
 		.Process(this->ForbidParallelAIQueues_Aircraft)
@@ -465,6 +484,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForbidParallelAIQueues_Navy)
 		.Process(this->ForbidParallelAIQueues_Vehicle)
 		.Process(this->EnablePowerSurplus)
+		.Process(this->AllowDeployControlledMCV)
 		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->IronCurtain_EffectOnOrganics)
 		.Process(this->IronCurtain_KillOrganicsWarhead)
@@ -520,6 +540,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DamageEnemiesMultiplier)
 		.Process(this->DamageOwnerMultiplier_NotAffectsEnemies)
 		.Process(this->DamageAlliesMultiplier_NotAffectsEnemies)
+		.Process(this->DamageOwnerMultiplier_Berzerk)
+		.Process(this->DamageAlliesMultiplier_Berzerk)
+		.Process(this->DamageEnemiesMultiplier_Berzerk)
 		.Process(this->AircraftLevelLightMultiplier)
 		.Process(this->JumpjetLevelLightMultiplier)
 		.Process(this->VoxelLightSource)
@@ -559,6 +582,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->WarheadParticleAlphaImageIsLightFlash)
 		.Process(this->CombatLightDetailLevel)
 		.Process(this->LightFlashAlphaImageDetailLevel)
+		.Process(this->UseRetintFix)
 		.Process(this->AINormalTargetingDelay)
 		.Process(this->PlayerNormalTargetingDelay)
 		.Process(this->AIGuardAreaTargetingDelay)
@@ -582,6 +606,11 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Parasite_GrappleAnim)
 		.Process(this->InfantryAutoDeploy)
 		.Process(this->AdjacentWallDamage)
+		.Process(this->WarheadAnimZAdjust)
+		.Process(this->IvanBombAttachToCenter)
+		.Process(this->FallingDownTargetingFix)
+		.Process(this->AIAirTargetingFix)
+		.Process(this->SortCameoByName)
 		;
 }
 

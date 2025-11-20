@@ -741,9 +741,22 @@ DEFINE_HOOK(0x414DA8, AircraftClass_Update_UnlandableDamage, 0x6) // After FootC
 	{
 		const bool extendedMissions = RulesExt::Global()->ExtendedAircraftMissions;
 
-		// Check dock building
 		if (extendedMissions)
+		{
+			// Check area guard range
+			if (const auto pArchive = pThis->ArchiveTarget)
+			{
+				if (pThis->Target && !pThis->IsFiring && !pThis->IsLocked
+					&& pThis->DistanceFrom3D(pArchive) > static_cast<int>(pThis->GetGuardRange(1) * 1.1))
+				{
+					pThis->SetTarget(nullptr);
+					pThis->SetDestination(pArchive, true);
+				}
+			}
+
+			// Check dock building
 			pThis->TryNearestDockBuilding(&pThis->Type->Dock, 0, 0);
+		}
 
 		if (pThis->DockNowHeadingTo)
 		{
@@ -1078,8 +1091,9 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2668, AircraftClass_GreatestThreat)
 // Handle assigning area guard mission to aircraft.
 DEFINE_HOOK(0x4C7403, EventClass_Execute_AircraftAreaGuard, 0x6)
 {
-	enum { SkipGameCode = 0x4C7435 };
+	enum { SkipGameCode = 0x4C7426 };
 
+	GET(EventClass* const, pThis, ESI);
 	GET(TechnoClass* const, pTechno, EDI);
 
 	if (pTechno->WhatAmI() == AbstractType::Aircraft
@@ -1087,6 +1101,7 @@ DEFINE_HOOK(0x4C7403, EventClass_Execute_AircraftAreaGuard, 0x6)
 		&& !pTechno->Ammo)
 	{
 		// Skip assigning destination / target here.
+		R->ESI(&pThis->MegaMission.Target);
 		return SkipGameCode;
 	}
 

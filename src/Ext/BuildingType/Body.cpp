@@ -245,6 +245,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
+	this->UndeploysInto_Sellable.Read(exINI, pSection, "UndeploysInto.Sellable");
 
 	// PlacementPreview
 	{
@@ -260,6 +261,10 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Art
 	this->IsAnimDelayedBurst.Read(exArtINI, pArtSection, "IsAnimDelayedBurst");
 	this->ZShapePointMove_OnBuildup.Read(exArtINI, pArtSection, "ZShapePointMove.OnBuildup");
+
+	// Ares 0.A
+	this->RubbleIntact.Read(exINI, pSection, "Rubble.Intact");
+	this->RubbleIntactRemove.Read(exINI, pSection, "Rubble.Intact.Remove");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -334,6 +339,11 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingRepairedSound)
 		.Process(this->Refinery_UseNormalActiveAnim)
 		.Process(this->HasPowerUpAnim)
+		.Process(this->UndeploysInto_Sellable)
+
+		// Ares 0.A
+		.Process(this->RubbleIntact)
+		.Process(this->RubbleIntactRemove)
 		;
 }
 
