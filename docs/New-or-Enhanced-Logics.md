@@ -2029,6 +2029,19 @@ WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
 
+### Customize Ares's radar jam logic
+
+- It is now possible to customize some properties of Ares's radar jam logic.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType
+RadarJamHouses=enemies    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+RadarJamDelay=30                ; integer, minimum delay between scans in frames.
+RadarJamAffect=                    ; list of buildingtypes, whitelist
+RadarJamIgnore=                   ; list of buildingtypes, blacklist
+```
+
 ## Terrain
 
 ### Destroy animation & sound

@@ -37,6 +37,10 @@ public:
 		Valueable<bool> LowSelectionPriority;
 		PhobosFixedString<0x20> GroupAs;
 		Valueable<int> RadarJamRadius;
+		Valueable<AffectedHouse> RadarJamHouses;
+		Valueable<int> RadarJamDelay;
+		ValueableVector<BuildingTypeClass*> RadarJamAffect;
+		ValueableVector<BuildingTypeClass*> RadarJamIgnore;
 		Nullable<int> InhibitorRange;
 		Nullable<int> DesignatorRange;
 		Valueable<float> FactoryPlant_Multiplier;
@@ -443,6 +447,10 @@ public:
 			, LowSelectionPriority { false }
 			, GroupAs { NONE_STR }
 			, RadarJamRadius { 0 }
+			, RadarJamHouses { AffectedHouse::Enemies }
+			, RadarJamDelay { 30 }
+			, RadarJamAffect {}
+			, RadarJamIgnore {}
 			, InhibitorRange {}
 			, DesignatorRange { }
 			, FactoryPlant_Multiplier { 1.0 }
