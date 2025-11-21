@@ -322,6 +322,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PlayerAttackMoveTargetingDelay.Read(exINI, GameStrings::General, "PlayerAttackMoveTargetingDelay");
 	this->DistributeTargetingFrame.Read(exINI, GameStrings::General, "DistributeTargetingFrame");
 	this->DistributeTargetingFrame_AIOnly.Read(exINI, GameStrings::General, "DistributeTargetingFrame.AIOnly");
+  
+  this->CrusherLevel.Read(exINI, GameStrings::General, "CrusherLevel");
+	this->CrushableLevel.Read(exINI, GameStrings::General, "CrushableLevel");
+	this->OmniCrusherLevel.Read(exINI, GameStrings::General, "OmniCrusherLevel");
+	this->OmniCrushResistantLevel.Read(exINI, GameStrings::General, "OmniCrushResistantLevel");
 	
 	this->InfantryAutoDeploy.Read(exINI, GameStrings::General, "InfantryAutoDeploy");
 
@@ -604,6 +609,11 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackMove_IgnoreWeaponCheck)
 		.Process(this->AttackMove_StopWhenTargetAcquired)
 		.Process(this->Parasite_GrappleAnim)
+    .Process(this->CrusherLevel)
+		.Process(this->CrushableLevel)
+		.Process(this->OmniCrusherLevel)
+		.Process(this->OmniCrushResistantLevel)
+		.Process(this->WallCrushableLevel)
 		.Process(this->InfantryAutoDeploy)
 		.Process(this->AdjacentWallDamage)
 		.Process(this->WarheadAnimZAdjust)
@@ -800,3 +810,13 @@ DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
 
 // skip vanilla JumpjetControls and make it earlier load
 // DEFINE_JUMP(LJMP, 0x668EB5, 0x668EBD); // RulesClass_Process_SkipJumpjetControls // Really necessary? won't hurt to read again
+
+DEFINE_HOOK(0x66D242, RulesClass_ReadWallModel_CrushableLevel, 0x5)
+{
+	GET(CCINIClass*, pINI, EDI);
+	INI_EX exINI(pINI);
+
+	RulesExt::Global()->WallCrushableLevel.Read(exINI, "WallModel", "WallCrushableLevel");
+
+	return 0;
+}

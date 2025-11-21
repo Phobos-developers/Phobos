@@ -266,6 +266,12 @@ public:
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
 
 		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
+    
+    Valueable<int> CrusherLevel;
+		Valueable<int> CrushableLevel;
+		Valueable<int> OmniCrusherLevel;
+		Valueable<int> OmniCrushResistantLevel;
+		Valueable<int> WallCrushableLevel;
 
 		// cache tint color
 		int TintColorIronCurtain;
@@ -497,6 +503,12 @@ public:
 			, AttackMove_StopWhenTargetAcquired { }
 
 			, Parasite_GrappleAnim {}
+    
+      , CrusherLevel { 5 }
+			, CrushableLevel { 5 }
+			, OmniCrusherLevel { 10 }
+			, OmniCrushResistantLevel { 10 }
+			, WallCrushableLevel { 10 }
 			, InfantryAutoDeploy { false }
 			, AdjacentWallDamage { 200 }
 
