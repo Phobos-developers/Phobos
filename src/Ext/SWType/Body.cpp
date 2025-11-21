@@ -33,8 +33,10 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_Unstoppable)
 		.Process(this->SW_Inhibitors)
 		.Process(this->SW_AnyInhibitor)
+		.Process(this->SW_Inhibitors_Houses)
 		.Process(this->SW_Designators)
 		.Process(this->SW_AnyDesignator)
+		.Process(this->SW_Designators_Houses)
 		.Process(this->SW_RangeMinimum)
 		.Process(this->SW_RangeMaximum)
 		.Process(this->SW_RequiredHouses)
@@ -118,8 +120,10 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_Unstoppable.Read(exINI, pSection, "SW.Unstoppable");
 	this->SW_Inhibitors.Read(exINI, pSection, "SW.Inhibitors");
 	this->SW_AnyInhibitor.Read(exINI, pSection, "SW.AnyInhibitor");
+	this->SW_Inhibitors_Houses.Read(exINI, pSection, "SW.Inhibitors.Houses");
 	this->SW_Designators.Read(exINI, pSection, "SW.Designators");
 	this->SW_AnyDesignator.Read(exINI, pSection, "SW.AnyDesignator");
+	this->SW_Designators_Houses.Read(exINI, pSection, "SW.Designators.Houses");
 	this->SW_RangeMinimum.Read(exINI, pSection, "SW.RangeMinimum");
 	this->SW_RangeMaximum.Read(exINI, pSection, "SW.RangeMaximum");
 	this->SW_RequiredHouses = pINI->ReadHouseTypesList(pSection, "SW.RequiredHouses", this->SW_RequiredHouses);

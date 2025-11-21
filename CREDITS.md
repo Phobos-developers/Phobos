@@ -459,6 +459,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that vehicle fall on infantry will make all cell content has been removed
   - Allow deploy controlled MCV
   - Fix the bug that naval ship will sink even they destroyed in air
+  - Customize Inhibitors and Designators
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

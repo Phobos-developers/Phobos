@@ -46,11 +46,11 @@ bool SWTypeExt::ExtData::IsInhibitor(HouseClass* pOwner, TechnoClass* pTechno) c
 {
 	if (pTechno->IsAlive && pTechno->Health && !pTechno->InLimbo && !pTechno->Deactivated)
 	{
-		if (!pOwner->IsAlliedWith(pTechno))
+		if (EnumFunctions::CanTargetHouse(this->SW_Inhibitors_Houses, pOwner, pTechno->Owner))
 		{
-			if (const auto pBld = abstract_cast<BuildingClass*, true>(pTechno))
+			if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pTechno))
 			{
-				if (!pBld->IsPowerOnline())
+				if (!pBuilding->IsPowerOnline())
 					return false;
 			}
 
@@ -93,7 +93,7 @@ bool SWTypeExt::ExtData::HasInhibitor(HouseClass* pOwner, const CellStruct& coor
 // Designators check
 bool SWTypeExt::ExtData::IsDesignator(HouseClass* pOwner, TechnoClass* pTechno) const
 {
-	if (pTechno->Owner == pOwner && pTechno->IsAlive && pTechno->Health && !pTechno->InLimbo && !pTechno->Deactivated)
+	if (EnumFunctions::CanTargetHouse(this->SW_Designators_Houses, pOwner, pTechno->Owner) && pTechno->IsAlive && pTechno->Health && !pTechno->InLimbo && !pTechno->Deactivated)
 		return this->SW_AnyDesignator || this->SW_Designators.Contains(pTechno->GetTechnoType());
 
 	return false;

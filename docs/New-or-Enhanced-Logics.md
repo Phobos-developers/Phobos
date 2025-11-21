@@ -1115,6 +1115,17 @@ In `rulesmd.ini`:
 TabIndex=1  ; integer
 ```
 
+### Customize Inhibitors and Designators
+
+- Theres only enemies inhibitors and selfowned designators are eligible. Now you can customize it.
+
+In `rulesmd.ini`
+```ini
+[SOMESW]    ; SuperWeaponType
+SW.Inhibitors.Houses=enemies    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+SW.Designators.Houses=owner    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
 ### EMPulse settings
 
 - It is possible to customize which weapon a building with `EMPulseCannon=true` fires when an associated `Type=EMPulse` superweapon (**only** if `EMPulse.TargetSelf=false` or omitted) is fired by setting `EMPulse.WeaponIndex`.

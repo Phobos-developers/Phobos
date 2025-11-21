@@ -8,6 +8,7 @@
 #include <Ext/Building/Body.h>
 #include <Ext/Sidebar/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/SWType/Body.h>
 #include <Ext/EBolt/Body.h>
 
 // Remember that we still don't fix Ares "issues" a priori. Extensions as well.
@@ -40,13 +41,24 @@ bool __stdcall ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
 TechnoTypeClass* __fastcall ShowPromoteAnim(TechnoClass* pThis)
 {
 	TechnoExt::ShowPromoteAnim(pThis);
-
 	return pThis->GetTechnoType();
 }
 
 WeaponStruct* __fastcall GetLaserWeapon(BuildingClass* pThis)
 {
 	return BuildingExt::GetLaserWeapon(pThis);
+}
+
+bool __fastcall NewSWType_IsInhibitor(void*, void*, SuperWeaponTypeClass** pExt_Ares, HouseClass* pOwner, TechnoClass* pTechno)
+{
+	const auto pSWExt = SWTypeExt::ExtMap.Find(*pExt_Ares);
+	return pSWExt->IsInhibitor(pOwner, pTechno);
+}
+
+bool __fastcall NewSWType_IsDesignator(void*, void*, SuperWeaponTypeClass** pExt_Ares, HouseClass* pOwner, TechnoClass* pTechno)
+{
+	const auto pSWExt = SWTypeExt::ExtMap.Find(*pExt_Ares);
+	return pSWExt->IsDesignator(pOwner, pTechno);
 }
 
 EBolt* __stdcall CreateEBolt(WeaponTypeClass** pWeaponData)
@@ -108,6 +120,10 @@ void Apply_Ares3_0_Patches()
 
 	// Apply laser weapon selection fix on Ares' laser fire replacement.
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x56415, &GetLaserWeapon);
+
+	// Redirect Ares' IsInhibitor() and IsDesignator() to our implementation:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x6D900, &NewSWType_IsInhibitor);
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x6D880, &NewSWType_IsDesignator);
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -161,4 +177,8 @@ void Apply_Ares3_0p1_Patches()
 
 	// Apply laser weapon selection fix on Ares' laser fire replacement.
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x570C5, &GetLaserWeapon);
+
+	// Redirect Ares' IsInhibitor() and IsDesignator() to our implementation:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x6E910, &NewSWType_IsInhibitor);
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x6E890, &NewSWType_IsDesignator);
 }
