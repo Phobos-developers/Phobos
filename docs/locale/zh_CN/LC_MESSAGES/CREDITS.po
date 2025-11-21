@@ -1879,7 +1879,7 @@ msgstr "修复了载具落到有步兵的单元格上时会将格内所有对象
 
 #: ../../../CREDITS.md:461
 msgid "Allow deploy controlled MCV"
-msgstr ""
+msgstr "允许部署被心控的 MCV"
 
 #: ../../../CREDITS.md:462
 msgid "Fix the bug that naval ship will sink even they destroyed in air"

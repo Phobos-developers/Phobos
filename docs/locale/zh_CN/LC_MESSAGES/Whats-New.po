@@ -2049,8 +2049,8 @@ msgstr ""
 "logic)（by Starkku）"
 
 #: ../../Whats-New.md:462
-msgid "Allow deploy controlled MCV (by NetsuNegi)"
-msgstr ""
+msgid "[Allow deploy controlled MCV](Fixed-or-Improved-Logics.md#allow-deploy-controlled-mcv) (by NetsuNegi)"
+msgstr "[允许部署被心控的 MCV](Fixed-or-Improved-Logics.md#allow-deploy-controlled-mcv)（by NetsuNegi）"
 
 #: ../../Whats-New.md:464 ../../Whats-New.md:702 ../../Whats-New.md:1061
 #: ../../Whats-New.md:1170 ../../Whats-New.md:1195 ../../Whats-New.md:1234
