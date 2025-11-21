@@ -2280,11 +2280,10 @@ msgid ""
 msgstr "修复 2、53 和 54 号触发条件在重复类触发器中只要激活过就会被无条件激活的问题（by FlyStar）"
 
 #: ../../Whats-New.md:500
-#, fuzzy
 msgid ""
 "Fixed the bug that naval ship will sink even they destroyed in air (by "
 "NetsuNegi)"
-msgstr "修复了悬浮载具在桥上被摧毁会沉没（而不是爆炸）的 Bug（by NetsuNegi）"
+msgstr "修复了海军舰船即便在空中被摧毁也会在天上沉没的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:502 ../../Whats-New.md:848 ../../Whats-New.md:933
 #: ../../Whats-New.md:1097 ../../Whats-New.md:1138 ../../Whats-New.md:1150

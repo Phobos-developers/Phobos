@@ -1882,9 +1882,8 @@ msgid "Allow deploy controlled MCV"
 msgstr ""
 
 #: ../../../CREDITS.md:462
-#, fuzzy
 msgid "Fix the bug that naval ship will sink even they destroyed in air"
-msgstr "修复了悬浮载具在桥上被摧毁会沉没（而不是爆炸）的 Bug"
+msgstr "修复了海军舰船即便在空中被摧毁也会在天上沉没的 Bug"
 
 #: ../../../CREDITS.md:463
 msgid "**Apollo** - Translucent SHP drawing patches"
