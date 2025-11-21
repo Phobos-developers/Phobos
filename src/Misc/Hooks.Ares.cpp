@@ -114,7 +114,7 @@ void Apply_Ares3_0_Patches()
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x56415, &GetLaserWeapon);
 
 	// Redirect Ares's RadarJammerClass::Update to our implementation
-	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x68500, &AresRadarJammerClass_Update_GetAddr);
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x68500, AresRadarJammerClass_Update_GetAddr());
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -170,5 +170,5 @@ void Apply_Ares3_0p1_Patches()
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x570C5, &GetLaserWeapon);
 
 	// Redirect Ares's RadarJammerClass::Update to our implementation
-	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x69470, &AresRadarJammerClass_Update_GetAddr);
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x69470, AresRadarJammerClass_Update_GetAddr());
 }
