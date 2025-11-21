@@ -93,8 +93,11 @@ bool SWTypeExt::ExtData::HasInhibitor(HouseClass* pOwner, const CellStruct& coor
 // Designators check
 bool SWTypeExt::ExtData::IsDesignator(HouseClass* pOwner, TechnoClass* pTechno) const
 {
-	if (EnumFunctions::CanTargetHouse(this->SW_Designators_Houses, pOwner, pTechno->Owner) && pTechno->IsAlive && pTechno->Health && !pTechno->InLimbo && !pTechno->Deactivated)
-		return this->SW_AnyDesignator || this->SW_Designators.Contains(pTechno->GetTechnoType());
+	if (EnumFunctions::CanTargetHouse(this->SW_Designators_Houses, pOwner, pTechno->Owner))
+	{
+		if (pTechno->IsAlive && pTechno->Health && !pTechno->InLimbo && !pTechno->Deactivated)
+			return this->SW_AnyDesignator || this->SW_Designators.Contains(pTechno->GetTechnoType());
+	}
 
 	return false;
 }
