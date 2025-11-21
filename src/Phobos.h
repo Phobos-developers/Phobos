@@ -32,8 +32,9 @@ public:
 	static const wchar_t* VersionDescription;
 	static bool DisplayDamageNumbers;
 	static bool IsLoadingSaveGame;
-	static bool ShouldQuickSave;
+	static bool ShouldSave;
 	static std::wstring CustomGameSaveDescription;
+	static void ScheduleGameSave(const std::wstring& description);
 	static void PassiveSaveGame();
 #ifdef DEBUG
 	static bool DetachFromDebugger();
@@ -89,6 +90,9 @@ public:
 		static bool DigitalDisplay_Enable;
 		static bool MessageApplyHoverState;
 		static bool MessageDisplayInCenter;
+		static int MessageDisplayInCenter_BoardOpacity;
+		static int MessageDisplayInCenter_LabelsCount;
+		static int MessageDisplayInCenter_RecordsCount;
 		static bool RealTimeTimers;
 		static bool RealTimeTimers_Adaptive;
 		static int CampaignDefaultGameSpeed;
@@ -102,6 +106,8 @@ public:
 		static bool ShowWeedsCounter;
 		static bool ShowPlanningPath;
 		static bool HideLightFlashEffects;
+		static bool HideLaserTrailEffects;
+		static bool HideShakeEffects;
 		static bool ShowFlashOnSelecting;
 		static bool UnitPowerDrain;
 		static int SuperWeaponSidebar_RequiredSignificance;
