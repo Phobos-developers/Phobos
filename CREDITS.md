@@ -458,6 +458,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow setting whether `AlternateFLH` applies to vehicle passengers in the transport unit
   - Fix the bug that vehicle fall on infantry will make all cell content has been removed
   - Allow deploy controlled MCV
+  - Fix the bug that naval ship will sink even they destroyed in air
   - Fix the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
