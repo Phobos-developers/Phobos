@@ -336,6 +336,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->SortCameoByName.Read(exINI, GameStrings::General, "SortCameoByName");
 
+	this->KeepAnimOnLimbo.Read(exINI, GameStrings::General, "KeepAnimOnLimbo");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -611,6 +613,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->FallingDownTargetingFix)
 		.Process(this->AIAirTargetingFix)
 		.Process(this->SortCameoByName)
+		.Process(this->KeepAnimOnLimbo)
 		;
 }
 
