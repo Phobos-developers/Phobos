@@ -101,6 +101,9 @@ public:
 
 		Valueable<bool> UndeploysInto_Sellable;
 
+		// Ares 0.2
+		Valueable<bool> CloningFacility;
+
 		// Ares 0.A
 		Valueable<BuildingTypeClass*> RubbleIntact;
 		Valueable<bool> RubbleIntactRemove;
@@ -168,6 +171,9 @@ public:
 			, Refinery_UseNormalActiveAnim { false }
 			, HasPowerUpAnim {}
 			, UndeploysInto_Sellable { false }
+
+			// Ares 0.2
+			, CloningFacility { false }
 
 			// Ares 0.A
 			, RubbleIntact { nullptr }
