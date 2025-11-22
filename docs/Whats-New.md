@@ -459,6 +459,8 @@ New:
 - Toggle off laser trail and shake effects (by Ollerus)
 - [Dehardcode the `ZAdjust` of warhead anim](Fixed-or-Improved-Logics.md#dehardcode-the-zadjust-of-warhead-anim) (by TaranDahl)
 - [Interceptor target scan delay customization](New-or-Enhanced-Logics.md#projectile-interception-logic) (by Starkku)
+- Allow deploy controlled MCV (by NetsuNegi)
+- Customize if cloning need power (by NetsuNegi)
 - SHP turret vehicles support the use of `*tur.shp` files (by FlyStar)
 
 Vanilla fixes:
@@ -495,7 +497,9 @@ Vanilla fixes:
 - Fixed `MovementZone=Subterannean` harvesters being unable to find docks if in area enclosed by water, cliffs etc. (by Starkku)
 - Fixed an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner (by TaranDahl)
 - Allow Reveal Crate to take effect when picking up by another player controlled house in campaign (by Trsdy)
-- Fixed an issue where the vanilla script ignores jumpjets. (by TaranDahl)
+- Fixed an issue where the vanilla script ignores jumpjets (by TaranDahl)
+- Fixed the issue where trigger events 2, 53 and 54 in persistent type triggers would be activated unconditionally after activation (by FlyStar)
+- Fixed the bug that naval ship will sink even they destroyed in air (by NetsuNegi)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -524,6 +528,8 @@ Fixes / interactions with other extensions:
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
 - Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle` (by TaranDahl)
 - Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect (by Sovietianqi, based on knowledge of DeathFish)
+- Fixed the bug that building with `CloningFacility=true` and `WeaponsFactory=true` may cloning multiple vehicles and then they get stuck (by NetsuNegi)
+- Customize Ares's radar jam logic (by NetsuNegi)
 ```
 
 ### 0.4

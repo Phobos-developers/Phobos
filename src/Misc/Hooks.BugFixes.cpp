@@ -2049,15 +2049,14 @@ DEFINE_HOOK(0x73C43F, UnitClass_DrawAsVXL_Shadow_IsLocomotorFix2, 0x6)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x737E2A, UnitClass_ReceiveDamage_Sinkable_Bridge, 0x6)
+DEFINE_HOOK(0x737E2A, UnitClass_ReceiveDamage_Sinkable_BridgeOrHeight, 0x6)
 {
 	enum { Explode = 0x737E63 };
 
 	GET(UnitClass*, pThis, ESI);
 
-	return pThis->OnBridge ? Explode : 0;
+	return pThis->OnBridge || pThis->GetHeight() > 0 ? Explode : 0;
 }
-
 
 // These hooks cause invisible barrier in multiplayer games, when a tank destroyed in tank bunker, and then the bunker has been sold
 //namespace RemoveCellContentTemp
@@ -2888,3 +2887,15 @@ DEFINE_HOOK(0x6F9D13, TechnoClass_SelectAutoTarget_AIAirTargetingFix2, 0x7)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x4440B0, BuildingClass_KickOutUnit_CloningFacility, 0x6)
+{
+	enum { CheckFreeLinks = 0x4440BA, ContinueIn = 0x4440D7 };
+
+	GET(BuildingTypeClass*, pFactoryType, EAX);
+
+	if (!pFactoryType->WeaponsFactory || BuildingTypeExt::ExtMap.Find(pFactoryType)->CloningFacility)
+		return CheckFreeLinks;
+
+	return ContinueIn;
+}

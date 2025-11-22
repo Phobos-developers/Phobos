@@ -275,6 +275,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner.
 - Allow Reveal Crate to take effect when picking up by another player controlled house in campaign.
 - Fixed an issue where the vanilla script ignores jumpjets. Enable it through `[General] -> AIAirTargetingFix=true`.
+- Fixed the bug that naval ship will sink even they destroyed in air.
 
 ## Fixes / interactions with other extensions
 
@@ -308,6 +309,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that technos head to building's dock even they are not going to dock.
 - Fixed an issue that the jumpjet vehicles cannot stop correctly after going berserk.
 - Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect.
+- Fixed the bug that building with `CloningFacility=true` and `WeaponsFactory=true` may cloning multiple vehicles and then they get stuck.
 
 ```{note}
 The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
@@ -759,6 +761,16 @@ In `rulesmd.ini`:
 ```ini
 [General]
 BuildingWaypoints=false  ; boolean
+```
+
+### Customize if cloning need power
+
+- In vanilla, cloning vats can work fine even low power. In ares, they need power to work. Now you can specific it.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]        ; BuildingType
+Cloning.Powered=true  ; boolean
 ```
 
 ## Infantry
@@ -2338,6 +2350,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]         ; WeaponType
 IsSingleColor=false  ; boolean
+```
+
+## Allow deploy controlled MCV
+
+In vanilla, you cannot deploy a controlled vehicle to `ConstructionYard=true` building. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AllowDeployControlledMCV=false   ; boolean
 ```
 
 ## RadialIndicator visibility

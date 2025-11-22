@@ -55,6 +55,9 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	if (!pInterceptorType || Unsorted::CurrentFrame % pInterceptorType->TargetingDelay != 0)
 		return;
 
+	if (!BulletClass::Array.Count || this->IsBurrowed)
+		return;
+
 	const auto pThis = this->OwnerObject();
 	const auto pTarget = pThis->Target;
 
@@ -69,15 +72,12 @@ void TechnoExt::ExtData::ApplyInterceptor()
 			return;
 	}
 
-	if (this->IsBurrowed || !BulletClass::Array.Count)
-		return;
-
 	BulletClass* pOptionalTarget = nullptr;
 	const double guardRange = pInterceptorType->GuardRange.Get(pThis);
 	const double guardRangeSq = guardRange * guardRange;
 	const double minGuardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
-	const auto location = pThis->Location;
 	const double minGuardRangeSq = minGuardRange * minGuardRange;
+	const auto location = pThis->Location;
 	const auto pWeapon = pThis->GetWeapon(pInterceptorType->Weapon)->WeaponType; // Interceptor weapon is always fixed
 	const auto pWH = pWeapon->Warhead;
 
@@ -95,7 +95,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 		if (pOptionalTarget && isTargetedOrLocked)
 			continue;
 
-		const auto distanceSq = pBullet->Location.DistanceFromSquared(pThis->Location);
+		const auto distanceSq = pBullet->Location.DistanceFromSquared(location);
 
 		if (distanceSq > guardRangeSq || distanceSq < minGuardRangeSq)
 			continue;
@@ -1998,6 +1998,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	bool reflectsDamage = false;
 	bool hasOnFireDiscardables = false;
 	bool hasRestrictedArmorMultipliers = false;
+	bool hasCritModifiers = false;
 
 	for (const auto& attachEffect : this->AttachedEffects)
 	{
@@ -2022,6 +2023,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		hasTint |= type->HasTint();
 		reflectsDamage |= type->ReflectDamage;
 		hasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
+		hasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
 	}
 
 	pAE.FirepowerMultiplier = firepower;
@@ -2037,6 +2039,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	pAE.ReflectDamage = reflectsDamage;
 	pAE.HasOnFireDiscardables = hasOnFireDiscardables;
 	pAE.HasRestrictedArmorMultipliers = hasRestrictedArmorMultipliers;
+	pAE.HasCritModifiers = hasCritModifiers;
 
 	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
 		pThis->Uncloak(true);

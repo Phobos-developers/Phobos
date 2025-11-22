@@ -176,14 +176,15 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			{
 				// Jun 2, 2024 - Starkku: We should only detonate on the target if the bullet, at the moment of detonation is within acceptable distance of the target.
 				// Ares uses 64 leptons / quarter of a cell as a tolerance, so for sake of consistency we're gonna do the same here.
-				if (pBullet->DistanceFrom(pTarget) < Unsorted::LeptonsPerCell / 4.0)
+				// Skip the distance checking process for Inviso projectiles.
+				if (pBullet->Type->Inviso || pBullet->DistanceFrom(pTarget) <= 64.0) // Unsorted::LeptonsPerCell / 4.0
 					this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
 			}
 		}
-		else if (this->DamageAreaTarget)
+		else if (auto const pTarget = this->DamageAreaTarget)
 		{
-			if (coords.DistanceFrom(this->DamageAreaTarget->GetCoords()) < Unsorted::LeptonsPerCell / 4.0)
-				this->DetonateOnOneUnit(pHouse, this->DamageAreaTarget, pOwner, bulletWasIntercepted);
+			if (coords.DistanceFromSquared(pTarget->GetCoords()) <= 4096.0) // (Unsorted::LeptonsPerCell / 4.0) * (Unsorted::LeptonsPerCell / 4.0)
+				this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
 		}
 	}
 }
@@ -546,12 +547,14 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, BulletClass*
 				return;
 
 			// 1/8th of a cell as a margin of error if not Inviso interceptor.
-			if (pInterceptor->Type->Inviso || pBullet->Location.DistanceFrom(coords) <= Unsorted::LeptonsPerCell / 8.0)
+			if (pInterceptor->Type->Inviso || pBullet->Location.DistanceFromSquared(coords) <= 1024.0) // (Unsorted::LeptonsPerCell / 8.0) * (Unsorted::LeptonsPerCell / 8.0)
 				pBulletExt->InterceptBullet(pOwner, pInterceptor);
 		}
 	}
 	else
 	{
+		const double cellSpreadSq = cellSpread * cellSpread * 65536; // Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell
+
 		for (const auto& pBullet : BulletClass::Array)
 		{
 			const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
@@ -560,7 +563,7 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, BulletClass*
 			if (!pBulletExt->TypeExtData->Interceptable || pBullet->SpawnNextAnim)
 				continue;
 
-			if (pBullet->Location.DistanceFrom(coords) <= cellSpread * Unsorted::LeptonsPerCell)
+			if (pBullet->Location.DistanceFromSquared(coords) <= cellSpreadSq)
 				pBulletExt->InterceptBullet(pOwner, pInterceptor);
 		}
 	}
@@ -568,7 +571,7 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, BulletClass*
 
 void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget)
 {
-	auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
+	const auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
 
 	if (!pTargetFoot)
 		return;
@@ -643,6 +646,10 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
 		return critChance;
 
 	auto const pExt = TechnoExt::ExtMap.Find(pFirer);
+
+	if (!pExt->AE.HasCritModifiers)
+		return critChance;
+
 	double extraChance = 0.0;
 
 	for (auto const& attachEffect : pExt->AttachedEffects)

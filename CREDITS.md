@@ -458,6 +458,11 @@ This page lists all the individual contributions to the project by their author.
   - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles
   - Allow setting whether `AlternateFLH` applies to vehicle passengers in the transport unit
   - Fix the bug that vehicle fall on infantry will make all cell content has been removed
+  - Allow deploy controlled MCV
+  - Fix the bug that naval ship will sink even they destroyed in air
+  - Fix the bug that building with `CloningFacility=true` and `WeaponsFactory=true` may cloning multiple vehicles and then they get stuck
+  - Customize Ares's radar jam logic
+  - Customize if cloning need power
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -638,7 +643,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the techno with weapon with `AA=yes` and `AG=no` would not auto targeting units that are falling, such as paratroopers
   - Dehardcode the `ZAdjust` of warhead anim
   - Fix an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner
-  - Fix an issue where the vanilla script ignores jumpjets.
+  - Fix an issue where the vanilla script ignores jumpjets
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
