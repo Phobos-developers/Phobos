@@ -2887,3 +2887,15 @@ DEFINE_HOOK(0x6F9D13, TechnoClass_SelectAutoTarget_AIAirTargetingFix2, 0x7)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x4440B0, BuildingClass_KickOutUnit_CloningFacility, 0x6)
+{
+	enum { CheckFreeLinks = 0x4440BA, ContinueIn = 0x4440D7 };
+
+	GET(BuildingTypeClass*, pFactoryType, EAX);
+
+	if (!pFactoryType->WeaponsFactory || BuildingTypeExt::ExtMap.Find(pFactoryType)->CloningFacility)
+		return CheckFreeLinks;
+
+	return ContinueIn;
+}

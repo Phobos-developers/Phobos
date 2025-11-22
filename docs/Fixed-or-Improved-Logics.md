@@ -309,6 +309,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that technos head to building's dock even they are not going to dock.
 - Fixed an issue that the jumpjet vehicles cannot stop correctly after going berserk.
 - Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect.
+- Fixed the bug that building with `CloningFacility=true` and `WeaponsFactory=true` may cloning multiple vehicles and then they get stuck.
 
 ```{note}
 The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
@@ -760,6 +761,16 @@ In `rulesmd.ini`:
 ```ini
 [General]
 BuildingWaypoints=false  ; boolean
+```
+
+### Customize if cloning need power
+
+- In vanilla, cloning vats can work fine even low power. In ares, they need power to work. Now you can specific it.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]        ; BuildingType
+Cloning.Powered=true  ; boolean
 ```
 
 ## Infantry

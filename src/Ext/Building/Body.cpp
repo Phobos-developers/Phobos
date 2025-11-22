@@ -448,6 +448,17 @@ WeaponStruct* BuildingExt::GetLaserWeapon(BuildingClass* pThis)
 	return pThis->GetPrimaryWeapon();
 }
 
+void BuildingExt::KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, void*, BuildingClass* pFactory)
+{
+	if (!pFactory->IsAlive || pFactory->InLimbo || (BuildingTypeExt::ExtMap.Find(pFactory->Type)->Cloning_Powered && !pFactory->IsPowerOnline()) || pFactory->IsBeingWarpedOut())
+		return;
+
+	const auto pClone = static_cast<TechnoClass*>(info.first->CreateObject(info.second));
+
+	if (pFactory->KickOutUnit(pClone, CellStruct::Empty) != KickOutResult::Succeeded)
+		pClone->UnInit();
+}
+
 // =============================
 // load / save
 

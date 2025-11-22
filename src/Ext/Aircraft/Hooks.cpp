@@ -197,7 +197,7 @@ DEFINE_FUNCTION_JUMP(CALL6, 0x418AF1, AircraftClass_SelectWeapon_Wrapper);
 DEFINE_HOOK_AGAIN(0x41874E, AircraftClass_Mission_Attack_StrafingDestinationFix, 0x6)
 DEFINE_HOOK(0x418544, AircraftClass_Mission_Attack_StrafingDestinationFix, 0x6)
 {
-	GET(FireError, fireError, EAX);
+	GET(const FireError, fireError, EAX);
 	GET(AircraftClass*, pThis, ESI);
 
 	// The aircraft managed by the spawn manager will not update destination after changing target

@@ -1998,6 +1998,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	bool reflectsDamage = false;
 	bool hasOnFireDiscardables = false;
 	bool hasRestrictedArmorMultipliers = false;
+	bool hasCritModifiers = false;
 
 	for (const auto& attachEffect : this->AttachedEffects)
 	{
@@ -2022,6 +2023,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		hasTint |= type->HasTint();
 		reflectsDamage |= type->ReflectDamage;
 		hasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
+		hasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
 	}
 
 	pAE.FirepowerMultiplier = firepower;
@@ -2037,6 +2039,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	pAE.ReflectDamage = reflectsDamage;
 	pAE.HasOnFireDiscardables = hasOnFireDiscardables;
 	pAE.HasRestrictedArmorMultipliers = hasRestrictedArmorMultipliers;
+	pAE.HasCritModifiers = hasCritModifiers;
 
 	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
 		pThis->Uncloak(true);
