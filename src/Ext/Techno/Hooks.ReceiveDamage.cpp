@@ -33,7 +33,6 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	const auto pSourceHouse = args->SourceHouse;
 	const auto pTargetHouse = pThis->Owner;
-	int& damage = *args->Damage;
 
 	// Calculate Damage Multiplier
 	if (!args->IgnoreDefenses && damage)
