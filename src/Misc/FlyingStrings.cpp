@@ -36,8 +36,8 @@ void FlyingStrings::AddMoneyString(int amount, HouseClass* owner, AffectedHouse 
 		&& (displayToHouses == AffectedHouse::All
 			|| owner && EnumFunctions::CanTargetHouse(displayToHouses, owner, HouseClass::CurrentPlayer)))
 	{
-		bool isPositive = amount > 0;
-		ColorStruct color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };
+		const bool isPositive = amount > 0;
+		const ColorStruct color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };
 		wchar_t moneyStr[0x20];
 		swprintf_s(moneyStr, L"%ls%ls%d", isPositive ? L"+" : L"-", Phobos::UI::CostLabel, std::abs(amount));
 

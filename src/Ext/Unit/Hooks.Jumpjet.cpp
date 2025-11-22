@@ -50,7 +50,7 @@ DEFINE_HOOK(0x736F78, UnitClass_UpdateFiring_FireErrorIsFACING, 0x6)
 // For compatibility with previous builds
 DEFINE_HOOK(0x736E6E, UnitClass_UpdateFiring_OmniFireTurnToTarget, 0x9)
 {
-	GET(FireError, err, EBP);
+	GET(const FireError, err, EBP);
 
 	if (err != FireError::OK && err != FireError::REARM)
 		return 0;
