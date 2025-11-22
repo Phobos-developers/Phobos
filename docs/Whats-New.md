@@ -531,6 +531,13 @@ Fixes / interactions with other extensions:
 - Customize Ares's radar jam logic (by NetsuNegi)
 ```
 
+### 0.4.0.1
+
+```{dropdown} Click to show
+Vanilla fixes:
+- Fix preplaced aircraft outside visible map being incorrectly flagged as crashing under certain conditions (by Starkku)
+```
+
 ### 0.4
 
 ```{dropdown} Click to show
