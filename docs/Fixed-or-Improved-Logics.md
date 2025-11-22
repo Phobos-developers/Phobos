@@ -763,6 +763,16 @@ In `rulesmd.ini`:
 BuildingWaypoints=false  ; boolean
 ```
 
+### Customize if cloning need power
+
+- In vanilla, cloning vats can work fine even low power. In ares, they need power to work. Now you can specific it.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]        ; BuildingType
+Cloning.Powered=true  ; boolean
+```
+
 ## Infantry
 
 ### Auto deploy for GI-like infantry

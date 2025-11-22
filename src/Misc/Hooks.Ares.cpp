@@ -115,6 +115,9 @@ void Apply_Ares3_0_Patches()
 
 	// Redirect Ares's RadarJammerClass::Update to our implementation
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x68500, AresRadarJammerClass_Update_GetAddr());
+  
+  // Redirect Ares's function to our implementation:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x112D0, &BuildingExt::KickOutClone);
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -171,4 +174,7 @@ void Apply_Ares3_0p1_Patches()
 
 	// Redirect Ares's RadarJammerClass::Update to our implementation
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x69470, AresRadarJammerClass_Update_GetAddr());
+  
+  // Redirect Ares's function to our implementation:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x11860, &BuildingExt::KickOutClone);
 }
