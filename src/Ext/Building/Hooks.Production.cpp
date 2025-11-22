@@ -236,7 +236,7 @@ DEFINE_HOOK(0x4449FB, BuildingClass_KickOutUnit_CloningVats, 0x8)
 	auto info = std::make_pair(pProductionType, pOwner);
 
 	for (const auto pVat : pOwner->CloningVats)
-		BuildingExt::KickOutClone(info, 0, pFactory);
+		BuildingExt::KickOutClone(info, 0, pVat);
 
 	return SkipGameCode;
 }
