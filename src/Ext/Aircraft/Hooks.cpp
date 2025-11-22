@@ -535,7 +535,7 @@ DEFINE_HOOK(0x4DDD66, FootClass_IsLandZoneClear_ReplaceHardcode, 0x6) // To avoi
 	enum { SkipGameCode = 0x4DDD8A };
 
 	GET(FootClass* const, pThis, EBP);
-	GET_STACK(CellStruct, cell, STACK_OFFSET(0x20, 0x4));
+	GET_STACK(const CellStruct, cell, STACK_OFFSET(0x20, 0x4));
 
 	const auto pType = pThis->GetTechnoType();
 
