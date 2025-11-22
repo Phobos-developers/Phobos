@@ -276,6 +276,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allow Reveal Crate to take effect when picking up by another player controlled house in campaign.
 - Fixed an issue where the vanilla script ignores jumpjets. Enable it through `[General] -> AIAirTargetingFix=true`.
 - Fixed the bug that naval ship will sink even they destroyed in air.
+- When a unit disappears (e.g., cloaks, enters a vehicle), the animations attached to it will be hidden instead of removed. Enable this feature through `[General] -> KeepAnimOnLimbo=true`.
 
 ## Fixes / interactions with other extensions
 

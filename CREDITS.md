@@ -642,6 +642,7 @@ This page lists all the individual contributions to the project by their author.
   - Dehardcode the `ZAdjust` of warhead anim
   - Fix an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner
   - Fix an issue where the vanilla script ignores jumpjets
+  - Allow the attached animations to be retained and hidden when the unit disappears (f.ex. cloak, enters a vehicle)
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
