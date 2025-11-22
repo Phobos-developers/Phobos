@@ -1890,6 +1890,7 @@ msgid ""
 "`WeaponsFactory=true` may cloning multiple vehicles and then they get "
 "stuck."
 msgstr ""
+"修复了拥有 `CloningFacility=true` 和 `WeaponsFactory=true` 的建筑可能克隆多个载具并卡住的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:315
 msgid ""
