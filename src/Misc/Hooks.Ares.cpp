@@ -108,6 +108,9 @@ void Apply_Ares3_0_Patches()
 
 	// Apply laser weapon selection fix on Ares' laser fire replacement.
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x56415, &GetLaserWeapon);
+
+	// Redirect Ares's function to our implementation:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x112D0, &BuildingExt::KickOutClone);
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -161,4 +164,7 @@ void Apply_Ares3_0p1_Patches()
 
 	// Apply laser weapon selection fix on Ares' laser fire replacement.
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x570C5, &GetLaserWeapon);
+
+	// Redirect Ares's function to our implementation:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x11860, &BuildingExt::KickOutClone);
 }
