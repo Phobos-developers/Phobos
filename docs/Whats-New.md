@@ -461,6 +461,7 @@ New:
 - [Interceptor target scan delay customization](New-or-Enhanced-Logics.md#projectile-interception-logic) (by Starkku)
 - Allow deploy controlled MCV (by NetsuNegi)
 - Customize if cloning need power (by NetsuNegi)
+- SHP turret vehicles support the use of `*tur.shp` files (by FlyStar)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

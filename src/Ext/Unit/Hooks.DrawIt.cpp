@@ -29,8 +29,14 @@ DEFINE_HOOK(0x73C7AC, UnitClass_DrawAsSHP_DrawTurret_TintFix, 0x6)
 
 	pThis->Draw_A_SHP(pShape, bodyFrameIdx, &location, &bounds, 0, 256, zAdjust, zGradient, 0, extraLight, 0, 0, 0, 0, 0, 0);
 
+	const auto pTurretShape = TechnoTypeExt::ExtMap.Find(pType)->TurretShape;
+	const int StartFrame = pTurretShape ? 0 : (pType->WalkFrames * pType->Facings);
+
+	if (pTurretShape)
+		pShape = pTurretShape;
+
 	const auto secondaryDir = pThis->SecondaryFacing.Current();
-	const int frameIdx = secondaryDir.GetFacing<32>(4) + pType->WalkFrames * pType->Facings;
+	const int frameIdx = secondaryDir.GetFacing<32>(4) + StartFrame;
 
 	const auto primaryDir = pThis->PrimaryFacing.Current();
 	const double bodyRad = primaryDir.GetRadian<32>();
@@ -49,4 +55,23 @@ DEFINE_HOOK(0x73C7AC, UnitClass_DrawAsSHP_DrawTurret_TintFix, 0x6)
 	pThis->Draw_A_SHP(pShape, frameIdx, &drawPoint, &bounds, 0, 256, static_cast<DWORD>(-32), zGradient, 0, extraLight, 0, 0, 0, 0, 0, 0);
 	Game::bDrawShadow = originalDrawShadow;
 	return SkipDrawCode;
+}
+
+DEFINE_HOOK(0x73CCF4, UnitClass_DrawSHP_FacingsB_TurretShape, 0xA)
+{
+	enum { SkipGameCode = 0x73CD06 };
+
+	GET(UnitClass*, pThis, EBP);
+	GET(UnitTypeClass*, pType, ECX);
+
+	const auto pTurretShape = TechnoTypeExt::ExtMap.Find(pType)->TurretShape;
+	const int StartFrame = pTurretShape ? 0 : (pType->WalkFrames * pType->Facings);
+	const int frameIdx = pThis->SecondaryFacing.Current().GetFacing<32>(4) + StartFrame;
+
+	if (pTurretShape)
+		R->EDI(pTurretShape);
+
+	R->ECX(pThis);
+	R->EAX(frameIdx);
+	return 0x73CD06;
 }
