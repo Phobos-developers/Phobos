@@ -1,19 +1,20 @@
 #include "RadarJammerClass.h"
 
+#include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/EnumFunctions.h>
 
 void RadarJammerClass::Update()
 {
-	const auto pType = this->Techno->GetTechnoType();
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto pTechno = this->Techno;
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pTechno)->TypeExtData;
 
 	if (Unsorted::CurrentFrame - this->LastScan < pTypeExt->RadarJamDelay)
 		return;
 
 	this->LastScan = Unsorted::CurrentFrame;
-	const auto pOwner = this->Techno->Owner;
-	const int jamRange = TechnoTypeExt::ExtMap.Find(pType)->RadarJamRadius * Unsorted::LeptonsPerCell;
+	const auto pOwner = pTechno->Owner;
+	const int jamRange = pTypeExt->RadarJamRadius * Unsorted::LeptonsPerCell;
 
 	for (const auto pHouse : HouseClass::Array)
 	{
@@ -27,12 +28,16 @@ void RadarJammerClass::Update()
 			if (!pBuildingType->Radar && !pBuildingType->SpySat)
 				continue;
 
-			if (this->Techno->DistanceFrom(pBuilding) <= jamRange
+			if (pTechno->DistanceFrom(pBuilding) <= jamRange
 				&& !pTypeExt->RadarJamIgnore.Contains(pBuildingType)
 				&& (pTypeExt->RadarJamAffect.empty() || pTypeExt->RadarJamAffect.Contains(pBuildingType)))
+			{
 				this->Jam(pBuilding);
+			}
 			else
+			{
 				this->Unjam(pBuilding);
+			}
 		}
 	}
 }
