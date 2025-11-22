@@ -1899,7 +1899,7 @@ msgstr "自定义 Ares 的雷达干扰逻辑"
 
 #: ../../../CREDITS.md:465
 msgid "Customize if cloning need power"
-msgstr ""
+msgstr "自定义克隆耗电"
 
 #: ../../../CREDITS.md:466
 msgid "**Apollo** - Translucent SHP drawing patches"

@@ -3332,13 +3332,14 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:766
 msgid "Customize if cloning need power"
-msgstr ""
+msgstr "自定义克隆耗电"
 
 #: ../../Fixed-or-Improved-Logics.md:768
 msgid ""
-"In vanilla, cloning vats can work fine even low power. In ares, they need"
+"In vanilla, cloning vats can work fine even low power. Starting from Ares 2.0, they need"
 " power to work. Now you can specific it."
 msgstr ""
+"在原版中，克隆缸即便没电也可以工作。从 Ares 2.0 开始，它们需要电力运作。现在你可以指定。"
 
 #: ../../Fixed-or-Improved-Logics.md:771
 msgid ""

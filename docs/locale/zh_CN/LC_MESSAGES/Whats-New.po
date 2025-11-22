@@ -2057,8 +2057,8 @@ msgstr ""
 "mcv)（by NetsuNegi）"
 
 #: ../../Whats-New.md:463
-msgid "Customize if cloning need power (by NetsuNegi)"
-msgstr "（by NetsuNegi）"
+msgid "[Customize if cloning need power](Fixed-or-Improved-Logics.md#customize-if-cloning-need-power) (by NetsuNegi)"
+msgstr "[自定义克隆耗电](Fixed-or-Improved-Logics.md#customize-if-cloning-need-power)（by NetsuNegi）"
 
 #: ../../Whats-New.md:465 ../../Whats-New.md:705 ../../Whats-New.md:1064
 #: ../../Whats-New.md:1173 ../../Whats-New.md:1198 ../../Whats-New.md:1237
