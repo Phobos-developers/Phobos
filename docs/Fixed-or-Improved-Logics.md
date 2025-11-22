@@ -271,12 +271,12 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Reactivate unused trigger events 2, 53, and 54.
 - Fixed the bug that vehicle fall on infantry will make all cell content has been removed.
 - Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state.
+- Fixed preplaced aircraft outside visible map being incorrectly flagged as crashing under certain conditions.
 - Fixed `MovementZone=Subterannean` harvesters being unable to find docks if in area enclosed by water, cliffs etc.
 - Fixed an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner.
 - Allow Reveal Crate to take effect when picking up by another player controlled house in campaign.
 - Fixed an issue where the vanilla script ignores jumpjets. Enable it through `[General] -> AIAirTargetingFix=true`.
 - Fixed the bug that naval ship will sink even they destroyed in air.
-- Fix preplaced aircraft outside visible map being incorrectly flagged as crashing under certain conditions.
 
 ## Fixes / interactions with other extensions
 
