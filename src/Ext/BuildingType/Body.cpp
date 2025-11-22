@@ -262,6 +262,9 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->IsAnimDelayedBurst.Read(exArtINI, pArtSection, "IsAnimDelayedBurst");
 	this->ZShapePointMove_OnBuildup.Read(exArtINI, pArtSection, "ZShapePointMove.OnBuildup");
 
+	// Ares 0.2
+	this->CloningFacility.Read(exINI, pSection, "CloningFacility");
+
 	// Ares 0.A
 	this->RubbleIntact.Read(exINI, pSection, "Rubble.Intact");
 	this->RubbleIntactRemove.Read(exINI, pSection, "Rubble.Intact.Remove");
@@ -340,6 +343,9 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Refinery_UseNormalActiveAnim)
 		.Process(this->HasPowerUpAnim)
 		.Process(this->UndeploysInto_Sellable)
+
+		// Ares 0.2
+		.Process(this->CloningFacility)
 
 		// Ares 0.A
 		.Process(this->RubbleIntact)
