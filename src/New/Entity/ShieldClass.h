@@ -20,10 +20,11 @@ public:
 	int ReceiveDamage(args_ReceiveDamage* args);
 	bool CanBeTargeted(WeaponTypeClass* pWeapon) const;
 	bool CanBePenetrated(WarheadTypeClass* pWarhead) const;
-	void BreakShield(AnimTypeClass* pBreakAnim = nullptr, WeaponTypeClass* pBreakWeapon = nullptr);
+	void BreakShield(const std::vector<AnimTypeClass*>& pBreakAnim, WeaponTypeClass* pBreakWeapon = nullptr);
 
-	void SetRespawn(int duration, double amount, int rate, bool resetTimer);
+	void SetRespawn(int duration, double amount, int rate, bool restartInCombat, int restartInCombatDelay, bool resetTimer, std::vector<AnimTypeClass*> anim, WeaponTypeClass* weapon = nullptr);
 	void SetSelfHealing(int duration, double amount, int rate, bool restartInCombat, int restartInCombatDelay, bool resetTimer);
+	void SetRespawnRestartInCombat();
 	void KillAnim();
 	void AI_Temporal();
 	void AI();
@@ -44,10 +45,9 @@ public:
 	}
 	bool IsActive() const
 	{
-		return
-			this->Available &&
-			this->HP > 0 &&
-			this->Online;
+		return this->Available
+			&& this->HP > 0
+			&& this->Online;
 	}
 	bool IsAvailable() const
 	{
@@ -64,6 +64,8 @@ public:
 	ArmorType GetArmorType(TechnoTypeClass* pTechnoType = nullptr) const;
 	int GetFramesSinceLastBroken() const;
 	void SetAnimationVisibility(bool visible);
+	void UpdateTint();
+	void ConvertCheck(TechnoTypeClass* pTechnoType);
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
 	static bool ShieldIsBrokenTEvent(ObjectClass* pAttached);
@@ -81,8 +83,6 @@ private:
 	template <typename T>
 	bool Serialize(T& Stm);
 
-	void UpdateType();
-
 	void SelfHealing();
 	int GetPercentageAmount(double iStatus);
 
@@ -92,19 +92,16 @@ private:
 	void UpdateIdleAnim();
 	AnimTypeClass* GetIdleAnimType();
 
-	void WeaponNullifyAnim(AnimTypeClass* pHitAnim = nullptr);
+	void WeaponNullifyAnim(const std::vector<AnimTypeClass*>& pHitAnim);
 	void ResponseAttack();
 
 	void CloakCheck();
 	void OnlineCheck();
 	void TemporalCheck();
-	bool ConvertCheck();
 	void EnabledByCheck();
 
 	int DrawShieldBar_Pip(const bool isBuilding) const;
 	int DrawShieldBar_PipAmount(const int length) const;
-
-	void UpdateTint();
 
 	/// Properties ///
 	TechnoClass* Techno;
@@ -125,6 +122,10 @@ private:
 	int SelfHealing_RestartInCombatDelay_Warhead;
 	double Respawn_Warhead;
 	int Respawn_Rate_Warhead;
+	bool Respawn_RestartInCombat_Warhead;
+	int Respawn_RestartInCombatDelay_Warhead;
+	std::vector<AnimTypeClass*> Respawn_Anim_Warhead;
+	WeaponTypeClass* Respawn_Weapon_Warhead;
 
 	int LastBreakFrame;
 	double LastTechnoHealthRatio;
@@ -137,6 +138,7 @@ private:
 			SelfHealing_CombatRestart { }
 			, SelfHealing { }
 			, SelfHealing_WHModifier { }
+			, Respawn_CombatRestart { }
 			, Respawn { }
 			, Respawn_WHModifier { }
 		{ }
@@ -144,6 +146,7 @@ private:
 		CDTimerClass SelfHealing_CombatRestart;
 		CDTimerClass SelfHealing;
 		CDTimerClass SelfHealing_WHModifier;
+		CDTimerClass Respawn_CombatRestart;
 		CDTimerClass Respawn;
 		CDTimerClass Respawn_WHModifier;
 

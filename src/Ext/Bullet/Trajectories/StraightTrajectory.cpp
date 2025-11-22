@@ -168,10 +168,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	if (pFirer)
 	{
 		this->CurrentBurst = pFirer->CurrentBurstIndex;
-		this->FirepowerMult = pFirer->FirepowerMultiplier;
-
-		if (const auto pExt = TechnoExt::ExtMap.Find(pFirer))
-			this->FirepowerMult *= pExt->AE.FirepowerMultiplier;
+		this->FirepowerMult = TechnoExt::GetCurrentFirepowerMultiplier(pFirer);
 
 		if (pType->MirrorCoord && pFirer->CurrentBurstIndex % 2 == 1)
 			this->OffsetCoord.Y = -(this->OffsetCoord.Y);
@@ -1018,8 +1015,8 @@ double StraightTrajectory::GetExtraDamageMultiplier(BulletClass* pBullet, Techno
 		return this->Type->EdgeAttenuation;
 
 	// Remove the first cell distance for calculation
-	if (distance > 256.0)
-		damageMult += (this->Type->EdgeAttenuation - 1.0) * ((distance - 256.0) / (static_cast<double>(this->AttenuationRange - 256)));
+	if (distance > Unsorted::LeptonsPerCell)
+		damageMult += (this->Type->EdgeAttenuation - 1.0) * ((distance - Unsorted::LeptonsPerCell) / (static_cast<double>(this->AttenuationRange - Unsorted::LeptonsPerCell)));
 
 	return damageMult;
 }

@@ -33,6 +33,8 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Interceptable_DeleteOnIntercept.Read(exINI, pSection, "Interceptable.DeleteOnIntercept");
 	this->Interceptable_WeaponOverride.Read<true>(exINI, pSection, "Interceptable.WeaponOverride");
 	this->Gravity.Read(exINI, pSection, "Gravity");
+	this->Vertical_AircraftFix.Read(exINI, pSection, "Vertical.AircraftFix");
+	this->VerticalInitialFacing.Read(exINI, pSection, "VerticalInitialFacing");
 
 	this->TrajectoryType.LoadFromINI(pINI, pSection);
 
@@ -67,7 +69,11 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AirburstWeapon_ApplyFirepowerMult.Read(exINI, pSection, "AirburstWeapon.ApplyFirepowerMult");
 	this->AirburstWeapon_SourceScatterMin.Read(exINI, pSection, "AirburstWeapon.SourceScatterMin");
 	this->AirburstWeapon_SourceScatterMax.Read(exINI, pSection, "AirburstWeapon.SourceScatterMax");
+	this->Parachuted.Read(exINI, pSection, "Parachuted");
+	this->Parachuted_FallRate.Read(exINI, pSection, "Parachuted.FallRate");
+	this->Parachuted_MaxFallRate.Read(exINI, pSection, "Parachuted.MaxFallRate");
 	this->BombParachute.Read(exINI, pSection, "BombParachute");
+	this->AU.Read(exINI, pSection, "AU");
 
 	// Ares 0.7
 	this->BallisticScatter_Min.Read(exINI, pSection, "BallisticScatter.Min");
@@ -127,6 +133,8 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Interceptable_WeaponOverride)
 		.Process(this->LaserTrail_Types)
 		.Process(this->Gravity)
+		.Process(this->Vertical_AircraftFix)
+		.Process(this->VerticalInitialFacing)
 		.Process(this->Shrapnel_AffectsGround)
 		.Process(this->Shrapnel_AffectsBuildings)
 		.Process(this->Shrapnel_UseWeaponTargeting)
@@ -159,7 +167,11 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AirburstWeapon_ApplyFirepowerMult)
 		.Process(this->AirburstWeapon_SourceScatterMin)
 		.Process(this->AirburstWeapon_SourceScatterMax)
+		.Process(this->Parachuted)
+		.Process(this->Parachuted_FallRate)
+		.Process(this->Parachuted_MaxFallRate)
 		.Process(this->BombParachute)
+		.Process(this->AU)
 
 		.Process(this->TrajectoryType) // just keep this shit at last
 		;

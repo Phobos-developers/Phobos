@@ -92,11 +92,22 @@ public:
 		Nullable<float> BuildingBunkerROFMult;
 		NullableIdx<VocClass> BunkerWallsUpSound;
 		NullableIdx<VocClass> BunkerWallsDownSound;
-		
+
 		NullableIdx<VocClass> BuildingRepairedSound;
 
 		Valueable<bool> Refinery_UseNormalActiveAnim;
-		
+
+		ValueableVector<bool> HasPowerUpAnim;
+
+		Valueable<bool> UndeploysInto_Sellable;
+
+		// Ares 0.2
+		Valueable<bool> CloningFacility;
+
+		// Ares 0.A
+		Valueable<BuildingTypeClass*> RubbleIntact;
+		Valueable<bool> RubbleIntactRemove;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -158,6 +169,15 @@ public:
 			, BunkerWallsDownSound {}
 			, BuildingRepairedSound {}
 			, Refinery_UseNormalActiveAnim { false }
+			, HasPowerUpAnim {}
+			, UndeploysInto_Sellable { false }
+
+			// Ares 0.2
+			, CloningFacility { false }
+
+			// Ares 0.A
+			, RubbleIntact { nullptr }
+			, RubbleIntactRemove { false }
 		{ }
 
 		// Ares 0.A functions
