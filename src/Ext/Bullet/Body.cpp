@@ -154,12 +154,13 @@ void BulletExt::ExtData::ApplyExtraWarheads(const std::vector<WarheadTypeClass*>
 {
 	auto const pThis = this->OwnerObject();
 	const int defaultDamage = pThis->WeaponType ? pThis->WeaponType->Damage : 0;
+	auto& random = ScenarioClass::Instance->Random;
 
 	for (size_t i = 0; i < exWH.size(); i++)
 	{
 		auto const pWH = exWH[i];
 		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
-		auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target); // must be check in every loop
+		auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target); // must be checked in every loop
 
 		if (pTarget && !pWHExt->IsHealthInThreshold(pTarget))
 			continue;
@@ -176,9 +177,9 @@ void BulletExt::ExtData::ApplyExtraWarheads(const std::vector<WarheadTypeClass*>
 		size = exWHChances.size();
 
 		if (size > i)
-			detonate = exWHChances[i] >= ScenarioClass::Instance->Random.RandomDouble();
+			detonate = exWHChances[i] >= random.RandomDouble();
 		else if (size > 0)
-			detonate = exWHChances[size - 1] >= ScenarioClass::Instance->Random.RandomDouble();
+			detonate = exWHChances[size - 1] >= random.RandomDouble();
 
 		if (!detonate)
 			continue;
