@@ -1895,7 +1895,7 @@ msgstr ""
 
 #: ../../../CREDITS.md:464
 msgid "Customize Ares's radar jam logic"
-msgstr ""
+msgstr "自定义 Ares 的雷达干扰逻辑"
 
 #: ../../../CREDITS.md:465
 msgid "Customize if cloning need power"

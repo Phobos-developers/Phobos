@@ -2452,8 +2452,8 @@ msgstr ""
 "修复了拥有 `CloningFacility=true` 和 `WeaponsFactory=true` 的建筑可能克隆多个载具并卡住的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:531
-msgid "Customize Ares's radar jam logic (by NetsuNegi)"
-msgstr "（by NetsuNegi）"
+msgid "[Customize Ares's radar jam logic](New-or-Enhanced-Logics.md#customize-ares-s-radar-jam-logic) (by NetsuNegi)"
+msgstr "[自定义 Ares 的雷达干扰逻辑](New-or-Enhanced-Logics.md#customize-ares-s-radar-jam-logic)（by NetsuNegi）"
 
 #: ../../Whats-New.md:534
 msgid "0.4"

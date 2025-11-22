@@ -2039,7 +2039,7 @@ WarpOutWeapon=                          ; WeaponType
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                      ; TechnoType
+[SOMETECHNO]                      ; TechnoType, with RadarJamRadius=
 RadarJamHouses=enemies            ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 RadarJamDelay=30                  ; integer
 RadarJamAffect=                   ; List of BuildingTypes

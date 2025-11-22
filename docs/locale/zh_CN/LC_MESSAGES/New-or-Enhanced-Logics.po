@@ -7458,15 +7458,15 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:2032
 msgid "Customize Ares's radar jam logic"
-msgstr ""
+msgstr "自定义 Ares 的雷达干扰逻辑"
 
 #: ../../New-or-Enhanced-Logics.md:2034
 msgid "It is now possible to customize some properties of Ares's radar jam logic."
-msgstr ""
+msgstr "现在可以自定义 Ares 雷达干扰逻辑的部分属性。"
 
 #: ../../New-or-Enhanced-Logics.md:2035
 msgid "`RadarJamHouses` determines which houses will be affected by the jam."
-msgstr ""
+msgstr "`RadarJamHouses` 决定哪些所属方会受到雷达干扰效果影响。"
 
 #: ../../New-or-Enhanced-Logics.md:2036
 msgid ""
@@ -7474,6 +7474,7 @@ msgid ""
 "like Ares did. Shorter interval means the jam will be applied more "
 "timely, but worse for performance."
 msgstr ""
+"`RadarJamDelay` 决定干扰间隔，默认同 Ares 为 30。较短的间隔会使干扰生效更及时但会降低性能。"
 
 #: ../../New-or-Enhanced-Logics.md:2037
 msgid ""
@@ -7481,23 +7482,25 @@ msgid ""
 "`SpySat=yes` that could be affected by the jam. If it's empty, all radar "
 "buildings will be affected."
 msgstr ""
+"`RadarJamAffect` 决定哪些拥有 `Radar=yes` 或 `SpySat=yes` 的建筑会受到干扰。如果为空则所有雷达建筑都会受到干扰。"
 
 #: ../../New-or-Enhanced-Logics.md:2038
 msgid ""
 "`RadarJamIgnore` determines a list of buildings with `Radar=yes` or "
 "`SpySat=yes` that couldn't be affected by the jam."
 msgstr ""
+"`RadarJamIgnore` 决定哪些拥有 `Radar=yes` 或 `SpySat=yes` 的建筑不受到干扰。"
 
 #: ../../New-or-Enhanced-Logics.md:2041
 msgid ""
-"[SOMETECHNO]                      ; TechnoType\n"
+"[SOMETECHNO]                      ; TechnoType, with RadarJamRadius=\n"
 "RadarJamHouses=enemies            ; List of Affected House Enumeration "
 "(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
 "RadarJamDelay=30                  ; integer\n"
 "RadarJamAffect=                   ; List of BuildingTypes\n"
 "RadarJamIgnore=                   ; List of BuildingTypes\n"
 msgstr ""
-"[SOMETECHNO]                      ; TechnoType\n"
+"[SOMETECHNO]                      ; TechnoType, with RadarJamRadius=\n"
 "RadarJamHouses=enemies            ; List of Affected House Enumeration "
 "(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
 "RadarJamDelay=30                  ; integer\n"
