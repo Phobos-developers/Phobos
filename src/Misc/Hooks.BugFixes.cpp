@@ -2933,3 +2933,6 @@ DEFINE_HOOK(0x4440B0, BuildingClass_KickOutUnit_CloningFacility, 0x6)
 
 	return ContinueIn;
 }
+
+// Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.
+DEFINE_JUMP(LJMP, 0x6FC278, 0x6FC289);

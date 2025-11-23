@@ -277,6 +277,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allow Reveal Crate to take effect when picking up by another player controlled house in campaign.
 - Fixed an issue where the vanilla script ignores jumpjets. Enable it through `[General] -> AIAirTargetingFix=true`.
 - Fixed the bug that naval ship will sink even they destroyed in air.
+- Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.
 
 ## Fixes / interactions with other extensions
 
