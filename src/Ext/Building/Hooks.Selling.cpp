@@ -7,7 +7,8 @@ DEFINE_HOOK(0x4D9F7B, FootClass_Sell, 0x6)
 	GET(FootClass*, pThis, ESI);
 
 	int money = pThis->GetRefund();
-	pThis->Owner->GiveMoney(money);
+	auto const pOwner = pThis->Owner;
+	pOwner->GiveMoney(money);
 
 	if (pThis->Owner->IsControlledByCurrentPlayer())
 	{
@@ -18,7 +19,7 @@ DEFINE_HOOK(0x4D9F7B, FootClass_Sell, 0x6)
 	}
 
 	if (RulesExt::Global()->DisplayIncome.Get())
-		FlyingStrings::AddMoneyString(money, pThis->Owner, RulesExt::Global()->DisplayIncome_Houses.Get(), pThis->Location);
+		FlyingStrings::AddMoneyString(money, pThis, pOwner, RulesExt::Global()->DisplayIncome_Houses.Get(), pThis->Location);
 
 	return ReadyToVanish;
 }
