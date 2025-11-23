@@ -3031,6 +3031,9 @@ msgstr ""
 "](New-or-Enhanced-Logics.md#straight-trajectory) 和 [Phobos 轰击弹道](New-or-"
 "Enhanced-Logics.md#bombard-trajectory) 可穿透地表。除此之外的抛射体在接触地面时将会强制引爆。"
 
+msgid "In order to attack units moving horizontally underground, the attacker needs to have `SensorsSight` settings."
+msgstr "为了能够攻击处于地下水平运动的单位，攻击者需要有 `SensorsSight` 设置。"
+
 #: ../../New-or-Enhanced-Logics.md:765
 msgid "Parabombs"
 msgstr "伞降炸弹"

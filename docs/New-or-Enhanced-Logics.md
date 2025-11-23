@@ -760,6 +760,8 @@ AU=false              ; boolean
 
 ```{note}
 Only vanilla projectiles with `Inviso=yes` set or [Phobos projectiles](#projectile-trajectories) `Straight` with `Trajectory.Straight.SubjectToGround=false` enabled and `Bombard` with `Trajectory.Bombard.SubjectToGround=false` enabled can go beneath the ground. Otherwise, the projectile will be forced to detonate upon hitting the ground.
+
+In order to attack units moving horizontally underground, the attacker needs to have `SensorsSight` settings.
 ```
 
 ### Parabombs
