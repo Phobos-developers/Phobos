@@ -1121,9 +1121,22 @@ TabIndex=1  ; integer
 
 In `rulesmd.ini`
 ```ini
+[SWSignalTypes]
+0=SOMESWSIGNAL
+
+[SOMESWSIGNAL]
+Range=      ; integer
+Affects=     ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+
 [SOMESW]    ; SuperWeaponType
 SW.Inhibitors.Houses=enemies    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 SW.Designators.Houses=owner    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+SW.InhibiteTypes=       ; List of sw signal types
+SW.DesignateTypes=   ; List of sw signal types
+
+[SOMETECHNO]    ; TechnoType
+InhibiteTypes=       ; List of sw signal types
+DesignateTypes=   ; List of sw signal types
 ```
 
 ### EMPulse settings
