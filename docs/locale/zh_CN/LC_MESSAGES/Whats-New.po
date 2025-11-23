@@ -2473,6 +2473,7 @@ msgid ""
 "Fixed preplaced aircraft outside visible map being incorrectly flagged as"
 " crashing under certain conditions (by Starkku)"
 msgstr ""
+"修复了处于可视地图范围外的预置战机某些情况下被错误标记为坠毁的问题（by Starkku）"
 
 #: ../../Whats-New.md:541
 msgid ""

@@ -1670,6 +1670,7 @@ msgid ""
 "Fixed preplaced aircraft outside visible map being incorrectly flagged as"
 " crashing under certain conditions."
 msgstr ""
+"修复了处于可视地图范围外的预置战机某些情况下被错误标记为坠毁的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:275
 msgid ""
