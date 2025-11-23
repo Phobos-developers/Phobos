@@ -8,6 +8,7 @@
 #include <Utilities/TemplateDef.h>
 
 #include <Ext/Building/Body.h>
+#include <New/Type/SWSignalTypeClass.h>
 #include <New/Type/Affiliated/TypeConvertGroup.h>
 
 class SWTypeExt
@@ -51,6 +52,9 @@ public:
 		Valueable<bool> SW_InitialReady;
 		ValueableIdx<SuperWeaponTypeClass> SW_PostDependent;
 		Valueable<int> SW_MaxCount;
+
+		ValueableVector<SWSignalTypeClass*> SW_DesignateTypes;
+		ValueableVector<SWSignalTypeClass*> SW_InhibiteTypes;
 
 		Valueable<CSFText> Message_CannotFire;
 		Valueable<CSFText> Message_InsufficientFunds;
@@ -140,6 +144,8 @@ public:
 			, SW_InitialReady { false }
 			, SW_PostDependent {}
 			, SW_MaxCount { -1 }
+			, SW_DesignateTypes {}
+			, SW_InhibiteTypes {}
 			, SW_Shots { -1 }
 			, Message_CannotFire {}
 			, Message_InsufficientFunds {}
@@ -194,10 +200,10 @@ public:
 		{ }
 
 		// Ares 0.A functions
-		bool IsInhibitor(HouseClass* pOwner, TechnoClass* pTechno) const;
+		//bool IsInhibitor(HouseClass* pOwner, TechnoClass* pTechno) const;
 		bool HasInhibitor(HouseClass* pOwner, const CellStruct& coords) const;
 		bool IsInhibitorEligible(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno) const;
-		bool IsDesignator(HouseClass* pOwner, TechnoClass* pTechno) const;
+		//bool IsDesignator(HouseClass* pOwner, TechnoClass* pTechno) const;
 		bool HasDesignator(HouseClass* pOwner, const CellStruct& coords) const;
 		bool IsDesignatorEligible(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno) const;
 		bool IsLaunchSiteEligible(const CellStruct& Coords, BuildingClass* pBuilding, bool ignoreRange) const;

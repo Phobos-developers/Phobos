@@ -12,6 +12,7 @@
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
+#include <New/Type/SWSignalTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
 #include <New/Type/Affiliated/TiberiumEaterTypeClass.h>
 #include <New/Type/Affiliated/CreateUnitTypeClass.h>
@@ -331,6 +332,9 @@ public:
 		Valueable<Leptons> KeepTargetOnMove_ExtraDistance;
 
 		Valueable<int> Power;
+
+		ValueableVector<SWSignalTypeClass*> DesignateTypes;
+		ValueableVector<SWSignalTypeClass*> InhibiteTypes;
 
 		Nullable<bool> AllowAirstrike;
 
@@ -737,6 +741,9 @@ public:
 			, KeepTargetOnMove_ExtraDistance { Leptons(0) }
 
 			, Power { }
+
+			, DesignateTypes { }
+			, InhibiteTypes { }
 
 			, AllowAirstrike { }
 

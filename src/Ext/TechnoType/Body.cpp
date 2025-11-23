@@ -943,6 +943,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Power.Read(exINI, pSection, "Power");
 
+	this->DesignateTypes.Read(exINI, pSection, "DesignateTypes");
+	this->InhibiteTypes.Read(exINI, pSection, "InhibiteTypes");
+
 	this->AllowAirstrike.Read(exINI, pSection, "AllowAirstrike");
 
 	this->Image_ConditionYellow.Read(exINI, pSection, "Image.ConditionYellow");
@@ -1579,6 +1582,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->KeepTargetOnMove_ExtraDistance)
 
 		.Process(this->Power)
+
+		.Process(this->DesignateTypes)
+		.Process(this->InhibiteTypes)
 
 		.Process(this->AllowAirstrike)
 

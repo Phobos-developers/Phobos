@@ -47,6 +47,8 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_PostDependent)
 		.Process(this->SW_MaxCount)
 		.Process(this->SW_Shots)
+		.Process(this->SW_DesignateTypes)
+		.Process(this->SW_InhibiteTypes)
 		.Process(this->Message_CannotFire)
 		.Process(this->Message_InsufficientFunds)
 		.Process(this->Message_ColorScheme)
@@ -134,6 +136,9 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_PostDependent.Read(exINI, pSection, "SW.PostDependent");
 	this->SW_MaxCount.Read(exINI, pSection, "SW.MaxCount");
 	this->SW_Shots.Read(exINI, pSection, "SW.Shots");
+
+	this->SW_DesignateTypes.Read(exINI, pSection, "SW.DesignateTypes");
+	this->SW_InhibiteTypes.Read(exINI, pSection, "SW.InhibiteTypes");
 
 	this->Message_CannotFire.Read(exINI, pSection, "Message.CannotFire");
 	this->Message_InsufficientFunds.Read(exINI, pSection, "Message.InsufficientFunds");
