@@ -142,7 +142,7 @@ ReflectDamage.Override=                            ; integer
 ReflectDamage.UseInvokerAsOwner=false              ; boolean
 DisableWeapons=false                               ; boolean
 Unkillable=false                                   ; boolean
-LaserTrail.Type=                                   ; lasertrail type
+LaserTrail.Type=                                   ; LaserTrailType
 Groups=                                            ; comma-separated list of strings (group IDs)
 
 [SOMETECHNO]                                       ; TechnoType
@@ -760,6 +760,8 @@ AU=false              ; boolean
 
 ```{note}
 Only vanilla projectiles with `Inviso=yes` set or [Phobos projectiles](#projectile-trajectories) `Straight` with `Trajectory.Straight.SubjectToGround=false` enabled and `Bombard` with `Trajectory.Bombard.SubjectToGround=false` enabled can go beneath the ground. Otherwise, the projectile will be forced to detonate upon hitting the ground.
+
+In order to attack units moving horizontally underground, the attacker needs to have `SensorsSight` settings.
 ```
 
 ### Parabombs
@@ -2039,7 +2041,7 @@ WarpOutWeapon=                          ; WeaponType
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                      ; TechnoType
+[SOMETECHNO]                      ; TechnoType, with RadarJamRadius=
 RadarJamHouses=enemies            ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 RadarJamDelay=30                  ; integer
 RadarJamAffect=                   ; List of BuildingTypes
