@@ -460,6 +460,7 @@ New:
 - [Dehardcode the `ZAdjust` of warhead anim](Fixed-or-Improved-Logics.md#dehardcode-the-zadjust-of-warhead-anim) (by TaranDahl)
 - [Interceptor target scan delay customization](New-or-Enhanced-Logics.md#projectile-interception-logic) (by Starkku)
 - Allow deploy controlled MCV (by NetsuNegi)
+- Customize if cloning need power (by NetsuNegi)
 - Attached effect attach/discard by health (by Ollerus)
 - Attached effect with `ExtraWarheads`, `KillWeapon` and `FeedbackWeapon` (by Ollerus)
 - [AuxWeapon](New-or-Enhanced-Logics.md#auxiliary-weapon) (by Ollerus)
@@ -531,6 +532,21 @@ Fixes / interactions with other extensions:
 - Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect (by Sovietianqi, based on knowledge of DeathFish)
 - Fixed the bug that building with `CloningFacility=true` and `WeaponsFactory=true` may cloning multiple vehicles and then they get stuck (by NetsuNegi)
 - Customize Ares's radar jam logic (by NetsuNegi)
+```
+
+### 0.4.0.1
+
+```{dropdown} Click to show
+Vanilla fixes:
+- Fixed preplaced aircraft outside visible map being incorrectly flagged as crashing under certain conditions (by Starkku)
+
+Phobos fixes:
+- AttachEffect `DisableWeapons` no longer interferes with 'can this unit/building fire weapons?' checks for units/buildings with no weapons (by Starkku)
+- Fixed starting infantry being scattered randomly on game start instead of being grouped (by 11EJDE11, Belonit & Ollerus)
+- Fixed OverlayType `ZAdjust` as well as some shield & AttachEffect variables not being correctly saved & loaded (by Ollerus)
+- Fixed an issue with certain Warhead detonation features (f.ex `Crit.Warhead` without `Crit.Warhead.FullDetonation`=true` not snapping on the intended target without `CellSpread` (by Starkku)
+- Fixed an issue with `UndeploysInto.Sellable` (by TaranDahl)
+- Fixed an issue with `Powered`/`PoweredSpecial` building animation ownership change fix (by Trsdy)
 ```
 
 ### 0.4

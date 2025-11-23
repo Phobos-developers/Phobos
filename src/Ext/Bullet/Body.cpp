@@ -166,20 +166,20 @@ void BulletExt::ExtData::ApplyExtraWarheads(const std::vector<WarheadTypeClass*>
 		if (!detonate)
 			continue;
 
-		auto pFirer = pThis->Owner;
-		auto pHouse = pOwner;
+		bool useInvoker = false;
 
 		if (pInvoker)
 		{
 			size = exWHOwner.size();
 
-			if ((size > i && exWHOwner[i]) || (size > 0 && exWHOwner[size - 1]))
-			{
-				pFirer = pInvoker;
-				pHouse = pInvoker->Owner;
-			}
+			if (size > i)
+				useInvoker = exWHOwner[i];
+			else if (size > 0)
+				useInvoker = exWHOwner[size - 1];
 		}
 
+		auto const pFirer = useInvoker ? pInvoker : pThis->Owner;
+		auto const pHouse = useInvoker ? pInvoker->Owner : pOwner;
 		bool isFull = true;
 		size = exWHFull.size();
 

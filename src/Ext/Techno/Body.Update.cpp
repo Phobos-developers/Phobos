@@ -1891,10 +1891,8 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	{
 		auto const attachEffect = it->get();
 		auto const pType = attachEffect->GetType();
-		bool selfOwned = attachEffect->IsSelfOwned();
-		bool remove = selfOwned && !pTypeExt->AttachEffects.AttachTypes.Contains(pType);
 
-		if (remove)
+		if (attachEffect->IsSelfOwned() && !pTypeExt->AttachEffects.AttachTypes.Contains(pType))
 		{
 			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
 			{
@@ -2027,7 +2025,6 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		hasTint |= type->HasTint();
 		reflectsDamage |= type->ReflectDamage;
 		hasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
-		hasRestrictedArmorMultipliers |= (type->ArmorMultiplier != 1.0 && (type->ArmorMultiplier_AllowWarheads.size() > 0 || type->ArmorMultiplier_DisallowWarheads.size() > 0));
 		hasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
 		hasExtraWarheads |= type->ExtraWarheads.size() > 0;
 		hasFeedbackOrAuxWeapon |= type->FeedbackWeapon != nullptr || type->AuxWeapon != nullptr;

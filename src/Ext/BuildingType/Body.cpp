@@ -149,6 +149,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CanC4_AllowZeroDamage.Read(exINI, pSection, "CanC4.AllowZeroDamage");
 
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
+	this->Cloning_Powered.Read(exINI, pSection, "Cloning.Powered");
 	this->ExcludeFromMultipleFactoryBonus.Read(exINI, pSection, "ExcludeFromMultipleFactoryBonus");
 
 	this->Grinding_AllowAllies.Read(exINI, pSection, "Grinding.AllowAllies");
@@ -291,6 +292,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Powered_KillSpawns)
 		.Process(this->CanC4_AllowZeroDamage)
 		.Process(this->InitialStrength_Cloning)
+		.Process(this->Cloning_Powered)
 		.Process(this->ExcludeFromMultipleFactoryBonus)
 		.Process(this->Refinery_UseStorage)
 		.Process(this->Grinding_AllowAllies)

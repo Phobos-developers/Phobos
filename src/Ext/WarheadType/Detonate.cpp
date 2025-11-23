@@ -571,7 +571,7 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, BulletClass*
 
 void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget)
 {
-	auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
+	const auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
 
 	if (!pTargetFoot)
 		return;

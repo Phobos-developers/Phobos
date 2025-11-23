@@ -106,7 +106,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 					}
 					else
 					{
-						int damage = (pThis->Health * pThis->DamageMultiplier) >> 8;
+						const int damage = (pThis->Health * pThis->DamageMultiplier) >> 8;
 						pWHExt->DamageAreaWithTarget(pTechno->GetCoords(), damage, pThis->Owner, pThis->WH, true, pOwner, pTechno);
 					}
 				}
@@ -179,7 +179,7 @@ DEFINE_HOOK(0x469D1A, BulletClass_Logics_Debris, 0x6)
 		const auto pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 		auto coord = pThis->GetCoords();
 
-		int count = Math::min(debrisTypes.Count, debrisMaximums.Count);
+		const int count = Math::min(debrisTypes.Count, debrisMaximums.Count);
 
 		// Restore DebrisMaximums logic
 		// Make DebrisTypes generate completely in accordance with DebrisMaximums,

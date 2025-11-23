@@ -129,7 +129,7 @@ DEFINE_HOOK(0x744103, UnitClass_Mission_AreaGuard_DisallowMoving, 0x6)
 DEFINE_HOOK(0x74132B, UnitClass_GetFireError_DisallowMoving, 0x7)
 {
 	GET(UnitClass*, pThis, ESI);
-	GET(FireError, result, EAX);
+	GET(const FireError, result, EAX);
 
 	if (result == FireError::RANGE && TechnoExt::CannotMove(pThis))
 		R->EAX(FireError::ILLEGAL);
