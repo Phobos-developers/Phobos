@@ -12,6 +12,8 @@
 #include <Ext/SWType/Ares/NewSWType.h>
 #include <Ext/EBolt/Body.h>
 
+#include <New/Entity/Ares/RadarJammerClass.h>
+
 // Remember that we still don't fix Ares "issues" a priori. Extensions as well.
 // Patches presented here are exceptions rather that the rule. They must be short, concise and correct.
 // DO NOT POLLUTE ISSUEs and PRs.
@@ -61,6 +63,8 @@ EBolt* __stdcall CreateEBolt2(WeaponTypeClass* pWeapon)
 {
 	return EBoltExt::CreateEBolt(pWeapon);
 }
+
+_GET_FUNCTION_ADDRESS(RadarJammerClass::Update, AresRadarJammerClass_Update_GetAddr)
 
 void Apply_Ares3_0_Patches()
 {
@@ -112,7 +116,13 @@ void Apply_Ares3_0_Patches()
 	// Apply laser weapon selection fix on Ares' laser fire replacement.
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x56415, &GetLaserWeapon);
 
-	// Redirect Ares' NewSWType::GetTargetingData() to our implementation:
+	// Redirect Ares's RadarJammerClass::Update to our implementation
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x68500, AresRadarJammerClass_Update_GetAddr());
+  
+  // Redirect Ares's function to our implementation:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x112D0, &BuildingExt::KickOutClone);
+  
+  // Redirect Ares' NewSWType::GetTargetingData() to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x6D1E0, AresNewSWType_GetTargetingData_GetAddr());
 }
 
@@ -168,6 +178,12 @@ void Apply_Ares3_0p1_Patches()
 	// Apply laser weapon selection fix on Ares' laser fire replacement.
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x570C5, &GetLaserWeapon);
 
-	// Redirect Ares' NewSWType::GetTargetingData() to our implementation:
+	// Redirect Ares's RadarJammerClass::Update to our implementation
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x69470, AresRadarJammerClass_Update_GetAddr());
+  
+  // Redirect Ares's function to our implementation:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x11860, &BuildingExt::KickOutClone);
+  
+  // Redirect Ares' NewSWType::GetTargetingData() to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x6E1F0, AresNewSWType_GetTargetingData_GetAddr());
 }

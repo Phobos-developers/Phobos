@@ -56,7 +56,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 		pType->HandleEvent(pTechno);
 	}
 
-	auto& duration = this->Duration;
+	int& duration = this->Duration;
 
 	duration = this->DurationOverride != 0 ? this->DurationOverride : pType->Duration;
 
@@ -484,7 +484,7 @@ void AttachEffectClass::SetAnimationTunnelState(bool visible)
 
 void AttachEffectClass::RefreshDuration(int durationOverride)
 {
-	auto& duration = this->Duration;
+	int& duration = this->Duration;
 	auto const pType = this->Type;
 
 	if (durationOverride)
@@ -713,7 +713,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 
 	if (pTarget->IsIronCurtained())
 	{
-		bool penetrates = pTarget->ForceShielded ? pType->PenetratesForceShield.Get(pType->PenetratesIronCurtain) : pType->PenetratesIronCurtain;
+		const bool penetrates = pTarget->ForceShielded ? pType->PenetratesForceShield.Get(pType->PenetratesIronCurtain) : pType->PenetratesIronCurtain;
 
 		if (!penetrates)
 			return nullptr;
