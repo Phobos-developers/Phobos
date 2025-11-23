@@ -312,14 +312,16 @@ HideLightFlashEffects=false      ; boolean
 ### 0.4.0.1
 
 ```{dropdown} Click to show
+:open:
+
 Vanilla fixes:
 - Fixed preplaced aircraft outside visible map being incorrectly flagged as crashing under certain conditions (by Starkku)
 
 Phobos fixes:
 - AttachEffect `DisableWeapons` no longer interferes with 'can this unit/building fire weapons?' checks for units/buildings with no weapons (by Starkku)
-- Fixed starting infantry being scattered randomly on game start instead of being grouped (by 11EJDE11, Belonit & Ollerus)
+- Fixed starting infantry being scattered randomly on game start instead of being grouped (by 11EJDE11, Belonit, Ollerus)
 - Fixed OverlayType `ZAdjust` as well as some shield & AttachEffect variables not being correctly saved & loaded (by Ollerus)
-- Fixed an issue with certain Warhead detonation features (f.ex `Crit.Warhead` without `Crit.Warhead.FullDetonation`=true` not snapping on the intended target without `CellSpread` (by Starkku)
+- Fixed an issue with certain Warhead detonation features (f.ex `Crit.Warhead` without `Crit.Warhead.FullDetonation=true` not snapping on the intended target without `CellSpread`) (by Starkku)
 - Fixed an issue with `UndeploysInto.Sellable` (by TaranDahl)
 - Fixed an issue with `Powered`/`PoweredSpecial` building animation ownership change fix (by Trsdy)
 ```
