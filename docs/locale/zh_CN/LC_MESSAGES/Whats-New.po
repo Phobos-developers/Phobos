@@ -2484,7 +2484,7 @@ msgstr ""
 #: ../../Whats-New.md:542
 msgid ""
 "Fixed starting infantry being scattered randomly on game start instead of"
-" being grouped (by 11EJDE11, Belonit & Ollerus)"
+" being grouped (by 11EJDE11, Belonit, Ollerus)"
 msgstr ""
 
 #: ../../Whats-New.md:543
@@ -2496,8 +2496,8 @@ msgstr ""
 #: ../../Whats-New.md:544
 msgid ""
 "Fixed an issue with certain Warhead detonation features (f.ex "
-"`Crit.Warhead` without `Crit.Warhead.FullDetonation`=true` not snapping "
-"on the intended target without `CellSpread` (by Starkku)"
+"`Crit.Warhead` without `Crit.Warhead.FullDetonation=true` not snapping "
+"on the intended target without `CellSpread`) (by Starkku)"
 msgstr ""
 
 #: ../../Whats-New.md:545
