@@ -766,7 +766,7 @@ BuildingWaypoints=false  ; boolean
 
 ### Customize if cloning need power
 
-- In vanilla, cloning vats can work fine even low power. In ares, they need power to work. Now you can specific it.
+- In vanilla, cloning vats can work fine even low power. Starting from Ares 2.0, they need power to work. Now you can specific it.
 
 In `rulesmd.ini`:
 ```ini
