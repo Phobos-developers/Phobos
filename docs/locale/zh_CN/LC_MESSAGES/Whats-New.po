@@ -2481,18 +2481,21 @@ msgid ""
 "unit/building fire weapons?' checks for units/buildings with no weapons "
 "(by Starkku)"
 msgstr ""
+"AE 的 `DisableWeapons` 效果不再干扰无武器单位／建筑的“该单位／建筑能否开火？”判定（by Starkku）"
 
 #: ../../Whats-New.md:542
 msgid ""
 "Fixed starting infantry being scattered randomly on game start instead of"
 " being grouped (by 11EJDE11, Belonit, Ollerus)"
 msgstr ""
+"修复了初始步兵从原有行为变为随机分散的问题（by 11EJDE11, Belonit, Ollerus）"
 
 #: ../../Whats-New.md:543
 msgid ""
 "Fixed OverlayType `ZAdjust` as well as some shield & AttachEffect "
 "variables not being correctly saved & loaded (by Ollerus)"
 msgstr ""
+"修复了覆盖物的 `ZAdjust` 及一些护盾和 AE 变量无法正确保存与加载的问题（by Ollerus）"
 
 #: ../../Whats-New.md:544
 msgid ""
@@ -2500,16 +2503,18 @@ msgid ""
 "`Crit.Warhead` without `Crit.Warhead.FullDetonation=true` not snapping "
 "on the intended target without `CellSpread`) (by Starkku)"
 msgstr ""
+"修复了某些弹头引爆功能问题（例如当未设置 `Crit.Warhead.FullDetonation=true` 且未设置 `CellSpread` 的有 `Crit.Warhead` 弹头无法精确命中目标）（by Starkku）"
 
 #: ../../Whats-New.md:545
 msgid "Fixed an issue with `UndeploysInto.Sellable` (by TaranDahl)"
-msgstr ""
+msgstr "修复了 `UndeploysInto.Sellable` 相关问题（by TaranDahl）"
 
 #: ../../Whats-New.md:546
 msgid ""
 "Fixed an issue with `Powered`/`PoweredSpecial` building animation "
 "ownership change fix (by Trsdy)"
 msgstr ""
+"修复了 `Powered`／`PoweredSpecial` 建筑动画的所属变更修复相关的问题（by Trsdy）"
 
 #: ../../Whats-New.md:549
 msgid "0.4"
