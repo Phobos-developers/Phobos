@@ -650,6 +650,7 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 		return false;
 
 	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	auto const pTargetType = pTarget->GetTechnoType();
 	int attachedCount = 0;
 	bool markForRedraw = false;
 	double ROFModifier = 1.0;
@@ -660,7 +661,7 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 		auto const pType = types[i];
 		auto const params = attachEffectInfo.GetAttachParams(i, selfOwned);
 
-		if (auto const pAE = AttachEffectClass::CreateAndAttach(pType, pTarget, pTargetExt->AttachedEffects, pInvokerHouse, pInvoker, pSource, params))
+		if (auto const pAE = AttachEffectClass::CreateAndAttach(pType, pTarget, pTargetType, pTargetExt->AttachedEffects, pInvokerHouse, pInvoker, pSource, params))
 		{
 			attachedCount++;
 
@@ -706,10 +707,10 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 /// <param name="pSource">Source object for the attachment e.g a Warhead or Techno.</param>
 /// <param name="attachParams">Attachment parameters.</param>
 /// <returns>The created and attached AttachEffect if successful, nullptr if not.</returns>
-AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs,
+AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, TechnoTypeClass* pTargetType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs,
 	HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachParams const& attachParams)
 {
-	if (!pType || !pTarget)
+	if (!pType)
 		return nullptr;
 
 	if (pTarget->IsIronCurtained())
@@ -720,20 +721,10 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 			return nullptr;
 	}
 
-	const auto pTargetTechnoType = pTarget->GetTechnoType();
-
-	if (!pType->AffectTypes.empty())
-	{
-		if (!pType->AffectTypes.Contains(pTargetTechnoType))
-			return nullptr;
-	}
-	if (!pType->IgnoreTypes.empty())
-	{
-		if (pType->IgnoreTypes.Contains(pTargetTechnoType))
-			return nullptr;
-	}
-
 	if (!EnumFunctions::IsTechnoEligible(pTarget, pType->AffectTargets, true))
+		return nullptr;
+
+	if ((!pType->AffectTypes.empty() && !pType->AffectTypes.Contains(pTargetType)) || pType->IgnoreTypes.Contains(pTargetType))
 		return nullptr;
 
 	int currentTypeCount = 0;
@@ -991,6 +982,7 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 {
 	const auto pSourceExt = TechnoExt::ExtMap.Find(pSource);
 	const auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	const auto pTargetType = pTarget->GetTechnoType();
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 
 	for (it = pSourceExt->AttachedEffects.begin(); it != pSourceExt->AttachedEffects.end(); )
@@ -1004,6 +996,15 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 		}
 
 		auto const type = attachEffect->GetType();
+		const bool isValid = EnumFunctions::IsTechnoEligible(pTarget, type->AffectTargets, true)
+			&& (type->AffectTypes.empty() || type->AffectTypes.Contains(pTargetType)) && !type->IgnoreTypes.Contains(pTargetType);
+
+		if (!isValid)
+		{
+			++it;
+			continue;
+		}
+
 		int currentTypeCount = 0;
 		AttachEffectClass* match = nullptr;
 		AttachEffectClass* sourceMatch = nullptr;
@@ -1035,7 +1036,7 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 			AEAttachParams info {};
 			info.DurationOverride = attachEffect->DurationOverride;
 
-			if (auto const pAE = AttachEffectClass::CreateAndAttach(type, pTarget, pTargetExt->AttachedEffects, attachEffect->InvokerHouse, attachEffect->Invoker, attachEffect->Source, info))
+			if (auto const pAE = AttachEffectClass::CreateAndAttach(type, pTarget, pTargetType, pTargetExt->AttachedEffects, attachEffect->InvokerHouse, attachEffect->Invoker, attachEffect->Source, info))
 				pAE->Duration = attachEffect->Duration;
 		}
 
