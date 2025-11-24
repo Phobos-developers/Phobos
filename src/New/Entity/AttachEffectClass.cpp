@@ -719,6 +719,28 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 			return nullptr;
 	}
 
+	//获取单位的种类（E1，APOC，YACNST等）
+	const auto targetID = pTarget->GetTechnoType()->ID;
+
+	if (!pType->AffectTypes.size() < 1)
+	{
+		// 判断 targetID 是否在 AffectTypes
+		auto& allowList = pType->AffectTypes;
+		bool allowed = std::find(allowList.begin(), allowList.end(), targetID) != allowList.end();
+
+		if (!allowed)
+			return nullptr;  // 不是指定类型，直接返回
+	}
+	if (!pType->IgnoreTypes.size() < 1)
+	{
+		// 判断 targetID 是否在 IgnoreTypes
+		auto& disallowList = pType->IgnoreTypes;
+		bool disallowed = std::find(disallowList.begin(), disallowList.end(), targetID) != disallowList.end();
+
+		if (disallowed)
+			return nullptr;  // 在黑名单里，直接返回
+	}
+
 	int currentTypeCount = 0;
 	AttachEffectClass* match = nullptr;
 	std::vector<AttachEffectClass*> cumulativeMatches;

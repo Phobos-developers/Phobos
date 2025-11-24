@@ -52,6 +52,10 @@ public:
 	Nullable<Leptons> DiscardOn_RangeOverride;
 	Valueable<bool> PenetratesIronCurtain;
 	Nullable<bool> PenetratesForceShield;
+	//声明
+	ValueableVector<TechnoTypeClass*> AffectTypes;
+	ValueableVector<TechnoTypeClass*> IgnoreTypes;
+	//声明结束
 	Valueable<AnimTypeClass*> Animation;
 	ValueableVector<AnimTypeClass*> CumulativeAnimations;
 	Valueable<bool> CumulativeAnimations_RestartOnChange;
@@ -112,6 +116,10 @@ public:
 		, DiscardOn_RangeOverride {}
 		, PenetratesIronCurtain { false }
 		, PenetratesForceShield {}
+		//初始化
+		, AffectTypes {}
+		, IgnoreTypes {}
+		//初始化结束
 		, Animation {}
 		, CumulativeAnimations {}
 		, CumulativeAnimations_RestartOnChange { true }

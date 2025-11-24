@@ -112,6 +112,11 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
 	this->PenetratesForceShield.Read(exINI, pSection, "PenetratesForceShield");
 
+	//加入 AffectTypes 和 IgnoreTypes
+	this->AffectTypes.Read(exINI, pSection, "AffectTypes");
+	this->IgnoreTypes.Read(exINI, pSection, "IgnoreTypes");
+	//加入 AffectTypes 和 IgnoreTypes 结束
+
 	this->Animation.Read(exINI, pSection, "Animation");
 	this->CumulativeAnimations.Read(exINI, pSection, "CumulativeAnimations");
 	this->CumulativeAnimations_RestartOnChange.Read(exINI, pSection, "CumulativeAnimations.RestartOnChange");
@@ -187,6 +192,10 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->DiscardOn_RangeOverride)
 		.Process(this->PenetratesIronCurtain)
 		.Process(this->PenetratesForceShield)
+		//加入 AffectTypes 和 IgnoreTypes
+		.Process(this->AffectTypes)
+		.Process(this->IgnoreTypes)
+		//加入 AffectTypes 和 IgnoreTypes 结束
 		.Process(this->Animation)
 		.Process(this->CumulativeAnimations)
 		.Process(this->CumulativeAnimations_RestartOnChange)
