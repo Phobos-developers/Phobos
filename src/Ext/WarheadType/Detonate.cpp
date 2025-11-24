@@ -155,12 +155,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			this->Crit_RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
 
 		if (this->Crit_ActiveChanceAnims.size() > 0 && this->Crit_CurrentChance > 0.0)
-		{
-			const int idx = ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_ActiveChanceAnims.size() - 1);
-			auto const pAnim = GameCreate<AnimClass>(this->Crit_ActiveChanceAnims[idx], coords);
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, nullptr, false, true);
-			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pOwner, pHouse);
-		}
+			AnimExt::CreateRandomAnim(Crit_ActiveChanceAnims, coords, pOwner, pHouse, true);
 
 		const bool bulletWasIntercepted = pBulletExt && (pBulletExt->InterceptedStatus & InterceptedStatus::Intercepted);
 		const float cellSpread = this->OwnerObject()->CellSpread;
@@ -200,7 +195,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	this->ApplyShieldModifiers(pTarget);
 
 	if (this->RemoveDisguise)
-		this->ApplyRemoveDisguise(pHouse, pTarget);
+		this->ApplyRemoveDisguise(pTarget);
 
 	if (this->RemoveMindControl)
 		this->ApplyRemoveMindControl(pTarget);
@@ -240,7 +235,7 @@ void WarheadTypeExt::ExtData::ApplyBuildingUndeploy(TechnoClass* pTarget)
 {
 	const auto pBuilding = abstract_cast<BuildingClass*, true>(pTarget);
 
-	if (!pBuilding || !pBuilding->IsAlive || pBuilding->Health <= 0 || !pBuilding->IsOnMap || pBuilding->InLimbo)
+	if (!pBuilding)
 		return;
 
 	// Higher priority for selling
@@ -442,7 +437,7 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 	}
 }
 
-void WarheadTypeExt::ExtData::ApplyRemoveDisguise(HouseClass* pHouse, TechnoClass* pTarget)
+void WarheadTypeExt::ExtData::ApplyRemoveDisguise(TechnoClass* pTarget)
 {
 	if (pTarget->IsDisguised())
 	{
@@ -461,12 +456,7 @@ void WarheadTypeExt::ExtData::ApplyRemoveMindControl(TechnoClass* pTarget)
 
 void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
 {
-	double dice;
-
-	if (this->Crit_ApplyChancePerTarget)
-		dice = ScenarioClass::Instance->Random.RandomDouble();
-	else
-		dice = this->Crit_RandomBuffer;
+	const double dice = this->Crit_ApplyChancePerTarget ? ScenarioClass::Instance->Random.RandomDouble() : this->Crit_RandomBuffer;
 
 	if (this->Crit_CurrentChance < dice)
 		return;
@@ -628,9 +618,6 @@ void WarheadTypeExt::ExtData::ApplyLocomotorInflictionReset(TechnoClass* pTarget
 
 void WarheadTypeExt::ExtData::ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker)
 {
-	if (!pTarget)
-		return;
-
 	std::vector<int> dummy = std::vector<int>();
 	auto const& info = this->AttachEffects;
 	AttachEffectClass::Attach(pTarget, pInvokerHouse, pInvoker, this->OwnerObject(), info);

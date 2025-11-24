@@ -94,9 +94,9 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 			return vec;
 		};
 
-		auto tryDetonate = [pThis, pWHExt, pOwner, isFull](TechnoClass* pTechno)
+		auto tryDetonate = [pThis, pWHExt, pOwner, isFull](TechnoClass* pTechno, TechnoTypeClass* pType)
 			{
-				if (pWHExt->EligibleForFullMapDetonation(pTechno, pOwner))
+				if (pWHExt->EligibleForFullMapDetonation(pTechno, pType, pOwner))
 				{
 					if (isFull)
 					{
@@ -117,7 +117,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 			auto const aircraft = copy_dvc(AircraftClass::Array);
 
 			for (auto const pAircraft : aircraft)
-				tryDetonate(pAircraft);
+				tryDetonate(pAircraft, pAircraft->Type);
 		}
 
 		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Building) != AffectedTarget::None)
@@ -125,7 +125,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 			auto const buildings = copy_dvc(BuildingClass::Array);
 
 			for (auto const pBuilding : buildings)
-				tryDetonate(pBuilding);
+				tryDetonate(pBuilding, pBuilding->Type);
 		}
 
 		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Infantry) != AffectedTarget::None)
@@ -133,7 +133,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 			auto const infantry = copy_dvc(InfantryClass::Array);
 
 			for (auto const pInf : infantry)
-				tryDetonate(pInf);
+				tryDetonate(pInf, pInf->Type);
 		}
 
 		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Unit) != AffectedTarget::None)
@@ -141,7 +141,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 			auto const units = copy_dvc(UnitClass::Array);
 
 			for (auto const pUnit : units)
-				tryDetonate(pUnit);
+				tryDetonate(pUnit, pUnit->Type);
 		}
 
 		pThis->Target = pOriginalTarget;
@@ -429,7 +429,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			if (pTypeExt->ReturnWeapon_ApplyFirepowerMult)
 				damage = static_cast<int>(damage * TechnoExt::GetCurrentFirepowerMultiplier(pTechno));
 
-			if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pTechno, pTechno,
+			if (auto const pBullet = pWeapon->Projectile->CreateBullet(pTechno, pTechno,
 				damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 			{
 				BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, pThis->Location, false);
