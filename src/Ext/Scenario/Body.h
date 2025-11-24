@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ScenarioClass.h>
+#include <MessageListClass.h>
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
@@ -39,6 +40,18 @@ public:
 		bool SWSidebar_Enable;
 		std::vector<int> SWSidebar_Indices;
 
+		std::vector<std::wstring> RecordMessages;
+
+		PhobosFixedString<64u> DefaultLS640BkgdName;
+		PhobosFixedString<64u> DefaultLS800BkgdName;
+		PhobosFixedString<64u> DefaultLS800BkgdPal;
+
+		std::vector<TechnoExt::ExtData*> LimboLaunchers;
+
+		DynamicVectorClass<TechnoClass*> UndergroundTracker; // Technos that are underground.
+		DynamicVectorClass<TechnoClass*> SpecialTracker; // For special purposes, like tracking technos that are forced moving. Currently unused.
+		DynamicVectorClass<TechnoClass*> FallingDownTracker; // Technos that are falling down, parachutes and land technos falling from bridge.
+
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
 			, BriefingTheme { -1 }
@@ -48,6 +61,14 @@ public:
 			, TransportReloaders {}
 			, SWSidebar_Enable { true }
 			, SWSidebar_Indices {}
+			, RecordMessages {}
+			, DefaultLS640BkgdName {}
+			, DefaultLS800BkgdName {}
+			, DefaultLS800BkgdPal {}
+			, LimboLaunchers {}
+			, UndergroundTracker {}
+			, SpecialTracker {}
+			, FallingDownTracker {}
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);

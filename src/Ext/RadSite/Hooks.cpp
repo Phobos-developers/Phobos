@@ -29,7 +29,7 @@
 DEFINE_HOOK(0x469150, BulletClass_Detonate_ApplyRadiation, 0x5)
 {
 	GET(BulletClass* const, pThis, ESI);
-	GET_BASE(CoordStruct const*, pCoords, 0x8);
+	GET_BASE(CoordStruct const* const, pCoords, 0x8);
 
 	const auto pWeapon = pThis->GetWeaponType();
 
@@ -38,7 +38,7 @@ DEFINE_HOOK(0x469150, BulletClass_Detonate_ApplyRadiation, 0x5)
 		const auto pExt = BulletExt::ExtMap.Find(pThis);
 		const auto pWH = pThis->WH;
 		const auto cell = CellClass::Coord2Cell(*pCoords);
-		const auto spread = Game::F2I(pWH->CellSpread);
+		const auto spread = static_cast<int>(pWH->CellSpread);
 
 		pExt->ApplyRadiationToCell(cell, spread, pWeapon->RadLevel);
 	}
@@ -59,7 +59,7 @@ DEFINE_HOOK(0x5213B4, InfantryClass_AIDeployment_CheckRad, 0x7)
 	enum { FireCheck = 0x5213F4, SetMissionRate = 0x521484 };
 
 	GET(InfantryClass*, pInfantry, ESI);
-	GET(int, weaponRadLevel, EBX);
+	GET(const int, weaponRadLevel, EBX);
 	const auto pCell = pInfantry->GetCell();
 	const auto pCellExt = CellExt::ExtMap.Find(pCell);
 	int radLevel = 0;
@@ -70,11 +70,11 @@ DEFINE_HOOK(0x5213B4, InfantryClass_AIDeployment_CheckRad, 0x7)
 		{
 			const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 			const auto pRadType = pWeaponExt->RadType;
-			const auto warhead = pWeapon->Warhead;
+			const float cellSpread = pWeapon->Warhead->CellSpread;
 
 			for (const auto radSite : pCellExt->RadSites)
 			{
-				if (radSite->Spread == static_cast<int>(warhead->CellSpread) && RadSiteExt::ExtMap.Find(radSite)->Type == pRadType)
+				if (radSite->Spread == static_cast<int>(cellSpread) && RadSiteExt::ExtMap.Find(radSite)->Type == pRadType)
 				{
 					radLevel = radSite->GetRadLevel();
 					break;
@@ -83,8 +83,8 @@ DEFINE_HOOK(0x5213B4, InfantryClass_AIDeployment_CheckRad, 0x7)
 		}
 	}
 
-	return (!radLevel || (radLevel < weaponRadLevel / 3)) ?
-		FireCheck : SetMissionRate;
+	return (!radLevel || (radLevel < weaponRadLevel / 3))
+		? FireCheck : SetMissionRate;
 }
 
 // Fix for desolator unable to fire his deploy weapon when cloaked
@@ -102,7 +102,7 @@ DEFINE_HOOK(0x521478, InfantryClass_AIDeployment_FireNotOKCloakFix, 0x4)
 		// FYI this are hack to immedietely stop the Cloaking
 		// since this function is always failing to decloak and set target when cell is occupied
 		// something is wrong somewhere  # Otamaa
-		auto nDeployFrame = pThis->Type->Sequence->GetSequence(Sequence::DeployedFire).CountFrames;
+		const int nDeployFrame = pThis->Type->Sequence->GetSequence(Sequence::DeployedFire).CountFrames;
 		pThis->CloakDelayTimer.Start(nDeployFrame);
 
 		pTarget = MapClass::Instance.TryGetCellAt(pThis->GetCoords());
@@ -121,12 +121,12 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 	if (pBuilding->Type->ImmuneToRadiation || pBuilding->InLimbo || pBuilding->BeingWarpedOut || pBuilding->TemporalTargetingMe)
 		return 0;
 
-	int radDelay = RulesExt::Global()->RadApplicationDelay_Building;
-
-	if (RulesExt::Global()->UseGlobalRadApplicationDelay &&
-		(radDelay == 0 || Unsorted::CurrentFrame % radDelay != 0))
+	if (RulesExt::Global()->UseGlobalRadApplicationDelay)
 	{
-		return 0;
+		const int delay = RulesExt::Global()->RadApplicationDelay_Building;
+
+		if (delay == 0 || Unsorted::CurrentFrame % delay)
+			return 0;
 	}
 
 	const auto buildingCoords = pBuilding->GetMapCoords();
@@ -134,13 +134,15 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 
 	for (auto pFoundation = pBuilding->GetFoundationData(false); *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
 	{
-		CellStruct nCurrentCoord = buildingCoords + *pFoundation;
+		const auto nCurrentCoord = buildingCoords + *pFoundation;
 		const auto pCell = MapClass::Instance.TryGetCellAt(nCurrentCoord);
 
 		if (!pCell)
 			continue;
 
 		const auto pCellExt = CellExt::ExtMap.Find(pCell);
+		std::vector<std::pair<RadTypeClass*, std::vector<std::pair<RadSiteClass*, int>>>> typeMap;
+		typeMap.reserve(RadTypeClass::Array.size());
 
 		for (const auto& [pRadSite, radLevel] : pCellExt->RadLevels)
 		{
@@ -148,32 +150,58 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 				continue;
 
 			const auto pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
-			RadTypeClass* pType = pRadExt->Type;
-			int maxDamageCount = pType->GetBuildingDamageMaxCount();
+			const auto pRadType = pRadExt->Type;
+			const int maxDamageCount = pRadType->GetBuildingDamageMaxCount();
 
 			if (maxDamageCount > 0 && damageCounts[pRadSite] >= maxDamageCount)
 				continue;
 
-			if (!pType->GetWarhead())
+			if (!pRadType->GetWarhead())
 				continue;
 
 			if (!RulesExt::Global()->UseGlobalRadApplicationDelay)
 			{
-				int delay = pType->GetBuildingApplicationDelay();
+				const int delay = pRadType->GetBuildingApplicationDelay();
 
-				if ((delay == 0) || (Unsorted::CurrentFrame % delay != 0))
+				if (delay == 0 || Unsorted::CurrentFrame % delay)
 					continue;
 			}
 
-			if (pBuilding->IsAlive) // simple fix for previous issues
+			const auto it = std::ranges::find_if(typeMap, [pRadType](std::pair<RadTypeClass*, std::vector<std::pair<RadSiteClass*, int>>> const& item) { return item.first == pRadType; });
+
+			if (it != typeMap.cend())
 			{
-				int damage = Game::F2I(radLevel * pType->GetLevelFactor());
+				it->second.emplace_back(pRadSite, radLevel);
+			}
+			else
+			{
+				std::vector<std::pair<RadSiteClass*, int>> sites;
+				sites.reserve(pCellExt->RadLevels.size());
+				sites.emplace_back(pRadSite, radLevel);
+				typeMap.emplace_back(pRadType, std::move(sites));
+			}
+		}
 
-				if (maxDamageCount > 0)
-					damageCounts[pRadSite]++;
+		for (auto& [_, sites] : typeMap)
+			std::ranges::stable_sort(sites, [](std::pair<RadSiteClass*, int> const& left, std::pair<RadSiteClass*, int> const& right) { return left.second > right.second; });
 
-				if (!pRadExt->ApplyRadiationDamage(pBuilding, damage))
+		for (const auto& [pRadType, sites] : typeMap)
+		{
+			const int radLevelMax = pRadType->GetLevelMax();
+			int radLevelSum = 0;
+
+			for (const auto& [pRadSite, radLevel] : sites)
+			{
+				const int remain = radLevelMax - radLevelSum;
+				int damage = static_cast<int>(std::min(radLevel, remain) * pRadType->GetLevelFactor());
+
+				if (pBuilding->IsAlive && !RadSiteExt::ExtMap.Find(pRadSite)->ApplyRadiationDamage(pBuilding, damage))
+					return 0;
+
+				if (radLevel >= remain)
 					break;
+
+				radLevelSum += radLevel;
 			}
 		}
 	}
@@ -191,11 +219,14 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 
 	GET(FootClass* const, pFoot, ESI);
 
-	if (pFoot->IsInPlayfield && !pFoot->TemporalTargetingMe &&
-		(!RulesExt::Global()->UseGlobalRadApplicationDelay || Unsorted::CurrentFrame % RulesClass::Instance->RadApplicationDelay == 0))
+	if (pFoot->IsInPlayfield && !pFoot->TemporalTargetingMe
+		&& (!RulesExt::Global()->UseGlobalRadApplicationDelay
+			|| Unsorted::CurrentFrame % RulesClass::Instance->RadApplicationDelay == 0))
 	{
 		const auto pCell = pFoot->GetCell();
 		const auto pCellExt = CellExt::ExtMap.Find(pCell);
+		std::vector<std::pair<RadTypeClass*, std::vector<std::pair<RadSiteClass*, int>>>> typeMap;
+		typeMap.reserve(RadTypeClass::Array.size());
 
 		for (const auto& [pRadSite, radLevel] : pCellExt->RadLevels)
 		{
@@ -203,25 +234,54 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 				continue;
 
 			const auto pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
-			RadTypeClass* pType = pRadExt->Type;
+			const auto pRadType = pRadExt->Type;
 
-			if (!pType->GetWarhead())
+			if (!pRadType->GetWarhead())
 				continue;
 
 			if (!RulesExt::Global()->UseGlobalRadApplicationDelay)
 			{
-				int delay = pType->GetApplicationDelay();
+				const int delay = pRadType->GetApplicationDelay();
 
-				if ((delay == 0) || (Unsorted::CurrentFrame % delay != 0))
+				if (delay == 0 || Unsorted::CurrentFrame % delay)
 					continue;
 			}
 
-			if (pFoot->IsAlive || !pFoot->IsSinking)
-			{
-				int damage = Game::F2I(radLevel * pType->GetLevelFactor());
+			const auto it = std::ranges::find_if(typeMap, [pRadType](std::pair<RadTypeClass*, std::vector<std::pair<RadSiteClass*, int>>> const& item) { return item.first == pRadType; });
 
-				if (!pRadExt->ApplyRadiationDamage(pFoot, damage))
+			if (it != typeMap.cend())
+			{
+				it->second.emplace_back(pRadSite, radLevel);
+			}
+			else
+			{
+				std::vector<std::pair<RadSiteClass*, int>> sites;
+				sites.reserve(pCellExt->RadLevels.size());
+				sites.emplace_back(pRadSite, radLevel);
+				typeMap.emplace_back(pRadType, std::move(sites));
+			}
+		}
+
+		for (auto& [_, sites] : typeMap)
+			std::ranges::stable_sort(sites, [](std::pair<RadSiteClass*, int> const& left, std::pair<RadSiteClass*, int> const& right) { return left.second > right.second; });
+
+		for (const auto& [pRadType, sites] : typeMap)
+		{
+			const int radLevelMax = pRadType->GetLevelMax();
+			int radLevelSum = 0;
+
+			for (const auto& [pRadSite, radLevel] : sites)
+			{
+				const int remain = radLevelMax - radLevelSum;
+				int damage = static_cast<int>(std::min(radLevel, remain) * pRadType->GetLevelFactor());
+
+				if ((pFoot->IsAlive || !pFoot->IsSinking) && !RadSiteExt::ExtMap.Find(pRadSite)->ApplyRadiationDamage(pFoot, damage))
+					return ReturnFromFunction;
+
+				if (radLevel >= remain)
 					break;
+
+				radLevelSum += radLevel;
 			}
 		}
 	}
@@ -320,7 +380,7 @@ DEFINE_HOOK(0x65B8B9, RadSiteClass_AI_LightDelay, 0x6)
 DEFINE_HOOK(0x65BB67, RadSite_Deactivate, 0x6)
 {
 	GET_RADSITE(ECX, GetLevelDelay());
-	GET(int, val, EAX);
+	GET(const int, val, EAX);
 
 	R->EAX(val / output);
 	R->EDX(val % output);
@@ -335,7 +395,7 @@ DEFINE_HOOK(0x65BAC1, RadSiteClass_UpdateLevel, 0x8)// RadSiteClass_Radiate_Incr
 	enum { SkipGameCode = 0x65BB11, SkipGameCode2 = 0x65BCBD, SkipGameCode3 = 0x65BE4C };
 
 	GET(RadSiteClass*, pThis, EDX);
-	GET(int, distance, EAX);
+	GET(const int, distance, EAX);
 	const int max = pThis->SpreadInLeptons;
 
 	if (distance <= max)
@@ -349,7 +409,7 @@ DEFINE_HOOK(0x65BAC1, RadSiteClass_UpdateLevel, 0x8)// RadSiteClass_Radiate_Incr
 		else
 			cell = R->lea_Stack<CellStruct*>(STACK_OFFSET(0x60, -0x50));
 
-		if (const auto pCellExt = CellExt::ExtMap.Find(MapClass::Instance.TryGetCellAt(*cell)))
+		if (const auto pCellExt = CellExt::ExtMap.TryFind(MapClass::Instance.TryGetCellAt(*cell)))
 		{
 			auto& radLevels = pCellExt->RadLevels;
 
@@ -368,7 +428,7 @@ DEFINE_HOOK(0x65BAC1, RadSiteClass_UpdateLevel, 0x8)// RadSiteClass_Radiate_Incr
 			{
 				if (it != radLevels.end())
 				{
-					GET_STACK(int, stepCount, STACK_OFFSET(0x70, -0x30));
+					GET_STACK(const int, stepCount, STACK_OFFSET(0x70, -0x30));
 					const int level = static_cast<int>(static_cast<double>(max - distance) / max * pThis->RadLevel / pThis->LevelSteps * stepCount);
 					it->Level = std::max(it->Level - std::max(level, 0), 0);
 				}
