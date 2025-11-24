@@ -192,28 +192,34 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (!this->CanTargetHouse(pHouse, pTarget) || !this->CanAffectTarget(pTarget))
 		return;
 
-	this->ApplyShieldModifiers(pTarget);
-
-	if (this->RemoveDisguise)
-		this->ApplyRemoveDisguise(pTarget);
-
+	// Put this at first since it can change the target's house
 	if (this->RemoveMindControl)
-		this->ApplyRemoveMindControl(pTarget);
+		pHouse = this->ApplyRemoveMindControl(pHouse, pTarget);
 
-	if (this->Crit_CurrentChance > 0.0 && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
-		this->ApplyCrit(pHouse, pTarget, pOwner);
-
+	// These can change the target's techno types
 	if (this->Convert_Pairs.size() > 0)
 		this->ApplyConvert(pHouse, pTarget);
-
-	if (this->AttachEffects.AttachTypes.size() > 0 || this->AttachEffects.RemoveTypes.size() > 0 || this->AttachEffects.RemoveGroups.size() > 0)
-		this->ApplyAttachEffects(pTarget, pHouse, pOwner);
 
 	if (this->BuildingSell || this->BuildingUndeploy)
 		this->ApplyBuildingUndeploy(pTarget);
 
+	// Other one time effects
+	if (this->RemoveDisguise)
+		this->ApplyRemoveDisguise(pTarget);
+
 	if (this->ReverseEngineer)
 		this->ApplyReverseEngineer(pHouse, pTarget);
+
+	// This might change the target's armor type
+	this->ApplyShieldModifiers(pTarget);
+
+	// Put AE behind others but before Crit
+	if (this->AttachEffects.AttachTypes.size() > 0 || this->AttachEffects.RemoveTypes.size() > 0 || this->AttachEffects.RemoveGroups.size() > 0)
+		this->ApplyAttachEffects(pTarget, pHouse, pOwner);
+
+	// Put Crit at last since it might kill the target
+	if (this->Crit_CurrentChance > 0.0 && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
+		this->ApplyCrit(pHouse, pTarget, pOwner);
 
 #ifdef LOCO_TEST_WARHEADS
 	if (this->InflictLocomotor)
@@ -448,10 +454,15 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguise(TechnoClass* pTarget)
 	}
 }
 
-void WarheadTypeExt::ExtData::ApplyRemoveMindControl(TechnoClass* pTarget)
+HouseClass* WarheadTypeExt::ExtData::ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget)
 {
 	if (const auto pController = pTarget->MindControlledBy)
+	{
 		pController->CaptureManager->FreeUnit(pTarget);
+		return pTarget->Owner;
+	}
+
+	return pHouse;
 }
 
 void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
