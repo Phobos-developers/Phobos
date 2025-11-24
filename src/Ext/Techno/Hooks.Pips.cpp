@@ -459,9 +459,9 @@ DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_HealthAndShieldBar, 0x5)
 	//	return 0;
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	const bool pThisIsInf = pThis->WhatAmI() == AbstractType::Infantry;
-	const bool pThisIsBld = pThis->WhatAmI() == AbstractType::Building;
 	ValueableVector<BarTypeClass*>* pBarTypes = nullptr;
+	//const bool pThisIsInf = pThis->WhatAmI() == AbstractType::Infantry;
+	//const bool pThisIsBld = pThis->WhatAmI() == AbstractType::Building;
 
 	Point2D position = *pLocation;
 
@@ -558,10 +558,15 @@ DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_HealthAndShieldBar, 0x5)
 			}
 			case DisplayInfoType::Shield:
 			{
-				position.Y += pExt->Shield->GetType()->BracketDelta;
-				pValuePercentage = double(pExt->Shield->GetHP()) / pExt->Shield->GetType()->Strength.Get();
-				pConditionYellow = pExt->Shield->GetType()->ConditionYellow;
-				pConditionRed = pExt->Shield->GetType()->ConditionRed;
+				if (const auto pShield = pExt->Shield.get())
+				{
+					if (pShield->IsBrokenAndNonRespawning())
+						break;
+					position.Y += pShield->GetType()->BracketDelta;
+					pValuePercentage = double(pShield->GetHP()) / pShield->GetType()->Strength.Get();
+					pConditionYellow = pShield->GetType()->ConditionYellow;
+					pConditionRed = pShield->GetType()->ConditionRed;
+				}
 				break;
 			}
 			case DisplayInfoType::Ammo:
