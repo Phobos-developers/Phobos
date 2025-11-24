@@ -441,7 +441,7 @@ DEFINE_HOOK(0x70A4FB, TechnoClass_DrawPips_SelfHealGain, 0x5)
 	return SkipGameDrawing;
 }
 
-DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_HealthAndShieldBar, 0x5)
+DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_PrepareBarsToDraw, 0x5)
 {
 	enum { Skip = 0x6F6AB6 };
 
@@ -452,8 +452,6 @@ DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_HealthAndShieldBar, 0x5)
 	const auto pType = pThis->GetTechnoType();
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	if (pTypeExt && pTypeExt->HealthBar_Hide)
-		return Skip;
 
 	//if (!pTypeExt->HealthBar_BarType)
 	//	return 0;
@@ -511,6 +509,10 @@ DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_HealthAndShieldBar, 0x5)
 	if (pBarTypes->empty())
 	{
 		TechnoExt::ProcessDigitalDisplays(pThis);
+
+		if (pTypeExt && pTypeExt->HealthBar_Hide)
+			return Skip;
+
 		return 0;
 	}
 
@@ -551,36 +553,46 @@ DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_HealthAndShieldBar, 0x5)
 		{
 			case DisplayInfoType::Health:
 			{
+				if (pTypeExt && pTypeExt->HealthBar_Hide)
+					return Skip;
+
 				pValuePercentage = pThis->GetHealthPercentage();
 				pConditionYellow = RulesClass::Instance->ConditionYellow;
 				pConditionRed = RulesClass::Instance->ConditionRed;
+				TechnoExt::DrawBar(pThis, pBarType, position, pBound, pValuePercentage, pConditionYellow, pConditionRed);
 				break;
 			}
 			case DisplayInfoType::Shield:
 			{
-				if (const auto pShield = pExt->Shield.get())
-				{
-					if (pShield->IsBrokenAndNonRespawning())
-						break;
-					position.Y += pShield->GetType()->BracketDelta;
-					pValuePercentage = double(pShield->GetHP()) / pShield->GetType()->Strength.Get();
-					pConditionYellow = pShield->GetType()->ConditionYellow;
-					pConditionRed = pShield->GetType()->ConditionRed;
-				}
+				const auto pShield = TechnoExt::ExtMap.Find(pThis)->Shield.get();
+				const bool hasShield = pShield && !pShield->IsBrokenAndNonRespawning();
+
+				if (!hasShield)
+					break;
+
+				position.Y += pShield->GetType()->BracketDelta;
+				pValuePercentage = double(pShield->GetHP()) / pShield->GetType()->Strength.Get();
+				pConditionYellow = pShield->GetType()->ConditionYellow;
+				pConditionRed = pShield->GetType()->ConditionRed;
+				TechnoExt::DrawBar(pThis, pBarType, position, pBound, pValuePercentage, pConditionYellow, pConditionRed);
 				break;
 			}
 			case DisplayInfoType::Ammo:
 			{
-				if (pType->Ammo > 0)
-					pValuePercentage = double(pThis->Ammo) / pType->Ammo;
+				if (pType->Ammo == 0)
+					break;
 
+				pValuePercentage = double(pThis->Ammo) / pType->Ammo;
+				TechnoExt::DrawBar(pThis, pBarType, position, pBound, pValuePercentage, pConditionYellow, pConditionRed);
 				break;
 			}
 			case DisplayInfoType::MindControl:
 			{
-				if (pThis->CaptureManager != nullptr)
-					pValuePercentage = double(pThis->CaptureManager->ControlNodes.Count) / pThis->CaptureManager->MaxControlNodes;
+				if (pThis->CaptureManager == nullptr)
+					break;
 
+				pValuePercentage = double(pThis->CaptureManager->ControlNodes.Count) / pThis->CaptureManager->MaxControlNodes;
+				TechnoExt::DrawBar(pThis, pBarType, position, pBound, pValuePercentage, pConditionYellow, pConditionRed);
 				break;
 			}
 			case DisplayInfoType::Spawns:
@@ -589,25 +601,31 @@ DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_HealthAndShieldBar, 0x5)
 					break;
 
 				pValuePercentage = double(pThis->SpawnManager->CountAliveSpawns()) / pType->SpawnsNumber;
+				TechnoExt::DrawBar(pThis, pBarType, position, pBound, pValuePercentage, pConditionYellow, pConditionRed);
 				break;
 			}
 			case DisplayInfoType::Passengers:
 			{
-				if (pType->Passengers > 0)
-					pValuePercentage = double(pThis->Passengers.NumPassengers) / pType->Passengers;
+				if (pType->Passengers == 0)
+					break;
 
+				pValuePercentage = double(pThis->Passengers.NumPassengers) / pType->Passengers;
+				TechnoExt::DrawBar(pThis, pBarType, position, pBound, pValuePercentage, pConditionYellow, pConditionRed);
 				break;
 			}
 			case DisplayInfoType::Tiberium:
 			{
-				if (pType->Storage > 0)
-					pValuePercentage = double(pThis->Tiberium.GetTotalAmount()) / pType->Storage;
+				if (pType->Storage == 0)
+					break;
 
+				pValuePercentage = double(pThis->Tiberium.GetTotalAmount()) / pType->Storage;
+				TechnoExt::DrawBar(pThis, pBarType, position, pBound, pValuePercentage, pConditionYellow, pConditionRed);
 				break;
 			}
 			case DisplayInfoType::Experience:
 			{
 				pValuePercentage = double(pThis->Veterancy.Veterancy * RulesClass::Instance->VeteranRatio * pType->GetCost()) / (2.0 * RulesClass::Instance->VeteranRatio * pType->GetCost());
+				TechnoExt::DrawBar(pThis, pBarType, position, pBound, pValuePercentage, pConditionYellow, pConditionRed);
 				break;
 			}
 			case DisplayInfoType::Occupants:
@@ -622,6 +640,7 @@ DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_HealthAndShieldBar, 0x5)
 					break;
 
 				pValuePercentage = double(pBuilding->Occupants.Count) / pBuildingType->MaxNumberOccupants;
+				TechnoExt::DrawBar(pThis, pBarType, position, pBound, pValuePercentage, pConditionYellow, pConditionRed);
 				break;
 			}
 			case DisplayInfoType::GattlingStage:
@@ -630,6 +649,7 @@ DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_HealthAndShieldBar, 0x5)
 					break;
 
 				pValuePercentage = double(pThis->CurrentGattlingStage) / pType->WeaponStages;
+				TechnoExt::DrawBar(pThis, pBarType, position, pBound, pValuePercentage, pConditionYellow, pConditionRed);
 				break;
 			}
 			default:
@@ -637,8 +657,6 @@ DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_HealthAndShieldBar, 0x5)
 				break;
 			}
 		}
-
-		TechnoExt::DrawBar(pThis, pBarType, position, pBound, pValuePercentage, pConditionYellow, pConditionRed);
 	}
 
 	TechnoExt::ProcessDigitalDisplays(pThis);

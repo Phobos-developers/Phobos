@@ -876,9 +876,11 @@ void TechnoExt::DrawBar(TechnoClass* pThis, BarTypeClass* barType, Point2D pLoca
 	const int sectionEmptyFrame = barType->Pips_EmptyFrame;
 	const bool drawBackwards = barType->Pips_DrawBackwards;
 	int sectionsToDraw = (int)round(sectionAmount * barPercentage);
-	sectionsToDraw = sectionsToDraw == 0 ? 1 : sectionsToDraw;
 	int frameIdxa = sectionFrames.Z;
 	int sign = drawBackwards ? 1 : -1;
+
+	if(barType->InfoType == DisplayInfoType::Health)
+		sectionsToDraw = sectionsToDraw == 0 ? 1 : sectionsToDraw;
 
 	if (barPercentage > conditionYellow)
 		frameIdxa = sectionFrames.X;
