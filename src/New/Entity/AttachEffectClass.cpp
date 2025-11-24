@@ -8,6 +8,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Utilities/EnumFunctions.h>
 
 std::vector<AttachEffectClass*> AttachEffectClass::Array;
 
@@ -719,27 +720,21 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 			return nullptr;
 	}
 
-	//获取单位的种类（E1，APOC，YACNST等）
-	const auto targetID = pTarget->GetTechnoType()->ID;
+	const auto pTargetTechnoType = pTarget->GetTechnoType();
 
-	if (!pType->AffectTypes.size() < 1)
+	if (!pType->AffectTypes.empty())
 	{
-		// 判断 targetID 是否在 AffectTypes
-		auto& allowList = pType->AffectTypes;
-		bool allowed = std::find(allowList.begin(), allowList.end(), targetID) != allowList.end();
-
-		if (!allowed)
-			return nullptr;  // 不是指定类型，直接返回
+		if (!pType->AffectTypes.Contains(pTargetTechnoType))
+			return nullptr;
 	}
-	if (!pType->IgnoreTypes.size() < 1)
+	if (!pType->IgnoreTypes.empty())
 	{
-		// 判断 targetID 是否在 IgnoreTypes
-		auto& disallowList = pType->IgnoreTypes;
-		bool disallowed = std::find(disallowList.begin(), disallowList.end(), targetID) != disallowList.end();
-
-		if (disallowed)
-			return nullptr;  // 在黑名单里，直接返回
+		if (pType->IgnoreTypes.Contains(pTargetTechnoType))
+			return nullptr;
 	}
+
+	if (!EnumFunctions::IsTechnoEligible(pTarget, pType->AffectTargets, true))
+		return nullptr;
 
 	int currentTypeCount = 0;
 	AttachEffectClass* match = nullptr;
