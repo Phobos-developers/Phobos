@@ -327,6 +327,7 @@
     <ClInclude Include="src\Utilities\TemplateDef.h" />
     <ClInclude Include="src\Utilities\AresHelper.h" />
     <ClInclude Include="src\Utilities\AresFunctions.h" />
+    <ClInclude Include="src\Utilities\Expected.h"/>
     <ClInclude Include="lib\nameof\nameof.h" />
     <ClInclude Include="YRpp\GameTextManager.h" />
   </ItemGroup>
