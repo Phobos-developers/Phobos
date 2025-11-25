@@ -369,10 +369,12 @@ void TechnoExt::ExtData::EatPassengers()
 
 						if (nMoneyToGive > 0)
 						{
-							pThis->Owner->GiveMoney(nMoneyToGive);
+							auto const pOwner = pThis->Owner;
+							pOwner->GiveMoney(nMoneyToGive);
+
 							if (pDelType->DisplaySoylent)
 							{
-								FlyingStrings::AddMoneyString(nMoneyToGive, pThis->Owner,
+								FlyingStrings::AddMoneyString(nMoneyToGive, pThis, pOwner,
 									pDelType->DisplaySoylentToHouses, pThis->Location, pDelType->DisplaySoylentOffset);
 							}
 						}

@@ -10,17 +10,22 @@ void BuildingExt::ExtData::DisplayIncomeString()
 {
 	if (this->AccumulatedIncome && Unsorted::CurrentFrame % 15 == 0)
 	{
-		if ((RulesExt::Global()->DisplayIncome_AllowAI || this->OwnerObject()->Owner->IsControlledByHuman())
-			&& this->TypeExtData->DisplayIncome.Get(RulesExt::Global()->DisplayIncome))
+		auto const pThis = this->OwnerObject();
+		auto const pTypeExt = this->TypeExtData;
+
+		if ((RulesExt::Global()->DisplayIncome_AllowAI || pThis->Owner->IsControlledByHuman())
+			&& pTypeExt->DisplayIncome.Get(RulesExt::Global()->DisplayIncome))
 		{
 			FlyingStrings::AddMoneyString(
 				this->AccumulatedIncome,
-				this->OwnerObject()->Owner,
-				this->TypeExtData->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
-				this->OwnerObject()->GetRenderCoords(),
-				this->TypeExtData->DisplayIncome_Offset
+				pThis,
+				pThis->Owner,
+				pTypeExt->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
+				pThis->GetRenderCoords(),
+				pTypeExt->DisplayIncome_Offset
 			);
 		}
+
 		this->AccumulatedIncome = 0;
 	}
 }
@@ -303,7 +308,8 @@ void BuildingExt::ExtData::ApplyPoweredKillSpawns()
 
 bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore)
 {
-	auto pVictimHouse = this->OwnerObject()->Owner;
+	const auto pThis = this->OwnerObject();
+	const auto pVictimHouse = pThis->Owner;
 	this->AccumulatedIncome += pVictimHouse->Available_Money() - moneybefore;
 
 	if (!pVictimHouse->IsControlledByHuman() && !RulesExt::Global()->DisplayIncome_AllowAI)
@@ -311,9 +317,10 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int m
 		// TODO there should be a better way...
 		FlyingStrings::AddMoneyString(
 				this->AccumulatedIncome,
+				pThis,
 				pVictimHouse,
 				this->TypeExtData->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
-				this->OwnerObject()->GetRenderCoords(),
+				pThis->GetRenderCoords(),
 				this->TypeExtData->DisplayIncome_Offset
 		);
 	}

@@ -7,7 +7,8 @@ DEFINE_HOOK(0x4D9F7B, FootClass_Sell, 0x6)
 	GET(FootClass*, pThis, ESI);
 
 	int money = pThis->GetRefund();
-	pThis->Owner->GiveMoney(money);
+	auto const pOwner = pThis->Owner;
+	pOwner->GiveMoney(money);
 
 	if (pThis->Owner->IsControlledByCurrentPlayer())
 	{
@@ -18,7 +19,7 @@ DEFINE_HOOK(0x4D9F7B, FootClass_Sell, 0x6)
 	}
 
 	if (RulesExt::Global()->DisplayIncome.Get())
-		FlyingStrings::AddMoneyString(money, pThis->Owner, RulesExt::Global()->DisplayIncome_Houses.Get(), pThis->Location);
+		FlyingStrings::AddMoneyString(money, pThis, pOwner, RulesExt::Global()->DisplayIncome_Houses.Get(), pThis->Location);
 
 	return ReadyToVanish;
 }
@@ -41,10 +42,15 @@ bool __forceinline BuildingExt::CanUndeployOnSell(BuildingClass* pThis)
 		if (pThis->MindControlledBy || !pThis->Owner->IsControlledByHuman())
 			return false;
 	}
+	else
+	{
+		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+		if (!pTypeExt->UndeploysInto_Sellable)
+			return true;
+	}
 
 	// Move ArchiveTarget check outside Conyard check to allow generic Unsellable=no buildings to be sold
-	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
-	return pTypeExt->UndeploysInto_Sellable ? pThis->ArchiveTarget != nullptr : true;
+	return pThis->ArchiveTarget != nullptr;
 }
 
 // Skip SessionClass::IsCampaign() checks, where inlined not exactly the function above but sth similar

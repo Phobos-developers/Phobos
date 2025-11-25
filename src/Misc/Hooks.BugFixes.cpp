@@ -97,7 +97,7 @@ DEFINE_HOOK(0x5F53AA, ObjectClass_ReceiveDamage_DyingFix, 0x6)
 DEFINE_HOOK(0x4D7431, FootClass_ReceiveDamage_DyingFix, 0x5)
 {
 	GET(FootClass*, pThis, ESI);
-	GET(DamageState, result, EAX);
+	GET(const DamageState, result, EAX);
 
 	if (result != DamageState::PostMortem && (pThis->IsSinking || (!pThis->IsAttackedByLocomotor && pThis->IsCrashing)))
 		R->EAX(DamageState::PostMortem);
@@ -108,7 +108,7 @@ DEFINE_HOOK(0x4D7431, FootClass_ReceiveDamage_DyingFix, 0x5)
 DEFINE_HOOK(0x737D57, UnitClass_ReceiveDamage_DyingFix, 0x7)
 {
 	GET(UnitClass*, pThis, ESI);
-	GET(DamageState, result, EAX);
+	GET(const DamageState, result, EAX);
 
 	// Immediately release locomotor warhead's hold on a crashable unit if it dies while attacked by one.
 	if (result == DamageState::NowDead && pThis->IsAttackedByLocomotor && pThis->Type->Crashable)
@@ -119,6 +119,40 @@ DEFINE_HOOK(0x737D57, UnitClass_ReceiveDamage_DyingFix, 0x7)
 
 	return 0;
 }
+
+// Nov 22, 2025 - Starkku: Fixes an issue that causes preplaced aircraft placed outside visible map to be flagged as crashing even if
+// there are preplaced docks, due to parsing order (preplaced aircraft go before buildings) as well as outside visible map aircraft
+// being instantly elevated to FlightLevel on Unlimbo which makes it bypass a height check in FootClass::Crash().
+// This fix makes preplaced aircraft immediately return from FootClass::Crash() during unlimbo process.
+// Related GitHub issue: https://github.com/Phobos-developers/Phobos/issues/1958
+#pragma region PrePlacedAircraftFix
+
+namespace PrePlacedAircraftFixTemp
+{
+	bool SkipCrashing;
+}
+
+static bool __fastcall AircraftClass_Unlimbo_Wrapper(AircraftClass* pThis, void* _, const CoordStruct& coords, DirType facing)
+{
+	PrePlacedAircraftFixTemp::SkipCrashing = true;
+	bool retVal = pThis->Unlimbo(coords, facing);
+	PrePlacedAircraftFixTemp::SkipCrashing = false;
+	return retVal;
+}
+
+DEFINE_FUNCTION_JUMP(CALL6, 0x41B39B, AircraftClass_Unlimbo_Wrapper);
+
+DEFINE_HOOK(0x4DEBC4, FootClass_Crash_PreplacedAircraft, 0x7)
+{
+	enum { ReturnFromFunction = 0x4DED5B };
+
+	if (PrePlacedAircraftFixTemp::SkipCrashing)
+		return ReturnFromFunction;
+
+	return 0;
+}
+
+#pragma endregion
 
 // Restore DebrisMaximums logic (issue #109)
 // Author: Otamaa
@@ -248,7 +282,7 @@ DEFINE_HOOK(0x4438B4, BuildingClass_SetRallyPoint_Naval, 0x6)
 	REF_STACK(SpeedType, spdtp, STACK_OFFSET(0xA4, -0x84));
 	if (!playEVA)// assuming the hook above is the only place where it's set to false when UndeploysInto
 	{
-		if (auto pInto = pBuildingType->UndeploysInto)// r u sure this is not too OP?
+		if (const auto pInto = pBuildingType->UndeploysInto)// r u sure this is not too OP?
 		{
 			R->ESI(pInto->MovementZone);
 			spdtp = pInto->SpeedType;
@@ -424,7 +458,7 @@ DEFINE_HOOK(0x73B2A2, UnitClass_DrawObject_DrawerBlitterFix, 0x6)
 	enum { SkipGameCode = 0x73B2C3 };
 
 	GET(UnitClass* const, pThis, ESI);
-	GET(BlitterFlags, blitterFlags, EDI);
+	GET(const BlitterFlags, blitterFlags, EDI);
 
 	R->EAX(pThis->GetDrawer()->SelectPlainBlitter(blitterFlags));
 
@@ -518,17 +552,15 @@ namespace FetchBomb
 }
 
 // Fetch the BombClass context From earlier address.
-DEFINE_HOOK(0x438771, BombClass_Detonate_SetContext, 0x6)
+DEFINE_HOOK(0x43878E, BombClass_Detonate_SetContext, 0x6)
 {
 	GET(BombClass*, pThis, ESI);
+	REF_STACK(CoordStruct, pCoords, STACK_OFFSET(0x40, -0xC));
 
 	FetchBomb::pThisBomb = pThis;
 
 	if (RulesExt::Global()->IvanBombAttachToCenter)
-	{
-		CoordStruct coords = pThis->Target->GetCenterCoords();
-		R->EDX(&coords);
-	}
+		pCoords = pThis->Target->GetCenterCoords();
 
 	return 0;
 }
@@ -582,12 +614,10 @@ DEFINE_FUNCTION_JUMP(CALL, 0x4387A3, _BombClass_Detonate_DamageArea);
 DEFINE_HOOK(0x6F5201, TechnoClass_DrawExtras_IvanBombImage, 0x6)
 {
 	GET(TechnoClass*, pThis, EBP);
+	GET(CoordStruct*, pCoords, EAX);
 
 	if (RulesExt::Global()->IvanBombAttachToCenter)
-	{
-		auto coords = pThis->GetCenterCoords();
-		R->EAX(&coords);
-	}
+		*pCoords = pThis->GetCenterCoords();
 
 	return 0;
 }
@@ -611,12 +641,10 @@ DEFINE_HOOK(0x43D874, BuildingClass_Draw_BuildupBibShape, 0x6)
 DEFINE_HOOK(0x70BCE6, TechnoClass_GetTargetCoords_BuildingFix, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
+	GET(CoordStruct*, pCoords, EAX);
 
 	if (const auto pBuilding = abstract_cast<BuildingClass*>(pThis->Target))
-	{
-		const auto coords = pBuilding->GetTargetCoords();
-		R->EAX(&coords);
-	}
+		*pCoords = pBuilding->GetTargetCoords();
 
 	return 0;
 }
@@ -627,7 +655,7 @@ DEFINE_HOOK(0x51A996, InfantryClass_PerCellProcess_KillOnImpassable, 0x5)
 	enum { ContinueChecks = 0x51A9A0, SkipKilling = 0x51A9EB };
 
 	GET(InfantryClass*, pThis, ESI);
-	GET(LandType, landType, EBX);
+	GET(const LandType, landType, EBX);
 
 	if (landType == LandType::Rock)
 		return ContinueChecks;
@@ -814,12 +842,7 @@ bool __fastcall BuildingClass_SetOwningHouse_Wrapper(BuildingClass* pThis, void*
 
 	if (res && (pThis->Type->Powered || pThis->Type->PoweredSpecial))
 	{
-		bool on = pThis->IsPowerOnline();
-		if (on != pThis->WasOnline)
-		{
 			reinterpret_cast<void(__thiscall*)(BuildingClass*)>(0x4549B0)(pThis);
-			pThis->WasOnline = on;
-		}
 	}
 	return res;
 }
@@ -1117,7 +1140,7 @@ DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
 {
 	enum { SkipGameCode = 0x7436AC };
 
-	REF_STACK(TypeList<int>, followers, STACK_OFFSET(0xCC, -0xC0));
+	REF_STACK(const TypeList<int>, followers, STACK_OFFSET(0xCC, -0xC0));
 	auto& units = UnitParseTemp::ParsedUnits;
 
 	for (size_t i = 0; i < units.size(); i++)
@@ -1492,13 +1515,15 @@ DEFINE_HOOK(0x688F8C, ScenarioClass_ScanPlaceUnit_CheckMovement, 0x5)
 	GET(TechnoClass*, pTechno, EBX);
 	LEA_STACK(CoordStruct*, pCoords, STACK_OFFSET(0x6C, -0x30));
 
-	if (pTechno->WhatAmI() == BuildingClass::AbsID)
+	const auto absType = pTechno->WhatAmI();
+
+	if (absType == BuildingClass::AbsID)
 		return 0;
 
 	const auto pCell = MapClass::Instance.GetCellAt(*pCoords);
 	const auto pTechnoType = pTechno->GetTechnoType();
 
-	return pCell->IsClearToMove(pTechnoType->SpeedType, false, false, -1, pTechnoType->MovementZone, -1, 1) ? 0 : NotUsableArea;
+	return pCell->IsClearToMove(pTechnoType->SpeedType, absType == InfantryClass::AbsID, false, -1, pTechnoType->MovementZone, -1, 1) ? 0 : NotUsableArea;
 }
 
 DEFINE_HOOK(0x68927B, ScenarioClass_ScanPlaceUnit_CheckMovement2, 0x5)
@@ -1508,13 +1533,15 @@ DEFINE_HOOK(0x68927B, ScenarioClass_ScanPlaceUnit_CheckMovement2, 0x5)
 	GET(TechnoClass*, pTechno, EDI);
 	LEA_STACK(CoordStruct*, pCoords, STACK_OFFSET(0x6C, -0xC));
 
-	if (pTechno->WhatAmI() == BuildingClass::AbsID)
+	const auto absType = pTechno->WhatAmI();
+
+	if (absType == BuildingClass::AbsID)
 		return 0;
 
 	const auto pCell = MapClass::Instance.GetCellAt(*pCoords);
 	const auto pTechnoType = pTechno->GetTechnoType();
 
-	return pCell->IsClearToMove(pTechnoType->SpeedType, false, false, -1, pTechnoType->MovementZone, -1, 1) ? 0 : NotUsableArea;
+	return pCell->IsClearToMove(pTechnoType->SpeedType, absType == InfantryClass::AbsID, false, -1, pTechnoType->MovementZone, -1, 1) ? 0 : NotUsableArea;
 }
 
 DEFINE_HOOK(0x446BF4, BuildingClass_Place_FreeUnit_NearByLocation, 0x6)
