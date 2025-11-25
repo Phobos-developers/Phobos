@@ -1882,6 +1882,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 {
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
+	auto const pTechnoType = pTypeExt->OwnerObject();
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
 	bool altered = false;
@@ -1891,8 +1892,9 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	{
 		auto const attachEffect = it->get();
 		auto const pType = attachEffect->GetType();
-		bool selfOwned = attachEffect->IsSelfOwned();
-		bool remove = selfOwned && !pTypeExt->AttachEffects.AttachTypes.Contains(pType);
+		const bool isValid = EnumFunctions::IsTechnoEligible(pThis, pType->AffectTargets, true)
+			&& (pType->AffectTypes.empty() || pType->AffectTypes.Contains(pTechnoType)) && !pType->IgnoreTypes.Contains(pTechnoType);
+		const bool remove = !isValid || (attachEffect->IsSelfOwned() && !pTypeExt->AttachEffects.AttachTypes.Contains(pType));
 
 		if (remove)
 		{
