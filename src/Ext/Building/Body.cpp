@@ -10,17 +10,18 @@ void BuildingExt::ExtData::DisplayIncomeString()
 {
 	if (this->AccumulatedIncome && Unsorted::CurrentFrame % 15 == 0)
 	{
-		auto const pOwnerObject = this->OwnerObject();
+		auto const pThis = this->OwnerObject();
 		auto const pTypeExt = this->TypeExtData;
 
-		if ((RulesExt::Global()->DisplayIncome_AllowAI || pOwnerObject->Owner->IsControlledByHuman())
+		if ((RulesExt::Global()->DisplayIncome_AllowAI || pThis->Owner->IsControlledByHuman())
 			&& pTypeExt->DisplayIncome.Get(RulesExt::Global()->DisplayIncome))
 		{
 			FlyingStrings::AddMoneyString(
 				this->AccumulatedIncome,
-				pOwnerObject->Owner,
+				pThis,
+				pThis->Owner,
 				pTypeExt->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
-				pOwnerObject->GetRenderCoords(),
+				pThis->GetRenderCoords(),
 				pTypeExt->DisplayIncome_Offset
 			);
 		}
@@ -306,7 +307,8 @@ void BuildingExt::ExtData::ApplyPoweredKillSpawns()
 
 bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore)
 {
-	const auto pVictimHouse = this->OwnerObject()->Owner;
+	const auto pThis = this->OwnerObject();
+	const auto pVictimHouse = pThis->Owner;
 	const auto pTypeExt = this->TypeExtData;
 	this->AccumulatedIncome += pVictimHouse->Available_Money() - moneybefore;
 
@@ -315,9 +317,10 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int m
 		// TODO there should be a better way...
 		FlyingStrings::AddMoneyString(
 				this->AccumulatedIncome,
+				pThis,
 				pVictimHouse,
 				pTypeExt->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
-				this->OwnerObject()->GetRenderCoords(),
+				pThis->GetRenderCoords(),
 				pTypeExt->DisplayIncome_Offset
 		);
 	}

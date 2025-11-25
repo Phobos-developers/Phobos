@@ -420,7 +420,7 @@ void TechnoExt::ExtData::EatPassengers()
 
 						if (pDelType->DisplaySoylent)
 						{
-							FlyingStrings::AddMoneyString(nMoneyToGive, pOwner,
+							FlyingStrings::AddMoneyString(nMoneyToGive, pThis, pOwner,
 								pDelType->DisplaySoylentToHouses, pThis->Location, pDelType->DisplaySoylentOffset);
 						}
 					}
@@ -527,7 +527,7 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 			{
 				auto cellCoords = pCell->GetCoords();
 				cellCoords.Z = std::max(locationZ, cellCoords.Z);
-				FlyingStrings::AddMoneyString(value, pOwner, displayToHouse, cellCoords, displayOffset);
+				FlyingStrings::AddMoneyString(value, pThis, pOwner, displayToHouse, cellCoords, displayOffset);
 			}
 
 			const auto& anims = pEaterType->Anims_Tiberiums[tiberiumIdx].GetElements(animsAll);
