@@ -646,6 +646,7 @@ This page lists all the individual contributions to the project by their author.
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
+- **Flactine** - added target filtering options to attacheffect system
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
@@ -683,4 +684,3 @@ This page lists all the individual contributions to the project by their author.
 - **Damfoos** - extensive and thorough testing
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
-- **Flactine** - added target filtering options to attacheffect system
