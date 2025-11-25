@@ -169,6 +169,7 @@ msgid ""
 "empty, no whitelist filtering occurs. This check has the highest "
 "priority."
 msgstr ""
+"如果 `AffectTypes` 设为非空列表，则 AE 仅对列出的特定单位生效。若未设置或为空则不执行白名单过滤。此项检查具有最高优先级。"
 
 #: ../../New-or-Enhanced-Logics.md:26
 msgid ""
@@ -177,6 +178,7 @@ msgid ""
 "empty, no blacklist filtering occurs. This check is performed after "
 "`AffectTypes`."
 msgstr ""
+"如果 `IgnoreTypes` 设为非空列表，则 AE 不对列出的特定单位生效。若未设置或为空则不执行黑名单过滤。此项检查在 `AffectTypes` 之后执行。"
 
 #: ../../New-or-Enhanced-Logics.md:27
 msgid ""
@@ -185,6 +187,7 @@ msgid ""
 "(e.g., infantry, units, aircraft, buildings). This check is performed "
 "after both type-based filters."
 msgstr ""
+"如果 `AffectTargets` 设为非空列表，则 AE 仅可对特定大类目标生效（例如步兵、载具、战机、建筑）。此项检查在两个类型名单过滤之后执行。"
 
 #: ../../New-or-Enhanced-Logics.md:28
 msgid ""

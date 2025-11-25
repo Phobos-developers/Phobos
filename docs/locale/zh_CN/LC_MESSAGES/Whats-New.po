@@ -2066,9 +2066,10 @@ msgstr ""
 
 #: ../../Whats-New.md:464
 msgid ""
-"[Add Target Filtering Options to AttachEffect System](New-or-Enhanced-"
+"[Added Target Filtering Options to AttachEffect System](New-or-Enhanced-"
 "Logics.md#attached-effects) (by Flactine)"
 msgstr ""
+"[为 AE 系统添加目标过滤选项](New-or-Enhanced-Logics.md#attached-effects)（by Flactine）"
 
 #: ../../Whats-New.md:466 ../../Whats-New.md:538 ../../Whats-New.md:722
 #: ../../Whats-New.md:1081 ../../Whats-New.md:1190 ../../Whats-New.md:1215

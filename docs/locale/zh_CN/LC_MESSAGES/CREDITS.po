@@ -2692,8 +2692,8 @@ msgid "Skip target scanning function calling for unarmed technos (documentation)
 msgstr "禁用了无武器单位的索敌（文档）"
 
 #: ../../../CREDITS.md:650
-msgid "**Flactine** - added target filtering options to attacheffect system"
-msgstr ""
+msgid "**Flactine** - add target filtering options to attacheffect system"
+msgstr "**Flactine** - 为 AE 系统添加目标过滤选项"
 
 #: ../../../CREDITS.md:651
 msgid "**tyuah8**:"
