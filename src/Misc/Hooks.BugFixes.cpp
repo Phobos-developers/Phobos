@@ -520,10 +520,7 @@ DEFINE_HOOK(0x44CABA, BuildingClass_Mission_Missile_BulletParams, 0x7)
 	GET(CellClass* const, pTarget, EAX);
 
 	const auto pWeapon = SuperWeaponTypeClass::Array.GetItem(pThis->FiringSWType)->WeaponType;
-	BulletClass* pBullet = nullptr;
-
-	if (pWeapon)
-		pBullet = pWeapon->Projectile->CreateBullet(pTarget, pThis, pWeapon->Damage, pWeapon->Warhead, 255, pWeapon->Bright);
+	const auto pBullet = pWeapon ? pWeapon->Projectile->CreateBullet(pTarget, pThis, pWeapon->Damage, pWeapon->Warhead, 255, pWeapon->Bright) : nullptr;
 
 	R->EAX(pBullet);
 	R->EBX(pWeapon);
