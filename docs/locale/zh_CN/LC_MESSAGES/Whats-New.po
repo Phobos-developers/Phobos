@@ -2518,6 +2518,7 @@ msgid ""
 "through shroud and for objects that are supposed to be hidden such as "
 "cloaked, undetected enemies (by Starkku)"
 msgstr ""
+"修复了 `DisplayIncome`、`Transact.Money` 等的数字在黑幕之上以及本应隐藏的对象（例如处于未被探测到的隐形敌方单位）上显示的问题（by Starkku）"
 
 #: ../../Whats-New.md:550
 msgid "0.4"
