@@ -1,14 +1,19 @@
 #include "AresFunctions.h"
 #include "AresHelper.h"
 #include "Patch.h"
+
 #define NOTE_ARES_FUN(name,reladdr) AresFunctions::name = reinterpret_cast<decltype(AresFunctions::name)>(AresHelper::AresBaseAddress + reladdr)
 
 decltype(AresFunctions::ConvertTypeTo) AresFunctions::ConvertTypeTo = nullptr;
 decltype(AresFunctions::CreateAresEBolt) AresFunctions::CreateAresEBolt = nullptr;
 decltype(AresFunctions::SpawnSurvivors) AresFunctions::SpawnSurvivors = nullptr;
+decltype(AresFunctions::ReverseEngineer) AresFunctions::ReverseEngineer = nullptr;
 decltype(AresFunctions::IsTargetConstraintsEligible) AresFunctions::IsTargetConstraintsEligible = nullptr;
 std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> AresFunctions::SWTypeExtMap_Find;
 PhobosMap<ObjectClass*, AlphaShapeClass*>* AresFunctions::AlphaExtMap = nullptr;
+
+decltype(AresFunctions::GetTunnel) AresFunctions::GetTunnel = nullptr;
+decltype(AresFunctions::AddPassengerFromTunnel) AresFunctions::AddPassengerFromTunnel = nullptr;
 
 void* AresFunctions::_SWTypeExtMap = nullptr;
 decltype(AresFunctions::_SWTypeExtMapFind) AresFunctions::_SWTypeExtMapFind = nullptr;
@@ -32,6 +37,8 @@ void AresFunctions::InitAres3_0()
 		NOTE_ARES_FUN(SpawnSurvivors, 0x464C0);
 	}
 
+	NOTE_ARES_FUN(ReverseEngineer, 0x022360);
+
 	NOTE_ARES_FUN(IsTargetConstraintsEligible, 0x032110);
 
 	NOTE_ARES_FUN(_SWTypeExtMapFind, 0x57C70);
@@ -39,6 +46,10 @@ void AresFunctions::InitAres3_0()
 	SWTypeExtMap_Find = [](SuperWeaponTypeClass* swt) { return _SWTypeExtMapFind(_SWTypeExtMap, swt); };
 
 	NOTE_ARES_FUN(AlphaExtMap, 0xC1924);
+
+	// BuildingTypeExt::ExtData
+	NOTE_ARES_FUN(AresFunctions::GetTunnel, 0x0D740);
+	NOTE_ARES_FUN(AresFunctions::AddPassengerFromTunnel, 0x09000);
 
 #ifndef USING_MULTIFINITE_SYRINGE
 	Apply_Ares3_0_Patches();
@@ -61,6 +72,8 @@ void AresFunctions::InitAres3_0p1()
 		NOTE_ARES_FUN(SpawnSurvivors, 0x47030);
 	}
 
+	NOTE_ARES_FUN(ReverseEngineer, 0x022DE0);
+
 	NOTE_ARES_FUN(IsTargetConstraintsEligible, 0x032AF0);
 
 	NOTE_ARES_FUN(_SWTypeExtMapFind, 0x58900);
@@ -68,6 +81,10 @@ void AresFunctions::InitAres3_0p1()
 	SWTypeExtMap_Find = [](SuperWeaponTypeClass* swt) { return _SWTypeExtMapFind(_SWTypeExtMap, swt); };
 
 	NOTE_ARES_FUN(AlphaExtMap, 0xC2988);
+
+	// BuildingTypeExt::ExtData
+	NOTE_ARES_FUN(AresFunctions::GetTunnel, 0x0DA30);
+	NOTE_ARES_FUN(AresFunctions::AddPassengerFromTunnel, 0x09040);
 
 #ifndef USING_MULTIFINITE_SYRINGE
 	Apply_Ares3_0p1_Patches();

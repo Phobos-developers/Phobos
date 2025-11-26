@@ -10,6 +10,14 @@ void SideExt::ExtData::Initialize()
 
 	this->ArrayIndex = SideClass::FindIndex(pID);
 	this->Sidebar_GDIPositions = this->ArrayIndex == 0; // true = Allied
+
+	// Init MessageTextColor like Ares
+	if (!_strcmpi(pID, "Nod")) //Soviets
+		this->MessageTextColor = 11;
+	else if (!_strcmpi(pID, "ThirdSide")) //Yuri
+		this->MessageTextColor = 25;
+	else //Allies or any other country
+		this->MessageTextColor = 21;
 };
 
 void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
@@ -18,9 +26,7 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	const char* pSection = pThis->ID;
 
 	if (!pINI->GetSection(pSection))
-	{
 		return;
-	}
 
 	INI_EX exINI(pINI);
 	this->Sidebar_GDIPositions.Read(exINI, pSection, "Sidebar.GDIPositions");
@@ -42,6 +48,7 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->ToolTip_Background_Opacity.Read(exINI, pSection, "ToolTip.Background.Opacity");
 	this->ToolTip_Background_BlurSize.Read(exINI, pSection, "ToolTip.Background.BlurSize");
 	this->BriefingTheme = pINI->ReadTheme(pSection, "BriefingTheme", this->BriefingTheme);
+	this->MessageTextColor.Read(exINI, pSection, "MessageTextColor");
 	this->SuperWeaponSidebar_OnPCX.Read(pINI, pSection, "SuperWeaponSidebar.OnPCX");
 	this->SuperWeaponSidebar_OffPCX.Read(pINI, pSection, "SuperWeaponSidebar.OffPCX");
 	this->SuperWeaponSidebar_TopPCX.Read(pINI, pSection, "SuperWeaponSidebar.TopPCX");
@@ -76,6 +83,7 @@ void SideExt::ExtData::Serialize(T& Stm)
 		.Process(this->IngameScore_WinTheme)
 		.Process(this->IngameScore_LoseTheme)
 		.Process(this->BriefingTheme)
+		.Process(this->MessageTextColor)
 		.Process(this->SuperWeaponSidebar_OnPCX)
 		.Process(this->SuperWeaponSidebar_OffPCX)
 		.Process(this->SuperWeaponSidebar_TopPCX)

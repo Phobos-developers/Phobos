@@ -55,8 +55,8 @@ DEFINE_HOOK(0x48A62E, DoFlash_CombatLightOptions, 0x6)
 		return SkipFlash;
 
 	GET(WarheadTypeClass*, pWH, EDI);
-	GET(int, currentDetailLevel, EAX);
-	GET(int, damage, ECX);
+	GET(const int, currentDetailLevel, EAX);
+	GET(const int, damage, ECX);
 
 	R->ESI(damage); // Restore overridden instructions.
 	int detailLevel = RulesExt::Global()->CombatLightDetailLevel;

@@ -3,9 +3,10 @@
 #include <TacticalClass.h>
 #include <SpawnManagerClass.h>
 
-#include <Utilities/ShapeTextPrinter.h>
-
 #include <Ext/Techno/Body.h>
+
+#include <Utilities/ShapeTextPrinter.h>
+#include <Utilities/EnumFunctions.h>
 
 template<>
 const char* Enumerable<DigitalDisplayTypeClass>::GetMainSection()
@@ -16,6 +17,9 @@ const char* Enumerable<DigitalDisplayTypeClass>::GetMainSection()
 void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* section = this->Name;
+
+	if (!pINI->GetSection(section))
+		return;
 
 	INI_EX exINI(pINI);
 
@@ -39,6 +43,38 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->InfoIndex.Read(exINI, section, "InfoIndex");
 	this->ValueScaleDivisor.Read(exINI, section, "ValueScaleDivisor");
 	this->ValueAsTimer.Read(exINI, section, "ValueAsTimer");
+	this->ShowType.Read(exINI, section, "ShowType");
+}
+
+bool DigitalDisplayTypeClass::CanShow(TechnoClass* pThis)
+{
+	if (HouseClass::IsCurrentPlayerObserver())
+	{
+		if (!this->VisibleToHouses_Observer)
+			return false;
+	}
+	else if (!EnumFunctions::CanTargetHouse(this->VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
+	{
+		return false;
+	}
+
+	if (!this->VisibleInSpecialState && (pThis->TemporalTargetingMe || pThis->IsIronCurtained()))
+		return false;
+
+	const DisplayShowType flags = this->ShowType;
+
+	if (flags == DisplayShowType::All)
+		return true;
+
+	DisplayShowType current = pThis->IsMouseHovering ? DisplayShowType::CursorHover : DisplayShowType::None;
+
+	if (pThis->IsSelected)
+		current |= DisplayShowType::Selected;
+
+	if (current != DisplayShowType::None) // is hovering | is selected
+		return (current & flags) != DisplayShowType::None;
+
+	return (flags & DisplayShowType::Idle) != DisplayShowType::None; // not hovering & not selected
 }
 
 void DigitalDisplayTypeClass::Draw(Point2D position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield)
@@ -101,7 +137,7 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& position, int length, int val
 		swprintf_s(text, L"%d/%d", value, maxValue);
 	}
 
-	COLORREF color = Drawing::RGB_To_Int(Text_Color.Get(ratio));
+	const COLORREF color = Drawing::RGB_To_Int(Text_Color.Get(ratio));
 	RectangleStruct rect = DSurface::Composite->GetRect();
 	rect.Height -= 32; // account for bottom bar
 	const int textHeight = 12;
@@ -157,11 +193,12 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& position, int length, int va
 		}
 	}
 
-	Vector2D<int> spacing = (
-		Shape_Spacing.isset() ?
-		Shape_Spacing.Get() :
-		(isBuilding ? Vector2D<int> { 4, -2 } : Vector2D<int> { 4, 0 }) // default
-	);
+	Vector2D<int> spacing = (Shape_Spacing.isset()
+		? Shape_Spacing.Get()
+		: (isBuilding
+			? Vector2D<int> { 4, -2 }
+			: Vector2D<int> { 4, 0 })); // default
+
 	const int pipsHeight = hasShield ? 4 : 0;
 
 	if (AnchorType.Vertical == VerticalPosition::Top)
@@ -278,6 +315,7 @@ void DigitalDisplayTypeClass::Serialize(T& Stm)
 		.Process(this->InfoIndex)
 		.Process(this->ValueScaleDivisor)
 		.Process(this->ValueAsTimer)
+		.Process(this->ShowType)
 		;
 }
 
