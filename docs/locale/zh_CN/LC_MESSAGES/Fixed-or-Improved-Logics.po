@@ -6621,12 +6621,14 @@ msgid ""
 "check. If set to -1, the game will select the weapon against the target "
 "by default logic."
 msgstr ""
+"`KeepTargetOnMove.Weapon` 决定用于射程检查的武器。如果设为 -1，游戏将会根据默认武器选用规则针对目标对象选取。"
 
 #: ../../Fixed-or-Improved-Logics.md:1870
 msgid ""
 "It's recommended to set it to a specific weapon for better performance, "
 "unless there's a need to use multiple weapons for different targets."
 msgstr ""
+"建议将其设为特定武器以优化性能，除非需要针对不同目标使用多种武器。"
 
 #: ../../Fixed-or-Improved-Logics.md:1871
 msgid ""
