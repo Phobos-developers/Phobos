@@ -232,7 +232,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Infantry support `IsGattling=yes`.
 - Fixed the issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case.
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce.
-- Fixed the bug where technos with `BalloonHover=yes` incorrectly considered ground factors when setting the destination and distributing moving commands. If you don't want this anyway, use `[General]->BalloonHoverPathingFix=false` to disable this fix.
+- Fixed the bug where technos with `BalloonHover=yes` incorrectly considered ground factors when setting the destination and distributing moving commands. If you don't want this anyway, use `[General] -> BalloonHoverPathingFix=false` to disable this fix.
 
 ## Fixes / interactions with other extensions
 
