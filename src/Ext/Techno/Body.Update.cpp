@@ -1758,7 +1758,7 @@ void TechnoExt::ExtData::UpdateKeepTargetOnMove()
 		return;
 	}
 
-	const int weaponIndex = pThis->SelectWeapon(pThis->Target);
+	const int weaponIndex = pTypeExt->KeepTargetOnMove_Weapon >= 0 ? pTypeExt->KeepTargetOnMove_Weapon : pThis->SelectWeapon(pThis->Target);
 
 	if (auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType)
 	{
