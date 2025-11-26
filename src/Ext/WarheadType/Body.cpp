@@ -45,7 +45,7 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 	if (!this->EffectsRequireVerses)
 		return true;
 
-	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget) != 0.0;
+	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget, pTarget->GetTechnoType()) != 0.0;
 }
 
 bool WarheadTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
@@ -75,15 +75,13 @@ void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coor
 	BulletExt::Detonate(coords, pOwner, damage, pFiringHouse, pTarget, pThis->Bright, nullptr, pThis);
 }
 
-bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner) const
+bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno, TechnoTypeClass* pType, HouseClass* pOwner) const
 {
 	if (!pTechno || !pTechno->IsOnMap || !pTechno->IsAlive || pTechno->InLimbo || pTechno->IsSinking)
 		return false;
 
 	if (pOwner && !EnumFunctions::CanTargetHouse(this->DetonateOnAllMapObjects_AffectHouses, pOwner, pTechno->Owner))
 		return false;
-
-	auto const pType = pTechno->GetTechnoType();
 
 	if ((this->DetonateOnAllMapObjects_AffectTypes.size() > 0 && !this->DetonateOnAllMapObjects_AffectTypes.Contains(pType))
 		|| this->DetonateOnAllMapObjects_IgnoreTypes.Contains(pType))
@@ -93,7 +91,7 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 
 	if (this->DetonateOnAllMapObjects_RequireVerses)
 	{
-		if (GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTechno) == 0.0)
+		if (GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTechno, pType) == 0.0)
 			return false;
 	}
 

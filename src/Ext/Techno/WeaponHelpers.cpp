@@ -283,16 +283,17 @@ void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, Warhea
 	tryKillWeapon(pWHExt->KillWeapon, pWHExt->KillWeapon_AffectsHouses, pWHExt->KillWeapon_Affects, false, false);
 	tryKillWeapon(pWHExt->KillWeapon_OnFirer, pWHExt->KillWeapon_OnFirer_AffectsHouses, pWHExt->KillWeapon_OnFirer_Affects, pWHExt->KillWeapon_OnFirer_RealLaunch, true);
 
-	auto const pExt = TechnoExt::ExtMap.Find(pSource);
-
-	for (auto const& attachEffect : pExt->AttachedEffects)
+	if (auto const pExt = TechnoExt::ExtMap.TryFind(pSource))
 	{
-		if (!attachEffect->IsActive())
-			continue;
+		for (auto const& attachEffect : pExt->AttachedEffects)
+		{
+			if (!attachEffect->IsActive())
+				continue;
 
-		auto const pType = attachEffect->GetType();
-		tryKillWeapon(pType->KillWeapon, pType->KillWeapon_AffectsHouses, pType->KillWeapon_Affects, false, false);
-		tryKillWeapon(pType->KillWeapon_OnFirer, pType->KillWeapon_OnFirer_AffectsHouses, pType->KillWeapon_OnFirer_Affects, pType->KillWeapon_OnFirer_RealLaunch, true);
+			auto const pType = attachEffect->GetType();
+			tryKillWeapon(pType->KillWeapon, pType->KillWeapon_AffectsHouses, pType->KillWeapon_Affects, false, false);
+			tryKillWeapon(pType->KillWeapon_OnFirer, pType->KillWeapon_OnFirer_AffectsHouses, pType->KillWeapon_OnFirer_Affects, pType->KillWeapon_OnFirer_RealLaunch, true);
+		}
 	}
 }
 

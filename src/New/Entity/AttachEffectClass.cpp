@@ -9,6 +9,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Utilities/EnumFunctions.h>
 
 std::vector<AttachEffectClass*> AttachEffectClass::Array;
 
@@ -54,7 +55,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	if (this->InitialDelay <= 0)
 	{
 		this->HasInitialized = true;
-		pType->HandleEvent(pTechno);
+		AttachEffectTypeClass::HandleEvent(pTechno);
 	}
 
 	int& duration = this->Duration;
@@ -196,7 +197,7 @@ void AttachEffectClass::AI()
 			pTechno->MarkForRedraw();
 
 		this->NeedsRecalculateStat = true;
-		pType->HandleEvent(pTechno);
+		AttachEffectTypeClass::HandleEvent(pTechno);
 	}
 
 	if (this->CurrentDelay > 0)
@@ -219,7 +220,7 @@ void AttachEffectClass::AI()
 			this->RefreshDuration();
 			this->NeedsRecalculateStat = true;
 			this->NeedsDurationRefresh = false;
-			pType->HandleEvent(pTechno);
+			AttachEffectTypeClass::HandleEvent(pTechno);
 		}
 
 		return;
@@ -479,13 +480,6 @@ void AttachEffectClass::TransferCumulativeAnim(AttachEffectClass* pSource)
 	pSource->HasCumulativeAnim = false;
 }
 
-bool AttachEffectClass::CanShowAnim() const
-{
-	return (!this->IsUnderTemporal || this->Type->Animation_TemporalAction != AttachedAnimFlag::Hides)
-		&& (this->IsOnline || this->Type->Animation_OfflineAction != AttachedAnimFlag::Hides)
-		&& !this->IsInTunnel && !this->IsAnimHidden;
-}
-
 void AttachEffectClass::SetAnimationTunnelState(bool visible)
 {
 	if (!this->IsInTunnel && !visible)
@@ -544,11 +538,6 @@ bool AttachEffectClass::ResetIfRecreatable()
 	this->CurrentDelay = this->RecreationDelay;
 
 	return true;
-}
-
-bool AttachEffectClass::HasExpired() const
-{
-	return this->IsSelfOwned() && this->Delay >= 0 ? false : !this->Duration;
 }
 
 bool AttachEffectClass::ShouldBeDiscardedNow()
@@ -652,29 +641,6 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 	return false;
 }
 
-bool AttachEffectClass::IsActiveIgnorePowered() const
-{
-	if (this->IsSelfOwned())
-		return this->InitialDelay <= 0 && this->CurrentDelay == 0 && this->HasInitialized && !this->NeedsDurationRefresh;
-	else
-		return this->Duration;
-}
-
-bool AttachEffectClass::IsActive() const
-{
-	return this->IsOnline && this->IsActiveIgnorePowered();
-}
-
-bool AttachEffectClass::IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const
-{
-	return pInvoker == this->Invoker && pSource == this->Source;
-}
-
-TechnoClass* AttachEffectClass::GetInvoker() const
-{
-	return this->Invoker;
-}
-
 #pragma region StaticFunctions_AttachDetachTransfer
 
 /// <summary>
@@ -694,6 +660,7 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 		return false;
 
 	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	auto const pTargetType = pTarget->GetTechnoType();
 	int attachedCount = 0;
 	bool markForRedraw = false;
 	double ROFModifier = 1.0;
@@ -704,7 +671,7 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 		auto const pType = types[i];
 		auto const params = attachEffectInfo.GetAttachParams(i, selfOwned);
 
-		if (auto const pAE = AttachEffectClass::CreateAndAttach(pType, pTarget, pTargetExt->AttachedEffects, pInvokerHouse, pInvoker, pSource, params))
+		if (auto const pAE = AttachEffectClass::CreateAndAttach(pType, pTarget, pTargetType, pTargetExt->AttachedEffects, pInvokerHouse, pInvoker, pSource, params))
 		{
 			attachedCount++;
 
@@ -750,10 +717,10 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 /// <param name="pSource">Source object for the attachment e.g a Warhead or Techno.</param>
 /// <param name="attachParams">Attachment parameters.</param>
 /// <returns>The created and attached AttachEffect if successful, nullptr if not.</returns>
-AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs,
+AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, TechnoTypeClass* pTargetType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs,
 	HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachParams const& attachParams)
 {
-	if (!pType || !pTarget)
+	if (!pType)
 		return nullptr;
 
 	if (pType->AffectAbovePercent > 0.0 && pTarget->GetHealthPercentage() < pType->AffectAbovePercent)
@@ -769,6 +736,12 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 		if (!penetrates)
 			return nullptr;
 	}
+
+	if (!EnumFunctions::IsTechnoEligible(pTarget, pType->AffectTargets, true))
+		return nullptr;
+
+	if ((!pType->AffectTypes.empty() && !pType->AffectTypes.Contains(pTargetType)) || pType->IgnoreTypes.Contains(pTargetType))
+		return nullptr;
 
 	int currentTypeCount = 0;
 	AttachEffectClass* match = nullptr;
@@ -815,7 +788,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 				best->RefreshDuration(attachParams.DurationOverride);
 			}
 
-			pType->HandleEvent(pTarget);
+			AttachEffectTypeClass::HandleEvent(pTarget);
 			return nullptr;
 		}
 		else if (attachParams.CumulativeRefreshAll && attachParams.CumulativeRefreshAll_OnAttach)
@@ -830,7 +803,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 	if (!pType->Cumulative && currentTypeCount > 0 && match)
 	{
 		match->RefreshDuration(attachParams.DurationOverride);
-		pType->HandleEvent(pTarget);
+		AttachEffectTypeClass::HandleEvent(pTarget);
 	}
 	else
 	{
@@ -1025,6 +998,7 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 {
 	const auto pSourceExt = TechnoExt::ExtMap.Find(pSource);
 	const auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	const auto pTargetType = pTarget->GetTechnoType();
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 
 	for (it = pSourceExt->AttachedEffects.begin(); it != pSourceExt->AttachedEffects.end(); )
@@ -1038,6 +1012,15 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 		}
 
 		auto const type = attachEffect->GetType();
+		const bool isValid = EnumFunctions::IsTechnoEligible(pTarget, type->AffectTargets, true)
+			&& (type->AffectTypes.empty() || type->AffectTypes.Contains(pTargetType)) && !type->IgnoreTypes.Contains(pTargetType);
+
+		if (!isValid)
+		{
+			++it;
+			continue;
+		}
+
 		int currentTypeCount = 0;
 		AttachEffectClass* match = nullptr;
 		AttachEffectClass* sourceMatch = nullptr;
@@ -1069,7 +1052,7 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 			AEAttachParams info {};
 			info.DurationOverride = attachEffect->DurationOverride;
 
-			if (auto const pAE = AttachEffectClass::CreateAndAttach(type, pTarget, pTargetExt->AttachedEffects, attachEffect->InvokerHouse, attachEffect->Invoker, attachEffect->Source, info))
+			if (auto const pAE = AttachEffectClass::CreateAndAttach(type, pTarget, pTargetType, pTargetExt->AttachedEffects, attachEffect->InvokerHouse, attachEffect->Invoker, attachEffect->Source, info))
 				pAE->Duration = attachEffect->Duration;
 		}
 

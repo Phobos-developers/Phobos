@@ -142,7 +142,7 @@ void BulletExt::ExtData::ApplyExtraWarheads(const std::vector<WarheadTypeClass*>
 	{
 		auto const pWH = exWH[i];
 		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
-		auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target); // must be checked in every loop
+		auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target);
 
 		if (pTarget && !pWHExt->IsHealthInThreshold(pTarget))
 			continue;
@@ -473,6 +473,7 @@ void BulletExt::Detonate(const CoordStruct& coords, TechnoClass* pOwner, int dam
 
 	pBullet->SetLocation(coords);
 	pBullet->Explode(true);
+	pBullet->UnInit();
 }
 
 // =============================

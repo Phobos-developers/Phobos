@@ -955,26 +955,6 @@ AnimTypeClass* ShieldClass::GetIdleAnimType()
 	return pType->GetIdleAnimType(isDamaged, this->GetHealthRatio());
 }
 
-bool ShieldClass::IsGreenSP()
-{
-	auto const pType = this->Type;
-	return pType->GetConditionYellow() * pType->Strength.Get() < this->HP;
-}
-
-bool ShieldClass::IsYellowSP()
-{
-	auto const pType = this->Type;
-	const int health = this->HP;
-	const int strength = pType->Strength.Get();
-	return pType->GetConditionRed() * strength < health && health <= pType->GetConditionYellow() * strength;
-}
-
-bool ShieldClass::IsRedSP()
-{
-	auto const pType = this->Type;
-	return this->HP <= pType->GetConditionYellow() * pType->Strength.Get();
-}
-
 void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBound)
 {
 	if (this->HP <= 0 && this->Type->Pips_HideIfNoStrength)
@@ -1098,18 +1078,13 @@ ArmorType ShieldClass::GetArmorType(TechnoTypeClass* pTechnoType) const
 			pTechnoType = pTechno->GetTechnoType();
 
 		if (pShieldType->InheritArmor_Allowed.empty() || pShieldType->InheritArmor_Allowed.Contains(pTechnoType)
-			&& (pShieldType->InheritArmor_Disallowed.empty() || !pShieldType->InheritArmor_Disallowed.Contains(pTechnoType)))
+			&& !pShieldType->InheritArmor_Disallowed.Contains(pTechnoType))
 		{
 			return pTechnoType->Armor;
 		}
 	}
 
 	return pShieldType->Armor.Get();
-}
-
-int ShieldClass::GetFramesSinceLastBroken() const
-{
-	return Unsorted::CurrentFrame - this->LastBreakFrame;
 }
 
 void ShieldClass::SetAnimationVisibility(bool visible)

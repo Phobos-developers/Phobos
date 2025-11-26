@@ -943,6 +943,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackMove_UpdateTarget.Read(exINI, pSection, "AttackMove.UpdateTarget");
 
 	this->KeepTargetOnMove.Read(exINI, pSection, "KeepTargetOnMove");
+	this->KeepTargetOnMove_Weapon.Read(exINI, pSection, "KeepTargetOnMove.Weapon");
 	this->KeepTargetOnMove_NoMorePursuit.Read(exINI, pSection, "KeepTargetOnMove.NoMorePursuit");
 	this->KeepTargetOnMove_ExtraDistance.Read(exINI, pSection, "KeepTargetOnMove.ExtraDistance");
 
@@ -1585,6 +1586,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->BunkerableAnyway)
 		.Process(this->KeepTargetOnMove)
+		.Process(this->KeepTargetOnMove_Weapon)
 		.Process(this->KeepTargetOnMove_NoMorePursuit)
 		.Process(this->KeepTargetOnMove_ExtraDistance)
 
