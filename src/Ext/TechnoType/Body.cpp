@@ -893,6 +893,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
 	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
+	this->RevengeWeapon_RealLaunch.Read(exINI, pSection, "RevengeWeapon.RealLaunch");
 
 	this->RecountBurst.Read(exINI, pSection, "RecountBurst");
 
@@ -1533,6 +1534,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->RevengeWeapon)
 		.Process(this->RevengeWeapon_AffectsHouses)
+		.Process(this->RevengeWeapon_RealLaunch)
 
 		.Process(this->AttachEffects)
 

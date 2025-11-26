@@ -109,6 +109,15 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Burst_NoDelay.Read(exINI, pSection, "Burst.NoDelay");
 	this->AreaFire_Target.Read(exINI, pSection, "AreaFire.Target");
 	this->FeedbackWeapon.Read<true>(exINI, pSection, "FeedbackWeapon");
+	this->AuxWeapon.Read<true>(exINI, pSection, "AuxWeapon");
+	this->AuxWeapon_Offset.Read(exINI, pSection, "AuxWeapon.Offset");
+	this->AuxWeapon_FireOnTurret.Read(exINI, pSection, "AuxWeapon.FireOnTurret");
+	this->AuxWeapon_AllowZeroDamage.Read(exINI, pSection, "AuxWeapon.AllowZeroDamage");
+	this->AuxWeapon_ApplyFirepowerMult.Read(exINI, pSection, "AuxWeapon.ApplyFirepowerMult");
+	this->AuxWeapon_Retarget.Read(exINI, pSection, "AuxWeapon.Retarget");
+	this->AuxWeapon_Retarget_AroundFirer.Read(exINI, pSection, "AuxWeapon.Retarget.AroundFirer");
+	this->AuxWeapon_Retarget_Range.Read(exINI, pSection, "AuxWeapon.Retarget.Range");
+	this->AuxWeapon_Retarget_Accuracy.Read(exINI, pSection, "AuxWeapon.Retarget.Accuracy");
 	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
 	this->VisualScatter.Read(exINI, pSection, "VisualScatter");
 	this->ROF_RandomDelay.Read(exINI, pSection, "ROF.RandomDelay");
@@ -192,6 +201,15 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Burst_NoDelay)
 		.Process(this->AreaFire_Target)
 		.Process(this->FeedbackWeapon)
+		.Process(this->AuxWeapon)
+		.Process(this->AuxWeapon_Offset)
+		.Process(this->AuxWeapon_FireOnTurret)
+		.Process(this->AuxWeapon_AllowZeroDamage)
+		.Process(this->AuxWeapon_ApplyFirepowerMult)
+		.Process(this->AuxWeapon_Retarget)
+		.Process(this->AuxWeapon_Retarget_AroundFirer)
+		.Process(this->AuxWeapon_Retarget_Range)
+		.Process(this->AuxWeapon_Retarget_Accuracy)
 		.Process(this->Laser_IsSingleColor)
 		.Process(this->VisualScatter)
 		.Process(this->ROF_RandomDelay)

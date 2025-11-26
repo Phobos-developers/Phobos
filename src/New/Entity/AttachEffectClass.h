@@ -110,6 +110,7 @@ struct AttachEffectTechnoProperties
 	double ArmorMultiplier;
 	double SpeedMultiplier;
 	double ROFMultiplier;
+	double NegativeDamageMultiplier;
 	bool Cloakable;
 	bool ForceDecloak;
 	bool DisableWeapons;
@@ -120,12 +121,15 @@ struct AttachEffectTechnoProperties
 	bool HasOnFireDiscardables;
 	bool HasRestrictedArmorMultipliers;
 	bool HasCritModifiers;
+	bool HasExtraWarheads;
+	bool HasFeedbackOrAuxWeapon;
 
 	AttachEffectTechnoProperties() :
 		FirepowerMultiplier { 1.0 }
 		, ArmorMultiplier { 1.0 }
 		, SpeedMultiplier { 1.0 }
 		, ROFMultiplier { 1.0 }
+		, NegativeDamageMultiplier { 1.0 }
 		, Cloakable { false }
 		, ForceDecloak { false }
 		, DisableWeapons { false }
@@ -136,5 +140,7 @@ struct AttachEffectTechnoProperties
 		, HasOnFireDiscardables { false }
 		, HasRestrictedArmorMultipliers { false }
 		, HasCritModifiers { false }
+		, HasExtraWarheads { false }
+		, HasFeedbackOrAuxWeapon { false }
 	{ }
 };

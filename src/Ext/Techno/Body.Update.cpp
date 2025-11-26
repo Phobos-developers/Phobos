@@ -1901,7 +1901,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 			&& (pType->AffectTypes.empty() || pType->AffectTypes.Contains(pTechnoType)) && !pType->IgnoreTypes.Contains(pTechnoType);
 		const bool remove = !isValid || (attachEffect->IsSelfOwned() && !pTypeExt->AttachEffects.AttachTypes.Contains(pType));
 
-		if (remove)
+		if (attachEffect->IsSelfOwned() && !pTypeExt->AttachEffects.AttachTypes.Contains(pType))
 		{
 			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
 			{
@@ -1996,6 +1996,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	double armor = 1.0;
 	double speed = 1.0;
 	double ROF = 1.0;
+	double negativeDamage = 1.0;
 	bool cloak = false;
 	bool forceDecloak = false;
 	bool disableWeapons = false;
@@ -2006,6 +2007,8 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	bool hasOnFireDiscardables = false;
 	bool hasRestrictedArmorMultipliers = false;
 	bool hasCritModifiers = false;
+	bool hasExtraWarheads = false;
+	bool hasFeedbackOrAuxWeapon = false;
 
 	for (const auto& attachEffect : this->AttachedEffects)
 	{
@@ -2022,6 +2025,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 			armor *= type->ArmorMultiplier;
 
 		ROF *= type->ROFMultiplier;
+		negativeDamage *= type->NegativeDamage_Multiplier;
 		cloak |= type->Cloakable;
 		forceDecloak |= type->ForceDecloak;
 		disableWeapons |= type->DisableWeapons;
@@ -2031,12 +2035,15 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		reflectsDamage |= type->ReflectDamage;
 		hasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
 		hasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
+		hasExtraWarheads |= type->ExtraWarheads.size() > 0;
+		hasFeedbackOrAuxWeapon |= type->FeedbackWeapon != nullptr || type->AuxWeapon != nullptr;
 	}
 
 	pAE.FirepowerMultiplier = firepower;
 	pAE.ArmorMultiplier = armor;
 	pAE.SpeedMultiplier = speed;
 	pAE.ROFMultiplier = ROF;
+	pAE.NegativeDamageMultiplier = negativeDamage;
 	pAE.Cloakable = cloak;
 	pAE.ForceDecloak = forceDecloak;
 	pAE.DisableWeapons = disableWeapons;
@@ -2047,6 +2054,8 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	pAE.HasOnFireDiscardables = hasOnFireDiscardables;
 	pAE.HasRestrictedArmorMultipliers = hasRestrictedArmorMultipliers;
 	pAE.HasCritModifiers = hasCritModifiers;
+	pAE.HasExtraWarheads = hasExtraWarheads;
+	pAE.HasFeedbackOrAuxWeapon = hasFeedbackOrAuxWeapon;
 
 	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
 		pThis->Uncloak(true);

@@ -59,6 +59,7 @@ public:
 		void InterceptBullet(TechnoClass* pSource, BulletClass* pInterceptor);
 		void ApplyRadiationToCell(CellStruct cell, int spread, int radLevel);
 		void InitializeLaserTrails();
+		void ApplyExtraWarheads(const std::vector<WarheadTypeClass*>& exWH, const std::vector<int>& exWHOverrides, const std::vector<double>& exWHChances, const std::vector<bool>& exWHFull, const std::vector<bool>& exWHOwner, const CoordStruct& coords, HouseClass* pOwner, TechnoClass* pInvoker = nullptr);
 
 	private:
 		template <typename T>

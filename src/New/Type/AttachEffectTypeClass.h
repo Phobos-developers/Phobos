@@ -43,6 +43,7 @@ class AttachEffectTypeClass final : public Enumerable<AttachEffectTypeClass>
 
 public:
 	Valueable<int> Duration;
+	Valueable<WarheadTypeClass*> Duration_ApplyVersus_Warhead;
 	Valueable<bool> Duration_ApplyFirepowerMult;
 	Valueable<bool> Duration_ApplyArmorMultOnTarget;
 	Valueable<bool> Cumulative;
@@ -50,6 +51,11 @@ public:
 	Valueable<bool> Powered;
 	Valueable<DiscardCondition> DiscardOn;
 	Nullable<Leptons> DiscardOn_RangeOverride;
+	Valueable<double> DiscardOn_AbovePercent;
+	Valueable<double> DiscardOn_BelowPercent;
+	Valueable<int> DiscardOn_CumulativeCount;
+	Valueable<double> AffectAbovePercent;
+	Valueable<double> AffectBelowPercent;
 	Valueable<bool> PenetratesIronCurtain;
 	Nullable<bool> PenetratesForceShield;
 	ValueableVector<TechnoTypeClass*> AffectTypes;
@@ -67,6 +73,23 @@ public:
 	Valueable<ExpireWeaponCondition> ExpireWeapon_TriggerOn;
 	Valueable<bool> ExpireWeapon_CumulativeOnlyOnce;
 	Valueable<bool> ExpireWeapon_UseInvokerAsOwner;
+	ValueableVector<WarheadTypeClass*> ExtraWarheads;
+	ValueableVector<int> ExtraWarheads_DamageOverrides;
+	ValueableVector<double> ExtraWarheads_DetonationChances;
+	ValueableVector<bool> ExtraWarheads_FullDetonation;
+	ValueableVector<bool> ExtraWarheads_UseInvokerAsOwner;
+	Valueable<WeaponTypeClass*> FeedbackWeapon;
+	Valueable<bool> FeedbackWeapon_UseInvokerAsOwner;
+	Valueable<WeaponTypeClass*> AuxWeapon;
+	Valueable<CoordStruct> AuxWeapon_Offset;
+	Valueable<bool> AuxWeapon_FireOnTurret;
+	Valueable<bool> AuxWeapon_AllowZeroDamage;
+	Valueable<bool> AuxWeapon_ApplyFirepowerMult;
+	Valueable<bool> AuxWeapon_Retarget;
+	Valueable<bool> AuxWeapon_Retarget_AroundFirer;
+	Valueable<int> AuxWeapon_Retarget_Range;
+	Valueable<double> AuxWeapon_Retarget_Accuracy;
+	Valueable<bool> AuxWeapon_UseInvokerAsOwner;
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
@@ -87,8 +110,16 @@ public:
 	Valueable<double> Crit_ExtraChance;
 	ValueableVector<WarheadTypeClass*> Crit_AllowWarheads;
 	ValueableVector<WarheadTypeClass*> Crit_DisallowWarheads;
+	Valueable<WeaponTypeClass*> KillWeapon;
+	Valueable<WeaponTypeClass*> KillWeapon_OnFirer;
+	Valueable<AffectedHouse> KillWeapon_AffectsHouses;
+	Valueable<AffectedHouse> KillWeapon_OnFirer_AffectsHouses;
+	Valueable<AffectedTarget> KillWeapon_Affects;
+	Valueable<AffectedTarget> KillWeapon_OnFirer_Affects;
+	Valueable<bool> KillWeapon_OnFirer_RealLaunch;
 	Valueable<WeaponTypeClass*> RevengeWeapon;
 	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
+	Valueable<bool> RevengeWeapon_RealLaunch;
 	Valueable<bool> RevengeWeapon_UseInvokerAsOwner;
 	Valueable<bool> ReflectDamage;
 	Nullable<WarheadTypeClass*> ReflectDamage_Warhead;
@@ -100,12 +131,14 @@ public:
 	Valueable<bool> ReflectDamage_UseInvokerAsOwner;
 	Valueable<bool> DisableWeapons;
 	Valueable<bool> Unkillable;
+	Valueable<double> NegativeDamage_Multiplier;
 	ValueableIdx<LaserTrailTypeClass> LaserTrail_Type;
 
 	std::vector<std::string> Groups;
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, Duration { 0 }
+		, Duration_ApplyVersus_Warhead {}
 		, Duration_ApplyFirepowerMult { false }
 		, Duration_ApplyArmorMultOnTarget { false }
 		, Cumulative { false }
@@ -113,6 +146,11 @@ public:
 		, Powered { false }
 		, DiscardOn { DiscardCondition::None }
 		, DiscardOn_RangeOverride {}
+		, DiscardOn_AbovePercent { 0.0 }
+		, DiscardOn_BelowPercent { 0.0 }
+		, DiscardOn_CumulativeCount { -1 }
+		, AffectAbovePercent { 0.0 }
+		, AffectBelowPercent { 0.0 }
 		, PenetratesIronCurtain { false }
 		, PenetratesForceShield {}
 		, AffectTypes {}
@@ -130,6 +168,23 @@ public:
 		, ExpireWeapon_TriggerOn { ExpireWeaponCondition::Expire }
 		, ExpireWeapon_CumulativeOnlyOnce { false }
 		, ExpireWeapon_UseInvokerAsOwner { false }
+		, ExtraWarheads {}
+		, ExtraWarheads_DamageOverrides {}
+		, ExtraWarheads_DetonationChances {}
+		, ExtraWarheads_FullDetonation {}
+		, ExtraWarheads_UseInvokerAsOwner {}
+		, FeedbackWeapon {}
+		, FeedbackWeapon_UseInvokerAsOwner { false }
+		, AuxWeapon {}
+		, AuxWeapon_Offset { {0, 0, 0} }
+		, AuxWeapon_FireOnTurret { false }
+		, AuxWeapon_AllowZeroDamage { true }
+		, AuxWeapon_ApplyFirepowerMult { true }
+		, AuxWeapon_Retarget { false }
+		, AuxWeapon_Retarget_AroundFirer { false }
+		, AuxWeapon_Retarget_Range { 0 }
+		, AuxWeapon_Retarget_Accuracy { 1.0 }
+		, AuxWeapon_UseInvokerAsOwner { false }
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
 		, Tint_VisibleToHouses { AffectedHouse::All }
@@ -150,8 +205,16 @@ public:
 		, Crit_ExtraChance { 0.0 }
 		, Crit_AllowWarheads {}
 		, Crit_DisallowWarheads {}
+		, KillWeapon {}
+		, KillWeapon_OnFirer {}
+		, KillWeapon_AffectsHouses { AffectedHouse::All }
+		, KillWeapon_OnFirer_AffectsHouses { AffectedHouse::All }
+		, KillWeapon_Affects { AffectedTarget::All }
+		, KillWeapon_OnFirer_Affects { AffectedTarget::All }
+		, KillWeapon_OnFirer_RealLaunch { false }
 		, RevengeWeapon {}
 		, RevengeWeapon_AffectsHouses { AffectedHouse::All }
+		, RevengeWeapon_RealLaunch { false }
 		, ReflectDamage { false }
 		, RevengeWeapon_UseInvokerAsOwner { false }
 		, ReflectDamage_Warhead {}
@@ -163,6 +226,7 @@ public:
 		, ReflectDamage_UseInvokerAsOwner { false }
 		, DisableWeapons { false }
 		, Unkillable { false }
+		, NegativeDamage_Multiplier { 1.0 }
 		, LaserTrail_Type { -1 }
 		, Groups {}
 	{};

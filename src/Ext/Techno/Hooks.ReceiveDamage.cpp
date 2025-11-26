@@ -166,6 +166,12 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			pThis->EstimatedHealth = 1;
 			ReceiveDamageTemp::SkipLowDamageCheck = true;
 		}
+
+		if (pExt->AE.NegativeDamageMultiplier != 1.0 && nDamageLeft != 0 && pWHExt->CanTargetHouse(pSourceHouse, pThis)
+			&& MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, args->DistanceToEpicenter) < 0)
+		{
+			damage = static_cast<int>(damage * pExt->AE.NegativeDamageMultiplier);
+		}
 	}
 
 	return 0;

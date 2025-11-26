@@ -360,90 +360,52 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 	GET(BulletClass*, pThis, ESI);
 	GET_BASE(CoordStruct const* const, coords, 0x8);
 
+	auto const pBulletExt = BulletExt::ExtMap.Find(pThis);
 	auto const pTechno = pThis->Owner;
-	auto const pOwner = pTechno ? pTechno->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+	auto const pOwner = pTechno ? pTechno->Owner : pBulletExt->FirerHouse;
+	auto const pWH = pThis->WH;
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	pWHExt->InDamageArea = true;
 
 	// Extra warheads
-	if (auto const pWeapon = pThis->WeaponType)
+	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pThis->WeaponType))
 	{
-		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-		auto const& extraWarheads = pWeaponExt->ExtraWarheads;
-		auto const& damageOverrides = pWeaponExt->ExtraWarheads_DamageOverrides;
-		auto const& detonationChances = pWeaponExt->ExtraWarheads_DetonationChances;
-		auto const& fullDetonation = pWeaponExt->ExtraWarheads_FullDetonation;
-		const int defaultDamage = pWeapon->Damage;
-		auto& random = ScenarioClass::Instance->Random;
-
-		for (size_t i = 0; i < extraWarheads.size(); i++)
+		if (pWeaponExt->ExtraWarheads.size() > 0)
 		{
-			auto const pWH = extraWarheads[i];
-			auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
-			auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target);
+			std::vector<bool> vec;
 
-			if (pTarget && !pWHExt->IsHealthInThreshold(pTarget))
-				continue;
-
-			int damage = defaultDamage;
-			size_t size = damageOverrides.size();
-
-			if (size > i)
-				damage = damageOverrides[i];
-			else if (size > 0)
-				damage = damageOverrides[size - 1];
-
-			size = detonationChances.size();
-			bool detonate = true;
-
-			if (size > i)
-				detonate = detonationChances[i] >= random.RandomDouble();
-			else if (size > 0)
-				detonate = detonationChances[size - 1] >= random.RandomDouble();
-
-			size = fullDetonation.size();
-			bool isFull = true;
-
-			if (size > i)
-				isFull = fullDetonation[i];
-			else if (size > 0)
-				isFull = fullDetonation[size - 1];
-
-			if (!detonate)
-				continue;
-
-			if (isFull)
-				WarheadTypeExt::DetonateAt(pWH, *coords, pTechno, damage, pOwner, pThis->Target);
-			else
-				pWHExt->DamageAreaWithTarget(*coords, damage, pTechno, pWH, true, pOwner, pTarget);
+			pBulletExt->ApplyExtraWarheads(pWeaponExt->ExtraWarheads, pWeaponExt->ExtraWarheads_DamageOverrides,
+				pWeaponExt->ExtraWarheads_DetonationChances, pWeaponExt->ExtraWarheads_FullDetonation, vec, *coords, pOwner);
 		}
 	}
+	
+	if (!pTechno)
+		return 0;
+	
+	auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 
-	// Return to sender
-	if (pTechno)
+	if (pTechnoExt->AE.HasExtraWarheads)
 	{
-		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
-
-		if (auto const pWeapon = pTypeExt->ReturnWeapon)
+		for (auto const& pAE : pTechnoExt->AttachedEffects)
 		{
-			int damage = pWeapon->Damage;
+			auto const pType = pAE->GetType();
 
-			if (pTypeExt->ReturnWeapon_ApplyFirepowerMult)
-				damage = static_cast<int>(damage * TechnoExt::GetCurrentFirepowerMultiplier(pTechno));
-
-			if (auto const pBullet = pWeapon->Projectile->CreateBullet(pTechno, pTechno,
-				damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
+			if (pType->ExtraWarheads.size() > 0)
 			{
-				BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, pThis->Location, false);
-				BulletExt::SimulatedFiringEffects(pBullet, pOwner, nullptr, false, true);
+				pBulletExt->ApplyExtraWarheads(pType->ExtraWarheads, pType->ExtraWarheads_DamageOverrides, pType->ExtraWarheads_DetonationChances,
+					pType->ExtraWarheads_FullDetonation, pType->ExtraWarheads_UseInvokerAsOwner, *coords, pOwner, pAE->GetInvoker());
 			}
 		}
 	}
 
-	// Unlimbo Detonate
-	const auto pWH = pThis->WH;
-	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
-	pWHExt->InDamageArea = true;
+	// Return to sender
+	auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pTechno && pTechno->InLimbo && !pWH->Parasite && pWHExt->UnlimboDetonate)
+	if (auto const pWeapon = pBulletTypeExt->ReturnWeapon)
+		TechnoExt::RealLaunch(pWeapon, pTechno, pTechno, pBulletTypeExt->ReturnWeapon_ApplyFirepowerMult);
+
+	// Unlimbo Detonate
+	if (pTechno->InLimbo && !pWH->Parasite && pWHExt->UnlimboDetonate)
 	{
 		CoordStruct location = *coords;
 		const auto pTarget = pThis->Target;
@@ -488,8 +450,6 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			--Unsorted::ScenarioInit;
 		}
 
-		const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
-
 		if (success)
 		{
 			if (isInAir)
@@ -526,7 +486,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			}
 
 			pTechno->SetLocation(location);
-			pTechno->ReceiveDamage(&pTechno->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pTechno->Owner);
+			pTechno->ReceiveDamage(&pTechno->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pOwner);
 		}
 	}
 

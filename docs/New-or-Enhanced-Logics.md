@@ -8,6 +8,7 @@ This page describes all the engine features that are either new and introduced b
 
 - Similar (but not identical) to [Ares' AttachEffect](https://ares-developers.github.io/Ares-docs/new/attacheffect.html), but with some differences and new features. The largest difference is that here attached effects are explicitly defined types.
   - `Duration` determines how long the effect lasts for. It can be overriden by `DurationOverrides` on TechnoTypes and Warheads.
+    - If `Duration.ApplyVersus.Warhead` is set, it can multiply the duration by the set warhead's versus against the target's armor type if it's not negative. Can't reduce duration to below 0 by a negative versus.
     - If `Duration.ApplyFirepowerMult` set to true, the duration will multiply the invoker's firepower multipliers if it's not negative. Can't reduce duration to below 0 by a negative firepower multiplier.
     - If `Duration.ApplyArmorMultOnTarget` set to true, the duration will divide the target's armor multipliers if it's not negative. This'll also include `ArmorMultiplier` from its own and ignore `ArmorMultiplier.Allow/DisallowWarheads`. Can't reduce duration to below 0 by a negative armor multiplier.
   - `Cumulative`, if set to true, allows the same type of effect to be applied on same object multiple times, up to `Cumulative.MaxCount` number or with no limit if `Cumulative.MaxCount` is a negative number. If the target already has `Cumulative.MaxCount` number of the same effect applied on it, trying to attach another will refresh duration of the attached instance with shortest remaining duration.
@@ -20,6 +21,9 @@ This page describes all the engine features that are either new and introduced b
     - `inrange`: Discard if within weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
     - `outofrange`: Discard if outside weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
     - `firing`: Discard when firing a weapon. This counts special weapons that are not actually fired such as ones with `Spawner=true` or `DrainWeapon=true`.
+  - If `DiscardOn.CumulativeCount` is greater than 0, the effect is discarded when it has `Cumulative=yes` and been attached to the object more than this amount of times.
+  - If `DiscardOn.AbovePercent` or `DiscardOn.BelowPercent` is set, the effect is discarded when the object's health percentage is above/below that value.
+  - If `AffectAbovePercent` or `AffectBelowPercent` is set, the effect can be applied only when the object's health percentage is above/below that value.
   - If `PenetratesIronCurtain` is not set to true, the effect is not applied on currently invulnerable objects.
     - `PenetratesForceShield` can be used to set this separately for Force Shielded objects, defaults to value of `PenetratesIronCurtain`.
   - `AffectTypes`, if set to a non-empty list, restricts the effect to only be applicable on the specific unit types listed. If this is not set or empty, no whitelist filtering occurs. This check has the highest priority.
@@ -37,6 +41,23 @@ This page describes all the engine features that are either new and introduced b
     - `ExpireWeapon.TriggerOn` determines the exact conditions upon which the weapon is fired, defaults to `expire` which means only if the effect naturally expires.
     - `ExpireWeapon.CumulativeOnlyOnce`, if set to true, makes it so that `Cumulative=true` attached effects only detonate the weapon once period, instead of once per active instance. On `remove` and `expire` condition this means it will only detonate after last instance has expired or been removed.
     - `ExpireWeapon.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the weapon's owner & invoker instead of the object the effect is attached to.
+  - Attached effect can allow the TechnoType's weapon to detonate multiple Warheads on impact by listing `ExtraWarheads`. The warheads are detonated at same location as the main one, after it in listed order. This only works in cases where a projectile has been fired by a weapon and still remembers it when it is detonated (due to currently existing technical limitations, this excludes `AirburstWeapon`).
+    - `ExtraWarheads.DamageOverrides` can be used to override the weapon's `Damage` for the extra Warhead detonations. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, WeaponType `Damage` is used.
+    - `ExtraWarheads.DetonationChances` can be used to customize the chance of each extra Warhead detonation occuring. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, every extra Warhead detonation is guaranteed to occur.
+    - `ExtraWarheads.FullDetonation` can be used to customize whether or not each individual Warhead is detonated fully (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, defaults to true.
+    - `ExtraWarheads.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the weapon's owner & invoker instead of the object the effect is attached to. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, defaults to false.
+    - Note that the listed Warheads must be listed in `[Warheads]` for them to work.
+  - You can now specify an auxiliary weapon to be fired when a weapon is fired.
+    - `FireInTransport` setting of the auxiliary weapons are respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If auxiliary weapons are fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on auxiliary weapons.
+  - `AuxWeapon` is fired at the original target, or another nearby target if `AuxWeapon.Retarget` set to true.
+    - `AuxWeapon.Offset` defines the relative position to the firer that the auxiliary weapon will be fired from. `AuxWeapon.FireOnTurret` defines if the FLH is relative to the turret rather than the body.
+    - If `AuxWeapon.AllowZeroDamage` set to true, the auxiliary weapon will be fired even if its damage on the set target is 0.
+    - `AuxWeapon.ApplyFirepowerMult` determines whether or not the auxiliary weapon's damage should multiply the firer's firepower multipliers.
+    - `AuxWeapon.Retarget.AroundFirer` determines whether the original target or the firer will be the center of the retargeting. `AuxWeapon.Retarget.Range` determines the radius of the retargeting, default to the auxiliary weapon's `Range` if the center is the firer, and 0 if the center is the original target.
+    - `AuxWeapon.Retarget.Accuracy` defines the probability that the auxiliary weapon is fired to the original target.
+    - `AuxWeapon.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the weapon's owner & invoker instead of the object the effect is attached to.
+  - `FeedbackWeapon` is fired at the firer.
+    - `FeedbackWeapon.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the weapon's owner & invoker instead of the object the effect is attached to.
   - `Tint.Color` & `Tint.Intensity` can be used to set a color tint effect and additive lighting increase/decrease on the object the effect is attached to, respectively.
     - `Tint.VisibleToHouses` can be used to control which houses can see the tint effect.
   - `FirepowerMultiplier`, `ArmorMultiplier`, `SpeedMultiplier` and `ROFMultiplier` can be used to modify the object's firepower, armor strength, movement speed and weapon reload rate, respectively.
@@ -49,8 +70,13 @@ This page describes all the engine features that are either new and introduced b
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.UseTransportRangeModifiers` can be set to true to make passengers firing out use the transport's active range bonuses instead.
   - `Crit.Multiplier` and `Crit.ExtraChance` can be used to multiply the [critical hit](#chance-based-extra-damage-or-warhead-detonation--critical-hits) chance or grant a fixed bonus to it for the object the effect is attached to, respectively.
     - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
+  - `KillWeapon` will be fired at the target TechnoType's location once it's killed by the attached object.
+    - `KillWeapon.OnFirer` will be fired at the attacker's location once the target TechnoType is killed the attached object. If `KillWeapon.OnFirer.RealLaunch` set to true, the weapon will be fired through a real projectile from the TechnoType to the attached object.
+    - `KillWeapon.AffectsHouses` / `KillWeapon.OnFirer.AffectsHouses` and `KillWeapon.Affects` / `KillWeapon.OnFirer.Affects` can be used to filter which houses targets can belong to and which types of targets are be considered valid for `KillWeapon` and `KillWeapon.OnFirer` respectively.
+    - If a TechnoType has `SuppressKillWeapons` set to true, it will not trigger `KillWeapon` or `KillWeapon.OnFirer` upon being killed. `SuppressKillWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
+    - If `RevengeWeapon.RealLaunch` set to true, the weapon will be fired through a real projectile from the TechnoType to the killer.
     - `RevengeWeapon.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the weapon's owner & invoker instead of the object the effect is attached to.
   - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage] -> C4Warhead`. If `ReflectDamage.Warhead.Detonate` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Chance` determines the chance of reflection. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back, while `ReflectDamage.Override` directly overrides the damage. Already reflected damage cannot be further reflected back.
     - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed. `SuppressReflectDamage.Groups` does the same thing but for all AttachEffectTypes in the listed groups.
@@ -58,6 +84,7 @@ This page describes all the engine features that are either new and introduced b
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
   - `Unkillable` can be used to prevent the techno from being killed by taken damage (minimum health will be 1).
+  - `NegativeDamage.Multiplier` will be multiplied on the negative damage taken by the attached object. This includes both negative `Damage` and negative `Verses`.
   - It is possible to set groups for attach effect types by defining strings in `Groups`.
     - Groups can be used instead of types for removing effects and weapon filters.
 
@@ -91,6 +118,7 @@ In `rulesmd.ini`:
 
 [SOMEATTACHEFFECT]                                 ; AttachEffectType
 Duration=0                                         ; integer - game frames or negative value for indefinite duration
+Duration.ApplyVersus.Warhead=                      ; WarheadType
 Duration.ApplyFirepowerMult=false                  ; boolean
 Duration.ApplyArmorMultOnTarget=false              ; boolean
 Cumulative=false                                   ; boolean
@@ -98,6 +126,11 @@ Cumulative.MaxCount=-1                             ; integer
 Powered=false                                      ; boolean
 DiscardOn=none                                     ; List of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange)
 DiscardOn.RangeOverride=                           ; floating point value, distance in cells
+DiscardOn.CumulativeCount=-1                       ; integer
+DiscardOn.AbovePercent=                            ; floating point value, percents or absolute (0.0-1.0)
+DiscardOn.BelowPercent=                            ; floating point value, percents or absolute (0.0-1.0)
+AffectAbovePercent=                                ; floating point value, percents or absolute (0.0-1.0)
+AffectBelowPercent=                                ; floating point value, percents or absolute (0.0-1.0)
 PenetratesIronCurtain=false                        ; boolean
 PenetratesForceShield=                             ; boolean
 AffectTypes=                                       ; List of TechnoTypes
@@ -115,6 +148,23 @@ ExpireWeapon=                                      ; WeaponType
 ExpireWeapon.TriggerOn=expire                      ; List of expire weapon trigger condition enumeration (none|expire|remove|death|discard|all)
 ExpireWeapon.CumulativeOnlyOnce=false              ; boolean
 ExpireWeapon.UseInvokerAsOwner=false               ; boolean
+ExtraWarheads=                                     ; List of WarheadTypes
+ExtraWarheads.DamageOverrides=                     ; List of integers
+ExtraWarheads.DetonationChances=                   ; List of floating-point values (percentage or absolute)
+ExtraWarheads.FullDetonation=                      ; List of booleans
+ExtraWarheads.UseInvokerAsOwner=false              ; boolean
+AuxWeapon=                                         ; WeaponType
+AuxWeapon.Offset=0,0,0                             ; integer - Forward,Lateral,Height
+AuxWeapon.FireOnTurret=false                       ; boolean
+AuxWeapon.AllowZeroDamage=true                     ; boolean
+AuxWeapon.ApplyFirepowerMult=true                  ; boolean
+AuxWeapon.Retarget=false                           ; boolean
+AuxWeapon.Retarget.Range=                          ; integer
+AuxWeapon.Retarget.Accuracy=1.0                    ; floating point value, percents or absolute (0.0-1.0)
+AuxWeapon.Retarget.AroundFirer=false               ; boolean
+AuxWeapon.UseInvokerAsOwner=false                  ; boolean
+FeedbackWeapon=                                    ; WeaponType
+FeedbackWeapon.UseInvokerAsOwner=false             ; boolean
 Tint.Color=                                        ; integer - R,G,B
 Tint.Intensity=                                    ; floating point value
 Tint.VisibleToHouses=all                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
@@ -135,8 +185,16 @@ Crit.Multiplier=1.0                                ; floating point value
 Crit.ExtraChance=0.0                               ; floating point value
 Crit.AllowWarheads=                                ; List of WarheadTypes
 Crit.DisallowWarheads=                             ; List of WarheadTypes
+KillWeapon=                                        ; WeaponType
+KillWeapon.OnFirer=                                ; WeaponType
+KillWeapon.AffectsHouses=all                       ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+KillWeapon.OnFirer.AffectsHouses=all               ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+KillWeapon.Affects=all                             ; List of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
+KillWeapon.OnFirer.Affects=all                     ; List of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
+KillWeapon.OnFirer.RealLaunch=false                ; boolean
 RevengeWeapon=                                     ; WeaponType
 RevengeWeapon.AffectsHouses=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+RevengeWeapon.RealLaunch=false                     ; boolean
 RevengeWeapon.UseInvokerAsOwner=false              ; boolean
 ReflectDamage=false                                ; boolean
 ReflectDamage.Warhead=                             ; WarheadType
@@ -148,6 +206,7 @@ ReflectDamage.Override=                            ; integer
 ReflectDamage.UseInvokerAsOwner=false              ; boolean
 DisableWeapons=false                               ; boolean
 Unkillable=false                                   ; boolean
+NegativeDamage.Multiplier=1.0                      ; floating point value
 LaserTrail.Type=                                   ; LaserTrailType
 Groups=                                            ; comma-separated list of strings (group IDs)
 
@@ -1936,6 +1995,7 @@ Convert.ResetMindControl=false          ; boolean
 
 - Similar to `DeathWeapon` in that it is fired after a TechnoType is killed, but with the difference that it will be fired on whoever dealt the damage that killed the TechnoType. If TechnoType died of sources other than direct damage dealt by another TechnoType, `RevengeWeapon` will not be fired.
   - `RevengeWeapon.AffectsHouses` can be used to filter which houses the damage that killed the TechnoType is allowed to come from to fire the weapon.
+  - If `RevengeWeapon.RealLaunch` set to true, the weapon will be fired through a real projectile from the TechnoType to the killer.
   - It is possible to grant revenge weapons through [attached effects](#attached-effects) as well.
   - If a Warhead has `SuppressRevengeWeapons` set to true, it will not trigger revenge weapons. `SuppressRevengeWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
 
@@ -1944,6 +2004,7 @@ In `rulesmd.ini`:
 [SOMETECHNO]                    ; TechnoType
 RevengeWeapon=                  ; WeaponType
 RevengeWeapon.AffectsHouses=all ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+RevengeWeapon.RealLaunch=false  ; boolean
 
 [SOMEWARHEAD]                   ; WarheadType
 SuppressRevengeWeapons=false    ; boolean
@@ -2374,7 +2435,7 @@ While this feature can provide better performance than a large `CellSpread` valu
 ### Fire weapon when Warhead kills something
 
 - `KillWeapon` will be fired at the target TechnoType's location once it's killed by this Warhead.
-- `KillWeapon.OnFirer` will be fired at the attacker's location once the target TechnoType is killed by this Warhead. If the source of this Warhead is not another TechnoType, `KillWeapon.OnFirer` will not be fired.
+- `KillWeapon.OnFirer` will be fired at the attacker's location once the target TechnoType is killed by this Warhead. If the source of this Warhead is not another TechnoType, `KillWeapon.OnFirer` will not be fired. If `KillWeapon.OnFirer.RealLaunch` set to true, the weapon will be fired through a real projectile from the TechnoType to the killer.
 - `KillWeapon.AffectsHouses` / `KillWeapon.OnFirer.AffectsHouses` and `KillWeapon.Affects` / `KillWeapon.OnFirer.Affects` can be used to filter which houses targets can belong to and which types of targets are be considered valid for `KillWeapon` and `KillWeapon.OnFirer` respectively.
   - If the source of this Warhead is not another TechnoType, `KillWeapon` will be fired regardless of the target's house or type.
 - If a TechnoType has `SuppressKillWeapons` set to true, it will not trigger `KillWeapon` or `KillWeapon.OnFirer` upon being killed. `SuppressKillWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
@@ -2388,6 +2449,7 @@ KillWeapon.AffectsHouses=all          ; List of Affected House Enumeration (none
 KillWeapon.OnFirer.AffectsHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 KillWeapon.Affects=all                ; List of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
 KillWeapon.OnFirer.Affects=all        ; List of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
+KillWeapon.OnFirer.RealLaunch=false   ; boolean
 
 [SOMETECHNO]                          ; TechnoType
 SuppressKillWeapons=false             ; boolean
@@ -2683,18 +2745,34 @@ ExtraWarheads.DetonationChances=  ; List of floating-point values (percentage or
 ExtraWarheads.FullDetonation=     ; List of booleans
 ```
 
-### Feedback weapon
+### Auxiliary weapon
 
 ![image](_static/images/feedbackweapon.gif)
 *`FeedbackWeapon` used to apply healing aura upon firing a weapon in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
-- You can now specify an auxiliary weapon to be fired on the firer itself when a weapon is fired.
-  - `FireInTransport` setting of the feedback weapon is respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If feedback weapon is fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on feedback weapons.
+- You can now specify an auxiliary weapon to be fired when a weapon is fired.
+  - `FireInTransport` setting of the auxiliary weapons are respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If auxiliary weapons are fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on auxiliary weapons.
+- `AuxWeapon` is fired at the original target, or another nearby target if `AuxWeapon.Retarget` set to true.
+  - `AuxWeapon.Offset` defines the relative position to the firer that the auxiliary weapon will be fired from. `AuxWeapon.FireOnTurret` defines if the FLH is relative to the turret rather than the body.
+  - If `AuxWeapon.AllowZeroDamage` set to true, the auxiliary weapon will be fired even if its damage on the set target is 0.
+  - `AuxWeapon.ApplyFirepowerMult` determines whether or not the auxiliary weapon's damage should multiply the firer's firepower multipliers.
+  - `AuxWeapon.Retarget.AroundFirer` determines whether the original target or the firer will be the center of the retargeting. `AuxWeapon.Retarget.Range` determines the radius of the retargeting, default to the auxiliary weapon's `Range` if the center is the firer, and 0 if the center is the original target.
+  - `AuxWeapon.Retarget.Accuracy` defines the probability that the auxiliary weapon is fired to the original target.
+- `FeedbackWeapon` is fired at the firer.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]     ; WeaponType
-FeedbackWeapon=  ; WeaponType
+[SOMEWEAPON]                              ; WeaponType
+AuxWeapon=                                ; WeaponType
+AuxWeapon.Offset=0,0,0                    ; integer - Forward,Lateral,Height
+AuxWeapon.FireOnTurret=false              ; boolean
+AuxWeapon.AllowZeroDamage=true            ; boolean
+AuxWeapon.ApplyFirepowerMult=true         ; boolean
+AuxWeapon.Retarget=false                  ; boolean
+AuxWeapon.Retarget.Range=                 ; integer
+AuxWeapon.Retarget.Accuracy=1.0           ; floating point value, percents or absolute (0.0-1.0)
+AuxWeapon.Retarget.AroundFirer=false      ; boolean
+FeedbackWeapon=                           ; WeaponType
 ```
 
 ### Keep Range After Firing

@@ -586,6 +586,9 @@ This page lists all the individual contributions to the project by their author.
   - Fix customized `WarpAway` anim's wrong definition
   - Shield respawn animation and weapon
   - Toggle off laser trail and shake effects
+  - Attached effect attach/discard by health
+  - Attached effect with `ExtraWarheads`, `KillWeapon` and `FeedbackWeapon`
+  - `AuxWeapon`
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:

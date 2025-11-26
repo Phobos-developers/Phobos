@@ -132,6 +132,69 @@ void BulletExt::ExtData::InitializeLaserTrails()
 		this->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(LaserTrailTypeClass::Array[idxTrail].get(), pOwner));
 }
 
+void BulletExt::ExtData::ApplyExtraWarheads(const std::vector<WarheadTypeClass*>& exWH, const std::vector<int>& exWHOverrides, const std::vector<double>& exWHChances, const std::vector<bool>& exWHFull, const std::vector<bool>& exWHOwner, const CoordStruct& coords, HouseClass* pOwner, TechnoClass* pInvoker)
+{
+	auto const pThis = this->OwnerObject();
+	const int defaultDamage = pThis->WeaponType ? pThis->WeaponType->Damage : 0;
+	auto& random = ScenarioClass::Instance->Random;
+
+	for (size_t i = 0; i < exWH.size(); i++)
+	{
+		auto const pWH = exWH[i];
+		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+		auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target);
+
+		if (pTarget && !pWHExt->IsHealthInThreshold(pTarget))
+			continue;
+
+		int damage = defaultDamage;
+		size_t size = exWHOverrides.size();
+
+		if (size > i)
+			damage = exWHOverrides[i];
+		else if (size > 0)
+			damage = exWHOverrides[size - 1];
+
+		bool detonate = true;
+		size = exWHChances.size();
+
+		if (size > i)
+			detonate = exWHChances[i] >= random.RandomDouble();
+		else if (size > 0)
+			detonate = exWHChances[size - 1] >= random.RandomDouble();
+
+		if (!detonate)
+			continue;
+
+		bool useInvoker = false;
+
+		if (pInvoker)
+		{
+			size = exWHOwner.size();
+
+			if (size > i)
+				useInvoker = exWHOwner[i];
+			else if (size > 0)
+				useInvoker = exWHOwner[size - 1];
+		}
+
+		auto const pFirer = useInvoker ? pInvoker : pThis->Owner;
+		auto const pHouse = useInvoker ? pInvoker->Owner : pOwner;
+		bool isFull = true;
+		size = exWHFull.size();
+
+		if (size > i)
+			isFull = exWHFull[i];
+		else if (size > 0)
+			isFull = exWHFull[size - 1];
+
+		if (isFull)
+			WarheadTypeExt::DetonateAt(pWH, coords, pFirer, damage, pHouse, pThis->Target);
+		else
+			pWHExt->DamageAreaWithTarget(coords, damage, pFirer, pWH, true, pHouse, pTarget);
+	}
+}
+
 static inline int SetBuildingFireAnimZAdjust(BuildingClass* pBuilding, int animY)
 {
 	if (pBuilding->GetOccupantCount() > 0)
