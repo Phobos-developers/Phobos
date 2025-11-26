@@ -866,6 +866,97 @@ void TechnoExt::GetDigitalDisplayFakeHealth(TechnoClass* pThis, int& value, int&
 	}
 }
 
+void TechnoExt::ProcessBars(TechnoClass* pThis, Point2D pLocation, RectangleStruct* pBounds)
+{
+	const auto pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	ValueableVector<BarTypeClass*>* pBarTypes = nullptr;
+
+	if (!pTypeExt->BarTypes.empty())
+	{
+		pBarTypes = &pTypeExt->BarTypes;
+	}
+	else
+	{
+		switch (pThis->WhatAmI())
+		{
+		case AbstractType::Building:
+		{
+			pBarTypes = &RulesExt::Global()->Buildings_DefaultBarTypes;
+			const auto pBuildingType = static_cast<BuildingTypeClass*>(pType);
+			pLocation.Y -= (pBuildingType->Height + 1) * Unsorted::CellHeightInPixels / 2;
+			break;
+		}
+		case AbstractType::Infantry:
+		{
+			pBarTypes = &RulesExt::Global()->Infantry_DefaultBarTypes;
+			pLocation.Y -= Unsorted::HealthBarYOffsetInfantry - pType->PixelSelectionBracketDelta;
+			break;
+		}
+		case AbstractType::Unit:
+		{
+			pBarTypes = &RulesExt::Global()->Vehicles_DefaultBarTypes;
+			pLocation.Y -= Unsorted::HealthBarYOffsetOther - pType->PixelSelectionBracketDelta;
+			break;
+		}
+		case AbstractType::Aircraft:
+		{
+			pBarTypes = &RulesExt::Global()->Aircraft_DefaultBarTypes;
+			pLocation.Y -= Unsorted::HealthBarYOffsetOther - pType->PixelSelectionBracketDelta;
+			break;
+		}
+		default:
+			break;
+		}
+	}
+
+	if (pBarTypes->empty())
+		return;
+
+	for (BarTypeClass*& pBarType : *pBarTypes)
+	{
+		double pConditionYellow = 0.66;
+		double pConditionRed = 0.33;
+
+		switch (pBarType->InfoType)
+		{
+			case DisplayInfoType::Health:
+			{
+				pConditionYellow = RulesClass::Instance->ConditionYellow;
+				pConditionRed = RulesClass::Instance->ConditionRed;
+				break;
+			}
+			case DisplayInfoType::Shield:
+			{
+				const auto pShield = TechnoExt::ExtMap.Find(pThis)->Shield.get();
+				const bool hasShield = pShield != nullptr && !pShield->IsBrokenAndNonRespawning();
+
+				if (!hasShield)
+					continue;
+
+				pConditionYellow = pShield->GetType()->ConditionYellow ? pShield->GetType()->ConditionYellow : RulesClass::Instance->ConditionYellow;
+				pConditionRed = pShield->GetType()->ConditionRed ? pShield->GetType()->ConditionRed : RulesClass::Instance->ConditionRed;
+				break;
+			}
+			default:
+			{
+				break;
+			}
+		}
+
+		int value = -1;
+		int maxValue = 0;
+
+		GetValuesForDisplay(pThis, pType, pBarType->InfoType, value, maxValue, 0 /*pBarType->InfoIndex*/);
+
+		if (value <= -1 || maxValue <= 0)
+			continue;
+
+		double pValuePercentage = static_cast<double>(value) / maxValue;
+		TechnoExt::DrawBar(pThis, pBarType, pLocation, pBounds, pValuePercentage, pConditionYellow, pConditionRed);
+	}
+}
+
 void TechnoExt::DrawBar(TechnoClass* pThis, BarTypeClass* barType, Point2D pLocation, RectangleStruct* pBounds, double barPercentage, double conditionYellow, double conditionRed)
 {
 	const BlitterFlags blitFlagsBG = barType->PipBrd_Background_Translucency.Get(0);
