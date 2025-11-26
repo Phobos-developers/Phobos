@@ -62,7 +62,7 @@ AnimTypeClass* AttachEffectTypeClass::GetCumulativeAnimation(int cumulativeCount
 	return this->CumulativeAnimations.at(index);
 }
 
-void AttachEffectTypeClass::HandleEvent(TechnoClass* pTarget) const
+void AttachEffectTypeClass::HandleEvent(TechnoClass* pTarget)
 {
 	if (const auto pTag = pTarget->AttachedTag)
 		pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::AttachedIsUnderAttachedEffect, pTarget, CellStruct::Empty);

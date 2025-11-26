@@ -54,7 +54,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	if (this->InitialDelay <= 0)
 	{
 		this->HasInitialized = true;
-		pType->HandleEvent(pTechno);
+		AttachEffectTypeClass::HandleEvent(pTechno);
 	}
 
 	int& duration = this->Duration;
@@ -185,7 +185,7 @@ void AttachEffectClass::AI()
 			pTechno->MarkForRedraw();
 
 		this->NeedsRecalculateStat = true;
-		pType->HandleEvent(pTechno);
+		AttachEffectTypeClass::HandleEvent(pTechno);
 	}
 
 	if (this->CurrentDelay > 0)
@@ -208,7 +208,7 @@ void AttachEffectClass::AI()
 			this->RefreshDuration();
 			this->NeedsRecalculateStat = true;
 			this->NeedsDurationRefresh = false;
-			pType->HandleEvent(pTechno);
+			AttachEffectTypeClass::HandleEvent(pTechno);
 		}
 
 		return;
@@ -468,13 +468,6 @@ void AttachEffectClass::TransferCumulativeAnim(AttachEffectClass* pSource)
 	pSource->HasCumulativeAnim = false;
 }
 
-bool AttachEffectClass::CanShowAnim() const
-{
-	return (!this->IsUnderTemporal || this->Type->Animation_TemporalAction != AttachedAnimFlag::Hides)
-		&& (this->IsOnline || this->Type->Animation_OfflineAction != AttachedAnimFlag::Hides)
-		&& !this->IsInTunnel && !this->IsAnimHidden;
-}
-
 void AttachEffectClass::SetAnimationTunnelState(bool visible)
 {
 	if (!this->IsInTunnel && !visible)
@@ -518,11 +511,6 @@ bool AttachEffectClass::ResetIfRecreatable()
 	this->CurrentDelay = this->RecreationDelay;
 
 	return true;
-}
-
-bool AttachEffectClass::HasExpired() const
-{
-	return this->IsSelfOwned() && this->Delay >= 0 ? false : !this->Duration;
 }
 
 bool AttachEffectClass::ShouldBeDiscardedNow()
@@ -606,29 +594,6 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 
 	this->LastDiscardCheckValue = false;
 	return false;
-}
-
-bool AttachEffectClass::IsActiveIgnorePowered() const
-{
-	if (this->IsSelfOwned())
-		return this->InitialDelay <= 0 && this->CurrentDelay == 0 && this->HasInitialized && !this->NeedsDurationRefresh;
-	else
-		return this->Duration;
-}
-
-bool AttachEffectClass::IsActive() const
-{
-	return this->IsOnline && this->IsActiveIgnorePowered();
-}
-
-bool AttachEffectClass::IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const
-{
-	return pInvoker == this->Invoker && pSource == this->Source;
-}
-
-TechnoClass* AttachEffectClass::GetInvoker() const
-{
-	return this->Invoker;
 }
 
 #pragma region StaticFunctions_AttachDetachTransfer
@@ -772,7 +737,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 				best->RefreshDuration(attachParams.DurationOverride);
 			}
 
-			pType->HandleEvent(pTarget);
+			AttachEffectTypeClass::HandleEvent(pTarget);
 			return nullptr;
 		}
 		else if (attachParams.CumulativeRefreshAll && attachParams.CumulativeRefreshAll_OnAttach)
@@ -787,7 +752,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 	if (!pType->Cumulative && currentTypeCount > 0 && match)
 	{
 		match->RefreshDuration(attachParams.DurationOverride);
-		pType->HandleEvent(pTarget);
+		AttachEffectTypeClass::HandleEvent(pTarget);
 	}
 	else
 	{

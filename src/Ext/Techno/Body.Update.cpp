@@ -333,7 +333,12 @@ void TechnoExt::ExtData::EatPassengers()
 	auto const pDelType = pTypeExt->PassengerDeletionType.get();
 
 	if (!pDelType->UnderEMP && (pThis->Deactivated || pThis->IsUnderEMP()))
+	{
+		if (this->PassengerDeletionTimer.InProgress())
+			this->PassengerDeletionTimer.StartTime++;
+
 		return;
+	}
 
 	if (pDelType->Rate > 0 || pDelType->UseCostAsRate)
 	{
@@ -688,12 +693,12 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			this->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(entry.GetType(), pOwner, entry.FLH, entry.IsOnTurret));
 	}
 
-	// Reset AutoDeath Timer
-	if (this->AutoDeathTimer.HasStarted())
+	// Reset AutoDeath Timer if new techno type doesn't have timed AutoDeath
+	if (this->AutoDeathTimer.HasStarted() && pNewTypeExt->AutoDeath_AfterDelay <= 0)
 		this->AutoDeathTimer.Stop();
 
 	// Reset PassengerDeletion Timer
-	if (this->PassengerDeletionTimer.IsTicking() && pNewTypeExt->PassengerDeletionType && pNewTypeExt->PassengerDeletionType->Rate <= 0)
+	if (this->PassengerDeletionTimer.HasStarted() && pNewTypeExt->PassengerDeletionType && pNewTypeExt->PassengerDeletionType->Rate <= 0)
 		this->PassengerDeletionTimer.Stop();
 
 	// Remove from tracked AutoDeath objects if no longer has AutoDeath
@@ -1719,10 +1724,10 @@ void TechnoExt::ExtData::UpdateRearmInTemporal()
 // Resets target if KeepTargetOnMove unit moves beyond weapon range.
 void TechnoExt::ExtData::UpdateKeepTargetOnMove()
 {
-	auto const pThis = this->OwnerObject();
-
 	if (!this->KeepTargetOnMove)
 		return;
+
+	auto const pThis = this->OwnerObject();
 
 	if (!pThis->Target)
 	{
@@ -1753,7 +1758,7 @@ void TechnoExt::ExtData::UpdateKeepTargetOnMove()
 		return;
 	}
 
-	const int weaponIndex = pThis->SelectWeapon(pThis->Target);
+	const int weaponIndex = pTypeExt->KeepTargetOnMove_Weapon >= 0 ? pTypeExt->KeepTargetOnMove_Weapon : pThis->SelectWeapon(pThis->Target);
 
 	if (auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType)
 	{
