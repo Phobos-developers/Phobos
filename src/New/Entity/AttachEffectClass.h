@@ -22,19 +22,33 @@ public:
 	void CreateAnim();
 	void UpdateCumulativeAnim();
 	void TransferCumulativeAnim(AttachEffectClass* pSource);
-	bool CanShowAnim() const;
+
+	bool CanShowAnim() const
+	{
+		return (this->IsOnline || this->Type->Animation_OfflineAction != AttachedAnimFlag::Hides)
+			&& (!this->IsUnderTemporal || this->Type->Animation_TemporalAction != AttachedAnimFlag::Hides)
+			&& !this->IsAnimHidden && !this->IsInTunnel;
+	}
+
 	void SetAnimationTunnelState(bool visible);
 	AttachEffectTypeClass* GetType() const { return this->Type; }
 	int GetRemainingDuration() const { return this->Duration; }
 	void RefreshDuration(int durationOverride = 0);
 	bool ResetIfRecreatable();
 	bool IsSelfOwned() const { return this->Source == this->Techno; }
-	bool HasExpired() const;
+	bool HasExpired() const { return this->IsSelfOwned() && this->Delay >= 0 ? false : !this->Duration; }
 	bool ShouldBeDiscardedNow();
-	bool IsActive() const;
-	bool IsActiveIgnorePowered() const;
-	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const;
-	TechnoClass* GetInvoker() const;
+	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const { return pInvoker == this->Invoker && pSource == this->Source; }
+	TechnoClass* GetInvoker() const { return this->Invoker; }
+	bool IsActive() const { return this->IsOnline && this->IsActiveIgnorePowered(); }
+
+	bool IsActiveIgnorePowered() const
+	{
+		if (this->IsSelfOwned())
+			return this->InitialDelay <= 0 && this->CurrentDelay == 0 && this->HasInitialized && !this->NeedsDurationRefresh;
+		else
+			return this->Duration;
+	}
 
 	static void PointerGotInvalid(void* ptr, bool removed);
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
@@ -50,7 +64,7 @@ private:
 	void CloakCheck();
 	void AnimCheck();
 
-	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
+	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, TechnoTypeClass* pTargetType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
 		AbstractClass* pSource, AEAttachParams const& attachInfo);
 
 	static int DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo, std::vector<AttachEffectTypeClass*> const& types);
@@ -105,6 +119,7 @@ struct AttachEffectTechnoProperties
 	bool ReflectDamage;
 	bool HasOnFireDiscardables;
 	bool HasRestrictedArmorMultipliers;
+	bool HasCritModifiers;
 
 	AttachEffectTechnoProperties() :
 		FirepowerMultiplier { 1.0 }
@@ -120,5 +135,6 @@ struct AttachEffectTechnoProperties
 		, ReflectDamage { false }
 		, HasOnFireDiscardables { false }
 		, HasRestrictedArmorMultipliers { false }
+		, HasCritModifiers { false }
 	{ }
 };

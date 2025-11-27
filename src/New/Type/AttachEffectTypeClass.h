@@ -52,6 +52,9 @@ public:
 	Nullable<Leptons> DiscardOn_RangeOverride;
 	Valueable<bool> PenetratesIronCurtain;
 	Nullable<bool> PenetratesForceShield;
+	ValueableVector<TechnoTypeClass*> AffectTypes;
+	ValueableVector<TechnoTypeClass*> IgnoreTypes;
+	Valueable<AffectedTarget> AffectTargets;
 	Valueable<AnimTypeClass*> Animation;
 	ValueableVector<AnimTypeClass*> CumulativeAnimations;
 	Valueable<bool> CumulativeAnimations_RestartOnChange;
@@ -112,6 +115,9 @@ public:
 		, DiscardOn_RangeOverride {}
 		, PenetratesIronCurtain { false }
 		, PenetratesForceShield {}
+		, AffectTypes {}
+		, IgnoreTypes {}
+		, AffectTargets { AffectedTarget::All }
 		, Animation {}
 		, CumulativeAnimations {}
 		, CumulativeAnimations_RestartOnChange { true }
@@ -169,7 +175,6 @@ public:
 	bool HasGroup(const std::string& groupID) const;
 	bool HasGroups(const std::vector<std::string>& groupIDs, bool requireAll) const;
 	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const;
-	void HandleEvent(TechnoClass* pTarget) const;
 
 	void LoadFromINI(CCINIClass* pINI);
 	void LoadFromStream(PhobosStreamReader& Stm);
@@ -181,6 +186,7 @@ public:
 	}
 
 	static std::vector<AttachEffectTypeClass*> GetTypesFromGroups(const std::vector<std::string>& groupIDs);
+	static void HandleEvent(TechnoClass* pTarget);
 
 private:
 	template <typename T>

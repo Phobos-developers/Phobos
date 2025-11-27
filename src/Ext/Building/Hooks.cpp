@@ -131,12 +131,12 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 
 	GET(BuildingClass*, pThis, ESI);
 
-	int weaponIndex = 0;
 	auto const pExt = BuildingExt::ExtMap.Find(pThis);
 
 	if (!pExt->CurrentEMPulseSW)
 		return 0;
 
+	int weaponIndex = 0;
 	auto const pSWExt = SWTypeExt::ExtMap.Find(pExt->CurrentEMPulseSW->Type);
 	auto const pOwner = pThis->Owner;
 

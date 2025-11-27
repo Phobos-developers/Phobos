@@ -120,6 +120,40 @@ DEFINE_HOOK(0x737D57, UnitClass_ReceiveDamage_DyingFix, 0x7)
 	return 0;
 }
 
+// Nov 22, 2025 - Starkku: Fixes an issue that causes preplaced aircraft placed outside visible map to be flagged as crashing even if
+// there are preplaced docks, due to parsing order (preplaced aircraft go before buildings) as well as outside visible map aircraft
+// being instantly elevated to FlightLevel on Unlimbo which makes it bypass a height check in FootClass::Crash().
+// This fix makes preplaced aircraft immediately return from FootClass::Crash() during unlimbo process.
+// Related GitHub issue: https://github.com/Phobos-developers/Phobos/issues/1958
+#pragma region PrePlacedAircraftFix
+
+namespace PrePlacedAircraftFixTemp
+{
+	bool SkipCrashing;
+}
+
+static bool __fastcall AircraftClass_Unlimbo_Wrapper(AircraftClass* pThis, void* _, const CoordStruct& coords, DirType facing)
+{
+	PrePlacedAircraftFixTemp::SkipCrashing = true;
+	bool retVal = pThis->Unlimbo(coords, facing);
+	PrePlacedAircraftFixTemp::SkipCrashing = false;
+	return retVal;
+}
+
+DEFINE_FUNCTION_JUMP(CALL6, 0x41B39B, AircraftClass_Unlimbo_Wrapper);
+
+DEFINE_HOOK(0x4DEBC4, FootClass_Crash_PreplacedAircraft, 0x7)
+{
+	enum { ReturnFromFunction = 0x4DED5B };
+
+	if (PrePlacedAircraftFixTemp::SkipCrashing)
+		return ReturnFromFunction;
+
+	return 0;
+}
+
+#pragma endregion
+
 // Restore DebrisMaximums logic (issue #109)
 // Author: Otamaa
 // Jun20,2025 Modified by: CrimRecya
@@ -486,10 +520,7 @@ DEFINE_HOOK(0x44CABA, BuildingClass_Mission_Missile_BulletParams, 0x7)
 	GET(CellClass* const, pTarget, EAX);
 
 	const auto pWeapon = SuperWeaponTypeClass::Array.GetItem(pThis->FiringSWType)->WeaponType;
-	BulletClass* pBullet = nullptr;
-
-	if (pWeapon)
-		pBullet = pWeapon->Projectile->CreateBullet(pTarget, pThis, pWeapon->Damage, pWeapon->Warhead, 255, pWeapon->Bright);
+	const auto pBullet = pWeapon ? pWeapon->Projectile->CreateBullet(pTarget, pThis, pWeapon->Damage, pWeapon->Warhead, 255, pWeapon->Bright) : nullptr;
 
 	R->EAX(pBullet);
 	R->EBX(pWeapon);
@@ -2887,3 +2918,15 @@ DEFINE_HOOK(0x6F9D13, TechnoClass_SelectAutoTarget_AIAirTargetingFix2, 0x7)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x4440B0, BuildingClass_KickOutUnit_CloningFacility, 0x6)
+{
+	enum { CheckFreeLinks = 0x4440BA, ContinueIn = 0x4440D7 };
+
+	GET(BuildingTypeClass*, pFactoryType, EAX);
+
+	if (!pFactoryType->WeaponsFactory || BuildingTypeExt::ExtMap.Find(pFactoryType)->CloningFacility)
+		return CheckFreeLinks;
+
+	return ContinueIn;
+}
