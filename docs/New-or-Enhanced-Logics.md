@@ -188,6 +188,7 @@ SuppressReflectDamage.Groups=                      ; comma-separated list of str
 - `Affects` determines the affected house of the Inhibitor and Designator effects. Default to `enemies` if it's used as an Inhibitor, and `owner` if it's Designator.
 - `Powered` determines whether or not the effect is rendered inactive if the object it is attached to is deactivated (`PoweredUnit` or affected by EMP) or on low power.
   - Notice that it's different from Ares' behavior, which always checks if the building is on low power for Inhibitor, and doesn't check EMP.
+- `StopInTemporal` determines whether or not the effect is rendered inactive if the object is being warped out by a `Temporal=yes` warhead.
 - `SW.InhibiteTypes` determines the Super Weapon Signals that'll act as an Inhibitor for this super weapon, which prevent it to be launched in this area.
 - `SW.DesignateTypes` determines the Super Weapon Signals that'll act as an Designator for this super weapon, which only allow it to be launched in this area.
 - `InhibiteTypes` and `DesignateTypes` determine the Super Weapon Signals a techno owned, which make it an Inhibitor/Designator to super weapons with corresponding `SW.Inhibite/DesignateTypes`.
@@ -202,6 +203,7 @@ In `rulesmd.ini`
 Range=                  ; integer, default to [SOMETECHNO] -> Sight
 Affects=                ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to enemies for Inhibitor and owner for Designator
 Powered=false           ; boolean
+StopInTemporal=false    ; boolean
 
 [SOMESW]                ; SuperWeaponType
 SW.InhibiteTypes=       ; List of SuperWeaponSignalType

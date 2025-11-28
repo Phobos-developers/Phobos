@@ -66,20 +66,28 @@ bool SWTypeExt::ExtData::IsInhibitorEligible(HouseClass* pOwner, const CellStruc
 	if (!pTechno->IsAlive || !pTechno->Health || pTechno->InLimbo)
 		return false;
 
-	// get the inhibitor's center
-	const auto center = pTechno->GetCenterCoords();
-	const double distanceSqr = coords.DistanceFromSquared(CellClass::Coord2Cell(center));
-	bool inactive = pTechno->Deactivated || pTechno->IsUnderEMP();
+	const bool deactivated = pTechno->Deactivated;
+
+	if (deactivated && this->SW_InhibiteTypes.empty())
+		return false;
+
+	const bool isTemporal = pTechno->TemporalTargetingMe || pTechno->IsBeingWarpedOut();
+	bool inactive = deactivated || pTechno->IsUnderEMP();
 
 	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
 		inactive |= !pBuilding->IsPowerOnline();
 
+	const auto center = pTechno->GetCenterCoords();
+	const double distanceSqr = coords.DistanceFromSquared(CellClass::Coord2Cell(center));
 	const auto pTechnoType = pTechno->GetTechnoType();
 	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
 	for (const auto signal : this->SW_InhibiteTypes)
 	{
 		if (inactive && signal->Powered)
+			continue;
+
+		if (isTemporal && signal->StopInTemporal)
 			continue;
 
 		if (std::ranges::find(pTechnoTypeExt->InhibiteTypes, signal) == pTechnoTypeExt->InhibiteTypes.cend()
@@ -92,7 +100,7 @@ bool SWTypeExt::ExtData::IsInhibitorEligible(HouseClass* pOwner, const CellStruc
 			return true;
 	}
 
-	if (EnumFunctions::CanTargetHouse(this->SW_Inhibitors_Houses, pOwner, pTechno->Owner) && (this->SW_AnyInhibitor || this->SW_Inhibitors.Contains(pTechnoType)))
+	if (!deactivated && EnumFunctions::CanTargetHouse(this->SW_Inhibitors_Houses, pOwner, pTechno->Owner) && (this->SW_AnyInhibitor || this->SW_Inhibitors.Contains(pTechnoType)))
 	{
 		const int range = pTechnoTypeExt->InhibitorRange.Get(pTechnoType->Sight);
 
@@ -132,20 +140,28 @@ bool SWTypeExt::ExtData::IsDesignatorEligible(HouseClass* pOwner, const CellStru
 	if (!pTechno->IsAlive || !pTechno->Health || pTechno->InLimbo)
 		return false;
 
-	// get the designator's center
-	const auto center = pTechno->GetCenterCoords();
-	const double distanceSqr = coords.DistanceFromSquared(CellClass::Coord2Cell(center));
-	bool inactive = pTechno->Deactivated || pTechno->IsUnderEMP();
+	const bool deactivated = pTechno->Deactivated;
+
+	if (deactivated && this->SW_DesignateTypes.empty())
+		return false;
+
+	const bool isTemporal = pTechno->TemporalTargetingMe || pTechno->IsBeingWarpedOut();
+	bool inactive = deactivated || pTechno->IsUnderEMP();
 
 	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
 		inactive |= !pBuilding->IsPowerOnline();
 
+	const auto center = pTechno->GetCenterCoords();
+	const double distanceSqr = coords.DistanceFromSquared(CellClass::Coord2Cell(center));
 	const auto pTechnoType = pTechno->GetTechnoType();
 	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
 	for (const auto signal : this->SW_DesignateTypes)
 	{
 		if (inactive && signal->Powered)
+			continue;
+
+		if (isTemporal && signal->StopInTemporal)
 			continue;
 
 		if (std::ranges::find(pTechnoTypeExt->DesignateTypes, signal) == pTechnoTypeExt->DesignateTypes.cend()
@@ -158,7 +174,7 @@ bool SWTypeExt::ExtData::IsDesignatorEligible(HouseClass* pOwner, const CellStru
 			return true;
 	}
 
-	if (EnumFunctions::CanTargetHouse(this->SW_Designators_Houses, pOwner, pTechno->Owner) && (this->SW_AnyDesignator || this->SW_Designators.Contains(pTechnoType)))
+	if (!deactivated && EnumFunctions::CanTargetHouse(this->SW_Designators_Houses, pOwner, pTechno->Owner) && (this->SW_AnyDesignator || this->SW_Designators.Contains(pTechnoType)))
 	{
 		const int range = pTechnoTypeExt->DesignatorRange.Get(pTechnoType->Sight);
 

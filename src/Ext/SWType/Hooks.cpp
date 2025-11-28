@@ -76,11 +76,13 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 		if (!pTechno->IsAlive || !pTechno->Health || pTechno->InLimbo)
 			continue;
 
-		CoordStruct coords = pTechno->GetCenterCoords();
-		coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
-		const auto pOwner = pTechno->Owner;
-		const auto color = pOwner->Color;
-		bool inactive = pTechno->Deactivated || pTechno->IsUnderEMP();
+		const bool deactivated = pTechno->Deactivated;
+
+		if (deactivated && !hasDesignateType && !hasInhibiteType)
+			continue;
+
+		const bool isTemporal = pTechno->TemporalTargetingMe || pTechno->IsBeingWarpedOut();
+		bool inactive = deactivated || pTechno->IsUnderEMP();
 		bool buildingOnline = true;
 
 		if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
@@ -89,6 +91,10 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 			inactive |= !buildingOnline;
 		}
 
+		CoordStruct coords = pTechno->GetCenterCoords();
+		coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
+		const auto pOwner = pTechno->Owner;
+		const auto color = pOwner->Color;
 		const auto pTechnoType = pTechno->GetTechnoType();
 		const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
@@ -97,6 +103,9 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 			for (const auto signal : pSWExt->SW_DesignateTypes)
 			{
 				if (inactive && signal->Powered)
+					continue;
+
+				if (isTemporal && signal->StopInTemporal)
 					continue;
 
 				if (std::ranges::find(pTechnoTypeExt->DesignateTypes, signal) == pTechnoTypeExt->DesignateTypes.cend()
@@ -110,7 +119,7 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 			}
 		}
 
-		if (hasDesignator)
+		if (hasDesignator && !deactivated)
 		{
 			if (EnumFunctions::CanTargetHouse(pSWExt->SW_Designators_Houses, HouseClass::CurrentPlayer, pOwner) && pSWExt->SW_Designators.Contains(pTechnoType))
 			{
@@ -128,6 +137,9 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 				if (inactive && signal->Powered)
 					continue;
 
+				if (isTemporal && signal->StopInTemporal)
+					continue;
+
 				if (std::ranges::find(pTechnoTypeExt->InhibiteTypes, signal) == pTechnoTypeExt->InhibiteTypes.cend()
 					|| !EnumFunctions::CanTargetHouse(signal->Affects.Get(AffectedHouse::Enemies), pOwner, pTechno->Owner))
 					continue;
@@ -139,7 +151,7 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 			}
 		}
 
-		if (hasInhibitor && buildingOnline)
+		if (hasInhibitor && buildingOnline && !deactivated)
 		{
 			if (EnumFunctions::CanTargetHouse(pSWExt->SW_Inhibitors_Houses, HouseClass::CurrentPlayer, pOwner) && pSWExt->SW_Inhibitors.Contains(pTechnoType))
 			{

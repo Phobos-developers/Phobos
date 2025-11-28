@@ -18,6 +18,7 @@ void SWSignalTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Range.Read(exINI, pSection, "Range");
 	this->Affects.Read(exINI, pSection, "Affects");
 	this->Powered.Read(exINI, pSection, "Powered");
+	this->StopInTemporal.Read(exINI, pSection, "StopInTemporal");
 }
 
 // =============================
@@ -30,6 +31,7 @@ void SWSignalTypeClass::Serialize(T& stm)
 		.Process(this->Range)
 		.Process(this->Affects)
 		.Process(this->Powered)
+		.Process(this->StopInTemporal)
 		;
 }
 

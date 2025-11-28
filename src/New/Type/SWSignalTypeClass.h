@@ -9,6 +9,7 @@ public:
 	Nullable<int> Range {};
 	Nullable<AffectedHouse> Affects {};
 	Valueable<bool> Powered { false };
+	Valueable<bool> StopInTemporal { false };
 
 	SWSignalTypeClass(const char* pTitle = NONE_STR) : Enumerable<SWSignalTypeClass>(pTitle)
 	{ }

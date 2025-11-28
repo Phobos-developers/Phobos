@@ -44,10 +44,13 @@ TargetingData& AresNewSWType::GetTargetingData(TargetingData& data, SuperWeaponT
 			if (!pTechno->IsAlive || !pTechno->Health || pTechno->InLimbo)
 				continue;
 
-			// get the designator's center
-			const auto center = pTechno->GetCoords();
-			const auto cell = CellClass::Coord2Cell(center);
-			bool inactive = pTechno->Deactivated || pTechno->IsUnderEMP();
+			const bool deactivated = pTechno->Deactivated;
+
+			if (deactivated && !hasDesignateType && !hasInhibiteType)
+				continue;
+
+			const bool isTemporal = pTechno->TemporalTargetingMe || pTechno->IsBeingWarpedOut();
+			bool inactive = deactivated || pTechno->IsUnderEMP();
 			bool buildingOnline = true;
 
 			if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
@@ -56,6 +59,8 @@ TargetingData& AresNewSWType::GetTargetingData(TargetingData& data, SuperWeaponT
 				inactive |= !buildingOnline;
 			}
 
+			const auto center = pTechno->GetCoords();
+			const auto cell = CellClass::Coord2Cell(center);
 			const auto pTechnoType = pTechno->GetTechnoType();
 			const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
@@ -64,6 +69,9 @@ TargetingData& AresNewSWType::GetTargetingData(TargetingData& data, SuperWeaponT
 				for (const auto signal : pExt->SW_DesignateTypes)
 				{
 					if (inactive && signal->Powered)
+						continue;
+
+					if (isTemporal && signal->StopInTemporal)
 						continue;
 
 					if (std::ranges::find(pTechnoTypeExt->DesignateTypes, signal) == pTechnoTypeExt->DesignateTypes.cend()
@@ -77,7 +85,7 @@ TargetingData& AresNewSWType::GetTargetingData(TargetingData& data, SuperWeaponT
 				}
 			}
 
-			if (hasDesignator
+			if (hasDesignator && !deactivated
 				&& EnumFunctions::CanTargetHouse(pExt->SW_Designators_Houses, pOwner, pTechno->Owner)
 				&& (pExt->SW_AnyDesignator || pExt->SW_Designators.Contains(pTechnoType)))
 			{
@@ -94,6 +102,9 @@ TargetingData& AresNewSWType::GetTargetingData(TargetingData& data, SuperWeaponT
 					if (inactive && signal->Powered)
 						continue;
 
+					if (isTemporal && signal->StopInTemporal)
+						continue;
+
 					if (std::ranges::find(pTechnoTypeExt->InhibiteTypes, signal) == pTechnoTypeExt->InhibiteTypes.cend()
 						|| !EnumFunctions::CanTargetHouse(signal->Affects.Get(AffectedHouse::Enemies), pOwner, pTechno->Owner))
 						continue;
@@ -105,7 +116,7 @@ TargetingData& AresNewSWType::GetTargetingData(TargetingData& data, SuperWeaponT
 				}
 			}
 
-			if (hasInhibitor && buildingOnline
+			if (hasInhibitor && buildingOnline && !deactivated
 				&& EnumFunctions::CanTargetHouse(pExt->SW_Inhibitors_Houses, pOwner, pTechno->Owner)
 				&& (pExt->SW_AnyInhibitor || pExt->SW_Inhibitors.Contains(pTechnoType)))
 			{
