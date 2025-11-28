@@ -134,14 +134,14 @@ public:
 		do
 		{
 			const auto pTechnoType = pTechno->GetTechnoType();
-			const char* id = TechnoTypeExt::GetSelectionGroupID(pTechnoType);
+			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+			const char* id = pTypeExt->GetSelectionGroupID();
 
 			if (std::ranges::none_of(names, [id](const char* pID) { return !_stricmp(pID, id); }))
 				break;
 
 			if (pTechnoType->Gunner && !ExtSelection::IFVGroups.empty())
 			{
-				const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 				char* gunnerID = pTypeExt->WeaponGroupAs[pTechno->CurrentWeaponNumber];
 
 				if (!GeneralUtils::IsValidString(gunnerID))
