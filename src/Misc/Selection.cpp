@@ -7,6 +7,8 @@
 #include <HouseClass.h>
 #include <Unsorted.h>
 
+#include <unordered_set>
+
 class ExtSelection
 {
 public:
@@ -31,6 +33,8 @@ public:
 		}
 	} Array {};
 
+	static inline std::unordered_set<int> ContainsIFVModes;
+
 	// Reversed from Is_Selectable, w/o Select call
 	static bool ObjectClass_IsSelectable(ObjectClass* pThis)
 	{
@@ -54,12 +58,14 @@ public:
 				return true;
 			}
 		}
+
 		return false;
 	}
 
 	static bool Tactical_IsHighPriorityInRect(TacticalClass* pThis, LTRBStruct* rect)
 	{
 		for (const auto& selected : Array)
+		{
 			if (Tactical_IsInSelectionRect(pThis, rect, selected) && ObjectClass_IsSelectable(selected.Object))
 			{
 				if ((selected.Object->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
@@ -68,6 +74,7 @@ public:
 						return true;
 				}
 			}
+		}
 
 		return false;
 	}
@@ -120,6 +127,21 @@ public:
 		Unsorted::MoveFeedback = true;
 	}
 
+	static bool __fastcall TypeSelectExecute_Filter(TechnoClass* pTechno, DynamicVectorClass<const char*>& names)
+	{
+		const auto pTechnoType = pTechno->GetTechnoType();
+		const char* id = TechnoTypeExt::GetSelectionGroupID(pTechnoType);
+
+		if (std::ranges::any_of(names, [id](const char* pID) { return !_stricmp(pID, id); })
+			&& (!pTechnoType->Gunner || ExtSelection::ContainsIFVModes.empty() || ExtSelection::ContainsIFVModes.contains(pTechno->CurrentTurretNumber)))
+		{
+			if (pTechno->CanBeSelectedNow() || (pTechno->WhatAmI() == BuildingClass::AbsID && pTechnoType->UndeploysInto))
+				return true;
+		}
+
+		return false;
+	}
+
 	// Reversed from Tactical::MakeSelection
 	static void __fastcall Tactical_MakeFilteredSelection(TacticalClass* pThis, void* _, callback_type check_callback)
 	{
@@ -146,8 +168,28 @@ public:
 	}
 };
 
+DEFINE_FUNCTION_JUMP(LJMP, 0x732C30, ExtSelection::TypeSelectExecute_Filter)
+
 // Replace single call
-DEFINE_JUMP(CALL, 0x4ABCEB, GET_OFFSET(ExtSelection::Tactical_MakeFilteredSelection))
+DEFINE_FUNCTION_JUMP(CALL, 0x4ABCEB, ExtSelection::Tactical_MakeFilteredSelection)
 
 // Replace vanilla function. For in case another module tries to call the vanilla function at offset
-DEFINE_JUMP(LJMP, 0x6D9FF0, GET_OFFSET(ExtSelection::Tactical_MakeFilteredSelection))
+DEFINE_FUNCTION_JUMP(LJMP, 0x6D9FF0, ExtSelection::Tactical_MakeFilteredSelection)
+
+DEFINE_HOOK(0x73298D, TypeSelectExecute_UseIFVMode, 0x5)
+{
+	if (!RulesExt::Global()->TypeSelectUseIFVMode)
+		return 0;
+
+	ExtSelection::ContainsIFVModes.clear();
+
+	for (const auto pObject : ObjectClass::CurrentObjects)
+	{
+		const auto pTechno = abstract_cast<TechnoClass*, true>(pObject);
+
+		if (pTechno && pTechno->GetTechnoType()->Gunner)
+			ExtSelection::ContainsIFVModes.emplace(pTechno->CurrentTurretNumber);
+	}
+
+	return 0;
+}
