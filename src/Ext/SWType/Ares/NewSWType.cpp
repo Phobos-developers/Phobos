@@ -31,10 +31,10 @@ TargetingData& AresNewSWType::GetTargetingData(TargetingData& data, SuperWeaponT
 	const auto pExt = SWTypeExt::ExtMap.Find(*pExt_Ares);
 	const bool hasDesignateType = !pExt->SW_DesignateTypes.empty();
 	const bool hasDesignator = !pExt->SW_Designators.empty() || pExt->SW_AnyDesignator;
-	const bool hasInhibiteType = !pExt->SW_InhibiteTypes.empty();
+	const bool hasInhibitType = !pExt->SW_InhibitTypes.empty();
 	const bool hasInhibitor = !pExt->SW_Inhibitors.empty() || pExt->SW_AnyInhibitor;
 
-	if (hasDesignateType || hasDesignator || hasInhibiteType || hasInhibitor)
+	if (hasDesignateType || hasDesignator || hasInhibitType || hasInhibitor)
 	{
 		if (hasDesignateType || hasDesignator)
 			data.NeedsDesignator = true;
@@ -46,7 +46,7 @@ TargetingData& AresNewSWType::GetTargetingData(TargetingData& data, SuperWeaponT
 
 			const bool deactivated = pTechno->Deactivated;
 
-			if (deactivated && !hasDesignateType && !hasInhibiteType)
+			if (deactivated && !hasDesignateType && !hasInhibitType)
 				continue;
 
 			const bool isTemporal = pTechno->TemporalTargetingMe || pTechno->IsBeingWarpedOut();
@@ -60,9 +60,12 @@ TargetingData& AresNewSWType::GetTargetingData(TargetingData& data, SuperWeaponT
 			}
 
 			const auto center = pTechno->GetCoords();
-			const auto cell = CellClass::Coord2Cell(center);
-			const auto pTechnoType = pTechno->GetTechnoType();
-			const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+			const auto cell = CellClass::Coord2Cell(center);	
+			const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+			const auto pTechnoTypeExt = pTechnoExt->TypeExtData;
+			const auto pTechnoType = pTechnoTypeExt->OwnerObject();
+			const auto pTechnoOwner = pTechno->Owner;
+			const int sight = pTechnoType->Sight;
 
 			if (hasDesignateType)
 			{
@@ -74,11 +77,27 @@ TargetingData& AresNewSWType::GetTargetingData(TargetingData& data, SuperWeaponT
 					if (isTemporal && signal->StopInTemporal)
 						continue;
 
-					if (std::ranges::find(pTechnoTypeExt->DesignateTypes, signal) == pTechnoTypeExt->DesignateTypes.cend()
-						|| !EnumFunctions::CanTargetHouse(signal->Affects.Get(AffectedHouse::Owner), pOwner, pTechno->Owner))
+					if (!EnumFunctions::CanTargetHouse(signal->Affects.Get(AffectedHouse::Owner), pOwner, pTechnoOwner))
 						continue;
 
-					const int range = signal->Range.Get(pTechnoType->Sight);
+					bool findSignal = std::ranges::find(pTechnoTypeExt->DesignateTypes, signal) == pTechnoTypeExt->DesignateTypes.cend();
+
+					if (!findSignal && pTechnoExt->AE.HasDesignator)
+					{
+						for (const auto& attachEffect : pTechnoExt->AttachedEffects)
+						{
+							if (signal == attachEffect->GetType()->DesignateType)
+							{
+								findSignal = true;
+								break;
+							}
+						}
+					}
+
+					if (!findSignal)
+						continue;
+
+					const int range = signal->Range.Get(sight);
 
 					if (range > 0)
 						data.Designators.emplace_back(range * range, cell);
@@ -86,18 +105,18 @@ TargetingData& AresNewSWType::GetTargetingData(TargetingData& data, SuperWeaponT
 			}
 
 			if (hasDesignator && !deactivated
-				&& EnumFunctions::CanTargetHouse(pExt->SW_Designators_Houses, pOwner, pTechno->Owner)
+				&& EnumFunctions::CanTargetHouse(pExt->SW_Designators_Houses, pOwner, pTechnoOwner)
 				&& (pExt->SW_AnyDesignator || pExt->SW_Designators.Contains(pTechnoType)))
 			{
-				const int range = pTechnoTypeExt->DesignatorRange.Get(pTechnoType->Sight);
+				const int range = pTechnoTypeExt->DesignatorRange.Get(sight);
 
 				if (range > 0)
 					data.Designators.emplace_back(range * range, cell);
 			}
 
-			if (hasInhibiteType)
+			if (hasInhibitType)
 			{
-				for (const auto signal : pExt->SW_InhibiteTypes)
+				for (const auto signal : pExt->SW_InhibitTypes)
 				{
 					if (inactive && signal->Powered)
 						continue;
@@ -105,11 +124,27 @@ TargetingData& AresNewSWType::GetTargetingData(TargetingData& data, SuperWeaponT
 					if (isTemporal && signal->StopInTemporal)
 						continue;
 
-					if (std::ranges::find(pTechnoTypeExt->InhibiteTypes, signal) == pTechnoTypeExt->InhibiteTypes.cend()
-						|| !EnumFunctions::CanTargetHouse(signal->Affects.Get(AffectedHouse::Enemies), pOwner, pTechno->Owner))
+					if (!EnumFunctions::CanTargetHouse(signal->Affects.Get(AffectedHouse::Enemies), pOwner, pTechnoOwner))
 						continue;
 
-					const int range = signal->Range.Get(pTechnoType->Sight);
+					bool findSignal = std::ranges::find(pTechnoTypeExt->InhibitTypes, signal) == pTechnoTypeExt->InhibitTypes.cend();
+
+					if (!findSignal && pTechnoExt->AE.HasInhibitor)
+					{
+						for (const auto& attachEffect : pTechnoExt->AttachedEffects)
+						{
+							if (signal == attachEffect->GetType()->InhibitType)
+							{
+								findSignal = true;
+								break;
+							}
+						}
+					}
+
+					if (!findSignal)
+						continue;
+
+					const int range = signal->Range.Get(sight);
 
 					if (range > 0)
 						data.Inhibitors.emplace_back(range * range, cell);
@@ -117,10 +152,10 @@ TargetingData& AresNewSWType::GetTargetingData(TargetingData& data, SuperWeaponT
 			}
 
 			if (hasInhibitor && buildingOnline && !deactivated
-				&& EnumFunctions::CanTargetHouse(pExt->SW_Inhibitors_Houses, pOwner, pTechno->Owner)
+				&& EnumFunctions::CanTargetHouse(pExt->SW_Inhibitors_Houses, pOwner, pTechnoOwner)
 				&& (pExt->SW_AnyInhibitor || pExt->SW_Inhibitors.Contains(pTechnoType)))
 			{
-				const int range = pTechnoTypeExt->InhibitorRange.Get(pTechnoType->Sight);
+				const int range = pTechnoTypeExt->InhibitorRange.Get(sight);
 
 				if (range > 0)
 					data.Inhibitors.emplace_back(range * range, cell);

@@ -68,7 +68,7 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 
 	const bool hasDesignateType = !pSWExt->SW_DesignateTypes.empty();
 	const bool hasDesignator = !pSWExt->SW_Designators.empty();
-	const bool hasInhibiteType = !pSWExt->SW_InhibiteTypes.empty();
+	const bool hasInhibitType = !pSWExt->SW_InhibitTypes.empty();
 	const bool hasInhibitor = !pSWExt->SW_Inhibitors.empty();
 
 	for (const auto pTechno : TechnoClass::Array)
@@ -78,7 +78,7 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 
 		const bool deactivated = pTechno->Deactivated;
 
-		if (deactivated && !hasDesignateType && !hasInhibiteType)
+		if (deactivated && !hasDesignateType && !hasInhibitType)
 			continue;
 
 		const bool isTemporal = pTechno->TemporalTargetingMe || pTechno->IsBeingWarpedOut();
@@ -95,8 +95,10 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 		coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
 		const auto pOwner = pTechno->Owner;
 		const auto color = pOwner->Color;
-		const auto pTechnoType = pTechno->GetTechnoType();
-		const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+		const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+		const auto pTechnoTypeExt = pTechnoExt->TypeExtData;
+		const auto pTechnoType = pTechnoTypeExt->OwnerObject();
+		const int sight = pTechnoType->Sight;
 
 		if (hasDesignateType)
 		{
@@ -108,11 +110,27 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 				if (isTemporal && signal->StopInTemporal)
 					continue;
 
-				if (std::ranges::find(pTechnoTypeExt->DesignateTypes, signal) == pTechnoTypeExt->DesignateTypes.cend()
-					|| !EnumFunctions::CanTargetHouse(signal->Affects.Get(AffectedHouse::Owner), pOwner, pTechno->Owner))
+				if (!EnumFunctions::CanTargetHouse(signal->Affects.Get(AffectedHouse::Owner), HouseClass::CurrentPlayer, pOwner))
 					continue;
 
-				const int radius = signal->Range.Get(pTechnoType->Sight);
+				bool findSignal = std::ranges::find(pTechnoTypeExt->DesignateTypes, signal) == pTechnoTypeExt->DesignateTypes.cend();
+
+				if (!findSignal && pTechnoExt->AE.HasDesignator)
+				{
+					for (const auto& attachEffect : pTechnoExt->AttachedEffects)
+					{
+						if (signal == attachEffect->GetType()->DesignateType)
+						{
+							findSignal = true;
+							break;
+						}
+					}
+				}
+
+				if (!findSignal)
+					continue;
+
+				const int radius = signal->Range.Get(sight);
 
 				if (radius > 0)
 					Game::DrawRadialIndicator(false, true, coords, color, static_cast<float>(radius), false, true);
@@ -123,16 +141,16 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 		{
 			if (EnumFunctions::CanTargetHouse(pSWExt->SW_Designators_Houses, HouseClass::CurrentPlayer, pOwner) && pSWExt->SW_Designators.Contains(pTechnoType))
 			{
-				const int radius = pTechnoTypeExt->DesignatorRange.Get(pTechnoType->Sight);
+				const int radius = pTechnoTypeExt->DesignatorRange.Get(sight);
 
 				if (radius > 0)
 					Game::DrawRadialIndicator(false, true, coords, color, static_cast<float>(radius), false, true);
 			}
 		}
 
-		if (hasInhibiteType)
+		if (hasInhibitType)
 		{
-			for (const auto signal : pSWExt->SW_InhibiteTypes)
+			for (const auto signal : pSWExt->SW_InhibitTypes)
 			{
 				if (inactive && signal->Powered)
 					continue;
@@ -140,11 +158,27 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 				if (isTemporal && signal->StopInTemporal)
 					continue;
 
-				if (std::ranges::find(pTechnoTypeExt->InhibiteTypes, signal) == pTechnoTypeExt->InhibiteTypes.cend()
-					|| !EnumFunctions::CanTargetHouse(signal->Affects.Get(AffectedHouse::Enemies), pOwner, pTechno->Owner))
+				if (!EnumFunctions::CanTargetHouse(signal->Affects.Get(AffectedHouse::Enemies), HouseClass::CurrentPlayer, pOwner))
 					continue;
 
-				const int radius = signal->Range.Get(pTechnoType->Sight);
+				bool findSignal = std::ranges::find(pTechnoTypeExt->InhibitTypes, signal) == pTechnoTypeExt->InhibitTypes.cend();
+
+				if (!findSignal && pTechnoExt->AE.HasInhibitor)
+				{
+					for (const auto& attachEffect : pTechnoExt->AttachedEffects)
+					{
+						if (signal == attachEffect->GetType()->InhibitType)
+						{
+							findSignal = true;
+							break;
+						}
+					}
+				}
+
+				if (!findSignal)
+					continue;
+
+				const int radius = signal->Range.Get(sight);
 
 				if (radius > 0)
 					Game::DrawRadialIndicator(false, true, coords, color, static_cast<float>(radius), false, true);
@@ -155,7 +189,7 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 		{
 			if (EnumFunctions::CanTargetHouse(pSWExt->SW_Inhibitors_Houses, HouseClass::CurrentPlayer, pOwner) && pSWExt->SW_Inhibitors.Contains(pTechnoType))
 			{
-				const int radius = pTechnoTypeExt->InhibitorRange.Get(pTechnoType->Sight);
+				const int radius = pTechnoTypeExt->InhibitorRange.Get(sight);
 
 				if (radius > 0)
 					Game::DrawRadialIndicator(false, true, coords, color, static_cast<float>(radius), false, true);

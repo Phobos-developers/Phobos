@@ -7,6 +7,7 @@
 #include <Utilities/Enumerable.h>
 #include <Utilities/TemplateDef.h>
 #include "LaserTrailTypeClass.h"
+#include "SWSignalTypeClass.h"
 
 // AE discard condition
 enum class DiscardCondition : unsigned char
@@ -98,6 +99,8 @@ public:
 	Valueable<bool> DisableWeapons;
 	Valueable<bool> Unkillable;
 	ValueableIdx<LaserTrailTypeClass> LaserTrail_Type;
+	Valueable<SWSignalTypeClass*> InhibitType;
+	Valueable<SWSignalTypeClass*> DesignateType;
 
 	std::vector<std::string> Groups;
 
@@ -158,6 +161,8 @@ public:
 		, DisableWeapons { false }
 		, Unkillable { false }
 		, LaserTrail_Type { -1 }
+		, InhibitType {}
+		, DesignateType {}
 		, Groups {}
 	{};
 

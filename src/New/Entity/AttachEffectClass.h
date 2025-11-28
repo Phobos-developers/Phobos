@@ -106,6 +106,8 @@ struct AttachEffectTechnoProperties
 	bool HasOnFireDiscardables;
 	bool HasRestrictedArmorMultipliers;
 	bool HasCritModifiers;
+	bool HasInhibitor;
+	bool HasDesignator;
 
 	AttachEffectTechnoProperties() :
 		FirepowerMultiplier { 1.0 }
@@ -122,5 +124,7 @@ struct AttachEffectTechnoProperties
 		, HasOnFireDiscardables { false }
 		, HasRestrictedArmorMultipliers { false }
 		, HasCritModifiers { false }
+		, HasInhibitor { false }
+		, HasDesignator { false }
 	{ }
 };

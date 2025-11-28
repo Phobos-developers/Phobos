@@ -338,7 +338,7 @@ public:
 		Valueable<int> Power;
 
 		ValueableVector<SWSignalTypeClass*> DesignateTypes;
-		ValueableVector<SWSignalTypeClass*> InhibiteTypes;
+		ValueableVector<SWSignalTypeClass*> InhibitTypes;
 
 		Nullable<bool> AllowAirstrike;
 
@@ -751,7 +751,7 @@ public:
 			, Power { }
 
 			, DesignateTypes { }
-			, InhibiteTypes { }
+			, InhibitTypes { }
 
 			, AllowAirstrike { }
 

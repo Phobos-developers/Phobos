@@ -54,7 +54,7 @@ public:
 		Valueable<int> SW_MaxCount;
 
 		ValueableVector<SWSignalTypeClass*> SW_DesignateTypes;
-		ValueableVector<SWSignalTypeClass*> SW_InhibiteTypes;
+		ValueableVector<SWSignalTypeClass*> SW_InhibitTypes;
 
 		Valueable<CSFText> Message_CannotFire;
 		Valueable<CSFText> Message_InsufficientFunds;
@@ -145,7 +145,7 @@ public:
 			, SW_PostDependent {}
 			, SW_MaxCount { -1 }
 			, SW_DesignateTypes {}
-			, SW_InhibiteTypes {}
+			, SW_InhibitTypes {}
 			, SW_Shots { -1 }
 			, Message_CannotFire {}
 			, Message_InsufficientFunds {}

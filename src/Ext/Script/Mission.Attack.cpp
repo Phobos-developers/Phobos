@@ -977,7 +977,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 
 			if (pTechnoTypeExt->RadarJamRadius > 0
 				|| pTechnoTypeExt->InhibitorRange.isset()
-				|| !pTechnoTypeExt->InhibiteTypes.empty())
+				|| !pTechnoTypeExt->InhibitTypes.empty())
 			{
 				return true;
 			}
@@ -1255,7 +1255,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 		{
 			const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
-			if (pTechnoTypeExt->InhibitorRange.isset() || !pTechnoTypeExt->InhibiteTypes.empty())
+			if (pTechnoTypeExt->InhibitorRange.isset() || !pTechnoTypeExt->InhibitTypes.empty())
 				return true;
 		}
 
