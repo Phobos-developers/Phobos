@@ -2374,6 +2374,9 @@ In `rulesmd.ini`:
 ```ini
 [General]
 TypeSelectUseIFVMode=false   ; boolean
+
+[SOMEUNIT]          ; UnitType
+WeaponGroupAsN=N            ; string, N stands for 1-based weapon mode index
 ```
 
 ## RadialIndicator visibility

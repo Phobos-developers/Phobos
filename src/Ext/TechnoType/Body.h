@@ -36,6 +36,7 @@ public:
 		Valueable<CSFText> UIDescription;
 		Valueable<bool> LowSelectionPriority;
 		PhobosFixedString<0x20> GroupAs;
+		std::vector<PhobosFixedString<0x20>> WeaponGroupAs;
 		Valueable<int> RadarJamRadius;
 		Valueable<AffectedHouse> RadarJamHouses;
 		Valueable<int> RadarJamDelay;
@@ -447,6 +448,7 @@ public:
 			, UIDescription {}
 			, LowSelectionPriority { false }
 			, GroupAs { NONE_STR }
+			, WeaponGroupAs {}
 			, RadarJamRadius { 0 }
 			, RadarJamHouses { AffectedHouse::Enemies }
 			, RadarJamDelay { 30 }
