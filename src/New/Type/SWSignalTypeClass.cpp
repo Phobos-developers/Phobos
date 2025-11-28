@@ -2,7 +2,7 @@
 
 const char* Enumerable<SWSignalTypeClass>::GetMainSection()
 {
-	return "SWSignalTypes";
+	return "SuperWeaponSignalTypes";
 }
 
 void SWSignalTypeClass::LoadFromINI(CCINIClass* pINI)
@@ -17,6 +17,7 @@ void SWSignalTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->Range.Read(exINI, pSection, "Range");
 	this->Affects.Read(exINI, pSection, "Affects");
+	this->Powered.Read(exINI, pSection, "Powered");
 }
 
 // =============================
@@ -28,6 +29,7 @@ void SWSignalTypeClass::Serialize(T& stm)
 	stm
 		.Process(this->Range)
 		.Process(this->Affects)
+		.Process(this->Powered)
 		;
 }
 

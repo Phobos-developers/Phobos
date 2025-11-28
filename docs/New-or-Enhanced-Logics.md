@@ -181,6 +181,37 @@ SuppressReflectDamage.Types=                       ; List of AttachEffectTypes
 SuppressReflectDamage.Groups=                      ; comma-separated list of strings (group IDs)
 ```
 
+### Custom Super Weapon Signal Type
+
+- It's now possible to define Inhibitor and Designator properties in a Super Weapon Signal Type, which allows more customization than [Ares' Inibitors and Designators](https://ares-developers.github.io/Ares-docs/new/superweapons/range.html).
+- `Range` determines the radius of the Inhibitor and Designator effects. Default to the attached techno's `Sight` if not set.
+- `Affects` determines the affected house of the Inhibitor and Designator effects. Default to `enemies` if it's used as an Inhibitor, and `owner` if it's Designator.
+- `Powered` determines whether or not the effect is rendered inactive if the object it is attached to is deactivated (`PoweredUnit` or affected by EMP) or on low power.
+  - Notice that it's different from Ares' behavior, which always checks if the building is on low power for Inhibitor, and doesn't check EMP.
+- `SW.InhibiteTypes` determines the Super Weapon Signals that'll act as an Inhibitor for this super weapon, which prevent it to be launched in this area.
+- `SW.DesignateTypes` determines the Super Weapon Signals that'll act as an Designator for this super weapon, which only allow it to be launched in this area.
+- `InhibiteTypes` and `DesignateTypes` determine the Super Weapon Signals a techno owned, which make it an Inhibitor/Designator to super weapons with corresponding `SW.Inhibite/DesignateTypes`.
+- This allow a techno to own multiple Inhibitor and Designator effects towards different super weapons, rather than limited to one for all super weapons.
+
+In `rulesmd.ini`
+```ini
+[SuperWeaponSignalTypes]
+0=SOMESWSIGNAL
+
+[SOMESWSIGNAL]          ; SuperWeaponSignalType
+Range=                  ; integer, default to [SOMETECHNO] -> Sight
+Affects=                ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to enemies for Inhibitor and owner for Designator
+Powered=false           ; boolean
+
+[SOMESW]                ; SuperWeaponType
+SW.InhibiteTypes=       ; List of SuperWeaponSignalType
+SW.DesignateTypes=      ; List of SuperWeaponSignalType
+
+[SOMETECHNO]            ; TechnoType
+InhibiteTypes=          ; List of SuperWeaponSignalType
+DesignateTypes=         ; List of SuperWeaponSignalType
+```
+
 ### Custom Radiation Types
 
 ![image](_static/images/radtype-01.png)
@@ -1115,30 +1146,6 @@ In `rulesmd.ini`:
 ```ini
 [SOMESW]    ; SuperWeaponType
 TabIndex=1  ; integer
-```
-
-### Customize Inhibitors and Designators
-
-- Theres only enemies inhibitors and selfowned designators are eligible. Now you can customize it.
-
-In `rulesmd.ini`
-```ini
-[SWSignalTypes]
-0=SOMESWSIGNAL
-
-[SOMESWSIGNAL]
-Range=      ; integer
-Affects=     ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-
-[SOMESW]    ; SuperWeaponType
-SW.Inhibitors.Houses=enemies    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-SW.Designators.Houses=owner    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-SW.InhibiteTypes=       ; List of sw signal types
-SW.DesignateTypes=   ; List of sw signal types
-
-[SOMETECHNO]    ; TechnoType
-InhibiteTypes=       ; List of sw signal types
-DesignateTypes=   ; List of sw signal types
 ```
 
 ### EMPulse settings

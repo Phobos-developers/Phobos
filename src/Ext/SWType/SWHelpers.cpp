@@ -63,23 +63,25 @@ std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>
 
 bool SWTypeExt::ExtData::IsInhibitorEligible(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno) const
 {
-	if (!pTechno->IsAlive || !pTechno->Health || pTechno->InLimbo || pTechno->Deactivated)
-		return false;
-
-	const auto pBuilding = abstract_cast<BuildingClass*, true>(pTechno);
-
-	if (pBuilding && !pBuilding->IsPowerOnline())
+	if (!pTechno->IsAlive || !pTechno->Health || pTechno->InLimbo)
 		return false;
 
 	// get the inhibitor's center
 	const auto center = pTechno->GetCenterCoords();
 	const double distanceSqr = coords.DistanceFromSquared(CellClass::Coord2Cell(center));
+	bool inactive = pTechno->Deactivated || pTechno->IsUnderEMP();
+
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
+		inactive |= !pBuilding->IsPowerOnline();
 
 	const auto pTechnoType = pTechno->GetTechnoType();
 	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
 	for (const auto signal : this->SW_InhibiteTypes)
 	{
+		if (inactive && signal->Powered)
+			continue;
+
 		if (std::ranges::find(pTechnoTypeExt->InhibiteTypes, signal) == pTechnoTypeExt->InhibiteTypes.cend()
 			|| !EnumFunctions::CanTargetHouse(signal->Affects.Get(AffectedHouse::Enemies), pOwner, pTechno->Owner))
 			continue;
@@ -127,18 +129,25 @@ bool SWTypeExt::ExtData::HasInhibitor(HouseClass* pOwner, const CellStruct& coor
 
 bool SWTypeExt::ExtData::IsDesignatorEligible(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno) const
 {
-	if (!pTechno->IsAlive || !pTechno->Health || pTechno->InLimbo || pTechno->Deactivated)
+	if (!pTechno->IsAlive || !pTechno->Health || pTechno->InLimbo)
 		return false;
 
 	// get the designator's center
 	const auto center = pTechno->GetCenterCoords();
 	const double distanceSqr = coords.DistanceFromSquared(CellClass::Coord2Cell(center));
+	bool inactive = pTechno->Deactivated || pTechno->IsUnderEMP();
+
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
+		inactive |= !pBuilding->IsPowerOnline();
 
 	const auto pTechnoType = pTechno->GetTechnoType();
 	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
 	for (const auto signal : this->SW_DesignateTypes)
 	{
+		if (inactive && signal->Powered)
+			continue;
+
 		if (std::ranges::find(pTechnoTypeExt->DesignateTypes, signal) == pTechnoTypeExt->DesignateTypes.cend()
 			|| !EnumFunctions::CanTargetHouse(signal->Affects.Get(AffectedHouse::Owner), pOwner, pTechno->Owner))
 			continue;

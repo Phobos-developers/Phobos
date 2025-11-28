@@ -948,6 +948,20 @@ Shrapnel.AffectsBuildings=false    ; boolean
 Shrapnel.UseWeaponTargeting=false  ; boolean
 ```
 
+## Super Weapons
+
+### Custom affected houses for Ares' Inhibitor and Designator
+
+- In Ares, only enemies inhibitors and selfowned designators are eligible. Now you can customize it.
+- This is independent from [Custom Inhibitor and Designator Type](New-or-Enhanced-Logics.md#custom-inhibitor-and-designator-type) introduced by Phobos.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]                        ; SuperWeaponType
+SW.Inhibitors.Houses=enemies    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+SW.Designators.Houses=owner     ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
 ## Technos
 
 ### Airstrike flare visual customizations

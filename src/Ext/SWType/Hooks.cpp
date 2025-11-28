@@ -73,13 +73,21 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 
 	for (const auto pTechno : TechnoClass::Array)
 	{
-		if (!pTechno->IsAlive || !pTechno->Health || pTechno->InLimbo || pTechno->Deactivated)
+		if (!pTechno->IsAlive || !pTechno->Health || pTechno->InLimbo)
 			continue;
 
 		CoordStruct coords = pTechno->GetCenterCoords();
 		coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
 		const auto pOwner = pTechno->Owner;
 		const auto color = pOwner->Color;
+		bool inactive = pTechno->Deactivated || pTechno->IsUnderEMP();
+		bool buildingOnline = true;
+
+		if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
+		{
+			buildingOnline = pBuilding->IsPowerOnline();
+			inactive |= !buildingOnline;
+		}
 
 		const auto pTechnoType = pTechno->GetTechnoType();
 		const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
@@ -88,6 +96,9 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 		{
 			for (const auto signal : pSWExt->SW_DesignateTypes)
 			{
+				if (inactive && signal->Powered)
+					continue;
+
 				if (std::ranges::find(pTechnoTypeExt->DesignateTypes, signal) == pTechnoTypeExt->DesignateTypes.cend()
 					|| !EnumFunctions::CanTargetHouse(signal->Affects.Get(AffectedHouse::Owner), pOwner, pTechno->Owner))
 					continue;
@@ -114,6 +125,9 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 		{
 			for (const auto signal : pSWExt->SW_InhibiteTypes)
 			{
+				if (inactive && signal->Powered)
+					continue;
+
 				if (std::ranges::find(pTechnoTypeExt->InhibiteTypes, signal) == pTechnoTypeExt->InhibiteTypes.cend()
 					|| !EnumFunctions::CanTargetHouse(signal->Affects.Get(AffectedHouse::Enemies), pOwner, pTechno->Owner))
 					continue;
@@ -125,7 +139,7 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 			}
 		}
 
-		if (hasInhibitor)
+		if (hasInhibitor && buildingOnline)
 		{
 			if (EnumFunctions::CanTargetHouse(pSWExt->SW_Inhibitors_Houses, HouseClass::CurrentPlayer, pOwner) && pSWExt->SW_Inhibitors.Contains(pTechnoType))
 			{

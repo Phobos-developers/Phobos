@@ -8,6 +8,7 @@ class SWSignalTypeClass final : public Enumerable<SWSignalTypeClass>
 public:
 	Nullable<int> Range {};
 	Nullable<AffectedHouse> Affects {};
+	Valueable<bool> Powered { false };
 
 	SWSignalTypeClass(const char* pTitle = NONE_STR) : Enumerable<SWSignalTypeClass>(pTitle)
 	{ }
