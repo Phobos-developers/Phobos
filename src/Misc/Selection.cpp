@@ -1,13 +1,12 @@
 #include "Phobos.h"
 #include "Utilities/Macro.h"
+#include <Utilities/AresHelper.h>
 #include "Ext/Techno/Body.h"
 #include "Ext/TechnoType/Body.h"
 
 #include <TacticalClass.h>
 #include <HouseClass.h>
 #include <Unsorted.h>
-
-#include <unordered_set>
 
 class ExtSelection
 {
@@ -33,6 +32,7 @@ public:
 		}
 	} Array {};
 
+	static inline bool ProcessingIDMatches = false;
 	static inline std::vector<const char*> IFVGroups;
 
 	// Reversed from Is_Selectable, w/o Select call
@@ -127,27 +127,36 @@ public:
 		Unsorted::MoveFeedback = true;
 	}
 
-	static bool __fastcall TypeSelectCommand_Execute_Filter(TechnoClass* pTechno, DynamicVectorClass<const char*>& names)
+	static bool __fastcall TechnoClass_IDMatches(TechnoClass* pTechno, DynamicVectorClass<const char*>& names)
 	{
-		const auto pTechnoType = pTechno->GetTechnoType();
-		const char* id = TechnoTypeExt::GetSelectionGroupID(pTechnoType);
+		bool result = false;
 
-		if (std::ranges::none_of(names, [id](const char* pID) { return !_stricmp(pID, id); }))
-			return false;
-
-		if (pTechnoType->Gunner && !ExtSelection::IFVGroups.empty())
+		do
 		{
-			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
-			char* gunnerID = pTypeExt->WeaponGroupAs[pTechno->CurrentWeaponNumber];
+			const auto pTechnoType = pTechno->GetTechnoType();
+			const char* id = TechnoTypeExt::GetSelectionGroupID(pTechnoType);
 
-			if (!GeneralUtils::IsValidString(gunnerID))
-				sprintf_s(gunnerID, 0x20, "%d", pTechno->CurrentWeaponNumber + 1);
+			if (std::ranges::none_of(names, [id](const char* pID) { return !_stricmp(pID, id); }))
+				break;
 
-			if (std::ranges::none_of(ExtSelection::IFVGroups, [gunnerID](const char* pID) { return !_stricmp(pID, gunnerID); }))
-				return false;
+			if (pTechnoType->Gunner && !ExtSelection::IFVGroups.empty())
+			{
+				const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+				char* gunnerID = pTypeExt->WeaponGroupAs[pTechno->CurrentWeaponNumber];
+
+				if (!GeneralUtils::IsValidString(gunnerID))
+					sprintf_s(gunnerID, 0x20, "%d", pTechno->CurrentWeaponNumber + 1);
+
+				if (std::ranges::none_of(ExtSelection::IFVGroups, [gunnerID](const char* pID) { return !_stricmp(pID, gunnerID); }))
+					break;
+			}
+
+			result = pTechno->CanBeSelectedNow() || (pTechno->WhatAmI() == BuildingClass::AbsID && pTechnoType->UndeploysInto);
 		}
+		while (false);
 
-		return pTechno->CanBeSelectedNow() || (pTechno->WhatAmI() == BuildingClass::AbsID && pTechnoType->UndeploysInto);
+		ExtSelection::ProcessingIDMatches = false;
+		return result;
 	}
 
 	// Reversed from Tactical::MakeSelection
@@ -176,7 +185,7 @@ public:
 	}
 };
 
-DEFINE_FUNCTION_JUMP(LJMP, 0x732C30, ExtSelection::TypeSelectCommand_Execute_Filter)
+DEFINE_FUNCTION_JUMP(LJMP, 0x732C30, ExtSelection::TechnoClass_IDMatches)
 
 // Replace single call
 DEFINE_FUNCTION_JUMP(CALL, 0x4ABCEB, ExtSelection::Tactical_MakeFilteredSelection)
@@ -215,3 +224,31 @@ DEFINE_HOOK(0x73298D, TypeSelectCommand_Execute_UseIFVMode, 0x5)
 
 	return 0;
 }
+
+#pragma region BuildingTypeSelectable
+
+DEFINE_HOOK_AGAIN(0x732B28, TypeSelectExecute_SetContext, 0x6)
+DEFINE_HOOK(0x732A85, TypeSelectExecute_SetContext, 0x7)
+{
+	ExtSelection::ProcessingIDMatches = true;
+	return 0;
+}
+
+// If the context is set as well as the flags is enabled, this will make the vfunc CanBeSelectedNow return true to enable the type selection.
+DEFINE_HOOK(0x465D40, BuildingClass_Is1x1AndUndeployable_BuildingMassSelectable, 0x6)
+{
+	enum { SkipGameCode = 0x465D6A };
+
+	// Since Ares hooks around, we have difficulty juggling Ares and no Ares.
+	// So we simply disable this feature if no Ares.
+	if (!AresHelper::CanUseAres)
+		return 0;
+
+	if (!ExtSelection::ProcessingIDMatches || !RulesExt::Global()->BuildingTypeSelectable)
+		return 0;
+
+	R->EAX(true);
+	return SkipGameCode;
+}
+
+#pragma endregion
