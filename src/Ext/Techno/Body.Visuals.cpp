@@ -915,15 +915,15 @@ void TechnoExt::ProcessBars(TechnoClass* pThis, Point2D pLocation, RectangleStru
 
 	for (BarTypeClass*& pBarType : *pBarTypes)
 	{
-		double pConditionYellow = 0.66;
-		double pConditionRed = 0.33;
+		double pConditionYellow = pBarType->Bar_ConditionYellow;
+		double pConditionRed = pBarType->Bar_ConditionRed;
 
 		switch (pBarType->InfoType)
 		{
 			case DisplayInfoType::Health:
 			{
-				pConditionYellow = RulesClass::Instance->ConditionYellow;
-				pConditionRed = RulesClass::Instance->ConditionRed;
+				pConditionYellow = pConditionYellow > 0 ? pConditionYellow : RulesClass::Instance->ConditionYellow;
+				pConditionRed = pConditionRed > 0 ? pConditionRed : RulesClass::Instance->ConditionRed;
 				break;
 			}
 			case DisplayInfoType::Shield:
@@ -934,8 +934,8 @@ void TechnoExt::ProcessBars(TechnoClass* pThis, Point2D pLocation, RectangleStru
 				if (!hasShield)
 					continue;
 
-				pConditionYellow = pShield->GetType()->ConditionYellow ? pShield->GetType()->ConditionYellow : RulesClass::Instance->ConditionYellow;
-				pConditionRed = pShield->GetType()->ConditionRed ? pShield->GetType()->ConditionRed : RulesClass::Instance->ConditionRed;
+				pConditionYellow = pConditionYellow > 0 ? pConditionYellow : (pShield->GetType()->ConditionYellow ? pShield->GetType()->ConditionYellow : RulesClass::Instance->ConditionYellow);
+				pConditionRed = pConditionYellow > 0 ? pConditionYellow : (pShield->GetType()->ConditionRed ? pShield->GetType()->ConditionRed : RulesClass::Instance->ConditionRed);
 				break;
 			}
 			default:
@@ -947,7 +947,7 @@ void TechnoExt::ProcessBars(TechnoClass* pThis, Point2D pLocation, RectangleStru
 		int value = -1;
 		int maxValue = 0;
 
-		GetValuesForDisplay(pThis, pType, pBarType->InfoType, value, maxValue, 0 /*pBarType->InfoIndex*/);
+		GetValuesForDisplay(pThis, pType, pBarType->InfoType, value, maxValue, pBarType->InfoIndex);
 
 		if (value <= -1 || maxValue <= 0)
 			continue;

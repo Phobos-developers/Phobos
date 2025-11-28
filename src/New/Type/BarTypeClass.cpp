@@ -18,6 +18,9 @@ void BarTypeClass::LoadFromINI(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->InfoType.Read(exINI, section, "InfoType");
+	this->InfoIndex.Read(exINI, section, "InfoIndex");
+	this->Bar_ConditionYellow.Read(exINI, section, "Bar.ConditionYellow");
+	this->Bar_ConditionRed.Read(exINI, section, "Bar.ConditionRed");
 	this->PipBrd_Background_File.Read(exINI, section, "PipBrd.Background.File");
 	this->PipBrd_Background_ShowWhenNotSelected.Read(exINI, section, "PipBrd.Background.ShowWhenNotSelected");
 	this->PipBrd_Background_Translucency.Read(exINI, section, "PipBrd.Background.Translucency");
@@ -40,6 +43,9 @@ void BarTypeClass::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->InfoType)
+		.Process(this->InfoIndex)
+		.Process(this->Bar_ConditionYellow)
+		.Process(this->Bar_ConditionRed)
 		.Process(this->PipBrd_Background_File)
 		.Process(this->PipBrd_Background_ShowWhenNotSelected)
 		.Process(this->PipBrd_Background_Translucency)

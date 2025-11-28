@@ -9,6 +9,9 @@ class BarTypeClass final : public Enumerable<BarTypeClass>
 {
 public:
 	Valueable<DisplayInfoType> InfoType;
+	Valueable<int> InfoIndex;
+	Valueable<double> Bar_ConditionYellow;
+	Valueable<double> Bar_ConditionRed;
 	Nullable<SHPStruct*> PipBrd_Background_File;
 	Valueable<bool> PipBrd_Background_ShowWhenNotSelected;
 	Nullable<TranslucencyLevel> PipBrd_Background_Translucency;
@@ -25,7 +28,10 @@ public:
 	Valueable<bool> Pips_DrawBackwards;
 
 	BarTypeClass(const char* pTitle = NONE_STR) : Enumerable<BarTypeClass>(pTitle)
-		, InfoType { }
+		, InfoType { DisplayInfoType::Health }
+		, InfoIndex { 0 }
+		, Bar_ConditionYellow { 0.66 }
+		, Bar_ConditionRed { 0.33 }
 		, PipBrd_Background_File { }
 		, PipBrd_Background_ShowWhenNotSelected { false }
 		, PipBrd_Background_Translucency { }
