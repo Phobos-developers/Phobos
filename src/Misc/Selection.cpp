@@ -145,7 +145,7 @@ public:
 				char* gunnerID = pTypeExt->WeaponGroupAs[pTechno->CurrentWeaponNumber];
 
 				if (!GeneralUtils::IsValidString(gunnerID))
-					sprintf_s(gunnerID, 0x20, "%d", pTechno->CurrentWeaponNumber + 1);
+					sprintf_s(gunnerID, 0x20, "%d", RulesExt::Global()->TypeSelectUseIFVMode ? pTechno->CurrentWeaponNumber + 1 : 0);
 
 				if (std::ranges::none_of(ExtSelection::IFVGroups, [gunnerID](const char* pID) { return !_stricmp(pID, gunnerID); }))
 					break;
@@ -193,12 +193,9 @@ DEFINE_FUNCTION_JUMP(CALL, 0x4ABCEB, ExtSelection::Tactical_MakeFilteredSelectio
 // Replace vanilla function. For in case another module tries to call the vanilla function at offset
 DEFINE_FUNCTION_JUMP(LJMP, 0x6D9FF0, ExtSelection::Tactical_MakeFilteredSelection)
 
-DEFINE_HOOK(0x73298D, TypeSelectCommand_Execute_UseIFVMode, 0x5)
+DEFINE_HOOK(0x73298D, TypeSelectExecute_UseIFVMode, 0x5)
 {
-	if (!RulesExt::Global()->TypeSelectUseIFVMode)
-		return 0;
-
-	ExtSelection::IFVGroups.clear();
+	const bool useIFVMode = RulesExt::Global()->TypeSelectUseIFVMode;
 
 	for (const auto pObject : ObjectClass::CurrentObjects)
 	{
@@ -216,12 +213,18 @@ DEFINE_HOOK(0x73298D, TypeSelectCommand_Execute_UseIFVMode, 0x5)
 		char* gunnerID = pTypeExt->WeaponGroupAs[pTechno->CurrentWeaponNumber];
 
 		if (!GeneralUtils::IsValidString(gunnerID))
-			sprintf_s(gunnerID, 0x20, "%d", pTechno->CurrentWeaponNumber + 1);
+			sprintf_s(gunnerID, 0x20, "%d", useIFVMode ? pTechno->CurrentWeaponNumber + 1 : 0);
 
 		if (std::ranges::none_of(ExtSelection::IFVGroups, [gunnerID](const char* pID) { return !_stricmp(pID, gunnerID); }))
 			ExtSelection::IFVGroups.emplace_back(gunnerID);
 	}
 
+	return 0;
+}
+
+DEFINE_HOOK(0x732C06, TypeSelectExecute_Clear, 0x6)
+{
+	ExtSelection::IFVGroups.clear();
 	return 0;
 }
 
