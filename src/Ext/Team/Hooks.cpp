@@ -106,7 +106,7 @@ DEFINE_HOOK(0x6EA8E7, TeamClass_LiberateMember_Consideration, 0x5)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x6EAD73, TeamClass_Sub_6EAA90_Consideration, 0x7)
+DEFINE_HOOK(0x6EAD73, TeamClass_RecruitMember_Consideration, 0x7)
 {
 	enum { ContinueCheck = 0x6EAD8F, SkipThisMember = 0x6EADB3 };
 
