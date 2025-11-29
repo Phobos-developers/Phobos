@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-26 22:40+0800\n"
+"POT-Creation-Date: 2025-11-30 01:57+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2022,9 +2022,10 @@ msgstr "现在可以通过设置 `VoicePickup` 来覆盖 `Carryall=true` 战机�
 #: ../../Fixed-or-Improved-Logics.md:2331
 #: ../../Fixed-or-Improved-Logics.md:2353
 #: ../../Fixed-or-Improved-Logics.md:2363
-#: ../../Fixed-or-Improved-Logics.md:2374
-#: ../../Fixed-or-Improved-Logics.md:2390
-#: ../../Fixed-or-Improved-Logics.md:2415
+#: ../../Fixed-or-Improved-Logics.md:2377
+#: ../../Fixed-or-Improved-Logics.md:2391
+#: ../../Fixed-or-Improved-Logics.md:2407
+#: ../../Fixed-or-Improved-Logics.md:2432
 msgid "In `rulesmd.ini`:"
 msgstr "在 `rulesmd.ini`："
 
@@ -6620,15 +6621,13 @@ msgid ""
 "`KeepTargetOnMove.Weapon` determines the weapon to be used for range "
 "check. If set to -1, the game will select the weapon against the target "
 "by default logic."
-msgstr ""
-"`KeepTargetOnMove.Weapon` 决定用于射程检查的武器。如果设为 -1，游戏将会根据默认武器选用规则针对目标对象选取。"
+msgstr "`KeepTargetOnMove.Weapon` 决定用于射程检查的武器。如果设为 -1，游戏将会根据默认武器选用规则针对目标对象选取。"
 
 #: ../../Fixed-or-Improved-Logics.md:1870
 msgid ""
 "It's recommended to set it to a specific weapon for better performance, "
 "unless there's a need to use multiple weapons for different targets."
-msgstr ""
-"建议将其设为特定武器以优化性能，除非需要针对不同目标使用多种武器。"
+msgstr "建议将其设为特定武器以优化性能，除非需要针对不同目标使用多种武器。"
 
 #: ../../Fixed-or-Improved-Logics.md:1871
 msgid ""
@@ -7871,17 +7870,71 @@ msgstr ""
 "AllowDeployControlledMCV=false   ; boolean\n"
 
 #: ../../Fixed-or-Improved-Logics.md:2369
+msgid "Customize type selection for IFV"
+msgstr ""
+
+#: ../../Fixed-or-Improved-Logics.md:2371
+msgid ""
+"In vanilla game, when using type selection command on IFVs, all of them "
+"will be selected regardless of their current modes, which is allowed to "
+"customize now."
+msgstr ""
+
+#: ../../Fixed-or-Improved-Logics.md:2372
+msgid ""
+"`WeaponGroupAsN` determines which group the IFV is in when enabling "
+"`WeaponN`, where N stands for 1-based weapon mode index. IFVs in the same"
+" group will be selected together during type a selection, while not "
+"included those in different groups."
+msgstr ""
+
+#: ../../Fixed-or-Improved-Logics.md:2373
+msgid ""
+"`TypeSelectUseIFVMode` determines whether all IFV modes will be "
+"considered as its own group by default during a type selection."
+msgstr ""
+
+#: ../../Fixed-or-Improved-Logics.md:2374
+msgid ""
+"If it's set to true, `WeaponGroupAsN` will be default to N for each "
+"`WeaponN`, which makes each of them become a standalone type during a "
+"type selection."
+msgstr ""
+
+#: ../../Fixed-or-Improved-Logics.md:2375
+msgid ""
+"If it's set to false, `WeaponGroupAsN` will be default to 0 for all "
+"weapons, which makes type selection on IFVs work the same as before."
+msgstr ""
+
+#: ../../Fixed-or-Improved-Logics.md:2378
+msgid ""
+"[General]\n"
+"TypeSelectUseIFVMode=false   ; boolean\n"
+"\n"
+"[SOMEVEHICLE]                ; VehicleType\n"
+"WeaponGroupAsN=              ; string, default to N if [General] -> "
+"TypeSelectUseIFVMode=true, and 0 if false\n"
+msgstr ""
+"[General]\n"
+"TypeSelectUseIFVMode=false   ; boolean\n"
+"\n"
+"[SOMEVEHICLE]                ; VehicleType\n"
+"WeaponGroupAsN=              ; string, default to N if [General] -> "
+"TypeSelectUseIFVMode=true, and 0 if false\n"
+
+#: ../../Fixed-or-Improved-Logics.md:2386
 msgid "RadialIndicator visibility"
 msgstr "范围指示环可见性"
 
-#: ../../Fixed-or-Improved-Logics.md:2371
+#: ../../Fixed-or-Improved-Logics.md:2388
 msgid ""
 "In vanilla game, a structure's radial indicator can be drawn only when it"
 " belongs to the player. Now it can also be visible to observer. On top of"
 " that, you can specify its visibility from other houses."
 msgstr "在原本的游戏中，结构的范围指示环只有在玩家拥有时才绘制。现在它也对观察者可见。此外，你还可以指定其他所属方的可见性。"
 
-#: ../../Fixed-or-Improved-Logics.md:2375
+#: ../../Fixed-or-Improved-Logics.md:2392
 msgid ""
 "[AudioVisual]\n"
 "RadialIndicatorVisibility=allies  ; List of Affected House Enumeration "
@@ -7891,28 +7944,28 @@ msgstr ""
 "RadialIndicatorVisibility=allies  ; List of Affected House Enumeration "
 "(owner/self | allies/ally | enemies/enemy | all)\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2380
+#: ../../Fixed-or-Improved-Logics.md:2397
 msgid "Crate improvements"
 msgstr "升级工具箱增强"
 
-#: ../../Fixed-or-Improved-Logics.md:2382
+#: ../../Fixed-or-Improved-Logics.md:2399
 msgid "There are some improvements on goodie crate logic:"
 msgstr "对升级工具箱逻辑提供了以下改进："
 
-#: ../../Fixed-or-Improved-Logics.md:2383
+#: ../../Fixed-or-Improved-Logics.md:2400
 msgid ""
 "The statistic distribution of the randomly generated crates is now more "
 "uniform within the visible map region by using an optimized sampling "
 "procedure."
 msgstr "优化了随机算法使得随机生成的升级工具箱在可见地图区域内的统计分布更加均匀。"
 
-#: ../../Fixed-or-Improved-Logics.md:2384
+#: ../../Fixed-or-Improved-Logics.md:2401
 msgid ""
 "You can now limit the crates' spawn region to land only by setting "
 "`[CrateRules] -> CreateOnlyOnLand` to true."
 msgstr "现在你可以通过将 `[CrateRules] -> CreateOnlyOnLand` 设为 true 来让升级工具箱的生成区域仅限陆地。"
 
-#: ../../Fixed-or-Improved-Logics.md:2385
+#: ../../Fixed-or-Improved-Logics.md:2402
 msgid ""
 "The limit of vehicles a player can own before unit crates start giving "
 "money instead can now be customized by setting `UnitCrateVehicleCap`. "
@@ -7921,7 +7974,7 @@ msgstr ""
 "现在可以通过 `UnitCrateVehicleCap` "
 "来设置玩家在单位箱子转为给予金钱之前可以拥有的载具数量上限。负数将禁用上限也就是永久生成载具不会达到一定数目后转为金钱。"
 
-#: ../../Fixed-or-Improved-Logics.md:2386
+#: ../../Fixed-or-Improved-Logics.md:2403
 msgid ""
 "`FreeMCV` setting is now actually respected and can be used to disable "
 "the forced unit selected from `[General] -> BaseUnit` that is given if "
@@ -7931,13 +7984,13 @@ msgstr ""
 "现在尊重 `FreeMCV` 设置并且可以用来禁止玩家拾取升级工具箱且拥有足够的资金单然而没有建筑或 `BaseUnit` 载具时强制将内容选择为"
 " `[General] -> BaseUnit` 中的单位。"
 
-#: ../../Fixed-or-Improved-Logics.md:2387
+#: ../../Fixed-or-Improved-Logics.md:2404
 msgid ""
 "The previously hardcoded credits threshold that must be passed can also "
 "now be customized via `FreeMCV.CreditsThreshold`."
 msgstr "现在可以通过 `FreeMCV.CreditsThreshold` 自定义先前硬编码需要高于的资金阈值。"
 
-#: ../../Fixed-or-Improved-Logics.md:2388
+#: ../../Fixed-or-Improved-Logics.md:2405
 msgid ""
 "It is possible to influence weighting of units given from crates "
 "(`CrateGoodie=true`) via `CrateGoodie.RerollChance`, which determines the"
@@ -7947,7 +8000,7 @@ msgstr ""
 "现在可以通过 `CrateGoodie.RerollChance` 来影响从升级工具箱 (`CrateGoodie=true`) "
 "中获得一个单位的权重，该值决定了如果随机到这种类型的单位，那么它将重新随机另一种单位的概率。"
 
-#: ../../Fixed-or-Improved-Logics.md:2391
+#: ../../Fixed-or-Improved-Logics.md:2408
 msgid ""
 "[CrateRules]\n"
 "CrateOnlyOnLand=false          ; boolean\n"
@@ -7969,55 +8022,55 @@ msgstr ""
 "CrateGoodie.RerollChance=0.0   ; floating point value, percents or "
 "absolute (0.0-1.0)\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2402
+#: ../../Fixed-or-Improved-Logics.md:2419
 msgid "DropPod"
 msgstr "空降仓"
 
-#: ../../Fixed-or-Improved-Logics.md:2404
+#: ../../Fixed-or-Improved-Logics.md:2421
 msgid ""
 "DropPod properties can now be customized on a per-TechnoType (non-"
 "building) basis."
 msgstr "现在可以在每个非建筑类单位上微观定义 DropPod 属性。"
 
-#: ../../Fixed-or-Improved-Logics.md:2405
+#: ../../Fixed-or-Improved-Logics.md:2422
 msgid ""
 "If you want to attach the trailer animation to the pod, set "
 "`DropPod.Trailer.Attached` to yes."
 msgstr "如果你要将尾烟动画附加到空降仓上，请将 `DropPod.Trailer.Attached` 设为 yes。"
 
-#: ../../Fixed-or-Improved-Logics.md:2406
+#: ../../Fixed-or-Improved-Logics.md:2423
 msgid ""
 "By default LaserTrails that are attached to the infantry will not be "
 "drawn if it's on DropPod."
 msgstr "默认情况下附加到步兵上的激光尾焰如果处于 DropPod 状态将不会绘制。"
 
-#: ../../Fixed-or-Improved-Logics.md:2407
+#: ../../Fixed-or-Improved-Logics.md:2424
 msgid ""
 "If you really want to use it, set `DropPodOnly` on the LaserTrail's type "
 "entry in art."
 msgstr "如果你实在想要使用它，那么请在 art 中的激光尾焰条目下设置 `DropPodOnly`。"
 
-#: ../../Fixed-or-Improved-Logics.md:2408
+#: ../../Fixed-or-Improved-Logics.md:2425
 msgid ""
 "If you want `DropPod.Weapon` to be fired only upon hard landing, set "
 "`DropPod.Weapon.HitLandOnly` to true."
 msgstr "如果要在着陆时才发射 `DropPod.Weapon`，请将 `DropPod.Weapon.HitLandOnly` 设为 true。"
 
-#: ../../Fixed-or-Improved-Logics.md:2409
+#: ../../Fixed-or-Improved-Logics.md:2426
 msgid ""
 "The landing speed is not smaller than it's current height /10 + 2 for "
 "unknown reason. A small `DropPod.Speed` value therefore results in "
 "exponential deceleration."
 msgstr "由于某些未知原因着陆速度不小于其当前高度 / 20 + 2 的值。因此较小的 `DropPod.Speed` 值会导致指数级减速。"
 
-#: ../../Fixed-or-Improved-Logics.md:2412
+#: ../../Fixed-or-Improved-Logics.md:2429
 msgid ""
 "Due to technical constraints `DropPod.AirImage` is only drawn for "
 "InfantryTypes (as the DropPod is the infantry itself with its image "
 "swapped). This may change in future."
 msgstr "由于技术限制，`DropPod.AirImage` 仅在步兵类单位上绘制（因为空降仓本身就是替换了图像的步兵自身）。未来可能会进行更改。"
 
-#: ../../Fixed-or-Improved-Logics.md:2416
+#: ../../Fixed-or-Improved-Logics.md:2433
 msgid ""
 "[SOMETECHNO]                  ; TechnoType\n"
 "DropPod.Angle=                ; double, default to [General] -> "
@@ -8065,7 +8118,7 @@ msgstr ""
 "DropPodWeapon\n"
 "DropPod.Weapon.HitLandOnly=   ; boolean, default to no\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2433
+#: ../../Fixed-or-Improved-Logics.md:2450
 msgid ""
 "`[General] -> DropPodTrailer` is [Ares feature](https://ares-"
 "developers.github.io/Ares-docs/new/droppod.html)."

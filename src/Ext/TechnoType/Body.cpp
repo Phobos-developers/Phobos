@@ -632,12 +632,26 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	const char* pSection = pThis->ID;
 	INI_EX exINI(pINI);
 
+	char tempBuffer[40];
+
 	this->HealthBar_Hide.Read(exINI, pSection, "HealthBar.Hide");
 	this->HealthBar_HidePips.Read(exINI, pSection, "HealthBar.HidePips");
 	this->HealthBar_Permanent.Read(exINI, pSection, "HealthBar.Permanent");
 	this->HealthBar_Permanent_PipScale.Read(exINI, pSection, "HealthBar.Permanent.PipScale");
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
+
+	if (pThis->Gunner)
+	{
+		this->WeaponGroupAs.resize(pThis->WeaponCount);
+
+		for (int idx = 0; idx < pThis->WeaponCount; ++idx)
+		{
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "WeaponGroupAs%d", idx + 1);
+			this->WeaponGroupAs[idx].Read(pINI, pSection, tempBuffer);
+		}
+	}
+
 	this->RadarJamHouses.Read(exINI, pSection, "RadarJamHouses");
 	this->RadarJamDelay.Read(exINI, pSection, "RadarJamDelay");
 	this->RadarJamAffect.Read(exINI, pSection, "RadarJamAffect");
@@ -1029,8 +1043,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 2.0
 	this->Passengers_BySize.Read(exINI, pSection, "Passengers.BySize");
 
-	char tempBuffer[40];
-
 	if (pThis->Gunner)
 	{
 		size_t weaponCount = pThis->WeaponCount;
@@ -1289,6 +1301,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InterceptorType)
 
 		.Process(this->GroupAs)
+		.Process(this->WeaponGroupAs)
 		.Process(this->RadarJamRadius)
 		.Process(this->RadarJamHouses)
 		.Process(this->RadarJamDelay)
