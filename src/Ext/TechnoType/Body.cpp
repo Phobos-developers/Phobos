@@ -641,12 +641,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
 
-	this->WeaponGroupAs.resize(pThis->WeaponCount);
-
-	for (int idx = 0; idx < pThis->WeaponCount; ++idx)
+	if (pThis->Gunner)
 	{
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "WeaponGroupAs%d", idx + 1);
-		this->WeaponGroupAs[idx].Read(pINI, pSection, tempBuffer);
+		this->WeaponGroupAs.resize(pThis->WeaponCount);
+
+		for (int idx = 0; idx < pThis->WeaponCount; ++idx)
+		{
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "WeaponGroupAs%d", idx + 1);
+			this->WeaponGroupAs[idx].Read(pINI, pSection, tempBuffer);
+		}
 	}
 
 	this->RadarJamHouses.Read(exINI, pSection, "RadarJamHouses");
