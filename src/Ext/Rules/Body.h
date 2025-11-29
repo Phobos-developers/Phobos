@@ -124,6 +124,8 @@ public:
 
 		Valueable<bool> AllowDeployControlledMCV;
 
+		Valueable<bool> TypeSelectUseIFVMode;
+
 		Valueable<bool> IronCurtain_KeptOnDeploy;
 		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> IronCurtain_KillOrganicsWarhead;
@@ -369,6 +371,8 @@ public:
 			, EnablePowerSurplus { false }
 
 			, AllowDeployControlledMCV { false }
+
+			, TypeSelectUseIFVMode { false }
 
 			, IronCurtain_KeptOnDeploy { true }
 			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
