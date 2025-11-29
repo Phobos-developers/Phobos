@@ -1901,8 +1901,8 @@ msgid "Customize if cloning need power"
 msgstr "自定义克隆耗电"
 
 #: ../../../CREDITS.md:466
-msgid "Typeselect consider ifv mode"
-msgstr ""
+msgid "Customize type selection for IFV"
+msgstr "自定义 IFV 的类型选择"
 
 #: ../../../CREDITS.md:467
 msgid "**Apollo** - Translucent SHP drawing patches"

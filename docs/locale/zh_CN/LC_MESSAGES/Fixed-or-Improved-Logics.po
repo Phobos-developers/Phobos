@@ -7871,7 +7871,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:2369
 msgid "Customize type selection for IFV"
-msgstr ""
+msgstr "自定义 IFV 的类型选择"
 
 #: ../../Fixed-or-Improved-Logics.md:2371
 msgid ""
@@ -7879,6 +7879,7 @@ msgid ""
 "will be selected regardless of their current modes, which is allowed to "
 "customize now."
 msgstr ""
+"在原文的游戏中，当对 IFV 使用类型选择命令时会直接选中所有 IFV 而无论其当前的模式，现在这可以自定义了。"
 
 #: ../../Fixed-or-Improved-Logics.md:2372
 msgid ""
@@ -7887,12 +7888,14 @@ msgid ""
 " group will be selected together during type a selection, while not "
 "included those in different groups."
 msgstr ""
+"`WeaponGroupAsN` 决定当 IFV 启用 `WeaponN` 时所属的组别，N 为从 1 开始的武器模式序号。进行类型选择时将会选中同组 IFV 而不会包含非同组的。"
 
 #: ../../Fixed-or-Improved-Logics.md:2373
 msgid ""
 "`TypeSelectUseIFVMode` determines whether all IFV modes will be "
 "considered as its own group by default during a type selection."
 msgstr ""
+"`TypeSelectUseIFVMode` 决定类型选择时所有 IFVMode 是否默认自成一组。"
 
 #: ../../Fixed-or-Improved-Logics.md:2374
 msgid ""
@@ -7900,12 +7903,14 @@ msgid ""
 "`WeaponN`, which makes each of them become a standalone type during a "
 "type selection."
 msgstr ""
+"若设为 true 则 `WeaponGroupAsN` 默认为 N 的值以使每个模式都作为独立的组。"
 
 #: ../../Fixed-or-Improved-Logics.md:2375
 msgid ""
 "If it's set to false, `WeaponGroupAsN` will be default to 0 for all "
 "weapons, which makes type selection on IFVs work the same as before."
 msgstr ""
+"若设为 false 则 `WeaponGroupAsN` 将默认为 0 以保持原有行为。"
 
 #: ../../Fixed-or-Improved-Logics.md:2378
 msgid ""

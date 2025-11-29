@@ -2075,6 +2075,8 @@ msgid ""
 "[Customize type selection for IFV](Fixed-or-Improved-Logics.md#customize-"
 "type-selection-for-ifv) (by NetsuNegi)"
 msgstr ""
+"[自定义 IFV 的类型选择](Fixed-or-Improved-Logics.md#customize-"
+"type-selection-for-ifv)（by NetsuNegi）"
 
 #: ../../Whats-New.md:467 ../../Whats-New.md:539 ../../Whats-New.md:723
 #: ../../Whats-New.md:1082 ../../Whats-New.md:1191 ../../Whats-New.md:1216

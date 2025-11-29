@@ -462,7 +462,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that building with `CloningFacility=true` and `WeaponsFactory=true` may cloning multiple vehicles and then they get stuck
   - Customize Ares's radar jam logic
   - Customize if cloning need power
-  - Typeselect consider ifv mode
+  - Customize type selection for IFV
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
