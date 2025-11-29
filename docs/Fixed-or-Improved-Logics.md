@@ -2366,17 +2366,21 @@ In `rulesmd.ini`:
 AllowDeployControlledMCV=false   ; boolean
 ```
 
-## Typeselect consider ifv mode
+## Customize type selection for IFV
 
-In Vanilla, when selecting units of the same type by pressing `T`, the ifv mode will be ignored. Now you can enable to filter it.
+In vanilla game, when using type selection command on IFVs, all of them will be selected regardless of their current modes, which is allowed to customize now.
+- `WeaponGroupAsN` determines which group the IFV is in when enabling `WeaponN`, where N stands for 1-based weapon mode index. IFVs in the same group will be selected together during type a selection, while not included those in different groups.
+- `TypeSelectUseIFVMode` determines whether all IFV modes will be considered as its own group by default during a type selection.
+  - If it's set to true, `WeaponGroupAsN` will be default to N for each `WeaponN`, which makes each of them become a standalone type during a type selection.
+  - If it's set to false, `WeaponGroupAsN` will be default to 0 for all weapons, which makes type selection on IFVs work the same as before.
 
 In `rulesmd.ini`:
 ```ini
 [General]
 TypeSelectUseIFVMode=false   ; boolean
 
-[SOMEUNIT]          ; UnitType
-WeaponGroupAsN=N            ; string, N stands for 1-based weapon mode index
+[SOMEVEHICLE]                ; VehicleType
+WeaponGroupAsN=              ; string, default to N if [General] -> TypeSelectUseIFVMode=true, and 0 if false
 ```
 
 ## RadialIndicator visibility
