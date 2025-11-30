@@ -227,7 +227,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	if (pTypeExt->Harvester_Counted)
 		HouseExt::ExtMap.Find(pThis->Owner)->OwnedCountedHarvesters.push_back(pThis);
 
-	if ((pThis->Owner->IsControlledByHuman() || !RulesExt::Global()->DistributeTargetingFrame_AIOnly)
+	if (!(pThis->Owner->IsControlledByHuman() && RulesExt::Global()->DistributeTargetingFrame_AIOnly)
 		&& pTypeExt->DistributeTargetingFrame.Get(RulesExt::Global()->DistributeTargetingFrame))
 	{
 		pThis->TargetingTimer.Start(ScenarioClass::Instance->Random.RandomRanged(0, 15));
@@ -704,47 +704,6 @@ DEFINE_HOOK(0x414665, AircraftClass_Draw_ExtraSHP, 0x6)
 
 	return Continue;
 }
-
-#pragma region BuildingTypeSelectable
-
-namespace BuildingTypeSelectable
-{
-	bool ProcessingIDMatches = false;
-}
-
-DEFINE_HOOK_AGAIN(0x732B28, TypeSelectExecute_SetContext, 0x6)
-DEFINE_HOOK(0x732A85, TypeSelectExecute_SetContext, 0x7)
-{
-	BuildingTypeSelectable::ProcessingIDMatches = true;
-	return 0;
-}
-
-// This func has two retn, but one of them is affected by Ares' hook. Thus we only hook the other one.
-// If you have any problem, check Ares in IDA before making any changes.
-DEFINE_HOOK(0x732C97, TechnoClass_IDMatches_ResetContext, 0x5)
-{
-	BuildingTypeSelectable::ProcessingIDMatches = false;
-	return 0;
-}
-
-// If the context is set as well as the flags is enabled, this will make the vfunc CanBeSelectedNow return true to enable the type selection.
-DEFINE_HOOK(0x465D40, BuildingClass_Is1x1AndUndeployable_BuildingMassSelectable, 0x6)
-{
-	enum { SkipGameCode = 0x465D6A };
-
-	// Since Ares hooks around, we have difficulty juggling Ares and no Ares.
-	// So we simply disable this feature if no Ares.
-	if (!AresHelper::CanUseAres)
-		return 0;
-
-	if (!BuildingTypeSelectable::ProcessingIDMatches || !RulesExt::Global()->BuildingTypeSelectable)
-		return 0;
-
-	R->EAX(true);
-	return SkipGameCode;
-}
-
-#pragma endregion
 
 DEFINE_HOOK(0x521D94, InfantryClass_CurrentSpeed_ProneSpeed, 0x6)
 {

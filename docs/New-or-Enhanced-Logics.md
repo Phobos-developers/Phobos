@@ -22,6 +22,9 @@ This page describes all the engine features that are either new and introduced b
     - `firing`: Discard when firing a weapon. This counts special weapons that are not actually fired such as ones with `Spawner=true` or `DrainWeapon=true`.
   - If `PenetratesIronCurtain` is not set to true, the effect is not applied on currently invulnerable objects.
     - `PenetratesForceShield` can be used to set this separately for Force Shielded objects, defaults to value of `PenetratesIronCurtain`.
+  - `AffectTypes`, if set to a non-empty list, restricts the effect to only be applicable on the specific unit types listed. If this is not set or empty, no whitelist filtering occurs. This check has the highest priority.
+  - `IgnoreTypes`, if set to a non-empty list, prevents the effect from being applied to any of the specific unit types listed. If this is not set or empty, no blacklist filtering occurs. This check is performed after `AffectTypes`.
+  - `AffectTargets`, if set to a non-empty list, restricts the effect to only be applicable on units belonging to the specified target categories (e.g., infantry, units, aircraft, buildings). This check is performed after both type-based filters.
   - `Animation` defines animation to play in an indefinite loop for as long as the effect is active on the object it is attached to.
     - If `Animation.ResetOnReapply` is set to true, the animation playback is reset every time the effect is applied if `Cumulative=false`.
     - `Animation.OfflineAction` determines what happens to the animation when the attached object is deactivated or not powered. Only applies if `Powered=true`.
@@ -97,6 +100,9 @@ DiscardOn=none                                     ; List of discard condition e
 DiscardOn.RangeOverride=                           ; floating point value, distance in cells
 PenetratesIronCurtain=false                        ; boolean
 PenetratesForceShield=                             ; boolean
+AffectTypes=                                       ; List of TechnoTypes
+IgnoreTypes=                                       ; List of TechnoTypes
+AffectTargets=all                                  ; List of TechnoType Enumeration (none|infantry|units|aircraft|buildings|all)
 Animation=                                         ; AnimationType
 Animation.ResetOnReapply=false                     ; boolean
 Animation.OfflineAction=Hides                      ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
@@ -142,7 +148,7 @@ ReflectDamage.Override=                            ; integer
 ReflectDamage.UseInvokerAsOwner=false              ; boolean
 DisableWeapons=false                               ; boolean
 Unkillable=false                                   ; boolean
-LaserTrail.Type=                                   ; lasertrail type
+LaserTrail.Type=                                   ; LaserTrailType
 Groups=                                            ; comma-separated list of strings (group IDs)
 
 [SOMETECHNO]                                       ; TechnoType
@@ -760,6 +766,8 @@ AU=false              ; boolean
 
 ```{note}
 Only vanilla projectiles with `Inviso=yes` set or [Phobos projectiles](#projectile-trajectories) `Straight` with `Trajectory.Straight.SubjectToGround=false` enabled and `Bombard` with `Trajectory.Bombard.SubjectToGround=false` enabled can go beneath the ground. Otherwise, the projectile will be forced to detonate upon hitting the ground.
+
+In order to attack units moving horizontally underground, the attacker needs to have `SensorsSight` settings.
 ```
 
 ### Parabombs
@@ -2005,7 +2013,7 @@ TiberiumEater.CellN=              ; X,Y - cell offset
 TiberiumEater.CashMultiplier=1.0  ; floating point value
 TiberiumEater.AmountPerCell=0     ; integer
 TiberiumEater.Display=true        ; boolean
-TiberiumEater.Display.Houses=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+TiberiumEater.Display.Houses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 TiberiumEater.Anims=              ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium0=    ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium1=    ; List of AnimationTypes
@@ -2027,6 +2035,23 @@ WarpInWeapon=                           ; WeaponType
 WarpInMinRangeWeapon=                   ; WeaponType
 WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
+```
+
+### Customize Ares's radar jam logic
+
+- It is now possible to customize some properties of Ares's radar jam logic.
+  - `RadarJamHouses` determines which houses will be affected by the jam.
+  - `RadarJamDelay` determines the interval of the jam, default to 30 frames like Ares did. Shorter interval means the jam will be applied more timely, but worse for performance.
+  - `RadarJamAffect` determines a list of buildings with `Radar=yes` or `SpySat=yes` that could be affected by the jam. If it's empty, all radar buildings will be affected.
+  - `RadarJamIgnore` determines a list of buildings with `Radar=yes` or `SpySat=yes` that couldn't be affected by the jam.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType, with RadarJamRadius=
+RadarJamHouses=enemies            ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+RadarJamDelay=30                  ; integer
+RadarJamAffect=                   ; List of BuildingTypes
+RadarJamIgnore=                   ; List of BuildingTypes
 ```
 
 ## Terrain

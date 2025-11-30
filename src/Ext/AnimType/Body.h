@@ -92,7 +92,7 @@ public:
 			, DetachOnCloak { true }
 			, ConstrainFireAnimsToCellSpots { true }
 			, FireAnimDisallowedLandTypes {}
-			, AttachFireAnimsToParent { false }
+			, AttachFireAnimsToParent {}
 			, SmallFireCount {}
 			, SmallFireAnims {}
 			, SmallFireChances {}

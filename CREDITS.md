@@ -459,6 +459,10 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that vehicle fall on infantry will make all cell content has been removed
   - Allow deploy controlled MCV
   - Fix the bug that naval ship will sink even they destroyed in air
+  - Fix the bug that building with `CloningFacility=true` and `WeaponsFactory=true` may cloning multiple vehicles and then they get stuck
+  - Customize Ares's radar jam logic
+  - Customize if cloning need power
+  - Typeselect consider ifv mode
   - Fix the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
@@ -644,6 +648,7 @@ This page lists all the individual contributions to the project by their author.
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
+- **Flactine** - added target filtering options to attacheffect system
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
