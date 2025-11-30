@@ -463,6 +463,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize Ares's radar jam logic
   - Customize if cloning need power
   - Typeselect consider ifv mode
+  - Fix the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
