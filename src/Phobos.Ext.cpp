@@ -309,6 +309,35 @@ DEFINE_HOOK(0x67FDB1, LoadOptionsClass_GetFileInfo, 0x7)
 #include <Dbghelp.h>
 #include <tlhelp32.h>
 
+/**
+ *  Sets up to close Syringe when the game exits.
+ *  We don't do it immediately so that the client doesn't think
+ *  the game has exited once Syringe closes.
+ *
+ *  Ported from Vinifera
+ *  @author: ZivDero, secsome
+ */
+static DWORD DebuggerPID = 0;
+
+void _cdecl Kill_Debugger()
+{
+	if (DebuggerPID != 0)
+	{
+		HANDLE handle = OpenProcess(PROCESS_TERMINATE, FALSE, DebuggerPID);
+		if (handle)
+		{
+			TerminateProcess(handle, EXIT_SUCCESS);
+			CloseHandle(handle);
+		}
+	}
+}
+
+void Setup_Kill_Debugger(DWORD pid)
+{
+	DebuggerPID = pid;
+	atexit(Kill_Debugger);
+}
+
 bool Phobos::DetachFromDebugger()
 {
 	auto GetDebuggerProcessId = [](DWORD dwSelfProcessId) -> DWORD
@@ -362,13 +391,8 @@ bool Phobos::DetachFromDebugger()
 				status = NtRemoveProcessDebug(hCurrentProcess, hDebug);
 				if (0 <= status)
 				{
-					HANDLE hDbgProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
-					if (INVALID_HANDLE_VALUE != hDbgProcess)
-					{
-						BOOL ret = TerminateProcess(hDbgProcess, EXIT_SUCCESS);
-						CloseHandle(hDbgProcess);
-						return ret;
-					}
+					Setup_Kill_Debugger(pid);
+					return true;
 				}
 			}
 			NtClose(hDebug);
