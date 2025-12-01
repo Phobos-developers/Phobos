@@ -333,7 +333,12 @@ void TechnoExt::ExtData::EatPassengers()
 	auto const pDelType = pTypeExt->PassengerDeletionType.get();
 
 	if (!pDelType->UnderEMP && (pThis->Deactivated || pThis->IsUnderEMP()))
+	{
+		if (this->PassengerDeletionTimer.InProgress())
+			this->PassengerDeletionTimer.StartTime++;
+
 		return;
+	}
 
 	if (pDelType->Rate > 0 || pDelType->UseCostAsRate)
 	{
@@ -420,7 +425,7 @@ void TechnoExt::ExtData::EatPassengers()
 
 						if (pDelType->DisplaySoylent)
 						{
-							FlyingStrings::AddMoneyString(nMoneyToGive, pOwner,
+							FlyingStrings::AddMoneyString(nMoneyToGive, pThis, pOwner,
 								pDelType->DisplaySoylentToHouses, pThis->Location, pDelType->DisplaySoylentOffset);
 						}
 					}
@@ -527,7 +532,7 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 			{
 				auto cellCoords = pCell->GetCoords();
 				cellCoords.Z = std::max(locationZ, cellCoords.Z);
-				FlyingStrings::AddMoneyString(value, pOwner, displayToHouse, cellCoords, displayOffset);
+				FlyingStrings::AddMoneyString(value, pThis, pOwner, displayToHouse, cellCoords, displayOffset);
 			}
 
 			const auto& anims = pEaterType->Anims_Tiberiums[tiberiumIdx].GetElements(animsAll);
@@ -688,12 +693,12 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			this->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(entry.GetType(), pOwner, entry.FLH, entry.IsOnTurret));
 	}
 
-	// Reset AutoDeath Timer
-	if (this->AutoDeathTimer.HasStarted())
+	// Reset AutoDeath Timer if new techno type doesn't have timed AutoDeath
+	if (this->AutoDeathTimer.HasStarted() && pNewTypeExt->AutoDeath_AfterDelay <= 0)
 		this->AutoDeathTimer.Stop();
 
 	// Reset PassengerDeletion Timer
-	if (this->PassengerDeletionTimer.IsTicking() && pNewTypeExt->PassengerDeletionType && pNewTypeExt->PassengerDeletionType->Rate <= 0)
+	if (this->PassengerDeletionTimer.HasStarted() && pNewTypeExt->PassengerDeletionType && pNewTypeExt->PassengerDeletionType->Rate <= 0)
 		this->PassengerDeletionTimer.Stop();
 
 	// Remove from tracked AutoDeath objects if no longer has AutoDeath
@@ -1719,10 +1724,10 @@ void TechnoExt::ExtData::UpdateRearmInTemporal()
 // Resets target if KeepTargetOnMove unit moves beyond weapon range.
 void TechnoExt::ExtData::UpdateKeepTargetOnMove()
 {
-	auto const pThis = this->OwnerObject();
-
 	if (!this->KeepTargetOnMove)
 		return;
+
+	auto const pThis = this->OwnerObject();
 
 	if (!pThis->Target)
 	{
@@ -1753,7 +1758,7 @@ void TechnoExt::ExtData::UpdateKeepTargetOnMove()
 		return;
 	}
 
-	const int weaponIndex = pThis->SelectWeapon(pThis->Target);
+	const int weaponIndex = pTypeExt->KeepTargetOnMove_Weapon >= 0 ? pTypeExt->KeepTargetOnMove_Weapon : pThis->SelectWeapon(pThis->Target);
 
 	if (auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType)
 	{
@@ -1882,6 +1887,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 {
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
+	auto const pTechnoType = pTypeExt->OwnerObject();
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
 	bool altered = false;
@@ -1891,8 +1897,9 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	{
 		auto const attachEffect = it->get();
 		auto const pType = attachEffect->GetType();
-		bool selfOwned = attachEffect->IsSelfOwned();
-		bool remove = selfOwned && !pTypeExt->AttachEffects.AttachTypes.Contains(pType);
+		const bool isValid = EnumFunctions::IsTechnoEligible(pThis, pType->AffectTargets, true)
+			&& (pType->AffectTypes.empty() || pType->AffectTypes.Contains(pTechnoType)) && !pType->IgnoreTypes.Contains(pTechnoType);
+		const bool remove = !isValid || (attachEffect->IsSelfOwned() && !pTypeExt->AttachEffects.AttachTypes.Contains(pType));
 
 		if (remove)
 		{

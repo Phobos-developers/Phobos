@@ -62,7 +62,7 @@ AnimTypeClass* AttachEffectTypeClass::GetCumulativeAnimation(int cumulativeCount
 	return this->CumulativeAnimations.at(index);
 }
 
-void AttachEffectTypeClass::HandleEvent(TechnoClass* pTarget) const
+void AttachEffectTypeClass::HandleEvent(TechnoClass* pTarget)
 {
 	if (const auto pTag = pTarget->AttachedTag)
 		pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::AttachedIsUnderAttachedEffect, pTarget, CellStruct::Empty);
@@ -111,6 +111,9 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->DiscardOn_RangeOverride.Read(exINI, pSection, "DiscardOn.RangeOverride");
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
 	this->PenetratesForceShield.Read(exINI, pSection, "PenetratesForceShield");
+	this->AffectTypes.Read(exINI, pSection, "AffectTypes");
+	this->IgnoreTypes.Read(exINI, pSection, "IgnoreTypes");
+	this->AffectTargets.Read(exINI, pSection, "AffectTargets");
 
 	this->Animation.Read(exINI, pSection, "Animation");
 	this->CumulativeAnimations.Read(exINI, pSection, "CumulativeAnimations");
@@ -189,6 +192,9 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->DiscardOn_RangeOverride)
 		.Process(this->PenetratesIronCurtain)
 		.Process(this->PenetratesForceShield)
+		.Process(this->AffectTypes)
+		.Process(this->IgnoreTypes)
+		.Process(this->AffectTargets)
 		.Process(this->Animation)
 		.Process(this->CumulativeAnimations)
 		.Process(this->CumulativeAnimations_RestartOnChange)

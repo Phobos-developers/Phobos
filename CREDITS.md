@@ -462,6 +462,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that building with `CloningFacility=true` and `WeaponsFactory=true` may cloning multiple vehicles and then they get stuck
   - Customize Ares's radar jam logic
   - Customize if cloning need power
+  - Customize type selection for IFV
   - Customize Inhibitors and Designators
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
@@ -647,6 +648,7 @@ This page lists all the individual contributions to the project by their author.
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
+- **Flactine** - add target filtering options to attacheffect system
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

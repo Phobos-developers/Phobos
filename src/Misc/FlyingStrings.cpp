@@ -30,23 +30,28 @@ void FlyingStrings::Add(const wchar_t* text, const CoordStruct& coords, ColorStr
 	Data.emplace_back(item);
 }
 
-void FlyingStrings::AddMoneyString(int amount, HouseClass* owner, AffectedHouse displayToHouses, const CoordStruct& coords, Point2D pixelOffset)
+void FlyingStrings::AddMoneyString(int amount, ObjectClass* pSource, HouseClass* pOwner,
+	AffectedHouse displayToHouses, const CoordStruct& coords, Point2D pixelOffset)
 {
-	if (amount
-		&& (displayToHouses == AffectedHouse::All
-			|| owner && EnumFunctions::CanTargetHouse(displayToHouses, owner, HouseClass::CurrentPlayer)))
-	{
-		const bool isPositive = amount > 0;
-		const ColorStruct color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };
-		wchar_t moneyStr[0x20];
-		swprintf_s(moneyStr, L"%ls%ls%d", isPositive ? L"+" : L"-", Phobos::UI::CostLabel, std::abs(amount));
+	if (amount == 0 || MapClass::Instance.IsLocationShrouded(coords))
+		return;
 
-		int width = 0, height = 0;
-		BitFont::Instance->GetTextDimension(moneyStr, &width, &height, 120);
-		pixelOffset.X -= (width / 2);
+	if (displayToHouses != AffectedHouse::All && !EnumFunctions::CanTargetHouse(displayToHouses, pOwner, HouseClass::CurrentPlayer))
+		return;
 
-		FlyingStrings::Add(moneyStr, coords, color, pixelOffset);
-	}
+	if (pSource && pSource->VisualCharacter(false, nullptr) == VisualType::Hidden)
+		return;
+
+	const bool isPositive = amount > 0;
+	const ColorStruct color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };
+	wchar_t moneyStr[0x20];
+	swprintf_s(moneyStr, L"%ls%ls%d", isPositive ? L"+" : L"-", Phobos::UI::CostLabel, std::abs(amount));
+
+	int width = 0, height = 0;
+	BitFont::Instance->GetTextDimension(moneyStr, &width, &height, 120);
+	pixelOffset.X -= (width / 2);
+
+	FlyingStrings::Add(moneyStr, coords, color, pixelOffset);
 }
 
 void FlyingStrings::UpdateAll()

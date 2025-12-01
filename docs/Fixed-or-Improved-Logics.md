@@ -1880,13 +1880,16 @@ ForceShield.KeptOnDeploy=       ; boolean, default to [CombatDamage] -> ForceShi
 - It is now possible for vehicles to retain their target when issued movement command by setting `KeepTargetOnMove` to true.
   - Note that no check is done whether or not the vehicle or the weapon can actually fire while moving, this is on modder's discretion.
   - The target is automatically reset if the vehicle moves beyond the weapon's range from the target.
+- `KeepTargetOnMove.Weapon` determines the weapon to be used for range check. If set to -1, the game will select the weapon against the target by default logic.
+  - It's recommended to set it to a specific weapon for better performance, unless there's a need to use multiple weapons for different targets.
 - `KeepTargetOnMove.NoMorePursuit` controls whether the unit will restart chasing the target for attack when it stops again, otherwise it will clear the target when it moves away.
-- `KeepTargetOnMove.ExtraDistance` can be used to modify the distance considered 'out of range' from target (it is added to weapon range), negative values work to reduce the distance.
+- `KeepTargetOnMove.ExtraDistance` can be used to modify the distance considered 'out of range' from the target (it is added to weapon range), negative values work to reduce the distance.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEVEHICLE]                        ; VehicleType
 KeepTargetOnMove=false               ; boolean
+KeepTargetOnMove.Weapon=-1           ; integer, weapon slot index
 KeepTargetOnMove.NoMorePursuit=true  ; boolean
 KeepTargetOnMove.ExtraDistance=0     ; floating point value, distance in cells
 ```
@@ -2375,6 +2378,23 @@ In `rulesmd.ini`:
 ```ini
 [General]
 AllowDeployControlledMCV=false   ; boolean
+```
+
+## Customize type selection for IFV
+
+In vanilla game, when using type selection command on IFVs, all of them will be selected regardless of their current modes, which is allowed to customize now.
+- `WeaponGroupAsN` determines which group the IFV is in when enabling `WeaponN`, where N stands for 1-based weapon mode index. IFVs in the same group will be selected together during type a selection, while not included those in different groups.
+- `TypeSelectUseIFVMode` determines whether all IFV modes will be considered as its own group by default during a type selection.
+  - If it's set to true, `WeaponGroupAsN` will be default to N for each `WeaponN`, which makes each of them become a standalone type during a type selection.
+  - If it's set to false, `WeaponGroupAsN` will be default to 0 for all weapons, which makes type selection on IFVs work the same as before.
+
+In `rulesmd.ini`:
+```ini
+[General]
+TypeSelectUseIFVMode=false   ; boolean
+
+[SOMEVEHICLE]                ; VehicleType
+WeaponGroupAsN=              ; string, default to N if [General] -> TypeSelectUseIFVMode=true, and 0 if false
 ```
 
 ## RadialIndicator visibility
