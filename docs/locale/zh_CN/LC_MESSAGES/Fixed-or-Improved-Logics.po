@@ -540,7 +540,7 @@ msgstr "尝试避免单位在更改所属方（心灵控制、超时空监狱等
 msgid ""
 "Fixed buildings' `NaturalParticleSystem` being created for in-map pre-"
 "placed structures."
-msgstr "修复了地图中预先放置的结构也会创建建筑 `NaturalParticleSystem` 的问题。"
+msgstr "修复了地图中预先放置的建筑也会创建建筑 `NaturalParticleSystem` 的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:95
 msgid ""
@@ -2939,7 +2939,7 @@ msgid ""
 "`Refinery.UseStorage=yes` and `Storage` > 0."
 msgstr ""
 "现在 Ares 的 `Storage` 功能可以设置 `[Tiberiums]` 列表中的哪种类型被用于在拥有 "
-"`Refinery.UseStorage=yes` 且 `Storage` > 0 的结构中存储。"
+"`Refinery.UseStorage=yes` 且 `Storage` > 0 的建筑中存储。"
 
 #: ../../Fixed-or-Improved-Logics.md:867
 msgid "This tag can not be used without Ares."
@@ -3155,7 +3155,7 @@ msgstr "断电时击杀子机"
 msgid ""
 "`Powered=yes` structures that spawn aircraft like Aircraft Carriers will "
 "stop targeting the enemy if low power."
-msgstr "像航空母舰那样生成子机的 `Powered=yes` 结构将在断电时停止攻击敌人。"
+msgstr "像航空母舰那样生成子机的 `Powered=yes` 建筑将在断电时停止攻击敌人。"
 
 #: ../../Fixed-or-Improved-Logics.md:1008
 msgid "Spawned aircraft self-destruct if they are flying."
@@ -3303,7 +3303,7 @@ msgid ""
 "In vanilla game, a structure's radial indicator can be drawn only when it"
 " belongs to the player. Now it can also be visible to observer. On top of"
 " that, you can specify its visibility from other houses."
-msgstr "在原本的游戏中，结构的范围指示环只有在玩家拥有时才绘制。现在它也对观察者可见。此外，你还可以指定其他所属方的可见性。"
+msgstr "在原本的游戏中，建筑的范围指示环只有在玩家拥有时才绘制。现在它也对观察者可见。此外，你还可以指定其他所属方的可见性。"
 
 #: ../../Fixed-or-Improved-Logics.md:1074
 msgid "Re-enable obsolete [JumpjetControls]"
