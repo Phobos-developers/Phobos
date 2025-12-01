@@ -884,6 +884,41 @@ AircraftLevelLightMultiplier=1.0  ; floating point value, percents or absolute
 JumpjetLevelLightMultiplier=0.0   ; floating point value, percents or absolute
 ```
 
+### DropPod
+
+- DropPod properties can now be customized on a per-TechnoType (non-building) basis.
+  - Note that due to technical constraints `DropPod.AirImage` is only drawn for InfantryTypes (as the DropPod is the infantry itself with its image swapped). This may change in future.
+  - If you want to attach the trailer animation to the pod, set `DropPod.Trailer.Attached` to yes.
+  - By default LaserTrails that are attached to the infantry will not be drawn if it's on DropPod.
+    - If you really want to use it, set `DropPodOnly` on the LaserTrail's type entry in art.
+  - If you want `DropPod.Weapon` to be fired only upon hard landing, set `DropPod.Weapon.HitLandOnly` to true.
+  - The landing speed is not smaller than it's current height /10 + 2 for unknown reason. A small `DropPod.Speed` value therefore results in exponential deceleration.
+
+```{note}
+Due to technical constraints `DropPod.AirImage` is only drawn for InfantryTypes (as the DropPod is the infantry itself with its image swapped). This may change in future.
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                  ; TechnoType
+DropPod.Angle=                ; double, default to [General] -> DropPodAngle, measured in radians
+DropPod.AtmosphereEntry=      ; anim, default to [AudioVisual] -> AtmosphereEntry
+DropPod.GroundAnim=           ; 2 anims, default to [General] -> DropPod
+DropPod.AirImage=             ; SHP file, the pod's shape, default to POD
+DropPod.Height=               ; int, default to [General] -> DropPodHeight
+DropPod.Puff=                 ; anim, default to [AudioVisual] -> DropPodPuff
+DropPod.Speed=                ; int, default to [General] -> DropPodSpeed
+DropPod.Trailer=              ; anim, default to [General] -> DropPodTrailer, which by default is SMOKEY
+DropPod.Trailer.Attached=     ; boolean, default to no
+DropPod.Trailer.SpawnDelay=   ; int, number of frames between each spawn of DropPod.Trailer, default to 6
+DropPod.Weapon=               ; weapon, default to [General] -> DropPodWeapon
+DropPod.Weapon.HitLandOnly=   ; boolean, default to no
+```
+
+```{note}
+`[General] -> DropPodTrailer` is [Ares feature](https://ares-developers.github.io/Ares-docs/new/droppod.html).
+```
+
 ### Exploding object customizations
 
 - By default `Explodes=true` TechnoTypes have all of their passengers killed when they are destroyed. This behaviour can now be disabled by setting `Explodes.KillPassengers=false`.
@@ -1023,6 +1058,17 @@ SpawnsPipFrame=1                     ; integer, frame of pips.shp (buildings) or
 EmptySpawnsPipFrame=0                ; integer, frame of pips.shp (buildings) or pips2.shp (others) (zero-based)
 SpawnsPipSize=                       ; X,Y, increment in pixels to next pip
 SpawnsPipOffset=0,0                  ; X,Y, position offset from default
+```
+
+### RadialIndicator visibility
+
+In vanilla game, a structure's radial indicator can be drawn only when it belongs to the player. Now it can also be visible to observer.
+On top of that, you can specify its visibility from other houses.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+RadialIndicatorVisibility=allies  ; List of Affected House Enumeration (owner/self | allies/ally | enemies/enemy | all)
 ```
 
 ### Re-enable obsolete [JumpjetControls]
@@ -1675,17 +1721,6 @@ In `rulesmd.ini`:
 IsSingleColor=false  ; boolean
 ```
 
-## RadialIndicator visibility
-
-In vanilla game, a structure's radial indicator can be drawn only when it belongs to the player. Now it can also be visible to observer.
-On top of that, you can specify its visibility from other houses.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-RadialIndicatorVisibility=allies  ; List of Affected House Enumeration (owner/self | allies/ally | enemies/enemy | all)
-```
-
 ## Crate improvements
 
 There are some improvements on goodie crate logic:
@@ -1706,39 +1741,4 @@ FreeMCV.CreditsThreshold=1500  ; integer
 
 [SOMEVEHICLE]                  ; VehicleType
 CrateGoodie.RerollChance=0.0   ; floating point value, percents or absolute (0.0-1.0)
-```
-
-## DropPod
-
-- DropPod properties can now be customized on a per-TechnoType (non-building) basis.
-  - Note that due to technical constraints `DropPod.AirImage` is only drawn for InfantryTypes (as the DropPod is the infantry itself with its image swapped). This may change in future.
-  - If you want to attach the trailer animation to the pod, set `DropPod.Trailer.Attached` to yes.
-  - By default LaserTrails that are attached to the infantry will not be drawn if it's on DropPod.
-    - If you really want to use it, set `DropPodOnly` on the LaserTrail's type entry in art.
-  - If you want `DropPod.Weapon` to be fired only upon hard landing, set `DropPod.Weapon.HitLandOnly` to true.
-  - The landing speed is not smaller than it's current height /10 + 2 for unknown reason. A small `DropPod.Speed` value therefore results in exponential deceleration.
-
-```{note}
-Due to technical constraints `DropPod.AirImage` is only drawn for InfantryTypes (as the DropPod is the infantry itself with its image swapped). This may change in future.
-```
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                  ; TechnoType
-DropPod.Angle=                ; double, default to [General] -> DropPodAngle, measured in radians
-DropPod.AtmosphereEntry=      ; anim, default to [AudioVisual] -> AtmosphereEntry
-DropPod.GroundAnim=           ; 2 anims, default to [General] -> DropPod
-DropPod.AirImage=             ; SHP file, the pod's shape, default to POD
-DropPod.Height=               ; int, default to [General] -> DropPodHeight
-DropPod.Puff=                 ; anim, default to [AudioVisual] -> DropPodPuff
-DropPod.Speed=                ; int, default to [General] -> DropPodSpeed
-DropPod.Trailer=              ; anim, default to [General] -> DropPodTrailer, which by default is SMOKEY
-DropPod.Trailer.Attached=     ; boolean, default to no
-DropPod.Trailer.SpawnDelay=   ; int, number of frames between each spawn of DropPod.Trailer, default to 6
-DropPod.Weapon=               ; weapon, default to [General] -> DropPodWeapon
-DropPod.Weapon.HitLandOnly=   ; boolean, default to no
-```
-
-```{note}
-`[General] -> DropPodTrailer` is [Ares feature](https://ares-developers.github.io/Ares-docs/new/droppod.html).
 ```

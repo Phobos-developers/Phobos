@@ -475,7 +475,7 @@ msgstr "2"
 
 #: ../../AI-Scripting-and-Mapping.md:52
 msgid "Structures"
-msgstr "结构"
+msgstr "建筑"
 
 #: ../../AI-Scripting-and-Mapping.md:52
 msgid "Any enemy `BuildingTypes` that are not considered as vehicles"
@@ -926,7 +926,7 @@ msgstr "36"
 
 #: ../../AI-Scripting-and-Mapping.md:52
 msgid "Non-defensive Structures"
-msgstr "非防御结构"
+msgstr "非防御建筑"
 
 #: ../../AI-Scripting-and-Mapping.md:52
 msgid "Any enemy `BuildingTypes` with `IsBaseDefense=no`"
