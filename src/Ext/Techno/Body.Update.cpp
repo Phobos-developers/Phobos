@@ -2033,8 +2033,8 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		reflectsDamage |= type->ReflectDamage;
 		hasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
 		hasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
-		hasInibitor |= type->InhibitType;
-		hasDesignator |= type->DesignateType;
+		hasInibitor |= type->InhibitType != nullptr;
+		hasDesignator |= type->DesignateType != nullptr;
 	}
 
 	pAE.FirepowerMultiplier = firepower;
