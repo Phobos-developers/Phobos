@@ -63,6 +63,9 @@ public:
 		Valueable<AffectedHouse> LimboKill_Affected;
 		ValueableVector<int> LimboKill_IDs;
 		Valueable<double> RandomBuffer;
+		Valueable<int> Music_Theme;
+		Valueable<int> Music_Duration;
+		Valueable<AffectedHouse> Music_AffectedHouses;
 		ValueableIdxVector<SuperWeaponTypeClass> SW_Next;
 		Valueable<bool> SW_Next_RealLaunch;
 		Valueable<bool> SW_Next_IgnoreInhibitors;
@@ -187,6 +190,7 @@ public:
 			, SW_Link_RandomWeightsData {}
 			, Message_LinkedSWAcquired {}
 			, EVA_LinkedSWAcquired {}
+			, Music_AffectedHouses { AffectedHouse::All }
 		{ }
 
 		// Ares 0.A functions

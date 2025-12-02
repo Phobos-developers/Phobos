@@ -1254,6 +1254,28 @@ Detonate.Damage=            ; integer
 Detonate.AtFirer=false      ; boolean
 ```
 
+### Superweapon music control
+
+- Superweapons can now play a soundtrack theme when fired and optionally stop after a configurable duration.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]              ; SuperWeaponType
+Music.Theme=          ; Soundtrack theme ID from thememd.ini (such as GodsendOne)
+Music.Duration=0      ; integer, game frames; 0 or below means do not auto-stop,with the game speed set to 4, 15 frames equal 1 second.
+Music.AffectedHouses= ; owner|allies|enemies|all (default all)
+```
+
+- `Music.Theme` selects the soundtrack theme by its ID defined in `thememd.ini` (such as `GodsendOne`).
+- `Music.Duration` sets how long to keep playing, in game frames. 0 or below means no auto-stop.
+- If a different theme is already playing, it will be replaced when the superweapon fires.
+- When the timer completes, the theme is stopped only if the currently playing theme still equals the configured `Music.Theme`; if music was changed during the countdown, it will not be altered.
+- `Music.AffectedHouses` determines which houses will hear and be affected by the superweapon music on their client: `owner`, `allies`, `enemies`, or `all` (default). Playback and auto-stop are applied only for those houses.
+
+```{note}
+To loop the music correctly during this period, set `Repeat=yes` for the corresponding theme in `thememd.ini`. Otherwise, the track may stop at its end even if `Music.Duration` has not elapsed.
+```
+
 ## Technos
 
 ### Aggressive attack move mission

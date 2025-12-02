@@ -2,6 +2,10 @@
 
 #include <SessionClass.h>
 #include <VeinholeMonsterClass.h>
+#include <HouseClass.h>
+#include <ThemeClass.h>
+#include <Ext/House/Body.h>
+#include <Ext/SWType/Body.h>
 
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
@@ -268,6 +272,47 @@ DEFINE_HOOK(0x55B4E1, LogicClass_Update_BeforeAll, 0x5)
 
 	ScenarioExt::Global()->UpdateAutoDeathObjectsInLimbo();
 	ScenarioExt::Global()->UpdateTransportReloaders();
+
+	// SW music timers: stop music when timer completes
+	for (auto const pHouse : HouseClass::Array)
+	{
+		if (!pHouse) { continue; }
+		auto& houseExt = *HouseExt::ExtMap.Find(pHouse);
+		for (size_t i = 0; i < houseExt.SuperExts.size(); ++i)
+		{
+			auto& swExt = houseExt.SuperExts[i];
+			if (swExt.MusicActive && swExt.MusicTimer.Completed())
+			{
+				int configuredTheme = -1;
+				SuperClass* pSuper = nullptr;
+				SWTypeExt::ExtData* pTypeExt = nullptr;
+				if (pHouse->Supers.Count > static_cast<int>(i))
+				{
+					pSuper = pHouse->Supers[static_cast<int>(i)];
+					if (pSuper && pSuper->Type)
+					{
+						pTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+						configuredTheme = pTypeExt->Music_Theme.Get();
+					}
+				}
+				if (configuredTheme >= 0 && ThemeClass::Instance.CurrentTheme == configuredTheme)
+				{
+					// stop only if same theme and local house is affected
+					AffectedHouse affected = AffectedHouse::All;
+					if (pTypeExt)
+					{
+						affected = pTypeExt->Music_AffectedHouses.Get();
+					}
+					if (EnumFunctions::CanTargetHouse(affected, pHouse, HouseClass::CurrentPlayer))
+					{
+						ThemeClass::Instance.Stop();
+					}
+				}
+				swExt.MusicTimer.Stop();
+				swExt.MusicActive = false;
+			}
+		}
+	}
 
 	return 0;
 }

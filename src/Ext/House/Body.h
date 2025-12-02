@@ -6,6 +6,7 @@
 #include <Utilities/TemplateDef.h>
 
 #include <Ext/Building/Body.h>
+#include <Timer.h>
 
 #include <map>
 
@@ -62,6 +63,10 @@ public:
 		struct SWExt
 		{
 			int ShotCount;
+			CDTimerClass MusicTimer;
+			bool MusicActive;
+
+			SWExt() : ShotCount(0), MusicTimer(), MusicActive(false) { }
 		};
 		std::vector<SWExt> SuperExts;
 

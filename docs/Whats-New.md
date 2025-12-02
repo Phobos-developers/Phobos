@@ -340,6 +340,7 @@ HideShakeEffects=false           ; boolean
 :open:
 
 New:
+- [Superweapon music control](New-or-Enhanced-Logics.md#superweapon-music-control) (by ahasasjeb)
 - [Allow using waypoints, area guard and attack move with aircraft](Fixed-or-Improved-Logics.md#extended-aircraft-missions) (by CrimRecya)
 - [Enhanced Straight trajectory](New-or-Enhanced-Logics.md#straight-trajectory) (by CrimRecya)
 - [Enable building production queue](User-Interface.md#building-production-queue) (by CrimRecya)
