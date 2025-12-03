@@ -8,6 +8,7 @@ namespace detail
 	template <typename T>
 	inline T interpolate(T& first, T& second, double percentage, InterpolationMode mode)
 	{
+		static_assert((sizeof(T) == 0), "interpolate<T> should not be instantiated, create and use a specialization.");
 		return first;
 	}
 
