@@ -618,29 +618,27 @@ UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit, TechnoTypeExt::ExtD
 
 AircraftTypeClass* TechnoExt::GetAircraftTypeExtra(AircraftClass* pAircraft)
 {
-	if (pAircraft->IsGreenHP())
+	auto const pType = pAircraft->Type;
+	auto const pData = TechnoTypeExt::ExtMap.Find(pType);
+
+	if (!pData->NeedDamagedImage || pAircraft->IsGreenHP())
 	{
-		return pAircraft->Type;
+		return pType;
 	}
 	else if (pAircraft->IsYellowHP())
 	{
-		auto const pData = TechnoTypeExt::ExtMap.Find(pAircraft->Type);
-
 		if (auto const imageYellow = pData->Image_ConditionYellow)
 			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
 	}
 	else
 	{
-		auto const pType = pAircraft->Type;
-		auto const pData = TechnoTypeExt::ExtMap.Find(pType);
-
 		if (auto const imageRed = pData->Image_ConditionRed)
 			return abstract_cast<AircraftTypeClass*, true>(imageRed);
 		else if (auto const imageYellow = pData->Image_ConditionYellow)
 			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
 	}
 
-	return pAircraft->Type;
+	return pType;
 
 }
 
