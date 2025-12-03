@@ -440,6 +440,14 @@ public:
 
 		Nullable<bool> TurretResponse;
 
+		Nullable<bool> BarrelOverTurret;
+		Valueable<int> BarrelOffset;
+		Valueable<int> ExtraBarrelCount;
+		std::vector<int> ExtraBarrelOffsets;
+		Valueable<int> ExtraTurretCount;
+		std::vector<CoordStruct> ExtraTurretOffsets;
+		Valueable<int> BurstPerTurret;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, HealthBar_HidePips { false }
@@ -830,6 +838,15 @@ public:
 			, InfantryAutoDeploy {}
 
 			, TurretResponse {}
+				
+			, BarrelOverTurret { }
+			, BarrelOffset { 0 }
+			, ExtraBarrelCount { 0 }
+			, ExtraBarrelOffsets { }
+			, ExtraTurretCount { 0 }
+			, ExtraTurretOffsets { }
+			, BurstPerTurret { 0 }
+
 		{ }
 
 		virtual ~ExtData() = default;
