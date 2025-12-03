@@ -568,12 +568,17 @@ bool ObjectFake::_IsCRCHashable()
 			return false;
 
 		auto const pAnim = static_cast<AnimClass*>((ObjectClass*)this);
-		auto const pType = pAnim->Type;
+		auto pType = pAnim->Type;
 
-		if (pType->Damage != 0.0 || pType->Bouncer || pType->IsMeteor || pType->IsTiberium || pType->TiberiumChainReaction
-			|| pType->IsAnimatedTiberium || pType->MakeInfantry != -1 || AnimTypeExt::ExtMap.Find(pType)->CreateUnitType.get())
+		while (pType)
 		{
-			return true;
+			if (pType->Damage != 0.0 || pType->Bouncer || pType->IsMeteor || pType->IsTiberium || pType->TiberiumChainReaction
+				|| pType->IsAnimatedTiberium || pType->MakeInfantry != -1 || AnimTypeExt::ExtMap.Find(pType)->CreateUnitType.get())
+			{
+				return true;
+			}
+
+			pType = pType->Next;
 		}
 
 		return false;
@@ -581,10 +586,15 @@ bool ObjectFake::_IsCRCHashable()
 	else if (rtti == AbstractType::Particle)
 	{
 		auto const pParticle = static_cast<ParticleClass*>((ObjectClass*)this);
-		auto const pType = pParticle->Type;
+		auto pType = pParticle->Type;
 
-		if (pType->Damage)
-			return true;
+		while (pType)
+		{
+			if (pType->Damage)
+				return true;
+
+			pType = pType->NextParticle;
+		}
 
 		return false;
 	}
