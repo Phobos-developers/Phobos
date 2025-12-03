@@ -368,7 +368,7 @@ enum class AttachCargoMode
 	SingleObject,
 	ObjectChain,
 
-	DefaultBehavior = SingleObject,
+	DefaultBehavior = ObjectChain,
 };
 
 namespace TechnoAttachmentTemp
@@ -387,8 +387,11 @@ void __fastcall CargoClass_Attach_##mode(PassengersClass* pThis, void*, FootClas
 DEFINE_ATTACH_WRAPPER(SingleObject);
 DEFINE_ATTACH_WRAPPER(ObjectChain);
 
-DEFINE_FUNCTION_JUMP(CALL, 0x65DF88, CargoClass_Attach_ObjectChain);  // Create_Group
-DEFINE_FUNCTION_JUMP(CALL, 0x65DCF0, CargoClass_Attach_ObjectChain);  // Do_Reinforcements, paradrop loading
+DEFINE_FUNCTION_JUMP(CALL, 0x41729E, CargoClass_Attach_SingleObject); // AircraftClass::MissionMoveCarryall
+DEFINE_FUNCTION_JUMP(CALL, 0x41A048, CargoClass_Attach_SingleObject); // AircraftClass::MissionEnter
+DEFINE_FUNCTION_JUMP(CALL, 0x51A38A, CargoClass_Attach_SingleObject); // InfrantryClass::PerCellProcess
+DEFINE_FUNCTION_JUMP(CALL, 0x710682, CargoClass_Attach_SingleObject); // TechnoClass::AttachCargo
+DEFINE_FUNCTION_JUMP(CALL, 0x73A2E4, CargoClass_Attach_SingleObject); // UnitClass::PerCellProcess
 
 DEFINE_HOOK(0x4733BD, CargoClass_Attach_HandleCurrentAttachMode, 0x6)
 {
