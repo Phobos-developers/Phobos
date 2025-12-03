@@ -860,7 +860,7 @@ public:
 
 		void LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSection, INI_EX& exArtINI, const char* pArtSection);
 
-		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0, int turIdx);
+		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0, int turIdx = -1);
 		void CalculateSpawnerRange();
 		bool IsSecondary(int nWeaponIndex);
 
@@ -890,7 +890,7 @@ public:
 	static ExtContainer ExtMap;
 	static bool SelectWeaponMutex;
 
-	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0, int turIdx);
+	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0, int turIdx = -1);
 	static TechnoTypeClass* GetTechnoType(ObjectTypeClass* pType);
 
 	static TechnoClass* CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType facing, DirType* secondaryFacing,
