@@ -37,8 +37,8 @@ public:
 		std::vector<RadSiteClass*> RadSites {};
 		std::vector<RadLevel> RadLevels { };
 		int InfantryCount{ 0 };
-		UnitClass* IncomingUnit;
-		UnitClass* IncomingUnitAlt;
+		UnitClass* IncomingUnit {};
+		UnitClass* IncomingUnitAlt {};
 
 		ExtData(CellClass* OwnerObject) : Extension<CellClass>(OwnerObject)
 		{ }
