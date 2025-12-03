@@ -344,6 +344,7 @@ public:
 		Nullable<TechnoTypeClass*> Image_ConditionRed;
 		Nullable<UnitTypeClass*> WaterImage_ConditionYellow;
 		Nullable<UnitTypeClass*> WaterImage_ConditionRed;
+		bool NeedDamagedImage;
 
 		Nullable<int> InitialSpawnsNumber;
 		ValueableVector<AircraftTypeClass*> Spawns_Queue;
@@ -756,6 +757,7 @@ public:
 			, Image_ConditionRed { }
 			, WaterImage_ConditionYellow { }
 			, WaterImage_ConditionRed { }
+			, NeedDamagedImage { false }
 
 			, InitialSpawnsNumber { }
 			, Spawns_Queue { }

@@ -576,7 +576,7 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
-UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit)
+UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit, TechnoTypeExt::ExtData* pData)
 {
 	if (pUnit->IsGreenHP())
 	{
@@ -584,8 +584,6 @@ UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit)
 	}
 	else if (pUnit->IsYellowHP())
 	{
-		auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
-
 		if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
 		{
 			if (auto const imageYellow = pData->WaterImage_ConditionYellow)
@@ -598,8 +596,6 @@ UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit)
 	}
 	else
 	{
-		auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
-
 		if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
 		{
 			if (auto const imageRed = pData->WaterImage_ConditionRed)

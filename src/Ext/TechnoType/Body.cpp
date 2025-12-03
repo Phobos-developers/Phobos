@@ -969,6 +969,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->WaterImage_ConditionYellow.Read(exINI, pSection, "WaterImage.ConditionYellow");
 	this->WaterImage_ConditionRed.Read(exINI, pSection, "WaterImage.ConditionRed");
 
+	this->NeedDamagedImage = this->Image_ConditionYellow.isset() || this->Image_ConditionRed.isset()
+		|| this->WaterImage_ConditionYellow.isset() || this->WaterImage_ConditionRed.isset();
+
 	this->InitialSpawnsNumber.Read(exINI, pSection, "InitialSpawnsNumber");
 	this->Spawns_Queue.Read(exINI, pSection, "Spawns.Queue");
 
@@ -1609,6 +1612,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Image_ConditionRed)
 		.Process(this->WaterImage_ConditionYellow)
 		.Process(this->WaterImage_ConditionRed)
+		.Process(this->NeedDamagedImage)
 
 		.Process(this->InitialSpawnsNumber)
 		.Process(this->Spawns_Queue)
