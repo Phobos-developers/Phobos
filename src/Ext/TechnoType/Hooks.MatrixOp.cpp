@@ -18,9 +18,9 @@ DEFINE_REFERENCE(double, Pixel_Per_Lepton, 0xB1D008)
 
 #pragma region FLH_Turrets
 
-void TechnoTypeExt::ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor)
+void TechnoTypeExt::ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor, int turIdx)
 {
-	TechnoTypeExt::ExtMap.Find(pType)->ApplyTurretOffset(mtx, factor);
+	TechnoTypeExt::ExtMap.Find(pType)->ApplyTurretOffset(mtx, factor, turIdx);
 }
 
 DEFINE_HOOK(0x6F3E6E, TechnoClass_ActionLines_TurretMultiOffset, 0x0)
@@ -35,14 +35,16 @@ DEFINE_HOOK(0x6F3E6E, TechnoClass_ActionLines_TurretMultiOffset, 0x0)
 
 DEFINE_HOOK(0x73B780, UnitClass_DrawVXL_TurretMultiOffset, 0x0)
 {
-	GET(TechnoTypeClass*, technoType, EAX);
+	enum { CleanFlag = 0x73B78A, SkipFlag = 0x73B790 };
 
-	auto const pTypeData = TechnoTypeExt::ExtMap.Find(technoType);
+	GET(TechnoTypeClass* const, pDrawType, EBX);
 
-	if (*pTypeData->TurretOffset.GetEx() == CoordStruct { 0, 0, 0 })
-		return 0x73B78A;
+	auto const pDrawTypeExt = TechnoTypeExt::ExtMap.Find(pDrawType);
 
-	return 0x73B790;
+	return (*pDrawTypeExt->TurretOffset.GetEx() == CoordStruct::Empty
+		&& pDrawTypeExt->ExtraTurretCount <= 0
+		&& pDrawTypeExt->ExtraBarrelCount <= 0)
+		? CleanFlag : SkipFlag;
 }
 
 struct AresTechnoTypeExt
@@ -75,108 +77,204 @@ DEFINE_HOOK(0x73BA12, UnitClass_DrawAsVXL_RewriteTurretDrawing, 0x6)
 	// base matrix
 	const auto mtx = Matrix3D::VoxelDefaultMatrix * drawMatrix;
 
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	const auto pDrawTypeExt = TechnoTypeExt::ExtMap.Find(pDrawType);
 	const bool notChargeTurret = pThis->Type->TurretCount <= 0 || pThis->Type->IsGattling;
 
 	auto getTurretVoxel = [pDrawType, notChargeTurret, currentTurretNumber]() -> VoxelStruct*
-	{
-		if (notChargeTurret)
-			return &pDrawType->TurretVoxel;
+		{
+			if (notChargeTurret)
+				return &pDrawType->TurretVoxel;
 
-		// Not considering the situation where there is no Ares and the limit is exceeded
-		if (currentTurretNumber < 18 || !AresHelper::CanUseAres)
-			return &pDrawType->ChargerTurrets[currentTurretNumber];
+			// Not considering the situation where there is no Ares and the limit is exceeded
+			if (currentTurretNumber < 18 || !AresHelper::CanUseAres)
+				return &pDrawType->ChargerTurrets[currentTurretNumber];
 
-		auto* aresTypeExt = reinterpret_cast<AresTechnoTypeExt*>(pDrawType->align_2FC);
-		return &aresTypeExt->ChargerTurrets[currentTurretNumber - 18];
-	};
+			auto* aresTypeExt = reinterpret_cast<AresTechnoTypeExt*>(pDrawType->align_2FC);
+			return &aresTypeExt->ChargerTurrets[currentTurretNumber - 18];
+		};
 	const auto pTurretVoxel = getTurretVoxel();
 
-	// When in recoiling or have no cache, need to recalculate drawing matrix
-	const bool inRecoil = pDrawType->TurretRecoil && (pThis->TurretRecoil.State != RecoilData::RecoilState::Inactive || pThis->BarrelRecoil.State != RecoilData::RecoilState::Inactive);
-	const bool shouldRedraw = !haveTurretCache || haveBar && !haveBarrelCache || inRecoil;
-
-	// When in recoiling, need to bypass cache and draw without saving
-	const auto turKey = inRecoil ? -1 : flags;
-	const auto turCache = inRecoil ? nullptr : &pDrawType->VoxelTurretWeaponCache;
-
-	auto getTurretMatrix = [=, &mtx]() -> Matrix3D
-	{
-		auto mtxTurret = mtx;
-		pDrawTypeExt->ApplyTurretOffset(&mtxTurret, Pixel_Per_Lepton);
-		mtxTurret.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
-
-		if (pThis->TurretRecoil.State != RecoilData::RecoilState::Inactive)
-			mtxTurret.TranslateX(-pThis->TurretRecoil.TravelSoFar);
-
-		return mtxTurret;
-	};
-	auto mtxTurret = shouldRedraw ? getTurretMatrix() : mtx;
-	constexpr BlitterFlags blit = BlitterFlags::Alpha | BlitterFlags::Flat;
-
-	// Only when there is a barrel will its calculation and drawing be considered
-	if (haveBar)
-	{
-		auto drawBarrel = [=, &mtxTurret, &mtx]()
+	auto getBarrelVoxel = [pDrawType, notChargeTurret, currentTurretNumber]() -> VoxelStruct*
 		{
-			// When in recoiling, need to bypass cache and draw without saving
-			const auto brlKey = inRecoil ? -1 : flags;
-			const auto brlCache = inRecoil ? nullptr : &pDrawType->VoxelTurretBarrelCache;
+			if (notChargeTurret)
+				return &pDrawType->BarrelVoxel;
 
-			auto getBarrelMatrix = [=, &mtxTurret, &mtx]() -> Matrix3D
+			// Not considering the situation where there is no Ares and the limit is exceeded
+			if (currentTurretNumber < 18 || !AresHelper::CanUseAres)
+				return &pDrawType->ChargerBarrels[currentTurretNumber];
+
+			auto* aresTypeExt = reinterpret_cast<AresTechnoTypeExt*>(pDrawType->align_2FC);
+			return &aresTypeExt->ChargerBarrels[currentTurretNumber - 18];
+		};
+	const auto pBarrelVoxel = haveBar ? getBarrelVoxel() : nullptr;
+
+	constexpr BlitterFlags blit = BlitterFlags::Alpha | BlitterFlags::Flat;
+	// When in recoiling or have no cache, need to recalculate drawing matrix
+	const bool shouldRedraw = !haveTurretCache || haveBar && !haveBarrelCache;
+
+	// The orientation of the turret can affect the layer order of the barrel and turret
+	const auto turretDir = pThis->SecondaryFacing.Current().GetFacing<4>();
+	const bool barrelOverTechno = pDrawTypeExt->BarrelOverTurret.Get(turretDir != 0 && turretDir != 3);
+
+	auto drawTurret = [=, &mtx](int turIdx)
+		{
+			const auto pTurData = pDrawType->TurretRecoil ? ((turIdx < 0) ? &pThis->TurretRecoil : &pExt->ExtraTurretRecoil[turIdx]) : nullptr;
+			const bool turretInRecoil = pTurData && pTurData->State != RecoilData::RecoilState::Inactive;
+
+			// When in recoiling or is not main turret, need to bypass cache and draw without saving
+			const bool turShouldRedraw = turretInRecoil || turIdx >= 0;
+			const auto turKey = turShouldRedraw ? -1 : flags;
+			const auto turCache = turShouldRedraw ? nullptr : &pDrawType->VoxelTurretWeaponCache;
+
+			auto shouldCalculateMatrix = [=]()
+				{
+					if (!haveBar)
+						return false;
+
+					if (pThis->BarrelRecoil.State != RecoilData::RecoilState::Inactive)
+						return true;
+
+					return pDrawTypeExt->ExtraBarrelCount.Get() > 0;
+				};
+			auto getTurretMatrix = [=, &mtx]() -> Matrix3D
+				{
+					auto mtx_turret = mtx;
+					pDrawTypeExt->ApplyTurretOffset(&mtx_turret, Pixel_Per_Lepton, turIdx);
+					mtx_turret.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
+
+					if (turretInRecoil)
+						mtx_turret.TranslateX(-pTurData->TravelSoFar);
+
+					return mtx_turret;
+				};
+			auto mtx_turret = (shouldRedraw || turShouldRedraw || shouldCalculateMatrix()) ? getTurretMatrix() : mtx;
+
+			auto drawBarrel = [=, &mtx_turret, &mtx](int brlIdx)
+				{
+					const auto idx = brlIdx + ((turIdx + 1) * (pDrawTypeExt->ExtraBarrelCount.Get() + 1));
+					const auto pBrlData = pDrawType->TurretRecoil ? ((idx < 0) ? &pThis->BarrelRecoil : &pExt->ExtraBarrelRecoil[idx]) : nullptr;
+					const bool barrelInRecoil = pBrlData && pBrlData->State != RecoilData::RecoilState::Inactive;
+
+					// When in recoiling or is not main barrel, need to bypass cache and draw without saving
+					const bool brlShouldRedraw = turretInRecoil || barrelInRecoil || idx >= 0;
+					const auto brlKey = brlShouldRedraw ? -1 : flags;
+					const auto brlCache = brlShouldRedraw ? nullptr : &pDrawType->VoxelTurretBarrelCache;
+
+					auto getBarrelMatrix = [=, &mtx_turret, &mtx]() -> Matrix3D
+						{
+							auto mtx_barrel = mtx_turret;
+							mtx_barrel.Translate(-mtx.Row[0].W, -mtx.Row[1].W, -mtx.Row[2].W);
+							mtx_barrel.RotateY(static_cast<float>(-pThis->BarrelFacing.Current().GetRadian<32>()));
+							const auto offset = ((brlIdx < 0) ? pDrawTypeExt->BarrelOffset.Get() : pDrawTypeExt->ExtraBarrelOffsets[brlIdx]);
+							mtx_barrel.TranslateY(static_cast<float>(Pixel_Per_Lepton * offset));
+
+							if (barrelInRecoil)
+								mtx_barrel.TranslateX(-pBrlData->TravelSoFar);
+
+							mtx_barrel.Translate(mtx.Row[0].W, mtx.Row[1].W, mtx.Row[2].W);
+							return mtx_barrel;
+						};
+					auto mtx_barrel = (shouldRedraw || brlShouldRedraw) ? getBarrelMatrix() : mtx;
+
+					// draw barrel
+					pThis->Draw_A_VXL(pBarrelVoxel, hvaFrameIdx, brlKey, brlCache, rect, center, &mtx_barrel, brightness, blit, 0);
+				};
+
+			auto drawBarrels = [&drawBarrel, pDrawTypeExt, turretDir]()
+				{
+					const auto exBrlCount = pDrawTypeExt->ExtraBarrelCount.Get();
+
+					if (exBrlCount > 0)
+					{
+						std::vector<int> barrels;
+						barrels.emplace_back(-1);
+
+						for (int i = 0; i < exBrlCount; ++i)
+							barrels.emplace_back(i);
+
+						const auto barrelsSize = barrels.size();
+						const bool faceRight = turretDir == 0 || turretDir == 1;
+						std::sort(&barrels[0], &barrels[barrelsSize], [pDrawTypeExt, faceRight](const auto& idxA, const auto& idxB)
+							{
+										const auto offsetA = idxA < 0 ? pDrawTypeExt->BarrelOffset.Get() : pDrawTypeExt->ExtraBarrelOffsets[idxA];
+										const auto offsetB = idxB < 0 ? pDrawTypeExt->BarrelOffset.Get() : pDrawTypeExt->ExtraBarrelOffsets[idxB];
+
+										return faceRight ? (offsetA > offsetB) : (offsetA <= offsetB);
+							});
+
+						for (const auto& i : barrels)
+							drawBarrel(i);
+					}
+					else
+					{
+						drawBarrel(-1);
+					}
+				};
+
+			if (barrelOverTechno)
 			{
-				auto mtxBarrel = mtxTurret;
-				mtxBarrel.Translate(-mtx.Row[0].W, -mtx.Row[1].W, -mtx.Row[2].W);
-				mtxBarrel.RotateY(static_cast<float>(-pThis->BarrelFacing.Current().GetRadian<32>()));
+				// draw turret
+				pThis->Draw_A_VXL(pTurretVoxel, hvaFrameIdx, turKey, turCache, rect, center, &mtx_turret, brightness, blit, 0);
 
-				if (pThis->BarrelRecoil.State != RecoilData::RecoilState::Inactive)
-					mtxBarrel.TranslateX(-pThis->BarrelRecoil.TravelSoFar);
-
-				mtxBarrel.Translate(mtx.Row[0].W, mtx.Row[1].W, mtx.Row[2].W);
-				return mtxBarrel;
-			};
-			auto mtxBarrel = shouldRedraw ? getBarrelMatrix() : mtx;
-
-			auto getBarrelVoxel = [pDrawType, notChargeTurret, currentTurretNumber]() -> VoxelStruct*
+				if (haveBar)
+					drawBarrels();
+			}
+			else
 			{
-				if (notChargeTurret)
-					return &pDrawType->BarrelVoxel;
+				if (haveBar)
+					drawBarrels();
 
-				// Not considering the situation where there is no Ares and the limit is exceeded
-				if (currentTurretNumber < 18 || !AresHelper::CanUseAres)
-					return &pDrawType->ChargerBarrels[currentTurretNumber];
-
-				auto* aresTypeExt = reinterpret_cast<AresTechnoTypeExt*>(pDrawType->align_2FC);
-				return &aresTypeExt->ChargerBarrels[currentTurretNumber - 18];
-			};
-			const auto pBarrelVoxel = getBarrelVoxel();
-
-			// draw barrel
-			pThis->Draw_A_VXL(pBarrelVoxel, hvaFrameIdx, brlKey, brlCache, rect, center, &mtxBarrel, brightness, blit, 0);
+				// draw turret
+				pThis->Draw_A_VXL(pTurretVoxel, hvaFrameIdx, turKey, turCache, rect, center, &mtx_turret, brightness, blit, 0);
+			}
 		};
 
-		const auto turretDir = pThis->SecondaryFacing.Current().GetFacing<4>();
-
-		// The orientation of the turret can affect the layer order of the barrel and turret
-		if (turretDir != 0 && turretDir != 3)
+	auto drawTurrets = [&drawTurret, pThis, pDrawTypeExt]()
 		{
-			// draw turret
-			pThis->Draw_A_VXL(pTurretVoxel, hvaFrameIdx, turKey, turCache, rect, center, &mtxTurret, brightness, blit, 0);
+			const auto exTurCount = pDrawTypeExt->ExtraTurretCount.Get();
 
-			drawBarrel();
-		}
-		else
-		{
-			drawBarrel();
+			if (exTurCount > 0)
+			{
+				std::vector<int> turrets;
+				turrets.emplace_back(-1);
 
-			// draw turret
-			pThis->Draw_A_VXL(pTurretVoxel, hvaFrameIdx, turKey, turCache, rect, center, &mtxTurret, brightness, blit, 0);
-		}
-	}
-	else
-	{
-		pThis->Draw_A_VXL(pTurretVoxel, hvaFrameIdx, turKey, turCache, rect, center, &mtxTurret, brightness, blit, 0);
-	}
+				for (int i = 0; i < exTurCount; ++i)
+					turrets.emplace_back(i);
+
+				const auto turretsSize = turrets.size();
+				std::sort(&turrets[0], &turrets[turretsSize], [pThis, pDrawTypeExt](const auto& idxA, const auto& idxB)
+					{
+							const auto pOffsetA = idxA < 0 ? static_cast<CoordStruct*>(pDrawTypeExt->TurretOffset.GetEx()) : &pDrawTypeExt->ExtraTurretOffsets[idxA];
+							const auto pOffsetB = idxB < 0 ? static_cast<CoordStruct*>(pDrawTypeExt->TurretOffset.GetEx()) : &pDrawTypeExt->ExtraTurretOffsets[idxB];
+
+							if (pOffsetA->Z < pOffsetB->Z)
+								return true;
+
+							if (pOffsetA->Z > pOffsetB->Z)
+								return false;
+
+							const auto pointA = TacticalClass::Instance->CoordsToClient(TechnoExt::GetFLHAbsoluteCoords(pThis, *pOffsetA)).first;
+							const auto pointB = TacticalClass::Instance->CoordsToClient(TechnoExt::GetFLHAbsoluteCoords(pThis, *pOffsetB)).first;
+
+							if (pointA.Y < pointB.Y)
+								return true;
+
+							if (pointA.Y > pointB.Y)
+								return false;
+
+							return pointA.X <= pointB.X;
+					});
+
+				for (const auto& i : turrets)
+					drawTurret(i);
+			}
+			else
+			{
+				drawTurret(-1);
+			}
+		};
+	drawTurrets();
 
 	return SkipGameCode;
 }

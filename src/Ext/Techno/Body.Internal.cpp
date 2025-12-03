@@ -35,7 +35,7 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 }
 
 // reversed from 6F3D60
-CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
+CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret, int turIdx)
 {
 	auto const pType = pThis->GetTechnoType();
 	auto const pFoot = abstract_cast<FootClass*, true>(pThis);
@@ -170,6 +170,57 @@ void TechnoExt::ExtData::InitializeAttachEffects()
 
 	auto const pThis = this->OwnerObject();
 	AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
+}
+
+void TechnoExt::ExtData::InitializeRecoilData()
+{
+	const auto pTypeExt = this->TypeExtData;
+	const auto pType = pTypeExt->OwnerObject();
+
+	if (!pType->TurretRecoil)
+		return;
+
+	if (pTypeExt->ExtraTurretCount)
+	{
+		if (static_cast<int>(this->ExtraTurretRecoil.size()) < pTypeExt->ExtraTurretCount)
+			this->ExtraTurretRecoil.resize(pTypeExt->ExtraTurretCount);
+
+		const auto& refData = pType->TurretAnimData;
+
+		for (auto& data : this->ExtraTurretRecoil)
+		{
+			data.Turret.Travel = refData.Travel;
+			data.Turret.CompressFrames = refData.CompressFrames;
+			data.Turret.RecoverFrames = refData.RecoverFrames;
+			data.Turret.HoldFrames = refData.HoldFrames;
+			data.TravelPerFrame = 0.0;
+			data.TravelSoFar = 0.0;
+			data.State = RecoilData::RecoilState::Inactive;
+			data.TravelFramesLeft = 0;
+		}
+	}
+
+	if (pTypeExt->ExtraTurretCount || pTypeExt->ExtraBarrelCount)
+	{
+		const auto dataCount = (pTypeExt->ExtraBarrelCount + 1) * (pTypeExt->ExtraTurretCount + 1) - 1;
+
+		if (static_cast<int>(this->ExtraBarrelRecoil.size()) < dataCount)
+			this->ExtraBarrelRecoil.resize(dataCount);
+
+		const auto& refData = pType->BarrelAnimData;
+
+		for (auto& data : this->ExtraBarrelRecoil)
+		{
+			data.Turret.Travel = refData.Travel;
+			data.Turret.CompressFrames = refData.CompressFrames;
+			data.Turret.RecoverFrames = refData.RecoverFrames;
+			data.Turret.HoldFrames = refData.HoldFrames;
+			data.TravelPerFrame = 0.0;
+			data.TravelSoFar = 0.0;
+			data.State = RecoilData::RecoilState::Inactive;
+			data.TravelFramesLeft = 0;
+		}
+	}
 }
 
 // Gets tint colors for invulnerability, airstrike laser target and berserk, depending on parameters.
