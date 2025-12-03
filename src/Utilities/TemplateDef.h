@@ -1905,17 +1905,27 @@ bool __declspec(noinline) Animatable<TValue>::KeyframeDataEntry::Read(INI_EX& pa
 
 	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Percentage");
 	percentageTemp.Read(parser, pSection, flagName);
+	bool useNonAbs = true;
 
-	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Absolute");
-	absoluteTemp.Read(parser, pSection, flagName);
+	if (absoluteLength > absolute_length_t(0))
+	{
+		_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Absolute");
+		absoluteTemp.Read(parser, pSection, flagName);
 
-	if (!percentageTemp.isset() && !absoluteTemp.isset())
-		return false;
+		if (absoluteTemp.isset())
+		{
+			this->Percentage = (double)absoluteTemp / absoluteLength;
+			useNonAbs = false;
+		}
+	}
 
-	if (absoluteTemp.isset())
-		this->Percentage = (double)absoluteTemp / absoluteLength;
-	else
-		this->Percentage = percentageTemp;
+	if (useNonAbs)
+	{
+		if (!percentageTemp.isset())
+			return false;
+		else
+			this->Percentage = percentageTemp;
+	}
 
 	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Value");
 	this->Value.Read(parser, pSection, flagName);
