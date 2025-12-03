@@ -10,37 +10,30 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 	enum { ReturnResult = 0x70138F };
 
 	GET(TechnoClass*, pThis, ECX);
-	GET_STACK(int, weaponIndex, STACK_OFFSET(0x8, 0x4));
+	GET_STACK(const int, weaponIndex, STACK_OFFSET(0x8, 0x4));
 
 	int result = 0;
-	auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 
 	if (pWeapon)
 	{
 		result = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis);
 		auto const pType = pThis->GetTechnoType();
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-		if (pType->OpenTopped && !pTypeExt->OpenTopped_IgnoreRangefinding)
+		if (pType->OpenTopped && !TechnoTypeExt::ExtMap.Find(pType)->OpenTopped_IgnoreRangefinding)
 		{
 			int smallestRange = INT32_MAX;
 			auto pPassenger = abstract_cast<FootClass*>(pThis->Passengers.GetFirstPassenger());
 
 			while (pPassenger)
 			{
-				int openTWeaponIndex = pPassenger->GetTechnoType()->OpenTransportWeapon;
-				int tWeaponIndex = 0;
-
-				if (openTWeaponIndex != -1)
-					tWeaponIndex = openTWeaponIndex;
-				else
-					tWeaponIndex = pPassenger->SelectWeapon(pThis->Target);
-
-				WeaponTypeClass* pTWeapon = pPassenger->GetWeapon(tWeaponIndex)->WeaponType;
+				const int openTWeaponIndex = pPassenger->GetTechnoType()->OpenTransportWeapon;
+				const int tWeaponIndex = openTWeaponIndex == -1 ? pPassenger->SelectWeapon(pThis->Target) : openTWeaponIndex;
+				auto const pTWeapon = pPassenger->GetWeapon(tWeaponIndex)->WeaponType;
 
 				if (pTWeapon && pTWeapon->FireInTransport)
 				{
-					int range = WeaponTypeExt::GetRangeWithModifiers(pTWeapon, pPassenger);
+					const int range = WeaponTypeExt::GetRangeWithModifiers(pTWeapon, pPassenger);
 
 					if (range < smallestRange)
 						smallestRange = range;
@@ -82,7 +75,7 @@ DEFINE_HOOK(0x6F7294, TechnoClass_InRange_OccupyRange, 0x5)
 	enum { SkipGameCode = 0x6F729F };
 
 	GET(TechnoClass*, pThis, ESI);
-	GET(int, range, EDI);
+	GET(const int, range, EDI);
 
 	const int occupyRange = WeaponTypeExt::GetRangeWithModifiers(nullptr, pThis) / Unsorted::LeptonsPerCell;
 
@@ -122,9 +115,9 @@ DEFINE_HOOK(0x41810F, AircraftClass_MissionAttack_WeaponRangeCheck1, 0x6)
 
 	GET(AircraftClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
-	GET(int, distance, EAX);
+	GET(const int, distance, EAX);
 
-	int range = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis);
+	const int range = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis);
 
 	if (distance < range)
 		return WithinDistance;

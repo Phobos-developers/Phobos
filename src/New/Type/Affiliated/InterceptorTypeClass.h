@@ -14,6 +14,7 @@ public:
 
 	TechnoTypeClass* OwnerType;
 
+	Valueable<int> TargetingDelay;
 	Valueable<AffectedHouse> CanTargetHouses;
 	Promotable<Leptons> GuardRange;
 	Promotable<Leptons> MinimumGuardRange;

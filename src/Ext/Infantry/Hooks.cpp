@@ -5,6 +5,9 @@
 #include <InputManagerClass.h>
 #include <WarheadTypeClass.h>
 
+#include <Ext/BuildingType/Body.h>
+#include <Ext/TechnoType/Body.h>
+
 DEFINE_HOOK(0x51B2BD, InfantryClass_UpdateTarget_IsControlledByHuman, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);
@@ -65,8 +68,16 @@ DEFINE_HOOK(0x51E4FB, InfantryClass_WhatAction_ObjectClass_EnigneerEnterBuilding
 
 	if (!bridgeRepairHut && pThis->Owner->IsAlliedWith(pBuilding->Owner))
 	{
-		if (WhatActionObjectTemp::Move || pBuilding->Health >= pBuildingType->Strength)
+		if (WhatActionObjectTemp::Move)
 			return Skip;
+
+		if (pBuilding->Health >= pBuildingType->Strength)
+		{
+			const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
+
+			if (!pTypeExt->RubbleIntact && !pTypeExt->RubbleIntactRemove)
+				return Skip;
+		}
 	}
 
 	R->CL(bridgeRepairHut);
@@ -127,4 +138,29 @@ DEFINE_HOOK(0x7093F8, TechnoClass_709290_DeployWeapon, 0x5)
 	}
 
 	return ReturnTrue;
+}
+
+// Skip incorrect retn to restore the auto deploy behavior of infantry
+DEFINE_HOOK(0x522373, InfantryClass_ApproachTarget_InfantryAutoDeploy, 0x5)
+{
+	enum { Deploy = 0x522378 };
+	GET(InfantryClass*, pThis, ESI);
+	return TechnoTypeExt::ExtMap.Find(pThis->Type)->InfantryAutoDeploy.Get(RulesExt::Global()->InfantryAutoDeploy) ? Deploy : 0;
+}
+
+DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_InfiltrateBuilding, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+	GET(BuildingClass*, pBuilding, EDI);
+
+	if (const auto pTag = pBuilding->AttachedTag)
+		pTag->RaiseEvent(TriggerEvent::SpiedBy, pThis, CellStruct::Empty);
+
+	if (const auto pTag = pBuilding->AttachedTag)
+		pTag->RaiseEvent(TriggerEvent::SpyAsHouse, pThis, CellStruct::Empty);
+
+	if (const auto pTag = pBuilding->AttachedTag)
+		pTag->RaiseEvent(TriggerEvent::SpyAsInfantry, pThis, CellStruct::Empty);
+
+	return 0;
 }

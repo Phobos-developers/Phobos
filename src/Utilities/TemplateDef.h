@@ -336,7 +336,7 @@ namespace detail
 			auto const pValue = parser.value();
 			std::string Result = pValue;
 
-			if (!strstr(pValue, ".shp"))
+			if (Result.size() < 4 || !std::equal(Result.end() - 4, Result.end(), ".shp", [](char input, char expected) { return std::tolower(input) == expected; }))
 				Result += ".shp";
 
 			if (auto const pImage = FileSystem::LoadSHPFile(Result.c_str()))
@@ -603,6 +603,9 @@ namespace detail
 
 			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 			{
+				if (!_strcmpi(cur, "none"))
+					continue;
+
 				auto const landType = GroundType::GetLandTypeFromName(parser.value());
 
 				if (landType >= LandType::Clear && landType <= LandType::Weeds)
@@ -1340,6 +1343,50 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 	}
 
 	template <>
+	inline bool read<DisplayShowType>(DisplayShowType& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			static const std::pair<const char*, DisplayShowType> Names[] =
+			{
+				{"cursorhover", DisplayShowType::CursorHover},
+				{"selected", DisplayShowType::Selected},
+				{"idle", DisplayShowType::Idle},
+				{"all", DisplayShowType::All},
+			};
+
+
+			auto parsed = DisplayShowType::None;
+			for (auto&& part : std::string_view { parser.value() } | std::views::split(','))
+			{
+				std::string_view&& cur { part.begin(), part.end() };
+				*const_cast<char*>(cur.data() + cur.find_last_not_of(" \t\r") + 1) = 0;
+				auto pCur = cur.data() + cur.find_first_not_of(" \t\r");
+				bool matched = false;
+				for (auto const& [name, val] : Names)
+				{
+					if (_strcmpi(pCur, name) == 0)
+					{
+						parsed |= val;
+						matched = true;
+						break;
+					}
+				}
+				if (!matched)
+				{
+					Debug::INIParseFailed(pSection, pKey, pCur, "Display show type is invalid");
+					return false;
+				}
+			}
+
+			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
 	inline bool read<BannerNumberType>(BannerNumberType& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
@@ -1477,16 +1524,20 @@ void __declspec(noinline) ValueableIdx<Lookuper>::Read(INI_EX& parser, const cha
 // Nullable
 
 template <typename T>
-template <bool Allocate>
+template <bool allocate, bool allowNone>
 void __declspec(noinline) Nullable<T>::Read(INI_EX& parser, const char* pSection, const char* pKey)
 {
 	if (parser.ReadString(pSection, pKey))
 	{
 		const char* val = parser.value();
+		bool reset = !_strcmpi(val, "<default>");
 
-		if (!_strcmpi(val, "<default>") || INIClass::IsBlank(val))
+		if constexpr (!allowNone)
+			reset = reset || INIClass::IsBlank(val);
+
+		if (reset)
 			this->Reset();
-		else if (detail::read<T, Allocate>(this->Value, parser, pSection, pKey))
+		else if (detail::read<T, allocate>(this->Value, parser, pSection, pKey))
 			this->HasValue = true;
 	}
 }
@@ -1610,7 +1661,7 @@ bool ValueableVector<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		{
 			value_type buffer = value_type();
 			Savegame::ReadPhobosStream(Stm, buffer, false);
-			this->push_back(std::move(buffer));
+			this->emplace_back(std::move(buffer));
 
 			if (RegisterForChange)
 				Swizzle swizzle(this->back());
@@ -1629,6 +1680,7 @@ inline bool ValueableVector<bool>::Load(PhobosStreamReader& stm, bool registerFo
 	if (Savegame::ReadPhobosStream(stm, size, registerForChange))
 	{
 		this->clear();
+		this->reserve(size);
 
 		for (size_t i = 0; i < size; ++i)
 		{

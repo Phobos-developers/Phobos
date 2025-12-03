@@ -10,9 +10,23 @@ This page describes all AI scripting and mapping related additions and changes i
 - Map trigger action `125 Build At...` can now play buildup anim and becomes singleplayer-AI-repairable optionally (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2)).
 - Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 - Script action `Deploy` now has vehicles with `DeploysInto` searching for free space to deploy at if failing to do so at initial location, instead of simply getting stuck.
-- Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally. `InitialPayload` logic from Ares is not supported yet.
+- Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally.
 - If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
 - Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General] -> AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively.
+
+### Increased Overlay Limit
+
+- Maps can now contain OverlayTypes with indices up to 65535.
+
+- To enable this, set `[Basic] -> NewINIFormat=5` in the scenario file.
+
+```{note}
+Maps using this feature cannot be loaded by the vanilla game.
+```
+
+```{warning}
+Not all tools properly support this feature yet, and may crash or corrupt the map. We recommend using the [World-Altering Editor](https://github.com/CnCNet/WorldAlteringEditor) map editor when using this feature.
+```
 
 ## Singleplayer Mission Maps
 
@@ -35,7 +49,7 @@ RepairBaseNodes=                   ; List of 3 booleans indicating whether AI re
 
 ### Default loading screen and briefing offsets
 
-- It is now possible to set defaults for singleplayer map loading screen briefing pixel offsets and the loading screen images and palette that are used if there are no values defined for the map itself.
+- It is now possible to set defaults for singleplayer map loading screen briefing pixel offsets and the loading screen images and palette that are used if there are no values defined for the map itself or in case of loading screens and palette, if the files are missing.
 
 In `missionmd.ini`:
 ```ini
@@ -484,7 +498,12 @@ This category is empty for now.
 
 ### `500` Save Game
 
-- Save the current game immediately (singleplayer game only).
+- Save the current game immediately.
+
+```{note}
+For this action to work in multiplayer - you need to use a version of [YRpp spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support.
+```
+
 - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
 - The save's description will look like `MapDescName - CSFText`.
 - For example: `Allied Mission 25: Esther's Money - Money Stolen`.
@@ -694,9 +713,9 @@ In `rulesmd.ini`:
 0=SOMEBANNER
 
 [SOMEBANNER]                ; BannerType
-PCX=                        ; filename - excluding the .pcx extension
+PCX=                        ; filename - including the .pcx extension
 SHP=                        ; filename - excluding the .shp extension
-SHP.Palette=palette.pal     ; filename - excluding the .pal extension
+SHP.Palette=palette.pal     ; filename - including the .pal extension
 SHP.RefreshAfterDelay=false ; boolean
 CSF=                        ; CSF entry key
 CSF.Color=                  ; integer - R,G,B, defaults to MessageTextColor of the owner Side
