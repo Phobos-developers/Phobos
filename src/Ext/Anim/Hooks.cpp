@@ -532,7 +532,7 @@ DEFINE_HOOK(0x42308D, AnimClass_DrawIt_Transparency, 0x6)
 		int frames = pType->End;
 
 		// New addition: Keyframeable Translucent stages.
-		if (pTypeExt->Translucent_Keyframes.KeyframeData.size() > 0)
+		if (pTypeExt->Translucent_Keyframes.HasValues())
 		{
 			flags |= pTypeExt->Translucent_Keyframes.Get(static_cast<double>(currentFrame) / frames);
 		}

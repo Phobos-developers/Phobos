@@ -1948,6 +1948,12 @@ bool Animatable<TValue>::KeyframeDataEntry::Save(PhobosStreamWriter& Stm) const
 }
 
 template <typename TValue>
+bool Animatable<TValue>::HasValues() const
+{
+	return this->KeyframeData.size() > 0;
+}
+
+template <typename TValue>
 TValue Animatable<TValue>::Get(double const percentage) const noexcept
 {
 	// This currently assumes the keyframes are ordered and there are no duplicates for same frame/percentage.
@@ -1955,7 +1961,7 @@ TValue Animatable<TValue>::Get(double const percentage) const noexcept
 
 	TValue match {};
 
-	if (!this->KeyframeData.size())
+	if (!this->HasValues())
 		return match;
 
 	double startPercentage = 0.0;

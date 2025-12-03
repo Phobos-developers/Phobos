@@ -524,7 +524,7 @@ public:
 	InterpolationMode InterpolationMode;
 	MultiflagValueableVector<KeyframeDataEntry, absolute_length_t> KeyframeData;
 
-	// TODO ctors and stuff
+	inline bool HasValues() const;
 
 	inline TValue Get(double const percentage) const noexcept;
 
