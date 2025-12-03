@@ -652,6 +652,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow the aircraft to enter area guard mission and not crash immediately without any airport
   - Allow merging AOE damage to buildings into one
   - Fix the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health
+  - RA1-Style multi-turret and multi-barrel
 - **Noble Fish**:
   - Documentation maintenance
   - Chinese documentation maintenance and translation
@@ -826,6 +827,7 @@ This page lists all the individual contributions to the project by their author.
   - Auto-remove earliest beacon
   - Allow beacon placement hotkey in single player
   - Adjust recruitable status on team member discharge
+  - RA1-Style multi-turret and multi-barrel
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

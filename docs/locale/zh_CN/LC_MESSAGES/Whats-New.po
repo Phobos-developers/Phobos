@@ -2143,6 +2143,13 @@ msgstr ""
 "[小队成员解散时调整可招募性](AI-Scripting-and-Mapping.md#adjust-recruitable-status-on-"
 "team-member-discharge)（by TaranDahl）"
 
+msgid ""
+"[RA1-Style Multi-Turret and Multi-Barrel](New-or-Enhanced-Logics.md#ra1"
+"-style-multi-turret-and-multi-barrel) (by TaranDahl & CrimRecya)"
+msgstr ""
+"[RA1 风格的多炮塔与多炮管](New-or-Enhanced-Logics.md#ra1-style-multi-turret-and-"
+"multi-barrel)（by TaranDahl 与 CrimRecya）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
