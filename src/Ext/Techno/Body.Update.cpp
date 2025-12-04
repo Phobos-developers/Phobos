@@ -80,6 +80,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	const auto location = pThis->Location;
 	const auto pWeapon = pThis->GetWeapon(pInterceptorType->Weapon)->WeaponType; // Interceptor weapon is always fixed
 	const auto pWH = pWeapon->Warhead;
+	const auto pOwner = pThis->Owner;
 
 	for (auto const pBullet : BulletClass::Array)
 	{
@@ -102,15 +103,13 @@ void TechnoExt::ExtData::ApplyInterceptor()
 
 		if (pBulletTypeExt->Armor.isset())
 		{
-			const double versus = GeneralUtils::GetWarheadVersusArmor(pWH, pBulletTypeExt->Armor.Get());
-
-			if (versus == 0.0)
+			if (!GeneralUtils::GetWarheadVersusArmor(pWH, pBulletTypeExt->Armor.Get()))
 				continue;
 		}
 
 		const auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
 
-		if (!EnumFunctions::CanTargetHouse(pInterceptorType->CanTargetHouses, pThis->Owner, bulletOwner))
+		if (!EnumFunctions::CanTargetHouse(pInterceptorType->CanTargetHouses, pOwner, bulletOwner))
 			continue;
 
 		if (!pOptionalTarget && isTargetedOrLocked)

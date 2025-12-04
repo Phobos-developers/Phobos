@@ -287,7 +287,7 @@ public:
 	static void CreateDelayedFireAnim(TechnoClass* pThis, AnimTypeClass* pAnimType, int weaponIndex, bool attach, bool center, bool removeOnNoDelay, bool onTurret, CoordStruct firingCoords);
 	static bool HandleDelayedFireWithPauseSequence(TechnoClass* pThis, WeaponTypeClass* pWeapon, int weaponIndex, int frame, int firingFrame);
 	static bool IsHealthInThreshold(TechnoClass* pObject, double min, double max);
-	static UnitTypeClass* GetUnitTypeExtra(UnitClass* pUnit);
+	static UnitTypeClass* GetUnitTypeExtra(UnitClass* pUnit, TechnoTypeExt::ExtData* pData);
 	static AircraftTypeClass* GetAircraftTypeExtra(AircraftClass* pAircraft);
 	static bool CannotMove(UnitClass* pThis);
 	static bool HasAmmoToDeploy(TechnoClass* pThis);

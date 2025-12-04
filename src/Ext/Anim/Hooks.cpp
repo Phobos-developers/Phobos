@@ -332,9 +332,8 @@ CoordStruct* AnimClassFake::_GetCenterCoords(CoordStruct* pCrd) const
 {
 	CoordStruct* coords = pCrd;
 	*coords = this->Location;
-	auto const pObject = this->OwnerObject;
 
-	if (pObject)
+	if (auto const pObject = this->OwnerObject)
 	{
 		*coords += pObject->GetCoords();
 
