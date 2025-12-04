@@ -712,7 +712,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 
 			if (!cumulative)
 			{
-				if (simpleStack)
+				if (simpleStack && (pType->Cumulative_MaxCount < 0 || attachEffect->SimpleStackCount < pType->Cumulative_MaxCount))
 				{
 					attachEffect->SimpleStackCount++;
 
@@ -734,7 +734,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 		}
 	}
 
-	if (cumulativeMatches.size() > 0)
+	if (cumulative)
 	{
 		if (pType->Cumulative_MaxCount >= 0 && currentTypeCount >= pType->Cumulative_MaxCount)
 		{
@@ -745,7 +745,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 					ae->RefreshDuration(attachParams.DurationOverride);
 				}
 			}
-			else
+			else if (match)
 			{
 				match->RefreshDuration(attachParams.DurationOverride);
 			}
