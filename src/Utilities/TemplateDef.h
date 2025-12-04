@@ -2002,6 +2002,7 @@ TValue Animatable<TValue>::Get(double const percentage) const noexcept
 	return match;
 }
 
+// pBaseFlag is expected to be in format "BaseFlagName.%s".
 template <typename TValue>
 void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength)
 {
@@ -2009,8 +2010,14 @@ void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* c
 
 	// Reset value cache.
 	this->KeyframeValueCache.clear();
+	
+	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "ResetData");
+	Valueable<bool> resetData {};
+	resetData.Read(parser, pSection, flagName);
 
-	// we expect "BaseFlagName.%s" here
+	if (resetData)
+		this->KeyframeData.clear();
+
 	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Keyframe%d.%s");
 	this->KeyframeData.Read(parser, pSection, flagName, absoluteLength);
 

@@ -193,12 +193,14 @@ BASEKEY.KeyframeN.Value=        ; Key-dependant value type
 BASEKEY.KeyframeN.Percentage=   ; floating point value, percents or absolute
 BASEKEY.KeyframeN.Absolute=     ; integer, zero-based frame index
 BASEKEY.Interpolation=none      ; Interpolation mode (none|linear)
+BASEKEY.ResetData=false         ; boolean
 ```
 
 - `BASEKEY` is whatever base key name the feature in question may use. `N` is zero-based keyframe index.
   - `Value` is a key/feature-dependant value type associated with that keyframe.
   - `Percentage` is the percentage through the animation's frames where the keyframe becomes active. It is also possible to instead use zero-based frame index via `Absolute` which takes precedence over percentage, albeit it is internally converted to a percentage value.
   - `Interpolation` controls interpolation of values between keyframes. The behaviour here may depend on the value type in use, as not all value types may be interpolatable well or at all.
+  - `ResetData` if set to true makes it so that all existing keyframe data is reset before parsing. Can be used to reset keyframes when redefining them in map files etc.
 
 ```{note}
 Keyframes are expected to be defined with no duplicates for Percentage or Absolute. Failure to do so will crash the game and output developer warnings about offending keys to the log.
