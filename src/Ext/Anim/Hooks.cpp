@@ -549,3 +549,25 @@ DEFINE_HOOK(0x4250E1, AnimClass_Middle_CraterDestroyTiberium, 0x6)
 	return AnimTypeExt::ExtMap.Find(pType)->Crater_DestroyTiberium.Get(RulesExt::Global()->AnimCraterDestroyTiberium) ? 0 : SkipDestroyTiberium;
 }
 
+#pragma region KeepAnimOnLimbo
+
+DEFINE_HOOK(0x422C70, AnimClass_DrawIfVisible_DontDrawIfOwnerInLimbo, 0x6)
+{
+	if (!RulesExt::Global()->KeepAnimOnLimbo)
+		return 0;
+
+	GET(AnimClass*, pThis, ECX);
+	R->EAX(pThis->LoopDelay || pThis->OwnerObject && (pThis->OwnerObject->InLimbo || pThis->OwnerObject->VisualCharacter(true, HouseClass::CurrentPlayer) == VisualType::Hidden));
+	return R->Origin() + 0x6;
+}
+
+DEFINE_HOOK(0x425174, AnimClass_PointerExpired_KeepAnimOnLimbo, 0x6)
+{
+	if (!RulesExt::Global()->KeepAnimOnLimbo)
+		return 0;
+
+	GET_STACK(bool, bRemoved, STACK_OFFSET(0xC, 0x8));
+	return bRemoved ? 0 : 0x4251A3;
+}
+
+#pragma endregion
