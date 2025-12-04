@@ -524,7 +524,7 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 
 					if (minSize > 0)
 					{
-						if (cumulativeCount < minSize > 0 ? minCounts->at(typeCounter - 1 >= minSize ? minSize - 1 : typeCounter - 1) : 0)
+						if (cumulativeCount < minCounts->at(typeCounter - 1 >= minSize ? minSize - 1 : typeCounter - 1))
 						{
 							if (simpleStack)
 								break;
@@ -535,7 +535,7 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 
 					if (maxSize > 0)
 					{
-						if (cumulativeCount > maxSize > 0 ? maxCounts->at(typeCounter - 1 >= maxSize ? maxSize - 1 : typeCounter - 1) : 0)
+						if (cumulativeCount > maxCounts->at(typeCounter - 1 >= maxSize ? maxSize - 1 : typeCounter - 1))
 						{
 							if (simpleStack)
 								break;
