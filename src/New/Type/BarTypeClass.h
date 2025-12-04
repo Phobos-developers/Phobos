@@ -26,6 +26,7 @@ public:
 	Valueable<int> Pips_Amount;
 	Valueable<Vector2D<int>> Pips_PositionDelta;
 	Valueable<bool> Pips_DrawBackwards;
+	Valueable<bool> Pips_ChangePerSection;
 
 	BarTypeClass(const char* pTitle = NONE_STR) : Enumerable<BarTypeClass>(pTitle)
 		, InfoType { DisplayInfoType::Health }
@@ -46,6 +47,7 @@ public:
 		, Pips_Amount { 17 }
 		, Pips_PositionDelta { { 2, 0 } }
 		, Pips_DrawBackwards { false }
+		, Pips_ChangePerSection { false }
 	{ }
 
 	void LoadFromINI(CCINIClass* pINI);

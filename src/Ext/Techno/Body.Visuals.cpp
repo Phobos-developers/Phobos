@@ -965,18 +965,14 @@ void TechnoExt::DrawBar(TechnoClass* pThis, BarTypeClass* barType, Point2D pLoca
 	const Vector3D<int> sectionFrames = barType->Pips_Frames;
 	const int sectionAmount = barType->Pips_Amount;
 	const int sectionEmptyFrame = barType->Pips_EmptyFrame;
+	const bool bySection = barType->Pips_ChangePerSection;
 	const bool drawBackwards = barType->Pips_DrawBackwards;
 	int sectionsToDraw = (int)round(sectionAmount * barPercentage);
-	int frameIdxa = sectionFrames.Z;
 	int sign = drawBackwards ? 1 : -1;
 
 	if(barType->InfoType == DisplayInfoType::Health)
 		sectionsToDraw = sectionsToDraw == 0 ? 1 : sectionsToDraw;
 
-	if (barPercentage > conditionYellow)
-		frameIdxa = sectionFrames.X;
-	else if (barPercentage > conditionRed)
-		frameIdxa = sectionFrames.Y;
 
 	pLocation += barType->Bar_Offset;
 	Point2D boardPosition = pLocation + barType->PipBrd_Offset;
@@ -1007,8 +1003,34 @@ void TechnoExt::DrawBar(TechnoClass* pThis, BarTypeClass* barType, Point2D pLoca
 			position -= sectionOffset;
 	}
 
-	for (int i = 0; i < sectionsToDraw; ++i)
+	if(bySection)
+		barPercentage = 1 - ((int)ceil(sectionAmount * barPercentage) - barPercentage * sectionAmount);
+
+	int frameIdxa = sectionFrames.Z;
+
+	if (barPercentage > conditionYellow)
+		frameIdxa = sectionFrames.X;
+	else if (barPercentage > conditionRed)
+		frameIdxa = sectionFrames.Y;
+
+	if(!bySection)
 	{
+		for (int i = 0; i < sectionsToDraw; ++i)
+		{
+			position -= {sign * sectionOffset.X, sign * sectionOffset.Y};
+			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->Pips_File.Get(),
+					frameIdxa, &position, pBounds, BlitterFlags::Centered | BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		}
+	}
+	else
+	{
+		for (int i = 0; i < (sectionsToDraw - 1); ++i)
+		{
+			position -= {sign * sectionOffset.X, sign * sectionOffset.Y};
+			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->Pips_File.Get(),
+					sectionFrames.X, &position, pBounds, BlitterFlags::Centered | BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		}
+
 		position -= {sign * sectionOffset.X, sign * sectionOffset.Y};
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->Pips_File.Get(),
 				frameIdxa, &position, pBounds, BlitterFlags::Centered | BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);

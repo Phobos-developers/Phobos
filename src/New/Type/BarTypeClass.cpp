@@ -35,6 +35,7 @@ void BarTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Pips_Amount.Read(exINI, section, "Pips.Amount");
 	this->Pips_PositionDelta.Read(exINI, section, "Pips.PositionDelta");
 	this->Pips_DrawBackwards.Read(exINI, section, "Pips.DrawBackwards");
+	this->Pips_ChangePerSection.Read(exINI, section, "Pips.ChangePerSection");
 
 }
 
@@ -60,6 +61,7 @@ void BarTypeClass::Serialize(T& Stm)
 		.Process(this->Pips_Amount)
 		.Process(this->Pips_PositionDelta)
 		.Process(this->Pips_DrawBackwards)
+		.Process(this->Pips_ChangePerSection)
 		;
 }
 
