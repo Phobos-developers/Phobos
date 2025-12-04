@@ -101,6 +101,7 @@ public:
 	bool HasCumulativeAnim;
 	bool ShouldBeDiscarded;
 	bool NeedsRecalculateStat;
+	int SimpleStackCount;
 };
 
 // Container for TechnoClass-specific AttachEffect fields.

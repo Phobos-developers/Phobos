@@ -671,8 +671,8 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
 		if (disallowWarheads.size() > 0 && disallowWarheads.Contains(pObject))
 			continue;
 
-		critChance = critChance * Math::max(pType->Crit_Multiplier, 0);
-		extraChance += pType->Crit_ExtraChance;
+		critChance = critChance * Math::max(std::pow(pType->Crit_Multiplier, attachEffect->SimpleStackCount), 0);
+		extraChance += pType->Crit_ExtraChance * attachEffect->SimpleStackCount;
 	}
 
 	return critChance + extraChance;

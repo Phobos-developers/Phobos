@@ -498,6 +498,8 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 
 	for (auto const& type : attachEffectTypes)
 	{
+		const bool cumulative = type->Cumulative;
+
 		for (auto const& attachEffect : this->AttachedEffects)
 		{
 			if (attachEffect->GetType() == type && attachEffect->IsActive())
@@ -508,15 +510,16 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 				const unsigned int minSize = minCounts ? minCounts->size() : 0;
 				const unsigned int maxSize = maxCounts ? maxCounts->size() : 0;
 
-				if (type->Cumulative && (minSize > 0 || maxSize > 0))
+				if (cumulative && (minSize > 0 || maxSize > 0))
 				{
-					const int cumulativeCount = this->GetAttachedEffectCumulativeCount(type, ignoreSameSource, pInvoker, pSource);
+					const int cumulativeCount = type->Cumulative_SimpleStack? attachEffect->SimpleStackCount : this->GetAttachedEffectCumulativeCount(type, ignoreSameSource, pInvoker, pSource);
 
 					if (minSize > 0)
 					{
 						if (cumulativeCount < minCounts->at(typeCounter - 1 >= minSize ? minSize - 1 : typeCounter - 1))
 							continue;
 					}
+
 					if (maxSize > 0)
 					{
 						if (cumulativeCount > maxCounts->at(typeCounter - 1 >= maxSize ? maxSize - 1 : typeCounter - 1))
