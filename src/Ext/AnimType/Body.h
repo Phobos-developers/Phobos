@@ -93,7 +93,7 @@ public:
 			, RestrictVisibilityIfCloaked { false }
 			, DetachOnCloak { true }
 			, Translucency_Cloaked {}
-			, Translucent_Keyframes {}
+			, Translucent_Keyframes { TranslucencyLevel {} }
 			, ConstrainFireAnimsToCellSpots { true }
 			, FireAnimDisallowedLandTypes {}
 			, AttachFireAnimsToParent {}
