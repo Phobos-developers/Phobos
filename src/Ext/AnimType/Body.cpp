@@ -109,7 +109,8 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->VisibleTo_ConsiderInvokerAsOwner.Read(exINI, pID, "VisibleTo.ConsiderInvokerAsOwner");
 	this->RestrictVisibilityIfCloaked.Read(exINI, pID, "RestrictVisibilityIfCloaked");
 	this->DetachOnCloak.Read(exINI, pID, "DetachOnCloak");
-	this->Translucency_Cloaked.Read(exINI, pID, "Translucency.Cloaked");
+	this->Translucency.Read(exINI, pID, "Translucency", this->OwnerObject()->End);
+	this->Translucency_Cloaked.Read(exINI, pID, "Translucency.Cloaked", this->OwnerObject()->End, false);
 	this->ConstrainFireAnimsToCellSpots.Read(exINI, pID, "ConstrainFireAnimsToCellSpots");
 	this->FireAnimDisallowedLandTypes.Read<false, true>(exINI, pID, "FireAnimDisallowedLandTypes");
 	this->AttachFireAnimsToParent.Read(exINI, pID, "AttachFireAnimsToParent");
@@ -122,9 +123,6 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->LargeFireChances.Read(exINI, pID, "LargeFireChances");
 	this->LargeFireDistances.Read(exINI, pID, "LargeFireDistances");
 	this->Crater_DestroyTiberium.Read(exINI, pID, "Crater.DestroyTiberium");
-
-	if (this->OwnerObject()->Translucent)
-		this->Translucent_Keyframes.Read(exINI, pID, "Translucent", this->OwnerObject()->End);
 
 	// Parasitic types
 	Nullable<TechnoTypeClass*> createUnit;
@@ -172,8 +170,8 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->VisibleTo_ConsiderInvokerAsOwner)
 		.Process(this->RestrictVisibilityIfCloaked)
 		.Process(this->DetachOnCloak)
+		.Process(this->Translucency)
 		.Process(this->Translucency_Cloaked)
-		.Process(this->Translucent_Keyframes)
 		.Process(this->ConstrainFireAnimsToCellSpots)
 		.Process(this->FireAnimDisallowedLandTypes)
 		.Process(this->AttachFireAnimsToParent)

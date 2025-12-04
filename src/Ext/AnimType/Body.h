@@ -51,8 +51,8 @@ public:
 		Valueable<bool> VisibleTo_ConsiderInvokerAsOwner;
 		Valueable<bool> RestrictVisibilityIfCloaked;
 		Valueable<bool> DetachOnCloak;
-		Nullable<int> Translucency_Cloaked;
-		Animatable<TranslucencyLevel> Translucent_Keyframes;
+		Animatable<TranslucencyLevel> Translucency;
+		Animatable<TranslucencyLevel> Translucency_Cloaked;
 		Valueable<bool> ConstrainFireAnimsToCellSpots;
 		Nullable<LandTypeFlags> FireAnimDisallowedLandTypes;
 		Nullable<bool> AttachFireAnimsToParent;
@@ -92,8 +92,8 @@ public:
 			, VisibleTo_ConsiderInvokerAsOwner { false }
 			, RestrictVisibilityIfCloaked { false }
 			, DetachOnCloak { true }
-			, Translucency_Cloaked {}
-			, Translucent_Keyframes { TranslucencyLevel {} }
+			, Translucency { TranslucencyLevel {} }
+			, Translucency_Cloaked { TranslucencyLevel {} }
 			, ConstrainFireAnimsToCellSpots { true }
 			, FireAnimDisallowedLandTypes {}
 			, AttachFireAnimsToParent {}
