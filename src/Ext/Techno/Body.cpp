@@ -495,10 +495,15 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 	unsigned int foundCount = 0;
 	unsigned int typeCounter = 1;
 	const bool checkSource = ignoreSameSource && pInvoker && pSource;
+	const unsigned int minSize = minCounts ? minCounts->size() : 0;
+	const unsigned int maxSize = maxCounts ? maxCounts->size() : 0;
+	const bool hasMinMax = minSize > 0 || maxSize > 0;
 
 	for (auto const& type : attachEffectTypes)
 	{
 		const bool cumulative = type->Cumulative;
+		const bool simpleStack = type->Cumulative_SimpleStack;
+		int cumulativeCount = -1;
 
 		for (auto const& attachEffect : this->AttachedEffects)
 		{
@@ -507,23 +512,36 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 				if (checkSource && attachEffect->IsFromSource(pInvoker, pSource))
 					continue;
 
-				const unsigned int minSize = minCounts ? minCounts->size() : 0;
-				const unsigned int maxSize = maxCounts ? maxCounts->size() : 0;
-
-				if (cumulative && (minSize > 0 || maxSize > 0))
+				if (cumulative && hasMinMax)
 				{
-					const int cumulativeCount = type->Cumulative_SimpleStack? attachEffect->SimpleStackCount : this->GetAttachedEffectCumulativeCount(type, ignoreSameSource, pInvoker, pSource);
+					if (cumulativeCount == -1)
+					{
+						if (simpleStack)
+							cumulativeCount = attachEffect->SimpleStackCount;
+						else
+							cumulativeCount = this->GetAttachedEffectCumulativeCount(type, ignoreSameSource, pInvoker, pSource);
+					}
 
 					if (minSize > 0)
 					{
-						if (cumulativeCount < minCounts->at(typeCounter - 1 >= minSize ? minSize - 1 : typeCounter - 1))
+						if (cumulativeCount < minSize > 0 ? minCounts->at(typeCounter - 1 >= minSize ? minSize - 1 : typeCounter - 1) : 0)
+						{
+							if (simpleStack)
+								break;
+
 							continue;
+						}
 					}
 
 					if (maxSize > 0)
 					{
-						if (cumulativeCount > maxCounts->at(typeCounter - 1 >= maxSize ? maxSize - 1 : typeCounter - 1))
+						if (cumulativeCount > maxSize > 0 ? maxCounts->at(typeCounter - 1 >= maxSize ? maxSize - 1 : typeCounter - 1) : 0)
+						{
+							if (simpleStack)
+								break;
+
 							continue;
+						}
 					}
 				}
 
