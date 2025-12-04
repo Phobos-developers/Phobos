@@ -25,7 +25,6 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From 0.4
 
-- `[WarheadType] -> Crit.AffectBelowPercent` has been changed to `Crit.AffectsBelowPercent` to align with the flags used by similar functions and the Debug Log.
 - `[TechnoType] -> WarpAway=` has now been changed to set the animation when units are erased to maintain semantic consistency with `[General] -> WarpAway=`. The animation that was originally controlled by `[TechnoType] -> WarpAway=`, which played instead of `[General] -> WarpOut=` when a Techno is chronowarped by chronosphere, now needs to be specified using `[TechnoType] -> Chronoshift.WarpOut=`, which defaults to the value of `[TechnoType] -> WarpOut=`.
 - `UseCenterCoordsIfAttached` has been replaced by enumeration key `AttachedAnimPosition`. Set `AttachedAnimPosition=center` to replicate effects of `UseCenterCoordsIfAttached=true`.
 
@@ -89,6 +88,13 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 #### From 0.1.1
 
 - Key `rulesmd.ini -> [TechnoType] -> Deployed.RememberTarget` is deprecated and can be removed now, the bugfix for `DeployToFire` deployers is now always on.
+
+### Changed tags
+
+#### From 0.3
+
+- `[WarheadType] -> Crit.AffectBelowPercent` -> `[WarheadType] -> Crit.AffectsBelowPercent`.
+  - To maintain consistency with the tags used for similar functions and avoid misspellings, replace with a more standard tag name.
 
 ### New user settings in RA2MD.INI
 

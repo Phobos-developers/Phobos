@@ -158,9 +158,6 @@ msgstr "由旧版本 Phobos"
 msgid "From 0.4"
 msgstr "由 0.4"
 
-msgid "`[WarheadType] -> Crit.AffectBelowPercent` has been changed to `Crit.AffectsBelowPercent` to align with the flags used by similar functions and the Debug Log."
-msgstr "`[WarheadType] -> Crit.AffectBelowPercent` 已被改为 `Crit.AffectsBelowPercent` 以与类似功能所用的标签及 Debug 日志保持一致。"
-
 #: ../../Whats-New.md:28
 msgid ""
 "`[TechnoType] -> WarpAway=` has now been changed to set the animation "
