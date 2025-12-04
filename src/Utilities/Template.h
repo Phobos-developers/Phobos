@@ -39,6 +39,7 @@
 
 #include "Savegame.h"
 #include "Enum.h"
+#include <map>
 
 class INI_EX;
 
@@ -523,6 +524,7 @@ public:
 
 	InterpolationMode InterpolationMode;
 	MultiflagValueableVector<KeyframeDataEntry, absolute_length_t> KeyframeData;
+	mutable std::map<double, TValue> KeyframeValueCache;
 
 	inline bool HasValues() const;
 

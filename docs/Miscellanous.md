@@ -201,7 +201,7 @@ BASEKEY.Interpolation=none      ; Interpolation mode (none|linear)
   - `Interpolation` controls interpolation of values between keyframes. The behaviour here may depend on the value type in use, as not all value types may be interpolatable well or at all.
 
 ```{note}
-Keyframes are expected to be defined in ascending order with no duplicates by percentage or absolute value. Failure to do so will crash the game and output developer warnings about offending keys to the log.
+Keyframes are expected to be defined with no duplicates for Percentage or Absolute. Failure to do so will crash the game and output developer warnings about offending keys to the log.
 ```
 
 ### Include files

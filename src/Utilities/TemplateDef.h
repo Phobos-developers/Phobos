@@ -1956,37 +1956,48 @@ bool Animatable<TValue>::HasValues() const
 template <typename TValue>
 TValue Animatable<TValue>::Get(double const percentage) const noexcept
 {
-	// This currently assumes the keyframes are ordered and there are no duplicates for same frame/percentage.
-	// Thing is still far from lightweight as searching for the correct items requires going through the vector.
-
 	TValue match {};
 
 	if (!this->HasValues())
 		return match;
 
-	double startPercentage = 0.0;
-	int i = this->KeyframeData.size() - 1;
+	// Check if there is cached value for given percentage and return it if found.
+	auto it_cache = KeyframeValueCache.find(percentage);
+	
+	if (it_cache != KeyframeValueCache.end())
+		return it_cache->second;
 
-	for (; i >= 0; i--)
-	{
-		auto const& value = this->KeyframeData[i];
-
-		if (percentage >= value.Percentage)
+	// Binary search for a matching keyframe.
+	auto it = std::lower_bound(
+		KeyframeData.begin(),
+		KeyframeData.end(),
+		percentage,
+		[](const KeyframeDataEntry& entry, double p)
 		{
-			startPercentage = value.Percentage;
-			match = value.Value;
-			break;
+			return entry.Percentage < p;
+		}
+	);
+
+	// We found a match.
+	if (it != KeyframeData.begin())
+	{
+		--it;
+		double startPercentage = it->Percentage;
+		match = it->Value;
+		auto it_next = std::next(it);
+
+		// Only interpolate if an interpolation mode is enabled and there's keyframes remaining.
+		if (this->InterpolationMode != InterpolationMode::None && it_next != KeyframeData.end())
+		{
+			auto const& nextKeyFrame = *it_next;
+			TValue nextValue = nextKeyFrame.Value.Get();
+			double progressPercentage = (percentage - startPercentage) / (nextKeyFrame.Percentage - startPercentage);
+			match = detail::interpolate(match, nextValue, progressPercentage, this->InterpolationMode);
 		}
 	}
 
-	// Only interpolate if an interpolation mode is enabled and there's keyframes remaining.
-	if (this->InterpolationMode != InterpolationMode::None && i >= 0 && (size_t)(i + 1) < this->KeyframeData.size())
-	{
-		auto const& value = this->KeyframeData[i + 1];
-		TValue nextValue = value.Value;
-		double progressPercentage = (percentage - startPercentage) / (value.Percentage - startPercentage);
-		return detail::interpolate(match, nextValue, progressPercentage, this->InterpolationMode);
-	}
+	// Add value to cache.
+	this->KeyframeValueCache.emplace(percentage, match);
 
 	return match;
 }
@@ -1996,6 +2007,9 @@ void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* c
 {
 	char flagName[0x40];
 
+	// Reset value cache.
+	this->KeyframeValueCache.clear();
+
 	// we expect "BaseFlagName.%s" here
 	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Keyframe%d.%s");
 	this->KeyframeData.Read(parser, pSection, flagName, absoluteLength);
@@ -2003,9 +2017,15 @@ void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* c
 	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Interpolation");
 	detail::read(this->InterpolationMode, parser, pSection, flagName);
 
+	// Sort the keyframe data based on percentages.
+	std::sort(KeyframeData.begin(), KeyframeData.end(),
+		  [](KeyframeDataEntry const& a, KeyframeDataEntry const& b)
+		  {
+			  return a.Percentage < b.Percentage;
+		  });
+
 	// Error handling
 	bool foundError = false;
-	double lastPercentage = -DBL_MAX;
 	std::unordered_set<double> percentages;
 
 	for (size_t i = 0; i < this->KeyframeData.size(); i++)
@@ -2020,14 +2040,7 @@ void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* c
 			foundError = true;
 		}
 
-		if (lastPercentage > value.Percentage)
-		{
-			Debug::Log("[Developer warning] [%s] %s has keyframe out of order (%.3f after previous keyframe of %.3f).\n", pSection, flagName, value.Percentage, lastPercentage);
-			foundError = true;
-		}
-
 		percentages.insert(value.Percentage);
-		lastPercentage = value.Percentage;
 	}
 
 	if (foundError)
