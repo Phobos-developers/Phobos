@@ -502,3 +502,14 @@ DEFINE_HOOK(0x552F79, LoadProgressManager_Draw_MissingLoadingScreenDefaults, 0x6
 
 	return 0;
 }
+
+// Hides the number at top-left of screen when debug stats are not being drawn
+DEFINE_HOOK(0x55F1F8, MPDebugPrint_CheckDrawFlag, 0x8)
+{
+	if (!Game::DrawMPDebugStats)
+	{
+		return 0x55F280;
+	}
+
+	return 0;
+}
