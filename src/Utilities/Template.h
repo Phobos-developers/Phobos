@@ -522,6 +522,7 @@ public:
 		inline bool Save(PhobosStreamWriter& Stm) const;
 	};
 
+	TValue DefaultValue;
 	InterpolationMode InterpolationMode;
 	MultiflagValueableVector<KeyframeDataEntry, absolute_length_t> KeyframeData;
 	mutable std::map<double, TValue> KeyframeValueCache;
@@ -530,7 +531,7 @@ public:
 
 	inline TValue Get(double const percentage) const noexcept;
 
-	inline void Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength = absolute_length_t(0));
+	inline void Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength = absolute_length_t(0), bool useFallback = true);
 
 	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 

@@ -196,7 +196,7 @@ BASEKEY.Interpolation=none      ; Interpolation mode (none|linear)
 BASEKEY.ResetData=false         ; boolean
 ```
 
-- `BASEKEY` is whatever base key name the feature in question may use. `N` is zero-based keyframe index.
+- `BASEKEY` is whatever base key name the feature in question may use. `N` is zero-based keyframe index. If no keyframes are defined, a single value from `BASEKEY` is attempted to be parsed instead.
   - `Value` is a key/feature-dependant value type associated with that keyframe.
   - `Percentage` is the percentage through the animation's frames where the keyframe becomes active. It is also possible to instead use zero-based frame index via `Absolute` which takes precedence over percentage, albeit it is internally converted to a percentage value.
   - `Interpolation` controls interpolation of values between keyframes. The behaviour here may depend on the value type in use, as not all value types may be interpolatable well or at all.

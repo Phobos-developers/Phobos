@@ -1961,6 +1961,10 @@ TValue Animatable<TValue>::Get(double const percentage) const noexcept
 	if (!this->HasValues())
 		return match;
 
+	// Shortcut for fallback keyframe.
+	if (this->KeyframeData.size() == 1 && this->KeyframeData[0].Percentage == 0.0)
+		return this->KeyframeData[0].Value;
+
 	// Check if there is cached value for given percentage and return it if found.
 	auto it_cache = KeyframeValueCache.find(percentage);
 	
@@ -1969,8 +1973,8 @@ TValue Animatable<TValue>::Get(double const percentage) const noexcept
 
 	// Binary search for a matching keyframe.
 	auto it = std::lower_bound(
-		KeyframeData.begin(),
-		KeyframeData.end(),
+		this->KeyframeData.begin(),
+		this->KeyframeData.end(),
 		percentage,
 		[](const KeyframeDataEntry& entry, double p)
 		{
@@ -1979,7 +1983,7 @@ TValue Animatable<TValue>::Get(double const percentage) const noexcept
 	);
 
 	// We found a match.
-	if (it != KeyframeData.begin())
+	if (it != this->KeyframeData.begin())
 	{
 		--it;
 		double startPercentage = it->Percentage;
@@ -1987,7 +1991,7 @@ TValue Animatable<TValue>::Get(double const percentage) const noexcept
 		auto it_next = std::next(it);
 
 		// Only interpolate if an interpolation mode is enabled and there's keyframes remaining.
-		if (this->InterpolationMode != InterpolationMode::None && it_next != KeyframeData.end())
+		if (this->InterpolationMode != InterpolationMode::None && it_next != this->KeyframeData.end())
 		{
 			auto const& nextKeyFrame = *it_next;
 			TValue nextValue = nextKeyFrame.Value.Get();
@@ -2002,27 +2006,39 @@ TValue Animatable<TValue>::Get(double const percentage) const noexcept
 	return match;
 }
 
-// pBaseFlag is expected to be in format "BaseFlagName.%s".
 template <typename TValue>
-void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength)
+void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength, bool useFallback)
 {
+	// Set up buffers.
+	char baseFlagName[0x40];
 	char flagName[0x40];
+	_snprintf_s(baseFlagName, sizeof(baseFlagName), "%s.%%s", pBaseFlag);
 
 	// Reset value cache.
 	this->KeyframeValueCache.clear();
-	
-	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "ResetData");
+
+	_snprintf_s(flagName, sizeof(flagName), baseFlagName, "ResetData");
 	Valueable<bool> resetData {};
 	resetData.Read(parser, pSection, flagName);
 
 	if (resetData)
 		this->KeyframeData.clear();
 
-	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Keyframe%d.%s");
+	_snprintf_s(flagName, sizeof(flagName), baseFlagName, "Keyframe%d.%s");
 	this->KeyframeData.Read(parser, pSection, flagName, absoluteLength);
 
-	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Interpolation");
+	_snprintf_s(flagName, sizeof(flagName), baseFlagName, "Interpolation");
 	detail::read(this->InterpolationMode, parser, pSection, flagName);
+
+	if (!this->HasValues() && useFallback)
+	{
+		TValue value { DefaultValue };
+		KeyframeDataEntry keyframe {};
+		detail::read(value, parser, pSection, pBaseFlag);
+		keyframe.Value = value;
+		this->KeyframeData.push_back(keyframe);
+		return;
+	}
 
 	// Sort the keyframe data based on percentages.
 	std::sort(KeyframeData.begin(), KeyframeData.end(),
