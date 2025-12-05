@@ -888,8 +888,6 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 	int detachedCount = 0;
 	auto const targetAEs = &pTargetExt->AttachedEffects;
 	auto const pWeapon = pType->ExpireWeapon;
-	const bool triggerOnDiscard = (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Remove) != ExpireWeaponCondition::None;
-	const bool onlyOnce = pType->ExpireWeapon_CumulativeOnlyOnce;
 	const bool invokerOwner = pType->ExpireWeapon_UseInvokerAsOwner;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
@@ -933,18 +931,18 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 				}
 			}
 
-			if (pWeapon && triggerOnDiscard)
+			if (pWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Remove) != ExpireWeaponCondition::None)
 			{
 				auto const pInvoker = attachEffect->Invoker;
 
 				// can't be GetAttachedEffectCumulativeCount(pType) < 2, or inactive AE might make it stack more than once
-				if (!simpleStack || !onlyOnce || stackCount == 1)
+				if (!simpleStack || !pType->ExpireWeapon_CumulativeOnlyOnce || stackCount == 1)
 				{
 					handleExpireWeapon(pInvoker);
 				}
 				else if (simpleStack) // handle ExpireWeapon for Cumulative.SimpleStack
 				{
-					if (onlyOnce)
+					if (pType->ExpireWeapon_CumulativeOnlyOnce)
 					{
 						if (stackCount <= 0)
 							handleExpireWeapon(pInvoker);
