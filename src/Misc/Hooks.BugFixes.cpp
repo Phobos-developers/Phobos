@@ -223,36 +223,6 @@ DEFINE_HOOK(0x4FB2DE, HouseClass_PlaceObject_HotkeyFix, 0x6)
 	return 0;
 }
 
-// Issue #46: Laser is mirrored relative to FireFLH
-// Author: Starkku
-DEFINE_HOOK(0x6FF2BE, TechnoClass_FireAt_BurstOffsetFix_1, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-
-	--pThis->CurrentBurstIndex;
-
-	return 0x6FF2D1;
-}
-
-DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_BurstOffsetFix_2, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-	GET_BASE(int, weaponIndex, 0xC);
-
-	++pThis->CurrentBurstIndex;
-	pThis->CurrentBurstIndex %= pThis->GetWeapon(weaponIndex)->WeaponType->Burst;
-
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pExt->ForceFullRearmDelay)
-	{
-		pExt->ForceFullRearmDelay = false;
-		pThis->CurrentBurstIndex = 0;
-	}
-
-	return 0;
-}
-
 // issue #290: Undeploy building into a unit plays EVA_NewRallyPointEstablished
 // Author: secsome
 DEFINE_HOOK(0x44377E, BuildingClass_ActiveClickWith, 0x6)
