@@ -846,6 +846,27 @@ ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...
 These events, as opposed to [events 81 & 82 from Ares](https://ares-developers.github.io/Ares-docs/new/triggerevents.html#house-owns-techno-type-81-82), take house as a parameter instead of using the trigger owner.
 ```
 
+### `603` There are no technos of the specified houses list
+
+- Returns `True` if there are no technos of the specified houses in the map.
+- The second parameter is a 0-based index for the `AIHousesList` section that specifies the list of possible `Countries` that can be evaluated. The new `AIHousesList` section must be declared in `rulesmd.ini` for making this script work:
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,603,0,[Index],...
+...
+```
+
+In `rulesmd.ini`:
+```ini
+[AIHousesList]  ; List of HouseType lists
+0=SOMEHOUSETYPE,SOMEOTHERHOUSETYPE,SAMPLEHOUSETYPE
+1=ANOTHERHOUSETYPE,YETANOTHERHOUSETYPE
+; ...
+```
+
 ### `604-605` Checking if a specific Techno enters in a cell
 
 - `604`: Checks if the techno that entered in the cell has the same ID specified in the event.

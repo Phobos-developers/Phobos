@@ -132,6 +132,7 @@ HideShakeEffects=false           ; boolean
   68=House,1,2
   69=Non-inert,10
   70=AITargetTypes index,0
+  71=AIHousesList index,501
   71=AttachEffectType,0
   101=BannerType,0
   102=Horizontal position,0
@@ -178,6 +179,7 @@ HideShakeEffects=false           ; boolean
   600=Shield of the attached object is broken,0,0,0,0,[LONG DESC],0,1,600,1
   601=House owns Techno Type,68,46,0,0,[LONG DESC],0,1,601,1
   602=House doesn't own Techno Type,68,46,0,0,[LONG DESC],0,1,602,1
+  603=There are no technos of the specified houses list,0,71,0,0,[LONG DESC],0,1,603,1
   604=Techno Type Entered Cell,68,46,0,0,[LONG DESC],0,1,604,1
   605=AI Target Type Entered Cell,68,70,0,0,[LONG DESC],0,1,605,1
   606=AttachEffect is attaching to a Techno,-2,71,0,0,[LONG DESC],0,1,606,1
@@ -199,6 +201,9 @@ HideShakeEffects=false           ; boolean
   800=Display banner and local variable (Phobos),-4,101,104,102,103,3,0,0,0,Draw banner on screen and replace banner with same ID,0,1,800
   801=Display banner and global variable (Phobos),-4,101,104,102,103,35,0,0,0,Draw banner on screen and replace banner with same ID,0,1,801
   802=Delete banner (Phobos),0,104,0,0,0,0,0,0,0,Delete banner with ID,0,1,802
+
+  [TriggerParamTypes]
+  501=AIHousesList,1,1
 
   ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
   [ScriptTypeLists]
@@ -765,6 +770,7 @@ Vanilla fixes:
 - `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false` (by Starkku)
 - Fixed position and layer of info tip and reveal production cameo on selected building (by Belonit)
 - Fixed `TurretOffset` to be supported for SHP vehicles (by TwinkleStar)
+- Map event `There are no technos of the specified houses list` (by FS-21)
 - `Powered`/`PoweredSpecial` buildings' powered anims will update as usual when being captured by enemies (by Trsdy)
 - Fixed a glitch related to incorrect target setting for missiles (by Belonit)
 - Skipped parsing `[Header]` section of compaign maps which led to occasional crashes on Linux (by Trsdy)
