@@ -1,4 +1,4 @@
-#include <AircraftClass.h>
+﻿#include <AircraftClass.h>
 #include <AircraftTrackerClass.h>
 #include <AnimClass.h>
 #include <BuildingClass.h>
@@ -2900,3 +2900,75 @@ DEFINE_HOOK(0x4440B0, BuildingClass_KickOutUnit_CloningFacility, 0x6)
 
 	return ContinueIn;
 }
+
+#pragma region BalloonHoverPathingFix
+
+DEFINE_HOOK(0x64D592, Game_PreProcessMegaMissionList_CheckForTargetCrdRecal1, 0x6)
+{
+	enum { SkipTargetCrdRecal = 0x64D598 };
+	GET(TechnoClass*, pTechno, EBP);
+	return pTechno->GetTechnoType()->BalloonHover ? SkipTargetCrdRecal : 0;
+}
+
+DEFINE_HOOK(0x64D575, Game_PreProcessMegaMissionList_CheckForTargetCrdRecal2, 0x6)
+{
+	enum { SkipTargetCrdRecal = 0x64D598 };
+	GET(TechnoClass*, pTechno, EBP);
+	return pTechno->GetTechnoType()->BalloonHover ? SkipTargetCrdRecal : 0;
+}
+
+DEFINE_HOOK(0x64D5C5, Game_PreProcessMegaMissionList_CheckForTargetCrdRecal3, 0x6)
+{
+	enum { SkipTargetCrdRecal = 0x64D659 };
+	GET(TechnoClass*, pTechno, EBP);
+	return pTechno->GetTechnoType()->BalloonHover ? SkipTargetCrdRecal : 0;
+}
+
+DEFINE_HOOK(0x51BFA2, InfantryClass_IsCellOccupied_Start, 0x6)
+{
+	enum { MoveOK = 0x51C02D };
+	GET(InfantryClass*, pThis, EBP);
+	return pThis->Type->BalloonHover && pThis->IsInAir() ? MoveOK : 0;
+}
+
+DEFINE_HOOK(0x73F0A7, UnitClass_IsCellOccupied_Start, 0x9)
+{
+	enum { MoveOK = 0x73F23F };
+	GET(UnitClass*, pThis, ECX);
+	return pThis->Type->BalloonHover && pThis->IsInAir() ? MoveOK : 0;
+}
+
+namespace ApproachTargetContext
+{
+	bool IsBalloonHover = false;
+}
+
+DEFINE_HOOK(0x4D5690, FootClass_ApproachTarget_SetContext, 0x6)
+{
+	GET(FootClass*, pThis, ECX);
+	ApproachTargetContext::IsBalloonHover = pThis->GetTechnoType()->BalloonHover;
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x4D5A42, FootClass_ApproachTarget_ResetContext, 0x5);
+DEFINE_HOOK_AGAIN(0x4D5AB5, FootClass_ApproachTarget_ResetContext, 0x5);
+DEFINE_HOOK_AGAIN(0x4D68DE, FootClass_ApproachTarget_ResetContext, 0x5);
+DEFINE_HOOK_AGAIN(0x4D6A8B, FootClass_ApproachTarget_ResetContext, 0x5);
+DEFINE_HOOK(0x4D5744, FootClass_ApproachTarget_ResetContext, 0x5)
+{
+	ApproachTargetContext::IsBalloonHover = false;
+	return 0;
+}
+
+DEFINE_HOOK(0x4834A0, CellClass_IsClearToMove_Start, 0x5)
+{
+	if (ApproachTargetContext::IsBalloonHover)
+	{
+		R->AL(true);
+		return 0x483605;
+	}
+
+	return 0;
+}
+
+#pragma endregion
