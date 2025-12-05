@@ -96,6 +96,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 #### From 0.4
 
 - `[WarheadType] -> Crit.AffectBelowPercent` -> `[WarheadType] -> Crit.AffectsBelowPercent`.
+- `[WarheadType] -> DetonateOnAllMapObjects.AffectHouses` -> `[WarheadType] -> DetonateOnAllMapObjects.AffectsHouses`
 
 #### From ???
 
