@@ -1082,6 +1082,7 @@ AISuperWeaponDelay=  ; integer, game frames
   - `ConvertN.AffectedHouses` specifies whose units can be converted.
   - `Convert.From`, `Convert.To` and `Convert.AffectedHouses` (without numbers) are a valid alternative to `Convert0.From`, `Convert0.To` and `Convert0.AffectedHouses` if only one pair is specified.
   - Conversion affects *all* existing units of set TechnoTypes, this includes units in: transports, occupied buildings, buildings with `InfantryAbsorb=yes` or `UnitAbsorb=yes`, buildings with `Bunker=yes`.
+ - `Convert.Anim` specifies the animation that will appear in the unit after a successful conversion.
 
 In example, this superweapon would convert all owned and friendly `SOLDIERA` and `SOLDIERB` to `NEWSOLDIER`:
 ```ini
@@ -1094,11 +1095,13 @@ Convert.AffectedHouses=team
 In `rulesmd.ini`:
 ```ini
 [SOMESW]                        ; SuperWeaponType
+Convert.Anim=                   ; Animation
 ConvertN.From=                  ; List of TechnoTypes
 ConvertN.To=                    ; TechnoType
 ConvertN.AffectedHouses=owner   ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ; where N = 0, 1, 2, ...
 ; or
+Convert.Anim=                   ; Animation
 Convert.From=                   ; List of TechnoTypes
 Convert.To=                     ; TechnoType
 Convert.AffectedHouses=owner    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
