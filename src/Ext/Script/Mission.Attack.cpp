@@ -17,6 +17,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 	auto& waitNoTargetCounter = pTeamData->WaitNoTargetCounter;
 	auto& waitNoTargetTimer = pTeamData->WaitNoTargetTimer;
 	auto& waitNoTargetAttempts = pTeamData->WaitNoTargetAttempts;
+	std::vector<double> disguiseDetection = {};
 
 	// When the new target wasn't found it sleeps some few frames before the new attempt. This can save cycles and cycles of unnecessary executed lines.
 	if (waitNoTargetCounter > 0)
@@ -138,6 +139,19 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 			}
 
 			pacifistTeam &= !ScriptExt::IsUnitArmed(pFoot);
+
+			auto pTechnoData = TechnoTypeExt::ExtMap.Find(pTechnoType);
+			if (pTechnoType->DetectDisguise)
+			{
+				auto const AIDifficulty = static_cast<int>(pFoot->Owner->GetAIDifficultyIndex());
+				double detectionValue = 1.0;
+
+				if (pTechnoData->DetectDisguise_Percent.size() == 3)
+					detectionValue = pTechnoData->DetectDisguise_Percent[AIDifficulty];
+
+				detectionValue = detectionValue > 0.0 ? detectionValue : 1.0;
+				disguiseDetection.push_back(detectionValue);
+			}
 		}
 	}
 
@@ -190,7 +204,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 
 		const auto& node = scriptActions[currentMission];
 		const int targetMask = node.Argument; // This is the target type
-		const auto pSelectedTarget = ScriptExt::GreatestThreat(pLeaderUnit, targetMask, calcThreatMode, enemyHouse, attackAITargetType, idxAITargetTypeItem, agentMode);
+		const auto pSelectedTarget = GreatestThreat(pLeaderUnit, targetMask, calcThreatMode, enemyHouse, attackAITargetType, idxAITargetTypeItem, agentMode, disguiseDetection);
 
 		if (pSelectedTarget)
 		{
@@ -446,7 +460,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 	}
 }
 
-TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode, HouseClass* onlyTargetThisHouseEnemy, int attackAITargetType, int idxAITargetTypeItem, bool agentMode)
+TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode, HouseClass* onlyTargetThisHouseEnemy, int attackAITargetType, int idxAITargetTypeItem, bool agentMode, std::vector<double> disguiseDetection)
 {
 	TechnoClass* pBestObject = nullptr;
 	double bestVal = -1;
@@ -487,6 +501,30 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 		if (const auto pTargetBuildingType = abstract_cast<BuildingTypeClass*, true>(pTargetType))
 		{
 			if (pTargetBuildingType->InvisibleInGame)
+				continue;
+		}
+
+		// Checking disguise logic, if the target isn't detected then it will be ignored
+		if (pTarget->IsDisguised())
+		{
+			if (disguiseDetection.size() == 0)
+				continue;
+
+			bool detected = false;
+
+			for (double item : disguiseDetection)
+			{
+				int dice = ScenarioClass::Instance->Random.RandomRanged(0, 99);
+				int detectionValue = static_cast<int>(std::round(item * 100.0));
+
+				if (detectionValue > dice)
+				{
+					detected = true;
+					break;
+				}
+			}
+
+			if (!detected)
 				continue;
 		}
 

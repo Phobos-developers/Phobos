@@ -220,7 +220,7 @@ public:
 
 	// Mission.Attack.cpp
 	static void Mission_Attack(TeamClass* pTeam, int calcThreatMode = 0, bool repeatAction = true, int attackAITargetType = -1, int idxAITargetTypeItem = -1);
-	static TechnoClass* GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode = 0, HouseClass* onlyTargetThisHouseEnemy = nullptr, int attackAITargetType = -1, int idxAITargetTypeItem = -1, bool agentMode = false);
+	static TechnoClass* GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode = 0, HouseClass* onlyTargetThisHouseEnemy = nullptr, int attackAITargetType = -1, int idxAITargetTypeItem = -1, bool agentMode = false, std::vector<double> disguiseDetection = {});
 	static bool EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attackAITargetType = -1, int idxAITargetTypeItem = -1, TechnoClass* pTeamLeader = nullptr);
 	static void Mission_Attack_List(TeamClass* pTeam, int calcThreatMode = 0, bool repeatAction = true, int attackAITargetType = -1);
 	static void Mission_Attack_List1Random(TeamClass* pTeam, int calcThreatMode = 0, bool repeatAction = true, int attackAITargetType = -1);
