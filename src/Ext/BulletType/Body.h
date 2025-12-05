@@ -27,6 +27,8 @@ public:
 		Valueable<WeaponTypeClass*> Interceptable_WeaponOverride;
 		ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
 		Nullable<double> Gravity;
+		Valueable<bool> Vertical_AircraftFix;
+		Nullable<bool> VerticalInitialFacing;
 
 		TrajectoryTypePointer TrajectoryType;
 
@@ -44,6 +46,9 @@ public:
 		Valueable<bool> AAOnly;
 		Valueable<bool> Arcing_AllowElevationInaccuracy;
 		Valueable<WeaponTypeClass*> ReturnWeapon;
+		Valueable<bool> ReturnWeapon_ApplyFirepowerMult;
+
+		Valueable<bool> SubjectToGround;
 
 		Valueable<bool> Splits;
 		Valueable<double> AirburstSpread;
@@ -53,10 +58,21 @@ public:
 		Nullable<bool> AroundTarget;
 		Valueable<bool> Airburst_UseCluster;
 		Valueable<bool> Airburst_RandomClusters;
+		Valueable<bool> Airburst_TargetAsSource;
+		Valueable<bool> Airburst_TargetAsSource_SkipHeight;
 		Valueable<Leptons> Splits_TargetingDistance;
 		Valueable<int> Splits_TargetCellRange;
 		Valueable<bool> Splits_UseWeaponTargeting;
 		Valueable<bool> AirburstWeapon_ApplyFirepowerMult;
+		Valueable<Leptons> AirburstWeapon_SourceScatterMin;
+		Valueable<Leptons> AirburstWeapon_SourceScatterMax;
+
+		Valueable<bool> Parachuted;
+		Valueable<int> Parachuted_FallRate;
+		Nullable<int> Parachuted_MaxFallRate;
+		Nullable<AnimTypeClass*> BombParachute;
+
+		Valueable<bool> AU;
 
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
@@ -69,6 +85,8 @@ public:
 			, Interceptable_WeaponOverride {}
 			, LaserTrail_Types {}
 			, Gravity {}
+			, Vertical_AircraftFix { true }
+			, VerticalInitialFacing {}
 			, TrajectoryType { }
 			, Shrapnel_AffectsGround { false }
 			, Shrapnel_AffectsBuildings { false }
@@ -84,6 +102,8 @@ public:
 			, AAOnly { false }
 			, Arcing_AllowElevationInaccuracy { true }
 			, ReturnWeapon {}
+			, ReturnWeapon_ApplyFirepowerMult { false }
+			, SubjectToGround { false }
 			, Splits { false }
 			, AirburstSpread { 1.5 }
 			, RetargetAccuracy { 0.0 }
@@ -92,10 +112,19 @@ public:
 			, AroundTarget {}
 			, Airburst_UseCluster { false }
 			, Airburst_RandomClusters { false }
+			, Airburst_TargetAsSource { false }
+			, Airburst_TargetAsSource_SkipHeight { false }
 			, Splits_TargetingDistance{ Leptons(1280) }
 			, Splits_TargetCellRange { 3 }
 			, Splits_UseWeaponTargeting { false }
 			, AirburstWeapon_ApplyFirepowerMult { false }
+			, AirburstWeapon_SourceScatterMin { Leptons(0) }
+			, AirburstWeapon_SourceScatterMax { Leptons(0) }
+			, Parachuted { false }
+			, Parachuted_FallRate { 1 }
+			, Parachuted_MaxFallRate {}
+			, BombParachute {}
+			, AU { false }
 		{ }
 
 		virtual ~ExtData() = default;

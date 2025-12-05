@@ -22,16 +22,17 @@ public:
 		ValueableVector<BuildingTypeClass*> PowersUp_Buildings;
 		ValueableIdxVector<SuperWeaponTypeClass> SuperWeapons;
 
+		Valueable<double> PowerPlant_DamageFactor;
 		ValueableVector<BuildingTypeClass*> PowerPlantEnhancer_Buildings;
 		Valueable<int> PowerPlantEnhancer_Amount;
 		Nullable<float> PowerPlantEnhancer_Factor;
 
 		std::vector<Point2D> OccupierMuzzleFlashes;
 		Valueable<bool> Powered_KillSpawns;
-		Nullable<bool> AllowAirstrike;
 		Valueable<bool> CanC4_AllowZeroDamage;
 		Valueable<bool> Refinery_UseStorage;
 		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
+		Valueable<bool> Cloning_Powered { true };
 		Valueable<bool> ExcludeFromMultipleFactoryBonus;
 
 		ValueableIdx<VocClass> Grinding_Sound;
@@ -82,15 +83,41 @@ public:
 
 		Nullable<Point2D> BarracksExitCell;
 
+		Valueable<int> Overpower_KeepOnline;
+		Valueable<int> Overpower_ChargeWeapon;
+
+		Valueable<bool> DisableDamageSound;
+		Nullable<float> BuildingOccupyDamageMult;
+		Nullable<float> BuildingOccupyROFMult;
+		Nullable<float> BuildingBunkerDamageMult;
+		Nullable<float> BuildingBunkerROFMult;
+		NullableIdx<VocClass> BunkerWallsUpSound;
+		NullableIdx<VocClass> BunkerWallsDownSound;
+
+		NullableIdx<VocClass> BuildingRepairedSound;
+
+		Valueable<bool> Refinery_UseNormalActiveAnim;
+
+		ValueableVector<bool> HasPowerUpAnim;
+
+		Valueable<bool> UndeploysInto_Sellable;
+
+		// Ares 0.2
+		Valueable<bool> CloningFacility;
+
+		// Ares 0.A
+		Valueable<BuildingTypeClass*> RubbleIntact;
+		Valueable<bool> RubbleIntactRemove;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
+			, PowerPlant_DamageFactor { 1.0 }
 			, PowerPlantEnhancer_Buildings {}
 			, PowerPlantEnhancer_Amount { 0 }
 			, PowerPlantEnhancer_Factor { 1.0 }
 			, OccupierMuzzleFlashes()
 			, Powered_KillSpawns { false }
-			, AllowAirstrike {}
 			, CanC4_AllowZeroDamage { false }
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, ExcludeFromMultipleFactoryBonus { false }
@@ -132,6 +159,26 @@ public:
 			, Adjacent_Allowed {}
 			, Adjacent_Disallowed {}
 			, BarracksExitCell {}
+			, Overpower_KeepOnline { 2 }
+			, Overpower_ChargeWeapon { 1 }
+			, DisableDamageSound { false }
+			, BuildingOccupyDamageMult {}
+			, BuildingOccupyROFMult {}
+			, BuildingBunkerDamageMult {}
+			, BuildingBunkerROFMult {}
+			, BunkerWallsUpSound {}
+			, BunkerWallsDownSound {}
+			, BuildingRepairedSound {}
+			, Refinery_UseNormalActiveAnim { false }
+			, HasPowerUpAnim {}
+			, UndeploysInto_Sellable { false }
+
+			// Ares 0.2
+			, CloningFacility { false }
+
+			// Ares 0.A
+			, RubbleIntact { nullptr }
+			, RubbleIntactRemove { false }
 		{ }
 
 		// Ares 0.A functions
@@ -167,6 +214,8 @@ public:
 	static ExtContainer ExtMap;
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static void PlayBunkerSound(BuildingClass const* pThis, bool buildUp = false);
 
 	static int GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);

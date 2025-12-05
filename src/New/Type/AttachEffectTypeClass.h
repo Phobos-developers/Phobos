@@ -3,8 +3,10 @@
 #include <set>
 #include <unordered_map>
 
+#include <Ext/TEvent/Body.h>
 #include <Utilities/Enumerable.h>
 #include <Utilities/TemplateDef.h>
+#include "LaserTrailTypeClass.h"
 
 // AE discard condition
 enum class DiscardCondition : unsigned char
@@ -41,6 +43,8 @@ class AttachEffectTypeClass final : public Enumerable<AttachEffectTypeClass>
 
 public:
 	Valueable<int> Duration;
+	Valueable<bool> Duration_ApplyFirepowerMult;
+	Valueable<bool> Duration_ApplyArmorMultOnTarget;
 	Valueable<bool> Cumulative;
 	Valueable<int> Cumulative_MaxCount;
 	Valueable<bool> Powered;
@@ -48,6 +52,9 @@ public:
 	Nullable<Leptons> DiscardOn_RangeOverride;
 	Valueable<bool> PenetratesIronCurtain;
 	Nullable<bool> PenetratesForceShield;
+	ValueableVector<TechnoTypeClass*> AffectTypes;
+	ValueableVector<TechnoTypeClass*> IgnoreTypes;
+	Valueable<AffectedTarget> AffectTargets;
 	Valueable<AnimTypeClass*> Animation;
 	ValueableVector<AnimTypeClass*> CumulativeAnimations;
 	Valueable<bool> CumulativeAnimations_RestartOnChange;
@@ -59,6 +66,7 @@ public:
 	Valueable<WeaponTypeClass*> ExpireWeapon;
 	Valueable<ExpireWeaponCondition> ExpireWeapon_TriggerOn;
 	Valueable<bool> ExpireWeapon_CumulativeOnlyOnce;
+	Valueable<bool> ExpireWeapon_UseInvokerAsOwner;
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
@@ -81,17 +89,25 @@ public:
 	ValueableVector<WarheadTypeClass*> Crit_DisallowWarheads;
 	Valueable<WeaponTypeClass*> RevengeWeapon;
 	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
+	Valueable<bool> RevengeWeapon_UseInvokerAsOwner;
 	Valueable<bool> ReflectDamage;
 	Nullable<WarheadTypeClass*> ReflectDamage_Warhead;
 	Valueable<bool> ReflectDamage_Warhead_Detonate;
 	Valueable<double> ReflectDamage_Multiplier;
 	Valueable<AffectedHouse> ReflectDamage_AffectsHouses;
+	Valueable<double> ReflectDamage_Chance;
+	Nullable<int> ReflectDamage_Override;
+	Valueable<bool> ReflectDamage_UseInvokerAsOwner;
 	Valueable<bool> DisableWeapons;
+	Valueable<bool> Unkillable;
+	ValueableIdx<LaserTrailTypeClass> LaserTrail_Type;
 
 	std::vector<std::string> Groups;
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, Duration { 0 }
+		, Duration_ApplyFirepowerMult { false }
+		, Duration_ApplyArmorMultOnTarget { false }
 		, Cumulative { false }
 		, Cumulative_MaxCount { -1 }
 		, Powered { false }
@@ -99,6 +115,9 @@ public:
 		, DiscardOn_RangeOverride {}
 		, PenetratesIronCurtain { false }
 		, PenetratesForceShield {}
+		, AffectTypes {}
+		, IgnoreTypes {}
+		, AffectTargets { AffectedTarget::All }
 		, Animation {}
 		, CumulativeAnimations {}
 		, CumulativeAnimations_RestartOnChange { true }
@@ -110,6 +129,7 @@ public:
 		, ExpireWeapon {}
 		, ExpireWeapon_TriggerOn { ExpireWeaponCondition::Expire }
 		, ExpireWeapon_CumulativeOnlyOnce { false }
+		, ExpireWeapon_UseInvokerAsOwner { false }
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
 		, Tint_VisibleToHouses { AffectedHouse::All }
@@ -133,11 +153,17 @@ public:
 		, RevengeWeapon {}
 		, RevengeWeapon_AffectsHouses { AffectedHouse::All }
 		, ReflectDamage { false }
+		, RevengeWeapon_UseInvokerAsOwner { false }
 		, ReflectDamage_Warhead {}
 		, ReflectDamage_Warhead_Detonate { false }
 		, ReflectDamage_Multiplier { 1.0 }
 		, ReflectDamage_AffectsHouses { AffectedHouse::All }
+		, ReflectDamage_Chance { 1.0 }
+		, ReflectDamage_Override {}
+		, ReflectDamage_UseInvokerAsOwner { false }
 		, DisableWeapons { false }
+		, Unkillable { false }
+		, LaserTrail_Type { -1 }
 		, Groups {}
 	{};
 
@@ -148,7 +174,16 @@ public:
 
 	bool HasGroup(const std::string& groupID) const;
 	bool HasGroups(const std::vector<std::string>& groupIDs, bool requireAll) const;
-	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const;
+
+	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const
+	{
+		if (cumulativeCount < 0 || this->CumulativeAnimations.size() < 1)
+			return nullptr;
+
+		const int index = static_cast<size_t>(cumulativeCount) >= this->CumulativeAnimations.size() ? this->CumulativeAnimations.size() - 1 : cumulativeCount - 1;
+
+		return this->CumulativeAnimations.at(index);
+	}
 
 	void LoadFromINI(CCINIClass* pINI);
 	void LoadFromStream(PhobosStreamReader& Stm);
@@ -160,6 +195,7 @@ public:
 	}
 
 	static std::vector<AttachEffectTypeClass*> GetTypesFromGroups(const std::vector<std::string>& groupIDs);
+	static void HandleEvent(TechnoClass* pTarget);
 
 private:
 	template <typename T>

@@ -18,11 +18,10 @@ DEFINE_HOOK(0x71C110, TerrainClass_SetOccupyBit_PassableTerrain, 0x6)
 
 	GET(TerrainClass*, pThis, ECX);
 
-	if (auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type))
-	{
-		if (pTypeExt->IsPassable)
-			return Skip;
-	}
+	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->IsPassable)
+		return Skip;
 
 	return 0;
 }
@@ -34,20 +33,17 @@ DEFINE_HOOK(0x7002E9, TechnoClass_WhatAction_PassableTerrain, 0x5)
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(ObjectClass*, pTarget, EDI);
-	GET_STACK(bool, isForceFire, STACK_OFFSET(0x1C, 0x8));
+	GET_STACK(const bool, isForceFire, STACK_OFFSET(0x1C, 0x8));
 
 	if (!pThis->Owner->IsControlledByCurrentPlayer() || !pThis->IsControllable())
 		return 0;
 
-	if (pTarget->WhatAmI() == AbstractType::Terrain)
+	if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pTarget))
 	{
-		if (auto const pTypeExt = TerrainTypeExt::ExtMap.Find((abstract_cast<TerrainClass*>(pTarget))->Type))
+		if (!isForceFire && TerrainTypeExt::ExtMap.Find(pTerrain->Type)->IsPassable)
 		{
-			if (pTypeExt->IsPassable && !isForceFire)
-			{
-				R->EBP(Action::Move);
-				return ReturnAction;
-			}
+			R->EBP(Action::Move);
+			return ReturnAction;
 		}
 	}
 
@@ -62,13 +58,12 @@ DEFINE_HOOK(0x483DDF, CellClass_CheckPassability_PassableTerrain, 0x6)
 	GET(CellClass*, pThis, EDI);
 	GET(TerrainClass*, pTerrain, ESI);
 
-	if (auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type))
+	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
+
+	if (pTypeExt->IsPassable)
 	{
-		if (pTypeExt->IsPassable)
-		{
-			pThis->Passability = PassabilityType::Passable;
-			return ReturnFromFunction;
-		}
+		pThis->Passability = PassabilityType::Passable;
+		return ReturnFromFunction;
 	}
 
 	return 0;
@@ -93,75 +88,9 @@ DEFINE_HOOK(0x73FB71, UnitClass_CanEnterCell_PassableTerrain, 0x6)
 }
 
 // Buildable-upon TerrainTypes Hook #1 - Allow placing buildings on top of them.
-DEFINE_HOOK_AGAIN(0x47C80E, CellClass_IsClearTo_Build_BuildableTerrain, 0x5)
-DEFINE_HOOK(0x47C745, CellClass_IsClearTo_Build_BuildableTerrain, 0x5)
-{
-	enum { Skip = 0x47C85F, SkipFlags = 0x47C6A0 };
+// DEFINE_HOOK(0x73FEC1, UnitClass_WhatAction_DeploysIntoDesyncFix, 0x6) in Hooks.DeploysInto.cpp
 
-	GET(CellClass*, pThis, EDI);
-
-	auto pTerrain = pThis->GetTerrain(false);
-
-	if (pTerrain)
-	{
-		if (auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type))
-		{
-			if (pTypeExt->CanBeBuiltOn)
-			{
-				if (IS_CELL_OCCUPIED(pThis))
-					return Skip;
-				else
-					return SkipFlags;
-			}
-		}
-	}
-
-	return 0;
-}
-
-// Buildable-upon TerrainTypes Hook #2 - Allow placing laser fences on top of them.
-DEFINE_HOOK(0x47C657, CellClass_IsClearTo_Build_BuildableTerrain_LF, 0x6)
-{
-	enum { Skip = 0x47C6A0, Return = 0x47C6D1 };
-
-	GET(CellClass*, pThis, EDI);
-
-	auto pObj = pThis->FirstObject;
-
-	if (pObj)
-	{
-		bool isEligible = true;
-
-		while (true)
-		{
-			isEligible = pObj->WhatAmI() != AbstractType::Building;
-
-			if (auto const pTerrain = abstract_cast<TerrainClass*>(pObj))
-			{
-				isEligible = false;
-				auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
-
-				if (pTypeExt->CanBeBuiltOn)
-					isEligible = true;
-			}
-
-			if (!isEligible)
-				break;
-
-			pObj = pObj->NextObject;
-
-			if (!pObj)
-				return Skip;
-		}
-
-		return Return;
-	}
-
-	return Skip;
-}
-
-
-// Buildable-upon TerrainTypes Hook #3 - Draw laser fence placement even if they are on the way.
+// Buildable-upon TerrainTypes Hook #2 - Draw laser fence placement even if they are on the way.
 DEFINE_HOOK(0x6D57C1, TacticalClass_DrawLaserFencePlacement_BuildableTerrain, 0x9)
 {
 	enum { ContinueChecks = 0x6D57D2, DontDraw = 0x6D59A6 };
@@ -169,19 +98,12 @@ DEFINE_HOOK(0x6D57C1, TacticalClass_DrawLaserFencePlacement_BuildableTerrain, 0x
 	GET(CellClass*, pCell, ESI);
 
 	if (auto const pTerrain = pCell->GetTerrain(false))
-	{
-		auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
-
-		if (pTypeExt->CanBeBuiltOn)
-			return ContinueChecks;
-
-		return DontDraw;
-	}
+		return TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn ? ContinueChecks : DontDraw;
 
 	return ContinueChecks;
 }
 
-// Buildable-upon TerrainTypes Hook #4 - Remove them when buildings are placed on them.
+// Buildable-upon TerrainTypes Hook #3 - Remove them when buildings are placed on them.
 DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableTerrain, 0x6)
 {
 	GET(ObjectClass*, pObject, EDI);
@@ -191,9 +113,7 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableTerrain, 0x6)
 	{
 		if (auto const pTerrain = pCell->GetTerrain(false))
 		{
-			auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
-
-			if (pTypeExt->CanBeBuiltOn)
+			if (TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
 			{
 				pCell->RemoveContent(pTerrain, false);
 				TerrainTypeExt::Remove(pTerrain);
@@ -202,4 +122,26 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableTerrain, 0x6)
 	}
 
 	return 0;
+}
+
+// Buildable-upon TerrainTypes Hook #4 -> Allow placing walls on top of terrain
+DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
+{
+	enum { Unlimbo = 0x5FD2CA, NoUnlimbo = 0x5FD2C3 };
+
+	GET(CellClass* const, pCell, EAX);
+
+	if (!Game::IsActive)
+		return Unlimbo;
+
+	if (auto const pTerrain = pCell->GetTerrain(false))
+	{
+		if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+			return NoUnlimbo;
+
+		pCell->RemoveContent(pTerrain, false);
+		TerrainTypeExt::Remove(pTerrain);
+	}
+
+	return Unlimbo;
 }

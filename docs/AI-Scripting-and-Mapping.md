@@ -10,9 +10,23 @@ This page describes all AI scripting and mapping related additions and changes i
 - Map trigger action `125 Build At...` can now play buildup anim and becomes singleplayer-AI-repairable optionally (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2)).
 - Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 - Script action `Deploy` now has vehicles with `DeploysInto` searching for free space to deploy at if failing to do so at initial location, instead of simply getting stuck.
-- Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally. `InitialPayload` logic from Ares is not supported yet.
+- Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally.
 - If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
 - Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General] -> AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively.
+
+### Increased Overlay Limit
+
+- Maps can now contain OverlayTypes with indices up to 65535.
+
+- To enable this, set `[Basic] -> NewINIFormat=5` in the scenario file.
+
+```{note}
+Maps using this feature cannot be loaded by the vanilla game.
+```
+
+```{warning}
+Not all tools properly support this feature yet, and may crash or corrupt the map. We recommend using the [World-Altering Editor](https://github.com/CnCNet/WorldAlteringEditor) map editor when using this feature.
+```
 
 ## Singleplayer Mission Maps
 
@@ -35,8 +49,7 @@ RepairBaseNodes=                   ; List of 3 booleans indicating whether AI re
 
 ### Default loading screen and briefing offsets
 
-- It is now possible to set defaults for singleplayer map loading screen briefing pixel offsets and the loading screen images and palette that are used if there are no values defined for the map itself.
-  - Note that despite the key name being `DefaultLS800BkgdPal`, this applies to both shapes just like the original scenario-specific `LS800BkgdPal` does.
+- It is now possible to set defaults for singleplayer map loading screen briefing pixel offsets and the loading screen images and palette that are used if there are no values defined for the map itself or in case of loading screens and palette, if the files are missing.
 
 In `missionmd.ini`:
 ```ini
@@ -48,6 +61,10 @@ DefaultLS800BriefLocY=0  ; integer
 DefaultLS640BkgdName=    ; filename - including the .shp extension.
 DefaultLS800BkgdName=    ; filename - including the .shp extension.
 DefaultLS800BkgdPal=     ; filename - including the .pal extension
+```
+
+```{note}
+Despite the key name being `DefaultLS800BkgdPal`, this applies to both shapes just like the original scenario-specific `LS800BkgdPal` does.
 ```
 
 ### MCV redeploying
@@ -78,8 +95,8 @@ Ranking.OverParMessage=   ; CSF entry key
 
 ### Show briefing dialog on startup
 
-- You can now have the briefing dialog screen show up on singleplayer campaign mission startup by setting `ShowBriefing` to true in map file's `[Basic]` section, or in the map file's section in `missionmd.ini` (latter takes precedence over former if available). This can be disabled by user by setting `ShowBriefing` to false in `RA2MD.INI`.
-  - `BriefingTheme` (In order of precedence from highest to lowest: `missionmd.ini`, map file, side entry in `rulesmd.ini`) can be used to define a custom theme to play on this briefing screen. If not set, the loading screen theme will keep playing until the scenario starts properly.
+- You can now have the briefing dialog screen show up on singleplayer campaign mission startup by setting `ShowBriefing` to true in map file's `[Basic]` section, or in the map file's section in `missionmd.ini` (former takes precedence if available). This can be disabled by user by setting `ShowBriefing` to false in `RA2MD.INI`.
+  - `BriefingTheme` (In order of precedence from highest to lowest: map file, `missionmd.ini`, side entry in `rulesmd.ini`) can be used to define a custom theme to play on this briefing screen. If not set, the loading screen theme will keep playing until the scenario starts properly.
   - String labels for the startup briefing dialog screen's resume button as well as the button's status bar text can be customized by setting `ShowBriefingResumeButtonLabel` and `ShowBriefingResumeButtonStatusLabel` respectively. They default to the same labels used by the briefing screen dialog when opened otherwise.
 
 In `missionmd.ini`:
@@ -133,7 +150,7 @@ x=i,n             ; For i values check the next table
 ```
 
 | *Action* | *Argument*             | *Repeats* | *Target Priority*      | *Description*                                      |
-| :------: | :--------------------: | :-------: | :--------------------: | :------------------------------------------------: |
+|:--------:|:----------------------:|:---------:|:-----------------------|:--------------------------------------------------:|
 | 10000    | Target Type#           | Yes       | Closer                 |                                                    |
 | 10001    | Target Type#           | No        | Closer                 | Ends when a team member kill the designated target |
 | 10002    | `AITargetTypes` index# | Yes       | Closer                 |                                                    |
@@ -157,7 +174,7 @@ x=i,n             ; For i values check the next table
   - 'Buildings considered as vehicles' means buildings with both `UndeploysInto` set & `Foundation=1x1` and `ConsideredVehicle` not set or buildings with `ConsideredVehicle=true`.
 
 | *Value* | *Target Type*            | *Description*                                 |
-| :-----: | :----------------------: | :-------------------------------------------: |
+|:-------:|:------------------------:|:----------------------------------------------|
 | 1       | Anything                 | Any enemy `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` |
 | 2       | Structures               | Any enemy `BuildingTypes` that are not considered as vehicles |
 | 3       | Ore Miners               | Any enemy `VehicleTypes` with `Harvester=yes` or `ResourceGatherer=yes`, `BuildingTypes` with `ResourceGatherer=yes` |
@@ -169,7 +186,7 @@ x=i,n             ; For i values check the next table
 | 9       | Power Plants             | Any enemy `BuildingTypes` with positive `Power=` values |
 | 10      | Occupied                 | Any `BuildingTypes` with garrisoned infantry |
 | 11      | Tech Buildings           | Any `BuildingTypes` with `Unsellable=yes`, `Capturable=yes`, negative `TechLevel=` values or appears in `[AI] -> NeutralTechBuildings=` list |
-| 12      |	Refinery                 | Any enemy `BuildingTypes` with `Refinery=yes` or `ResourceGatherer=yes`, `VehicleTypes` with `ResourceGatherer=yes` & `Harvester=no` (i.e. Slave Miner) |
+| 12      | Refinery                 | Any enemy `BuildingTypes` with `Refinery=yes` or `ResourceGatherer=yes`, `VehicleTypes` with `ResourceGatherer=yes` & `Harvester=no` (i.e. Slave Miner) |
 | 13      | Mind Controller          | Anything `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` with `MindControl=yes` in the weapons Warheads |
 | 14      | Air Units (incl. landed) | Any enemy, `AircraftTypes` and `Jumpjet=yes` `VehicleTypes` or `InfantryTypes`, including landed ones as well as any other currently airborne units |
 | 15      | Naval                    | Any enemy `BuildingTypes` and `VehicleTypes` with a `Naval=yes`, any enemy `VehicleTypes`, `AircraftTypes`, `InfantryTypes` in a water cell |
@@ -203,7 +220,7 @@ In `rulesmd.ini`:
 [AITargetTypes]  ; List of TechnoType lists
 0=SOMETECHNOTYPE,SOMEOTHERTECHNOTYPE,SAMPLETECHNOTYPE
 1=ANOTHERTECHNOTYPE,YETANOTHERTECHNOTYPE
-; ...
+...
 ```
 
 #### `10050-10099` Move Team to Techno Location actions
@@ -217,7 +234,7 @@ x=i,n             ; For i values check the next table
 ```
 
 | *Action* | *Argument*              | *Target Owner* | *Target Priority*      | *Description*                                |
-| :------: | :---------------------: | :------------: | :--------------------: | :------------------------------------------: |
+|:--------:|:----------------------:|:---------:|:-----------------------|:--------------------------------------------------:|
 | 10050    | Target Type#            | Enemy          | Closer, higher threat  |                                              |
 | 10051    | `[AITargetType]` index# | Enemy          | Closer, higher threat  |                                              |
 | 10052    | `[AITargetType]` index# | Enemy          | Closer                 | Picks 1 random target from the selected list |
@@ -240,7 +257,7 @@ x=i,n             ; For i values check the next table
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=10100,n            ; integer, time in ingame seconds
+x=10100,n         ; integer, time in ingame seconds
 ```
 
 ##### `10101` Wait Until Ammo is Full
@@ -292,7 +309,7 @@ x=10104,n         ; integer, additional distance in cells
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=12000,n            ; integer n=0
+x=12000,n         ; integer n=0
 ```
 
 #### `12001` Modify Target Distance
@@ -318,7 +335,7 @@ x=12002,n
 - The possible argument values are:
 
 | *Argument* | *Action ends when...*                         |
-| :--------: | :-------------------------------------------: |
+|:----------:|:---------------------------------------------:|
 | 0          | Team Leader reaches the minimum distance      |
 | 1          | One unit reaches the minimum distance         |
 | 2          | All team members reached the minimum distance |
@@ -374,7 +391,7 @@ x=14003,0
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=16000,n           ; integer n=0, in ingame seconds
+x=16000,n         ; integer n=0, in ingame seconds
 ```
 
 #### `16001` Start a Timed Jump to the Next Line
@@ -384,7 +401,7 @@ x=16000,n           ; integer n=0, in ingame seconds
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=16001,n           ; integer n=0, in ingame seconds
+x=16001,n         ; integer n=0, in ingame seconds
 ```
 
 #### `16002` Stop the Timed Jumps
@@ -404,7 +421,7 @@ x=16002,0
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=16003,n           ; where 0 > n <= 100
+x=16003,n         ; where 0 > n <= 100
 ```
 
 #### `16004` Pick a Random Script
@@ -424,7 +441,7 @@ In `rulesmd.ini`:
 [AIScriptsList]  ; List of ScriptType lists
 0=SOMESCRIPTTYPE,SOMEOTHERSCRIPTTYPE,SAMPLESCRIPTTYPE
 1=ANOTHERSCRIPTTYPE,YETANOTHERSCRIPTTYPE
-; ...
+...
 ```
 
 #### `16005` Jump Back To Previous Script
@@ -481,7 +498,12 @@ This category is empty for now.
 
 ### `500` Save Game
 
-- Save the current game immediately (singleplayer game only).
+- Save the current game immediately.
+
+```{note}
+For this action to work in multiplayer - you need to use a version of [YRpp spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support.
+```
+
 - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
 - The save's description will look like `MapDescName - CSFText`.
 - For example: `Allied Mission 25: Esther's Money - Money Stolen`.
@@ -509,7 +531,7 @@ ID=ActionCount,[Action1],501,0,[VariableIndex],[Operation],[Number],[IsGlobalVar
 ```
 
 | *Operation* | *Description*                                 |
-| :---------: | :-------------------------------------------: |
+|------------:|:----------------------------------------------|
 | 0           | CurrentValue = Number                         |
 | 1           | CurrentValue = CurrentValue + Number          |
 | 2           | CurrentValue = CurrentValue - Number          |
@@ -543,7 +565,7 @@ In `mycampaign.map`:
 ```ini
 [Actions]
 ...
-ID=ActionCount,[Action1],503,[VariableIndex],0,[IsGlobalVariable],0,0,0,A,[ActionX]
+ID=ActionCount,[Action1],503,0,[VariableIndex],[IsGlobalVariable],0,0,0,A,[ActionX]
 ...
 ```
 
@@ -569,7 +591,7 @@ ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperation
 - `HouseIndex` can take various values:
 
 | *House Index* | *Description*                             |
-| :-----------: | :---------------------------------------: |
+|:-------------:|:------------------------------------------|
 | >= 0          | The index of the current House in the map |
 | 4475-4482     | Like in the index range 0-7               |
 | -1            | Pick a random House that isn't Neutral    |
@@ -611,6 +633,108 @@ ID=ActionCount,[Action1],510,0,0,[MCVRedeploy],0,0,0,A,[ActionX]
 ...
 ```
 
+### `606` Edit Hate-Value
+
+- Edit the hate-value that trigger houses to other houses.
+- -1 works for all houses.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],606,0,[HouseIndex],[Operation],[Number],0,0,A,[ActionX]
+...
+```
+
+| *Operation* | *Description*                                 |
+|------------:|:----------------------------------------------|
+| 0           | CurrentValue = Number                         |
+| 1           | CurrentValue = CurrentValue + Number          |
+| 2           | CurrentValue = CurrentValue - Number          |
+| 3           | CurrentValue = CurrentValue * Number          |
+| 4           | CurrentValue = CurrentValue / Number          |
+| 5           | CurrentValue = CurrentValue % Number          |
+| 6           | CurrentValue = CurrentValue leftshift Number  |
+| 7           | CurrentValue = CurrentValue rightshift Number |
+| 8           | CurrentValue = ~CurrentValue                  |
+| 9           | CurrentValue = CurrentValue xor Number        |
+| 10          | CurrentValue = CurrentValue or Number         |
+| 11          | CurrentValue = CurrentValue and Number        |
+
+### `607` Clear Hate-Value
+
+- Clear the hate-value that trigger houses to other houses.
+- -1 works for all houses.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],607,0,[HouseIndex],0,0,0,0,A,[ActionX]
+...
+```
+
+### `608` Set Force Enemy
+
+- Force an enemy, it will not change with the change of hate-value.
+- -1 will remove the forced enemy.
+- -2 will never have any enemies.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]
+...
+```
+
+### `800-802` Display Banner
+
+- Display a 'banner' at a fixed location that is relative to the screen.
+  - Action `800` will create a new banner or replace the banner with the same Banner ID if it exists. Using a local variable's value when displaying a text banner.
+  - Action `801` will create a new banner or replace the banner with the same Banner ID if it exists. Using a global variable's value when displaying a text banner.
+  - Action `802` will delete the banner corresponding to the set Banner ID.
+- To make use of this, you need to set the properties of a `BannerType` in your ini file. The banner can either be a `PCX` file, a Shape (`SHP`) file or a `CSF` text. If multiple are set the first one in the above listed order takes effect.
+  - `SHP.Palette` controls the palette that'll be used when drawing a banner for Shape file.
+  - `CSF.Color` controls the color of the text that'll be used when drawing a text banner.
+  - `CSF.Background` controls whether a black background will be displayed below the text banner.
+  - `CSF.VariableFormat` controls the way to print a variable together with the text banner.
+    - `none` will make the text banner not display the variable.
+    - `variable` will make the text banner display the variable alone and will ignore the text in `CSF`.
+    - `prefix`/`prefixed` will make the text banner display the variable before any other text.
+    - `suffix`/`suffixed` will make the text banner display the variable after any other text.
+  - `Duration` determines how long the banner will be displayed. Negative values mean the banner can always be displayed until being deleted. The banner itself won't be deleted when it's not displaying.
+  - `Delay` determines when the banner will be displayed again after it stops displaying by a positive `Duration`. Neagtive values mean it can't be displayed again.
+    - If an `SHP` banner displays again after the delay, it'll start from the frame when it's stopped last time. This can also be changed to its first frame if `SHP.RefreshAfterDelay` set to true.
+
+In `rulesmd.ini`:
+```ini
+[BannerTypes]
+0=SOMEBANNER
+
+[SOMEBANNER]                ; BannerType
+PCX=                        ; filename - including the .pcx extension
+SHP=                        ; filename - excluding the .shp extension
+SHP.Palette=palette.pal     ; filename - including the .pal extension
+SHP.RefreshAfterDelay=false ; boolean
+CSF=                        ; CSF entry key
+CSF.Color=                  ; integer - R,G,B, defaults to MessageTextColor of the owner Side
+CSF.Background=false        ; boolean
+CSF.VariableFormat=none     ; List of Variable Format Enumeration (none|variable|prefix/prefixed|surfix/surfixed)
+Duration=-1                 ; integer
+Delay=-1                    ; integer
+```
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],800,4,[SOMEBANNER],[Unique ID],[Horizontal position],[Vertical position],[VariableIndex],A,[ActionX]
+ID=ActionCount,[Action1],801,4,[SOMEBANNER],[Unique ID],[Horizontal position],[Vertical position],[VariableIndex],A,[ActionX]
+ID=ActionCount,[Action1],802,0,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
 ## Trigger events
 
 ### `500-511` Variable comparation
@@ -626,7 +750,7 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[Param],[EventX]
 ```
 
 | *Event ID* | *Description*          | *Global* |
-| :--------: | :--------------------: | :------: |
+|:----------:|:-----------------------|:--------:|
 | 500        | CurrentValue > Number  | No       |
 | 501        | CurrentValue < Number  | No       |
 | 502        | CurrentValue = Number  | No       |
@@ -653,7 +777,7 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[LocalVariableIndex],[EventX]
 ```
 
 | *Event ID* | *Description*                      | *Global* |
-| :--------: | :--------------------------------: | :------: |
+|:----------:|:-----------------------------------|:--------:|
 | 512        | CurrentValue > LocalVariableValue  | No       |
 | 513        | CurrentValue < LocalVariableValue  | No       |
 | 514        | CurrentValue = LocalVariableValue  | No       |
@@ -680,7 +804,7 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[GlobalVariableIndex],[EventX
 ```
 
 | *Event ID* | *Description*                       | *Global* |
-| :--------: | :---------------------------------: | :------: |
+|:----------:|:------------------------------------|:--------:|
 | 524        | CurrentValue > GlobalVariableValue  | No       |
 | 525        | CurrentValue < GlobalVariableValue  | No       |
 | 526        | CurrentValue = GlobalVariableValue  | No       |
@@ -710,16 +834,16 @@ ID=EventCount,...,600,2,0,0,...
 - `602`: Springs when specified house doesn't own a single instance of set TechnoType.
   - Multiplayer houses (indices 4475 through 4482) are supported.
 
-```{note}
-These events, as opposed to [events 81 & 82 from Ares](https://ares-developers.github.io/Ares-docs/new/triggerevents.html#house-owns-techno-type-81-82), take house as a parameter instead of using the trigger owner.
-```
-
 In `mycampaign.map`:
 ```ini
 [Events]
 ...
 ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...
 ...
+```
+
+```{note}
+These events, as opposed to [events 81 & 82 from Ares](https://ares-developers.github.io/Ares-docs/new/triggerevents.html#house-owns-techno-type-81-82), take house as a parameter instead of using the trigger owner.
 ```
 
 ### `604-605` Checking if a specific Techno enters in a cell
@@ -729,16 +853,31 @@ ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...
 - `HouseIndex` can be customized to focus in a specified house.
 
 In `mycampaign.map`:
-```ini
-[Events]
-...
-ID=EventCount,...,604,2,[HouseIndex],[TechnoType],...
-ID=EventCount,...,605,2,[HouseIndex],[AITargetTypes index#],...
-...
-```
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Events]</span>
+<span class="na">...</span>
+<span class="na">ID</span><span class="o">=</span><span class="s">EventCount,...,604,2,[HouseIndex],[TechnoType],...</span>
+<span class="na">ID</span><span class="o">=</span><span class="s">EventCount,...,605,2,[HouseIndex],[AITargetTypes index#],...</span>
+<span class="na">...</span>
+</pre></div>
+</div>
 
 | *House Index* | *Description*                              |
-| :-----------: | :----------------------------------------: |
+|:-------------:|:------------------------------------------:|
 | >= 0          | The index of the current House in the map  |
 | -1            | This value is ignored (any house is valid) |
 | -2            | Pick the owner of the map trigger          |
+
+### `606` AttachEffect is attaching to a Techno
+
+- Checks if an `AttachEffectType` is attaching to a techno. Doesn't work for [attached effects](New-or-Enhanced-Logics.md#attached-effects) that were attached prior to the trigger's enabling.
+- To be elaborate, the event will be triggered during these occasions:
+  - Self-owned effects: initial granted (triggered after `AttachEffect.InitialDelays` amount of frames), recreation (triggered after `AttachEffect.Delays` or `AttachEffect.RecreationDelays` amount of frames).
+  - Effects from other sources: granted, refreshing when trying to apply the same type of attached effect to the techno.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,606,2,0,[AttachEffectType],...
+...
+```

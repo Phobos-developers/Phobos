@@ -5,35 +5,35 @@
 
 DEFINE_HOOK(0x43C30A, BuildingClass_ReceiveMessage_Grinding, 0x6)
 {
-	enum { ReturnStatic = 0x43C31A, ReturnNegative = 0x43CB68, ReturnRoger = 0x43CCF2 };
+	enum { ContinueAresCheck = 0x43C326, ReturnStatic = 0x43C31A, ReturnNegative = 0x43CB68, ReturnRoger = 0x43CCF2 };
 
 	GET(BuildingClass*, pThis, ESI);
 	GET(TechnoClass*, pFrom, EDI);
 
-	if (pThis->Type->Grinding)
+	if (!pThis->Owner->IsAlliedWith(pFrom))
+		return ReturnStatic;
+
+	// Ares perfectly replicated this issue, rewrite it here
+	const auto pType = pThis->Type;
+	const auto pFromType = pFrom->GetTechnoType();
+	const auto movementZone = pFromType->MovementZone;
+	const bool isAmphibious = movementZone == MovementZone::Amphibious || movementZone == MovementZone::AmphibiousCrusher
+		|| movementZone == MovementZone::AmphibiousDestroyer;
+
+	if (!isAmphibious && (pType->Naval != pFromType->Naval))
+		return ReturnNegative;
+
+	if (pType->Grinding)
 	{
-		if (!pThis->Owner->IsAlliedWith(pFrom))
-			return ReturnStatic;
+		const auto mission = pThis->GetCurrentMission();
 
-		if (pThis->GetCurrentMission() == Mission::Construction || pThis->GetCurrentMission() == Mission::Selling ||
-			pThis->BState == 0 || !pThis->HasPower || pFrom->GetTechnoType()->BalloonHover)
-		{
+		if (mission == Mission::Construction || mission == Mission::Selling || pThis->BState == 0 || !pThis->HasPower || pFromType->BalloonHover)
 			return ReturnNegative;
-		}
-
-		bool isAmphibious = pFrom->GetTechnoType()->MovementZone == MovementZone::Amphibious || pFrom->GetTechnoType()->MovementZone == MovementZone::AmphibiousCrusher ||
-			pFrom->GetTechnoType()->MovementZone == MovementZone::AmphibiousDestroyer;
-
-		if (!isAmphibious && (pThis->GetTechnoType()->Naval && !pFrom->GetTechnoType()->Naval ||
-			!pThis->GetTechnoType()->Naval && pFrom->GetTechnoType()->Naval))
-		{
-			return ReturnNegative;
-		}
 
 		return BuildingExt::CanGrindTechno(pThis, pFrom) ? ReturnRoger : ReturnNegative;
 	}
 
-	return 0;
+	return ContinueAresCheck;
 }
 
 
@@ -63,23 +63,25 @@ DEFINE_HOOK(0x4D4B43, FootClass_Mission_Capture_ForbidUnintended, 0x6)
 	if (!pThis || pThis->Target)
 		return 0;
 
-	auto pBld = specific_cast<BuildingClass*>(pThis->Destination);
+	auto const pBld = specific_cast<BuildingClass*>(pThis->Destination);
 	if (!pBld)
 		return 0;
 
-	if (pThis->Type->Engineer)
+	auto const pType = pThis->Type;
+
+	if (pType->Engineer)
 		return 0;
 
 	// interaction issues with Ares, no more further checking to make life easier. If someone still try to abuse the bug I won't try to stop them
-	if (pThis->Type->Infiltrate && !pThis->Owner->IsAlliedWith(pBld->Owner))
+	if (pType->Infiltrate && !pThis->Owner->IsAlliedWith(pBld->Owner))
 		return 0;
 	if (pBld->IsStrange())
 		return 0;
 
-	if (pBld->Type->CanBeOccupied && (pThis->Type->Occupier || pThis->Type->Assaulter))
+	if (pBld->Type->CanBeOccupied && (pType->Occupier || pType->Assaulter))
 		return 0;
 
-	if (pThis->Type->C4 || pThis->HasAbility(Ability::C4))
+	if (pType->C4 || pThis->HasAbility(Ability::C4))
 		return 0;
 
 	// If you can't do any of these then why are you here?
@@ -95,17 +97,19 @@ DEFINE_HOOK(0x51F0AF, InfantryClass_WhatAction_Grinding, 0x0)
 	GET(TechnoClass*, pTarget, ESI);
 	GET(Action, action, EBP);
 
-	if (auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
 	{
-		if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
+		const auto pType = pBuilding->Type;
+
+		if (pType->Grinding
+			&& pThis->Owner->IsControlledByCurrentPlayer()
+			&& !pBuilding->IsBeingWarpedOut()
+			&& pThis->Owner->IsAlliedWith(pTarget)
+			&& (BuildingTypeExt::ExtMap.Find(pType)->Grinding_AllowAllies || action == Action::Select))
 		{
-			if (pBuilding->Type->Grinding && pThis->Owner->IsControlledByCurrentPlayer() && !pBuilding->IsBeingWarpedOut() &&
-				pThis->Owner->IsAlliedWith(pTarget) && (pExt->Grinding_AllowAllies || action == Action::Select))
-			{
-				action = BuildingExt::CanGrindTechno(pBuilding, pThis) ? Action::Repair : Action::NoEnter;
-				R->EBP(action);
-				return ReturnValue;
-			}
+			action = BuildingExt::CanGrindTechno(pBuilding, pThis) ? Action::Repair : Action::NoEnter;
+			R->EBP(action);
+			return ReturnValue;
 		}
 	}
 
@@ -119,9 +123,9 @@ DEFINE_HOOK(0x51E63A, InfantryClass_WhatAction_Grinding_Engineer, 0x6)
 	GET(InfantryClass*, pThis, EDI);
 	GET(TechnoClass*, pTarget, ESI);
 
-	if (auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
 	{
-		bool canBeGrinded = BuildingExt::CanGrindTechno(pBuilding, pThis);
+		const bool canBeGrinded = BuildingExt::CanGrindTechno(pBuilding, pThis);
 		R->EBP(canBeGrinded ? Action::Repair : Action::NoGRepair);
 		return ReturnValue;
 	}
@@ -140,21 +144,43 @@ DEFINE_HOOK(0x740134, UnitClass_WhatAction_Grinding, 0x0)
 	if (InputManagerClass::Instance->IsForceFireKeyPressed() && pThis->IsArmed())
 		return Continue;
 
-	if (auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
 	{
-		if (pThis->Owner->IsControlledByCurrentPlayer() && !pBuilding->IsBeingWarpedOut() &&
-			pThis->Owner->IsAlliedWith(pTarget) && (pBuilding->Type->Grinding || action == Action::Select))
+		if (pThis->Owner->IsControlledByCurrentPlayer()
+			&& !pBuilding->IsBeingWarpedOut()
+			&& pThis->Owner->IsAlliedWith(pTarget))
 		{
-			if (pThis->SendCommand(RadioCommand::QueryCanEnter, pTarget) == RadioCommand::AnswerPositive)
+			const bool isGrinding = pBuilding->Type->Grinding;
+
+			if (isGrinding || action == Action::Select)
 			{
-				bool isFlying = pThis->GetTechnoType()->MovementZone == MovementZone::Fly;
-				bool canBeGrinded = BuildingExt::CanGrindTechno(pBuilding, pThis);
-				action = pBuilding->Type->Grinding ? canBeGrinded && !isFlying ? Action::Repair : Action::NoEnter : !isFlying ? Action::Enter : Action::NoEnter;
+				if (pThis->SendCommand(RadioCommand::QueryCanEnter, pTarget) != RadioCommand::AnswerPositive)
+				{
+					if (isGrinding)
+						action = Action::NoEnter;
+					else
+						return Continue;
+				}
+				else if (isGrinding)
+				{
+					if (BuildingExt::CanGrindTechno(pBuilding, pThis) && pThis->Type->MovementZone != MovementZone::Fly)
+						action = Action::Repair;
+					else
+						action = Action::NoEnter;
+				}
+				else
+				{
+					const auto pType = pThis->Type;
+
+					if (pType->MovementZone != MovementZone::Fly)
+						action = Action::Enter;
+					else if ((pType->Harvester || pType->Weeder) && !pType->BalloonHover && pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet)
+						action = Action::Enter;
+					else
+						action = Action::NoEnter;
+				}
+
 				R->EBX(action);
-			}
-			else if (pBuilding->Type->Grinding)
-			{
-				R->EBX(Action::NoEnter);
 			}
 		}
 	}
@@ -222,7 +248,7 @@ DEFINE_HOOK(0x73A1C3, UnitClass_PerCellProcess_DoGrindingExtras, 0x5)
 	GET(BuildingClass*, pBuilding, EBX);
 
 	// Calculated like this because it is easier than tallying up individual refunds for passengers and parasites.
-	int totalRefund = pBuilding->Owner->Balance - GrinderRefundTemp::BalanceBefore;
+	const int totalRefund = pBuilding->Owner->Balance - GrinderRefundTemp::BalanceBefore;
 
 	return BuildingExt::DoGrindingExtras(pBuilding, pThis, totalRefund) ? Continue : 0;
 }

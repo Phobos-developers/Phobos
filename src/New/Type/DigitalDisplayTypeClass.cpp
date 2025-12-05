@@ -3,9 +3,10 @@
 #include <TacticalClass.h>
 #include <SpawnManagerClass.h>
 
-#include <Utilities/ShapeTextPrinter.h>
-
 #include <Ext/Techno/Body.h>
+
+#include <Utilities/ShapeTextPrinter.h>
+#include <Utilities/EnumFunctions.h>
 
 template<>
 const char* Enumerable<DigitalDisplayTypeClass>::GetMainSection()
@@ -16,6 +17,9 @@ const char* Enumerable<DigitalDisplayTypeClass>::GetMainSection()
 void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* section = this->Name;
+
+	if (!pINI->GetSection(section))
+		return;
 
 	INI_EX exINI(pINI);
 
@@ -29,12 +33,48 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Shape.Read(exINI, section, "Shape");
 	this->Palette.LoadFromINI(pINI, section, "Palette");
 	this->Shape_Spacing.Read(exINI, section, "Shape.Spacing");
+	this->Shape_PercentageFrame.Read(exINI, section, "Shape.PercentageFrame");
 	this->Percentage.Read(exINI, section, "Percentage");
 	this->HideMaxValue.Read(exINI, section, "HideMaxValue");
-	this->VisibleToHouses_Observer.Read(exINI, section, "VisibleToHouses.Observer");
 	this->VisibleToHouses.Read(exINI, section, "VisibleToHouses");
+	this->VisibleToHouses_Observer.Read(exINI, section, "VisibleToHouses.Observer");
+	this->VisibleInSpecialState.Read(exINI, section, "VisibleInSpecialState");
 	this->InfoType.Read(exINI, section, "InfoType");
+	this->InfoIndex.Read(exINI, section, "InfoIndex");
 	this->ValueScaleDivisor.Read(exINI, section, "ValueScaleDivisor");
+	this->ValueAsTimer.Read(exINI, section, "ValueAsTimer");
+	this->ShowType.Read(exINI, section, "ShowType");
+}
+
+bool DigitalDisplayTypeClass::CanShow(TechnoClass* pThis)
+{
+	if (HouseClass::IsCurrentPlayerObserver())
+	{
+		if (!this->VisibleToHouses_Observer)
+			return false;
+	}
+	else if (!EnumFunctions::CanTargetHouse(this->VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
+	{
+		return false;
+	}
+
+	if (!this->VisibleInSpecialState && (pThis->TemporalTargetingMe || pThis->IsIronCurtained()))
+		return false;
+
+	const DisplayShowType flags = this->ShowType;
+
+	if (flags == DisplayShowType::All)
+		return true;
+
+	DisplayShowType current = pThis->IsMouseHovering ? DisplayShowType::CursorHover : DisplayShowType::None;
+
+	if (pThis->IsSelected)
+		current |= DisplayShowType::Selected;
+
+	if (current != DisplayShowType::None) // is hovering | is selected
+		return (current & flags) != DisplayShowType::None;
+
+	return (flags & DisplayShowType::Idle) != DisplayShowType::None; // not hovering & not selected
 }
 
 void DigitalDisplayTypeClass::Draw(Point2D position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield)
@@ -72,10 +112,20 @@ void DigitalDisplayTypeClass::Draw(Point2D position, int length, int value, int 
 void DigitalDisplayTypeClass::DisplayText(Point2D& position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield)
 {
 	wchar_t text[0x20];
+	double ratio = static_cast<double>(value) / maxValue;
 
-	if (Percentage.Get())
+	if (ValueAsTimer)
 	{
-		swprintf_s(text, L"%d", static_cast<int>((static_cast<double>(value) / maxValue) * 100));
+		const int minute = value / 60;
+
+		if (const int hour = minute / 60)
+			swprintf_s(text, L"%u:%02u:%02u", hour, minute % 60, value % 60);
+		else
+			swprintf_s(text, L"%u:%02u", minute % 60, value % 60);
+	}
+	else if (Percentage)
+	{
+		swprintf_s(text, L"%d", static_cast<int>(ratio * 100));
 		wcscat_s(text, L"%%");
 	}
 	else if (HideMaxValue.Get(isInfantry))
@@ -87,8 +137,7 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& position, int length, int val
 		swprintf_s(text, L"%d/%d", value, maxValue);
 	}
 
-	double ratio = static_cast<double>(value) / maxValue;
-	COLORREF color = Drawing::RGB_To_Int(Text_Color.Get(ratio));
+	const COLORREF color = Drawing::RGB_To_Int(Text_Color.Get(ratio));
 	RectangleStruct rect = DSurface::Composite->GetRect();
 	rect.Height -= 32; // account for bottom bar
 	const int textHeight = 12;
@@ -106,25 +155,51 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& position, int length, int val
 
 void DigitalDisplayTypeClass::DisplayShape(Point2D& position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield)
 {
-	std::string valueString(std::move(Percentage ?
-		GeneralUtils::IntToDigits(static_cast<int>(static_cast<double>(value) / maxValue * 100)) :
-		GeneralUtils::IntToDigits(value)
-	));
-	std::string maxValueString(!Percentage && !HideMaxValue.Get(isInfantry) ?
-		std::move(GeneralUtils::IntToDigits(maxValue)) :
-		""
-	);
-	Vector2D<int> spacing = (
-		Shape_Spacing.isset() ?
-		Shape_Spacing.Get() :
-		(isBuilding ? Vector2D<int> { 4, -2 } : Vector2D<int> { 4, 0 }) // default
-	);
-	const int pipsHeight = hasShield ? 4 : 0;
+	double ratio = static_cast<double>(value) / maxValue;
+	std::string valueString("");
 
-	if (Percentage)
-		valueString.push_back('%');
-	else if (!HideMaxValue.Get(isInfantry))
-		valueString += '/' + maxValueString;
+	if (!Shape_PercentageFrame)
+	{
+		if (!ValueAsTimer)
+		{
+			if (Percentage)
+				valueString += std::move(GeneralUtils::IntToDigits(static_cast<int>(ratio * 100))) + '%';
+			else if (HideMaxValue.Get(isInfantry))
+				valueString += std::move(GeneralUtils::IntToDigits(value));
+			else
+				valueString += std::move(GeneralUtils::IntToDigits(value)) + '/' + std::move(GeneralUtils::IntToDigits(maxValue));
+		}
+		else
+		{
+			const int minute = value / 60;
+			const int hour = minute / 60;
+
+			if (hour)
+				valueString += std::move(GeneralUtils::IntToDigits(hour)) + '%';
+
+			const int min = minute % 60;
+
+			if (!(min / 10) && hour)
+				valueString += '0';
+
+			valueString += std::move(GeneralUtils::IntToDigits(min)) + '%';
+
+			const int sec = value % 60;
+
+			if (!(sec / 10))
+				valueString += '0';
+
+			valueString += std::move(GeneralUtils::IntToDigits(sec));
+		}
+	}
+
+	Vector2D<int> spacing = (Shape_Spacing.isset()
+		? Shape_Spacing.Get()
+		: (isBuilding
+			? Vector2D<int> { 4, -2 }
+			: Vector2D<int> { 4, 0 })); // default
+
+	const int pipsHeight = hasShield ? 4 : 0;
 
 	if (AnchorType.Vertical == VerticalPosition::Top)
 		position.Y -= Shape->Height + pipsHeight; // upper of healthbar and shieldbar
@@ -137,13 +212,25 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& position, int length, int va
 	}
 	case TextAlign::Center:
 	{
-		position.X -= static_cast<int>(valueString.length()) * spacing.X / 2;
-		position.Y += static_cast<int>(valueString.length()) * spacing.Y / 2;
+		if (Shape_PercentageFrame)
+		{
+			position.X -= static_cast<int>(Shape->Width) / 2;
+		}
+		else
+		{
+			position.X -= static_cast<int>(valueString.length()) * spacing.X / 2;
+			position.Y += static_cast<int>(valueString.length()) * spacing.Y / 2;
+		}
+
 		break;
 	}
 	case TextAlign::Right:
 	{
-		position.X -= spacing.X;
+		if (Shape_PercentageFrame)
+			position.X -= static_cast<int>(Shape->Width);
+		else
+			position.X -= spacing.X;
+
 		break;
 	}
 	}
@@ -156,7 +243,6 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& position, int length, int va
 	const int redExtraFrame = 34;
 	int numberBaseFrame = greenBaseFrame;
 	int extraBaseFrame = greenExtraFrame;
-	double ratio = static_cast<double>(value) / maxValue;
 
 	if (ratio > RulesClass::Instance->ConditionYellow)
 		numberBaseFrame = greenBaseFrame;
@@ -188,7 +274,20 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& position, int length, int va
 	RectangleStruct rect = DSurface::Composite->GetRect();
 	rect.Height -= 32; // account for bottom bar
 
-	ShapeTextPrinter::PrintShape(valueString.c_str(), shapeTextPrintData, position, rect, DSurface::Composite);
+	if (Shape_PercentageFrame)
+	{
+		DSurface::Composite->DrawSHP
+		(
+			const_cast<ConvertClass*>(Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL)),
+			const_cast<SHPStruct*>(Shape.Get()),
+			static_cast<int>(Math::clamp(ratio, 0, 1) * (Shape->Frames - 1) + 0.5),
+			&position, &rect, BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0
+		);
+	}
+	else
+	{
+		ShapeTextPrinter::PrintShape(valueString.c_str(), shapeTextPrintData, position, rect, DSurface::Composite);
+	}
 }
 
 
@@ -206,12 +305,17 @@ void DigitalDisplayTypeClass::Serialize(T& Stm)
 		.Process(this->Shape)
 		.Process(this->Palette)
 		.Process(this->Shape_Spacing)
+		.Process(this->Shape_PercentageFrame)
 		.Process(this->Percentage)
 		.Process(this->HideMaxValue)
-		.Process(this->VisibleToHouses_Observer)
 		.Process(this->VisibleToHouses)
+		.Process(this->VisibleToHouses_Observer)
+		.Process(this->VisibleInSpecialState)
 		.Process(this->InfoType)
+		.Process(this->InfoIndex)
 		.Process(this->ValueScaleDivisor)
+		.Process(this->ValueAsTimer)
+		.Process(this->ShowType)
 		;
 }
 

@@ -235,8 +235,8 @@ void BombardTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 
 		if (pExt->LaserTrails.size())
 		{
-			for (auto& trail : pExt->LaserTrails)
-				trail.LastLocation = middleLocation;
+			for (const auto& pTrail : pExt->LaserTrails)
+				pTrail->LastLocation = middleLocation;
 		}
 		this->RefreshBulletLineTrail(pBullet);
 
@@ -490,7 +490,7 @@ bool BombardTrajectory::BulletDetonatePreCheck(BulletClass* pBullet)
 	// Ground, must be checked when free fall
 	if (pType->SubjectToGround || (this->IsFalling && pType->FreeFallOnTarget))
 	{
-		if (MapClass::Instance->GetCellFloorHeight(pBullet->Location) >= (pBullet->Location.Z + 15))
+		if (MapClass::Instance.GetCellFloorHeight(pBullet->Location) >= (pBullet->Location.Z + 15))
 			return true;
 	}
 
@@ -560,9 +560,10 @@ void BombardTrajectory::BulletVelocityChange(BulletClass* pBullet)
 
 				if (pExt->LaserTrails.size())
 				{
-					for (auto& trail : pExt->LaserTrails)
-						trail.LastLocation = middleLocation;
+					for (const auto& pTrail : pExt->LaserTrails)
+						pTrail->LastLocation = middleLocation;
 				}
+
 				this->RefreshBulletLineTrail(pBullet);
 
 				pBullet->SetLocation(middleLocation);
@@ -600,17 +601,15 @@ void BombardTrajectory::RefreshBulletLineTrail(BulletClass* pBullet)
 
 	if (pType->UseLineTrail)
 	{
-		if (const auto pLineTrailer = GameCreate<LineTrail>())
-		{
-			pBullet->LineTrailer = pLineTrailer;
+		const auto pLineTrailer = GameCreate<LineTrail>();
+		pBullet->LineTrailer = pLineTrailer;
 
-			if (RulesClass::Instance->LineTrailColorOverride != ColorStruct { 0, 0, 0 })
-				pLineTrailer->Color = RulesClass::Instance->LineTrailColorOverride;
-			else
-				pLineTrailer->Color = pType->LineTrailColor;
+		if (RulesClass::Instance->LineTrailColorOverride != ColorStruct { 0, 0, 0 })
+			pLineTrailer->Color = RulesClass::Instance->LineTrailColorOverride;
+		else
+			pLineTrailer->Color = pType->LineTrailColor;
 
-			pLineTrailer->SetDecrement(pType->LineTrailColorDecrement);
-			pLineTrailer->Owner = pBullet;
-		}
+		pLineTrailer->SetDecrement(pType->LineTrailColorDecrement);
+		pLineTrailer->Owner = pBullet;
 	}
 }

@@ -3,7 +3,9 @@
 #include <ScenarioClass.h>
 #include <HouseClass.h>
 #include <SessionClass.h>
+#include <EventClass.h>
 #include <Utilities/GeneralUtils.h>
+#include <Utilities/SpawnerHelper.h>
 
 const char* QuickSaveCommandClass::GetName() const
 {
@@ -22,14 +24,14 @@ const wchar_t* QuickSaveCommandClass::GetUICategory() const
 
 const wchar_t* QuickSaveCommandClass::GetUIDescription() const
 {
-	return GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_DESC", L"Save the current game (Singleplayer only).");
+	return GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_DESC", L"Save the current game.");
 }
 
 void QuickSaveCommandClass::Execute(WWKey eInput) const
 {
 	auto PrintMessage = [](const wchar_t* pMessage)
 	{
-		MessageListClass::Instance->PrintMessage(
+		MessageListClass::Instance.PrintMessage(
 			pMessage,
 			RulesClass::Instance->MessageDelay,
 			HouseClass::CurrentPlayer->ColorSchemeIndex,
@@ -39,15 +41,12 @@ void QuickSaveCommandClass::Execute(WWKey eInput) const
 
 	if (SessionClass::IsSingleplayer())
 	{
-		*reinterpret_cast<bool*>(0xABCE08) = false;
-		Phobos::ShouldQuickSave = true;
-
-		if (SessionClass::IsCampaign())
-			Phobos::CustomGameSaveDescription = ScenarioClass::Instance->UINameLoaded;
-		else
-			Phobos::CustomGameSaveDescription = ScenarioClass::Instance->Name;
-		Phobos::CustomGameSaveDescription += L" - ";
-		Phobos::CustomGameSaveDescription += GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_SUFFIX", L"Quicksaved");
+		Phobos::ScheduleGameSave(GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_SUFFIX", L"Quicksaved"));
+	}
+	else if (SpawnerHelper::IsSaveGameEventHooked())
+	{
+		// Relinquish handling of the save game to spawner
+		EventClass::OutList.Add(EventClass { HouseClass::CurrentPlayer->ArrayIndex, EventType::SaveGame });
 	}
 	else
 	{

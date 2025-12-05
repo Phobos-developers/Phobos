@@ -51,7 +51,7 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 	{
 		memset(Phobos::wideBuffer, 0, sizeof Phobos::wideBuffer);
 		CRT::mbstowcs(Phobos::wideBuffer, buffer, strlen(buffer));
-		MessageListClass::Instance->PrintMessage(Phobos::wideBuffer, 600, 5, true);
+		MessageListClass::Instance.PrintMessage(Phobos::wideBuffer, 600, -1, true);
 		Debug::Log("%s\n", buffer);
 		buffer[0] = 0;
 	};
@@ -75,7 +75,7 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 	auto printFoots = [&append, &display, &getTargetInfo](FootClass* pFoot)
 	{
 		append("[Phobos] Dump ObjectInfo runs.\n");
-		auto pType = pFoot->GetTechnoType();
+		auto const pType = pFoot->GetTechnoType();
 		append("ID = %s, ", pType->ID);
 		append("Owner = %s (%s), ", pFoot->Owner->get_ID(), pFoot->Owner->PlainName);
 		append("Location = (%d, %d), ", pFoot->GetMapCoords().X, pFoot->GetMapCoords().Y);
@@ -83,19 +83,19 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 
 		if (pFoot->BelongsToATeam())
 		{
-			auto pTeam = pFoot->Team;
+			auto const pTeam = pFoot->Team;
 
-			auto pTeamType = pFoot->Team->Type;
+			auto const pTeamType = pFoot->Team->Type;
 			bool found = false;
-			for (int i = 0; i < AITriggerTypeClass::Array->Count && !found; i++)
+			for (int i = 0; i < AITriggerTypeClass::Array.Count && !found; i++)
 			{
-				auto pTriggerTeam1Type = AITriggerTypeClass::Array->GetItem(i)->Team1;
-				auto pTriggerTeam2Type = AITriggerTypeClass::Array->GetItem(i)->Team2;
+				auto const pTriggerTeam1Type = AITriggerTypeClass::Array.GetItem(i)->Team1;
+				auto const pTriggerTeam2Type = AITriggerTypeClass::Array.GetItem(i)->Team2;
 
 				if (pTeamType && ((pTriggerTeam1Type && pTriggerTeam1Type == pTeamType) || (pTriggerTeam2Type && pTriggerTeam2Type == pTeamType)))
 				{
 					found = true;
-					auto pTriggerType = AITriggerTypeClass::Array->GetItem(i);
+					auto const pTriggerType = AITriggerTypeClass::Array.GetItem(i);
 					append("Trigger ID = %s, weights [Current, Min, Max]: %f, %f, %f", pTriggerType->ID, pTriggerType->Weight_Current, pTriggerType->Weight_Minimum, pTriggerType->Weight_Maximum);
 				}
 			}
@@ -113,9 +113,8 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 			display();
 		}
 
-		if (pFoot->Passengers.NumPassengers > 0)
+		if (FootClass* pCurrent = pFoot->Passengers.GetFirstPassenger())
 		{
-			FootClass* pCurrent = pFoot->Passengers.FirstPassenger;
 			append("%d Passengers: %s", pFoot->Passengers.NumPassengers, pCurrent->GetTechnoType()->ID);
 			for (pCurrent = abstract_cast<FootClass*>(pCurrent->NextObject); pCurrent; pCurrent = abstract_cast<FootClass*>(pCurrent->NextObject))
 				append(", %s", pCurrent->GetTechnoType()->ID);
@@ -142,8 +141,8 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 
 		append("Current HP = (%d / %d)", pFoot->Health, pType->Strength);
 
-		auto pTechnoExt = TechnoExt::ExtMap.Find(pFoot);
-		auto pShieldData = pTechnoExt->Shield.get();
+		auto const pTechnoExt = TechnoExt::ExtMap.Find(pFoot);
+		auto const pShieldData = pTechnoExt->Shield.get();
 
 		if (pTechnoExt->CurrentShieldType && pShieldData)
 			append(", Current Shield HP = (%d / %d)", pShieldData->GetHP(), pTechnoExt->CurrentShieldType->Strength);
@@ -158,7 +157,7 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 	auto printBuilding = [&append, &display, &getTargetInfo](BuildingClass* pBuilding)
 	{
 		append("[Phobos] Dump ObjectInfo runs.\n");
-		auto pType = pBuilding->Type;
+		auto const pType = pBuilding->Type;
 		append("ID = %s, ", pType->ID);
 		append("Owner = %s (%s), ", pBuilding->Owner->get_ID(), pBuilding->Owner->PlainName);
 		append("Location = (%d, %d), ", pBuilding->GetMapCoords().X, pBuilding->GetMapCoords().Y);
@@ -211,8 +210,8 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 
 		append("Current HP = (%d / %d)\n", pBuilding->Health, pBuilding->Type->Strength);
 
-		auto pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
-		auto pShieldData = pTechnoExt->Shield.get();
+		auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
+		auto const pShieldData = pTechnoExt->Shield.get();
 
 		if (pTechnoExt->CurrentShieldType && pShieldData)
 			append("Current Shield HP = (%d / %d)\n", pShieldData->GetHP(), pTechnoExt->CurrentShieldType->Strength);
@@ -241,7 +240,7 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		dumped = true;
 	};
 
-	for (auto pTechno : *TechnoClass::Array)
+	for (auto const pTechno : TechnoClass::Array)
 	{
 		if (dumped) break;
 		if (pTechno->IsMouseHovering)
@@ -250,12 +249,12 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 
 	if (!dumped)
 	{
-		if (ObjectClass::CurrentObjects->Count > 0)
+		if (ObjectClass::CurrentObjects.Count > 0)
 		{
-			if (ObjectClass::CurrentObjects->Count != 1)
-				MessageListClass::Instance->PrintMessage(L"This command will only dump one of these selected object", 600, 5, true);
+			if (ObjectClass::CurrentObjects.Count != 1)
+				MessageListClass::Instance.PrintMessage(L"This command will only dump one of these selected object", 600, -1, true);
 
-			dumpInfo(ObjectClass::CurrentObjects->GetItem(ObjectClass::CurrentObjects->Count - 1));
+			dumpInfo(ObjectClass::CurrentObjects.GetItem(ObjectClass::CurrentObjects.Count - 1));
 		}
 	}
 }
