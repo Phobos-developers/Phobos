@@ -881,3 +881,18 @@ In `mycampaign.map`:
 ID=EventCount,...,606,2,0,[AttachEffectType],...
 ...
 ```
+
+### `1000` Force the check of events in sequential order
+
+- By default, the game evaluates all map triggers in parallel. Adding this map event forces short-circuit evaluation as soon as any subsequent event returns `false`.
+- This only affects evaluation from this control event (inclusive) to the last event in the list.
+- All events placed before this control event still work in a non-short-circuiting manner.
+- Sequential events will not begin evaluation until all preceding events have successfully completed.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,1000,0,0,0,...
+...
+```
