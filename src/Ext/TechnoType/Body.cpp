@@ -64,6 +64,15 @@ int TechnoTypeExt::ExtData::SelectForceWeapon(TechnoClass* pThis, AbstractClass*
 		{
 			forceWeaponIndex = this->ForceWeapon_UnderEMP;
 		}
+		else if (this->ForceWeapon_Capture >= 0)
+		{
+			if (const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pTargetType))
+			{
+				if ((pBuildingType->Capturable || pBuildingType->NeedsEngineer)
+					&& !pThis->Owner->IsAlliedWith(pTargetTechno->Owner))
+					forceWeaponIndex = this->ForceWeapon_Capture;
+			}
+		}
 	}
 
 	if (forceWeaponIndex == -1
@@ -803,6 +812,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ForceAAWeapon_Infantry.Read(exINI, pSection, "ForceAAWeapon.Infantry");
 	this->ForceAAWeapon_Units.Read(exINI, pSection, "ForceAAWeapon.Units");
 	this->ForceAAWeapon_Aircraft.Read(exINI, pSection, "ForceAAWeapon.Aircraft");
+	this->ForceWeapon_Capture.Read(exINI, pSection, "ForceWeapon.Capture");
 
 	this->ForceWeapon_Check = (
 		this->ForceWeapon_Naval_Decloaked >= 0
@@ -820,6 +830,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->ForceAAWeapon_Infantry >= 0
 		|| this->ForceAAWeapon_Units >= 0
 		|| this->ForceAAWeapon_Aircraft >= 0
+		|| this->ForceWeapon_Capture >= 0
 	);
 
 	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
@@ -1457,6 +1468,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceAAWeapon_Infantry)
 		.Process(this->ForceAAWeapon_Units)
 		.Process(this->ForceAAWeapon_Aircraft)
+		.Process(this->ForceWeapon_Capture)
 
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)

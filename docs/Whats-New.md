@@ -440,6 +440,7 @@ New:
 - [Units can customize the attack voice that plays when using more weapons](New-or-Enhanced-Logics.md#multi-voiceattack) (by FlyStar)
 - Customize squid grapple animation (by NetsuNegi)
 - [Auto deploy for GI-like infantry](Fixed-or-Improved-Logics.md#auto-deploy-for-gi-like-infantry) (by TaranDahl)
+- Engineer logics on Warheads (by FS-21)
 - [Vehicles that have lost their target can customize the turret direction to align with the vehicle body](New-or-Enhanced-Logics.md#turret-response) (by FlyStar)
 - [Reverse engineer warhead](New-or-Enhanced-Logics.md#reverse-engineer-warhead) (by CrimRecya)
 - [AI base construction modification](Fixed-or-Improved-Logics.md#ai-base-construction-modification) (by CrimRecya)

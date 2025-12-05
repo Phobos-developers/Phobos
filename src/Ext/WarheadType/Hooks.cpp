@@ -345,6 +345,26 @@ DEFINE_HOOK(0x442290, BuildingClass_ReceiveDamage_Nonprovocative1, 0x6)
 	return pTypeExt->Nonprovocative ? SkipEvents : 0;
 }
 
+DEFINE_HOOK(0x4423B7, BuildingClass_ReceiveDamage_BridgeRepairHut, 0xC)
+{
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x9C, 0xC));
+	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0x9C, 0x10));
+	GET_STACK(HouseClass*, pHouse, STACK_OFFSET(0x9C, 0x18));
+	GET(BuildingClass*, pThis, ESI);
+
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+
+	if (pWHExt->FakeEngineer_CanRepairBridges || pWHExt->FakeEngineer_CanDestroyBridges)
+	{
+		const bool isBridgeDestroyed = MapClass::Instance.IsLinkedBridgeDestroyed(CellClass::Coord2Cell(pThis->GetCenterCoords()));
+		bool destroyBridge = isBridgeDestroyed && pWHExt->FakeEngineer_CanRepairBridges ? false : pWHExt->FakeEngineer_CanDestroyBridges;
+
+		WarheadTypeExt::DetonateAtBridgeRepairHut(pThis, pSource, pHouse, destroyBridge);
+	}
+
+	return 0;
+}
+
 // Suppress all events and alerts that come from attacking a building, unlike Ares' Malicious this includes all EVA notifications AND events
 DEFINE_HOOK(0x442956, BuildingClass_ReceiveDamage_Nonprovocative2, 0x6)
 {

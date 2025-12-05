@@ -289,6 +289,7 @@ public:
 	static bool IsHealthInThreshold(TechnoClass* pObject, double min, double max);
 	static UnitTypeClass* GetUnitTypeExtra(UnitClass* pUnit, TechnoTypeExt::ExtData* pData);
 	static AircraftTypeClass* GetAircraftTypeExtra(AircraftClass* pAircraft);
+	static bool CanBeAffectedByFakeEngineer(TechnoClass* pThis, TechnoClass* pBuilding, bool checkBridge = false, bool checkCapturableBuilding = false, bool checkAttachedBombs = false);
 	static bool CannotMove(UnitClass* pThis);
 	static bool HasAmmoToDeploy(TechnoClass* pThis);
 	static void HandleOnDeployAmmoChange(TechnoClass* pThis, int maxAmmoOverride = -1);

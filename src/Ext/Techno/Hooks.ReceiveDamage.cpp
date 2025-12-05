@@ -2,6 +2,7 @@
 
 #include <TacticalClass.h>
 #include <RadarEventClass.h>
+#include <BombClass.h>
 
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -71,6 +72,33 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			damage = calculateDamage ? calculateDamage : sgnDamage;
 		}
 	}
+
+	auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
+
+	// Repair/Destroy bridges at Bridge Repair Huts buildings
+	if (pBuilding && (pWHExt->FakeEngineer_CanRepairBridges || pWHExt->FakeEngineer_CanDestroyBridges))
+	{
+		const bool isBridgeDestroyed = MapClass::Instance.IsLinkedBridgeDestroyed(CellClass::Coord2Cell(pThis->GetCenterCoords()));
+		bool destroyBridge = !isBridgeDestroyed && pWHExt->FakeEngineer_CanRepairBridges ? false : pWHExt->FakeEngineer_CanDestroyBridges;
+		WarheadTypeExt::DetonateAtBridgeRepairHut(pThis, nullptr, pSourceHouse, destroyBridge);
+	}
+
+	// Capture enemy buildings
+	if (pBuilding && pWHExt->FakeEngineer_CanCaptureBuildings
+		&& !pSourceHouse->IsAlliedWith(pTargetHouse)
+		&& (pBuilding->Type->Capturable || pBuilding->Type->NeedsEngineer))
+	{
+		// Send engineer's "enter" event
+		auto const pTag = pBuilding->AttachedTag;
+		if (args->Attacker && pTag)
+			pTag->RaiseEvent(TriggerEvent::EnteredBy, args->Attacker, CellStruct::Empty);
+
+		reinterpret_cast<bool(__thiscall*)(BuildingClass*, HouseClass*, bool)>(0x448260)(pBuilding, pSourceHouse, true);
+	}
+
+	// Disarm bomb
+	if (pThis->AttachedBomb && pWHExt->FakeEngineer_BombDisarm)
+		pThis->AttachedBomb->Disarm();
 
 	// Raise Combat Alert
 	if (RulesExt::Global()->CombatAlert && damage > 1)
