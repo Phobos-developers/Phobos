@@ -549,15 +549,35 @@ DEFINE_HOOK(0x6FF905, TechnoClass_FireAt_FireOnce, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
+static inline void ToggleLaserWeaponIndex(TechnoClass* pThis, WeaponTypeClass* pWeapon, int weaponIndex)
 {
-	GET(TechnoClass* const, pSource, ESI);
+	if (pWeapon->IsLaser)
+	{
+		if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
+		{
+			auto const pExt = BuildingExt::ExtMap.Find(pBuilding);
+
+			if (!pExt->CurrentLaserWeaponIndex.has_value())
+				pExt->CurrentLaserWeaponIndex = weaponIndex;
+			else
+				pExt->CurrentLaserWeaponIndex.reset();
+		}
+	}
+}
+
+DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_LateLogic, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
 	GET_BASE(AbstractClass* const, pTarget, 0x8);
 	GET_STACK(BulletClass* const, pBullet, STACK_OFFSET(0xB0, -0x74));
+	GET(WeaponTypeClass* const, pWeapon, EBX);
+	GET_BASE(const int, weaponIndex, 0xC);
 
-	const auto pSourceTypeExt = TechnoExt::ExtMap.Find(pSource)->TypeExtData;
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pTypeExt = pExt->TypeExtData;
 
-	if (const auto pInterceptorType = pSourceTypeExt->InterceptorType.get())
+	// Interceptor.
+	if (const auto pInterceptorType = pTypeExt->InterceptorType.get())
 	{
 		if (const auto pTargetBullet = abstract_cast<BulletClass*, true>(pTarget))
 		{
@@ -568,33 +588,48 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 
 			const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 
-			pBulletExt->InterceptorTechnoType = pSourceTypeExt;
+			pBulletExt->InterceptorTechnoType = pTypeExt;
 			pBulletExt->InterceptedStatus |= InterceptedStatus::Targeted;
 		}
+	}
+
+	// Laser weapon index toggle.
+	ToggleLaserWeaponIndex(pThis, pWeapon, weaponIndex);
+
+	// Increment burst index, reset if needed.
+	++pThis->CurrentBurstIndex;
+	pThis->CurrentBurstIndex %= pWeapon->Burst;
+
+	// Force full rearm delay and reset burst index.
+	if (pExt->ForceFullRearmDelay)
+	{
+		pExt->ForceFullRearmDelay = false;
+		pThis->CurrentBurstIndex = 0;
 	}
 
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x6FF660, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
 DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
 	GET(WeaponTypeClass* const, pWeapon, EBX);
 	GET_BASE(int, weaponIndex, 0xC);
 
-	if (pWeapon->IsLaser)
-	{
-		if (auto const pExt = BuildingExt::ExtMap.Find(abstract_cast<BuildingClass*, true>(pThis)))
-		{
-			if (!pExt->CurrentLaserWeaponIndex.has_value())
-				pExt->CurrentLaserWeaponIndex = weaponIndex;
-			else
-				pExt->CurrentLaserWeaponIndex.reset();
-		}
-	}
+	ToggleLaserWeaponIndex(pThis, pWeapon, weaponIndex);
 
 	return 0;
+}
+
+// Issue #46: Laser is mirrored relative to FireFLH
+// Author: Starkku
+DEFINE_HOOK(0x6FF2BE, TechnoClass_FireAt_BurstOffsetFix, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	--pThis->CurrentBurstIndex; // Restored in TechnoClass_FireAt_LateLogic hook.
+
+	return 0x6FF2D1;
 }
 
 static inline void SetChargeTurretDelay(TechnoClass* pThis, int rearmDelay, WeaponTypeClass* pWeapon)
