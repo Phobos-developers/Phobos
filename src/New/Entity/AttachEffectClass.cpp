@@ -717,12 +717,15 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 				cumulativeMatches.push_back(attachEffect);
 
 				if (!match || attachEffect->Duration < match->Duration)
-					match = attachEffect;
+					attachEffect->RefreshDuration(attachParams.DurationOverride);
+
+				AttachEffectTypeClass::HandleEvent(pTarget);
+				return nullptr;
 			}
 		}
 	}
 
-	if (cumulativeMatches.size() > 0)
+	if (cumulative)
 	{
 		if (pType->Cumulative_MaxCount >= 0 && currentTypeCount >= pType->Cumulative_MaxCount)
 		{
@@ -733,7 +736,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 					ae->RefreshDuration(attachParams.DurationOverride);
 				}
 			}
-			else
+			else if (match)
 			{
 				match->RefreshDuration(attachParams.DurationOverride);
 			}
@@ -750,23 +753,13 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 		}
 	}
 
-	if (!cumulative && match)
-	{
-		match->RefreshDuration(attachParams.DurationOverride);
-		AttachEffectTypeClass::HandleEvent(pTarget);
-	}
-	else
-	{
-		targetAEs.emplace_back(std::make_unique<AttachEffectClass>(pType, pTarget, pInvokerHouse, pInvoker, pSource, attachParams.DurationOverride, attachParams.Delay, attachParams.InitialDelay, attachParams.RecreationDelay));
-		auto const pAE = targetAEs.back().get();
+	targetAEs.emplace_back(std::make_unique<AttachEffectClass>(pType, pTarget, pInvokerHouse, pInvoker, pSource, attachParams.DurationOverride, attachParams.Delay, attachParams.InitialDelay, attachParams.RecreationDelay));
+	auto const pAE = targetAEs.back().get();
 
-		if (!currentTypeCount && cumulative && pType->CumulativeAnimations.size() > 0)
-			pAE->HasCumulativeAnim = true;
+	if (!currentTypeCount && cumulative && pType->CumulativeAnimations.size() > 0)
+		pAE->HasCumulativeAnim = true;
 
-		return pAE;
-	}
-
-	return nullptr;
+	return pAE;
 }
 
 /// <summary>

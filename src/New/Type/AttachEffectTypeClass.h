@@ -174,7 +174,16 @@ public:
 
 	bool HasGroup(const std::string& groupID) const;
 	bool HasGroups(const std::vector<std::string>& groupIDs, bool requireAll) const;
-	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const;
+
+	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const
+	{
+		if (cumulativeCount < 0 || this->CumulativeAnimations.size() < 1)
+			return nullptr;
+
+		const int index = static_cast<size_t>(cumulativeCount) >= this->CumulativeAnimations.size() ? this->CumulativeAnimations.size() - 1 : cumulativeCount - 1;
+
+		return this->CumulativeAnimations.at(index);
+	}
 
 	void LoadFromINI(CCINIClass* pINI);
 	void LoadFromStream(PhobosStreamReader& Stm);
