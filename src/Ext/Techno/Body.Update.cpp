@@ -1844,7 +1844,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			if (pType->HasTint())
 				markForRedraw = true;
 
-			if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
+			if (pType->Cumulative && !pType->Cumulative_SimpleStack && pType->CumulativeAnimations.size() > 0)
 				this->UpdateCumulativeAttachEffects(attachEffect->GetType(), attachEffect);
 
 			auto const pWeapon = pType->ExpireWeapon;

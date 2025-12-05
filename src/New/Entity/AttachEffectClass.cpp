@@ -641,7 +641,12 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 					markForRedraw = true;
 
 				if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
-					pTargetExt->UpdateCumulativeAttachEffects(pType);
+				{
+					if (!pType->Cumulative_SimpleStack)
+						pTargetExt->UpdateCumulativeAttachEffects(pType);
+					else
+						pAE->UpdateCumulativeAnim();
+				}
 			}
 		}
 	}
