@@ -2541,6 +2541,7 @@ msgid ""
 " convert the firer to another TechnoType with less or no weapons (by "
 "Starkku)"
 msgstr ""
+"修复了一个 `FeedbackWeapon` 将开火者转换为另一种武器数量更少或无武器的单位时可能引发崩溃的问题（by Starkku）"
 
 #: ../../Whats-New.md:553
 msgid "0.4"
