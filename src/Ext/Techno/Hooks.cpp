@@ -298,6 +298,17 @@ DEFINE_HOOK(0x6F6AC4, TechnoClass_Limbo, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x702D6D, TechnoClass_RegisterDestruction_SaveKillerInfo, 0x6)
+{
+	GET(TechnoClass*, pKiller, EDI);
+	GET(TechnoClass*, pVictim, ESI);
+
+	if (pKiller && pVictim)
+		TechnoExt::ObjectKilledBy(pVictim, pKiller);
+
+	return 0;
+}
+
 bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 {
 	// Do not remove attached effects from undeploying buildings.
@@ -517,17 +528,6 @@ DEFINE_HOOK(0x7060A9, TechnoClas_DrawObject_DisguisePalette, 0x6)
 }
 
 #pragma endregion
-
-DEFINE_HOOK(0x702E4E, TechnoClass_RegisterDestruction_SaveKillerInfo, 0x6)
-{
-	GET(TechnoClass*, pKiller, EDI);
-	GET(TechnoClass*, pVictim, ECX);
-
-	if (pKiller && pVictim)
-		TechnoExt::ObjectKilledBy(pVictim, pKiller);
-
-	return 0;
-}
 
 DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 {

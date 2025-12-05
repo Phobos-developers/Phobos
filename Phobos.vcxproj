@@ -74,6 +74,7 @@
     <ClCompile Include="src\Ext\ParticleType\Hooks.cpp" />
     <ClCompile Include="src\Ext\Scenario\Hooks.cpp" />
     <ClCompile Include="src\Ext\Scenario\Hooks.Variables.cpp" />
+    <ClCompile Include="src\Ext\Script\ConditionalJump.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Body.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Hooks.cpp" />
     <ClCompile Include="src\Ext\Surface\Body.cpp" />
