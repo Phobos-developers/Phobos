@@ -5,6 +5,7 @@
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
+#include <Ext/Techno/Body.h>
 #include <Phobos.h>
 
 class TeamExt
@@ -32,6 +33,7 @@ public:
 		bool ForceJump_RepeatMode;
 		FootClass* TeamLeader;
 		std::vector<ScriptClass*> PreviousScriptList;
+		std::vector<TechnoClass*> BridgeRepairHuts;
 
 		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject)
 			, WaitNoTargetAttempts { 0 }
@@ -47,6 +49,7 @@ public:
 			, ForceJump_RepeatMode { false }
 			, TeamLeader { nullptr }
 			, PreviousScriptList { }
+			, BridgeRepairHuts { }
 		{ }
 
 		virtual ~ExtData() = default;
