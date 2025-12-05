@@ -89,16 +89,21 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 - Key `rulesmd.ini -> [TechnoType] -> Deployed.RememberTarget` is deprecated and can be removed now, the bugfix for `DeployToFire` deployers is now always on.
 
-### Changed tags
+### Changed tags<!-- This is only a temporary solution; what method to use afterwards has not been determined yet. -->
+
+- To standardize tag names for similar functions, prevent typos, or avoid misunderstandings, replace them with new tag names.
 
 #### From 0.3
 
 - `[WarheadType] -> Crit.AffectBelowPercent` -> `[WarheadType] -> Crit.AffectsBelowPercent`.
-  - To maintain consistency with the tags used for similar functions and avoid misspellings, replace with a more standard tag name.
 
 #### From 0.4
 
 - `[WarheadType] -> DetonateOnAllMapObjects.AffectHouses` -> `[WarheadType] -> DetonateOnAllMapObjects.AffectsHouses`
+
+#### From ???
+
+- `[WarheadType] -> Crit.AffectAbovePercent` -> `[WarheadType] -> Crit.AffectsAbovePercent`.
 
 ### New user settings in RA2MD.INI
 
