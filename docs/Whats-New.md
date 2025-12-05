@@ -96,6 +96,10 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `[WarheadType] -> Crit.AffectBelowPercent` -> `[WarheadType] -> Crit.AffectsBelowPercent`.
   - To maintain consistency with the tags used for similar functions and avoid misspellings, replace with a more standard tag name.
 
+#### From 0.4
+
+- `[WarheadType] -> DetonateOnAllMapObjects.AffectHouses` -> `[WarheadType] -> DetonateOnAllMapObjects.AffectsHouses`
+
 ### New user settings in RA2MD.INI
 
 - These are new user setting keys added by various features in Phobos. Most of them can be found in either in [user inteface](User-Interface.md) or [miscellaneous](Miscellanous.md) sections. Search functionality can be used to find them quickly if needed.

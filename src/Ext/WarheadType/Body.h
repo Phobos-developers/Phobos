@@ -137,7 +137,7 @@ public:
 		Valueable<bool> DetonateOnAllMapObjects_Full;
 		Valueable<bool> DetonateOnAllMapObjects_RequireVerses;
 		Valueable<AffectedTarget> DetonateOnAllMapObjects_AffectTargets;
-		Valueable<AffectedHouse> DetonateOnAllMapObjects_AffectHouses;
+		Valueable<AffectedHouse> DetonateOnAllMapObjects_AffectsHouses;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_AffectTypes;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
 
@@ -351,7 +351,7 @@ public:
 			, DetonateOnAllMapObjects_Full { true }
 			, DetonateOnAllMapObjects_RequireVerses { false }
 			, DetonateOnAllMapObjects_AffectTargets { AffectedTarget::None }
-			, DetonateOnAllMapObjects_AffectHouses { AffectedHouse::None }
+			, DetonateOnAllMapObjects_AffectsHouses { AffectedHouse::None }
 			, DetonateOnAllMapObjects_AffectTypes {}
 			, DetonateOnAllMapObjects_IgnoreTypes {}
 
