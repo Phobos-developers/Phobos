@@ -3,6 +3,7 @@
 #include <Utilities/TemplateDef.h>
 #include <FPSCounter.h>
 #include <GameOptionsClass.h>
+#include <HouseTypeClass.h>
 
 #include <Ext/BulletType/Body.h>
 #include <Ext/TechnoType/Body.h>
@@ -81,6 +82,10 @@ void RulesExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 
 void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
+	const char* sectionAITargetTypes = "AITargetTypes";
+	const char* sectionAIScriptsList = "AIScriptsList";
+	const char* sectionAIHousesList = "AIHousesList";
+
 	INI_EX exINI(pINI);
 
 	this->Storage_TiberiumIndex.Read(exINI, GameStrings::General, "Storage.TiberiumIndex");
@@ -375,6 +380,24 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 		this->AIScriptsLists.emplace_back(std::move(objectsList));
 	}
+
+	// Section AIHousesList
+	int houseItemsCount = pINI->GetKeyCount("AIHousesList");
+	for (int i = 0; i < houseItemsCount; ++i)
+	{
+		std::vector<HouseTypeClass*> objectsList;
+
+		char* context = nullptr;
+		pINI->ReadString("AIHousesList", pINI->GetKeyName("AIHousesList", i), "", Phobos::readBuffer);
+
+		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			if (const auto pNewHouse = HouseTypeClass::Find(cur))
+				objectsList.emplace_back(pNewHouse);
+		}
+
+		this->AIHousesLists.emplace_back(std::move(objectsList));
+	}
 }
 
 // this should load everything that TypeData is not dependant on
@@ -411,6 +434,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->AITargetTypesLists)
 		.Process(this->AIScriptsLists)
+		.Process(this->AIHousesLists)
 		.Process(this->Storage_TiberiumIndex)
 		.Process(this->HarvesterDumpAmount)
 		.Process(this->InfantryGainSelfHealCap)
