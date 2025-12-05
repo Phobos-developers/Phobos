@@ -214,7 +214,27 @@ bool TEventExt::HouseOwnsTechnoTypeTEvent(TEventClass* pThis)
 	if (!pHouse)
 		return false;
 
-	return pHouse->CountOwnedNow(pType) > 0;
+	if (pType->WhatAmI() == AbstractType::BuildingType)
+	{
+		auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+		auto& vec = pHouseExt->OwnedLimboDeliveredBuildings;
+
+		for (auto pBuilding : pHouse->Buildings)
+		{
+			if (pBuilding->Type != pType)
+				continue;
+
+			if (pBuilding->IsAlive && pBuilding->Health > 0 && !pBuilding->InLimbo)
+				return true;
+		}
+
+		return false;
+	}
+	else
+	{
+		int count = pHouse->CountOwnedNow(pType);
+		return pHouse->CountOwnedNow(pType) > 0;
+	}
 }
 
 bool TEventExt::HouseDoesntOwnTechnoTypeTEvent(TEventClass* pThis)
