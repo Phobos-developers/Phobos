@@ -93,12 +93,9 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 - To standardize tag names for similar functions, prevent typos, or avoid misunderstandings, replace them with new tag names.
 
-#### From 0.3
-
-- `[WarheadType] -> Crit.AffectBelowPercent` -> `[WarheadType] -> Crit.AffectsBelowPercent`.
-
 #### From 0.4
 
+- `[WarheadType] -> Crit.AffectBelowPercent` -> `[WarheadType] -> Crit.AffectsBelowPercent`.
 - `[WarheadType] -> DetonateOnAllMapObjects.AffectHouses` -> `[WarheadType] -> DetonateOnAllMapObjects.AffectsHouses`
 
 #### From ???
