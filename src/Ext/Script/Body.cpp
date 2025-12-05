@@ -196,6 +196,39 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case PhobosScripts::RandomSkipNextAction:
 		ScriptExt::SkipNextAction(pTeam);
 		break;
+	case PhobosScripts::SetHouseAngerModifier:
+		ScriptExt::SetHouseAngerModifier(pTeam, 0);
+		break;
+	case PhobosScripts::OverrideOnlyTargetHouseEnemy:
+		ScriptExt::OverrideOnlyTargetHouseEnemy(pTeam, -1);
+		break;
+	case PhobosScripts::ModifyHateHouseIndex:
+		ScriptExt::ModifyHateHouse_Index(pTeam, -1);
+		break;
+	case PhobosScripts::ModifyHateHousesList:
+		ScriptExt::ModifyHateHouses_List(pTeam, -1);
+		break;
+	case PhobosScripts::ModifyHateHousesList1Random:
+		ScriptExt::ModifyHateHouses_List1Random(pTeam, -1);
+		break;
+	case PhobosScripts::SetTheMostHatedHouseMinorNoRandom:
+		// <, no random
+		ScriptExt::SetTheMostHatedHouse(pTeam, 0, 0, false);
+		break;
+	case PhobosScripts::SetTheMostHatedHouseMajorNoRandom:
+		// >, no random
+		ScriptExt::SetTheMostHatedHouse(pTeam, 0, 1, false);
+		break;
+	case PhobosScripts::SetTheMostHatedHouseRandom:
+		// random
+		ScriptExt::SetTheMostHatedHouse(pTeam, 0, 0, true);
+		break;
+	case PhobosScripts::ResetAngerAgainstHouses:
+		ScriptExt::ResetAngerAgainstHouses(pTeam);
+		break;
+	case PhobosScripts::AggroHouse:
+		ScriptExt::AggroHouse(pTeam, -1);
+		break;
 	case PhobosScripts::StopForceJumpCountdown:
 		// Stop Timed Jump
 		ScriptExt::Stop_ForceJump_Countdown(pTeam);
