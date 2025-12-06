@@ -2900,6 +2900,7 @@ msgid ""
 "**11EJDE11** - Prevent mpdebug number from being drawn when visibility "
 "toggled off"
 msgstr ""
+"**11EJDE11** - 阻止 MPDEBUG 数字在关闭可见时仍然绘制"
 
 #~ msgid ""
 #~ "Allow `AuxBuilding` and Ares' "

@@ -2322,6 +2322,7 @@ msgid ""
 "Fixed MPDebug timer displaying when debug's visibility is off (by "
 "11EJDE11)"
 msgstr ""
+"修复了 MPDEBUG 计时器在 debug 信息关闭可见时依旧显示的问题（by 11EJDE11）"
 
 #: ../../Whats-New.md:507 ../../Whats-New.md:545 ../../Whats-New.md:873
 #: ../../Whats-New.md:958 ../../Whats-New.md:1122 ../../Whats-New.md:1163
