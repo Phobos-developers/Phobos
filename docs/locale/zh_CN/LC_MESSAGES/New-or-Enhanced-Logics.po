@@ -2938,6 +2938,17 @@ msgid ""
 "`IsGattling=true` is also wholly exempt."
 msgstr "任何使用 `(Elite)WeaponX` 的系统也完全不受影响，例如 `Gunner=true` 或 `IsGattling=true`。"
 
+#: ../../Fixed-or-Improved-Logics.md:124
+msgid ""
+"If `[CombatDamage] -> AllowWeaponSelectAgainstWalls` is set to true, "
+"`Secondary` will now be used against walls if `Primary` weapon Warhead "
+"has `Wall=false`, `Secondary` has `Wall=true` and the firer does not have"
+" `NoSecondaryWeaponFallback` set to true."
+msgstr ""
+"现在如果 `[CombatDamage] -> AllowWeaponSelectAgainstWalls` 设置为 true，假设 "
+"`Primary` 武器的弹头拥有 `Wall=false`，而 `Secondary` 武器拥有 `Wall=true` 且开火者没有将 "
+"`NoSecondaryWeaponFallback` 设为 true 那么 `Secondary` 将在应对墙时被使用。"
+
 #: ../../New-or-Enhanced-Logics.md:1130
 msgid ""
 "Disguise logic additions (disguise-based movement speed, disguise "
