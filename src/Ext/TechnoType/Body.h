@@ -409,6 +409,10 @@ public:
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
 
+		Valueable<int> Ammo_AutoConvertMinimumAmount;
+		Valueable<int> Ammo_AutoConvertMaximumAmount;
+		Nullable<TechnoTypeClass*> Ammo_AutoConvertType;
+
 		Valueable<bool> FiringForceScatter;
 
 		Valueable<int> FireUp;
@@ -800,6 +804,10 @@ public:
 
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
+
+			, Ammo_AutoConvertMinimumAmount { -1 }
+			, Ammo_AutoConvertMaximumAmount { -1 }
+			, Ammo_AutoConvertType { nullptr }
 
 			, FiringForceScatter { true }
 

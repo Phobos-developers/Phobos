@@ -437,6 +437,7 @@ New:
 - [Damaged aircraft image changes](New-or-Enhanced-Logics.md#damaged-aircraft-image-changes) (by Fryone)
 - [Additional attached animation position customizations](Fixed-or-Improved-Logics.md#attached-animation-position-customization) (by Starkku)
 - Use `SkipCrushSlowdown=true` to avoid the bug related to `Accelerates=true` and `MovementZone=CrushAll` (by TaranDahl)
+- Unit & infantry auto-conversion on ammo change (by FS-21)
 - [Units can customize the attack voice that plays when using more weapons](New-or-Enhanced-Logics.md#multi-voiceattack) (by FlyStar)
 - Customize squid grapple animation (by NetsuNegi)
 - [Auto deploy for GI-like infantry](Fixed-or-Improved-Logics.md#auto-deploy-for-gi-like-infantry) (by TaranDahl)
@@ -503,6 +504,7 @@ Vanilla fixes:
 - Fixed an issue where the vanilla script ignores jumpjets (by TaranDahl)
 - Fixed the issue where trigger events 2, 53 and 54 in persistent type triggers would be activated unconditionally after activation (by FlyStar)
 - Fixed the bug that naval ship will sink even they destroyed in air (by NetsuNegi)
+- Fixed MPDebug timer displaying when debug's visibility is off (by 11EJDE11)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -525,6 +527,7 @@ Phobos fixes:
 - Fixed an issue where the game would only use `Weapon1` and `Weapon2` for auto-targeting even when `MultiWeapon=yes` was set (by FlyStar)
 - Fixed a game load crash caused by `MultiWeapon.IsSecondary=-1` or non-projectile weapons (by FlyStar)
 - Fixed an issue that caused Ares's `Battery.KeepOnline` cannot keep defense buildings works fine (by NetsuNegi)
+- Map Event 601 should return true only when exists in the map like other similar map events (by FS-21)
 
 Fixes / interactions with other extensions:
 <!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->
@@ -549,6 +552,7 @@ Phobos fixes:
 - Fixed an issue with `UndeploysInto.Sellable` (by TaranDahl)
 - Fixed an issue with `Powered`/`PoweredSpecial` building animation ownership change fix (by Trsdy)
 - Fixed `DisplayIncome`, `Transact.Money` etc. display strings showing through shroud and for objects that are supposed to be hidden such as cloaked, undetected enemies (by Starkku)
+- Fixed an issue that could cause crashes when `FeedbackWeapon` was used to convert the firer to another TechnoType with less or no weapons (by Starkku)
 ```
 
 ### 0.4
