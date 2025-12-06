@@ -43,7 +43,6 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->ApplyMindControlRangeLimit();
 	this->UpdateRecountBurst();
 	this->UpdateRearmInEMPState();
-	this->AmmoAutoConvertActions();
 
 	if (this->AttackMoveFollowerTempCount)
 		this->AttackMoveFollowerTempCount--;
@@ -179,12 +178,6 @@ void TechnoExt::ExtData::ApplyInterceptor()
 
 void TechnoExt::ExtData::DepletedAmmoActions()
 {
-	auto const pThis = static_cast<UnitClass*>(this->OwnerObject());
-	auto const pType = pThis->Type;
-
-	if (pType->Ammo <= 0 || !pType->IsSimpleDeployer)
-		return;
-
 	auto const pTypeExt = this->TypeExtData;
 	const bool skipMinimum = pTypeExt->Ammo_AutoDeployMinimumAmount < 0;
 	const bool skipMaximum = pTypeExt->Ammo_AutoDeployMaximumAmount < 0;
@@ -192,29 +185,35 @@ void TechnoExt::ExtData::DepletedAmmoActions()
 	if (skipMinimum && skipMaximum)
 		return;
 
-	const bool moreThanMinimum = pThis->Ammo >= pTypeExt->Ammo_AutoDeployMinimumAmount;
-	const bool lessThanMaximum = pThis->Ammo <= pTypeExt->Ammo_AutoDeployMaximumAmount;
+	auto const pThis = static_cast<UnitClass*>(this->OwnerObject());
+	auto const pType = pThis->Type;
 
-	if ((skipMinimum || moreThanMinimum) && (skipMaximum || lessThanMaximum))
+	if (pType->Ammo <= 0 || !pType->IsSimpleDeployer)
+		return;
+
+	if ((skipMinimum || pThis->Ammo >= pTypeExt->Ammo_AutoDeployMinimumAmount) // More than minimum
+		&& (skipMaximum || pThis->Ammo <= pTypeExt->Ammo_AutoDeployMaximumAmount)) // Less than maximum
+	{
 		pThis->QueueMission(Mission::Unload, true);
+	}
 }
 
 void TechnoExt::ExtData::AmmoAutoConvertActions()
 {
-	const auto pThis = this->OwnerObject();
 	const auto pTypeExt = this->TypeExtData;
-
-	if (!pTypeExt || pThis->GetTechnoType()->Ammo <= 0)
-		return;
-
 	const bool skipMinimum = pTypeExt->Ammo_AutoConvertMinimumAmount < 0;
 	const bool skipMaximum = pTypeExt->Ammo_AutoConvertMaximumAmount < 0;
 
 	if (skipMinimum && skipMaximum)
 		return;
 
+	if (pTypeExt->OwnerObject()->Ammo <= 0)
+		return;
+
+	const auto pThis = this->OwnerObject();
+
 	if ((skipMinimum || pThis->Ammo >= pTypeExt->Ammo_AutoConvertMinimumAmount) // More than minimum
-	&& (skipMaximum || pThis->Ammo <= pTypeExt->Ammo_AutoConvertMaximumAmount)) // Less than maximum
+		&& (skipMaximum || pThis->Ammo <= pTypeExt->Ammo_AutoConvertMaximumAmount)) // Less than maximum
 	{
 		const auto pFoot = abstract_cast<FootClass*, true>(pThis);
 
