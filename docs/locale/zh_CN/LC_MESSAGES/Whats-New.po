@@ -2455,6 +2455,7 @@ msgid ""
 "Map Event 601 should return true only when exists in the map like other "
 "similar map events (by FS-21)"
 msgstr ""
+"将触发条件 `601 所属方存在科技类型...` 改为像其他条件一样仅当对象存在于地图内时才视为满足（by FS-21）"
 
 #: ../../Whats-New.md:530 ../../Whats-New.md:928 ../../Whats-New.md:1151
 msgid "Fixes / interactions with other extensions:"
