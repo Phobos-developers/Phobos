@@ -206,17 +206,19 @@ bool TEventExt::VariableCheckBinary(TEventClass* pThis)
 
 bool TEventExt::HouseOwnsTechnoTypeTEvent(TEventClass* pThis)
 {
-	auto pType = TechnoTypeClass::Find(pThis->String);
+	auto const pType = TechnoTypeClass::Find(pThis->String);
+
 	if (!pType)
 		return false;
 
-	auto pHouse = HouseClass::Index_IsMP(pThis->Value) ? HouseClass::FindByIndex(pThis->Value) : HouseClass::FindByCountryIndex(pThis->Value);
+	auto const pHouse = HouseClass::Index_IsMP(pThis->Value) ? HouseClass::FindByIndex(pThis->Value) : HouseClass::FindByCountryIndex(pThis->Value);
+
 	if (!pHouse)
 		return false;
 
 	if (pType->WhatAmI() == AbstractType::BuildingType)
 	{
-		for (auto pBuilding : pHouse->Buildings)
+		for (auto const pBuilding : pHouse->Buildings)
 		{
 			if (pBuilding->Type != pType)
 				continue;
@@ -227,11 +229,8 @@ bool TEventExt::HouseOwnsTechnoTypeTEvent(TEventClass* pThis)
 
 		return false;
 	}
-	else
-	{
-		int count = pHouse->CountOwnedNow(pType);
-		return pHouse->CountOwnedNow(pType) > 0;
-	}
+
+	return pHouse->CountOwnedNow(pType) > 0;
 }
 
 bool TEventExt::HouseDoesntOwnTechnoTypeTEvent(TEventClass* pThis)
