@@ -1838,7 +1838,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:359
 msgid "Customizing default ColorScheme"
-msgstr ""
+msgstr "自定义默认配色方案"
 
 #: ../../Fixed-or-Improved-Logics.md:361
 msgid ""
@@ -1846,6 +1846,7 @@ msgid ""
 " that cannot properly remap will use the first Color Scheme in the "
 "`[Colors]` list; now it can be manually specified."
 msgstr ""
+"在原版中，一个无法正确重映射颜色的 `AltPalette=yes` 动画或 `Voxel=yes` 的抛射体图像会使用 `[Colors]` 列表中的第一个配色方案作为默认配色方案来映射所属色，现在它可以被手动指定了。"
 
 #: ../../Fixed-or-Improved-Logics.md:369
 msgid "Iron Curtain & Force Shield extra tint intensity"
@@ -1859,22 +1860,19 @@ msgstr "现在可以指定应用于处于铁幕和力场护盾中的单位的额
 
 #: ../../Fixed-or-Improved-Logics.md:380
 msgid "Move IvanBomb Position"
-msgstr ""
+msgstr "移动伊文炸弹位置"
 
 #: ../../Fixed-or-Improved-Logics.md:382
-#, fuzzy
 msgid ""
 "In vanilla, IvanBomb images display and the bombs detonate at the top-"
 "leftmost cell of the building foundation instead of at the center of "
 "buildings. This can now be changed."
 msgstr ""
-"现在伊文炸弹的图像显示位置和炸弹引爆位置可以通过设置 `[CombatDamage] -> "
-"IvanBombAttachToCenter=true` 来改为建筑中心而不再是建筑占地左上角的单元格。"
+"在原版中，伊文炸弹的图像显示位置和炸弹引爆位置在建筑占地左上角的单元格而不是建筑中心。现在这可以被更改。"
 
 #: ../../Fixed-or-Improved-Logics.md:390
-#, fuzzy
 msgid "Due to technical constraints this cannot be customized per WeaponType."
-msgstr "由于技术限制，这不会去除 Ares 的 EMP 效果所产生的警告。"
+msgstr "由于技术限制，这无法在每种武器上微观定义。"
 
 #: ../../Fixed-or-Improved-Logics.md:393
 msgid "RadialIndicator visibility"
@@ -1959,7 +1957,7 @@ msgstr "`[General] -> GatherWhenMCVDeploy` 控制这一行为。"
 
 #: ../../Fixed-or-Improved-Logics.md:438
 msgid "Use 8-bit RGB parameters for `[ColorAdd]`"
-msgstr ""
+msgstr "为 `[ColorAdd]` 使用 8 位 RGB 参数"
 
 #: ../../Fixed-or-Improved-Logics.md:440
 msgid ""
@@ -1967,12 +1965,14 @@ msgid ""
 " for red & blue, 0-63 for green). Now, with this setting, you can use the"
 " more user-friendly 8-bit RGB (0-255) for input."
 msgstr ""
+"在原版中，`[ColorAdd]` 条目中的值会被按照 RGB565（红色和蓝色为 0-31，绿色为 0-63）来使用，现在，你可以通过这一设置使其使用对人类用户更加友好的 8 位 RGB（0-255）来填写。"
 
 #: ../../Fixed-or-Improved-Logics.md:441
 msgid ""
 "This works for `LaserTargetColor`, `IronCurtainColor`, `BerserkColor` and"
 " `ForceShieldColor`."
 msgstr ""
+"这适用于 `LaserTargetColor`、`IronCurtainColor`、`BerserkColor` 和 `ForceShieldColor`。"
 
 #: ../../Fixed-or-Improved-Logics.md:449
 msgid "Veinholes & Weeds"
