@@ -761,17 +761,6 @@ msgid ""
 "in `artmd.ini` if possible."
 msgstr "现在如果可能的话墙类覆盖物将会使用 `artmd.ini` 中使用 `Palette` 指定的自定义色盘进行绘制。"
 
-#: ../../Fixed-or-Improved-Logics.md:124
-msgid ""
-"If `[CombatDamage] -> AllowWeaponSelectAgainstWalls` is set to true, "
-"`Secondary` will now be used against walls if `Primary` weapon Warhead "
-"has `Wall=false`, `Secondary` has `Wall=true` and the firer does not have"
-" `NoSecondaryWeaponFallback` set to true."
-msgstr ""
-"现在如果 `[CombatDamage] -> AllowWeaponSelectAgainstWalls` 设置为 true，假设 "
-"`Primary` 武器的弹头拥有 `Wall=false`，而 `Secondary` 武器拥有 `Wall=true` 且开火者没有将 "
-"`NoSecondaryWeaponFallback` 设为 true 那么 `Secondary` 将在应对墙时被使用。"
-
 #: ../../Fixed-or-Improved-Logics.md:125
 msgid ""
 "Setting `ReloadInTransport` to true on units with `Ammo` will allow the "
