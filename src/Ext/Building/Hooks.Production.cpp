@@ -225,3 +225,18 @@ DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType_Phobos, 0xA)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x4449FB, BuildingClass_KickOutUnit_CloningVats, 0x8)
+{
+	enum { SkipGameCode = 0x444A53 };
+
+	GET(BuildingClass*, pFactory, ESI);
+	GET(TechnoTypeClass*, pProductionType, EAX);
+	const auto pOwner = pFactory->Owner;
+	auto info = std::make_pair(pProductionType, pOwner);
+
+	for (const auto pVat : pOwner->CloningVats)
+		BuildingExt::KickOutClone(info, 0, pVat);
+
+	return SkipGameCode;
+}

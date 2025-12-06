@@ -6,6 +6,7 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/Scenario/Body.h>
 #include <Utilities/Helpers.Alex.h>
 
 #include <VoxelAnimClass.h>
@@ -30,6 +31,9 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 	}
 
 	// Check for ScreenShake
+	if (Phobos::Config::HideShakeEffects)
+		return SkipShaking;
+
 	auto&& [_, visible] = TacticalClass::Instance->CoordsToClient(*pCoords);
 
 	if (pExt->ShakeIsLocal && !visible)
@@ -90,9 +94,9 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 			return vec;
 		};
 
-		auto tryDetonate = [pThis, pWHExt, pOwner, isFull](TechnoClass* pTechno)
+		auto tryDetonate = [pThis, pWHExt, pOwner, isFull](TechnoClass* pTechno, TechnoTypeClass* pType)
 			{
-				if (pWHExt->EligibleForFullMapDetonation(pTechno, pOwner))
+				if (pWHExt->EligibleForFullMapDetonation(pTechno, pType, pOwner))
 				{
 					if (isFull)
 					{
@@ -102,7 +106,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 					}
 					else
 					{
-						int damage = (pThis->Health * pThis->DamageMultiplier) >> 8;
+						const int damage = (pThis->Health * pThis->DamageMultiplier) >> 8;
 						pWHExt->DamageAreaWithTarget(pTechno->GetCoords(), damage, pThis->Owner, pThis->WH, true, pOwner, pTechno);
 					}
 				}
@@ -113,7 +117,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 			auto const aircraft = copy_dvc(AircraftClass::Array);
 
 			for (auto const pAircraft : aircraft)
-				tryDetonate(pAircraft);
+				tryDetonate(pAircraft, pAircraft->Type);
 		}
 
 		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Building) != AffectedTarget::None)
@@ -121,7 +125,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 			auto const buildings = copy_dvc(BuildingClass::Array);
 
 			for (auto const pBuilding : buildings)
-				tryDetonate(pBuilding);
+				tryDetonate(pBuilding, pBuilding->Type);
 		}
 
 		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Infantry) != AffectedTarget::None)
@@ -129,7 +133,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 			auto const infantry = copy_dvc(InfantryClass::Array);
 
 			for (auto const pInf : infantry)
-				tryDetonate(pInf);
+				tryDetonate(pInf, pInf->Type);
 		}
 
 		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Unit) != AffectedTarget::None)
@@ -137,7 +141,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 			auto const units = copy_dvc(UnitClass::Array);
 
 			for (auto const pUnit : units)
-				tryDetonate(pUnit);
+				tryDetonate(pUnit, pUnit->Type);
 		}
 
 		pThis->Target = pOriginalTarget;
@@ -175,7 +179,7 @@ DEFINE_HOOK(0x469D1A, BulletClass_Logics_Debris, 0x6)
 		const auto pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 		auto coord = pThis->GetCoords();
 
-		int count = Math::min(debrisTypes.Count, debrisMaximums.Count);
+		const int count = Math::min(debrisTypes.Count, debrisMaximums.Count);
 
 		// Restore DebrisMaximums logic
 		// Make DebrisTypes generate completely in accordance with DebrisMaximums,
@@ -259,6 +263,15 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 	if (pAnimType)
 	{
 		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
+		const int cellHeight = MapClass::Instance.GetCellFloorHeight(*coords);
+		auto const newCrds = pWHExt->PlayAnimAboveSurface ? CoordStruct{ coords->X, coords->Y, Math::max(cellHeight, coords->Z) } : *coords;
+
+		if (cellHeight > newCrds.Z && !pWHExt->PlayAnimUnderground)
+		{
+			R->EAX(createdAnim);
+			return SkipGameCode;
+		}
+
 		auto const pOwner = pThis->Owner;
 		const bool splashed = pWHExt->Splashed;
 		const int creationInterval = splashed ? pWHExt->SplashList_CreationInterval : pWHExt->AnimList_CreationInterval;
@@ -310,7 +323,7 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 				if (!pType)
 					continue;
 
-				auto animCoords = *coords;
+				auto animCoords = newCrds;
 
 				if (allowScatter)
 				{
@@ -318,7 +331,7 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 					animCoords = MapClass::GetRandomCoordsNear(animCoords, distance, false);
 				}
 
-				auto const pAnim = GameCreate<AnimClass>(pType, animCoords, 0, 1, 0x2600, -15, false);
+				auto const pAnim = GameCreate<AnimClass>(pType, animCoords, 0, 1, 0x2600, pWHExt->AnimZAdjust.Get(RulesExt::Global()->WarheadAnimZAdjust), false);
 				createdAnim = true;
 				AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
 
@@ -416,7 +429,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			if (pTypeExt->ReturnWeapon_ApplyFirepowerMult)
 				damage = static_cast<int>(damage * TechnoExt::GetCurrentFirepowerMultiplier(pTechno));
 
-			if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pTechno, pTechno,
+			if (auto const pBullet = pWeapon->Projectile->CreateBullet(pTechno, pTechno,
 				damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 			{
 				BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, pThis->Location, false);
@@ -425,7 +438,97 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 		}
 	}
 
-	WarheadTypeExt::ExtMap.Find(pThis->WH)->InDamageArea = true;
+	// Unlimbo Detonate
+	const auto pWH = pThis->WH;
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	pWHExt->InDamageArea = true;
+
+	if (pTechno && pTechno->InLimbo && !pWH->Parasite && pWHExt->UnlimboDetonate)
+	{
+		CoordStruct location = *coords;
+		const auto pTarget = pThis->Target;
+		const bool isInAir = pTarget && pTarget->AbstractFlags & AbstractFlags::Foot ? static_cast<FootClass*>(pTarget)->IsInAir() : false;
+		bool success = false;
+
+		if (!pWHExt->UnlimboDetonate_ForceLocation)
+		{
+			const auto pType = pTechno->GetTechnoType();
+			const auto nCell = MapClass::Instance.NearByLocation(CellClass::Coord2Cell(location),
+									pType->SpeedType, -1, pType->MovementZone, false, 1, 1, true,
+									false, false, true, CellStruct::Empty, false, false);
+
+			const auto pCell = MapClass::Instance.TryGetCellAt(nCell);
+
+			if (pCell)
+			{
+				pTechno->OnBridge = pCell->ContainsBridge();
+				location = pCell->GetCoordsWithBridge();
+			}
+			else
+			{
+				pTechno->OnBridge = false;
+			}
+
+			if (isInAir)
+				location.Z = coords->Z;
+
+			success = pTechno->Unlimbo(location, pTechno->PrimaryFacing.Current().GetDir());
+		}
+		else
+		{
+			const auto pCell = MapClass::Instance.TryGetCellAt(location);
+
+			if (pCell)
+				pTechno->OnBridge = pCell->ContainsBridge();
+			else
+				pTechno->OnBridge = false;
+
+			++Unsorted::ScenarioInit;
+			success = pTechno->Unlimbo(location, pTechno->PrimaryFacing.Current().GetDir());
+			--Unsorted::ScenarioInit;
+		}
+
+		const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+
+		if (success)
+		{
+			if (isInAir)
+			{
+				pTechno->IsFallingDown = true;
+				pTechno->FallRate = 0;
+			}
+
+			if (pWHExt->UnlimboDetonate_KeepTarget
+				&& pTarget && pTarget->AbstractFlags & AbstractFlags::Object)
+			{
+				pTechno->SetTarget(pTarget);
+			}
+			else
+			{
+				pTechno->SetTarget(nullptr);
+			}
+
+			if (pTechnoExt->IsSelected)
+			{
+				auto& vec = ScenarioExt::Global()->LimboLaunchers;
+				vec.erase(std::remove(vec.begin(), vec.end(), pTechnoExt), vec.end());
+				pTechno->Select();
+				pTechnoExt->IsSelected = false;
+			}
+		}
+		else
+		{
+			if (pTechnoExt->IsSelected)
+			{
+				auto& vec = ScenarioExt::Global()->LimboLaunchers;
+				vec.erase(std::remove(vec.begin(), vec.end(), pTechnoExt), vec.end());
+				pTechnoExt->IsSelected = false;
+			}
+
+			pTechno->SetLocation(location);
+			pTechno->ReceiveDamage(&pTechno->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pTechno->Owner);
+		}
+	}
 
 	return 0;
 }
@@ -600,7 +703,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 				const int x = random.RandomRanged(-range, range);
 				const int y = random.RandomRanged(-range, range);
 
-				CellStruct cell = { static_cast<short>(cellTarget.X + x), static_cast<short>(cellTarget.Y + y) };
+				const CellStruct cell = { static_cast<short>(cellTarget.X + x), static_cast<short>(cellTarget.Y + y) };
 				auto const pCell = MapClass::Instance.GetCellAt(cell);
 
 				targets.AddItem(pCell);
@@ -681,6 +784,72 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 	}
 
 	return SkipGameCode;
+}
+
+#pragma endregion
+
+#pragma region AffectsUnderground
+
+// In vanilla, only ground is allowed, and Ares added air and top.
+// But it seems that underground and surface is also working fine?
+DEFINE_HOOK(0x469453, BulletClass_Logics_TemporalUnderGround, 0x6)
+{
+	enum { NotOK = 0x469AA4, OK = 0x469475 };
+
+	GET(FootClass*, pTarget, EAX);
+
+	if (pTarget->InWhichLayer() != Layer::None)
+		return OK;
+
+	return NotOK;
+}
+
+DEFINE_HOOK(0x4899DA, MapClass_DamageArea_DamageUnderGround, 0x7)
+{
+	GET_STACK(const bool, isNullified, STACK_OFFSET(0xE0, -0xC9));
+	GET_STACK(int, damage, STACK_OFFSET(0xE0, -0xBC));
+	GET_STACK(CoordStruct*, pCrd, STACK_OFFSET(0xE0, -0xB8));
+	GET_BASE(WarheadTypeClass*, pWH, 0xC);
+	GET_BASE(TechnoClass*, pSrcTechno, 0x8);
+	GET_BASE(HouseClass*, pSrcHouse, 0x14);
+	GET_STACK(bool, hitted, STACK_OFFSET(0xE0, -0xC1)); // bHitted = true
+
+	if (isNullified)
+		return 0;
+
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+	if (!pWHExt || !pWHExt->AffectsUnderground)
+		return 0;
+
+	// bool cylinder = pWHExt->CellSpread_Cylinder;
+	const float spread = pWH->CellSpread * (float)Unsorted::LeptonsPerCell;
+
+	for (auto const& pTechno : ScenarioExt::Global()->UndergroundTracker)
+	{
+		if (pTechno->InWhichLayer() == Layer::Underground // Layer.
+			&& pTechno->IsAlive && !pTechno->IsIronCurtained()
+			&& !pTechno->IsOnMap // Underground is not on map.
+			&& !pTechno->InLimbo)
+		{
+			double dist = 0.0;
+			auto const technoCoords = pTechno->GetCoords();
+
+			//if (cylinder)
+			//	dist = CoordStruct{ technoCoords.X - pCrd->X, technoCoords.Y - pCrd->Y, 0 }.Magnitude();
+			//else
+				dist = technoCoords.DistanceFrom(*pCrd);
+
+			if (dist <= spread)
+			{
+				pTechno->ReceiveDamage(&damage, (int)dist, pWH, pSrcTechno, false, false, pSrcHouse);
+				hitted = true;
+			}
+		}
+	}
+
+	R->Stack8(STACK_OFFSET(0xE0, -0xC1), true);
+	return 0;
 }
 
 #pragma endregion

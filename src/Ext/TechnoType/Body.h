@@ -36,7 +36,12 @@ public:
 		Valueable<CSFText> UIDescription;
 		Valueable<bool> LowSelectionPriority;
 		PhobosFixedString<0x20> GroupAs;
+		std::vector<PhobosFixedString<0x20>> WeaponGroupAs;
 		Valueable<int> RadarJamRadius;
+		Valueable<AffectedHouse> RadarJamHouses;
+		Valueable<int> RadarJamDelay;
+		ValueableVector<BuildingTypeClass*> RadarJamAffect;
+		ValueableVector<BuildingTypeClass*> RadarJamIgnore;
 		Nullable<int> InhibitorRange;
 		Nullable<int> DesignatorRange;
 		Valueable<float> FactoryPlant_Multiplier;
@@ -84,7 +89,7 @@ public:
 		Valueable<int> Ammo_DeployUnlockMaximumAmount;
 
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
-		Valueable<AnimTypeClass*> AutoDeath_VanishAnimation;
+		ValueableVector<AnimTypeClass*> AutoDeath_VanishAnimation;
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
 		Valueable<int> AutoDeath_AfterDelay;
 		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosDontExist;
@@ -111,9 +116,11 @@ public:
 		NullableIdx<VocClass> VoiceCreated;
 		NullableIdx<VocClass> VoicePickup; // Used by carryalls instead of VoiceMove if set.
 
-		Nullable<AnimTypeClass*> WarpOut;
-		Nullable<AnimTypeClass*> WarpIn;
-		Nullable<AnimTypeClass*> WarpAway;
+		ValueableVector<AnimTypeClass*> WarpOut;
+		ValueableVector<AnimTypeClass*> WarpIn;
+		ValueableVector<AnimTypeClass*> Chronoshift_WarpOut;
+		ValueableVector<AnimTypeClass*> Chronoshift_WarpIn;
+		ValueableVector<AnimTypeClass*> WarpAway;
 		Nullable<bool> ChronoTrigger;
 		Nullable<int> ChronoDistanceFactor;
 		Nullable<int> ChronoMinimumDelay;
@@ -138,6 +145,7 @@ public:
 		std::vector<std::vector<CoordStruct>> EliteWeaponBurstFLHs;
 		std::vector<CoordStruct> AlternateFLHs;
 		Valueable<bool> AlternateFLH_OnTurret;
+		Valueable<bool> AlternateFLH_ApplyVehicle;
 
 		Valueable<bool> DestroyAnim_Random;
 		Valueable<bool> NotHuman_RandomDeathSequence;
@@ -166,6 +174,8 @@ public:
 		Valueable<bool> JumpjetRotateOnCrash;
 		Nullable<int> ShadowSizeCharacteristicHeight;
 
+		Valueable<bool> IsSimpleDeployer_ConsiderPathfinding;
+		Nullable<LandTypeFlags> IsSimpleDeployer_DisallowedLandTypes;
 		Nullable<FacingType> DeployDir;
 		ValueableVector<AnimTypeClass*> DeployingAnims;
 		Valueable<bool> DeployingAnim_KeepUnitVisible;
@@ -322,6 +332,7 @@ public:
 
 		Valueable<bool> BunkerableAnyway;
 		Valueable<bool> KeepTargetOnMove;
+		Valueable<int> KeepTargetOnMove_Weapon;
 		Valueable<bool> KeepTargetOnMove_NoMorePursuit;
 		Valueable<Leptons> KeepTargetOnMove_ExtraDistance;
 
@@ -333,12 +344,13 @@ public:
 		Nullable<TechnoTypeClass*> Image_ConditionRed;
 		Nullable<UnitTypeClass*> WaterImage_ConditionYellow;
 		Nullable<UnitTypeClass*> WaterImage_ConditionRed;
+		bool NeedDamagedImage;
 
 		Nullable<int> InitialSpawnsNumber;
 		ValueableVector<AircraftTypeClass*> Spawns_Queue;
 
 		Valueable<Leptons> Spawner_RecycleRange;
-		Valueable<AnimTypeClass*> Spawner_RecycleAnim;
+		ValueableVector<AnimTypeClass*> Spawner_RecycleAnim;
 		Valueable<CoordStruct> Spawner_RecycleCoord;
 		Valueable<bool> Spawner_RecycleOnTurret;
 
@@ -349,8 +361,8 @@ public:
 		Nullable<double> ProneSpeed;
 		Nullable<double> DamagedSpeed;
 
-		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
-		Nullable<AnimTypeClass*> Promote_EliteAnimation;
+		ValueableVector<AnimTypeClass*> Promote_VeteranAnimation;
+		ValueableVector<AnimTypeClass*> Promote_EliteAnimation;
 
 		Nullable<AffectedHouse> RadarInvisibleToHouse;
 
@@ -391,6 +403,8 @@ public:
 		Nullable<bool> ExtendedAircraftMissions_SmoothMoving;
 		Nullable<bool> ExtendedAircraftMissions_EarlyDescend;
 		Nullable<bool> ExtendedAircraftMissions_RearApproach;
+		Nullable<bool> ExtendedAircraftMissions_FastScramble;
+		Nullable<int> ExtendedAircraftMissions_UnlandDamage;
 
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
@@ -420,6 +434,8 @@ public:
 		ValueableVector<bool> MultiWeapon_IsSecondary;
 		Valueable<int> MultiWeapon_SelectCount;
 		bool ReadMultiWeapon;
+		Vector2D<ThreatType> ThreatTypes;
+		Vector2D<int> CombatDamages;
 
 		ValueableIdx<VocClass> VoiceIFVRepair;
 		ValueableVector<int> VoiceWeaponAttacks;
@@ -437,7 +453,12 @@ public:
 			, UIDescription {}
 			, LowSelectionPriority { false }
 			, GroupAs { NONE_STR }
+			, WeaponGroupAs {}
 			, RadarJamRadius { 0 }
+			, RadarJamHouses { AffectedHouse::Enemies }
+			, RadarJamDelay { 30 }
+			, RadarJamAffect {}
+			, RadarJamIgnore {}
 			, InhibitorRange {}
 			, DesignatorRange { }
 			, FactoryPlant_Multiplier { 1.0 }
@@ -474,6 +495,8 @@ public:
 
 			, WarpOut {}
 			, WarpIn {}
+			, Chronoshift_WarpOut {}
+			, Chronoshift_WarpIn {}
 			, WarpAway {}
 			, ChronoTrigger {}
 			, ChronoDistanceFactor {}
@@ -495,6 +518,7 @@ public:
 			, OreGathering_FramesPerDir {}
 			, LaserTrailData {}
 			, AlternateFLH_OnTurret { true }
+			, AlternateFLH_ApplyVehicle { false }
 			, DestroyAnim_Random { true }
 			, NotHuman_RandomDeathSequence { false }
 
@@ -518,6 +542,9 @@ public:
 			, NoAmmoAmount { 0 }
 			, JumpjetRotateOnCrash { true }
 			, ShadowSizeCharacteristicHeight { }
+
+			, IsSimpleDeployer_ConsiderPathfinding { false }
+			, IsSimpleDeployer_DisallowedLandTypes {}
 			, DeployDir {}
 			, DeployingAnims {}
 			, DeployingAnim_KeepUnitVisible { false }
@@ -722,6 +749,7 @@ public:
 
 			, BunkerableAnyway { false }
 			, KeepTargetOnMove { false }
+			, KeepTargetOnMove_Weapon { -1 }
 			, KeepTargetOnMove_NoMorePursuit { true }
 			, KeepTargetOnMove_ExtraDistance { Leptons(0) }
 
@@ -733,6 +761,7 @@ public:
 			, Image_ConditionRed { }
 			, WaterImage_ConditionYellow { }
 			, WaterImage_ConditionRed { }
+			, NeedDamagedImage { false }
 
 			, InitialSpawnsNumber { }
 			, Spawns_Queue { }
@@ -770,6 +799,8 @@ public:
 			, ExtendedAircraftMissions_SmoothMoving {}
 			, ExtendedAircraftMissions_EarlyDescend {}
 			, ExtendedAircraftMissions_RearApproach {}
+			, ExtendedAircraftMissions_FastScramble {}
+			, ExtendedAircraftMissions_UnlandDamage {}
 
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
@@ -799,6 +830,8 @@ public:
 			, MultiWeapon_IsSecondary {}
 			, MultiWeapon_SelectCount { 2 }
 			, ReadMultiWeapon { false }
+			, ThreatTypes { ThreatType::Normal,ThreatType::Normal }
+			, CombatDamages { 0,0 }
 
 			, VoiceIFVRepair { -1 }
 			, VoiceWeaponAttacks {}
@@ -826,6 +859,8 @@ public:
 
 		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget);
 		int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget);
+
+		void UpdateAdditionalAttributes();
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;

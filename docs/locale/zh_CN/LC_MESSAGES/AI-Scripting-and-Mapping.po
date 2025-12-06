@@ -52,7 +52,7 @@ msgid ""
 "to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2))."
 msgstr ""
 "地图触发结果 `41 播放动画在...` 现在可以更完善地创建可以播放音效、造成杀伤以及使用设置了 `TiberiumChainReaction`"
-" 参数的动画（需要[修改 `FAData.ini`](Whats-New.md#for-map-editor-final-alert-2)）。"
+" 参数的动画（需要 [修改 `FAData.ini`](Whats-New.md#for-map-editor-final-alert-2)）。"
 
 #: ../../AI-Scripting-and-Mapping.md:10
 msgid ""
@@ -81,10 +81,9 @@ msgstr "脚本动作 `部署` 现在会让拥有 `DeploysInto` 的载具自动�
 #: ../../AI-Scripting-and-Mapping.md:13
 msgid ""
 "Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic"
-" normally. `InitialPayload` logic from Ares is not supported yet."
+" normally."
 msgstr ""
-"由触发结果 7、80、107 生成的小队现在可以正常使用 IFV 和 OpenTopped 逻辑。Ares 的 `InitialPayload` "
-"逻辑暂不支持。"
+"由触发结果 7、80、107 生成的小队现在可以正常使用 IFV 和 OpenTopped 逻辑。"
 
 #: ../../AI-Scripting-and-Mapping.md:14
 msgid ""
@@ -234,7 +233,7 @@ msgstr "尽管标签名为 `DefaultLS800BkgdPal`，但实际上就像原本游�
 
 #: ../../AI-Scripting-and-Mapping.md:70
 msgid "MCV redeploying"
-msgstr "基地车重部署"
+msgstr "基地车重新部署"
 
 #: ../../AI-Scripting-and-Mapping.md:72
 msgid ""
@@ -2174,9 +2173,9 @@ msgid ""
 "0=SOMEBANNER\n"
 "\n"
 "[SOMEBANNER]                ; BannerType\n"
-"PCX=                        ; filename - excluding the .pcx extension\n"
+"PCX=                        ; filename - including the .pcx extension\n"
 "SHP=                        ; filename - excluding the .shp extension\n"
-"SHP.Palette=palette.pal     ; filename - excluding the .pal extension\n"
+"SHP.Palette=palette.pal     ; filename - including the .pal extension\n"
 "SHP.RefreshAfterDelay=false ; boolean\n"
 "CSF=                        ; CSF entry key\n"
 "CSF.Color=                  ; integer - R,G,B, defaults to "
@@ -2191,9 +2190,9 @@ msgstr ""
 "0=SOMEBANNER\n"
 "\n"
 "[SOMEBANNER]                ; BannerType\n"
-"PCX=                        ; filename - excluding the .pcx extension\n"
+"PCX=                        ; filename - including the .pcx extension\n"
 "SHP=                        ; filename - excluding the .shp extension\n"
-"SHP.Palette=palette.pal     ; filename - excluding the .pal extension\n"
+"SHP.Palette=palette.pal     ; filename - including the .pal extension\n"
 "SHP.RefreshAfterDelay=false ; boolean\n"
 "CSF=                        ; CSF entry key\n"
 "CSF.Color=                  ; integer - R,G,B, defaults to "

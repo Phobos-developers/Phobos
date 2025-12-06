@@ -72,7 +72,8 @@ DEFINE_HOOK(0x736B60, UnitClass_Rotation_AI_DisallowMoving, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
-	return !TechnoTypeExt::ExtMap.Find(pThis->Type)->TurretResponse.Get(!TechnoExt::CannotMove(pThis)) ? 0x736AFB : 0;
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	return (pTypeExt->TurretResponse.isset() ? !pTypeExt->TurretResponse.Get() : TechnoExt::CannotMove(pThis)) ? 0x736AFB : 0;
 }
 
 DEFINE_HOOK(0x73891D, UnitClass_Active_Click_With_DisallowMoving, 0x6)
@@ -82,8 +83,7 @@ DEFINE_HOOK(0x73891D, UnitClass_Active_Click_With_DisallowMoving, 0x6)
 	return TechnoExt::CannotMove(pThis) ? 0x738927 : 0;
 }
 
-DEFINE_HOOK_AGAIN(0x744103, UnitClass_Mission_DisallowMoving, 0x6)	// UnitClass::Mission_AreaGuard
-DEFINE_HOOK(0x73EFC4, UnitClass_Mission_DisallowMoving, 0x6)		// UnitClass::Mission_Hunt
+DEFINE_HOOK(0x73EFC4, UnitClass_Mission_Hunt_DisallowMoving, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
@@ -93,7 +93,34 @@ DEFINE_HOOK(0x73EFC4, UnitClass_Mission_DisallowMoving, 0x6)		// UnitClass::Miss
 		pThis->NextMission();
 
 		R->EAX(pThis->Mission_Guard());
-		return R->Origin() == 0x744103 ? 0x744173 : 0x73F091;
+		return 0x73F091;
+	}
+
+	return 0;
+}
+
+// 3 Sep, 2025 - Starkku: Separated from above, do not change to guard mission
+// and only handle the target acquisition part of area guard for immobile units.
+DEFINE_HOOK(0x744103, UnitClass_Mission_AreaGuard_DisallowMoving, 0x6) 
+{
+	GET(UnitClass*, pThis, ESI);
+
+	if (TechnoExt::CannotMove(pThis))
+	{
+		if (pThis->CanPassiveAcquireTargets() && pThis->TargetingTimer.Completed()) 
+			pThis->TargetAndEstimateDamage(pThis->Location, ThreatType::Range);
+
+		int delay = 1;
+
+		if (!pThis->Target)
+		{
+			pThis->UpdateIdleAction();
+			auto const control = &MissionControlClass::Array[(int)Mission::Area_Guard];
+			delay = static_cast<int>(control->Rate * 900) + ScenarioClass::Instance->Random(1, 5);
+		}
+
+		R->EAX(delay);
+		return 0x744173;
 	}
 
 	return 0;
@@ -102,7 +129,7 @@ DEFINE_HOOK(0x73EFC4, UnitClass_Mission_DisallowMoving, 0x6)		// UnitClass::Miss
 DEFINE_HOOK(0x74132B, UnitClass_GetFireError_DisallowMoving, 0x7)
 {
 	GET(UnitClass*, pThis, ESI);
-	GET(FireError, result, EAX);
+	GET(const FireError, result, EAX);
 
 	if (result == FireError::RANGE && TechnoExt::CannotMove(pThis))
 		R->EAX(FireError::ILLEGAL);

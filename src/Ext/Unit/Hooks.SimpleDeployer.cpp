@@ -7,6 +7,11 @@
 #include <Utilities/AresFunctions.h>
 #include <Utilities/Macro.h>
 
+static bool HasDeployingAnim(TechnoTypeClass* pType)
+{
+	return pType->DeployingAnim || TechnoTypeExt::ExtMap.Find(pType)->DeployingAnims.size() > 0;
+}
+
 static bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 {
 	// Movement restrictions.
@@ -33,7 +38,7 @@ static bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 	auto const defaultFacing = (FacingType)(RulesClass::Instance->DeployDir >> 5);
 	auto const facing = pTypeExt->DeployDir.Get(defaultFacing);
 
-	if (facing == FacingType::None)
+	if (facing == FacingType::None || (!pTypeExt->DeployDir.isset() && !HasDeployingAnim(pUnit->GetTechnoType())))
 		return false;
 
 	if (facing != (FacingType)currentDir->Current().GetFacing<8>())
@@ -59,11 +64,6 @@ static bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 	}
 
 	return false;
-}
-
-static bool HasDeployingAnim(UnitTypeClass* pUnitType)
-{
-	return pUnitType->DeployingAnim || TechnoTypeExt::ExtMap.Find(pUnitType)->DeployingAnims.size() > 0;
 }
 
 static void CreateDeployingAnim(UnitClass* pUnit, bool isDeploying)
@@ -158,6 +158,14 @@ DEFINE_HOOK(0x739AC0, UnitClass_SimpleDeployer_Deploy, 0x6)
 
 	if (pThis->Deployed)
 	{
+		int maxAmmo = -1;
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+
+		if (AresFunctions::ConvertTypeTo && pTypeExt->Convert_Deploy)
+			maxAmmo = pTypeExt->Convert_Deploy->Ammo;
+
+		TechnoExt::HandleOnDeployAmmoChange(pThis, maxAmmo);
+
 		if (pType->DeploySound != -1)
 			VocClass::PlayAt(pType->DeploySound, pThis->Location);
 	}
@@ -199,7 +207,7 @@ DEFINE_HOOK(0x739CD0, UnitClass_SimpleDeployer_Undeploy, 0x6)
 		{
 			if (HasDeployingAnim(pType))
 			{
-				CreateDeployingAnim(pThis, true);
+				CreateDeployingAnim(pThis, false);
 				pThis->Undeploying = true;
 			}
 			else
@@ -213,6 +221,8 @@ DEFINE_HOOK(0x739CD0, UnitClass_SimpleDeployer_Undeploy, 0x6)
 
 		if (!pThis->Deployed)
 		{
+			TechnoExt::HandleOnDeployAmmoChange(pThis);
+
 			if (pType->UndeploySound != -1)
 				VocClass::PlayAt(pType->UndeploySound, pThis->Location);
 		}
@@ -235,6 +245,20 @@ DEFINE_HOOK(0x54C76D, JumpjetLocomotionClass_Descending_DeployDir, 0x7)
 	CheckRestrictions(pLinkedTo, false);
 
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x54C58E, JumpjetLocomotionClass_Descending_PathfindingChecks, 0x7)
+{
+	enum { SkipGameCode = 0x54C65F };
+
+	GET(JumpjetLocomotionClass*, pThis, ESI);
+
+	auto const pUnit = abstract_cast<UnitClass*>(pThis->LinkedTo);
+
+	if (pUnit && pUnit->CurrentMission == Mission::Unload && TechnoExt::SimpleDeployerAllowedToDeploy(pUnit, false, true))
+		return SkipGameCode;
+
+	return 0;
 }
 
 // Disable DeployToLand=no forcing landing when idle due to what appears to be
@@ -319,18 +343,17 @@ DEFINE_HOOK(0x514A2A, HoverLocomotionClass_Process_DeployToLand, 0x8)
 	GET(bool, isMoving, EAX);
 
 	auto const pLinkedTo = static_cast<LocomotionClass*>(pThis)->LinkedTo;
+	auto const pUnit = abstract_cast<UnitClass*>(pLinkedTo);
 
-	if (pLinkedTo->InAir)
+	if (pUnit && pUnit->InAir)
 	{
-		auto const pType = pLinkedTo->GetTechnoType();
+		auto const pType = pUnit->GetTechnoType();
 
 		if (pType->DeployToLand)
 		{
-			auto const landType = pLinkedTo->GetCell()->LandType;
-
-			if (landType == LandType::Water || landType == LandType::Beach)
+			if (!TechnoExt::SimpleDeployerAllowedToDeploy(pUnit, false, true))
 			{
-				pLinkedTo->InAir = false;
+				pUnit->InAir = false;
 				pLinkedTo->QueueMission(Mission::Guard, true);
 			}
 
@@ -403,25 +426,3 @@ DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
 	return Continue;
 }
 
-// Disable deploy cursor if Ares type conversion on deploy is available and the new type is not allowed to move to the cell.
-DEFINE_HOOK(0x7010C1, TechnoClass_CanShowDeployCursor_IsSimpleDeployer, 0x5)
-{
-	enum { DoNotAllowDeploy = 0x700DCE };
-
-	GET(UnitClass*, pThis, ESI);
-
-	if (pThis->Type->IsSimpleDeployer && AresFunctions::ConvertTypeTo)
-	{
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-
-		if (auto const pTypeConvert = pTypeExt->Convert_Deploy)
-		{
-			auto const pCell = pThis->GetCell();
-
-			if (!pCell->IsClearToMove(pTypeConvert->SpeedType, true, true, -1, pTypeConvert->MovementZone, -1, pCell->ContainsBridge()))
-				return DoNotAllowDeploy;
-		}
-	}
-
-	return 0;
-}

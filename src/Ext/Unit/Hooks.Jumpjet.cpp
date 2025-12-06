@@ -50,7 +50,7 @@ DEFINE_HOOK(0x736F78, UnitClass_UpdateFiring_FireErrorIsFACING, 0x6)
 // For compatibility with previous builds
 DEFINE_HOOK(0x736E6E, UnitClass_UpdateFiring_OmniFireTurnToTarget, 0x9)
 {
-	GET(FireError, err, EBP);
+	GET(const FireError, err, EBP);
 
 	if (err != FireError::OK && err != FireError::REARM)
 		return 0;
@@ -378,3 +378,50 @@ DEFINE_HOOK(0x54D4C0, JumpjetLocomotionClass_sub_54D0F0_NoStuck, 0x6)
 
 	return SkipCheckStop;
 }
+
+#pragma region JumpjetStraightAscend
+
+// Skip adjusting max speed and rotation while ascending if flag is set.
+DEFINE_HOOK(0x54BBD0, JumpjetLocomotionClass_Ascending_JumpjetStraightAscend, 0x6)
+{
+	enum { SkipGameCode = 0x54BC59 };
+
+	GET(JumpjetLocomotionClass*, pThis, ESI);
+
+	auto const pTechnoExt = TechnoExt::ExtMap.Find(pThis->LinkedTo);
+
+	if (pTechnoExt->JumpjetStraightAscend)
+		return SkipGameCode;
+
+	return 0;
+}
+
+// Skip adjusting coords if flag is set, unit is alive, not crashing and is in JJ loco states 0-1.
+// Unset flag in any other state.
+DEFINE_HOOK(0x54D600, JumpjetLocomotionClass_MovementAI_JumpjetStraightAscend, 0x6)
+{
+	enum { SkipGameCode = 0x54D697 };
+
+	GET(JumpjetLocomotionClass*, pThis, ESI);
+
+	auto const pLinkedTo = pThis->LinkedTo;
+	auto const pTechnoExt = TechnoExt::ExtMap.Find(pLinkedTo);
+
+	if (pTechnoExt->JumpjetStraightAscend)
+	{
+		if (pLinkedTo->IsCrashing || pLinkedTo->Health < 1)
+		{
+			pTechnoExt->JumpjetStraightAscend = false;
+			return 0;
+		}
+
+		if (pThis->State <= JumpjetLocomotionClass::State::Ascending)
+			return SkipGameCode;
+		else
+			pTechnoExt->JumpjetStraightAscend = false;
+	}
+
+	return 0;
+}
+
+#pragma endregion
