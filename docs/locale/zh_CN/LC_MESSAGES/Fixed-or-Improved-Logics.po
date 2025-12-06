@@ -1886,8 +1886,8 @@ msgid ""
 msgstr "在原本的游戏中，建筑的范围指示环只有在玩家拥有时才绘制。现在它也对观察者可见。此外，你还可以指定其他所属方的可见性。"
 
 #: ../../Fixed-or-Improved-Logics.md:404
-msgid "Re-enable obsolete [JumpjetControls]"
-msgstr "重启废弃的 [JumpjetControls]"
+msgid "Re-enable obsolete `[JumpjetControls]`"
+msgstr "重启废弃的 `[JumpjetControls]`"
 
 #: ../../Fixed-or-Improved-Logics.md:406
 msgid ""

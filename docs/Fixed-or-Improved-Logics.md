@@ -383,6 +383,7 @@ In vanilla, IvanBomb images display and the bombs detonate at the top-leftmost c
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
 IvanBombAttachToCenter=false  ; boolean
 ```
 
@@ -401,7 +402,7 @@ In `rulesmd.ini`:
 RadialIndicatorVisibility=allies  ; List of Affected House Enumeration (owner/self | allies/ally | enemies/enemy | all)
 ```
 
-### Re-enable obsolete [JumpjetControls]
+### Re-enable obsolete `[JumpjetControls]`
 
 - Re-enable obsolete `[JumpjetControls]`, the keys in it will be as the default value of jumpjet units.
   - Moreover, added two tags for missing ones.
