@@ -319,7 +319,7 @@ In `rulesmd.ini`:
 ArtImageSwap=false  ; disabled by default
 ```
 
-```{caution}
+```{warning}
 To use this feature properly, you need to remove or replace the following segments in the YR INI code to avoid compatibility issues between the original Westwood INI code and this feature.
 ```
 
