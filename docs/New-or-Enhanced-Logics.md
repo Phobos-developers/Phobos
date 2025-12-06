@@ -1355,6 +1355,30 @@ Spawner.RecycleOnTurret=false      ; boolean
 If you set recycle FLH, it is best to set a recycle range of at least `0.5` at the same time. Otherwise, the spawner may not recycle correctly.
 ```
 
+### Automatic conversion based on ammo
+
+- Units can now be converted into another unit by ammo count.
+- `Ammo.AutoConvertMinimumAmount` determines the minimal number of ammo at which a unit converts automatically after the ammo update.
+- `Ammo.AutoConvertMaximumAmount` determines the maximum number of ammo at which a unit converts automatically after the ammo update.
+- `Ammo.AutoConvertType` specify the new techno after the conversion. This unit must be of the same type of the original (infantry -> infantry, vehicle -> vehicle or aircraft -> aircraft).
+- Setting a negative number will disable the ammo count check, and when both checks are disabled, conversion will not occur.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType, before conversion
+Ammo.AutoConvertMinimumAmount=-1  ; integer
+Ammo.AutoConvertMaximumAmount=-1  ; integer
+Ammo.AutoConvertType=             ; TechnoType, after conversion
+```
+
+```{warning}
+This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
+```
+
+```{warning}
+This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
+```
+
 ### Automatic passenger deletion
 
 - Transports can erase passengers over time. Passengers are deleted in order of entering the transport, from first to last.
@@ -1504,6 +1528,23 @@ Spawns.Queue=       ; List of AircraftTypes, in order
 
 ```{warning}
 Note that all spawnees in a queue should have `MissileSpawn` set to the same value (all to true or false). Mixing them will make missile spawnees can't hit their targets.
+```
+
+### Customize Ares's radar jam logic
+
+- It is now possible to customize some properties of Ares's radar jam logic.
+  - `RadarJamHouses` determines which houses will be affected by the jam.
+  - `RadarJamDelay` determines the interval of the jam, default to 30 frames like Ares did. Shorter interval means the jam will be applied more timely, but worse for performance.
+  - `RadarJamAffect` determines a list of buildings with `Radar=yes` or `SpySat=yes` that could be affected by the jam. If it's empty, all radar buildings will be affected.
+  - `RadarJamIgnore` determines a list of buildings with `Radar=yes` or `SpySat=yes` that couldn't be affected by the jam.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType, with RadarJamRadius=
+RadarJamHouses=enemies            ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+RadarJamDelay=30                  ; integer
+RadarJamAffect=                   ; List of BuildingTypes
+RadarJamIgnore=                   ; List of BuildingTypes
 ```
 
 ### Customize EVA voice and `SellSound` when selling units
@@ -2035,47 +2076,6 @@ WarpInWeapon=                           ; WeaponType
 WarpInMinRangeWeapon=                   ; WeaponType
 WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
-```
-
-### Customize Ares's radar jam logic
-
-- It is now possible to customize some properties of Ares's radar jam logic.
-  - `RadarJamHouses` determines which houses will be affected by the jam.
-  - `RadarJamDelay` determines the interval of the jam, default to 30 frames like Ares did. Shorter interval means the jam will be applied more timely, but worse for performance.
-  - `RadarJamAffect` determines a list of buildings with `Radar=yes` or `SpySat=yes` that could be affected by the jam. If it's empty, all radar buildings will be affected.
-  - `RadarJamIgnore` determines a list of buildings with `Radar=yes` or `SpySat=yes` that couldn't be affected by the jam.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                      ; TechnoType, with RadarJamRadius=
-RadarJamHouses=enemies            ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-RadarJamDelay=30                  ; integer
-RadarJamAffect=                   ; List of BuildingTypes
-RadarJamIgnore=                   ; List of BuildingTypes
-```
-
-### Automatic conversion based on ammo
-
-- Units can now be converted into another unit by ammo count.
-- `Ammo.AutoConvertMinimumAmount` determines the minimal number of ammo at which a unit converts automatically after the ammo update.
-- `Ammo.AutoConvertMaximumAmount` determines the maximum number of ammo at which a unit converts automatically after the ammo update.
-- `Ammo.AutoConvertType` specify the new techno after the conversion. This unit must be of the same type of the original (infantry -> infantry, vehicle -> vehicle or aircraft -> aircraft).
-- Setting a negative number will disable the ammo count check, and when both checks are disabled, conversion will not occur.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                      ; TechnoType, before conversion
-Ammo.AutoConvertMinimumAmount=-1  ; integer
-Ammo.AutoConvertMaximumAmount=-1  ; integer
-Ammo.AutoConvertType=             ; TechnoType, after conversion
-```
-
-```{warning}
-This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
-```
-
-```{warning}
-This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
 ```
 
 ## Terrain
