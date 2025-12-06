@@ -332,6 +332,10 @@ Image=JOSH
 Image=SREF
 ```
 
+```{hint}
+In vanilla, `[CLNT]` does not have its own image. Originally, in `artmd.ini`, it uses another image placeholder via `Image=ARND`, but due to the lack of this feature, it has no effect. Subsequently, it and `[UTNK]` etc. also switch to using `rulesmd.ini` to call image resources; however, unlike other art sections which merely changed the implementation method, it not only changes the implementation method but also switches to using `Image=CIVC` instead of `ARND`. Although this does not directly manifest as a conflict when `[General] -> ArtImageSwap=true`, modders may need to pay attention.
+```
+
 ### Customize resource storage
 
 - Now Ares `Storage` feature can set which Tiberium type from `[Tiberiums]` list should be used for storing resources in structures with `Refinery.UseStorage=yes` and `Storage` > 0.
