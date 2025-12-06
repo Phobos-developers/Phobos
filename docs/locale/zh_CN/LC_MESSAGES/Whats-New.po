@@ -1904,6 +1904,8 @@ msgid ""
 "[Automatic conversion based on ammo](New-or-Enhanced-Logics.md#automatic-"
 "conversion-based-on-ammo) (by FS-21)"
 msgstr ""
+"[基于弹药量的自动变形](New-or-Enhanced-Logics.md#automatic-"
+"conversion-based-on-ammo)（by FS-21）"
 
 #: ../../Whats-New.md:441
 msgid ""

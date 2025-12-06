@@ -7553,23 +7553,25 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:2057
 msgid "Automatic conversion based on ammo"
-msgstr ""
+msgstr "基于弹药量的自动变形"
 
 #: ../../New-or-Enhanced-Logics.md:2059
 msgid "Units can now be converted into another unit by ammo count."
-msgstr ""
+msgstr "单位现在可以根据弹药量转换成另一种单位"
 
 #: ../../New-or-Enhanced-Logics.md:2060
 msgid ""
 "`Ammo.AutoConvertMinimumAmount` determines the minimal number of ammo at "
 "which a unit converts automatically after the ammo update."
 msgstr ""
+"`Ammo.AutoConvertMinimumAmount` 决定触发自动变形的最小弹药量。"
 
 #: ../../New-or-Enhanced-Logics.md:2061
 msgid ""
 "`Ammo.AutoConvertMaximumAmount` determines the maximum number of ammo at "
 "which a unit converts automatically after the ammo update."
 msgstr ""
+"`Ammo.AutoConvertMaximumAmount` 决定触发自动变形的最大弹药量。"
 
 #: ../../New-or-Enhanced-Logics.md:2062
 msgid ""
@@ -7577,12 +7579,14 @@ msgid ""
 "unit must be of the same type of the original (infantry -> infantry, "
 "vehicle -> vehicle or aircraft -> aircraft)."
 msgstr ""
+"`Ammo.AutoConvertType` 指定变形成哪个新单位。该单位必须与原单位同属一类（载具变载具，步兵变步兵，战机变战机）。"
 
 #: ../../New-or-Enhanced-Logics.md:2063
 msgid ""
 "Setting a negative number will disable the ammo count check, and when "
 "both checks are disabled, conversion will not occur."
 msgstr ""
+"设为负数将会禁用弹药数量检查，当两个检查都被禁用时将不会触发变形。"
 
 #: ../../New-or-Enhanced-Logics.md:2066
 msgid ""
