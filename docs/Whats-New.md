@@ -437,7 +437,7 @@ New:
 - [Damaged aircraft image changes](New-or-Enhanced-Logics.md#damaged-aircraft-image-changes) (by Fryone)
 - [Additional attached animation position customizations](Fixed-or-Improved-Logics.md#attached-animation-position-customization) (by Starkku)
 - Use `SkipCrushSlowdown=true` to avoid the bug related to `Accelerates=true` and `MovementZone=CrushAll` (by TaranDahl)
-- Unit & infantry auto-conversion on ammo change (by FS-21)
+- [Automatic conversion based on ammo](New-or-Enhanced-Logics.md#automatic-conversion-based-on-ammo) (by FS-21)
 - [Units can customize the attack voice that plays when using more weapons](New-or-Enhanced-Logics.md#multi-voiceattack) (by FlyStar)
 - Customize squid grapple animation (by NetsuNegi)
 - [Auto deploy for GI-like infantry](Fixed-or-Improved-Logics.md#auto-deploy-for-gi-like-infantry) (by TaranDahl)
