@@ -121,7 +121,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy.
 - `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false`.
 - Wall overlays are now drawn with the custom palette defined in `Palette` in `artmd.ini` if possible.
-- If `[CombatDamage] -> AllowWeaponSelectAgainstWalls` is set to true, `Secondary` will now be used against walls if `Primary` weapon Warhead has `Wall=false`, `Secondary` has `Wall=true` and the firer does not have `NoSecondaryWeaponFallback` set to true.
 - Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport.
 - It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead.
 - Attached animations on flying units now have their layer updated immediately after the parent unit, if on same layer they always draw above the parent.
@@ -150,7 +149,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Units with `Sensors=true` will no longer reveal ally buildings.
 - Air units are now reliably included by target scan with large range and Warhead detonation by large `CellSpread`.
 - OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini` entry.
-- Setting `[AudioVisual] -> ColorAddUse8BitRGB` to true makes game treat values from `[ColorAdd]` as 8-bit RGB (0-255) instead of RGB565 (0-31 for red & blue, 0-63 for green). This works for `LaserTargetColor`, `IronCurtainColor`, `BerserkColor` and `ForceShieldColor`.
 - Weapons with `AA=true` Projectile can now correctly fire at air units when both firer and target are over a bridge.
 - Fixed disguised units not using the correct palette if target has custom palette.
 - Building upgrades now consistently use building's `PowerUpN` animation settings corresponding to the upgrade's `PowersUpToLevel` where possible.
@@ -359,6 +357,16 @@ AircraftLevelLightMultiplier=1.0  ; floating point value, percents or absolute
 JumpjetLevelLightMultiplier=0.0   ; floating point value, percents or absolute
 ```
 
+### Customizing default ColorScheme
+
+- In vanilla, an `AltPalette=yes` animation or `Voxel=yes` Projectile image that cannot properly remap will use the first Color Scheme in the `[Colors]` list; now it can be manually specified.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+AnimRemapDefaultColorScheme=      ; ColorScheme name
+```
+
 ### Iron Curtain & Force Shield extra tint intensity
 
 - It is now possible to specify additional tint intensity applied to Iron Curtained and Force Shielded units.
@@ -368,6 +376,19 @@ In `rulesmd.ini`:
 [AudioVisual]
 IronCurtain.ExtraTintIntensity=0.0  ; floating point value
 ForceShield.ExtraTintIntensity=0.0  ; floating point value
+```
+
+### Move IvanBomb Position
+
+In vanilla, IvanBomb images display and the bombs detonate at the top-leftmost cell of the building foundation instead of at the center of buildings. This can now be changed.
+
+In `rulesmd.ini`:
+```ini
+IvanBombAttachToCenter=false  ; boolean
+```
+
+```{warning}
+Due to technical constraints this cannot be customized per WeaponType.
 ```
 
 ### RadialIndicator visibility
@@ -413,6 +434,17 @@ AIFireSale=true           ; boolean
 AIFireSaleDelay=0         ; integer, number of frames
 AIAllToHunt=true          ; boolean
 GatherWhenMCVDeploy=true  ; boolean
+```
+
+### Use 8-bit RGB parameters for `[ColorAdd]`
+
+- In vanilla, the values in the `[ColorAdd]` entry are used as RGB565 (0-31 for red & blue, 0-63 for green). Now, with this setting, you can use the more user-friendly 8-bit RGB (0-255) for input.
+- This works for `LaserTargetColor`, `IronCurtainColor`, `BerserkColor` and `ForceShieldColor`.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+ColorAddUse8BitRGB=false  ; boolean
 ```
 
 ### Veinholes & Weeds
