@@ -2118,7 +2118,7 @@ msgstr ""
 "![image](_static/images/VoxelLightSourceComparison2.png) *Voxel by <a "
 "class=\"reference external\" "
 "href=\"https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index\" "
-"target=\"_blank\">C&CrispS</a>*"
+"target=\"_blank\">C&CrispS</a>（另存为并解压第二张图片即可获得包括 pal & vpl 的示例文件）*"
 
 #: ../../Fixed-or-Improved-Logics.md:538
 msgid ""
