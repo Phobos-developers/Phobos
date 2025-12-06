@@ -87,7 +87,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed railgun particles being drawn to wrong coordinate against buildings with non-default `TargetCoordOffset` or when force-firing on bridges.
 - Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines.
 - In singleplayer missions, the player can now see cloaked objects owned by allied houses.
-- IvanBomb images can now display and the bombs detonate at center of buildings instead of in top-leftmost cell of the building foundation if `[CombatDamage] -> IvanBombAttachToCenter` is set to true.
 - Fixed BibShape drawing for a couple of frames during buildup for buildings with long buildup animations.
 - Animation with `Tiled=yes` now supports `CustomPalette`.
 - Attempted to avoid units from retaining previous orders (attack,grind,garrison,etc) after changing ownership (mind-control,abduction,etc).
@@ -121,7 +120,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy.
 - `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false`.
 - Wall overlays are now drawn with the custom palette defined in `Palette` in `artmd.ini` if possible.
-- If `[CombatDamage] -> AllowWeaponSelectAgainstWalls` is set to true, `Secondary` will now be used against walls if `Primary` weapon Warhead has `Wall=false`, `Secondary` has `Wall=true` and the firer does not have `NoSecondaryWeaponFallback` set to true.
 - Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport.
 - It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead.
 - Attached animations on flying units now have their layer updated immediately after the parent unit, if on same layer they always draw above the parent.
@@ -150,7 +148,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Units with `Sensors=true` will no longer reveal ally buildings.
 - Air units are now reliably included by target scan with large range and Warhead detonation by large `CellSpread`.
 - OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini` entry.
-- Setting `[AudioVisual] -> ColorAddUse8BitRGB` to true makes game treat values from `[ColorAdd]` as 8-bit RGB (0-255) instead of RGB565 (0-31 for red & blue, 0-63 for green). This works for `LaserTargetColor`, `IronCurtainColor`, `BerserkColor` and `ForceShieldColor`.
 - Weapons with `AA=true` Projectile can now correctly fire at air units when both firer and target are over a bridge.
 - Fixed disguised units not using the correct palette if target has custom palette.
 - Building upgrades now consistently use building's `PowerUpN` animation settings corresponding to the upgrade's `PowersUpToLevel` where possible.
@@ -274,6 +271,286 @@ The described behavior is a replica of and is compliant with XNA CnCNet Client's
 
 ```{note}
 At the moment this is only useful if you use a version of [YRpp Spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support (along with [XNA CnCNet Client](https://github.com/CnCNet/xna-cncnet-client)).
+```
+
+## Newly added global settings
+
+```{note}
+This category lists all features that are globally effective without needing to be defined on any specific object.
+```
+
+<!--
+
+It was originally planned to list global features that are exclusively related to specific Types, such as [Voxel light source customization](https://phobos.readthedocs.io/en/latest/Fixed-or-Improved-Logics.html#voxel-light-source-customization) and [Customizing effect of level lighting on air units](https://phobos.readthedocs.io/en/latest/Fixed-or-Improved-Logics.html#customizing-effect-of-level-lighting-on-air-units), under the corresponding Types categories. But later, features like [Veinholes & Weeds](https://phobos.readthedocs.io/en/latest/Fixed-or-Improved-Logics.html#veinholes-weeds) were found to be too difficult to separate, so they were just summarized according to the locations where INI flags are written. After all, the end users are modders.
+
+-->
+
+### Crate improvements
+
+There are some improvements on goodie crate logic:
+- The statistic distribution of the randomly generated crates is now more uniform within the visible map region by using an optimized sampling procedure.
+- You can now limit the crates' spawn region to land only by setting `[CrateRules] -> CreateOnlyOnLand` to true.
+- The limit of vehicles a player can own before unit crates start giving money instead can now be customized by setting `UnitCrateVehicleCap`. Negative numbers disable the cap entirely.
+- `FreeMCV` setting is now actually respected and can be used to disable the forced unit selected from `[General] -> BaseUnit` that is given if player picks a crate and has enough credits but no existing buildings or `BaseUnit` vehicles.
+  - The previously hardcoded credits threshold that must be passed can also now be customized via `FreeMCV.CreditsThreshold`.
+
+In `rulesmd.ini`:
+```ini
+[CrateRules]
+CrateOnlyOnLand=false          ; boolean
+UnitCrateVehicleCap=50         ; integer
+FreeMCV=true                   ; boolean
+FreeMCV.CreditsThreshold=1500  ; integer
+```
+
+### Customizable unit image in art
+
+- `Image` tag in art INI is no longer limited to AnimationTypes and BuildingTypes, and can be applied to all TechnoTypes (InfantryTypes, VehicleTypes, AircraftTypes, BuildingTypes).
+- The tag specifies **only** the file name (without extension) of the asset that replaces TechnoType's graphics. If the name in `Image` is also an entry in the art INI, **no tags will be read from it**.
+- **By default this feature is disabled** to remain compatible with YR. To use this feature, enable it in rules with `ArtImageSwap=true`.
+- This feature supports SHP images for InfantryTypes, SHP and VXL images for VehicleTypes and VXL images for AircraftTypes.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ArtImageSwap=false  ; disabled by default
+```
+
+```{warning}
+To use this feature properly, you need to remove or replace the following segments in the YR INI code to avoid compatibility issues between the original Westwood INI code and this feature.
+```
+
+In `artmd.ini`:
+```ini
+[CAML]
+Image=JOSH
+
+[BFRT]
+Image=SREF
+```
+
+```{hint}
+In vanilla, `[CLNT]` does not have its own image. Originally, in `artmd.ini`, it uses another image placeholder via `Image=ARND`, but due to the lack of this feature, it has no effect. Subsequently, it and `[UTNK]` etc. also switch to using `rulesmd.ini` to call image resources; however, unlike other art sections which merely changed the implementation method, it not only changes the implementation method but also switches to using `Image=CIVC` instead of `ARND`. Although this does not directly manifest as a conflict when `[General] -> ArtImageSwap=true`, modders may need to pay attention.
+```
+
+### Customize resource storage
+
+- Now Ares `Storage` feature can set which Tiberium type from `[Tiberiums]` list should be used for storing resources in structures with `Refinery.UseStorage=yes` and `Storage` > 0.
+- This tag can not be used without Ares.
+
+In `rulesmd.ini`:
+```ini
+[General]
+Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
+```
+
+### Customizing effect of level lighting on air units
+
+- It is now possible to customize how air units are affected by level lighting, separately for AircraftTypes and infantry/vehicles with Jumpjet `Locomotor`.
+  - `AircraftLevelLightMultiplier` & `JumpjetLevelLightMultiplier` are direct multipliers to level lighting applied on the units, for height levels above the cell they are on.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+AircraftLevelLightMultiplier=1.0  ; floating point value, percents or absolute
+JumpjetLevelLightMultiplier=0.0   ; floating point value, percents or absolute
+```
+
+### Customizing default ColorScheme
+
+- In vanilla, an `AltPalette=yes` animation or `Voxel=yes` Projectile image that cannot properly remap will use the first Color Scheme in the `[Colors]` list; now it can be manually specified.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+AnimRemapDefaultColorScheme=      ; ColorScheme name
+```
+
+### Iron Curtain & Force Shield extra tint intensity
+
+- It is now possible to specify additional tint intensity applied to Iron Curtained and Force Shielded units.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+IronCurtain.ExtraTintIntensity=0.0  ; floating point value
+ForceShield.ExtraTintIntensity=0.0  ; floating point value
+```
+
+### Move IvanBomb Position
+
+In vanilla, IvanBomb images display and the bombs detonate at the top-leftmost cell of the building foundation instead of at the center of buildings. This can now be changed.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+IvanBombAttachToCenter=false  ; boolean
+```
+
+```{warning}
+Due to technical constraints this cannot be customized per WeaponType.
+```
+
+### RadialIndicator visibility
+
+In vanilla game, a structure's radial indicator can be drawn only when it belongs to the player. Now it can also be visible to observer.
+On top of that, you can specify its visibility from other houses.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+RadialIndicatorVisibility=allies  ; List of Affected House Enumeration (owner/self | allies/ally | enemies/enemy | all)
+```
+
+### Re-enable obsolete `[JumpjetControls]`
+
+- Re-enable obsolete `[JumpjetControls]`, the keys in it will be as the default value of jumpjet units.
+  - Moreover, added two tags for missing ones.
+
+In `rulesmd.ini`:
+```ini
+[JumpjetControls]
+Crash=5.0        ; floating point value
+NoWobbles=false  ; boolean
+```
+
+```{note}
+`CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
+```
+
+### Skirmish AI behavior dehardcode
+
+- In vanilla, there is a hardcoded behavior that when an skirmish AI player has no factory and has not taken damage for a while, it will sell its buildings and set its units to hunt. This can be customized now.
+  - `[General] -> AIFireSale` and `[General] -> AIAllToHunt` control whether the AI will act selling and hunting respectively.
+  - `[General] -> AIFireSaleDelay` defines a timer, it will only work if `[General] -> AIFireSale` is set to `true`. When the first time the AI reaches the trigger condition of vanilla behavior, the timer starts and prevents the selling behavior from happening until the timer is expired.
+  - You can use these flags to make the AIs "all in" before they are defeated.
+- Another hardcoded behavior is that, when the AI deploys a MCV, it will gather all of its forces to that place. This can be toggle off now.
+  - `[General] -> GatherWhenMCVDeploy` controls this behavior.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AIFireSale=true           ; boolean
+AIFireSaleDelay=0         ; integer, number of frames
+AIAllToHunt=true          ; boolean
+GatherWhenMCVDeploy=true  ; boolean
+```
+
+### Use 8-bit RGB parameters for `[ColorAdd]`
+
+- In vanilla, the values in the `[ColorAdd]` entry are used as RGB565 (0-31 for red & blue, 0-63 for green). Now, with this setting, you can use the more user-friendly 8-bit RGB (0-255) for input.
+- This works for `LaserTargetColor`, `IronCurtainColor`, `BerserkColor` and `ForceShieldColor`.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+ColorAddUse8BitRGB=false  ; boolean
+```
+
+### Veinholes & Weeds
+
+#### Veinholes
+
+- Veinhole monsters now work like they used to in Tiberian Sun.
+- Their core parameters are still loaded from `[General]`.
+- The Warhead used by veins is specified under `[CombatDamage]`. The warhead has to have `Veinhole=yes` set.
+- Veinholes are hardcoded to use several overlay types.
+- The vein attack animation specified under `[AudioVisual]` is what deals the damage. The animation has to be properly listed under `[Animations]` as well.
+- Units can be made immune to veins the same way as in Tiberian Sun.
+- The monster itself is represented by the `VEINTREE` TerrainType, which has `IsVeinhole=true` set. Its strength is what determines the strength of the Veinhole.
+
+```{note}
+Everything listed below functions identically to Tiberian Sun.
+Many of the tags from Tiberian Sun have been re-enabled. The values provided below are identical to those found in TS and YR rules. You can read more about them on ModENC:
+[VeinholeGrowthRate](https://modenc.renegadeprojects.com/VeinholeGrowthRate), [VeinholeShrinkRate](https://modenc.renegadeprojects.com/VeinholeShrinkRate), [MaxVeinholeGrowth](https://modenc.renegadeprojects.com/MaxVeinholeGrowth), [VeinDamage](https://modenc.renegadeprojects.com/VeinDamage), [VeinholeTypeClass](https://modenc.renegadeprojects.com/VeinholeTypeClass),
+[VeinholeWarhead](https://modenc.renegadeprojects.com/VeinholeWarhead), [Veinhole](https://modenc.renegadeprojects.com/Veinhole), [VeinAttack](https://modenc.renegadeprojects.com/VeinAttack), [ImmuneToVeins](https://modenc.renegadeprojects.com/ImmuneToVeins), [IsVeinhole](https://modenc.renegadeprojects.com/IsVeinhole)
+```
+
+In `rulesmd.ini`:
+```ini
+[General]
+VeinholeGrowthRate=300        ; integer
+VeinholeShrinkRate=100        ; integer
+MaxVeinholeGrowth=2000        ; integer
+VeinDamage=5                  ; integer
+VeinholeTypeClass=VEINTREE    ; TerrainType
+
+[CombatDamage]
+VeinholeWarhead=VeinholeWH    ; WarheadType
+
+[VeinholeWH]
+Veinhole=yes
+
+[AudioVisual]
+VeinAttack=VEINATAC           ; AnimationType
+
+[TechnoType]
+EliteAbilities=VEIN_PROOF
+ImmuneToVeins=yes
+
+[VEINTREE]
+IsVeinhole=true
+Strength=1000                 ; integer - the strength of the Veinhole
+```
+
+```{warning}
+The game expects certain overlays related to Veinholes to have certain indices, they are listed below. Please keep in mind that the indices in the OverlayTypes list are 0-based, formed internally by the game, and the identifiers left of "=" don't matter. Vanilla `rulesmd.ini` already has the required overlays listed at the correct indices.
+```
+
+In `rulesmd.ini`:
+```ini
+[OverlayTypes]
+126=VEINS                     ; The veins (weeds)
+167=VEINHOLE                  ; The Veinhole itself
+178=VEINHOLEDUMMY             ; A technical overlay
+```
+
+#### Weeds & Weed Eaters
+
+- Vehicles with `Weeder=yes` can now collect weeds. The weeds can then be deposited into a building with `Weeder=yes`.
+- Weeds are not stored in a building's storage, but rather in a House's storage. The weed capacity is listed under `[General] -> WeedCapacity`.
+- Weeders now show the ore gathering animation. It can be customized the same way as for harvesters.
+- Weeders can use the Teleport locomotor like chrono miners.
+- Total amount of weeds in storage can be displayed on sidebar, see [Weeds counter](User-Interface.md#weeds-counter).
+
+#### Weed-consuming superweapons
+
+- Superweapons can consume weeds to recharge, like the Chemical Missile special in Tiberian Sun.
+
+```{note}
+As the code for the Chemical Missile had been removed, setting `Type=ChemMissile` will not work.
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]                                        ; SuperWeaponType
+UseWeeds=no                                     ; boolean - should the SW use weeds to recharge?
+UseWeeds.Amount=                                ; integer - how many? default is General->WeedCapacity
+UseWeeds.StorageTimer=no                        ; boolean - should the counter on the sidebar display the % of weeds stored?
+UseWeeds.ReadinessAnimationPercentage=0.9       ; double - when this many weeds % are stored, the SW will show it's ready on the building (open nuke/open chrono, etc.)
+```
+
+### Voxel light source customization
+
+![image](_static/images/VoxelLightSourceComparison1.png)
+![image](_static/images/VoxelLightSourceComparison2.png)
+*Voxel by <a class="reference external" href="https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index" target="_blank">C&CrispS</a>*
+
+- It is now possible to change the position of the light relative to the voxels. This allows for better lighting to be set up.
+  - Only the direction of the light is accounted, the distance to the voxel is not accounted.
+  - Vanilla light (assuming `UseFixedVoxelLighting=false`) is located roughly at `VoxelLightSource=0.201,-0.907,-0.362`.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+UseFixedVoxelLighting=false  ; boolean, whether to fix the lighting
+VoxelLightSource=            ; X,Y,Z - position of the light in the world relative to each voxel, floating point values
+```
+
+```{hint}
+In order to easily preview the light source settings use the [VXL Viewer and VPL Generator tool by thomassneddon](https://github.com/ThomasSneddon/vxl-renderer/releases). To use the tool unpack it somewhere, then drag the main VXL file of a voxel that you will use to preview onto it (auxilliary VXL and HVA files must be in the same folder).
+
+Keep in mind that the tool doesn't account for `UseFixedVoxelLighting=true` as of yet, so the values shown in tool need to be offset when putting in the game with with fixed voxel lighting.
 ```
 
 ## Aircraft
@@ -779,25 +1056,6 @@ ChronoDelay=            ; integer, delay after teleport for chronosphere
 Originally, `[General] -> WarpOut=` would play at two locations when a Techno is chronowarped by chronosphere. Now, `[TechnoType] -> WarpAway=` replaces it at the *source* location, but the *destination* location *still* uses the animation specified by `[General] -> WarpOut=`. This has been further extended and supported in the [*nightly* builds](General-Info.md#build-types), but the current release version still follows this rule.
 ```
 
-### Customizable unit image in art
-
-- `Image` tag in art INI is no longer limited to AnimationTypes and BuildingTypes, and can be applied to all TechnoTypes (InfantryTypes, VehicleTypes, AircraftTypes, BuildingTypes).
-- The tag specifies **only** the file name (without extension) of the asset that replaces TechnoType's graphics. If the name in `Image` is also an entry in the art INI, **no tags will be read from it**.
-- **By default this feature is disabled** to remain compatible with YR. To use this feature, enable it in rules with `ArtImageSwap=true`.
-- This feature supports SHP images for InfantryTypes, SHP and VXL images for VehicleTypes and VXL images for AircraftTypes.
-
-In `rulesmd.ini`:
-```ini
-[General]
-ArtImageSwap=false  ; disabled by default
-```
-
-In `artmd.ini`:
-```ini
-[SOMETECHNO]        ; TechnoType
-Image=              ; name of the file that will be used as image, without extension
-```
-
 ### Customizable veterancy insignias
 
 - You can now customize veterancy insignia of TechnoTypes.
@@ -859,29 +1117,6 @@ In `rulesmd.ini`:
 Wake=                ; Anim (played when Techno moving on the water), default to [General] -> Wake
 Wake.Grapple=        ; Anim (played when Techno being parasited on the water), defaults to [TechnoType] -> Wake
 Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [TechnoType] -> Wake
-```
-
-### Customize resource storage
-
-- Now Ares `Storage` feature can set which Tiberium type from `[Tiberiums]` list should be used for storing resources in structures with `Refinery.UseStorage=yes` and `Storage` > 0.
-- This tag can not be used without Ares.
-
-In `rulesmd.ini`:
-```ini
-[General]
-Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
-```
-
-### Customizing effect of level lighting on air units
-
-- It is now possible to customize how air units are affected by level lighting, separately for AircraftTypes and infantry/vehicles with Jumpjet `Locomotor`.
-  - `AircraftLevelLightMultiplier` & `JumpjetLevelLightMultiplier` are direct multipliers to level lighting applied on the units, for height levels above the cell they are on.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-AircraftLevelLightMultiplier=1.0  ; floating point value, percents or absolute
-JumpjetLevelLightMultiplier=0.0   ; floating point value, percents or absolute
 ```
 
 ### DropPod
@@ -977,17 +1212,6 @@ ForceShield.Effect=                ; IronCurtain effect Enumeration (kill | invu
 ForceShield.KillWarhead=           ; WarheadType
 ```
 
-### Iron Curtain & Force Shield extra tint intensity
-
-- It is now possible to specify additional tint intensity applied to Iron Curtained and Force Shielded units.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-IronCurtain.ExtraTintIntensity=0.0  ; floating point value
-ForceShield.ExtraTintIntensity=0.0  ; floating point value
-```
-
 ### Jumpjet rotating on crashing toggle
 
 - Jumpjet that is going to crash starts to change its facing uncontrollably, this can now be turned off.
@@ -1060,51 +1284,6 @@ SpawnsPipSize=                       ; X,Y, increment in pixels to next pip
 SpawnsPipOffset=0,0                  ; X,Y, position offset from default
 ```
 
-### RadialIndicator visibility
-
-In vanilla game, a structure's radial indicator can be drawn only when it belongs to the player. Now it can also be visible to observer.
-On top of that, you can specify its visibility from other houses.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-RadialIndicatorVisibility=allies  ; List of Affected House Enumeration (owner/self | allies/ally | enemies/enemy | all)
-```
-
-### Re-enable obsolete [JumpjetControls]
-
-- Re-enable obsolete `[JumpjetControls]`, the keys in it will be as the default value of jumpjet units.
-  - Moreover, added two tags for missing ones.
-
-In `rulesmd.ini`:
-```ini
-[JumpjetControls]
-Crash=5.0        ; floating point value
-NoWobbles=false  ; boolean
-```
-
-```{note}
-`CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
-```
-
-### Skirmish AI behavior dehardcode
-
-- In vanilla, there is a hardcoded behavior that when an skirmish AI player has no factory and has not taken damage for a while, it will sell its buildings and set its units to hunt. This can be customized now.
-  - `[General] -> AIFireSale` and `[General] -> AIAllToHunt` control whether the AI will act selling and hunting respectively.
-  - `[General] -> AIFireSaleDelay` defines a timer, it will only work if `[General] -> AIFireSale` is set to `true`. When the first time the AI reaches the trigger condition of vanilla behavior, the timer starts and prevents the selling behavior from happening until the timer is expired.
-  - You can use these flags to make the AIs "all in" before they are defeated.
-- Another hardcoded behavior is that, when the AI deploys a MCV, it will gather all of its forces to that place. This can be toggle off now.
-  - `[General] -> GatherWhenMCVDeploy` controls this behavior.
-
-In `rulesmd.ini`:
-```ini
-[General]
-AIFireSale=true           ; boolean
-AIFireSaleDelay=0         ; integer, number of frames
-AIAllToHunt=true          ; boolean
-GatherWhenMCVDeploy=true  ; boolean
-```
-
 ### Subterranean unit travel height and speed
 
 - It is now possible to control the height at which units with subterranean (Tunnel) `Locomotor` travel, globally or per TechnoType.
@@ -1139,29 +1318,6 @@ In `artmd.ini`:
 ShadowIndices=        ; List of integers (voxel section indices)
 ShadowIndex.Frame=0   ; integer (HVA animation frame index)
 ShadowIndices.Frame=  ; List of integers (HVA animation frame indices)
-```
-
-### Voxel light source customization
-
-![image](_static/images/VoxelLightSourceComparison1.png)
-![image](_static/images/VoxelLightSourceComparison2.png)
-*Voxel by <a class="reference external" href="https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index" target="_blank">C&CrispS</a>*
-
-- It is now possible to change the position of the light relative to the voxels. This allows for better lighting to be set up.
-  - Only the direction of the light is accounted, the distance to the voxel is not accounted.
-  - Vanilla light (assuming `UseFixedVoxelLighting=false`) is located roughly at `VoxelLightSource=0.201,-0.907,-0.362`.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-UseFixedVoxelLighting=false  ; boolean, whether to fix the lighting
-VoxelLightSource=            ; X,Y,Z - position of the light in the world relative to each voxel, floating point values
-```
-
-```{hint}
-In order to easily preview the light source settings use the [VXL Viewer and VPL Generator tool by thomassneddon](https://github.com/ThomasSneddon/vxl-renderer/releases). To use the tool unpack it somewhere, then drag the main VXL file of a voxel that you will use to preview onto it (auxilliary VXL and HVA files must be in the same folder).
-
-Keep in mind that the tool doesn't account for `UseFixedVoxelLighting=true` as of yet, so the values shown in tool need to be offset when putting in the game with with fixed voxel lighting.
 ```
 
 ### Voxel shadow scaling in air
@@ -1289,6 +1445,16 @@ MinimapColor=  ; integer - Red,Green,Blue
 
 ## Vehicles
 
+### Custom Unit Crate Reroll Chance
+
+- It is possible to influence weighting of units given from crates (`CrateGoodie=true`) via `CrateGoodie.RerollChance`, which determines the chance that if this type of unit is rolled, it will reroll again for another type of unit.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                  ; VehicleType
+CrateGoodie.RerollChance=0.0   ; floating point value, percents or absolute (0.0-1.0)
+```
+
 ### Customizing crushing tilt and slowdown
 
 - Vehicles with `Crusher=true` and `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrusher.Vehicles` and `TiltsWhenCrusher.Overlays`, which both default to `TiltsWhenCrushes`.
@@ -1406,89 +1572,6 @@ In `artmd.ini`:
 ```ini
 [SOMEVEHICLE]   ; VehicleType
 TurretShadow=   ; boolean
-```
-
-## Veinholes & Weeds
-
-### Veinholes
-
-- Veinhole monsters now work like they used to in Tiberian Sun.
-- Their core parameters are still loaded from `[General]`.
-- The Warhead used by veins is specified under `[CombatDamage]`. The warhead has to have `Veinhole=yes` set.
-- Veinholes are hardcoded to use several overlay types.
-- The vein attack animation specified under `[AudioVisual]` is what deals the damage. The animation has to be properly listed under `[Animations]` as well.
-- Units can be made immune to veins the same way as in Tiberian Sun.
-- The monster itself is represented by the `VEINTREE` TerrainType, which has `IsVeinhole=true` set. Its strength is what determines the strength of the Veinhole.
-
-```{note}
-Everything listed below functions identically to Tiberian Sun.
-Many of the tags from Tiberian Sun have been re-enabled. The values provided below are identical to those found in TS and YR rules. You can read more about them on ModENC:
-[VeinholeGrowthRate](https://modenc.renegadeprojects.com/VeinholeGrowthRate), [VeinholeShrinkRate](https://modenc.renegadeprojects.com/VeinholeShrinkRate), [MaxVeinholeGrowth](https://modenc.renegadeprojects.com/MaxVeinholeGrowth), [VeinDamage](https://modenc.renegadeprojects.com/VeinDamage), [VeinholeTypeClass](https://modenc.renegadeprojects.com/VeinholeTypeClass),
-[VeinholeWarhead](https://modenc.renegadeprojects.com/VeinholeWarhead), [Veinhole](https://modenc.renegadeprojects.com/Veinhole), [VeinAttack](https://modenc.renegadeprojects.com/VeinAttack), [ImmuneToVeins](https://modenc.renegadeprojects.com/ImmuneToVeins), [IsVeinhole](https://modenc.renegadeprojects.com/IsVeinhole)
-```
-
-In `rulesmd.ini`:
-```ini
-[General]
-VeinholeGrowthRate=300        ; integer
-VeinholeShrinkRate=100        ; integer
-MaxVeinholeGrowth=2000        ; integer
-VeinDamage=5                  ; integer
-VeinholeTypeClass=VEINTREE    ; TerrainType
-
-[CombatDamage]
-VeinholeWarhead=VeinholeWH    ; WarheadType
-
-[VeinholeWH]
-Veinhole=yes
-
-[AudioVisual]
-VeinAttack=VEINATAC           ; AnimationType
-
-[TechnoType]
-EliteAbilities=VEIN_PROOF
-ImmuneToVeins=yes
-
-[VEINTREE]
-IsVeinhole=true
-Strength=1000                 ; integer - the strength of the Veinhole
-```
-
-```{warning}
-The game expects certain overlays related to Veinholes to have certain indices, they are listed below. Please keep in mind that the indices in the OverlayTypes list are 0-based, formed internally by the game, and the identifiers left of "=" don't matter. Vanilla `rulesmd.ini` already has the required overlays listed at the correct indices.
-```
-
-In `rulesmd.ini`:
-```ini
-[OverlayTypes]
-126=VEINS                     ; The veins (weeds)
-167=VEINHOLE                  ; The Veinhole itself
-178=VEINHOLEDUMMY             ; A technical overlay
-```
-
-### Weeds & Weed Eaters
-
-- Vehicles with `Weeder=yes` can now collect weeds. The weeds can then be deposited into a building with `Weeder=yes`.
-- Weeds are not stored in a building's storage, but rather in a House's storage. The weed capacity is listed under `[General] -> WeedCapacity`.
-- Weeders now show the ore gathering animation. It can be customized the same way as for harvesters.
-- Weeders can use the Teleport locomotor like chrono miners.
-- Total amount of weeds in storage can be displayed on sidebar, see [Weeds counter](User-Interface.md#weeds-counter).
-
-### Weed-consuming superweapons
-
-- Superweapons can consume weeds to recharge, like the Chemical Missile special in Tiberian Sun.
-
-```{note}
-As the code for the Chemical Missile had been removed, setting `Type=ChemMissile` will not work.
-```
-
-In `rulesmd.ini`:
-```ini
-[SOMESW]                                        ; SuperWeaponType
-UseWeeds=no                                     ; boolean - should the SW use weeds to recharge?
-UseWeeds.Amount=                                ; integer - how many? default is General->WeedCapacity
-UseWeeds.StorageTimer=no                        ; boolean - should the counter on the sidebar display the % of weeds stored?
-UseWeeds.ReadinessAnimationPercentage=0.9       ; double - when this many weeds % are stored, the SW will show it's ready on the building (open nuke/open chrono, etc.)
 ```
 
 ## VoxelAnims
@@ -1719,26 +1802,4 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]         ; WeaponType
 IsSingleColor=false  ; boolean
-```
-
-## Crate improvements
-
-There are some improvements on goodie crate logic:
-- The statistic distribution of the randomly generated crates is now more uniform within the visible map region by using an optimized sampling procedure.
-- You can now limit the crates' spawn region to land only by setting `[CrateRules] -> CreateOnlyOnLand` to true.
-- The limit of vehicles a player can own before unit crates start giving money instead can now be customized by setting `UnitCrateVehicleCap`. Negative numbers disable the cap entirely.
-- `FreeMCV` setting is now actually respected and can be used to disable the forced unit selected from `[General] -> BaseUnit` that is given if player picks a crate and has enough credits but no existing buildings or `BaseUnit` vehicles.
-  - The previously hardcoded credits threshold that must be passed can also now be customized via `FreeMCV.CreditsThreshold`.
-- It is possible to influence weighting of units given from crates (`CrateGoodie=true`) via `CrateGoodie.RerollChance`, which determines the chance that if this type of unit is rolled, it will reroll again for another type of unit.
-
-In `rulesmd.ini`:
-```ini
-[CrateRules]
-CrateOnlyOnLand=false          ; boolean
-UnitCrateVehicleCap=50         ; integer
-FreeMCV=true                   ; boolean
-FreeMCV.CreditsThreshold=1500  ; integer
-
-[SOMEVEHICLE]                  ; VehicleType
-CrateGoodie.RerollChance=0.0   ; floating point value, percents or absolute (0.0-1.0)
 ```
