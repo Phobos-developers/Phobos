@@ -576,6 +576,13 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_BeforeTruelyFire, 0x6)
 					pAnimType = pWeaponExt->DelayedFire_OpenToppedAnimation;
 
 				auto firingCoords = pThis->GetWeapon(weaponIndex)->FLH;
+				bool found = false;
+
+				if (auto const pInf = abstract_cast<InfantryClass*>(pThis))
+				{
+					auto firingCoordsInf = TechnoExt::GetSimpleFLH(pInf, weaponIndex, found);
+					firingCoords = found ? firingCoordsInf : firingCoords;
+				}
 
 				if (pWeaponExt->DelayedFire_AnimOffset.isset())
 					firingCoords = pWeaponExt->DelayedFire_AnimOffset;
