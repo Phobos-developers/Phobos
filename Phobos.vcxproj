@@ -18,7 +18,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Ext\Cell\Hooks.cpp" />
     <ClCompile Include="src\Ext\Infantry\Hooks.cpp" />
     <ClCompile Include="src\Ext\Infantry\Hooks.Firing.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hooks.MultiWeapon.cpp" />
@@ -33,6 +32,7 @@
     <ClCompile Include="src\Blowfish\blowfish.cpp" />
     <ClCompile Include="src\Blowfish\Hooks.Blowfish.cpp" />
     <ClCompile Include="src\Ext\Cell\Body.cpp" />
+    <ClCompile Include="src\Ext\Cell\Hooks.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.ForceEnemy.cpp" />
     <ClCompile Include="src\Commands\ToggleSWSidebar.cpp" />
     <ClCompile Include="src\Ext\Sidebar\SWSidebar\SWColumnClass.cpp" />
@@ -93,6 +93,7 @@
     <ClCompile Include="src\Ext\Unit\Hooks.Crushing.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Harvester.cpp" />
     <ClCompile Include="src\Locomotion\TestLocomotionClass.cpp" />
+    <ClCompile Include="src\Locomotion\AttachmentLocomotionClass.cpp"/>
     <ClCompile Include="src\Misc\Hooks.Gamespeed.cpp" />
     <ClCompile Include="src\Misc\Hooks.Ares.cpp" />
     <ClCompile Include="src\Misc\Hooks.Crates.cpp" />
@@ -113,7 +114,9 @@
     <ClCompile Include="src\New\Type\LaserTrailTypeClass.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\InterceptorTypeClass.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\PassengerDeletionTypeClass.cpp" />
+    <ClCompile Include="src\New\Type\AttachmentTypeClass.cpp" />
     <ClCompile Include="src\New\Entity\LaserTrailClass.cpp" />
+    <ClCompile Include="src\New\Entity\AttachmentClass.cpp" />
     <ClCompile Include="src\Ext\Aircraft\Body.cpp" />
     <ClCompile Include="src\Ext\Aircraft\Hooks.cpp" />
     <ClCompile Include="src\Ext\AnimType\Body.cpp" />
@@ -152,6 +155,7 @@
     <ClCompile Include="src\Ext\Techno\Body.cpp" />
     <ClCompile Include="src\Ext\Techno\Body.Internal.cpp" />
     <ClCompile Include="src\Ext\Techno\Body.Update.cpp" />
+    <ClCompile Include="src\Ext\Techno\Body.TechnoAttachment.cpp" />
     <ClCompile Include="src\Ext\Techno\WeaponHelpers.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Cloak.cpp" />
@@ -160,6 +164,7 @@
     <ClCompile Include="src\Ext\Techno\Hooks.ReceiveDamage.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.TargetEvaluation.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Transport.cpp" />
+    <ClCompile Include="src\Ext\Techno\Hooks.TechnoAttachment.cpp" />
     <ClCompile Include="src\Ext\TerrainType\Body.cpp" />
     <ClCompile Include="src\Ext\TerrainType\Hooks.cpp" />
     <ClCompile Include="src\Ext\TerrainType\Hooks.Passable.cpp" />
@@ -180,6 +185,7 @@
     <ClCompile Include="src\Ext\WeaponType\Hooks.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.DiskLaserRadius.cpp" />
     <ClCompile Include="src\Misc\BlittersFix.cpp" />
+    <ClCompile Include="src\Misc\Hooks.AI.cpp" />
     <ClCompile Include="src\Misc\Selection.cpp" />
     <ClCompile Include="src\Utilities\Anchor.cpp" />
     <ClCompile Include="src\Utilities\Debug.cpp" />
@@ -257,7 +263,8 @@
     <ClInclude Include="src\Ext\TAction\Body.h" />
     <ClInclude Include="src\Ext\Team\Body.h" />
     <ClInclude Include="src\Ext\TEvent\Body.h" />
-    <ClInclude Include="src\Locomotion\TestLocomotionClass.h" />
+    <ClInclude Include="src\Locomotion\TestLocomotionClass.h"/>
+    <ClInclude Include="src\Locomotion\AttachmentLocomotionClass.h"/>
     <ClInclude Include="src\Misc\BlittersFix.h" />
     <ClInclude Include="src\Ext\CaptureManager\Body.h" />
     <ClInclude Include="src\Misc\FlyingStrings.h" />
@@ -275,8 +282,10 @@
     <ClInclude Include="src\New\Type\LaserTrailTypeClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\InterceptorTypeClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\PassengerDeletionTypeClass.h" />
+    <ClInclude Include="src\New\Type\AttachmentTypeClass.h" />
     <ClInclude Include="src\New\Entity\LaserTrailClass.h" />
     <ClInclude Include="src\New\Entity\ShieldClass.h" />
+    <ClInclude Include="src\New\Entity\AttachmentClass.h" />
     <ClInclude Include="src\Utilities\Anchor.h" />
     <ClInclude Include="src\Utilities\Enumerable.h" />
     <ClInclude Include="src\Ext\Aircraft\Body.h" />

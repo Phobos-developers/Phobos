@@ -15,6 +15,7 @@
 #include <New/Type/BannerTypeClass.h>
 #include <New/Type/InsigniaTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
+#include <New/Type/AttachmentTypeClass.h>
 #include <Utilities/Patch.h>
 
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
@@ -44,6 +45,7 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	AttachEffectTypeClass::LoadFromINIList(pINI);
 	BannerTypeClass::LoadFromINIList(pINI);
 	InsigniaTypeClass::LoadFromINIList(pINI);
+	AttachmentTypeClass::LoadFromINIList(pINI);
 
 	Data->LoadBeforeTypeData(pThis, pINI);
 }
@@ -338,6 +340,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->SortCameoByName.Read(exINI, GameStrings::General, "SortCameoByName");
 
+	this->AttachmentTopLayerMinHeight.Read(exINI, GameStrings::General, "AttachmentTopLayerMinHeight");
+	this->AttachmentUndergroundLayerMaxHeight.Read(exINI, GameStrings::General, "AttachmentUndergroundLayerMaxHeight");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -614,6 +619,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->FallingDownTargetingFix)
 		.Process(this->AIAirTargetingFix)
 		.Process(this->SortCameoByName)
+		.Process(this->AttachmentTopLayerMinHeight)
+		.Process(this->AttachmentUndergroundLayerMaxHeight)
 		;
 }
 

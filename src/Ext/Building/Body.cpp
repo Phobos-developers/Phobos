@@ -378,6 +378,10 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 				if (pThis->Owner != pUnit->Owner || pUnit->Locomotor->Destination() != CoordStruct::Empty)
 					continue;
 
+				// Skip attachments - they shouldn't be treated as stuck units
+				if (TechnoExt::IsAttached(pUnit))
+					continue;
+
 				const auto height = pUnit->GetHeight();
 
 				if (height < 0 || height > Unsorted::CellHeight)

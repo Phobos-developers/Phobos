@@ -1652,19 +1652,29 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, cons
 	}
 
 	default: //must be AutoDeathBehavior::Kill
-		if (AresFunctions::SpawnSurvivors)
-		{
-			switch (pThis->WhatAmI())
-			{
-			case AbstractType::Unit:
-			case AbstractType::Aircraft:
-				AresFunctions::SpawnSurvivors(static_cast<FootClass*>(pThis), nullptr, false, false);
-			default:;
-			}
-		}
-		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
-		return;
+		TechnoExt::Kill(pThis, nullptr, pThis->Owner);
 	}
+}
+
+void TechnoExt::Kill(TechnoClass* pThis, ObjectClass* pAttacker, HouseClass* pAttackingHouse)
+{
+	if (AresFunctions::SpawnSurvivors)
+	{
+		switch (pThis->WhatAmI())
+		{
+		case AbstractType::Unit:
+		case AbstractType::Aircraft:
+			AresFunctions::SpawnSurvivors(abstract_cast<FootClass*>(pThis), abstract_cast<TechnoClass*>(pAttacker), false, false);
+		default: break;
+		}
+	}
+
+	pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, pAttacker, true, false, pAttackingHouse);
+}
+
+void TechnoExt::Kill(TechnoClass* pThis, TechnoClass* pAttacker)
+{
+	TechnoExt::Kill(pThis, pAttacker, pAttacker ? pAttacker->Owner : nullptr);
 }
 
 void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)

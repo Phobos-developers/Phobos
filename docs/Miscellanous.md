@@ -45,20 +45,22 @@ SaveVariablesOnScenarioEnd=false    ; boolean
 ### Semantic locomotor aliases
 
 - It's now possible to write locomotor aliases instead of their CLSIDs in the `Locomotor` tag value. Use the table below to find the needed alias for a locomotor.
+  - The feature is also supported for Phobos locomotors.
 
-| *Alias* | *CLSID*                                  |
-|--------:|:----------------------------------------:|
-|Drive    | `{4A582741-9839-11d1-B709-00A024DDAFD1}` |
-|Hover    | `{4A582742-9839-11d1-B709-00A024DDAFD1}` |
-|Tunnel   | `{4A582743-9839-11d1-B709-00A024DDAFD1}` |
-|Walk     | `{4A582744-9839-11d1-B709-00A024DDAFD1}` |
-|DropPod  | `{4A582745-9839-11d1-B709-00A024DDAFD1}` |
-|Fly      | `{4A582746-9839-11d1-B709-00A024DDAFD1}` |
-|Teleport | `{4A582747-9839-11d1-B709-00A024DDAFD1}` |
-|Mech     | `{55D141B8-DB94-11d1-AC98-006008055BB5}` |
-|Ship     | `{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}` |
-|Jumpjet  | `{92612C46-F71F-11d1-AC9F-006008055BB5}` |
-|Rocket   | `{B7B49766-E576-11d3-9BD9-00104B972FE8}` |
+| *Alias*   | *CLSID*                                  |
+|----------:|:----------------------------------------:|
+|Drive      | `{4A582741-9839-11d1-B709-00A024DDAFD1}` |
+|Hover      | `{4A582742-9839-11d1-B709-00A024DDAFD1}` |
+|Tunnel     | `{4A582743-9839-11d1-B709-00A024DDAFD1}` |
+|Walk       | `{4A582744-9839-11d1-B709-00A024DDAFD1}` |
+|DropPod    | `{4A582745-9839-11d1-B709-00A024DDAFD1}` |
+|Fly        | `{4A582746-9839-11d1-B709-00A024DDAFD1}` |
+|Teleport   | `{4A582747-9839-11d1-B709-00A024DDAFD1}` |
+|Mech       | `{55D141B8-DB94-11d1-AC98-006008055BB5}` |
+|Ship       | `{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}` |
+|Jumpjet    | `{92612C46-F71F-11d1-AC9F-006008055BB5}` |
+|Rocket     | `{B7B49766-E576-11d3-9BD9-00104B972FE8}` |
+|Attachment | `{C5D54B98-8C98-4275-8CE4-EF75CB0CBE3E}` |
 
 ```{note}
 `Chrono` is not a standard Alias, but since the default behavior of using `Teleport` will be triggered when the value of `Locomotor` is incorrect, the result of the operation will appear as if `Chrono` has taken effect.

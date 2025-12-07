@@ -287,6 +287,9 @@ public:
 
 		Valueable<bool> SortCameoByName;
 		
+		Valueable<int> AttachmentTopLayerMinHeight;
+		Valueable<int> AttachmentUndergroundLayerMaxHeight;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -512,6 +515,8 @@ public:
 			, AIAirTargetingFix { false }
 
 			, SortCameoByName { false }
+			, AttachmentTopLayerMinHeight { 500 }
+			, AttachmentUndergroundLayerMaxHeight { -256 }
 		{ }
 
 		virtual ~ExtData() = default;

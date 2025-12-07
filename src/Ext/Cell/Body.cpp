@@ -16,6 +16,8 @@ void CellExt::ExtData::Serialize(T& Stm)
 		.Process(this->RadSites)
 		.Process(this->RadLevels)
 		.Process(this->InfantryCount)
+		.Process(this->IncomingUnit)
+		.Process(this->IncomingUnitAlt)
 		;
 }
 
@@ -32,7 +34,19 @@ void CellExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 }
 
 void CellExt::ExtData::InvalidatePointer(void* ptr, bool removed)
-{ }
+{
+	if (ptr == static_cast<void*>(this->IncomingUnit))
+	{
+		this->OwnerObject()->OccupationFlags &= ~0x20;
+		this->IncomingUnit = nullptr;
+	}
+
+	if (ptr == static_cast<void*>(this->IncomingUnitAlt))
+	{
+		this->OwnerObject()->AltOccupationFlags &= ~0x20;
+		this->IncomingUnitAlt = nullptr;
+	}
+}
 
 bool CellExt::RadLevel::Load(PhobosStreamReader& stm, bool registerForChange)
 {

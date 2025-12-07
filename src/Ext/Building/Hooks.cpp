@@ -749,6 +749,7 @@ DEFINE_HOOK(0x44EFD8, BuildingClass_FindExitCell_BarracksExitCell, 0x6)
 	return 0;
 }
 
+
 DEFINE_HOOK(0x444B83, BuildingClass_ExitObject_BarracksExitCell, 0x7)
 {
 	enum { SkipGameCode = 0x444C7C };

@@ -70,7 +70,11 @@ public:
 			{
 				if ((selected.Object->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 				{
-					if (!TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(selected.Object))->TypeExtData->LowSelectionPriority)
+					auto const& pExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(selected.Object));
+					auto const& pTypeExt = TechnoTypeExt::ExtMap.Find(selected.Object->GetTechnoType());
+
+					bool isLowPriorityByAttachment = pExt->ParentAttachment && pExt->ParentAttachment->GetType()->LowSelectionPriority;
+					if (!pTypeExt->LowSelectionPriority && !isLowPriorityByAttachment)
 						return true;
 				}
 			}
@@ -96,8 +100,16 @@ public:
 
 				if (auto const pTypeExt = TechnoTypeExt::ExtMap.TryFind(pTechnoType)) // If pTechnoType is nullptr so will be pTypeExt
 				{
-					if (bPriorityFiltering && pTypeExt->LowSelectionPriority)
-						continue;
+					if (bPriorityFiltering)
+					{
+						auto const& pExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pObject));
+						// Attached units shouldn't be selected regardless of the setting
+						bool isLowPriorityByAttachment = pExt->ParentAttachment && pExt->ParentAttachment->GetType()->LowSelectionPriority;
+						bool isLowPriorityByTechno = Phobos::Config::PrioritySelectionFiltering && pTypeExt->LowSelectionPriority;
+
+						if (isLowPriorityByAttachment || isLowPriorityByTechno)
+							continue;
+					}
 
 					if (Game::IsTypeSelecting())
 					{
@@ -176,7 +188,7 @@ public:
 
 			LTRBStruct rect { nLeft , nTop, nRight - nLeft + 1, nBottom - nTop + 1 };
 
-			const bool bPriorityFiltering = Phobos::Config::PrioritySelectionFiltering && Tactical_IsHighPriorityInRect(pThis, &rect);
+			bool bPriorityFiltering = Tactical_IsHighPriorityInRect(pThis, &rect);
 			Tactical_SelectFiltered(pThis, &rect, check_callback, bPriorityFiltering);
 
 			pThis->Band.Left = 0;

@@ -13,7 +13,7 @@ void RegisterFactoryForClass(IClassFactory* pFactory)
 	else
 		Debug::Log("Class factory for %s registered.\n", typeid(T).name());
 
-	Game::COMClasses->AddItem((ULONG)dwRegister);
+	Game::COMClasses.AddItem((ULONG)dwRegister);
 }
 
 // Registers an automatically created factory for a class.

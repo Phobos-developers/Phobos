@@ -15,6 +15,7 @@
 #include <New/Type/Affiliated/DroppodTypeClass.h>
 #include <New/Type/Affiliated/TiberiumEaterTypeClass.h>
 #include <New/Type/Affiliated/CreateUnitTypeClass.h>
+#include <New/Type/AttachmentTypeClass.h>
 
 class Matrix3D;
 class ParticleSystemTypeClass;
@@ -365,6 +366,27 @@ public:
 		ValueableVector<AnimTypeClass*> Promote_EliteAnimation;
 
 		Nullable<AffectedHouse> RadarInvisibleToHouse;
+
+		Valueable<int> AttachmentTopLayerMinHeight;
+		Valueable<int> AttachmentUndergroundLayerMaxHeight;
+
+		struct AttachmentDataEntry
+		{
+			ValueableIdx<AttachmentTypeClass> Type;
+			NullableIdx<TechnoTypeClass> TechnoType;
+			Valueable<CoordStruct> FLH;
+			Valueable<bool> IsOnTurret;
+			Valueable<DirType> RotationAdjust;
+
+			bool Load(PhobosStreamReader& stm, bool registerForChange);
+			bool Save(PhobosStreamWriter& stm) const;
+
+		private:
+			template <typename T>
+			bool Serialize(T& stm);
+		};
+
+		ValueableVector<AttachmentDataEntry> AttachmentData;
 
 		struct LaserTrailDataEntry
 		{
@@ -840,6 +862,10 @@ public:
 			, InfantryAutoDeploy {}
 
 			, TurretResponse {}
+
+			, AttachmentTopLayerMinHeight { RulesExt::Global()->AttachmentTopLayerMinHeight }
+			, AttachmentUndergroundLayerMaxHeight { RulesExt::Global()->AttachmentUndergroundLayerMaxHeight }
+			, AttachmentData {}
 		{ }
 
 		virtual ~ExtData() = default;
