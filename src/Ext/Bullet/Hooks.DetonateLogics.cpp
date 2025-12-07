@@ -819,7 +819,7 @@ DEFINE_HOOK(0x4899DA, MapClass_DamageArea_DamageUnderGround, 0x7)
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 
-	if (!pWHExt || !pWHExt->AffectsUnderground)
+	if (!pWHExt->AffectsUnderground)
 		return 0;
 
 	const bool cylinder = pWHExt->CellSpread_Cylinder;
