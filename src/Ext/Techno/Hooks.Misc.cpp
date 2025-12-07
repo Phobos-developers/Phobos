@@ -722,15 +722,88 @@ DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 {
 	GET(ObjectClass*, pThis, ESI);
 
+	TechnoClass* pOriginal = abstract_cast<TechnoClass*>(pThis);
+	TechnoClass* pFinalTarget = pOriginal;
+
+	if (pOriginal)
+	{
+		TechnoClass* pCurrent = pOriginal;
+		while (pCurrent)
+		{
+			auto pExt = TechnoExt::ExtMap.Find(pCurrent);
+			if (!pExt || !pExt->ParentAttachment)
+			{
+				pFinalTarget = pCurrent;
+				break;
+			}
+
+			auto pType = pExt->ParentAttachment->GetType();
+			if (!pType || !pType->PassSelection)
+			{
+				pFinalTarget = pCurrent;
+				break;
+			}
+
+			TechnoClass* pParent = pExt->ParentAttachment->Parent;
+			if (!pParent || pParent->IsDead())
+			{
+				pFinalTarget = pCurrent;
+				break;
+			}
+
+			pCurrent = pParent;
+			pFinalTarget = pParent;
+		}
+
+		if (pFinalTarget && pFinalTarget != pOriginal)
+		{
+			for (int i = 0; i < ObjectClass::CurrentObjects.Count; i++)
+			{
+				if (ObjectClass::CurrentObjects[i] == pOriginal)
+				{
+					int lastIndex = ObjectClass::CurrentObjects.Count - 1;
+					ObjectClass::CurrentObjects[i] = ObjectClass::CurrentObjects[lastIndex];
+					ObjectClass::CurrentObjects.Count--;
+					break;
+				}
+			}
+
+			pOriginal->IsSelected = false;
+
+			bool parentAlreadySelected = false;
+			for (int i = 0; i < ObjectClass::CurrentObjects.Count; i++)
+			{
+				if (ObjectClass::CurrentObjects[i] == pFinalTarget)
+				{
+					parentAlreadySelected = true;
+					break;
+				}
+			}
+
+			if (!parentAlreadySelected)
+			{
+				ObjectClass::CurrentObjects.AddItem(pFinalTarget);
+			}
+
+			R->ESI(pFinalTarget);
+			pThis = pFinalTarget;
+		}
+	}
+
 	pThis->IsSelected = true;
 
-	if (!Phobos::Config::ShowFlashOnSelecting)
-		return 0;
-
-	auto const duration = RulesExt::Global()->SelectionFlashDuration;
-
-	if (duration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
-		pThis->Flash(duration);
+	if (Phobos::Config::ShowFlashOnSelecting)
+	{
+		auto const duration = RulesExt::Global()->SelectionFlashDuration;
+		if (duration > 0)
+		{
+			TechnoClass* pFlashTarget = abstract_cast<TechnoClass*>(pThis);
+			if (pFlashTarget && pFlashTarget->GetOwningHouse()->IsControlledByCurrentPlayer())
+			{
+				pFlashTarget->Flash(duration);
+			}
+		}
+	}
 
 	return 0;
 }
