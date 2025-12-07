@@ -1031,6 +1031,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Ammo_AutoConvertMaximumAmount.Read(exINI, pSection, "Ammo.AutoConvertMaximumAmount");
 	this->Ammo_AutoConvertType.Read(exINI, pSection, "Ammo.AutoConvertType");
 
+	if (this->Ammo_AutoConvertMinimumAmount > this->Ammo_AutoConvertMaximumAmount)
+		Debug::Log("[Developer warning][%s] Ammo.AutoConvertMinimumAmount is greater than Ammo.AutoConvertMaximumAmount, resulting in no conversion.\n", pSection);
+
 	this->InfantryAutoDeploy.Read(exINI, pSection, "InfantryAutoDeploy");
 	
 	// Ares 0.2
