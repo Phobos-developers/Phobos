@@ -1129,7 +1129,9 @@ ProneSpeed.NoCrawls=1.5       ; floating point value, multiplier
 ProneSpeed=                   ; floating point value, multiplier, by default, use the corresponding global value according to Crawls
 ```
 
+<!--
 ## Overlays
+-->
 
 ## Particle systems
 
