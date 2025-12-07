@@ -1128,9 +1128,9 @@ ProneSpeed.NoCrawls=1.5       ; floating point value, multiplier
 [SOMEINFANTRY]                ; InfantryType
 ProneSpeed=                   ; floating point value, multiplier, by default, use the corresponding global value according to Crawls
 ```
-
+<!--
 ## Overlays
-
+-->
 ## Particle systems
 
 ### Fire particle target coordinate adjustment when firer rotates
