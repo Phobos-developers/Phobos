@@ -126,7 +126,7 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 			}
 			return true;
 		case Mission::Guard:
-			if (auto pUnit = abstract_cast<UnitClass*, true>(pThis))
+			if (auto const pUnit = abstract_cast<UnitClass*, true>(pThis))
 			{
 				if (pUnit->ArchiveTarget && pUnit->GetStoragePercentage() > 0.0 && pUnit->Locomotor->Is_Moving()) // Edge-case, waiting to be able to unload.
 					return true;
@@ -260,14 +260,14 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 
 	auto const pType = pThis->GetTechnoType();
 	auto const mZone = pType->MovementZone;
-	int currentZone = useZone ? zone : MapClass::Instance.GetMovementZoneType(pThis->GetMapCoords(), mZone, pThis->OnBridge);
+	const int currentZone = useZone ? zone : MapClass::Instance.GetMovementZoneType(pThis->GetMapCoords(), mZone, pThis->OnBridge);
 
 	if (currentZone != -1)
 	{
 		if (zoneScanType == TargetZoneScanType::Any)
 			return true;
 
-		int targetZone = MapClass::Instance.GetMovementZoneType(pTarget->GetMapCoords(), mZone, pTarget->OnBridge);
+		const int targetZone = MapClass::Instance.GetMovementZoneType(pTarget->GetMapCoords(), mZone, pTarget->OnBridge);
 
 		if (zoneScanType == TargetZoneScanType::Same)
 		{
@@ -294,7 +294,7 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 
 			if (!pWeapon)
 			{
-				int weaponIndex = pThis->SelectWeapon(pTarget);
+				const int weaponIndex = pThis->SelectWeapon(pTarget);
 
 				if (weaponIndex < 0)
 					return false;
@@ -338,7 +338,6 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 			auto const pTypeExt = TechnoExt::ExtMap.Find(pThis);
 			pTypeExt->UpdateTypeData(pToType);
 			pTypeExt->UpdateTypeData_Foot();
-			pTypeExt->UpdateTintValues();
 			return true;
 		}
 
@@ -437,7 +436,6 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis);
 	pTypeExt->UpdateTypeData(pToType);
 	pTypeExt->UpdateTypeData_Foot();
-	pTypeExt->UpdateTintValues();
 	return true;
 }
 
@@ -578,7 +576,7 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
-UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit)
+UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit, TechnoTypeExt::ExtData* pData)
 {
 	if (pUnit->IsGreenHP())
 	{
@@ -586,8 +584,6 @@ UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit)
 	}
 	else if (pUnit->IsYellowHP())
 	{
-		auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
-
 		if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
 		{
 			if (auto const imageYellow = pData->WaterImage_ConditionYellow)
@@ -600,8 +596,6 @@ UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit)
 	}
 	else
 	{
-		auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
-
 		if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
 		{
 			if (auto const imageRed = pData->WaterImage_ConditionRed)
@@ -624,29 +618,27 @@ UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit)
 
 AircraftTypeClass* TechnoExt::GetAircraftTypeExtra(AircraftClass* pAircraft)
 {
-	if (pAircraft->IsGreenHP())
+	auto const pType = pAircraft->Type;
+	auto const pData = TechnoTypeExt::ExtMap.Find(pType);
+
+	if (!pData->NeedDamagedImage || pAircraft->IsGreenHP())
 	{
-		return pAircraft->Type;
+		return pType;
 	}
 	else if (pAircraft->IsYellowHP())
 	{
-		auto const pData = TechnoTypeExt::ExtMap.Find(pAircraft->Type);
-
 		if (auto const imageYellow = pData->Image_ConditionYellow)
 			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
 	}
 	else
 	{
-		auto const pType = pAircraft->Type;
-		auto const pData = TechnoTypeExt::ExtMap.Find(pType);
-
 		if (auto const imageRed = pData->Image_ConditionRed)
 			return abstract_cast<AircraftTypeClass*, true>(imageRed);
 		else if (auto const imageYellow = pData->Image_ConditionYellow)
 			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
 	}
 
-	return pAircraft->Type;
+	return pType;
 
 }
 
@@ -827,16 +819,11 @@ bool TechnoExt::HasAmmoToDeploy(TechnoClass* pThis)
 void TechnoExt::HandleOnDeployAmmoChange(TechnoClass* pThis, int maxAmmoOverride)
 {
 	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
-	int add = pTypeExt->Ammo_AddOnDeploy;
 
-	if (add != 0)
+	if (const int add = pTypeExt->Ammo_AddOnDeploy)
 	{
-		int maxAmmo = pTypeExt->OwnerObject()->Ammo;
-
-		if (maxAmmoOverride >= 0)
-			maxAmmo = maxAmmoOverride;
-
-		int originalAmmo = pThis->Ammo;
+		const int maxAmmo = maxAmmoOverride >= 0 ? maxAmmoOverride : pTypeExt->OwnerObject()->Ammo;
+		const int originalAmmo = pThis->Ammo;
 		pThis->Ammo = std::clamp(pThis->Ammo + add, 0, maxAmmo);
 
 		if (originalAmmo != pThis->Ammo)
@@ -914,6 +901,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->AE)
 		.Process(this->PreviousType)
 		.Process(this->AnimRefCount)
+		.Process(this->SubterraneanHarvStatus)
+		.Process(this->SubterraneanHarvRallyPoint)
 		.Process(this->ReceiveDamage)
 		.Process(this->LastKillWasTeamTarget)
 		.Process(this->PassengerDeletionTimer)
@@ -968,6 +957,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->UndergroundTracked)
 		.Process(this->SpecialTracked)
 		.Process(this->FallingDownTracked)
+		.Process(this->JumpjetStraightAscend)
 		;
 }
 

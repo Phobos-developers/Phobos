@@ -137,7 +137,7 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& position, int length, int val
 		swprintf_s(text, L"%d/%d", value, maxValue);
 	}
 
-	COLORREF color = Drawing::RGB_To_Int(Text_Color.Get(ratio));
+	const COLORREF color = Drawing::RGB_To_Int(Text_Color.Get(ratio));
 	RectangleStruct rect = DSurface::Composite->GetRect();
 	rect.Height -= 32; // account for bottom bar
 	const int textHeight = 12;
