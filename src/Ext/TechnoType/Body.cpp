@@ -969,6 +969,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->WaterImage_ConditionYellow.Read(exINI, pSection, "WaterImage.ConditionYellow");
 	this->WaterImage_ConditionRed.Read(exINI, pSection, "WaterImage.ConditionRed");
 
+	this->NeedDamagedImage = this->Image_ConditionYellow.isset() || this->Image_ConditionRed.isset()
+		|| this->WaterImage_ConditionYellow.isset() || this->WaterImage_ConditionRed.isset();
+
 	this->InitialSpawnsNumber.Read(exINI, pSection, "InitialSpawnsNumber");
 	this->Spawns_Queue.Read(exINI, pSection, "Spawns.Queue");
 
@@ -1023,6 +1026,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackMove_Follow_IfMindControlIsFull.Read(exINI, pSection, "AttackMove.Follow.IfMindControlIsFull");
 	this->AttackMove_StopWhenTargetAcquired.Read(exINI, pSection, "AttackMove.StopWhenTargetAcquired");
 	this->AttackMove_PursuitTarget.Read(exINI, pSection, "AttackMove.PursuitTarget");
+
+	this->Ammo_AutoConvertMinimumAmount.Read(exINI, pSection, "Ammo.AutoConvertMinimumAmount");
+	this->Ammo_AutoConvertMaximumAmount.Read(exINI, pSection, "Ammo.AutoConvertMaximumAmount");
+	this->Ammo_AutoConvertType.Read(exINI, pSection, "Ammo.AutoConvertType");
+
+	if (this->Ammo_AutoConvertMinimumAmount > this->Ammo_AutoConvertMaximumAmount)
+		Debug::Log("[Developer warning][%s] Ammo.AutoConvertMinimumAmount is greater than Ammo.AutoConvertMaximumAmount, resulting in no conversion.\n", pSection);
 
 	this->InfantryAutoDeploy.Read(exINI, pSection, "InfantryAutoDeploy");
 	
@@ -1647,6 +1657,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Image_ConditionRed)
 		.Process(this->WaterImage_ConditionYellow)
 		.Process(this->WaterImage_ConditionRed)
+		.Process(this->NeedDamagedImage)
 
 		.Process(this->InitialSpawnsNumber)
 		.Process(this->Spawns_Queue)
@@ -1689,6 +1700,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->FallingDownDamage)
 		.Process(this->FallingDownDamage_Water)
+
+		.Process(this->Ammo_AutoConvertMinimumAmount)
+		.Process(this->Ammo_AutoConvertMaximumAmount)
+		.Process(this->Ammo_AutoConvertType)
 
 		.Process(this->FiringForceScatter)
 

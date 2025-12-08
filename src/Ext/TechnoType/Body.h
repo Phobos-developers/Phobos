@@ -344,6 +344,7 @@ public:
 		Nullable<TechnoTypeClass*> Image_ConditionRed;
 		Nullable<UnitTypeClass*> WaterImage_ConditionYellow;
 		Nullable<UnitTypeClass*> WaterImage_ConditionRed;
+		bool NeedDamagedImage;
 
 		Nullable<int> InitialSpawnsNumber;
 		ValueableVector<AircraftTypeClass*> Spawns_Queue;
@@ -407,6 +408,10 @@ public:
 
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
+
+		Valueable<int> Ammo_AutoConvertMinimumAmount;
+		Valueable<int> Ammo_AutoConvertMaximumAmount;
+		Nullable<TechnoTypeClass*> Ammo_AutoConvertType;
 
 		Valueable<bool> FiringForceScatter;
 
@@ -764,6 +769,7 @@ public:
 			, Image_ConditionRed { }
 			, WaterImage_ConditionYellow { }
 			, WaterImage_ConditionRed { }
+			, NeedDamagedImage { false }
 
 			, InitialSpawnsNumber { }
 			, Spawns_Queue { }
@@ -806,6 +812,10 @@ public:
 
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
+
+			, Ammo_AutoConvertMinimumAmount { -1 }
+			, Ammo_AutoConvertMaximumAmount { -1 }
+			, Ammo_AutoConvertType { nullptr }
 
 			, FiringForceScatter { true }
 
