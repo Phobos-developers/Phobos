@@ -187,22 +187,20 @@ DEFINE_HOOK(0x4D5FBD, FootClass_ApproachTarget_BeforeSearching, 0xA)
 	if (searchRange <= 204)
 		return WantAggressiveCrush;
 
-	GET_STACK(bool, inRange, STACK_OFFSET(0x158, -0x146));
+	GET_STACK(const bool, inRange, STACK_OFFSET(0x158, -0x146));
 
 	if (!inRange)
 	{
 		GET(FootClass*, pThis, EBX);
-		GET_STACK(int, weaponIdx, STACK_OFFSET(0x158, -0xAC));
+		GET_STACK(const int, weaponIdx, STACK_OFFSET(0x158, -0xAC));
 		const auto pWeapon = pThis->GetWeapon(weaponIdx)->WeaponType;
 
 		if (pWeapon && pWeapon->Range != -512)
 		{
-			const auto coords = pThis->GetCoords();
-			const int distance = pThis->IsInAir() || pWeapon->Projectile->Arcing || pThis->WhatAmI() == AircraftClass::AbsID
+			const int distance = (pThis->IsInAir() || pWeapon->Projectile->Arcing || pThis->WhatAmI() == AircraftClass::AbsID)
 				? pThis->DistanceFrom(pThis->Target)
 				: pThis->DistanceFrom3D(pThis->Target);
-			const int minimum = pWeapon->MinimumRange;
-			ApproachTargetTemp::FromMaximumRange = distance >= minimum;
+			ApproachTargetTemp::FromMaximumRange = distance >= pWeapon->MinimumRange;
 
 			if (!ApproachTargetTemp::FromMaximumRange)
 				searchRange = 204;
