@@ -31,47 +31,72 @@ public:
 
 	void DrawShieldBar_Building(const int length, RectangleStruct* pBound);
 	void DrawShieldBar_Other(const int length, RectangleStruct* pBound);
+
 	double GetHealthRatio() const
 	{
 		return static_cast<double>(this->HP) / this->Type->Strength;
 	}
+
 	void SetHP(int amount)
 	{
 		this->HP = std::min(amount, this->Type->Strength.Get());
 	}
+
 	int GetHP() const
 	{
 		return this->HP;
 	}
+
 	bool IsActive() const
 	{
 		return this->Available
 			&& this->HP > 0
 			&& this->Online;
 	}
+
 	bool IsAvailable() const
 	{
 		return this->Available;
 	}
+
 	bool IsBrokenAndNonRespawning() const
 	{
 		return this->HP <= 0 && !this->Type->Respawn;
 	}
+
 	ShieldTypeClass* GetType() const
 	{
 		return this->Type;
 	}
+
 	ArmorType GetArmorType(TechnoTypeClass* pTechnoType = nullptr) const;
-	int GetFramesSinceLastBroken() const;
+	int GetFramesSinceLastBroken() const { return Unsorted::CurrentFrame - this->LastBreakFrame; }
 	void SetAnimationVisibility(bool visible);
-	void UpdateTint(bool forceUpdate = false);
+	void UpdateTint();
+	void ConvertCheck(TechnoTypeClass* pTechnoType);
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
 	static bool ShieldIsBrokenTEvent(ObjectClass* pAttached);
 
-	bool IsGreenSP();
-	bool IsYellowSP();
-	bool IsRedSP();
+	bool IsGreenSP() const
+	{
+		auto const pType = this->Type;
+		return pType->GetConditionYellow() * pType->Strength.Get() < this->HP;
+	}
+
+	bool IsYellowSP() const
+	{
+		auto const pType = this->Type;
+		const int health = this->HP;
+		const int strength = pType->Strength.Get();
+		return pType->GetConditionRed() * strength < health && health <= pType->GetConditionYellow() * strength;
+	}
+
+	bool IsRedSP() const
+	{
+		auto const pType = this->Type;
+		return this->HP <= pType->GetConditionYellow() * pType->Strength.Get();
+	}
 
 	static void PointerGotInvalid(void* ptr, bool removed);
 
@@ -81,8 +106,6 @@ public:
 private:
 	template <typename T>
 	bool Serialize(T& Stm);
-
-	void UpdateType();
 
 	void SelfHealing();
 	int GetPercentageAmount(double iStatus);
@@ -99,7 +122,6 @@ private:
 	void CloakCheck();
 	void OnlineCheck();
 	void TemporalCheck();
-	bool ConvertCheck();
 	void EnabledByCheck();
 
 	int DrawShieldBar_Pip(const bool isBuilding) const;

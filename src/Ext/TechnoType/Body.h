@@ -36,7 +36,12 @@ public:
 		Valueable<CSFText> UIDescription;
 		Valueable<bool> LowSelectionPriority;
 		PhobosFixedString<0x20> GroupAs;
+		std::vector<PhobosFixedString<0x20>> WeaponGroupAs;
 		Valueable<int> RadarJamRadius;
+		Valueable<AffectedHouse> RadarJamHouses;
+		Valueable<int> RadarJamDelay;
+		ValueableVector<BuildingTypeClass*> RadarJamAffect;
+		ValueableVector<BuildingTypeClass*> RadarJamIgnore;
 		Nullable<int> InhibitorRange;
 		Nullable<int> DesignatorRange;
 		Valueable<float> FactoryPlant_Multiplier;
@@ -328,6 +333,7 @@ public:
 
 		Valueable<bool> BunkerableAnyway;
 		Valueable<bool> KeepTargetOnMove;
+		Valueable<int> KeepTargetOnMove_Weapon;
 		Valueable<bool> KeepTargetOnMove_NoMorePursuit;
 		Valueable<Leptons> KeepTargetOnMove_ExtraDistance;
 
@@ -339,6 +345,7 @@ public:
 		Nullable<TechnoTypeClass*> Image_ConditionRed;
 		Nullable<UnitTypeClass*> WaterImage_ConditionYellow;
 		Nullable<UnitTypeClass*> WaterImage_ConditionRed;
+		bool NeedDamagedImage;
 
 		Nullable<int> InitialSpawnsNumber;
 		ValueableVector<AircraftTypeClass*> Spawns_Queue;
@@ -403,6 +410,10 @@ public:
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
 
+		Valueable<int> Ammo_AutoConvertMinimumAmount;
+		Valueable<int> Ammo_AutoConvertMaximumAmount;
+		Nullable<TechnoTypeClass*> Ammo_AutoConvertType;
+
 		Valueable<bool> FiringForceScatter;
 
 		Valueable<int> FireUp;
@@ -443,7 +454,12 @@ public:
 			, UIDescription {}
 			, LowSelectionPriority { false }
 			, GroupAs { NONE_STR }
+			, WeaponGroupAs {}
 			, RadarJamRadius { 0 }
+			, RadarJamHouses { AffectedHouse::Enemies }
+			, RadarJamDelay { 30 }
+			, RadarJamAffect {}
+			, RadarJamIgnore {}
 			, InhibitorRange {}
 			, DesignatorRange { }
 			, FactoryPlant_Multiplier { 1.0 }
@@ -735,6 +751,7 @@ public:
 
 			, BunkerableAnyway { false }
 			, KeepTargetOnMove { false }
+			, KeepTargetOnMove_Weapon { -1 }
 			, KeepTargetOnMove_NoMorePursuit { true }
 			, KeepTargetOnMove_ExtraDistance { Leptons(0) }
 
@@ -746,6 +763,7 @@ public:
 			, Image_ConditionRed { }
 			, WaterImage_ConditionYellow { }
 			, WaterImage_ConditionRed { }
+			, NeedDamagedImage { false }
 
 			, InitialSpawnsNumber { }
 			, Spawns_Queue { }
@@ -788,6 +806,10 @@ public:
 
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
+
+			, Ammo_AutoConvertMinimumAmount { -1 }
+			, Ammo_AutoConvertMaximumAmount { -1 }
+			, Ammo_AutoConvertType { nullptr }
 
 			, FiringForceScatter { true }
 

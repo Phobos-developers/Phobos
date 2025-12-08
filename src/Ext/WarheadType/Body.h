@@ -193,6 +193,9 @@ public:
 		Valueable<double> AffectsBelowPercent;
 		Valueable<double> AffectsAbovePercent;
 		Valueable<bool> AffectsNeutral;
+		Valueable<bool> AffectsGround;
+		Valueable<bool> AffectsAir;
+		Valueable<bool> CellSpread_Cylinder;
 
 		Valueable<bool> ReverseEngineer;
 
@@ -400,6 +403,9 @@ public:
 			, AffectsBelowPercent { 1.0 }
 			, AffectsAbovePercent { 0.0 }
 			, AffectsNeutral { true }
+			, AffectsGround { true }
+			, AffectsAir { true }
+			, CellSpread_Cylinder { false }
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}
@@ -449,7 +455,7 @@ public:
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno) const;
 		bool CanAffectTarget(TechnoClass* pTarget) const;
 		bool CanAffectInvulnerable(TechnoClass* pTarget) const;
-		bool EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner) const;
+		bool EligibleForFullMapDetonation(TechnoClass* pTechno, TechnoTypeClass* pType, HouseClass* pOwner) const;
 		bool IsHealthInThreshold(TechnoClass* pTarget) const;
 
 		virtual ~ExtData() = default;
@@ -469,8 +475,8 @@ public:
 		DamageAreaResult DamageAreaWithTarget(const CoordStruct& coords, int damage, TechnoClass* pSource, WarheadTypeClass* pWH, bool affectsTiberium, HouseClass* pSourceHouse, TechnoClass* pTarget);
 	private:
 		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
-		void ApplyRemoveDisguise(HouseClass* pHouse, TechnoClass* pTarget);
-		void ApplyRemoveMindControl(TechnoClass* pTarget);
+		void ApplyRemoveDisguise(TechnoClass* pTarget);
+		HouseClass* ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
 		void ApplyShieldModifiers(TechnoClass* pTarget);
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);

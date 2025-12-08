@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-26 00:40+0800\n"
+"POT-Creation-Date: 2025-11-16 13:44+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -112,12 +112,12 @@ msgstr "现在你可以指定在胜利或失败时播放哪些音轨的主题曲
 #: ../../User-Interface.md:257 ../../User-Interface.md:316
 #: ../../User-Interface.md:368 ../../User-Interface.md:387
 #: ../../User-Interface.md:424 ../../User-Interface.md:443
-#: ../../User-Interface.md:549 ../../User-Interface.md:564
-#: ../../User-Interface.md:584 ../../User-Interface.md:612
-#: ../../User-Interface.md:657 ../../User-Interface.md:692
-#: ../../User-Interface.md:702 ../../User-Interface.md:750
-#: ../../User-Interface.md:795 ../../User-Interface.md:838
-#: ../../User-Interface.md:858
+#: ../../User-Interface.md:549 ../../User-Interface.md:566
+#: ../../User-Interface.md:589 ../../User-Interface.md:617
+#: ../../User-Interface.md:662 ../../User-Interface.md:697
+#: ../../User-Interface.md:707 ../../User-Interface.md:755
+#: ../../User-Interface.md:800 ../../User-Interface.md:843
+#: ../../User-Interface.md:863
 msgid "In `rulesmd.ini`:"
 msgstr "在 `rulesmd.ini`："
 
@@ -148,9 +148,9 @@ msgstr ""
 "Shape 文件的默认配置。*"
 
 #: ../../User-Interface.md:34 ../../User-Interface.md:146
-#: ../../User-Interface.md:174 ../../User-Interface.md:592
-#: ../../User-Interface.md:637 ../../User-Interface.md:680
-#: ../../User-Interface.md:710 ../../User-Interface.md:814
+#: ../../User-Interface.md:174 ../../User-Interface.md:597
+#: ../../User-Interface.md:642 ../../User-Interface.md:685
+#: ../../User-Interface.md:715 ../../User-Interface.md:819
 msgid "image"
 msgstr "图像"
 
@@ -508,9 +508,9 @@ msgstr ""
 #: ../../User-Interface.md:281 ../../User-Interface.md:296
 #: ../../User-Interface.md:350 ../../User-Interface.md:377
 #: ../../User-Interface.md:406 ../../User-Interface.md:533
-#: ../../User-Interface.md:623 ../../User-Interface.md:668
-#: ../../User-Interface.md:772 ../../User-Interface.md:802
-#: ../../User-Interface.md:846 ../../User-Interface.md:870
+#: ../../User-Interface.md:628 ../../User-Interface.md:673
+#: ../../User-Interface.md:777 ../../User-Interface.md:807
+#: ../../User-Interface.md:851 ../../User-Interface.md:875
 msgid "In `RA2MD.INI`:"
 msgstr "在 `RA2MD.INI`："
 
@@ -1307,14 +1307,14 @@ msgid ""
 "[Phobos]\n"
 "MessageApplyHoverState=false            ; boolean\n"
 "MessageDisplayInCenter=false            ; boolean\n"
-"MessageDisplayInCenter.BoardOpacity=30  ; integer\n"
+"MessageDisplayInCenter.BoardOpacity=40  ; integer\n"
 "MessageDisplayInCenter.LabelsCount=6    ; integer\n"
 "MessageDisplayInCenter.RecordsCount=12  ; integer\n"
 msgstr ""
 "[Phobos]\n"
 "MessageApplyHoverState=false            ; boolean\n"
 "MessageDisplayInCenter=false            ; boolean\n"
-"MessageDisplayInCenter.BoardOpacity=30  ; integer\n"
+"MessageDisplayInCenter.BoardOpacity=40  ; integer\n"
 "MessageDisplayInCenter.LabelsCount=6    ; integer\n"
 "MessageDisplayInCenter.RecordsCount=12  ; integer\n"
 
@@ -1472,7 +1472,7 @@ msgstr "`[ ]` 开关逐帧模式"
 
 #: ../../User-Interface.md:470
 msgid "Switches on/off [frame by frame mode](Miscellanous.md#frame-step-in)."
-msgstr "开关[逐帧模式](Miscellanous.md#frame-step-in)。"
+msgstr "开关 [逐帧模式](Miscellanous.md#frame-step-in)。"
 
 #: ../../User-Interface.md:471
 msgid ""
@@ -1663,10 +1663,10 @@ msgid ""
 "markers that are produced by Map Renderer instead."
 msgstr "现在你可以禁用 YR 引擎在空置出生点显示的黑点，这允许使用由地图渲染器生成的更没关且位置正确的标记。"
 
-#: ../../User-Interface.md:521 ../../User-Interface.md:574
-#: ../../User-Interface.md:603 ../../User-Interface.md:649
-#: ../../User-Interface.md:686 ../../User-Interface.md:738
-#: ../../User-Interface.md:789 ../../User-Interface.md:826
+#: ../../User-Interface.md:521 ../../User-Interface.md:579
+#: ../../User-Interface.md:608 ../../User-Interface.md:654
+#: ../../User-Interface.md:691 ../../User-Interface.md:743
+#: ../../User-Interface.md:794 ../../User-Interface.md:831
 msgid "In `uimd.ini`:"
 msgstr "在 `uimd.ini`："
 
@@ -1743,7 +1743,9 @@ msgid ""
 "You can now specify Cameo Priority for any TechnoType/SuperWeaponType. "
 "Vanilla sorting rules are "
 "[here](https://modenc.renegadeprojects.com/Cameo_Sorting)."
-msgstr "现在你可以为任何科技类型／超级武器类型指定图标优先级。原版排序规则可见[此处](https://modenc.renegadeprojects.com/Cameo_Sorting)。"
+msgstr ""
+"现在你可以为任何科技类型／超级武器类型指定图标优先级。原版排序规则可见 "
+"[此处](https://modenc.renegadeprojects.com/Cameo_Sorting)。"
 
 #: ../../User-Interface.md:562
 msgid ""
@@ -1751,19 +1753,41 @@ msgid ""
 "`CameoPriority` wins."
 msgstr "图标优先级在原版所有内容之前检查。更高的 `CameoPriority` 具有更高优先级。"
 
-#: ../../User-Interface.md:565
+#: ../../User-Interface.md:563
 msgid ""
+"You can also use `Name` of TechnoType/SuperWeaponType to sort the cameo. "
+"They'll be compared after all the other rules but before comparing the "
+"CSF text of `UIName`."
+msgstr ""
+"你也可以使用单位／超级武器的 `Name` 来排列图标。它们将在所有其他规则之后、`UIName` 的 CSF 文本前被比较。"
+
+#: ../../User-Interface.md:564
+msgid ""
+"This is to prevent cameo order being disrupted by CSF change "
+"accidentally, like when you're using a translation pack of different "
+"language."
+msgstr ""
+"这用于避免图标顺序因 CSF 变更而被意外打乱，例如当你使用不同语言的翻译包时。"
+
+#: ../../User-Interface.md:567
+msgid ""
+"[General]\n"
+"SortCameoByName=false  ; boolean\n"
+"\n"
 "[SOMENAME]             ; TechnoType / SuperWeaponType\n"
 "CameoPriority=0        ; integer\n"
 msgstr ""
+"[General]\n"
+"SortCameoByName=false  ; boolean\n"
+"\n"
 "[SOMENAME]             ; TechnoType / SuperWeaponType\n"
 "CameoPriority=0        ; integer\n"
 
-#: ../../User-Interface.md:570
+#: ../../User-Interface.md:575
 msgid "Center pause menu background"
 msgstr "暂停菜单背景居中"
 
-#: ../../User-Interface.md:572
+#: ../../User-Interface.md:577
 msgid ""
 "Pause menu background (`bkgdXX(y).shp`) can now optionally be centered on"
 " the center of the available space instead of top-left corner. This "
@@ -1771,7 +1795,7 @@ msgid ""
 " `1024x768` in mind."
 msgstr "现在可以选择将暂停菜单背景（`bkgdXX(y).shp`) 居中而不是丢在左上角。这允许背景在分辨率大于 `1024x768` 的时候更好地设计。"
 
-#: ../../User-Interface.md:575
+#: ../../User-Interface.md:580
 msgid ""
 "[Sidebar]\n"
 "CenterPauseMenuBackground=false  ; boolean\n"
@@ -1779,15 +1803,15 @@ msgstr ""
 "[Sidebar]\n"
 "CenterPauseMenuBackground=false  ; boolean\n"
 
-#: ../../User-Interface.md:580
+#: ../../User-Interface.md:585
 msgid "Custom Missing Cameo (`XXICON.SHP`)"
 msgstr "自定义缺省图标（`XXICON.SHP`）"
 
-#: ../../User-Interface.md:582
+#: ../../User-Interface.md:587
 msgid "You can now specify any SHP/PCX file as `XXICON.SHP` for missing cameo."
 msgstr "现在你可以指定任何 SHP／PCX 文件作为缺省图标使用的 `XXICON.SHP` 。"
 
-#: ../../User-Interface.md:585
+#: ../../User-Interface.md:590
 msgid ""
 "[AudioVisual]\n"
 "MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension\n"
@@ -1795,11 +1819,11 @@ msgstr ""
 "[AudioVisual]\n"
 "MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension\n"
 
-#: ../../User-Interface.md:590
+#: ../../User-Interface.md:595
 msgid "Harvester counter"
 msgstr "矿车计数器"
 
-#: ../../User-Interface.md:592
+#: ../../User-Interface.md:597
 msgid ""
 "![image](_static/images/harvestercounter-01.gif) *Harvester Counter in "
 "[Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*"
@@ -1807,13 +1831,13 @@ msgstr ""
 "![image](_static/images/harvestercounter-01.gif) "
 "*[幻想奇遇](https://www.moddb.com/mods/fantasy-adventure) 中的矿车计数器*"
 
-#: ../../User-Interface.md:595
+#: ../../User-Interface.md:600
 msgid ""
 "An additional counter for your active / total harvesters can be added "
 "near the credits indicator."
 msgstr "可以在资金示数器附近添加一个额外的计数器用于显示你的活动（工作中）矿车的数量／总矿车数量。"
 
-#: ../../User-Interface.md:596
+#: ../../User-Interface.md:601
 msgid ""
 "You can specify which TechnoType should be counted as a Harvester with "
 "`Harvester.Counted`. If not set, the techno with `Harvester=yes` or "
@@ -1822,25 +1846,25 @@ msgstr ""
 "你可以使用 `Harvester.Counted` 指定哪些科技类型被视为矿车。若未设置，带有 `Harvester=yes` 或 "
 "`Enslaves=SOMESLAVE` 的单位将被计入。"
 
-#: ../../User-Interface.md:597
+#: ../../User-Interface.md:602
 msgid ""
 "Can be set to true on buildings with `ProduceCashAmount` to count them as"
 " active 'harvesters' while generating credits."
 msgstr "可以在使用 `ProduceCashAmount` 的建筑上设置为 true 以便在其生成资金时计为工作中的 “矿车”。"
 
-#: ../../User-Interface.md:598
+#: ../../User-Interface.md:603
 msgid ""
 "The counter is displayed with the format of `Label(Active "
 "Harvesters)/(Total Harvesters)`. The label is `⛏ U+26CF` by default."
 msgstr "计数器以 `标签(活动矿车数/总矿车数)` 的格式显示，标签默认为 `⛏ U+26CF`。"
 
-#: ../../User-Interface.md:599
+#: ../../User-Interface.md:604
 msgid ""
 "You can adjust counter position by `Sidebar.HarvesterCounter.Offset`, "
 "negative means left/up, positive means right/down."
 msgstr "你可以通过 `Sidebar.HarvesterCounter.Offset` 调整计数器位置，负数表示左／上，正数表示右／下。"
 
-#: ../../User-Interface.md:600
+#: ../../User-Interface.md:605
 msgid ""
 "By setting `HarvesterCounter.ConditionYellow` and "
 "`HarvesterCounter.ConditionRed`, the game will warn player by changing "
@@ -1852,13 +1876,13 @@ msgstr ""
 "`HarvesterCounter.ConditionRed`，当矿车活动百分比小于或等于它们时，游戏将通过改变计数器颜色来警告玩家，就像 HP "
 "达到 `ConditionYellow` 和 `ConditionRed` 改变颜色一样。"
 
-#: ../../User-Interface.md:601
+#: ../../User-Interface.md:606
 msgid ""
 "The feature can be toggled on/off by user if enabled in mod via "
 "`ShowHarvesterCounter` setting in `RA2MD.INI`."
 msgstr "此逻辑可以在 mod 中于 `RA2MD.INI` 设置 `ShowHarvesterCounter` 来由用户自行开关。"
 
-#: ../../User-Interface.md:604
+#: ../../User-Interface.md:609
 msgid ""
 "[Sidebar]\n"
 "HarvesterCounter.Show=false           ; boolean\n"
@@ -1872,7 +1896,7 @@ msgstr ""
 "HarvesterCounter.ConditionYellow=99%  ; floating point value, percents\n"
 "HarvesterCounter.ConditionRed=50%     ; floating point value, percents\n"
 
-#: ../../User-Interface.md:613
+#: ../../User-Interface.md:618
 msgid ""
 "[SOMETECHNO]                                    ; TechnoType\n"
 "Harvester.Counted=                              ; boolean\n"
@@ -1892,7 +1916,7 @@ msgstr ""
 "Sidebar.HarvesterCounter.ColorYellow=255,255,0  ; integer - R,G,B\n"
 "Sidebar.HarvesterCounter.ColorRed=255,0,0       ; integer - R,G,B\n"
 
-#: ../../User-Interface.md:624
+#: ../../User-Interface.md:629
 msgid ""
 "[Phobos]\n"
 "ShowHarvesterCounter=true  ; boolean\n"
@@ -1900,7 +1924,7 @@ msgstr ""
 "[Phobos]\n"
 "ShowHarvesterCounter=true  ; boolean\n"
 
-#: ../../User-Interface.md:630 ../../User-Interface.md:675
+#: ../../User-Interface.md:635 ../../User-Interface.md:680
 msgid ""
 "If you use the vanilla font in your mod, you can use the improved font "
 "(v4 and higher; can be found on [Phobos supplementaries "
@@ -1916,17 +1940,17 @@ msgstr ""
 ".arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D) "
 "绘制它们。"
 
-#: ../../User-Interface.md:632
+#: ../../User-Interface.md:637
 msgid ""
 "Additionally, default position for harvester counter overlaps with [weeds"
 " counter](#weeds-counter)."
-msgstr "此外，默认的矿车计数器位置与[废矿计数器](#weeds-counter)重叠。"
+msgstr "此外，默认的矿车计数器位置与 [废矿计数器](#weeds-counter) 重叠。"
 
-#: ../../User-Interface.md:635
+#: ../../User-Interface.md:640
 msgid "Power delta counter"
 msgstr "电力差值计数器"
 
-#: ../../User-Interface.md:637
+#: ../../User-Interface.md:642
 msgid ""
 "![image](_static/images/powerdelta-01.gif) *Power delta Counter in "
 "[Assault Amerika](https://www.moddb.com/mods/assault-amerika)*"
@@ -1934,19 +1958,19 @@ msgstr ""
 "![image](_static/images/powerdelta-01.gif) *[Assault "
 "Amerika](https://www.moddb.com/mods/assault-amerika) 中的电力差值计数器*"
 
-#: ../../User-Interface.md:640
+#: ../../User-Interface.md:645
 msgid ""
 "An additional counter for your power delta (surplus) can be added near "
 "the credits indicator."
 msgstr "可以在资金示数器旁边追加一个电力差值计数器以显示你的电力差值（盈余）。"
 
-#: ../../User-Interface.md:641
+#: ../../User-Interface.md:646
 msgid ""
 "The counter is displayed with the format of `Label(sign)(Power Delta)`. "
 "The label is `PowerLabel` used in `ToolTips` (by default `⚡ U+26A1`)."
 msgstr "计数器以 `Label(sign)(电力差值)` 的格式显示，标签默认为 `PowerLabel`（在 `ToolTips` 中使用）。"
 
-#: ../../User-Interface.md:642
+#: ../../User-Interface.md:647
 msgid ""
 "When the power of the player is blacked-out by a spy or force-shield, "
 "`PowerBlackoutLabel` in `ToolTips` is displayed instead (by default ⚡❌ "
@@ -1955,13 +1979,13 @@ msgstr ""
 "当玩家的电力被间谍或力场护盾中断时，在 `ToolTips` 中显示的会换成 `PowerBlackoutLabel` （默认为 `⚡❌ "
 "U+26A1 U+274C`），文本颜色为 `Sidebar.PowerDelta.ColorGrey`。"
 
-#: ../../User-Interface.md:643
+#: ../../User-Interface.md:648
 msgid ""
 "You can adjust counter position by `Sidebar.PowerDelta.Offset`, negative "
 "means left/up, positive means right/down."
 msgstr "你可以通过 `Sidebar.PowerDelta.Offset` 调整计数器位置，负数表示左／上，正数表示右／下。"
 
-#: ../../User-Interface.md:644
+#: ../../User-Interface.md:649
 msgid ""
 "You can adjust counter text alignment by `Sidebar.PowerDelta.Align`, "
 "acceptable values are left, right, center/centre."
@@ -1969,7 +1993,7 @@ msgstr ""
 "你可以通过 `Sidebar.PowerDelta.Align` "
 "调整计数器对齐方式，可接受的值为左对齐（`left`）、右对齐（`right`）或居中对齐（`center`／`centre`）。"
 
-#: ../../User-Interface.md:645
+#: ../../User-Interface.md:650
 msgid ""
 "By setting `PowerDelta.ConditionYellow` and `PowerDelta.ConditionRed`, "
 "the game will warn player by changing the color of counter whenever the "
@@ -1980,19 +2004,19 @@ msgstr ""
 "`PowerDelta.ConditionRed`，当电力使用率超过指定值时，游戏将通过改变计数器颜色来警告玩家（例如，当负载与输出功率之比大于 "
 "100% 时，计数器会变为红色）。"
 
-#: ../../User-Interface.md:646
+#: ../../User-Interface.md:651
 msgid ""
 "The exception for this rule is when both power output and drain are 0 - "
 "in this case the counter will default to yellow."
 msgstr "此规则的例外情况是当负载和输出功率均为 0 时 - 这种情况下计数器将默认为黄色。"
 
-#: ../../User-Interface.md:647
+#: ../../User-Interface.md:652
 msgid ""
 "The feature can be toggled on/off by user if enabled in mod via "
 "`ShowPowerDelta` setting in `RA2MD.INI`."
 msgstr "此逻辑可以在 mod 中于 `RA2MD.INI` 设置 `ShowPowerDelta` 来由用户自行开关。"
 
-#: ../../User-Interface.md:650
+#: ../../User-Interface.md:655
 msgid ""
 "[Sidebar]\n"
 "PowerDelta.Show=false           ; boolean\n"
@@ -2004,7 +2028,7 @@ msgstr ""
 "PowerDelta.ConditionYellow=75%  ; floating point value, percents\n"
 "PowerDelta.ConditionRed=100%    ; floating point value, percents\n"
 
-#: ../../User-Interface.md:658
+#: ../../User-Interface.md:663
 msgid ""
 "[SOMESIDE]                                ; Side\n"
 "Sidebar.PowerDelta.Offset=0,0             ; X,Y, pixels relative to "
@@ -2026,7 +2050,7 @@ msgstr ""
 "Sidebar.PowerDelta.Align=left             ; Alignment enumeration - left "
 "| center/centre | right\n"
 
-#: ../../User-Interface.md:669
+#: ../../User-Interface.md:674
 msgid ""
 "[Phobos]\n"
 "ShowPowerDelta=true  ; boolean\n"
@@ -2034,11 +2058,11 @@ msgstr ""
 "[Phobos]\n"
 "ShowPowerDelta=true  ; boolean\n"
 
-#: ../../User-Interface.md:678
+#: ../../User-Interface.md:683
 msgid "Producing Progress"
 msgstr "生产进度"
 
-#: ../../User-Interface.md:680
+#: ../../User-Interface.md:685
 msgid ""
 "![image](_static/images/producing-progress-01.gif) *Producing Progress "
 "bars in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-"
@@ -2047,17 +2071,17 @@ msgstr ""
 "![image](_static/images/producing-progress-01.gif) "
 "*[幻想奇遇](https://www.moddb.com/mods/fantasy-adventure) 中的生产进度条*"
 
-#: ../../User-Interface.md:683
+#: ../../User-Interface.md:688
 msgid "You can now know your factories' status via sidebar!"
 msgstr "现在你可以通过侧边栏了解到你的工厂的状态了！"
 
-#: ../../User-Interface.md:684
+#: ../../User-Interface.md:689
 msgid ""
 "You need to draw your own assets (`tab0xpp.shp`, x is replaced by 0-3) "
 "and put them into `sidec0x.mix`."
 msgstr "你需要自己绘制资源（`tab0xpp.shp`，x 替换为 0-3）并将它们放入 `sidec0x.mix` 中。"
 
-#: ../../User-Interface.md:687
+#: ../../User-Interface.md:692
 msgid ""
 "[Sidebar]\n"
 "ProducingProgress.Show=false  ; boolean\n"
@@ -2065,17 +2089,17 @@ msgstr ""
 "[Sidebar]\n"
 "ProducingProgress.Show=false  ; boolean\n"
 
-#: ../../User-Interface.md:693
+#: ../../User-Interface.md:698
 msgid ""
 "[SOMESIDE]                            ; Side\n"
 "Sidebar.ProducingProgress.Offset=0,0  ; X,Y, pixels relative to default\n"
 msgstr ""
 
-#: ../../User-Interface.md:698
+#: ../../User-Interface.md:703
 msgid "Specify Sidebar style"
 msgstr "指定侧边栏样式"
 
-#: ../../User-Interface.md:700
+#: ../../User-Interface.md:705
 msgid ""
 "It's now possible to switch hardcoded sidebar button coords to use GDI "
 "sidebar coords by setting `Sidebar.GDIPosition`. Defaults to true for "
@@ -2084,17 +2108,17 @@ msgstr ""
 "现在可以通过设置 `Sidebar.GDIPosition` 来切换硬编码的侧边栏按钮坐标为 GDI "
 "阵营（原版盟军）侧边栏坐标。默认情况下，第一个阵营为 true，其他阵营为 false。"
 
-#: ../../User-Interface.md:703
+#: ../../User-Interface.md:708
 msgid ""
 "[SOMESIDE]             ; Side\n"
 "Sidebar.GDIPositions=  ; boolean\n"
 msgstr ""
 
-#: ../../User-Interface.md:708
+#: ../../User-Interface.md:713
 msgid "SuperWeapon Sidebar"
 msgstr "超武侧边栏"
 
-#: ../../User-Interface.md:710
+#: ../../User-Interface.md:715
 msgid ""
 "![image](_static/images/sw_sidebar.png) *SuperWeapon Sidebar used with "
 "vanilla-like assets for from [Phobos supplementaries](https://github.com"
@@ -2104,23 +2128,23 @@ msgstr ""
 "补充仓库](https://github.com/Phobos-developers/PhobosSupplementaries) 中类原版 UI"
 " 资产的超武侧边栏*"
 
-#: ../../User-Interface.md:713
+#: ../../User-Interface.md:718
 msgid ""
 "It is possible to put superweapon cameos on the left of screen like C&C3 "
 "when `SuperWeaponSidebar` is true."
 msgstr "当 `SuperWeaponSidebar` 为 true 时可以把超级武器的图标像 C&C3 那样放置在屏幕左侧。"
 
-#: ../../User-Interface.md:714
+#: ../../User-Interface.md:719
 msgid "Superweapon Sidebar is compatible with Ares superweapons."
 msgstr "超武侧边栏兼容 Ares 新增的超武类别。"
 
-#: ../../User-Interface.md:715
+#: ../../User-Interface.md:720
 msgid ""
 "`SuperWeaponSidebar.Pyramid` controls whether cameos are arranged in a "
 "pyramid or rectangle."
 msgstr "`SuperWeaponSidebar.Pyramid` 决定图标以金字塔形而不是矩形排列。"
 
-#: ../../User-Interface.md:716
+#: ../../User-Interface.md:721
 msgid ""
 "`SuperWeaponSidebar.Interval` controls the distance between two column "
 "cameos (excluding the background). When you need to make a background, "
@@ -2130,7 +2154,7 @@ msgstr ""
 "`SuperWeaponSidebar.Interval` 控制两列图标之间的间距（不包括背景）。如果你需要制作背景那么背景图像的宽度应当为 "
 "`SuperWeaponSidebar.Interval` + 60（图标固定宽度）。"
 
-#: ../../User-Interface.md:717
+#: ../../User-Interface.md:722
 msgid ""
 "`SuperWeaponSidebar.LeftOffset` controls the distance between the left "
 "side of cameo and the left side of its column (background). This should "
@@ -2139,7 +2163,7 @@ msgstr ""
 "`SuperWeaponSidebar.LeftOffset` 控制图标左侧与其所在列（背景）左侧的距离，该值不应大于 "
 "`SuperWeaponSidebar.Interval`。"
 
-#: ../../User-Interface.md:718
+#: ../../User-Interface.md:723
 msgid ""
 "`SuperWeaponSidebar.CameoHeight` controls the distance from the top of "
 "the previous cameo to the top of the next cameo. That is, the space "
@@ -2151,17 +2175,17 @@ msgstr ""
 "`SuperWeaponSidebar.CameoHeight` - 48（图标固定高度）。该值不应小于 "
 "48。如果你需要制作背景那么此值即为背景图像的高度。"
 
-#: ../../User-Interface.md:719
+#: ../../User-Interface.md:724
 msgid ""
 "`SuperWeaponSidebar.Max` controls the maximum number of cameos on the "
 "leftmost column, which also depends on the current game resolution."
 msgstr "`SuperWeaponSidebar.Max` 控制左侧每列最多显示的图标数量，这也取决于游戏分辨率。"
 
-#: ../../User-Interface.md:720
+#: ../../User-Interface.md:725
 msgid "`SuperWeaponSidebar.MaxColumns` controls that maximum count of columns."
 msgstr "`SuperWeaponSidebar.MaxColumns` 控制最多有多少列。"
 
-#: ../../User-Interface.md:721
+#: ../../User-Interface.md:726
 msgid ""
 "`SuperWeaponSidebar.Significance` is needed for user to control which "
 "superweapons appear on the sidebar. Only superweapons with "
@@ -2173,7 +2197,7 @@ msgstr ""
 "`SuperWeaponSidebar.Significance` 不低于用户定义的 "
 "`SuperWeaponSidebar.RequiredSignificance` 时才会出现。"
 
-#: ../../User-Interface.md:724
+#: ../../User-Interface.md:729
 msgid ""
 "While a mod maker can \"ban\" certain superweapons from appearing on a "
 "sidebar completely using `SuperWeaponSidebar.Allow=false` and "
@@ -2195,37 +2219,37 @@ msgstr ""
 "来控制哪些超武出现在侧边栏上。这样一来具有不同偏好和不同显示分辨率的用户就可以通过客户端设置来控制他们希望在侧边栏上看到多少超武而无需编辑 Mod"
 " 文件，并且你可以通过默认的 Significance 值来精确指定你的预期效果。"
 
-#: ../../User-Interface.md:727
+#: ../../User-Interface.md:732
 msgid ""
 "There is a hotkey to toggle the sidebar on/off, which can be bound to a "
 "key in the hotkey settings."
 msgstr "快捷键设置中新增了一个快捷键条目以用于开关超武侧边栏。"
 
-#: ../../User-Interface.md:728
+#: ../../User-Interface.md:733
 msgid ""
 "`TXT_TOGGLE_SW_SIDEBAR` and `TXT_TOGGLE_SW_SIDEBAR_DESC` are used for "
 "localization of the hotkey."
 msgstr "`TXT_TOGGLE_SW_SIDEBAR` 与 `TXT_TOGGLE_SW_SIDEBAR_DESC` 用于该快捷键的本地化。"
 
-#: ../../User-Interface.md:729
+#: ../../User-Interface.md:734
 msgid ""
 "`SuperWeaponSidebarKeysEnabled` enables users to use hotkeys for "
 "superweapons displayed on the sidebar."
 msgstr "`SuperWeaponSidebarKeysEnabled` 允许用户使用快捷键拉起侧边栏上显示的超武。"
 
-#: ../../User-Interface.md:730
+#: ../../User-Interface.md:735
 msgid ""
 "The hotkeys are positional and are only provided for the first 10 "
 "superweapons."
 msgstr "这些快捷键的位置是定死仅对应前 10 个超武的。"
 
-#: ../../User-Interface.md:731
+#: ../../User-Interface.md:736
 msgid ""
 "If assigned, a hotkey will be displayed on a superweapon instead of the "
 "`Ready` (or its alternative) text."
 msgstr "如果已分配快捷键，则对应的按键会替代 `就绪` 等文本显示在超武图标上。"
 
-#: ../../User-Interface.md:732
+#: ../../User-Interface.md:737
 msgid ""
 "For localization of those hotkeys, add `TXT_FIRE_TACTICAL_SW_XX` and "
 "`TXT_FIRE_TACTICAL_SW_XX_DESC` into your `.csf` file."
@@ -2233,7 +2257,7 @@ msgstr ""
 "为了本地化，请将 `TXT_FIRE_TACTICAL_SW_XX` 和 `TXT_FIRE_TACTICAL_SW_XX_DESC` 添加到你的"
 " `.csf` 文件中。"
 
-#: ../../User-Interface.md:735
+#: ../../User-Interface.md:740
 msgid ""
 "Positional superweapon hotkeys are an experimental feature and currently "
 "the user experience may be not polished enough, due to superweapon "
@@ -2241,7 +2265,7 @@ msgid ""
 " default."
 msgstr "超武快捷键属于实验性功能并且由于超武在侧边栏上的位置并不固定所以当前用户体验可能不够完善，因此该功默认处于禁用状态。"
 
-#: ../../User-Interface.md:739
+#: ../../User-Interface.md:744
 msgid ""
 "[Sidebar]\n"
 "SuperWeaponSidebar=false                    ; boolean\n"
@@ -2261,7 +2285,7 @@ msgstr ""
 "SuperWeaponSidebar.Max=0                    ; integer\n"
 "SuperWeaponSidebar.MaxColumns=              ; integer\n"
 
-#: ../../User-Interface.md:751
+#: ../../User-Interface.md:756
 msgid ""
 "[GlobalControls]\n"
 "SuperWeaponSidebarKeysEnabled=false         ; boolean\n"
@@ -2311,7 +2335,7 @@ msgstr ""
 "SuperWeaponSidebar.RequiredHouses=          ; List of house types\n"
 "SuperWeaponSidebar.Significance=0           ; integer\n"
 
-#: ../../User-Interface.md:773
+#: ../../User-Interface.md:778
 msgid ""
 "[Phobos]\n"
 "SuperWeaponSidebar.RequiredSignificance=0   ; integer\n"
@@ -2319,7 +2343,7 @@ msgstr ""
 "[Phobos]\n"
 "SuperWeaponSidebar.RequiredSignificance=0   ; integer\n"
 
-#: ../../User-Interface.md:779
+#: ../../User-Interface.md:784
 msgid ""
 "While the feature is usable without any extra graphics, you can find "
 "example assets to use with vanilla graphics on [Phobos supplementaries "
@@ -2328,11 +2352,11 @@ msgstr ""
 "虽然该功能可以在没有任何额外图像的情况下使用，但你可以在 [Phobos 补充仓库](https://github.com/Phobos-"
 "developers/PhobosSupplementaries) 找到数与原版界面 UI 图像搭配使用的示例资产。"
 
-#: ../../User-Interface.md:782
+#: ../../User-Interface.md:787
 msgid "Weeds counter"
 msgstr "废矿计数器"
 
-#: ../../User-Interface.md:784
+#: ../../User-Interface.md:789
 msgid ""
 "Counter for amount of [weeds in storage](Fixed-or-Improved-"
 "Logics.md#weeds--weed-eaters) can be added near the credits indicator."
@@ -2340,25 +2364,25 @@ msgstr ""
 "你可以在资金示数器附近添加一个额外的计数器用于显示[存储的泰伯利亚废矿](Fixed-or-Improved-Logics.md#weeds"
 "--weed-eaters)的数量。"
 
-#: ../../User-Interface.md:785
+#: ../../User-Interface.md:790
 msgid ""
 "You can adjust counter position by `Sidebar.WeedsCounter.Offset` (per-"
 "side setting), negative means left/up, positive means right/down."
 msgstr "你可以通过 `Sidebar.WeedsCounter.Offset`（每个阵营的设置）调整计数器位置，负数表示左／上，正数表示右／下。"
 
-#: ../../User-Interface.md:786
+#: ../../User-Interface.md:791
 msgid ""
 "Counter is by default displayed in side's tooltip color, which can be "
 "overridden per side by setting `Sidebar.WeedsCounter.Color`."
 msgstr "计数器默认为每个阵营拓展工具条的颜色，可以通过设置 `Sidebar.WeedsCounter.Color` 来为每个阵营独立覆盖设置。"
 
-#: ../../User-Interface.md:787
+#: ../../User-Interface.md:792
 msgid ""
 "The feature can be toggled on/off by user if enabled in mod via "
 "`ShowWeedsCounter` setting in `RA2MD.INI`."
 msgstr "此逻辑可以在 mod 中于 `RA2MD.INI` 设置 `ShowWeedsCounter` 来由用户自行开关。"
 
-#: ../../User-Interface.md:790
+#: ../../User-Interface.md:795
 msgid ""
 "[Sidebar]\n"
 "WeedsCounter.Show=false          ; boolean\n"
@@ -2366,7 +2390,7 @@ msgstr ""
 "[Sidebar]\n"
 "WeedsCounter.Show=false          ; boolean\n"
 
-#: ../../User-Interface.md:796
+#: ../../User-Interface.md:801
 msgid ""
 "[SOMESIDE]                       ; Side\n"
 "Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default\n"
@@ -2376,7 +2400,7 @@ msgstr ""
 "Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default\n"
 "Sidebar.WeedsCounter.Color=      ; integer - R,G,B\n"
 
-#: ../../User-Interface.md:803
+#: ../../User-Interface.md:808
 msgid ""
 "[Phobos]\n"
 "ShowWeedsCounter=true  ; boolean\n"
@@ -2384,17 +2408,17 @@ msgstr ""
 "[Phobos]\n"
 "ShowWeedsCounter=true  ; boolean\n"
 
-#: ../../User-Interface.md:809
+#: ../../User-Interface.md:814
 msgid ""
 "Default position for weeds counter overlaps with [harvester counter"
 "](#harvester-counter)."
-msgstr "默认的废矿计数器位置与[矿车计数器](#harvester-counter)重叠。"
+msgstr "默认的废矿计数器位置与 [矿车计数器](#harvester-counter) 重叠。"
 
-#: ../../User-Interface.md:812
+#: ../../User-Interface.md:817
 msgid "Tooltips"
 msgstr "拓展工具条"
 
-#: ../../User-Interface.md:814
+#: ../../User-Interface.md:819
 msgid ""
 "![image](_static/images/tooltips-01.png) *Extended tooltips used in [CnC:"
 " Final War](https://www.moddb.com/mods/cncfinalwar)*"
@@ -2402,7 +2426,7 @@ msgstr ""
 "![image](_static/images/tooltips-01.png) *[CnC: Final "
 "War](https://www.moddb.com/mods/cncfinalwar) 中的拓展拓展工具条*"
 
-#: ../../User-Interface.md:817
+#: ../../User-Interface.md:822
 msgid ""
 "Sidebar tooltips can now display extended information about the "
 "TechnoType/SWType when hovered over it's cameo. In addition the low "
@@ -2412,19 +2436,19 @@ msgstr ""
 "现在当鼠标悬停在图标上时侧边栏拓展工具条提示可以显示关于科技类型／超级武器类型的拓展信息。此外当通过相应标签启用此功能时低字符限制将被取消从而允许长达"
 " 1024 字符长度的工具提示信息。"
 
-#: ../../User-Interface.md:818
+#: ../../User-Interface.md:823
 msgid ""
 "TechnoType's tooltip would display it's name, cost, power, build time and"
 " description (when applicable)."
 msgstr "科技类型的拓展工具条将显示其名称、成本、电力、建造时间和描述（如果适用）。"
 
-#: ../../User-Interface.md:819
+#: ../../User-Interface.md:824
 msgid ""
 "SWType's tooltip would display it's name, cost,  and recharge time (when "
 "applicable)."
 msgstr "超级武器类型的拓展工具条将显示其名称、成本和充能时间（如果适用）。"
 
-#: ../../User-Interface.md:820
+#: ../../User-Interface.md:825
 #, python-format
 msgid ""
 "If `SW.Shots` from Ares is used, a C-style format string default to "
@@ -2435,7 +2459,7 @@ msgstr ""
 "如果使用了 Ares 的 `SW.Shots`，那么将会附加一个 C 语言风格的格式化字符，默认为 `Shots: %d`。格式可以在 csf "
 "中自定义。如果使用双参数格式（例如 `还剩 %d/%d 发`），第二个整数是 `SW.Shots`。"
 
-#: ../../User-Interface.md:821
+#: ../../User-Interface.md:826
 msgid ""
 "Extended tooltips don't use `TXT_MONEY_FORMAT_1` and "
 "`TXT_MONEY_FORMAT_2`. Instead you can specify cost, power and time labels"
@@ -2446,20 +2470,20 @@ msgstr ""
 "`TXT_MONEY_FORMAT_2`。但你可以使用对应的标签指定成本、电力和时间标签（在对应值前显示）。默认为 `$ U+0024`，`⚡ "
 "U+26A1` 和 `⌚ U+231A`。"
 
-#: ../../User-Interface.md:822
+#: ../../User-Interface.md:827
 msgid ""
 "Fixed a bug when switching build queue tabs via QWER didn't make tooltips"
 " disappear as they should, resulting in stuck tooltips."
 msgstr "修复了一个通过 QWER 切换建造队列标签时拓展工具条没有消失的问题，这导致拓展工具条卡住。"
 
-#: ../../User-Interface.md:823
+#: ../../User-Interface.md:828
 msgid ""
 "The tooltips can now go over the sidebar bounds to accommodate for longer"
 " contents. You can control maximum text width with a new tag (paddings "
 "are excluded from the number you specify)."
 msgstr "现在拓展工具条可以超出侧边栏边界以容纳更长的内容。你可以使用新增的标签控制最大文本宽度（不包括边框）。"
 
-#: ../../User-Interface.md:824
+#: ../../User-Interface.md:829
 msgid ""
 "`AnchoredToolTips` positions the tooltip always to the left of sidebar, "
 "only applies to if `ExtendedToolTips` is set to true and they are enabled"
@@ -2468,7 +2492,7 @@ msgstr ""
 "`AnchoredToolTips` 将拓展工具条始终定到侧边栏左侧，仅在 `ExtendedToolTips` 设置为 true "
 "且用户启用时生效。"
 
-#: ../../User-Interface.md:827
+#: ../../User-Interface.md:832
 msgid ""
 "[ToolTips]\n"
 "ExtendedToolTips=false     ; boolean\n"
@@ -2489,22 +2513,22 @@ msgstr ""
 "TimeLabel=<none>           ; CSF entry key\n"
 "SWShotsFormat=<none>       ; CSF entry key\n"
 "MaxWidth=0                 ; integer, pixels\n"
-
-#: ../../User-Interface.md:839
-msgid ""
-"[SOMENAME]            ; TechnoType or SWType\n"
-"UIDescription=<none>  ; CSF entry key\n"
-msgstr ""
-"[SOMENAME]            ; TechnoType or SWType\n"
-"UIDescription=<none>  ; CSF entry key\n"
 
 #: ../../User-Interface.md:844
+msgid ""
+"[SOMENAME]            ; TechnoType or SWType\n"
+"UIDescription=<none>  ; CSF entry key\n"
+msgstr ""
+"[SOMENAME]            ; TechnoType or SWType\n"
+"UIDescription=<none>  ; CSF entry key\n"
+
+#: ../../User-Interface.md:849
 msgid ""
 "The descriptions are designed to be toggleable by users. For now you can "
 "only do that externally via client or manually."
 msgstr "描述设计可由用户自行切换。目前你只能通过客户端或进行手动设置。"
 
-#: ../../User-Interface.md:847
+#: ../../User-Interface.md:852
 msgid ""
 "[Phobos]\n"
 "ToolTipDescriptions=true  ; boolean\n"
@@ -2512,7 +2536,7 @@ msgstr ""
 "[Phobos]\n"
 "ToolTipDescriptions=true  ; boolean\n"
 
-#: ../../User-Interface.md:853
+#: ../../User-Interface.md:858
 msgid ""
 "Same as with harvester counter, you can download the improved font (v4 "
 "and higher; can be found on [Phobos supplementaries "
@@ -2522,13 +2546,13 @@ msgstr ""
 "与矿车计数器相同，你可以下载改进的字体（v4 或更高版本；可以在 [Phobos 补充仓库](https://github.com/Phobos-"
 "developers/PhobosSupplementaries) 中找到）否则你需要自己编辑字库文件。"
 
-#: ../../User-Interface.md:856
+#: ../../User-Interface.md:861
 msgid ""
 "The background color and opacity of tooltips can now be customized "
 "globally or per side."
 msgstr "现在可以全局或按阵营自定义拓展工具条的背景色和不透明度。"
 
-#: ../../User-Interface.md:859
+#: ../../User-Interface.md:864
 msgid ""
 "[SOMESIDE]                          ; Side\n"
 "ToolTip.Background.Color=0,0,0      ; integer - R,G,B, defaults to "
@@ -2548,13 +2572,13 @@ msgstr ""
 "ToolTip.Background.BlurSize=0.0     ; float, defaults to [AudioVisual] ->"
 " ToolTip.Background.BlurSize, which defaults to 0.0\n"
 
-#: ../../User-Interface.md:867
+#: ../../User-Interface.md:872
 msgid ""
 "The blur effect is resource intensive. Please make sure you really want "
 "to enable this effect, otherwise leave it to 0.0 so it stays disabled."
 msgstr "模糊效果非常占用资源，请确保你的确想要启用此效果，否则请保持 0.0 以禁用。"
 
-#: ../../User-Interface.md:871
+#: ../../User-Interface.md:876
 msgid ""
 "[Phobos]\n"
 "ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be"

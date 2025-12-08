@@ -66,11 +66,11 @@ DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 		auto const pWeaponSecondary = pThis->GetWeapon(1)->WeaponType;
 		auto const pPrimaryExt = WeaponTypeExt::ExtMap.Find(pWeaponPrimary);
 
-		if (pWeaponSecondary
-			&& !pPrimaryExt->SkipWeaponPicking
+		if (pWeaponSecondary && !pPrimaryExt->SkipWeaponPicking
 			&& (!EnumFunctions::IsCellEligible(pCell, pPrimaryExt->CanTarget, true, true)
-				|| (pPrimaryExt->AttachEffect_CheckOnFirer
-					&& !pPrimaryExt->HasRequiredAttachedEffects(pThis, pThis))))
+			|| (pPrimaryExt->AttachEffect_CheckOnFirer && !pPrimaryExt->HasRequiredAttachedEffects(pThis, pThis)))
+			&& (!TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->NoSecondaryWeaponFallback
+			|| TechnoExt::CanFireNoAmmoWeapon(pThis, 1)))
 		{
 			R->EAX(1);
 			return ReturnWeaponIndex;
@@ -324,8 +324,14 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-	if (!pWeaponExt->SkipWeaponPicking && pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true, true))
-		return CannotFire;
+	if (!pWeaponExt->SkipWeaponPicking && pTargetCell)
+	{
+		if (!EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true, true)
+			|| (pWeaponExt->AttachEffect_CheckOnFirer && !pWeaponExt->HasRequiredAttachedEffects(pThis, pThis)))
+		{
+			return CannotFire;
+		}
+	}
 
 	if (pTargetTechno)
 	{
@@ -366,13 +372,14 @@ DEFINE_HOOK(0x6FC0C5, TechnoClass_CanFire_DisableWeapons, 0x6)
 	enum { OutOfRange = 0x6FC0DF, Illegal = 0x6FC86A, Continue = 0x6FC0D3 };
 
 	GET(TechnoClass*, pThis, ESI);
+	GET_STACK(const int, weaponIndex, STACK_OFFSET(0x20, 0x8));
 
 	if (pThis->SlaveOwner)
 		return Illegal;
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pExt->AE.DisableWeapons)
+	if (pExt->AE.DisableWeapons && pThis->GetWeapon(weaponIndex)->WeaponType)
 		return OutOfRange;
 
 	return Continue;
@@ -382,7 +389,9 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 {
 	enum { Illegal = 0x6FC86A, OutOfRange = 0x6FC0DF, Continue = 0x6FC5D5 };
 
+	GET(TechnoClass*, pThis, ESI);
 	GET(TechnoClass*, pTransport, EAX);
+	GET_STACK(const int, weaponIndex, STACK_OFFSET(0x20, 0x8));
 
 	auto const pTypeExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData;
 
@@ -392,7 +401,7 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 	if (pTransport->Transporter)
 		return Illegal;
 
-	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons && TechnoExt::ExtMap.Find(pTransport)->AE.DisableWeapons)
+	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons && TechnoExt::ExtMap.Find(pTransport)->AE.DisableWeapons && pThis->GetWeapon(weaponIndex)->WeaponType)
 		return OutOfRange;
 
 	return Continue;
@@ -534,7 +543,7 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_BeforeTruelyFire, 0x6)
 	GET(TechnoClass* const, pThis, ESI);
 //	GET(AbstractClass* const, pTarget, EDI);
 	GET(WeaponTypeClass* const, pWeapon, EBX);
-	GET_BASE(int, weaponIndex, 0xC);
+	GET_BASE(const int, weaponIndex, 0xC);
 
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
@@ -724,44 +733,8 @@ DEFINE_HOOK(0x6FF905, TechnoClass_FireAt_FireOnce, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
+static inline void ToggleLaserWeaponIndex(TechnoClass* pThis, WeaponTypeClass* pWeapon, int weaponIndex)
 {
-	GET(TechnoClass* const, pSource, ESI);
-	GET_BASE(AbstractClass* const, pTarget, 0x8);
-	GET_STACK(BulletClass* const, pBullet, STACK_OFFSET(0xB0, -0x74));
-	GET(WeaponTypeClass* const, pWeapon, EBX);
-
-	const auto pSourceTypeExt = TechnoExt::ExtMap.Find(pSource)->TypeExtData;
-
-	if (const auto pInterceptorType = pSourceTypeExt->InterceptorType.get())
-	{
-		if (const auto pTargetBullet = abstract_cast<BulletClass*, true>(pTarget))
-		{
-			const auto pTargetExt = BulletExt::ExtMap.Find(pTargetBullet);
-
-			if (!pTargetExt->TypeExtData->Armor.isset())
-				pTargetExt->InterceptedStatus |= InterceptedStatus::Locked;
-
-			const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
-
-			pBulletExt->InterceptorTechnoType = pSourceTypeExt;
-			pBulletExt->InterceptedStatus |= InterceptedStatus::Targeted;
-
-			if (!pInterceptorType->ApplyFirepowerMult)
-				pBullet->Health = pWeapon->Damage;
-		}
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x6FF660, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
-DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
-{
-	GET(TechnoClass* const, pThis, ESI);
-	GET(WeaponTypeClass* const, pWeapon, EBX);
-	GET_BASE(const int, weaponIndex, 0xC);
-
 	if (pWeapon->IsLaser)
 	{
 		if (auto const pExt = BuildingExt::ExtMap.TryFind(abstract_cast<BuildingClass*, true>(pThis)))
@@ -772,8 +745,76 @@ DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
 				pExt->CurrentLaserWeaponIndex.reset();
 		}
 	}
+}
+
+DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_LateLogic, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET_BASE(AbstractClass* const, pTarget, 0x8);
+	GET_STACK(BulletClass* const, pBullet, STACK_OFFSET(0xB0, -0x74));
+	GET(WeaponTypeClass* const, pWeapon, EBX);
+	GET_BASE(const int, weaponIndex, 0xC);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pTypeExt = pExt->TypeExtData;
+
+	// Interceptor.
+	if (const auto pInterceptorType = pTypeExt->InterceptorType.get())
+	{
+		if (const auto pTargetBullet = abstract_cast<BulletClass*, true>(pTarget))
+		{
+			const auto pTargetExt = BulletExt::ExtMap.Find(pTargetBullet);
+
+			if (!pTargetExt->TypeExtData->Armor.isset())
+				pTargetExt->InterceptedStatus |= InterceptedStatus::Locked;
+
+			const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+
+			pBulletExt->InterceptorTechnoType = pTypeExt;
+			pBulletExt->InterceptedStatus |= InterceptedStatus::Targeted;
+
+			if (!pInterceptorType->ApplyFirepowerMult)
+				pBullet->Health = pWeapon->Damage;
+		}
+	}
+
+	// Laser weapon index toggle.
+	ToggleLaserWeaponIndex(pThis, pWeapon, weaponIndex);
+
+	// Increment burst index, reset if needed.
+	++pThis->CurrentBurstIndex;
+	pThis->CurrentBurstIndex %= pWeapon->Burst;
+
+	// Force full rearm delay and reset burst index.
+	if (pExt->ForceFullRearmDelay)
+	{
+		pExt->ForceFullRearmDelay = false;
+		pThis->CurrentBurstIndex = 0;
+	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET(WeaponTypeClass* const, pWeapon, EBX);
+	GET_BASE(const int, weaponIndex, 0xC);
+
+	ToggleLaserWeaponIndex(pThis, pWeapon, weaponIndex);
+
+	return 0;
+}
+
+// Issue #46: Laser is mirrored relative to FireFLH
+// Author: Starkku
+DEFINE_HOOK(0x6FF2BE, TechnoClass_FireAt_BurstOffsetFix, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	--pThis->CurrentBurstIndex; // Restored in TechnoClass_FireAt_LateLogic hook.
+
+	return 0x6FF2D1;
 }
 
 static inline void SetChargeTurretDelay(TechnoClass* pThis, int rearmDelay, WeaponTypeClass* pWeapon)
@@ -909,27 +950,16 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 
 #pragma endregion
 
-// Basically a hack to make game and Ares pick laser properties from non-Primary weapons.
-DEFINE_HOOK(0x70E1A0, TechnoClass_GetTurretWeapon_LaserWeapon, 0x5)
+// Fix laser weapons always using characteristics from primary.
+// This particular patch only applies if Ares is not present (fixed separately for Ares elsewhere).
+static WeaponStruct* __fastcall  BuildingClass_GetPrimaryWeapon_Wrapper(BuildingClass* pThis)
 {
-	enum { ReturnResult = 0x70E1C8 };
-
-	GET(TechnoClass* const, pThis, ECX);
-
-	if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
-	{
-		auto const pExt = BuildingExt::ExtMap.Find(pBuilding);
-
-		if (pExt->CurrentLaserWeaponIndex.has_value())
-		{
-			auto const weaponStruct = pThis->GetWeapon(*pExt->CurrentLaserWeaponIndex);
-			R->EAX(weaponStruct);
-			return ReturnResult;
-		}
-	}
-
-	return 0;
+	return BuildingExt::GetLaserWeapon(pThis);
 }
+
+DEFINE_FUNCTION_JUMP(CALL6, 0x6FF4EA, BuildingClass_GetPrimaryWeapon_Wrapper)
+
+DEFINE_PATCH(0x6FF4DE, 0xFF, 0x52, 0x2C, 0x83, 0xF8, 0x6);
 
 DEFINE_HOOK(0x6FCFE0, TechnoClass_RearmDelay_CanCloakDuringRearm, 0x6)
 {
