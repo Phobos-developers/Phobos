@@ -180,28 +180,33 @@ DEFINE_HOOK(0x4D5FBD, FootClass_ApproachTarget_BeforeSearching, 0xA)
 	GET(TechnoTypeClass*, pType, EAX);
 	R->ESI(pType->MovementZone);
 
-	GET(FootClass*, pThis, EBX);
 	GET_STACK(int, searchRange, STACK_OFFSET(0x158, -0x120));
-	GET_STACK(int, weaponIdx, STACK_OFFSET(0x158, -0xAC));
 	ApproachTargetTemp::FromMaximumRange = true;
 	ApproachTargetTemp::SearchRange = searchRange;
 
 	if (searchRange <= 204)
 		return WantAggressiveCrush;
 
-	const auto pWeapon = pThis->GetWeapon(weaponIdx)->WeaponType;
+	GET_STACK(bool, inRange, STACK_OFFSET(0x158, -0x146));
 
-	if (pWeapon && pWeapon->Range != -512)
+	if (!inRange)
 	{
-		const auto coords = pThis->GetCoords();
-		const int distance = pThis->IsInAir() || pWeapon->Projectile->Arcing || pThis->WhatAmI() == AircraftClass::AbsID
-			? pThis->DistanceFrom(pThis->Target)
-			: pThis->DistanceFrom3D(pThis->Target);
-		const int minimum = pWeapon->MinimumRange;
-		ApproachTargetTemp::FromMaximumRange = distance >= minimum;
+		GET(FootClass*, pThis, EBX);
+		GET_STACK(int, weaponIdx, STACK_OFFSET(0x158, -0xAC));
+		const auto pWeapon = pThis->GetWeapon(weaponIdx)->WeaponType;
 
-		if (!ApproachTargetTemp::FromMaximumRange)
-			searchRange = 204;
+		if (pWeapon && pWeapon->Range != -512)
+		{
+			const auto coords = pThis->GetCoords();
+			const int distance = pThis->IsInAir() || pWeapon->Projectile->Arcing || pThis->WhatAmI() == AircraftClass::AbsID
+				? pThis->DistanceFrom(pThis->Target)
+				: pThis->DistanceFrom3D(pThis->Target);
+			const int minimum = pWeapon->MinimumRange;
+			ApproachTargetTemp::FromMaximumRange = distance >= minimum;
+
+			if (!ApproachTargetTemp::FromMaximumRange)
+				searchRange = 204;
+		}
 	}
 
 	R->ECX(searchRange);
