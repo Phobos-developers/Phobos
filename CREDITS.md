@@ -464,6 +464,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize Ares's radar jam logic
   - Customize if cloning need power
   - Customize type selection for IFV
+  - Fix the issue that units will goto farest location if target is closer than `MinimumRange`
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
