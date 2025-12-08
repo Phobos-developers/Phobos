@@ -166,3 +166,63 @@ DEFINE_HOOK(0x6DBE63, TacticalClass_DrawRadialIndicators_WeaponRange, 0x6)
 
 	return R->Origin() == 0x6DBE63 ? SkipGameCode1 : SkipGameCode2;
 }
+
+namespace ApproachTargetTemp
+{
+	bool FromMaximumRange = true;
+	int SearchRange = 0;
+}
+
+DEFINE_HOOK(0x4D5FBD, FootClass_ApproachTarget_BeforeSearching, 0xA)
+{
+	enum { WantAggressiveCrush = 0x4D6892, StartSearching = 0x4D5FE0 };
+
+	GET(TechnoTypeClass*, pType, EAX);
+	R->ESI(pType->MovementZone);
+
+	GET(FootClass*, pThis, EBX);
+	GET_STACK(int, searchRange, STACK_OFFSET(0x158, -0x120));
+	GET_STACK(int, weaponIdx, STACK_OFFSET(0x158, -0xAC));
+	ApproachTargetTemp::FromMaximumRange = true;
+	ApproachTargetTemp::SearchRange = searchRange;
+
+	if (searchRange <= 204)
+		return WantAggressiveCrush;
+
+	const auto pWeapon = pThis->GetWeapon(weaponIdx)->WeaponType;
+
+	if (pWeapon && pWeapon->Range != -512)
+	{
+		const auto coords = pThis->GetCoords();
+		const int distance = pThis->IsInAir() || pWeapon->Projectile->Arcing || pThis->WhatAmI() == AircraftClass::AbsID
+			? pThis->DistanceFrom(pThis->Target)
+			: pThis->DistanceFrom3D(pThis->Target);
+		const int minimum = pWeapon->MinimumRange;
+		ApproachTargetTemp::FromMaximumRange = distance >= minimum;
+
+		if (!ApproachTargetTemp::FromMaximumRange)
+			searchRange = 204;
+	}
+
+	R->ECX(searchRange);
+	R->Stack(STACK_OFFSET(0x158, -0xF4), searchRange);
+	return StartSearching;
+}
+
+DEFINE_HOOK(0x4D6874, FootClass_ApproachTarget_NextRadius, 0xC)
+{
+	enum { ContinueNextRadius = 0x4D5FE0, BreakOut = 0x4D68E7 };
+
+	GET_STACK(int, searchRadius, STACK_OFFSET(0x158, -0xF4));
+
+	if (ApproachTargetTemp::FromMaximumRange)
+	{
+		searchRadius -= Unsorted::LeptonsPerCell;
+		R->Stack(STACK_OFFSET(0x158, -0xF4), searchRadius);
+		return searchRadius > 204 ? ContinueNextRadius : BreakOut;
+	}
+
+	searchRadius += Unsorted::LeptonsPerCell;
+	R->Stack(STACK_OFFSET(0x158, -0xF4), searchRadius);
+	return searchRadius <= ApproachTargetTemp::SearchRange ? ContinueNextRadius : BreakOut;
+}
