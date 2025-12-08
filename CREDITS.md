@@ -564,6 +564,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that units' `LaserTrails` will always lags behind by one frame
   - Fix an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos
   - Allow the aircraft to enter area guard mission and not crash immediately without any airport
+  - Multiple Barrels and Turrets
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -644,6 +645,7 @@ This page lists all the individual contributions to the project by their author.
   - Dehardcode the `ZAdjust` of warhead anim
   - Fix an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner
   - Fix an issue where the vanilla script ignores jumpjets
+  - Multiple Barrels and Turrets
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
