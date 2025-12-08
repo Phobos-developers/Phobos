@@ -462,6 +462,53 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB0D4, TechnoClass_IsSurfaced);
 
 #pragma endregion
 
+#pragma region Select & Flash
+
+bool __fastcall TechnoClass_Select(TechnoClass* pThis)
+{
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pAttachment = pExt->ParentAttachment;
+	return pAttachment && pAttachment->GetType()->PassSelection
+		? pAttachment->Parent->Select()
+		: reinterpret_cast<bool(__thiscall*)(TechnoClass*)>(0x6FBFA0)(pThis);
+}
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5DBC, TechnoClass_Select) // UnitClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB1A4, TechnoClass_Select) // InfantryClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E4008, TechnoClass_Select) // BuildingClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E23F0, TechnoClass_Select) // AircraftClass
+
+void __fastcall TechnoClass_Flash(TechnoClass* pThis, void*, int duration)
+{
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	for (const auto& pAttachment : pExt->ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects && pAttachment->Child)
+			pAttachment->Child->Flash(duration);
+	}
+
+	return reinterpret_cast<void(__thiscall*)(TechnoClass*, int)>(0x6F9DD0)(pThis, duration);// TechnoClass::Flash
+}
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5DB8, TechnoClass_Flash) // UnitClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB1A0, TechnoClass_Flash) // InfantryClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E23EC, TechnoClass_Flash) // AircraftClass
+
+void __fastcall BuildingClass_Flash(TechnoClass* pThis, void*, int duration)
+{
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	for (const auto& pAttachment : pExt->ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects && pAttachment->Child)
+			pAttachment->Child->Flash(duration);
+	}
+
+	return reinterpret_cast<void(__thiscall*)(TechnoClass*, int)>(0x456E00)(pThis, duration);// BuildingClass::Flash
+}
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E4004, BuildingClass_Flash) // BuildingClass
+
+#pragma endregion
+
 DEFINE_HOOK(0x6CC763, SuperClass_Place_ChronoWarp_SkipChildren, 0x6)
 {
 	enum { Skip = 0x6CCCCA, Continue = 0 };
