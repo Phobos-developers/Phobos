@@ -464,6 +464,7 @@ New:
 - [Customize if cloning need power](Fixed-or-Improved-Logics.md#customize-if-cloning-need-power) (by NetsuNegi)
 - [Added Target Filtering Options to AttachEffect System](New-or-Enhanced-Logics.md#attached-effects) (by Flactine)
 - [Customize type selection for IFV](Fixed-or-Improved-Logics.md#customize-type-selection-for-ifv) (by NetsuNegi)
+- Delayed fire additional initial animations count
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

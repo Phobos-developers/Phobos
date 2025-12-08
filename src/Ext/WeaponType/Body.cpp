@@ -151,6 +151,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DelayedFire_RemoveAnimOnNoDelay.Read(exINI, pSection, "DelayedFire.RemoveAnimOnNoDelay");
 	this->DelayedFire_PauseFiringSequence.Read(exINI, pSection, "DelayedFire.PauseFiringSequence");
 	this->DelayedFire_OnlyOnInitialBurst.Read(exINI, pSection, "DelayedFire.OnlyOnInitialBurst");
+	this->DelayedFire_InitialBurstAnimCount.Read(exINI, pSection, "DelayedFire.InitialBurstAnimCount");
 	this->DelayedFire_AnimOffset.Read(exINI, pSection, "DelayedFire.AnimOffset");
 	this->DelayedFire_AnimOnTurret.Read(exINI, pSection, "DelayedFire.AnimOnTurret");
 
@@ -235,6 +236,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DelayedFire_RemoveAnimOnNoDelay)
 		.Process(this->DelayedFire_PauseFiringSequence)
 		.Process(this->DelayedFire_OnlyOnInitialBurst)
+		.Process(this->DelayedFire_InitialBurstAnimCount)
 		.Process(this->DelayedFire_AnimOffset)
 		.Process(this->DelayedFire_AnimOnTurret)
 		;
