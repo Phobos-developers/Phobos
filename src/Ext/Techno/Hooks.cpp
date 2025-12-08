@@ -636,9 +636,9 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 
 	GET(TechnoClass*, pThis, ECX);
 
-	auto const pThisType = pThis->GetTechnoType();
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto const pThisType = pTypeExt->OwnerObject();
 	int maxSpeed = pThisType->Speed;
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThisType);
 
 	if (pTypeExt->UseDisguiseMovementSpeed && pThis->IsDisguised())
 	{

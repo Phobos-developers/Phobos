@@ -745,28 +745,30 @@ bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max
 
 bool TechnoExt::CannotMove(UnitClass* pThis)
 {
-	const auto pType = pThis->Type;
+	const auto loco = pThis->Locomotor;
 
-	if (pType->Speed == 0)
-		return true;
-
-	if (!locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+	if (!locomotion_cast<JumpjetLocomotionClass*>(loco))
 	{
-		LandType landType = pThis->GetCell()->LandType;
-		const LandType movementRestrictedTo = pType->MovementRestrictedTo;
+		const auto pType = pThis->Type;
 
-		if (pThis->OnBridge
-			&& (landType == LandType::Water || landType == LandType::Beach))
-		{
-			landType = LandType::Road;
-		}
-
-		if (movementRestrictedTo != LandType::None
-			&& movementRestrictedTo != landType
-			&& landType != LandType::Tunnel)
-		{
+		if (pType->Speed == 0 && !locomotion_cast<TeleportLocomotionClass*>(loco))
 			return true;
-		}
+
+		const auto movementRestrictedTo = pType->MovementRestrictedTo;
+
+		if (movementRestrictedTo == LandType::None)
+			return false;
+
+		auto landType = pThis->GetCell()->LandType;
+
+		if (landType == LandType::Tunnel)
+			return false;
+
+		if (pThis->OnBridge && (landType == LandType::Water || landType == LandType::Beach))
+			landType = LandType::Road;
+
+		if (movementRestrictedTo != landType)
+			return true;
 	}
 
 	return false;
