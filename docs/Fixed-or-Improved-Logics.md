@@ -1542,7 +1542,7 @@ How to generate `DebrisTypes` in the game:
 4. When the number of debris generated after a single traversal is not enough to exceed the total number, it will end if `DebrisTypes.Limit` is enabled, otherwise the traversal will restart like vanilla game do.
 ```
 
-## DropPod
+### DropPod
 
 - DropPod properties can now be customized on a per-TechnoType (non-building) basis.
   - If you want to attach the trailer animation to the pod, set `DropPod.Trailer.Attached` to yes.
