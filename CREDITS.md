@@ -152,6 +152,7 @@ This page lists all the individual contributions to the project by their author.
   - Warhead activation target health thresholds enhancements
   - Event 606: AttachEffect is attaching to a Techno
   - Linked superweapons
+  - Unit & infantry auto-conversion on ammo change
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -463,6 +464,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize Ares's radar jam logic
   - Customize if cloning need power
   - Customize type selection for IFV
+  - Fix the issue that units will goto farest location if target is closer than `MinimumRange`
   - Customize Inhibitors and Designators
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
@@ -645,6 +647,8 @@ This page lists all the individual contributions to the project by their author.
   - Dehardcode the `ZAdjust` of warhead anim
   - Fix an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner
   - Fix an issue where the vanilla script ignores jumpjets
+  - CellSpread in cylinder shape
+  - CellSpread damage check if victim is in air or on floor
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
@@ -686,3 +690,4 @@ This page lists all the individual contributions to the project by their author.
 - **Damfoos** - extensive and thorough testing
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
+- **11EJDE11** - Prevent mpdebug number from being drawn when visibility toggled off
