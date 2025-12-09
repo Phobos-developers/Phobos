@@ -199,15 +199,21 @@ void TechnoExt::ExtData::WebbyUpdate()
 		}
 
 		pExt->WebbyAnim = nullptr;
+		pThis->Target = nullptr;
+		auto const pLastTarget = static_cast<TechnoClass*>(pExt->WebbyLastTarget);
 
 		// Restore previous action
-		if (pExt->WebbyLastTarget)
+		if (pLastTarget && pLastTarget->Health > 0 && pLastTarget->IsAlive && pLastTarget->IsOnMap)
 		{
 			pThis->SetDestination(pExt->WebbyLastTarget, false);
 			pThis->SetTarget(pExt->WebbyLastTarget);
 			pThis->QueueMission(pExt->WebbyLastMission, true);
 			pExt->WebbyLastTarget = nullptr;
 			pExt->WebbyLastMission = Mission::Sleep;
+		}
+		else
+		{
+			pThis->QueueMission(Mission::Guard, true);
 		}
 	}
 }
