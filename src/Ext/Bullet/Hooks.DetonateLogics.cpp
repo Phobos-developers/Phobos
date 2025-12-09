@@ -79,7 +79,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 
 	if (pWHExt->DetonateOnAllMapObjects && !pWHExt->WasDetonatedOnAllMapObjects
 		&& pWHExt->DetonateOnAllMapObjects_AffectTargets != AffectedTarget::None
-		&& pWHExt->DetonateOnAllMapObjects_AffectHouses != AffectedHouse::None)
+		&& pWHExt->DetonateOnAllMapObjects_AffectsHouses != AffectedHouse::None)
 	{
 		pWHExt->WasDetonatedOnAllMapObjects = true;
 		auto const originalLocation = pThis->Location;
