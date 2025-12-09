@@ -8,6 +8,8 @@
 #include <Ext/Building/Body.h>
 #include <Ext/Sidebar/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/SWType/Body.h>
+#include <Ext/SWType/Ares/NewSWType.h>
 #include <Ext/EBolt/Body.h>
 
 #include <New/Entity/Ares/RadarJammerClass.h>
@@ -42,7 +44,6 @@ bool __stdcall ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
 TechnoTypeClass* __fastcall ShowPromoteAnim(TechnoClass* pThis)
 {
 	TechnoExt::ShowPromoteAnim(pThis);
-
 	return pThis->GetTechnoType();
 }
 
@@ -50,6 +51,8 @@ WeaponStruct* __fastcall GetLaserWeapon(BuildingClass* pThis)
 {
 	return BuildingExt::GetLaserWeapon(pThis);
 }
+
+_GET_FUNCTION_ADDRESS(AresNewSWType::GetTargetingData, AresNewSWType_GetTargetingData_GetAddr)
 
 EBolt* __stdcall CreateEBolt(WeaponTypeClass** pWeaponData)
 {
@@ -118,6 +121,9 @@ void Apply_Ares3_0_Patches()
   
   // Redirect Ares's function to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x112D0, &BuildingExt::KickOutClone);
+  
+  // Redirect Ares' NewSWType::GetTargetingData() to our implementation:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x6D1E0, AresNewSWType_GetTargetingData_GetAddr());
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -177,4 +183,7 @@ void Apply_Ares3_0p1_Patches()
   
   // Redirect Ares's function to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x11860, &BuildingExt::KickOutClone);
+  
+  // Redirect Ares' NewSWType::GetTargetingData() to our implementation:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x6E1F0, AresNewSWType_GetTargetingData_GetAddr());
 }

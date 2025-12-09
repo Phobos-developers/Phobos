@@ -61,35 +61,140 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 		return 0;
 
 	const auto pSuperType = SuperWeaponTypeClass::Array.GetItem(Unsorted::CurrentSWType);
-	const auto pExt = SWTypeExt::ExtMap.Find(pSuperType);
+	const auto pSWExt = SWTypeExt::ExtMap.Find(pSuperType);
 
-	if (!pExt->ShowDesignatorRange)
+	if (!pSWExt->ShowDesignatorRange)
 		return 0;
 
-	for (const auto pCurrentTechno : TechnoClass::Array)
-	{
-		const auto pCurrentTechnoType = pCurrentTechno->GetTechnoType();
-		const auto pOwner = pCurrentTechno->Owner;
+	const bool hasDesignateType = !pSWExt->SW_DesignateTypes.empty();
+	const bool hasDesignator = !pSWExt->SW_Designators.empty();
+	const bool hasInhibitType = !pSWExt->SW_InhibitTypes.empty();
+	const bool hasInhibitor = !pSWExt->SW_Inhibitors.empty();
 
-		if (!pCurrentTechno->IsAlive
-			|| pCurrentTechno->InLimbo
-			|| (pOwner != HouseClass::CurrentPlayer && pOwner->IsAlliedWith(HouseClass::CurrentPlayer))                  // Ally objects are never designators or inhibitors
-			|| (pOwner == HouseClass::CurrentPlayer && !pExt->SW_Designators.Contains(pCurrentTechnoType))               // Only owned objects can be designators
-			|| (!pOwner->IsAlliedWith(HouseClass::CurrentPlayer) && !pExt->SW_Inhibitors.Contains(pCurrentTechnoType)))  // Only enemy objects can be inhibitors
-		{
+	for (const auto pTechno : TechnoClass::Array)
+	{
+		if (!pTechno->IsAlive || !pTechno->Health || pTechno->InLimbo)
 			continue;
+
+		const bool deactivated = pTechno->Deactivated;
+
+		if (deactivated && !hasDesignateType && !hasInhibitType)
+			continue;
+
+		const bool isTemporal = pTechno->TemporalTargetingMe || pTechno->IsBeingWarpedOut();
+		bool inactive = deactivated || pTechno->IsUnderEMP();
+		bool buildingOnline = true;
+
+		if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
+		{
+			buildingOnline = pBuilding->IsPowerOnline();
+			inactive |= !buildingOnline;
 		}
 
-		const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pCurrentTechnoType);
-
-		const float radius = pOwner == HouseClass::CurrentPlayer
-			? (float)(pTechnoTypeExt->DesignatorRange.Get(pCurrentTechnoType->Sight))
-			: (float)(pTechnoTypeExt->InhibitorRange.Get(pCurrentTechnoType->Sight));
-
-		CoordStruct coords = pCurrentTechno->GetCenterCoords();
+		CoordStruct coords = pTechno->GetCenterCoords();
 		coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
+		const auto pOwner = pTechno->Owner;
 		const auto color = pOwner->Color;
-		Game::DrawRadialIndicator(false, true, coords, color, radius, false, true);
+		const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+		const auto pTechnoTypeExt = pTechnoExt->TypeExtData;
+		const auto pTechnoType = pTechnoTypeExt->OwnerObject();
+		const int sight = pTechnoType->Sight;
+
+		if (hasDesignateType)
+		{
+			for (const auto signal : pSWExt->SW_DesignateTypes)
+			{
+				if (inactive && signal->Powered)
+					continue;
+
+				if (isTemporal && signal->StopInTemporal)
+					continue;
+
+				if (!EnumFunctions::CanTargetHouse(signal->Affects.Get(AffectedHouse::Owner), HouseClass::CurrentPlayer, pOwner))
+					continue;
+
+				bool findSignal = std::ranges::find(pTechnoTypeExt->DesignateTypes, signal) == pTechnoTypeExt->DesignateTypes.cend();
+
+				if (!findSignal && pTechnoExt->AE.HasDesignator)
+				{
+					for (const auto& attachEffect : pTechnoExt->AttachedEffects)
+					{
+						if (signal == attachEffect->GetType()->DesignateType)
+						{
+							findSignal = true;
+							break;
+						}
+					}
+				}
+
+				if (!findSignal)
+					continue;
+
+				const int radius = signal->Range.Get(sight);
+
+				if (radius > 0)
+					Game::DrawRadialIndicator(false, true, coords, color, static_cast<float>(radius), false, true);
+			}
+		}
+
+		if (hasDesignator && !deactivated)
+		{
+			if (EnumFunctions::CanTargetHouse(pSWExt->SW_Designators_Houses, HouseClass::CurrentPlayer, pOwner) && pSWExt->SW_Designators.Contains(pTechnoType))
+			{
+				const int radius = pTechnoTypeExt->DesignatorRange.Get(sight);
+
+				if (radius > 0)
+					Game::DrawRadialIndicator(false, true, coords, color, static_cast<float>(radius), false, true);
+			}
+		}
+
+		if (hasInhibitType)
+		{
+			for (const auto signal : pSWExt->SW_InhibitTypes)
+			{
+				if (inactive && signal->Powered)
+					continue;
+
+				if (isTemporal && signal->StopInTemporal)
+					continue;
+
+				if (!EnumFunctions::CanTargetHouse(signal->Affects.Get(AffectedHouse::Enemies), HouseClass::CurrentPlayer, pOwner))
+					continue;
+
+				bool findSignal = std::ranges::find(pTechnoTypeExt->InhibitTypes, signal) == pTechnoTypeExt->InhibitTypes.cend();
+
+				if (!findSignal && pTechnoExt->AE.HasInhibitor)
+				{
+					for (const auto& attachEffect : pTechnoExt->AttachedEffects)
+					{
+						if (signal == attachEffect->GetType()->InhibitType)
+						{
+							findSignal = true;
+							break;
+						}
+					}
+				}
+
+				if (!findSignal)
+					continue;
+
+				const int radius = signal->Range.Get(sight);
+
+				if (radius > 0)
+					Game::DrawRadialIndicator(false, true, coords, color, static_cast<float>(radius), false, true);
+			}
+		}
+
+		if (hasInhibitor && buildingOnline && !deactivated)
+		{
+			if (EnumFunctions::CanTargetHouse(pSWExt->SW_Inhibitors_Houses, HouseClass::CurrentPlayer, pOwner) && pSWExt->SW_Inhibitors.Contains(pTechnoType))
+			{
+				const int radius = pTechnoTypeExt->InhibitorRange.Get(sight);
+
+				if (radius > 0)
+					Game::DrawRadialIndicator(false, true, coords, color, static_cast<float>(radius), false, true);
+			}
+		}
 	}
 
 	return 0;

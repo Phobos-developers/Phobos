@@ -58,6 +58,8 @@ This page describes all the engine features that are either new and introduced b
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
   - `Unkillable` can be used to prevent the techno from being killed by taken damage (minimum health will be 1).
+  - `LaserTrail.Type` can be used to grant a [laser trail](#laser-trails) for the attached object.
+  - `InhibitType` and `DesignateType` can be used to grant a [super weapon signal](#custom-super-weapon-signal-type) which can act as Inhibitor and Designator for the attached object.
   - It is possible to set groups for attach effect types by defining strings in `Groups`.
     - Groups can be used instead of types for removing effects and weapon filters.
 
@@ -149,6 +151,8 @@ ReflectDamage.UseInvokerAsOwner=false              ; boolean
 DisableWeapons=false                               ; boolean
 Unkillable=false                                   ; boolean
 LaserTrail.Type=                                   ; LaserTrailType
+InhibitType=                                       ; SuperWeaponSignalType
+DesignateType=                                     ; SuperWeaponSignalType
 Groups=                                            ; comma-separated list of strings (group IDs)
 
 [SOMETECHNO]                                       ; TechnoType
@@ -185,6 +189,39 @@ AttachEffect.DurationOverrides=                    ; integer - duration override
 SuppressReflectDamage=false                        ; boolean
 SuppressReflectDamage.Types=                       ; List of AttachEffectTypes
 SuppressReflectDamage.Groups=                      ; comma-separated list of strings (group IDs)
+```
+
+### Custom Super Weapon Signal Type
+
+- It's now possible to define Inhibitor and Designator properties in a Super Weapon Signal Type, which allows more customization than [Ares' Inibitors and Designators](https://ares-developers.github.io/Ares-docs/new/superweapons/range.html).
+- `Range` determines the radius of the Inhibitor and Designator effects. Default to the attached techno's `Sight` if not set.
+- `Affects` determines the affected house of the Inhibitor and Designator effects. Default to `enemies` if it's used as an Inhibitor, and `owner` if it's Designator.
+- `Powered` determines whether or not the effect is rendered inactive if the object it is attached to is deactivated (`PoweredUnit` or affected by EMP) or on low power.
+  - Notice that it's different from Ares' behavior, which always checks if the building is on low power for Inhibitor, and doesn't check EMP.
+- `StopInTemporal` determines whether or not the effect is rendered inactive if the object is being warped out by a `Temporal=yes` warhead.
+- `SW.InhibitTypes` determines the Super Weapon Signals that'll act as an Inhibitor for this super weapon, which prevent it to be launched in this area.
+- `SW.DesignateTypes` determines the Super Weapon Signals that'll act as an Designator for this super weapon, which only allow it to be launched in this area.
+- `InhibitTypes` and `DesignateTypes` determine the Super Weapon Signals a techno owned, which make it an Inhibitor/Designator to super weapons with corresponding `SW.Inhibit/DesignateTypes`.
+- This allow a techno to own multiple Inhibitor and Designator effects towards different super weapons, rather than limited to one for all super weapons.
+
+In `rulesmd.ini`
+```ini
+[SuperWeaponSignalTypes]
+0=SOMESWSIGNAL
+
+[SOMESWSIGNAL]          ; SuperWeaponSignalType
+Range=                  ; integer, default to [SOMETECHNO] -> Sight
+Affects=                ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to enemies for Inhibitor and owner for Designator
+Powered=false           ; boolean
+StopInTemporal=false    ; boolean
+
+[SOMESW]                ; SuperWeaponType
+SW.InhibitTypes=        ; List of SuperWeaponSignalType
+SW.DesignateTypes=      ; List of SuperWeaponSignalType
+
+[SOMETECHNO]            ; TechnoType
+InhibitTypes=           ; List of SuperWeaponSignalType
+DesignateTypes=         ; List of SuperWeaponSignalType
 ```
 
 ### Custom Radiation Types
