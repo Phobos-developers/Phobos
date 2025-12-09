@@ -52,7 +52,7 @@ DEFINE_HOOK(0x71C84D, TerrainClass_AI_Animated, 0x6)
 
 				if (particleIdx >= 0)
 				{
-					const auto particleSys = reinterpret_cast<ParticleSystemClass*>(0xA8ED78);
+					const auto particleSys = Make_Global<ParticleSystemClass*>(0xA8ED78);
 					reinterpret_cast<ParticleClass*(__thiscall*)(void*, ParticleTypeClass*, const CoordStruct&)>(0x62E430)(particleSys, ParticleTypeClass::Array[particleIdx], pThis->Location);
 				}
 
