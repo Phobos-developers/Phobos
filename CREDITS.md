@@ -465,6 +465,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize if cloning need power
   - Customize type selection for IFV
   - Fix the issue that units will goto farest location if target is closer than `MinimumRange`
+  - Fix the bug that building type has `UndeploysInto` cannot show `AltCameo` or `AltCameoPCX` even you infiltrated enemies war factories
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

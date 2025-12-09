@@ -2900,3 +2900,16 @@ DEFINE_HOOK(0x4440B0, BuildingClass_KickOutUnit_CloningFacility, 0x6)
 
 	return ContinueIn;
 }
+
+#pragma region AltCameo
+
+DEFINE_HOOK(712045, TechnoTypeClass_GetCameo, 5)
+{
+	GET(TechnoTypeClass*, pThis, ECX);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis);
+
+	R->EAX(pTypeExt->CameoIsElite(HouseClass::CurrentPlayer) ? pThis->AltCameo : pThis->Cameo);
+	return 0x7120C6;
+}
+
+#pragma endregion

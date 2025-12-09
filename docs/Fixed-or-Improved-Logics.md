@@ -275,6 +275,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where the vanilla script ignores jumpjets. Enable it through `[General] -> AIAirTargetingFix=true`.
 - Fixed the bug that naval ship will sink even they destroyed in air.
 - Fixed the issue that units will goto farest location if target is closer than `MinimumRange`
+- Fixed the bug that building type has `UndeploysInto` cannot show `AltCameo` or `AltCameoPCX` even you infiltrated enemies war factories.
 
 ## Fixes / interactions with other extensions
 
