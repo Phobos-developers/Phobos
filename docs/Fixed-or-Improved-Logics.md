@@ -1821,6 +1821,16 @@ HeightShadowScaling.MinScale=0.0  ; floating point value
 ShadowSizeCharacteristicHeight=   ; integer, height in leptons
 ```
 
+### Allow techno type considered as other type when AI recruit techno for teams
+
+- It is now possible to make techno type considered as other type when AI recruit techno for teams.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType
+TeamMember.ConsideredAs=        ; list of technotypes
+```
+
 ## Terrains
 
 ### Animated TerrainTypes

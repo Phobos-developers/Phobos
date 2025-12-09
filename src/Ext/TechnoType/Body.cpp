@@ -1035,6 +1035,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		Debug::Log("[Developer warning][%s] Ammo.AutoConvertMinimumAmount is greater than Ammo.AutoConvertMaximumAmount, resulting in no conversion.\n", pSection);
 
 	this->InfantryAutoDeploy.Read(exINI, pSection, "InfantryAutoDeploy");
+
+	this->TeamMember_ConsideredAs.Read(exINI, pSection, "TeamMember.ConsideredAs");
 	
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -1696,6 +1698,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->VoiceEliteWeaponAttacks)
 
 		.Process(this->InfantryAutoDeploy)
+
+		.Process(this->TeamMember_ConsideredAs)
 
 		.Process(this->TurretResponse)
 		;

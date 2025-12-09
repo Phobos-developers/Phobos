@@ -465,6 +465,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize if cloning need power
   - Customize type selection for IFV
   - Fix the issue that units will goto farest location if target is closer than `MinimumRange`
+  - Allow techno type considered as other type when AI recruit techno for teams
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
