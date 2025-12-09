@@ -274,6 +274,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allow Reveal Crate to take effect when picking up by another player controlled house in campaign.
 - Fixed an issue where the vanilla script ignores jumpjets. Enable it through `[General] -> AIAirTargetingFix=true`.
 - Fixed the bug that naval ship will sink even they destroyed in air.
+- Fixed MPDebug timer displaying when debug's visibility is off.
+- Fixed the issue that units will goto farest location if target is closer than `MinimumRange`.
 
 ## Fixes / interactions with other extensions
 
@@ -1542,7 +1544,7 @@ How to generate `DebrisTypes` in the game:
 4. When the number of debris generated after a single traversal is not enough to exceed the total number, it will end if `DebrisTypes.Limit` is enabled, otherwise the traversal will restart like vanilla game do.
 ```
 
-## DropPod
+### DropPod
 
 - DropPod properties can now be customized on a per-TechnoType (non-building) basis.
   - If you want to attach the trailer animation to the pod, set `DropPod.Trailer.Attached` to yes.

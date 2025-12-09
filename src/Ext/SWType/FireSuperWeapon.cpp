@@ -82,7 +82,7 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 // ====================================================
 
 #pragma region LimboDelivery
-inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
+static inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 {
 	// BuildLimit check goes before creation
 	if (pType->BuildLimit > 0)

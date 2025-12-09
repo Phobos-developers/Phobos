@@ -579,8 +579,7 @@ DEFINE_HOOK(0x454244, BuildingClass_Save_Suffix, 0x7)
 // Removes setting otherwise unused field (0x6FC) in BuildingClass when building has airstrike applied on it so that it can safely be used to store BuildingExt pointer.
 DEFINE_JUMP(LJMP, 0x41D9FB, 0x41DA05);
 
-
-void __fastcall BuildingClass_InfiltratedBy_Wrapper(BuildingClass* pThis, void*, HouseClass* pInfiltratorHouse)
+static void __fastcall BuildingClass_InfiltratedBy_Wrapper(BuildingClass* pThis, void*, HouseClass* pInfiltratorHouse)
 {
 	const int oldBalance = pThis->Owner->Available_Money();
 	// explicitly call because Ares rewrote it

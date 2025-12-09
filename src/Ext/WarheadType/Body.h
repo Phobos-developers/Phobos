@@ -193,6 +193,9 @@ public:
 		Valueable<double> AffectsBelowPercent;
 		Valueable<double> AffectsAbovePercent;
 		Valueable<bool> AffectsNeutral;
+		Valueable<bool> AffectsGround;
+		Valueable<bool> AffectsAir;
+		Valueable<bool> CellSpread_Cylinder;
 
 		Valueable<bool> ReverseEngineer;
 
@@ -400,6 +403,9 @@ public:
 			, AffectsBelowPercent { 1.0 }
 			, AffectsAbovePercent { 0.0 }
 			, AffectsNeutral { true }
+			, AffectsGround { true }
+			, AffectsAir { true }
+			, CellSpread_Cylinder { false }
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}

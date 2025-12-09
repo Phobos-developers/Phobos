@@ -819,10 +819,10 @@ DEFINE_HOOK(0x4899DA, MapClass_DamageArea_DamageUnderGround, 0x7)
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 
-	if (!pWHExt || !pWHExt->AffectsUnderground)
+	if (!pWHExt->AffectsUnderground)
 		return 0;
 
-	// bool cylinder = pWHExt->CellSpread_Cylinder;
+	const bool cylinder = pWHExt->CellSpread_Cylinder;
 	const float spread = pWH->CellSpread * (float)Unsorted::LeptonsPerCell;
 
 	for (auto const& pTechno : ScenarioExt::Global()->UndergroundTracker)
@@ -835,9 +835,9 @@ DEFINE_HOOK(0x4899DA, MapClass_DamageArea_DamageUnderGround, 0x7)
 			double dist = 0.0;
 			auto const technoCoords = pTechno->GetCoords();
 
-			//if (cylinder)
-			//	dist = CoordStruct{ technoCoords.X - pCrd->X, technoCoords.Y - pCrd->Y, 0 }.Magnitude();
-			//else
+			if (cylinder)
+				dist = CoordStruct{ technoCoords.X - pCrd->X, technoCoords.Y - pCrd->Y, 0 }.Magnitude();
+			else
 				dist = technoCoords.DistanceFrom(*pCrd);
 
 			if (dist <= spread)

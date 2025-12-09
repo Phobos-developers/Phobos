@@ -287,6 +287,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AffectsBelowPercent.Read(exINI, pSection, "AffectsBelowPercent");
 	this->AffectsAbovePercent.Read(exINI, pSection, "AffectsAbovePercent");
 	this->AffectsNeutral.Read(exINI, pSection, "AffectsNeutral");
+	this->AffectsGround.Read(exINI, pSection, "AffectsGround");
+	this->AffectsAir.Read(exINI, pSection, "AffectsAir");
+	this->CellSpread_Cylinder.Read(exINI, pSection, "CellSpread.Cylinder");
 	this->HealthCheck = this->AffectsBelowPercent > 0.0 || this->AffectsAbovePercent < 1.0;
 
 	if (this->AffectsAbovePercent > this->AffectsBelowPercent)
@@ -536,6 +539,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AffectsBelowPercent)
 		.Process(this->AffectsAbovePercent)
 		.Process(this->AffectsNeutral)
+		.Process(this->AffectsGround)
+		.Process(this->AffectsAir)
+		.Process(this->CellSpread_Cylinder)
 		.Process(this->HealthCheck)
 
 		.Process(this->InflictLocomotor)

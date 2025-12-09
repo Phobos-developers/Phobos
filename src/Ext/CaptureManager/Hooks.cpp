@@ -81,7 +81,7 @@ DEFINE_HOOK(0x4721E6, CaptureManagerClass_DrawLinkToVictim, 0x6)
 	return 0x472287;
 }
 
-void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void* _)
+static void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void* _)
 {
 	auto const pOwner = pThis->Owner;
 	auto const pOwnerTypeExt = TechnoExt::ExtMap.Find(pOwner)->TypeExtData;
