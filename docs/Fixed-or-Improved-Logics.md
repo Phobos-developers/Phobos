@@ -259,6 +259,11 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `DeployingAnim` using unit drawer now also tint accordingly with the unit.
 - Fixed an issue that jumpjets in air can not correctly spawn missiles.
 - Fixed an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos.
+- Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range.
+- Fixed an issue that jumpjet infantry stop incorrectly when assigned a target out of range.
+- Fixed an issue that jumpjet infantry' shadow is always drawn even if they are cloaked.
+- Fixed an issue that technos head to building's dock even they are not going to dock.
+- Fixed an issue that the jumpjet vehicles cannot stop correctly after going berserk.
 - Fixed an issue that infantry walking through a cell containing a tree would cause it to be impassable to other houses.
 - Fixed the bug that techno unit will draw with ironcurtain and airstrike color and intensity who disguised as terrain or overlay.
 - Fixed an issue that the AI would enter a combat state when its building receiving damage from friendly units or damage not greater than 0.
@@ -302,11 +307,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - The previous `SVGM_XXX.NET` files are cleaned up before first copy if it's a new game, otherwise the highest numbered `SVGM_XXX.NET` file is found and the index is incremented, if possible.
   - The game also automatically copies `spawn.ini` to the save folder as `spawnSG.ini` when saving a game.
 - Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle`.
-- Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range.
-- Fixed an issue that jumpjet infantry stop incorrectly when assigned a target out of range.
-- Fixed an issue that jumpjet infantry' shadow is always drawn even if they are cloaked.
-- Fixed an issue that technos head to building's dock even they are not going to dock.
-- Fixed an issue that the jumpjet vehicles cannot stop correctly after going berserk.
 - Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect.
 - Fixed the bug that building with `CloningFacility=true` and `WeaponsFactory=true` may cloning multiple vehicles and then they get stuck.
 
