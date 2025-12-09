@@ -2346,6 +2346,7 @@ msgid ""
 "Fixed the issue that units will goto farest location if target is closer "
 "than `MinimumRange` (by NetsuNegi)"
 msgstr ""
+"修复了单位距离目标小于 `MinimumRange` 时会前往最远距离的问题（by NetsuNegi）"
 
 #: ../../Whats-New.md:510 ../../Whats-New.md:548 ../../Whats-New.md:876
 #: ../../Whats-New.md:961 ../../Whats-New.md:1125 ../../Whats-New.md:1166

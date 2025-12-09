@@ -1913,6 +1913,7 @@ msgid ""
 "Fix the issue that units will goto farest location if target is closer "
 "than `MinimumRange`"
 msgstr ""
+"修复了单位距离目标小于 `MinimumRange` 时会前往最远距离的问题"
 
 #: ../../../CREDITS.md:469
 msgid "**Apollo** - Translucent SHP drawing patches"
