@@ -22,7 +22,7 @@ public:
 		Valueable<PartialVector2D<int>> SpawnsTiberium_GrowthStage;
 		Valueable<PartialVector2D<int>> SpawnsTiberium_CellsPerAnim;
 		ValueableIdx<ParticleTypeClass> SpawnsTiberium_Particle;
-		Valueable<AnimTypeClass*> DestroyAnim;
+		ValueableVector<AnimTypeClass*> DestroyAnim;
 		ValueableIdx<VocClass> DestroySound;
 		Nullable<ColorStruct> MinimapColor;
 		Valueable<bool> IsPassable;

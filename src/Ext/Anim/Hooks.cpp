@@ -332,9 +332,8 @@ CoordStruct* AnimClassFake::_GetCenterCoords(CoordStruct* pCrd) const
 {
 	CoordStruct* coords = pCrd;
 	*coords = this->Location;
-	auto const pObject = this->OwnerObject;
 
-	if (pObject)
+	if (auto const pObject = this->OwnerObject)
 	{
 		*coords += pObject->GetCoords();
 
@@ -377,6 +376,31 @@ DEFINE_HOOK(0x423365, AnimClass_DrawIt_ExtraShadow, 0x8)
 	}
 
 	return SkipExtraShadow;
+}
+
+DEFINE_HOOK(0x423855, AnimClass_DrawIt_ShadowLocation, 0x7)
+{
+	enum { SkipGameCode = 0x42385D };
+
+	GET(AnimClass*, pThis, ESI);
+	GET(Point2D*, pLocation, EDI);
+
+	int zCoord = pThis->GetZ();
+
+	if (auto const pUnit = abstract_cast<UnitClass*>(pThis->OwnerObject))
+	{
+		// If deploying anim is played in air, cast shadow on ground.
+		if (pUnit->DeployAnim == pThis && pUnit->GetHeight() > 0)
+		{
+			auto const pCell = pUnit->GetCell();
+			auto const coords = pCell->GetCenterCoords();
+			*pLocation = TacticalClass::Instance->CoordsToClient(coords).first;
+			zCoord = coords.Z;
+		}
+	}
+
+	R->EAX(zCoord);
+	return SkipGameCode;
 }
 
 // Apply cell lighting on UseNormalLight=no MakeInfantry anims.

@@ -13,13 +13,13 @@ DEFINE_HOOK(0x4D9F7B, FootClass_Sell, 0x6)
 	if (pOwner->IsControlledByCurrentPlayer())
 	{
 		const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
-		VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex(GameStrings::EVA_UnitSold)));
+		VoxClass::PlayIndex(pTypeExt->EVA_Sold.isset() ? pTypeExt->EVA_Sold.Get() : VoxClass::FindIndex(GameStrings::EVA_UnitSold));
 		//WW used VocClass::PlayGlobal to play the SellSound, why did they do that?
 		VocClass::PlayAt(pTypeExt->SellSound.Get(RulesClass::Instance->SellSound), pThis->Location);
 	}
 
 	if (RulesExt::Global()->DisplayIncome.Get())
-		FlyingStrings::AddMoneyString(money, pOwner, RulesExt::Global()->DisplayIncome_Houses.Get(), pThis->Location);
+		FlyingStrings::AddMoneyString(money, pThis, pOwner, RulesExt::Global()->DisplayIncome_Houses.Get(), pThis->Location);
 
 	return ReadyToVanish;
 }
@@ -39,12 +39,18 @@ bool __forceinline BuildingExt::CanUndeployOnSell(BuildingClass* pThis)
 		if (!GameModeOptionsClass::Instance.MCVRedeploy)
 			return false;
 		// or MindControlledBy YURIX (why? for balance?)
-		if (pThis->MindControlledBy)
+		if (!RulesExt::Global()->AllowDeployControlledMCV && pThis->MindControlledBy)
 			return false;
+	}
+	else
+	{
+		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+		if (!pTypeExt->UndeploysInto_Sellable)
+			return true;
 	}
 
 	// Move ArchiveTarget check outside Conyard check to allow generic Unsellable=no buildings to be sold
-	return pThis->ArchiveTarget;
+	return pThis->ArchiveTarget != nullptr;
 }
 
 // Skip SessionClass::IsCampaign() checks, where inlined not exactly the function above but sth similar
@@ -60,7 +66,10 @@ DEFINE_HOOK(0x449CC1, BuildingClass_Mi_Selling_EVASold_UndeploysInto, 0x6)
 	const auto pType = pThis->Type;
 	// Fix Conyards can't play EVA_StructureSold
 	if (pThis->IsOwnedByCurrentPlayer && (!pThis->ArchiveTarget || !pType->UndeploysInto))
-		VoxClass::PlayIndex(TechnoTypeExt::ExtMap.Find(pType)->EVA_Sold.Get(VoxClass::FindIndex(GameStrings::EVA_StructureSold)));
+	{
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		VoxClass::PlayIndex(pTypeExt->EVA_Sold.isset() ? pTypeExt->EVA_Sold.Get() : VoxClass::FindIndex(GameStrings::EVA_StructureSold));
+	}
 
 	return BuildingExt::CanUndeployOnSell(pThis) ? CreateUnit : SkipTheEntireShit;
 }

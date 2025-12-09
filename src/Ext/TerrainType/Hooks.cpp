@@ -30,7 +30,7 @@ DEFINE_HOOK(0x71C84D, TerrainClass_AI_Animated, 0x6)
 	{
 		auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pType);
 
-		if (pThis->Animation.Value == pTypeExt->AnimationLength.Get(pType->GetImage()->Frames / (2 * (pTypeExt->HasDamagedFrames + 1))))
+		if (pThis->Animation.Value == (pTypeExt->AnimationLength.isset() ? pTypeExt->AnimationLength.Get() : (pType->GetImage()->Frames / (2 * (pTypeExt->HasDamagedFrames + 1)))))
 		{
 			pThis->Animation.Value = 0;
 			pThis->Animation.Start(0);
@@ -85,7 +85,7 @@ DEFINE_HOOK(0x71C812, TerrainClass_AI_Crumbling, 0x6)
 		return SkipCheck;
 	}
 
-	const int animationLength = pTypeExt->AnimationLength.Get(pType->GetImage()->Frames / (2 * (pTypeExt->HasDamagedFrames + 1)));
+	const int animationLength = pTypeExt->AnimationLength.isset() ? pTypeExt->AnimationLength.Get() : pType->GetImage()->Frames / (2 * (pTypeExt->HasDamagedFrames + 1));
 	const int currentStage = pThis->Animation.Value + (pType->IsAnimated ? animationLength * (pTypeExt->HasDamagedFrames + 1) : 0 + pTypeExt->HasDamagedFrames);
 
 	if (currentStage + 1 == pType->GetImage()->Frames / 2)
@@ -111,7 +111,7 @@ DEFINE_HOOK(0x71C1FE, TerrainClass_Draw_PickFrame, 0x6)
 
 	if (pType->IsAnimated)
 	{
-		const int animLength = pTypeExt->AnimationLength.Get(pType->GetImage()->Frames / (2 * (pTypeExt->HasDamagedFrames + 1)));
+		const int animLength = pTypeExt->AnimationLength.isset() ? pTypeExt->AnimationLength.Get() : ((pType->GetImage()->Frames / (2 * (pTypeExt->HasDamagedFrames + 1))));
 
 		if (pTypeExt->HasCrumblingFrames && pThis->IsCrumbling)
 			frame = (animLength * (pTypeExt->HasDamagedFrames + 1)) + 1 + pThis->Animation.Value;

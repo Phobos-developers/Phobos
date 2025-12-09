@@ -20,6 +20,10 @@ public:
 	Valueable<bool> Powered;
 	Valueable<double> Respawn;
 	Valueable<int> Respawn_Rate;
+	Valueable<bool> Respawn_RestartInCombat;
+	Valueable<int> Respawn_RestartInCombatDelay;
+	ValueableVector<AnimTypeClass*> Respawn_Anim;
+	Valueable<WeaponTypeClass*> Respawn_Weapon;
 	Valueable<double> SelfHealing;
 	Valueable<int> SelfHealing_Rate;
 	Valueable<bool> SelfHealing_RestartInCombat;
@@ -32,8 +36,8 @@ public:
 	Valueable<AttachedAnimFlag> IdleAnim_TemporalAction;
 	Damageable<AnimTypeClass*> IdleAnim;
 	Damageable<AnimTypeClass*> IdleAnimDamaged;
-	Valueable<AnimTypeClass*> BreakAnim;
-	Valueable<AnimTypeClass*> HitAnim;
+	ValueableVector<AnimTypeClass*> BreakAnim;
+	ValueableVector<AnimTypeClass*> HitAnim;
 	Valueable<bool> HitFlash;
 	Nullable<int> HitFlash_FixedSize;
 	Valueable<bool> HitFlash_Red;
@@ -73,6 +77,10 @@ public:
 		, Powered { false }
 		, Respawn { 0.0 }
 		, Respawn_Rate { 0 }
+		, Respawn_RestartInCombat { true }
+		, Respawn_RestartInCombatDelay { 0 }
+		, Respawn_Anim { }
+		, Respawn_Weapon { }
 		, SelfHealing { 0.0 }
 		, SelfHealing_Rate { 0 }
 		, SelfHealing_RestartInCombat { true }
@@ -119,9 +127,19 @@ public:
 		return this->Tint_Color.isset() || this->Tint_Intensity != 0.0;
 	}
 
-	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio) const;
-	double GetConditionYellow() const;
-	double GetConditionRed() const;
+	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio) const
+	{
+		if (isDamaged)
+		{
+			if (const auto damagedAnim = this->IdleAnimDamaged.Get(healthRatio))
+				return damagedAnim;
+		}
+
+		return this->IdleAnim.Get(healthRatio, this->GetConditionYellow(), this->GetConditionRed());
+	}
+
+	double GetConditionYellow() const { return this->ConditionYellow.Get(RulesExt::Global()->Shield_ConditionYellow.Get(RulesClass::Instance->ConditionYellow)); }
+	double GetConditionRed() const { return this->ConditionRed.Get(RulesExt::Global()->Shield_ConditionRed.Get(RulesClass::Instance->ConditionRed)); }
 
 private:
 	template <typename T>
