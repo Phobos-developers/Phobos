@@ -6,6 +6,7 @@
 #include <TacticalClass.h>
 #include <TiberiumClass.h>
 #include <TerrainClass.h>
+#include <ParticleSystemClass.h>
 
 #include <Ext/Rules/Body.h>
 #include <Utilities/GeneralUtils.h>
@@ -46,6 +47,14 @@ DEFINE_HOOK(0x71C84D, TerrainClass_AI_Animated, 0x6)
 
 				for (int i = 0; i < cellCount; i++)
 					pCell->SpreadTiberium(true);
+
+				const int particleIdx = pTypeExt->SpawnsTiberium_Particle;
+
+				if (particleIdx >= 0)
+				{
+					const auto particleSys = Make_Global<ParticleSystemClass*>(0xA8ED78);
+					particleSys->SpawnParticle(ParticleTypeClass::Array[particleIdx], pThis->Location);
+				}
 
 				// Unset context for CellClass hooks.
 				TerrainTypeTemp::pCurrentType = nullptr;
