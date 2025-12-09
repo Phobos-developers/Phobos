@@ -181,7 +181,7 @@ DEFINE_HOOK(0x687B18, ScenarioClass_ReadINI_StartTracking, 0x7)
 	return 0;
 }
 
-void __fastcall TechnoClass_UnInit_Wrapper(TechnoClass* pThis)
+static void __fastcall TechnoClass_UnInit_Wrapper(TechnoClass* pThis)
 {
 
 	if (LimboTrackingTemp::Enabled && pThis->InLimbo)

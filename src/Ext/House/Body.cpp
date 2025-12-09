@@ -204,7 +204,7 @@ bool HouseExt::ExtData::UpdateHarvesterProduction()
 	return false;
 }
 
-bool HouseExt::ExtData::OwnsLimboDeliveredBuilding(BuildingClass* pBuilding)
+bool HouseExt::ExtData::OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const
 {
 	if (!pBuilding)
 		return false;
@@ -449,7 +449,7 @@ void HouseExt::ExtData::RemoveFromLimboTracking(TechnoTypeClass* pTechnoType)
 	}
 }
 
-int HouseExt::ExtData::CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType)
+int HouseExt::ExtData::CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType) const
 {
 	int count = this->OwnerObject()->CountOwnedAndPresent(pTechnoType);
 	const int arrayIndex = pTechnoType->GetArrayIndex();
@@ -505,7 +505,7 @@ void HouseExt::ExtData::UpdateNonMFBFactoryCounts(AbstractType rtti, bool remove
 		*count += remove ? -1 : 1;
 }
 
-int HouseExt::ExtData::GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNaval)
+int HouseExt::ExtData::GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNaval) const
 {
 	auto const pThis = this->OwnerObject();
 	int count = 0;

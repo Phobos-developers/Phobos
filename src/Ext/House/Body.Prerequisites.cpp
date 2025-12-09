@@ -121,7 +121,7 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 			}
 			else
 			{
-				auto debugType = BuildingTypeClass::Array.GetItem(idx);
+				//auto debugType = BuildingTypeClass::Array.GetItem(idx);
 				if (ownedBuildings.count(BuildingTypeClass::Array.GetItem(idx)) > 0)
 					found = true;
 			}
@@ -195,7 +195,7 @@ bool HouseExt::HasGenericPrerequisite(int idx, std::map<BuildingTypeClass*, int>
 		if (found)
 			break;
 
-		auto debugType = BuildingTypeClass::Array.GetItem(idxItem);
+		//auto debugType = BuildingTypeClass::Array.GetItem(idxItem);
 		if (ownedBuildings.count(BuildingTypeClass::Array.GetItem(idxItem)) > 0)
 			found = true;
 	}
