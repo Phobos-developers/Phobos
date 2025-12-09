@@ -16,7 +16,7 @@
 // Patches presented here are exceptions rather that the rule. They must be short, concise and correct.
 // DO NOT POLLUTE ISSUEs and PRs.
 
-ObjectClass* __fastcall CreateInitialPayload(TechnoTypeClass* type, void*, HouseClass* owner)
+static ObjectClass* __fastcall CreateInitialPayload(TechnoTypeClass* type, void*, HouseClass* owner)
 {
 	// temporarily reset the mutex since it's not part of the design
 	const int mutex_old = std::exchange(Unsorted::ScenarioInit, 0);
@@ -25,12 +25,12 @@ ObjectClass* __fastcall CreateInitialPayload(TechnoTypeClass* type, void*, House
 	return instance;
 }
 
-void __fastcall LetGo(TemporalClass* pTemporal)
+static void __fastcall LetGo(TemporalClass* pTemporal)
 {
 	pTemporal->LetGo();
 }
 
-bool __stdcall ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
+static bool __stdcall ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
 {
 	if (const auto pFoot = abstract_cast<FootClass*, true>(pThis))
 		return TechnoExt::ConvertToType(pFoot, pToType);
@@ -39,24 +39,24 @@ bool __stdcall ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
 }
 
 // Technically this replaces GetTechnoType() call.
-TechnoTypeClass* __fastcall ShowPromoteAnim(TechnoClass* pThis)
+static TechnoTypeClass* __fastcall ShowPromoteAnim(TechnoClass* pThis)
 {
 	TechnoExt::ShowPromoteAnim(pThis);
 
 	return pThis->GetTechnoType();
 }
 
-WeaponStruct* __fastcall GetLaserWeapon(BuildingClass* pThis)
+static WeaponStruct* __fastcall GetLaserWeapon(BuildingClass* pThis)
 {
 	return BuildingExt::GetLaserWeapon(pThis);
 }
 
-EBolt* __stdcall CreateEBolt(WeaponTypeClass** pWeaponData)
+static EBolt* __stdcall CreateEBolt(WeaponTypeClass** pWeaponData)
 {
 	return EBoltExt::CreateEBolt(*pWeaponData);
 }
 
-EBolt* __stdcall CreateEBolt2(WeaponTypeClass* pWeapon)
+static EBolt* __stdcall CreateEBolt2(WeaponTypeClass* pWeapon)
 {
 	return EBoltExt::CreateEBolt(pWeapon);
 }
