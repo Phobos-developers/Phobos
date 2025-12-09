@@ -287,7 +287,7 @@ void BuildingExt::ExtData::ApplyPoweredKillSpawns()
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (pTypeExt->Powered_KillSpawns && pThis->Type->Powered && !pThis->IsPowerOnline())
+	if (pTypeExt->Powered_KillSpawns && !pThis->IsPowerOnline())
 	{
 		if (auto const pManager = pThis->SpawnManager)
 		{
