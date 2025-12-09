@@ -129,7 +129,7 @@ void AttachmentClass::AI()
 			this->Child->unknown_280 = this->Parent->unknown_280; // sth related to teleport
 			this->Child->BeingWarpedOut = this->Parent->BeingWarpedOut;
 			this->Child->Deactivated = this->Parent->Deactivated;
-			this->Child->Flash(this->Parent->Flashing.DurationRemaining);
+			//this->Child->Flash(this->Parent->Flashing.DurationRemaining);
 
 			this->Child->IronCurtainTimer = this->Parent->IronCurtainTimer;
 			this->Child->IdleActionTimer = this->Parent->IdleActionTimer;

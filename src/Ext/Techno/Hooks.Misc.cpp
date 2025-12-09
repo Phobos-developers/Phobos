@@ -721,16 +721,20 @@ DEFINE_HOOK_AGAIN(0x5F4718, ObjectClass_Select, 0x7)
 DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 {
 	GET(ObjectClass*, pThis, ESI);
-
 	pThis->IsSelected = true;
 
-	if (!Phobos::Config::ShowFlashOnSelecting)
-		return 0;
+	if (Phobos::Config::ShowFlashOnSelecting)
+	{
+		const int duration = RulesExt::Global()->SelectionFlashDuration;
 
-	auto const duration = RulesExt::Global()->SelectionFlashDuration;
+		if (duration > 0)
+		{
+			const auto pFlashTarget = abstract_cast<TechnoClass*>(pThis);
 
-	if (duration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
-		pThis->Flash(duration);
+			if (pFlashTarget && pFlashTarget->Owner->IsControlledByCurrentPlayer())
+				pFlashTarget->Flash(duration);
+		}
+	}
 
 	return 0;
 }

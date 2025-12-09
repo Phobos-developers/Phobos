@@ -20,6 +20,7 @@ public:
 	Valueable<bool> InheritHeightStatus;
 	Valueable<bool> OccupiesCell;
 	Valueable<bool> LowSelectionPriority;
+	Valueable<bool> PassSelection;
 	Valueable<bool> TransparentToMouse;
 	Valueable<AttachmentYSortPosition> YSortPosition;
 	Nullable<WeaponTypeClass*> DestructionWeapon_Child;
@@ -39,6 +40,7 @@ public:
 		, InheritDestruction { true }
 		, InheritHeightStatus { true }
 		, LowSelectionPriority { true }
+		, PassSelection { true }
 		, TransparentToMouse { false }
 		, YSortPosition { AttachmentYSortPosition::Default }
 		, DestructionWeapon_Child { }

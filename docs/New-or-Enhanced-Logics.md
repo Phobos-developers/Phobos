@@ -214,6 +214,7 @@ InheritCommands=true                      ; boolean
 InheritCommands.StopCommand=true          ; boolean
 InheritCommands.DeployCommand=true        ; boolean
 LowSelectionPriority=true                 ; boolean, whether the child is low priority while attached
+PassSelection=true                        ; boolean, whether the child selection propagates to parent
 TransparentToMouse=false                  ; boolean, can't click on attached techno if set
 YSortPosition=default                     ; Attachment YSort position enumeration - default|underparent|overparent
 InheritDestruction=true                   ; boolean

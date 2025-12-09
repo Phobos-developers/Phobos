@@ -24,6 +24,7 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->InheritHeightStatus.Read(exINI, section, "InheritHeightStatus");
 	this->OccupiesCell.Read(exINI, section, "OccupiesCell");
 	this->LowSelectionPriority.Read(exINI, section, "LowSelectionPriority");
+	this->PassSelection.Read(exINI, section, "PassSelection");
 	this->TransparentToMouse.Read(exINI, section, "TransparentToMouse");
 	this->YSortPosition.Read(exINI, section, "YSortPosition");
 	this->DestructionWeapon_Child.Read(exINI, section, "DestructionWeapon.Child");
@@ -47,6 +48,7 @@ void AttachmentTypeClass::Serialize(T& Stm)
 		.Process(this->InheritHeightStatus)
 		.Process(this->OccupiesCell)
 		.Process(this->LowSelectionPriority)
+		.Process(this->PassSelection)
 		.Process(this->TransparentToMouse)
 		.Process(this->YSortPosition)
 		.Process(this->DestructionWeapon_Child)
