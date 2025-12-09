@@ -1669,7 +1669,7 @@ msgstr "修复了海军舰船即便在空中被摧毁也会在天上沉没的 Bu
 
 #: ../../Fixed-or-Improved-Logics.md:277
 msgid "Fixed MPDebug timer displaying when debug's visibility is off."
-msgstr ""
+msgstr "修复了 MPDEBUG 计时器在 debug 信息关闭可见时依旧显示的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:278
 msgid ""
