@@ -275,7 +275,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where the vanilla script ignores jumpjets. Enable it through `[General] -> AIAirTargetingFix=true`.
 - Fixed the bug that naval ship will sink even they destroyed in air.
 - Fixed the issue that units will goto farest location if target is closer than `MinimumRange`
-- Fixed the bug that building type has `UndeploysInto` cannot show `AltCameo` or `AltCameoPCX` even you infiltrated enemies war factories.
 
 ## Fixes / interactions with other extensions
 
@@ -310,6 +309,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that the jumpjet vehicles cannot stop correctly after going berserk.
 - Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect.
 - Fixed the bug that building with `CloningFacility=true` and `WeaponsFactory=true` may cloning multiple vehicles and then they get stuck.
+- Fixed a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType`.
 
 ```{note}
 The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
