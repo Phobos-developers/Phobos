@@ -113,7 +113,7 @@ DEFINE_HOOK(0x68BE90, ScenarioClass_Write_Waypoints, 0x5)
 DEFINE_HOOK(0x68BF50, ScenarioClass_Set_Waypoint, 0x8)
 {
 	GET_STACK(const int, nWaypoint, 0x4);
-	GET_STACK(CellStruct, cell, 0x8);
+	GET_STACK(const CellStruct, cell, 0x8);
 
 	ScenarioExt::Global()->Waypoints[nWaypoint] = cell;
 

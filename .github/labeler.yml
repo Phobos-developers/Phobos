@@ -19,3 +19,8 @@ labels:
     include:
       - '(?i)\[minor\]'
     exclude: []
+
+  'No Documentation Needed':
+    include:
+      - '(?i)\[no documentation needed\]'
+    exclude: []
