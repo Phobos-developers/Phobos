@@ -865,7 +865,7 @@ public:
 		void UpdateAdditionalAttributes();
 
 		// Ares 0.2
-		bool CameoIsElite(HouseClass* pHouse) const;
+		bool CameoIsVeteran(HouseClass* pHouse) const;
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;

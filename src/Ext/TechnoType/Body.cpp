@@ -261,7 +261,7 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 }
 
 // Ares 0.A source
-bool TechnoTypeExt::ExtData::CameoIsElite(HouseClass* pHouse) const
+bool TechnoTypeExt::ExtData::CameoIsVeteran(HouseClass* pHouse) const
 {
 	const auto pThis = this->OwnerObject();;
 

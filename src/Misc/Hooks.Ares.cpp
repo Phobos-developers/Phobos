@@ -61,9 +61,9 @@ static EBolt* __stdcall CreateEBolt2(WeaponTypeClass* pWeapon)
 	return EBoltExt::CreateEBolt(pWeapon);
 }
 
-static bool __fastcall CameoIsElite(TechnoTypeClass** pTypeExt_Ares, void*, HouseClass* pHouse)
+static bool __fastcall CameoIsVeteran(TechnoTypeClass** pTypeExt_Ares, void*, HouseClass* pHouse)
 {
-	return TechnoTypeExt::ExtMap.Find(*pTypeExt_Ares)->CameoIsElite(pHouse);
+	return TechnoTypeExt::ExtMap.Find(*pTypeExt_Ares)->CameoIsVeteran(pHouse);
 }
 
 _GET_FUNCTION_ADDRESS(RadarJammerClass::Update, AresRadarJammerClass_Update_GetAddr)
@@ -125,7 +125,7 @@ void Apply_Ares3_0_Patches()
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x112D0, &BuildingExt::KickOutClone);
 
 	// Redirect Ares's TechnoTypeExt::ExtData::CameoIsElite() to our implementation:
-	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3D800, &CameoIsElite);
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3D800, &CameoIsVeteran);
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -187,5 +187,5 @@ void Apply_Ares3_0p1_Patches()
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x11860, &BuildingExt::KickOutClone);
 
 	// Redirect Ares's TechnoTypeExt::ExtData::CameoIsElite() to our implementation:
-	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3E210, &CameoIsElite);
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3E210, &CameoIsVeteran);
 }
