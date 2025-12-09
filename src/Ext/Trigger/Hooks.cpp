@@ -102,6 +102,7 @@ DEFINE_HOOK(0x7264C0, TriggerClass_RegisterEvent_ForceSequentialEvents, 0x0)
 		R->AL(false);
 		return SkipGameCode;
 	}
+
 	auto pExt = TriggerExt::ExtMap.Find(pThis);
 	bool isSequentialMode = false; // Flag: Controls if short-circuit is active for subsequent events
 	bool allEventsSuccessful = true;
@@ -123,18 +124,16 @@ DEFINE_HOOK(0x7264C0, TriggerClass_RegisterEvent_ForceSequentialEvents, 0x0)
 			}
 			else if (pExt->SequentialTimers.contains(i))
 			{
-				eventTimer = pExt->SequentialTimers[i];
-
-				if (eventTimer.HasTimeLeft()
-				&& !eventTimer.InProgress()
-				&& !eventTimer.Completed())
+				if (pExt->SequentialTimers[i].HasTimeLeft()
+				&& !pExt->SequentialTimers[i].InProgress()
+				&& !pExt->SequentialTimers[i].Completed())
 				{
 					pExt->SequentialTimers[i].Resume();
-					eventTimer.Resume();
 				}
+
+				eventTimer = pExt->SequentialTimers[i];
 			}
 
-			// *** 1. Lógica del Interruptor de Modo (Evento 1000) ***
 			if (static_cast<int>(pCurrentEvent->EventKind) == PhobosTriggerEvent::ForceSequentialEvents)
 			{
 				bool predecessorsCompleted = false;
@@ -155,15 +154,6 @@ DEFINE_HOOK(0x7264C0, TriggerClass_RegisterEvent_ForceSequentialEvents, 0x0)
 					R->AL(false);
 					return SkipGameCode; // Short-circuit
 				}
-			}
-
-			if (pExt->SequentialTimers.contains(i)
-				&& eventTimer.HasTimeLeft()
-				&& !eventTimer.InProgress()
-				&& !eventTimer.Completed())
-			{
-				pExt->SequentialTimers[i].Resume();
-				eventTimer = pExt->SequentialTimers[i];
 			}
 
 			if (!alreadyOccured)
