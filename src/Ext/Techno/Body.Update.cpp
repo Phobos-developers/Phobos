@@ -1825,6 +1825,19 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
 
+	auto handleExpireWeapon = [&](WeaponTypeClass* pWeapon, TechnoClass* pTarget, TechnoClass* pInvoker, bool invokerOwner)
+		{
+			if (invokerOwner)
+			{
+				if (pInvoker)
+					expireWeapons.emplace_back(pWeapon, pInvoker);
+			}
+			else
+			{
+				expireWeapons.emplace_back(pWeapon, pTarget);
+			}
+		};
+
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
 	{
 		auto const attachEffect = it->get();
@@ -1851,22 +1864,34 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			if (pType->HasTint())
 				markForRedraw = true;
 
-			if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
+			if (pType->Cumulative && !pType->Cumulative_SimpleStack && pType->CumulativeAnimations.size() > 0)
 				this->UpdateCumulativeAttachEffects(attachEffect->GetType(), attachEffect);
 
-			if (pType->ExpireWeapon && ((hasExpired && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
+			auto const pWeapon = pType->ExpireWeapon;
+
+			if (pWeapon && ((hasExpired && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
 				|| (shouldDiscard && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Discard) != ExpireWeaponCondition::None)))
 			{
-				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
+				const bool simpleStack = pType->Cumulative && pType->Cumulative_SimpleStack;
+				const bool invokerOwner = pType->ExpireWeapon_UseInvokerAsOwner;
+				auto const pInvoker = attachEffect->GetInvoker();
+
+				if (!simpleStack || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
 				{
-					if (pType->ExpireWeapon_UseInvokerAsOwner)
+					handleExpireWeapon(pWeapon, pThis, pInvoker, invokerOwner);
+				}
+				else if (simpleStack)
+				{
+					if (pType->ExpireWeapon_CumulativeOnlyOnce)
 					{
-						if (auto const pInvoker = attachEffect->GetInvoker())
-							expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pInvoker));
+						handleExpireWeapon(pWeapon, pThis, pInvoker, invokerOwner);
 					}
 					else
 					{
-						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pThis));
+						for (int i = 0; i < attachEffect->SimpleStackCount; i++)
+						{
+							handleExpireWeapon(pWeapon, pThis, pInvoker, invokerOwner);
+						}
 					}
 				}
 			}
@@ -1911,6 +1936,19 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
 	bool altered = false;
 
+	auto handleExpireWeapon = [&](WeaponTypeClass* pWeapon, TechnoClass* pTarget, TechnoClass* pInvoker, bool invokerOwner)
+		{
+			if (invokerOwner)
+			{
+				if (pInvoker)
+					expireWeapons.emplace_back(pWeapon, pInvoker);
+			}
+			else
+			{
+				expireWeapons.emplace_back(pWeapon, pTarget);
+			}
+		};
+
 	// Delete ones on old type and not on current.
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
 	{
@@ -1922,18 +1960,30 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 
 		if (remove)
 		{
-			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
+			auto const pWeapon = pType->ExpireWeapon;
+
+			if (pWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
 			{
-				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
+				const bool simpleStack = pType->Cumulative && pType->Cumulative_SimpleStack;
+				const bool invokerOwner = pType->ExpireWeapon_UseInvokerAsOwner;
+				auto const pInvoker = attachEffect->GetInvoker();
+
+				if (!simpleStack || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
 				{
-					if (pType->ExpireWeapon_UseInvokerAsOwner)
+					handleExpireWeapon(pWeapon, pThis, pInvoker, invokerOwner);
+				}
+				else if (simpleStack)
+				{
+					if (pType->ExpireWeapon_CumulativeOnlyOnce)
 					{
-						if (auto const pInvoker = attachEffect->GetInvoker())
-							expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pInvoker));
+						handleExpireWeapon(pWeapon, pThis, pInvoker, invokerOwner);
 					}
 					else
 					{
-						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pThis));
+						for (int i = 0; i < attachEffect->SimpleStackCount; i++)
+						{
+							handleExpireWeapon(pWeapon, pThis, pInvoker, invokerOwner);
+						}
 					}
 				}
 			}
@@ -2032,15 +2082,16 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 			continue;
 
 		auto const type = attachEffect->GetType();
-		firepower *= type->FirepowerMultiplier;
-		speed *= type->SpeedMultiplier;
+		const int simpleStackCount = type->Cumulative_SimpleStack;
+		firepower *= std::pow(type->FirepowerMultiplier, simpleStackCount);
+		speed *= std::pow(type->SpeedMultiplier, simpleStackCount);
 
 		if (type->ArmorMultiplier != 1.0 && (type->ArmorMultiplier_AllowWarheads.size() > 0 || type->ArmorMultiplier_DisallowWarheads.size() > 0))
 			hasRestrictedArmorMultipliers = true;
 		else
-			armor *= type->ArmorMultiplier;
+			armor *= std::pow(type->ArmorMultiplier, simpleStackCount);
 
-		ROF *= type->ROFMultiplier;
+		ROF *= std::pow(type->ROFMultiplier, simpleStackCount);
 		cloak |= type->Cloakable;
 		forceDecloak |= type->ForceDecloak;
 		disableWeapons |= type->DisableWeapons;

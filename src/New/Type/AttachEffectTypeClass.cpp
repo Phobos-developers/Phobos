@@ -95,6 +95,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Duration_ApplyFirepowerMult.Read(exINI, pSection, "Duration.ApplyFirepowerMult");
 	this->Duration_ApplyArmorMultOnTarget.Read(exINI, pSection, "Duration.ApplyArmorMultOnTarget");
 	this->Cumulative.Read(exINI, pSection, "Cumulative");
+	this->Cumulative_SimpleStack.Read(exINI, pSection, "SimpleStack");
 	this->Cumulative_MaxCount.Read(exINI, pSection, "Cumulative.MaxCount");
 	this->Powered.Read(exINI, pSection, "Powered");
 	this->DiscardOn.Read(exINI, pSection, "DiscardOn");
@@ -174,6 +175,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Duration_ApplyFirepowerMult)
 		.Process(this->Duration_ApplyArmorMultOnTarget)
 		.Process(this->Cumulative)
+		.Process(this->Cumulative_SimpleStack)
 		.Process(this->Cumulative_MaxCount)
 		.Process(this->Powered)
 		.Process(this->DiscardOn)

@@ -346,8 +346,8 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 		if (type->WeaponRange_DisallowWeapons.size() > 0 && type->WeaponRange_DisallowWeapons.Contains(pThis))
 			continue;
 
-		range = static_cast<int>(range * Math::max(type->WeaponRange_Multiplier, 0.0));
-		extraRange += type->WeaponRange_ExtraRange;
+		range = static_cast<int>(range * Math::max(std::pow(type->WeaponRange_Multiplier, attachEffect->SimpleStackCount), 0.0));
+		extraRange += type->WeaponRange_ExtraRange * attachEffect->SimpleStackCount;
 	}
 
 	range += static_cast<int>(extraRange * Unsorted::LeptonsPerCell);

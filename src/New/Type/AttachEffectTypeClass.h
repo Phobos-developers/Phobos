@@ -46,6 +46,7 @@ public:
 	Valueable<bool> Duration_ApplyFirepowerMult;
 	Valueable<bool> Duration_ApplyArmorMultOnTarget;
 	Valueable<bool> Cumulative;
+	Valueable<bool> Cumulative_SimpleStack;
 	Valueable<int> Cumulative_MaxCount;
 	Valueable<bool> Powered;
 	Valueable<DiscardCondition> DiscardOn;
@@ -109,6 +110,7 @@ public:
 		, Duration_ApplyFirepowerMult { false }
 		, Duration_ApplyArmorMultOnTarget { false }
 		, Cumulative { false }
+		, Cumulative_SimpleStack { false }
 		, Cumulative_MaxCount { -1 }
 		, Powered { false }
 		, DiscardOn { DiscardCondition::None }

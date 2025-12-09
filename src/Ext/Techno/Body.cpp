@@ -498,6 +498,9 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 
 	for (auto const& type : attachEffectTypes)
 	{
+		const bool cumulative = type->Cumulative;
+		int cumulativeCount = -1;
+
 		for (auto const& attachEffect : this->AttachedEffects)
 		{
 			if (attachEffect->GetType() == type && attachEffect->IsActive())
@@ -505,22 +508,42 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 				if (checkSource && attachEffect->IsFromSource(pInvoker, pSource))
 					continue;
 
-				const unsigned int minSize = minCounts ? minCounts->size() : 0;
-				const unsigned int maxSize = maxCounts ? maxCounts->size() : 0;
-
-				if (type->Cumulative && (minSize > 0 || maxSize > 0))
+				if (cumulative)
 				{
-					const int cumulativeCount = this->GetAttachedEffectCumulativeCount(type, ignoreSameSource, pInvoker, pSource);
+					const unsigned int minSize = minCounts ? minCounts->size() : 0;
+					const unsigned int maxSize = maxCounts ? maxCounts->size() : 0;
 
-					if (minSize > 0)
+					if (minSize > 0 || maxSize > 0)
 					{
-						if (cumulativeCount < minCounts->at(typeCounter - 1 >= minSize ? minSize - 1 : typeCounter - 1))
-							continue;
-					}
-					if (maxSize > 0)
-					{
-						if (cumulativeCount > maxCounts->at(typeCounter - 1 >= maxSize ? maxSize - 1 : typeCounter - 1))
-							continue;
+						if (cumulativeCount == -1)
+						{
+							if (type->Cumulative_SimpleStack)
+								cumulativeCount = attachEffect->SimpleStackCount;
+							else
+								cumulativeCount = this->GetAttachedEffectCumulativeCount(type, ignoreSameSource, pInvoker, pSource);
+						}
+
+						if (minSize > 0)
+						{
+							if (cumulativeCount < minCounts->at(typeCounter - 1 >= minSize ? minSize - 1 : typeCounter - 1))
+							{
+								if (type->Cumulative_SimpleStack)
+									break;
+
+								continue;
+							}
+						}
+
+						if (maxSize > 0)
+						{
+							if (cumulativeCount > maxCounts->at(typeCounter - 1 >= maxSize ? maxSize - 1 : typeCounter - 1))
+							{
+								if (type->Cumulative_SimpleStack)
+									break;
+
+								continue;
+							}
+						}
 					}
 				}
 

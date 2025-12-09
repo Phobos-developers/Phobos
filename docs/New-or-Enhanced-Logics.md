@@ -11,6 +11,7 @@ This page describes all the engine features that are either new and introduced b
     - If `Duration.ApplyFirepowerMult` set to true, the duration will multiply the invoker's firepower multipliers if it's not negative. Can't reduce duration to below 0 by a negative firepower multiplier.
     - If `Duration.ApplyArmorMultOnTarget` set to true, the duration will divide the target's armor multipliers if it's not negative. This'll also include `ArmorMultiplier` from its own and ignore `ArmorMultiplier.Allow/DisallowWarheads`. Can't reduce duration to below 0 by a negative armor multiplier.
   - `Cumulative`, if set to true, allows the same type of effect to be applied on same object multiple times, up to `Cumulative.MaxCount` number or with no limit if `Cumulative.MaxCount` is a negative number. If the target already has `Cumulative.MaxCount` number of the same effect applied on it, trying to attach another will refresh duration of the attached instance with shortest remaining duration.
+    - If `Cumulative.SimpleStack` also set to true, latter applied effects will be counted as a part of the first one, instead of its own entity. This is better for performance but will make the effect always refresh during a reapplication.
   - `Powered` controls whether or not the effect is rendered inactive if the object it is attached to is deactivated (`PoweredUnit` or affected by EMP) or on low power. What happens to animation is controlled by `Animation.OfflineAction`.
   - `DiscardOn` accepts a list of values corresponding to conditions where the attached effect should be discarded. Defaults to `none`, meaning it is never discarded.
     - `entry`: Discard on exiting the map when entering transports or buildings etc.
@@ -70,8 +71,8 @@ This page describes all the engine features that are either new and introduced b
 
 - AttachEffectTypes can be attached to objects via Warheads using `AttachEffect.AttachTypes`.
   - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
-  - `AttachEffect.CumulativeRefreshAll` if set to true makes it so that trying to attach `Cumulative=true` effect to a target that already has `Cumulative.MaxCount` amount of effects will refresh duration of all attached effects of the same type instead of only the one with shortest remaining duration. If `AttachEffect.CumulativeRefreshAll.OnAttach` is also set to true, this refresh applies even if the target does not have maximum allowed amount of effects of same type.
-  - `AttachEffect.CumulativeRefreshSameSourceOnly` controls whether or not trying to apply `Cumulative=true` effect on target requires any existing effects of same type to come from same Warhead by same firer for them to be eligible for duration refresh.
+  - `AttachEffect.CumulativeRefreshAll` if set to true makes it so that trying to attach `Cumulative=true` effect to a target that already has `Cumulative.MaxCount` amount of effects will refresh duration of all attached effects of the same type instead of only the one with shortest remaining duration. If `AttachEffect.CumulativeRefreshAll.OnAttach` is also set to true, this refresh applies even if the target does not have maximum allowed amount of effects of same type. These toggles don't work on effects with `Cumulative.SimpleStack=true`, which always refresh during a reapplication.
+  - `AttachEffect.CumulativeRefreshSameSourceOnly` controls whether or not trying to apply `Cumulative=true` effect on target requires any existing effects of same type to come from same Warhead by same firer for them to be eligible for duration refresh. Doesn't work on effects with `Cumulative.SimpleStack=true`.
   - Attached Effects can be removed from objects by Warheads using `AttachEffect.RemoveTypes` or `AttachEffect.RemoveGroups`.
     - `AttachEffect.CumulativeRemoveMinCounts` sets minimum number of active instaces per `RemoveTypes`/`RemoveGroups` required for `Cumulative=true` types to be removed.
     - `AttachEffect.CumulativeRemoveMaxCounts` sets maximum number of active instaces per `RemoveTypes`/`RemoveGroups` for `Cumulative=true` that are removed at once by this Warhead.
@@ -94,6 +95,7 @@ Duration=0                                         ; integer - game frames or ne
 Duration.ApplyFirepowerMult=false                  ; boolean
 Duration.ApplyArmorMultOnTarget=false              ; boolean
 Cumulative=false                                   ; boolean
+Cumulative.SimpleStack=false                       ; boolean
 Cumulative.MaxCount=-1                             ; integer
 Powered=false                                      ; boolean
 DiscardOn=none                                     ; List of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange)

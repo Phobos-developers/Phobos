@@ -23,6 +23,7 @@ AttachEffectClass::AttachEffectClass()
 	, NeedsRecalculateStat { false }
 	, LastDiscardCheckFrame { -1 }
 	, LastDiscardCheckValue { false }
+	, SimpleStackCount { 1 }
 {
 	this->HasInitialized = false;
 	AttachEffectClass::Array.emplace_back(this);
@@ -48,6 +49,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, NeedsRecalculateStat { false }
 	, LastDiscardCheckFrame { -1 }
 	, LastDiscardCheckValue { false }
+	, SimpleStackCount { 1 }
 {
 	this->HasInitialized = false;
 
@@ -391,7 +393,7 @@ void AttachEffectClass::CreateAnim()
 		if (!this->HasCumulativeAnim)
 			return;
 
-		const int count = TechnoExt::ExtMap.Find(pTechno)->GetAttachedEffectCumulativeCount(pType);
+		const int count = pType->Cumulative_SimpleStack ? this->SimpleStackCount : TechnoExt::ExtMap.Find(pTechno)->GetAttachedEffectCumulativeCount(pType);
 		pAnimType = pType->GetCumulativeAnimation(count);
 	}
 	else
@@ -442,7 +444,7 @@ void AttachEffectClass::UpdateCumulativeAnim()
 		return;
 
 	const auto pType = this->Type;
-	const int count = TechnoExt::ExtMap.Find(this->Techno)->GetAttachedEffectCumulativeCount(pType);
+	const int count = pType->Cumulative_SimpleStack ? this->SimpleStackCount : TechnoExt::ExtMap.Find(this->Techno)->GetAttachedEffectCumulativeCount(pType);
 
 	if (count < 1)
 	{
@@ -639,7 +641,12 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 					markForRedraw = true;
 
 				if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
-					pTargetExt->UpdateCumulativeAttachEffects(pType);
+				{
+					if (!pType->Cumulative_SimpleStack)
+						pTargetExt->UpdateCumulativeAttachEffects(pType);
+					else
+						pAE->UpdateCumulativeAnim();
+				}
 			}
 		}
 	}
@@ -694,7 +701,8 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 		return nullptr;
 
 	int currentTypeCount = 0;
-	const bool cumulative = pType->Cumulative && checkCumulative;
+	const bool simpleStack = pType->Cumulative && pType->Cumulative_SimpleStack;
+	const bool cumulative = pType->Cumulative && !pType->Cumulative_SimpleStack && checkCumulative;
 	AttachEffectClass* match = nullptr;
 	std::vector<AttachEffectClass*> cumulativeMatches;
 	cumulativeMatches.reserve(targetAEs.size());
@@ -709,8 +717,17 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 
 			if (!cumulative)
 			{
-				match = attachEffect;
-				break;
+				if (simpleStack && (pType->Cumulative_MaxCount < 0 || attachEffect->SimpleStackCount < pType->Cumulative_MaxCount))
+				{
+					attachEffect->SimpleStackCount++;
+
+					if (pType->CumulativeAnimations.size() > 0)
+						attachEffect->HasCumulativeAnim = true;
+				}
+
+				attachEffect->RefreshDuration(attachParams.DurationOverride);
+				AttachEffectTypeClass::HandleEvent(pTarget);
+				return nullptr;
 			}
 			else if (!attachParams.CumulativeRefreshSameSourceOnly || (attachEffect->Source == pSource && attachEffect->Invoker == pInvoker))
 			{
@@ -858,18 +875,38 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 		return 0;
 
 	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-	int detachedCount = 0;
+	const bool cumulative = pType->Cumulative;
+	const bool simpleStack = cumulative && pType->Cumulative_SimpleStack;
+	const bool complexStack = cumulative && !pType->Cumulative_SimpleStack;
 	int stackCount = -1;
 
-	if (pType->Cumulative)
+	if (complexStack)
+	{
 		stackCount = pTargetExt->GetAttachedEffectCumulativeCount(pType);
 
-	if (minCount > 0 && stackCount > -1 && pType->Cumulative && minCount > stackCount)
-		return 0;
+		if (minCount > 0 && stackCount > -1 && minCount > stackCount)
+			return 0;
+	}
 
+	int detachedCount = 0;
 	auto const targetAEs = &pTargetExt->AttachedEffects;
+	auto const pWeapon = pType->ExpireWeapon;
+	const bool invokerOwner = pType->ExpireWeapon_UseInvokerAsOwner;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
+
+	auto handleExpireWeapon = [&](TechnoClass* pInvoker)
+		{
+			if (invokerOwner)
+			{
+				if (pInvoker)
+					expireWeapons.emplace_back(pWeapon, pInvoker);
+			}
+			else
+			{
+				expireWeapons.emplace_back(pWeapon, pTarget);
+			}
+		};
 
 	for (it = targetAEs->begin(); it != targetAEs->end(); )
 	{
@@ -882,24 +919,48 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 		{
 			detachedCount++;
 
-			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Remove) != ExpireWeaponCondition::None)
+			if (simpleStack)
 			{
-				// can't be GetAttachedEffectCumulativeCount(pType) < 2, or inactive AE might make it stack more than once
-				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || stackCount == 1)
+				detachedCount = attachEffect->SimpleStackCount;
+
+				if (minCount > 0 && minCount > detachedCount)
+					return 0;
+
+				if (maxCount > 0 && detachedCount > maxCount)
 				{
-					if (pType->ExpireWeapon_UseInvokerAsOwner)
+					detachedCount = maxCount;
+					attachEffect->SimpleStackCount -= maxCount;
+					stackCount = attachEffect->SimpleStackCount;
+				}
+			}
+
+			if (pWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Remove) != ExpireWeaponCondition::None)
+			{
+				auto const pInvoker = attachEffect->Invoker;
+
+				// can't be GetAttachedEffectCumulativeCount(pType) < 2, or inactive AE might make it stack more than once
+				if (!simpleStack || !pType->ExpireWeapon_CumulativeOnlyOnce || stackCount == 1)
+				{
+					handleExpireWeapon(pInvoker);
+				}
+				else if (simpleStack) // handle ExpireWeapon for Cumulative.SimpleStack
+				{
+					if (pType->ExpireWeapon_CumulativeOnlyOnce)
 					{
-						if (auto const pInvoker = attachEffect->Invoker)
-							expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pInvoker));
+						if (stackCount <= 0)
+							handleExpireWeapon(pInvoker);
 					}
 					else
 					{
-						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pTarget));
+						for (int i = 0; i < detachedCount; i++)
+						{
+							handleExpireWeapon(pInvoker);
+						}
 					}
 				}
 			}
 
-			if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
+			if (complexStack && pType->CumulativeAnimations.size() > 0)
 				pTargetExt->UpdateCumulativeAttachEffects(pType, attachEffect);
 
 			if (attachEffect->ResetIfRecreatable())
@@ -910,7 +971,7 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 
 			it = targetAEs->erase(it);
 
-			if (!pType->Cumulative)
+			if (!cumulative)
 				break;
 
 			stackCount--;
@@ -1042,6 +1103,7 @@ bool AttachEffectClass::Serialize(T& Stm)
 		.Process(this->LastActiveStat)
 		.Process(this->LaserTrail)
 		.Process(this->NeedsRecalculateStat)
+		.Process(this->SimpleStackCount)
 		.Success();
 }
 
