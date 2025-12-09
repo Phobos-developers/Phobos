@@ -5,9 +5,12 @@
 
 DEFINE_HOOK(0x687C9B, ReadScenarioINI_AITeamSelector_PreloadValidTriggers, 0x7)
 {
+	if (!RulesExt::Global()->NewTeamsSelector)
+		return 0;
+
 	bool ignoreGlobalAITriggers = ScenarioClass::Instance->IgnoreGlobalAITriggers;
 
-	// For each house save a list with only AI Triggers that can be used
+	// For each house a list will be saved with Triggers that can be used by the AI
 	for (HouseClass* pHouse : HouseClass::Array)
 	{
 		auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
@@ -21,11 +24,11 @@ DEFINE_HOOK(0x687C9B, ReadScenarioINI_AITeamSelector_PreloadValidTriggers, 0x7)
 		int sideTypeIdx = parentCountrySideTypeIdx >= 0 ? parentCountrySideTypeIdx + 1 : pHouse->Type->SideIndex + 1; // Side indexes in AITriggers section are 1-based
 		int sideIdx = pHouse->SideIndex + 1; // Side indexes in AITriggers section are 1-based -> unused variable!!
 
-
 		for (int i = 0; i < AITriggerTypeClass::Array.Count; i++)
 		{
 			auto pTrigger = AITriggerTypeClass::Array.GetItem(i);
-			if (!pTrigger || ignoreGlobalAITriggers == pTrigger->IsGlobal || !pTrigger->Team1)
+
+			if (!pTrigger || (ignoreGlobalAITriggers && pTrigger->IsGlobal && !pTrigger->IsEnabled) || !pTrigger->Team1)
 				continue;
 
 			int triggerHouse = pTrigger->HouseIndex;
@@ -37,7 +40,12 @@ DEFINE_HOOK(0x687C9B, ReadScenarioINI_AITeamSelector_PreloadValidTriggers, 0x7)
 				pHouseExt->AITriggers_ValidList.push_back(i);
 		}
 
-		Debug::Log("House %d [%s] could use %d AI triggers in this map.\n", pHouse->ArrayIndex, pHouse->Type->ID, pHouseExt->AITriggers_ValidList.size());
+		Debug::Log("AITeamsSelector - The house %d [%s](%s) should be able to use %d AI triggers in this map.\n", pHouse->ArrayIndex, pHouse->Type->ID, pHouse->PlainName, pHouseExt->AITriggers_ValidList.size());
+
+		/*for (int i : pHouseExt->AITriggers_ValidList)
+		{
+			Debug::Log(" => %s => %s\n", AITriggerTypeClass::Array.GetItem(i)->ID, AITriggerTypeClass::Array.GetItem(i)->Name);
+		}*/
 	}
 
 	return 0;

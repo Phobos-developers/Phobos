@@ -1186,119 +1186,115 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ConsideredSecretLabTech.Read(exINI, pSection, "ConsideredSecretLabTech");
 
 	// Secret.RequiredHouses contains a list of HouseTypeClass indexes
-	//this->Secret_RequiredHouses.clear();
-	const char* key = "SecretLab.RequiredHouses";
-	char* context = nullptr;
-	pINI->ReadString(pSection, key, "", Phobos::readBuffer);
-	this->Secret_RequiredHouses.clear();
-
-	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+	if (pINI->ReadString(pSection, "SecretLab.RequiredHouses", "", Phobos::readBuffer) > 0)
 	{
-		std::string item(cur);
-		this->Secret_RequiredHouses.push_back(item);
-	}
+		char* context = nullptr;
+		this->Secret_RequiredHouses.clear();
 
-	key = nullptr;
+		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			std::string item(cur);
+			this->Secret_RequiredHouses.push_back(item);
+		}
+	}
 
 	// Secret.ForbiddenHouses contains a list of HouseTypeClass indexes
-	//this->Secret_ForbiddenHouses.clear();
-	key = "SecretLab.ForbiddenHouses";
-	context = nullptr;
-	pINI->ReadString(pSection, key, "", Phobos::readBuffer);
-	this->Secret_ForbiddenHouses.clear();
-
-	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+	if (pINI->ReadString(pSection, "SecretLab.ForbiddenHouses", "", Phobos::readBuffer) > 0)
 	{
-		std::string item(cur);
-		this->Secret_ForbiddenHouses.push_back(item);
-	}
+		char* context = nullptr;
+		this->Secret_ForbiddenHouses.clear();
 
-	key = nullptr;
+		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			std::string item(cur);
+			this->Secret_ForbiddenHouses.push_back(item);
+		}
+	}
 
 	// Prerequisite.RequiredTheaters contains a list of theader names
-	this->Prerequisite_RequiredTheaters.clear();
-	key = "Prerequisite.RequiredTheaters";
-	context = nullptr;
-	pINI->ReadString(pSection, key, "", Phobos::readBuffer);
-	this->Prerequisite_RequiredTheaters.clear();
-
-	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+	if (pINI->ReadString(pSection, "Prerequisite.RequiredTheaters", "", Phobos::readBuffer) > 0)
 	{
-		int index = Theater::FindIndex(cur);
-		if (index != -1)
-			this->Prerequisite_RequiredTheaters.push_back(index);
-	}
+		char* context = nullptr;
+		this->Prerequisite_RequiredTheaters.clear();
 
-	key = nullptr;
+		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			int index = Theater::FindIndex(cur);
+
+			if (index != -1)
+				this->Prerequisite_RequiredTheaters.push_back(index);
+		}
+	}
 
 	// Prerequisite with Generic Prerequistes support.
 	// Note: I have no idea of what could happen in all the game engine logics if I push the negative indexes of the Ares generic prerequisites directly into the original Prerequisite tag... for that reason this tag is duplicated for working with it
-	//this->Prerequisite.clear();
-	key = "Prerequisite";
-	context = nullptr;
-	pINI->ReadString(pSection, key, "", Phobos::readBuffer);
-	this->Prerequisite.clear();
-
-	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+	if (pINI->ReadString(pSection, "Prerequisite", "", Phobos::readBuffer) > 0)
 	{
-		int idx = TechnoTypeClass::FindIndex(cur);
-		if (idx >= 0)
+		char* context = nullptr;
+		this->Prerequisite.clear();
+
+		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
-			this->Prerequisite.push_back(idx);
-		}
-		else
-		{
-			int index = HouseExt::FindGenericPrerequisite(cur);
-			if (index < 0)
-				this->Prerequisite.push_back(index);
+			int idx = TechnoTypeClass::FindIndex(cur);
+
+			if (idx >= 0)
+			{
+				this->Prerequisite.push_back(idx);
+			}
+			else
+			{
+				int index = HouseExt::FindGenericPrerequisite(cur);
+
+				if (index < 0)
+					this->Prerequisite.push_back(index);
+			}
 		}
 	}
-
-	key = nullptr;
 
 	// Prerequisite.Negative with Generic Prerequistes support
-	//this->Prerequisite_Negative.clear();
-	key = "Prerequisite.Negative";
-	context = nullptr;
-	pINI->ReadString(pSection, key, "", Phobos::readBuffer);
-	this->Prerequisite_Negative.clear();
-
-	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+	if (pINI->ReadString(pSection, "Prerequisite.Negative", "", Phobos::readBuffer) > 0)
 	{
-		int idx = TechnoTypeClass::FindIndex(cur);
-		if (idx >= 0)
+		char* context = nullptr;
+		this->Prerequisite_Negative.clear();
+
+		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
-			this->Prerequisite_Negative.push_back(idx);
-		}
-		else
-		{
-			int index = HouseExt::FindGenericPrerequisite(cur);
-			if (index < 0)
-				this->Prerequisite_Negative.push_back(index);
+			int idx = TechnoTypeClass::FindIndex(cur);
+
+			if (idx >= 0)
+			{
+				this->Prerequisite_Negative.push_back(idx);
+			}
+			else
+			{
+				int index = HouseExt::FindGenericPrerequisite(cur);
+
+				if (index < 0)
+					this->Prerequisite_Negative.push_back(index);
+			}
 		}
 	}
 
-	key = nullptr;
-
 	// Prerequisite.ListX with Generic Prerequistes support
-	//this->Prerequisite_ListVector.clear();
 	this->Prerequisite_Lists.Read(exINI, pSection, "Prerequisite.Lists");
-	this->Prerequisite_ListVector.clear();
 
-	if (Prerequisite_Lists.Get() > 0)
+	if (this->Prerequisite_Lists.Get() >= 0)
 	{
+		this->Prerequisite_ListVector.clear();
+
 		for (int i = 1; i <= Prerequisite_Lists.Get(); i++)
 		{
 			char keySection[32];
 			_snprintf_s(keySection, sizeof(keySection), "Prerequisite.List%d", i);
 
 			DynamicVectorClass<int> objectsList;
-			char* context2 = nullptr;
+			char* context = nullptr;
 			pINI->ReadString(pSection, keySection, "", Phobos::readBuffer);
 
-			for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context2); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context2))
+			for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 			{
 				int idx = TechnoTypeClass::FindIndex(cur);
+
 				if (idx >= 0)
 				{
 					objectsList.AddItem(idx);
@@ -1306,6 +1302,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 				else
 				{
 					int index = HouseExt::FindGenericPrerequisite(cur);
+
 					if (index < 0)
 						objectsList.AddItem(index);
 				}
