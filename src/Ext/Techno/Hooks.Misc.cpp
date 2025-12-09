@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <EventClass.h>
 #include <SpawnManagerClass.h>
 #include <TunnelLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
@@ -87,8 +88,8 @@ DEFINE_HOOK(0x6B72FE, SpawnerManagerClass_AI_MissileCheck, 0x9)
 
 	GET(SpawnManagerClass*, pThis, ESI);
 
-	auto pLoco = ((FootClass*)pThis->Owner)->Locomotor; // Ares has already handled the building case.
-	auto pLocoInterface = pLoco.GetInterfacePtr();
+	const auto pLoco = ((FootClass*)pThis->Owner)->Locomotor; // Ares has already handled the building case.
+	const auto pLocoInterface = pLoco.GetInterfacePtr();
 
 	return (pLocoInterface->Is_Moving_Now()
 		|| (!locomotion_cast<JumpjetLocomotionClass*>(pLoco) && pLocoInterface->Is_Moving())) // Jumpjet should only check Is_Moving_Now.
@@ -279,7 +280,7 @@ DEFINE_HOOK(0x4D962B, FootClass_SetDestination_RecycleFLH, 0x5)
 			*pDestCrd += TechnoExt::GetFLHAbsoluteCoords(pCarrier, FLH, pCarrierTypeExt->Spawner_RecycleOnTurret) - pCarrier->GetCoords();
 		}
 	}
-	else if (pDest->WhatAmI() == AbstractType::Building
+	else if (!pThis->GetTechnoType()->MissileSpawn && pDest->WhatAmI() == AbstractType::Building
 		&& pThis->SendCommand(RadioCommand::QueryCanEnter, static_cast<BuildingClass*>(pDest)) != RadioCommand::AnswerPositive)
 	{
 		GET(CoordStruct*, pDestCrd, EAX);
@@ -526,7 +527,7 @@ DEFINE_HOOK(0x74691D, UnitClass_UpdateDisguise_EMP, 0x6)
 
 #pragma region AttackMindControlledDelay
 
-bool __fastcall CanAttackMindControlled(TechnoClass* pControlled, TechnoClass* pRetaliator)
+static bool __fastcall CanAttackMindControlled(TechnoClass* pControlled, TechnoClass* pRetaliator)
 {
 	const auto pMind = pControlled->MindControlledBy;
 
@@ -757,7 +758,7 @@ DEFINE_HOOK(0x51B20E, InfantryClass_AssignTarget_FireOnce, 0x6)
 }
 
 // Update attached anim layers after parent unit changes layer.
-void __fastcall DisplayClass_Submit_Wrapper(DisplayClass* pThis, void* _, ObjectClass* pObject)
+static void __fastcall DisplayClass_Submit_Wrapper(DisplayClass* pThis, void* _, ObjectClass* pObject)
 {
 	pThis->Submit(pObject);
 
@@ -776,7 +777,7 @@ DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
 	enum { Continue= 0x51D7EC, SkipWaterSequences = 0x51D842, UseSwim = 0x51D83D, UseWetAttack = 0x51D82F };
 
 	GET(InfantryClass*, pThis, ESI);
-	GET(Sequence, sequence, EDI);
+	GET(const Sequence, sequence, EDI);
 
 	R->EBP(0); // Restore overridden instructions.
 
@@ -791,7 +792,7 @@ DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
 	return Continue;
 }
 
-bool __fastcall LocomotorCheckForBunkerable(TechnoTypeClass* pType)
+static bool __fastcall LocomotorCheckForBunkerable(TechnoTypeClass* pType)
 {
 	auto const loco = pType->Locomotor;
 
@@ -846,13 +847,78 @@ DEFINE_HOOK(0x73D6E6, UnitClass_Unload_Subterranean, 0x6)
 
 	GET(UnitClass*, pThis, ESI);
 
-	if (pThis->Type->Locomotor == LocomotionClass::CLSIDs::Tunnel)
+	if (auto const pLoco = locomotion_cast<TunnelLocomotionClass*>(pThis->Locomotor))
 	{
-		auto const pLoco = static_cast<TunnelLocomotionClass*>(pThis->Locomotor.GetInterfacePtr());
-
 		if (pLoco->State != TunnelLocomotionClass::State::Idle)
 			return ReturnFromFunction;
 	}
 
 	return 0;
 }
+
+#pragma region Events
+
+DEFINE_HOOK(0x4C7512, EventClass_Execute_StopCommand, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+
+	if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+	{
+		// issue #112 Make FireOnce=yes work on other TechnoType
+		// Author: Starkku
+		if (pUnit->CurrentMission == Mission::Unload && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer)
+		{
+			pUnit->SetTarget(nullptr);
+			pThis->QueueMission(Mission::Guard, true);
+		}
+
+		// Explicit stop command should reset subterranean harvester state machine.
+		auto const pExt = TechnoExt::ExtMap.Find(pUnit);
+		pExt->SubterraneanHarvStatus = 0;
+		pExt->SubterraneanHarvRallyPoint = nullptr;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4C7462, EventClass_Execute_MegaMission_MoveCommand, 0x5)
+{
+	enum { SkipGameCode = 0x4C74C0 };
+
+	GET(TechnoClass*, pTechno, EDI);
+
+	if (pTechno->WhatAmI() != AbstractType::Unit)
+		return 0;
+
+	GET(EventClass*, pThis, ESI);
+	auto const mission = static_cast<Mission>(pThis->MegaMission.Mission);
+	auto const pExt = TechnoExt::ExtMap.Find(pTechno);
+
+	if (mission == Mission::Move)
+	{
+		// Explicitly reset subterranean harvester state machine.
+		pExt->SubterraneanHarvStatus = 0;
+		pExt->SubterraneanHarvRallyPoint = nullptr;
+
+		// Do not explicitly reset target for KeepTargetOnMove vehicles when issued move command.
+		if (pExt->TypeExtData->KeepTargetOnMove && pTechno->Target)
+		{
+			GET(AbstractClass*, pTarget, EBX);
+
+			if (!pTarget && pTechno->IsCloseEnoughToAttack(pTechno->Target))
+			{
+				auto const pDestination = pThis->MegaMission.Destination.As_Abstract();
+				pTechno->SetDestination(pDestination, true);
+				pExt->KeepTargetOnMove = true;
+
+				return SkipGameCode;
+			}
+		}
+	}
+
+	pExt->KeepTargetOnMove = false;
+
+	return 0;
+}
+
+#pragma endregion

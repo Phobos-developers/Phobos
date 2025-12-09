@@ -53,12 +53,13 @@ DEFINE_HOOK(0x740744, UnitClass_What_Action_DisallowMoving_2, 0x6)
 	enum { AllowAttack = 0x74078E, ReturnNoMove = 0x740769, ReturnResult = 0x740801 };
 
 	GET(UnitClass*, pThis, ESI);
-	GET_STACK(Action, result, 0x30);
+	GET_STACK(const Action, result, 0x30);
 
 	if (TechnoExt::CannotMove(pThis))
 	{
 		if (result == Action::Move)
 			return ReturnNoMove;
+
 		if (result != Action::Attack)
 			return ReturnResult;
 
@@ -129,7 +130,7 @@ DEFINE_HOOK(0x744103, UnitClass_Mission_AreaGuard_DisallowMoving, 0x6)
 DEFINE_HOOK(0x74132B, UnitClass_GetFireError_DisallowMoving, 0x7)
 {
 	GET(UnitClass*, pThis, ESI);
-	GET(FireError, result, EAX);
+	GET(const FireError, result, EAX);
 
 	if (result == FireError::RANGE && TechnoExt::CannotMove(pThis))
 		R->EAX(FireError::ILLEGAL);

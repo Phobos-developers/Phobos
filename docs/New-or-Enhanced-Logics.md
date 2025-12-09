@@ -22,6 +22,9 @@ This page describes all the engine features that are either new and introduced b
     - `firing`: Discard when firing a weapon. This counts special weapons that are not actually fired such as ones with `Spawner=true` or `DrainWeapon=true`.
   - If `PenetratesIronCurtain` is not set to true, the effect is not applied on currently invulnerable objects.
     - `PenetratesForceShield` can be used to set this separately for Force Shielded objects, defaults to value of `PenetratesIronCurtain`.
+  - `AffectTypes`, if set to a non-empty list, restricts the effect to only be applicable on the specific unit types listed. If this is not set or empty, no whitelist filtering occurs. This check has the highest priority.
+  - `IgnoreTypes`, if set to a non-empty list, prevents the effect from being applied to any of the specific unit types listed. If this is not set or empty, no blacklist filtering occurs. This check is performed after `AffectTypes`.
+  - `AffectTargets`, if set to a non-empty list, restricts the effect to only be applicable on units belonging to the specified target categories (e.g., infantry, units, aircraft, buildings). This check is performed after both type-based filters.
   - `Animation` defines animation to play in an indefinite loop for as long as the effect is active on the object it is attached to.
     - If `Animation.ResetOnReapply` is set to true, the animation playback is reset every time the effect is applied if `Cumulative=false`.
     - `Animation.OfflineAction` determines what happens to the animation when the attached object is deactivated or not powered. Only applies if `Powered=true`.
@@ -97,6 +100,9 @@ DiscardOn=none                                     ; List of discard condition e
 DiscardOn.RangeOverride=                           ; floating point value, distance in cells
 PenetratesIronCurtain=false                        ; boolean
 PenetratesForceShield=                             ; boolean
+AffectTypes=                                       ; List of TechnoTypes
+IgnoreTypes=                                       ; List of TechnoTypes
+AffectTargets=all                                  ; List of TechnoType Enumeration (none|infantry|units|aircraft|buildings|all)
 Animation=                                         ; AnimationType
 Animation.ResetOnReapply=false                     ; boolean
 Animation.OfflineAction=Hides                      ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
@@ -142,7 +148,7 @@ ReflectDamage.Override=                            ; integer
 ReflectDamage.UseInvokerAsOwner=false              ; boolean
 DisableWeapons=false                               ; boolean
 Unkillable=false                                   ; boolean
-LaserTrail.Type=                                   ; lasertrail type
+LaserTrail.Type=                                   ; LaserTrailType
 Groups=                                            ; comma-separated list of strings (group IDs)
 
 [SOMETECHNO]                                       ; TechnoType
@@ -292,7 +298,7 @@ Laser trails are very resource intensive! Due to the game not utilizing GPU havi
 ### Shields
 
 ![image](_static/images/technoshield-01.gif)
-*Buildings, Infantries and Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+*Buildings, Infantry and Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 In `rulesmd.ini`:
 ```ini
@@ -760,6 +766,8 @@ AU=false              ; boolean
 
 ```{note}
 Only vanilla projectiles with `Inviso=yes` set or [Phobos projectiles](#projectile-trajectories) `Straight` with `Trajectory.Straight.SubjectToGround=false` enabled and `Bombard` with `Trajectory.Bombard.SubjectToGround=false` enabled can go beneath the ground. Otherwise, the projectile will be forced to detonate upon hitting the ground.
+
+In order to attack units moving horizontally underground, the attacker needs to have `SensorsSight` settings.
 ```
 
 ### Parabombs
@@ -786,6 +794,7 @@ BombParachute=           ; AnimationType, default to [General] -> BombParachute
 - Projectiles can now be made interceptable by certain TechnoTypes by setting `Interceptable=true` on them. The TechnoType scans for interceptable projectiles within a range if it has no other target and will use one of its weapons to shoot at them. Projectiles can define `Armor` and `Strength`. Weapons that cannot target the projectile's armor type will not attempt to intercept it. On interception, if the projectile has `Armor` set, an amount equaling to the intercepting weapon's `Damage` adjusted by Warhead `Verses` is deducted from the projectile's current strength. Regardless of if the current projectile strength was reduced or not, if it sits at 0 or below after interception, the projectile is detonated.
   - `Interceptor.Weapon` determines the weapon (0 = `Primary`, 1 = `Secondary`) to be used for intercepting projectiles.
     - The interceptor weapon may need `AG` and/or `AA` set to true on its projectile to be able to target projectiles depending on their elevation from ground. If you don't set those then the weapon won't be able to target low-flying or high-flying projectiles respectively.
+  - `Interceptor.TargetingDelay` determines how often (in frames) interceptor TechnoType scans for suitable projectiles to intercept. Smaller delay is better for interceptor's capabilities but worse for game performance. Delay cannot be set to 0, this will change the delay to 1 and outputs a developer warning to log.
   - `Interceptor.CanTargetHouses` controls which houses the projectiles (or rather their firers) can belong to be eligible for interception.
   - `Interceptor.GuardRange` (and `Interceptor.(Rookie|Veteran|EliteGuardRange)`) is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
   - `Interceptor.MinimumGuardRange` (and `Interceptor.(Rookie|Veteran|EliteMinimumGuardRange)`) is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
@@ -801,6 +810,7 @@ In `rulesmd.ini`:
 [SOMETECHNO]                               ; TechnoType
 Interceptor=false                          ; boolean
 Interceptor.Weapon=0                       ; integer, weapon slot index (0 or 1)
+Interceptor.TargetingDelay=1               ; integer, game frames
 Interceptor.CanTargetHouses=enemies        ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 Interceptor.GuardRange=0.0                 ; floating point value
 Interceptor.VeteranGuardRange=             ; floating point value
@@ -869,7 +879,7 @@ Trajectory.Speed=100.0  ; floating point value
     - `Trajectory.Straight.ProximityMedial` controls whether to detonate `Trajectory.Straight.ProximityWarhead` at the bullet's location rather than the proximity target's location. If `Trajectory.Straight.ProximityDirect` is set to true, this will only affect the calculation result of `Trajectory.Straight.EdgeAttenuation`.
     - `Trajectory.Straight.ProximityAllies` controls whether allies will also trigger the proximity fuse.
     - `Trajectory.Straight.ProximityFlight` controls whether to count units in the air.
-  - `Trajectory.Straight.ThroughVehicles` controls whether the projectile will not be obstructed by vehicles or aircrafts on the ground. When it is obstructed, it will be directly detonated at its location. If it still have `Trajectory.Straight.ProximityImpact` times, it will also detonate a `Trajectory.Straight.ProximityImpact` at the location of the obstacle.
+  - `Trajectory.Straight.ThroughVehicles` controls whether the projectile will not be obstructed by vehicles or aircraft on the ground. When it is obstructed, it will be directly detonated at its location. If it still have `Trajectory.Straight.ProximityImpact` times, it will also detonate a `Trajectory.Straight.ProximityImpact` at the location of the obstacle.
   - `Trajectory.Straight.ThroughBuilding` controls whether the projectile will not be obstructed by buildings. When it is obstructed, it will be directly detonated at its location. If it still have `Trajectory.Straight.ProximityImpact` times, it will also detonate a `Trajectory.Straight.ProximityImpact` at the location of the obstacle.
   - `Trajectory.Straight.SubjectToGround` controls whether the projectile should explode when it hits the ground. Note that this will not make AI search for suitable attack locations.
   - `Trajectory.Straight.ConfineAtHeight` controls the height above ground that projectile will try to travel as it can. It can not move down from the cliff by setting `SubjectToCliffs=true`. It can be cancelled by setting as a non positive integer. It will be forcibly cancelled by setting `Trajectory.Speed` above 256.
@@ -1020,7 +1030,7 @@ Trajectory.Parabola.AxisOfRotation=0,0,1        ; integer - Forward,Lateral,Heig
 ```
 
 ```{note}
-- Compared to vanilla `Arcing`, this can also be used for aircrafts and airburst weapon.
+- Compared to vanilla `Arcing`, this can also be used for aircraft and airburst weapon.
 - Certainly, `Gravity` can also affect the trajectory.
 ```
 
@@ -1345,6 +1355,30 @@ Spawner.RecycleOnTurret=false      ; boolean
 If you set recycle FLH, it is best to set a recycle range of at least `0.5` at the same time. Otherwise, the spawner may not recycle correctly.
 ```
 
+### Automatic conversion based on ammo
+
+- Units can now be converted into another unit by ammo count.
+- `Ammo.AutoConvertMinimumAmount` determines the minimal number of ammo at which a unit converts automatically after the ammo update.
+- `Ammo.AutoConvertMaximumAmount` determines the maximum number of ammo at which a unit converts automatically after the ammo update.
+- `Ammo.AutoConvertType` specify the new techno after the conversion. This unit must be of the same type of the original (infantry -> infantry, vehicle -> vehicle or aircraft -> aircraft).
+- Setting a negative number will disable the ammo count check, and when both checks are disabled, conversion will not occur.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType, before conversion
+Ammo.AutoConvertMinimumAmount=-1  ; integer
+Ammo.AutoConvertMaximumAmount=-1  ; integer
+Ammo.AutoConvertType=             ; TechnoType, after conversion
+```
+
+```{warning}
+This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
+```
+
+```{warning}
+This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
+```
+
 ### Automatic passenger deletion
 
 - Transports can erase passengers over time. Passengers are deleted in order of entering the transport, from first to last.
@@ -1496,6 +1530,23 @@ Spawns.Queue=       ; List of AircraftTypes, in order
 Note that all spawnees in a queue should have `MissileSpawn` set to the same value (all to true or false). Mixing them will make missile spawnees can't hit their targets.
 ```
 
+### Customize Ares's radar jam logic
+
+- It is now possible to customize some properties of Ares's radar jam logic.
+  - `RadarJamHouses` determines which houses will be affected by the jam.
+  - `RadarJamDelay` determines the interval of the jam, default to 30 frames like Ares did. Shorter interval means the jam will be applied more timely, but worse for performance.
+  - `RadarJamAffect` determines a list of buildings with `Radar=yes` or `SpySat=yes` that could be affected by the jam. If it's empty, all radar buildings will be affected.
+  - `RadarJamIgnore` determines a list of buildings with `Radar=yes` or `SpySat=yes` that couldn't be affected by the jam.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType, with RadarJamRadius=
+RadarJamHouses=enemies            ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+RadarJamDelay=30                  ; integer
+RadarJamAffect=                   ; List of BuildingTypes
+RadarJamIgnore=                   ; List of BuildingTypes
+```
+
 ### Customize EVA voice and `SellSound` when selling units
 
 - When a building or a unit is sold, a sell sound as well as an EVA is played to the owner. These configurations have been deglobalized.
@@ -1524,9 +1575,13 @@ Vanilla game played vehicles' `SellSound` globally. This has been changed in con
   - Weapons with `ElectricAssault=true` set on `Warhead` against `Overpowerable=true` buildings belonging to owner or allies.
   - `Overpowerable=true` buildings that are currently overpowered.
   - Any system using `(Elite)WeaponX`, f.ex `Gunner=true` or `IsGattling=true` is also wholly exempt.
+- If `[CombatDamage] -> AllowWeaponSelectAgainstWalls` is set to true, `Secondary` will now be used against walls if `Primary` weapon Warhead has `Wall=false`, `Secondary` has `Wall=true` and the firer does not have `NoSecondaryWeaponFallback` set to true.
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+AllowWeaponSelectAgainstWalls=false      ; boolean
+
 [SOMETECHNO]                             ; TechnoType
 NoSecondaryWeaponFallback=false          ; boolean
 NoSecondaryWeaponFallback.AllowAA=false  ; boolean
@@ -1639,8 +1694,8 @@ NoQueueUpToEnter.Buildings=     ; boolean, default to NoQueueUpToEnter
 NoQueueUpToUnload.Buildings=    ; boolean, default to NoQueueUpToUnload
 
 [SOMEVEHICLE/SOMEBUILDING]      ; VehicleType/BuildingType, transport
-NoQueueUpToEnter=               ; boolean, default to [General] -> NoQueueUpToEnter.Buildings
-NoQueueUpToUnload=              ; boolean, default to [General] -> NoQueueUpToUnload.Buildings
+NoQueueUpToEnter=               ; boolean, default to [General] -> NoQueueUpToEnter(.Buildings)
+NoQueueUpToUnload=              ; boolean, default to [General] -> NoQueueUpToUnload(.Buildings)
 ```
 
 ```{note}
@@ -2003,7 +2058,7 @@ TiberiumEater.CellN=              ; X,Y - cell offset
 TiberiumEater.CashMultiplier=1.0  ; floating point value
 TiberiumEater.AmountPerCell=0     ; integer
 TiberiumEater.Display=true        ; boolean
-TiberiumEater.Display.Houses=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+TiberiumEater.Display.Houses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 TiberiumEater.Anims=              ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium0=    ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium1=    ; List of AnimationTypes
@@ -2161,6 +2216,21 @@ In `rulesmd.ini`:
 RemoveMindControl=false  ; boolean
 ```
 
+### CellSpread enhancement
+
+- In vanilla, the damage area of an AOE warhead is spherical. In some case, e.g. you want to make a warhead superweapon buff all units in an area, the affectted range for air units is always smaller than ground units. Now you can use a new flag `CellSpread.Cylinder` to overcome this problem.
+- `AffectsAir` allow you to make a warhead only damage the units with height more than 208.
+- `AffectsGround` allow you to make a warhead only damage the units with height less than 208.
+- Noting that these features work independently with the ares flag `DamageAirThreshold`. A warhead with `CellSpread.Cylinder` detonating on floor will not affect units in air, unless it has `DamageAirThreshold = -1`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]              ; WarheadType
+CellSpread.Cylinder=false  ; boolean
+AffectsAir=true            ; boolean
+AffectsGround=true         ; boolean
+```
+
 ### Chance-based extra damage or Warhead detonation / 'critical hits'
 
 - Warheads can now apply additional chance-based damage or Warhead detonation ('critical hits') with the ability to customize chance, damage, affected targets, affected target HP threshold and animations of critical hit.
@@ -2171,7 +2241,7 @@ RemoveMindControl=false  ; boolean
   - `Crit.Warhead.FullDetonation` controls whether or not the Warhead is detonated fully on the targets (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
   - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against. Critical hits cannot affect empty cells or cells containing only TerrainTypes, overlays etc.
   - `Crit.AffectsHouses` can be used to customize houses that this Warhead can deal critical hits against.
-  - `Crit.AffectBelowPercent` and `Crit.AffectsAbovePercent` can be used to set the health percentage that targets must be above and/or below/equal to respectively to be affected by critical hits. If target has zero health left this check is bypassed.
+  - `Crit.AffectBelowPercent` and `Crit.AffectAbovePercent` can be used to set the health percentage that targets must be above and/or below/equal to respectively to be affected by critical hits. If target has zero health left this check is bypassed.
   - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list. If `Crit.AnimList.CreateAll` is set (defaults to `AnimList.CreateAll`), all animations from the list are created.
     - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation. Note that because these animations are independent from `AnimList`, `Crit.AnimList.PickRandom` and `Crit.AnimList.CreateAll` will not default to their `AnimList` counterparts here and need to be explicitly set if needed.
   - `Crit.ActiveChanceAnims` can be used to set animation to be always displayed at the Warhead's detonation coordinates if the current Warhead has a chance to critically hit. If more than one animation is listed, a random one is selected.
@@ -2190,7 +2260,7 @@ Crit.Warhead.FullDetonation=true           ; boolean
 Crit.Affects=all                           ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
 Crit.AffectsHouses=all                     ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 Crit.AffectBelowPercent=1.0                ; floating point value, percents or absolute (0.0-1.0)
-Crit.AffectsAbovePercent=0.0               ; floating point value, percents or absolute (0.0-1.0)
+Crit.AffectAbovePercent=0.0                ; floating point value, percents or absolute (0.0-1.0)
 Crit.AnimList=                             ; List of AnimationTypes
 Crit.AnimList.PickRandom=                  ; boolean
 Crit.AnimList.CreateAll=                   ; boolean
@@ -2594,7 +2664,7 @@ Burst.FireWithinSequence=false  ; boolean
 
 ### Burst without delay
 
-- In vanilla, vehicles and infantries will only fire once in one frame, even if their `ROF` or `BurstDelay` is set to 0. Now you can force units to fire all bursts in one frame by setting the `Burst.NoDelay` to true.
+- In vanilla, vehicles and infantry will only fire once in one frame, even if their `ROF` or `BurstDelay` is set to 0. Now you can force units to fire all bursts in one frame by setting the `Burst.NoDelay` to true.
 
 In `rulesmd.ini`:
 ```ini

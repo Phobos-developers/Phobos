@@ -52,7 +52,7 @@ msgid ""
 "to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2))."
 msgstr ""
 "地图触发结果 `41 播放动画在...` 现在可以更完善地创建可以播放音效、造成杀伤以及使用设置了 `TiberiumChainReaction`"
-" 参数的动画（需要[修改 `FAData.ini`](Whats-New.md#for-map-editor-final-alert-2)）。"
+" 参数的动画（需要 [修改 `FAData.ini`](Whats-New.md#for-map-editor-final-alert-2)）。"
 
 #: ../../AI-Scripting-and-Mapping.md:10
 msgid ""
@@ -81,10 +81,9 @@ msgstr "脚本动作 `部署` 现在会让拥有 `DeploysInto` 的载具自动�
 #: ../../AI-Scripting-and-Mapping.md:13
 msgid ""
 "Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic"
-" normally. `InitialPayload` logic from Ares is not supported yet."
+" normally."
 msgstr ""
-"由触发结果 7、80、107 生成的小队现在可以正常使用 IFV 和 OpenTopped 逻辑。Ares 的 `InitialPayload` "
-"逻辑暂不支持。"
+"由触发结果 7、80、107 生成的小队现在可以正常使用 IFV 和 OpenTopped 逻辑。"
 
 #: ../../AI-Scripting-and-Mapping.md:14
 msgid ""
@@ -615,7 +614,7 @@ msgstr "2"
 
 #: ../../AI-Scripting-and-Mapping.md:66
 msgid "Structures"
-msgstr "结构"
+msgstr "建筑"
 
 #: ../../AI-Scripting-and-Mapping.md:66
 msgid "Any enemy `BuildingTypes` that are not considered as vehicles"
@@ -1066,7 +1065,7 @@ msgstr "36"
 
 #: ../../AI-Scripting-and-Mapping.md:66
 msgid "Non-defensive Structures"
-msgstr "非防御结构"
+msgstr "非防御建筑"
 
 #: ../../AI-Scripting-and-Mapping.md:66
 msgid "Any enemy `BuildingTypes` with `IsBaseDefense=no`"

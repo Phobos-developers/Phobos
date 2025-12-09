@@ -6,7 +6,19 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Building/Body.h>
 
-static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
+#pragma region AllowDeployControlledMCV
+
+DEFINE_HOOK_AGAIN(0x443770, TechnoClass_AllowDeployControlledMCV, 0x6)// BuildingClass::CellClickedAction
+DEFINE_HOOK_AGAIN(0x443AB0, TechnoClass_AllowDeployControlledMCV, 0x6)// BuildingClass::SetRallyPoint
+DEFINE_HOOK_AGAIN(0x44F614, TechnoClass_AllowDeployControlledMCV, 0x6)// BuildingClass::IsControllable
+DEFINE_HOOK(0x700ED0, TechnoClass_AllowDeployControlledMCV, 0x6)// UnitClass::CanDeploySlashUnload
+{
+	return RulesExt::Global()->AllowDeployControlledMCV ? R->Origin() + 0xE : 0;
+}
+
+#pragma endregion
+
+static inline void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
 {
 	const auto pAnimType = pTechnoFrom->MindControlRingAnim
 		? pTechnoFrom->MindControlRingAnim->Type
@@ -96,8 +108,9 @@ DEFINE_HOOK(0x44A03C, BuildingClass_Mi_Selling_Transfer, 0x6)
 	TechnoExt::SyncInvulnerability(pStructure, pUnit);
 	AttachEffectClass::TransferAttachedEffects(pStructure, pUnit);
 
-	pUnit->QueueMission(Mission::Hunt, true);
-	//Why?
+	// This line will break the bahavior of UnDeploysInto buildings. However, it might serve a purpose that no one knows yet
+	// Comment out the line instead of removing it for now, so we can turn to it if something related goes wrong in the future
+	// pUnit->QueueMission(Mission::Hunt, true);
 	return 0;
 }
 

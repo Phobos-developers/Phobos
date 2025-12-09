@@ -6,26 +6,6 @@ const char* Enumerable<ShieldTypeClass>::GetMainSection()
 	return "ShieldTypes";
 }
 
-AnimTypeClass* ShieldTypeClass::GetIdleAnimType(bool isDamaged, double healthRatio) const
-{
-	auto damagedAnim = this->IdleAnimDamaged.Get(healthRatio);
-
-	if (isDamaged && damagedAnim)
-		return damagedAnim;
-	else
-		return this->IdleAnim.Get(healthRatio, this->GetConditionYellow(), this->GetConditionRed());
-}
-
-double ShieldTypeClass::GetConditionYellow() const
-{
-	return this->ConditionYellow.Get(RulesExt::Global()->Shield_ConditionYellow.Get(RulesClass::Instance->ConditionYellow));
-}
-
-double ShieldTypeClass::GetConditionRed() const
-{
-	return this->ConditionRed.Get(RulesExt::Global()->Shield_ConditionRed.Get(RulesClass::Instance->ConditionRed));
-}
-
 void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* pSection = this->Name;

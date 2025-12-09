@@ -87,7 +87,7 @@ DEFINE_HOOK(0x4197F3, AircraftClass_GetFireLocation_Strafing, 0x5)
 	return 0;
 }
 
-long __stdcall AircraftClass_IFlyControl_IsStrafe(IFlyControl const* ifly)
+static long __stdcall AircraftClass_IFlyControl_IsStrafe(IFlyControl const* ifly)
 {
 	__assume(ifly != nullptr);
 
@@ -176,7 +176,7 @@ DEFINE_HOOK(0x418B1F, AircraftClass_Mission_Attack_FireAtTarget5Strafe_BurstFix,
 	return 0x418B40;
 }
 
-int __fastcall AircraftClass_SelectWeapon_Wrapper(AircraftClass* pThis, void* _, AbstractClass* pTarget)
+static int __fastcall AircraftClass_SelectWeapon_Wrapper(AircraftClass* pThis, void* _, AbstractClass* pTarget)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
@@ -197,7 +197,7 @@ DEFINE_FUNCTION_JUMP(CALL6, 0x418AF1, AircraftClass_SelectWeapon_Wrapper);
 DEFINE_HOOK_AGAIN(0x41874E, AircraftClass_Mission_Attack_StrafingDestinationFix, 0x6)
 DEFINE_HOOK(0x418544, AircraftClass_Mission_Attack_StrafingDestinationFix, 0x6)
 {
-	GET(FireError, fireError, EAX);
+	GET(const FireError, fireError, EAX);
 	GET(AircraftClass*, pThis, ESI);
 
 	// The aircraft managed by the spawn manager will not update destination after changing target
@@ -209,7 +209,7 @@ DEFINE_HOOK(0x418544, AircraftClass_Mission_Attack_StrafingDestinationFix, 0x6)
 
 #pragma region After_Shot_Delays
 
-static int GetDelay(AircraftClass* pThis, bool isLastShot)
+static inline int GetDelay(AircraftClass* pThis, bool isLastShot)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pWeapon = pThis->GetWeapon(pExt->CurrentAircraftWeaponIndex)->WeaponType;
@@ -420,7 +420,7 @@ DEFINE_HOOK(0x446F57, BuildingClass_GrandOpening_PoseDir_SetContext, 0x6)
 	return 0;
 }
 
-DirType __fastcall AircraftClass_PoseDir_Wrapper(AircraftClass* pThis)
+static DirType __fastcall AircraftClass_PoseDir_Wrapper(AircraftClass* pThis)
 {
 	return AircraftExt::GetLandingDir(pThis, SeparateAircraftTemp::pBuilding);
 }
@@ -477,13 +477,13 @@ DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
 #pragma region ExtendedAircraftMissions
 
 // Waypoint: enable and smooth moving action
-bool __fastcall AircraftTypeClass_CanUseWaypoint(AircraftTypeClass* pThis)
+static bool __fastcall AircraftTypeClass_CanUseWaypoint(AircraftTypeClass* pThis)
 {
 	return RulesExt::Global()->ExtendedAircraftMissions.Get();
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2908, AircraftTypeClass_CanUseWaypoint)
 
-static inline int GetTurningRadius(AircraftClass* pThis)
+static __forceinline int GetTurningRadius(AircraftClass* pThis)
 {
 	constexpr double epsilon = 1e-10;
 	constexpr double raw2Radian = Math::TwoPi / 65536;
@@ -535,7 +535,7 @@ DEFINE_HOOK(0x4DDD66, FootClass_IsLandZoneClear_ReplaceHardcode, 0x6) // To avoi
 	enum { SkipGameCode = 0x4DDD8A };
 
 	GET(FootClass* const, pThis, EBP);
-	GET_STACK(CellStruct, cell, STACK_OFFSET(0x20, 0x4));
+	GET_STACK(const CellStruct, cell, STACK_OFFSET(0x20, 0x4));
 
 	const auto pType = pThis->GetTechnoType();
 
@@ -560,7 +560,7 @@ DEFINE_HOOK(0x419EF6, AircraftClass_Mission_Enter_FixNotCarryall, 0x7)
 }
 
 // Skip set chaotic ArchiveTarget
-void __fastcall AircraftClass_SetArchiveTarget_Wrapper(AircraftClass* pThis, void* _, AbstractClass* pTarget)
+static void __fastcall AircraftClass_SetArchiveTarget_Wrapper(AircraftClass* pThis, void* _, AbstractClass* pTarget)
 {
 	if (!RulesExt::Global()->ExtendedAircraftMissions)
 		pThis->SetArchiveTarget(pTarget);
@@ -907,7 +907,7 @@ DEFINE_HOOK(0x7001B0, TechnoClass_MouseOverObject_EnableGuardObject, 0x7)
 }
 
 // Sleep: return to airbase if in incorrect sleep status
-int __fastcall AircraftClass_Mission_Sleep(AircraftClass* pThis)
+static int __fastcall AircraftClass_Mission_Sleep(AircraftClass* pThis)
 {
 	if (!pThis->Destination || pThis->Destination == pThis->DockNowHeadingTo)
 		return 450; // Vanilla MissionClass_Mission_Sleep value
@@ -918,7 +918,7 @@ int __fastcall AircraftClass_Mission_Sleep(AircraftClass* pThis)
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E24A8, AircraftClass_Mission_Sleep)
 
 // AttackMove: return when no ammo or arrived destination
-bool __fastcall AircraftTypeClass_CanAttackMove(AircraftTypeClass* pThis)
+static bool __fastcall AircraftTypeClass_CanAttackMove(AircraftTypeClass* pThis)
 {
 	return RulesExt::Global()->ExtendedAircraftMissions.Get();
 }
@@ -1073,7 +1073,7 @@ DEFINE_HOOK(0x4425B6, BuildingClass_ReceiveDamage_NoDestroyLink, 0xA)
 }
 
 // GreatestThreat: for all the mission that should let the aircraft auto select a target
-AbstractClass* __fastcall AircraftClass_GreatestThreat(AircraftClass* pThis, void* _, ThreatType threatType, CoordStruct* pSelectCoords, bool onlyTargetHouseEnemy)
+static AbstractClass* __fastcall AircraftClass_GreatestThreat(AircraftClass* pThis, void* _, ThreatType threatType, CoordStruct* pSelectCoords, bool onlyTargetHouseEnemy)
 {
 	if (RulesExt::Global()->ExtendedAircraftMissions && !pThis->Team && pThis->Ammo && !pThis->Airstrike && !pThis->Spawned)
 	{
