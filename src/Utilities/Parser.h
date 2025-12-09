@@ -263,8 +263,10 @@ inline bool Parser<double>::TryParse(const char* pValue, OutType* outValue)
 	errno = 0;
 	char* end;
 
-	// Nov 23, 2025 - Starkku: strtod() + cast result to float produces results
-	// more similar to game's CRT functions than using sscanf_s.
+	// Nov 23, 2025 - Starkku, Kerbiter: strtod() + cast result to float produces
+	// results more similar to game's CRT functions than using sscanf_s. For some
+	// reason CnC-DDraw in DirectX mode causes game's CRT function usage here to change
+	// for some players, causing stably reproducible desyncs when CMIN appears, f.ex.
 	double value = strtod(pValue, &end);
 
 	if (pValue == end || errno == ERANGE)
