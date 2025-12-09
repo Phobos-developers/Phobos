@@ -7946,7 +7946,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:2219
 msgid "CellSpread enhancement"
-msgstr ""
+msgstr "弹头范围增强"
 
 #: ../../New-or-Enhanced-Logics.md:2221
 msgid ""
@@ -7956,26 +7956,33 @@ msgid ""
 "Now you can use a new flag `CellSpread.Cylinder` to overcome this "
 "problem."
 msgstr ""
+"在原版中，范围伤害的杀伤区域是一个球形。某些例如你希望制作一个给目标区域上 Buff 的弹头超武的时候空中单位的受益范围总是比地面单位更小。"
+"现在你可以使用新语句 `CellSpread.Cylinder` 来解决这一问题。"
 
 #: ../../New-or-Enhanced-Logics.md:2222
 msgid ""
 "`AffectsAir` allow you to make a warhead only damage the units with "
 "height more than 208."
 msgstr ""
+"`AffectsAir` 允许你制作一个仅可杀伤 208 高度以上单位的弹头。"
 
 #: ../../New-or-Enhanced-Logics.md:2223
 msgid ""
 "`AffectsGround` allow you to make a warhead only damage the units with "
 "height less than 208."
 msgstr ""
+"`AffectsGround` 允许你制作一个仅可杀伤 208 高度以下单位的弹头。"
 
 #: ../../New-or-Enhanced-Logics.md:2224
 msgid ""
-"Noting that these features work independently with the ares flag "
+"These features are affected by ares flag "
 "`DamageAirThreshold`. A warhead with `CellSpread.Cylinder` detonating on "
-"floor will not affect units in air, unless it has `DamageAirThreshold = "
+"floor will not affect units in air, unless it has `DamageAirThreshold="
 "-1`."
 msgstr ""
+"这些功能受 Ares 语句 `DamageAirThreshold` 影响。除非同时设置 "
+"`DamageAirThreshold=-1` 否则一个在地面引爆的弹头即便拥有 "
+"`CellSpread.Cylinder` 也无法影响空中单位。"
 
 #: ../../New-or-Enhanced-Logics.md:2227
 msgid ""

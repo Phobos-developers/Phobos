@@ -2091,12 +2091,16 @@ msgid ""
 "[CellSpread in cylinder shape](New-or-Enhanced-Logics.md#cellspread-"
 "enhancement) (by TaranDahl)"
 msgstr ""
+"[圆柱形弹头范围](New-or-Enhanced-Logics.md#cellspread-"
+"enhancement)（by TaranDahl）"
 
 #: ../../Whats-New.md:468
 msgid ""
 "[CellSpread damage check if victim is in air or on floor](New-or-"
 "Enhanced-Logics.md#cellspread-enhancement) (by TaranDahl)"
 msgstr ""
+"[弹头范围对目标的空地判定](New-or-"
+"Enhanced-Logics.md#cellspread-enhancement)（by TaranDahl）"
 
 #: ../../Whats-New.md:470 ../../Whats-New.md:545 ../../Whats-New.md:730
 #: ../../Whats-New.md:1089 ../../Whats-New.md:1198 ../../Whats-New.md:1223

@@ -2221,7 +2221,6 @@ RemoveMindControl=false  ; boolean
 - In vanilla, the damage area of an AOE warhead is spherical. In some case, e.g. you want to make a warhead superweapon buff all units in an area, the affectted range for air units is always smaller than ground units. Now you can use a new flag `CellSpread.Cylinder` to overcome this problem.
 - `AffectsAir` allow you to make a warhead only damage the units with height more than 208.
 - `AffectsGround` allow you to make a warhead only damage the units with height less than 208.
-- Noting that these features work independently with the ares flag `DamageAirThreshold`. A warhead with `CellSpread.Cylinder` detonating on floor will not affect units in air, unless it has `DamageAirThreshold = -1`.
 
 In `rulesmd.ini`:
 ```ini
@@ -2229,6 +2228,10 @@ In `rulesmd.ini`:
 CellSpread.Cylinder=false  ; boolean
 AffectsAir=true            ; boolean
 AffectsGround=true         ; boolean
+```
+
+```{note}
+These features are affected by ares flag `DamageAirThreshold`. A warhead with `CellSpread.Cylinder` detonating on floor will not affect units in air, unless it has `DamageAirThreshold=-1`.
 ```
 
 ### Chance-based extra damage or Warhead detonation / 'critical hits'
