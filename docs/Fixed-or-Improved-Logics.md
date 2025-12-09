@@ -217,7 +217,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that game crashes when spawnee has been removed and is not real dead.
 - Separated the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues.
 - Fixed the bug that buildings will always be tinted as airstrike owner.
-- Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it.
 - Fixed an issue where computer players did not search for new enemies after defeating them or forming alliances with them.
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings.
 - Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar.
