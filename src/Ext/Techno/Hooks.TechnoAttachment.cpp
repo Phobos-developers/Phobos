@@ -470,7 +470,7 @@ bool __fastcall TechnoClass_Select(TechnoClass* pThis)
 	const auto pAttachment = pExt->ParentAttachment;
 	return pAttachment && pAttachment->GetType()->PassSelection
 		? pAttachment->Parent->Select()
-		: reinterpret_cast<bool(__thiscall*)(TechnoClass*)>(0x6FBFA0)(pThis);
+		: pThis->TechnoClass::Select();
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5DBC, TechnoClass_Select) // UnitClass
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB1A4, TechnoClass_Select) // InfantryClass
@@ -487,13 +487,13 @@ void __fastcall TechnoClass_Flash(TechnoClass* pThis, void*, int duration)
 			pAttachment->Child->Flash(duration);
 	}
 
-	return reinterpret_cast<void(__thiscall*)(TechnoClass*, int)>(0x6F9DD0)(pThis, duration);// TechnoClass::Flash
+	return pThis->TechnoClass::Flash(duration);
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5DB8, TechnoClass_Flash) // UnitClass
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB1A0, TechnoClass_Flash) // InfantryClass
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E23EC, TechnoClass_Flash) // AircraftClass
 
-void __fastcall BuildingClass_Flash(TechnoClass* pThis, void*, int duration)
+void __fastcall BuildingClass_Flash(BuildingClass* pThis, void*, int duration)
 {
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
@@ -503,7 +503,7 @@ void __fastcall BuildingClass_Flash(TechnoClass* pThis, void*, int duration)
 			pAttachment->Child->Flash(duration);
 	}
 
-	return reinterpret_cast<void(__thiscall*)(TechnoClass*, int)>(0x456E00)(pThis, duration);// BuildingClass::Flash
+	return pThis->BuildingClass::Flash(duration);
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E4004, BuildingClass_Flash) // BuildingClass
 
