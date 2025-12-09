@@ -147,7 +147,7 @@ DEFINE_HOOK(0x71F58B, TEventClass_ReadINI_MaskedTEvents, 0x7)
 		pThis->EventKind = TriggerEvent::LowPower;
 		break;
 	case PhobosTriggerEvent::BuildingExistsByID:
-		pThis->Value = HouseTypeClass::FindIndexOfName(pThis->String);
+		pThis->Value = BuildingTypeClass::FindIndex(pThis->String);
 		pThis->EventKind = TriggerEvent::BuildingExists;
 		break;
 	case PhobosTriggerEvent::AttackedByHouseByID:
