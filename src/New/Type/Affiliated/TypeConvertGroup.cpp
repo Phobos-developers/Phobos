@@ -56,7 +56,7 @@ void TypeConvertGroup::Parse(std::vector<TypeConvertGroup>& list, INI_EX& exINI,
 		convertFrom.Read(exINI, pSection, tempBuffer);
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.To", i);
 		convertTo.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.AffectedHouses", i);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.AffectsHouses", i);
 		convertAffectedHouses.Read(exINI, pSection, tempBuffer);
 
 		if (!convertTo.isset())
@@ -72,7 +72,7 @@ void TypeConvertGroup::Parse(std::vector<TypeConvertGroup>& list, INI_EX& exINI,
 	Nullable<AffectedHouse> convertAffectedHouses;
 	convertFrom.Read(exINI, pSection, "Convert.From");
 	convertTo.Read(exINI, pSection, "Convert.To");
-	convertAffectedHouses.Read(exINI, pSection, "Convert.AffectedHouses");
+	convertAffectedHouses.Read(exINI, pSection, "Convert.AffectsHouses");
 	if (convertTo.isset())
 	{
 		if (!convertAffectedHouses.isset())

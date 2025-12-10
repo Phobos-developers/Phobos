@@ -1079,8 +1079,8 @@ AISuperWeaponDelay=  ; integer, game frames
 - Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft).
   - `ConvertN.From` (where N is 0, 1, 2...) specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
   - `ConvertN.To` specifies the TechnoType which is the result of conversion.
-  - `ConvertN.AffectedHouses` specifies whose units can be converted.
-  - `Convert.From`, `Convert.To` and `Convert.AffectedHouses` (without numbers) are a valid alternative to `Convert0.From`, `Convert0.To` and `Convert0.AffectedHouses` if only one pair is specified.
+  - `ConvertN.AffectsHouses` specifies whose units can be converted.
+  - `Convert.From`, `Convert.To` and `Convert.AffectsHouses` (without numbers) are a valid alternative to `Convert0.From`, `Convert0.To` and `Convert0.AffectsHouses` if only one pair is specified.
   - Conversion affects *all* existing units of set TechnoTypes, this includes units in: transports, occupied buildings, buildings with `InfantryAbsorb=yes` or `UnitAbsorb=yes`, buildings with `Bunker=yes`.
 
 In example, this superweapon would convert all owned and friendly `SOLDIERA` and `SOLDIERB` to `NEWSOLDIER`:
@@ -1088,7 +1088,7 @@ In example, this superweapon would convert all owned and friendly `SOLDIERA` and
 [ExampleSW]
 Convert.From=SOLDIERA,SOLDIERB
 Convert.To=NEWSOLDIER
-Convert.AffectedHouses=team
+Convert.AffectsHouses=team
 ```
 
 In `rulesmd.ini`:
@@ -1096,12 +1096,12 @@ In `rulesmd.ini`:
 [SOMESW]                        ; SuperWeaponType
 ConvertN.From=                  ; List of TechnoTypes
 ConvertN.To=                    ; TechnoType
-ConvertN.AffectedHouses=owner   ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ConvertN.AffectsHouses=owner    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ; where N = 0, 1, 2, ...
 ; or
 Convert.From=                   ; List of TechnoTypes
 Convert.To=                     ; TechnoType
-Convert.AffectedHouses=owner    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Convert.AffectsHouses=owner     ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
 ```{warning}
@@ -2306,15 +2306,15 @@ If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chai
 - Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft).
   - `ConvertN.From` (where N is 0, 1, 2...) specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
   - `ConvertN.To` specifies the TechnoType which is the result of conversion.
-  - `ConvertN.AffectedHouses` specifies whose units can be converted.
-  - `Convert.From`, `Convert.To` and `Convert.AffectedHouses` (without numbers) are a valid alternative to `Convert0.From`, `Convert0.To` and `Convert0.AffectedHouses` if only one pair is specified.
+  - `ConvertN.AffectsHouses` specifies whose units can be converted.
+  - `Convert.From`, `Convert.To` and `Convert.AffectsHouses` (without numbers) are a valid alternative to `Convert0.From`, `Convert0.To` and `Convert0.AffectsHouses` if only one pair is specified.
 
 In example, this warhead would convert all affected owned and friendly `SOLDIERA` and `SOLDIERB` to `NEWSOLDIER`:
 ```ini
 [ExampleWH]
 Convert.From=SOLDIERA,SOLDIERB
 Convert.To=NEWSOLDIER
-Convert.AffectedHouses=team
+Convert.AffectsHouses=team
 ```
 
 In `rulesmd.ini`:
@@ -2322,12 +2322,12 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]                   ; WarheadType
 ConvertN.From=                  ; List of TechnoTypes
 ConvertN.To=                    ; TechnoType
-ConvertN.AffectedHouses=all     ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ConvertN.AffectsHouses=all      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ; where N = 0, 1, 2, ...
 ; or
 Convert.From=                   ; List of TechnoTypes
 Convert.To=                     ; TechnoType
-Convert.AffectedHouses=all      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Convert.AffectsHouses=all       ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
 ```{warning}
