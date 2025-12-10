@@ -105,6 +105,8 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `[WarheadType] -> Crit.AffectsHouses` -> `[WarheadType] -> Crit.AffectsHouse`
 - `[WarheadType] -> KillWeapon.AffectsHouses` -> `[WarheadType] -> KillWeapon.AffectsHouse`
 - `[WarheadType] -> KillWeapon.OnFirer.AffectsHouses` -> `[WarheadType] -> KillWeapon.OnFirer.AffectsHouse`
+- `[AttachEffectType] -> AffectTargets` -> `[AttachEffectType] -> AffectsTarget`
+- `[WarheadType] -> DetonateOnAllMapObjects.AffectTargets` -> `[WarheadType] -> DetonateOnAllMapObjects.AffectsTarget`
 
 #### From ???
 
