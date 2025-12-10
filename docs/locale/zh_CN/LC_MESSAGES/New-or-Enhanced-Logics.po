@@ -2802,16 +2802,16 @@ msgstr "染色"
 msgid ""
 "A tint effect similar to that used by Iron Curtain / Force Shield or "
 "`Psychedelic=true` Warheads can be applied to TechnoTypes naturally by "
-"setting `Tint.Color` and/or `Tint Intensity`."
+"setting `Tint.Color` and/or `Tint.Intensity`."
 msgstr ""
-"通过设置 `Tint.Color` 和 `Tint Intensity` 可以为拥有护盾的科技类型使用类似于铁幕／力场护盾或 "
+"通过设置 `Tint.Color` 和 `Tint.Intensity` 可以为拥有护盾的科技类型使用类似于铁幕／力场护盾或 "
 "`Psychedelic=true` 弹头的染色效果。"
 
 #: ../../New-or-Enhanced-Logics.md:1067
 msgid ""
 "Tint effects can also be applied by [attached effects](#attached-effects)"
 " and on [shields](#shields)."
-msgstr "染色效果也可以通过 [Attach Effect](#attached-effects) 和[护盾](#shields)应用。"
+msgstr "染色效果也可以通过 [Attach Effect](#attached-effects) 和 [护盾](#shields) 应用。"
 
 #: ../../New-or-Enhanced-Logics.md:1077
 msgid "Customizable OpenTopped properties"
