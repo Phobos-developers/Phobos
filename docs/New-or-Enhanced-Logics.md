@@ -1148,7 +1148,7 @@ EMPulse.SuspendOthers=false  ; boolean
   - `LimboDelivery.IDs` is the list of numeric IDs that will be assigned to buildings. Necessary for LimboKill to work.
 
 - Created buildings are not affected by any on-map threats. The only way to remove them from the game is by using a Superweapon with `LimboKill.IDs` set.
-  - `LimboKill.Affected` sets which houses are affected by this feature.
+  - `LimboKill.AffectsHouse` sets which houses are affected by this feature.
   - `LimboKill.IDs` lists IDs that will be targeted. Buildings with these IDs will be removed from the game instantly.
 
 - Delivery can be made random with these optional tags. The game will randomly choose only a single building from the list for each roll chance provided.
@@ -1174,7 +1174,7 @@ LimboDelivery.Types=            ; List of BuildingTypes
 LimboDelivery.IDs=              ; List of numeric IDs. -1 cannot be used.
 LimboDelivery.RollChances=      ; List of percentages.
 LimboDelivery.RandomWeightsN=   ; List of integers.
-LimboKill.Affected=self         ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+LimboKill.AffectsHouse=self     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 LimboKill.IDs=                  ; List of numeric IDs.
 ```
 

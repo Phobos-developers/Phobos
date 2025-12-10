@@ -143,7 +143,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->LimboDelivery_Types.Read(exINI, pSection, "LimboDelivery.Types");
 	this->LimboDelivery_IDs.Read(exINI, pSection, "LimboDelivery.IDs");
 	this->LimboDelivery_RollChances.Read(exINI, pSection, "LimboDelivery.RollChances");
-	this->LimboKill_Affected.Read(exINI, pSection, "LimboKill.Affected");
+	this->LimboKill_Affected.Read(exINI, pSection, "LimboKill.AffectsHouse");
 	this->LimboKill_IDs.Read(exINI, pSection, "LimboKill.IDs");
 	this->SW_Next.Read(exINI, pSection, "SW.Next");
 	this->SW_Next_RealLaunch.Read(exINI, pSection, "SW.Next.RealLaunch");
