@@ -554,6 +554,7 @@ Phobos fixes:
 - Fixed an issue with `Powered`/`PoweredSpecial` building animation ownership change fix (by Trsdy)
 - Fixed `DisplayIncome`, `Transact.Money` etc. display strings showing through shroud and for objects that are supposed to be hidden such as cloaked, undetected enemies (by Starkku)
 - Fixed an issue that could cause crashes when `FeedbackWeapon` was used to convert the firer to another TechnoType with less or no weapons (by Starkku)
+- Fixed an issue with parsing floating point numbers from INI that may have in some cases contributed to desyncs (by Starkku)
 ```
 
 ### 0.4
