@@ -234,6 +234,9 @@ DEFINE_HOOK(0x7264C0, TriggerClass_RegisterEvent_ForceSequentialEvents, 0x0)
 		}
 	}
 
+	if (allEventsSuccessful)
+		Debug::Log("Starting actions of the trigger: [%s] - %s\n", pThis->Type->ID, pThis->Type->Name);
+
 	R->AL(allEventsSuccessful);
 
 	return SkipGameCode;
