@@ -648,6 +648,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where the vanilla script ignores jumpjets
   - CellSpread in cylinder shape
   - CellSpread damage check if victim is in air or on floor
+  - Allow other vehicles to attempt to move above the target like `BalloonHover=yes`
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
