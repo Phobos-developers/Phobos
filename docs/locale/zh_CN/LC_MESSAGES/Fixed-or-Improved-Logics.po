@@ -4361,8 +4361,8 @@ msgid ""
 "Logics.md#attached-effects) will be checked."
 msgstr ""
 "`Splits.UseWeaponTargeting` 如果设为 true，则在检查分裂抛射体的目标时启用武器瞄准筛选。目标上的 "
-"`LegalTarget` 设置、弹头的 `Verses` 对 `Armor` 的设置以及 `AirburstWeapon` 所填武器的 "
-"[武器瞄准筛选](New-or-Enhanced-Logics.md#weapon-targeting-filter) 和 "
+"`LegalTarget` 设置、弹头的 `Verses` 对 `Armor` 的设置以及 `AirburstWeapon` "
+"所填武器的 <a href=\"New-or-Enhanced-Logics.html#weapon-targeting-filter\">武器瞄准筛选</a> 和 "
 "[AttachEffect 筛选](New-or-Enhanced-Logics.md#attached-effects) 都将被检查。"
 
 #: ../../Fixed-or-Improved-Logics.md:1174
