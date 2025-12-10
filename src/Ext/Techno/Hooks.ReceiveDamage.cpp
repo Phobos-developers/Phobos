@@ -204,7 +204,7 @@ DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
 
 DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 {
-	if (!Phobos::DisplayDamageNumbers)
+	if (!Phobos::Config::DisplayDamageNumbers)
 		return 0;
 
 	GET(TechnoClass* const, pThis, ESI);

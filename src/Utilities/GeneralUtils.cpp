@@ -239,14 +239,28 @@ void GeneralUtils::DisplayDamageNumberString(int damage, DamageDisplayType type,
 	const int maxOffset = Unsorted::CellWidthInPixels / 2;
 	int width = 0, height = 0;
 	wchar_t damageStr[0x20];
-	swprintf_s(damageStr, L"%d", damage);
+	swprintf_s(damageStr, L"%c%d", damage > 0 ? L'-' : L'+', abs(damage));
 
 	BitFont::Instance->GetTextDimension(damageStr, &width, &height, 120);
 
 	if (offset >= maxOffset || offset == INT32_MIN)
 		offset = -maxOffset;
 
-	FlyingStrings::Add(damageStr, coords, color, Point2D { offset - (width / 2), 0 });
+	Point2D basePos { offset - (width / 2), 0 };
+
+	FlyingStrings::Add(
+		damageStr,
+		coords,
+		color,
+		basePos
+	);
+
+	FlyingStrings::Add(
+		damageStr,
+		coords,
+		ColorStruct { 84, 84, 84 },
+		Point2D { basePos.X + 1, basePos.Y + 1 }
+	);
 
 	offset = offset + width;
 }

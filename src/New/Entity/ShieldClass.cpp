@@ -227,7 +227,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	const int maxDmg = GeneralUtils::SafeMultiply(max, pWHExt->Shield_ReceivedDamage_MaxMultiplier);
 	shieldDamage = Math::clamp(shieldDamage, minDmg, maxDmg);
 
-	if (Phobos::DisplayDamageNumbers && shieldDamage != 0)
+	if (Phobos::Config::DisplayDamageNumbers && shieldDamage != 0)
 		GeneralUtils::DisplayDamageNumberString(shieldDamage, DamageDisplayType::Shield, pTechno->GetRenderCoords(), TechnoExt::ExtMap.Find(pTechno)->DamageNumberOffset);
 
 	if (shieldDamage > 0)
