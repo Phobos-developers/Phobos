@@ -152,6 +152,17 @@ The arrangement of static images on the plane is entirely up to you to draw free
 Of course, this is just the implementation method. To balance freedom with efficiency—that is, how to efficiently draw the patterns you need—you still need to independently explore a workflow that suits you.
 ````
 
+### Display Damage Numbers
+
+- There's a [new hotkey](User-Interface.md#display-damage-numbers) to show exact numbers of damage dealt on units & buildings. The numbers are shown in red (blue against shields) for damage, and for healing damage in green (cyan against shields). They are shown on the affected units and will move upwards after appearing.
+  - Whether the feature is enabled by default is determined by `DisplayDamageNumbers` setting in `RA2MD.INI`.
+  
+In `RA2MD.INI`:
+```ini
+[Phobos]
+DisplayDamageNumbers=false  ; boolean
+```
+
 ### Flashing Technos on selecting
 
 - Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter higher than 0.
