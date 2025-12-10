@@ -1484,7 +1484,7 @@ Convert.ComputerToHuman=    ; TechnoType
 
 ### Custom tint on TechnoTypes
 
-- A tint effect similar to that used by Iron Curtain / Force Shield or `Psychedelic=true` Warheads can be applied to TechnoTypes naturally by setting `Tint.Color` and/or `Tint Intensity`.
+- A tint effect similar to that used by Iron Curtain / Force Shield or `Psychedelic=true` Warheads can be applied to TechnoTypes naturally by setting `Tint.Color` and/or `Tint.Intensity`.
   - `Tint.Intensity` is additive lighting increase/decrease - 1.0 is the default object lighting.
   - `Tint.VisibleToHouses` can be used to customize which houses can see the tint effect.
   - Tint effects can also be applied by [attached effects](#attached-effects) and on [shields](#shields).
