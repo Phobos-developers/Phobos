@@ -4697,8 +4697,8 @@ msgid ""
 msgstr "创建的建筑不受地图上任何威胁的影响。从游戏中移除它们的唯一方法是使用设置了 `LimboKill.IDs` 的超级武器。"
 
 #: ../../New-or-Enhanced-Logics.md:1151
-msgid "`LimboKill.Affected` sets which houses are affected by this feature."
-msgstr "`LimboKill.Affected` 设置那个所属方受此效果影响。"
+msgid "`LimboKill.AffectsHouse` sets which houses are affected by this feature."
+msgstr "`LimboKill.AffectsHouse` 设置那个所属方受此效果影响。"
 
 #: ../../New-or-Enhanced-Logics.md:1152
 msgid ""
@@ -4788,7 +4788,7 @@ msgid ""
 "\n"
 "LimboDelivery.RollChances=      ; List of percentages.\n"
 "LimboDelivery.RandomWeightsN=   ; List of integers.\n"
-"LimboKill.Affected=self         ; Affected House Enumeration "
+"LimboKill.AffectsHouse=self     ; Affected House Enumeration "
 "(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
 "LimboKill.IDs=                  ; List of numeric IDs.\n"
 msgstr ""
@@ -4798,7 +4798,7 @@ msgstr ""
 "\n"
 "LimboDelivery.RollChances=      ; List of percentages.\n"
 "LimboDelivery.RandomWeightsN=   ; List of integers.\n"
-"LimboKill.Affected=self         ; Affected House Enumeration "
+"LimboKill.AffectsHouse=self     ; Affected House Enumeration "
 "(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
 "LimboKill.IDs=                  ; List of numeric IDs.\n"
 
