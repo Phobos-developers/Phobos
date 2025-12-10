@@ -445,6 +445,8 @@ public:
 
 		Nullable<bool> TurretResponse;
 
+		Valueable<bool> CanGoAboveTarget;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, HealthBar_HidePips { false }
@@ -840,6 +842,8 @@ public:
 			, InfantryAutoDeploy {}
 
 			, TurretResponse {}
+
+			, CanGoAboveTarget { false }
 		{ }
 
 		virtual ~ExtData() = default;
