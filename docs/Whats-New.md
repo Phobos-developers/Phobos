@@ -99,6 +99,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `[WarheadType] -> DetonateOnAllMapObjects.AffectHouses` -> `[WarheadType] -> DetonateOnAllMapObjects.AffectsHouses`
 - `[WarheadType/SuperWeaponType] -> Convert(N).AffectedHouses` -> `[WarheadType/SuperWeaponType] -> Convert(N).AffectsHouses`
 - `[SuperWeaponType] -> LimboKill.Affected` -> `[SuperWeaponType] -> LimboKill.AffectsHouse`
+- `[WarheadType] -> Crit.Affects` -> `[WarheadType] -> Crit.AffectsTarget`
 
 #### From ???
 
