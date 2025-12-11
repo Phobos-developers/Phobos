@@ -653,6 +653,8 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->SuspendedEMPulseSWs)
 		.Process(this->SuperExts)
 		.Process(this->ForceEnemyIndex)
+		.Process(this->TeamDelay)
+		.Process(this->FreeRadar)
 		;
 }
 

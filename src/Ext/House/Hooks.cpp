@@ -457,3 +457,29 @@ DEFINE_HOOK(0x4FD8F7, HouseClass_UpdateAI_OnLastLegs, 0x10)
 
 	return ret;
 }
+
+DEFINE_HOOK(0x4F8ACC, HouseClass_Update_ResetTeamDelay, 0x6)
+{
+	enum { ResetTeamDelay = 0x4F8AD5 };
+
+	GET(HouseClass*, pThis, ESI);
+
+	const int teamDelay = HouseExt::ExtMap.Find(pThis)->TeamDelay;
+
+	if (teamDelay >= 0)
+	{
+		R->ECX(teamDelay);
+		return ResetTeamDelay;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x508E37, HouseClass_UpdateRadar_FreeRadar, 0x6)
+{
+	enum { FreeRadar = 0x508F2A, Continue = 0x508E4A };
+
+	GET(HouseClass*, pThis, ECX);
+
+	return HouseExt::ExtMap.Find(pThis)->FreeRadar ? FreeRadar : Continue;
+}
