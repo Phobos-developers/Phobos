@@ -1576,6 +1576,17 @@ NoSecondaryWeaponFallback=false          ; boolean
 NoSecondaryWeaponFallback.AllowAA=false  ; boolean
 ```
 
+### Default disguise for individual InfantryTypes or UnitTypes
+
+- Infantry can now have its `DefaultDisguise` overridden per-type.
+  - This tag's priority is higher than Ares' per-side `DefaultDisguise`.
+- Now you can make vehicle disguise to other vehicles, like spy.
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]      ; InfantryType or UnitType 
+DefaultDisguise=    ; InfantryType or UnitType
+```
+
 ### Disguise logic additions (disguise-based movement speed, disguise blinking visibility)
 
 - `DisguiseBlinkingVisibility` can be used to customize which players can see disguises blinking on units. This does not affect targeting but does affect veterancy insignia visibility - blinking disguise means the original unit's insignia is visible always instead of disguise's.

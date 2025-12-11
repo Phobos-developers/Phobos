@@ -552,7 +552,7 @@ DEFINE_HOOK(0x7466D8, UnitClass_DisguiseAs_DisguiseAsVehicle, 0xA)
 
 	pThis->Disguise = targetDisguised ? pTarget->GetDisguise(true) : pTarget->Type;
 	pThis->DisguisedAsHouse = targetDisguised ? pTarget->GetDisguiseHouse(true) : pTarget->Owner;
-	reinterpret_cast<void(__thiscall*)(TechnoClass*, AbstractClass*)>(0x70E280)(pThis, pTarget);//pThis->TechnoClass::DisguiseAs(pTarget);
+	pThis->TechnoClass::DisguiseAs(pTarget);
 	return SkipGameCode;
 }
 
