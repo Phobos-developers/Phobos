@@ -81,6 +81,7 @@ public:
 		static bool ToolTipBlur;
 		static bool PrioritySelectionFiltering;
 		static bool DevelopmentCommands;
+		static bool DamageNumbersCommands;
 		static bool SuperWeaponSidebarCommands;
 		static bool ArtImageSwap;
 		static bool ShowPlacementPreview;

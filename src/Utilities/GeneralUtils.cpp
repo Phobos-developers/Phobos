@@ -246,21 +246,7 @@ void GeneralUtils::DisplayDamageNumberString(int damage, DamageDisplayType type,
 	if (offset >= maxOffset || offset == INT32_MIN)
 		offset = -maxOffset;
 
-	Point2D basePos { offset - (width / 2), 0 };
-
-	FlyingStrings::Add(
-		damageStr,
-		coords,
-		color,
-		basePos
-	);
-
-	FlyingStrings::Add(
-		damageStr,
-		coords,
-		ColorStruct { 84, 84, 84 },
-		Point2D { basePos.X + 1, basePos.Y + 1 }
-	);
+	FlyingStrings::Add(damageStr, coords, color, Point2D { offset - (width / 2), 0 });
 
 	offset = offset + width;
 }

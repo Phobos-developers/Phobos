@@ -29,7 +29,6 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<ToggleDesignatorRangeCommandClass>();
 	MakeCommand<ToggleMessageListCommandClass>();
 	MakeCommand<ToggleSWSidebar>();
-	MakeCommand<DamageDisplayCommandClass>();
 
 	if (Phobos::Config::SuperWeaponSidebarCommands)
 	{
@@ -43,6 +42,11 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 		SWSidebarClass::Commands[7] = MakeCommand<FireTacticalSWCommandClass<7>>();
 		SWSidebarClass::Commands[8] = MakeCommand<FireTacticalSWCommandClass<8>>();
 		SWSidebarClass::Commands[9] = MakeCommand<FireTacticalSWCommandClass<9>>();
+	}
+
+	if (Phobos::Config::DamageNumbersCommands)
+	{
+		MakeCommand<DamageDisplayCommandClass>();
 	}
 
 	if (Phobos::Config::DevelopmentCommands)
