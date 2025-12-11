@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-10 00:53+0800\n"
+"POT-Creation-Date: 2025-12-11 12:59+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1337,110 +1337,104 @@ msgstr "修复了建筑总是被染色为空袭所属方颜色的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:220
 msgid ""
-"Fixed the bug that `AllowAirstrike=no` cannot completely prevent air "
-"strikes from being launched against it."
-msgstr "修复了 `AllowAirstrike=no` 未能完全阻止对某个单位进行空袭的 Bug。"
-
-#: ../../Fixed-or-Improved-Logics.md:221
-msgid ""
 "Fixed an issue where computer players did not search for new enemies "
 "after defeating them or forming alliances with them."
 msgstr "修复了 AI 玩家在消灭一家敌人或敌人结盟后不再搜索新敌人的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:222
+#: ../../Fixed-or-Improved-Logics.md:221
 msgid ""
 "Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when "
 "entering buildings."
 msgstr "修复了步兵进入建筑时忽略 `Passengers` 和 `SizeLimit` 的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:223
+#: ../../Fixed-or-Improved-Logics.md:222
 msgid "Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar."
 msgstr "修复了通过快捷键／底边栏按钮部署时不播放 `VoiceDeploy` 的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:224
+#: ../../Fixed-or-Improved-Logics.md:223
 msgid "Fixed the bug that ships can travel on elevated bridges."
 msgstr "修复了船只可以在高架桥上行驶的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:225
+#: ../../Fixed-or-Improved-Logics.md:224
 msgid "Dehardcoded 255 limit of `OverlayType`."
 msgstr "解除了覆盖物最多 255 个的数量限制。"
 
-#: ../../Fixed-or-Improved-Logics.md:226
+#: ../../Fixed-or-Improved-Logics.md:225
 msgid ""
 "Fixed an issue where airstrike flare line drawn to target at lower "
 "elevation would clip."
 msgstr "修复了空袭引导激光高打低时会截断的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:227
+#: ../../Fixed-or-Improved-Logics.md:226
 msgid ""
 "Fixed the bug that uncontrolled scatter when elite techno attacked by "
 "aircraft or some unit try crush it."
 msgstr "修复精英单位在被战机攻击或一个单位尝试碾压它时强制散开的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:228
+#: ../../Fixed-or-Improved-Logics.md:227
 msgid ""
 "Second weapon with `ElectricAssault=yes` will not unconditionally attack "
 "your building with `Overpowerable=yes`."
 msgstr "有 `ElectricAssault=yes` 的副武不再会无条件地攻击己方 `Overpowerable=yes` 的建筑。"
 
-#: ../../Fixed-or-Improved-Logics.md:229
+#: ../../Fixed-or-Improved-Logics.md:228
 msgid "Infantry support `IsGattling=yes`."
 msgstr "步兵类现已支持使用 `IsGattling=yes` 开启盖特逻辑"
 
-#: ../../Fixed-or-Improved-Logics.md:230
+#: ../../Fixed-or-Improved-Logics.md:229
 msgid ""
 "Fixed an issue that the widespread damage caused by detonation on the "
 "bridge/ground cannot affect objects on the ground/bridge who are in the "
 "opposite case."
 msgstr "修复了范围伤害在桥上／地面引爆时无法影响相对情况即在地面／桥上的对象的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:231
+#: ../../Fixed-or-Improved-Logics.md:230
 msgid ""
 "Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective "
 "on airforce."
 msgstr "修复了 `DamageSelf` 和 `AllowDamageOnSelf` 对空军无效的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:232
+#: ../../Fixed-or-Improved-Logics.md:231
 msgid ""
 "Fixed the bug that damaged particle dont disappear after building has "
 "repaired by engineer."
 msgstr "修复了建筑在被工程师修复后受损粒子不会移除的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:233
+#: ../../Fixed-or-Improved-Logics.md:232
 msgid "Fixed an issue of incorrect position of `TrailerAnim` in `VoxelAnim`."
 msgstr "修复了 Voxel 碎片 `TrailerAnim` 生成位置不正确的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:234
+#: ../../Fixed-or-Improved-Logics.md:233
 msgid ""
 "Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for"
 " building target."
 msgstr "修复了建筑类目标 `OpenToppedWarpDistance` 计算错误的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:235
+#: ../../Fixed-or-Improved-Logics.md:234
 msgid ""
 "Fixed an issue that `MovementZone=Fly` harvesters can not be able to "
 "enter refinery buildings manually."
 msgstr "修复了 `MovementZone=Fly` 的矿车无法手动进入矿场的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:236
+#: ../../Fixed-or-Improved-Logics.md:235
 msgid ""
 "Fixed an issue that jumpjet harvester cannot automatically go mining when"
 " leaving the weapons factory."
 msgstr "修复了 `Locomotor=Jumpjet` 的矿车出厂后不会自动去采矿的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:237
+#: ../../Fixed-or-Improved-Logics.md:236
 msgid ""
 "Fixed an issue that jumpjet harvester will overlap when manually entering"
 " refinery buildings and cause game crashes."
 msgstr "修复了 `Locomotor=Jumpjet` 的矿车会因为手动进入矿场而交叠并导致游戏崩溃的问题"
 
-#: ../../Fixed-or-Improved-Logics.md:238
+#: ../../Fixed-or-Improved-Logics.md:237
 msgid ""
 "Fixed an issue that `Spawned` aircraft will fly towards the edge of the "
 "map when its `Spawner` is under EMP."
 msgstr "修了拥有 `Spawned` 的战机会在子机发射器单位处于 EMP 状态时飞向地图边界的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:239
+#: ../../Fixed-or-Improved-Logics.md:238
 msgid ""
 "Projectiles with `Vertical=true` now drop straight down if fired off by "
 "AircraftTypes instead of behaving erratically. This behaviour can be "
@@ -1449,85 +1443,85 @@ msgstr ""
 "现在当一个拥有 `Vertical=true` 的抛射体被战机类发射时将会正常下坠。可以通过在抛射体上设置 "
 "`Vertical.AircraftFix=false` 来关闭这一行为。"
 
-#: ../../Fixed-or-Improved-Logics.md:240
+#: ../../Fixed-or-Improved-Logics.md:239
 msgid ""
 "Engineers can enter buildings normally when they don't need to be "
 "repaired (or you can force it by pressing Alt)."
 msgstr "工程师在建筑无需维修时可以正常进入（也可以通过按住 `[Alt]` 强制进入）。"
 
-#: ../../Fixed-or-Improved-Logics.md:241
+#: ../../Fixed-or-Improved-Logics.md:240
 msgid ""
 "Player-controlled spies are not forced to perform other tasks while "
 "attacking buildings."
 msgstr "人类玩家控制的间谍在攻击建筑时不会强制执行其他任务。"
 
-#: ../../Fixed-or-Improved-Logics.md:242
+#: ../../Fixed-or-Improved-Logics.md:241
 msgid ""
 "If `BombDisarm=yes` is not present for all weapon warheads, then the "
 "engineer will no longer use the appropriate mouse action."
 msgstr "如果所有武器的弹头都没有 `BombDisarm=yes` 则工程师将不再使用相应的鼠标动作。"
 
-#: ../../Fixed-or-Improved-Logics.md:243
+#: ../../Fixed-or-Improved-Logics.md:242
 msgid "Fixed an unusual use of DeployFireWeapon for InfantryType."
 msgstr "修复了步兵使用 `DeployFireWeapon` 时的异常情况。"
 
-#: ../../Fixed-or-Improved-Logics.md:244
+#: ../../Fixed-or-Improved-Logics.md:243
 msgid ""
 "Fixed the bug that passengers' Temporal attacks wouldn't stop when an "
 "OpenTopped vehicle was frozen by a Temporal warhead."
 msgstr "修复了即便 `OpenTopped` 载具被超时空弹头冻结其乘客的超时空武器攻击也不会停止的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:245
+#: ../../Fixed-or-Improved-Logics.md:244
 msgid "Fixed the bug that vehicle owned by computer will scatter when cloaking."
 msgstr "修复了 AI 的载具在隐形时会乱跑的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:246
+#: ../../Fixed-or-Improved-Logics.md:245
 msgid ""
 "Fixed the bug that submarine always turn left after changed owner by map "
 "event."
 msgstr "修复了水下单位在被地图触发修改所属后总会朝向左方的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:247
+#: ../../Fixed-or-Improved-Logics.md:246
 msgid ""
 "Fixed the bug that occupyable structure won't redraw when press deploy "
 "hotkey to release all occupants."
 msgstr "修复了可驻军建筑在按部署键释放全部驻兵后绘图不会刷新的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:248
+#: ../../Fixed-or-Improved-Logics.md:247
 msgid ""
 "Fixed an issue that if the garrison unload occupants when there is no "
 "open space around it would result in the disappearance of the occupants."
 msgstr "修复了周围没有空地时释放驻军会导致它们消失的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:249
+#: ../../Fixed-or-Improved-Logics.md:248
 msgid ""
 "Fixed the bug that Locomotor warhead won't stop working when the attacker"
 " is being affected by `Temporal=yes` warhead."
 msgstr "修复了攻击者被 `Temporal=yes` 弹头作用时运动模式弹头不会停止工作的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:250
+#: ../../Fixed-or-Improved-Logics.md:249
 msgid ""
 "Fixed the bug that `IsLocomotor=yes` warhead rendering hover units "
 "unselectable and undamageable on elevated bridge."
 msgstr "修复了 `IsLocomotor=yes` 弹头会导致高架桥上的悬浮载具无法选中且无法被伤害的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:251
+#: ../../Fixed-or-Improved-Logics.md:250
 msgid ""
 "Fixed the bug that Locomotor warhead won't stop working when firer "
 "(except for vehicle) stop firing."
 msgstr "修复了非载具单位使用运动模式弹头时停止开火也不会停止工作的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:252
+#: ../../Fixed-or-Improved-Logics.md:251
 msgid "Fixed the bug that hover vehicle will sink if destroyed on bridge."
 msgstr "修复了悬浮载具在桥上被摧毁会沉没（而不是爆炸）的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:253
+#: ../../Fixed-or-Improved-Logics.md:252
 msgid ""
 "Fixed the fact that when the selected unit is in a rearmed state, it can "
 "unconditionally use attack mouse on the target."
 msgstr "修复了当被选中的单位武器正在 CD 时可以无条件对目标使用 Attack 光标的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:254
+#: ../../Fixed-or-Improved-Logics.md:253
 msgid ""
 "When `Speed=0` or the TechnoTypes cell cannot move due to "
 "`MovementRestrictedTo`, vehicles cannot attack targets beyond the "
@@ -1537,19 +1531,19 @@ msgstr ""
 "若 `Speed=0` 或单位由于 `MovementRestrictedTo` 导致无法移动，载具不再可以攻击武器射程外的目标。`Area "
 "Guard` 和 `Hunt` 任务将不会生效。"
 
-#: ../../Fixed-or-Improved-Logics.md:255
+#: ../../Fixed-or-Improved-Logics.md:254
 msgid ""
 "Fixed an issue that barrel anim data will be incorrectly overwritten by "
 "turret anim data if the techno's section exists in the map file."
 msgstr "修复了地图文件中内置了某单位时其炮管动画数据会被炮塔动画数据错误覆盖的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:256
+#: ../../Fixed-or-Improved-Logics.md:255
 msgid ""
 "Fixed pathfinding crashes (EIP 0x42A525, 0x42C507, 0x42C554) that "
 "happened on bigger maps due to too small pathfinding node buffer."
 msgstr "修复了在较大的地图中由于寻路节点缓冲区过小而引发的寻路崩溃（EIP 0x42A525、0x42C507、0x42C554）问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:257
+#: ../../Fixed-or-Improved-Logics.md:256
 msgid ""
 "`IsSimpleDeployer` `BalloonHover=true` units with `DeployToLand=false` "
 "are no longer forced to land when hovering."
@@ -1557,13 +1551,13 @@ msgstr ""
 "拥有 `BalloonHover=true` 和 `IsSimpleDeployer=true` 但 `DeployToLand=false` "
 "的单位现在在悬停时不会强制着陆。"
 
-#: ../../Fixed-or-Improved-Logics.md:258
+#: ../../Fixed-or-Improved-Logics.md:257
 msgid ""
 "If `DeployingAnim` with `Shadow=true` is played for unit currently in air"
 " its shadow will now be drawn on ground."
 msgstr "如果当前处于空中的单位通过 `DeployingAnim` 播放带有 `Shadow=true` 的动画则动画的影子现在会绘制在地面上。"
 
-#: ../../Fixed-or-Improved-Logics.md:259
+#: ../../Fixed-or-Improved-Logics.md:258
 msgid ""
 "`DeployingAnim` now supports both `Normalized=true` and `Reverse=true`. "
 "Keep in mind `Reverse` uses `LoopEnd` for frame amount instead of `End` "
@@ -1572,39 +1566,69 @@ msgstr ""
 "`DeployingAnim` 现已支持 `Normalized=true` 与 `Reverse=true`。注意：即便不是 "
 "`LoopCount > 1` 的情况 `Reverse` 也会使用 `LoopEnd` 而不是 `End` 来控制帧数。"
 
-#: ../../Fixed-or-Improved-Logics.md:260
+#: ../../Fixed-or-Improved-Logics.md:259
 msgid "`DeployingAnim` using unit drawer now also tint accordingly with the unit."
 msgstr "`DeployingAnim` 使用单位绘制方式时现可跟随单位一起染色。"
 
-#: ../../Fixed-or-Improved-Logics.md:261
+#: ../../Fixed-or-Improved-Logics.md:260
 msgid "Fixed an issue that jumpjets in air can not correctly spawn missiles."
 msgstr "修复了 Jumpjet 单位在空中时无法生成导弹子机的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:262
+#: ../../Fixed-or-Improved-Logics.md:261
 msgid ""
 "Fixed an issue that the currently hovered planning node not update up-to-"
 "date, such as using hotkeys to select technos."
 msgstr "修复了所谓的高等路径学。"
 
+#: ../../Fixed-or-Improved-Logics.md:262
+msgid ""
+"Fixed an issue that jumpjet vehicles can not stop correctly when assigned"
+" a target in range."
+msgstr "修复了 Jumpjet 载具在指定射程内目标时无法正确停止的问题。"
+
 #: ../../Fixed-or-Improved-Logics.md:263
+msgid ""
+"Fixed an issue that jumpjet infantry stop incorrectly when assigned a "
+"target out of range."
+msgstr "修复了 Jumpjet 步兵在指定超出射程的目标时停止不正确的问题。"
+
+#: ../../Fixed-or-Improved-Logics.md:264
+msgid ""
+"Fixed an issue that jumpjet infantry' shadow is always drawn even if they"
+" are cloaked."
+msgstr "修复了 Jumpjet 步兵隐形时依然绘制影子的问题。"
+
+#: ../../Fixed-or-Improved-Logics.md:265
+msgid ""
+"Fixed an issue that technos head to building's dock even they are not "
+"going to dock."
+msgstr "修复了单位不执行停靠命令的情况下也会前往停靠位置的问题。"
+
+#: ../../Fixed-or-Improved-Logics.md:266
+msgid ""
+"Fixed an issue that the jumpjet vehicles cannot stop correctly after "
+"going berserk."
+msgstr "修复了被混乱的 Jumpjet 载具无法正确停止的问题。"
+
+#: ../../Fixed-or-Improved-Logics.md:267
 msgid ""
 "Fixed an issue that infantry walking through a cell containing a tree "
 "would cause it to be impassable to other houses."
 msgstr "修复了步兵占据包含树木的单元格会导致该单元格对其他所属方不可通行的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:264
+#: ../../Fixed-or-Improved-Logics.md:268
 msgid ""
 "Fixed the bug that techno unit will draw with ironcurtain and airstrike "
 "color and intensity who disguised as terrain or overlay."
 msgstr "修复了单位在伪装成地形对象或覆盖物时铁幕与空袭染色强度绘制错误的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:265
+#: ../../Fixed-or-Improved-Logics.md:269
 msgid ""
 "Fixed an issue that the AI would enter a combat state when its building "
 "receiving damage from friendly units or damage not greater than 0."
 msgstr "修复了 AI 在建筑受到的伤害即便来自友军单位或不大于 0 点也依然进入防御状态的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:266
+#: ../../Fixed-or-Improved-Logics.md:270
 msgid ""
 "If `[General] -> FallingDownTargetingFix` is set to true, the techno with"
 " weapon with `AA=yes` and `AG=no` will auto targeting units that are "
@@ -1613,82 +1637,81 @@ msgstr ""
 "如果 `[General] -> FallingDownTargetingFix` 设为 true 则所用武器 `AA=yes` 且 "
 "`AG=no` 的单位将会主动攻击坠落中的单位（例如伞兵）。"
 
-#: ../../Fixed-or-Improved-Logics.md:267
+#: ../../Fixed-or-Improved-Logics.md:271
 msgid "Iron Curtain/Custom Tint Support for SHP Turreted Vehicles."
 msgstr "修复了铁幕／自定义染色无法将 SHP 有炮塔载具染色的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:268
+#: ../../Fixed-or-Improved-Logics.md:272
 msgid "Reactivate unused trigger events 2, 53, and 54."
 msgstr "重新激活无效的 2、53 和 54 号触发条件。"
 
-#: ../../Fixed-or-Improved-Logics.md:269
+#: ../../Fixed-or-Improved-Logics.md:273
 msgid ""
 "Fixed the bug that vehicle fall on infantry will make all cell content "
 "has been removed."
 msgstr "修复了载具落到有步兵的单元格上时会将格内所有对象全部移除的 Bug"
 
-#: ../../Fixed-or-Improved-Logics.md:270
+#: ../../Fixed-or-Improved-Logics.md:274
 msgid ""
 "Fixed buildings that have their owner changed during buildup skipping "
 "buildup and sometimes not correctly clearing the state."
 msgstr "修复了建筑拔起过程中发生所属变更会跳过建造阶段且有时无法正确清除状态的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:271
+#: ../../Fixed-or-Improved-Logics.md:275
 msgid ""
 "Fixed preplaced aircraft outside visible map being incorrectly flagged as"
 " crashing under certain conditions."
 msgstr "修复了处于可视地图范围外的预置战机某些情况下被错误标记为坠毁的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:272
+#: ../../Fixed-or-Improved-Logics.md:276
 msgid ""
 "Fixed `MovementZone=Subterannean` harvesters being unable to find docks "
 "if in area enclosed by water, cliffs etc."
 msgstr "修复了 `MovementZone=Subterannean` 的矿车无法跨越封闭的水域、悬崖等区域找到停靠点的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:273
+#: ../../Fixed-or-Improved-Logics.md:277
 msgid ""
 "Fixed an issue where some effects pointing to a unit were not properly "
 "cleared when the unit changed its owner."
 msgstr "修复了指向某个某个单位的部分效果在该单位变更所属时未能正确清除的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:274
+#: ../../Fixed-or-Improved-Logics.md:278
 msgid ""
 "Allow Reveal Crate to take effect when picking up by another player "
 "controlled house in campaign."
 msgstr "允许在战役模式中由其他被玩家控制的所属方拾取到的开全图工具箱效果生效。"
 
-#: ../../Fixed-or-Improved-Logics.md:275
+#: ../../Fixed-or-Improved-Logics.md:279
 msgid ""
 "Fixed an issue where the vanilla script ignores jumpjets. Enable it "
 "through `[General] -> AIAirTargetingFix=true`."
 msgstr "修复了原版脚本会忽略 Jumpjet 单位的问题，需要通过 `[General] -> AIAirTargetingFix=true` 来启用。"
 
-#: ../../Fixed-or-Improved-Logics.md:276
+#: ../../Fixed-or-Improved-Logics.md:280
 msgid "Fixed the bug that naval ship will sink even they destroyed in air."
 msgstr "修复了海军舰船即便在空中被摧毁也会在天上沉没的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:277
+#: ../../Fixed-or-Improved-Logics.md:281
 msgid "Fixed MPDebug timer displaying when debug's visibility is off."
 msgstr "修复了 MPDEBUG 计时器在 debug 信息关闭可见时依旧显示的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:278
+#: ../../Fixed-or-Improved-Logics.md:282
 msgid ""
 "Fixed the issue that units will goto farest location if target is closer "
 "than `MinimumRange`."
-msgstr ""
-"修复了单位距离目标小于 `MinimumRange` 时会前往最远距离的问题。"
+msgstr "修复了单位距离目标小于 `MinimumRange` 时会前往最远距离的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:280
+#: ../../Fixed-or-Improved-Logics.md:284
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 
-#: ../../Fixed-or-Improved-Logics.md:282
+#: ../../Fixed-or-Improved-Logics.md:286
 msgid ""
 "Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect "
 "the firing building's FLH."
 msgstr "现在由 EMPulse 超级武器（*Ares 功能*）发射的武器将完全遵照发射建筑的 FLH 设置。"
 
-#: ../../Fixed-or-Improved-Logics.md:283
+#: ../../Fixed-or-Improved-Logics.md:287
 msgid ""
 "Weapons fired by EMPulse superweapons *(Ares feature)* without "
 "`EMPulse.TargetSelf=true` can now create radiation."
@@ -1696,57 +1719,57 @@ msgstr ""
 "现在由 EMPulse 超级武器（*Ares 功能*）发射的武器在没有 `EMPulse.TargetSelf=true` "
 "的情况下也可以正常产生辐射。"
 
-#: ../../Fixed-or-Improved-Logics.md:284
+#: ../../Fixed-or-Improved-Logics.md:288
 msgid ""
 "Weapons fired by EMPulse superweapons *(Ares feature)* now respect "
 "`Floater` and Phobos-added `Gravity` setting."
 msgstr "现在由 EMPulse 超级武器（*Ares 功能*）发射的武器遵守 `Floater` 与 Phobos 添加的 `Gravity` 设定"
 
-#: ../../Fixed-or-Improved-Logics.md:285
+#: ../../Fixed-or-Improved-Logics.md:289
 msgid ""
 "`IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no "
 "longer get stuck after deploying or play their move sound indefinitely."
 msgstr "拥有 Hover 运动模式的 `IsSimpleDeployer` 且 `DeployToLand` 的单位在部署后不再会卡住或无限播放移动音效。"
 
-#: ../../Fixed-or-Improved-Logics.md:286
+#: ../../Fixed-or-Improved-Logics.md:290
 msgid ""
 "`Convert.Deploy` displays 'NoDeploy' cursor if the new type is not "
 "allowed to move to the cell due to `SpeedType` etc."
 msgstr "当 `Convert.Deploy` 转换的目标单位由于 `SpeedType` 等原因无法移动到目标单元格时将会显示 `NoDeploy` 光标。"
 
-#: ../../Fixed-or-Improved-Logics.md:287
+#: ../../Fixed-or-Improved-Logics.md:291
 msgid ""
 "All forms of type conversion (including Ares') now correctly update the "
 "warp-in delay if unit with teleport `Locomotor` was converted while the "
 "delay was active."
 msgstr "现在所有单位转换形式（包括 Ares 的）在使用超时空 `Locomotor` 的单位处于僵直状态被转换时可以正确的更新传送延迟。"
 
-#: ../../Fixed-or-Improved-Logics.md:288
+#: ../../Fixed-or-Improved-Logics.md:292
 msgid ""
 "All forms of type conversion (including Ares') now correctly update "
 "`MoveSound` if a moving unit has their type changed."
 msgstr "现在所有单位转换形式（包括 Ares 的）在移动单位的类型被转换时可以正确更新 `MoveSound`。"
 
-#: ../../Fixed-or-Improved-Logics.md:289
+#: ../../Fixed-or-Improved-Logics.md:293
 msgid ""
 "All forms of type conversion (including Ares') now correctly update "
 "`OpenTopped` state of passengers in transport that is converted."
 msgstr "现在所有单位转换形式（包括 Ares 的）在运输工具被转换时可以正确更新乘客的 `OpenTopped` 状态。"
 
-#: ../../Fixed-or-Improved-Logics.md:290
+#: ../../Fixed-or-Improved-Logics.md:294
 msgid ""
 "Fixed an issue introduced by Ares that caused building `ActiveAnim` to be"
 " incorrectly restored while `SpecialAnim` was playing and the building "
 "was sold, erased or destroyed."
 msgstr "修复了 Ares 引入的一个当 `SpecialAnim` 播放且建筑被出售、删除或摧毁时它的 `ActiveAnim` 会被错误地恢复的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:291
+#: ../../Fixed-or-Improved-Logics.md:295
 msgid ""
 "Fixed Ares' Abductor weapon leaves permanent placement stats when "
 "abducting moving vehicles."
 msgstr "修复了 Ares 的超时空监狱武器在绑架移动载具时会留下永久放置统计（空气墙）的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:292
+#: ../../Fixed-or-Improved-Logics.md:296
 msgid ""
 "Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` "
 "(typically begin with `[Developer fatal]Pointer 00000000 declared change "
@@ -1755,48 +1778,48 @@ msgstr ""
 "在解析 `Tags` 和 `TaskForces` 时抑制 Ares 的 swizzle 警告（通常以 `[Developer "
 "fatal]Pointer 00000000 declared change to both` 开头）。"
 
-#: ../../Fixed-or-Improved-Logics.md:293
+#: ../../Fixed-or-Improved-Logics.md:297
 msgid ""
 "Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares"
 " feature)* of vehicles built from a war factory."
 msgstr "修复了训练所（*Ares 功能*）在由战车工厂所生产载具的初始载员（*Ares 功能*）上不起作用的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:294
+#: ../../Fixed-or-Improved-Logics.md:298
 msgid ""
 "Fixed Ares' InitialPayload not being created for vehicles spawned by "
 "trigger actions."
 msgstr "修复了 Ares 的初始荷载未为触发行为生成的载具创建的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:296
+#: ../../Fixed-or-Improved-Logics.md:300
 msgid ""
 "Taking over Ares' AlphaImage respawn logic to make it not recreate in "
 "every frame for buildings, static techno and techno without turret, in "
 "order to reduce lags from it."
 msgstr "接管了 Ares 的 AlphaImage 重绘逻辑，使其用于建筑、静止单位和无炮塔单位时不会每帧重绘，以减少其造成的卡顿。"
 
-#: ../../Fixed-or-Improved-Logics.md:297
+#: ../../Fixed-or-Improved-Logics.md:301
 msgid ""
 "Fixed an issue where a portion of Ares's trigger event 75/77 was "
 "determined unsuccessfully."
 msgstr "修复了 Ares 触发条件 75/77 有时判定不成功的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:298
+#: ../../Fixed-or-Improved-Logics.md:302
 msgid ""
 "Fixed an issue where some units crashed after the deployment "
 "transformation."
 msgstr "修复了某些单位部署变形后崩溃的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:299
+#: ../../Fixed-or-Improved-Logics.md:303
 msgid "Fixed the bug that AlphaImage remained after unit entered tunnel."
 msgstr "修复了 AlphaImage 在单位进入隧道后会遗留在隧道口的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:300
+#: ../../Fixed-or-Improved-Logics.md:304
 msgid ""
 "Fixed an issue where Ares' `Convert.Deploy` triggers repeatedly when the "
 "unit is turning or moving."
 msgstr "修复了 Ares 的 `Convert.Deploy` 会在单位转向或移动中反复触发的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:301
+#: ../../Fixed-or-Improved-Logics.md:305
 msgid ""
 "The game now automatically changes save file name from `SAVEGAME.NET` to "
 "`SVGM_XXX.NET` (where `XXX` is a number) when saving to prevent "
@@ -1806,13 +1829,13 @@ msgstr ""
 "游戏现在在保存时会自动将存档文件名从 `SAVEGAME.NET` 改为 `SVGM_XXX.NET`（此处 `XXX` 为数字）以防止在 "
 "Phobos 与 XNA CNCNet Client 共用且保存过于频繁时偶尔覆盖存档文件。"
 
-#: ../../Fixed-or-Improved-Logics.md:302
+#: ../../Fixed-or-Improved-Logics.md:306
 msgid ""
 "1000 save files are supported, from `SVGM_000.NET` to `SVGM_999.NET`. "
 "When the limit is reached, the game will overwrite the latest save file."
 msgstr "支持从 `SVGM_000.NET` 到 `SVGM_999.NET` 的 1000 个文件。当达到上线后游戏将会覆盖此前最新的存档文件。"
 
-#: ../../Fixed-or-Improved-Logics.md:303
+#: ../../Fixed-or-Improved-Logics.md:307
 msgid ""
 "The previous `SVGM_XXX.NET` files are cleaned up before first copy if "
 "it's a new game, otherwise the highest numbered `SVGM_XXX.NET` file is "
@@ -1821,68 +1844,19 @@ msgstr ""
 "如果是新游戏，在首次保存前会清理先前存在的 `SVGM_XXX.NET` 文件，否则游戏会查找编号最大的 `SVGM_XXX.NET` "
 "文件并在可行的情况下递增编号。"
 
-#: ../../Fixed-or-Improved-Logics.md:304
+#: ../../Fixed-or-Improved-Logics.md:308
 msgid ""
 "The game also automatically copies `spawn.ini` to the save folder as "
 "`spawnSG.ini` when saving a game."
 msgstr "游戏还会在保存时自动将 `spawn.ini` 复制到存档文件夹中的 `spawnSG.ini`。"
 
-#: ../../Fixed-or-Improved-Logics.md:305
-msgid ""
-"Fixed an issue that Ares' Type Conversion not resetting barrel's "
-"direction by `FireAngle`."
-msgstr "修复了 Ares 的单位转换不会通过 `FireAngle` 重设炮管方向的问题。"
-
-#: ../../Fixed-or-Improved-Logics.md:306
-msgid ""
-"Fixed an issue that jumpjet vehicles can not stop correctly when assigned"
-" a target in range."
-msgstr "修复了 Jumpjet 载具在指定射程内目标时无法正确停止的问题。"
-
-#: ../../Fixed-or-Improved-Logics.md:307
-msgid ""
-"Fixed an issue that jumpjet infantry stop incorrectly when assigned a "
-"target out of range."
-msgstr "修复了 Jumpjet 步兵在指定超出射程的目标时停止不正确的问题。"
-
-#: ../../Fixed-or-Improved-Logics.md:308
-msgid ""
-"Fixed an issue that jumpjet infantry' shadow is always drawn even if they"
-" are cloaked."
-msgstr "修复了 Jumpjet 步兵隐形时依然绘制影子的问题。"
-
-#: ../../Fixed-or-Improved-Logics.md:309
-msgid ""
-"Fixed an issue that technos head to building's dock even they are not "
-"going to dock."
-msgstr "修复了单位不执行停靠命令的情况下也会前往停靠位置的问题。"
-
-#: ../../Fixed-or-Improved-Logics.md:310
-msgid ""
-"Fixed an issue that the jumpjet vehicles cannot stop correctly after "
-"going berserk."
-msgstr "修复了被混乱的 Jumpjet 载具无法正确停止的问题。"
-
 #: ../../Fixed-or-Improved-Logics.md:311
-msgid ""
-"Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's"
-" repair flash effect."
-msgstr "修复了 Ares 的 `[WarheadType] -> Flash.Duration=` 无法覆盖维修武器闪光效果的问题。"
-
-#: ../../Fixed-or-Improved-Logics.md:312
-msgid ""
-"Fixed the bug that building with `CloningFacility=true` and "
-"`WeaponsFactory=true` may cloning multiple vehicles and then they get "
-"stuck."
-msgstr "修复了拥有 `CloningFacility=true` 和 `WeaponsFactory=true` 的建筑可能克隆多个载具并卡住的 Bug。"
-
-#: ../../Fixed-or-Improved-Logics.md:315
 msgid ""
 "The described behavior is a replica of and is compliant with XNA CnCNet "
 "Client's multiplayer save game support."
 msgstr "上述行为复刻并兼容了 XNA CNCNet Client 的多人游戏存档功能支持。"
 
-#: ../../Fixed-or-Improved-Logics.md:319
+#: ../../Fixed-or-Improved-Logics.md:315
 msgid ""
 "At the moment this is only useful if you use a version of [YRpp "
 "Spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves "
@@ -1892,6 +1866,25 @@ msgstr ""
 "目前此功能仅在使用支持了多人游戏存档后的 [YRpp Spawner](https://github.com/CnCNet/yrpp-"
 "spawner) 版本（同时配合 [XNA CnCNet Client](https://github.com/CnCNet/xna-"
 "cncnet-client)） 时才有用。"
+
+#: ../../Fixed-or-Improved-Logics.md:318
+msgid ""
+"Fixed an issue that Ares' Type Conversion not resetting barrel's "
+"direction by `FireAngle`."
+msgstr "修复了 Ares 的单位转换不会通过 `FireAngle` 重设炮管方向的问题。"
+
+#: ../../Fixed-or-Improved-Logics.md:319
+msgid ""
+"Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's"
+" repair flash effect."
+msgstr "修复了 Ares 的 `[WarheadType] -> Flash.Duration=` 无法覆盖维修武器闪光效果的问题。"
+
+#: ../../Fixed-or-Improved-Logics.md:320
+msgid ""
+"Fixed the bug that building with `CloningFacility=true` and "
+"`WeaponsFactory=true` may cloning multiple vehicles and then they get "
+"stuck."
+msgstr "修复了拥有 `CloningFacility=true` 和 `WeaponsFactory=true` 的建筑可能克隆多个载具并卡住的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:322
 msgid "Newly added global settings"
@@ -4361,9 +4354,9 @@ msgid ""
 "Logics.md#attached-effects) will be checked."
 msgstr ""
 "`Splits.UseWeaponTargeting` 如果设为 true，则在检查分裂抛射体的目标时启用武器瞄准筛选。目标上的 "
-"`LegalTarget` 设置、弹头的 `Verses` 对 `Armor` 的设置以及 `AirburstWeapon` "
-"所填武器的 <a href=\"New-or-Enhanced-Logics.html#weapon-targeting-filter\">武器瞄准筛选</a> 和 "
-"[AttachEffect 筛选](New-or-Enhanced-Logics.md#attached-effects) 都将被检查。"
+"`LegalTarget` 设置、弹头的 `Verses` 对 `Armor` 的设置以及 `AirburstWeapon` 所填武器的 <a "
+"href=\"New-or-Enhanced-Logics.html#weapon-targeting-filter\">武器瞄准筛选</a> 和"
+" [AttachEffect 筛选](New-or-Enhanced-Logics.md#attached-effects) 都将被检查。"
 
 #: ../../Fixed-or-Improved-Logics.md:1174
 msgid ""
@@ -4632,12 +4625,14 @@ msgid ""
 "Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering "
 "to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, "
 "Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon "
-"targeting filters](New-or-Enhanced-Logics.md#weapon-targeting-filter) & [AttachEffect filters"
-"](New-or-Enhanced-Logics.md#attached-effects) will be checked."
+"targeting filters](New-or-Enhanced-Logics.md#weapon-targeting-filter) & "
+"[AttachEffect filters](New-or-Enhanced-Logics.md#attached-effects) will "
+"be checked."
 msgstr ""
 "设置 `Shrapnel.UseWeaponTargeting` 现在允许为 `ShrapnelWeapon` 启用武器目标过滤。目标的 "
-"`LegalTarget` 设置、弹头的 `Verses` 对 `Armor` 以及 `ShrapnelWeapon` <a href=\"New-or-Enhanced-Logics.html#weapon-targeting-filter\">武器目标筛选"
-"</a> 和 [AE 武器过滤](New-or-Enhanced-Logics.md#attached-effects) 将被检查。"
+"`LegalTarget` 设置、弹头的 `Verses` 对 `Armor` 以及 `ShrapnelWeapon` <a href"
+"=\"New-or-Enhanced-Logics.html#weapon-targeting-filter\">武器目标筛选</a> 和 [AE"
+" 武器过滤](New-or-Enhanced-Logics.md#attached-effects) 将被检查。"
 
 #: ../../Fixed-or-Improved-Logics.md:1260
 msgid ""
@@ -8413,4 +8408,10 @@ msgstr ""
 
 #~ msgid "Overlays"
 #~ msgstr "覆盖物"
+
+#~ msgid ""
+#~ "Fixed the bug that `AllowAirstrike=no` "
+#~ "cannot completely prevent air strikes "
+#~ "from being launched against it."
+#~ msgstr "修复了 `AllowAirstrike=no` 未能完全阻止对某个单位进行空袭的 Bug。"
 
