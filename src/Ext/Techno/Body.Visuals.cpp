@@ -369,10 +369,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 		auto [point, visible] = TacticalClass::Instance->CoordsToClient(pThis->GetRenderCoords());
 		const auto pFoot = static_cast<FootClass*>(pThis);
 
-		if (!pFoot->Locomotor)
-			Game::RaiseError(E_POINTER);
-
-		point += pFoot->Locomotor->Shadow_Point();
+		point.Y += TacticalClass::AdjustForZ(pFoot->GetHeight());
 
 		if (visible && pGroundShape)
 		{
