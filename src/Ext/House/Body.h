@@ -97,12 +97,12 @@ public:
 			, ForceEnemyIndex(-1)
 		{ }
 
-		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
+		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;
 		void AddToLimboTracking(TechnoTypeClass* pTechnoType);
 		void RemoveFromLimboTracking(TechnoTypeClass* pTechnoType);
-		int CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType);
+		int CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType) const;
 		void UpdateNonMFBFactoryCounts(AbstractType rtti, bool remove, bool isNaval);
-		int GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNaval);
+		int GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNaval) const;
 		float GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoType) const;
 
 		int GetForceEnemyIndex();

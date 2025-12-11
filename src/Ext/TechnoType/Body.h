@@ -409,6 +409,10 @@ public:
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
 
+		Valueable<int> Ammo_AutoConvertMinimumAmount;
+		Valueable<int> Ammo_AutoConvertMaximumAmount;
+		Nullable<TechnoTypeClass*> Ammo_AutoConvertType;
+
 		Valueable<bool> FiringForceScatter;
 
 		Valueable<int> FireUp;
@@ -801,6 +805,10 @@ public:
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
 
+			, Ammo_AutoConvertMinimumAmount { -1 }
+			, Ammo_AutoConvertMaximumAmount { -1 }
+			, Ammo_AutoConvertType { nullptr }
+
 			, FiringForceScatter { true }
 
 			, FireUp { -1 }
@@ -847,10 +855,10 @@ public:
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 		void CalculateSpawnerRange();
-		bool IsSecondary(int nWeaponIndex);
+		bool IsSecondary(int nWeaponIndex) const;
 
-		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget);
-		int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget);
+		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget) const;
+		int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget) const;
 
 		void UpdateAdditionalAttributes();
 

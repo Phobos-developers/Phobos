@@ -300,7 +300,7 @@ namespace BriefingTemp
 	bool ShowBriefing = false;
 }
 
-__forceinline void ShowBriefing()
+static __forceinline void ShowBriefing()
 {
 	if (BriefingTemp::ShowBriefing)
 	{
@@ -428,7 +428,7 @@ DEFINE_HOOK(0x604985, GetDialogUIStatusLabels_ShowBriefing, 0x5)
 
 #pragma endregion
 
-bool __fastcall Fake_HouseIsAlliedWith(HouseClass* pThis, void*, HouseClass* CurrentPlayer)
+static bool __fastcall Fake_HouseIsAlliedWith(HouseClass* pThis, void*, HouseClass* CurrentPlayer)
 {
 	return (Phobos::Config::ShowPlanningPath && SessionClass::IsSingleplayer())
 		|| pThis->IsControlledByCurrentPlayer()
@@ -501,4 +501,10 @@ DEFINE_HOOK(0x552F79, LoadProgressManager_Draw_MissingLoadingScreenDefaults, 0x6
 	}
 
 	return 0;
+}
+
+// Hides the number at top-left of screen when debug stats are not being drawn
+DEFINE_HOOK(0x55F1F8, MPDebugPrint_CheckDrawFlag, 0x8)
+{
+    return Game::DrawMPDebugStats ? 0 : 0x55F280;
 }
