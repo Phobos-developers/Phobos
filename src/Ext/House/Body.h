@@ -66,6 +66,8 @@ public:
 		std::vector<SWExt> SuperExts;
 
 		int ForceEnemyIndex;
+		int TeamDelay;
+		bool FreeRadar;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
@@ -95,6 +97,8 @@ public:
 			, SuspendedEMPulseSWs {}
 			, SuperExts(SuperWeaponTypeClass::Array.Count)
 			, ForceEnemyIndex(-1)
+			, TeamDelay(-1)
+			, FreeRadar(ScenarioClass::Instance->FreeRadar)
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;
