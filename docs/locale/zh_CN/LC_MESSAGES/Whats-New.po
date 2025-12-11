@@ -2587,6 +2587,7 @@ msgid ""
 "Fixed an issue with parsing floating point numbers from INI that may have"
 " in some cases contributed to desyncs (by Starkku)"
 msgstr ""
+"修复了一个某些情况下从 INI 解析浮点值时可能导致不同步的问题（by Starkku）"
 
 #: ../../Whats-New.md:560
 msgid "0.4"
