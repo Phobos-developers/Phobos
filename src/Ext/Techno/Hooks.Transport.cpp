@@ -173,7 +173,9 @@ DEFINE_HOOK(0x6F72D2, TechnoClass_IsCloseEnoughToTarget_OpenTopped_RangeBonus, 0
 	if (auto const pTransport = pThis->Transporter)
 	{
 		auto const pExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData;
-		R->EAX(pExt->OpenTopped_RangeBonus.Get(RulesClass::Instance->OpenToppedRangeBonus));
+		const int rangeBonus = pExt->OpenTopped_RangeBonus.Get(RulesClass::Instance->OpenToppedRangeBonus);
+
+		R->EAX(rangeBonus + TechnoExt::ExtMap.Find(pThis)->TypeExtData->OpenTransport_RangeBonus);
 		return 0x6F72DE;
 	}
 
