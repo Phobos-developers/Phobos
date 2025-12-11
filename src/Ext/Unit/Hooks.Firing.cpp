@@ -160,3 +160,12 @@ DEFINE_HOOK(0x741A96, UnitClass_SetDestination_ResetFiringFrame, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x74159F, UnitClass_ApproachTarget_GoAboveTarget, 0x6)
+{
+	GET(UnitClass* const, pThis, ESI);
+	auto pType = pThis->Type;
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	R->AL(pType->BalloonHover || pTypeExt->CanGoAboveTarget);
+	return R->Origin() + 0x6;
+}

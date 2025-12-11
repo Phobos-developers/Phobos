@@ -1941,6 +1941,18 @@ In `rulesmd.ini`:
 Harvester.CanGuardArea=no          ; boolean
 ```
 
+### Allow other vehicles to attempt to move above the target like `BalloonHover=yes`
+
+- In vanilla, vehicles with `BalloonHover=yes` and a weapon with projectile with `Vertical=yes` will attempt to move above the target.
+- Now you can make other vehicles do the same without `BalloonHover=yes`.
+  - A weapon with projectile with `Vertical=yes` is still needed.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                        ; VehicleType
+CanGoAboveTarget=false               ; boolean
+```
+
 ### Bunker entering check dehardcode
 
 - In vanilla, vehicles entering tank bunkers are subject to a series of hardcoding restrictions, including having to have turrets, having to have weapons, and not having Hover speed types. Now you can skip these restrictions.
