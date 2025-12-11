@@ -320,12 +320,12 @@ Vanilla fixes:
 Phobos fixes:
 - AttachEffect `DisableWeapons` no longer interferes with 'can this unit/building fire weapons?' checks for units/buildings with no weapons (by Starkku)
 - Fixed starting infantry being scattered randomly on game start instead of being grouped (by 11EJDE11, Belonit, Ollerus)
-- Fixed OverlayType `ZAdjust` as well as some shield & AttachEffect variables not being correctly saved & loaded (by Ollerus)
 - Fixed an issue with certain Warhead detonation features (f.ex `Crit.Warhead` without `Crit.Warhead.FullDetonation=true` not snapping on the intended target without `CellSpread`) (by Starkku)
 - Fixed an issue with `UndeploysInto.Sellable` (by TaranDahl)
 - Fixed an issue with `Powered`/`PoweredSpecial` building animation ownership change fix (by Trsdy)
 - Fixed `DisplayIncome`, `Transact.Money` etc. display strings showing through shroud and for objects that are supposed to be hidden such as cloaked, undetected enemies (by Starkku)
 - Fixed an issue that could cause crashes when `FeedbackWeapon` was used to convert the firer to another TechnoType with less or no weapons (by Starkku)
+- Fixed an issue with parsing floating point numbers from INI that may have in some cases contributed to desyncs (by Starkku)
 ```
 
 ### 0.4

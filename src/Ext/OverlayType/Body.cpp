@@ -14,7 +14,6 @@ template <typename T>
 void OverlayTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->ZAdjust)
 		.Process(this->PaletteFile)
 		;
 }

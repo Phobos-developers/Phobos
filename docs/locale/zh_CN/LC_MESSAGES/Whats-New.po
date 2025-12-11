@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-06 01:43+0800\n"
+"POT-Creation-Date: 2025-12-11 13:24+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -587,12 +587,6 @@ msgstr "修复了初始步兵从原有行为变为随机分散的问题（by 11E
 
 #: ../../Whats-New.md:323
 msgid ""
-"Fixed OverlayType `ZAdjust` as well as some shield & AttachEffect "
-"variables not being correctly saved & loaded (by Ollerus)"
-msgstr "修复了覆盖物的 `ZAdjust` 及一些护盾和 AE 变量无法正确保存与加载的问题（by Ollerus）"
-
-#: ../../Whats-New.md:324
-msgid ""
 "Fixed an issue with certain Warhead detonation features (f.ex "
 "`Crit.Warhead` without `Crit.Warhead.FullDetonation=true` not snapping on"
 " the intended target without `CellSpread`) (by Starkku)"
@@ -600,17 +594,17 @@ msgstr ""
 "修复了某些弹头引爆功能问题（例如当未设置 `Crit.Warhead.FullDetonation=true` 且未设置 `CellSpread`"
 " 的有 `Crit.Warhead` 弹头无法精确命中目标）（by Starkku）"
 
-#: ../../Whats-New.md:325
+#: ../../Whats-New.md:324
 msgid "Fixed an issue with `UndeploysInto.Sellable` (by TaranDahl)"
 msgstr "修复了 `UndeploysInto.Sellable` 相关问题（by TaranDahl）"
 
-#: ../../Whats-New.md:326
+#: ../../Whats-New.md:325
 msgid ""
 "Fixed an issue with `Powered`/`PoweredSpecial` building animation "
 "ownership change fix (by Trsdy)"
 msgstr "修复了 `Powered`／`PoweredSpecial` 建筑动画的所属变更修复相关的问题（by Trsdy）"
 
-#: ../../Whats-New.md:327
+#: ../../Whats-New.md:326
 msgid ""
 "Fixed `DisplayIncome`, `Transact.Money` etc. display strings showing "
 "through shroud and for objects that are supposed to be hidden such as "
@@ -619,13 +613,18 @@ msgstr ""
 "修复了 `DisplayIncome`、`Transact.Money` "
 "等的数字在黑幕之上以及本应隐藏的对象（例如处于未被探测到的隐形敌方单位）上显示的问题（by Starkku）"
 
-#: ../../Whats-New.md:328
+#: ../../Whats-New.md:327
 msgid ""
 "Fixed an issue that could cause crashes when `FeedbackWeapon` was used to"
 " convert the firer to another TechnoType with less or no weapons (by "
 "Starkku)"
+msgstr "修复了一个 `FeedbackWeapon` 将开火者转换为另一种武器数量更少或无武器的单位时可能引发崩溃的问题（by Starkku）"
+
+#: ../../Whats-New.md:328
+msgid ""
+"Fixed an issue with parsing floating point numbers from INI that may have"
+" in some cases contributed to desyncs (by Starkku)"
 msgstr ""
-"修复了一个 `FeedbackWeapon` 将开火者转换为另一种武器数量更少或无武器的单位时可能引发崩溃的问题（by Starkku）"
 
 #: ../../Whats-New.md:331
 msgid "0.4"
@@ -4222,4 +4221,11 @@ msgstr "解除了拓展工具条字符数量小得愚蠢的上限（by Belonit�
 #~ "snapping on the intended target without"
 #~ " `CellSpread` (by Starkku)"
 #~ msgstr ""
+
+#~ msgid ""
+#~ "Fixed OverlayType `ZAdjust` as well as"
+#~ " some shield & AttachEffect variables "
+#~ "not being correctly saved & loaded "
+#~ "(by Ollerus)"
+#~ msgstr "修复了覆盖物的 `ZAdjust` 及一些护盾和 AE 变量无法正确保存与加载的问题（by Ollerus）"
 
