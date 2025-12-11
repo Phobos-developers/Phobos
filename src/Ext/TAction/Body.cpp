@@ -392,7 +392,7 @@ bool TActionExt::ToggleMCVRedeploy(TActionClass* pThis, HouseClass* pHouse, Obje
 
 bool TActionExt::UndeployToWaypoint(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
 {
-	const auto& nCell = ScenarioExt::Global()->Waypoints[pThis->Param4];
+	const auto& nCell = ScenarioExt::Global()->Waypoints[pThis->Waypoint];
 	CellClass* const pCell = MapClass::Instance.TryGetCellAt(nCell);
 
 	if (!pCell)
@@ -415,7 +415,7 @@ bool TActionExt::UndeployToWaypoint(TActionClass* const pThis, HouseClass* const
 	if (!allHouse && !vHouse)
 		return true;
 
-	const char* buildingName = pThis->Text;
+	const char* buildingName = pThis->TechnoID;
 	bool allBuilding = false;
 	BuildingTypeClass* pBuildingType = nullptr;
 
