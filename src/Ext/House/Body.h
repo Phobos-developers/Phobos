@@ -98,7 +98,7 @@ public:
 			, SuperExts(SuperWeaponTypeClass::Array.Count)
 			, ForceEnemyIndex(-1)
 			, TeamDelay(-1)
-			, FreeRadar(ScenarioClass::Instance->FreeRadar)
+			, FreeRadar(false)
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;
