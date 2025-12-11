@@ -177,6 +177,7 @@ msgid ""
 "**[🌐 International Discord channel on C&C Mod "
 "Haven](https://discord.gg/sZeMzz6qVg)**"
 msgstr ""
+"**[🌐国际性的 Discord 频道：C&C Mod Haven](https://discord.gg/sZeMzz6qVg)**"
 
 #: ../../../README.md:27
 #, python-format
