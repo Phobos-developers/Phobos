@@ -2167,6 +2167,35 @@ JumpjetTilt.SidewaysRotationFactor=1.0  ; floating point value
 JumpjetTilt.SidewaysSpeedFactor=1.0     ; floating point value
 ```
 
+#### Multiple Barrels and Turrets
+
+![image](_static/images/multiturret-01.png)
+*Vehicle with multiple turrets*
+
+- Vehicles can now draw and fire turrets at multiple positions, only supports regular VXL vehicles.
+  - `ExtraTurretCount` controls how many extra turrets a unit has. `ExtraTurretOffsetX` controls the offset position of the X-th extra turret of the unit relative to the center of the unit. X is 0-based.
+  - `ExtraBarrelCount` controls how many extra barrels each turret has. `BarrelOffset` controls the offset distance of the main barrel relative to the center of the turret along the Y-axis (left and right). `ExtraBarrelOffsetX` controls the offset distance of the X-th extra barrel of each turret relative to the center of the turret along the Y-axis (left and right). X is 0-based.
+  - `BarrelOverTurret` controls whether the barrel layer is always above the turret layer. Otherwise, the layer relationship will be judged according to the direction of the turret.
+  - When a unit fires, it will first use the original turret to fire `BurstPerTurret` times, then switch to the 0th additional turret to fire `BurstPerTurret` times, then switch to the 1st, and so on.
+- The firing FLH is also calculated relative to the firing turret's position. If the unit's turret or barrel has recoil effects set, the turret/barrel index will be automatically calculated based on `Burst`.
+- The firing position is essentially determined by the current `Burst`. If you want the rear turrets to fire, you need weapons with high `Burst`. For example, a battleship with 2 additional turrets (3 turrets total) and `BurstPerTurret=3` would need at least `Burst=9` to allow all turrets to fire completely once. The same applies to barrels on each turret.
+
+In `artmd.ini`:
+```ini
+[SOMEVEHICLE]               ; VehicleType
+BarrelOverTurret=           ; boolean
+BarrelOffset=0              ; integer
+ExtraBarrelCount=0          ; integer
+ExtraBarrelOffsetX=0        ; integer
+ExtraTurretCount=0          ; integer
+ExtraTurretOffsetX=0,0,0    ; FLH coordinates
+BurstPerTurret=0            ; integer
+```
+
+```{note}
+This is essentially designed to restore multi-turrets in RA1, not to help you make a Zantos. Therefore, features like different turrets using different weapons/targeting separately/calculating cooldown separately/having separate health are not within the scope of this function. Please use techno attachment for such requirements.
+```
+
 ### Turret Response
 
 - When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body.

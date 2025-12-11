@@ -18,10 +18,10 @@
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
 bool TechnoTypeExt::SelectWeaponMutex = false;
 
-void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
+void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor, int turIdx)
 {
 	// Does not verify if the offset actually has all values parsed as it makes no difference, it will be 0 for the unparsed ones either way.
-	const auto offset = this->TurretOffset.GetEx();
+	const auto offset = turIdx < 0 ? static_cast<CoordStruct*>(this->TurretOffset.GetEx()) : &this->ExtraTurretOffsets[turIdx];
 	const float x = static_cast<float>(offset->X * factor);
 	const float y = static_cast<float>(offset->Y * factor);
 	const float z = static_cast<float>(offset->Z * factor);
@@ -1208,6 +1208,44 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			this->AlternateFLHs.emplace_back(alternateFLH);
 	}
 
+	// Extra barrel/turret offsets
+	this->BarrelOverTurret.Read(exArtINI, pArtSection, "BarrelOverTurret");
+	this->BarrelOffset.Read(exArtINI, pArtSection, "BarrelOffset");
+	this->ExtraBarrelCount.Read(exArtINI, pArtSection, "ExtraBarrelCount");
+
+	if (this->ExtraBarrelCount > 0)
+	{
+		for (int i = 0; i < this->ExtraBarrelCount; ++i)
+		{
+			Valueable<int> extraBarrelOffset;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "ExtraBarrelOffset%u", i);
+			extraBarrelOffset.Read(exArtINI, pArtSection, tempBuffer);
+			this->ExtraBarrelOffsets.emplace_back(extraBarrelOffset.Get());
+		}
+	}
+	else
+	{
+		this->ExtraBarrelCount = 0;
+	}
+
+	this->ExtraTurretCount.Read(exArtINI, pArtSection, "ExtraTurretCount");
+
+	if (this->ExtraTurretCount > 0)
+	{
+		for (int i = 0; i < this->ExtraTurretCount; ++i)
+		{
+			Valueable<CoordStruct> extraTurretOffset;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "ExtraTurretOffset%u", i);
+			extraTurretOffset.Read(exArtINI, pArtSection, tempBuffer);
+			this->ExtraTurretOffsets.emplace_back(extraTurretOffset.Get());
+		}
+		this->BurstPerTurret.Read(exArtINI, pArtSection, "BurstPerTurret");
+	}
+	else
+	{
+		this->ExtraTurretCount = 0;
+	}
+
 	// Parasitic types
 	this->AttachEffects.LoadFromINI(pINI, pSection);
 
@@ -1698,6 +1736,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InfantryAutoDeploy)
 
 		.Process(this->TurretResponse)
+			
+		.Process(this->BarrelOverTurret)
+		.Process(this->BarrelOffset)
+		.Process(this->ExtraBarrelCount)
+		.Process(this->ExtraBarrelOffsets)
+		.Process(this->ExtraTurretCount)
+		.Process(this->ExtraTurretOffsets)
+		.Process(this->BurstPerTurret)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

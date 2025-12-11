@@ -715,7 +715,13 @@ DEFINE_HOOK(0x6FF0DD, TechnoClass_FireAt_TurretRecoil, 0x6)
 
 	GET_STACK(WeaponTypeClass* const, pWeapon, STACK_OFFSET(0xB0, -0x70));
 
-	return WeaponTypeExt::ExtMap.Find(pWeapon)->TurretRecoil_Suppress ? SkipGameCode : 0;
+	if (!WeaponTypeExt::ExtMap.Find(pWeapon)->TurretRecoil_Suppress)
+	{
+		GET(TechnoClass* const, pThis, ESI);
+		TechnoExt::ExtMap.Find(pThis)->RecordRecoilData();
+	}
+
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x6FF905, TechnoClass_FireAt_FireOnce, 0x6)
@@ -911,6 +917,7 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 
 	bool allowOnTurret = true;
 	CoordStruct flh = CoordStruct::Empty;
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	if (weaponIndex >= 0)
 	{
@@ -932,7 +939,6 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 	else
 	{
 		const int index = -weaponIndex - 1;
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 		if (index < static_cast<int>(pTypeExt->AlternateFLHs.size()))
 			flh = pTypeExt->AlternateFLHs[index];
@@ -941,7 +947,12 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 			allowOnTurret = false;
 	}
 
-	*pCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, allowOnTurret);
+	auto turIdx = -1;
+
+	if (pTypeExt->BurstPerTurret > 0)
+		turIdx = ((pThis->CurrentBurstIndex / pTypeExt->BurstPerTurret) % (pTypeExt->ExtraTurretCount + 1)) - 1;
+
+	*pCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, allowOnTurret, turIdx);
 	R->EAX(pCoords);
 
 	return SkipGameCode;

@@ -34,37 +34,56 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 	}
 }
 
-// reversed from 6F3D60
-CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
+Matrix3D TechnoExt::GetTransform(TechnoClass* pThis, VoxelIndexKey* pKey, bool isShadow)
 {
-	auto const pType = pThis->GetTechnoType();
-	auto const pFoot = abstract_cast<FootClass*, true>(pThis);
 	Matrix3D mtx;
+	auto const pFoot = abstract_cast<FootClass*, true>(pThis);
 
-	// Step 1: get body transform matrix
 	if (pFoot && pFoot->Locomotor)
-		mtx = pFoot->Locomotor->Draw_Matrix(nullptr);
+		mtx = isShadow ? pFoot->Locomotor->Shadow_Matrix(pKey) : pFoot->Locomotor->Draw_Matrix(pKey);
 	else // no locomotor means no rotation or transform of any kind (f.ex. buildings) - Kerbiter
 		mtx.MakeIdentity();
 
-	// Steps 2-3: turret offset and rotation
-	if (isOnTurret && (pType->Turret || !pFoot)) // If building has no turret, it's TurretFacing is TargetDirection
+	return mtx;
+}
+
+Matrix3D TechnoExt::TransformFLHForTurret(TechnoClass* pThis, Matrix3D mtx, bool isOnTurret, double factor, int turIdx)
+{
+	auto const pType = pThis->GetTechnoType();
+	const bool isFoot = (pThis->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None;
+
+	// turret offset and rotation
+	if (isOnTurret && (pType->Turret || !isFoot)) // If building has no turret, it's TurretFacing is TargetDirection
 	{
-		TechnoTypeExt::ApplyTurretOffset(pType, &mtx);
+		TechnoTypeExt::ApplyTurretOffset(pType, &mtx, factor, turIdx);
 
 		const double turretRad = pThis->TurretFacing().GetRadian<32>();
 		// For BuildingClass turret facing is equal to primary facing
-		const float angle = pFoot ? (float)(turretRad - pThis->PrimaryFacing.Current().GetRadian<32>()) : (float)(turretRad);
+		const float angle = isFoot ? (float)(turretRad - pThis->PrimaryFacing.Current().GetRadian<32>()) : (float)(turretRad);
 
 		mtx.RotateZ(angle);
 	}
 
-	// Step 4: apply FLH offset
-	mtx.Translate((float)pCoord.X, (float)pCoord.Y, (float)pCoord.Z);
+	return mtx;
+}
 
-	auto const result = mtx.GetTranslation();
+Matrix3D TechnoExt::GetFLHMatrix(TechnoClass* pThis, const CoordStruct& flh, bool isOnTurret, double factor, bool isShadow, int turIdx)
+{
+	Matrix3D transform = TechnoExt::GetTransform(pThis, nullptr, isShadow);
+	Matrix3D mtx = TechnoExt::TransformFLHForTurret(pThis, transform, isOnTurret, factor, turIdx);
 
-	// Step 5: apply as an offset to global object coords
+	// apply FLH offset
+	mtx.Translate((float)(flh.X * factor), (float)(flh.Y * factor), (float)(flh.Z * factor));
+
+	return mtx;
+}
+
+// reversed from 6F3D60
+CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, const CoordStruct& flh, bool isOnTurret, int turIdx)
+{
+	auto result = TechnoExt::GetFLHMatrix(pThis, flh, isOnTurret, 1.0, false, turIdx).GetTranslation();
+
+	// apply as an offset to global object coords
 	// Resulting coords are mirrored along X axis, so we mirror it back
 	auto const location = pThis->GetRenderCoords() + CoordStruct { (int)result.X, -(int)result.Y, (int)result.Z };
 
@@ -170,6 +189,57 @@ void TechnoExt::ExtData::InitializeAttachEffects()
 
 	auto const pThis = this->OwnerObject();
 	AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
+}
+
+void TechnoExt::ExtData::InitializeRecoilData()
+{
+	const auto pTypeExt = this->TypeExtData;
+	const auto pType = pTypeExt->OwnerObject();
+
+	if (!pType->TurretRecoil)
+		return;
+
+	if (pTypeExt->ExtraTurretCount)
+	{
+		if (static_cast<int>(this->ExtraTurretRecoil.size()) < pTypeExt->ExtraTurretCount)
+			this->ExtraTurretRecoil.resize(pTypeExt->ExtraTurretCount);
+
+		const auto& refData = pType->TurretAnimData;
+
+		for (auto& data : this->ExtraTurretRecoil)
+		{
+			data.Turret.Travel = refData.Travel;
+			data.Turret.CompressFrames = refData.CompressFrames;
+			data.Turret.RecoverFrames = refData.RecoverFrames;
+			data.Turret.HoldFrames = refData.HoldFrames;
+			data.TravelPerFrame = 0.0;
+			data.TravelSoFar = 0.0;
+			data.State = RecoilData::RecoilState::Inactive;
+			data.TravelFramesLeft = 0;
+		}
+	}
+
+	if (pTypeExt->ExtraTurretCount || pTypeExt->ExtraBarrelCount)
+	{
+		const auto dataCount = (pTypeExt->ExtraBarrelCount + 1) * (pTypeExt->ExtraTurretCount + 1) - 1;
+
+		if (static_cast<int>(this->ExtraBarrelRecoil.size()) < dataCount)
+			this->ExtraBarrelRecoil.resize(dataCount);
+
+		const auto& refData = pType->BarrelAnimData;
+
+		for (auto& data : this->ExtraBarrelRecoil)
+		{
+			data.Turret.Travel = refData.Travel;
+			data.Turret.CompressFrames = refData.CompressFrames;
+			data.Turret.RecoverFrames = refData.RecoverFrames;
+			data.Turret.HoldFrames = refData.HoldFrames;
+			data.TravelPerFrame = 0.0;
+			data.TravelSoFar = 0.0;
+			data.State = RecoilData::RecoilState::Inactive;
+			data.TravelFramesLeft = 0;
+		}
+	}
 }
 
 // Gets tint colors for invulnerability, airstrike laser target and berserk, depending on parameters.
