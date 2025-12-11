@@ -66,6 +66,7 @@ public:
 		Valueable<bool> ImmuneToCrit;
 		Valueable<bool> MultiMindControl_ReleaseVictim;
 		Valueable<int> CameoPriority;
+		PhobosPCXFile AltCameoPCX;
 		Valueable<bool> NoManualMove;
 		Nullable<int> InitialStrength;
 		Valueable<bool> ReloadInTransport;
@@ -485,6 +486,7 @@ public:
 			, ImmuneToCrit { false }
 			, MultiMindControl_ReleaseVictim { false }
 			, CameoPriority { 0 }
+			, AltCameoPCX {}
 			, NoManualMove { false }
 			, InitialStrength {}
 			, ReloadInTransport { false }
@@ -865,6 +867,9 @@ public:
 		int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget) const;
 
 		void UpdateAdditionalAttributes();
+
+		// Ares 0.2
+		bool CameoIsVeteran(HouseClass* pHouse) const;
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;
