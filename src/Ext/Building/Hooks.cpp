@@ -20,7 +20,6 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 
 	const auto pBuildingExt = BuildingExt::ExtMap.Find(pThis);
 	pBuildingExt->DisplayIncomeString();
-	pBuildingExt->ApplyPoweredKillSpawns();
 
 	const auto pTechnoExt = pBuildingExt->TechnoExtData;
 	pTechnoExt->UpdateLaserTrails(); // Mainly for on turret trails
@@ -28,6 +27,15 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 	// Force airstrike targets to redraw every frame to account for tint intensity fluctuations.
 	if (pTechnoExt->AirstrikeTargetingMe)
 		pThis->Mark(MarkType::Change);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x43FBEF, BuildingClass_AI_PoweredKillSpawns, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	BuildingExt::ExtMap.Find(pThis)->ApplyPoweredKillSpawns();
 
 	return 0;
 }
@@ -185,7 +193,7 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 	return SkipGameCode;
 }
 
-CoordStruct* __fastcall BuildingClass_GetFireCoords_Wrapper(BuildingClass* pThis, void* _, CoordStruct* pCrd, int weaponIndex)
+static CoordStruct* __fastcall BuildingClass_GetFireCoords_Wrapper(BuildingClass* pThis, void* _, CoordStruct* pCrd, int weaponIndex)
 {
 	auto coords = MapClass::Instance.GetCellAt(pThis->Owner->EMPTarget)->GetCellCoords();
 	pCrd = pThis->GetFLH(&coords, EMPulseCannonTemp::weaponIndex, *pCrd);
@@ -800,7 +808,7 @@ DEFINE_HOOK(0x44B630, BuildingClass_MissionAttack_AnimDelayedFire, 0x6)
 
 #pragma region BuildingWaypoints
 
-bool __fastcall BuildingTypeClass_CanUseWaypoint(BuildingTypeClass* pThis)
+static bool __fastcall BuildingTypeClass_CanUseWaypoint(BuildingTypeClass* pThis)
 {
 	return RulesExt::Global()->BuildingWaypoints;
 }
@@ -908,7 +916,7 @@ DEFINE_HOOK(0x4555E4, BuildingClass_IsPowerOnline_Overpower, 0x6)
 
 #pragma region OwnerChangeBuildupFix
 
-void __fastcall BuildingClass_Place_Wrapper(BuildingClass* pThis, void*, bool captured)
+static void __fastcall BuildingClass_Place_Wrapper(BuildingClass* pThis, void*, bool captured)
 {
 	// Skip calling Place() here if we're in middle of buildup.
 	if (pThis->CurrentMission != Mission::Construction || pThis->BState != (int)BStateType::Construction)

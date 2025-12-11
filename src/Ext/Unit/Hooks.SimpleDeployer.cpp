@@ -7,21 +7,23 @@
 #include <Utilities/AresFunctions.h>
 #include <Utilities/Macro.h>
 
-static bool HasDeployingAnim(TechnoTypeClass* pType)
+static __forceinline bool HasDeployingAnim(TechnoTypeClass* pType)
 {
 	return pType->DeployingAnim || TechnoTypeExt::ExtMap.Find(pType)->DeployingAnims.size() > 0;
 }
 
-static bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
+static inline bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 {
 	// Movement restrictions.
-	if (isDeploying && pUnit->Locomotor->Is_Moving_Now())
+	const ILocomotionPtr pLoco = pUnit->Locomotor;
+
+	if (isDeploying && pLoco->Is_Moving_Now())
 		return true;
 
 	FacingClass* currentDir = &pUnit->PrimaryFacing;
 	bool isJumpjet = false;
 
-	if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pUnit->Locomotor))
+	if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pLoco))
 	{
 		// Jumpjet rotating is basically half a guarantee it is also moving and
 		// may not be caught by the Is_Moving_Now() check.
@@ -33,12 +35,11 @@ static bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 	}
 
 	// Facing restrictions.
-	auto const pType = pUnit->GetTechnoType();
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pUnit)->TypeExtData;
 	auto const defaultFacing = (FacingType)(RulesClass::Instance->DeployDir >> 5);
 	auto const facing = pTypeExt->DeployDir.Get(defaultFacing);
 
-	if (facing == FacingType::None || (!pTypeExt->DeployDir.isset() && !HasDeployingAnim(pUnit->GetTechnoType())))
+	if (facing == FacingType::None || (!pTypeExt->DeployDir.isset() && !HasDeployingAnim(pTypeExt->OwnerObject())))
 		return false;
 
 	if (facing != (FacingType)currentDir->Current().GetFacing<8>())
@@ -53,7 +54,7 @@ static bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 			if (isJumpjet)
 				currentDir->SetDesired(dir);
 
-			pUnit->Locomotor->Do_Turn(dir);
+			pLoco->Do_Turn(dir);
 
 			return true;
 		}
@@ -66,13 +67,13 @@ static bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 	return false;
 }
 
-static void CreateDeployingAnim(UnitClass* pUnit, bool isDeploying)
+static inline void CreateDeployingAnim(UnitClass* pUnit, bool isDeploying)
 {
 	if (!pUnit->DeployAnim)
 	{
 		auto const pType = pUnit->Type;
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-		auto pAnimType = pUnit->Type->DeployingAnim;
+		auto pAnimType = pType->DeployingAnim;
 
 		if (pTypeExt->DeployingAnims.size() > 0)
 			pAnimType = GeneralUtils::GetItemForDirection<AnimTypeClass*>(pTypeExt->DeployingAnims, pUnit->PrimaryFacing.Current());
