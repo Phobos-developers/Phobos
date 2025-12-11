@@ -239,20 +239,39 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 
 DEFINE_HOOK(0x6F421C, TechnoClass_Init_DefaultDisguise, 0x6)
 {
+	enum { DefaultDisguise = 0x6F4277 };
+
 	GET(TechnoClass*, pThis, ESI);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	const auto pDefault = pTypeExt->DefaultDisguise.Get();
 
-	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	// mirage is not here yet
-	if (pThis->WhatAmI() == AbstractType::Infantry && pExt->DefaultDisguise)
+	switch (pThis->WhatAmI())
 	{
-		pThis->Disguise = pExt->DefaultDisguise;
-		pThis->DisguisedAsHouse = pThis->Owner;
-		pThis->Disguised = true;
-		return 0x6F4277;
-	}
+	case AbstractType::Unit:
+		if (pDefault && pDefault->WhatAmI() == AbstractType::UnitType)
+		{
+			pThis->Disguise = pDefault;
+			pThis->DisguisedAsHouse = pThis->Owner;
+			pThis->Disguised = true;
+			return DefaultDisguise;
+		}
 
-	pThis->Disguised = false;
+		break;
+
+	case AbstractType::Infantry:
+		if (pDefault && pDefault->WhatAmI() == AbstractType::InfantryType)
+		{
+			pThis->Disguise = pDefault;
+			pThis->DisguisedAsHouse = pThis->Owner;
+			pThis->Disguised = true;
+			return DefaultDisguise;
+		}
+
+		break;
+
+	default:
+		break;
+	}
 
 	return 0;
 }
