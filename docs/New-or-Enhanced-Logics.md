@@ -1482,9 +1482,9 @@ Tint.VisibleToHouses=all  ; List of Affected House Enumeration (none|owner/self|
 
 ```ini
 [SOMETECHNO]                              ; TechnoType
-OpenTopped.RangeBonus=                    ; integer, default to [CombatDamage] -> OpenToppedRangeBonus
-OpenTopped.DamageMultiplier=              ; floating point value, default to [CombatDamage] -> OpenToppedDamageMultiplier
-OpenTopped.WarpDistance=                  ; integer, default to [CombatDamage] -> OpenToppedWarpDistance
+OpenTopped.RangeBonus=                    ; integer, override of the global default
+OpenTopped.DamageMultiplier=              ; floating point value, override of the global default
+OpenTopped.WarpDistance=                  ; integer, override of the global default
 OpenTopped.IgnoreRangefinding=false       ; boolean
 OpenTopped.AllowFiringIfDeactivated=true  ; boolean
 OpenTopped.ShareTransportTarget=true      ; boolean
