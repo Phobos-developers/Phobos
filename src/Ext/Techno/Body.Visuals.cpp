@@ -368,12 +368,10 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 	{
 		auto [point, visible] = TacticalClass::Instance->CoordsToClient(pThis->GetRenderCoords());
 		const auto pFoot = static_cast<FootClass*>(pThis);
-
-		if (!pFoot->Locomotor)
-			Game::RaiseError(E_POINTER);
-
-		point += pFoot->Locomotor->Shadow_Point();
-
+		if(pThis->WhatAmI()==AbstractType::Aircraft)
+			point.Y += TacticalClass::AdjustForZ(pFoot->GetHeight());
+		else
+			point += pFoot->Locomotor->Shadow_Point();
 		if (visible && pGroundShape)
 		{
 			const auto pPalette = pSelectBox->GroundPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
