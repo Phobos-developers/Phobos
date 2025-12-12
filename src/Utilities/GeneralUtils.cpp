@@ -239,7 +239,7 @@ void GeneralUtils::DisplayDamageNumberString(int damage, DamageDisplayType type,
 	const int maxOffset = Unsorted::CellWidthInPixels / 2;
 	int width = 0, height = 0;
 	wchar_t damageStr[0x20];
-	swprintf_s(damageStr, L"%d", damage);
+	swprintf_s(damageStr, L"%c%d", damage > 0 ? L'-' : L'+', abs(damage));
 
 	BitFont::Instance->GetTextDimension(damageStr, &width, &height, 120);
 

@@ -47,6 +47,7 @@ bool Phobos::Config::ToolTipDescriptions = true;
 bool Phobos::Config::ToolTipBlur = false;
 bool Phobos::Config::PrioritySelectionFiltering = true;
 bool Phobos::Config::DevelopmentCommands = true;
+bool Phobos::Config::DamageNumbersCommands = false;
 bool Phobos::Config::SuperWeaponSidebarCommands = false;
 bool Phobos::Config::ShowPlanningPath = false;
 bool Phobos::Config::ArtImageSwap = false;
@@ -75,6 +76,7 @@ bool Phobos::Config::HideShakeEffects = true;
 bool Phobos::Config::ShowFlashOnSelecting = false;
 bool Phobos::Config::UnitPowerDrain = false;
 int Phobos::Config::SuperWeaponSidebar_RequiredSignificance = 0;
+bool Phobos::Config::DisplayDamageNumbers = false;
 
 bool Phobos::Misc::CustomGS = false;
 int Phobos::Misc::CustomGS_ChangeInterval[7] = { -1, -1, -1, -1, -1, -1, -1 };
@@ -108,6 +110,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::HideShakeEffects = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "HideShakeEffects", false);
 	Phobos::Config::ShowFlashOnSelecting = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowFlashOnSelecting", false);
 	Phobos::Config::SuperWeaponSidebar_RequiredSignificance = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "SuperWeaponSidebar.RequiredSignificance", 0);
+	Phobos::Config::DisplayDamageNumbers = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "DisplayDamageNumbers", false);
 
 	// Custom game speeds, 6 - i so that GS6 is index 0, just like in the engine
 	Phobos::Config::CampaignDefaultGameSpeed = 6 - CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "CampaignDefaultGameSpeed", 4);
@@ -281,6 +284,7 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 	Phobos::Config::SaveVariablesOnScenarioEnd = pINI_RULESMD->ReadBool(GameStrings::General, "SaveVariablesOnScenarioEnd", false);
 #ifndef DEBUG
 	Phobos::Config::DevelopmentCommands = pINI_RULESMD->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
+	Phobos::Config::DamageNumbersCommands = pINI_RULESMD->ReadBool("GlobalControls", "DamageNumbersEnabled", Phobos::Config::DevelopmentCommands);
 #endif
 	Phobos::Config::SuperWeaponSidebarCommands = pINI_RULESMD->ReadBool("GlobalControls", "SuperWeaponSidebarKeysEnabled", Phobos::Config::SuperWeaponSidebarCommands);
 	Phobos::Config::ShowPlanningPath = pINI_RULESMD->ReadBool("GlobalControls", "DebugPlanningPaths", Phobos::Config::ShowPlanningPath);

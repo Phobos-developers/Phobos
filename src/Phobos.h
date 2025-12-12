@@ -30,7 +30,6 @@ public:
 
 	static const char* AppIconPath;
 	static const wchar_t* VersionDescription;
-	static bool DisplayDamageNumbers;
 	static bool IsLoadingSaveGame;
 	static bool ShouldSave;
 	static std::wstring CustomGameSaveDescription;
@@ -82,6 +81,7 @@ public:
 		static bool ToolTipBlur;
 		static bool PrioritySelectionFiltering;
 		static bool DevelopmentCommands;
+		static bool DamageNumbersCommands;
 		static bool SuperWeaponSidebarCommands;
 		static bool ArtImageSwap;
 		static bool ShowPlacementPreview;
@@ -111,6 +111,7 @@ public:
 		static bool ShowFlashOnSelecting;
 		static bool UnitPowerDrain;
 		static int SuperWeaponSidebar_RequiredSignificance;
+		static bool DisplayDamageNumbers;
 	};
 
 	class Misc

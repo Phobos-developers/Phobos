@@ -466,6 +466,7 @@ New:
 - [Customize type selection for IFV](Fixed-or-Improved-Logics.md#customize-type-selection-for-ifv) (by NetsuNegi)
 - CellSpread in cylinder shape (by TaranDahl)
 - CellSpread damage check if victim is in air or on floor (by TaranDahl)
+- Improve Damage Number Display Configuration and Readability (by Flactine)
 - OpenTopped range bonus and damage multiplier customization for passengers (by Ollerus)
 
 Vanilla fixes:

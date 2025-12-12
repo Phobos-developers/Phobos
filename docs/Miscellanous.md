@@ -12,10 +12,6 @@ This page describes every change in Phobos that wasn't categorized into a proper
 
 - Phobos writes additional information to the `SYNC#.txt` log files when a desynchronization occurs such as calls to random number generator functions, facing / target / destination changes etc.
 
-### Display Damage Numbers
-
-- There's a [new hotkey](User-Interface.md#display-damage-numbers) to show exact numbers of damage dealt on units & buildings. The numbers are shown in red (blue against shields) for damage, and for healing damage in green (cyan against shields). They are shown on the affected units and will move upwards after appearing. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`.
-
 ### Dump Object Info
 
 ![image](_static/images/objectinfo-01.png)
