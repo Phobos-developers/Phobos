@@ -209,6 +209,10 @@ DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 
 	GET(TechnoClass* const, pThis, ESI);
 	GET(int* const, pDamage, EBX);
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
+
+	if (WarheadTypeExt::ExtMap.Find(pWarhead)->HiddenDamageNumbers)
+		return 0;
 
 	if (*pDamage)
 		GeneralUtils::DisplayDamageNumberString(*pDamage, DamageDisplayType::Regular, pThis->GetRenderCoords(), TechnoExt::ExtMap.Find(pThis)->DamageNumberOffset);

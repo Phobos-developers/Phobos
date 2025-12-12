@@ -160,11 +160,18 @@ Of course, this is just the implementation method. To balance freedom with effic
 	- If set to `yes`, the feature starts enabled.
     - If set to `no`, the feature starts disabled, but the player can still toggle it manually using the hotkey.
     - Regardless of the default state, the hotkey always allows enabling or disabling the feature during gameplay.
+  - Individual warheads can suppress damage number display by setting `HiddenDamageNumbers`.
   
 In `RA2MD.INI`:
 ```ini
 [Phobos]
 DisplayDamageNumbers=false  ; boolean
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]
+HiddenDamageNumbers=false  ; boolean
 ```
 
 ### Flashing Technos on selecting
