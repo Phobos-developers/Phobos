@@ -156,6 +156,7 @@ Of course, this is just the implementation method. To balance freedom with effic
 
 - There's a [new hotkey](User-Interface.md#toggle-damage-numbers-display) to show exact numbers of damage dealt on units & buildings. The numbers are shown in red (blue against shields) for damage, and for healing damage in green (cyan against shields). They are shown on the affected units and will move upwards after appearing.
   - The feature is **available only when** `DamageNumbersEnabled` under `[GlobalControls]` in `rulesmd.ini` is set to `true`. If this setting is `false`, the feature is completely disabled and cannot be used.
+	- If `DamageNumbersEnabled` is not specified, its value defaults to the value of `DebugKeysEnabled`.
   - The initial state of the feature (enabled or disabled when entering a game) is controlled by the `DisplayDamageNumbers` setting in `RA2MD.INI`.
 	- If set to `yes`, the feature starts enabled.
     - If set to `no`, the feature starts disabled, but the player can still toggle it manually using the hotkey.

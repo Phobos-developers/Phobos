@@ -284,7 +284,7 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 	Phobos::Config::SaveVariablesOnScenarioEnd = pINI_RULESMD->ReadBool(GameStrings::General, "SaveVariablesOnScenarioEnd", false);
 #ifndef DEBUG
 	Phobos::Config::DevelopmentCommands = pINI_RULESMD->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
-	Phobos::Config::DamageNumbersCommands = pINI_RULESMD->ReadBool("GlobalControls", "DamageNumbersEnabled", Phobos::Config::DamageNumbersCommands);
+	Phobos::Config::DamageNumbersCommands = pINI_RULESMD->ReadBool("GlobalControls", "DamageNumbersEnabled", Phobos::Config::DevelopmentCommands);
 #endif
 	Phobos::Config::SuperWeaponSidebarCommands = pINI_RULESMD->ReadBool("GlobalControls", "SuperWeaponSidebarKeysEnabled", Phobos::Config::SuperWeaponSidebarCommands);
 	Phobos::Config::ShowPlanningPath = pINI_RULESMD->ReadBool("GlobalControls", "DebugPlanningPaths", Phobos::Config::ShowPlanningPath);

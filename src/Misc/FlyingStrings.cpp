@@ -73,13 +73,6 @@ void FlyingStrings::UpdateAll()
 		if (Unsorted::CurrentFrame > dataItem.CreationFrame + Duration - 70)
 			point.Y -= (Unsorted::CurrentFrame - dataItem.CreationFrame);
 
-		const COLORREF shadowColor = Drawing::RGB_To_Int(84, 84, 84);
-
-		Point2D shadowPoint = point;
-		shadowPoint.X += 1;
-		shadowPoint.Y += 1;
-
-		DSurface::Temp->DrawText(dataItem.Text, &bound, &shadowPoint, shadowColor, 0, TextPrintType::NoShadow);
 		DSurface::Temp->DrawText(dataItem.Text, &bound, &point, dataItem.Color, 0, TextPrintType::NoShadow);
 
 		if (Unsorted::CurrentFrame > dataItem.CreationFrame + Duration || Unsorted::CurrentFrame < dataItem.CreationFrame)
