@@ -296,6 +296,8 @@ public:
 	static void HandleOnDeployAmmoChange(TechnoClass* pThis, int maxAmmoOverride = -1);
 	static bool SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue, bool alwaysCheckLandTypes);
 	static void ShowPromoteAnim(TechnoClass* pThis);
+	static void ProcessBars(TechnoClass* pThis, Point2D pLocation, RectangleStruct* pBounds);
+	static void DrawBar(TechnoClass* pThis, BarTypeClass* barType, Point2D pLocation, RectangleStruct* pBounds, double barPercentage, double conditionYellow, double conditionRed);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);

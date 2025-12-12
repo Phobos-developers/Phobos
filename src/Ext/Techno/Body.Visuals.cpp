@@ -864,6 +864,181 @@ void TechnoExt::GetDigitalDisplayFakeHealth(TechnoClass* pThis, int& value, int&
 	}
 }
 
+void TechnoExt::ProcessBars(TechnoClass* pThis, Point2D pLocation, RectangleStruct* pBounds)
+{
+	const auto pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	ValueableVector<BarTypeClass*>* pBarTypes = nullptr;
+
+	if (!pTypeExt->BarTypes.empty())
+	{
+		pBarTypes = &pTypeExt->BarTypes;
+	}
+	else
+	{
+		switch (pThis->WhatAmI())
+		{
+		case AbstractType::Building:
+		{
+			pBarTypes = &RulesExt::Global()->Buildings_DefaultBarTypes;
+			const auto pBuildingType = static_cast<BuildingTypeClass*>(pType);
+			pLocation.Y -= (pBuildingType->Height + 1) * Unsorted::CellHeightInPixels / 2;
+			break;
+		}
+		case AbstractType::Infantry:
+		{
+			pBarTypes = &RulesExt::Global()->Infantry_DefaultBarTypes;
+			pLocation.Y -= Unsorted::HealthBarYOffsetInfantry - pType->PixelSelectionBracketDelta;
+			break;
+		}
+		case AbstractType::Unit:
+		{
+			pBarTypes = &RulesExt::Global()->Vehicles_DefaultBarTypes;
+			pLocation.Y -= Unsorted::HealthBarYOffsetOther - pType->PixelSelectionBracketDelta;
+			break;
+		}
+		case AbstractType::Aircraft:
+		{
+			pBarTypes = &RulesExt::Global()->Aircraft_DefaultBarTypes;
+			pLocation.Y -= Unsorted::HealthBarYOffsetOther - pType->PixelSelectionBracketDelta;
+			break;
+		}
+		default:
+			break;
+		}
+	}
+
+	if (pBarTypes->empty())
+		return;
+
+	for (BarTypeClass*& pBarType : *pBarTypes)
+	{
+		double pConditionYellow = pBarType->Bar_ConditionYellow;
+		double pConditionRed = pBarType->Bar_ConditionRed;
+
+		switch (pBarType->InfoType)
+		{
+			case DisplayInfoType::Health:
+			{
+				pConditionYellow = pConditionYellow > 0 ? pConditionYellow : RulesClass::Instance->ConditionYellow;
+				pConditionRed = pConditionRed > 0 ? pConditionRed : RulesClass::Instance->ConditionRed;
+				break;
+			}
+			case DisplayInfoType::Shield:
+			{
+				const auto pShield = TechnoExt::ExtMap.Find(pThis)->Shield.get();
+				const bool hasShield = pShield != nullptr && !pShield->IsBrokenAndNonRespawning();
+
+				if (!hasShield)
+					continue;
+
+				pConditionYellow = pConditionYellow > 0 ? pConditionYellow : (pShield->GetType()->ConditionYellow ? pShield->GetType()->ConditionYellow : RulesClass::Instance->ConditionYellow);
+				pConditionRed = pConditionYellow > 0 ? pConditionYellow : (pShield->GetType()->ConditionRed ? pShield->GetType()->ConditionRed : RulesClass::Instance->ConditionRed);
+				break;
+			}
+			default:
+			{
+				break;
+			}
+		}
+
+		int value = -1;
+		int maxValue = 0;
+
+		GetValuesForDisplay(pThis, pType, pBarType->InfoType, value, maxValue, pBarType->InfoIndex);
+
+		if (value <= -1 || maxValue <= 0)
+			continue;
+
+		double pValuePercentage = static_cast<double>(value) / maxValue;
+		TechnoExt::DrawBar(pThis, pBarType, pLocation, pBounds, pValuePercentage, pConditionYellow, pConditionRed);
+	}
+}
+
+void TechnoExt::DrawBar(TechnoClass* pThis, BarTypeClass* barType, Point2D pLocation, RectangleStruct* pBounds, double barPercentage, double conditionYellow, double conditionRed)
+{
+	const BlitterFlags blitFlagsBG = barType->PipBrd_Background_Translucency.Get(0);
+	const BlitterFlags blitFlagsFG = barType->PipBrd_Foreground_Translucency.Get(0);
+	const Point2D sectionOffset = barType->Pips_PositionDelta;
+	const Vector3D<int> sectionFrames = barType->Pips_Frames;
+	const int sectionAmount = barType->Pips_Amount;
+	const int sectionEmptyFrame = barType->Pips_EmptyFrame;
+	const bool bySection = barType->Pips_ChangePerSection;
+	const bool drawBackwards = barType->Pips_DrawBackwards;
+	int sectionsToDraw = (int)round(sectionAmount * barPercentage);
+	int sign = drawBackwards ? 1 : -1;
+
+	if(barType->InfoType == DisplayInfoType::Health)
+		sectionsToDraw = sectionsToDraw == 0 ? 1 : sectionsToDraw;
+
+
+	pLocation += barType->Bar_Offset;
+	Point2D boardPosition = pLocation + barType->PipBrd_Offset;
+
+	if (barType->PipBrd_Background_File && (pThis->IsSelected || barType->PipBrd_Background_ShowWhenNotSelected))
+		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->PipBrd_Background_File.Get(),
+				0, &boardPosition, pBounds, BlitterFlags::Centered | BlitterFlags::bf_400 | BlitterFlags::Alpha | blitFlagsBG, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+
+	Point2D position = pLocation;
+	position += {sign * (int)round(sectionAmount * sectionOffset.X / 2), sign * (int)round(sectionAmount * sectionOffset.Y / 2)};
+
+	if (sectionEmptyFrame != -1)
+	{
+		for (int i = 0; i < sectionAmount; ++i)
+		{
+			position -= {sign * sectionOffset.X, sign * sectionOffset.Y};
+			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->Pips_File.Get(),
+					sectionEmptyFrame, &position, pBounds, BlitterFlags::Centered | BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		}
+
+		position = pLocation;
+		position += {sign * (int)round(sectionAmount * sectionOffset.X / 2), sign * (int)round(sectionAmount * sectionOffset.Y / 2)};
+	}
+
+	if (drawBackwards)
+	{
+		for (int i = 0; i < (sectionAmount - sectionsToDraw); ++i)
+			position -= sectionOffset;
+	}
+
+	if(bySection)
+		barPercentage = 1 - ((int)ceil(sectionAmount * barPercentage) - barPercentage * sectionAmount);
+
+	int frameIdxa = sectionFrames.Z;
+
+	if (barPercentage > conditionYellow)
+		frameIdxa = sectionFrames.X;
+	else if (barPercentage > conditionRed)
+		frameIdxa = sectionFrames.Y;
+
+	if(!bySection)
+	{
+		for (int i = 0; i < sectionsToDraw; ++i)
+		{
+			position -= {sign * sectionOffset.X, sign * sectionOffset.Y};
+			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->Pips_File.Get(),
+					frameIdxa, &position, pBounds, BlitterFlags::Centered | BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		}
+	}
+	else
+	{
+		for (int i = 0; i < (sectionsToDraw - 1); ++i)
+		{
+			position -= {sign * sectionOffset.X, sign * sectionOffset.Y};
+			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->Pips_File.Get(),
+					sectionFrames.X, &position, pBounds, BlitterFlags::Centered | BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		}
+
+		position -= {sign * sectionOffset.X, sign * sectionOffset.Y};
+		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->Pips_File.Get(),
+				frameIdxa, &position, pBounds, BlitterFlags::Centered | BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+	}
+
+	if (barType->PipBrd_Foreground_File && (pThis->IsSelected || barType->PipBrd_Foreground_ShowWhenNotSelected))
+		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->PipBrd_Foreground_File.Get(),
+				0, &boardPosition, pBounds, BlitterFlags::Centered | BlitterFlags::bf_400 | BlitterFlags::Alpha | blitFlagsFG, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+}
+
 void TechnoExt::ShowPromoteAnim(TechnoClass* pThis)
 {
 	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
