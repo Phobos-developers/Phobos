@@ -2537,6 +2537,7 @@ msgid ""
 "`UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you "
 "infiltrate enemy buildings with `Factory=UnitType` (by NetsuNegi)"
 msgstr ""
+"修复了 Ares 引入的渗透敌方重工后 `UndeploysInto` 建筑 `AltCameo` 或 `AltCameoPCX` 不显示 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:545
 msgid "0.4.0.1"
