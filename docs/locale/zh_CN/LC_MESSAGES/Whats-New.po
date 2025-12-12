@@ -2105,6 +2105,7 @@ msgid ""
 "OpenTopped range bonus and damage multiplier customization for passengers"
 " (by Ollerus)"
 msgstr ""
+"在乘客上自定义 OpenTopped 射程加成和杀伤倍率（by Ollerus）"
 
 #: ../../Whats-New.md:471 ../../Whats-New.md:548 ../../Whats-New.md:733
 #: ../../Whats-New.md:1092 ../../Whats-New.md:1201 ../../Whats-New.md:1226

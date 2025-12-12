@@ -5873,6 +5873,8 @@ msgid ""
 "which works independently from transport's "
 "`OpenTopped.RangeBonus/DamageMultiplier`."
 msgstr ""
+"你还可以通过 `OpenTransport.RangeBonus/DamageMultiplier` 为运输工具内的乘客单独定义射程加成与伤害倍率，"
+"该设置独立于运输工具的 `OpenTopped.RangeBonus/DamageMultiplier` 生效。"
 
 #: ../../New-or-Enhanced-Logics.md:1508
 msgid ""
@@ -5913,6 +5915,7 @@ msgid ""
 "Range of passive acquiring of passengers in an OpenTopped transport won't"
 " be affected by these RangeBonus values."
 msgstr ""
+"乘客在 OpenTopped 载具中的主动寻敌范围不受这些射程加成值的影响。"
 
 #: ../../New-or-Enhanced-Logics.md:1526
 msgid "Customizable spawns queue"

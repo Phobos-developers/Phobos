@@ -2443,7 +2443,7 @@ msgstr "关闭激光尾焰与屏幕抖动效果"
 
 #: ../../../CREDITS.md:594
 msgid "OpenTopped range bonus and damage multiplier customization for passengers"
-msgstr ""
+msgstr "在乘客上自定义 OpenTopped 射程加成和杀伤倍率"
 
 #: ../../../CREDITS.md:595
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
