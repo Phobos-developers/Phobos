@@ -411,6 +411,7 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->DelayedFireRemoveOnNoDelay)
 		.Process(this->IsAttachedEffectAnim)
 		.Process(this->IsShieldIdleAnim)
+		.Process(this->AEDrawOffset)
 		;
 }
 

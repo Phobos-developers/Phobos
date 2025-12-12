@@ -52,7 +52,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 - Vehicle to building deployers now keep their target when deploying with `DeployToFire`.
 - Effects like lasers are no longer drawn from wrong firing offset on weapons that use Burst.
-- Animations can now be offset on the X axis with `XDrawOffset`.
 - `IsSimpleDeployer` units now only play `DeploySound` and `UndeploySound` once, when done with (un)deploying instead of repeating it over duration of turning and/or `DeployingAnim`.
 - AITrigger can now recognize Building Upgrades as legal condition.
 - `EWGates` and `NSGates` now will link walls like `xxGateOne` and `xxGateTwo` do.
@@ -807,6 +806,23 @@ In `artmd.ini`:
 ```ini
 [SOMEANIM]                      ; AnimationType
 Crater.DestroyTiberium=         ; boolean, default to [General] -> AnimCraterDestroyTiberium
+```
+
+### Draw offset customization
+
+- `XDrawOffset` can be used to adjust horizontal/X axis position of the animation.
+- `YDrawOffset.ApplyBracketHeight` makes Y axis position follow it's owner object's selection bracket height (for buildings, this is based on `Height` and `Foundation`, for others it is influenced by `PixelSelectionBracketDelta`) if it is attached to one.
+  - By default this will only apply if the bracket position is negative e.g it is moved upwards from the object center. If `YDrawOffset.InvertBracketShift` is set to true, the opposite is true and negative shift is ignored.
+  - The bracket-based shift can be further adjusted with offset from `YDrawOffset.BracketAdjust`, overridden by `YDrawOffset.BracketAdjust.Buildings` for buildings only.
+ 
+In `artmd.ini`:
+```ini
+[SOMEANIM]                            ; AnimationType
+XDrawOffset=0,0                       ; X,Y, pixels relative to default
+YDrawOffset.ApplyBracketHeight=false  ; boolean
+YDrawOffset.InvertBracketShift=false  ; boolean
+YDrawOffset.BracketAdjust=0,0         ; X,Y, pixels relative to default
+YDrawOffset.BracketAdjust.Buildings=  ; X,Y, pixels relative to default
 ```
 
 ### Fire animations spawned by Scorch & Flamer

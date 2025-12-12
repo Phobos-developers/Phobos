@@ -37,6 +37,8 @@ enum class ExpireWeaponCondition : unsigned char
 
 MAKE_ENUM_FLAGS(ExpireWeaponCondition);
 
+class AnimationDrawOffsetClass;
+
 class AttachEffectTypeClass final : public Enumerable<AttachEffectTypeClass>
 {
 	static std::unordered_map<std::string, std::set<AttachEffectTypeClass*>> GroupsMap;
@@ -99,10 +101,11 @@ public:
 	Nullable<int> ReflectDamage_Override;
 	Valueable<bool> ReflectDamage_UseInvokerAsOwner;
 	Valueable<bool> DisableWeapons;
-	Valueable<bool> Unkillable;
+	Valueable<bool> Unkillable;bool HasAnim() const;
 	ValueableIdx<LaserTrailTypeClass> LaserTrail_Type;
 
 	std::vector<std::string> Groups;
+	std::vector<AnimationDrawOffsetClass> Animation_DrawOffsets;
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, Duration { 0 }
@@ -165,6 +168,7 @@ public:
 		, Unkillable { false }
 		, LaserTrail_Type { -1 }
 		, Groups {}
+		, Animation_DrawOffsets {}
 	{};
 
 	bool HasTint() const
@@ -174,6 +178,7 @@ public:
 
 	bool HasGroup(const std::string& groupID) const;
 	bool HasGroups(const std::vector<std::string>& groupIDs, bool requireAll) const;
+	bool HasAnim() const;
 
 	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const
 	{
@@ -269,3 +274,25 @@ private:
 	template <typename T>
 	bool Serialize(T& stm);
 };
+
+// Container for AttachEffect animation draw offset info.
+class AnimationDrawOffsetClass
+{
+public:
+	Valueable<Point2D> Offset;
+	ValueableVector<AttachEffectTypeClass*> RequiredTypes;
+
+	bool LoadFromINI(CCINIClass* pINI, const char* pSection, int index);
+	bool Load(PhobosStreamReader& stm, bool registerForChange);
+	bool Save(PhobosStreamWriter& stm) const;
+
+	AnimationDrawOffsetClass() :
+		Offset { Point2D::Empty}
+		, RequiredTypes {}
+	{ }
+
+private:
+	template <typename T>
+	bool Serialize(T& stm);
+};
+

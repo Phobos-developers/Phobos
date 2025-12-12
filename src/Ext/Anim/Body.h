@@ -31,6 +31,7 @@ public:
 		bool DelayedFireRemoveOnNoDelay;
 		bool IsAttachedEffectAnim;
 		bool IsShieldIdleAnim;
+		Point2D AEDrawOffset;
 
 		ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
 			, DeathUnitFacing { 0 }
@@ -45,6 +46,7 @@ public:
 			, DelayedFireRemoveOnNoDelay { false }
 			, IsAttachedEffectAnim { false }
 			, IsShieldIdleAnim { false }
+			, AEDrawOffset { Point2D::Empty }
 		{ }
 
 		void SetInvoker(TechnoClass* pInvoker);

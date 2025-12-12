@@ -266,14 +266,57 @@ DEFINE_HOOK(0x424CF1, AnimClass_Start_DetachedReport, 0x6)
 }
 
 // 0x422CD8 is in an alternate code path only used by anims with ID RING1, unused normally but covering it just because
-DEFINE_HOOK_AGAIN(0x422CD8, AnimClass_DrawIt_XDrawOffset, 0x6)
-DEFINE_HOOK(0x423122, AnimClass_DrawIt_XDrawOffset, 0x6)
+DEFINE_HOOK_AGAIN(0x422CD8, AnimClass_DrawIt_DrawOffset, 0x6)
+DEFINE_HOOK(0x423122, AnimClass_DrawIt_DrawOffset, 0x6)
 {
 	GET(AnimClass* const, pThis, ESI);
 	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x110, 0x4));
 
-	if (auto const pTypeExt = AnimTypeExt::ExtMap.TryFind(pThis->Type))
-		pLocation->X += pTypeExt->XDrawOffset;
+	auto const pTypeExt = AnimTypeExt::ExtMap.TryFind(pThis->Type);
+	pLocation->X += pTypeExt->XDrawOffset;
+
+	if (pTypeExt->YDrawOffset_ApplyBracketHeight && pThis->OwnerObject && pThis->OwnerObject->AbstractFlags & AbstractFlags::Techno)
+	{
+		// Le magic number.
+		constexpr int SHIELD_HEALTHBAR_OFFSET = -3;
+
+		auto const pTechno = static_cast<TechnoClass*>(pThis->OwnerObject);
+		bool inverse = pTypeExt->YDrawOffset_InvertBracketShift;
+
+		if (auto const pBuilding = abstract_cast<BuildingClass*>(pTechno))
+		{
+			auto const pType = pBuilding->Type;
+
+			if ((pType->Height >= 0 && !inverse) || (pType->Height < 0 && inverse))
+			{
+				auto const pos = TechnoExt::GetBuildingSelectBracketPosition(pBuilding, BuildingSelectBracketPosition::Top);
+				pLocation->Y = pos.Y + pTypeExt->YDrawOffset_BracketAdjust_Buildings.Get(pTypeExt->YDrawOffset_BracketAdjust);
+			}
+		}
+		else
+		{
+			auto const pType = pTechno->GetTechnoType();
+
+			if ((pType->PixelSelectionBracketDelta <= 0 && !inverse) || (pType->PixelSelectionBracketDelta > 0 && inverse))
+			{
+				auto const pos = TechnoExt::GetFootSelectBracketPosition(pTechno, Anchor(HorizontalPosition::Left, VerticalPosition::Top));
+				pLocation->Y = pos.Y + pType->PixelSelectionBracketDelta + pTypeExt->YDrawOffset_BracketAdjust;
+			}
+		}
+
+		if (auto const pShield = TechnoExt::ExtMap.Find(pTechno)->Shield.get())
+		{
+			auto const pShieldType = pShield->GetType();
+
+			if (pShield->IsAvailable() && !pShield->IsBrokenAndNonRespawning() && (pShield->GetHealthRatio() > 0.0 || !pShieldType->Pips_HideIfNoStrength))
+			{
+				if ((pShieldType->BracketDelta <= 0 && !inverse) || (pShieldType->BracketDelta > 0 && inverse))
+					pLocation->Y += pShieldType->BracketDelta + SHIELD_HEALTHBAR_OFFSET;
+			}
+		}
+	}
+
+	*pLocation += AnimExt::ExtMap.Find(pThis)->AEDrawOffset;
 
 	return 0;
 }

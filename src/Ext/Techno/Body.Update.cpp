@@ -1887,7 +1887,10 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 	}
 
 	if (altered)
+	{
 		this->RecalculateStatMultipliers();
+		this->UpdateAEAnimLogic();
+	}
 
 	if (markForRedraw)
 		pThis->MarkForRedraw();
@@ -1959,7 +1962,10 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	const int count = AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
 
 	if (altered && !count)
+	{
 		this->RecalculateStatMultipliers();
+		this->UpdateAEAnimLogic();
+	}
 }
 
 // Updates CumulativeAnimations AE's on techno.
@@ -2001,6 +2007,15 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 			if (pAELargestDuration)
 				pAELargestDuration->TransferCumulativeAnim(pAEWithAnim);
 		}
+	}
+}
+
+// Update AttachEffect animation logic.
+void TechnoExt::ExtData::UpdateAEAnimLogic()
+{
+	for (auto const& attachEffect : this->AttachedEffects)
+	{
+		attachEffect->UpdateAnimLogic();
 	}
 }
 

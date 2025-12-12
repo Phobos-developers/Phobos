@@ -101,7 +101,11 @@ AttachEffectClass::~AttachEffectClass()
 	if (it != AttachEffectClass::Array.end())
 		AttachEffectClass::Array.erase(it);
 
-	this->KillAnim();
+	if (this->Animation)
+	{
+		this->Animation->UnInit();
+		this->Animation = nullptr;
+	}
 
 	if (this->Invoker)
 		TechnoExt::ExtMap.Find(this->Invoker)->AttachedEffectInvokerCount--;
@@ -251,8 +255,6 @@ void AttachEffectClass::AI()
 
 	if (!this->Animation && this->CanShowAnim())
 		this->CreateAnim();
-
-	this->AnimCheck();
 }
 
 void AttachEffectClass::AI_Temporal()
@@ -287,12 +289,10 @@ void AttachEffectClass::AI_Temporal()
 				break;
 			}
 		}
-
-		this->AnimCheck();
 	}
 }
 
-void AttachEffectClass::AnimCheck()
+void AttachEffectClass::UpdateAnimLogic()
 {
 	if (this->Type->Animation_HideIfAttachedWith.size() > 0)
 	{
@@ -309,6 +309,19 @@ void AttachEffectClass::AnimCheck()
 
 			if (!this->Animation && this->CanShowAnim())
 				this->CreateAnim();
+		}
+	}
+
+	if (this->Animation && this->Type->Animation_DrawOffsets.size() > 0)
+	{
+		auto const pAnimExt = AnimExt::ExtMap.Find(this->Animation);
+		auto const pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
+		pAnimExt->AEDrawOffset = Point2D::Empty;
+
+		for (auto const& drawOffset : this->Type->Animation_DrawOffsets)
+		{
+			if (drawOffset.RequiredTypes.size() < 1 || pTechnoExt->HasAttachedEffects(drawOffset.RequiredTypes, false, false, nullptr, nullptr, nullptr, nullptr, true))
+				pAnimExt->AEDrawOffset += drawOffset.Offset;
 		}
 	}
 }
@@ -419,6 +432,7 @@ void AttachEffectClass::CreateAnim()
 
 		pAnim->RemainingIterations = 0xFFu;
 		this->Animation = pAnim;
+		TechnoExt::ExtMap.Find(this->Techno)->UpdateAEAnimLogic();
 	}
 }
 
@@ -428,7 +442,12 @@ void AttachEffectClass::KillAnim()
 	{
 		this->Animation->UnInit();
 		this->Animation = nullptr;
+		TechnoExt::ExtMap.Find(this->Techno)->UpdateAEAnimLogic();
 	}
+}
+bool AttachEffectClass::HasAnim()
+{
+	return this->Animation != nullptr;
 }
 
 void AttachEffectClass::UpdateCumulativeAnim()
@@ -757,6 +776,8 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 	if (!currentTypeCount && cumulative && pType->CumulativeAnimations.size() > 0)
 		pAE->HasCumulativeAnim = true;
 
+		TechnoExt::ExtMap.Find(pTarget)->UpdateAEAnimLogic();
+
 	return pAE;
 }
 
@@ -834,7 +855,11 @@ int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass c
 	}
 
 	if (detachedCount > 0)
-		TechnoExt::ExtMap.Find(pTarget)->RecalculateStatMultipliers();
+	{
+		auto const pExt = TechnoExt::ExtMap.Find(pTarget);
+		pExt->RecalculateStatMultipliers();
+		pExt->UpdateAEAnimLogic();
+	}
 
 	if (markForRedraw)
 		pTarget->MarkForRedraw();
@@ -937,6 +962,7 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 /// <param name="pTarget">Target techno.</param>
 void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget)
 {
+	int transferCount = 0;
 	const auto pSourceExt = TechnoExt::ExtMap.Find(pSource);
 	const auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 	const auto pTargetType = pTarget->GetTechnoType();
@@ -1001,7 +1027,14 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 				pAE->Duration = attachEffect->Duration;
 		}
 
+		transferCount++;
 		it = pSourceExt->AttachedEffects.erase(it);
+	}
+
+	if (transferCount)
+	{
+		pSourceExt->UpdateAEAnimLogic();
+		pTargetExt->UpdateAEAnimLogic();
 	}
 }
 
