@@ -55,6 +55,7 @@ enum PhobosTriggerEvent
 	CellHasTechnoType = 604,
 	CellHasAnyTechnoTypeFromList = 605,
 	AttachedIsUnderAttachedEffect = 606,
+	AttachedIsUnderWebby = 607,
 
 	_DummyMaximum,
 };
@@ -99,6 +100,7 @@ public:
 
 	static bool CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectClass* pObject, HouseClass* pHouse);
 	static bool CellHasTechnoTypeTEvent(TEventClass* pThis, ObjectClass* pObject, HouseClass* pHouse);
+	static bool AttachedIsUnderWebbyTEvent(ObjectClass* pObject);
 
 	static bool AttachedIsUnderAttachedEffectTEvent(TEventClass* pThis, ObjectClass* pObject);
 
