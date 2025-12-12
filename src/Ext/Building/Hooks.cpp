@@ -831,6 +831,19 @@ DEFINE_HOOK(0x4AE95E, DisplayClass_sub_4AE750_DisallowBuildingNonAttackPlanning,
 
 #pragma endregion
 
+DEFINE_HOOK(0x445F80, BuildingClass_GrandOpening_UpdateSecretLabAI, 0x5)
+{
+	GET(BuildingClass*, pThis, ECX);
+
+	if (pThis->Type->SecretLab && !pThis->Owner->IsControlledByHuman())
+	{
+		auto pExt = BuildingExt::ExtMap.Find(pThis);
+		pExt->UpdateSecretLabAI();
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x4400F9, BuildingClass_AI_UpdateOverpower, 0x6)
 {
 	enum { SkipGameCode = 0x44019D };
