@@ -154,7 +154,7 @@ Of course, this is just the implementation method. To balance freedom with effic
 
 ### Display Damage Numbers
 
-- There's a [new hotkey](User-Interface.md#display-damage-numbers) to show exact numbers of damage dealt on units & buildings. The numbers are shown in red (blue against shields) for damage, and for healing damage in green (cyan against shields). They are shown on the affected units and will move upwards after appearing.
+- There's a [new hotkey](User-Interface.md#toggle-damage-numbers-display) to show exact numbers of damage dealt on units & buildings. The numbers are shown in red (blue against shields) for damage, and for healing damage in green (cyan against shields). They are shown on the affected units and will move upwards after appearing.
   - The feature is **available only when** `DamageNumbersEnabled` under `[GlobalControls]` in `rulesmd.ini` is set to `true`. If this setting is `false`, the feature is completely disabled and cannot be used.
   - The initial state of the feature (enabled or disabled when entering a game) is controlled by the `DisplayDamageNumbers` setting in `RA2MD.INI`.
 	- If set to `yes`, the feature starts enabled.
@@ -477,9 +477,9 @@ DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
 
 ## Hotkey Commands
 
-### `[ ]` Display Damage Numbers
+### `[ ]` Toggle Damage Numbers Display
 
-- Switches on/off floating numbers when dealing damage. See [this](Miscellanous.md#display-damage-numbers) for details.
+- Switches on/off floating numbers when dealing damage. See [this](User-Interface.md#display-damage-numbers) for details.
 - For localization add `TXT_DISPLAY_DAMAGE` and `TXT_DISPLAY_DAMAGE_DESC` into your `.csf` file.
 
 ### `[ ]` Dump Object Info
