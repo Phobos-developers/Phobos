@@ -588,12 +588,19 @@ bool ObjectFake::_IsCRCHashable()
 		auto const pParticle = static_cast<ParticleClass*>((ObjectClass*)this);
 		auto pType = pParticle->Type;
 
-		while (pType)
+		if (pType->Damage)
+			return true;
+
+		int index = pType->NextParticle;
+
+		while (index != -1)
 		{
+			pType = ParticleTypeClass::Array[index];
+
 			if (pType->Damage)
 				return true;
 
-			pType = pType->NextParticle;
+			index = pType->NextParticle;
 		}
 
 		return false;
