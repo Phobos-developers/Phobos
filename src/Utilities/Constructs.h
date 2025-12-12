@@ -463,8 +463,20 @@ class TranslucencyLevel
 public:
 	constexpr TranslucencyLevel() noexcept = default;
 
-	TranslucencyLevel(int nInt)
+	TranslucencyLevel(int nInt, bool clamp = false)
 	{
+		if (clamp)
+		{
+			if (nInt >= 75)
+				nInt = 75;
+			else if (nInt >= 50)
+				nInt = 50;
+			else if (nInt >= 25)
+				nInt = 25;
+			else
+				nInt = 0;
+		}
+
 		*this = nInt;
 	}
 
@@ -490,14 +502,36 @@ public:
 		return *this;
 	}
 
-	operator BlitterFlags()
+	operator BlitterFlags() const
 	{
 		return this->value;
 	}
 
-	BlitterFlags GetBlitterFlags()
+	BlitterFlags GetBlitterFlags() const
 	{
-		return *this;
+		return this->value;
+	}
+
+	int GetIntValue() const
+	{
+		int value = 0;
+
+		switch (this->value)
+		{
+		case BlitterFlags::TransLucent75:
+			value = 75;
+			break;
+		case BlitterFlags::TransLucent50:
+			value = 50;
+			break;
+		case BlitterFlags::TransLucent25:
+			value = 25;
+			break;
+		default:
+			break;
+		}
+
+		return value;
 	}
 
 	bool Read(INI_EX& parser, const char* pSection, const char* pKey);

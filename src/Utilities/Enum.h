@@ -263,7 +263,6 @@ enum class VerticalPosition : BYTE
 	Center = 1,
 	Bottom = 2
 };
-
 //hexagon
 enum class BuildingSelectBracketPosition :BYTE
 {
@@ -381,4 +380,10 @@ public:
 		}
 		return false;
 	}
+};
+
+enum class InterpolationMode : BYTE
+{
+	None = 0,
+	Linear = 1
 };
