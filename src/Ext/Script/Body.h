@@ -13,6 +13,7 @@
 #include <WarheadTypeClass.h>
 #include <SpawnManagerClass.h>
 
+#include <Ext/House/Body.h>
 #include <Ext/Team/Body.h>
 #include <Utilities/Container.h>
 #include <Phobos.h>
@@ -77,6 +78,13 @@ enum class PhobosScripts : unsigned int
 	RandomSkipNextAction = 16003,
 	PickRandomScript = 16004,
 	JumpBackToPreviousScript = 16005,
+	SetHouseIdxForManagingTriggers = 16006,
+	ManageAllAITriggers = 16007,
+	EnableTriggersFromList = 16008,
+	DisableTriggersFromList = 16009,
+	DisableTriggersWithObjects = 16010,
+	EnableTriggersWithObjects = 16011,
+	SetSideIdxForManagingTriggers = 16012,
 
 	// Range 18000-18999 are variable actions
 	LocalVariableSet = 18000,
@@ -208,6 +216,8 @@ public:
 	static void Stop_ForceJump_Countdown(TeamClass* pTeam);
 	static void JumpBackToPreviousScript(TeamClass* pTeam);
 	static void ChronoshiftToEnemyBase(TeamClass* pTeam, int extraDistance);
+	static void ManageTriggersFromList(TeamClass* pTeam, int idxAITriggerType, bool isEnabled);
+	static void ManageAllTriggersFromHouse(TeamClass* pTeam, HouseClass* pHouse, int sideIdx, int houseIdx, bool isEnabled);
 
 	static bool IsExtVariableAction(int action);
 	static void VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nArg);
@@ -216,6 +226,10 @@ public:
 	template<bool IsSrcGlobal, bool IsGlobal, class _Pr>
 	static void VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate);
 	static bool IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed);
+	static void SetSideIdxForManagingTriggers(TeamClass* pTeam, int sideIdx);
+	static void SetHouseIdxForManagingTriggers(TeamClass* pTeam, int houseIdx);
+	static void ManageAITriggers(TeamClass* pTeam, int enabled);
+	static void ManageTriggersWithObjects(TeamClass* pTeam, int idxAITargetType, bool isEnabled);
 	static void Log(const char* pFormat, ...);
 
 	// Mission.Attack.cpp

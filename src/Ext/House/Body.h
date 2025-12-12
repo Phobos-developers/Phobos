@@ -1,5 +1,6 @@
 #pragma once
 #include <HouseClass.h>
+#include <TActionClass.h>
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
@@ -153,6 +154,7 @@ public:
 	static int ActiveHarvesterCount(HouseClass* pThis);
 	static int TotalHarvesterCount(HouseClass* pThis);
 	static HouseClass* GetHouseKind(OwnerHouseKind kind, bool allowRandom, HouseClass* pDefault, HouseClass* pInvoker = nullptr, HouseClass* pVictim = nullptr);
+	static int GetHouseIndex(int param, TeamClass* pTeam, TActionClass* pTAction);
 	static CellClass* GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass* pCurrentHouse, CoordStruct defaultCurrentCoords, SpeedType speedTypeZone, int extraDistance = 0);
 	static void GetAIChronoshiftSupers(HouseClass* pThis, SuperClass*& pSuperCSphere, SuperClass*& pSuperCWarp);
 
