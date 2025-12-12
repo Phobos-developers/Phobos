@@ -507,6 +507,7 @@ Vanilla fixes:
 - Fixed the bug that naval ship will sink even they destroyed in air (by NetsuNegi)
 - Fixed MPDebug timer displaying when debug's visibility is off (by 11EJDE11)
 - Fixed the issue that units will goto farest location if target is closer than `MinimumRange` (by NetsuNegi)
+- Purely visual animations and particles excluded from sync checks (by Starkku)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
