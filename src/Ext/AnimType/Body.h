@@ -39,7 +39,7 @@ public:
 		Valueable<bool> Damage_ApplyFirepowerMult;
 		Valueable<bool> ExplodeOnWater;
 		Valueable<bool> Warhead_Detonate;
-		Valueable<AnimTypeClass*> WakeAnim;
+		ValueableVector<AnimTypeClass*> WakeAnim;
 		NullableVector<AnimTypeClass*> SplashAnims;
 		Valueable<bool> SplashAnims_PickRandom;
 		Valueable<ParticleSystemTypeClass*> AttachedSystem;
@@ -92,7 +92,7 @@ public:
 			, DetachOnCloak { true }
 			, ConstrainFireAnimsToCellSpots { true }
 			, FireAnimDisallowedLandTypes {}
-			, AttachFireAnimsToParent { false }
+			, AttachFireAnimsToParent {}
 			, SmallFireCount {}
 			, SmallFireAnims {}
 			, SmallFireChances {}

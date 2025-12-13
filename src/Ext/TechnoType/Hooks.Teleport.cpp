@@ -19,7 +19,11 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 {
 	GET_LOCO(ESI);
 
-	if (auto pWarpOut = pExt->WarpOut.Get(RulesClass::Instance->WarpOut))
+	if (pExt->WarpOut.size() > 0)
+	{
+		AnimExt::CreateRandomAnim(pExt->WarpOut, pLinked->Location, nullptr, pLinked->Owner);
+	}
+	else if (auto const pWarpOut = RulesClass::Instance->WarpOut)
 	{
 		auto const pAnim = GameCreate<AnimClass>(pWarpOut, pLinked->Location);
 		AnimExt::SetAnimOwnerHouseKind(pAnim, pLinked->Owner, nullptr, false, true);
@@ -29,10 +33,10 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 		WeaponTypeExt::DetonateAt(pExt->WarpOutWeapon, pLinked, pLinked);
 
 	const int distance = (int)Math::sqrt(pLinked->Location.DistanceFromSquared(pLocomotor->LastCoords));
-	auto linkedExt = TechnoExt::ExtMap.Find(pLinked);
+	const auto linkedExt = TechnoExt::ExtMap.Find(pLinked);
 	linkedExt->LastWarpDistance = distance;
 
-	if (auto pImage = pType->AlphaImage)
+	if (const auto pImage = pType->AlphaImage)
 	{
 		auto [xy, _] = TacticalClass::Instance->CoordsToClient(pLinked->Location);
 		RectangleStruct Dirty = {
@@ -49,16 +53,18 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 	if (distance >= pExt->ChronoRangeMinimum.Get(RulesClass::Instance->ChronoRangeMinimum)
 		&& pExt->ChronoTrigger.Get(RulesClass::Instance->ChronoTrigger))
 	{
-		int factor = std::max(pExt->ChronoDistanceFactor.Get(RulesClass::Instance->ChronoDistanceFactor), 1);
+		const int factor = std::max(pExt->ChronoDistanceFactor.Get(RulesClass::Instance->ChronoDistanceFactor), 1);
 		duree = std::max(distance / factor, duree);
 
 	}
 
 	pLinked->WarpingOut = true;
 
-	if (auto pUnit = specific_cast<UnitClass*, true>(pLinked))
+	if (const auto pUnit = specific_cast<UnitClass*, true>(pLinked))
 	{
-		if (pUnit->Type->Harvester || pUnit->Type->Weeder)
+		const auto pUnitType = pUnit->Type;
+
+		if (pUnitType->Harvester || pUnitType->Weeder)
 		{
 			duree = 0;
 			pLinked->WarpingOut = false;
@@ -74,35 +80,68 @@ DEFINE_HOOK(0x719742, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 0x
 {
 	GET_LOCO(ESI);
 
-	if (auto pWarpIn = pExt->WarpIn.Get(RulesClass::Instance->WarpIn))
+	if (pExt->WarpIn.size() > 0)
+	{
+		AnimExt::CreateRandomAnim(pExt->WarpIn, pLinked->Location, nullptr, pLinked->Owner);
+	}
+	else if (auto const pWarpIn = RulesClass::Instance->WarpIn)
 	{
 		auto const pAnim = GameCreate<AnimClass>(pWarpIn, pLinked->Location);
 		AnimExt::SetAnimOwnerHouseKind(pAnim, pLinked->Owner, nullptr, false, true);
 	}
 
 	auto const lastWarpDistance = TechnoExt::ExtMap.Find(pLinked)->LastWarpDistance;
-	bool isInMinRange = lastWarpDistance < pExt->ChronoRangeMinimum.Get(RulesClass::Instance->ChronoRangeMinimum);
+	const bool isInMinRange = lastWarpDistance < pExt->ChronoRangeMinimum.Get(RulesClass::Instance->ChronoRangeMinimum);
 
 	if (auto const weaponType = isInMinRange ? pExt->WarpInMinRangeWeapon.Get(pExt->WarpInWeapon) : pExt->WarpInWeapon)
 	{
-		int damage = pExt->WarpInWeapon_UseDistanceAsDamage ? lastWarpDistance / Unsorted::LeptonsPerCell : weaponType->Damage;
+		const int damage = pExt->WarpInWeapon_UseDistanceAsDamage ? lastWarpDistance / Unsorted::LeptonsPerCell : weaponType->Damage;
 		WeaponTypeExt::DetonateAt(weaponType, pLinked, pLinked, damage);
 	}
 
 	return 0x719796;
 }
 
-DEFINE_HOOK(0x719827, TeleportLocomotionClass_ILocomotion_Process_WarpAway, 0x5)
+DEFINE_HOOK(0x719827, TeleportLocomotionClass_ILocomotion_Process_ChronoshiftWarpOutAnim, 0x5)
 {
 	GET_LOCO(ESI);
 
-	if (auto pWarpAway = pExt->WarpAway.Get(RulesClass::Instance->WarpOut))
+	if (pExt->Chronoshift_WarpOut.size() > 0)
 	{
-		auto const pAnim = GameCreate<AnimClass>(pWarpAway, pLinked->Location);
+		AnimExt::CreateRandomAnim(pExt->Chronoshift_WarpOut, pLinked->Location, nullptr, pLinked->Owner);
+	}
+	else if (pExt->WarpOut.size() > 0)
+	{
+		AnimExt::CreateRandomAnim(pExt->WarpOut, pLinked->Location, nullptr, pLinked->Owner);
+	}
+	else if (auto const pWarpOut = RulesClass::Instance->WarpOut)
+	{
+		auto const pAnim = GameCreate<AnimClass>(pWarpOut, pLinked->Location);
 		AnimExt::SetAnimOwnerHouseKind(pAnim, pLinked->Owner, nullptr, false, true);
 	}
 
 	return 0x719878;
+}
+
+DEFINE_HOOK(0x719B1E, TeleportLocomotionClass_ILocomotion_Process_ChronoshiftWarpInAnim, 0x5)
+{
+	GET_LOCO(ESI);
+
+	if (pExt->Chronoshift_WarpIn.size() > 0)
+	{
+		AnimExt::CreateRandomAnim(pExt->Chronoshift_WarpIn, pLinked->Location, nullptr, pLinked->Owner);
+	}
+	else if (pExt->WarpIn.size() > 0)
+	{
+		AnimExt::CreateRandomAnim(pExt->WarpIn, pLinked->Location, nullptr, pLinked->Owner);
+	}
+	else if (auto const pWarpIn = RulesClass::Instance->WarpIn)
+	{
+		auto const pAnim = GameCreate<AnimClass>(pWarpIn, pLinked->Location);
+		AnimExt::SetAnimOwnerHouseKind(pAnim, pLinked->Owner, nullptr, false, true);
+	}
+
+	return 0x719B81;
 }
 
 DEFINE_HOOK(0x719973, TeleportLocomotionClass_ILocomotion_Process_ChronoDelay, 0x5)
@@ -137,7 +176,7 @@ DEFINE_HOOK(0x719BD9, TeleportLocomotionClass_Process_ChronosphereDelay2, 0x6)
 	if (!pExt->IsBeingChronoSphered)
 		return 0;
 
-	int delay = pExt->TypeExtData->ChronoSphereDelay.Get(RulesExt::Global()->ChronoSphereDelay);
+	const int delay = pExt->TypeExtData->ChronoSphereDelay.Get(RulesExt::Global()->ChronoSphereDelay);
 
 	if (delay > 0)
 	{

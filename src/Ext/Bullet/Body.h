@@ -30,6 +30,7 @@ public:
 		bool SnappedToTarget; // Used for custom trajectory projectile target snap checks
 		int DamageNumberOffset;
 		int ParabombFallRate;
+		bool IsInstantDetonation;
 
 		TrajectoryPointer Trajectory;
 
@@ -45,6 +46,7 @@ public:
 			, SnappedToTarget { false }
 			, DamageNumberOffset { INT32_MIN }
 			, ParabombFallRate { 0 }
+			, IsInstantDetonation { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -72,6 +74,7 @@ public:
 
 	static ExtContainer ExtMap;
 
+	static void Detonate(const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse, AbstractClass* pTarget, bool isBright, WeaponTypeClass* pWeapon, WarheadTypeClass* pWarhead);
 	static void ApplyArcingFix(BulletClass* pThis, const CoordStruct& sourceCoords, const CoordStruct& targetCoords, BulletVelocity& velocity);
 
 	static void SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords, bool randomVelocity);

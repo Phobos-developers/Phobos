@@ -18,6 +18,7 @@
 #include <Ext/Scenario/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
+#include <New/Type/Affiliated/TypeConvertGroup.h>
 
 
 // TechnoClass_AI_0x6F9E50
@@ -36,7 +37,6 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 
 	this->UpdateShield();
 	this->UpdateAttachEffects();
-	this->UpdateLaserTrails();
 	this->ApplyInterceptor();
 	this->EatPassengers();
 	this->ApplySpawnLimitRange();
@@ -45,20 +45,21 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->UpdateRearmInEMPState();
 
 	if (this->AttackMoveFollowerTempCount)
-	{
 		this->AttackMoveFollowerTempCount--;
-	}
 }
 
 void TechnoExt::ExtData::ApplyInterceptor()
 {
-	const auto pThis = this->OwnerObject();
 	const auto pTypeExt = this->TypeExtData;
 	const auto pInterceptorType = pTypeExt->InterceptorType.get();
 
-	if (!pInterceptorType)
+	if (!pInterceptorType || Unsorted::CurrentFrame % pInterceptorType->TargetingDelay != 0)
 		return;
 
+	if (!BulletClass::Array.Count || this->IsBurrowed)
+		return;
+
+	const auto pThis = this->OwnerObject();
 	const auto pTarget = pThis->Target;
 
 	if (pTarget)
@@ -72,55 +73,50 @@ void TechnoExt::ExtData::ApplyInterceptor()
 			return;
 	}
 
-	const int count = BulletClass::Array.Count;
-
-	if (this->IsBurrowed || !count)
-		return;
-
-	BulletClass* pTargetBullet = nullptr;
+	BulletClass* pOptionalTarget = nullptr;
 	const double guardRange = pInterceptorType->GuardRange.Get(pThis);
 	const double guardRangeSq = guardRange * guardRange;
-	const double minguardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
-	const double minguardRangeSq = minguardRange * minguardRange;
-	// Interceptor weapon is always fixed
-	const auto pWeapon = pThis->GetWeapon(pInterceptorType->Weapon)->WeaponType;
+	const double minGuardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
+	const double minGuardRangeSq = minGuardRange * minGuardRange;
+	const auto location = pThis->Location;
+	const auto pWeapon = pThis->GetWeapon(pInterceptorType->Weapon)->WeaponType; // Interceptor weapon is always fixed
+	const auto pWH = pWeapon->Warhead;
+	const auto pOwner = pThis->Owner;
 
-	// DO NOT iterate BulletExt::ExtMap here, the order of items is not deterministic
-	// so it can differ across players throwing target management out of sync.
-	int i = 0;
-
-	for ( ; i < count; ++i)
+	for (auto const pBullet : BulletClass::Array)
 	{
-		const auto& pBullet = BulletClass::Array.GetItem(i);
 		const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 		const auto pBulletTypeExt = pBulletExt->TypeExtData;
 
 		if (!pBulletTypeExt->Interceptable || pBullet->SpawnNextAnim)
 			continue;
 
-		const auto distanceSq = pBullet->Location.DistanceFromSquared(pThis->Location);
+		const bool isTargetedOrLocked = static_cast<bool>(pBulletExt->InterceptedStatus & (InterceptedStatus::Targeted | InterceptedStatus::Locked));
 
-		if (distanceSq > guardRangeSq || distanceSq < minguardRangeSq)
+		// If we already have an optional target skip ones that are already being targeted etc.
+		if (pOptionalTarget && isTargetedOrLocked)
+			continue;
+
+		const auto distanceSq = pBullet->Location.DistanceFromSquared(location);
+
+		if (distanceSq > guardRangeSq || distanceSq < minGuardRangeSq)
 			continue;
 
 		if (pBulletTypeExt->Armor.isset())
 		{
-			const double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBulletTypeExt->Armor.Get());
-
-			if (versus == 0.0)
+			if (!GeneralUtils::GetWarheadVersusArmor(pWH, pBulletTypeExt->Armor.Get()))
 				continue;
 		}
 
 		const auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
 
-		if (!EnumFunctions::CanTargetHouse(pInterceptorType->CanTargetHouses, pThis->Owner, bulletOwner))
+		if (!EnumFunctions::CanTargetHouse(pInterceptorType->CanTargetHouses, pOwner, bulletOwner))
 			continue;
 
-		if (pBulletExt->InterceptedStatus & (InterceptedStatus::Targeted | InterceptedStatus::Locked))
+		if (!pOptionalTarget && isTargetedOrLocked)
 		{
-			// Set as optional target
-			pTargetBullet = pBullet;
-			break;
+			pOptionalTarget = pBullet;  // Set as optional target
+			continue;
 		}
 
 		// Establish target
@@ -128,71 +124,134 @@ void TechnoExt::ExtData::ApplyInterceptor()
 		return;
 	}
 
-	// Loop ends and there is no target
-	if (!pTargetBullet)
-		return;
-
-	// There is an optional target, but it is still possible to continue checking for more suitable target
-	for ( ; i < count; ++i)
-	{
-		const auto& pBullet = BulletClass::Array.GetItem(i);
-		const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
-
-		if (pBulletExt->InterceptedStatus & (InterceptedStatus::Targeted | InterceptedStatus::Locked))
-			continue;
-
-		const auto pBulletTypeExt = pBulletExt->TypeExtData;
-
-		if (!pBulletTypeExt->Interceptable || pBullet->SpawnNextAnim)
-			continue;
-
-		const auto distanceSq = pBullet->Location.DistanceFromSquared(pThis->Location);
-
-		if (distanceSq > guardRangeSq || distanceSq < minguardRangeSq)
-			continue;
-
-		if (pBulletTypeExt->Armor.isset())
-		{
-			const double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBulletTypeExt->Armor.Get());
-
-			if (versus == 0.0)
-				continue;
-		}
-
-		const auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
-
-		if (!EnumFunctions::CanTargetHouse(pInterceptorType->CanTargetHouses, pThis->Owner, bulletOwner))
-			continue;
-
-		// Establish target
-		pThis->SetTarget(pBullet);
-		return;
-	}
-
-	// There is no more suitable target, establish optional target
-	if (pTargetBullet)
-		pThis->SetTarget(pTargetBullet);
+	if (pOptionalTarget)
+		pThis->SetTarget(pOptionalTarget);  // There is no more suitable target, establish optional target
 }
 
 void TechnoExt::ExtData::DepletedAmmoActions()
 {
+	auto const pTypeExt = this->TypeExtData;
+	const int min = pTypeExt->Ammo_AutoDeployMinimumAmount;
+	const int max = pTypeExt->Ammo_AutoDeployMaximumAmount;
+
+	if (min < 0 && max < 0)
+		return;
+
+	auto const pType = pTypeExt->OwnerObject();
+
+	if (pType->Ammo <= 0)
+		return;
+
+	auto const pThis = static_cast<UnitClass*>(this->OwnerObject());
+	auto const pUnitType = pThis->Type;
+
+	if (!pUnitType->IsSimpleDeployer && !pUnitType->DeploysInto && !pUnitType->DeployFire
+		&& pUnitType->Passengers < 1 && pThis->Passengers.NumPassengers < 1)
+	{
+		return;
+	}
+
+	const int ammo = pThis->Ammo;
+	const bool canDeploy = TechnoExt::HasAmmoToDeploy(pThis) && (min < 0 || ammo >= min) && (max < 0 || ammo <= max);
+	const bool isDeploying = pThis->CurrentMission == Mission::Unload || pThis->QueuedMission == Mission::Unload;
+
+	if (canDeploy && !isDeploying)
+	{
+		pThis->QueueMission(Mission::Unload, true);
+	}
+	else if (!canDeploy && isDeploying)
+	{
+		pThis->QueueMission(Mission::Guard, true);
+
+		if (pUnitType->IsSimpleDeployer && pThis->InAir)
+		{
+			if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+				pJJLoco->State = JumpjetLocomotionClass::State::Ascending;
+		}
+	}
+}
+
+void TechnoExt::ExtData::AmmoAutoConvertActions()
+{
+	const auto pTypeExt = this->TypeExtData;
+
+	if (!pTypeExt->Ammo_AutoConvertType.isset())
+		return;
+
+	const int min = pTypeExt->Ammo_AutoConvertMinimumAmount;
+	const int max = pTypeExt->Ammo_AutoConvertMaximumAmount;
+
+	if (min < 0 && max < 0)
+		return;
+
+	if (pTypeExt->OwnerObject()->Ammo <= 0)
+		return;
+
+	const auto pThis = this->OwnerObject();
+	const int ammo = pThis->Ammo;
+
+	if ((min < 0 || ammo >= min) && (max < 0 || ammo <= max))
+	{
+		const auto pFoot = abstract_cast<FootClass*, true>(pThis);
+		TechnoExt::ConvertToType(pFoot, pTypeExt->Ammo_AutoConvertType);
+	}
+}
+
+// Subterranean harvester factory exit state machine.
+void TechnoExt::ExtData::UpdateSubterraneanHarvester()
+{
 	auto const pThis = static_cast<UnitClass*>(this->OwnerObject());
 
-	if (pThis->Type->Ammo <= 0 || !pThis->Type->IsSimpleDeployer)
+	// Unnecessary for AI players.
+	if (!pThis->Owner->IsControlledByHuman())
 		return;
 
-	auto const pTypeExt = this->TypeExtData;
-	const bool skipMinimum = pTypeExt->Ammo_AutoDeployMinimumAmount < 0;
-	const bool skipMaximum = pTypeExt->Ammo_AutoDeployMaximumAmount < 0;
+	switch (this->SubterraneanHarvStatus)
+	{
+	case 0: // No state to handle.
+		break;
+	case 1: // Unit has been created.
+		// If we're still in the factory do not advance.
+		if (pThis->HasAnyLink())
+			break;
 
-	if (skipMinimum && skipMaximum)
-		return;
+		pThis->ClearNavigationList();
 
-	const bool moreThanMinimum = pThis->Ammo >= pTypeExt->Ammo_AutoDeployMinimumAmount;
-	const bool lessThanMaximum = pThis->Ammo <= pTypeExt->Ammo_AutoDeployMaximumAmount;
+		// If we have rally point available, move to it and advance to next state, otherwise end here.
+		if (this->SubterraneanHarvRallyPoint)
+		{
+			pThis->SetDestination(this->SubterraneanHarvRallyPoint, false);
+			pThis->QueueMission(Mission::Move, true);
+			this->SubterraneanHarvRallyPoint = nullptr;
+			this->SubterraneanHarvStatus = 2;
+			break;
+		}
+		else
+		{
+			this->SubterraneanHarvStatus = 0;
+		}
 
-	if ((skipMinimum || moreThanMinimum) && (skipMaximum || lessThanMaximum))
-		pThis->QueueMission(Mission::Unload, true);
+		break;
+	case 2: // Out of factory and on move.
+		// If we're still moving don't start harvesting.
+		if (pThis->Destination || pThis->CurrentMission == Mission::Move)
+			break;
+
+		// If harvester stops moving and becomes anything except idle, reset the state machine.
+		if (pThis->CurrentMission != Mission::Guard)
+		{
+			this->SubterraneanHarvStatus = 0;
+			break;
+		}
+
+		// Go harvest ore.
+		pThis->ClearNavigationList();
+		pThis->QueueMission(Mission::Harvest, true);
+		this->SubterraneanHarvStatus = 0;
+		break;
+	default:
+		break;
+	}
 }
 
 // TODO : Merge into new AttachEffects
@@ -204,16 +263,14 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 		return false;
 
 	auto const pThis = this->OwnerObject();
-	auto const pType = pThis->GetTechnoType();
 
 	// Self-destruction must be enabled
 	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
-	const auto pVanishAnim = pTypeExt->AutoDeath_VanishAnimation;
 
 	// Death if no ammo
-	if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
+	if (pTypeExt->OwnerObject()->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
 	{
-		TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
+		TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 		return true;
 	}
 
@@ -226,21 +283,23 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 		}
 		else if (this->AutoDeathTimer.Completed())
 		{
-			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
+			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 			return true;
 		}
 	}
 
-	auto existTechnoTypes = [pThis](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any, bool allowLimbo)
+	auto const pOwner = pThis->Owner;
+
+	auto existTechnoTypes = [pOwner](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any, bool allowLimbo)
 		{
-			auto existSingleType = [pThis, affectedHouse, allowLimbo](TechnoTypeClass* pType)
+			auto existSingleType = [pOwner, affectedHouse, allowLimbo](TechnoTypeClass* pType)
 				{
 					if (affectedHouse == AffectedHouse::Owner)
-						return allowLimbo ? HouseExt::ExtMap.Find(pThis->Owner)->CountOwnedPresentAndLimboed(pType) > 0 : pThis->Owner->CountOwnedAndPresent(pType) > 0;
+						return allowLimbo ? HouseExt::ExtMap.Find(pOwner)->CountOwnedPresentAndLimboed(pType) > 0 : pOwner->CountOwnedAndPresent(pType) > 0;
 
 					for (auto const pHouse : HouseClass::Array)
 					{
-						if (EnumFunctions::CanTargetHouse(affectedHouse, pThis->Owner, pHouse)
+						if (EnumFunctions::CanTargetHouse(affectedHouse, pOwner, pHouse)
 							&& (allowLimbo ? HouseExt::ExtMap.Find(pHouse)->CountOwnedPresentAndLimboed(pType) > 0 : pHouse->CountOwnedAndPresent(pType) > 0))
 							return true;
 					}
@@ -258,7 +317,7 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	{
 		if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any, pTypeExt->AutoDeath_TechnosDontExist_AllowLimboed))
 		{
-			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
+			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 
 			return true;
 		}
@@ -269,7 +328,7 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	{
 		if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any, pTypeExt->AutoDeath_TechnosExist_AllowLimboed))
 		{
-			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
+			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 
 			return true;
 		}
@@ -280,16 +339,25 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 
 void TechnoExt::ExtData::EatPassengers()
 {
-	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (!pTypeExt->PassengerDeletionType || !TechnoExt::IsActiveIgnoreEMP(pThis))
+	if (!pTypeExt->PassengerDeletionType)
+		return;
+
+	auto const pThis = this->OwnerObject();
+
+	if (!TechnoExt::IsActiveIgnoreEMP(pThis))
 		return;
 
 	auto const pDelType = pTypeExt->PassengerDeletionType.get();
 
 	if (!pDelType->UnderEMP && (pThis->Deactivated || pThis->IsUnderEMP()))
+	{
+		if (this->PassengerDeletionTimer.InProgress())
+			this->PassengerDeletionTimer.StartTime++;
+
 		return;
+	}
 
 	if (pDelType->Rate > 0 || pDelType->UseCostAsRate)
 	{
@@ -300,11 +368,13 @@ void TechnoExt::ExtData::EatPassengers()
 			FootClass* pPreviousPassenger = nullptr;  // Passenger immediately prior to the deleted one in the stack
 			ObjectClass* pLastPassenger = nullptr;    // Passenger that is last in the stack
 			auto pCurrentPassenger = pThis->Passengers.GetFirstPassenger();
+			const auto allowedHouses = pDelType->AllowedHouses;
+			const auto pOwner = pThis->Owner;
 
 			// Find the first entered passenger that is eligible for deletion.
 			while (pCurrentPassenger)
 			{
-				if (EnumFunctions::CanTargetHouse(pDelType->AllowedHouses, pThis->Owner, pCurrentPassenger->Owner))
+				if (EnumFunctions::CanTargetHouse(allowedHouses, pOwner, pCurrentPassenger->Owner))
 				{
 					pPreviousPassenger = abstract_cast<FootClass*>(pLastPassenger);
 					pPassenger = pCurrentPassenger;
@@ -360,34 +430,28 @@ void TechnoExt::ExtData::EatPassengers()
 				if (pDelType->ReportSound >= 0)
 					VocClass::PlayAt(pDelType->ReportSound.Get(), pThis->GetCoords(), nullptr);
 
-				if (const auto pAnimType = pDelType->Anim.Get())
-				{
-					auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location);
-					pAnim->SetOwnerObject(pThis);
-					AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
-					AnimExt::ExtMap.Find(pAnim)->SetInvoker(pThis);
-				}
+				AnimExt::CreateRandomAnim(pDelType->Anim, pThis->Location, pThis, nullptr, true, true);
 
 				// Check if there is money refund
-				if (pDelType->Soylent &&
-					EnumFunctions::CanTargetHouse(pDelType->SoylentAllowedHouses, pThis->Owner, pPassenger->Owner))
+				if (pDelType->Soylent
+					&& EnumFunctions::CanTargetHouse(pDelType->SoylentAllowedHouses, pOwner, pPassenger->Owner))
 				{
 					const int nMoneyToGive = (int)(pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true) * pDelType->SoylentMultiplier);
 
 					if (nMoneyToGive > 0)
 					{
-						pThis->Owner->GiveMoney(nMoneyToGive);
+						pOwner->GiveMoney(nMoneyToGive);
 
 						if (pDelType->DisplaySoylent)
 						{
-							FlyingStrings::AddMoneyString(nMoneyToGive, pThis->Owner,
+							FlyingStrings::AddMoneyString(nMoneyToGive, pThis, pOwner,
 								pDelType->DisplaySoylentToHouses, pThis->Location, pDelType->DisplaySoylentOffset);
 						}
 					}
 				}
 
 				// Handle gunner change.
-				auto const pTransportType = pThis->GetTechnoType();
+				auto const pTransportType = pTypeExt->OwnerObject();
 
 				if (pTransportType->Gunner)
 				{
@@ -414,7 +478,7 @@ void TechnoExt::ExtData::EatPassengers()
 				if (auto const pBldType = abstract_cast<BuildingTypeClass*, true>(pTransportType))
 				{
 					if (pBldType->ExtraPowerBonus || pBldType->ExtraPowerDrain)
-						pThis->Owner->RecheckPower = true;
+						pOwner->RecheckPower = true;
 				}
 
 				this->PassengerDeletionTimer.Stop();
@@ -451,6 +515,16 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 		facing++;
 
 	const int cellCount = static_cast<int>(pEaterType->Cells.size());
+	const int locationZ = pThis->Location.Z;
+	const int numOrePurifiers = pOwner->NumOrePurifiers;
+	const float cashMultiplier = pEaterType->CashMultiplier;
+	const float purifierBonus = RulesClass::Instance->PurifierBonus;
+	const bool animMove = pEaterType->AnimMove;
+	const auto displayToHouse = pEaterType->DisplayToHouse;
+	const auto amountPerCell = pEaterType->AmountPerCell;
+	const auto displayOffset = pEaterType->DisplayOffset;
+	const auto& animsAll = pEaterType->Anims;
+	auto* scenarioRandom = &ScenarioClass::Instance->Random;
 
 	for (int idx = 0; idx < cellCount; idx++)
 	{
@@ -466,9 +540,9 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 			const int tiberiumIdx = pCell->GetContainedTiberiumIndex();
 			const int tiberiumValue = TiberiumClass::Array[tiberiumIdx]->Value;
 			const int tiberiumAmount = static_cast<int>(static_cast<double>(contained) / tiberiumValue);
-			const int amount = pEaterType->AmountPerCell > 0 ? std::min(pEaterType->AmountPerCell.Get(), tiberiumAmount) : tiberiumAmount;
+			const int amount = amountPerCell > 0 ? std::min(amountPerCell.Get(), tiberiumAmount) : tiberiumAmount;
 			pCell->ReduceTiberium(amount);
-			const float multiplier = pEaterType->CashMultiplier * (1.0f + pOwner->NumOrePurifiers * RulesClass::Instance->PurifierBonus);
+			const float multiplier = cashMultiplier * (1.0f + numOrePurifiers * purifierBonus);
 			const int value = static_cast<int>(std::round(amount * tiberiumValue * multiplier));
 			pOwner->TransactMoney(value);
 			active = true;
@@ -476,11 +550,11 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 			if (displayCash)
 			{
 				auto cellCoords = pCell->GetCoords();
-				cellCoords.Z = std::max(pThis->Location.Z, cellCoords.Z);
-				FlyingStrings::AddMoneyString(value, pOwner, pEaterType->DisplayToHouse, cellCoords, pEaterType->DisplayOffset);
+				cellCoords.Z = std::max(locationZ, cellCoords.Z);
+				FlyingStrings::AddMoneyString(value, pThis, pOwner, displayToHouse, cellCoords, displayOffset);
 			}
 
-			const auto& anims = pEaterType->Anims_Tiberiums[tiberiumIdx].GetElements(pEaterType->Anims);
+			const auto& anims = pEaterType->Anims_Tiberiums[tiberiumIdx].GetElements(animsAll);
 			const int animCount = static_cast<int>(anims.size());
 
 			if (animCount == 0)
@@ -499,7 +573,7 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 				break;
 
 			default:
-				pAnimType = anims[ScenarioClass::Instance->Random.RandomRanged(0, animCount - 1)];
+				pAnimType = anims[scenarioRandom->RandomRanged(0, animCount - 1)];
 				break;
 			}
 
@@ -508,7 +582,7 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 				const auto pAnim = GameCreate<AnimClass>(pAnimType, pos);
 				AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
 
-				if (pEaterType->AnimMove)
+				if (animMove)
 					pAnim->SetOwnerObject(pThis);
 			}
 		}
@@ -597,10 +671,17 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 	// Cache the new type data
 	this->PreviousType = pOldType;
-	this->TypeExtData = TechnoTypeExt::ExtMap.Find(pCurrentType);
-	auto const pNewTypeExt = this->TypeExtData;
+	auto const pNewTypeExt = TechnoTypeExt::ExtMap.Find(pCurrentType);
+	this->TypeExtData = pNewTypeExt;
 
 	this->UpdateSelfOwnedAttachEffects();
+
+	if (auto const pShield = this->Shield.get())
+		pShield->ConvertCheck(pCurrentType);
+
+	// Recalculate and redraw
+	this->UpdateTintValues();
+	pThis->MarkForRedraw();
 
 	// Recreate Laser Trails
 	if (const size_t trailCount = this->LaserTrails.size())
@@ -623,13 +704,20 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		for (auto& pTrail : addition)
 			this->LaserTrails.emplace_back(std::move(pTrail));
 	}
+	else if (const size_t trailSize = pNewTypeExt->LaserTrailData.size())
+	{
+		this->LaserTrails.reserve(trailSize);
 
-	// Reset AutoDeath Timer
-	if (this->AutoDeathTimer.HasStarted())
+		for (const auto& entry : pNewTypeExt->LaserTrailData)
+			this->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(entry.GetType(), pOwner, entry.FLH, entry.IsOnTurret));
+	}
+
+	// Reset AutoDeath Timer if new techno type doesn't have timed AutoDeath
+	if (this->AutoDeathTimer.HasStarted() && pNewTypeExt->AutoDeath_AfterDelay <= 0)
 		this->AutoDeathTimer.Stop();
 
 	// Reset PassengerDeletion Timer
-	if (this->PassengerDeletionTimer.IsTicking() && pNewTypeExt->PassengerDeletionType && pNewTypeExt->PassengerDeletionType->Rate <= 0)
+	if (this->PassengerDeletionTimer.HasStarted() && pNewTypeExt->PassengerDeletionType && pNewTypeExt->PassengerDeletionType->Rate <= 0)
 		this->PassengerDeletionTimer.Stop();
 
 	// Remove from tracked AutoDeath objects if no longer has AutoDeath
@@ -679,13 +767,11 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 				for (int i = 0; i < count; i++)
 				{
-					if (auto pSlaveNode = GameCreate<SlaveManagerClass::SlaveControl>())
-					{
-						pSlaveNode->Slave = nullptr;
-						pSlaveNode->State = SlaveControlStatus::Dead;
-						pSlaveNode->RespawnTimer.Start(pCurrentType->SlaveRegenRate);
-						pSlaveManager->SlaveNodes.AddItem(pSlaveNode);
-					}
+					const auto pSlaveNode = GameCreate<SlaveManagerClass::SlaveControl>();
+					pSlaveNode->Slave = nullptr;
+					pSlaveNode->State = SlaveControlStatus::Dead;
+					pSlaveNode->RespawnTimer.Start(pCurrentType->SlaveRegenRate);
+					pSlaveManager->SlaveNodes.AddItem(pSlaveNode);
 				}
 			}
 			else
@@ -693,7 +779,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 				// Remove excess slaves
 				for (int i = pSlaveManager->SlaveCount - 1; i >= pCurrentType->SlavesNumber; --i)
 				{
-					if (auto pSlaveNode = pSlaveManager->SlaveNodes.GetItem(i))
+					if (const auto pSlaveNode = pSlaveManager->SlaveNodes.GetItem(i))
 					{
 						if (const auto pSlave = pSlaveNode->Slave)
 						{
@@ -706,7 +792,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 							else
 							{
 								// Oh, my God, he's been killed.
-								pSlave->ReceiveDamage(&pSlave->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pOwner);
+								pSlave->ReceiveDamage(&pSlave->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
 							}
 						}
 
@@ -755,14 +841,12 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 				// Add the missing Spawns, but don't intend for them to be born right away.
 				for (int i = 0; i < count; i++)
 				{
-					if (auto pSpawnNode = GameCreate<SpawnControl>())
-					{
-						pSpawnNode->Unit = nullptr;
-						pSpawnNode->Status = SpawnNodeStatus::Dead;
-						pSpawnNode->SpawnTimer.Start(pCurrentType->SpawnRegenRate);
-						pSpawnNode->IsSpawnMissile = false;
-						pSpawnManager->SpawnedNodes.AddItem(pSpawnNode);
-					}
+					const auto pSpawnNode = GameCreate<SpawnControl>();
+					pSpawnNode->Unit = nullptr;
+					pSpawnNode->Status = SpawnNodeStatus::Dead;
+					pSpawnNode->SpawnTimer.Start(pCurrentType->SpawnRegenRate);
+					pSpawnNode->IsSpawnMissile = false;
+					pSpawnManager->SpawnedNodes.AddItem(pSpawnNode);
 				}
 			}
 			else
@@ -770,7 +854,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 				// Remove excess spawns
 				for (int i = pSpawnManager->SpawnCount - 1; i >= pCurrentType->SpawnsNumber; --i)
 				{
-					if (auto pSpawnNode = pSpawnManager->SpawnedNodes.GetItem(i))
+					if (const auto pSpawnNode = pSpawnManager->SpawnedNodes.GetItem(i))
 					{
 						auto& pStatus = pSpawnNode->Status;
 
@@ -779,8 +863,10 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 						{
 							pAircraft->SpawnOwner = nullptr;
 
-							if (pAircraft->InLimbo || pStatus == SpawnNodeStatus::Idle ||
-								pStatus == SpawnNodeStatus::Reloading || pStatus == SpawnNodeStatus::TakeOff)
+							if (pAircraft->InLimbo
+								|| pStatus == SpawnNodeStatus::Idle
+								|| pStatus == SpawnNodeStatus::Reloading
+								|| pStatus == SpawnNodeStatus::TakeOff)
 							{
 								if (pStatus == SpawnNodeStatus::TakeOff)
 									Kamikaze::Instance.Remove(pAircraft);
@@ -789,7 +875,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 							}
 							else if (pSpawnNode->IsSpawnMissile)
 							{
-								pAircraft->ReceiveDamage(&pAircraft->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pOwner);
+								pAircraft->ReceiveDamage(&pAircraft->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
 							}
 							else
 							{
@@ -823,8 +909,10 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			auto& pStatus = pSpawnNode->Status;
 
 			// A dead or idle Spawn is not killed.
-			if (!pAircraft || pStatus == SpawnNodeStatus::Dead ||
-				pStatus == SpawnNodeStatus::Idle || pStatus == SpawnNodeStatus::Reloading)
+			if (!pAircraft
+				|| pStatus == SpawnNodeStatus::Dead
+				|| pStatus == SpawnNodeStatus::Idle
+				|| pStatus == SpawnNodeStatus::Reloading)
 			{
 				continue;
 			}
@@ -838,7 +926,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			}
 			else if (pSpawnNode->IsSpawnMissile)
 			{
-				pAircraft->ReceiveDamage(&pAircraft->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pOwner);
+				pAircraft->ReceiveDamage(&pAircraft->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
 			}
 			else
 			{
@@ -979,6 +1067,25 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		pThis->LocomotorTarget = nullptr;
 	}
 
+	// FireAngle
+	pThis->BarrelFacing.SetCurrent(DirStruct(0x4000 - (pCurrentType->FireAngle << 8)));
+
+	// Reset recoil data
+	{
+		auto& turretRecoil = pThis->TurretRecoil.Turret;
+		const auto& turretAnimData = pCurrentType->TurretAnimData;
+		turretRecoil.Travel = turretAnimData.Travel;
+		turretRecoil.CompressFrames = turretAnimData.CompressFrames;
+		turretRecoil.RecoverFrames = turretAnimData.RecoverFrames;
+		turretRecoil.HoldFrames = turretAnimData.HoldFrames;
+		auto& barrelRecoil = pThis->BarrelRecoil.Turret;
+		const auto& barrelAnimData = pCurrentType->BarrelAnimData;
+		barrelRecoil.Travel = barrelAnimData.Travel;
+		barrelRecoil.CompressFrames = barrelAnimData.CompressFrames;
+		barrelRecoil.RecoverFrames = barrelAnimData.RecoverFrames;
+		barrelRecoil.HoldFrames = barrelAnimData.HoldFrames;
+	}
+
 	// Only FootClass* can use this.
 	if (const auto pFoot = abstract_cast<FootClass*, true>(pThis))
 	{
@@ -1005,6 +1112,10 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			pParasiteImUsing = nullptr;
 		}
 	}
+
+	// handle AutoFire
+	if (pOldTypeExt->AutoFire && !pNewTypeExt->AutoFire)
+		pThis->SetTarget(nullptr);
 }
 
 void TechnoExt::ExtData::UpdateTypeData_Foot()
@@ -1016,7 +1127,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 	//auto const pOldTypeExt = TechnoTypeExt::ExtMap.Find(pOldType);
 
 	// Update movement sound if still moving while type changed.
-	if (pThis->Locomotor->Is_Moving_Now() && pThis->IsMoveSoundPlaying)
+	if (pThis->IsMoveSoundPlaying && pThis->Locomotor->Is_Moving())
 	{
 		if (pCurrentType->MoveSound != pOldType->MoveSound)
 		{
@@ -1203,7 +1314,12 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 
 void TechnoExt::ExtData::UpdateLaserTrails()
 {
+	if (this->LaserTrails.size() <= 0)
+		return;
+
 	auto const pThis = this->OwnerObject();
+	auto const pOwner = pThis->Owner;
+	auto const cloakState = pThis->CloakState;
 
 	// LaserTrails update routine is in TechnoClass::AI hook because LaserDrawClass-es are updated in LogicClass::AI
 	for (const auto& pTrail : this->LaserTrails)
@@ -1222,9 +1338,9 @@ void TechnoExt::ExtData::UpdateLaserTrails()
 
 		pTrail->Cloaked = false;
 
-		if (pThis->CloakState == CloakState::Cloaked)
+		if (cloakState == CloakState::Cloaked)
 		{
-			if (pType->CloakVisible && pType->CloakVisible_DetectedOnly && !HouseClass::IsCurrentPlayerObserver() && !pThis->Owner->IsAlliedWith(HouseClass::CurrentPlayer))
+			if (pType->CloakVisible && pType->CloakVisible_DetectedOnly && !HouseClass::IsCurrentPlayerObserver() && !pOwner->IsAlliedWith(HouseClass::CurrentPlayer))
 				pTrail->Cloaked = !pThis->GetCell()->Sensors_InclHouse(HouseClass::CurrentPlayer->ArrayIndex);
 			else if (!pType->CloakVisible)
 				pTrail->Cloaked = true;
@@ -1235,7 +1351,7 @@ void TechnoExt::ExtData::UpdateLaserTrails()
 
 		auto const trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, pTrail->FLH, pTrail->IsOnTurret);
 
-		if (pThis->CloakState == CloakState::Uncloaking && !pType->CloakVisible)
+		if (cloakState == CloakState::Uncloaking && !pType->CloakVisible)
 			pTrail->LastLocation = trailLoc;
 		else
 			pTrail->Update(trailLoc);
@@ -1245,14 +1361,15 @@ void TechnoExt::ExtData::UpdateLaserTrails()
 void TechnoExt::ExtData::UpdateMindControlAnim()
 {
 	auto const pThis = this->OwnerObject();
+
 	if (pThis->IsMindControlled())
 	{
 		if (pThis->MindControlRingAnim && !this->MindControlRingAnimType)
 		{
 			this->MindControlRingAnimType = pThis->MindControlRingAnim->Type;
 		}
-		else if (!pThis->MindControlRingAnim && this->MindControlRingAnimType &&
-			pThis->CloakState == CloakState::Uncloaked && !pThis->InLimbo && pThis->IsAlive)
+		else if (!pThis->MindControlRingAnim && this->MindControlRingAnimType
+			&& pThis->CloakState == CloakState::Uncloaked && !pThis->InLimbo && pThis->IsAlive)
 		{
 			auto coords = pThis->GetCoords();
 			int offset = 0;
@@ -1310,7 +1427,7 @@ void TechnoExt::ExtData::UpdateGattlingRateDownReset()
 
 		if (pTypeExt->RateDown_Reset && (!pThis->Target || this->LastTargetID != pThis->Target->UniqueID))
 		{
-			int oldStage = pThis->CurrentGattlingStage;
+			const int oldStage = pThis->CurrentGattlingStage;
 			this->LastTargetID = pThis->Target ? pThis->Target->UniqueID : 0xFFFFFFFF;
 			pThis->GattlingValue = 0;
 			pThis->CurrentGattlingStage = 0;
@@ -1318,9 +1435,7 @@ void TechnoExt::ExtData::UpdateGattlingRateDownReset()
 			this->ShouldUpdateGattlingValue = false;
 
 			if (oldStage != 0)
-			{
 				pThis->GattlingRateDown(0);
-			}
 		}
 	}
 }
@@ -1444,15 +1559,15 @@ void TechnoExt::ExtData::ApplyMindControlRangeLimit()
 	{
 		auto const pCapturerExt = TechnoExt::ExtMap.Find(pCapturer)->TypeExtData;
 
-		if (pCapturerExt->MindControlRangeLimit.Get() > 0 &&
-			pCapturer->DistanceFrom(pThis) > pCapturerExt->MindControlRangeLimit.Get())
+		if (pCapturerExt->MindControlRangeLimit.Get() > 0
+			&& pCapturer->DistanceFrom(pThis) > pCapturerExt->MindControlRangeLimit.Get())
 		{
 			pCapturer->CaptureManager->FreeUnit(pThis);
 		}
 	}
 }
 
-void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation, bool isInLimbo)
+void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, const std::vector<AnimTypeClass*>& pVanishAnimation, bool isInLimbo)
 {
 	if (isInLimbo)
 	{
@@ -1466,8 +1581,10 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 		// Remove limbo buildings' tracking here because their are not truely InLimbo
 		if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pThis))
 		{
-			if (!pBuilding->InLimbo && !pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
-				HouseExt::ExtMap.Find(pBuilding->Owner)->RemoveFromLimboTracking(pBuilding->Type);
+			auto const pBldType = pBuilding->Type;
+
+			if (!pBuilding->InLimbo && !pBldType->Insignificant && !pBldType->DontScore)
+				HouseExt::ExtMap.Find(pBuilding->Owner)->RemoveFromLimboTracking(pBldType);
 		}
 
 		auto const pTransport = pThis->Transporter;
@@ -1504,12 +1621,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 
 	case AutoDeathBehavior::Vanish:
 	{
-		if (pVanishAnimation)
-		{
-			auto const pAnim = GameCreate<AnimClass>(pVanishAnimation, pThis->GetCoords());
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
-			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pThis);
-		}
+		AnimExt::CreateRandomAnim(pVanishAnimation, pThis->GetCoords(), pThis, nullptr, true);
 
 		pThis->KillPassengers(pThis);
 		pThis->Stun();
@@ -1550,7 +1662,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 			default:;
 			}
 		}
-		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pThis->Owner);
+		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
 		return;
 	}
 }
@@ -1631,10 +1743,10 @@ void TechnoExt::ExtData::UpdateRearmInTemporal()
 // Resets target if KeepTargetOnMove unit moves beyond weapon range.
 void TechnoExt::ExtData::UpdateKeepTargetOnMove()
 {
-	auto const pThis = this->OwnerObject();
-
 	if (!this->KeepTargetOnMove)
 		return;
+
+	auto const pThis = this->OwnerObject();
 
 	if (!pThis->Target)
 	{
@@ -1665,7 +1777,7 @@ void TechnoExt::ExtData::UpdateKeepTargetOnMove()
 		return;
 	}
 
-	const int weaponIndex = pThis->SelectWeapon(pThis->Target);
+	const int weaponIndex = pTypeExt->KeepTargetOnMove_Weapon >= 0 ? pTypeExt->KeepTargetOnMove_Weapon : pThis->SelectWeapon(pThis->Target);
 
 	if (auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType)
 	{
@@ -1794,9 +1906,9 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 {
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
+	auto const pTechnoType = pTypeExt->OwnerObject();
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
-	bool markForRedraw = false;
 	bool altered = false;
 
 	// Delete ones on old type and not on current.
@@ -1804,8 +1916,9 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	{
 		auto const attachEffect = it->get();
 		auto const pType = attachEffect->GetType();
-		bool selfOwned = attachEffect->IsSelfOwned();
-		bool remove = selfOwned && !pTypeExt->AttachEffects.AttachTypes.Contains(pType);
+		const bool isValid = EnumFunctions::IsTechnoEligible(pThis, pType->AffectTargets, true)
+			&& (pType->AffectTypes.empty() || pType->AffectTypes.Contains(pTechnoType)) && !pType->IgnoreTypes.Contains(pTechnoType);
+		const bool remove = !isValid || (attachEffect->IsSelfOwned() && !pTypeExt->AttachEffects.AttachTypes.Contains(pType));
 
 		if (remove)
 		{
@@ -1825,7 +1938,6 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 				}
 			}
 
-			markForRedraw |= pType->HasTint();
 			it = this->AttachedEffects.erase(it);
 			altered = true;
 		}
@@ -1848,9 +1960,6 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 
 	if (altered && !count)
 		this->RecalculateStatMultipliers();
-
-	if (markForRedraw)
-		pThis->MarkForRedraw();
 }
 
 // Updates CumulativeAnimations AE's on techno.
@@ -1871,7 +1980,7 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 		}
 		else if (attachEffect->CanShowAnim())
 		{
-			int currentDuration = attachEffect->GetRemainingDuration();
+			const int currentDuration = attachEffect->GetRemainingDuration();
 
 			if (currentDuration < 0 || currentDuration > duration)
 			{
@@ -1915,6 +2024,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	bool reflectsDamage = false;
 	bool hasOnFireDiscardables = false;
 	bool hasRestrictedArmorMultipliers = false;
+	bool hasCritModifiers = false;
 
 	for (const auto& attachEffect : this->AttachedEffects)
 	{
@@ -1924,7 +2034,12 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		auto const type = attachEffect->GetType();
 		firepower *= type->FirepowerMultiplier;
 		speed *= type->SpeedMultiplier;
-		armor *= type->ArmorMultiplier;
+
+		if (type->ArmorMultiplier != 1.0 && (type->ArmorMultiplier_AllowWarheads.size() > 0 || type->ArmorMultiplier_DisallowWarheads.size() > 0))
+			hasRestrictedArmorMultipliers = true;
+		else
+			armor *= type->ArmorMultiplier;
+
 		ROF *= type->ROFMultiplier;
 		cloak |= type->Cloakable;
 		forceDecloak |= type->ForceDecloak;
@@ -1934,7 +2049,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		hasTint |= type->HasTint();
 		reflectsDamage |= type->ReflectDamage;
 		hasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
-		hasRestrictedArmorMultipliers |= (type->ArmorMultiplier != 1.0 && (type->ArmorMultiplier_AllowWarheads.size() > 0 || type->ArmorMultiplier_DisallowWarheads.size() > 0));
+		hasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
 	}
 
 	pAE.FirepowerMultiplier = firepower;
@@ -1950,6 +2065,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	pAE.ReflectDamage = reflectsDamage;
 	pAE.HasOnFireDiscardables = hasOnFireDiscardables;
 	pAE.HasRestrictedArmorMultipliers = hasRestrictedArmorMultipliers;
+	pAE.HasCritModifiers = hasCritModifiers;
 
 	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
 		pThis->Uncloak(true);

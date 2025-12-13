@@ -52,7 +52,7 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 			point.Y += cellDimensions.Y / 2;
 			point += off;
 
-			RectangleStruct dirty = { point.X - tacticalPos->X - cellDimensions.X,
+			const RectangleStruct dirty = { point.X - tacticalPos->X - cellDimensions.X,
 				point.Y - tacticalPos->Y - cellDimensions.Y,
 				pImage->Width + cellDimensions.X * 2,
 				pImage->Height + cellDimensions.Y * 2 };
@@ -87,7 +87,7 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 
 	if (inactive)
 	{
-		if (auto pAlpha = alphaExt.get_or_default(pSource))
+		if (const auto pAlpha = alphaExt.get_or_default(pSource))
 			GameDelete(pAlpha);
 
 		return;
@@ -105,8 +105,8 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 		GameCreate<AlphaShapeClass>(pSource, point.X, point.Y);
 		--Unsorted::ScenarioInit;
 		//int Margin = 40;
-		RectangleStruct Dirty = { point.X - tacticalPos->X, point.Y - tacticalPos->Y, pImage->Width, pImage->Height };
-		TacticalClass::Instance->RegisterDirtyArea(Dirty, true);
+		const RectangleStruct dirty = { point.X - tacticalPos->X, point.Y - tacticalPos->Y, pImage->Width, pImage->Height };
+		TacticalClass::Instance->RegisterDirtyArea(dirty, true);
 	}
 }
 

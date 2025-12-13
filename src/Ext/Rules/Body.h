@@ -99,10 +99,13 @@ public:
 		double AirShadowBaseScale_log;
 
 		Valueable<bool> ExtendedAircraftMissions;
+		Valueable<int> ExtendedAircraftMissions_UnlandDamage;
 		Valueable<bool> AmphibiousEnter;
 		Valueable<bool> AmphibiousUnload;
 		Valueable<bool> NoQueueUpToEnter;
 		Valueable<bool> NoQueueUpToUnload;
+		Nullable<bool> NoQueueUpToEnter_Buildings;
+		Nullable<bool> NoQueueUpToUnload_Buildings;
 
 		Valueable<bool> BuildingProductionQueue;
 
@@ -118,6 +121,10 @@ public:
 		Valueable<bool> DisplayIncome;
 		Valueable<bool> DisplayIncome_AllowAI;
 		Valueable<AffectedHouse> DisplayIncome_Houses;
+
+		Valueable<bool> AllowDeployControlledMCV;
+
+		Valueable<bool> TypeSelectUseIFVMode;
 
 		Valueable<bool> IronCurtain_KeptOnDeploy;
 		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
@@ -170,8 +177,11 @@ public:
 		Nullable<BuildingSelectBracketPosition> DrawInsignia_AdjustPos_BuildingsAnchor;
 		Valueable<Point2D> DrawInsignia_AdjustPos_Units;
 		Valueable<bool> DrawInsignia_UsePixelSelectionBracketDelta;
-		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
-		Valueable<AnimTypeClass*> Promote_EliteAnimation;
+		ValueableVector<AnimTypeClass*> Promote_VeteranAnimation;
+		ValueableVector<AnimTypeClass*> Promote_EliteAnimation;
+
+		Valueable<bool> JumpjetClimbPredictHeight;
+		Valueable<bool> JumpjetClimbWithoutCutOut;
 
 		Valueable<bool> MergeBuildingDamage;
 
@@ -180,6 +190,9 @@ public:
 		Valueable<double> DamageEnemiesMultiplier;
 		Nullable<double> DamageOwnerMultiplier_NotAffectsEnemies;
 		Nullable<double> DamageAlliesMultiplier_NotAffectsEnemies;
+		Nullable<double> DamageOwnerMultiplier_Berzerk;
+		Nullable<double> DamageAlliesMultiplier_Berzerk;
+		Nullable<double> DamageEnemiesMultiplier_Berzerk;
 
 		Valueable<double> AircraftLevelLightMultiplier;
 		Valueable<double> JumpjetLevelLightMultiplier;
@@ -198,6 +211,13 @@ public:
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
+
+		Valueable<bool> AIAutoDeployMCV;
+		Valueable<bool> AISetBaseCenter;
+		Valueable<bool> AIBiasSpawnCell;
+		Valueable<bool> AIForbidConYard;
+		Valueable<bool> AINodeWallsOnly;
+		Valueable<bool> AICleanWallNode;
 
 		Valueable<bool> AttackMove_Aggressive;
 		Valueable<bool> AttackMove_UpdateTarget;
@@ -220,6 +240,8 @@ public:
 		Valueable<bool> WarheadParticleAlphaImageIsLightFlash;
 		Valueable<int> CombatLightDetailLevel;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
+
+		Valueable<bool> UseRetintFix;
 
 		Nullable<int> AINormalTargetingDelay;
 		Nullable<int> PlayerNormalTargetingDelay;
@@ -247,11 +269,26 @@ public:
 		Valueable<bool> AttackMove_IgnoreWeaponCheck;
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
 
+		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
+
 		// cache tint color
 		int TintColorIronCurtain;
 		int TintColorForceShield;
 		int TintColorBerserk;
 
+		Valueable<bool> InfantryAutoDeploy;
+
+		Valueable<int> AdjacentWallDamage;
+
+		Valueable<int> WarheadAnimZAdjust;
+
+		Valueable<bool> IvanBombAttachToCenter;
+
+		Valueable<bool> FallingDownTargetingFix;
+		Valueable<bool> AIAirTargetingFix;
+
+		Valueable<bool> SortCameoByName;
+		
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -316,10 +353,13 @@ public:
 			, AirShadowBaseScale_log { 0.693376137 }
 
 			, ExtendedAircraftMissions { false }
+			, ExtendedAircraftMissions_UnlandDamage { -1 }
 			, AmphibiousEnter { false }
 			, AmphibiousUnload { false }
 			, NoQueueUpToEnter { false }
 			, NoQueueUpToUnload { false }
+			, NoQueueUpToEnter_Buildings {}
+			, NoQueueUpToUnload_Buildings {}
 
 			, BuildingProductionQueue { false }
 
@@ -331,6 +371,10 @@ public:
 			, ForbidParallelAIQueues_Vehicle { false }
 
 			, EnablePowerSurplus { false }
+
+			, AllowDeployControlledMCV { false }
+
+			, TypeSelectUseIFVMode { false }
 
 			, IronCurtain_KeptOnDeploy { true }
 			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
@@ -380,12 +424,16 @@ public:
 			, DropPodTrailer { }
 			, DropPodDefaultTrailer { }
 			, PodImage { }
-			, MergeBuildingDamage { false }
+			, JumpjetClimbPredictHeight { false }
+			, JumpjetClimbWithoutCutOut { false }
 			, DamageOwnerMultiplier { 1.0 }
 			, DamageAlliesMultiplier { 1.0 }
 			, DamageEnemiesMultiplier { 1.0 }
 			, DamageOwnerMultiplier_NotAffectsEnemies {}
 			, DamageAlliesMultiplier_NotAffectsEnemies {}
+			, DamageOwnerMultiplier_Berzerk {}
+			, DamageAlliesMultiplier_Berzerk {}
+			, DamageEnemiesMultiplier_Berzerk {}
 			, AircraftLevelLightMultiplier { 1.0 }
 			, JumpjetLevelLightMultiplier { 0.0 }
 			, VoxelLightSource { }
@@ -402,6 +450,12 @@ public:
 			, CombatAlert_UseAttackVoice { true }
 			, CombatAlert_UseEVA { true }
 			, UseFixedVoxelLighting { false }
+			, AIAutoDeployMCV { true }
+			, AISetBaseCenter { true }
+			, AIBiasSpawnCell { false }
+			, AIForbidConYard { false }
+			, AINodeWallsOnly { false }
+			, AICleanWallNode { false }
 			, AttackMove_Aggressive { false }
 			, AttackMove_UpdateTarget { false }
 			, MindControl_ThreatDelay { 0 }
@@ -419,6 +473,7 @@ public:
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
 			, LightFlashAlphaImageDetailLevel { 0 }
+			, UseRetintFix { true }
 			, AINormalTargetingDelay {}
 			, PlayerNormalTargetingDelay {}
 			, AIGuardAreaTargetingDelay {}
@@ -446,6 +501,21 @@ public:
 
 			, AttackMove_IgnoreWeaponCheck { false }
 			, AttackMove_StopWhenTargetAcquired { }
+
+			, Parasite_GrappleAnim {}
+			, InfantryAutoDeploy { false }
+			, AdjacentWallDamage { 200 }
+
+			, WarheadAnimZAdjust { -15 }
+
+			, IvanBombAttachToCenter { false }
+
+			, FallingDownTargetingFix { false }
+			, AIAirTargetingFix { false }
+
+			, SortCameoByName { false }
+			
+			, MergeBuildingDamage { false }
 		{ }
 
 		virtual ~ExtData() = default;

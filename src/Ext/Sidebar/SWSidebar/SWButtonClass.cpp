@@ -21,14 +21,9 @@ SWButtonClass::SWButtonClass(int superIdx, int x, int y, int width, int height)
 SWButtonClass::~SWButtonClass()
 {
 	// The vanilla game did not consider adding/deleting buttons midway through the game,
-	// so this behavior needs to be made known to the global variable and then remove it
-	auto& pCurrentMouseOverGadget = Make_Global<GadgetClass*>(0x8B3E94);
-
-	if (pCurrentMouseOverGadget == this)
-	{
-		pCurrentMouseOverGadget = nullptr;
+	// so this behavior needs to be made known to the global variable
+	if (this == Make_Global<GadgetClass*>(0x8B3E94))
 		this->OnMouseLeave();
-	}
 }
 
 bool SWButtonClass::Draw(bool forced)
@@ -43,14 +38,15 @@ bool SWButtonClass::Draw(bool forced)
 
 	const auto pCurrent = HouseClass::CurrentPlayer;
 	const auto pSuper = pCurrent->Supers[this->SuperIndex];
-	const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+	const auto pType = pSuper->Type;
+	const auto pSWExt = SWTypeExt::ExtMap.Find(pType);
 
 	// support for pcx cameos
 	if (const auto pPCXCameo = pSWExt->SidebarPCX.GetSurface())
 	{
 		PCX::Instance.BlitToSurface(&destRect, pSurface, pPCXCameo);
 	}
-	else if (const auto pCameo = pSuper->Type->SidebarImage) // old shp cameos, fixed palette
+	else if (const auto pCameo = pType->SidebarImage) // old shp cameos, fixed palette
 	{
 		const auto pCameoRef = pCameo->AsReference();
 		char pFilename[0x20];
@@ -85,7 +81,7 @@ bool SWButtonClass::Draw(bool forced)
 		pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, FileSystem::DARKEN_SHP, 0, &location, &darkenBounds, BlitterFlags::bf_400 | BlitterFlags::Darken, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 
-	const bool ready = !pSuper->IsSuspended && (pSuper->Type->UseChargeDrain ? pSuper->ChargeDrainState == ChargeDrainState::Ready : pSuper->IsReady);
+	const bool ready = !pSuper->IsSuspended && (pType->UseChargeDrain ? pSuper->ChargeDrainState == ChargeDrainState::Ready : pSuper->IsReady);
 	bool drawReadiness = true;
 
 	if (ready && this->ColumnIndex == 0)
@@ -187,9 +183,10 @@ bool SWButtonClass::LaunchSuper() const
 {
 	const auto pCurrent = HouseClass::CurrentPlayer;
 	const auto pSuper = pCurrent->Supers[this->SuperIndex];
-	const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+	const auto pType = pSuper->Type;
+	const auto pSWExt = SWTypeExt::ExtMap.Find(pType);
 	const bool manual = !pSWExt->SW_ManualFire && pSWExt->SW_AutoFire;
-	const bool unstoppable = pSuper->Type->UseChargeDrain && pSuper->ChargeDrainState == ChargeDrainState::Draining && pSWExt->SW_Unstoppable;
+	const bool unstoppable = pType->UseChargeDrain && pSuper->ChargeDrainState == ChargeDrainState::Draining && pSWExt->SW_Unstoppable;
 
 	if (!pSuper->CanFire() && !manual)
 	{
@@ -202,16 +199,15 @@ bool SWButtonClass::LaunchSuper() const
 		VoxClass::PlayIndex(pSWExt->EVA_InsufficientFunds);
 		pSWExt->PrintMessage(pSWExt->Message_InsufficientFunds, pCurrent);
 	}
-	else if (!pSWExt->SW_UseAITargeting || (AresFunctions::IsTargetConstraintsEligible && AresFunctions::IsTargetConstraintsEligible(AresFunctions::SWTypeExtMap_Find(pSuper->Type), HouseClass::CurrentPlayer, true)))
+	else if (!pSWExt->SW_UseAITargeting || (AresFunctions::IsTargetConstraintsEligible && AresFunctions::IsTargetConstraintsEligible(AresFunctions::SWTypeExtMap_Find(pType), HouseClass::CurrentPlayer, true)))
 	{
 		if (!manual && !unstoppable)
 		{
-			const auto swIndex = pSuper->Type->ArrayIndex;
+			const auto swIndex = pType->ArrayIndex;
 
-			if (pSuper->Type->Action == Action::None || pSWExt->SW_UseAITargeting)
+			if (pType->Action == Action::None || pSWExt->SW_UseAITargeting)
 			{
-				EventClass Event = EventClass(pCurrent->ArrayIndex, EventType::SpecialPlace, swIndex, CellStruct::Empty);
-				EventClass::AddEvent(Event);
+				EventClass::OutList.Add(EventClass(pCurrent->ArrayIndex, EventType::SpecialPlace, swIndex, CellStruct::Empty));
 			}
 			else
 			{

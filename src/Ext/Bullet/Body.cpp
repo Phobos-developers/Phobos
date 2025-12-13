@@ -3,6 +3,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/RadSite/Body.h>
+#include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
@@ -122,10 +123,9 @@ void BulletExt::ExtData::InitializeLaserTrails()
 	if (this->LaserTrails.size())
 		return;
 
-	auto pThis = this->OwnerObject();
-
-	auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
-	auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
+	auto const pThis = this->OwnerObject();
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	auto const pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
 	this->LaserTrails.reserve(pTypeExt->LaserTrail_Types.size());
 
 	for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
@@ -395,6 +395,24 @@ void BulletExt::ApplyArcingFix(BulletClass* pThis, const CoordStruct& sourceCoor
 	}
 }
 
+// Detonate weapon/warhead using a bullet.
+void BulletExt::Detonate(const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse, AbstractClass* pTarget, bool isBright, WeaponTypeClass* pWeapon, WarheadTypeClass* pWarhead)
+{
+	auto const pType = pWeapon ? pWeapon->Projectile : BulletTypeExt::GetDefaultBulletType();
+	auto const pBullet = pType->CreateBullet(pTarget, pOwner, damage, pWarhead, 100, isBright);
+	pBullet->WeaponType = pWeapon;
+
+	auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	pBulletExt->IsInstantDetonation = true;
+
+	if (pFiringHouse)
+		pBulletExt->FirerHouse = pFiringHouse;
+
+	pBullet->SetLocation(coords);
+	pBullet->Explode(true);
+	pBullet->UnInit();
+}
+
 // =============================
 // load / save
 
@@ -412,6 +430,7 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->SnappedToTarget)
 		.Process(this->DamageNumberOffset)
 		.Process(this->ParabombFallRate)
+		.Process(this->IsInstantDetonation)
 
 		.Process(this->Trajectory) // Keep this shit at last
 		;

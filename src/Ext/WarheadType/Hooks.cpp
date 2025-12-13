@@ -7,6 +7,7 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Scenario/Body.h>
 #include <Utilities/EnumFunctions.h>
 
 #pragma region Detonation
@@ -29,13 +30,13 @@ DEFINE_HOOK(0x46920B, BulletClass_Detonate, 0x6)
 
 DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
 {
-	GET_BASE(const WarheadTypeClass*, pWH, 0x0C);
+	GET_BASE(const WarheadTypeClass*, pWH, 0xC);
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 
 	if (pWHExt->InDamageArea)
 	{
 		GET(const CoordStruct*, pCoords, ECX);
-		GET_BASE(TechnoClass*, pOwner, 0x08);
+		GET_BASE(TechnoClass*, pOwner, 0x8);
 		GET_BASE(HouseClass*, pHouse, 0x14);
 
 		auto const pDecidedHouse = !pHouse && pOwner ? pOwner->Owner : pHouse;
@@ -44,20 +45,149 @@ DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
 
 	return 0;
 }
+
+// Cylinder CellSpread
+DEFINE_HOOK(0x489430, MapClass_DamageArea_Cylinder_1, 0x7)
+{
+	//GET(int, nDetoCrdZ, EDX);
+	GET_BASE(WarheadTypeClass* const, pWH, 0xC);
+	GET_STACK(const int, nVictimCrdZ, STACK_OFFSET(0xE0, -0x5C));
+
+	const auto pWHExt = WarheadTypeExt::ExtMap.TryFind(pWH);
+
+	if (pWHExt && pWHExt->CellSpread_Cylinder)
+		R->EDX(nVictimCrdZ);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4894C1, MapClass_DamageArea_Cylinder_2, 0x5)
+{
+	//GET(int, nDetoCrdZ, EDX);
+	GET_BASE(WarheadTypeClass* const, pWH, 0xC);
+	GET(const int, nVictimCrdZ, ESI);
+
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+	if (pWHExt->CellSpread_Cylinder)
+		R->EDX(nVictimCrdZ);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x48979C, MapClass_DamageArea_Cylinder_3, 0x8)
+{
+	//GET(int, nDetoCrdZ, ECX);
+	GET_BASE(WarheadTypeClass* const, pWH, 0xC);
+	GET(const int, nVictimCrdZ, EDX);
+
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+	if (pWHExt->CellSpread_Cylinder)
+		R->ECX(nVictimCrdZ);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4897C3, MapClass_DamageArea_Cylinder_4, 0x5)
+{
+	//GET(int, nDetoCrdZ, ECX);
+	GET_BASE(WarheadTypeClass* const, pWH, 0xC);
+	GET(const int, nVictimCrdZ, EDX);
+
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+	if (pWHExt->CellSpread_Cylinder)
+		R->ECX(nVictimCrdZ);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x48985A, MapClass_DamageArea_Cylinder_5, 0x5)
+{
+	//GET(int, nDetoCrdZ, ECX);
+	GET_BASE(WarheadTypeClass* const, pWH, 0xC);
+	GET(const int, nVictimCrdZ, EDX);
+
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+	if (pWHExt->CellSpread_Cylinder)
+		R->ECX(nVictimCrdZ);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4898BF, MapClass_DamageArea_Cylinder_6, 0x5)
+{
+	//GET(int, nDetoCrdZ, EDX);
+	GET_BASE(WarheadTypeClass* const, pWH, 0xC);
+	GET(const int, nVictimCrdZ, ECX);
+
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+	if (pWHExt->CellSpread_Cylinder)
+		R->EDX(nVictimCrdZ);
+
+	return 0;
+}
+
+// AffectsAir and AffectsGround
+DEFINE_HOOK(0x489416, MapClass_DamageArea_CheckHeight_1, 0x6)
+{
+	enum { SkipThisObject = 0x489547 };
+
+	GET_BASE(WarheadTypeClass* const, pWH, 0xC);
+	GET(ObjectClass*, pObject, EBX);
+
+	if (!pObject)
+		return 0;
+
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+	if (pWHExt->AffectsAir && pWHExt->AffectsGround)
+		return 0;
+
+	if ((pWHExt->AffectsAir && pObject->IsInAir()) || (pWHExt->AffectsGround && !pObject->IsInAir()))
+		return 0;
+
+	return SkipThisObject;
+}
+
+DEFINE_HOOK(0x489710, MapClass_DamageArea_CheckHeight_2, 0x7)
+{
+	enum { SkipThisObject = 0x4899B3 };
+
+	GET_BASE(WarheadTypeClass* const, pWH, 0xC);
+	GET(ObjectClass*, pObject, ESI);
+
+	if (!pObject)
+		return 0;
+
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+	if (pWHExt->AffectsAir && pWHExt->AffectsGround)
+		return 0;
+
+	if ((pWHExt->AffectsAir && pObject->IsInAir()) || (pWHExt->AffectsGround && !pObject->IsInAir()))
+		return 0;
+
+	return SkipThisObject;
+}
+
 #pragma endregion
 
 DEFINE_HOOK(0x48A551, WarheadTypeClass_AnimList_SplashList, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
-	GET(int, nDamage, EDI);
+	GET(const int, nDamage, EDI);
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 	auto const animTypes = pWHExt->SplashList.GetElements(RulesClass::Instance->SplashList);
 	pWHExt->Splashed = true;
 
-	int idx = pWHExt->SplashList_PickRandom ?
-		ScenarioClass::Instance->Random.RandomRanged(0, animTypes.size() - 1) :
-		std::min(animTypes.size() * 35 - 1, (size_t)nDamage) / 35;
+	const int idx = pWHExt->SplashList_PickRandom
+		? ScenarioClass::Instance->Random.RandomRanged(0, animTypes.size() - 1)
+		: std::min(animTypes.size() * 35 - 1, (size_t)nDamage) / 35;
 
 	R->EAX(animTypes.size() > 0 ? animTypes[idx] : nullptr);
 	return 0x48A5AD;
@@ -74,15 +204,15 @@ DEFINE_HOOK(0x48A5BD, SelectDamageAnimation_PickRandom, 0x6)
 DEFINE_HOOK(0x48A5B3, SelectDamageAnimation_CritAnim, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
-	GET(int, nDamage, EDI);
+	GET(const int, nDamage, EDI);
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
 	if (pWHExt->Crit_Active && pWHExt->Crit_AnimList.size() && !pWHExt->Crit_AnimOnAffectedTargets)
 	{
-		int idx = pThis->EMEffect || pWHExt->Crit_AnimList_PickRandom.Get(pWHExt->AnimList_PickRandom) ?
-			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->Crit_AnimList.size() - 1) :
-			std::min(pWHExt->Crit_AnimList.size() * 25 - 1, (size_t)nDamage) / 25;
+		const int idx = pThis->EMEffect || pWHExt->Crit_AnimList_PickRandom.Get(pWHExt->AnimList_PickRandom)
+			? ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->Crit_AnimList.size() - 1)
+			: std::min(pWHExt->Crit_AnimList.size() * 25 - 1, (size_t)nDamage) / 25;
 
 		R->EAX(pWHExt->Crit_AnimList[idx]);
 		return 0x48A5AD;
@@ -97,7 +227,7 @@ DEFINE_HOOK(0x4896EC, Explosion_Damage_DamageSelf, 0x6)
 
 	GET_BASE(WarheadTypeClass*, pWarhead, 0xC);
 
-	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead))
+	if (auto const pWHExt = WarheadTypeExt::ExtMap.TryFind(pWarhead))
 	{
 		if (pWHExt->AllowDamageOnSelf)
 			return SkipCheck;
@@ -112,7 +242,7 @@ DEFINE_HOOK(0x44224F, BuildingClass_ReceiveDamage_DamageSelf, 0x5)
 
 	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFSET(0x9C, 0x4));
 
-	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(receiveDamageArgs.WH))
+	if (auto const pWHExt = WarheadTypeExt::ExtMap.TryFind(receiveDamageArgs.WH))
 	{
 		if (pWHExt->AllowDamageOnSelf)
 			return SkipCheck;
@@ -189,7 +319,7 @@ DEFINE_HOOK(0x4891AF, GetTotalDamage_NegativeDamageModifiers1, 0x6)
 	enum { ApplyModifiers = 0x4891C6 };
 
 	GET(WarheadTypeClass* const, pWarhead, EDI);
-	GET(int, damage, ESI);
+	GET(const int, damage, ESI);
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
@@ -206,7 +336,7 @@ DEFINE_HOOK(0x48922D, GetTotalDamage_NegativeDamageModifiers2, 0x5)
 {
 	enum { SkipGameCode = 0x489235 };
 
-	GET(int, damage, ESI);
+	GET(const int, damage, ESI);
 
 	if (NegativeDamageTemp::ApplyNegativeDamageModifiers)
 	{
@@ -251,7 +381,7 @@ DEFINE_HOOK(0x489968, Explosion_Damage_PenetratesIronCurtain, 0x5)
 DEFINE_HOOK(0x489B49, MapClass_DamageArea_Rocker, 0xA)
 {
 	GET_BASE(WarheadTypeClass*, pWH, 0xC);
-	GET_STACK(int, damage, STACK_OFFSET(0xE0, -0xBC));
+	GET_STACK(const int, damage, STACK_OFFSET(0xE0, -0xBC));
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 	double rocker = pWHExt->Rocker_AmplitudeOverride.Get(damage);
@@ -442,7 +572,7 @@ DEFINE_HOOK(0x4D73DE, FootClass_ReceiveDamage_RemoveParasite, 0x5)
 	enum { Continue = 0x4D73E3, Skip = 0x4D7413 };
 
 	GET(WarheadTypeClass*, pWarhead, EBP);
-	GET(int*, damage, EDI);
+	GET(const int*, damage, EDI);
 
 	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
@@ -451,3 +581,72 @@ DEFINE_HOOK(0x4D73DE, FootClass_ReceiveDamage_RemoveParasite, 0x5)
 
 	return Continue;
 }
+
+#pragma region UnlimboDetonate
+
+namespace UnlimboDetonateFireTemp
+{
+	BulletClass* Bullet;
+	bool InSelected;
+	bool InLimbo;
+}
+
+DEFINE_HOOK(0x6FE562, TechnoClass_Fire_SetContext, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET(BulletClass* const, pBullet, EAX);
+
+	UnlimboDetonateFireTemp::Bullet = pBullet;
+	UnlimboDetonateFireTemp::InSelected = pThis->IsSelected;
+	UnlimboDetonateFireTemp::InLimbo = pThis->InLimbo;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FF7FF, TechnoClass_Fire_UnlimboDetonate, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET(WarheadTypeClass* const, pWH, EAX);
+
+	const auto pBullet = UnlimboDetonateFireTemp::Bullet;
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+	if (pThis->IsAlive && pThis->Health > 0 && pBullet
+		&& !UnlimboDetonateFireTemp::InLimbo && !pWH->Parasite && pWHExt->UnlimboDetonate)
+	{
+		if (pWHExt->UnlimboDetonate_KeepSelected)
+		{
+			const auto pExt = TechnoExt::ExtMap.Find(pThis);
+			pExt->IsSelected = UnlimboDetonateFireTemp::InSelected;
+
+			auto& vec = ScenarioExt::Global()->LimboLaunchers;
+			const auto it = std::find(vec.begin(), vec.end(), pExt);
+
+			if (it == vec.end())
+				vec.push_back(pExt);
+		}
+
+		pBullet->Owner = pThis;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x48DC90, MapClass_UnselectAll_ClearLimboLaunchers, 0x5)
+{
+	auto& vec = ScenarioExt::Global()->LimboLaunchers;
+
+	if (!vec.empty())
+	{
+		for (const auto pExt : vec)
+		{
+			pExt->IsSelected = false;
+		}
+
+		vec.clear();
+	}
+
+	return 0;
+}
+
+#pragma endregion
