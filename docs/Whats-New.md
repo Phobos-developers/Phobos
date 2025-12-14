@@ -540,6 +540,7 @@ Fixes / interactions with other extensions:
 - Fixed the bug that building with `CloningFacility=true` and `WeaponsFactory=true` may cloning multiple vehicles and then they get stuck (by NetsuNegi)
 - [Customize Ares's radar jam logic](New-or-Enhanced-Logics.md#customize-ares-s-radar-jam-logic) (by NetsuNegi)
 - Fixed a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType` (by NetsuNegi)
+- Fixed Short Game defeat detection with Ares so deployable buildings that undeploy into non-BaseUnit vehicles (e.g., deployed Slave Miner) no longer keep a player alive (by 11EJDE11)
 ```
 
 ### 0.4.0.1

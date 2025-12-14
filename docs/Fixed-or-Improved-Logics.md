@@ -26,6 +26,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug where jumpjet units that are `Crashable` do not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
 - Fixed the bug that prevents jumpjet units from turn to the target when firing from a different direction.
 - Fixed the bug allowing jumpjet units to continue firing at enemy target when crashing.
+- Short Game defeat checks now ignore deployable buildings that only undeploy into non-BaseUnit vehicles (e.g., deployed Slave Miner), so they don’t keep the player alive when using Ares.
 
 ![image](_static/images/jumpjet-turning.gif)
 *Jumpjet turning to target applied in Robot Storm X*

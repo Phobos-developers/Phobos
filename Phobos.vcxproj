@@ -131,6 +131,7 @@
     <ClCompile Include="src\Ext\House\Hooks.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.AINavalProduction.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.UnitFromFactory.cpp" />
+    <ClCompile Include="src\Ext\House\Hooks.ShortGame.cpp" />
     <ClCompile Include="src\Ext\ParticleSystemType\Body.cpp" />
     <ClCompile Include="src\Ext\RadSite\Body.cpp" />
     <ClCompile Include="src\Ext\RadSite\Hooks.cpp" />

@@ -66,10 +66,15 @@ static bool __fastcall CameoIsVeteran(TechnoTypeClass** pTypeExt_Ares, void*, Ho
 	return TechnoTypeExt::ExtMap.Find(*pTypeExt_Ares)->CameoIsVeteran(pHouse);
 }
 
+DWORD __cdecl HouseClass_Update_HasBeenDefeated(int param_1);
+
 _GET_FUNCTION_ADDRESS(RadarJammerClass::Update, AresRadarJammerClass_Update_GetAddr)
 
 void Apply_Ares3_0_Patches()
 {
+	// Short Game deployed unit fix: override Ares' handler to ignore deployable miners
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x254B0, GET_OFFSET(HouseClass_Update_HasBeenDefeated));
+
 	// Abductor fix:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x54CDF, AresHelper::AresBaseAddress + 0x54D3C);
 
@@ -120,7 +125,7 @@ void Apply_Ares3_0_Patches()
 
 	// Redirect Ares's RadarJammerClass::Update to our implementation
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x68500, AresRadarJammerClass_Update_GetAddr());
-  
+
 	// Redirect Ares's function to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x112D0, &BuildingExt::KickOutClone);
 
@@ -130,6 +135,8 @@ void Apply_Ares3_0_Patches()
 
 void Apply_Ares3_0p1_Patches()
 {
+	// Short Game deployed unit fix: override Ares' handler to ignore deployable miners
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x254B0, GET_OFFSET(HouseClass_Update_HasBeenDefeated));
 	// Abductor fix:
 	// Issue: moving vehicles leave permanent occupation stats on terrain
 	// What's done here: Skip Mark_Occupation_Bits cuz pFoot->Remove/Limbo() will do it.
@@ -182,7 +189,7 @@ void Apply_Ares3_0p1_Patches()
 
 	// Redirect Ares's RadarJammerClass::Update to our implementation
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x69470, AresRadarJammerClass_Update_GetAddr());
-  
+
 	// Redirect Ares's function to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x11860, &BuildingExt::KickOutClone);
 
