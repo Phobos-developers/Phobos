@@ -2240,7 +2240,7 @@ AffectsGround=true         ; boolean
 ```
 
 ```{note}
-- These features do not override the effects of the ares flag `DamageAirThreshold`. A warhead with `CellSpread.Cylinder` detonating on floor will not affect units in air, unless it has `DamageAirThreshold=-1`.
+- These features do not override the effects of the ares flag `DamageAirThreshold`: A warhead with `CellSpread.Cylinder` detonating on floor will not affect units in air, unless it has `DamageAirThreshold=-1`.
 - These will also affect application of Phobos' Warhead effects where relevant. Due to technical constraints Ares' Warhead effects such as EMP and Iron Curtain are excluded.
 ```
 
