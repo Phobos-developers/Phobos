@@ -398,7 +398,6 @@ bool TActionExt::UndeployToWaypoint(TActionClass* const pThis, HouseClass* const
 	if (!pCell)
 		return true;
 
-	bool allHouse = false;
 	HouseClass* vHouse = nullptr;
 	const int houseIndex = pThis->Param3;
 
@@ -407,12 +406,8 @@ bool TActionExt::UndeployToWaypoint(TActionClass* const pThis, HouseClass* const
 		vHouse = HouseClass::Index_IsMP(houseIndex) ?
 			HouseClass::FindByIndex(houseIndex) : HouseClass::FindByCountryIndex(houseIndex);
 	}
-	else if (houseIndex == -1)
-	{
-		allHouse = true;
-	}
 
-	if (!allHouse && !vHouse)
+	if (!vHouse)
 		return true;
 
 	const char* buildingName = pThis->TechnoID;
@@ -433,14 +428,14 @@ bool TActionExt::UndeployToWaypoint(TActionClass* const pThis, HouseClass* const
 
 	// Thanks to chaserli for the relevant code!
 	// There should be a more perfect way to do this, but I don't know how.
-	auto canUndeploy = [pThis, pTrigger, allBuilding, allHouse, pBuildingType, vHouse](BuildingClass* pBuilding)
+	auto canUndeploy = [pThis, pTrigger, allBuilding, pBuildingType, vHouse](BuildingClass* pBuilding)
 	{
 		auto const pType = pBuilding->Type;
 
-		if (!pType->UndeploysInto ||
-			(!allBuilding && pType != pBuildingType) ||
-			(!allHouse && pBuilding->Owner != vHouse) ||
-			!pBuilding->IsAlive || pBuilding->Health <= 0 || pBuilding->InLimbo)
+		if (!pType->UndeploysInto
+			|| (pBuilding->Owner != vHouse)
+			|| (!allBuilding && pType != pBuildingType)
+			|| !pBuilding->IsAlive || pBuilding->Health <= 0 || pBuilding->InLimbo)
 		{
 			return false;
 		}
@@ -612,10 +607,30 @@ bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 
 bool TActionExt::SetFreeRadar(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
 {
-	if (pHouse->IsControlledByHuman() &&
-		(!SessionClass::Instance.IsCampaign() || pHouse == HouseClass::CurrentPlayer))
+	if (pHouse->IsControlledByHuman())
 	{
-		HouseExt::ExtMap.Find(pHouse)->FreeRadar = pThis->Param3 != 0;
+		auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+
+		switch (pThis->Param3)
+		{
+		case 1:
+			pHouseExt->FreeRadar = true;
+			pHouseExt->ForceRadar = false;
+			break;
+		case -1:
+			pHouseExt->FreeRadar = true;
+			pHouseExt->ForceRadar = true;
+			break;
+		case -2:
+			pHouseExt->FreeRadar = false;
+			pHouseExt->ForceRadar = true;
+			break;
+		default:
+			pHouseExt->FreeRadar = false;
+			pHouseExt->ForceRadar = false;
+			break;
+		}
+
 		pHouse->RecheckRadar = true;
 	}
 

@@ -475,11 +475,29 @@ DEFINE_HOOK(0x4F8ACC, HouseClass_Update_ResetTeamDelay, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x508E37, HouseClass_UpdateRadar_FreeRadar, 0x6)
+DEFINE_HOOK(0x508E17, HouseClass_UpdateRadar_FreeRadar, 0x8)
 {
-	enum { FreeRadar = 0x508F2A, Continue = 0x508E4A };
+	enum { ForceRadar = 0x508F2F, Continue = 0x508E4A };
 
 	GET(HouseClass*, pThis, ECX);
 
-	return HouseExt::ExtMap.Find(pThis)->FreeRadar ? FreeRadar : Continue;
+	auto const pExt = HouseExt::ExtMap.Find(pThis);
+
+	if (pExt->ForceRadar)
+	{
+		R->Stack(STACK_OFFSET(0x1C, -0xC), pExt->FreeRadar);
+		return ForceRadar;
+	}
+	else if (pThis->PowerBlackoutTimer.InProgress())
+	{
+		R->Stack(STACK_OFFSET(0x1C, -0xC), false);
+		return ForceRadar;
+	}
+	else if (pExt->FreeRadar)
+	{
+		R->Stack(STACK_OFFSET(0x1C, -0xC), true);
+		return ForceRadar;
+	}
+
+	return Continue;
 }
