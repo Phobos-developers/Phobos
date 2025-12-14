@@ -288,19 +288,19 @@ bool TechnoTypeExt::ExtData::CameoIsVeteran(HouseClass* pHouse) const
 
 	switch (pThis->WhatAmI())
 	{
-	case UnitTypeClass::AbsID:
+	case AbstractType::UnitType:
 		if (pThis->Trainable && (pThis->Naval ? (pHouseExt_Ares && pHouseExt_Ares->ShipYardInfiltrated) : pHouse->WarFactoryInfiltrated))
 			return true;
 
 		return pCountry->VeteranUnits.FindItemIndex(static_cast<UnitTypeClass*>(pThis)) != -1;
 
-	case InfantryClass::AbsID:
+	case AbstractType::InfantryType:
 		if (pThis->Trainable && !pThis->Naval && pHouse->BarracksInfiltrated)
 			return true;
 
 		return pCountry->VeteranInfantry.FindItemIndex(static_cast<InfantryTypeClass*>(pThis)) != -1;
 
-	case BuildingTypeClass::AbsID:
+	case AbstractType::BuildingType:
 		if (pThis->Trainable)
 		{
 			if (const auto pUndeploysInto = pThis->UndeploysInto)
@@ -317,7 +317,7 @@ bool TechnoTypeExt::ExtData::CameoIsVeteran(HouseClass* pHouse) const
 
 		return AresHelper::CanUseAres && reinterpret_cast<DummyHouseTypeExtHere*>(*(uintptr_t*)((char*)pCountry + 0xC4))->VeteranBuildings.Contains(static_cast<BuildingTypeClass*>(pThis));
 
-	case AircraftTypeClass::AbsID:
+	case AbstractType::AircraftType:
 		if (pThis->Trainable && pHouseExt_Ares && pHouseExt_Ares->AirFieldInfiltrated)
 			return true;
 
