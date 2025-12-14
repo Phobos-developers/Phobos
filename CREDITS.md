@@ -466,6 +466,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize if cloning need power
   - Customize type selection for IFV
   - Fix the issue that units will goto farest location if target is closer than `MinimumRange`
+  - Fix a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType`
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -590,6 +591,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix customized `WarpAway` anim's wrong definition
   - Shield respawn animation and weapon
   - Toggle off laser trail and shake effects
+  - OpenTopped range bonus and damage multiplier customization for passengers
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:

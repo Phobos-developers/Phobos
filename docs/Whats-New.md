@@ -469,6 +469,7 @@ New:
 - [Customize type selection for IFV](Fixed-or-Improved-Logics.md#customize-type-selection-for-ifv) (by NetsuNegi)
 - CellSpread in cylinder shape (by TaranDahl)
 - CellSpread damage check if victim is in air or on floor (by TaranDahl)
+- OpenTopped range bonus and damage multiplier customization for passengers (by Ollerus)
 - Map Action 511,609,610 (by FlyStar)
 
 Vanilla fixes:
@@ -542,6 +543,7 @@ Fixes / interactions with other extensions:
 - Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect (by Sovietianqi, based on knowledge of DeathFish)
 - Fixed the bug that building with `CloningFacility=true` and `WeaponsFactory=true` may cloning multiple vehicles and then they get stuck (by NetsuNegi)
 - [Customize Ares's radar jam logic](New-or-Enhanced-Logics.md#customize-ares-s-radar-jam-logic) (by NetsuNegi)
+- Fixed a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType` (by NetsuNegi)
 ```
 
 ### 0.4.0.1

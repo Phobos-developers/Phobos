@@ -1503,15 +1503,24 @@ Tint.VisibleToHouses=all  ; List of Affected House Enumeration (none|owner/self|
 - `OpenTopped.IgnoreRangefinding` can be used to disable `OpenTopped` transport rangefinding behaviour where smallest weapon range between transport and all passengers is used when approaching targets that are out of range and when scanning for potential targets.
 - `OpenTopped.AllowFiringIfDeactivated` can be used to customize whether or not passengers can fire out when the transport is deactivated (EMP, powered unit etc).
 - `OpenTopped.ShareTransportTarget` controls whether or not the current target of the transport itself is passed to the passengers as well.
+- You can also customize range bonus and damage multiplier for passenger inside the transport with `OpenTransport.RangeBonus/DamageMultiplier`, which works independently from transport's `OpenTopped.RangeBonus/DamageMultiplier`. 
 
 ```ini
-[SOMETECHNO]                              ; TechnoType
-OpenTopped.RangeBonus=                    ; integer, override of the global default
-OpenTopped.DamageMultiplier=              ; floating point value, override of the global default
-OpenTopped.WarpDistance=                  ; integer, override of the global default
+[SOMETECHNO]                              ; TechnoType, OpenTopped transport
+OpenTopped.RangeBonus=                    ; integer, default to [CombatDamage] -> OpenToppedRangeBonus
+OpenTopped.DamageMultiplier=              ; floating point value, default to [CombatDamage] -> OpenToppedDamageMultiplier
+OpenTopped.WarpDistance=                  ; integer, default to [CombatDamage] -> OpenToppedWarpDistance
 OpenTopped.IgnoreRangefinding=false       ; boolean
 OpenTopped.AllowFiringIfDeactivated=true  ; boolean
 OpenTopped.ShareTransportTarget=true      ; boolean
+
+[SOMETECHNO]                              ; TechnoType, passenger
+OpenTransport.RangeBonus=0                ; integer
+OpenTransport.DamageMultiplier=1.0        ; floating point value
+```
+
+```{note}
+Range of passive acquiring of passengers in an OpenTopped transport won't be affected by these RangeBonus values.
 ```
 
 ### Customizable spawns queue
@@ -2221,7 +2230,8 @@ RemoveMindControl=false  ; boolean
 - In vanilla, the damage area of an AOE warhead is spherical. In some case, e.g. you want to make a warhead superweapon buff all units in an area, the affectted range for air units is always smaller than ground units. Now you can use a new flag `CellSpread.Cylinder` to overcome this problem.
 - `AffectsAir` allow you to make a warhead only damage the units with height more than 208.
 - `AffectsGround` allow you to make a warhead only damage the units with height less than 208.
-- Noting that these features work independently with the ares flag `DamageAirThreshold`. A warhead with `CellSpread.Cylinder` detonating on floor will not affect units in air, unless it has `DamageAirThreshold = -1`.
+- Note that these features work independently of the Ares flag `DamageAirThreshold`. A warhead with `CellSpread.Cylinder` detonating on floor will not affect units in air, unless it has `DamageAirThreshold = -1`.
+- These will also affect application of Phobos' Warhead effects where relevant. Due to technical constraints Ares' Warhead effects such as EMP and Iron Curtain are excluded.
 
 In `rulesmd.ini`:
 ```ini
