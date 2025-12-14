@@ -138,7 +138,11 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 			{
 				if (pTechno == pEffect->Invoker)
 				{
-					AnnounceInvalidPointer(pEffect->Invoker, ptr);
+					pEffect->Invoker = nullptr;
+
+					if ((pEffect->Type->DiscardOn & DiscardCondition::InvokerDie) != DiscardCondition::None)
+						pEffect->ShouldBeDiscarded = true;
+
 					count--;
 
 					if (count <= 0)
@@ -886,16 +890,9 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || stackCount == 1)
 				{
 					if (pType->ExpireWeapon_UseInvokerAsOwner)
-					{
-						const auto pInvoker = attachEffect->Invoker;
-
-						if (pInvoker || !pType->ExpireWeapon_InvokerMustAlive)
-							expireWeapons.emplace_back(pType->ExpireWeapon, pInvoker, attachEffect->InvokerHouse);
-					}
+						expireWeapons.emplace_back(pType->ExpireWeapon, attachEffect->Invoker, attachEffect->InvokerHouse);
 					else
-					{
 						expireWeapons.emplace_back(pType->ExpireWeapon, pTarget, pTarget->Owner);
-					}
 				}
 			}
 

@@ -1860,16 +1860,9 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
 				{
 					if (pType->ExpireWeapon_UseInvokerAsOwner)
-					{
-						const auto pInvoker = attachEffect->GetInvoker();
-
-						if (pInvoker || !pType->ExpireWeapon_InvokerMustAlive)
-							expireWeapons.emplace_back(pType->ExpireWeapon, pInvoker, attachEffect->GetInvokerHouse());
-					}
+						expireWeapons.emplace_back(pType->ExpireWeapon, attachEffect->GetInvoker(), attachEffect->GetInvokerHouse());
 					else
-					{
 						expireWeapons.emplace_back(pType->ExpireWeapon, pThis, pThis->Owner);
-					}
 				}
 			}
 
@@ -1926,16 +1919,9 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
 				{
 					if (pType->ExpireWeapon_UseInvokerAsOwner)
-					{
-						const auto pInvoker = attachEffect->GetInvoker();
-
-						if (pInvoker || !pType->ExpireWeapon_InvokerMustAlive)
-							expireWeapons.emplace_back(pType->ExpireWeapon, pInvoker, attachEffect->GetInvokerHouse());
-					}
+						expireWeapons.emplace_back(pType->ExpireWeapon, attachEffect->GetInvoker(), attachEffect->GetInvokerHouse());
 					else
-					{
 						expireWeapons.emplace_back(pType->ExpireWeapon, pThis, pThis->Owner);
-					}
 				}
 			}
 

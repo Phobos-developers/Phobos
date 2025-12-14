@@ -118,7 +118,6 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ExpireWeapon_TriggerOn.Read(exINI, pSection, "ExpireWeapon.TriggerOn");
 	this->ExpireWeapon_CumulativeOnlyOnce.Read(exINI, pSection, "ExpireWeapon.CumulativeOnlyOnce");
 	this->ExpireWeapon_UseInvokerAsOwner.Read(exINI, pSection, "ExpireWeapon.UseInvokerAsOwner");
-	this->ExpireWeapon_InvokerMustAlive.Read(exINI, pSection, "ExpireWeapon.InvokerMustAlive");
 
 	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
 	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
@@ -196,7 +195,6 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ExpireWeapon_TriggerOn)
 		.Process(this->ExpireWeapon_CumulativeOnlyOnce)
 		.Process(this->ExpireWeapon_UseInvokerAsOwner)
-		.Process(this->ExpireWeapon_InvokerMustAlive)
 		.Process(this->Tint_Color)
 		.Process(this->Tint_Intensity)
 		.Process(this->Tint_VisibleToHouses)
@@ -291,6 +289,10 @@ namespace detail
 				else if (!_strcmpi(cur, "firing"))
 				{
 					parsed |= DiscardCondition::Firing;
+				}
+				else if (!_strcmpi(cur, "invokerdie"))
+				{
+					parsed |= DiscardCondition::InvokerDie;
 				}
 				else
 				{
