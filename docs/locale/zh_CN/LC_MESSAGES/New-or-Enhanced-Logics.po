@@ -5639,6 +5639,9 @@ msgstr ""
 "AutoFire=false             ; boolean\n"
 "AutoFire.TargetSelf=false  ; boolean\n"
 
+msgid "To make this logic work properly, you need to ensure that there is no flag like `CanPassiveAquire=false` set on units that prevents target scanning."
+msgstr "为了让该逻辑正常工作，你需要确保单位上没有设置 `CanPassiveAquire=false` 等阻止索敌的语句。"
+
 #: ../../New-or-Enhanced-Logics.md:1445
 msgid "Build limit group"
 msgstr "建造限制组"

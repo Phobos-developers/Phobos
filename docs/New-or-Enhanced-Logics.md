@@ -1442,6 +1442,10 @@ AutoFire=false             ; boolean
 AutoFire.TargetSelf=false  ; boolean
 ```
 
+```{note}
+To make this logic work properly, you need to ensure that there is no flag like `CanPassiveAquire=false` set on units that prevents target scanning.
+```
+
 ### Build limit group
 
 - You can now make different technos share build limit in a group.
