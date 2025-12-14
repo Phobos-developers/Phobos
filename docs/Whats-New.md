@@ -467,6 +467,8 @@ New:
 - CellSpread in cylinder shape (by TaranDahl)
 - CellSpread damage check if victim is in air or on floor (by TaranDahl)
 - Improve Damage Number Display Configuration and Readability (by Flactine)
+- [CellSpread in cylinder shape](New-or-Enhanced-Logics.md#cellspread-enhancement) (by TaranDahl)
+- [CellSpread damage check if victim is in air or on floor](New-or-Enhanced-Logics.md#cellspread-enhancement) (by TaranDahl)
 - OpenTopped range bonus and damage multiplier customization for passengers (by Ollerus)
 
 Vanilla fixes:
