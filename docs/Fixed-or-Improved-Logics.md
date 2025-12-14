@@ -217,7 +217,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that game crashes when spawnee has been removed and is not real dead.
 - Separated the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues.
 - Fixed the bug that buildings will always be tinted as airstrike owner.
-- Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it.
 - Fixed an issue where computer players did not search for new enemies after defeating them or forming alliances with them.
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings.
 - Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar.
@@ -260,6 +259,11 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `DeployingAnim` using unit drawer now also tint accordingly with the unit.
 - Fixed an issue that jumpjets in air can not correctly spawn missiles.
 - Fixed an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos.
+- Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range.
+- Fixed an issue that jumpjet infantry stop incorrectly when assigned a target out of range.
+- Fixed an issue that jumpjet infantry' shadow is always drawn even if they are cloaked.
+- Fixed an issue that technos head to building's dock even they are not going to dock.
+- Fixed an issue that the jumpjet vehicles cannot stop correctly after going berserk.
 - Fixed an issue that infantry walking through a cell containing a tree would cause it to be impassable to other houses.
 - Fixed the bug that techno unit will draw with ironcurtain and airstrike color and intensity who disguised as terrain or overlay.
 - Fixed an issue that the AI would enter a combat state when its building receiving damage from friendly units or damage not greater than 0.
@@ -302,23 +306,19 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - 1000 save files are supported, from `SVGM_000.NET` to `SVGM_999.NET`. When the limit is reached, the game will overwrite the latest save file.
   - The previous `SVGM_XXX.NET` files are cleaned up before first copy if it's a new game, otherwise the highest numbered `SVGM_XXX.NET` file is found and the index is incremented, if possible.
   - The game also automatically copies `spawn.ini` to the save folder as `spawnSG.ini` when saving a game.
+
+  ```{note}
+  The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
+  ```
+
+  ```{note}
+  At the moment this is only useful if you use a version of [YRpp Spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support (along with [XNA CnCNet Client](https://github.com/CnCNet/xna-cncnet-client)).
+  ```
+
 - Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle`.
-- Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range.
-- Fixed an issue that jumpjet infantry stop incorrectly when assigned a target out of range.
-- Fixed an issue that jumpjet infantry' shadow is always drawn even if they are cloaked.
-- Fixed an issue that technos head to building's dock even they are not going to dock.
-- Fixed an issue that the jumpjet vehicles cannot stop correctly after going berserk.
 - Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect.
 - Fixed the bug that building with `CloningFacility=true` and `WeaponsFactory=true` may cloning multiple vehicles and then they get stuck.
 - Fixed a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType`.
-
-```{note}
-The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
-```
-
-```{note}
-At the moment this is only useful if you use a version of [YRpp Spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support (along with [XNA CnCNet Client](https://github.com/CnCNet/xna-cncnet-client)).
-```
 
 ## Newly added global settings
 
@@ -1131,9 +1131,11 @@ ProneSpeed.NoCrawls=1.5       ; floating point value, multiplier
 [SOMEINFANTRY]                ; InfantryType
 ProneSpeed=                   ; floating point value, multiplier, by default, use the corresponding global value according to Crawls
 ```
+
 <!--
 ## Overlays
 -->
+
 ## Particle systems
 
 ### Fire particle target coordinate adjustment when firer rotates
@@ -1255,7 +1257,7 @@ BallisticScatter.Max= ; floating point value, distance in cells
 *Shrapnel appearing against ground & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
 - `ShrapnelWeapon` can now be triggered against ground & buildings via `Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`.
-- Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](#weapon-targeting-filter) & [AttachEffect filters](#attached-effects) will be checked.
+- Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](New-or-Enhanced-Logics.md#weapon-targeting-filter) & [AttachEffect filters](New-or-Enhanced-Logics.md#attached-effects) will be checked.
   - Do note that this overrides the normal check of only allowing shrapnels to hit non-allied objects. Use `CanTargetHouses=enemies` to manually enable this behaviour again.
 
 In `rulesmd.ini`:
