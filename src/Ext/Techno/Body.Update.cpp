@@ -1823,7 +1823,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 	bool markForRedraw = false;
 	bool altered = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
-	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
+	std::vector<ExpireWeaponData> expireWeapons;
 
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
 	{
@@ -1861,12 +1861,14 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 				{
 					if (pType->ExpireWeapon_UseInvokerAsOwner)
 					{
-						if (auto const pInvoker = attachEffect->GetInvoker())
-							expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pInvoker));
+						const auto pInvoker = attachEffect->GetInvoker();
+
+						if (pInvoker || !pType->ExpireWeapon_InvokerMustAlive)
+							expireWeapons.emplace_back(pType->ExpireWeapon, pInvoker, attachEffect->GetInvokerHouse());
 					}
 					else
 					{
-						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pThis));
+						expireWeapons.emplace_back(pType->ExpireWeapon, pThis, pThis->Owner);
 					}
 				}
 			}
@@ -1894,11 +1896,8 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 
 	auto const coords = pThis->GetCoords();
 
-	for (auto const& pair : expireWeapons)
-	{
-		auto const pInvoker = pair.second;
-		WeaponTypeExt::DetonateAt(pair.first, coords, pInvoker, pInvoker->Owner, pThis);
-	}
+	for (auto const& [pWeapon, pInvoker, pInvokerHouse] : expireWeapons)
+		WeaponTypeExt::DetonateAt(pWeapon, coords, pInvoker, pInvokerHouse, pThis);
 }
 
 // Updates self-owned (defined on TechnoType) AttachEffects, called on type conversion.
@@ -1908,7 +1907,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	auto const pTypeExt = this->TypeExtData;
 	auto const pTechnoType = pTypeExt->OwnerObject();
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
-	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
+	std::vector<ExpireWeaponData> expireWeapons;
 	bool altered = false;
 
 	// Delete ones on old type and not on current.
@@ -1928,12 +1927,14 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 				{
 					if (pType->ExpireWeapon_UseInvokerAsOwner)
 					{
-						if (auto const pInvoker = attachEffect->GetInvoker())
-							expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pInvoker));
+						const auto pInvoker = attachEffect->GetInvoker();
+
+						if (pInvoker || !pType->ExpireWeapon_InvokerMustAlive)
+							expireWeapons.emplace_back(pType->ExpireWeapon, pInvoker, attachEffect->GetInvokerHouse());
 					}
 					else
 					{
-						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pThis));
+						expireWeapons.emplace_back(pType->ExpireWeapon, pThis, pThis->Owner);
 					}
 				}
 			}
@@ -1949,11 +1950,8 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 
 	auto const coords = pThis->GetCoords();
 
-	for (auto const& pair : expireWeapons)
-	{
-		auto const pInvoker = pair.second;
-		WeaponTypeExt::DetonateAt(pair.first, coords, pInvoker, pInvoker->Owner, pThis);
-	}
+	for (auto const& [pWeapon, pInvoker, pInvokerHouse] : expireWeapons)
+		WeaponTypeExt::DetonateAt(pWeapon, coords, pInvoker, pInvokerHouse, pThis);
 
 	// Add new ones.
 	const int count = AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);

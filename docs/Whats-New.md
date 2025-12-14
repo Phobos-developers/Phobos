@@ -467,6 +467,7 @@ New:
 - CellSpread in cylinder shape (by TaranDahl)
 - CellSpread damage check if victim is in air or on floor (by TaranDahl)
 - OpenTopped range bonus and damage multiplier customization for passengers (by Ollerus)
+- Allow customize either `ExpireWeapon` can detonate or not if invoker of AE is dead (by NetsuNegi)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

@@ -67,6 +67,7 @@ public:
 	Valueable<ExpireWeaponCondition> ExpireWeapon_TriggerOn;
 	Valueable<bool> ExpireWeapon_CumulativeOnlyOnce;
 	Valueable<bool> ExpireWeapon_UseInvokerAsOwner;
+	Valueable<bool> ExpireWeapon_InvokerMustAlive;
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
@@ -130,6 +131,7 @@ public:
 		, ExpireWeapon_TriggerOn { ExpireWeaponCondition::Expire }
 		, ExpireWeapon_CumulativeOnlyOnce { false }
 		, ExpireWeapon_UseInvokerAsOwner { false }
+		, ExpireWeapon_InvokerMustAlive { true }
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
 		, Tint_VisibleToHouses { AffectedHouse::All }

@@ -287,7 +287,7 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	std::set<AttachEffectTypeClass*> cumulativeTypes;
-	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
+	std::vector<ExpireWeaponData> expireWeapons;
 
 	for (auto const& attachEffect : pExt->AttachedEffects)
 	{
@@ -302,12 +302,14 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 
 				if (pType->ExpireWeapon_UseInvokerAsOwner)
 				{
-					if (auto const pInvoker = attachEffect->GetInvoker())
-						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pInvoker));
+					const auto pInvoker = attachEffect->GetInvoker();
+
+					if (pInvoker || !pType->ExpireWeapon_InvokerMustAlive)
+						expireWeapons.emplace_back(pType->ExpireWeapon, pInvoker, attachEffect->GetInvokerHouse());
 				}
 				else
 				{
-					expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pThis));
+					expireWeapons.emplace_back(pType->ExpireWeapon, pThis, pThis->Owner);
 				}
 			}
 		}
@@ -315,11 +317,8 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 
 	auto const coords = pThis->GetCoords();
 
-	for (auto const& pair : expireWeapons)
-	{
-		auto const pInvoker = pair.second;
-		WeaponTypeExt::DetonateAt(pair.first, coords, pInvoker, pInvoker->Owner, pThis);
-	}
+	for (auto const& [pWeapon, pInvoker, pInvokerHouse] : expireWeapons)
+		WeaponTypeExt::DetonateAt(pWeapon, coords, pInvoker, pInvokerHouse, pThis);
 
 	return 0;
 }

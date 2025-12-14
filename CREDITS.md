@@ -466,6 +466,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize type selection for IFV
   - Fix the issue that units will goto farest location if target is closer than `MinimumRange`
   - Fix a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType`
+  - Allow customize either `ExpireWeapon` can detonate or not if invoker of AE is dead
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
