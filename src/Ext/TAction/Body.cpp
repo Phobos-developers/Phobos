@@ -403,8 +403,8 @@ bool TActionExt::UndeployToWaypoint(TActionClass* const pThis, HouseClass* const
 
 	if (houseIndex >= 0)
 	{
-		vHouse = HouseClass::Index_IsMP(houseIndex) ?
-			HouseClass::FindByIndex(houseIndex) : HouseClass::FindByCountryIndex(houseIndex);
+		vHouse = HouseClass::Index_IsMP(houseIndex)
+			? HouseClass::FindByIndex(houseIndex) : HouseClass::FindByCountryIndex(houseIndex);
 	}
 
 	if (!vHouse)
@@ -639,17 +639,17 @@ bool TActionExt::SetFreeRadar(TActionClass* const pThis, HouseClass* const pHous
 
 bool TActionExt::SetTeamDelay(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
 {
-	const int timer = Math::max(pThis->Param3, 0);
+	const int timer = std::max(pThis->Param3, 0);
 	HouseExt::ExtMap.Find(pHouse)->TeamDelay = timer;
 
 	auto& Timer = pHouse->TeamDelayTimer;
-	const int time = Math::min(Timer.TimeLeft, timer);
+	const int time = std::min(Timer.GetTimeLeft(), timer);
 
 	if (Timer.StartTime == -1 && Timer.TimeLeft != 0 && time > 0)
 	{
 		Timer.TimeLeft = time;
 	}
-	else if (Timer.InProgress() || time >= 0)
+	else if (Timer.InProgress())
 	{
 		Timer.Start(time);
 	}
