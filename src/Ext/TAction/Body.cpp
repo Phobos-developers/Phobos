@@ -617,11 +617,11 @@ bool TActionExt::SetFreeRadar(TActionClass* const pThis, HouseClass* const pHous
 			pHouseExt->FreeRadar = true;
 			pHouseExt->ForceRadar = false;
 			break;
-		case -1:
+		case 2:
 			pHouseExt->FreeRadar = true;
 			pHouseExt->ForceRadar = true;
 			break;
-		case -2:
+		case 3:
 			pHouseExt->FreeRadar = false;
 			pHouseExt->ForceRadar = true;
 			break;
