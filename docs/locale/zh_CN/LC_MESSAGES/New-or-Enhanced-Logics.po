@@ -2671,6 +2671,9 @@ msgstr ""
 "现在你可以设置 `AutoFire` 使科技类型根据 `AutoFire.TargetSelf` "
 "选择当前单元格或开火者自身自动发射其武器而无需检索一个合适的目标。"
 
+msgid "To make this logic work properly, you need to ensure that there is no flag like `CanPassiveAquire=false` set on units that prevents target scanning."
+msgstr "为了让该逻辑正常工作，你需要确保单位上没有设置 `CanPassiveAquire=false` 等阻止索敌的语句。"
+
 #: ../../New-or-Enhanced-Logics.md:1022
 msgid "Build limit group"
 msgstr "建造限制组"
