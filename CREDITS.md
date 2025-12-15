@@ -270,7 +270,7 @@ This page lists all the individual contributions to the project by their author.
   - Build area customizations
   - `Scorch` / `Flamer` fire animation customization
   - EM Pulse cannon logic improvements
-  - `<Player @ X>` as owner for pre-placed objects
+  - `<Player @ X>` as owner for pre-placed objects and triggers
   - Custom exit cell for infantry factory
   - Vehicles keeping target on move command
   - `IsSonic` wave drawing crash fix
