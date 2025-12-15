@@ -18,7 +18,8 @@ enum class DiscardCondition : unsigned char
 	Drain = 0x8,
 	InRange = 0x10,
 	OutOfRange = 0x20,
-	Firing = 0x40
+	Firing = 0x40,
+	InvokerDie = 0x80
 };
 
 MAKE_ENUM_FLAGS(DiscardCondition);

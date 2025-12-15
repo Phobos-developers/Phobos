@@ -287,7 +287,7 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	std::set<AttachEffectTypeClass*> cumulativeTypes;
-	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
+	std::vector<ExpireWeaponData> expireWeapons;
 
 	for (auto const& attachEffect : pExt->AttachedEffects)
 	{
@@ -301,25 +301,17 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 					cumulativeTypes.insert(pType);
 
 				if (pType->ExpireWeapon_UseInvokerAsOwner)
-				{
-					if (auto const pInvoker = attachEffect->GetInvoker())
-						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pInvoker));
-				}
+					expireWeapons.emplace_back(pType->ExpireWeapon, attachEffect->GetInvoker(), attachEffect->GetInvokerHouse());
 				else
-				{
-					expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pThis));
-				}
+					expireWeapons.emplace_back(pType->ExpireWeapon, pThis, pThis->Owner);
 			}
 		}
 	}
 
 	auto const coords = pThis->GetCoords();
 
-	for (auto const& pair : expireWeapons)
-	{
-		auto const pInvoker = pair.second;
-		WeaponTypeExt::DetonateAt(pair.first, coords, pInvoker, pInvoker->Owner, pThis);
-	}
+	for (auto const& [pWeapon, pInvoker, pInvokerHouse] : expireWeapons)
+		WeaponTypeExt::DetonateAt(pWeapon, coords, pInvoker, pInvokerHouse, pThis);
 
 	return 0;
 }
@@ -378,16 +370,17 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 			if (pType->ReflectDamage_UseInvokerAsOwner)
 			{
 				auto const pInvoker = attachEffect->GetInvoker();
+				const auto pInvokerHouse = pInvoker ? pInvoker->Owner : attachEffect->GetInvokerHouse();
 
-				if (pInvoker && EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouses, pInvoker->Owner, pSourceHouse))
+				if (pInvokerHouse && EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouses, pInvokerHouse, pSourceHouse))
 				{
 					auto const pWHExtRef = WarheadTypeExt::ExtMap.Find(pWH);
 					pWHExtRef->Reflected = true;
 
 					if (pType->ReflectDamage_Warhead_Detonate)
-						WarheadTypeExt::DetonateAt(pWH, pSource, pInvoker, damage, pInvoker->Owner);
+						WarheadTypeExt::DetonateAt(pWH, pSource, pInvoker, damage, pInvokerHouse);
 					else
-						pSource->ReceiveDamage(&damage, 0, pWH, pInvoker, false, false, pInvoker->Owner);
+						pSource->ReceiveDamage(&damage, 0, pWH, pInvoker, false, false, pInvokerHouse);
 
 					pWHExtRef->Reflected = false;
 				}

@@ -138,7 +138,11 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 			{
 				if (pTechno == pEffect->Invoker)
 				{
-					AnnounceInvalidPointer(pEffect->Invoker, ptr);
+					pEffect->Invoker = nullptr;
+
+					if ((pEffect->Type->DiscardOn & DiscardCondition::InvokerDie) != DiscardCondition::None)
+						pEffect->ShouldBeDiscarded = true;
+
 					count--;
 
 					if (count <= 0)
@@ -867,7 +871,7 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 
 	auto const targetAEs = &pTargetExt->AttachedEffects;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
-	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
+	std::vector<ExpireWeaponData> expireWeapons;
 
 	for (it = targetAEs->begin(); it != targetAEs->end(); )
 	{
@@ -886,14 +890,9 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || stackCount == 1)
 				{
 					if (pType->ExpireWeapon_UseInvokerAsOwner)
-					{
-						if (auto const pInvoker = attachEffect->Invoker)
-							expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pInvoker));
-					}
+						expireWeapons.emplace_back(pType->ExpireWeapon, attachEffect->Invoker, attachEffect->InvokerHouse);
 					else
-					{
-						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pTarget));
-					}
+						expireWeapons.emplace_back(pType->ExpireWeapon, pTarget, pTarget->Owner);
 				}
 			}
 
@@ -921,11 +920,8 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 
 	auto const coords = pTarget->GetCoords();
 
-	for (auto const& pair : expireWeapons)
-	{
-		auto const pInvoker = pair.second;
-		WeaponTypeExt::DetonateAt(pair.first, coords, pInvoker, pInvoker->Owner, pTarget);
-	}
+	for (auto const& [pWeapon, pInvoker, pInvokerHouse] : expireWeapons)
+		WeaponTypeExt::DetonateAt(pWeapon, coords, pInvoker, pInvokerHouse, pTarget);
 
 	return detachedCount;
 }

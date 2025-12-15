@@ -40,6 +40,7 @@ public:
 	bool ShouldBeDiscardedNow();
 	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const { return pInvoker == this->Invoker && pSource == this->Source; }
 	TechnoClass* GetInvoker() const { return this->Invoker; }
+	HouseClass* GetInvokerHouse() const { return this->InvokerHouse; }
 	bool IsActive() const { return this->IsOnline && this->IsActiveIgnorePowered(); }
 
 	bool IsActiveIgnorePowered() const
@@ -136,5 +137,18 @@ struct AttachEffectTechnoProperties
 		, HasOnFireDiscardables { false }
 		, HasRestrictedArmorMultipliers { false }
 		, HasCritModifiers { false }
+	{ }
+};
+
+struct ExpireWeaponData
+{
+	WeaponTypeClass* Weapon { nullptr };
+	TechnoClass* Owner { nullptr };
+	HouseClass* OwnerHouse { nullptr };
+
+	ExpireWeaponData(WeaponTypeClass* pWeapon, TechnoClass* pOwner, HouseClass* pOwnerHouse)
+		: Weapon(pWeapon)
+		, Owner(pOwner)
+		, OwnerHouse(pOwnerHouse)
 	{ }
 };
