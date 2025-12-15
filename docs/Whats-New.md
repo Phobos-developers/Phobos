@@ -574,6 +574,7 @@ New:
 - Customizable ROF random delay (by Starkku)
 - Animation with `Tiled=yes` now supports `CustomPalette` (by ststl)
 - Toggleable `DieSound` when grinding (by Trsdy)
+- New AI teams selector (by FS-21)
 - Shields can inherit Techno ArmorType (by Starkku)
 - Income money flying-string display when harvesters or slaves are docking to refineries or when spies steal credits (by Trsdy)
 - Allow random crates to be generated only on lands (by Trsdy)
