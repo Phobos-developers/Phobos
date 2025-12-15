@@ -52,6 +52,7 @@ This page lists all the individual contributions to the project by their author.
   - MP saves support for quicksave command and savegame trigger action
   - Ported XNA CnCNet Client MP save handling
   - Retint fix toggle
+  - Animatable template
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -264,6 +265,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizing effect of level lighting on air units
   - Reimplemented `Airburst` & `Splits` logic with more customization options
   - Buildings considered as destroyable pathfinding obstacles
+  - Animation transparency customization settings
   - Animation visibility customization settings
   - Light effect customizations
   - Building unit repair customizations
@@ -282,6 +284,7 @@ This page lists all the individual contributions to the project by their author.
   - Bugfixes to map trigger action `125 Build At...`
   - Owner change during buildup bugfix
   - Subterranean harvester pathfinding fix
+  - Animatable template
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

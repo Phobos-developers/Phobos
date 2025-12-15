@@ -468,6 +468,82 @@ DEFINE_HOOK(0x423061, AnimClass_DrawIt_Visibility, 0x6)
 	return 0;
 }
 
+// Reverse-engineered from YR with exception of new additions.
+DEFINE_HOOK(0x42308D, AnimClass_DrawIt_Transparency, 0x6)
+{
+	enum { SkipGameCode = 0x4230FE, ReturnFromFunction = 0x4238A3 };
+
+	GET(AnimClass*, pThis, ESI);
+	GET(BlitterFlags, flags, EBX);
+
+	auto const pType = pThis->Type;
+	int translucencyLevel = pThis->TranslucencyLevel; // Used by building animations when building needs to be drawn partially transparent. >= 15 means animation skips drawing.
+
+	if (translucencyLevel >= 15)
+		return ReturnFromFunction;
+
+	int currentFrame = pThis->Animation.Value;
+	int frames = pType->End;
+	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pType);
+
+	if (!pType->Translucent)
+	{
+		TranslucencyLevel level;
+		bool hasValue = false;
+
+		if (pTypeExt->Translucency_Cloaked.HasValues())
+		{
+			// New addition: Different Translucency animation for attached animations on cloaked objects. Also keyframeable.
+			if (auto const pTechno = abstract_cast<TechnoClass*>(pThis->OwnerObject))
+			{
+				if (pTechno->CloakState == CloakState::Cloaked || pTechno->CloakState == CloakState::Cloaking)
+				{
+					level = pTypeExt->Translucency_Cloaked.Get(static_cast<double>(currentFrame) / frames);
+					hasValue = true;
+				}
+			}
+		}
+
+		if (!hasValue && pTypeExt->Translucency.HasValues())
+		{
+			// New addition: Keyframeable Translucency, replaces game Translucency setting.
+			level = pTypeExt->Translucency.Get(static_cast<double>(currentFrame) / frames);
+		}
+
+		if (level == BlitterFlags::None)
+		{
+			// Translucency <= 0, map translucencyLevel to transparency blitter flags
+			if (translucencyLevel)
+			{
+				if (translucencyLevel > 10)
+					flags |= BlitterFlags::TransLucent50;
+				else if (translucencyLevel > 5)
+					flags |= BlitterFlags::TransLucent50;
+				else
+					flags |= BlitterFlags::TransLucent25;
+			}
+		}
+		else
+		{
+			// Translucency > 0, transparency level directly maps to blitter flags.
+			flags |= level;
+		}
+	}
+	else
+	{
+		// Translucent=yes vanilla game logic.
+		if (currentFrame > frames * 0.6)
+			flags |= BlitterFlags::TransLucent75;
+		else if (currentFrame > frames * 0.4)
+			flags |= BlitterFlags::TransLucent50;
+		else if (currentFrame > frames * 0.2)
+			flags |= BlitterFlags::TransLucent25;
+	}
+
+	R->EBX(flags);
+	return SkipGameCode;
+}
+
 #pragma region AltPalette
 
 // Fix AltPalette anims not using owner color scheme.
