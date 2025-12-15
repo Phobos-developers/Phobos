@@ -31,6 +31,8 @@ This page describes all the engine features that are either new and introduced b
     - `Animation.TemporalAction` determines what happens to the animation when the attached object is under effect of `Temporal=true` Warhead.
     - `Animation.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the animation's owner & invoker instead of the object the effect is attached to.
     - `Animation.HideIfAttachedWith` contains list of other AttachEffectTypes that if attached to same techno as the current one, will hide this effect's animation.
+    - `Animation.DrawOffsetN` (where N is integer starting from 0) can be used to define draw offset rules for the animation. These are parsed starting from index 0 until offset with value 0,0 is encountered.
+      - `Animation.DrawOffsetN.RequiredTypes` contains list other AttachEffectTypes that need to be attached on the same techno as the current one for the draw offset rule to apply.
   - `CumulativeAnimations` can be used to declare a list of animations used for `Cumulative=true` types instead of `Animation`. An animation is picked from the list in order matching the number of active instances of the type on the object, with last listed animation used if number is higher than the number of listed animations. This animation is only displayed once and is transferred from the effect to another of same type (specifically one with longest remaining duration), if such exists, upon expiration or removal. Note that because `Cumulative.MaxCount` limits the number of effects of same type that can be applied this can cause animations to 'flicker' here as effects expire before new ones can be applied in some circumstances.
     - `CumulativeAnimations.RestartOnChange` determines if the animation playback is restarted when the type of animation changes, if not then playback resumes at frame at same position relative to the animation's length.
   - Attached effect can fire off a weapon when expired / removed / object dies by setting `ExpireWeapon`.
@@ -109,6 +111,8 @@ Animation.OfflineAction=Hides                      ; AttachedAnimFlag (None, Hid
 Animation.TemporalAction=None                      ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 Animation.UseInvokerAsOwner=false                  ; boolean
 Animation.HideIfAttachedWith=                      ; List of AttachEffectTypes
+Animation.DrawOffsetN=0,0                          ; X,Y, pixels relative to default
+Animation.DrawOffsetN.RequiredTypes=               ; List of AttachEffectTypes
 CumulativeAnimations=                              ; List of AnimationTypes
 CumulativeAnimations.RestartOnChange=true          ; boolean
 ExpireWeapon=                                      ; WeaponType
