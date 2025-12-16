@@ -2447,7 +2447,7 @@ msgstr "在乘客上自定义 OpenTopped 射程加成和杀伤倍率"
 
 #: ../../../CREDITS.md:595
 msgid "AutoDeath upon ownership change"
-msgstr ""
+msgstr "所属更改引发自毁"
 
 #: ../../../CREDITS.md:596
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"

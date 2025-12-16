@@ -6620,7 +6620,7 @@ msgstr "`OnAmmoDepletion`：如果剩余弹药达到 0 则对象死亡。"
 
 #: ../../New-or-Enhanced-Logics.md:1752
 msgid "`OnOwnerChange`: The object's ownership has been changed."
-msgstr ""
+msgstr "`OnOwnerChange`：该对象所属方发生变更。"
 
 #: ../../New-or-Enhanced-Logics.md:1753
 msgid ""
@@ -6628,6 +6628,7 @@ msgid ""
 "has been changed from human to computer or from computer to human. "
 "Default to `OnOwnerChange` if not set."
 msgstr ""
+"`OnOwnerChange.HumanToComputer/ComputerToHuman`：该对象的所属方从人类玩家转为 AI 玩家或从 AI 玩家转为人类玩家。若未设置则默认同 `OnOwnerChange`。"
 
 #: ../../New-or-Enhanced-Logics.md:1754
 msgid "`AfterDelay`: The object will die if the countdown (in frames) reaches 0."

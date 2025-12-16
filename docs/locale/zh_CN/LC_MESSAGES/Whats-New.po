@@ -2108,7 +2108,7 @@ msgstr "在乘客上自定义 OpenTopped 射程加成和杀伤倍率（by Olleru
 
 #: ../../Whats-New.md:470
 msgid "AutoDeath upon ownership change (by Ollerus)"
-msgstr ""
+msgstr "所属更改引发自毁（by Ollerus）"
 
 #: ../../Whats-New.md:472 ../../Whats-New.md:549 ../../Whats-New.md:734
 #: ../../Whats-New.md:1093 ../../Whats-New.md:1202 ../../Whats-New.md:1227
