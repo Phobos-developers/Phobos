@@ -487,19 +487,18 @@ void WarheadTypeExt::ExtData::ApplyOwnerChange(HouseClass* pHouse, TechnoClass* 
 		{
 			pTarget->MindControlledByAUnit = true;
 
-			if (const auto pOwnerAnimType = this->ChangeOwner_MindControlAnim.Get())
+			if (const auto pAnimType = this->ChangeOwner_MindControlAnim.Get())
 			{
-				CoordStruct OwningAnimLocation = pTarget->Location;
+				CoordStruct location = pTarget->Location;
 				const bool isBld = pTarget->What_Am_I() == AbstractType::Building;
 
 				if (isBld)
-					OwningAnimLocation.Z += static_cast<BuildingClass*>(pTarget)->Type->Height * Unsorted::LevelHeight;
+					location.Z += static_cast<BuildingClass*>(pTarget)->Type->Height * Unsorted::LevelHeight;
 				else
-					OwningAnimLocation.Z += pTarget->GetTechnoType()->MindControlRingOffset;
+					location.Z += pTarget->GetTechnoType()->MindControlRingOffset;
 
-				if (const auto pOwnerAnim = GameCreate<AnimClass>(pOwnerAnimType, OwningAnimLocation, 0, 1))
+				if (const auto pOwnerAnim = GameCreate<AnimClass>(pAnimType, location))
 				{
-					pOwnerAnim->Owner = pHouse;
 					pTarget->MindControlRingAnim = pOwnerAnim;
 					pOwnerAnim->SetOwnerObject(pTarget);
 
