@@ -1256,7 +1256,8 @@ void ScriptExt::ForceGlobalOnlyTargetHouseEnemy(TeamClass* pTeam, int mode)
 	if (!pTeam)
 		return;
 
-	auto pHouseExt = HouseExt::ExtMap.Find(pTeam->Owner);
+	const auto pHouseExt = HouseExt::ExtMap.Find(pTeam->Owner);
+
 	if (!pHouseExt)
 	{
 		// This action finished

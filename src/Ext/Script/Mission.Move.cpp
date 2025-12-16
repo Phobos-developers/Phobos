@@ -251,9 +251,9 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 		if (const auto pFoot = abstract_cast<FootClass*>(pTechno))
 		{
 			const auto pTeam = pFoot->Team;
+			const auto pHouseExt = HouseExt::ExtMap.Find(pTeam->Owner);
 			const int enemyHouseIndex = pTeam->FirstUnit->Owner->EnemyHouseIndex;
 			bool onlyTargetHouseEnemy = pFoot->Team->Type->OnlyTargetHouseEnemy;
-			auto pHouseExt = HouseExt::ExtMap.Find(pTeam->Owner);
 
 			if (pHouseExt->ForceOnlyTargetHouseEnemyMode != -1)
 				onlyTargetHouseEnemy = pHouseExt->ForceOnlyTargetHouseEnemy;
@@ -282,7 +282,7 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 		const auto pTargetType = pTarget->GetTechnoType();
 
 		// Discard invisible structures
-		const auto pTargetBuildingType = abstract_cast<BuildingTypeClass*>(pTargetType);
+		const auto pTargetBuildingType = abstract_cast<BuildingTypeClass*, true>(pTargetType);
 
 		if (pTargetBuildingType && pTargetBuildingType->InvisibleInGame)
 			continue;

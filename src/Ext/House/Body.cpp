@@ -585,12 +585,12 @@ float HouseExt::ExtData::GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoT
 
 void HouseExt::ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode)
 {
-	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	const auto pHouseExt = HouseExt::ExtMap.Find(pThis);
 
 	if (mode < 0 || mode > 2)
 		mode = -1;
 
-	enum { ForceFalse = 0, ForceTrue = 1, ForceRandom = 2, UseDefault = -1 };
+	enum { ForceFalse = 0, ForceTrue = 1, ForceRandom = 2};
 	pHouseExt->ForceOnlyTargetHouseEnemyMode = mode;
 
 	switch (mode)
