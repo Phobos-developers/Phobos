@@ -280,6 +280,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that naval ship will sink even they destroyed in air.
 - Fixed MPDebug timer displaying when debug's visibility is off.
 - Fixed the issue that units will goto farest location if target is closer than `MinimumRange`.
+- Purely visual animations and particles are no longer included in frame CRC generation and are thus exempt from any sync checks between players in multiplayer games.
 
 ## Fixes / interactions with other extensions
 

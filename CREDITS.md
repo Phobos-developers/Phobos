@@ -282,6 +282,7 @@ This page lists all the individual contributions to the project by their author.
   - Bugfixes to map trigger action `125 Build At...`
   - Owner change during buildup bugfix
   - Subterranean harvester pathfinding fix
+  - Frame CRC generation rewrite
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
