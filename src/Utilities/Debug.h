@@ -8,7 +8,8 @@ public:
 	enum class ExitCode : int
 	{
 		Undefined = -1,
-		SLFail = 114514
+		SLFail = 114514,
+		BadINIUsage = 1919810,
 	};
 
 	static char StringBuffer[0x1000];
@@ -77,7 +78,7 @@ public:
 	static void Release();
 
 	template<size_t Length>
-	constexpr static void Write(const char (&str)[Length])
+	constexpr static void Write(const char(&str)[Length])
 	{
 		Write(str, Length - 1); // -1 because there is a '\0' here
 	}

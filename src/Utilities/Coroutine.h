@@ -96,7 +96,7 @@ Generator<int> Fibonacci()
 void Test_Fibonacci()
 {
 	auto f = Fibonacci();
-	while(true)
+	while (true)
 	{
 		auto t = f.next();
 		if (!t.has_value())

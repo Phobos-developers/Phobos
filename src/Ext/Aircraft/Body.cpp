@@ -1,24 +1,51 @@
 #include "Body.h"
-#include <Ext/TechnoType/Body.h>
+
+#include <BuildingClass.h>
+
+#include <Ext/BuildingType/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 // TODO: Implement proper extended AircraftClass.
 
-void AircraftExt::FireBurst(AircraftClass* pThis, AbstractClass* pTarget, int shotNumber = 0)
+void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 {
-	if (!pTarget) return;
-	int weaponIndex = pThis->SelectWeapon(pTarget);
-	auto weaponType = pThis->GetWeapon(weaponIndex)->WeaponType;
-	auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(weaponType);
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	const int weaponIndex = pExt->CurrentAircraftWeaponIndex;
+	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const int burstCount = pWeapon->Burst;
+	const bool isStrafe = pThis->Is_Strafe();
 
-	if (weaponType->Burst > 0)
+	if (burstCount > 0)
 	{
-		for (int i = 0; i < weaponType->Burst; i++)
+		int& bombDropCount = pExt->Strafe_BombsDroppedThisRound;
+		int& currentBurstIndex = pThis->CurrentBurstIndex;
+		const bool simulateBurst = pWeaponExt->Strafing_SimulateBurst;
+
+		for (int i = 0; i < burstCount; i++)
 		{
-			if (weaponType->Burst < 2 && pWeaponTypeExt->Strafing_SimulateBurst)
-				pThis->CurrentBurstIndex = shotNumber;
+			if (isStrafe && burstCount < 2 && simulateBurst)
+				currentBurstIndex = bombDropCount % 2 == 0;
 
 			pThis->Fire(pTarget, weaponIndex);
+		}
+
+		if (isStrafe)
+		{
+			bombDropCount++;
+
+			if (pWeaponExt->Strafing_UseAmmoPerShot)
+			{
+				pThis->Ammo--;
+				pThis->ShouldLoseAmmo = false;
+
+				if (!pThis->Ammo)
+				{
+					pThis->SetTarget(nullptr);
+					pThis->SetDestination(nullptr, true);
+				}
+			}
 		}
 	}
 }
@@ -26,7 +53,8 @@ void AircraftExt::FireBurst(AircraftClass* pThis, AbstractClass* pTarget, int sh
 // Spy plane, airstrike etc.
 bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CellStruct edgeCell)
 {
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pType = pThis->Type;
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	auto coords = CellClass::Cell2Coord(edgeCell);
 	coords.Z = 0;
 	AbstractClass* pTarget = nullptr;
@@ -39,14 +67,58 @@ bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CellStruct ed
 			coords = GeneralUtils::CalculateCoordsFromDistance(CellClass::Cell2Coord(edgeCell), pTarget->GetCoords(), pTypeExt->SpawnDistanceFromTarget.Get());
 	}
 
-	++Unsorted::IKnowWhatImDoing;
-	bool result = pThis->Unlimbo(coords, DirType::North);
-	--Unsorted::IKnowWhatImDoing;
+	++Unsorted::ScenarioInit;
+	const bool result = pThis->Unlimbo(coords, DirType::North);
+	--Unsorted::ScenarioInit;
 
-	pThis->SetHeight(pTypeExt->SpawnHeight.Get(pThis->Type->GetFlightLevel()));
+	pThis->SetHeight(pTypeExt->SpawnHeight.isset() ? pTypeExt->SpawnHeight.Get() : pType->GetFlightLevel());
 
 	if (pTarget)
 		pThis->PrimaryFacing.SetDesired(pThis->GetTargetDirection(pTarget));
 
 	return result;
+}
+
+DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
+{
+	auto const poseDir = static_cast<DirType>(RulesClass::Instance->PoseDir);
+
+	if (!pThis)
+		return poseDir;
+
+	// If this is a spawnee, use the spawner's facing.
+	if (auto const pOwner = pThis->SpawnOwner)
+		return pOwner->PrimaryFacing.Current().GetDir();
+
+	auto const pType = pThis->Type;
+
+	if (pDock || pThis->HasAnyLink())
+	{
+		auto const pLink = pThis->GetNthLink(0);
+
+		if (auto const pBuilding = pDock ? pDock : abstract_cast<BuildingClass*, true>(pLink))
+		{
+			auto const pBuildingType = pBuilding->Type;
+			auto const pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
+			const int docks = pBuildingType->NumberOfDocks;
+			const int linkIndex = pBuilding->FindLinkIndex(pThis);
+
+			if (docks > 0 && linkIndex >= 0 && linkIndex < docks)
+			{
+				if (pBuildingTypeExt->AircraftDockingDirs[linkIndex].has_value())
+					return *pBuildingTypeExt->AircraftDockingDirs[linkIndex];
+			}
+			else if (docks > 0 && pBuildingTypeExt->AircraftDockingDirs[0].has_value())
+				return *pBuildingTypeExt->AircraftDockingDirs[0];
+		}
+		else if (!pType->AirportBound)
+			return pLink->PrimaryFacing.Current().GetDir();
+	}
+
+	const int landingDir = TechnoTypeExt::ExtMap.Find(pType)->LandingDir.Get((int)poseDir);
+
+	if (!pType->AirportBound && landingDir < 0)
+		return pThis->PrimaryFacing.Current().GetDir();
+
+	return static_cast<DirType>(std::clamp(landingDir, 0, 255));
 }

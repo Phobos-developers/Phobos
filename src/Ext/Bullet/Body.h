@@ -2,6 +2,7 @@
 #include <BulletClass.h>
 
 #include <Ext/BulletType/Body.h>
+#include <Ext/TechnoType/Body.h>
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
@@ -22,38 +23,41 @@ public:
 		BulletTypeExt::ExtData* TypeExtData;
 		HouseClass* FirerHouse;
 		int CurrentStrength;
-		bool IsInterceptor;
+		TechnoTypeExt::ExtData* InterceptorTechnoType;
 		InterceptedStatus InterceptedStatus;
 		bool DetonateOnInterception;
-		std::vector<LaserTrailClass> LaserTrails;
+		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		bool SnappedToTarget; // Used for custom trajectory projectile target snap checks
+		int DamageNumberOffset;
+		int ParabombFallRate;
+		bool IsInstantDetonation;
 
-		PhobosTrajectory* Trajectory; // TODO: why not unique_ptr
+		TrajectoryPointer Trajectory;
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, FirerHouse { nullptr }
 			, CurrentStrength { 0 }
-			, IsInterceptor { false }
+			, InterceptorTechnoType { nullptr }
 			, InterceptedStatus { InterceptedStatus::None }
 			, DetonateOnInterception { true }
 			, LaserTrails {}
 			, Trajectory { nullptr }
 			, SnappedToTarget { false }
+			, DamageNumberOffset { INT32_MIN }
+			, ParabombFallRate { 0 }
+			, IsInstantDetonation { false }
 		{ }
 
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
-		{
-			AnnounceInvalidPointer(FirerHouse, ptr);
-		}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-		void InterceptBullet(TechnoClass* pSource, WeaponTypeClass* pWeapon);
-		void ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel);
+		void InterceptBullet(TechnoClass* pSource, BulletClass* pInterceptor);
+		void ApplyRadiationToCell(CellStruct cell, int spread, int radLevel);
 		void InitializeLaserTrails();
 
 	private:
@@ -66,20 +70,19 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
-
-		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
-		{
-			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-
-			switch (abs)
-			{
-			case AbstractType::House:
-				return false;
-			default:
-				return true;
-			}
-		}
 	};
 
 	static ExtContainer ExtMap;
+
+	static void Detonate(const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse, AbstractClass* pTarget, bool isBright, WeaponTypeClass* pWeapon, WarheadTypeClass* pWarhead);
+	static void ApplyArcingFix(BulletClass* pThis, const CoordStruct& sourceCoords, const CoordStruct& targetCoords, BulletVelocity& velocity);
+
+	static void SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords, bool randomVelocity);
+	static void SimulatedFiringEffects(BulletClass* pBullet, HouseClass* pHouse, ObjectClass* pAttach, bool firingEffect, bool visualEffect);
+	static inline void SimulatedFiringAnim(BulletClass* pBullet, HouseClass* pHouse, ObjectClass* pAttach);
+	static inline void SimulatedFiringReport(BulletClass* pBullet);
+	static inline void SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pHouse);
+	static inline void SimulatedFiringElectricBolt(BulletClass* pBullet);
+	static inline void SimulatedFiringRadBeam(BulletClass* pBullet, HouseClass* pHouse);
+	static inline void SimulatedFiringParticleSystem(BulletClass* pBullet, HouseClass* pHouse);
 };

@@ -1,17 +1,20 @@
 #include "Body.h"
 
+#include <HouseClass.h>
 #include <ScenarioClass.h>
+#include <SpecificStructures.h>
+#include <TacticalClass.h>
 #include <TiberiumClass.h>
 #include <TerrainClass.h>
-#include <SpecificStructures.h>
-#include <AnimClass.h>
 
+#include <Ext/Rules/Body.h>
 #include <Utilities/GeneralUtils.h>
 
 namespace TerrainTypeTemp
 {
 	TerrainTypeClass* pCurrentType = nullptr;
 	TerrainTypeExt::ExtData* pCurrentExt = nullptr;
+	double PriorHealthRatio = 0.0;
 }
 
 DEFINE_HOOK(0x71C84D, TerrainClass_AI_Animated, 0x6)
@@ -20,22 +23,25 @@ DEFINE_HOOK(0x71C84D, TerrainClass_AI_Animated, 0x6)
 
 	GET(TerrainClass*, pThis, ESI);
 
-	if (pThis->Type->IsAnimated)
+	auto const pType = pThis->Type;
+
+	if (pType->IsAnimated)
 	{
-		if (pThis->Animation.Value == pThis->Type->GetImage()->Frames / 2)
+		auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pType);
+
+		if (pThis->Animation.Value == (pTypeExt->AnimationLength.isset() ? pTypeExt->AnimationLength.Get() : (pType->GetImage()->Frames / (2 * (pTypeExt->HasDamagedFrames + 1)))))
 		{
 			pThis->Animation.Value = 0;
 			pThis->Animation.Start(0);
 
 			// Spawn tiberium if enabled.
-			if (pThis->Type->SpawnsTiberium)
+			if (pType->SpawnsTiberium)
 			{
-				auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type);
-				auto pCell = pThis->GetCell();
-				int cellCount = pTypeExt->GetCellsPerAnim();
+				const auto pCell = pThis->GetCell();
+				const int cellCount = pTypeExt->GetCellsPerAnim();
 
 				// Set context for CellClass hooks.
-				TerrainTypeTemp::pCurrentType = pThis->Type;
+				TerrainTypeTemp::pCurrentType = pType;
 				TerrainTypeTemp::pCurrentExt = pTypeExt;
 
 				for (int i = 0; i < cellCount; i++)
@@ -49,6 +55,92 @@ DEFINE_HOOK(0x71C84D, TerrainClass_AI_Animated, 0x6)
 	}
 
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x71C812, TerrainClass_AI_Crumbling, 0x6)
+{
+	enum { ReturnFromFunction = 0x71C839, SkipCheck = 0x71C7C2 };
+
+	GET(TerrainClass*, pThis, ESI);
+
+	auto const pType = pThis->Type;
+	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pType);
+
+	if (pTypeExt->HasDamagedFrames && pThis->Health > 0)
+	{
+		if (!pType->IsAnimated && !pType->IsFlammable)
+			LogicClass::Instance.Remove(pThis);
+
+		pThis->IsCrumbling = false;
+
+		return SkipCheck;
+	}
+
+	const int animationLength = pTypeExt->AnimationLength.isset() ? pTypeExt->AnimationLength.Get() : pType->GetImage()->Frames / (2 * (pTypeExt->HasDamagedFrames + 1));
+	const int currentStage = pThis->Animation.Value + (pType->IsAnimated ? animationLength * (pTypeExt->HasDamagedFrames + 1) : 0 + pTypeExt->HasDamagedFrames);
+
+	if (currentStage + 1 == pType->GetImage()->Frames / 2)
+	{
+		pTypeExt->PlayDestroyEffects(pThis->GetCoords());
+		TerrainTypeExt::Remove(pThis);
+	}
+
+	return ReturnFromFunction;
+}
+
+DEFINE_HOOK(0x71C1FE, TerrainClass_Draw_PickFrame, 0x6)
+{
+	enum { SkipGameCode = 0x71C234 };
+
+	GET(int, frame, EBX);
+
+	GET(TerrainClass*, pThis, ESI);
+
+	auto const pType = pThis->Type;
+	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pType);
+	const bool isDamaged = pTypeExt->HasDamagedFrames && pThis->GetHealthPercentage() <= RulesExt::Global()->ConditionYellow_Terrain.Get(RulesClass::Instance->ConditionYellow);
+
+	if (pType->IsAnimated)
+	{
+		const int animLength = pTypeExt->AnimationLength.isset() ? pTypeExt->AnimationLength.Get() : ((pType->GetImage()->Frames / (2 * (pTypeExt->HasDamagedFrames + 1))));
+
+		if (pTypeExt->HasCrumblingFrames && pThis->IsCrumbling)
+			frame = (animLength * (pTypeExt->HasDamagedFrames + 1)) + 1 + pThis->Animation.Value;
+		else
+			frame = pThis->Animation.Value + (isDamaged * animLength);
+	}
+	else
+	{
+		if (pTypeExt->HasCrumblingFrames && pThis->IsCrumbling)
+			frame = 1 + pThis->Animation.Value;
+		else if (isDamaged)
+			frame = 1;
+	}
+
+	R->EBX(frame);
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x71C2BC, TerrainClass_Draw_Palette, 0x6)
+{
+	GET(TerrainClass*, pThis, ESI);
+
+	auto const pCell = pThis->GetCell();
+	const int wallOwnerIndex = pCell->WallOwnerIndex;
+	int colorSchemeIndex = HouseClass::CurrentPlayer->ColorSchemeIndex;
+
+	if (wallOwnerIndex >= 0)
+		colorSchemeIndex = HouseClass::Array[wallOwnerIndex]->ColorSchemeIndex;
+
+	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->Palette)
+	{
+		R->EDX(pTypeExt->Palette->Items[colorSchemeIndex]->LightConvert);
+		R->EBP(pCell->Intensity_Normal);
+	}
+
+	return 0;
 }
 
 // Overrides Ares hook at 0x5F4FF9, required for animated terrain cause game & Ares check SpawnsTiberium instead of IsAnimated
@@ -93,19 +185,19 @@ DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
 	if (TerrainTypeTemp::pCurrentExt)
 	{
 		GET(CellClass*, pThis, EDI);
-		GET(int, tibIndex, EAX);
+		GET(const int, tibIndex, EAX);
 
-		TiberiumClass* pTib = TiberiumClass::Array->GetItem(tibIndex);
+		TiberiumClass* pTib = TiberiumClass::Array.GetItem(tibIndex);
 
 		std::vector<CellStruct> adjacentCells = GeneralUtils::AdjacentCellsInRange(TerrainTypeTemp::pCurrentExt->SpawnsTiberium_Range);
-		size_t size = adjacentCells.size();
-		int rand = ScenarioClass::Instance->Random.RandomRanged(0, size - 1);
+		const size_t size = adjacentCells.size();
+		const int rand = ScenarioClass::Instance->Random.RandomRanged(0, size - 1);
 
 		for (unsigned int i = 0; i < size; i++)
 		{
-			unsigned int cellIndex = (i + rand) % size;
-			CellStruct tgtPos = pThis->MapCoords + adjacentCells[cellIndex];
-			CellClass* tgtCell = MapClass::Instance->GetCellAt(tgtPos);
+			const unsigned int cellIndex = (i + rand) % size;
+			const CellStruct tgtPos = pThis->MapCoords + adjacentCells[cellIndex];
+			CellClass* tgtCell = MapClass::Instance.TryGetCellAt(tgtPos);
 
 			if (tgtCell && tgtCell->CanTiberiumGerminate(pTib))
 			{
@@ -122,6 +214,52 @@ DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x71C6EE, TerrainClass_FireOut_Crumbling, 0x6)
+{
+	enum { StartCrumbling = 0x71C6F8, Skip = 0x71C72B };
+
+	GET(TerrainClass*, pThis, ESI);
+
+	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type);
+
+	if (!pThis->IsCrumbling && pTypeExt->HasCrumblingFrames)
+	{
+		// Needs to be added to the logic layer for the anim to work.
+		LogicClass::Instance.AddObject(pThis, false);
+		VocClass::PlayIndexAtPos(pTypeExt->CrumblingSound, pThis->GetCoords());
+
+		return StartCrumbling;
+	}
+
+	return Skip;
+}
+
+DEFINE_HOOK(0x71B965, TerrainClass_TakeDamage_SetContext, 0x8)
+{
+	GET(TerrainClass*, pThis, ESI);
+
+	TerrainTypeTemp::PriorHealthRatio = pThis->GetHealthPercentage();
+
+	return 0;
+}
+
+DEFINE_HOOK(0x71B98B, TerrainClass_TakeDamage_RefreshDamageFrame, 0x7)
+{
+	GET(TerrainClass*, pThis, ESI);
+
+	auto const pType = pThis->Type;
+	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pType);
+	const double condYellow = RulesExt::Global()->ConditionYellow_Terrain.Get(RulesClass::Instance->ConditionYellow);
+
+	if (!pType->IsAnimated && pTypeExt->HasDamagedFrames && TerrainTypeTemp::PriorHealthRatio > condYellow && pThis->GetHealthPercentage() <= condYellow)
+	{
+		pThis->IsCrumbling = true; // Dirty hack to get game to redraw the art reliably.
+		LogicClass::Instance.AddObject(pThis, false);
+	}
+
+	return 0;
+}
+
 //This one on Very end of it , let everything play first
 DEFINE_HOOK(0x71BB2C, TerrainClass_TakeDamage_NowDead_Add, 0x6)
 {
@@ -129,14 +267,21 @@ DEFINE_HOOK(0x71BB2C, TerrainClass_TakeDamage_NowDead_Add, 0x6)
 	//saved for later usage !
 	//REF_STACK(args_ReceiveDamage const, ReceiveDamageArgs, STACK_OFFSET(0x3C, 0x4));
 
-	if (auto const pTerrainExt = TerrainTypeExt::ExtMap.Find(pThis->Type))
-	{
-		auto const nCoords = pThis->GetCoords();
-		VocClass::PlayIndexAtPos(pTerrainExt->DestroySound.Get(-1), nCoords);
+	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type);
 
-		if (auto const pAnimType = pTerrainExt->DestroyAnim.Get(nullptr))
-			GameCreate<AnimClass>(pAnimType, nCoords);
+	// Skip over the removal of the tree as well as destroy sound/anim (for now) if the tree has crumble animation.
+	if (pThis->IsCrumbling && pTypeExt->HasCrumblingFrames)
+	{
+		// Needs to be added to the logic layer for the anim to work.
+		LogicClass::Instance.AddObject(pThis, false);
+		VocClass::PlayIndexAtPos(pTypeExt->CrumblingSound, pThis->GetCoords());
+		pThis->Mark(MarkType::Change);
+		pThis->Disappear(true);
+
+		return 0x71BB79;
 	}
+
+	pTypeExt->PlayDestroyEffects(pThis->GetCoords());
 
 	return 0;
 }
@@ -149,17 +294,21 @@ DEFINE_HOOK(0x47C065, CellClass_CellColor_TerrainRadarColor, 0x6)
 	GET_STACK(ColorStruct*, arg0, STACK_OFFSET(0x14, 0x4));
 	GET_STACK(ColorStruct*, arg4, STACK_OFFSET(0x14, 0x8));
 
-	auto pTerrain = pThis->GetTerrain(false);
+	auto const pTerrain = pThis->GetTerrain(false);
 
 	if (pTerrain)
 	{
-		if (pTerrain->Type->RadarInvisible)
+		auto const pType = pTerrain->Type;
+
+		if (pType->RadarInvisible)
 		{
 			R->ESI(pThis);
 			return SkipTerrainColor;
 		}
-		else if (auto const pTerrainExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type))
+		else
 		{
+			auto const pTerrainExt = TerrainTypeExt::ExtMap.Find(pType);
+
 			if (pTerrainExt->MinimapColor.isset())
 			{
 				auto& color = pTerrainExt->MinimapColor.Get();

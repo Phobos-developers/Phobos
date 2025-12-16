@@ -25,8 +25,5 @@ const wchar_t* DamageDisplayCommandClass::GetUIDescription() const
 
 void DamageDisplayCommandClass::Execute(WWKey eInput) const
 {
-	if (this->CheckDebugDeactivated())
-		return;
-
 	Phobos::DisplayDamageNumbers = !Phobos::DisplayDamageNumbers;
 }

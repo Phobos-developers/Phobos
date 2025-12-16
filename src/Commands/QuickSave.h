@@ -3,7 +3,7 @@
 #include "Commands.h"
 
 // Quicksave current game
-class QuickSaveCommandClass : public PhobosCommandClass
+class QuickSaveCommandClass : public CommandClass
 {
 public:
 	// CommandClass

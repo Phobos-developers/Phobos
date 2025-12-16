@@ -6,7 +6,6 @@
 #include <GameOptionsClass.h>
 #include <GScreenClass.h>
 #include <EvadeClass.h>
-#include <GameStrings.h>
 
 namespace RetryDialogFlag
 {
@@ -25,7 +24,7 @@ DEFINE_HOOK(0x686092, DoLose_RetryDialogForCampaigns, 0x7)
 		// Button2
 		// I prefer to put the loadgame to the center of them - secsome
 		// Did you??? NO, YOU DIDN'T. Bruhhhh
-		switch (WWMessageBox::Instance->Process(
+		switch (WWMessageBox::Instance.Process(
 			GameStrings::TXT_TO_REPLAY,
 			"GUI:LOADGAME",
 			GameStrings::TXT_CANCEL,
@@ -48,19 +47,19 @@ DEFINE_HOOK(0x686092, DoLose_RetryDialogForCampaigns, 0x7)
 			if (!bIsAboutToLoad)
 				continue;
 
-			ThemeClass::Instance->Stop();
+			ThemeClass::Instance.Stop();
 			break;
 		}
 
 		break;
 	}
 
-	EvadeClass::Instance->Do();
+	EvadeClass::Instance.Do();
 
-	if (CCToolTip::Instance())
-		CCToolTip::Instance->SetState(GameOptionsClass::Instance->Tooltips);
+	if (CCToolTip::Instance)
+		CCToolTip::Instance->SetState(GameOptionsClass::Instance.Tooltips);
 
-	GScreenClass::Instance->Render();
+	GScreenClass::Instance.Render();
 
 	return LoadGame;
 }

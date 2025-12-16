@@ -3,7 +3,7 @@
 #include <Utilities/SavegameDef.h>
 #include <Utilities/TemplateDef.h>
 
-std::pair<bool,bool> PassengerDeletionTypeClass::CanParse(INI_EX exINI, const char* pSection)
+std::pair<bool, bool> PassengerDeletionTypeClass::CanParse(INI_EX exINI, const char* pSection)
 {
 	Nullable<int> rate;
 	rate.Read(exINI, pSection, "PassengerDeletion.Rate");
@@ -11,7 +11,7 @@ std::pair<bool,bool> PassengerDeletionTypeClass::CanParse(INI_EX exINI, const ch
 	useCost.Read(exINI, pSection, "PassengerDeletion.UseCostAsRate");
 
 	bool canParse = rate.Get(0) > 0 || useCost.Get(false);
-	bool shouldResetValue = !canParse && (rate.isset() || !useCost.isset());
+	bool shouldResetValue = rate.isset() && rate.Get() == 0 && !(useCost.isset() && useCost.Get());
 	return std::make_pair(canParse, shouldResetValue);
 }
 
@@ -32,8 +32,8 @@ PassengerDeletionTypeClass::PassengerDeletionTypeClass(TechnoTypeClass* pOwnerTy
 	, DisplaySoylentOffset { { 0, 0 } }
 	, ReportSound {}
 	, Anim {}
-{
-}
+	, UnderEMP { false }
+{ }
 void PassengerDeletionTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 {
 	INI_EX exINI(pINI);
@@ -53,6 +53,7 @@ void PassengerDeletionTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSect
 	this->DisplaySoylentOffset.Read(exINI, pSection, "PassengerDeletion.DisplaySoylentOffset");
 	this->ReportSound.Read(exINI, pSection, "PassengerDeletion.ReportSound");
 	this->Anim.Read(exINI, pSection, "PassengerDeletion.Anim");
+	this->UnderEMP.Read(exINI, pSection, "PassengerDeletion.UnderEMP");
 }
 
 #pragma region(save/load)
@@ -77,6 +78,7 @@ bool PassengerDeletionTypeClass::Serialize(T& stm)
 		.Process(this->DisplaySoylentOffset)
 		.Process(this->ReportSound)
 		.Process(this->Anim)
+		.Process(this->UnderEMP)
 		.Success();
 }
 
