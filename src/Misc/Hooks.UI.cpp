@@ -198,8 +198,8 @@ DEFINE_HOOK(0x6A8463, StripClass_OperatorLessThan_CameoPriority, 0x5)
 	GET_STACK(TechnoTypeClass*, pRight, STACK_OFFSET(0x1C, -0x4));
 	GET_STACK(const int, idxLeft, STACK_OFFSET(0x1C, 0x8));
 	GET_STACK(const int, idxRight, STACK_OFFSET(0x1C, 0x10));
-	GET_STACK(AbstractType, rttiLeft, STACK_OFFSET(0x1C, 0x4));
-	GET_STACK(AbstractType, rttiRight, STACK_OFFSET(0x1C, 0xC));
+	GET_STACK(const AbstractType, rttiLeft, STACK_OFFSET(0x1C, 0x4));
+	GET_STACK(const AbstractType, rttiRight, STACK_OFFSET(0x1C, 0xC));
 	const auto pLeftTechnoExt = TechnoTypeExt::ExtMap.TryFind(pLeft);
 	const auto pRightTechnoExt = TechnoTypeExt::ExtMap.TryFind(pRight);
 	const auto pLeftSWExt = (rttiLeft == AbstractType::Special || rttiLeft == AbstractType::Super || rttiLeft == AbstractType::SuperWeaponType)
@@ -220,8 +220,48 @@ DEFINE_HOOK(0x6A8463, StripClass_OperatorLessThan_CameoPriority, 0x5)
 	}
 
 	// Restore overridden instructions
-	GET(AbstractType, rtti1, ESI);
+	GET(const AbstractType, rtti1, ESI);
 	return rtti1 == AbstractType::Special ? 0x6A8477 : 0x6A8468;
+}
+
+DEFINE_HOOK(0x6A84DB, StripClass_OperatorLessThan_SortCameoByNameSW, 0x5)
+{
+	enum { rTrue = 0x6A8692, rFalse = 0x6A86A0 };
+
+	GET(SuperWeaponTypeClass*, pLeftSW, EAX);
+	GET(SuperWeaponTypeClass*, pRightSW, ECX);
+
+	if (RulesExt::Global()->SortCameoByName)
+	{
+		const int result = strcmp(pLeftSW->Name, pRightSW->Name);
+
+		if (result < 0)
+			return rTrue;
+		else if (result > 0)
+			return rFalse;
+	}
+
+	return wcscmp(pLeftSW->UIName, pRightSW->UIName) <= 0 ? rTrue : rFalse;
+}
+
+DEFINE_HOOK(0x6A86ED, StripClass_OperatorLessThan_SortCameoByNameTechno, 0x5)
+{
+	enum { rTrue = 0x6A8692, rFalse = 0x6A86A0 };
+
+	GET(TechnoTypeClass*, pLeft, EDI);
+	GET(TechnoTypeClass*, pRight, EBP);
+
+	if (RulesExt::Global()->SortCameoByName)
+	{
+		const int result = strcmp(pLeft->Name, pRight->Name);
+
+		if (result < 0)
+			return rTrue;
+		else if (result > 0)
+			return rFalse;
+	}
+
+	return wcscmp(pLeft->UIName, pRight->UIName) <= 0 ? rTrue : rFalse;
 }
 
 DEFINE_HOOK(0x6D4684, TacticalClass_Draw_FlyingStrings, 0x6)
@@ -260,7 +300,7 @@ namespace BriefingTemp
 	bool ShowBriefing = false;
 }
 
-__forceinline void ShowBriefing()
+static __forceinline void ShowBriefing()
 {
 	if (BriefingTemp::ShowBriefing)
 	{
@@ -362,7 +402,7 @@ DEFINE_HOOK(0x65F764, BriefingDialog_ShowBriefing, 0x5)
 {
 	if (BriefingTemp::ShowBriefing)
 	{
-		GET(HWND, hDlg, ESI);
+		GET(const HWND, hDlg, ESI);
 
 		auto const hResumeBtn = GetDlgItem(hDlg, 1059);
 		SendMessageA(hResumeBtn, 1202, 0, reinterpret_cast<LPARAM>(Phobos::UI::ShowBriefingResumeButtonLabel));
@@ -388,7 +428,7 @@ DEFINE_HOOK(0x604985, GetDialogUIStatusLabels_ShowBriefing, 0x5)
 
 #pragma endregion
 
-bool __fastcall Fake_HouseIsAlliedWith(HouseClass* pThis, void*, HouseClass* CurrentPlayer)
+static bool __fastcall Fake_HouseIsAlliedWith(HouseClass* pThis, void*, HouseClass* CurrentPlayer)
 {
 	return (Phobos::Config::ShowPlanningPath && SessionClass::IsSingleplayer())
 		|| pThis->IsControlledByCurrentPlayer()
@@ -405,7 +445,7 @@ DEFINE_HOOK(0x69A317, SessionClass_PlayerColorIndexToColorSchemeIndex, 0x0)
 {
 	GET_STACK(int, index, 0x4);
 
-	bool isRandom = index == PlayerColorSlot::Random;
+	const bool isRandom = index == PlayerColorSlot::Random;
 
 	if (Phobos::Config::SkirmishUnlimitedColors)
 	{
@@ -433,7 +473,7 @@ DEFINE_HOOK(0x552F79, LoadProgressManager_Draw_MissingLoadingScreenDefaults, 0x6
 {
 	GET(LoadProgressManager*, pThis, EBP);
 	GET(ConvertClass*, pDrawer, EBX);
-	GET_STACK(bool, isLowRes, STACK_OFFSET(0x1268, -0x1235));
+	GET_STACK(const bool, isLowRes, STACK_OFFSET(0x1268, -0x1235));
 
 	auto const pScenarioExt = ScenarioExt::Global();
 
@@ -461,4 +501,10 @@ DEFINE_HOOK(0x552F79, LoadProgressManager_Draw_MissingLoadingScreenDefaults, 0x6
 	}
 
 	return 0;
+}
+
+// Hides the number at top-left of screen when debug stats are not being drawn
+DEFINE_HOOK(0x55F1F8, MPDebugPrint_CheckDrawFlag, 0x8)
+{
+    return Game::DrawMPDebugStats ? 0 : 0x55F280;
 }

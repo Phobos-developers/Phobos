@@ -67,11 +67,12 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 		pThis->UnInit();
 
 		const auto pTechno = pThis->Owner;
+		const auto pWeapon = pThis->WeaponType;
 
 		if (pTechno
 			&& pTechno->InLimbo
-			&& pThis->WeaponType
-			&& pThis->WeaponType->LimboLaunch)
+			&& pWeapon
+			&& pWeapon->LimboLaunch)
 		{
 			pThis->SetTarget(nullptr);
 			auto damage = pTechno->Health * 2;
@@ -369,7 +370,9 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 
 	GET(BulletClass*, pThis, ESI);
 
-	if (pThis == ScenarioExt::Global()->MasterDetonationBullet)
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (pExt->IsInstantDetonation)
 		return SkipChecks;
 
 	auto const pType = pThis->Type;
@@ -384,8 +387,6 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 	{
 		return 0;
 	}
-
-	auto const pExt = BulletExt::ExtMap.Find(pThis);
 
 	if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
 	{
@@ -402,7 +403,9 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 
 	GET(BulletClass*, pThis, ESI);
 
-	if (pThis == ScenarioExt::Global()->MasterDetonationBullet)
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (pExt->IsInstantDetonation)
 		return SkipChecks;
 
 	auto const pType = pThis->Type;
@@ -420,8 +423,6 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 
 	// Do not force Trajectory=Straight projectiles to detonate at target coordinates under certain circumstances.
 	// Fixes issues with walls etc.
-	auto const pExt = BulletExt::ExtMap.Find(pThis);
-
 	if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
 		return SkipSetCoordinate;
 
@@ -521,7 +522,7 @@ DEFINE_HOOK(0x415F25, AircraftClass_Fire_TrajectorySkipInertiaEffect, 0x6)
 DEFINE_PATCH(0x46867F, 0x6A, 0x00, 0x8B, 0xD9, 0x50);
 
 // Add in our own.
-bool __fastcall ObjectClass_Unlimbo_Parachuted_Wrapper(BulletClass* pThis, void*, const CoordStruct& coords, DirType facing)
+static bool __fastcall ObjectClass_Unlimbo_Parachuted_Wrapper(BulletClass* pThis, void*, const CoordStruct& coords, DirType facing)
 {
 	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 

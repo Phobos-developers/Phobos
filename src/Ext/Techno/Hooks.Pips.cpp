@@ -29,7 +29,7 @@ DEFINE_HOOK(0x6F5E37, TechnoClass_DrawExtras_DrawHealthBar, 0x6)
 
 	GET(TechnoClass*, pThis, EBP);
 
-	if ((pThis->IsMouseHovering || TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_Permanent)
+	if (pThis && (pThis->IsMouseHovering || TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_Permanent)
 		&& !MapClass::Instance.IsLocationShrouded(pThis->GetCoords()))
 	{
 		return Permanent;
@@ -413,7 +413,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 
 	const int offsetWidth = offset->Width;
 
-	for (int pip : pipsToDraw)
+	for (const int pip : pipsToDraw)
 	{
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, shape, pip,
 			&position, rect, BlitterFlags::Centered | BlitterFlags::bf_400, 0, 0,

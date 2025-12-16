@@ -440,12 +440,12 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown)
 		// Leader's area radius where the Team members are considered "near" to the Leader
 		if (pExt->CloseEnough > 0)
 		{
-			closeEnough = pExt->CloseEnough;
+			closeEnough = pExt->CloseEnough * (double)Unsorted::LeptonsPerCell;
 			pExt->CloseEnough = -1; // This a one-time-use value
 		}
 		else
 		{
-			closeEnough = RulesClass::Instance->CloseEnough / (double)Unsorted::LeptonsPerCell;
+			closeEnough = RulesClass::Instance->CloseEnough;
 		}
 
 		// The leader should stay calm & be the group's center
@@ -485,7 +485,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown)
 
 				nUnits++;
 
-				if ((pUnit->DistanceFrom(pLeaderUnit->GetCell()) / (double)Unsorted::LeptonsPerCell) > closeEnough)
+				if (pUnit->DistanceFrom(pLeaderUnit->GetCell()) > closeEnough)
 				{
 					// Leader's location is too far from me. Regroup
 					if (pUnit->Destination != pLeaderUnit)
@@ -727,11 +727,11 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 	if (!pFocus || mode < 0 || (mode != 2 && mode != 1 && !pLeader))
 		return false;
 
-	double closeEnough = RulesClass::Instance->CloseEnough / (double)Unsorted::LeptonsPerCell;
+	double closeEnough = RulesClass::Instance->CloseEnough;
 	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
 
 	if (pTeamData->CloseEnough > 0)
-		closeEnough = pTeamData->CloseEnough;
+		closeEnough = pTeamData->CloseEnough * (double)Unsorted::LeptonsPerCell;
 
 	bool bForceNextAction = false;
 
@@ -748,7 +748,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 			if (mode == 2)
 			{
 				// Default mode: all members in range
-				if ((pUnit->DistanceFrom(pFocus->GetCell()) / (double)Unsorted::LeptonsPerCell) > closeEnough)
+				if (pUnit->DistanceFrom(pFocus->GetCell()) > closeEnough)
 				{
 					bForceNextAction = false;
 
@@ -772,7 +772,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 				if (mode == 1)
 				{
 					// Any member in range
-					if ((pUnit->DistanceFrom(pFocus->GetCell()) / (double)Unsorted::LeptonsPerCell) > closeEnough)
+					if (pUnit->DistanceFrom(pFocus->GetCell()) > closeEnough)
 					{
 						if (pUnit->WhatAmI() == AbstractType::Aircraft && pUnit->Ammo > 0)
 							pUnit->QueueMission(Mission::Move, false);
@@ -796,7 +796,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 					// All other cases: Team Leader mode in range
 					if (pLeader)
 					{
-						if ((pUnit->DistanceFrom(pFocus->GetCell()) / (double)Unsorted::LeptonsPerCell) > closeEnough)
+						if (pUnit->DistanceFrom(pFocus->GetCell()) > closeEnough)
 						{
 							if (pUnit->WhatAmI() == AbstractType::Aircraft && pUnit->Ammo > 0)
 								pUnit->QueueMission(Mission::Move, false);
