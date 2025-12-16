@@ -2240,7 +2240,7 @@ msgid ""
 msgstr ""
 "在原版中，`[CLNT]` 没有自己的图像，它原本在 `artmd.ini` 中通过 `Image=ARND` "
 "使用另一个图像占位，由于没有本功能所以没有任何效果。随后它和 `[UTNK]` 等同样转为通过 `rulesmd.ini` "
-"来实现图像资源调用，但它不是与其他 art 小节那样只是更改实现方式，还同时转为了使用 `Image=CIVC` 而非 `ARND`，虽然这在 "
+"来实现图像资源调用，但它不是与其他 art 小节那样只是更改实现方式，而是还同时改为了 `Image=CIVC` 而非 `ARND`，虽然这在 "
 "`[General] -> ArtImageSwap=true` 时不会直接表现为冲突，但 modder 们可能需要注意。"
 
 #: ../../Fixed-or-Improved-Logics.md:408
