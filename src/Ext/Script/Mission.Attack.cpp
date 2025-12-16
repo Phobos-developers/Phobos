@@ -18,6 +18,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 	auto& waitNoTargetTimer = pTeamData->WaitNoTargetTimer;
 	auto& waitNoTargetAttempts = pTeamData->WaitNoTargetAttempts;
 
+	const auto pHouseExt = HouseExt::ExtMap.Find(pTeam->Owner);
 	// When the new target wasn't found it sleeps some few frames before the new attempt. This can save cycles and cycles of unnecessary executed lines.
 	if (waitNoTargetCounter > 0)
 	{
@@ -183,9 +184,13 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 	{
 		// This part of the code is used for picking a new target.
 		HouseClass* enemyHouse = nullptr;
+		bool onlyTargetHouseEnemy = pTeam->Type->OnlyTargetHouseEnemy;
+
+		if (pHouseExt->ForceOnlyTargetHouseEnemyMode != -1)
+			onlyTargetHouseEnemy = pHouseExt->ForceOnlyTargetHouseEnemy;
 
 		// Favorite Enemy House case. If set, AI will focus against that House
-		if (pTeamType->OnlyTargetHouseEnemy && pLeaderUnit->Owner->EnemyHouseIndex >= 0)
+		if (onlyTargetHouseEnemy && pLeaderUnit->Owner->EnemyHouseIndex >= 0)
 			enemyHouse = HouseClass::Array.GetItem(pLeaderUnit->Owner->EnemyHouseIndex);
 
 		const auto& node = scriptActions[currentMission];
@@ -841,7 +846,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 
 		if (!pTechno->Owner->IsNeutral())
 		{
-			if (const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pTechnoType))
+			if (const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pTechnoType))
 			{
 				if (pBuildingType->PowerBonus > 0)
 					return true;
