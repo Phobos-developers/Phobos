@@ -210,7 +210,7 @@ public:
 		Valueable<bool> PlayAnimUnderground;
 		Valueable<bool> PlayAnimAboveSurface;
 
-		Nullable<bool> AnimZAdjust;
+		Nullable<int> AnimZAdjust;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html

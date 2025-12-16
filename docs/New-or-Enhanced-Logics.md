@@ -1442,6 +1442,10 @@ AutoFire=false             ; boolean
 AutoFire.TargetSelf=false  ; boolean
 ```
 
+```{note}
+To make this logic work properly, you need to ensure that there is no flag like `CanPassiveAquire=false` set on units that prevents target scanning.
+```
+
 ### Build limit group
 
 - You can now make different technos share build limit in a group.
@@ -1745,6 +1749,8 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
 
 - Objects can be destroyed automatically if *any* of these conditions is met:
   - `OnAmmoDepletion`: The object will die if the remaining ammo reaches 0.
+  - `OnOwnerChange`: The object's ownership has been changed.
+    - `OnOwnerChange.HumanToComputer/ComputerToHuman`: The object's ownership has been changed from human to computer or from computer to human. Default to `OnOwnerChange` if not set.
   - `AfterDelay`: The object will die if the countdown (in frames) reaches 0.
   - `TechnosExist` / `TechnosDontExist`: The object will die if TechnoTypes exist or do not exist, respectively.
     - `Technos(Dont)Exist.Any` controls whether or not a single listed TechnoType is enough to satisfy the requirement or if all are required.
@@ -1763,7 +1769,10 @@ In `rulesmd.ini`:
 [SOMETECHNO]                                   ; TechnoType
 AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell), default not set
 AutoDeath.VanishAnimation=                     ; List of AnimationTypes
-AutoDeath.OnAmmoDepletion=no                   ; boolean
+AutoDeath.OnAmmoDepletion=false                ; boolean
+AutoDeath.OnOwnerChange=false                  ; boolean
+AutoDeath.OnOwnerChange.HumanToComputer=       ; boolean, default to AutoDeath.OnOwnerChange
+AutoDeath.OnOwnerChange.ComputerToHuman=       ; boolean, default to AutoDeath.OnOwnerChange
 AutoDeath.AfterDelay=0                         ; positive integer
 AutoDeath.TechnosDontExist=                    ; List of TechnoTypes
 AutoDeath.TechnosDontExist.Any=false           ; boolean

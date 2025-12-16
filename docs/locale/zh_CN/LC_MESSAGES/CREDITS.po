@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-12 18:22+0800\n"
+"POT-Creation-Date: 2025-12-16 19:58+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1919,8 +1919,7 @@ msgid ""
 "Fix a bug introduced by Ares where building types that have "
 "`UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you "
 "infiltrate enemy buildings with `Factory=UnitType`"
-msgstr ""
-"修复了 Ares 引入的渗透敌方重工后 `UndeploysInto` 建筑 `AltCameo` 或 `AltCameoPCX` 不显示 Bug"
+msgstr "修复了 Ares 引入的渗透敌方重工后 `UndeploysInto` 建筑 `AltCameo` 或 `AltCameoPCX` 不显示 Bug"
 
 #: ../../../CREDITS.md:470
 msgid "**Apollo** - Translucent SHP drawing patches"
@@ -2110,7 +2109,7 @@ msgstr "新的抛物线弹道"
 msgid "Enhanced Bombard trajectory"
 msgstr "增强的轰击弹道"
 
-#: ../../../CREDITS.md:519 ../../../CREDITS.md:608
+#: ../../../CREDITS.md:519 ../../../CREDITS.md:609
 msgid "No turret unit turn to the target"
 msgstr "无炮塔单位转向目标"
 
@@ -2166,7 +2165,7 @@ msgid ""
 "attacks when under elevated bridges on their own"
 msgstr "修复了航空母舰在桥下时无法找到恰当攻击位置的问题"
 
-#: ../../../CREDITS.md:532 ../../../CREDITS.md:618
+#: ../../../CREDITS.md:532 ../../../CREDITS.md:619
 msgid ""
 "Fix an issue that in air aircraft carriers being unable to attack when it"
 " is near by elevated bridges"
@@ -2300,7 +2299,7 @@ msgid ""
 " when its `Spawner` is under EMP"
 msgstr "修了拥有 `Spawned` 的战机会在子机发射器单位处于 EMP 状态时飞向地图边界的问题"
 
-#: ../../../CREDITS.md:558 ../../../CREDITS.md:631
+#: ../../../CREDITS.md:558 ../../../CREDITS.md:632
 msgid "Burst without delay"
 msgstr "无间隔连发"
 
@@ -2447,173 +2446,177 @@ msgid "OpenTopped range bonus and damage multiplier customization for passengers
 msgstr "在乘客上自定义 OpenTopped 射程加成和杀伤倍率"
 
 #: ../../../CREDITS.md:595
+msgid "AutoDeath upon ownership change"
+msgstr ""
+
+#: ../../../CREDITS.md:596
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
 
-#: ../../../CREDITS.md:596
+#: ../../../CREDITS.md:597
 msgid "**handama** - AI script action to `16005 Jump Back To Previous Script`"
 msgstr "**handama** - AI 脚本动作 `16005 跳回上一个脚本`"
 
-#: ../../../CREDITS.md:597
+#: ../../../CREDITS.md:598
 msgid "**TaranDahl (航味麻酱)**:"
 msgstr "**TaranDahl (航味麻酱)**："
 
-#: ../../../CREDITS.md:598
+#: ../../../CREDITS.md:599
 msgid ""
 "Skirmish AI \"sell all buildings and set all technos to hunt\" behavior "
 "dehardcode"
 msgstr "遭遇战 AI 卖家冲锋行为的去硬编码化"
 
-#: ../../../CREDITS.md:599
+#: ../../../CREDITS.md:600
 msgid "Skirmish AI \"gather when MCV deploy\" behavior dehardcode"
 msgstr "遭遇战 AI 基地部署时集结行为的去硬编码化"
 
-#: ../../../CREDITS.md:600
+#: ../../../CREDITS.md:601
 msgid "Global value of `RepairBaseNodes`"
 msgstr "`RepairBaseNodes` 的全局值"
 
-#: ../../../CREDITS.md:601
+#: ../../../CREDITS.md:602
 msgid "Skip anim delay for burst fire"
 msgstr "为有 `Burst` 的武器跳过建筑开火前摇动画"
 
-#: ../../../CREDITS.md:602
+#: ../../../CREDITS.md:603
 msgid "Type select for buildings (code)"
 msgstr "建筑的类型选择（代码）"
 
-#: ../../../CREDITS.md:603
+#: ../../../CREDITS.md:604
 msgid "Raise alert when technos are taking damage"
 msgstr "当科技类型受到伤害时发出警报"
 
-#: ../../../CREDITS.md:604
+#: ../../../CREDITS.md:605
 msgid "Toggle waypoint for building"
 msgstr "建筑路径点开关"
 
-#: ../../../CREDITS.md:605
+#: ../../../CREDITS.md:606
 msgid "Parasite returning bug fix"
 msgstr "寄生返回 bug 修复"
 
-#: ../../../CREDITS.md:606
+#: ../../../CREDITS.md:607
 msgid "Bunkerable checks dehardcode"
 msgstr "坦克碉堡准入检查的去硬编码化"
 
-#: ../../../CREDITS.md:607
+#: ../../../CREDITS.md:608
 msgid ""
 "Prevent the units with locomotors that cause problems from entering the "
 "tank bunker"
 msgstr "防止使用了可能导致问题的运动模式的单位进入坦克碉堡"
 
-#: ../../../CREDITS.md:609
+#: ../../../CREDITS.md:610
 msgid ""
 "Units are now unable to kick out from a factory that is in construction "
 "process"
 msgstr "单位现在不会再从正在建造的工厂中驶出"
 
-#: ../../../CREDITS.md:610
+#: ../../../CREDITS.md:611
 msgid ""
 "Fix issues caused by incorrect reference removal (f.ex. If the unit "
 "cloaks/enters transport, it cannot gain experience from previously "
 "launched spawners/C4/projectiles)"
 msgstr "修复了错误脱引用导致的问题（例如，如果单位隐形／进入运输工具则无法自此前发射的子机／抛射体以及安置的 C4 炸弹获得经验）"
 
-#: ../../../CREDITS.md:611
+#: ../../../CREDITS.md:612
 msgid "Recycle spawner in long-range"
 msgstr "远距离回收子机"
 
-#: ../../../CREDITS.md:612
+#: ../../../CREDITS.md:613
 msgid "Play an anim when recycling a spawner"
 msgstr "回收子机时播放动画"
 
-#: ../../../CREDITS.md:613
+#: ../../../CREDITS.md:614
 msgid "Recycle the spawner on other FLH"
 msgstr "使用其他 FLH 回收子机"
 
-#: ../../../CREDITS.md:614
+#: ../../../CREDITS.md:615
 msgid ""
 "Fix the bug that spawned can not return to buildings with foundation "
 "bigger than 1x1"
 msgstr "修复了占地面积超过 1x1 的建筑无法回收子机的 Bug"
 
-#: ../../../CREDITS.md:615
+#: ../../../CREDITS.md:616
 msgid "`BombParachute` deglobalization"
 msgstr "抛射体自定义 `BombParachute`"
 
-#: ../../../CREDITS.md:616
+#: ../../../CREDITS.md:617
 msgid "Sinkablity and sinking speed customization"
 msgstr "自定义能否沉没以及沉没速度"
 
-#: ../../../CREDITS.md:617
+#: ../../../CREDITS.md:618
 msgid ""
 "Fix an issue where `FireAngle` would not work properly under certain "
 "circumstances"
 msgstr "修复了 `FireAngle` 在某些情况下未能正常工作的问题"
 
-#: ../../../CREDITS.md:619
+#: ../../../CREDITS.md:620
 msgid ""
 "Fix the bug that healing weapons could not automatically acquire aerial "
 "targets"
 msgstr "修复了治疗武器无法自动获取到空中目标的 Bug"
 
-#: ../../../CREDITS.md:620
+#: ../../../CREDITS.md:621
 msgid ""
 "Fix an issue where AI would select unreachable buildings and get stuck "
 "when looking for buildings like tank bunkers, bio reactors, etc"
 msgstr "修复了 AI 会找实际无法抵达的坦克碉堡、生化反应炉等建筑作为目标而导致卡住的问题"
 
-#: ../../../CREDITS.md:621
+#: ../../../CREDITS.md:622
 msgid "Prone speed customization"
 msgstr "自定义匍匐速度"
 
-#: ../../../CREDITS.md:622
+#: ../../../CREDITS.md:623
 msgid "RadarInvisible for non-enemy house"
 msgstr "不仅限于敌方的 `RadarInvisible`"
 
-#: ../../../CREDITS.md:623
+#: ../../../CREDITS.md:624
 msgid "Allow miners do area guard"
 msgstr "允许矿车区域警戒"
 
-#: ../../../CREDITS.md:624
+#: ../../../CREDITS.md:625
 msgid "Make harvesters do addtional scan after unload"
 msgstr "使矿车卸载后重新扫描较近的矿区"
 
-#: ../../../CREDITS.md:625
+#: ../../../CREDITS.md:626
 msgid "Customize the scatter caused by aircraft attack mission"
 msgstr "自定义战机攻击任务引发分散"
 
-#: ../../../CREDITS.md:626
+#: ../../../CREDITS.md:627
 msgid "Customize whether `Crater=yes` animation would destroy tiberium"
 msgstr "自定义 `Crater=yes` 的动画能否摧毁矿石"
 
-#: ../../../CREDITS.md:627
+#: ../../../CREDITS.md:628
 msgid "Targeting limitation for berzerk technos"
 msgstr "狂暴单位索敌限制"
 
-#: ../../../CREDITS.md:628
+#: ../../../CREDITS.md:629
 msgid "Allows refineries to use multiple ActiveAnim simultaneously"
 msgstr "允许矿场同时播放多个 `ActiveAnim` 动画"
 
-#: ../../../CREDITS.md:629
+#: ../../../CREDITS.md:630
 msgid "Several attackmove related enhancement"
 msgstr "几个移动攻击相关的增强"
 
-#: ../../../CREDITS.md:630
+#: ../../../CREDITS.md:631
 msgid ""
 "Fix the bug that `OpenToppedWarpDistance` is calculated incorrectly for "
 "building target"
 msgstr "修复了建筑类目标 `OpenToppedWarpDistance` 计算错误的 Bug"
 
-#: ../../../CREDITS.md:632
+#: ../../../CREDITS.md:633
 msgid "Target scanning delay customization (code)"
 msgstr "自定义索敌间隔（代码）"
 
-#: ../../../CREDITS.md:633
+#: ../../../CREDITS.md:634
 msgid "Skip target scanning function calling for unarmed technos (code)"
 msgstr "禁用了无武器单位的索敌（代码）"
 
-#: ../../../CREDITS.md:634
+#: ../../../CREDITS.md:635
 msgid "Force techno targeting in distributed frames to improve performance"
 msgstr "强制单位索敌行为分散到不同帧以提升性能"
 
-#: ../../../CREDITS.md:635
+#: ../../../CREDITS.md:636
 msgid ""
 "Use `SkipCrushSlowdown=true` to avoid the bug related to "
 "`Accelerates=true` and `MovementZone=CrushAll`"
@@ -2621,177 +2624,177 @@ msgstr ""
 "使用 `SkipCrushSlowdown=true` 来避免 `Accelerates=true` 与 "
 "`MovementZone=CrushAll` 相关的 Bug"
 
-#: ../../../CREDITS.md:636
+#: ../../../CREDITS.md:637
 msgid "Auto deploy for GI-like infantry"
 msgstr "GI 式步兵自动部署"
 
-#: ../../../CREDITS.md:637
+#: ../../../CREDITS.md:638
 msgid ""
 "Fix an issue that Ares' Type Conversion not resetting barrel's direction "
 "by `FireAngle`"
 msgstr "修复了 Ares 的单位转换不会通过 `FireAngle` 重设炮管方向的问题"
 
-#: ../../../CREDITS.md:638
+#: ../../../CREDITS.md:639
 msgid "Fix an issue that jumpjets in air can not correctly spawn missiles"
 msgstr "修复了 Jumpjet 单位在空中时无法生成导弹子机的问题"
 
-#: ../../../CREDITS.md:639
+#: ../../../CREDITS.md:640
 msgid "Customize the chained damage of the wall"
 msgstr "自定义墙的连锁伤害"
 
-#: ../../../CREDITS.md:640
+#: ../../../CREDITS.md:641
 msgid ""
 "Fix an issue that jumpjet vehicles can not stop correctly when assigned a"
 " target in range"
 msgstr "修复了 Jumpjet 载具在指定射程内目标时无法正确停止的问题"
 
-#: ../../../CREDITS.md:641
+#: ../../../CREDITS.md:642
 msgid ""
 "Fix an issue that jumpjet infantry stop incorrectly when assigned a "
 "target out of range"
 msgstr "修复了 Jumpjet 步兵在指定超出射程的目标时停止不正确的问题"
 
-#: ../../../CREDITS.md:642
+#: ../../../CREDITS.md:643
 msgid ""
 "Fix an issue that jumpjet infantry' shadow is always drawn even if they "
 "are cloaked"
 msgstr "修复了 Jumpjet 步兵隐形时依然绘制影子的问题"
 
-#: ../../../CREDITS.md:643
+#: ../../../CREDITS.md:644
 msgid ""
 "Fix an issue that technos head to building's dock even they are not going"
 " to dock"
 msgstr "修复了单位不执行停靠命令的情况下也会前往停靠位置的问题"
 
-#: ../../../CREDITS.md:644
+#: ../../../CREDITS.md:645
 msgid ""
 "Fix an issue that the jumpjet vehicles cannot stop correctly after going "
 "berserk"
 msgstr "修复了被混乱的 Jumpjet 载具无法正确停止的问题"
 
-#: ../../../CREDITS.md:645
+#: ../../../CREDITS.md:646
 msgid "Attack and damage technos underground"
 msgstr "攻击和杀伤地下单位"
 
-#: ../../../CREDITS.md:646
+#: ../../../CREDITS.md:647
 msgid ""
 "Fix an issue that infantry walking through a cell containing a tree would"
 " cause it to be impassable to other houses"
 msgstr "修复了步兵占据包含树木的单元格会导致该单元格对其他所属方不可通行的问题"
 
-#: ../../../CREDITS.md:647
+#: ../../../CREDITS.md:648
 msgid ""
 "Fix an issue that the AI would enter a combat state when its building "
 "receiving damage from friendly units or damage not greater than 0"
 msgstr "修复了 AI 在建筑受到的伤害即便来自友军单位或不大于 0 点也依然进入防御状态的问题"
 
-#: ../../../CREDITS.md:648
+#: ../../../CREDITS.md:649
 msgid ""
 "Fix an issue that the techno with weapon with `AA=yes` and `AG=no` would "
 "not auto targeting units that are falling, such as paratroopers"
 msgstr "修复了所用武器 `AA=yes` 且 `AG=no` 的单位不会主动攻击坠落中的单位（例如伞兵）的问题"
 
-#: ../../../CREDITS.md:649
+#: ../../../CREDITS.md:650
 msgid "Dehardcode the `ZAdjust` of warhead anim"
 msgstr "弹头动画 `ZAdjust` 去硬编码"
 
-#: ../../../CREDITS.md:650
+#: ../../../CREDITS.md:651
 msgid ""
 "Fix an issue where some effects pointing to a unit were not properly "
 "cleared when the unit changed its owner"
 msgstr "修复了指向某个某个单位的部分效果在该单位变更所属时未能正确清除的问题"
 
-#: ../../../CREDITS.md:651
+#: ../../../CREDITS.md:652
 msgid "Fix an issue where the vanilla script ignores jumpjets"
 msgstr "修复了原版脚本会忽略 Jumpjet 单位的问题"
 
-#: ../../../CREDITS.md:652
+#: ../../../CREDITS.md:653
 msgid "CellSpread in cylinder shape"
 msgstr ""
 
-#: ../../../CREDITS.md:653
+#: ../../../CREDITS.md:654
 msgid "CellSpread damage check if victim is in air or on floor"
 msgstr ""
 
-#: ../../../CREDITS.md:654
+#: ../../../CREDITS.md:655
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
 
-#: ../../../CREDITS.md:655
+#: ../../../CREDITS.md:656
 msgid "Target scanning delay customization (documentation)"
 msgstr "自定义索敌间隔（文档）"
 
-#: ../../../CREDITS.md:656
+#: ../../../CREDITS.md:657
 msgid "Skip target scanning function calling for unarmed technos (documentation)"
 msgstr "禁用了无武器单位的索敌（文档）"
 
-#: ../../../CREDITS.md:657
+#: ../../../CREDITS.md:658
 msgid "**Flactine** - add target filtering options to attacheffect system"
 msgstr "**Flactine** - 为 AE 系统添加目标过滤选项"
 
-#: ../../../CREDITS.md:658
+#: ../../../CREDITS.md:659
 msgid "**tyuah8**:"
 msgstr "**tyuah8**："
 
-#: ../../../CREDITS.md:659
+#: ../../../CREDITS.md:660
 msgid ""
 "Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-"
 "piggybacked bugfix"
 msgstr "修复了 Drive/Jumpjet/Ship/Teleport 运动方式在退出 piggybacked 接口时无法激活的问题"
 
-#: ../../../CREDITS.md:660
+#: ../../../CREDITS.md:661
 msgid "Destroyed unit leaves sensors bugfix"
 msgstr "单位被摧毁后遗留反隐区域的 bug 修复"
 
-#: ../../../CREDITS.md:661
+#: ../../../CREDITS.md:662
 msgid ""
 "**Aephiex** - initial fix for Ares academy not working on the initial "
 "payloads of vehicles built from a war factory"
 msgstr "**Aephiex** - 对于 Ares 训练所逻辑在产自重工的载具其初始载员上不生效问题初始的修复方式"
 
-#: ../../../CREDITS.md:662
+#: ../../../CREDITS.md:663
 msgid ""
 "**Multfinite** - Allow to toggle main exception handler via command line "
 "argument `-ExceptionHandler=boolean`"
 msgstr "**Multfinite** - 允许通过命令行参数 `-ExceptionHandler=boolean` 开关主循环异常处理程序"
 
-#: ../../../CREDITS.md:663
+#: ../../../CREDITS.md:664
 msgid ""
 "**hejiajun107, Xkein** - Fix a jumpjet crash related to voxel shadow "
 "drawing"
 msgstr "**hejiajun107, Xkein** - 修复与 Voxel 阴影绘制相关的 Jumpjet 崩溃问题"
 
-#: ../../../CREDITS.md:664
+#: ../../../CREDITS.md:665
 msgid "**Ares developers**:"
 msgstr "**Ares developers**："
 
-#: ../../../CREDITS.md:665
+#: ../../../CREDITS.md:666
 msgid ""
 "YRpp and Syringe which are used, save/load, project foundation and "
 "generally useful code from Ares"
 msgstr "Ares 所使用的 YRpp 和 Syringe、存读档、项目基础和一些通用代码"
 
-#: ../../../CREDITS.md:666
+#: ../../../CREDITS.md:667
 msgid "unfinished RadTypes code"
 msgstr "半成品自定义辐射类型代码"
 
-#: ../../../CREDITS.md:667
+#: ../../../CREDITS.md:668
 msgid "prototype deployer fixes"
 msgstr "部署修复雏形"
 
-#: ../../../CREDITS.md:668
+#: ../../../CREDITS.md:669
 msgid "Superweapon launch site & availability code"
 msgstr "超级武器发射地点与超武可用性代码"
 
-#: ../../../CREDITS.md:669
+#: ../../../CREDITS.md:670
 msgid "AI vehicle production update code"
 msgstr "AI 载具生产更新代码"
 
-#: ../../../CREDITS.md:670
+#: ../../../CREDITS.md:671
 msgid "parts of TechnoType conversion placeholder code"
 msgstr "单位转换占位符代码的一部分"
 
-#: ../../../CREDITS.md:671
+#: ../../../CREDITS.md:672
 msgid ""
 "**ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, CrimRecya** - "
 "Digital Display"
@@ -2799,23 +2802,23 @@ msgstr ""
 "**ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, CrimRecya** - "
 "数字化显示"
 
-#: ../../../CREDITS.md:672
+#: ../../../CREDITS.md:673
 msgid "**SukaHati (Erzoid)** - Minimum interceptor guard range"
 msgstr "**SukaHati (Erzoid)** - 抛射体最小拦截距离"
 
-#: ../../../CREDITS.md:673
+#: ../../../CREDITS.md:674
 msgid "**E1 Elite** - TileSet 255 and above bridge repair fix"
 msgstr "**E1 Elite** - TileSet 达到 255 以上后的桥梁维修修复"
 
-#: ../../../CREDITS.md:674
+#: ../../../CREDITS.md:675
 msgid "**AutoGavy** - interceptor logic, Warhead critical hit logic"
 msgstr "**AutoGavy** - 抛射体拦截逻辑、弹头暴击逻辑"
 
-#: ../../../CREDITS.md:675
+#: ../../../CREDITS.md:676
 msgid "**Chasheen (Chasheenburg)** - CN docs help for Build#24"
 msgstr "**Chasheen (Chasheenburg)** - Build#24 的中文文档协助"
 
-#: ../../../CREDITS.md:676
+#: ../../../CREDITS.md:677
 msgid ""
 "**Noble Fish** - some minor improvements and fixes, established Community"
 " Chinese docs, took over and completely rewrite the Official Chinese docs"
@@ -2824,36 +2827,36 @@ msgstr ""
 "**Noble Fish** - 一些小改进与修复、文档维护者（官方英文文档维护、创建了社区中文文档、在 Build#46 "
 "接管并完全重写了官方中文文档）"
 
-#: ../../../CREDITS.md:677
+#: ../../../CREDITS.md:678
 msgid ""
 "**tomsons26** - all-around help, assistance and guidance in reverse-"
 "engineering, YR binary mappings"
 msgstr "**tomsons26** - 全方位协助，逆向工程方面的协助与指导、YR 二进制映射"
 
-#: ../../../CREDITS.md:678
+#: ../../../CREDITS.md:679
 msgid ""
 "**CCHyper** - all-around help, current project logo, assistance and "
 "guidance in reverse-engineering, YR binary mappings, custom locomotors "
 "example implementation"
 msgstr "**CCHyper** - 全方位协助，当前项目 Logo 设计、逆向工程方面的协助与指导、YR 二进制映射、自定义运动模式示例实现"
 
-#: ../../../CREDITS.md:679
+#: ../../../CREDITS.md:680
 msgid "**AlexB** - Original FlyingStrings implementation"
 msgstr "**AlexB** - 原始 FlyingStrings 实现"
 
-#: ../../../CREDITS.md:680
+#: ../../../CREDITS.md:681
 msgid "**Joshy** - Original FlyingStrings implementation"
 msgstr "**Joshy** - 原始 FlyingStrings 实现"
 
-#: ../../../CREDITS.md:681
+#: ../../../CREDITS.md:682
 msgid "**CnCVK** - Original custom locomotors experiment"
 msgstr "**CnCVK** - 原始的自定义运动模式尝试"
 
-#: ../../../CREDITS.md:682
+#: ../../../CREDITS.md:683
 msgid "**ZΞPHYɌUS** - win/lose themes code"
 msgstr "**ZΞPHYɌUS** - 胜利／失败主题音乐代码"
 
-#: ../../../CREDITS.md:683
+#: ../../../CREDITS.md:684
 msgid ""
 "**Neargye (Daniil Goncharov)** - [nameof "
 "library](https://github.com/Neargye/nameof) (MIT)"
@@ -2861,33 +2864,33 @@ msgstr ""
 "**Neargye (Daniil Goncharov)** - [nameof "
 "库](https://github.com/Neargye/nameof)（MIT）"
 
-#: ../../../CREDITS.md:684
+#: ../../../CREDITS.md:685
 msgid "**ayylmao** - help with docs, extensive and thorough testing"
 msgstr "**ayylmao** - 文档协助，广泛且深入的测试"
 
-#: ../../../CREDITS.md:685
+#: ../../../CREDITS.md:686
 msgid "**SMxReaver** - help with docs, extensive and thorough testing"
 msgstr "**SMxReaver** - 文档协助，广泛且深入的测试"
 
-#: ../../../CREDITS.md:686
+#: ../../../CREDITS.md:687
 msgid "**4SG** - help with docs"
 msgstr "**4SG** - 文档协助"
 
-#: ../../../CREDITS.md:687
+#: ../../../CREDITS.md:688
 msgid ""
 "**thomassneddon** - general assistance, knowledge about voxel lighting "
 "model"
 msgstr "**thomassneddon** - 一般性协助、Voxel 照明模型知识"
 
-#: ../../../CREDITS.md:688
+#: ../../../CREDITS.md:689
 msgid "**Xkein** - general assistance, YRpp edits"
 msgstr "**Xkein** - 一般性协助、YRpp 编辑"
 
-#: ../../../CREDITS.md:689
+#: ../../../CREDITS.md:690
 msgid "**mevitar** - honorary shield tester *triple* award"
 msgstr "**mevitar** - 荣誉护盾测试员 **三重** 奖章"
 
-#: ../../../CREDITS.md:690
+#: ../../../CREDITS.md:691
 msgid ""
 "**Mentalmeisters Team (Speeder, Ollerus, mevitar, Reedom, Takitoru, "
 "Terumasa, Zhelin)** - extensive and thorough testing"
@@ -2895,7 +2898,7 @@ msgstr ""
 "**Mentalmeisters Team (Speeder, Ollerus, mevitar, Reedom, Takitoru, "
 "Terumasa, Zhelin)** - 广泛且深入的测试"
 
-#: ../../../CREDITS.md:691
+#: ../../../CREDITS.md:692
 msgid ""
 "**Phobos CN Tester Group (Mantis, Swim Wing, Examon, AKB, Pusheen, ZQ, "
 "Claptrap, BunkerGeneral, Big J, Skywalker, ChickEmperor, Shifty, Mikain, "
@@ -2909,19 +2912,19 @@ msgstr ""
 "Yumeri_Rei, Nacho, Zhuzi, Ika_Aru, EUSiegfried, HanpiBaozi, Nxusbot, "
 "TientsinWind)** - 广泛且深入的测试"
 
-#: ../../../CREDITS.md:692
+#: ../../../CREDITS.md:693
 msgid "**Damfoos** - extensive and thorough testing"
 msgstr "**Damfoos** - 广泛且深入的测试"
 
-#: ../../../CREDITS.md:693
+#: ../../../CREDITS.md:694
 msgid "**Dmitry Volkov** - extensive and thorough testing"
 msgstr "**Dmitry Volkov** - 广泛且深入的测试"
 
-#: ../../../CREDITS.md:694
+#: ../../../CREDITS.md:695
 msgid "**Rise of the East community** - extensive playtesting of in-dev features"
 msgstr "**东方崛起社区** - 对开发功能的广泛测试"
 
-#: ../../../CREDITS.md:695
+#: ../../../CREDITS.md:696
 msgid ""
 "**11EJDE11** - Prevent mpdebug number from being drawn when visibility "
 "toggled off"
