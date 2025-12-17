@@ -304,7 +304,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AffectsAir.Read(exINI, pSection, "AffectsAir");
 	this->CellSpread_Cylinder.Read(exINI, pSection, "CellSpread.Cylinder");
 	this->HealthCheck = this->AffectsBelowPercent > 0.0 || this->AffectsAbovePercent < 1.0;
-	this->VeterancyCheck = this->AffectsBelowVeterancy > 0.0 || this->AffectsAboveVeterancy < 2.0;
+	this->VeterancyCheck = this->AffectsBelowVeterancy > 0.0f || this->AffectsAboveVeterancy < 2.0f;
 
 	if (this->AffectsAbovePercent > this->AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] AffectsAbovePercent is bigger than AffectsBelowPercent, the warhead will never activate!\n", pSection);

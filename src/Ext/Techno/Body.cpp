@@ -745,13 +745,10 @@ bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max
 
 bool TechnoExt::IsVeterancyInThreshold(TechnoClass* pTechno, float min, float max)
 {
-	Debug::Log("[Developer] min:[%.2f], max:[%.2f]\n", min, max);
 	float veterancy = 0.0f;
 
 	if (pTechno->GetTechnoType()->Trainable)
 		veterancy = pTechno->Veterancy.Veterancy;
-
-	Debug::Log("[Developer] veterancy:[%.2f]\n", veterancy);
 
 	return veterancy >= min && veterancy <= max;
 }
