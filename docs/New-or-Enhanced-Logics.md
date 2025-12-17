@@ -2826,6 +2826,12 @@ This function is only used as an additional scattering visual display, which is 
 
 - You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
   - `CanTarget.MaxHealth` and `CanTarget.MinHealth` set health percentage thresholds for allowed targets (TechnoTypes only) that the target's health must be above and/or below/equal to, respectively. If target has zero health left this check is bypassed.
+  - `CanTarget.MinVeterancy` and `CanTarget.MaxVeterancy` define the allowed veterancy range for targets. The target's veterancy must be greater than or equal to `MinVeterancy` and less than or equal to `MaxVeterancy` in order to be considered a valid target.
+    - Veterancy values are interpreted as follows:
+      - `0.0` = Rookie
+      - `1.0` = Veteran
+      - `2.0` = Elite
+	- TechnoTypes with `Trainable=no` are always treated as having a veterancy level of `0.0` (Rookie) for the purpose of this check.
 
 In `rulesmd.ini`:
 ```ini
@@ -2834,6 +2840,8 @@ CanTarget=all            ; List of Affected Target Enumeration (none|land|water|
 CanTargetHouses=all      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 CanTarget.MaxHealth=1.0  ; floating point value, percents or absolute
 CanTarget.MinHealth=0.0  ; floating point value, percents or absolute
+CanTarget.MaxVeterancy=2.0  ; floating point value, percents or absolute
+CanTarget.MinVeterancy=0.0  ; floating point value, percents or absolute
 ```
 
 ```{note}
