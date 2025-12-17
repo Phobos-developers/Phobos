@@ -405,8 +405,8 @@ public:
 
 			, AffectsBelowPercent { 1.0 }
 			, AffectsAbovePercent { 0.0 }
-			, AffectsBelowVeterancy { 2.0 }
-			, AffectsAboveVeterancy { 0.0 }
+			, AffectsBelowVeterancy { 2.0f }
+			, AffectsAboveVeterancy { 0.0f }
 			, AffectsNeutral { true }
 			, AffectsGround { true }
 			, AffectsAir { true }
