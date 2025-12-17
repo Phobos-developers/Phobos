@@ -116,7 +116,7 @@ public:
 			, CanTargetHouses { AffectedHouse::All }
 			, CanTarget_MaxHealth { 1.0 }
 			, CanTarget_MinHealth { 0.0 }
-			, CanTarget_MaxVeterancy { 2.0f }
+			, CanTarget_MaxVeterancy { RulesClass::Instance->VeteranCap }
 			, CanTarget_MinVeterancy { 0.0f }
 			, Burst_Delays {}
 			, Burst_FireWithinSequence { false }
