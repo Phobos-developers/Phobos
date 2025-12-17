@@ -192,8 +192,8 @@ public:
 
 		Valueable<double> AffectsBelowPercent;
 		Valueable<double> AffectsAbovePercent;
-		Valueable<float> AffectsBelowVeterancy;
-		Valueable<float> AffectsAboveVeterancy;
+		Nullable<float> AffectsBelowVeterancy;
+		Nullable<float> AffectsAboveVeterancy;
 		Valueable<bool> AffectsNeutral;
 		Valueable<bool> AffectsGround;
 		Valueable<bool> AffectsAir;
@@ -405,7 +405,7 @@ public:
 
 			, AffectsBelowPercent { 1.0 }
 			, AffectsAbovePercent { 0.0 }
-			, AffectsBelowVeterancy { static_cast<float>(RulesClass::Instance->VeteranCap) }
+			, AffectsBelowVeterancy {}
 			, AffectsAboveVeterancy { 0.0f }
 			, AffectsNeutral { true }
 			, AffectsGround { true }

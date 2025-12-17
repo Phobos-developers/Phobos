@@ -42,8 +42,8 @@ public:
 		Valueable<AffectedHouse> CanTargetHouses;
 		Valueable<double> CanTarget_MaxHealth;
 		Valueable<double> CanTarget_MinHealth;
-		Valueable<float> CanTarget_MaxVeterancy;
-		Valueable<float> CanTarget_MinVeterancy;
+		Nullable<float> CanTarget_MaxVeterancy;
+		Nullable<float> CanTarget_MinVeterancy;
 		ValueableVector<int> Burst_Delays;
 		Valueable<bool> Burst_FireWithinSequence;
 		Valueable<bool> Burst_NoDelay;
@@ -116,7 +116,7 @@ public:
 			, CanTargetHouses { AffectedHouse::All }
 			, CanTarget_MaxHealth { 1.0 }
 			, CanTarget_MinHealth { 0.0 }
-			, CanTarget_MaxVeterancy { static_cast<float>(RulesClass::Instance->VeteranCap) }
+			, CanTarget_MaxVeterancy {}
 			, CanTarget_MinVeterancy { 0.0f }
 			, Burst_Delays {}
 			, Burst_FireWithinSequence { false }
