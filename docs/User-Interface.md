@@ -169,7 +169,7 @@ In `RA2MD.INI`:
 ShowFlashOnSelecting=false  ; boolean
 ```
 
-### Hide health bars
+### Custom health bars display
 
 ![image](_static/images/healthbar.hide-01.png)
 *Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
@@ -188,12 +188,15 @@ HealthBar.Permanent=false            ; boolean
 HealthBar.Permanent.PipScale=false   ; boolean
 ```
 
-### Light flash effect toggling
+### Visual effects toggling
 
 - It is possible to toggle certain light flash effects off. These light flash effects include:
   - Combat light effects (`Bright=true`) and everything that uses same functionality e.g Iron Curtain / Force Field impact flashes.
   - Alpha images attached to ParticleSystems or Particles that are generated through a Warhead's `Particle` if `[AudioVisual] -> WarheadParticleAlphaImageIsLightFlash` or on Warhead `Particle.AlphaImageIsLightFlash` is set to true, latter defaults to former.
     - Additionally these alpha images are not created if `[AudioVisual] -> LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting.
+- It is possible to toggle shake screen effects (`ShakeX/Ylo/hi`) off by setting `HideShakeEffects=true`.
+- Phobos's [Laser Trail effects](New-or-Enhanced-Logics.md#laser-trails) can also be toggled off.
+  - If a LaserTrailType has `IsHideable=false`, it can't be toggled off by setting `HideLaserTrailEffects=true`.
 
 In `rulesmd.ini`:
 ```ini
@@ -205,10 +208,18 @@ LightFlashAlphaImageDetailLevel=0            ; integer
 Particle.AlphaImageIsLightFlash=             ; boolean
 ```
 
+In `artmd.ini`:
+```ini
+[SOMETRAIL]                  ; LaserTrailType name
+IsHideable=true              ; boolean
+```
+
 In `RA2MD.INI`:
 ```ini
 [Phobos]
 HideLightFlashEffects=false  ; boolean
+HideLaserTrailEffects=false  ; boolean
+HideShakeEffects=false       ; boolean
 ```
 
 ### Low priority for box selection
@@ -296,7 +307,6 @@ RealTimeTimers.Adaptive=false   ; boolean
 
 - Now you can use and customize select box for infantry, vehicle and aircraft. No select box for buildings in default case, but you still can specific for some building if you want.
   - `Frames` can be used to list frames of `Shape` file that'll be drawn as a select box when the TechnoType's health is at or below full health/the percentage defined in `[AudioVisual] -> ConditionYellow/ConditionRed`, respectively.
-  - If `Grounded` set to true, the select box will be drawn on the ground below the TechnoType.
   - Select box's translucency setting can be adjusted via `Translucency`.
   - `VisibleToHouses` and `VisibleToHouses.Observer` can limit visibility to specific players.
   - `DrawAboveTechno` specific whether the select box will be drawn before drawing the TechnoType. If set to false, the select box can be obscured by the TechnoType, and the draw location will ignore `PixelSelectionBracketDelta`.
@@ -343,6 +353,11 @@ In `RA2MD.INI`:
 EnableSelectBox=false                   ; boolean
 ```
 
+```{warning}
+- For your shp to work properly, you need to save it in `Force Compression 3` mode, otherwise it might be incorrectly rendered as something similar to AlphaImage.
+- For ImageShaper users, you need to choose a mode other than `Uncompressed` or `Uncompressed_Full_Frame` to create `*.shp` files.
+```
+
 ### Show designator & inhibitor range
 
 - It is now possible to display range of designator and inhibitor units when in super weapon targeting mode. Each instance of player owned techno types listed in `[SuperWeapon] -> SW.Designators` will display a circle with radius set in `[TechnoType] -> DesignatorRange` or `Sight`.
@@ -377,17 +392,25 @@ ShowTimer.Priority=0  ; integer
 
 ### Task subtitles display in the middle of the screen
 
-![Message Display In Center](_static/images/messagedisplayincenter.png)
+![Message Display In Center](_static/images/messagedisplayincenter.gif)
+*Taking a campaign in [Mental Omega](https://www.mentalomega.com) as an example to display messages in center*
 
 - Now you can set `MessageApplyHoverState` to true，to make the upper left messages not disappear while mouse hovering over the top of display area.
-- You can also let task subtitles (created by trigger 11) to display directly in the middle area of the screen instead of the upper left corner, with a semi transparent background, by setting `MessageDisplayInCenter` to true.
-  - If you also set `MessageApplyHoverState` to true, when the mouse hovers over the subtitle area (simply judged as a rectangle), its opacity will increase and it will not disappear during this period.
+- You can also let task subtitles (created by trigger 11) to display directly in the middle area of the screen instead of the upper left corner, with a semi transparent background, by setting `MessageDisplayInCenter` to true. In this case, all messages within this game can be saved, even after being s/l. The storage capacity of messages can reach thousands.
+  - If you also set `MessageApplyHoverState` to true, when the mouse hovers over the subtitle area (simply judged as a rectangle), its opacity will increase and it will not disappear during this period. If the area is expanded, disabling this option will not prevent mouse clicking behavior from being restricted to this area.
+  - `MessageDisplayInCenter.BoardOpacity` controls the opacity of the background.
+  - `MessageDisplayInCenter.LabelsCount` controls the maximum number of subtitle labels that can automatically pop up at a same time in the middle area of the screen. At least 1.
+  - `MessageDisplayInCenter.RecordsCount` controls the maximum number of historical messages displayed when this middle area is expanded (not the maximum number that can be stored). At least 4, and it is 8 in the demonstration gif.
+  - The label can be toggled by ["Toggle Message Label" hotkey](#toggle-message-label) in "Interface" category.
 
 In `RA2MD.INI`:
 ```ini
 [Phobos]
-MessageApplyHoverState=false  ; boolean
-MessageDisplayInCenter=false  ; boolean
+MessageApplyHoverState=false            ; boolean
+MessageDisplayInCenter=false            ; boolean
+MessageDisplayInCenter.BoardOpacity=40  ; integer
+MessageDisplayInCenter.LabelsCount=6    ; integer
+MessageDisplayInCenter.RecordsCount=12  ; integer
 ```
 
 ### Type select for buildings
@@ -479,6 +502,11 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
   - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
   - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`.
 
+### `[ ]` Toggle Message Label
+
+- Switches on/off [Task subtitles' label in the middle of the screen](#task-subtitles-display-in-the-middle-of-the-screen).
+- For localization add `TXT_TOGGLE_MESSAGE` and `TXT_TOGGLE_MESSAGE_DESC` into your `.csf` file.
+
 ## Loading screen
 
 - PCX files can now be used as loadscreen images.
@@ -531,10 +559,15 @@ When the building becomes ready to be placed, the next building's construction w
 ### Cameo Sorting
 
 - You can now specify Cameo Priority for any TechnoType/SuperWeaponType. Vanilla sorting rules are [here](https://modenc.renegadeprojects.com/Cameo_Sorting).
-  - The Cameo Priority is checked just before evevything vanilla. Greater `CameoPriority` wins.
+  - The Cameo Priority is checked just before everything vanilla. Greater `CameoPriority` wins.
+- You can also use `Name` of TechnoType/SuperWeaponType to sort the cameo. They'll be compared after all the other rules but before comparing the CSF text of `UIName`.
+  - This is to prevent cameo order being disrupted by CSF change accidentally, like when you're using a translation pack of different language.
 
 In `rulesmd.ini`:
 ```ini
+[General]
+SortCameoByName=false  ; boolean
+
 [SOMENAME]             ; TechnoType / SuperWeaponType
 CameoPriority=0        ; integer
 ```

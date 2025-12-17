@@ -296,7 +296,7 @@ namespace JumpjetTiltReference
 }
 
 // Just rewrite this completely to avoid headache
-Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, PhobosVoxelIndexKey* key)
+static Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, PhobosVoxelIndexKey* key)
 {
 	__assume(iloco != nullptr);
 	auto const pThis = static_cast<JumpjetLocomotionClass*>(iloco);
@@ -431,7 +431,7 @@ DEFINE_HOOK(0x73B748, UnitClass_DrawVXL_ResetKeyForTurretUse, 0x7)
 }
 
 // Visual bugfix : Teleport loco vxls could not tilt
-Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, VoxelIndexKey* pIndex)
+static Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, VoxelIndexKey* pIndex)
 {
 	__assume(iloco != nullptr);
 	auto const pThis = static_cast<LocomotionClass*>(iloco);
@@ -491,14 +491,14 @@ constexpr double Pade2_2(double in)
 		* (12. - 6 * s + s * s) / (12. + 6 * s + s * s);
 }
 
-Matrix3D* __fastcall sub7559B0(Matrix3D* ret, int idx)
+static Matrix3D* __fastcall sub7559B0(Matrix3D* ret, int idx)
 {
 	*ret = Matrix3D::VoxelRampMatrix[idx] * Matrix3D { 1,0,0,0,0,1,0,0,0,0,0,0 };
 	return ret;
 }
 DEFINE_FUNCTION_JUMP(CALL, 0x55A814, sub7559B0);
 
-Matrix3D* __stdcall TunnelLocomotionClass_ShadowMatrix(ILocomotion* iloco, Matrix3D* ret, VoxelIndexKey* key)
+static Matrix3D* __stdcall TunnelLocomotionClass_ShadowMatrix(ILocomotion* iloco, Matrix3D* ret, VoxelIndexKey* key)
 {
 	__assume(iloco != nullptr);
 	const auto tLoco = static_cast<TunnelLocomotionClass*>(iloco);

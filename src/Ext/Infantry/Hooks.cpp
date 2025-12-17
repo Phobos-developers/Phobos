@@ -6,6 +6,7 @@
 #include <InputManagerClass.h>
 #include <WarheadTypeClass.h>
 
+#include <Ext/BuildingType/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/ParticleSystemType/Body.h>
@@ -21,7 +22,7 @@ DEFINE_HOOK(0x51DF42, InfantryClass_Limbo_Cyborg, 0x7)
 		if (pThis->Transporter)
 		{
 			// Note: When infantry enters into a transport this Limbo will be executed 2 times, in the second run of this hook infaatry will contain information of the transport unit (Transporter variable)
-			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Transporter->GetTechnoType());
+			auto const pTypeExt = TechnoExt::ExtMap.Find(pThis->Transporter)->TypeExtData;
 
 			if (pTypeExt->FixEnteringCyborgLegs)
 				return 0;
@@ -41,7 +42,7 @@ DEFINE_HOOK(0x52291A, InfantryClass_InfantryEnteredThing_Cyborg, 0x6)
 
 	if (pThis->Type->Cyborg && pThis->Crawling)
 	{
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->GetTechnoType());
+		auto const pTypeExt = TechnoExt::ExtMap.Find(pBuilding)->TypeExtData;
 
 		if (pTypeExt->FixEnteringCyborgLegs)
 			pThis->Crawling = false;
@@ -127,8 +128,16 @@ DEFINE_HOOK(0x51E4FB, InfantryClass_WhatAction_ObjectClass_EnigneerEnterBuilding
 
 	if (!bridgeRepairHut && pThis->Owner->IsAlliedWith(pBuilding->Owner))
 	{
-		if (WhatActionObjectTemp::Move || pBuilding->Health >= pBuildingType->Strength)
+		if (WhatActionObjectTemp::Move)
 			return Skip;
+
+		if (pBuilding->Health >= pBuildingType->Strength)
+		{
+			const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
+
+			if (!pTypeExt->RubbleIntact && !pTypeExt->RubbleIntactRemove)
+				return Skip;
+		}
 	}
 
 	R->CL(bridgeRepairHut);
@@ -197,4 +206,21 @@ DEFINE_HOOK(0x522373, InfantryClass_ApproachTarget_InfantryAutoDeploy, 0x5)
 	enum { Deploy = 0x522378 };
 	GET(InfantryClass*, pThis, ESI);
 	return TechnoTypeExt::ExtMap.Find(pThis->Type)->InfantryAutoDeploy.Get(RulesExt::Global()->InfantryAutoDeploy) ? Deploy : 0;
+}
+
+DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_InfiltrateBuilding, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+	GET(BuildingClass*, pBuilding, EDI);
+
+	if (const auto pTag = pBuilding->AttachedTag)
+		pTag->RaiseEvent(TriggerEvent::SpiedBy, pThis, CellStruct::Empty);
+
+	if (const auto pTag = pBuilding->AttachedTag)
+		pTag->RaiseEvent(TriggerEvent::SpyAsHouse, pThis, CellStruct::Empty);
+
+	if (const auto pTag = pBuilding->AttachedTag)
+		pTag->RaiseEvent(TriggerEvent::SpyAsInfantry, pThis, CellStruct::Empty);
+
+	return 0;
 }
