@@ -149,6 +149,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CanC4_AllowZeroDamage.Read(exINI, pSection, "CanC4.AllowZeroDamage");
 
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
+	this->Cloning_Powered.Read(exINI, pSection, "Cloning.Powered");
 	this->ExcludeFromMultipleFactoryBonus.Read(exINI, pSection, "ExcludeFromMultipleFactoryBonus");
 
 	this->Grinding_AllowAllies.Read(exINI, pSection, "Grinding.AllowAllies");
@@ -245,6 +246,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
+	this->UndeploysInto_Sellable.Read(exINI, pSection, "UndeploysInto.Sellable");
 
 	// PlacementPreview
 	{
@@ -260,6 +262,13 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Art
 	this->IsAnimDelayedBurst.Read(exArtINI, pArtSection, "IsAnimDelayedBurst");
 	this->ZShapePointMove_OnBuildup.Read(exArtINI, pArtSection, "ZShapePointMove.OnBuildup");
+
+	// Ares 0.2
+	this->CloningFacility.Read(exINI, pSection, "CloningFacility");
+
+	// Ares 0.A
+	this->RubbleIntact.Read(exINI, pSection, "Rubble.Intact");
+	this->RubbleIntactRemove.Read(exINI, pSection, "Rubble.Intact.Remove");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -283,6 +292,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Powered_KillSpawns)
 		.Process(this->CanC4_AllowZeroDamage)
 		.Process(this->InitialStrength_Cloning)
+		.Process(this->Cloning_Powered)
 		.Process(this->ExcludeFromMultipleFactoryBonus)
 		.Process(this->Refinery_UseStorage)
 		.Process(this->Grinding_AllowAllies)
@@ -334,6 +344,14 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingRepairedSound)
 		.Process(this->Refinery_UseNormalActiveAnim)
 		.Process(this->HasPowerUpAnim)
+		.Process(this->UndeploysInto_Sellable)
+
+		// Ares 0.2
+		.Process(this->CloningFacility)
+
+		// Ares 0.A
+		.Process(this->RubbleIntact)
+		.Process(this->RubbleIntactRemove)
 		;
 }
 

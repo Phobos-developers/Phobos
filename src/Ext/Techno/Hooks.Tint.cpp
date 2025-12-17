@@ -186,8 +186,49 @@ DEFINE_HOOK(0x423420, AnimClass_Draw_TintColor, 0x6)
 	return SkipGameCode;
 }
 
+namespace TechnoClass_DrawShapeTemp
+{
+	bool DisableTint = false;
+}
+
+DEFINE_HOOK(0x7060D6, TechnoClass_DrawShape_DisguiseTint_SetContext, 0x5)
+{
+	TechnoClass_DrawShapeTemp::DisableTint = true;
+	return 0;
+}
+
+DEFINE_HOOK(0x70632E, TechnoClass_DrawShape_GetTintIntensity, 0x6)
+{
+	enum { SkipGameCode = 0x706389 };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(int, intensity, EAX);
+
+	if (!TechnoClass_DrawShapeTemp::DisableTint)
+	{
+		if (pThis->IsIronCurtained())
+			intensity = pThis->GetInvulnerabilityTintIntensity(intensity);
+
+		const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+		if (pExt->AirstrikeTargetingMe)
+			intensity = pThis->GetAirstrikeTintIntensity(intensity);
+	}
+
+	R->EBP(intensity);
+	return SkipGameCode;
+}
+
 DEFINE_HOOK(0x706389, TechnoClass_DrawObject_TintColor, 0x6)
 {
+	enum { ClearColor = 0x7063E0 };
+
+	if (TechnoClass_DrawShapeTemp::DisableTint)
+	{
+		TechnoClass_DrawShapeTemp::DisableTint = false;
+		return ClearColor;
+	}
+
 	GET(TechnoClass*, pThis, ESI);
 	GET(int, intensity, EBP);
 	REF_STACK(int, color, STACK_OFFSET(0x54, 0x2C));
@@ -209,25 +250,6 @@ DEFINE_HOOK(0x706389, TechnoClass_DrawObject_TintColor, 0x6)
 	R->EBP(intensity);
 
 	return 0;
-}
-
-DEFINE_HOOK(0x70632E, TechnoClass_DrawShape_GetTintIntensity, 0x6)
-{
-	enum { SkipGameCode = 0x706389 };
-
-	GET(TechnoClass*, pThis, ESI);
-	GET(int, intensity, EAX);
-
-	if (pThis->IsIronCurtained())
-		intensity = pThis->GetInvulnerabilityTintIntensity(intensity);
-
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pExt->AirstrikeTargetingMe)
-		intensity = pThis->GetAirstrikeTintIntensity(intensity);
-
-	R->EBP(intensity);
-	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x706786, TechnoClass_DrawVoxel_TintColor, 0x5)

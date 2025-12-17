@@ -72,6 +72,7 @@ public:
 		Nullable<int> Parachuted_MaxFallRate;
 		Nullable<AnimTypeClass*> BombParachute;
 
+		Valueable<bool> AU;
 		Valueable<int> EMPulseCannon_InaccurateRadius;
 
 		// Ares 0.7
@@ -124,6 +125,7 @@ public:
 			, Parachuted_FallRate { 1 }
 			, Parachuted_MaxFallRate {}
 			, BombParachute {}
+			, AU { false }
 			, EMPulseCannon_InaccurateRadius { 0 }
 		{ }
 
