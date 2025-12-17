@@ -509,6 +509,7 @@ Vanilla fixes:
 - Fixed the bug that naval ship will sink even they destroyed in air (by NetsuNegi)
 - Fixed MPDebug timer displaying when debug's visibility is off (by 11EJDE11)
 - Fixed the issue that units will goto farest location if target is closer than `MinimumRange` (by NetsuNegi)
+- Fixed the bug that restored cyborg legs when the soldier left transport (by FS-21)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

@@ -451,6 +451,8 @@ public:
 
 		Nullable<bool> TurretResponse;
 
+		Valueable<bool> FixEnteringCyborgLegs;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, HealthBar_HidePips { false }
@@ -816,6 +818,7 @@ public:
 
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
+			, FixEnteringCyborgLegs { false }
 
 			, Ammo_AutoConvertMinimumAmount { -1 }
 			, Ammo_AutoConvertMaximumAmount { -1 }
