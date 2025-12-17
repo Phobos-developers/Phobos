@@ -405,7 +405,7 @@ public:
 
 			, AffectsBelowPercent { 1.0 }
 			, AffectsAbovePercent { 0.0 }
-			, AffectsBelowVeterancy { RulesClass::Instance->VeteranCap }
+			, AffectsBelowVeterancy { static_cast<float>(RulesClass::Instance->VeteranCap) }
 			, AffectsAboveVeterancy { 0.0f }
 			, AffectsNeutral { true }
 			, AffectsGround { true }
