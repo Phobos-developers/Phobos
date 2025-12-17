@@ -193,7 +193,7 @@ public:
 		Valueable<double> AffectsBelowPercent;
 		Valueable<double> AffectsAbovePercent;
 		Nullable<float> AffectsBelowVeterancy;
-		Nullable<float> AffectsAboveVeterancy;
+		Valueable<float> AffectsAboveVeterancy;
 		Valueable<bool> AffectsNeutral;
 		Valueable<bool> AffectsGround;
 		Valueable<bool> AffectsAir;

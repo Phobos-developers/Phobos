@@ -43,7 +43,7 @@ public:
 		Valueable<double> CanTarget_MaxHealth;
 		Valueable<double> CanTarget_MinHealth;
 		Nullable<float> CanTarget_MaxVeterancy;
-		Nullable<float> CanTarget_MinVeterancy;
+		Valueable<float> CanTarget_MinVeterancy;
 		ValueableVector<int> Burst_Delays;
 		Valueable<bool> Burst_FireWithinSequence;
 		Valueable<bool> Burst_NoDelay;

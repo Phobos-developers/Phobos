@@ -48,7 +48,7 @@ bool WeaponTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
 
 bool WeaponTypeExt::ExtData::IsVeterancyInThreshold(TechnoClass* pTarget) const
 {
-	return TechnoExt::IsVeterancyInThreshold(pTarget, this->CanTarget_MinVeterancy, this->CanTarget_MaxVeterancy);
+	return TechnoExt::IsVeterancyInThreshold(pTarget, this->CanTarget_MinVeterancy, this->CanTarget_MaxVeterancy.Get(static_cast<float>(RulesClass::Instance->VeteranCap)));
 }
 
 void WeaponTypeExt::ExtData::Initialize()
@@ -164,7 +164,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// handle SkipWeaponPicking
 	if (this->CanTarget != AffectedTarget::All || this->CanTargetHouses != AffectedHouse::All
 		|| this->CanTarget_MaxHealth < 1.0 || this->CanTarget_MinHealth > 0.0
-		|| this->CanTarget_MaxVeterancy < 2.0f || this->CanTarget_MinVeterancy > 0.0f
+		|| this->CanTarget_MaxVeterancy.Get(static_cast<float>(RulesClass::Instance->VeteranCap)) < 2.0f || this->CanTarget_MinVeterancy > 0.0f
 		|| this->AttachEffect_RequiredTypes.size() || this->AttachEffect_RequiredGroups.size()
 		|| this->AttachEffect_DisallowedTypes.size() || this->AttachEffect_DisallowedGroups.size())
 	{
