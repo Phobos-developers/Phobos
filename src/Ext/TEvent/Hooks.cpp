@@ -111,7 +111,7 @@ DEFINE_HOOK(0x71F58B, TEventClass_ReadINI_MaskedTEvents, 0x7)
 		pThis->Value = HouseTypeClass::FindIndexOfName(pThis->String);
 		pThis->EventKind = TriggerEvent::EnteredBy;
 		break;
-	case PhobosTriggerEvent::SpiedByByID:
+	case PhobosTriggerEvent::ThievedByByID:
 		pThis->Value = HouseTypeClass::FindIndexOfName(pThis->String);
 		pThis->EventKind = TriggerEvent::SpiedBy;
 		break;
@@ -120,11 +120,11 @@ DEFINE_HOOK(0x71F58B, TEventClass_ReadINI_MaskedTEvents, 0x7)
 		pThis->EventKind = TriggerEvent::HouseDiscovered;
 		break;
 	case PhobosTriggerEvent::DestroyedUnitsAllByID:
-		pThis->Value = UnitTypeClass::FindIndex(pThis->String);
+		pThis->Value = HouseTypeClass::FindIndex(pThis->String);
 		pThis->EventKind = TriggerEvent::DestroyedUnitsAll;
 		break;
 	case PhobosTriggerEvent::DestroyedBuildingsAllByID:
-		pThis->Value = BuildingTypeClass::FindIndex(pThis->String);
+		pThis->Value = HouseTypeClass::FindIndex(pThis->String);
 		pThis->EventKind = TriggerEvent::DestroyedBuildingsAll;
 		break;
 	case PhobosTriggerEvent::DestroyedAllByID:

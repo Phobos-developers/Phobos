@@ -57,7 +57,7 @@ enum PhobosTriggerEvent
 	AttachedIsUnderAttachedEffect = 606,
 
 	EnteredByByID = 19001,
-	SpiedByByID = 19002,
+	ThievedByByID = 19003,
 	HouseDiscoveredByID = 19005,
 	DestroyedUnitsAllByID = 19009,
 	DestroyedBuildingsAllByID = 19010,
