@@ -35,7 +35,6 @@
 #include <type_traits>
 #include <Windows.h>
 #include <stdio.h>
-#include <CRT.h>
 
 //! Parses strings into one or more elements of another type.
 /*!
@@ -261,35 +260,47 @@ inline bool Parser<int>::TryParse(const char* pValue, OutType* outValue)
 template<>
 inline bool Parser<double>::TryParse(const char* pValue, OutType* outValue)
 {
+	errno = 0;
+	char* end;
 
-	// Game doesn't use double precision when parsing, using double here would create inconsistency.
-	float buffer = 0.0;
+	// Nov 23, 2025 - Starkku, Kerbiter: strtod() + cast result to float produces
+	// results more similar to game's CRT functions than using sscanf_s. For some
+	// reason CnC-DDraw in DirectX mode causes game's CRT function usage here to change
+	// for some players, causing stably reproducible desyncs when CMIN appears, f.ex.
+	double value = strtod(pValue, &end);
 
-	// Use game's sscanf function, the C library one has different precision/rounding.
-	if (CRT::sscanf(pValue, "%f", &buffer) == 1)
+	if (pValue == end || errno == ERANGE)
+		return false;
+
+	float floatValue = static_cast<float>(value);
+
+	if (strchr(pValue, '%'))
 	{
-		if (strchr(pValue, '%'))
-		{
-			buffer *= 0.01f;
-		}
-		if (outValue)
-		{
-			*outValue = buffer;
-		}
-		return true;
+		floatValue *= 0.01f;
 	}
-	return false;
+	if (outValue)
+	{
+		*outValue = floatValue;
+	}
+	return true;
 };
 
 template<>
 inline bool Parser<float>::TryParse(const char* pValue, OutType* outValue)
 {
 	double buffer = 0.0;
+
 	if (Parser<double>::TryParse(pValue, &buffer))
 	{
+		float floatValue = static_cast<float>(buffer);
+
+		if (strchr(pValue, '%'))
+		{
+			floatValue *= 0.01f;
+		}
 		if (outValue)
 		{
-			*outValue = static_cast<float>(buffer);
+			*outValue = floatValue;
 		}
 		return true;
 	}
