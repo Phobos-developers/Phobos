@@ -485,12 +485,21 @@ DEFINE_HOOK(0x4FD8F7, HouseClass_UpdateAI_OnLastLegs, 0x10)
 }
 
 // WW's code set anger on every houses, even on the allies.
-DEFINE_HOOK(0x4FD616, HouseClass_sub4FD500_DontAngerOnAlly, 0x9)
+DEFINE_HOOK(0x4FD616, HouseClass_UpdateAI_DontAngerOnAlly, 0x9)
 {
-	enum { SkipAlly = 0x4FD6FE, DontSkip = 0 };
+	enum { SkipCurrentHouse = 0x4FD6FE };
 
 	GET(HouseClass*, pThis, EBX);
 	GET(HouseClass*, pTargetHouse, ESI);
 
-	return (!RulesExt::Global()->AIAngerOnAlly && pThis->IsAlliedWith(pTargetHouse)) ? SkipAlly : DontSkip;
+	return pThis->IsAlliedWith(pTargetHouse) ? SkipCurrentHouse : 0;
+}
+
+// WW calculates the distance from pThis to pThis ...
+DEFINE_HOOK(0x4FD635, HouseClass_UpdateAI_DistCalcFix, 0x5)
+{
+	enum { SkipGameCode = 0x4FD657 };
+	GET(HouseClass*, pTargetHouse, ESI);
+	R->EAX(pTargetHouse->BaseCenter == CellStruct::Empty ? pTargetHouse->BaseSpawnCell : pTargetHouse->BaseCenter);
+	return SkipGameCode;
 }
