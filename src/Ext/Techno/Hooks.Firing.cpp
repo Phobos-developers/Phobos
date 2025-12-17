@@ -625,6 +625,8 @@ DEFINE_HOOK(0x6FE43B, TechnoClass_FireAt_OpenToppedDmgMult, 0x8)
 			nDamageMult = pExt->OpenTopped_DamageMultiplier.Get(nDamageMult);
 		}
 
+		nDamageMult *= TechnoExt::ExtMap.Find(pThis)->TypeExtData->OpenTransport_DamageMultiplier;
+
 		R->EAX(static_cast<int>(nDamage * nDamageMult));
 		return ApplyDamageMult;
 	}

@@ -242,13 +242,14 @@ HideShakeEffects=false           ; boolean
 
   [ScriptExtType_GlobalVariables]
   BuiltInType=5
-
+  
   [ScriptsRA2]
   10100=Timed Area Guard,20,0,1,[LONG DESC]
   10101=Wait until ammo is full,0,0,1,[LONG DESC]
   10102=Regroup Temporarily Around the Team Leader,20,0,1,[LONG DESC]
   10103=Load Onto Transports,0,0,1,[LONG DESC]
   10104=Chronoshift to Enemy Base,20,0,1,[LONG DESC]
+  14004=Force Global OnlyTargetHouseEnemy value in Teams,20,0,1,[LONG DESC]
   18000=Local variable set,22,0,1,[LONG DESC]
   18001=Local variable add,22,0,1,[LONG DESC]
   18002=Local variable minus,22,0,1,[LONG DESC]
@@ -468,6 +469,10 @@ New:
 - CellSpread damage check if victim is in air or on floor (by TaranDahl)
 - [Weapon target filtering by target veterancy](New-or-Enhanced-Logics.md#weapon-targeting-filter) (by Flactine)
 - [Warhead effect filtering by target veterancy](Fixed-or-Improved-Logics.md#customizable-warhead-trigger-conditions) (by Flactine)
+- [CellSpread in cylinder shape](New-or-Enhanced-Logics.md#cellspread-enhancement) (by TaranDahl)
+- [CellSpread damage check if victim is in air or on floor](New-or-Enhanced-Logics.md#cellspread-enhancement) (by TaranDahl)
+- OpenTopped range bonus and damage multiplier customization for passengers (by Ollerus)
+- AutoDeath upon ownership change (by Ollerus)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -508,6 +513,7 @@ Vanilla fixes:
 - Fixed the bug that naval ship will sink even they destroyed in air (by NetsuNegi)
 - Fixed MPDebug timer displaying when debug's visibility is off (by 11EJDE11)
 - Fixed the issue that units will goto farest location if target is closer than `MinimumRange` (by NetsuNegi)
+- Fixed the bug that techno with `Trainable=false` can be promoted if it's created by trigger event (by NetsuNegi)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -531,6 +537,7 @@ Phobos fixes:
 - Fixed a game load crash caused by `MultiWeapon.IsSecondary=-1` or non-projectile weapons (by FlyStar)
 - Fixed an issue that caused Ares's `Battery.KeepOnline` cannot keep defense buildings works fine (by NetsuNegi)
 - Map Event 601 should return true only when exists in the map like other similar map events (by FS-21)
+- Fixed OverlayType `ZAdjust` as well as some shield & AttachEffect variables not being correctly saved & loaded (by Ollerus)
 
 Fixes / interactions with other extensions:
 <!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->
@@ -539,6 +546,7 @@ Fixes / interactions with other extensions:
 - Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect (by Sovietianqi, based on knowledge of DeathFish)
 - Fixed the bug that building with `CloningFacility=true` and `WeaponsFactory=true` may cloning multiple vehicles and then they get stuck (by NetsuNegi)
 - [Customize Ares's radar jam logic](New-or-Enhanced-Logics.md#customize-ares-s-radar-jam-logic) (by NetsuNegi)
+- Fixed a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType` (by NetsuNegi)
 ```
 
 ### 0.4.0.1
@@ -550,12 +558,12 @@ Vanilla fixes:
 Phobos fixes:
 - AttachEffect `DisableWeapons` no longer interferes with 'can this unit/building fire weapons?' checks for units/buildings with no weapons (by Starkku)
 - Fixed starting infantry being scattered randomly on game start instead of being grouped (by 11EJDE11, Belonit, Ollerus)
-- Fixed OverlayType `ZAdjust` as well as some shield & AttachEffect variables not being correctly saved & loaded (by Ollerus)
 - Fixed an issue with certain Warhead detonation features (f.ex `Crit.Warhead` without `Crit.Warhead.FullDetonation=true` not snapping on the intended target without `CellSpread`) (by Starkku)
 - Fixed an issue with `UndeploysInto.Sellable` (by TaranDahl)
 - Fixed an issue with `Powered`/`PoweredSpecial` building animation ownership change fix (by Trsdy)
 - Fixed `DisplayIncome`, `Transact.Money` etc. display strings showing through shroud and for objects that are supposed to be hidden such as cloaked, undetected enemies (by Starkku)
 - Fixed an issue that could cause crashes when `FeedbackWeapon` was used to convert the firer to another TechnoType with less or no weapons (by Starkku)
+- Fixed an issue with parsing floating point numbers from INI that may have in some cases contributed to desyncs (by Starkku)
 ```
 
 ### 0.4
@@ -570,6 +578,7 @@ New:
 - Building airstrike target eligibility customization (by Starkku)
 - IvanBomb detonation & image display optionally centered on buildings (by Starkku)
 - Forcing specific weapon against cloaked or disguised targets (by Starkku)
+- Script Action 14004 for forcing all new actions to target only the main owner's enemy (by FS-21)
 - Customizable ROF random delay (by Starkku)
 - Animation with `Tiled=yes` now supports `CustomPalette` (by ststl)
 - Toggleable `DieSound` when grinding (by Trsdy)
