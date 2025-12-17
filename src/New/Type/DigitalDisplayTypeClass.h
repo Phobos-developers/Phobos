@@ -18,36 +18,47 @@ public:
 	Valueable<SHPStruct*> Shape;
 	CustomPalette Palette;
 	Nullable<Vector2D<int>> Shape_Spacing;
+	Valueable<bool> Shape_PercentageFrame;
 	Valueable<bool> Percentage;
 	Nullable<bool> HideMaxValue;
-	Valueable<bool> VisibleToHouses_Observer;
 	Valueable<AffectedHouse> VisibleToHouses;
+	Valueable<bool> VisibleToHouses_Observer;
+	Valueable<bool> VisibleInSpecialState;
 	Valueable<DisplayInfoType> InfoType;
-	Valueable<int> ValueScaleDivisor;
+	Valueable<int> InfoIndex;
+	Nullable<int> ValueScaleDivisor;
+	Valueable<bool> ValueAsTimer;
+	Valueable<DisplayShowType> ShowType;
 
 	DigitalDisplayTypeClass(const char* pTitle = NONE_STR) : Enumerable<DigitalDisplayTypeClass>(pTitle)
-		, Text_Color({ 0, 255, 0 }, { 255,255,0 }, { 255,0,0 })
-		, Text_Background(false)
-		, Offset({ 0, 0 })
-		, Offset_ShieldDelta()
-		, Align(TextAlign::Right)
-		, AnchorType(HorizontalPosition::Right, VerticalPosition::Top)
-		, AnchorType_Building(BuildingSelectBracketPosition::Top)
-		, Shape(nullptr)
-		, Palette()
-		, Shape_Spacing()
-		, Percentage(false)
-		, HideMaxValue()
-		, VisibleToHouses_Observer(true)
-		, VisibleToHouses(AffectedHouse::All)
-		, InfoType(DisplayInfoType::Health)
-		, ValueScaleDivisor { 1 }
+		, Text_Color { { 0, 255, 0 }, { 255, 255, 0 }, { 255, 0, 0 } }
+		, Text_Background { false }
+		, Offset { Point2D::Empty }
+		, Offset_ShieldDelta {}
+		, Align { TextAlign::Right }
+		, AnchorType { HorizontalPosition::Right, VerticalPosition::Top }
+		, AnchorType_Building { BuildingSelectBracketPosition::Top }
+		, Shape { nullptr }
+		, Palette {}
+		, Shape_Spacing {}
+		, Shape_PercentageFrame { false }
+		, Percentage { false }
+		, HideMaxValue {}
+		, VisibleToHouses { AffectedHouse::All }
+		, VisibleToHouses_Observer { true }
+		, VisibleInSpecialState { true }
+		, InfoType { DisplayInfoType::Health }
+		, InfoIndex { 0 }
+		, ValueScaleDivisor {}
+		, ValueAsTimer { false }
+		, ShowType { DisplayShowType::Select }
 	{ }
 
 	void LoadFromINI(CCINIClass* pINI);
 	void LoadFromStream(PhobosStreamReader& Stm);
 	void SaveToStream(PhobosStreamWriter& Stm);
 
+	bool CanShow(TechnoClass* pThis);
 	void Draw(Point2D position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield);
 
 private:

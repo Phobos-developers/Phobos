@@ -10,15 +10,19 @@ void BuildingExt::ExtData::DisplayIncomeString()
 {
 	if (this->AccumulatedIncome && Unsorted::CurrentFrame % 15 == 0)
 	{
-		if ((RulesExt::Global()->DisplayIncome_AllowAI || this->OwnerObject()->Owner->IsControlledByHuman())
-			&& this->TypeExtData->DisplayIncome.Get(RulesExt::Global()->DisplayIncome))
+		auto const pThis = this->OwnerObject();
+		auto const pTypeExt = this->TypeExtData;
+
+		if ((RulesExt::Global()->DisplayIncome_AllowAI || pThis->Owner->IsControlledByHuman())
+			&& pTypeExt->DisplayIncome.Get(RulesExt::Global()->DisplayIncome))
 		{
 			FlyingStrings::AddMoneyString(
 				this->AccumulatedIncome,
-				this->OwnerObject()->Owner,
-				this->TypeExtData->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
-				this->OwnerObject()->GetRenderCoords(),
-				this->TypeExtData->DisplayIncome_Offset
+				pThis,
+				pThis->Owner,
+				pTypeExt->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
+				pThis->GetRenderCoords(),
+				pTypeExt->DisplayIncome_Offset
 			);
 		}
 		this->AccumulatedIncome = 0;
@@ -29,11 +33,12 @@ bool BuildingExt::ExtData::HasSuperWeapon(const int index, const bool withUpgrad
 {
 	const auto pThis = this->OwnerObject();
 	const auto pExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	const auto pOwner = pThis->Owner;
 
 	const auto count = pExt->GetSuperWeaponCount();
 	for (auto i = 0; i < count; ++i)
 	{
-		const auto idxSW = pExt->GetSuperWeaponIndex(i, pThis->Owner);
+		const auto idxSW = pExt->GetSuperWeaponIndex(i, pOwner);
 
 		if (idxSW == index)
 			return true;
@@ -43,12 +48,12 @@ bool BuildingExt::ExtData::HasSuperWeapon(const int index, const bool withUpgrad
 	{
 		for (auto const& pUpgrade : pThis->Upgrades)
 		{
-			if (const auto pUpgradeExt = BuildingTypeExt::ExtMap.Find(pUpgrade))
+			if (const auto pUpgradeExt = BuildingTypeExt::ExtMap.TryFind(pUpgrade))
 			{
 				const auto countUpgrade = pUpgradeExt->GetSuperWeaponCount();
 				for (auto i = 0; i < countUpgrade; ++i)
 				{
-					const auto idxSW = pUpgradeExt->GetSuperWeaponIndex(i, pThis->Owner);
+					const auto idxSW = pUpgradeExt->GetSuperWeaponIndex(i, pOwner);
 
 					if (idxSW == index)
 						return true;
@@ -62,36 +67,32 @@ bool BuildingExt::ExtData::HasSuperWeapon(const int index, const bool withUpgrad
 
 void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiberiumType, int idxStorageTiberiumType)
 {
-	auto const pDepositableTiberium = TiberiumClass::Array->GetItem(idxStorageTiberiumType);
+	auto const pDepositableTiberium = TiberiumClass::Array.GetItem(idxStorageTiberiumType);
 	float depositableTiberiumAmount = 0.0f; // Number of 'bails' that will be stored.
-	auto const pTiberium = TiberiumClass::Array->GetItem(idxTiberiumType);
+	auto const pTiberium = TiberiumClass::Array.GetItem(idxTiberiumType);
 
 	if (amount > 0.0)
 	{
-		if (auto pBuildingType = pThis->Type)
+		auto const pExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+		if (pExt->Refinery_UseStorage)
 		{
-			if (auto const pExt = BuildingTypeExt::ExtMap.Find(pBuildingType))
-			{
-				if (pExt->Refinery_UseStorage)
-				{
-					// Store Tiberium in structures
-					depositableTiberiumAmount = (amount * pTiberium->Value) / pDepositableTiberium->Value;
-					pThis->Owner->GiveTiberium(depositableTiberiumAmount, idxStorageTiberiumType);
-				}
-			}
+			// Store Tiberium in structures
+			depositableTiberiumAmount = (amount * pTiberium->Value) / pDepositableTiberium->Value;
+			pThis->Owner->GiveTiberium(depositableTiberiumAmount, idxStorageTiberiumType);
 		}
 	}
 }
 
 void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 {
-	auto pOwner = this->OwnerObject()->Owner;
+	auto const pOwner = this->OwnerObject()->Owner;
 
 	if (!pOwner || pOwner->ProducingAircraftTypeIndex < 0)
 		return;
 
-	AircraftTypeClass* pAircraft = AircraftTypeClass::Array->GetItem(pOwner->ProducingAircraftTypeIndex);
-	FactoryClass* currFactory = pOwner->GetFactoryProducing(pAircraft);
+	auto const pAircraft = AircraftTypeClass::Array.GetItem(pOwner->ProducingAircraftTypeIndex);
+	auto currFactory = pOwner->GetFactoryProducing(pAircraft);
 	std::vector<BuildingClass*> airFactoryBuilding;
 	BuildingClass* newBuilding = nullptr;
 
@@ -99,10 +100,10 @@ void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 	if (this->CurrentAirFactory)
 	{
 		int nDocks = 0;
-		if (this->CurrentAirFactory->Type)
-			nDocks = this->CurrentAirFactory->Type->NumberOfDocks;
+		if (const auto pFactoryType = this->CurrentAirFactory->Type)
+			nDocks = pFactoryType->NumberOfDocks;
 
-		int nOccupiedDocks = BuildingExt::CountOccupiedDocks(this->CurrentAirFactory);
+		const int nOccupiedDocks = BuildingExt::CountOccupiedDocks(this->CurrentAirFactory);
 
 		if (nOccupiedDocks < nDocks)
 			currFactory = this->CurrentAirFactory->Factory;
@@ -111,7 +112,7 @@ void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 	}
 
 	// Obtain a list of air factories for optimizing the comparisons
-	for (auto pBuilding : pOwner->Buildings)
+	for (auto const pBuilding : pOwner->Buildings)
 	{
 		if (pBuilding->Type->Factory == AbstractType::AircraftType)
 		{
@@ -122,14 +123,14 @@ void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 		}
 	}
 
-	if (this->CurrentAirFactory)
+	if (auto const pCurrent = this->CurrentAirFactory)
 	{
-		for (auto pBuilding : airFactoryBuilding)
+		for (auto const pBuilding : airFactoryBuilding)
 		{
-			if (pBuilding == this->CurrentAirFactory)
+			if (pBuilding == pCurrent)
 			{
-				this->CurrentAirFactory->Factory = currFactory;
-				this->CurrentAirFactory->IsPrimaryFactory = true;
+				pCurrent->Factory = currFactory;
+				pCurrent->IsPrimaryFactory = true;
 			}
 			else
 			{
@@ -137,9 +138,9 @@ void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 
 				if (pBuilding->Factory)
 				{
-					auto const* prodType = pBuilding->Factory->Object->GetType();
+					//auto const* prodType = pBuilding->Factory->Object->GetType();
 					pBuilding->Factory->AbandonProduction();
-					Debug::Log("%s is not CurrentAirFactory of %s, production of %s aborted\n", pBuilding->Type->ID, pOwner->PlainName, prodType->ID);
+					//Debug::Log("%s is not CurrentAirFactory of %s, production of %s aborted\n", pBuilding->Type->ID, pOwner->PlainName, prodType->ID);
 				}
 			}
 		}
@@ -150,14 +151,11 @@ void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 	if (!currFactory)
 		return;
 
-	for (auto pBuilding : airFactoryBuilding)
+	for (auto const pBuilding : airFactoryBuilding)
 	{
-		int nDocks = pBuilding->Type->NumberOfDocks;
-		int nOccupiedDocks = BuildingExt::CountOccupiedDocks(pBuilding);
-
-		if (nOccupiedDocks < nDocks)
+		if (!newBuilding)
 		{
-			if (!newBuilding)
+			if (BuildingExt::CountOccupiedDocks(pBuilding) < pBuilding->Type->NumberOfDocks)
 			{
 				newBuilding = pBuilding;
 				newBuilding->Factory = currFactory;
@@ -172,9 +170,9 @@ void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 
 		if (pBuilding->Factory)
 		{
-			auto const* prodType = pBuilding->Factory->Object->GetType();
+			//auto const* prodType = pBuilding->Factory->Object->GetType();
 			pBuilding->Factory->AbandonProduction();
-			Debug::Log("%s of %s abandonded production of %s due to redundancies\n", pBuilding->Type->ID, pOwner->PlainName, prodType->ID);
+			//Debug::Log("%s of %s abandonded production of %s due to redundancies\n", pBuilding->Type->ID, pOwner->PlainName, prodType->ID);
 		}
 	}
 
@@ -202,10 +200,12 @@ int BuildingExt::CountOccupiedDocks(BuildingClass* pBuilding)
 
 bool BuildingExt::HasFreeDocks(BuildingClass* pBuilding)
 {
-	if (pBuilding->Type->Factory == AbstractType::AircraftType)
+	auto const pType = pBuilding->Type;
+
+	if (pType->Factory == AbstractType::AircraftType)
 	{
-		int nDocks = pBuilding->Type->NumberOfDocks;
-		int nOccupiedDocks = BuildingExt::CountOccupiedDocks(pBuilding);
+		const int nDocks = pType->NumberOfDocks;
+		const int nOccupiedDocks = BuildingExt::CountOccupiedDocks(pBuilding);
 
 		if (nOccupiedDocks < nDocks)
 			return true;
@@ -218,46 +218,53 @@ bool BuildingExt::HasFreeDocks(BuildingClass* pBuilding)
 
 bool BuildingExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
 {
-	if (!pBuilding->Type->Grinding || (pTechno->WhatAmI() != AbstractType::Infantry && pTechno->WhatAmI() != AbstractType::Unit))
+	auto const pBldType = pBuilding->Type;
+	auto const whatAmI = pTechno->WhatAmI();
+
+	if (!pBldType->Grinding || (whatAmI != AbstractType::Infantry && whatAmI != AbstractType::Unit))
 		return false;
 
-	if ((pBuilding->Type->InfantryAbsorb || pBuilding->Type->UnitAbsorb) &&
-		(pTechno->WhatAmI() == AbstractType::Infantry && !pBuilding->Type->InfantryAbsorb ||
-			pTechno->WhatAmI() == AbstractType::Unit && !pBuilding->Type->UnitAbsorb))
+	if ((pBldType->InfantryAbsorb || pBldType->UnitAbsorb)
+		&& (whatAmI == AbstractType::Infantry && !pBldType->InfantryAbsorb
+			|| whatAmI == AbstractType::Unit && !pBldType->UnitAbsorb))
 	{
 		return false;
 	}
 
-	if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
-	{
-		if (pBuilding->Owner == pTechno->Owner && !pExt->Grinding_AllowOwner)
-			return false;
+	auto const pExt = BuildingTypeExt::ExtMap.Find(pBldType);
 
-		if (pBuilding->Owner != pTechno->Owner && pBuilding->Owner->IsAlliedWith(pTechno) && !pExt->Grinding_AllowAllies)
-			return false;
+	if (pBuilding->Owner == pTechno->Owner && !pExt->Grinding_AllowOwner)
+		return false;
 
-		if (pExt->Grinding_AllowTypes.size() > 0 && !pExt->Grinding_AllowTypes.Contains(pTechno->GetTechnoType()))
-			return false;
+	if (pBuilding->Owner != pTechno->Owner && pBuilding->Owner->IsAlliedWith(pTechno) && !pExt->Grinding_AllowAllies)
+		return false;
 
-		if (pExt->Grinding_DisallowTypes.size() > 0 && pExt->Grinding_DisallowTypes.Contains(pTechno->GetTechnoType()))
-			return false;
-	}
+	auto const pType = pTechno->GetTechnoType();
+	auto const& allowTypes = pExt->Grinding_AllowTypes;
+	auto const& disallowTypes = pExt->Grinding_DisallowTypes;
+
+	if (allowTypes.size() > 0 && !allowTypes.Contains(pType))
+		return false;
+
+	if (disallowTypes.size() > 0 && disallowTypes.Contains(pType))
+		return false;
+
 
 	return true;
 }
 
 bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno, int refund)
 {
-	if (auto const pExt = BuildingExt::ExtMap.Find(pBuilding))
+	if (auto const pExt = BuildingExt::ExtMap.TryFind(pBuilding))
 	{
 		auto const pTypeExt = pExt->TypeExtData;
 
 		pExt->AccumulatedIncome += refund;
 		pExt->GrindingWeapon_AccumulatedCredits += refund;
 
-		if (pTypeExt->Grinding_Weapon &&
-			Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon->ROF &&
-			pExt->GrindingWeapon_AccumulatedCredits >= pTypeExt->Grinding_Weapon_RequiredCredits)
+		if (pTypeExt->Grinding_Weapon
+			&& Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon->ROF
+			&& pExt->GrindingWeapon_AccumulatedCredits >= pTypeExt->Grinding_Weapon_RequiredCredits)
 		{
 			TechnoExt::FireWeaponAtSelf(pBuilding, pTypeExt->Grinding_Weapon);
 			pExt->GrindingWeapon_LastFiredFrame = Unsorted::CurrentFrame;
@@ -280,17 +287,18 @@ void BuildingExt::ExtData::ApplyPoweredKillSpawns()
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (pTypeExt->Powered_KillSpawns && pThis->Type->Powered && !pThis->IsPowerOnline())
+	if (pTypeExt->Powered_KillSpawns && !pThis->IsPowerOnline())
 	{
-		if (auto pManager = pThis->SpawnManager)
+		if (auto const pManager = pThis->SpawnManager)
 		{
 			pManager->ResetTarget();
-			for (auto pItem : pManager->SpawnedNodes)
+			for (auto const pItem : pManager->SpawnedNodes)
 			{
-				if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
+				auto const status = pItem->Status;
+				if (status == SpawnNodeStatus::Attacking || status == SpawnNodeStatus::Returning)
 				{
-					pItem->Unit->ReceiveDamage(&pItem->Unit->Health, 0,
-						RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+					auto const pUnit = pItem->Unit;
+					pUnit->ReceiveDamage(&pUnit->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
 				}
 			}
 		}
@@ -299,7 +307,9 @@ void BuildingExt::ExtData::ApplyPoweredKillSpawns()
 
 bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore)
 {
-	auto pVictimHouse = this->OwnerObject()->Owner;
+	const auto pThis = this->OwnerObject();
+	const auto pVictimHouse = pThis->Owner;
+	const auto pTypeExt = this->TypeExtData;
 	this->AccumulatedIncome += pVictimHouse->Available_Money() - moneybefore;
 
 	if (!pVictimHouse->IsControlledByHuman() && !RulesExt::Global()->DisplayIncome_AllowAI)
@@ -307,14 +317,15 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int m
 		// TODO there should be a better way...
 		FlyingStrings::AddMoneyString(
 				this->AccumulatedIncome,
+				pThis,
 				pVictimHouse,
-				this->TypeExtData->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
-				this->OwnerObject()->GetRenderCoords(),
-				this->TypeExtData->DisplayIncome_Offset
+				pTypeExt->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
+				pThis->GetRenderCoords(),
+				pTypeExt->DisplayIncome_Offset
 		);
 	}
 
-	if (!this->TypeExtData->SpyEffect_Custom)
+	if (!pTypeExt->SpyEffect_Custom)
 		return false;
 
 	if (pInfiltratorHouse != pVictimHouse)
@@ -323,8 +334,8 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int m
 
 		auto launchTheSWHere = [this](SuperClass* const pSuper, HouseClass* const pHouse)->void
 			{
-				int oldstart = pSuper->RechargeTimer.StartTime;
-				int oldleft = pSuper->RechargeTimer.TimeLeft;
+				const int oldstart = pSuper->RechargeTimer.StartTime;
+				const int oldleft = pSuper->RechargeTimer.TimeLeft;
 				pSuper->SetReadiness(true);
 				pSuper->Launch(CellClass::Coord2Cell(this->OwnerObject()->GetCenterCoords()), pHouse->IsCurrentPlayer());
 				pSuper->Reset();
@@ -332,16 +343,57 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int m
 				pSuper->RechargeTimer.TimeLeft = oldleft;
 			};
 
-		int idx = this->TypeExtData->SpyEffect_VictimSuperWeapon;
-		if (idx >= 0)
-			launchTheSWHere(pVictimHouse->Supers.Items[idx], pVictimHouse);
+		const int idx1 = pTypeExt->SpyEffect_VictimSuperWeapon;
+		if (idx1 >= 0)
+			launchTheSWHere(pVictimHouse->Supers.Items[idx1], pVictimHouse);
 
-		idx = this->TypeExtData->SpyEffect_InfiltratorSuperWeapon;
-		if (idx >= 0)
-			launchTheSWHere(pInfiltratorHouse->Supers.Items[idx], pInfiltratorHouse);
+		const int idx2 = pTypeExt->SpyEffect_InfiltratorSuperWeapon;
+		if (idx2 >= 0)
+			launchTheSWHere(pInfiltratorHouse->Supers.Items[idx2], pInfiltratorHouse);
 	}
 
 	return true;
+}
+
+// For unit's weapons factory only
+void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
+{
+	auto buffer = CoordStruct::Empty;
+	pThis->GetExitCoords(&buffer, 0);
+
+	auto cell = CellClass::Coord2Cell(buffer);
+
+	const auto pType = pThis->Type;
+	const short start = static_cast<short>(pThis->Location.X / Unsorted::LeptonsPerCell + pType->GetFoundationWidth() - 2); // door
+	const short end = cell.X; // exit
+	cell.X = start;
+	auto pCell = MapClass::Instance.GetCellAt(cell);
+
+	while (true)
+	{
+		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
+		{
+			if (const auto pUnit = abstract_cast<UnitClass*, true>(pObject))
+			{
+				if (pThis->Owner != pUnit->Owner || pUnit->Locomotor->Destination() != CoordStruct::Empty)
+					continue;
+
+				const auto height = pUnit->GetHeight();
+
+				if (height < 0 || height > Unsorted::CellHeight)
+					continue;
+
+				pThis->SendCommand(RadioCommand::RequestLink, pUnit);
+				pThis->QueueMission(Mission::Unload, false);
+				return; // one after another
+			}
+		}
+
+		if (--cell.X < end)
+			return; // no stuck
+
+		pCell = MapClass::Instance.GetCellAt(cell);
+	}
 }
 
 // Get all cells covered by the building, optionally including those covered by OccupyHeight.
@@ -370,7 +422,7 @@ const std::vector<CellStruct> BuildingExt::GetFoundationCells(BuildingClass* con
 
 		for (auto i = occupyHeight; i > 0; --i)
 		{
-			foundationCells.push_back(actualCell);
+			foundationCells.emplace_back(actualCell);
 			--actualCell.X;
 			--actualCell.Y;
 		}
@@ -387,6 +439,27 @@ const std::vector<CellStruct> BuildingExt::GetFoundationCells(BuildingClass* con
 	foundationCells.erase(it, foundationCells.end());
 
 	return foundationCells;
+}
+
+WeaponStruct* BuildingExt::GetLaserWeapon(BuildingClass* pThis)
+{
+	auto const pExt = BuildingExt::ExtMap.Find(pThis);
+
+	if (pExt->CurrentLaserWeaponIndex.has_value())
+		return pThis->GetWeapon(pExt->CurrentLaserWeaponIndex.value());
+
+	return pThis->GetPrimaryWeapon();
+}
+
+void BuildingExt::KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, void*, BuildingClass* pFactory)
+{
+	if (!pFactory->IsAlive || pFactory->InLimbo || (BuildingTypeExt::ExtMap.Find(pFactory->Type)->Cloning_Powered && !pFactory->IsPowerOnline()) || pFactory->IsBeingWarpedOut())
+		return;
+
+	const auto pClone = static_cast<TechnoClass*>(info.first->CreateObject(info.second));
+
+	if (pFactory->KickOutUnit(pClone, CellStruct::Empty) != KickOutResult::Succeeded)
+		pClone->UnInit();
 }
 
 // =============================
@@ -407,7 +480,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->AccumulatedIncome)
 		.Process(this->CurrentLaserWeaponIndex)
 		.Process(this->PoweredUpToLevel)
-		.Process(this->EMPulseSW)
+		.Process(this->CurrentEMPulseSW)
 		;
 }
 
@@ -484,7 +557,7 @@ DEFINE_HOOK(0x454174, BuildingClass_Load_LightSource, 0xA)
 {
 	GET(BuildingClass*, pThis, EDI);
 
-	SwizzleManagerClass::Instance->Swizzle((void**)&pThis->LightSource);
+	SWIZZLE(pThis->LightSource);
 
 	return 0x45417E;
 }
@@ -506,14 +579,13 @@ DEFINE_HOOK(0x454244, BuildingClass_Save_Suffix, 0x7)
 // Removes setting otherwise unused field (0x6FC) in BuildingClass when building has airstrike applied on it so that it can safely be used to store BuildingExt pointer.
 DEFINE_JUMP(LJMP, 0x41D9FB, 0x41DA05);
 
-
-void __fastcall BuildingClass_InfiltratedBy_Wrapper(BuildingClass* pThis, void*, HouseClass* pInfiltratorHouse)
+static void __fastcall BuildingClass_InfiltratedBy_Wrapper(BuildingClass* pThis, void*, HouseClass* pInfiltratorHouse)
 {
-	int oldBalance = pThis->Owner->Available_Money();
+	const int oldBalance = pThis->Owner->Available_Money();
 	// explicitly call because Ares rewrote it
 	reinterpret_cast<void(__thiscall*)(BuildingClass*, HouseClass*)>(0x4571E0)(pThis, pInfiltratorHouse);
 
 	BuildingExt::ExtMap.Find(pThis)->HandleInfiltrate(pInfiltratorHouse, oldBalance);
 }
 
-DEFINE_JUMP(CALL, 0x51A00B, GET_OFFSET(BuildingClass_InfiltratedBy_Wrapper));
+DEFINE_FUNCTION_JUMP(CALL, 0x51A00B, BuildingClass_InfiltratedBy_Wrapper);

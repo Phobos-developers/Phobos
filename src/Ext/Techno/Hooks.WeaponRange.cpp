@@ -10,36 +10,30 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 	enum { ReturnResult = 0x70138F };
 
 	GET(TechnoClass*, pThis, ECX);
-	GET_STACK(int, weaponIndex, STACK_OFFSET(0x8, 0x4));
+	GET_STACK(const int, weaponIndex, STACK_OFFSET(0x8, 0x4));
 
 	int result = 0;
-	auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 
 	if (pWeapon)
 	{
 		result = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis);
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		auto const pType = pThis->GetTechnoType();
 
-		if (pThis->GetTechnoType()->OpenTopped && !pTypeExt->OpenTopped_IgnoreRangefinding)
+		if (pType->OpenTopped && !TechnoTypeExt::ExtMap.Find(pType)->OpenTopped_IgnoreRangefinding)
 		{
 			int smallestRange = INT32_MAX;
-			auto pPassenger = abstract_cast<FootClass*>(pThis->Passengers.FirstPassenger);
+			auto pPassenger = abstract_cast<FootClass*>(pThis->Passengers.GetFirstPassenger());
 
 			while (pPassenger)
 			{
-				int openTWeaponIndex = pPassenger->GetTechnoType()->OpenTransportWeapon;
-				int tWeaponIndex = 0;
-
-				if (openTWeaponIndex != -1)
-					tWeaponIndex = openTWeaponIndex;
-				else
-					tWeaponIndex = pPassenger->SelectWeapon(pThis->Target);
-
-				WeaponTypeClass* pTWeapon = pPassenger->GetWeapon(tWeaponIndex)->WeaponType;
+				const int openTWeaponIndex = pPassenger->GetTechnoType()->OpenTransportWeapon;
+				const int tWeaponIndex = openTWeaponIndex == -1 ? pPassenger->SelectWeapon(pThis->Target) : openTWeaponIndex;
+				auto const pTWeapon = pPassenger->GetWeapon(tWeaponIndex)->WeaponType;
 
 				if (pTWeapon && pTWeapon->FireInTransport)
 				{
-					int range = WeaponTypeExt::GetRangeWithModifiers(pTWeapon, pPassenger);
+					const int range = WeaponTypeExt::GetRangeWithModifiers(pTWeapon, pPassenger);
 
 					if (range < smallestRange)
 						smallestRange = range;
@@ -64,7 +58,14 @@ DEFINE_HOOK(0x6F7248, TechnoClass_InRange_WeaponRange, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EBX);
 
-	R->EDI(WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis));
+	int range = 0;
+
+	if (const auto keepRange = WeaponTypeExt::GetTechnoKeepRange(pWeapon, pThis, false))
+		range = keepRange;
+	else
+		range = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis);
+
+	R->EDI(range);
 
 	return SkipGameCode;
 }
@@ -74,10 +75,9 @@ DEFINE_HOOK(0x6F7294, TechnoClass_InRange_OccupyRange, 0x5)
 	enum { SkipGameCode = 0x6F729F };
 
 	GET(TechnoClass*, pThis, ESI);
-	GET(int, range, EDI);
+	GET(const int, range, EDI);
 
-	int occupyRange = WeaponTypeExt::GetRangeWithModifiers(nullptr, pThis);
-	occupyRange /= Unsorted::LeptonsPerCell;
+	const int occupyRange = WeaponTypeExt::GetRangeWithModifiers(nullptr, pThis) / Unsorted::LeptonsPerCell;
 
 	R->EDI(range + occupyRange);
 
@@ -115,9 +115,9 @@ DEFINE_HOOK(0x41810F, AircraftClass_MissionAttack_WeaponRangeCheck1, 0x6)
 
 	GET(AircraftClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
-	GET(int, distance, EAX);
+	GET(const int, distance, EAX);
 
-	int range = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis);
+	const int range = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis);
 
 	if (distance < range)
 		return WithinDistance;
@@ -165,4 +165,67 @@ DEFINE_HOOK(0x6DBE63, TacticalClass_DrawRadialIndicators_WeaponRange, 0x6)
 		*range = originalRange;
 
 	return R->Origin() == 0x6DBE63 ? SkipGameCode1 : SkipGameCode2;
+}
+
+namespace ApproachTargetTemp
+{
+	bool FromMaximumRange = true;
+	int SearchRange = 0;
+}
+
+DEFINE_HOOK(0x4D5FBD, FootClass_ApproachTarget_BeforeSearching, 0xA)
+{
+	enum { WantAggressiveCrush = 0x4D6892, StartSearching = 0x4D5FE0 };
+
+	GET(TechnoTypeClass*, pType, EAX);
+	R->ESI(pType->MovementZone);
+
+	GET_STACK(int, searchRange, STACK_OFFSET(0x158, -0x120));
+	ApproachTargetTemp::FromMaximumRange = true;
+	ApproachTargetTemp::SearchRange = searchRange;
+
+	if (searchRange <= 204)
+		return WantAggressiveCrush;
+
+	GET_STACK(const bool, inRange, STACK_OFFSET(0x158, -0x146));
+
+	if (!inRange)
+	{
+		GET(FootClass*, pThis, EBX);
+		GET_STACK(const int, weaponIdx, STACK_OFFSET(0x158, -0xAC));
+		const auto pWeapon = pThis->GetWeapon(weaponIdx)->WeaponType;
+
+		if (pWeapon && pWeapon->Range != -512)
+		{
+			const int distance = (pThis->IsInAir() || pWeapon->Projectile->Arcing || pThis->WhatAmI() == AircraftClass::AbsID)
+				? pThis->DistanceFrom(pThis->Target)
+				: pThis->DistanceFrom3D(pThis->Target);
+			ApproachTargetTemp::FromMaximumRange = distance >= pWeapon->MinimumRange;
+
+			if (!ApproachTargetTemp::FromMaximumRange)
+				searchRange = 204;
+		}
+	}
+
+	R->ECX(searchRange);
+	R->Stack(STACK_OFFSET(0x158, -0xF4), searchRange);
+	return StartSearching;
+}
+
+DEFINE_HOOK(0x4D6874, FootClass_ApproachTarget_NextRadius, 0xC)
+{
+	enum { ContinueNextRadius = 0x4D5FE0, BreakOut = 0x4D68E7 };
+
+	GET_STACK(int, searchRadius, STACK_OFFSET(0x158, -0xF4));
+
+	if (ApproachTargetTemp::FromMaximumRange)
+	{
+		searchRadius -= Unsorted::LeptonsPerCell;
+		R->Stack(STACK_OFFSET(0x158, -0xF4), searchRadius);
+		return searchRadius > 204 ? ContinueNextRadius : BreakOut;
+	}
+
+	searchRadius += Unsorted::LeptonsPerCell;
+	R->Stack(STACK_OFFSET(0x158, -0xF4), searchRadius);
+	return searchRadius <= ApproachTargetTemp::SearchRange ? ContinueNextRadius : BreakOut;
 }

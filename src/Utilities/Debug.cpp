@@ -47,7 +47,7 @@ void Debug::LogAndMessage(const char* pFormat, ...)
 	va_end(args);
 	wchar_t buffer[0x1000];
 	CRT::mbstowcs(buffer, StringBuffer, 0x1000);
-	MessageListClass::Instance->PrintMessage(buffer);
+	MessageListClass::Instance.PrintMessage(buffer);
 }
 
 void Debug::LogWithVArgs(const char* pFormat, va_list args)

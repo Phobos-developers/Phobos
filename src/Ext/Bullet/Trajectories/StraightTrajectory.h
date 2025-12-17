@@ -147,12 +147,7 @@ private:
 	void CalculateNewDamage(BulletClass* pBullet);
 	void PassWithDetonateAt(BulletClass* pBullet, HouseClass* pOwner);
 	void PrepareForDetonateAt(BulletClass* pBullet, HouseClass* pOwner);
-	std::vector<CellClass*> GetCellsInProximityRadius(BulletClass* pBullet);
-	std::vector<CellStruct> GetCellsInRectangle(CellStruct bottomStaCell, CellStruct leftMidCell, CellStruct rightMidCell, CellStruct topEndCell);
 	int GetTheTrueDamage(int damage, BulletClass* pBullet, TechnoClass* pTechno, bool self);
 	double GetExtraDamageMultiplier(BulletClass* pBullet, TechnoClass* pTechno);
 	bool PassAndConfineAtHeight(BulletClass* pBullet);
-	int GetFirerZPosition(BulletClass* pBullet);
-	int GetTargetZPosition(BulletClass* pBullet);
-	bool ElevationDetonationCheck(BulletClass* pBullet);
 };

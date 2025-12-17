@@ -183,12 +183,15 @@ enum class SelfHealGainType
 	Units = 2
 };
 
-enum class InterceptedStatus
+enum class InterceptedStatus : unsigned char
 {
-	None = 0,
-	Targeted = 1,
-	Intercepted = 2
+	None = 0x0,
+	Targeted = 0x1,
+	Intercepted = 0x2,
+	Locked = 0x4
 };
+
+MAKE_ENUM_FLAGS(InterceptedStatus);
 
 enum class PhobosAction
 {
@@ -240,6 +243,13 @@ enum class ChronoSparkleDisplayPosition : unsigned char
 
 MAKE_ENUM_FLAGS(ChronoSparkleDisplayPosition);
 
+enum class LaserTrailDrawType : BYTE
+{
+	Laser = 0,
+	EBolt = 1,
+	RadBeam = 2
+};
+
 enum class HorizontalPosition : BYTE
 {
 	Left = 0,
@@ -276,7 +286,39 @@ enum class DisplayInfoType : BYTE
 	Tiberium = 6,
 	Experience = 7,
 	Occupants = 8,
-	GattlingStage = 9
+	GattlingStage = 9,
+	ROF = 10,
+	Reload = 11,
+	SpawnTimer = 12,
+	GattlingTimer = 13,
+	ProduceCash = 14,
+	PassengerKill = 15,
+	AutoDeath = 16,
+	SuperWeapon = 17,
+	IronCurtain = 18,
+	TemporalLife = 19,
+	FactoryProcess = 20
+};
+
+enum class DisplayShowType : unsigned char
+{
+	None = 0x0,
+	CursorHover = 0x1,
+	Selected = 0x2,
+	Idle = 0x4,
+
+	Select = CursorHover | Selected,
+	All = CursorHover | Selected | Idle
+};
+
+MAKE_ENUM_FLAGS(DisplayShowType);
+
+enum class BannerNumberType : int
+{
+	None = 0,
+	Variable = 1,
+	Prefixed = 2,
+	Suffixed = 3
 };
 
 class MouseCursorHotSpotX

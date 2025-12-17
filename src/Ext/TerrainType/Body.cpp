@@ -5,6 +5,7 @@
 #include <TerrainClass.h>
 #include <TerrainTypeClass.h>
 
+#include <Ext/Anim/Body.h>
 #include <Utilities/GeneralUtils.h>
 
 TerrainTypeExt::ExtContainer TerrainTypeExt::ExtMap;
@@ -22,9 +23,7 @@ int TerrainTypeExt::ExtData::GetCellsPerAnim()
 void TerrainTypeExt::ExtData::PlayDestroyEffects(const CoordStruct& coords)
 {
 	VocClass::PlayIndexAtPos(this->DestroySound, coords);
-
-	if (auto const pAnimType = this->DestroyAnim)
-		GameCreate<AnimClass>(pAnimType, coords);
+	AnimExt::CreateRandomAnim(this->DestroyAnim, coords);
 }
 
 void TerrainTypeExt::Remove(TerrainClass* pTerrain)
@@ -67,11 +66,8 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
-
-	if (!pINI->GetSection(pSection))
-		return;
-
 	INI_EX exINI(pINI);
+
 	this->SpawnsTiberium_Type.Read(exINI, pSection, "SpawnsTiberium.Type");
 	this->SpawnsTiberium_Range.Read(exINI, pSection, "SpawnsTiberium.Range");
 	this->SpawnsTiberium_GrowthStage.Read(exINI, pSection, "SpawnsTiberium.GrowthStage");
@@ -93,14 +89,11 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	//Strength is already part of ObjecTypeClass::ReadIni Duh!
 	//this->TerrainStrength.Read(exINI, pSection, "Strength");
 
-	auto const pArtINI = &CCINIClass::INI_Art();
-	auto pArtSection = pThis->ImageFile;
-
-	this->PaletteFile.Read(pArtINI, pArtSection, "Palette");
+	this->PaletteFile.Read(&CCINIClass::INI_Art, pThis->ImageFile, "Palette");
 	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
 
 	if (GeneralUtils::IsValidString(this->PaletteFile) && !this->Palette)
-		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pArtSection, this->PaletteFile.data());
+		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pThis->ImageFile, this->PaletteFile.data());
 }
 
 void TerrainTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

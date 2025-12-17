@@ -2,26 +2,35 @@
 #include <Helpers/Macro.h>
 #include <Utilities/Debug.h>
 
-DEFINE_HOOK(0x6870D7, ReadScenario_LoadingScreens, 0x5)
+DEFINE_HOOK(0x6870D7, ReadScenario_MissionINI, 0x5)
 {
 	enum { SkipGameCode = 0x6873AB };
 
 	LEA_STACK(CCINIClass*, pINI, STACK_OFFSET(0x174, -0x158));
 
-	auto const pScenario = ScenarioClass::Instance();
+	auto const pScenario = ScenarioClass::Instance;
+	auto const pScenarioExt = ScenarioExt::Global();
 	auto const scenarioName = pScenario->FileName;
 	auto const defaultsSection = "Defaults";
 
-	pScenario->LS640BriefLocX = pINI->ReadInteger(scenarioName, "LS640BriefLocX", pINI->ReadInteger(defaultsSection, "DefaultLS640BriefLocX", 0));
-	pScenario->LS640BriefLocY = pINI->ReadInteger(scenarioName, "LS640BriefLocY", pINI->ReadInteger(defaultsSection, "DefaultLS640BriefLocY", 0));
-	pScenario->LS800BriefLocX = pINI->ReadInteger(scenarioName, "LS800BriefLocX", pINI->ReadInteger(defaultsSection, "DefaultLS800BriefLocX", 0));
-	pScenario->LS800BriefLocY = pINI->ReadInteger(scenarioName, "LS800BriefLocY", pINI->ReadInteger(defaultsSection, "DefaultLS800BriefLocY", 0));
-	pINI->ReadString(defaultsSection, "DefaultLS640BkgdName", pScenario->LS640BkgdName, pScenario->LS640BkgdName, 64);
-	pINI->ReadString(scenarioName, "LS640BkgdName", pScenario->LS640BkgdName, pScenario->LS640BkgdName, 64);
-	pINI->ReadString(defaultsSection, "DefaultLS800BkgdName", pScenario->LS800BkgdName, pScenario->LS800BkgdName, 64);
-	pINI->ReadString(scenarioName, "LS800BkgdName", pScenario->LS800BkgdName, pScenario->LS800BkgdName, 64);
-	pINI->ReadString(defaultsSection, "DefaultLS800BkgdPal", pScenario->LS800BkgdPal, pScenario->LS800BkgdPal, 64);
-	pINI->ReadString(scenarioName, "LS800BkgdPal", pScenario->LS800BkgdPal, pScenario->LS800BkgdPal, 64);
+	CCINIClass ini_missionmd {};
+	ini_missionmd.LoadFromFile(GameStrings::MISSIONMD_INI);
+
+	pScenarioExt->DefaultLS640BkgdName.Read(&ini_missionmd, defaultsSection, "DefaultLS640BkgdName");
+	pScenarioExt->DefaultLS800BkgdName.Read(&ini_missionmd, defaultsSection, "DefaultLS800BkgdName");
+	pScenarioExt->DefaultLS800BkgdPal.Read(&ini_missionmd, defaultsSection, "DefaultLS800BkgdPal");
+
+	pScenarioExt->ShowBriefing = pINI->ReadBool(scenarioName, "ShowBriefing", pScenarioExt->ShowBriefing);
+	pScenarioExt->BriefingTheme = pINI->ReadTheme(scenarioName, "BriefingTheme", pScenarioExt->BriefingTheme);
+
+	pScenario->LS640BriefLocX = pINI->ReadInteger(scenarioName, "LS640BriefLocX", ini_missionmd.ReadInteger(defaultsSection, "DefaultLS640BriefLocX", 0));
+	pScenario->LS640BriefLocY = pINI->ReadInteger(scenarioName, "LS640BriefLocY", ini_missionmd.ReadInteger(defaultsSection, "DefaultLS640BriefLocY", 0));
+	pScenario->LS800BriefLocX = pINI->ReadInteger(scenarioName, "LS800BriefLocX", ini_missionmd.ReadInteger(defaultsSection, "DefaultLS800BriefLocX", 0));
+	pScenario->LS800BriefLocY = pINI->ReadInteger(scenarioName, "LS800BriefLocY", ini_missionmd.ReadInteger(defaultsSection, "DefaultLS800BriefLocY", 0));
+
+	pINI->ReadString(scenarioName, "LS640BkgdName", pScenarioExt->DefaultLS640BkgdName, pScenario->LS640BkgdName, 64);
+	pINI->ReadString(scenarioName, "LS800BkgdName", pScenarioExt->DefaultLS800BkgdName, pScenario->LS800BkgdName, 64);
+	pINI->ReadString(scenarioName, "LS800BkgdPal", pScenarioExt->DefaultLS800BkgdPal, pScenario->LS800BkgdPal, 64);
 
 	return SkipGameCode;
 }
@@ -39,7 +48,7 @@ DEFINE_HOOK(0x50C186, GetHouseIndexFromName_PlayerAtX, 0x6)
 	if (SessionClass::IsCampaign() || *name != '<')
 		return 0;
 
-	int playerAtIndex = HouseClass::GetPlayerAtFromString(name);
+	const int playerAtIndex = HouseClass::GetPlayerAtFromString(name);
 
 	if (playerAtIndex != -1)
 	{
