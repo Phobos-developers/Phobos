@@ -292,7 +292,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AIFireSaleDelay.Read(exINI, GameStrings::General, "AIFireSaleDelay");
 	this->AIAllToHunt.Read(exINI, GameStrings::General, "AIAllToHunt");
 	this->RepairBaseNodes.Read(exINI, GameStrings::Basic, "RepairBaseNodes");
-	this->AIAngerOnAlly.Read(exINI, GameStrings::General, "AIAngerOnAlly");
 
 	this->WarheadParticleAlphaImageIsLightFlash.Read(exINI, GameStrings::AudioVisual, "WarheadParticleAlphaImageIsLightFlash");
 	this->CombatLightDetailLevel.Read(exINI, GameStrings::AudioVisual, "CombatLightDetailLevel");
@@ -583,7 +582,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AIFireSaleDelay)
 		.Process(this->AIAllToHunt)
 		.Process(this->RepairBaseNodes)
-		.Process(this->AIAngerOnAlly)
 		.Process(this->WarheadParticleAlphaImageIsLightFlash)
 		.Process(this->CombatLightDetailLevel)
 		.Process(this->LightFlashAlphaImageDetailLevel)
