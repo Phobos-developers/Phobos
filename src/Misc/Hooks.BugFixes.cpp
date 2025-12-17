@@ -2900,3 +2900,12 @@ DEFINE_HOOK(0x4440B0, BuildingClass_KickOutUnit_CloningFacility, 0x6)
 
 	return ContinueIn;
 }
+
+DEFINE_HOOK(0x65DE82, TeamTypeClass_CreateTeamMembers_Veterancy, 0x6)
+{
+	enum { SkipVeterancy = 0x65DEC0 };
+
+	GET(TechnoTypeClass*, pTechnoType, EDI);
+
+	return pTechnoType->Trainable ? 0 : SkipVeterancy;
+}
