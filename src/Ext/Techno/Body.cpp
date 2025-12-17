@@ -743,6 +743,25 @@ bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max
 	return (hp > 0 ? hp > min : hp >= min) && hp <= max;
 }
 
+bool TechnoExt::IsVeterancyInThreshold(TechnoClass* pObject, int min, int max)
+{
+	VeterancyStruct* pVeterancy = &pObject->Veterancy;
+	if (pVeterancy == nullptr)
+		return true;
+
+	min = std::clamp(min, 0, 2);
+	max = std::clamp(max, 0, 2);
+
+	int level = 0;
+
+	if (pVeterancy->IsElite())
+		level = 2;
+	else if (pVeterancy->IsVeteran())
+		level = 1;
+
+	return level >= min && level <= max;
+}
+
 bool TechnoExt::CannotMove(UnitClass* pThis)
 {
 	const auto loco = pThis->Locomotor;
