@@ -500,6 +500,7 @@ DEFINE_HOOK(0x4FD635, HouseClass_UpdateAI_DistCalcFix, 0x5)
 {
 	enum { SkipGameCode = 0x4FD657 };
 	GET(HouseClass*, pTargetHouse, ESI);
-	R->EAX(pTargetHouse->BaseCenter == CellStruct::Empty ? pTargetHouse->BaseSpawnCell : pTargetHouse->BaseCenter);
+	auto baseMapCrd = pTargetHouse->BaseCenter == CellStruct::Empty ? pTargetHouse->BaseSpawnCell : pTargetHouse->BaseCenter;
+	R->EAX(*(int*)&baseMapCrd);
 	return SkipGameCode;
 }
