@@ -297,8 +297,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AffectsBelowPercent.Read(exINI, pSection, "AffectsBelowPercent");
 	this->AffectsAbovePercent.Read(exINI, pSection, "AffectsAbovePercent");
-	this->AffectsBelowPercent.Read(exINI, pSection, "AffectsBelowVeterancy");
-	this->AffectsAbovePercent.Read(exINI, pSection, "AffectsAboveVeterancy");
+	this->AffectsBelowVeterancy.Read(exINI, pSection, "AffectsBelowVeterancy");
+	this->AffectsAboveVeterancy.Read(exINI, pSection, "AffectsAboveVeterancy");
 	this->AffectsNeutral.Read(exINI, pSection, "AffectsNeutral");
 	this->AffectsGround.Read(exINI, pSection, "AffectsGround");
 	this->AffectsAir.Read(exINI, pSection, "AffectsAir");
