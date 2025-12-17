@@ -743,23 +743,14 @@ bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max
 	return (hp > 0 ? hp > min : hp >= min) && hp <= max;
 }
 
-bool TechnoExt::IsVeterancyInThreshold(TechnoClass* pObject, int min, int max)
+bool TechnoExt::IsVeterancyInThreshold(TechnoClass* pTechno, float min, float max)
 {
-	VeterancyStruct* pVeterancy = &pObject->Veterancy;
-	if (pVeterancy == nullptr)
-		return true;
+	float veterancy = 0.0;
 
-	min = std::clamp(min, 0, 2);
-	max = std::clamp(max, 0, 2);
+	if (pTechno->GetTechnoType()->Trainable)
+		veterancy = pTechno->Veterancy.Veterancy;
 
-	int level = 0;
-
-	if (pVeterancy->IsElite())
-		level = 2;
-	else if (pVeterancy->IsVeteran())
-		level = 1;
-
-	return level >= min && level <= max;
+	return veterancy >= min && veterancy <= max;
 }
 
 bool TechnoExt::CannotMove(UnitClass* pThis)

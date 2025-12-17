@@ -192,6 +192,8 @@ public:
 
 		Valueable<double> AffectsBelowPercent;
 		Valueable<double> AffectsAbovePercent;
+		Valueable<float> AffectsBelowVeterancy;
+		Valueable<float> AffectsAboveVeterancy;
 		Valueable<bool> AffectsNeutral;
 		Valueable<bool> AffectsGround;
 		Valueable<bool> AffectsAir;
@@ -230,6 +232,7 @@ public:
 		int RemainingAnimCreationInterval;
 		bool PossibleCellSpreadDetonate;
 		bool HealthCheck;
+		bool VeterancyCheck;
 		TechnoClass* DamageAreaTarget;
 
 	private:
@@ -402,6 +405,8 @@ public:
 
 			, AffectsBelowPercent { 1.0 }
 			, AffectsAbovePercent { 0.0 }
+			, AffectsBelowVeterancy { 2.0 }
+			, AffectsAboveVeterancy { 0.0 }
 			, AffectsNeutral { true }
 			, AffectsGround { true }
 			, AffectsAir { true }
@@ -423,6 +428,7 @@ public:
 			, RemainingAnimCreationInterval { 0 }
 			, PossibleCellSpreadDetonate { false }
 			, HealthCheck { false }
+			, VeterancyCheck { false }
 			, DamageAreaTarget {}
 
 			, CanKill { true }
