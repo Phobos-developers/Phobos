@@ -509,6 +509,8 @@ Vanilla fixes:
 - Fixed the bug that naval ship will sink even they destroyed in air (by NetsuNegi)
 - Fixed MPDebug timer displaying when debug's visibility is off (by 11EJDE11)
 - Fixed the issue that units will goto farest location if target is closer than `MinimumRange` (by NetsuNegi)
+- Prevent AI from setting up anger against friendly players to prevent AI from losing intelligence early in the game (by TaranDahl)
+- Fixed the bug that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies (by TaranDahl)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

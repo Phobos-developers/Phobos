@@ -652,6 +652,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where the vanilla script ignores jumpjets
   - CellSpread in cylinder shape
   - CellSpread damage check if victim is in air or on floor
+  - Prevent AI from setting up anger against friendly players to prevent AI from losing intelligence early in the game
+  - Fix an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies.
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
