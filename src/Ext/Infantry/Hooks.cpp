@@ -1,6 +1,5 @@
 #include <Utilities/Macro.h>
-#include <ScenarioClass.h>
-#include <ParticleSystemClass.h>
+
 #include <InfantryClass.h>
 #include <HouseClass.h>
 #include <InputManagerClass.h>
@@ -9,7 +8,6 @@
 #include <Ext/BuildingType/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
-#include <Ext/ParticleSystemType/Body.h>
 
 DEFINE_HOOK(0x51DF42, InfantryClass_Limbo_Cyborg, 0x7)
 {
