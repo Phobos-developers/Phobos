@@ -457,9 +457,10 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 	double bestVal = -1;
 	bool unitWeaponsHaveAA = false;
 	bool unitWeaponsHaveAG = false;
-	const auto pTechnoType = pTechno->GetTechnoType();
+	const auto pTechnoTypeExt = TechnoExt::ExtMap.Find(pTechno)->TypeExtData;
+	const auto pTechnoType = pTechnoTypeExt->OwnerObject();
 	const auto pTechnoOwner = pTechno->Owner;
-	const auto targetZoneScanType = TechnoTypeExt::ExtMap.Find(pTechnoType)->TargetZoneScanType;
+	const auto targetZoneScanType = pTechnoTypeExt->TargetZoneScanType;
 
 	// Generic method for targeting
 	for (int i = 0; i < TechnoClass::Array.Count; i++)

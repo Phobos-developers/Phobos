@@ -1445,7 +1445,8 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 	if (!RulesExt::Global()->GainSelfHealAllowMultiplayPassive && pThis->Owner->Type->MultiplayPassive)
 		return;
 
-	auto const pType = pThis->GetTechnoType();
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto const pType = pTypeExt->OwnerObject();
 	const int healthDeficit = pType->Strength - pThis->Health;
 
 	if (pThis->Health && healthDeficit > 0)
@@ -1458,7 +1459,7 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 		else if (whatAmI == AbstractType::Unit)
 			defaultSelfHealType = (pType->Organic ? SelfHealGainType::Infantry : SelfHealGainType::Units);
 
-		auto const selfHealType = TechnoTypeExt::ExtMap.Find(pType)->SelfHealGainType.Get(defaultSelfHealType);
+		auto const selfHealType = pTypeExt->SelfHealGainType.Get(defaultSelfHealType);
 
 		if (selfHealType == SelfHealGainType::NoHeal)
 			return;
@@ -1669,24 +1670,23 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, cons
 
 void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 {
-	const auto pType = pThis->GetTechnoType();
+	const auto pExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
-	if (pType->OpenTopped)
+	if (pExt->Ammo_Shared)
 	{
-		const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
+		const auto pType = pExt->OwnerObject();
 
-		if (pExt->Ammo_Shared && pType->Ammo > 0)
+		if (pType->OpenTopped && pType->Ammo > 0)
 		{
 			for (auto pPassenger = pThis->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
 			{
-				const auto pPassengerType = pPassenger->GetTechnoType();
-				const auto pPassengerExt = TechnoTypeExt::ExtMap.Find(pPassengerType);
+				const auto pPassengerExt = TechnoExt::ExtMap.Find(pPassenger)->TypeExtData;
 
 				if (pPassengerExt->Ammo_Shared)
 				{
 					if (pExt->Ammo_Shared_Group < 0 || pExt->Ammo_Shared_Group == pPassengerExt->Ammo_Shared_Group)
 					{
-						if (pThis->Ammo > 0 && (pPassenger->Ammo < pPassengerType->Ammo))
+						if (pThis->Ammo > 0 && (pPassenger->Ammo < pPassengerExt->OwnerObject()->Ammo))
 						{
 							pThis->Ammo--;
 							pPassenger->Ammo++;
