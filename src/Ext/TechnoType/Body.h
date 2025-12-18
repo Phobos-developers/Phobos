@@ -372,8 +372,6 @@ public:
 
 		Nullable<AffectedHouse> RadarInvisibleToHouse;
 
-		NullableVector<int> ChangeOwnerImmunities;
-
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -854,8 +852,6 @@ public:
 			, InfantryAutoDeploy {}
 
 			, TurretResponse {}
-
-			, ChangeOwnerImmunities {}
 		{ }
 
 		virtual ~ExtData() = default;
