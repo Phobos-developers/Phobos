@@ -2857,12 +2857,12 @@ This function is only used as an additional scattering visual display, which is 
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]             ; WeaponType
-CanTarget=all            ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-CanTargetHouses=all      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-CanTarget.MaxHealth=1.0  ; floating point value, percents or absolute
-CanTarget.MinHealth=0.0  ; floating point value, percents or absolute
-CanTarget.MaxVeterancy=  ; floating point value, percents or absolute, default to [General] -> VeteranCap
+[SOMEWEAPON]                ; WeaponType
+CanTarget=all               ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+CanTargetHouses=all         ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+CanTarget.MaxHealth=1.0     ; floating point value, percents or absolute
+CanTarget.MinHealth=0.0     ; floating point value, percents or absolute
+CanTarget.MaxVeterancy=     ; floating point value, percents or absolute, default to [General] -> VeteranCap
 CanTarget.MinVeterancy=0.0  ; floating point value, percents or absolute
 ```
 
