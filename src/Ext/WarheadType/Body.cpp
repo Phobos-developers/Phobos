@@ -64,7 +64,7 @@ bool WarheadTypeExt::ExtData::IsVeterancyInThreshold(TechnoClass* pTarget) const
 	if (!this->VeterancyCheck)
 		return true;
 
-	return TechnoExt::IsVeterancyInThreshold(pTarget, this->AffectsAboveVeterancy, this->AffectsBelowVeterancy.Get(static_cast<float>(RulesClass::Instance->VeteranCap)));
+	return TechnoExt::IsVeterancyInThreshold(pTarget, this->AffectsAboveVeterancy, this->AffectsBelowVeterancy.Get(RulesClass::Instance->VeteranCap));
 }
 
 // Checks if Warhead can affect target that might or might be currently invulnerable.
@@ -304,12 +304,12 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AffectsAir.Read(exINI, pSection, "AffectsAir");
 	this->CellSpread_Cylinder.Read(exINI, pSection, "CellSpread.Cylinder");
 	this->HealthCheck = this->AffectsBelowPercent > 0.0 || this->AffectsAbovePercent < 1.0;
-	this->VeterancyCheck = this->AffectsBelowVeterancy.Get(static_cast<float>(RulesClass::Instance->VeteranCap)) > 0.0f || this->AffectsAboveVeterancy < static_cast<float>(RulesClass::Instance->VeteranCap);
+	this->VeterancyCheck = this->AffectsBelowVeterancy.Get(RulesClass::Instance->VeteranCap) > 0.0 || this->AffectsAboveVeterancy < RulesClass::Instance->VeteranCap;
 
 	if (this->AffectsAbovePercent > this->AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] AffectsAbovePercent is bigger than AffectsBelowPercent, the warhead will never activate!\n", pSection);
 
-	if (this->AffectsAboveVeterancy > this->AffectsBelowVeterancy.Get(static_cast<float>(RulesClass::Instance->VeteranCap)))
+	if (this->AffectsAboveVeterancy > this->AffectsBelowVeterancy.Get(RulesClass::Instance->VeteranCap))
 		Debug::Log("[Developer warning][%s] AffectsAboveVeterancy is bigger than AffectsBelowVeterancy, the warhead will never activate!\n", pSection);
 
 	this->ReverseEngineer.Read(exINI, pSection, "ReverseEngineer");

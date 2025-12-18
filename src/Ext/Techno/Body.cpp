@@ -743,9 +743,9 @@ bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max
 	return (hp > 0 ? hp > min : hp >= min) && hp <= max;
 }
 
-bool TechnoExt::IsVeterancyInThreshold(TechnoClass* pTechno, float min, float max)
+bool TechnoExt::IsVeterancyInThreshold(TechnoClass* pTechno, double min, double max)
 {
-	float veterancy = 0.0f;
+	double veterancy = 0.0;
 
 	if (pTechno->GetTechnoType()->Trainable)
 		veterancy = pTechno->Veterancy.Veterancy;
