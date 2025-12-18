@@ -17,6 +17,7 @@ public:
 
 	static constexpr DWORD Canary = 0x88446622;
 	static constexpr size_t ExtPointerOffset = 0x18;
+	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
 	class ExtData final : public Extension<RadSiteClass>
 	{
@@ -35,15 +36,10 @@ public:
 
 		virtual ~ExtData() = default;
 
-		virtual size_t Size() const
-		{
-			return sizeof(*this);
-		}
-
-		bool ApplyRadiationDamage(TechnoClass* pTarget, int& damage, int distance);
+		bool ApplyRadiationDamage(TechnoClass* pTarget, int& damage);
 		void Add(int amount);
 		void SetRadLevel(int amount);
-		double GetRadLevelAt(CellStruct const& cell) const;
+		// double GetRadLevelAt(CellStruct const& cell) const;
 		void CreateLight();
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
@@ -52,7 +48,6 @@ public:
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
-			AnnounceInvalidPointer(RadHouse, ptr);
 			AnnounceInvalidPointer(RadInvoker, ptr);
 		}
 
@@ -61,7 +56,7 @@ public:
 		void Serialize(T& Stm);
 	};
 
-	static void CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner, TechnoClass* const pInvoker);
+	static void CreateInstance(CellStruct location, int spread, int radLevel, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner, TechnoClass* const pInvoker);
 
 	class ExtContainer final : public Container<RadSiteExt>
 	{
@@ -78,7 +73,6 @@ public:
 			case AbstractType::Building:
 			case AbstractType::Infantry:
 			case AbstractType::Unit:
-			case AbstractType::House:
 				return false;
 			default:
 				return true;

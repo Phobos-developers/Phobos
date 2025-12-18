@@ -2,10 +2,19 @@
 
 #include <AnimTypeClass.h>
 
+#include <New/Type/Affiliated/CreateUnitTypeClass.h>
 #include <Utilities/Container.h>
 #include <Utilities/Enum.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
+
+enum class AttachedAnimPosition : BYTE
+{
+	Default = 0,
+	Center = 1,
+	Ground = 2
+};
+
 class AnimTypeExt
 {
 public:
@@ -18,55 +27,55 @@ public:
 	{
 	public:
 		CustomPalette Palette;
-		Valueable<UnitTypeClass*> CreateUnit;
-		Valueable<DirType> CreateUnit_Facing;
-		Valueable<bool> CreateUnit_InheritDeathFacings;
-		Valueable<bool> CreateUnit_InheritTurretFacings;
-		Valueable<bool> CreateUnit_RemapAnim;
-		Valueable<bool> CreateUnit_RandomFacing;
-		Valueable<Mission> CreateUnit_Mission;
-		Valueable<OwnerHouseKind> CreateUnit_Owner;
-		Valueable<bool> CreateUnit_AlwaysSpawnOnGround;
-		Valueable<bool> CreateUnit_ConsiderPathfinding;
-		Nullable<AnimTypeClass*> CreateUnit_SpawnAnim;
+		std::unique_ptr<CreateUnitTypeClass> CreateUnitType;
 		Valueable<int> XDrawOffset;
 		Valueable<int> HideIfNoOre_Threshold;
 		Nullable<bool> Layer_UseObjectLayer;
-		Valueable<bool> UseCenterCoordsIfAttached;
-		Nullable<WeaponTypeClass*> Weapon;
+		Valueable<AttachedAnimPosition> AttachedAnimPosition;
+		Valueable<WeaponTypeClass*> Weapon;
 		Valueable<int> Damage_Delay;
 		Valueable<bool> Damage_DealtByInvoker;
 		Valueable<bool> Damage_ApplyOncePerLoop;
+		Valueable<bool> Damage_ApplyFirepowerMult;
 		Valueable<bool> ExplodeOnWater;
 		Valueable<bool> Warhead_Detonate;
-		Nullable<AnimTypeClass*> WakeAnim;
+		ValueableVector<AnimTypeClass*> WakeAnim;
 		NullableVector<AnimTypeClass*> SplashAnims;
 		Valueable<bool> SplashAnims_PickRandom;
 		Valueable<ParticleSystemTypeClass*> AttachedSystem;
 		Valueable<bool> AltPalette_ApplyLighting;
 		Valueable<OwnerHouseKind> MakeInfantryOwner;
 		Valueable<bool> ExtraShadow;
+		ValueableIdx<VocClass> DetachedReport;
+		Valueable<AffectedHouse> VisibleTo;
+		Valueable<bool> VisibleTo_ConsiderInvokerAsOwner;
+		Valueable<bool> RestrictVisibilityIfCloaked;
+		Valueable<bool> DetachOnCloak;
+		Valueable<bool> ConstrainFireAnimsToCellSpots;
+		Nullable<LandTypeFlags> FireAnimDisallowedLandTypes;
+		Nullable<bool> AttachFireAnimsToParent;
+		Nullable<int> SmallFireCount;
+		ValueableVector<AnimTypeClass*> SmallFireAnims;
+		ValueableVector<double> SmallFireChances;
+		ValueableVector<double> SmallFireDistances;
+		Valueable<int> LargeFireCount;
+		ValueableVector<AnimTypeClass*> LargeFireAnims;
+		ValueableVector<double> LargeFireChances;
+		ValueableVector<double> LargeFireDistances;
+		Nullable<bool> Crater_DestroyTiberium;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
-			, CreateUnit_Facing { DirType::North }
-			, CreateUnit_RandomFacing { true }
-			, CreateUnit_InheritDeathFacings { false }
-			, CreateUnit_InheritTurretFacings { false }
-			, CreateUnit_RemapAnim { false }
-			, CreateUnit_Mission { Mission::Guard }
-			, CreateUnit_Owner { OwnerHouseKind::Victim }
-			, CreateUnit_AlwaysSpawnOnGround { false }
-			, CreateUnit_ConsiderPathfinding { false }
-			, CreateUnit_SpawnAnim {}
+			, CreateUnitType { nullptr }
 			, XDrawOffset { 0 }
 			, HideIfNoOre_Threshold { 0 }
 			, Layer_UseObjectLayer {}
-			, UseCenterCoordsIfAttached { false }
+			, AttachedAnimPosition { AttachedAnimPosition::Default }
 			, Weapon {}
 			, Damage_Delay { 0 }
 			, Damage_DealtByInvoker { false }
 			, Damage_ApplyOncePerLoop { false }
+			, Damage_ApplyFirepowerMult { false }
 			, ExplodeOnWater { false }
 			, Warhead_Detonate { false }
 			, WakeAnim {}
@@ -76,6 +85,23 @@ public:
 			, AltPalette_ApplyLighting { false }
 			, MakeInfantryOwner { OwnerHouseKind::Victim }
 			, ExtraShadow { true }
+			, DetachedReport {}
+			, VisibleTo { AffectedHouse::All }
+			, VisibleTo_ConsiderInvokerAsOwner { false }
+			, RestrictVisibilityIfCloaked { false }
+			, DetachOnCloak { true }
+			, ConstrainFireAnimsToCellSpots { true }
+			, FireAnimDisallowedLandTypes {}
+			, AttachFireAnimsToParent {}
+			, SmallFireCount {}
+			, SmallFireAnims {}
+			, SmallFireChances {}
+			, SmallFireDistances {}
+			, LargeFireCount { 1 }
+			, LargeFireAnims {}
+			, LargeFireChances {}
+			, LargeFireDistances {}
+			, Crater_DestroyTiberium {}
 		{ }
 
 		virtual ~ExtData() = default;

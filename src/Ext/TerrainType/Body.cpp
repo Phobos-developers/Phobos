@@ -1,9 +1,11 @@
 #include "Body.h"
 
+#include <AnimClass.h>
 #include <TacticalClass.h>
 #include <TerrainClass.h>
 #include <TerrainTypeClass.h>
 
+#include <Ext/Anim/Body.h>
 #include <Utilities/GeneralUtils.h>
 
 TerrainTypeExt::ExtContainer TerrainTypeExt::ExtMap;
@@ -16,6 +18,12 @@ int TerrainTypeExt::ExtData::GetTiberiumGrowthStage()
 int TerrainTypeExt::ExtData::GetCellsPerAnim()
 {
 	return GeneralUtils::GetRangedRandomOrSingleValue(this->SpawnsTiberium_CellsPerAnim.Get());
+}
+
+void TerrainTypeExt::ExtData::PlayDestroyEffects(const CoordStruct& coords)
+{
+	VocClass::PlayIndexAtPos(this->DestroySound, coords);
+	AnimExt::CreateRandomAnim(this->DestroyAnim, coords);
 }
 
 void TerrainTypeExt::Remove(TerrainClass* pTerrain)
@@ -46,6 +54,11 @@ void TerrainTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MinimapColor)
 		.Process(this->IsPassable)
 		.Process(this->CanBeBuiltOn)
+		.Process(this->HasDamagedFrames)
+		.Process(this->HasCrumblingFrames)
+		.Process(this->CrumblingSound)
+		.Process(this->AnimationLength)
+		.Process(this->PaletteFile)
 		;
 }
 
@@ -53,11 +66,8 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
-
-	if (!pINI->GetSection(pSection))
-		return;
-
 	INI_EX exINI(pINI);
+
 	this->SpawnsTiberium_Type.Read(exINI, pSection, "SpawnsTiberium.Type");
 	this->SpawnsTiberium_Range.Read(exINI, pSection, "SpawnsTiberium.Range");
 	this->SpawnsTiberium_GrowthStage.Read(exINI, pSection, "SpawnsTiberium.GrowthStage");
@@ -71,14 +81,26 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->IsPassable.Read(exINI, pSection, "IsPassable");
 	this->CanBeBuiltOn.Read(exINI, pSection, "CanBeBuiltOn");
 
+	this->HasDamagedFrames.Read(exINI, pSection, "HasDamagedFrames");
+	this->HasCrumblingFrames.Read(exINI, pSection, "HasCrumblingFrames");
+	this->CrumblingSound.Read(exINI, pSection, "CrumblingSound");
+	this->AnimationLength.Read(exINI, pSection, "AnimationLength");
+
 	//Strength is already part of ObjecTypeClass::ReadIni Duh!
 	//this->TerrainStrength.Read(exINI, pSection, "Strength");
+
+	this->PaletteFile.Read(&CCINIClass::INI_Art, pThis->ImageFile, "Palette");
+	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
+
+	if (GeneralUtils::IsValidString(this->PaletteFile) && !this->Palette)
+		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pThis->ImageFile, this->PaletteFile.data());
 }
 
 void TerrainTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<TerrainTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
+	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
 }
 
 void TerrainTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)

@@ -43,12 +43,14 @@ bool CustomPalette::LoadFromINI(
 	CCINIClass* pINI, const char* pSection, const char* pKey,
 	const char* pDefault)
 {
-	if (pINI->ReadString(pSection, pKey, pDefault, Phobos::readBuffer)) {
+	if (pINI->ReadString(pSection, pKey, pDefault, Phobos::readBuffer))
+	{
 		GeneralUtils::ApplyTheaterSuffixToString(Phobos::readBuffer);
 
 		this->Clear();
 
-		if (auto pPal = FileSystem::AllocatePalette(Phobos::readBuffer)) {
+		if (auto pPal = FileSystem::AllocatePalette(Phobos::readBuffer))
+		{
 			this->Palette.reset(pPal);
 			this->CreateConvert();
 		}
@@ -65,11 +67,13 @@ bool CustomPalette::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 	bool hasPalette = false;
 	auto ret = Stm.Load(this->Mode) && Stm.Load(hasPalette);
 
-	if (ret && hasPalette) {
+	if (ret && hasPalette)
+	{
 		this->Palette.reset(GameCreate<BytePalette>());
 		ret = Stm.Load(*this->Palette);
 
-		if (ret) {
+		if (ret)
+		{
 			this->CreateConvert();
 		}
 	}
@@ -81,7 +85,8 @@ bool CustomPalette::Save(PhobosStreamWriter& Stm) const
 {
 	Stm.Save(this->Mode);
 	Stm.Save(this->Palette != nullptr);
-	if (this->Palette) {
+	if (this->Palette)
+	{
 		Stm.Save(*this->Palette);
 	}
 	return true;
@@ -96,12 +101,14 @@ void CustomPalette::Clear()
 void CustomPalette::CreateConvert()
 {
 	ConvertClass* buffer = nullptr;
-	if (this->Mode == PaletteMode::Temperate) {
+	if (this->Mode == PaletteMode::Temperate)
+	{
 		buffer = GameCreate<ConvertClass>(
 			*this->Palette.get(), FileSystem::TEMPERAT_PAL, DSurface::Primary,
 			53, false);
 	}
-	else {
+	else
+	{
 		buffer = GameCreate<ConvertClass>(
 			*this->Palette.get(), *this->Palette.get(), DSurface::Alternate,
 			1, false);
@@ -129,7 +136,7 @@ PhobosPCXFile& PhobosPCXFile::operator = (const char* pFilename)
 
 BSurface* PhobosPCXFile::GetSurface(BytePalette* pPalette) const
 {
-	return this->Exists() ? PCX::Instance->GetSurface(this->filename, pPalette) : nullptr;
+	return this->Exists() ? PCX::Instance.GetSurface(this->filename, pPalette) : nullptr;
 }
 
 bool PhobosPCXFile::Exists() const
@@ -139,7 +146,7 @@ bool PhobosPCXFile::Exists() const
 		this->checked = true;
 		if (this->filename)
 		{
-			auto pPCX = &PCX::Instance();
+			auto pPCX = &PCX::Instance;
 			this->exists = (pPCX->GetSurface(this->filename) || pPCX->LoadFile(this->filename));
 		}
 	}
@@ -254,7 +261,7 @@ bool TheaterSpecificSHP::Read(INI_EX& parser, const char* pSection, const char* 
 		GeneralUtils::ApplyTheaterSuffixToString(pValue);
 
 		std::string Result = pValue;
-		if (!strstr(pValue, ".shp"))
+		if (Result.size() < 4 || !std::equal(Result.end() - 4, Result.end(), ".shp", [](char input, char expected) { return std::tolower(input) == expected; }))
 			Result += ".shp";
 
 		if (auto const pImage = FileSystem::LoadSHPFile(Result.c_str()))

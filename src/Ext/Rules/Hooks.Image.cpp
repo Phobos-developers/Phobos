@@ -10,10 +10,10 @@
 #include <UnitTypeClass.h>
 #include <AircraftTypeClass.h>
 
-void ReplaceImageInfantry(InfantryTypeClass* pType)
+static void ReplaceImageInfantry(InfantryTypeClass* pType)
 {
 	char nameBuffer[0x19];
-	if (CCINIClass::INI_Art->ReadString(pType->ImageFile, "Image", 0, nameBuffer, 0x19) != 0)
+	if (CCINIClass::INI_Art.ReadString(pType->ImageFile, "Image", 0, nameBuffer, 0x19) != 0)
 	{
 		Debug::Log("Replacing image for %s with %s.\n", pType->ImageFile, nameBuffer);
 		char filename[260];
@@ -22,10 +22,10 @@ void ReplaceImageInfantry(InfantryTypeClass* pType)
 	}
 }
 
-void ReplaceImageUnit(UnitTypeClass* pType)
+static void ReplaceImageUnit(UnitTypeClass* pType)
 {
 	char nameBuffer[0x19];
-	if (CCINIClass::INI_Art->ReadString(pType->ImageFile, "Image", 0, nameBuffer, 0x19) != 0)
+	if (CCINIClass::INI_Art.ReadString(pType->ImageFile, "Image", 0, nameBuffer, 0x19) != 0)
 	{
 		Debug::Log("Replacing image for %s with %s.\n", pType->ImageFile, nameBuffer);
 		if (pType->Voxel)
@@ -45,10 +45,10 @@ void ReplaceImageUnit(UnitTypeClass* pType)
 	}
 }
 
-void ReplaceImageAircraft(AircraftTypeClass* pType)
+static void ReplaceImageAircraft(AircraftTypeClass* pType)
 {
 	char nameBuffer[0x19];
-	if (CCINIClass::INI_Art->ReadString(pType->ImageFile, "Image", 0, nameBuffer, 0x19) != 0)
+	if (CCINIClass::INI_Art.ReadString(pType->ImageFile, "Image", 0, nameBuffer, 0x19) != 0)
 	{
 		if (pType->Voxel)
 		{

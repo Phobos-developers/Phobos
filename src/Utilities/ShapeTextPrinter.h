@@ -12,7 +12,7 @@ public:
 	int BaseExtraFrame;		// as sequence ShapeTextPrinter::SignSequence
 	Vector2D<int> Spacing;
 
-	ShapeTextPrintData(const SHPStruct* const shape, const ConvertClass* const palette, int baseNumberFrame, int baseExtraFrame, const Vector2D<int>& spacing):
+	ShapeTextPrintData(const SHPStruct* const shape, const ConvertClass* const palette, int baseNumberFrame, int baseExtraFrame, const Vector2D<int>& spacing) :
 		Shape(shape),
 		Palette(palette),
 		BaseNumberFrame(baseNumberFrame),
@@ -25,10 +25,7 @@ class ShapeTextPrinter
 {
 private:
 
-	static const char* SignSequence;
-	static const int SignSequenceLength;
-
-	static int GetSignIndex(const char sign);
+	static constexpr std::string_view SignSequence = "/%$,.!?|";
 
 public:
 

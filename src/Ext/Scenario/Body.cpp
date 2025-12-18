@@ -1,7 +1,7 @@
 #include "Body.h"
 
 #include <SessionClass.h>
-#include <GameStrings.h>
+#include <VeinholeMonsterClass.h>
 
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
@@ -40,10 +40,10 @@ void ScenarioExt::ExtData::ReadVariables(bool bIsGlobal, CCINIClass* pINI)
 	else if (Global()->Variables[true].size() != 0) // Global variables had been loaded, DO NOT CHANGE THEM
 		return;
 
-	int nCount = pINI->GetKeyCount("VariableNames");
+	const int nCount = pINI->GetKeyCount("VariableNames");
 	for (int i = 0; i < nCount; ++i)
 	{
-		auto pKey = pINI->GetKeyName("VariableNames", i);
+		const auto pKey = pINI->GetKeyName("VariableNames", i);
 		int nIndex;
 		if (sscanf_s(pKey, "%d", &nIndex) == 1)
 		{
@@ -59,23 +59,22 @@ void ScenarioExt::ExtData::ReadVariables(bool bIsGlobal, CCINIClass* pINI)
 	}
 }
 
+// you've inspired something controversial
 void ScenarioExt::ExtData::SaveVariablesToFile(bool isGlobal)
 {
-	const auto fileName = isGlobal ? "globals.ini" : "locals.ini";
-	auto pINI = GameCreate<CCINIClass>();
-	auto pFile = GameCreate<CCFileClass>(fileName);
+	CCINIClass fINI {};
+	CCFileClass file { isGlobal ? "globals.ini" : "locals.ini" };
 
-	if (pFile->Exists())
-		pINI->ReadCCFile(pFile);
+	if (file.Exists())
+		fINI.ReadCCFile(&file);
 	else
-		pFile->CreateFileA();
+		file.CreateFileA();
 
-	const auto& variables = Global()->Variables[isGlobal];
-	for (const auto& variable : variables)
-		pINI->WriteInteger(ScenarioClass::Instance()->FileName, variable.second.Name, variable.second.Value, false);
+	for (const auto& [_,varext] : Global()->Variables[isGlobal])
+		fINI.WriteInteger(ScenarioClass::Instance->FileName, varext.Name, varext.Value, false);
 
-	pINI->WriteCCFile(pFile);
-	pFile->Close();
+	fINI.WriteCCFile(&file);
+	file.Close();
 }
 
 void ScenarioExt::Allocate(ScenarioClass* pThis)
@@ -93,6 +92,28 @@ void ScenarioExt::LoadFromINIFile(ScenarioClass* pThis, CCINIClass* pINI)
 	Data->LoadFromINI(pINI);
 }
 
+void ScenarioExt::ExtData::UpdateAutoDeathObjectsInLimbo()
+{
+	for (auto const pExt : this->AutoDeathObjects)
+	{
+		auto const pTechno = pExt->OwnerObject();
+
+		if (!pTechno->IsInLogic && pTechno->IsAlive)
+			pExt->CheckDeathConditions(true);
+	}
+}
+
+void ScenarioExt::ExtData::UpdateTransportReloaders()
+{
+	for (auto const pExt : this->TransportReloaders)
+	{
+		auto const pTechno = pExt->OwnerObject();
+
+		if (pTechno->IsAlive && pTechno->Transporter && pTechno->Transporter->IsInLogic)
+			pTechno->Reload();
+	}
+}
+
 // =============================
 // load / save
 
@@ -100,30 +121,32 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 
-	INI_EX exINI(pINI);
+	INI_EX maINI(pINI);
+	INI_EX ruINI(CCINIClass::INI_Rules);
 
 	if (SessionClass::IsCampaign())
 	{
 		Nullable<bool> SP_MCVRedeploy;
-		SP_MCVRedeploy.Read(exINI, GameStrings::Basic, GameStrings::MCVRedeploys);
-		GameModeOptionsClass::Instance->MCVRedeploy = SP_MCVRedeploy.Get(false);
+		SP_MCVRedeploy.Read(maINI, GameStrings::Basic, GameStrings::MCVRedeploys);
+		if (!SP_MCVRedeploy.isset())
+			SP_MCVRedeploy.Read(ruINI, GameStrings::Basic, GameStrings::MCVRedeploys);
+		GameModeOptionsClass::Instance.MCVRedeploy = SP_MCVRedeploy.Get(false);
 
-		CCINIClass* pINI_MISSIONMD = CCINIClass::LoadINIFile(GameStrings::MISSIONMD_INI);
+		CCINIClass ini_missionmd {};
+		ini_missionmd.LoadFromFile(GameStrings::MISSIONMD_INI);
 		auto const scenarioName = pThis->FileName;
 
 		// Override rankings
-		pThis->ParTimeEasy = pINI_MISSIONMD->ReadTime(scenarioName, "Ranking.ParTimeEasy", pThis->ParTimeEasy);
-		pThis->ParTimeMedium = pINI_MISSIONMD->ReadTime(scenarioName, "Ranking.ParTimeMedium", pThis->ParTimeMedium);
-		pThis->ParTimeDifficult = pINI_MISSIONMD->ReadTime(scenarioName, "Ranking.ParTimeHard", pThis->ParTimeDifficult);
-		pINI_MISSIONMD->ReadString(scenarioName, "Ranking.UnderParTitle", pThis->UnderParTitle, pThis->UnderParTitle);
-		pINI_MISSIONMD->ReadString(scenarioName, "Ranking.UnderParMessage", pThis->UnderParMessage, pThis->UnderParMessage);
-		pINI_MISSIONMD->ReadString(scenarioName, "Ranking.OverParTitle", pThis->OverParTitle, pThis->OverParTitle);
-		pINI_MISSIONMD->ReadString(scenarioName, "Ranking.OverParMessage", pThis->OverParMessage, pThis->OverParMessage);
+		pThis->ParTimeEasy = ini_missionmd.ReadTime(scenarioName, "Ranking.ParTimeEasy", pThis->ParTimeEasy);
+		pThis->ParTimeMedium = ini_missionmd.ReadTime(scenarioName, "Ranking.ParTimeMedium", pThis->ParTimeMedium);
+		pThis->ParTimeDifficult = ini_missionmd.ReadTime(scenarioName, "Ranking.ParTimeHard", pThis->ParTimeDifficult);
+		ini_missionmd.ReadString(scenarioName, "Ranking.UnderParTitle", pThis->UnderParTitle, pThis->UnderParTitle);
+		ini_missionmd.ReadString(scenarioName, "Ranking.UnderParMessage", pThis->UnderParMessage, pThis->UnderParMessage);
+		ini_missionmd.ReadString(scenarioName, "Ranking.OverParTitle", pThis->OverParTitle, pThis->OverParTitle);
+		ini_missionmd.ReadString(scenarioName, "Ranking.OverParMessage", pThis->OverParMessage, pThis->OverParMessage);
 
-		this->ShowBriefing = pINI_MISSIONMD->ReadBool(scenarioName, "ShowBriefing", pINI->ReadBool(GameStrings::Basic,"ShowBriefing", this->ShowBriefing));
-		this->BriefingTheme = pINI_MISSIONMD->ReadTheme(scenarioName, "BriefingTheme", pINI->ReadTheme(GameStrings::Basic, "BriefingTheme", this->BriefingTheme));
-
-		CCINIClass::UnloadINIFile(pINI_MISSIONMD);
+		this->ShowBriefing = pINI->ReadBool(GameStrings::Basic, "ShowBriefing", this->ShowBriefing);
+		this->BriefingTheme = pINI->ReadTheme(GameStrings::Basic, "BriefingTheme", this->BriefingTheme);
 	}
 }
 
@@ -134,9 +157,20 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->Waypoints)
 		.Process(this->Variables[0])
 		.Process(this->Variables[1])
-		.Process(SessionClass::Instance->Config)
 		.Process(this->ShowBriefing)
 		.Process(this->BriefingTheme)
+		.Process(this->AutoDeathObjects)
+		.Process(this->TransportReloaders)
+		.Process(this->SWSidebar_Enable)
+		.Process(this->SWSidebar_Indices)
+		.Process(this->RecordMessages)
+		.Process(this->DefaultLS640BkgdName)
+		.Process(this->DefaultLS800BkgdName)
+		.Process(this->DefaultLS800BkgdPal)
+		.Process(this->LimboLaunchers)
+		.Process(this->UndergroundTracker)
+		.Process(this->SpecialTracker)
+		.Process(this->FallingDownTracker)
 		;
 }
 
@@ -151,17 +185,6 @@ void ScenarioExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	Extension<ScenarioClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
-
-bool ScenarioExt::LoadGlobals(PhobosStreamReader& Stm)
-{
-	return Stm.Success();
-}
-
-bool ScenarioExt::SaveGlobals(PhobosStreamWriter& Stm)
-{
-	return Stm.Success();
-}
-
 
 // =============================
 // container hooks
@@ -236,5 +259,15 @@ DEFINE_HOOK(0x68AD2F, ScenarioClass_LoadFromINI, 0x5)
 	GET(CCINIClass*, pINI, EDI);
 
 	ScenarioExt::LoadFromINIFile(pItem, pINI);
+	return 0;
+}
+
+DEFINE_HOOK(0x55B4E1, LogicClass_Update_BeforeAll, 0x5)
+{
+	VeinholeMonsterClass::UpdateAllVeinholes();
+
+	ScenarioExt::Global()->UpdateAutoDeathObjectsInLimbo();
+	ScenarioExt::Global()->UpdateTransportReloaders();
+
 	return 0;
 }

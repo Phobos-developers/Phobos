@@ -3,8 +3,10 @@
 #include <MapClass.h>
 #include <ParticleSystemClass.h>
 #include <FootClass.h>
+#include <WaveClass.h>
 
 #include <Ext/ParticleSystemType/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/Macro.h>
 
@@ -13,9 +15,19 @@
 
 namespace FireAtTemp
 {
-	CoordStruct originalTargetCoords;
+	BulletClass* FireBullet = nullptr;
+	CoordStruct OriginalTargetCoords;
 	CellClass* pObstacleCell = nullptr;
 	AbstractClass* pOriginalTarget = nullptr;
+	AbstractClass* pWaveOwnerTarget = nullptr;
+	bool IgnoreTargetForWaveAmbientDamage = false;
+}
+
+DEFINE_HOOK(0x6FF08B, TechnoClass_Fire_RecordBullet, 0x6)
+{
+	GET(BulletClass*, pBullet, EBX);
+	FireAtTemp::FireBullet = pBullet;
+	return 0;
 }
 
 // Set obstacle cell.
@@ -26,12 +38,12 @@ DEFINE_HOOK(0x6FF15F, TechnoClass_FireAt_ObstacleCellSet, 0x6)
 	GET_BASE(AbstractClass*, pTarget, 0x8);
 	LEA_STACK(CoordStruct*, pSourceCoords, STACK_OFFSET(0xB0, -0x6C));
 
-	auto coords = pTarget->GetCenterCoords();
+	const auto pBuilding = abstract_cast<BuildingClass*, true>(pTarget);
+	const auto coords = pBuilding ? pBuilding->GetTargetCoords() : pTarget->GetCenterCoords();
 
-	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
-		coords = pBuilding->GetTargetCoords();
-
+	// This is set to a temp variable as well, as accessing it everywhere needed from TechnoExt would be more complicated.
 	FireAtTemp::pObstacleCell = TrajectoryHelper::FindFirstObstacle(*pSourceCoords, coords, pWeapon->Projectile, pThis->Owner);
+	TechnoExt::ExtMap.Find(pThis)->FiringObstacleCell = FireAtTemp::pObstacleCell;
 
 	return 0;
 }
@@ -52,26 +64,18 @@ DEFINE_HOOK(0x6FF189, TechnoClass_FireAt_SparkFireTargetSet, 0x5)
 }
 
 // Fix fire particle target coordinates potentially differing from actual target coords.
-DEFINE_HOOK(0x62FA20, ParticleSystemClass_FireAI_TargetCoords, 0x6)
+DEFINE_HOOK(0x62FA41, ParticleSystemClass_FireAI_TargetCoords, 0x6)
 {
-	enum { SkipGameCode = 0x62FA51, Continue = 0x62FBAF };
+	enum { SkipGameCode = 0x62FBAF };
 
 	GET(ParticleSystemClass*, pThis, ESI);
-	GET(TechnoClass*, pOwner, EBX);
 
-	if (pOwner->PrimaryFacing.IsRotating())
-	{
-		auto const pTypeExt = ParticleSystemTypeExt::ExtMap.Find(pThis->Type);
+	auto const pTypeExt = ParticleSystemTypeExt::ExtMap.Find(pThis->Type);
 
-		if (!pTypeExt->AdjustTargetCoordsOnRotation)
-			return Continue;
-
-		auto coords = pThis->TargetCoords;
-		R->EAX(&coords);
+	if (!pTypeExt->AdjustTargetCoordsOnRotation)
 		return SkipGameCode;
-	}
 
-	return Continue;
+	return 0;
 }
 
 // Fix fire particles being disallowed from going upwards.
@@ -90,8 +94,8 @@ DEFINE_HOOK(0x62D685, ParticleSystemClass_Fire_Coords, 0x5)
 	REF_STACK(CoordStruct, previousCoords, STACK_OFFSET(0x24, -0xC));
 
 	auto const sourceLocation = pThis->ParticleSystem ? pThis->ParticleSystem->Location : CoordStruct { INT_MAX, INT_MAX, INT_MAX };
-	auto const pCell = MapClass::Instance->TryGetCellAt(currentCoords);
-	int cellFloor = MapClass::Instance->GetCellFloorHeight(currentCoords);
+	auto const pCell = MapClass::Instance.TryGetCellAt(currentCoords);
+	int cellFloor = MapClass::Instance.GetCellFloorHeight(currentCoords);
 	bool downwardTrajectory = currentCoords.Z < previousCoords.Z;
 	bool isBelowSource = cellFloor < sourceLocation.Z - Unsorted::LevelHeight * 2;
 	bool isRamp = pCell ? pCell->SlopeIndex : false;
@@ -110,15 +114,13 @@ DEFINE_HOOK(0x62D685, ParticleSystemClass_Fire_Coords, 0x5)
 DEFINE_HOOK(0x70C6B5, TechnoClass_Railgun_TargetCoords, 0x5)
 {
 	GET(AbstractClass*, pTarget, EBX);
+	GET(CoordStruct*, pCoords, EAX);
 
-	auto coords = pTarget->GetCenterCoords();
+	if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pTarget))
+		*pCoords = pBuilding->GetTargetCoords();
+	else if (const auto pCell = abstract_cast<CellClass*, true>(pTarget))
+		*pCoords = pCell->GetCoordsWithBridge();
 
-	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
-		coords = pBuilding->GetTargetCoords();
-	else if (const auto pCell = abstract_cast<CellClass*>(pTarget))
-		coords = pCell->GetCoordsWithBridge();
-
-	R->EAX(&coords);
 	return 0;
 }
 
@@ -129,7 +131,7 @@ DEFINE_HOOK(0x70CA64, TechnoClass_Railgun_Obstacles, 0x5)
 
 	REF_STACK(CoordStruct const, coords, STACK_OFFSET(0xC0, -0x80));
 
-	auto pCell = MapClass::Instance->GetCellAt(coords);
+	const auto pCell = MapClass::Instance.GetCellAt(coords);
 
 	if (pCell == FireAtTemp::pObstacleCell)
 		return Stop;
@@ -165,11 +167,39 @@ DEFINE_HOOK(0x70CA8B, TechnoClass_Railgun_AmbientDamageIgnoreTarget2, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x70CBE0, TechnoClass_Railgun_AmbientDamageWarhead, 0x5)
+DEFINE_HOOK(0x70CBDA, TechnoClass_Railgun_AmbientDamageWarhead, 0x6)
 {
+	enum { SkipGameCode = 0x70CBE0 };
+
 	GET(WeaponTypeClass*, pWeapon, EDI);
 
 	R->EDX(WeaponTypeExt::ExtMap.Find(pWeapon)->AmbientDamage_Warhead.Get(pWeapon->Warhead));
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x75F39D, WaveClass_DamageAI_AmbientDamageWarhead, 0x6)
+{
+	enum { SkipGameCode = 0x75F3A3 };
+
+	GET(WeaponTypeClass*, pWeapon, EBX);
+
+	auto const pTypeExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	FireAtTemp::IgnoreTargetForWaveAmbientDamage = pTypeExt->AmbientDamage_IgnoreTarget;
+	R->EAX(pTypeExt->AmbientDamage_Warhead.Get(pWeapon->Warhead));
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x75F415, WaveClass_DamageAI_AmbientDamageIgnoreTarget, 0x6)
+{
+	enum { IgnoreTarget = 0x75F432 };
+
+	GET(WaveClass*, pThis, EBP);
+	GET(ObjectClass*, pObject, ESI);
+
+	if (FireAtTemp::IgnoreTargetForWaveAmbientDamage && pThis->Target == pObject)
+		return IgnoreTarget;
 
 	return 0;
 }
@@ -181,28 +211,45 @@ DEFINE_HOOK(0x62B8BC, ParticleClass_CTOR_CoordAdjust, 0x6)
 
 	GET(ParticleClass*, pThis, ESI);
 
-	if (pThis->ParticleSystem
-		&& (pThis->ParticleSystem->Type->BehavesLike == BehavesLike::Railgun
-			|| pThis->ParticleSystem->Type->BehavesLike == BehavesLike::Fire))
+	if (pThis->ParticleSystem)
 	{
-		return SkipCoordAdjust;
+		const auto behavesLike = pThis->ParticleSystem->Type->BehavesLike;
+
+		if (behavesLike == BehavesLike::Railgun || behavesLike == BehavesLike::Fire)
+			return SkipCoordAdjust;
 	}
 
 	return 0;
 }
 
-// Adjust target coordinates for laser drawing.
-DEFINE_HOOK(0x6FD38D, TechnoClass_LaserZap_Obstacles, 0x7)
+DEFINE_HOOK_AGAIN(0x6FD70D, TechnoClass_DrawSth_DrawToInvisoFlakScatterLocation, 0x6) // CreateRBeam
+DEFINE_HOOK_AGAIN(0x6FD514, TechnoClass_DrawSth_DrawToInvisoFlakScatterLocation, 0x7) // CreateEBolt
+DEFINE_HOOK(0x6FD38D, TechnoClass_DrawSth_DrawToInvisoFlakScatterLocation, 0x7) // CreateLaser
 {
 	GET(CoordStruct*, pTargetCoords, EAX);
 
-	auto coords = *pTargetCoords;
-	auto pObstacleCell = FireAtTemp::pObstacleCell;
+	if (const auto pBullet = FireAtTemp::FireBullet)
+	{
+		// The weapon may not have been set up
+		const auto pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pBullet->WeaponType);
 
-	if (pObstacleCell)
-		coords = pObstacleCell->GetCoordsWithBridge();
+		if (pWeaponExt && pWeaponExt->VisualScatter)
+		{
+			const auto& pRulesExt = RulesExt::Global();
+			const auto radius = ScenarioClass::Instance->Random.RandomRanged(pRulesExt->VisualScatter_Min.Get(), pRulesExt->VisualScatter_Max.Get());
+			*pTargetCoords = MapClass::GetRandomCoordsNear((pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords), radius, false);
+		}
+		else
+		{
+			*pTargetCoords = (pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords);
+		}
+	}
+	else if (const auto pObstacleCell = FireAtTemp::pObstacleCell)
+	{
+		*pTargetCoords = pObstacleCell->GetCoordsWithBridge();
+	}
 
-	R->EAX(&coords);
+	R->EAX(pTargetCoords);
 	return 0;
 }
 
@@ -210,16 +257,16 @@ DEFINE_HOOK(0x6FD38D, TechnoClass_LaserZap_Obstacles, 0x7)
 DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_TargetSet, 0x6)
 {
 	LEA_STACK(CoordStruct*, pTargetCoords, STACK_OFFSET(0xB0, -0x28));
-	GET(AbstractClass*, pTarget, EDI);
+	GET_BASE(AbstractClass*, pOriginalTarget, 0x8);
 
-	FireAtTemp::originalTargetCoords = *pTargetCoords;
-	FireAtTemp::pOriginalTarget = pTarget;
+	// Store original target & coords
+	FireAtTemp::OriginalTargetCoords = *pTargetCoords;
+	FireAtTemp::pOriginalTarget = pOriginalTarget;
 
 	if (FireAtTemp::pObstacleCell)
 	{
-		auto coords = FireAtTemp::pObstacleCell->GetCoordsWithBridge();
-		pTargetCoords = &coords;
-		R->EDI(FireAtTemp::pObstacleCell);
+		*pTargetCoords = FireAtTemp::pObstacleCell->GetCoordsWithBridge();
+		R->Base(8, FireAtTemp::pObstacleCell); // Replace original target so it gets used by Ares sonic wave stuff etc. as well.
 	}
 
 	return 0;
@@ -230,15 +277,16 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_ObstacleCellUnset, 0x6)
 {
 	LEA_STACK(CoordStruct*, pTargetCoords, STACK_OFFSET(0xB0, -0x28));
 
-	auto coords = FireAtTemp::originalTargetCoords;
-	pTargetCoords = &coords;
-	auto target = FireAtTemp::pOriginalTarget;
+	// Restore original target & coords
+	*pTargetCoords = FireAtTemp::OriginalTargetCoords;
+	R->Base(8, FireAtTemp::pOriginalTarget);
+	R->EDI(FireAtTemp::pOriginalTarget);
 
-	FireAtTemp::originalTargetCoords = CoordStruct::Empty;
-	FireAtTemp::pOriginalTarget = nullptr;
+	// Reset temp values
+	FireAtTemp::FireBullet = nullptr;
+	FireAtTemp::OriginalTargetCoords = CoordStruct::Empty;
 	FireAtTemp::pObstacleCell = nullptr;
-
-	R->EDI(target);
+	FireAtTemp::pOriginalTarget = nullptr;
 
 	return 0;
 }
@@ -249,7 +297,7 @@ DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_IsSingleColor, 0x7)
 	GET(WeaponTypeClass* const, pWeapon, ECX);
 	GET(LaserDrawClass* const, pLaser, EAX);
 
-	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
+	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon))
 	{
 		if (!pLaser->IsHouseColor && pWeaponExt->Laser_IsSingleColor)
 			pLaser->IsHouseColor = true;
@@ -257,6 +305,43 @@ DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_IsSingleColor, 0x7)
 
 	// Fixes drawing thick lasers for non-PrismSupport building-fired lasers.
 	pLaser->IsSupported = pLaser->Thickness > 3;
+
+	return 0;
+}
+
+// WaveClass requires the firer's target and wave's target to match so it needs bit of extra handling here for obstacle cell targets.
+DEFINE_HOOK(0x762AFF, WaveClass_AI_TargetSet, 0x6)
+{
+	GET(WaveClass*, pThis, ESI);
+
+	if (pThis->Target)
+	{
+		if (auto const pOwner = pThis->Owner)
+		{
+			auto const pObstacleCell = TechnoExt::ExtMap.Find(pOwner)->FiringObstacleCell;
+
+			if (pObstacleCell == pThis->Target && pOwner->Target)
+			{
+				FireAtTemp::pWaveOwnerTarget = pOwner->Target;
+				pOwner->Target = pThis->Target;
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x762D57, WaveClass_AI_TargetUnset, 0x6)
+{
+	GET(WaveClass*, pThis, ESI);
+
+	if (FireAtTemp::pWaveOwnerTarget)
+	{
+		if (pThis->Owner->Target)
+			pThis->Owner->Target = FireAtTemp::pWaveOwnerTarget;
+
+		FireAtTemp::pWaveOwnerTarget = nullptr;
+	}
 
 	return 0;
 }

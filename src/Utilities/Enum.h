@@ -32,7 +32,6 @@
 
 #pragma once
 
-#include <Phobos.h>
 #include <GeneralDefinitions.h>
 
 enum class AttachedAnimFlag
@@ -65,6 +64,33 @@ enum class SuperWeaponAITargetingMode
 	HunterSeeker = 13,
 	EnemyBase = 14
 };
+
+enum class LandTypeFlags : unsigned short
+{
+	None = 0,
+	Clear = 1 << (char)LandType::Clear,
+	Road = 1 << (char)LandType::Road,
+	Water = 1 << (char)LandType::Water,
+	Rock = 1 << (char)LandType::Rock,
+	Wall = 1 << (char)LandType::Wall,
+	Tiberium = 1 << (char)LandType::Tiberium,
+	Beach = 1 << (char)LandType::Beach,
+	Rough = 1 << (char)LandType::Rough,
+	Ice = 1 << (char)LandType::Ice,
+	Railroad = 1 << (char)LandType::Railroad,
+	Tunnel = 1 << (char)LandType::Tunnel,
+	Weeds = 1 << (char)LandType::Weeds,
+
+	All = 0xFFFF,
+	DefaultDisallowed = Water | Rock | Ice | Beach
+};
+
+MAKE_ENUM_FLAGS(LandTypeFlags);
+
+constexpr bool IsLandTypeInFlags(LandTypeFlags flags, LandType type)
+{
+	return (bool)((LandTypeFlags)(1 << (char)type) & flags);
+}
 
 enum class AffectedTarget : unsigned char
 {
@@ -152,17 +178,20 @@ enum class AutoDeathBehavior
 
 enum class SelfHealGainType
 {
-	None = 0,
+	NoHeal = 0,
 	Infantry = 1,
 	Units = 2
 };
 
-enum class InterceptedStatus
+enum class InterceptedStatus : unsigned char
 {
-	None = 0,
-	Targeted = 1,
-	Intercepted = 2
+	None = 0x0,
+	Targeted = 0x1,
+	Intercepted = 0x2,
+	Locked = 0x4
 };
+
+MAKE_ENUM_FLAGS(InterceptedStatus);
 
 enum class PhobosAction
 {
@@ -195,10 +224,17 @@ enum class TargetZoneScanType
 	InRange = 2
 };
 
+enum class DamageDisplayType
+{
+	Regular = 0,
+	Shield = 1,
+	Intercept = 2
+};
+
 enum class ChronoSparkleDisplayPosition : unsigned char
 {
 	None = 0x0,
-	Building= 0x1,
+	Building = 0x1,
 	Occupants = 0x2,
 	OccupantSlots = 0x4,
 
@@ -206,6 +242,13 @@ enum class ChronoSparkleDisplayPosition : unsigned char
 };
 
 MAKE_ENUM_FLAGS(ChronoSparkleDisplayPosition);
+
+enum class LaserTrailDrawType : BYTE
+{
+	Laser = 0,
+	EBolt = 1,
+	RadBeam = 2
+};
 
 enum class HorizontalPosition : BYTE
 {
@@ -243,7 +286,39 @@ enum class DisplayInfoType : BYTE
 	Tiberium = 6,
 	Experience = 7,
 	Occupants = 8,
-	GattlingStage = 9
+	GattlingStage = 9,
+	ROF = 10,
+	Reload = 11,
+	SpawnTimer = 12,
+	GattlingTimer = 13,
+	ProduceCash = 14,
+	PassengerKill = 15,
+	AutoDeath = 16,
+	SuperWeapon = 17,
+	IronCurtain = 18,
+	TemporalLife = 19,
+	FactoryProcess = 20
+};
+
+enum class DisplayShowType : unsigned char
+{
+	None = 0x0,
+	CursorHover = 0x1,
+	Selected = 0x2,
+	Idle = 0x4,
+
+	Select = CursorHover | Selected,
+	All = CursorHover | Selected | Idle
+};
+
+MAKE_ENUM_FLAGS(DisplayShowType);
+
+enum class BannerNumberType : int
+{
+	None = 0,
+	Variable = 1,
+	Prefixed = 2,
+	Suffixed = 3
 };
 
 class MouseCursorHotSpotX

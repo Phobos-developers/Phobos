@@ -47,7 +47,7 @@ void Debug::LogAndMessage(const char* pFormat, ...)
 	va_end(args);
 	wchar_t buffer[0x1000];
 	CRT::mbstowcs(buffer, StringBuffer, 0x1000);
-	MessageListClass::Instance->PrintMessage(buffer);
+	MessageListClass::Instance.PrintMessage(buffer);
 }
 
 void Debug::LogWithVArgs(const char* pFormat, va_list args)
@@ -72,6 +72,7 @@ void Debug::FatalErrorAndExit(const char* pFormat, ...)
 	va_start(args, pFormat);
 	LogWithVArgs(pFormat, args);
 	va_end(args);
+	MessageBox(0, StringBuffer, "Fatal error ", MB_ICONERROR);
 	FatalExit(static_cast<int>(ExitCode::Undefined));
 }
 
@@ -81,6 +82,7 @@ void Debug::FatalErrorAndExit(ExitCode nExitCode, const char* pFormat, ...)
 	va_start(args, pFormat);
 	LogWithVArgs(pFormat, args);
 	va_end(args);
+	MessageBox(0, StringBuffer, "Fatal error ", MB_ICONERROR);
 	FatalExit(static_cast<int>(nExitCode));
 }
 
