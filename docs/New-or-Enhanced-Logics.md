@@ -2862,8 +2862,8 @@ CanTarget=all            ; List of Affected Target Enumeration (none|land|water|
 CanTargetHouses=all      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 CanTarget.MaxHealth=1.0  ; floating point value, percents or absolute
 CanTarget.MinHealth=0.0  ; floating point value, percents or absolute
-CanTarget.MaxVeterancy=2.0  ; floating point value, percents or absolute, default to [General] -> VeteranCap
-CanTarget.MinVeterancy=0.0  ; floating point value, percents or absolute
+CanTarget.MaxVeterancy=2.0  ; double, default to [General] -> VeteranCap
+CanTarget.MinVeterancy=0.0  ; double
 ```
 
 ```{note}
