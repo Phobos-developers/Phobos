@@ -750,7 +750,7 @@ bool TechnoExt::IsVeterancyInThreshold(TechnoClass* pTechno, double min, double 
 	if (pTechno->GetTechnoType()->Trainable)
 		veterancy = pTechno->Veterancy.Veterancy;
 
-	return veterancy >= min && veterancy <= max;
+	return veterancy >= min && veterancy < max;
 }
 
 bool TechnoExt::CannotMove(UnitClass* pThis)
