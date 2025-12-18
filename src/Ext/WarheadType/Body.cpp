@@ -42,6 +42,9 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 	if (!IsHealthInThreshold(pTarget))
 		return false;
 
+	if (!IsVeterancyInThreshold(pTarget))
+		return false;
+
 	if (!this->EffectsRequireVerses)
 		return true;
 
@@ -54,6 +57,14 @@ bool WarheadTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
 		return true;
 
 	return TechnoExt::IsHealthInThreshold(pTarget, this->AffectsAbovePercent, this->AffectsBelowPercent);
+}
+
+bool WarheadTypeExt::ExtData::IsVeterancyInThreshold(TechnoClass* pTarget) const
+{
+	if (!this->VeterancyCheck)
+		return true;
+
+	return TechnoExt::IsVeterancyInThreshold(pTarget, this->AffectsAboveVeterancy, this->AffectsBelowVeterancy.Get(RulesClass::Instance->VeteranCap));
 }
 
 // Checks if Warhead can affect target that might or might be currently invulnerable.
@@ -286,14 +297,20 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AffectsBelowPercent.Read(exINI, pSection, "AffectsBelowPercent");
 	this->AffectsAbovePercent.Read(exINI, pSection, "AffectsAbovePercent");
+	this->AffectsBelowVeterancy.Read(exINI, pSection, "AffectsBelowVeterancy");
+	this->AffectsAboveVeterancy.Read(exINI, pSection, "AffectsAboveVeterancy");
 	this->AffectsNeutral.Read(exINI, pSection, "AffectsNeutral");
 	this->AffectsGround.Read(exINI, pSection, "AffectsGround");
 	this->AffectsAir.Read(exINI, pSection, "AffectsAir");
 	this->CellSpread_Cylinder.Read(exINI, pSection, "CellSpread.Cylinder");
-	this->HealthCheck = this->AffectsBelowPercent > 0.0 || this->AffectsAbovePercent < 1.0;
+	this->HealthCheck = this->AffectsAbovePercent > 0.0 || this->AffectsBelowPercent < 1.0;
+	this->VeterancyCheck = this->AffectsAboveVeterancy > 0.0 || this->AffectsBelowVeterancy.Get(RulesClass::Instance->VeteranCap) < RulesClass::Instance->VeteranCap;
 
 	if (this->AffectsAbovePercent > this->AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] AffectsAbovePercent is bigger than AffectsBelowPercent, the warhead will never activate!\n", pSection);
+
+	if (this->AffectsAboveVeterancy > this->AffectsBelowVeterancy.Get(RulesClass::Instance->VeteranCap))
+		Debug::Log("[Developer warning][%s] AffectsAboveVeterancy is bigger than AffectsBelowVeterancy, the warhead will never activate!\n", pSection);
 
 	this->ReverseEngineer.Read(exINI, pSection, "ReverseEngineer");
 
@@ -538,11 +555,14 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AffectsBelowPercent)
 		.Process(this->AffectsAbovePercent)
+		.Process(this->AffectsBelowVeterancy)
+		.Process(this->AffectsAboveVeterancy)
 		.Process(this->AffectsNeutral)
 		.Process(this->AffectsGround)
 		.Process(this->AffectsAir)
 		.Process(this->CellSpread_Cylinder)
 		.Process(this->HealthCheck)
+		.Process(this->VeterancyCheck)
 
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)

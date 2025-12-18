@@ -192,6 +192,8 @@ public:
 
 		Valueable<double> AffectsBelowPercent;
 		Valueable<double> AffectsAbovePercent;
+		Nullable<double> AffectsBelowVeterancy;
+		Valueable<double> AffectsAboveVeterancy;
 		Valueable<bool> AffectsNeutral;
 		Valueable<bool> AffectsGround;
 		Valueable<bool> AffectsAir;
@@ -230,6 +232,7 @@ public:
 		int RemainingAnimCreationInterval;
 		bool PossibleCellSpreadDetonate;
 		bool HealthCheck;
+		bool VeterancyCheck;
 		TechnoClass* DamageAreaTarget;
 
 	private:
@@ -402,6 +405,8 @@ public:
 
 			, AffectsBelowPercent { 1.0 }
 			, AffectsAbovePercent { 0.0 }
+			, AffectsBelowVeterancy {}
+			, AffectsAboveVeterancy { 0.0 }
 			, AffectsNeutral { true }
 			, AffectsGround { true }
 			, AffectsAir { true }
@@ -423,6 +428,7 @@ public:
 			, RemainingAnimCreationInterval { 0 }
 			, PossibleCellSpreadDetonate { false }
 			, HealthCheck { false }
+			, VeterancyCheck { false }
 			, DamageAreaTarget {}
 
 			, CanKill { true }
@@ -457,6 +463,7 @@ public:
 		bool CanAffectInvulnerable(TechnoClass* pTarget) const;
 		bool EligibleForFullMapDetonation(TechnoClass* pTechno, TechnoTypeClass* pType, HouseClass* pOwner) const;
 		bool IsHealthInThreshold(TechnoClass* pTarget) const;
+		bool IsVeterancyInThreshold(TechnoClass* pTarget) const;
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;

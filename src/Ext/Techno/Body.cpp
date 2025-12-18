@@ -743,6 +743,16 @@ bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max
 	return (hp > 0 ? hp > min : hp >= min) && hp <= max;
 }
 
+bool TechnoExt::IsVeterancyInThreshold(TechnoClass* pTechno, double min, double max)
+{
+	double veterancy = 0.0;
+
+	if (pTechno->GetTechnoType()->Trainable)
+		veterancy = pTechno->Veterancy.Veterancy;
+
+	return veterancy >= min && veterancy <= max;
+}
+
 bool TechnoExt::CannotMove(UnitClass* pThis)
 {
 	const auto loco = pThis->Locomotor;
