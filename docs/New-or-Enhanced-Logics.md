@@ -2303,7 +2303,6 @@ If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chai
 - Warheads can now change targets owner to warhead's owner.
 - `ChangeOwner.SetAsMindControl` makes the effect work like permanent mind control, which respects `ImmuneToPsionics`.
   - `ChangeOwner.MindControlAnim` determines the mind control anim of this effect, which respects `MindControlRingOffset`.
-- `ChangeOwner.AffectElites` determines if elite units can be affected by owner change.
 
 In `rulesmd.ini`:
 ```ini
@@ -2311,7 +2310,6 @@ In `rulesmd.ini`:
 ChangeOwner=false                      ; boolean
 ChangeOwner.SetAsMindControl=false     ; boolean
 ChangeOwner.MindControlAnim=           ; Animation
-ChangeOwner.AffectElites=true          ; boolean
 ```
 
 ### Convert TechnoType on impact

@@ -475,9 +475,7 @@ HouseClass* WarheadTypeExt::ExtData::ApplyRemoveMindControl(HouseClass* pHouse, 
 void WarheadTypeExt::ExtData::ApplyOwnerChange(HouseClass* pHouse, TechnoClass* pTarget)
 {
 	const bool isMindControl = this->ChangeOwner_SetAsMindControl;
-	const bool affectElites = this->ChangeOwner_AffectElites;
-	const bool isImmune = (isMindControl && pTarget->GetTechnoType()->ImmuneToPsionics)
-		|| (!affectElites && pTarget->Veterancy.IsElite()) || pTarget->IsMindControlled();
+	const bool isImmune = (isMindControl && pTarget->GetTechnoType()->ImmuneToPsionics) || pTarget->IsMindControlled();
 
 	if (!isImmune)
 	{

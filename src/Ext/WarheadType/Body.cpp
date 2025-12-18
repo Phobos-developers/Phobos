@@ -311,7 +311,6 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ChangeOwner.Read(exINI, pSection, "ChangeOwner");
 	this->ChangeOwner_SetAsMindControl.Read(exINI, pSection, "ChangeOwner.SetAsMindControl");
 	this->ChangeOwner_MindControlAnim.Read(exINI, pSection, "ChangeOwner.MindControlAnim");
-	this->ChangeOwner_AffectElites.Read(exINI, pSection, "ChangeOwner.AffectElites");
 
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
@@ -608,7 +607,6 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ChangeOwner)
 		.Process(this->ChangeOwner_SetAsMindControl)
 		.Process(this->ChangeOwner_MindControlAnim)
-		.Process(this->ChangeOwner_AffectElites)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

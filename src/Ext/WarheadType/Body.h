@@ -215,7 +215,6 @@ public:
 		Valueable<bool> ChangeOwner;
 		Valueable<bool> ChangeOwner_SetAsMindControl;
 		Nullable<AnimTypeClass*> ChangeOwner_MindControlAnim;
-		Valueable<bool> ChangeOwner_AffectElites;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -455,7 +454,6 @@ public:
 			, ChangeOwner { false }
 			, ChangeOwner_SetAsMindControl { false }
 			, ChangeOwner_MindControlAnim {}
-			, ChangeOwner_AffectElites { true }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
