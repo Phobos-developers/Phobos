@@ -2326,6 +2326,8 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]               ; WarheadType
 AffectsBelowPercent=1.0     ; floating point value, percents or absolute
 AffectsAbovePercent=0.0     ; floating point value, percents or absolute
+AffectsBelowVeterancy=2.0     ; floating point value, percents or absolute, default to [General] -> VeteranCap
+AffectsAboveVeterancy=0.0     ; floating point value, percents or absolute
 AffectsNeutral=true         ; boolean
 EffectsRequireVerses=false  ; boolean
 ```
