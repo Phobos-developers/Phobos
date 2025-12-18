@@ -2312,7 +2312,7 @@ Conventional.IgnoreUnits=false  ; boolean
 ### Customizable Warhead trigger conditions
 
 - `AffectsBelowPercent` and `AffectsAbovePercent` can be used to set the health percentage thresholds that target needs to be below/equal and/or above of for the Warhead to detonate. If target has zero health left this check is bypassed.
-- `AffectsAboveVeterancy` and `AffectsBelowVeterancy` can be used to set the veterancy thresholds that target needs to be below/equal and/or above of for the Warhead to detonate.
+- `AffectsAboveVeterancy` and `AffectsBelowVeterancy` can be used to set veterancy thresholds for Warhead activation. The target's veterancy must be greater than or equal to `AffectsAboveVeterancy`, and strictly less than `AffectsBelowVeterancy`.
   - Veterancy values are interpreted as follows:
     - `0.0` = Rookie
     - `1.0` = Veteran
@@ -2326,7 +2326,7 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]               ; WarheadType
 AffectsBelowPercent=1.0     ; floating point value, percents or absolute
 AffectsAbovePercent=0.0     ; floating point value, percents or absolute
-AffectsBelowVeterancy=      ; floating point value, percents or absolute, default to [General] -> VeteranCap
+AffectsBelowVeterancy=      ; floating point value, percents or absolute, default to [General] -> VeteranCap + 1.0
 AffectsAboveVeterancy=0.0   ; floating point value, percents or absolute
 AffectsNeutral=true         ; boolean
 EffectsRequireVerses=false  ; boolean
