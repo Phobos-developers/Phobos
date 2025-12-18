@@ -20,15 +20,14 @@ DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
-	auto const pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	const auto pType = pTypeExt->OwnerObject();
 
 	if (pTarget && pTarget->WhatAmI() == AbstractType::Bullet)
 	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-
-		if (pTypeExt->InterceptorType)
+		if (const auto pInterceptor = pTypeExt->InterceptorType.get())
 		{
-			R->EAX(pTypeExt->InterceptorType->Weapon);
+			R->EAX(pInterceptor->Weapon);
 			return ReturnValue;
 		}
 	}
@@ -69,7 +68,7 @@ DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 		if (pWeaponSecondary && !pPrimaryExt->SkipWeaponPicking
 			&& (!EnumFunctions::IsCellEligible(pCell, pPrimaryExt->CanTarget, true, true)
 			|| (pPrimaryExt->AttachEffect_CheckOnFirer && !pPrimaryExt->HasRequiredAttachedEffects(pThis, pThis)))
-			&& (!TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->NoSecondaryWeaponFallback
+			&& (!TechnoExt::ExtMap.Find(pThis)->TypeExtData->NoSecondaryWeaponFallback
 			|| TechnoExt::CanFireNoAmmoWeapon(pThis, 1)))
 		{
 			R->EAX(1);
@@ -883,7 +882,7 @@ CoordStruct* GetFLHTemp::UnitClassFake::_GetFLH(CoordStruct* outBuffer, int weap
 	{
 		const auto pTransporter = pThis->Transporter;
 
-		if (pThis->InOpenToppedTransport && pTransporter && TechnoTypeExt::ExtMap.Find(pTransporter->GetTechnoType())->AlternateFLH_ApplyVehicle)
+		if (pThis->InOpenToppedTransport && pTransporter && TechnoExt::ExtMap.Find(pTransporter)->TypeExtData->AlternateFLH_ApplyVehicle)
 		{
 			if (const int idx = pTransporter->Passengers.IndexOf(pThis))
 			{
