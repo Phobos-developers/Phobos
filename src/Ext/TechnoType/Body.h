@@ -92,6 +92,9 @@ public:
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
 		ValueableVector<AnimTypeClass*> AutoDeath_VanishAnimation;
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
+		Valueable<bool> AutoDeath_OnOwnerChange;
+		Nullable<bool> AutoDeath_OnOwnerChange_HumanToComputer;
+		Nullable<bool> AutoDeath_OnOwnerChange_ComputerToHuman;
 		Valueable<int> AutoDeath_AfterDelay;
 		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosDontExist;
 		Valueable<bool> AutoDeath_TechnosDontExist_Any;
@@ -568,6 +571,9 @@ public:
 			, AutoDeath_Behavior { }
 			, AutoDeath_VanishAnimation {}
 			, AutoDeath_OnAmmoDepletion { false }
+			, AutoDeath_OnOwnerChange { false }
+			, AutoDeath_OnOwnerChange_HumanToComputer {}
+			, AutoDeath_OnOwnerChange_ComputerToHuman {}
 			, AutoDeath_AfterDelay { 0 }
 			, AutoDeath_TechnosDontExist {}
 			, AutoDeath_TechnosDontExist_Any { false }

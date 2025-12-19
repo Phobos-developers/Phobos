@@ -400,7 +400,13 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	// Ares RecalculateStats -- skipped
 
 	// Adjust ammo
-	pThis->Ammo = Math::min(pThis->Ammo, pToType->Ammo);
+	const int originalAmmo = pThis->Ammo;
+	const int maxAmmo = pToType->Ammo;
+	pThis->Ammo = Math::min(originalAmmo, maxAmmo);
+
+	if (originalAmmo > maxAmmo)
+		pThis->Mark(MarkType::Change);
+
 	// Ares ResetSpotlights -- skipped
 
 	// Adjust ROT
@@ -800,7 +806,7 @@ void TechnoExt::HandleOnDeployAmmoChange(TechnoClass* pThis, int maxAmmoOverride
 	{
 		const int maxAmmo = maxAmmoOverride >= 0 ? maxAmmoOverride : pTypeExt->OwnerObject()->Ammo;
 		const int originalAmmo = pThis->Ammo;
-		pThis->Ammo = std::clamp(pThis->Ammo + add, 0, maxAmmo);
+		pThis->Ammo = std::clamp(originalAmmo + add, 0, maxAmmo);
 
 		if (originalAmmo != pThis->Ammo)
 		{
@@ -818,17 +824,23 @@ bool TechnoExt::SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValu
 		return defaultValue;
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	auto const pTypeConvert = pTypeExt->Convert_Deploy;
-	bool enabledChecks = alwaysCheckLandTypes || pTypeExt->IsSimpleDeployer_ConsiderPathfinding;
 
-	if (enabledChecks)
+	if (alwaysCheckLandTypes || pTypeExt->IsSimpleDeployer_ConsiderPathfinding)
 	{
-		bool isHover = pType->Locomotor == LocomotionClass::CLSIDs::Hover;
-		bool isJumpjet = pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet;
-		bool isLander = pType->DeployToLand && (isJumpjet || isHover);
-		auto const defaultLandTypes = isLander ? (LandTypeFlags)(LandTypeFlags::Water | LandTypeFlags::Beach) : LandTypeFlags::None;
-		auto const disallowedLandTypes = pTypeExt->IsSimpleDeployer_DisallowedLandTypes.Get(defaultLandTypes);
+		LandTypeFlags disallowedLandTypes;
 
+		if (pTypeExt->IsSimpleDeployer_DisallowedLandTypes.isset())
+		{
+			disallowedLandTypes = pTypeExt->IsSimpleDeployer_DisallowedLandTypes.Get();
+		}
+		else
+		{
+			const bool isHover = pType->Locomotor == LocomotionClass::CLSIDs::Hover;
+			const bool isJumpjet = pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet;
+			const bool isLander = pType->DeployToLand && (isJumpjet || isHover);
+			disallowedLandTypes = isLander ? (LandTypeFlags)(LandTypeFlags::Water | LandTypeFlags::Beach) : LandTypeFlags::None;
+		}
+		
 		if (IsLandTypeInFlags(disallowedLandTypes, pThis->GetCell()->LandType))
 			return false;
 
@@ -840,6 +852,7 @@ bool TechnoExt::SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValu
 		return defaultValue;
 	}
 
+	auto const pTypeConvert = pTypeExt->Convert_Deploy;
 	SpeedType speed = SpeedType::None;
 	MovementZone mZone = MovementZone::None;
 
