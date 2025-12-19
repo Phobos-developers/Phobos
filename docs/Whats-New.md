@@ -469,6 +469,7 @@ New:
 - [CellSpread damage check if victim is in air or on floor](New-or-Enhanced-Logics.md#cellspread-enhancement) (by TaranDahl)
 - OpenTopped range bonus and damage multiplier customization for passengers (by Ollerus)
 - AutoDeath upon ownership change (by Ollerus)
+- `EMPulseCannon.InaccurateRadius` for projectiles in `EMPulseCannon=yes` superweapons and `Ammo` support (by FS-21)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

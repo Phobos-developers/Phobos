@@ -73,6 +73,7 @@ public:
 		Nullable<AnimTypeClass*> BombParachute;
 
 		Valueable<bool> AU;
+		Valueable<int> EMPulseCannon_InaccurateRadius;
 
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
@@ -125,6 +126,7 @@ public:
 			, Parachuted_MaxFallRate {}
 			, BombParachute {}
 			, AU { false }
+			, EMPulseCannon_InaccurateRadius { 0 }
 		{ }
 
 		virtual ~ExtData() = default;

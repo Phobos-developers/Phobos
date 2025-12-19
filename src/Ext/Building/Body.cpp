@@ -481,6 +481,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentLaserWeaponIndex)
 		.Process(this->PoweredUpToLevel)
 		.Process(this->CurrentEMPulseSW)
+		.Process(this->RandomEMPTarget)
 		;
 }
 

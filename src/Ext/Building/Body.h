@@ -38,6 +38,7 @@ public:
 		std::optional<int> CurrentLaserWeaponIndex;
 		int PoweredUpToLevel; // Distinct from UpgradeLevel, and set to highest PowersUpToLevel out of applied upgrades regardless of how many are currently applied to this building.
 		SuperClass* CurrentEMPulseSW;
+		CellStruct RandomEMPTarget;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -52,6 +53,7 @@ public:
 			, CurrentLaserWeaponIndex {}
 			, PoweredUpToLevel { 0 }
 			, CurrentEMPulseSW {}
+			, RandomEMPTarget { CellStruct::Empty }
 		{ }
 
 		void DisplayIncomeString();

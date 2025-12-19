@@ -74,6 +74,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Parachuted_MaxFallRate.Read(exINI, pSection, "Parachuted.MaxFallRate");
 	this->BombParachute.Read(exINI, pSection, "BombParachute");
 	this->AU.Read(exINI, pSection, "AU");
+	this->EMPulseCannon_InaccurateRadius.Read(exINI, pSection, "EMPulseCannon.InaccurateRadius");
 
 	// Ares 0.7
 	this->BallisticScatter_Min.Read(exINI, pSection, "BallisticScatter.Min");
@@ -172,6 +173,7 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Parachuted_MaxFallRate)
 		.Process(this->BombParachute)
 		.Process(this->AU)
+		.Process(this->EMPulseCannon_InaccurateRadius)
 
 		.Process(this->TrajectoryType) // just keep this shit at last
 		;
