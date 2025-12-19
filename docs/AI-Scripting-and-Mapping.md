@@ -900,3 +900,279 @@ In `mycampaign.map`:
 ID=EventCount,...,606,2,0,[AttachEffectType],...
 ...
 ```
+
+#### `19001` Entered By ... by ID
+
+- Similar to map event 1, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19001,2,0,[ID],...
+...
+```
+
+#### `19003` Thieved By ... by ID
+
+- Similar to map event 3, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19003,2,0,[ID],...
+...
+```
+
+#### `19005` House Discovered ... by ID
+
+- Similar to map event 5, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19005,2,0,[ID],...
+...
+```
+
+#### `19009` Destroyed, Units, All ... by ID
+
+- Similar to map event 9, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19009,2,0,[ID],...
+...
+```
+
+#### `19010` Destroyed, Buildings, All ... by ID
+
+- Similar to map event 10, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19010,2,0,[ID],...
+...
+```
+
+#### `19011` Destroyed, All ... by ID
+
+- Similar to map event 11, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19011,2,0,[ID],...
+...
+```
+
+#### `19019` Build building type ... by ID
+
+- Similar to map event 19, but uses a string ID from the `[BuildingTypes]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19019,2,0,[ID],...
+...
+```
+
+#### `19020` Build unit type ... by ID
+
+- Similar to map event 20, but uses a string ID from the `[VehicleTypes]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19020,2,0,[ID],...
+...
+```
+
+#### `19021` Build infantry type ... by ID
+
+- Similar to map event 21, but uses a string ID from the `[InfantryTypes]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19021,2,0,[ID],...
+...
+```
+
+#### `19022` Build aircraft type ... by ID
+
+- Similar to map event 22, but uses a string ID from the `[AircraftTypes]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19022,2,0,[ID],...
+...
+```
+
+#### `19024` Zone entry by ... by ID
+
+- Similar to map event 24, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19024,2,0,[ID],...
+...
+```
+
+#### `19025` Crosses horizontal line ... by ID
+
+- Similar to map event 25, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19025,2,0,[ID],...
+...
+```
+
+#### `19026` Crosses vertical line ... by ID
+
+- Similar to map event 26, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19026,2,0,[ID],...
+...
+```
+
+#### `19030` Low power ... by ID
+
+- Similar to map event 30, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19030,2,0,[ID],...
+...
+```
+
+#### `19032` Building exists ... by ID
+
+- Similar to map event 32, but uses a string ID from the `[BuildingTypes]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19032,2,0,[ID],...
+...
+```
+
+#### `19044` Attacked by (house) ... by ID
+
+- Similar to map event 44, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19044,2,0,[ID],...
+...
+```
+
+#### `19053` Spy entering as House ... by ID
+
+- Similar to map event 53, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19053,2,0,[ID],...
+...
+```
+
+#### `19054` Spy entering as Infantry ... by ID
+
+- Similar to map event 54, but uses a string ID from the `[InfantryTypes]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19054,2,0,[ID],...
+...
+```
+
+#### `19055` Destroyed Units, Naval ... by ID
+
+- Similar to map event 55, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19055,2,0,[ID],...
+...
+```
+
+#### `19056` Destroyed Units, Land ... by ID
+
+- Similar to map event 56, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19056,2,0,[ID],...
+...
+```
+
+#### `19057`Building does not exist ... by ID
+
+- Similar to map event 57, but uses a string ID from the `[BuildingTypes]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19057,2,0,[ID],...
+...
+```
+
+#### `19058` Power Full ... by ID
+
+- Similar to map event 58, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19058,2,0,[ID],...
+...
+```
+
+#### `19059` Entered or Overflown By ... by ID
+
+- Similar to map event 59, but uses a string ID from the `[Countries]` list instead of an index.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,19059,2,0,[ID],...
+...
+```

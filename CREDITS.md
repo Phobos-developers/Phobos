@@ -154,6 +154,7 @@ This page lists all the individual contributions to the project by their author.
   - Event 606: AttachEffect is attaching to a Techno
   - Linked superweapons
   - Unit & infantry auto-conversion on ammo change
+  - New map events in the 19000 range that are copies of the original events but using ID entries instead of indexes
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
