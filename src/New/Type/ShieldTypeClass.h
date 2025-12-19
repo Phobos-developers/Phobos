@@ -127,9 +127,19 @@ public:
 		return this->Tint_Color.isset() || this->Tint_Intensity != 0.0;
 	}
 
-	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio) const;
-	double GetConditionYellow() const;
-	double GetConditionRed() const;
+	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio) const
+	{
+		if (isDamaged)
+		{
+			if (const auto damagedAnim = this->IdleAnimDamaged.Get(healthRatio))
+				return damagedAnim;
+		}
+
+		return this->IdleAnim.Get(healthRatio, this->GetConditionYellow(), this->GetConditionRed());
+	}
+
+	double GetConditionYellow() const { return this->ConditionYellow.Get(RulesExt::Global()->Shield_ConditionYellow.Get(RulesClass::Instance->ConditionYellow)); }
+	double GetConditionRed() const { return this->ConditionRed.Get(RulesExt::Global()->Shield_ConditionRed.Get(RulesClass::Instance->ConditionRed)); }
 
 private:
 	template <typename T>

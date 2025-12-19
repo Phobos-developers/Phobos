@@ -198,7 +198,8 @@ WeaponTypeClass* TechnoExt::GetCurrentWeapon(TechnoClass* pThis, bool getSeconda
 // Gets weapon index for a weapon to use against wall overlay.
 int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* pWallOverlayType)
 {
-	auto const pTechnoType = pThis->GetTechnoType();
+	auto const pTechnoTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto const pTechnoType = pTechnoTypeExt->OwnerObject();
 	int weaponIndex = -1;
 	auto pWeapon = TechnoExt::GetCurrentWeapon(pThis, weaponIndex);
 
@@ -218,7 +219,7 @@ int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* p
 		const bool aeForbidsSecondary = pWeaponExt && !pWeaponExt->SkipWeaponPicking && pWeaponExt->AttachEffect_CheckOnFirer && !pWeaponExt->HasRequiredAttachedEffects(pThis, pThis);
 
 		if (pWeapon && (pWeapon->Warhead->Wall || (pWeapon->Warhead->Wood && pWallOverlayType->Armor == Armor::Wood))
-			&& (!TechnoTypeExt::ExtMap.Find(pTechnoType)->NoSecondaryWeaponFallback || aeForbidsPrimary) && !aeForbidsSecondary)
+			&& (!pTechnoTypeExt->NoSecondaryWeaponFallback || aeForbidsPrimary) && !aeForbidsSecondary)
 		{
 			return weaponIndexSec;
 		}

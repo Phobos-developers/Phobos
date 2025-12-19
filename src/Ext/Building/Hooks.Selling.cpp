@@ -19,7 +19,7 @@ DEFINE_HOOK(0x4D9F7B, FootClass_Sell, 0x6)
 	}
 
 	if (RulesExt::Global()->DisplayIncome.Get())
-		FlyingStrings::AddMoneyString(money, pOwner, RulesExt::Global()->DisplayIncome_Houses.Get(), pThis->Location);
+		FlyingStrings::AddMoneyString(money, pThis, pOwner, RulesExt::Global()->DisplayIncome_Houses.Get(), pThis->Location);
 
 	return ReadyToVanish;
 }

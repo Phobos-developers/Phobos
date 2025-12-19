@@ -18,6 +18,7 @@
 #include <Ext/Scenario/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
+#include <New/Type/Affiliated/TypeConvertGroup.h>
 
 
 // TechnoClass_AI_0x6F9E50
@@ -80,6 +81,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	const auto location = pThis->Location;
 	const auto pWeapon = pThis->GetWeapon(pInterceptorType->Weapon)->WeaponType; // Interceptor weapon is always fixed
 	const auto pWH = pWeapon->Warhead;
+	const auto pOwner = pThis->Owner;
 
 	for (auto const pBullet : BulletClass::Array)
 	{
@@ -102,15 +104,13 @@ void TechnoExt::ExtData::ApplyInterceptor()
 
 		if (pBulletTypeExt->Armor.isset())
 		{
-			const double versus = GeneralUtils::GetWarheadVersusArmor(pWH, pBulletTypeExt->Armor.Get());
-
-			if (versus == 0.0)
+			if (!GeneralUtils::GetWarheadVersusArmor(pWH, pBulletTypeExt->Armor.Get()))
 				continue;
 		}
 
 		const auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
 
-		if (!EnumFunctions::CanTargetHouse(pInterceptorType->CanTargetHouses, pThis->Owner, bulletOwner))
+		if (!EnumFunctions::CanTargetHouse(pInterceptorType->CanTargetHouses, pOwner, bulletOwner))
 			continue;
 
 		if (!pOptionalTarget && isTargetedOrLocked)
@@ -131,34 +131,27 @@ void TechnoExt::ExtData::ApplyInterceptor()
 void TechnoExt::ExtData::DepletedAmmoActions()
 {
 	auto const pTypeExt = this->TypeExtData;
+	const int min = pTypeExt->Ammo_AutoDeployMinimumAmount;
+	const int max = pTypeExt->Ammo_AutoDeployMaximumAmount;
+
+	if (min < 0 && max < 0)
+		return;
+
 	auto const pType = pTypeExt->OwnerObject();
 
 	if (pType->Ammo <= 0)
 		return;
 
-	auto const pThis = this->OwnerObject();
-	auto const rtti = pThis->WhatAmI();
-	UnitClass* pUnit = nullptr;
+	auto const pThis = static_cast<UnitClass*>(this->OwnerObject());
+	auto const pUnitType = pThis->Type;
 
-	if (rtti == AbstractType::Unit)
+	if (!pUnitType->IsSimpleDeployer && !pUnitType->DeploysInto && !pUnitType->DeployFire
+		&& pUnitType->Passengers < 1 && pThis->Passengers.NumPassengers < 1)
 	{
-		pUnit = static_cast<UnitClass*>(pThis);
-		auto const pUnitType = pUnit->Type;
-
-		if (!pUnitType->IsSimpleDeployer && !pUnitType->DeploysInto && !pUnitType->DeployFire
-			&& pUnitType->Passengers < 1 && pUnit->Passengers.NumPassengers < 1)
-		{
-			return;
-		}
+		return;
 	}
 
-	int const min = pTypeExt->Ammo_AutoDeployMinimumAmount;
-	int const max = pTypeExt->Ammo_AutoDeployMaximumAmount;
-
-	if (min < 0 && max < 0)
-		return;
-
-	int const ammo = pThis->Ammo;
+	const int ammo = pThis->Ammo;
 	const bool canDeploy = TechnoExt::HasAmmoToDeploy(pThis) && (min < 0 || ammo >= min) && (max < 0 || ammo <= max);
 	const bool isDeploying = pThis->CurrentMission == Mission::Unload || pThis->QueuedMission == Mission::Unload;
 
@@ -170,11 +163,37 @@ void TechnoExt::ExtData::DepletedAmmoActions()
 	{
 		pThis->QueueMission(Mission::Guard, true);
 
-		if (pUnit && pUnit->Type->IsSimpleDeployer && pThis->InAir)
+		if (pUnitType->IsSimpleDeployer && pThis->InAir)
 		{
-			if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pUnit->Locomotor))
+			if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 				pJJLoco->State = JumpjetLocomotionClass::State::Ascending;
 		}
+	}
+}
+
+void TechnoExt::ExtData::AmmoAutoConvertActions()
+{
+	const auto pTypeExt = this->TypeExtData;
+
+	if (!pTypeExt->Ammo_AutoConvertType.isset())
+		return;
+
+	const int min = pTypeExt->Ammo_AutoConvertMinimumAmount;
+	const int max = pTypeExt->Ammo_AutoConvertMaximumAmount;
+
+	if (min < 0 && max < 0)
+		return;
+
+	if (pTypeExt->OwnerObject()->Ammo <= 0)
+		return;
+
+	const auto pThis = this->OwnerObject();
+	const int ammo = pThis->Ammo;
+
+	if ((min < 0 || ammo >= min) && (max < 0 || ammo <= max))
+	{
+		const auto pFoot = abstract_cast<FootClass*, true>(pThis);
+		TechnoExt::ConvertToType(pFoot, pTypeExt->Ammo_AutoConvertType);
 	}
 }
 
@@ -333,7 +352,12 @@ void TechnoExt::ExtData::EatPassengers()
 	auto const pDelType = pTypeExt->PassengerDeletionType.get();
 
 	if (!pDelType->UnderEMP && (pThis->Deactivated || pThis->IsUnderEMP()))
+	{
+		if (this->PassengerDeletionTimer.InProgress())
+			this->PassengerDeletionTimer.StartTime++;
+
 		return;
+	}
 
 	if (pDelType->Rate > 0 || pDelType->UseCostAsRate)
 	{
@@ -420,7 +444,7 @@ void TechnoExt::ExtData::EatPassengers()
 
 						if (pDelType->DisplaySoylent)
 						{
-							FlyingStrings::AddMoneyString(nMoneyToGive, pOwner,
+							FlyingStrings::AddMoneyString(nMoneyToGive, pThis, pOwner,
 								pDelType->DisplaySoylentToHouses, pThis->Location, pDelType->DisplaySoylentOffset);
 						}
 					}
@@ -527,7 +551,7 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 			{
 				auto cellCoords = pCell->GetCoords();
 				cellCoords.Z = std::max(locationZ, cellCoords.Z);
-				FlyingStrings::AddMoneyString(value, pOwner, displayToHouse, cellCoords, displayOffset);
+				FlyingStrings::AddMoneyString(value, pThis, pOwner, displayToHouse, cellCoords, displayOffset);
 			}
 
 			const auto& anims = pEaterType->Anims_Tiberiums[tiberiumIdx].GetElements(animsAll);
@@ -688,12 +712,12 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			this->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(entry.GetType(), pOwner, entry.FLH, entry.IsOnTurret));
 	}
 
-	// Reset AutoDeath Timer
-	if (this->AutoDeathTimer.HasStarted())
+	// Reset AutoDeath Timer if new techno type doesn't have timed AutoDeath
+	if (this->AutoDeathTimer.HasStarted() && pNewTypeExt->AutoDeath_AfterDelay <= 0)
 		this->AutoDeathTimer.Stop();
 
 	// Reset PassengerDeletion Timer
-	if (this->PassengerDeletionTimer.IsTicking() && pNewTypeExt->PassengerDeletionType && pNewTypeExt->PassengerDeletionType->Rate <= 0)
+	if (this->PassengerDeletionTimer.HasStarted() && pNewTypeExt->PassengerDeletionType && pNewTypeExt->PassengerDeletionType->Rate <= 0)
 		this->PassengerDeletionTimer.Stop();
 
 	// Remove from tracked AutoDeath objects if no longer has AutoDeath
@@ -1421,7 +1445,8 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 	if (!RulesExt::Global()->GainSelfHealAllowMultiplayPassive && pThis->Owner->Type->MultiplayPassive)
 		return;
 
-	auto const pType = pThis->GetTechnoType();
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto const pType = pTypeExt->OwnerObject();
 	const int healthDeficit = pType->Strength - pThis->Health;
 
 	if (pThis->Health && healthDeficit > 0)
@@ -1434,7 +1459,7 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 		else if (whatAmI == AbstractType::Unit)
 			defaultSelfHealType = (pType->Organic ? SelfHealGainType::Infantry : SelfHealGainType::Units);
 
-		auto const selfHealType = TechnoTypeExt::ExtMap.Find(pType)->SelfHealGainType.Get(defaultSelfHealType);
+		auto const selfHealType = pTypeExt->SelfHealGainType.Get(defaultSelfHealType);
 
 		if (selfHealType == SelfHealGainType::NoHeal)
 			return;
@@ -1645,24 +1670,23 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, cons
 
 void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 {
-	const auto pType = pThis->GetTechnoType();
+	const auto pExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
-	if (pType->OpenTopped)
+	if (pExt->Ammo_Shared)
 	{
-		const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
+		const auto pType = pExt->OwnerObject();
 
-		if (pExt->Ammo_Shared && pType->Ammo > 0)
+		if (pType->OpenTopped && pType->Ammo > 0)
 		{
 			for (auto pPassenger = pThis->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
 			{
-				const auto pPassengerType = pPassenger->GetTechnoType();
-				const auto pPassengerExt = TechnoTypeExt::ExtMap.Find(pPassengerType);
+				const auto pPassengerExt = TechnoExt::ExtMap.Find(pPassenger)->TypeExtData;
 
 				if (pPassengerExt->Ammo_Shared)
 				{
 					if (pExt->Ammo_Shared_Group < 0 || pExt->Ammo_Shared_Group == pPassengerExt->Ammo_Shared_Group)
 					{
-						if (pThis->Ammo > 0 && (pPassenger->Ammo < pPassengerType->Ammo))
+						if (pThis->Ammo > 0 && (pPassenger->Ammo < pPassengerExt->OwnerObject()->Ammo))
 						{
 							pThis->Ammo--;
 							pPassenger->Ammo++;
@@ -1719,10 +1743,10 @@ void TechnoExt::ExtData::UpdateRearmInTemporal()
 // Resets target if KeepTargetOnMove unit moves beyond weapon range.
 void TechnoExt::ExtData::UpdateKeepTargetOnMove()
 {
-	auto const pThis = this->OwnerObject();
-
 	if (!this->KeepTargetOnMove)
 		return;
+
+	auto const pThis = this->OwnerObject();
 
 	if (!pThis->Target)
 	{
@@ -1753,7 +1777,7 @@ void TechnoExt::ExtData::UpdateKeepTargetOnMove()
 		return;
 	}
 
-	const int weaponIndex = pThis->SelectWeapon(pThis->Target);
+	const int weaponIndex = pTypeExt->KeepTargetOnMove_Weapon >= 0 ? pTypeExt->KeepTargetOnMove_Weapon : pThis->SelectWeapon(pThis->Target);
 
 	if (auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType)
 	{
@@ -1882,6 +1906,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 {
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
+	auto const pTechnoType = pTypeExt->OwnerObject();
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
 	bool altered = false;
@@ -1891,8 +1916,9 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	{
 		auto const attachEffect = it->get();
 		auto const pType = attachEffect->GetType();
-		bool selfOwned = attachEffect->IsSelfOwned();
-		bool remove = selfOwned && !pTypeExt->AttachEffects.AttachTypes.Contains(pType);
+		const bool isValid = EnumFunctions::IsTechnoEligible(pThis, pType->AffectTargets, true)
+			&& (pType->AffectTypes.empty() || pType->AffectTypes.Contains(pTechnoType)) && !pType->IgnoreTypes.Contains(pTechnoType);
+		const bool remove = !isValid || (attachEffect->IsSelfOwned() && !pTypeExt->AttachEffects.AttachTypes.Contains(pType));
 
 		if (remove)
 		{
