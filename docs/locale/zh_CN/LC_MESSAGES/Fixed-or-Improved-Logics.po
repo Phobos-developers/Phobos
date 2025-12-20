@@ -6757,7 +6757,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:1964
 msgid "Custom Unit Crate Reroll Chance"
-msgstr ""
+msgstr "自定义单位箱子重新随机选取的概率"
 
 #: ../../Fixed-or-Improved-Logics.md:1966
 msgid ""
