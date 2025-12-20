@@ -840,7 +840,7 @@ bool TechnoExt::SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValu
 			const bool isLander = pType->DeployToLand && (isJumpjet || isHover);
 			disallowedLandTypes = isLander ? (LandTypeFlags)(LandTypeFlags::Water | LandTypeFlags::Beach) : LandTypeFlags::None;
 		}
-		
+
 		if (IsLandTypeInFlags(disallowedLandTypes, pThis->GetCell()->LandType))
 			return false;
 
@@ -947,6 +947,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpecialTracked)
 		.Process(this->FallingDownTracked)
 		.Process(this->JumpjetStraightAscend)
+		.Process(this->OwnerTimer)
+		.Process(this->OwnerOriginalOwner)
 		;
 }
 

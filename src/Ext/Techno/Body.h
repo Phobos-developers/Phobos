@@ -102,6 +102,8 @@ public:
 		bool FallingDownTracked;
 
 		bool JumpjetStraightAscend; // Is set to true jumpjet units will ascend straight and do not adjust rotation or position during it.
+		CDTimerClass OwnerTimer;
+		HouseClass* OwnerOriginalOwner;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -169,6 +171,8 @@ public:
 			, SpecialTracked { false }
 			, FallingDownTracked { false }
 			, JumpjetStraightAscend { false }
+			, OwnerTimer {}
+			, OwnerOriginalOwner {}
 		{ }
 
 		void OnEarlyUpdate();
@@ -207,6 +211,7 @@ public:
 		int ApplyForceWeaponInRange(AbstractClass* pTarget);
 		void ResetDelayedFireTimer();
 		void UpdateTintValues();
+		void UpdateOwnerTimer();
 
 		void AmmoAutoConvertActions();
 

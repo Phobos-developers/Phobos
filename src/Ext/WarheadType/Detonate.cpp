@@ -479,6 +479,13 @@ void WarheadTypeExt::ExtData::ApplyOwnerChange(HouseClass* pHouse, TechnoClass* 
 
 	if (!isImmune)
 	{
+		if(this->ChangeOwner_Duration)
+		{
+			auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+			pTargetExt->OwnerOriginalOwner = pTarget->Owner;
+			pTargetExt->OwnerTimer.Start(this->ChangeOwner_Duration);
+		}
+
 		pTarget->SetOwningHouse(pHouse, true);
 
 		if (isMindControl)
