@@ -1927,9 +1927,10 @@ msgstr "修复了 Ares 引入的渗透敌方重工后 `UndeploysInto` 建筑 `Al
 
 #: ../../../CREDITS.md:471
 msgid ""
-"Fix the bug that techno with `Trainable=false` can be promoted if it's "
-"created by trigger event"
+"Fix a bug where units can be promoted when created via trigger actions "
+"even if they have `Trainable=false`"
 msgstr ""
+"修复了由触发结果创建的单位即便拥有 `Trainable=false` 也可以被升级的 Bug"
 
 #: ../../../CREDITS.md:472
 msgid "**Apollo** - Translucent SHP drawing patches"

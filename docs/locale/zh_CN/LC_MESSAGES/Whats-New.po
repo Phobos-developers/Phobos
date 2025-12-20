@@ -2361,9 +2361,10 @@ msgstr "修复了单位距离目标小于 `MinimumRange` 时会前往最远距�
 
 #: ../../Whats-New.md:512
 msgid ""
-"Fixed the bug that techno with `Trainable=false` can be promoted if it's "
-"created by trigger event (by NetsuNegi)"
+"Fixed a bug where units can be promoted when created via trigger actions "
+"even if they have `Trainable=false` (by NetsuNegi)"
 msgstr ""
+"修复了由触发结果创建的单位即便拥有 `Trainable=false` 也可以被升级的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:514 ../../Whats-New.md:554 ../../Whats-New.md:883
 #: ../../Whats-New.md:968 ../../Whats-New.md:1132 ../../Whats-New.md:1173

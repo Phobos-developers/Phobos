@@ -280,7 +280,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that naval ship will sink even they destroyed in air.
 - Fixed MPDebug timer displaying when debug's visibility is off.
 - Fixed the issue that units will goto farest location if target is closer than `MinimumRange`.
-- Fixed the bug that techno with `Trainable=false` can be promoted if it's created by trigger event.
+- Fixed a bug where units can be promoted when created via trigger actions even if they have `Trainable=false`.
 
 ## Fixes / interactions with other extensions
 

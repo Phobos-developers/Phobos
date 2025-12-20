@@ -1703,9 +1703,10 @@ msgstr "修复了单位距离目标小于 `MinimumRange` 时会前往最远距�
 
 #: ../../Fixed-or-Improved-Logics.md:283
 msgid ""
-"Fixed the bug that techno with `Trainable=false` can be promoted if it's "
-"created by trigger event."
+"Fixed a bug where units can be promoted when created via trigger actions "
+"even if they have `Trainable=false`."
 msgstr ""
+"修复了由触发结果创建的单位即便拥有 `Trainable=false` 也可以被升级的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:285
 msgid "Fixes / interactions with other extensions"
