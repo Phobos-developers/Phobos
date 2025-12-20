@@ -527,8 +527,8 @@ msgid "Majority of ScriptType actions"
 msgstr "大多数动作脚本行为"
 
 #: ../../../CREDITS.md:138
-msgid "ScriptType Action 14004: Force Global OnlyTargetHouseEnemy value in Teams"
-msgstr ""
+msgid "ScriptType Action 14004: Force Global `OnlyTargetHouseEnemy` value in Teams"
+msgstr "脚本动作 14004：在小队中强制全局 `OnlyTargetHouseEnemy` 值"
 
 #: ../../../CREDITS.md:139
 msgid "MC deployer fixes"

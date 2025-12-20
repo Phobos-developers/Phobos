@@ -1492,15 +1492,17 @@ msgstr ""
 
 #: ../../AI-Scripting-and-Mapping.md:385
 msgid ""
-"`14004` Force Global OnlyTargetHouseEnemy value in Teams for new attack /"
+"`14004` Force Global `OnlyTargetHouseEnemy` value in Teams for new attack /"
 " move actions"
 msgstr ""
+"`14004` 为新的攻击／移动行为在小队中强制全局 `OnlyTargetHouseEnemy` 值"
 
 #: ../../AI-Scripting-and-Mapping.md:387
 msgid ""
 "Sets the TeamType tag value for `OnlyTargetHouseEnemy` tag. Only affects "
 "the new attack / move actions."
 msgstr ""
+"为 `OnlyTargetHouseEnemy` 标签设置小队上的标签值。仅作用于新发生的攻击／移动动作。"
 
 #: ../../AI-Scripting-and-Mapping.md:390
 msgid ""
@@ -1517,19 +1519,19 @@ msgstr "-1"
 
 #: ../../AI-Scripting-and-Mapping.md:66
 msgid "Disable Global value for Force `OnlyTargetHouseEnemy` tag. Default value"
-msgstr ""
+msgstr "默认值，禁用强制 `OnlyTargetHouseEnemy` 标签全局值。"
 
 #: ../../AI-Scripting-and-Mapping.md:66
 msgid "Force `OnlyTargetHouseEnemy` = false"
-msgstr ""
+msgstr "强制 `OnlyTargetHouseEnemy = false`"
 
 #: ../../AI-Scripting-and-Mapping.md:66
 msgid "Force `OnlyTargetHouseEnemy` = true"
-msgstr ""
+msgstr "强制 `OnlyTargetHouseEnemy = true`"
 
 #: ../../AI-Scripting-and-Mapping.md:66
 msgid "Force random boolean value"
-msgstr ""
+msgstr "强制随机布尔值"
 
 #: ../../AI-Scripting-and-Mapping.md:404
 msgid "`16000-16999` Flow Control"

@@ -2656,6 +2656,7 @@ msgid ""
 "Script Action 14004 for forcing all new actions to target only the main "
 "owner's enemy (by FS-21)"
 msgstr ""
+"用于强制所有新动作仅以主要所有者敌人为目标的 14004 号脚本动作（by FS-21）"
 
 #: ../../Whats-New.md:578
 msgid "Customizable ROF random delay (by Starkku)"
