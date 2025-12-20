@@ -24,7 +24,7 @@ This page describes all the engine features that are either new and introduced b
     - `PenetratesForceShield` can be used to set this separately for Force Shielded objects, defaults to value of `PenetratesIronCurtain`.
   - `AffectTypes`, if set to a non-empty list, restricts the effect to only be applicable on the specific unit types listed. If this is not set or empty, no whitelist filtering occurs. This check has the highest priority.
   - `IgnoreTypes`, if set to a non-empty list, prevents the effect from being applied to any of the specific unit types listed. If this is not set or empty, no blacklist filtering occurs. This check is performed after `AffectTypes`.
-  - `AffectTargets`, if set to a non-empty list, restricts the effect to only be applicable on units belonging to the specified target categories (e.g., infantry, units, aircraft, buildings). This check is performed after both type-based filters.
+  - `AffectsTarget`, if set to a non-empty list, restricts the effect to only be applicable on units belonging to the specified target categories (e.g., infantry, units, aircraft, buildings). This check is performed after both type-based filters.
   - `Animation` defines animation to play in an indefinite loop for as long as the effect is active on the object it is attached to.
     - If `Animation.ResetOnReapply` is set to true, the animation playback is reset every time the effect is applied if `Cumulative=false`.
     - `Animation.OfflineAction` determines what happens to the animation when the attached object is deactivated or not powered. Only applies if `Powered=true`.
@@ -102,7 +102,7 @@ PenetratesIronCurtain=false                        ; boolean
 PenetratesForceShield=                             ; boolean
 AffectTypes=                                       ; List of TechnoTypes
 IgnoreTypes=                                       ; List of TechnoTypes
-AffectTargets=all                                  ; List of TechnoType Enumeration (none|infantry|units|aircraft|buildings|all)
+AffectsTarget=all                                  ; List of TechnoType Enumeration (none|infantry|units|aircraft|buildings|all)
 Animation=                                         ; AnimationType
 Animation.ResetOnReapply=false                     ; boolean
 Animation.OfflineAction=Hides                      ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
@@ -2414,9 +2414,9 @@ PlayAnimAboveSurface=false            ; boolean
 
 - Setting `DetonateOnAllMapObjects` to true allows a Warhead that is detonated by a projectile (for an example, this excludes things like animation `Warhead` and Ares' GenericWarhead superweapon but includes `Crit.Warhead` and animation `Weapon`) and consequently any `AirburstWeapon/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
   - `DetonateOnAllMapObjects.Full` customizes whether or not the Warhead is detonated fully on the targets (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
-  - `DetonateOnAllMapObjects.AffectTargets` is used to filter which types of targets (TechnoTypes) are considered valid and must be set to a valid value other than `none` for this feature to work. Only `none`, `all`, `aircraft`, `buildings`, `infantry` and `units` are valid values. This is set to `none` by default as inclusion of all object types can be performance-heavy.
+  - `DetonateOnAllMapObjects.AffectsTarget` is used to filter which types of targets (TechnoTypes) are considered valid and must be set to a valid value other than `none` for this feature to work. Only `none`, `all`, `aircraft`, `buildings`, `infantry` and `units` are valid values. This is set to `none` by default as inclusion of all object types can be performance-heavy.
   - `DetonateOnAllMapObjects.AffectsHouse` is used to filter which houses targets can belong to be considered valid and must be set to a valid value other than `none` for this feature to work. Only applicable if the house that fired the projectile is known. This is set to `none` by default as inclusion of all houses can be performance-heavy.
-  - `DetonateOnAllMapObjects.AffectTypes` can be used to list specific TechnoTypes to be considered as valid targets. If any valid TechnoTypes are listed, then only matching objects will be targeted. Note that `DetonateOnAllMapObjects.AffectTargets` and `DetonateOnAllMapObjects.AffectsHouse` take priority over this setting.
+  - `DetonateOnAllMapObjects.AffectTypes` can be used to list specific TechnoTypes to be considered as valid targets. If any valid TechnoTypes are listed, then only matching objects will be targeted. Note that `DetonateOnAllMapObjects.AffectsTarget` and `DetonateOnAllMapObjects.AffectsHouse` take priority over this setting.
   - `DetonateOnAllMapObjects.IgnoreTypes` can be used to list specific TechnoTypes to be never considered as valid targets.
   - `DetonateOnAllMapObjects.RequireVerses`, if set to true, only considers targets whose armor type the warhead has non-zero `Verses` value against as valid. On targets with active shields, shield's armor type is used unless the Warhead has `Shield.Penetrate=true`. This is checked after all other filters listed above.
 
@@ -2425,7 +2425,7 @@ PlayAnimAboveSurface=false            ; boolean
 [SOMEWARHEAD]                                ; WarheadType
 DetonateOnAllMapObjects=false                ; boolean
 DetonateOnAllMapObjects.Full=true            ; boolean
-DetonateOnAllMapObjects.AffectTargets=none   ; List of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
+DetonateOnAllMapObjects.AffectsTarget=none   ; List of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
 DetonateOnAllMapObjects.AffectsHouse=none    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 DetonateOnAllMapObjects.AffectTypes=         ; List of TechnoTypes
 DetonateOnAllMapObjects.IgnoreTypes=         ; List of TechnoTypes
@@ -2433,7 +2433,7 @@ DetonateOnAllMapObjects.RequireVerses=false  ; boolean
 ```
 
 ```{warning}
-While this feature can provide better performance than a large `CellSpread` value, it still has potential to slow down the game, especially if used in conjunction with things like animations, alpha lights etc. Modder discretion and use of the filter keys (`AffectTargets/House/Types` etc.) is advised.
+While this feature can provide better performance than a large `CellSpread` value, it still has potential to slow down the game, especially if used in conjunction with things like animations, alpha lights etc. Modder discretion and use of the filter keys (`AffectsTarget/House/Types` etc.) is advised.
 ```
 
 ### Fire weapon when Warhead kills something
