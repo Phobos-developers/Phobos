@@ -107,6 +107,8 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `[WarheadType] -> KillWeapon.OnFirer.AffectsHouses` -> `[WarheadType] -> KillWeapon.OnFirer.AffectsHouse`
 - `[AttachEffectType] -> AffectTargets` -> `[AttachEffectType] -> AffectsTarget`
 - `[WarheadType] -> DetonateOnAllMapObjects.AffectTargets` -> `[WarheadType] -> DetonateOnAllMapObjects.AffectsTarget`
+- `[TechnoType] -> AutoFire` -> `[TechnoType] -> AutoTargetOwnPosition`
+- `[TechnoType] -> AutoFire.TargetSelf` -> `[TechnoType] -> AutoTargetOwnPosition.Self`
 
 #### From ???
 
