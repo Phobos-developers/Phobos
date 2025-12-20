@@ -2657,7 +2657,7 @@ msgid ""
 "Script Action 14004 for forcing all new actions to target only the main "
 "owner's enemy (by FS-21)"
 msgstr ""
-"用于强制所有新动作仅以主要所有者敌人为目标的 14004 号脚本动作（by FS-21）"
+"用于强制所有新动作仅以主要所有者敌人为目标的 14004 号动作脚本（by FS-21）"
 
 #: ../../Whats-New.md:578
 msgid "Customizable ROF random delay (by Starkku)"
@@ -3164,7 +3164,7 @@ msgstr "允许限制同一辐射每帧对一个建筑造成杀伤的次数（by 
 msgid ""
 "Allow explicitly setting the superweapons AI uses for Chronoshift script "
 "actions (by Starkku)"
-msgstr "允许明确定义 AI 使用超时空传送脚本动作时所使用的超级武器（by Starkku）"
+msgstr "允许明确定义 AI 使用超时空传送动作脚本时所使用的超级武器（by Starkku）"
 
 #: ../../Whats-New.md:680
 msgid ""
@@ -3222,7 +3222,7 @@ msgstr "自定义掀起幅度（by TwinkleStar 与 Ollerus）"
 msgid ""
 "AI script action to jump back to previous script after picking a random "
 "script (by handama)"
-msgstr "随机跳转回先前步骤的 AI 脚本动作（by handama）"
+msgstr "随机跳转回先前步骤的 AI 动作脚本（by handama）"
 
 #: ../../Whats-New.md:691
 msgid "Insignias visibility and position adjustments (by Fryone)"
@@ -5102,7 +5102,7 @@ msgstr "修改新移动动作结束条件的动作脚本（by FS-21）"
 
 #: ../../Whats-New.md:1032
 msgid "Script action that un-register Team success (by FS-21)"
-msgstr "取消注册小队成功的脚本动作（by FS-21）"
+msgstr "取消注册小队成功的动作脚本（by FS-21）"
 
 #: ../../Whats-New.md:1033
 msgid "Script action to regroup temporarily around the Team Leader (by FS-21)"
@@ -5114,7 +5114,7 @@ msgstr "随机跳过下一个动作的动作脚本（by FS-21）"
 
 #: ../../Whats-New.md:1035
 msgid "Script action for timed script action jumps (by FS-21)"
-msgstr "定时跳转脚本动作（by FS-21）"
+msgstr "定时跳转动作脚本（by FS-21）"
 
 #: ../../Whats-New.md:1036
 msgid "ObjectInfo now shows current Target and AI Trigger data (by FS-21)"
@@ -5509,7 +5509,7 @@ msgid ""
 "Fixed AI script action Deploy getting stuck with vehicles with "
 "`DeploysInto` if there was no space to deploy at initial location (by "
 "Starkku)"
-msgstr "修复了 AI 部署脚本动作导致拥有 `DeploysInto` 的载具在其原位置空间不足而卡住的问题（by Starkku）"
+msgstr "修复了 AI 部署动作脚本导致拥有 `DeploysInto` 的载具在其原位置空间不足而卡住的问题（by Starkku）"
 
 #: ../../Whats-New.md:1119
 msgid ""
@@ -6067,7 +6067,7 @@ msgstr "修复了 `InfiniteMindControl` 在 `Damage=1` 的情况下只能控制 
 msgid ""
 "Fixed the bug that script action `Move to cell` was still using leftover "
 "cell calculations from previous games (by secsome)"
-msgstr "修复了脚本动作 `移动到单元格` 使用先代游戏残留单元格算法的 Bug（by secsome）"
+msgstr "修复了动作脚本 `移动到单元格` 使用先代游戏残留单元格算法的 Bug（by secsome）"
 
 #: ../../Whats-New.md:1278
 msgid ""

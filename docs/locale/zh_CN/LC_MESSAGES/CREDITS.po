@@ -528,7 +528,7 @@ msgstr "大多数动作脚本行为"
 
 #: ../../../CREDITS.md:138
 msgid "ScriptType Action 14004: Force Global `OnlyTargetHouseEnemy` value in Teams"
-msgstr "脚本动作 14004：在小队中强制全局 `OnlyTargetHouseEnemy` 值"
+msgstr "动作脚本 14004：在小队中强制全局 `OnlyTargetHouseEnemy` 值"
 
 #: ../../../CREDITS.md:139
 msgid "MC deployer fixes"
@@ -616,7 +616,7 @@ msgstr "各种小 bug 修复与改进"
 
 #: ../../../CREDITS.md:160
 msgid "AI script actions:"
-msgstr "AI 脚本动作："
+msgstr "AI 动作脚本："
 
 #: ../../../CREDITS.md:161
 msgid "Chronoshift to Enemy Base"
@@ -2466,7 +2466,7 @@ msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
 
 #: ../../../CREDITS.md:599
 msgid "**handama** - AI script action to `16005 Jump Back To Previous Script`"
-msgstr "**handama** - AI 脚本动作 `16005 跳回上一个脚本`"
+msgstr "**handama** - AI 动作脚本 `16005 跳回上一个脚本`"
 
 #: ../../../CREDITS.md:600
 msgid "**TaranDahl (航味麻酱)**:"

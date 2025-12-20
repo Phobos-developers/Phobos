@@ -37,7 +37,7 @@ msgid ""
 "`1000 * Y + X` as its cell value. (was `128 * Y + X` as it's a RA1 "
 "leftover)"
 msgstr ""
-"脚本动作 `移动到单元格` 现在遵守 YR 的单元格计算规则。使用 `1000 * Y + X` 获取单元格值。（先前使用遗留自 RA1 的 "
+"动作脚本 `移动到单元格` 现在遵守 YR 的单元格计算规则。使用 `1000 * Y + X` 获取单元格值。（先前使用遗留自 RA1 的 "
 "`128 * Y + X`）"
 
 #: ../../AI-Scripting-and-Mapping.md:8
@@ -76,7 +76,7 @@ msgid ""
 "Script action `Deploy` now has vehicles with `DeploysInto` searching for "
 "free space to deploy at if failing to do so at initial location, instead "
 "of simply getting stuck."
-msgstr "脚本动作 `部署` 现在会让拥有 `DeploysInto` 的载具自动寻找空地以进行部署，而不再是直接呆住。"
+msgstr "动作脚本 `部署` 现在会让拥有 `DeploysInto` 的载具自动寻找空地以进行部署，而不再是直接呆住。"
 
 #: ../../AI-Scripting-and-Mapping.md:13
 msgid ""
@@ -101,7 +101,7 @@ msgid ""
 "listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or "
 "`Type=ChronoWarp` will be used, respectively."
 msgstr ""
-"用于 AI 脚本动作的超级武器 `56 超时空传送至建筑`、`57 超时空传送至目标` 和 `10104 超时空传送至敌方基地` 现在可以通过 "
+"用于 AI 动作脚本的超级武器 `56 超时空传送至建筑`、`57 超时空传送至目标` 和 `10104 超时空传送至敌方基地` 现在可以通过 "
 "`[General] -> AIChronoSphereSW` 和 `AIChronoWarpSW` 分别明确设置。如果设置了 "
 "`AIChronoSphereSW` 但没有设置 `AIChronoWarpSW`，那么游戏会检查前者指定的 `SW.PostDependent`"
 " 来获取关联的超级武器。如果也没有设置那么会分别使用 `[SuperWeaponTypes]` 列表中最后一个 "
@@ -384,7 +384,7 @@ msgstr ""
 
 #: ../../AI-Scripting-and-Mapping.md:135
 msgid "Script Actions"
-msgstr "脚本动作"
+msgstr "动作脚本"
 
 #: ../../AI-Scripting-and-Mapping.md:137
 msgid "`10000-10999` Ingame Actions"
@@ -589,7 +589,7 @@ msgstr "10017"
 msgid ""
 "The following values are the *Target Type#* which can be used as second "
 "parameter of the new attack script actions:"
-msgstr "下列值为可用于新攻击脚本动作第二个参数的 **目标类型 #** 参数："
+msgstr "下列值为可用于新攻击动作脚本第二个参数的 **目标类型 #** 参数："
 
 #: ../../AI-Scripting-and-Mapping.md:174
 msgid ""
@@ -1318,8 +1318,8 @@ msgid ""
 "Action is discarded & the script execution jumps to the next line. The "
 "value `0` means infinite retries."
 msgstr ""
-"当在例如新的 `通用目标类型攻击` 动作和 `AITargetTypes 攻击` 脚本动作执行前小队类型会考虑如果未选择目标则必须等待 1 "
-"秒。第二个参数是一个用于指定未找到目标时充实多少次然后才放弃新的攻击脚本动作并跳转到下一行的参数。默认值 `0` 表示无限次重试。"
+"当在例如新的 `通用目标类型攻击` 动作和 `AITargetTypes 攻击` 动作脚本执行前小队类型会考虑如果未选择目标则必须等待 1 "
+"秒。第二个参数是一个用于指定未找到目标时充实多少次然后才放弃新的攻击动作脚本并跳转到下一行的参数。默认值 `0` 表示无限次重试。"
 
 #: ../../AI-Scripting-and-Mapping.md:310
 msgid ""
@@ -1415,7 +1415,7 @@ msgid ""
 "positive value."
 msgstr ""
 "当在例如新的 `通用目标类型攻击` 动作和 `AITargetTypes 攻击` "
-"脚本动作执行前小队类型会考虑如果小队目标被小队成员杀死则必须奖励增加 AI "
+"动作脚本执行前小队类型会考虑如果小队目标被小队成员杀死则必须奖励增加 AI "
 "触发的当前权重。当前权重不会超过AI触发最小权重和最大权重的限制。第二个参数是一个正整数。"
 
 #: ../../AI-Scripting-and-Mapping.md:350
@@ -1480,7 +1480,7 @@ msgstr "`14003` 撤销小队成功"
 msgid ""
 "Is just the opposite effect of the script action `49,0`. Like if the Team"
 " failed."
-msgstr "与脚本动作 `49,0` 相反的效果。类似小队失败。"
+msgstr "与动作脚本 `49,0` 相反的效果。类似小队失败。"
 
 #: ../../AI-Scripting-and-Mapping.md:380
 msgid ""
@@ -1546,7 +1546,7 @@ msgid ""
 "When the timer ends the current script action ends and start again the "
 "same script action. The timer jump repeats again (infinite loop) until is"
 " stopped with action `16002` or the team is destroyed."
-msgstr "当计时器结束时当前脚本动作结束并重新开始同一动作。计时器会会一直重复跳转（无限循环）直到被 `16002` 号结果打断或小队被摧毁。"
+msgstr "当计时器结束时当前动作脚本结束并重新开始同一动作。计时器会会一直重复跳转（无限循环）直到被 `16002` 号结果打断或小队被摧毁。"
 
 #: ../../AI-Scripting-and-Mapping.md:411
 msgid ""
@@ -1564,7 +1564,7 @@ msgstr "`16001` 定时跳转至下一行"
 msgid ""
 "When the timer ends the current script action ends and start the next one"
 " in the script type list."
-msgstr "当计时器结束时当前脚本动作结束并开始脚本类型列表中下一个动作。"
+msgstr "当计时器结束时当前动作脚本结束并开始脚本类型列表中下一个动作。"
 
 #: ../../AI-Scripting-and-Mapping.md:421
 msgid ""
