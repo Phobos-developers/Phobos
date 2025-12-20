@@ -4462,8 +4462,8 @@ msgid ""
 "delay, or disabling it entirely. Values of 0 and below disable the delay "
 "and cause AI houses to check superweapons on every game frame."
 msgstr ""
-"默认情况下 AI 所属方只检查它能否发射任何超级武器并在 106 到 112 "
-"个游戏帧的随机间隔内发射该超武。这一行为现在可以自定义设置为明确的间隔时间或予以禁用。0 及更小的值会禁用间隔并导致 AI "
+"默认情况下 AI 所属方只检查它是否拥有能够发射的超级武器并在 106 到 112 "
+"个游戏帧的随机间隔内发射它们。这一行为现在可以自定义设置为明确的间隔时间或予以禁用。0 及更小的值会禁用间隔并导致 AI "
 "所属方每帧检查超级武器。"
 
 #: ../../New-or-Enhanced-Logics.md:1072
