@@ -582,7 +582,7 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_BeforeTruelyFire, 0x6)
 				else
 					firingCoords = TechnoExt::GetCompleteFLH(pThis, weaponIndex);
 
-				if(pWeaponExt->DelayedFire_InitialBurstAnimCount > 1)
+				if(pWeaponExt->DelayedFire_InitialBurstAnimCount > 1 && pThis->CurrentBurstIndex == 0)
 				{
 					for (int i = 1; i < pWeaponExt->DelayedFire_InitialBurstAnimCount; i++)
 					{

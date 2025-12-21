@@ -716,7 +716,7 @@ bool TechnoExt::HandleDelayedFireWithPauseSequence(TechnoClass* pThis, WeaponTyp
 				else
 					firingCoords = TechnoExt::GetCompleteFLH(pThis, weaponIndex);
 
-				if(pWeaponExt->DelayedFire_InitialBurstAnimCount > 1)
+				if(pWeaponExt->DelayedFire_InitialBurstAnimCount > 1 && pThis->CurrentBurstIndex == 0)
 				{
 					for (int i = 1; i < pWeaponExt->DelayedFire_InitialBurstAnimCount; i++)
 					{
