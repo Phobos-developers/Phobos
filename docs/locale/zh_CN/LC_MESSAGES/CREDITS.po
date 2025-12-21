@@ -2381,7 +2381,7 @@ msgstr "允许战机执行区域警戒任务且在无机场的情况下不会立
 
 #: ../../../CREDITS.md:573
 msgid "Allow merging AOE damage to buildings into one"
-msgstr ""
+msgstr "允许将建筑所受的 AOE 伤害合而为一"
 
 #: ../../../CREDITS.md:574
 msgid "**Ollerus**:"

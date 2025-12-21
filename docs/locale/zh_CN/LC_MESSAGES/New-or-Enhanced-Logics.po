@@ -7977,14 +7977,15 @@ msgstr "如果目标拥有一个激活的 [护盾](#shields)，那么它的护�
 
 #: ../../New-or-Enhanced-Logics.md:2224
 msgid "Allow merging AOE damage to buildings into one"
-msgstr ""
+msgstr "允许将建筑所受的 AOE 伤害合而为一"
 
 #: ../../New-or-Enhanced-Logics.md:2226
 msgid ""
 "Warheads are now able to damage building only once by merging the AOE "
 "damage when setting `MergeBuildingDamage` to true, which default to "
-"`[CombatDamage]->MergeBuildingDamage`."
+"`[CombatDamage] -> MergeBuildingDamage`."
 msgstr ""
+"弹头现在可以在 `MergeBuildingDamage` 设为 true 时通过合并 AOE 伤害来仅对建筑造成单次杀伤，其默认同 `[CombatDamage] -> MergeBuildingDamage`。"
 
 #: ../../New-or-Enhanced-Logics.md:2229
 msgid ""
@@ -8002,11 +8003,11 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:2238
 msgid "This is different from `CellSpread.MaxAffect`."
-msgstr ""
+msgstr "这是与 `CellSpread.MaxAffect` 不同的机制。"
 
 #: ../../New-or-Enhanced-Logics.md:2239
 msgid "Due to the rounding of damage, there may be a slight increase in damage."
-msgstr ""
+msgstr "由于原本的部分杀伤被取整消去，开启本功能后所造成的杀伤可能略有增大。"
 
 #: ../../New-or-Enhanced-Logics.md:2242
 msgid "Break Mind Control on impact"

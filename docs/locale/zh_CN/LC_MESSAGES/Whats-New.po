@@ -2115,8 +2115,12 @@ msgid "AutoDeath upon ownership change (by Ollerus)"
 msgstr "所属更改引发自毁（by Ollerus）"
 
 #: ../../Whats-New.md:472
-msgid "Allow merging AOE damage to buildings into one (by CrimRecya)"
+msgid ""
+"[Allow merging AOE damage to buildings into one](New-or-Enhanced-"
+"Logics.md#allow-merging-aoe-damage-to-buildings-into-one) (by CrimRecya)"
 msgstr ""
+"[允许将建筑所受的 AOE 伤害合而为一](New-or-Enhanced-"
+"Logics.md#allow-merging-aoe-damage-to-buildings-into-one)（by CrimRecya）"
 
 #: ../../Whats-New.md:474 ../../Whats-New.md:552 ../../Whats-New.md:738
 #: ../../Whats-New.md:1097 ../../Whats-New.md:1206 ../../Whats-New.md:1231

@@ -2223,14 +2223,14 @@ All new Warhead effects
 
 ### Allow merging AOE damage to buildings into one
 
-- Warheads are now able to damage building only once by merging the AOE damage when setting `MergeBuildingDamage` to true, which default to `[CombatDamage]->MergeBuildingDamage`.
+- Warheads are now able to damage building only once by merging the AOE damage when setting `MergeBuildingDamage` to true, which default to `[CombatDamage] -> MergeBuildingDamage`.
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
 MergeBuildingDamage=false    ; boolean
 
-[SOMEWARHEAD]                ; Warhead
+[SOMEWARHEAD]                ; WarheadType
 MergeBuildingDamage=         ; boolean
 ```
 
