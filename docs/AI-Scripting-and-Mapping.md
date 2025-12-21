@@ -10,7 +10,7 @@ This page describes all AI scripting and mapping related additions and changes i
 - Map trigger action `125 Build At...` can now play buildup anim and becomes singleplayer-AI-repairable optionally (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2)).
 - Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 - Script action `Deploy` now has vehicles with `DeploysInto` searching for free space to deploy at if failing to do so at initial location, instead of simply getting stuck.
-- Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally. `InitialPayload` logic from Ares is not supported yet.
+- Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally.
 - If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
 - Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General] -> AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively.
 
@@ -400,6 +400,25 @@ In `aimd.ini`:
 x=14003,0
 ```
 
+### `14004` Force Global `OnlyTargetHouseEnemy` value in Teams for new attack / move actions introduced by Phobos
+
+- Globally forcibly set a value for the `OnlyTargetHouseEnemy` tag on TeamType. Only affects the new attack / move actions introduced by Phobos.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=14004,n         ; integer
+```
+
+- The possible argument values are:
+
+| *Argument* | *Description*                                                            |
+| :--------: | :----------------------------------------------------------------------: |
+| -1         | Disable Global value for Force `OnlyTargetHouseEnemy` tag. Default value |
+| 0          | Force `OnlyTargetHouseEnemy` = false                                     |
+| 1          | Force `OnlyTargetHouseEnemy` = true                                      |
+| 2          | Force random boolean value                                               |
+
 ### `16000-16999` Flow Control
 
 #### `16000` Start a Timed Jump to the Same Line
@@ -731,9 +750,9 @@ In `rulesmd.ini`:
 0=SOMEBANNER
 
 [SOMEBANNER]                ; BannerType
-PCX=                        ; filename - excluding the .pcx extension
+PCX=                        ; filename - including the .pcx extension
 SHP=                        ; filename - excluding the .shp extension
-SHP.Palette=palette.pal     ; filename - excluding the .pal extension
+SHP.Palette=palette.pal     ; filename - including the .pal extension
 SHP.RefreshAfterDelay=false ; boolean
 CSF=                        ; CSF entry key
 CSF.Color=                  ; integer - R,G,B, defaults to MessageTextColor of the owner Side

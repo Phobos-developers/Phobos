@@ -127,7 +127,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	exINI.ParseStringList(this->AttachEffect_RequiredGroups, pSection, "AttachEffect.RequiredGroups");
 	exINI.ParseStringList(this->AttachEffect_DisallowedGroups, pSection, "AttachEffect.DisallowedGroups");
 	this->AttachEffect_RequiredMinCounts.Read(exINI, pSection, "AttachEffect.RequiredMinCounts");
-	this->AttachEffect_RequiredMaxCounts.Read(exINI, pSection, "AttachEffect.RequiredMaxCounts");this->DelayedFire_Duration.Read(exINI, pSection, "DelayedFire.Duration");
+	this->AttachEffect_RequiredMaxCounts.Read(exINI, pSection, "AttachEffect.RequiredMaxCounts");
 	this->AttachEffect_DisallowedMinCounts.Read(exINI, pSection, "AttachEffect.DisallowedMinCounts");
 	this->AttachEffect_DisallowedMaxCounts.Read(exINI, pSection, "AttachEffect.DisallowedMaxCounts");
 	this->AttachEffect_CheckOnFirer.Read(exINI, pSection, "AttachEffect.CheckOnFirer");
@@ -310,17 +310,12 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 {
 	auto pTechno = pFirer;
 
-	if (pTechno->Transporter)
+	if (auto const pTransport = pTechno->Transporter)
 	{
-		auto const pType = pTechno->Transporter->GetTechnoType();
+		auto const pTypeExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData;
 
-		if (pType->OpenTopped)
-		{
-			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-
-			if (pTypeExt->OpenTopped_UseTransportRangeModifiers)
-				pTechno = pTechno->Transporter;
-		}
+		if (pTypeExt->OpenTopped_UseTransportRangeModifiers && pTypeExt->OwnerObject()->OpenTopped)
+			pTechno = pTransport;
 	}
 
 	auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
@@ -328,7 +323,7 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 	if (!pTechnoExt->AE.HasRangeModifier)
 		return range;
 
-	int extraRange = 0;
+	double extraRange = 0.0;
 
 	for (auto const& attachEffect : pTechnoExt->AttachedEffects)
 	{
@@ -347,10 +342,10 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 			continue;
 
 		range = static_cast<int>(range * Math::max(type->WeaponRange_Multiplier, 0.0));
-		extraRange += static_cast<int>(type->WeaponRange_ExtraRange * Unsorted::LeptonsPerCell);
+		extraRange += type->WeaponRange_ExtraRange;
 	}
 
-	range += extraRange;
+	range += static_cast<int>(extraRange * Unsorted::LeptonsPerCell);
 
 	return Math::max(range, 0);
 }

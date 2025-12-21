@@ -5,15 +5,18 @@
 #include <Utilities/AresHelper.h>
 #include <Utilities/Helpers.Alex.h>
 
+#include <Ext/Building/Body.h>
 #include <Ext/Sidebar/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/EBolt/Body.h>
+
+#include <New/Entity/Ares/RadarJammerClass.h>
 
 // Remember that we still don't fix Ares "issues" a priori. Extensions as well.
 // Patches presented here are exceptions rather that the rule. They must be short, concise and correct.
 // DO NOT POLLUTE ISSUEs and PRs.
 
-ObjectClass* __fastcall CreateInitialPayload(TechnoTypeClass* type, void*, HouseClass* owner)
+static ObjectClass* __fastcall CreateInitialPayload(TechnoTypeClass* type, void*, HouseClass* owner)
 {
 	// temporarily reset the mutex since it's not part of the design
 	const int mutex_old = std::exchange(Unsorted::ScenarioInit, 0);
@@ -22,12 +25,12 @@ ObjectClass* __fastcall CreateInitialPayload(TechnoTypeClass* type, void*, House
 	return instance;
 }
 
-void __fastcall LetGo(TemporalClass* pTemporal)
+static void __fastcall LetGo(TemporalClass* pTemporal)
 {
 	pTemporal->LetGo();
 }
 
-bool __stdcall ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
+static bool __stdcall ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
 {
 	if (const auto pFoot = abstract_cast<FootClass*, true>(pThis))
 		return TechnoExt::ConvertToType(pFoot, pToType);
@@ -35,15 +38,35 @@ bool __stdcall ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
 	return false;
 }
 
-EBolt* __stdcall CreateEBolt(WeaponTypeClass** pWeaponData)
+// Technically this replaces GetTechnoType() call.
+static TechnoTypeClass* __fastcall ShowPromoteAnim(TechnoClass* pThis)
+{
+	TechnoExt::ShowPromoteAnim(pThis);
+
+	return pThis->GetTechnoType();
+}
+
+static WeaponStruct* __fastcall GetLaserWeapon(BuildingClass* pThis)
+{
+	return BuildingExt::GetLaserWeapon(pThis);
+}
+
+static EBolt* __stdcall CreateEBolt(WeaponTypeClass** pWeaponData)
 {
 	return EBoltExt::CreateEBolt(*pWeaponData);
 }
 
-EBolt* __stdcall CreateEBolt2(WeaponTypeClass* pWeapon)
+static EBolt* __stdcall CreateEBolt2(WeaponTypeClass* pWeapon)
 {
 	return EBoltExt::CreateEBolt(pWeapon);
 }
+
+static bool __fastcall CameoIsVeteran(TechnoTypeClass** pTypeExt_Ares, void*, HouseClass* pHouse)
+{
+	return TechnoTypeExt::ExtMap.Find(*pTypeExt_Ares)->CameoIsVeteran(pHouse);
+}
+
+_GET_FUNCTION_ADDRESS(RadarJammerClass::Update, AresRadarJammerClass_Update_GetAddr)
 
 void Apply_Ares3_0_Patches()
 {
@@ -85,6 +108,24 @@ void Apply_Ares3_0_Patches()
 	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4C0C6, { 0x5E }); // pop esi
 	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4C0C7, { 0x33, 0xC0 }); // xor eax, eax
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x4C0A9, AresHelper::AresBaseAddress + 0x4C0C6);
+
+	// Skip DeployDir parsing on Ares side cause we reimplement it and Ares' parser whines about -1.
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3F38A, AresHelper::AresBaseAddress + 0x3F3A0);
+
+	// Handle promote animations within Ares code if Ares is available.
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x46B44, &ShowPromoteAnim);
+
+	// Apply laser weapon selection fix on Ares' laser fire replacement.
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x56415, &GetLaserWeapon);
+
+	// Redirect Ares's RadarJammerClass::Update to our implementation
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x68500, AresRadarJammerClass_Update_GetAddr());
+  
+	// Redirect Ares's function to our implementation:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x112D0, &BuildingExt::KickOutClone);
+
+	// Redirect Ares's TechnoTypeExt::ExtData::CameoIsElite() to our implementation:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3D800, &CameoIsVeteran);
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -129,4 +170,22 @@ void Apply_Ares3_0p1_Patches()
 	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4CD26, { 0x5E }); // pop esi
 	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4CD27, { 0x33, 0xC0 }); // xor eax, eax
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x4CD09, AresHelper::AresBaseAddress + 0x4CD26);
+
+	// Skip DeployDir parsing on Ares side cause we reimplement it and Ares' parser whines about -1.
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3FFEA, AresHelper::AresBaseAddress + 0x40000);
+
+	// Handle promote animations within Ares code if Ares is available.
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x476E4, &ShowPromoteAnim);
+
+	// Apply laser weapon selection fix on Ares' laser fire replacement.
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x570C5, &GetLaserWeapon);
+
+	// Redirect Ares's RadarJammerClass::Update to our implementation
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x69470, AresRadarJammerClass_Update_GetAddr());
+  
+	// Redirect Ares's function to our implementation:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x11860, &BuildingExt::KickOutClone);
+
+	// Redirect Ares's TechnoTypeExt::ExtData::CameoIsElite() to our implementation:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3E210, &CameoIsVeteran);
 }

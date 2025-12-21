@@ -219,6 +219,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		// Start Timed Jump that jumps to the same line when the countdown finish (in frames)
 		ScriptExt::RepairDestroyedBridge(pTeam, -1);
 		break;
+	case PhobosScripts::ForceGlobalOnlyTargetHouseEnemy:
+		ScriptExt::ForceGlobalOnlyTargetHouseEnemy(pTeam, -1);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		if (action > 70 && !ScriptExt::IsExtVariableAction(action))
@@ -441,12 +444,12 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown)
 		// Leader's area radius where the Team members are considered "near" to the Leader
 		if (pExt->CloseEnough > 0)
 		{
-			closeEnough = pExt->CloseEnough;
+			closeEnough = pExt->CloseEnough * (double)Unsorted::LeptonsPerCell;
 			pExt->CloseEnough = -1; // This a one-time-use value
 		}
 		else
 		{
-			closeEnough = RulesClass::Instance->CloseEnough / (double)Unsorted::LeptonsPerCell;
+			closeEnough = RulesClass::Instance->CloseEnough;
 		}
 
 		// The leader should stay calm & be the group's center
@@ -486,7 +489,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown)
 
 				nUnits++;
 
-				if ((pUnit->DistanceFrom(pLeaderUnit->GetCell()) / (double)Unsorted::LeptonsPerCell) > closeEnough)
+				if (pUnit->DistanceFrom(pLeaderUnit->GetCell()) > closeEnough)
 				{
 					// Leader's location is too far from me. Regroup
 					if (pUnit->Destination != pLeaderUnit)
@@ -728,11 +731,11 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 	if (!pFocus || mode < 0 || (mode != 2 && mode != 1 && !pLeader))
 		return false;
 
-	double closeEnough = RulesClass::Instance->CloseEnough / (double)Unsorted::LeptonsPerCell;
+	double closeEnough = RulesClass::Instance->CloseEnough;
 	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
 
 	if (pTeamData->CloseEnough > 0)
-		closeEnough = pTeamData->CloseEnough;
+		closeEnough = pTeamData->CloseEnough * (double)Unsorted::LeptonsPerCell;
 
 	bool bForceNextAction = false;
 
@@ -749,7 +752,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 			if (mode == 2)
 			{
 				// Default mode: all members in range
-				if ((pUnit->DistanceFrom(pFocus->GetCell()) / (double)Unsorted::LeptonsPerCell) > closeEnough)
+				if (pUnit->DistanceFrom(pFocus->GetCell()) > closeEnough)
 				{
 					bForceNextAction = false;
 
@@ -773,7 +776,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 				if (mode == 1)
 				{
 					// Any member in range
-					if ((pUnit->DistanceFrom(pFocus->GetCell()) / (double)Unsorted::LeptonsPerCell) > closeEnough)
+					if (pUnit->DistanceFrom(pFocus->GetCell()) > closeEnough)
 					{
 						if (pUnit->WhatAmI() == AbstractType::Aircraft && pUnit->Ammo > 0)
 							pUnit->QueueMission(Mission::Move, false);
@@ -797,7 +800,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 					// All other cases: Team Leader mode in range
 					if (pLeader)
 					{
-						if ((pUnit->DistanceFrom(pFocus->GetCell()) / (double)Unsorted::LeptonsPerCell) > closeEnough)
+						if (pUnit->DistanceFrom(pFocus->GetCell()) > closeEnough)
 						{
 							if (pUnit->WhatAmI() == AbstractType::Aircraft && pUnit->Ammo > 0)
 								pUnit->QueueMission(Mission::Move, false);
@@ -1025,7 +1028,7 @@ void ScriptExt::VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nA
 template<bool IsGlobal, class _Pr>
 void ScriptExt::VariableOperationHandler(TeamClass* pTeam, int nVariable, int Number)
 {
-	auto itr = ScenarioExt::Global()->Variables[IsGlobal].find(nVariable);
+	const auto itr = ScenarioExt::Global()->Variables[IsGlobal].find(nVariable);
 
 	if (itr != ScenarioExt::Global()->Variables[IsGlobal].end())
 	{
@@ -1042,7 +1045,7 @@ void ScriptExt::VariableOperationHandler(TeamClass* pTeam, int nVariable, int Nu
 template<bool IsSrcGlobal, bool IsGlobal, class _Pr>
 void ScriptExt::VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate)
 {
-	auto itr = ScenarioExt::Global()->Variables[IsSrcGlobal].find(nVarToOperate);
+	const auto itr = ScenarioExt::Global()->Variables[IsSrcGlobal].find(nVarToOperate);
 
 	if (itr != ScenarioExt::Global()->Variables[IsSrcGlobal].end())
 		ScriptExt::VariableOperationHandler<IsGlobal, _Pr>(pTeam, nVariable, itr->second.Value);
@@ -1076,7 +1079,7 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 
 bool ScriptExt::IsExtVariableAction(int action)
 {
-	auto eAction = static_cast<PhobosScripts>(action);
+	auto const eAction = static_cast<PhobosScripts>(action);
 	return eAction >= PhobosScripts::LocalVariableAdd && eAction <= PhobosScripts::GlobalVariableAndByGlobal;
 }
 
@@ -1139,7 +1142,7 @@ void ScriptExt::JumpBackToPreviousScript(TeamClass* pTeam)
 
 void ScriptExt::ChronoshiftToEnemyBase(TeamClass* pTeam, int extraDistance)
 {
-	auto pScript = pTeam->CurrentScript;
+	auto const pScript = pTeam->CurrentScript;
 	auto const pLeader = ScriptExt::FindTheTeamLeader(pTeam);
 
 	char logText[1024];
@@ -1152,7 +1155,7 @@ void ScriptExt::ChronoshiftToEnemyBase(TeamClass* pTeam, int extraDistance)
 		return;
 	}
 
-	int houseIndex = pLeader->Owner->EnemyHouseIndex;
+	const int houseIndex = pLeader->Owner->EnemyHouseIndex;
 	HouseClass* pEnemy = houseIndex != -1 ? HouseClass::Array.GetItem(houseIndex) : nullptr;
 
 	if (!pEnemy)
@@ -1176,8 +1179,8 @@ void ScriptExt::ChronoshiftToEnemyBase(TeamClass* pTeam, int extraDistance)
 
 void ScriptExt::ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLeader, AbstractClass* pTarget)
 {
-	auto pScript = pTeam->CurrentScript;
-	HouseClass* pOwner = pTeamLeader->Owner;
+	auto const pScript = pTeam->CurrentScript;
+	auto const pOwner = pTeamLeader->Owner;
 	SuperClass* pSuperCSphere = nullptr;
 	SuperClass* pSuperCWarp = nullptr;
 
@@ -1213,7 +1216,7 @@ void ScriptExt::ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLead
 		}
 	}
 
-	auto pTargetCell = MapClass::Instance.TryGetCellAt(pTarget->GetCoords());
+	auto const pTargetCell = MapClass::Instance.TryGetCellAt(pTarget->GetCoords());
 
 	if (pTargetCell)
 	{
@@ -1229,6 +1232,17 @@ void ScriptExt::ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLead
 
 	pTeam->StepCompleted = true;
 	return;
+}
+
+void ScriptExt::ForceGlobalOnlyTargetHouseEnemy(TeamClass* pTeam, int mode)
+{
+	if (mode < 0 || mode > 2)
+		mode = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
+
+	HouseExt::ForceOnlyTargetHouseEnemy(pTeam->Owner, mode);
+
+	// This action finished
+	pTeam->StepCompleted = true;
 }
 
 bool ScriptExt::IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed)

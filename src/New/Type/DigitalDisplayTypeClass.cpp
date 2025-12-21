@@ -112,7 +112,7 @@ void DigitalDisplayTypeClass::Draw(Point2D position, int length, int value, int 
 void DigitalDisplayTypeClass::DisplayText(Point2D& position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield)
 {
 	wchar_t text[0x20];
-	double ratio = static_cast<double>(value) / maxValue;
+	const double ratio = static_cast<double>(value) / maxValue;
 
 	if (ValueAsTimer)
 	{
@@ -137,7 +137,7 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& position, int length, int val
 		swprintf_s(text, L"%d/%d", value, maxValue);
 	}
 
-	COLORREF color = Drawing::RGB_To_Int(Text_Color.Get(ratio));
+	const COLORREF color = Drawing::RGB_To_Int(Text_Color.Get(ratio));
 	RectangleStruct rect = DSurface::Composite->GetRect();
 	rect.Height -= 32; // account for bottom bar
 	const int textHeight = 12;
@@ -146,7 +146,7 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& position, int length, int val
 	if (AnchorType.Vertical == VerticalPosition::Top)
 		position.Y -= textHeight + pipsHeight; // upper of healthbar and shieldbar
 
-	TextPrintType printType = static_cast<TextPrintType>(Align.Get())
+	const TextPrintType printType = static_cast<TextPrintType>(Align.Get())
 		| TextPrintType::FullShadow
 		| (Text_Background ? TextPrintType::Background : TextPrintType::LASTPOINT);
 
@@ -155,7 +155,7 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& position, int length, int val
 
 void DigitalDisplayTypeClass::DisplayShape(Point2D& position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield)
 {
-	double ratio = static_cast<double>(value) / maxValue;
+	const double ratio = static_cast<double>(value) / maxValue;
 	std::string valueString("");
 
 	if (!Shape_PercentageFrame)

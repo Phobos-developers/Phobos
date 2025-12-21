@@ -55,6 +55,9 @@ bool Phobos::Config::EnableSelectBox = false;
 bool Phobos::Config::DigitalDisplay_Enable = false;
 bool Phobos::Config::MessageApplyHoverState = false;
 bool Phobos::Config::MessageDisplayInCenter = false;
+int Phobos::Config::MessageDisplayInCenter_BoardOpacity = 40;
+int Phobos::Config::MessageDisplayInCenter_LabelsCount = 6;
+int Phobos::Config::MessageDisplayInCenter_RecordsCount = 12;
 bool Phobos::Config::RealTimeTimers = false;
 bool Phobos::Config::RealTimeTimers_Adaptive = false;
 int Phobos::Config::CampaignDefaultGameSpeed = 2;
@@ -67,6 +70,8 @@ bool Phobos::Config::ShowHarvesterCounter = false;
 bool Phobos::Config::ShowPowerDelta = true;
 bool Phobos::Config::ShowWeedsCounter = false;
 bool Phobos::Config::HideLightFlashEffects = true;
+bool Phobos::Config::HideLaserTrailEffects = true;
+bool Phobos::Config::HideShakeEffects = true;
 bool Phobos::Config::ShowFlashOnSelecting = false;
 bool Phobos::Config::UnitPowerDrain = false;
 int Phobos::Config::SuperWeaponSidebar_RequiredSignificance = 0;
@@ -86,6 +91,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::ShowPlacementPreview = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowPlacementPreview", true);
 	Phobos::Config::MessageApplyHoverState = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "MessageApplyHoverState", false);
 	Phobos::Config::MessageDisplayInCenter = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "MessageDisplayInCenter", false);
+	Phobos::Config::MessageDisplayInCenter_BoardOpacity = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "MessageDisplayInCenter.BoardOpacity", 40);
+	Phobos::Config::MessageDisplayInCenter_LabelsCount = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "MessageDisplayInCenter.LabelsCount", 6);
+	Phobos::Config::MessageDisplayInCenter_RecordsCount = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "MessageDisplayInCenter.RecordsCount", 12);
 	Phobos::Config::RealTimeTimers = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "RealTimeTimers", false);
 	Phobos::Config::RealTimeTimers_Adaptive = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "RealTimeTimers.Adaptive", false);
 	Phobos::Config::EnableSelectBox = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "EnableSelectBox", false);
@@ -96,6 +104,8 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::ShowHarvesterCounter = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowHarvesterCounter", true);
 	Phobos::Config::ShowWeedsCounter = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowWeedsCounter", true);
 	Phobos::Config::HideLightFlashEffects = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "HideLightFlashEffects", false);
+	Phobos::Config::HideLaserTrailEffects = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "HideLaserTrailEffects", false);
+	Phobos::Config::HideShakeEffects = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "HideShakeEffects", false);
 	Phobos::Config::ShowFlashOnSelecting = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowFlashOnSelecting", false);
 	Phobos::Config::SuperWeaponSidebar_RequiredSignificance = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "SuperWeaponSidebar.RequiredSignificance", 0);
 

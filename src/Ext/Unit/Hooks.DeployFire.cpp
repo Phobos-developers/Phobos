@@ -3,23 +3,7 @@
 #include <Ext/Techno/Body.h>
 #include <Utilities/Macro.h>
 
-// issue #112 Make FireOnce=yes work on other TechnoTypes
-// Author: Starkku
-DEFINE_HOOK(0x4C7512, EventClass_Execute_StopUnitDeployFire, 0x6)
-{
-	GET(TechnoClass* const, pThis, ESI);
-
-	auto const pUnit = abstract_cast<UnitClass*>(pThis);
-	if (pUnit && pUnit->CurrentMission == Mission::Unload && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer)
-	{
-		pUnit->SetTarget(nullptr);
-		pThis->QueueMission(Mission::Guard, true);
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x4C77E4, EventClass_Execute_UnitDeployFire, 0x6)
+DEFINE_HOOK(0x4C77E4, EventClass_Execute_DeployCommand, 0x6)
 {
 	enum { DoNotExecute = 0x4C8109 };
 

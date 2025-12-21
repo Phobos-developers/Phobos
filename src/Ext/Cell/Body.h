@@ -1,6 +1,7 @@
 #pragma once
 #include <CellClass.h>
 
+#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
@@ -35,6 +36,7 @@ public:
 	public:
 		std::vector<RadSiteClass*> RadSites {};
 		std::vector<RadLevel> RadLevels { };
+		int InfantryCount{ 0 };
 
 		ExtData(CellClass* OwnerObject) : Extension<CellClass>(OwnerObject)
 		{ }
