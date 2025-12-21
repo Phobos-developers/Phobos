@@ -468,6 +468,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue that units will goto farest location if target is closer than `MinimumRange`
   - Fix a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType`
   - Fix the bug that techno with `Trainable=false` can be promoted if it's created by trigger event
+  - Fix the bug that ai will try to product aircraft even the airport has no free dock for it
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
