@@ -183,6 +183,8 @@ public:
 		Valueable<bool> JumpjetClimbPredictHeight;
 		Valueable<bool> JumpjetClimbWithoutCutOut;
 
+		Valueable<bool> MergeBuildingDamage;
+
 		Valueable<double> DamageOwnerMultiplier;
 		Valueable<double> DamageAlliesMultiplier;
 		Valueable<double> DamageEnemiesMultiplier;
@@ -512,6 +514,8 @@ public:
 			, AIAirTargetingFix { false }
 
 			, SortCameoByName { false }
+			
+			, MergeBuildingDamage { false }
 		{ }
 
 		virtual ~ExtData() = default;
