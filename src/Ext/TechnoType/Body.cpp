@@ -839,8 +839,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->OpenTransport_RangeBonus.Read(exINI, pSection, "OpenTransport.RangeBonus");
 	this->OpenTransport_DamageMultiplier.Read(exINI, pSection, "OpenTransport.DamageMultiplier");
 
-	this->AutoFire.Read(exINI, pSection, "AutoFire");
-	this->AutoFire_TargetSelf.Read(exINI, pSection, "AutoFire.TargetSelf");
+	this->AutoFire.Read(exINI, pSection, "AutoTargetOwnPosition");
+	this->AutoFire_TargetSelf.Read(exINI, pSection, "AutoTargetOwnPosition.Self");
 
 	this->NoSecondaryWeaponFallback.Read(exINI, pSection, "NoSecondaryWeaponFallback");
 	this->NoSecondaryWeaponFallback_AllowAA.Read(exINI, pSection, "NoSecondaryWeaponFallback.AllowAA");
@@ -981,7 +981,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Tint_VisibleToHouses.Read(exINI, pSection, "Tint.VisibleToHouses");
 
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
-	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
+	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouse");
 
 	this->RecountBurst.Read(exINI, pSection, "RecountBurst");
 

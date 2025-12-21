@@ -103,7 +103,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->PenetratesForceShield.Read(exINI, pSection, "PenetratesForceShield");
 	this->AffectTypes.Read(exINI, pSection, "AffectTypes");
 	this->IgnoreTypes.Read(exINI, pSection, "IgnoreTypes");
-	this->AffectTargets.Read(exINI, pSection, "AffectTargets");
+	this->AffectTargets.Read(exINI, pSection, "AffectsTarget");
 
 	this->Animation.Read(exINI, pSection, "Animation");
 	this->CumulativeAnimations.Read(exINI, pSection, "CumulativeAnimations");
@@ -145,14 +145,14 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Crit_DisallowWarheads.Read(exINI, pSection, "Crit.DisallowWarheads");
 
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
-	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
+	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouse");
 	this->RevengeWeapon_UseInvokerAsOwner.Read(exINI, pSection, "RevengeWeapon.UseInvokerAsOwner");
 
 	this->ReflectDamage.Read(exINI, pSection, "ReflectDamage");
 	this->ReflectDamage_Warhead.Read(exINI, pSection, "ReflectDamage.Warhead");
 	this->ReflectDamage_Warhead_Detonate.Read(exINI, pSection, "ReflectDamage.Warhead.Detonate");
 	this->ReflectDamage_Multiplier.Read(exINI, pSection, "ReflectDamage.Multiplier");
-	this->ReflectDamage_AffectsHouses.Read(exINI, pSection, "ReflectDamage.AffectsHouses");
+	this->ReflectDamage_AffectsHouses.Read(exINI, pSection, "ReflectDamage.AffectsHouse");
 	this->ReflectDamage_Chance.Read(exINI, pSection, "ReflectDamage.Chance");
 	this->ReflectDamage_Override.Read(exINI, pSection, "ReflectDamage.Override");
 	this->ReflectDamage_UseInvokerAsOwner.Read(exINI, pSection, "ReflectDamage.UseInvokerAsOwner");
