@@ -472,6 +472,7 @@ New:
 - AutoDeath upon ownership change (by Ollerus)
 - [Script Action 14004 for forcing all new actions to target only the main owner's enemy](AI-Scripting-and-Mapping.md#force-global-onlytargethouseenemy-value-in-teams-for-new-attack-move-actions-introduced-by-phobos) (by FS-21)
 - [Allow merging AOE damage to buildings into one](New-or-Enhanced-Logics.md#allow-merging-aoe-damage-to-buildings-into-one) (by CrimRecya)
+- [Script action for repairing destroyed bridges](AI-Scripting-and-Mapping.md#repair-destroyed-bridge) (by FS-21)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -645,7 +646,6 @@ New:
 - Allow toggling `Infantry/UnitsGainSelfHeal` for `MultiplayPassive=true` houses (by Starkku)
 - Customizable straight trajectory detonation & snap distance and pass-through option (by Starkku)
 - Airstrike & spy plane fixed spawn distance & height (by Starkku)
-- Script action for repairing destroyed bridges (by FS-21)
 - Allow enabling application of `Verses` and `PercentAtMax` for negative damage (by Starkku)
 - In addition to `PlacementGrid.Translucency`, allow to set the transparency of the grid when `PlacementPreview` is enabled, using the `PlacementGrid.TranslucencyWithPreview` tag (by Belonit)
 - Show briefing screen on singleplayer mission start (by Starkku)
