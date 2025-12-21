@@ -382,7 +382,7 @@ In `aimd.ini`:
 x=14003,0
 ```
 
-### `14004` Force Global OnlyTargetHouseEnemy value in Teams for new attack / move actions
+### `14004` Force Global `OnlyTargetHouseEnemy` value in Teams for new attack / move actions
 
 - Sets the TeamType tag value for `OnlyTargetHouseEnemy` tag. Only affects the new attack / move actions.
 
