@@ -242,7 +242,7 @@ HideShakeEffects=false           ; boolean
 
   [ScriptExtType_GlobalVariables]
   BuiltInType=5
-  
+
   [ScriptsRA2]
   10100=Timed Area Guard,20,0,1,[LONG DESC]
   10101=Wait until ammo is full,0,0,1,[LONG DESC]
@@ -469,6 +469,7 @@ New:
 - [CellSpread damage check if victim is in air or on floor](New-or-Enhanced-Logics.md#cellspread-enhancement) (by TaranDahl)
 - OpenTopped range bonus and damage multiplier customization for passengers (by Ollerus)
 - AutoDeath upon ownership change (by Ollerus)
+- [Allow merging AOE damage to buildings into one](New-or-Enhanced-Logics.md#allow-merging-aoe-damage-to-buildings-into-one) (by CrimRecya)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -509,7 +510,7 @@ Vanilla fixes:
 - Fixed the bug that naval ship will sink even they destroyed in air (by NetsuNegi)
 - Fixed MPDebug timer displaying when debug's visibility is off (by 11EJDE11)
 - Fixed the issue that units will goto farest location if target is closer than `MinimumRange` (by NetsuNegi)
-- Fixed the bug that techno with `Trainable=false` can be promoted if it's created by trigger event (by NetsuNegi)
+- Fixed a bug where units can be promoted when created via trigger actions even if they have `Trainable=false` (by NetsuNegi)
 - Fixed the bug that ai will try to product aircraft even the airport has no free dock for it (by NetsuNegi)
 
 Phobos fixes:

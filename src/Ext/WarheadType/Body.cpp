@@ -244,6 +244,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Nonprovocative.Read(exINI, pSection, "Nonprovocative");
 
+	this->MergeBuildingDamage.Read(exINI, pSection, "MergeBuildingDamage");
+
 	this->CombatLightDetailLevel.Read(exINI, pSection, "CombatLightDetailLevel");
 	this->CombatLightChance.Read(exINI, pSection, "CombatLightChance");
 	this->CLIsBlack.Read(exINI, pSection, "CLIsBlack");
@@ -560,6 +562,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Parasite_GrappleAnim)
 
 		.Process(this->Nonprovocative)
+
+		.Process(this->MergeBuildingDamage)
 
 		.Process(this->CombatLightDetailLevel)
 		.Process(this->CombatLightChance)
