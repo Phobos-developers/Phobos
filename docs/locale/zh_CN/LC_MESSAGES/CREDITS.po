@@ -530,7 +530,7 @@ msgstr "大多数动作脚本行为"
 msgid ""
 "ScriptType Action 14004: Force Global `OnlyTargetHouseEnemy` value in "
 "Teams"
-msgstr "动作脚本 14004：在小队中强制全局 `OnlyTargetHouseEnemy` 值"
+msgstr "动作脚本 14004：强制全局更改小队中的 `OnlyTargetHouseEnemy` 值"
 
 #: ../../../CREDITS.md:139
 msgid "MC deployer fixes"

@@ -469,6 +469,7 @@ New:
 - [CellSpread damage check if victim is in air or on floor](New-or-Enhanced-Logics.md#cellspread-enhancement) (by TaranDahl)
 - OpenTopped range bonus and damage multiplier customization for passengers (by Ollerus)
 - AutoDeath upon ownership change (by Ollerus)
+- [Script Action 14004 for forcing all new actions to target only the main owner's enemy](AI-Scripting-and-Mapping.md#force-global-onlytargethouseenemy-value-in-teams-for-new-attack-move-actions-introduced-by-phobos) (by FS-21)
 - [Allow merging AOE damage to buildings into one](New-or-Enhanced-Logics.md#allow-merging-aoe-damage-to-buildings-into-one) (by CrimRecya)
 
 Vanilla fixes:
@@ -575,7 +576,6 @@ New:
 - Building airstrike target eligibility customization (by Starkku)
 - IvanBomb detonation & image display optionally centered on buildings (by Starkku)
 - Forcing specific weapon against cloaked or disguised targets (by Starkku)
-- Script Action 14004 for forcing all new actions to target only the main owner's enemy (by FS-21)
 - Customizable ROF random delay (by Starkku)
 - Animation with `Tiled=yes` now supports `CustomPalette` (by ststl)
 - Toggleable `DieSound` when grinding (by Trsdy)
