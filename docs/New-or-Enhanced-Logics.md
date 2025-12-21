@@ -2221,6 +2221,24 @@ All new Warhead effects
 - If target has an active [shield](#shields), its armor type is used instead unless warhead can penetrate the shield.
 ```
 
+### Allow merging AOE damage to buildings into one
+
+- Warheads are now able to damage building only once by merging the AOE damage when setting `MergeBuildingDamage` to true, which default to `[CombatDamage]->MergeBuildingDamage`.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+MergeBuildingDamage=false    ; boolean
+
+[SOMEWARHEAD]                ; Warhead
+MergeBuildingDamage=         ; boolean
+```
+
+```{note}
+- This is different from `CellSpread.MaxAffect`.
+- Due to the rounding of damage, there may be a slight increase in damage.
+```
+
 ### Break Mind Control on impact
 
 ![image](_static/images/remove-mc.gif)
