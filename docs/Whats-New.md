@@ -242,7 +242,7 @@ HideShakeEffects=false           ; boolean
 
   [ScriptExtType_GlobalVariables]
   BuiltInType=5
-  
+
   [ScriptsRA2]
   10100=Timed Area Guard,20,0,1,[LONG DESC]
   10101=Wait until ammo is full,0,0,1,[LONG DESC]
