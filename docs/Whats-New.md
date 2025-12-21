@@ -513,6 +513,7 @@ Vanilla fixes:
 - Fixed the issue that units will goto farest location if target is closer than `MinimumRange` (by NetsuNegi)
 - Fixed a bug where units can be promoted when created via trigger actions even if they have `Trainable=false` (by NetsuNegi)
 - Fixed the bug that ai will try to product aircraft even the airport has no free dock for it (by NetsuNegi)
+- Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units (by TaranDahl)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

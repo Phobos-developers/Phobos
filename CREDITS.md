@@ -655,6 +655,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where the vanilla script ignores jumpjets
   - CellSpread in cylinder shape
   - CellSpread damage check if victim is in air or on floor
+  - Fix an issue where non-repairer units needed sensors to attack cloaked friendly units
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
