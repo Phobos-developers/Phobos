@@ -710,16 +710,11 @@ bool TechnoExt::HandleDelayedFireWithPauseSequence(TechnoClass* pThis, WeaponTyp
 					pAnimType = pWeaponExt->DelayedFire_OpenToppedAnimation;
 
 				auto firingCoords = pThis->GetWeapon(weaponIndex)->FLH;
-				bool found = false;
-
-				if (auto const pInf = abstract_cast<InfantryClass*>(pThis))
-				{
-					auto firingCoordsInf = TechnoExt::GetSimpleFLH(pInf, weaponIndex, found);
-					firingCoords = found ? firingCoordsInf : firingCoords;
-				}
 
 				if (pWeaponExt->DelayedFire_AnimOffset.isset())
 					firingCoords = pWeaponExt->DelayedFire_AnimOffset;
+				else
+					firingCoords = TechnoExt::GetCompleteFLH(pThis, weaponIndex);
 
 				if(pWeaponExt->DelayedFire_InitialBurstAnimCount > 1)
 				{
@@ -728,19 +723,7 @@ bool TechnoExt::HandleDelayedFireWithPauseSequence(TechnoClass* pThis, WeaponTyp
 						TechnoExt::CreateDelayedFireAnim(pThis, pAnimType, weaponIndex, pWeaponExt->DelayedFire_AnimIsAttached, pWeaponExt->DelayedFire_CenterAnimOnFirer,
 							pWeaponExt->DelayedFire_RemoveAnimOnNoDelay, pWeaponExt->DelayedFire_AnimOnTurret, firingCoords);
 						pThis->CurrentBurstIndex = i;
-						firingCoords = TechnoExt::GetBurstFLH(pThis, weaponIndex, found);
-
-						if (!found)
-						{
-							if (auto const pInf = abstract_cast<InfantryClass*>(pThis))
-								firingCoords = TechnoExt::GetSimpleFLH(pInf, weaponIndex, found);
-
-							if (!found)
-								firingCoords = pThis->GetWeapon(weaponIndex)->FLH;
-
-							if (pThis->CurrentBurstIndex % 2 != 0)
-								firingCoords.Y = -firingCoords.Y;
-						}
+						firingCoords = TechnoExt::GetCompleteFLH(pThis, weaponIndex);
 					}
 
 					pThis->CurrentBurstIndex = 0;

@@ -148,6 +148,25 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 	return FLH;
 }
 
+CoordStruct TechnoExt::GetCompleteFLH(TechnoClass* pThis, int weaponIndex)
+{
+		bool found = false;
+		auto FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, found);
+
+		if (!found)
+		{
+			if (auto const pInf = abstract_cast<InfantryClass*>(pThis))
+				FLH = TechnoExt::GetSimpleFLH(pInf, weaponIndex, found);
+
+			if (!found)
+				FLH = pThis->GetWeapon(weaponIndex)->FLH;
+
+			if (pThis->CurrentBurstIndex % 2 != 0)
+				FLH.Y = -FLH.Y;
+		}
+	return FLH;
+}
+
 void TechnoExt::ExtData::InitializeDisplayInfo()
 {
 	const auto pThis = this->OwnerObject();
