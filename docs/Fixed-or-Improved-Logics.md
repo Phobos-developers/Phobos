@@ -280,7 +280,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that naval ship will sink even they destroyed in air.
 - Fixed MPDebug timer displaying when debug's visibility is off.
 - Fixed the issue that units will goto farest location if target is closer than `MinimumRange`.
-- Fixed the bug that techno with `Trainable=false` can be promoted if it's created by trigger event.
+- Fixed a bug where units can be promoted when created via trigger actions even if they have `Trainable=false`.
+- Fixed the bug that ai will try to product aircraft even the airport has no free dock for it.
+- Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.
 
 ## Fixes / interactions with other extensions
 
@@ -1938,11 +1940,13 @@ MinimapColor=  ; integer - Red,Green,Blue
 
 - In vanilla, when miners enter area guard mission, they immediately switch to harvest mission. Now you can make them perform area guard mission normally like other technos.
   - We made it work only for miners controlled by the player, because this will prevent AI's miners from going work.
+  - If `Harvester.CanGuardArea.RequireTarget` set to true, it'll switch back to regular harvest mission when there's no valid target within its guard range.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]                      ; VehicleType
-Harvester.CanGuardArea=no          ; boolean
+[SOMEVEHICLE]                               ; VehicleType
+Harvester.CanGuardArea=false                ; boolean
+Harvester.CanGuardArea.RequireTarget=false  ; boolean
 ```
 
 ### Bunker entering check dehardcode

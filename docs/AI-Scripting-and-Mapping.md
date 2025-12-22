@@ -382,9 +382,9 @@ In `aimd.ini`:
 x=14003,0
 ```
 
-### `14004` Force Global OnlyTargetHouseEnemy value in Teams for new attack / move actions
+### `14004` Force Global `OnlyTargetHouseEnemy` value in Teams for new attack / move actions introduced by Phobos
 
-- Sets the TeamType tag value for `OnlyTargetHouseEnemy` tag. Only affects the new attack / move actions.
+- Globally forcibly set a value for the `OnlyTargetHouseEnemy` tag on TeamType. Only affects the new attack / move actions introduced by Phobos.
 
 In `aimd.ini`:
 ```ini
