@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <Ext/Building/Body.h>
+
 // AI Naval queue bugfix hooks
 
 namespace ExitObjectTemp
