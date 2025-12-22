@@ -1,5 +1,4 @@
 #pragma once
-#include <WarheadTypeClass.h>
 #include <Ext/Bullet/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>

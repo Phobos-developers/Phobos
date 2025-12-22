@@ -1,6 +1,4 @@
 #pragma once
-#include <TechnoTypeClass.h>
-
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 

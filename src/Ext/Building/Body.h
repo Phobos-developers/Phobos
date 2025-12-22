@@ -1,5 +1,4 @@
 #pragma once
-#include <BuildingClass.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/BuildingType/Body.h>
 

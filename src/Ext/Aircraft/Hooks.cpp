@@ -1,6 +1,7 @@
+#include "Body.h"
+
 #include <EventClass.h>
 
-#include <Ext/Aircraft/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/BulletType/Body.h>

@@ -1,5 +1,4 @@
 #pragma once
-#include "BuildingTypeClass.h"
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
