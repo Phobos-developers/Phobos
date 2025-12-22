@@ -2140,12 +2140,9 @@ void TechnoExt::ExtData::UpdateTintValues()
 
 void TechnoExt::ExtData::UpdateOwnerTimer()
 {
-	auto const pThis = this->OwnerObject();
-
 	if (this->OwnerTimer.Completed())
 	{
-		pThis->Owner = this->OwnerOriginalOwner->Defeated
-					? HouseClass::FindNeutral() : this->OwnerOriginalOwner;
-		//this->OwnerOriginalOwner = NULL;
+		this->OwnerObject()->SetOwningHouse(this->OwnerOriginalOwner);
+		this->ImmuneToChangeOwner = false;
 	}
 }

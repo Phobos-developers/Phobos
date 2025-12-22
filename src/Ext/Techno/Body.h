@@ -104,6 +104,7 @@ public:
 		bool JumpjetStraightAscend; // Is set to true jumpjet units will ascend straight and do not adjust rotation or position during it.
 		CDTimerClass OwnerTimer;
 		HouseClass* OwnerOriginalOwner;
+		bool ImmuneToChangeOwner;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -173,6 +174,7 @@ public:
 			, JumpjetStraightAscend { false }
 			, OwnerTimer {}
 			, OwnerOriginalOwner {}
+			, ImmuneToChangeOwner { false }
 		{ }
 
 		void OnEarlyUpdate();

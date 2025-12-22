@@ -949,6 +949,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->JumpjetStraightAscend)
 		.Process(this->OwnerTimer)
 		.Process(this->OwnerOriginalOwner)
+		.Process(this->ImmuneToChangeOwner)
 		;
 }
 
