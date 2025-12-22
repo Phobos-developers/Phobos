@@ -1940,11 +1940,13 @@ MinimapColor=  ; integer - Red,Green,Blue
 
 - In vanilla, when miners enter area guard mission, they immediately switch to harvest mission. Now you can make them perform area guard mission normally like other technos.
   - We made it work only for miners controlled by the player, because this will prevent AI's miners from going work.
+  - If `Harvester.CanGuardArea.RequireTarget` set to true, it'll switch back to regular harvest mission when there's no valid target within its guard range.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]                      ; VehicleType
-Harvester.CanGuardArea=no          ; boolean
+[SOMEVEHICLE]                               ; VehicleType
+Harvester.CanGuardArea=false                ; boolean
+Harvester.CanGuardArea.RequireTarget=false  ; boolean
 ```
 
 ### Bunker entering check dehardcode
