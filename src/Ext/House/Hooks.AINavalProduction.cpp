@@ -54,7 +54,12 @@ DEFINE_HOOK(0x450319, BuildingClass_AI_Factory_NavalProductionFix, 0x6)
 		index = pHouse->ProducingAircraftTypeIndex;
 
 		if (index >= 0)
-			pTechnoType = AircraftTypeClass::Array.GetItem(index);
+		{
+			const auto pAircraftType = AircraftTypeClass::Array.GetItem(index);
+
+			if (!pAircraftType->AirportBound || BuildingExt::HasFreeDocks(pThis))
+				pTechnoType = pAircraftType;
+		}
 
 		break;
 

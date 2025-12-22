@@ -134,7 +134,7 @@ This page lists all the individual contributions to the project by their author.
   - `Powered.KillSpawns`
   - `Spawner.LimitRange`
   - Majority of ScriptType actions
-  - ScriptType Action 14004: Force Global OnlyTargetHouseEnemy value in Teams
+  - ScriptType Action 14004: Force Global `OnlyTargetHouseEnemy` value in Teams
   - MC deployer fixes
   - Help with docs
   - Automatic Passenger Deletion logic
@@ -467,7 +467,8 @@ This page lists all the individual contributions to the project by their author.
   - Customize type selection for IFV
   - Fix the issue that units will goto farest location if target is closer than `MinimumRange`
   - Fix a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType`
-  - Fix the bug that techno with `Trainable=false` can be promoted if it's created by trigger event
+  - Fix a bug where units can be promoted when created via trigger actions even if they have `Trainable=false`
+  - Fix the bug that ai will try to product aircraft even the airport has no free dock for it
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -569,6 +570,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that units' `LaserTrails` will always lags behind by one frame
   - Fix an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos
   - Allow the aircraft to enter area guard mission and not crash immediately without any airport
+  - Allow merging AOE damage to buildings into one
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -653,6 +655,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where the vanilla script ignores jumpjets
   - CellSpread in cylinder shape
   - CellSpread damage check if victim is in air or on floor
+  - Fix an issue where non-repairer units needed sensors to attack cloaked friendly units
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
