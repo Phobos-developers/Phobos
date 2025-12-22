@@ -214,7 +214,7 @@ public:
 
 		Nullable<int> AnimZAdjust;
 
-		Valueable<bool> ApplyPerTargetEffectsOnDetonate;
+		Nullable<bool> ApplyPerTargetEffectsOnDetonate;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -453,7 +453,7 @@ public:
 
 			, AnimZAdjust {}
 
-			, ApplyPerTargetEffectsOnDetonate { false }
+			, ApplyPerTargetEffectsOnDetonate {}
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);

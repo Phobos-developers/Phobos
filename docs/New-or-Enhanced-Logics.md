@@ -2628,6 +2628,31 @@ SpawnsCrate(N).Type=     ; Powerup crate type enum (money|unit|healbase|cloak|ex
 SpawnsCrate(N).Weight=1  ; integer
 ```
 
+### Toggle per-target warhead effects apply timing
+
+- Now you can set the following flag to `false` to apply the Phobos warhead effects that take effect on each target when taking damage, rather than when the projectiles detonate.
+  - This will allow such effects to be applied through damage without projectiles, including but not limited to damage from particles, vanilla radiation, and Ares' `GenericWarhead` superweapon.
+  - If you use a warhead with CellSpread to damage a building multiple times, then these effects will be applied multiple times. If you don't want this to happen, use [`MergeBuildingDamage`](#allow-merging-aoe-damage-to-buildings-into-one).
+  - The affected effects include:
+    - [Remove mind-control](#break-mind-control-on-impact)
+    - [Type convertion](#convert-technotype-on-impact)
+    - [`BuildingSell` & `BuildingUndeploy`](#sell-or-undeploy-building-on-impact)
+    - [`RemoveDisguise`](#remove-disguise-on-impact)
+    - [`ReverseEngineer`](#reverse-engineer-warhead)
+    - [Modify shield](#shields)
+    - [Modify attach-effects](#attached-effects)
+    - [Critical hits](#chance-based-extra-damage-or-warhead-detonation--critical-hits)
+      - Due to technical reasons, `Crit.SuppressWhenIntercepted=false` and `Crit.ApplyChancePerTarget=true` will forced to be used.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]                        ; WarheadType
+ApplyPerTargetEffectsOnDetonate=true  ; boolean
+
+[SOMEWARHEAD]                         ; WarheadType
+ApplyPerTargetEffectsOnDetonate=      ; boolean, default to [CombatDamage] -> ApplyPerTargetEffectsOnDetonate
+```
+
 ### Trigger specific NotHuman infantry Death anim sequence
 
 - Warheads are now able to trigger specific `NotHuman=yes` infantry `Death` anim sequence using the corresponding tag. It's value represents sequences from `Die1` to `Die5`.
