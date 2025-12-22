@@ -1,9 +1,7 @@
 #pragma once
 
 #include <Utilities/Container.h>
-#include <Utilities/Template.h>
-
-#include <Helpers/Template.h>
+#include <Utilities/TemplateDef.h>
 
 #include <TActionClass.h>
 

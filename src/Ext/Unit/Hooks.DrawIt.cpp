@@ -1,6 +1,3 @@
-#include <Helpers/Macro.h>
-#include <UnitClass.h>
-
 #include <Ext/TechnoType/Body.h>
 
 DEFINE_HOOK(0x73C7AC, UnitClass_DrawAsSHP_DrawTurret_TintFix, 0x6)

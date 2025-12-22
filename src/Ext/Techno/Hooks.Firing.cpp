@@ -1,15 +1,10 @@
 #include "Body.h"
 
-#include <OverlayTypeClass.h>
-#include <ScenarioClass.h>
-#include <TerrainClass.h>
-
 #include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Utilities/EnumFunctions.h>
 
 #pragma region TechnoClass_SelectWeapon
 

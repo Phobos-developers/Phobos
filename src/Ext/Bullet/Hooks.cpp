@@ -1,13 +1,7 @@
 #include "Body.h"
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
-#include <Ext/BulletType/Body.h>
-#include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Utilities/EnumFunctions.h>
-#include <Utilities/Macro.h>
-
-#include <ScenarioClass.h>
 
 // has everything inited except SpawnNextAnim at this point
 DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)

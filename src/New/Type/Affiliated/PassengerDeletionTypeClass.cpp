@@ -1,8 +1,5 @@
 #include "PassengerDeletionTypeClass.h"
 
-#include <Utilities/SavegameDef.h>
-#include <Utilities/TemplateDef.h>
-
 std::pair<bool, bool> PassengerDeletionTypeClass::CanParse(INI_EX exINI, const char* pSection)
 {
 	Nullable<int> rate;

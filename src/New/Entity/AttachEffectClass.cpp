@@ -1,14 +1,8 @@
 #include "AttachEffectClass.h"
-#include "Memory.h"
 
-#include <AnimClass.h>
-#include <BuildingClass.h>
-
-#include <Ext/TEvent/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Utilities/EnumFunctions.h>
 
 std::vector<AttachEffectClass*> AttachEffectClass::Array;
 

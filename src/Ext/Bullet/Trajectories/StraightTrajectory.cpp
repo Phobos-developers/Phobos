@@ -1,7 +1,5 @@
 #include "StraightTrajectory.h"
 
-#include <OverlayTypeClass.h>
-#include <ScenarioClass.h>
 #include <AircraftTrackerClass.h>
 
 #include <Ext/Bullet/Body.h>

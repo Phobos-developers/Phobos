@@ -1,11 +1,6 @@
 #include "Body.h"
 
-#include <ScenarioClass.h>
-
 #include <Ext/Anim/Body.h>
-#include <Ext/AnimType/Body.h>
-#include <Ext/VoxelAnimType/Body.h>
-#include <Ext/WarheadType/Body.h>
 
 DEFINE_HOOK(0x74A70E, VoxelAnimClass_AI_Additional, 0xC)
 {

@@ -15,7 +15,6 @@
 
 #include <CCINIClass.h>
 
-#include <Utilities/Macro.h>
 #include <Ext/Sidebar/SWSidebar/SWSidebarClass.h>
 #include <Misc/MessageColumn.h>
 

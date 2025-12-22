@@ -1,8 +1,5 @@
 #include "Body.h"
 
-#include <FactoryClass.h>
-#include <TEventClass.h>
-
 // AI Naval queue bugfix hooks
 
 namespace ExitObjectTemp

@@ -1,7 +1,4 @@
-#include <ScenarioClass.h>
-
 #include <Ext/Techno/Body.h>
-#include <Utilities/Macro.h>
 
 DEFINE_HOOK(0x4C77E4, EventClass_Execute_DeployCommand, 0x6)
 {

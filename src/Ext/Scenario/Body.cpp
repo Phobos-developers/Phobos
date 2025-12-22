@@ -1,6 +1,5 @@
 #include "Body.h"
 
-#include <SessionClass.h>
 #include <VeinholeMonsterClass.h>
 
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;

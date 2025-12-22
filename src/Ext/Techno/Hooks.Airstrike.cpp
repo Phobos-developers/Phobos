@@ -1,6 +1,4 @@
 #include "Body.h"
-#include <AirstrikeClass.h>
-#include <AircraftClass.h>
 
 #include <Ext/WarheadType/Body.h>
 

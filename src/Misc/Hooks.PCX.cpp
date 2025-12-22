@@ -1,8 +1,4 @@
-#include <Helpers/Macro.h>
-#include <PCX.h>
-#include <FileFormats/SHP.h>
 #include <Ext/Rules/Body.h>
-#include <LoadProgressManager.h>
 
 DEFINE_HOOK(0x6B9D9C, RGB_PCX_Loader, 0x7)
 {

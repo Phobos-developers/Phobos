@@ -2,8 +2,8 @@
 
 #include <GameOptionsClass.h>
 
-#include <Ext/AnimType/Body.h>
 #include <Ext/House/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Misc/SyncLogging.h>
 

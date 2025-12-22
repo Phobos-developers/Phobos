@@ -1,6 +1,5 @@
 #include "Body.h"
 
-
 VoxelAnimTypeExt::ExtContainer VoxelAnimTypeExt::ExtMap;
 
 void VoxelAnimTypeExt::ExtData::Initialize() { }

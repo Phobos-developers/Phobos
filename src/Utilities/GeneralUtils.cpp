@@ -1,13 +1,12 @@
+#include "Constructs.h"
 #include "GeneralUtils.h"
 #include "Debug.h"
 #include <Theater.h>
-#include <ScenarioClass.h>
 #include <BitFont.h>
 
 #include <Ext/Rules/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Misc/FlyingStrings.h>
-#include <Utilities/Constructs.h>
 #include "AresHelper.h"
 
 bool GeneralUtils::IsValidString(const char* str)

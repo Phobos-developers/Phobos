@@ -1,10 +1,5 @@
 #include "Body.h"
 
-#include <OverlayTypeClass.h>
-#include <TacticalClass.h>
-
-#include <Utilities/GeneralUtils.h>
-
 OverlayTypeExt::ExtContainer OverlayTypeExt::ExtMap;
 
 // =============================

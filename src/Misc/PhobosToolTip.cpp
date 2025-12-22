@@ -1,18 +1,8 @@
-#include <Helpers/Macro.h>
-
 #include "PhobosToolTip.h"
-
-#include <AircraftClass.h>
-#include <BuildingClass.h>
-#include <UnitClass.h>
-#include <InfantryClass.h>
 
 #include <GameOptionsClass.h>
 #include <CCToolTip.h>
-#include <BitFont.h>
-#include <BitText.h>
 #include <FPSCounter.h>
-#include <Phobos.h>
 
 #include <Ext/Side/Body.h>
 #include <Ext/Surface/Body.h>

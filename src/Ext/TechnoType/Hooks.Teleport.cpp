@@ -1,11 +1,8 @@
 #include "Body.h"
-#include <LocomotionClass.h>
-#include <TeleportLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <TacticalClass.h>
 
 #define GET_LOCO(reg_Loco) \
 	GET(ILocomotion *, Loco, reg_Loco); \

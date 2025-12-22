@@ -1,9 +1,6 @@
 #pragma once
 
 #include <Utilities/TemplateDef.h>
-#include <Utilities/Savegame.h>
-
-#include <BulletClass.h>
 
 enum class TrajectoryFlag : int
 {

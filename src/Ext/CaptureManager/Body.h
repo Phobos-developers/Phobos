@@ -1,13 +1,8 @@
 #pragma once
 
-#include <CaptureManagerClass.h>
 #include <AnimTypeClass.h>
-#include <RulesClass.h>
 #include <FootClass.h>
-#include <HouseClass.h>
-#include <AnimClass.h>
-
-#include <Ext/TechnoType/Body.h>
+#include <CaptureManagerClass.h>
 
 class CaptureManagerExt
 {

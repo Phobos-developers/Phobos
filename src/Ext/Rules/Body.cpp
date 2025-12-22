@@ -1,12 +1,6 @@
 #include "Body.h"
-#include <Ext/Side/Body.h>
-#include <Utilities/TemplateDef.h>
-#include <FPSCounter.h>
-#include <GameOptionsClass.h>
 
-#include <Ext/BulletType/Body.h>
 #include <Ext/TechnoType/Body.h>
-#include <Ext/Scenario/Body.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
@@ -15,7 +9,6 @@
 #include <New/Type/BannerTypeClass.h>
 #include <New/Type/InsigniaTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
-#include <Utilities/Patch.h>
 
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
 

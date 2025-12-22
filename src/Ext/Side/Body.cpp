@@ -1,7 +1,5 @@
 #include "Body.h"
 
-#include <ThemeClass.h>
-
 SideExt::ExtContainer SideExt::ExtMap;
 
 void SideExt::ExtData::Initialize()

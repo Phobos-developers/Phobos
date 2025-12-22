@@ -1,14 +1,8 @@
 #include "Body.h"
 
-#include <SessionClass.h>
-#include <TacticalClass.h>
-#include <SpawnManagerClass.h>
-#include <FactoryClass.h>
-#include <SuperClass.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/House/Body.h>
-#include <Utilities/EnumFunctions.h>
 
 void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
 {

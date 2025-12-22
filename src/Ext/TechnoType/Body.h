@@ -1,17 +1,16 @@
 #pragma once
 #include <TechnoTypeClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
+#include <New/Type/AttachEffectTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
-#include <New/Type/AttachEffectTypeClass.h>
-#include <New/Type/Affiliated/InterceptorTypeClass.h>
-#include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
+#include <New/Type/Affiliated/InterceptorTypeClass.h>
+#include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
 #include <New/Type/Affiliated/TiberiumEaterTypeClass.h>
 #include <New/Type/Affiliated/CreateUnitTypeClass.h>

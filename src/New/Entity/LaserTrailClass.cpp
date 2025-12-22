@@ -1,6 +1,5 @@
 #include "LaserTrailClass.h"
 
-#include <Utilities/TemplateDef.h>
 #include <Ext/EBolt/Body.h>
 
 // Draws LaserTrail if the conditions are suitable.

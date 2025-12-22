@@ -1,11 +1,6 @@
 #include "Body.h"
 
-#include <AircraftTrackerClass.h>
-#include <AnimClass.h>
-#include <FlyLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
-#include <TechnoTypeClass.h>
-#include <StringTable.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
@@ -13,7 +8,6 @@
 #include <Ext/Techno/Body.h>
 #include <New/Type/InsigniaTypeClass.h>
 
-#include <Utilities/GeneralUtils.h>
 #include <Utilities/AresHelper.h>
 
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;

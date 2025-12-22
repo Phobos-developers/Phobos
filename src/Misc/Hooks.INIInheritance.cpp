@@ -1,15 +1,9 @@
-#include <Utilities/Debug.h>
-#include <Utilities/Macro.h>
-#include <Helpers/Macro.h>
-#include <CCINIClass.h>
 #include <Utilities/TemplateDef.h>
 
 #include <CRC.h>
-#include <CRT.h>
 
 #include <vector>
 #include <set>
-#include <string>
 #include <unordered_map>
 
 namespace INIInheritance

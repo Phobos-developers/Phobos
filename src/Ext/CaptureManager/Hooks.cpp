@@ -1,9 +1,6 @@
 #include "Body.h"
 
-#include <ParticleSystemClass.h>
 #include <Ext/Techno/Body.h>
-#include <Utilities/Macro.h>
-#include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x471D40, CaptureManagerClass_CaptureUnit, 0x7)
 {

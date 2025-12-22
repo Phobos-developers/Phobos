@@ -1,14 +1,7 @@
-#include <BuildingClass.h>
-#include <CellClass.h>
-#include <MapClass.h>
-#include <ParticleSystemClass.h>
-#include <FootClass.h>
-#include <WaveClass.h>
+#include "Body.h"
 
 #include <Ext/ParticleSystemType/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Utilities/Macro.h>
 
 // Contains hooks that fix weapon graphical effects like lasers, railguns, electric bolts, beams and waves not interacting
 // correctly with obstacles between firer and target, as well as railgun / railgun particles being cut off by elevation.

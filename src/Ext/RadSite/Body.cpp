@@ -1,9 +1,9 @@
 #include "Body.h"
-#include <LightSourceClass.h>
 #include <Notifications.h>
 
 #include <New/Type/RadTypeClass.h>
 #include <Ext/WarheadType/Body.h>
+#include <Ext/WeaponType/Body.h>
 #include <Ext/Cell/Body.h>
 
 RadSiteExt::ExtContainer RadSiteExt::ExtMap;

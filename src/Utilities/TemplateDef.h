@@ -37,17 +37,21 @@
 #include "Template.h"
 
 #include "INIParser.h"
-#include "Enum.h"
-#include "Constructs.h"
+#include "EnumFunctions.h"
 #include "SavegameDef.h"
+#include "Macro.h"
 
 #include <InfantryTypeClass.h>
 #include <AircraftTypeClass.h>
 #include <UnitTypeClass.h>
 #include <BuildingTypeClass.h>
 #include <WarheadTypeClass.h>
+#include <WeaponTypeClass.h>
 #include <SuperWeaponTypeClass.h>
-#include <FootClass.h>
+#include <InfantryClass.h>
+#include <AircraftClass.h>
+#include <UnitClass.h>
+#include <BuildingClass.h>
 #include <Powerups.h>
 #include <VocClass.h>
 #include <VoxClass.h>

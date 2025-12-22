@@ -1,8 +1,7 @@
 #include "Body.h"
 
 #include <BitFont.h>
-
-#include <Utilities/EnumFunctions.h>
+#include <Misc/FlyingStrings.h>
 
 BuildingExt::ExtContainer BuildingExt::ExtMap;
 

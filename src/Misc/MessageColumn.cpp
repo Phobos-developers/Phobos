@@ -1,8 +1,6 @@
 #include "MessageColumn.h"
 
 #include <BitFont.h>
-#include <MessageListClass.h>
-#include <MouseClass.h>
 #include <WWMouseClass.h>
 
 #include <Ext/Side/Body.h>

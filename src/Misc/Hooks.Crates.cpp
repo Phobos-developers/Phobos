@@ -1,10 +1,4 @@
-#include <HouseClass.h>
-#include <ScenarioClass.h>
-
-#include <Ext/Rules/Body.h>
 #include <Ext/TechnoType/Body.h>
-
-#include <Utilities/Macro.h>
 
 DEFINE_HOOK(0x56BD8B, MapClass_PlaceRandomCrate_Sampling, 0x5)
 {

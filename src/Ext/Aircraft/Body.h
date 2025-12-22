@@ -1,5 +1,6 @@
 #pragma once
 #include <AircraftClass.h>
+#include <Ext/Techno/Body.h>
 
 // TODO: Implement proper extended AircraftClass.
 

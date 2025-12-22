@@ -1,7 +1,6 @@
 #include <GameOptionsClass.h>
 
 #include <Ext/WarheadType/Body.h>
-#include <Helpers/Macro.h>
 
 namespace LightEffectsTemp
 {

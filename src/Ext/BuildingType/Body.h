@@ -1,9 +1,5 @@
 #pragma once
-#include <BuildingTypeClass.h>
-#include <SuperClass.h>
-#include <SuperWeaponTypeClass.h>
-
-#include <Helpers/Macro.h>
+#include "BuildingTypeClass.h"
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 

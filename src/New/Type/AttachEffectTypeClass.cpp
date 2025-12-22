@@ -1,5 +1,7 @@
 #include "AttachEffectTypeClass.h"
 
+#include <Ext/TEvent/Body.h>
+
 // Used to match groups names to AttachEffectTypeClass instances. Do not iterate due to undetermined order being prone to desyncs.
 std::unordered_map<std::string, std::set<AttachEffectTypeClass*>> AttachEffectTypeClass::GroupsMap;
 
