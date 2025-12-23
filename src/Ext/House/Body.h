@@ -102,7 +102,7 @@ public:
 			, ForceEnemyIndex(-1)
 			, ForceOnlyTargetHouseEnemy { false }
 			, ForceOnlyTargetHouseEnemyMode { -1 }
-      , TeamDelay(-1)
+			, TeamDelay(-1)
 			, FreeRadar(false)
 			, ForceRadar(false)
 		{ }

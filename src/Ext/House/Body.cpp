@@ -590,26 +590,26 @@ void HouseExt::ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode)
 	if (mode < 0 || mode > 2)
 		mode = -1;
 
-	enum { ForceFalse = 0, ForceTrue = 1, ForceRandom = 2};
+	enum { ForceFalse = 0, ForceTrue = 1, ForceRandom = 2 };
 	pHouseExt->ForceOnlyTargetHouseEnemyMode = mode;
 
 	switch (mode)
 	{
-		case ForceFalse:
-			pHouseExt->ForceOnlyTargetHouseEnemy = false;
-			break;
+	case ForceFalse:
+		pHouseExt->ForceOnlyTargetHouseEnemy = false;
+		break;
 
-		case ForceTrue:
-			pHouseExt->ForceOnlyTargetHouseEnemy = true;
-			break;
+	case ForceTrue:
+		pHouseExt->ForceOnlyTargetHouseEnemy = true;
+		break;
 
-		case ForceRandom:
-			pHouseExt->ForceOnlyTargetHouseEnemy = (bool)ScenarioClass::Instance->Random.RandomRanged(0, 1);;
-			break;
+	case ForceRandom:
+		pHouseExt->ForceOnlyTargetHouseEnemy = (bool)ScenarioClass::Instance->Random.RandomRanged(0, 1);;
+		break;
 
-		default:
-			pHouseExt->ForceOnlyTargetHouseEnemy = false;
-			break;
+	default:
+		pHouseExt->ForceOnlyTargetHouseEnemy = false;
+		break;
 	}
 }
 
@@ -685,7 +685,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceEnemyIndex)
 		.Process(this->ForceOnlyTargetHouseEnemy)
 		.Process(this->ForceOnlyTargetHouseEnemyMode)
-    .Process(this->TeamDelay)
+		.Process(this->TeamDelay)
 		.Process(this->FreeRadar)
 		.Process(this->ForceRadar)
 		;

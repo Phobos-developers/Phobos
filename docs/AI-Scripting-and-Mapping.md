@@ -652,6 +652,19 @@ ID=ActionCount,[Action1],510,0,0,[MCVRedeploy],0,0,0,A,[ActionX]
 ...
 ```
 
+### `511` Building Type undeploy at
+
+- Recycle the building type into a vehicle and move it to the specified waypoint.
+  - If the type is `<All>`, recycle all buildings.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],511,-10,[BuildingTypesID],[HouseIndex],0,0,0,[WaypointIndex],[ActionX]
+...
+```
+
 ### `606` Edit Hate-Value
 
 - Edit the hate-value that trigger houses to other houses.
@@ -704,6 +717,35 @@ In `mycampaign.map`:
 [Actions]
 ...
 ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]
+...
+```
+
+### `609` Set radar mode
+
+- Trigger's house can modify the current radar mode.
+  - 0 for requires full-power and building.
+  - 1 for free radar.
+  - 2 for forced enable.
+  - 3 for forced disable.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],609,0,0,[RadarMode],0,0,0,A,[ActionX]
+...
+```
+
+### `610` Set team delay
+
+- Trigger's house can customize TeamDelay.
+  - When the value is less than 0 in `[General]>TeamDelays`.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],610,0,0,[Number],0,0,0,A,[ActionX]
 ...
 ```
 
