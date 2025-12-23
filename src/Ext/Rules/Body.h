@@ -124,6 +124,8 @@ public:
 
 		Valueable<bool> AllowDeployControlledMCV;
 
+		Valueable<bool> TypeSelectUseIFVMode;
+
 		Valueable<bool> IronCurtain_KeptOnDeploy;
 		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> IronCurtain_KillOrganicsWarhead;
@@ -180,6 +182,8 @@ public:
 
 		Valueable<bool> JumpjetClimbPredictHeight;
 		Valueable<bool> JumpjetClimbWithoutCutOut;
+
+		Valueable<bool> MergeBuildingDamage;
 
 		Valueable<double> DamageOwnerMultiplier;
 		Valueable<double> DamageAlliesMultiplier;
@@ -370,6 +374,8 @@ public:
 
 			, AllowDeployControlledMCV { false }
 
+			, TypeSelectUseIFVMode { false }
+
 			, IronCurtain_KeptOnDeploy { true }
 			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
 			, IronCurtain_KillOrganicsWarhead { }
@@ -508,6 +514,8 @@ public:
 			, AIAirTargetingFix { false }
 
 			, SortCameoByName { false }
+			
+			, MergeBuildingDamage { false }
 		{ }
 
 		virtual ~ExtData() = default;
