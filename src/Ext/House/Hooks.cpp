@@ -508,10 +508,11 @@ DEFINE_HOOK(0x508E17, HouseClass_UpdateRadar_FreeRadar, 0x8)
 	GET(HouseClass*, pThis, ECX);
 
 	auto const pExt = HouseExt::ExtMap.Find(pThis);
+	const bool freeRadar = pExt->FreeRadar;
 
 	if (pExt->ForceRadar)
 	{
-		R->Stack(STACK_OFFSET(0x1C, -0xC), pExt->FreeRadar);
+		R->Stack(STACK_OFFSET(0x1C, -0xC), freeRadar);
 		return ForceRadar;
 	}
 	else if (pThis->PowerBlackoutTimer.InProgress())
@@ -519,7 +520,7 @@ DEFINE_HOOK(0x508E17, HouseClass_UpdateRadar_FreeRadar, 0x8)
 		R->Stack(STACK_OFFSET(0x1C, -0xC), false);
 		return ForceRadar;
 	}
-	else if (pExt->FreeRadar)
+	else if (freeRadar)
 	{
 		R->Stack(STACK_OFFSET(0x1C, -0xC), true);
 		return ForceRadar;
