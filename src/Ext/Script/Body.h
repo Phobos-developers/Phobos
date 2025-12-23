@@ -230,7 +230,7 @@ public:
 	static void Mission_Attack_List(TeamClass* pTeam, int calcThreatMode = 0, bool repeatAction = true, int attackAITargetType = -1);
 	static void Mission_Attack_List1Random(TeamClass* pTeam, int calcThreatMode = 0, bool repeatAction = true, int attackAITargetType = -1);
 	static bool CheckUnitTargetingCapability(TechnoClass* pTechno, bool targetInAir, bool agentMode);
-	static bool IsUnitArmed(TechnoClass* pTechno);
+	static bool IsUnitArmed(TechnoClass* pTechno, TechnoTypeClass* pType);
 	static bool IsMindControlledByEnemy(HouseClass* pHouse, TechnoClass* pTechno);
 
 	// Mission.Move.cpp
