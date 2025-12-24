@@ -15,6 +15,7 @@
 #include <New/Type/BannerTypeClass.h>
 #include <New/Type/InsigniaTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
+#include <New/Type/BarTypeClass.h>
 #include <Utilities/Patch.h>
 
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
@@ -44,6 +45,7 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	AttachEffectTypeClass::LoadFromINIList(pINI);
 	BannerTypeClass::LoadFromINIList(pINI);
 	InsigniaTypeClass::LoadFromINIList(pINI);
+	BarTypeClass::LoadFromINIList(pINI);
 
 	Data->LoadBeforeTypeData(pThis, pINI);
 }
@@ -234,6 +236,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->DefaultInfantrySelectBox.Read(exINI, GameStrings::AudioVisual, "DefaultInfantrySelectBox");
 	this->DefaultUnitSelectBox.Read(exINI, GameStrings::AudioVisual, "DefaultUnitSelectBox");
+	this->Buildings_DefaultBarTypes.Read(exINI, GameStrings::AudioVisual, "Buildings.DefaultBarTypes");
+	this->Infantry_DefaultBarTypes.Read(exINI, GameStrings::AudioVisual, "Infantry.DefaultBarTypes");
+	this->Vehicles_DefaultBarTypes.Read(exINI, GameStrings::AudioVisual, "Vehicles.DefaultBarTypes");
+	this->Aircraft_DefaultBarTypes.Read(exINI, GameStrings::AudioVisual, "Aircraft.DefaultBarTypes");
 
 	this->JumpjetClimbPredictHeight.Read(exINI, GameStrings::General, "JumpjetClimbPredictHeight");
 	this->JumpjetClimbWithoutCutOut.Read(exINI, GameStrings::General, "JumpjetClimbWithoutCutOut");
@@ -532,6 +538,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Aircraft_DefaultDigitalDisplayTypes)
 		.Process(this->DefaultInfantrySelectBox)
 		.Process(this->DefaultUnitSelectBox)
+		.Process(this->Buildings_DefaultBarTypes)
+		.Process(this->Infantry_DefaultBarTypes)
+		.Process(this->Vehicles_DefaultBarTypes)
+		.Process(this->Aircraft_DefaultBarTypes)
 		.Process(this->VisualScatter_Min)
 		.Process(this->VisualScatter_Max)
 		.Process(this->ShowDesignatorRange)

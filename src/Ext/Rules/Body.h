@@ -18,6 +18,7 @@ class VocClass;
 class WarheadTypeClass;
 class DigitalDisplayTypeClass;
 class SelectBoxTypeClass;
+class BarTypeClass;
 
 class RulesExt
 {
@@ -158,6 +159,10 @@ public:
 		ValueableVector<DigitalDisplayTypeClass*> Infantry_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Aircraft_DefaultDigitalDisplayTypes;
+		ValueableVector<BarTypeClass*> Buildings_DefaultBarTypes;
+		ValueableVector<BarTypeClass*> Infantry_DefaultBarTypes;
+		ValueableVector<BarTypeClass*> Vehicles_DefaultBarTypes;
+		ValueableVector<BarTypeClass*> Aircraft_DefaultBarTypes;
 
 		Valueable<SelectBoxTypeClass*> DefaultInfantrySelectBox;
 		Valueable<SelectBoxTypeClass*> DefaultUnitSelectBox;
@@ -288,7 +293,7 @@ public:
 		Valueable<bool> AIAirTargetingFix;
 
 		Valueable<bool> SortCameoByName;
-		
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -416,6 +421,10 @@ public:
 			, Infantry_DefaultDigitalDisplayTypes {}
 			, Vehicles_DefaultDigitalDisplayTypes {}
 			, Aircraft_DefaultDigitalDisplayTypes {}
+			, Buildings_DefaultBarTypes {}
+			, Infantry_DefaultBarTypes {}
+			, Vehicles_DefaultBarTypes {}
+			, Aircraft_DefaultBarTypes {}
 			, DefaultInfantrySelectBox {}
 			, DefaultUnitSelectBox {}
 			, VisualScatter_Min { Leptons(8) }

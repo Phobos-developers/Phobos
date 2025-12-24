@@ -15,6 +15,7 @@
 #include <New/Type/Affiliated/DroppodTypeClass.h>
 #include <New/Type/Affiliated/TiberiumEaterTypeClass.h>
 #include <New/Type/Affiliated/CreateUnitTypeClass.h>
+#include <New/Type/BarTypeClass.h>
 
 class Matrix3D;
 class ParticleSystemTypeClass;
@@ -370,6 +371,7 @@ public:
 
 		ValueableVector<AnimTypeClass*> Promote_VeteranAnimation;
 		ValueableVector<AnimTypeClass*> Promote_EliteAnimation;
+		ValueableVector<BarTypeClass*> BarTypes;
 
 		Nullable<AffectedHouse> RadarInvisibleToHouse;
 
@@ -856,6 +858,8 @@ public:
 			, InfantryAutoDeploy {}
 
 			, TurretResponse {}
+
+			, BarTypes { }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -38,7 +38,7 @@ DEFINE_HOOK(0x6F5E37, TechnoClass_DrawExtras_DrawHealthBar, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
+/*DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5) //replaced with new bars
 {
 	enum { SkipDraw = 0x6F6AB6 };
 
@@ -50,7 +50,7 @@ DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 		return SkipDraw;
 
 	return 0;
-}
+}*/
 
 DEFINE_HOOK(0x6F6637, TechnoClass_DrawHealthBar_HideBuildingsPips, 0x5)
 {
@@ -80,12 +80,12 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
 	GET(BuildingClass*, pThis, ESI);
 	GET(const int, length, EBX);
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (pThis->IsSelected && Phobos::Config::EnableSelectBox && !pExt->TypeExtData->HideSelectBox)
 	{
-		GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
 		UNREFERENCED_PARAMETER(pLocation); // choom thought he was clever and recomputed the same shit again and again
 		TechnoExt::DrawSelectBox(pThis, pLocation, pBound);
 	}
@@ -93,9 +93,12 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
 	if (const auto pShieldData = pExt->Shield.get())
 	{
 		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
+		{
 			pShieldData->DrawShieldBar_Building(length, pBound);
+		}
 	}
 
+	TechnoExt::ProcessBars(pThis, *pLocation, pBound);
 	TechnoExt::ProcessDigitalDisplays(pThis);
 
 	return 0;
@@ -121,11 +124,12 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_Units, 0x7)
 	{
 		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
 		{
-			const int length = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
+			const int length = pThis->WhatAmI() == AbstractType::Infantry ? Unsorted::HealthBarSectionsInfantry : Unsorted::HealthBarSectionsOther;
 			pShieldData->DrawShieldBar_Other(length, pBound);
 		}
 	}
 
+	TechnoExt::ProcessBars(pThis, *pLocation, pBound);
 	TechnoExt::ProcessDigitalDisplays(pThis);
 
 	if (pExt->TypeExtData->HealthBar_HidePips)
