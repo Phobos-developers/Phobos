@@ -1,5 +1,6 @@
 #include "DistributionMode.h"
 
+#include "AdvancedCommandBarButtons.h"
 #include <Ext/Techno/Body.h>
 #include <Utilities/Helpers.Alex.h>
 #include <Helpers/Macro.h>
@@ -132,7 +133,7 @@ void DistributionModeHoldDownCommandClass::DistributionModeOn()
 
 	DistributionModeHoldDownCommandClass::Enabled = true;
 
-	if (const auto pButton = reinterpret_cast<ShapeButtonClass*(__fastcall*)(int)>(0x6CFD40)(ShapeButtonHelper::NewButtonIndexes[0]))
+	if (const auto pButton = ShapeButtonClass::GetButton(ShapeButtonHelper::NewButtonIndexes[0]))
 	{
 		if (!pButton->IsOn)
 			pButton->TurnOn();
@@ -154,7 +155,7 @@ void DistributionModeHoldDownCommandClass::DistributionModeOff()
 
 	DistributionModeHoldDownCommandClass::Enabled = false;
 
-	if (const auto pButton = reinterpret_cast<ShapeButtonClass*(__fastcall*)(int)>(0x6CFD40)(ShapeButtonHelper::NewButtonIndexes[0]))
+	if (const auto pButton = ShapeButtonClass::GetButton(ShapeButtonHelper::NewButtonIndexes[0]))
 	{
 		if (pButton->IsOn)
 			pButton->TurnOff();
