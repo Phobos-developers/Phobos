@@ -18,6 +18,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Commands\AdvancedCommandBarButtons.cpp" />
     <ClCompile Include="src\Ext\Cell\Hooks.cpp" />
     <ClCompile Include="src\Ext\Infantry\Hooks.cpp" />
     <ClCompile Include="src\Ext\Infantry\Hooks.Firing.cpp" />
@@ -58,6 +59,7 @@
     <ClCompile Include="src\Commands\ToggleDesignatorRange.cpp" />
     <ClCompile Include="src\Commands\ToggleDigitalDisplay.cpp" />
     <ClCompile Include="src\Commands\SaveVariablesToFile.cpp" />
+    <ClCompile Include="src\Commands\DistributionMode.cpp" />
     <ClCompile Include="src\Ext\Anim\Body.cpp" />
     <ClCompile Include="src\Ext\Anim\Hooks.cpp" />
     <ClCompile Include="src\Ext\Anim\Hooks.AnimCreateUnit.cpp" />
@@ -217,6 +219,7 @@
     <ClCompile Include="YRpp\StaticInits.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Commands\AdvancedCommandBarButtons.h" />
     <ClInclude Include="src\Ext\EBolt\Body.h" />
     <ClInclude Include="src\New\Entity\Ares\RadarJammerClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\CreateUnitTypeClass.h" />
@@ -244,6 +247,7 @@
     <ClInclude Include="src\Commands\ToggleDesignatorRange.h" />
     <ClInclude Include="src\Commands\ToggleDigitalDisplay.h" />
     <ClInclude Include="src\Commands\SaveVariablesToFile.h" />
+    <ClInclude Include="src\Commands\DistributionMode.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\BombardTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\PhobosTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\StraightTrajectory.h" />
