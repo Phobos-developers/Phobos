@@ -18,6 +18,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Commands\AdvancedCommandBarButtons.cpp" />
     <ClCompile Include="src\Ext\Cell\Hooks.cpp" />
     <ClCompile Include="src\Ext\Infantry\Hooks.cpp" />
     <ClCompile Include="src\Ext\Infantry\Hooks.Firing.cpp" />
@@ -218,6 +219,7 @@
     <ClCompile Include="YRpp\StaticInits.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Commands\AdvancedCommandBarButtons.h" />
     <ClInclude Include="src\Ext\EBolt\Body.h" />
     <ClInclude Include="src\New\Entity\Ares\RadarJammerClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\CreateUnitTypeClass.h" />
