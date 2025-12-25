@@ -203,6 +203,7 @@ public:
 		ValueableVector<int> ForceAAWeapon_InRange;
 		ValueableVector<double> ForceAAWeapon_InRange_Overrides;
 		Valueable<bool> ForceAAWeapon_InRange_ApplyRangeModifiers;
+		Valueable<int> ForceWeapon_Webby;
 		Valueable<int> ForceWeapon_Buildings;
 		Valueable<int> ForceWeapon_Defenses;
 		Valueable<int> ForceWeapon_Infantry;
@@ -276,6 +277,11 @@ public:
 		Nullable<Leptons> SpawnDistanceFromTarget;
 		Nullable<int> SpawnHeight;
 		Nullable<int> LandingDir;
+
+		ValueableVector<AnimTypeClass*> Webby_Anims;
+		Valueable<bool> ImmuneToWeb;
+		Valueable<int> Webby_Duration;
+		Valueable<int> Webby_DurationVariation;
 
 		Valueable<TechnoTypeClass*> Convert_Deploy; // Ares
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
@@ -616,6 +622,7 @@ public:
 			, ForceAAWeapon_InRange {}
 			, ForceAAWeapon_InRange_Overrides {}
 			, ForceAAWeapon_InRange_ApplyRangeModifiers { false }
+			, ForceWeapon_Webby { -1 }
 			, ForceWeapon_Buildings { -1 }
 			, ForceWeapon_Defenses { -1 }
 			, ForceWeapon_Infantry { -1 }
@@ -696,6 +703,11 @@ public:
 
 			, SpawnDistanceFromTarget {}
 			, SpawnHeight {}
+
+			, Webby_Anims {}
+			, ImmuneToWeb { false }
+			, Webby_Duration { 0 }
+			, Webby_DurationVariation { 0 }
 			, LandingDir {}
 			, DroppodType {}
 			, TiberiumEaterType {}

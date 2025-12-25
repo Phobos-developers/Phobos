@@ -103,6 +103,12 @@ public:
 
 		bool JumpjetStraightAscend; // Is set to true jumpjet units will ascend straight and do not adjust rotation or position during it.
 
+		int	WebbyDurationCountDown;
+		CDTimerClass WebbyDurationTimer;
+		AnimClass* WebbyAnim;
+		AbstractClass* WebbyLastTarget;
+		Mission WebbyLastMission;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -169,6 +175,11 @@ public:
 			, SpecialTracked { false }
 			, FallingDownTracked { false }
 			, JumpjetStraightAscend { false }
+			, WebbyDurationCountDown { -1 }
+			, WebbyDurationTimer {}
+			, WebbyAnim { nullptr }
+			, WebbyLastTarget { nullptr }
+			, WebbyLastMission { Mission::Sleep }
 		{ }
 
 		void OnEarlyUpdate();
@@ -207,11 +218,14 @@ public:
 		int ApplyForceWeaponInRange(AbstractClass* pTarget);
 		void ResetDelayedFireTimer();
 		void UpdateTintValues();
+		void WebbyUpdate();
 
 		void AmmoAutoConvertActions();
 
 		virtual ~ExtData() override;
+
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
+
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 

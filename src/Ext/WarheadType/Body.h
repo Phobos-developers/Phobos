@@ -192,6 +192,12 @@ public:
 
 		Valueable<AffectedTarget> AirstrikeTargets;
 
+		Valueable<bool> Webby;
+		ValueableVector<AnimTypeClass*> Webby_Anims;
+		Valueable<int> Webby_Duration;
+		Valueable<int> Webby_DurationVariation;
+		Valueable<int> Webby_Cap;
+
 		Valueable<double> AffectsBelowPercent;
 		Valueable<double> AffectsAbovePercent;
 		Valueable<bool> AffectsNeutral;
@@ -437,6 +443,12 @@ public:
 			, KillWeapon_OnFirer_AffectsHouses { AffectedHouse::All }
 			, KillWeapon_Affects { AffectedTarget::All }
 			, KillWeapon_OnFirer_Affects { AffectedTarget::All }
+
+			, Webby { false }
+			, Webby_Anims {}
+			, Webby_Duration { 0 }
+			, Webby_DurationVariation { 0 }
+			, Webby_Cap { -1 }
 
 			, ReverseEngineer { false }
 
