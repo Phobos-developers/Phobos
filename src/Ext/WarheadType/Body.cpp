@@ -274,6 +274,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CombatAlert_Suppress.Read(exINI, pSection, "CombatAlert.Suppress");
 
 	this->CanKill.Read(exINI, pSection, "CanKill");
+	this->HiddenDamageNumbers.Read(exINI, pSection, "HiddenDamageNumbers");
 
 	this->KillWeapon.Read(exINI, pSection, "KillWeapon");
 	this->KillWeapon_OnFirer.Read(exINI, pSection, "KillWeapon.OnFirer");
@@ -589,6 +590,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AirstrikeTargets)
 
 		.Process(this->CanKill)
+
+		.Process(this->HiddenDamageNumbers)
 
 		.Process(this->ReverseEngineer)
 

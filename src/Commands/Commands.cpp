@@ -44,9 +44,13 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 		SWSidebarClass::Commands[9] = MakeCommand<FireTacticalSWCommandClass<9>>();
 	}
 
-	if (Phobos::Config::DevelopmentCommands)
+	if (Phobos::Config::DamageNumbersCommands)
 	{
 		MakeCommand<DamageDisplayCommandClass>();
+	}
+
+	if (Phobos::Config::DevelopmentCommands)
+	{
 		MakeCommand<SaveVariablesToFileCommandClass>();
 		MakeCommand<ObjectInfoCommandClass>();
 		MakeCommand<FrameByFrameCommandClass>();

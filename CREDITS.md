@@ -660,7 +660,9 @@ This page lists all the individual contributions to the project by their author.
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
-- **Flactine** - add target filtering options to attacheffect system
+- **Flactine** 
+  - Add target filtering options to attacheffect system
+  - Improve Damage Number Display Configuration and Readability
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

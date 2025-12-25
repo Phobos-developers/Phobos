@@ -203,6 +203,8 @@ public:
 
 		Valueable<bool> CanKill;
 
+		Valueable<bool> HiddenDamageNumbers;
+
 		Valueable<bool> UnlimboDetonate;
 		Valueable<bool> UnlimboDetonate_ForceLocation;
 		Valueable<bool> UnlimboDetonate_KeepTarget;
@@ -430,6 +432,8 @@ public:
 			, DamageAreaTarget {}
 
 			, CanKill { true }
+
+			, HiddenDamageNumbers { false }
 
 			, KillWeapon {}
 			, KillWeapon_OnFirer {}

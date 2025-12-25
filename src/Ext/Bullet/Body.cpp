@@ -35,7 +35,9 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, BulletClass* pInt
 		const int damage = static_cast<int>(pInterceptor->Health * versus);
 		this->CurrentStrength -= damage;
 
-		if (Phobos::DisplayDamageNumbers && damage != 0)
+		const bool HiddenNumbers = WarheadTypeExt::ExtMap.Find(pThis->WH)->HiddenDamageNumbers;
+
+		if (Phobos::Config::DamageNumbersCommands && Phobos::Config::DisplayDamageNumbers && !HiddenNumbers && damage != 0)
 			GeneralUtils::DisplayDamageNumberString(damage, DamageDisplayType::Intercept, pThis->GetRenderCoords(), this->DamageNumberOffset);
 
 		if (this->CurrentStrength <= 0)
