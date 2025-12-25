@@ -1,11 +1,9 @@
 #include <GameOptionsClass.h>
 #include <JumpjetLocomotionClass.h>
-#include <UnitClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Utilities/AresFunctions.h>
-#include <Utilities/Macro.h>
 
 static __forceinline bool HasDeployingAnim(TechnoTypeClass* pType)
 {

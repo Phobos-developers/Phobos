@@ -1,13 +1,8 @@
 #pragma once
 #include <HouseClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
-
-#include <Ext/Building/Body.h>
-
-#include <map>
 
 class HouseExt
 {

@@ -1,13 +1,8 @@
-#include <Ext/BulletType/Body.h>
-#include <Ext/Bullet/Body.h>
-#include <Ext/WeaponType/Body.h>
-
-#include <BulletClass.h>
-#include <Helpers/Macro.h>
-
 #include "StraightTrajectory.h"
 #include "BombardTrajectory.h"
 #include "ParabolaTrajectory.h"
+
+#include <Ext/Bullet/Body.h>
 
 TrajectoryTypePointer::TrajectoryTypePointer(TrajectoryFlag flag)
 {

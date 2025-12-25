@@ -1,7 +1,6 @@
 #include "ToggleSWButtonClass.h"
 #include "SWSidebarClass.h"
 #include <GameOptionsClass.h>
-#include <ScenarioClass.h>
 
 #include <Ext/Side/Body.h>
 

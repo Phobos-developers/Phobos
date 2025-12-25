@@ -1,8 +1,6 @@
 #include "Body.h"
 
-#include <HouseClass.h>
-
-#include "Ext/Rules/Body.h"
+#include <Ext/Rules/Body.h>
 
 // AIConstructionYard Hook #1 -> sub_740810 - Check number of construction yard before deploy.
 DEFINE_HOOK(0x740A11, UnitClass_Mission_Guard_AIAutoDeployMCV, 0x6)

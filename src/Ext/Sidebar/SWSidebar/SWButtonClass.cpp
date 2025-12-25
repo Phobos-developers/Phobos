@@ -2,10 +2,7 @@
 #include "SWSidebarClass.h"
 #include <EventClass.h>
 #include <CCToolTip.h>
-#include <CommandClass.h>
-#include <UI.h>
 
-#include <Ext/SWType/Body.h>
 #include <Utilities/AresFunctions.h>
 
 SWButtonClass::SWButtonClass(int superIdx, int x, int y, int width, int height)

@@ -1,13 +1,8 @@
-#include <BuildingClass.h>
-#include <FootClass.h>
-
-#include <Utilities/Macro.h>
 #include <Utilities/AresHelper.h>
 #include <Utilities/Helpers.Alex.h>
 
 #include <Ext/Building/Body.h>
 #include <Ext/Sidebar/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/EBolt/Body.h>
 
 #include <New/Entity/Ares/RadarJammerClass.h>

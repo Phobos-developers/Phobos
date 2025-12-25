@@ -1,11 +1,5 @@
 #include "Body.h"
 
-#include <HouseClass.h>
-#include <OverlayClass.h>
-#include <TerrainClass.h>
-
-#include <Utilities/GeneralUtils.h>
-
 constexpr bool IS_CELL_OCCUPIED(CellClass* pCell)
 {
 	return pCell->OccupationFlags & 0x20 || pCell->OccupationFlags & 0x40 || pCell->OccupationFlags & 0x80 || pCell->GetInfantry(false);

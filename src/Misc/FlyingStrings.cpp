@@ -3,9 +3,6 @@
 #include <MapClass.h>
 #include <Phobos.CRT.h>
 #include <TacticalClass.h>
-#include <ColorScheme.h>
-#include <Drawing.h>
-#include <ScenarioClass.h>
 #include <BitFont.h>
 #include <Utilities/EnumFunctions.h>
 

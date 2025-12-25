@@ -1,11 +1,6 @@
-#include <Utilities/Macro.h>
-#include <BuildingClass.h>
-#include <BuildingTypeClass.h>
-#include <HouseClass.h>
-#include <Utilities/EnumFunctions.h>
 #include "Body.h"
-#include <Ext/TechnoType/Body.h>
-#include <FactoryClass.h>
+
+#include <Ext/Building/Body.h>
 #include <Ext/House/Body.h>
 
 bool BuildingTypeExt::CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner)

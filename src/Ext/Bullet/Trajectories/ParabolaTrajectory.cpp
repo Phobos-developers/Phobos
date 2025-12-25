@@ -1,10 +1,6 @@
 #include "ParabolaTrajectory.h"
 
-#include <OverlayTypeClass.h>
-#include <ScenarioClass.h>
-
 #include <Ext/Bullet/Body.h>
-#include <Ext/BulletType/Body.h>
 #include <Ext/WarheadType/Body.h>
 
 std::unique_ptr<PhobosTrajectory> ParabolaTrajectoryType::CreateInstance() const

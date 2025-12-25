@@ -2,9 +2,7 @@
 
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Scenario/Body.h>
-#include "Ext/Techno/Body.h"
-#include "Ext/Building/Body.h"
-#include <unordered_map>
+#include <Ext/Building/Body.h>
 
 DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 {

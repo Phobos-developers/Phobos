@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <Misc/FlyingStrings.h>
+
 // SellSound and EVA dehardcode
 DEFINE_HOOK(0x4D9F7B, FootClass_Sell, 0x6)
 {

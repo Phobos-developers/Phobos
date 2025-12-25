@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Utilities/EnumFunctions.h>
+#include <Utilities/TemplateDef.h>
 
 class TypeConvertGroup
 {

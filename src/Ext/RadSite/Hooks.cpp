@@ -1,19 +1,10 @@
 #include "Body.h"
 
-#include <BulletClass.h>
-#include <HouseClass.h>
-#include <InfantryClass.h>
-#include <WarheadTypeClass.h>
-#include <ScenarioClass.h>
-
-#include <Ext/BuildingType/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/Rules/Body.h>
-#include <Ext/Techno/Body.h>
+#include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
-
-#include <Utilities/Macro.h>
 /*
 	Custom Radiations
 	Worked out from old uncommented Ares RadSite Hook , adding some more hook

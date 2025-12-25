@@ -1,8 +1,5 @@
 #include "BannerTypeClass.h"
 
-#include <Utilities/GeneralUtils.h>
-#include <Utilities/TemplateDef.h>
-
 template<>
 const char* Enumerable<BannerTypeClass>::GetMainSection()
 {

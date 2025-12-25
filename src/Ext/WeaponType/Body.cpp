@@ -1,7 +1,6 @@
 #include "Body.h"
 #include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
-#include <SpawnManagerClass.h>
 
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 

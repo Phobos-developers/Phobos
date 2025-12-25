@@ -51,8 +51,6 @@
 
 class PhobosStreamReader;
 class PhobosStreamWriter;
-#include "Enum.h"
-
 class ConvertClass;
 
 template <typename T>

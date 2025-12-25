@@ -1,10 +1,7 @@
 #include "Body.h"
 
 #include <Ext/SWType/Body.h>
-#include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
-
-#include <ScenarioClass.h>
 
 //Static init
 

@@ -1,7 +1,5 @@
 #include "Body.h"
 
-#include <AircraftClass.h>
-
 #include <Ext/WeaponType/Body.h>
 
 // Reimplements the game function with few changes / optimizations

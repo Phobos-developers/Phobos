@@ -1,13 +1,7 @@
 #pragma once
-#include <WarheadTypeClass.h>
-#include <WeaponTypeClass.h>
-#include <SuperWeaponTypeClass.h>
-
-#include <Helpers/Macro.h>
+#include <Ext/Building/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
-
-#include <Ext/Building/Body.h>
 #include <New/Type/Affiliated/TypeConvertGroup.h>
 
 class SWTypeExt

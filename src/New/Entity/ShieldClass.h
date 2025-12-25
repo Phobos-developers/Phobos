@@ -1,8 +1,8 @@
 #pragma once
 
-#include <GeneralStructures.h>
-#include <SpecificStructures.h>
-#include <Ext/TechnoType/Body.h>
+#include <New/Type/ShieldTypeClass.h>
+
+#include "SpecificStructures.h"
 
 class TechnoClass;
 class WarheadTypeClass;

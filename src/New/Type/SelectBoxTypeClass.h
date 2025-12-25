@@ -2,7 +2,6 @@
 
 #include <Utilities/Enumerable.h>
 #include <Utilities/TemplateDef.h>
-#include <Utilities/Enum.h>
 
 class SelectBoxTypeClass final : public Enumerable<SelectBoxTypeClass>
 {

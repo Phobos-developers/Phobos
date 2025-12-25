@@ -1,17 +1,10 @@
 #include "Body.h"
-#include <functional>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/CaptureManager/Body.h>
-#include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Utilities/Helpers.Alex.h>
-
-#include <VoxelAnimClass.h>
-#include <AircraftClass.h>
-#include <TacticalClass.h>
 
 DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 {

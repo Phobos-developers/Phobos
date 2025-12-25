@@ -3,11 +3,7 @@
 
 #include <Ext/BulletType/Body.h>
 #include <Ext/TechnoType/Body.h>
-#include <Helpers/Macro.h>
-#include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
 #include <New/Entity/LaserTrailClass.h>
-#include "Trajectories/PhobosTrajectory.h"
 
 class BulletExt
 {

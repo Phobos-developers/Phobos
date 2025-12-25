@@ -1,8 +1,6 @@
 #pragma once
-#include "SWButtonClass.h"
 #include "SWColumnClass.h"
 #include "ToggleSWButtonClass.h"
-#include <Ext/Scenario/Body.h>
 #include <CommandClass.h>
 
 class SWSidebarClass

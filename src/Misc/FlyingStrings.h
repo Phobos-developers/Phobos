@@ -6,7 +6,6 @@ By AlexB and Joshy
 
 #pragma once
 #include <vector>
-#include <ColorScheme.h>
 #include <HouseClass.h>
 #include <Utilities/Enum.h>
 

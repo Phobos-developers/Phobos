@@ -1,14 +1,8 @@
 #pragma once
 
-#include <CCINIClass.h>
 #include <RulesClass.h>
 #include <Utilities/Container.h>
-#include <Utilities/Constructs.h>
-#include <Utilities/Template.h>
-#include <Utilities/Enum.h>
 #include <Utilities/TemplateDef.h>
-#include <Utilities/Debug.h>
-#include <Utilities/Anchor.h>
 
 class AnimTypeClass;
 class MouseCursor;

@@ -1,13 +1,10 @@
-#include <AircraftClass.h>
-#include <EventClass.h>
-#include <FlyLocomotionClass.h>
+#include "Body.h"
 
-#include <Ext/Aircraft/Body.h>
-#include <Ext/Techno/Body.h>
+#include <EventClass.h>
+
 #include <Ext/Anim/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/BulletType/Body.h>
-#include <Utilities/Macro.h>
 
 #pragma region Mission_Attack
 

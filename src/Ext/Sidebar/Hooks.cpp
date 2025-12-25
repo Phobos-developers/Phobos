@@ -1,10 +1,6 @@
 #include "Body.h"
 #include "SWSidebar/SWSidebarClass.h"
 
-#include <HouseClass.h>
-#include <FactoryClass.h>
-#include <FileSystem.h>
-
 #include <Ext/Side/Body.h>
 #include <Misc/MessageColumn.h>
 

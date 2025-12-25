@@ -1,11 +1,4 @@
 #include "Body.h"
-#include <Phobos.h>
-#include <Helpers/Macro.h>
-#include <Utilities/TemplateDef.h>
-#include <HouseTypeClass.h>
-#include <HouseClass.h>
-#include <ScenarioClass.h>
-#include <UnitClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/TechnoType/Body.h>

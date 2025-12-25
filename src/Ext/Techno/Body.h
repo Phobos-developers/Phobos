@@ -1,11 +1,8 @@
 #pragma once
-#include <InfantryClass.h>
-#include <AnimClass.h>
 
-#include <Helpers/Macro.h>
+#include <Ext/TechnoType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
-#include <Utilities/Macro.h>
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Entity/AttachEffectClass.h>
