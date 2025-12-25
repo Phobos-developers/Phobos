@@ -196,9 +196,12 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (!this->CanTargetHouse(pHouse, pTarget) || !this->CanAffectTarget(pTarget))
 		return;
 
-	// Put this at first since it can change the target's house
+	// Put these at first since they can change the target's house
 	if (this->RemoveMindControl)
 		pHouse = this->ApplyRemoveMindControl(pHouse, pTarget);
+
+	if (this->ChangeOwner)
+		this->ApplyOwnerChange(pHouse, pTarget);
 
 	// These can change the target's techno types
 	if (this->Convert_Pairs.size() > 0)
@@ -467,6 +470,53 @@ HouseClass* WarheadTypeExt::ExtData::ApplyRemoveMindControl(HouseClass* pHouse, 
 	}
 
 	return pHouse;
+}
+
+void WarheadTypeExt::ExtData::ApplyOwnerChange(HouseClass* pHouse, TechnoClass* pTarget)
+{
+	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	const bool isMindControl = this->ChangeOwner_SetAsMindControl;
+	const bool isImmune = pTargetExt->ImmuneToChangeOwner || (isMindControl && pTarget->GetTechnoType()->ImmuneToPsionics) || pTarget->IsMindControlled();
+
+	if (!isImmune)
+	{
+		auto const pOwner = pTarget->Owner;
+		pTarget->SetOwningHouse(pHouse, true);
+		pTargetExt->OwnerOriginalOwner = pOwner;
+
+		if (this->ChangeOwner_Duration && !isMindControl)
+		{
+			pTargetExt->OwnerTimer.Start(this->ChangeOwner_Duration);
+
+			if (this->ChangeOwner_Duration_PreventChange)
+				pTargetExt->ImmuneToChangeOwner = true;
+		}
+
+		if (isMindControl)
+		{
+			pTarget->MindControlledByAUnit = true;
+
+			if (const auto pAnimType = this->ChangeOwner_MindControlAnim.Get())
+			{
+				CoordStruct location = pTarget->Location;
+				const bool isBld = pTarget->What_Am_I() == AbstractType::Building;
+
+				if (isBld)
+					location.Z += static_cast<BuildingClass*>(pTarget)->Type->Height * Unsorted::LevelHeight;
+				else
+					location.Z += pTarget->GetTechnoType()->MindControlRingOffset;
+
+				if (const auto pOwnerAnim = GameCreate<AnimClass>(pAnimType, location))
+				{
+					pTarget->MindControlRingAnim = pOwnerAnim;
+					pOwnerAnim->SetOwnerObject(pTarget);
+
+					if (isBld)
+						pOwnerAnim->ZAdjust = -1024;
+				}
+			}
+		}
+	}
 }
 
 void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)

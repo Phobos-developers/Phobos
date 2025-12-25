@@ -310,6 +310,12 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AnimZAdjust.Read(exINI, pSection, "AnimZAdjust");
 
+	this->ChangeOwner.Read(exINI, pSection, "ChangeOwner");
+	this->ChangeOwner_SetAsMindControl.Read(exINI, pSection, "ChangeOwner.SetAsMindControl");
+	this->ChangeOwner_MindControlAnim.Read(exINI, pSection, "ChangeOwner.MindControlAnim");
+	this->ChangeOwner_Duration.Read(exINI, pSection, "ChangeOwner.Duration");
+	this->ChangeOwner_Duration_PreventChange.Read(exINI, pSection, "ChangeOwner.Duration.PreventChange");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -361,6 +367,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->Convert_Pairs.size() > 0
 		|| this->InflictLocomotor
 		|| this->RemoveInflictedLocomotor
+		|| this->ChangeOwner
 		|| this->AttachEffects.AttachTypes.size() > 0
 		|| this->AttachEffects.RemoveTypes.size() > 0
 		|| this->AttachEffects.RemoveGroups.size() > 0
@@ -602,6 +609,12 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlayAnimAboveSurface)
 
 		.Process(this->AnimZAdjust)
+
+		.Process(this->ChangeOwner)
+		.Process(this->ChangeOwner_SetAsMindControl)
+		.Process(this->ChangeOwner_MindControlAnim)
+		.Process(this->ChangeOwner_Duration)
+		.Process(this->ChangeOwner_Duration_PreventChange)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

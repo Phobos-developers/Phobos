@@ -214,6 +214,12 @@ public:
 
 		Nullable<int> AnimZAdjust;
 
+		Valueable<bool> ChangeOwner;
+		Valueable<bool> ChangeOwner_SetAsMindControl;
+		Nullable<AnimTypeClass*> ChangeOwner_MindControlAnim;
+		Nullable<int> ChangeOwner_Duration;
+		Valueable<bool> ChangeOwner_Duration_PreventChange;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -450,11 +456,19 @@ public:
 			, PlayAnimAboveSurface { false }
 
 			, AnimZAdjust {}
+
+			, ChangeOwner { false }
+			, ChangeOwner_SetAsMindControl { false }
+			, ChangeOwner_MindControlAnim {}
+			, ChangeOwner_Duration {}
+			, ChangeOwner_Duration_PreventChange { false }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyLocomotorInfliction(TechnoClass* pTarget);
 		void ApplyLocomotorInflictionReset(TechnoClass* pTarget);
+		void ApplyOwnerChange(HouseClass* pHouse, TechnoClass* pTarget);
+
 	public:
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno) const;
 		bool CanAffectTarget(TechnoClass* pTarget) const;
