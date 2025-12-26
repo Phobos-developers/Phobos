@@ -19,7 +19,7 @@ DEFINE_HOOK(0x4C77E4, EventClass_Execute_DeployCommand, 0x6)
 		if (pType->DeployFire && !pType->IsSimpleDeployer)
 		{
 			int weaponIndex = -1;
-			auto const pWeapon = TechnoExt::GetDeployFireWeapon(pThis, weaponIndex);
+			auto const pWeapon = TechnoExt::GetDeployFireWeapon(pThis, pType, weaponIndex);
 
 			if (pWeapon && pWeapon->FireOnce)
 			{
@@ -41,7 +41,7 @@ DEFINE_HOOK(0x73DCEF, UnitClass_Mission_Unload_DeployFire, 0x6)
 	GET(UnitClass*, pThis, ESI);
 
 	int weaponIndex = -1;
-	auto const pWeapon = TechnoExt::GetDeployFireWeapon(pThis, weaponIndex);
+	auto const pWeapon = TechnoExt::GetDeployFireWeapon(pThis, pThis->Type, weaponIndex);
 
 	if (weaponIndex < 0 || !pWeapon)
 	{

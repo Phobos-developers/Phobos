@@ -288,6 +288,8 @@ public:
 		Valueable<bool> AIAirTargetingFix;
 
 		Valueable<bool> SortCameoByName;
+
+		Valueable<bool> BuildingRadioLink_SyncOwner;
 		
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -516,6 +518,8 @@ public:
 			, SortCameoByName { false }
 			
 			, MergeBuildingDamage { false }
+
+			, BuildingRadioLink_SyncOwner { true }
 		{ }
 
 		virtual ~ExtData() = default;

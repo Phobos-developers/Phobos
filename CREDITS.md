@@ -468,6 +468,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue that units will goto farest location if target is closer than `MinimumRange`
   - Fix a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType`
   - Fix a bug where units can be promoted when created via trigger actions even if they have `Trainable=false`
+  - Fix the bug that ai will try to product aircraft even the airport has no free dock for it
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -654,6 +655,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where the vanilla script ignores jumpjets
   - CellSpread in cylinder shape
   - CellSpread damage check if victim is in air or on floor
+  - Fix an issue where non-repairer units needed sensors to attack cloaked friendly units
+  - Allow customizing whether to synchronously change the owner of the RadioLink-linked units when the owner of a building changes
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

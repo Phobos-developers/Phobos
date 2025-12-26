@@ -281,6 +281,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed MPDebug timer displaying when debug's visibility is off.
 - Fixed the issue that units will goto farest location if target is closer than `MinimumRange`.
 - Fixed a bug where units can be promoted when created via trigger actions even if they have `Trainable=false`.
+- Fixed the bug that ai will try to product aircraft even the airport has no free dock for it.
+- Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.
 
 ## Fixes / interactions with other extensions
 
@@ -955,6 +957,19 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]     ; BuildingType
 BarracksExitCell=  ; X,Y - cell offset
+```
+
+### Custom whether to synchronously change the owner of the RadioLink-linked units when the owner of a building changes
+
+- In vanilla, buildings with RadioLink (f.ex. war factory and air base) will change the owner of the RadioLink-linked units when the owner of the building changes. Now you can toggle this behaviour off by the following flags.
+
+In `rulesmd.ini`:
+```ini
+[General]
+BuildingRadioLink.SyncOwner=true ; boolean
+
+[SOMEBUILDING]                   ; BuildingType
+BuildingRadioLink.SyncOwner=     ; boolean, default to [General] -> BuildingRadioLink.SyncOwner
 ```
 
 ### Customizable garrison and bunker properties
@@ -1938,11 +1953,13 @@ MinimapColor=  ; integer - Red,Green,Blue
 
 - In vanilla, when miners enter area guard mission, they immediately switch to harvest mission. Now you can make them perform area guard mission normally like other technos.
   - We made it work only for miners controlled by the player, because this will prevent AI's miners from going work.
+  - If `Harvester.CanGuardArea.RequireTarget` set to true, it'll switch back to regular harvest mission when there's no valid target within its guard range.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]                      ; VehicleType
-Harvester.CanGuardArea=no          ; boolean
+[SOMEVEHICLE]                               ; VehicleType
+Harvester.CanGuardArea=false                ; boolean
+Harvester.CanGuardArea.RequireTarget=false  ; boolean
 ```
 
 ### Bunker entering check dehardcode

@@ -1493,16 +1493,16 @@ msgstr ""
 #: ../../AI-Scripting-and-Mapping.md:385
 msgid ""
 "`14004` Force Global `OnlyTargetHouseEnemy` value in Teams for new attack /"
-" move actions"
+" move actions introduced by Phobos"
 msgstr ""
-"`14004` 为新的攻击／移动行为在小队中强制全局 `OnlyTargetHouseEnemy` 值"
+"`14004` 为 Phobos 新增的攻击／移动脚本强制全局更改小队中的 `OnlyTargetHouseEnemy` 值"
 
 #: ../../AI-Scripting-and-Mapping.md:387
 msgid ""
-"Sets the TeamType tag value for `OnlyTargetHouseEnemy` tag. Only affects "
-"the new attack / move actions."
+"Globally forcibly set a value for the `OnlyTargetHouseEnemy` tag on TeamType. "
+"Only affects the new attack / move actions introduced by Phobos."
 msgstr ""
-"为 `OnlyTargetHouseEnemy` 标签设置小队上的标签值。仅作用于新发生的攻击／移动动作。"
+"全局性地强制为小队上的 `OnlyTargetHouseEnemy` 标签设置一个值。仅适用于 Phobos 新增的攻击／移动脚本。"
 
 #: ../../AI-Scripting-and-Mapping.md:390
 msgid ""
@@ -1519,15 +1519,15 @@ msgstr "-1"
 
 #: ../../AI-Scripting-and-Mapping.md:66
 msgid "Disable Global value for Force `OnlyTargetHouseEnemy` tag. Default value"
-msgstr "默认值，禁用强制 `OnlyTargetHouseEnemy` 标签全局值。"
+msgstr "默认值，不强制更改 `OnlyTargetHouseEnemy` 标签全局值。"
 
 #: ../../AI-Scripting-and-Mapping.md:66
 msgid "Force `OnlyTargetHouseEnemy` = false"
-msgstr "强制 `OnlyTargetHouseEnemy = false`"
+msgstr "强制 `OnlyTargetHouseEnemy` 为 false"
 
 #: ../../AI-Scripting-and-Mapping.md:66
 msgid "Force `OnlyTargetHouseEnemy` = true"
-msgstr "强制 `OnlyTargetHouseEnemy = true`"
+msgstr "强制 `OnlyTargetHouseEnemy` 为 true"
 
 #: ../../AI-Scripting-and-Mapping.md:66
 msgid "Force random boolean value"
