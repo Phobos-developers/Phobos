@@ -2751,6 +2751,7 @@ msgid ""
 "Allow customizing whether to synchronously change the owner of the "
 "RadioLink-linked units when the owner of a building changes"
 msgstr ""
+"允许自定义单位是否会在其所连接建筑发生所属变更时同步变更所属"
 
 #: ../../../CREDITS.md:661
 msgid "**solar-III (凤九歌)**"

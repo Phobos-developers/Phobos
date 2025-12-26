@@ -3828,6 +3828,7 @@ msgid ""
 "Custom whether to synchronously change the owner of the RadioLink-linked "
 "units when the owner of a building changes"
 msgstr ""
+"自定义单位是否会在其所连接建筑发生所属变更时同步变更所属"
 
 #: ../../Fixed-or-Improved-Logics.md:964
 msgid ""
@@ -3836,6 +3837,7 @@ msgid ""
 " building changes. Now you can toggle this behaviour off by the following"
 " flags."
 msgstr ""
+"在原版中，拥有 `RadioLink`<!-- IDA 内命名 --> 链接的建筑（例如战车工厂和机场）会在建筑发生所属变更时更改被 `RadioLink` 所链接单位的所属。现在你可以通过以下语句禁用该行为。"
 
 #: ../../Fixed-or-Improved-Logics.md:967
 msgid ""
