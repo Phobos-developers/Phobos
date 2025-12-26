@@ -2396,6 +2396,7 @@ msgid ""
 "Fixed the issue where non-repairer units needed sensors to attack cloaked"
 " friendly units (by TaranDahl)"
 msgstr ""
+"修复了非维修单位需要能够反隐才能攻击友军隐形单位的问题（by TaranDahl）"
 
 #: ../../Whats-New.md:517
 msgid ""

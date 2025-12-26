@@ -1719,6 +1719,7 @@ msgid ""
 "Fixed the issue where non-repairer units needed sensors to attack cloaked"
 " friendly units."
 msgstr ""
+"修复了非维修单位需要能够反隐才能攻击友军隐形单位的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:287
 msgid "Fixes / interactions with other extensions"
