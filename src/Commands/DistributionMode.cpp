@@ -133,7 +133,7 @@ void DistributionModeHoldDownCommandClass::DistributionModeOn()
 
 	DistributionModeHoldDownCommandClass::Enabled = true;
 
-	if (const auto pButton = ShapeButtonClass::GetButton(ShapeButtonHelper::NewButtonIndexes[0]))
+	if (const auto pButton = AdvancedCommandBarButton::GetShapeButton("DistributionMode"))
 	{
 		if (!pButton->IsOn)
 			pButton->TurnOn();
@@ -155,7 +155,7 @@ void DistributionModeHoldDownCommandClass::DistributionModeOff()
 
 	DistributionModeHoldDownCommandClass::Enabled = false;
 
-	if (const auto pButton = ShapeButtonClass::GetButton(ShapeButtonHelper::NewButtonIndexes[0]))
+	if (const auto pButton = AdvancedCommandBarButton::GetShapeButton("DistributionMode"))
 	{
 		if (pButton->IsOn)
 			pButton->TurnOff();
@@ -424,6 +424,29 @@ DEFINE_HOOK(0x6DBE74, TacticalClass_DrawAllRadialIndicators_DrawDistributionRang
 	}
 
 	return 0;
+}
+
+const char* DistributionModeHoldDownButtonClass::GetName() const
+{
+	return "DistributionMode";
+}
+
+const char* DistributionModeHoldDownButtonClass::GetTipName() const
+{
+	return "Tip:DistributionMode";
+}
+
+bool DistributionModeHoldDownButtonClass::CanHoldDown() const
+{
+	return true;
+}
+
+void DistributionModeHoldDownButtonClass::Execute(bool isOn) const
+{
+	if (isOn)
+		DistributionModeHoldDownCommandClass::DistributionModeOn();
+	else
+		DistributionModeHoldDownCommandClass::DistributionModeOff();
 }
 
 /*

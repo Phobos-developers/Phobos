@@ -13,3 +13,11 @@ public:
 	virtual const wchar_t* GetUIDescription() const override;
 	virtual void Execute(WWKey eInput) const override;
 };
+
+class DummyButtonClass : public AdvancedCommandBarButton
+{
+	virtual const char* GetName() const override;
+	virtual const char* GetTipName() const override;
+	virtual bool CanHoldDown() const override;
+	virtual void Execute(bool isOn) const override;
+};

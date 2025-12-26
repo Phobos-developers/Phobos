@@ -59,3 +59,11 @@ public:
 	static void __fastcall ClickedCellAction(ObjectClass* pSelect, Action action, CellStruct* pCell, CellStruct* pSecondCell);
 	static void __fastcall AreaGuardAction(TechnoClass* pTechno);
 };
+
+class DistributionModeHoldDownButtonClass : public AdvancedCommandBarButton
+{
+	virtual const char* GetName() const override;
+	virtual const char* GetTipName() const override;
+	virtual bool CanHoldDown() const override;
+	virtual void Execute(bool isOn) const override;
+};
