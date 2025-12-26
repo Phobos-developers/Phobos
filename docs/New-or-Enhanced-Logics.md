@@ -2166,6 +2166,13 @@ WaterImage.ConditionRed=              ; VehicleType entry
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
 ```
 
+### Independent SHP Vehicle Turret Files
+
+- SHP turret vehicles support the use of `*tur.shp` files.
+  - If the SHP vehicle has a Shape file named `* tur.shp` when drawing the turret, the start frame becomes 0; Otherwise, it is still `WalkFrames * Facings`.
+  - If you want to split the existing shape file in two, you only need to separate the 32-frame image of the turret and the corresponding 32-frame shadow from the source file and combine them into a new shape file. 
+  - When the turrets of carrier-based vehicles need to be replaced, dividing them into two files can reduce troublesome steps.
+
 ### Jumpjet Tilts While Moving
 
 ![image](_static/images/jumpjet-tilt.gif)
