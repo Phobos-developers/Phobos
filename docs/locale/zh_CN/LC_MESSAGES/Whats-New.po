@@ -2389,6 +2389,7 @@ msgid ""
 "Fixed the bug that ai will try to product aircraft even the airport has "
 "no free dock for it (by NetsuNegi)"
 msgstr ""
+"修复了即便在没有可用的空余机位时 AI 也仍会尝试生产战机的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:516
 msgid ""
