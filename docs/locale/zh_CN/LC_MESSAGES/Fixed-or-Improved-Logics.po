@@ -6754,6 +6754,7 @@ msgid ""
 "to regular harvest mission when there's no valid target within its guard "
 "range."
 msgstr ""
+"若 `Harvester.CanGuardArea.RequireTarget` 设为 true，当单位警戒范围内不存在有效目标时将会切换回通常所用的 `Havrest` 任务。"
 
 #: ../../Fixed-or-Improved-Logics.md:1959
 msgid ""
