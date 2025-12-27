@@ -540,7 +540,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, TechnoTypeClass* pType, 
 		if (!pCaptureManager)
 			return;
 
-		value = pCaptureManager->ControlNodes.Count;
+		value = pCaptureManager->GetControlledCount();
 		maxValue = pCaptureManager->MaxControlNodes;
 		break;
 	}

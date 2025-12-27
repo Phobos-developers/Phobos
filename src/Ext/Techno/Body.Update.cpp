@@ -992,7 +992,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		}
 		else if (pOldTypeExt->Convert_ResetMindControl)
 		{
-			if (!infiniteCapture && pCaptureManager->ControlNodes.Count > maxCapture)
+			if (!infiniteCapture && pCaptureManager->GetControlledCount() > maxCapture)
 			{
 				// Remove excess nodes.
 				for (int i = pCaptureManager->ControlNodes.Count - 1; i >= maxCapture; --i)

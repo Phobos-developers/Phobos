@@ -1,23 +1,112 @@
 #include "Body.h"
 
 #include <Ext/Techno/Body.h>
+#include <Utilities/AresHelper.h>
+
+int CaptureManagerExt::GetControlledTotalSize(CaptureManagerClass* pManager)
+{
+	int totalSize = 0;
+
+	for (const auto pNode : pManager->ControlNodes)
+	{
+		if (const auto pTechno = pNode->Unit)
+			totalSize += TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType())->MindControlSize;
+	}
+
+	return totalSize;
+}
+
+struct DummyExtHere
+{
+	char _[0x9C];
+	bool DriverKilled;
+};
+
+struct DummyTypeExtHere
+{
+	char _[0x131];
+	bool Vet_PsionicsImmune;
+	bool __[0x6];
+	bool Elite_PsionicsImmune;
+};
 
 bool CaptureManagerExt::CanCapture(CaptureManagerClass* pManager, TechnoClass* pTarget)
 {
-	if (pManager->MaxControlNodes == 1)
-		return pManager->CanCapture(pTarget);
+	// target exists and doesn't belong to capturing player
+	if (!pTarget)
+		return false;
 
-	const auto pTechnoTypeExt = TechnoExt::ExtMap.Find(pManager->Owner)->TypeExtData;
-	if (pTechnoTypeExt->MultiMindControl_ReleaseVictim)
+	if (pManager->MaxControlNodes <= 0)
+		return false;
+
+	const auto pOwner = pManager->Owner;
+
+	if (pTarget->Owner == pOwner->Owner)
+		return false;
+
+	const auto pTargetType = pTarget->GetTechnoType();
+
+	// generally not capturable
+	if (pTargetType->ImmuneToPsionics)
+		return false;
+
+	if (AresHelper::CanUseAres)
 	{
-		// I hate Ares' completely rewritten things - secsome
-		pManager->MaxControlNodes += 1;
-		const bool result = pManager->CanCapture(pTarget);
-		pManager->MaxControlNodes -= 1;
-		return result;
+		const auto pTargetTypeExt_Ares = reinterpret_cast<DummyTypeExtHere*>(pTargetType->align_2FC);
+
+		switch (pTarget->Veterancy.GetRemainingLevel())
+		{
+		case Rank::Elite:
+			if (pTargetTypeExt_Ares->Elite_PsionicsImmune)
+				return false;
+
+		case Rank::Veteran:
+			if (pTargetTypeExt_Ares->Vet_PsionicsImmune)
+				return false;
+
+		default:
+			break;
+		}
 	}
 
-	return pManager->CanCapture(pTarget);
+	// disallow capturing bunkered units
+	if (pTarget->BunkerLinkedItem)
+		return false;
+
+	if (pTarget->IsMindControlled() || pTarget->MindControlledByHouse)
+		return false;
+
+	// free slot? (move on if infinite or single slot which will be freed if used)
+	if (!pManager->InfiniteMindControl && pManager->MaxControlNodes != 1)
+	{
+		const auto pOwnerTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
+
+		if (!pOwnerTypeExt->MindControl_IgnoreSize)
+		{
+			const int totalSize = CaptureManagerExt::GetControlledTotalSize(pManager);
+			const int available = pOwnerTypeExt->MultiMindControl_ReleaseVictim ? pManager->MaxControlNodes : pManager->MaxControlNodes - totalSize;
+
+			if (TechnoTypeExt::ExtMap.Find(pTargetType)->MindControlSize > available)
+				return false;
+		}
+		else
+		{
+			if (pManager->ControlNodes.Count >= pManager->MaxControlNodes && !pOwnerTypeExt->MultiMindControl_ReleaseVictim)
+				return false;
+		}
+	}
+
+	// currently disallowed
+	const auto mission = pTarget->CurrentMission;
+
+	if (pTarget->IsIronCurtained() || mission == Mission::Selling || mission == Mission::Construction)
+		return false;
+
+	// driver killed. has no mind.
+	if (AresHelper::CanUseAres && reinterpret_cast<DummyExtHere*>(*(uintptr_t*)((char*)pTarget + 0x154))->DriverKilled)
+		return false;
+
+	return true;
 }
 
 bool CaptureManagerExt::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarget, bool silent)
@@ -68,7 +157,7 @@ bool CaptureManagerExt::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 }
 
 bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTarget,
-	bool bRemoveFirst, AnimTypeClass* pControlledAnimType, bool silent, int threatDelay)
+	bool removeFirst, AnimTypeClass* pControlledAnimType, bool silent, int threatDelay)
 {
 	if (CaptureManagerExt::CanCapture(pManager, pTarget))
 	{
@@ -78,10 +167,26 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* 
 		if (!pManager->InfiniteMindControl)
 		{
 			if (pManager->MaxControlNodes == 1 && pManager->ControlNodes.Count == 1)
+			{
 				CaptureManagerExt::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
-			else if (pManager->ControlNodes.Count == pManager->MaxControlNodes)
-				if (bRemoveFirst)
-					CaptureManagerExt::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
+			}
+			else if (pManager->ControlNodes.Count > 0 && removeFirst)
+			{
+				const auto pOwnerTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType());
+
+				if (pOwnerTypeExt->MindControl_IgnoreSize)
+				{
+					if (pManager->ControlNodes.Count == pManager->MaxControlNodes)
+						CaptureManagerExt::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
+				}
+				else
+				{
+					const auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
+
+					while (pManager->ControlNodes.Count && pTargetTypeExt->MindControlSize > pManager->MaxControlNodes - CaptureManagerExt::GetControlledTotalSize(pManager))
+						CaptureManagerExt::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
+				}
+			}
 		}
 
 		auto const pControlNode = GameCreate<ControlNode>();

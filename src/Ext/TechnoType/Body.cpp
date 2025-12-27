@@ -727,6 +727,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->RadarJamAffect.Read(exINI, pSection, "RadarJamAffect");
 	this->RadarJamIgnore.Read(exINI, pSection, "RadarJamIgnore");
 	this->MindControlRangeLimit.Read(exINI, pSection, "MindControlRangeLimit");
+	this->MindControl_IgnoreSize.Read(exINI, pSection, "MindControl.IgnoreSize");
+	this->MindControlSize.Read(exINI, pSection, "MindControlSize");
 	this->MindControlLink_VisibleToHouse.Read(exINI, pSection, "MindControlLink.VisibleToHouse");
 	this->FactoryPlant_Multiplier.Read(exINI, pSection, "FactoryPlant.Multiplier");
 
@@ -1385,6 +1387,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->UIDescription)
 		.Process(this->LowSelectionPriority)
 		.Process(this->MindControlRangeLimit)
+		.Process(this->MindControl_IgnoreSize)
+		.Process(this->MindControlSize)
 		.Process(this->MindControlLink_VisibleToHouse)
 		.Process(this->FactoryPlant_Multiplier)
 
