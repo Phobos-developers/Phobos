@@ -70,7 +70,7 @@ bool CaptureManagerExt::CanCapture(CaptureManagerClass* pManager, TechnoClass* p
 	}
 
 	// disallow capturing bunkered units
-	if (pTarget->BunkerLinkedItem)
+	if (pTarget->BunkerLinkedItem && pTarget->WhatAmI() == AbstractType::Unit)
 		return false;
 
 	if (pTarget->IsMindControlled() || pTarget->MindControlledByHouse)
