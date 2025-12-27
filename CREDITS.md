@@ -469,6 +469,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType`
   - Fix a bug where units can be promoted when created via trigger actions even if they have `Trainable=false`
   - Fix the bug that ai will try to product aircraft even the airport has no free dock for it
+  - Customize size for mind controlled unit
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
