@@ -159,8 +159,8 @@ DEFINE_HOOK(0x7431C9, FootClass_SelectAutoTarget_MultiWeapon, 0x7)			// UnitClas
 	GET(const ThreatType, result, EDI);
 
 	const bool isUnit = R->Origin() == 0x7431C9;
-	const auto pType = pThis->GetTechnoType();
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	const auto pType = pTypeExt->OwnerObject();
 
 	if (isUnit
 		&& !pType->IsGattling && pType->TurretCount > 0

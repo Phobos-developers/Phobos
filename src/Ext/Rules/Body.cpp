@@ -338,6 +338,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->SortCameoByName.Read(exINI, GameStrings::General, "SortCameoByName");
 
+	this->MergeBuildingDamage.Read(exINI, GameStrings::CombatDamage, "MergeBuildingDamage");
+	
+	this->BuildingRadioLink_SyncOwner.Read(exINI, GameStrings::General, "BuildingRadioLink.SyncOwner");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -614,6 +618,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->FallingDownTargetingFix)
 		.Process(this->AIAirTargetingFix)
 		.Process(this->SortCameoByName)
+		.Process(this->MergeBuildingDamage)
+		.Process(this->BuildingRadioLink_SyncOwner)
 		;
 }
 

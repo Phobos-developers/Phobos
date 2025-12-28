@@ -5,4 +5,4 @@ rem Builds Phobos DevBuild.
 rem Ensure we're in correct directory.
 cd /D "%~dp0"
 
-call run_msbuild /maxCpuCount /consoleloggerparameters:NoSummary /property:Configuration=Debug
+call build Debug

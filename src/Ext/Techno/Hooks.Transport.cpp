@@ -243,12 +243,13 @@ static inline bool CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 		return false;
 
 	const auto pTransportType = pTransport->Type;
+	const auto pTransportTypeExt = TechnoTypeExt::ExtMap.Find(pTransportType);
 
 	// Added to fit with AmphibiousEnter
-	if (pTransport->GetCell()->LandType == LandType::Water && !TechnoTypeExt::ExtMap.Find(pTransportType)->AmphibiousEnter.Get(RulesExt::Global()->AmphibiousEnter))
+	if (pTransport->GetCell()->LandType == LandType::Water && !pTransportTypeExt->AmphibiousEnter.Get(RulesExt::Global()->AmphibiousEnter))
 		return false;
 
-	const bool bySize = TechnoTypeExt::ExtMap.Find(pTransportType)->Passengers_BySize;
+	const bool bySize = pTransportTypeExt->Passengers_BySize;
 	const int passengerSize = static_cast<int>(pPassenger->GetTechnoType()->Size);
 
 	if (passengerSize > static_cast<int>(pTransportType->SizeLimit))

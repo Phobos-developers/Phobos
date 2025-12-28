@@ -941,3 +941,10 @@ DEFINE_HOOK(0x44939F, BuildingClass_Captured_BuildupFix, 0x7)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x4485DB, BuildingClass_SetOwningHouse_SyncLinkedOwner, 0x6)
+{
+	enum { SkipGameCode = 0x4486C8 };
+	GET(BuildingClass*, pThis, ESI);
+	return BuildingTypeExt::ExtMap.Find(pThis->Type)->BuildingRadioLink_SyncOwner.Get(RulesExt::Global()->BuildingRadioLink_SyncOwner) ? 0 : SkipGameCode;	
+}
