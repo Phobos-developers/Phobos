@@ -426,18 +426,32 @@ bool TActionExt::UndeployToWaypoint(TActionClass* const pThis, HouseClass* const
 	if (!allBuilding && !pBuildingType)
 		return true;
 
+	const auto& limboDelivereds = HouseExt::ExtMap.Find(vHouse)->OwnedLimboDeliveredBuildings;
+	const bool existLimboBuilding = !limboDelivereds.empty();
+
 	// Thanks to chaserli for the relevant code!
 	// There should be a more perfect way to do this, but I don't know how.
-	auto canUndeploy = [pThis, pTrigger, allBuilding, pBuildingType, vHouse](BuildingClass* pBuilding)
+	auto canUndeploy = [&](BuildingClass* const pBuilding)
 	{
 		auto const pType = pBuilding->Type;
 
 		if (!pType->UndeploysInto
 			|| pBuilding->Owner != vHouse
 			|| (!allBuilding && pType != pBuildingType)
+			|| pBuilding->CurrentMission == Mission::Selling 
 			|| !pBuilding->IsAlive || pBuilding->Health <= 0 || pBuilding->InLimbo)
 		{
 			return false;
+		}
+
+		// verify whether the building's source is LimboDelivery.
+		if (existLimboBuilding)
+		{
+			for (auto const pLimboBuilding : limboDelivereds)
+			{
+				if (pLimboBuilding == pBuilding)
+					return false;
+			}
 		}
 
 		if (pType->ConstructionYard)
