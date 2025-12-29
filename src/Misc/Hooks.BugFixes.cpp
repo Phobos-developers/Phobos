@@ -2912,3 +2912,11 @@ DEFINE_HOOK(0x65DE82, TeamTypeClass_CreateTeamMembers_Veterancy, 0x6)
 
 // Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.
 DEFINE_JUMP(LJMP, 0x6FC278, 0x6FC289);
+
+// Fixed the issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team.
+DEFINE_HOOK(0x6EA870, TeamClass_LiberateMember_Start, 0x6)
+{
+	GET_STACK(FootClass*, pMember, 0x4);
+	pMember->RecruitableB = true;
+	return 0;
+}

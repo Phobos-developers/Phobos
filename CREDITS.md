@@ -657,6 +657,7 @@ This page lists all the individual contributions to the project by their author.
   - CellSpread damage check if victim is in air or on floor
   - Fix an issue where non-repairer units needed sensors to attack cloaked friendly units
   - Allow customizing whether to synchronously change the owner of the RadioLink-linked units when the owner of a building changes
+  - Fix an issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
