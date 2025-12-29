@@ -738,8 +738,8 @@ ID=ActionCount,[Action1],609,0,0,[RadarMode],0,0,0,A,[ActionX]
 
 ### `610` Set team delay
 
-- Trigger's house can customize TeamDelay.
-  - When the value is less than 0 in `[General]>TeamDelays`.
+- Trigger's house can customize `TeamDelay`.
+  - When the value is less than 0 in `[General] -> TeamDelays`.
 
 In `mycampaign.map`:
 ```ini
