@@ -173,6 +173,7 @@ public:
 
 		Valueable<bool> NoSecondaryWeaponFallback;
 		Valueable<bool> NoSecondaryWeaponFallback_AllowAA;
+		Nullable<bool> AllowWeaponSelectAgainstWalls;
 
 		Valueable<int> NoAmmoWeapon;
 		Valueable<int> NoAmmoAmount;
@@ -548,6 +549,7 @@ public:
 			, AutoFire_TargetSelf { false }
 			, NoSecondaryWeaponFallback { false }
 			, NoSecondaryWeaponFallback_AllowAA { false }
+			, AllowWeaponSelectAgainstWalls {}
 			, NoAmmoWeapon { -1 }
 			, NoAmmoAmount { 0 }
 			, JumpjetRotateOnCrash { true }
