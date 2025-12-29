@@ -461,7 +461,7 @@ bool TActionExt::UndeployToWaypoint(TActionClass* const pThis, HouseClass* const
 		// Why does having this allow it to undeploy?
 		// Why don't vehicles move when waypoints are placed off the map?
 
-		const auto old = std::exchange(VocClass::VoicesEnabled, false);
+		const bool old = std::exchange(VocClass::VoicesEnabled, false);
 		pBuilding->SetArchiveTarget(pCell);
 		pBuilding->Sell(true);
 		VocClass::VoicesEnabled = old;
