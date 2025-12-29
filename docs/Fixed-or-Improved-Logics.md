@@ -323,6 +323,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that building with `CloningFacility=true` and `WeaponsFactory=true` may cloning multiple vehicles and then they get stuck.
 - Fixed a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType`.
 - Fixed the bug that technos cannot spawn survivors if it has been killed by ignore defense damage.
+- Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed.
+- Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed.
 
 ## Newly added global settings
 

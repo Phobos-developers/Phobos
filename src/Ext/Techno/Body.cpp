@@ -876,6 +876,103 @@ bool TechnoExt::SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValu
 	return true;
 }
 
+bool TechnoExt::EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, int distance, bool select)
+{
+	std::vector<CoordStruct> usableCoords;
+
+	for (int direction = 0; direction < 8; ++direction)
+	{
+		const CellStruct tmpCoords = Unsorted::AdjacentCell[direction];
+		CoordStruct ejectCoords { coords.X + tmpCoords.X * distance, coords.Y + tmpCoords.Y * distance, coords.Z };
+		const auto pCell = MapClass::Instance.TryGetCellAt(ejectCoords);
+
+		if (!pCell)
+			continue;
+
+		const auto occupied = pEjectee->IsCellOccupied(pCell, FacingType::None, -1, nullptr, true);
+
+		if (occupied != Move::OK && occupied != Move::MovingBlock)
+			continue;
+
+		if (pEjectee->WhatAmI() == InfantryClass::AbsID)
+		{
+			ejectCoords = pCell->FindInfantrySubposition(ejectCoords, false, false, false);
+			ejectCoords.Z = coords.Z;
+		}
+		else
+		{
+			ejectCoords = CellClass::Cell2Coord(pCell->MapCoords, coords.Z);
+		}
+
+		usableCoords.emplace_back(ejectCoords);
+	}
+
+	const int count = static_cast<int>(usableCoords.size());
+
+	if (!count)
+		return false;
+
+	return TechnoExt::EjectSurvivor(pEjectee, usableCoords[ScenarioClass::Instance->Random(0, count - 1)], select);
+}
+
+bool TechnoExt::EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool select)
+{
+	const auto pCell = MapClass::Instance.GetCellAt(coords);
+
+	pSurvivor->OnBridge = pCell->ContainsBridge();
+
+	const int floorZ = pCell->GetCoordsWithBridge().Z;
+	const bool chuted = (coords.Z - floorZ > 2 * Unsorted::LevelHeight);
+
+	if (chuted)
+	{
+		pSurvivor->Limbo();
+
+		++Unsorted::ScenarioInit;
+		const bool result = pSurvivor->SpawnParachuted(coords);
+		--Unsorted::ScenarioInit;
+
+		if (!result)
+			return false;
+	}
+	else
+	{
+		coords.Z = floorZ;
+
+		++Unsorted::ScenarioInit;
+		const bool result = pSurvivor->Unlimbo(coords, static_cast<DirType>(ScenarioClass::Instance->Random(0, 7)));
+		--Unsorted::ScenarioInit;
+
+		if (!result)
+			return false;
+	}
+
+	pSurvivor->Transporter = nullptr;
+	pSurvivor->LastMapCoords = pCell->MapCoords;
+
+	if (chuted)
+	{
+		const bool scat = pSurvivor->OnBridge;
+		const auto occupation = scat ? pCell->AltOccupationFlags : pCell->OccupationFlags;
+
+		if (occupation & 0x1C)
+			pCell->ScatterContent(CoordStruct::Empty, true, true, scat);
+	}
+	else
+	{
+		pSurvivor->Scatter(CoordStruct::Empty, true, false);
+		pSurvivor->QueueMission(pSurvivor->Owner->IsControlledByHuman() ? Mission::Guard : Mission::Hunt, 0);
+	}
+
+	pSurvivor->ShouldEnterOccupiable = false;
+	pSurvivor->ShouldGarrisonStructure = false;
+
+	if (select)
+		pSurvivor->Select();
+
+	return true;
+}
+
 // =============================
 // load / save
 

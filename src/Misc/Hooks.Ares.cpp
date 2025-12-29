@@ -77,7 +77,8 @@ void Apply_Ares3_0_Patches()
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x17536, AresHelper::AresBaseAddress + 0x1754D);
 
 	// SpawnSurvivor fix:
-	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4C0E8B, { 0x5C });
+	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4C0E8B, { 0x5C }); // preventEscape
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x445E0, GET_OFFSET(TechnoExt::EjectRandomly));
 
 	// Redirect Ares' getCellSpreadItems to our implementation:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x62267, &Helpers::Alex::getCellSpreadItems);
@@ -142,7 +143,8 @@ void Apply_Ares3_0p1_Patches()
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x17C26, AresHelper::AresBaseAddress + 0x17C3D);
 
 	// SpawnSurvivor fix:
-	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4CD4B, { 0x5C });
+	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4CD4B, { 0x5C }); // preventEscape
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x450C0, GET_OFFSET(TechnoExt::EjectRandomly));
 
 	// Redirect Ares' getCellSpreadItems to our implementation:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x62FB7, &Helpers::Alex::getCellSpreadItems);

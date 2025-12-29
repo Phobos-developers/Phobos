@@ -549,6 +549,8 @@ Fixes / interactions with other extensions:
 - [Customize Ares's radar jam logic](New-or-Enhanced-Logics.md#customize-ares-s-radar-jam-logic) (by NetsuNegi)
 - Fixed a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType` (by NetsuNegi)
 - Fixed the bug that technos cannot spawn survivors if it has been killed by ignore defense damage (by NetsuNegi)
+- Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed (by NetsuNegi)
+- Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed (by NetsuNegi)
 ```
 
 ### 0.4.0.1
