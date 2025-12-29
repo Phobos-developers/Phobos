@@ -652,10 +652,10 @@ ID=ActionCount,[Action1],510,0,0,[MCVRedeploy],0,0,0,A,[ActionX]
 ...
 ```
 
-### `511` Building Type undeploy at
+### `511` Undeploy Building to Waypoint
 
-- Recycle the building type into a vehicle and move it to the specified waypoint.
-  - If the type is `<All>`, recycle all buildings.
+- Undeploy specific BuildingTypes into VehicleTypes and move them to a specific Waypoint.
+  - If `<All>` is entered for the Building Type here, then undeploy all BuildingTypes.
 
 In `mycampaign.map`:
 ```ini
@@ -720,13 +720,9 @@ ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]
 ...
 ```
 
-### `609` Set radar mode
+### `609` Set Radar Mode
 
-- Trigger's house can modify the current radar mode.
-  - 0 for requires full-power and building.
-  - 1 for free radar.
-  - 2 for forced enable.
-  - 3 for forced disable.
+- Change the current radar mode of the trigger house.
 
 In `mycampaign.map`:
 ```ini
@@ -736,10 +732,19 @@ ID=ActionCount,[Action1],609,0,0,[RadarMode],0,0,0,A,[ActionX]
 ...
 ```
 
-### `610` Set team delay
+- The possible argument values are:
 
-- Trigger's house can customize `TeamDelay`.
-  - When the value is less than 0 in `[General] -> TeamDelays`.
+| *Argument* | *Description*                                                             |
+| :--------: | :-----------------------------------------------------------------------: |
+| 0          | Normal mode, requires buildings that provide radar and sufficient power   |
+| 1          | Change to [FreeRadar](https://modenc.renegadeprojects.com/FreeRadar) mode |
+| 2          | Force enable radar                                                        |
+| 3          | Force disable radar                                                       |
+
+### `610` Set house's `TeamDelays` value
+
+- Set the `TeamDelays` value of the trigger's house.
+  - If this value is less than 0, then use the value of `[General] -> TeamDelays`.
 
 In `mycampaign.map`:
 ```ini
