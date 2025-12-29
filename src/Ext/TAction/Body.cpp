@@ -639,7 +639,7 @@ bool TActionExt::SetFreeRadar(TActionClass* const pThis, HouseClass* const pHous
 
 bool TActionExt::SetTeamDelay(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
 {
-	const int timer = std::max(pThis->Param3, 0);
+	const int timer = pThis->Param3 < 0 ? RulesClass::Instance->TeamDelays.Items[static_cast<int>(pHouse->AIDifficulty)] : pThis->Param3;
 	HouseExt::ExtMap.Find(pHouse)->TeamDelay = timer;
 
 	auto& Timer = pHouse->TeamDelayTimer;
