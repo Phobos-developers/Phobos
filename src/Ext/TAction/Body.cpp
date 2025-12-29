@@ -433,7 +433,7 @@ bool TActionExt::UndeployToWaypoint(TActionClass* const pThis, HouseClass* const
 		auto const pType = pBuilding->Type;
 
 		if (!pType->UndeploysInto
-			|| (pBuilding->Owner != vHouse)
+			|| pBuilding->Owner != vHouse
 			|| (!allBuilding && pType != pBuildingType)
 			|| !pBuilding->IsAlive || pBuilding->Health <= 0 || pBuilding->InLimbo)
 		{
