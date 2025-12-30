@@ -94,7 +94,13 @@ DEFINE_HOOK(0x4D6D34, FootClass_MissionAreaGuard_Miner, 0x5)
 
 	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
-	return pTypeExt->Harvester_CanGuardArea && pThis->Owner->IsControlledByHuman() ? GoGuardArea : 0;
+	if (pTypeExt->Harvester_CanGuardArea && pThis->Owner->IsControlledByHuman())
+	{
+		if (!pTypeExt->Harvester_CanGuardArea_RequireTarget || pThis->TargetAndEstimateDamage(pThis->Location, ThreatType::Area))
+			return GoGuardArea;
+	}
+
+	return 0;
 }
 
 #pragma region HarvesterScanAfterUnload

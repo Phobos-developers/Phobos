@@ -97,6 +97,8 @@ public:
 
 		Valueable<bool> UndeploysInto_Sellable;
 
+		Nullable<bool> BuildingRadioLink_SyncOwner;
+
 		// Ares 0.2
 		Valueable<bool> CloningFacility;
 
@@ -167,6 +169,8 @@ public:
 			, Refinery_UseNormalActiveAnim { false }
 			, HasPowerUpAnim {}
 			, UndeploysInto_Sellable { false }
+
+			, BuildingRadioLink_SyncOwner {}
 
 			// Ares 0.2
 			, CloningFacility { false }

@@ -959,6 +959,19 @@ In `rulesmd.ini`:
 BarracksExitCell=  ; X,Y - cell offset
 ```
 
+### Custom whether to synchronously change the owner of the RadioLink-linked units when the owner of a building changes
+
+- In vanilla, buildings with RadioLink (f.ex. war factory and air base) will change the owner of the RadioLink-linked units when the owner of the building changes. Now you can toggle this behaviour off by the following flags.
+
+In `rulesmd.ini`:
+```ini
+[General]
+BuildingRadioLink.SyncOwner=true ; boolean
+
+[SOMEBUILDING]                   ; BuildingType
+BuildingRadioLink.SyncOwner=     ; boolean, default to [General] -> BuildingRadioLink.SyncOwner
+```
+
 ### Customizable garrison and bunker properties
 
 - You can now customize damage or ROF multipliers of a garrison or tank bunker building.
@@ -1940,11 +1953,13 @@ MinimapColor=  ; integer - Red,Green,Blue
 
 - In vanilla, when miners enter area guard mission, they immediately switch to harvest mission. Now you can make them perform area guard mission normally like other technos.
   - We made it work only for miners controlled by the player, because this will prevent AI's miners from going work.
+  - If `Harvester.CanGuardArea.RequireTarget` set to true, it'll switch back to regular harvest mission when there's no valid target within its guard range.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]                      ; VehicleType
-Harvester.CanGuardArea=no          ; boolean
+[SOMEVEHICLE]                               ; VehicleType
+Harvester.CanGuardArea=false                ; boolean
+Harvester.CanGuardArea.RequireTarget=false  ; boolean
 ```
 
 ### Bunker entering check dehardcode

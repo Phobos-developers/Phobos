@@ -1588,7 +1588,7 @@ Vanilla game played vehicles' `SellSound` globally. This has been changed in con
   - Weapons with `ElectricAssault=true` set on `Warhead` against `Overpowerable=true` buildings belonging to owner or allies.
   - `Overpowerable=true` buildings that are currently overpowered.
   - Any system using `(Elite)WeaponX`, f.ex `Gunner=true` or `IsGattling=true` is also wholly exempt.
-- If `[CombatDamage] -> AllowWeaponSelectAgainstWalls` is set to true, `Secondary` will now be used against walls if `Primary` weapon Warhead has `Wall=false`, `Secondary` has `Wall=true` and the firer does not have `NoSecondaryWeaponFallback` set to true.
+- If `[CombatDamage] -> AllowWeaponSelectAgainstWalls` is set to true, `Secondary` will now be used against walls if `Primary` weapon Warhead has `Wall=false`, `Secondary` has `Wall=true` and the firer does not have `NoSecondaryWeaponFallback` set to true. Can be overriden by setting `AllowWeaponSelectAgainstWalls` for a techno.
 
 In `rulesmd.ini`:
 ```ini
@@ -1598,6 +1598,7 @@ AllowWeaponSelectAgainstWalls=false      ; boolean
 [SOMETECHNO]                             ; TechnoType
 NoSecondaryWeaponFallback=false          ; boolean
 NoSecondaryWeaponFallback.AllowAA=false  ; boolean
+AllowWeaponSelectAgainstWalls=           ; boolean, default to [CombatDamage] -> AllowWeaponSelectAgainstWalls
 ```
 
 ### Disguise logic additions (disguise-based movement speed, disguise blinking visibility)
