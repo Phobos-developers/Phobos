@@ -1,7 +1,7 @@
 #include "Body.h"
 
 #include <BitFont.h>
-
+#include <Utilities/AresHelper.h>
 #include <Utilities/EnumFunctions.h>
 
 BuildingExt::ExtContainer BuildingExt::ExtMap;
@@ -314,15 +314,8 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int m
 
 	if (!pVictimHouse->IsControlledByHuman() && !RulesExt::Global()->DisplayIncome_AllowAI)
 	{
-		// TODO there should be a better way...
-		FlyingStrings::AddMoneyString(
-				this->AccumulatedIncome,
-				pThis,
-				pVictimHouse,
-				pTypeExt->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
-				pThis->GetRenderCoords(),
-				pTypeExt->DisplayIncome_Offset
-		);
+		if (AresHelper::CanUseAres)
+			*reinterpret_cast<int*>(reinterpret_cast<char*>(this->OwnerObject()->align_154) + 168) += pVictimHouse->Available_Money() - moneybefore;
 	}
 
 	if (!pTypeExt->SpyEffect_Custom)

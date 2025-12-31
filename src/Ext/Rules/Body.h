@@ -289,6 +289,8 @@ public:
 
 		Valueable<bool> SortCameoByName;
 
+		Valueable<bool> BuildingRadioLink_SyncOwner;
+		
 		Valueable<bool> ApplyPerTargetEffectsOnDetonate;
 		
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
@@ -519,6 +521,8 @@ public:
 			
 			, MergeBuildingDamage { false }
 
+			, BuildingRadioLink_SyncOwner { true }
+			
 			, ApplyPerTargetEffectsOnDetonate { true }
 		{ }
 

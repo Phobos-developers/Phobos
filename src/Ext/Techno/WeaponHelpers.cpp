@@ -57,8 +57,8 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 
 	if (!allowFallback
 		&& (!allowAAFallback || !secondIsAA)
-		&& !TechnoExt::CanFireNoAmmoWeapon(pThis, 1)
-		&& firstAllowedAE)
+		&& firstAllowedAE
+		&& !TechnoExt::CanFireNoAmmoWeapon(pThis, 1))
 	{
 		return weaponIndexOne;
 	}
@@ -105,10 +105,8 @@ void TechnoExt::FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponTyp
 	WeaponTypeExt::DetonateAt(pWeaponType, pThis, pThis);
 }
 
-bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
+bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, TechnoTypeClass* pType, int weaponIndex)
 {
-	auto const pType = pThis->GetTechnoType();
-
 	if (pType->Ammo > 0)
 	{
 		auto const pExt = TechnoTypeExt::ExtMap.Find(pType);
@@ -120,9 +118,13 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 	return false;
 }
 
-WeaponTypeClass* TechnoExt::GetDeployFireWeapon(TechnoClass* pThis, int& weaponIndex)
+bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 {
-	auto const pType = pThis->GetTechnoType();
+	return TechnoExt::CanFireNoAmmoWeapon(pThis, pThis->GetTechnoType(), weaponIndex);
+}
+
+WeaponTypeClass* TechnoExt::GetDeployFireWeapon(TechnoClass* pThis, TechnoTypeClass* pType, int& weaponIndex)
+{
 	weaponIndex = pType->DeployFireWeapon;
 
 	if (pThis->WhatAmI() == AbstractType::Unit)
@@ -157,18 +159,14 @@ WeaponTypeClass* TechnoExt::GetDeployFireWeapon(TechnoClass* pThis, int& weaponI
 	return pWeapon;
 }
 
-WeaponTypeClass* TechnoExt::GetDeployFireWeapon(TechnoClass* pThis)
+WeaponTypeClass* TechnoExt::GetDeployFireWeapon(TechnoClass* pThis, TechnoTypeClass* pType)
 {
 	int weaponIndex = 0;
-	return TechnoExt::GetDeployFireWeapon(pThis, weaponIndex);
+	return TechnoExt::GetDeployFireWeapon(pThis, pType, weaponIndex);
 }
 
-WeaponTypeClass* TechnoExt::GetCurrentWeapon(TechnoClass* pThis, int& weaponIndex, bool getSecondary)
+WeaponTypeClass* TechnoExt::GetCurrentWeapon(TechnoClass* pThis, TechnoTypeClass* pType, int& weaponIndex, bool getSecondary)
 {
-	if (!pThis)
-		return nullptr;
-
-	auto const pType = pThis->GetTechnoType();
 	weaponIndex = getSecondary ? 1 : 0;
 
 	if (pType->TurretCount > 0 && !pType->IsGattling)
@@ -189,10 +187,10 @@ WeaponTypeClass* TechnoExt::GetCurrentWeapon(TechnoClass* pThis, int& weaponInde
 	return pThis->GetWeapon(weaponIndex)->WeaponType;
 }
 
-WeaponTypeClass* TechnoExt::GetCurrentWeapon(TechnoClass* pThis, bool getSecondary)
+WeaponTypeClass* TechnoExt::GetCurrentWeapon(TechnoClass* pThis, TechnoTypeClass* pType, bool getSecondary)
 {
 	int weaponIndex = 0;
-	return TechnoExt::GetCurrentWeapon(pThis, weaponIndex, getSecondary);
+	return TechnoExt::GetCurrentWeapon(pThis, pType, weaponIndex, getSecondary);
 }
 
 // Gets weapon index for a weapon to use against wall overlay.
@@ -201,9 +199,9 @@ int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* p
 	auto const pTechnoTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 	auto const pTechnoType = pTechnoTypeExt->OwnerObject();
 	int weaponIndex = -1;
-	auto pWeapon = TechnoExt::GetCurrentWeapon(pThis, weaponIndex);
+	auto pWeapon = TechnoExt::GetCurrentWeapon(pThis, pTechnoType, weaponIndex);
 
-	if ((pTechnoType->TurretCount > 0 && !pTechnoType->IsGattling) || !pWallOverlayType || !pWallOverlayType->Wall || !RulesExt::Global()->AllowWeaponSelectAgainstWalls)
+	if ((pTechnoType->TurretCount > 0 && !pTechnoType->IsGattling) || !pWallOverlayType || !pWallOverlayType->Wall || !pTechnoTypeExt->AllowWeaponSelectAgainstWalls.Get(RulesExt::Global()->AllowWeaponSelectAgainstWalls))
 		return weaponIndex;
 	else if (weaponIndex == -1)
 		return 0;
@@ -214,7 +212,7 @@ int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* p
 	if (!pWeapon || (!pWeapon->Warhead->Wall && (!pWeapon->Warhead->Wood || pWallOverlayType->Armor != Armor::Wood)) || TechnoExt::CanFireNoAmmoWeapon(pThis, 1) || aeForbidsPrimary)
 	{
 		int weaponIndexSec = -1;
-		pWeapon = TechnoExt::GetCurrentWeapon(pThis, weaponIndexSec, true);
+		pWeapon = TechnoExt::GetCurrentWeapon(pThis, pTechnoType, weaponIndexSec, true);
 		pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon);
 		const bool aeForbidsSecondary = pWeaponExt && !pWeaponExt->SkipWeaponPicking && pWeaponExt->AttachEffect_CheckOnFirer && !pWeaponExt->HasRequiredAttachedEffects(pThis, pThis);
 
