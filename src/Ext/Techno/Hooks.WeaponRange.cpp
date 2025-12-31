@@ -57,13 +57,31 @@ DEFINE_HOOK(0x6F7248, TechnoClass_InRange_WeaponRange, 0x6)
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EBX);
+	GET_BASE(AbstractClass*, pTarget, 0xC);
 
 	int range = 0;
 
 	if (const auto keepRange = WeaponTypeExt::GetTechnoKeepRange(pWeapon, pThis, false))
+	{
 		range = keepRange;
+	}
 	else
+	{
 		range = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis);
+		auto pInfantry = abstract_cast<InfantryClass*>(pThis);
+
+		if (pInfantry && range != -512)
+		{
+			if (pInfantry->IsFiring)
+				range += RulesExt::Global()->InSequenceExtraRange.Get();
+
+			if (auto pFootTarget = abstract_cast<FootClass*>(pTarget))
+			{
+				if (pFootTarget->Locomotor.GetInterfacePtr()->Is_Moving_Now())
+					range += 192;
+			}
+		}
+	}
 
 	R->EDI(range);
 
