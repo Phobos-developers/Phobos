@@ -2630,7 +2630,7 @@ SpawnsCrate(N).Weight=1  ; integer
 
 ### Toggle per-target warhead effects apply timing
 
-- Now you can set the following flag to `false` to apply the Phobos warhead effects that take effect on each target when taking damage, rather than when the projectiles detonate.
+- Now you can set the following flag to `false` to apply the **Phobos** warhead effects that take effect on each target when taking damage, rather than when the projectiles detonate.
   - This will allow such effects to be applied through damage without projectiles, including but not limited to damage from particles, vanilla radiation, and Ares' `GenericWarhead` superweapon.
   - This will also cause all effects that can completely prevent damage to also prevent these warhead effects, including but not limited to `DamageSelf`, `DamageAirThreshold`, `AffectsAllies`, `AffectsAir`.
   - If you use a warhead with CellSpread to damage a building multiple times, then these effects will be applied multiple times. If you don't want this to happen, use [`MergeBuildingDamage`](#allow-merging-aoe-damage-to-buildings-into-one).
@@ -2652,6 +2652,11 @@ ApplyPerTargetEffectsOnDetonate=true  ; boolean
 
 [SOMEWARHEAD]                         ; WarheadType
 ApplyPerTargetEffectsOnDetonate=      ; boolean, default to [CombatDamage] -> ApplyPerTargetEffectsOnDetonate
+```
+
+```{note}
+- Ares' warhead effects, such as EMP or IronCurtain warhead, will not be affected. 
+- Ares' warhead effect controllers, such as `EffectsRequireDamage`, only affect Ares' effects. So they have nothing to do with this.
 ```
 
 ### Trigger specific NotHuman infantry Death anim sequence
