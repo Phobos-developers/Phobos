@@ -1661,7 +1661,7 @@ msgid ""
 "You can now disable hardcoded black dots that YR engine shows over empty "
 "spawn locations, which allows to use prettier and more correctly placed "
 "markers that are produced by Map Renderer instead."
-msgstr "现在你可以禁用 YR 引擎在空置出生点显示的黑点，这允许使用由地图渲染器生成的更没关且位置正确的标记。"
+msgstr "现在你可以禁用 YR 引擎在空置出生点显示的黑点，这允许使用由地图渲染器生成的更美观且位置正确的标记。"
 
 #: ../../User-Interface.md:521 ../../User-Interface.md:579
 #: ../../User-Interface.md:608 ../../User-Interface.md:654

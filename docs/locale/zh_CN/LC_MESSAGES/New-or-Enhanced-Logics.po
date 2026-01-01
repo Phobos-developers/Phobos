@@ -9004,7 +9004,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:2556
 msgid "Remove disguise on impact"
-msgstr "移除伪装"
+msgstr "移除伪装弹头"
 
 #: ../../New-or-Enhanced-Logics.md:2558
 msgid ""
@@ -9241,7 +9241,7 @@ msgstr "[将建筑出售或反部署](#sell-or-undeploy-building-on-"
 
 #: ../../New-or-Enhanced-Logics.md:2642
 msgid "[`RemoveDisguise`](#remove-disguise-on-impact)"
-msgstr "[移除伪装](#remove-disguise-on-impact)"
+msgstr "[移除伪装弹头](#remove-disguise-on-impact)"
 
 #: ../../New-or-Enhanced-Logics.md:2643
 msgid "[`ReverseEngineer`](#reverse-engineer-warhead)"
