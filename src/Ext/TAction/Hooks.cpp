@@ -131,3 +131,13 @@ DEFINE_HOOK(0x6E2368, TActionClass_PlayAnimAt, 0x7)
 
 	return SkipGameCode;
 }
+
+DEFINE_HOOK(0x5BED61, Game_StartMovie_CheckMP, 0x5)
+{
+	return 0x5BED70;
+}
+
+DEFINE_HOOK(0x5BF3B0, Game_StartInGameMovie_CheckMP, 0x5)
+{
+	return 0x5BF3BD;
+}
