@@ -2752,7 +2752,7 @@ msgstr "允许自定义单位是否会在其所连接建筑发生所属变更时
 
 #: ../../../CREDITS.md:661
 msgid "Toggle per-target warhead effects apply timing"
-msgstr ""
+msgstr "设置按目标生效的弹头效果应用时机"
 
 #: ../../../CREDITS.md:662
 msgid "**solar-III (凤九歌)**"

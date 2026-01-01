@@ -9183,7 +9183,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:2632
 msgid "Toggle per-target warhead effects apply timing"
-msgstr ""
+msgstr "设置按目标生效的弹头效果应用时机"
 
 #: ../../New-or-Enhanced-Logics.md:2634
 msgid ""
@@ -9191,6 +9191,7 @@ msgid ""
 "warhead effects that take effect on each target when taking damage, "
 "rather than when the projectiles detonate."
 msgstr ""
+"现在你可以通过将下列语句设为 `false` 来使 **Phobos** 弹头效果在每个目标受伤时而不只是在抛射体引爆时生效。"
 
 #: ../../New-or-Enhanced-Logics.md:2635
 msgid ""
@@ -9198,6 +9199,7 @@ msgid ""
 "projectiles, including but not limited to damage from particles, vanilla "
 "radiation, and Ares' `GenericWarhead` superweapon."
 msgstr ""
+"这将允许此类效果通过包括但不限于来自粒子、原版辐射以及 Ares 的 `Type=GenericWarhead` 类超武造成的无抛射体杀伤效果生效。"
 
 #: ../../New-or-Enhanced-Logics.md:2636
 msgid ""
@@ -9205,60 +9207,67 @@ msgid ""
 "also prevent these warhead effects, including but not limited to "
 "`DamageSelf`, `DamageAirThreshold`, `AffectsAllies`, `AffectsAir`."
 msgstr ""
+"这也将导致这些弹头效果同样会被包括但不限于 `DamageSelf`、`DamageAirThreshold`、`AffectsAllies`、`AffectsAir` 的杀伤阻断效果阻断。"
 
 #: ../../New-or-Enhanced-Logics.md:2637
 msgid ""
-"If you use a warhead with CellSpread to damage a building multiple times,"
+"If you use a warhead with `CellSpread` to damage a building multiple times,"
 " then these effects will be applied multiple times. If you don't want "
 "this to happen, use [`MergeBuildingDamage`](#allow-merging-aoe-damage-to-"
 "buildings-into-one)."
 msgstr ""
+"如果你使用带有 `CellSpread` 的弹头对一个建筑造成多次杀伤，那么这些效果将被多次应用。"
+"若不希望如此则可使用 [`MergeBuildingDamage`](#allow-merging-aoe-damage-to-"
+"buildings-into-one) 来避免。"
 
 #: ../../New-or-Enhanced-Logics.md:2638
 msgid "The affected effects include:"
-msgstr ""
+msgstr "适用的效果包括："
 
 #: ../../New-or-Enhanced-Logics.md:2639
 msgid "[Remove mind-control](#break-mind-control-on-impact)"
-msgstr ""
+msgstr "[解除心控](#break-mind-control-on-impact)"
 
 #: ../../New-or-Enhanced-Logics.md:2640
-msgid "[Type convertion](#convert-technotype-on-impact)"
-msgstr ""
+msgid "[Type conversion](#convert-technotype-on-impact)"
+msgstr "[单位转换弹头](#convert-technotype-on-impact)"
 
 #: ../../New-or-Enhanced-Logics.md:2641
 msgid ""
 "[`BuildingSell` & `BuildingUndeploy`](#sell-or-undeploy-building-on-"
 "impact)"
-msgstr ""
+msgstr "[将建筑出售或反部署](#sell-or-undeploy-building-on-"
+"impact)"
 
 #: ../../New-or-Enhanced-Logics.md:2642
 msgid "[`RemoveDisguise`](#remove-disguise-on-impact)"
-msgstr ""
+msgstr "[移除伪装](#remove-disguise-on-impact)"
 
 #: ../../New-or-Enhanced-Logics.md:2643
 msgid "[`ReverseEngineer`](#reverse-engineer-warhead)"
-msgstr ""
+msgstr "[逆向工程弹头](#reverse-engineer-warhead)"
 
 #: ../../New-or-Enhanced-Logics.md:2644
 msgid "[Modify shield](#shields)"
-msgstr ""
+msgstr "[护盾修改](#shields)"
 
 #: ../../New-or-Enhanced-Logics.md:2645
 msgid "[Modify attach-effects](#attached-effects)"
-msgstr ""
+msgstr "[AE 修改](#attached-effects)"
 
 #: ../../New-or-Enhanced-Logics.md:2646
 msgid ""
 "[Critical hits](#chance-based-extra-damage-or-warhead-detonation"
 "--critical-hits)"
-msgstr ""
+msgstr "[暴击](#chance-based-extra-damage-or-warhead-detonation"
+"--critical-hits)"
 
 #: ../../New-or-Enhanced-Logics.md:2647
 msgid ""
 "Due to technical reasons, `Crit.SuppressWhenIntercepted=false` and "
 "`Crit.ApplyChancePerTarget=true` will forced to be used."
 msgstr ""
+"由于技术原因，强制 `Crit.SuppressWhenIntercepted=false` 且 `Crit.ApplyChancePerTarget=true`。"
 
 #: ../../New-or-Enhanced-Logics.md:2650
 msgid ""
@@ -9281,12 +9290,14 @@ msgid ""
 "Ares' warhead effects, such as EMP or IronCurtain warhead, will not be "
 "affected."
 msgstr ""
+"Ares 弹头效果例如 EMP 或铁幕弹头将不受影响。"
 
 #: ../../New-or-Enhanced-Logics.md:2660
 msgid ""
 "Ares' warhead effect controllers, such as `EffectsRequireDamage`, only "
 "affect Ares' effects. So they have nothing to do with this."
 msgstr ""
+"Ares 弹头效果控制器例如 `EffectsRequireDamage` 仅影响 Ares 效果。所以它们与此功能无关。"
 
 #: ../../New-or-Enhanced-Logics.md:2663
 msgid "Trigger specific NotHuman infantry Death anim sequence"

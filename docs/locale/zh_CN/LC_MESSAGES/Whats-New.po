@@ -2409,8 +2409,13 @@ msgid ""
 msgstr "修复了非维修单位需要能够反隐才能攻击友军隐形单位的问题（by TaranDahl）"
 
 #: ../../Whats-New.md:518
-msgid "Toggle per-target warhead effects apply timing (by TaranDahl)"
+msgid ""
+"[Toggle per-target warhead effects apply timing](New-or-Enhanced-"
+"Logics.md#toggle-per-target-warhead-effects-apply-timing) (by TaranDahl)"
 msgstr ""
+"[设置按目标生效的弹头效果应用时机](New-or-Enhanced-"
+"Logics.md#toggle-per-target-warhead-effects-apply-timing)（by TaranDahl）"
+
 
 #: ../../Whats-New.md:520 ../../Whats-New.md:560 ../../Whats-New.md:888
 #: ../../Whats-New.md:973 ../../Whats-New.md:1137 ../../Whats-New.md:1178

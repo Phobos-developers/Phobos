@@ -472,6 +472,7 @@ New:
 - [Script Action 14004 for forcing all new actions to target only the main owner's enemy](AI-Scripting-and-Mapping.md#force-global-onlytargethouseenemy-value-in-teams-for-new-attack-move-actions-introduced-by-phobos) (by FS-21)
 - [Allow merging AOE damage to buildings into one](New-or-Enhanced-Logics.md#allow-merging-aoe-damage-to-buildings-into-one) (by CrimRecya)
 - [Allow customizing whether to synchronously change the owner of the RadioLink-linked units when the owner of a building changes](Fixed-or-Improved-Logics.md#custom-whether-to-synchronously-change-the-owner-of-the-radiolink-linked-units-when-the-owner-of-a-building-changes) (by TaranDahl)
+- [Toggle per-target warhead effects apply timing](New-or-Enhanced-Logics.md#toggle-per-target-warhead-effects-apply-timing) (by TaranDahl)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -515,7 +516,6 @@ Vanilla fixes:
 - Fixed a bug where units can be promoted when created via trigger actions even if they have `Trainable=false` (by NetsuNegi)
 - Fixed the bug that ai will try to product aircraft even the airport has no free dock for it (by NetsuNegi)
 - Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units (by TaranDahl)
-- Toggle per-target warhead effects apply timing (by TaranDahl)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
