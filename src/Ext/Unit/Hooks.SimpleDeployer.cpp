@@ -262,43 +262,12 @@ DEFINE_HOOK(0x54C58E, JumpjetLocomotionClass_Descending_PathfindingChecks, 0x7)
 	return 0;
 }
 
-// Disable DeployToLand=no forcing landing when idle due to what appears to be
-// a code oversight and no need for DeployToLand=no to work in vanilla game.
-DEFINE_HOOK(0x54BED4, JumpjetLocomotionClass_Hovering_DeployToLand, 0x7)
-{
-	enum { SkipGameCode = 0x54BEE0 };
-
-	GET(JumpjetLocomotionClass*, pThis, ESI);
-	GET(FootClass*, pLinkedTo, ECX);
-
-	auto const pType = pLinkedTo->GetTechnoType();
-
-	if (!pType->BalloonHover || pType->DeployToLand)
-		pThis->State = JumpjetLocomotionClass::State::Descending;
-
-	pLinkedTo->TryNextPlanningTokenNode();
-	return SkipGameCode;
-}
+// Skip DeployToLand check for IsSimpleDeployer jumpjet units, the desired behaviour here
+// should be same for both (hover in place if not deploying)
+DEFINE_JUMP(LJMP, 0x54BDDE, 0x54BDF2);
 
 // Same as above but at a different state.
-DEFINE_HOOK(0x54C2DF, JumpjetLocomotionClass_Cruising_DeployToLand, 0xA)
-{
-	enum { SkipGameCode = 0x54C4FD };
-
-	GET(JumpjetLocomotionClass*, pThis, ESI);
-	GET(FootClass*, pLinkedTo, ECX);
-
-	auto const pType = pLinkedTo->GetTechnoType();
-
-	if (!pType->BalloonHover || pType->DeployToLand)
-	{
-		pThis->CurrentHeight = 0;
-		pThis->State = JumpjetLocomotionClass::State::Descending;
-	}
-
-	pLinkedTo->TryNextPlanningTokenNode();
-	return SkipGameCode;
-}
+DEFINE_JUMP(LJMP, 0x54C212, 0x54C22A);
 
 // Disable Ares hover locomotor bobbing processing DeployToLand hook.
 DEFINE_PATCH(0x513EAA, 0xA1, 0xE0, 0x71, 0x88, 0x00);

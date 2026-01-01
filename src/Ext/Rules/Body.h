@@ -291,6 +291,8 @@ public:
 
 		Valueable<bool> BuildingRadioLink_SyncOwner;
 		
+		Valueable<bool> ApplyPerTargetEffectsOnDetonate;
+		
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -520,6 +522,8 @@ public:
 			, MergeBuildingDamage { false }
 
 			, BuildingRadioLink_SyncOwner { true }
+			
+			, ApplyPerTargetEffectsOnDetonate { true }
 		{ }
 
 		virtual ~ExtData() = default;
