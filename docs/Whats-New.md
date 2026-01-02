@@ -95,24 +95,30 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From pre-0.5 devbuilds
 
-- `[WarheadType] -> Crit.AffectAbovePercent` -> `[WarheadType] -> Crit.AffectsAbovePercent`.
+- The following tags were renamed:
+  - `[WarheadType] -> Crit.AffectAbovePercent` -> `[WarheadType] -> Crit.AffectsAbovePercent`.
 
 #### From 0.4
 
-- `[AttachEffectType] -> AffectTargets` -> `[AttachEffectType] -> AffectsTarget`
-- `[AttachEffectType] -> ReflectDamage.AffectsHouses` -> `[AttachEffectType] -> ReflectDamage.AffectsHouse`
-- `[AttachEffectType/TechnoType] -> RevengeWeapon.AffectsHouses` -> `[AttachEffectType/TechnoType] -> RevengeWeapon.AffectsHouse`
-- `[TechnoType] -> AutoFire` -> `[TechnoType] -> AutoTargetOwnPosition`
-- `[TechnoType] -> AutoFire.TargetSelf` -> `[TechnoType] -> AutoTargetOwnPosition.Self`
-- `[WarheadType] -> DetonateOnAllMapObjects.AffectHouses` -> `[WarheadType] -> DetonateOnAllMapObjects.AffectsHouse`
-- `[WarheadType] -> DetonateOnAllMapObjects.AffectTargets` -> `[WarheadType] -> DetonateOnAllMapObjects.AffectsTarget`
-- `[WarheadType] -> Crit.AffectBelowPercent` -> `[WarheadType] -> Crit.AffectsBelowPercent`.
-- `[WarheadType] -> Crit.Affects` -> `[WarheadType] -> Crit.AffectsTarget`
-- `[WarheadType] -> Crit.AffectsHouses` -> `[WarheadType] -> Crit.AffectsHouse`
-- `[WarheadType] -> KillWeapon.AffectsHouses` -> `[WarheadType] -> KillWeapon.AffectsHouse`
-- `[WarheadType] -> KillWeapon.OnFirer.AffectsHouses` -> `[WarheadType] -> KillWeapon.OnFirer.AffectsHouse`
-- `[WarheadType/SuperWeaponType] -> Convert(N).AffectedHouses` -> `[WarheadType/SuperWeaponType] -> Convert(N).AffectsHouse`
-- `[SuperWeaponType] -> LimboKill.Affected` -> `[SuperWeaponType] -> LimboKill.AffectsHouse`
+- The following tags were renamed:
+  - `[AttachEffectType] -> AffectTargets` -> `[AttachEffectType] -> AffectsTarget`
+  - `[AttachEffectType] -> ReflectDamage.AffectsHouses` -> `[AttachEffectType] -> ReflectDamage.AffectsHouse`
+  - `[AttachEffectType/TechnoType] -> RevengeWeapon.AffectsHouses` -> `[AttachEffectType/TechnoType] -> RevengeWeapon.AffectsHouse`
+  - `[TechnoType] -> AutoFire` -> `[TechnoType] -> AutoTargetOwnPosition`
+  - `[TechnoType] -> AutoFire.TargetSelf` -> `[TechnoType] -> AutoTargetOwnPosition.Self`
+  - `[WarheadType] -> DetonateOnAllMapObjects.AffectHouses` -> `[WarheadType] -> DetonateOnAllMapObjects.AffectsHouse`
+  - `[WarheadType] -> DetonateOnAllMapObjects.AffectTargets` -> `[WarheadType] -> DetonateOnAllMapObjects.AffectsTarget`
+  - `[WarheadType] -> Crit.AffectBelowPercent` -> `[WarheadType] -> Crit.AffectsBelowPercent`.
+  - `[WarheadType] -> Crit.Affects` -> `[WarheadType] -> Crit.AffectsTarget`
+  - `[WarheadType] -> Crit.AffectsHouses` -> `[WarheadType] -> Crit.AffectsHouse`
+  - `[WarheadType] -> KillWeapon.AffectsHouses` -> `[WarheadType] -> KillWeapon.AffectsHouse`
+  - `[WarheadType] -> KillWeapon.OnFirer.AffectsHouses` -> `[WarheadType] -> KillWeapon.OnFirer.AffectsHouse`
+  - `[WarheadType/SuperWeaponType] -> Convert(N).AffectedHouses` -> `[WarheadType/SuperWeaponType] -> Convert(N).AffectsHouse`
+  - `[SuperWeaponType] -> LimboKill.Affected` -> `[SuperWeaponType] -> LimboKill.AffectsHouse`
+
+```{note}
+- You can use the [*MigrationUtility*](https://github.com/Phobos-developers/PhobosSupplementaries/tree/develop/MigrationUtility) in the PhobosSupplementaries repository to conveniently complete these migrations.
+```
 
 ### New user settings in RA2MD.INI
 
