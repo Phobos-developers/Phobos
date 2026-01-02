@@ -93,26 +93,55 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 - To standardize tag names for similar functions, prevent typos, or avoid misunderstandings, replace them with new tag names.
 
+```{hint}
+- You can use the [*MigrationUtility*](https://github.com/Phobos-developers/PhobosSupplementaries/tree/develop/MigrationUtility) in the PhobosSupplementaries repository to conveniently complete these migrations.
+```
+
 #### From pre-0.5 devbuilds
 
-- `[WarheadType] -> Crit.AffectAbovePercent` -> `[WarheadType] -> Crit.AffectsAbovePercent`.
+- **WarheadType**:
+
+|            Old            |            New             |
+| :-----------------------: | :------------------------: |
+| `Crit.AffectAbovePercent` | `Crit.AffectsAbovePercent` |
 
 #### From 0.4
 
-- `[AttachEffectType] -> AffectTargets` -> `[AttachEffectType] -> AffectsTarget`
-- `[AttachEffectType] -> ReflectDamage.AffectsHouses` -> `[AttachEffectType] -> ReflectDamage.AffectsHouse`
-- `[AttachEffectType/TechnoType] -> RevengeWeapon.AffectsHouses` -> `[AttachEffectType/TechnoType] -> RevengeWeapon.AffectsHouse`
-- `[TechnoType] -> AutoFire` -> `[TechnoType] -> AutoTargetOwnPosition`
-- `[TechnoType] -> AutoFire.TargetSelf` -> `[TechnoType] -> AutoTargetOwnPosition.Self`
-- `[WarheadType] -> DetonateOnAllMapObjects.AffectHouses` -> `[WarheadType] -> DetonateOnAllMapObjects.AffectsHouse`
-- `[WarheadType] -> DetonateOnAllMapObjects.AffectTargets` -> `[WarheadType] -> DetonateOnAllMapObjects.AffectsTarget`
-- `[WarheadType] -> Crit.AffectBelowPercent` -> `[WarheadType] -> Crit.AffectsBelowPercent`.
-- `[WarheadType] -> Crit.Affects` -> `[WarheadType] -> Crit.AffectsTarget`
-- `[WarheadType] -> Crit.AffectsHouses` -> `[WarheadType] -> Crit.AffectsHouse`
-- `[WarheadType] -> KillWeapon.AffectsHouses` -> `[WarheadType] -> KillWeapon.AffectsHouse`
-- `[WarheadType] -> KillWeapon.OnFirer.AffectsHouses` -> `[WarheadType] -> KillWeapon.OnFirer.AffectsHouse`
-- `[WarheadType/SuperWeaponType] -> Convert(N).AffectedHouses` -> `[WarheadType/SuperWeaponType] -> Convert(N).AffectsHouse`
-- `[SuperWeaponType] -> LimboKill.Affected` -> `[SuperWeaponType] -> LimboKill.AffectsHouse`
+- **AttachEffectType**:
+
+|              Old              |             New              |
+| :---------------------------: | :--------------------------: |
+| `AffectTargets`               | `AffectsTarget`              |
+| `ReflectDamage.AffectsHouses` | `ReflectDamage.AffectsHouse` |
+| `RevengeWeapon.AffectsHouses` | `RevengeWeapon.AffectsHouse` |
+
+- **TechnoType**:
+
+|              Old              |             New              |
+| :---------------------------: | :--------------------------: |
+| `AutoFire`                    | `AutoTargetOwnPosition`      |
+| `AutoFire.TargetSelf`         | `AutoTargetOwnPosition.Self` |
+| `RevengeWeapon.AffectsHouses` | `RevengeWeapon.AffectsHouse` |
+
+- **WarheadType**:
+
+|                   Old                   |                   New                   |
+| :-------------------------------------: | :-------------------------------------: |
+| `DetonateOnAllMapObjects.AffectHouses`  | `DetonateOnAllMapObjects.AffectsHouse`  |
+| `DetonateOnAllMapObjects.AffectTargets` | `DetonateOnAllMapObjects.AffectsTarget` |
+| `Crit.AffectBelowPercent`               | `Crit.AffectsBelowPercent`              |
+| `Crit.Affects`                          | `Crit.AffectsTarget`                    |
+| `Crit.AffectsHouses`                    | `Crit.AffectsHouse`                     |
+| `KillWeapon.AffectsHouses`              | `KillWeapon.AffectsHouse`               |
+| `KillWeapon.OnFirer.AffectsHouses`      | `KillWeapon.OnFirer.AffectsHouse`       |
+| `Convert(N).AffectedHouses`             | `Convert(N).AffectsHouse`               |
+
+- **SuperWeaponType**:
+
+|             Old             |            New            |
+| :-------------------------: | :-----------------------: |
+| `LimboKill.Affected`        | `LimboKill.AffectsHouse`  |
+| `Convert(N).AffectedHouses` | `Convert(N).AffectsHouse` |
 
 ### New user settings in RA2MD.INI
 
