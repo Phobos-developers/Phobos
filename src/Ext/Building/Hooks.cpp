@@ -951,15 +951,14 @@ DEFINE_HOOK(0x4485DB, BuildingClass_SetOwningHouse_SyncLinkedOwner, 0x6)
 
 #pragma region PrefiringMark
 
-DEFINE_HOOK(0x450419, BuildingClass_UpdateDelayedFiring_PrefiringMark1, 0xA)
+DEFINE_HOOK(0x440042, BuildingClass_UpdateDelayedFiring_PrefiringMark1, 0x9)
 {
 	GET(BuildingClass*, pThis, ESI);
-	BuildingExt::ExtMap.Find(pThis)->IsFiringNow = true;
+	BuildingExt::ExtMap.Find(pThis)->IsFiringNow = (int)pThis->PrismStage && pThis->DelayBeforeFiring <= 1;
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x4504D7, BuildingClass_UpdateDelayedFiring_PrefiringMar2, 0xA);
-DEFINE_HOOK(0x450452, BuildingClass_UpdateDelayedFiring_PrefiringMar2, 0xA)
+DEFINE_HOOK(0x4400F9, BuildingClass_UpdateDelayedFiring_PrefiringMar2, 0x7)
 {
 	GET(BuildingClass*, pThis, ESI);
 	BuildingExt::ExtMap.Find(pThis)->IsFiringNow = false;

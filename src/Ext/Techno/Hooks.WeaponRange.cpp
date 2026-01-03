@@ -146,8 +146,9 @@ DEFINE_HOOK(0x6F7248, TechnoClass_InRange_WeaponRange, 0x6)
 
 		if (range != -512)
 		{
+			auto pRulesExt = RulesExt::Global();
 			auto pTypeExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-			auto prefiringExtraRange = pTypeExt->PrefiringExtraRange.Get(RulesExt::Global()->PrefiringExtraRange);
+			auto prefiringExtraRange = pTypeExt->PrefiringExtraRange.Get(pRulesExt->PrefiringExtraRange);
 
 			if (prefiringExtraRange
 				&& IsPrefiring(pThis, pWeapon))
@@ -155,7 +156,7 @@ DEFINE_HOOK(0x6F7248, TechnoClass_InRange_WeaponRange, 0x6)
 				range += prefiringExtraRange;
 			}
 
-			auto chasingExtraRange = pTypeExt->ChasingExtraRange.Get(RulesExt::Global()->ChasingExtraRange);
+			auto chasingExtraRange = pTypeExt->ChasingExtraRange.Get(pThis->GetTechnoType()->CloseRange || !pRulesExt->ChasingExtraRange_CloseRangeOnly ? pRulesExt->ChasingExtraRange : Leptons(0));
 
 			if (chasingExtraRange
 				&& IsChasing(pThis, pTarget))

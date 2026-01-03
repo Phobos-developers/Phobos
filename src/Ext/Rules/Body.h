@@ -292,6 +292,7 @@ public:
 		Valueable<bool> BuildingRadioLink_SyncOwner;
 
 		Valueable<Leptons> ChasingExtraRange;
+		Valueable<bool> ChasingExtraRange_CloseRangeOnly;
 		Valueable<Leptons> PrefiringExtraRange;
 		Valueable<bool> PrefiringExtraRange_IncludeBurst;
 		
@@ -526,6 +527,7 @@ public:
 			, BuildingRadioLink_SyncOwner { true }
 
 			, ChasingExtraRange { Leptons(0) }
+			, ChasingExtraRange_CloseRangeOnly { true }
 			, PrefiringExtraRange { Leptons(0) }
 			, PrefiringExtraRange_IncludeBurst { true }
 		{ }
