@@ -112,7 +112,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->EVA_InsufficientFunds.Read(exINI, pSection, "EVA.InsufficientFunds");
 	this->EVA_SelectTarget.Read(exINI, pSection, "EVA.SelectTarget");
 	this->SW_UseAITargeting.Read(exINI, pSection, "SW.UseAITargeting");
-	this->SW_AutoFire.Read(exINI, pSection, "SW.AutoTargetOwnPosition");
+	this->SW_AutoFire.Read(exINI, pSection, "SW.AutoFire");
 	this->SW_ManualFire.Read(exINI, pSection, "SW.ManualFire");
 	this->SW_ShowCameo.Read(exINI, pSection, "SW.ShowCameo");
 	this->SW_Unstoppable.Read(exINI, pSection, "SW.Unstoppable");
