@@ -296,6 +296,8 @@ public:
 		Valueable<Leptons> PrefiringExtraRange;
 		Valueable<bool> PrefiringExtraRange_IncludeBurst;
 		
+		Valueable<bool> ApplyPerTargetEffectsOnDetonate;
+		
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -525,6 +527,8 @@ public:
 			, MergeBuildingDamage { false }
 
 			, BuildingRadioLink_SyncOwner { true }
+			
+			, ApplyPerTargetEffectsOnDetonate { true }
 
 			, ChasingExtraRange { Leptons(0) }
 			, ChasingExtraRange_CloseRangeOnly { true }

@@ -657,6 +657,7 @@ This page lists all the individual contributions to the project by their author.
   - CellSpread damage check if victim is in air or on floor
   - Fix an issue where non-repairer units needed sensors to attack cloaked friendly units
   - Allow customizing whether to synchronously change the owner of the RadioLink-linked units when the owner of a building changes
+  - Toggle per-target warhead effects apply timing
   - Allow to avoid melee units or units with a pre-firing delay from being teased by fast-moving targets by temporarily increasing the range
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
