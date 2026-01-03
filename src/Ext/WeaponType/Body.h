@@ -92,6 +92,10 @@ public:
 		Nullable<CoordStruct> DelayedFire_AnimOffset;
 		Valueable<bool> DelayedFire_AnimOnTurret;
 
+		Nullable<Leptons> ChasingExtraRange;
+		Nullable<Leptons> PrefiringExtraRange;
+		Nullable<bool> PrefiringExtraRange_IncludeBurst;
+
 		bool SkipWeaponPicking;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
@@ -164,6 +168,10 @@ public:
 			, DelayedFire_OnlyOnInitialBurst { false }
 			, DelayedFire_AnimOffset {}
 			, DelayedFire_AnimOnTurret { true }
+
+			, ChasingExtraRange {}
+			, PrefiringExtraRange {}
+			, PrefiringExtraRange_IncludeBurst {}
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;

@@ -290,6 +290,10 @@ public:
 		Valueable<bool> SortCameoByName;
 
 		Valueable<bool> BuildingRadioLink_SyncOwner;
+
+		Valueable<Leptons> ChasingExtraRange;
+		Valueable<Leptons> PrefiringExtraRange;
+		Valueable<bool> PrefiringExtraRange_IncludeBurst;
 		
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -520,6 +524,10 @@ public:
 			, MergeBuildingDamage { false }
 
 			, BuildingRadioLink_SyncOwner { true }
+
+			, ChasingExtraRange { Leptons(0) }
+			, PrefiringExtraRange { Leptons(0) }
+			, PrefiringExtraRange_IncludeBurst { true }
 		{ }
 
 		virtual ~ExtData() = default;

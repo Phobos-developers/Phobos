@@ -948,3 +948,22 @@ DEFINE_HOOK(0x4485DB, BuildingClass_SetOwningHouse_SyncLinkedOwner, 0x6)
 	GET(BuildingClass*, pThis, ESI);
 	return BuildingTypeExt::ExtMap.Find(pThis->Type)->BuildingRadioLink_SyncOwner.Get(RulesExt::Global()->BuildingRadioLink_SyncOwner) ? 0 : SkipGameCode;	
 }
+
+#pragma region PrefiringMark
+
+DEFINE_HOOK(0x450419, BuildingClass_UpdateDelayedFiring_PrefiringMark1, 0xA)
+{
+	GET(BuildingClass*, pThis, ESI);
+	BuildingExt::ExtMap.Find(pThis)->IsFiringNow = true;
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x4504D7, BuildingClass_UpdateDelayedFiring_PrefiringMar2, 0xA);
+DEFINE_HOOK(0x450452, BuildingClass_UpdateDelayedFiring_PrefiringMar2, 0xA)
+{
+	GET(BuildingClass*, pThis, ESI);
+	BuildingExt::ExtMap.Find(pThis)->IsFiringNow = false;
+	return 0;
+}
+
+#pragma endregion
