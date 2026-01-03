@@ -687,7 +687,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 			return nullptr;
 	}
 
-	if (!EnumFunctions::IsTechnoEligible(pTarget, pType->AffectTargets, true))
+	if (!EnumFunctions::IsTechnoEligible(pTarget, pType->AffectsTarget, true))
 		return nullptr;
 
 	if ((!pType->AffectTypes.empty() && !pType->AffectTypes.Contains(pTargetType)) || pType->IgnoreTypes.Contains(pTargetType))
@@ -953,7 +953,7 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 		}
 
 		auto const type = attachEffect->GetType();
-		const bool isValid = EnumFunctions::IsTechnoEligible(pTarget, type->AffectTargets, true)
+		const bool isValid = EnumFunctions::IsTechnoEligible(pTarget, type->AffectsTarget, true)
 			&& (type->AffectTypes.empty() || type->AffectTypes.Contains(pTargetType)) && !type->IgnoreTypes.Contains(pTargetType);
 
 		if (!isValid)

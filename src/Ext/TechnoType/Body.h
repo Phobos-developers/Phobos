@@ -168,8 +168,8 @@ public:
 		Valueable<int> OpenTransport_RangeBonus;
 		Valueable<float> OpenTransport_DamageMultiplier;
 
-		Valueable<bool> AutoFire;
-		Valueable<bool> AutoFire_TargetSelf;
+		Valueable<bool> AutoTargetOwnPosition;
+		Valueable<bool> AutoTargetOwnPosition_Self;
 
 		Valueable<bool> NoSecondaryWeaponFallback;
 		Valueable<bool> NoSecondaryWeaponFallback_AllowAA;
@@ -289,7 +289,7 @@ public:
 		Valueable<AffectedHouse> Tint_VisibleToHouses;
 
 		Valueable<WeaponTypeClass*> RevengeWeapon;
-		Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
+		Valueable<AffectedHouse> RevengeWeapon_AffectsHouse;
 
 		AEAttachInfoTypeClass AttachEffects;
 
@@ -545,8 +545,8 @@ public:
 			, OpenTransport_RangeBonus { 0 }
 			, OpenTransport_DamageMultiplier { 1.0 }
 
-			, AutoFire { false }
-			, AutoFire_TargetSelf { false }
+			, AutoTargetOwnPosition { false }
+			, AutoTargetOwnPosition_Self { false }
 			, NoSecondaryWeaponFallback { false }
 			, NoSecondaryWeaponFallback_AllowAA { false }
 			, AllowWeaponSelectAgainstWalls {}
@@ -712,7 +712,7 @@ public:
 			, Tint_VisibleToHouses { AffectedHouse::All }
 
 			, RevengeWeapon {}
-			, RevengeWeapon_AffectsHouses { AffectedHouse::All }
+			, RevengeWeapon_AffectsHouse { AffectedHouse::All }
 
 			, AttachEffects {}
 

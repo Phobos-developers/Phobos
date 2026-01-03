@@ -78,8 +78,8 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
 
 	if (pWHExt->DetonateOnAllMapObjects && !pWHExt->WasDetonatedOnAllMapObjects
-		&& pWHExt->DetonateOnAllMapObjects_AffectTargets != AffectedTarget::None
-		&& pWHExt->DetonateOnAllMapObjects_AffectHouses != AffectedHouse::None)
+		&& pWHExt->DetonateOnAllMapObjects_AffectsTarget != AffectedTarget::None
+		&& pWHExt->DetonateOnAllMapObjects_AffectsHouse != AffectedHouse::None)
 	{
 		pWHExt->WasDetonatedOnAllMapObjects = true;
 		auto const originalLocation = pThis->Location;
@@ -112,7 +112,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 				}
 			};
 
-		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Aircraft) != AffectedTarget::None)
+		if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Aircraft) != AffectedTarget::None)
 		{
 			auto const aircraft = copy_dvc(AircraftClass::Array);
 
@@ -120,7 +120,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 				tryDetonate(pAircraft, pAircraft->Type);
 		}
 
-		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Building) != AffectedTarget::None)
+		if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Building) != AffectedTarget::None)
 		{
 			auto const buildings = copy_dvc(BuildingClass::Array);
 
@@ -128,7 +128,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 				tryDetonate(pBuilding, pBuilding->Type);
 		}
 
-		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Infantry) != AffectedTarget::None)
+		if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Infantry) != AffectedTarget::None)
 		{
 			auto const infantry = copy_dvc(InfantryClass::Array);
 
@@ -136,7 +136,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 				tryDetonate(pInf, pInf->Type);
 		}
 
-		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Unit) != AffectedTarget::None)
+		if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Unit) != AffectedTarget::None)
 		{
 			auto const units = copy_dvc(UnitClass::Array);
 

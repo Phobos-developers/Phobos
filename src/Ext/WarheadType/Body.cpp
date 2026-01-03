@@ -80,7 +80,7 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 	if (!pTechno || !pTechno->IsOnMap || !pTechno->IsAlive || pTechno->InLimbo || pTechno->IsSinking)
 		return false;
 
-	if (pOwner && !EnumFunctions::CanTargetHouse(this->DetonateOnAllMapObjects_AffectHouses, pOwner, pTechno->Owner))
+	if (pOwner && !EnumFunctions::CanTargetHouse(this->DetonateOnAllMapObjects_AffectsHouse, pOwner, pTechno->Owner))
 		return false;
 
 	if ((this->DetonateOnAllMapObjects_AffectTypes.size() > 0 && !this->DetonateOnAllMapObjects_AffectTypes.Contains(pType))
@@ -156,18 +156,18 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_ExtraDamage_ApplyFirepowerMult.Read(exINI, pSection, "Crit.ExtraDamage.ApplyFirepowerMult");
 	this->Crit_Warhead.Read<true>(exINI, pSection, "Crit.Warhead");
 	this->Crit_Warhead_FullDetonation.Read(exINI, pSection, "Crit.Warhead.FullDetonation");
-	this->Crit_Affects.Read(exINI, pSection, "Crit.AffectsTarget");
-	this->Crit_AffectsHouses.Read(exINI, pSection, "Crit.AffectsHouse");
+	this->Crit_AffectsTarget.Read(exINI, pSection, "Crit.AffectsTarget");
+	this->Crit_AffectsHouse.Read(exINI, pSection, "Crit.AffectsHouse");
 	this->Crit_AnimList.Read(exINI, pSection, "Crit.AnimList");
 	this->Crit_AnimList_PickRandom.Read(exINI, pSection, "Crit.AnimList.PickRandom");
 	this->Crit_AnimList_CreateAll.Read(exINI, pSection, "Crit.AnimList.CreateAll");
 	this->Crit_ActiveChanceAnims.Read(exINI, pSection, "Crit.ActiveChanceAnims");
 	this->Crit_AnimOnAffectedTargets.Read(exINI, pSection, "Crit.AnimOnAffectedTargets");
-	this->Crit_AffectBelowPercent.Read(exINI, pSection, "Crit.AffectsBelowPercent");
-	this->Crit_AffectAbovePercent.Read(exINI, pSection, "Crit.AffectsAbovePercent");
+	this->Crit_AffectsBelowPercent.Read(exINI, pSection, "Crit.AffectsBelowPercent");
+	this->Crit_AffectsAbovePercent.Read(exINI, pSection, "Crit.AffectsAbovePercent");
 	this->Crit_SuppressWhenIntercepted.Read(exINI, pSection, "Crit.SuppressWhenIntercepted");
 
-	if (this->Crit_AffectAbovePercent > this->Crit_AffectBelowPercent)
+	if (this->Crit_AffectsAbovePercent > this->Crit_AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] Crit.AffectsAbovePercent is bigger than Crit.AffectsBelowPercent, crit will never activate!\n", pSection);
 
 	this->MindControl_Anim.Read(exINI, pSection, "MindControl.Anim");
@@ -234,8 +234,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects.Read(exINI, pSection, "DetonateOnAllMapObjects");
 	this->DetonateOnAllMapObjects_Full.Read(exINI, pSection, "DetonateOnAllMapObjects.Full");
 	this->DetonateOnAllMapObjects_RequireVerses.Read(exINI, pSection, "DetonateOnAllMapObjects.RequireVerses");
-	this->DetonateOnAllMapObjects_AffectTargets.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectsTarget");
-	this->DetonateOnAllMapObjects_AffectHouses.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectsHouse");
+	this->DetonateOnAllMapObjects_AffectsTarget.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectsTarget");
+	this->DetonateOnAllMapObjects_AffectsHouse.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectsHouse");
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
@@ -277,8 +277,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->KillWeapon.Read(exINI, pSection, "KillWeapon");
 	this->KillWeapon_OnFirer.Read(exINI, pSection, "KillWeapon.OnFirer");
-	this->KillWeapon_AffectsHouses.Read(exINI, pSection, "KillWeapon.AffectsHouse");
-	this->KillWeapon_OnFirer_AffectsHouses.Read(exINI, pSection, "KillWeapon.OnFirer.AffectsHouse");
+	this->KillWeapon_AffectsHouse.Read(exINI, pSection, "KillWeapon.AffectsHouse");
+	this->KillWeapon_OnFirer_AffectsHouse.Read(exINI, pSection, "KillWeapon.OnFirer.AffectsHouse");
 	this->KillWeapon_Affects.Read(exINI, pSection, "KillWeapon.Affects");
 	this->KillWeapon_OnFirer_Affects.Read(exINI, pSection, "KillWeapon.OnFirer.Affects");
 
@@ -451,15 +451,15 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_ExtraDamage_ApplyFirepowerMult)
 		.Process(this->Crit_Warhead)
 		.Process(this->Crit_Warhead_FullDetonation)
-		.Process(this->Crit_Affects)
-		.Process(this->Crit_AffectsHouses)
+		.Process(this->Crit_AffectsTarget)
+		.Process(this->Crit_AffectsHouse)
 		.Process(this->Crit_AnimList)
 		.Process(this->Crit_AnimList_PickRandom)
 		.Process(this->Crit_AnimList_CreateAll)
 		.Process(this->Crit_ActiveChanceAnims)
 		.Process(this->Crit_AnimOnAffectedTargets)
-		.Process(this->Crit_AffectBelowPercent)
-		.Process(this->Crit_AffectAbovePercent)
+		.Process(this->Crit_AffectsBelowPercent)
+		.Process(this->Crit_AffectsAbovePercent)
 		.Process(this->Crit_SuppressWhenIntercepted)
 
 		.Process(this->MindControl_Anim)
@@ -526,8 +526,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DetonateOnAllMapObjects)
 		.Process(this->DetonateOnAllMapObjects_Full)
 		.Process(this->DetonateOnAllMapObjects_RequireVerses)
-		.Process(this->DetonateOnAllMapObjects_AffectTargets)
-		.Process(this->DetonateOnAllMapObjects_AffectHouses)
+		.Process(this->DetonateOnAllMapObjects_AffectsTarget)
+		.Process(this->DetonateOnAllMapObjects_AffectsHouse)
 		.Process(this->DetonateOnAllMapObjects_AffectTypes)
 		.Process(this->DetonateOnAllMapObjects_IgnoreTypes)
 
@@ -581,8 +581,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->KillWeapon)
 		.Process(this->KillWeapon_OnFirer)
-		.Process(this->KillWeapon_AffectsHouses)
-		.Process(this->KillWeapon_OnFirer_AffectsHouses)
+		.Process(this->KillWeapon_AffectsHouse)
+		.Process(this->KillWeapon_OnFirer_AffectsHouse)
 		.Process(this->KillWeapon_Affects)
 		.Process(this->KillWeapon_OnFirer_Affects)
 
