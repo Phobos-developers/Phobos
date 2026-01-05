@@ -2783,18 +2783,16 @@ AircraftTypes, due to their different attack patterns, will not wait for the del
 
 ### Extra range for chasing and pre-firing
 
-- In vanilla, melee units have difficulty attacking enemies that are moving away, even if they have a slightly higher speed than their targets. This is because the game's pathfinding algorithm searches for a firing position in units of cells, which creates an unacceptable error for melee units, causing the targets to move out of range before they can get close.
-- Units with various forms of pre-firing behavior have similar problems. The target may move out of range before they fire.
-  - Pre-firing behavior includes:
-    - Vehicles with tags such as `FiringSyncFrame%d`.
-    - Aircraft that are firing.
-    - Buildings with tags such as `IsAnimDelayedFire`.
-    - Infantry with tags such as `FireUp`.
-    - Any unit with [`DelayedFire`](#delayed-firing).
-- Now you can solve the above problems through the following flags.
+- Now you can give units additional range while they are chasing or in pre-firing state.
   - `ChasingExtraRange` grants the weapon extra range when the target is in a moving state.
   - `ChasingExtraRange.CloseRangeOnly` is used to restrict whether the global default value only applies to units with `CloseRange=yes`.
   - `PrefiringExtraRange` grants the weapon extra range when the unit is in a pre-firing state.
+    - Pre-firing state includes:
+      - Vehicles with tags such as `FiringSyncFrame%d`.
+      - Aircraft that are firing.
+      - Buildings with tags such as `IsAnimDelayedFire`.
+      - Infantry with tags such as `FireUp`.
+      - Any unit with [`DelayedFire`](#delayed-firing).
   - `PrefiringExtraRange.IncludeBurst` is used to decide whether the execution of burst is considered as being in a pre-firing state.
 
 In `rulesmd.ini`:
@@ -2809,6 +2807,12 @@ PrefiringExtraRange.IncludeBurst=true      ; boolean
 ChasingExtraRange=                         ; float, cells, the default values refer to the descriptions above
 PrefiringExtraRange=                       ; float, cells, default to [General] -> PrefiringExtraRange
 PrefiringExtraRange.IncludeBurst=          ; boolean, default to [General] -> PrefiringExtraRange.IncludeBurst
+```
+
+```{note}
+- In vanilla, melee units have difficulty attacking enemies that are moving away, even if they have a slightly higher speed than their targets. This is because the game's pathfinding algorithm searches for a firing position in units of cells, which creates an unacceptable error for melee units, causing the targets to move out of range before they can get close.
+- Units with various forms of pre-firing behavior have similar problems. The target may move out of range before they fire.
+- This feature can solve the above issues.
 ```
 
 ### Extra warhead detonations
