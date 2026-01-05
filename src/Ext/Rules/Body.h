@@ -291,10 +291,10 @@ public:
 
 		Valueable<bool> BuildingRadioLink_SyncOwner;
 
-		Valueable<Leptons> ChasingExtraRange;
-		Valueable<bool> ChasingExtraRange_CloseRangeOnly;
-		Valueable<Leptons> PrefiringExtraRange;
-		Valueable<bool> PrefiringExtraRange_IncludeBurst;
+		Valueable<Leptons> ExtraRange_TargetMoving;
+		Valueable<bool> ExtraRange_TargetMoving_CloseRangeOnly;
+		Valueable<Leptons> ExtraRange_Prefiring;
+		Valueable<bool> ExtraRange_Prefiring_IncludeBurst;
 		
 		Valueable<bool> ApplyPerTargetEffectsOnDetonate;
 		
@@ -530,10 +530,10 @@ public:
 			
 			, ApplyPerTargetEffectsOnDetonate { true }
 
-			, ChasingExtraRange { Leptons(0) }
-			, ChasingExtraRange_CloseRangeOnly { true }
-			, PrefiringExtraRange { Leptons(0) }
-			, PrefiringExtraRange_IncludeBurst { true }
+			, ExtraRange_TargetMoving { Leptons(0) }
+			, ExtraRange_TargetMoving_CloseRangeOnly { true }
+			, ExtraRange_Prefiring { Leptons(0) }
+			, ExtraRange_Prefiring_IncludeBurst { true }
 		{ }
 
 		virtual ~ExtData() = default;

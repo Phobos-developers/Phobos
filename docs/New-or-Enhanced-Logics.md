@@ -2784,29 +2784,29 @@ AircraftTypes, due to their different attack patterns, will not wait for the del
 ### Extra range for chasing and pre-firing
 
 - Now you can give units additional range while they are chasing or in pre-firing state.
-  - `ChasingExtraRange` grants the weapon extra range when the target is in a moving state.
-  - `ChasingExtraRange.CloseRangeOnly` is used to restrict whether the global default value only applies to units with `CloseRange=yes`.
-  - `PrefiringExtraRange` grants the weapon extra range when the unit is in a pre-firing state.
+  - `ExtraRange.TargetMoving` grants the weapon extra range when the target is in a moving state.
+  - `ExtraRange.TargetMoving.CloseRangeOnly` is used to restrict whether the global default value only applies to units with `CloseRange=yes`.
+  - `ExtraRange.Prefiring` grants the weapon extra range when the unit is in a pre-firing state.
     - Pre-firing state includes:
       - Vehicles with tags such as `FiringSyncFrame%d`.
       - Aircraft that are firing.
       - Buildings with tags such as `IsAnimDelayedFire`.
       - Infantry with tags such as `FireUp`.
       - Any unit with [`DelayedFire`](#delayed-firing).
-  - `PrefiringExtraRange.IncludeBurst` is used to decide whether the execution of burst is considered as being in a pre-firing state.
+  - `ExtraRange.Prefiring.IncludeBurst` is used to decide whether the execution of burst is considered as being in a pre-firing state.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-ChasingExtraRange=0.0                      ; float, cells
-ChasingExtraRange.CloseRangeOnly=true      ; boolean
-PrefiringExtraRange=0.0                    ; float, cells
-PrefiringExtraRange.IncludeBurst=true      ; boolean
+ExtraRange.TargetMoving=0.0                     ; float, cells
+ExtraRange.TargetMoving.CloseRangeOnly=true     ; boolean
+ExtraRange.Prefiring=0.0                        ; float, cells
+ExtraRange.Prefiring.IncludeBurst=true          ; boolean
 
-[SOMEWEAPON]                               ; WeaponType
-ChasingExtraRange=                         ; float, cells, the default values refer to the descriptions above
-PrefiringExtraRange=                       ; float, cells, default to [General] -> PrefiringExtraRange
-PrefiringExtraRange.IncludeBurst=          ; boolean, default to [General] -> PrefiringExtraRange.IncludeBurst
+[SOMEWEAPON]                                    ; WeaponType
+ExtraRange.TargetMoving=                        ; float, cells, the default values refer to the descriptions above
+ExtraRange.Prefiring=                           ; float, cells, default to [General] -> ExtraRange.Prefiring
+ExtraRange.Prefiring.IncludeBurst=              ; boolean, default to [General] -> ExtraRange.Prefiring.IncludeBurst
 ```
 
 ```{note}

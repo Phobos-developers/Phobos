@@ -92,9 +92,9 @@ public:
 		Nullable<CoordStruct> DelayedFire_AnimOffset;
 		Valueable<bool> DelayedFire_AnimOnTurret;
 
-		Nullable<Leptons> ChasingExtraRange;
-		Nullable<Leptons> PrefiringExtraRange;
-		Nullable<bool> PrefiringExtraRange_IncludeBurst;
+		Nullable<Leptons> ExtraRange_TargetMoving;
+		Nullable<Leptons> ExtraRange_Prefiring;
+		Nullable<bool> ExtraRange_Prefiring_IncludeBurst;
 
 		bool SkipWeaponPicking;
 
@@ -169,9 +169,9 @@ public:
 			, DelayedFire_AnimOffset {}
 			, DelayedFire_AnimOnTurret { true }
 
-			, ChasingExtraRange {}
-			, PrefiringExtraRange {}
-			, PrefiringExtraRange_IncludeBurst {}
+			, ExtraRange_TargetMoving {}
+			, ExtraRange_Prefiring {}
+			, ExtraRange_Prefiring_IncludeBurst {}
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;
