@@ -71,7 +71,7 @@ static bool IsChasing(TechnoClass* pThis, AbstractClass* pTarget)
 static bool IsPrefiring(TechnoClass* pThis, WeaponTypeClass* pWeapon)
 {
 	auto pTypeExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-	bool includeBurst = pTypeExt->PrefiringExtraRange_IncludeBurst.Get(RulesExt::Global()->PrefiringExtraRange_IncludeBurst);
+	bool includeBurst = pTypeExt->ExtraRange_Prefiring_IncludeBurst.Get(RulesExt::Global()->ExtraRange_Prefiring_IncludeBurst);
 
 	if (includeBurst && pThis->CurrentBurstIndex % pWeapon->Burst != 0)
 		return true;
@@ -148,7 +148,7 @@ DEFINE_HOOK(0x6F7248, TechnoClass_InRange_WeaponRange, 0x6)
 		{
 			auto pRulesExt = RulesExt::Global();
 			auto pTypeExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-			auto prefiringExtraRange = pTypeExt->PrefiringExtraRange.Get(pRulesExt->PrefiringExtraRange);
+			auto prefiringExtraRange = pTypeExt->ExtraRange_Prefiring.Get(pRulesExt->ExtraRange_Prefiring);
 
 			if (prefiringExtraRange
 				&& IsPrefiring(pThis, pWeapon))
@@ -156,7 +156,7 @@ DEFINE_HOOK(0x6F7248, TechnoClass_InRange_WeaponRange, 0x6)
 				range += prefiringExtraRange;
 			}
 
-			auto chasingExtraRange = pTypeExt->ChasingExtraRange.Get(pThis->GetTechnoType()->CloseRange || !pRulesExt->ChasingExtraRange_CloseRangeOnly ? pRulesExt->ChasingExtraRange : Leptons(0));
+			auto chasingExtraRange = pTypeExt->ExtraRange_TargetMoving.Get(pThis->GetTechnoType()->CloseRange || !pRulesExt->ExtraRange_TargetMoving_CloseRangeOnly ? pRulesExt->ExtraRange_TargetMoving : Leptons(0));
 
 			if (chasingExtraRange
 				&& IsChasing(pThis, pTarget))
