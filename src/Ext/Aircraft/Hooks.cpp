@@ -1179,3 +1179,24 @@ DEFINE_HOOK(0x4157EB, AircraftClass_Mission_SpyPlaneOverfly_MaxCount, 0x6)
 
 	return 0;
 }
+
+#pragma region Rocket
+
+DEFINE_HOOK(0x66295A, RocketLocomotionClass_Process_IsHighEnoughForCruise, 0x8)
+{
+	GET(AircraftClass*, pLinkedTo, ECX);
+	GET(ILocomotion*, pThis, ESI);
+
+	if (true)
+	{
+		auto heightThis = pLinkedTo->GetHeight();
+		auto heightTarget = locomotion_cast<RocketLocomotionClass*>(pThis);
+		R->EAX(Math::max(heightThis, heightTarget));
+	}
+	else
+	{
+		R->EAX(pLinkedTo->GetHeight());
+	}
+}
+
+#pragma endregion
