@@ -271,7 +271,7 @@ public:
 
 		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
     
-    Valueable<int> CrusherLevel;
+		Valueable<int> CrusherLevel;
 		Valueable<int> CrushableLevel;
 		Valueable<int> OmniCrusherLevel;
 		Valueable<int> OmniCrushResistantLevel;
@@ -514,7 +514,7 @@ public:
 
 			, Parasite_GrappleAnim {}
     
-      , CrusherLevel { 5 }
+			, CrusherLevel { 5 }
 			, CrushableLevel { 5 }
 			, OmniCrusherLevel { 10 }
 			, OmniCrushResistantLevel { 10 }

@@ -325,7 +325,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DistributeTargetingFrame.Read(exINI, GameStrings::General, "DistributeTargetingFrame");
 	this->DistributeTargetingFrame_AIOnly.Read(exINI, GameStrings::General, "DistributeTargetingFrame.AIOnly");
   
-  this->CrusherLevel.Read(exINI, GameStrings::General, "CrusherLevel");
+	this->CrusherLevel.Read(exINI, GameStrings::General, "CrusherLevel");
 	this->CrushableLevel.Read(exINI, GameStrings::General, "CrushableLevel");
 	this->OmniCrusherLevel.Read(exINI, GameStrings::General, "OmniCrusherLevel");
 	this->OmniCrushResistantLevel.Read(exINI, GameStrings::General, "OmniCrushResistantLevel");
@@ -618,7 +618,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackMove_IgnoreWeaponCheck)
 		.Process(this->AttackMove_StopWhenTargetAcquired)
 		.Process(this->Parasite_GrappleAnim)
-    .Process(this->CrusherLevel)
+		.Process(this->CrusherLevel)
 		.Process(this->CrushableLevel)
 		.Process(this->OmniCrusherLevel)
 		.Process(this->OmniCrushResistantLevel)

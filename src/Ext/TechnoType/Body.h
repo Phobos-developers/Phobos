@@ -367,9 +367,6 @@ public:
 
 		Nullable<double> ProneSpeed;
 		Nullable<double> DamagedSpeed;
-
-		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
-		Nullable<AnimTypeClass*> Promote_EliteAnimation;
     
 		Promotable<int> CrushLevel;
 		Promotable<int> CrushableLevel;
