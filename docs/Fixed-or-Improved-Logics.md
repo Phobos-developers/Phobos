@@ -283,6 +283,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed a bug where units can be promoted when created via trigger actions even if they have `Trainable=false`.
 - Fixed the bug that ai will try to product aircraft even the airport has no free dock for it.
 - Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.
+- Fixed the issue that rockets do not consider the destination altitude during climbing.
 
 ## Fixes / interactions with other extensions
 

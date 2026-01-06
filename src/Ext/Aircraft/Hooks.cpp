@@ -1187,16 +1187,17 @@ DEFINE_HOOK(0x66295A, RocketLocomotionClass_Process_IsHighEnoughForCruise, 0x8)
 	GET(AircraftClass*, pLinkedTo, ECX);
 	GET(ILocomotion*, pThis, ESI);
 
-	if (true)
-	{
-		auto heightThis = pLinkedTo->GetHeight();
-		auto heightTarget = locomotion_cast<RocketLocomotionClass*>(pThis);
-		R->EAX(Math::max(heightThis, heightTarget));
-	}
-	else
-	{
-		R->EAX(pLinkedTo->GetHeight());
-	}
+	auto pLoco = locomotion_cast<RocketLocomotionClass*>(pThis);
+	auto heightThis = pLinkedTo->GetHeight();
+	auto heightTarget = pLinkedTo->Location.Z - pLoco->MovingDestination.Z;
+
+	if (MapClass::Instance.GetCellAt(pLoco->MovingDestination)->ContainsBridge())
+		heightTarget -= CellClass::BridgeHeight;
+
+	R->EAX(Math::min(heightThis, heightTarget));
+	//R->EAX(pLinkedTo->GetHeight()); Vanilla behavior
+
+	return R->Origin() + 0x8;
 }
 
 #pragma endregion
