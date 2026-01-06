@@ -105,9 +105,9 @@ DEFINE_HOOK(0x5F6CD0, ObjectClass_IsCrushable, 0x6)
 			if (!pCrusher->Owner->IsAlliedWith(pTechno) && !pTechno->IsIronCurtained())
 				result = TechnoExt::GetCrushLevel(pCrusher) > TechnoExt::GetCrushableLevel(pTechno);
 		}
-		else if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pThis))
+		else
 		{
-			result = pTerrain->Type->Crushable;
+			result = pThis->GetType()->Crushable;
 		}
 	}
 
