@@ -515,7 +515,7 @@ int TechnoExt::GetCrushLevel(FootClass* pThis)
 	return 0;
 }
 
-int TechnoExt::GetCrushableLevel(FootClass* pThis)
+int TechnoExt::GetCrushableLevel(TechnoClass* pThis)
 {
 	const auto pType = pThis->GetTechnoType();
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);

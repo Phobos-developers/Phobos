@@ -100,16 +100,14 @@ DEFINE_HOOK(0x5F6CD0, ObjectClass_IsCrushable, 0x6)
 
 	if (pThis && pCrusher && pThis != pCrusher)
 	{
-		if (pThis->AbstractFlags & AbstractFlags::Techno)
+		if (const auto pTechno = abstract_cast<TechnoClass*, true>(pThis))
 		{
-			const auto pFoot = abstract_cast<FootClass*>(pThis);
-
-			if (pFoot && !pCrusher->Owner->IsAlliedWith(pFoot) && !pFoot->IsIronCurtained())
-				result = TechnoExt::GetCrushLevel(pCrusher) > TechnoExt::GetCrushableLevel(pFoot);
+			if (!pCrusher->Owner->IsAlliedWith(pTechno) && !pTechno->IsIronCurtained())
+				result = TechnoExt::GetCrushLevel(pCrusher) > TechnoExt::GetCrushableLevel(pTechno);
 		}
-		else
+		else if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pThis))
 		{
-			result = pThis->GetType()->Crushable;
+			result = pTerrain->Type->Crushable;
 		}
 	}
 

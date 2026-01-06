@@ -1181,6 +1181,10 @@ DeployedCrushableLevel.Veteran=           ; integer
 DeployedCrushableLevel.Elite=             ; integer
 ```
 
+<!--
+## Overlays
+-->
+
 ## Particle systems
 
 ### Fire particle target coordinate adjustment when firer rotates
