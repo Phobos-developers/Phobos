@@ -410,6 +410,7 @@ void BulletExt::Detonate(const CoordStruct& coords, TechnoClass* pOwner, int dam
 
 	pBullet->SetLocation(coords);
 	pBullet->Explode(true);
+	pBullet->UnInit();
 }
 
 // =============================

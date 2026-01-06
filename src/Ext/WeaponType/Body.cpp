@@ -310,17 +310,12 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 {
 	auto pTechno = pFirer;
 
-	if (pTechno->Transporter)
+	if (auto const pTransport = pTechno->Transporter)
 	{
-		auto const pType = pTechno->Transporter->GetTechnoType();
+		auto const pTypeExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData;
 
-		if (pType->OpenTopped)
-		{
-			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-
-			if (pTypeExt->OpenTopped_UseTransportRangeModifiers)
-				pTechno = pTechno->Transporter;
-		}
+		if (pTypeExt->OpenTopped_UseTransportRangeModifiers && pTypeExt->OwnerObject()->OpenTopped)
+			pTechno = pTransport;
 	}
 
 	auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
@@ -328,7 +323,7 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 	if (!pTechnoExt->AE.HasRangeModifier)
 		return range;
 
-	int extraRange = 0;
+	double extraRange = 0.0;
 
 	for (auto const& attachEffect : pTechnoExt->AttachedEffects)
 	{
@@ -347,10 +342,10 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 			continue;
 
 		range = static_cast<int>(range * Math::max(type->WeaponRange_Multiplier, 0.0));
-		extraRange += static_cast<int>(type->WeaponRange_ExtraRange * Unsorted::LeptonsPerCell);
+		extraRange += type->WeaponRange_ExtraRange;
 	}
 
-	range += extraRange;
+	range += static_cast<int>(extraRange * Unsorted::LeptonsPerCell);
 
 	return Math::max(range, 0);
 }

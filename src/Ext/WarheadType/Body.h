@@ -152,6 +152,8 @@ public:
 
 		Valueable<bool> Nonprovocative;
 
+		Nullable<bool> MergeBuildingDamage;
+
 		Nullable<int> CombatLightDetailLevel;
 		Valueable<double> CombatLightChance;
 		Valueable<bool> CLIsBlack;
@@ -193,6 +195,9 @@ public:
 		Valueable<double> AffectsBelowPercent;
 		Valueable<double> AffectsAbovePercent;
 		Valueable<bool> AffectsNeutral;
+		Valueable<bool> AffectsGround;
+		Valueable<bool> AffectsAir;
+		Valueable<bool> CellSpread_Cylinder;
 
 		Valueable<bool> ReverseEngineer;
 
@@ -207,7 +212,9 @@ public:
 		Valueable<bool> PlayAnimUnderground;
 		Valueable<bool> PlayAnimAboveSurface;
 
-		Nullable<bool> AnimZAdjust;
+		Nullable<int> AnimZAdjust;
+
+		Nullable<bool> ApplyPerTargetEffectsOnDetonate;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -366,6 +373,8 @@ public:
 
 			, Nonprovocative { false }
 
+			, MergeBuildingDamage {}
+
 			, CombatLightDetailLevel {}
 			, CombatLightChance { 1.0 }
 			, CLIsBlack { false }
@@ -400,6 +409,9 @@ public:
 			, AffectsBelowPercent { 1.0 }
 			, AffectsAbovePercent { 0.0 }
 			, AffectsNeutral { true }
+			, AffectsGround { true }
+			, AffectsAir { true }
+			, CellSpread_Cylinder { false }
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}
@@ -440,6 +452,8 @@ public:
 			, PlayAnimAboveSurface { false }
 
 			, AnimZAdjust {}
+
+			, ApplyPerTargetEffectsOnDetonate {}
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
@@ -449,7 +463,7 @@ public:
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno) const;
 		bool CanAffectTarget(TechnoClass* pTarget) const;
 		bool CanAffectInvulnerable(TechnoClass* pTarget) const;
-		bool EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner) const;
+		bool EligibleForFullMapDetonation(TechnoClass* pTechno, TechnoTypeClass* pType, HouseClass* pOwner) const;
 		bool IsHealthInThreshold(TechnoClass* pTarget) const;
 
 		virtual ~ExtData() = default;
@@ -465,12 +479,12 @@ public:
 	public:
 		// Detonate.cpp
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
+		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
 		void InterceptBullets(TechnoClass* pOwner, BulletClass* pInterceptor, const CoordStruct& coords);
 		DamageAreaResult DamageAreaWithTarget(const CoordStruct& coords, int damage, TechnoClass* pSource, WarheadTypeClass* pWH, bool affectsTiberium, HouseClass* pSourceHouse, TechnoClass* pTarget);
 	private:
-		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
-		void ApplyRemoveDisguise(HouseClass* pHouse, TechnoClass* pTarget);
-		void ApplyRemoveMindControl(TechnoClass* pTarget);
+		void ApplyRemoveDisguise(TechnoClass* pTarget);
+		HouseClass* ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
 		void ApplyShieldModifiers(TechnoClass* pTarget);
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);

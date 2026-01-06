@@ -94,9 +94,6 @@ const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor ar
 
 const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, TechnoClass* pThis, TechnoTypeClass* pType)
 {
-	if (!pType)
-		pType = pThis->GetTechnoType();
-
 	auto armorType = pType->Armor;
 	auto const pShield = TechnoExt::ExtMap.Find(pThis)->Shield.get();
 

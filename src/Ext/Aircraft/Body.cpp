@@ -11,7 +11,7 @@
 void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	int weaponIndex = pExt->CurrentAircraftWeaponIndex;
+	const int weaponIndex = pExt->CurrentAircraftWeaponIndex;
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	const int burstCount = pWeapon->Burst;

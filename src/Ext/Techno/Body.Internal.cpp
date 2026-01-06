@@ -190,7 +190,7 @@ int TechnoExt::GetTintColor(TechnoClass* pThis, bool invulnerability, bool airst
 
 			if (auto const pAirstrike = pExt->AirstrikeTargetingMe)
 			{
-				auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pAirstrike->Owner->GetTechnoType());
+				auto const pTypeExt = TechnoExt::ExtMap.Find(pAirstrike->Owner)->TypeExtData;
 				tintColor |= pTypeExt->TintColorAirstrike;
 			}
 		}

@@ -208,6 +208,8 @@ public:
 		void ResetDelayedFireTimer();
 		void UpdateTintValues();
 
+		void AmmoAutoConvertActions();
+
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
@@ -289,7 +291,7 @@ public:
 	static void CreateDelayedFireAnim(TechnoClass* pThis, AnimTypeClass* pAnimType, int weaponIndex, bool attach, bool center, bool removeOnNoDelay, bool onTurret, CoordStruct firingCoords);
 	static bool HandleDelayedFireWithPauseSequence(TechnoClass* pThis, WeaponTypeClass* pWeapon, int weaponIndex, int frame, int firingFrame);
 	static bool IsHealthInThreshold(TechnoClass* pObject, double min, double max);
-	static UnitTypeClass* GetUnitTypeExtra(UnitClass* pUnit);
+	static UnitTypeClass* GetUnitTypeExtra(UnitClass* pUnit, TechnoTypeExt::ExtData* pData);
 	static AircraftTypeClass* GetAircraftTypeExtra(AircraftClass* pAircraft);
 	static bool CannotMove(UnitClass* pThis);
 	static bool HasAmmoToDeploy(TechnoClass* pThis);
@@ -301,10 +303,11 @@ public:
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
-	static WeaponTypeClass* GetDeployFireWeapon(TechnoClass* pThis, int& weaponIndex);
-	static WeaponTypeClass* GetDeployFireWeapon(TechnoClass* pThis);
-	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, int& weaponIndex, bool getSecondary = false);
-	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, bool getSecondary = false);
+	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, TechnoTypeClass* pType, int weaponIndex);
+	static WeaponTypeClass* GetDeployFireWeapon(TechnoClass* pThis, TechnoTypeClass* pType, int& weaponIndex);
+	static WeaponTypeClass* GetDeployFireWeapon(TechnoClass* pThis, TechnoTypeClass* pType);
+	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, TechnoTypeClass* pType, int& weaponIndex, bool getSecondary = false);
+	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, TechnoTypeClass* pType, bool getSecondary = false);
 	static int GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* pWallOverlayType);
 	static void ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 	static void ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);

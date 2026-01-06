@@ -68,7 +68,7 @@ DEFINE_HOOK(0x4408EB, BuildingClass_Unlimbo_UpgradeBuildings, 0xA)
 
 #pragma region UpgradesInteraction
 
-int BuildLimitRemaining(HouseClass const* const pHouse, BuildingTypeClass const* const pItem)
+static int BuildLimitRemaining(HouseClass const* const pHouse, BuildingTypeClass const* const pItem)
 {
 	const int BuildLimit = pItem->BuildLimit;
 
@@ -78,7 +78,7 @@ int BuildLimitRemaining(HouseClass const* const pHouse, BuildingTypeClass const*
 		return -BuildLimit - pHouse->CountOwnedEver(pItem);
 }
 
-int CheckBuildLimit(HouseClass const* const pHouse, BuildingTypeClass const* const pItem, bool const includeQueued)
+static int CheckBuildLimit(HouseClass const* const pHouse, BuildingTypeClass const* const pItem, bool const includeQueued)
 {
 	enum { NotReached = 1, ReachedPermanently = -1, ReachedTemporarily = 0 };
 

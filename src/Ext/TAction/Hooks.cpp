@@ -45,7 +45,7 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 	const bool playBuildup = pBuildingType->LoadBuildup();
 	bool created = false;
 
-	if (auto pBuilding = static_cast<BuildingClass*>(pBuildingType->CreateObject(pHouse)))
+	if (auto const pBuilding = static_cast<BuildingClass*>(pBuildingType->CreateObject(pHouse)))
 	{
 		// Set before unlimbo cause otherwise it will call BuildingClass::Place.
 		pBuilding->QueueMission(Mission::Construction, false);
