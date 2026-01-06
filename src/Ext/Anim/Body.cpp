@@ -65,6 +65,63 @@ void AnimExt::ExtData::DeleteAttachedSystem()
 	}
 }
 
+inline unsigned int TranslateFixedPoint(size_t bitsFrom, size_t bitsTo, unsigned int value, unsigned int offset = 0)
+{
+	const size_t MaskIn = ((1u << bitsFrom) - 1);
+	const size_t MaskOut = ((1u << bitsTo) - 1);
+
+	if (bitsFrom > bitsTo)
+	{
+		// converting down
+		return (((((value & MaskIn) >> (bitsFrom - bitsTo - 1)) + 1) >> 1) + offset) & MaskOut;
+
+	}
+	else if (bitsFrom < bitsTo)
+	{
+		// converting up
+		return (((value - offset) & MaskIn) << (bitsTo - bitsFrom)) & MaskOut;
+
+	}
+	else
+	{
+		return value & MaskOut;
+	}
+}
+
+void AnimExt::ExtData::UpdateAsFiringAnim()
+{
+	auto pThis = this->OwnerObject();
+	auto pOwner = abstract_cast<TechnoClass*>(pThis->OwnerObject);
+
+	if (this->FromWeapon && pOwner)
+	{
+		AnimTypeClass* pNewType = nullptr;
+		auto pWeapon = this->FromWeapon;
+
+		auto highest = Conversions::Int2Highest(pWeapon->Anim.Count);
+
+		// 2^highest is the frame count, 3 means 8 frames
+		if (highest >= 3)
+		{
+			auto offset = 1u << (highest - 3);
+			auto index = TranslateFixedPoint(16, highest, static_cast<WORD>((pOwner)->GetRealFacing().GetValue<16>()), offset);
+			pNewType = pWeapon->Anim.GetItemOrDefault(index);
+		}
+		else
+		{
+			pNewType = pWeapon->Anim.GetItemOrDefault(0);
+		}
+
+		pThis->Type = pNewType;
+
+		auto burstIdx = pOwner->CurrentBurstIndex;
+		pOwner->CurrentBurstIndex = this->FromBurstIdx;
+		auto flh = pOwner->GetFLH(this->FromWeaponIdx, CoordStruct::Empty);
+		pOwner->CurrentBurstIndex = burstIdx;
+		pThis->SetLocation(flh - pOwner->GetCoords());
+	}
+}
+
 //Modified from Ares
 bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner, bool defaultToInvokerOwner)
 {
@@ -411,6 +468,9 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->DelayedFireRemoveOnNoDelay)
 		.Process(this->IsAttachedEffectAnim)
 		.Process(this->IsShieldIdleAnim)
+		.Process(this->FromWeapon)
+		.Process(this->FromWeaponIdx)
+		.Process(this->FromBurstIdx)
 		;
 }
 
