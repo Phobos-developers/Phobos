@@ -1,6 +1,6 @@
 #include "Body.h"
 #include <Utilities/AresHelper.h>
-#include <Ext/TechnoType/Body.h>
+#include <Ext/Techno/Body.h>
 
 // Bugfix: TAction 7,80,107.
 DEFINE_HOOK(0x65DF67, TeamTypeClass_CreateMembers_LoadOntoTransport, 0x6)
@@ -62,8 +62,8 @@ DEFINE_HOOK(0x6EA6BE, TeamClass_CanAddMember_Consideration, 0x6)
 	GET(TeamClass*, pTeam, EBP);
 	GET(FootClass*, pFoot, ESI);
 	GET(int*, idx, EBX);
-	const auto pFootType = pFoot->GetTechnoType();
-	const auto pFootTypeExt = TechnoTypeExt::ExtMap.Find(pFootType);
+	const auto pFootTypeExt = TechnoExt::ExtMap.Find(pFoot)->TypeExtData;
+	const auto pFootType = pFootTypeExt->OwnerObject();
 	const auto pTaskForce = pTeam->Type->TaskForce;
 
 	do
@@ -87,8 +87,8 @@ DEFINE_HOOK(0x6EA8E7, TeamClass_LiberateMember_Consideration, 0x5)
 	GET(TeamClass*, pTeam, EDI);
 	GET(FootClass*, pMember, EBP);
 	int idx = 0;
-	const auto pMemberType = pMember->GetTechnoType();
-	const auto pMemberTypeExt = TechnoTypeExt::ExtMap.Find(pMemberType);
+	const auto pMemberTypeExt = TechnoExt::ExtMap.Find(pMember)->TypeExtData;
+	const auto pMemberType = pMemberTypeExt->OwnerObject();
 	const auto pTaskForce = pTeam->Type->TaskForce;
 
 	do
@@ -112,7 +112,7 @@ DEFINE_HOOK(0x6EAD73, TeamClass_RecruitMember_Consideration, 0x7)
 
 	GET(TeamClass*, pTeam, ECX);
 	GET(UnitClass*, pMember, ESI);
-	GET_STACK(int, idx, STACK_OFFSET(0x3C, 0x4));
+	GET_STACK(const int, idx, STACK_OFFSET(0x3C, 0x4));
 	const auto pMemberType = pMember->Type;
 	const auto pTaskForce = pTeam->Type->TaskForce;
 	const auto pSearchType = pTaskForce->Entries[idx].Type;
@@ -131,7 +131,7 @@ DEFINE_HOOK(0x6EF57F, TeamClass_GetTaskForceMissingMemberTypes_Consideration, 0x
 
 	GET(DynamicVectorClass<TechnoTypeClass*>*, vector, ESI);
 	GET(FootClass*, pMember, EDI);
-	const auto pMemberTypeExt = TechnoTypeExt::ExtMap.Find(pMember->GetTechnoType());
+	const auto pMemberTypeExt = TechnoExt::ExtMap.Find(pMember)->TypeExtData;
 
 	for (const auto pConsideType : pMemberTypeExt->TeamMember_ConsideredAs)
 	{
