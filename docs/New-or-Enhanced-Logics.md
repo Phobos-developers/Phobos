@@ -2781,6 +2781,39 @@ DelayedFire.OnlyOnInitialBurst=false   ; boolean
 AircraftTypes, due to their different attack patterns, will not wait for the delay to expire before attempting to fire and will instead continue without firing if the delay is too long.
 ```
 
+### Extra range
+
+- Now you can adjust weapon's range when the firer or target are under specific conditions.
+- `ExtraRange.TargetMoving` grants the weapon extra range when the target is in a moving state.
+  - `ExtraRange.TargetMoving.CloseRangeOnly` is used to restrict whether the global default value only applies to units with `CloseRange=yes`.
+- `ExtraRange.Prefiring` grants the weapon extra range when the firer is in a pre-firing state, including:
+    - Vehicles with tags such as `FiringSyncFrame%d`.
+    - Aircraft that are firing.
+    - Buildings with tags such as `IsAnimDelayedFire`.
+    - Infantry with tags such as `FireUp`.
+    - Any unit with [`DelayedFire`](#delayed-firing).
+  - `ExtraRange.Prefiring.IncludeBurst` is used to decide whether the execution of burst is considered as being in a pre-firing state.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ExtraRange.TargetMoving=0.0                     ; float, range in cells
+ExtraRange.TargetMoving.CloseRangeOnly=false    ; boolean
+ExtraRange.Prefiring=0.0                        ; float, range in cells
+ExtraRange.Prefiring.IncludeBurst=true          ; boolean
+
+[SOMEWEAPON]                                    ; WeaponType
+ExtraRange.TargetMoving=                        ; float, range in cells, the default values refer to the descriptions above
+ExtraRange.Prefiring=                           ; float, range in cells, default to [General] -> ExtraRange.Prefiring
+ExtraRange.Prefiring.IncludeBurst=              ; boolean, default to [General] -> ExtraRange.Prefiring.IncludeBurst
+```
+
+```{note}
+- In vanilla, melee units have difficulty attacking enemies that are moving away, even if they have a slightly higher speed than their targets. This is because the game's pathfinding algorithm searches for a firing position in units of cells, which creates an unacceptable error for melee units, causing the targets to move out of range before they can get close.
+- Units with various forms of pre-firing behavior have similar problems. The target may move out of range before they fire.
+- This feature can solve the above issues.
+```
+
 ### Extra warhead detonations
 
 - It is now possible to have same weapon detonate multiple Warheads on impact by listing `ExtraWarheads`. The warheads are detonated at same location as the main one, after it in listed order. This only works in cases where a projectile has been fired by a weapon and still remembers it when it is detonated (due to currently existing technical limitations, this excludes `AirburstWeapon`).
