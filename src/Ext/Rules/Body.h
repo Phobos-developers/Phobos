@@ -531,7 +531,7 @@ public:
 			, ApplyPerTargetEffectsOnDetonate { true }
 
 			, ExtraRange_TargetMoving { Leptons(0) }
-			, ExtraRange_TargetMoving_CloseRangeOnly { true }
+			, ExtraRange_TargetMoving_CloseRangeOnly { false }
 			, ExtraRange_Prefiring { Leptons(0) }
 			, ExtraRange_Prefiring_IncludeBurst { true }
 		{ }
