@@ -112,7 +112,8 @@ void AnimExt::ExtData::UpdateAsFiringAnim()
 			pNewType = pWeapon->Anim.GetItemOrDefault(0);
 		}
 
-		pThis->Type = pNewType;
+		if (pNewType)
+			pThis->Type = pNewType;
 
 		auto burstIdx = pOwner->CurrentBurstIndex;
 		pOwner->CurrentBurstIndex = this->FromBurstIdx;
