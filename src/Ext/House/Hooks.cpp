@@ -483,3 +483,48 @@ DEFINE_HOOK(0x4FD8F7, HouseClass_UpdateAI_OnLastLegs, 0x10)
 
 	return ret;
 }
+
+DEFINE_HOOK(0x4F8ACC, HouseClass_Update_ResetTeamDelay, 0x6)
+{
+	enum { ResetTeamDelay = 0x4F8AD5 };
+
+	GET(HouseClass*, pThis, ESI);
+
+	const int teamDelay = HouseExt::ExtMap.Find(pThis)->TeamDelay;
+
+	if (teamDelay >= 0)
+	{
+		R->ECX(teamDelay);
+		return ResetTeamDelay;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x508E17, HouseClass_UpdateRadar_FreeRadar, 0x8)
+{
+	enum { ForceRadar = 0x508F2F, Continue = 0x508E4A };
+
+	GET(HouseClass*, pThis, ECX);
+
+	auto const pExt = HouseExt::ExtMap.Find(pThis);
+	const bool freeRadar = pExt->FreeRadar;
+
+	if (pExt->ForceRadar)
+	{
+		R->Stack(STACK_OFFSET(0x1C, -0xC), freeRadar);
+		return ForceRadar;
+	}
+	else if (pThis->PowerBlackoutTimer.InProgress())
+	{
+		R->Stack(STACK_OFFSET(0x1C, -0xC), false);
+		return ForceRadar;
+	}
+	else if (freeRadar)
+	{
+		R->Stack(STACK_OFFSET(0x1C, -0xC), true);
+		return ForceRadar;
+	}
+
+	return Continue;
+}
