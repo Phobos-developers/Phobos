@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-26 20:55+0800\n"
+"POT-Creation-Date: 2026-01-01 19:07+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -718,14 +718,14 @@ msgstr "`AttachEffect.CheckOnFirer` 可设为 true 以将必须存在／禁止�
 #: ../../New-or-Enhanced-Logics.md:2550 ../../New-or-Enhanced-Logics.md:2560
 #: ../../New-or-Enhanced-Logics.md:2571 ../../New-or-Enhanced-Logics.md:2581
 #: ../../New-or-Enhanced-Logics.md:2598 ../../New-or-Enhanced-Logics.md:2612
-#: ../../New-or-Enhanced-Logics.md:2625 ../../New-or-Enhanced-Logics.md:2636
-#: ../../New-or-Enhanced-Logics.md:2646 ../../New-or-Enhanced-Logics.md:2662
-#: ../../New-or-Enhanced-Logics.md:2683 ../../New-or-Enhanced-Logics.md:2699
-#: ../../New-or-Enhanced-Logics.md:2710 ../../New-or-Enhanced-Logics.md:2733
-#: ../../New-or-Enhanced-Logics.md:2761 ../../New-or-Enhanced-Logics.md:2778
-#: ../../New-or-Enhanced-Logics.md:2796 ../../New-or-Enhanced-Logics.md:2810
-#: ../../New-or-Enhanced-Logics.md:2834 ../../New-or-Enhanced-Logics.md:2849
-#: ../../New-or-Enhanced-Logics.md:2871
+#: ../../New-or-Enhanced-Logics.md:2625 ../../New-or-Enhanced-Logics.md:2649
+#: ../../New-or-Enhanced-Logics.md:2667 ../../New-or-Enhanced-Logics.md:2677
+#: ../../New-or-Enhanced-Logics.md:2693 ../../New-or-Enhanced-Logics.md:2714
+#: ../../New-or-Enhanced-Logics.md:2730 ../../New-or-Enhanced-Logics.md:2741
+#: ../../New-or-Enhanced-Logics.md:2764 ../../New-or-Enhanced-Logics.md:2792
+#: ../../New-or-Enhanced-Logics.md:2809 ../../New-or-Enhanced-Logics.md:2827
+#: ../../New-or-Enhanced-Logics.md:2841 ../../New-or-Enhanced-Logics.md:2865
+#: ../../New-or-Enhanced-Logics.md:2880 ../../New-or-Enhanced-Logics.md:2902
 msgid "In `rulesmd.ini`:"
 msgstr "在 `rulesmd.ini`："
 
@@ -1066,8 +1066,8 @@ msgstr "![image](_static/images/radtype-01.png) *混合起来的多种辐射类�
 #: ../../New-or-Enhanced-Logics.md:1896 ../../New-or-Enhanced-Logics.md:2171
 #: ../../New-or-Enhanced-Logics.md:2202 ../../New-or-Enhanced-Logics.md:2245
 #: ../../New-or-Enhanced-Logics.md:2322 ../../New-or-Enhanced-Logics.md:2371
-#: ../../New-or-Enhanced-Logics.md:2483 ../../New-or-Enhanced-Logics.md:2772
-#: ../../New-or-Enhanced-Logics.md:2822 ../../New-or-Enhanced-Logics.md:2865
+#: ../../New-or-Enhanced-Logics.md:2483 ../../New-or-Enhanced-Logics.md:2803
+#: ../../New-or-Enhanced-Logics.md:2853 ../../New-or-Enhanced-Logics.md:2896
 msgid "image"
 msgstr "图像"
 
@@ -6134,8 +6134,8 @@ msgid ""
 msgstr ""
 "现在如果 `[CombatDamage] -> AllowWeaponSelectAgainstWalls` 设置为 true，假设 "
 "`Primary` 武器的弹头拥有 `Wall=false`，而 `Secondary` 武器拥有 `Wall=true` 且开火者没有将 "
-"`NoSecondaryWeaponFallback` 设为 true 那么 `Secondary` 将在应对墙时被使用。"
-"这可以在单位上微观定义以覆盖全局值。"
+"`NoSecondaryWeaponFallback` 设为 true 那么 `Secondary` "
+"将在应对墙时被使用。这可以在单位上微观定义以覆盖全局值。"
 
 #: ../../New-or-Enhanced-Logics.md:1594
 msgid ""
@@ -9004,7 +9004,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:2556
 msgid "Remove disguise on impact"
-msgstr "移除伪装"
+msgstr "移除伪装弹头"
 
 #: ../../New-or-Enhanced-Logics.md:2558
 msgid ""
@@ -9182,17 +9182,135 @@ msgstr ""
 "SpawnsCrate(N).Weight=1  ; integer\n"
 
 #: ../../New-or-Enhanced-Logics.md:2632
+msgid "Toggle per-target warhead effects apply timing"
+msgstr "设置按目标生效的弹头效果应用时机"
+
+#: ../../New-or-Enhanced-Logics.md:2634
+msgid ""
+"Now you can set the following flag to `false` to apply the **Phobos** "
+"warhead effects that take effect on each target when taking damage, "
+"rather than when the projectiles detonate."
+msgstr ""
+"现在你可以通过将下列语句设为 `false` 来使 **Phobos** 弹头效果在每个目标受伤时而不只是在抛射体引爆时生效。"
+
+#: ../../New-or-Enhanced-Logics.md:2635
+msgid ""
+"This will allow such effects to be applied through damage without "
+"projectiles, including but not limited to damage from particles, vanilla "
+"radiation, and Ares' `GenericWarhead` superweapon."
+msgstr ""
+"这将允许此类效果通过包括但不限于来自粒子、原版辐射以及 Ares 的 `Type=GenericWarhead` 类超武造成的无抛射体杀伤效果生效。"
+
+#: ../../New-or-Enhanced-Logics.md:2636
+msgid ""
+"This will also cause all effects that can completely prevent damage to "
+"also prevent these warhead effects, including but not limited to "
+"`DamageSelf`, `DamageAirThreshold`, `AffectsAllies`, `AffectsAir`."
+msgstr ""
+"这也将导致这些弹头效果同样会被包括但不限于 `DamageSelf`、`DamageAirThreshold`、`AffectsAllies`、`AffectsAir` 的杀伤阻断效果阻断。"
+
+#: ../../New-or-Enhanced-Logics.md:2637
+msgid ""
+"If you use a warhead with `CellSpread` to damage a building multiple times,"
+" then these effects will be applied multiple times. If you don't want "
+"this to happen, use [`MergeBuildingDamage`](#allow-merging-aoe-damage-to-"
+"buildings-into-one)."
+msgstr ""
+"如果你使用带有 `CellSpread` 的弹头对一个建筑造成多次杀伤，那么这些效果将被多次应用。"
+"若不希望如此则可使用 [`MergeBuildingDamage`](#allow-merging-aoe-damage-to-"
+"buildings-into-one) 来避免。"
+
+#: ../../New-or-Enhanced-Logics.md:2638
+msgid "The affected effects include:"
+msgstr "适用的效果包括："
+
+#: ../../New-or-Enhanced-Logics.md:2639
+msgid "[Remove mind-control](#break-mind-control-on-impact)"
+msgstr "[解除心控](#break-mind-control-on-impact)"
+
+#: ../../New-or-Enhanced-Logics.md:2640
+msgid "[Type conversion](#convert-technotype-on-impact)"
+msgstr "[单位转换弹头](#convert-technotype-on-impact)"
+
+#: ../../New-or-Enhanced-Logics.md:2641
+msgid ""
+"[`BuildingSell` & `BuildingUndeploy`](#sell-or-undeploy-building-on-"
+"impact)"
+msgstr "[将建筑出售或反部署](#sell-or-undeploy-building-on-"
+"impact)"
+
+#: ../../New-or-Enhanced-Logics.md:2642
+msgid "[`RemoveDisguise`](#remove-disguise-on-impact)"
+msgstr "[移除伪装弹头](#remove-disguise-on-impact)"
+
+#: ../../New-or-Enhanced-Logics.md:2643
+msgid "[`ReverseEngineer`](#reverse-engineer-warhead)"
+msgstr "[逆向工程弹头](#reverse-engineer-warhead)"
+
+#: ../../New-or-Enhanced-Logics.md:2644
+msgid "[Modify shield](#shields)"
+msgstr "[护盾修改](#shields)"
+
+#: ../../New-or-Enhanced-Logics.md:2645
+msgid "[Modify attach-effects](#attached-effects)"
+msgstr "[AE 修改](#attached-effects)"
+
+#: ../../New-or-Enhanced-Logics.md:2646
+msgid ""
+"[Critical hits](#chance-based-extra-damage-or-warhead-detonation"
+"--critical-hits)"
+msgstr "[暴击](#chance-based-extra-damage-or-warhead-detonation"
+"--critical-hits)"
+
+#: ../../New-or-Enhanced-Logics.md:2647
+msgid ""
+"Due to technical reasons, `Crit.SuppressWhenIntercepted=false` and "
+"`Crit.ApplyChancePerTarget=true` will forced to be used."
+msgstr ""
+"由于技术原因，强制 `Crit.SuppressWhenIntercepted=false` 且 `Crit.ApplyChancePerTarget=true`。"
+
+#: ../../New-or-Enhanced-Logics.md:2650
+msgid ""
+"[CombatDamage]                        ; WarheadType\n"
+"ApplyPerTargetEffectsOnDetonate=true  ; boolean\n"
+"\n"
+"[SOMEWARHEAD]                         ; WarheadType\n"
+"ApplyPerTargetEffectsOnDetonate=      ; boolean, default to "
+"[CombatDamage] -> ApplyPerTargetEffectsOnDetonate\n"
+msgstr ""
+"[CombatDamage]                        ; WarheadType\n"
+"ApplyPerTargetEffectsOnDetonate=true  ; boolean\n"
+"\n"
+"[SOMEWARHEAD]                         ; WarheadType\n"
+"ApplyPerTargetEffectsOnDetonate=      ; boolean, default to "
+"[CombatDamage] -> ApplyPerTargetEffectsOnDetonate\n"
+
+#: ../../New-or-Enhanced-Logics.md:2659
+msgid ""
+"Ares' warhead effects, such as EMP or IronCurtain warhead, will not be "
+"affected."
+msgstr ""
+"Ares 弹头效果例如 EMP 或铁幕弹头将不受影响。"
+
+#: ../../New-or-Enhanced-Logics.md:2660
+msgid ""
+"Ares' warhead effect controllers, such as `EffectsRequireDamage`, only "
+"affect Ares' effects. So they have nothing to do with this."
+msgstr ""
+"Ares 弹头效果控制器例如 `EffectsRequireDamage` 仅影响 Ares 效果。所以它们与此功能无关。"
+
+#: ../../New-or-Enhanced-Logics.md:2663
 msgid "Trigger specific NotHuman infantry Death anim sequence"
 msgstr "指定非人步兵死亡序列"
 
-#: ../../New-or-Enhanced-Logics.md:2634
+#: ../../New-or-Enhanced-Logics.md:2665
 msgid ""
 "Warheads are now able to trigger specific `NotHuman=yes` infantry `Death`"
 " anim sequence using the corresponding tag. It's value represents "
 "sequences from `Die1` to `Die5`."
 msgstr "现在弹头可以使用相应的标签触发特定的 `NotHuman=yes` 步兵 `Death` 动画序列。其值代表从 `Die1` 到 `Die5`。"
 
-#: ../../New-or-Enhanced-Logics.md:2637
+#: ../../New-or-Enhanced-Logics.md:2668
 msgid ""
 "[SOMEWARHEAD]            ; WarheadType\n"
 "NotHuman.DeathSequence=  ; integer (1 to 5)\n"
@@ -9200,17 +9318,17 @@ msgstr ""
 "[SOMEWARHEAD]            ; WarheadType\n"
 "NotHuman.DeathSequence=  ; integer (1 to 5)\n"
 
-#: ../../New-or-Enhanced-Logics.md:2642
+#: ../../New-or-Enhanced-Logics.md:2673
 msgid "Warhead that can not kill"
 msgstr "弹头击杀限制"
 
-#: ../../New-or-Enhanced-Logics.md:2644
+#: ../../New-or-Enhanced-Logics.md:2675
 msgid ""
 "Warheads can now damage the enemy without killing them (minimum health "
 "will be 1)."
 msgstr "现在可以让一个弹头可以杀伤敌人但无法击杀它们（至少保留 1 滴血）。"
 
-#: ../../New-or-Enhanced-Logics.md:2647
+#: ../../New-or-Enhanced-Logics.md:2678
 msgid ""
 "[SOMEWARHEAD]  ; WarheadType\n"
 "CanKill=true   ; boolean\n"
@@ -9218,11 +9336,11 @@ msgstr ""
 "[SOMEWARHEAD]  ; WarheadType\n"
 "CanKill=true   ; boolean\n"
 
-#: ../../New-or-Enhanced-Logics.md:2652
+#: ../../New-or-Enhanced-Logics.md:2683
 msgid "Unlimbo detonate warhead"
 msgstr "去虚拟化弹头"
 
-#: ../../New-or-Enhanced-Logics.md:2654
+#: ../../New-or-Enhanced-Logics.md:2685
 msgid ""
 "![Unlimbo Detonate](_static/images/unlimbodetonate.gif) *Unlimbo Detonate"
 " used in **The Call of the Panic Spear** by @[Octagonal "
@@ -9231,36 +9349,36 @@ msgstr ""
 "![去虚拟化弹头](_static/images/unlimbodetonate.gif) "
 "*@[八棱彩](https://space.bilibili.com/360577336) 在 **恐慌之矛的召唤** 中使用的去虚拟化弹头*"
 
-#: ../../New-or-Enhanced-Logics.md:2654
+#: ../../New-or-Enhanced-Logics.md:2685
 msgid "Unlimbo Detonate"
 msgstr "去虚拟化弹头"
 
-#: ../../New-or-Enhanced-Logics.md:2657
+#: ../../New-or-Enhanced-Logics.md:2688
 msgid ""
 "`UnlimboDetonate` allows units that have fired weapons with "
 "`LimboLaunch=yes` to reappear."
 msgstr "`UnlimboDetonate` 允许发射了拥有 `LimboLaunch=yes` 的武器的单位在弹头引爆后重新刷出（退出 Limbo 状态）。"
 
-#: ../../New-or-Enhanced-Logics.md:2658
+#: ../../New-or-Enhanced-Logics.md:2689
 msgid ""
 "`UnlimboDetonate.ForceLocation` allows units to forcefully appear at the "
 "projectile explosion location, otherwise they will search for other "
 "available cells."
 msgstr "`UnlimboDetonate.ForceLocation` 允许单位强制出现在抛射体爆炸的位置，否则它们会检索其他可用的单元格。"
 
-#: ../../New-or-Enhanced-Logics.md:2659
+#: ../../New-or-Enhanced-Logics.md:2690
 msgid ""
 "`UnlimboDetonate.KeepTarget` allows units to retain their original attack"
 " target when they reappear."
 msgstr "`UnlimboDetonate.KeepTarget` 允许单位进出 Limbo 状态前后保留原先的目标。"
 
-#: ../../New-or-Enhanced-Logics.md:2660
+#: ../../New-or-Enhanced-Logics.md:2691
 msgid ""
 "`UnlimboDetonate.KeepSelected` allows units to retain their original "
 "selected state when they appear."
 msgstr "`UnlimboDetonate.KeepSelected` 允许单位进出 Limbo 状态前保留原先选中状态。"
 
-#: ../../New-or-Enhanced-Logics.md:2663
+#: ../../New-or-Enhanced-Logics.md:2694
 msgid ""
 "[SOMEWARHEAD]                          ; WarheadType\n"
 "UnlimboDetonate=false                  ; boolean\n"
@@ -9274,19 +9392,19 @@ msgstr ""
 "UnlimboDetonate.KeepTarget=false       ; boolean\n"
 "UnlimboDetonate.KeepSelected=false     ; boolean\n"
 
-#: ../../New-or-Enhanced-Logics.md:2672
+#: ../../New-or-Enhanced-Logics.md:2703
 msgid "`UnlimboDetonate` cannot be used in conjunction with `Parasite`."
 msgstr "`UnlimboDetonate` 不能与 `Parasite` 共用。"
 
-#: ../../New-or-Enhanced-Logics.md:2675
+#: ../../New-or-Enhanced-Logics.md:2706
 msgid "Weapons"
 msgstr "武器"
 
-#: ../../New-or-Enhanced-Logics.md:2677
+#: ../../New-or-Enhanced-Logics.md:2708
 msgid "AreaFire target customization"
 msgstr "自定义 `AreaFire` 目标"
 
-#: ../../New-or-Enhanced-Logics.md:2679
+#: ../../New-or-Enhanced-Logics.md:2710
 msgid ""
 "You can now specify how AreaFire weapon picks its target. By default it "
 "targets the base cell the firer is currently on, but this can now be "
@@ -9297,13 +9415,13 @@ msgstr ""
 "现在你可以指定 AreaFire 武器如何选择目标。默认情况下它会瞄准开火者当前所处的单元格，现在可以通过将 `AreaFire.Target` "
 "设为 `self` 或 `random` 分别改为瞄准发开火者自身或武器 `Range` 范围内的随机单元格。"
 
-#: ../../New-or-Enhanced-Logics.md:2680
+#: ../../New-or-Enhanced-Logics.md:2711
 msgid ""
 "`AreaFire.Target=self` respects normal targeting rules (Warhead `Verses` "
 "etc.) against the firer itself."
 msgstr "`AreaFire.Target=self` 遵守对开火者自身的正常目标筛选规则（弹头 `Verses` 等）。"
 
-#: ../../New-or-Enhanced-Logics.md:2681
+#: ../../New-or-Enhanced-Logics.md:2712
 msgid ""
 "`AreaFire.Target=random` ignores cells that are ineligible or contain "
 "ineligible objects based on listed values in weapon's `CanTarget` & "
@@ -9312,7 +9430,7 @@ msgstr ""
 "`AreaFire.Target=random` 会忽略由武器 `CanTarget` 和 `CanTargetHouses` "
 "值设为不可作为目标的单元格或存在不可作为目标的对象的单元格。"
 
-#: ../../New-or-Enhanced-Logics.md:2684
+#: ../../New-or-Enhanced-Logics.md:2715
 msgid ""
 "[SOMEWEAPON]         ; WeaponType\n"
 "AreaFire.Target=base ; AreaFire Target Enumeration (base|self|random)\n"
@@ -9320,11 +9438,11 @@ msgstr ""
 "[SOMEWEAPON]         ; WeaponType\n"
 "AreaFire.Target=base ; AreaFire Target Enumeration (base|self|random)\n"
 
-#: ../../New-or-Enhanced-Logics.md:2689
+#: ../../New-or-Enhanced-Logics.md:2720
 msgid "Burst delay customizations"
 msgstr "自定义 BurstDelay"
 
-#: ../../New-or-Enhanced-Logics.md:2691
+#: ../../New-or-Enhanced-Logics.md:2722
 msgid ""
 "`Burst.Delays` allows specifying weapon-specific burst shot delays. Takes"
 " precedence over the old `BurstDelayX` logic available on VehicleTypes, "
@@ -9337,7 +9455,7 @@ msgstr ""
 "逻辑，且适用于步兵和建筑类型的武器（由于战机类型武器的发射系统完全不同因此暂不支持），并允许独立设置每一发 `Burst` 之间的间隔而不仅限于第"
 " 1 发到第 4 发。"
 
-#: ../../New-or-Enhanced-Logics.md:2692
+#: ../../New-or-Enhanced-Logics.md:2723
 msgid ""
 "If no delay is defined for a shot, it falls back to last delay value "
 "defined (f.ex `Burst=3` and `Burst.Delays=10` would use 10 as delay for "
@@ -9346,14 +9464,14 @@ msgstr ""
 "如果未未某一发设定间隔那么它会使用上一发所定义的间隔（例如 `Burst=3` 和 `Burst.Delays=10` 将使用 10 "
 "作为所有连发的间隔）。"
 
-#: ../../New-or-Enhanced-Logics.md:2693
+#: ../../New-or-Enhanced-Logics.md:2724
 msgid ""
 "Using `-1` as delay reverts back to old logic (`BurstDelay0-3` for "
 "VehicleTypes if available or random value between 3-5 otherwise) for that"
 " shot."
 msgstr "使用 `-1` 作为间隔会使该发使用旧逻辑（如果有则使用载具类型的 `BurstDelay0-3` 否则使用 3-5 之间的随机值）。"
 
-#: ../../New-or-Enhanced-Logics.md:2694
+#: ../../New-or-Enhanced-Logics.md:2725
 msgid ""
 "`Burst.FireWithinSequence` is only used if the weapon is fired by "
 "InfantryType or `Voxel=no` turretless VehicleType, and setting it to true"
@@ -9363,13 +9481,13 @@ msgstr ""
 "`Burst.FireWithinSequence` 仅在步兵或 `Voxel=no` 的无炮塔载具发射武器时使用，将其设为 true "
 "以允许步兵/载具在同一射击序列内射出多发 `Burst`。"
 
-#: ../../New-or-Enhanced-Logics.md:2695
+#: ../../New-or-Enhanced-Logics.md:2726
 msgid ""
 "First shot is always fired at sequence frame determined by firing frame "
 "controls on InfantryType image (`FireUp` et al)."
 msgstr "第一发始终在由步兵类型图像的射击帧（如 `FireUp` 等）确定的帧序列决定。"
 
-#: ../../New-or-Enhanced-Logics.md:2696
+#: ../../New-or-Enhanced-Logics.md:2727
 msgid ""
 "Following shots come at intervals determined by `Burst.Delays` (with "
 "minimum delay of 1 frame) or random delay between 3 to 5 frames if not "
@@ -9380,7 +9498,7 @@ msgstr ""
 "后续的连发发射间隔由 `Burst.Delays` 决定（最小间隔为 1 帧）或未定义情况下使用随机 3 到 5 "
 "帧。注意如果下一发的发射帧超出了射击序列长度则连发计数器将被重置且武器会重新开始装填。"
 
-#: ../../New-or-Enhanced-Logics.md:2697
+#: ../../New-or-Enhanced-Logics.md:2728
 msgid ""
 "Burst shot counter is not immediately reset if firing is ceased mid-"
 "sequence after at least one shot, but the frame at which each burst shot "
@@ -9390,7 +9508,7 @@ msgid ""
 "burst shot should be fired is hit)."
 msgstr "如果在至少一发后停止射击则连发计数器不会立即重置，但每个连发的发射帧不会受此影响（换而言之，如果之后重新开始射击而武器没有重新装填，那么射击序列会重新开始，但不会发射任何直到下一发应该被发射的帧）。"
 
-#: ../../New-or-Enhanced-Logics.md:2700
+#: ../../New-or-Enhanced-Logics.md:2731
 msgid ""
 "[SOMEWEAPON]                    ; WeaponType\n"
 "Burst.Delays=-1                 ; integer - burst delays (comma-"
@@ -9402,11 +9520,11 @@ msgstr ""
 "separated) for shots in order from first to last.\n"
 "Burst.FireWithinSequence=false  ; boolean\n"
 
-#: ../../New-or-Enhanced-Logics.md:2706
+#: ../../New-or-Enhanced-Logics.md:2737
 msgid "Burst without delay"
 msgstr "无间隔连发"
 
-#: ../../New-or-Enhanced-Logics.md:2708
+#: ../../New-or-Enhanced-Logics.md:2739
 msgid ""
 "In vanilla, vehicles and infantry will only fire once in one frame, even "
 "if their `ROF` or `BurstDelay` is set to 0. Now you can force units to "
@@ -9415,7 +9533,7 @@ msgstr ""
 "原版中即便武器的 `ROF` 或载具的 `BurstDelay` 设为 0 也最快每帧发射一次。现在可以通过将 `Burst.NoDelay` "
 "设为 true 强制单位在一帧内全部发射。"
 
-#: ../../New-or-Enhanced-Logics.md:2711
+#: ../../New-or-Enhanced-Logics.md:2742
 msgid ""
 "[SOMEWEAPON]          ; WeaponType\n"
 "Burst.NoDelay=false   ; boolean\n"
@@ -9423,32 +9541,32 @@ msgstr ""
 "[SOMEWEAPON]          ; WeaponType\n"
 "Burst.NoDelay=false   ; boolean\n"
 
-#: ../../New-or-Enhanced-Logics.md:2717
+#: ../../New-or-Enhanced-Logics.md:2748
 msgid "This is useless for buildings and aircraft."
 msgstr "此功能对建筑和战机无效。"
 
-#: ../../New-or-Enhanced-Logics.md:2718
+#: ../../New-or-Enhanced-Logics.md:2749
 msgid "This will ignore `Burst.Delays` setting."
 msgstr "这会无视 `Burst.Delays` 设置。"
 
-#: ../../New-or-Enhanced-Logics.md:2721
+#: ../../New-or-Enhanced-Logics.md:2752
 msgid "Delayed firing"
 msgstr "延迟开火"
 
-#: ../../New-or-Enhanced-Logics.md:2723
+#: ../../New-or-Enhanced-Logics.md:2754
 msgid ""
 "It is possible to have any weapon fire with a delay by setting "
 "`DelayedFire.Duration` on a WeaponType - it supports a single integer or "
 "two comma-separated ones for a random range to pick value from."
 msgstr "通过为武器设置 `DelayedFire.Duration` 可使其延迟开火 - 它支持单个整数或用逗号隔开的两个整数作为随机取值区间。"
 
-#: ../../New-or-Enhanced-Logics.md:2724
+#: ../../New-or-Enhanced-Logics.md:2755
 msgid ""
 "If `DelayedFire.SkipInTransport` is set to true and firer is in a "
 "transport, no delay is applied to firing."
 msgstr "若 `DelayedFire.SkipInTransport` 设为 true 且开火者在运输工具中则这种情况下跳过延迟。"
 
-#: ../../New-or-Enhanced-Logics.md:2725
+#: ../../New-or-Enhanced-Logics.md:2756
 msgid ""
 "`DelayedFire.Animation` can be used to define animation to create when "
 "the delay timer starts. `DelayedFire.OpenToppedAnimation` is used instead"
@@ -9457,7 +9575,7 @@ msgstr ""
 "`DelayedFire.Animation` 可用于定义延时计时器启动时创建的动画。可用 "
 "`DelayedFire.OpenToppedAnimation` 单独定义开火者在运输工具中开火时创建的。"
 
-#: ../../New-or-Enhanced-Logics.md:2726
+#: ../../New-or-Enhanced-Logics.md:2757
 msgid ""
 "If `DelayedFire.AnimIsAttached` is set to true, the animation is attached"
 " to the firing TechnoType. If `DelayedFire.RemoveAnimOnNoDelay` is also "
@@ -9468,26 +9586,26 @@ msgstr ""
 "`DelayedFire.RemoveAnimOnNoDelay` 也设为 "
 "true，则在持续时间结束或开火被中断时无论是否播放完毕都立即移除动画。"
 
-#: ../../New-or-Enhanced-Logics.md:2727
+#: ../../New-or-Enhanced-Logics.md:2758
 msgid ""
 "`DelayedFire.AnimOffset` can be used to override the weapon's firing "
 "coordinates / FLH for the animation's position."
 msgstr "`DelayedFire.AnimOffset` 可用于覆盖开火坐标来设置动画的位置。"
 
-#: ../../New-or-Enhanced-Logics.md:2728
+#: ../../New-or-Enhanced-Logics.md:2759
 msgid ""
 "`DelayedFire.AnimOnTurret` determines whether or not the animation's "
 "position is calculated relative to firer's body or turret (only if it has"
 " one)."
 msgstr "`DelayedFire.AnimOnTurret` 决定在单位有炮塔的情况下该动画的位置是相对于开火单位的本体还是炮塔。"
 
-#: ../../New-or-Enhanced-Logics.md:2729
+#: ../../New-or-Enhanced-Logics.md:2760
 msgid ""
 "If `DelayedFire.CenterAnimOnFirer` is set the animation is created at the"
 " firer's center rather than at the firing coordinates."
 msgstr "若设置了 `DelayedFire.CenterAnimOnFirer` 则动画会创建于开火单位的中心而非开火坐标处。"
 
-#: ../../New-or-Enhanced-Logics.md:2730
+#: ../../New-or-Enhanced-Logics.md:2761
 msgid ""
 "If the weapon was fired by InfantryType and "
 "`DelayedFire.PauseFiringSequence` is set to true, the infantry's firing "
@@ -9499,7 +9617,7 @@ msgstr ""
 "`artmd.ini` 中由 `FireUp/Prone` 或 `SecondaryFire/Prone` "
 "定义的开火帧时其开火序列动画将会暂停直至延时计时器结束。"
 
-#: ../../New-or-Enhanced-Logics.md:2731
+#: ../../New-or-Enhanced-Logics.md:2762
 msgid ""
 "If the weapon has `Burst` > 1 and `DelayedFire.OnlyOnInitialBurst` set to"
 " true, the delay occurs only before the initial burst shot. Note that if "
@@ -9511,7 +9629,7 @@ msgstr ""
 "则延迟仅在首次发射前生效。注意若使用了 Ares 则开火被中断或开火者失去目标时 `Burst` "
 "索引不会重置，这意味着它可以无需等待延迟时间即可开火。"
 
-#: ../../New-or-Enhanced-Logics.md:2734
+#: ../../New-or-Enhanced-Logics.md:2765
 msgid ""
 "[SOMEWEAPON]                           ; WeaponType\n"
 "DelayedFire.Duration=                  ; integer - single or comma-sep. "
@@ -9543,18 +9661,18 @@ msgstr ""
 "DelayedFire.PauseFiringSequence=false  ; boolean\n"
 "DelayedFire.OnlyOnInitialBurst=false   ; boolean\n"
 
-#: ../../New-or-Enhanced-Logics.md:2750
+#: ../../New-or-Enhanced-Logics.md:2781
 msgid ""
 "AircraftTypes, due to their different attack patterns, will not wait for "
 "the delay to expire before attempting to fire and will instead continue "
 "without firing if the delay is too long."
 msgstr "战机类单位由于其独特的攻击模式并不会等待延迟结束后才尝试开火而是延迟过长时会不开火直接继续飞。"
 
-#: ../../New-or-Enhanced-Logics.md:2753
+#: ../../New-or-Enhanced-Logics.md:2784
 msgid "Extra warhead detonations"
 msgstr "额外弹头"
 
-#: ../../New-or-Enhanced-Logics.md:2755
+#: ../../New-or-Enhanced-Logics.md:2786
 msgid ""
 "It is now possible to have same weapon detonate multiple Warheads on "
 "impact by listing `ExtraWarheads`. The warheads are detonated at same "
@@ -9567,7 +9685,7 @@ msgstr ""
 "来让同一武器在命中时引爆多个弹头。这些弹头会在主弹头爆炸后按列出的顺序在同一位置引爆。这仅适用于由武器发射且引爆时仍保留其信息的抛射体（由于目前存在的技术限制，这不包括"
 " `AirburstWeapon`）。"
 
-#: ../../New-or-Enhanced-Logics.md:2756
+#: ../../New-or-Enhanced-Logics.md:2787
 msgid ""
 "`ExtraWarheads.DamageOverrides` can be used to override the weapon's "
 "`Damage` for the extra Warhead detonations. Value from position matching "
@@ -9577,7 +9695,7 @@ msgstr ""
 "`ExtraWarheads.DamageOverrides` 可用于额外弹头引爆时覆盖武器的 `Damage` 属性。如果找到 "
 "`ExtraWarheads` 中与之对应的值则使用，否则使用最后列出的值。如果列表为空则使用武器的 `Damage` 属性。"
 
-#: ../../New-or-Enhanced-Logics.md:2757
+#: ../../New-or-Enhanced-Logics.md:2788
 msgid ""
 "`ExtraWarheads.DetonationChances` can be used to customize the chance of "
 "each extra Warhead detonation occuring. Value from position matching the "
@@ -9588,7 +9706,7 @@ msgstr ""
 "`ExtraWarheads.DetonationChances` 可用于自定义每个额外弹头爆炸的概率。如果找到 `ExtraWarheads` "
 "中与之对应的值则使用，否则使用最后列出的值。如果列表为空则每个额外弹头都必然引爆。"
 
-#: ../../New-or-Enhanced-Logics.md:2758
+#: ../../New-or-Enhanced-Logics.md:2789
 msgid ""
 "`ExtraWarheads.FullDetonation` can be used to customize whether or not "
 "each individual Warhead is detonated fully (as part of a dummy weapon) or"
@@ -9600,13 +9718,13 @@ msgstr ""
 "可用于设置每个额外弹头是否在目标上完全引爆（作为虚拟武器的一部分）或者只能对所在区域造成杀伤并应用 Phobos 的弹头效果。如果找到 "
 "`ExtraWarheads` 中与之对应的值则使用，否则使用最后列出的值。如果列表为空则默认为 true。"
 
-#: ../../New-or-Enhanced-Logics.md:2759
+#: ../../New-or-Enhanced-Logics.md:2790
 msgid ""
 "Note that the listed Warheads must be listed in `[Warheads]` for them to "
 "work."
 msgstr "注意列出的弹头必须在 `[Warheads]` 中列出才能生效。"
 
-#: ../../New-or-Enhanced-Logics.md:2762
+#: ../../New-or-Enhanced-Logics.md:2793
 msgid ""
 "[SOMEWEAPON]                      ; WeaponType\n"
 "ExtraWarheads=                    ; List of WarheadTypes\n"
@@ -9622,11 +9740,11 @@ msgstr ""
 "(percentage or absolute)\n"
 "ExtraWarheads.FullDetonation=     ; List of booleans\n"
 
-#: ../../New-or-Enhanced-Logics.md:2770
+#: ../../New-or-Enhanced-Logics.md:2801
 msgid "Feedback weapon"
 msgstr "反馈武器"
 
-#: ../../New-or-Enhanced-Logics.md:2772
+#: ../../New-or-Enhanced-Logics.md:2803
 msgid ""
 "![image](_static/images/feedbackweapon.gif) *`FeedbackWeapon` used to "
 "apply healing aura upon firing a weapon in [Project "
@@ -9636,13 +9754,13 @@ msgstr ""
 "*[幽灵计划](https://www.moddb.com/mods/project-phantom) "
 "中使用反馈武器在发射武器时对目标施加治疗光环*"
 
-#: ../../New-or-Enhanced-Logics.md:2775
+#: ../../New-or-Enhanced-Logics.md:2806
 msgid ""
 "You can now specify an auxiliary weapon to be fired on the firer itself "
 "when a weapon is fired."
 msgstr "现在你可以指定一个辅助武器在发射武器时对开火者自身发射。"
 
-#: ../../New-or-Enhanced-Logics.md:2776
+#: ../../New-or-Enhanced-Logics.md:2807
 msgid ""
 "`FireInTransport` setting of the feedback weapon is respected to "
 "determine if it can be fired when the original weapon is fired from "
@@ -9653,7 +9771,7 @@ msgstr ""
 "当原始武器于运输工具内的载员使用时反馈武器会根据自身的 `FireInTransport` "
 "决定能否发射。如果反馈武器被发射那么它将命中运输工具。注：`OpenToppedDamageMultiplier` 不适用于反馈武器。"
 
-#: ../../New-or-Enhanced-Logics.md:2779
+#: ../../New-or-Enhanced-Logics.md:2810
 msgid ""
 "[SOMEWEAPON]     ; WeaponType\n"
 "FeedbackWeapon=  ; WeaponType\n"
@@ -9661,17 +9779,17 @@ msgstr ""
 "[SOMEWEAPON]     ; WeaponType\n"
 "FeedbackWeapon=  ; WeaponType\n"
 
-#: ../../New-or-Enhanced-Logics.md:2784
+#: ../../New-or-Enhanced-Logics.md:2815
 msgid "Keep Range After Firing"
 msgstr "开火后保持距离"
 
-#: ../../New-or-Enhanced-Logics.md:2786
+#: ../../New-or-Enhanced-Logics.md:2817
 msgid ""
 "Technos can maintain a suitable distance after firing if `KeepRange` is "
 "not set to 0."
 msgstr "如果 `KeepRange` 没有设为 0 那么科技类型可以在开火后与目标保持适当的距离。"
 
-#: ../../New-or-Enhanced-Logics.md:2787
+#: ../../New-or-Enhanced-Logics.md:2818
 msgid ""
 "`KeepRange` controls how long the distance to maintain when the techno's "
 "ROF timer is ticking. What is actually read is its absolute value. If it "
@@ -9686,31 +9804,31 @@ msgstr ""
 "`MinimumRange`。对于负值则科技类型会尽可能保持在该距离附近，就像它有一个开火后的特殊 "
 "`Range`。此外如果有效射程区间太小单位将被视为无法开火。最好有一个 1.0 长度的有效射程，对步兵而言为 2.0。"
 
-#: ../../New-or-Enhanced-Logics.md:2788
+#: ../../New-or-Enhanced-Logics.md:2819
 msgid ""
 "`KeepRange.AllowAI` controls whether this function is effective for "
 "computer."
 msgstr "`KeepRange.AllowAI` 控制此功能是否对 AI 玩家生效。"
 
-#: ../../New-or-Enhanced-Logics.md:2789
+#: ../../New-or-Enhanced-Logics.md:2820
 msgid ""
 "`KeepRange.AllowPlayer` controls whether this function is effective for "
 "human."
 msgstr "`KeepRange.AllowPlayer` 控制此功能是否对人类玩家生效。"
 
-#: ../../New-or-Enhanced-Logics.md:2790
+#: ../../New-or-Enhanced-Logics.md:2821
 msgid ""
 "The function won't take effect if the techno's rearm time left is shorter"
 " than `KeepRange.EarlyStopFrame`."
 msgstr "如果单位开火剩余 CD 短于 `KeepRange.EarlyStopFrame` 的时间则该功能不会生效。"
 
-#: ../../New-or-Enhanced-Logics.md:2793
+#: ../../New-or-Enhanced-Logics.md:2824
 msgid ""
 "That is to say, the total duration of executing KeepRange equals the "
 "value of weapon `ROF` minus the value of `KeepRange.EarlyStopFrame`."
 msgstr "也就是说执行 KeepRange 效果的总时长 = 武器 `ROF` 的值 - `KeepRange.EarlyStopFrame` 的值。"
 
-#: ../../New-or-Enhanced-Logics.md:2797
+#: ../../New-or-Enhanced-Logics.md:2828
 msgid ""
 "[SOMEWEAPON]                  ; WeaponType\n"
 "KeepRange=0                   ; floating point value\n"
@@ -9724,23 +9842,23 @@ msgstr ""
 "KeepRange.AllowPlayer=false   ; boolean\n"
 "KeepRange.EarlyStopFrame=0    ; integer\n"
 
-#: ../../New-or-Enhanced-Logics.md:2805
+#: ../../New-or-Enhanced-Logics.md:2836
 msgid "Make units try turning to target when firing with `OmniFire=yes`"
 msgstr "`OmniFire=yes` 下转向"
 
-#: ../../New-or-Enhanced-Logics.md:2807
+#: ../../New-or-Enhanced-Logics.md:2838
 msgid ""
 "The unit will try to turn the body to target even firing with "
 "`OmniFire=yes`."
 msgstr "即便使用 `OmniFire=yes` 的武器开火单位也会尝试将车体转向目标。"
 
-#: ../../New-or-Enhanced-Logics.md:2808
+#: ../../New-or-Enhanced-Logics.md:2839
 msgid ""
 "Jumpjets are recommended to have the same value of body `ROT` and "
 "`JumpjetTurnRate`."
 msgstr "建议 Jumpjet 的 `ROT` 和 `JumpjetTurnRate` 相同。"
 
-#: ../../New-or-Enhanced-Logics.md:2811
+#: ../../New-or-Enhanced-Logics.md:2842
 msgid ""
 "[SOMEWEAPON]              ; WeaponType, with OmniFire=yes\n"
 "OmniFire.TurnToTarget=no  ; boolean\n"
@@ -9748,11 +9866,11 @@ msgstr ""
 "[SOMEWEAPON]              ; WeaponType, with OmniFire=yes\n"
 "OmniFire.TurnToTarget=no  ; boolean\n"
 
-#: ../../New-or-Enhanced-Logics.md:2816
+#: ../../New-or-Enhanced-Logics.md:2847
 msgid "Radiation enhancements"
 msgstr "辐射增强"
 
-#: ../../New-or-Enhanced-Logics.md:2818
+#: ../../New-or-Enhanced-Logics.md:2849
 msgid ""
 "In addition to allowing custom radiation types, several enhancements are "
 "also available to the default radiation type defined in `[Radiation]`, "
@@ -9762,11 +9880,11 @@ msgstr ""
 "除了允许自定义辐射类型外还有对于默认辐射类型 `[Radiation]` 的增强，例如可以设置所有者与开火者或对建筑造成伤害。详见[自定义辐射类型"
 "](#custom-radiation-types)。"
 
-#: ../../New-or-Enhanced-Logics.md:2820
+#: ../../New-or-Enhanced-Logics.md:2851
 msgid "Strafing aircraft weapon customization"
 msgstr "自定义战机扫射"
 
-#: ../../New-or-Enhanced-Logics.md:2822
+#: ../../New-or-Enhanced-Logics.md:2853
 msgid ""
 "![image](_static/images/strafing-01.gif) *Strafing aircraft weapon "
 "customization in [Project Phantom](https://www.moddb.com/mods/project-"
@@ -9775,11 +9893,11 @@ msgstr ""
 "![image](_static/images/strafing-01.gif) "
 "*[幽灵计划](https://www.moddb.com/mods/project-phantom) 中的自定义战机扫射武器*"
 
-#: ../../New-or-Enhanced-Logics.md:2825
+#: ../../New-or-Enhanced-Logics.md:2856
 msgid "Some of the behavior of strafing aircraft weapons can now be customized."
 msgstr "现在可以自定义战机扫射武器的一些行为。"
 
-#: ../../New-or-Enhanced-Logics.md:2826
+#: ../../New-or-Enhanced-Logics.md:2857
 msgid ""
 "`Strafing` controls if the aircraft can strafe when firing at the target."
 " Default to `true` if the projectile's `ROT` < 2 and `Inviso=false` "
@@ -9788,7 +9906,7 @@ msgstr ""
 "`Strafing` 控制战机在目标射击时是否可以扫射。如果抛射体 `ROT` < 2 且 `Inviso=false` 并且没有 "
 "`Trajectory` 则默认为 `true` 其他情况为 `false`。"
 
-#: ../../New-or-Enhanced-Logics.md:2827
+#: ../../New-or-Enhanced-Logics.md:2858
 msgid ""
 "`Strafing.Shots` controls the number of times the weapon is fired during "
 "a single strafe run, defaults to 5 if not set. `Ammo` is only deducted at"
@@ -9797,7 +9915,7 @@ msgstr ""
 "`Strafing.Shots` 控制在单次扫射过程中武器发射的次数，如果未设置则默认为 5。`Ammo` "
 "只会在扫射结束后扣除一次，无论实际多少次。"
 
-#: ../../New-or-Enhanced-Logics.md:2828
+#: ../../New-or-Enhanced-Logics.md:2859
 msgid ""
 "`Strafing.SimulateBurst` controls whether or not the shots fired during "
 "strafing simulate behavior of `Burst`, allowing for alternating firing "
@@ -9806,14 +9924,14 @@ msgstr ""
 "`Strafing.SimulateBurst` 控制在扫射过程中发射的武器是否模拟 `Burst` 的行为，即允许交替开火坐标。仅当武器 "
 "`Burst` 设置为 1 或未定义时才有效。"
 
-#: ../../New-or-Enhanced-Logics.md:2829
+#: ../../New-or-Enhanced-Logics.md:2860
 msgid ""
 "`Strafing.UseAmmoPerShot`, if set to `true` overrides the usual behaviour"
 " of only deducting ammo after a strafing run and instead doing it after "
 "each individual shot."
 msgstr "`Strafing.UseAmmoPerShot` 如果设为 `true` 将在每次开火后都扣除弹药而不是通常的仅在扫射结束后才扣除弹药。"
 
-#: ../../New-or-Enhanced-Logics.md:2830
+#: ../../New-or-Enhanced-Logics.md:2861
 msgid ""
 "`Strafing.TargetCell` controls whether the aircraft will change the "
 "target of this round to the ground after firing the first shot, to ensure"
@@ -9823,7 +9941,7 @@ msgstr ""
 "`Strafing.TargetCell` 控制战机是否会在第一发后将目标切换为地板以确保与 `Strafing.Shots` "
 "设定的次数一致。也就是扫射不再会由于目标被摧毁而中断。"
 
-#: ../../New-or-Enhanced-Logics.md:2831
+#: ../../New-or-Enhanced-Logics.md:2862
 msgid ""
 "`Strafing.EndDelay` can be used to override the delay after firing last "
 "shot in strafing run before aircraft resumes another strafing run or "
@@ -9838,7 +9956,7 @@ msgstr ""
 "Speed`。注意对于弹药量足够进行多次扫射的战机而言过短的间隔可能导致并不理想的行为例如四处游走或朝向怪异的方向，具体取决于 "
 "`[WeaponType] -> ROF` 和 `[AircraftType] -> Speed` 等其他因素。"
 
-#: ../../New-or-Enhanced-Logics.md:2832
+#: ../../New-or-Enhanced-Logics.md:2863
 msgid ""
 "There is a special case for aircraft spawned by `Type=SpyPlane` "
 "superweapons on `SpyPlane Approach` or `SpyPlane Overfly` mission where "
@@ -9849,7 +9967,7 @@ msgstr ""
 "对于 `Type=SpyPlane` 超级武器生成的战机在 `SpyPlane Approach` 或 `SpyPlane Overfly` "
 "任务中的情况 `Strafing.Shots` 只有在其主武器上手动设置才会生效并决定地图揭示效果的最大次数而无视其他因素。"
 
-#: ../../New-or-Enhanced-Logics.md:2835
+#: ../../New-or-Enhanced-Logics.md:2866
 msgid ""
 "[SOMEWEAPON]                   ; WeaponType\n"
 "Strafing=                      ; boolean\n"
@@ -9867,11 +9985,11 @@ msgstr ""
 "Strafing.TargetCell=false      ; boolean\n"
 "Strafing.EndDelay=             ; integer, game frames\n"
 
-#: ../../New-or-Enhanced-Logics.md:2845
+#: ../../New-or-Enhanced-Logics.md:2876
 msgid "Visual effect scatter"
 msgstr "视觉效果散布"
 
-#: ../../New-or-Enhanced-Logics.md:2847
+#: ../../New-or-Enhanced-Logics.md:2878
 msgid ""
 "You can now add a random offset to visual effect's (`IsLaser=true`, "
 "`IsElectricBolt=true` or `IsRadBeam=true`) target location if set "
@@ -9880,7 +9998,7 @@ msgstr ""
 "现在你可以在 `VisualScatter` 设为 true "
 "时为视觉效果（`IsLaser=true`、`IsElectricBolt=true` 或 `IsRadBeam=true`）添加一个随机偏移。"
 
-#: ../../New-or-Enhanced-Logics.md:2850
+#: ../../New-or-Enhanced-Logics.md:2881
 msgid ""
 "[AudioVisual]\n"
 "VisualScatter.Min=0.03  ; floating point value, distance in cells\n"
@@ -9896,7 +10014,7 @@ msgstr ""
 "[SOMEWEAPON]            ; WeaponType\n"
 "VisualScatter=false     ; boolean\n"
 
-#: ../../New-or-Enhanced-Logics.md:2860
+#: ../../New-or-Enhanced-Logics.md:2891
 msgid ""
 "This function is only used as an additional scattering visual display, "
 "which is different from `BallisticScatter.(Min/Max)` and can be used "
@@ -9906,11 +10024,11 @@ msgstr ""
 "此功能仅叠加到**视觉效果**原本的散布上，也就是说它独立于 `BallisticScatter.(Min/Max)` "
 "且可共同使用，不会影响抛射体实际爆点的散布。"
 
-#: ../../New-or-Enhanced-Logics.md:2863
+#: ../../New-or-Enhanced-Logics.md:2894
 msgid "Weapon targeting filter"
 msgstr "武器瞄准筛选"
 
-#: ../../New-or-Enhanced-Logics.md:2865
+#: ../../New-or-Enhanced-Logics.md:2896
 msgid ""
 "![image](_static/images/weaponfilter.gif) *`Weapon target filter - "
 "different weapon used against enemies & allies as well as units & "
@@ -9921,14 +10039,14 @@ msgstr ""
 "*[幽灵计划](https://www.moddb.com/mods/project-phantom) 中的武器瞄准筛选 - "
 "就像分别对单位和建筑使用那样对敌军和友军使用不同武器*"
 
-#: ../../New-or-Enhanced-Logics.md:2868
+#: ../../New-or-Enhanced-Logics.md:2899
 msgid ""
 "You can now specify which targets or houses a weapon can fire at. This "
 "also affects weapon selection, other than certain special cases where the"
 " selection is fixed."
 msgstr "现在你可以指定武器可以开火的目标或所属方。这还会影响武器选择，除了某些特殊情况下的固定选择。"
 
-#: ../../New-or-Enhanced-Logics.md:2869
+#: ../../New-or-Enhanced-Logics.md:2900
 msgid ""
 "`CanTarget.MaxHealth` and `CanTarget.MinHealth` set health percentage "
 "thresholds for allowed targets (TechnoTypes only) that the target's "
@@ -9938,7 +10056,7 @@ msgstr ""
 "`CanTarget.MaxHealth` 和 `CanTarget.MinHealth` "
 "用于设置可被攻击的（仅单位）目标所需的血量阈值，分别要求目标血量必须高于和／或低于／等于的限制。若目标血量为 0 则跳过检查。"
 
-#: ../../New-or-Enhanced-Logics.md:2872
+#: ../../New-or-Enhanced-Logics.md:2903
 msgid ""
 "[SOMEWEAPON]             ; WeaponType\n"
 "CanTarget=all            ; List of Affected Target Enumeration "
@@ -9956,7 +10074,7 @@ msgstr ""
 "CanTarget.MaxHealth=1.0  ; floating point value, percents or absolute\n"
 "CanTarget.MinHealth=0.0  ; floating point value, percents or absolute\n"
 
-#: ../../New-or-Enhanced-Logics.md:2881
+#: ../../New-or-Enhanced-Logics.md:2912
 msgid ""
 "`CanTarget` explicitly requires either `all` or `empty` to be listed for "
 "the weapon to be able to fire at cells containing no TechnoTypes."
