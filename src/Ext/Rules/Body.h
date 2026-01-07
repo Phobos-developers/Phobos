@@ -290,6 +290,13 @@ public:
 		Valueable<bool> SortCameoByName;
 
 		Valueable<bool> BuildingRadioLink_SyncOwner;
+
+		Valueable<Leptons> ExtraRange_TargetMoving;
+		Valueable<bool> ExtraRange_TargetMoving_CloseRangeOnly;
+		Valueable<Leptons> ExtraRange_Prefiring;
+		Valueable<bool> ExtraRange_Prefiring_IncludeBurst;
+		
+		Valueable<bool> ApplyPerTargetEffectsOnDetonate;
 		
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -520,6 +527,13 @@ public:
 			, MergeBuildingDamage { false }
 
 			, BuildingRadioLink_SyncOwner { true }
+			
+			, ApplyPerTargetEffectsOnDetonate { true }
+
+			, ExtraRange_TargetMoving { Leptons(0) }
+			, ExtraRange_TargetMoving_CloseRangeOnly { false }
+			, ExtraRange_Prefiring { Leptons(0) }
+			, ExtraRange_Prefiring_IncludeBurst { true }
 		{ }
 
 		virtual ~ExtData() = default;

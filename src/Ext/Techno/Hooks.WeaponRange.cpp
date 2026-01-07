@@ -3,6 +3,7 @@
 #include <AircraftClass.h>
 
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Building/Body.h>
 
 // Reimplements the game function with few changes / optimizations
 DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
@@ -51,19 +52,113 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 	return ReturnResult;
 }
 
+static bool IsChasing(TechnoClass* pThis, AbstractClass* pTarget)
+{
+	if ((pThis->AbstractFlags & AbstractFlags::Foot) == AbstractFlags::None)
+		return false;
+
+	if (!pTarget)
+		return false;
+
+	const auto pFootTarget = abstract_cast<FootClass*>(pTarget);
+
+	if (!pFootTarget || !pFootTarget->Locomotor.GetInterfacePtr()->Is_Really_Moving_Now())
+		return false;
+
+	return true;
+}
+
+static bool IsPrefiring(TechnoClass* pThis, WeaponTypeClass* pWeapon)
+{
+	const auto pTypeExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const int currentBurst = pThis->CurrentBurstIndex % pWeapon->Burst;
+
+	if (pTypeExt->ExtraRange_Prefiring_IncludeBurst.Get(RulesExt::Global()->ExtraRange_Prefiring_IncludeBurst) && currentBurst != 0)
+		return true;
+
+	const auto pTechnoExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pTechnoExt->DelayedFireTimer.InProgress())
+		return true;
+
+	switch (pThis->WhatAmI())
+	{
+	case AbstractType::Unit:
+	{
+		const auto pUnit = static_cast<UnitClass*>(pThis);
+		int syncFrame = -1;
+
+		if (currentBurst == 0)
+			syncFrame = pUnit->Type->FiringSyncFrame0;
+		else if (currentBurst == 1)
+			syncFrame = pUnit->Type->FiringSyncFrame1;
+
+		if (syncFrame == -1)
+			return false;
+
+		return pUnit->CurrentFiringFrame >= syncFrame;
+	}
+	case AbstractType::Aircraft:
+	{
+		const auto pAircraft = static_cast<AircraftClass*>(pThis);
+		const auto status = (AirAttackStatus)pAircraft->MissionStatus;
+		return status == AirAttackStatus::FireAtTarget
+			|| status == AirAttackStatus::FireAtTarget2
+			|| status == AirAttackStatus::FireAtTarget2_Strafe
+			|| status == AirAttackStatus::FireAtTarget3_Strafe
+			|| status == AirAttackStatus::FireAtTarget4_Strafe
+			|| status == AirAttackStatus::FireAtTarget5_Strafe;
+	}
+	case AbstractType::Building:
+	{
+		const auto pBuilding = static_cast<BuildingClass*>(pThis);
+		const auto pExt = BuildingExt::ExtMap.Find(pBuilding);
+		return pBuilding->DelayBeforeFiring || pExt->IsFiringNow;
+	}
+	case AbstractType::Infantry:
+	{
+		const auto pInfantry = static_cast<InfantryClass*>(pThis);
+		return pInfantry->IsFiring;
+	}
+	default:
+		return false;
+	}
+}
+
 DEFINE_HOOK(0x6F7248, TechnoClass_InRange_WeaponRange, 0x6)
 {
 	enum { SkipGameCode = 0x6F724E };
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EBX);
+	GET_BASE(AbstractClass*, pTarget, 0xC);
 
 	int range = 0;
 
-	if (const auto keepRange = WeaponTypeExt::GetTechnoKeepRange(pWeapon, pThis, false))
+	if (const int keepRange = WeaponTypeExt::GetTechnoKeepRange(pWeapon, pThis, false))
+	{
 		range = keepRange;
+	}
 	else
+	{
 		range = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis);
+
+		if (range != -512)
+		{
+			const auto pExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+			const auto prefiringExtraRange = pExt->ExtraRange_Prefiring.Get(RulesExt::Global()->ExtraRange_Prefiring);
+
+			if (prefiringExtraRange && IsPrefiring(pThis, pWeapon))
+				range += prefiringExtraRange;
+
+			const auto targetMovingExtraRange = pExt->ExtraRange_TargetMoving.isset()
+				? pExt->ExtraRange_TargetMoving.Get() : (!RulesExt::Global()->ExtraRange_TargetMoving_CloseRangeOnly || pThis->GetTechnoType()->CloseRange
+				? RulesExt::Global()->ExtraRange_TargetMoving : Leptons(0));
+
+			if (targetMovingExtraRange && IsChasing(pThis, pTarget))
+				range += targetMovingExtraRange;
+		}
+	}
 
 	R->EDI(range);
 

@@ -1379,7 +1379,7 @@ void ScriptExt::Mission_Attack_List(TeamClass* pTeam, int calcThreatMode, bool r
 	if (RulesExt::Global()->AITargetTypesLists.size() > 0
 		&& RulesExt::Global()->AITargetTypesLists[attackAITargetType].size() > 0)
 	{
-		ScriptExt::Mission_Attack(pTeam, repeatAction, calcThreatMode, attackAITargetType, -1);
+		ScriptExt::Mission_Attack(pTeam, calcThreatMode, repeatAction, attackAITargetType, -1);
 	}
 }
 
@@ -1453,7 +1453,7 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass* pTeam, int calcThreatMode,
 		if (selected)
 			pTeamData->IdxSelectedObjectFromAIList = idxSelectedObject;
 
-		ScriptExt::Mission_Attack(pTeam, repeatAction, calcThreatMode, attackAITargetType, idxSelectedObject);
+		ScriptExt::Mission_Attack(pTeam, calcThreatMode, repeatAction, attackAITargetType, idxSelectedObject);
 	}
 
 	// This action finished

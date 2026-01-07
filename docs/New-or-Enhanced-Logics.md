@@ -2629,6 +2629,37 @@ SpawnsCrate(N).Type=     ; Powerup crate type enum (money|unit|healbase|cloak|ex
 SpawnsCrate(N).Weight=1  ; integer
 ```
 
+### Toggle per-target warhead effects apply timing
+
+- Now you can set the following flag to `false` to apply the **Phobos** warhead effects that take effect on each target when taking damage, rather than when the projectiles detonate.
+  - This will allow such effects to be applied through damage without projectiles, including but not limited to damage from particles, vanilla radiation, and Ares' `GenericWarhead` superweapon.
+  - This will also cause all effects that can completely prevent damage to also prevent these warhead effects, including but not limited to `DamageSelf`, `DamageAirThreshold`, `AffectsAllies`, `AffectsAir`.
+  - If you use a warhead with `CellSpread` to damage a building multiple times, then these effects will be applied multiple times. If you don't want this to happen, use [`MergeBuildingDamage`](#allow-merging-aoe-damage-to-buildings-into-one).
+  - The affected effects include:
+    - [Remove mind-control](#break-mind-control-on-impact)
+    - [Type conversion](#convert-technotype-on-impact)
+    - [`BuildingSell` & `BuildingUndeploy`](#sell-or-undeploy-building-on-impact)
+    - [`RemoveDisguise`](#remove-disguise-on-impact)
+    - [`ReverseEngineer`](#reverse-engineer-warhead)
+    - [Modify shield](#shields)
+    - [Modify attach-effects](#attached-effects)
+    - [Critical hits](#chance-based-extra-damage-or-warhead-detonation--critical-hits)
+      - Due to technical reasons, `Crit.SuppressWhenIntercepted=false` and `Crit.ApplyChancePerTarget=true` will forced to be used.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]                        ; WarheadType
+ApplyPerTargetEffectsOnDetonate=true  ; boolean
+
+[SOMEWARHEAD]                         ; WarheadType
+ApplyPerTargetEffectsOnDetonate=      ; boolean, default to [CombatDamage] -> ApplyPerTargetEffectsOnDetonate
+```
+
+```{note}
+- Ares' warhead effects, such as EMP or IronCurtain warhead, will not be affected.
+- Ares' warhead effect controllers, such as `EffectsRequireDamage`, only affect Ares' effects. So they have nothing to do with this.
+```
+
 ### Trigger specific NotHuman infantry Death anim sequence
 
 - Warheads are now able to trigger specific `NotHuman=yes` infantry `Death` anim sequence using the corresponding tag. It's value represents sequences from `Die1` to `Die5`.
@@ -2748,6 +2779,39 @@ DelayedFire.OnlyOnInitialBurst=false   ; boolean
 
 ```{note}
 AircraftTypes, due to their different attack patterns, will not wait for the delay to expire before attempting to fire and will instead continue without firing if the delay is too long.
+```
+
+### Extra range
+
+- Now you can adjust weapon's range when the firer or target are under specific conditions.
+- `ExtraRange.TargetMoving` grants the weapon extra range when the target is in a moving state.
+  - `ExtraRange.TargetMoving.CloseRangeOnly` is used to restrict whether the global default value only applies to units with `CloseRange=yes`.
+- `ExtraRange.Prefiring` grants the weapon extra range when the firer is in a pre-firing state, including:
+    - Vehicles with tags such as `FiringSyncFrame%d`.
+    - Aircraft that are firing.
+    - Buildings with tags such as `IsAnimDelayedFire`.
+    - Infantry with tags such as `FireUp`.
+    - Any unit with [`DelayedFire`](#delayed-firing).
+  - `ExtraRange.Prefiring.IncludeBurst` is used to decide whether the execution of burst is considered as being in a pre-firing state.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ExtraRange.TargetMoving=0.0                     ; float, range in cells
+ExtraRange.TargetMoving.CloseRangeOnly=false    ; boolean
+ExtraRange.Prefiring=0.0                        ; float, range in cells
+ExtraRange.Prefiring.IncludeBurst=true          ; boolean
+
+[SOMEWEAPON]                                    ; WeaponType
+ExtraRange.TargetMoving=                        ; float, range in cells, the default values refer to the descriptions above
+ExtraRange.Prefiring=                           ; float, range in cells, default to [General] -> ExtraRange.Prefiring
+ExtraRange.Prefiring.IncludeBurst=              ; boolean, default to [General] -> ExtraRange.Prefiring.IncludeBurst
+```
+
+```{note}
+- In vanilla, melee units have difficulty attacking enemies that are moving away, even if they have a slightly higher speed than their targets. This is because the game's pathfinding algorithm searches for a firing position in units of cells, which creates an unacceptable error for melee units, causing the targets to move out of range before they can get close.
+- Units with various forms of pre-firing behavior have similar problems. The target may move out of range before they fire.
+- This feature can solve the above issues.
 ```
 
 ### Extra warhead detonations

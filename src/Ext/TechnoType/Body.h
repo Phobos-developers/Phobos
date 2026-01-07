@@ -451,6 +451,8 @@ public:
 
 		Nullable<bool> InfantryAutoDeploy;
 
+		ValueableVector<TechnoTypeClass*> TeamMember_ConsideredAs;
+
 		Nullable<bool> TurretResponse;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
@@ -854,6 +856,8 @@ public:
 			, VoiceEliteWeaponAttacks {}
 
 			, InfantryAutoDeploy {}
+
+			, TeamMember_ConsideredAs {}
 
 			, TurretResponse {}
 		{ }
