@@ -181,7 +181,7 @@ DEFINE_HOOK(0x687B18, ScenarioClass_ReadINI_StartTracking, 0x7)
 	return 0;
 }
 
-void __fastcall TechnoClass_UnInit_Wrapper(TechnoClass* pThis)
+static void __fastcall TechnoClass_UnInit_Wrapper(TechnoClass* pThis)
 {
 
 	if (LimboTrackingTemp::Enabled && pThis->InLimbo)
@@ -243,9 +243,35 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 	GET(TechnoClass* const, pThis, ESI);
 	GET(HouseClass* const, pNewOwner, EBP);
 
-	auto const pType = pThis->GetTechnoType();
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pTypeExt = pExt->TypeExtData;
+
+	if (pTypeExt->AutoDeath_Behavior.isset())
+	{
+		const bool humanToComputer = pTypeExt->AutoDeath_OnOwnerChange_HumanToComputer.Get(pTypeExt->AutoDeath_OnOwnerChange);
+		const bool computerToHuman = pTypeExt->AutoDeath_OnOwnerChange_ComputerToHuman.Get(pTypeExt->AutoDeath_OnOwnerChange);
+
+		if (humanToComputer && computerToHuman)
+		{
+			TechnoExt::KillSelf(pThis, pTypeExt->AutoDeath_Behavior, pTypeExt->AutoDeath_VanishAnimation, !pThis->IsInLogic && pThis->IsAlive);
+			return 0;
+		}
+		else if (humanToComputer || computerToHuman)
+		{
+			const bool I_am_human = pThis->Owner->IsControlledByHuman();
+
+			if (I_am_human != pNewOwner->IsControlledByHuman())
+			{
+				if ((I_am_human && humanToComputer) || (!I_am_human && computerToHuman))
+				{
+					TechnoExt::KillSelf(pThis, pTypeExt->AutoDeath_Behavior, pTypeExt->AutoDeath_VanishAnimation, !pThis->IsInLogic && pThis->IsAlive);
+					return 0;
+				}
+			}
+		}
+	}
+
+	auto const pType = pTypeExt->OwnerObject();
 	auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
 	auto const pNewOwnerExt = HouseExt::ExtMap.Find(pNewOwner);
 

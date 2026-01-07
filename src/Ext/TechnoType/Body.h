@@ -66,6 +66,7 @@ public:
 		Valueable<bool> ImmuneToCrit;
 		Valueable<bool> MultiMindControl_ReleaseVictim;
 		Valueable<int> CameoPriority;
+		PhobosPCXFile AltCameoPCX;
 		Valueable<bool> NoManualMove;
 		Nullable<int> InitialStrength;
 		Valueable<bool> ReloadInTransport;
@@ -91,6 +92,9 @@ public:
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
 		ValueableVector<AnimTypeClass*> AutoDeath_VanishAnimation;
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
+		Valueable<bool> AutoDeath_OnOwnerChange;
+		Nullable<bool> AutoDeath_OnOwnerChange_HumanToComputer;
+		Nullable<bool> AutoDeath_OnOwnerChange_ComputerToHuman;
 		Valueable<int> AutoDeath_AfterDelay;
 		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosDontExist;
 		Valueable<bool> AutoDeath_TechnosDontExist_Any;
@@ -161,12 +165,15 @@ public:
 		Valueable<bool> OpenTopped_ShareTransportTarget;
 		Valueable<bool> OpenTopped_UseTransportRangeModifiers;
 		Valueable<bool> OpenTopped_CheckTransportDisableWeapons;
+		Valueable<int> OpenTransport_RangeBonus;
+		Valueable<float> OpenTransport_DamageMultiplier;
 
 		Valueable<bool> AutoFire;
 		Valueable<bool> AutoFire_TargetSelf;
 
 		Valueable<bool> NoSecondaryWeaponFallback;
 		Valueable<bool> NoSecondaryWeaponFallback_AllowAA;
+		Nullable<bool> AllowWeaponSelectAgainstWalls;
 
 		Valueable<int> NoAmmoWeapon;
 		Valueable<int> NoAmmoAmount;
@@ -398,6 +405,7 @@ public:
 		Valueable<int> Overload_ParticleSysCount;
 
 		Valueable<bool> Harvester_CanGuardArea;
+		Valueable<bool> Harvester_CanGuardArea_RequireTarget;
 		Nullable<bool> HarvesterScanAfterUnload;
 
 		Nullable<bool> ExtendedAircraftMissions_SmoothMoving;
@@ -485,6 +493,7 @@ public:
 			, ImmuneToCrit { false }
 			, MultiMindControl_ReleaseVictim { false }
 			, CameoPriority { 0 }
+			, AltCameoPCX {}
 			, NoManualMove { false }
 			, InitialStrength {}
 			, ReloadInTransport { false }
@@ -535,11 +544,14 @@ public:
 			, OpenTopped_ShareTransportTarget { true }
 			, OpenTopped_UseTransportRangeModifiers { false }
 			, OpenTopped_CheckTransportDisableWeapons { false }
+			, OpenTransport_RangeBonus { 0 }
+			, OpenTransport_DamageMultiplier { 1.0 }
 
 			, AutoFire { false }
 			, AutoFire_TargetSelf { false }
 			, NoSecondaryWeaponFallback { false }
 			, NoSecondaryWeaponFallback_AllowAA { false }
+			, AllowWeaponSelectAgainstWalls {}
 			, NoAmmoWeapon { -1 }
 			, NoAmmoAmount { 0 }
 			, JumpjetRotateOnCrash { true }
@@ -564,6 +576,9 @@ public:
 			, AutoDeath_Behavior { }
 			, AutoDeath_VanishAnimation {}
 			, AutoDeath_OnAmmoDepletion { false }
+			, AutoDeath_OnOwnerChange { false }
+			, AutoDeath_OnOwnerChange_HumanToComputer {}
+			, AutoDeath_OnOwnerChange_ComputerToHuman {}
 			, AutoDeath_AfterDelay { 0 }
 			, AutoDeath_TechnosDontExist {}
 			, AutoDeath_TechnosDontExist_Any { false }
@@ -796,6 +811,7 @@ public:
 			, Overload_ParticleSysCount { 5 }
 
 			, Harvester_CanGuardArea { false }
+			, Harvester_CanGuardArea_RequireTarget { false }
 			, HarvesterScanAfterUnload {}
 
 			, ExtendedAircraftMissions_SmoothMoving {}
@@ -859,12 +875,15 @@ public:
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 		void CalculateSpawnerRange();
-		bool IsSecondary(int nWeaponIndex);
+		bool IsSecondary(int nWeaponIndex) const;
 
-		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget);
-		int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget);
+		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget) const;
+		int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget) const;
 
 		void UpdateAdditionalAttributes();
+
+		// Ares 0.2
+		bool CameoIsVeteran(HouseClass* pHouse) const;
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;

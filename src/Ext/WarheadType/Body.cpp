@@ -244,6 +244,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Nonprovocative.Read(exINI, pSection, "Nonprovocative");
 
+	this->MergeBuildingDamage.Read(exINI, pSection, "MergeBuildingDamage");
+
 	this->CombatLightDetailLevel.Read(exINI, pSection, "CombatLightDetailLevel");
 	this->CombatLightChance.Read(exINI, pSection, "CombatLightChance");
 	this->CLIsBlack.Read(exINI, pSection, "CLIsBlack");
@@ -290,7 +292,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AffectsGround.Read(exINI, pSection, "AffectsGround");
 	this->AffectsAir.Read(exINI, pSection, "AffectsAir");
 	this->CellSpread_Cylinder.Read(exINI, pSection, "CellSpread.Cylinder");
-	this->HealthCheck = this->AffectsBelowPercent > 0.0 || this->AffectsAbovePercent < 1.0;
+	this->HealthCheck = this->AffectsAbovePercent > 0.0 || this->AffectsBelowPercent < 1.0;
 
 	if (this->AffectsAbovePercent > this->AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] AffectsAbovePercent is bigger than AffectsBelowPercent, the warhead will never activate!\n", pSection);
@@ -307,6 +309,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PlayAnimAboveSurface.Read(exINI, pSection, "PlayAnimAboveSurface");
 
 	this->AnimZAdjust.Read(exINI, pSection, "AnimZAdjust");
+
+	this->ApplyPerTargetEffectsOnDetonate.Read(exINI, pSection, "ApplyPerTargetEffectsOnDetonate");
 
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
@@ -561,6 +565,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Nonprovocative)
 
+		.Process(this->MergeBuildingDamage)
+
 		.Process(this->CombatLightDetailLevel)
 		.Process(this->CombatLightChance)
 		.Process(this->CLIsBlack)
@@ -598,6 +604,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlayAnimAboveSurface)
 
 		.Process(this->AnimZAdjust)
+
+		.Process(this->ApplyPerTargetEffectsOnDetonate)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

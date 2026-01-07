@@ -709,18 +709,16 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 
 			if (!cumulative)
 			{
-				match = attachEffect;
-				break;
+				attachEffect->RefreshDuration(attachParams.DurationOverride);
+				AttachEffectTypeClass::HandleEvent(pTarget);
+				return nullptr;
 			}
 			else if (!attachParams.CumulativeRefreshSameSourceOnly || (attachEffect->Source == pSource && attachEffect->Invoker == pInvoker))
 			{
 				cumulativeMatches.push_back(attachEffect);
 
 				if (!match || attachEffect->Duration < match->Duration)
-					attachEffect->RefreshDuration(attachParams.DurationOverride);
-
-				AttachEffectTypeClass::HandleEvent(pTarget);
-				return nullptr;
+					match = attachEffect;
 			}
 		}
 	}

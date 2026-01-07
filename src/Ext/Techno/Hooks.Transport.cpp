@@ -173,7 +173,9 @@ DEFINE_HOOK(0x6F72D2, TechnoClass_IsCloseEnoughToTarget_OpenTopped_RangeBonus, 0
 	if (auto const pTransport = pThis->Transporter)
 	{
 		auto const pExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData;
-		R->EAX(pExt->OpenTopped_RangeBonus.Get(RulesClass::Instance->OpenToppedRangeBonus));
+		const int rangeBonus = pExt->OpenTopped_RangeBonus.Get(RulesClass::Instance->OpenToppedRangeBonus);
+
+		R->EAX(rangeBonus + TechnoExt::ExtMap.Find(pThis)->TypeExtData->OpenTransport_RangeBonus);
 		return 0x6F72DE;
 	}
 
@@ -241,12 +243,13 @@ static inline bool CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 		return false;
 
 	const auto pTransportType = pTransport->Type;
+	const auto pTransportTypeExt = TechnoTypeExt::ExtMap.Find(pTransportType);
 
 	// Added to fit with AmphibiousEnter
-	if (pTransport->GetCell()->LandType == LandType::Water && !TechnoTypeExt::ExtMap.Find(pTransportType)->AmphibiousEnter.Get(RulesExt::Global()->AmphibiousEnter))
+	if (pTransport->GetCell()->LandType == LandType::Water && !pTransportTypeExt->AmphibiousEnter.Get(RulesExt::Global()->AmphibiousEnter))
 		return false;
 
-	const bool bySize = TechnoTypeExt::ExtMap.Find(pTransportType)->Passengers_BySize;
+	const bool bySize = pTransportTypeExt->Passengers_BySize;
 	const int passengerSize = static_cast<int>(pPassenger->GetTechnoType()->Size);
 
 	if (passengerSize > static_cast<int>(pTransportType->SizeLimit))

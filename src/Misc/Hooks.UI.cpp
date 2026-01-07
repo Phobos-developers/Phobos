@@ -300,7 +300,7 @@ namespace BriefingTemp
 	bool ShowBriefing = false;
 }
 
-__forceinline void ShowBriefing()
+static __forceinline void ShowBriefing()
 {
 	if (BriefingTemp::ShowBriefing)
 	{
@@ -428,7 +428,7 @@ DEFINE_HOOK(0x604985, GetDialogUIStatusLabels_ShowBriefing, 0x5)
 
 #pragma endregion
 
-bool __fastcall Fake_HouseIsAlliedWith(HouseClass* pThis, void*, HouseClass* CurrentPlayer)
+static bool __fastcall Fake_HouseIsAlliedWith(HouseClass* pThis, void*, HouseClass* CurrentPlayer)
 {
 	return (Phobos::Config::ShowPlanningPath && SessionClass::IsSingleplayer())
 		|| pThis->IsControlledByCurrentPlayer()
