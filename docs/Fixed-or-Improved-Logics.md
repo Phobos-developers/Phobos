@@ -283,6 +283,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed a bug where units can be promoted when created via trigger actions even if they have `Trainable=false`.
 - Fixed the bug that ai will try to product aircraft even the airport has no free dock for it.
 - Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.
+- Fixed the issue that rockets do not consider the destination altitude during climbing.
 
 ## Fixes / interactions with other extensions
 
@@ -1840,6 +1841,17 @@ HeightShadowScaling.MinScale=0.0  ; floating point value
 
 [SOMETECHNO]                      ; TechnoType
 ShadowSizeCharacteristicHeight=   ; integer, height in leptons
+```
+
+### Allow techno type considered as other type when recruiting techno for teams
+
+- It is now possible to make techno type considered as other type when recruiting techno for teams, both for AI team recruitment and `Create Team` action.
+  - Only affect techno that's presented on the map. Cannot make AI produce this type of techno if it doesn't have any.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType
+TeamMember.ConsideredAs=        ; list of technotypes
 ```
 
 ## Terrains

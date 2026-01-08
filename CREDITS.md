@@ -401,6 +401,7 @@ This page lists all the individual contributions to the project by their author.
   - Fast access structure
   - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles
   - Reactivate unused trigger events 2, 53, and 54
+  - Map Action 511, 609, 610
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -469,6 +470,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType`
   - Fix a bug where units can be promoted when created via trigger actions even if they have `Trainable=false`
   - Fix the bug that ai will try to product aircraft even the airport has no free dock for it
+  - Allow techno type considered as other type when recruiting techno for teams
   - Fix the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed
   - Fix the bug that vehicle survivor can spawn on wrong position when transport has been destroyed
 - **Apollo** - Translucent SHP drawing patches
@@ -659,6 +661,9 @@ This page lists all the individual contributions to the project by their author.
   - CellSpread damage check if victim is in air or on floor
   - Fix an issue where non-repairer units needed sensors to attack cloaked friendly units
   - Allow customizing whether to synchronously change the owner of the RadioLink-linked units when the owner of a building changes
+  - Toggle per-target warhead effects apply timing
+  - Extra range for chasing and pre-firing
+  - Fix an issue that rockets do not consider the destination altitude during climbing
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

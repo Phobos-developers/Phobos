@@ -1519,7 +1519,7 @@ msgstr "-1"
 
 #: ../../AI-Scripting-and-Mapping.md:66
 msgid "Disable Global value for Force `OnlyTargetHouseEnemy` tag. Default value"
-msgstr "默认值，禁用强制 `OnlyTargetHouseEnemy` 标签全局值。"
+msgstr "默认值，不强制更改 `OnlyTargetHouseEnemy` 标签全局值。"
 
 #: ../../AI-Scripting-and-Mapping.md:66
 msgid "Force `OnlyTargetHouseEnemy` = false"
