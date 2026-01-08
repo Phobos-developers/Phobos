@@ -428,6 +428,8 @@ bool TActionExt::UndeployToWaypoint(TActionClass* const pThis, HouseClass* const
 
 	const auto& limboDelivereds = HouseExt::ExtMap.Find(vHouse)->OwnedLimboDeliveredBuildings;
 	const bool existLimboBuilding = !limboDelivereds.empty();
+	const auto vectorBegin = limboDelivereds.begin();
+	const auto vectorEnd = limboDelivereds.end();
 
 	// Thanks to chaserli for the relevant code!
 	// There should be a more perfect way to do this, but I don't know how.
@@ -445,13 +447,10 @@ bool TActionExt::UndeployToWaypoint(TActionClass* const pThis, HouseClass* const
 		}
 
 		// verify whether the building's source is LimboDelivery.
-		if (existLimboBuilding)
+		if (existLimboBuilding
+			&& std::find(vectorBegin, vectorEnd, pBuilding) != vectorEnd)
 		{
-			for (auto const pLimboBuilding : limboDelivereds)
-			{
-				if (pLimboBuilding == pBuilding)
-					return false;
-			}
+			return false;
 		}
 
 		if (pType->ConstructionYard)

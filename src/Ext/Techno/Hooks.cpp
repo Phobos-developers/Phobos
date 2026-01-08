@@ -1498,13 +1498,11 @@ DEFINE_HOOK(0x6FBFA3, TechnoClass_Select_SkipLimboDelivery, 0x6)
 
 	if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pThis))
 	{
-		auto const pHouseExt = HouseExt::ExtMap.Find(pBuilding->Owner);
+		const auto& limboDelivereds = HouseExt::ExtMap.Find(pBuilding->Owner)->OwnedLimboDeliveredBuildings;
+		const auto vectorEnd = limboDelivereds.end();
 
-		for (auto const pItem : pHouseExt->OwnedLimboDeliveredBuildings)
-		{
-			if (pItem == pBuilding)
-				return SkipSelect;
-		}
+		if (std::find(limboDelivereds.begin(), vectorEnd, pBuilding) != vectorEnd)
+			return SkipSelect;
 	}
 
 	return 0;
