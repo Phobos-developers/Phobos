@@ -1,4 +1,4 @@
-#include "StraightTrajectory.h"
+﻿#include "StraightTrajectory.h"
 #include "BombardTrajectory.h"
 #include "ParabolaTrajectory.h"
 
@@ -587,6 +587,15 @@ DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_Trajectories, 0x5)
 		pExt->Trajectory = pTypeExt->TrajectoryType->CreateInstance();
 		pExt->Trajectory->OnUnlimbo(pThis, pCoord, pVelocity);
 	}
-
+	
+	// Parasite=yes will make the bullet MoveTo twice, and may cause some issue.
+	// Before we know how to deal with it, just exclude it.
+	if ((!pThis->WeaponType || !pThis->WeaponType->Warhead->Parasite)
+		&& !pThis->WH->Parasite
+		&& pTypeExt->UpdateImmediately.Get(pThis->Type->Inviso && RulesExt::Global()->UpdateInvisoImmediately))
+	{
+		pThis->Update();
+	}
+	
 	return 0;
 }

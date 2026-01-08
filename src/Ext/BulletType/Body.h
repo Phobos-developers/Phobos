@@ -77,6 +77,8 @@ public:
 
 		Valueable<bool> AU;
 
+		Nullable<bool> UpdateImmediately;
+
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
 		Nullable<Leptons> BallisticScatter_Max;
@@ -132,6 +134,7 @@ public:
 			, Parachuted_MaxFallRate {}
 			, BombParachute {}
 			, AU { false }
+			, UpdateImmediately {}
 		{ }
 
 		virtual ~ExtData() = default;

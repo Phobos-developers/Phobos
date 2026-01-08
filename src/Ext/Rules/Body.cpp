@@ -1,4 +1,4 @@
-#include "Body.h"
+﻿#include "Body.h"
 
 #include <Ext/TechnoType/Body.h>
 #include <New/Type/RadTypeClass.h>
@@ -408,6 +408,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ExtendedPlayerRepair.Read(exINI, GameStrings::General, "ExtendedPlayerRepair");
 
 	this->Shrapnel_IgnoreHitBuildings.Read(exINI, GameStrings::CombatDamage, "Shrapnel.IgnoreHitBuildings");
+	this->UpdateInvisoImmediately.Read(exINI, GameStrings::General, "UpdateInvisoImmediately");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -737,6 +738,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->FiringAnim_Update)
 		.Process(this->ExtendedPlayerRepair)
 		.Process(this->Shrapnel_IgnoreHitBuildings)
+		.Process(this->UpdateInvisoImmediately)
 		;
 }
 
