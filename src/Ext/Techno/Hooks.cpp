@@ -1489,3 +1489,23 @@ DEFINE_HOOK(0x6F9398, TechnoClass_SelectAutoTarget_Scan_FallingDown, 0x9)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x6FBFA3, TechnoClass_Select_SkipLimboDelivery, 0x6)
+{
+	enum { SkipSelect = 0x6FC029 };
+
+	GET(TechnoClass* const, pThis, ESI);
+
+	if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pThis))
+	{
+		auto const pHouseExt = HouseExt::ExtMap.Find(pBuilding->Owner);
+
+		for (auto const pItem : pHouseExt->OwnedLimboDeliveredBuildings)
+		{
+			if (pItem == pBuilding)
+				return SkipSelect;
+		}
+	}
+
+	return 0;
+}

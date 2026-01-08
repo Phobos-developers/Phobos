@@ -526,5 +526,6 @@ DEFINE_HOOK(0x508E17, HouseClass_UpdateRadar_FreeRadar, 0x8)
 		return ForceRadar;
 	}
 
+	R->Stack(STACK_OFFSET(0x1C, -0xC), false);
 	return Continue;
 }
