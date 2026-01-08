@@ -679,6 +679,16 @@ SpyEffect.VictimSuperWeapon=       ; SuperWeaponType
 SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 ```
 
+### Customize reveal radius of `RevealToAll`
+
+- In vanilla, `RevealToAll` is hardcoded to reveal area in radius is `Sight`. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType
+RevealToAll.Radius=             ; integer
+```
+
 ## Infantry
 
 ### Customizable FLH when infantry is prone or deployed

@@ -480,6 +480,7 @@ New:
 - Allow techno type considered as other type when recruiting techno for teams (by NetsuNegi)
 - Map Action [`511` Undeploy Building to Waypoint](AI-Scripting-and-Mapping.md#undeploy-building-to-waypoint), [`609` Set Radar Mode](AI-Scripting-and-Mapping.md#set-radar-mode), [`610` Set house's `TeamDelays` value](AI-Scripting-and-Mapping.md#set-house-s-teamdelays-value) (by FlyStar)
 - Fixed an issue that rockets do not consider the destination altitude during climbing (by TaranDahl)
+- Customize reveal radius of `RevealToAll` (by NetsuNegi)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

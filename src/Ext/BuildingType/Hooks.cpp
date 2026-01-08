@@ -429,3 +429,18 @@ DEFINE_HOOK(0x73F5A7, UnitClass_IsCellOccupied_UnlimboDirection, 0x8)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x446816, BuildingClass_Place_RevealToAll_UpdateSight, 0x5)
+{
+	enum { SkipGameCode = 0x44682F };
+
+	GET(BuildingClass*, pThis, EBP);
+	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	if (!pTypeExt->RevealToAll_Radius.isset())
+		return 0;
+
+	const int radius = pTypeExt->RevealToAll_Radius.Get();
+	pThis->UpdateSight(0, 0, 1, reinterpret_cast<DWORD>(HouseClass::CurrentPlayer), radius);
+	return SkipGameCode;
+}

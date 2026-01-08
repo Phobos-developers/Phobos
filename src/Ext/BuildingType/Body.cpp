@@ -250,6 +250,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->BuildingRadioLink_SyncOwner.Read(exINI, pSection, "BuildingRadioLink.SyncOwner");
 
+	this->RevealToAll_Radius.Read(exINI, pSection, "RevealToAll.Radius");
+
 	// PlacementPreview
 	{
 		this->PlacementPreview.Read(exINI, pSection, "PlacementPreview");
@@ -348,6 +350,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->HasPowerUpAnim)
 		.Process(this->UndeploysInto_Sellable)
 		.Process(this->BuildingRadioLink_SyncOwner)
+		.Process(this->RevealToAll_Radius)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)

@@ -104,6 +104,8 @@ public:
 
 		Nullable<bool> BuildingRadioLink_SyncOwner;
 
+		Nullable<int> RevealToAll_Radius;
+
 		// Ares 0.2
 		Valueable<bool> CloningFacility;
 
@@ -176,6 +178,8 @@ public:
 			, UndeploysInto_Sellable { false }
 
 			, BuildingRadioLink_SyncOwner {}
+
+			, RevealToAll_Radius {}
 
 			// Ares 0.2
 			, CloningFacility { false }
