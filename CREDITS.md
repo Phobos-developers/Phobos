@@ -473,6 +473,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow techno type considered as other type when recruiting techno for teams
   - Fix the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed
   - Fix the bug that vehicle survivor can spawn on wrong position when transport has been destroyed
+  - Fix the bug that if object has been removed from LogicClass in Update(), next object will be skip
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
