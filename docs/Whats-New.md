@@ -480,6 +480,7 @@ New:
 - Allow techno type considered as other type when recruiting techno for teams (by NetsuNegi)
 - Map Action [`511` Undeploy Building to Waypoint](AI-Scripting-and-Mapping.md#undeploy-building-to-waypoint), [`609` Set Radar Mode](AI-Scripting-and-Mapping.md#set-radar-mode), [`610` Set house's `TeamDelays` value](AI-Scripting-and-Mapping.md#set-house-s-teamdelays-value) (by FlyStar)
 - Fixed an issue that rockets do not consider the destination altitude during climbing (by TaranDahl)
+- Fixed the bug that if object has been removed from LogicClass in Update(), next object will be skip (by NetsuNegi)
 - Customize reveal radius of `RevealToAll` (by NetsuNegi)
 
 Vanilla fixes:
@@ -549,6 +550,7 @@ Phobos fixes:
 - Map Event 601 should return true only when exists in the map like other similar map events (by FS-21)
 - Fixed OverlayType `ZAdjust` as well as some shield & AttachEffect variables not being correctly saved & loaded (by Ollerus)
 - LimboDelivery buildings cannot be selected (by FlyStar)
+- Fixed the positive value of `Reveal` on warhead (by NetsuNegi)
 
 Fixes / interactions with other extensions:
 <!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->

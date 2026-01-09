@@ -947,7 +947,14 @@ bool TechnoExt::EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool sel
 			return false;
 	}
 
-	pSurvivor->Transporter = nullptr;
+	if (const auto pTransporter = pSurvivor->Transporter)
+	{
+		if (pTransporter->GetTechnoType()->OpenTopped)
+			pTransporter->ExitedOpenTopped(pSurvivor);
+
+		pSurvivor->Transporter = nullptr;
+	}
+
 	pSurvivor->LastMapCoords = pCell->MapCoords;
 
 	if (chuted)

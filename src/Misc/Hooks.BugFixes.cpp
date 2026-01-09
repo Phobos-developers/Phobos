@@ -1,4 +1,4 @@
-﻿#include <AircraftClass.h>
+#include <AircraftClass.h>
 #include <AircraftTrackerClass.h>
 #include <AnimClass.h>
 #include <BuildingClass.h>
@@ -2912,3 +2912,44 @@ DEFINE_HOOK(0x65DE82, TeamTypeClass_CreateTeamMembers_Veterancy, 0x6)
 
 // Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.
 DEFINE_JUMP(LJMP, 0x6FC278, 0x6FC289);
+
+#pragma region LogicClasss_AI
+namespace LogicUpdateTemp
+{
+	int UpdateIndex = -1;
+}
+
+DEFINE_HOOK(0x55B5FF, LogicClass_AI_UpdateObjects, 0x5)
+{
+	enum { SkipGameCode = 0x55B61B };
+
+	GET(LogicClass*, pLogic, EDI);
+	int& updateIdx = LogicUpdateTemp::UpdateIndex;
+
+	for (updateIdx = 0; updateIdx < pLogic->Count; ++updateIdx)
+	{
+		const auto pObject = pLogic->Items[updateIdx];
+		pObject->Update();
+	}
+
+	updateIdx = -1;
+	return SkipGameCode;
+}
+
+// Fixed the bug that if object has been removed from LogicClass in Update(), next object will be skip.
+DEFINE_HOOK(0x55BB09, LogicClass_RemoveObject_FixIndex, 0x6)
+{
+	int& updateIdx = LogicUpdateTemp::UpdateIndex;
+
+	if (updateIdx == -1)
+		return 0;
+
+	GET(int, findIdx, EAX);
+
+	if (findIdx <= updateIdx)
+		--updateIdx;
+
+	return 0;
+}
+
+#pragma endregion
