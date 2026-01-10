@@ -423,3 +423,31 @@ DEFINE_HOOK(0x54D600, JumpjetLocomotionClass_MovementAI_JumpjetStraightAscend, 0
 }
 
 #pragma endregion
+
+
+#pragma region JumpjetClimbIgnoreBuilding
+
+namespace JumpjetClimbIgnoreBuilding
+{
+	bool Ignore = false;
+	int Z = 0;
+}
+
+DEFINE_HOOK(0x54D820, JumpjetLocomotionClass_GetFloorZ_SetContext, 0x6)
+{
+	GET(JumpjetLocomotionClass*, pThis, ESI);
+	JumpjetClimbIgnoreBuilding::Ignore = TechnoTypeExt::ExtMap.Find(pThis->LinkedTo->GetTechnoType())->JumpjetClimbIgnoreBuilding.Get(RulesExt::Global()->JumpjetClimbIgnoreBuilding);
+	if (JumpjetClimbIgnoreBuilding::Ignore)
+		JumpjetClimbIgnoreBuilding::Z = MapClass::Instance.GetCellFloorHeight(pThis->LinkedTo->Location);
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x54D8EA, JumpjetLocomotionClass_GetFloorZ_IgnoreBuilding, 0x6);
+DEFINE_HOOK(0x54D859, JumpjetLocomotionClass_GetFloorZ_IgnoreBuilding, 0x9)
+{
+	if (JumpjetClimbIgnoreBuilding::Ignore)
+		R->EAX(JumpjetClimbIgnoreBuilding::Z);
+	return 0;
+}
+
+#pragma endregion
