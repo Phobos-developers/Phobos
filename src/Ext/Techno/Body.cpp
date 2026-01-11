@@ -521,7 +521,8 @@ int TechnoExt::GetCrushableLevel(TechnoClass* pThis)
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	const auto rank = pThis->Veterancy.GetRemainingLevel();
-	const auto pInfantry = specific_cast<InfantryClass*>(pThis);
+	const auto whatAmI = pThis->WhatAmI();
+	const auto pInfantry = whatAmI == AbstractType::Infantry ? static_cast<InfantryClass*>(pThis) : nullptr;
 
 	if (pInfantry && pInfantry->Uncrushable)
 	{
@@ -563,7 +564,7 @@ int TechnoExt::GetCrushableLevel(TechnoClass* pThis)
 				return pTypeExt->CrushableLevel.Rookie;
 		}
 
-		if (pType->OmniCrushResistant)
+		if (pType->OmniCrushResistant || whatAmI == AbstractType::Building)
 			return RulesExt::Global()->OmniCrushResistantLevel;
 
 		if (!pType->Crushable)
