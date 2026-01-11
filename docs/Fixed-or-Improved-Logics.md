@@ -1852,7 +1852,7 @@ ShadowSizeCharacteristicHeight=   ; integer, height in leptons
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                      ; TechnoType
-TeamMember.ConsideredAs=        ; list of technotypes
+TeamMember.ConsideredAs=          ; List of TechnoTypes
 ```
 
 ## Terrains

@@ -1948,6 +1948,7 @@ msgid ""
 "Allow techno type considered as other type when recruiting techno for "
 "teams"
 msgstr ""
+"允许单位作为其他类型的单位参与小队招募"
 
 #: ../../../CREDITS.md:475
 msgid ""

@@ -2186,9 +2186,12 @@ msgstr "[追击和预开火时的额外射程](New-or-Enhanced-Logics.md#extra-"
 
 #: ../../Whats-New.md:480
 msgid ""
-"Allow techno type considered as other type when recruiting techno for "
-"teams (by NetsuNegi)"
+"[Allow techno type considered as other type when recruiting techno for "
+"teams](Fixed-or-Improved-Logics.md#allow-techno-type-considered-as-other-"
+"type-when-recruiting-techno-for-teams) (by NetsuNegi)"
 msgstr ""
+"[允许单位作为其他类型的单位参与小队招募](Fixed-or-Improved-Logics.md#allow-techno-type-considered-as-other-"
+"type-when-recruiting-techno-for-teams) (by NetsuNegi)"
 
 #: ../../Whats-New.md:481
 msgid ""

@@ -6485,6 +6485,7 @@ msgid ""
 "Allow techno type considered as other type when recruiting techno for "
 "teams"
 msgstr ""
+"允许单位作为其他类型的单位参与小队招募"
 
 #: ../../Fixed-or-Improved-Logics.md:1849
 msgid ""
@@ -6492,20 +6493,22 @@ msgid ""
 "recruiting techno for teams, both for AI team recruitment and `Create "
 "Team` action."
 msgstr ""
+"现在小队（包括 AI 小队招募和 `建立作战小队...` 行为）招募单位时可以将一个单位视为其他类型的单位。"
 
 #: ../../Fixed-or-Improved-Logics.md:1850
 msgid ""
 "Only affect techno that's presented on the map. Cannot make AI produce "
 "this type of techno if it doesn't have any."
 msgstr ""
+"仅影响存在于地图上的单位。AI 不会在没有作为其他类型参与招募的单位时使从工厂生产它们。"
 
 #: ../../Fixed-or-Improved-Logics.md:1853
 msgid ""
 "[SOMETECHNO]                      ; TechnoType\n"
-"TeamMember.ConsideredAs=        ; list of technotypes\n"
+"TeamMember.ConsideredAs=          ; List of TechnoTypes\n"
 msgstr ""
 "[SOMETECHNO]                      ; TechnoType\n"
-"TeamMember.ConsideredAs=        ; list of technotypes\n"
+"TeamMember.ConsideredAs=          ; List of TechnoTypes\n"
 
 #: ../../Fixed-or-Improved-Logics.md:1858
 msgid "Terrains"
