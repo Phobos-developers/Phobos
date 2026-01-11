@@ -1506,6 +1506,7 @@ msgid ""
 "Fix the issue where computer players did not search for new enemies after"
 " defeating them or forming alliances with them"
 msgstr ""
+"修复了 AI 玩家在消灭一家敌人或敌人结盟后不再搜索新敌人的问题"
 
 #: ../../../CREDITS.md:384
 msgid "Customize the damage taken when falling from a bridge"
