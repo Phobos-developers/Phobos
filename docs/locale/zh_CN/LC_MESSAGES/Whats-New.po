@@ -2627,7 +2627,7 @@ msgstr "虚拟投放的建筑不再可以被选中（by FlyStar）"
 
 #: ../../Whats-New.md:552
 msgid "Fixed the positive value of `Reveal` on warhead (by NetsuNegi)"
-msgstr ""
+msgstr "修复了弹头上正值 `Reveal` 不工作的问题（by NetsuNegi）"
 
 #: ../../Whats-New.md:554 ../../Whats-New.md:955 ../../Whats-New.md:1178
 msgid "Fixes / interactions with other extensions:"
