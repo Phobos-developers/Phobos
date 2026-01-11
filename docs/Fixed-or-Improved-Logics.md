@@ -283,6 +283,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed a bug where units can be promoted when created via trigger actions even if they have `Trainable=false`.
 - Fixed the bug that ai will try to product aircraft even the airport has no free dock for it.
 - Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.
+- Fixed the issue that rockets do not consider the destination altitude during climbing.
+- Fixed the bug that if object has been removed from LogicClass in Update(), next object will be skip.
 
 ## Fixes / interactions with other extensions
 
@@ -322,6 +324,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect.
 - Fixed the bug that building with `CloningFacility=true` and `WeaponsFactory=true` may cloning multiple vehicles and then they get stuck.
 - Fixed a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType`.
+- Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed.
+- Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed.
 
 ## Newly added global settings
 
@@ -1838,6 +1842,17 @@ HeightShadowScaling.MinScale=0.0  ; floating point value
 
 [SOMETECHNO]                      ; TechnoType
 ShadowSizeCharacteristicHeight=   ; integer, height in leptons
+```
+
+### Allow techno type considered as other type when recruiting techno for teams
+
+- It is now possible to make techno type considered as other type when recruiting techno for teams, both for AI team recruitment and `Create Team` action.
+  - Only affect techno that's presented on the map. Cannot make AI produce this type of techno if it doesn't have any.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType
+TeamMember.ConsideredAs=        ; list of technotypes
 ```
 
 ## Terrains
