@@ -2102,19 +2102,21 @@ msgstr ""
 
 #: ../../AI-Scripting-and-Mapping.md:655
 msgid "`511` Undeploy Building to Waypoint"
-msgstr ""
+msgstr "`511` 反部署建筑至路径点"
 
 #: ../../AI-Scripting-and-Mapping.md:657
 msgid ""
 "Undeploy specific BuildingTypes into VehicleTypes and move them to a "
 "specific Waypoint."
 msgstr ""
+"反部署特定建筑类型为载具并移动至一个特定路径点。"
 
 #: ../../AI-Scripting-and-Mapping.md:658
 msgid ""
 "If `<All>` is entered for the Building Type here, then undeploy all "
 "BuildingTypes."
 msgstr ""
+"若将此处建筑类型设为 `<All>` 则反部署所有建筑。"
 
 #: ../../AI-Scripting-and-Mapping.md:661
 msgid ""
@@ -2206,11 +2208,11 @@ msgstr ""
 
 #: ../../AI-Scripting-and-Mapping.md:723
 msgid "`609` Set Radar Mode"
-msgstr ""
+msgstr "`609` 设置雷达模式"
 
 #: ../../AI-Scripting-and-Mapping.md:725
 msgid "Change the current radar mode of the trigger house."
-msgstr ""
+msgstr "更改触发所属方的当前雷达模式"
 
 #: ../../AI-Scripting-and-Mapping.md:728
 msgid ""
@@ -2226,33 +2228,34 @@ msgstr ""
 
 #: ../../AI-Scripting-and-Mapping.md:522
 msgid "Normal mode, requires buildings that provide radar and sufficient power"
-msgstr ""
+msgstr "常规模式，需要提供雷达的建筑并且电力充足。"
 
 #: ../../AI-Scripting-and-Mapping.md:522
 msgid "Change to [FreeRadar](https://modenc.renegadeprojects.com/FreeRadar) mode"
-msgstr ""
+msgstr "改为 [FreeRadar](https://modenc.renegadeprojects.com/FreeRadar) 模式"
 
 #: ../../AI-Scripting-and-Mapping.md:522
 msgid "Force enable radar"
-msgstr ""
+msgstr "强制开启雷达"
 
 #: ../../AI-Scripting-and-Mapping.md:522
 msgid "Force disable radar"
-msgstr ""
+msgstr "强制关闭雷达"
 
 #: ../../AI-Scripting-and-Mapping.md:744
 msgid "`610` Set house's `TeamDelays` value"
-msgstr ""
+msgstr "`610` 设置所属方的 `TeamDelays` 值"
 
 #: ../../AI-Scripting-and-Mapping.md:746
 msgid "Set the `TeamDelays` value of the trigger's house."
-msgstr ""
+msgstr "设置触发所属方的 `TeamDelays` 值。"
 
 #: ../../AI-Scripting-and-Mapping.md:747
 msgid ""
 "If this value is less than 0, then use the value of `[General] -> "
 "TeamDelays`."
 msgstr ""
+"若该值小于 0 则使用 `[General] -> TeamDelays` 的值。"
 
 #: ../../AI-Scripting-and-Mapping.md:750
 msgid ""

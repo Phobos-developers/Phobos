@@ -2201,6 +2201,10 @@ msgid ""
 " value](AI-Scripting-and-Mapping.md#set-house-s-teamdelays-value) (by "
 "FlyStar)"
 msgstr ""
+"地图触发结果 "
+"<a href=\"AI-Scripting-and-Mapping.html#undeploy-building-to-waypoint\">`511` 反部署建筑至路径点</a>、"
+"<a href=\"AI-Scripting-and-Mapping.html#set-radar-mode\">`609` 设置雷达模式</a> "
+"和 <a href=\"AI-Scripting-and-Mapping.html#set-house-s-teamdelays-value\">`610` 设置所属方的 `TeamDelays` 值</a>（by FlyStar）"
 
 #: ../../Whats-New.md:482
 msgid ""

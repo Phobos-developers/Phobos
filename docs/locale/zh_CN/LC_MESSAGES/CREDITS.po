@@ -1615,7 +1615,7 @@ msgstr "重新激活无效的 2、53 和 54 号触发条件"
 
 #: ../../../CREDITS.md:405
 msgid "Map Action 511, 609, 610"
-msgstr ""
+msgstr "511、609 和 610 号地图触发结果"
 
 #: ../../../CREDITS.md:406
 msgid "**NetsuNegi**:"
