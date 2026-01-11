@@ -2622,7 +2622,7 @@ msgstr "修复了覆盖物的 `ZAdjust` 及一些护盾和 AE 变量无法正确
 
 #: ../../Whats-New.md:551
 msgid "LimboDelivery buildings cannot be selected (by FlyStar)"
-msgstr ""
+msgstr "虚拟投放的建筑不再可以被选中（by FlyStar）"
 
 #: ../../Whats-New.md:552
 msgid "Fixed the positive value of `Reveal` on warhead (by NetsuNegi)"
