@@ -2211,6 +2211,7 @@ msgid ""
 "Fixed an issue that rockets do not consider the destination altitude "
 "during climbing (by TaranDahl)"
 msgstr ""
+"修复了导弹在爬升过程中不考虑目标高度的问题（by TaranDahl）"
 
 #: ../../Whats-New.md:483
 msgid ""
