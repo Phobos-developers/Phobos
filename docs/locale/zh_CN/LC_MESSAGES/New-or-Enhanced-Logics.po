@@ -9667,7 +9667,7 @@ msgstr "战机类单位由于其独特的攻击模式并不会等待延迟结束
 
 #: ../../New-or-Enhanced-Logics.md:2784
 msgid "Extra range"
-msgstr ""
+msgstr "额外射程"
 
 #: ../../New-or-Enhanced-Logics.md:2786
 msgid ""
@@ -9675,57 +9675,63 @@ msgid ""
 "specific conditions. Only work during the attack process and cannot "
 "affect other behaviors such as path finding."
 msgstr ""
+"现在你可以在开火者或目标处于特定状态时调整武器的射程。此功能仅在攻击过程中有效且不影响例如寻路等其他行为。"
 
 #: ../../New-or-Enhanced-Logics.md:2787
 msgid ""
 "`ExtraRange.TargetMoving` grants the weapon extra range when the target "
 "is in a moving state."
 msgstr ""
+"`ExtraRange.TargetMoving` 当 **目标** 正在移动时提供的额外射程。"
 
 #: ../../New-or-Enhanced-Logics.md:2788
 msgid ""
 "`ExtraRange.TargetMoving.CloseRangeOnly` is used to restrict whether the "
 "global default value only applies to units with `CloseRange=yes`."
 msgstr ""
+"`ExtraRange.TargetMoving.CloseRangeOnly` 用于全局默认值是否适用于拥有 `CloseRange=yes` 的单位。"
 
 #: ../../New-or-Enhanced-Logics.md:2789
 msgid ""
 "`ExtraRange.FirerMoving` grants the weapon extra range when the firer is "
 "in a moving state."
 msgstr ""
+"`ExtraRange.FirerMoving` 当 **开火者** 正在移动时提供的额外射程。"
 
 #: ../../New-or-Enhanced-Logics.md:2790
 msgid ""
 "`ExtraRange.Prefiring` grants the weapon extra range when the firer is in"
 " a pre-firing state, including:"
 msgstr ""
+"`ExtraRange.Prefiring` 当开火者处于预开火状态时提供的额外射程，该状态包括："
 
 #: ../../New-or-Enhanced-Logics.md:2791
 #, python-format
 msgid "Vehicles with tags such as `FiringSyncFrame%d`."
-msgstr ""
+msgstr "拥有 `FiringSyncFrame%d` 等标签的载具。"
 
 #: ../../New-or-Enhanced-Logics.md:2792
 msgid "Aircraft that are firing."
-msgstr ""
+msgstr "正在开火的飞行器。"
 
 #: ../../New-or-Enhanced-Logics.md:2793
 msgid "Buildings with tags such as `IsAnimDelayedFire`."
-msgstr ""
+msgstr "拥有 `IsAnimDelayedFire` 等标签的建筑。"
 
 #: ../../New-or-Enhanced-Logics.md:2794
 msgid "Infantry with tags such as `FireUp`."
-msgstr ""
+msgstr "拥有 `FireUp` 等标签的步兵。"
 
 #: ../../New-or-Enhanced-Logics.md:2795
 msgid "Any unit with [`DelayedFire`](#delayed-firing)."
-msgstr ""
+msgstr "任何拥有 [`DelayedFire`](#delayed-firing) 的单位。"
 
 #: ../../New-or-Enhanced-Logics.md:2796
 msgid ""
 "`ExtraRange.Prefiring.IncludeBurst` is used to decide whether the "
 "execution of burst is considered as being in a pre-firing state."
 msgstr ""
+"`ExtraRange.Prefiring.IncludeBurst` 用于决定连发过程是否被视为预开火状态。"
 
 #: ../../New-or-Enhanced-Logics.md:2799
 msgid ""
@@ -9772,16 +9778,18 @@ msgid ""
 " units, causing the targets to move out of range before they can get "
 "close."
 msgstr ""
+"在原版中，近战单位即便追得上正在逃离的敌人也难以对其发起攻击。这是因为游戏的寻路算法以单元格为单位寻找开火位置，这会对进展单位产生不可接受的误差，导致目标总是在其足够靠近前移动出攻击范围。"
 
 #: ../../New-or-Enhanced-Logics.md:2816
 msgid ""
 "Units with various forms of pre-firing behavior have similar problems. "
 "The target may move out of range before they fire."
 msgstr ""
+"具有各类预开火行为的单位也存在类似的问题。目标可能在单位开火前移出射程。"
 
 #: ../../New-or-Enhanced-Logics.md:2817
 msgid "This feature can solve the above issues."
-msgstr ""
+msgstr "此功能可解决上述问题。"
 
 #: ../../New-or-Enhanced-Logics.md:2820
 msgid "Extra warhead detonations"

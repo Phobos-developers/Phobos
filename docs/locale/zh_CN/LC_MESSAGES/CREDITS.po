@@ -2784,7 +2784,7 @@ msgstr "设置按目标生效的弹头效果应用时机"
 
 #: ../../../CREDITS.md:667
 msgid "Extra range for chasing and pre-firing"
-msgstr ""
+msgstr "追击和预开火时的额外射程"
 
 #: ../../../CREDITS.md:668
 msgid ""
