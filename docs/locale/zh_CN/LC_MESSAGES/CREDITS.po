@@ -2764,11 +2764,11 @@ msgstr "修复了原版脚本会忽略 Jumpjet 单位的问题"
 
 #: ../../../CREDITS.md:662
 msgid "CellSpread in cylinder shape"
-msgstr ""
+msgstr "圆柱形弹头范围"
 
 #: ../../../CREDITS.md:663
 msgid "CellSpread damage check if victim is in air or on floor"
-msgstr ""
+msgstr "弹头范围对目标的空地判定"
 
 #: ../../../CREDITS.md:664
 msgid ""
