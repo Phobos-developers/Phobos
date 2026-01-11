@@ -479,7 +479,6 @@ New:
 - [Extra range for chasing and pre-firing](New-or-Enhanced-Logics.md#extra-range) (by TaranDahl)
 - [Allow techno type considered as other type when recruiting techno for teams](Fixed-or-Improved-Logics.md#allow-techno-type-considered-as-other-type-when-recruiting-techno-for-teams) (by NetsuNegi)
 - Map Action [`511` Undeploy Building to Waypoint](AI-Scripting-and-Mapping.md#undeploy-building-to-waypoint), [`609` Set Radar Mode](AI-Scripting-and-Mapping.md#set-radar-mode), [`610` Set house's `TeamDelays` value](AI-Scripting-and-Mapping.md#set-house-s-teamdelays-value) (by FlyStar)
-- Fixed the bug that if object has been removed from LogicClass in Update(), next object will be skip (by NetsuNegi)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -524,6 +523,7 @@ Vanilla fixes:
 - Fixed the bug that ai will try to product aircraft even the airport has no free dock for it (by NetsuNegi)
 - Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units (by TaranDahl)
 - Fixed an issue that rockets do not consider the destination altitude during climbing (by TaranDahl)
+- Fixed the bug that if object has been removed from LogicClass in Update(), next object will be skip (by NetsuNegi)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

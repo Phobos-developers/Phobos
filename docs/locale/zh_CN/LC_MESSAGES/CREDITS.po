@@ -1969,6 +1969,7 @@ msgid ""
 "Fix the bug that if object has been removed from LogicClass in Update(), "
 "next object will be skip"
 msgstr ""
+"修复了当一个物体更新时被移除会导致全局容器中下一个物体被跳过的 Bug"
 
 #: ../../../CREDITS.md:478
 msgid "**Apollo** - Translucent SHP drawing patches"

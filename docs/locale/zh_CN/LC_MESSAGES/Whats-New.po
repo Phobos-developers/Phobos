@@ -2218,6 +2218,7 @@ msgid ""
 "Fixed the bug that if object has been removed from LogicClass in "
 "Update(), next object will be skip (by NetsuNegi)"
 msgstr ""
+"修复了当一个物体更新时被移除会导致全局容器中下一个物体被跳过的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:485 ../../Whats-New.md:569 ../../Whats-New.md:754
 #: ../../Whats-New.md:1113 ../../Whats-New.md:1222 ../../Whats-New.md:1247
