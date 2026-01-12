@@ -36,6 +36,7 @@ public:
 		Valueable<CSFText> UIDescription;
 		Valueable<bool> LowSelectionPriority;
 		PhobosFixedString<0x20> GroupAs;
+		std::vector<PhobosFixedString<0x20>> WeaponGroupAs;
 		Valueable<int> RadarJamRadius;
 		Valueable<AffectedHouse> RadarJamHouses;
 		Valueable<int> RadarJamDelay;
@@ -65,6 +66,7 @@ public:
 		Valueable<bool> ImmuneToCrit;
 		Valueable<bool> MultiMindControl_ReleaseVictim;
 		Valueable<int> CameoPriority;
+		PhobosPCXFile AltCameoPCX;
 		Valueable<bool> NoManualMove;
 		Nullable<int> InitialStrength;
 		Valueable<bool> ReloadInTransport;
@@ -90,6 +92,9 @@ public:
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
 		ValueableVector<AnimTypeClass*> AutoDeath_VanishAnimation;
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
+		Valueable<bool> AutoDeath_OnOwnerChange;
+		Nullable<bool> AutoDeath_OnOwnerChange_HumanToComputer;
+		Nullable<bool> AutoDeath_OnOwnerChange_ComputerToHuman;
 		Valueable<int> AutoDeath_AfterDelay;
 		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosDontExist;
 		Valueable<bool> AutoDeath_TechnosDontExist_Any;
@@ -160,12 +165,15 @@ public:
 		Valueable<bool> OpenTopped_ShareTransportTarget;
 		Valueable<bool> OpenTopped_UseTransportRangeModifiers;
 		Valueable<bool> OpenTopped_CheckTransportDisableWeapons;
+		Valueable<int> OpenTransport_RangeBonus;
+		Valueable<float> OpenTransport_DamageMultiplier;
 
 		Valueable<bool> AutoFire;
 		Valueable<bool> AutoFire_TargetSelf;
 
 		Valueable<bool> NoSecondaryWeaponFallback;
 		Valueable<bool> NoSecondaryWeaponFallback_AllowAA;
+		Nullable<bool> AllowWeaponSelectAgainstWalls;
 
 		Valueable<int> NoAmmoWeapon;
 		Valueable<int> NoAmmoAmount;
@@ -283,6 +291,7 @@ public:
 		Valueable<WeaponTypeClass*> RevengeWeapon;
 		Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
 		Valueable<bool> RevengeWeapon_RealLaunch;
+		Valueable<bool> RevengeWeapon_UseWeaponTargeting;
 
 		AEAttachInfoTypeClass AttachEffects;
 
@@ -344,6 +353,7 @@ public:
 		Nullable<TechnoTypeClass*> Image_ConditionRed;
 		Nullable<UnitTypeClass*> WaterImage_ConditionYellow;
 		Nullable<UnitTypeClass*> WaterImage_ConditionRed;
+		bool NeedDamagedImage;
 
 		Nullable<int> InitialSpawnsNumber;
 		ValueableVector<AircraftTypeClass*> Spawns_Queue;
@@ -397,6 +407,7 @@ public:
 		Valueable<int> Overload_ParticleSysCount;
 
 		Valueable<bool> Harvester_CanGuardArea;
+		Valueable<bool> Harvester_CanGuardArea_RequireTarget;
 		Nullable<bool> HarvesterScanAfterUnload;
 
 		Nullable<bool> ExtendedAircraftMissions_SmoothMoving;
@@ -407,6 +418,10 @@ public:
 
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
+
+		Valueable<int> Ammo_AutoConvertMinimumAmount;
+		Valueable<int> Ammo_AutoConvertMaximumAmount;
+		Nullable<TechnoTypeClass*> Ammo_AutoConvertType;
 
 		Valueable<bool> FiringForceScatter;
 
@@ -438,6 +453,8 @@ public:
 
 		Nullable<bool> InfantryAutoDeploy;
 
+		ValueableVector<TechnoTypeClass*> TeamMember_ConsideredAs;
+
 		Nullable<bool> TurretResponse;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
@@ -448,6 +465,7 @@ public:
 			, UIDescription {}
 			, LowSelectionPriority { false }
 			, GroupAs { NONE_STR }
+			, WeaponGroupAs {}
 			, RadarJamRadius { 0 }
 			, RadarJamHouses { AffectedHouse::Enemies }
 			, RadarJamDelay { 30 }
@@ -477,6 +495,7 @@ public:
 			, ImmuneToCrit { false }
 			, MultiMindControl_ReleaseVictim { false }
 			, CameoPriority { 0 }
+			, AltCameoPCX {}
 			, NoManualMove { false }
 			, InitialStrength {}
 			, ReloadInTransport { false }
@@ -527,11 +546,14 @@ public:
 			, OpenTopped_ShareTransportTarget { true }
 			, OpenTopped_UseTransportRangeModifiers { false }
 			, OpenTopped_CheckTransportDisableWeapons { false }
+			, OpenTransport_RangeBonus { 0 }
+			, OpenTransport_DamageMultiplier { 1.0 }
 
 			, AutoFire { false }
 			, AutoFire_TargetSelf { false }
 			, NoSecondaryWeaponFallback { false }
 			, NoSecondaryWeaponFallback_AllowAA { false }
+			, AllowWeaponSelectAgainstWalls {}
 			, NoAmmoWeapon { -1 }
 			, NoAmmoAmount { 0 }
 			, JumpjetRotateOnCrash { true }
@@ -556,6 +578,9 @@ public:
 			, AutoDeath_Behavior { }
 			, AutoDeath_VanishAnimation {}
 			, AutoDeath_OnAmmoDepletion { false }
+			, AutoDeath_OnOwnerChange { false }
+			, AutoDeath_OnOwnerChange_HumanToComputer {}
+			, AutoDeath_OnOwnerChange_ComputerToHuman {}
 			, AutoDeath_AfterDelay { 0 }
 			, AutoDeath_TechnosDontExist {}
 			, AutoDeath_TechnosDontExist_Any { false }
@@ -693,6 +718,7 @@ public:
 			, RevengeWeapon {}
 			, RevengeWeapon_AffectsHouses { AffectedHouse::All }
 			, RevengeWeapon_RealLaunch { false }
+			, RevengeWeapon_UseWeaponTargeting { false }
 
 			, AttachEffects {}
 
@@ -756,6 +782,7 @@ public:
 			, Image_ConditionRed { }
 			, WaterImage_ConditionYellow { }
 			, WaterImage_ConditionRed { }
+			, NeedDamagedImage { false }
 
 			, InitialSpawnsNumber { }
 			, Spawns_Queue { }
@@ -788,6 +815,7 @@ public:
 			, Overload_ParticleSysCount { 5 }
 
 			, Harvester_CanGuardArea { false }
+			, Harvester_CanGuardArea_RequireTarget { false }
 			, HarvesterScanAfterUnload {}
 
 			, ExtendedAircraftMissions_SmoothMoving {}
@@ -798,6 +826,10 @@ public:
 
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
+
+			, Ammo_AutoConvertMinimumAmount { -1 }
+			, Ammo_AutoConvertMaximumAmount { -1 }
+			, Ammo_AutoConvertType { nullptr }
 
 			, FiringForceScatter { true }
 
@@ -829,6 +861,8 @@ public:
 
 			, InfantryAutoDeploy {}
 
+			, TeamMember_ConsideredAs {}
+
 			, TurretResponse {}
 		{ }
 
@@ -845,12 +879,15 @@ public:
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 		void CalculateSpawnerRange();
-		bool IsSecondary(int nWeaponIndex);
+		bool IsSecondary(int nWeaponIndex) const;
 
-		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget);
-		int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget);
+		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget) const;
+		int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget) const;
 
 		void UpdateAdditionalAttributes();
+
+		// Ares 0.2
+		bool CameoIsVeteran(HouseClass* pHouse) const;
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;

@@ -13,6 +13,11 @@
 #include <AircraftClass.h>
 #include <TacticalClass.h>
 
+namespace ExtraWarheadsTemp
+{
+	bool AttachedExtraWarheads = false;
+}
+
 DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 {
 	enum { SkipShaking = 0x469130, GoToExtras = 0x469AA4 };
@@ -374,8 +379,8 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 		{
 			std::vector<bool> vec;
 
-			pBulletExt->ApplyExtraWarheads(pWeaponExt->ExtraWarheads, pWeaponExt->ExtraWarheads_DamageOverrides,
-				pWeaponExt->ExtraWarheads_DetonationChances, pWeaponExt->ExtraWarheads_FullDetonation, vec, *coords, pOwner);
+			pBulletExt->ApplyExtraWarheads(pWeaponExt->ExtraWarheads, pWeaponExt->ExtraWarheads_DamageOverrides, pWeaponExt->ExtraWarheads_DetonationChances,
+				pWeaponExt->ExtraWarheads_FullDetonation, vec, pWeaponExt->ExtraWarheads_ApplyFirepowerMult, *coords, pOwner);
 		}
 	}
 	
@@ -384,8 +389,10 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 	
 	auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 
-	if (pTechnoExt->AE.HasExtraWarheads)
+	if (pTechnoExt->AE.HasExtraWarheads && !ExtraWarheadsTemp::AttachedExtraWarheads)
 	{
+		ExtraWarheadsTemp::AttachedExtraWarheads = true;
+
 		for (auto const& pAE : pTechnoExt->AttachedEffects)
 		{
 			auto const pType = pAE->GetType();
@@ -393,9 +400,11 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			if (pType->ExtraWarheads.size() > 0)
 			{
 				pBulletExt->ApplyExtraWarheads(pType->ExtraWarheads, pType->ExtraWarheads_DamageOverrides, pType->ExtraWarheads_DetonationChances,
-					pType->ExtraWarheads_FullDetonation, pType->ExtraWarheads_UseInvokerAsOwner, *coords, pOwner, pAE->GetInvoker());
+					pType->ExtraWarheads_FullDetonation, pType->ExtraWarheads_UseInvokerAsOwner, pType->ExtraWarheads_ApplyFirepowerMult, *coords, pOwner, pAE->GetInvoker());
 			}
 		}
+
+		ExtraWarheadsTemp::AttachedExtraWarheads = false;
 	}
 
 	// Return to sender
@@ -779,10 +788,10 @@ DEFINE_HOOK(0x4899DA, MapClass_DamageArea_DamageUnderGround, 0x7)
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 
-	if (!pWHExt || !pWHExt->AffectsUnderground)
+	if (!pWHExt->AffectsUnderground)
 		return 0;
 
-	// bool cylinder = pWHExt->CellSpread_Cylinder;
+	const bool cylinder = pWHExt->CellSpread_Cylinder;
 	const float spread = pWH->CellSpread * (float)Unsorted::LeptonsPerCell;
 
 	for (auto const& pTechno : ScenarioExt::Global()->UndergroundTracker)
@@ -795,9 +804,9 @@ DEFINE_HOOK(0x4899DA, MapClass_DamageArea_DamageUnderGround, 0x7)
 			double dist = 0.0;
 			auto const technoCoords = pTechno->GetCoords();
 
-			//if (cylinder)
-			//	dist = CoordStruct{ technoCoords.X - pCrd->X, technoCoords.Y - pCrd->Y, 0 }.Magnitude();
-			//else
+			if (cylinder)
+				dist = CoordStruct{ technoCoords.X - pCrd->X, technoCoords.Y - pCrd->Y, 0 }.Magnitude();
+			else
 				dist = technoCoords.DistanceFrom(*pCrd);
 
 			if (dist <= spread)

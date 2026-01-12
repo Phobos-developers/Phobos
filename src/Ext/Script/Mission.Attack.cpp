@@ -18,6 +18,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 	auto& waitNoTargetTimer = pTeamData->WaitNoTargetTimer;
 	auto& waitNoTargetAttempts = pTeamData->WaitNoTargetAttempts;
 
+	const auto pHouseExt = HouseExt::ExtMap.Find(pTeam->Owner);
 	// When the new target wasn't found it sleeps some few frames before the new attempt. This can save cycles and cycles of unnecessary executed lines.
 	if (waitNoTargetCounter > 0)
 	{
@@ -137,7 +138,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 					agentMode = true;
 			}
 
-			pacifistTeam &= !ScriptExt::IsUnitArmed(pFoot);
+			pacifistTeam &= !ScriptExt::IsUnitArmed(pFoot, pTechnoType);
 		}
 	}
 
@@ -183,9 +184,13 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 	{
 		// This part of the code is used for picking a new target.
 		HouseClass* enemyHouse = nullptr;
+		bool onlyTargetHouseEnemy = pTeam->Type->OnlyTargetHouseEnemy;
+
+		if (pHouseExt->ForceOnlyTargetHouseEnemyMode != -1)
+			onlyTargetHouseEnemy = pHouseExt->ForceOnlyTargetHouseEnemy;
 
 		// Favorite Enemy House case. If set, AI will focus against that House
-		if (pTeamType->OnlyTargetHouseEnemy && pLeaderUnit->Owner->EnemyHouseIndex >= 0)
+		if (onlyTargetHouseEnemy && pLeaderUnit->Owner->EnemyHouseIndex >= 0)
 			enemyHouse = HouseClass::Array.GetItem(pLeaderUnit->Owner->EnemyHouseIndex);
 
 		const auto& node = scriptActions[currentMission];
@@ -452,9 +457,10 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 	double bestVal = -1;
 	bool unitWeaponsHaveAA = false;
 	bool unitWeaponsHaveAG = false;
-	const auto pTechnoType = pTechno->GetTechnoType();
+	const auto pTechnoTypeExt = TechnoExt::ExtMap.Find(pTechno)->TypeExtData;
+	const auto pTechnoType = pTechnoTypeExt->OwnerObject();
 	const auto pTechnoOwner = pTechno->Owner;
-	const auto targetZoneScanType = TechnoTypeExt::ExtMap.Find(pTechnoType)->TargetZoneScanType;
+	const auto targetZoneScanType = pTechnoTypeExt->TargetZoneScanType;
 
 	// Generic method for targeting
 	for (int i = 0; i < TechnoClass::Array.Count; i++)
@@ -811,13 +817,13 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 				{
 					const int distanceToTarget = pTeamLeader->DistanceFrom(pTechno);
 
-					if (const auto pWeapon = TechnoExt::GetCurrentWeapon(pTechno))
+					if (const auto pWeapon = TechnoExt::GetCurrentWeapon(pTechno, pTechnoType))
 					{
 						if (distanceToTarget <= (WeaponTypeExt::GetRangeWithModifiers(pWeapon, pTechno) * 4))
 							return true;
 					}
 
-					if (const auto pWeapon = TechnoExt::GetCurrentWeapon(pTechno, true))
+					if (const auto pWeapon = TechnoExt::GetCurrentWeapon(pTechno, pTechnoType, true))
 					{
 						if (distanceToTarget <= (WeaponTypeExt::GetRangeWithModifiers(pWeapon, pTechno) * 4))
 							return true;
@@ -841,7 +847,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 
 		if (!pTechno->Owner->IsNeutral())
 		{
-			if (const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pTechnoType))
+			if (const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pTechnoType))
 			{
 				if (pBuildingType->PowerBonus > 0)
 					return true;
@@ -929,13 +935,13 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 
 		if (!pTechno->Owner->IsNeutral())
 		{
-			if (const auto pWeapon = TechnoExt::GetCurrentWeapon(pTechno))
+			if (const auto pWeapon = TechnoExt::GetCurrentWeapon(pTechno, pTechnoType))
 			{
 				if (pWeapon->Warhead->MindControl)
 					return true;
 			}
 
-			if (const auto pWeapon = TechnoExt::GetCurrentWeapon(pTechno, true))
+			if (const auto pWeapon = TechnoExt::GetCurrentWeapon(pTechno, pTechnoType, true))
 			{
 				if (pWeapon->Warhead->MindControl)
 					return true;
@@ -1373,7 +1379,7 @@ void ScriptExt::Mission_Attack_List(TeamClass* pTeam, int calcThreatMode, bool r
 	if (RulesExt::Global()->AITargetTypesLists.size() > 0
 		&& RulesExt::Global()->AITargetTypesLists[attackAITargetType].size() > 0)
 	{
-		ScriptExt::Mission_Attack(pTeam, repeatAction, calcThreatMode, attackAITargetType, -1);
+		ScriptExt::Mission_Attack(pTeam, calcThreatMode, repeatAction, attackAITargetType, -1);
 	}
 }
 
@@ -1447,7 +1453,7 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass* pTeam, int calcThreatMode,
 		if (selected)
 			pTeamData->IdxSelectedObjectFromAIList = idxSelectedObject;
 
-		ScriptExt::Mission_Attack(pTeam, repeatAction, calcThreatMode, attackAITargetType, idxSelectedObject);
+		ScriptExt::Mission_Attack(pTeam, calcThreatMode, repeatAction, attackAITargetType, idxSelectedObject);
 	}
 
 	// This action finished
@@ -1472,20 +1478,23 @@ bool ScriptExt::CheckUnitTargetingCapability(TechnoClass* pTechno, bool targetIn
 	if (!targetInAir && agentMode)
 		return true;
 
-	auto checkWeaponCapability = [targetInAir](TechnoClass* pTechno, bool secondary)
+	auto const pType = pTechno->GetTechnoType();
+
+	auto checkWeaponCapability = [=](TechnoClass* pTechno, bool secondary)
 	{
-		if (const auto pWeapon = TechnoExt::GetCurrentWeapon(pTechno, secondary))
+		if (const auto pWeapon = TechnoExt::GetCurrentWeapon(pTechno, pType, secondary))
 		{
 			const auto pBulletType = pWeapon->Projectile;
 			return (targetInAir ? pBulletType->AA : (pBulletType->AG && !BulletTypeExt::ExtMap.Find(pBulletType)->AAOnly));
 		}
+
 		return false;
 	};
 
 	if (checkWeaponCapability(pTechno, false) || checkWeaponCapability(pTechno, true))
 		return true;
 
-	if (!pTechno->GetTechnoType()->OpenTopped || pTechno->Passengers.NumPassengers <= 0)
+	if (!pType->OpenTopped || pTechno->Passengers.NumPassengers <= 0)
 		return false;
 
 	// Special case: a Leader with OpenTopped tag
@@ -1498,9 +1507,9 @@ bool ScriptExt::CheckUnitTargetingCapability(TechnoClass* pTechno, bool targetIn
 	return false;
 }
 
-bool ScriptExt::IsUnitArmed(TechnoClass* pTechno)
+bool ScriptExt::IsUnitArmed(TechnoClass* pTechno, TechnoTypeClass* pType)
 {
-	return TechnoExt::GetCurrentWeapon(pTechno) || TechnoExt::GetCurrentWeapon(pTechno, true);
+	return TechnoExt::GetCurrentWeapon(pTechno, pType) || TechnoExt::GetCurrentWeapon(pTechno, pType, true);
 }
 
 bool ScriptExt::IsMindControlledByEnemy(HouseClass* pHouse, TechnoClass* pTechno)

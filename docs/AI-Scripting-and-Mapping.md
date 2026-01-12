@@ -382,6 +382,25 @@ In `aimd.ini`:
 x=14003,0
 ```
 
+### `14004` Force Global `OnlyTargetHouseEnemy` value in Teams for new attack / move actions introduced by Phobos
+
+- Globally forcibly set a value for the `OnlyTargetHouseEnemy` tag on TeamType. Only affects the new attack / move actions introduced by Phobos.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=14004,n         ; integer
+```
+
+- The possible argument values are:
+
+| *Argument* | *Description*                                                            |
+| :--------: | :----------------------------------------------------------------------: |
+| -1         | Disable Global value for Force `OnlyTargetHouseEnemy` tag. Default value |
+| 0          | Force `OnlyTargetHouseEnemy` = false                                     |
+| 1          | Force `OnlyTargetHouseEnemy` = true                                      |
+| 2          | Force random boolean value                                               |
+
 ### `16000-16999` Flow Control
 
 #### `16000` Start a Timed Jump to the Same Line
@@ -633,6 +652,19 @@ ID=ActionCount,[Action1],510,0,0,[MCVRedeploy],0,0,0,A,[ActionX]
 ...
 ```
 
+### `511` Undeploy Building to Waypoint
+
+- Undeploy specific BuildingTypes into VehicleTypes and move them to a specific Waypoint.
+  - If `<All>` is entered for the Building Type here, then undeploy all BuildingTypes.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],511,-10,[BuildingTypesID],[HouseIndex],0,0,0,[WaypointIndex],[ActionX]
+...
+```
+
 ### `606` Edit Hate-Value
 
 - Edit the hate-value that trigger houses to other houses.
@@ -685,6 +717,40 @@ In `mycampaign.map`:
 [Actions]
 ...
 ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]
+...
+```
+
+### `609` Set Radar Mode
+
+- Change the current radar mode of the trigger house.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],609,0,0,[RadarMode],0,0,0,A,[ActionX]
+...
+```
+
+- The possible argument values are:
+
+| *Argument* | *Description*                                                             |
+| :--------: | :-----------------------------------------------------------------------: |
+| 0          | Normal mode, requires buildings that provide radar and sufficient power   |
+| 1          | Change to [FreeRadar](https://modenc.renegadeprojects.com/FreeRadar) mode |
+| 2          | Force enable radar                                                        |
+| 3          | Force disable radar                                                       |
+
+### `610` Set house's `TeamDelays` value
+
+- Set the `TeamDelays` value of the trigger's house.
+  - If this value is less than 0, then use the value of `[General] -> TeamDelays`.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],610,0,0,[Number],0,0,0,A,[ActionX]
 ...
 ```
 

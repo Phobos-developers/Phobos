@@ -149,7 +149,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	this->Crit_Active = false;
 	this->Crit_CurrentChance = this->GetCritChance(pOwner);
 
-	if (this->PossibleCellSpreadDetonate || this->Crit_CurrentChance > 0.0)
+	if ((this->PossibleCellSpreadDetonate || this->Crit_CurrentChance > 0.0) && this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate))
 	{
 		if (!this->Crit_ApplyChancePerTarget)
 			this->Crit_RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
@@ -162,7 +162,11 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 		if (cellSpread)
 		{
-			for (auto const pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, true))
+			Helpers::Alex::GetCellSpreadItems::SetParams(this);
+			auto const items = Helpers::Alex::getCellSpreadItems(coords, cellSpread, true);
+			Helpers::Alex::GetCellSpreadItems::ResetParams();
+
+			for (auto const pTarget : items)
 				this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
 		}
 		else if (pBullet)
@@ -467,7 +471,7 @@ HouseClass* WarheadTypeExt::ExtData::ApplyRemoveMindControl(HouseClass* pHouse, 
 
 void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
 {
-	const double dice = this->Crit_ApplyChancePerTarget ? ScenarioClass::Instance->Random.RandomDouble() : this->Crit_RandomBuffer;
+	const double dice = this->Crit_ApplyChancePerTarget || !this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate) ? ScenarioClass::Instance->Random.RandomDouble() : this->Crit_RandomBuffer;
 
 	if (this->Crit_CurrentChance < dice)
 		return;

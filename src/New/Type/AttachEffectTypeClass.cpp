@@ -52,16 +52,6 @@ std::vector<AttachEffectTypeClass*> AttachEffectTypeClass::GetTypesFromGroups(co
 	return std::vector<AttachEffectTypeClass*>(types.begin(), types.end());
 }
 
-AnimTypeClass* AttachEffectTypeClass::GetCumulativeAnimation(int cumulativeCount) const
-{
-	if (cumulativeCount < 0 || this->CumulativeAnimations.size() < 1)
-		return nullptr;
-
-	int index = static_cast<size_t>(cumulativeCount) >= this->CumulativeAnimations.size() ? this->CumulativeAnimations.size() - 1 : cumulativeCount - 1;
-
-	return this->CumulativeAnimations.at(index);
-}
-
 void AttachEffectTypeClass::HandleEvent(TechnoClass* pTarget)
 {
 	if (const auto pTag = pTarget->AttachedTag)
@@ -139,6 +129,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ExtraWarheads_DamageOverrides.Read(exINI, pSection, "ExtraWarheads.DamageOverrides");
 	this->ExtraWarheads_DetonationChances.Read(exINI, pSection, "ExtraWarheads.DetonationChances");
 	this->ExtraWarheads_FullDetonation.Read(exINI, pSection, "ExtraWarheads.FullDetonation");
+	this->ExtraWarheads_ApplyFirepowerMult.Read(exINI, pSection, "ExtraWarheads.ApplyFirepowerMult");
 	this->ExtraWarheads_UseInvokerAsOwner.Read(exINI, pSection, "ExtraWarheads.UseInvokerAsOwner");
 
 	this->FeedbackWeapon.Read<true>(exINI, pSection, "FeedbackWeapon");
@@ -147,7 +138,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->AuxWeapon.Read<true>(exINI, pSection, "AuxWeapon");
 	this->AuxWeapon_Offset.Read(exINI, pSection, "AuxWeapon.Offset");
 	this->AuxWeapon_FireOnTurret.Read(exINI, pSection, "AuxWeapon.FireOnTurret");
-	this->AuxWeapon_AllowZeroDamage.Read(exINI, pSection, "AuxWeapon.AllowZeroDamage");
+	this->AuxWeapon_UseWeaponTargeting.Read(exINI, pSection, "AuxWeapon.UseWeaponTargeting");
 	this->AuxWeapon_ApplyFirepowerMult.Read(exINI, pSection, "AuxWeapon.ApplyFirepowerMult");
 	this->AuxWeapon_Retarget.Read(exINI, pSection, "AuxWeapon.Retarget");
 	this->AuxWeapon_Retarget_AroundFirer.Read(exINI, pSection, "AuxWeapon.Retarget.AroundFirer");
@@ -191,6 +182,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
 	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
 	this->RevengeWeapon_RealLaunch.Read(exINI, pSection, "RevengeWeapon.RealLaunch");
+	this->RevengeWeapon_UseWeaponTargeting.Read(exINI, pSection, "RevengeWeapon.UseWeaponTargeting");
 	this->RevengeWeapon_UseInvokerAsOwner.Read(exINI, pSection, "RevengeWeapon.UseInvokerAsOwner");
 
 	this->ReflectDamage.Read(exINI, pSection, "ReflectDamage");
@@ -251,13 +243,14 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ExtraWarheads_DamageOverrides)
 		.Process(this->ExtraWarheads_DetonationChances)
 		.Process(this->ExtraWarheads_FullDetonation)
+		.Process(this->ExtraWarheads_ApplyFirepowerMult)
 		.Process(this->ExtraWarheads_UseInvokerAsOwner)
 		.Process(this->FeedbackWeapon)
 		.Process(this->FeedbackWeapon_UseInvokerAsOwner)
 		.Process(this->AuxWeapon)
 		.Process(this->AuxWeapon_Offset)
 		.Process(this->AuxWeapon_FireOnTurret)
-		.Process(this->AuxWeapon_AllowZeroDamage)
+		.Process(this->AuxWeapon_UseWeaponTargeting)
 		.Process(this->AuxWeapon_ApplyFirepowerMult)
 		.Process(this->AuxWeapon_Retarget)
 		.Process(this->AuxWeapon_Retarget_AroundFirer)
@@ -294,6 +287,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->RevengeWeapon)
 		.Process(this->RevengeWeapon_AffectsHouses)
 		.Process(this->RevengeWeapon_RealLaunch)
+		.Process(this->RevengeWeapon_UseWeaponTargeting)
 		.Process(this->RevengeWeapon_UseInvokerAsOwner)
 		.Process(this->ReflectDamage)
 		.Process(this->ReflectDamage_Warhead)

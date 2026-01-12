@@ -168,7 +168,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_SuppressWhenIntercepted.Read(exINI, pSection, "Crit.SuppressWhenIntercepted");
 
 	if (this->Crit_AffectAbovePercent > this->Crit_AffectBelowPercent)
-		Debug::Log("[Developer warning][%s] Crit.AffectsAbovePercent is bigger than Crit.AffectsBelowPercent, crit will never activate!\n", pSection);
+		Debug::Log("[Developer warning][%s] Crit.AffectAbovePercent is bigger than Crit.AffectBelowPercent, crit will never activate!\n", pSection);
 
 	this->MindControl_Anim.Read(exINI, pSection, "MindControl.Anim");
 	this->MindControl_ThreatDelay.Read(exINI, pSection, "MindControl.ThreatDelay");
@@ -244,6 +244,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Nonprovocative.Read(exINI, pSection, "Nonprovocative");
 
+	this->MergeBuildingDamage.Read(exINI, pSection, "MergeBuildingDamage");
+
 	this->CombatLightDetailLevel.Read(exINI, pSection, "CombatLightDetailLevel");
 	this->CombatLightChance.Read(exINI, pSection, "CombatLightChance");
 	this->CLIsBlack.Read(exINI, pSection, "CLIsBlack");
@@ -288,7 +290,10 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AffectsBelowPercent.Read(exINI, pSection, "AffectsBelowPercent");
 	this->AffectsAbovePercent.Read(exINI, pSection, "AffectsAbovePercent");
 	this->AffectsNeutral.Read(exINI, pSection, "AffectsNeutral");
-	this->HealthCheck = this->AffectsBelowPercent > 0.0 || this->AffectsAbovePercent < 1.0;
+	this->AffectsGround.Read(exINI, pSection, "AffectsGround");
+	this->AffectsAir.Read(exINI, pSection, "AffectsAir");
+	this->CellSpread_Cylinder.Read(exINI, pSection, "CellSpread.Cylinder");
+	this->HealthCheck = this->AffectsAbovePercent > 0.0 || this->AffectsBelowPercent < 1.0;
 
 	if (this->AffectsAbovePercent > this->AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] AffectsAbovePercent is bigger than AffectsBelowPercent, the warhead will never activate!\n", pSection);
@@ -305,6 +310,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PlayAnimAboveSurface.Read(exINI, pSection, "PlayAnimAboveSurface");
 
 	this->AnimZAdjust.Read(exINI, pSection, "AnimZAdjust");
+
+	this->ApplyPerTargetEffectsOnDetonate.Read(exINI, pSection, "ApplyPerTargetEffectsOnDetonate");
 
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
@@ -537,6 +544,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AffectsBelowPercent)
 		.Process(this->AffectsAbovePercent)
 		.Process(this->AffectsNeutral)
+		.Process(this->AffectsGround)
+		.Process(this->AffectsAir)
+		.Process(this->CellSpread_Cylinder)
 		.Process(this->HealthCheck)
 
 		.Process(this->InflictLocomotor)
@@ -555,6 +565,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Parasite_GrappleAnim)
 
 		.Process(this->Nonprovocative)
+
+		.Process(this->MergeBuildingDamage)
 
 		.Process(this->CombatLightDetailLevel)
 		.Process(this->CombatLightChance)
@@ -594,6 +606,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlayAnimAboveSurface)
 
 		.Process(this->AnimZAdjust)
+
+		.Process(this->ApplyPerTargetEffectsOnDetonate)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

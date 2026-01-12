@@ -4,36 +4,19 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Build Phobos debug build",
+      "label": "Build Phobos",
       "type": "process",
       "command": [],
       "windows": {
-        "command": "scripts/build_debug.bat"
+        "command": "scripts/build.bat",
+        "args": [
+          "${input:buildType}"
+        ]
       },
       "group": {
         "kind": "build",
         "isDefault": true
       },
-      "problemMatcher": "$msCompile"
-    },
-    {
-      "label": "Build Phobos development build",
-      "type": "process",
-      "command": [],
-      "windows": {
-        "command": "scripts/build_devbuild.bat"
-      },
-      "group": "build",
-      "problemMatcher": "$msCompile"
-    },
-    {
-      "label": "Build Phobos release build",
-      "type": "process",
-      "command": [],
-      "windows": {
-        "command": "scripts/build_release.bat"
-      },
-      "group": "build",
       "problemMatcher": "$msCompile"
     },
     {
@@ -84,6 +67,25 @@
         "panel": "shared",
         "showReuseMessage": false
       }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "buildType",
+      "type": "pickString",
+      "options": [
+        {
+          "value": "Debug"
+        },
+        {
+          "value": "DevBuild"
+        },
+        {
+          "value": "Release"
+        }
+      ],
+      "default": "Debug",
+      "description": "Select the build type"
     }
   ]
 }

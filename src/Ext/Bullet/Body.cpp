@@ -132,7 +132,7 @@ void BulletExt::ExtData::InitializeLaserTrails()
 		this->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(LaserTrailTypeClass::Array[idxTrail].get(), pOwner));
 }
 
-void BulletExt::ExtData::ApplyExtraWarheads(const std::vector<WarheadTypeClass*>& exWH, const std::vector<int>& exWHOverrides, const std::vector<double>& exWHChances, const std::vector<bool>& exWHFull, const std::vector<bool>& exWHOwner, const CoordStruct& coords, HouseClass* pOwner, TechnoClass* pInvoker)
+void BulletExt::ExtData::ApplyExtraWarheads(const std::vector<WarheadTypeClass*>& exWH, const std::vector<int>& exWHOverrides, const std::vector<double>& exWHChances, const std::vector<bool>& exWHFull, const std::vector<bool>& exWHOwner, const std::vector<bool>& exWHMult, const CoordStruct& coords, HouseClass* pOwner, TechnoClass* pInvoker)
 {
 	auto const pThis = this->OwnerObject();
 	const int defaultDamage = pThis->WeaponType ? pThis->WeaponType->Damage : 0;
@@ -180,6 +180,18 @@ void BulletExt::ExtData::ApplyExtraWarheads(const std::vector<WarheadTypeClass*>
 
 		auto const pFirer = useInvoker ? pInvoker : pThis->Owner;
 		auto const pHouse = useInvoker ? pInvoker->Owner : pOwner;
+
+		bool fireMult = false;
+		size = exWHMult.size();
+
+		if (size > i)
+			fireMult = exWHMult[i];
+		else if (size > 0)
+			fireMult = exWHMult[size - 1];
+
+		if (fireMult)
+			damage = static_cast<int>(damage * TechnoExt::GetCurrentFirepowerMultiplier(pFirer));
+
 		bool isFull = true;
 		size = exWHFull.size();
 

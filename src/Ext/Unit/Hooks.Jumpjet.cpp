@@ -96,7 +96,7 @@ DEFINE_HOOK(0x736E6E, UnitClass_UpdateFiring_OmniFireTurnToTarget, 0x9)
 	return 0;
 }
 
-void __stdcall JumpjetLocomotionClass_DoTurn(ILocomotion* iloco, DirStruct dir)
+static void __stdcall JumpjetLocomotionClass_DoTurn(ILocomotion* iloco, DirStruct dir)
 {
 	__assume(iloco != nullptr);
 	// This seems to be used only when unloading shit on the ground
@@ -169,7 +169,7 @@ DEFINE_HOOK(0x70B649, TechnoClass_RigidBodyDynamics_NoTiltCrashBlyat, 0x6)
 	return 0;
 }
 
-FireError __stdcall JumpjetLocomotionClass_Can_Fire(ILocomotion* pThis)
+static FireError __stdcall JumpjetLocomotionClass_Can_Fire(ILocomotion* pThis)
 {
 	__assume(pThis != nullptr);
 	// do not use explicit toggle for this
@@ -212,7 +212,7 @@ DEFINE_HOOK(0x54AE44, JumpjetLocomotionClass_LinkToObject_FixFacing, 0x7)
 }
 
 // Fix initial facing when jumpjet locomotor on unlimbo
-void __stdcall JumpjetLocomotionClass_Unlimbo(ILocomotion* pThis)
+static void __stdcall JumpjetLocomotionClass_Unlimbo(ILocomotion* pThis)
 {
 	__assume(pThis != nullptr);
 	auto const pThisLoco = static_cast<JumpjetLocomotionClass*>(pThis);
@@ -231,7 +231,7 @@ namespace JumpjetRushHelpers
 	int JumpjetLocomotionPredictHeight(JumpjetLocomotionClass* pThis); // Replace sub_54D820
 }
 
-int JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(const CellClass* pCell)
+inline int JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(const CellClass* pCell)
 {
 	if (const auto pBuilding = pCell->GetBuilding())
 	{

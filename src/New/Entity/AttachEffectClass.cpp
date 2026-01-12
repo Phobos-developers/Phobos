@@ -76,7 +76,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	}
 
 	if (pType->Duration_ApplyFirepowerMult && duration > 0 && pInvoker)
-		duration = Math::max(static_cast<int>(duration * pInvoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(pInvoker)->AE.FirepowerMultiplier), 0);
+		duration = Math::max(static_cast<int>(duration * TechnoExt::GetCurrentFirepowerMultiplier(pInvoker)), 0);
 
 	if (pType->Duration_ApplyArmorMultOnTarget && duration > 0) // count its own ArmorMultiplier as well
 		duration = Math::max(static_cast<int>(duration / pTechno->ArmorMultiplier / pTechnoExt->AE.ArmorMultiplier / pType->ArmorMultiplier), 0);
@@ -514,7 +514,7 @@ void AttachEffectClass::RefreshDuration(int durationOverride)
 	}
 
 	if (pType->Duration_ApplyFirepowerMult && duration > 0 && this->Invoker)
-		duration = Math::max(static_cast<int>(duration * this->Invoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(this->Invoker)->AE.FirepowerMultiplier), 0);
+		duration = Math::max(static_cast<int>(duration * TechnoExt::GetCurrentFirepowerMultiplier(this->Invoker)), 0);
 
 	if (pType->Duration_ApplyArmorMultOnTarget && duration > 0) // no need to count its own effect again
 		duration = Math::max(static_cast<int>(duration / pTechno->ArmorMultiplier / TechnoExt::ExtMap.Find(pTechno)->AE.ArmorMultiplier), 0);
@@ -716,9 +716,10 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 /// <param name="pInvoker">Techno that invoked the attachment.</param>
 /// <param name="pSource">Source object for the attachment e.g a Warhead or Techno.</param>
 /// <param name="attachParams">Attachment parameters.</param>
+/// <param name="checkCumulative">Whether cumulative AE needs to be processed.</param>
 /// <returns>The created and attached AttachEffect if successful, nullptr if not.</returns>
 AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, TechnoTypeClass* pTargetType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs,
-	HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachParams const& attachParams)
+	HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachParams const& attachParams, bool checkCumulative)
 {
 	if (!pType)
 		return nullptr;
@@ -744,6 +745,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 		return nullptr;
 
 	int currentTypeCount = 0;
+	const bool cumulative = pType->Cumulative && checkCumulative;
 	AttachEffectClass* match = nullptr;
 	std::vector<AttachEffectClass*> cumulativeMatches;
 	cumulativeMatches.reserve(targetAEs.size());
@@ -755,16 +757,24 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 		if (attachEffect->GetType() == pType)
 		{
 			currentTypeCount++;
-			match = attachEffect;
 
-			if (!pType->Cumulative)
-				break;
+			if (!cumulative)
+			{
+				attachEffect->RefreshDuration(attachParams.DurationOverride);
+				AttachEffectTypeClass::HandleEvent(pTarget);
+				return nullptr;
+			}
 			else if (!attachParams.CumulativeRefreshSameSourceOnly || (attachEffect->Source == pSource && attachEffect->Invoker == pInvoker))
+			{
 				cumulativeMatches.push_back(attachEffect);
+
+				if (!match || attachEffect->Duration < match->Duration)
+					match = attachEffect;
+			}
 		}
 	}
 
-	if (cumulativeMatches.size() > 0)
+	if (cumulative)
 	{
 		if (pType->Cumulative_MaxCount >= 0 && currentTypeCount >= pType->Cumulative_MaxCount)
 		{
@@ -775,17 +785,9 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 					ae->RefreshDuration(attachParams.DurationOverride);
 				}
 			}
-			else
+			else if (match)
 			{
-				AttachEffectClass* best = nullptr;
-
-				for (auto const& ae : cumulativeMatches)
-				{
-					if (!best || ae->Duration < best->Duration)
-						best = ae;
-				}
-
-				best->RefreshDuration(attachParams.DurationOverride);
+				match->RefreshDuration(attachParams.DurationOverride);
 			}
 
 			AttachEffectTypeClass::HandleEvent(pTarget);
@@ -800,23 +802,13 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 		}
 	}
 
-	if (!pType->Cumulative && currentTypeCount > 0 && match)
-	{
-		match->RefreshDuration(attachParams.DurationOverride);
-		AttachEffectTypeClass::HandleEvent(pTarget);
-	}
-	else
-	{
-		targetAEs.emplace_back(std::make_unique<AttachEffectClass>(pType, pTarget, pInvokerHouse, pInvoker, pSource, attachParams.DurationOverride, attachParams.Delay, attachParams.InitialDelay, attachParams.RecreationDelay));
-		auto const pAE = targetAEs.back().get();
+	targetAEs.emplace_back(std::make_unique<AttachEffectClass>(pType, pTarget, pInvokerHouse, pInvoker, pSource, attachParams.DurationOverride, attachParams.Delay, attachParams.InitialDelay, attachParams.RecreationDelay));
+	auto const pAE = targetAEs.back().get();
 
-		if (!currentTypeCount && pType->Cumulative && pType->CumulativeAnimations.size() > 0)
-			pAE->HasCumulativeAnim = true;
+	if (!currentTypeCount && cumulative && pType->CumulativeAnimations.size() > 0)
+		pAE->HasCumulativeAnim = true;
 
-		return pAE;
-	}
-
-	return nullptr;
+	return pAE;
 }
 
 /// <summary>
@@ -1017,13 +1009,13 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 
 		if (!isValid)
 		{
-			++it;
+			it = pSourceExt->AttachedEffects.erase(it);
 			continue;
 		}
 
 		int currentTypeCount = 0;
+		const bool cumulative = type->Cumulative;
 		AttachEffectClass* match = nullptr;
-		AttachEffectClass* sourceMatch = nullptr;
 
 		for (auto const& aePtr : pTargetExt->AttachedEffects)
 		{
@@ -1031,28 +1023,32 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 
 			if (targetAttachEffect->GetType() == type)
 			{
-				currentTypeCount++;
-				match = targetAttachEffect;
+				currentTypeCount++;	
 
-				if (targetAttachEffect->Source == attachEffect->Source && targetAttachEffect->Invoker == attachEffect->Invoker)
-					sourceMatch = targetAttachEffect;
+				if (!cumulative)
+				{
+					match = targetAttachEffect;
+					break;
+				}
+				else if (targetAttachEffect->Source == attachEffect->Source && targetAttachEffect->Invoker == attachEffect->Invoker)
+				{
+					if (!match || targetAttachEffect->Duration < match->Duration)
+						match = targetAttachEffect;
+				}
 			}
 		}
 
-		if (type->Cumulative && type->Cumulative_MaxCount >= 0 && currentTypeCount >= type->Cumulative_MaxCount && sourceMatch)
+		if (match)
 		{
-			sourceMatch->Duration = Math::max(sourceMatch->Duration, attachEffect->Duration);
-		}
-		else if (!type->Cumulative && currentTypeCount > 0 && match)
-		{
-			match->Duration = Math::max(match->Duration, attachEffect->Duration);
+			if (!cumulative || (type->Cumulative_MaxCount >= 0 && currentTypeCount >= type->Cumulative_MaxCount))
+				match->Duration = Math::max(match->Duration, attachEffect->Duration);
 		}
 		else
 		{
 			AEAttachParams info {};
 			info.DurationOverride = attachEffect->DurationOverride;
 
-			if (auto const pAE = AttachEffectClass::CreateAndAttach(type, pTarget, pTargetType, pTargetExt->AttachedEffects, attachEffect->InvokerHouse, attachEffect->Invoker, attachEffect->Source, info))
+			if (auto const pAE = AttachEffectClass::CreateAndAttach(type, pTarget, pTargetType, pTargetExt->AttachedEffects, attachEffect->InvokerHouse, attachEffect->Invoker, attachEffect->Source, info, false))
 				pAE->Duration = attachEffect->Duration;
 		}
 

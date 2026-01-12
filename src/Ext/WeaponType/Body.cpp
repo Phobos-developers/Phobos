@@ -112,7 +112,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AuxWeapon.Read<true>(exINI, pSection, "AuxWeapon");
 	this->AuxWeapon_Offset.Read(exINI, pSection, "AuxWeapon.Offset");
 	this->AuxWeapon_FireOnTurret.Read(exINI, pSection, "AuxWeapon.FireOnTurret");
-	this->AuxWeapon_AllowZeroDamage.Read(exINI, pSection, "AuxWeapon.AllowZeroDamage");
+	this->AuxWeapon_UseWeaponTargeting.Read(exINI, pSection, "AuxWeapon.UseWeaponTargeting");
 	this->AuxWeapon_ApplyFirepowerMult.Read(exINI, pSection, "AuxWeapon.ApplyFirepowerMult");
 	this->AuxWeapon_Retarget.Read(exINI, pSection, "AuxWeapon.Retarget");
 	this->AuxWeapon_Retarget_AroundFirer.Read(exINI, pSection, "AuxWeapon.Retarget.AroundFirer");
@@ -129,6 +129,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ExtraWarheads_DamageOverrides.Read(exINI, pSection, "ExtraWarheads.DamageOverrides");
 	this->ExtraWarheads_DetonationChances.Read(exINI, pSection, "ExtraWarheads.DetonationChances");
 	this->ExtraWarheads_FullDetonation.Read(exINI, pSection, "ExtraWarheads.FullDetonation");
+	this->ExtraWarheads_ApplyFirepowerMult.Read(exINI, pSection, "ExtraWarheads.ExtraWarheads_ApplyFirepowerMult");
 	this->AmbientDamage_Warhead.Read<true>(exINI, pSection, "AmbientDamage.Warhead");
 	this->AmbientDamage_IgnoreTarget.Read(exINI, pSection, "AmbientDamage.IgnoreTarget");
 	this->AttachEffect_RequiredTypes.Read(exINI, pSection, "AttachEffect.RequiredTypes");
@@ -162,6 +163,10 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DelayedFire_OnlyOnInitialBurst.Read(exINI, pSection, "DelayedFire.OnlyOnInitialBurst");
 	this->DelayedFire_AnimOffset.Read(exINI, pSection, "DelayedFire.AnimOffset");
 	this->DelayedFire_AnimOnTurret.Read(exINI, pSection, "DelayedFire.AnimOnTurret");
+	this->ExtraRange_TargetMoving.Read(exINI, GameStrings::General, "ExtraRange.TargetMoving");
+	this->ExtraRange_FirerMoving.Read(exINI, GameStrings::General, "ExtraRange.FirerMoving");
+	this->ExtraRange_Prefiring.Read(exINI, GameStrings::General, "ExtraRange.Prefiring");
+	this->ExtraRange_Prefiring_IncludeBurst.Read(exINI, GameStrings::General, "ExtraRange.Prefiring.IncludeBurst");
 
 	// handle SkipWeaponPicking
 	if (this->CanTarget != AffectedTarget::All || this->CanTargetHouses != AffectedHouse::All
@@ -204,7 +209,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AuxWeapon)
 		.Process(this->AuxWeapon_Offset)
 		.Process(this->AuxWeapon_FireOnTurret)
-		.Process(this->AuxWeapon_AllowZeroDamage)
+		.Process(this->AuxWeapon_UseWeaponTargeting)
 		.Process(this->AuxWeapon_ApplyFirepowerMult)
 		.Process(this->AuxWeapon_Retarget)
 		.Process(this->AuxWeapon_Retarget_AroundFirer)
@@ -221,6 +226,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraWarheads_DamageOverrides)
 		.Process(this->ExtraWarheads_DetonationChances)
 		.Process(this->ExtraWarheads_FullDetonation)
+		.Process(this->ExtraWarheads_ApplyFirepowerMult)
 		.Process(this->AmbientDamage_Warhead)
 		.Process(this->AmbientDamage_IgnoreTarget)
 		.Process(this->AttachEffect_RequiredTypes)
@@ -255,6 +261,10 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DelayedFire_OnlyOnInitialBurst)
 		.Process(this->DelayedFire_AnimOffset)
 		.Process(this->DelayedFire_AnimOnTurret)
+		.Process(this->ExtraRange_TargetMoving)
+		.Process(this->ExtraRange_FirerMoving)
+		.Process(this->ExtraRange_Prefiring)
+		.Process(this->ExtraRange_Prefiring_IncludeBurst)
 		;
 };
 
@@ -328,17 +338,12 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 {
 	auto pTechno = pFirer;
 
-	if (pTechno->Transporter)
+	if (auto const pTransport = pTechno->Transporter)
 	{
-		auto const pType = pTechno->Transporter->GetTechnoType();
+		auto const pTypeExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData;
 
-		if (pType->OpenTopped)
-		{
-			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-
-			if (pTypeExt->OpenTopped_UseTransportRangeModifiers)
-				pTechno = pTechno->Transporter;
-		}
+		if (pTypeExt->OpenTopped_UseTransportRangeModifiers && pTypeExt->OwnerObject()->OpenTopped)
+			pTechno = pTransport;
 	}
 
 	auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);

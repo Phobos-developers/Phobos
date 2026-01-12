@@ -77,13 +77,14 @@ public:
 	ValueableVector<int> ExtraWarheads_DamageOverrides;
 	ValueableVector<double> ExtraWarheads_DetonationChances;
 	ValueableVector<bool> ExtraWarheads_FullDetonation;
+	ValueableVector<bool> ExtraWarheads_ApplyFirepowerMult;
 	ValueableVector<bool> ExtraWarheads_UseInvokerAsOwner;
 	Valueable<WeaponTypeClass*> FeedbackWeapon;
 	Valueable<bool> FeedbackWeapon_UseInvokerAsOwner;
 	Valueable<WeaponTypeClass*> AuxWeapon;
 	Valueable<CoordStruct> AuxWeapon_Offset;
 	Valueable<bool> AuxWeapon_FireOnTurret;
-	Valueable<bool> AuxWeapon_AllowZeroDamage;
+	Valueable<bool> AuxWeapon_UseWeaponTargeting;
 	Valueable<bool> AuxWeapon_ApplyFirepowerMult;
 	Valueable<bool> AuxWeapon_Retarget;
 	Valueable<bool> AuxWeapon_Retarget_AroundFirer;
@@ -120,6 +121,7 @@ public:
 	Valueable<WeaponTypeClass*> RevengeWeapon;
 	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
 	Valueable<bool> RevengeWeapon_RealLaunch;
+	Valueable<bool> RevengeWeapon_UseWeaponTargeting;
 	Valueable<bool> RevengeWeapon_UseInvokerAsOwner;
 	Valueable<bool> ReflectDamage;
 	Nullable<WarheadTypeClass*> ReflectDamage_Warhead;
@@ -172,13 +174,14 @@ public:
 		, ExtraWarheads_DamageOverrides {}
 		, ExtraWarheads_DetonationChances {}
 		, ExtraWarheads_FullDetonation {}
+		, ExtraWarheads_ApplyFirepowerMult {}
 		, ExtraWarheads_UseInvokerAsOwner {}
 		, FeedbackWeapon {}
 		, FeedbackWeapon_UseInvokerAsOwner { false }
 		, AuxWeapon {}
 		, AuxWeapon_Offset { {0, 0, 0} }
 		, AuxWeapon_FireOnTurret { false }
-		, AuxWeapon_AllowZeroDamage { true }
+		, AuxWeapon_UseWeaponTargeting { false }
 		, AuxWeapon_ApplyFirepowerMult { true }
 		, AuxWeapon_Retarget { false }
 		, AuxWeapon_Retarget_AroundFirer { false }
@@ -215,6 +218,7 @@ public:
 		, RevengeWeapon {}
 		, RevengeWeapon_AffectsHouses { AffectedHouse::All }
 		, RevengeWeapon_RealLaunch { false }
+		, RevengeWeapon_UseWeaponTargeting { false }
 		, ReflectDamage { false }
 		, RevengeWeapon_UseInvokerAsOwner { false }
 		, ReflectDamage_Warhead {}
@@ -238,7 +242,16 @@ public:
 
 	bool HasGroup(const std::string& groupID) const;
 	bool HasGroups(const std::vector<std::string>& groupIDs, bool requireAll) const;
-	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const;
+
+	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const
+	{
+		if (cumulativeCount < 0 || this->CumulativeAnimations.size() < 1)
+			return nullptr;
+
+		const int index = static_cast<size_t>(cumulativeCount) >= this->CumulativeAnimations.size() ? this->CumulativeAnimations.size() - 1 : cumulativeCount - 1;
+
+		return this->CumulativeAnimations.at(index);
+	}
 
 	void LoadFromINI(CCINIClass* pINI);
 	void LoadFromStream(PhobosStreamReader& Stm);

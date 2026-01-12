@@ -31,7 +31,7 @@ public:
 
 	static EBolt* (__stdcall* CreateAresEBolt)(WeaponTypeClass* pWeapon);
 
-	static void(__stdcall* SpawnSurvivors)(FootClass* pThis, TechnoClass* pKiller, bool Select, bool IgnoreDefenses);
+	static void(__stdcall* SpawnSurvivors)(FootClass* pThis, TechnoClass* pKiller, bool Select, bool PreventEscape);
 
 	static bool(__thiscall* ReverseEngineer)(void* pAresHouseExt, TechnoTypeClass* pType);
 

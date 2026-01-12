@@ -50,7 +50,7 @@ public:
 		Valueable<WeaponTypeClass*> AuxWeapon;
 		Valueable<CoordStruct> AuxWeapon_Offset;
 		Valueable<bool> AuxWeapon_FireOnTurret;
-		Valueable<bool> AuxWeapon_AllowZeroDamage;
+		Valueable<bool> AuxWeapon_UseWeaponTargeting;
 		Valueable<bool> AuxWeapon_ApplyFirepowerMult;
 		Valueable<bool> AuxWeapon_Retarget;
 		Valueable<bool> AuxWeapon_Retarget_AroundFirer;
@@ -67,6 +67,7 @@ public:
 		ValueableVector<int> ExtraWarheads_DamageOverrides;
 		ValueableVector<double> ExtraWarheads_DetonationChances;
 		ValueableVector<bool> ExtraWarheads_FullDetonation;
+		ValueableVector<bool> ExtraWarheads_ApplyFirepowerMult;
 		Nullable<WarheadTypeClass*> AmbientDamage_Warhead;
 		Valueable<bool> AmbientDamage_IgnoreTarget;
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_RequiredTypes;
@@ -101,6 +102,11 @@ public:
 		Nullable<CoordStruct> DelayedFire_AnimOffset;
 		Valueable<bool> DelayedFire_AnimOnTurret;
 
+		Nullable<Leptons> ExtraRange_TargetMoving;
+		Nullable<Leptons> ExtraRange_FirerMoving;
+		Nullable<Leptons> ExtraRange_Prefiring;
+		Nullable<bool> ExtraRange_Prefiring_IncludeBurst;
+
 		bool SkipWeaponPicking;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
@@ -131,7 +137,7 @@ public:
 			, AuxWeapon {}
 			, AuxWeapon_Offset { {0, 0, 0} }
 			, AuxWeapon_FireOnTurret { false }
-			, AuxWeapon_AllowZeroDamage { true }
+			, AuxWeapon_UseWeaponTargeting { false }
 			, AuxWeapon_ApplyFirepowerMult { true }
 			, AuxWeapon_Retarget { false }
 			, AuxWeapon_Retarget_AroundFirer { false }
@@ -148,6 +154,7 @@ public:
 			, ExtraWarheads_DamageOverrides {}
 			, ExtraWarheads_DetonationChances {}
 			, ExtraWarheads_FullDetonation {}
+			, ExtraWarheads_ApplyFirepowerMult {}
 			, AmbientDamage_Warhead {}
 			, AmbientDamage_IgnoreTarget { false }
 			, AttachEffect_RequiredTypes {}
@@ -182,6 +189,11 @@ public:
 			, DelayedFire_OnlyOnInitialBurst { false }
 			, DelayedFire_AnimOffset {}
 			, DelayedFire_AnimOnTurret { true }
+
+			, ExtraRange_TargetMoving {}
+			, ExtraRange_FirerMoving {}
+			, ExtraRange_Prefiring {}
+			, ExtraRange_Prefiring_IncludeBurst {}
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;

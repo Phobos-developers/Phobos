@@ -522,7 +522,7 @@ DEFINE_HOOK(0x415F25, AircraftClass_Fire_TrajectorySkipInertiaEffect, 0x6)
 DEFINE_PATCH(0x46867F, 0x6A, 0x00, 0x8B, 0xD9, 0x50);
 
 // Add in our own.
-bool __fastcall ObjectClass_Unlimbo_Parachuted_Wrapper(BulletClass* pThis, void*, const CoordStruct& coords, DirType facing)
+static bool __fastcall ObjectClass_Unlimbo_Parachuted_Wrapper(BulletClass* pThis, void*, const CoordStruct& coords, DirType facing)
 {
 	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 

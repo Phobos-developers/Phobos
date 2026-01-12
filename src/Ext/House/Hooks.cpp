@@ -181,7 +181,7 @@ DEFINE_HOOK(0x687B18, ScenarioClass_ReadINI_StartTracking, 0x7)
 	return 0;
 }
 
-void __fastcall TechnoClass_UnInit_Wrapper(TechnoClass* pThis)
+static void __fastcall TechnoClass_UnInit_Wrapper(TechnoClass* pThis)
 {
 
 	if (LimboTrackingTemp::Enabled && pThis->InLimbo)
@@ -243,9 +243,35 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 	GET(TechnoClass* const, pThis, ESI);
 	GET(HouseClass* const, pNewOwner, EBP);
 
-	auto const pType = pThis->GetTechnoType();
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pTypeExt = pExt->TypeExtData;
+
+	if (pTypeExt->AutoDeath_Behavior.isset())
+	{
+		const bool humanToComputer = pTypeExt->AutoDeath_OnOwnerChange_HumanToComputer.Get(pTypeExt->AutoDeath_OnOwnerChange);
+		const bool computerToHuman = pTypeExt->AutoDeath_OnOwnerChange_ComputerToHuman.Get(pTypeExt->AutoDeath_OnOwnerChange);
+
+		if (humanToComputer && computerToHuman)
+		{
+			TechnoExt::KillSelf(pThis, pTypeExt->AutoDeath_Behavior, pTypeExt->AutoDeath_VanishAnimation, !pThis->IsInLogic && pThis->IsAlive);
+			return 0;
+		}
+		else if (humanToComputer || computerToHuman)
+		{
+			const bool I_am_human = pThis->Owner->IsControlledByHuman();
+
+			if (I_am_human != pNewOwner->IsControlledByHuman())
+			{
+				if ((I_am_human && humanToComputer) || (!I_am_human && computerToHuman))
+				{
+					TechnoExt::KillSelf(pThis, pTypeExt->AutoDeath_Behavior, pTypeExt->AutoDeath_VanishAnimation, !pThis->IsInLogic && pThis->IsAlive);
+					return 0;
+				}
+			}
+		}
+	}
+
+	auto const pType = pTypeExt->OwnerObject();
 	auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
 	auto const pNewOwnerExt = HouseExt::ExtMap.Find(pNewOwner);
 
@@ -456,4 +482,50 @@ DEFINE_HOOK(0x4FD8F7, HouseClass_UpdateAI_OnLastLegs, 0x10)
 		pThis->All_To_Hunt();
 
 	return ret;
+}
+
+DEFINE_HOOK(0x4F8ACC, HouseClass_Update_ResetTeamDelay, 0x6)
+{
+	enum { ResetTeamDelay = 0x4F8AD5 };
+
+	GET(HouseClass*, pThis, ESI);
+
+	const int teamDelay = HouseExt::ExtMap.Find(pThis)->TeamDelay;
+
+	if (teamDelay >= 0)
+	{
+		R->ECX(teamDelay);
+		return ResetTeamDelay;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x508E17, HouseClass_UpdateRadar_FreeRadar, 0x8)
+{
+	enum { ForceRadar = 0x508F2F, Continue = 0x508E4A };
+
+	GET(HouseClass*, pThis, ECX);
+
+	auto const pExt = HouseExt::ExtMap.Find(pThis);
+	const bool freeRadar = pExt->FreeRadar;
+
+	if (pExt->ForceRadar)
+	{
+		R->Stack(STACK_OFFSET(0x1C, -0xC), freeRadar);
+		return ForceRadar;
+	}
+	else if (pThis->PowerBlackoutTimer.InProgress())
+	{
+		R->Stack(STACK_OFFSET(0x1C, -0xC), false);
+		return ForceRadar;
+	}
+	else if (freeRadar)
+	{
+		R->Stack(STACK_OFFSET(0x1C, -0xC), true);
+		return ForceRadar;
+	}
+
+	R->Stack(STACK_OFFSET(0x1C, -0xC), false);
+	return Continue;
 }

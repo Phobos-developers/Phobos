@@ -42,6 +42,8 @@
 #include <Helpers/Iterators.h>
 #include <Helpers/Enumerators.h>
 
+#include <Ext/WarheadType/Body.h>
+
 #include <set>
 #include <functional>
 #include <algorithm>
@@ -119,6 +121,43 @@ namespace Helpers
 			}
 		}
 
+		// We can't touch function signature because Ares calls are redirected to it, so this is a workaround to introduce
+		// new params for now.
+		namespace GetCellSpreadItems
+		{
+			static bool IsCylindrical = false;
+			static bool AffectsAir = true;
+			static bool AffectsGround = true;
+
+			static void SetParams(WarheadTypeExt::ExtData* pWarheadExt)
+			{
+				IsCylindrical = pWarheadExt->CellSpread_Cylinder;
+				AffectsAir = pWarheadExt->AffectsAir;
+				AffectsGround = pWarheadExt->AffectsGround;
+			}
+
+			static void ResetParams()
+			{
+				IsCylindrical = false;
+				AffectsAir = true;
+				AffectsGround = true;
+			}
+
+			// Helper for checking AffectsAir & AffectsGround
+			static bool CanBeAffected(TechnoClass* pTechno)
+			{
+				if (!AffectsAir || !AffectsGround)
+				{
+					bool isInAir = pTechno->IsInAir();
+
+					if ((AffectsAir && isInAir) || (!AffectsGround && !isInAir))
+						return false;
+				}
+
+				return true;
+			}
+		}
+
 		//! Gets a list of all units in range of a cell spread weapon.
 		/*!
 			CellSpread is handled as described in
@@ -156,12 +195,22 @@ namespace Helpers
 				{
 					if (auto const pTechno = abstract_cast<TechnoClass*>(*obj))
 					{
+						// Check AffectsAir & AffectsGround.
+						if (!GetCellSpreadItems::CanBeAffected(pTechno))
+							continue;
+
 						// May 22, 2024 - Starkku: Buildings need their distance from the origin coords checked at cell level.
 						if (pTechno->WhatAmI() == AbstractType::Building)
 						{
 							if (static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
 								continue;
-							auto const cellCenterCoords = pCell->GetCenterCoords();
+
+							auto cellCenterCoords = pCell->GetCenterCoords();
+
+							// Ignore Z coordinate if detonation is cylindrical.
+							if (GetCellSpreadItems::IsCylindrical)
+								cellCenterCoords.Z = coords.Z;
+
 							double dist = cellCenterCoords.DistanceFrom(coords);
 
 							// If this is the center cell, there's some different behaviour.
@@ -197,7 +246,18 @@ namespace Helpers
 				{
 					if (pTechno->IsAlive && pTechno->IsOnMap && pTechno->Health > 0)
 					{
-						auto dist = pTechno->Location.DistanceFrom(coords);
+						// Check AffectsAir & AffectsGround.
+						if (!GetCellSpreadItems::CanBeAffected(pTechno))
+							continue;
+
+						auto location = pTechno->Location;
+
+						// Ignore Z coordinate if detonation is cylindrical.
+						if (GetCellSpreadItems::IsCylindrical)
+							location.Z = coords.Z;
+
+						auto dist = location.DistanceFrom(coords);
+
 						// reduce the distance for flying aircraft
 						if (pTechno->WhatAmI() == AbstractType::Aircraft)
 							dist *= 0.5;

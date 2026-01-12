@@ -181,6 +181,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->AllowDeployControlledMCV.Read(exINI, GameStrings::General, "AllowDeployControlledMCV");
 
+	this->TypeSelectUseIFVMode.Read(exINI, GameStrings::General, "TypeSelectUseIFVMode");
+
 	this->IronCurtain_KeptOnDeploy.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KeptOnDeploy");
 	this->IronCurtain_EffectOnOrganics.Read(exINI, GameStrings::CombatDamage, "IronCurtain.EffectOnOrganics");
 	this->IronCurtain_KillOrganicsWarhead.Read<true>(exINI, GameStrings::CombatDamage, "IronCurtain.KillOrganicsWarhead");
@@ -336,6 +338,18 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->SortCameoByName.Read(exINI, GameStrings::General, "SortCameoByName");
 
+	this->MergeBuildingDamage.Read(exINI, GameStrings::CombatDamage, "MergeBuildingDamage");
+
+	this->ApplyPerTargetEffectsOnDetonate.Read(exINI, GameStrings::CombatDamage, "ApplyPerTargetEffectsOnDetonate");
+	
+	this->BuildingRadioLink_SyncOwner.Read(exINI, GameStrings::General, "BuildingRadioLink.SyncOwner");
+
+	this->ExtraRange_TargetMoving.Read(exINI, GameStrings::General, "ExtraRange.TargetMoving");
+	this->ExtraRange_TargetMoving_CloseRangeOnly.Read(exINI, GameStrings::General, "ExtraRange.TargetMoving.CloseRangeOnly");
+	this->ExtraRange_FirerMoving.Read(exINI, GameStrings::General, "ExtraRange.FirerMoving");
+	this->ExtraRange_Prefiring.Read(exINI, GameStrings::General, "ExtraRange.Prefiring");
+	this->ExtraRange_Prefiring_IncludeBurst.Read(exINI, GameStrings::General, "ExtraRange.Prefiring.IncludeBurst");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -485,6 +499,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForbidParallelAIQueues_Vehicle)
 		.Process(this->EnablePowerSurplus)
 		.Process(this->AllowDeployControlledMCV)
+		.Process(this->TypeSelectUseIFVMode)
 		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->IronCurtain_EffectOnOrganics)
 		.Process(this->IronCurtain_KillOrganicsWarhead)
@@ -611,6 +626,14 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->FallingDownTargetingFix)
 		.Process(this->AIAirTargetingFix)
 		.Process(this->SortCameoByName)
+		.Process(this->MergeBuildingDamage)
+		.Process(this->BuildingRadioLink_SyncOwner)
+		.Process(this->ApplyPerTargetEffectsOnDetonate)
+		.Process(this->ExtraRange_TargetMoving)
+		.Process(this->ExtraRange_TargetMoving_CloseRangeOnly)
+		.Process(this->ExtraRange_FirerMoving)
+		.Process(this->ExtraRange_Prefiring)
+		.Process(this->ExtraRange_Prefiring_IncludeBurst)
 		;
 }
 

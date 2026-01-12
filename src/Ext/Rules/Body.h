@@ -124,6 +124,8 @@ public:
 
 		Valueable<bool> AllowDeployControlledMCV;
 
+		Valueable<bool> TypeSelectUseIFVMode;
+
 		Valueable<bool> IronCurtain_KeptOnDeploy;
 		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> IronCurtain_KillOrganicsWarhead;
@@ -180,6 +182,8 @@ public:
 
 		Valueable<bool> JumpjetClimbPredictHeight;
 		Valueable<bool> JumpjetClimbWithoutCutOut;
+
+		Valueable<bool> MergeBuildingDamage;
 
 		Valueable<double> DamageOwnerMultiplier;
 		Valueable<double> DamageAlliesMultiplier;
@@ -284,6 +288,16 @@ public:
 		Valueable<bool> AIAirTargetingFix;
 
 		Valueable<bool> SortCameoByName;
+
+		Valueable<bool> BuildingRadioLink_SyncOwner;
+
+		Valueable<Leptons> ExtraRange_TargetMoving;
+		Valueable<bool> ExtraRange_TargetMoving_CloseRangeOnly;
+		Valueable<Leptons> ExtraRange_FirerMoving;
+		Valueable<Leptons> ExtraRange_Prefiring;
+		Valueable<bool> ExtraRange_Prefiring_IncludeBurst;
+		
+		Valueable<bool> ApplyPerTargetEffectsOnDetonate;
 		
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -369,6 +383,8 @@ public:
 			, EnablePowerSurplus { false }
 
 			, AllowDeployControlledMCV { false }
+
+			, TypeSelectUseIFVMode { false }
 
 			, IronCurtain_KeptOnDeploy { true }
 			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
@@ -508,6 +524,18 @@ public:
 			, AIAirTargetingFix { false }
 
 			, SortCameoByName { false }
+			
+			, MergeBuildingDamage { false }
+
+			, BuildingRadioLink_SyncOwner { true }
+			
+			, ApplyPerTargetEffectsOnDetonate { true }
+
+			, ExtraRange_TargetMoving { Leptons(0) }
+			, ExtraRange_TargetMoving_CloseRangeOnly { false }
+			, ExtraRange_FirerMoving { Leptons(0) }
+			, ExtraRange_Prefiring { Leptons(0) }
+			, ExtraRange_Prefiring_IncludeBurst { true }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -207,7 +207,9 @@ public:
 		int ApplyForceWeaponInRange(AbstractClass* pTarget);
 		void ResetDelayedFireTimer();
 		void UpdateTintValues();
-		void ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractClass* pTarget, const CoordStruct& offset, int range, const double& accuracy, bool onTurret, bool retarget, bool aroundFirer, bool zeroDamage, bool firepowerMult, TechnoClass* pInvoker = nullptr);
+		void ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractClass* pTarget, const CoordStruct& offset, int range, const double& accuracy, bool onTurret, bool retarget, bool aroundFirer, bool useWeaponTargeting, bool firepowerMult, TechnoClass* pInvoker = nullptr);
+
+		void AmmoAutoConvertActions();
 
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
@@ -288,7 +290,7 @@ public:
 	static void CreateDelayedFireAnim(TechnoClass* pThis, AnimTypeClass* pAnimType, int weaponIndex, bool attach, bool center, bool removeOnNoDelay, bool onTurret, CoordStruct firingCoords);
 	static bool HandleDelayedFireWithPauseSequence(TechnoClass* pThis, WeaponTypeClass* pWeapon, int weaponIndex, int frame, int firingFrame);
 	static bool IsHealthInThreshold(TechnoClass* pObject, double min, double max);
-	static UnitTypeClass* GetUnitTypeExtra(UnitClass* pUnit);
+	static UnitTypeClass* GetUnitTypeExtra(UnitClass* pUnit, TechnoTypeExt::ExtData* pData);
 	static AircraftTypeClass* GetAircraftTypeExtra(AircraftClass* pAircraft);
 	static bool CannotMove(UnitClass* pThis);
 	static bool HasAmmoToDeploy(TechnoClass* pThis);
@@ -296,18 +298,22 @@ public:
 	static bool SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue, bool alwaysCheckLandTypes);
 	static void ShowPromoteAnim(TechnoClass* pThis);
 
+	static bool EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, int distance, bool select);
+	static bool EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool select);
+
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
-	static WeaponTypeClass* GetDeployFireWeapon(TechnoClass* pThis, int& weaponIndex);
-	static WeaponTypeClass* GetDeployFireWeapon(TechnoClass* pThis);
-	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, int& weaponIndex, bool getSecondary = false);
-	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, bool getSecondary = false);
+	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, TechnoTypeClass* pType, int weaponIndex);
+	static WeaponTypeClass* GetDeployFireWeapon(TechnoClass* pThis, TechnoTypeClass* pType, int& weaponIndex);
+	static WeaponTypeClass* GetDeployFireWeapon(TechnoClass* pThis, TechnoTypeClass* pType);
+	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, TechnoTypeClass* pType, int& weaponIndex, bool getSecondary = false);
+	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, TechnoTypeClass* pType, bool getSecondary = false);
 	static int GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* pWallOverlayType);
 	static void ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 	static void ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 	static bool MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType);
-	static bool IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, WeaponTypeClass* pWeapon, TechnoClass* pTarget, bool useWeaponTargeting = true, bool allowZeroDamage = false);
+	static bool IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, WeaponTypeClass* pWeapon, TechnoClass* pTarget, bool useWeaponTargeting = true);
 	static void RealLaunch(WeaponTypeClass* pWeapon, TechnoClass* pSource, TechnoClass* pTarget, bool applyFirepowerMult = true, TechnoClass* pFirer = nullptr);
 };

@@ -44,14 +44,15 @@ This page describes all the engine features that are either new and introduced b
   - Attached effect can allow the TechnoType's weapon to detonate multiple Warheads on impact by listing `ExtraWarheads`. The warheads are detonated at same location as the main one, after it in listed order. This only works in cases where a projectile has been fired by a weapon and still remembers it when it is detonated (due to currently existing technical limitations, this excludes `AirburstWeapon`).
     - `ExtraWarheads.DamageOverrides` can be used to override the weapon's `Damage` for the extra Warhead detonations. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, WeaponType `Damage` is used.
     - `ExtraWarheads.DetonationChances` can be used to customize the chance of each extra Warhead detonation occuring. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, every extra Warhead detonation is guaranteed to occur.
+    - `ExtraWarheads.ApplyFirepowerMult` determines whether or not the extra warheads' damage should multiply the firer's firepower multipliers. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, every extra Warhead detonation is guaranteed to occur.
     - `ExtraWarheads.FullDetonation` can be used to customize whether or not each individual Warhead is detonated fully (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, defaults to true.
     - `ExtraWarheads.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the weapon's owner & invoker instead of the object the effect is attached to. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, defaults to false.
-    - Note that the listed Warheads must be listed in `[Warheads]` for them to work.
+    - Note that the listed Warheads must be listed in `[Warheads]` for them to work. Each warhead detonation from the firer (e.g `ExtraWarheads` on the firer's weapon) will trigger all of their attached extra warheads once, and only once.
   - You can now specify an auxiliary weapon to be fired when a weapon is fired.
     - `FireInTransport` setting of the auxiliary weapons are respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If auxiliary weapons are fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on auxiliary weapons.
   - `AuxWeapon` is fired at the original target, or another nearby target if `AuxWeapon.Retarget` set to true.
     - `AuxWeapon.Offset` defines the relative position to the firer that the auxiliary weapon will be fired from. `AuxWeapon.FireOnTurret` defines if the FLH is relative to the turret rather than the body.
-    - If `AuxWeapon.AllowZeroDamage` set to true, the auxiliary weapon will be fired even if its damage on the set target is 0.
+    - `AuxWeapon.UseWeaponTargeting`, if set to true, enables weapon targeting filter for when checking targets for auxiliary weapon. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `AirburstWeapon` [weapon targeting filters](New-or-Enhanced-Logics.md#weapon-targeting-filter) & [AttachEffect filters](New-or-Enhanced-Logics.md#attached-effects) will be checked.
     - `AuxWeapon.ApplyFirepowerMult` determines whether or not the auxiliary weapon's damage should multiply the firer's firepower multipliers.
     - `AuxWeapon.Retarget.AroundFirer` determines whether the original target or the firer will be the center of the retargeting. `AuxWeapon.Retarget.Range` determines the radius of the retargeting, default to the auxiliary weapon's `Range` if the center is the firer, and 0 if the center is the original target.
     - `AuxWeapon.Retarget.Accuracy` defines the probability that the auxiliary weapon is fired to the original target.
@@ -77,6 +78,7 @@ This page describes all the engine features that are either new and introduced b
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
     - If `RevengeWeapon.RealLaunch` set to true, the weapon will be fired through a real projectile from the TechnoType to the killer.
+    - `RevengeWeapon.UseWeaponTargeting`, if set to true, enables weapon targeting filter for when checking targets for revenge weapon. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `AirburstWeapon` [weapon targeting filters](New-or-Enhanced-Logics.md#weapon-targeting-filter) & [AttachEffect filters](New-or-Enhanced-Logics.md#attached-effects) will be checked.
     - `RevengeWeapon.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the weapon's owner & invoker instead of the object the effect is attached to.
   - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage] -> C4Warhead`. If `ReflectDamage.Warhead.Detonate` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Chance` determines the chance of reflection. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back, while `ReflectDamage.Override` directly overrides the damage. Already reflected damage cannot be further reflected back.
     - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed. `SuppressReflectDamage.Groups` does the same thing but for all AttachEffectTypes in the listed groups.
@@ -152,11 +154,12 @@ ExtraWarheads=                                     ; List of WarheadTypes
 ExtraWarheads.DamageOverrides=                     ; List of integers
 ExtraWarheads.DetonationChances=                   ; List of floating-point values (percentage or absolute)
 ExtraWarheads.FullDetonation=                      ; List of booleans
-ExtraWarheads.UseInvokerAsOwner=false              ; boolean
+ExtraWarheads.ApplyFirepowerMult=                  ; List of booleans
+ExtraWarheads.UseInvokerAsOwner=                   ; List of booleans
 AuxWeapon=                                         ; WeaponType
 AuxWeapon.Offset=0,0,0                             ; integer - Forward,Lateral,Height
 AuxWeapon.FireOnTurret=false                       ; boolean
-AuxWeapon.AllowZeroDamage=true                     ; boolean
+AuxWeapon.UseWeaponTargeting=false                 ; boolean
 AuxWeapon.ApplyFirepowerMult=true                  ; boolean
 AuxWeapon.Retarget=false                           ; boolean
 AuxWeapon.Retarget.Range=                          ; integer
@@ -195,6 +198,7 @@ KillWeapon.OnFirer.RealLaunch=false                ; boolean
 RevengeWeapon=                                     ; WeaponType
 RevengeWeapon.AffectsHouses=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 RevengeWeapon.RealLaunch=false                     ; boolean
+RevengeWeapon.UseWeaponTargeting=false             ; boolean
 RevengeWeapon.UseInvokerAsOwner=false              ; boolean
 ReflectDamage=false                                ; boolean
 ReflectDamage.Warhead=                             ; WarheadType
@@ -1414,6 +1418,30 @@ Spawner.RecycleOnTurret=false      ; boolean
 If you set recycle FLH, it is best to set a recycle range of at least `0.5` at the same time. Otherwise, the spawner may not recycle correctly.
 ```
 
+### Automatic conversion based on ammo
+
+- Units can now be converted into another unit by ammo count.
+- `Ammo.AutoConvertMinimumAmount` determines the minimal number of ammo at which a unit converts automatically after the ammo update.
+- `Ammo.AutoConvertMaximumAmount` determines the maximum number of ammo at which a unit converts automatically after the ammo update.
+- `Ammo.AutoConvertType` specify the new techno after the conversion. This unit must be of the same type of the original (infantry -> infantry, vehicle -> vehicle or aircraft -> aircraft).
+- Setting a negative number will disable the ammo count check, and when both checks are disabled, conversion will not occur.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType, before conversion
+Ammo.AutoConvertMinimumAmount=-1  ; integer
+Ammo.AutoConvertMaximumAmount=-1  ; integer
+Ammo.AutoConvertType=             ; TechnoType, after conversion
+```
+
+```{warning}
+This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
+```
+
+```{warning}
+This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
+```
+
 ### Automatic passenger deletion
 
 - Transports can erase passengers over time. Passengers are deleted in order of entering the transport, from first to last.
@@ -1477,6 +1505,10 @@ AutoFire=false             ; boolean
 AutoFire.TargetSelf=false  ; boolean
 ```
 
+```{note}
+To make this logic work properly, you need to ensure that there is no flag like `CanPassiveAquire=false` set on units that prevents target scanning.
+```
+
 ### Build limit group
 
 - You can now make different technos share build limit in a group.
@@ -1519,7 +1551,7 @@ Convert.ComputerToHuman=    ; TechnoType
 
 ### Custom tint on TechnoTypes
 
-- A tint effect similar to that used by Iron Curtain / Force Shield or `Psychedelic=true` Warheads can be applied to TechnoTypes naturally by setting `Tint.Color` and/or `Tint Intensity`.
+- A tint effect similar to that used by Iron Curtain / Force Shield or `Psychedelic=true` Warheads can be applied to TechnoTypes naturally by setting `Tint.Color` and/or `Tint.Intensity`.
   - `Tint.Intensity` is additive lighting increase/decrease - 1.0 is the default object lighting.
   - `Tint.VisibleToHouses` can be used to customize which houses can see the tint effect.
   - Tint effects can also be applied by [attached effects](#attached-effects) and on [shields](#shields).
@@ -1538,15 +1570,24 @@ Tint.VisibleToHouses=all  ; List of Affected House Enumeration (none|owner/self|
 - `OpenTopped.IgnoreRangefinding` can be used to disable `OpenTopped` transport rangefinding behaviour where smallest weapon range between transport and all passengers is used when approaching targets that are out of range and when scanning for potential targets.
 - `OpenTopped.AllowFiringIfDeactivated` can be used to customize whether or not passengers can fire out when the transport is deactivated (EMP, powered unit etc).
 - `OpenTopped.ShareTransportTarget` controls whether or not the current target of the transport itself is passed to the passengers as well.
+- You can also customize range bonus and damage multiplier for passenger inside the transport with `OpenTransport.RangeBonus/DamageMultiplier`, which works independently from transport's `OpenTopped.RangeBonus/DamageMultiplier`.
 
 ```ini
-[SOMETECHNO]                              ; TechnoType
-OpenTopped.RangeBonus=                    ; integer, override of the global default
-OpenTopped.DamageMultiplier=              ; floating point value, override of the global default
-OpenTopped.WarpDistance=                  ; integer, override of the global default
+[SOMETECHNO]                              ; TechnoType, transport with OpenTopped=yes
+OpenTopped.RangeBonus=                    ; integer, default to [CombatDamage] -> OpenToppedRangeBonus
+OpenTopped.DamageMultiplier=              ; floating point value, default to [CombatDamage] -> OpenToppedDamageMultiplier
+OpenTopped.WarpDistance=                  ; integer, default to [CombatDamage] -> OpenToppedWarpDistance
 OpenTopped.IgnoreRangefinding=false       ; boolean
 OpenTopped.AllowFiringIfDeactivated=true  ; boolean
 OpenTopped.ShareTransportTarget=true      ; boolean
+
+[SOMETECHNO]                              ; TechnoType, passenger
+OpenTransport.RangeBonus=0                ; integer
+OpenTransport.DamageMultiplier=1.0        ; floating point value
+```
+
+```{note}
+Range of passive acquiring of passengers in an OpenTopped transport won't be affected by these RangeBonus values.
 ```
 
 ### Customizable spawns queue
@@ -1563,6 +1604,23 @@ Spawns.Queue=       ; List of AircraftTypes, in order
 
 ```{warning}
 Note that all spawnees in a queue should have `MissileSpawn` set to the same value (all to true or false). Mixing them will make missile spawnees can't hit their targets.
+```
+
+### Customize Ares's radar jam logic
+
+- It is now possible to customize some properties of Ares's radar jam logic.
+  - `RadarJamHouses` determines which houses will be affected by the jam.
+  - `RadarJamDelay` determines the interval of the jam, default to 30 frames like Ares did. Shorter interval means the jam will be applied more timely, but worse for performance.
+  - `RadarJamAffect` determines a list of buildings with `Radar=yes` or `SpySat=yes` that could be affected by the jam. If it's empty, all radar buildings will be affected.
+  - `RadarJamIgnore` determines a list of buildings with `Radar=yes` or `SpySat=yes` that couldn't be affected by the jam.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType, with RadarJamRadius=
+RadarJamHouses=enemies            ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+RadarJamDelay=30                  ; integer
+RadarJamAffect=                   ; List of BuildingTypes
+RadarJamIgnore=                   ; List of BuildingTypes
 ```
 
 ### Customize EVA voice and `SellSound` when selling units
@@ -1593,12 +1651,17 @@ Vanilla game played vehicles' `SellSound` globally. This has been changed in con
   - Weapons with `ElectricAssault=true` set on `Warhead` against `Overpowerable=true` buildings belonging to owner or allies.
   - `Overpowerable=true` buildings that are currently overpowered.
   - Any system using `(Elite)WeaponX`, f.ex `Gunner=true` or `IsGattling=true` is also wholly exempt.
+- If `[CombatDamage] -> AllowWeaponSelectAgainstWalls` is set to true, `Secondary` will now be used against walls if `Primary` weapon Warhead has `Wall=false`, `Secondary` has `Wall=true` and the firer does not have `NoSecondaryWeaponFallback` set to true. Can be overriden by setting `AllowWeaponSelectAgainstWalls` for a techno.
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+AllowWeaponSelectAgainstWalls=false      ; boolean
+
 [SOMETECHNO]                             ; TechnoType
 NoSecondaryWeaponFallback=false          ; boolean
 NoSecondaryWeaponFallback.AllowAA=false  ; boolean
+AllowWeaponSelectAgainstWalls=           ; boolean, default to [CombatDamage] -> AllowWeaponSelectAgainstWalls
 ```
 
 ### Disguise logic additions (disguise-based movement speed, disguise blinking visibility)
@@ -1750,6 +1813,8 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
 
 - Objects can be destroyed automatically if *any* of these conditions is met:
   - `OnAmmoDepletion`: The object will die if the remaining ammo reaches 0.
+  - `OnOwnerChange`: The object's ownership has been changed.
+    - `OnOwnerChange.HumanToComputer/ComputerToHuman`: The object's ownership has been changed from human to computer or from computer to human. Default to `OnOwnerChange` if not set.
   - `AfterDelay`: The object will die if the countdown (in frames) reaches 0.
   - `TechnosExist` / `TechnosDontExist`: The object will die if TechnoTypes exist or do not exist, respectively.
     - `Technos(Dont)Exist.Any` controls whether or not a single listed TechnoType is enough to satisfy the requirement or if all are required.
@@ -1768,7 +1833,10 @@ In `rulesmd.ini`:
 [SOMETECHNO]                                   ; TechnoType
 AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell), default not set
 AutoDeath.VanishAnimation=                     ; List of AnimationTypes
-AutoDeath.OnAmmoDepletion=no                   ; boolean
+AutoDeath.OnAmmoDepletion=false                ; boolean
+AutoDeath.OnOwnerChange=false                  ; boolean
+AutoDeath.OnOwnerChange.HumanToComputer=       ; boolean, default to AutoDeath.OnOwnerChange
+AutoDeath.OnOwnerChange.ComputerToHuman=       ; boolean, default to AutoDeath.OnOwnerChange
 AutoDeath.AfterDelay=0                         ; positive integer
 AutoDeath.TechnosDontExist=                    ; List of TechnoTypes
 AutoDeath.TechnosDontExist.Any=false           ; boolean
@@ -1996,15 +2064,17 @@ Convert.ResetMindControl=false          ; boolean
 - Similar to `DeathWeapon` in that it is fired after a TechnoType is killed, but with the difference that it will be fired on whoever dealt the damage that killed the TechnoType. If TechnoType died of sources other than direct damage dealt by another TechnoType, `RevengeWeapon` will not be fired.
   - `RevengeWeapon.AffectsHouses` can be used to filter which houses the damage that killed the TechnoType is allowed to come from to fire the weapon.
   - If `RevengeWeapon.RealLaunch` set to true, the weapon will be fired through a real projectile from the TechnoType to the killer.
+  - `RevengeWeapon.UseWeaponTargeting`, if set to true, enables weapon targeting filter for when checking targets for revenge weapon. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `AirburstWeapon` [weapon targeting filters](New-or-Enhanced-Logics.md#weapon-targeting-filter) & [AttachEffect filters](New-or-Enhanced-Logics.md#attached-effects) will be checked.
   - It is possible to grant revenge weapons through [attached effects](#attached-effects) as well.
   - If a Warhead has `SuppressRevengeWeapons` set to true, it will not trigger revenge weapons. `SuppressRevengeWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                    ; TechnoType
-RevengeWeapon=                  ; WeaponType
-RevengeWeapon.AffectsHouses=all ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-RevengeWeapon.RealLaunch=false  ; boolean
+[SOMETECHNO]                            ; TechnoType
+RevengeWeapon=                          ; WeaponType
+RevengeWeapon.AffectsHouses=all         ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+RevengeWeapon.RealLaunch=false          ; boolean
+RevengeWeapon.UseWeaponTargeting=false  ; boolean
 
 [SOMEWARHEAD]                   ; WarheadType
 SuppressRevengeWeapons=false    ; boolean
@@ -2096,23 +2166,6 @@ WarpInWeapon=                           ; WeaponType
 WarpInMinRangeWeapon=                   ; WeaponType
 WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
-```
-
-### Customize Ares's radar jam logic
-
-- It is now possible to customize some properties of Ares's radar jam logic.
-  - `RadarJamHouses` determines which houses will be affected by the jam.
-  - `RadarJamDelay` determines the interval of the jam, default to 30 frames like Ares did. Shorter interval means the jam will be applied more timely, but worse for performance.
-  - `RadarJamAffect` determines a list of buildings with `Radar=yes` or `SpySat=yes` that could be affected by the jam. If it's empty, all radar buildings will be affected.
-  - `RadarJamIgnore` determines a list of buildings with `Radar=yes` or `SpySat=yes` that couldn't be affected by the jam.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                      ; TechnoType, with RadarJamRadius=
-RadarJamHouses=enemies            ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-RadarJamDelay=30                  ; integer
-RadarJamAffect=                   ; List of BuildingTypes
-RadarJamIgnore=                   ; List of BuildingTypes
 ```
 
 ## Terrain
@@ -2236,6 +2289,24 @@ All new Warhead effects
 - If target has an active [shield](#shields), its armor type is used instead unless warhead can penetrate the shield.
 ```
 
+### Allow merging AOE damage to buildings into one
+
+- Warheads are now able to damage building only once by merging the AOE damage when setting `MergeBuildingDamage` to true, which default to `[CombatDamage] -> MergeBuildingDamage`.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+MergeBuildingDamage=false    ; boolean
+
+[SOMEWARHEAD]                ; WarheadType
+MergeBuildingDamage=         ; boolean
+```
+
+```{note}
+- This is different from `CellSpread.MaxAffect`.
+- Due to the rounding of damage, there may be a slight increase in damage.
+```
+
 ### Break Mind Control on impact
 
 ![image](_static/images/remove-mc.gif)
@@ -2249,6 +2320,25 @@ In `rulesmd.ini`:
 RemoveMindControl=false  ; boolean
 ```
 
+### CellSpread enhancement
+
+- In vanilla, the damage area of an AOE warhead is spherical. In some case, e.g. you want to make a warhead superweapon buff all units in an area, the affectted range for air units is always smaller than ground units. Now you can use a new flag `CellSpread.Cylinder` to overcome this problem.
+- `AffectsAir` allow you to make a warhead only damage the units with height more than 208.
+- `AffectsGround` allow you to make a warhead only damage the units with height less than 208.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]              ; WarheadType
+CellSpread.Cylinder=false  ; boolean
+AffectsAir=true            ; boolean
+AffectsGround=true         ; boolean
+```
+
+```{note}
+- These features do not override the effects of the ares flag `DamageAirThreshold`: A warhead with `CellSpread.Cylinder` detonating on floor will not affect units in air, unless it has `DamageAirThreshold=-1`.
+- These will also affect application of Phobos' Warhead effects where relevant. Due to technical constraints Ares' Warhead effects such as EMP and Iron Curtain are excluded.
+```
+
 ### Chance-based extra damage or Warhead detonation / 'critical hits'
 
 - Warheads can now apply additional chance-based damage or Warhead detonation ('critical hits') with the ability to customize chance, damage, affected targets, affected target HP threshold and animations of critical hit.
@@ -2259,7 +2349,7 @@ RemoveMindControl=false  ; boolean
   - `Crit.Warhead.FullDetonation` controls whether or not the Warhead is detonated fully on the targets (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
   - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against. Critical hits cannot affect empty cells or cells containing only TerrainTypes, overlays etc.
   - `Crit.AffectsHouses` can be used to customize houses that this Warhead can deal critical hits against.
-  - `Crit.AffectBelowPercent` and `Crit.AffectsAbovePercent` can be used to set the health percentage that targets must be above and/or below/equal to respectively to be affected by critical hits. If target has zero health left this check is bypassed.
+  - `Crit.AffectBelowPercent` and `Crit.AffectAbovePercent` can be used to set the health percentage that targets must be above and/or below/equal to respectively to be affected by critical hits. If target has zero health left this check is bypassed.
   - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list. If `Crit.AnimList.CreateAll` is set (defaults to `AnimList.CreateAll`), all animations from the list are created.
     - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation. Note that because these animations are independent from `AnimList`, `Crit.AnimList.PickRandom` and `Crit.AnimList.CreateAll` will not default to their `AnimList` counterparts here and need to be explicitly set if needed.
   - `Crit.ActiveChanceAnims` can be used to set animation to be always displayed at the Warhead's detonation coordinates if the current Warhead has a chance to critically hit. If more than one animation is listed, a random one is selected.
@@ -2278,7 +2368,7 @@ Crit.Warhead.FullDetonation=true           ; boolean
 Crit.Affects=all                           ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
 Crit.AffectsHouses=all                     ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 Crit.AffectBelowPercent=1.0                ; floating point value, percents or absolute (0.0-1.0)
-Crit.AffectsAbovePercent=0.0               ; floating point value, percents or absolute (0.0-1.0)
+Crit.AffectAbovePercent=0.0                ; floating point value, percents or absolute (0.0-1.0)
 Crit.AnimList=                             ; List of AnimationTypes
 Crit.AnimList.PickRandom=                  ; boolean
 Crit.AnimList.CreateAll=                   ; boolean
@@ -2607,6 +2697,37 @@ SpawnsCrate(N).Type=     ; Powerup crate type enum (money|unit|healbase|cloak|ex
 SpawnsCrate(N).Weight=1  ; integer
 ```
 
+### Toggle per-target warhead effects apply timing
+
+- Now you can set the following flag to `false` to apply the **Phobos** warhead effects that take effect on each target when taking damage, rather than when the projectiles detonate.
+  - This will allow such effects to be applied through damage without projectiles, including but not limited to damage from particles, vanilla radiation, and Ares' `GenericWarhead` superweapon.
+  - This will also cause all effects that can completely prevent damage to also prevent these warhead effects, including but not limited to `DamageSelf`, `DamageAirThreshold`, `AffectsAllies`, `AffectsAir`.
+  - If you use a warhead with `CellSpread` to damage a building multiple times, then these effects will be applied multiple times. If you don't want this to happen, use [`MergeBuildingDamage`](#allow-merging-aoe-damage-to-buildings-into-one).
+  - The affected effects include:
+    - [Remove mind-control](#break-mind-control-on-impact)
+    - [Type conversion](#convert-technotype-on-impact)
+    - [`BuildingSell` & `BuildingUndeploy`](#sell-or-undeploy-building-on-impact)
+    - [`RemoveDisguise`](#remove-disguise-on-impact)
+    - [`ReverseEngineer`](#reverse-engineer-warhead)
+    - [Modify shield](#shields)
+    - [Modify attach-effects](#attached-effects)
+    - [Critical hits](#chance-based-extra-damage-or-warhead-detonation--critical-hits)
+      - Due to technical reasons, `Crit.SuppressWhenIntercepted=false` and `Crit.ApplyChancePerTarget=true` will forced to be used.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]                        ; WarheadType
+ApplyPerTargetEffectsOnDetonate=true  ; boolean
+
+[SOMEWARHEAD]                         ; WarheadType
+ApplyPerTargetEffectsOnDetonate=      ; boolean, default to [CombatDamage] -> ApplyPerTargetEffectsOnDetonate
+```
+
+```{note}
+- Ares' warhead effects, such as EMP or IronCurtain warhead, will not be affected.
+- Ares' warhead effect controllers, such as `EffectsRequireDamage`, only affect Ares' effects. So they have nothing to do with this.
+```
+
 ### Trigger specific NotHuman infantry Death anim sequence
 
 - Warheads are now able to trigger specific `NotHuman=yes` infantry `Death` anim sequence using the corresponding tag. It's value represents sequences from `Die1` to `Die5`.
@@ -2728,21 +2849,59 @@ DelayedFire.OnlyOnInitialBurst=false   ; boolean
 AircraftTypes, due to their different attack patterns, will not wait for the delay to expire before attempting to fire and will instead continue without firing if the delay is too long.
 ```
 
+### Extra range
+
+- Now you can adjust weapon's range when the firer or target are under specific conditions. Only work during the attack process and cannot affect other behaviors such as path finding.
+- `ExtraRange.TargetMoving` grants the weapon extra range when the target is in a moving state.
+  - `ExtraRange.TargetMoving.CloseRangeOnly` is used to restrict whether the global default value only applies to units with `CloseRange=yes`.
+- `ExtraRange.FirerMoving` grants the weapon extra range when the firer is in a moving state.
+- `ExtraRange.Prefiring` grants the weapon extra range when the firer is in a pre-firing state, including:
+    - Vehicles with tags such as `FiringSyncFrame%d`.
+    - Aircraft that are firing.
+    - Buildings with tags such as `IsAnimDelayedFire`.
+    - Infantry with tags such as `FireUp`.
+    - Any unit with [`DelayedFire`](#delayed-firing).
+  - `ExtraRange.Prefiring.IncludeBurst` is used to decide whether the execution of burst is considered as being in a pre-firing state.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ExtraRange.TargetMoving=0.0                     ; float, range in cells
+ExtraRange.TargetMoving.CloseRangeOnly=false    ; boolean
+ExtraRange.FirerMoving=0.0                      ; float, range in cells
+ExtraRange.Prefiring=0.0                        ; float, range in cells
+ExtraRange.Prefiring.IncludeBurst=true          ; boolean
+
+[SOMEWEAPON]                                    ; WeaponType
+ExtraRange.TargetMoving=                        ; float, range in cells, the default values refer to the descriptions above
+ExtraRange.FirerMoving=                         ; float, range in cells, default to [General] -> ExtraRange.FirerMoving
+ExtraRange.Prefiring=                           ; float, range in cells, default to [General] -> ExtraRange.Prefiring
+ExtraRange.Prefiring.IncludeBurst=              ; boolean, default to [General] -> ExtraRange.Prefiring.IncludeBurst
+```
+
+```{note}
+- In vanilla, melee units have difficulty attacking enemies that are moving away, even if they have a slightly higher speed than their targets. This is because the game's pathfinding algorithm searches for a firing position in units of cells, which creates an unacceptable error for melee units, causing the targets to move out of range before they can get close.
+- Units with various forms of pre-firing behavior have similar problems. The target may move out of range before they fire.
+- This feature can solve the above issues.
+```
+
 ### Extra warhead detonations
 
 - It is now possible to have same weapon detonate multiple Warheads on impact by listing `ExtraWarheads`. The warheads are detonated at same location as the main one, after it in listed order. This only works in cases where a projectile has been fired by a weapon and still remembers it when it is detonated (due to currently existing technical limitations, this excludes `AirburstWeapon`).
   - `ExtraWarheads.DamageOverrides` can be used to override the weapon's `Damage` for the extra Warhead detonations. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, WeaponType `Damage` is used.
   - `ExtraWarheads.DetonationChances` can be used to customize the chance of each extra Warhead detonation occuring. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, every extra Warhead detonation is guaranteed to occur.
   - `ExtraWarheads.FullDetonation` can be used to customize whether or not each individual Warhead is detonated fully (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, defaults to true.
+  - `ExtraWarheads.ApplyFirepowerMult` determines whether or not the extra warheads' damage should multiply the firer's firepower multipliers. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, every extra Warhead detonation is guaranteed to occur.
   - Note that the listed Warheads must be listed in `[Warheads]` for them to work.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]                      ; WeaponType
-ExtraWarheads=                    ; List of WarheadTypes
-ExtraWarheads.DamageOverrides=    ; List of integers
-ExtraWarheads.DetonationChances=  ; List of floating-point values (percentage or absolute)
-ExtraWarheads.FullDetonation=     ; List of booleans
+[SOMEWEAPON]                        ; WeaponType
+ExtraWarheads=                      ; List of WarheadTypes
+ExtraWarheads.DamageOverrides=      ; List of integers
+ExtraWarheads.DetonationChances=    ; List of floating-point values (percentage or absolute)
+ExtraWarheads.FullDetonation=       ; List of booleans
+ExtraWarheads.ApplyFirepowerMult=   ; List of booleans
 ```
 
 ### Auxiliary weapon
@@ -2754,7 +2913,7 @@ ExtraWarheads.FullDetonation=     ; List of booleans
   - `FireInTransport` setting of the auxiliary weapons are respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If auxiliary weapons are fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on auxiliary weapons.
 - `AuxWeapon` is fired at the original target, or another nearby target if `AuxWeapon.Retarget` set to true.
   - `AuxWeapon.Offset` defines the relative position to the firer that the auxiliary weapon will be fired from. `AuxWeapon.FireOnTurret` defines if the FLH is relative to the turret rather than the body.
-  - If `AuxWeapon.AllowZeroDamage` set to true, the auxiliary weapon will be fired even if its damage on the set target is 0.
+  - `AuxWeapon.UseWeaponTargeting`, if set to true, enables weapon targeting filter for when checking targets for auxiliary weapon. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `AirburstWeapon` [weapon targeting filters](New-or-Enhanced-Logics.md#weapon-targeting-filter) & [AttachEffect filters](New-or-Enhanced-Logics.md#attached-effects) will be checked.
   - `AuxWeapon.ApplyFirepowerMult` determines whether or not the auxiliary weapon's damage should multiply the firer's firepower multipliers.
   - `AuxWeapon.Retarget.AroundFirer` determines whether the original target or the firer will be the center of the retargeting. `AuxWeapon.Retarget.Range` determines the radius of the retargeting, default to the auxiliary weapon's `Range` if the center is the firer, and 0 if the center is the original target.
   - `AuxWeapon.Retarget.Accuracy` defines the probability that the auxiliary weapon is fired to the original target.
@@ -2766,7 +2925,7 @@ In `rulesmd.ini`:
 AuxWeapon=                                ; WeaponType
 AuxWeapon.Offset=0,0,0                    ; integer - Forward,Lateral,Height
 AuxWeapon.FireOnTurret=false              ; boolean
-AuxWeapon.AllowZeroDamage=true            ; boolean
+AuxWeapon.UseWeaponTargeting=false        ; boolean
 AuxWeapon.ApplyFirepowerMult=true         ; boolean
 AuxWeapon.Retarget=false                  ; boolean
 AuxWeapon.Retarget.Range=                 ; integer
