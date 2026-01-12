@@ -3,6 +3,7 @@
 #include "NewSWType/NewSWType.h"
 
 SWTypeExt::ExtContainer SWTypeExt::ExtMap;
+SuperClass* SWTypeExt::CurrentAIEvaluatedSW = nullptr;
 
 void SWTypeExt::Initialize()
 {
@@ -24,6 +25,13 @@ void SWTypeExt::Serialize(T& Stm)
 		.Process(this->EVA_Impatient)
 		.Process(this->EVA_InsufficientFunds)
 		.Process(this->EVA_SelectTarget)
+		.Process(this->SW_AITargeting_PsyDom_SkipChecks)
+		.Process(this->SW_AITargeting_PsyDom_AllowAir)
+		.Process(this->SW_AITargeting_PsyDom_AllowInvulnerable)
+		.Process(this->SW_AITargeting_PsyDom_AllowTypes)
+		.Process(this->SW_AITargeting_PsyDom_DisallowTypes)
+		.Process(this->SW_AITargeting_Random_SnapOnDesignators)
+		.Process(this->SW_AITargeting_Random_PickFirstDesignator)
 		.Process(this->SW_UseAITargeting)
 		.Process(this->SW_AutoFire)
 		.Process(this->SW_ManualFire)
@@ -48,6 +56,8 @@ void SWTypeExt::Serialize(T& Stm)
 		.Process(this->SW_PostDependent)
 		.Process(this->SW_MaxCount)
 		.Process(this->SW_Shots)
+		.Process(this->SW_AIRequiresTarget)
+		.Process(this->SW_AIRequiresHouse)
 		.Process(this->Message_CannotFire)
 		.Process(this->Message_InsufficientFunds)
 		.Process(this->Message_ColorScheme)
@@ -122,6 +132,13 @@ void SWTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->EVA_Impatient.Read(exINI, pSection, "EVA.Impatient");
 	this->EVA_InsufficientFunds.Read(exINI, pSection, "EVA.InsufficientFunds");
 	this->EVA_SelectTarget.Read(exINI, pSection, "EVA.SelectTarget");
+	this->SW_AITargeting_PsyDom_SkipChecks.Read(exINI, pSection, "SW.AITargeting.PsyDom.SkipChecks");
+	this->SW_AITargeting_PsyDom_AllowAir.Read(exINI, pSection, "SW.AITargeting.PsyDom.AllowAir");
+	this->SW_AITargeting_PsyDom_AllowInvulnerable.Read(exINI, pSection, "SW.AITargeting.PsyDom.AllowInvulnerable");
+	this->SW_AITargeting_PsyDom_AllowTypes.Read(exINI, pSection, "SW.AITargeting.PsyDom.AllowTypes");
+	this->SW_AITargeting_PsyDom_DisallowTypes.Read(exINI, pSection, "SW.AITargeting.PsyDom.DisallowTypes");
+	this->SW_AITargeting_Random_SnapOnDesignators.Read(exINI, pSection, "SW.AITargeting.Random.SnapOnDesignators");
+	this->SW_AITargeting_Random_PickFirstDesignator.Read(exINI, pSection, "SW.AITargeting.Random.PickFirstDesignator");
 	this->SW_UseAITargeting.Read(exINI, pSection, "SW.UseAITargeting");
 	this->SW_AutoFire.Read(exINI, pSection, "SW.AutoFire");
 	this->SW_ManualFire.Read(exINI, pSection, "SW.ManualFire");
@@ -146,6 +163,8 @@ void SWTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_PostDependent.Read(exINI, pSection, "SW.PostDependent");
 	this->SW_MaxCount.Read(exINI, pSection, "SW.MaxCount");
 	this->SW_Shots.Read(exINI, pSection, "SW.Shots");
+	this->SW_AIRequiresTarget.Read(exINI, pSection, "SW.AIRequiresTarget");
+	this->SW_AIRequiresHouse.Read(exINI, pSection, "SW.AIRequiresHouse");
 
 	this->Message_CannotFire.Read(exINI, pSection, "Message.CannotFire");
 	this->Message_InsufficientFunds.Read(exINI, pSection, "Message.InsufficientFunds");
