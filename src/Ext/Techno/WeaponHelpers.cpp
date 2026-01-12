@@ -269,7 +269,7 @@ void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, Warhea
 			if (onFirer)
 			{
 				if (realLaunch)
-					RealLaunch(pWeapon, pSource, pSource, true, pThis);
+					TechnoExt::RealLaunch(pWeapon, pSource, pSource, true, pThis);
 				else
 					WeaponTypeExt::DetonateAt(pWeapon, pSource, pSource);
 			}
@@ -309,11 +309,11 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 
 	if (pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThisOwner, pSourceOwner))
 	{
-		if (!pWHExt->SuppressRevengeWeapons || (hasFilters && !pWHExt->SuppressRevengeWeapons_Types.Contains(pTypeExt->RevengeWeapon))
-			&& TechnoExt::IsAllowedSplitsTarget(pThis, pThisOwner, pTypeExt->RevengeWeapon, pSource, pTypeExt->RevengeWeapon_UseWeaponTargeting))
+		if ((!pWHExt->SuppressRevengeWeapons || (hasFilters && !pWHExt->SuppressRevengeWeapons_Types.Contains(pTypeExt->RevengeWeapon)))
+			&& TechnoExt::IsAllowedSplitsTarget(pThis, pThisOwner, pTypeExt->RevengeWeapon, pSource, pTypeExt->RevengeWeapon_UseWeaponTargeting, false))
 		{
 			if (pTypeExt->RevengeWeapon_RealLaunch)
-				RealLaunch(pTypeExt->RevengeWeapon, pThis, pSource);
+				TechnoExt::RealLaunch(pTypeExt->RevengeWeapon, pThis, pSource);
 			else
 				WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
 		}
@@ -337,7 +337,7 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 			auto const pInvoker = attachEffect->GetInvoker();
 
 			if (pInvoker && EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pInvoker->Owner, pSource->Owner)
-				&& TechnoExt::IsAllowedSplitsTarget(pInvoker, pInvoker->Owner, pType->RevengeWeapon, pSource, pType->RevengeWeapon_UseWeaponTargeting))
+				&& TechnoExt::IsAllowedSplitsTarget(pInvoker, pInvoker->Owner, pType->RevengeWeapon, pSource, pType->RevengeWeapon_UseWeaponTargeting, false))
 			{
 				if (pType->RevengeWeapon_RealLaunch)
 					TechnoExt::RealLaunch(pType->RevengeWeapon, pInvoker, pSource);
@@ -346,7 +346,7 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 			}
 		}
 		else if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThisOwner, pSourceOwner)
-			&& TechnoExt::IsAllowedSplitsTarget(pThis, pThisOwner, pType->RevengeWeapon, pSource, pType->RevengeWeapon_UseWeaponTargeting))
+			&& TechnoExt::IsAllowedSplitsTarget(pThis, pThisOwner, pType->RevengeWeapon, pSource, pType->RevengeWeapon_UseWeaponTargeting, false))
 		{
 			if (pType->RevengeWeapon_RealLaunch)
 				TechnoExt::RealLaunch(pType->RevengeWeapon, pThis, pSource);
@@ -415,7 +415,7 @@ int TechnoExt::ExtData::ApplyForceWeaponInRange(AbstractClass* pTarget)
 	return forceWeaponIndex;
 }
 
-bool TechnoExt::IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, WeaponTypeClass* pWeapon, TechnoClass* pTarget, bool useWeaponTargeting)
+bool TechnoExt::IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, WeaponTypeClass* pWeapon, TechnoClass* pTarget, bool useWeaponTargeting, bool useWarheadTargeting)
 {
 	auto const pWH = pWeapon->Warhead;
 
@@ -430,7 +430,8 @@ bool TechnoExt::IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, 
 
 		if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTarget->Owner)
 			|| !EnumFunctions::IsCellEligible(pTarget->GetCell(), pWeaponExt->CanTarget, true, true)
-			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget))
+			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget)
+			|| !pWeaponExt->IsHealthInThreshold(pTarget))
 		{
 			return false;
 		}
@@ -438,9 +439,11 @@ bool TechnoExt::IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, 
 		if (!pWeaponExt->HasRequiredAttachedEffects(pTarget, pSource))
 			return false;
 	}
-	else
+	else if (useWarheadTargeting)
 	{
-		if (!WarheadTypeExt::ExtMap.Find(pWH)->CanTargetHouse(pOwner, pTarget))
+		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+		if (!pWHExt->CanTargetHouse(pOwner, pTarget) || !pWHExt->IsHealthInThreshold(pTarget))
 			return false;
 	}
 
@@ -614,7 +617,7 @@ void TechnoExt::ExtData::ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractCla
 		{
 			if (pTechno->IsInPlayfield && pTechno->IsOnMap && pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo && pTechno != pThis)
 			{
-				if ((pAuxWeapon->Projectile->AA || !pTechno->IsInAir()) && TechnoExt::IsAllowedSplitsTarget(pThis, pThis->Owner, pAuxWeapon, pTechno, true))
+				if ((pAuxWeapon->Projectile->AA || !pTechno->IsInAir()) && TechnoExt::IsAllowedSplitsTarget(pThis, pThis->Owner, pAuxWeapon, pTechno, useWeaponTargeting))
 					targets.push_back(pTechno);
 			}
 		}
