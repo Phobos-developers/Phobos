@@ -288,3 +288,21 @@ DEFINE_HOOK(0x53B276, PsyDom_Fire_Select, 0x6)
 
 	return SkipGameCode;
 }
+
+// Only used if Ares is not available.
+DEFINE_HOOK(0x509952, HouseClass_SuperWeapon_AI_Set, 0x6)
+{
+	GET(SuperClass*, pSuper, EAX);
+
+	SWTypeExt::CurrentAIEvaluatedSW = pSuper;
+
+	return 0;
+}
+
+// Only used if Ares is not available.
+DEFINE_HOOK(0x509AD2, HouseClass_SuperWeapon_AI_Unset, 0x6)
+{
+	SWTypeExt::CurrentAIEvaluatedSW = nullptr;
+
+	return 0;
+}

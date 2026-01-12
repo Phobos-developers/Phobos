@@ -337,3 +337,181 @@ SuperClass* __stdcall SWTypeExt::IsSuperAvailable(int swIdx, HouseClass* pHouse)
 
 	return nullptr;
 }
+
+// Replaces Ares Psychic Dominator SW target eligibility checks if Ares is present.
+bool SWTypeExt::EligibleTargetForPsyDomSW(TechnoClass* pTechno)
+{
+	auto const pTechnoType = pTechno->GetTechnoType();
+
+	// Always ignore Insignificant or civilian-house owned targets - change from Ares and vanilla behaviour.
+	if (pTechnoType->Insignificant || pTechno->Owner->Type->MultiplayPassive)
+		return false;
+
+	if (auto const pSuper = SWTypeExt::CurrentAIEvaluatedSW)
+	{
+		auto const pTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+		auto const pOwner = pSuper->Owner;
+		auto const pTargetHouse = pTechno->Owner;
+
+		// If SW.AIRequiresHouse is explicitly set use that instead of restricting to enemies only.
+		if (pTypeExt->SW_AIRequiresHouse.isset())
+		{
+			if (!EnumFunctions::CanTargetHouse(pTypeExt->SW_AIRequiresHouse, pOwner, pTargetHouse))
+				return false;
+		}
+		else if (pOwner->IsAlliedWith(pTargetHouse))
+		{
+			return false;
+		}
+
+		// If SW.AIRequiresTarget is explicitly set check that here as well.
+		if (pTypeExt->SW_AIRequiresTarget.isset() && !EnumFunctions::IsTechnoEligible(pTechno, pTypeExt->SW_AIRequiresTarget))
+			return false;
+
+		if (pTypeExt->SW_AITargeting_PsyDom_AllowTypes.size() > 0 && !pTypeExt->SW_AITargeting_PsyDom_AllowTypes.Contains(pTechnoType))
+			return false;
+
+		if (pTypeExt->SW_AITargeting_PsyDom_DisallowTypes.size() > 0 && pTypeExt->SW_AITargeting_PsyDom_DisallowTypes.Contains(pTechnoType))
+			return false;
+
+		// Skip normal MC immunity etc. checks and only check air & invulnerability separately with toggles to turn them off.
+		if (pTypeExt->SW_AITargeting_PsyDom_SkipChecks)
+		{
+			if (pTechno->IsInAir() && !pTypeExt->SW_AITargeting_PsyDom_AllowAir)
+				return false;
+
+			if (pTechno->IsIronCurtained() && !pTypeExt->SW_AITargeting_PsyDom_AllowInvulnerable)
+				return false;
+
+			return true;
+		}
+	}
+
+	return pTechno->CanBePermaMindControlled();
+}
+
+// Override Ares' SW AI targeting behaviour based in AI targeting type or whatever else.
+bool SWTypeExt::HandleAITargetingOverrides(SuperClass* pSuper, SuperWeaponAITargetingMode aiTargetingType, CellStruct& targetCell, bool& isSuccessful)
+{
+	// Fix LightningRandom behaving suboptimally with explicit Designators.
+	if (aiTargetingType == SuperWeaponAITargetingMode::LightningRandom)
+	{
+		auto const pTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+
+		if (pTypeExt->SW_AITargeting_Random_SnapOnDesignators)
+			return pTypeExt->PickDesignatorCell(pSuper->Owner, pTypeExt->SW_AITargeting_Random_PickFirstDesignator, targetCell, isSuccessful);
+	}
+
+	return false;
+}
+
+// Overrides target cell with a cell of designator or one in designator range not affected by inhibitor.
+bool SWTypeExt::ExtData::PickDesignatorCell(HouseClass* pOwner, bool pickFirst, CellStruct& targetCell, bool& isSuccessful) const
+{
+	if (!this->SW_Designators.empty())
+	{
+		std::vector<TechnoClass*> inhibited;
+		std::vector<CellStruct> designatorCells;
+
+		// Evaluate technos for designators.
+		for (auto* pTechno : TechnoClass::Array)
+		{
+			if (this->IsDesignator(pOwner, pTechno))
+			{
+				auto const cell = pTechno->GetMapCoords();
+
+				if (this->HasInhibitor(pOwner, cell))
+				{
+					inhibited.push_back(pTechno); // Designator is in inhibitor range, defer evaluation.
+				}
+				else
+				{
+					// Bail out early if we're picking first match.
+					if (pickFirst)
+					{
+						targetCell = cell;
+						isSuccessful = true;
+						return true;
+					}
+
+					designatorCells.push_back(cell);
+				}
+			}
+		}
+
+		// Pick random cell from found designators.
+		if (!designatorCells.empty())
+		{
+			int index = ScenarioClass::Instance->Random.RandomRanged(0, designatorCells.size() - 1);
+			targetCell = designatorCells[index];
+			isSuccessful = true;
+			return true;
+		}
+
+		// Evaluate designators in inhibitor range.
+		if (!inhibited.empty())
+		{
+			// Scramble list of designators if we're not always picking first one.
+			if (!pickFirst)
+			{
+				size_t n = inhibited.size();
+
+				for (size_t i = n - 1; i > 0; --i)
+				{
+					size_t j = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(i));
+					std::swap(inhibited[i], inhibited[j]);
+				}
+			}
+
+			// Find first cell not within inhibitor range but still within designator's range.
+			for (auto const* pTechno : inhibited)
+			{
+				auto cell = pTechno->GetMapCoords();
+				auto const pType = pTechno->GetTechnoType();
+				auto const pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+				short maxDistance = static_cast<short>(pTechnoTypeExt->DesignatorRange.Get(pType->Sight) + 0.5);
+
+				for (short dist = 1; dist <= maxDistance; ++dist)
+				{
+					for (short dx = -dist; dx <= dist; ++dx)
+					{
+						for (int sign : {-1, 1})
+						{
+							short x = cell.X + dx;
+							short y = cell.Y + static_cast<short>(sign) * dist;
+
+							if (!this->HasInhibitor(pOwner, { x, y }))
+							{
+								targetCell = { x, y };
+								isSuccessful = true;
+								return true;
+							}
+						}
+					}
+
+					for (short dy = -dist + 1; dy <= dist - 1; ++dy)
+					{
+						for (int sign : {-1, 1})
+						{
+							short x = cell.X + static_cast<short>(sign) * dist;
+							short y = cell.Y + dy;
+
+							if (!this->HasInhibitor(pOwner, { x, y }))
+							{
+								targetCell = { x, y };
+								isSuccessful = true;
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		targetCell = CellStruct::Empty;
+		isSuccessful = false;
+		return true;
+	}
+
+	return false;
+}

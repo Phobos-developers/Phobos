@@ -883,12 +883,13 @@ HideShakeEffects=false           ; boolean
 - Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic (by Noble_Fish)
 - `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 (by Starkku)
 - Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter` (by Noble_Fish)
+- `SW.AITargeting=PsychicDominator` superweapons now ignore `Insignificant=true` as well as owned by `MultiplayPassive=true` house targets (by Starkku)
+- [Additional customizations for certain AI superweapon targeting modes](New-or-Enhanced-Logics.md#ai-superweapon-targeting-customizations) (by Starkku)
 ```
 
 ```{dropdown} Pre-release changes
 
 #### 0.5-alpha1
-
 ```
 
 ### 0.4.0.3

@@ -13,6 +13,7 @@
 #include <Ext/Rules/Body.h>
 
 #include <New/Entity/Ares/RadarJammerClass.h>
+#include <Utilities/AresFunctions.h>
 
 // Remember that we still don't fix Ares "issues" a priori. Extensions as well.
 // Patches presented here are exceptions rather that the rule. They must be short, concise and correct.
@@ -253,6 +254,24 @@ DEFINE_HOOK(0x440580, BuildingClass_Unlimbo_UnitDeliveryFix, 0x5)
 	return 0;
 }
 
+static AresSWTargetResult* __stdcall PickSuperWeaponTarget(AresSWTargetResult* result, AresSWTargetInfo* info)
+{
+	SWTypeExt::CurrentAIEvaluatedSW = info->SW;
+	auto const aiTargetingType = *(SuperWeaponAITargetingMode*)((char*)info->Ext + 0x210); // Ares' SW.AITargetingType
+
+	if (SWTypeExt::HandleAITargetingOverrides(info->SW, aiTargetingType, result->TargetCell, result->WasSuccessful))
+		return result;
+
+	result = AresFunctions::PickSuperWeaponTarget(result, info);
+	SWTypeExt::CurrentAIEvaluatedSW = nullptr;
+	return result;
+}
+
+static bool __fastcall CanBePermaMindControlled(TechnoClass* pTechno)
+{
+	return SWTypeExt::EligibleTargetForPsyDomSW(pTechno);
+}
+
 _GET_FUNCTION_ADDRESS(RadarJammerClass::Update, AresRadarJammerClass_Update_GetAddr)
 
 static DWORD _cdecl AresPreventScatter_Override(REGISTERS* R)
@@ -383,6 +402,15 @@ void Apply_Ares3_0_Patches()
 
 	// Ares' `KeepAlive` adds global tags.
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x21F70, GET_OFFSET(AresHouseExt_UpdateKeepAlive));
+
+	// Redirect Ares' SW target picker to our wrapper.
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x38356, &PickSuperWeaponTarget);
+
+	// Redirect Ares' Psychic Dominator target evaluation checks to our wrapper.
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x38177, &CanBePermaMindControlled);
+
+	// Skip checking house alliances in Ares' Psychic Dominator target evaluation checks, check them elsewhere later.
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x38137, AresHelper::AresBaseAddress + 0x38175);
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -504,4 +532,13 @@ void Apply_Ares3_0p1_Patches()
 
 	// Ares' `KeepAlive` adds global tags.
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x229F0, GET_OFFSET(AresHouseExt_UpdateKeepAlive));
+
+	// Redirect Ares' SW target picker to our wrapper.
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x38DF6, &PickSuperWeaponTarget);
+
+	// Redirect Ares' Psychic Dominator target evaluation checks to our wrapper.
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x38C17, &CanBePermaMindControlled);
+
+	// Skip checks in Ares' Psychic Dominator target evaluation checks, check them elsewhere later.
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x38BD7, AresHelper::AresBaseAddress + 0x38C15);
 }
