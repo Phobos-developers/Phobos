@@ -477,9 +477,8 @@ New:
 - [Allow customizing whether to synchronously change the owner of the RadioLink-linked units when the owner of a building changes](Fixed-or-Improved-Logics.md#custom-whether-to-synchronously-change-the-owner-of-the-radiolink-linked-units-when-the-owner-of-a-building-changes) (by TaranDahl)
 - [Toggle per-target warhead effects apply timing](New-or-Enhanced-Logics.md#toggle-per-target-warhead-effects-apply-timing) (by TaranDahl)
 - [Extra range for chasing and pre-firing](New-or-Enhanced-Logics.md#extra-range) (by TaranDahl)
-- Allow techno type considered as other type when recruiting techno for teams (by NetsuNegi)
+- [Allow techno type considered as other type when recruiting techno for teams](Fixed-or-Improved-Logics.md#allow-techno-type-considered-as-other-type-when-recruiting-techno-for-teams) (by NetsuNegi)
 - Map Action [`511` Undeploy Building to Waypoint](AI-Scripting-and-Mapping.md#undeploy-building-to-waypoint), [`609` Set Radar Mode](AI-Scripting-and-Mapping.md#set-radar-mode), [`610` Set house's `TeamDelays` value](AI-Scripting-and-Mapping.md#set-house-s-teamdelays-value) (by FlyStar)
-- Fixed an issue that rockets do not consider the destination altitude during climbing (by TaranDahl)
 - Attached effect attach/discard by health (by Ollerus)
 - Attached effect with `ExtraWarheads`, `KillWeapon` and `FeedbackWeapon` (by Ollerus)
 - [AuxWeapon](New-or-Enhanced-Logics.md#auxiliary-weapon) (by Ollerus)
@@ -526,6 +525,8 @@ Vanilla fixes:
 - Fixed a bug where units can be promoted when created via trigger actions even if they have `Trainable=false` (by NetsuNegi)
 - Fixed the bug that ai will try to product aircraft even the airport has no free dock for it (by NetsuNegi)
 - Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units (by TaranDahl)
+- Fixed an issue that rockets do not consider the destination altitude during climbing (by TaranDahl)
+- Fixed the bug that if object has been removed from LogicClass in Update(), next object will be skip (by NetsuNegi)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -551,6 +552,7 @@ Phobos fixes:
 - Map Event 601 should return true only when exists in the map like other similar map events (by FS-21)
 - Fixed OverlayType `ZAdjust` as well as some shield & AttachEffect variables not being correctly saved & loaded (by Ollerus)
 - LimboDelivery buildings cannot be selected (by FlyStar)
+- Fixed the positive value of `Reveal` on warhead (by NetsuNegi)
 
 Fixes / interactions with other extensions:
 <!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->

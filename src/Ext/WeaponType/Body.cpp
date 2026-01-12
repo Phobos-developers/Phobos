@@ -87,7 +87,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->Bolt_Disable[idx].Read(exINI, pSection, tempBuffer);
 	}
 
-	this->Bolt_ParticleSystem.Read(exINI, pSection, "Bolt.ParticleSystem");
+	this->Bolt_ParticleSystem.Read<false, true>(exINI, pSection, "Bolt.ParticleSystem");
 	this->Bolt_Arcs.Read(exINI, pSection, "Bolt.Arcs");
 	this->Bolt_Duration.Read(exINI, pSection, "Bolt.Duration");
 	this->Bolt_FollowFLH.Read(exINI, pSection, "Bolt.FollowFLH");
