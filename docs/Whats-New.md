@@ -2091,6 +2091,8 @@ HideShakeEffects=false           ; boolean
 - Fixed an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed (by FlyStar)
 - [Ares' Chrono Prisons / Abductors Expansion](Fixed-or-Improved-Logics.md#ares-chrono-prisons-abductors-expansion) (by FlyStar)
 - [Allow Ares Academy add country-level filters](New-or-Enhanced-Logics.md#allow-ares-academy-add-country-level-filters) (by dh381)
+- `SW.AITargeting=PsychicDominator` superweapons now ignore `Insignificant=true` as well as owned by `MultiplayPassive=true` house targets (by Starkku)
+- [Additional customizations for certain AI superweapon targeting modes](New-or-Enhanced-Logics.md#ai-superweapon-targeting-customizations) (by Starkku)
 ```
 
 ### 0.5
@@ -2556,7 +2558,6 @@ HideShakeEffects=false           ; boolean
 - Fixed a bug caused by spotlights and transports interacting (by Noble_Fish)
 
 #### 0.5-alpha1
-
 ```
 
 ### 0.4.0.3
