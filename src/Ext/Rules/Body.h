@@ -303,6 +303,8 @@ public:
 		Valueable<bool> ExtraRange_Prefiring_IncludeBurst;
 		
 		Valueable<bool> ApplyPerTargetEffectsOnDetonate;
+
+		Valueable<bool> ExtendedHealthBarDrawing;
 		
 		Valueable<bool> AutoTarget_NoThreatBuildings;
 		Valueable<bool> AutoTargetAI_NoThreatBuildings;
@@ -570,6 +572,7 @@ public:
 			, DefaultToGuardArea { false }
 			
 			, CylinderRangefinding { false }
+			, ExtendedHealthBarDrawing { false }
 		{ }
 
 		virtual ~ExtData() = default;

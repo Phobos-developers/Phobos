@@ -1660,6 +1660,18 @@ RateDown.Cover.Value=0        ; integer
 RateDown.Cover.AmmoBelow=-2   ; integer
 ```
 
+### Extended health bar drawing logic
+
+- In vanilla, the algorithm used for drawing the health bar is very crude, with problems of insufficient accuracy and incorrect boundary handling. 
+- You can now enable a new way of drawing the health bar through the following flag.
+  - The new logic will draw the last pip of the health bar with a transparency fade.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+ExtendedHealthBarDrawing=false  ; boolean
+```
+
 ### Firing offsets for specific Burst shots
 
 - You can now specify separate firing offsets for each of the shots fired by weapon with `Burst` via using `(Elite)(Prone/Deployed)PrimaryFire|SecondaryFire|WeaponX|FLH.BurstN` keys, depending on which weapons your TechnoType makes use of. *N* in `BurstN` is zero-based burst shot index, and the values are parsed sequentially until no value for either regular or elite weapon is present, with elite weapon defaulting to regular weapon FLH if only it is missing. If no burst-index specific value is available, value from the base key (f.ex `PrimaryFireFLH`) is used.

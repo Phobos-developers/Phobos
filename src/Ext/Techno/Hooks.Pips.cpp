@@ -133,6 +133,102 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_Units, 0x7)
 	return 0;
 }
 
+#pragma region ExtendedHealthBarDrawing
+
+int GetPipCount(double healthPercent, int maxCount)
+{
+	int pipCount = (int)std::floor(healthPercent * maxCount);
+	double healthPercentPerPip = 1.0 / maxCount;
+	double lastPipHealthPercent = healthPercent - healthPercentPerPip * pipCount;
+	int lastPipPercent = (int)(std::round(100 * (lastPipHealthPercent / healthPercentPerPip)));
+	if (lastPipPercent >= 25)
+		pipCount += 1;
+	return std::clamp(pipCount, 0, maxCount);
+}
+
+BlitterFlags GetTranslucency(double healthPercent, int maxCount)
+{
+	double healthPercentPerPip = 1.0 / maxCount;
+	double pipHealthPercent = healthPercent - healthPercentPerPip * (GetPipCount(healthPercent, maxCount) - 1);
+	pipHealthPercent = std::clamp(pipHealthPercent, 0.0, healthPercentPerPip);
+	int pipPercent = (int)(std::round(100 * (pipHealthPercent / healthPercentPerPip)));
+	BlitterFlags flags = BlitterFlags::None;
+
+	if (pipPercent == 100)
+		flags |= BlitterFlags::None;
+	else if (pipPercent >= 75)
+		flags |= BlitterFlags::TransLucent25;
+	else if (pipPercent >= 50)
+		flags |= BlitterFlags::TransLucent50;
+	else if (pipPercent >= 25)
+		flags |= BlitterFlags::TransLucent75;
+	else
+		Debug::Log("Health bar pip drawing translucency calculation incorrect.\n");
+
+	return flags;
+}
+
+DEFINE_HOOK(0x6F6604, TechnoClass_DrawHealthBar_PipCount1, 0x6)
+{
+	if (!RulesExt::Global()->ExtendedHealthBarDrawing)
+		return 0;
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(const int, maxCount, EBX);
+
+	int pipCount = GetPipCount(pThis->GetHealthPercentage(), maxCount);
+	R->EBP(pipCount);
+	R->Stack(STACK_OFFSET(0x4C, -0x3C), pipCount);
+	return 0;
+}
+
+DEFINE_HOOK(0x6F69A7, TechnoClass_DrawHealthBar_PipCount2, 0xA)
+{
+	if (!RulesExt::Global()->ExtendedHealthBarDrawing)
+		return 0;
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(const int, maxCount, EBX);
+
+	int pipCount = GetPipCount(pThis->GetHealthPercentage(), maxCount);
+	R->Stack(STACK_OFFSET(0x4C, 0x4), pipCount);
+	return 0;
+}
+
+DEFINE_HOOK(0x6F66A1, TechnoClass_DrawHealthBar_DrawPip1, 0x5)
+{
+	if (!RulesExt::Global()->ExtendedHealthBarDrawing)
+		return 0;
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(const int, maxCount, EBX);
+	GET_STACK(int, pipIdx, STACK_OFFSET(0x74, -0x34));
+	REF_STACK(BlitterFlags, flags, 0);
+
+	if (pipIdx == 1)
+		flags |= GetTranslucency(pThis->GetHealthPercentage(), maxCount);
+	return 0;
+}
+
+DEFINE_HOOK(0x6F6A31, TechnoClass_DrawHealthBar_DrawPip2, 0x5)
+{
+	if (!RulesExt::Global()->ExtendedHealthBarDrawing)
+		return 0;
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(const int, pipIdx, EBX);
+	REF_STACK(BlitterFlags, flags, 0);
+
+	double healthPercent = pThis->GetHealthPercentage();
+	int maxCount = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
+
+	if (pipIdx == GetPipCount(healthPercent, maxCount) - 1)
+		flags |= GetTranslucency(healthPercent, maxCount);
+	return 0;
+}
+
+#pragma endregion
+
 DEFINE_HOOK(0x6F534E, TechnoClass_DrawExtras_Insignia, 0x5)
 {
 	enum { SkipGameCode = 0x6F5388 };
