@@ -19,7 +19,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v6
+        with:
+            fetch-depth: 0
       - name: Check that Changelog has been updated
         run: |
           # Check that Changelog has been updated
@@ -40,7 +42,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v6
+        with:
+            fetch-depth: 0
       - name: Check that Credits List has been updated
         run: |
           # Check that Credits List has been updated
@@ -61,7 +65,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v6
+        with:
+            fetch-depth: 0
       - name: Check that Documentation has been updated
         run: |
           # Check that Documentation has been updated

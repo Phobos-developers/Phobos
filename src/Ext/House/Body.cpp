@@ -682,6 +682,9 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceEnemyIndex)
 		.Process(this->ForceOnlyTargetHouseEnemy)
 		.Process(this->ForceOnlyTargetHouseEnemyMode)
+		.Process(this->TeamDelay)
+		.Process(this->FreeRadar)
+		.Process(this->ForceRadar)
 		;
 }
 

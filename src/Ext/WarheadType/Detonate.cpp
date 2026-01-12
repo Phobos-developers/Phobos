@@ -69,7 +69,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			if ((pHouse->IsControlledByCurrentPlayer() || pHouse->IsAlliedWith(pCurrent)) && !pCurrent->Defeated && !pCurrent->Visionary)
 			{
 				Sub_4ADEE0(0, 0);
-				MapClass::Instance.RevealArea2(const_cast<CoordStruct*>(&coords), reveal, pHouse, 0, 0, 0, 0, 1);
+				MapClass::Instance.RevealArea2(const_cast<CoordStruct*>(&coords), reveal, pHouse, 0, 0, 0, 1, 0);
 				Sub_4ADCD0(0, 0);
 				MapClass::Instance.sub_657CE0();
 				MapClass::Instance.MarkNeedsRedraw(2);
@@ -137,7 +137,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	this->Crit_Active = false;
 	this->Crit_CurrentChance = this->GetCritChance(pOwner);
 
-	if (this->PossibleCellSpreadDetonate || this->Crit_CurrentChance > 0.0)
+	if ((this->PossibleCellSpreadDetonate || this->Crit_CurrentChance > 0.0) && this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate))
 	{
 		if (!this->Crit_ApplyChancePerTarget)
 			this->Crit_RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
@@ -459,7 +459,7 @@ HouseClass* WarheadTypeExt::ExtData::ApplyRemoveMindControl(HouseClass* pHouse, 
 
 void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
 {
-	const double dice = this->Crit_ApplyChancePerTarget ? ScenarioClass::Instance->Random.RandomDouble() : this->Crit_RandomBuffer;
+	const double dice = this->Crit_ApplyChancePerTarget || !this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate) ? ScenarioClass::Instance->Random.RandomDouble() : this->Crit_RandomBuffer;
 
 	if (this->Crit_CurrentChance < dice)
 		return;
