@@ -2176,6 +2176,19 @@ WaterImage.ConditionRed=              ; VehicleType entry
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
 ```
 
+### Deployment Enhancement
+
+- When a vehicle possesses both the `Passengers` and `DeployFire/IsSimpleDeployer` attributes, it can perform custom actions instead of solely unloading passengers.
+  - `Unload.SkipPassengers` allows the vehicle to bypass the passenger release process and execute other deployment actions.
+  - `Unload.NoPassengers` enables the vehicle to perform other deployment actions after losing all passengers.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                   ; VehicleType
+Unload.SkipPassengers=false     ; boolean
+Unload.NoPassengers=false       ; boolean
+```
+
 ### Jumpjet Tilts While Moving
 
 ![image](_static/images/jumpjet-tilt.gif)

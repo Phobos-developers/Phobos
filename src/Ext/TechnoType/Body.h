@@ -453,6 +453,9 @@ public:
 
 		Nullable<bool> TurretResponse;
 
+		Valueable<bool> Unload_SkipPassengers;
+		Valueable<bool> Unload_NoPassengers;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, HealthBar_HidePips { false }
@@ -859,6 +862,9 @@ public:
 			, TeamMember_ConsideredAs {}
 
 			, TurretResponse {}
+
+			, Unload_SkipPassengers { false }
+			, Unload_NoPassengers { false }
 		{ }
 
 		virtual ~ExtData() = default;

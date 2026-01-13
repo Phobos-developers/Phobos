@@ -1363,6 +1363,8 @@ void TechnoTypeExt::ExtData::LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSe
 		this->FireUp.Read(exArtINI, pArtSection, "FireUp");
 		this->FireUp_ResetInRetarget.Read(exArtINI, pArtSection, "FireUp.ResetInRetarget");
 		this->TurretResponse.Read(exINI, pSection, "TurretResponse");
+		this->Unload_SkipPassengers.Read(exINI, pSection, "Unload.SkipPassengers");
+		this->Unload_NoPassengers.Read(exINI, pSection, "Unload.NoPassengers");
 		//this->SecondaryFire.Read(exArtINI, pArtSection, "SecondaryFire");
 		break;
 	}
@@ -1786,6 +1788,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TeamMember_ConsideredAs)
 
 		.Process(this->TurretResponse)
+
+		.Process(this->Unload_SkipPassengers)
+		.Process(this->Unload_NoPassengers)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
