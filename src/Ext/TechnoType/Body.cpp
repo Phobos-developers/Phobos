@@ -6,6 +6,7 @@
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/WeaponType/Body.h>
 #include <New/Type/InsigniaTypeClass.h>
 
 #include <Utilities/AresHelper.h>
@@ -437,11 +438,49 @@ void TechnoTypeExt::ExtData::UpdateAdditionalAttributes()
 	const auto pThis = this->OwnerObject();
 	int count = 2;
 
+	const bool attackFriendlies = pThis->AttackFriendlies;
+	this->AttackFriendlies = { attackFriendlies ,attackFriendlies };
+
 	if (this->MultiWeapon
 		&& (!pThis->IsGattling && (!pThis->HasMultipleTurrets() || !pThis->Gunner)))
 	{
 		count = pThis->WeaponCount;
 	}
+
+	auto WeaponCheck = [&](WeaponTypeClass* const pWeapon, const bool isElite)
+	{
+		if (!pWeapon)
+			return;
+
+		if (isElite)
+		{
+			if (pWeapon->Projectile)
+				this->ThreatTypes.Y |= pWeapon->AllowedThreats();
+
+			this->CombatDamages.Y += (pWeapon->Damage + pWeapon->AmbientDamage);
+			eliteNum++;
+
+			if (!this->AttackFriendlies.Y
+				&& WeaponTypeExt::ExtMap.Find(pWeapon)->AttackFriendlies.Get(false))
+			{
+				this->AttackFriendlies.Y = true;
+			}
+		}
+		else
+		{
+			if (pWeapon->Projectile)
+				this->ThreatTypes.X |= pWeapon->AllowedThreats();
+
+			this->CombatDamages.X += (pWeapon->Damage + pWeapon->AmbientDamage);
+			num++;
+
+			if (!this->AttackFriendlies.X
+				&& WeaponTypeExt::ExtMap.Find(pWeapon)->AttackFriendlies.Get(false))
+			{
+				this->AttackFriendlies.X = true;
+			}
+		}
+	};
 
 	for (int index = 0; index < count; index++)
 	{
@@ -451,23 +490,8 @@ void TechnoTypeExt::ExtData::UpdateAdditionalAttributes()
 		if (!pEliteWeapon)
 			pEliteWeapon = pWeapon;
 
-		if (pWeapon)
-		{
-			if (pWeapon->Projectile)
-				this->ThreatTypes.X |= pWeapon->AllowedThreats();
-
-			this->CombatDamages.X += (pWeapon->Damage + pWeapon->AmbientDamage);
-			num++;
-		}
-
-		if (pEliteWeapon)
-		{
-			if (pEliteWeapon->Projectile)
-				this->ThreatTypes.Y |= pEliteWeapon->AllowedThreats();
-
-			this->CombatDamages.Y += (pEliteWeapon->Damage + pEliteWeapon->AmbientDamage);
-			eliteNum++;
-		}
+		WeaponCheck(pWeapon, false);
+		WeaponCheck(pEliteWeapon, true);
 	}
 
 	if (num > 0)
@@ -1790,6 +1814,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TeamMember_ConsideredAs)
 
 		.Process(this->TurretResponse)
+
+		.Process(this->AttackFriendlies)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

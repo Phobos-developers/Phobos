@@ -156,6 +156,9 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ExtraRange_FirerMoving.Read(exINI, GameStrings::General, "ExtraRange.FirerMoving");
 	this->ExtraRange_Prefiring.Read(exINI, GameStrings::General, "ExtraRange.Prefiring");
 	this->ExtraRange_Prefiring_IncludeBurst.Read(exINI, GameStrings::General, "ExtraRange.Prefiring.IncludeBurst");
+	this->AttackFriendlies.Read(exINI, pSection, "AttackFriendlies");
+	this->AttackCursorOnFriendlies.Read(exINI, pSection, "AttackCursorOnFriendlies");
+	this->AttackNoThreatBuildings.Read(exINI, pSection, "AttackNoThreatBuildings");
 
 	// handle SkipWeaponPicking
 	if (this->CanTarget != AffectedTarget::All || this->CanTargetHouses != AffectedHouse::All
@@ -244,6 +247,9 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraRange_FirerMoving)
 		.Process(this->ExtraRange_Prefiring)
 		.Process(this->ExtraRange_Prefiring_IncludeBurst)
+		.Process(this->AttackFriendlies)
+		.Process(this->AttackCursorOnFriendlies)
+		.Process(this->AttackNoThreatBuildings)
 		;
 };
 
