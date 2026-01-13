@@ -1,15 +1,11 @@
 #pragma once
 
 #include <ScenarioClass.h>
-#include <MessageListClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
 #include <Ext/Techno/Body.h>
-
-#include <map>
 
 struct ExtendedVariable
 {
@@ -46,7 +42,6 @@ public:
 		PhobosFixedString<64u> DefaultLS800BkgdName;
 		PhobosFixedString<64u> DefaultLS800BkgdPal;
 
-		BulletClass* MasterDetonationBullet; // Used to do warhead/weapon detonations on spot without having to create new BulletClass instance every time.
 		std::vector<TechnoExt::ExtData*> LimboLaunchers;
 
 		DynamicVectorClass<TechnoClass*> UndergroundTracker; // Technos that are underground.
@@ -66,16 +61,15 @@ public:
 			, DefaultLS640BkgdName {}
 			, DefaultLS800BkgdName {}
 			, DefaultLS800BkgdPal {}
-			, MasterDetonationBullet {}
 			, LimboLaunchers {}
 			, UndergroundTracker {}
 			, SpecialTracker {}
 			, FallingDownTracker {}
 		{ }
 
-		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
-		void GetVariableStateByID(bool bIsGlobal, int nIndex, char* pOut);
-		void ReadVariables(bool bIsGlobal, CCINIClass* pINI);
+		static void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
+		static void GetVariableStateByID(bool bIsGlobal, int nIndex, char* pOut);
+		static void ReadVariables(bool bIsGlobal, CCINIClass* pINI);
 		static void SaveVariablesToFile(bool isGlobal);
 
 		virtual ~ExtData() = default;

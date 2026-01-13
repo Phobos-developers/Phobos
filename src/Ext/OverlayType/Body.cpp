@@ -1,10 +1,5 @@
 #include "Body.h"
 
-#include <OverlayTypeClass.h>
-#include <TacticalClass.h>
-
-#include <Utilities/GeneralUtils.h>
-
 OverlayTypeExt::ExtContainer OverlayTypeExt::ExtMap;
 
 // =============================
@@ -14,6 +9,7 @@ template <typename T>
 void OverlayTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->ZAdjust)
 		.Process(this->PaletteFile)
 		;
 }

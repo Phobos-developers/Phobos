@@ -1,16 +1,11 @@
 #include "Body.h"
 
 #include <Ext/Anim/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/RadSite/Body.h>
-#include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
 #include <Ext/EBolt/Body.h>
-#include <Utilities/EnumFunctions.h>
-#include <Utilities/AresFunctions.h>
-#include <Misc/FlyingStrings.h>
+#include <New/Entity/LaserTrailClass.h>
 
 BulletExt::ExtContainer BulletExt::ExtMap;
 
@@ -395,29 +390,12 @@ void BulletExt::ApplyArcingFix(BulletClass* pThis, const CoordStruct& sourceCoor
 	}
 }
 
-// Detonate weapon/warhead using master bullet instance.
+// Detonate weapon/warhead using a bullet.
 void BulletExt::Detonate(const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse, AbstractClass* pTarget, bool isBright, WeaponTypeClass* pWeapon, WarheadTypeClass* pWarhead)
 {
-	auto pBullet = ScenarioExt::Global()->MasterDetonationBullet;
 	auto const pType = pWeapon ? pWeapon->Projectile : BulletTypeExt::GetDefaultBulletType();
-
-	// Oct 24, 2025 - Starkku: If the warhead is supposed to detonate on all map objects we actually need to create new BulletClass instance.
-	// Otherwise the master bullet instance can have its properties overwritten prematurely and cause weird issues.
-	if (WarheadTypeExt::ExtMap.Find(pWarhead)->DetonateOnAllMapObjects)
-	{
-		pBullet = pType->CreateBullet(pTarget, pOwner, damage, pWarhead, 100, isBright);
-		pBullet->WeaponType = pWeapon;
-	}
-	else
-	{
-		pBullet->Type = pType;
-		pBullet->WeaponType = pWeapon;
-		pBullet->Owner = pOwner;
-		pBullet->Health = damage;
-		pBullet->Target = pTarget;
-		pBullet->WH = pWarhead;
-		pBullet->Bright = isBright;
-	}
+	auto const pBullet = pType->CreateBullet(pTarget, pOwner, damage, pWarhead, 100, isBright);
+	pBullet->WeaponType = pWeapon;
 
 	auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
 	pBulletExt->IsInstantDetonation = true;
@@ -427,8 +405,8 @@ void BulletExt::Detonate(const CoordStruct& coords, TechnoClass* pOwner, int dam
 
 	pBullet->SetLocation(coords);
 	pBullet->Explode(true);
+	pBullet->UnInit();
 }
-
 
 // =============================
 // load / save

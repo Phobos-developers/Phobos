@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../../License.md:1
 msgid "License"
-msgstr "许可证，汉化可参阅[此处](https://www.thebigfly.com/gnu/gpl)。"
+msgstr "许可证，汉化可参阅 [此处](https://www.thebigfly.com/gnu/gpl)。"
 
 #: ../../../LICENSE.md:2
 msgid ""

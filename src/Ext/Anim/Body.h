@@ -1,11 +1,7 @@
 #pragma once
 #include <AnimClass.h>
 #include <ParticleSystemClass.h>
-
 #include <Ext/AnimType/Body.h>
-#include <Helpers/Macro.h>
-#include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
 
 class AnimExt
 {

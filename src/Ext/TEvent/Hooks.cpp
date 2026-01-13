@@ -1,14 +1,10 @@
 #include "Body.h"
 
-#include <Helpers\Macro.h>
-
 #include <HouseClass.h>
 #include <BuildingClass.h>
 #include <InfantryClass.h>
 #include <OverlayTypeClass.h>
 #include <VocClass.h>
-
-#include <Utilities/Macro.h>
 
 DEFINE_HOOK(0x71E940, TEventClass_Execute, 0x5)
 {
@@ -34,7 +30,7 @@ DEFINE_HOOK(0x7271F9, TEventClass_GetFlags, 0x5)
 	GET(int, eAttach, EAX);
 	GET(TEventClass*, pThis, ESI);
 
-	int nEvent = static_cast<int>(pThis->EventKind);
+	const int nEvent = static_cast<int>(pThis->EventKind);
 	if (nEvent >= PhobosTriggerEvent::LocalVariableGreaterThan && nEvent < PhobosTriggerEvent::_DummyMaximum)
 	{
 		eAttach |= TEventExt::GetFlags(nEvent);
@@ -50,7 +46,7 @@ DEFINE_HOOK(0x71F3FE, TEventClass_BuildINIEntry, 0x5)
 	GET(int, eNeedType, EAX);
 	GET(TEventClass*, pThis, ECX);
 
-	int nEvent = static_cast<int>(pThis->EventKind);
+	const int nEvent = static_cast<int>(pThis->EventKind);
 	if (nEvent >= PhobosTriggerEvent::LocalVariableGreaterThan && nEvent < PhobosTriggerEvent::_DummyMaximum)
 		eNeedType = 43;
 
@@ -63,13 +59,30 @@ DEFINE_HOOK(0x726577, TEventClass_Persistable, 0x7)
 {
 	GET(TEventClass*, pThis, EDI);
 
-	int nEvent = static_cast<int>(pThis->EventKind);
+	const int nEvent = static_cast<int>(pThis->EventKind);
 	if (nEvent >= PhobosTriggerEvent::LocalVariableGreaterThan && nEvent < PhobosTriggerEvent::_DummyMaximum)
 		R->AL(true);
 	else
 		R->AL(pThis->GetStateB());
 
 	return 0x72657E;
+}
+
+DEFINE_HOOK(0x71F9C0, TEventClass_GetStateB_SpyEvent, 0x6)
+{
+	enum { ReturnFalse = 0x71F9DA };
+
+	GET(TEventClass* const, pThis, ECX);
+
+	switch (pThis->EventKind)
+	{
+	case TriggerEvent::SpiedBy:
+	case TriggerEvent::SpyAsHouse:
+	case TriggerEvent::SpyAsInfantry:
+		return ReturnFalse;
+	default:
+		return 0;
+	}
 }
 
 DEFINE_HOOK_AGAIN(0x71ED5E, TriggerClass_SpyAsInfantryOrHouse, 0x8)		// SpyAsHouse

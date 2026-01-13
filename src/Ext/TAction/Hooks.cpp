@@ -3,18 +3,6 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/Rules/Body.h>
 
-#include <Helpers/Macro.h>
-
-#include <HouseClass.h>
-#include <BuildingClass.h>
-#include <OverlayTypeClass.h>
-#include <LightSourceClass.h>
-#include <RadSiteClass.h>
-#include <VocClass.h>
-#include <ScenarioClass.h>
-
-#include <Utilities/Macro.h>
-
 DEFINE_HOOK(0x6DD8B0, TActionClass_Execute, 0x6)
 {
 	GET(TActionClass*, pThis, ECX);
@@ -45,7 +33,7 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 	const bool playBuildup = pBuildingType->LoadBuildup();
 	bool created = false;
 
-	if (auto pBuilding = static_cast<BuildingClass*>(pBuildingType->CreateObject(pHouse)))
+	if (auto const pBuilding = static_cast<BuildingClass*>(pBuildingType->CreateObject(pHouse)))
 	{
 		// Set before unlimbo cause otherwise it will call BuildingClass::Place.
 		pBuilding->QueueMission(Mission::Construction, false);
