@@ -2178,7 +2178,7 @@ Note that the VehicleTypes had to be defined under [VehicleTypes] and use same i
 
 ### Deployment Enhancement
 
-- When a vehicle possesses both the `Passengers` and `DeployFire/IsSimpleDeployer/DeploysInto` attributes, it can perform custom actions instead of solely unloading passengers.
+- When a vehicle has `Passengers` and possesses `DeployFire/IsSimpleDeployer/DeploysInto`, it can perform custom deployment actions beyond merely releasing passengers.
   - `Unload.SkipPassengers` allows the vehicle to bypass the passenger release process and execute other deployment actions.
   - `Unload.NoPassengers` enables the vehicle to perform other deployment actions after losing all passengers.
 
