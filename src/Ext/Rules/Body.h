@@ -1,14 +1,8 @@
 #pragma once
 
-#include <CCINIClass.h>
 #include <RulesClass.h>
 #include <Utilities/Container.h>
-#include <Utilities/Constructs.h>
-#include <Utilities/Template.h>
-#include <Utilities/Enum.h>
 #include <Utilities/TemplateDef.h>
-#include <Utilities/Debug.h>
-#include <Utilities/Anchor.h>
 
 class AnimTypeClass;
 class MouseCursor;
@@ -122,6 +116,10 @@ public:
 		Valueable<bool> DisplayIncome_AllowAI;
 		Valueable<AffectedHouse> DisplayIncome_Houses;
 
+		Valueable<bool> AllowDeployControlledMCV;
+
+		Valueable<bool> TypeSelectUseIFVMode;
+
 		Valueable<bool> IronCurtain_KeptOnDeploy;
 		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> IronCurtain_KillOrganicsWarhead;
@@ -178,6 +176,8 @@ public:
 
 		Valueable<bool> JumpjetClimbPredictHeight;
 		Valueable<bool> JumpjetClimbWithoutCutOut;
+
+		Valueable<bool> MergeBuildingDamage;
 
 		Valueable<double> DamageOwnerMultiplier;
 		Valueable<double> DamageAlliesMultiplier;
@@ -280,6 +280,18 @@ public:
 
 		Valueable<bool> FallingDownTargetingFix;
 		Valueable<bool> AIAirTargetingFix;
+
+		Valueable<bool> SortCameoByName;
+
+		Valueable<bool> BuildingRadioLink_SyncOwner;
+
+		Valueable<Leptons> ExtraRange_TargetMoving;
+		Valueable<bool> ExtraRange_TargetMoving_CloseRangeOnly;
+		Valueable<Leptons> ExtraRange_FirerMoving;
+		Valueable<Leptons> ExtraRange_Prefiring;
+		Valueable<bool> ExtraRange_Prefiring_IncludeBurst;
+		
+		Valueable<bool> ApplyPerTargetEffectsOnDetonate;
 		
 		Valueable<bool> AutoTarget_NoThreatBuildings;
 		Valueable<bool> AutoTargetAI_NoThreatBuildings;
@@ -366,6 +378,10 @@ public:
 			, ForbidParallelAIQueues_Vehicle { false }
 
 			, EnablePowerSurplus { false }
+
+			, AllowDeployControlledMCV { false }
+
+			, TypeSelectUseIFVMode { false }
 
 			, IronCurtain_KeptOnDeploy { true }
 			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
@@ -503,6 +519,21 @@ public:
 
 			, FallingDownTargetingFix { false }
 			, AIAirTargetingFix { false }
+
+			, SortCameoByName { false }
+			
+			, MergeBuildingDamage { false }
+
+			, BuildingRadioLink_SyncOwner { true }
+			
+			, ApplyPerTargetEffectsOnDetonate { true }
+
+			, ExtraRange_TargetMoving { Leptons(0) }
+			, ExtraRange_TargetMoving_CloseRangeOnly { false }
+			, ExtraRange_FirerMoving { Leptons(0) }
+			, ExtraRange_Prefiring { Leptons(0) }
+			, ExtraRange_Prefiring_IncludeBurst { true }
+
 			, AutoTarget_NoThreatBuildings { false }
 			, AutoTargetAI_NoThreatBuildings { true }
 		{ }

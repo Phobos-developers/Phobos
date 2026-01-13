@@ -1,17 +1,5 @@
 #pragma once
-#include <BuildingClass.h>
-#include <HouseClass.h>
-#include <TiberiumClass.h>
-#include <FactoryClass.h>
-
-#include <Helpers/Macro.h>
-#include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
-
-#include <Misc/FlyingStrings.h>
 #include <Ext/Techno/Body.h>
-#include <Ext/TechnoType/Body.h>
-#include <Ext/Building/Body.h>
 #include <Ext/BuildingType/Body.h>
 
 class BuildingExt
@@ -38,6 +26,7 @@ public:
 		std::optional<int> CurrentLaserWeaponIndex;
 		int PoweredUpToLevel; // Distinct from UpgradeLevel, and set to highest PowersUpToLevel out of applied upgrades regardless of how many are currently applied to this building.
 		SuperClass* CurrentEMPulseSW;
+		bool IsFiringNow;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -52,6 +41,7 @@ public:
 			, CurrentLaserWeaponIndex {}
 			, PoweredUpToLevel { 0 }
 			, CurrentEMPulseSW {}
+			, IsFiringNow { false }
 		{ }
 
 		void DisplayIncomeString();
@@ -111,4 +101,5 @@ public:
 	static void KickOutStuckUnits(BuildingClass* pThis);
 	static const std::vector<CellStruct> GetFoundationCells(BuildingClass* pThis, CellStruct baseCoords, bool includeOccupyHeight = false);
 	static WeaponStruct* GetLaserWeapon(BuildingClass* pThis);
+	static void __fastcall KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, void*, BuildingClass* pFactory);
 };

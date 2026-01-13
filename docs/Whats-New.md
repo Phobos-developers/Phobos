@@ -185,17 +185,20 @@ HideShakeEffects=false           ; boolean
   [ActionsRA2]
   41=Play animation at a waypoint...,0,25,69,0,0,0,1,0,0,[LONG DESC].,0,1,41
   125=Build at...,-10,47,0,65,0,0,1,0,0,[LONG DESC],0,1,125
-  500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
-  501=Edit variable,0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1
-  502=Generate random number,0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
-  503=Print variable value,0,56,54,0,0,0,0,0,0,[LONG DESC],0,1,503,0
-  504=Binary operation,0,56,55,60,54,59,0,0,0,[LONG DESC],0,1,504,1
+  500=Save game (Phobos),-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
+  501=Edit variable (Phobos),0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1
+  502=Generate random number (Phobos),0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
+  503=Print variable value (Phobos),0,56,54,0,0,0,0,0,0,[LONG DESC],0,1,503,0
+  504=Binary operation (Phobos),0,56,55,60,54,59,0,0,0,[LONG DESC],0,1,504,1
   505=Fire Super Weapon at specified location (Phobos),0,0,20,2,21,22,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified location. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,505
   506=Fire Super Weapon at specified waypoint (Phobos),0,0,20,2,30,0,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,506
   510=Toggle MCV Redeployablility (Phobos),0,0,15,0,0,0,0,0,0, Set MCVRedeploys to the given value,0,1,510
-  606=Edit hate-value (Phobos),0,2,55,6,0,0,0,0,0, Edit the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,606
-  607=Clear hate-value (Phobos),0,2,0,0,0,0,0,0,0, Clear the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,607
-  608=Set force enemy (Phobos),0,0,2,0,0,0,0,0,0, Force an enemy, it will not change with the change of hate-value. -1 will remove the forced enemy, -2 will never have any enemies.,0,1,608
+  511=Building Type undeploy at... (Phobos),-10,47,2,0,0,0,1,0,0,Recycle the building type into a vehicle and move it to the specified waypoint. If the type is `<All>`, recycle all buildings.,0,1,511
+  606=Edit hate-value... (Phobos),0,2,55,6,0,0,0,0,0, Edit the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,606
+  607=Clear hate-value... (Phobos),0,2,0,0,0,0,0,0,0, Clear the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,607
+  608=Set force enemy... (Phobos),0,0,2,0,0,0,0,0,0, Force an enemy, it will not change with the change of hate-value. -1 will remove the forced enemy, -2 will never have any enemies.,0,1,608
+  609=Set radar mode... (Phobos),0,0,15,0,0,0,0,0,0, Trigger's house can modify the current radar mode. 0 for requires full-power and building, 1 for free radar, 2 for forced enable, 3 for forced disable.,0,1,609
+  610=Set team delay... (Phobos),0,0,6,0,0,0,0,0,0, Trigger's house can customize TeamDelay. When the value is less than 0 in `[General]>TeamDelays`.,0,1,610
   800=Display banner and local variable (Phobos),-4,101,104,102,103,3,0,0,0,Draw banner on screen and replace banner with same ID,0,1,800
   801=Display banner and global variable (Phobos),-4,101,104,102,103,35,0,0,0,Draw banner on screen and replace banner with same ID,0,1,801
   802=Delete banner (Phobos),0,104,0,0,0,0,0,0,0,Delete banner with ID,0,1,802
@@ -249,6 +252,7 @@ HideShakeEffects=false           ; boolean
   10102=Regroup Temporarily Around the Team Leader,20,0,1,[LONG DESC]
   10103=Load Onto Transports,0,0,1,[LONG DESC]
   10104=Chronoshift to Enemy Base,20,0,1,[LONG DESC]
+  14004=Force Global OnlyTargetHouseEnemy value in Teams,20,0,1,[LONG DESC]
   18000=Local variable set,22,0,1,[LONG DESC]
   18001=Local variable add,22,0,1,[LONG DESC]
   18002=Local variable minus,22,0,1,[LONG DESC]
@@ -437,6 +441,7 @@ New:
 - [Damaged aircraft image changes](New-or-Enhanced-Logics.md#damaged-aircraft-image-changes) (by Fryone)
 - [Additional attached animation position customizations](Fixed-or-Improved-Logics.md#attached-animation-position-customization) (by Starkku)
 - Use `SkipCrushSlowdown=true` to avoid the bug related to `Accelerates=true` and `MovementZone=CrushAll` (by TaranDahl)
+- [Automatic conversion based on ammo](New-or-Enhanced-Logics.md#automatic-conversion-based-on-ammo) (by FS-21)
 - [Units can customize the attack voice that plays when using more weapons](New-or-Enhanced-Logics.md#multi-voiceattack) (by FlyStar)
 - Customize squid grapple animation (by NetsuNegi)
 - [Auto deploy for GI-like infantry](Fixed-or-Improved-Logics.md#auto-deploy-for-gi-like-infantry) (by TaranDahl)
@@ -459,6 +464,23 @@ New:
 - Toggle off laser trail and shake effects (by Ollerus)
 - [Dehardcode the `ZAdjust` of warhead anim](Fixed-or-Improved-Logics.md#dehardcode-the-zadjust-of-warhead-anim) (by TaranDahl)
 - [Interceptor target scan delay customization](New-or-Enhanced-Logics.md#projectile-interception-logic) (by Starkku)
+- [Allow deploy controlled MCV](Fixed-or-Improved-Logics.md#allow-deploy-controlled-mcv) (by NetsuNegi)
+- [Customize if cloning need power](Fixed-or-Improved-Logics.md#customize-if-cloning-need-power) (by NetsuNegi)
+- [Added Target Filtering Options to AttachEffect System](New-or-Enhanced-Logics.md#attached-effects) (by Flactine)
+- [Customize type selection for IFV](Fixed-or-Improved-Logics.md#customize-type-selection-for-ifv) (by NetsuNegi)
+- [CellSpread in cylinder shape](New-or-Enhanced-Logics.md#cellspread-enhancement) (by TaranDahl)
+- [CellSpread damage check if victim is in air or on floor](New-or-Enhanced-Logics.md#cellspread-enhancement) (by TaranDahl)
+- OpenTopped range bonus and damage multiplier customization for passengers (by Ollerus)
+- AutoDeath upon ownership change (by Ollerus)
+- [Script Action 14004 for forcing all new actions to target only the main owner's enemy](AI-Scripting-and-Mapping.md#force-global-onlytargethouseenemy-value-in-teams-for-new-attack-move-actions-introduced-by-phobos) (by FS-21)
+- [Allow merging AOE damage to buildings into one](New-or-Enhanced-Logics.md#allow-merging-aoe-damage-to-buildings-into-one) (by CrimRecya)
+- [Allow customizing whether to synchronously change the owner of the RadioLink-linked units when the owner of a building changes](Fixed-or-Improved-Logics.md#custom-whether-to-synchronously-change-the-owner-of-the-radiolink-linked-units-when-the-owner-of-a-building-changes) (by TaranDahl)
+- [Toggle per-target warhead effects apply timing](New-or-Enhanced-Logics.md#toggle-per-target-warhead-effects-apply-timing) (by TaranDahl)
+- [Extra range for chasing and pre-firing](New-or-Enhanced-Logics.md#extra-range) (by TaranDahl)
+- [Allow techno type considered as other type when recruiting techno for teams](Fixed-or-Improved-Logics.md#allow-techno-type-considered-as-other-type-when-recruiting-techno-for-teams) (by NetsuNegi)
+- Map Action [`511` Undeploy Building to Waypoint](AI-Scripting-and-Mapping.md#undeploy-building-to-waypoint), [`609` Set Radar Mode](AI-Scripting-and-Mapping.md#set-radar-mode), [`610` Set house's `TeamDelays` value](AI-Scripting-and-Mapping.md#set-house-s-teamdelays-value) (by FlyStar)
+- [Toggle to exclude technos from base center calculations](New-or-Enhanced-Logics.md#exclusion-from-base-center-calculations) (by Starkku)
+- Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies` (by FlyStar)
 - Attack non-threatening structures extensions (by FlyStar)
 
 Vanilla fixes:
@@ -495,7 +517,16 @@ Vanilla fixes:
 - Fixed `MovementZone=Subterannean` harvesters being unable to find docks if in area enclosed by water, cliffs etc. (by Starkku)
 - Fixed an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner (by TaranDahl)
 - Allow Reveal Crate to take effect when picking up by another player controlled house in campaign (by Trsdy)
-- Fixed an issue where the vanilla script ignores jumpjets. (by TaranDahl)
+- Fixed an issue where the vanilla script ignores jumpjets (by TaranDahl)
+- Fixed the issue where trigger events 2, 53 and 54 in persistent type triggers would be activated unconditionally after activation (by FlyStar)
+- Fixed the bug that naval ship will sink even they destroyed in air (by NetsuNegi)
+- Fixed MPDebug timer displaying when debug's visibility is off (by 11EJDE11)
+- Fixed the issue that units will goto farest location if target is closer than `MinimumRange` (by NetsuNegi)
+- Fixed a bug where units can be promoted when created via trigger actions even if they have `Trainable=false` (by NetsuNegi)
+- Fixed the bug that ai will try to product aircraft even the airport has no free dock for it (by NetsuNegi)
+- Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units (by TaranDahl)
+- Fixed an issue that rockets do not consider the destination altitude during climbing (by TaranDahl)
+- Fixed the bug that if object has been removed from LogicClass in Update(), next object will be skip (by NetsuNegi)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -517,12 +548,40 @@ Phobos fixes:
 - Fixed the projection location of selectbox when over elevated bridge (by NetsuNegi)
 - Fixed an issue where the game would only use `Weapon1` and `Weapon2` for auto-targeting even when `MultiWeapon=yes` was set (by FlyStar)
 - Fixed a game load crash caused by `MultiWeapon.IsSecondary=-1` or non-projectile weapons (by FlyStar)
+- Fixed an issue that caused Ares's `Battery.KeepOnline` cannot keep defense buildings works fine (by NetsuNegi)
+- Map Event 601 should return true only when exists in the map like other similar map events (by FS-21)
+- Fixed OverlayType `ZAdjust` as well as some shield & AttachEffect variables not being correctly saved & loaded (by Ollerus)
+- LimboDelivery buildings cannot be selected (by FlyStar)
+- Fixed the positive value of `Reveal` on warhead (by NetsuNegi)
+- Fixed the bug that weapon cannot used to intercept on gound bullet if it's projectile has `AG=no` (by NetsuNegi)
 
 Fixes / interactions with other extensions:
 <!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
 - Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle` (by TaranDahl)
 - Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect (by Sovietianqi, based on knowledge of DeathFish)
+- Fixed the bug that building with `CloningFacility=true` and `WeaponsFactory=true` may cloning multiple vehicles and then they get stuck (by NetsuNegi)
+- [Customize Ares's radar jam logic](New-or-Enhanced-Logics.md#customize-ares-s-radar-jam-logic) (by NetsuNegi)
+- Fixed a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType` (by NetsuNegi)
+- Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed (by NetsuNegi)
+- Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed (by NetsuNegi)
+```
+
+### 0.4.0.1
+
+```{dropdown} Click to show
+Vanilla fixes:
+- Fixed preplaced aircraft outside visible map being incorrectly flagged as crashing under certain conditions (by Starkku)
+
+Phobos fixes:
+- AttachEffect `DisableWeapons` no longer interferes with 'can this unit/building fire weapons?' checks for units/buildings with no weapons (by Starkku)
+- Fixed starting infantry being scattered randomly on game start instead of being grouped (by 11EJDE11, Belonit, Ollerus)
+- Fixed an issue with certain Warhead detonation features (f.ex `Crit.Warhead` without `Crit.Warhead.FullDetonation=true` not snapping on the intended target without `CellSpread`) (by Starkku)
+- Fixed an issue with `UndeploysInto.Sellable` (by TaranDahl)
+- Fixed an issue with `Powered`/`PoweredSpecial` building animation ownership change fix (by Trsdy)
+- Fixed `DisplayIncome`, `Transact.Money` etc. display strings showing through shroud and for objects that are supposed to be hidden such as cloaked, undetected enemies (by Starkku)
+- Fixed an issue that could cause crashes when `FeedbackWeapon` was used to convert the firer to another TechnoType with less or no weapons (by Starkku)
+- Fixed an issue with parsing floating point numbers from INI that may have in some cases contributed to desyncs (by Starkku)
 ```
 
 ### 0.4

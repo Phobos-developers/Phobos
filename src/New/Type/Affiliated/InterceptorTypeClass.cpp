@@ -1,8 +1,5 @@
 #include "InterceptorTypeClass.h"
 
-#include <Utilities/SavegameDef.h>
-#include <Utilities/TemplateDef.h>
-
 InterceptorTypeClass::InterceptorTypeClass(TechnoTypeClass* OwnedBy)
 	: OwnerType { OwnedBy }
 	, TargetingDelay { 1 }
@@ -48,6 +45,7 @@ bool InterceptorTypeClass::Serialize(T& stm)
 {
 	return stm
 		.Process(this->OwnerType)
+		.Process(this->TargetingDelay)
 		.Process(this->CanTargetHouses)
 		.Process(this->GuardRange)
 		.Process(this->MinimumGuardRange)

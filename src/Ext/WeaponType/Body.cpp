@@ -1,7 +1,6 @@
 #include "Body.h"
 #include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
-#include <SpawnManagerClass.h>
 
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
@@ -87,7 +86,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->Bolt_Disable[idx].Read(exINI, pSection, tempBuffer);
 	}
 
-	this->Bolt_ParticleSystem.Read(exINI, pSection, "Bolt.ParticleSystem");
+	this->Bolt_ParticleSystem.Read<false, true>(exINI, pSection, "Bolt.ParticleSystem");
 	this->Bolt_Arcs.Read(exINI, pSection, "Bolt.Arcs");
 	this->Bolt_Duration.Read(exINI, pSection, "Bolt.Duration");
 	this->Bolt_FollowFLH.Read(exINI, pSection, "Bolt.FollowFLH");
@@ -153,6 +152,12 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DelayedFire_OnlyOnInitialBurst.Read(exINI, pSection, "DelayedFire.OnlyOnInitialBurst");
 	this->DelayedFire_AnimOffset.Read(exINI, pSection, "DelayedFire.AnimOffset");
 	this->DelayedFire_AnimOnTurret.Read(exINI, pSection, "DelayedFire.AnimOnTurret");
+	this->ExtraRange_TargetMoving.Read(exINI, GameStrings::General, "ExtraRange.TargetMoving");
+	this->ExtraRange_FirerMoving.Read(exINI, GameStrings::General, "ExtraRange.FirerMoving");
+	this->ExtraRange_Prefiring.Read(exINI, GameStrings::General, "ExtraRange.Prefiring");
+	this->ExtraRange_Prefiring_IncludeBurst.Read(exINI, GameStrings::General, "ExtraRange.Prefiring.IncludeBurst");
+	this->AttackFriendlies.Read(exINI, pSection, "AttackFriendlies");
+	this->AttackCursorOnFriendlies.Read(exINI, pSection, "AttackCursorOnFriendlies");
 	this->AttackNoThreatBuildings.Read(exINI, pSection, "AttackNoThreatBuildings");
 
 	// handle SkipWeaponPicking
@@ -238,6 +243,12 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DelayedFire_OnlyOnInitialBurst)
 		.Process(this->DelayedFire_AnimOffset)
 		.Process(this->DelayedFire_AnimOnTurret)
+		.Process(this->ExtraRange_TargetMoving)
+		.Process(this->ExtraRange_FirerMoving)
+		.Process(this->ExtraRange_Prefiring)
+		.Process(this->ExtraRange_Prefiring_IncludeBurst)
+		.Process(this->AttackFriendlies)
+		.Process(this->AttackCursorOnFriendlies)
 		.Process(this->AttackNoThreatBuildings)
 		;
 };
@@ -312,17 +323,12 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 {
 	auto pTechno = pFirer;
 
-	if (pTechno->Transporter)
+	if (auto const pTransport = pTechno->Transporter)
 	{
-		auto const pType = pTechno->Transporter->GetTechnoType();
+		auto const pTypeExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData;
 
-		if (pType->OpenTopped)
-		{
-			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-
-			if (pTypeExt->OpenTopped_UseTransportRangeModifiers)
-				pTechno = pTechno->Transporter;
-		}
+		if (pTypeExt->OpenTopped_UseTransportRangeModifiers && pTypeExt->OwnerObject()->OpenTopped)
+			pTechno = pTransport;
 	}
 
 	auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
@@ -330,7 +336,7 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 	if (!pTechnoExt->AE.HasRangeModifier)
 		return range;
 
-	int extraRange = 0;
+	double extraRange = 0.0;
 
 	for (auto const& attachEffect : pTechnoExt->AttachedEffects)
 	{
@@ -349,10 +355,10 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 			continue;
 
 		range = static_cast<int>(range * Math::max(type->WeaponRange_Multiplier, 0.0));
-		extraRange += static_cast<int>(type->WeaponRange_ExtraRange * Unsorted::LeptonsPerCell);
+		extraRange += type->WeaponRange_ExtraRange;
 	}
 
-	range += extraRange;
+	range += static_cast<int>(extraRange * Unsorted::LeptonsPerCell);
 
 	return Math::max(range, 0);
 }

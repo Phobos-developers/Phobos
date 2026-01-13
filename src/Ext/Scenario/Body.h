@@ -1,15 +1,11 @@
 #pragma once
 
 #include <ScenarioClass.h>
-#include <MessageListClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
 #include <Ext/Techno/Body.h>
-
-#include <map>
 
 struct ExtendedVariable
 {
@@ -71,9 +67,9 @@ public:
 			, FallingDownTracker {}
 		{ }
 
-		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
-		void GetVariableStateByID(bool bIsGlobal, int nIndex, char* pOut);
-		void ReadVariables(bool bIsGlobal, CCINIClass* pINI);
+		static void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
+		static void GetVariableStateByID(bool bIsGlobal, int nIndex, char* pOut);
+		static void ReadVariables(bool bIsGlobal, CCINIClass* pINI);
 		static void SaveVariablesToFile(bool isGlobal);
 
 		virtual ~ExtData() = default;
