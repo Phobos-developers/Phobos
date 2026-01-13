@@ -1,17 +1,14 @@
 #pragma once
-#include <TechnoTypeClass.h>
-
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
+#include <New/Type/AttachEffectTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
-#include <New/Type/AttachEffectTypeClass.h>
-#include <New/Type/Affiliated/InterceptorTypeClass.h>
-#include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
+#include <New/Type/Affiliated/InterceptorTypeClass.h>
+#include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
 #include <New/Type/Affiliated/TiberiumEaterTypeClass.h>
 #include <New/Type/Affiliated/CreateUnitTypeClass.h>
@@ -73,6 +70,7 @@ public:
 		Nullable<int> InitialStrength;
 		Valueable<bool> ReloadInTransport;
 		Valueable<bool> ForbidParallelAIQueues;
+		Valueable<bool> IgnoreForBaseCenter;
 
 		int TintColorAirstrike;
 		Nullable<int> LaserTargetColor;
@@ -453,6 +451,8 @@ public:
 
 		Nullable<bool> InfantryAutoDeploy;
 
+		ValueableVector<TechnoTypeClass*> TeamMember_ConsideredAs;
+
 		Nullable<bool> TurretResponse;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
@@ -500,6 +500,7 @@ public:
 			, InitialStrength {}
 			, ReloadInTransport { false }
 			, ForbidParallelAIQueues { false }
+			, IgnoreForBaseCenter { false }
 			, TintColorAirstrike { 0 }
 			, LaserTargetColor {}
 			, AirstrikeLineColor {}
@@ -858,6 +859,8 @@ public:
 			, VoiceEliteWeaponAttacks {}
 
 			, InfantryAutoDeploy {}
+
+			, TeamMember_ConsideredAs {}
 
 			, TurretResponse {}
 		{ }

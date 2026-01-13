@@ -1,9 +1,6 @@
 #include "SWColumnClass.h"
 #include "SWSidebarClass.h"
 
-#include <Ext/SWType/Body.h>
-#include <Ext/Side/Body.h>
-
 SWColumnClass::SWColumnClass(int maxButtons, int x, int y, int width, int height)
 	: GadgetClass(x, y, width, height, static_cast<GadgetFlag>(0), false)
 	, MaxButtons(maxButtons)

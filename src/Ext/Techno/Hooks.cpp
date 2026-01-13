@@ -1,20 +1,13 @@
 #include "Body.h"
 
-#include <AircraftClass.h>
-#include <ScenarioClass.h>
 #include <TunnelLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
-#include <AlphaShapeClass.h>
-#include <TacticalClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/WarheadType/Body.h>
-#include <Ext/WeaponType/Body.h>
-#include <Ext/TechnoType/Body.h>
-#include <Utilities/EnumFunctions.h>
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/AresHelper.h>
 #include <Utilities/AresFunctions.h>
@@ -1489,3 +1482,21 @@ DEFINE_HOOK(0x6F9398, TechnoClass_SelectAutoTarget_Scan_FallingDown, 0x9)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x6FBFA3, TechnoClass_Select_SkipLimboDelivery, 0x6)
+{
+	enum { SkipSelect = 0x6FC029 };
+
+	GET(TechnoClass* const, pThis, ESI);
+
+	if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pThis))
+	{
+		const auto& limboDelivereds = HouseExt::ExtMap.Find(pBuilding->Owner)->OwnedLimboDeliveredBuildings;
+		const auto vectorEnd = limboDelivereds.end();
+
+		if (std::find(limboDelivereds.begin(), vectorEnd, pBuilding) != vectorEnd)
+			return SkipSelect;
+	}
+
+	return 0;
+}

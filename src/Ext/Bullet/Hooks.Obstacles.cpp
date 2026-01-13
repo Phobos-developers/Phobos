@@ -1,8 +1,6 @@
 #include "Body.h"
 
 #include <Ext/WeaponType/Body.h>
-#include <Ext/TechnoType/Body.h>
-#include <Utilities/Macro.h>
 
 // Ares reimplements the bullet obstacle logic so need to get creative to add any new functionality for that in Phobos.
 // Not named PhobosTrajectoryHelper to avoid confusion with actual custom trajectory logic.

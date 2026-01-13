@@ -1,8 +1,5 @@
 #include "LaserTrailTypeClass.h"
 
-#include <Utilities/TemplateDef.h>
-#include <HouseClass.h>
-
 template<>
 const char* Enumerable<LaserTrailTypeClass>::GetMainSection()
 {

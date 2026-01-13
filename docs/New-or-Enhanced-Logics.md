@@ -793,7 +793,7 @@ BombParachute=           ; AnimationType, default to [General] -> BombParachute
 
 - Projectiles can now be made interceptable by certain TechnoTypes by setting `Interceptable=true` on them. The TechnoType scans for interceptable projectiles within a range if it has no other target and will use one of its weapons to shoot at them. Projectiles can define `Armor` and `Strength`. Weapons that cannot target the projectile's armor type will not attempt to intercept it. On interception, if the projectile has `Armor` set, an amount equaling to the intercepting weapon's `Damage` adjusted by Warhead `Verses` is deducted from the projectile's current strength. Regardless of if the current projectile strength was reduced or not, if it sits at 0 or below after interception, the projectile is detonated.
   - `Interceptor.Weapon` determines the weapon (0 = `Primary`, 1 = `Secondary`) to be used for intercepting projectiles.
-    - The interceptor weapon may need `AG` and/or `AA` set to true on its projectile to be able to target projectiles depending on their elevation from ground. If you don't set those then the weapon won't be able to target low-flying or high-flying projectiles respectively.
+    - The interceptor weapon may need `AA` set to true on its projectile to be able to target projectiles depending on their elevation from ground. If you don't set those then the weapon won't be able to target high-flying projectiles respectively.
   - `Interceptor.TargetingDelay` determines how often (in frames) interceptor TechnoType scans for suitable projectiles to intercept. Smaller delay is better for interceptor's capabilities but worse for game performance. Delay cannot be set to 0, this will change the delay to 1 and outputs a developer warning to log.
   - `Interceptor.CanTargetHouses` controls which houses the projectiles (or rather their firers) can belong to be eligible for interception.
   - `Interceptor.GuardRange` (and `Interceptor.(Rookie|Veteran|EliteGuardRange)`) is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
@@ -1614,6 +1614,16 @@ DisguiseBlinkingVisibility=owner  ; List of Affected House Enumeration (none|own
 
 [SOMETECHNO]                      ; TechnoType
 UseDisguiseMovementSpeed=false    ; boolean
+```
+
+### Exclusion from base center calculations
+
+- It is possible to exclude TechnoType from base center calculations (used for number of things such as certain AI scripts and AI superweapon targeting modes etc). Normally only buildings are factored in, but the initial base center does count house's starting technos which this does affect.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]               ; TechnoType
+IgnoreForBaseCenter=false  ; boolean
 ```
 
 ### Extended gattling rate down logic
@@ -2632,6 +2642,37 @@ SpawnsCrate(N).Type=     ; Powerup crate type enum (money|unit|healbase|cloak|ex
 SpawnsCrate(N).Weight=1  ; integer
 ```
 
+### Toggle per-target warhead effects apply timing
+
+- Now you can set the following flag to `false` to apply the **Phobos** warhead effects that take effect on each target when taking damage, rather than when the projectiles detonate.
+  - This will allow such effects to be applied through damage without projectiles, including but not limited to damage from particles, vanilla radiation, and Ares' `GenericWarhead` superweapon.
+  - This will also cause all effects that can completely prevent damage to also prevent these warhead effects, including but not limited to `DamageSelf`, `DamageAirThreshold`, `AffectsAllies`, `AffectsAir`.
+  - If you use a warhead with `CellSpread` to damage a building multiple times, then these effects will be applied multiple times. If you don't want this to happen, use [`MergeBuildingDamage`](#allow-merging-aoe-damage-to-buildings-into-one).
+  - The affected effects include:
+    - [Remove mind-control](#break-mind-control-on-impact)
+    - [Type conversion](#convert-technotype-on-impact)
+    - [`BuildingSell` & `BuildingUndeploy`](#sell-or-undeploy-building-on-impact)
+    - [`RemoveDisguise`](#remove-disguise-on-impact)
+    - [`ReverseEngineer`](#reverse-engineer-warhead)
+    - [Modify shield](#shields)
+    - [Modify attach-effects](#attached-effects)
+    - [Critical hits](#chance-based-extra-damage-or-warhead-detonation--critical-hits)
+      - Due to technical reasons, `Crit.SuppressWhenIntercepted=false` and `Crit.ApplyChancePerTarget=true` will forced to be used.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]                        ; WarheadType
+ApplyPerTargetEffectsOnDetonate=true  ; boolean
+
+[SOMEWARHEAD]                         ; WarheadType
+ApplyPerTargetEffectsOnDetonate=      ; boolean, default to [CombatDamage] -> ApplyPerTargetEffectsOnDetonate
+```
+
+```{note}
+- Ares' warhead effects, such as EMP or IronCurtain warhead, will not be affected.
+- Ares' warhead effect controllers, such as `EffectsRequireDamage`, only affect Ares' effects. So they have nothing to do with this.
+```
+
 ### Trigger specific NotHuman infantry Death anim sequence
 
 - Warheads are now able to trigger specific `NotHuman=yes` infantry `Death` anim sequence using the corresponding tag. It's value represents sequences from `Die1` to `Die5`.
@@ -2751,6 +2792,42 @@ DelayedFire.OnlyOnInitialBurst=false   ; boolean
 
 ```{note}
 AircraftTypes, due to their different attack patterns, will not wait for the delay to expire before attempting to fire and will instead continue without firing if the delay is too long.
+```
+
+### Extra range
+
+- Now you can adjust weapon's range when the firer or target are under specific conditions. Only work during the attack process and cannot affect other behaviors such as path finding.
+- `ExtraRange.TargetMoving` grants the weapon extra range when the target is in a moving state.
+  - `ExtraRange.TargetMoving.CloseRangeOnly` is used to restrict whether the global default value only applies to units with `CloseRange=yes`.
+- `ExtraRange.FirerMoving` grants the weapon extra range when the firer is in a moving state.
+- `ExtraRange.Prefiring` grants the weapon extra range when the firer is in a pre-firing state, including:
+    - Vehicles with tags such as `FiringSyncFrame%d`.
+    - Aircraft that are firing.
+    - Buildings with tags such as `IsAnimDelayedFire`.
+    - Infantry with tags such as `FireUp`.
+    - Any unit with [`DelayedFire`](#delayed-firing).
+  - `ExtraRange.Prefiring.IncludeBurst` is used to decide whether the execution of burst is considered as being in a pre-firing state.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ExtraRange.TargetMoving=0.0                     ; float, range in cells
+ExtraRange.TargetMoving.CloseRangeOnly=false    ; boolean
+ExtraRange.FirerMoving=0.0                      ; float, range in cells
+ExtraRange.Prefiring=0.0                        ; float, range in cells
+ExtraRange.Prefiring.IncludeBurst=true          ; boolean
+
+[SOMEWEAPON]                                    ; WeaponType
+ExtraRange.TargetMoving=                        ; float, range in cells, the default values refer to the descriptions above
+ExtraRange.FirerMoving=                         ; float, range in cells, default to [General] -> ExtraRange.FirerMoving
+ExtraRange.Prefiring=                           ; float, range in cells, default to [General] -> ExtraRange.Prefiring
+ExtraRange.Prefiring.IncludeBurst=              ; boolean, default to [General] -> ExtraRange.Prefiring.IncludeBurst
+```
+
+```{note}
+- In vanilla, melee units have difficulty attacking enemies that are moving away, even if they have a slightly higher speed than their targets. This is because the game's pathfinding algorithm searches for a firing position in units of cells, which creates an unacceptable error for melee units, causing the targets to move out of range before they can get close.
+- Units with various forms of pre-firing behavior have similar problems. The target may move out of range before they fire.
+- This feature can solve the above issues.
 ```
 
 ### Extra warhead detonations

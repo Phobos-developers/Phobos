@@ -1,11 +1,6 @@
 #include "Body.h"
 
-#include <AircraftTrackerClass.h>
-#include <AnimClass.h>
-#include <FlyLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
-#include <TechnoTypeClass.h>
-#include <StringTable.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
@@ -13,7 +8,6 @@
 #include <Ext/Techno/Body.h>
 #include <New/Type/InsigniaTypeClass.h>
 
-#include <Utilities/GeneralUtils.h>
 #include <Utilities/AresHelper.h>
 
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
@@ -752,6 +746,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ReloadInTransport.Read(exINI, pSection, "ReloadInTransport");
 	this->ForbidParallelAIQueues.Read(exINI, pSection, "ForbidParallelAIQueues");
+	this->IgnoreForBaseCenter.Read(exINI, pSection, "IgnoreForBaseCenter");
 
 	this->LaserTargetColor.Read(exINI, pSection, "LaserTargetColor");
 	this->AirstrikeLineColor.Read(exINI, pSection, "AirstrikeLineColor");
@@ -1114,6 +1109,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		Debug::Log("[Developer warning][%s] Ammo.AutoConvertMinimumAmount is greater than Ammo.AutoConvertMaximumAmount, resulting in no conversion.\n", pSection);
 
 	this->InfantryAutoDeploy.Read(exINI, pSection, "InfantryAutoDeploy");
+
+	this->TeamMember_ConsideredAs.Read(exINI, pSection, "TeamMember.ConsideredAs");
 	
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -1424,6 +1421,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InitialStrength)
 		.Process(this->ReloadInTransport)
 		.Process(this->ForbidParallelAIQueues)
+		.Process(this->IgnoreForBaseCenter)
 		.Process(this->TintColorAirstrike)
 		.Process(this->LaserTargetColor)
 		.Process(this->AirstrikeLineColor)
@@ -1788,6 +1786,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->VoiceEliteWeaponAttacks)
 
 		.Process(this->InfantryAutoDeploy)
+
+		.Process(this->TeamMember_ConsideredAs)
 
 		.Process(this->TurretResponse)
 		;

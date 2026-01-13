@@ -1,7 +1,6 @@
 #include "Body.h"
 
 #include <Ext/House/Body.h>
-#include <Utilities/GeneralUtils.h>
 #include <Ext/SWType/Body.h>
 
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;

@@ -1,17 +1,8 @@
 #include "Body.h"
 
-#include <SuperClass.h>
-#include <BuildingClass.h>
-#include <HouseClass.h>
-#include <ScenarioClass.h>
-#include <MessageListClass.h>
-
-#include <Utilities/EnumFunctions.h>
-#include <Utilities/GeneralUtils.h>
-
-#include "Ext/House/Body.h"
-#include "Ext/WarheadType/Body.h"
-#include "Ext/WeaponType/Body.h"
+#include <Ext/House/Body.h>
+#include <Ext/WarheadType/Body.h>
+#include <Ext/WeaponType/Body.h>
 #include <Ext/Scenario/Body.h>
 
 // ============= New SuperWeapon Effects================
