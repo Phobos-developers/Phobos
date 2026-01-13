@@ -2,8 +2,6 @@
 
 #include "NewSWType/NewSWType.h"
 
-#include <StringTable.h>
-
 SWTypeExt::ExtContainer SWTypeExt::ExtMap;
 
 void SWTypeExt::ExtData::Initialize()

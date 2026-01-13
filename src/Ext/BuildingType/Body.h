@@ -1,9 +1,4 @@
 #pragma once
-#include <BuildingTypeClass.h>
-#include <SuperClass.h>
-#include <SuperWeaponTypeClass.h>
-
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -102,6 +97,8 @@ public:
 
 		Valueable<bool> UndeploysInto_Sellable;
 
+		Nullable<bool> BuildingRadioLink_SyncOwner;
+
 		// Ares 0.2
 		Valueable<bool> CloningFacility;
 
@@ -172,6 +169,8 @@ public:
 			, Refinery_UseNormalActiveAnim { false }
 			, HasPowerUpAnim {}
 			, UndeploysInto_Sellable { false }
+
+			, BuildingRadioLink_SyncOwner {}
 
 			// Ares 0.2
 			, CloningFacility { false }

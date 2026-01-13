@@ -144,7 +144,7 @@ msgid ""
 "developers/PhobosSupplementaries).*"
 msgstr ""
 "![image](_static/images/digital_display_shapes.png) *使用来自 [Phobos "
-"补充仓库](https://github.com/Phobos-developers/PhobosSupplementaries) 示例 "
+"补充资源库](https://github.com/Phobos-developers/PhobosSupplementaries) 中示例 "
 "Shape 文件的默认配置。*"
 
 #: ../../User-Interface.md:34 ../../User-Interface.md:146
@@ -527,7 +527,7 @@ msgid ""
 "An example shape file for digits can be found on [Phobos supplementaries "
 "repo](https://github.com/Phobos-developers/PhobosSupplementaries)."
 msgstr ""
-"可以在 [Phobos 补充仓库](https://github.com/Phobos-"
+"可以在 [Phobos 补充资源库](https://github.com/Phobos-"
 "developers/PhobosSupplementaries) 找到数字化显示的示例 Shape 文件。"
 
 #: ../../User-Interface.md:141
@@ -1661,7 +1661,7 @@ msgid ""
 "You can now disable hardcoded black dots that YR engine shows over empty "
 "spawn locations, which allows to use prettier and more correctly placed "
 "markers that are produced by Map Renderer instead."
-msgstr "现在你可以禁用 YR 引擎在空置出生点显示的黑点，这允许使用由地图渲染器生成的更没关且位置正确的标记。"
+msgstr "现在你可以禁用 YR 引擎在空置出生点显示的黑点，这允许使用由地图渲染器生成的更美观且位置正确的标记。"
 
 #: ../../User-Interface.md:521 ../../User-Interface.md:579
 #: ../../User-Interface.md:608 ../../User-Interface.md:654
@@ -1935,7 +1935,7 @@ msgid ""
 "example."
 msgstr ""
 "如果你的 mod 使用原版字体文件，你可以使用改进的字体文件（v4 或更高版本；可以在 [Phobos "
-"补充仓库](https://github.com/Phobos-developers/PhobosSupplementaries) "
+"补充资源库](https://github.com/Phobos-developers/PhobosSupplementaries) "
 "中找到）其中包含所有提到的图标。否则你需要自己编辑字库文件，例如使用 [WWFontEditor](http://nyerguds"
 ".arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D) "
 "绘制它们。"
@@ -2124,8 +2124,8 @@ msgid ""
 "vanilla-like assets for from [Phobos supplementaries](https://github.com"
 "/Phobos-developers/PhobosSupplementaries)*"
 msgstr ""
-"![image](_static/images/sw_sidebar.png) *使用来自 [Phobos "
-"补充仓库](https://github.com/Phobos-developers/PhobosSupplementaries) 中类原版 UI"
+"![image](_static/images/sw_sidebar.png) *使用 [Phobos "
+"补充资源库](https://github.com/Phobos-developers/PhobosSupplementaries) 中类原版 UI"
 " 资产的超武侧边栏*"
 
 #: ../../User-Interface.md:718
@@ -2349,7 +2349,7 @@ msgid ""
 "example assets to use with vanilla graphics on [Phobos supplementaries "
 "repo](https://github.com/Phobos-developers/PhobosSupplementaries)."
 msgstr ""
-"虽然该功能可以在没有任何额外图像的情况下使用，但你可以在 [Phobos 补充仓库](https://github.com/Phobos-"
+"虽然该功能可以在没有任何额外图像的情况下使用，但你可以在 [Phobos 补充资源库](https://github.com/Phobos-"
 "developers/PhobosSupplementaries) 找到数与原版界面 UI 图像搭配使用的示例资产。"
 
 #: ../../User-Interface.md:787

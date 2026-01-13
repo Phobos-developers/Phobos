@@ -2,16 +2,10 @@
 
 #include <MessageListClass.h>
 
-#include <Ext/Scenario/Body.h>
-#include <Ext/SWType/Body.h>
-
-#include <New/Entity/BannerClass.h>
-
-#include <New/Type/BannerTypeClass.h>
-
-#include <Utilities/SavegameDef.h>
-#include <Utilities/SpawnerHelper.h>
 #include <Ext/House/Body.h>
+#include <Ext/Scenario/Body.h>
+#include <New/Entity/BannerClass.h>
+#include <Utilities/SpawnerHelper.h>
 
 //Static init
 TActionExt::ExtContainer TActionExt::ExtMap;
@@ -71,6 +65,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 
 	case PhobosTriggerAction::ToggleMCVRedeploy:
 		return TActionExt::ToggleMCVRedeploy(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::UndeployToWaypoint:
+		return TActionExt::UndeployToWaypoint(pThis, pHouse, pObject, pTrigger, location);
 
 	case PhobosTriggerAction::EditAngerNode:
 		return TActionExt::EditAngerNode(pThis, pHouse, pObject, pTrigger, location);
@@ -78,6 +74,10 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::ClearAngerNode(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::SetForceEnemy:
 		return TActionExt::SetForceEnemy(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetFreeRadar:
+		return TActionExt::SetFreeRadar(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetTeamDelay:
+		return TActionExt::SetTeamDelay(pThis, pHouse, pObject, pTrigger, location);
 
 	case PhobosTriggerAction::CreateBannerLocal:
 		return TActionExt::CreateBannerLocal(pThis, pHouse, pObject, pTrigger, location);
@@ -384,6 +384,99 @@ bool TActionExt::ToggleMCVRedeploy(TActionClass* pThis, HouseClass* pHouse, Obje
 	return true;
 }
 
+bool TActionExt::UndeployToWaypoint(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
+{
+	const auto& nCell = ScenarioExt::Global()->Waypoints[pThis->Waypoint];
+	CellClass* const pCell = MapClass::Instance.TryGetCellAt(nCell);
+
+	if (!pCell)
+		return true;
+
+	HouseClass* vHouse = nullptr;
+	const int houseIndex = pThis->Param3;
+
+	if (houseIndex >= 0)
+	{
+		vHouse = HouseClass::Index_IsMP(houseIndex)
+			? HouseClass::FindByIndex(houseIndex) : HouseClass::FindByCountryIndex(houseIndex);
+	}
+
+	if (!vHouse)
+		return true;
+
+	const char* buildingName = pThis->TechnoID;
+	bool allBuilding = false;
+	BuildingTypeClass* pBuildingType = nullptr;
+
+	if (!strcmp(buildingName, "<All>"))
+	{
+		allBuilding = true;
+	}
+	else
+	{
+		pBuildingType = BuildingTypeClass::Find(buildingName);
+	}
+
+	if (!allBuilding && !pBuildingType)
+		return true;
+
+	const auto& limboDelivereds = HouseExt::ExtMap.Find(vHouse)->OwnedLimboDeliveredBuildings;
+	const bool existLimboBuilding = !limboDelivereds.empty();
+	const auto vectorBegin = limboDelivereds.begin();
+	const auto vectorEnd = limboDelivereds.end();
+
+	// Thanks to chaserli for the relevant code!
+	// There should be a more perfect way to do this, but I don't know how.
+	auto canUndeploy = [&](BuildingClass* const pBuilding)
+	{
+		auto const pType = pBuilding->Type;
+
+		if (!pType->UndeploysInto
+			|| pBuilding->Owner != vHouse
+			|| (!allBuilding && pType != pBuildingType)
+			|| pBuilding->CurrentMission == Mission::Selling 
+			|| !pBuilding->IsAlive || pBuilding->Health <= 0 || pBuilding->InLimbo)
+		{
+			return false;
+		}
+
+		// verify whether the building's source is LimboDelivery.
+		if (existLimboBuilding
+			&& std::find(vectorBegin, vectorEnd, pBuilding) != vectorEnd)
+		{
+			return false;
+		}
+
+		if (pType->ConstructionYard)
+		{
+			// Conyards can't undeploy if MCVRedeploy=no
+			if (!GameModeOptionsClass::Instance.MCVRedeploy)
+				return false;
+			// or MindControlledBy YURIX (why? for balance?)
+			if (!RulesExt::Global()->AllowDeployControlledMCV && pBuilding->MindControlledBy)
+				return false;
+		}
+
+		return true;
+	};
+
+	for (const auto pBuilding : BuildingClass::Array)
+	{
+		if (!canUndeploy(pBuilding))
+			continue;
+
+		// Why does having this allow it to undeploy?
+		// Why don't vehicles move when waypoints are placed off the map?
+
+		const bool old = std::exchange(VocClass::VoicesEnabled, false);
+		pBuilding->SetArchiveTarget(pCell);
+		pBuilding->Sell(true);
+		VocClass::VoicesEnabled = old;
+	}
+
+	return true;
+}
+
 bool TActionExt::EditAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	if (pHouse->AngerNodes.Count <= 0)
@@ -514,6 +607,59 @@ bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 	{
 		pHouseExt->SetForceEnemyIndex(-1);
 		pHouse->UpdateAngerNodes(0, pHouse);
+	}
+
+	return true;
+}
+
+bool TActionExt::SetFreeRadar(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
+{
+	if (pHouse->IsControlledByHuman())
+	{
+		auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+
+		switch (pThis->Param3)
+		{
+		case 1:
+			pHouseExt->FreeRadar = true;
+			pHouseExt->ForceRadar = false;
+			break;
+		case 2:
+			pHouseExt->FreeRadar = true;
+			pHouseExt->ForceRadar = true;
+			break;
+		case 3:
+			pHouseExt->FreeRadar = false;
+			pHouseExt->ForceRadar = true;
+			break;
+		default:
+			pHouseExt->FreeRadar = false;
+			pHouseExt->ForceRadar = false;
+			break;
+		}
+
+		pHouse->RecheckRadar = true;
+	}
+
+	return true;
+}
+
+bool TActionExt::SetTeamDelay(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
+{
+	const int value = pThis->Param3;
+	const int timer = value < 0 ? RulesClass::Instance->TeamDelays.Items[static_cast<int>(pHouse->AIDifficulty)] : value;
+	HouseExt::ExtMap.Find(pHouse)->TeamDelay = value;
+
+	auto& Timer = pHouse->TeamDelayTimer;
+	const int time = std::min(Timer.GetTimeLeft(), timer);
+
+	if (Timer.StartTime == -1 && Timer.TimeLeft != 0 && time > 0)
+	{
+		Timer.TimeLeft = time;
+	}
+	else if (Timer.InProgress())
+	{
+		Timer.Start(time);
 	}
 
 	return true;

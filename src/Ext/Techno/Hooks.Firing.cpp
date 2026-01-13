@@ -1,15 +1,10 @@
 #include "Body.h"
 
-#include <OverlayTypeClass.h>
-#include <ScenarioClass.h>
-#include <TerrainClass.h>
-
 #include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Utilities/EnumFunctions.h>
 
 #pragma region TechnoClass_SelectWeapon
 
@@ -150,7 +145,7 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 				&& (allowFallback
 					|| ((allowAAFallback && pTargetTechno->IsInAir() && pSecondary->Projectile->AA)
 							|| (pTargetTechno->InWhichLayer() == Layer::Underground && BulletTypeExt::ExtMap.Find(pSecondary->Projectile)->AU))
-					|| TechnoExt::CanFireNoAmmoWeapon(pThis, 1)))
+					|| TechnoExt::CanFireNoAmmoWeapon(pThis, pTypeExt->OwnerObject(), 1)))
 			{
 				if (!pShield->CanBeTargeted(pThis->GetWeapon(0)->WeaponType))
 					return Secondary;
@@ -479,6 +474,19 @@ DEFINE_HOOK(0x6FC749, TechnoClass_GetFireError_AntiUnderground, 0x5)
 	}
 
 	return GoOtherChecks;
+}
+
+DEFINE_HOOK(0x6FC7EB, TechnoClass_GetFireError_InterceptBullet, 0x7)
+{
+	enum { IgnoreAG = 0x6FC815, ContinueCheck = 0x6FC7F2 };
+
+	GET(AbstractClass*, pTarget, EBX);
+
+	if (pTarget->WhatAmI() == AbstractType::Bullet)
+		return IgnoreAG;
+
+	R->AL(pTarget->IsInAir());
+	return ContinueCheck;
 }
 
 #pragma endregion

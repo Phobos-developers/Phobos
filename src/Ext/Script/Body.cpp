@@ -1,7 +1,5 @@
 #include "Body.h"
 
-#include <Ext/House/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/Scenario/Body.h>
 
 ScriptExt::ExtContainer ScriptExt::ExtMap;

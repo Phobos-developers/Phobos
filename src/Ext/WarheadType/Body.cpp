@@ -1,11 +1,6 @@
 #include "Body.h"
 
-#include <BulletClass.h>
-#include <HouseClass.h>
-
-#include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
-#include <Utilities/EnumFunctions.h>
 
 WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
 
@@ -310,6 +305,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AnimZAdjust.Read(exINI, pSection, "AnimZAdjust");
 
+	this->ApplyPerTargetEffectsOnDetonate.Read(exINI, pSection, "ApplyPerTargetEffectsOnDetonate");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -602,6 +599,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlayAnimAboveSurface)
 
 		.Process(this->AnimZAdjust)
+
+		.Process(this->ApplyPerTargetEffectsOnDetonate)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

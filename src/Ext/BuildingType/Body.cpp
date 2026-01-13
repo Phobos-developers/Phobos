@@ -1,7 +1,6 @@
 #include "Body.h"
 
 #include <Ext/House/Body.h>
-#include <Utilities/GeneralUtils.h>
 #include <Ext/SWType/Body.h>
 
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
@@ -248,6 +247,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
 	this->UndeploysInto_Sellable.Read(exINI, pSection, "UndeploysInto.Sellable");
 
+	this->BuildingRadioLink_SyncOwner.Read(exINI, pSection, "BuildingRadioLink.SyncOwner");
+
 	// PlacementPreview
 	{
 		this->PlacementPreview.Read(exINI, pSection, "PlacementPreview");
@@ -345,6 +346,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Refinery_UseNormalActiveAnim)
 		.Process(this->HasPowerUpAnim)
 		.Process(this->UndeploysInto_Sellable)
+		.Process(this->BuildingRadioLink_SyncOwner)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)
