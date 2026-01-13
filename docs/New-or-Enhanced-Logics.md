@@ -1815,8 +1815,8 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                          ; TechnoType
 MindControlRangeLimit=-1.0            ; floating point value
-MindControl.IgnoreSize=true             ; boolean
-MindControlSize=1                       ; integer
+MindControl.IgnoreSize=true           ; boolean
+MindControlSize=1                     ; integer
 MindControlLink.VisibleToHouse=all    ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 MultiMindControl.ReleaseVictim=false  ; boolean
 ```

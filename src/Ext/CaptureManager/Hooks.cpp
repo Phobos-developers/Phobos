@@ -34,7 +34,7 @@ DEFINE_HOOK(0x471C90, CaptureManagerClass_CanCapture, 0x6)
 
 static int __fastcall _GetControlledCount(CaptureManagerClass* pThis)
 {
-	const auto pOwnerTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
+	const auto pOwnerTypeExt = TechnoExt::ExtMap.Find(pThis->Owner)->TypeExtData;
 
 	if (!pOwnerTypeExt->MindControl_IgnoreSize)
 		return CaptureManagerExt::GetControlledTotalSize(pThis);

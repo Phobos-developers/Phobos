@@ -10,7 +10,7 @@ int CaptureManagerExt::GetControlledTotalSize(CaptureManagerClass* pManager)
 	for (const auto pNode : pManager->ControlNodes)
 	{
 		if (const auto pTechno = pNode->Unit)
-			totalSize += TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType())->MindControlSize;
+			totalSize += TechnoExt::ExtMap.Find(pTechno)->TypeExtData->MindControlSize;
 	}
 
 	return totalSize;
@@ -79,7 +79,7 @@ bool CaptureManagerExt::CanCapture(CaptureManagerClass* pManager, TechnoClass* p
 	// free slot? (move on if infinite or single slot which will be freed if used)
 	if (!pManager->InfiniteMindControl && pManager->MaxControlNodes != 1)
 	{
-		const auto pOwnerTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
+		const auto pOwnerTypeExt = TechnoExt::ExtMap.Find(pOwner)->TypeExtData;
 
 		if (!pOwnerTypeExt->MindControl_IgnoreSize)
 		{
