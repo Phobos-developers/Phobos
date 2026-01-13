@@ -482,6 +482,7 @@ New:
 - [Toggle to exclude technos from base center calculations](New-or-Enhanced-Logics.md#exclusion-from-base-center-calculations) (by Starkku)
 - Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies` (by FlyStar)
 - Attack non-threatening structures extensions (by FlyStar)
+- Customize size for mind controlled unit (by NetsuNegi)
 - Vehicle Deployment Enhancement (by FlyStar)
 
 Vanilla fixes:
