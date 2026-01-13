@@ -453,6 +453,8 @@ public:
 
 		Nullable<bool> TurretResponse;
 
+		Vector2D<bool> AttackFriendlies;
+
 		Valueable<bool> Unload_SkipPassengers;
 		Valueable<bool> Unload_NoPassengers;
 
@@ -862,6 +864,8 @@ public:
 			, TeamMember_ConsideredAs {}
 
 			, TurretResponse {}
+
+			, AttackFriendlies { false,false }
 
 			, Unload_SkipPassengers { false }
 			, Unload_NoPassengers { false }
