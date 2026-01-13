@@ -455,7 +455,7 @@ public:
 
 		Vector2D<bool> AttackFriendlies;
 
-    SHPStruct* TurretShape;
+		SHPStruct* TurretShape;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
