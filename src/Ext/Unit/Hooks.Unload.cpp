@@ -54,8 +54,8 @@ DEFINE_HOOK(0x73DEEB, UnitClass_Mi_Unload_SkipHarvester, 0x5)
 
 	auto const pTypeExt = UnitUnloadTemp::TypeExtData;
 
-	if (pTypeExt->Unload_SkipHarvester
-		|| (pTypeExt->Unload_NoTiberiums && pThis->Tiberium.GetTotalValue() == 0))
+	if (!pThis->Unloading
+		&& (pTypeExt->Unload_SkipHarvester || (pTypeExt->Unload_NoTiberiums && pThis->Tiberium.GetTotalValue() == 0)))
 	{
 		R->EAX(pThis->Type);
 		return SkipHarvester;
