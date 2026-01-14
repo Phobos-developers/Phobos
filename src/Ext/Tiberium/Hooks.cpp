@@ -1,9 +1,6 @@
 #include "Body.h"
 
-#include <CellClass.h>
 #include <OverlayClass.h>
-
-#include <Utilities/GeneralUtils.h>
 
 DEFINE_HOOK(0x47C210, CellClass_CellColor_TiberiumRadarColor, 0x6)
 {

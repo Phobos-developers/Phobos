@@ -479,6 +479,10 @@ New:
 - [Extra range for chasing and pre-firing](New-or-Enhanced-Logics.md#extra-range) (by TaranDahl)
 - [Allow techno type considered as other type when recruiting techno for teams](Fixed-or-Improved-Logics.md#allow-techno-type-considered-as-other-type-when-recruiting-techno-for-teams) (by NetsuNegi)
 - Map Action [`511` Undeploy Building to Waypoint](AI-Scripting-and-Mapping.md#undeploy-building-to-waypoint), [`609` Set Radar Mode](AI-Scripting-and-Mapping.md#set-radar-mode), [`610` Set house's `TeamDelays` value](AI-Scripting-and-Mapping.md#set-house-s-teamdelays-value) (by FlyStar)
+- [Toggle to exclude technos from base center calculations](New-or-Enhanced-Logics.md#exclusion-from-base-center-calculations) (by Starkku)
+- Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies` (by FlyStar)
+- Attack non-threatening structures extensions (by FlyStar)
+- Customize size for mind controlled unit (by NetsuNegi)
 - Attached effect attach/discard by health (by Ollerus)
 - Attached effect with `ExtraWarheads`, `KillWeapon` and `FeedbackWeapon` (by Ollerus)
 - [AuxWeapon](New-or-Enhanced-Logics.md#auxiliary-weapon) (by Ollerus)
@@ -553,6 +557,7 @@ Phobos fixes:
 - Fixed OverlayType `ZAdjust` as well as some shield & AttachEffect variables not being correctly saved & loaded (by Ollerus)
 - LimboDelivery buildings cannot be selected (by FlyStar)
 - Fixed the positive value of `Reveal` on warhead (by NetsuNegi)
+- Fixed the bug that weapon cannot used to intercept on gound bullet if it's projectile has `AG=no` (by NetsuNegi)
 
 Fixes / interactions with other extensions:
 <!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->

@@ -402,6 +402,8 @@ This page lists all the individual contributions to the project by their author.
   - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles
   - Reactivate unused trigger events 2, 53, and 54
   - Map Action 511, 609, 610
+  - Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`
+  - Attack non-threatening structures extensions
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -474,6 +476,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed
   - Fix the bug that vehicle survivor can spawn on wrong position when transport has been destroyed
   - Fix the bug that if object has been removed from LogicClass in Update(), next object will be skip
+  - Fix the bug that weapon cannot used to intercept on gound bullet if it's projectile has `AG=no`
+  - Customize size for mind controlled unit
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

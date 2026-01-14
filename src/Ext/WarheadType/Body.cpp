@@ -1,11 +1,6 @@
 #include "Body.h"
 
-#include <BulletClass.h>
-#include <HouseClass.h>
-
-#include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
-#include <Utilities/EnumFunctions.h>
 
 WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
 

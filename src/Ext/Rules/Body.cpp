@@ -1,12 +1,6 @@
 #include "Body.h"
-#include <Ext/Side/Body.h>
-#include <Utilities/TemplateDef.h>
-#include <FPSCounter.h>
-#include <GameOptionsClass.h>
 
-#include <Ext/BulletType/Body.h>
 #include <Ext/TechnoType/Body.h>
-#include <Ext/Scenario/Body.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
@@ -15,7 +9,6 @@
 #include <New/Type/BannerTypeClass.h>
 #include <New/Type/InsigniaTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
-#include <Utilities/Patch.h>
 
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
 
@@ -350,6 +343,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ExtraRange_Prefiring.Read(exINI, GameStrings::General, "ExtraRange.Prefiring");
 	this->ExtraRange_Prefiring_IncludeBurst.Read(exINI, GameStrings::General, "ExtraRange.Prefiring.IncludeBurst");
 
+	this->AutoTarget_NoThreatBuildings.Read(exINI, GameStrings::General, "AutoTarget.NoThreatBuildings");
+	this->AutoTargetAI_NoThreatBuildings.Read(exINI, GameStrings::General, "AutoTargetAI.NoThreatBuildings");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -634,6 +630,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraRange_FirerMoving)
 		.Process(this->ExtraRange_Prefiring)
 		.Process(this->ExtraRange_Prefiring_IncludeBurst)
+		.Process(this->AutoTarget_NoThreatBuildings)
+		.Process(this->AutoTargetAI_NoThreatBuildings)
 		;
 }
 

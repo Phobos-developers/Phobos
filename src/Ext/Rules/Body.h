@@ -1,14 +1,8 @@
 #pragma once
 
-#include <CCINIClass.h>
 #include <RulesClass.h>
 #include <Utilities/Container.h>
-#include <Utilities/Constructs.h>
-#include <Utilities/Template.h>
-#include <Utilities/Enum.h>
 #include <Utilities/TemplateDef.h>
-#include <Utilities/Debug.h>
-#include <Utilities/Anchor.h>
 
 class AnimTypeClass;
 class MouseCursor;
@@ -299,6 +293,9 @@ public:
 		
 		Valueable<bool> ApplyPerTargetEffectsOnDetonate;
 		
+		Valueable<bool> AutoTarget_NoThreatBuildings;
+		Valueable<bool> AutoTargetAI_NoThreatBuildings;
+    
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -536,6 +533,9 @@ public:
 			, ExtraRange_FirerMoving { Leptons(0) }
 			, ExtraRange_Prefiring { Leptons(0) }
 			, ExtraRange_Prefiring_IncludeBurst { true }
+
+			, AutoTarget_NoThreatBuildings { false }
+			, AutoTargetAI_NoThreatBuildings { true }
 		{ }
 
 		virtual ~ExtData() = default;

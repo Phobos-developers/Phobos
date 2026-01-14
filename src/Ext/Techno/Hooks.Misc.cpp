@@ -1,7 +1,6 @@
 #include "Body.h"
 
 #include <EventClass.h>
-#include <SpawnManagerClass.h>
 #include <TunnelLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
 

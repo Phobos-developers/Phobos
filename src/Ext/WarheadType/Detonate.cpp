@@ -1,21 +1,9 @@
 #include "Body.h"
 
-#include <InfantryClass.h>
-#include <BulletClass.h>
-#include <HouseClass.h>
-#include <ScenarioClass.h>
-#include <AnimTypeClass.h>
-#include <AnimClass.h>
-#include <BitFont.h>
-#include <SuperClass.h>
-
 #include <Ext/Anim/Body.h>
-#include <Ext/Bullet/Body.h>
-#include <Ext/BulletType/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/Helpers.Alex.h>
-#include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
 
 #pragma region CreateGap Calls

@@ -1,16 +1,8 @@
 #include "ShieldClass.h"
 
 #include <Ext/Anim/Body.h>
-#include <Ext/Rules/Body.h>
 #include <Ext/Techno/Body.h>
-#include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
-
-#include <Utilities/GeneralUtils.h>
-#include <AnimClass.h>
-#include <HouseClass.h>
-#include <RadarEventClass.h>
-#include <TacticalClass.h>
 
 std::vector<ShieldClass*> ShieldClass::Array;
 

@@ -2,16 +2,10 @@
 
 #include <MessageListClass.h>
 
-#include <Ext/Scenario/Body.h>
-#include <Ext/SWType/Body.h>
-
-#include <New/Entity/BannerClass.h>
-
-#include <New/Type/BannerTypeClass.h>
-
-#include <Utilities/SavegameDef.h>
-#include <Utilities/SpawnerHelper.h>
 #include <Ext/House/Body.h>
+#include <Ext/Scenario/Body.h>
+#include <New/Entity/BannerClass.h>
+#include <Utilities/SpawnerHelper.h>
 
 //Static init
 TActionExt::ExtContainer TActionExt::ExtMap;

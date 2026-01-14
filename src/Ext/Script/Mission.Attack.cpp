@@ -2,7 +2,6 @@
 
 #include <Ext/Building/Body.h>
 #include <Ext/BulletType/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 // Contains ScriptExt::Mission_Attack and its helper functions.

@@ -1,12 +1,9 @@
 #pragma once
-#include <WarheadTypeClass.h>
-#include <SuperWeaponTypeClass.h>
-#include <Helpers/Macro.h>
+#include <Ext/Bullet/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 #include <New/Type/ShieldTypeClass.h>
-#include <Ext/Bullet/Body.h>
-#include <Ext/Techno/Body.h>
+#include <New/Type/AttachEffectTypeClass.h>
 #include <New/Type/Affiliated/TypeConvertGroup.h>
 
 class WarheadTypeExt

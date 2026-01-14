@@ -856,7 +856,7 @@ BombParachute=           ; AnimationType, default to [General] -> BombParachute
 
 - Projectiles can now be made interceptable by certain TechnoTypes by setting `Interceptable=true` on them. The TechnoType scans for interceptable projectiles within a range if it has no other target and will use one of its weapons to shoot at them. Projectiles can define `Armor` and `Strength`. Weapons that cannot target the projectile's armor type will not attempt to intercept it. On interception, if the projectile has `Armor` set, an amount equaling to the intercepting weapon's `Damage` adjusted by Warhead `Verses` is deducted from the projectile's current strength. Regardless of if the current projectile strength was reduced or not, if it sits at 0 or below after interception, the projectile is detonated.
   - `Interceptor.Weapon` determines the weapon (0 = `Primary`, 1 = `Secondary`) to be used for intercepting projectiles.
-    - The interceptor weapon may need `AG` and/or `AA` set to true on its projectile to be able to target projectiles depending on their elevation from ground. If you don't set those then the weapon won't be able to target low-flying or high-flying projectiles respectively.
+    - The interceptor weapon may need `AA` set to true on its projectile to be able to target projectiles depending on their elevation from ground. If you don't set those then the weapon won't be able to target high-flying projectiles respectively.
   - `Interceptor.TargetingDelay` determines how often (in frames) interceptor TechnoType scans for suitable projectiles to intercept. Smaller delay is better for interceptor's capabilities but worse for game performance. Delay cannot be set to 0, this will change the delay to 1 and outputs a developer warning to log.
   - `Interceptor.CanTargetHouses` controls which houses the projectiles (or rather their firers) can belong to be eligible for interception.
   - `Interceptor.GuardRange` (and `Interceptor.(Rookie|Veteran|EliteGuardRange)`) is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
@@ -1385,6 +1385,18 @@ In `rulesmd.ini`:
 AttackMove.IgnoreWeaponCheck=false    ; boolean
 ```
 
+### Attack non-threatening structures
+
+- You can now freely configure whether units can automatically target non-threatening structures.
+  - `AutoTarget.NoThreatBuildings` affects player-controlled units, `AutoTargetAI.NoThreatBuildings` affects other units.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AutoTarget.NoThreatBuildings=false      ; boolean
+AutoTargetAI.NoThreatBuildings=true     ; boolean
+```
+
 ### Aircraft spawner customizations
 
 ![image](_static/images/spawnrange-01.gif)
@@ -1679,6 +1691,16 @@ DisguiseBlinkingVisibility=owner  ; List of Affected House Enumeration (none|own
 UseDisguiseMovementSpeed=false    ; boolean
 ```
 
+### Exclusion from base center calculations
+
+- It is possible to exclude TechnoType from base center calculations (used for number of things such as certain AI scripts and AI superweapon targeting modes etc). Normally only buildings are factored in, but the initial base center does count house's starting technos which this does affect.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]               ; TechnoType
+IgnoreForBaseCenter=false  ; boolean
+```
+
 ### Extended gattling rate down logic
 
 - Now you can customize some effects of `RateDown`.
@@ -1860,6 +1882,7 @@ Please notice that if the object is a unit which carries passengers, they will n
 *Multiple Mind Control unit auto-releases the first victim in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 - Mind controllers now can have the upper limit of the control distance. Tag values greater than 0 will activate this feature.
+- Mind controlled targets can have size of control, like passengers in transport.
 - Mind controllers now can decide which house can see the link drawn between itself and the controlled units.
 - Mind controllers with multiple controlling slots can now release the first controlled unit when they have reached the control limit and are ordered to control a new target.
 
@@ -1867,6 +1890,8 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                          ; TechnoType
 MindControlRangeLimit=-1.0            ; floating point value
+MindControl.IgnoreSize=true           ; boolean
+MindControlSize=1                     ; integer
 MindControlLink.VisibleToHouse=all    ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 MultiMindControl.ReleaseVictim=false  ; boolean
 ```
@@ -2785,6 +2810,16 @@ In `rulesmd.ini`:
 AreaFire.Target=base ; AreaFire Target Enumeration (base|self|random)
 ```
 
+### Attack non-threatening structures
+
+- `AttackNoThreatBuildings` permits shooters to attack non-threatening structures. This setting overrides other configurations.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                ; WeaponType
+AttackNoThreatBuildings=    ; boolean
+```
+
 ### Burst delay customizations
 
 - `Burst.Delays` allows specifying weapon-specific burst shot delays. Takes precedence over the old `BurstDelayX` logic available on VehicleTypes, functions with Infantry & BuildingType weapons (AircraftTypes are not supported due to their weapon firing system being completely different) and allows every shot of `Burst` to have a separate delay instead of only first four shots.
@@ -2815,6 +2850,17 @@ Burst.NoDelay=false   ; boolean
 ```{note}
 - This is useless for buildings and aircraft.
 - This will ignore `Burst.Delays` setting.
+```
+
+### Can attack allies
+
+- Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`, They override the firer's `AttackFriendlies` and `AttackCursorOnFriendlies`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                ; WeaponType
+AttackFriendlies=           ; boolean
+AttackCursorOnFriendlies=   ; boolean
 ```
 
 ### Delayed firing

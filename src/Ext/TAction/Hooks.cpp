@@ -3,18 +3,6 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/Rules/Body.h>
 
-#include <Helpers/Macro.h>
-
-#include <HouseClass.h>
-#include <BuildingClass.h>
-#include <OverlayTypeClass.h>
-#include <LightSourceClass.h>
-#include <RadSiteClass.h>
-#include <VocClass.h>
-#include <ScenarioClass.h>
-
-#include <Utilities/Macro.h>
-
 DEFINE_HOOK(0x6DD8B0, TActionClass_Execute, 0x6)
 {
 	GET(TActionClass*, pThis, ECX);
