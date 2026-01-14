@@ -43,6 +43,8 @@ public:
 		Nullable<int> DesignatorRange;
 		Valueable<float> FactoryPlant_Multiplier;
 		Valueable<Leptons> MindControlRangeLimit;
+		Valueable<bool> MindControl_IgnoreSize;
+		Valueable<int> MindControlSize;
 		Valueable<AffectedHouse> MindControlLink_VisibleToHouse;
 
 		std::unique_ptr<InterceptorTypeClass> InterceptorType;
@@ -475,6 +477,8 @@ public:
 			, DesignatorRange { }
 			, FactoryPlant_Multiplier { 1.0 }
 			, MindControlRangeLimit {}
+			, MindControl_IgnoreSize { true }
+			, MindControlSize { 1 }
 			, MindControlLink_VisibleToHouse{ AffectedHouse::All }
 
 			, InterceptorType { nullptr }
