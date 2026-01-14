@@ -459,6 +459,8 @@ public:
 
 		Valueable<bool> Unload_SkipPassengers;
 		Valueable<bool> Unload_NoPassengers;
+		Valueable<bool> Unload_SkipHarvester;
+		Valueable<bool> Unload_NoTiberiums;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -873,6 +875,8 @@ public:
 
 			, Unload_SkipPassengers { false }
 			, Unload_NoPassengers { false }
+			, Unload_SkipHarvester { false }
+			, Unload_NoTiberiums { false }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -2194,14 +2194,19 @@ Note that the VehicleTypes had to be defined under [VehicleTypes] and use same i
 ### Deployment Enhancement
 
 - When a vehicle has `Passengers` and possesses `DeployFire/IsSimpleDeployer/DeploysInto`, it can perform custom deployment actions beyond merely releasing passengers.
-  - `Unload.SkipPassengers` allows the vehicle to bypass the passenger release process and execute other deployment actions.
-  - `Unload.NoPassengers` enables the vehicle to perform other deployment actions after losing all passengers.
+  - `Unload.SkipPassengers` enables vehicles to bypass the passenger release process and perform other deployment actions.
+  - `Unload.NoPassengers` enables vehicles to perform other deployment actions after losing all passengers.
+- Mining vehicles that have not yet unloaded minerals can now perform other deployment operations.
+  - `Unload.SkipHarvester` allows mining vehicles to perform other deployment actions when not unloading minerals.
+  - `Unload.NoTiberiums` allows mining vehicles to perform other deployment actions when no minerals are present.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEVEHICLE]                   ; VehicleType
 Unload.SkipPassengers=false     ; boolean
 Unload.NoPassengers=false       ; boolean
+Unload.SkipHarvester=false      ; boolean
+Unload.NoTiberiums=false        ; boolean
 ```
 
 ### Jumpjet Tilts While Moving

@@ -405,6 +405,7 @@ This page lists all the individual contributions to the project by their author.
   - Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`
   - Attack non-threatening structures extensions
   - Vehicle Deployment Enhancement
+  - Fixed an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building

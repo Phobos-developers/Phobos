@@ -529,6 +529,7 @@ Vanilla fixes:
 - Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units (by TaranDahl)
 - Fixed an issue that rockets do not consider the destination altitude during climbing (by TaranDahl)
 - Fixed the bug that if object has been removed from LogicClass in Update(), next object will be skip (by NetsuNegi)
+- Fixed an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals (by FlyStar)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
