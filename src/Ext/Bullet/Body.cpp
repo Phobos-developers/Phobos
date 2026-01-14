@@ -2,7 +2,9 @@
 
 #include <Ext/Anim/Body.h>
 #include <Ext/RadSite/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
 #include <Ext/EBolt/Body.h>
 #include <New/Entity/LaserTrailClass.h>
@@ -125,6 +127,59 @@ void BulletExt::ExtData::InitializeLaserTrails()
 
 	for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
 		this->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(LaserTrailTypeClass::Array[idxTrail].get(), pOwner));
+}
+
+void BulletExt::RealLaunch(WeaponTypeClass* pWeapon, TechnoClass* pSource, TechnoClass* pTarget, bool applyFirepowerMult, TechnoClass* pFirer)
+{
+	int damage = pWeapon->Damage;
+
+	if (applyFirepowerMult)
+		damage = static_cast<int>(damage * TechnoExt::GetCurrentFirepowerMultiplier(pSource));
+
+	if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pTarget, pSource,
+		damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
+	{
+		if (!pFirer)
+			pFirer = pSource;
+
+		BulletExt::SimulatedFiringUnlimbo(pBullet, pSource->Owner, pWeapon, pFirer->Location, true);
+		BulletExt::SimulatedFiringEffects(pBullet, pSource->Owner, nullptr, false, true);
+	}
+}
+
+bool BulletExt::IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, WeaponTypeClass* pWeapon, TechnoClass* pTarget, bool useWeaponTargeting, bool useWarheadTargeting)
+{
+	auto const pWH = pWeapon->Warhead;
+
+	if (useWeaponTargeting)
+	{
+		auto const pType = pTarget->GetTechnoType();
+
+		if (!pType->LegalTarget || GeneralUtils::GetWarheadVersusArmor(pWH, pType->Armor) == 0.0)
+			return false;
+
+		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+		if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTarget->Owner)
+			|| !EnumFunctions::IsCellEligible(pTarget->GetCell(), pWeaponExt->CanTarget, true, true)
+			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget)
+			|| !pWeaponExt->IsHealthInThreshold(pTarget))
+		{
+			return false;
+		}
+
+		if (!pWeaponExt->HasRequiredAttachedEffects(pTarget, pSource))
+			return false;
+	}
+	else if (useWarheadTargeting)
+	{
+		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+		if (!pWHExt->CanTargetHouse(pOwner, pTarget) || !pWHExt->IsHealthInThreshold(pTarget))
+			return false;
+	}
+
+	return true;
 }
 
 void BulletExt::ExtData::ApplyExtraWarheads(const std::vector<WarheadTypeClass*>& exWH, const std::vector<int>& exWHOverrides, const std::vector<double>& exWHChances, const std::vector<bool>& exWHFull, const std::vector<bool>& exWHOwner, const std::vector<bool>& exWHMult, const CoordStruct& coords, HouseClass* pOwner, TechnoClass* pInvoker)

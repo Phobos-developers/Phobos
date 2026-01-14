@@ -263,7 +263,7 @@ void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, Warhea
 			if (onFirer)
 			{
 				if (realLaunch)
-					TechnoExt::RealLaunch(pWeapon, pSource, pSource, true, pThis);
+					BulletExt::RealLaunch(pWeapon, pSource, pSource, true, pThis);
 				else
 					WeaponTypeExt::DetonateAt(pWeapon, pSource, pSource);
 			}
@@ -304,10 +304,10 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 	if (pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThisOwner, pSourceOwner))
 	{
 		if ((!pWHExt->SuppressRevengeWeapons || (hasFilters && !pWHExt->SuppressRevengeWeapons_Types.Contains(pTypeExt->RevengeWeapon)))
-			&& TechnoExt::IsAllowedSplitsTarget(pThis, pThisOwner, pTypeExt->RevengeWeapon, pSource, pTypeExt->RevengeWeapon_UseWeaponTargeting, false))
+			&& BulletExt::IsAllowedSplitsTarget(pThis, pThisOwner, pTypeExt->RevengeWeapon, pSource, pTypeExt->RevengeWeapon_UseWeaponTargeting, false))
 		{
 			if (pTypeExt->RevengeWeapon_RealLaunch)
-				TechnoExt::RealLaunch(pTypeExt->RevengeWeapon, pThis, pSource);
+				BulletExt::RealLaunch(pTypeExt->RevengeWeapon, pThis, pSource);
 			else
 				WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
 		}
@@ -331,19 +331,19 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 			auto const pInvoker = attachEffect->GetInvoker();
 
 			if (pInvoker && EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pInvoker->Owner, pSource->Owner)
-				&& TechnoExt::IsAllowedSplitsTarget(pInvoker, pInvoker->Owner, pType->RevengeWeapon, pSource, pType->RevengeWeapon_UseWeaponTargeting, false))
+				&& BulletExt::IsAllowedSplitsTarget(pInvoker, pInvoker->Owner, pType->RevengeWeapon, pSource, pType->RevengeWeapon_UseWeaponTargeting, false))
 			{
 				if (pType->RevengeWeapon_RealLaunch)
-					TechnoExt::RealLaunch(pType->RevengeWeapon, pInvoker, pSource);
+					BulletExt::RealLaunch(pType->RevengeWeapon, pInvoker, pSource);
 				else
 					WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pInvoker);
 			}
 		}
 		else if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThisOwner, pSourceOwner)
-			&& TechnoExt::IsAllowedSplitsTarget(pThis, pThisOwner, pType->RevengeWeapon, pSource, pType->RevengeWeapon_UseWeaponTargeting, false))
+			&& BulletExt::IsAllowedSplitsTarget(pThis, pThisOwner, pType->RevengeWeapon, pSource, pType->RevengeWeapon_UseWeaponTargeting, false))
 		{
 			if (pType->RevengeWeapon_RealLaunch)
-				TechnoExt::RealLaunch(pType->RevengeWeapon, pThis, pSource);
+				BulletExt::RealLaunch(pType->RevengeWeapon, pThis, pSource);
 			else
 				WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pThis);
 		}
@@ -407,41 +407,6 @@ int TechnoExt::ExtData::ApplyForceWeaponInRange(AbstractClass* pTarget)
 	}
 
 	return forceWeaponIndex;
-}
-
-bool TechnoExt::IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, WeaponTypeClass* pWeapon, TechnoClass* pTarget, bool useWeaponTargeting, bool useWarheadTargeting)
-{
-	auto const pWH = pWeapon->Warhead;
-
-	if (useWeaponTargeting)
-	{
-		auto const pType = pTarget->GetTechnoType();
-
-		if (!pType->LegalTarget || GeneralUtils::GetWarheadVersusArmor(pWH, pType->Armor) == 0.0)
-			return false;
-
-		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-
-		if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTarget->Owner)
-			|| !EnumFunctions::IsCellEligible(pTarget->GetCell(), pWeaponExt->CanTarget, true, true)
-			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget)
-			|| !pWeaponExt->IsHealthInThreshold(pTarget))
-		{
-			return false;
-		}
-
-		if (!pWeaponExt->HasRequiredAttachedEffects(pTarget, pSource))
-			return false;
-	}
-	else if (useWarheadTargeting)
-	{
-		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
-
-		if (!pWHExt->CanTargetHouse(pOwner, pTarget) || !pWHExt->IsHealthInThreshold(pTarget))
-			return false;
-	}
-
-	return true;
 }
 
 bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType)
@@ -611,7 +576,7 @@ void TechnoExt::ExtData::ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractCla
 		{
 			if (pTechno->IsInPlayfield && pTechno->IsOnMap && pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo && pTechno != pThis)
 			{
-				if ((pAuxWeapon->Projectile->AA || !pTechno->IsInAir()) && TechnoExt::IsAllowedSplitsTarget(pThis, pThis->Owner, pAuxWeapon, pTechno, useWeaponTargeting))
+				if ((pAuxWeapon->Projectile->AA || !pTechno->IsInAir()) && BulletExt::IsAllowedSplitsTarget(pThis, pThis->Owner, pAuxWeapon, pTechno, useWeaponTargeting))
 					targets.push_back(pTechno);
 			}
 		}
@@ -633,7 +598,7 @@ void TechnoExt::ExtData::ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractCla
 	{
 		pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
 
-		if (pTargetTechno && ((!pAuxWeapon->Projectile->AA && pTargetTechno->IsInAir()) || !TechnoExt::IsAllowedSplitsTarget(pThis, pThis->Owner, pAuxWeapon, pTargetTechno, useWeaponTargeting)))
+		if (pTargetTechno && ((!pAuxWeapon->Projectile->AA && pTargetTechno->IsInAir()) || !BulletExt::IsAllowedSplitsTarget(pThis, pThis->Owner, pAuxWeapon, pTargetTechno, useWeaponTargeting)))
 			return;
 
 		if (!pTargetTechno)
@@ -669,23 +634,5 @@ void TechnoExt::ExtData::ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractCla
 	{
 		BulletExt::SimulatedFiringUnlimbo(pBullet, pThis->Owner, pAuxWeapon, location, true);
 		BulletExt::SimulatedFiringEffects(pBullet, pThis->Owner, nullptr, false, true);
-	}
-}
-
-void TechnoExt::RealLaunch(WeaponTypeClass* pWeapon, TechnoClass* pSource, TechnoClass* pTarget, bool applyFirepowerMult, TechnoClass* pFirer)
-{
-	int damage = pWeapon->Damage;
-
-	if (applyFirepowerMult)
-		damage = static_cast<int>(damage * TechnoExt::GetCurrentFirepowerMultiplier(pSource));
-
-	if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pTarget, pSource,
-		damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
-	{
-		if (!pFirer)
-			pFirer = pSource;
-
-		BulletExt::SimulatedFiringUnlimbo(pBullet, pSource->Owner, pWeapon, pFirer->Location, true);
-		BulletExt::SimulatedFiringEffects(pBullet, pSource->Owner, nullptr, false, true);
 	}
 }

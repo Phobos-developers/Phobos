@@ -404,7 +404,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 	auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 
 	if (auto const pWeapon = pBulletTypeExt->ReturnWeapon)
-		TechnoExt::RealLaunch(pWeapon, pTechno, pTechno, pBulletTypeExt->ReturnWeapon_ApplyFirepowerMult);
+		BulletExt::RealLaunch(pWeapon, pTechno, pTechno, pBulletTypeExt->ReturnWeapon_ApplyFirepowerMult);
 
 	// Unlimbo Detonate
 	if (pTechno->InLimbo && !pWH->Parasite && pWHExt->UnlimboDetonate)
@@ -614,7 +614,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 				if (pTechno->IsInPlayfield && pTechno->IsOnMap && pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo
 					&& (retargetSelf || pTechno != pSource))
 				{
-					if ((isAA || !pTechno->IsInAir()) && TechnoExt::IsAllowedSplitsTarget(pSource, pOwner, pWeapon, pTechno, useWeaponTargeting))
+					if ((isAA || !pTechno->IsInAir()) && BulletExt::IsAllowedSplitsTarget(pSource, pOwner, pWeapon, pTechno, useWeaponTargeting))
 						targets.AddItem(pTechno);
 				}
 			}
