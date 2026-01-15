@@ -10,9 +10,23 @@ This page describes all AI scripting and mapping related additions and changes i
 - Map trigger action `125 Build At...` can now play buildup anim and becomes singleplayer-AI-repairable optionally (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2)).
 - Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 - Script action `Deploy` now has vehicles with `DeploysInto` searching for free space to deploy at if failing to do so at initial location, instead of simply getting stuck.
-- Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally. `InitialPayload` logic from Ares is not supported yet.
+- Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally.
 - If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
 - Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General] -> AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively.
+
+### Increased Overlay Limit
+
+- Maps can now contain OverlayTypes with indices up to 65535.
+
+- To enable this, set `[Basic] -> NewINIFormat=5` in the scenario file.
+
+```{note}
+Maps using this feature cannot be loaded by the vanilla game.
+```
+
+```{warning}
+Not all tools properly support this feature yet, and may crash or corrupt the map. We recommend using the [World-Altering Editor](https://github.com/CnCNet/WorldAlteringEditor) map editor when using this feature.
+```
 
 ## Singleplayer Mission Maps
 
@@ -35,7 +49,7 @@ RepairBaseNodes=                   ; List of 3 booleans indicating whether AI re
 
 ### Default loading screen and briefing offsets
 
-- It is now possible to set defaults for singleplayer map loading screen briefing pixel offsets and the loading screen images and palette that are used if there are no values defined for the map itself.
+- It is now possible to set defaults for singleplayer map loading screen briefing pixel offsets and the loading screen images and palette that are used if there are no values defined for the map itself or in case of loading screens and palette, if the files are missing.
 
 In `missionmd.ini`:
 ```ini
@@ -368,6 +382,25 @@ In `aimd.ini`:
 x=14003,0
 ```
 
+### `14004` Force Global `OnlyTargetHouseEnemy` value in Teams for new attack / move actions introduced by Phobos
+
+- Globally forcibly set a value for the `OnlyTargetHouseEnemy` tag on TeamType. Only affects the new attack / move actions introduced by Phobos.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=14004,n         ; integer
+```
+
+- The possible argument values are:
+
+| *Argument* | *Description*                                                            |
+| :--------: | :----------------------------------------------------------------------: |
+| -1         | Disable Global value for Force `OnlyTargetHouseEnemy` tag. Default value |
+| 0          | Force `OnlyTargetHouseEnemy` = false                                     |
+| 1          | Force `OnlyTargetHouseEnemy` = true                                      |
+| 2          | Force random boolean value                                               |
+
 ### `16000-16999` Flow Control
 
 #### `16000` Start a Timed Jump to the Same Line
@@ -484,7 +517,12 @@ This category is empty for now.
 
 ### `500` Save Game
 
-- Save the current game immediately (singleplayer game only).
+- Save the current game immediately.
+
+```{note}
+For this action to work in multiplayer - you need to use a version of [YRpp spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support.
+```
+
 - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
 - The save's description will look like `MapDescName - CSFText`.
 - For example: `Allied Mission 25: Esther's Money - Money Stolen`.
@@ -614,6 +652,19 @@ ID=ActionCount,[Action1],510,0,0,[MCVRedeploy],0,0,0,A,[ActionX]
 ...
 ```
 
+### `511` Undeploy Building to Waypoint
+
+- Undeploy specific BuildingTypes into VehicleTypes and move them to a specific Waypoint.
+  - If `<All>` is entered for the Building Type here, then undeploy all BuildingTypes.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],511,-10,[BuildingTypesID],[HouseIndex],0,0,0,[WaypointIndex],[ActionX]
+...
+```
+
 ### `606` Edit Hate-Value
 
 - Edit the hate-value that trigger houses to other houses.
@@ -669,6 +720,40 @@ ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]
 ...
 ```
 
+### `609` Set Radar Mode
+
+- Change the current radar mode of the trigger house.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],609,0,0,[RadarMode],0,0,0,A,[ActionX]
+...
+```
+
+- The possible argument values are:
+
+| *Argument* | *Description*                                                             |
+| :--------: | :-----------------------------------------------------------------------: |
+| 0          | Normal mode, requires buildings that provide radar and sufficient power   |
+| 1          | Change to [FreeRadar](https://modenc.renegadeprojects.com/FreeRadar) mode |
+| 2          | Force enable radar                                                        |
+| 3          | Force disable radar                                                       |
+
+### `610` Set house's `TeamDelays` value
+
+- Set the `TeamDelays` value of the trigger's house.
+  - If this value is less than 0, then use the value of `[General] -> TeamDelays`.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],610,0,0,[Number],0,0,0,A,[ActionX]
+...
+```
+
 ### `800-802` Display Banner
 
 - Display a 'banner' at a fixed location that is relative to the screen.
@@ -684,6 +769,9 @@ ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]
     - `variable` will make the text banner display the variable alone and will ignore the text in `CSF`.
     - `prefix`/`prefixed` will make the text banner display the variable before any other text.
     - `suffix`/`suffixed` will make the text banner display the variable after any other text.
+  - `Duration` determines how long the banner will be displayed. Negative values mean the banner can always be displayed until being deleted. The banner itself won't be deleted when it's not displaying.
+  - `Delay` determines when the banner will be displayed again after it stops displaying by a positive `Duration`. Neagtive values mean it can't be displayed again.
+    - If an `SHP` banner displays again after the delay, it'll start from the frame when it's stopped last time. This can also be changed to its first frame if `SHP.RefreshAfterDelay` set to true.
 
 In `rulesmd.ini`:
 ```ini
@@ -691,13 +779,16 @@ In `rulesmd.ini`:
 0=SOMEBANNER
 
 [SOMEBANNER]                ; BannerType
-PCX=                        ; filename - excluding the .pcx extension
+PCX=                        ; filename - including the .pcx extension
 SHP=                        ; filename - excluding the .shp extension
-SHP.Palette=palette.pal     ; filename - excluding the .pal extension
+SHP.Palette=palette.pal     ; filename - including the .pal extension
+SHP.RefreshAfterDelay=false ; boolean
 CSF=                        ; CSF entry key
 CSF.Color=                  ; integer - R,G,B, defaults to MessageTextColor of the owner Side
 CSF.Background=false        ; boolean
 CSF.VariableFormat=none     ; List of Variable Format Enumeration (none|variable|prefix/prefixed|surfix/surfixed)
+Duration=-1                 ; integer
+Delay=-1                    ; integer
 ```
 
 In `mycampaign.map`:

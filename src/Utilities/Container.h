@@ -378,11 +378,19 @@ public:
 		return Allocate(key);
 	}
 
-	extension_type_ptr Find(const_base_type_ptr key) const
+	extension_type_ptr TryFind(const_base_type_ptr key) const
 	{
 		if (!key)
 			return nullptr;
 
+		if constexpr (HasOffset<T>)
+			return GetExtensionPointer(key);
+		else
+			return this->Items.find(key);
+	}
+
+	extension_type_ptr Find(const_base_type_ptr key) const
+	{
 		if constexpr (HasOffset<T>)
 			return GetExtensionPointer(key);
 		else

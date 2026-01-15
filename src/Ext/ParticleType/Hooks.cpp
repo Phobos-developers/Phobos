@@ -1,16 +1,14 @@
 #include "Body.h"
 
-#include <ParticleClass.h>
-
 DEFINE_HOOK(0x62BE30, ParticleClass_Gas_AI_DriftSpeed, 0x5)
 {
 	enum { ContinueAI = 0x62BE60 };
 
 	GET(ParticleClass*, pParticle, EBP);
 
-	auto pExt = ParticleTypeExt::ExtMap.Find(pParticle->Type);
-	int maxDriftSpeed = pExt->Gas_MaxDriftSpeed;
-	int minDriftSpeed = -maxDriftSpeed;
+	const auto pExt = ParticleTypeExt::ExtMap.Find(pParticle->Type);
+	const int maxDriftSpeed = pExt->Gas_MaxDriftSpeed;
+	const int minDriftSpeed = -maxDriftSpeed;
 
 	if (pParticle->Velocity.X > maxDriftSpeed)
 		pParticle->Velocity.X = maxDriftSpeed;

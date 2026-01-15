@@ -1,8 +1,4 @@
-#include <Helpers/Macro.h>
-
 #include "Body.h"
-
-#include <TagClass.h>
 
 DEFINE_HOOK(0x689910, ScenarioClass_SetLocalToByID, 0x5)
 {
@@ -131,7 +127,7 @@ DEFINE_HOOK(0x685A38, ScenarioClass_sub_685670_SetNextScenario, 0x6)
 
 			if (!LocalVariables.empty())
 			{
-				for (auto const itr : LocalVariables)
+				for (auto const& itr : LocalVariables)
 				{
 					if (strcmp(itr.second.Name, "<Alternate Next Scenario>") || itr.second.Value <= 0)
 						continue;
@@ -142,7 +138,7 @@ DEFINE_HOOK(0x685A38, ScenarioClass_sub_685670_SetNextScenario, 0x6)
 
 			if (!GlobalVariables.empty())
 			{
-				for (auto const itr : GlobalVariables)
+				for (auto const& itr : GlobalVariables)
 				{
 					if (strcmp(itr.second.Name, "<Alternate Next Scenario>") || itr.second.Value <= 0)
 						continue;

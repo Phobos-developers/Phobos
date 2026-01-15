@@ -7,7 +7,7 @@ DEFINE_HOOK(0x5047D0, HouseClass_UpdateAngerNodes_SetForceEnemy, 0x6)
 
 	if (pThis)
 	{
-		int forceIndex = HouseExt::ExtMap.Find(pThis)->GetForceEnemyIndex();
+		const int forceIndex = HouseExt::ExtMap.Find(pThis)->GetForceEnemyIndex();
 
 		if (forceIndex >= 0 || forceIndex == -2)
 		{

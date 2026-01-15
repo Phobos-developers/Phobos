@@ -6,26 +6,6 @@ const char* Enumerable<ShieldTypeClass>::GetMainSection()
 	return "ShieldTypes";
 }
 
-AnimTypeClass* ShieldTypeClass::GetIdleAnimType(bool isDamaged, double healthRatio) const
-{
-	auto damagedAnim = this->IdleAnimDamaged.Get(healthRatio);
-
-	if (isDamaged && damagedAnim)
-		return damagedAnim;
-	else
-		return this->IdleAnim.Get(healthRatio, this->GetConditionYellow(), this->GetConditionRed());
-}
-
-double ShieldTypeClass::GetConditionYellow() const
-{
-	return this->ConditionYellow.Get(RulesExt::Global()->Shield_ConditionYellow.Get(RulesClass::Instance->ConditionYellow));
-}
-
-double ShieldTypeClass::GetConditionRed() const
-{
-	return this->ConditionRed.Get(RulesExt::Global()->Shield_ConditionRed.Get(RulesClass::Instance->ConditionRed));
-}
-
 void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* pSection = this->Name;
@@ -46,10 +26,16 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Powered.Read(exINI, pSection, "Powered");
 
 	this->Respawn.Read(exINI, pSection, "Respawn");
+	this->Respawn_Anim.Read(exINI, pSection, "Respawn.Anim");
+	this->Respawn_Weapon.Read(exINI, pSection, "Respawn.Weapon");
+
 	Nullable<double> Respawn_Rate__InMinutes;
 	Respawn_Rate__InMinutes.Read(exINI, pSection, "Respawn.Rate");
 	if (Respawn_Rate__InMinutes.isset())
 		this->Respawn_Rate = (int)(Respawn_Rate__InMinutes.Get() * 900);
+
+	this->Respawn_RestartInCombat.Read(exINI, pSection, "Respawn.RestartInCombat");
+	this->Respawn_RestartInCombatDelay.Read(exINI, pSection, "Respawn.RestartInCombatDelay");
 
 	this->SelfHealing.Read(exINI, pSection, "SelfHealing");
 	Nullable<double> SelfHealing_Rate__InMinutes;
@@ -116,6 +102,10 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->Powered)
 		.Process(this->Respawn)
 		.Process(this->Respawn_Rate)
+		.Process(this->Respawn_RestartInCombat)
+		.Process(this->Respawn_RestartInCombatDelay)
+		.Process(this->Respawn_Anim)
+		.Process(this->Respawn_Weapon)
 		.Process(this->SelfHealing)
 		.Process(this->SelfHealing_Rate)
 		.Process(this->SelfHealing_RestartInCombat)

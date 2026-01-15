@@ -1,10 +1,4 @@
 #pragma once
-#include <BulletClass.h>
-#include <WeaponTypeClass.h>
-#include <DiskLaserClass.h>
-#include <EBolt.h>
-#include <ParticleSystemTypeClass.h>
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -36,6 +30,7 @@ public:
 		Nullable<int> Strafing_Shots;
 		Valueable<bool> Strafing_SimulateBurst;
 		Valueable<bool> Strafing_UseAmmoPerShot;
+		Valueable<bool> Strafing_TargetCell;
 		Nullable<int> Strafing_EndDelay;
 		Valueable<AffectedTarget> CanTarget;
 		Valueable<AffectedHouse> CanTargetHouses;
@@ -52,6 +47,7 @@ public:
 		ValueableVector<int> ChargeTurret_Delays;
 		Valueable<bool> OmniFire_TurnToTarget;
 		Valueable<bool> FireOnce_ResetSequence;
+		Valueable<bool> TurretRecoil_Suppress;
 		ValueableVector<WarheadTypeClass*> ExtraWarheads;
 		ValueableVector<int> ExtraWarheads_DamageOverrides;
 		ValueableVector<double> ExtraWarheads_DetonationChances;
@@ -71,6 +67,7 @@ public:
 		Valueable<Leptons> KeepRange;
 		Valueable<bool> KeepRange_AllowAI;
 		Valueable<bool> KeepRange_AllowPlayer;
+		Valueable<int> KeepRange_EarlyStopFrame;
 		Valueable<bool> KickOutPassengers;
 		Nullable<ColorStruct> Beam_Color;
 		Valueable<int> Beam_Duration;
@@ -88,6 +85,13 @@ public:
 		Valueable<bool> DelayedFire_OnlyOnInitialBurst;
 		Nullable<CoordStruct> DelayedFire_AnimOffset;
 		Valueable<bool> DelayedFire_AnimOnTurret;
+		Nullable<Leptons> ExtraRange_TargetMoving;
+		Nullable<Leptons> ExtraRange_FirerMoving;
+		Nullable<Leptons> ExtraRange_Prefiring;
+		Nullable<bool> ExtraRange_Prefiring_IncludeBurst;
+		Nullable<bool> AttackFriendlies;
+		Nullable<bool> AttackCursorOnFriendlies;
+		Nullable<bool> AttackNoThreatBuildings;
 
 		bool SkipWeaponPicking;
 
@@ -105,6 +109,7 @@ public:
 			, Strafing_Shots {}
 			, Strafing_SimulateBurst { false }
 			, Strafing_UseAmmoPerShot { false }
+			, Strafing_TargetCell { false }
 			, Strafing_EndDelay {}
 			, CanTarget { AffectedTarget::All }
 			, CanTargetHouses { AffectedHouse::All }
@@ -121,6 +126,7 @@ public:
 			, ChargeTurret_Delays {}
 			, OmniFire_TurnToTarget { false }
 			, FireOnce_ResetSequence { true }
+			, TurretRecoil_Suppress { false }
 			, ExtraWarheads {}
 			, ExtraWarheads_DamageOverrides {}
 			, ExtraWarheads_DetonationChances {}
@@ -140,6 +146,7 @@ public:
 			, KeepRange { Leptons(0) }
 			, KeepRange_AllowAI { false }
 			, KeepRange_AllowPlayer { false }
+			, KeepRange_EarlyStopFrame { 0 }
 			, KickOutPassengers { true }
 			, Beam_Color {}
 			, Beam_Duration { 15 }
@@ -158,6 +165,13 @@ public:
 			, DelayedFire_OnlyOnInitialBurst { false }
 			, DelayedFire_AnimOffset {}
 			, DelayedFire_AnimOnTurret { true }
+			, ExtraRange_TargetMoving {}
+			, ExtraRange_FirerMoving {}
+			, ExtraRange_Prefiring {}
+			, ExtraRange_Prefiring_IncludeBurst {}
+			, AttackFriendlies {}
+			, AttackCursorOnFriendlies {}
+			, AttackNoThreatBuildings {}
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;

@@ -1,16 +1,17 @@
 #pragma once
 #include "SWButtonClass.h"
-#include <ControlClass.h>
+#include <Ext/Side/Body.h>
+#include <Ext/Scenario/Body.h>
 
 #include <vector>
 
-class SWColumnClass : public ControlClass
+class SWColumnClass : public GadgetClass
 {
 public:
 	SWColumnClass() = default;
-	SWColumnClass(unsigned int id, int maxButtons, int x, int y, int width, int height);
+	SWColumnClass(int maxButtons, int x, int y, int width, int height);
 
-	~SWColumnClass() = default;
+	~SWColumnClass();
 
 	virtual bool Draw(bool forced) override;
 	virtual void OnMouseEnter() override;
@@ -22,8 +23,6 @@ public:
 	void ClearButtons(bool remove = true);
 
 	void SetHeight(int height);
-
-	static constexpr int StartID = 2101;
 
 	std::vector<SWButtonClass*> Buttons {};
 	int MaxButtons { 0 };

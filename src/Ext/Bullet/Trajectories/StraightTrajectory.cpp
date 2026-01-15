@@ -1,7 +1,5 @@
 #include "StraightTrajectory.h"
 
-#include <OverlayTypeClass.h>
-#include <ScenarioClass.h>
 #include <AircraftTrackerClass.h>
 
 #include <Ext/Bullet/Body.h>
@@ -168,10 +166,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	if (pFirer)
 	{
 		this->CurrentBurst = pFirer->CurrentBurstIndex;
-		this->FirepowerMult = pFirer->FirepowerMultiplier;
-
-		if (const auto pExt = TechnoExt::ExtMap.Find(pFirer))
-			this->FirepowerMult *= pExt->AE.FirepowerMultiplier;
+		this->FirepowerMult = TechnoExt::GetCurrentFirepowerMultiplier(pFirer);
 
 		if (pType->MirrorCoord && pFirer->CurrentBurstIndex % 2 == 1)
 			this->OffsetCoord.Y = -(this->OffsetCoord.Y);

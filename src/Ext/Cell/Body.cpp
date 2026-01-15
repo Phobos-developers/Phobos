@@ -1,9 +1,5 @@
 #include "Body.h"
 
-#include <Helpers/Macro.h>
-
-#include <Utilities/TemplateDef.h>
-
 CellExt::ExtContainer CellExt::ExtMap;
 
 // =============================
@@ -15,6 +11,7 @@ void CellExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->RadSites)
 		.Process(this->RadLevels)
+		.Process(this->InfantryCount)
 		;
 }
 

@@ -132,7 +132,7 @@ msgstr "现有系统扩展——为现有系统添加逻辑，通常无需独立
 msgid ""
 "Examples: feedback weapon logic, superweapon launch warhead logic, a new "
 "type of trajectory that uses existing custom trajectory framework, etc."
-msgstr "示例：反馈武器、弹头发射超级武器、使用现有的自定义轨迹框架的新轨迹类型等"
+msgstr "示例：反馈武器、弹头发射超级武器、使用现有的自定义弹道框架的新弹道类型等"
 
 #: ../../Contributing.md:33
 msgid ""
@@ -151,7 +151,7 @@ msgstr "新系统——通常拥有自己的类，这些类不扩展游戏类／
 msgid ""
 "Examples: custom trajectories framework, interceptor logic, shield logic,"
 " etc."
-msgstr "示例：自定义轨迹框架、抛射体拦截、护盾逻辑等"
+msgstr "示例：自定义弹道框架、抛射体拦截、护盾逻辑等"
 
 #: ../../Contributing.md:36 ../../Contributing.md:38
 msgid "`T2` complexity by default"
@@ -866,7 +866,7 @@ msgid ""
 " branch in YRpp, then you can push it and submit a pull request to YRpp "
 "repository."
 msgstr ""
-"当你开发 Phobos 和／或研究 YR 引擎时常常需要对 YRpp 进行修正。这些修正通常需要提交到 [YRpp "
+"当你开发 Phobos 和研究 YR 引擎时常常需要对 YRpp 进行修正。这些修正通常需要提交到 [YRpp "
 "仓库](https://github.com/Phobos-developers/YRpp)，可与 Phobos "
 "中的实际功能分开处理。但许多情况下这些改动需要作为 Phobos 贡献流程的一部分进行提交。要向 YRpp 提交改动你需要在 YRpp "
 "中创建分支，推送后向 YRpp 仓库提交拉取请求。"

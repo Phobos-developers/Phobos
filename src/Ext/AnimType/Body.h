@@ -2,11 +2,17 @@
 
 #include <AnimTypeClass.h>
 
-#include <New/Type/Affiliated//CreateUnitTypeClass.h>
 #include <Utilities/Container.h>
-#include <Utilities/Enum.h>
-#include <Utilities/Constructs.h>
-#include <Utilities/Template.h>
+#include <Utilities/TemplateDef.h>
+
+#include <New/Type/Affiliated/CreateUnitTypeClass.h>
+
+enum class AttachedAnimPosition : BYTE
+{
+	Default = 0,
+	Center = 1,
+	Ground = 2
+};
 
 class AnimTypeExt
 {
@@ -24,7 +30,7 @@ public:
 		Valueable<int> XDrawOffset;
 		Valueable<int> HideIfNoOre_Threshold;
 		Nullable<bool> Layer_UseObjectLayer;
-		Valueable<bool> UseCenterCoordsIfAttached;
+		Valueable<AttachedAnimPosition> AttachedAnimPosition;
 		Valueable<WeaponTypeClass*> Weapon;
 		Valueable<int> Damage_Delay;
 		Valueable<bool> Damage_DealtByInvoker;
@@ -32,7 +38,7 @@ public:
 		Valueable<bool> Damage_ApplyFirepowerMult;
 		Valueable<bool> ExplodeOnWater;
 		Valueable<bool> Warhead_Detonate;
-		Valueable<AnimTypeClass*> WakeAnim;
+		ValueableVector<AnimTypeClass*> WakeAnim;
 		NullableVector<AnimTypeClass*> SplashAnims;
 		Valueable<bool> SplashAnims_PickRandom;
 		Valueable<ParticleSystemTypeClass*> AttachedSystem;
@@ -63,7 +69,7 @@ public:
 			, XDrawOffset { 0 }
 			, HideIfNoOre_Threshold { 0 }
 			, Layer_UseObjectLayer {}
-			, UseCenterCoordsIfAttached { false }
+			, AttachedAnimPosition { AttachedAnimPosition::Default }
 			, Weapon {}
 			, Damage_Delay { 0 }
 			, Damage_DealtByInvoker { false }
@@ -85,7 +91,7 @@ public:
 			, DetachOnCloak { true }
 			, ConstrainFireAnimsToCellSpots { true }
 			, FireAnimDisallowedLandTypes {}
-			, AttachFireAnimsToParent { false }
+			, AttachFireAnimsToParent {}
 			, SmallFireCount {}
 			, SmallFireAnims {}
 			, SmallFireChances {}
