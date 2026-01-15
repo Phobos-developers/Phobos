@@ -1,22 +1,15 @@
 // methods used in TechnoClass_AI hooks or anything similar
 #include "Body.h"
 
-#include <SessionClass.h>
-#include <SpawnManagerClass.h>
-#include <ParticleSystemClass.h>
-#include <Conversions.h>
-#include <SlaveManagerClass.h>
-#include <AirstrikeClass.h>
 #include <Kamikaze.h>
 #include <JumpjetLocomotionClass.h>
-#include <FlyLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Scenario/Body.h>
-#include <Utilities/EnumFunctions.h>
+#include <Misc/FlyingStrings.h>
 #include <Utilities/AresFunctions.h>
 #include <New/Type/Affiliated/TypeConvertGroup.h>
 
@@ -992,7 +985,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		}
 		else if (pOldTypeExt->Convert_ResetMindControl)
 		{
-			if (!infiniteCapture && pCaptureManager->ControlNodes.Count > maxCapture)
+			if (!infiniteCapture && pCaptureManager->GetControlledCount() > maxCapture)
 			{
 				// Remove excess nodes.
 				for (int i = pCaptureManager->ControlNodes.Count - 1; i >= maxCapture; --i)

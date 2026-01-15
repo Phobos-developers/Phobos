@@ -1,13 +1,10 @@
-#include <AircraftClass.h>
-#include <EventClass.h>
-#include <FlyLocomotionClass.h>
+#include "Body.h"
 
-#include <Ext/Aircraft/Body.h>
-#include <Ext/Techno/Body.h>
+#include <EventClass.h>
+
 #include <Ext/Anim/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/BulletType/Body.h>
-#include <Utilities/Macro.h>
 
 #pragma region Mission_Attack
 
@@ -1179,3 +1176,25 @@ DEFINE_HOOK(0x4157EB, AircraftClass_Mission_SpyPlaneOverfly_MaxCount, 0x6)
 
 	return 0;
 }
+
+#pragma region Rocket
+
+DEFINE_HOOK(0x66295A, RocketLocomotionClass_Process_IsHighEnoughForCruise, 0x8)
+{
+	GET(AircraftClass*, pLinkedTo, ECX);
+	GET(ILocomotion*, pThis, ESI);
+
+	const auto pLoco = locomotion_cast<RocketLocomotionClass*>(pThis);
+	const int heightThis = pLinkedTo->GetHeight();
+	int heightTarget = pLinkedTo->Location.Z - pLoco->MovingDestination.Z;
+
+	if (MapClass::Instance.GetCellAt(pLoco->MovingDestination)->ContainsBridge())
+		heightTarget -= CellClass::BridgeHeight;
+
+	R->EAX(Math::min(heightThis, heightTarget));
+	//R->EAX(pLinkedTo->GetHeight()); Vanilla behavior
+
+	return R->Origin() + 0x8;
+}
+
+#pragma endregion

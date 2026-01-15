@@ -1,15 +1,7 @@
 #pragma once
 
-#include <SidebarClass.h>
-#include <SuperWeaponTypeClass.h>
-#include <TechnoTypeClass.h>
-
-#include <Phobos.h>
-
 #include <Ext/TechnoType/Body.h>
 #include <Ext/SWType/Body.h>
-
-#include <string>
 
 struct StripClass;
 

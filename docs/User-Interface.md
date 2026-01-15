@@ -11,7 +11,7 @@ This page lists all user interface additions, changes, fixes that are implemente
 - Fixed position and layer of info tip and reveal production cameo on selected building.
 - Timer (superweapon, mission etc) blinking color scheme can be customized by setting `[AudioVisual] -> TimerBlinkColorScheme`. Defaults to third color scheme listed in `[Colors]`.
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold.
-
+- Fixed cursor from being hardcoded to update/render 60 times a second no matter how fast the game is rendering. Now the Cursor will update and render much more frequently.
 ```{note}
 You can use the improved vanilla font which can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries) which has way more Unicode character coverage than the default one.
 ```

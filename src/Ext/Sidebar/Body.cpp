@@ -2,8 +2,6 @@
 #include "SWSidebar/SWSidebarClass.h"
 
 #include <EventClass.h>
-#include <HouseClass.h>
-#include <SuperClass.h>
 
 std::unique_ptr<SidebarExt::ExtData> SidebarExt::Data = nullptr;
 

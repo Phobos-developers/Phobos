@@ -1,12 +1,9 @@
 #include "Body.h"
 
-#include <TacticalClass.h>
-#include <RadarEventClass.h>
-
+#include <Ext/House/Body.h>
+#include <Ext/TEvent/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Ext/TEvent/Body.h>
-#include <Ext/House/Body.h>
 
 namespace ReceiveDamageTemp
 {
@@ -33,6 +30,10 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	const auto pSourceHouse = args->SourceHouse;
 	const auto pTargetHouse = pThis->Owner;
+
+	// Apply warhead effects
+	if (damage && !pWHExt->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate))
+		pWHExt->DetonateOnOneUnit(args->SourceHouse, pThis, args->Attacker);
 
 	// Calculate Damage Multiplier
 	if (!args->IgnoreDefenses && damage)

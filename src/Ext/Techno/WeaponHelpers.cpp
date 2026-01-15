@@ -1,10 +1,7 @@
 #include "Body.h"
 
-#include <OverlayTypeClass.h>
-
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
-#include <Utilities/EnumFunctions.h>
 
 // Compares two weapons and returns index of which one is eligible to fire against current target (0 = first, 1 = second), or -1 if neither works.
 int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback, bool allowAAFallback)

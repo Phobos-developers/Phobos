@@ -1,8 +1,6 @@
 #include "RadarJammerClass.h"
 
 #include <Ext/Techno/Body.h>
-#include <Ext/TechnoType/Body.h>
-#include <Utilities/EnumFunctions.h>
 
 void RadarJammerClass::Update()
 {

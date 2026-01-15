@@ -1,10 +1,7 @@
 #include "Body.h"
 
 #include <Ext/SWType/Body.h>
-#include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
-
-#include <ScenarioClass.h>
 
 //Static init
 
@@ -685,6 +682,9 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceEnemyIndex)
 		.Process(this->ForceOnlyTargetHouseEnemy)
 		.Process(this->ForceOnlyTargetHouseEnemyMode)
+		.Process(this->TeamDelay)
+		.Process(this->FreeRadar)
+		.Process(this->ForceRadar)
 		;
 }
 

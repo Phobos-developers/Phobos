@@ -1,17 +1,14 @@
 #pragma once
-#include <TechnoTypeClass.h>
-
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
+#include <New/Type/AttachEffectTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
-#include <New/Type/AttachEffectTypeClass.h>
-#include <New/Type/Affiliated/InterceptorTypeClass.h>
-#include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
+#include <New/Type/Affiliated/InterceptorTypeClass.h>
+#include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
 #include <New/Type/Affiliated/TiberiumEaterTypeClass.h>
 #include <New/Type/Affiliated/CreateUnitTypeClass.h>
@@ -46,6 +43,8 @@ public:
 		Nullable<int> DesignatorRange;
 		Valueable<float> FactoryPlant_Multiplier;
 		Valueable<Leptons> MindControlRangeLimit;
+		Valueable<bool> MindControl_IgnoreSize;
+		Valueable<int> MindControlSize;
 		Valueable<AffectedHouse> MindControlLink_VisibleToHouse;
 
 		std::unique_ptr<InterceptorTypeClass> InterceptorType;
@@ -71,6 +70,7 @@ public:
 		Nullable<int> InitialStrength;
 		Valueable<bool> ReloadInTransport;
 		Valueable<bool> ForbidParallelAIQueues;
+		Valueable<bool> IgnoreForBaseCenter;
 
 		int TintColorAirstrike;
 		Nullable<int> LaserTargetColor;
@@ -451,7 +451,11 @@ public:
 
 		Nullable<bool> InfantryAutoDeploy;
 
+		ValueableVector<TechnoTypeClass*> TeamMember_ConsideredAs;
+
 		Nullable<bool> TurretResponse;
+
+		Vector2D<bool> AttackFriendlies;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -471,6 +475,8 @@ public:
 			, DesignatorRange { }
 			, FactoryPlant_Multiplier { 1.0 }
 			, MindControlRangeLimit {}
+			, MindControl_IgnoreSize { true }
+			, MindControlSize { 1 }
 			, MindControlLink_VisibleToHouse{ AffectedHouse::All }
 
 			, InterceptorType { nullptr }
@@ -496,6 +502,7 @@ public:
 			, InitialStrength {}
 			, ReloadInTransport { false }
 			, ForbidParallelAIQueues { false }
+			, IgnoreForBaseCenter { false }
 			, TintColorAirstrike { 0 }
 			, LaserTargetColor {}
 			, AirstrikeLineColor {}
@@ -855,7 +862,11 @@ public:
 
 			, InfantryAutoDeploy {}
 
+			, TeamMember_ConsideredAs {}
+
 			, TurretResponse {}
+
+			, AttackFriendlies { false,false }
 		{ }
 
 		virtual ~ExtData() = default;
