@@ -526,3 +526,24 @@ DEFINE_HOOK(0x508E17, HouseClass_UpdateRadar_FreeRadar, 0x8)
 	R->Stack(STACK_OFFSET(0x1C, -0xC), false);
 	return Continue;
 }
+
+// WW's code set anger on every houses, even on the allies.
+DEFINE_HOOK(0x4FD616, HouseClass_UpdateAI_DontAngerOnAlly, 0x9)
+{
+	enum { SkipCurrentHouse = 0x4FD6FE };
+
+	GET(HouseClass*, pThis, EBX);
+	GET(HouseClass*, pTargetHouse, ESI);
+
+	return pThis->IsAlliedWith(pTargetHouse) ? SkipCurrentHouse : 0;
+}
+
+// WW calculates the distance from pThis to pThis ...
+DEFINE_HOOK(0x4FD635, HouseClass_UpdateAI_DistCalcFix, 0x5)
+{
+	enum { SkipGameCode = 0x4FD657 };
+	GET(HouseClass*, pTargetHouse, ESI);
+	auto baseMapCrd = pTargetHouse->BaseCenter == CellStruct::Empty ? pTargetHouse->BaseSpawnCell : pTargetHouse->BaseCenter;
+	R->EAX(*(int*)&baseMapCrd);
+	return SkipGameCode;
+}

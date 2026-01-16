@@ -671,6 +671,8 @@ This page lists all the individual contributions to the project by their author.
   - Toggle per-target warhead effects apply timing
   - Extra range for chasing and pre-firing
   - Fix an issue that rockets do not consider the destination altitude during climbing
+  - Fix an issue that the AI would set anger towards friendly houses, causing it to act stupidly
+  - Fix an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
@@ -700,6 +702,7 @@ This page lists all the individual contributions to the project by their author.
 - **Joshy** - Original FlyingStrings implementation
 - **CnCVK** - Original custom locomotors experiment
 - **ZΞPHYɌUS** - win/lose themes code
+- **Fridge** - Cursor Fix code
 - **Neargye (Daniil Goncharov)** - [nameof library](https://github.com/Neargye/nameof) (MIT)
 - **ayylmao** - help with docs, extensive and thorough testing
 - **SMxReaver** - help with docs, extensive and thorough testing
