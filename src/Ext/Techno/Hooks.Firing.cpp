@@ -266,14 +266,14 @@ DEFINE_HOOK(0x6F3528, TechnoClass_WhatWeaponShouldIUse_IsLocomotor, 0x6)
 
 	if (pTargetTechno && pTargetTechno->WhatAmI() == AbstractType::Building)
 	{
-		GET(WeaponTypeClass*, primary, EBX);
+		GET(WeaponTypeClass*, pPrimary, EBX);
 
-		if (primary->Warhead->IsLocomotor)
+		if (pPrimary->Warhead->IsLocomotor)
 			return Secondary;
 
-		GET_STACK(WeaponTypeClass*, secondary, STACK_OFFSET(0x18, -0x8));
+		GET_STACK(WeaponTypeClass*, pSecondary, STACK_OFFSET(0x18, -0x8));
 
-		if (secondary->Warhead->IsLocomotor)
+		if (pSecondary->Warhead->IsLocomotor)
 			return Primary;
 	}
 
