@@ -285,6 +285,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.
 - Fixed the issue that rockets do not consider the destination altitude during climbing.
 - Fixed the bug that if object has been removed from LogicClass in Update(), next object will be skip.
+- Fixed the issue that weapon selection don't check if secondary's warhead has `IsLocomotor=yes`.
 
 ## Fixes / interactions with other extensions
 

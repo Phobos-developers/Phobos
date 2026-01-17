@@ -478,6 +478,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that if object has been removed from LogicClass in Update(), next object will be skip
   - Fix the bug that weapon cannot used to intercept on gound bullet if it's projectile has `AG=no`
   - Customize size for mind controlled unit
+  - Fix the issue that weapon selection don't check if secondary's warhead has `IsLocomotor=yes`
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
