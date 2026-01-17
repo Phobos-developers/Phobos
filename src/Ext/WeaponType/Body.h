@@ -1,10 +1,4 @@
 #pragma once
-#include <BulletClass.h>
-#include <WeaponTypeClass.h>
-#include <DiskLaserClass.h>
-#include <EBolt.h>
-#include <ParticleSystemTypeClass.h>
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -36,6 +30,7 @@ public:
 		Nullable<int> Strafing_Shots;
 		Valueable<bool> Strafing_SimulateBurst;
 		Valueable<bool> Strafing_UseAmmoPerShot;
+		Valueable<bool> Strafing_TargetCell;
 		Nullable<int> Strafing_EndDelay;
 		Valueable<AffectedTarget> CanTarget;
 		Valueable<AffectedHouse> CanTargetHouses;
@@ -90,6 +85,13 @@ public:
 		Valueable<bool> DelayedFire_OnlyOnInitialBurst;
 		Nullable<CoordStruct> DelayedFire_AnimOffset;
 		Valueable<bool> DelayedFire_AnimOnTurret;
+		Nullable<Leptons> ExtraRange_TargetMoving;
+		Nullable<Leptons> ExtraRange_FirerMoving;
+		Nullable<Leptons> ExtraRange_Prefiring;
+		Nullable<bool> ExtraRange_Prefiring_IncludeBurst;
+		Nullable<bool> AttackFriendlies;
+		Nullable<bool> AttackCursorOnFriendlies;
+		Nullable<bool> AttackNoThreatBuildings;
 
 		bool SkipWeaponPicking;
 
@@ -107,6 +109,7 @@ public:
 			, Strafing_Shots {}
 			, Strafing_SimulateBurst { false }
 			, Strafing_UseAmmoPerShot { false }
+			, Strafing_TargetCell { false }
 			, Strafing_EndDelay {}
 			, CanTarget { AffectedTarget::All }
 			, CanTargetHouses { AffectedHouse::All }
@@ -162,6 +165,13 @@ public:
 			, DelayedFire_OnlyOnInitialBurst { false }
 			, DelayedFire_AnimOffset {}
 			, DelayedFire_AnimOnTurret { true }
+			, ExtraRange_TargetMoving {}
+			, ExtraRange_FirerMoving {}
+			, ExtraRange_Prefiring {}
+			, ExtraRange_Prefiring_IncludeBurst {}
+			, AttackFriendlies {}
+			, AttackCursorOnFriendlies {}
+			, AttackNoThreatBuildings {}
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;

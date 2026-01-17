@@ -7,43 +7,59 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 {
 	enum { SkipFiring = 0x737063 };
 
-	GET(UnitClass*, pThis, ESI);
-	GET(int, weaponIndex, EDI);
+	GET(UnitClass* const, pThis, ESI);
+	GET(const int, weaponIndex, EDI);
 
 	const auto pType = pThis->Type;
 
-	if (pType->Turret || pType->Voxel)
+	if (pType->Turret || pType->Voxel || pThis->InLimbo)
 		return 0;
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pTypeExt = pExt->TypeExtData;
 
 	// SHP vehicles have no secondary action frames, so it does not need SecondaryFire.
-	const auto pTypeExt = pExt->TypeExtData;
 	const int fireUp = pTypeExt->FireUp;
-	CDTimerClass& timer = pExt->FiringAnimationTimer;
 
 	if (fireUp >= 0 && !pType->OpportunityFire && pThis->Locomotor->Is_Really_Moving_Now())
 	{
-		if (timer.InProgress())
-			timer.Stop();
+		if (pThis->CurrentFiringFrame != -1)
+			pThis->CurrentFiringFrame = -1;
 
 		return SkipFiring;
 	}
 
-	const int frames = pType->FiringFrames;
+	const int firingFrames = pType->FiringFrames;
+	const int frames = 2 * firingFrames - 1;
 
-	if (!timer.InProgress() && frames >= 1)
+	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+
+	if (frames >= 0)
 	{
-		pThis->CurrentFiringFrame = 2 * frames - 1;
-		timer.Start(pThis->CurrentFiringFrame);
+		bool updateFiringFrame = true;
+
+		if (!pTypeExt->IsSecondary(weaponIndex))
+		{
+			const int value = pThis->CurrentBurstIndex % pWeapon->Burst;
+			const int syncFrame = value >= 2 ? -1
+				: (value == 0 ? pType->FiringSyncFrame0 : pType->FiringSyncFrame1);
+
+			updateFiringFrame = syncFrame == -1;
+		}
+
+		if (pThis->CurrentFiringFrame == -1
+			|| (fireUp < 0 && updateFiringFrame))
+		{
+			pThis->CurrentFiringFrame = frames;
+		}
 	}
 
-	if (fireUp >= 0 && frames >= 1)
+	if (fireUp >= 0)
 	{
 		int cumulativeDelay = 0;
 		int projectedDelay = 0;
-		auto const pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pThis->GetWeapon(weaponIndex)->WeaponType);
-		const bool allowBurst = pWeaponExt && pWeaponExt->Burst_FireWithinSequence;
+		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+		const bool allowBurst = pWeaponExt->Burst_FireWithinSequence;
 		const int currentBurstIndex = pThis->CurrentBurstIndex;
 		auto& random = ScenarioClass::Instance->Random;
 
@@ -66,15 +82,13 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 			}
 		}
 
-		if (TechnoExt::HandleDelayedFireWithPauseSequence(pThis, weaponIndex, fireUp + cumulativeDelay))
+		const int frame = (frames - pThis->CurrentFiringFrame) / 2;
+		const int firingFrame = fireUp + cumulativeDelay;
+
+		if (TechnoExt::HandleDelayedFireWithPauseSequence(pThis, pWeapon, weaponIndex, frame, firingFrame))
 			return SkipFiring;
 
-		int frame = (timer.TimeLeft - timer.GetTimeLeft());
-
-		if (frame % 2 != 0)
-			return SkipFiring;
-
-		if (frame / 2 != fireUp + cumulativeDelay)
+		if (frame != firingFrame)
 		{
 			return SkipFiring;
 		}
@@ -85,6 +99,10 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 				pExt->ForceFullRearmDelay = true;
 		}
 	}
+	else if (TechnoExt::HandleDelayedFireWithPauseSequence(pThis, pWeapon, weaponIndex, 0, -1))
+	{
+		return SkipFiring;
+	}
 
 	return 0;
 }
@@ -94,26 +112,26 @@ DEFINE_HOOK(0x736F67, UnitClass_UpdateFiring_BurstNoDelay, 0x6)
 	enum { SkipVanillaFire = 0x737063 };
 
 	GET(UnitClass* const, pThis, ESI);
-	GET(const int, wpIdx, EDI);
+	GET(const int, weaponIndex, EDI);
 	GET(AbstractClass* const, pTarget, EAX);
 
-	if (const auto pWeapon = pThis->GetWeapon(wpIdx)->WeaponType)
+	if (const auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType)
 	{
 		if (pWeapon->Burst > 1)
 		{
-			const auto pExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+			const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-			if (pExt->Burst_NoDelay && (!pExt->DelayedFire_Duration.isset() || pExt->DelayedFire_OnlyOnInitialBurst))
+			if (pWeaponExt->Burst_NoDelay && (!pWeaponExt->DelayedFire_Duration.isset() || pWeaponExt->DelayedFire_OnlyOnInitialBurst))
 			{
-				if (pThis->Fire(pTarget, wpIdx))
+				if (pThis->Fire(pTarget, weaponIndex))
 				{
 					if (!pThis->CurrentBurstIndex)
 						return SkipVanillaFire;
 
-					auto rof = pThis->RearmTimer.TimeLeft;
+					int rof = pThis->RearmTimer.TimeLeft;
 					pThis->RearmTimer.Start(0);
 
-					for (auto i = pThis->CurrentBurstIndex; i < pWeapon->Burst && pThis->GetFireError(pTarget, wpIdx, true) == FireError::OK && pThis->Fire(pTarget, wpIdx); ++i)
+					for (int i = pThis->CurrentBurstIndex; i < pWeapon->Burst && pThis->GetFireError(pTarget, weaponIndex, true) == FireError::OK && pThis->Fire(pTarget, weaponIndex); ++i)
 					{
 						rof = pThis->RearmTimer.TimeLeft;
 						pThis->RearmTimer.Start(0);
@@ -125,6 +143,19 @@ DEFINE_HOOK(0x736F67, UnitClass_UpdateFiring_BurstNoDelay, 0x6)
 				return SkipVanillaFire;
 			}
 		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x741A96, UnitClass_SetDestination_ResetFiringFrame, 0x6)
+{
+	GET(UnitClass* const, pThis, EBP);
+
+	if (!pThis->Target && !pThis->Type->Turret
+		&& pThis->CurrentFiringFrame != -1)
+	{
+		pThis->CurrentFiringFrame = -1;
 	}
 
 	return 0;

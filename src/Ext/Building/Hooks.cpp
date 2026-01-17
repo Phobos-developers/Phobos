@@ -1,15 +1,10 @@
 #include "Body.h"
 
-#include <BulletClass.h>
-#include <UnitClass.h>
-#include <SuperClass.h>
 #include <GameOptionsClass.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/WarheadType/Body.h>
-#include <TacticalClass.h>
-#include <PlanningTokenClass.h>
 
 #pragma region Update
 
@@ -18,13 +13,24 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	auto const pExt = BuildingExt::ExtMap.Find(pThis);
-	pExt->DisplayIncomeString();
-	pExt->ApplyPoweredKillSpawns();
+	const auto pBuildingExt = BuildingExt::ExtMap.Find(pThis);
+	pBuildingExt->DisplayIncomeString();
+
+	const auto pTechnoExt = pBuildingExt->TechnoExtData;
+	pTechnoExt->UpdateLaserTrails(); // Mainly for on turret trails
 
 	// Force airstrike targets to redraw every frame to account for tint intensity fluctuations.
-	if (TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe)
+	if (pTechnoExt->AirstrikeTargetingMe)
 		pThis->Mark(MarkType::Change);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x43FBEF, BuildingClass_AI_PoweredKillSpawns, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	BuildingExt::ExtMap.Find(pThis)->ApplyPoweredKillSpawns();
 
 	return 0;
 }
@@ -128,13 +134,13 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 
 	GET(BuildingClass*, pThis, ESI);
 
-	int weaponIndex = 0;
 	auto const pExt = BuildingExt::ExtMap.Find(pThis);
 
-	if (!pExt->EMPulseSW)
+	if (!pExt->CurrentEMPulseSW)
 		return 0;
 
-	auto const pSWExt = SWTypeExt::ExtMap.Find(pExt->EMPulseSW->Type);
+	int weaponIndex = 0;
+	auto const pSWExt = SWTypeExt::ExtMap.Find(pExt->CurrentEMPulseSW->Type);
 	auto const pOwner = pThis->Owner;
 
 	if (pSWExt->EMPulse_WeaponIndex >= 0)
@@ -159,15 +165,16 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 	if (pSWExt->EMPulse_SuspendOthers)
 	{
 		auto const pHouseExt = HouseExt::ExtMap.Find(pOwner);
-		const int index = pExt->EMPulseSW->Type->ArrayIndex;
+		const int index = pExt->CurrentEMPulseSW->Type->ArrayIndex;
 
 		if (pHouseExt->SuspendedEMPulseSWs.count(index))
 		{
-			auto& super = pOwner->Supers;
+			auto& supers = pOwner->Supers;
 
 			for (auto const& swidx : pHouseExt->SuspendedEMPulseSWs[index])
 			{
-				super[swidx]->IsSuspended = false;
+				auto const super = supers[swidx];
+				super->IsSuspended = false;
 			}
 
 			pHouseExt->SuspendedEMPulseSWs[index].clear();
@@ -175,13 +182,13 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 		}
 	}
 
-	pExt->EMPulseSW = nullptr;
+	pExt->CurrentEMPulseSW = nullptr;
 	EMPulseCannonTemp::weaponIndex = weaponIndex;
 	R->EAX(pThis->GetWeapon(weaponIndex));
 	return SkipGameCode;
 }
 
-CoordStruct* __fastcall BuildingClass_GetFireCoords_Wrapper(BuildingClass* pThis, void* _, CoordStruct* pCrd, int weaponIndex)
+static CoordStruct* __fastcall BuildingClass_GetFireCoords_Wrapper(BuildingClass* pThis, void* _, CoordStruct* pCrd, int weaponIndex)
 {
 	auto coords = MapClass::Instance.GetCellAt(pThis->Owner->EMPTarget)->GetCellCoords();
 	pCrd = pThis->GetFLH(&coords, EMPulseCannonTemp::weaponIndex, *pCrd);
@@ -330,7 +337,7 @@ DEFINE_HOOK(0x43D6E5, BuildingClass_Draw_ZShapePointMove, 0x5)
 {
 	enum { Apply = 0x43D6EF, Skip = 0x43D712 };
 
-	GET(Mission, mission, EAX);
+	GET(const Mission, mission, EAX);
 
 	if ((mission != Mission::Selling && mission != Mission::Construction))
 		return Apply;
@@ -637,35 +644,25 @@ DEFINE_HOOK(0x4FAAD8, HouseClass_AbandonProduction_RewriteForBuilding, 0x8)
 	GET(const AbstractType, absType, EBP);
 	GET(FactoryClass* const, pFactory, ESI);
 
-	if (buildCat == BuildCat::DontCare || all)
-	{
-		const auto pType = TechnoTypeClass::GetByTypeAndIndex(absType, index);
-		const auto firstRemoved = pFactory->RemoveOneFromQueue(pType);
-
-		if (firstRemoved)
-		{
-			SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
-			SidebarClass::Instance.RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
-
-			if (all)
-				while (pFactory->RemoveOneFromQueue(pType));
-			else
-				return Return;
-		}
-
-		return CheckSame;
-	}
-
-	if (!pFactory->Object)
+	// After placing the building, the factory will be in this state
+	if (buildCat != BuildCat::DontCare && !all && !pFactory->Object)
 		return SkipCheck;
 
-	if (!pFactory->RemoveOneFromQueue(TechnoTypeClass::GetByTypeAndIndex(absType, index)))
-		return CheckSame;
+	const auto pType = TechnoTypeClass::GetByTypeAndIndex(absType, index);
+	const auto firstRemoved = pFactory->RemoveOneFromQueue(pType);
 
-	SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
-	SidebarClass::Instance.RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
+	if (firstRemoved)
+	{
+		SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
+		SidebarClass::Instance.RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
 
-	return Return;
+		if (all)
+			while (pFactory->RemoveOneFromQueue(pType));
+		else
+			return Return;
+	}
+
+	return CheckSame;
 }
 
 DEFINE_HOOK(0x6A9C54, StripClass_DrawStrip_FindFactoryDehardCode, 0x6)
@@ -806,7 +803,7 @@ DEFINE_HOOK(0x44B630, BuildingClass_MissionAttack_AnimDelayedFire, 0x6)
 
 #pragma region BuildingWaypoints
 
-bool __fastcall BuildingTypeClass_CanUseWaypoint(BuildingTypeClass* pThis)
+static bool __fastcall BuildingTypeClass_CanUseWaypoint(BuildingTypeClass* pThis)
 {
 	return RulesExt::Global()->BuildingWaypoints;
 }
@@ -819,7 +816,7 @@ DEFINE_HOOK(0x4AE95E, DisplayClass_sub_4AE750_DisallowBuildingNonAttackPlanning,
 	GET(ObjectClass* const, pObject, ECX);
 	LEA_STACK(CellStruct*, pCell, STACK_OFFSET(0x20, 0x8));
 
-	auto action = pObject->MouseOverCell(pCell);
+	const auto action = pObject->MouseOverCell(pCell);
 
 	if (!PlanningNodeClass::PlanningModeActive || pObject->WhatAmI() != AbstractType::Building || action == Action::Attack)
 		pObject->CellClickedAction(action, pCell, pCell, false);
@@ -883,6 +880,12 @@ DEFINE_HOOK(0x4555E4, BuildingClass_IsPowerOnline_Overpower, 0x6)
 {
 	enum { LowPower = 0x4556BE, Continue1 = 0x4555F0, Continue2 = 0x455643 };
 
+	GET(const int, threshold, EDI);
+
+	// Battery.KeepOnline activated
+	if (!threshold)
+		return R->Origin() == 0x4555E4 ? Continue1 : Continue2;
+
 	GET(BuildingClass*, pThis, ESI);
 	const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 	const int keepOnline = pBuildingTypeExt->Overpower_KeepOnline;
@@ -905,3 +908,56 @@ DEFINE_HOOK(0x4555E4, BuildingClass_IsPowerOnline_Overpower, 0x6)
 
 	return overPower < keepOnline ? LowPower : (R->Origin() == 0x4555E4 ? Continue1 : Continue2);
 }
+
+#pragma region OwnerChangeBuildupFix
+
+static void __fastcall BuildingClass_Place_Wrapper(BuildingClass* pThis, void*, bool captured)
+{
+	// Skip calling Place() here if we're in middle of buildup.
+	if (pThis->CurrentMission != Mission::Construction || pThis->BState != (int)BStateType::Construction)
+		pThis->Place(captured);
+}
+
+DEFINE_FUNCTION_JUMP(CALL6, 0x448CEF, BuildingClass_Place_Wrapper);
+
+DEFINE_HOOK(0x44939F, BuildingClass_Captured_BuildupFix, 0x7)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	// If we're supposed to be playing buildup during/after owner change reset any changes to mission or BState made during owner change. 
+	if (pThis->CurrentMission == Mission::Construction && pThis->BState == (int)BStateType::Construction)
+	{
+		pThis->IsReadyToCommence = false;
+		pThis->QueueBState = (int)BStateType::None;
+		pThis->QueuedMission = Mission::None;
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
+DEFINE_HOOK(0x4485DB, BuildingClass_SetOwningHouse_SyncLinkedOwner, 0x6)
+{
+	enum { SkipGameCode = 0x4486C8 };
+	GET(BuildingClass*, pThis, ESI);
+	return BuildingTypeExt::ExtMap.Find(pThis->Type)->BuildingRadioLink_SyncOwner.Get(RulesExt::Global()->BuildingRadioLink_SyncOwner) ? 0 : SkipGameCode;	
+}
+
+#pragma region PrefiringMark
+
+DEFINE_HOOK(0x440042, BuildingClass_UpdateDelayedFiring_PrefiringMark1, 0x9)
+{
+	GET(BuildingClass*, pThis, ESI);
+	BuildingExt::ExtMap.Find(pThis)->IsFiringNow = (int)pThis->PrismStage && pThis->DelayBeforeFiring <= 1;
+	return 0;
+}
+
+DEFINE_HOOK(0x4400F9, BuildingClass_UpdateDelayedFiring_PrefiringMar2, 0x7)
+{
+	GET(BuildingClass*, pThis, ESI);
+	BuildingExt::ExtMap.Find(pThis)->IsFiringNow = false;
+	return 0;
+}
+
+#pragma endregion

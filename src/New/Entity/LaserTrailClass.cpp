@@ -1,12 +1,14 @@
 #include "LaserTrailClass.h"
 
-#include <Utilities/TemplateDef.h>
 #include <Ext/EBolt/Body.h>
 
 // Draws LaserTrail if the conditions are suitable.
 // Returns true if drawn, false otherwise.
 bool LaserTrailClass::Update(CoordStruct location)
 {
+	if (Phobos::Config::HideLaserTrailEffects && this->Type->IsHideable)
+		return false;
+
 	bool result = false;
 
 	if (!this->LastLocation.isset())

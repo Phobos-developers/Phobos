@@ -1,9 +1,4 @@
 #pragma once
-#include <BuildingTypeClass.h>
-#include <SuperClass.h>
-#include <SuperWeaponTypeClass.h>
-
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -32,6 +27,7 @@ public:
 		Valueable<bool> CanC4_AllowZeroDamage;
 		Valueable<bool> Refinery_UseStorage;
 		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
+		Valueable<bool> Cloning_Powered { true };
 		Valueable<bool> ExcludeFromMultipleFactoryBonus;
 
 		ValueableIdx<VocClass> Grinding_Sound;
@@ -99,6 +95,17 @@ public:
 
 		ValueableVector<bool> HasPowerUpAnim;
 
+		Valueable<bool> UndeploysInto_Sellable;
+
+		Nullable<bool> BuildingRadioLink_SyncOwner;
+
+		// Ares 0.2
+		Valueable<bool> CloningFacility;
+
+		// Ares 0.A
+		Valueable<BuildingTypeClass*> RubbleIntact;
+		Valueable<bool> RubbleIntactRemove;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -161,6 +168,16 @@ public:
 			, BuildingRepairedSound {}
 			, Refinery_UseNormalActiveAnim { false }
 			, HasPowerUpAnim {}
+			, UndeploysInto_Sellable { false }
+
+			, BuildingRadioLink_SyncOwner {}
+
+			// Ares 0.2
+			, CloningFacility { false }
+
+			// Ares 0.A
+			, RubbleIntact { nullptr }
+			, RubbleIntactRemove { false }
 		{ }
 
 		// Ares 0.A functions

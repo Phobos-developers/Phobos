@@ -37,17 +37,21 @@
 #include "Template.h"
 
 #include "INIParser.h"
-#include "Enum.h"
-#include "Constructs.h"
+#include "EnumFunctions.h"
 #include "SavegameDef.h"
+#include "Macro.h"
 
 #include <InfantryTypeClass.h>
 #include <AircraftTypeClass.h>
 #include <UnitTypeClass.h>
 #include <BuildingTypeClass.h>
 #include <WarheadTypeClass.h>
+#include <WeaponTypeClass.h>
 #include <SuperWeaponTypeClass.h>
-#include <FootClass.h>
+#include <InfantryClass.h>
+#include <AircraftClass.h>
+#include <UnitClass.h>
+#include <BuildingClass.h>
 #include <Powerups.h>
 #include <VocClass.h>
 #include <VoxClass.h>
@@ -336,7 +340,7 @@ namespace detail
 			auto const pValue = parser.value();
 			std::string Result = pValue;
 
-			if (!strstr(pValue, ".shp"))
+			if (Result.size() < 4 || !std::equal(Result.end() - 4, Result.end(), ".shp", [](char input, char expected) { return std::tolower(input) == expected; }))
 				Result += ".shp";
 
 			if (auto const pImage = FileSystem::LoadSHPFile(Result.c_str()))
@@ -600,6 +604,9 @@ namespace detail
 
 			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 			{
+				if (!_strcmpi(cur, "none"))
+					continue;
+
 				auto const landType = GroundType::GetLandTypeFromName(parser.value());
 
 				if (landType >= LandType::Clear && landType <= LandType::Weeds)
@@ -1491,16 +1498,20 @@ void __declspec(noinline) ValueableIdx<Lookuper>::Read(INI_EX& parser, const cha
 // Nullable
 
 template <typename T>
-template <bool Allocate>
+template <bool allocate, bool allowNone>
 void __declspec(noinline) Nullable<T>::Read(INI_EX& parser, const char* pSection, const char* pKey)
 {
 	if (parser.ReadString(pSection, pKey))
 	{
 		const char* val = parser.value();
+		bool reset = !_strcmpi(val, "<default>");
 
-		if (!_strcmpi(val, "<default>") || INIClass::IsBlank(val))
+		if constexpr (!allowNone)
+			reset = reset || INIClass::IsBlank(val);
+
+		if (reset)
 			this->Reset();
-		else if (detail::read<T, Allocate>(this->Value, parser, pSection, pKey))
+		else if (detail::read<T, allocate>(this->Value, parser, pSection, pKey))
 			this->HasValue = true;
 	}
 }

@@ -3,6 +3,8 @@
 #include <AbstractClass.h>
 #include <GeneralDefinitions.h>
 #include <Randomizer.h>
+#include <TeamClass.h>
+
 #include <vector>
 
 // These determine how many of each type of sync log event are stored in the buffers.
@@ -157,10 +159,15 @@ private:
 	static void WriteDestinationChanges(FILE* const pLogFile, int frameDigits);
 	static void WriteMissionOverrides(FILE* const pLogFile, int frameDigits);
 	static void WriteAnimCreations(FILE* const pLogFile, int frameDigits);
+	static void WriteTeams(FILE* const pLogFile);
 public:
 	static int AnimCreations_HighestX;
 	static int AnimCreations_HighestY;
 	static int AnimCreations_HighestZ;
+	static int TeamTypeClass_MaxIDLength;
+	static int ScriptTypeClass_MaxIDLength;
+	static int HouseTypeClass_MaxIDLength;
+	static int HouseName_MaxIDLength;
 
 	static void AddRNGCallSyncLogEvent(Randomizer* pRandomizer, int type, unsigned int callerAddress, int min = 0, int max = 0);
 	static void AddFacingChangeSyncLogEvent(unsigned short facing, unsigned int callerAddress);
@@ -169,4 +176,5 @@ public:
 	static void AddMissionOverrideSyncLogEvent(AbstractClass* pObject, int mission, unsigned int callerAddress);
 	static void AddAnimCreationSyncLogEvent(const CoordStruct& coords, unsigned int callerAddress);
 	static void WriteSyncLog(const char* logFilename);
+	static void SetTeamLoggingPadding(TeamClass* pTeam);
 };

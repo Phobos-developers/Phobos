@@ -30,7 +30,7 @@ public:
 	static const int GetRangedRandomOrSingleValue(PartialVector2D<int> range);
 	static const double GetRangedRandomOrSingleValue(PartialVector2D<double> range);
 	static const double GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor armorType);
-	static const double GetWarheadVersusArmor(WarheadTypeClass* pWH, TechnoClass* pThis, TechnoTypeClass* pType = nullptr);
+	static const double GetWarheadVersusArmor(WarheadTypeClass* pWH, TechnoClass* pThis, TechnoTypeClass* pType);
 	static int ChooseOneWeighted(const double dice, const std::vector<int>* weights);
 	static bool HasHealthRatioThresholdChanged(double oldRatio, double newRatio);
 	static bool ApplyTheaterSuffixToString(char* str);
@@ -39,6 +39,8 @@ public:
 	static CoordStruct CalculateCoordsFromDistance(CoordStruct currentCoords, CoordStruct targetCoords, int distance);
 	static void DisplayDamageNumberString(int damage, DamageDisplayType type, CoordStruct coords, int& offset);
 	static int GetColorFromColorAdd(int colorIndex);
+	static int SafeMultiply(int value, int mult);
+	static int SafeMultiply(int value, double mult);
 	static DynamicVectorClass<ColorScheme*>* BuildPalette(const char* paletteFileName);
 
 	template<typename T>

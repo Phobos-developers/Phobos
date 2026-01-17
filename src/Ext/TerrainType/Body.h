@@ -1,10 +1,8 @@
 #pragma once
 #include <TerrainTypeClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
-#include <Utilities/Macro.h>
 
 class TerrainTypeExt
 {
@@ -21,7 +19,7 @@ public:
 		Valueable<int> SpawnsTiberium_Range;
 		Valueable<PartialVector2D<int>> SpawnsTiberium_GrowthStage;
 		Valueable<PartialVector2D<int>> SpawnsTiberium_CellsPerAnim;
-		Valueable<AnimTypeClass*> DestroyAnim;
+		ValueableVector<AnimTypeClass*> DestroyAnim;
 		ValueableIdx<VocClass> DestroySound;
 		Nullable<ColorStruct> MinimapColor;
 		Valueable<bool> IsPassable;
