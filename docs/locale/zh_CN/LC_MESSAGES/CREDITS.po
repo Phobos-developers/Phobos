@@ -1996,6 +1996,7 @@ msgid ""
 "Fix the issue that weapon selection don't check if secondary's warhead "
 "has `IsLocomotor=yes`"
 msgstr ""
+"修复了武器选取规则未检查副武弹头是否拥有 `IsLocomotor=yes` 的问题"
 
 #: ../../../CREDITS.md:483
 msgid "**Apollo** - Translucent SHP drawing patches"

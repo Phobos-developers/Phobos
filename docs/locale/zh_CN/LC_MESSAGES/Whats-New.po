@@ -2647,6 +2647,7 @@ msgid ""
 "Fixed the issue that weapon selection don't check if secondary's warhead "
 "has `IsLocomotor=yes` (by NetsuNegi)"
 msgstr ""
+"修复了武器选取规则未检查副武弹头是否拥有 `IsLocomotor=yes` 的问题（by NetsuNegi）"
 
 #: ../../Whats-New.md:567 ../../Whats-New.md:612 ../../Whats-New.md:940
 #: ../../Whats-New.md:1025 ../../Whats-New.md:1189 ../../Whats-New.md:1230
