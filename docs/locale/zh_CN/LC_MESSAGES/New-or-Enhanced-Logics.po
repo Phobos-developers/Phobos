@@ -564,7 +564,6 @@ msgid ""
 msgstr "AE 可以通过 `AttachEffect.AttachTypes` 被弹头上赋予给其他对象。"
 
 #: ../../New-or-Enhanced-Logics.md:73
-#, fuzzy
 msgid ""
 "`AttachEffect.CumulativeSourceMaxCount` can be used to determine the "
 "maximum count of `Cumulative=true` effect from this source, or with no "
@@ -575,9 +574,10 @@ msgid ""
 "will refresh duration of the attached instance with shortest remaining "
 "duration."
 msgstr ""
-"`Cumulative` 如果设为 true，那么允许在同一对象上多次赋予相同类型的 AE，上限取决于 `Cumulative.MaxCount`"
-" 的值，如果 `Cumulative.MaxCount` 是一个负数则没有上限。如果目标已经有了 `Cumulative.MaxCount` "
-"个相同类型的 AE，那么再赋予同类 AE 将会刷新所剩持续时间最短的已有 AE 的剩余持续时间。"
+"`AttachEffect.CumulativeSourceMaxCount` 可用于控制来自同一来源的 `Cumulative=true` 的 AE 可叠加的最大数量，"
+"如果 `AttachEffect.CumulativeSourceMaxCount` 是一个负数则没有上限。独立于 `Cumulative.MaxCount` 工作。"
+"如果目标已经有了 `AttachEffect.CumulativeSourceMaxCount` 个来自同一来源的、相同类型的 AE，"
+"那么再赋予同类 AE 将会刷新所剩持续时间最短的已有 AE 的剩余持续时间。"
 
 #: ../../New-or-Enhanced-Logics.md:74
 msgid ""
