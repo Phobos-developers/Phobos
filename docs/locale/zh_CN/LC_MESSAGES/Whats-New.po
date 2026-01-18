@@ -2796,6 +2796,7 @@ msgid ""
 "Fixed the bug that weapon cannot used to intercept on gound bullet if "
 "it's projectile has `AG=no` (by NetsuNegi)"
 msgstr ""
+"修复了抛射体 `AG=no` 的武器无法拦截贴地飞行的抛射体的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:594 ../../Whats-New.md:995 ../../Whats-New.md:1218
 msgid "Fixes / interactions with other extensions:"

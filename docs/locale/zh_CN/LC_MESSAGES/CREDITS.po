@@ -1985,6 +1985,7 @@ msgid ""
 "Fix the bug that weapon cannot used to intercept on gound bullet if it's "
 "projectile has `AG=no`"
 msgstr ""
+"修复了抛射体 `AG=no` 的武器无法拦截贴地飞行的抛射体的 Bug"
 
 #: ../../../CREDITS.md:481
 msgid "Customize size for mind controlled unit"
