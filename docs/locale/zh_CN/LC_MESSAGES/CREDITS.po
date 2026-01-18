@@ -1989,7 +1989,7 @@ msgstr ""
 
 #: ../../../CREDITS.md:481
 msgid "Customize size for mind controlled unit"
-msgstr ""
+msgstr "自定义被心控单位的心控尺寸"
 
 #: ../../../CREDITS.md:482
 msgid ""

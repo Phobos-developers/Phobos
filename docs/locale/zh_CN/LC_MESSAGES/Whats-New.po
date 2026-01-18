@@ -2343,8 +2343,8 @@ msgid "[Attack non-threatening structures extensions](New-or-Enhanced-Logics.md#
 msgstr "[攻击无威胁建筑扩展](New-or-Enhanced-Logics.md#attack-non-threatening-structures-techno)（by FlyStar）"
 
 #: ../../Whats-New.md:516
-msgid "Customize size for mind controlled unit (by NetsuNegi)"
-msgstr ""
+msgid "[Customize size for mind controlled unit](New-or-Enhanced-Logics.md#mind-control-enhancement) (by NetsuNegi)"
+msgstr "[自定义被心控单位的心控尺寸](New-or-Enhanced-Logics.md#mind-control-enhancement)（by NetsuNegi）"
 
 #: ../../Whats-New.md:518 ../../Whats-New.md:609 ../../Whats-New.md:794
 #: ../../Whats-New.md:1153 ../../Whats-New.md:1262 ../../Whats-New.md:1287
