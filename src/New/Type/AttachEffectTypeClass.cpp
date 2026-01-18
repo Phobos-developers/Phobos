@@ -363,6 +363,7 @@ void AEAttachInfoTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	INI_EX exINI(pINI);
 
 	this->AttachTypes.Read(exINI, pSection, "AttachEffect.AttachTypes");
+	this->CumulativeSourceMaxCount.Read(exINI, pSection, "AttachEffect.CumulativeSourceMaxCount");
 	this->CumulativeRefreshAll.Read(exINI, pSection, "AttachEffect.CumulativeRefreshAll");
 	this->CumulativeRefreshAll_OnAttach.Read(exINI, pSection, "AttachEffect.CumulativeRefreshAll.OnAttach");
 	this->CumulativeRefreshSameSourceOnly.Read(exINI, pSection, "AttachEffect.CumulativeRefreshSameSourceOnly");
@@ -396,6 +397,7 @@ AEAttachParams AEAttachInfoTypeClass::GetAttachParams(unsigned int index, bool s
 	}
 	else
 	{
+		info.CumulativeSourceMaxCount = this->CumulativeSourceMaxCount;
 		info.CumulativeRefreshAll = this->CumulativeRefreshAll;
 		info.CumulativeRefreshAll_OnAttach = this->CumulativeRefreshAll_OnAttach;
 		info.CumulativeRefreshSameSourceOnly = this->CumulativeRefreshSameSourceOnly;
@@ -411,6 +413,7 @@ bool AEAttachInfoTypeClass::Serialize(T& stm)
 {
 	return stm
 		.Process(this->AttachTypes)
+		.Process(this->CumulativeSourceMaxCount)
 		.Process(this->CumulativeRefreshAll)
 		.Process(this->CumulativeRefreshAll_OnAttach)
 		.Process(this->CumulativeRefreshSameSourceOnly)

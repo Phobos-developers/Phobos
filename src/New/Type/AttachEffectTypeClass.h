@@ -209,6 +209,7 @@ struct AEAttachParams
 	int Delay;
 	int InitialDelay;
 	int RecreationDelay;
+	int CumulativeSourceMaxCount;
 	bool CumulativeRefreshAll;
 	bool CumulativeRefreshAll_OnAttach;
 	bool CumulativeRefreshSameSourceOnly;
@@ -218,6 +219,7 @@ struct AEAttachParams
 		, Delay { 0 }
 		, InitialDelay { 0 }
 		, RecreationDelay { -1 }
+		, CumulativeSourceMaxCount { -1 }
 		, CumulativeRefreshAll { false }
 		, CumulativeRefreshAll_OnAttach { false }
 		, CumulativeRefreshSameSourceOnly { true }
@@ -230,6 +232,7 @@ class AEAttachInfoTypeClass
 {
 public:
 	ValueableVector<AttachEffectTypeClass*> AttachTypes;
+	Valueable<int> CumulativeSourceMaxCount;
 	Valueable<bool> CumulativeRefreshAll;
 	Valueable<bool> CumulativeRefreshAll_OnAttach;
 	Valueable<bool> CumulativeRefreshSameSourceOnly;
@@ -250,6 +253,7 @@ public:
 
 	AEAttachInfoTypeClass() :
 		AttachTypes {}
+		, CumulativeSourceMaxCount { -1 }
 		, CumulativeRefreshAll { false }
 		, CumulativeRefreshAll_OnAttach { false }
 		, CumulativeRefreshSameSourceOnly { true }
