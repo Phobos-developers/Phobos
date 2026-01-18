@@ -2327,6 +2327,8 @@ msgid ""
 "[Toggle to exclude technos from base center calculations](New-or-"
 "Enhanced-Logics.md#exclusion-from-base-center-calculations) (by Starkku)"
 msgstr ""
+"[定义单位是否不参与基地中心计算](New-or-"
+"Enhanced-Logics.md#exclusion-from-base-center-calculations) (by Starkku)"
 
 #: ../../Whats-New.md:514
 msgid ""

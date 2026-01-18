@@ -6242,7 +6242,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:1631
 msgid "Exclusion from base center calculations"
-msgstr ""
+msgstr "不参与基地中心计算"
 
 #: ../../New-or-Enhanced-Logics.md:1633
 msgid ""
@@ -6252,6 +6252,8 @@ msgid ""
 "initial base center does count house's starting technos which this does "
 "affect."
 msgstr ""
+"这可用于将科技类型从基地中心计算中排除（用于特定 AI 脚本和 AI 超武瞄准模式等）"
+"通常仅有建筑参与计算，但初始基地中心的确会计入所属方的初始单位，该设置对此也可生效。"
 
 #: ../../New-or-Enhanced-Logics.md:1636
 msgid ""

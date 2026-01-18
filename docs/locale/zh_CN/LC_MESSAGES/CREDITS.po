@@ -1116,6 +1116,11 @@ msgstr "建筑拔起期间变更所属相关 Bug 的修复"
 msgid "Subterranean harvester pathfinding fix"
 msgstr "潜地矿车寻路问题修复"
 
+msgid ""
+"Toggle to exclude technos from base center calculations"
+msgstr ""
+"定义单位是否不参与基地中心计算"
+
 #: ../../../CREDITS.md:287
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
