@@ -1,15 +1,10 @@
 #include "Body.h"
 
-#include <BulletClass.h>
-#include <UnitClass.h>
-#include <SuperClass.h>
 #include <GameOptionsClass.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/WarheadType/Body.h>
-#include <TacticalClass.h>
-#include <PlanningTokenClass.h>
 
 #pragma region Update
 

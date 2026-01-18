@@ -1,5 +1,7 @@
 #include "AttachEffectTypeClass.h"
 
+#include <Ext/TEvent/Body.h>
+
 // Used to match groups names to AttachEffectTypeClass instances. Do not iterate due to undetermined order being prone to desyncs.
 std::unordered_map<std::string, std::set<AttachEffectTypeClass*>> AttachEffectTypeClass::GroupsMap;
 
@@ -103,7 +105,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->PenetratesForceShield.Read(exINI, pSection, "PenetratesForceShield");
 	this->AffectTypes.Read(exINI, pSection, "AffectTypes");
 	this->IgnoreTypes.Read(exINI, pSection, "IgnoreTypes");
-	this->AffectTargets.Read(exINI, pSection, "AffectTargets");
+	this->AffectsTarget.Read(exINI, pSection, "AffectsTarget");
 
 	this->Animation.Read(exINI, pSection, "Animation");
 	this->CumulativeAnimations.Read(exINI, pSection, "CumulativeAnimations");
@@ -145,14 +147,14 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Crit_DisallowWarheads.Read(exINI, pSection, "Crit.DisallowWarheads");
 
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
-	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
+	this->RevengeWeapon_AffectsHouse.Read(exINI, pSection, "RevengeWeapon.AffectsHouse");
 	this->RevengeWeapon_UseInvokerAsOwner.Read(exINI, pSection, "RevengeWeapon.UseInvokerAsOwner");
 
 	this->ReflectDamage.Read(exINI, pSection, "ReflectDamage");
 	this->ReflectDamage_Warhead.Read(exINI, pSection, "ReflectDamage.Warhead");
 	this->ReflectDamage_Warhead_Detonate.Read(exINI, pSection, "ReflectDamage.Warhead.Detonate");
 	this->ReflectDamage_Multiplier.Read(exINI, pSection, "ReflectDamage.Multiplier");
-	this->ReflectDamage_AffectsHouses.Read(exINI, pSection, "ReflectDamage.AffectsHouses");
+	this->ReflectDamage_AffectsHouse.Read(exINI, pSection, "ReflectDamage.AffectsHouse");
 	this->ReflectDamage_Chance.Read(exINI, pSection, "ReflectDamage.Chance");
 	this->ReflectDamage_Override.Read(exINI, pSection, "ReflectDamage.Override");
 	this->ReflectDamage_UseInvokerAsOwner.Read(exINI, pSection, "ReflectDamage.UseInvokerAsOwner");
@@ -182,7 +184,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->PenetratesForceShield)
 		.Process(this->AffectTypes)
 		.Process(this->IgnoreTypes)
-		.Process(this->AffectTargets)
+		.Process(this->AffectsTarget)
 		.Process(this->Animation)
 		.Process(this->CumulativeAnimations)
 		.Process(this->CumulativeAnimations_RestartOnChange)
@@ -216,13 +218,13 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Crit_AllowWarheads)
 		.Process(this->Crit_DisallowWarheads)
 		.Process(this->RevengeWeapon)
-		.Process(this->RevengeWeapon_AffectsHouses)
+		.Process(this->RevengeWeapon_AffectsHouse)
 		.Process(this->RevengeWeapon_UseInvokerAsOwner)
 		.Process(this->ReflectDamage)
 		.Process(this->ReflectDamage_Warhead)
 		.Process(this->ReflectDamage_Warhead_Detonate)
 		.Process(this->ReflectDamage_Multiplier)
-		.Process(this->ReflectDamage_AffectsHouses)
+		.Process(this->ReflectDamage_AffectsHouse)
 		.Process(this->ReflectDamage_Chance)
 		.Process(this->ReflectDamage_Override)
 		.Process(this->ReflectDamage_UseInvokerAsOwner)

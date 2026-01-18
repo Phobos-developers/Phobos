@@ -1,6 +1,3 @@
-#include <AlphaShapeClass.h>
-#include <TacticalClass.h>
-
 #include <Ext/Building/Body.h>
 #include <Utilities/AresFunctions.h>
 

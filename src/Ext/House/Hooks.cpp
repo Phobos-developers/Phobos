@@ -2,9 +2,7 @@
 
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Scenario/Body.h>
-#include "Ext/Techno/Body.h"
-#include "Ext/Building/Body.h"
-#include <unordered_map>
+#include <Ext/Building/Body.h>
 
 DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 {
@@ -128,13 +126,12 @@ DEFINE_HOOK(0x4FD1CD, HouseClass_RecalcCenter_LimboDelivery, 0x6)
 
 	GET(BuildingClass* const, pBuilding, ESI);
 
-	if (!MapClass::Instance.CoordinatesLegal(pBuilding->GetMapCoords()))
+	if (!MapClass::Instance.CoordinatesLegal(pBuilding->GetMapCoords())
+		|| (RecalcCenterTemp::pExtData && RecalcCenterTemp::pExtData->OwnsLimboDeliveredBuilding(pBuilding))
+		|| TechnoTypeExt::ExtMap.Find(pBuilding->Type)->IgnoreForBaseCenter)
+	{
 		return R->Origin() == 0x4FD1CD ? SkipBuilding1 : SkipBuilding2;
-
-	auto const pExt = RecalcCenterTemp::pExtData;
-
-	if (pExt && pExt->OwnsLimboDeliveredBuilding(pBuilding))
-		return R->Origin() == 0x4FD1CD ? SkipBuilding1 : SkipBuilding2;
+	}
 
 	return 0;
 }
@@ -145,7 +142,7 @@ DEFINE_HOOK(0x4AC534, DisplayClass_ComputeStartPosition_IllegalCoords, 0x6)
 
 	GET(TechnoClass* const, pTechno, ECX);
 
-	if (!MapClass::Instance.CoordinatesLegal(pTechno->GetMapCoords()))
+	if (!MapClass::Instance.CoordinatesLegal(pTechno->GetMapCoords()) || TechnoExt::ExtMap.Find(pTechno)->TypeExtData->IgnoreForBaseCenter)
 		return SkipTechno;
 
 	return 0;
@@ -528,4 +525,25 @@ DEFINE_HOOK(0x508E17, HouseClass_UpdateRadar_FreeRadar, 0x8)
 
 	R->Stack(STACK_OFFSET(0x1C, -0xC), false);
 	return Continue;
+}
+
+// WW's code set anger on every houses, even on the allies.
+DEFINE_HOOK(0x4FD616, HouseClass_UpdateAI_DontAngerOnAlly, 0x9)
+{
+	enum { SkipCurrentHouse = 0x4FD6FE };
+
+	GET(HouseClass*, pThis, EBX);
+	GET(HouseClass*, pTargetHouse, ESI);
+
+	return pThis->IsAlliedWith(pTargetHouse) ? SkipCurrentHouse : 0;
+}
+
+// WW calculates the distance from pThis to pThis ...
+DEFINE_HOOK(0x4FD635, HouseClass_UpdateAI_DistCalcFix, 0x5)
+{
+	enum { SkipGameCode = 0x4FD657 };
+	GET(HouseClass*, pTargetHouse, ESI);
+	auto baseMapCrd = pTargetHouse->BaseCenter == CellStruct::Empty ? pTargetHouse->BaseSpawnCell : pTargetHouse->BaseCenter;
+	R->EAX(*(int*)&baseMapCrd);
+	return SkipGameCode;
 }

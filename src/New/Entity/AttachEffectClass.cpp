@@ -1,14 +1,8 @@
 #include "AttachEffectClass.h"
-#include "Memory.h"
 
-#include <AnimClass.h>
-#include <BuildingClass.h>
-
-#include <Ext/TEvent/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Utilities/EnumFunctions.h>
 
 std::vector<AttachEffectClass*> AttachEffectClass::Array;
 
@@ -687,7 +681,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 			return nullptr;
 	}
 
-	if (!EnumFunctions::IsTechnoEligible(pTarget, pType->AffectTargets, true))
+	if (!EnumFunctions::IsTechnoEligible(pTarget, pType->AffectsTarget, true))
 		return nullptr;
 
 	if ((!pType->AffectTypes.empty() && !pType->AffectTypes.Contains(pTargetType)) || pType->IgnoreTypes.Contains(pTargetType))
@@ -953,7 +947,7 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 		}
 
 		auto const type = attachEffect->GetType();
-		const bool isValid = EnumFunctions::IsTechnoEligible(pTarget, type->AffectTargets, true)
+		const bool isValid = EnumFunctions::IsTechnoEligible(pTarget, type->AffectsTarget, true)
 			&& (type->AffectTypes.empty() || type->AffectTypes.Contains(pTargetType)) && !type->IgnoreTypes.Contains(pTargetType);
 
 		if (!isValid)

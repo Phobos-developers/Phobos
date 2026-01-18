@@ -1,6 +1,5 @@
 #include "Body.h"
 
-#include <SessionClass.h>
 #include <VeinholeMonsterClass.h>
 
 #include <Ext/House/Body.h>

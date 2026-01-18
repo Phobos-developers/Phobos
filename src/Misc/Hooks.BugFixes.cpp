@@ -1,39 +1,13 @@
-#include <AircraftClass.h>
 #include <AircraftTrackerClass.h>
-#include <AnimClass.h>
-#include <BuildingClass.h>
-#include <TechnoClass.h>
-#include <InfantryClass.h>
-#include <FootClass.h>
-#include <UnitClass.h>
-#include <OverlayTypeClass.h>
-#include <ScenarioClass.h>
-#include <SpawnManagerClass.h>
-#include <VoxelAnimClass.h>
-#include <BulletClass.h>
-#include <HouseClass.h>
-#include <FlyLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
-#include <TeleportLocomotionClass.h>
-#include <BombClass.h>
-#include <ParticleSystemClass.h>
-#include <WarheadTypeClass.h>
-#include <HashTable.h>
 #include <TunnelLocomotionClass.h>
-#include <TacticalClass.h>
 
-#include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/Anim/Body.h>
-#include <Ext/AnimType/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
-
-#include <Utilities/Macro.h>
-#include <Utilities/Debug.h>
-#include <Utilities/TemplateDef.h>
 
 /*
 	Allow usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable
@@ -2953,3 +2927,13 @@ DEFINE_HOOK(0x55BB09, LogicClass_RemoveObject_FixIndex, 0x6)
 }
 
 #pragma endregion
+
+//Jul 7, 2025 - Fridge: Cursor Refresh rate fix(from 60 to game render rate)
+DEFINE_HOOK(0x7B8536, StartMouseThread_AdjustMouseInterval, 0xA)
+{
+
+	// Original - Thread_Mouse_Args.Interval = 16ms
+	Game::MouseThread.Interval = 1;
+
+	return 0x7B8540;
+}

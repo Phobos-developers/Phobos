@@ -1,21 +1,9 @@
 #include "Body.h"
 
-#include <InfantryClass.h>
-#include <BulletClass.h>
-#include <HouseClass.h>
-#include <ScenarioClass.h>
-#include <AnimTypeClass.h>
-#include <AnimClass.h>
-#include <BitFont.h>
-#include <SuperClass.h>
-
 #include <Ext/Anim/Body.h>
-#include <Ext/Bullet/Body.h>
-#include <Ext/BulletType/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/Helpers.Alex.h>
-#include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
 
 #pragma region CreateGap Calls
@@ -486,16 +474,16 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	if (pSld && pSld->IsActive() && pSld->GetType()->ImmuneToCrit)
 		return;
 
-	if (!TechnoExt::IsHealthInThreshold(pTarget, this->Crit_AffectAbovePercent, this->Crit_AffectBelowPercent))
+	if (!TechnoExt::IsHealthInThreshold(pTarget, this->Crit_AffectsAbovePercent, this->Crit_AffectsBelowPercent))
 		return;
 
-	if (pHouse && !EnumFunctions::CanTargetHouse(this->Crit_AffectsHouses, pHouse, pTarget->Owner))
+	if (pHouse && !EnumFunctions::CanTargetHouse(this->Crit_AffectsHouse, pHouse, pTarget->Owner))
 		return;
 
-	if (!EnumFunctions::IsCellEligible(pTarget->GetCell(), this->Crit_Affects))
+	if (!EnumFunctions::IsCellEligible(pTarget->GetCell(), this->Crit_AffectsTarget))
 		return;
 
-	if (!EnumFunctions::IsTechnoEligible(pTarget, this->Crit_Affects))
+	if (!EnumFunctions::IsTechnoEligible(pTarget, this->Crit_AffectsTarget))
 		return;
 
 	this->Crit_Active = true;

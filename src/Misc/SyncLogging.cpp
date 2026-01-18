@@ -1,12 +1,7 @@
-#include <Misc/SyncLogging.h>
+#include "SyncLogging.h"
 
-#include <AircraftClass.h>
-#include <InfantryClass.h>
-#include <HouseClass.h>
-#include <Unsorted.h>
-
+#include <Helpers/Macro.h>
 #include <Utilities/Debug.h>
-#include <Utilities/Macro.h>
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/AresHelper.h>
 

@@ -89,6 +89,37 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 - Key `rulesmd.ini -> [TechnoType] -> Deployed.RememberTarget` is deprecated and can be removed now, the bugfix for `DeployToFire` deployers is now always on.
 
+### Changed tags<!-- This is only a temporary solution; what method to use afterwards has not been determined yet. -->
+
+- To standardize tag names for similar functions, prevent typos, or avoid misunderstandings, replace them with new tag names.
+
+#### From pre-0.5 devbuilds
+
+- The following tags were renamed:
+  - `[WarheadType] -> Crit.AffectAbovePercent` -> `[WarheadType] -> Crit.AffectsAbovePercent`.
+
+#### From 0.4
+
+- The following tags were renamed:
+  - `[AttachEffectType] -> AffectTargets` -> `[AttachEffectType] -> AffectsTarget`
+  - `[AttachEffectType] -> ReflectDamage.AffectsHouses` -> `[AttachEffectType] -> ReflectDamage.AffectsHouse`
+  - `[AttachEffectType/TechnoType] -> RevengeWeapon.AffectsHouses` -> `[AttachEffectType/TechnoType] -> RevengeWeapon.AffectsHouse`
+  - `[TechnoType] -> AutoFire` -> `[TechnoType] -> AutoTargetOwnPosition`
+  - `[TechnoType] -> AutoFire.TargetSelf` -> `[TechnoType] -> AutoTargetOwnPosition.Self`
+  - `[WarheadType] -> DetonateOnAllMapObjects.AffectHouses` -> `[WarheadType] -> DetonateOnAllMapObjects.AffectsHouse`
+  - `[WarheadType] -> DetonateOnAllMapObjects.AffectTargets` -> `[WarheadType] -> DetonateOnAllMapObjects.AffectsTarget`
+  - `[WarheadType] -> Crit.AffectBelowPercent` -> `[WarheadType] -> Crit.AffectsBelowPercent`.
+  - `[WarheadType] -> Crit.Affects` -> `[WarheadType] -> Crit.AffectsTarget`
+  - `[WarheadType] -> Crit.AffectsHouses` -> `[WarheadType] -> Crit.AffectsHouse`
+  - `[WarheadType] -> KillWeapon.AffectsHouses` -> `[WarheadType] -> KillWeapon.AffectsHouse`
+  - `[WarheadType] -> KillWeapon.OnFirer.AffectsHouses` -> `[WarheadType] -> KillWeapon.OnFirer.AffectsHouse`
+  - `[WarheadType/SuperWeaponType] -> Convert(N).AffectedHouses` -> `[WarheadType/SuperWeaponType] -> Convert(N).AffectsHouse`
+  - `[SuperWeaponType] -> LimboKill.Affected` -> `[SuperWeaponType] -> LimboKill.AffectsHouse`
+
+```{note}
+- You can use the [*MigrationUtility*](https://github.com/Phobos-developers/PhobosSupplementaries/tree/develop/MigrationUtility) in the PhobosSupplementaries repository to conveniently complete these migrations.
+```
+
 ### New user settings in RA2MD.INI
 
 - These are new user setting keys added by various features in Phobos. Most of them can be found in either in [user inteface](User-Interface.md) or [miscellaneous](Miscellanous.md) sections. Search functionality can be used to find them quickly if needed.
@@ -479,6 +510,10 @@ New:
 - [Extra range for chasing and pre-firing](New-or-Enhanced-Logics.md#extra-range) (by TaranDahl)
 - [Allow techno type considered as other type when recruiting techno for teams](Fixed-or-Improved-Logics.md#allow-techno-type-considered-as-other-type-when-recruiting-techno-for-teams) (by NetsuNegi)
 - Map Action [`511` Undeploy Building to Waypoint](AI-Scripting-and-Mapping.md#undeploy-building-to-waypoint), [`609` Set Radar Mode](AI-Scripting-and-Mapping.md#set-radar-mode), [`610` Set house's `TeamDelays` value](AI-Scripting-and-Mapping.md#set-house-s-teamdelays-value) (by FlyStar)
+- [Toggle to exclude technos from base center calculations](New-or-Enhanced-Logics.md#exclusion-from-base-center-calculations) (by Starkku)
+- Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies` (by FlyStar)
+- Attack non-threatening structures extensions (by FlyStar)
+- Customize size for mind controlled unit (by NetsuNegi)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -524,6 +559,10 @@ Vanilla fixes:
 - Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units (by TaranDahl)
 - Fixed an issue that rockets do not consider the destination altitude during climbing (by TaranDahl)
 - Fixed the bug that if object has been removed from LogicClass in Update(), next object will be skip (by NetsuNegi)
+- Fixed cursor from being hardcoded to update/render 60 times a second no matter how fast the game is rendering. Now the Cursor will update and render much more frequently (by Fridge)
+- Fixed an issue that the AI would set anger towards friendly houses, causing it to act stupidly (by TaranDahl)
+- Fixed an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies (by TaranDahl)
+- Fixed the issue that weapon selection don't check if secondary's warhead has `IsLocomotor=yes` (by NetsuNegi)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -550,6 +589,7 @@ Phobos fixes:
 - Fixed OverlayType `ZAdjust` as well as some shield & AttachEffect variables not being correctly saved & loaded (by Ollerus)
 - LimboDelivery buildings cannot be selected (by FlyStar)
 - Fixed the positive value of `Reveal` on warhead (by NetsuNegi)
+- Fixed the bug that weapon cannot used to intercept on gound bullet if it's projectile has `AG=no` (by NetsuNegi)
 
 Fixes / interactions with other extensions:
 <!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->

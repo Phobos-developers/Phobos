@@ -1,8 +1,5 @@
 #include "Body.h"
 
-#include <AircraftClass.h>
-#include <HouseClass.h>
-#include <ScenarioClass.h>
 #include <JumpjetLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>

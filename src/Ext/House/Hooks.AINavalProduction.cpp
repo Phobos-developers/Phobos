@@ -1,7 +1,6 @@
 #include "Body.h"
 
-#include <FactoryClass.h>
-#include <TEventClass.h>
+#include <Ext/Building/Body.h>
 
 // AI Naval queue bugfix hooks
 
