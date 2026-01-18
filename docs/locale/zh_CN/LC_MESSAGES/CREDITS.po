@@ -2827,12 +2827,14 @@ msgid ""
 "Fix an issue that the AI would set anger towards friendly houses, causing"
 " it to act stupidly"
 msgstr ""
+"修复了 AI 会对友军所属方产生愤怒而导致行为异常的问题"
 
 #: ../../../CREDITS.md:675
 msgid ""
 "Fix an issue that the AI would look for the first house in the array as "
 "an enemy instead of the nearest one when there were no enemies"
 msgstr ""
+"修复了没有敌人的 AI 寻找敌人时会使用数组中第一个所属方而非空间上最近者的问题"
 
 #: ../../../CREDITS.md:676
 msgid "**solar-III (凤九歌)**"
