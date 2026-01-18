@@ -512,9 +512,8 @@ msgid ""
 msgstr "[Patreon](https://www.patreon.com/kerbiter) 或私信请求使用 PayPal（更推荐，因为免手续费）"
 
 #: ../../../README.md:107
-#, fuzzy
 msgid "**[@Starkku](https://github.com/Starkku)** - T3 maintainer (co-lead)"
-msgstr "**[@Starkku](https://github.com/Starkku)** - T2 维护者"
+msgstr "**[@Starkku](https://github.com/Starkku)** - T3 维护者（共同领导者）"
 
 #: ../../../README.md:108
 msgid "[Patreon](https://www.patreon.com/Starkku)"
