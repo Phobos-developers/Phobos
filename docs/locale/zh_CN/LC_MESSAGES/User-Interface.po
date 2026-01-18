@@ -90,10 +90,9 @@ msgstr "修复了若生产暂停那么添加或移除单位时侧边栏并不更
 
 #: ../../User-Interface.md:14
 msgid ""
-"Fixed cursor from being hardcoded to update/render 60 times a second no "
-"matter how fast the game is rendering. Now the Cursor will update and "
-"render much more frequently."
+"Increased cursor update frequency by setting interval to 1ms instead of 16ms."
 msgstr ""
+"通过将间隔从 16 毫秒更改为 1 毫秒来提高光标更新频率。"
 
 #: ../../User-Interface.md:16
 msgid ""

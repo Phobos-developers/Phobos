@@ -2976,7 +2976,7 @@ msgstr "**ZΞPHYɌUS** - 胜利／失败主题音乐代码"
 
 #: ../../../CREDITS.md:705
 msgid "**Fridge** - Cursor Fix code"
-msgstr ""
+msgstr "**Fridge** - 光标修复代码"
 
 #: ../../../CREDITS.md:706
 msgid ""
