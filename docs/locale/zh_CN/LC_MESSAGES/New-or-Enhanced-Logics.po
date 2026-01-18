@@ -9622,27 +9622,6 @@ msgstr "此功能对建筑和战机无效。"
 msgid "This will ignore `Burst.Delays` setting."
 msgstr "这会无视 `Burst.Delays` 设置。"
 
-#: ../../New-or-Enhanced-Logics.md:2787
-msgid "Can attack allies"
-msgstr ""
-
-#: ../../New-or-Enhanced-Logics.md:2789
-msgid ""
-"Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`, "
-"They override the firer's `AttackFriendlies` and "
-"`AttackCursorOnFriendlies`."
-msgstr ""
-
-#: ../../New-or-Enhanced-Logics.md:2792
-msgid ""
-"[SOMEWEAPON]                ; WeaponType\n"
-"AttackFriendlies=           ; boolean\n"
-"AttackCursorOnFriendlies=   ; boolean\n"
-msgstr ""
-"[SOMEWEAPON]                ; WeaponType\n"
-"AttackFriendlies=           ; boolean\n"
-"AttackCursorOnFriendlies=   ; boolean\n"
-
 #: ../../New-or-Enhanced-Logics.md:2798
 msgid "Delayed firing"
 msgstr "延迟开火"

@@ -2453,6 +2453,17 @@ AmbientDamage.Warhead=            ; WarheadType
 AmbientDamage.IgnoreTarget=false  ; boolean
 ```
 
+### Can attack allies
+
+- Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`, They override the firer's `AttackFriendlies` and `AttackCursorOnFriendlies`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                ; WeaponType
+AttackFriendlies=           ; boolean
+AttackCursorOnFriendlies=   ; boolean
+```
+
 ### Charge turret delays
 
 - It is now possible to customize the delay of `IsChargeTurret=true` unit turret animation per weapon, per `Burst` shot instead of defaulting to weapon's rearm timer (`ROF`, `Burst.Delays` etc). Delay in the list corresponding to burst shot is used, or last delay listed if number of listed values is lower than the current burst index. Delay of 0 or less means previous delay, if applicable, is not restarted.

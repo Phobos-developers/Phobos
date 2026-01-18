@@ -2784,17 +2784,6 @@ Burst.NoDelay=false   ; boolean
 - This will ignore `Burst.Delays` setting.
 ```
 
-### Can attack allies
-
-- Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`, They override the firer's `AttackFriendlies` and `AttackCursorOnFriendlies`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]                ; WeaponType
-AttackFriendlies=           ; boolean
-AttackCursorOnFriendlies=   ; boolean
-```
-
 ### Delayed firing
 
 - It is possible to have any weapon fire with a delay by setting `DelayedFire.Duration` on a WeaponType - it supports a single integer or two comma-separated ones for a random range to pick value from.

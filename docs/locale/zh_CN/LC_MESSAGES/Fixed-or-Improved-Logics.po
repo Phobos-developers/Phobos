@@ -8109,6 +8109,25 @@ msgstr ""
 "AmbientDamage.Warhead=            ; WarheadType\n"
 "AmbientDamage.IgnoreTarget=false  ; boolean\n"
 
+msgid "Can attack allies"
+msgstr "武器层面的攻击友军定义"
+
+msgid ""
+"Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`, "
+"They override the firer's `AttackFriendlies` and "
+"`AttackCursorOnFriendlies`."
+msgstr ""
+"现在支持在武器上使用 `AttackFriendlies` 和 `AttackCursorOnFriendlies`，它们会覆盖开火者自身的这两项生效。"
+
+msgid ""
+"[SOMEWEAPON]                ; WeaponType\n"
+"AttackFriendlies=           ; boolean\n"
+"AttackCursorOnFriendlies=   ; boolean\n"
+msgstr ""
+"[SOMEWEAPON]                ; WeaponType\n"
+"AttackFriendlies=           ; boolean\n"
+"AttackCursorOnFriendlies=   ; boolean\n"
+
 #: ../../Fixed-or-Improved-Logics.md:2456
 msgid "Charge turret delays"
 msgstr "炮塔充能间隔"

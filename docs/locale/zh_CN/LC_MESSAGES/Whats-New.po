@@ -2332,9 +2332,11 @@ msgstr ""
 
 #: ../../Whats-New.md:514
 msgid ""
-"Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies` (by"
+"[Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`](latest/Fixed-or-Improved-Logics.md#can-attack-allies) (by"
 " FlyStar)"
 msgstr ""
+"[支持在武器上定义 `AttackFriendlies` 和 `AttackCursorOnFriendlies`](latest/Fixed-or-Improved-Logics.md#can-attack-allies) (by"
+" FlyStar)"
 
 #: ../../Whats-New.md:515
 msgid "Attack non-threatening structures extensions (by FlyStar)"

@@ -1624,7 +1624,7 @@ msgstr "511、609 和 610 号地图触发结果"
 
 #: ../../../CREDITS.md:406
 msgid "Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`"
-msgstr ""
+msgstr "支持在武器上定义 `AttackFriendlies` 和 `AttackCursorOnFriendlies`"
 
 #: ../../../CREDITS.md:407
 msgid "Attack non-threatening structures extensions"
