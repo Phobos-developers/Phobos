@@ -1,18 +1,9 @@
-#include <AircraftClass.h>
-#include <BounceClass.h>
-#include <FlyLocomotionClass.h>
-#include <JumpjetLocomotionClass.h>
-#include <RocketLocomotionClass.h>
-#include <SpawnManagerClass.h>
-#include <TacticalClass.h>
-#include <TunnelLocomotionClass.h>
-#include <UnitClass.h>
-#include <Utilities/AresHelper.h>
-#include <Utilities/Macro.h>
-#include <Ext/Techno/Body.h>
-
 #include "Body.h"
 
+#include <JumpjetLocomotionClass.h>
+#include <TunnelLocomotionClass.h>
+#include <Utilities/AresHelper.h>
+#include <Ext/Techno/Body.h>
 
 DEFINE_REFERENCE(double, Pixel_Per_Lepton, 0xB1D008)
 

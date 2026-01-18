@@ -1,21 +1,9 @@
 #include "Body.h"
 
-#include <InfantryClass.h>
-#include <BulletClass.h>
-#include <HouseClass.h>
-#include <ScenarioClass.h>
-#include <AnimTypeClass.h>
-#include <AnimClass.h>
-#include <BitFont.h>
-#include <SuperClass.h>
-
 #include <Ext/Anim/Body.h>
-#include <Ext/Bullet/Body.h>
-#include <Ext/BulletType/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/Helpers.Alex.h>
-#include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
 
 #pragma region CreateGap Calls
@@ -81,7 +69,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			if ((pHouse->IsControlledByCurrentPlayer() || pHouse->IsAlliedWith(pCurrent)) && !pCurrent->Defeated && !pCurrent->Visionary)
 			{
 				Sub_4ADEE0(0, 0);
-				MapClass::Instance.RevealArea2(const_cast<CoordStruct*>(&coords), reveal, pHouse, 0, 0, 0, 0, 1);
+				MapClass::Instance.RevealArea2(const_cast<CoordStruct*>(&coords), reveal, pHouse, 0, 0, 0, 1, 0);
 				Sub_4ADCD0(0, 0);
 				MapClass::Instance.sub_657CE0();
 				MapClass::Instance.MarkNeedsRedraw(2);
@@ -486,16 +474,16 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	if (pSld && pSld->IsActive() && pSld->GetType()->ImmuneToCrit)
 		return;
 
-	if (!TechnoExt::IsHealthInThreshold(pTarget, this->Crit_AffectAbovePercent, this->Crit_AffectBelowPercent))
+	if (!TechnoExt::IsHealthInThreshold(pTarget, this->Crit_AffectsAbovePercent, this->Crit_AffectsBelowPercent))
 		return;
 
-	if (pHouse && !EnumFunctions::CanTargetHouse(this->Crit_AffectsHouses, pHouse, pTarget->Owner))
+	if (pHouse && !EnumFunctions::CanTargetHouse(this->Crit_AffectsHouse, pHouse, pTarget->Owner))
 		return;
 
-	if (!EnumFunctions::IsCellEligible(pTarget->GetCell(), this->Crit_Affects))
+	if (!EnumFunctions::IsCellEligible(pTarget->GetCell(), this->Crit_AffectsTarget))
 		return;
 
-	if (!EnumFunctions::IsTechnoEligible(pTarget, this->Crit_Affects))
+	if (!EnumFunctions::IsTechnoEligible(pTarget, this->Crit_AffectsTarget))
 		return;
 
 	this->Crit_Active = true;

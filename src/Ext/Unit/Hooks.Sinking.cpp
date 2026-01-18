@@ -1,10 +1,4 @@
-#include <AircraftClass.h>
-
-#include <ScenarioClass.h>
-#include <TunnelLocomotionClass.h>
-#include <UnitClass.h>
-
-#include <Ext/TechnoType/Body.h>
+#include <Ext/Techno/Body.h>
 
 DEFINE_HOOK(0x7364DC, UnitClass_Update_SinkSpeed, 0x7)
 {
@@ -35,8 +29,7 @@ DEFINE_HOOK(0x629C67, ParasiteClass_UpdateSquid_SinkableBySquid, 0x9)
 	GET(ParasiteClass*, pThis, ESI);
 	GET(FootClass*, pVictim, EDI);
 
-	const auto pVictimType = pVictim->GetTechnoType();
-	const auto pVictimTypeExt = TechnoTypeExt::ExtMap.Find(pVictimType);
+	const auto pVictimTypeExt = TechnoExt::ExtMap.Find(pVictim)->TypeExtData;
 	const auto pOwner = pThis->Owner;
 
 	if (pVictimTypeExt->Sinkable_SquidGrab || pVictim->WhatAmI() != AbstractType::Unit)
@@ -47,7 +40,7 @@ DEFINE_HOOK(0x629C67, ParasiteClass_UpdateSquid_SinkableBySquid, 0x9)
 	}
 	else
 	{
-		auto damage = pVictimType->Strength;
+		auto damage = pVictimTypeExt->OwnerObject()->Strength;
 		pVictim->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, pOwner, true, false, pOwner->Owner);
 	}
 

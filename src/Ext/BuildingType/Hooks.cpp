@@ -1,10 +1,6 @@
 #include "Body.h"
 
-#include <TacticalClass.h>
 #include <Ext/Rules/Body.h>
-
-#include <Utilities/Macro.h>
-#include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x460285, BuildingTypeClass_LoadFromINI_Muzzle, 0x6)
 {

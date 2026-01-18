@@ -2,10 +2,6 @@
 
 #include <Ext/Scenario/Body.h>
 
-#include <New/Type/BannerTypeClass.h>
-
-#include <Utilities/SavegameDef.h>
-
 std::vector<std::unique_ptr<BannerClass>> BannerClass::Array;
 
 BannerClass::BannerClass

@@ -89,6 +89,39 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 - Key `rulesmd.ini -> [TechnoType] -> Deployed.RememberTarget` is deprecated and can be removed now, the bugfix for `DeployToFire` deployers is now always on.
 
+### Changed tags<!-- This is only a temporary solution; what method to use afterwards has not been determined yet. -->
+
+- To standardize tag names for similar functions, prevent typos, or avoid misunderstandings, replace them with new tag names.
+
+#### From pre-0.5 devbuilds
+
+- The following tags were renamed:
+  - `[WarheadType] -> Crit.AffectAbovePercent` -> `[WarheadType] -> Crit.AffectsAbovePercent`.
+
+#### From 0.4
+
+- The following tags were renamed:
+  - `[AttachEffectType] -> AffectTargets` -> `[AttachEffectType] -> AffectsTarget`
+  - `[AttachEffectType] -> ReflectDamage.AffectsHouses` -> `[AttachEffectType] -> ReflectDamage.AffectsHouse`
+  - `[AttachEffectType/TechnoType] -> RevengeWeapon.AffectsHouses` -> `[AttachEffectType/TechnoType] -> RevengeWeapon.AffectsHouse`
+  - `[TechnoType] -> AutoFire` -> `[TechnoType] -> AutoTargetOwnPosition`
+  - `[TechnoType] -> AutoFire.TargetSelf` -> `[TechnoType] -> AutoTargetOwnPosition.Self`
+  - `[WarheadType] -> DetonateOnAllMapObjects.AffectHouses` -> `[WarheadType] -> DetonateOnAllMapObjects.AffectsHouse`
+  - `[WarheadType] -> DetonateOnAllMapObjects.AffectTargets` -> `[WarheadType] -> DetonateOnAllMapObjects.AffectsTarget`
+  - `[WarheadType] -> Crit.AffectBelowPercent` -> `[WarheadType] -> Crit.AffectsBelowPercent`.
+  - `[WarheadType] -> Crit.Affects` -> `[WarheadType] -> Crit.AffectsTarget`
+  - `[WarheadType] -> Crit.AffectsHouses` -> `[WarheadType] -> Crit.AffectsHouse`
+  - `[WarheadType] -> KillWeapon.Affects` -> `[WarheadType] -> KillWeapon.AffectsTarget`
+  - `[WarheadType] -> KillWeapon.AffectsHouses` -> `[WarheadType] -> KillWeapon.AffectsHouse`
+  - `[WarheadType] -> KillWeapon.OnFirer.Affects` -> `[WarheadType] -> KillWeapon.OnFirer.AffectsTarget`
+  - `[WarheadType] -> KillWeapon.OnFirer.AffectsHouses` -> `[WarheadType] -> KillWeapon.OnFirer.AffectsHouse`
+  - `[WarheadType/SuperWeaponType] -> Convert(N).AffectedHouses` -> `[WarheadType/SuperWeaponType] -> Convert(N).AffectsHouse`
+  - `[SuperWeaponType] -> LimboKill.Affected` -> `[SuperWeaponType] -> LimboKill.AffectsHouse`
+
+```{note}
+- You can use the [*MigrationUtility*](https://github.com/Phobos-developers/PhobosSupplementaries/tree/develop/MigrationUtility) in the PhobosSupplementaries repository to conveniently complete these migrations.
+```
+
 ### New user settings in RA2MD.INI
 
 - These are new user setting keys added by various features in Phobos. Most of them can be found in either in [user inteface](User-Interface.md) or [miscellaneous](Miscellanous.md) sections. Search functionality can be used to find them quickly if needed.
@@ -139,66 +172,69 @@ HideShakeEffects=false           ; boolean
   104=Banner ID,0
 
   [EventsRA2]
-  500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
-  501=Local variable is less than,48,6,0,0,[LONG DESC],0,1,501,1
-  502=Local variable equals to,48,6,0,0,[LONG DESC],0,1,502,1
-  503=Local variable is greater than or equals to,48,6,0,0,[LONG DESC],0,1,503,1
-  504=Local variable is less than or equals,48,6,0,0,[LONG DESC],0,1,504,1
-  505=Local variable and X is true,48,6,0,0,[LONG DESC],0,1,505,1
-  506=Global variable is greater than,48,6,0,0,[LONG DESC],0,1,506,1
-  507=Global variable is less than,48,6,0,0,[LONG DESC],0,1,507,1
-  508=Global variable equals to,48,6,0,0,[LONG DESC],0,1,508,1
-  509=Global variable is greater than or queals to,48,6,0,0,[LONG DESC],0,1,509,1
-  510=Global variable is less than or equals to,48,6,0,0,[LONG DESC],0,1,510,1
-  511=Global variable and X is true,48,6,0,0,[LONG DESC],0,1,511,1
-  512=Local variable is greater than local variable,48,3,0,0,[LONG DESC],0,1,500,1
-  513=Local variable is less than local variable,48,3,0,0,[LONG DESC],0,1,501,1
-  514=Local variable equals to local variable,48,3,0,0,[LONG DESC],0,1,502,1
-  515=Local variable is greater than or equals to local variable,48,3,0,0,[LONG DESC],0,1,503,1
-  516=Local variable is less than or equals local variable,48,3,0,0,[LONG DESC],0,1,504,1
-  517=Local variable and local variable is true,48,3,0,0,[LONG DESC],0,1,505,1
-  518=Global variable is greater than local variable,48,3,0,0,[LONG DESC],0,1,506,1
-  519=Global variable is less than local variable,48,3,0,0,[LONG DESC],0,1,507,1
-  520=Global variable equals to local variable,48,3,0,0,[LONG DESC],0,1,508,1
-  521=Global variable is greater than or queals to local variable,48,3,0,0,[LONG DESC],0,1,509,1
-  522=Global variable is less than or equals to local variable,48,3,0,0,[LONG DESC],0,1,510,1
-  523=Global variable and local variable is true,48,3,0,0,[LONG DESC],0,1,511,1
-  524=Local variable is greater than global variable,48,35,0,0,[LONG DESC],0,1,500,1
-  525=Local variable is less than global variable,48,35,0,0,[LONG DESC],0,1,501,1
-  526=Local variable equals to global variable,48,35,0,0,[LONG DESC],0,1,502,1
-  527=Local variable is greater than or equals to global variable,48,35,0,0,[LONG DESC],0,1,503,1
-  528=Local variable is less than or equals global variable,48,35,0,0,[LONG DESC],0,1,504,1
-  529=Local variable and global variable is true,48,35,0,0,[LONG DESC],0,1,505,1
-  530=Global variable is greater than global variable,48,35,0,0,[LONG DESC],0,1,506,1
-  531=Global variable is less than global variable,48,35,0,0,[LONG DESC],0,1,507,1
-  532=Global variable equals to global variable,48,35,0,0,[LONG DESC],0,1,508,1
-  533=Global variable is greater than or queals to global variable,48,35,0,0,[LONG DESC],0,1,509,1
-  534=Global variable is less than or equals to global variable,48,35,0,0,[LONG DESC],0,1,510,1
-  535=Global variable and global variable is true,48,35,0,0,[LONG DESC],0,1,511,1
+  500=Local variable is greater than...,48,6,0,0,[LONG DESC],0,1,500,1
+  501=Local variable is less than...,48,6,0,0,[LONG DESC],0,1,501,1
+  502=Local variable equals to...,48,6,0,0,[LONG DESC],0,1,502,1
+  503=Local variable is greater than or equals to...,48,6,0,0,[LONG DESC],0,1,503,1
+  504=Local variable is less than or equals...,48,6,0,0,[LONG DESC],0,1,504,1
+  505=Local variable and X is true...,48,6,0,0,[LONG DESC],0,1,505,1
+  506=Global variable is greater than...,48,6,0,0,[LONG DESC],0,1,506,1
+  507=Global variable is less than...,48,6,0,0,[LONG DESC],0,1,507,1
+  508=Global variable equals to...,48,6,0,0,[LONG DESC],0,1,508,1
+  509=Global variable is greater than or queals to...,48,6,0,0,[LONG DESC],0,1,509,1
+  510=Global variable is less than or equals to...,48,6,0,0,[LONG DESC],0,1,510,1
+  511=Global variable and X is true...,48,6,0,0,[LONG DESC],0,1,511,1
+  512=Local variable is greater than local variable...,48,3,0,0,[LONG DESC],0,1,500,1
+  513=Local variable is less than local variable...,48,3,0,0,[LONG DESC],0,1,501,1
+  514=Local variable equals to local variable...,48,3,0,0,[LONG DESC],0,1,502,1
+  515=Local variable is greater than or equals to local variable...,48,3,0,0,[LONG DESC],0,1,503,1
+  516=Local variable is less than or equals local variable...,48,3,0,0,[LONG DESC],0,1,504,1
+  517=Local variable and local variable is true...,48,3,0,0,[LONG DESC],0,1,505,1
+  518=Global variable is greater than local variable...,48,3,0,0,[LONG DESC],0,1,506,1
+  519=Global variable is less than local variable...,48,3,0,0,[LONG DESC],0,1,507,1
+  520=Global variable equals to local variable...,48,3,0,0,[LONG DESC],0,1,508,1
+  521=Global variable is greater than or queals to local variable...,48,3,0,0,[LONG DESC],0,1,509,1
+  522=Global variable is less than or equals to local variable...,48,3,0,0,[LONG DESC],0,1,510,1
+  523=Global variable and local variable is true...,48,3,0,0,[LONG DESC],0,1,511,1
+  524=Local variable is greater than global variable...,48,35,0,0,[LONG DESC],0,1,500,1
+  525=Local variable is less than global variable...,48,35,0,0,[LONG DESC],0,1,501,1
+  526=Local variable equals to global variable...,48,35,0,0,[LONG DESC],0,1,502,1
+  527=Local variable is greater than or equals to global variable...,48,35,0,0,[LONG DESC],0,1,503,1
+  528=Local variable is less than or equals global variable...,48,35,0,0,[LONG DESC],0,1,504,1
+  529=Local variable and global variable is true...,48,35,0,0,[LONG DESC],0,1,505,1
+  530=Global variable is greater than global variable...,48,35,0,0,[LONG DESC],0,1,506,1
+  531=Global variable is less than global variable...,48,35,0,0,[LONG DESC],0,1,507,1
+  532=Global variable equals to global variable...,48,35,0,0,[LONG DESC],0,1,508,1
+  533=Global variable is greater than or queals to global variable...,48,35,0,0,[LONG DESC],0,1,509,1
+  534=Global variable is less than or equals to global variable...,48,35,0,0,[LONG DESC],0,1,510,1
+  535=Global variable and global variable is true...,48,35,0,0,[LONG DESC],0,1,511,1
   600=Shield of the attached object is broken,0,0,0,0,[LONG DESC],0,1,600,1
-  601=House owns Techno Type,68,46,0,0,[LONG DESC],0,1,601,1
-  602=House doesn't own Techno Type,68,46,0,0,[LONG DESC],0,1,602,1
-  604=Techno Type Entered Cell,68,46,0,0,[LONG DESC],0,1,604,1
-  605=AI Target Type Entered Cell,68,70,0,0,[LONG DESC],0,1,605,1
-  606=AttachEffect is attaching to a Techno,-2,71,0,0,[LONG DESC],0,1,606,1
+  601=House owns Techno Type...,68,46,0,0,[LONG DESC],0,1,601,1
+  602=House doesn't own Techno Type...,68,46,0,0,[LONG DESC],0,1,602,1
+  604=Techno Type Entered Cell...,68,46,0,0,[LONG DESC],0,1,604,1
+  605=AI Target Type Entered Cell...,68,70,0,0,[LONG DESC],0,1,605,1
+  606=AttachEffect is attaching to a Techno...,-2,71,0,0,[LONG DESC],0,1,606,1
 
   [ActionsRA2]
   41=Play animation at a waypoint...,0,25,69,0,0,0,1,0,0,[LONG DESC].,0,1,41
   125=Build at...,-10,47,0,65,0,0,1,0,0,[LONG DESC],0,1,125
-  500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
-  501=Edit variable,0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1
-  502=Generate random number,0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
-  503=Print variable value,0,56,54,0,0,0,0,0,0,[LONG DESC],0,1,503,0
-  504=Binary operation,0,56,55,60,54,59,0,0,0,[LONG DESC],0,1,504,1
-  505=Fire Super Weapon at specified location (Phobos),0,0,20,2,21,22,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified location. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,505
-  506=Fire Super Weapon at specified waypoint (Phobos),0,0,20,2,30,0,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,506
-  510=Toggle MCV Redeployablility (Phobos),0,0,15,0,0,0,0,0,0, Set MCVRedeploys to the given value,0,1,510
-  606=Edit hate-value (Phobos),0,2,55,6,0,0,0,0,0, Edit the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,606
-  607=Clear hate-value (Phobos),0,2,0,0,0,0,0,0,0, Clear the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,607
-  608=Set force enemy (Phobos),0,0,2,0,0,0,0,0,0, Force an enemy, it will not change with the change of hate-value. -1 will remove the forced enemy, -2 will never have any enemies.,0,1,608
-  800=Display banner and local variable (Phobos),-4,101,104,102,103,3,0,0,0,Draw banner on screen and replace banner with same ID,0,1,800
-  801=Display banner and global variable (Phobos),-4,101,104,102,103,35,0,0,0,Draw banner on screen and replace banner with same ID,0,1,801
-  802=Delete banner (Phobos),0,104,0,0,0,0,0,0,0,Delete banner with ID,0,1,802
+  500=Save game... (Phobos),-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
+  501=Edit variable... (Phobos),0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1
+  502=Generate random number... (Phobos),0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
+  503=Print variable value... (Phobos),0,56,54,0,0,0,0,0,0,[LONG DESC],0,1,503,0
+  504=Binary operation... (Phobos),0,56,55,60,54,59,0,0,0,[LONG DESC],0,1,504,1
+  505=Fire Super Weapon at specified location... (Phobos),0,0,20,2,21,22,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified location. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,505
+  506=Fire Super Weapon at specified waypoint... (Phobos),0,0,20,2,30,0,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,506
+  510=Toggle MCV Redeployablility... (Phobos),0,0,15,0,0,0,0,0,0, Set MCVRedeploys to the given value,0,1,510
+  511=Building Type undeploy at... (Phobos),-10,47,2,0,0,0,1,0,0,Recycle the building type into a vehicle and move it to the specified waypoint. If the type is `<All>`, recycle all buildings.,0,1,511
+  606=Edit hate-value... (Phobos),0,2,55,6,0,0,0,0,0, Edit the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,606
+  607=Clear hate-value... (Phobos),0,2,0,0,0,0,0,0,0, Clear the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,607
+  608=Set force enemy... (Phobos),0,0,2,0,0,0,0,0,0, Force an enemy, it will not change with the change of hate-value. -1 will remove the forced enemy, -2 will never have any enemies.,0,1,608
+  609=Set radar mode... (Phobos),0,0,15,0,0,0,0,0,0, Trigger's house can modify the current radar mode. 0 for requires full-power and building, 1 for free radar, 2 for forced enable, 3 for forced disable.,0,1,609
+  610=Set team delay... (Phobos),0,0,6,0,0,0,0,0,0, Trigger's house can customize TeamDelay. When the value is less than 0 in `[General]>TeamDelays`.,0,1,610
+  800=Display banner and local variable... (Phobos),-4,101,104,102,103,3,0,0,0,Draw banner on screen and replace banner with same ID,0,1,800
+  801=Display banner and global variable... (Phobos),-4,101,104,102,103,35,0,0,0,Draw banner on screen and replace banner with same ID,0,1,801
+  802=Delete banner... (Phobos),0,104,0,0,0,0,0,0,0,Delete banner with ID,0,1,802
 
   ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
   [ScriptTypeLists]
@@ -472,6 +508,14 @@ New:
 - [Script Action 14004 for forcing all new actions to target only the main owner's enemy](AI-Scripting-and-Mapping.md#force-global-onlytargethouseenemy-value-in-teams-for-new-attack-move-actions-introduced-by-phobos) (by FS-21)
 - [Allow merging AOE damage to buildings into one](New-or-Enhanced-Logics.md#allow-merging-aoe-damage-to-buildings-into-one) (by CrimRecya)
 - [Allow customizing whether to synchronously change the owner of the RadioLink-linked units when the owner of a building changes](Fixed-or-Improved-Logics.md#custom-whether-to-synchronously-change-the-owner-of-the-radiolink-linked-units-when-the-owner-of-a-building-changes) (by TaranDahl)
+- [Toggle per-target warhead effects apply timing](New-or-Enhanced-Logics.md#toggle-per-target-warhead-effects-apply-timing) (by TaranDahl)
+- [Extra range for chasing and pre-firing](New-or-Enhanced-Logics.md#extra-range) (by TaranDahl)
+- [Allow techno type considered as other type when recruiting techno for teams](Fixed-or-Improved-Logics.md#allow-techno-type-considered-as-other-type-when-recruiting-techno-for-teams) (by NetsuNegi)
+- Map Action [`511` Undeploy Building to Waypoint](AI-Scripting-and-Mapping.md#undeploy-building-to-waypoint), [`609` Set Radar Mode](AI-Scripting-and-Mapping.md#set-radar-mode), [`610` Set house's `TeamDelays` value](AI-Scripting-and-Mapping.md#set-house-s-teamdelays-value) (by FlyStar)
+- [Toggle to exclude technos from base center calculations](New-or-Enhanced-Logics.md#exclusion-from-base-center-calculations) (by Starkku)
+- [Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`](Fixed-or-Improved-Logics.md#can-attack-allies) (by FlyStar)
+- [Attack non-threatening structures extensions](New-or-Enhanced-Logics.md#attack-non-threatening-structures-techno) (by FlyStar)
+- [Customize size for mind controlled unit](New-or-Enhanced-Logics.md#mind-control-enhancement) (by NetsuNegi)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -515,7 +559,12 @@ Vanilla fixes:
 - Fixed a bug where units can be promoted when created via trigger actions even if they have `Trainable=false` (by NetsuNegi)
 - Fixed the bug that ai will try to product aircraft even the airport has no free dock for it (by NetsuNegi)
 - Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units (by TaranDahl)
-- Toggle per-target warhead effects apply timing (by TaranDahl)
+- Fixed an issue that rockets do not consider the destination altitude during climbing (by TaranDahl)
+- Fixed the bug that if object has been removed from LogicClass in Update(), next object will be skip (by NetsuNegi)
+- Increased cursor update frequency by setting interval to 1ms instead of 16ms (by Fridge)
+- Fixed an issue that the AI would set anger towards friendly houses, causing it to act stupidly (by TaranDahl)
+- Fixed an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies (by TaranDahl)
+- Fixed the issue that weapon selection don't check if secondary's warhead has `IsLocomotor=yes` (by NetsuNegi)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -540,6 +589,9 @@ Phobos fixes:
 - Fixed an issue that caused Ares's `Battery.KeepOnline` cannot keep defense buildings works fine (by NetsuNegi)
 - Map Event 601 should return true only when exists in the map like other similar map events (by FS-21)
 - Fixed OverlayType `ZAdjust` as well as some shield & AttachEffect variables not being correctly saved & loaded (by Ollerus)
+- LimboDelivery buildings cannot be selected (by FlyStar)
+- Fixed the positive value of `Reveal` on warhead (by NetsuNegi)
+- Fixed the bug that weapon cannot used to intercept on gound bullet if it's projectile has `AG=no` (by NetsuNegi)
 
 Fixes / interactions with other extensions:
 <!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->
@@ -549,6 +601,8 @@ Fixes / interactions with other extensions:
 - Fixed the bug that building with `CloningFacility=true` and `WeaponsFactory=true` may cloning multiple vehicles and then they get stuck (by NetsuNegi)
 - [Customize Ares's radar jam logic](New-or-Enhanced-Logics.md#customize-ares-s-radar-jam-logic) (by NetsuNegi)
 - Fixed a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType` (by NetsuNegi)
+- Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed (by NetsuNegi)
+- Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed (by NetsuNegi)
 ```
 
 ### 0.4.0.1

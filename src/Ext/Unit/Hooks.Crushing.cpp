@@ -1,11 +1,7 @@
 #include <DriveLocomotionClass.h>
 #include <ShipLocomotionClass.h>
-#include <UnitClass.h>
 
 #include <Ext/Techno/Body.h>
-#include <Ext/TechnoType/Body.h>
-#include <Utilities/Macro.h>
-#include <Utilities/TemplateDef.h>
 
 DEFINE_HOOK(0x73B05B, UnitClass_PerCellProcess_TiltWhenCrushes, 0x6)
 {
