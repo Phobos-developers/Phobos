@@ -2455,7 +2455,7 @@ AmbientDamage.IgnoreTarget=false  ; boolean
 
 ### Can attack allies
 
-- Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`, They override the firer's `AttackFriendlies` and `AttackCursorOnFriendlies`.
+- Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`. They override the firer's `AttackFriendlies` and `AttackCursorOnFriendlies`.
 
 In `rulesmd.ini`:
 ```ini
