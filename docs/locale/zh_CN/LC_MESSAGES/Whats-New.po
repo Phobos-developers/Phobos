@@ -2339,8 +2339,8 @@ msgstr ""
 " FlyStar)"
 
 #: ../../Whats-New.md:515
-msgid "Attack non-threatening structures extensions (by FlyStar)"
-msgstr ""
+msgid "[Attack non-threatening structures extensions](New-or-Enhanced-Logics.md#attack-non-threatening-structures-techno) (by FlyStar)"
+msgstr "[攻击无威胁建筑扩展](New-or-Enhanced-Logics.md#attack-non-threatening-structures-techno)（by FlyStar）"
 
 #: ../../Whats-New.md:516
 msgid "Customize size for mind controlled unit (by NetsuNegi)"

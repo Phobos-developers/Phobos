@@ -5267,21 +5267,23 @@ msgstr ""
 "[General]\n"
 "AttackMove.IgnoreWeaponCheck=false    ; boolean\n"
 
-#: ../../New-or-Enhanced-Logics.md:1325 ../../New-or-Enhanced-Logics.md:2745
-msgid "Attack non-threatening structures"
-msgstr ""
+#: ../../New-or-Enhanced-Logics.md:1325
+msgid "Attack non-threatening structures (Techno)"
+msgstr "攻击无威胁建筑（单位定义）"
 
 #: ../../New-or-Enhanced-Logics.md:1327
 msgid ""
 "You can now freely configure whether units can automatically target non-"
 "threatening structures."
 msgstr ""
+"现在你可以自由地设置单位能否自动瞄准无威胁的建筑物。"
 
 #: ../../New-or-Enhanced-Logics.md:1328
 msgid ""
 "`AutoTarget.NoThreatBuildings` affects player-controlled units, "
 "`AutoTargetAI.NoThreatBuildings` affects other units."
 msgstr ""
+"`AutoTarget.NoThreatBuildings` 控制玩家操作的单位，`AutoTargetAI.NoThreatBuildings` 控制其他（由 AI 操作的）单位。"
 
 #: ../../New-or-Enhanced-Logics.md:1331
 msgid ""
@@ -9497,11 +9499,16 @@ msgstr ""
 "[SOMEWEAPON]         ; WeaponType\n"
 "AreaFire.Target=base ; AreaFire Target Enumeration (base|self|random)\n"
 
+#: ../../New-or-Enhanced-Logics.md:2745
+msgid "Attack non-threatening structures (Weapon)"
+msgstr "攻击无威胁建筑（武器定义）"
+
 #: ../../New-or-Enhanced-Logics.md:2747
 msgid ""
 "`AttackNoThreatBuildings` permits shooters to attack non-threatening "
 "structures. This setting overrides other configurations."
 msgstr ""
+"`AttackNoThreatBuildings` 允许单位（主动）攻击无威胁建筑。这会覆盖其他设置。"
 
 #: ../../New-or-Enhanced-Logics.md:2750
 msgid ""

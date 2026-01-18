@@ -1322,7 +1322,7 @@ In `rulesmd.ini`:
 AttackMove.IgnoreWeaponCheck=false    ; boolean
 ```
 
-### Attack non-threatening structures
+### Attack non-threatening structures (Techno)
 
 - You can now freely configure whether units can automatically target non-threatening structures.
   - `AutoTarget.NoThreatBuildings` affects player-controlled units, `AutoTargetAI.NoThreatBuildings` affects other units.
@@ -2742,7 +2742,7 @@ In `rulesmd.ini`:
 AreaFire.Target=base ; AreaFire Target Enumeration (base|self|random)
 ```
 
-### Attack non-threatening structures
+### Attack non-threatening structures (Weapon)
 
 - `AttackNoThreatBuildings` permits shooters to attack non-threatening structures. This setting overrides other configurations.
 

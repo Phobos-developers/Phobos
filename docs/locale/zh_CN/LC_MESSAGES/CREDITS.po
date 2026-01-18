@@ -1628,7 +1628,7 @@ msgstr "支持在武器上定义 `AttackFriendlies` 和 `AttackCursorOnFriendlie
 
 #: ../../../CREDITS.md:407
 msgid "Attack non-threatening structures extensions"
-msgstr ""
+msgstr "攻击无威胁建筑扩展"
 
 #: ../../../CREDITS.md:408
 msgid "**NetsuNegi**:"
