@@ -600,12 +600,14 @@ msgid ""
 "Changed tags<!-- This is only a temporary solution; what method to use "
 "afterwards has not been determined yet. -->"
 msgstr ""
+"被更改过的标签"
 
 #: ../../Whats-New.md:94
 msgid ""
 "To standardize tag names for similar functions, prevent typos, or avoid "
 "misunderstandings, replace them with new tag names."
 msgstr ""
+"出于相似功能标签名标准化、防止习惯性拼写导致错误以及避免语义误解目的，它们被替换为新的标签名。"
 
 #: ../../Whats-New.md:96
 msgid "From pre-0.5 devbuilds"
@@ -613,93 +615,133 @@ msgstr "由 pre-0.5 开发版"
 
 #: ../../Whats-New.md:98 ../../Whats-New.md:103
 msgid "The following tags were renamed:"
-msgstr ""
+msgstr "以下标签被重命名："
 
 #: ../../Whats-New.md:99
 msgid ""
 "`[WarheadType] -> Crit.AffectAbovePercent` -> `[WarheadType] -> "
 "Crit.AffectsAbovePercent`."
 msgstr ""
+"`[WarheadType] -> Crit.AffectAbovePercent` -> `[WarheadType] -> "
+"Crit.AffectsAbovePercent`."
 
 #: ../../Whats-New.md:104
 msgid ""
 "`[AttachEffectType] -> AffectTargets` -> `[AttachEffectType] -> "
 "AffectsTarget`"
 msgstr ""
+"`[AttachEffectType] -> AffectTargets` -> `[AttachEffectType] -> "
+"AffectsTarget`"
 
 #: ../../Whats-New.md:105
 msgid ""
 "`[AttachEffectType] -> ReflectDamage.AffectsHouses` -> "
 "`[AttachEffectType] -> ReflectDamage.AffectsHouse`"
 msgstr ""
+"`[AttachEffectType] -> ReflectDamage.AffectsHouses` -> "
+"`[AttachEffectType] -> ReflectDamage.AffectsHouse`"
 
 #: ../../Whats-New.md:106
 msgid ""
 "`[AttachEffectType/TechnoType] -> RevengeWeapon.AffectsHouses` -> "
 "`[AttachEffectType/TechnoType] -> RevengeWeapon.AffectsHouse`"
 msgstr ""
+"`[AttachEffectType/TechnoType] -> RevengeWeapon.AffectsHouses` -> "
+"`[AttachEffectType/TechnoType] -> RevengeWeapon.AffectsHouse`"
 
 #: ../../Whats-New.md:107
 msgid "`[TechnoType] -> AutoFire` -> `[TechnoType] -> AutoTargetOwnPosition`"
-msgstr ""
+msgstr "`[TechnoType] -> AutoFire` -> `[TechnoType] -> AutoTargetOwnPosition`"
 
 #: ../../Whats-New.md:108
 msgid ""
 "`[TechnoType] -> AutoFire.TargetSelf` -> `[TechnoType] -> "
 "AutoTargetOwnPosition.Self`"
 msgstr ""
+"`[TechnoType] -> AutoFire.TargetSelf` -> `[TechnoType] -> "
+"AutoTargetOwnPosition.Self`"
 
 #: ../../Whats-New.md:109
 msgid ""
 "`[WarheadType] -> DetonateOnAllMapObjects.AffectHouses` -> `[WarheadType]"
 " -> DetonateOnAllMapObjects.AffectsHouse`"
 msgstr ""
+"`[WarheadType] -> DetonateOnAllMapObjects.AffectHouses` -> `[WarheadType]"
+" -> DetonateOnAllMapObjects.AffectsHouse`"
 
 #: ../../Whats-New.md:110
 msgid ""
 "`[WarheadType] -> DetonateOnAllMapObjects.AffectTargets` -> "
 "`[WarheadType] -> DetonateOnAllMapObjects.AffectsTarget`"
 msgstr ""
+"`[WarheadType] -> DetonateOnAllMapObjects.AffectTargets` -> "
+"`[WarheadType] -> DetonateOnAllMapObjects.AffectsTarget`"
 
 #: ../../Whats-New.md:111
 msgid ""
 "`[WarheadType] -> Crit.AffectBelowPercent` -> `[WarheadType] -> "
 "Crit.AffectsBelowPercent`."
 msgstr ""
+"`[WarheadType] -> Crit.AffectBelowPercent` -> `[WarheadType] -> "
+"Crit.AffectsBelowPercent`."
 
 #: ../../Whats-New.md:112
 msgid "`[WarheadType] -> Crit.Affects` -> `[WarheadType] -> Crit.AffectsTarget`"
-msgstr ""
+msgstr "`[WarheadType] -> Crit.Affects` -> `[WarheadType] -> Crit.AffectsTarget`"
 
 #: ../../Whats-New.md:113
 msgid ""
 "`[WarheadType] -> Crit.AffectsHouses` -> `[WarheadType] -> "
 "Crit.AffectsHouse`"
 msgstr ""
+"`[WarheadType] -> Crit.AffectsHouses` -> `[WarheadType] -> "
+"Crit.AffectsHouse`"
+
+msgid ""
+"`[WarheadType] -> KillWeapon.Affects` -> `[WarheadType] -> "
+"KillWeapon.AffectsTarget`"
+msgstr ""
+"`[WarheadType] -> KillWeapon.Affects` -> `[WarheadType] -> "
+"KillWeapon.AffectsTarget`"
 
 #: ../../Whats-New.md:114
 msgid ""
 "`[WarheadType] -> KillWeapon.AffectsHouses` -> `[WarheadType] -> "
 "KillWeapon.AffectsHouse`"
 msgstr ""
+"`[WarheadType] -> KillWeapon.AffectsHouses` -> `[WarheadType] -> "
+"KillWeapon.AffectsHouse`"
+
+msgid ""
+"`[WarheadType] -> KillWeapon.OnFirer.Affects` -> `[WarheadType] -> "
+"KillWeapon.OnFirer.AffectsTarget`"
+msgstr ""
+"`[WarheadType] -> KillWeapon.OnFirer.Affects` -> `[WarheadType] -> "
+"KillWeapon.OnFirer.AffectsTarget`"
 
 #: ../../Whats-New.md:115
 msgid ""
 "`[WarheadType] -> KillWeapon.OnFirer.AffectsHouses` -> `[WarheadType] -> "
 "KillWeapon.OnFirer.AffectsHouse`"
 msgstr ""
+"`[WarheadType] -> KillWeapon.OnFirer.AffectsHouses` -> `[WarheadType] -> "
+"KillWeapon.OnFirer.AffectsHouse`"
 
 #: ../../Whats-New.md:116
 msgid ""
 "`[WarheadType/SuperWeaponType] -> Convert(N).AffectedHouses` -> "
 "`[WarheadType/SuperWeaponType] -> Convert(N).AffectsHouse`"
 msgstr ""
+"`[WarheadType/SuperWeaponType] -> Convert(N).AffectedHouses` -> "
+"`[WarheadType/SuperWeaponType] -> Convert(N).AffectsHouse`"
 
 #: ../../Whats-New.md:117
 msgid ""
 "`[SuperWeaponType] -> LimboKill.Affected` -> `[SuperWeaponType] -> "
 "LimboKill.AffectsHouse`"
 msgstr ""
+"`[SuperWeaponType] -> LimboKill.Affected` -> `[SuperWeaponType] -> "
+"LimboKill.AffectsHouse`"
 
 #: ../../Whats-New.md:120
 msgid ""
@@ -708,6 +750,8 @@ msgid ""
 "PhobosSupplementaries repository to conveniently complete these "
 "migrations."
 msgstr ""
+"你可以使用 Phobos 补充资源库 中的 [*迁移工具*](https://github.com/Phobos-"
+"developers/PhobosSupplementaries/tree/develop/MigrationUtility) 轻松完成这些迁移。"
 
 #: ../../Whats-New.md:123
 msgid "New user settings in RA2MD.INI"
