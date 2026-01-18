@@ -69,6 +69,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_Next_RandomWeightsData)
 		.Process(this->SW_Next_RollChances)
 		.Process(this->ShowTimer_Priority)
+		.Process(this->ShowTimer_Percentage)
 		.Process(this->Convert_Pairs)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->TabIndex)
@@ -152,6 +153,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_Next_RollChances.Read(exINI, pSection, "SW.Next.RollChances");
 
 	this->ShowTimer_Priority.Read(exINI, pSection, "ShowTimer.Priority");
+	this->ShowTimer_Percentage.Read(exINI, pSection, "ShowTimer.Percentage");
 
 	this->EMPulse_WeaponIndex.Read(exINI, pSection, "EMPulse.WeaponIndex");
 	this->EMPulse_SuspendOthers.Read(exINI, pSection, "EMPulse.SuspendOthers");
