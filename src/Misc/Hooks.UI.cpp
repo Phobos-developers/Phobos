@@ -599,10 +599,6 @@ TextPrintType flag,
 		}
 	}
 
-	// Fix text position
-	location.X += 2;
-	location.Y += 1;
-
 	return Fancy_Text_Print_Wide(retBuffer, pText, pSurface, bounds, location, pForeScheme, pBackScheme, flag);
 }
 DEFINE_FUNCTION_JUMP(CALL, 0x6D4D42, TacticalClass_DrawTimer_Print_Wide)// UIName
