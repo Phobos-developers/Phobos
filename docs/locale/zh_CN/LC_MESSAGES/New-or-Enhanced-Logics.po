@@ -9786,7 +9786,7 @@ msgid ""
 "`ExtraRange.TargetMoving.CloseRangeOnly` is used to restrict whether the "
 "global default value only applies to units with `CloseRange=yes`."
 msgstr ""
-"`ExtraRange.TargetMoving.CloseRangeOnly` 用于全局默认值是否适用于拥有 `CloseRange=yes` "
+"`ExtraRange.TargetMoving.CloseRangeOnly` 用于全局默认值是否仅适用于拥有 `CloseRange=yes` "
 "的单位。"
 
 #: ../../New-or-Enhanced-Logics.md:2826
@@ -9872,7 +9872,7 @@ msgid ""
 "position in units of cells, which creates an unacceptable error for melee"
 " units, causing the targets to move out of range before they can get "
 "close."
-msgstr "在原版中，近战单位即便追得上正在逃离的敌人也难以对其发起攻击。这是因为游戏的寻路算法以单元格为单位寻找开火位置，这会对进展单位产生不可接受的误差，导致目标总是在其足够靠近前移动出攻击范围。"
+msgstr "在原版中，近战单位即便追得上正在逃离的敌人也难以对其发起攻击。这是因为游戏的寻路算法以单元格为单位寻找开火位置，这会对近战单位产生不可接受的误差，导致目标总是在其足够靠近前逃出攻击范围。"
 
 #: ../../New-or-Enhanced-Logics.md:2853
 msgid ""
