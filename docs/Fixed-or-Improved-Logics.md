@@ -328,6 +328,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType`.
 - Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed.
 - Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed.
+- Fixed an issue that the AI would set anger towards friendly houses, causing it to act stupidly.
+- Fixed an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies.
 
 ## Newly added global settings
 
