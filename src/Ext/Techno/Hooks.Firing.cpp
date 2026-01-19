@@ -264,7 +264,7 @@ DEFINE_HOOK(0x6F3528, TechnoClass_WhatWeaponShouldIUse_IsLocomotor, 0x6)
 
 	GET(TechnoClass*, pTargetTechno, EBP);
 
-	if (pTargetTechno && pTargetTechno->WhatAmI() == AbstractType::Building)
+	if (pTargetTechno && (pTargetTechno->WhatAmI() == AbstractType::Building || pTargetTechno->BunkerLinkedItem))
 	{
 		GET(WeaponTypeClass*, pPrimary, EBX);
 
