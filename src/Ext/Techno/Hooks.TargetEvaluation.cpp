@@ -10,9 +10,9 @@ DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
-	if (pExt->AutoFire)
+	if (pExt->AutoTargetOwnPosition)
 	{
-		if (pExt->AutoFire_TargetSelf)
+		if (pExt->AutoTargetOwnPosition_Self)
 			pThis->SetTarget(pThis);
 		else
 			pThis->SetTarget(pThis->GetCell());

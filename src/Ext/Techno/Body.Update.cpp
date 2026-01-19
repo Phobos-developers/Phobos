@@ -1106,8 +1106,8 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		}
 	}
 
-	// handle AutoFire
-	if (pOldTypeExt->AutoFire && !pNewTypeExt->AutoFire)
+	// handle AutoTargetOwnPosition
+	if (pOldTypeExt->AutoTargetOwnPosition && !pNewTypeExt->AutoTargetOwnPosition)
 		pThis->SetTarget(nullptr);
 }
 
@@ -1909,7 +1909,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	{
 		auto const attachEffect = it->get();
 		auto const pType = attachEffect->GetType();
-		const bool isValid = EnumFunctions::IsTechnoEligible(pThis, pType->AffectTargets, true)
+		const bool isValid = EnumFunctions::IsTechnoEligible(pThis, pType->AffectsTarget, true)
 			&& (pType->AffectTypes.empty() || pType->AffectTypes.Contains(pTechnoType)) && !pType->IgnoreTypes.Contains(pTechnoType);
 		const bool remove = !isValid || (attachEffect->IsSelfOwned() && !pTypeExt->AttachEffects.AttachTypes.Contains(pType));
 

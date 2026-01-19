@@ -258,6 +258,28 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 	return UseWeaponIndex;
 }
 
+DEFINE_HOOK(0x6F3528, TechnoClass_WhatWeaponShouldIUse_IsLocomotor, 0x6)
+{
+	enum { ContinueAfter = 0x6F3558, Primary = 0x6F37AD, Secondary = 0x6F3549 };
+
+	GET(TechnoClass*, pTargetTechno, EBP);
+
+	if (pTargetTechno && pTargetTechno->WhatAmI() == AbstractType::Building)
+	{
+		GET(WeaponTypeClass*, pPrimary, EBX);
+
+		if (pPrimary->Warhead->IsLocomotor)
+			return Secondary;
+
+		GET_STACK(WeaponTypeClass*, pSecondary, STACK_OFFSET(0x18, -0x8));
+
+		if (pSecondary->Warhead->IsLocomotor)
+			return Primary;
+	}
+
+	return ContinueAfter;
+}
+
 DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);

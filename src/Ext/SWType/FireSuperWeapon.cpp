@@ -197,7 +197,7 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 	{
 		for (HouseClass* pTargetHouse : HouseClass::Array)
 		{
-			if (EnumFunctions::CanTargetHouse(this->LimboKill_Affected, pHouse, pTargetHouse))
+			if (EnumFunctions::CanTargetHouse(this->LimboKill_AffectsHouse, pHouse, pTargetHouse))
 			{
 				auto const pHouseExt = HouseExt::ExtMap.Find(pTargetHouse);
 				auto& vec = pHouseExt->OwnedLimboDeliveredBuildings;
