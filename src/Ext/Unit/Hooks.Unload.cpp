@@ -9,9 +9,9 @@ namespace UnitUnloadTemp
 }
 
 // Prevent subterranean units from deploying while underground.
-DEFINE_HOOK(0x73D6E6, UnitClass_Unload_Subterranean, 0x6)
+DEFINE_HOOK(0x73D63B, UnitClass_Mi_Unload_Subterranean, 0x6)
 {
-	enum { ReturnFromFunction = 0x73DFB0, SkipPassengers = 0x73DCD3, DeployFireAfter = 0x73D672 };
+	enum { ReturnFromFunction = 0x73DFB0, SkipHarvester = 0x73D694, SkipPassengers = 0x73DCD3, Harvester = 0x73DEE7, Continue = 0x73D6EC };
 
 	GET(UnitClass* const, pThis, ESI);
 
@@ -25,26 +25,42 @@ DEFINE_HOOK(0x73D6E6, UnitClass_Unload_Subterranean, 0x6)
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	UnitUnloadTemp::TypeExtData = pTypeExt;
 
-	// Miners should not be hindered by other deployment actions while unloading minerals.
-	if ((pType->Harvester || pType->Weeder)
-		&& (pThis->HasAnyLink() || pThis->Unloading))
+	// It should be the highest priority.
+	if (pThis->BunkerLinkedItem)
 	{
-		return DeployFireAfter;
+		if (auto const pBuilding = pThis->GetCell()->GetBuilding())
+			pBuilding->EmptyBunker();
+
+		// It can fix the issue where mining carts cannot move.
+		R->EAX(pType);
+		return SkipHarvester;
 	}
+
+	// Miners should not be hindered by other deployment actions while unloading minerals.
+	if (pType->Harvester || pType->Weeder)
+	{
+		const bool hasAnyLink = pThis->HasAnyLink();
+
+		if (hasAnyLink || pThis->Unloading)
+		{
+			R->AL(hasAnyLink);
+			return Harvester;
+		}
+	}
+
+	R->EAX(pType);
 
 	if (pTypeExt->Unload_SkipPassengers)
 	{
-		R->EAX(pType);
 		return SkipPassengers;
 	}
 	else if (pTypeExt->Unload_NoPassengers
 		&& pThis->Passengers.NumPassengers <= 0 && pThis->MissionStatus == 0)
 	{
-		R->EAX(pType);
 		return SkipPassengers;
 	}
 
-	return 0;
+	return Continue;
 }
 
 DEFINE_HOOK(0x73DEEB, UnitClass_Mi_Unload_SkipHarvester, 0x5)

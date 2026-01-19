@@ -406,6 +406,7 @@ This page lists all the individual contributions to the project by their author.
   - Attack non-threatening structures extensions
   - Vehicle Deployment Enhancement
   - Fixed an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals
+  - Fixed an issue where mining vehicles could not move after leaving a tank bunker
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
