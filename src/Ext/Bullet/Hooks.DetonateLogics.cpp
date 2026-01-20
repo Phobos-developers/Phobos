@@ -49,6 +49,15 @@ DEFINE_HOOK(0x4692BD, BulletClass_Logics_ApplyMindControl, 0x6)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x46954C, BulletClass_Logics_IsLocomotor_Bunker, 0x6)
+{
+	enum { CannotImbue = 0x4695E6 };
+
+	GET(UnitClass*, pTarget, ECX);
+
+	return pTarget->BunkerLinkedItem ? CannotImbue : 0;
+}
+
 DEFINE_HOOK(0x469A75, BulletClass_Logics_DamageHouse, 0x7)
 {
 	GET(BulletClass*, pThis, ESI);

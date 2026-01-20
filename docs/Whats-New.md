@@ -565,6 +565,7 @@ Vanilla fixes:
 - Fixed an issue that the AI would set anger towards friendly houses, causing it to act stupidly (by TaranDahl)
 - Fixed an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies (by TaranDahl)
 - Fixed the issue that weapon selection don't check if secondary's warhead has `IsLocomotor=yes` (by NetsuNegi)
+- Fixed the issue that warhead with `IsLocomotor=yes` can be used to vehicles who is in tank bunker (by NetsuNegi)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

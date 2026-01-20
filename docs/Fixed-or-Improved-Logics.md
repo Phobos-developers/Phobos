@@ -288,6 +288,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that the AI would set anger towards friendly houses, causing it to act stupidly.
 - Fixed an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies.
 - Fixed the issue that weapon selection don't check if secondary's warhead has `IsLocomotor=yes`.
+- Fixed the issue that warhead with `IsLocomotor=yes` can be used to vehicles who is in tank bunker.
 
 ## Fixes / interactions with other extensions
 
