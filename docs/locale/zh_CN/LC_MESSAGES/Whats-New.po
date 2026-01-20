@@ -2703,6 +2703,7 @@ msgid ""
 "Fixed the issue that warhead with `IsLocomotor=yes` can be used to "
 "vehicles who is in tank bunker (by NetsuNegi)"
 msgstr ""
+"修复了拥有 `IsLocomotor=yes` 的弹头可攻击坦克碉堡内载具目标的问题（by NetsuNegi）"
 
 #: ../../Whats-New.md:570 ../../Whats-New.md:615 ../../Whats-New.md:943
 #: ../../Whats-New.md:1028 ../../Whats-New.md:1192 ../../Whats-New.md:1233

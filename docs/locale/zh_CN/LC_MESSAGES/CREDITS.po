@@ -2000,6 +2000,7 @@ msgid ""
 "Fix the issue that warhead with `IsLocomotor=yes` can be used to vehicles"
 " who is in tank bunker"
 msgstr ""
+"修复了拥有 `IsLocomotor=yes` 的弹头可攻击坦克碉堡内载具目标的问题"
 
 #: ../../../CREDITS.md:485
 msgid "**Apollo** - Translucent SHP drawing patches"
