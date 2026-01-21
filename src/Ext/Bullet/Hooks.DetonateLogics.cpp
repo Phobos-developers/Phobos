@@ -493,6 +493,19 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 		}
 
 		const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+		bool isSelcted = false;
+
+		auto& vec = ScenarioExt::Global()->LimboLaunchers;
+		const auto vecEnd = vec.end();
+		const auto it = std::find(vec.begin(), vecEnd, pTechnoExt);
+
+		if (it != vecEnd)
+		{
+			vec.erase(it);
+
+			isSelcted = true;
+			pTechnoExt->IsSelected = false;
+		}
 
 		if (success)
 		{
@@ -512,23 +525,11 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 				pTechno->SetTarget(nullptr);
 			}
 
-			if (pTechnoExt->IsSelected)
-			{
-				auto& vec = ScenarioExt::Global()->LimboLaunchers;
-				vec.erase(std::remove(vec.begin(), vec.end(), pTechnoExt), vec.end());
+			if (isSelcted)
 				pTechno->Select();
-				pTechnoExt->IsSelected = false;
-			}
 		}
 		else
 		{
-			if (pTechnoExt->IsSelected)
-			{
-				auto& vec = ScenarioExt::Global()->LimboLaunchers;
-				vec.erase(std::remove(vec.begin(), vec.end(), pTechnoExt), vec.end());
-				pTechnoExt->IsSelected = false;
-			}
-
 			pTechno->SetLocation(location);
 			pTechno->ReceiveDamage(&pTechno->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pTechno->Owner);
 		}
