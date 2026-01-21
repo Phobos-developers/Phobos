@@ -246,6 +246,8 @@ public:
 		Valueable<bool> DistributeTargetingFrame;
 		Valueable<bool> DistributeTargetingFrame_AIOnly;
 
+		Valueable<bool> CanAITargetIronCurtained;
+
 		Valueable<bool> BuildingWaypoints;
 		Valueable<bool> BuildingTypeSelectable;
 
@@ -489,6 +491,7 @@ public:
 			, PlayerAttackMoveTargetingDelay {}
 			, DistributeTargetingFrame { false }
 			, DistributeTargetingFrame_AIOnly { true }
+			, CanAITargetIronCurtained { false };
 			, BuildingWaypoints { false }
 			, BuildingTypeSelectable { false }
 			, ProneSpeed_Crawls { 0.67 }

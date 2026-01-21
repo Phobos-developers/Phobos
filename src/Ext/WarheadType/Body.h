@@ -205,6 +205,8 @@ public:
 		Valueable<bool> UnlimboDetonate_KeepTarget;
 		Valueable<bool> UnlimboDetonate_KeepSelected;
 
+		Nullable<bool> CanTargetIronCurtained;
+
 		Valueable<bool> AffectsUnderground;
 		Valueable<bool> PlayAnimUnderground;
 		Valueable<bool> PlayAnimAboveSurface;
@@ -443,6 +445,8 @@ public:
 			, UnlimboDetonate_ForceLocation { false }
 			, UnlimboDetonate_KeepTarget { true }
 			, UnlimboDetonate_KeepSelected { true }
+
+			, CanTargetIronCurtained {}
 
 			, AffectsUnderground { false }
 			, PlayAnimUnderground { true }

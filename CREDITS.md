@@ -481,6 +481,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize size for mind controlled unit
   - Fix the issue that weapon selection don't check if secondary's warhead has `IsLocomotor=yes`
   - Fix the issue that warhead with `IsLocomotor=yes` can be used to vehicles who is in tank bunker
+  - Customize whether warhead can be used to targeting ironcurtained technos or not
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

@@ -2730,6 +2730,19 @@ UnlimboDetonate.KeepSelected=false     ; boolean
 `UnlimboDetonate` cannot be used in conjunction with `Parasite`.
 ```
 
+### Customize whether warhead can be used to targeting ironcurtained technos or not
+
+- In vanilla, computer player's techno always dont attack ironcurtained technos. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+CanAITargetIronCurtained=false                  ; boolean
+
+[SOMEWARHEAD]                          ; WarheadType
+CanTargetIronCurtained=                  ; boolean
+```
+
 ## Weapons
 
 ### AreaFire target customization
