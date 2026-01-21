@@ -2738,9 +2738,10 @@ In `rulesmd.ini`:
 ```ini
 [CombatDamage]
 CanAITargetIronCurtained=false                  ; boolean
+CanHumanTargetIronCurtained=true            ; boolean
 
-[SOMEWARHEAD]                          ; WarheadType
-CanTargetIronCurtained=                  ; boolean
+[SOMEWEAPON]                          ; WeaponType
+CanTarget.IronCurtained=                  ; boolean
 ```
 
 ## Weapons

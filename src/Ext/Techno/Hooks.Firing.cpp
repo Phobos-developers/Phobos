@@ -309,10 +309,6 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
 	const auto pWH = pWeapon->Warhead;
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
-
-	if (pTargetTechno && pTargetTechno->IsIronCurtained() && !pWHExt->CanTargetIronCurtained.Get(pThis->Owner->IsHumanPlayer || RulesExt::Global()->CanAITargetIronCurtained))
-		return CannotFire;
-
 	const int nMoney = pWHExt->TransactMoney;
 
 	if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
@@ -354,11 +350,11 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 	if (pTargetTechno)
 	{
-		if (pThis->Berzerk
-			&& !EnumFunctions::CanTargetHouse(RulesExt::Global()->BerzerkTargeting, pThis->Owner, pTargetTechno->Owner))
-		{
+		if (!pThis->Owner->IsControlledByHuman() && pTargetTechno->IsIronCurtained() && !pWeaponExt->CanTarget_IronCurtained.Get(RulesExt::Global()->CanAITargetIronCurtained))
 			return CannotFire;
-		}
+
+		if (pThis->Berzerk && !EnumFunctions::CanTargetHouse(RulesExt::Global()->BerzerkTargeting, pThis->Owner, pTargetTechno->Owner))
+			return CannotFire;
 
 		if (!pWeaponExt->SkipWeaponPicking)
 		{
@@ -1091,4 +1087,40 @@ DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 
 	R->EDI(deployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : deployFireWeapon);
 	return 0x5223B9;
+}
+
+DEFINE_HOOK(0x708AD0, TechnoClass_ShouldRetaliate_IronCurtain, 0x6)
+{
+	enum { ContinueCheck = 0x708AD6, ReturnTrue = 0x708B0B, ReturnFalse = 0x708B17 };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(TechnoClass*, pTarget, EBP);
+	GET(WeaponTypeClass*, pWeapon, EAX);
+
+	do
+	{
+		if (!pThis->Owner->IsControlledByHuman() || !pTarget->IsIronCurtained())
+			break;
+
+		if (pWeapon)
+		{
+			const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+			if (pWeaponExt->CanTarget_IronCurtained.isset())
+			{
+				if (!pWeaponExt->CanTarget_IronCurtained.Get())
+					return ReturnFalse;
+
+				break;
+			}
+		}
+
+		if (!RulesExt::Global()->CanHumanTargetIronCurtained)
+			return ReturnFalse;
+	}
+	while (false);
+
+	// Restore overriden instructions
+	R->ESI(pWeapon);
+	return pWeapon ? ContinueCheck : ReturnTrue;
 }

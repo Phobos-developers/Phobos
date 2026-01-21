@@ -247,6 +247,7 @@ public:
 		Valueable<bool> DistributeTargetingFrame_AIOnly;
 
 		Valueable<bool> CanAITargetIronCurtained;
+		Valueable<bool> CanHumanTargetIronCurtained;
 
 		Valueable<bool> BuildingWaypoints;
 		Valueable<bool> BuildingTypeSelectable;
@@ -492,6 +493,7 @@ public:
 			, DistributeTargetingFrame { false }
 			, DistributeTargetingFrame_AIOnly { true }
 			, CanAITargetIronCurtained { false }
+			, CanHumanTargetIronCurtained { true }
 			, BuildingWaypoints { false }
 			, BuildingTypeSelectable { false }
 			, ProneSpeed_Crawls { 0.67 }

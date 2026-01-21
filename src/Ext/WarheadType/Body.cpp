@@ -299,8 +299,6 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->UnlimboDetonate_KeepTarget.Read(exINI, pSection, "UnlimboDetonate.KeepTarget");
 	this->UnlimboDetonate_KeepSelected.Read(exINI, pSection, "UnlimboDetonate.KeepSelected");
 
-	this->CanTargetIronCurtained.Read(exINI, pSection, "CanTargetIronCurtained");
-
 	this->AffectsUnderground.Read(exINI, pSection, "AffectsUnderground");
 	this->PlayAnimUnderground.Read(exINI, pSection, "PlayAnimUnderground");
 	this->PlayAnimAboveSurface.Read(exINI, pSection, "PlayAnimAboveSurface");
@@ -595,8 +593,6 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->UnlimboDetonate_ForceLocation)
 		.Process(this->UnlimboDetonate_KeepTarget)
 		.Process(this->UnlimboDetonate_KeepSelected)
-
-		.Process(this->CanTargetIronCurtained)
 
 		.Process(this->AffectsUnderground)
 		.Process(this->PlayAnimUnderground)

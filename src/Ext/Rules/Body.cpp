@@ -319,6 +319,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DistributeTargetingFrame_AIOnly.Read(exINI, GameStrings::General, "DistributeTargetingFrame.AIOnly");
 
 	this->CanAITargetIronCurtained.Read(exINI, GameStrings::CombatDamage, "CanAITargetIronCurtained");
+	this->CanHumanTargetIronCurtained.Read(exINI, GameStrings::CombatDamage, "CanHumanTargetIronCurtained");
 	
 	this->InfantryAutoDeploy.Read(exINI, GameStrings::General, "InfantryAutoDeploy");
 
@@ -605,6 +606,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DistributeTargetingFrame)
 		.Process(this->DistributeTargetingFrame_AIOnly)
 		.Process(this->CanAITargetIronCurtained)
+		.Process(this->CanHumanTargetIronCurtained)
 		.Process(this->BuildingTypeSelectable)
 		.Process(this->ProneSpeed_Crawls)
 		.Process(this->ProneSpeed_NoCrawls)
