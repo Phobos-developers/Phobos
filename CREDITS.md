@@ -284,6 +284,7 @@ This page lists all the individual contributions to the project by their author.
   - Owner change during buildup bugfix
   - Subterranean harvester pathfinding fix
   - Toggle to exclude technos from base center calculations
+  - Deploy priority filtering
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

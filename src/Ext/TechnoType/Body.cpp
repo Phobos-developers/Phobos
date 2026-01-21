@@ -728,6 +728,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->HealthBar_Permanent_PipScale.Read(exINI, pSection, "HealthBar.Permanent.PipScale");
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
+	this->LowDeployPriority.Read(exINI, pSection, "LowDeployPriority");
 
 	if (pThis->Gunner)
 	{
@@ -1407,6 +1408,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->HealthBar_Permanent_PipScale)
 		.Process(this->UIDescription)
 		.Process(this->LowSelectionPriority)
+		.Process(this->LowDeployPriority)
 		.Process(this->MindControlRangeLimit)
 		.Process(this->MindControl_IgnoreSize)
 		.Process(this->MindControlSize)
