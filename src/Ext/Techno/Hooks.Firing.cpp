@@ -264,7 +264,7 @@ DEFINE_HOOK(0x6F3528, TechnoClass_WhatWeaponShouldIUse_IsLocomotor, 0x6)
 
 	GET(TechnoClass*, pTargetTechno, EBP);
 
-	if (pTargetTechno && pTargetTechno->WhatAmI() == AbstractType::Building)
+	if (pTargetTechno && (pTargetTechno->WhatAmI() == AbstractType::Building || pTargetTechno->BunkerLinkedItem))
 	{
 		GET(WeaponTypeClass*, pPrimary, EBX);
 
@@ -400,6 +400,16 @@ DEFINE_HOOK(0x6FC0C5, TechnoClass_CanFire_DisableWeapons, 0x6)
 	return Continue;
 }
 
+DEFINE_HOOK(0x6FC3AE, TechnoClass_CanFire_TankInBunker_LocomotorWarhead, 0x6)
+{
+	enum { Illegal = 0x6FC86A };
+
+	GET(WeaponTypeClass*, pWeapon, EDI);
+	const auto pWarhead = pWeapon->Warhead;
+
+	return pWarhead && pWarhead->IsLocomotor ? Illegal : 0;
+}
+
 DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 {
 	enum { Illegal = 0x6FC86A, OutOfRange = 0x6FC0DF, Continue = 0x6FC5D5 };
@@ -473,7 +483,7 @@ DEFINE_HOOK(0x6FCBE6, TechnoClass_CanFire_BridgeAAFix, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x6FC749, TechnoClass_GetFireError_AntiUnderground, 0x5)
+DEFINE_HOOK(0x6FC749, TechnoClass_CanFire_AntiUnderground, 0x5)
 {
 	enum { Illegal = 0x6FC86A, GoOtherChecks = 0x6FC762 };
 
@@ -498,7 +508,7 @@ DEFINE_HOOK(0x6FC749, TechnoClass_GetFireError_AntiUnderground, 0x5)
 	return GoOtherChecks;
 }
 
-DEFINE_HOOK(0x6FC7EB, TechnoClass_GetFireError_InterceptBullet, 0x7)
+DEFINE_HOOK(0x6FC7EB, TechnoClass_CanFire_InterceptBullet, 0x7)
 {
 	enum { IgnoreAG = 0x6FC815, ContinueCheck = 0x6FC7F2 };
 

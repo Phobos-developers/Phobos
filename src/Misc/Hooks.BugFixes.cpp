@@ -2918,7 +2918,7 @@ DEFINE_HOOK(0x55BB09, LogicClass_RemoveObject_FixIndex, 0x6)
 	if (updateIdx == -1)
 		return 0;
 
-	GET(int, findIdx, EAX);
+	GET(const int, findIdx, EAX);
 
 	if (findIdx <= updateIdx)
 		--updateIdx;

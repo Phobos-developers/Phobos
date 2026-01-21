@@ -822,16 +822,44 @@ DEFINE_HOOK(0x70FB73, FootClass_IsBunkerableNow_Dehardcode, 0x6)
 	return pTypeExt->BunkerableAnyway ? CanEnter : 0;
 }
 
-DEFINE_HOOK(0x730D1F, DeployCommandClass_Execute_VoiceDeploy, 0x5)
+DEFINE_HOOK(0x730D0F, ProcessDeployCommand_LowDeployPriority, 0x6)
 {
-	GET_STACK(const int, unitsToDeploy, STACK_OFFSET(0x18, -0x4));
+	enum { SkipDeploy = 0x730D24 };
 
-	if (unitsToDeploy != 1)
+	GET_STACK(const int, selectedObjectCount, STACK_OFFSET(0x18, -0x4));
+
+	if (Phobos::Config::PriorityDeployFiltering && selectedObjectCount > 1)
+	{
+		GET(TechnoClass* const, pTechno, ESI);
+
+		auto const pExt = TechnoExt::ExtMap.Find(pTechno);
+
+		if (pExt->TypeExtData->LowDeployPriority)
+		{
+			for (const auto pObject : ObjectClass::CurrentObjects)
+			{
+				if ((pObject->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
+				{
+					if (!TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pObject))->TypeExtData->LowDeployPriority)
+						return SkipDeploy;
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x730D1F, ProcessDeployCommand_VoiceDeploy, 0x5)
+{
+	GET_STACK(const int, selectedObjectCount, STACK_OFFSET(0x18, -0x4));
+
+	if (selectedObjectCount != 1)
 		return 0;
 
-	GET(TechnoClass* const, pThis, ESI);
+	GET(TechnoClass* const, pTechno, ESI);
 
-	pThis->VoiceDeploy();
+	pTechno->VoiceDeploy();
 
 	return 0;
 }

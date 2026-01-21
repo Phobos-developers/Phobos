@@ -132,6 +132,7 @@ ShowBriefing=true                ; boolean
 DigitalDisplay.Enable=false      ; boolean
 ShowDesignatorRange=false        ; boolean
 PrioritySelectionFiltering=true  ; boolean
+PriorityDeployFiltering=true     ; boolean
 ShowPlacementPreview=yes         ; boolean
 RealTimeTimers=false             ; boolean
 RealTimeTimers.Adaptive=false    ; boolean
@@ -516,6 +517,7 @@ New:
 - [Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`](Fixed-or-Improved-Logics.md#can-attack-allies) (by FlyStar)
 - [Attack non-threatening structures extensions](New-or-Enhanced-Logics.md#attack-non-threatening-structures-techno) (by FlyStar)
 - [Customize size for mind controlled unit](New-or-Enhanced-Logics.md#mind-control-enhancement) (by NetsuNegi)
+- [Deploy priority filtering](New-or-Enhanced-Logics.md#low-priority-for-deploy) (by Starkku)
 - Vehicle Deployment Enhancement (by FlyStar)
 
 Vanilla fixes:
@@ -566,6 +568,7 @@ Vanilla fixes:
 - Fixed an issue that the AI would set anger towards friendly houses, causing it to act stupidly (by TaranDahl)
 - Fixed an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies (by TaranDahl)
 - Fixed the issue that weapon selection don't check if secondary's warhead has `IsLocomotor=yes` (by NetsuNegi)
+- Fixed the issue that warhead with `IsLocomotor=yes` can be used to vehicles who is in tank bunker (by NetsuNegi)
 - Fixed an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals (by FlyStar)
 - Fixed an issue where mining vehicles could not move after leaving a tank bunker (by FlyStar)
 
