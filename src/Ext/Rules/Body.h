@@ -491,7 +491,7 @@ public:
 			, PlayerAttackMoveTargetingDelay {}
 			, DistributeTargetingFrame { false }
 			, DistributeTargetingFrame_AIOnly { true }
-			, CanAITargetIronCurtained { false };
+			, CanAITargetIronCurtained { false }
 			, BuildingWaypoints { false }
 			, BuildingTypeSelectable { false }
 			, ProneSpeed_Crawls { 0.67 }
