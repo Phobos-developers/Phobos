@@ -1095,7 +1095,8 @@ DEFINE_HOOK(0x708AD0, TechnoClass_ShouldRetaliate_IronCurtain, 0x6)
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(TechnoClass*, pTarget, EBP);
-	GET(WeaponTypeClass*, pWeapon, EAX);
+	GET(WeaponStruct*, pWeaponStruct, EAX);
+	const auto pWeapon = pWeaponStruct->WeaponType;
 
 	do
 	{
