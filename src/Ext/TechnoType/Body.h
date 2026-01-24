@@ -32,6 +32,7 @@ public:
 		Valueable<bool> HealthBar_Permanent_PipScale;
 		Valueable<CSFText> UIDescription;
 		Valueable<bool> LowSelectionPriority;
+		Valueable<bool> LowDeployPriority;
 		PhobosFixedString<0x20> GroupAs;
 		std::vector<PhobosFixedString<0x20>> WeaponGroupAs;
 		Valueable<int> RadarJamRadius;
@@ -168,8 +169,8 @@ public:
 		Valueable<int> OpenTransport_RangeBonus;
 		Valueable<float> OpenTransport_DamageMultiplier;
 
-		Valueable<bool> AutoFire;
-		Valueable<bool> AutoFire_TargetSelf;
+		Valueable<bool> AutoTargetOwnPosition;
+		Valueable<bool> AutoTargetOwnPosition_Self;
 
 		Valueable<bool> NoSecondaryWeaponFallback;
 		Valueable<bool> NoSecondaryWeaponFallback_AllowAA;
@@ -289,7 +290,7 @@ public:
 		Valueable<AffectedHouse> Tint_VisibleToHouses;
 
 		Valueable<WeaponTypeClass*> RevengeWeapon;
-		Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
+		Valueable<AffectedHouse> RevengeWeapon_AffectsHouse;
 
 		AEAttachInfoTypeClass AttachEffects;
 
@@ -478,6 +479,7 @@ public:
 			, HealthBar_Permanent_PipScale { false }
 			, UIDescription {}
 			, LowSelectionPriority { false }
+			, LowDeployPriority { false }
 			, GroupAs { NONE_STR }
 			, WeaponGroupAs {}
 			, RadarJamRadius { 0 }
@@ -566,8 +568,8 @@ public:
 			, OpenTransport_RangeBonus { 0 }
 			, OpenTransport_DamageMultiplier { 1.0 }
 
-			, AutoFire { false }
-			, AutoFire_TargetSelf { false }
+			, AutoTargetOwnPosition { false }
+			, AutoTargetOwnPosition_Self { false }
 			, NoSecondaryWeaponFallback { false }
 			, NoSecondaryWeaponFallback_AllowAA { false }
 			, AllowWeaponSelectAgainstWalls {}
@@ -733,7 +735,7 @@ public:
 			, Tint_VisibleToHouses { AffectedHouse::All }
 
 			, RevengeWeapon {}
-			, RevengeWeapon_AffectsHouses { AffectedHouse::All }
+			, RevengeWeapon_AffectsHouse { AffectedHouse::All }
 
 			, AttachEffects {}
 

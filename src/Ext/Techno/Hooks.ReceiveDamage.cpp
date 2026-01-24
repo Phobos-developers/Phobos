@@ -91,7 +91,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			else if (!pTypeExt->CombatAlert.Get(pRules->CombatAlert_Default.Get(!pType->Insignificant && !pType->Spawned)) || !pThis->IsInPlayfield)
 				return;
 
-			const auto pBuilding = abstract_cast<BuildingClass*>(pThis);
+			const auto pBuilding = abstract_cast<BuildingClass*, true>(pThis);
 
 			if (RulesExt::Global()->CombatAlert_IgnoreBuilding && pBuilding && (pTypeExt->CombatAlert_NotBuilding.isset() ? !pTypeExt->CombatAlert_NotBuilding.Get() : !pBuilding->Type->IsVehicle()))
 				return;
@@ -384,7 +384,7 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 			{
 				auto const pInvoker = attachEffect->GetInvoker();
 
-				if (pInvoker && EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouses, pInvoker->Owner, pSourceHouse))
+				if (pInvoker && EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, pInvoker->Owner, pSourceHouse))
 				{
 					auto const pWHExtRef = WarheadTypeExt::ExtMap.Find(pWH);
 					pWHExtRef->Reflected = true;
@@ -397,7 +397,7 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 					pWHExtRef->Reflected = false;
 				}
 			}
-			else if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouses, pThis->Owner, pSourceHouse))
+			else if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, pThis->Owner, pSourceHouse))
 			{
 				auto const pWHExtRef = WarheadTypeExt::ExtMap.Find(pWH);
 				pWHExtRef->Reflected = true;

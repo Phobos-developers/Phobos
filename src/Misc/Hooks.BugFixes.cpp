@@ -2791,6 +2791,9 @@ DEFINE_HOOK(0x70D4A0, AbstractClass_ClearTargetToMe_ClearManagerTarget, 0x5)
 {
 	GET(AbstractClass*, pThis, ECX);
 
+	if (!pThis)
+		return 0;
+
 	for (const auto pTemporal : TemporalClass::Array)
 	{
 		if (pTemporal->Target == pThis)
@@ -2811,10 +2814,10 @@ DEFINE_HOOK(0x70D4A0, AbstractClass_ClearTargetToMe_ClearManagerTarget, 0x5)
 			pSpawn->ResetTarget();
 	}
 
-	if (const auto pTechno = abstract_cast<TechnoClass*>(pThis))
+	if (const auto pTechno = abstract_cast<TechnoClass*, true>(pThis))
 		pTechno->LastTarget = nullptr;
 
-	if (const auto pFoot = abstract_cast<FootClass*>(pThis))
+	if (const auto pFoot = abstract_cast<FootClass*, true>(pThis))
 		pFoot->LastDestination = nullptr;
 
 	return 0;
@@ -2918,7 +2921,7 @@ DEFINE_HOOK(0x55BB09, LogicClass_RemoveObject_FixIndex, 0x6)
 	if (updateIdx == -1)
 		return 0;
 
-	GET(int, findIdx, EAX);
+	GET(const int, findIdx, EAX);
 
 	if (findIdx <= updateIdx)
 		--updateIdx;

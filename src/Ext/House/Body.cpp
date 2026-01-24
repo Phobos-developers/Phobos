@@ -804,7 +804,7 @@ DEFINE_HOOK(0x50114D, HouseClass_InitFromINI, 0x5)
 	return 0;
 }
 #pragma region BuildLimitGroup
-int CountOwnedIncludeDeploy(const HouseClass* pThis, const TechnoTypeClass* pItem)
+static int CountOwnedIncludeDeploy(const HouseClass* pThis, const TechnoTypeClass* pItem)
 {
 	int count = pThis->CountOwnedNow(pItem);
 	count += pItem->DeploysInto ? pThis->CountOwnedNow(pItem->DeploysInto) : 0;
@@ -831,7 +831,7 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 		{
 			int count = 0;
 			auto const pTmpType = extraLimitTypes[i];
-			auto const pBuildingType = abstract_cast<BuildingTypeClass*>(pTmpType);
+			auto const pBuildingType = abstract_cast<BuildingTypeClass*, true>(pTmpType);
 
 			if (pBuildingType && (BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))
 				count = BuildingTypeExt::GetUpgradesAmount(pBuildingType, const_cast<HouseClass*>(pThis));
@@ -865,7 +865,7 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 		{
 			const auto pType = buildLimit[i];
 			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-			const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
+			const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pType);
 			int ownedNow = 0;
 
 			if (pBuildingType && (BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))
@@ -891,7 +891,7 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 			for (const auto pType : buildLimit)
 			{
 				const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-				const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
+				const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pType);
 				int owned = 0;
 
 				if (pBuildingType && (BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))
@@ -918,7 +918,7 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 			{
 				const auto pType = buildLimit[i];
 				const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-				const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
+				const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pType);
 				int ownedNow = 0;
 
 				if (pBuildingType && (BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))
@@ -940,7 +940,7 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 	}
 }
 
-int QueuedNum(const HouseClass* pHouse, const TechnoTypeClass* pType)
+static int QueuedNum(const HouseClass* pHouse, const TechnoTypeClass* pType)
 {
 	const AbstractType absType = pType->WhatAmI();
 	const BuildCat buildCat = (absType == AbstractType::BuildingType ? static_cast<const BuildingTypeClass*>(pType)->BuildCat : BuildCat::DontCare);
@@ -961,7 +961,7 @@ int QueuedNum(const HouseClass* pHouse, const TechnoTypeClass* pType)
 	return queued;
 }
 
-void RemoveProduction(const HouseClass* pHouse, const TechnoTypeClass* pType, int num)
+static void RemoveProduction(const HouseClass* pHouse, const TechnoTypeClass* pType, int num)
 {
 	const auto absType = pType->WhatAmI();
 	const auto buildCat = (absType == AbstractType::BuildingType ? static_cast<const BuildingTypeClass*>(pType)->BuildCat : BuildCat::DontCare);
@@ -999,7 +999,7 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 		for (size_t i = 0; i < extraLimitTypes.size(); i++)
 		{
 			const auto pTmpType = extraLimitTypes[i];
-			const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pTmpType);
+			const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pTmpType);
 			int count = 0;
 
 			if (pBuildingType && (BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))

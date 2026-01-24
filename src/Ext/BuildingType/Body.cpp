@@ -197,8 +197,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	if (pThis->NumberOfDocks > 0)
 	{
-		this->AircraftDockingDirs.clear();
-		this->AircraftDockingDirs.resize(pThis->NumberOfDocks);
+		std::optional<DirType> empty;
+		this->AircraftDockingDirs.resize(pThis->NumberOfDocks, empty);
 
 		Nullable<DirType> nLandingDir;
 		nLandingDir.Read(exINI, pSection, "AircraftDockingDir");

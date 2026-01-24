@@ -609,7 +609,7 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 		return false;
 
 	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-	auto const pTargetType = pTarget->GetTechnoType();
+	auto const pTargetType = pTargetExt->TypeExtData->OwnerObject();
 	int attachedCount = 0;
 	bool markForRedraw = false;
 	double ROFModifier = 1.0;
@@ -681,13 +681,14 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 			return nullptr;
 	}
 
-	if (!EnumFunctions::IsTechnoEligible(pTarget, pType->AffectTargets, true))
+	if (!EnumFunctions::IsTechnoEligible(pTarget, pType->AffectsTarget, true))
 		return nullptr;
 
 	if ((!pType->AffectTypes.empty() && !pType->AffectTypes.Contains(pTargetType)) || pType->IgnoreTypes.Contains(pTargetType))
 		return nullptr;
 
 	int currentTypeCount = 0;
+	int currentSourceCount = 0;
 	const bool cumulative = pType->Cumulative && checkCumulative;
 	AttachEffectClass* match = nullptr;
 	std::vector<AttachEffectClass*> cumulativeMatches;
@@ -707,19 +708,26 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 				AttachEffectTypeClass::HandleEvent(pTarget);
 				return nullptr;
 			}
-			else if (!attachParams.CumulativeRefreshSameSourceOnly || (attachEffect->Source == pSource && attachEffect->Invoker == pInvoker))
+			else
 			{
-				cumulativeMatches.push_back(attachEffect);
+				if (attachEffect->IsFromSource(pInvoker, pSource))
+					currentSourceCount++;
 
-				if (!match || attachEffect->Duration < match->Duration)
-					match = attachEffect;
+				if (!attachParams.CumulativeRefreshSameSourceOnly || attachEffect->IsFromSource(pInvoker, pSource))
+				{
+					cumulativeMatches.push_back(attachEffect);
+
+					if (!match || attachEffect->Duration < match->Duration)
+						match = attachEffect;
+				}
 			}
 		}
 	}
 
 	if (cumulative)
 	{
-		if (pType->Cumulative_MaxCount >= 0 && currentTypeCount >= pType->Cumulative_MaxCount)
+		if ((pType->Cumulative_MaxCount >= 0 && currentTypeCount >= pType->Cumulative_MaxCount)
+			|| (attachParams.CumulativeSourceMaxCount >= 0 && currentSourceCount >= attachParams.CumulativeSourceMaxCount))
 		{
 			if (attachParams.CumulativeRefreshAll)
 			{
@@ -947,7 +955,7 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 		}
 
 		auto const type = attachEffect->GetType();
-		const bool isValid = EnumFunctions::IsTechnoEligible(pTarget, type->AffectTargets, true)
+		const bool isValid = EnumFunctions::IsTechnoEligible(pTarget, type->AffectsTarget, true)
 			&& (type->AffectTypes.empty() || type->AffectTypes.Contains(pTargetType)) && !type->IgnoreTypes.Contains(pTargetType);
 
 		if (!isValid)
@@ -973,7 +981,7 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 					match = targetAttachEffect;
 					break;
 				}
-				else if (targetAttachEffect->Source == attachEffect->Source && targetAttachEffect->Invoker == attachEffect->Invoker)
+				else if (targetAttachEffect->IsFromSource(attachEffect->Invoker, attachEffect->Source))
 				{
 					if (!match || targetAttachEffect->Duration < match->Duration)
 						match = targetAttachEffect;
