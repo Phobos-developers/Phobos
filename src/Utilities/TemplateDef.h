@@ -788,6 +788,52 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<AffectedVeterancy>(AffectedVeterancy& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			static const std::pair<const char*, AffectedVeterancy> Names[] =
+			{
+				{"rookie",  AffectedVeterancy::Rookie},
+				{"veteran", AffectedVeterancy::Veteran},
+				{"elite",   AffectedVeterancy::Elite},
+				{"all",     AffectedVeterancy::All},
+				{"none",    AffectedVeterancy::None},
+			};
+
+
+			auto parsed = AffectedVeterancy::None;
+			for (auto&& part : std::string_view { parser.value() } | std::views::split(','))
+			{
+				std::string_view&& cur { part.begin(),part.end() };
+				*const_cast<char*>(cur.data() + cur.find_last_not_of(" \t\r") + 1) = 0;
+				auto pCur = cur.data() + cur.find_first_not_of(" \t\r");
+				bool matched = false;
+				for (auto const& [name, val] : Names)
+				{
+					if (_strcmpi(pCur, name) == 0)
+					{
+						parsed |= val;
+						matched = true;
+						break;
+					}
+				}
+				if (!matched)
+				{
+					Debug::INIParseFailed(pSection, pKey, pCur, "Expected an affected veterancy");
+					return false;
+				}
+			}
+
+			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
+
+
+	template <>
 	inline bool read<AttachedAnimFlag>(AttachedAnimFlag& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))

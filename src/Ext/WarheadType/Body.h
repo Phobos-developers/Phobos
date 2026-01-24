@@ -191,8 +191,8 @@ public:
 
 		Valueable<double> AffectsBelowPercent;
 		Valueable<double> AffectsAbovePercent;
-		Nullable<double> AffectsBelowVeterancy;
-		Valueable<double> AffectsAboveVeterancy;
+		Valueable<AffectedVeterancy> AffectsVeterancy;
+
 		Valueable<bool> AffectsNeutral;
 		Valueable<bool> AffectsGround;
 		Valueable<bool> AffectsAir;
@@ -408,8 +408,7 @@ public:
 
 			, AffectsBelowPercent { 1.0 }
 			, AffectsAbovePercent { 0.0 }
-			, AffectsBelowVeterancy {}
-			, AffectsAboveVeterancy { 0.0 }
+			, AffectsVeterancy { AffectedVeterancy::All }
 			, AffectsNeutral { true }
 			, AffectsGround { true }
 			, AffectsAir { true }

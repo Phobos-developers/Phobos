@@ -59,7 +59,7 @@ bool WarheadTypeExt::ExtData::IsVeterancyInThreshold(TechnoClass* pTarget) const
 	if (!this->VeterancyCheck)
 		return true;
 
-	return TechnoExt::IsVeterancyInThreshold(pTarget, this->AffectsAboveVeterancy, this->AffectsBelowVeterancy.Get(RulesClass::Instance->VeteranCap + 1.0));
+	return EnumFunctions::CanTargetVeterancy(this->AffectsVeterancy, pTarget);
 }
 
 // Checks if Warhead can affect target that might or might be currently invulnerable.
@@ -294,20 +294,16 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AffectsBelowPercent.Read(exINI, pSection, "AffectsBelowPercent");
 	this->AffectsAbovePercent.Read(exINI, pSection, "AffectsAbovePercent");
-	this->AffectsBelowVeterancy.Read(exINI, pSection, "AffectsBelowVeterancy");
-	this->AffectsAboveVeterancy.Read(exINI, pSection, "AffectsAboveVeterancy");
+	this->AffectsVeterancy.Read(exINI, pSection, "AffectsVeterancy");
 	this->AffectsNeutral.Read(exINI, pSection, "AffectsNeutral");
 	this->AffectsGround.Read(exINI, pSection, "AffectsGround");
 	this->AffectsAir.Read(exINI, pSection, "AffectsAir");
 	this->CellSpread_Cylinder.Read(exINI, pSection, "CellSpread.Cylinder");
 	this->HealthCheck = this->AffectsAbovePercent > 0.0 || this->AffectsBelowPercent < 1.0;
-	this->VeterancyCheck = this->AffectsAboveVeterancy > 0.0 || this->AffectsBelowVeterancy.Get(RulesClass::Instance->VeteranCap + 1.0) < RulesClass::Instance->VeteranCap + 1.0;
+	this->VeterancyCheck = this->AffectsVeterancy != AffectedVeterancy::All;
 
 	if (this->AffectsAbovePercent > this->AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] AffectsAbovePercent is bigger than AffectsBelowPercent, the warhead will never activate!\n", pSection);
-
-	if (this->AffectsAboveVeterancy > this->AffectsBelowVeterancy.Get(RulesClass::Instance->VeteranCap + 1.0))
-		Debug::Log("[Developer warning][%s] AffectsAboveVeterancy is bigger than AffectsBelowVeterancy, the warhead will never activate!\n", pSection);
 
 	this->ReverseEngineer.Read(exINI, pSection, "ReverseEngineer");
 
@@ -554,8 +550,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AffectsBelowPercent)
 		.Process(this->AffectsAbovePercent)
-		.Process(this->AffectsBelowVeterancy)
-		.Process(this->AffectsAboveVeterancy)
+		.Process(this->AffectsVeterancy)
 		.Process(this->AffectsNeutral)
 		.Process(this->AffectsGround)
 		.Process(this->AffectsAir)

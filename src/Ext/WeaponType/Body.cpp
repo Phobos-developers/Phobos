@@ -47,7 +47,7 @@ bool WeaponTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
 
 bool WeaponTypeExt::ExtData::IsVeterancyInThreshold(TechnoClass* pTarget) const
 {
-	return TechnoExt::IsVeterancyInThreshold(pTarget, this->CanTarget_MinVeterancy, this->CanTarget_MaxVeterancy.Get(RulesClass::Instance->VeteranCap + 1.0));
+	return EnumFunctions::CanTargetVeterancy(this->CanTargetVeterancy, pTarget);
 }
 
 void WeaponTypeExt::ExtData::Initialize()
@@ -108,8 +108,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CanTargetHouses.Read(exINI, pSection, "CanTargetHouses");
 	this->CanTarget_MaxHealth.Read(exINI, pSection, "CanTarget.MaxHealth");
 	this->CanTarget_MinHealth.Read(exINI, pSection, "CanTarget.MinHealth");
-	this->CanTarget_MaxVeterancy.Read(exINI, pSection, "CanTarget.MaxVeterancy");
-	this->CanTarget_MinVeterancy.Read(exINI, pSection, "CanTarget.MinVeterancy");
+	this->CanTargetVeterancy.Read(exINI, pSection, "CanTargetVeterancy");
 	this->Burst_Delays.Read(exINI, pSection, "Burst.Delays");
 	this->Burst_FireWithinSequence.Read(exINI, pSection, "Burst.FireWithinSequence");
 	this->Burst_NoDelay.Read(exINI, pSection, "Burst.NoDelay");
@@ -170,7 +169,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// handle SkipWeaponPicking
 	if (this->CanTarget != AffectedTarget::All || this->CanTargetHouses != AffectedHouse::All
 		|| this->CanTarget_MaxHealth < 1.0 || this->CanTarget_MinHealth > 0.0
-		|| this->CanTarget_MaxVeterancy.Get(RulesClass::Instance->VeteranCap + 1.0) < RulesClass::Instance->VeteranCap + 1.0 || this->CanTarget_MinVeterancy > 0.0
+		|| this->CanTargetVeterancy != AffectedVeterancy::All
 		|| this->AttachEffect_RequiredTypes.size() || this->AttachEffect_RequiredGroups.size()
 		|| this->AttachEffect_DisallowedTypes.size() || this->AttachEffect_DisallowedGroups.size())
 	{
@@ -200,8 +199,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CanTargetHouses)
 		.Process(this->CanTarget_MaxHealth)
 		.Process(this->CanTarget_MinHealth)
-		.Process(this->CanTarget_MaxVeterancy)
-		.Process(this->CanTarget_MinVeterancy)
+		.Process(this->CanTargetVeterancy)
 		.Process(this->RadType)
 		.Process(this->Burst_Delays)
 		.Process(this->Burst_FireWithinSequence)
