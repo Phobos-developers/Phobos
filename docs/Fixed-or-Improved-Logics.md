@@ -280,7 +280,15 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that naval ship will sink even they destroyed in air.
 - Fixed MPDebug timer displaying when debug's visibility is off.
 - Fixed the issue that units will goto farest location if target is closer than `MinimumRange`.
-- Fixed the bug that techno with `Trainable=false` can be promoted if it's created by trigger event.
+- Fixed a bug where units can be promoted when created via trigger actions even if they have `Trainable=false`.
+- Fixed the bug that ai will try to product aircraft even the airport has no free dock for it.
+- Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.
+- Fixed the issue that rockets do not consider the destination altitude during climbing.
+- Fixed the bug that if object has been removed from LogicClass in Update(), next object will be skip.
+- Fixed an issue that the AI would set anger towards friendly houses, causing it to act stupidly.
+- Fixed an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies.
+- Fixed the issue that weapon selection don't check if secondary's warhead has `IsLocomotor=yes`.
+- Fixed the issue that warhead with `IsLocomotor=yes` can be used to vehicles who is in tank bunker.
 
 ## Fixes / interactions with other extensions
 
@@ -320,6 +328,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect.
 - Fixed the bug that building with `CloningFacility=true` and `WeaponsFactory=true` may cloning multiple vehicles and then they get stuck.
 - Fixed a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType`.
+- Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed.
+- Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed.
 
 ## Newly added global settings
 
@@ -955,6 +965,19 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]     ; BuildingType
 BarracksExitCell=  ; X,Y - cell offset
+```
+
+### Custom whether to synchronously change the owner of the RadioLink-linked units when the owner of a building changes
+
+- In vanilla, buildings with RadioLink (f.ex. war factory and air base) will change the owner of the RadioLink-linked units when the owner of the building changes. Now you can toggle this behaviour off by the following flags.
+
+In `rulesmd.ini`:
+```ini
+[General]
+BuildingRadioLink.SyncOwner=true ; boolean
+
+[SOMEBUILDING]                   ; BuildingType
+BuildingRadioLink.SyncOwner=     ; boolean, default to [General] -> BuildingRadioLink.SyncOwner
 ```
 
 ### Customizable garrison and bunker properties
@@ -1825,6 +1848,17 @@ HeightShadowScaling.MinScale=0.0  ; floating point value
 ShadowSizeCharacteristicHeight=   ; integer, height in leptons
 ```
 
+### Allow techno type considered as other type when recruiting techno for teams
+
+- It is now possible to make techno type considered as other type when recruiting techno for teams, both for AI team recruitment and `Create Team` action.
+  - Only affect techno that's presented on the map. Cannot make AI produce this type of techno if it doesn't have any.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType
+TeamMember.ConsideredAs=          ; List of TechnoTypes
+```
+
 ## Terrains
 
 ### Animated TerrainTypes
@@ -1938,11 +1972,13 @@ MinimapColor=  ; integer - Red,Green,Blue
 
 - In vanilla, when miners enter area guard mission, they immediately switch to harvest mission. Now you can make them perform area guard mission normally like other technos.
   - We made it work only for miners controlled by the player, because this will prevent AI's miners from going work.
+  - If `Harvester.CanGuardArea.RequireTarget` set to true, it'll switch back to regular harvest mission when there's no valid target within its guard range.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]                      ; VehicleType
-Harvester.CanGuardArea=no          ; boolean
+[SOMEVEHICLE]                               ; VehicleType
+Harvester.CanGuardArea=false                ; boolean
+Harvester.CanGuardArea.RequireTarget=false  ; boolean
 ```
 
 ### Bunker entering check dehardcode
@@ -2424,6 +2460,17 @@ In `rulesmd.ini`:
 [SOMEWEAPON]                      ; WeaponType
 AmbientDamage.Warhead=            ; WarheadType
 AmbientDamage.IgnoreTarget=false  ; boolean
+```
+
+### Can attack allies
+
+- Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`. They override the firer's `AttackFriendlies` and `AttackCursorOnFriendlies`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                ; WeaponType
+AttackFriendlies=           ; boolean
+AttackCursorOnFriendlies=   ; boolean
 ```
 
 ### Charge turret delays

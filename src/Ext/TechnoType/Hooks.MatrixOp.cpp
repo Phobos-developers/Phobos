@@ -1,18 +1,9 @@
-#include <AircraftClass.h>
-#include <BounceClass.h>
-#include <FlyLocomotionClass.h>
-#include <JumpjetLocomotionClass.h>
-#include <RocketLocomotionClass.h>
-#include <SpawnManagerClass.h>
-#include <TacticalClass.h>
-#include <TunnelLocomotionClass.h>
-#include <UnitClass.h>
-#include <Utilities/AresHelper.h>
-#include <Utilities/Macro.h>
-#include <Ext/Techno/Body.h>
-
 #include "Body.h"
 
+#include <JumpjetLocomotionClass.h>
+#include <TunnelLocomotionClass.h>
+#include <Utilities/AresHelper.h>
+#include <Ext/Techno/Body.h>
 
 DEFINE_REFERENCE(double, Pixel_Per_Lepton, 0xB1D008)
 
@@ -926,9 +917,9 @@ DEFINE_HOOK(0x7072A1, cyka707280_WhichMatrix, 0x6)
 	GET_STACK(const int, shadow_index_now, STACK_OFFSET(0xE8, 0x18));// it's used later, otherwise I could have chosen the frame index earlier
 
 	REF_STACK(Matrix3D, matRet, STACK_OFFSET(0xE8, -0x60));
-	auto pType = pThis->GetTechnoType();
 
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto pType = pTypeExt->OwnerObject();
 
 	const auto hva = pVXL->HVA;
 

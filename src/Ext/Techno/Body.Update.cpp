@@ -1,22 +1,15 @@
 // methods used in TechnoClass_AI hooks or anything similar
 #include "Body.h"
 
-#include <SessionClass.h>
-#include <SpawnManagerClass.h>
-#include <ParticleSystemClass.h>
-#include <Conversions.h>
-#include <SlaveManagerClass.h>
-#include <AirstrikeClass.h>
 #include <Kamikaze.h>
 #include <JumpjetLocomotionClass.h>
-#include <FlyLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Scenario/Body.h>
-#include <Utilities/EnumFunctions.h>
+#include <Misc/FlyingStrings.h>
 #include <Utilities/AresFunctions.h>
 #include <New/Type/Affiliated/TypeConvertGroup.h>
 
@@ -992,7 +985,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		}
 		else if (pOldTypeExt->Convert_ResetMindControl)
 		{
-			if (!infiniteCapture && pCaptureManager->ControlNodes.Count > maxCapture)
+			if (!infiniteCapture && pCaptureManager->GetControlledCount() > maxCapture)
 			{
 				// Remove excess nodes.
 				for (int i = pCaptureManager->ControlNodes.Count - 1; i >= maxCapture; --i)
@@ -1113,8 +1106,8 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		}
 	}
 
-	// handle AutoFire
-	if (pOldTypeExt->AutoFire && !pNewTypeExt->AutoFire)
+	// handle AutoTargetOwnPosition
+	if (pOldTypeExt->AutoTargetOwnPosition && !pNewTypeExt->AutoTargetOwnPosition)
 		pThis->SetTarget(nullptr);
 }
 
@@ -1445,7 +1438,8 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 	if (!RulesExt::Global()->GainSelfHealAllowMultiplayPassive && pThis->Owner->Type->MultiplayPassive)
 		return;
 
-	auto const pType = pThis->GetTechnoType();
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto const pType = pTypeExt->OwnerObject();
 	const int healthDeficit = pType->Strength - pThis->Health;
 
 	if (pThis->Health && healthDeficit > 0)
@@ -1458,7 +1452,7 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 		else if (whatAmI == AbstractType::Unit)
 			defaultSelfHealType = (pType->Organic ? SelfHealGainType::Infantry : SelfHealGainType::Units);
 
-		auto const selfHealType = TechnoTypeExt::ExtMap.Find(pType)->SelfHealGainType.Get(defaultSelfHealType);
+		auto const selfHealType = pTypeExt->SelfHealGainType.Get(defaultSelfHealType);
 
 		if (selfHealType == SelfHealGainType::NoHeal)
 			return;
@@ -1669,24 +1663,23 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, cons
 
 void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 {
-	const auto pType = pThis->GetTechnoType();
+	const auto pExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
-	if (pType->OpenTopped)
+	if (pExt->Ammo_Shared)
 	{
-		const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
+		const auto pType = pExt->OwnerObject();
 
-		if (pExt->Ammo_Shared && pType->Ammo > 0)
+		if (pType->OpenTopped && pType->Ammo > 0)
 		{
 			for (auto pPassenger = pThis->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
 			{
-				const auto pPassengerType = pPassenger->GetTechnoType();
-				const auto pPassengerExt = TechnoTypeExt::ExtMap.Find(pPassengerType);
+				const auto pPassengerExt = TechnoExt::ExtMap.Find(pPassenger)->TypeExtData;
 
 				if (pPassengerExt->Ammo_Shared)
 				{
 					if (pExt->Ammo_Shared_Group < 0 || pExt->Ammo_Shared_Group == pPassengerExt->Ammo_Shared_Group)
 					{
-						if (pThis->Ammo > 0 && (pPassenger->Ammo < pPassengerType->Ammo))
+						if (pThis->Ammo > 0 && (pPassenger->Ammo < pPassengerExt->OwnerObject()->Ammo))
 						{
 							pThis->Ammo--;
 							pPassenger->Ammo++;
@@ -1916,7 +1909,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	{
 		auto const attachEffect = it->get();
 		auto const pType = attachEffect->GetType();
-		const bool isValid = EnumFunctions::IsTechnoEligible(pThis, pType->AffectTargets, true)
+		const bool isValid = EnumFunctions::IsTechnoEligible(pThis, pType->AffectsTarget, true)
 			&& (pType->AffectTypes.empty() || pType->AffectTypes.Contains(pTechnoType)) && !pType->IgnoreTypes.Contains(pTechnoType);
 		const bool remove = !isValid || (attachEffect->IsSelfOwned() && !pTypeExt->AttachEffects.AttachTypes.Contains(pType));
 

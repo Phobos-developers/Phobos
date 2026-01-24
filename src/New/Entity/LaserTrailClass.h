@@ -1,10 +1,6 @@
 #pragma once
 
-#include <GeneralStructures.h>
-#include <HouseClass.h>
-
 #include <New/Type/LaserTrailTypeClass.h>
-
 
 class LaserTrailClass
 {

@@ -1,17 +1,8 @@
 #include "Body.h"
 
-#include <SuperClass.h>
-#include <BuildingClass.h>
-#include <HouseClass.h>
-#include <ScenarioClass.h>
-#include <MessageListClass.h>
-
-#include <Utilities/EnumFunctions.h>
-#include <Utilities/GeneralUtils.h>
-
-#include "Ext/House/Body.h"
-#include "Ext/WarheadType/Body.h"
-#include "Ext/WeaponType/Body.h"
+#include <Ext/House/Body.h>
+#include <Ext/WarheadType/Body.h>
+#include <Ext/WeaponType/Body.h>
 #include <Ext/Scenario/Body.h>
 
 // ============= New SuperWeapon Effects================
@@ -206,7 +197,7 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 	{
 		for (HouseClass* pTargetHouse : HouseClass::Array)
 		{
-			if (EnumFunctions::CanTargetHouse(this->LimboKill_Affected, pHouse, pTargetHouse))
+			if (EnumFunctions::CanTargetHouse(this->LimboKill_AffectsHouse, pHouse, pTargetHouse))
 			{
 				auto const pHouseExt = HouseExt::ExtMap.Find(pTargetHouse);
 				auto& vec = pHouseExt->OwnedLimboDeliveredBuildings;

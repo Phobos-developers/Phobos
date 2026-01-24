@@ -1,39 +1,13 @@
-#include <AircraftClass.h>
 #include <AircraftTrackerClass.h>
-#include <AnimClass.h>
-#include <BuildingClass.h>
-#include <TechnoClass.h>
-#include <InfantryClass.h>
-#include <FootClass.h>
-#include <UnitClass.h>
-#include <OverlayTypeClass.h>
-#include <ScenarioClass.h>
-#include <SpawnManagerClass.h>
-#include <VoxelAnimClass.h>
-#include <BulletClass.h>
-#include <HouseClass.h>
-#include <FlyLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
-#include <TeleportLocomotionClass.h>
-#include <BombClass.h>
-#include <ParticleSystemClass.h>
-#include <WarheadTypeClass.h>
-#include <HashTable.h>
 #include <TunnelLocomotionClass.h>
-#include <TacticalClass.h>
 
-#include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/Anim/Body.h>
-#include <Ext/AnimType/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
-
-#include <Utilities/Macro.h>
-#include <Utilities/Debug.h>
-#include <Utilities/TemplateDef.h>
 
 /*
 	Allow usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable
@@ -1012,8 +986,8 @@ DEFINE_HOOK(0x72958E, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x8
 
 	// Nov 27, 2024 - Starkku: The movement speed was actually also hardcoded here to 19, so the distance check made sense
 	// It can now be customized globally or per TechnoType however
-	auto const pType = pLinkedTo->GetTechnoType();
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pLinkedTo)->TypeExtData;
+	auto const pType = pTypeExt->OwnerObject();
 	int speed = pTypeExt->SubterraneanSpeed >= 0 ? pTypeExt->SubterraneanSpeed : RulesExt::Global()->SubterraneanSpeed;
 
 	// Calculate speed multipliers.
@@ -2817,6 +2791,9 @@ DEFINE_HOOK(0x70D4A0, AbstractClass_ClearTargetToMe_ClearManagerTarget, 0x5)
 {
 	GET(AbstractClass*, pThis, ECX);
 
+	if (!pThis)
+		return 0;
+
 	for (const auto pTemporal : TemporalClass::Array)
 	{
 		if (pTemporal->Target == pThis)
@@ -2837,10 +2814,10 @@ DEFINE_HOOK(0x70D4A0, AbstractClass_ClearTargetToMe_ClearManagerTarget, 0x5)
 			pSpawn->ResetTarget();
 	}
 
-	if (const auto pTechno = abstract_cast<TechnoClass*>(pThis))
+	if (const auto pTechno = abstract_cast<TechnoClass*, true>(pThis))
 		pTechno->LastTarget = nullptr;
 
-	if (const auto pFoot = abstract_cast<FootClass*>(pThis))
+	if (const auto pFoot = abstract_cast<FootClass*, true>(pThis))
 		pFoot->LastDestination = nullptr;
 
 	return 0;
@@ -2908,4 +2885,58 @@ DEFINE_HOOK(0x65DE82, TeamTypeClass_CreateTeamMembers_Veterancy, 0x6)
 	GET(TechnoTypeClass*, pTechnoType, EDI);
 
 	return pTechnoType->Trainable ? 0 : SkipVeterancy;
+}
+
+// Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.
+DEFINE_JUMP(LJMP, 0x6FC278, 0x6FC289);
+
+#pragma region LogicClasss_AI
+namespace LogicUpdateTemp
+{
+	int UpdateIndex = -1;
+}
+
+DEFINE_HOOK(0x55B5FF, LogicClass_AI_UpdateObjects, 0x5)
+{
+	enum { SkipGameCode = 0x55B61B };
+
+	GET(LogicClass*, pLogic, EDI);
+	int& updateIdx = LogicUpdateTemp::UpdateIndex;
+
+	for (updateIdx = 0; updateIdx < pLogic->Count; ++updateIdx)
+	{
+		const auto pObject = pLogic->Items[updateIdx];
+		pObject->Update();
+	}
+
+	updateIdx = -1;
+	return SkipGameCode;
+}
+
+// Fixed the bug that if object has been removed from LogicClass in Update(), next object will be skip.
+DEFINE_HOOK(0x55BB09, LogicClass_RemoveObject_FixIndex, 0x6)
+{
+	int& updateIdx = LogicUpdateTemp::UpdateIndex;
+
+	if (updateIdx == -1)
+		return 0;
+
+	GET(const int, findIdx, EAX);
+
+	if (findIdx <= updateIdx)
+		--updateIdx;
+
+	return 0;
+}
+
+#pragma endregion
+
+//Jul 7, 2025 - Fridge: Cursor Refresh rate fix(from 60 to game render rate)
+DEFINE_HOOK(0x7B8536, StartMouseThread_AdjustMouseInterval, 0xA)
+{
+
+	// Original - Thread_Mouse_Args.Interval = 16ms
+	Game::MouseThread.Interval = 1;
+
+	return 0x7B8540;
 }

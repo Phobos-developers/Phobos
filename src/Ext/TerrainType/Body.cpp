@@ -1,12 +1,6 @@
 #include "Body.h"
 
-#include <AnimClass.h>
-#include <TacticalClass.h>
-#include <TerrainClass.h>
-#include <TerrainTypeClass.h>
-
 #include <Ext/Anim/Body.h>
-#include <Utilities/GeneralUtils.h>
 
 TerrainTypeExt::ExtContainer TerrainTypeExt::ExtMap;
 
