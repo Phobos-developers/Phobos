@@ -50,15 +50,10 @@ DEFINE_HOOK(0x73D63B, UnitClass_Mi_Unload_Subterranean, 0x6)
 
 	R->EAX(pType);
 
-	if (pTypeExt->Unload_SkipPassengers)
-	{
+	if (pTypeExt->Deploy_SkipPassengerUnload)
 		return SkipPassengers;
-	}
-	else if (pTypeExt->Unload_NoPassengers
-		&& pThis->Passengers.NumPassengers <= 0 && pThis->MissionStatus == 0)
-	{
+	else if (pTypeExt->Deploy_NoPassenger && pThis->Passengers.NumPassengers <= 0 && pThis->MissionStatus == 0)
 		return SkipPassengers;
-	}
 
 	return Continue;
 }
@@ -70,8 +65,7 @@ DEFINE_HOOK(0x73DEEB, UnitClass_Mi_Unload_SkipHarvester, 0x5)
 
 	auto const pTypeExt = UnitUnloadTemp::TypeExtData;
 
-	if (!pThis->Unloading
-		&& (pTypeExt->Unload_SkipHarvester || (pTypeExt->Unload_NoTiberiums && pThis->Tiberium.GetTotalValue() == 0)))
+	if (!pThis->Unloading && (!pTypeExt->Deploy_NoTiberium || pThis->Tiberium.GetTotalValue() == 0))
 	{
 		R->EAX(pThis->Type);
 		return SkipHarvester;
@@ -89,7 +83,7 @@ DEFINE_HOOK(0x740015, UnitClass_MouseOverObject_SkipPassengers, 0x6)
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	return pTypeExt->Unload_SkipPassengers
-		|| (pTypeExt->Unload_NoPassengers && pThis->Passengers.NumPassengers <= 0)
+	return pTypeExt->Deploy_SkipPassengerUnload
+		|| (pTypeExt->Deploy_NoPassenger && pThis->Passengers.NumPassengers <= 0)
 		? SkipPassengers : 0;
 }

@@ -458,10 +458,9 @@ public:
 
 		Vector2D<bool> AttackFriendlies;
 
-		Valueable<bool> Unload_SkipPassengers;
-		Valueable<bool> Unload_NoPassengers;
-		Valueable<bool> Unload_SkipHarvester;
-		Valueable<bool> Unload_NoTiberiums;
+		Valueable<bool> Deploy_SkipPassengerUnload;
+		Valueable<bool> Deploy_NoPassenger;
+		Valueable<bool> Deploy_NoTiberium;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -875,10 +874,9 @@ public:
 
 			, AttackFriendlies { false,false }
 
-			, Unload_SkipPassengers { false }
-			, Unload_NoPassengers { false }
-			, Unload_SkipHarvester { false }
-			, Unload_NoTiberiums { false }
+			, Deploy_SkipPassengerUnload { false }
+			, Deploy_NoPassenger { false }
+			, Deploy_NoTiberium { false }
 		{ }
 
 		virtual ~ExtData() = default;

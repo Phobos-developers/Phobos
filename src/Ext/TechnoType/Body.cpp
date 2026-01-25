@@ -1390,10 +1390,9 @@ void TechnoTypeExt::ExtData::LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSe
 		this->FireUp.Read(exArtINI, pArtSection, "FireUp");
 		this->FireUp_ResetInRetarget.Read(exArtINI, pArtSection, "FireUp.ResetInRetarget");
 		this->TurretResponse.Read(exINI, pSection, "TurretResponse");
-		this->Unload_SkipPassengers.Read(exINI, pSection, "Unload.SkipPassengers");
-		this->Unload_NoPassengers.Read(exINI, pSection, "Unload.NoPassengers");
-		this->Unload_SkipHarvester.Read(exINI, pSection, "Unload.SkipHarvester");
-		this->Unload_NoTiberiums.Read(exINI, pSection, "Unload.NoTiberiums");
+		this->Deploy_SkipPassengerUnload.Read(exINI, pSection, "Deploy.SkipPassengerUnload");
+		this->Deploy_NoPassenger.Read(exINI, pSection, "Deploy.NoPassenger");
+		this->Deploy_NoTiberium.Read(exINI, pSection, "Deploy.NoTiberium");
 		//this->SecondaryFire.Read(exArtINI, pArtSection, "SecondaryFire");
 		break;
 	}
@@ -1823,10 +1822,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AttackFriendlies)
 
-		.Process(this->Unload_SkipPassengers)
-		.Process(this->Unload_NoPassengers)
-		.Process(this->Unload_SkipHarvester)
-		.Process(this->Unload_NoTiberiums)
+		.Process(this->Deploy_SkipPassengerUnload)
+		.Process(this->Deploy_NoPassenger)
+		.Process(this->Deploy_NoTiberium)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

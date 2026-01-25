@@ -2214,19 +2214,17 @@ Note that the VehicleTypes had to be defined under [VehicleTypes] and use same i
 ### Deployment Enhancement
 
 - When a vehicle has `Passengers` and possesses `DeployFire/IsSimpleDeployer/DeploysInto`, it can perform custom deployment actions beyond merely releasing passengers.
-  - `Unload.SkipPassengers` enables vehicles to bypass the passenger release process and perform other deployment actions.
-  - `Unload.NoPassengers` enables vehicles to perform other deployment actions after losing all passengers.
-- Mining vehicles that have not yet unloaded minerals can now perform other deployment operations.
-  - `Unload.SkipHarvester` allows mining vehicles to perform other deployment actions when not unloading minerals.
-  - `Unload.NoTiberiums` allows mining vehicles to perform other deployment actions when no minerals are present.
+  - `Deploy.SkipPassengerUnload` allows vehicles to bypass the passenger release process and perform other deployment actions.
+  - `Deploy.NoPassenger` allows vehicles to perform other deployment actions after losing all passengers.
+- Harvester can now perform other deployment operations. Can't deploy when it's unloading minerals.
+  - `Deploy.NoTiberium` controls whether the deployment actions can only be performed when the harvester carries no mineral. If set to false, the harvester can deploy regardless of carrying minerals or not.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]                   ; VehicleType
-Unload.SkipPassengers=false     ; boolean
-Unload.NoPassengers=false       ; boolean
-Unload.SkipHarvester=false      ; boolean
-Unload.NoTiberiums=false        ; boolean
+[SOMEVEHICLE]                       ; VehicleType
+Deploy.SkipPassengerUnload=false    ; boolean
+Deploy.NoPassenger=false            ; boolean
+Deploy.NoTiberium=false             ; boolean
 ```
 
 ### Jumpjet Tilts While Moving
