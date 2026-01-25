@@ -2,11 +2,10 @@
 
 #include <AnimTypeClass.h>
 
-#include <New/Type/Affiliated/CreateUnitTypeClass.h>
 #include <Utilities/Container.h>
-#include <Utilities/Enum.h>
-#include <Utilities/Constructs.h>
-#include <Utilities/Template.h>
+#include <Utilities/TemplateDef.h>
+
+#include <New/Type/Affiliated/CreateUnitTypeClass.h>
 
 enum class AttachedAnimPosition : BYTE
 {
@@ -92,7 +91,7 @@ public:
 			, DetachOnCloak { true }
 			, ConstrainFireAnimsToCellSpots { true }
 			, FireAnimDisallowedLandTypes {}
-			, AttachFireAnimsToParent { false }
+			, AttachFireAnimsToParent {}
 			, SmallFireCount {}
 			, SmallFireAnims {}
 			, SmallFireChances {}

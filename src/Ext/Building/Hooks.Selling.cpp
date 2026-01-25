@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <Misc/FlyingStrings.h>
+
 // SellSound and EVA dehardcode
 DEFINE_HOOK(0x4D9F7B, FootClass_Sell, 0x6)
 {
@@ -19,7 +21,7 @@ DEFINE_HOOK(0x4D9F7B, FootClass_Sell, 0x6)
 	}
 
 	if (RulesExt::Global()->DisplayIncome.Get())
-		FlyingStrings::AddMoneyString(money, pOwner, RulesExt::Global()->DisplayIncome_Houses.Get(), pThis->Location);
+		FlyingStrings::AddMoneyString(money, pThis, pOwner, RulesExt::Global()->DisplayIncome_Houses.Get(), pThis->Location);
 
 	return ReadyToVanish;
 }
@@ -39,7 +41,7 @@ bool __forceinline BuildingExt::CanUndeployOnSell(BuildingClass* pThis)
 		if (!GameModeOptionsClass::Instance.MCVRedeploy)
 			return false;
 		// or MindControlledBy YURIX (why? for balance?)
-		if (pThis->MindControlledBy)
+		if (!RulesExt::Global()->AllowDeployControlledMCV && pThis->MindControlledBy)
 			return false;
 	}
 	else

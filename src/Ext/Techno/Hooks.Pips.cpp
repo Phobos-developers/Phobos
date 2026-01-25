@@ -1,7 +1,3 @@
-#include <AircraftTypeClass.h>
-#include <SpawnManagerClass.h>
-#include <TiberiumClass.h>
-#include <TacticalClass.h>
 #include "Body.h"
 
 DEFINE_HOOK_AGAIN(0x6D9134, TacticalClass_RenderLayers_DrawBefore, 0x5)// BuildingClass
@@ -413,7 +409,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 
 	const int offsetWidth = offset->Width;
 
-	for (int pip : pipsToDraw)
+	for (const int pip : pipsToDraw)
 	{
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, shape, pip,
 			&position, rect, BlitterFlags::Centered | BlitterFlags::bf_400, 0, 0,

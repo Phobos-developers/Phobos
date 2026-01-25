@@ -2,14 +2,7 @@
 
 #include <VoxelAnimClass.h>
 
-#include <Utilities/Container.h>
-#include <Utilities/Constructs.h>
-#include <Utilities/Template.h>
-#include <Utilities/TemplateDef.h>
-#include <Utilities/Debug.h>
-
-#include <Helpers/Macro.h>
-
+#include <Ext/VoxelAnimType/Body.h>
 #include <New/Entity/LaserTrailClass.h>
 
 class VoxelAnimExt

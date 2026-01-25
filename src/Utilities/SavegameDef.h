@@ -3,6 +3,8 @@
 // include this file whenever something is to be saved.
 
 #include "Savegame.h"
+#include "Constructs.h"
+
 #include <optional>
 #include <vector>
 #include <map>
@@ -15,7 +17,6 @@
 #include <FileFormats/SHP.h>
 #include <RulesClass.h>
 #include <SidebarClass.h>
-#include <Utilities/Constructs.h>
 
 #include "Swizzle.h"
 #include "Debug.h"

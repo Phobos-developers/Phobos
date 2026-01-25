@@ -11,6 +11,8 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
 
+#include <Ext/Bullet/Body.h>
+
 TrajectoryTypePointer::TrajectoryTypePointer(TrajectoryFlag flag)
 {
 	switch (flag)

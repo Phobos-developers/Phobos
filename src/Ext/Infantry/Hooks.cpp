@@ -1,12 +1,7 @@
-#include <Utilities/Macro.h>
-
-#include <InfantryClass.h>
-#include <HouseClass.h>
-#include <InputManagerClass.h>
-#include <WarheadTypeClass.h>
-
 #include <Ext/BuildingType/Body.h>
 #include <Ext/TechnoType/Body.h>
+
+#include <InputManagerClass.h>
 
 DEFINE_HOOK(0x51B2BD, InfantryClass_UpdateTarget_IsControlledByHuman, 0x6)
 {
