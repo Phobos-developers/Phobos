@@ -55,9 +55,6 @@ static bool IsChasing(TechnoClass* pThis, AbstractClass* pTarget)
 	if ((pThis->AbstractFlags & AbstractFlags::Foot) == AbstractFlags::None)
 		return false;
 
-	if (!pTarget)
-		return false;
-
 	const auto pFootTarget = abstract_cast<FootClass*>(pTarget);
 
 	if (!pFootTarget || !pFootTarget->Locomotor.GetInterfacePtr()->Is_Really_Moving_Now())

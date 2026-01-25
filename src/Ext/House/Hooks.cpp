@@ -503,27 +503,27 @@ DEFINE_HOOK(0x508E17, HouseClass_UpdateRadar_FreeRadar, 0x8)
 	enum { ForceRadar = 0x508F2F, Continue = 0x508E4A };
 
 	GET(HouseClass*, pThis, ECX);
+	REF_STACK(bool, enableRadar, STACK_OFFSET(0x1C, -0xC));
 
 	auto const pExt = HouseExt::ExtMap.Find(pThis);
-	const bool freeRadar = pExt->FreeRadar;
+	bool const freeRadar = pExt->FreeRadar;
+	enableRadar = false;
 
 	if (pExt->ForceRadar)
 	{
-		R->Stack(STACK_OFFSET(0x1C, -0xC), freeRadar);
+		enableRadar = freeRadar;
 		return ForceRadar;
 	}
-	else if (pThis->PowerBlackoutTimer.InProgress())
+	else if (pThis->RadarBlackoutTimer.HasTimeLeft())
 	{
-		R->Stack(STACK_OFFSET(0x1C, -0xC), false);
 		return ForceRadar;
 	}
 	else if (freeRadar)
 	{
-		R->Stack(STACK_OFFSET(0x1C, -0xC), true);
+		enableRadar = true;
 		return ForceRadar;
 	}
 
-	R->Stack(STACK_OFFSET(0x1C, -0xC), false);
 	return Continue;
 }
 

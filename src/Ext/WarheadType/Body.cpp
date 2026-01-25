@@ -37,6 +37,9 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 	if (!IsHealthInThreshold(pTarget))
 		return false;
 
+	if (!IsVeterancyInThreshold(pTarget))
+		return false;
+
 	if (!this->EffectsRequireVerses)
 		return true;
 
@@ -49,6 +52,14 @@ bool WarheadTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
 		return true;
 
 	return TechnoExt::IsHealthInThreshold(pTarget, this->AffectsAbovePercent, this->AffectsBelowPercent);
+}
+
+bool WarheadTypeExt::ExtData::IsVeterancyInThreshold(TechnoClass* pTarget) const
+{
+	if (!this->VeterancyCheck)
+		return true;
+
+	return EnumFunctions::CanTargetVeterancy(this->AffectsVeterancy, pTarget);
 }
 
 // Checks if Warhead can affect target that might or might be currently invulnerable.
@@ -283,11 +294,13 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AffectsBelowPercent.Read(exINI, pSection, "AffectsBelowPercent");
 	this->AffectsAbovePercent.Read(exINI, pSection, "AffectsAbovePercent");
+	this->AffectsVeterancy.Read(exINI, pSection, "AffectsVeterancy");
 	this->AffectsNeutral.Read(exINI, pSection, "AffectsNeutral");
 	this->AffectsGround.Read(exINI, pSection, "AffectsGround");
 	this->AffectsAir.Read(exINI, pSection, "AffectsAir");
 	this->CellSpread_Cylinder.Read(exINI, pSection, "CellSpread.Cylinder");
 	this->HealthCheck = this->AffectsAbovePercent > 0.0 || this->AffectsBelowPercent < 1.0;
+	this->VeterancyCheck = this->AffectsVeterancy != AffectedVeterancy::All;
 
 	if (this->AffectsAbovePercent > this->AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] AffectsAbovePercent is bigger than AffectsBelowPercent, the warhead will never activate!\n", pSection);
@@ -537,11 +550,13 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AffectsBelowPercent)
 		.Process(this->AffectsAbovePercent)
+		.Process(this->AffectsVeterancy)
 		.Process(this->AffectsNeutral)
 		.Process(this->AffectsGround)
 		.Process(this->AffectsAir)
 		.Process(this->CellSpread_Cylinder)
 		.Process(this->HealthCheck)
+		.Process(this->VeterancyCheck)
 
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)

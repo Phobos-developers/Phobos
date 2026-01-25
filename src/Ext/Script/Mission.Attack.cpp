@@ -846,7 +846,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 
 		if (!pTechno->Owner->IsNeutral())
 		{
-			if (const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pTechnoType))
+			if (const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pTechnoType))
 			{
 				if (pBuildingType->PowerBonus > 0)
 					return true;

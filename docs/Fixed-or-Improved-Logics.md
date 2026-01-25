@@ -2350,6 +2350,7 @@ Conventional.IgnoreUnits=false  ; boolean
 ### Customizable Warhead trigger conditions
 
 - `AffectsBelowPercent` and `AffectsAbovePercent` can be used to set the health percentage thresholds that target needs to be below/equal and/or above of for the Warhead to detonate. If target has zero health left this check is bypassed.
+- `AffectsVeterancy` sets the veterancy levels that allow the Warhead to detonate on the target.
 - If set to `false`, `AffectsNeutral` makes the warhead can't damage or affect target that belongs to neutral house.
 - If set to `false`, `EffectsRequireVerses` makes the Phobos-introduced warhead effects trigger even if it can't damage the target because of it's current ArmorType (e.g. 0% in `Verses`).
 
@@ -2358,6 +2359,7 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]               ; WarheadType
 AffectsBelowPercent=1.0     ; floating point value, percents or absolute
 AffectsAbovePercent=0.0     ; floating point value, percents or absolute
+AffectsVeterancy=all        ; List of Affected Veterancy Enumeration (none|rookie|veteran|elite|all)
 AffectsNeutral=true         ; boolean
 EffectsRequireVerses=false  ; boolean
 ```
