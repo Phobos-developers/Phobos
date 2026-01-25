@@ -112,13 +112,14 @@ msgstr "你可以切换到逐帧模式然后用逐帧命令一次前进 1、5、
 
 #: ../../Miscellanous.md:31
 msgid "Logging missing audio files (samples)"
-msgstr ""
+msgstr "输出音频文件缺失日志（样品）"
 
 #: ../../Miscellanous.md:33
 msgid ""
 "While parsing `soundmd.ini`, Phobos prints information in debug log about"
 " any missing audio files (samples)."
 msgstr ""
+"Phobos 会在解析 `soundmd.ini` 时将所有音频文件缺失相关的信息输出到 `debug.log` 中（样品）。"
 
 #: ../../Miscellanous.md:35
 msgid "Save variables to file"
