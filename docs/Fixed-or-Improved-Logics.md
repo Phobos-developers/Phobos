@@ -1818,6 +1818,16 @@ AIAttackMoveTargetingDelay=          ; integer, game frames
 PlayerAttackMoveTargetingDelay=      ; integer, game frames
 ```
 
+### Technos with Walk locomotor spawn wake like ship
+
+- Now you can make infantry spawn wake like vehicle.
+
+In `rulesmd.ini`:
+```ini
+[General]
+WalkLocomotorMakesWake=false  ; boolean
+```
+
 ### Voxel body multi-section shadows
 
 ![image](_static/images/uh0-be.gif)

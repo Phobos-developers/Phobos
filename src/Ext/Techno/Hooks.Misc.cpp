@@ -378,6 +378,25 @@ DEFINE_HOOK(0x737F05, UnitClass_ReceiveDamage_SinkingWake, 0x6)
 	return 0x737F0B;
 }
 
+DEFINE_HOOK(0x75AC93, WalkLocomotionClass_Process_Wake, 0x6)
+{
+	if (!RulesExt::Global()->WalkLocomotorMakesWake)
+		return 0;
+
+	GET(ILocomotion* const, pThis, ESI);
+
+	const auto pLinkedTo = static_cast<LocomotionClass*>(pThis)->LinkedTo;
+
+	if (pThis->Is_Moving_Now() && !(Unsorted::CurrentFrame % 10) && !pLinkedTo->OnBridge && pLinkedTo->GetCell()->LandType == LandType::Water)
+	{
+		const auto pAnimType = TechnoExt::ExtMap.Find(pLinkedTo)->TypeExtData->Wake.Get(RulesClass::Instance->Wake);
+		auto location = pLinkedTo->GetCoords();
+		GameCreate<AnimClass>(pAnimType, location, 0, 1, 0x600u, false);
+	}
+	
+	return 0;
+}
+
 #pragma endregion
 
 #pragma region TunnelLocomotionClass

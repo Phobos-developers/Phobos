@@ -346,6 +346,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AutoTarget_NoThreatBuildings.Read(exINI, GameStrings::General, "AutoTarget.NoThreatBuildings");
 	this->AutoTargetAI_NoThreatBuildings.Read(exINI, GameStrings::General, "AutoTargetAI.NoThreatBuildings");
 
+	this->WalkLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "WalkLocomotorMakesWake");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -632,6 +634,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraRange_Prefiring_IncludeBurst)
 		.Process(this->AutoTarget_NoThreatBuildings)
 		.Process(this->AutoTargetAI_NoThreatBuildings)
+		.Process(this->WalkLocomotorMakesWake)
 		;
 }
 

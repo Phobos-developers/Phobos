@@ -678,6 +678,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that rockets do not consider the destination altitude during climbing
   - Fix an issue that the AI would set anger towards friendly houses, causing it to act stupidly
   - Fix an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies
+  - Technos with Walk locomotor spawn wake like ship
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
