@@ -1122,7 +1122,7 @@ msgstr "定义单位是否不参与基地中心计算"
 
 #: ../../../CREDITS.md:288
 msgid "Deploy priority filtering"
-msgstr ""
+msgstr "低优先级部署"
 
 #: ../../../CREDITS.md:289
 msgid "**Morton (MortonPL)**:"

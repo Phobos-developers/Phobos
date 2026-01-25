@@ -2404,7 +2404,8 @@ msgstr ""
 msgid ""
 "[Deploy priority filtering](New-or-Enhanced-Logics.md#low-priority-for-"
 "deploy) (by Starkku)"
-msgstr ""
+msgstr "[低优先级部署](New-or-Enhanced-Logics.md#low-priority-for-"
+"deploy)（by Starkku）"
 
 #: ../../Whats-New.md:522 ../../Whats-New.md:614 ../../Whats-New.md:799
 #: ../../Whats-New.md:1158 ../../Whats-New.md:1267 ../../Whats-New.md:1292

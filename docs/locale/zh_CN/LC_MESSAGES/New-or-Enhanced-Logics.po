@@ -6830,7 +6830,7 @@ msgstr "请注意 **如果你没有使用 Ares 3.0+** 那么对于携带载员�
 
 #: ../../New-or-Enhanced-Logics.md:1816
 msgid "Low priority for deploy"
-msgstr ""
+msgstr "低优先级部署"
 
 #: ../../New-or-Enhanced-Logics.md:1818
 msgid ""
@@ -6839,6 +6839,8 @@ msgid ""
 "units. This will not affect the cursor action which requires no other "
 "objects to be selected in the first place."
 msgstr ""
+"现在你可以为单位在部署行为中设置低优先级，这意味着如果它与其他单位一同被选中那么不会与其他单位一起执行部署指令。"
+"这不影响通过光标下达部署指令，这种情况本就不需要事先选中其他对象。"
 
 #: ../../New-or-Enhanced-Logics.md:1821
 msgid ""
@@ -6852,7 +6854,7 @@ msgstr ""
 msgid ""
 "This behavior is designed to be toggleable by users. For now you can only"
 " do that externally via client or manually."
-msgstr ""
+msgstr "此行为设计为可由用户切换。目前你只能通过客户端或进行手动设置。"
 
 #: ../../New-or-Enhanced-Logics.md:1828
 msgid "In `RA2MD.INI`:"
