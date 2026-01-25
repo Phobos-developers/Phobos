@@ -6895,7 +6895,7 @@ msgstr "心灵控制者现在可以设置控制距离的上限。标签值大于
 msgid ""
 "Mind controlled targets can have size of control, like passengers in "
 "transport."
-msgstr "被心灵控制的目标可以拥有心控单位，就像乘客相对运输工具的那种。"
+msgstr "被心灵控制的单位可以拥有被心控尺寸，就像乘客相对运输工具的那种。"
 
 #: ../../New-or-Enhanced-Logics.md:1843
 msgid ""
