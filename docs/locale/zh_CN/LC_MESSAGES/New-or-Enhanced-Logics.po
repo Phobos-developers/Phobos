@@ -6893,9 +6893,9 @@ msgstr "心灵控制者现在可以设置控制距离的上限。标签值大于
 
 #: ../../New-or-Enhanced-Logics.md:1842
 msgid ""
-"Mind controlled targets can have size of control, like passengers in "
+"Mind controlled *targets* can have size of control, like passengers in "
 "transport."
-msgstr "被心灵控制的单位可以拥有被心控尺寸，就像乘客相对运输工具的那种。"
+msgstr "**被** 心灵控制的单位可以拥有被心控尺寸，就像乘客相对运输工具的那种。"
 
 #: ../../New-or-Enhanced-Logics.md:1843
 msgid ""
@@ -6912,21 +6912,27 @@ msgstr "多重心控单位现在可以达到控制上限而又要控制一个新
 
 #: ../../New-or-Enhanced-Logics.md:1847
 msgid ""
-"[SOMETECHNO]                          ; TechnoType\n"
+"[SOMETECHNO]                          ; TechnoType, as Mind controllers\n"
 "MindControlRangeLimit=-1.0            ; floating point value\n"
 "MindControl.IgnoreSize=true           ; boolean\n"
-"MindControlSize=1                     ; integer\n"
 "MindControlLink.VisibleToHouse=all    ; Affected House Enumeration "
 "(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
 "MultiMindControl.ReleaseVictim=false  ; boolean\n"
+"\n"
+"[SOMETECHNO]                          ; TechnoType, as Mind controlled "
+"targets\n"
+"MindControlSize=1                     ; integer\n"
 msgstr ""
-"[SOMETECHNO]                          ; TechnoType\n"
+"[SOMETECHNO]                          ; TechnoType, as Mind controllers\n"
 "MindControlRangeLimit=-1.0            ; floating point value\n"
 "MindControl.IgnoreSize=true           ; boolean\n"
-"MindControlSize=1                     ; integer\n"
 "MindControlLink.VisibleToHouse=all    ; Affected House Enumeration "
 "(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
 "MultiMindControl.ReleaseVictim=false  ; boolean\n"
+"\n"
+"[SOMETECHNO]                          ; TechnoType, as Mind controlled "
+"targets\n"
+"MindControlSize=1                     ; integer\n"
 
 #: ../../New-or-Enhanced-Logics.md:1856
 msgid "Multi Weapon"
