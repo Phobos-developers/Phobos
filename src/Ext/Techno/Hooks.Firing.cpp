@@ -764,7 +764,7 @@ DEFINE_HOOK(0x6FF905, TechnoClass_FireAt_FireOnce, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EBX);
 
-	if (auto const pInf = abstract_cast<InfantryClass*>(pThis))
+	if (auto const pInf = abstract_cast<InfantryClass*, true>(pThis))
 	{
 		if (!WeaponTypeExt::ExtMap.Find(pWeapon)->FireOnce_ResetSequence)
 			TechnoExt::ExtMap.Find(pInf)->SkipTargetChangeResetSequence = true;
@@ -960,7 +960,7 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 
 		if (!found)
 		{
-			if (auto const pInf = abstract_cast<InfantryClass*>(pThis))
+			if (auto const pInf = abstract_cast<InfantryClass*, true>(pThis))
 				flh = TechnoExt::GetSimpleFLH(pInf, weaponIndex, found);
 
 			if (!found)

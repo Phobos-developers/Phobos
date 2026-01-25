@@ -27,10 +27,15 @@ void AresFunctions::InitAres3_0()
 
 	NOTE_ARES_FUN(CreateAresEBolt, 0x550F0);
 
-	// Fixes for SpawnSurvivors
-	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4C0EB, { 0x5C });
-	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x48C69, { 0x30 });
-	NOTE_ARES_FUN(SpawnSurvivors, 0x464C0);
+	if constexpr (AresFunctions::AresWasWrongAboutSpawnSurvivors)
+	{
+		Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4C0EB, { 0x5C });
+		Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x48C69, { 0x30 });
+	}
+	else
+	{
+		NOTE_ARES_FUN(SpawnSurvivors, 0x464C0);
+	}
 
 	NOTE_ARES_FUN(ReverseEngineer, 0x022360);
 
@@ -57,10 +62,15 @@ void AresFunctions::InitAres3_0p1()
 
 	NOTE_ARES_FUN(CreateAresEBolt, 0x55DA0);
 
-	// Fixes for SpawnSurvivors
-	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4CD4B, { 0x5C });
-	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x498B9, { 0x30 });
-	NOTE_ARES_FUN(SpawnSurvivors, 0x47030);
+	if constexpr (AresFunctions::AresWasWrongAboutSpawnSurvivors)
+	{
+		Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4CD4B, { 0x5C });
+		Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x498B9, { 0x30 });
+	}
+	else
+	{
+		NOTE_ARES_FUN(SpawnSurvivors, 0x47030);
+	}
 
 	NOTE_ARES_FUN(ReverseEngineer, 0x022DE0);
 

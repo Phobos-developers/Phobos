@@ -31,7 +31,7 @@ int TechnoTypeExt::ExtData::SelectForceWeapon(TechnoClass* pThis, AbstractClass*
 		return -1;
 
 	int forceWeaponIndex = -1;
-	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
+	const auto pTargetTechno = abstract_cast<TechnoClass*, true>(pTarget);
 	TechnoTypeClass* pTargetType = nullptr;
 
 	if (pTargetTechno)
@@ -728,6 +728,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->HealthBar_Permanent_PipScale.Read(exINI, pSection, "HealthBar.Permanent.PipScale");
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
+	this->LowDeployPriority.Read(exINI, pSection, "LowDeployPriority");
 
 	if (pThis->Gunner)
 	{
@@ -1407,6 +1408,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->HealthBar_Permanent_PipScale)
 		.Process(this->UIDescription)
 		.Process(this->LowSelectionPriority)
+		.Process(this->LowDeployPriority)
 		.Process(this->MindControlRangeLimit)
 		.Process(this->MindControl_IgnoreSize)
 		.Process(this->MindControlSize)

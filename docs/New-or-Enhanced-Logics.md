@@ -1813,6 +1813,24 @@ AutoDeath.TechnosExist.Houses=owner            ; Affected House Enumeration (non
 Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option **if you are not using Ares 3.0+**.
 ```
 
+### Low priority for deploy
+
+- You can now set lower priority for TechnoType deploying which means it will be excluded from deploy command if selected together with other units. This will not affect the cursor action which requires no other objects to be selected in the first place.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]             ; TechnoType
+LowDeployPriority=false  ; boolean
+```
+
+- This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+PriorityDeployFiltering=true  ; boolean
+```
+
 ### Mind Control enhancement
 
 ![image](_static/images/mindcontrol-max-range-01.gif)

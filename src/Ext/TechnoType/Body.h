@@ -32,6 +32,7 @@ public:
 		Valueable<bool> HealthBar_Permanent_PipScale;
 		Valueable<CSFText> UIDescription;
 		Valueable<bool> LowSelectionPriority;
+		Valueable<bool> LowDeployPriority;
 		PhobosFixedString<0x20> GroupAs;
 		std::vector<PhobosFixedString<0x20>> WeaponGroupAs;
 		Valueable<int> RadarJamRadius;
@@ -464,6 +465,7 @@ public:
 			, HealthBar_Permanent_PipScale { false }
 			, UIDescription {}
 			, LowSelectionPriority { false }
+			, LowDeployPriority { false }
 			, GroupAs { NONE_STR }
 			, WeaponGroupAs {}
 			, RadarJamRadius { 0 }
