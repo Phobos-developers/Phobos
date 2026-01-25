@@ -607,10 +607,12 @@ DEFINE_HOOK(0x6FF7FF, TechnoClass_Fire_UnlimboDetonate, 0x6)
 	if (pThis->IsAlive && pThis->Health > 0 && pBullet
 		&& !UnlimboDetonateFireTemp::InLimbo && !pWH->Parasite && pWHExt->UnlimboDetonate)
 	{
-		if (pWHExt->UnlimboDetonate_KeepSelected)
+		const bool isSelected = UnlimboDetonateFireTemp::InSelected;
+
+		if (pWHExt->UnlimboDetonate_KeepSelected && isSelected)
 		{
 			const auto pExt = TechnoExt::ExtMap.Find(pThis);
-			pExt->IsSelected = UnlimboDetonateFireTemp::InSelected;
+			pExt->IsSelected = isSelected;
 
 			auto& vec = ScenarioExt::Global()->LimboLaunchers;
 			const auto it = std::find(vec.begin(), vec.end(), pExt);
