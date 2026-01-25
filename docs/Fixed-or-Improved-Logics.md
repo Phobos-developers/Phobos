@@ -1824,7 +1824,7 @@ PlayerAttackMoveTargetingDelay=      ; integer, game frames
 
 In `rulesmd.ini`:
 ```ini
-[General]
+[AudioVisual]
 WalkLocomotorMakesWake=false  ; boolean
 ```
 
