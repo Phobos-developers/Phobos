@@ -26,6 +26,8 @@ public:
 	class ExtData final : public Extension<TechnoTypeClass>
 	{
 	public:
+		AbstractType AbsType;
+
 		Valueable<bool> HealthBar_Hide;
 		Valueable<bool> HealthBar_HidePips;
 		Valueable<bool> HealthBar_Permanent;
@@ -463,6 +465,8 @@ public:
 		Valueable<bool> Deploy_NoTiberium;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
+			, AbsType {}
+
 			, HealthBar_Hide { false }
 			, HealthBar_HidePips { false }
 			, HealthBar_Permanent { false }
@@ -888,7 +892,7 @@ public:
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-		void LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSection, INI_EX& exArtINI, const char* pArtSection);
+		void LoadFromINIByWhatAmI(CCINIClass* const pINI, INI_EX& exINI, const char* pSection, INI_EX& exArtINI, const char* pArtSection, TechnoTypeClass* pThis);
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 		void CalculateSpawnerRange();

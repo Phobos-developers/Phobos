@@ -796,13 +796,13 @@ DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
 
 	if (const auto pTechno = abstract_cast<TechnoClass*, true>(pThis))
 	{
-		const auto pType = pTechno->GetTechnoType();
+		const auto pTypeExt = TechnoExt::ExtMap.Find(pTechno)->TypeExtData;
+		const auto pType = pTypeExt->OwnerObject();
 		const auto pCell = pTechno->GetCell();
 
 		if (!pCell->IsClearToMove(pType->SpeedType, true, true, -1, pType->MovementZone, pCell->GetLevel(), pCell->ContainsBridge()))
 			return 0;
 
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 		double ratio = 0.0;
 
 		if (pCell->LandType == LandType::Water && !pTechno->OnBridge)

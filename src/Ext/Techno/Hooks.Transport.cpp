@@ -79,11 +79,8 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 		if (pTransTypeExt->Passengers_SyncOwner && pTransTypeExt->Passengers_SyncOwner_RevertOnExit)
 			pExt->OriginalPassengerOwner = pPassenger->Owner;
 
-		if (whatAmI != AbstractType::Aircraft && whatAmI != AbstractType::Building
-			&& pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
-		{
+		if (pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
 			ScenarioExt::Global()->TransportReloaders.push_back(pExt);
-		}
 	}
 
 	return 0;
@@ -102,8 +99,7 @@ DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 		auto const pTransTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
 		// Remove from transport reloader list before switching house
-		if (whatAmI != AbstractType::Aircraft && whatAmI != AbstractType::Building
-			&& pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
+		if (pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
 		{
 			auto& vec = ScenarioExt::Global()->TransportReloaders;
 			vec.erase(std::remove(vec.begin(), vec.end(), pExt), vec.end());
