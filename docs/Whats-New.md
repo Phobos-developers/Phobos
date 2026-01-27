@@ -524,6 +524,7 @@ New:
 - `ProductionAnim` is now available for `Factory=InfantryType` as well as non-`ConstructionYard=true` `Factory=BuildingType` buildings (by Starkku)
 - [Extra distance modifier for `Adjacent.Disallowed`](Fixed-or-Improved-Logics.md#build-area-customizations) (by Starkku)
 - [Allow customizing how many times `FactoryPlant` bonuses can be applied from a BuildingType](Fixed-or-Improved-Logics.md#factoryplant-customizations) (by Starkku)
+- [Return warhead](New-or-Enhanced-Logics.md#return-warhead) (by Ollerus)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
