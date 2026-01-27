@@ -66,6 +66,7 @@ public:
 
 		ValueableVector<TechnoTypeClass*> FactoryPlant_AllowTypes;
 		ValueableVector<TechnoTypeClass*> FactoryPlant_DisallowTypes;
+		Valueable<int> FactoryPlant_MaxCount;
 
 		Nullable<double> Units_RepairRate;
 		Nullable<int> Units_RepairStep;
@@ -147,6 +148,7 @@ public:
 			, AircraftDockingDirs {}
 			, FactoryPlant_AllowTypes {}
 			, FactoryPlant_DisallowTypes {}
+			, FactoryPlant_MaxCount { -1 }
 			, IsAnimDelayedBurst { true }
 			, IsDestroyableObstacle { false }
 			, Units_RepairRate {}

@@ -523,6 +523,7 @@ New:
 - Vehicle Deployment Enhancement (by FlyStar)
 - `ProductionAnim` is now available for `Factory=InfantryType` as well as non-`ConstructionYard=true` `Factory=BuildingType` buildings (by Starkku)
 - [Extra distance modifier for `Adjacent.Disallowed`](Fixed-or-Improved-Logics.md#build-area-customizations) (by Starkku)
+- [Allow customizing how many times `FactoryPlant` bonuses can be applied from a BuildingType](Fixed-or-Improved-Logics.md#factoryplant-customizations) (by Starkku)
 - Attached effect attach/discard by health (by Ollerus)
 - Attached effect with `ExtraWarheads`, `KillWeapon` and `FeedbackWeapon` (by Ollerus)
 - [AuxWeapon](New-or-Enhanced-Logics.md#auxiliary-weapon) (by Ollerus)
