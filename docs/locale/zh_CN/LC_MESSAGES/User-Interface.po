@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-16 13:44+0800\n"
+"POT-Creation-Date: 2026-01-18 20:10+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -87,6 +87,12 @@ msgid ""
 "Fixed sidebar not updating queued unit numbers when adding or removing "
 "units when the production is on hold."
 msgstr "修复了若生产暂停那么添加或移除单位时侧边栏并不更新队列单位数量的问题。"
+
+#: ../../User-Interface.md:14
+msgid ""
+"Increased cursor update frequency by setting interval to 1ms instead of 16ms."
+msgstr ""
+"通过将间隔从 16 毫秒更改为 1 毫秒来提高光标更新频率。"
 
 #: ../../User-Interface.md:16
 msgid ""
@@ -1758,16 +1764,14 @@ msgid ""
 "You can also use `Name` of TechnoType/SuperWeaponType to sort the cameo. "
 "They'll be compared after all the other rules but before comparing the "
 "CSF text of `UIName`."
-msgstr ""
-"你也可以使用单位／超级武器的 `Name` 来排列图标。它们将在所有其他规则之后、`UIName` 的 CSF 文本前被比较。"
+msgstr "你也可以使用单位／超级武器的 `Name` 来排列图标。它们将在所有其他规则之后、`UIName` 的 CSF 文本前被比较。"
 
 #: ../../User-Interface.md:564
 msgid ""
 "This is to prevent cameo order being disrupted by CSF change "
 "accidentally, like when you're using a translation pack of different "
 "language."
-msgstr ""
-"这用于避免图标顺序因 CSF 变更而被意外打乱，例如当你使用不同语言的翻译包时。"
+msgstr "这用于避免图标顺序因 CSF 变更而被意外打乱，例如当你使用不同语言的翻译包时。"
 
 #: ../../User-Interface.md:567
 msgid ""
@@ -2125,8 +2129,8 @@ msgid ""
 "/Phobos-developers/PhobosSupplementaries)*"
 msgstr ""
 "![image](_static/images/sw_sidebar.png) *使用 [Phobos "
-"补充资源库](https://github.com/Phobos-developers/PhobosSupplementaries) 中类原版 UI"
-" 资产的超武侧边栏*"
+"补充资源库](https://github.com/Phobos-developers/PhobosSupplementaries) 中类原版 "
+"UI 资产的超武侧边栏*"
 
 #: ../../User-Interface.md:718
 msgid ""

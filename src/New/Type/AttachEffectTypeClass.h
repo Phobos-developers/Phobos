@@ -59,7 +59,7 @@ public:
 	Nullable<bool> PenetratesForceShield;
 	ValueableVector<TechnoTypeClass*> AffectTypes;
 	ValueableVector<TechnoTypeClass*> IgnoreTypes;
-	Valueable<AffectedTarget> AffectTargets;
+	Valueable<AffectedTarget> AffectsTarget;
 	Valueable<AnimTypeClass*> Animation;
 	ValueableVector<AnimTypeClass*> CumulativeAnimations;
 	Valueable<bool> CumulativeAnimations_RestartOnChange;
@@ -118,7 +118,7 @@ public:
 	Valueable<AffectedTarget> KillWeapon_OnFirer_Affects;
 	Valueable<bool> KillWeapon_OnFirer_RealLaunch;
 	Valueable<WeaponTypeClass*> RevengeWeapon;
-	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
+	Valueable<AffectedHouse> RevengeWeapon_AffectsHouse;
 	Valueable<bool> RevengeWeapon_RealLaunch;
 	Valueable<bool> RevengeWeapon_UseWeaponTargeting;
 	Valueable<bool> RevengeWeapon_UseInvokerAsOwner;
@@ -126,7 +126,7 @@ public:
 	Nullable<WarheadTypeClass*> ReflectDamage_Warhead;
 	Valueable<bool> ReflectDamage_Warhead_Detonate;
 	Valueable<double> ReflectDamage_Multiplier;
-	Valueable<AffectedHouse> ReflectDamage_AffectsHouses;
+	Valueable<AffectedHouse> ReflectDamage_AffectsHouse;
 	Valueable<double> ReflectDamage_Chance;
 	Nullable<int> ReflectDamage_Override;
 	Valueable<bool> ReflectDamage_UseInvokerAsOwner;
@@ -148,15 +148,15 @@ public:
 		, DiscardOn { DiscardCondition::None }
 		, DiscardOn_RangeOverride {}
 		, DiscardOn_AbovePercent { 0.0 }
-		, DiscardOn_BelowPercent { 0.0 }
+		, DiscardOn_BelowPercent { 1.0 }
 		, DiscardOn_CumulativeCount { -1 }
 		, AffectAbovePercent { 0.0 }
-		, AffectBelowPercent { 0.0 }
+		, AffectBelowPercent { 1.0 }
 		, PenetratesIronCurtain { false }
 		, PenetratesForceShield {}
 		, AffectTypes {}
 		, IgnoreTypes {}
-		, AffectTargets { AffectedTarget::All }
+		, AffectsTarget { AffectedTarget::All }
 		, Animation {}
 		, CumulativeAnimations {}
 		, CumulativeAnimations_RestartOnChange { true }
@@ -215,7 +215,7 @@ public:
 		, KillWeapon_OnFirer_Affects { AffectedTarget::All }
 		, KillWeapon_OnFirer_RealLaunch { false }
 		, RevengeWeapon {}
-		, RevengeWeapon_AffectsHouses { AffectedHouse::All }
+		, RevengeWeapon_AffectsHouse { AffectedHouse::All }
 		, RevengeWeapon_RealLaunch { false }
 		, RevengeWeapon_UseWeaponTargeting { false }
 		, ReflectDamage { false }
@@ -223,7 +223,7 @@ public:
 		, ReflectDamage_Warhead {}
 		, ReflectDamage_Warhead_Detonate { false }
 		, ReflectDamage_Multiplier { 1.0 }
-		, ReflectDamage_AffectsHouses { AffectedHouse::All }
+		, ReflectDamage_AffectsHouse { AffectedHouse::All }
 		, ReflectDamage_Chance { 1.0 }
 		, ReflectDamage_Override {}
 		, ReflectDamage_UseInvokerAsOwner { false }
@@ -277,6 +277,7 @@ struct AEAttachParams
 	int Delay;
 	int InitialDelay;
 	int RecreationDelay;
+	int CumulativeSourceMaxCount;
 	bool CumulativeRefreshAll;
 	bool CumulativeRefreshAll_OnAttach;
 	bool CumulativeRefreshSameSourceOnly;
@@ -286,6 +287,7 @@ struct AEAttachParams
 		, Delay { 0 }
 		, InitialDelay { 0 }
 		, RecreationDelay { -1 }
+		, CumulativeSourceMaxCount { -1 }
 		, CumulativeRefreshAll { false }
 		, CumulativeRefreshAll_OnAttach { false }
 		, CumulativeRefreshSameSourceOnly { true }
@@ -298,6 +300,7 @@ class AEAttachInfoTypeClass
 {
 public:
 	ValueableVector<AttachEffectTypeClass*> AttachTypes;
+	Valueable<int> CumulativeSourceMaxCount;
 	Valueable<bool> CumulativeRefreshAll;
 	Valueable<bool> CumulativeRefreshAll_OnAttach;
 	Valueable<bool> CumulativeRefreshSameSourceOnly;
@@ -318,6 +321,7 @@ public:
 
 	AEAttachInfoTypeClass() :
 		AttachTypes {}
+		, CumulativeSourceMaxCount { -1 }
 		, CumulativeRefreshAll { false }
 		, CumulativeRefreshAll_OnAttach { false }
 		, CumulativeRefreshSameSourceOnly { true }

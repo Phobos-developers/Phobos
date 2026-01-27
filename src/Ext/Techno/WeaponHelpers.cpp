@@ -41,6 +41,7 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 			if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget)
 				|| !EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
 				|| !pSecondExt->IsHealthInThreshold(pTargetTechno)
+				|| !pSecondExt->IsVeterancyInThreshold(pTargetTechno)
 				|| !pSecondExt->HasRequiredAttachedEffects(pTargetTechno, pThis))
 			{
 				return weaponIndexOne;
@@ -71,6 +72,7 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 			if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget)
 				|| !EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
 				|| !pFirstExt->IsHealthInThreshold(pTargetTechno)
+				|| !pFirstExt->IsVeterancyInThreshold(pTargetTechno)
 				|| !firstAllowedAE)
 			{
 				return weaponIndexTwo;
@@ -273,8 +275,8 @@ void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, Warhea
 			}
 		};
 
-	tryKillWeapon(pWHExt->KillWeapon, pWHExt->KillWeapon_AffectsHouses, pWHExt->KillWeapon_Affects, false, false);
-	tryKillWeapon(pWHExt->KillWeapon_OnFirer, pWHExt->KillWeapon_OnFirer_AffectsHouses, pWHExt->KillWeapon_OnFirer_Affects, pWHExt->KillWeapon_OnFirer_RealLaunch, true);
+	tryKillWeapon(pWHExt->KillWeapon, pWHExt->KillWeapon_AffectsHouse, pWHExt->KillWeapon_AffectsTarget, false, false);
+	tryKillWeapon(pWHExt->KillWeapon_OnFirer, pWHExt->KillWeapon_OnFirer_AffectsHouse, pWHExt->KillWeapon_OnFirer_AffectsTarget, pWHExt->KillWeapon_OnFirer_RealLaunch, true);
 
 	if (auto const pExt = TechnoExt::ExtMap.TryFind(pSource))
 	{
@@ -301,7 +303,7 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 	const bool suppress = pWHExt->SuppressRevengeWeapons;
 	const bool hasFilters = suppressType.size() > 0;
 
-	if (pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThisOwner, pSourceOwner))
+	if (pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouse, pThisOwner, pSourceOwner))
 	{
 		if ((!pWHExt->SuppressRevengeWeapons || (hasFilters && !pWHExt->SuppressRevengeWeapons_Types.Contains(pTypeExt->RevengeWeapon)))
 			&& BulletExt::IsAllowedSplitsTarget(pThis, pThisOwner, pTypeExt->RevengeWeapon, pSource, pTypeExt->RevengeWeapon_UseWeaponTargeting, false))
@@ -330,7 +332,7 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 		{
 			auto const pInvoker = attachEffect->GetInvoker();
 
-			if (pInvoker && EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pInvoker->Owner, pSource->Owner)
+			if (pInvoker && EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouse, pInvoker->Owner, pSource->Owner)
 				&& BulletExt::IsAllowedSplitsTarget(pInvoker, pInvoker->Owner, pType->RevengeWeapon, pSource, pType->RevengeWeapon_UseWeaponTargeting, false))
 			{
 				if (pType->RevengeWeapon_RealLaunch)
@@ -339,7 +341,7 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 					WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pInvoker);
 			}
 		}
-		else if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThisOwner, pSourceOwner)
+		else if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouse, pThisOwner, pSourceOwner)
 			&& BulletExt::IsAllowedSplitsTarget(pThis, pThisOwner, pType->RevengeWeapon, pSource, pType->RevengeWeapon_UseWeaponTargeting, false))
 		{
 			if (pType->RevengeWeapon_RealLaunch)

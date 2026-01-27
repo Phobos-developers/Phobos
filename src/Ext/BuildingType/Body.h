@@ -75,6 +75,7 @@ public:
 		Valueable<bool> NoBuildAreaOnBuildup;
 		ValueableVector<BuildingTypeClass*> Adjacent_Allowed;
 		ValueableVector<BuildingTypeClass*> Adjacent_Disallowed;
+		Valueable<int> Adjacent_Disallowed_ExtraDistance;
 
 		Nullable<Point2D> BarracksExitCell;
 
@@ -116,7 +117,7 @@ public:
 			, OccupierMuzzleFlashes()
 			, Powered_KillSpawns { false }
 			, CanC4_AllowZeroDamage { false }
-			, InitialStrength_Cloning { { 1.0, 0.0 } }
+			, InitialStrength_Cloning { { 1.0 } }
 			, ExcludeFromMultipleFactoryBonus { false }
 			, Refinery_UseStorage { false }
 			, Grinding_AllowAllies { false }
@@ -155,6 +156,7 @@ public:
 			, NoBuildAreaOnBuildup { false }
 			, Adjacent_Allowed {}
 			, Adjacent_Disallowed {}
+			, Adjacent_Disallowed_ExtraDistance { 0 }
 			, BarracksExitCell {}
 			, Overpower_KeepOnline { 2 }
 			, Overpower_ChargeWeapon { 1 }
@@ -169,7 +171,6 @@ public:
 			, Refinery_UseNormalActiveAnim { false }
 			, HasPowerUpAnim {}
 			, UndeploysInto_Sellable { false }
-
 			, BuildingRadioLink_SyncOwner {}
 
 			// Ares 0.2

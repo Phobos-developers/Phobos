@@ -32,6 +32,7 @@ public:
 		Valueable<bool> HealthBar_Permanent_PipScale;
 		Valueable<CSFText> UIDescription;
 		Valueable<bool> LowSelectionPriority;
+		Valueable<bool> LowDeployPriority;
 		PhobosFixedString<0x20> GroupAs;
 		std::vector<PhobosFixedString<0x20>> WeaponGroupAs;
 		Valueable<int> RadarJamRadius;
@@ -168,8 +169,8 @@ public:
 		Valueable<int> OpenTransport_RangeBonus;
 		Valueable<float> OpenTransport_DamageMultiplier;
 
-		Valueable<bool> AutoFire;
-		Valueable<bool> AutoFire_TargetSelf;
+		Valueable<bool> AutoTargetOwnPosition;
+		Valueable<bool> AutoTargetOwnPosition_Self;
 
 		Valueable<bool> NoSecondaryWeaponFallback;
 		Valueable<bool> NoSecondaryWeaponFallback_AllowAA;
@@ -289,7 +290,7 @@ public:
 		Valueable<AffectedHouse> Tint_VisibleToHouses;
 
 		Valueable<WeaponTypeClass*> RevengeWeapon;
-		Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
+		Valueable<AffectedHouse> RevengeWeapon_AffectsHouse;
 		Valueable<bool> RevengeWeapon_RealLaunch;
 		Valueable<bool> RevengeWeapon_UseWeaponTargeting;
 
@@ -410,6 +411,7 @@ public:
 		Valueable<bool> Harvester_CanGuardArea_RequireTarget;
 		Nullable<bool> HarvesterScanAfterUnload;
 
+		Nullable<bool> ExtendedAircraftMissions;
 		Nullable<bool> ExtendedAircraftMissions_SmoothMoving;
 		Nullable<bool> ExtendedAircraftMissions_EarlyDescend;
 		Nullable<bool> ExtendedAircraftMissions_RearApproach;
@@ -459,6 +461,10 @@ public:
 
 		Vector2D<bool> AttackFriendlies;
 
+		Valueable<bool> Deploy_SkipPassengerUnload;
+		Valueable<bool> Deploy_NoPassenger;
+		Valueable<bool> Deploy_NoTiberium;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, HealthBar_HidePips { false }
@@ -466,6 +472,7 @@ public:
 			, HealthBar_Permanent_PipScale { false }
 			, UIDescription {}
 			, LowSelectionPriority { false }
+			, LowDeployPriority { false }
 			, GroupAs { NONE_STR }
 			, WeaponGroupAs {}
 			, RadarJamRadius { 0 }
@@ -554,8 +561,8 @@ public:
 			, OpenTransport_RangeBonus { 0 }
 			, OpenTransport_DamageMultiplier { 1.0 }
 
-			, AutoFire { false }
-			, AutoFire_TargetSelf { false }
+			, AutoTargetOwnPosition { false }
+			, AutoTargetOwnPosition_Self { false }
 			, NoSecondaryWeaponFallback { false }
 			, NoSecondaryWeaponFallback_AllowAA { false }
 			, AllowWeaponSelectAgainstWalls {}
@@ -721,7 +728,7 @@ public:
 			, Tint_VisibleToHouses { AffectedHouse::All }
 
 			, RevengeWeapon {}
-			, RevengeWeapon_AffectsHouses { AffectedHouse::All }
+			, RevengeWeapon_AffectsHouse { AffectedHouse::All }
 			, RevengeWeapon_RealLaunch { false }
 			, RevengeWeapon_UseWeaponTargeting { false }
 
@@ -823,6 +830,7 @@ public:
 			, Harvester_CanGuardArea_RequireTarget { false }
 			, HarvesterScanAfterUnload {}
 
+			, ExtendedAircraftMissions {}
 			, ExtendedAircraftMissions_SmoothMoving {}
 			, ExtendedAircraftMissions_EarlyDescend {}
 			, ExtendedAircraftMissions_RearApproach {}
@@ -871,6 +879,10 @@ public:
 			, TurretResponse {}
 
 			, AttackFriendlies { false,false }
+
+			, Deploy_SkipPassengerUnload { false }
+			, Deploy_NoPassenger { false }
+			, Deploy_NoTiberium { false }
 		{ }
 
 		virtual ~ExtData() = default;

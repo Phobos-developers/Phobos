@@ -55,15 +55,15 @@ public:
 		Valueable<bool> Crit_ExtraDamage_ApplyFirepowerMult;
 		Valueable<WarheadTypeClass*> Crit_Warhead;
 		Valueable<bool> Crit_Warhead_FullDetonation;
-		Valueable<AffectedTarget> Crit_Affects;
-		Valueable<AffectedHouse> Crit_AffectsHouses;
+		Valueable<AffectedTarget> Crit_AffectsTarget;
+		Valueable<AffectedHouse> Crit_AffectsHouse;
 		ValueableVector<AnimTypeClass*> Crit_AnimList;
 		Nullable<bool> Crit_AnimList_PickRandom;
 		Nullable<bool> Crit_AnimList_CreateAll;
 		ValueableVector<AnimTypeClass*> Crit_ActiveChanceAnims;
 		Valueable<bool> Crit_AnimOnAffectedTargets;
-		Valueable<double> Crit_AffectBelowPercent;
-		Valueable<double> Crit_AffectAbovePercent;
+		Valueable<double> Crit_AffectsBelowPercent;
+		Valueable<double> Crit_AffectsAbovePercent;
 		Valueable<bool> Crit_SuppressWhenIntercepted;
 
 		Nullable<AnimTypeClass*> MindControl_Anim;
@@ -133,8 +133,8 @@ public:
 		Valueable<bool> DetonateOnAllMapObjects;
 		Valueable<bool> DetonateOnAllMapObjects_Full;
 		Valueable<bool> DetonateOnAllMapObjects_RequireVerses;
-		Valueable<AffectedTarget> DetonateOnAllMapObjects_AffectTargets;
-		Valueable<AffectedHouse> DetonateOnAllMapObjects_AffectHouses;
+		Valueable<AffectedTarget> DetonateOnAllMapObjects_AffectsTarget;
+		Valueable<AffectedHouse> DetonateOnAllMapObjects_AffectsHouse;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_AffectTypes;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
 
@@ -180,10 +180,10 @@ public:
 
 		Valueable<WeaponTypeClass*> KillWeapon;
 		Valueable<WeaponTypeClass*> KillWeapon_OnFirer;
-		Valueable<AffectedHouse> KillWeapon_AffectsHouses;
-		Valueable<AffectedHouse> KillWeapon_OnFirer_AffectsHouses;
-		Valueable<AffectedTarget> KillWeapon_Affects;
-		Valueable<AffectedTarget> KillWeapon_OnFirer_Affects;
+		Valueable<AffectedHouse> KillWeapon_AffectsHouse;
+		Valueable<AffectedHouse> KillWeapon_OnFirer_AffectsHouse;
+		Valueable<AffectedTarget> KillWeapon_AffectsTarget;
+		Valueable<AffectedTarget> KillWeapon_OnFirer_AffectsTarget;
 		Valueable<bool> KillWeapon_OnFirer_RealLaunch;
 
 		Valueable<int> ElectricAssaultLevel;
@@ -192,6 +192,8 @@ public:
 
 		Valueable<double> AffectsBelowPercent;
 		Valueable<double> AffectsAbovePercent;
+		Valueable<AffectedVeterancy> AffectsVeterancy;
+
 		Valueable<bool> AffectsNeutral;
 		Valueable<bool> AffectsGround;
 		Valueable<bool> AffectsAir;
@@ -232,6 +234,7 @@ public:
 		int RemainingAnimCreationInterval;
 		bool PossibleCellSpreadDetonate;
 		bool HealthCheck;
+		bool VeterancyCheck;
 		TechnoClass* DamageAreaTarget;
 
 	private:
@@ -277,15 +280,15 @@ public:
 			, Crit_ExtraDamage_ApplyFirepowerMult { false }
 			, Crit_Warhead {}
 			, Crit_Warhead_FullDetonation { true }
-			, Crit_Affects { AffectedTarget::All }
-			, Crit_AffectsHouses { AffectedHouse::All }
+			, Crit_AffectsTarget { AffectedTarget::All }
+			, Crit_AffectsHouse { AffectedHouse::All }
 			, Crit_AnimList {}
 			, Crit_AnimList_PickRandom {}
 			, Crit_AnimList_CreateAll {}
 			, Crit_ActiveChanceAnims {}
 			, Crit_AnimOnAffectedTargets { false }
-			, Crit_AffectBelowPercent { 1.0 }
-			, Crit_AffectAbovePercent { 0.0 }
+			, Crit_AffectsBelowPercent { 1.0 }
+			, Crit_AffectsAbovePercent { 0.0 }
 			, Crit_SuppressWhenIntercepted { false }
 
 			, MindControl_Anim {}
@@ -355,8 +358,8 @@ public:
 			, DetonateOnAllMapObjects { false }
 			, DetonateOnAllMapObjects_Full { true }
 			, DetonateOnAllMapObjects_RequireVerses { false }
-			, DetonateOnAllMapObjects_AffectTargets { AffectedTarget::None }
-			, DetonateOnAllMapObjects_AffectHouses { AffectedHouse::None }
+			, DetonateOnAllMapObjects_AffectsTarget { AffectedTarget::None }
+			, DetonateOnAllMapObjects_AffectsHouse { AffectedHouse::None }
 			, DetonateOnAllMapObjects_AffectTypes {}
 			, DetonateOnAllMapObjects_IgnoreTypes {}
 
@@ -406,6 +409,7 @@ public:
 
 			, AffectsBelowPercent { 1.0 }
 			, AffectsAbovePercent { 0.0 }
+			, AffectsVeterancy { AffectedVeterancy::All }
 			, AffectsNeutral { true }
 			, AffectsGround { true }
 			, AffectsAir { true }
@@ -427,16 +431,17 @@ public:
 			, RemainingAnimCreationInterval { 0 }
 			, PossibleCellSpreadDetonate { false }
 			, HealthCheck { false }
+			, VeterancyCheck { false }
 			, DamageAreaTarget {}
 
 			, CanKill { true }
 
 			, KillWeapon {}
 			, KillWeapon_OnFirer {}
-			, KillWeapon_AffectsHouses { AffectedHouse::All }
-			, KillWeapon_OnFirer_AffectsHouses { AffectedHouse::All }
-			, KillWeapon_Affects { AffectedTarget::All }
-			, KillWeapon_OnFirer_Affects { AffectedTarget::All }
+			, KillWeapon_AffectsHouse { AffectedHouse::All }
+			, KillWeapon_OnFirer_AffectsHouse { AffectedHouse::All }
+			, KillWeapon_AffectsTarget { AffectedTarget::All }
+			, KillWeapon_OnFirer_AffectsTarget { AffectedTarget::All }
 			, KillWeapon_OnFirer_RealLaunch { false }
 
 			, ReverseEngineer { false }
@@ -464,6 +469,7 @@ public:
 		bool CanAffectInvulnerable(TechnoClass* pTarget) const;
 		bool EligibleForFullMapDetonation(TechnoClass* pTechno, TechnoTypeClass* pType, HouseClass* pOwner) const;
 		bool IsHealthInThreshold(TechnoClass* pTarget) const;
+		bool IsVeterancyInThreshold(TechnoClass* pTarget) const;
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;

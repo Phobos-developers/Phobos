@@ -21,7 +21,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	// AffectsAbove/BelowPercent & AffectsNeutral can ignore IgnoreDefenses like AffectsAllies/Enmies/Owner
 	// They should be checked here to cover all cases that directly use ReceiveDamage to deal damage
-	if (!pWHExt->IsHealthInThreshold(pThis) || (!pWHExt->AffectsNeutral && pThis->Owner->IsNeutral()))
+	if (!pWHExt->IsHealthInThreshold(pThis) || !pWHExt->IsVeterancyInThreshold(pThis) || (!pWHExt->AffectsNeutral && pThis->Owner->IsNeutral()))
 	{
 		damage = 0;
 		return 0;
@@ -92,7 +92,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			if (!pTypeExt->CombatAlert.Get(RulesExt::Global()->CombatAlert_Default.Get(!pType->Insignificant && !pType->Spawned)) || !pThis->IsInPlayfield)
 				return;
 
-			const auto pBuilding = abstract_cast<BuildingClass*>(pThis);
+			const auto pBuilding = abstract_cast<BuildingClass*, true>(pThis);
 
 			if (RulesExt::Global()->CombatAlert_IgnoreBuilding && pBuilding && (pTypeExt->CombatAlert_NotBuilding.isset() ? !pTypeExt->CombatAlert_NotBuilding.Get() : !pBuilding->Type->IsVehicle()))
 				return;
@@ -386,7 +386,7 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 			{
 				auto const pInvoker = attachEffect->GetInvoker();
 
-				if (pInvoker && EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouses, pInvoker->Owner, pSourceHouse))
+				if (pInvoker && EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, pInvoker->Owner, pSourceHouse))
 				{
 					auto const pWHExtRef = WarheadTypeExt::ExtMap.Find(pWH);
 					pWHExtRef->Reflected = true;
@@ -399,7 +399,7 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 					pWHExtRef->Reflected = false;
 				}
 			}
-			else if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouses, pThis->Owner, pSourceHouse))
+			else if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, pThis->Owner, pSourceHouse))
 			{
 				auto const pWHExtRef = WarheadTypeExt::ExtMap.Find(pWH);
 				pWHExtRef->Reflected = true;
