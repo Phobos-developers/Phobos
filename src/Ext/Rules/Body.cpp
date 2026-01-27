@@ -303,6 +303,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AnimCraterDestroyTiberium.Read(exINI, GameStrings::General, "AnimCraterDestroyTiberium");
 
 	this->BerzerkTargeting.Read(exINI, GameStrings::CombatDamage, "BerzerkTargeting");
+	this->AllowBerzerkOnAllies.Read(exINI, GameStrings::CombatDamage, "AllowBerzerkOnAllies");
 
 	this->AttackMove_IgnoreWeaponCheck.Read(exINI, GameStrings::General, "AttackMove.IgnoreWeaponCheck");
 	this->AttackMove_StopWhenTargetAcquired.Read(exINI, GameStrings::General, "AttackMove.StopWhenTargetAcquired");
@@ -609,6 +610,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->HarvesterScanAfterUnload)
 		.Process(this->AnimCraterDestroyTiberium)
 		.Process(this->BerzerkTargeting)
+		.Process(this->AllowBerzerkOnAllies)
 		.Process(this->TintColorIronCurtain)
 		.Process(this->TintColorForceShield)
 		.Process(this->TintColorBerserk)

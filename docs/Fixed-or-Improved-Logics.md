@@ -2269,6 +2269,20 @@ In `rulesmd.ini`:
 AllowDamageOnSelf=false  ; boolean
 ```
 
+### Berzerk on allies
+
+- In vanilla, `Psychedelic` warheads is hardcoded to ignore allies' target. Now you can turn this off.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+AllowBerzerkOnAllies=false  ; boolean
+```
+
+```{note}
+No per-warhead setting because `AffectsAllies` etc. is respected.
+```
+
 ### Combat light customizations
 
 - You can now set minimum detail level at which combat light effects are shown by setting `[AudioVisual] -> CombatLightDetailLevel` or `CombatLightDetailLevel` on Warhead.
