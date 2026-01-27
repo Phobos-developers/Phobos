@@ -208,7 +208,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	// This might change the target's armor type
 	this->ApplyShieldModifiers(pTarget);
 
-	if (this->ReturnWarhead)
+	if (this->ReturnWarhead && pOwner)
 		this->ApplyReturnWarhead(pHouse, pTarget, pOwner);
 
 	// Put AE behind others but before Crit
