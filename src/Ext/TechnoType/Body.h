@@ -423,6 +423,7 @@ public:
 		Valueable<bool> Harvester_CanGuardArea_RequireTarget;
 		Nullable<bool> HarvesterScanAfterUnload;
 
+		Nullable<bool> ExtendedAircraftMissions;
 		Nullable<bool> ExtendedAircraftMissions_SmoothMoving;
 		Nullable<bool> ExtendedAircraftMissions_EarlyDescend;
 		Nullable<bool> ExtendedAircraftMissions_RearApproach;
@@ -471,6 +472,10 @@ public:
 		Nullable<bool> TurretResponse;
 
 		Vector2D<bool> AttackFriendlies;
+
+		Valueable<bool> Deploy_SkipPassengerUnload;
+		Valueable<bool> Deploy_NoPassenger;
+		Valueable<bool> Deploy_NoTiberium;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -849,6 +854,7 @@ public:
 			, Harvester_CanGuardArea_RequireTarget { false }
 			, HarvesterScanAfterUnload {}
 
+			, ExtendedAircraftMissions {}
 			, ExtendedAircraftMissions_SmoothMoving {}
 			, ExtendedAircraftMissions_EarlyDescend {}
 			, ExtendedAircraftMissions_RearApproach {}
@@ -897,6 +903,10 @@ public:
 			, TurretResponse {}
 
 			, AttackFriendlies { false,false }
+
+			, Deploy_SkipPassengerUnload { false }
+			, Deploy_NoPassenger { false }
+			, Deploy_NoTiberium { false }
 		{ }
 
 		virtual ~ExtData() = default;

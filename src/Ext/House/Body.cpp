@@ -539,11 +539,16 @@ float HouseExt::ExtData::GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoT
 {
 	float mult = 1.0;
 	auto const pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+	std::unordered_map<int, int> counts;
 
 	for (auto const pBuilding : this->RestrictedFactoryPlants)
 	{
 		auto const pType = pBuilding->Type;
 		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+		int max = pTypeExt->FactoryPlant_MaxCount;
+
+		if (max > -1 && counts[pType->ArrayIndex] >= max)
+			continue;
 
 		if (pTypeExt->FactoryPlant_AllowTypes.size() > 0 && !pTypeExt->FactoryPlant_AllowTypes.Contains(pTechnoType))
 			continue;
@@ -551,6 +556,7 @@ float HouseExt::ExtData::GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoT
 		if (pTypeExt->FactoryPlant_DisallowTypes.size() > 0 && pTypeExt->FactoryPlant_DisallowTypes.Contains(pTechnoType))
 			continue;
 
+		counts[pType->ArrayIndex]++;
 		float currentMult = 1.0f;
 
 		switch (pTechnoType->WhatAmI())

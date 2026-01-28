@@ -259,6 +259,7 @@ public:
 		Valueable<bool> AnimCraterDestroyTiberium;
 
 		Valueable<AffectedHouse> BerzerkTargeting;
+		Valueable<bool> AllowBerzerkOnAllies;
 
 		Valueable<bool> AttackMove_IgnoreWeaponCheck;
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
@@ -501,6 +502,7 @@ public:
 			, AnimCraterDestroyTiberium { true }
 
 			, BerzerkTargeting { AffectedHouse::All }
+			, AllowBerzerkOnAllies { false }
 
 			, TintColorIronCurtain { 0 }
 			, TintColorForceShield { 0 }

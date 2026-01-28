@@ -21,7 +21,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	// AffectsAbove/BelowPercent & AffectsNeutral can ignore IgnoreDefenses like AffectsAllies/Enmies/Owner
 	// They should be checked here to cover all cases that directly use ReceiveDamage to deal damage
-	if (!pWHExt->IsHealthInThreshold(pThis) || (!pWHExt->AffectsNeutral && pThis->Owner->IsNeutral()))
+	if (!pWHExt->IsHealthInThreshold(pThis) || !pWHExt->IsVeterancyInThreshold(pThis) || (!pWHExt->AffectsNeutral && pThis->Owner->IsNeutral()))
 	{
 		damage = 0;
 		return 0;
@@ -414,6 +414,7 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 
 	return 0;
 }
+
 DEFINE_HOOK(0x5F5480, ObjectClass_ReceiveDamage_FlashDuration, 0x6)
 {
 	enum { SkipGameCode = 0x5F545C };
@@ -430,4 +431,10 @@ DEFINE_HOOK(0x5F5480, ObjectClass_ReceiveDamage_FlashDuration, 0x6)
 		pThis->Flash(nFlashDuration);
 
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x701CFC, TechnoClass_ReceiveDamage_AllowBerzerkOnAllies, 0x5)
+{
+	enum { IgnoreOwnerCheckFailed = 0x701D0B };
+	return RulesExt::Global()->AllowBerzerkOnAllies ? IgnoreOwnerCheckFailed : 0;
 }
