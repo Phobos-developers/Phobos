@@ -309,8 +309,38 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 	return true;
 }
 
-bool ConvertToType_ProcessLikeAres(FootClass* pThis, TechnoTypeClass* pToType)
+bool TechnoExt::ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
 {
+	const auto pType = pThis->GetTechnoType();
+
+	// It really should be at the beginning.
+	if (pType == pToType || pType->WhatAmI() != pToType->WhatAmI())
+	{
+		Debug::Log("Incompatible types between %s and %s\n", pThis->get_ID(), pToType->get_ID());
+		return false;
+	}
+
+	auto pFoot = abstract_cast<FootClass*, true>(pThis);
+
+	if (AresFunctions::ConvertTypeTo && pFoot)
+	{
+		const int oldHealth = pThis->Health;
+
+		if (AresFunctions::ConvertTypeTo(pThis, pToType))
+		{
+			// Fixed an issue where morphing could result in -1 health.
+			const double ratio = static_cast<double>(pToType->Strength) / pType->Strength;
+			pThis->Health = static_cast<int>(oldHealth * ratio + 0.5);
+
+			auto const pTypeExt = TechnoExt::ExtMap.Find(pThis);
+			pTypeExt->UpdateTypeData(pToType);
+			pTypeExt->UpdateTypeData_Foot();
+			return true;
+		}
+
+		return false;
+	}
+
 	// In case not using Ares 3.0. Only update necessary vanilla properties
 
 	AbstractType rtti;
@@ -331,8 +361,11 @@ bool ConvertToType_ProcessLikeAres(FootClass* pThis, TechnoTypeClass* pToType)
 		nowTypePtr = reinterpret_cast<TechnoTypeClass**>(&(static_cast<AircraftClass*>(pThis)->Type));
 		rtti = AbstractType::AircraftType;
 		break;
+	case AbstractType::Building:
+		nowTypePtr = reinterpret_cast<TechnoTypeClass**>(&(static_cast<BuildingClass*>(pThis)->Type));
+		rtti = AbstractType::BuildingType;
 	default:
-		Debug::Log("%s is not FootClass, conversion not allowed\n", pToType->get_ID());
+		Debug::Log("%s is not TechnoClass, conversion not allowed\n", pToType->get_ID());
 		return false;
 	}
 
@@ -385,284 +418,41 @@ bool ConvertToType_ProcessLikeAres(FootClass* pThis, TechnoTypeClass* pToType)
 	// Adjust Ares TurretROT -- skipped
 	// pThis->SecondaryFacing.SetROT(TechnoTypeExt::ExtMap.Find(pToType)->TurretROT.Get(pToType->ROT));
 
-	// Locomotor change, referenced from Ares 0.A's abduction code, not sure if correct, untested
-	CLSID nowLocoID;
-	ILocomotion* iloco = pThis->Locomotor;
-	const auto& toLoco = pToType->Locomotor;
-	if ((SUCCEEDED(static_cast<LocomotionClass*>(iloco)->GetClassID(&nowLocoID)) && nowLocoID != toLoco))
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->UpdateTypeData(pToType);
+
+	if (rtti != AbstractType::BuildingType)
 	{
-		// because we are throwing away the locomotor in a split second, piggybacking
-		// has to be stopped. otherwise the object might remain in a weird state.
-		while (LocomotionClass::End_Piggyback(pThis->Locomotor));
-		// throw away the current locomotor and instantiate
-		// a new one of the default type for this unit.
-		if (auto const newLoco = LocomotionClass::CreateInstance(toLoco))
+		// Locomotor change, referenced from Ares 0.A's abduction code, not sure if correct, untested
+		CLSID nowLocoID;
+		ILocomotion* iloco = pFoot->Locomotor;
+		const auto& toLoco = pToType->Locomotor;
+		if ((SUCCEEDED(static_cast<LocomotionClass*>(iloco)->GetClassID(&nowLocoID)) && nowLocoID != toLoco))
 		{
-			newLoco->Link_To_Object(pThis);
-			pThis->Locomotor = std::move(newLoco);
-		}
-	}
-
-	const auto& jjLoco = LocomotionClass::CLSIDs::Jumpjet;
-	if (pToType->BalloonHover && pToType->DeployToLand && prevType->Locomotor != jjLoco && toLoco == jjLoco)
-		pThis->Locomotor->Move_To(pThis->Location);
-
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis);
-	pTypeExt->UpdateTypeData(pToType);
-	pTypeExt->UpdateTypeData_Foot();
-	return true;
-}
-
-// Feature for common usage : TechnoType conversion -- Trsdy
-// BTW, who said it was merely a Type pointer replacement and he could make a better one than Ares?
-bool TechnoExt::ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
-{
-	auto pPrevType = pThis->GetTechnoType();
-
-	// Different types prohibited
-	if (pPrevType->WhatAmI() != pToType->WhatAmI())
-	{
-		Debug::Log("Incompatible types between %s and %s\n", pThis->get_ID(), pToType->get_ID());
-		return false;
-	}
-
-	if (pToType->Spawns)
-	{
-		if (!pThis->SpawnManager)
-		{
-			pThis->SpawnManager = GameCreate<SpawnManagerClass>(pThis, pToType->Spawns, pToType->SpawnsNumber, pToType->SpawnRegenRate, pToType->SpawnReloadRate);
-		}
-		else
-		{
-			auto pManager = pThis->SpawnManager;
-			pManager->SpawnType = pToType->Spawns;
-			pManager->SpawnCount = pToType->SpawnsNumber;
-			pManager->RegenRate = pToType->SpawnRegenRate;
-			pManager->ReloadRate = pToType->SpawnReloadRate;
-		}
-	}
-
-	if (pToType->Enslaves)
-	{
-		if (!pThis->SlaveManager)
-		{
-			pThis->SlaveManager = GameCreate<SlaveManagerClass>(pThis, pToType->Enslaves, pToType->SlavesNumber, pToType->SlaveRegenRate, pToType->SlaveReloadRate);
-		}
-		else
-		{
-			auto pManager = pThis->SlaveManager;
-			pManager->SlaveType = pToType->Enslaves;
-			pManager->SlaveCount = pToType->SlavesNumber;
-			pManager->RegenRate = pToType->SlaveRegenRate;
-			pManager->ReloadRate = pToType->SlaveReloadRate;
-		}
-	}
-
-	if (auto pWeapon = pToType->GetWeapon(0, pThis->Veterancy.IsElite()).WeaponType)
-	{
-		if (pWeapon->Warhead->MindControl)
-		{
-			if (!pThis->CaptureManager)
+			// because we are throwing away the locomotor in a split second, piggybacking
+			// has to be stopped. otherwise the object might remain in a weird state.
+			while (LocomotionClass::End_Piggyback(pFoot->Locomotor));
+			// throw away the current locomotor and instantiate
+			// a new one of the default type for this unit.
+			if (auto const newLoco = LocomotionClass::CreateInstance(toLoco))
 			{
-				pThis->CaptureManager = GameCreate<CaptureManagerClass>(pThis, pWeapon->Damage, pWeapon->InfiniteMindControl);
-			}
-			else
-			{
-				auto pManager = pThis->CaptureManager;
-				pManager->MaxControlNodes = pWeapon->Damage;
-				pManager->InfiniteMindControl = pWeapon->InfiniteMindControl;
+				newLoco->Link_To_Object(pFoot);
+				pFoot->Locomotor = std::move(newLoco);
 			}
 		}
 
-		if (pWeapon->Warhead->Temporal)
-		{
-			if (!pThis->TemporalImUsing)
-			{
-				pThis->TemporalImUsing = GameCreate<TemporalClass>(pThis);
-				pThis->TemporalImUsing->WarpPerStep = pWeapon->Damage;
-			}
-		}
-	}
+		const auto& jjLoco = LocomotionClass::CLSIDs::Jumpjet;
+		if (pToType->BalloonHover && pToType->DeployToLand && prevType->Locomotor != jjLoco && toLoco == jjLoco)
+			pFoot->Locomotor->Move_To(pFoot->Location);
 
-	if (pToType->AirstrikeTeam > 0)
-	{
-		if (!pThis->Airstrike)
-		{
-			pThis->Airstrike = GameCreate<AirstrikeClass>(pThis);
-		}
-
-		if (pThis->Airstrike->Owner == pThis)
-		{
-			auto pAirstrike = pThis->Airstrike;
-			pAirstrike->AirstrikeTeam = pToType->AirstrikeTeam;
-			pAirstrike->EliteAirstrikeTeam = pToType->EliteAirstrikeTeam;
-			pAirstrike->AirstrikeRechargeTime = pToType->AirstrikeRechargeTime;
-			pAirstrike->EliteAirstrikeRechargeTime = pToType->EliteAirstrikeRechargeTime;
-			pAirstrike->AirstrikeTeamType = pToType->AirstrikeTeamType;
-			pAirstrike->EliteAirstrikeTeamType = pToType->EliteAirstrikeTeamType;
-		}
-	}
-
-	// Skip disguise related
-	// if (pToType->CanDisguise && pToType->PermaDisguise)
-
-	auto pTurretRecoil = pThis->TurretRecoil.Turret;
-	auto pTurretData = pToType->TurretAnimData;
-	pTurretRecoil.Travel = pTurretData.Travel;
-	pTurretRecoil.CompressFrames = pTurretData.CompressFrames;
-	pTurretRecoil.RecoverFrames = pTurretData.RecoverFrames;
-	pTurretRecoil.HoldFrames = pTurretData.HoldFrames;
-	auto pBarrelRecoil = pThis->BarrelRecoil.Turret;
-	auto pBarrelData = pToType->BarrelAnimData;
-	pBarrelRecoil.Travel = pBarrelData.Travel;
-	pBarrelRecoil.CompressFrames = pBarrelData.CompressFrames;
-	pBarrelRecoil.RecoverFrames = pBarrelData.RecoverFrames;
-	pBarrelRecoil.HoldFrames = pBarrelData.HoldFrames;
-
-	if (pThis->Cloakable && !pToType->Cloakable)
-		pThis->Uncloak(true);
-	pThis->Cloakable = pToType->Cloakable;
-
-	if (pPrevType->BombSight)
-		BombListClass::Instance.RemoveDetector(pThis);
-	if (pToType->BombSight)
-		BombListClass::Instance.AddDetector(pThis);
-
-	auto dir = DirStruct();
-	dir.Raw = 0x4000 - pToType->FireAngle;
-	pThis->BarrelFacing.SetCurrent(dir);
-
-	pThis->UpdateSight(0, 0, 0, 0, 0);
-
-	if (pPrevType->GapGenerator)
-		pThis->DestroyGap();
-	if (pToType->GapGenerator)
-	{
-		auto temp = pPrevType->GapRadiusInCells;
-		pThis->GapRadius = pToType->GapRadiusInCells;
-		pPrevType->GapRadiusInCells = pToType->GapRadiusInCells;
-		pThis->CreateGap();
-		pPrevType->GapRadiusInCells = temp;
-	}
-
-	if (pThis->WhatAmI() == AbstractType::Building)
-	{
-		auto pBuilding = (BuildingClass*)pThis;
-		auto pToBuildingType = (BuildingTypeClass*)pToType;
-		auto pPrevBuildingType = (BuildingTypeClass*)pPrevType;
-
-		// Maybe buggy
-		for (auto pAnim = pBuilding->Anims[0]; pAnim; pAnim++)
-			GameDelete(pAnim);
-
-		// Skip audio related
-
-		// Maybe buggy
-		auto dockNumber = std::max(pToBuildingType->NumberOfDocks, 1);
-		pBuilding->SetLinkCount(dockNumber);
-
-		if (pToBuildingType->LoadBuildup())
-			pBuilding->HasBuildUp = true;
-		else
-			pBuilding->AI_Sellable = false;
-
-		// Skip SecretLab related
-		
-		// Same as foot
-
-		auto tempUsing = pThis->TemporalImUsing;
-		if (tempUsing && tempUsing->Target)
-			tempUsing->LetGo();
-
-		HouseClass* const pOwner = pThis->Owner;
-
-		if (!pThis->InLimbo)
-			pOwner->RegisterLoss(pThis, false);
-		pOwner->RemoveTracking(pThis);
-
-		int oldHealth = pThis->Health;
-
-		// Maybe buggy
-		auto pCrd = pBuilding->Location;
-		pBuilding->Limbo();
-		pBuilding->Type = pToBuildingType;
-		pBuilding->ActuallyPlacedOnMap = false;
-		++Unsorted::ScenarioInit;
-		pBuilding->Unlimbo(pCrd, DirType::North);
-		--Unsorted::ScenarioInit;
-		pBuilding->Place(false);
-
-		pThis->SetHealthPercentage((double)(oldHealth) / (double)pPrevBuildingType->Strength);
-		pThis->EstimatedHealth = pThis->Health;
-
-		pOwner->AddTracking(pThis);
-		if (!pThis->InLimbo)
-			pOwner->RegisterGain(pThis, false);
-		pOwner->RecheckTechTree = true;
-
-		pThis->Ammo = Math::min(pThis->Ammo, pToType->Ammo);
-
-		pThis->SecondaryFacing.SetROT(pToType->ROT);
-		pThis->PrimaryFacing.SetROT(pToType->ROT);
-
-
-		return true;
+		pExt->UpdateTypeData_Foot();
 	}
 	else
 	{
-		auto pFoot = (FootClass*)pThis;
-
-		if (auto pWeapon = pToType->GetWeapon(0, pThis->Veterancy.IsElite()).WeaponType)
-		{
-			if (!pFoot->ParasiteImUsing && pWeapon->Warhead->Parasite)
-				pFoot->ParasiteImUsing = GameCreate<ParasiteClass>(pFoot);
-		}
-
-		if (pPrevType->SensorsSight)
-			pFoot->RemoveSensorsAt(CellStruct::Empty);
-		if (pToType->SensorsSight)
-		{
-			auto temp = pPrevType->SensorsSight;
-			pPrevType->SensorsSight = pToType->SensorsSight;
-			pFoot->AddSensorsAt(CellStruct::Empty);
-			pPrevType->SensorsSight = temp;
-		}
-
-		if (auto pInfantry = abstract_cast<InfantryClass*>(pFoot))
-		{
-			auto pToInfantryType = (InfantryTypeClass*)pToType;
-			auto pInfantryPrevType = (InfantryTypeClass*)pPrevType;
-		}
-
-		if (auto pUnit = abstract_cast<UnitClass*>(pFoot))
-		{
-			auto pToUnitType = (UnitTypeClass*)pToType;
-			auto pUnitPrevType = (UnitTypeClass*)pPrevType;
-
-			// Maybe buggy
-			if (pUnitPrevType->Gunner)
-				pUnit->RemoveGunner(pUnit->Passengers.GetFirstPassenger());
-			if (pToUnitType->Gunner)
-				pUnit->ReceiveGunner(pUnit->Passengers.GetFirstPassenger());
-
-
-		}
-
-		if (auto pAircraft = abstract_cast<AircraftClass*>(pFoot))
-		{
-			auto pToAircraftType = (AircraftTypeClass*)pToType;
-			auto pAircraftPrevType = (AircraftTypeClass*)pPrevType;
-		}
-
-		if (AresFunctions::ConvertTypeTo)
-		{
-			return AresFunctions::ConvertTypeTo(pThis, pToType);
-		}
-		else
-		{
-			return ConvertToType_ProcessLikeAres((FootClass*)pThis, pToType);
-		}
+		pExt->UpdateTypeData_Building();
 	}
+
+	return true;
 }
 
 // Checks if vehicle can deploy into a building at its current location. If unit has no DeploysInto set returns noDeploysIntoDefaultValue (def = false) instead.

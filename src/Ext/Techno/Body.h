@@ -182,6 +182,7 @@ public:
 		void ApplySpawnLimitRange();
 		void UpdateTypeData(TechnoTypeClass* pCurrentType);
 		void UpdateTypeData_Foot();
+		void UpdateTypeData_Building();
 		void UpdateLaserTrails();
 		void UpdateAttachEffects();
 		void UpdateGattlingRateDownReset();

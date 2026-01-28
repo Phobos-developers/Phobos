@@ -947,10 +947,9 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	bool hasTemporal = false;
 	bool hasAirstrike = false;
 	bool hasLocomotor = false;
-	bool hasParasite = false;
 
 	auto checkWeapon = [&maxCapture, &infiniteCapture, &hasTemporal,
-		&hasAirstrike, &hasLocomotor, &hasParasite](WeaponTypeClass* pWeaponType)
+		&hasAirstrike, &hasLocomotor](WeaponTypeClass* pWeaponType)
 	{
 		if (!pWeaponType)
 			return;
@@ -974,9 +973,6 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 		if (pWH->IsLocomotor)
 			hasLocomotor = true;
-
-		if (pWH->Parasite)
-			hasParasite = true;
 	};
 
 	for (int i = 0; i < TechnoTypeClass::MaxWeapons; i++)
@@ -1087,31 +1083,26 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		barrelRecoil.HoldFrames = barrelAnimData.HoldFrames;
 	}
 
-	// Only FootClass* can use this.
-	if (const auto pFoot = abstract_cast<FootClass*, true>(pThis))
+	if (pThis->Cloakable && !pCurrentType->Cloakable)
+		pThis->Uncloak(true);
+	pThis->Cloakable = pCurrentType->Cloakable;
+
+	if (pOldType->BombSight)
+		BombListClass::Instance.RemoveDetector(pThis);
+	if (pCurrentType->BombSight)
+		BombListClass::Instance.AddDetector(pThis);
+
+	pThis->UpdateSight(0, 0, 0, 0, 0);
+
+	if (pOldType->GapGenerator)
+		pThis->DestroyGap();
+	if (pCurrentType->GapGenerator)
 	{
-		auto& pParasiteImUsing = pFoot->ParasiteImUsing;
-
-		if (hasParasite)
-		{
-			if (!pParasiteImUsing)
-			{
-				// Rebuild a ParasiteClass
-				pParasiteImUsing = GameCreate<ParasiteClass>(pFoot);
-			}
-		}
-		else if (pParasiteImUsing)
-		{
-			if (pParasiteImUsing->Victim)
-			{
-				// Release of victims.
-				pParasiteImUsing->ExitUnit();
-			}
-
-			// Delete it
-			GameDelete(pParasiteImUsing);
-			pParasiteImUsing = nullptr;
-		}
+		auto temp = pOldType->GapRadiusInCells;
+		pThis->GapRadius = pCurrentType->GapRadiusInCells;
+		pOldType->GapRadiusInCells = pCurrentType->GapRadiusInCells;
+		pThis->CreateGap();
+		pOldType->GapRadiusInCells = temp;
 	}
 
 	// handle AutoTargetOwnPosition
@@ -1226,6 +1217,57 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 		pThis->ClearDisguise();
 	}
 
+	bool hasParasite = false;
+
+	auto checkWeapon = [&hasParasite](WeaponTypeClass* pWeaponType)
+		{
+			if (!pWeaponType)
+				return;
+
+			const auto pWH = pWeaponType->Warhead;
+
+			if (pWH->Parasite)
+				hasParasite = true;
+		};
+
+	for (int i = 0; i < TechnoTypeClass::MaxWeapons; i++)
+	{
+		checkWeapon(pThis->GetWeapon(i)->WeaponType);
+	}
+
+	auto& pParasiteImUsing = pThis->ParasiteImUsing;
+
+	if (hasParasite)
+	{
+		if (!pParasiteImUsing)
+		{
+			// Rebuild a ParasiteClass
+			pParasiteImUsing = GameCreate<ParasiteClass>(pThis);
+		}
+	}
+	else if (pParasiteImUsing)
+	{
+		if (pParasiteImUsing->Victim)
+		{
+			// Release of victims.
+			pParasiteImUsing->ExitUnit();
+		}
+
+		// Delete it
+		GameDelete(pParasiteImUsing);
+		pParasiteImUsing = nullptr;
+	}
+
+	if (pOldType->SensorsSight)
+		pThis->RemoveSensorsAt(CellStruct::Empty);
+	if (pCurrentType->SensorsSight)
+	{
+		auto temp = pOldType->SensorsSight;
+		pOldType->SensorsSight = pCurrentType->SensorsSight;
+		pThis->AddSensorsAt(CellStruct::Empty);
+		pOldType->SensorsSight = temp;
+	}
+
 	if (abs != AbstractType::Aircraft)
 	{
 		auto const pLocomotorType = pCurrentType->Locomotor;
@@ -1311,6 +1353,57 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 	}
 
 	this->PreviousType = nullptr;
+}
+
+void TechnoExt::ExtData::UpdateTypeData_Building()
+{
+	auto const pThis = static_cast<BuildingClass*>(this->OwnerObject());
+	auto const pOldType = static_cast<BuildingTypeClass*>(this->PreviousType);
+	auto const pCurrentType = static_cast<BuildingTypeClass*>(this->TypeExtData->OwnerObject());
+	auto const abs = pThis->WhatAmI();
+
+	// Maybe buggy
+	for (auto pAnim = pThis->Anims[0]; pAnim; pAnim++)
+		GameDelete(pAnim);
+
+	// Skip audio related
+
+	// Maybe buggy
+	auto dockNumber = std::max(pCurrentType->NumberOfDocks, 1);
+	pThis->SetLinkCount(dockNumber);
+
+	if (pCurrentType->LoadBuildup())
+		pThis->HasBuildUp = true;
+	else
+		pThis->AI_Sellable = false;
+
+	// Skip SecretLab related
+
+	HouseClass* const pOwner = pThis->Owner;
+
+	if (!pThis->InLimbo)
+		pOwner->RegisterLoss(pThis, false);
+	pOwner->RemoveTracking(pThis);
+
+	// Maybe buggy
+	auto pCrd = pThis->Location;
+	pThis->Limbo();
+	pThis->Type = pCurrentType;
+	pThis->ActuallyPlacedOnMap = false;
+	++Unsorted::ScenarioInit;
+	pThis->Unlimbo(pCrd, DirType::North);
+	--Unsorted::ScenarioInit;
+	pThis->Place(false);
+
+	pOwner->AddTracking(pThis);
+	if (!pThis->InLimbo)
+		pOwner->RegisterGain(pThis, false);
+	pOwner->RecheckTechTree = true;
+
+	pThis->Ammo = Math::min(pThis->Ammo, pCurrentType->Ammo);
+
+	pThis->SecondaryFacing.SetROT(pCurrentType->ROT);
+	pThis->PrimaryFacing.SetROT(pCurrentType->ROT);
 }
 
 void TechnoExt::ExtData::UpdateLaserTrails()
