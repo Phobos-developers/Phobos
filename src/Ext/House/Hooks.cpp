@@ -21,7 +21,8 @@ DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 			const auto pExt = BuildingTypeExt::ExtMap.Find(pType);
 
 			if (pExt->PowerPlantEnhancer_Buildings.size()
-				&& (pExt->PowerPlantEnhancer_Amount != 0 || pExt->PowerPlantEnhancer_Factor != 1.0f))
+				&& (pExt->PowerPlantEnhancer_Amount != 0 || pExt->PowerPlantEnhancer_Factor != 1.0f)
+				&& (pExt->PowerPlantEnhancer_MaxCount < 0 || pHouseExt->PowerPlantEnhancers[pType->ArrayIndex] < pExt->PowerPlantEnhancer_MaxCount))
 			{
 				++pHouseExt->PowerPlantEnhancers[pType->ArrayIndex];
 			}

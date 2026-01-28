@@ -21,6 +21,7 @@ public:
 		ValueableVector<BuildingTypeClass*> PowerPlantEnhancer_Buildings;
 		Valueable<int> PowerPlantEnhancer_Amount;
 		Nullable<float> PowerPlantEnhancer_Factor;
+		Valueable<int> PowerPlantEnhancer_MaxCount;
 
 		std::vector<Point2D> OccupierMuzzleFlashes;
 		Valueable<bool> Powered_KillSpawns;
@@ -115,6 +116,7 @@ public:
 			, PowerPlantEnhancer_Buildings {}
 			, PowerPlantEnhancer_Amount { 0 }
 			, PowerPlantEnhancer_Factor { 1.0 }
+			, PowerPlantEnhancer_MaxCount { -1 }
 			, OccupierMuzzleFlashes()
 			, Powered_KillSpawns { false }
 			, CanC4_AllowZeroDamage { false }

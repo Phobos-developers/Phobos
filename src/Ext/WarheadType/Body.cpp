@@ -176,6 +176,15 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (this->Crit_AffectsAbovePercent > this->Crit_AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] Crit.AffectsAbovePercent is bigger than Crit.AffectsBelowPercent, crit will never activate!\n", pSection);
 
+	// Return warhead
+	this->ReturnWarhead.Read(exINI, pSection, "ReturnWarhead");
+	this->ReturnWarhead_Damage.Read(exINI, pSection, "ReturnWarhead.Damage");
+	this->ReturnWarhead_Chance.Read(exINI, pSection, "ReturnWarhead.Chance");
+	this->ReturnWarhead_ApplyChancePerTarget.Read(exINI, pSection, "ReturnWarhead.ApplyChancePerTarget");
+	this->ReturnWarhead_FullDetonation.Read(exINI, pSection, "ReturnWarhead.FullDetonation");
+	this->ReturnWarhead_AffectsTarget.Read(exINI, pSection, "ReturnWarhead.AffectsTarget");
+	this->ReturnWarhead_AffectsHouse.Read(exINI, pSection, "ReturnWarhead.AffectsHouse");
+
 	this->MindControl_Anim.Read(exINI, pSection, "MindControl.Anim");
 	this->MindControl_ThreatDelay.Read(exINI, pSection, "MindControl.ThreatDelay");
 
@@ -377,6 +386,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->BuildingSell
 		|| this->BuildingUndeploy
 		|| this->ReverseEngineer
+		|| this->ReturnWarhead
 	);
 
 	char tempBuffer[32];
@@ -469,6 +479,14 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_AffectsBelowPercent)
 		.Process(this->Crit_AffectsAbovePercent)
 		.Process(this->Crit_SuppressWhenIntercepted)
+
+		.Process(this->ReturnWarhead)
+		.Process(this->ReturnWarhead_Damage)
+		.Process(this->ReturnWarhead_Chance)
+		.Process(this->ReturnWarhead_ApplyChancePerTarget)
+		.Process(this->ReturnWarhead_FullDetonation)
+		.Process(this->ReturnWarhead_AffectsTarget)
+		.Process(this->ReturnWarhead_AffectsHouse)
 
 		.Process(this->MindControl_Anim)
 		.Process(this->MindControl_ThreatDelay)
