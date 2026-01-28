@@ -682,6 +682,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the AI would set anger towards friendly houses, causing it to act stupidly
   - Fix an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies
   - `AllowBerzerkOnAllies`
+  - Allow techno conversion working on buildings
+  - Fixed the issue that multiple attributes such as cloaking and sensor would not be updated correctly in techno conversion
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
