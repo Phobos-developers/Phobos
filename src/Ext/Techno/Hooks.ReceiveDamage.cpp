@@ -429,7 +429,7 @@ DEFINE_HOOK(0x5F5480, ObjectClass_ReceiveDamage_FlashDuration, 0x6)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x701CE5, TechnoClass_ReceiveDamage_AllowBerzerkOnAllies, 0x7)
+DEFINE_HOOK(0x701CFC, TechnoClass_ReceiveDamage_AllowBerzerkOnAllies, 0x5)
 {
 	return RulesExt::Global()->AllowBerzerkOnAllies ? 0x701D0B : 0;
 }
