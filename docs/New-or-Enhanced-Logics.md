@@ -757,6 +757,45 @@ In `artmd.ini`:
 OnlyUseLandSequences=false  ; boolean
 ```
 
+## Locomotor
+
+### AdvancedDrive Locomotor
+
+- `AdvancedDrive` locomotor (`{4A582751-9839-11d1-B709-00A024DDAFD1}`) is an improved `Drive` locomotor (`{4A582741-9839-11d1-B709-00A024DDAFD1}`) that can serve as a complete upper level replacement for it.
+- It fixes the issue where `Drive` cannot correctly crush objects during rapid turns.
+- It has smoother uphill and downhill dynamic visual effects.
+- It has the function of driving the unit backwards.
+  - `AdvancedDrive.Reverse` controls whether the unit can driving backwards. The next 5 items are all under its control.
+  - `AdvancedDrive.Reverse.FaceTarget` controls whether to maitain the frontal movement towards the enemy within `AdvancedDrive.Reverse.FaceTargetRange` and no longer automatically selects by the current orientation.
+  - `AdvancedDrive.Reverse.MinimumDistance` controls how close the unit is to its destination, allowing reversing.
+  - `AdvancedDrive.Reverse.RetreatDuration` controls how long since the unit was last injured, allowing reversing.
+  - `AdvancedDrive.Reverse.Speed` controls the speed ratio when reversing.
+- It also has the function of hovering.
+  - `AdvancedDrive.Hover` controls whether the unit can hovering above the ground. The next 6 items are all under its control.
+  - `AdvancedDrive.Hover.Sink` controls whether the unit will be destroyed when losing power on the water.
+  - `AdvancedDrive.Hover.Spin` controls whether the unit will rotating when losing power.
+  - `AdvancedDrive.Hover.Tilt` controls whether the unit will will tilt at an angle on the slope.
+  - `AdvancedDrive.Hover.Height`, `AdvancedDrive.Hover.Dampen` and `AdvancedDrive.Hover.Bob` control the state of hovering like what vanilla `HoverHeight`, `HoverDampen` and `HoverBob` do.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                               ; VehicleType
+Locomotor=AdvancedDrive                     ; Locomotor
+AdvancedDrive.Reverse=true                  ; boolean
+AdvancedDrive.Reverse.FaceTarget=true       ; boolean
+AdvancedDrive.Reverse.FaceTargetRange=16.0  ; floating point value
+AdvancedDrive.Reverse.MinimumDistance=2.5   ; floating point value
+AdvancedDrive.Reverse.RetreatDuration=150   ; integer, game frames
+AdvancedDrive.Reverse.Speed=0.85            ; floating point value
+AdvancedDrive.Hover=false                   ; boolean
+AdvancedDrive.Hover.Sink=true               ; boolean
+AdvancedDrive.Hover.Spin=true               ; boolean
+AdvancedDrive.Hover.Tilt=true               ; boolean
+AdvancedDrive.Hover.Height=                 ; floating point value, default to [General] -> HoverHeight
+AdvancedDrive.Hover.Dampen=                 ; floating point value, default to [General] -> HoverDampen
+AdvancedDrive.Hover.Bob=                    ; floating point value, default to [General] -> HoverBob
+```
+
 ## Projectiles
 
 ### Attack technos underground

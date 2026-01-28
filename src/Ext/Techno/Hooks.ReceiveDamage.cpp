@@ -27,7 +27,10 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		return 0;
 	}
 
+	const auto pRules = RulesExt::Global();
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pTypeExt = pExt->TypeExtData;
+	const auto pType = pTypeExt->OwnerObject();
 	const auto pSourceHouse = args->SourceHouse;
 	const auto pTargetHouse = pThis->Owner;
 
@@ -74,7 +77,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	}
 
 	// Raise Combat Alert
-	if (RulesExt::Global()->CombatAlert && damage > 1)
+	if (*args->Damage && (MapClass::GetTotalDamage(*args->Damage, args->WH, pType->Armor, args->DistanceToEpicenter) > 0))
 	{
 		auto raiseCombatAlert = [&]()
 		{
@@ -85,11 +88,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 			if (pHouseExt->CombatAlertTimer.HasTimeLeft() || pWHExt->CombatAlert_Suppress.Get(!pWHExt->Malicious || pWHExt->Nonprovocative))
 				return;
-
-			const auto pTypeExt = pExt->TypeExtData;
-			const auto pType = pTypeExt->OwnerObject();
-
-			if (!pTypeExt->CombatAlert.Get(RulesExt::Global()->CombatAlert_Default.Get(!pType->Insignificant && !pType->Spawned)) || !pThis->IsInPlayfield)
+			else if (!pTypeExt->CombatAlert.Get(pRules->CombatAlert_Default.Get(!pType->Insignificant && !pType->Spawned)) || !pThis->IsInPlayfield)
 				return;
 
 			const auto pBuilding = abstract_cast<BuildingClass*, true>(pThis);
@@ -125,7 +124,12 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			if (index != -1)
 				VoxClass::PlayIndex(index);
 		};
-		raiseCombatAlert();
+
+		if (pRules->CombatAlert)
+			raiseCombatAlert();
+
+		if (pWHExt->CanTargetHouse(pSourceHouse, pThis))
+			pExt->LastHurtFrame = Unsorted::CurrentFrame;
 	}
 
 	// Shield Receive Damage
@@ -159,7 +163,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		if ((!pWHExt->CanKill || pExt->AE.Unkillable)
 			&& pThis->Health > 0 && nDamageLeft != 0
 			&& pWHExt->CanTargetHouse(pSourceHouse, pThis)
-			&& MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, args->DistanceToEpicenter) >= pThis->Health)
+			&& MapClass::GetTotalDamage(nDamageLeft, args->WH, pType->Armor, args->DistanceToEpicenter) >= pThis->Health)
 		{
 			// Update remaining damage and check if the target will die and should be avoided
 			damage = 0;

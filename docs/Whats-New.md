@@ -528,6 +528,7 @@ New:
 - Maximum amount for power plant enhancer (by Ollerus)
 - [Return warhead](New-or-Enhanced-Logics.md#return-warhead) (by Ollerus)
 - [`AllowBerzerkOnAllies`](Fixed-or-Improved-Logics.md#berzerk-on-allies) (by TaranDahl)
+- [New AdvancedDrive locomotor](New-or-Enhanced-Logics.md#advanceddrive-locomotor) (by CrimRecya)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
