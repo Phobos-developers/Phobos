@@ -223,7 +223,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that ships can travel on elevated bridges.
 - Dehardcoded 255 limit of `OverlayType`.
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip.
-- Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it.
+- Elite technos no longer scatter by default, behaviour is controlled by `SCATTER` veterancy ability now.
 - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`.
 - Infantry support `IsGattling=yes`.
 - Fixed an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case.
