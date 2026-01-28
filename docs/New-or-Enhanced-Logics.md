@@ -2648,6 +2648,10 @@ ReturnWarhead.AffectsTarget=all             ; List of Affected Target Enumeratio
 ReturnWarhead.AffectsHouse=all              ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
+```{warning}
+If you set `ReturnWarhead` to the same Warhead it is defined on, or create a chain of Warheads with it that loops back to the first one there is a possibility for the game to get stuck in a loop and freeze or crash afterwards.
+```
+
 ### Reveal map for owner on impact
 
 - Warheads can now reveal an area or the entire map on impact.

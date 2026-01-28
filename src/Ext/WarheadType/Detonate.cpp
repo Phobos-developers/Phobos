@@ -205,11 +205,11 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->ReverseEngineer)
 		this->ApplyReverseEngineer(pHouse, pTarget);
 
-	// This might change the target's armor type
-	this->ApplyShieldModifiers(pTarget);
-
 	if (this->ReturnWarhead && pOwner)
 		this->ApplyReturnWarhead(pHouse, pTarget, pOwner);
+
+	// This might change the target's armor type
+	this->ApplyShieldModifiers(pTarget);
 
 	// Put AE behind others but before Crit
 	if (this->AttachEffects.AttachTypes.size() > 0 || this->AttachEffects.RemoveTypes.size() > 0 || this->AttachEffects.RemoveGroups.size() > 0)
