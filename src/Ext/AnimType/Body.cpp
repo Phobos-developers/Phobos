@@ -12,37 +12,37 @@
 
 AnimTypeExt::ExtContainer AnimTypeExt::ExtMap;
 
-void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
+void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, HouseClass* pKiller)
 {
 	if (!pThis)
 		return;
 
-	HouseClass* pInvoker = pKiller ? pKiller->Owner : nullptr;
+	auto const pType = pThis->Type;
 
-	if (pThis->Type->DestroyAnim.Count > 0)
+	if (pType->DestroyAnim.Count > 0)
 	{
 		auto const facing = pThis->PrimaryFacing.Current().GetDir();
 		AnimTypeClass* pAnimType = nullptr;
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 		if (!pTypeExt->DestroyAnim_Random.Get())
 		{
 			int idxAnim = 0;
 
-			if (pThis->Type->DestroyAnim.Count >= 8)
+			if (pType->DestroyAnim.Count >= 8)
 			{
-				idxAnim = pThis->Type->DestroyAnim.Count - 1;
-				if (pThis->Type->DestroyAnim.Count % 2 == 0)
+				idxAnim = pType->DestroyAnim.Count - 1;
+				if (pType->DestroyAnim.Count % 2 == 0)
 					idxAnim = static_cast<int>(static_cast<unsigned char>(facing) / 256.0 * idxAnim);
 			}
 
-			pAnimType = pThis->Type->DestroyAnim[idxAnim];
+			pAnimType = pType->DestroyAnim[idxAnim];
 		}
 		else
 		{
-			int const nIDx_Rand = pThis->Type->DestroyAnim.Count == 1 ?
-				0 : ScenarioClass::Instance->Random.RandomRanged(0, (pThis->Type->DestroyAnim.Count - 1));
-			pAnimType = pThis->Type->DestroyAnim[nIDx_Rand];
+			int const nIDx_Rand = pType->DestroyAnim.Count == 1 ?
+				0 : ScenarioClass::Instance->Random.RandomRanged(0, (pType->DestroyAnim.Count - 1));
+			pAnimType = pType->DestroyAnim[nIDx_Rand];
 
 		}
 
@@ -56,7 +56,7 @@ void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
 			auto const pAnimTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
 			auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
 
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pThis->Owner);
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pKiller, pThis->Owner);
 
 			pAnimExt->SetInvoker(pThis);
 			pAnimExt->FromDeathUnit = true;

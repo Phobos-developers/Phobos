@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-20 08:34+0800\n"
+"POT-Creation-Date: 2026-01-30 05:13+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -594,27 +594,27 @@ msgstr "`AttachEffect.CheckOnFirer` 可设为 true 以将必须存在／禁止�
 #: ../../New-or-Enhanced-Logics.md:908 ../../New-or-Enhanced-Logics.md:928
 #: ../../New-or-Enhanced-Logics.md:950 ../../New-or-Enhanced-Logics.md:976
 #: ../../New-or-Enhanced-Logics.md:1004 ../../New-or-Enhanced-Logics.md:1015
-#: ../../New-or-Enhanced-Logics.md:1037 ../../New-or-Enhanced-Logics.md:1055
-#: ../../New-or-Enhanced-Logics.md:1069 ../../New-or-Enhanced-Logics.md:1100
-#: ../../New-or-Enhanced-Logics.md:1123 ../../New-or-Enhanced-Logics.md:1136
-#: ../../New-or-Enhanced-Logics.md:1166 ../../New-or-Enhanced-Logics.md:1182
-#: ../../New-or-Enhanced-Logics.md:1218 ../../New-or-Enhanced-Logics.md:1245
-#: ../../New-or-Enhanced-Logics.md:1256 ../../New-or-Enhanced-Logics.md:1269
-#: ../../New-or-Enhanced-Logics.md:1282 ../../New-or-Enhanced-Logics.md:1299
-#: ../../New-or-Enhanced-Logics.md:1317 ../../New-or-Enhanced-Logics.md:1333
-#: ../../New-or-Enhanced-Logics.md:1348 ../../New-or-Enhanced-Logics.md:1364
-#: ../../New-or-Enhanced-Logics.md:1376 ../../New-or-Enhanced-Logics.md:1399
-#: ../../New-or-Enhanced-Logics.md:1421 ../../New-or-Enhanced-Logics.md:1466
-#: ../../New-or-Enhanced-Logics.md:1490 ../../New-or-Enhanced-Logics.md:1501
-#: ../../New-or-Enhanced-Logics.md:1518 ../../New-or-Enhanced-Logics.md:1545
-#: ../../New-or-Enhanced-Logics.md:1560 ../../New-or-Enhanced-Logics.md:1586
-#: ../../New-or-Enhanced-Logics.md:1602 ../../New-or-Enhanced-Logics.md:1612
-#: ../../New-or-Enhanced-Logics.md:1623 ../../New-or-Enhanced-Logics.md:1634
-#: ../../New-or-Enhanced-Logics.md:1647 ../../New-or-Enhanced-Logics.md:1658
-#: ../../New-or-Enhanced-Logics.md:1672 ../../New-or-Enhanced-Logics.md:1688
-#: ../../New-or-Enhanced-Logics.md:1703 ../../New-or-Enhanced-Logics.md:1720
-#: ../../New-or-Enhanced-Logics.md:1731 ../../New-or-Enhanced-Logics.md:1754
-#: ../../New-or-Enhanced-Logics.md:1771
+#: ../../New-or-Enhanced-Logics.md:1041 ../../New-or-Enhanced-Logics.md:1059
+#: ../../New-or-Enhanced-Logics.md:1073 ../../New-or-Enhanced-Logics.md:1104
+#: ../../New-or-Enhanced-Logics.md:1128 ../../New-or-Enhanced-Logics.md:1144
+#: ../../New-or-Enhanced-Logics.md:1174 ../../New-or-Enhanced-Logics.md:1190
+#: ../../New-or-Enhanced-Logics.md:1226 ../../New-or-Enhanced-Logics.md:1253
+#: ../../New-or-Enhanced-Logics.md:1264 ../../New-or-Enhanced-Logics.md:1277
+#: ../../New-or-Enhanced-Logics.md:1290 ../../New-or-Enhanced-Logics.md:1307
+#: ../../New-or-Enhanced-Logics.md:1325 ../../New-or-Enhanced-Logics.md:1341
+#: ../../New-or-Enhanced-Logics.md:1356 ../../New-or-Enhanced-Logics.md:1372
+#: ../../New-or-Enhanced-Logics.md:1384 ../../New-or-Enhanced-Logics.md:1407
+#: ../../New-or-Enhanced-Logics.md:1429 ../../New-or-Enhanced-Logics.md:1474
+#: ../../New-or-Enhanced-Logics.md:1498 ../../New-or-Enhanced-Logics.md:1509
+#: ../../New-or-Enhanced-Logics.md:1526 ../../New-or-Enhanced-Logics.md:1553
+#: ../../New-or-Enhanced-Logics.md:1568 ../../New-or-Enhanced-Logics.md:1594
+#: ../../New-or-Enhanced-Logics.md:1610 ../../New-or-Enhanced-Logics.md:1620
+#: ../../New-or-Enhanced-Logics.md:1631 ../../New-or-Enhanced-Logics.md:1642
+#: ../../New-or-Enhanced-Logics.md:1655 ../../New-or-Enhanced-Logics.md:1666
+#: ../../New-or-Enhanced-Logics.md:1680 ../../New-or-Enhanced-Logics.md:1696
+#: ../../New-or-Enhanced-Logics.md:1711 ../../New-or-Enhanced-Logics.md:1728
+#: ../../New-or-Enhanced-Logics.md:1739 ../../New-or-Enhanced-Logics.md:1762
+#: ../../New-or-Enhanced-Logics.md:1779
 msgid "In `rulesmd.ini`:"
 msgstr "在 `rulesmd.ini`："
 
@@ -629,12 +629,12 @@ msgstr "![image](_static/images/radtype-01.png) *混合起来的多种辐射类�
 #: ../../New-or-Enhanced-Logics.md:170 ../../New-or-Enhanced-Logics.md:264
 #: ../../New-or-Enhanced-Logics.md:438 ../../New-or-Enhanced-Logics.md:545
 #: ../../New-or-Enhanced-Logics.md:666 ../../New-or-Enhanced-Logics.md:900
-#: ../../New-or-Enhanced-Logics.md:942 ../../New-or-Enhanced-Logics.md:1158
-#: ../../New-or-Enhanced-Logics.md:1176 ../../New-or-Enhanced-Logics.md:1237
-#: ../../New-or-Enhanced-Logics.md:1264 ../../New-or-Enhanced-Logics.md:1394
-#: ../../New-or-Enhanced-Logics.md:1449 ../../New-or-Enhanced-Logics.md:1498
-#: ../../New-or-Enhanced-Logics.md:1536 ../../New-or-Enhanced-Logics.md:1714
-#: ../../New-or-Enhanced-Logics.md:1743 ../../New-or-Enhanced-Logics.md:1766
+#: ../../New-or-Enhanced-Logics.md:942 ../../New-or-Enhanced-Logics.md:1166
+#: ../../New-or-Enhanced-Logics.md:1184 ../../New-or-Enhanced-Logics.md:1245
+#: ../../New-or-Enhanced-Logics.md:1272 ../../New-or-Enhanced-Logics.md:1402
+#: ../../New-or-Enhanced-Logics.md:1457 ../../New-or-Enhanced-Logics.md:1506
+#: ../../New-or-Enhanced-Logics.md:1544 ../../New-or-Enhanced-Logics.md:1722
+#: ../../New-or-Enhanced-Logics.md:1751 ../../New-or-Enhanced-Logics.md:1774
 msgid "image"
 msgstr "图像"
 
@@ -753,7 +753,7 @@ msgstr "科技类型、抛射体和 Voxel 碎片可以拥有多个尾焰。对�
 #: ../../New-or-Enhanced-Logics.md:223 ../../New-or-Enhanced-Logics.md:454
 #: ../../New-or-Enhanced-Logics.md:482 ../../New-or-Enhanced-Logics.md:496
 #: ../../New-or-Enhanced-Logics.md:509 ../../New-or-Enhanced-Logics.md:596
-#: ../../New-or-Enhanced-Logics.md:656 ../../New-or-Enhanced-Logics.md:1150
+#: ../../New-or-Enhanced-Logics.md:656 ../../New-or-Enhanced-Logics.md:1158
 msgid "In `artmd.ini`:"
 msgstr "在 `artmd.ini`："
 
@@ -1070,13 +1070,13 @@ msgstr ""
 "通过设置 `Tint.Color` 和 `Tint Intensity` 可以为拥有护盾的科技类型使用类似于铁幕／力场护盾或 "
 "`Psychedelic=true` 弹头的染色效果。"
 
-#: ../../New-or-Enhanced-Logics.md:402 ../../New-or-Enhanced-Logics.md:1065
+#: ../../New-or-Enhanced-Logics.md:402 ../../New-or-Enhanced-Logics.md:1069
 msgid ""
 "`Tint.Intensity` is additive lighting increase/decrease - 1.0 is the "
 "default object lighting."
 msgstr "`Tint.Intensity` 是增加／减少的光照，1.0 是默认的对象光照。"
 
-#: ../../New-or-Enhanced-Logics.md:403 ../../New-or-Enhanced-Logics.md:1066
+#: ../../New-or-Enhanced-Logics.md:403 ../../New-or-Enhanced-Logics.md:1070
 msgid ""
 "`Tint.VisibleToHouses` can be used to customize which houses can see the "
 "tint effect."
@@ -1856,11 +1856,12 @@ msgid ""
 msgstr "`Interceptor.Weapon` 决定用于拦截抛射体的武器（0 = `Primary`, 1 = `Secondary`)。"
 
 #: ../../New-or-Enhanced-Logics.md:671
+#, fuzzy
 msgid ""
-"The interceptor weapon may need `AG` and/or `AA` set to true on its "
-"projectile to be able to target projectiles depending on their elevation "
-"from ground. If you don't set those then the weapon won't be able to "
-"target low-flying or high-flying projectiles respectively."
+"The interceptor weapon may need `AA` set to true on its projectile to be "
+"able to target projectiles depending on their elevation from ground. If "
+"you don't set those then the weapon won't be able to target high-flying "
+"projectiles respectively."
 msgstr ""
 "拦截武器可能需要在其抛射体上将 `AG` 和 `AA` 设为 true "
 "以使其能够根据抛射体相对地面的高度来瞄准。如果你不设置这些那么武器将无法分别瞄准低空或高空飞行的抛射体。"
@@ -2114,14 +2115,14 @@ msgstr ""
 msgid "Convert TechnoType"
 msgstr "单位转换超武"
 
-#: ../../New-or-Enhanced-Logics.md:792 ../../New-or-Enhanced-Logics.md:1452
+#: ../../New-or-Enhanced-Logics.md:792 ../../New-or-Enhanced-Logics.md:1460
 msgid ""
 "Warheads can now change TechnoTypes of affected units to other Types in "
 "the same category (infantry to infantry, vehicles to vehicles, aircraft "
 "to aircraft)."
 msgstr "现在弹头可以将受影响单位的科技类型更改为同大类的其他科技类型（步兵到步兵，车辆到车辆，战机到战机）。"
 
-#: ../../New-or-Enhanced-Logics.md:793 ../../New-or-Enhanced-Logics.md:1453
+#: ../../New-or-Enhanced-Logics.md:793 ../../New-or-Enhanced-Logics.md:1461
 msgid ""
 "`ConvertN.From` (where N is 0, 1, 2...) specifies which TechnoTypes are "
 "valid for conversion. This entry can have many types listed, meanging "
@@ -2131,15 +2132,15 @@ msgstr ""
 "`ConvertN.From`（此处 N 为 0, 1, "
 "2...）指定哪些科技类型可用于转换。此条目可以列出许多类型以一次全部转换。当没有包含任何类型时将影响所有有效目标。"
 
-#: ../../New-or-Enhanced-Logics.md:794 ../../New-or-Enhanced-Logics.md:1454
+#: ../../New-or-Enhanced-Logics.md:794 ../../New-or-Enhanced-Logics.md:1462
 msgid "`ConvertN.To` specifies the TechnoType which is the result of conversion."
 msgstr "`ConvertN.To` 指定转换后的科技类型。"
 
-#: ../../New-or-Enhanced-Logics.md:795 ../../New-or-Enhanced-Logics.md:1455
+#: ../../New-or-Enhanced-Logics.md:795 ../../New-or-Enhanced-Logics.md:1463
 msgid "`ConvertN.AffectedHouses` specifies whose units can be converted."
 msgstr "`ConvertN.AffectedHouses` 指定哪些所属方的单位可以被转换。"
 
-#: ../../New-or-Enhanced-Logics.md:796 ../../New-or-Enhanced-Logics.md:1456
+#: ../../New-or-Enhanced-Logics.md:796 ../../New-or-Enhanced-Logics.md:1464
 msgid ""
 "`Convert.From`, `Convert.To` and `Convert.AffectedHouses` (without "
 "numbers) are a valid alternative to `Convert0.From`, `Convert0.To` and "
@@ -2163,7 +2164,7 @@ msgid ""
 "`SOLDIERA` and `SOLDIERB` to `NEWSOLDIER`:"
 msgstr "例如，这个超级武器可以将所有被影响的己方和友方 `SOLDIERA` 和 `SOLDIERB` 转换为 `NEWSOLDIER`："
 
-#: ../../New-or-Enhanced-Logics.md:821 ../../New-or-Enhanced-Logics.md:1480
+#: ../../New-or-Enhanced-Logics.md:821 ../../New-or-Enhanced-Logics.md:1488
 msgid ""
 "This feature has the same limitations as [Ares' Type Conversion](https"
 "://ares-developers.github.io/Ares-docs/new/typeconversion.html). This "
@@ -2172,7 +2173,7 @@ msgstr ""
 "此功能与 [Ares 的单位转换](https://ares-developers.github.io/Ares-"
 "docs/new/typeconversion.html) 存在同样的限制。此功能不支持建筑类型。"
 
-#: ../../New-or-Enhanced-Logics.md:825 ../../New-or-Enhanced-Logics.md:1484
+#: ../../New-or-Enhanced-Logics.md:825 ../../New-or-Enhanced-Logics.md:1492
 msgid ""
 "This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is "
 "not detected, not all properties of a unit may be updated."
@@ -2671,18 +2672,22 @@ msgstr ""
 "现在你可以设置 `AutoFire` 使科技类型根据 `AutoFire.TargetSelf` "
 "选择当前单元格或开火者自身自动发射其武器而无需检索一个合适的目标。"
 
-msgid "To make this logic work properly, you need to ensure that there is no flag like `CanPassiveAquire=false` set on units that prevents target scanning."
+#: ../../New-or-Enhanced-Logics.md:1023
+msgid ""
+"To make this logic work properly, you need to ensure that there is no "
+"flag like `CanPassiveAquire=false` set on units that prevents target "
+"scanning."
 msgstr "为了让该逻辑正常工作，你需要确保单位上没有设置 `CanPassiveAquire=false` 等阻止索敌的语句。"
 
-#: ../../New-or-Enhanced-Logics.md:1022
+#: ../../New-or-Enhanced-Logics.md:1026
 msgid "Build limit group"
 msgstr "建造限制组"
 
-#: ../../New-or-Enhanced-Logics.md:1024
+#: ../../New-or-Enhanced-Logics.md:1028
 msgid "You can now make different technos share build limit in a group."
 msgstr "现在你可以使不同的科技类型在一个组内共享建造限制。"
 
-#: ../../New-or-Enhanced-Logics.md:1025
+#: ../../New-or-Enhanced-Logics.md:1029
 msgid ""
 "`BuildLimitGroup.Types` determines the technos that'll be used for build "
 "limit conditions of the selected techno. Note that the limit won't be "
@@ -2692,7 +2697,7 @@ msgstr ""
 "`BuildLimitGroup.Types` "
 "决定了将用于所选科技类型建造条件的其他科技类型。注意该语句并不提供任何限制效果。要实现这点你需要手动位每个科技类型设置建造限制。"
 
-#: ../../New-or-Enhanced-Logics.md:1026
+#: ../../New-or-Enhanced-Logics.md:1030
 msgid ""
 "`BuildLimitGroup.Nums` determines the amount of technos that would reach "
 "the build limit. If using a single integer, it'll use the sum of all "
@@ -2705,7 +2710,7 @@ msgstr ""
 " `BuildLimitGroup.Types` 数量相同的整数列表，则会为每个科技类型计算建造限制，其值的位置与 "
 "`BuildLimitGroup.Types` 中的位置对应。"
 
-#: ../../New-or-Enhanced-Logics.md:1027
+#: ../../New-or-Enhanced-Logics.md:1031
 msgid ""
 "`BuildLimitGroup.Factor` determines each of this techno instance will "
 "count as what value when calculating build limit."
@@ -2713,13 +2718,13 @@ msgstr ""
 "`BuildLimitGroup.Factor` 决定了每个此类科技类型在计算建造限制时将被视为多少来进行计算（类似一个用于 "
 "`BuildLimit` 的 `Size`）。"
 
-#: ../../New-or-Enhanced-Logics.md:1028
+#: ../../New-or-Enhanced-Logics.md:1032
 msgid ""
 "This is only used by BuildLimitGroup. No other place will use it when "
 "counting owned objects, including `BuildLimitGroup.ExtraLimit`."
 msgstr "这仅由 BuildLimitGroup 使用。其他地方不会使用它来计算，包括 `BuildLimitGroup.ExtraLimit`。"
 
-#: ../../New-or-Enhanced-Logics.md:1029
+#: ../../New-or-Enhanced-Logics.md:1033
 msgid ""
 "`BuildLimitGroup.ContentIfAnyMatch` determines the rule of calculating "
 "build limit per techno. If set to true, build limit will be content if "
@@ -2731,7 +2736,7 @@ msgstr ""
 "true，则当组内任意科技类型的数量达到其 `BuildLimitGroup.Nums` 值时视为全组达到建造限制。如果设置为 "
 "false，则只有当组内所有科技类型的数量达到时建造限制才有效。"
 
-#: ../../New-or-Enhanced-Logics.md:1030
+#: ../../New-or-Enhanced-Logics.md:1034
 msgid ""
 "`BuildLimitGroup.NotBuildableIfQueueMatch` determines the moment to stop "
 "the techno's production. If set to true, its production will be stopped "
@@ -2742,19 +2747,19 @@ msgstr ""
 "`BuildLimitGroup.NotBuildableIfQueueMatch` 决定了禁用科技类型生产的时刻，如果设为 true "
 "则已存在的科技类型与处于生产序列中的科技类型只和满足条件就会停止生产。如果设为 false 则只有地图上实际存在的科技类型满足条件才会停止生产。"
 
-#: ../../New-or-Enhanced-Logics.md:1031
+#: ../../New-or-Enhanced-Logics.md:1035
 msgid ""
 "You can also add an extra value into `BuildLimitGroup.Nums`, determined "
 "by the amount of specific technos owned by its house."
 msgstr "你还可以根据其所属方拥有的特定科技类型数量向 `BuildLimitGroup.Nums` 添加一个额外调整值。"
 
-#: ../../New-or-Enhanced-Logics.md:1032
+#: ../../New-or-Enhanced-Logics.md:1036
 msgid ""
 "`BuildLimitGroup.ExtraLimit.Types` determines the technos that'll be used"
 " for extra value calculation."
 msgstr "`BuildLimitGroup.ExtraLimit.Types` 决定了将用于额外值计算的科技类型。"
 
-#: ../../New-or-Enhanced-Logics.md:1033
+#: ../../New-or-Enhanced-Logics.md:1037
 msgid ""
 "`BuildLimitGroup.ExtraLimit.Nums` determines the actual value of "
 "increment. Value matching the position in "
@@ -2766,7 +2771,7 @@ msgstr ""
 "`BuildLimitGroup.ExtraLimit.Types` "
 "中对应位置的科技类型一一对应。每个列表中的科技类型会使建造限制增加其场上存在的数量 * 该列表中对应值。"
 
-#: ../../New-or-Enhanced-Logics.md:1034
+#: ../../New-or-Enhanced-Logics.md:1038
 msgid ""
 "`BuildLimitGroup.ExtraLimit.MaxCount` determines the maximum amount of "
 "technos being counted into the extra value calculation. Value matching "
@@ -2778,7 +2783,7 @@ msgstr ""
 "`BuildLimitGroup.ExtraLimit.Types` 中对应位置的科技类型一一对应。如果未设置或设为小于 1 "
 "的值，则视为无最大数量限制。"
 
-#: ../../New-or-Enhanced-Logics.md:1035
+#: ../../New-or-Enhanced-Logics.md:1039
 msgid ""
 "`BuildLimitGroup.ExtraLimit.MaxNum` determines the maximum of values in "
 "`BuildLimitGroup.Nums` after extra limit calculation. If not set or set "
@@ -2787,21 +2792,21 @@ msgstr ""
 "`BuildLimitGroup.ExtraLimit.MaxNum` 决定了在计算额外值后 `BuildLimitGroup.Nums` "
 "的最大值。如果未设置或设为小于 1 的值，则视为无最大值。"
 
-#: ../../New-or-Enhanced-Logics.md:1051
+#: ../../New-or-Enhanced-Logics.md:1055
 msgid "Convert TechnoType on owner house change"
 msgstr "根据操作者变形"
 
-#: ../../New-or-Enhanced-Logics.md:1053
+#: ../../New-or-Enhanced-Logics.md:1057
 msgid ""
 "You can now change a unit's type when changing ownership from human to "
 "computer or from computer to human."
 msgstr "现在你可以在操作者从人类改为 AI 玩家或从 AI 玩家改为人类玩家时执行单位转换。"
 
-#: ../../New-or-Enhanced-Logics.md:1062
+#: ../../New-or-Enhanced-Logics.md:1066
 msgid "Custom tint on TechnoTypes"
 msgstr "染色"
 
-#: ../../New-or-Enhanced-Logics.md:1064
+#: ../../New-or-Enhanced-Logics.md:1068
 msgid ""
 "A tint effect similar to that used by Iron Curtain / Force Shield or "
 "`Psychedelic=true` Warheads can be applied to TechnoTypes naturally by "
@@ -2810,23 +2815,23 @@ msgstr ""
 "通过设置 `Tint.Color` 和 `Tint.Intensity` 可以为拥有护盾的科技类型使用类似于铁幕／力场护盾或 "
 "`Psychedelic=true` 弹头的染色效果。"
 
-#: ../../New-or-Enhanced-Logics.md:1067
+#: ../../New-or-Enhanced-Logics.md:1071
 msgid ""
 "Tint effects can also be applied by [attached effects](#attached-effects)"
 " and on [shields](#shields)."
 msgstr "染色效果也可以通过 [Attach Effect](#attached-effects) 和 [护盾](#shields) 应用。"
 
-#: ../../New-or-Enhanced-Logics.md:1077
+#: ../../New-or-Enhanced-Logics.md:1081
 msgid "Customizable OpenTopped properties"
 msgstr "自定义 `OpenTopped` 属性"
 
-#: ../../New-or-Enhanced-Logics.md:1079
+#: ../../New-or-Enhanced-Logics.md:1083
 msgid ""
 "You can now override global `OpenTopped` transport properties per "
 "TechnoType."
 msgstr "现在你可以为每个科技类型微观设定全局 `OpenTopped` 运输工具的属性。"
 
-#: ../../New-or-Enhanced-Logics.md:1080
+#: ../../New-or-Enhanced-Logics.md:1084
 msgid ""
 "`OpenTopped.IgnoreRangefinding` can be used to disable `OpenTopped` "
 "transport rangefinding behaviour where smallest weapon range between "
@@ -2836,7 +2841,7 @@ msgstr ""
 "`OpenTopped.IgnoreRangefinding` 可用于禁用 `OpenTopped` "
 "运输工具在接近超出射程的目标和扫描潜在目标时使用运输工具与所有载员之间的 `Range` 最小武器的射程这一测距行为。"
 
-#: ../../New-or-Enhanced-Logics.md:1081
+#: ../../New-or-Enhanced-Logics.md:1085
 msgid ""
 "`OpenTopped.AllowFiringIfDeactivated` can be used to customize whether or"
 " not passengers can fire out when the transport is deactivated (EMP, "
@@ -2845,41 +2850,41 @@ msgstr ""
 "`OpenTopped.AllowFiringIfDeactivated` 可用于自定义当运输工具被瘫痪（EMP、`PoweredUnit` "
 "等）时载员是否可以开火。"
 
-#: ../../New-or-Enhanced-Logics.md:1082
+#: ../../New-or-Enhanced-Logics.md:1086
 msgid ""
 "`OpenTopped.ShareTransportTarget` controls whether or not the current "
 "target of the transport itself is passed to the passengers as well."
 msgstr "`OpenTopped.ShareTransportTarget` 控制运输工具的当前目标是否传递给乘客。"
 
-#: ../../New-or-Enhanced-Logics.md:1094
+#: ../../New-or-Enhanced-Logics.md:1098
 msgid "Customize EVA voice and `SellSound` when selling units"
 msgstr "单位出售音效"
 
-#: ../../New-or-Enhanced-Logics.md:1096
+#: ../../New-or-Enhanced-Logics.md:1100
 msgid ""
 "When a building or a unit is sold, a sell sound as well as an EVA is "
 "played to the owner. These configurations have been deglobalized."
 msgstr "当建筑或单位被出售时将向所有者播放出售音效和 EVA 语音。这些设置以允许微观定义。"
 
-#: ../../New-or-Enhanced-Logics.md:1097
+#: ../../New-or-Enhanced-Logics.md:1101
 msgid "`EVA.Sold` is used to customize the EVA voice when selling."
 msgstr "`EVA.Sold` 用于自定义出售时的 EVA 语音。"
 
-#: ../../New-or-Enhanced-Logics.md:1098
+#: ../../New-or-Enhanced-Logics.md:1102
 msgid "`SellSound` is used to customize the report sound when selling."
 msgstr "`SellSound` 用于自定义出售时的音效。"
 
-#: ../../New-or-Enhanced-Logics.md:1108
+#: ../../New-or-Enhanced-Logics.md:1112
 msgid ""
 "Vanilla game played vehicles' `SellSound` globally. This has been changed"
 " in consistency with buildings' `SellSound`."
 msgstr "原版游戏中出售载具的 `SellSound` 是全局的。这已改为与建筑出售的 `SellSound` 保持一致。"
 
-#: ../../New-or-Enhanced-Logics.md:1111
+#: ../../New-or-Enhanced-Logics.md:1115
 msgid "Disabling fallback to (Elite)Secondary weapon"
 msgstr "禁用副武器自动推算"
 
-#: ../../New-or-Enhanced-Logics.md:1113
+#: ../../New-or-Enhanced-Logics.md:1117
 msgid ""
 "It is now possible to disable the fallback to `(Elite)Secondary` weapon "
 "from `(Elite)Primary` weapon if it cannot fire at the chosen target by "
@@ -2895,35 +2900,35 @@ msgstr ""
 "武器。`NoSecondaryWeaponFallback.AllowAA` 控制对抛射体拥有 `AA` 且应对空中目标的情况。这不适用于总是选择"
 " `(Elite)Secondary` 武器的特殊情况，包括但不限于以下几种："
 
-#: ../../New-or-Enhanced-Logics.md:1114
+#: ../../New-or-Enhanced-Logics.md:1118
 msgid ""
 "`OpenTransportWeapon=1` on an unit firing from inside `OpenTopped=true` "
 "transport."
 msgstr "`OpenTransportWeapon=1` 的单位在一个 `OpenTopped=true` 的运输工具内开火。"
 
-#: ../../New-or-Enhanced-Logics.md:1115
+#: ../../New-or-Enhanced-Logics.md:1119
 msgid ""
 "`NoAmmoWeapon=1` on an unit with `Ammo` value higher than 0 and current "
 "ammo count lower or  equal to `NoAmmoAmount`."
 msgstr "`NoAmmoWeapon=1` 的单位在 `Ammo` 大于 0 且当前弹药数量小于等于 `NoAmmoAmount`。"
 
-#: ../../New-or-Enhanced-Logics.md:1116
+#: ../../New-or-Enhanced-Logics.md:1120
 msgid ""
 "Deployed `IsSimpleDeployer=true` units with `DeployFireWeapon=1` set or "
 "omitted."
 msgstr "拥有 `DeployFireWeapon=1` 的 `IsSimpleDeployer=true` 单位处于部署状态。"
 
-#: ../../New-or-Enhanced-Logics.md:1117
+#: ../../New-or-Enhanced-Logics.md:1121
 msgid "`DrainWeapon=true` weapons against enemy `Drainable=yes` buildings."
 msgstr "`DrainWeapon=true` 的武器应对敌方 `Drainable=yes` 的建筑。"
 
-#: ../../New-or-Enhanced-Logics.md:1118
+#: ../../New-or-Enhanced-Logics.md:1122
 msgid ""
 "Units with `IsLocomotor=true` set on `Warhead` of `(Elite)Primary` weapon"
 " against buildings."
 msgstr "单位使用一个 `Warhead` 拥有 `IsLocomotor=true` 设置的 `(Elite)Primary` 应对建筑。"
 
-#: ../../New-or-Enhanced-Logics.md:1119
+#: ../../New-or-Enhanced-Logics.md:1123
 msgid ""
 "Weapons with `ElectricAssault=true` set on `Warhead` against "
 "`Overpowerable=true` buildings belonging to owner or allies."
@@ -2931,17 +2936,17 @@ msgstr ""
 "对所有者或盟友的 `Overpowerable=true` 建筑使用 `Warhead` 拥有 `ElectricAssault=true` "
 "设置的武器。"
 
-#: ../../New-or-Enhanced-Logics.md:1120
+#: ../../New-or-Enhanced-Logics.md:1124
 msgid "`Overpowerable=true` buildings that are currently overpowered."
 msgstr "`Overpowerable=true` 的建筑当前处于过载状态。"
 
-#: ../../New-or-Enhanced-Logics.md:1121
+#: ../../New-or-Enhanced-Logics.md:1125
 msgid ""
 "Any system using `(Elite)WeaponX`, f.ex `Gunner=true` or "
 "`IsGattling=true` is also wholly exempt."
 msgstr "任何使用 `(Elite)WeaponX` 的系统也完全不受影响，例如 `Gunner=true` 或 `IsGattling=true`。"
 
-#: ../../Fixed-or-Improved-Logics.md:124
+#: ../../New-or-Enhanced-Logics.md:1126
 msgid ""
 "If `[CombatDamage] -> AllowWeaponSelectAgainstWalls` is set to true, "
 "`Secondary` will now be used against walls if `Primary` weapon Warhead "
@@ -2952,13 +2957,13 @@ msgstr ""
 "`Primary` 武器的弹头拥有 `Wall=false`，而 `Secondary` 武器拥有 `Wall=true` 且开火者没有将 "
 "`NoSecondaryWeaponFallback` 设为 true 那么 `Secondary` 将在应对墙时被使用。"
 
-#: ../../New-or-Enhanced-Logics.md:1130
+#: ../../New-or-Enhanced-Logics.md:1138
 msgid ""
 "Disguise logic additions (disguise-based movement speed, disguise "
 "blinking visibility)"
 msgstr "伪装逻辑增强"
 
-#: ../../New-or-Enhanced-Logics.md:1132
+#: ../../New-or-Enhanced-Logics.md:1140
 msgid ""
 "`DisguiseBlinkingVisibility` can be used to customize which players can "
 "see disguises blinking on units. This does not affect targeting but does "
@@ -2968,7 +2973,7 @@ msgstr ""
 "`DisguiseBlinkingVisibility` "
 "可用于自定义哪些玩家可以看到单位的伪装闪烁。这不影响目标选择，但会影响军衔的可见性——闪烁的伪装意味着始终可见原单位的军衔而不是伪装单位的。"
 
-#: ../../New-or-Enhanced-Logics.md:1133
+#: ../../New-or-Enhanced-Logics.md:1141
 msgid ""
 "Another thing to note is that in singleplayer missions, for purposes of "
 "the disguise blinking, disguised objects owned by any player-controlled "
@@ -2980,7 +2985,7 @@ msgstr ""
 "另一个需要注意的是在单人任务中，就伪装闪烁而言，任何玩家所控制的所属方所拥有的伪装单位即使与玩家所属方不是盟友视为当前玩家所有，这意味着玩家始终可以看到它们的伪装闪烁，除非"
 " `DisguiseBlinkingVisibility` 设置为 `none` 或 `enemies`。"
 
-#: ../../New-or-Enhanced-Logics.md:1134
+#: ../../New-or-Enhanced-Logics.md:1142
 msgid ""
 "`UseDisguiseMovementSpeed`, if set, makes disguised unit adjust its "
 "movement speed to match that of the disguise, if applicable. Note that "
@@ -2990,11 +2995,11 @@ msgstr ""
 "`UseDisguiseMovementSpeed` "
 "如果设置则在可行的情况下伪装单位将调整其移动速度以匹配伪装目标的速度。注意即使伪装被识破只要未被解除此设置就依旧生效。"
 
-#: ../../New-or-Enhanced-Logics.md:1145
+#: ../../New-or-Enhanced-Logics.md:1153
 msgid "Firing offsets for specific Burst shots"
 msgstr "Burst 开火坐标"
 
-#: ../../New-or-Enhanced-Logics.md:1147
+#: ../../New-or-Enhanced-Logics.md:1155
 msgid ""
 "You can now specify separate firing offsets for each of the shots fired "
 "by weapon with `Burst` via using "
@@ -3012,18 +3017,18 @@ msgstr ""
 "开始的连发索引，这些值将按顺序解析，直到没有常规或精英武器的值为止，如果精英武器缺少值则默认使用常规武器的 "
 "FLH。如果特定连发索引缺少值，则使用基础标签（例如 `PrimaryFireFLH`）的值。"
 
-#: ../../New-or-Enhanced-Logics.md:1148
+#: ../../New-or-Enhanced-Logics.md:1156
 msgid ""
 "Burst-index specific firing offsets are absolute firing offsets and the "
 "lateral shifting based on burst index that occurs with the base firing "
 "offsets is not applied."
 msgstr "特定连发索引使用的是不会根据连发索引而将 L 值镜像的绝对坐标。"
 
-#: ../../New-or-Enhanced-Logics.md:1156
+#: ../../New-or-Enhanced-Logics.md:1164
 msgid "Forcing specific weapon against certain targets"
 msgstr "对特定目标使用特定武器"
 
-#: ../../New-or-Enhanced-Logics.md:1158
+#: ../../New-or-Enhanced-Logics.md:1166
 msgid ""
 "![image](_static/images/underwater-new-attack-tag.gif) *Naval underwater "
 "target behavior with `ForceWeapon.Naval.Decloaked` in [C&C: "
@@ -3033,7 +3038,7 @@ msgstr ""
 "Reloaded](https://www.moddb.com/mods/cncreloaded) 中使用 "
 "`ForceWeapon.Naval.Decloaked` 的海军对水下目标行为*"
 
-#: ../../New-or-Enhanced-Logics.md:1161
+#: ../../New-or-Enhanced-Logics.md:1169
 msgid ""
 "Can be used to override normal weapon selection logic to force specific "
 "weapons to use against certain targets. If multiple are set and target "
@@ -3041,7 +3046,7 @@ msgid ""
 "effect."
 msgstr "可用于覆盖正常的武器选择逻辑，以强制对特定目标使用特定武器。目标满足条件则按所列出规则的顺序使用第一个满足条件的规则。"
 
-#: ../../New-or-Enhanced-Logics.md:1162
+#: ../../New-or-Enhanced-Logics.md:1170
 msgid ""
 "`ForceWeapon.Naval.Decloaked` forces specified weapon to be used against "
 "uncloaked naval targets. Useful if your naval unit has one weapon only "
@@ -3050,23 +3055,23 @@ msgstr ""
 "`ForceWeapon.Naval.Decloaked` "
 "强制指定对未隐形（下潜）状态海军目标使用的武器。如果你的海军单位有一个武器仅用于水下目标另一个武器用于水面目标那么这个规则会很有用。"
 
-#: ../../New-or-Enhanced-Logics.md:1163
+#: ../../New-or-Enhanced-Logics.md:1171
 msgid ""
 "`ForceWeapon.Cloaked` forces specified weapon to be used against any "
 "cloaked targets."
 msgstr "`ForceWeapon.Cloaked` 强制对隐形（下潜）状态目标使用的武器。"
 
-#: ../../New-or-Enhanced-Logics.md:1164
+#: ../../New-or-Enhanced-Logics.md:1172
 msgid ""
 "`ForceWeapon.Disguised` forces specified weapon to be used against any "
 "disguised targets."
 msgstr "`ForceWeapon.Disguised` 强制针对伪装目标所使用的武器。"
 
-#: ../../New-or-Enhanced-Logics.md:1174
+#: ../../New-or-Enhanced-Logics.md:1182
 msgid "Initial strength for TechnoTypes and cloned infantry"
 msgstr "科技类型与克隆步兵的初始血量"
 
-#: ../../New-or-Enhanced-Logics.md:1176
+#: ../../New-or-Enhanced-Logics.md:1184
 msgid ""
 "![image](_static/images/initialstrength.cloning-01.png) *Initial strength"
 " for cloned infantry example in [C&C: "
@@ -3075,13 +3080,13 @@ msgstr ""
 "![image](_static/images/initialstrength.cloning-01.png) *[C&C: "
 "Reloaded](https://www.moddb.com/mods/cncreloaded) 中克隆步兵的初始血量示例*"
 
-#: ../../New-or-Enhanced-Logics.md:1179
+#: ../../New-or-Enhanced-Logics.md:1187
 msgid ""
 "`InitialStrength` can be used to set how many hitpoints a TechnoType "
 "starts with."
 msgstr "`InitialStrength` 可用于设置科技类型的初始血量。"
 
-#: ../../New-or-Enhanced-Logics.md:1180
+#: ../../New-or-Enhanced-Logics.md:1188
 msgid ""
 "`InitialStrength.Cloning` can be used to specify a percentage of "
 "hitpoints (single value or a range from which a random value is picked) "
@@ -3090,7 +3095,7 @@ msgstr ""
 "`InitialStrength.Cloning` 可以用于指定克隆步兵由 `Cloning=true` "
 "建筑创建时的初始血量百分比（单个值或从其中随机选取的一对值）。"
 
-#: ../../New-or-Enhanced-Logics.md:1192
+#: ../../New-or-Enhanced-Logics.md:1200
 msgid ""
 "Both `InitialStrength` and `InitialStrength.Cloning` never surpass the "
 "type's `Strength`, even if your values are bigger than it."
@@ -3098,67 +3103,67 @@ msgstr ""
 "`InitialStrength` 和 `InitialStrength.Cloning` 都不会超过单位的 "
 "`Strength`，即使你设置了一个比它更大的值。"
 
-#: ../../New-or-Enhanced-Logics.md:1195
+#: ../../New-or-Enhanced-Logics.md:1203
 msgid "Kill Object Automatically"
 msgstr "自毁"
 
-#: ../../New-or-Enhanced-Logics.md:1197
+#: ../../New-or-Enhanced-Logics.md:1205
 msgid ""
 "Objects can be destroyed automatically if *any* of these conditions is "
 "met:"
 msgstr "如果满足以下 **任何** 条件对象将会自毁："
 
-#: ../../New-or-Enhanced-Logics.md:1198
+#: ../../New-or-Enhanced-Logics.md:1206
 msgid "`OnAmmoDepletion`: The object will die if the remaining ammo reaches 0."
 msgstr "`OnAmmoDepletion`：如果剩余弹药达到 0 则对象死亡。"
 
-#: ../../New-or-Enhanced-Logics.md:1199
+#: ../../New-or-Enhanced-Logics.md:1207
 msgid "`AfterDelay`: The object will die if the countdown (in frames) reaches 0."
 msgstr "`AfterDelay`：如果倒计时（以帧为单位）达到 0 则对象死亡。"
 
-#: ../../New-or-Enhanced-Logics.md:1200
+#: ../../New-or-Enhanced-Logics.md:1208
 msgid ""
 "`TechnosExist` / `TechnosDontExist`: The object will die if TechnoTypes "
 "exist or do not exist, respectively."
 msgstr "`TechnosExist`／`TechnosDontExist`：如果科技类型分别存在或不存在则对象死亡。"
 
-#: ../../New-or-Enhanced-Logics.md:1201
+#: ../../New-or-Enhanced-Logics.md:1209
 msgid ""
 "`Technos(Dont)Exist.Any` controls whether or not a single listed "
 "TechnoType is enough to satisfy the requirement or if all are required."
 msgstr "`Technos(Dont)Exist.Any` 控制需要列出的单个科技类型还是所有科技类型来满足条件。"
 
-#: ../../New-or-Enhanced-Logics.md:1202
+#: ../../New-or-Enhanced-Logics.md:1210
 msgid ""
 "`Technos(Dont)Exist.AllowLimboed` controls whether or not limboed "
 "TechnoTypes (f.ex those in transports) are counted."
 msgstr "`Technos(Dont)Exist.AllowLimboed` 控制是否计入虚拟的科技类型（例如在运输工具中的那些）。"
 
-#: ../../New-or-Enhanced-Logics.md:1203
+#: ../../New-or-Enhanced-Logics.md:1211
 msgid "`Technos(Dont)Exist.Houses` controls which houses are checked."
 msgstr "`Technos(Dont)Exist.Houses` 控制检查哪些所属方。"
 
-#: ../../New-or-Enhanced-Logics.md:1205
+#: ../../New-or-Enhanced-Logics.md:1213
 msgid "The auto-death behavior can be chosen from the following:"
 msgstr "自毁行为有以下选择："
 
-#: ../../New-or-Enhanced-Logics.md:1206
+#: ../../New-or-Enhanced-Logics.md:1214
 msgid "`kill`: The object will be destroyed normally."
 msgstr "`kill`：对象将正常摧毁。"
 
-#: ../../New-or-Enhanced-Logics.md:1207
+#: ../../New-or-Enhanced-Logics.md:1215
 msgid ""
 "`vanish`: The object will be directly removed from the game peacefully "
 "instead of actually getting killed."
 msgstr "`vanish`：对象将被直接从游戏中静默移除而不是真正击杀。"
 
-#: ../../New-or-Enhanced-Logics.md:1208
+#: ../../New-or-Enhanced-Logics.md:1216
 msgid ""
 "`sell`: If the object is a **building** with buildup, it will be sold "
 "instead of destroyed."
 msgstr "`sell`：如果对象是拥有建造动画的 **建筑**，它将被出售而不是被摧毁。"
 
-#: ../../New-or-Enhanced-Logics.md:1210
+#: ../../New-or-Enhanced-Logics.md:1218
 msgid ""
 "If this option is not set, the self-destruction logic will not be "
 "enabled. `AutoDeath.VanishAnimation` can be set to animation to play at "
@@ -3167,14 +3172,14 @@ msgstr ""
 "如果未设置此项那么自毁逻辑将不会启用。如果选择 `vanish` 行为，那么可以使用 `AutoDeath.VanishAnimation` "
 "设置自毁时播放的动画。"
 
-#: ../../New-or-Enhanced-Logics.md:1213
+#: ../../New-or-Enhanced-Logics.md:1221
 msgid ""
 "Please notice that if the object is a unit which carries passengers, they"
 " will not be released even with the `kill` option **if you are not using "
 "Ares 3.0+**."
 msgstr "请注意 **如果你没有使用 Ares 3.0+** 那么对于携带载员的单位即使使用 `kill` 行为载员也不会被释放。"
 
-#: ../../New-or-Enhanced-Logics.md:1216
+#: ../../New-or-Enhanced-Logics.md:1224
 msgid ""
 "This logic also supports buildings delivered by "
 "[LimboDelivery](#limbodelivery). However in this case, all "
@@ -3184,11 +3189,11 @@ msgstr ""
 "此逻辑还支持通过 [虚拟投放](#limbodelivery) 提供的建筑。不过这种情况下所有 `AutoDeath.Behavior` "
 "值都将只是使建筑简单地移除。"
 
-#: ../../New-or-Enhanced-Logics.md:1235
+#: ../../New-or-Enhanced-Logics.md:1243
 msgid "Mind Control enhancement"
 msgstr "心灵控制增强"
 
-#: ../../New-or-Enhanced-Logics.md:1237
+#: ../../New-or-Enhanced-Logics.md:1245
 msgid ""
 "![image](_static/images/mindcontrol-max-range-01.gif) *Mind Control Range"
 " Limit used in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-"
@@ -3201,34 +3206,34 @@ msgstr ""
 "![image](_static/images/mindcontrol-multiple-01.gif) "
 "*[幻想奇遇](https://www.moddb.com/mods/fantasy-adventure) 中的多重心控单位自动释放第一个受害者*"
 
-#: ../../New-or-Enhanced-Logics.md:1242
+#: ../../New-or-Enhanced-Logics.md:1250
 msgid ""
 "Mind controllers now can have the upper limit of the control distance. "
 "Tag values greater than 0 will activate this feature."
 msgstr "心灵控制者现在可以设置控制距离的上限。标签值大于 0 将激活此功能。"
 
-#: ../../New-or-Enhanced-Logics.md:1243
+#: ../../New-or-Enhanced-Logics.md:1251
 msgid ""
 "Mind controllers with multiple controlling slots can now release the "
 "first controlled unit when they have reached the control limit and are "
 "ordered to control a new target."
 msgstr "多重心控单位现在可以达到控制上限而又要控制一个新目标时释放第一个被控制的单位。"
 
-#: ../../New-or-Enhanced-Logics.md:1252
+#: ../../New-or-Enhanced-Logics.md:1260
 msgid "No Manual Move"
 msgstr "禁止手动移动"
 
-#: ../../New-or-Enhanced-Logics.md:1254
+#: ../../New-or-Enhanced-Logics.md:1262
 msgid ""
 "You can now specify whether a TechnoType is unable to receive move "
 "command."
 msgstr "现在你可以指定一个科技类型是否无法接收移动指令。"
 
-#: ../../New-or-Enhanced-Logics.md:1262
+#: ../../New-or-Enhanced-Logics.md:1270
 msgid "Promoted Spawns"
 msgstr "子机升级"
 
-#: ../../New-or-Enhanced-Logics.md:1264
+#: ../../New-or-Enhanced-Logics.md:1272
 msgid ""
 "![image](_static/images/promotedspawns-01.gif) *Promoted Spawns in "
 "[Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*"
@@ -3236,41 +3241,41 @@ msgstr ""
 "![image](_static/images/promotedspawns-01.gif) "
 "*[幻想奇遇](https://www.moddb.com/mods/fantasy-adventure) 中的子机同步升级*"
 
-#: ../../New-or-Enhanced-Logics.md:1267
+#: ../../New-or-Enhanced-Logics.md:1275
 msgid "The spawned units will promote as their owner's veterancy."
 msgstr "生成的单位可以根据其所有者的等级进行同步升级。"
 
-#: ../../New-or-Enhanced-Logics.md:1275
+#: ../../New-or-Enhanced-Logics.md:1283
 msgid "Promotion animation"
 msgstr "升级动画"
 
-#: ../../New-or-Enhanced-Logics.md:1277
+#: ../../New-or-Enhanced-Logics.md:1285
 msgid "You can now specify an animation on the unit or structure promotion."
 msgstr "现在你可以在单位或建筑升级时播放指定动画。"
 
-#: ../../New-or-Enhanced-Logics.md:1278
+#: ../../New-or-Enhanced-Logics.md:1286
 msgid ""
 "`Promote.VeteranAnimation` is used when unit or structure is promoted to "
 "veteran."
 msgstr "`Promote.VeteranAnimation` 用于单位或建筑升级为老兵时。"
 
-#: ../../New-or-Enhanced-Logics.md:1279
+#: ../../New-or-Enhanced-Logics.md:1287
 msgid ""
 "`Promote.EliteAnimation` is used when unit or structure is promoted to "
 "elite."
 msgstr "`Promote.EliteAnimation` 用于单位或建筑升级为精英时。"
 
-#: ../../New-or-Enhanced-Logics.md:1280
+#: ../../New-or-Enhanced-Logics.md:1288
 msgid ""
 "If `Promote.EliteAnimation` is not defined, `Promote.VeteranAnimation` "
 "will play instead when unit or structure is promoted to elite."
 msgstr "如果未定义 `Promote.EliteAnimation` 则使用 `Promote.VeteranAnimation`。"
 
-#: ../../New-or-Enhanced-Logics.md:1289
+#: ../../New-or-Enhanced-Logics.md:1297
 msgid "Revenge weapon"
 msgstr "复仇武器"
 
-#: ../../New-or-Enhanced-Logics.md:1291
+#: ../../New-or-Enhanced-Logics.md:1299
 msgid ""
 "![Revenge Weapon](_static/images/revengeweapon.gif) *Revenge Weapon usage"
 " in [RA2: Reboot](https://www.moddb.com/mods/reboot)*"
@@ -3278,11 +3283,11 @@ msgstr ""
 "![image](_static/images/revengeweapon.gif) *[RA2: "
 "Reboot](https://www.moddb.com/mods/reboot) 中的复仇武器*"
 
-#: ../../New-or-Enhanced-Logics.md:1291
+#: ../../New-or-Enhanced-Logics.md:1299
 msgid "Revenge Weapon"
 msgstr "复仇武器"
 
-#: ../../New-or-Enhanced-Logics.md:1294
+#: ../../New-or-Enhanced-Logics.md:1302
 msgid ""
 "Similar to `DeathWeapon` in that it is fired after a TechnoType is "
 "killed, but with the difference that it will be fired on whoever dealt "
@@ -3294,20 +3299,20 @@ msgstr ""
 "`DeathWeapon`，它在科技类型被击杀后发射，但不同的是它将发射给造成伤害并杀死科技类型的人。如果科技类型不是由于其他科技类型造成的直接伤害而死亡，那么"
 " `RevengeWeapon` 将不会被发射。"
 
-#: ../../New-or-Enhanced-Logics.md:1295
+#: ../../New-or-Enhanced-Logics.md:1303
 msgid ""
 "`RevengeWeapon.AffectsHouses` can be used to filter which houses the "
 "damage that killed the TechnoType is allowed to come from to fire the "
 "weapon."
 msgstr "`RevengeWeapon.AffectsHouses` 可用于筛选可以对哪些所属方的击杀者发射武器。"
 
-#: ../../New-or-Enhanced-Logics.md:1296
+#: ../../New-or-Enhanced-Logics.md:1304
 msgid ""
 "It is possible to grant revenge weapons through [attached effects"
 "](#attached-effects) as well."
 msgstr "也可以通过 [Attach Effect](#attached-effects) 来授予复仇武器。"
 
-#: ../../New-or-Enhanced-Logics.md:1297
+#: ../../New-or-Enhanced-Logics.md:1305
 msgid ""
 "If a Warhead has `SuppressRevengeWeapons` set to true, it will not "
 "trigger revenge weapons. `SuppressRevengeWeapons.Types` can be used to "
@@ -3318,11 +3323,11 @@ msgstr ""
 "则不会触发复仇武器。`SuppressRevengeWeapons.Types` "
 "可用于列出受影响的武器类型，如果没有列出，则所有武器类型都受影响。"
 
-#: ../../New-or-Enhanced-Logics.md:1310
+#: ../../New-or-Enhanced-Logics.md:1318
 msgid "Shared Ammo"
 msgstr "共享弹药"
 
-#: ../../New-or-Enhanced-Logics.md:1312
+#: ../../New-or-Enhanced-Logics.md:1320
 msgid ""
 "Transports with `OpenTopped=yes` and `Ammo.Shared=yes` will transfer ammo"
 " to passengers that have `Ammo.Shared=yes`. In addition, a transport can "
@@ -3334,27 +3339,27 @@ msgstr ""
 "的载员共享弹药。此外如果载员拥有与运输工具相同的 `Ammo.Shared.Group=<integer>` "
 "值则运输工具可以筛选谁将接收弹药而忽略不拥有同组值的其他载员。"
 
-#: ../../New-or-Enhanced-Logics.md:1314
+#: ../../New-or-Enhanced-Logics.md:1322
 msgid ""
 "Transports with `Ammo.Shared.Group=-1` will transfer ammo to any "
 "passenger with `Ammo.Shared=yes` ignoring the group."
 msgstr "拥有 `Ammo.Shared.Group=-1` 的运输工具将像任何拥有 `Ammo.Shared=yes` 的载员共享弹药。"
 
-#: ../../New-or-Enhanced-Logics.md:1315
+#: ../../New-or-Enhanced-Logics.md:1323
 msgid "Transports must have ammo and should be able to reload ammo."
 msgstr "运输工具必须拥有弹药并应当能够自行重装弹药。"
 
-#: ../../New-or-Enhanced-Logics.md:1328
+#: ../../New-or-Enhanced-Logics.md:1336
 msgid "Sound entry on unit's creation"
 msgstr "单位创建时音效"
 
-#: ../../New-or-Enhanced-Logics.md:1330
+#: ../../New-or-Enhanced-Logics.md:1338
 msgid ""
 "When a unit is created, sound specified in `VoiceCreated` will be played "
 "for the unit owner."
 msgstr "当一个单位被创建时将为单位所有者播放 `VoiceCreated` 指定的音效。"
 
-#: ../../New-or-Enhanced-Logics.md:1331
+#: ../../New-or-Enhanced-Logics.md:1339
 msgid ""
 "If `IsVoiceCreatedGlobal` is set to true, `VoiceCreated` will be played "
 "globally instead of `EVA_UnitReady`."
@@ -3362,18 +3367,18 @@ msgstr ""
 "如果 `IsVoiceCreatedGlobal` 设为 true 则将全局播放 `VoiceCreated` 而不是 "
 "`EVA_UnitReady`。"
 
-#: ../../New-or-Enhanced-Logics.md:1342
+#: ../../New-or-Enhanced-Logics.md:1350
 msgid "Weapons fired on warping in / out"
 msgstr "武器在传送时开火"
 
-#: ../../New-or-Enhanced-Logics.md:1344
+#: ../../New-or-Enhanced-Logics.md:1352
 msgid ""
 "It is now possible to add weapons that are fired on a teleporting "
 "TechnoType when it warps in or out. They are at the same time as the "
 "appropriate animations (`WarpIn` / `WarpOut`) are displayed."
 msgstr "现在可以在科技类型传送来/去时发射武器。它们会与相应的 (`WarpIn`／`WarpOut`) 动画一起显示。"
 
-#: ../../New-or-Enhanced-Logics.md:1345
+#: ../../New-or-Enhanced-Logics.md:1353
 msgid ""
 "`WarpInMinRangeWeapon` is used instead of `WarpInWeapon` if the distance "
 "traveled (in leptons) was less than `ChronoRangeMinimum`. This works "
@@ -3384,7 +3389,7 @@ msgstr ""
 "时使用，无论是否设置了 `ChronoTrigger`。如果未设置 `WarpInMinRangeWeapon`，则默认为 "
 "`WarpInWeapon`。"
 
-#: ../../New-or-Enhanced-Logics.md:1346
+#: ../../New-or-Enhanced-Logics.md:1354
 msgid ""
 "If `WarpInWeapon.UseDistanceAsDamage` is set, `Damage` of "
 "`WarpIn(MinRange)Weapon` is overriden by the number of whole cells "
@@ -3393,15 +3398,15 @@ msgstr ""
 "如果设置了 `WarpInWeapon.UseDistanceAsDamage` 则 `WarpIn(MinRange)Weapon` 的 "
 "`Damage` 将被覆盖为传送所跨越的完整单元格数。"
 
-#: ../../New-or-Enhanced-Logics.md:1357
+#: ../../New-or-Enhanced-Logics.md:1365
 msgid "Reset MindControl after transformation"
 msgstr "变形后重置心控效果"
 
-#: ../../New-or-Enhanced-Logics.md:1359
+#: ../../New-or-Enhanced-Logics.md:1367
 msgid "After the unit conversion is completed, its mind control can be reset."
 msgstr "单位变形完毕后其心控效果可被重置。"
 
-#: ../../New-or-Enhanced-Logics.md:1360
+#: ../../New-or-Enhanced-Logics.md:1368
 msgid ""
 "If all warheads don't have `MindControl=yes`, then "
 "`Convert.ResetMindControl=yes` will release all controlled units."
@@ -3409,7 +3414,7 @@ msgstr ""
 "如果变形后的单位所有弹头都没有 `MindControl=yes`，那么 `Convert.ResetMindControl=yes` "
 "将释放所有被心控的单位。"
 
-#: ../../New-or-Enhanced-Logics.md:1361
+#: ../../New-or-Enhanced-Logics.md:1369
 msgid ""
 "If any warhead has `MindControl=yes`, then `Convert.ResetMindControl=yes`"
 " resets its maximum number of controls."
@@ -3417,7 +3422,7 @@ msgstr ""
 "如果变形后的单位任意弹头拥有 `MindControl=yes`，那么 `Convert.ResetMindControl=yes` "
 "将重置最大控制数量上限。"
 
-#: ../../New-or-Enhanced-Logics.md:1362
+#: ../../New-or-Enhanced-Logics.md:1370
 msgid ""
 "If all weapons don't have `InfiniteMindControl=yes`, then "
 "`Convert.ResetMindControl=yes` release controlled units that exceed the "
@@ -3426,39 +3431,39 @@ msgstr ""
 "如果变形后的单位所有武器都没有 `InfiniteMindControl=yes`，那么 "
 "`Convert.ResetMindControl=yes` 将释放超出上限的被心控单位。"
 
-#: ../../New-or-Enhanced-Logics.md:1370
+#: ../../New-or-Enhanced-Logics.md:1378
 msgid "Terrain"
 msgstr "地形对象"
 
-#: ../../New-or-Enhanced-Logics.md:1372
+#: ../../New-or-Enhanced-Logics.md:1380
 msgid "Destroy animation & sound"
 msgstr "摧毁动画与音效"
 
-#: ../../New-or-Enhanced-Logics.md:1374
+#: ../../New-or-Enhanced-Logics.md:1382
 msgid ""
 "You can now specify a destroy animation and sound for a TerrainType that "
 "are played when it is destroyed."
 msgstr "现在你可以指定当地形对象被摧毁时播放播放的摧毁动画与音效。"
 
-#: ../../New-or-Enhanced-Logics.md:1383
+#: ../../New-or-Enhanced-Logics.md:1391
 msgid "Warheads"
 msgstr "弹头"
 
-#: ../../New-or-Enhanced-Logics.md:1386
+#: ../../New-or-Enhanced-Logics.md:1394
 msgid "All new Warhead effects"
 msgstr "所有新增的弹头效果"
 
-#: ../../New-or-Enhanced-Logics.md:1387
+#: ../../New-or-Enhanced-Logics.md:1395
 msgid ""
 "Can be used with `CellSpread` and Ares' GenericWarhead superweapon where "
 "applicable."
 msgstr "可在适用的情况下与 `CellSpread` 和 Ares 的通用弹头超级武器一起使用。"
 
-#: ../../New-or-Enhanced-Logics.md:1388
+#: ../../New-or-Enhanced-Logics.md:1396
 msgid "Cannot be used with `MindControl.Permanent=yes` of Ares."
 msgstr "不能与 Ares 的 `MindControl.Permanent=yes` 共同使用。"
 
-#: ../../New-or-Enhanced-Logics.md:1389
+#: ../../New-or-Enhanced-Logics.md:1397
 msgid ""
 "Respect `Verses` where applicable unless `EffectsRequireVerses` is set to"
 " false. If target has an active shield, its armor type is used instead "
@@ -3467,11 +3472,11 @@ msgstr ""
 "在适用的情况下除非 `EffectsRequireVerses` 设为 false 否则尊重 "
 "`Verses`。如果目标拥有一个激活的护盾，那么它的护甲类型将被使用，除非弹头可以穿透护盾。"
 
-#: ../../New-or-Enhanced-Logics.md:1392
+#: ../../New-or-Enhanced-Logics.md:1400
 msgid "Break Mind Control on impact"
 msgstr "解除心控"
 
-#: ../../New-or-Enhanced-Logics.md:1394
+#: ../../New-or-Enhanced-Logics.md:1402
 msgid ""
 "![image](_static/images/remove-mc.gif) *Mind control break warhead being "
 "utilized in [RA2: Reboot](https://www.moddb.com/mods/reboot)*"
@@ -3479,17 +3484,17 @@ msgstr ""
 "![image](_static/images/remove-mc.gif) *[RA2: "
 "Reboot](https://www.moddb.com/mods/reboot) 中的心控解除弹头*"
 
-#: ../../New-or-Enhanced-Logics.md:1397
+#: ../../New-or-Enhanced-Logics.md:1405
 msgid ""
 "Warheads can now break mind control (doesn't apply to perma-MC-ed "
 "objects)."
 msgstr "弹头现在可以解除心灵控制（不适用于永久心控的对象）。"
 
-#: ../../New-or-Enhanced-Logics.md:1405
+#: ../../New-or-Enhanced-Logics.md:1413
 msgid "Chance-based extra damage or Warhead detonation / 'critical hits'"
 msgstr "暴击"
 
-#: ../../New-or-Enhanced-Logics.md:1407
+#: ../../New-or-Enhanced-Logics.md:1415
 msgid ""
 "Warheads can now apply additional chance-based damage or Warhead "
 "detonation ('critical hits') with the ability to customize chance, "
@@ -3497,7 +3502,7 @@ msgid ""
 "critical hit."
 msgstr "现在弹头可以基于概率额外造成暴击伤害或弹头爆炸，可以自定义暴击的概率、伤害、影响目标、受影响目标生命值阈值和暴击动画。"
 
-#: ../../New-or-Enhanced-Logics.md:1408
+#: ../../New-or-Enhanced-Logics.md:1416
 msgid ""
 "`Crit.Chance` determines chance for a critical hit to occur. By default "
 "this is checked once when the Warhead is detonated and every target that "
@@ -3508,7 +3513,7 @@ msgstr ""
 "`Crit.Chance` 决定暴击发生的概率。默认情况下这在弹头爆炸时检查一次，每个受影响的目标都可能受到暴击。如果设置了 "
 "`Crit.ApplyChancePerTarget`，那么每个目标是否成功进行暴击的概率将单独计算。"
 
-#: ../../New-or-Enhanced-Logics.md:1409
+#: ../../New-or-Enhanced-Logics.md:1417
 msgid ""
 "`Crit.ExtraDamage` determines the damage dealt by the critical hit. If "
 "`Crit.Warhead` is set, the damage is used to detonate the specified "
@@ -3518,13 +3523,13 @@ msgstr ""
 "`Crit.ExtraDamage` 决定暴击造成的额外伤害，如果设置了 "
 "`Crit.Warhead`，那么伤害将用于在每个受影响的目标上引爆指定的弹头，否则伤害将基于当前弹头的 `Verses` 设置直接造成伤害。"
 
-#: ../../New-or-Enhanced-Logics.md:1410
+#: ../../New-or-Enhanced-Logics.md:1418
 msgid ""
 "`Crit.Warhead` can be used to set a Warhead to detonate instead of using "
 "current Warhead."
 msgstr "`Crit.Warhead` 可用于设置一个替代当前弹头引爆的弹头。"
 
-#: ../../New-or-Enhanced-Logics.md:1411
+#: ../../New-or-Enhanced-Logics.md:1419
 msgid ""
 "`Crit.Warhead.FullDetonation` controls whether or not the Warhead is "
 "detonated fully on the targets (as part of a dummy weapon) or simply "
@@ -3533,27 +3538,27 @@ msgstr ""
 "`Crit.Warhead.FullDetonation` 控制弹头是否在目标上完全引爆（作为虚拟武器的一部分）或者只能对所在区域造成杀伤并应用 "
 "Phobos 的弹头效果。"
 
-#: ../../New-or-Enhanced-Logics.md:1412
+#: ../../New-or-Enhanced-Logics.md:1420
 msgid ""
 "`Crit.Affects` can be used to customize types of targets that this "
 "Warhead can deal critical hits against. Critical hits cannot affect empty"
 " cells or cells containing only TerrainTypes, overlays etc."
 msgstr "`Crit.Affects` 可用于自定义此弹头可暴击的目标类型。暴击不能影响空置单元格或仅包含地形对象和覆盖物等的单元格。"
 
-#: ../../New-or-Enhanced-Logics.md:1413
+#: ../../New-or-Enhanced-Logics.md:1421
 msgid ""
 "`Crit.AffectsHouses` can be used to customize houses that this Warhead "
 "can deal critical hits against."
 msgstr "`Crit.AffectsHouses` 可用于自定义此弹头可暴击的目标所属。"
 
-#: ../../New-or-Enhanced-Logics.md:1414
+#: ../../New-or-Enhanced-Logics.md:1422
 msgid ""
 "`Crit.AffectBelowPercent` can be used to set minimum percentage of their "
 "maximum `Strength` that targets must have left to be affected by a "
 "critical hit."
 msgstr "`Crit.AffectBelowPercent` 可用于设置暴击允许的目标其剩余血量相对最大 `Strength` 的百分比下限。"
 
-#: ../../New-or-Enhanced-Logics.md:1415
+#: ../../New-or-Enhanced-Logics.md:1423
 msgid ""
 "`Crit.AnimList` can be used to set a list of animations used instead of "
 "Warhead's `AnimList` if Warhead deals a critical hit to even one target. "
@@ -3566,7 +3571,7 @@ msgstr ""
 "`Crit.AnimList.PickRandom`（默认为 `AnimList.PickRandom`），则从列表中随机选择一个动画。如果设置了"
 " `Crit.AnimList.CreateAll`（默认为 `AnimList.CreateAll`），则创建列表中的所有动画。"
 
-#: ../../New-or-Enhanced-Logics.md:1416
+#: ../../New-or-Enhanced-Logics.md:1424
 msgid ""
 "`Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from "
 "`Crit.AnimList` play on each affected target *in addition* to animation "
@@ -3581,7 +3586,7 @@ msgstr ""
 "独立所以，`Crit.AnimList.PickRandom` 和 `Crit.AnimList.CreateAll` 将不会默认为 "
 "`AnimList` 对应项的值，需要手动设置。"
 
-#: ../../New-or-Enhanced-Logics.md:1417
+#: ../../New-or-Enhanced-Logics.md:1425
 msgid ""
 "`Crit.ActiveChanceAnims` can be used to set animation to be always "
 "displayed at the Warhead's detonation coordinates if the current Warhead "
@@ -3589,7 +3594,7 @@ msgid ""
 "random one is selected."
 msgstr "`Crit.ActiveChanceAnims` 可用于设置当前弹头有几率造成暴击时始终显示在弹头爆炸坐标处的动画。列出多个动画则随机选择其一。"
 
-#: ../../New-or-Enhanced-Logics.md:1418
+#: ../../New-or-Enhanced-Logics.md:1426
 msgid ""
 "`Crit.SuppressWhenIntercepted`, if set, prevents critical hits from "
 "occuring at all if the warhead was detonated from a [projectile that was "
@@ -3598,13 +3603,13 @@ msgstr ""
 "`Crit.SuppressWhenIntercepted` 如果设置则禁用弹头在被[抛射体拦截](#projectile-"
 "interception-logic)而引爆时造成暴击。"
 
-#: ../../New-or-Enhanced-Logics.md:1419
+#: ../../New-or-Enhanced-Logics.md:1427
 msgid ""
 "`ImmuneToCrit` can be set on TechnoTypes and ShieldTypes to make them "
 "immune to critical hits."
 msgstr "`ImmuneToCrit` 可以设置在科技类型和护盾类型上以使它们免疫暴击。"
 
-#: ../../New-or-Enhanced-Logics.md:1444
+#: ../../New-or-Enhanced-Logics.md:1452
 msgid ""
 "If you set `Crit.Warhead` to the same Warhead it is defined on, or create"
 " a chain of Warheads with it that loops back to the first one there is a "
@@ -3612,11 +3617,11 @@ msgid ""
 "afterwards."
 msgstr "如果你将 `Crit.Warhead` 设为定义暴击的弹头或者创建一个最终回到第一个弹头的循环那么游戏可能会陷入循环并随后卡死或崩溃。"
 
-#: ../../New-or-Enhanced-Logics.md:1447
+#: ../../New-or-Enhanced-Logics.md:1455
 msgid "Convert TechnoType on impact"
 msgstr "单位转换弹头"
 
-#: ../../New-or-Enhanced-Logics.md:1449
+#: ../../New-or-Enhanced-Logics.md:1457
 msgid ""
 "![image](_static/images/convertwh.gif) *Vehicle version of Genetic "
 "Converter in "
@@ -3626,29 +3631,29 @@ msgstr ""
 "*[NanodaSupercalifragilisticexpialidocious](https://www.bilibili.com/opus/896077937747427433)"
 " 中的载具版基因突变*"
 
-#: ../../New-or-Enhanced-Logics.md:1458
+#: ../../New-or-Enhanced-Logics.md:1466
 msgid ""
 "In example, this warhead would convert all affected owned and friendly "
 "`SOLDIERA` and `SOLDIERB` to `NEWSOLDIER`:"
 msgstr "例如这个弹头可以将所有被影响的己方和友方 `SOLDIERA` 和 `SOLDIERB` 转换为 `NEWSOLDIER`："
 
-#: ../../New-or-Enhanced-Logics.md:1487
+#: ../../New-or-Enhanced-Logics.md:1495
 msgid "Custom Mind Control Animation"
 msgstr "自定义心灵控制动画"
 
-#: ../../New-or-Enhanced-Logics.md:1488
+#: ../../New-or-Enhanced-Logics.md:1496
 msgid "Allows Warheads to play custom `MindControl.Anim`."
 msgstr "允许弹头播放自定义的 `MindControl.Anim`。"
 
-#: ../../New-or-Enhanced-Logics.md:1496
+#: ../../New-or-Enhanced-Logics.md:1504
 msgid "Custom 'SplashList' on Warheads"
 msgstr "自定义弹头水花"
 
-#: ../../New-or-Enhanced-Logics.md:1498
+#: ../../New-or-Enhanced-Logics.md:1506
 msgid "![image](_static/images/splashlist-01.gif)"
 msgstr "![image](_static/images/splashlist-01.gif)"
 
-#: ../../New-or-Enhanced-Logics.md:1499
+#: ../../New-or-Enhanced-Logics.md:1507
 msgid ""
 "Allows Warheads to play custom water splash animations. See vanilla's "
 "[Conventional](https://www.modenc.renegadeprojects.com/Conventional) "
@@ -3659,11 +3664,11 @@ msgstr ""
 "[Conventional](https://www.modenc.renegadeprojects.com/Conventional) "
 "系统。`SplashList.PickRandom` 可设置为 `true` 以从列表中随机选择一个动画。"
 
-#: ../../New-or-Enhanced-Logics.md:1508
+#: ../../New-or-Enhanced-Logics.md:1516
 msgid "Detonate Warhead on all objects on map"
 msgstr "全图弹头"
 
-#: ../../New-or-Enhanced-Logics.md:1510
+#: ../../New-or-Enhanced-Logics.md:1518
 msgid ""
 "Setting `DetonateOnAllMapObjects` to true allows a Warhead that is "
 "detonated by a projectile (for an example, this excludes things like "
@@ -3679,7 +3684,7 @@ msgstr ""
 "`Airburst/ShrapnelWeapon`，无论其实际目标如何，都可以对当前地图上所有存在且没死的对象进行引爆，并可以对目标进行筛选。注意，这是在弹头引爆之前的瞬间完成的，因此"
 " `PreImpactAnim`（Ares 功能）可以显示。"
 
-#: ../../New-or-Enhanced-Logics.md:1511
+#: ../../New-or-Enhanced-Logics.md:1519
 msgid ""
 "`DetonateOnAllMapObjects.Full` customizes whether or not the Warhead is "
 "detonated fully on the targets (as part of a dummy weapon) or simply "
@@ -3688,7 +3693,7 @@ msgstr ""
 "`DetonateOnAllMapObjects.Full` "
 "自定义弹头是否在目标上完全引爆（作为虚拟武器的一部分）或者只能对所在区域造成杀伤并应用 Phobos 的弹头效果。"
 
-#: ../../New-or-Enhanced-Logics.md:1512
+#: ../../New-or-Enhanced-Logics.md:1520
 msgid ""
 "`DetonateOnAllMapObjects.AffectTargets` is used to filter which types of "
 "targets (TechnoTypes) are considered valid and must be set to a valid "
@@ -3701,7 +3706,7 @@ msgstr ""
 "时筛选哪些类型的目标（科技类型）可被视为有效。仅 `none`、`all`、`aircraft`、`buildings`、`infantry` 和"
 " `units` 是有效值。默认为 `none`，因为包含所有对象类型可能会影响性能。"
 
-#: ../../New-or-Enhanced-Logics.md:1513
+#: ../../New-or-Enhanced-Logics.md:1521
 msgid ""
 "`DetonateOnAllMapObjects.AffectHouses` is used to filter which houses "
 "targets can belong to be considered valid and must be set to a valid "
@@ -3712,7 +3717,7 @@ msgstr ""
 "`DetonateOnAllMapObjects.AffectHouses` 用于在非 `none` "
 "时筛选哪些所属方的目标可以被视为有效。仅适用于发射弹头的所属方已知的情况。默认为 `none`，因为包含所有所属方可能会影响性能。"
 
-#: ../../New-or-Enhanced-Logics.md:1514
+#: ../../New-or-Enhanced-Logics.md:1522
 msgid ""
 "`DetonateOnAllMapObjects.AffectTypes` can be used to list specific "
 "TechnoTypes to be considered as valid targets. If any valid TechnoTypes "
@@ -3725,13 +3730,13 @@ msgstr ""
 "`DetonateOnAllMapObjects.AffectTargets` 和 "
 "`DetonateOnAllMapObjects.AffectHouses` 的优先级高于此设置。"
 
-#: ../../New-or-Enhanced-Logics.md:1515
+#: ../../New-or-Enhanced-Logics.md:1523
 msgid ""
 "`DetonateOnAllMapObjects.IgnoreTypes` can be used to list specific "
 "TechnoTypes to be never considered as valid targets."
 msgstr "`DetonateOnAllMapObjects.IgnoreTypes` 可用于列出特定的科技类型不得作为目标。"
 
-#: ../../New-or-Enhanced-Logics.md:1516
+#: ../../New-or-Enhanced-Logics.md:1524
 msgid ""
 "`DetonateOnAllMapObjects.RequireVerses`, if set to true, only considers "
 "targets whose armor type the warhead has non-zero `Verses` value against "
@@ -3743,7 +3748,7 @@ msgstr ""
 "`Verses` 值的目标为有效。对于具有激活状态护盾的目标除非弹头拥有 "
 "`Shield.Penetrate=true`，否则使用护盾的护甲类型。在所有上述筛选之后进行检查。"
 
-#: ../../New-or-Enhanced-Logics.md:1531
+#: ../../New-or-Enhanced-Logics.md:1539
 msgid ""
 "While this feature can provide better performance than a large "
 "`CellSpread` value, it still has potential to slow down the game, "
@@ -3754,11 +3759,11 @@ msgstr ""
 "虽然此功能比巨大的 `CellSpread` 值性能上好得多但它仍然可能减慢游戏速度。特别是与动画、AlphaImage 等共同使用时。建议 "
 "modder 谨慎使用并通过筛选语句进行限制。"
 
-#: ../../New-or-Enhanced-Logics.md:1534
+#: ../../New-or-Enhanced-Logics.md:1542
 msgid "Generate credits on impact"
 msgstr "撒币枪（弹）"
 
-#: ../../New-or-Enhanced-Logics.md:1536
+#: ../../New-or-Enhanced-Logics.md:1544
 msgid ""
 "![image](_static/images/hackerfinallyworks-01.gif) *`TransactMoney` used "
 "in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*"
@@ -3766,18 +3771,18 @@ msgstr ""
 "![image](_static/images/hackerfinallyworks-01.gif) "
 "*[东方崛起](https://www.moddb.com/mods/riseoftheeast) 中的 `TransactMoney` 应用*"
 
-#: ../../New-or-Enhanced-Logics.md:1539
+#: ../../New-or-Enhanced-Logics.md:1547
 msgid "Warheads can now give credits to its owner at impact."
 msgstr "现在弹头可以在爆炸时向其所有者撒币。"
 
-#: ../../New-or-Enhanced-Logics.md:1540
+#: ../../New-or-Enhanced-Logics.md:1548
 msgid ""
 "`TransactMoney.Display` can be set to display the amount of credits given"
 " or deducted. The number is displayed in green if given, red if deducted "
 "and will move upwards after appearing."
 msgstr "`TransactMoney.Display` 可以设置是否显示给予或扣除的资金金额。给予时数字显示为绿色，扣除时显示为红色，并在出现后向上飘起。"
 
-#: ../../New-or-Enhanced-Logics.md:1541
+#: ../../New-or-Enhanced-Logics.md:1549
 msgid ""
 "`TransactMoney.Display.AtFirer` if set, makes the credits display appear "
 "on firer instead of target. If set and firer is not known, it will "
@@ -3786,23 +3791,23 @@ msgstr ""
 "`TransactMoney.Display.AtFirer` "
 "如果设置则使资金出现在开火者处而非目标处。如果设置但开火者未知则无论如何都显示在目标处。"
 
-#: ../../New-or-Enhanced-Logics.md:1542
+#: ../../New-or-Enhanced-Logics.md:1550
 msgid ""
 "`TransactMoney.Display.Houses` determines which houses can see the "
 "credits display."
 msgstr "`TransactMoney.Display.Houses` 决定哪些所属方可以看到资金显示。"
 
-#: ../../New-or-Enhanced-Logics.md:1543
+#: ../../New-or-Enhanced-Logics.md:1551
 msgid ""
 "`TransactMoney.Display.Offset` is additional pixel offset for the center "
 "of the credits display, by default `0,0` at target's/firer's center."
 msgstr "`TransactMoney.Display.Offset` 是资金显示中心的额外像素偏移量，默认为 `0,0` 即目标／开火者的中心。"
 
-#: ../../New-or-Enhanced-Logics.md:1555
+#: ../../New-or-Enhanced-Logics.md:1563
 msgid "Iron Curtain & Force Shield damage penetration"
 msgstr "铁幕与力场护盾的伤害穿透"
 
-#: ../../New-or-Enhanced-Logics.md:1557
+#: ../../New-or-Enhanced-Logics.md:1565
 msgid ""
 "It is now possible to have Warhead be able to deal damage to Iron "
 "Curtained and/or Force Shielded objects. `PenetratesForceShield` defaults"
@@ -3811,7 +3816,7 @@ msgstr ""
 "现在可以让弹头对被铁幕和力场护盾保护的对象造成伤害。`PenetratesForceShield` 默认为 "
 "`PenetratesIronCurtain` 的值。"
 
-#: ../../New-or-Enhanced-Logics.md:1558
+#: ../../New-or-Enhanced-Logics.md:1566
 msgid ""
 "Note that this does not affect any Warhead effects other than those "
 "adjacent to damage (e.g `Psychedelic`) and things like debris generation "
@@ -3821,29 +3826,29 @@ msgstr ""
 "注意这不会影响关联伤害类效果（例如 `Psychedelic`）之外的弹头功能以及类似碎片生成和 `AirburstWeapon` "
 "的引爆这类通常在攻击被抵消时**本就**不发生的效果。"
 
-#: ../../New-or-Enhanced-Logics.md:1567
+#: ../../New-or-Enhanced-Logics.md:1575
 msgid "Launch superweapons on impact"
 msgstr "发射超武"
 
-#: ../../New-or-Enhanced-Logics.md:1569
+#: ../../New-or-Enhanced-Logics.md:1577
 msgid "Superweapons can now be launched when a warhead is detonated."
 msgstr "现在弹头可以在引爆时发射超级武器"
 
-#: ../../New-or-Enhanced-Logics.md:1570
+#: ../../New-or-Enhanced-Logics.md:1578
 msgid ""
 "`LaunchSW` specifies the superweapons to launch when the warhead is "
 "detonated. If superweapon has negative `Money.Amount`, the firing house "
 "must have enough credits in order for it to be fired."
 msgstr "`LaunchSW` 指定当弹头引爆时要发射的超级武器。如果超级武器的 `Money.Amount` 为负则发射的所属方还需要拥有足够的资金。"
 
-#: ../../New-or-Enhanced-Logics.md:1571
+#: ../../New-or-Enhanced-Logics.md:1579
 msgid ""
 "`LaunchSW.RealLaunch` controls whether the owner who fired the warhead "
 "must own all listed superweapons. Otherwise they will be launched out of "
 "nowhere."
 msgstr "`LaunchSW.RealLaunch` 控制弹头的所有者是否需要拥有所有列出的超级武器。否则它们将无从发射。"
 
-#: ../../New-or-Enhanced-Logics.md:1572
+#: ../../New-or-Enhanced-Logics.md:1580
 msgid ""
 "`LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of "
 "each superweapon, otherwise only non-inhibited superweapons are launched."
@@ -3851,7 +3856,7 @@ msgstr ""
 "`LaunchSW.IgnoreInhibitors` 设置是否忽略每个超级武器的 "
 "`SW.Inhibitors`／`SW.AnyInhibitor`，否则只有未被抑制的超级武器会被发射。"
 
-#: ../../New-or-Enhanced-Logics.md:1573
+#: ../../New-or-Enhanced-Logics.md:1581
 msgid ""
 "`LaunchSW.IgnoreDesignators` ignores `SW.Designators` / "
 "`SW.AnyDesignator` respectively."
@@ -3859,7 +3864,7 @@ msgstr ""
 "`LaunchSW.IgnoreDesignators` 设置是否忽略每个超级武器的 "
 "`SW.Designators`／`SW.AnyDesignator`。"
 
-#: ../../New-or-Enhanced-Logics.md:1574
+#: ../../New-or-Enhanced-Logics.md:1582
 msgid ""
 "`LaunchSW.DisplayMoney` can be set to display the amount of credits given"
 " or deducted by the launched superweapon by `Money.Amount`. The number is"
@@ -3869,41 +3874,41 @@ msgstr ""
 "`LaunchSW.DisplayMoney` 可以设置是否显示所发射超武 `Money.Amount` "
 "而给予或扣除的资金金额。给予时数字显示为绿色，扣除时显示为红色，并在出现后向上飘起。"
 
-#: ../../New-or-Enhanced-Logics.md:1575
+#: ../../New-or-Enhanced-Logics.md:1583
 msgid ""
 "`LaunchSW.DisplayMoney.Houses` determines which houses can see the "
 "credits display."
 msgstr "`LaunchSW.DisplayMoney.Houses` 决定哪些所属方可以看到资金显示。"
 
-#: ../../New-or-Enhanced-Logics.md:1576
+#: ../../New-or-Enhanced-Logics.md:1584
 msgid ""
 "`LaunchSW.DisplayMoney.Offset` is additional pixel offset for the center "
 "of the credits display, by default `0,0` at superweapon's target cell."
 msgstr "`LaunchSW.DisplayMoney.Offset` 是资金显示中心的额外像素偏移量，默认为 `0,0` 即超级武器目标单元格处。"
 
-#: ../../New-or-Enhanced-Logics.md:1579
+#: ../../New-or-Enhanced-Logics.md:1587
 msgid ""
 "For animation warheads/weapons to take effect, `Damage.DealtByInvoker` "
 "must be set."
 msgstr "为使动画弹头／武器上的此逻辑生效必须设置 `Damage.DealtByInvoker`。"
 
-#: ../../New-or-Enhanced-Logics.md:1581
+#: ../../New-or-Enhanced-Logics.md:1589
 msgid ""
 "Due to the nature of some superweapon types, not all superweapons are "
 "suitable for launch. **Please use with caution!**"
 msgstr "由于某些超级武器类型的特性并非所有超级武器都适合发射。**请慎用！**"
 
-#: ../../New-or-Enhanced-Logics.md:1583
+#: ../../New-or-Enhanced-Logics.md:1591
 msgid ""
 "The superweapons are launched on the *cell* where the warhead is "
 "detonated, instead of being click-fired."
 msgstr "超级武器在弹头引爆的 **单元格** 上发射而不是通过点击发射。"
 
-#: ../../New-or-Enhanced-Logics.md:1598
+#: ../../New-or-Enhanced-Logics.md:1606
 msgid "Parasite removal"
 msgstr "移除寄生"
 
-#: ../../New-or-Enhanced-Logics.md:1600
+#: ../../New-or-Enhanced-Logics.md:1608
 msgid ""
 "By default if unit takes negative damage from a Warhead (before `Verses` "
 "are calculated), any parasites infecting it are removed and deleted. This"
@@ -3913,46 +3918,46 @@ msgstr ""
 "默认情况下如果单位从弹头收到负伤害（在 `Verses` "
 "前计算）任何寄生单位都会被移除和删除。现在可以自定义此行为以禁用负伤害的移除效果或为任意弹头启用它。"
 
-#: ../../New-or-Enhanced-Logics.md:1608
+#: ../../New-or-Enhanced-Logics.md:1616
 msgid "Remove disguise on impact"
 msgstr "移除伪装"
 
-#: ../../New-or-Enhanced-Logics.md:1610
+#: ../../New-or-Enhanced-Logics.md:1618
 msgid ""
 "Warheads can now remove disguise from disguised spies or mirage tanks. "
 "This will work even if the disguised was acquired by default through "
 "`PermaDisguise`."
 msgstr "弹头现在可以移除间谍或幻影坦克的伪装。即使伪装是通过 `PermaDisguise` 默认获得来的。"
 
-#: ../../New-or-Enhanced-Logics.md:1618
+#: ../../New-or-Enhanced-Logics.md:1626
 msgid "Reveal map for owner on impact"
 msgstr "揭示弹"
 
-#: ../../New-or-Enhanced-Logics.md:1620
+#: ../../New-or-Enhanced-Logics.md:1628
 msgid "Warheads can now reveal the entire map on impact."
 msgstr "现在弹头可以在引爆时揭示整个地图的黑幕。"
 
-#: ../../New-or-Enhanced-Logics.md:1621
+#: ../../New-or-Enhanced-Logics.md:1629
 msgid "Reveal only applies to the owner of the warhead."
 msgstr "仅适用于弹头所有者。"
 
-#: ../../New-or-Enhanced-Logics.md:1629
+#: ../../New-or-Enhanced-Logics.md:1637
 msgid "Shroud map for enemies on impact"
 msgstr "黑幕弹"
 
-#: ../../New-or-Enhanced-Logics.md:1631
+#: ../../New-or-Enhanced-Logics.md:1639
 msgid "Warheads can now shroud the entire map on impact."
 msgstr "现在弹头可以在引爆时填充整个地图的黑幕"
 
-#: ../../New-or-Enhanced-Logics.md:1632
+#: ../../New-or-Enhanced-Logics.md:1640
 msgid "Shroud only applies to enemies of the warhead owner."
 msgstr "仅适用于敌对所属方。"
 
-#: ../../New-or-Enhanced-Logics.md:1640
+#: ../../New-or-Enhanced-Logics.md:1648
 msgid "Spawn powerup crate"
 msgstr "生成工具箱"
 
-#: ../../New-or-Enhanced-Logics.md:1642
+#: ../../New-or-Enhanced-Logics.md:1650
 msgid ""
 "Warheads can now spawn powerup crates of specified type(s) on their "
 "impact cells (if free, or nearby cells if occupied something other than a"
@@ -3961,13 +3966,13 @@ msgstr ""
 "现在弹头可以在其引爆的单元格上创建指定类型的升级工具箱（如果空置，若被非工具箱的对象占据则生成到附近的单元格）类似于地图触发动作 `108 "
 "创建工具箱...`。"
 
-#: ../../New-or-Enhanced-Logics.md:1643
+#: ../../New-or-Enhanced-Logics.md:1651
 msgid ""
 "`SpawnsCrateN` where N is a number starting from 0, parsed until no key "
 "is found can be used to define the type of crate spawned."
 msgstr "`SpawnsCrateN` 中的 N 是从 0 开始的数字，游戏会解析到最后一个为止。用于定义每个生成的升级工具箱类型。"
 
-#: ../../New-or-Enhanced-Logics.md:1644
+#: ../../New-or-Enhanced-Logics.md:1652
 msgid ""
 "`SpawnsCrateN.Weight` is a number that determines relative weighting of "
 "spawning corresponding crate type vs. other listed ones (0 is no chance, "
@@ -3976,32 +3981,32 @@ msgstr ""
 "`SpawnsCrateN.Weight` 是一个用于确定生成对应升级工具箱类型与其他列出的类型相比的相对权重（0 "
 "表示没门，越高代表概率越高）如果未定义则默认为 1。"
 
-#: ../../New-or-Enhanced-Logics.md:1645
+#: ../../New-or-Enhanced-Logics.md:1653
 msgid ""
 "`SpawnsCrate.Type/Weight` is an alias for `SpawnsCrate0.Type/Weight` if "
 "latter is not set."
 msgstr "如果未设置 `SpawnsCrate0.Type/Weight` 则 `SpawnsCrate.Type/Weight` 是其别名。"
 
-#: ../../New-or-Enhanced-Logics.md:1654
+#: ../../New-or-Enhanced-Logics.md:1662
 msgid "Trigger specific NotHuman infantry Death anim sequence"
 msgstr "指定非人步兵死亡序列"
 
-#: ../../New-or-Enhanced-Logics.md:1656
+#: ../../New-or-Enhanced-Logics.md:1664
 msgid ""
 "Warheads are now able to trigger specific `NotHuman=yes` infantry `Death`"
 " anim sequence using the corresponding tag. It's value represents "
 "sequences from `Die1` to `Die5`."
 msgstr "现在弹头可以使用相应的标签触发特定的 `NotHuman=yes` 步兵 `Death` 动画序列。其值代表从 `Die1` 到 `Die5`。"
 
-#: ../../New-or-Enhanced-Logics.md:1664
+#: ../../New-or-Enhanced-Logics.md:1672
 msgid "Weapons"
 msgstr "武器"
 
-#: ../../New-or-Enhanced-Logics.md:1666
+#: ../../New-or-Enhanced-Logics.md:1674
 msgid "AreaFire target customization"
 msgstr "自定义 `AreaFire` 目标"
 
-#: ../../New-or-Enhanced-Logics.md:1668
+#: ../../New-or-Enhanced-Logics.md:1676
 msgid ""
 "You can now specify how AreaFire weapon picks its target. By default it "
 "targets the base cell the firer is currently on, but this can now be "
@@ -4012,13 +4017,13 @@ msgstr ""
 "现在你可以指定 AreaFire 武器如何选择目标。默认情况下它会瞄准开火者当前所处的单元格，现在可以通过将 `AreaFire.Target` "
 "设为 `self` 或 `random` 分别改为瞄准发开火者自身或武器 `Range` 范围内的随机单元格。"
 
-#: ../../New-or-Enhanced-Logics.md:1669
+#: ../../New-or-Enhanced-Logics.md:1677
 msgid ""
 "`AreaFire.Target=self` respects normal targeting rules (Warhead `Verses` "
 "etc.) against the firer itself."
 msgstr "`AreaFire.Target=self` 遵守对开火者自身的正常目标筛选规则（弹头 `Verses` 等）。"
 
-#: ../../New-or-Enhanced-Logics.md:1670
+#: ../../New-or-Enhanced-Logics.md:1678
 msgid ""
 "`AreaFire.Target=random` ignores cells that are ineligible or contain "
 "ineligible objects based on listed values in weapon's `CanTarget` & "
@@ -4027,11 +4032,11 @@ msgstr ""
 "`AreaFire.Target=random` 会忽略由武器 `CanTarget` 和 `CanTargetHouses` "
 "值设为不可作为目标的单元格或存在不可作为目标的对象的单元格。"
 
-#: ../../New-or-Enhanced-Logics.md:1678
+#: ../../New-or-Enhanced-Logics.md:1686
 msgid "Burst delay customizations"
 msgstr "自定义 BurstDelay"
 
-#: ../../New-or-Enhanced-Logics.md:1680
+#: ../../New-or-Enhanced-Logics.md:1688
 msgid ""
 "`Burst.Delays` allows specifying weapon-specific burst shot delays. Takes"
 " precedence over the old `BurstDelayX` logic available on VehicleTypes, "
@@ -4044,7 +4049,7 @@ msgstr ""
 "逻辑，且适用于步兵和建筑类型的武器（由于战机类型武器的发射系统完全不同因此暂不支持），并允许独立设置每一发 `Burst` 之间的间隔而不仅限于第"
 " 1 发到第 4 发。"
 
-#: ../../New-or-Enhanced-Logics.md:1681
+#: ../../New-or-Enhanced-Logics.md:1689
 msgid ""
 "If no delay is defined for a shot, it falls back to last delay value "
 "defined (f.ex `Burst=3` and `Burst.Delays=10` would use 10 as delay for "
@@ -4053,14 +4058,14 @@ msgstr ""
 "如果未未某一发设定间隔那么它会使用上一发所定义的间隔（例如 `Burst=3` 和 `Burst.Delays=10` 将使用 10 "
 "作为所有连发的间隔）。"
 
-#: ../../New-or-Enhanced-Logics.md:1682
+#: ../../New-or-Enhanced-Logics.md:1690
 msgid ""
 "Using `-1` as delay reverts back to old logic (`BurstDelay0-3` for "
 "VehicleTypes if available or random value between 3-5 otherwise) for that"
 " shot."
 msgstr "使用 `-1` 作为间隔会使该发使用旧逻辑（如果有则使用载具类型的 `BurstDelay0-3` 否则使用 3-5 之间的随机值）。"
 
-#: ../../New-or-Enhanced-Logics.md:1683
+#: ../../New-or-Enhanced-Logics.md:1691
 msgid ""
 "`Burst.FireWithinSequence` is only used if the weapon is fired by "
 "InfantryTypes, and setting it to true allows infantry to fire multiple "
@@ -4069,13 +4074,13 @@ msgstr ""
 "`Burst.FireWithinSequence` 仅在步兵发射武器时使用，将其设为 true 以允许步兵在同一射击序列内射出多发 "
 "`Burst`。"
 
-#: ../../New-or-Enhanced-Logics.md:1684
+#: ../../New-or-Enhanced-Logics.md:1692
 msgid ""
 "First shot is always fired at sequence frame determined by firing frame "
 "controls on InfantryType image (`FireUp` et al)."
 msgstr "第一发始终在由步兵类型图像的射击帧（如 `FireUp` 等）确定的帧序列决定。"
 
-#: ../../New-or-Enhanced-Logics.md:1685
+#: ../../New-or-Enhanced-Logics.md:1693
 msgid ""
 "Following shots come at intervals determined by `Burst.Delays` (with "
 "minimum delay of 1 frame) or random delay between 3 to 5 frames if not "
@@ -4086,7 +4091,7 @@ msgstr ""
 "后续的连发发射间隔由 `Burst.Delays` 决定（最小间隔为 1 帧）或未定义情况下使用随机 3 到 5 "
 "帧。注意如果下一发的发射帧超出了射击序列长度则连发计数器将被重置且武器会重新开始装填。"
 
-#: ../../New-or-Enhanced-Logics.md:1686
+#: ../../New-or-Enhanced-Logics.md:1694
 msgid ""
 "Burst shot counter is not immediately reset if firing is ceased mid-"
 "sequence after at least one shot, but the frame at which each burst shot "
@@ -4096,11 +4101,11 @@ msgid ""
 "burst shot should be fired is hit)."
 msgstr "如果在至少一发后停止射击则连发计数器不会立即重置，但每个连发的发射帧不会受此影响（换而言之，如果之后重新开始射击而武器没有重新装填，那么射击序列会重新开始，但不会发射任何直到下一发应该被发射的帧）。"
 
-#: ../../New-or-Enhanced-Logics.md:1695
+#: ../../New-or-Enhanced-Logics.md:1703
 msgid "Extra warhead detonations"
 msgstr "额外弹头"
 
-#: ../../New-or-Enhanced-Logics.md:1697
+#: ../../New-or-Enhanced-Logics.md:1705
 msgid ""
 "It is now possible to have same weapon detonate multiple Warheads on "
 "impact by listing `ExtraWarheads`. The warheads are detonated at same "
@@ -4113,7 +4118,7 @@ msgstr ""
 "来让同一武器在命中时引爆多个弹头。这些弹头会在主弹头爆炸后按列出的顺序在同一位置引爆。这仅适用于由武器发射且引爆时仍保留其信息的抛射体（由于目前存在的技术限制，这不包括"
 " `AirburstWeapon`）。"
 
-#: ../../New-or-Enhanced-Logics.md:1698
+#: ../../New-or-Enhanced-Logics.md:1706
 msgid ""
 "`ExtraWarheads.DamageOverrides` can be used to override the weapon's "
 "`Damage` for the extra Warhead detonations. Value from position matching "
@@ -4123,7 +4128,7 @@ msgstr ""
 "`ExtraWarheads.DamageOverrides` 可用于额外弹头引爆时覆盖武器的 `Damage` 属性。如果找到 "
 "`ExtraWarheads` 中与之对应的值则使用，否则使用最后列出的值。如果列表为空则使用武器的 `Damage` 属性。"
 
-#: ../../New-or-Enhanced-Logics.md:1699
+#: ../../New-or-Enhanced-Logics.md:1707
 msgid ""
 "`ExtraWarheads.DetonationChances` can be used to customize the chance of "
 "each extra Warhead detonation occuring. Value from position matching the "
@@ -4134,7 +4139,7 @@ msgstr ""
 "`ExtraWarheads.DetonationChances` 可用于自定义每个额外弹头爆炸的概率。如果找到 `ExtraWarheads` "
 "中与之对应的值则使用，否则使用最后列出的值。如果列表为空则每个额外弹头都必然引爆。"
 
-#: ../../New-or-Enhanced-Logics.md:1700
+#: ../../New-or-Enhanced-Logics.md:1708
 msgid ""
 "`ExtraWarheads.FullDetonation` can be used to customize whether or not "
 "each individual Warhead is detonated fully (as part of a dummy weapon) or"
@@ -4146,17 +4151,17 @@ msgstr ""
 "可用于设置每个额外弹头是否在目标上完全引爆（作为虚拟武器的一部分）或者只能对所在区域造成杀伤并应用 Phobos 的弹头效果。如果找到 "
 "`ExtraWarheads` 中与之对应的值则使用，否则使用最后列出的值。如果列表为空则默认为 true。"
 
-#: ../../New-or-Enhanced-Logics.md:1701
+#: ../../New-or-Enhanced-Logics.md:1709
 msgid ""
 "Note that the listed Warheads must be listed in `[Warheads]` for them to "
 "work."
 msgstr "注意列出的弹头必须在 `[Warheads]` 中列出才能生效。"
 
-#: ../../New-or-Enhanced-Logics.md:1712
+#: ../../New-or-Enhanced-Logics.md:1720
 msgid "Feedback weapon"
 msgstr "反馈武器"
 
-#: ../../New-or-Enhanced-Logics.md:1714
+#: ../../New-or-Enhanced-Logics.md:1722
 msgid ""
 "![image](_static/images/feedbackweapon.gif) *`FeedbackWeapon` used to "
 "apply healing aura upon firing a weapon in [Project "
@@ -4166,13 +4171,13 @@ msgstr ""
 "*[幽灵计划](https://www.moddb.com/mods/project-phantom) "
 "中使用反馈武器在发射武器时对目标施加治疗光环*"
 
-#: ../../New-or-Enhanced-Logics.md:1717
+#: ../../New-or-Enhanced-Logics.md:1725
 msgid ""
 "You can now specify an auxiliary weapon to be fired on the firer itself "
 "when a weapon is fired."
 msgstr "现在你可以指定一个辅助武器在发射武器时对开火者自身发射。"
 
-#: ../../New-or-Enhanced-Logics.md:1718
+#: ../../New-or-Enhanced-Logics.md:1726
 msgid ""
 "`FireInTransport` setting of the feedback weapon is respected to "
 "determine if it can be fired when the original weapon is fired from "
@@ -4184,27 +4189,27 @@ msgstr ""
 "的运输工具中开火时是否可以发射反馈武器。如果反馈武器被发射，它会在运输工具上发射。`OpenToppedDamageMultiplier` "
 "不适用于反馈武器。"
 
-#: ../../New-or-Enhanced-Logics.md:1726
+#: ../../New-or-Enhanced-Logics.md:1734
 msgid "Make units try turning to target when firing with `OmniFire=yes`"
 msgstr "`OmniFire=yes` 下转向"
 
-#: ../../New-or-Enhanced-Logics.md:1728
+#: ../../New-or-Enhanced-Logics.md:1736
 msgid ""
 "The unit will try to turn the body to target even firing with "
 "`OmniFire=yes`."
 msgstr "即便使用 `OmniFire=yes` 的武器开火单位也会尝试将车体转向目标。"
 
-#: ../../New-or-Enhanced-Logics.md:1729
+#: ../../New-or-Enhanced-Logics.md:1737
 msgid ""
 "Jumpjets are recommended to have the same value of body `ROT` and "
 "`JumpjetTurnRate`."
 msgstr "建议 Jumpjet 的 `ROT` 和 `JumpjetTurnRate` 相同。"
 
-#: ../../New-or-Enhanced-Logics.md:1737
+#: ../../New-or-Enhanced-Logics.md:1745
 msgid "Radiation enhancements"
 msgstr "辐射增强"
 
-#: ../../New-or-Enhanced-Logics.md:1739
+#: ../../New-or-Enhanced-Logics.md:1747
 msgid ""
 "In addition to allowing custom radiation types, several enhancements are "
 "also available to the default radiation type defined in `[Radiation]`, "
@@ -4214,11 +4219,11 @@ msgstr ""
 "除了允许自定义辐射类型外还有对于默认辐射类型 `[Radiation]` 的增强，例如可以设置所有者与开火者或对建筑造成伤害。详见[自定义辐射类型"
 "](#custom-radiation-types)。"
 
-#: ../../New-or-Enhanced-Logics.md:1741
+#: ../../New-or-Enhanced-Logics.md:1749
 msgid "Strafing aircraft weapon customization"
 msgstr "自定义战机扫射"
 
-#: ../../New-or-Enhanced-Logics.md:1743
+#: ../../New-or-Enhanced-Logics.md:1751
 msgid ""
 "![image](_static/images/strafing-01.gif) *Strafing aircraft weapon "
 "customization in [Project Phantom](https://www.moddb.com/mods/project-"
@@ -4227,11 +4232,11 @@ msgstr ""
 "![image](_static/images/strafing-01.gif) "
 "*[幽灵计划](https://www.moddb.com/mods/project-phantom) 中的自定义战机扫射武器*"
 
-#: ../../New-or-Enhanced-Logics.md:1746
+#: ../../New-or-Enhanced-Logics.md:1754
 msgid "Some of the behavior of strafing aircraft weapons can now be customized."
 msgstr "现在可以自定义战机扫射武器的一些行为。"
 
-#: ../../New-or-Enhanced-Logics.md:1747
+#: ../../New-or-Enhanced-Logics.md:1755
 msgid ""
 "`Strafing` controls if the aircraft can strafe when firing at the target."
 " Default to `true` if the projectile's `ROT` < 2 and `Inviso=false` "
@@ -4240,7 +4245,7 @@ msgstr ""
 "`Strafing` 控制战机在目标射击时是否可以扫射。如果抛射体 `ROT` < 2 且 `Inviso=false` 并且没有 "
 "`Trajectory` 则默认为 `true` 其他情况为 `false`。"
 
-#: ../../New-or-Enhanced-Logics.md:1748
+#: ../../New-or-Enhanced-Logics.md:1756
 msgid ""
 "`Strafing.Shots` controls the number of times the weapon is fired during "
 "a single strafe run, defaults to 5 if not set. `Ammo` is only deducted at"
@@ -4249,7 +4254,7 @@ msgstr ""
 "`Strafing.Shots` 控制在单词扫射过程中武器发射的次数，如果未设置则默认为 5。`Ammo` "
 "只会在扫射结束后扣除一次，无论实际多少次。"
 
-#: ../../New-or-Enhanced-Logics.md:1749
+#: ../../New-or-Enhanced-Logics.md:1757
 msgid ""
 "`Strafing.SimulateBurst` controls whether or not the shots fired during "
 "strafing simulate behavior of `Burst`, allowing for alternating firing "
@@ -4258,14 +4263,14 @@ msgstr ""
 "`Strafing.SimulateBurst` 控制在扫射过程中发射的武器是否模拟 `Burst` 的行为，即允许交替开火坐标。仅当武器 "
 "`Burst` 设置为 1 或未定义时才有效。"
 
-#: ../../New-or-Enhanced-Logics.md:1750
+#: ../../New-or-Enhanced-Logics.md:1758
 msgid ""
 "`Strafing.UseAmmoPerShot`, if set to `true` overrides the usual behaviour"
 " of only deducting ammo after a strafing run and instead doing it after "
 "each individual shot."
 msgstr "`Strafing.UseAmmoPerShot` 如果设为 `true` 将在每次开火后都扣除弹药而不是通常的仅在扫射结束后才扣除弹药。"
 
-#: ../../New-or-Enhanced-Logics.md:1751
+#: ../../New-or-Enhanced-Logics.md:1759
 msgid ""
 "`Strafing.EndDelay` can be used to override the delay after firing last "
 "shot in strafing run before aircraft resumes another strafing run or "
@@ -4280,7 +4285,7 @@ msgstr ""
 "Speed`。注意对于弹药量足够进行多次扫射的战机而言过短的间隔可能导致并不理想的行为例如四处游走或朝向怪异的方向，具体取决于 "
 "`[WeaponType] -> ROF` 和 `[AircraftType] -> Speed` 等其他因素。"
 
-#: ../../New-or-Enhanced-Logics.md:1752
+#: ../../New-or-Enhanced-Logics.md:1760
 msgid ""
 "There is a special case for aircraft spawned by `Type=SpyPlane` "
 "superweapons on `SpyPlane Approach` or `SpyPlane Overfly` mission where "
@@ -4291,11 +4296,11 @@ msgstr ""
 "对于 `Type=SpyPlane` 超级武器生成的战机在 `SpyPlane Approach` 或 `SpyPlane Overfly` "
 "任务中的情况 `Strafing.Shots` 只有在其主武器上手动设置才会生效并决定地图揭示效果的最大次数而无视其他因素。"
 
-#: ../../New-or-Enhanced-Logics.md:1764
+#: ../../New-or-Enhanced-Logics.md:1772
 msgid "Weapon targeting filter"
 msgstr "武器瞄准筛选"
 
-#: ../../New-or-Enhanced-Logics.md:1766
+#: ../../New-or-Enhanced-Logics.md:1774
 msgid ""
 "![image](_static/images/weaponfilter.gif) *`Weapon target filter - "
 "different weapon used against enemies & allies as well as units & "
@@ -4306,14 +4311,14 @@ msgstr ""
 "*[幽灵计划](https://www.moddb.com/mods/project-phantom) 中的武器瞄准筛选 - "
 "就像分别对单位和建筑使用那样对敌军和友军使用不同武器*"
 
-#: ../../New-or-Enhanced-Logics.md:1769
+#: ../../New-or-Enhanced-Logics.md:1777
 msgid ""
 "You can now specify which targets or houses a weapon can fire at. This "
 "also affects weapon selection, other than certain special cases where the"
 " selection is fixed."
 msgstr "现在你可以指定武器可以开火的目标或所属方。这还会影响武器选择，除了某些特殊情况下的固定选择。"
 
-#: ../../New-or-Enhanced-Logics.md:1779
+#: ../../New-or-Enhanced-Logics.md:1787
 msgid ""
 "`CanTarget` explicitly requires either `all` or `empty` to be listed for "
 "the weapon to be able to fire at cells containing no TechnoTypes."

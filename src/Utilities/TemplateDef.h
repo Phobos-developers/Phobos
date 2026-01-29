@@ -273,10 +273,13 @@ namespace detail
 	template <>
 	inline bool read<PartialVector2D<int>>(PartialVector2D<int>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
-		value.ValueCount = parser.ReadMultipleIntegers(pSection, pKey, (int*)&value, 2);
+		int valueCount = parser.ReadMultipleIntegers(pSection, pKey, (int*)&value, 2);
 
-		if (value.ValueCount > 0)
+		if (valueCount > 0)
+		{
+			value.ValueCount = valueCount;
 			return true;
+		}
 
 		return false;
 	}
@@ -284,10 +287,13 @@ namespace detail
 	template <>
 	inline bool read<PartialVector2D<double>>(PartialVector2D<double>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
-		value.ValueCount = parser.ReadMultipleDoubles(pSection, pKey, (double*)&value, 2);
+		int valueCount = parser.ReadMultipleDoubles(pSection, pKey, (double*)&value, 2);
 
-		if (value.ValueCount > 0)
+		if (valueCount > 0)
+		{
+			value.ValueCount = valueCount;
 			return true;
+		}
 
 		return false;
 	}
@@ -295,10 +301,13 @@ namespace detail
 	template <>
 	inline bool read<PartialVector3D<int>>(PartialVector3D<int>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
-		value.ValueCount = parser.ReadMultipleIntegers(pSection, pKey, (int*)&value, 3);
+		int valueCount = parser.ReadMultipleIntegers(pSection, pKey, (int*)&value, 3);
 
-		if (value.ValueCount > 0)
+		if (valueCount > 0)
+		{
+			value.ValueCount = valueCount;
 			return true;
+		}
 
 		return false;
 	}
@@ -306,10 +315,13 @@ namespace detail
 	template <>
 	inline bool read<PartialVector3D<double>>(PartialVector3D<double>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
-		value.ValueCount = parser.ReadMultipleDoubles(pSection, pKey, (double*)&value, 3);
+		int valueCount = parser.ReadMultipleDoubles(pSection, pKey, (double*)&value, 3);
 
-		if (value.ValueCount > 0)
+		if (valueCount > 0)
+		{
+			value.ValueCount = valueCount;
 			return true;
+		}
 
 		return false;
 	}

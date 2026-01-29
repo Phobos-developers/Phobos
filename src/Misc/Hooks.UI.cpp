@@ -88,9 +88,9 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 	{
 		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
-		auto nActive = HouseExt::ActiveHarvesterCount(pPlayer);
-		auto nTotal = HouseExt::TotalHarvesterCount(pPlayer);
-		auto nPercentage = nTotal == 0 ? 1.0 : (double)nActive / (double)nTotal;
+		const int nActive = HouseExt::ActiveHarvesterCount(pPlayer);
+		const int nTotal = HouseExt::TotalHarvesterCount(pPlayer);
+		const double nPercentage = nTotal == 0 ? 1.0 : (double)nActive / (double)nTotal;
 
 		ColorStruct clrToolTip = nPercentage > Phobos::UI::HarvesterCounter_ConditionYellow
 			? Drawing::TooltipColor : nPercentage > Phobos::UI::HarvesterCounter_ConditionRed
