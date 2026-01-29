@@ -2032,9 +2032,9 @@ msgstr ""
 
 #: ../../../CREDITS.md:490
 msgid ""
-"Customize whether warhead can be used to targeting ironcurtained technos "
+"Customize whether weapon can be used to targeting ironcurtained technos "
 "or not"
-msgstr ""
+msgstr "自定义弹头能否瞄准被铁幕作用中的对象"
 
 #: ../../../CREDITS.md:491
 msgid "**Apollo** - Translucent SHP drawing patches"

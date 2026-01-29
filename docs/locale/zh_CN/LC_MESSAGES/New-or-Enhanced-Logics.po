@@ -9802,19 +9802,21 @@ msgstr "这会无视 `Burst.Delays` 设置。"
 
 #: ../../New-or-Enhanced-Logics.md:2839
 msgid "Customize whether weapon can target iron-curtained technos"
-msgstr ""
+msgstr "自定义武器能否瞄准被铁幕作用中的对象"
 
 #: ../../New-or-Enhanced-Logics.md:2841
 msgid ""
 "In vanilla, computer players always don't attack iron-curtained technos. "
 "Now you can customize it."
 msgstr ""
+"在原版中，AI 玩家总是不会攻击被铁幕作用中的单位。现在你可以自定义这点。"
 
 #: ../../New-or-Enhanced-Logics.md:2842
 msgid ""
 "`CanTarget.IronCurtained` affects human player, "
 "`CanTargetAI.IronCurtained` affects computer."
 msgstr ""
+"`CanTarget.IronCurtained` 控制人类玩家，`CanTargetAI.IronCurtained` 控制 AI 玩家。"
 
 #: ../../New-or-Enhanced-Logics.md:2843
 msgid ""
@@ -9822,6 +9824,7 @@ msgid ""
 "can fire at iron-curtained objects positively. Computer will ignore this "
 "setting while only following `CanTarget.IronCurtained`."
 msgstr ""
+"`AutoTarget.IronCurtained` 决定玩家控制的单位能否主动攻击铁幕保护中的目标。AI 只遵循 `CanTarget.IronCurtained` 而无视此设置。"
 
 #: ../../New-or-Enhanced-Logics.md:2846
 msgid ""

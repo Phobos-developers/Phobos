@@ -2470,9 +2470,10 @@ msgstr ""
 
 #: ../../Whats-New.md:531
 msgid ""
-"Customize whether warhead can be used to targeting ironcurtained technos "
-"or not (by NetsuNegi)"
+"[Customize whether weapon can be used to targeting ironcurtained technos "
+"or not](New-or-Enhanced-Logics.md#customize-whether-weapon-can-target-iron-curtained-technos) (by NetsuNegi)"
 msgstr ""
+"[自定义弹头能否瞄准被铁幕作用中的对象](New-or-Enhanced-Logics.md#customize-whether-weapon-can-target-iron-curtained-technos)（by NetsuNegi）"
 
 #: ../../Whats-New.md:533 ../../Whats-New.md:644 ../../Whats-New.md:830
 #: ../../Whats-New.md:1188 ../../Whats-New.md:1297 ../../Whats-New.md:1322
