@@ -60,11 +60,11 @@ DEFINE_HOOK(0x6F7CE2, TechnoClass_CanAutoTargetObject_IronCurtain, 0x6)
 		{
 			const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-			if (pWeaponExt->CanTarget_IronCurtained.isset())
-				return pWeaponExt->CanTarget_IronCurtained.Get() ? 0 : ReturnFalse;
+			if (pWeaponExt->CanAutoTargetIronCurtained.isset())
+				return pWeaponExt->CanAutoTargetIronCurtained.Get() ? 0 : ReturnFalse;
 		}
 
-		return RulesExt::Global()->CanHumanTargetIronCurtained ? 0 : ReturnFalse;
+		return RulesExt::Global()->CanHumanAutoTargetIronCurtained ? 0 : ReturnFalse;
 	}
 
 	return 0;
