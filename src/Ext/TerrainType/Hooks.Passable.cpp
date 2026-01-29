@@ -1,11 +1,5 @@
 #include "Body.h"
 
-#include <HouseClass.h>
-#include <OverlayClass.h>
-#include <TerrainClass.h>
-
-#include <Utilities/GeneralUtils.h>
-
 constexpr bool IS_CELL_OCCUPIED(CellClass* pCell)
 {
 	return pCell->OccupationFlags & 0x20 || pCell->OccupationFlags & 0x40 || pCell->OccupationFlags & 0x80 || pCell->GetInfantry(false);
@@ -145,3 +139,20 @@ DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
 
 	return Unlimbo;
 }
+
+// Buildable-upon TerrainTypes Hook #5 -> Ignore when flushing building foundations for placement.
+DEFINE_HOOK(0x45EF3A, BuildingTypeClass_FlushForPlacement_BuildableTerrain, 0x7)
+{
+	enum { Disallow = 0x45F00B, Continue = 0x45EF4A };
+
+	GET(ObjectClass* const, pObject, ESI);
+
+	if (auto const pTerrain = abstract_cast<TerrainClass*>(pObject))
+	{
+		if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+			return Disallow;
+	}
+
+	return Continue;
+}
+

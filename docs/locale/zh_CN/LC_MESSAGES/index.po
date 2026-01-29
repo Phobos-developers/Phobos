@@ -1,9 +1,14 @@
-
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025, The Phobos Contributors
+# This file is distributed under the same license as the Phobos package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-27 07:05+0800\n"
+"POT-Creation-Date: 2026-01-19 00:01+0800\n"
 "PO-Revision-Date: 2025-02-07 13:02+0800\n"
 "Last-Translator: \n"
 "Language: zh\n"
@@ -371,7 +376,7 @@ msgstr "你可以在右下角切换版本（默认显示开发分支最新一次
 msgid ""
 "The documentation is split by a few major categories, each represented "
 "with a page on the sidebar. Each page has its contents grouped into "
-"multiple subcategories, be it buildings, technotypes, infantries, "
+"multiple subcategories, be it buildings, technotypes, infantry, "
 "superweapons or something else."
 msgstr "文档分为几个大类，每类在侧边栏上都有一个页面。每个页面的内容又分为多个子类别，包括建筑、科技类型（四大类通用）、步兵、超级武器或其他。"
 
@@ -498,7 +503,7 @@ msgstr "欢迎每位团队成员在下方为他们自己的条目添加捐款链
 msgid ""
 "**Kerbiter ([@Metadorius](https://github.com/Metadorius))** - T3 "
 "maintainer (lead)"
-msgstr "**Kerbiter（[@Metadorius](https://github.com/Metadorius)）** - T3 维护者（领导者）"
+msgstr "**Kerbiter（[@Metadorius](https://github.com/Metadorius)）**- T3 维护者（领导者）"
 
 #: ../../../README.md:106
 msgid ""
@@ -507,8 +512,8 @@ msgid ""
 msgstr "[Patreon](https://www.patreon.com/kerbiter) 或私信请求使用 PayPal（更推荐，因为免手续费）"
 
 #: ../../../README.md:107
-msgid "**[@Starkku](https://github.com/Starkku)** - T2 maintainer"
-msgstr "**[@Starkku](https://github.com/Starkku)** - T2 维护者"
+msgid "**[@Starkku](https://github.com/Starkku)** - T3 maintainer (co-lead)"
+msgstr "**[@Starkku](https://github.com/Starkku)** - T3 维护者（共同领导者）"
 
 #: ../../../README.md:108
 msgid "[Patreon](https://www.patreon.com/Starkku)"
@@ -516,7 +521,7 @@ msgstr "[Patreon](https://www.patreon.com/Starkku)"
 
 #: ../../../README.md:109
 msgid "**[@CrimRecya](https://github.com/CrimRecya) (绯红热茶)** - T2 maintainer"
-msgstr "**[@CrimRecya](https://github.com/CrimRecya)（绯红热茶）** - T2 维护者"
+msgstr "**[@CrimRecya](https://github.com/CrimRecya)（绯红热茶）**- T2 维护者"
 
 #: ../../../README.md:110
 msgid "[Alipay](https://i2.hdslb.com/bfs/new_dyn/8de77b17b8fc2e005613821b62008e37362533219.jpg)"
@@ -532,7 +537,7 @@ msgstr "[Patreon](https://www.patreon.com/c/ZivDero)"
 
 #: ../../../README.md:113
 msgid "**Ollerus ([@Coronia](https://github.com/Coronia))** - T1 maintainer"
-msgstr "**Ollerus ([@Coronia](https://github.com/Coronia))** - T1 维护者"
+msgstr "**Ollerus（[@Coronia](https://github.com/Coronia)）**- T1 维护者"
 
 #: ../../../README.md:114
 msgid "[Alipay](https://i2.hdslb.com/bfs/new_dyn/7c5f82c5530c88dc076a6f1ca2c02b46362533219.jpg)"
@@ -548,7 +553,7 @@ msgstr "[支付宝](https://i2.hdslb.com/bfs/new_dyn/cb69d2b5eb08c13d03bc79664e6
 
 #: ../../../README.md:117
 msgid "**[@TaranDahl](https://github.com/TaranDahl) (航味麻酱)** - T1 maintainer"
-msgstr "**[@TaranDahl](https://github.com/TaranDahl)（航味麻酱）** - T1 维护者"
+msgstr "**[@TaranDahl](https://github.com/TaranDahl)（航味麻酱）**- T1 维护者"
 
 #: ../../../README.md:118
 msgid "[WeChatPay](https://i2.hdslb.com/bfs/new_dyn/ffd5d36cc5efcdd83d93138062ec116e362533219.jpg)"
@@ -559,7 +564,7 @@ msgid ""
 "**Noble_Fish ([@DeathFishAtEase](https://github.com/DeathFishAtEase))** -"
 " triage, doc maintainer"
 msgstr ""
-"**Noble_Fish（[@DeathFishAtEase](https://github.com/DeathFishAtEase)）** - "
+"**Noble_Fish（[@DeathFishAtEase](https://github.com/DeathFishAtEase)）**- "
 "分派、文档维护者"
 
 #: ../../../README.md:120
@@ -568,7 +573,7 @@ msgstr "[支付宝](https://i2.hdslb.com/bfs/new_dyn/b080641faea49ae3e10b4728679
 
 #: ../../../README.md:121
 msgid "**FlyStar ([@Fly-Star-him](https://github.com/Fly-Star-him))** - triage"
-msgstr "**FlyStar（[@Fly-Star-him](https://github.com/Fly-Star-him)）** - 分派"
+msgstr "**FlyStar（[@Fly-Star-him](https://github.com/Fly-Star-him)）**- 分派"
 
 #: ../../../README.md:122
 msgid "**[@Fryone](https://github.com/Fryone)** - triage"
@@ -687,15 +692,13 @@ msgstr "Phobos 是一个非官方的开源社区合作项目，旨在扩展《�
 #: ../../../README.md:152
 msgid ""
 "As a modification, the project complies with [EA C&C modding "
-"guidelines](https://www.ea.com/games/command-and-conquer/command-and-"
-"conquer-remastered/modding-faq); should there be conflict between the "
-"project's license and modding guidelines - the rules imposed by "
-"guidelines shall take precedence (for example, the project should not be "
-"commercial or used to make money)."
+"guidelines](https://www.ea.com/games/command-and-conquer/modding-faq); "
+"should there be conflict between the project's license and modding "
+"guidelines - the rules imposed by guidelines shall take precedence (for "
+"example, the project should not be commercial or used to make money)."
 msgstr ""
 "作为一项修改，该项目符合 [EA C&C 修改指南](https://www.ea.com/games/command-and-conquer"
-"/command-and-conquer-remastered/modding-"
-"faq)；如果项目许可与修改指南之间存在冲突，则以指南中的规则为准（例如，该项目不应用于商业用途或用于盈利）。"
+"/modding-faq)；如果项目许可与修改指南之间存在冲突，则以指南中的规则为准（例如，该项目不应用于商业用途或用于盈利）。"
 
 #: ../../../README.md:154
 msgid ""

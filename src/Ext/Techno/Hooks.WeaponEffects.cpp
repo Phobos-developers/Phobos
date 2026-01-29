@@ -1,14 +1,7 @@
-#include <BuildingClass.h>
-#include <CellClass.h>
-#include <MapClass.h>
-#include <ParticleSystemClass.h>
-#include <FootClass.h>
-#include <WaveClass.h>
+#include "Body.h"
 
 #include <Ext/ParticleSystemType/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Utilities/Macro.h>
 
 // Contains hooks that fix weapon graphical effects like lasers, railguns, electric bolts, beams and waves not interacting
 // correctly with obstacles between firer and target, as well as railgun / railgun particles being cut off by elevation.
@@ -38,10 +31,8 @@ DEFINE_HOOK(0x6FF15F, TechnoClass_FireAt_ObstacleCellSet, 0x6)
 	GET_BASE(AbstractClass*, pTarget, 0x8);
 	LEA_STACK(CoordStruct*, pSourceCoords, STACK_OFFSET(0xB0, -0x6C));
 
-	auto coords = pTarget->GetCenterCoords();
-
-	if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pTarget))
-		coords = pBuilding->GetTargetCoords();
+	const auto pBuilding = abstract_cast<BuildingClass*, true>(pTarget);
+	const auto coords = pBuilding ? pBuilding->GetTargetCoords() : pTarget->GetCenterCoords();
 
 	// This is set to a temp variable as well, as accessing it everywhere needed from TechnoExt would be more complicated.
 	FireAtTemp::pObstacleCell = TrajectoryHelper::FindFirstObstacle(*pSourceCoords, coords, pWeapon->Projectile, pThis->Owner);
@@ -116,15 +107,13 @@ DEFINE_HOOK(0x62D685, ParticleSystemClass_Fire_Coords, 0x5)
 DEFINE_HOOK(0x70C6B5, TechnoClass_Railgun_TargetCoords, 0x5)
 {
 	GET(AbstractClass*, pTarget, EBX);
-
-	auto coords = pTarget->GetCenterCoords();
+	GET(CoordStruct*, pCoords, EAX);
 
 	if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pTarget))
-		coords = pBuilding->GetTargetCoords();
+		*pCoords = pBuilding->GetTargetCoords();
 	else if (const auto pCell = abstract_cast<CellClass*, true>(pTarget))
-		coords = pCell->GetCoordsWithBridge();
+		*pCoords = pCell->GetCoordsWithBridge();
 
-	R->EAX(&coords);
 	return 0;
 }
 
@@ -318,15 +307,17 @@ DEFINE_HOOK(0x762AFF, WaveClass_AI_TargetSet, 0x6)
 {
 	GET(WaveClass*, pThis, ESI);
 
-	if (pThis->Target && pThis->Owner)
+	if (pThis->Target)
 	{
-		auto const pOwner = pThis->Owner;
-		auto const pObstacleCell = TechnoExt::ExtMap.Find(pThis->Owner)->FiringObstacleCell;
-
-		if (pObstacleCell == pThis->Target && pOwner->Target)
+		if (auto const pOwner = pThis->Owner)
 		{
-			FireAtTemp::pWaveOwnerTarget = pOwner->Target;
-			pOwner->Target = pThis->Target;
+			auto const pObstacleCell = TechnoExt::ExtMap.Find(pOwner)->FiringObstacleCell;
+
+			if (pObstacleCell == pThis->Target && pOwner->Target)
+			{
+				FireAtTemp::pWaveOwnerTarget = pOwner->Target;
+				pOwner->Target = pThis->Target;
+			}
 		}
 	}
 

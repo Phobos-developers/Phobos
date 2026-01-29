@@ -111,6 +111,18 @@ enum class AffectedTarget : unsigned char
 
 MAKE_ENUM_FLAGS(AffectedTarget);
 
+enum class AffectedVeterancy : unsigned char
+{
+	None = 0x0,
+	Rookie = 0x1,
+	Veteran = 0x2,
+	Elite = 0x4,
+
+	All = Rookie | Veteran | Elite
+};
+
+MAKE_ENUM_FLAGS(AffectedVeterancy);
+
 enum class AffectedHouse : unsigned char
 {
 	None = 0x0,
@@ -299,6 +311,19 @@ enum class DisplayInfoType : BYTE
 	TemporalLife = 19,
 	FactoryProcess = 20
 };
+
+enum class DisplayShowType : unsigned char
+{
+	None = 0x0,
+	CursorHover = 0x1,
+	Selected = 0x2,
+	Idle = 0x4,
+
+	Select = CursorHover | Selected,
+	All = CursorHover | Selected | Idle
+};
+
+MAKE_ENUM_FLAGS(DisplayShowType);
 
 enum class BannerNumberType : int
 {

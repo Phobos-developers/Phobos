@@ -1,9 +1,5 @@
 #include "Body.h"
 
-#include <AirstrikeClass.h>
-
-#include <Utilities/EnumFunctions.h>
-
 // Unsorted methods
 
 void TechnoExt::ExtData::InitializeLaserTrails()
@@ -189,7 +185,10 @@ int TechnoExt::GetTintColor(TechnoClass* pThis, bool invulnerability, bool airst
 			auto const pExt =  TechnoExt::ExtMap.Find(pThis);
 
 			if (auto const pAirstrike = pExt->AirstrikeTargetingMe)
-				tintColor |= pExt->TypeExtData->TintColorAirstrike;
+			{
+				auto const pTypeExt = TechnoExt::ExtMap.Find(pAirstrike->Owner)->TypeExtData;
+				tintColor |= pTypeExt->TintColorAirstrike;
+			}
 		}
 
 		if (berserk && pThis->Berzerk)

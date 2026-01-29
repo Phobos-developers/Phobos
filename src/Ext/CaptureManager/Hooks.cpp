@@ -1,9 +1,6 @@
 #include "Body.h"
 
-#include <ParticleSystemClass.h>
 #include <Ext/Techno/Body.h>
-#include <Utilities/Macro.h>
-#include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x471D40, CaptureManagerClass_CaptureUnit, 0x7)
 {
@@ -25,14 +22,44 @@ DEFINE_HOOK(0x471FF0, CaptureManagerClass_FreeUnit, 0x8)
 	return 0x472006;
 }
 
-DEFINE_HOOK(0x6FCB34, TechnoClass_CanFire_CanCapture, 0x6)
+DEFINE_HOOK(0x471C90, CaptureManagerClass_CanCapture, 0x6)
 {
-	GET(TechnoClass*, pThis, ESI);
-	GET(TechnoClass*, pTarget, EBP);
+	GET(CaptureManagerClass*, pThis, ECX);
+	GET_STACK(TechnoClass*, pTarget, 0x4);
 
-	R->AL(CaptureManagerExt::CanCapture(pThis->CaptureManager, pTarget));
+	R->AL(CaptureManagerExt::CanCapture(pThis, pTarget));
 
-	return 0x6FCB40;
+	return 0x471D39;
+}
+
+static int __fastcall _GetControlledCount(CaptureManagerClass* pThis)
+{
+	const auto pOwnerTypeExt = TechnoExt::ExtMap.Find(pThis->Owner)->TypeExtData;
+
+	if (!pOwnerTypeExt->MindControl_IgnoreSize)
+		return CaptureManagerExt::GetControlledTotalSize(pThis);
+
+	return pThis->ControlNodes.Count;
+}
+DEFINE_FUNCTION_JUMP(LJMP, 0x4722D0, _GetControlledCount)
+
+DEFINE_HOOK(0x4726C7, CaptureManagerClass_IsOverloading_ControlledCount, 0x6)
+{
+	enum { ContinueCheck = 0x4726D1, ReturnFalse = 0x4726E4 };
+
+	GET(CaptureManagerClass*, pThis, ECX);
+
+	return pThis->GetControlledCount() > pThis->MaxControlNodes ? ContinueCheck : ReturnFalse;
+}
+
+DEFINE_HOOK(0x4722AA, CaptureManagerClass_CannotControlAnyMore_ControlledCount, 0x6)
+{
+	enum { SkipGameCode = 0x4722B5 };
+
+	GET(CaptureManagerClass*, pThis, ECX);
+
+	R->AL(pThis->GetControlledCount() >= pThis->MaxControlNodes);
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x519F71, InfantryClass_UpdatePosition_BeforeBuildingChangeHouse, 0x6)
@@ -81,7 +108,7 @@ DEFINE_HOOK(0x4721E6, CaptureManagerClass_DrawLinkToVictim, 0x6)
 	return 0x472287;
 }
 
-void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void* _)
+static void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void* _)
 {
 	auto const pOwner = pThis->Owner;
 	auto const pOwnerTypeExt = TechnoExt::ExtMap.Find(pOwner)->TypeExtData;
@@ -107,7 +134,7 @@ void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void
 				return;
 
 			int nCurIdx = 0;
-			int const nNodeCount = pThis->ControlNodes.Count;
+			int const nNodeCount = pThis->GetControlledCount();
 
 			for (int i = 0; i < (int)(OverloadCount.size()); ++i)
 			{
