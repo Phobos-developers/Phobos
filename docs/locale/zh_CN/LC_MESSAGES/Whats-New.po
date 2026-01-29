@@ -3040,6 +3040,7 @@ msgid ""
 "Fixed `ROF.RandomDelay` incorrectly defaulting to 0 (no delay) instead of"
 " random value in range 0-2 (by Starkku)"
 msgstr ""
+"修复了 `ROF.RandomDelay` 默认为 0（不随机）而不是 0-2 之间的随机值的错误（by Starkku）"
 
 #: ../../Whats-New.md:635
 msgid ""
