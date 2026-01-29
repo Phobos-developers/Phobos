@@ -2466,6 +2466,7 @@ msgid ""
 "[`AllowBerzerkOnAllies`](Fixed-or-Improved-Logics.md#berzerk-on-allies) "
 "(by TaranDahl)"
 msgstr ""
+"[`AllowBerzerkOnAllies`](Fixed-or-Improved-Logics.md#berzerk-on-allies)（by TaranDahl）"
 
 #: ../../Whats-New.md:531
 msgid ""

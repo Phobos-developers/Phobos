@@ -7715,13 +7715,14 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:2288
 msgid "Berzerk on allies"
-msgstr ""
+msgstr "友军狂暴效果"
 
 #: ../../Fixed-or-Improved-Logics.md:2290
 msgid ""
 "In vanilla, `Psychedelic` warheads is hardcoded to ignore allies' target."
 " Now you can turn this off."
 msgstr ""
+"在原版中，`Psychedelic` 弹头硬编码忽略友军目标。现在你可以关闭这个。"
 
 #: ../../Fixed-or-Improved-Logics.md:2293
 msgid ""
@@ -7733,7 +7734,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:2299
 msgid "No per-warhead setting because `AffectsAllies` etc. is respected."
-msgstr ""
+msgstr "没有弹头微观语句，因为尊重 `AffectsAllies` 等设置。"
 
 #: ../../Fixed-or-Improved-Logics.md:2302
 msgid "Combat light customizations"

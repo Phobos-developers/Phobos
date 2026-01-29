@@ -2883,7 +2883,7 @@ msgstr "修复了没有敌人的 AI 寻找敌人时会使用数组中第一个�
 
 #: ../../../CREDITS.md:686
 msgid "`AllowBerzerkOnAllies`"
-msgstr ""
+msgstr "`AllowBerzerkOnAllies`"
 
 #: ../../../CREDITS.md:687
 msgid "**solar-III (凤九歌)**"
