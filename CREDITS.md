@@ -486,6 +486,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue that weapon selection don't check if secondary's warhead has `IsLocomotor=yes`
   - Fix the issue that warhead with `IsLocomotor=yes` can be used to vehicles who is in tank bunker
   - Fix the bug that if there's a tank in tank bunker, tank bunker use auto death by vanish will cause tank get stuck and game will crash quickly
+  - Customize whether warhead can be used to targeting ironcurtained technos or not
   - Fix the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
@@ -614,6 +615,8 @@ This page lists all the individual contributions to the project by their author.
   - Toggle off laser trail and shake effects
   - OpenTopped range bonus and damage multiplier customization for passengers
   - AutoDeath upon ownership change
+  - Maximum amount for power plant enhancer
+  - Return warhead
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
@@ -680,6 +683,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that rockets do not consider the destination altitude during climbing
   - Fix an issue that the AI would set anger towards friendly houses, causing it to act stupidly
   - Fix an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies
+  - `AllowBerzerkOnAllies`
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
