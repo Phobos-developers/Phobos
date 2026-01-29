@@ -4158,7 +4158,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:1069
 msgid "FactoryPlant customizations"
-msgstr ""
+msgstr "自定义工业工厂"
 
 #: ../../Fixed-or-Improved-Logics.md:1071
 msgid ""
@@ -4181,6 +4181,7 @@ msgid ""
 "bonuses are factored in from a particular type of building. Negative "
 "values mean no cap."
 msgstr ""
+"`FactoryPlant.MaxCount` 用于限制同一类建筑所提供的工业工厂加成次数上限。负值表示无上限。"
 
 #: ../../Fixed-or-Improved-Logics.md:1076
 msgid ""

@@ -2449,6 +2449,8 @@ msgid ""
 "from a BuildingType](Fixed-or-Improved-Logics.md#factoryplant-"
 "customizations) (by Starkku)"
 msgstr ""
+"[允许在建筑上自定义同一 `FactoryPlant` 效果的应用次数](Fixed-or-Improved-Logics.md#factoryplant-"
+"customizations)（by Starkku）"
 
 #: ../../Whats-New.md:528
 msgid "Maximum amount for power plant enhancer (by Ollerus)"
