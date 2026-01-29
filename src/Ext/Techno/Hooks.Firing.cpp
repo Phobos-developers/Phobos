@@ -351,7 +351,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	if (pTargetTechno)
 	{
 		if (pTargetTechno->IsIronCurtained()
-			&& !pWeaponExt->CanTarget_IronCurtained.Get(pThis->Owner->IsControlledByHuman() ? RulesExt::Global()->CanHumanTargetIronCurtained : RulesExt::Global()->CanAITargetIronCurtained))
+			&& !pWeaponExt->CanTarget_IronCurtained.Get(pThis->Owner->IsControlledByHuman() ? RulesExt::Global()->CanTarget_IronCurtained : RulesExt::Global()->CanTargetAI_IronCurtained))
 			return CannotFire;
 
 		if (pThis->Berzerk && !EnumFunctions::CanTargetHouse(RulesExt::Global()->BerzerkTargeting, pThis->Owner, pTargetTechno->Owner))
@@ -1098,6 +1098,7 @@ DEFINE_HOOK(0x708AD0, TechnoClass_ShouldRetaliate_IronCurtain, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 	GET(TechnoClass*, pTarget, EBP);
 	GET(WeaponStruct*, pWeaponStruct, EAX);
+
 	const auto pWeapon = pWeaponStruct->WeaponType;
 
 	do
@@ -1109,16 +1110,16 @@ DEFINE_HOOK(0x708AD0, TechnoClass_ShouldRetaliate_IronCurtain, 0x6)
 		{
 			const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-			if (pWeaponExt->CanAutoTargetIronCurtained.isset())
+			if (pWeaponExt->AutoTarget_IronCurtained.isset())
 			{
-				if (!pWeaponExt->CanAutoTargetIronCurtained.Get())
+				if (!pWeaponExt->AutoTarget_IronCurtained.Get())
 					return ReturnFalse;
 
 				break;
 			}
 		}
 
-		if (!RulesExt::Global()->CanHumanAutoTargetIronCurtained)
+		if (!RulesExt::Global()->AutoTarget_IronCurtained)
 			return ReturnFalse;
 	}
 	while (false);

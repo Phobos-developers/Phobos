@@ -2794,22 +2794,6 @@ UnlimboDetonate.KeepSelected=false     ; boolean
 `UnlimboDetonate` cannot be used in conjunction with `Parasite`.
 ```
 
-### Customize whether warhead can be used to targeting ironcurtained technos or not
-
-- In vanilla, computer player's techno always dont attack ironcurtained technos. Now you can customize it.
-
-In `rulesmd.ini`:
-```ini
-[CombatDamage]
-CanAITargetIronCurtained=false                  ; boolean
-CanHumanTargetIronCurtained=true            ; boolean
-CanHumanAutoTargetIronCurtained=true     ; boolean
-
-[SOMEWEAPON]                          ; WeaponType
-CanTarget.IronCurtained=                  ; boolean
-CanAutoTargetIronCurtained=            ; boolean
-```
-
 ## Weapons
 
 ### AreaFire target customization
@@ -2864,6 +2848,24 @@ Burst.NoDelay=false   ; boolean
 ```{note}
 - This is useless for buildings and aircraft.
 - This will ignore `Burst.Delays` setting.
+```
+
+### Customize whether weapon can target iron-curtained technos
+
+- In vanilla, computer players always don't attack iron-curtained technos. Now you can customize it.
+  - `CanTarget.IronCurtained` affects human player, `CanTargetAI.IronCurtained` affects computer.
+  - `AutoTarget.IronCurtained` determines whether player-controlled technos can fire at iron-curtained objects positively. Computer will ignore this setting while only following `CanTarget.IronCurtained`.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+CanTarget.IronCurtained=false       ; boolean
+CanTargetAI.IronCurtained=true      ; boolean
+AutoTarget.IronCurtained=true       ; boolean
+
+[SOMEWEAPON]                        ; WeaponType
+CanTarget.IronCurtained=            ; boolean, default to [CombatDamage] -> CanTarget.IronCurtained for human player and CanTargetAI.IronCurtained for computer
+AutoTarget.IronCurtained=           ; boolean, default to [CombatDamage] -> AutoTarget.IronCurtained
 ```
 
 ### Delayed firing

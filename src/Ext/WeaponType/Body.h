@@ -38,7 +38,7 @@ public:
 		Valueable<double> CanTarget_MinHealth;
 		Valueable<AffectedVeterancy> CanTargetVeterancy;
 		Nullable<bool> CanTarget_IronCurtained;
-		Nullable<bool> CanAutoTargetIronCurtained;
+		Nullable<bool> AutoTarget_IronCurtained;
 		ValueableVector<int> Burst_Delays;
 		Valueable<bool> Burst_FireWithinSequence;
 		Valueable<bool> Burst_NoDelay;
@@ -120,7 +120,7 @@ public:
 			, CanTarget_MinHealth { 0.0 }
 			, CanTargetVeterancy { AffectedVeterancy::All }
 			, CanTarget_IronCurtained {}
-			, CanAutoTargetIronCurtained {}
+			, AutoTarget_IronCurtained {}
 			, Burst_Delays {}
 			, Burst_FireWithinSequence { false }
 			, Burst_NoDelay { false }
