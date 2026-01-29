@@ -7181,8 +7181,8 @@ msgid ""
 "logic](New-or-Enhanced-Logics.md#anim-to-unit)."
 msgstr ""
 "`DestroyAnim` 已扩展至载具类型，并且如果 `DestroyAnim.Random` 设为 true "
-"那么可以随机选取其中一个动画。这些动画存储了所属方和朝向信息以供[生成单位](New-or-Enhanced-Logics.md#anim-to-"
-"unit)逻辑使用。"
+"那么可以随机选取其中一个动画。这些动画存储了所属方和朝向信息以供 [动画生成单位](New-or-Enhanced-Logics.md#anim-to-"
+"unit) 逻辑使用。"
 
 #: ../../Fixed-or-Improved-Logics.md:2088
 msgid ""

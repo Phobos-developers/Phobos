@@ -3205,7 +3205,7 @@ msgstr ""
 msgid ""
 "`Interceptor.Weapon` determines the weapon (0 = `Primary`, 1 = "
 "`Secondary`) to be used for intercepting projectiles."
-msgstr "`Interceptor.Weapon` 决定用于拦截抛射体的武器（0 = `Primary`, 1 = `Secondary`)。"
+msgstr "`Interceptor.Weapon` 决定用于拦截抛射体的武器（0 = `Primary`, 1 = `Secondary`）。"
 
 #: ../../New-or-Enhanced-Logics.md:802
 msgid ""
