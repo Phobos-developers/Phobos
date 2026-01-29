@@ -1,4 +1,4 @@
-#include "Body.h"
+﻿#include "Body.h"
 
 #include <JumpjetLocomotionClass.h>
 
@@ -1150,6 +1150,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ParadropMission.Read(exINI, pSection, "ParadropMission");
 	this->AIParadropMission.Read(exINI, pSection, "AIParadropMission");
 
+	this->GroupRetaliate_GroupRange.Read(exINI, pSection, "GroupRetaliate.GroupRange");
+	
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1851,6 +1853,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->ParadropMission)
 		.Process(this->AIParadropMission)
+
+		.Process(this->GroupRetaliate_GroupRange)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

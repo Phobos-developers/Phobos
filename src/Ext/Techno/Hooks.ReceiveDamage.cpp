@@ -434,3 +434,23 @@ DEFINE_HOOK(0x701CFC, TechnoClass_ReceiveDamage_AllowBerzerkOnAllies, 0x5)
 	enum { IgnoreOwnerCheckFailed = 0x701D0B };
 	return RulesExt::Global()->AllowBerzerkOnAllies ? IgnoreOwnerCheckFailed : 0;
 }
+
+DEFINE_HOOK(0x702A31, TechnoClass_ReceiveDamage_GroupRetaliate, 0x7)
+{
+	if (!RulesExt::Global()->GroupRetaliate_AllowAI && !RulesExt::Global()->GroupRetaliate_AllowPlayer)
+		return 0;
+
+	GET_STACK(WarheadTypeClass*, pWH, STACK_OFFSET(0xC4, 0xC));
+	GET_STACK(ObjectClass*, pAttacker, STACK_OFFSET(0xC4, 0x10));
+	GET(TechnoClass*, pThis, ESI);
+
+	if (pAttacker)
+		TechnoExt::ApplyGroupRetaliate(pThis, pAttacker, pWH);
+	return 0;
+}
+
+DEFINE_HOOK(0x702A58, TechnoClass_ReceiveDamage_DisableVanilla, 0x5)
+{
+	enum { SkipGameCode = 0x702B47 };
+	return RulesExt::Global()->DisableVanillaRetaliateBehavior ? SkipGameCode : 0;
+}
