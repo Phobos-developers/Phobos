@@ -3062,6 +3062,7 @@ msgid ""
 "Fixed an oversight that prevented units deploying into buildings from "
 "deploying on top of `CanBeBuiltOn` TerrainTypes (by Starkku)"
 msgstr ""
+"修复了一个阻止载具在 `CanBeBuiltOn` 的地形对象上部署为建筑的疏忽（by Starkku）"
 
 #: ../../Whats-New.md:638
 msgid ""
