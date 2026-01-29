@@ -528,6 +528,7 @@ New:
 - Maximum amount for power plant enhancer (by Ollerus)
 - [Return warhead](New-or-Enhanced-Logics.md#return-warhead) (by Ollerus)
 - [`AllowBerzerkOnAllies`](Fixed-or-Improved-Logics.md#berzerk-on-allies) (by TaranDahl)
+- Customize whether warhead can be used to targeting ironcurtained technos or not (by NetsuNegi)
 - Allow techno conversion working on buildings (by TaranDahl)
 - Fixed the issue that multiple attributes such as cloaking and sensor would not be updated correctly in techno conversion (by TaranDahl)
 

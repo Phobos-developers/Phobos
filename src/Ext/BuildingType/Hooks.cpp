@@ -204,7 +204,7 @@ DEFINE_HOOK(0x4A8F3E, DisplayClass_BuildingProximityCheck_BeforeChecks, 0x6)
 	enum { SkipGameCode = 0x4A8F44, ReturnFromFunction = 0x4A9052 };
 
 	GET(BuildingTypeClass*, pType, ESI);
-	GET_STACK(int, houseArrayIndex, STACK_OFFSET(0x30, 0x8));
+	GET_STACK(const int, houseArrayIndex, STACK_OFFSET(0x30, 0x8));
 	LEA_STACK(CellStruct*, foundationData, STACK_OFFSET(0x30, 0xC));
 	LEA_STACK(CellStruct*, currentPosition, STACK_OFFSET(0x30, 0x10));
 
@@ -215,9 +215,8 @@ DEFINE_HOOK(0x4A8F3E, DisplayClass_BuildingProximityCheck_BeforeChecks, 0x6)
 	if (pTypeExt->Adjacent_Disallowed_ExtraDistance != 0 && ProximityTemp::ExtraDistance == 0)
 	{
 		ProximityTemp::ExtraDistance = pTypeExt->Adjacent_Disallowed_ExtraDistance;
-		bool passed = DisplayClass::Instance.PassesProximityCheck(pType, houseArrayIndex, foundationData, currentPosition);
 
-		if (!passed)
+		if (!DisplayClass::Instance.PassesProximityCheck(pType, houseArrayIndex, foundationData, currentPosition))
 		{
 			R->EAX(false);
 			return ReturnFromFunction;

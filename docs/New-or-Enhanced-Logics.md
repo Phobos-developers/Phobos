@@ -2850,6 +2850,24 @@ Burst.NoDelay=false   ; boolean
 - This will ignore `Burst.Delays` setting.
 ```
 
+### Customize whether weapon can target iron-curtained technos
+
+- In vanilla, computer players always don't attack iron-curtained technos. Now you can customize it.
+  - `CanTarget.IronCurtained` affects human player, `CanTargetAI.IronCurtained` affects computer.
+  - `AutoTarget.IronCurtained` determines whether player-controlled technos can fire at iron-curtained objects positively. Computer will ignore this setting while only following `CanTarget.IronCurtained`.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+CanTarget.IronCurtained=false       ; boolean
+CanTargetAI.IronCurtained=true      ; boolean
+AutoTarget.IronCurtained=true       ; boolean
+
+[SOMEWEAPON]                        ; WeaponType
+CanTarget.IronCurtained=            ; boolean, default to [CombatDamage] -> CanTarget.IronCurtained for human player and CanTargetAI.IronCurtained for computer
+AutoTarget.IronCurtained=           ; boolean, default to [CombatDamage] -> AutoTarget.IronCurtained
+```
+
 ### Delayed firing
 
 - It is possible to have any weapon fire with a delay by setting `DelayedFire.Duration` on a WeaponType - it supports a single integer or two comma-separated ones for a random range to pick value from.
