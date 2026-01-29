@@ -2427,8 +2427,8 @@ msgstr ""
 "Logics.md#customizable-warhead-trigger-conditions)（by Flactine）"
 
 #: ../../Whats-New.md:524
-msgid "Vehicle Deployment Enhancement (by FlyStar)"
-msgstr ""
+msgid "[Vehicle Deployment Enhancement](Fixed-or-Improved-Logics.md#deployment-enhancement) (by FlyStar)"
+msgstr "[载具部署增强](Fixed-or-Improved-Logics.md#deployment-enhancement)（by FlyStar）"
 
 #: ../../Whats-New.md:525
 msgid ""
@@ -2780,12 +2780,14 @@ msgid ""
 "Fixed an issue where miners affected by `Passengers/DeployFire` were "
 "unable to unload minerals (by FlyStar)"
 msgstr ""
+"修复了矿车受 `Passengers/DeployFire` 影响而无法倒矿的问题（by FlyStar）"
 
 #: ../../Whats-New.md:583
 msgid ""
 "Fixed an issue where mining vehicles could not move after leaving a tank "
 "bunker (by FlyStar)"
 msgstr ""
+"修复了矿车离开坦克碉堡后无法移动的问题（by FlyStar）"
 
 #: ../../Whats-New.md:585 ../../Whats-New.md:629 ../../Whats-New.md:647
 #: ../../Whats-New.md:975 ../../Whats-New.md:1060 ../../Whats-New.md:1224

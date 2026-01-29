@@ -1760,12 +1760,14 @@ msgid ""
 "Fixed an issue where miners affected by `Passengers/DeployFire` were "
 "unable to unload minerals."
 msgstr ""
+"修复了矿车受 `Passengers/DeployFire` 影响而无法倒矿的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:293
 msgid ""
 "Fixed an issue where mining vehicles could not move after leaving a tank "
 "bunker."
 msgstr ""
+"修复了矿车离开坦克碉堡后无法移动的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:294
 msgid ""
@@ -7112,7 +7114,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:2067
 msgid "Deployment Enhancement"
-msgstr ""
+msgstr "部署增强"
 
 #: ../../Fixed-or-Improved-Logics.md:2069
 msgid ""
@@ -7120,24 +7122,28 @@ msgid ""
 "`DeployFire/IsSimpleDeployer/DeploysInto`, it can perform custom "
 "deployment actions beyond merely releasing passengers."
 msgstr ""
+"当载具有 `Passengers` 的同时还有 `DeployFire/IsSimpleDeployer/DeploysInto` 时可以执行释放乘客以外的其他部署动作。"
 
 #: ../../Fixed-or-Improved-Logics.md:2070
 msgid ""
 "`Deploy.SkipPassengerUnload` allows vehicles to bypass the passenger "
 "release process and perform other deployment actions."
 msgstr ""
+"`Deploy.SkipPassengerUnload` 允许载具跳过乘客释放流程执行其他部署动作。"
 
 #: ../../Fixed-or-Improved-Logics.md:2071
 msgid ""
 "`Deploy.NoPassenger` allows vehicles to perform other deployment actions "
 "after losing all passengers."
 msgstr ""
+"`Deploy.NoPassenger` 允许载具在释放所有乘客后执行其他部署动作。"
 
 #: ../../Fixed-or-Improved-Logics.md:2072
 msgid ""
 "Harvester can now perform other deployment operations. Can't deploy when "
 "it's unloading minerals."
 msgstr ""
+"矿车现在可以执行其他部署操作，不过倒矿期间不能部署。"
 
 #: ../../Fixed-or-Improved-Logics.md:2073
 msgid ""
@@ -7145,6 +7151,7 @@ msgid ""
 "performed when the harvester carries no mineral. If set to false, the "
 "harvester can deploy regardless of carrying minerals or not."
 msgstr ""
+"`Deploy.NoTiberium` 控制是否仅在矿车未装载矿石时才能执行部署动作。若设为 false 则无论是否携带矿石均可。"
 
 #: ../../Fixed-or-Improved-Logics.md:2076
 msgid ""

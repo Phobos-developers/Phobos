@@ -1635,19 +1635,21 @@ msgstr "攻击无威胁建筑扩展"
 
 #: ../../../CREDITS.md:410
 msgid "Vehicle Deployment Enhancement"
-msgstr ""
+msgstr "载具部署增强"
 
 #: ../../../CREDITS.md:411
 msgid ""
 "Fixed an issue where miners affected by `Passengers/DeployFire` were "
 "unable to unload minerals"
 msgstr ""
+"修复了矿车受 `Passengers/DeployFire` 影响而无法倒矿的问题"
 
 #: ../../../CREDITS.md:412
 msgid ""
 "Fixed an issue where mining vehicles could not move after leaving a tank "
 "bunker"
 msgstr ""
+"修复了矿车离开坦克碉堡后无法移动的问题"
 
 #: ../../../CREDITS.md:413
 msgid "**NetsuNegi**:"

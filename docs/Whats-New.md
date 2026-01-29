@@ -521,7 +521,7 @@ New:
 - [Deploy priority filtering](New-or-Enhanced-Logics.md#low-priority-for-deploy) (by Starkku)
 - [Weapon target filtering by target veterancy](New-or-Enhanced-Logics.md#weapon-targeting-filter) (by Flactine)
 - [Warhead effect filtering by target veterancy](Fixed-or-Improved-Logics.md#customizable-warhead-trigger-conditions) (by Flactine)
-- Vehicle Deployment Enhancement (by FlyStar)
+- [Vehicle Deployment Enhancement](Fixed-or-Improved-Logics.md#deployment-enhancement) (by FlyStar)
 - `ProductionAnim` is now available for `Factory=InfantryType` as well as non-`ConstructionYard=true` `Factory=BuildingType` buildings (by Starkku)
 - [Extra distance modifier for `Adjacent.Disallowed`](Fixed-or-Improved-Logics.md#build-area-customizations) (by Starkku)
 - [Allow customizing how many times `FactoryPlant` bonuses can be applied from a BuildingType](Fixed-or-Improved-Logics.md#factoryplant-customizations) (by Starkku)
