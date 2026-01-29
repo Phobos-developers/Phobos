@@ -2684,6 +2684,7 @@ msgid ""
 " value is added to `Adjacent` value when checking for disallowed "
 "buildings."
 msgstr ""
+"如果 `Adjacent.Disallowed.ExtraDistance` 设为了非 0 数值则该值将在判定不得放置的距离时与 `Adjacent` 加算。"
 
 #: ../../New-or-Enhanced-Logics.md:600
 msgid ""

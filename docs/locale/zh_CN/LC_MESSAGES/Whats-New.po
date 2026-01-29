@@ -2440,9 +2440,11 @@ msgstr ""
 
 #: ../../Whats-New.md:526
 msgid ""
-"[Extra distance modifier for `Adjacent.Disallowed`](Fixed-or-Improved-"
+"[Extra distance modifier for `Adjacent.Disallowed`](New-or-Enhanced-"
 "Logics.md#build-area-customizations) (by Starkku)"
 msgstr ""
+"[`Adjacent.Disallowed` 的额外距离修正](New-or-Enhanced-"
+"Logics.md#build-area-customizations)（by Starkku）"
 
 #: ../../Whats-New.md:527
 msgid ""
