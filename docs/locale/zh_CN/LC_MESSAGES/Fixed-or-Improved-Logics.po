@@ -7990,6 +7990,7 @@ msgid ""
 "`AffectsVeterancy` sets the veterancy levels that allow the Warhead to "
 "detonate on the target."
 msgstr ""
+"`AffectsVeterancy` 设置允许弹头攻击的经验等级。"
 
 #: ../../Fixed-or-Improved-Logics.md:2389
 msgid ""

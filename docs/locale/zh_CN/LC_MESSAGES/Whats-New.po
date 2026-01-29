@@ -2413,20 +2413,18 @@ msgid ""
 msgstr "[低优先级部署](New-or-Enhanced-Logics.md#low-priority-for-deploy)（by Starkku）"
 
 #: ../../Whats-New.md:522
-#, fuzzy
 msgid ""
 "[Weapon target filtering by target veterancy](New-or-Enhanced-Logics.md"
 "#weapon-targeting-filter) (by Flactine)"
-msgstr "[为 AE 系统添加目标过滤选项](New-or-Enhanced-Logics.md#attached-effects)（by Flactine）"
+msgstr "[根据目标经验等级的武器目标筛选](New-or-Enhanced-Logics.md#attached-effects)（by Flactine）"
 
 #: ../../Whats-New.md:523
-#, fuzzy
 msgid ""
 "[Warhead effect filtering by target veterancy](Fixed-or-Improved-"
 "Logics.md#customizable-warhead-trigger-conditions) (by Flactine)"
 msgstr ""
-"[目标血量作为弹头生效条件](Fixed-or-Improved-Logics.md#customizable-warhead-trigger-"
-"conditions)（by FS-21 & Kerbiter）"
+"[根据目标经验等级的弹头效果触发条件](Fixed-or-Improved-"
+"Logics.md#customizable-warhead-trigger-conditions)（by Flactine）"
 
 #: ../../Whats-New.md:524
 msgid "Vehicle Deployment Enhancement (by FlyStar)"

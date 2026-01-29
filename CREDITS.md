@@ -686,7 +686,7 @@ This page lists all the individual contributions to the project by their author.
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
-- **Flactine** 
+- **Flactine**
   - Add target filtering options to attacheffect system
   - Add veterancy-based target filtering for weapons and warheads
 - **tyuah8**:

@@ -2904,7 +2904,7 @@ msgstr "为 AE 系统添加目标过滤选项"
 
 #: ../../../CREDITS.md:692
 msgid "Add veterancy-based target filtering for weapons and warheads"
-msgstr ""
+msgstr "为武器和弹头添加基于经验等级的目标过滤"
 
 #: ../../../CREDITS.md:693
 msgid "**tyuah8**:"
