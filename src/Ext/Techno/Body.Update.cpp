@@ -1092,8 +1092,9 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	if (pCurrentType->BombSight)
 		BombListClass::Instance.AddDetector(pThis);
 
-	pThis->UpdateSight(0, 0, 0, 0, 0);
-	MapClass::Instance.RevealArea3(&pThis->Location, 0, pThis->LastSightRange + 3, 0);
+	// TODO : Fix this
+	//pThis->UpdateSight(0, 0, 0, 0, 0);
+	//MapClass::Instance.RevealArea3(&pThis->Location, 0, pThis->LastSightRange + 3, 0);
 
 	if (pOldType->GapGenerator)
 		pThis->DestroyGap();
@@ -1359,9 +1360,8 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 void TechnoExt::ExtData::UpdateTypeData_Building()
 {
 	auto const pThis = static_cast<BuildingClass*>(this->OwnerObject());
-	auto const pOldType = static_cast<BuildingTypeClass*>(this->PreviousType);
-	auto const pCurrentType = static_cast<BuildingTypeClass*>(this->TypeExtData->OwnerObject());
-	auto const abs = pThis->WhatAmI();
+	//auto const pOldType = static_cast<BuildingTypeClass*>(this->PreviousType);
+	auto const pNewType = static_cast<BuildingTypeClass*>(this->TypeExtData->OwnerObject());
 
 	// Maybe buggy
 	for (auto pAnim = pThis->Anims[0]; pAnim; pAnim++)
@@ -1370,10 +1370,10 @@ void TechnoExt::ExtData::UpdateTypeData_Building()
 	// Skip audio related
 
 	// Maybe buggy
-	auto dockNumber = std::max(pCurrentType->NumberOfDocks, 1);
+	auto dockNumber = std::max(pNewType->NumberOfDocks, 1);
 	pThis->SetLinkCount(dockNumber);
 
-	if (pCurrentType->LoadBuildup())
+	if (pNewType->LoadBuildup())
 		pThis->HasBuildUp = true;
 	else
 		pThis->AI_Sellable = false;
@@ -1389,7 +1389,7 @@ void TechnoExt::ExtData::UpdateTypeData_Building()
 	// Maybe buggy
 	auto pCrd = pThis->Location;
 	pThis->Limbo();
-	pThis->Type = pCurrentType;
+	pThis->Type = pNewType;
 	pThis->ActuallyPlacedOnMap = false;
 	++Unsorted::ScenarioInit;
 	pThis->Unlimbo(pCrd, DirType::North);
@@ -1401,10 +1401,12 @@ void TechnoExt::ExtData::UpdateTypeData_Building()
 		pOwner->RegisterGain(pThis, false);
 	pOwner->RecheckTechTree = true;
 
-	pThis->Ammo = Math::min(pThis->Ammo, pCurrentType->Ammo);
+	pThis->Ammo = Math::min(pThis->Ammo, pNewType->Ammo);
 
-	pThis->SecondaryFacing.SetROT(pCurrentType->ROT);
-	pThis->PrimaryFacing.SetROT(pCurrentType->ROT);
+	pThis->SecondaryFacing.SetROT(pNewType->ROT);
+	pThis->PrimaryFacing.SetROT(pNewType->ROT);
+
+	this->PreviousType = nullptr;
 }
 
 void TechnoExt::ExtData::UpdateLaserTrails()

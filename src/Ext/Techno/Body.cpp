@@ -320,7 +320,7 @@ bool TechnoExt::ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
 		return false;
 	}
 
-	auto pFoot = abstract_cast<FootClass*, true>(pThis);
+	auto pFoot = abstract_cast<FootClass*>(pThis);
 
 	if (AresFunctions::ConvertTypeTo && pFoot)
 	{
@@ -364,6 +364,7 @@ bool TechnoExt::ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
 	case AbstractType::Building:
 		nowTypePtr = reinterpret_cast<TechnoTypeClass**>(&(static_cast<BuildingClass*>(pThis)->Type));
 		rtti = AbstractType::BuildingType;
+		break;
 	default:
 		Debug::Log("%s is not TechnoClass, conversion not allowed\n", pToType->get_ID());
 		return false;

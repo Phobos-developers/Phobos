@@ -334,7 +334,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType`.
 - Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed.
 - Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed.
-- Allow techno conversion working on buildings.
+- Allow techno conversion working on buildings (Convert building to a bigger one is not recommended, as this may lead to problems).
 - Fixed the issue that multiple attributes such as cloaking and sensor would not be updated correctly in techno conversion.
 
 ## Newly added global settings
