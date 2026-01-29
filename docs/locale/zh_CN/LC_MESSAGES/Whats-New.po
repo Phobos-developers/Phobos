@@ -101,6 +101,7 @@ msgid ""
 "Elite technos no longer scatter by default, behaviour can be restored by "
 "including `SCATTER` in their `EliteAbilities`."
 msgstr ""
+"精英单位不再默认获得分散能力，可以通过在他们的 `EliteAbilities` 中添加 `SCATTER` 来复原旧有行为。"
 
 #: ../../Whats-New.md:19
 msgid ""
@@ -3956,8 +3957,9 @@ msgstr ""
 #: ../../Whats-New.md:828
 msgid ""
 "Elite technos no longer scatter by default, behaviour is controlled by "
-"`SCATTER` veterancy ability now (by NetsuNegi)"
+"`SCATTER` veterancy ability now (by NetsuNegi & Starkku)"
 msgstr ""
+"精英单位不再默认获得分散而是受 `SCATTER` 升级能力控制（by NetsuNegi & Starkku）"
 
 #: ../../Whats-New.md:831
 msgid ""

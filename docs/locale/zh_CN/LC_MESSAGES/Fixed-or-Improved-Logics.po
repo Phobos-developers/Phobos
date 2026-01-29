@@ -1370,6 +1370,7 @@ msgid ""
 "Elite technos no longer scatter by default, behaviour is controlled by "
 "`SCATTER` veterancy ability now."
 msgstr ""
+"精英单位不再默认获得分散而是受 `SCATTER` 升级能力控制。"
 
 #: ../../Fixed-or-Improved-Logics.md:227
 msgid ""
