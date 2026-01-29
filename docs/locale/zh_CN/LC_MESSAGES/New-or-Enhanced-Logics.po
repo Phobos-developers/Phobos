@@ -2871,6 +2871,7 @@ msgid ""
 "of building that can be used for power plant enhancement. Negative value "
 "means no limitation."
 msgstr ""
+"`PowerPlantEnhancer.MaxCount` 决定了此类建筑中参与电厂增幅的数量上限。负值代表无限。"
 
 #: ../../New-or-Enhanced-Logics.md:666
 msgid ""

@@ -2453,8 +2453,8 @@ msgstr ""
 "customizations)（by Starkku）"
 
 #: ../../Whats-New.md:528
-msgid "Maximum amount for power plant enhancer (by Ollerus)"
-msgstr ""
+msgid "[Maximum amount for power plant enhancer](New-or-Enhanced-Logics.md#power-plant-enhancer) (by Ollerus)"
+msgstr "[电厂增幅次数上限](New-or-Enhanced-Logics.md#power-plant-enhancer)（by Ollerus）"
 
 #: ../../Whats-New.md:529
 msgid "[Return warhead](New-or-Enhanced-Logics.md#return-warhead) (by Ollerus)"

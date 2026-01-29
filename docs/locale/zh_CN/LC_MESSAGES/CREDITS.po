@@ -2570,7 +2570,7 @@ msgstr "所属更改引发自毁"
 
 #: ../../../CREDITS.md:618
 msgid "Maximum amount for power plant enhancer"
-msgstr ""
+msgstr "电厂增幅次数上限"
 
 #: ../../../CREDITS.md:619
 msgid "Return warhead"
