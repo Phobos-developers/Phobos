@@ -66,6 +66,7 @@ msgid ""
 "Elite technos no longer scatter by default, behaviour can be restored by "
 "including `SCATTER` in their `EliteAbilities`."
 msgstr ""
+"精英单位不再默认获得分散能力，可以通过在他们的 `EliteAbilities` 中添加 `SCATTER` 来复原旧有行为。"
 
 #: ../../Whats-New.md:15
 msgid ""
@@ -556,9 +557,8 @@ msgid "Changelog"
 msgstr "更新日志"
 
 #: ../../Whats-New.md:313
-#, fuzzy
 msgid "0.4.0.2"
-msgstr "0.4.0.1"
+msgstr "0.4.0.2"
 
 #: ../../Whats-New.md:318 ../../Whats-New.md:337 ../../Whats-New.md:664
 #: ../../Whats-New.md:749 ../../Whats-New.md:911 ../../Whats-New.md:952
@@ -572,18 +572,21 @@ msgid ""
 "Fixed `AircraftDockingDirs` being reset if the BuildingType section is "
 "redefined in map file (by Starkku)"
 msgstr ""
+"修复了 `AircraftDockingDirs` 在地图内置了建筑节名时会重置的问题（by Starkku）"
 
 #: ../../Whats-New.md:320
 msgid ""
 "Fixed harvester counter not accounting for type converting harvesters (by"
 " Ollerus)"
 msgstr ""
+"修复了矿车计数器未正确计入经过类型转换的矿车的问题（by Ollerus）"
 
 #: ../../Whats-New.md:321
 msgid ""
 "Fixed the bug that weapon cannot used to intercept on gound bullet if "
 "it's projectile has `AG=no` (by NetsuNegi)"
 msgstr ""
+"修复了坦克碉堡中的载具使用 `AutoDeath.Behavior=vanish` 会导致坦克卡住并且游戏立即崩溃的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:322
 msgid ""
@@ -591,36 +594,42 @@ msgid ""
 " death by vanish will cause tank get stuck and game will crash quickly "
 "(by NetsuNegi)"
 msgstr ""
+"修复了坦克碉堡中的载具使用 `AutoDeath.Behavior=vanish` 会导致坦克卡住并且游戏立即崩溃的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:323
 msgid ""
 "Fixed `ROF.RandomDelay` incorrectly defaulting to 0 (no delay) instead of"
 " random value in range 0-2 (by Starkku)"
 msgstr ""
+"修复了 `ROF.RandomDelay` 默认为 0（不随机）而不是 0-2 之间的随机值的错误（by Starkku）"
 
 #: ../../Whats-New.md:324
 msgid ""
 "Fixed `CreateUnit.Owner=killer` not working correctly with "
 "`DestroyAnim(s)` (by TaranDahl)"
 msgstr ""
+"修复了 `CreateUnit.Owner=killer` 与 `DestroyAnim(s)` 不能正确搭配工作的问题（by TaranDahl）"
 
 #: ../../Whats-New.md:325
 msgid ""
 "Fixed a bug causing erratic behaviour with units scattering f.ex moving "
 "away from buildings being placed (by Starkku)"
 msgstr ""
+"修复了一个导致单位行为异常例如放置建筑时单位会散开的 Bug（by Starkku）"
 
 #: ../../Whats-New.md:326
 msgid ""
 "Fixed an oversight that prevented units deploying into buildings from "
 "deploying on top of `CanBeBuiltOn` TerrainTypes (by Starkku)"
 msgstr ""
+"修复了一个阻止载具在 `CanBeBuiltOn` 的地形对象上部署为建筑的疏忽（by Starkku）"
 
 #: ../../Whats-New.md:327
 msgid ""
 "Animation-fired weapons now snap on the object they are attached to if "
 "present (by TaranDahl)"
 msgstr ""
+"动画发射的武器现在会自动吸附到它们所附着的对象上（by TaranDahl）"
 
 #: ../../Whats-New.md:330
 msgid "0.4.0.1"
@@ -1524,6 +1533,7 @@ msgid ""
 "Elite technos no longer scatter by default, behaviour is controlled by "
 "`SCATTER` veterancy ability now (by NetsuNegi)"
 msgstr ""
+"精英单位不再默认获得分散而是受 `SCATTER` 升级能力控制（by NetsuNegi & Starkku）"
 
 #: ../../Whats-New.md:522
 msgid ""

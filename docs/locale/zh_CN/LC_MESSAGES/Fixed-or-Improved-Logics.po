@@ -1304,6 +1304,7 @@ msgid ""
 "Elite technos no longer scatter by default, behaviour is controlled by "
 "`SCATTER` veterancy ability now."
 msgstr ""
+"精英单位不再默认获得分散而是受 `SCATTER` 升级能力控制。"
 
 #: ../../Fixed-or-Improved-Logics.md:216
 msgid ""
@@ -1453,12 +1454,6 @@ msgid ""
 "Fixed preplaced aircraft outside visible map being incorrectly flagged as"
 " crashing under certain conditions."
 msgstr "修复了处于可视地图范围外的预置战机某些情况下被错误标记为坠毁的问题。"
-
-#: ../../Fixed-or-Improved-Logics.md:242
-msgid ""
-"Fixed the bug that if there's a tank in tank bunker, tank bunker use auto"
-" death by vanish will cause tank get stuck and game will crash quickly."
-msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:244
 msgid "Fixes / interactions with other extensions"

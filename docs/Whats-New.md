@@ -11,7 +11,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 ### From vanilla
 
 - `PowerUpNAnim` is now used instead of the upgrade building's image file for upgrade animation if set. Note that displaying a damaged version will still require setting `PowerUpNDamagedAnim` explicitly in all cases, as the fallback to upgrade building image does not extend to it, nor would it be safe to add. `PowersUpToLevel=-1` upgrades still do not work correctly `PowerUpNAnim` and such buildings should forgo using explicit upgrade animations.
-- Elite technos no longer scatter by default, behaviour can be restored by including `SCATTER` in their `EliteAbilities`. 
+- Elite technos no longer scatter by default, behaviour can be restored by including `SCATTER` in their `EliteAbilities`.
 - `[CrateRules] -> FreeMCV` now controls whether or not player is forced to receive unit from `[General] -> BaseUnit` from goodie crate if they own no buildings or any existing `[General] -> BaseUnit` vehicles and own more than `[CrateRules] -> FreeMCV.CreditsThreshold` (defaults to 1500) credits.
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini -> [General] -> FixTransparencyBlitters=no`.
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto` / `UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[TechnoType]/[CombatDamage] -> IronCurtain.KeptOnDeploy=no`.
@@ -348,7 +348,6 @@ Phobos fixes:
 ### 0.4
 
 ```{dropdown} Click to show
-:open:
 
 New:
 - `Crit.AffectsHouses` for critical hit system (by Starkku)

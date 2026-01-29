@@ -1625,13 +1625,14 @@ msgstr "允许设定 `AlternateFLH` 是否作用于运输工具中的载具类�
 msgid ""
 "Fix the bug that weapon cannot used to intercept on gound bullet if it's "
 "projectile has `AG=no`"
-msgstr ""
+msgstr "修复了抛射体 `AG=no` 的武器无法拦截贴地飞行的抛射体的 Bug"
 
 #: ../../../CREDITS.md:402
 msgid ""
 "Fix the bug that if there's a tank in tank bunker, tank bunker use auto "
 "death by vanish will cause tank get stuck and game will crash quickly"
 msgstr ""
+"修复了坦克碉堡中的载具使用 `AutoDeath.Behavior=vanish` 会导致坦克卡住并且游戏立即崩溃的 Bug"
 
 #: ../../../CREDITS.md:403
 msgid "**Apollo** - Translucent SHP drawing patches"

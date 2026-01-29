@@ -1853,17 +1853,16 @@ msgstr ""
 msgid ""
 "`Interceptor.Weapon` determines the weapon (0 = `Primary`, 1 = "
 "`Secondary`) to be used for intercepting projectiles."
-msgstr "`Interceptor.Weapon` 决定用于拦截抛射体的武器（0 = `Primary`, 1 = `Secondary`)。"
+msgstr "`Interceptor.Weapon` 决定用于拦截抛射体的武器（0 = `Primary`, 1 = `Secondary`）。"
 
 #: ../../New-or-Enhanced-Logics.md:671
-#, fuzzy
 msgid ""
 "The interceptor weapon may need `AA` set to true on its projectile to be "
 "able to target projectiles depending on their elevation from ground. If "
 "you don't set those then the weapon won't be able to target high-flying "
 "projectiles respectively."
 msgstr ""
-"拦截武器可能需要在其抛射体上将 `AG` 和 `AA` 设为 true "
+"拦截武器可能需要在其抛射体上将 `AA` 设为 true "
 "以使其能够根据抛射体相对地面的高度来瞄准。如果你不设置这些那么武器将无法分别瞄准低空或高空飞行的抛射体。"
 
 #: ../../New-or-Enhanced-Logics.md:672
