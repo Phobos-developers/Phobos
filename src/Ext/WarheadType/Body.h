@@ -66,6 +66,14 @@ public:
 		Valueable<double> Crit_AffectsAbovePercent;
 		Valueable<bool> Crit_SuppressWhenIntercepted;
 
+		Valueable<WarheadTypeClass*> ReturnWarhead;
+		Valueable<int> ReturnWarhead_Damage;
+		Valueable<double> ReturnWarhead_Chance;
+		Valueable<bool> ReturnWarhead_ApplyChancePerTarget;
+		Valueable<bool> ReturnWarhead_FullDetonation;
+		Valueable<AffectedTarget> ReturnWarhead_AffectsTarget;
+		Valueable<AffectedHouse> ReturnWarhead_AffectsHouse;
+
 		Nullable<AnimTypeClass*> MindControl_Anim;
 		Nullable<int> MindControl_ThreatDelay;
 
@@ -191,6 +199,8 @@ public:
 
 		Valueable<double> AffectsBelowPercent;
 		Valueable<double> AffectsAbovePercent;
+		Valueable<AffectedVeterancy> AffectsVeterancy;
+
 		Valueable<bool> AffectsNeutral;
 		Valueable<bool> AffectsGround;
 		Valueable<bool> AffectsAir;
@@ -224,6 +234,7 @@ public:
 		double Crit_RandomBuffer;
 		double Crit_CurrentChance;
 		bool Crit_Active;
+		double ReturnWarhead_RandomBuffer;
 		bool InDamageArea;
 		bool WasDetonatedOnAllMapObjects;
 		bool Splashed;
@@ -231,6 +242,7 @@ public:
 		int RemainingAnimCreationInterval;
 		bool PossibleCellSpreadDetonate;
 		bool HealthCheck;
+		bool VeterancyCheck;
 		TechnoClass* DamageAreaTarget;
 
 	private:
@@ -286,6 +298,14 @@ public:
 			, Crit_AffectsBelowPercent { 1.0 }
 			, Crit_AffectsAbovePercent { 0.0 }
 			, Crit_SuppressWhenIntercepted { false }
+
+			, ReturnWarhead {}
+			, ReturnWarhead_Damage { 0 }
+			, ReturnWarhead_Chance { 1.0 }
+			, ReturnWarhead_ApplyChancePerTarget { false }
+			, ReturnWarhead_FullDetonation { true }
+			, ReturnWarhead_AffectsTarget { AffectedTarget::All }
+			, ReturnWarhead_AffectsHouse { AffectedHouse::All }
 
 			, MindControl_Anim {}
 			, MindControl_ThreatDelay {}
@@ -405,6 +425,7 @@ public:
 
 			, AffectsBelowPercent { 1.0 }
 			, AffectsAbovePercent { 0.0 }
+			, AffectsVeterancy { AffectedVeterancy::All }
 			, AffectsNeutral { true }
 			, AffectsGround { true }
 			, AffectsAir { true }
@@ -419,6 +440,7 @@ public:
 			, Crit_RandomBuffer { 0.0 }
 			, Crit_CurrentChance { 0.0 }
 			, Crit_Active { false }
+			, ReturnWarhead_RandomBuffer { 0.0 }
 			, InDamageArea { true }
 			, WasDetonatedOnAllMapObjects { false }
 			, Splashed { false }
@@ -426,6 +448,7 @@ public:
 			, RemainingAnimCreationInterval { 0 }
 			, PossibleCellSpreadDetonate { false }
 			, HealthCheck { false }
+			, VeterancyCheck { false }
 			, DamageAreaTarget {}
 
 			, CanKill { true }
@@ -462,6 +485,7 @@ public:
 		bool CanAffectInvulnerable(TechnoClass* pTarget) const;
 		bool EligibleForFullMapDetonation(TechnoClass* pTechno, TechnoTypeClass* pType, HouseClass* pOwner) const;
 		bool IsHealthInThreshold(TechnoClass* pTarget) const;
+		bool IsVeterancyInThreshold(TechnoClass* pTarget) const;
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
@@ -487,6 +511,7 @@ public:
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
 		void ApplyBuildingUndeploy(TechnoClass* pTarget);
 		void ApplyReverseEngineer(HouseClass* pHouse, TechnoClass* pTarget);
+		void ApplyReturnWarhead(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
 		double GetCritChance(TechnoClass* pFirer) const;
 	};
 

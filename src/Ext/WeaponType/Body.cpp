@@ -45,6 +45,11 @@ bool WeaponTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
 	return TechnoExt::IsHealthInThreshold(pTarget, this->CanTarget_MinHealth, this->CanTarget_MaxHealth);
 }
 
+bool WeaponTypeExt::ExtData::IsVeterancyInThreshold(TechnoClass* pTarget) const
+{
+	return EnumFunctions::CanTargetVeterancy(this->CanTargetVeterancy, pTarget);
+}
+
 void WeaponTypeExt::ExtData::Initialize()
 {
 	this->RadType = RadTypeClass::FindOrAllocate(GameStrings::Radiation);
@@ -103,7 +108,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CanTargetHouses.Read(exINI, pSection, "CanTargetHouses");
 	this->CanTarget_MaxHealth.Read(exINI, pSection, "CanTarget.MaxHealth");
 	this->CanTarget_MinHealth.Read(exINI, pSection, "CanTarget.MinHealth");
-	this->CanTarget_IronCurtained.Read(exINI, pSection, "CanTarget.IronCurtained");
+	this->CanTargetVeterancy.Read(exINI, pSection, "CanTargetVeterancy");
+  this->CanTarget_IronCurtained.Read(exINI, pSection, "CanTarget.IronCurtained");
 	this->Burst_Delays.Read(exINI, pSection, "Burst.Delays");
 	this->Burst_FireWithinSequence.Read(exINI, pSection, "Burst.FireWithinSequence");
 	this->Burst_NoDelay.Read(exINI, pSection, "Burst.NoDelay");
@@ -164,6 +170,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// handle SkipWeaponPicking
 	if (this->CanTarget != AffectedTarget::All || this->CanTargetHouses != AffectedHouse::All
 		|| this->CanTarget_MaxHealth < 1.0 || this->CanTarget_MinHealth > 0.0
+		|| this->CanTargetVeterancy != AffectedVeterancy::All
 		|| this->AttachEffect_RequiredTypes.size() || this->AttachEffect_RequiredGroups.size()
 		|| this->AttachEffect_DisallowedTypes.size() || this->AttachEffect_DisallowedGroups.size())
 	{
@@ -193,7 +200,8 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CanTargetHouses)
 		.Process(this->CanTarget_MaxHealth)
 		.Process(this->CanTarget_MinHealth)
-		.Process(this->CanTarget_IronCurtained)
+		.Process(this->CanTargetVeterancy)
+    .Process(this->CanTarget_IronCurtained)
 		.Process(this->RadType)
 		.Process(this->Burst_Delays)
 		.Process(this->Burst_FireWithinSequence)

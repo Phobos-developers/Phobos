@@ -28,6 +28,7 @@
     <ClCompile Include="src\Ext\EBolt\Body.cpp" />
     <ClCompile Include="src\Ext\EBolt\Hooks.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.SimpleDeployer.cpp" />
+    <ClCompile Include="src\Ext\Unit\Hooks.Unload.cpp" />
     <ClCompile Include="src\New\Entity\Ares\RadarJammerClass.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\CreateUnitTypeClass.cpp" />
     <ClCompile Include="src\Blowfish\blowfish.cpp" />

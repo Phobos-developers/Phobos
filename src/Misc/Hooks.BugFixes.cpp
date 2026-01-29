@@ -2076,7 +2076,7 @@ DEFINE_HOOK(0x481778, CellClass_ScatterContent_Scatter, 0x6)
 	if (!pTechno)
 		return NextTechno;
 
-	REF_STACK(const CoordStruct, coords, STACK_OFFSET(0x2C, 0x4));
+	GET(const CoordStruct*, pCoords, EBP);
 	GET_STACK(const bool, ignoreMission, STACK_OFFSET(0x2C, 0x8));
 	GET_STACK(const bool, ignoreDestination, STACK_OFFSET(0x2C, 0xC));
 
@@ -2085,7 +2085,7 @@ DEFINE_HOOK(0x481778, CellClass_ScatterContent_Scatter, 0x6)
 		? RulesClass::Instance->PlayerScatter
 		: pTechno->Owner->IQLevel2 >= RulesClass::Instance->Scatter))
 	{
-		pTechno->Scatter(coords, ignoreMission, ignoreDestination);
+		pTechno->Scatter(*pCoords, ignoreMission, ignoreDestination);
 	}
 
 	return NextTechno;
@@ -2791,6 +2791,9 @@ DEFINE_HOOK(0x70D4A0, AbstractClass_ClearTargetToMe_ClearManagerTarget, 0x5)
 {
 	GET(AbstractClass*, pThis, ECX);
 
+	if (!pThis)
+		return 0;
+
 	for (const auto pTemporal : TemporalClass::Array)
 	{
 		if (pTemporal->Target == pThis)
@@ -2811,10 +2814,10 @@ DEFINE_HOOK(0x70D4A0, AbstractClass_ClearTargetToMe_ClearManagerTarget, 0x5)
 			pSpawn->ResetTarget();
 	}
 
-	if (const auto pTechno = abstract_cast<TechnoClass*>(pThis))
+	if (const auto pTechno = abstract_cast<TechnoClass*, true>(pThis))
 		pTechno->LastTarget = nullptr;
 
-	if (const auto pFoot = abstract_cast<FootClass*>(pThis))
+	if (const auto pFoot = abstract_cast<FootClass*, true>(pThis))
 		pFoot->LastDestination = nullptr;
 
 	return 0;
