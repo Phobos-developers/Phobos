@@ -721,10 +721,18 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	}
 
 	// Remove from harvesters list if no longer a harvester.
-	if (pOldTypeExt->Harvester_Counted && !pNewTypeExt->Harvester_Counted)
+	if (pOldTypeExt->Harvester_Counted)
 	{
-		auto& vec = HouseExt::ExtMap.Find(pOwner)->OwnedCountedHarvesters;
-		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
+		if (!pNewTypeExt->Harvester_Counted)
+		{
+			auto& vec = HouseExt::ExtMap.Find(pOwner)->OwnedCountedHarvesters;
+			vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
+		}
+	}
+	// Add to harvesters list if it's a harvester.
+	else if (pNewTypeExt->Harvester_Counted)
+	{
+		HouseExt::ExtMap.Find(pOwner)->OwnedCountedHarvesters.push_back(pThis);
 	}
 
 	// Remove from limbo reloaders if no longer applicable
@@ -1616,6 +1624,12 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, cons
 	case AutoDeathBehavior::Vanish:
 	{
 		AnimExt::CreateRandomAnim(pVanishAnimation, pThis->GetCoords(), pThis, nullptr, true);
+
+		if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pThis))
+		{
+			if (pThis->BunkerLinkedItem)
+				pBuilding->UnloadBunker();
+		}
 
 		pThis->KillPassengers(pThis);
 		pThis->Stun();

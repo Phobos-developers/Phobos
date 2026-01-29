@@ -21,6 +21,7 @@ public:
 		ValueableVector<BuildingTypeClass*> PowerPlantEnhancer_Buildings;
 		Valueable<int> PowerPlantEnhancer_Amount;
 		Nullable<float> PowerPlantEnhancer_Factor;
+		Valueable<int> PowerPlantEnhancer_MaxCount;
 
 		std::vector<Point2D> OccupierMuzzleFlashes;
 		Valueable<bool> Powered_KillSpawns;
@@ -66,6 +67,7 @@ public:
 
 		ValueableVector<TechnoTypeClass*> FactoryPlant_AllowTypes;
 		ValueableVector<TechnoTypeClass*> FactoryPlant_DisallowTypes;
+		Valueable<int> FactoryPlant_MaxCount;
 
 		Nullable<double> Units_RepairRate;
 		Nullable<int> Units_RepairStep;
@@ -75,6 +77,7 @@ public:
 		Valueable<bool> NoBuildAreaOnBuildup;
 		ValueableVector<BuildingTypeClass*> Adjacent_Allowed;
 		ValueableVector<BuildingTypeClass*> Adjacent_Disallowed;
+		Valueable<int> Adjacent_Disallowed_ExtraDistance;
 
 		Nullable<Point2D> BarracksExitCell;
 
@@ -113,10 +116,11 @@ public:
 			, PowerPlantEnhancer_Buildings {}
 			, PowerPlantEnhancer_Amount { 0 }
 			, PowerPlantEnhancer_Factor { 1.0 }
+			, PowerPlantEnhancer_MaxCount { -1 }
 			, OccupierMuzzleFlashes()
 			, Powered_KillSpawns { false }
 			, CanC4_AllowZeroDamage { false }
-			, InitialStrength_Cloning { { 1.0, 0.0 } }
+			, InitialStrength_Cloning { { 1.0 } }
 			, ExcludeFromMultipleFactoryBonus { false }
 			, Refinery_UseStorage { false }
 			, Grinding_AllowAllies { false }
@@ -146,6 +150,7 @@ public:
 			, AircraftDockingDirs {}
 			, FactoryPlant_AllowTypes {}
 			, FactoryPlant_DisallowTypes {}
+			, FactoryPlant_MaxCount { -1 }
 			, IsAnimDelayedBurst { true }
 			, IsDestroyableObstacle { false }
 			, Units_RepairRate {}
@@ -155,6 +160,7 @@ public:
 			, NoBuildAreaOnBuildup { false }
 			, Adjacent_Allowed {}
 			, Adjacent_Disallowed {}
+			, Adjacent_Disallowed_ExtraDistance { 0 }
 			, BarracksExitCell {}
 			, Overpower_KeepOnline { 2 }
 			, Overpower_ChargeWeapon { 1 }
@@ -169,7 +175,6 @@ public:
 			, Refinery_UseNormalActiveAnim { false }
 			, HasPowerUpAnim {}
 			, UndeploysInto_Sellable { false }
-
 			, BuildingRadioLink_SyncOwner {}
 
 			// Ares 0.2

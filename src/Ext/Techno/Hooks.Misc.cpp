@@ -866,23 +866,6 @@ DEFINE_HOOK(0x730D1F, ProcessDeployCommand_VoiceDeploy, 0x5)
 
 #pragma endregion
 
-
-// Prevent subterranean units from deploying while underground.
-DEFINE_HOOK(0x73D6E6, UnitClass_Unload_Subterranean, 0x6)
-{
-	enum { ReturnFromFunction = 0x73DFB0 };
-
-	GET(UnitClass*, pThis, ESI);
-
-	if (auto const pLoco = locomotion_cast<TunnelLocomotionClass*>(pThis->Locomotor))
-	{
-		if (pLoco->State != TunnelLocomotionClass::State::Idle)
-			return ReturnFromFunction;
-	}
-
-	return 0;
-}
-
 #pragma region Events
 
 DEFINE_HOOK(0x4C7512, EventClass_Execute_StopCommand, 0x6)

@@ -142,6 +142,9 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		if (!this->Crit_ApplyChancePerTarget)
 			this->Crit_RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
 
+		if (!this->ReturnWarhead_ApplyChancePerTarget)
+			this->ReturnWarhead_RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
+
 		if (this->Crit_ActiveChanceAnims.size() > 0 && this->Crit_CurrentChance > 0.0)
 			AnimExt::CreateRandomAnim(Crit_ActiveChanceAnims, coords, pOwner, pHouse, true);
 
@@ -201,6 +204,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->ReverseEngineer)
 		this->ApplyReverseEngineer(pHouse, pTarget);
+
+	if (this->ReturnWarhead && pOwner)
+		this->ApplyReturnWarhead(pHouse, pTarget, pOwner);
 
 	// This might change the target's armor type
 	this->ApplyShieldModifiers(pTarget);
@@ -524,6 +530,28 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	}
 	else
 		pTarget->ReceiveDamage(&damage, 0, this->OwnerObject(), pOwner, false, false, pHouse);
+}
+
+void WarheadTypeExt::ExtData::ApplyReturnWarhead(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
+{
+	const double dice = this->ReturnWarhead_ApplyChancePerTarget || !this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate) ? ScenarioClass::Instance->Random.RandomDouble() : this->ReturnWarhead_RandomBuffer;
+
+	if (this->ReturnWarhead_Chance < dice)
+		return;
+
+	if (pHouse && !EnumFunctions::CanTargetHouse(this->ReturnWarhead_AffectsHouse, pHouse, pTarget->Owner))
+		return;
+
+	if (!EnumFunctions::IsCellEligible(pTarget->GetCell(), this->ReturnWarhead_AffectsTarget))
+		return;
+
+	if (!EnumFunctions::IsTechnoEligible(pTarget, this->ReturnWarhead_AffectsTarget))
+		return;
+
+	if (this->ReturnWarhead_FullDetonation)
+		WarheadTypeExt::DetonateAt(this->ReturnWarhead, pOwner, pTarget, this->ReturnWarhead_Damage, pTarget->Owner);
+	else
+		pOwner->ReceiveDamage(&this->ReturnWarhead_Damage, 0, this->ReturnWarhead, pTarget, false, false, pTarget->Owner);
 }
 
 void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, BulletClass* pInterceptor, const CoordStruct& coords)

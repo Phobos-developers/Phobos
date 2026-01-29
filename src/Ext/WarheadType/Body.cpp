@@ -37,6 +37,9 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 	if (!IsHealthInThreshold(pTarget))
 		return false;
 
+	if (!IsVeterancyInThreshold(pTarget))
+		return false;
+
 	if (!this->EffectsRequireVerses)
 		return true;
 
@@ -49,6 +52,14 @@ bool WarheadTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
 		return true;
 
 	return TechnoExt::IsHealthInThreshold(pTarget, this->AffectsAbovePercent, this->AffectsBelowPercent);
+}
+
+bool WarheadTypeExt::ExtData::IsVeterancyInThreshold(TechnoClass* pTarget) const
+{
+	if (!this->VeterancyCheck)
+		return true;
+
+	return EnumFunctions::CanTargetVeterancy(this->AffectsVeterancy, pTarget);
 }
 
 // Checks if Warhead can affect target that might or might be currently invulnerable.
@@ -164,6 +175,15 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	if (this->Crit_AffectsAbovePercent > this->Crit_AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] Crit.AffectsAbovePercent is bigger than Crit.AffectsBelowPercent, crit will never activate!\n", pSection);
+
+	// Return warhead
+	this->ReturnWarhead.Read(exINI, pSection, "ReturnWarhead");
+	this->ReturnWarhead_Damage.Read(exINI, pSection, "ReturnWarhead.Damage");
+	this->ReturnWarhead_Chance.Read(exINI, pSection, "ReturnWarhead.Chance");
+	this->ReturnWarhead_ApplyChancePerTarget.Read(exINI, pSection, "ReturnWarhead.ApplyChancePerTarget");
+	this->ReturnWarhead_FullDetonation.Read(exINI, pSection, "ReturnWarhead.FullDetonation");
+	this->ReturnWarhead_AffectsTarget.Read(exINI, pSection, "ReturnWarhead.AffectsTarget");
+	this->ReturnWarhead_AffectsHouse.Read(exINI, pSection, "ReturnWarhead.AffectsHouse");
 
 	this->MindControl_Anim.Read(exINI, pSection, "MindControl.Anim");
 	this->MindControl_ThreatDelay.Read(exINI, pSection, "MindControl.ThreatDelay");
@@ -283,11 +303,13 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AffectsBelowPercent.Read(exINI, pSection, "AffectsBelowPercent");
 	this->AffectsAbovePercent.Read(exINI, pSection, "AffectsAbovePercent");
+	this->AffectsVeterancy.Read(exINI, pSection, "AffectsVeterancy");
 	this->AffectsNeutral.Read(exINI, pSection, "AffectsNeutral");
 	this->AffectsGround.Read(exINI, pSection, "AffectsGround");
 	this->AffectsAir.Read(exINI, pSection, "AffectsAir");
 	this->CellSpread_Cylinder.Read(exINI, pSection, "CellSpread.Cylinder");
 	this->HealthCheck = this->AffectsAbovePercent > 0.0 || this->AffectsBelowPercent < 1.0;
+	this->VeterancyCheck = this->AffectsVeterancy != AffectedVeterancy::All;
 
 	if (this->AffectsAbovePercent > this->AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] AffectsAbovePercent is bigger than AffectsBelowPercent, the warhead will never activate!\n", pSection);
@@ -364,6 +386,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->BuildingSell
 		|| this->BuildingUndeploy
 		|| this->ReverseEngineer
+		|| this->ReturnWarhead
 	);
 
 	char tempBuffer[32];
@@ -457,6 +480,14 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_AffectsAbovePercent)
 		.Process(this->Crit_SuppressWhenIntercepted)
 
+		.Process(this->ReturnWarhead)
+		.Process(this->ReturnWarhead_Damage)
+		.Process(this->ReturnWarhead_Chance)
+		.Process(this->ReturnWarhead_ApplyChancePerTarget)
+		.Process(this->ReturnWarhead_FullDetonation)
+		.Process(this->ReturnWarhead_AffectsTarget)
+		.Process(this->ReturnWarhead_AffectsHouse)
+
 		.Process(this->MindControl_Anim)
 		.Process(this->MindControl_ThreatDelay)
 
@@ -537,11 +568,13 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AffectsBelowPercent)
 		.Process(this->AffectsAbovePercent)
+		.Process(this->AffectsVeterancy)
 		.Process(this->AffectsNeutral)
 		.Process(this->AffectsGround)
 		.Process(this->AffectsAir)
 		.Process(this->CellSpread_Cylinder)
 		.Process(this->HealthCheck)
+		.Process(this->VeterancyCheck)
 
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)
