@@ -33,7 +33,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	// Apply warhead effects
 	if (damage && !pWHExt->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate))
-		pWHExt->DetonateOnOneUnit(args->SourceHouse, pThis, args->Attacker);
+		pWHExt->DetonateOnOneUnit(args->SourceHouse, pThis, CoordStruct { 0, 0, 0 }, damage, args->Attacker, args->DistanceToEpicenter);
 
 	// Calculate Damage Multiplier
 	if (!args->IgnoreDefenses && damage)

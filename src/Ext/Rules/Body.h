@@ -514,7 +514,6 @@ public:
 			, AttackMove_StopWhenTargetAcquired { }
 
 			, Parasite_GrappleAnim {}
-
 			, InfantryAutoDeploy { false }
 			, AdjacentWallDamage { 200 }
 
@@ -542,7 +541,7 @@ public:
 			, AutoTarget_NoThreatBuildings { false }
 			, AutoTargetAI_NoThreatBuildings { true }
 
-      , PenetratesTransport_Level { 10 }
+			, PenetratesTransport_Level { 10 }
 		{ }
 
 		virtual ~ExtData() = default;
