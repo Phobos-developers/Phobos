@@ -1782,6 +1782,7 @@ msgid ""
 "non-`ConstructionYard=true` `Factory=BuildingType` buildings. `IdleAnim` "
 "will cease to play for its duration normally as well."
 msgstr ""
+"`ProductionAnim` 现在添加了对 `Factory=InfantryType` 和 `Factory=BuildingType` 但 `ConstructionYard=false` 的建筑的适配。`IdleAnim` 也会在其播放期间停止播放。"
 
 #: ../../Fixed-or-Improved-Logics.md:297
 msgid "Fixes / interactions with other extensions"

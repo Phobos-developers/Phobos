@@ -2435,6 +2435,7 @@ msgid ""
 "`ProductionAnim` is now available for `Factory=InfantryType` as well as "
 "non-`ConstructionYard=true` `Factory=BuildingType` buildings (by Starkku)"
 msgstr ""
+"`ProductionAnim` 现在添加了对 `Factory=InfantryType` 和 `Factory=BuildingType` 但 `ConstructionYard=false` 的建筑的适配。`IdleAnim` 也会在其播放期间停止播放（by Starkku）"
 
 #: ../../Whats-New.md:526
 msgid ""
