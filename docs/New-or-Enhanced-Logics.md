@@ -2619,9 +2619,9 @@ RemoveDisguise=false  ; boolean
 - For each techno affected by this warhead, a warhead owned by the target techno will be detonated at the owner of the original warhead.
   - `ReturnWarhead` determines the warhead that'll 'return' to the original owner from the target.
   - `ReturnWarhead.Damage` determines the damage dealt by the return warhead.
-  - `ReturnWarhead.Chance` determines chance for a return warhead to occur. By default this is checked once when the original warhead is detonated and every target that is susceptible to critical hits will be affected. If `ReturnWarhead.ApplyChancePerTarget` is set, then whether or not the chance roll is successful is determined individually for each target.
+  - `ReturnWarhead.Chance` determines chance for a return warhead to occur. By default this is checked once when the original warhead is detonated and every target that is susceptible to triggering a return warhead will be affected. If `ReturnWarhead.ApplyChancePerTarget` is set, then whether or not the chance roll is successful is determined individually for each target.
   - `ReturnWarhead.FullDetonation` controls whether or not the return warhead is detonated fully on the original owner (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
-  - `ReturnWarhead.AffectsTarget` can be used to customize types of targets that original warhead can trigger a return warhead. Critical hits cannot affect empty cells or cells containing only TerrainTypes, overlays etc.
+  - `ReturnWarhead.AffectsTarget` can be used to customize types of targets that original warhead can trigger a return warhead. Return warhead cannot affect empty cells or cells containing only TerrainTypes, overlays etc.
   - `ReturnWarhead.AffectsHouse` can be used to customize houses that original warhead can trigger a return warhead.
 
 In `rulesmd.ini`:

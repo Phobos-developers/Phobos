@@ -2458,7 +2458,7 @@ msgstr "[电厂增幅次数上限](New-or-Enhanced-Logics.md#power-plant-enhance
 
 #: ../../Whats-New.md:529
 msgid "[Return warhead](New-or-Enhanced-Logics.md#return-warhead) (by Ollerus)"
-msgstr ""
+msgstr "[归返弹头](New-or-Enhanced-Logics.md#return-warhead)（by Ollerus）"
 
 #: ../../Whats-New.md:530
 msgid ""

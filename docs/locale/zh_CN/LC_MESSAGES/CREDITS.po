@@ -2574,7 +2574,7 @@ msgstr "电厂增幅次数上限"
 
 #: ../../../CREDITS.md:619
 msgid "Return warhead"
-msgstr ""
+msgstr "归返弹头"
 
 #: ../../../CREDITS.md:620
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"

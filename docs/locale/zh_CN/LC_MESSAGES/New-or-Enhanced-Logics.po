@@ -9170,60 +9170,58 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:2617
 msgid "Return warhead"
-msgstr ""
+msgstr "归返弹头"
 
 #: ../../New-or-Enhanced-Logics.md:2619
 msgid ""
 "For each techno affected by this warhead, a warhead owned by the target "
 "techno will be detonated at the owner of the original warhead."
 msgstr ""
+"对于每个受该弹头影响的单位都会有一个在该弹头的所有者处引爆且属于自己的弹头。"
 
 #: ../../New-or-Enhanced-Logics.md:2620
 msgid ""
 "`ReturnWarhead` determines the warhead that'll 'return' to the original "
 "owner from the target."
 msgstr ""
+"`ReturnWarhead` 决定从目标“归返”回原弹头所有者的弹头类型。"
 
 #: ../../New-or-Enhanced-Logics.md:2621
 msgid "`ReturnWarhead.Damage` determines the damage dealt by the return warhead."
-msgstr ""
+msgstr "`ReturnWarhead.Damage` 决定归返弹头造成的伤害。"
 
 #: ../../New-or-Enhanced-Logics.md:2622
-#, fuzzy
 msgid ""
 "`ReturnWarhead.Chance` determines chance for a return warhead to occur. "
 "By default this is checked once when the original warhead is detonated "
-"and every target that is susceptible to critical hits will be affected. "
+"and every target that is susceptible to triggering a return warhead will be affected. "
 "If `ReturnWarhead.ApplyChancePerTarget` is set, then whether or not the "
 "chance roll is successful is determined individually for each target."
 msgstr ""
-"`Crit.Chance` 决定暴击发生的概率。默认情况下这在弹头爆炸时检查一次，每个受影响的目标都可能受到暴击。如果设置了 "
-"`Crit.ApplyChancePerTarget`，那么每个目标是否成功进行暴击的概率将单独计算。"
+"`ReturnWarhead.Chance` 决定归返弹头发生的概率。默认情况下这在弹头爆炸时检查一次，每个受影响的目标都可能触发归返弹头。如果设置了 "
+"`ReturnWarhead.ApplyChancePerTarget`，那么每个目标是否成功触发归返的概率将单独计算。"
 
 #: ../../New-or-Enhanced-Logics.md:2623
-#, fuzzy
 msgid ""
 "`ReturnWarhead.FullDetonation` controls whether or not the return warhead"
 " is detonated fully on the original owner (as part of a dummy weapon) or "
 "simply deals area damage and applies Phobos' Warhead effects."
 msgstr ""
-"`Crit.Warhead.FullDetonation` 控制弹头是否在目标上完全引爆（作为虚拟武器的一部分）或者只能对所在区域造成杀伤并应用 "
+"`ReturnWarhead.FullDetonation` 控制弹头是否在目标上完全引爆（作为虚拟武器的一部分）或者只能对所在区域造成杀伤并应用 "
 "Phobos 的弹头效果。"
 
 #: ../../New-or-Enhanced-Logics.md:2624
-#, fuzzy
 msgid ""
 "`ReturnWarhead.AffectsTarget` can be used to customize types of targets "
-"that original warhead can trigger a return warhead. Critical hits cannot "
+"that original warhead can trigger a return warhead. Return warhead cannot "
 "affect empty cells or cells containing only TerrainTypes, overlays etc."
-msgstr "`Crit.AffectsTarget` 可用于自定义此弹头可暴击的目标类型。暴击不能影响空置单元格或仅包含地形对象和覆盖物等的单元格。"
+msgstr "`ReturnWarhead.AffectsTarget` 可用于自定义此弹头可触发归返的目标类型。归返弹头不能影响空置单元格或仅包含地形对象和覆盖物等的单元格。"
 
 #: ../../New-or-Enhanced-Logics.md:2625
-#, fuzzy
 msgid ""
 "`ReturnWarhead.AffectsHouse` can be used to customize houses that "
 "original warhead can trigger a return warhead."
-msgstr "`Crit.AffectsHouse` 可用于自定义此弹头可暴击的目标所属。"
+msgstr "`ReturnWarhead.AffectsHouse` 可用于自定义此弹头可触发归返的目标所属。"
 
 #: ../../New-or-Enhanced-Logics.md:2628
 msgid ""
