@@ -3011,19 +3011,21 @@ msgstr "修复了载具生还者在运输工具被摧毁时生成在错误位置
 
 #: ../../Whats-New.md:625
 msgid "0.4.0.2"
-msgstr ""
+msgstr "0.4.0.2"
 
 #: ../../Whats-New.md:630
 msgid ""
 "Fixed `AircraftDockingDirs` being reset if the BuildingType section is "
 "redefined in map file (by Starkku)"
 msgstr ""
+"修复了 `AircraftDockingDirs` 在地图内置了建筑节名时会重置的问题（by Starkku）"
 
 #: ../../Whats-New.md:631
 msgid ""
 "Fixed harvester counter not accounting for type converting harvesters (by"
 " Ollerus)"
 msgstr ""
+"修复了矿车计数器未正确计入经过类型转换的矿车的问题（by Ollerus）"
 
 #: ../../Whats-New.md:632
 msgid ""
@@ -3051,12 +3053,14 @@ msgid ""
 "Fixed `CreateUnit.Owner=killer` not working correctly with "
 "`DestroyAnim(s)` (by TaranDahl)"
 msgstr ""
+"修复了 `CreateUnit.Owner=killer` 与 `DestroyAnim(s)` 不能正确搭配工作的问题（by TaranDahl）"
 
 #: ../../Whats-New.md:636
 msgid ""
 "Fixed a bug causing erratic behaviour with units scattering f.ex moving "
 "away from buildings being placed (by Starkku)"
 msgstr ""
+"修复了一个导致单位行为异常例如放置建筑时单位会散开的 Bug（by Starkku）"
 
 #: ../../Whats-New.md:637
 msgid ""
@@ -3070,6 +3074,7 @@ msgid ""
 "Animation-fired weapons now snap on the object they are attached to if "
 "present (by TaranDahl)"
 msgstr ""
+"动画发射的武器现在会自动吸附到它们所附着的对象上（by TaranDahl）"
 
 #: ../../Whats-New.md:641
 msgid "0.4.0.1"
