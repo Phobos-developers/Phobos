@@ -487,6 +487,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue that warhead with `IsLocomotor=yes` can be used to vehicles who is in tank bunker
   - Fix the bug that if there's a tank in tank bunker, tank bunker use auto death by vanish will cause tank get stuck and game will crash quickly
   - Customize whether warhead can be used to targeting ironcurtained technos or not
+  - Keep select techno when use permanent mindcontrol or psychic dominator superweapon to instead normal mindcontrol
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

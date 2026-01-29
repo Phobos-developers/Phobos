@@ -581,6 +581,7 @@ Vanilla fixes:
 - Fixed the issue that warhead with `IsLocomotor=yes` can be used to vehicles who is in tank bunker (by NetsuNegi)
 - Fixed an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals (by FlyStar)
 - Fixed an issue where mining vehicles could not move after leaving a tank bunker (by FlyStar)
+- Keep select techno when use permanent mindcontrol or psychic dominator superweapon to instead normal mindcontrol (by NetsuNegi)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
