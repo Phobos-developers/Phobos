@@ -3032,6 +3032,7 @@ msgid ""
 " death by vanish will cause tank get stuck and game will crash quickly "
 "(by NetsuNegi)"
 msgstr ""
+"修复了坦克碉堡中的载具使用 `AutoDeath.Behavior=vanish` 会导致坦克卡住并且游戏立即崩溃的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:634
 msgid ""

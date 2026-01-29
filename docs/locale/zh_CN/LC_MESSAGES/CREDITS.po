@@ -2028,6 +2028,7 @@ msgid ""
 "Fix the bug that if there's a tank in tank bunker, tank bunker use auto "
 "death by vanish will cause tank get stuck and game will crash quickly"
 msgstr ""
+"修复了坦克碉堡中的载具使用 `AutoDeath.Behavior=vanish` 会导致坦克卡住并且游戏立即崩溃的 Bug"
 
 #: ../../../CREDITS.md:490
 msgid ""
