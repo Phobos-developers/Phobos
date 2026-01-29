@@ -7126,7 +7126,7 @@ msgid ""
 "`DeployFire/IsSimpleDeployer/DeploysInto`, it can perform custom "
 "deployment actions beyond merely releasing passengers."
 msgstr ""
-"当载具有 `Passengers` 的同时还有 `DeployFire/IsSimpleDeployer/DeploysInto` 时可以执行释放乘客以外的其他部署动作。"
+"当载具有 `Passengers` 的同时还有 `DeployFire/IsSimpleDeployer/DeploysInto` 则可以执行释放乘客以外的其他部署动作。"
 
 #: ../../Fixed-or-Improved-Logics.md:2070
 msgid ""
@@ -7734,7 +7734,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:2299
 msgid "No per-warhead setting because `AffectsAllies` etc. is respected."
-msgstr "没有弹头微观语句，因为尊重 `AffectsAllies` 等设置。"
+msgstr "没有弹头微观语句，因为生效与否仍会遵守 `AffectsAllies` 等设置。"
 
 #: ../../Fixed-or-Improved-Logics.md:2302
 msgid "Combat light customizations"
@@ -8002,7 +8002,7 @@ msgid ""
 "`AffectsVeterancy` sets the veterancy levels that allow the Warhead to "
 "detonate on the target."
 msgstr ""
-"`AffectsVeterancy` 设置允许弹头攻击的经验等级。"
+"`AffectsVeterancy` 设置允许受到弹头效果影响的经验等级。"
 
 #: ../../Fixed-or-Improved-Logics.md:2389
 msgid ""
