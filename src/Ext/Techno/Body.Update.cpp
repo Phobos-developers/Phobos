@@ -1093,6 +1093,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		BombListClass::Instance.AddDetector(pThis);
 
 	pThis->UpdateSight(0, 0, 0, 0, 0);
+	MapClass::Instance.RevealArea3(&pThis->Location, 0, pThis->LastSightRange + 3, 0);
 
 	if (pOldType->GapGenerator)
 		pThis->DestroyGap();
