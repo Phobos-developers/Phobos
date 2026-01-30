@@ -470,11 +470,11 @@ DEFINE_HOOK(0x446816, BuildingClass_Place_RevealToAll_UpdateSight, 0x5)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x446816, BuildingClass_Place_RevealToAll_UpdateSight, 0x5)
+DEFINE_HOOK(0x4ADE55, Sub_4ADCD0_RevealToAll_UpdateSight, 0x6)
 {
-	enum { SkipGameCode = 0x44682F };
+	enum { SkipGameCode = 0x4ADE6E };
 
-	GET(BuildingClass*, pThis, EBP);
+	GET(BuildingClass*, pThis, ESI);
 	const auto pType = pThis->Type;
 	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
 
