@@ -293,6 +293,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where mining vehicles could not move after leaving a tank bunker.
 - Fixed the bug that if there's a tank in tank bunker, tank bunker use auto death by vanish will cause tank get stuck and game will crash quickly.
 - `ProductionAnim` is now available for `Factory=InfantryType` as well as non-`ConstructionYard=true` `Factory=BuildingType` buildings. `IdleAnim` will cease to play for its duration normally as well.
+- Fixed the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon.
 
 ## Fixes / interactions with other extensions
 
