@@ -2046,6 +2046,7 @@ msgid ""
 "Fix the bug that building with `Explodes=yes` use Ares's rubble logic "
 "will cause it's owner cannot defeat normally"
 msgstr ""
+"修复了使用 Ares 废墟逻辑的 `Explodes=yes` 建筑会导致其所有者无法正常败北的 Bug"
 
 #: ../../../CREDITS.md:493
 msgid "**Apollo** - Translucent SHP drawing patches"
