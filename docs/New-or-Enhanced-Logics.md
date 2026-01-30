@@ -2845,8 +2845,8 @@ Burst.NoDelay=false   ; boolean
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-CanTarget.IronCurtained=false       ; boolean
-CanTargetAI.IronCurtained=true      ; boolean
+CanTarget.IronCurtained=true        ; boolean
+CanTargetAI.IronCurtained=false     ; boolean
 AutoTarget.IronCurtained=true       ; boolean
 
 [SOMEWEAPON]                        ; WeaponType
