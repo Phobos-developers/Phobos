@@ -1363,9 +1363,7 @@ void TechnoExt::ExtData::UpdateTypeData_Building()
 	//auto const pOldType = static_cast<BuildingTypeClass*>(this->PreviousType);
 	auto const pNewType = static_cast<BuildingTypeClass*>(this->TypeExtData->OwnerObject());
 
-	// Maybe buggy
-	for (auto pAnim = pThis->Anims[0]; pAnim; pAnim++)
-		GameDelete(pAnim);
+	pThis->DestroyNthAnim(BuildingAnimSlot::All);
 
 	// Skip audio related
 
@@ -1382,19 +1380,25 @@ void TechnoExt::ExtData::UpdateTypeData_Building()
 
 	HouseClass* const pOwner = pThis->Owner;
 
+	// TODO : Handle addon logics ()
+
 	if (!pThis->InLimbo)
 		pOwner->RegisterLoss(pThis, false);
 	pOwner->RemoveTracking(pThis);
 
 	// Maybe buggy
-	auto pCrd = pThis->Location;
-	pThis->Limbo();
-	pThis->Type = pNewType;
-	pThis->ActuallyPlacedOnMap = false;
-	++Unsorted::ScenarioInit;
-	pThis->Unlimbo(pCrd, DirType::North);
-	--Unsorted::ScenarioInit;
-	pThis->Place(false);
+	if (!pThis->InLimbo)
+	{
+		auto pCrd = pThis->Location;
+		pThis->Limbo();
+		pThis->Type = pNewType;
+		pThis->ActuallyPlacedOnMap = false;
+		++Unsorted::ScenarioInit;
+		pThis->Unlimbo(pCrd, DirType::North);
+		--Unsorted::ScenarioInit;
+		pThis->Place(false);
+		pThis->Mark(MarkType::Change);
+	}
 
 	pOwner->AddTracking(pThis);
 	if (!pThis->InLimbo)
