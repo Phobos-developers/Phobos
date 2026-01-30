@@ -336,6 +336,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed.
 - Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed.
 - Fixed the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally.
+- Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat
 
 ## Newly added global settings
 
