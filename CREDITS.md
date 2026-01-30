@@ -283,6 +283,8 @@ This page lists all the individual contributions to the project by their author.
   - Bugfixes to map trigger action `125 Build At...`
   - Owner change during buildup bugfix
   - Subterranean harvester pathfinding fix
+  - Toggle to exclude technos from base center calculations
+  - Deploy priority filtering
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -402,6 +404,11 @@ This page lists all the individual contributions to the project by their author.
   - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles
   - Reactivate unused trigger events 2, 53, and 54
   - Map Action 511, 609, 610
+  - Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`
+  - Attack non-threatening structures extensions
+  - Vehicle Deployment Enhancement
+  - Fixed an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals
+  - Fixed an issue where mining vehicles could not move after leaving a tank bunker
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -474,6 +481,13 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed
   - Fix the bug that vehicle survivor can spawn on wrong position when transport has been destroyed
   - Fix the bug that if object has been removed from LogicClass in Update(), next object will be skip
+  - Fix the bug that weapon cannot used to intercept on gound bullet if it's projectile has `AG=no`
+  - Customize size for mind controlled unit
+  - Fix the issue that weapon selection don't check if secondary's warhead has `IsLocomotor=yes`
+  - Fix the issue that warhead with `IsLocomotor=yes` can be used to vehicles who is in tank bunker
+  - Fix the bug that if there's a tank in tank bunker, tank bunker use auto death by vanish will cause tank get stuck and game will crash quickly
+  - Customize whether warhead can be used to targeting ironcurtained technos or not
+  - Fix the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon
   - Customize reveal radius of `RevealToAll`
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
@@ -580,7 +594,7 @@ This page lists all the individual contributions to the project by their author.
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
-<!--  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades  -->
+  <!--  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades  -->
   - Type select for buildings (doc)
   - Enhanced Bombard trajectory
   - Shield armor inheritance customization
@@ -602,6 +616,8 @@ This page lists all the individual contributions to the project by their author.
   - Toggle off laser trail and shake effects
   - OpenTopped range bonus and damage multiplier customization for passengers
   - AutoDeath upon ownership change
+  - Maximum amount for power plant enhancer
+  - Return warhead
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
@@ -666,10 +682,15 @@ This page lists all the individual contributions to the project by their author.
   - Toggle per-target warhead effects apply timing
   - Extra range for chasing and pre-firing
   - Fix an issue that rockets do not consider the destination altitude during climbing
+  - Fix an issue that the AI would set anger towards friendly houses, causing it to act stupidly
+  - Fix an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies
+  - `AllowBerzerkOnAllies`
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
-- **Flactine** - add target filtering options to attacheffect system
+- **Flactine** 
+  - Add target filtering options to attacheffect system
+  - Add veterancy-based target filtering for weapons and warheads
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
@@ -695,6 +716,7 @@ This page lists all the individual contributions to the project by their author.
 - **Joshy** - Original FlyingStrings implementation
 - **CnCVK** - Original custom locomotors experiment
 - **ZΞPHYɌUS** - win/lose themes code
+- **Fridge** - Cursor Fix code
 - **Neargye (Daniil Goncharov)** - [nameof library](https://github.com/Neargye/nameof) (MIT)
 - **ayylmao** - help with docs, extensive and thorough testing
 - **SMxReaver** - help with docs, extensive and thorough testing

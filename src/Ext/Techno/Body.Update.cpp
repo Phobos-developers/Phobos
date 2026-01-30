@@ -1,22 +1,15 @@
 // methods used in TechnoClass_AI hooks or anything similar
 #include "Body.h"
 
-#include <SessionClass.h>
-#include <SpawnManagerClass.h>
-#include <ParticleSystemClass.h>
-#include <Conversions.h>
-#include <SlaveManagerClass.h>
-#include <AirstrikeClass.h>
 #include <Kamikaze.h>
 #include <JumpjetLocomotionClass.h>
-#include <FlyLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Scenario/Body.h>
-#include <Utilities/EnumFunctions.h>
+#include <Misc/FlyingStrings.h>
 #include <Utilities/AresFunctions.h>
 #include <New/Type/Affiliated/TypeConvertGroup.h>
 
@@ -728,10 +721,18 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	}
 
 	// Remove from harvesters list if no longer a harvester.
-	if (pOldTypeExt->Harvester_Counted && !pNewTypeExt->Harvester_Counted)
+	if (pOldTypeExt->Harvester_Counted)
 	{
-		auto& vec = HouseExt::ExtMap.Find(pOwner)->OwnedCountedHarvesters;
-		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
+		if (!pNewTypeExt->Harvester_Counted)
+		{
+			auto& vec = HouseExt::ExtMap.Find(pOwner)->OwnedCountedHarvesters;
+			vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
+		}
+	}
+	// Add to harvesters list if it's a harvester.
+	else if (pNewTypeExt->Harvester_Counted)
+	{
+		HouseExt::ExtMap.Find(pOwner)->OwnedCountedHarvesters.push_back(pThis);
 	}
 
 	// Remove from limbo reloaders if no longer applicable
@@ -992,7 +993,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		}
 		else if (pOldTypeExt->Convert_ResetMindControl)
 		{
-			if (!infiniteCapture && pCaptureManager->ControlNodes.Count > maxCapture)
+			if (!infiniteCapture && pCaptureManager->GetControlledCount() > maxCapture)
 			{
 				// Remove excess nodes.
 				for (int i = pCaptureManager->ControlNodes.Count - 1; i >= maxCapture; --i)
@@ -1113,8 +1114,8 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		}
 	}
 
-	// handle AutoFire
-	if (pOldTypeExt->AutoFire && !pNewTypeExt->AutoFire)
+	// handle AutoTargetOwnPosition
+	if (pOldTypeExt->AutoTargetOwnPosition && !pNewTypeExt->AutoTargetOwnPosition)
 		pThis->SetTarget(nullptr);
 }
 
@@ -1624,6 +1625,12 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, cons
 	{
 		AnimExt::CreateRandomAnim(pVanishAnimation, pThis->GetCoords(), pThis, nullptr, true);
 
+		if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pThis))
+		{
+			if (pThis->BunkerLinkedItem)
+				pBuilding->UnloadBunker();
+		}
+
 		pThis->KillPassengers(pThis);
 		pThis->Stun();
 		pThis->Limbo();
@@ -1916,7 +1923,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	{
 		auto const attachEffect = it->get();
 		auto const pType = attachEffect->GetType();
-		const bool isValid = EnumFunctions::IsTechnoEligible(pThis, pType->AffectTargets, true)
+		const bool isValid = EnumFunctions::IsTechnoEligible(pThis, pType->AffectsTarget, true)
 			&& (pType->AffectTypes.empty() || pType->AffectTypes.Contains(pTechnoType)) && !pType->IgnoreTypes.Contains(pTechnoType);
 		const bool remove = !isValid || (attachEffect->IsSelfOwned() && !pTypeExt->AttachEffects.AttachTypes.Contains(pType));
 

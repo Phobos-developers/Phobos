@@ -2,21 +2,9 @@
 
 #include <ScriptClass.h>
 #include <ScriptTypeClass.h>
-#include <TeamClass.h>
-#include <AITriggerTypeClass.h>
-
-#include <HouseClass.h>
-#include <AircraftClass.h>
-#include <MapClass.h>
-#include <BulletClass.h>
-#include <Helpers/Enumerators.h>
-#include <WarheadTypeClass.h>
-#include <SpawnManagerClass.h>
-
-#include <Ext/House/Body.h>
 #include <Ext/Team/Body.h>
+#include <Ext/House/Body.h>
 #include <Utilities/Container.h>
-#include <Phobos.h>
 
 enum class PhobosScripts : unsigned int
 {

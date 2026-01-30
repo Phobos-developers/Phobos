@@ -2,7 +2,6 @@
 
 #include <Ext/Building/Body.h>
 #include <Ext/BulletType/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 // Contains ScriptExt::Mission_Attack and its helper functions.
@@ -847,7 +846,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 
 		if (!pTechno->Owner->IsNeutral())
 		{
-			if (const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pTechnoType))
+			if (const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pTechnoType))
 			{
 				if (pBuildingType->PowerBonus > 0)
 					return true;

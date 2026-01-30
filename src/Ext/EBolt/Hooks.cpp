@@ -1,11 +1,7 @@
 #include "Body.h"
-#include <ParticleSystemClass.h>
 
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Utilities/Macro.h>
-#include <Utilities/AresHelper.h>
-#include <Helpers/Macro.h>
 
 namespace BoltTemp
 {

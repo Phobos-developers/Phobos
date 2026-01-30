@@ -1,7 +1,5 @@
 #include "Body.h"
 
-#include <AircraftClass.h>
-
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Building/Body.h>
 
@@ -55,9 +53,6 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 static bool IsChasing(TechnoClass* pThis, AbstractClass* pTarget)
 {
 	if ((pThis->AbstractFlags & AbstractFlags::Foot) == AbstractFlags::None)
-		return false;
-
-	if (!pTarget)
 		return false;
 
 	const auto pFootTarget = abstract_cast<FootClass*>(pTarget);

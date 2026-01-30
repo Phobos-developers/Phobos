@@ -11,6 +11,23 @@ bool EnumFunctions::CanTargetHouse(AffectedHouse flags, HouseClass* ownerHouse, 
 	return (flags & AffectedHouse::Enemies) != AffectedHouse::None;
 }
 
+bool EnumFunctions::CanTargetVeterancy(AffectedVeterancy flags, TechnoClass* pTechno)
+{
+	if (flags == AffectedVeterancy::All)
+		return true;
+
+	switch (pTechno->Veterancy.GetRemainingLevel())
+	{
+	case Rank::Elite:
+		return (flags & AffectedVeterancy::Elite) != AffectedVeterancy::None;
+	case Rank::Veteran:
+		return (flags & AffectedVeterancy::Veteran) != AffectedVeterancy::None;
+	default:
+		return (flags & AffectedVeterancy::Rookie) != AffectedVeterancy::None;
+	}
+}
+
+
 bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowed, bool explicitEmptyCells, bool considerBridgesLand)
 {
 	if (allowed == AffectedTarget::All)
