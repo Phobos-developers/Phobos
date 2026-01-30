@@ -2961,5 +2961,5 @@ DEFINE_HOOK(0x708A81, TechnoClass_CanRetaliate_CheckThreat, 0x5)
 	GET(TechnoClass*, pThis, ESI);
 	GET(ObjectClass*, pAttacker, EBP);
 
-	return pThis->ThreatCoeffients((ObjectClass*)(pThis->Target), &CoordStruct::Empty) <= pThis->ThreatCoeffients(pAttacker, &CoordStruct::Empty) ? SkipRetaliate : GoOtherChecks;
+	return pThis->ThreatCoeffients(pAttacker, &CoordStruct::Empty) <= pThis->ThreatCoeffients((ObjectClass*)(pThis->Target), &CoordStruct::Empty) ? SkipRetaliate : GoOtherChecks;
 }
