@@ -201,6 +201,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->UndeploysInto_Sellable.Read(exINI, pSection, "UndeploysInto.Sellable");
 	this->BuildingRadioLink_SyncOwner.Read(exINI, pSection, "BuildingRadioLink.SyncOwner");
 
+	this->RevealToAll_Radius.Read(exINI, pSection, "RevealToAll.Radius");
+
 	if (pThis->NumberOfDocks > 0)
 	{
 		std::optional<DirType> empty;
