@@ -2808,6 +2808,7 @@ msgid ""
 "regular mind control was replaced with permanent mind control or with the"
 " control from the Psychic Dominator superweapon (by NetsuNegi)"
 msgstr ""
+"修复了被选中单位的常规心控被永久心控和心灵支配超武替换时丢失选中状态的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:586 ../../Whats-New.md:631 ../../Whats-New.md:649
 #: ../../Whats-New.md:977 ../../Whats-New.md:1062 ../../Whats-New.md:1226
