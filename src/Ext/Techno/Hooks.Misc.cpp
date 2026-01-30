@@ -387,7 +387,7 @@ DEFINE_HOOK(0x75AC93, WalkLocomotionClass_Process_Wake, 0x6)
 
 	const auto pLinkedTo = static_cast<LocomotionClass*>(pThis)->LinkedTo;
 
-	if (pThis->Is_Moving_Now() && !(Unsorted::CurrentFrame % 10) && !pLinkedTo->OnBridge && pLinkedTo->GetCell()->LandType == LandType::Water)
+	if (pThis->Is_Really_Moving_Now() && !(Unsorted::CurrentFrame % 10) && !pLinkedTo->OnBridge && pLinkedTo->GetCell()->LandType == LandType::Water)
 	{
 		const auto pAnimType = TechnoExt::ExtMap.Find(pLinkedTo)->TypeExtData->Wake.Get(RulesClass::Instance->Wake);
 		auto location = pLinkedTo->GetCoords();
