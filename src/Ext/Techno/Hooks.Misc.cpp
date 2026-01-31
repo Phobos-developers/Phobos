@@ -586,6 +586,30 @@ DEFINE_HOOK(0x74659B, UnitClass_RemoveGunner_ClearDisguise, 0x6)
 
 #pragma region UnitClass DrawSHP
 
+// Override Ares's hook
+DEFINE_HOOK(0x73C60E, UnitClass_DrawSHP_FacingsA, 0x5)
+{
+	enum { SkipGameCode = 0x73C64B };
+
+	// Restore overriden instuctions
+	R->Stack(STACK_OFFSET(0x128, -0x115), true);
+
+	GET(UnitClass*, pThis, EBP);
+	GET(UnitTypeClass*, pType, ECX);
+	unsigned int facing = 0u;
+	const unsigned int highest = Conversions::Int2Highest(pType->Facings);
+
+	// 2^highest is the frame count, 3 means 8 frames
+	if (highest >= 3 && (!pThis->Disguise || pThis->Disguise->WhatAmI() == UnitTypeClass::AbsID || pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer)))
+	{
+		const unsigned int offset = 1u << (highest - 3);
+		facing = Conversions::TranslateFixedPoint(16, highest, pThis->PrimaryFacing.Current().GetValue<16>(), offset);
+	}
+
+	R->EBX(facing);
+	return SkipGameCode;
+}
+
 static ObjectTypeClass* _GetUnitDisguiseAs(UnitClass* pThis)
 {
 	if (!pThis->IsDisguised() || pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
