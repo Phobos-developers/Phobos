@@ -31,8 +31,10 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_Unstoppable)
 		.Process(this->SW_Inhibitors)
 		.Process(this->SW_AnyInhibitor)
+		.Process(this->SW_InhibitorsHouse)
 		.Process(this->SW_Designators)
 		.Process(this->SW_AnyDesignator)
+		.Process(this->SW_DesignatorsHouse)
 		.Process(this->SW_RangeMinimum)
 		.Process(this->SW_RangeMaximum)
 		.Process(this->SW_RequiredHouses)
@@ -43,6 +45,8 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_PostDependent)
 		.Process(this->SW_MaxCount)
 		.Process(this->SW_Shots)
+		.Process(this->SW_DesignateTypes)
+		.Process(this->SW_InhibitTypes)
 		.Process(this->Message_CannotFire)
 		.Process(this->Message_InsufficientFunds)
 		.Process(this->Message_ColorScheme)
@@ -116,8 +120,10 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_Unstoppable.Read(exINI, pSection, "SW.Unstoppable");
 	this->SW_Inhibitors.Read(exINI, pSection, "SW.Inhibitors");
 	this->SW_AnyInhibitor.Read(exINI, pSection, "SW.AnyInhibitor");
+	this->SW_InhibitorsHouse.Read(exINI, pSection, "SW.InhibitorsHouse");
 	this->SW_Designators.Read(exINI, pSection, "SW.Designators");
 	this->SW_AnyDesignator.Read(exINI, pSection, "SW.AnyDesignator");
+	this->SW_DesignatorsHouse.Read(exINI, pSection, "SW.DesignatorsHouse");
 	this->SW_RangeMinimum.Read(exINI, pSection, "SW.RangeMinimum");
 	this->SW_RangeMaximum.Read(exINI, pSection, "SW.RangeMaximum");
 	this->SW_RequiredHouses = pINI->ReadHouseTypesList(pSection, "SW.RequiredHouses", this->SW_RequiredHouses);
@@ -128,6 +134,9 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_PostDependent.Read(exINI, pSection, "SW.PostDependent");
 	this->SW_MaxCount.Read(exINI, pSection, "SW.MaxCount");
 	this->SW_Shots.Read(exINI, pSection, "SW.Shots");
+
+	this->SW_DesignateTypes.Read(exINI, pSection, "SW.DesignateTypes");
+	this->SW_InhibitTypes.Read(exINI, pSection, "SW.InhibitTypes");
 
 	this->Message_CannotFire.Read(exINI, pSection, "Message.CannotFire");
 	this->Message_InsufficientFunds.Read(exINI, pSection, "Message.InsufficientFunds");

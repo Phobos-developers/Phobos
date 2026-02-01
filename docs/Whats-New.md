@@ -529,6 +529,7 @@ New:
 - [Return warhead](New-or-Enhanced-Logics.md#return-warhead) (by Ollerus)
 - [`AllowBerzerkOnAllies`](Fixed-or-Improved-Logics.md#berzerk-on-allies) (by TaranDahl)
 - Customize whether warhead can be used to targeting ironcurtained technos or not (by NetsuNegi)
+- Customize Inhibitors and Designators (by NetsuNegi)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
