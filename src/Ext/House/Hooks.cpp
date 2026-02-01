@@ -567,7 +567,7 @@ DEFINE_HOOK(0x50BF60, HouseClass_CalculateCostMultipliers, 0x5)
 	{
 		auto const pType = pBuilding->Type;
 		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
-		int max = pTypeExt->FactoryPlant_MaxCount;
+		const int max = pTypeExt->FactoryPlant_MaxCount;
 
 		if (max > -1 && counts[pType->ArrayIndex] >= max)
 			continue;

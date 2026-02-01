@@ -293,6 +293,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where mining vehicles could not move after leaving a tank bunker.
 - Fixed the bug that if there's a tank in tank bunker, tank bunker use auto death by vanish will cause tank get stuck and game will crash quickly.
 - `ProductionAnim` is now available for `Factory=InfantryType` as well as non-`ConstructionYard=true` `Factory=BuildingType` buildings. `IdleAnim` will cease to play for its duration normally as well.
+- Fixed the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon.
 
 ## Fixes / interactions with other extensions
 
@@ -334,6 +335,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType`.
 - Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed.
 - Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed.
+- Fixed the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally.
+- Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat
 
 ## Newly added global settings
 
