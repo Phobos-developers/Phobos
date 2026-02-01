@@ -2814,6 +2814,7 @@ msgid ""
 "Fixed an issue that retaliation will make the unit keep switching among "
 "multiple targets with the same amount of threat (by TaranDahl)"
 msgstr ""
+"修复了反击行为会让单位在多个相同威胁值的目标间不断切换的问题（by TaranDahl）"
 
 #: ../../Whats-New.md:587 ../../Whats-New.md:632 ../../Whats-New.md:650
 #: ../../Whats-New.md:978 ../../Whats-New.md:1063 ../../Whats-New.md:1227
