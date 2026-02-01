@@ -1312,8 +1312,8 @@ Shrapnel.UseWeaponTargeting=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMESW]                        ; SuperWeaponType
-SW.Inhibitors.Houses=enemies    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-SW.Designators.Houses=owner     ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+SW.InhibitorsHouse=enemies    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+SW.DesignatorsHouse=owner     ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
 ## Technos

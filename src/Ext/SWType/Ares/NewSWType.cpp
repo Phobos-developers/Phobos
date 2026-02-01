@@ -105,7 +105,7 @@ TargetingData& AresNewSWType::GetTargetingData(TargetingData& data, SuperWeaponT
 			}
 
 			if (hasDesignator && !deactivated
-				&& EnumFunctions::CanTargetHouse(pExt->SW_Designators_Houses, pOwner, pTechnoOwner)
+				&& EnumFunctions::CanTargetHouse(pExt->SW_DesignatorsHouse, pOwner, pTechnoOwner)
 				&& (pExt->SW_AnyDesignator || pExt->SW_Designators.Contains(pTechnoType)))
 			{
 				const int range = pTechnoTypeExt->DesignatorRange.Get(sight);
@@ -152,7 +152,7 @@ TargetingData& AresNewSWType::GetTargetingData(TargetingData& data, SuperWeaponT
 			}
 
 			if (hasInhibitor && buildingOnline && !deactivated
-				&& EnumFunctions::CanTargetHouse(pExt->SW_Inhibitors_Houses, pOwner, pTechnoOwner)
+				&& EnumFunctions::CanTargetHouse(pExt->SW_InhibitorsHouse, pOwner, pTechnoOwner)
 				&& (pExt->SW_AnyInhibitor || pExt->SW_Inhibitors.Contains(pTechnoType)))
 			{
 				const int range = pTechnoTypeExt->InhibitorRange.Get(sight);

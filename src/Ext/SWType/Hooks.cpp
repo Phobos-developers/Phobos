@@ -135,7 +135,7 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 
 		if (hasDesignator && !deactivated)
 		{
-			if (EnumFunctions::CanTargetHouse(pSWExt->SW_Designators_Houses, HouseClass::CurrentPlayer, pOwner) && pSWExt->SW_Designators.Contains(pTechnoType))
+			if (EnumFunctions::CanTargetHouse(pSWExt->SW_DesignatorsHouse, HouseClass::CurrentPlayer, pOwner) && pSWExt->SW_Designators.Contains(pTechnoType))
 			{
 				const int radius = pTechnoTypeExt->DesignatorRange.Get(sight);
 
@@ -183,7 +183,7 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 
 		if (hasInhibitor && buildingOnline && !deactivated)
 		{
-			if (EnumFunctions::CanTargetHouse(pSWExt->SW_Inhibitors_Houses, HouseClass::CurrentPlayer, pOwner) && pSWExt->SW_Inhibitors.Contains(pTechnoType))
+			if (EnumFunctions::CanTargetHouse(pSWExt->SW_InhibitorsHouse, HouseClass::CurrentPlayer, pOwner) && pSWExt->SW_Inhibitors.Contains(pTechnoType))
 			{
 				const int radius = pTechnoTypeExt->InhibitorRange.Get(sight);
 

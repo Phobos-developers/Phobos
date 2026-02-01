@@ -32,10 +32,10 @@ public:
 		Valueable<bool> SW_Unstoppable;
 		ValueableVector<TechnoTypeClass*> SW_Inhibitors;
 		Valueable<bool> SW_AnyInhibitor;
-		Valueable<AffectedHouse> SW_Inhibitors_Houses;
+		Valueable<AffectedHouse> SW_InhibitorsHouse;
 		ValueableVector<TechnoTypeClass*> SW_Designators;
 		Valueable<bool> SW_AnyDesignator;
-		Valueable<AffectedHouse> SW_Designators_Houses;
+		Valueable<AffectedHouse> SW_DesignatorsHouse;
 		Valueable<double> SW_RangeMinimum;
 		Valueable<double> SW_RangeMaximum;
 		Valueable<int> SW_Shots;
@@ -126,10 +126,10 @@ public:
 			, SW_Unstoppable { false }
 			, SW_Inhibitors {}
 			, SW_AnyInhibitor { false }
-			, SW_Inhibitors_Houses { AffectedHouse::Enemies }
+			, SW_InhibitorsHouse { AffectedHouse::Enemies }
 			, SW_Designators { }
 			, SW_AnyDesignator { false }
-			, SW_Designators_Houses { AffectedHouse::Owner }
+			, SW_DesignatorsHouse { AffectedHouse::Owner }
 			, SW_RangeMinimum { -1.0 }
 			, SW_RangeMaximum { -1.0 }
 			, SW_RequiredHouses { 0xFFFFFFFFu }

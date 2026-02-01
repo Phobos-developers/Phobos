@@ -46,7 +46,7 @@ std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>
 //{
 //	if (pTechno->IsAlive && pTechno->Health && !pTechno->InLimbo && !pTechno->Deactivated)
 //	{
-//		if (EnumFunctions::CanTargetHouse(this->SW_Inhibitors_Houses, pOwner, pTechno->Owner))
+//		if (EnumFunctions::CanTargetHouse(this->SW_InhibitorsHouse, pOwner, pTechno->Owner))
 //		{
 //			if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pTechno))
 //			{
@@ -119,7 +119,7 @@ bool SWTypeExt::ExtData::IsInhibitorEligible(HouseClass* pOwner, const CellStruc
 			return true;
 	}
 
-	if (EnumFunctions::CanTargetHouse(this->SW_Inhibitors_Houses, pOwner, pTechnoOwner) && (this->SW_AnyInhibitor || this->SW_Inhibitors.Contains(pTechnoType)))
+	if (EnumFunctions::CanTargetHouse(this->SW_InhibitorsHouse, pOwner, pTechnoOwner) && (this->SW_AnyInhibitor || this->SW_Inhibitors.Contains(pTechnoType)))
 	{
 		const int range = pTechnoTypeExt->InhibitorRange.Get(sight);
 
@@ -145,7 +145,7 @@ bool SWTypeExt::ExtData::HasInhibitor(HouseClass* pOwner, const CellStruct& coor
 // Designators check
 //bool SWTypeExt::ExtData::IsDesignator(HouseClass* pOwner, TechnoClass* pTechno) const
 //{
-//	if (EnumFunctions::CanTargetHouse(this->SW_Designators_Houses, pOwner, pTechno->Owner))
+//	if (EnumFunctions::CanTargetHouse(this->SW_DesignatorsHouse, pOwner, pTechno->Owner))
 //	{
 //		if (pTechno->IsAlive && pTechno->Health && !pTechno->InLimbo && !pTechno->Deactivated)
 //			return this->SW_AnyDesignator || this->SW_Designators.Contains(pTechno->GetTechnoType());
@@ -212,7 +212,7 @@ bool SWTypeExt::ExtData::IsDesignatorEligible(HouseClass* pOwner, const CellStru
 			return true;
 	}
 
-	if (EnumFunctions::CanTargetHouse(this->SW_Designators_Houses, pOwner, pTechnoOwner) && (this->SW_AnyDesignator || this->SW_Designators.Contains(pTechnoType)))
+	if (EnumFunctions::CanTargetHouse(this->SW_DesignatorsHouse, pOwner, pTechnoOwner) && (this->SW_AnyDesignator || this->SW_Designators.Contains(pTechnoType)))
 	{
 		const int range = pTechnoTypeExt->DesignatorRange.Get(sight);
 
