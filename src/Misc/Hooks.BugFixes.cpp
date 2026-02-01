@@ -2951,3 +2951,15 @@ DEFINE_HOOK(0x7B8536, StartMouseThread_AdjustMouseInterval, 0xA)
 
 	return 0x7B8540;
 }
+
+// It should be <= instead of < here, because this will cause the unit to keep switching among multiple targets with the same amount of threat.
+// Also <= is matched with the auto-targetting code.
+DEFINE_HOOK(0x708A81, TechnoClass_CanRetaliate_CheckThreat, 0x5)
+{
+	enum { SkipRetaliate = 0x708B17, GoOtherChecks = 0x708AAA };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(ObjectClass*, pAttacker, EBP);
+
+	return pThis->ThreatCoeffients(pAttacker, &CoordStruct::Empty) <= pThis->ThreatCoeffients((ObjectClass*)(pThis->Target), &CoordStruct::Empty) ? SkipRetaliate : GoOtherChecks;
+}

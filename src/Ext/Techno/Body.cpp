@@ -894,6 +894,11 @@ bool TechnoExt::EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, in
 		if (pEjectee->WhatAmI() == InfantryClass::AbsID)
 		{
 			ejectCoords = pCell->FindInfantrySubposition(ejectCoords, false, false, false);
+
+			// Jan 31, 2026 - Starkku: FindInfantrySubposition has several code paths that return empty CoordStruct. We should ignore those.
+			if (ejectCoords == CoordStruct::Empty)
+				continue;
+
 			ejectCoords.Z = coords.Z;
 		}
 		else

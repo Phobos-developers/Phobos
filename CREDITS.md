@@ -685,6 +685,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the AI would set anger towards friendly houses, causing it to act stupidly
   - Fix an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies
   - `AllowBerzerkOnAllies`
+  - Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
