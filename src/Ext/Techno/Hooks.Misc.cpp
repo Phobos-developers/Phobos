@@ -600,7 +600,7 @@ DEFINE_HOOK(0x73C60E, UnitClass_DrawSHP_FacingsA, 0x5)
 	const unsigned int highest = Conversions::Int2Highest(pType->Facings);
 
 	// 2^highest is the frame count, 3 means 8 frames
-	if (highest >= 3 && (!pThis->Disguise || pThis->Disguise->WhatAmI() == UnitTypeClass::AbsID || pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer)))
+	if (highest >= 3 && (!pThis->Disguise || pThis->Disguise->WhatAmI() == AbstractType::UnitType || pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer)))
 	{
 		const unsigned int offset = 1u << (highest - 3);
 		facing = Conversions::TranslateFixedPoint(16, highest, pThis->PrimaryFacing.Current().GetValue<16>(), offset);
@@ -610,54 +610,24 @@ DEFINE_HOOK(0x73C60E, UnitClass_DrawSHP_FacingsA, 0x5)
 	return SkipGameCode;
 }
 
-static ObjectTypeClass* _GetUnitDisguiseAs(UnitClass* pThis)
-{
-	if (!pThis->IsDisguised() || pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
-		return nullptr;
-
-	return abstract_cast<UnitTypeClass*>(pThis->GetDisguise(true));
-}
-
+DEFINE_HOOK_AGAIN(0x73C88A, UnitClass_DrawSHP_TechnoType, 0x6)
+DEFINE_HOOK_AGAIN(0x73C702, UnitClass_DrawSHP_TechnoType, 0x6)
+DEFINE_HOOK_AGAIN(0x73C69D, UnitClass_DrawSHP_TechnoType, 0x6)
 DEFINE_HOOK(0x73C655, UnitClass_DrawSHP_TechnoType, 0x6)
 {
-	enum { ApplyDisguiseType = 0x73C65B };
-
 	GET(UnitClass*, pThis, EBP);
 
-	if (const auto pDisguise = _GetUnitDisguiseAs(pThis))
+	if (pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
 	{
-		R->ECX(pDisguise);
-		return ApplyDisguiseType;
-	}
+		if (const auto pDisguise = TechnoTypeExt::GetTechnoType(pThis->GetDisguise(true)))
+		{
+			if (R->Origin() == 0x73C88A)
+				R->EAX(pDisguise);
+			else
+				R->ECX(pDisguise);
 
-	return 0;
-}
-
-DEFINE_HOOK(0x73C69D, UnitClass_DrawSHP_TechnoType2, 0x6)
-{
-	enum { ApplyDisguiseType = 0x73C6A3 };
-
-	GET(UnitClass*, pThis, EBP);
-
-	if (const auto pDisguise = _GetUnitDisguiseAs(pThis))
-	{
-		R->ECX(pDisguise);
-		return ApplyDisguiseType;
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x73C702, UnitClass_DrawSHP_TechnoType3, 0x6)
-{
-	enum { ApplyDisguiseType = 0x73C708 };
-
-	GET(UnitClass*, pThis, EBP);
-
-	if (const auto pDisguise = _GetUnitDisguiseAs(pThis))
-	{
-		R->ECX(pDisguise);
-		return ApplyDisguiseType;
+			return R->Origin() + 0x6;
+		}
 	}
 
 	return 0;
@@ -687,10 +657,8 @@ DEFINE_HOOK(0x73C725, UnitClass_DrawSHP_HasTurret, 0x6)
 
 #pragma region UnitClass DrawVoxel
 
-DEFINE_HOOK_AGAIN(0x73B765, UnitClass_DrawVoxel_TurretFacing, 0x5)
-DEFINE_HOOK_AGAIN(0x73BA78, UnitClass_DrawVoxel_TurretFacing, 0x6)
-DEFINE_HOOK_AGAIN(0x73BD8B, UnitClass_DrawVoxel_TurretFacing, 0x5)
-DEFINE_HOOK(0x73BDA3, UnitClass_DrawVoxel_TurretFacing, 0x5)
+DEFINE_HOOK_AGAIN(0x73BA6C, UnitClass_DrawVoxel_Disguise_TurretFacing, 0x6)
+DEFINE_HOOK(0x73B75A, UnitClass_DrawVoxel_Disguise_TurretFacing, 0x6)
 {
 	GET(UnitClass*, pThis, EBP);
 
@@ -700,8 +668,27 @@ DEFINE_HOOK(0x73BDA3, UnitClass_DrawVoxel_TurretFacing, 0x5)
 
 		if (pTargetType && pTargetType->Turret)
 		{
-			GET(DirStruct*, dir, EAX);
-			*dir = pThis->PrimaryFacing.Current();
+			R->ECX(&pThis->PrimaryFacing);
+			return R->Origin() + 0x6;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x73BC49, UnitClass_DrawVoxel_Disguise_TurretFacing, 0x6)
+DEFINE_HOOK(0x73BD79, UnitClass_DrawVoxel_Disguise_TurretFacing2, 0x6)
+{
+	GET(UnitClass*, pThis, EBP);
+
+	if (!pThis->Type->Turret && pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+	{
+		const auto pTargetType = TechnoTypeExt::GetTechnoType(pThis->GetDisguise(true));
+
+		if (pTargetType && pTargetType->Turret)
+		{
+			R->ESI(&pThis->PrimaryFacing);
+			return R->Origin() + 0x6;
 		}
 	}
 
