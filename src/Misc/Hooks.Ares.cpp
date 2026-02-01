@@ -1,7 +1,3 @@
-#include <BuildingClass.h>
-#include <FootClass.h>
-
-#include <Utilities/Macro.h>
 #include <Utilities/AresHelper.h>
 #include <Utilities/Helpers.Alex.h>
 
@@ -18,7 +14,7 @@
 // Patches presented here are exceptions rather that the rule. They must be short, concise and correct.
 // DO NOT POLLUTE ISSUEs and PRs.
 
-ObjectClass* __fastcall CreateInitialPayload(TechnoTypeClass* type, void*, HouseClass* owner)
+static ObjectClass* __fastcall CreateInitialPayload(TechnoTypeClass* type, void*, HouseClass* owner)
 {
 	// temporarily reset the mutex since it's not part of the design
 	const int mutex_old = std::exchange(Unsorted::ScenarioInit, 0);
@@ -27,12 +23,12 @@ ObjectClass* __fastcall CreateInitialPayload(TechnoTypeClass* type, void*, House
 	return instance;
 }
 
-void __fastcall LetGo(TemporalClass* pTemporal)
+static void __fastcall LetGo(TemporalClass* pTemporal)
 {
 	pTemporal->LetGo();
 }
 
-bool __stdcall ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
+static bool __stdcall ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
 {
 	if (const auto pFoot = abstract_cast<FootClass*, true>(pThis))
 		return TechnoExt::ConvertToType(pFoot, pToType);
@@ -41,27 +37,57 @@ bool __stdcall ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
 }
 
 // Technically this replaces GetTechnoType() call.
-TechnoTypeClass* __fastcall ShowPromoteAnim(TechnoClass* pThis)
+static TechnoTypeClass* __fastcall ShowPromoteAnim(TechnoClass* pThis)
 {
 	TechnoExt::ShowPromoteAnim(pThis);
 	return pThis->GetTechnoType();
 }
 
-WeaponStruct* __fastcall GetLaserWeapon(BuildingClass* pThis)
+static WeaponStruct* __fastcall GetLaserWeapon(BuildingClass* pThis)
 {
 	return BuildingExt::GetLaserWeapon(pThis);
 }
 
 _GET_FUNCTION_ADDRESS(AresNewSWType::GetTargetingData, AresNewSWType_GetTargetingData_GetAddr)
 
-EBolt* __stdcall CreateEBolt(WeaponTypeClass** pWeaponData)
+static EBolt* __stdcall CreateEBolt(WeaponTypeClass** pWeaponData)
 {
 	return EBoltExt::CreateEBolt(*pWeaponData);
 }
 
-EBolt* __stdcall CreateEBolt2(WeaponTypeClass* pWeapon)
+static EBolt* __stdcall CreateEBolt2(WeaponTypeClass* pWeapon)
 {
 	return EBoltExt::CreateEBolt(pWeapon);
+}
+
+static bool __fastcall CameoIsVeteran(TechnoTypeClass** pTypeExt_Ares, void*, HouseClass* pHouse)
+{
+	return TechnoTypeExt::ExtMap.Find(*pTypeExt_Ares)->CameoIsVeteran(pHouse);
+}
+
+namespace PermaMCTemp
+{
+	bool Selected = false;
+}
+
+static bool __fastcall PermaMC_FreeUnit_SetContext(CaptureManagerClass* pManager, void*, TechnoClass* pTechno)
+{
+	PermaMCTemp::Selected = pTechno->IsSelected;
+	return pManager->FreeUnit(pTechno);
+}
+
+static bool __fastcall PermaMC_SetOwningHouse_Select(TechnoClass* pTechno, void*, HouseClass* pHouse, bool announce)
+{
+	const bool result = pTechno->SetOwningHouse(pHouse, announce);
+
+	if (std::exchange(PermaMCTemp::Selected, false) && pTechno->Owner->IsCurrentPlayer())
+	{
+		const bool moveFeedBack = std::exchange(Unsorted::MoveFeedback, false);
+		pTechno->Select();
+		Unsorted::MoveFeedback = moveFeedBack;
+	}
+
+	return result;
 }
 
 _GET_FUNCTION_ADDRESS(RadarJammerClass::Update, AresRadarJammerClass_Update_GetAddr)
@@ -73,6 +99,9 @@ void Apply_Ares3_0_Patches()
 
 	// Amphibious enter fix:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x17536, AresHelper::AresBaseAddress + 0x1754D);
+
+	// SpawnSurvivor fix:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x445E0, GET_OFFSET(TechnoExt::EjectRandomly));
 
 	// Redirect Ares' getCellSpreadItems to our implementation:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x62267, &Helpers::Alex::getCellSpreadItems);
@@ -119,11 +148,24 @@ void Apply_Ares3_0_Patches()
 	// Redirect Ares's RadarJammerClass::Update to our implementation
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x68500, AresRadarJammerClass_Update_GetAddr());
   
-  // Redirect Ares's function to our implementation:
+	// Redirect Ares's function to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x112D0, &BuildingExt::KickOutClone);
   
   // Redirect Ares' NewSWType::GetTargetingData() to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x6D1E0, AresNewSWType_GetTargetingData_GetAddr());
+
+	// Redirect Ares's TechnoTypeExt::ExtData::CameoIsElite() to our implementation:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3D800, &CameoIsVeteran);
+
+	// Redirect Ares's return address in ImmuneToBerserk related checks
+	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4AB37, { 0x1F, 0x1D });
+
+	// Handle select of PsyDom
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x36107, &PermaMC_FreeUnit_SetContext);
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x36115, &PermaMC_SetOwningHouse_Select);
+	// Handle select of MindControl.Permanent
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x45EAF, &PermaMC_FreeUnit_SetContext);
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x45EBE, &PermaMC_SetOwningHouse_Select);
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -135,6 +177,9 @@ void Apply_Ares3_0p1_Patches()
 
 	// Amphibious enter fix:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x17C26, AresHelper::AresBaseAddress + 0x17C3D);
+
+	// SpawnSurvivor fix:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x450C0, GET_OFFSET(TechnoExt::EjectRandomly));
 
 	// Redirect Ares' getCellSpreadItems to our implementation:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x62FB7, &Helpers::Alex::getCellSpreadItems);
@@ -181,9 +226,22 @@ void Apply_Ares3_0p1_Patches()
 	// Redirect Ares's RadarJammerClass::Update to our implementation
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x69470, AresRadarJammerClass_Update_GetAddr());
   
-  // Redirect Ares's function to our implementation:
+	// Redirect Ares's function to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x11860, &BuildingExt::KickOutClone);
   
   // Redirect Ares' NewSWType::GetTargetingData() to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x6E1F0, AresNewSWType_GetTargetingData_GetAddr());
+
+	// Redirect Ares's TechnoTypeExt::ExtData::CameoIsElite() to our implementation:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3E210, &CameoIsVeteran);
+
+	// Redirect Ares's return address in ImmuneToBerserk related checks
+	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4B797, { 0x1F, 0x1D });
+
+	// Handle select of PsyDom
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x36BA7, &PermaMC_FreeUnit_SetContext);
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x36BB5, &PermaMC_SetOwningHouse_Select);
+	// Handle select of MindControl.Permanent
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x46A1F, &PermaMC_FreeUnit_SetContext);
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x46A2E, &PermaMC_SetOwningHouse_Select);
 }

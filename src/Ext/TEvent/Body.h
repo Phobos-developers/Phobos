@@ -1,10 +1,7 @@
 #pragma once
 
 #include <Utilities/Container.h>
-#include <Utilities/Template.h>
-#include <Helpers/Template.h>
-
-#include <optional>
+#include <Utilities/TemplateDef.h>
 
 #include <TEventClass.h>
 

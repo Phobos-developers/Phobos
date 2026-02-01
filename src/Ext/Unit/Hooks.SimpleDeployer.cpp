@@ -1,27 +1,27 @@
 #include <GameOptionsClass.h>
 #include <JumpjetLocomotionClass.h>
-#include <UnitClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Utilities/AresFunctions.h>
-#include <Utilities/Macro.h>
 
-static bool HasDeployingAnim(TechnoTypeClass* pType)
+static __forceinline bool HasDeployingAnim(TechnoTypeClass* pType)
 {
 	return pType->DeployingAnim || TechnoTypeExt::ExtMap.Find(pType)->DeployingAnims.size() > 0;
 }
 
-static bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
+static inline bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 {
 	// Movement restrictions.
-	if (isDeploying && pUnit->Locomotor->Is_Moving_Now())
+	const ILocomotionPtr pLoco = pUnit->Locomotor;
+
+	if (isDeploying && pLoco->Is_Moving_Now())
 		return true;
 
 	FacingClass* currentDir = &pUnit->PrimaryFacing;
 	bool isJumpjet = false;
 
-	if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pUnit->Locomotor))
+	if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pLoco))
 	{
 		// Jumpjet rotating is basically half a guarantee it is also moving and
 		// may not be caught by the Is_Moving_Now() check.
@@ -33,12 +33,11 @@ static bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 	}
 
 	// Facing restrictions.
-	auto const pType = pUnit->GetTechnoType();
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pUnit)->TypeExtData;
 	auto const defaultFacing = (FacingType)(RulesClass::Instance->DeployDir >> 5);
 	auto const facing = pTypeExt->DeployDir.Get(defaultFacing);
 
-	if (facing == FacingType::None || (!pTypeExt->DeployDir.isset() && !HasDeployingAnim(pUnit->GetTechnoType())))
+	if (facing == FacingType::None || (!pTypeExt->DeployDir.isset() && !HasDeployingAnim(pTypeExt->OwnerObject())))
 		return false;
 
 	if (facing != (FacingType)currentDir->Current().GetFacing<8>())
@@ -53,7 +52,7 @@ static bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 			if (isJumpjet)
 				currentDir->SetDesired(dir);
 
-			pUnit->Locomotor->Do_Turn(dir);
+			pLoco->Do_Turn(dir);
 
 			return true;
 		}
@@ -66,13 +65,13 @@ static bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 	return false;
 }
 
-static void CreateDeployingAnim(UnitClass* pUnit, bool isDeploying)
+static inline void CreateDeployingAnim(UnitClass* pUnit, bool isDeploying)
 {
 	if (!pUnit->DeployAnim)
 	{
 		auto const pType = pUnit->Type;
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-		auto pAnimType = pUnit->Type->DeployingAnim;
+		auto pAnimType = pType->DeployingAnim;
 
 		if (pTypeExt->DeployingAnims.size() > 0)
 			pAnimType = GeneralUtils::GetItemForDirection<AnimTypeClass*>(pTypeExt->DeployingAnims, pUnit->PrimaryFacing.Current());
@@ -261,43 +260,12 @@ DEFINE_HOOK(0x54C58E, JumpjetLocomotionClass_Descending_PathfindingChecks, 0x7)
 	return 0;
 }
 
-// Disable DeployToLand=no forcing landing when idle due to what appears to be
-// a code oversight and no need for DeployToLand=no to work in vanilla game.
-DEFINE_HOOK(0x54BED4, JumpjetLocomotionClass_Hovering_DeployToLand, 0x7)
-{
-	enum { SkipGameCode = 0x54BEE0 };
-
-	GET(JumpjetLocomotionClass*, pThis, ESI);
-	GET(FootClass*, pLinkedTo, ECX);
-
-	auto const pType = pLinkedTo->GetTechnoType();
-
-	if (!pType->BalloonHover || pType->DeployToLand)
-		pThis->State = JumpjetLocomotionClass::State::Descending;
-
-	pLinkedTo->TryNextPlanningTokenNode();
-	return SkipGameCode;
-}
+// Skip DeployToLand check for IsSimpleDeployer jumpjet units, the desired behaviour here
+// should be same for both (hover in place if not deploying)
+DEFINE_JUMP(LJMP, 0x54BDDE, 0x54BDF2);
 
 // Same as above but at a different state.
-DEFINE_HOOK(0x54C2DF, JumpjetLocomotionClass_Cruising_DeployToLand, 0xA)
-{
-	enum { SkipGameCode = 0x54C4FD };
-
-	GET(JumpjetLocomotionClass*, pThis, ESI);
-	GET(FootClass*, pLinkedTo, ECX);
-
-	auto const pType = pLinkedTo->GetTechnoType();
-
-	if (!pType->BalloonHover || pType->DeployToLand)
-	{
-		pThis->CurrentHeight = 0;
-		pThis->State = JumpjetLocomotionClass::State::Descending;
-	}
-
-	pLinkedTo->TryNextPlanningTokenNode();
-	return SkipGameCode;
-}
+DEFINE_JUMP(LJMP, 0x54C212, 0x54C22A);
 
 // Disable Ares hover locomotor bobbing processing DeployToLand hook.
 DEFINE_PATCH(0x513EAA, 0xA1, 0xE0, 0x71, 0x88, 0x00);

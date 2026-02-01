@@ -27,6 +27,7 @@ void AresFunctions::InitAres3_0()
 
 	NOTE_ARES_FUN(CreateAresEBolt, 0x550F0);
 
+	// an issue occured with this fix enabled: sometimes survivor will be spawned at coordinate 0,0
 	if constexpr (AresFunctions::AresWasWrongAboutSpawnSurvivors)
 	{
 		Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4C0EB, { 0x5C });
@@ -62,6 +63,7 @@ void AresFunctions::InitAres3_0p1()
 
 	NOTE_ARES_FUN(CreateAresEBolt, 0x55DA0);
 
+	// an issue occured with this fix enabled: sometimes survivor will be spawned at coordinate 0,0
 	if constexpr (AresFunctions::AresWasWrongAboutSpawnSurvivors)
 	{
 		Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4CD4B, { 0x5C });

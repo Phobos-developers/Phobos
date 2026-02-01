@@ -1,8 +1,6 @@
 #include "MessageColumn.h"
 
 #include <BitFont.h>
-#include <MessageListClass.h>
-#include <MouseClass.h>
 #include <WWMouseClass.h>
 
 #include <Ext/Side/Body.h>
@@ -1083,7 +1081,7 @@ DEFINE_HOOK(0x55DDA0, MainLoop_FrameStep_NewMessageListManage, 0x5)
 	return SkipGameCode;
 }
 
-void __fastcall AddTActionMessage(MessageListClass* pThis, void* _, const wchar_t* name, int id, const wchar_t* message, int color, TextPrintType style, int timeout, bool silent)
+static void __fastcall AddTActionMessage(MessageListClass* pThis, void* _, const wchar_t* name, int id, const wchar_t* message, int color, TextPrintType style, int timeout, bool silent)
 {
 	if (Phobos::Config::MessageDisplayInCenter)
 		MessageColumnClass::Instance.AddMessage(name, message, timeout, silent);

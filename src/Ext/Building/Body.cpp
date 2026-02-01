@@ -1,8 +1,8 @@
 #include "Body.h"
 
 #include <BitFont.h>
-
-#include <Utilities/EnumFunctions.h>
+#include <Misc/FlyingStrings.h>
+#include <Utilities/AresHelper.h>
 
 BuildingExt::ExtContainer BuildingExt::ExtMap;
 
@@ -314,15 +314,8 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int m
 
 	if (!pVictimHouse->IsControlledByHuman() && !RulesExt::Global()->DisplayIncome_AllowAI)
 	{
-		// TODO there should be a better way...
-		FlyingStrings::AddMoneyString(
-				this->AccumulatedIncome,
-				pThis,
-				pVictimHouse,
-				pTypeExt->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
-				pThis->GetRenderCoords(),
-				pTypeExt->DisplayIncome_Offset
-		);
+		if (AresHelper::CanUseAres)
+			*reinterpret_cast<int*>(reinterpret_cast<char*>(this->OwnerObject()->align_154) + 168) += pVictimHouse->Available_Money() - moneybefore;
 	}
 
 	if (!pTypeExt->SpyEffect_Custom)
@@ -481,6 +474,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentLaserWeaponIndex)
 		.Process(this->PoweredUpToLevel)
 		.Process(this->CurrentEMPulseSW)
+		//.Process(this->IsFiringNow) It is set and reset within a same function.
 		;
 }
 
@@ -579,8 +573,7 @@ DEFINE_HOOK(0x454244, BuildingClass_Save_Suffix, 0x7)
 // Removes setting otherwise unused field (0x6FC) in BuildingClass when building has airstrike applied on it so that it can safely be used to store BuildingExt pointer.
 DEFINE_JUMP(LJMP, 0x41D9FB, 0x41DA05);
 
-
-void __fastcall BuildingClass_InfiltratedBy_Wrapper(BuildingClass* pThis, void*, HouseClass* pInfiltratorHouse)
+static void __fastcall BuildingClass_InfiltratedBy_Wrapper(BuildingClass* pThis, void*, HouseClass* pInfiltratorHouse)
 {
 	const int oldBalance = pThis->Owner->Available_Money();
 	// explicitly call because Ares rewrote it

@@ -217,14 +217,13 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that game crashes when spawnee has been removed and is not real dead.
 - Separated the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues.
 - Fixed the bug that buildings will always be tinted as airstrike owner.
-- Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it.
 - Fixed an issue where computer players did not search for new enemies after defeating them or forming alliances with them.
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings.
 - Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar.
 - Fixed the bug that ships can travel on elevated bridges.
 - Dehardcoded 255 limit of `OverlayType`.
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip.
-- Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it.
+- Elite technos no longer scatter by default, behaviour is controlled by `SCATTER` veterancy ability now.
 - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`.
 - Infantry support `IsGattling=yes`.
 - Fixed an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case.
@@ -260,6 +259,11 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `DeployingAnim` using unit drawer now also tint accordingly with the unit.
 - Fixed an issue that jumpjets in air can not correctly spawn missiles.
 - Fixed an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos.
+- Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range.
+- Fixed an issue that jumpjet infantry stop incorrectly when assigned a target out of range.
+- Fixed an issue that jumpjet infantry' shadow is always drawn even if they are cloaked.
+- Fixed an issue that technos head to building's dock even they are not going to dock.
+- Fixed an issue that the jumpjet vehicles cannot stop correctly after going berserk.
 - Fixed an issue that infantry walking through a cell containing a tree would cause it to be impassable to other houses.
 - Fixed the bug that techno unit will draw with ironcurtain and airstrike color and intensity who disguised as terrain or overlay.
 - Fixed an issue that the AI would enter a combat state when its building receiving damage from friendly units or damage not greater than 0.
@@ -274,7 +278,22 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allow Reveal Crate to take effect when picking up by another player controlled house in campaign.
 - Fixed an issue where the vanilla script ignores jumpjets. Enable it through `[General] -> AIAirTargetingFix=true`.
 - Fixed the bug that naval ship will sink even they destroyed in air.
-- Fixed the issue that units will goto farest location if target is closer than `MinimumRange`
+- Fixed MPDebug timer displaying when debug's visibility is off.
+- Fixed the issue that units will goto farest location if target is closer than `MinimumRange`.
+- Fixed a bug where units can be promoted when created via trigger actions even if they have `Trainable=false`.
+- Fixed the bug that ai will try to product aircraft even the airport has no free dock for it.
+- Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.
+- Fixed the issue that rockets do not consider the destination altitude during climbing.
+- Fixed the bug that if object has been removed from LogicClass in Update(), next object will be skip.
+- Fixed an issue that the AI would set anger towards friendly houses, causing it to act stupidly.
+- Fixed an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies.
+- Fixed the issue that weapon selection don't check if secondary's warhead has `IsLocomotor=yes`.
+- Fixed the issue that warhead with `IsLocomotor=yes` can be used to vehicles who is in tank bunker.
+- Fixed an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals.
+- Fixed an issue where mining vehicles could not move after leaving a tank bunker.
+- Fixed the bug that if there's a tank in tank bunker, tank bunker use auto death by vanish will cause tank get stuck and game will crash quickly.
+- `ProductionAnim` is now available for `Factory=InfantryType` as well as non-`ConstructionYard=true` `Factory=BuildingType` buildings. `IdleAnim` will cease to play for its duration normally as well.
+- Fixed the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon.
 
 ## Fixes / interactions with other extensions
 
@@ -301,22 +320,23 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - 1000 save files are supported, from `SVGM_000.NET` to `SVGM_999.NET`. When the limit is reached, the game will overwrite the latest save file.
   - The previous `SVGM_XXX.NET` files are cleaned up before first copy if it's a new game, otherwise the highest numbered `SVGM_XXX.NET` file is found and the index is incremented, if possible.
   - The game also automatically copies `spawn.ini` to the save folder as `spawnSG.ini` when saving a game.
+
+  ```{note}
+  The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
+  ```
+
+  ```{note}
+  At the moment this is only useful if you use a version of [YRpp Spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support (along with [XNA CnCNet Client](https://github.com/CnCNet/xna-cncnet-client)).
+  ```
+
 - Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle`.
-- Fixed an issue that jumpjet vehicles can not stop correctly when assigned a target in range.
-- Fixed an issue that jumpjet infantry stop incorrectly when assigned a target out of range.
-- Fixed an issue that jumpjet infantry' shadow is always drawn even if they are cloaked.
-- Fixed an issue that technos head to building's dock even they are not going to dock.
-- Fixed an issue that the jumpjet vehicles cannot stop correctly after going berserk.
 - Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect.
 - Fixed the bug that building with `CloningFacility=true` and `WeaponsFactory=true` may cloning multiple vehicles and then they get stuck.
-
-```{note}
-The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
-```
-
-```{note}
-At the moment this is only useful if you use a version of [YRpp Spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support (along with [XNA CnCNet Client](https://github.com/CnCNet/xna-cncnet-client)).
-```
+- Fixed a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType`.
+- Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed.
+- Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed.
+- Fixed the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally.
+- Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat
 
 ## Newly added global settings
 
@@ -700,10 +720,11 @@ ExtendedAircraftMissions=false            ; boolean
 ExtendedAircraftMissions.UnlandDamage=-1  ; integer
 
 [SOMEAIRCRAFT]                            ; AircraftType
-ExtendedAircraftMissions.SmoothMoving=    ; boolean, default to [General] -> ExtendedAircraftMissions
-ExtendedAircraftMissions.EarlyDescend=    ; boolean, default to [General] -> ExtendedAircraftMissions
-ExtendedAircraftMissions.RearApproach=    ; boolean, default to [General] -> ExtendedAircraftMissions
-ExtendedAircraftMissions.FastScramble=    ; boolean, default to [General] -> ExtendedAircraftMissions
+ExtendedAircraftMissions=                 ; boolean, default to [General] -> ExtendedAircraftMissions
+ExtendedAircraftMissions.SmoothMoving=    ; boolean, default to [SOMEAIRCRAFT] -> ExtendedAircraftMissions
+ExtendedAircraftMissions.EarlyDescend=    ; boolean, default to [SOMEAIRCRAFT] -> ExtendedAircraftMissions
+ExtendedAircraftMissions.RearApproach=    ; boolean, default to [SOMEAIRCRAFT] -> ExtendedAircraftMissions
+ExtendedAircraftMissions.FastScramble=    ; boolean, default to [SOMEAIRCRAFT] -> ExtendedAircraftMissions
 ExtendedAircraftMissions.UnlandDamage=    ; integer, default to [General] -> ExtendedAircraftMissions.UnlandDamage
 ```
 
@@ -905,18 +926,6 @@ In `artmd.ini`:
 Refinery.UseNormalActiveAnim=false     ; boolean
 ```
 
-### Allowed / disallowed types for FactoryPlant
-
-- It is now possible to customize which TechnoTypes benefit from bonuses of a `FactoryPlant=true` building by listing them on `FactoryPlant.AllowTypes` and/or `FactoryPlant.DisallowTypes`.
-  - `FactoryPlant.Multiplier` *(Ares feature)* is still applied on the bonuses if they are in effect.
-
-In `rulesmd.ini`:
-```ini
-[SOMEBUILDING]               ; BuildingType
-FactoryPlant.AllowTypes=     ; List of TechnoTypes
-FactoryPlant.DisallowTypes=  ; List of TechnoTypes
-```
-
 ### Apply ZShapePointMove during buildups
 
 - By default buildings do not apply `ZShapePointMove` (which offsets the 'z shape' applied on buildings which is used to adjust them in depth buffer and is used to fix issues related to that such as corners of buildings getting cut off when drawn) when buildup is being displayed. This behaviour can now be toggled by setting `ZShapePointMove.OnBuildup`.
@@ -952,6 +961,19 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]     ; BuildingType
 BarracksExitCell=  ; X,Y - cell offset
+```
+
+### Custom whether to synchronously change the owner of the RadioLink-linked units when the owner of a building changes
+
+- In vanilla, buildings with RadioLink (f.ex. war factory and air base) will change the owner of the RadioLink-linked units when the owner of the building changes. Now you can toggle this behaviour off by the following flags.
+
+In `rulesmd.ini`:
+```ini
+[General]
+BuildingRadioLink.SyncOwner=true ; boolean
+
+[SOMEBUILDING]                   ; BuildingType
+BuildingRadioLink.SyncOwner=     ; boolean, default to [General] -> BuildingRadioLink.SyncOwner
 ```
 
 ### Customizable garrison and bunker properties
@@ -1047,6 +1069,20 @@ In `rulesmd.ini`:
 ExcludeFromMultipleFactoryBonus=false  ; boolean
 ```
 
+### FactoryPlant customizations
+
+- It is now possible to customize which TechnoTypes benefit from bonuses of a `FactoryPlant=true` building by listing them on `FactoryPlant.AllowTypes` and/or `FactoryPlant.DisallowTypes`.
+  - `FactoryPlant.Multiplier` *(Ares feature)* is still applied on the bonuses if they are in effect.
+- `FactoryPlant.MaxCount` can be used to limit the number of times the bonuses are factored in from a particular type of building. Negative values mean no cap.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]               ; BuildingType
+FactoryPlant.AllowTypes=     ; List of TechnoTypes
+FactoryPlant.DisallowTypes=  ; List of TechnoTypes
+FactoryPlant.MaxCount=-1     ; integer
+```
+
 ### Power plant damage factor
 
 - It is possible to customize the power decrement of a power plant when it's damaged. The actual power output for this plant will be: `Power` minuses the product of original power decrement and `Powerplant.DamageFactor`. Can't reduce power output lower than 0.
@@ -1129,9 +1165,11 @@ ProneSpeed.NoCrawls=1.5       ; floating point value, multiplier
 [SOMEINFANTRY]                ; InfantryType
 ProneSpeed=                   ; floating point value, multiplier, by default, use the corresponding global value according to Crawls
 ```
+
 <!--
 ## Overlays
 -->
+
 ## Particle systems
 
 ### Fire particle target coordinate adjustment when firer rotates
@@ -1253,7 +1291,7 @@ BallisticScatter.Max= ; floating point value, distance in cells
 *Shrapnel appearing against ground & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
 - `ShrapnelWeapon` can now be triggered against ground & buildings via `Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`.
-- Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](#weapon-targeting-filter) & [AttachEffect filters](#attached-effects) will be checked.
+- Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](New-or-Enhanced-Logics.md#weapon-targeting-filter) & [AttachEffect filters](New-or-Enhanced-Logics.md#attached-effects) will be checked.
   - Do note that this overrides the normal check of only allowing shrapnels to hit non-allied objects. Use `CanTargetHouses=enemies` to manually enable this behaviour again.
 
 In `rulesmd.ini`:
@@ -1555,7 +1593,7 @@ How to generate `DebrisTypes` in the game:
 4. When the number of debris generated after a single traversal is not enough to exceed the total number, it will end if `DebrisTypes.Limit` is enabled, otherwise the traversal will restart like vanilla game do.
 ```
 
-## DropPod
+### DropPod
 
 - DropPod properties can now be customized on a per-TechnoType (non-building) basis.
   - If you want to attach the trailer animation to the pod, set `DropPod.Trailer.Attached` to yes.
@@ -1834,6 +1872,17 @@ HeightShadowScaling.MinScale=0.0  ; floating point value
 ShadowSizeCharacteristicHeight=   ; integer, height in leptons
 ```
 
+### Allow techno type considered as other type when recruiting techno for teams
+
+- It is now possible to make techno type considered as other type when recruiting techno for teams, both for AI team recruitment and `Create Team` action.
+  - Only affect techno that's presented on the map. Cannot make AI produce this type of techno if it doesn't have any.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType
+TeamMember.ConsideredAs=          ; List of TechnoTypes
+```
+
 ## Terrains
 
 ### Animated TerrainTypes
@@ -1947,11 +1996,13 @@ MinimapColor=  ; integer - Red,Green,Blue
 
 - In vanilla, when miners enter area guard mission, they immediately switch to harvest mission. Now you can make them perform area guard mission normally like other technos.
   - We made it work only for miners controlled by the player, because this will prevent AI's miners from going work.
+  - If `Harvester.CanGuardArea.RequireTarget` set to true, it'll switch back to regular harvest mission when there's no valid target within its guard range.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]                      ; VehicleType
-Harvester.CanGuardArea=no          ; boolean
+[SOMEVEHICLE]                               ; VehicleType
+Harvester.CanGuardArea=false                ; boolean
+Harvester.CanGuardArea.RequireTarget=false  ; boolean
 ```
 
 ### Bunker entering check dehardcode
@@ -2235,6 +2286,20 @@ In `rulesmd.ini`:
 AllowDamageOnSelf=false  ; boolean
 ```
 
+### Berzerk on allies
+
+- In vanilla, `Psychedelic` warheads is hardcoded to ignore allies' target. Now you can turn this off.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+AllowBerzerkOnAllies=false  ; boolean
+```
+
+```{note}
+No per-warhead setting because `AffectsAllies` etc. is respected.
+```
+
 ### Combat light customizations
 
 - You can now set minimum detail level at which combat light effects are shown by setting `[AudioVisual] -> CombatLightDetailLevel` or `CombatLightDetailLevel` on Warhead.
@@ -2321,6 +2386,7 @@ Conventional.IgnoreUnits=false  ; boolean
 ### Customizable Warhead trigger conditions
 
 - `AffectsBelowPercent` and `AffectsAbovePercent` can be used to set the health percentage thresholds that target needs to be below/equal and/or above of for the Warhead to detonate. If target has zero health left this check is bypassed.
+- `AffectsVeterancy` sets the veterancy levels that allow the Warhead to detonate on the target.
 - If set to `false`, `AffectsNeutral` makes the warhead can't damage or affect target that belongs to neutral house.
 - If set to `false`, `EffectsRequireVerses` makes the Phobos-introduced warhead effects trigger even if it can't damage the target because of it's current ArmorType (e.g. 0% in `Verses`).
 
@@ -2329,6 +2395,7 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]               ; WarheadType
 AffectsBelowPercent=1.0     ; floating point value, percents or absolute
 AffectsAbovePercent=0.0     ; floating point value, percents or absolute
+AffectsVeterancy=all        ; List of Affected Veterancy Enumeration (none|rookie|veteran|elite|all)
 AffectsNeutral=true         ; boolean
 EffectsRequireVerses=false  ; boolean
 ```
@@ -2425,6 +2492,17 @@ In `rulesmd.ini`:
 [SOMEWEAPON]                      ; WeaponType
 AmbientDamage.Warhead=            ; WarheadType
 AmbientDamage.IgnoreTarget=false  ; boolean
+```
+
+### Can attack allies
+
+- Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`. They override the firer's `AttackFriendlies` and `AttackCursorOnFriendlies`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                ; WeaponType
+AttackFriendlies=           ; boolean
+AttackCursorOnFriendlies=   ; boolean
 ```
 
 ### Charge turret delays

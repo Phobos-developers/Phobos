@@ -1,7 +1,5 @@
 #include "Body.h"
 
-#include <HouseClass.h>
-
 DEFINE_HOOK(0x47F71D, CellClass_DrawOverlay_ZAdjust, 0x5)
 {
 	GET(const int, zAdjust, EDI);
