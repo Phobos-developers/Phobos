@@ -1843,18 +1843,20 @@ PriorityDeployFiltering=true  ; boolean
 *Multiple Mind Control unit auto-releases the first victim in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 - Mind controllers now can have the upper limit of the control distance. Tag values greater than 0 will activate this feature.
-- Mind controlled targets can have size of control, like passengers in transport.
+- Mind controlled *targets* can have size of control, like passengers in transport.
 - Mind controllers now can decide which house can see the link drawn between itself and the controlled units.
 - Mind controllers with multiple controlling slots can now release the first controlled unit when they have reached the control limit and are ordered to control a new target.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                          ; TechnoType
+[SOMETECHNO]                          ; TechnoType, as Mind controllers
 MindControlRangeLimit=-1.0            ; floating point value
 MindControl.IgnoreSize=true           ; boolean
-MindControlSize=1                     ; integer
 MindControlLink.VisibleToHouse=all    ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 MultiMindControl.ReleaseVictim=false  ; boolean
+
+[SOMETECHNO]                          ; TechnoType, as Mind controlled targets
+MindControlSize=1                     ; integer
 ```
 
 ### Multi Weapon
@@ -2213,22 +2215,6 @@ WaterImage.ConditionRed=              ; VehicleType entry
 
 ```{warning}
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
-```
-
-### Deployment Enhancement
-
-- When a vehicle has `Passengers` and possesses `DeployFire/IsSimpleDeployer/DeploysInto`, it can perform custom deployment actions beyond merely releasing passengers.
-  - `Deploy.SkipPassengerUnload` allows vehicles to bypass the passenger release process and perform other deployment actions.
-  - `Deploy.NoPassenger` allows vehicles to perform other deployment actions after losing all passengers.
-- Harvester can now perform other deployment operations. Can't deploy when it's unloading minerals.
-  - `Deploy.NoTiberium` controls whether the deployment actions can only be performed when the harvester carries no mineral. If set to false, the harvester can deploy regardless of carrying minerals or not.
-
-In `rulesmd.ini`:
-```ini
-[SOMEVEHICLE]                       ; VehicleType
-Deploy.SkipPassengerUnload=false    ; boolean
-Deploy.NoPassenger=false            ; boolean
-Deploy.NoTiberium=false             ; boolean
 ```
 
 ### Jumpjet Tilts While Moving
@@ -2663,9 +2649,9 @@ RemoveDisguise=false  ; boolean
 - For each techno affected by this warhead, a warhead owned by the target techno will be detonated at the owner of the original warhead.
   - `ReturnWarhead` determines the warhead that'll 'return' to the original owner from the target.
   - `ReturnWarhead.Damage` determines the damage dealt by the return warhead.
-  - `ReturnWarhead.Chance` determines chance for a return warhead to occur. By default this is checked once when the original warhead is detonated and every target that is susceptible to critical hits will be affected. If `ReturnWarhead.ApplyChancePerTarget` is set, then whether or not the chance roll is successful is determined individually for each target.
+  - `ReturnWarhead.Chance` determines chance for a return warhead to occur. By default this is checked once when the original warhead is detonated and every target that is susceptible to triggering a return warhead will be affected. If `ReturnWarhead.ApplyChancePerTarget` is set, then whether or not the chance roll is successful is determined individually for each target.
   - `ReturnWarhead.FullDetonation` controls whether or not the return warhead is detonated fully on the original owner (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
-  - `ReturnWarhead.AffectsTarget` can be used to customize types of targets that original warhead can trigger a return warhead. Critical hits cannot affect empty cells or cells containing only TerrainTypes, overlays etc.
+  - `ReturnWarhead.AffectsTarget` can be used to customize types of targets that original warhead can trigger a return warhead. Return warhead cannot affect empty cells or cells containing only TerrainTypes, overlays etc.
   - `ReturnWarhead.AffectsHouse` can be used to customize houses that original warhead can trigger a return warhead.
 
 In `rulesmd.ini`:
@@ -2889,8 +2875,8 @@ Burst.NoDelay=false   ; boolean
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-CanTarget.IronCurtained=false       ; boolean
-CanTargetAI.IronCurtained=true      ; boolean
+CanTarget.IronCurtained=true        ; boolean
+CanTargetAI.IronCurtained=false     ; boolean
 AutoTarget.IronCurtained=true       ; boolean
 
 [SOMEWEAPON]                        ; WeaponType

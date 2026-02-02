@@ -291,7 +291,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue that warhead with `IsLocomotor=yes` can be used to vehicles who is in tank bunker.
 - Fixed an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals.
 - Fixed an issue where mining vehicles could not move after leaving a tank bunker.
-- Fixed the bug that if there's a tank in tank bunker, tank bunker use auto death by vanish will cause tank get stuck and game will crash quickly.
 - `ProductionAnim` is now available for `Factory=InfantryType` as well as non-`ConstructionYard=true` `Factory=BuildingType` buildings. `IdleAnim` will cease to play for its duration normally as well.
 - Fixed the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon.
 
@@ -336,7 +335,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed.
 - Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed.
 - Fixed the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally.
-- Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat
+- Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat.
 
 ## Newly added global settings
 
@@ -2065,6 +2064,22 @@ CrushForwardTiltPerFrame=          ; floating point value
 CrushOverlayExtraForwardTilt=0.02  ; floating point value
 CrushSlowdownMultiplier=0.2        ; floating point value
 SkipCrushSlowdown=false            ; boolean
+```
+
+### Deployment Enhancement
+
+- When a vehicle has `Passengers` and possesses `DeployFire/IsSimpleDeployer/DeploysInto`, it can perform custom deployment actions beyond merely releasing passengers.
+  - `Deploy.SkipPassengerUnload` allows vehicles to bypass the passenger release process and perform other deployment actions.
+  - `Deploy.NoPassenger` allows vehicles to perform other deployment actions after losing all passengers.
+- Harvester can now perform other deployment operations. Can't deploy when it's unloading minerals.
+  - `Deploy.NoTiberium` controls whether the deployment actions can only be performed when the harvester carries no mineral. If set to false, the harvester can deploy regardless of carrying minerals or not.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                       ; VehicleType
+Deploy.SkipPassengerUnload=false    ; boolean
+Deploy.NoPassenger=false            ; boolean
+Deploy.NoTiberium=false             ; boolean
 ```
 
 ### Destroy animations
