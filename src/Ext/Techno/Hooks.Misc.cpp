@@ -744,8 +744,6 @@ DEFINE_HOOK(0x73BA63, UnitClass_DrawVoxel_TurretOffset, 0x5)
 	return 0;
 }
 
-DEFINE_JUMP(LJMP, 0x706724, 0x706731);
-
 #pragma endregion
 
 #pragma endregion
