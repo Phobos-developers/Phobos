@@ -729,25 +729,6 @@ DEFINE_HOOK(0x73BC28, UnitClass_DrawVoxel_HasChargeTurret2, 0x5)
 	return 0x73BC49;
 }
 
-DEFINE_HOOK(0x73BA63, UnitClass_DrawVoxel_TurretOffset, 0x5)
-{
-	GET(UnitClass*, pThis, EBP);
-	GET(UnitTypeClass*, pType, EBX);
-
-	if (pType != pThis->Type)
-	{
-		if (!pType->HasMultipleTurrets() || pType->IsGattling)
-			return 0x73BD79;
-
-		if (pThis->CurrentTurretNumber == -1)
-			R->Stack<int>(0x1C, 0);
-
-		return 0x73BC35;
-	}
-
-	return 0;
-}
-
 #pragma endregion
 
 #pragma endregion
