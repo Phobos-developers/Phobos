@@ -322,7 +322,7 @@ bool TechnoExt::ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
 
 	auto pFoot = abstract_cast<FootClass*>(pThis);
 
-	if (AresFunctions::ConvertTypeTo && pFoot)
+	if (AresFunctions::ConvertTypeTo && pFoot) // Ares processed most of the footclass stuff
 	{
 		const int oldHealth = pThis->Health;
 
@@ -341,10 +341,12 @@ bool TechnoExt::ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
 		return false;
 	}
 
-	// In case not using Ares 3.0. Only update necessary vanilla properties
+	// For buildingclass
+	// Also for footclass if no Ares
 
 	AbstractType rtti;
 	TechnoTypeClass** nowTypePtr;
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
 	// Different types prohibited
 	switch (pThis->WhatAmI())
@@ -370,83 +372,91 @@ bool TechnoExt::ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
 		return false;
 	}
 
-	// Detach CLEG targeting
-	auto const tempUsing = pThis->TemporalImUsing;
-	if (tempUsing && tempUsing->Target)
-		tempUsing->LetGo();
+	auto updateTechnoTypeDataLikeAres = [pThis, pToType, rtti, nowTypePtr, pExt]()
+		{
+			// Detach CLEG targeting
+			auto const tempUsing = pThis->TemporalImUsing;
+			if (tempUsing && tempUsing->Target)
+				tempUsing->LetGo();
 
-	auto const pOwner = pThis->Owner;
+			auto const pOwner = pThis->Owner;
 
-	// Remove tracking of old techno
-	if (!pThis->InLimbo)
-		pOwner->RegisterLoss(pThis, false);
-	pOwner->RemoveTracking(pThis);
+			// Remove tracking of old techno
+			if (!pThis->InLimbo)
+				pOwner->RegisterLoss(pThis, false);
+			pOwner->RemoveTracking(pThis);
 
-	const int oldHealth = pThis->Health;
+			const int oldHealth = pThis->Health;
 
-	// Generic type-conversion
-	auto const prevType = *nowTypePtr;
-	*nowTypePtr = pToType;
+			// Generic type-conversion
+			auto const prevType = *nowTypePtr;
+			*nowTypePtr = pToType;
 
-	// Readjust health according to percentage
-	pThis->SetHealthPercentage((double)(oldHealth) / (double)prevType->Strength);
-	pThis->EstimatedHealth = pThis->Health;
+			// Readjust health according to percentage
+			pThis->SetHealthPercentage((double)(oldHealth) / (double)prevType->Strength);
+			pThis->EstimatedHealth = pThis->Health;
 
-	// Add tracking of new techno
-	pOwner->AddTracking(pThis);
-	if (!pThis->InLimbo)
-		pOwner->RegisterGain(pThis, false);
-	pOwner->RecheckTechTree = true;
+			// Add tracking of new techno
+			pOwner->AddTracking(pThis);
+			if (!pThis->InLimbo)
+				pOwner->RegisterGain(pThis, false);
+			pOwner->RecheckTechTree = true;
 
-	// Update Ares AttachEffects -- skipped
-	// Ares RecalculateStats -- skipped
+			// Update Ares AttachEffects -- skipped
+			// Ares RecalculateStats -- skipped
 
-	// Adjust ammo
-	const int originalAmmo = pThis->Ammo;
-	const int maxAmmo = pToType->Ammo;
-	pThis->Ammo = Math::min(originalAmmo, maxAmmo);
+			// Adjust ammo
+			const int originalAmmo = pThis->Ammo;
+			const int maxAmmo = pToType->Ammo;
+			pThis->Ammo = Math::min(originalAmmo, maxAmmo);
 
-	if (originalAmmo > maxAmmo)
-		pThis->Mark(MarkType::Change);
+			if (originalAmmo > maxAmmo)
+				pThis->Mark(MarkType::Change);
 
-	// Ares ResetSpotlights -- skipped
+			// Ares ResetSpotlights -- skipped
 
-	// Adjust ROT
-	if (rtti == AbstractType::AircraftType)
-		pThis->SecondaryFacing.SetROT(pToType->ROT);
-	else
-		pThis->PrimaryFacing.SetROT(pToType->ROT);
-	// Adjust Ares TurretROT -- skipped
-	// pThis->SecondaryFacing.SetROT(TechnoTypeExt::ExtMap.Find(pToType)->TurretROT.Get(pToType->ROT));
+			// Adjust ROT
+			if (rtti == AbstractType::AircraftType)
+				pThis->SecondaryFacing.SetROT(pToType->ROT);
+			else
+				pThis->PrimaryFacing.SetROT(pToType->ROT);
+			// Adjust Ares TurretROT -- skipped
+			// pThis->SecondaryFacing.SetROT(TechnoTypeExt::ExtMap.Find(pToType)->TurretROT.Get(pToType->ROT));
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	pExt->UpdateTypeData(pToType);
+			pExt->UpdateTypeData(pToType);
+		};
+	auto updateFootTypeDataLikeAres = [pFoot, pToType, pExt]()
+		{
+			// Locomotor change, referenced from Ares 0.A's abduction code, not sure if correct, untested
+			CLSID nowLocoID;
+			ILocomotion* iloco = pFoot->Locomotor;
+			const auto& toLoco = pToType->Locomotor;
+			if ((SUCCEEDED(static_cast<LocomotionClass*>(iloco)->GetClassID(&nowLocoID)) && nowLocoID != toLoco))
+			{
+				// because we are throwing away the locomotor in a split second, piggybacking
+				// has to be stopped. otherwise the object might remain in a weird state.
+				while (LocomotionClass::End_Piggyback(pFoot->Locomotor));
+				// throw away the current locomotor and instantiate
+				// a new one of the default type for this unit.
+				if (auto const newLoco = LocomotionClass::CreateInstance(toLoco))
+				{
+					newLoco->Link_To_Object(pFoot);
+					pFoot->Locomotor = std::move(newLoco);
+				}
+			}
+
+			const auto& jjLoco = LocomotionClass::CLSIDs::Jumpjet;
+			if (pToType->BalloonHover && pToType->DeployToLand && prevType->Locomotor != jjLoco && toLoco == jjLoco)
+				pFoot->Locomotor->Move_To(pFoot->Location);
+
+			pExt->UpdateTypeData_Foot();
+		};
+
+	updateTechnoTypeDataLikeAres();
 
 	if (rtti != AbstractType::BuildingType)
 	{
-		// Locomotor change, referenced from Ares 0.A's abduction code, not sure if correct, untested
-		CLSID nowLocoID;
-		ILocomotion* iloco = pFoot->Locomotor;
-		const auto& toLoco = pToType->Locomotor;
-		if ((SUCCEEDED(static_cast<LocomotionClass*>(iloco)->GetClassID(&nowLocoID)) && nowLocoID != toLoco))
-		{
-			// because we are throwing away the locomotor in a split second, piggybacking
-			// has to be stopped. otherwise the object might remain in a weird state.
-			while (LocomotionClass::End_Piggyback(pFoot->Locomotor));
-			// throw away the current locomotor and instantiate
-			// a new one of the default type for this unit.
-			if (auto const newLoco = LocomotionClass::CreateInstance(toLoco))
-			{
-				newLoco->Link_To_Object(pFoot);
-				pFoot->Locomotor = std::move(newLoco);
-			}
-		}
-
-		const auto& jjLoco = LocomotionClass::CLSIDs::Jumpjet;
-		if (pToType->BalloonHover && pToType->DeployToLand && prevType->Locomotor != jjLoco && toLoco == jjLoco)
-			pFoot->Locomotor->Move_To(pFoot->Location);
-
-		pExt->UpdateTypeData_Foot();
+		updateFootTypeDataLikeAres();
 	}
 	else
 	{

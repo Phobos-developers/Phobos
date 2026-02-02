@@ -1360,8 +1360,10 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 void TechnoExt::ExtData::UpdateTypeData_Building()
 {
 	auto const pThis = static_cast<BuildingClass*>(this->OwnerObject());
-	//auto const pOldType = static_cast<BuildingTypeClass*>(this->PreviousType);
+	auto const pOldType = static_cast<BuildingTypeClass*>(this->PreviousType);
 	auto const pNewType = static_cast<BuildingTypeClass*>(this->TypeExtData->OwnerObject());
+
+	pThis->Type = pOldType;
 
 	pThis->DestroyNthAnim(BuildingAnimSlot::All);
 
@@ -1386,6 +1388,9 @@ void TechnoExt::ExtData::UpdateTypeData_Building()
 		pOwner->RegisterLoss(pThis, false);
 	pOwner->RemoveTracking(pThis);
 
+	if (pThis->Factory)
+		pThis->Factory->AbandonProduction();
+
 	// Maybe buggy
 	if (!pThis->InLimbo)
 	{
@@ -1399,6 +1404,8 @@ void TechnoExt::ExtData::UpdateTypeData_Building()
 		pThis->Place(false);
 		pThis->Mark(MarkType::Change);
 	}
+
+	pThis->Type = pNewType;
 
 	pOwner->AddTracking(pThis);
 	if (!pThis->InLimbo)
