@@ -552,6 +552,10 @@ DEFINE_HOOK(0x7466D8, UnitClass_DisguiseAs_DisguiseAsVehicle, 0xA)
 	pThis->Disguise = targetDisguised ? pTarget->GetDisguise(true) : pTarget->Type;
 	pThis->DisguisedAsHouse = targetDisguised ? pTarget->GetDisguiseHouse(true) : pTarget->Owner;
 	pThis->TechnoClass::DisguiseAs(pTarget);
+
+	if (const auto pDisguise = abstract_cast<UnitTypeClass*>(pThis->Disguise))
+		pThis->BarrelFacing.SetCurrent(DirStruct(0x4000 - (pDisguise->FireAngle << 8)));
+
 	return SkipGameCode;
 }
 
