@@ -15,6 +15,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `Vertical=true` projectiles no longer move horizontally if fired by aircraft by default. To re-enable this behaviour set `Vertical.AircraftFix=false` on the projectile.
 - Weapons with `Airstrike=true` on Warhead will now check target eligibility for airstrikes regardless of weapon slot. Use `AirstrikeTargets=all` on `Primary` airstrike weapon Warhead to restore previous behaviour.
 - `PowerUpNAnim` is now used instead of the upgrade building's image file for upgrade animation if set. Note that displaying a damaged version will still require setting `PowerUpNDamagedAnim` explicitly in all cases, as the fallback to upgrade building image does not extend to it, nor would it be safe to add. `PowersUpToLevel=-1` upgrades still do not work correctly `PowerUpNAnim` and such buildings should forgo using explicit upgrade animations.
+- Elite technos no longer scatter by default, behaviour can be restored by including `SCATTER` in their `EliteAbilities`.
 - `[CrateRules] -> FreeMCV` now controls whether or not player is forced to receive unit from `[General] -> BaseUnit` from goodie crate if they own no buildings or any existing `[General] -> BaseUnit` vehicles and own more than `[CrateRules] -> FreeMCV.CreditsThreshold` (defaults to 1500) credits.
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini -> [General] -> FixTransparencyBlitters=no`.
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto` / `UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[TechnoType]/[CombatDamage] -> IronCurtain.KeptOnDeploy=no`.
@@ -520,8 +521,15 @@ New:
 - [Deploy priority filtering](New-or-Enhanced-Logics.md#low-priority-for-deploy) (by Starkku)
 - [Weapon target filtering by target veterancy](New-or-Enhanced-Logics.md#weapon-targeting-filter) (by Flactine)
 - [Warhead effect filtering by target veterancy](Fixed-or-Improved-Logics.md#customizable-warhead-trigger-conditions) (by Flactine)
-- Vehicle Deployment Enhancement (by FlyStar)
-- Technos with Walk locomotor spawn wake like ship (by TaranDahl)
+- [Vehicle Deployment Enhancement](Fixed-or-Improved-Logics.md#deployment-enhancement) (by FlyStar)
+- `ProductionAnim` is now available for `Factory=InfantryType` as well as non-`ConstructionYard=true` `Factory=BuildingType` buildings (by Starkku)
+- [Extra distance modifier for `Adjacent.Disallowed`](New-or-Enhanced-Logics.md#build-area-customizations) (by Starkku)
+- [Allow customizing how many times `FactoryPlant` bonuses can be applied from a BuildingType](Fixed-or-Improved-Logics.md#factoryplant-customizations) (by Starkku)
+- [Maximum amount for power plant enhancer](New-or-Enhanced-Logics.md#power-plant-enhancer) (by Ollerus)
+- [Return warhead](New-or-Enhanced-Logics.md#return-warhead) (by Ollerus)
+- [`AllowBerzerkOnAllies`](Fixed-or-Improved-Logics.md#berzerk-on-allies) (by TaranDahl)
+- [Customize whether weapon can be used to targeting ironcurtained technos or not](New-or-Enhanced-Logics.md#customize-whether-weapon-can-target-iron-curtained-technos) (by NetsuNegi)
+- [Technos with Walk locomotor spawn wake like ship](Fixed-or-Improved-Logics.md#customizable-wake-anim) (by TaranDahl)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -574,6 +582,8 @@ Vanilla fixes:
 - Fixed the issue that warhead with `IsLocomotor=yes` can be used to vehicles who is in tank bunker (by NetsuNegi)
 - Fixed an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals (by FlyStar)
 - Fixed an issue where mining vehicles could not move after leaving a tank bunker (by FlyStar)
+- Fixed the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon (by NetsuNegi)
+- Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat (by TaranDahl)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -600,7 +610,7 @@ Phobos fixes:
 - Fixed OverlayType `ZAdjust` as well as some shield & AttachEffect variables not being correctly saved & loaded (by Ollerus)
 - LimboDelivery buildings cannot be selected (by FlyStar)
 - Fixed the positive value of `Reveal` on warhead (by NetsuNegi)
-- Fixed the bug that weapon cannot used to intercept on gound bullet if it's projectile has `AG=no` (by NetsuNegi)
+- Fixed `Adjacent.Disallowed` not blocking placement if other eligible buildings were in range (by Starkku)
 
 Fixes / interactions with other extensions:
 <!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->
@@ -612,6 +622,24 @@ Fixes / interactions with other extensions:
 - Fixed a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType` (by NetsuNegi)
 - Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed (by NetsuNegi)
 - Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed (by NetsuNegi)
+- Fixed the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally (by NetsuNegi)
+```
+
+
+### 0.4.0.2
+
+```{dropdown} Click to show
+
+Phobos fixes:
+- Fixed `AircraftDockingDirs` being reset if the BuildingType section is redefined in map file (by Starkku)
+- Fixed harvester counter not accounting for type converting harvesters (by Ollerus)
+- Fixed the bug that weapon cannot used to intercept on gound bullet if it's projectile has `AG=no` (by NetsuNegi)
+- Fixed the bug that if there's a tank in tank bunker, tank bunker use auto death by vanish will cause tank get stuck and game will crash quickly (by NetsuNegi)
+- Fixed `ROF.RandomDelay` incorrectly defaulting to 0 (no delay) instead of random value in range 0-2 (by Starkku)
+- Fixed `CreateUnit.Owner=killer` not working correctly with `DestroyAnim(s)` (by TaranDahl)
+- Fixed a bug causing erratic behaviour with units scattering f.ex moving away from buildings being placed (by Starkku)
+- Fixed an oversight that prevented units deploying into buildings from deploying on top of `CanBeBuiltOn` TerrainTypes (by Starkku)
+- Animation-fired weapons now snap on the object they are attached to if present (by TaranDahl)
 ```
 
 ### 0.4.0.1
@@ -801,6 +829,7 @@ New:
 - `Strafing` is now disabled by default when using `Trajectory` (by CrimRecya)
 - Skip target scanning function calling for unarmed technos (by TaranDahl & solar-III)
 - Allow retint fix to be disabled with `[AudioVisual] -> UseRetintFix=no` in `rulesmd.ini` due to performance considerations (by Kerbiter)
+- Elite technos no longer scatter by default, behaviour is controlled by `SCATTER` veterancy ability now (by NetsuNegi & Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -922,7 +951,6 @@ Vanilla fixes:
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings (by NetsuNegi)
 - Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar (by Fryone)
 - Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)
-- Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it (by NetsuNegi)
 - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes` (by FlyStar)
 - Fixed an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case (by CrimRecya)
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce (by NetsuNegi)

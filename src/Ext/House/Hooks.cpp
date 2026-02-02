@@ -21,7 +21,8 @@ DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 			const auto pExt = BuildingTypeExt::ExtMap.Find(pType);
 
 			if (pExt->PowerPlantEnhancer_Buildings.size()
-				&& (pExt->PowerPlantEnhancer_Amount != 0 || pExt->PowerPlantEnhancer_Factor != 1.0f))
+				&& (pExt->PowerPlantEnhancer_Amount != 0 || pExt->PowerPlantEnhancer_Factor != 1.0f)
+				&& (pExt->PowerPlantEnhancer_MaxCount < 0 || pHouseExt->PowerPlantEnhancers[pType->ArrayIndex] < pExt->PowerPlantEnhancer_MaxCount))
 			{
 				++pHouseExt->PowerPlantEnhancers[pType->ArrayIndex];
 			}
@@ -545,5 +546,39 @@ DEFINE_HOOK(0x4FD635, HouseClass_UpdateAI_DistCalcFix, 0x5)
 	GET(HouseClass*, pTargetHouse, ESI);
 	auto baseMapCrd = pTargetHouse->BaseCenter == CellStruct::Empty ? pTargetHouse->BaseSpawnCell : pTargetHouse->BaseCenter;
 	R->EAX(*(int*)&baseMapCrd);
+	return SkipGameCode;
+}
+
+// Replace game function.
+DEFINE_HOOK(0x50BF60, HouseClass_CalculateCostMultipliers, 0x5)
+{
+	enum { SkipGameCode = 0x50C04A };
+
+	GET(HouseClass*, pThis, ECX);
+
+	std::unordered_map<int, int> counts;
+	pThis->CostAircraftMult = 1.0f;
+	pThis->CostBuildingsMult = 1.0f;
+	pThis->CostDefensesMult = 1.0f;
+	pThis->CostInfantryMult = 1.0f;
+	pThis->CostUnitsMult = 1.0f;
+
+	for (auto const& pBuilding : pThis->FactoryPlants)
+	{
+		auto const pType = pBuilding->Type;
+		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+		const int max = pTypeExt->FactoryPlant_MaxCount;
+
+		if (max > -1 && counts[pType->ArrayIndex] >= max)
+			continue;
+
+		counts[pType->ArrayIndex]++;
+		pThis->CostAircraftMult *= pType->AircraftCostBonus;
+		pThis->CostBuildingsMult *= pType->BuildingsCostBonus;
+		pThis->CostDefensesMult *= pType->DefensesCostBonus;
+		pThis->CostInfantryMult *= pType->InfantryCostBonus;
+		pThis->CostUnitsMult *= pType->UnitsCostBonus;
+	}
+
 	return SkipGameCode;
 }

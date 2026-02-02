@@ -1105,6 +1105,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Harvester_CanGuardArea_RequireTarget.Read(exINI, pSection, "Harvester.CanGuardArea.RequireTarget");
 	this->HarvesterScanAfterUnload.Read(exINI, pSection, "HarvesterScanAfterUnload");
 
+	this->ExtendedAircraftMissions.Read(exINI, pSection, "ExtendedAircraftMissions");
 	this->ExtendedAircraftMissions_SmoothMoving.Read(exINI, pSection, "ExtendedAircraftMissions.SmoothMoving");
 	this->ExtendedAircraftMissions_EarlyDescend.Read(exINI, pSection, "ExtendedAircraftMissions.EarlyDescend");
 	this->ExtendedAircraftMissions_RearApproach.Read(exINI, pSection, "ExtendedAircraftMissions.RearApproach");
@@ -1775,6 +1776,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Harvester_CanGuardArea_RequireTarget)
 		.Process(this->HarvesterScanAfterUnload)
 
+		.Process(this->ExtendedAircraftMissions)
 		.Process(this->ExtendedAircraftMissions_SmoothMoving)
 		.Process(this->ExtendedAircraftMissions_EarlyDescend)
 		.Process(this->ExtendedAircraftMissions_RearApproach)

@@ -440,7 +440,7 @@ DEFINE_HOOK(0x44402E, BuildingClass_ExitObject_PoseDir2, 0x5)
 
 	auto const dir = DirStruct(AircraftExt::GetLandingDir(pAircraft, pThis));
 
-	if (RulesExt::Global()->ExtendedAircraftMissions)
+	if (TechnoTypeExt::ExtMap.Find(pAircraft->Type)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions))
 		pAircraft->PrimaryFacing.SetCurrent(dir);
 
 	pAircraft->SecondaryFacing.SetCurrent(dir);
@@ -476,7 +476,7 @@ DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
 // Waypoint: enable and smooth moving action
 static bool __fastcall AircraftTypeClass_CanUseWaypoint(AircraftTypeClass* pThis)
 {
-	return RulesExt::Global()->ExtendedAircraftMissions.Get();
+	return TechnoTypeExt::ExtMap.Find(pThis)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions);
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2908, AircraftTypeClass_CanUseWaypoint)
 
@@ -506,7 +506,7 @@ DEFINE_HOOK(0x416A0A, AircraftClass_Mission_Move_SmoothMoving, 0x5)
 	if (!pType->AirportBound)
 		return 0;
 
-	const bool extendedMissions = RulesExt::Global()->ExtendedAircraftMissions;
+	const bool extendedMissions = TechnoTypeExt::ExtMap.Find(pType)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions);
 
 	if (!TechnoTypeExt::ExtMap.Find(pType)->ExtendedAircraftMissions_SmoothMoving.Get(extendedMissions))
 		return 0;
@@ -559,7 +559,7 @@ DEFINE_HOOK(0x419EF6, AircraftClass_Mission_Enter_FixNotCarryall, 0x7)
 // Skip set chaotic ArchiveTarget
 static void __fastcall AircraftClass_SetArchiveTarget_Wrapper(AircraftClass* pThis, void* _, AbstractClass* pTarget)
 {
-	if (!RulesExt::Global()->ExtendedAircraftMissions)
+	if (!TechnoTypeExt::ExtMap.Find(pThis->Type)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions))
 		pThis->SetArchiveTarget(pTarget);
 }
 DEFINE_FUNCTION_JUMP(CALL, 0x41AB09, AircraftClass_SetArchiveTarget_Wrapper);
@@ -589,9 +589,11 @@ DEFINE_HOOK(0x4CF190, FlyLocomotionClass_FlightUpdate_SetPrimaryFacing, 0x6) // 
 
 		const auto pFoot = *pFootPtr;
 		const auto pAircraft = abstract_cast<AircraftClass*, true>(pFoot);
+		const auto pType = pAircraft->Type;
+		const bool extendedMissions = TechnoTypeExt::ExtMap.Find(pType)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions);
 
 		// Rewrite vanilla implement
-		if (!pAircraft || !TechnoTypeExt::ExtMap.Find(pAircraft->Type)->ExtendedAircraftMissions_RearApproach.Get(RulesExt::Global()->ExtendedAircraftMissions))
+		if (!pAircraft || !TechnoTypeExt::ExtMap.Find(pType)->ExtendedAircraftMissions_RearApproach.Get(extendedMissions))
 		{
 			const auto footCoords = pFoot->GetCoords();
 			const auto desired = DirStruct(Math::atan2(footCoords.Y - destination.Y, destination.X - footCoords.X));
@@ -610,8 +612,6 @@ DEFINE_HOOK(0x4CF190, FlyLocomotionClass_FlightUpdate_SetPrimaryFacing, 0x6) // 
 			// Try to land from the rear
 			if (pAircraft->Destination && (pAircraft->DockNowHeadingTo == pAircraft->Destination || pAircraft->SpawnOwner == pAircraft->Destination))
 			{
-				const auto pType = pAircraft->Type;
-
 				// Like smooth moving
 				const int turningRadius = GetTurningRadius(pAircraft);
 
@@ -665,8 +665,9 @@ DEFINE_HOOK(0x4CF3D0, FlyLocomotionClass_FlightUpdate_SetFlightLevel, 0x7) // Ma
 		return 0;
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const bool extendedMissions = pTypeExt->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions);
 
-	if (!pTypeExt->ExtendedAircraftMissions_EarlyDescend.Get(RulesExt::Global()->ExtendedAircraftMissions))
+	if (!pTypeExt->ExtendedAircraftMissions_EarlyDescend.Get(extendedMissions))
 		return 0;
 
 	enum { SkipGameCode = 0x4CF4D2 };
@@ -696,7 +697,7 @@ DEFINE_HOOK(0x4CF3D0, FlyLocomotionClass_FlightUpdate_SetFlightLevel, 0x7) // Ma
 	// Check returning actions
 	if (distance < pType->SlowdownDistance && pAircraft->Destination
 		&& (pAircraft->DockNowHeadingTo == pAircraft->Destination || pAircraft->SpawnOwner == pAircraft->Destination)
-		&& (!pTypeExt->ExtendedAircraftMissions_RearApproach.Get(RulesExt::Global()->ExtendedAircraftMissions)
+		&& (!pTypeExt->ExtendedAircraftMissions_RearApproach.Get(extendedMissions)
 			|| std::abs(static_cast<short>(static_cast<short>(DirStruct(AircraftExt::GetLandingDir(pAircraft)).Raw) - static_cast<short>(pAircraft->PrimaryFacing.Current().Raw))) < 16384))
 	{
 		// Slow descent
@@ -719,12 +720,12 @@ DEFINE_HOOK(0x4CE42A, FlyLocomotionClass_StateUpdate_NoLanding, 0x6) // Prevent 
 
 	GET(FootClass* const, pLinkTo, EAX);
 
-	if (!RulesExt::Global()->ExtendedAircraftMissions)
-		return 0;
-
 	const auto pAircraft = abstract_cast<AircraftClass*, true>(pLinkTo);
 
-	if (!pAircraft || pAircraft->Airstrike || pAircraft->Spawned || pAircraft->GetCurrentMission() == Mission::Enter)
+	if (!pAircraft || !TechnoTypeExt::ExtMap.Find(pAircraft->Type)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions))
+		return 0;
+
+	if (pAircraft->Airstrike || pAircraft->Spawned || pAircraft->GetCurrentMission() == Mission::Enter)
 		return 0;
 
 	return SkipGameCode;
@@ -734,9 +735,11 @@ DEFINE_HOOK(0x414DA8, AircraftClass_Update_UnlandableDamage, 0x6) // After FootC
 {
 	GET(AircraftClass* const, pThis, ESI);
 
-	if (pThis->IsAlive && pThis->Type->AirportBound && !pThis->Airstrike && !pThis->Spawned)
+	const auto pType = pThis->Type;
+
+	if (pThis->IsAlive && pType->AirportBound && !pThis->Airstrike && !pThis->Spawned)
 	{
-		const bool extendedMissions = RulesExt::Global()->ExtendedAircraftMissions;
+		const bool extendedMissions = TechnoTypeExt::ExtMap.Find(pType)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions);
 
 		if (extendedMissions)
 		{
@@ -752,7 +755,7 @@ DEFINE_HOOK(0x414DA8, AircraftClass_Update_UnlandableDamage, 0x6) // After FootC
 			}
 
 			// Check dock building
-			pThis->TryNearestDockBuilding(&pThis->Type->Dock, 0, 0);
+			pThis->TryNearestDockBuilding(&pType->Dock, 0, 0);
 		}
 
 		if (pThis->DockNowHeadingTo)
@@ -766,11 +769,11 @@ DEFINE_HOOK(0x414DA8, AircraftClass_Update_UnlandableDamage, 0x6) // After FootC
 		}
 		else if (pThis->IsInAir())
 		{
-			int damage = TechnoTypeExt::ExtMap.Find(pThis->Type)->ExtendedAircraftMissions_UnlandDamage.Get(RulesExt::Global()->ExtendedAircraftMissions_UnlandDamage);
+			int damage = TechnoTypeExt::ExtMap.Find(pType)->ExtendedAircraftMissions_UnlandDamage.Get(RulesExt::Global()->ExtendedAircraftMissions_UnlandDamage);
 
 			if (damage > 0)
 			{
-				if (!extendedMissions && !pThis->unknown_bool_6B3 && pThis->TryNearestDockBuilding(&pThis->Type->Dock, 0, 0))
+				if (!extendedMissions && !pThis->unknown_bool_6B3 && pThis->TryNearestDockBuilding(&pType->Dock, 0, 0))
 					return 0;
 
 				// Injury every four frames
@@ -796,8 +799,11 @@ DEFINE_HOOK(0x41A5C7, AircraftClass_Mission_Guard_StartAreaGuard, 0x6)
 
 	GET(AircraftClass* const, pThis, ESI);
 
-	if (!RulesExt::Global()->ExtendedAircraftMissions || pThis->Team || !pThis->IsArmed() || pThis->Airstrike || pThis->Spawned)
+	if (!TechnoTypeExt::ExtMap.Find(pThis->Type)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)
+		|| pThis->Team || !pThis->IsArmed() || pThis->Airstrike || pThis->Spawned)
+	{
 		return 0;
+	}
 
 	const auto pArchive = pThis->ArchiveTarget;
 
@@ -817,8 +823,11 @@ DEFINE_HOOK(0x41A96C, AircraftClass_Mission_AreaGuard, 0x6)
 
 	GET(AircraftClass* const, pThis, ESI);
 
-	if (!RulesExt::Global()->ExtendedAircraftMissions || pThis->Team || !pThis->IsArmed() || pThis->Airstrike || pThis->Spawned)
+	if (!TechnoTypeExt::ExtMap.Find(pThis->Type)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)
+		|| pThis->Team || !pThis->IsArmed() || pThis->Airstrike || pThis->Spawned)
+	{
 		return 0;
+	}
 
 	auto enterIdleMode = [pThis]() -> bool
 	{
@@ -900,7 +909,9 @@ DEFINE_HOOK(0x7001B0, TechnoClass_MouseOverObject_EnableGuardObject, 0x7)
 
 	GET(TechnoClass* const, pThis, ESI);
 
-	return pThis->WhatAmI() == AbstractType::Aircraft && !RulesExt::Global()->ExtendedAircraftMissions ? SkipCheckCanGuard : ContinueCheckCanGuard;
+	return pThis->WhatAmI() == AbstractType::Aircraft
+		&& !TechnoExt::ExtMap.Find(pThis)->TypeExtData->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)
+		? SkipCheckCanGuard : ContinueCheckCanGuard;
 }
 
 // Sleep: return to airbase if in incorrect sleep status
@@ -917,7 +928,7 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7E24A8, AircraftClass_Mission_Sleep)
 // AttackMove: return when no ammo or arrived destination
 static bool __fastcall AircraftTypeClass_CanAttackMove(AircraftTypeClass* pThis)
 {
-	return RulesExt::Global()->ExtendedAircraftMissions.Get();
+	return TechnoTypeExt::ExtMap.Find(pThis)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions);
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E290C, AircraftTypeClass_CanAttackMove)
 
@@ -927,8 +938,8 @@ DEFINE_HOOK(0x6FA68B, TechnoClass_Update_AttackMovePaused, 0xA) // To make aircr
 
 	GET(TechnoClass* const, pThis, ESI);
 
-	const bool skip = RulesExt::Global()->ExtendedAircraftMissions
-		&& pThis->WhatAmI() == AbstractType::Aircraft
+	const bool skip = pThis->WhatAmI() == AbstractType::Aircraft
+		&& TechnoExt::ExtMap.Find(pThis)->TypeExtData->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)
 		&& (!pThis->Ammo || !pThis->IsInAir());
 
 	return skip ? SkipGameCode : 0;
@@ -941,8 +952,11 @@ DEFINE_HOOK(0x4DF3BA, FootClass_UpdateAttackMove_AircraftHoldAttackMoveTarget1, 
 	GET(FootClass* const, pThis, ESI);
 
 	// The aircraft is constantly moving, which may cause its target to constantly enter and leave its range, so it is fixed to hold the target.
-	if (RulesExt::Global()->ExtendedAircraftMissions && pThis->WhatAmI() == AbstractType::Aircraft)
+	if (pThis->WhatAmI() == AbstractType::Aircraft
+		&& TechnoExt::ExtMap.Find(pThis)->TypeExtData->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions))
+	{
 		return HoldTarget;
+	}
 
 	return pThis->InAuxiliarySearchRange(pThis->Target) ? HoldTarget : LoseTarget;
 }
@@ -954,7 +968,9 @@ DEFINE_HOOK(0x4DF42A, FootClass_UpdateAttackMove_AircraftHoldAttackMoveTarget2, 
 	GET(FootClass* const, pThis, ESI);
 
 	// Although if the target selected by CS is an object rather than cell.
-	return (RulesExt::Global()->ExtendedAircraftMissions && pThis->WhatAmI() == AbstractType::Aircraft) ? HoldTarget : ContinueCheck;
+	return (pThis->WhatAmI() == AbstractType::Aircraft
+		&& TechnoExt::ExtMap.Find(pThis)->TypeExtData->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions))
+		? HoldTarget : ContinueCheck;
 }
 
 DEFINE_HOOK(0x418CD1, AircraftClass_Mission_Attack_ContinueFlyToDestination, 0x6)
@@ -965,7 +981,7 @@ DEFINE_HOOK(0x418CD1, AircraftClass_Mission_Attack_ContinueFlyToDestination, 0x6
 
 	if (!pThis->Target)
 	{
-		if (!RulesExt::Global()->ExtendedAircraftMissions || pThis->Airstrike || pThis->Spawned)
+		if (!TechnoTypeExt::ExtMap.Find(pThis->Type)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions) || pThis->Airstrike || pThis->Spawned)
 			return Continue;
 
 		if (pThis->MegaMissionIsAttackMove() && pThis->MegaDestination)
@@ -1003,7 +1019,8 @@ DEFINE_HOOK(0x414D4D, AircraftClass_Update_ClearTargetIfNoAmmo, 0x6)
 
 	GET(AircraftClass* const, pThis, ESI);
 
-	if (RulesExt::Global()->ExtendedAircraftMissions && !pThis->Ammo && !pThis->Airstrike && !pThis->Spawned)
+	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)
+		&& !pThis->Ammo && !pThis->Airstrike && !pThis->Spawned)
 	{
 		if (!SessionClass::IsCampaign()) // To avoid AI's aircrafts team repeatedly attempting to attack the target when no ammo
 		{
@@ -1063,7 +1080,13 @@ DEFINE_HOOK(0x4425B6, BuildingClass_ReceiveDamage_NoDestroyLink, 0xA)
 
 	const auto pAircraft = abstract_cast<AircraftClass*, true>(pTechno);
 
-	if (!pAircraft || !TechnoTypeExt::ExtMap.Find(pAircraft->Type)->ExtendedAircraftMissions_FastScramble.Get(RulesExt::Global()->ExtendedAircraftMissions))
+	if (!pAircraft)
+		return 0;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pAircraft->Type);
+	const bool extendedMissions = pTypeExt->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions);
+
+	if (!pTypeExt->ExtendedAircraftMissions_FastScramble.Get(extendedMissions))
 		return 0;
 
 	return LetTakeOff;
@@ -1072,7 +1095,8 @@ DEFINE_HOOK(0x4425B6, BuildingClass_ReceiveDamage_NoDestroyLink, 0xA)
 // GreatestThreat: for all the mission that should let the aircraft auto select a target
 static AbstractClass* __fastcall AircraftClass_GreatestThreat(AircraftClass* pThis, void* _, ThreatType threatType, CoordStruct* pSelectCoords, bool onlyTargetHouseEnemy)
 {
-	if (RulesExt::Global()->ExtendedAircraftMissions && !pThis->Team && pThis->Ammo && !pThis->Airstrike && !pThis->Spawned)
+	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)
+		&& !pThis->Team && pThis->Ammo && !pThis->Airstrike && !pThis->Spawned)
 	{
 		if (const auto pPrimaryWeapon = pThis->GetWeapon(0)->WeaponType)
 			threatType |= pPrimaryWeapon->AllowedThreats();
@@ -1094,7 +1118,7 @@ DEFINE_HOOK(0x4C7403, EventClass_Execute_AircraftAreaGuard, 0x6)
 	GET(TechnoClass* const, pTechno, EDI);
 
 	if (pTechno->WhatAmI() == AbstractType::Aircraft
-		&& RulesExt::Global()->ExtendedAircraftMissions
+		&& TechnoExt::ExtMap.Find(pTechno)->TypeExtData->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)
 		&& !pTechno->Ammo)
 	{
 		// Skip assigning destination / target here.
@@ -1114,7 +1138,7 @@ DEFINE_HOOK(0x4C72F2, EventClass_Execute_AircraftAreaGuard_Unlink, 0x6)
 	GET(TechnoClass* const, pTechno, EDI);
 
 	if (pTechno->WhatAmI() == AbstractType::Aircraft
-		&& RulesExt::Global()->ExtendedAircraftMissions
+		&& TechnoExt::ExtMap.Find(pTechno)->TypeExtData->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)
 		&& pThis->MegaMission.Mission == (char)Mission::Area_Guard
 		&& !pTechno->Ammo)
 	{

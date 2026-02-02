@@ -485,6 +485,10 @@ This page lists all the individual contributions to the project by their author.
   - Customize size for mind controlled unit
   - Fix the issue that weapon selection don't check if secondary's warhead has `IsLocomotor=yes`
   - Fix the issue that warhead with `IsLocomotor=yes` can be used to vehicles who is in tank bunker
+  - Fix the bug that if there's a tank in tank bunker, tank bunker use auto death by vanish will cause tank get stuck and game will crash quickly
+  - Customize whether weapon can be used to targeting ironcurtained technos or not
+  - Fix the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon
+  - Fix the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -612,6 +616,8 @@ This page lists all the individual contributions to the project by their author.
   - Toggle off laser trail and shake effects
   - OpenTopped range bonus and damage multiplier customization for passengers
   - AutoDeath upon ownership change
+  - Maximum amount for power plant enhancer
+  - Return warhead
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
@@ -678,11 +684,13 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that rockets do not consider the destination altitude during climbing
   - Fix an issue that the AI would set anger towards friendly houses, causing it to act stupidly
   - Fix an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies
+  - `AllowBerzerkOnAllies`
+  - Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat
   - Technos with Walk locomotor spawn wake like ship
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
-- **Flactine** 
+- **Flactine**
   - Add target filtering options to attacheffect system
   - Add veterancy-based target filtering for weapons and warheads
 - **tyuah8**:

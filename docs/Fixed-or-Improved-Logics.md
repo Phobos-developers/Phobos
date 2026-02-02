@@ -223,7 +223,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that ships can travel on elevated bridges.
 - Dehardcoded 255 limit of `OverlayType`.
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip.
-- Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it.
+- Elite technos no longer scatter by default, behaviour is controlled by `SCATTER` veterancy ability now.
 - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`.
 - Infantry support `IsGattling=yes`.
 - Fixed an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case.
@@ -291,6 +291,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue that warhead with `IsLocomotor=yes` can be used to vehicles who is in tank bunker.
 - Fixed an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals.
 - Fixed an issue where mining vehicles could not move after leaving a tank bunker.
+- `ProductionAnim` is now available for `Factory=InfantryType` as well as non-`ConstructionYard=true` `Factory=BuildingType` buildings. `IdleAnim` will cease to play for its duration normally as well.
+- Fixed the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon.
 
 ## Fixes / interactions with other extensions
 
@@ -332,6 +334,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType`.
 - Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed.
 - Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed.
+- Fixed the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally.
+- Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat.
 
 ## Newly added global settings
 
@@ -715,10 +719,11 @@ ExtendedAircraftMissions=false            ; boolean
 ExtendedAircraftMissions.UnlandDamage=-1  ; integer
 
 [SOMEAIRCRAFT]                            ; AircraftType
-ExtendedAircraftMissions.SmoothMoving=    ; boolean, default to [General] -> ExtendedAircraftMissions
-ExtendedAircraftMissions.EarlyDescend=    ; boolean, default to [General] -> ExtendedAircraftMissions
-ExtendedAircraftMissions.RearApproach=    ; boolean, default to [General] -> ExtendedAircraftMissions
-ExtendedAircraftMissions.FastScramble=    ; boolean, default to [General] -> ExtendedAircraftMissions
+ExtendedAircraftMissions=                 ; boolean, default to [General] -> ExtendedAircraftMissions
+ExtendedAircraftMissions.SmoothMoving=    ; boolean, default to [SOMEAIRCRAFT] -> ExtendedAircraftMissions
+ExtendedAircraftMissions.EarlyDescend=    ; boolean, default to [SOMEAIRCRAFT] -> ExtendedAircraftMissions
+ExtendedAircraftMissions.RearApproach=    ; boolean, default to [SOMEAIRCRAFT] -> ExtendedAircraftMissions
+ExtendedAircraftMissions.FastScramble=    ; boolean, default to [SOMEAIRCRAFT] -> ExtendedAircraftMissions
 ExtendedAircraftMissions.UnlandDamage=    ; integer, default to [General] -> ExtendedAircraftMissions.UnlandDamage
 ```
 
@@ -920,18 +925,6 @@ In `artmd.ini`:
 Refinery.UseNormalActiveAnim=false     ; boolean
 ```
 
-### Allowed / disallowed types for FactoryPlant
-
-- It is now possible to customize which TechnoTypes benefit from bonuses of a `FactoryPlant=true` building by listing them on `FactoryPlant.AllowTypes` and/or `FactoryPlant.DisallowTypes`.
-  - `FactoryPlant.Multiplier` *(Ares feature)* is still applied on the bonuses if they are in effect.
-
-In `rulesmd.ini`:
-```ini
-[SOMEBUILDING]               ; BuildingType
-FactoryPlant.AllowTypes=     ; List of TechnoTypes
-FactoryPlant.DisallowTypes=  ; List of TechnoTypes
-```
-
 ### Apply ZShapePointMove during buildups
 
 - By default buildings do not apply `ZShapePointMove` (which offsets the 'z shape' applied on buildings which is used to adjust them in depth buffer and is used to fix issues related to that such as corners of buildings getting cut off when drawn) when buildup is being displayed. This behaviour can now be toggled by setting `ZShapePointMove.OnBuildup`.
@@ -1073,6 +1066,20 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]                         ; BuildingType
 ExcludeFromMultipleFactoryBonus=false  ; boolean
+```
+
+### FactoryPlant customizations
+
+- It is now possible to customize which TechnoTypes benefit from bonuses of a `FactoryPlant=true` building by listing them on `FactoryPlant.AllowTypes` and/or `FactoryPlant.DisallowTypes`.
+  - `FactoryPlant.Multiplier` *(Ares feature)* is still applied on the bonuses if they are in effect.
+- `FactoryPlant.MaxCount` can be used to limit the number of times the bonuses are factored in from a particular type of building. Negative values mean no cap.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]               ; BuildingType
+FactoryPlant.AllowTypes=     ; List of TechnoTypes
+FactoryPlant.DisallowTypes=  ; List of TechnoTypes
+FactoryPlant.MaxCount=-1     ; integer
 ```
 
 ### Power plant damage factor
@@ -2070,6 +2077,22 @@ CrushSlowdownMultiplier=0.2        ; floating point value
 SkipCrushSlowdown=false            ; boolean
 ```
 
+### Deployment Enhancement
+
+- When a vehicle has `Passengers` and possesses `DeployFire/IsSimpleDeployer/DeploysInto`, it can perform custom deployment actions beyond merely releasing passengers.
+  - `Deploy.SkipPassengerUnload` allows vehicles to bypass the passenger release process and perform other deployment actions.
+  - `Deploy.NoPassenger` allows vehicles to perform other deployment actions after losing all passengers.
+- Harvester can now perform other deployment operations. Can't deploy when it's unloading minerals.
+  - `Deploy.NoTiberium` controls whether the deployment actions can only be performed when the harvester carries no mineral. If set to false, the harvester can deploy regardless of carrying minerals or not.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                       ; VehicleType
+Deploy.SkipPassengerUnload=false    ; boolean
+Deploy.NoPassenger=false            ; boolean
+Deploy.NoTiberium=false             ; boolean
+```
+
 ### Destroy animations
 
 - `DestroyAnim` has been extended to work with VehicleTypes, with option to pick random animation if `DestroyAnim.Random` is set to true. These animations store owner and facing information for use with [CreateUnit logic](New-or-Enhanced-Logics.md#anim-to-unit).
@@ -2273,6 +2296,20 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]            ; WarheadType
 AllowDamageOnSelf=false  ; boolean
+```
+
+### Berzerk on allies
+
+- In vanilla, `Psychedelic` warheads is hardcoded to ignore allies' target. Now you can turn this off.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+AllowBerzerkOnAllies=false  ; boolean
+```
+
+```{note}
+No per-warhead setting because `AffectsAllies` etc. is respected.
 ```
 
 ### Combat light customizations

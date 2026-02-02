@@ -2076,7 +2076,7 @@ DEFINE_HOOK(0x481778, CellClass_ScatterContent_Scatter, 0x6)
 	if (!pTechno)
 		return NextTechno;
 
-	REF_STACK(const CoordStruct, coords, STACK_OFFSET(0x2C, 0x4));
+	GET(const CoordStruct*, pCoords, EBP);
 	GET_STACK(const bool, ignoreMission, STACK_OFFSET(0x2C, 0x8));
 	GET_STACK(const bool, ignoreDestination, STACK_OFFSET(0x2C, 0xC));
 
@@ -2085,7 +2085,7 @@ DEFINE_HOOK(0x481778, CellClass_ScatterContent_Scatter, 0x6)
 		? RulesClass::Instance->PlayerScatter
 		: pTechno->Owner->IQLevel2 >= RulesClass::Instance->Scatter))
 	{
-		pTechno->Scatter(coords, ignoreMission, ignoreDestination);
+		pTechno->Scatter(*pCoords, ignoreMission, ignoreDestination);
 	}
 
 	return NextTechno;
@@ -2878,6 +2878,17 @@ DEFINE_HOOK(0x4440B0, BuildingClass_KickOutUnit_CloningFacility, 0x6)
 	return ContinueIn;
 }
 
+// Fixed the bug that building with Explodes=yes use Ares's rubble logic will cause it's owner cannot defeat normally
+DEFINE_HOOK(0x441C76, BuildingClass_Destroy_Explode_RubbleFix, 0x5)
+{
+	enum { AfterSetC4Timer = 0x441C8F };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	pThis->C4Timer.Start(pThis->Type->Explodes);
+	return AfterSetC4Timer;
+}
+
 DEFINE_HOOK(0x65DE82, TeamTypeClass_CreateTeamMembers_Veterancy, 0x6)
 {
 	enum { SkipVeterancy = 0x65DEC0 };
@@ -2939,4 +2950,16 @@ DEFINE_HOOK(0x7B8536, StartMouseThread_AdjustMouseInterval, 0xA)
 	Game::MouseThread.Interval = 1;
 
 	return 0x7B8540;
+}
+
+// It should be <= instead of < here, because this will cause the unit to keep switching among multiple targets with the same amount of threat.
+// Also <= is matched with the auto-targetting code.
+DEFINE_HOOK(0x708A81, TechnoClass_CanRetaliate_CheckThreat, 0x5)
+{
+	enum { SkipRetaliate = 0x708B17, GoOtherChecks = 0x708AAA };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(ObjectClass*, pAttacker, EBP);
+
+	return pThis->ThreatCoeffients(pAttacker, &CoordStruct::Empty) <= pThis->ThreatCoeffients((ObjectClass*)(pThis->Target), &CoordStruct::Empty) ? SkipRetaliate : GoOtherChecks;
 }

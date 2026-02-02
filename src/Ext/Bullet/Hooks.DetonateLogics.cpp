@@ -335,7 +335,7 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 
 				auto const pAnim = GameCreate<AnimClass>(pType, animCoords, 0, 1, 0x2600, pWHExt->AnimZAdjust.Get(RulesExt::Global()->WarheadAnimZAdjust), false);
 				createdAnim = true;
-				AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim);
 
 				if (!pAnim->Owner)
 					pAnim->Owner = pInvoker;

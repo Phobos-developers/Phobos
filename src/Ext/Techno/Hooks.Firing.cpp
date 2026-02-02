@@ -350,11 +350,12 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 	if (pTargetTechno)
 	{
-		if (pThis->Berzerk
-			&& !EnumFunctions::CanTargetHouse(RulesExt::Global()->BerzerkTargeting, pThis->Owner, pTargetTechno->Owner))
-		{
+		if (pTargetTechno->IsIronCurtained()
+			&& !pWeaponExt->CanTarget_IronCurtained.Get(pThis->Owner->IsControlledByHuman() ? RulesExt::Global()->CanTarget_IronCurtained : RulesExt::Global()->CanTargetAI_IronCurtained))
 			return CannotFire;
-		}
+
+		if (pThis->Berzerk && !EnumFunctions::CanTargetHouse(RulesExt::Global()->BerzerkTargeting, pThis->Owner, pTargetTechno->Owner))
+			return CannotFire;
 
 		if (!pWeaponExt->SkipWeaponPicking)
 		{
@@ -400,6 +401,8 @@ DEFINE_HOOK(0x6FC0C5, TechnoClass_CanFire_DisableWeapons, 0x6)
 
 	return Continue;
 }
+
+DEFINE_JUMP(LJMP, 0x6FC22A, 0x6FC24D) // Skip IronCurtain check
 
 DEFINE_HOOK(0x6FC3AE, TechnoClass_CanFire_TankInBunker_LocomotorWarhead, 0x6)
 {
@@ -1086,4 +1089,42 @@ DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 
 	R->EDI(deployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : deployFireWeapon);
 	return 0x5223B9;
+}
+
+DEFINE_HOOK(0x708AD0, TechnoClass_ShouldRetaliate_IronCurtain, 0x6)
+{
+	enum { ContinueCheck = 0x708AD6, ReturnTrue = 0x708B0B, ReturnFalse = 0x708B17 };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(TechnoClass*, pTarget, EBP);
+	GET(WeaponStruct*, pWeaponStruct, EAX);
+
+	const auto pWeapon = pWeaponStruct->WeaponType;
+
+	do
+	{
+		if (!pThis->Owner->IsControlledByHuman() || !pTarget->IsIronCurtained())
+			break;
+
+		if (pWeapon)
+		{
+			const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+			if (pWeaponExt->AutoTarget_IronCurtained.isset())
+			{
+				if (!pWeaponExt->AutoTarget_IronCurtained.Get())
+					return ReturnFalse;
+
+				break;
+			}
+		}
+
+		if (!RulesExt::Global()->AutoTarget_IronCurtained)
+			return ReturnFalse;
+	}
+	while (false);
+
+	// Restore overriden instructions
+	R->ESI(pWeapon);
+	return pWeapon ? ContinueCheck : ReturnTrue;
 }

@@ -1625,6 +1625,12 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, cons
 	{
 		AnimExt::CreateRandomAnim(pVanishAnimation, pThis->GetCoords(), pThis, nullptr, true);
 
+		if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pThis))
+		{
+			if (pThis->BunkerLinkedItem)
+				pBuilding->UnloadBunker();
+		}
+
 		pThis->KillPassengers(pThis);
 		pThis->Stun();
 		pThis->Limbo();
