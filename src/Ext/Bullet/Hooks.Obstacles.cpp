@@ -1,8 +1,6 @@
 #include "Body.h"
 
 #include <Ext/WeaponType/Body.h>
-#include <Ext/TechnoType/Body.h>
-#include <Utilities/Macro.h>
 
 // Ares reimplements the bullet obstacle logic so need to get creative to add any new functionality for that in Phobos.
 // Not named PhobosTrajectoryHelper to avoid confusion with actual custom trajectory logic.
@@ -31,9 +29,9 @@ public:
 
 		if (SubjectToObstacles(pBulletType, pBulletTypeExt) || subjectToGround)
 		{
-			auto sourceCell = CellClass::Coord2Cell(pSourceCoords);
+			auto const sourceCell = CellClass::Coord2Cell(pSourceCoords);
 			auto const pSourceCell = MapClass::Instance.GetCellAt(sourceCell);
-			auto targetCell = CellClass::Coord2Cell(pTargetCoords);
+			auto const targetCell = CellClass::Coord2Cell(pTargetCoords);
 			auto const pTargetCell = MapClass::Instance.GetCellAt(targetCell);
 
 			auto const sub = sourceCell - targetCell;
@@ -75,8 +73,8 @@ public:
 
 	static bool SubjectToTerrain(CellClass* pCurrentCell, BulletTypeClass* pBulletType, BulletTypeExt::ExtData*& pBulletTypeExt, bool isTargetingCheck)
 	{
-		bool isCellWater = pCurrentCell->LandType == LandType::Water || pCurrentCell->LandType == LandType::Beach;
-		bool isLevel = pBulletType->Level ? pCurrentCell->IsOnFloor() : false;
+		const bool isCellWater = pCurrentCell->LandType == LandType::Water || pCurrentCell->LandType == LandType::Beach;
+		const bool isLevel = pBulletType->Level ? pCurrentCell->IsOnFloor() : false;
 
 		if (!isTargetingCheck && isLevel && !pBulletTypeExt->SubjectToLand.isset() && !pBulletTypeExt->SubjectToWater.isset())
 			return true;
@@ -105,7 +103,7 @@ public:
 		const auto pCell = MapClass::Instance.GetCellAt(sourceCoords);
 		const auto source = pTechno->OnBridge ? pCell->GetCoordsWithBridge() : pCell->GetCoords();
 		// Predicted orientation
-		float radian = (float)(-Math::atan2(targetCoords.Y - source.Y, targetCoords.X - source.X));
+		const float radian = (float)(-Math::atan2(targetCoords.Y - source.Y, targetCoords.X - source.X));
 		mtx.RotateZ(radian);
 		// Offset of turret, directly substitute because it is impossible to predict the orientation of the techno when it reaches this position
 		// Only predict the situation when the techno is facing the target directly
@@ -134,13 +132,24 @@ DEFINE_HOOK(0x4688A9, BulletClass_Unlimbo_Obstacles, 0x6)
 	GET(CoordStruct const* const, sourceCoords, EDI);
 	REF_STACK(CoordStruct const, targetCoords, STACK_OFFSET(0x54, -0x10));
 
-	if (pThis->Type->Inviso)
+	// Jul 5, 2025 - Starkku: Borrowing this hook for a parabomb check instead of adding a new one.
+	if (pThis->HasParachute)
 	{
-		auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
-		const auto pObstacleCell = BulletObstacleHelper::FindFirstObstacle(*sourceCoords, targetCoords, pThis->Owner, pThis->Target, pOwner, pThis->Type, false, false);
+		pThis->Velocity = BulletVelocity::Empty;
+		return SkipGameCode;
+	}
+
+	auto const pType = pThis->Type;
+
+	if (pType->Inviso)
+	{
+		auto const pThisOwner = pThis->Owner;
+		auto const pOwner = pThisOwner ? pThisOwner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+		const auto pObstacleCell = BulletObstacleHelper::FindFirstObstacle(*sourceCoords, targetCoords, pThisOwner, pThis->Target, pOwner, pType, false, false);
 
 		if (pObstacleCell)
 		{
+			// TODO Accurate coords
 			pThis->SetLocation(pObstacleCell->GetCoords());
 			pThis->Speed = 0;
 			pThis->Velocity = BulletVelocity::Empty;
@@ -160,15 +169,16 @@ DEFINE_HOOK(0x468C86, BulletClass_ShouldExplode_Obstacles, 0xA)
 
 	GET(BulletClass*, pThis, ESI);
 
-	BulletTypeExt::ExtData* pBulletTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	auto const pType = pThis->Type;
+	auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pType);
 
-	if (BulletObstacleHelper::SubjectToObstacles(pThis->Type, pBulletTypeExt))
+	if (BulletObstacleHelper::SubjectToObstacles(pType, pBulletTypeExt))
 	{
 		auto const pCellSource = MapClass::Instance.GetCellAt(pThis->SourceCoords);
 		auto const pCellTarget = MapClass::Instance.GetCellAt(pThis->TargetCoords);
 		auto const pCellCurrent = MapClass::Instance.GetCellAt(pThis->LastMapCoords);
 		auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
-		const auto pObstacleCell = BulletObstacleHelper::GetObstacle(pCellSource, pCellTarget, pCellCurrent, pThis->Location, pThis->Owner, pThis->Target, pOwner, pThis->Type, pBulletTypeExt, false);
+		auto const pObstacleCell = BulletObstacleHelper::GetObstacle(pCellSource, pCellTarget, pCellCurrent, pThis->Location, pThis->Owner, pThis->Target, pOwner, pType, pBulletTypeExt, false);
 
 		if (pObstacleCell)
 			return Explode;
@@ -199,7 +209,7 @@ DEFINE_HOOK(0x6F737F, TechnoClass_InRange_WeaponMinimumRange, 0x6)
 
 	GET(WeaponTypeClass*, pWeapon, EDX);
 
-	auto pTechno = InRangeTemp::Techno;
+	const auto pTechno = InRangeTemp::Techno;
 
 	if (const auto keepRange = WeaponTypeExt::GetTechnoKeepRange(pWeapon, pTechno, true))
 		R->ECX(keepRange);
@@ -218,13 +228,25 @@ DEFINE_HOOK(0x6F7647, TechnoClass_InRange_Obstacles, 0x5)
 	GET(CellClass*, pResult, EAX);
 
 	auto pObstacleCell = pResult;
-	auto pTechno = InRangeTemp::Techno;
+	const auto pTechno = InRangeTemp::Techno;
 
 	if (!pObstacleCell)
 	{
-		auto subjectToGround = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->SubjectToGround.Get();
+		bool subjectToGround = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->SubjectToGround.Get();
 		const auto newSourceCoords = subjectToGround ? BulletObstacleHelper::AddFLHToSourceCoords(*pSourceCoords, targetCoords, pTechno, pTarget, pWeapon, subjectToGround) : *pSourceCoords;
 		pObstacleCell = BulletObstacleHelper::FindFirstImpenetrableObstacle(newSourceCoords, targetCoords, pTechno, pTarget, pTechno->Owner, pWeapon, true, subjectToGround);
+	}
+
+	// Enable aircraft carriers to search for suitable attack positions on their own
+	if (!pObstacleCell && pTechno->SpawnManager && (pTechno->AbstractFlags & AbstractFlags::Foot) && !pTechno->IsInAir())
+	{
+		const auto coords = pTechno->Location;
+		pTechno->Location = *pSourceCoords; // Temporarily adjust the coordinates based on the path finding
+
+		if (reinterpret_cast<bool(__thiscall*)(const TechnoClass*)>(0x703B10)(pTechno)) // Near by elevated bridge
+			pObstacleCell = MapClass::Instance.GetCellAt(*pSourceCoords);
+
+		pTechno->Location = coords;
 	}
 
 	InRangeTemp::Techno = nullptr;

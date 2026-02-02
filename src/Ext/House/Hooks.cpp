@@ -2,29 +2,29 @@
 
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Scenario/Body.h>
-#include "Ext/Techno/Body.h"
-#include "Ext/Building/Body.h"
-#include <unordered_map>
+#include <Ext/Building/Body.h>
 
 DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 {
 	GET(HouseClass*, pThis, ECX);
-	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	auto const pHouseExt = HouseExt::ExtMap.Find(pThis);
 
 	pHouseExt->PowerPlantEnhancers.clear();
 
 	// This pre-iterating ensure our process to be done in O(NM) instead of O(N^2),
 	// as M should be much less than N, this will be a great improvement. - secsome
-	for (auto& pBld : pThis->Buildings)
+	for (auto const pBld : pThis->Buildings)
 	{
 		if (TechnoExt::IsActive(pBld) && pBld->IsOnMap && pBld->HasPower)
 		{
-			const auto pExt = BuildingTypeExt::ExtMap.Find(pBld->Type);
+			const auto pType = pBld->Type;
+			const auto pExt = BuildingTypeExt::ExtMap.Find(pType);
 
-			if (pExt->PowerPlantEnhancer_Buildings.size() &&
-				(pExt->PowerPlantEnhancer_Amount != 0 || pExt->PowerPlantEnhancer_Factor != 1.0f))
+			if (pExt->PowerPlantEnhancer_Buildings.size()
+				&& (pExt->PowerPlantEnhancer_Amount != 0 || pExt->PowerPlantEnhancer_Factor != 1.0f)
+				&& (pExt->PowerPlantEnhancer_MaxCount < 0 || pHouseExt->PowerPlantEnhancers[pType->ArrayIndex] < pExt->PowerPlantEnhancer_MaxCount))
 			{
-				++pHouseExt->PowerPlantEnhancers[pBld->Type->ArrayIndex];
+				++pHouseExt->PowerPlantEnhancers[pType->ArrayIndex];
 			}
 		}
 	}
@@ -93,9 +93,9 @@ DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 	GET(int const, idxTiberium, EBP);
 	REF_STACK(float, amount, 0x1C);
 
-	auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
 
-	auto storageTiberiumIndex = RulesExt::Global()->Storage_TiberiumIndex;
+	auto const storageTiberiumIndex = RulesExt::Global()->Storage_TiberiumIndex;
 
 	if (pTypeExt->Refinery_UseStorage && storageTiberiumIndex >= 0)
 	{
@@ -127,10 +127,9 @@ DEFINE_HOOK(0x4FD1CD, HouseClass_RecalcCenter_LimboDelivery, 0x6)
 
 	GET(BuildingClass* const, pBuilding, ESI);
 
-	auto const pExt = RecalcCenterTemp::pExtData;
-
 	if (!MapClass::Instance.CoordinatesLegal(pBuilding->GetMapCoords())
-		|| (pExt && pExt->OwnsLimboDeliveredBuilding(pBuilding)))
+		|| (RecalcCenterTemp::pExtData && RecalcCenterTemp::pExtData->OwnsLimboDeliveredBuilding(pBuilding))
+		|| TechnoTypeExt::ExtMap.Find(pBuilding->Type)->IgnoreForBaseCenter)
 	{
 		return R->Origin() == 0x4FD1CD ? SkipBuilding1 : SkipBuilding2;
 	}
@@ -144,7 +143,7 @@ DEFINE_HOOK(0x4AC534, DisplayClass_ComputeStartPosition_IllegalCoords, 0x6)
 
 	GET(TechnoClass* const, pTechno, ECX);
 
-	if (!MapClass::Instance.CoordinatesLegal(pTechno->GetMapCoords()))
+	if (!MapClass::Instance.CoordinatesLegal(pTechno->GetMapCoords()) || TechnoExt::ExtMap.Find(pTechno)->TypeExtData->IgnoreForBaseCenter)
 		return SkipTechno;
 
 	return 0;
@@ -180,14 +179,15 @@ DEFINE_HOOK(0x687B18, ScenarioClass_ReadINI_StartTracking, 0x7)
 	return 0;
 }
 
-void __fastcall TechnoClass_UnInit_Wrapper(TechnoClass* pThis)
+static void __fastcall TechnoClass_UnInit_Wrapper(TechnoClass* pThis)
 {
-	auto const pType = pThis->GetTechnoType();
 
-	if (LimboTrackingTemp::Enabled && pThis->InLimbo && !pType->Insignificant && !pType->DontScore)
+	if (LimboTrackingTemp::Enabled && pThis->InLimbo)
 	{
-		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
-		pOwnerExt->RemoveFromLimboTracking(pType);
+		auto const pType = pThis->GetTechnoType();
+
+		if (!pType->Insignificant && !pType->DontScore)
+			HouseExt::ExtMap.Find(pThis->Owner)->RemoveFromLimboTracking(pType);
 	}
 
 	LimboTrackingTemp::IsBeingDeleted = true;
@@ -241,8 +241,35 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 	GET(TechnoClass* const, pThis, ESI);
 	GET(HouseClass* const, pNewOwner, EBP);
 
-	auto const pType = pThis->GetTechnoType();
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pTypeExt = pExt->TypeExtData;
+
+	if (pTypeExt->AutoDeath_Behavior.isset())
+	{
+		const bool humanToComputer = pTypeExt->AutoDeath_OnOwnerChange_HumanToComputer.Get(pTypeExt->AutoDeath_OnOwnerChange);
+		const bool computerToHuman = pTypeExt->AutoDeath_OnOwnerChange_ComputerToHuman.Get(pTypeExt->AutoDeath_OnOwnerChange);
+
+		if (humanToComputer && computerToHuman)
+		{
+			TechnoExt::KillSelf(pThis, pTypeExt->AutoDeath_Behavior, pTypeExt->AutoDeath_VanishAnimation, !pThis->IsInLogic && pThis->IsAlive);
+			return 0;
+		}
+		else if (humanToComputer || computerToHuman)
+		{
+			const bool I_am_human = pThis->Owner->IsControlledByHuman();
+
+			if (I_am_human != pNewOwner->IsControlledByHuman())
+			{
+				if ((I_am_human && humanToComputer) || (!I_am_human && computerToHuman))
+				{
+					TechnoExt::KillSelf(pThis, pTypeExt->AutoDeath_Behavior, pTypeExt->AutoDeath_VanishAnimation, !pThis->IsInLogic && pThis->IsAlive);
+					return 0;
+				}
+			}
+		}
+	}
+
+	auto const pType = pTypeExt->OwnerObject();
 	auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
 	auto const pNewOwnerExt = HouseExt::ExtMap.Find(pNewOwner);
 
@@ -252,7 +279,7 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		pNewOwnerExt->AddToLimboTracking(pType);
 	}
 
-	if (pExt->TypeExtData->Harvester_Counted)
+	if (pTypeExt->Harvester_Counted)
 	{
 		auto& vec = pOwnerExt->OwnedCountedHarvesters;
 		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
@@ -260,24 +287,29 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		pNewOwnerExt->OwnedCountedHarvesters.push_back(pThis);
 	}
 
-	if (auto pMe = generic_cast<FootClass*>(pThis))
+	if (const auto pMe = generic_cast<FootClass*, true>(pThis))
 	{
-		bool I_am_human = pThis->Owner->IsControlledByHuman();
-		bool You_are_human = pNewOwner->IsControlledByHuman();
-		auto pConvertTo = (I_am_human && !You_are_human) ? pExt->TypeExtData->Convert_HumanToComputer.Get() :
-			(!I_am_human && You_are_human) ? pExt->TypeExtData->Convert_ComputerToHuman.Get() : nullptr;
+		const bool I_am_human = pThis->Owner->IsControlledByHuman();
 
-		if (pConvertTo && pConvertTo->WhatAmI() == pType->WhatAmI())
-			TechnoExt::ConvertToType(pMe, pConvertTo);
-
-		for (auto& trail : pExt->LaserTrails)
+		if (I_am_human != pNewOwner->IsControlledByHuman())
 		{
-			if (trail.Type->IsHouseColor)
-				trail.CurrentColor = pNewOwner->LaserColor;
-		}
+			if (const auto pConvertTo = I_am_human
+				? pTypeExt->Convert_HumanToComputer.Get()
+				: pTypeExt->Convert_ComputerToHuman.Get())
+			{
+				if (pConvertTo->WhatAmI() == pType->WhatAmI())
+					TechnoExt::ConvertToType(pMe, pConvertTo);
+			}
 
-		if (!I_am_human && You_are_human)
-			TechnoExt::ChangeOwnerMissionFix(pMe);
+			if (!I_am_human)
+				TechnoExt::ChangeOwnerMissionFix(pMe);
+		}
+	}
+
+	for (const auto& pTrail : pExt->LaserTrails)
+	{
+		if (pTrail->Type->IsHouseColor)
+			pTrail->CurrentColor = pNewOwner->LaserColor;
 	}
 
 	return 0;
@@ -292,7 +324,7 @@ DEFINE_HOOK(0x65EB8D, HouseClass_SendSpyPlanes_PlaceAircraft, 0x6)
 	GET(AircraftClass* const, pAircraft, ESI);
 	GET(CellStruct const, edgeCell, EDI);
 
-	bool result = AircraftExt::PlaceReinforcementAircraft(pAircraft, edgeCell);
+	const bool result = AircraftExt::PlaceReinforcementAircraft(pAircraft, edgeCell);
 
 	return result ? SkipGameCode : SkipGameCodeNoSuccess;
 }
@@ -304,7 +336,7 @@ DEFINE_HOOK(0x65E997, HouseClass_SendAirstrike_PlaceAircraft, 0x6)
 	GET(AircraftClass* const, pAircraft, ESI);
 	GET(CellStruct const, edgeCell, EDI);
 
-	bool result = AircraftExt::PlaceReinforcementAircraft(pAircraft, edgeCell);
+	const bool result = AircraftExt::PlaceReinforcementAircraft(pAircraft, edgeCell);
 
 	return result ? SkipGameCode : SkipGameCodeNoSuccess;
 }
@@ -348,7 +380,7 @@ DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo_GreyCameo, 0x5)
 {
 	GET(HouseClass*, pThis, ECX);
 	GET_STACK(TechnoTypeClass*, pType, 0x4);
-	GET(bool, aresDisable, EAX);
+	GET(const bool, aresDisable, EAX);
 
 	if (aresDisable || !pType)
 		return 0;
@@ -376,7 +408,7 @@ DEFINE_HOOK(0x4F9038, HouseClass_AI_Superweapons, 0x5)
 	if (!RulesExt::Global()->AISuperWeaponDelay.isset() || pThis->IsControlledByHuman() || pThis->Type->MultiplayPassive)
 		return 0;
 
-	int delay = RulesExt::Global()->AISuperWeaponDelay.Get();
+	const int delay = RulesExt::Global()->AISuperWeaponDelay.Get();
 
 	if (delay > 0)
 	{
@@ -399,13 +431,15 @@ DEFINE_HOOK(0x4FF9C9, HouseClass_ExcludeFromMultipleFactoryBonus, 0x6)
 {
 	GET(BuildingClass*, pBuilding, ESI);
 
-	if (BuildingTypeExt::ExtMap.Find(pBuilding->Type)->ExcludeFromMultipleFactoryBonus)
+	auto const pType = pBuilding->Type;
+
+	if (BuildingTypeExt::ExtMap.Find(pType)->ExcludeFromMultipleFactoryBonus)
 	{
 		GET(HouseClass*, pThis, EDI);
-		GET(bool, isNaval, ECX);
+		GET(const bool, isNaval, ECX);
 
 		auto const pExt = HouseExt::ExtMap.Find(pThis);
-		pExt->UpdateNonMFBFactoryCounts(pBuilding->Type->Factory, R->Origin() == 0x4FF9C9, isNaval);
+		pExt->UpdateNonMFBFactoryCounts(pType->Factory, R->Origin() == 0x4FF9C9, isNaval);
 	}
 
 	return 0;
@@ -417,7 +451,7 @@ DEFINE_HOOK(0x500910, HouseClass_GetFactoryCount, 0x5)
 
 	GET(HouseClass*, pThis, ECX);
 	GET_STACK(AbstractType, rtti, 0x4);
-	GET_STACK(bool, isNaval, 0x8);
+	GET_STACK(const bool, isNaval, 0x8);
 
 	auto const pExt = HouseExt::ExtMap.Find(pThis);
 	R->EAX(pExt->GetFactoryCountWithoutNonMFB(rtti, isNaval));
@@ -432,27 +466,119 @@ DEFINE_HOOK(0x4FD8F7, HouseClass_UpdateAI_OnLastLegs, 0x10)
 
 	GET(HouseClass*, pThis, EBX);
 
-	auto const pRules = RulesExt::Global();
-
-	if (pRules->AIFireSale)
+	if (RulesExt::Global()->AIFireSale)
 	{
 		auto const pExt = HouseExt::ExtMap.Find(pThis);
 
-		if (pRules->AIFireSaleDelay <= 0 || !pExt ||
-			pExt->AIFireSaleDelayTimer.Completed())
-		{
+		if (RulesExt::Global()->AIFireSaleDelay <= 0 || pExt->AIFireSaleDelayTimer.Completed())
 			pThis->Fire_Sale();
-		}
 		else if (!pExt->AIFireSaleDelayTimer.HasStarted())
-		{
-			pExt->AIFireSaleDelayTimer.Start(pRules->AIFireSaleDelay);
-		}
+			pExt->AIFireSaleDelayTimer.Start(RulesExt::Global()->AIFireSaleDelay);
 	}
 
-	if (pRules->AIAllToHunt)
-	{
+	if (RulesExt::Global()->AIAllToHunt)
 		pThis->All_To_Hunt();
-	}
 
 	return ret;
+}
+
+DEFINE_HOOK(0x4F8ACC, HouseClass_Update_ResetTeamDelay, 0x6)
+{
+	enum { ResetTeamDelay = 0x4F8AD5 };
+
+	GET(HouseClass*, pThis, ESI);
+
+	const int teamDelay = HouseExt::ExtMap.Find(pThis)->TeamDelay;
+
+	if (teamDelay >= 0)
+	{
+		R->ECX(teamDelay);
+		return ResetTeamDelay;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x508E17, HouseClass_UpdateRadar_FreeRadar, 0x8)
+{
+	enum { ForceRadar = 0x508F2F, Continue = 0x508E4A };
+
+	GET(HouseClass*, pThis, ECX);
+	REF_STACK(bool, enableRadar, STACK_OFFSET(0x1C, -0xC));
+
+	auto const pExt = HouseExt::ExtMap.Find(pThis);
+	bool const freeRadar = pExt->FreeRadar;
+	enableRadar = false;
+
+	if (pExt->ForceRadar)
+	{
+		enableRadar = freeRadar;
+		return ForceRadar;
+	}
+	else if (pThis->RadarBlackoutTimer.HasTimeLeft())
+	{
+		return ForceRadar;
+	}
+	else if (freeRadar)
+	{
+		enableRadar = true;
+		return ForceRadar;
+	}
+
+	return Continue;
+}
+
+// WW's code set anger on every houses, even on the allies.
+DEFINE_HOOK(0x4FD616, HouseClass_UpdateAI_DontAngerOnAlly, 0x9)
+{
+	enum { SkipCurrentHouse = 0x4FD6FE };
+
+	GET(HouseClass*, pThis, EBX);
+	GET(HouseClass*, pTargetHouse, ESI);
+
+	return pThis->IsAlliedWith(pTargetHouse) ? SkipCurrentHouse : 0;
+}
+
+// WW calculates the distance from pThis to pThis ...
+DEFINE_HOOK(0x4FD635, HouseClass_UpdateAI_DistCalcFix, 0x5)
+{
+	enum { SkipGameCode = 0x4FD657 };
+	GET(HouseClass*, pTargetHouse, ESI);
+	auto baseMapCrd = pTargetHouse->BaseCenter == CellStruct::Empty ? pTargetHouse->BaseSpawnCell : pTargetHouse->BaseCenter;
+	R->EAX(*(int*)&baseMapCrd);
+	return SkipGameCode;
+}
+
+// Replace game function.
+DEFINE_HOOK(0x50BF60, HouseClass_CalculateCostMultipliers, 0x5)
+{
+	enum { SkipGameCode = 0x50C04A };
+
+	GET(HouseClass*, pThis, ECX);
+
+	std::unordered_map<int, int> counts;
+	pThis->CostAircraftMult = 1.0f;
+	pThis->CostBuildingsMult = 1.0f;
+	pThis->CostDefensesMult = 1.0f;
+	pThis->CostInfantryMult = 1.0f;
+	pThis->CostUnitsMult = 1.0f;
+
+	for (auto const& pBuilding : pThis->FactoryPlants)
+	{
+		auto const pType = pBuilding->Type;
+		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+		const int max = pTypeExt->FactoryPlant_MaxCount;
+
+		if (max > -1 && counts[pType->ArrayIndex] >= max)
+			continue;
+
+		counts[pType->ArrayIndex]++;
+		pThis->CostAircraftMult *= pType->AircraftCostBonus;
+		pThis->CostBuildingsMult *= pType->BuildingsCostBonus;
+		pThis->CostDefensesMult *= pType->DefensesCostBonus;
+		pThis->CostInfantryMult *= pType->InfantryCostBonus;
+		pThis->CostUnitsMult *= pType->UnitsCostBonus;
+	}
+
+	return SkipGameCode;
 }

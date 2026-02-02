@@ -1,13 +1,7 @@
 #pragma once
-#include <WarheadTypeClass.h>
-#include <WeaponTypeClass.h>
-#include <SuperWeaponTypeClass.h>
-
-#include <Helpers/Macro.h>
+#include <Ext/Building/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
-
-#include <Ext/Building/Body.h>
 #include <New/Type/Affiliated/TypeConvertGroup.h>
 
 class SWTypeExt
@@ -22,8 +16,18 @@ public:
 	{
 	public:
 
+		PhobosFixedString<0x20> TypeID;
+
 		//Ares 0.A
 		Valueable<int> Money_Amount;
+		ValueableIdx<VoxClass> EVA_Impatient;
+		ValueableIdx<VoxClass> EVA_InsufficientFunds;
+		ValueableIdx<VoxClass> EVA_SelectTarget;
+		Valueable<bool> SW_UseAITargeting;
+		Valueable<bool> SW_AutoFire;
+		Valueable<bool> SW_ManualFire;
+		Valueable<bool> SW_ShowCameo;
+		Valueable<bool> SW_Unstoppable;
 		ValueableVector<TechnoTypeClass*> SW_Inhibitors;
 		Valueable<bool> SW_AnyInhibitor;
 		ValueableVector<TechnoTypeClass*> SW_Designators;
@@ -40,12 +44,17 @@ public:
 		ValueableIdx<SuperWeaponTypeClass> SW_PostDependent;
 		Valueable<int> SW_MaxCount;
 
+		Valueable<CSFText> Message_CannotFire;
+		Valueable<CSFText> Message_InsufficientFunds;
+		ValueableIdx<ColorScheme> Message_ColorScheme;
+		Valueable<bool> Message_FirerColor;
+
 		Valueable<CSFText> UIDescription;
 		Valueable<int> CameoPriority;
 		ValueableVector<BuildingTypeClass*> LimboDelivery_Types;
 		ValueableVector<int> LimboDelivery_IDs;
 		ValueableVector<float> LimboDelivery_RollChances;
-		Valueable<AffectedHouse> LimboKill_Affected;
+		Valueable<AffectedHouse> LimboKill_AffectsHouse;
 		ValueableVector<int> LimboKill_IDs;
 		Valueable<double> RandomBuffer;
 		ValueableIdxVector<SuperWeaponTypeClass> SW_Next;
@@ -65,8 +74,17 @@ public:
 
 		Valueable<int> TabIndex;
 
+		Nullable<bool> SuperWeaponSidebar_Allow;
+		DWORD SuperWeaponSidebar_PriorityHouses;
+		DWORD SuperWeaponSidebar_RequiredHouses;
+		Valueable<int> SuperWeaponSidebar_Significance;
+
+		CustomPalette SidebarPal;
+		PhobosPCXFile SidebarPCX;
+
 		std::vector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
+		std::vector<ValueableVector<int>> SW_Link_RandomWeightsData;
 
 		std::vector<TypeConvertGroup> Convert_Pairs;
 
@@ -80,8 +98,25 @@ public:
 		ValueableVector<BuildingTypeClass*> EMPulse_Cannons;
 		Valueable<bool> EMPulse_TargetSelf;
 
+		ValueableIdxVector<SuperWeaponTypeClass> SW_Link;
+		Valueable<bool> SW_Link_Grant;
+		Valueable<bool> SW_Link_Ready;
+		Valueable<bool> SW_Link_Reset;
+		ValueableVector<float> SW_Link_RollChances;
+		Valueable<CSFText> Message_LinkedSWAcquired;
+		NullableIdx<VoxClass> EVA_LinkedSWAcquired;
+
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
+			, TypeID { "" }
 			, Money_Amount { 0 }
+			, EVA_Impatient { -1 }
+			, EVA_InsufficientFunds { -1 }
+			, EVA_SelectTarget { -1 }
+			, SW_UseAITargeting { false }
+			, SW_AutoFire { false }
+			, SW_ManualFire { true }
+			, SW_ShowCameo { true }
+			, SW_Unstoppable { false }
 			, SW_Inhibitors {}
 			, SW_AnyInhibitor { false }
 			, SW_Designators { }
@@ -96,13 +131,17 @@ public:
 			, SW_PostDependent {}
 			, SW_MaxCount { -1 }
 			, SW_Shots { -1 }
+			, Message_CannotFire {}
+			, Message_InsufficientFunds {}
+			, Message_ColorScheme { -1 }
+			, Message_FirerColor { false }
 			, UIDescription {}
 			, CameoPriority { 0 }
 			, LimboDelivery_Types {}
 			, LimboDelivery_IDs {}
 			, LimboDelivery_RollChances {}
 			, LimboDelivery_RandomWeightsData {}
-			, LimboKill_Affected { AffectedHouse::Owner }
+			, LimboKill_AffectsHouse { AffectedHouse::Owner }
 			, LimboKill_IDs {}
 			, RandomBuffer { 0.0 }
 			, Detonate_Warhead {}
@@ -120,6 +159,12 @@ public:
 			, Convert_Pairs {}
 			, ShowDesignatorRange { true }
 			, TabIndex { 1 }
+			, SuperWeaponSidebar_Allow {}
+			, SuperWeaponSidebar_PriorityHouses { 0u }
+			, SuperWeaponSidebar_RequiredHouses { 0xFFFFFFFFu }
+			, SuperWeaponSidebar_Significance { 0 }
+			, SidebarPal {}
+			, SidebarPCX {}
 			, UseWeeds { false }
 			, UseWeeds_Amount { RulesClass::Instance->WeedCapacity }
 			, UseWeeds_StorageTimer { false }
@@ -128,6 +173,14 @@ public:
 			, EMPulse_SuspendOthers { false }
 			, EMPulse_Cannons {}
 			, EMPulse_TargetSelf { false }
+			, SW_Link {}
+			, SW_Link_Grant { false }
+			, SW_Link_Ready { false }
+			, SW_Link_Reset { false }
+			, SW_Link_RollChances {}
+			, SW_Link_RandomWeightsData {}
+			, Message_LinkedSWAcquired {}
+			, EVA_LinkedSWAcquired {}
 		{ }
 
 		// Ares 0.A functions
@@ -141,6 +194,7 @@ public:
 		bool IsLaunchSite(BuildingClass* pBuilding) const;
 		std::pair<double, double> GetLaunchSiteRange(BuildingClass* pBuilding = nullptr) const;
 		bool IsAvailable(HouseClass* pHouse) const;
+		void PrintMessage(const CSFText& message, HouseClass* pFirer) const;
 
 		void ApplyLimboDelivery(HouseClass* pHouse);
 		void ApplyLimboKill(HouseClass* pHouse);
@@ -151,7 +205,11 @@ public:
 		std::vector<BuildingClass*> GetEMPulseCannons(HouseClass* pOwner, const CellStruct& cell) const;
 		std::pair<double, double> GetEMPulseCannonRange(BuildingClass* pBuilding) const;
 
+		void ApplyLinkedSW(SuperClass* pSW);
+
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
+		virtual void Initialize() override;
+
 		virtual ~ExtData() = default;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
@@ -178,5 +236,7 @@ public:
 	static ExtContainer ExtMap;
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static bool Activate(SuperClass* pSuper, CellStruct cell, bool isPlayer);
 
 };

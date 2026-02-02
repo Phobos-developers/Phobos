@@ -25,6 +25,8 @@ To distribute the workload and make the project more manageable, we have establi
   - `T1` complexity by default
 - Unhardcodings/customizations - contributions that only make something customizable through the INI or other way (by the modder usually), without adding too much code to handle the customization
   - `T1` complexity by default
+- Restored featues (from TS, RA2 etc.), assuming no extra changes or additions apart from the ones necessary to function in YR with extensions (the reviewer has to verify that)
+  - `T1` complexity by default
 - New features
   - Extensions of existing systems - add logic to existing systems, doesn't warrant it's own entity or type classes generally, but may introduce new hooks
     - Examples: feedback weapon logic, superweapon launch warhead logic, a new type of trajectory that uses existing custom trajectory framework, etc.

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-22 22:11+0800\n"
+"POT-Creation-Date: 2025-06-08 23:55+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,8 +48,8 @@ msgid ""
 "those versions with their mods if they want latest features, though we "
 "can't guarantee lack of bugs;"
 msgstr ""
-"**开发版**：包含待测试功能的版本，采用 0 开始的简单数字编号，每次发布递增版本号。Mod 作者仍可在 Mod "
-"中使用这类版本以获得最新功能，但我们无法保证它们没有 Bug。"
+"**开发版**：包含待测试功能的版本，采用 `build-` 加上从 `0` 开始且每次发布后递增的简单数字编号作为版本号。Mod 作者仍可在 "
+"Mod 中使用这类版本以获得最新功能，但我们无法保证它们没有 Bug。"
 
 #: ../../General-Info.md:10
 msgid ""
@@ -59,14 +59,21 @@ msgid ""
 " in mod releases and should only be used to help with development and "
 "testing."
 msgstr ""
-"**每夜构建**：最前沿版本，可能包含原型机、理论验证、废弃功能等。换而言之我们无法保证这些版本的稳定性，它们仅应当用于协助 Phobos "
+"**自动构建版本**：最前沿版本，可能包含原型机、理论验证、废弃功能等。换而言之我们无法保证这些版本的稳定性，它们仅应当用于协助 Phobos "
 "开发和测试而绝不应该用于 Mod 的发布版本。"
 
-#: ../../General-Info.md:12
+#: ../../General-Info.md:13
+msgid ""
+"You can find the downloads for these versions on the document's [main "
+"page](index.md#downloads)."
+msgstr ""
+"你可以在文档 [主页面](index.md#downloads) 找到这些版本的下载。"
+
+#: ../../General-Info.md:16
 msgid "Disabling development build warning"
 msgstr "关闭开发版本警告"
 
-#: ../../General-Info.md:14
+#: ../../General-Info.md:18
 msgid ""
 "**DISCLAIMER:** We understand that everyone wants to try and use the new "
 "features as soon as they're released, but we can't do all the testing "
@@ -81,18 +88,18 @@ msgstr ""
 "**免责声明**：我们理解每个人都希望尽快体验新功能的愿望，但我们仅可进行基础的功能验证而无法完成全面的测试。我们要求所有用户在关闭开发版本警告前务必通过各种方式全面测试变更内容，然后再将开发版本使用于"
 " Mod 的发布版本中。这将使我们能够专注于实现最复杂的核心功能。测试指南见 [此处](Contributing.md#testing)。"
 
-#: ../../General-Info.md:16
+#: ../../General-Info.md:20
 msgid ""
 "You can hide the warning by specifying the build number after `-b=` as a "
 "command line argument (for example, `-b=1` would hide the warning for "
 "development build #1 of Phobos)."
 msgstr "你可以通过在命令行参数 `-b=` 后面指定开发版本的版本号来隐藏开发版本警告（例如 `-b=1` 可以隐藏 Build#1 开发版本的警告）。"
 
-#: ../../General-Info.md:18
+#: ../../General-Info.md:22
 msgid "Saved games filtering"
 msgstr "存档过滤"
 
-#: ../../General-Info.md:20
+#: ../../General-Info.md:24
 msgid ""
 "Phobos fully supports saving and loading thanks to prototype code from "
 "publicly released Ares 0.A source and it implements it's own filtering "
@@ -106,13 +113,13 @@ msgid ""
 msgstr ""
 "得益于 Ares0.A 公开的源码范例，Phobos 完全支持存读档功能，并且实现了独立的过滤机制，这与 Ares 的存档过滤机制没有冲突。由于 "
 "Phobos "
-"扩展类几乎在每个版本都有所变动，所以不同版本间的存档互不兼容。但过滤机制不适用于每夜构建版本——这些版本使用其所基于的最新开发版本的编号。虽然不同每夜构建版本的存档可能显示在存读档列表中，但如果扩展类字段发生了变动，那么这些存档很可能实际上并不兼容。"
+"扩展类几乎在每个版本都有所变动，所以不同版本间的存档互不兼容。但过滤机制不适用于自动构建版本——这些版本使用其所基于的最新开发版本的编号。虽然不同自动构建版本的存档可能显示在存读档列表中，但如果扩展类字段发生了变动，那么这些存档很可能实际上并不兼容。"
 
-#: ../../General-Info.md:22
+#: ../../General-Info.md:26
 msgid "Compatibility"
 msgstr "兼容性"
 
-#: ../../General-Info.md:24
+#: ../../General-Info.md:28
 msgid ""
 "While Phobos is standalone, it is designed to be used alongside "
 "[Ares](https://ares.strategy-x.com) and [CnCNet5 "
@@ -123,7 +130,7 @@ msgstr ""
 "Spawner](https://github.com/CnCNet/cncnet-for-ares) "
 "搭配使用。新增或改进功能时都会考虑与它们的兼容性。"
 
-#: ../../General-Info.md:26
+#: ../../General-Info.md:30
 msgid ""
 "While we would also like to support HAres we can't guarantee "
 "compatibility with it due to the separation of it's userbase and "

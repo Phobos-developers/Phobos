@@ -1,5 +1,4 @@
 #pragma once
-#include <Utilities/Enum.h>
 #include <Utilities/TemplateDef.h>
 
 #include <YRPPCore.h>

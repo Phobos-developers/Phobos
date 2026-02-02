@@ -1,8 +1,5 @@
 #include "BombardTrajectory.h"
-#include "Memory.h"
 
-#include <LineTrail.h>
-#include <AnimClass.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
 
@@ -235,8 +232,8 @@ void BombardTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 
 		if (pExt->LaserTrails.size())
 		{
-			for (auto& trail : pExt->LaserTrails)
-				trail.LastLocation = middleLocation;
+			for (const auto& pTrail : pExt->LaserTrails)
+				pTrail->LastLocation = middleLocation;
 		}
 		this->RefreshBulletLineTrail(pBullet);
 
@@ -560,9 +557,10 @@ void BombardTrajectory::BulletVelocityChange(BulletClass* pBullet)
 
 				if (pExt->LaserTrails.size())
 				{
-					for (auto& trail : pExt->LaserTrails)
-						trail.LastLocation = middleLocation;
+					for (const auto& pTrail : pExt->LaserTrails)
+						pTrail->LastLocation = middleLocation;
 				}
+
 				this->RefreshBulletLineTrail(pBullet);
 
 				pBullet->SetLocation(middleLocation);
@@ -600,17 +598,15 @@ void BombardTrajectory::RefreshBulletLineTrail(BulletClass* pBullet)
 
 	if (pType->UseLineTrail)
 	{
-		if (const auto pLineTrailer = GameCreate<LineTrail>())
-		{
-			pBullet->LineTrailer = pLineTrailer;
+		const auto pLineTrailer = GameCreate<LineTrail>();
+		pBullet->LineTrailer = pLineTrailer;
 
-			if (RulesClass::Instance->LineTrailColorOverride != ColorStruct { 0, 0, 0 })
-				pLineTrailer->Color = RulesClass::Instance->LineTrailColorOverride;
-			else
-				pLineTrailer->Color = pType->LineTrailColor;
+		if (RulesClass::Instance->LineTrailColorOverride != ColorStruct { 0, 0, 0 })
+			pLineTrailer->Color = RulesClass::Instance->LineTrailColorOverride;
+		else
+			pLineTrailer->Color = pType->LineTrailColor;
 
-			pLineTrailer->SetDecrement(pType->LineTrailColorDecrement);
-			pLineTrailer->Owner = pBullet;
-		}
+		pLineTrailer->SetDecrement(pType->LineTrailColorDecrement);
+		pLineTrailer->Owner = pBullet;
 	}
 }

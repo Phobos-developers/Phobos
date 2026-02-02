@@ -1,6 +1,5 @@
 #include "RadTypeClass.h"
 
-#include <Utilities/TemplateDef.h>
 #include <WarheadTypeClass.h>
 
 template<>
@@ -17,6 +16,9 @@ void RadTypeClass::AddDefaults()
 void RadTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* section = this->Name;
+
+	if (!pINI->GetSection(section))
+		return;
 
 	INI_EX exINI(pINI);
 

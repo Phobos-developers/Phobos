@@ -1,12 +1,9 @@
 #pragma once
-#include <WarheadTypeClass.h>
-#include <SuperWeaponTypeClass.h>
-#include <Helpers/Macro.h>
+#include <Ext/Bullet/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 #include <New/Type/ShieldTypeClass.h>
-#include <Ext/Bullet/Body.h>
-#include <Ext/Techno/Body.h>
+#include <New/Type/AttachEffectTypeClass.h>
 #include <New/Type/Affiliated/TypeConvertGroup.h>
 
 class WarheadTypeExt
@@ -21,8 +18,8 @@ public:
 	{
 	public:
 
-		Valueable<bool> SpySat;
-		Valueable<bool> BigGap;
+		Valueable<int> Reveal;
+		Valueable<int> CreateGap;
 		Valueable<int> TransactMoney;
 		Valueable<bool> TransactMoney_Display;
 		Valueable<AffectedHouse> TransactMoney_Display_Houses;
@@ -58,23 +55,32 @@ public:
 		Valueable<bool> Crit_ExtraDamage_ApplyFirepowerMult;
 		Valueable<WarheadTypeClass*> Crit_Warhead;
 		Valueable<bool> Crit_Warhead_FullDetonation;
-		Valueable<AffectedTarget> Crit_Affects;
-		Valueable<AffectedHouse> Crit_AffectsHouses;
+		Valueable<AffectedTarget> Crit_AffectsTarget;
+		Valueable<AffectedHouse> Crit_AffectsHouse;
 		ValueableVector<AnimTypeClass*> Crit_AnimList;
 		Nullable<bool> Crit_AnimList_PickRandom;
 		Nullable<bool> Crit_AnimList_CreateAll;
 		ValueableVector<AnimTypeClass*> Crit_ActiveChanceAnims;
 		Valueable<bool> Crit_AnimOnAffectedTargets;
-		Valueable<double> Crit_AffectBelowPercent;
+		Valueable<double> Crit_AffectsBelowPercent;
+		Valueable<double> Crit_AffectsAbovePercent;
 		Valueable<bool> Crit_SuppressWhenIntercepted;
+
+		Valueable<WarheadTypeClass*> ReturnWarhead;
+		Valueable<int> ReturnWarhead_Damage;
+		Valueable<double> ReturnWarhead_Chance;
+		Valueable<bool> ReturnWarhead_ApplyChancePerTarget;
+		Valueable<bool> ReturnWarhead_FullDetonation;
+		Valueable<AffectedTarget> ReturnWarhead_AffectsTarget;
+		Valueable<AffectedHouse> ReturnWarhead_AffectsHouse;
 
 		Nullable<AnimTypeClass*> MindControl_Anim;
 		Nullable<int> MindControl_ThreatDelay;
 
 		Valueable<bool> Shield_Penetrate;
 		Valueable<bool> Shield_Break;
-		Valueable<AnimTypeClass*> Shield_BreakAnim;
-		Valueable<AnimTypeClass*> Shield_HitAnim;
+		ValueableVector<AnimTypeClass*> Shield_BreakAnim;
+		ValueableVector<AnimTypeClass*> Shield_HitAnim;
 		Valueable<bool> Shield_SkipHitAnim;
 		Valueable<bool> Shield_HitFlash;
 		Nullable<WeaponTypeClass*> Shield_BreakWeapon;
@@ -89,7 +95,11 @@ public:
 		Valueable<int> Shield_Respawn_Duration;
 		Nullable<double> Shield_Respawn_Amount;
 		Valueable<int> Shield_Respawn_Rate;
+		Nullable<bool> Shield_Respawn_RestartInCombat;
+		Valueable<int> Shield_Respawn_RestartInCombatDelay;
 		Valueable<bool> Shield_Respawn_RestartTimer;
+		ValueableVector<AnimTypeClass*> Shield_Respawn_Anim;
+		Nullable<WeaponTypeClass*> Shield_Respawn_Weapon;
 		Valueable<int> Shield_SelfHealing_Duration;
 		Nullable<double> Shield_SelfHealing_Amount;
 		Valueable<int> Shield_SelfHealing_Rate;
@@ -125,12 +135,14 @@ public:
 		Valueable<bool> AllowDamageOnSelf;
 		NullableVector<AnimTypeClass*> DebrisAnims;
 		Valueable<bool> Debris_Conventional;
+		Nullable<bool> DebrisTypes_Limit;
+		ValueableVector<int> DebrisMinimums;
 
 		Valueable<bool> DetonateOnAllMapObjects;
 		Valueable<bool> DetonateOnAllMapObjects_Full;
 		Valueable<bool> DetonateOnAllMapObjects_RequireVerses;
-		Valueable<AffectedTarget> DetonateOnAllMapObjects_AffectTargets;
-		Valueable<AffectedHouse> DetonateOnAllMapObjects_AffectHouses;
+		Valueable<AffectedTarget> DetonateOnAllMapObjects_AffectsTarget;
+		Valueable<AffectedHouse> DetonateOnAllMapObjects_AffectsHouse;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_AffectTypes;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
 
@@ -140,7 +152,12 @@ public:
 		Valueable<bool> InflictLocomotor;
 		Valueable<bool> RemoveInflictedLocomotor;
 
+		Valueable<AffectedTarget> Parasite_CullingTarget;
+		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
+
 		Valueable<bool> Nonprovocative;
+
+		Nullable<bool> MergeBuildingDamage;
 
 		Nullable<int> CombatLightDetailLevel;
 		Valueable<double> CombatLightChance;
@@ -150,11 +167,17 @@ public:
 		Nullable<double> DamageOwnerMultiplier;
 		Nullable<double> DamageAlliesMultiplier;
 		Nullable<double> DamageEnemiesMultiplier;
+		Nullable<double> DamageOwnerMultiplier_Berzerk;
+		Nullable<double> DamageAlliesMultiplier_Berzerk;
+		Nullable<double> DamageEnemiesMultiplier_Berzerk;
+		Valueable<double> DamageSourceHealthMultiplier;
+		Valueable<double> DamageTargetHealthMultiplier;
 
 		Valueable<bool> SuppressRevengeWeapons;
 		ValueableVector<WeaponTypeClass*> SuppressRevengeWeapons_Types;
 		Valueable<bool> SuppressReflectDamage;
 		ValueableVector<AttachEffectTypeClass*> SuppressReflectDamage_Types;
+		std::vector<std::string> SuppressReflectDamage_Groups;
 
 		Valueable<bool> BuildingSell;
 		Valueable<bool> BuildingSell_IgnoreUnsellable;
@@ -163,22 +186,63 @@ public:
 
 		Nullable<bool> CombatAlert_Suppress;
 
+		Valueable<WeaponTypeClass*> KillWeapon;
+		Valueable<WeaponTypeClass*> KillWeapon_OnFirer;
+		Valueable<AffectedHouse> KillWeapon_AffectsHouse;
+		Valueable<AffectedHouse> KillWeapon_OnFirer_AffectsHouse;
+		Valueable<AffectedTarget> KillWeapon_AffectsTarget;
+		Valueable<AffectedTarget> KillWeapon_OnFirer_AffectsTarget;
+
+		Valueable<int> ElectricAssaultLevel;
+
+		Valueable<AffectedTarget> AirstrikeTargets;
+
+		Valueable<double> AffectsBelowPercent;
+		Valueable<double> AffectsAbovePercent;
+		Valueable<AffectedVeterancy> AffectsVeterancy;
+
+		Valueable<bool> AffectsNeutral;
+		Valueable<bool> AffectsGround;
+		Valueable<bool> AffectsAir;
+		Valueable<bool> CellSpread_Cylinder;
+
+		Valueable<bool> ReverseEngineer;
+
+		Valueable<bool> CanKill;
+
+		Valueable<bool> UnlimboDetonate;
+		Valueable<bool> UnlimboDetonate_ForceLocation;
+		Valueable<bool> UnlimboDetonate_KeepTarget;
+		Valueable<bool> UnlimboDetonate_KeepSelected;
+
+		Valueable<bool> AffectsUnderground;
+		Valueable<bool> PlayAnimUnderground;
+		Valueable<bool> PlayAnimAboveSurface;
+
+		Nullable<int> AnimZAdjust;
+
+		Nullable<bool> ApplyPerTargetEffectsOnDetonate;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
 		Nullable<bool> AffectsOwner;
 		Valueable<bool> EffectsRequireVerses;
 		Valueable<bool> Malicious;
+		Nullable<int> Flash_Duration;
 
 		double Crit_RandomBuffer;
 		double Crit_CurrentChance;
 		bool Crit_Active;
+		double ReturnWarhead_RandomBuffer;
 		bool InDamageArea;
 		bool WasDetonatedOnAllMapObjects;
 		bool Splashed;
 		bool Reflected;
 		int RemainingAnimCreationInterval;
 		bool PossibleCellSpreadDetonate;
+		bool HealthCheck;
+		bool VeterancyCheck;
 		TechnoClass* DamageAreaTarget;
 
 	private:
@@ -187,8 +251,8 @@ public:
 
 	public:
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject)
-			, SpySat { false }
-			, BigGap { false }
+			, Reveal { 0 }
+			, CreateGap { 0 }
 			, TransactMoney { 0 }
 			, TransactMoney_Display { false }
 			, TransactMoney_Display_Houses { AffectedHouse::All }
@@ -224,15 +288,24 @@ public:
 			, Crit_ExtraDamage_ApplyFirepowerMult { false }
 			, Crit_Warhead {}
 			, Crit_Warhead_FullDetonation { true }
-			, Crit_Affects { AffectedTarget::All }
-			, Crit_AffectsHouses { AffectedHouse::All }
+			, Crit_AffectsTarget { AffectedTarget::All }
+			, Crit_AffectsHouse { AffectedHouse::All }
 			, Crit_AnimList {}
 			, Crit_AnimList_PickRandom {}
 			, Crit_AnimList_CreateAll {}
 			, Crit_ActiveChanceAnims {}
 			, Crit_AnimOnAffectedTargets { false }
-			, Crit_AffectBelowPercent { 1.0 }
+			, Crit_AffectsBelowPercent { 1.0 }
+			, Crit_AffectsAbovePercent { 0.0 }
 			, Crit_SuppressWhenIntercepted { false }
+
+			, ReturnWarhead {}
+			, ReturnWarhead_Damage { 0 }
+			, ReturnWarhead_Chance { 1.0 }
+			, ReturnWarhead_ApplyChancePerTarget { false }
+			, ReturnWarhead_FullDetonation { true }
+			, ReturnWarhead_AffectsTarget { AffectedTarget::All }
+			, ReturnWarhead_AffectsHouse { AffectedHouse::All }
 
 			, MindControl_Anim {}
 			, MindControl_ThreatDelay {}
@@ -252,10 +325,14 @@ public:
 			, Shield_ReceivedDamage_MaxMultiplier { 1.0 }
 
 			, Shield_Respawn_Duration { 0 }
-			, Shield_Respawn_Amount { 0.0 }
+			, Shield_Respawn_Amount { }
 			, Shield_Respawn_Rate { -1 }
 			, Shield_Respawn_Rate_InMinutes { -1.0 }
+			, Shield_Respawn_RestartInCombat {}
+			, Shield_Respawn_RestartInCombatDelay { -1 }
 			, Shield_Respawn_RestartTimer { false }
+			, Shield_Respawn_Anim { }
+			, Shield_Respawn_Weapon { }
 			, Shield_SelfHealing_Duration { 0 }
 			, Shield_SelfHealing_Amount { }
 			, Shield_SelfHealing_Rate { -1 }
@@ -291,12 +368,14 @@ public:
 			, AllowDamageOnSelf { false }
 			, DebrisAnims {}
 			, Debris_Conventional { false }
+			, DebrisTypes_Limit {}
+			, DebrisMinimums {}
 
 			, DetonateOnAllMapObjects { false }
 			, DetonateOnAllMapObjects_Full { true }
 			, DetonateOnAllMapObjects_RequireVerses { false }
-			, DetonateOnAllMapObjects_AffectTargets { AffectedTarget::None }
-			, DetonateOnAllMapObjects_AffectHouses { AffectedHouse::None }
+			, DetonateOnAllMapObjects_AffectsTarget { AffectedTarget::None }
+			, DetonateOnAllMapObjects_AffectsHouse { AffectedHouse::None }
 			, DetonateOnAllMapObjects_AffectTypes {}
 			, DetonateOnAllMapObjects_IgnoreTypes {}
 
@@ -306,21 +385,32 @@ public:
 			, InflictLocomotor { false }
 			, RemoveInflictedLocomotor { false }
 
+			, Parasite_CullingTarget { AffectedTarget::Infantry }
+			, Parasite_GrappleAnim {}
+
 			, Nonprovocative { false }
+
+			, MergeBuildingDamage {}
 
 			, CombatLightDetailLevel {}
 			, CombatLightChance { 1.0 }
-		    , CLIsBlack { false }
+			, CLIsBlack { false }
 			, Particle_AlphaImageIsLightFlash {}
 
 			, DamageOwnerMultiplier {}
 			, DamageAlliesMultiplier {}
 			, DamageEnemiesMultiplier {}
+			, DamageOwnerMultiplier_Berzerk {}
+			, DamageAlliesMultiplier_Berzerk {}
+			, DamageEnemiesMultiplier_Berzerk {}
+			, DamageSourceHealthMultiplier { 0.0 }
+			, DamageTargetHealthMultiplier { 0.0 }
 
 			, SuppressRevengeWeapons { false }
 			, SuppressRevengeWeapons_Types {}
 			, SuppressReflectDamage { false }
 			, SuppressReflectDamage_Types {}
+			, SuppressReflectDamage_Groups {}
 
 			, BuildingSell { false }
 			, BuildingSell_IgnoreUnsellable { false }
@@ -329,21 +419,61 @@ public:
 
 			, CombatAlert_Suppress {}
 
+			, ElectricAssaultLevel { 1 }
+
+			, AirstrikeTargets { AffectedTarget::Building }
+
+			, AffectsBelowPercent { 1.0 }
+			, AffectsAbovePercent { 0.0 }
+			, AffectsVeterancy { AffectedVeterancy::All }
+			, AffectsNeutral { true }
+			, AffectsGround { true }
+			, AffectsAir { true }
+			, CellSpread_Cylinder { false }
+
 			, AffectsEnemies { true }
 			, AffectsOwner {}
 			, EffectsRequireVerses { true }
 			, Malicious { true }
+			, Flash_Duration {}
 
 			, Crit_RandomBuffer { 0.0 }
 			, Crit_CurrentChance { 0.0 }
 			, Crit_Active { false }
+			, ReturnWarhead_RandomBuffer { 0.0 }
 			, InDamageArea { true }
 			, WasDetonatedOnAllMapObjects { false }
 			, Splashed { false }
 			, Reflected { false }
 			, RemainingAnimCreationInterval { 0 }
 			, PossibleCellSpreadDetonate { false }
+			, HealthCheck { false }
+			, VeterancyCheck { false }
 			, DamageAreaTarget {}
+
+			, CanKill { true }
+
+			, KillWeapon {}
+			, KillWeapon_OnFirer {}
+			, KillWeapon_AffectsHouse { AffectedHouse::All }
+			, KillWeapon_OnFirer_AffectsHouse { AffectedHouse::All }
+			, KillWeapon_AffectsTarget { AffectedTarget::All }
+			, KillWeapon_OnFirer_AffectsTarget { AffectedTarget::All }
+
+			, ReverseEngineer { false }
+
+			, UnlimboDetonate { false }
+			, UnlimboDetonate_ForceLocation { false }
+			, UnlimboDetonate_KeepTarget { true }
+			, UnlimboDetonate_KeepSelected { true }
+
+			, AffectsUnderground { false }
+			, PlayAnimUnderground { true }
+			, PlayAnimAboveSurface { false }
+
+			, AnimZAdjust {}
+
+			, ApplyPerTargetEffectsOnDetonate {}
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
@@ -351,9 +481,11 @@ public:
 		void ApplyLocomotorInflictionReset(TechnoClass* pTarget);
 	public:
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno) const;
-		bool CanAffectTarget(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt) const;
+		bool CanAffectTarget(TechnoClass* pTarget) const;
 		bool CanAffectInvulnerable(TechnoClass* pTarget) const;
-		bool EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner) const;
+		bool EligibleForFullMapDetonation(TechnoClass* pTechno, TechnoTypeClass* pType, HouseClass* pOwner) const;
+		bool IsHealthInThreshold(TechnoClass* pTarget) const;
+		bool IsVeterancyInThreshold(TechnoClass* pTarget) const;
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
@@ -368,16 +500,18 @@ public:
 	public:
 		// Detonate.cpp
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
-		void InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords);
+		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
+		void InterceptBullets(TechnoClass* pOwner, BulletClass* pInterceptor, const CoordStruct& coords);
 		DamageAreaResult DamageAreaWithTarget(const CoordStruct& coords, int damage, TechnoClass* pSource, WarheadTypeClass* pWH, bool affectsTiberium, HouseClass* pSourceHouse, TechnoClass* pTarget);
 	private:
-		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
-		void ApplyRemoveDisguise(HouseClass* pHouse, TechnoClass* pTarget);
-		void ApplyRemoveMindControl(TechnoClass* pTarget);
-		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner, TechnoExt::ExtData* pTargetExt);
-		void ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt);
+		void ApplyRemoveDisguise(TechnoClass* pTarget);
+		HouseClass* ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
+		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
+		void ApplyShieldModifiers(TechnoClass* pTarget);
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
 		void ApplyBuildingUndeploy(TechnoClass* pTarget);
+		void ApplyReverseEngineer(HouseClass* pHouse, TechnoClass* pTarget);
+		void ApplyReturnWarhead(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
 		double GetCritChance(TechnoClass* pFirer) const;
 	};
 

@@ -2,11 +2,7 @@
 #include <VoxelAnimTypeClass.h>
 
 #include <Utilities/Container.h>
-#include <Utilities/Constructs.h>
-#include <Utilities/Template.h>
 #include <Utilities/TemplateDef.h>
-#include <Utilities/Debug.h>
-#include <Helpers/Macro.h>
 
 #include <New/Type/LaserTrailTypeClass.h>
 
@@ -25,9 +21,10 @@ public:
 		ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
 		Valueable<bool> ExplodeOnWater;
 		Valueable<bool> Warhead_Detonate;
-		Valueable<AnimTypeClass*> WakeAnim;
+		ValueableVector<AnimTypeClass*> WakeAnim;
 		NullableVector<AnimTypeClass*> SplashAnims;
 		Valueable<bool> SplashAnims_PickRandom;
+		Valueable<int> Trailer_SpawnDelay;
 
 		ExtData(VoxelAnimTypeClass* OwnerObject) : Extension<VoxelAnimTypeClass>(OwnerObject)
 			, LaserTrail_Types()
@@ -36,6 +33,7 @@ public:
 			, WakeAnim {}
 			, SplashAnims {}
 			, SplashAnims_PickRandom { false }
+			, Trailer_SpawnDelay { 2 }
 		{ }
 
 		virtual ~ExtData() = default;

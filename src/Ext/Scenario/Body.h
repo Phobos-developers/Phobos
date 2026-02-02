@@ -2,13 +2,10 @@
 
 #include <ScenarioClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
 #include <Ext/Techno/Body.h>
-
-#include <map>
 
 struct ExtendedVariable
 {
@@ -36,6 +33,21 @@ public:
 		std::vector<TechnoExt::ExtData*> AutoDeathObjects;
 		std::vector<TechnoExt::ExtData*> TransportReloaders; // Objects that can reload ammo in limbo
 
+		bool SWSidebar_Enable;
+		std::vector<int> SWSidebar_Indices;
+
+		std::vector<std::wstring> RecordMessages;
+
+		PhobosFixedString<64u> DefaultLS640BkgdName;
+		PhobosFixedString<64u> DefaultLS800BkgdName;
+		PhobosFixedString<64u> DefaultLS800BkgdPal;
+
+		std::vector<TechnoExt::ExtData*> LimboLaunchers;
+
+		DynamicVectorClass<TechnoClass*> UndergroundTracker; // Technos that are underground.
+		DynamicVectorClass<TechnoClass*> SpecialTracker; // For special purposes, like tracking technos that are forced moving. Currently unused.
+		DynamicVectorClass<TechnoClass*> FallingDownTracker; // Technos that are falling down, parachutes and land technos falling from bridge.
+
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
 			, BriefingTheme { -1 }
@@ -43,11 +55,21 @@ public:
 			, Variables { }
 			, AutoDeathObjects {}
 			, TransportReloaders {}
+			, SWSidebar_Enable { true }
+			, SWSidebar_Indices {}
+			, RecordMessages {}
+			, DefaultLS640BkgdName {}
+			, DefaultLS800BkgdName {}
+			, DefaultLS800BkgdPal {}
+			, LimboLaunchers {}
+			, UndergroundTracker {}
+			, SpecialTracker {}
+			, FallingDownTracker {}
 		{ }
 
-		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
-		void GetVariableStateByID(bool bIsGlobal, int nIndex, char* pOut);
-		void ReadVariables(bool bIsGlobal, CCINIClass* pINI);
+		static void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
+		static void GetVariableStateByID(bool bIsGlobal, int nIndex, char* pOut);
+		static void ReadVariables(bool bIsGlobal, CCINIClass* pINI);
 		static void SaveVariablesToFile(bool isGlobal);
 
 		virtual ~ExtData() = default;
