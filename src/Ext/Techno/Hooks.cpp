@@ -12,6 +12,7 @@
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/AresHelper.h>
 #include <Utilities/AresFunctions.h>
+#include <Misc/FlyingStrings.h>
 
 #pragma region GetTechnoType
 
@@ -158,6 +159,44 @@ DEFINE_HOOK(0x6FA07A, TechnoClass_AI_PromoteAnim, 0x5)
 
 	// Restore overridden instructions.
 	R->EAX(pVet->GetRemainingLevel());
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x6FA167, TechnoClass_AI_DrainMoney, 0x5)
+{
+	enum { SkipGameCode = 0x6FA1C5 };
+
+	GET(TechnoClass*, pThis, ESI);
+	const auto pSource = pThis->DrainingMe;
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
+
+	if (Unsorted::CurrentFrame % pTypeExt->DrainMoneyFrameDelay.Get(RulesClass::Instance->DrainMoneyFrameDelay))
+		return SkipGameCode;
+
+	int amount = pTypeExt->DrainMoneyAmount.Get(RulesClass::Instance->DrainMoneyAmount);
+
+	if (!amount)
+		return SkipGameCode;
+
+	if (amount > 0)
+		amount = Math::min(amount, pThis->Owner->Available_Money());
+	else
+		amount = Math::max(amount, -pSource->Owner->Available_Money());
+
+	if (!amount)
+		return SkipGameCode;
+
+	pThis->Owner->TransactMoney(-amount);
+	pSource->Owner->TransactMoney(amount);
+
+	if (pTypeExt->DrainMoney_Display)
+	{
+		const auto displayAt = pTypeExt->DrainMoney_Display_AtFirer ? pSource : pThis;
+
+		if (displayAt->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+			FlyingStrings::AddMoneyString(amount, pSource, pSource->Owner, pTypeExt->DrainMoney_Display_House, displayAt->Location, pTypeExt->DrainMoney_Display_Offset);
+	}
+
 	return SkipGameCode;
 }
 

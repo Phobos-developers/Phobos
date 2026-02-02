@@ -2152,6 +2152,22 @@ WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
 
+### Customizable disk drain logic
+
+- It is possible to set properties of drain logic per technotypes.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                            ; TechnoType
+DrainMoneyFrameDelay=               ; integer
+DrainMoneyAmount=                       ; integer
+DrainAnimationType=                     ; AnimationType
+DrainMoney.Display=false            ; boolean
+DrainMoney.Display.House=all        ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DrainMoney.Display.AtFirer=true         ; boolean
+DrainMoney.Display.Offset=0,0           ; integer - X, Y
+```
+
 ## Terrain
 
 ### Destroy animation & sound

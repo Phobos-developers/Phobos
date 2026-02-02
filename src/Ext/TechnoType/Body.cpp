@@ -1137,6 +1137,14 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->InfantryAutoDeploy.Read(exINI, pSection, "InfantryAutoDeploy");
 
 	this->TeamMember_ConsideredAs.Read(exINI, pSection, "TeamMember.ConsideredAs");
+
+	this->DrainMoneyFrameDelay.Read(exINI, pSection, "DrainMoneyFrameDelay");
+	this->DrainMoneyAmount.Read(exINI, pSection, "DrainMoneyAmount");
+	this->DrainAnimationType.Read(exINI, pSection, "DrainAnimationType");
+	this->DrainMoney_Display.Read(exINI, pSection, "DrainMoney.Display");
+	this->DrainMoney_Display_House.Read(exINI, pSection, "DrainMoney.Display.House");
+	this->DrainMoney_Display_AtFirer.Read(exINI, pSection, "DrainMoney.Display.AtFirer");
+	this->DrainMoney_Display_Offset.Read(exINI, pSection, "DrainMoney.Display.Offset");
 	
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -1827,6 +1835,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Deploy_SkipPassengerUnload)
 		.Process(this->Deploy_NoPassenger)
 		.Process(this->Deploy_NoTiberium)
+		
+		.Process(this->DrainMoneyFrameDelay)
+		.Process(this->DrainMoneyAmount)
+		.Process(this->DrainAnimationType)
+		.Process(this->DrainMoney_Display)
+		.Process(this->DrainMoney_Display_House)
+		.Process(this->DrainMoney_Display_AtFirer)
+		.Process(this->DrainMoney_Display_Offset)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

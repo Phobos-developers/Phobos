@@ -463,6 +463,14 @@ public:
 		Valueable<bool> Deploy_NoPassenger;
 		Valueable<bool> Deploy_NoTiberium;
 
+		Nullable<int> DrainMoneyFrameDelay;
+		Nullable<int> DrainMoneyAmount;
+		Nullable<AnimTypeClass*> DrainAnimationType;
+		Valueable<bool> DrainMoney_Display;
+		Valueable<AffectedHouse> DrainMoney_Display_House;
+		Valueable<bool> DrainMoney_Display_AtFirer;
+		Valueable<Point2D> DrainMoney_Display_Offset;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, HealthBar_HidePips { false }
@@ -879,6 +887,14 @@ public:
 			, Deploy_SkipPassengerUnload { false }
 			, Deploy_NoPassenger { false }
 			, Deploy_NoTiberium { false }
+
+			, DrainMoneyFrameDelay {}
+			, DrainMoneyAmount {}
+			, DrainAnimationType {}
+			, DrainMoney_Display { false }
+			, DrainMoney_Display_House { AffectedHouse::All }
+			, DrainMoney_Display_AtFirer { true }
+			, DrainMoney_Display_Offset { Point2D::Empty }
 		{ }
 
 		virtual ~ExtData() = default;
