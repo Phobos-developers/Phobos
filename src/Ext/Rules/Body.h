@@ -297,6 +297,9 @@ public:
 		Valueable<bool> AutoTargetAI_NoThreatBuildings;
 
 		Valueable<bool> WalkLocomotorMakesWake;
+		Valueable<bool> DriveLocomotorMakesWake;
+		Valueable<bool> HoverLocomotorMakesWake;
+		Valueable<bool> ShipLocomotorMakesWake;
     
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -540,6 +543,9 @@ public:
 			, AutoTargetAI_NoThreatBuildings { true }
 
 			, WalkLocomotorMakesWake { false }
+			, DriveLocomotorMakesWake { true }
+			, HoverLocomotorMakesWake { true }
+			, ShipLocomotorMakesWake { true }
 		{ }
 
 		virtual ~ExtData() = default;
