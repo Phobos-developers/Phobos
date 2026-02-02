@@ -749,7 +749,6 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 
 					if (passenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, true, true, pInvokerHouse) == DamageState::NowDead)
 					{
-						passenger->RegisterDestruction(pInvoker);
 						passenger->Owner->RecheckTechTree = true;
 
 						if (isFirst && pTargetType->Gunner && pTargetFoot)
@@ -779,7 +778,6 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 
 					if (passenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, false, true, pInvokerHouse) == DamageState::NowDead)
 					{
-						passenger->RegisterDestruction(pInvoker);
 						passenger->Owner->RecheckTechTree = true;
 
 						if (isFirst && pTargetType->Gunner && pTargetFoot)
@@ -820,7 +818,6 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 
 			if (passenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, true, true, pInvokerHouse) == DamageState::NowDead)
 			{
-				passenger->RegisterDestruction(pInvoker);
 				passenger->Owner->RecheckTechTree = true;
 
 				if (isFirst && pTargetType->Gunner && pTargetFoot)
@@ -836,7 +833,6 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 
 			if (passenger->ReceiveDamage(&adjustedDamage, distance, pWH, pInvoker, false, true, pInvokerHouse) == DamageState::NowDead)
 			{
-				passenger->RegisterDestruction(pInvoker);
 				passenger->Owner->RecheckTechTree = true;
 
 				if (isFirst && pTargetType->Gunner && pTargetFoot)
