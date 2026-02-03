@@ -583,6 +583,7 @@ Vanilla fixes:
 - Fixed an issue where mining vehicles could not move after leaving a tank bunker (by FlyStar)
 - Fixed the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon (by NetsuNegi)
 - Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat (by TaranDahl)
+- Fixed the issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team (by TaranDahl)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

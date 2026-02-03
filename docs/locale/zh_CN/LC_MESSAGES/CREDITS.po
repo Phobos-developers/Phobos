@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-02 04:21+0800\n"
+"POT-Creation-Date: 2026-02-03 13:48+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2899,96 +2899,102 @@ msgstr "`AllowBerzerkOnAllies`"
 msgid ""
 "Fixed an issue that retaliation will make the unit keep switching among "
 "multiple targets with the same amount of threat"
-msgstr ""
-"修复了反击行为会让单位在多个相同威胁值的目标间不断切换的问题"
+msgstr "修复了反击行为会让单位在多个相同威胁值的目标间不断切换的问题"
 
 #: ../../../CREDITS.md:690
+msgid ""
+"Fix an issue where units recruited by a team with "
+"`AreTeamMembersRecruitable=false` cannot be recruited even if they have "
+"been liberated by that team"
+msgstr ""
+
+#: ../../../CREDITS.md:691
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
 
-#: ../../../CREDITS.md:691
+#: ../../../CREDITS.md:692
 msgid "Target scanning delay customization (documentation)"
 msgstr "自定义索敌间隔（文档）"
 
-#: ../../../CREDITS.md:692
+#: ../../../CREDITS.md:693
 msgid "Skip target scanning function calling for unarmed technos (documentation)"
 msgstr "禁用了无武器单位的索敌（文档）"
 
-#: ../../../CREDITS.md:693
+#: ../../../CREDITS.md:694
 msgid "**Flactine**"
 msgstr "**Flactine**："
 
-#: ../../../CREDITS.md:694
+#: ../../../CREDITS.md:695
 msgid "Add target filtering options to attacheffect system"
 msgstr "为 AE 系统添加目标过滤选项"
 
-#: ../../../CREDITS.md:695
+#: ../../../CREDITS.md:696
 msgid "Add veterancy-based target filtering for weapons and warheads"
 msgstr "为武器和弹头添加基于经验等级的目标过滤"
 
-#: ../../../CREDITS.md:696
+#: ../../../CREDITS.md:697
 msgid "**tyuah8**:"
 msgstr "**tyuah8**："
 
-#: ../../../CREDITS.md:697
+#: ../../../CREDITS.md:698
 msgid ""
 "Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-"
 "piggybacked bugfix"
 msgstr "修复了 Drive/Jumpjet/Ship/Teleport 运动方式在退出 piggybacked 接口时无法激活的问题"
 
-#: ../../../CREDITS.md:698
+#: ../../../CREDITS.md:699
 msgid "Destroyed unit leaves sensors bugfix"
 msgstr "单位被摧毁后遗留反隐区域的 bug 修复"
 
-#: ../../../CREDITS.md:699
+#: ../../../CREDITS.md:700
 msgid ""
 "**Aephiex** - initial fix for Ares academy not working on the initial "
 "payloads of vehicles built from a war factory"
 msgstr "**Aephiex** - 对于 Ares 训练所逻辑在产自重工的载具其初始载员上不生效问题初始的修复方式"
 
-#: ../../../CREDITS.md:700
+#: ../../../CREDITS.md:701
 msgid ""
 "**Multfinite** - Allow to toggle main exception handler via command line "
 "argument `-ExceptionHandler=boolean`"
 msgstr "**Multfinite** - 允许通过命令行参数 `-ExceptionHandler=boolean` 开关主循环异常处理程序"
 
-#: ../../../CREDITS.md:701
+#: ../../../CREDITS.md:702
 msgid ""
 "**hejiajun107, Xkein** - Fix a jumpjet crash related to voxel shadow "
 "drawing"
 msgstr "**hejiajun107, Xkein** - 修复与 Voxel 阴影绘制相关的 Jumpjet 崩溃问题"
 
-#: ../../../CREDITS.md:702
+#: ../../../CREDITS.md:703
 msgid "**Ares developers**:"
 msgstr "**Ares developers**："
 
-#: ../../../CREDITS.md:703
+#: ../../../CREDITS.md:704
 msgid ""
 "YRpp and Syringe which are used, save/load, project foundation and "
 "generally useful code from Ares"
 msgstr "Ares 所使用的 YRpp 和 Syringe、存读档、项目基础和一些通用代码"
 
-#: ../../../CREDITS.md:704
+#: ../../../CREDITS.md:705
 msgid "unfinished RadTypes code"
 msgstr "半成品自定义辐射类型代码"
 
-#: ../../../CREDITS.md:705
+#: ../../../CREDITS.md:706
 msgid "prototype deployer fixes"
 msgstr "部署修复雏形"
 
-#: ../../../CREDITS.md:706
+#: ../../../CREDITS.md:707
 msgid "Superweapon launch site & availability code"
 msgstr "超级武器发射地点与超武可用性代码"
 
-#: ../../../CREDITS.md:707
+#: ../../../CREDITS.md:708
 msgid "AI vehicle production update code"
 msgstr "AI 载具生产更新代码"
 
-#: ../../../CREDITS.md:708
+#: ../../../CREDITS.md:709
 msgid "parts of TechnoType conversion placeholder code"
 msgstr "单位转换占位符代码的一部分"
 
-#: ../../../CREDITS.md:709
+#: ../../../CREDITS.md:710
 msgid ""
 "**ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, CrimRecya** - "
 "Digital Display"
@@ -2996,23 +3002,23 @@ msgstr ""
 "**ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, CrimRecya** - "
 "数字化显示"
 
-#: ../../../CREDITS.md:710
+#: ../../../CREDITS.md:711
 msgid "**SukaHati (Erzoid)** - Minimum interceptor guard range"
 msgstr "**SukaHati (Erzoid)** - 抛射体最小拦截距离"
 
-#: ../../../CREDITS.md:711
+#: ../../../CREDITS.md:712
 msgid "**E1 Elite** - TileSet 255 and above bridge repair fix"
 msgstr "**E1 Elite** - TileSet 达到 255 以上后的桥梁维修修复"
 
-#: ../../../CREDITS.md:712
+#: ../../../CREDITS.md:713
 msgid "**AutoGavy** - interceptor logic, Warhead critical hit logic"
 msgstr "**AutoGavy** - 抛射体拦截逻辑、弹头暴击逻辑"
 
-#: ../../../CREDITS.md:713
+#: ../../../CREDITS.md:714
 msgid "**Chasheen (Chasheenburg)** - CN docs help for Build#24"
 msgstr "**Chasheen (Chasheenburg)** - Build#24 的中文文档协助"
 
-#: ../../../CREDITS.md:714
+#: ../../../CREDITS.md:715
 msgid ""
 "**Noble Fish** - some minor improvements and fixes, established Community"
 " Chinese docs, took over and completely rewrite the Official Chinese docs"
@@ -3021,40 +3027,40 @@ msgstr ""
 "**Noble Fish** - 一些小改进与修复、文档维护者（官方英文文档维护、创建了社区中文文档、在 Build#46 "
 "接管并完全重写了官方中文文档）"
 
-#: ../../../CREDITS.md:715
+#: ../../../CREDITS.md:716
 msgid ""
 "**tomsons26** - all-around help, assistance and guidance in reverse-"
 "engineering, YR binary mappings"
 msgstr "**tomsons26** - 全方位协助，逆向工程方面的协助与指导、YR 二进制映射"
 
-#: ../../../CREDITS.md:716
+#: ../../../CREDITS.md:717
 msgid ""
 "**CCHyper** - all-around help, current project logo, assistance and "
 "guidance in reverse-engineering, YR binary mappings, custom locomotors "
 "example implementation"
 msgstr "**CCHyper** - 全方位协助，当前项目 Logo 设计、逆向工程方面的协助与指导、YR 二进制映射、自定义运动模式示例实现"
 
-#: ../../../CREDITS.md:717
+#: ../../../CREDITS.md:718
 msgid "**AlexB** - Original FlyingStrings implementation"
 msgstr "**AlexB** - 原始 FlyingStrings 实现"
 
-#: ../../../CREDITS.md:718
+#: ../../../CREDITS.md:719
 msgid "**Joshy** - Original FlyingStrings implementation"
 msgstr "**Joshy** - 原始 FlyingStrings 实现"
 
-#: ../../../CREDITS.md:719
+#: ../../../CREDITS.md:720
 msgid "**CnCVK** - Original custom locomotors experiment"
 msgstr "**CnCVK** - 原始的自定义运动模式尝试"
 
-#: ../../../CREDITS.md:720
+#: ../../../CREDITS.md:721
 msgid "**ZΞPHYɌUS** - win/lose themes code"
 msgstr "**ZΞPHYɌUS** - 胜利／失败主题音乐代码"
 
-#: ../../../CREDITS.md:721
+#: ../../../CREDITS.md:722
 msgid "**Fridge** - Cursor Fix code"
 msgstr "**Fridge** - 光标修复代码"
 
-#: ../../../CREDITS.md:722
+#: ../../../CREDITS.md:723
 msgid ""
 "**Neargye (Daniil Goncharov)** - [nameof "
 "library](https://github.com/Neargye/nameof) (MIT)"
@@ -3062,33 +3068,33 @@ msgstr ""
 "**Neargye (Daniil Goncharov)** - [nameof "
 "库](https://github.com/Neargye/nameof)（MIT）"
 
-#: ../../../CREDITS.md:723
+#: ../../../CREDITS.md:724
 msgid "**ayylmao** - help with docs, extensive and thorough testing"
 msgstr "**ayylmao** - 文档协助，广泛且深入的测试"
 
-#: ../../../CREDITS.md:724
+#: ../../../CREDITS.md:725
 msgid "**SMxReaver** - help with docs, extensive and thorough testing"
 msgstr "**SMxReaver** - 文档协助，广泛且深入的测试"
 
-#: ../../../CREDITS.md:725
+#: ../../../CREDITS.md:726
 msgid "**4SG** - help with docs"
 msgstr "**4SG** - 文档协助"
 
-#: ../../../CREDITS.md:726
+#: ../../../CREDITS.md:727
 msgid ""
 "**thomassneddon** - general assistance, knowledge about voxel lighting "
 "model"
 msgstr "**thomassneddon** - 一般性协助、Voxel 照明模型知识"
 
-#: ../../../CREDITS.md:727
+#: ../../../CREDITS.md:728
 msgid "**Xkein** - general assistance, YRpp edits"
 msgstr "**Xkein** - 一般性协助、YRpp 编辑"
 
-#: ../../../CREDITS.md:728
+#: ../../../CREDITS.md:729
 msgid "**mevitar** - honorary shield tester *triple* award"
 msgstr "**mevitar** - 荣誉护盾测试员 **三重** 奖章"
 
-#: ../../../CREDITS.md:729
+#: ../../../CREDITS.md:730
 msgid ""
 "**Mentalmeisters Team (Speeder, Ollerus, mevitar, Reedom, Takitoru, "
 "Terumasa, Zhelin)** - extensive and thorough testing"
@@ -3096,7 +3102,7 @@ msgstr ""
 "**Mentalmeisters Team (Speeder, Ollerus, mevitar, Reedom, Takitoru, "
 "Terumasa, Zhelin)** - 广泛且深入的测试"
 
-#: ../../../CREDITS.md:730
+#: ../../../CREDITS.md:731
 msgid ""
 "**Phobos CN Tester Group (Mantis, Swim Wing, Examon, AKB, Pusheen, ZQ, "
 "Claptrap, BunkerGeneral, Big J, Skywalker, ChickEmperor, Shifty, Mikain, "
@@ -3110,19 +3116,19 @@ msgstr ""
 "Yumeri_Rei, Nacho, Zhuzi, Ika_Aru, EUSiegfried, HanpiBaozi, Nxusbot, "
 "TientsinWind)** - 广泛且深入的测试"
 
-#: ../../../CREDITS.md:731
+#: ../../../CREDITS.md:732
 msgid "**Damfoos** - extensive and thorough testing"
 msgstr "**Damfoos** - 广泛且深入的测试"
 
-#: ../../../CREDITS.md:732
+#: ../../../CREDITS.md:733
 msgid "**Dmitry Volkov** - extensive and thorough testing"
 msgstr "**Dmitry Volkov** - 广泛且深入的测试"
 
-#: ../../../CREDITS.md:733
+#: ../../../CREDITS.md:734
 msgid "**Rise of the East community** - extensive playtesting of in-dev features"
 msgstr "**东方崛起社区** - 对开发功能的广泛测试"
 
-#: ../../../CREDITS.md:734
+#: ../../../CREDITS.md:735
 msgid ""
 "**11EJDE11** - Prevent mpdebug number from being drawn when visibility "
 "toggled off"
