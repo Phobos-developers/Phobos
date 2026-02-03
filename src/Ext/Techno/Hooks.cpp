@@ -194,7 +194,10 @@ DEFINE_HOOK(0x6FA167, TechnoClass_AI_DrainMoney, 0x5)
 		const auto displayAt = pTypeExt->DrainMoney_Display_AtFirer ? pSource : pThis;
 
 		if (displayAt->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
-			FlyingStrings::AddMoneyString(amount, pSource, pSource->Owner, pTypeExt->DrainMoney_Display_House, displayAt->Location, pTypeExt->DrainMoney_Display_Offset);
+		{
+			const int displayAmount = pTypeExt->DrainMoney_Display_AtFirer ? amount : -amount;
+			FlyingStrings::AddMoneyString(displayAmount, pSource, pSource->Owner, pTypeExt->DrainMoney_Display_House, displayAt->Location, pTypeExt->DrainMoney_Display_Offset);
+		}
 	}
 
 	return SkipGameCode;
