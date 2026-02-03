@@ -360,6 +360,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ParadropMission.Read(exINI, GameStrings::General, "ParadropMission");
 	this->AIParadropMission.Read(exINI, GameStrings::General, "AIParadropMission");
 
+	this->AreaGuard_UseSelfAsCenter.Read(exINI, GameStrings::General, "AreaGuard.UseSelfAsCenter");
+	this->AreaGuard_TargetingInRange.Read(exINI, GameStrings::General, "AreaGuard.TargetingInRange");
+	this->AreaGuard_StrayIgnoreDestination.Read(exINI, GameStrings::General, "AreaGuard.StrayIgnoreDestination");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -657,6 +661,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AutoTargetAI_NoThreatBuildings)
 		.Process(this->ParadropMission)
 		.Process(this->AIParadropMission)
+		.Process(this->AreaGuard_UseSelfAsCenter)
+		.Process(this->AreaGuard_TargetingInRange)
+		.Process(this->AreaGuard_StrayIgnoreDestination)
 		;
 }
 

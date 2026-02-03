@@ -310,6 +310,10 @@ public:
 		Valueable<Mission> ParadropMission;
 		Valueable<Mission> AIParadropMission;
 
+		Valueable<bool> AreaGuard_UseSelfAsCenter;
+		Valueable<bool> AreaGuard_TargetingInRange;
+		Valueable<bool> AreaGuard_StrayIgnoreDestination;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -562,6 +566,10 @@ public:
 
 			, ParadropMission { Mission::Guard }
 			, AIParadropMission { Mission::Hunt }
+
+			, AreaGuard_UseSelfAsCenter { false }
+			, AreaGuard_TargetingInRange { false }
+			, AreaGuard_StrayIgnoreDestination { false }
 		{ }
 
 		virtual ~ExtData() = default;

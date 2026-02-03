@@ -69,3 +69,36 @@ DEFINE_HOOK(0x6F7CE2, TechnoClass_CanAutoTargetObject_IronCurtain, 0x6)
 
 	return 0;
 }
+
+#pragma region AreaGuard
+
+DEFINE_HOOK(0x4D6E9F, FootClass_MissionAreaGuard_UseSelfAsCenter, 0x6)
+{
+	enum { CheckDist = 0x4D6EAF, ResetTarget = 0x4D6ED1 };
+
+	GET(FootClass*, pThis, ESI);
+
+	if (!RulesExt::Global()->AreaGuard_StrayIgnoreDestination && pThis->Destination)
+		return ResetTarget;
+
+	R->EAX(pThis->DistanceFrom(RulesExt::Global()->AreaGuard_UseSelfAsCenter ? pThis->Target : pThis->ArchiveTarget));
+	return CheckDist;
+}
+
+namespace AreaGuard_UseSelfAsCenterContext
+{
+	CoordStruct crd;
+}
+
+DEFINE_HOOK(0x4D6EFD, FootClass_MissionAreaGuard_Extend, 0x6)
+{
+	enum { SkipGameCode = 0x4D6F03 };
+
+	GET(FootClass*, pThis, ESI);
+	AreaGuard_UseSelfAsCenterContext::crd = (RulesExt::Global()->AreaGuard_UseSelfAsCenter ? pThis : pThis->ArchiveTarget)->GetCoords();
+	R->EAX(&AreaGuard_UseSelfAsCenterContext::crd);
+	R->Stack(0, RulesExt::Global()->AreaGuard_TargetingInRange ? ThreatType::Range : ThreatType::Area);
+	return 0;
+}
+
+#pragma endregion
