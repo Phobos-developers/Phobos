@@ -1188,6 +1188,35 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x6F78D0, TechnoClass_InAttackMoveKeepRange_Start, 0x6)
+{
+	enum { RETN = 0x6F7923 };
+
+	GET(TechnoClass*, pThis, ECX);
+	GET_STACK(AbstractClass*, pTarget, 0x4);
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	int keepTargetRange = pTypeExt->AttackMove_KeepTargetRange.Get();
+
+	if (keepTargetRange >= 0)
+	{
+		R->AL(pThis->DistanceFrom(pTarget) <= keepTargetRange);
+		return RETN;
+	}
+
+	double mult = pTypeExt->AttackMove_KeepTargetRangeMultiplier.Get(RulesExt::Global()->AttackMove_KeepTargetRangeMultiplier);
+
+	if (mult >= 0)
+	{
+		auto addend = pTypeExt->AttackMove_KeepTargetRangeAddend.Get(RulesExt::Global()->AttackMove_KeepTargetRangeAddend);
+
+		R->AL(pThis->DistanceFrom(pTarget) <= (int)(pThis->GetGuardRange(0) * mult) + addend);
+		return RETN;
+	}
+
+	return 0;
+}
+
 #pragma endregion
 
 DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)

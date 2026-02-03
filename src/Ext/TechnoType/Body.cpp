@@ -1150,6 +1150,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ParadropMission.Read(exINI, pSection, "ParadropMission");
 	this->AIParadropMission.Read(exINI, pSection, "AIParadropMission");
 
+	this->AttackMove_KeepTargetRange.Read(exINI, pSection, "AttackMove.KeepTargetRange");
+	this->AttackMove_KeepTargetRangeAddend.Read(exINI, pSection, "AttackMove.KeepTargetRangeAddend");
+	this->AttackMove_KeepTargetRangeMultiplier.Read(exINI, pSection, "AttackMove.KeepTaragetRangeMultiplier");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1851,6 +1855,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->ParadropMission)
 		.Process(this->AIParadropMission)
+
+		.Process(this->AttackMove_KeepTargetRange)
+		.Process(this->AttackMove_KeepTargetRangeAddend)
+		.Process(this->AttackMove_KeepTargetRangeMultiplier)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

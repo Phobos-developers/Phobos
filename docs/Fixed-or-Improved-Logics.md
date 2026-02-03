@@ -1562,6 +1562,26 @@ FallingDownDamage=              ; integer / percentage
 FallingDownDamage.Water=        ; integer / percentage
 ```
 
+### Customize the keep-target-range of attackmove
+
+- In vanilla, the range of keep target in attackmove is determined by the range of weapon, or the range of the secondary weapon with `NeverUse=yes`.
+- Now you can directly specify this distance by setting the following flag to a non-negative value.
+  - `AttackMove.KeepTargetRange` is used to directly specify this distance. It takes effect when this flag is not less than 0.
+  - `AttackMove.KeepTargetRangeMultiplier` and `AttackMove.KeepTargetRangeAddend` are used to automatically calculate this distance based on the guard range. It takes effect when the multiplier is not less than 0.
+    - The final distance is guard range * multiplier + addend.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AttackMove.KeepTargetRangeMultiplier=-1.0   ; float
+AttackMove.KeepTargetRangeAddend=0.0        ; float, range in cell
+
+[SOMETECHNO]                                ; TechnoType
+AttackMove.KeepTargetRange=-1.0             ; float, range in cell
+AttackMove.KeepTargetRangeMultiplier=       ; float
+AttackMove.KeepTargetRangeAddend=           ; float, range in cell
+```
+
 ### Damaged speed customization
 
 - In vanilla, units using drive/ship loco will has hardcoded speed multiplier when damaged. Now you can customize it.

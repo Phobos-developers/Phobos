@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <RulesClass.h>
 #include <Utilities/Container.h>
@@ -314,6 +314,9 @@ public:
     
 		Valueable<bool> CylinderRangefinding;
 
+		Valueable<Leptons> AttackMove_KeepTargetRangeAddend;
+		Valueable<double> AttackMove_KeepTargetRangeMultiplier;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -570,6 +573,9 @@ public:
 			, DefaultToGuardArea { false }
 			
 			, CylinderRangefinding { false }
+				
+			, AttackMove_KeepTargetRangeAddend { Leptons(0) }
+			, AttackMove_KeepTargetRangeMultiplier { -1.0 }
 		{ }
 
 		virtual ~ExtData() = default;

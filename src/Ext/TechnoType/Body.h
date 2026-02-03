@@ -475,6 +475,10 @@ public:
 		Nullable<Mission> ParadropMission;
 		Nullable<Mission> AIParadropMission;
 
+		Valueable<Leptons> AttackMove_KeepTargetRange;
+		Nullable<Leptons> AttackMove_KeepTargetRangeAddend;
+		Nullable<double> AttackMove_KeepTargetRangeMultiplier;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, HealthBar_HidePips { false }
@@ -903,6 +907,10 @@ public:
 
 			, ParadropMission {}
 			, AIParadropMission {}
+
+			, AttackMove_KeepTargetRange { Leptons(-256) }
+			, AttackMove_KeepTargetRangeAddend {}
+			, AttackMove_KeepTargetRangeMultiplier {}
 		{ }
 
 		virtual ~ExtData() = default;
