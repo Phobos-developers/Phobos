@@ -688,6 +688,7 @@ This page lists all the individual contributions to the project by their author.
   - `AllowBerzerkOnAllies`
   - Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat
   - Fix an issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team
+  - Global default value for `DefaultToGuardArea`
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

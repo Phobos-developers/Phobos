@@ -310,6 +310,8 @@ public:
 		Valueable<Mission> ParadropMission;
 		Valueable<Mission> AIParadropMission;
 
+		Valueable<bool> DefaultToGuardArea;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -562,6 +564,8 @@ public:
 
 			, ParadropMission { Mission::Guard }
 			, AIParadropMission { Mission::Hunt }
+
+			, DefaultToGuardArea { false }
 		{ }
 
 		virtual ~ExtData() = default;
