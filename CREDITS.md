@@ -734,6 +734,7 @@ This page lists all the individual contributions to the project by their author.
   - Taunt warhead
   - Fix the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated
   - Miners back to work when ore regenerated
+  - Allow disable an over-optimization in targeting
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <RulesClass.h>
 #include <Utilities/Container.h>
@@ -319,6 +319,8 @@ public:
 
 		Valueable<bool> DefaultToGuardArea;
 
+		Valueable<bool> DisableOveroptimizationInTargeting;
+    
 		Valueable<bool> CylinderRangefinding;
 
 		Valueable<int> PenetratesTransport_Level;
@@ -596,6 +598,7 @@ public:
 			, UnitsUnsellable { false }
 
 			, DriverKilled_KillPassengers { false }
+			, DisableOveroptimizationInTargeting { false }
 		{ }
 
 		virtual ~ExtData() = default;

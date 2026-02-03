@@ -1,4 +1,4 @@
-#include "Body.h"
+﻿#include "Body.h"
 
 #include <Ext/TechnoType/Body.h>
 #include <New/Type/RadTypeClass.h>
@@ -375,6 +375,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PenetratesTransport_Level.Read(exINI, GameStrings::CombatDamage, "PenetratesTransport.Level");
 
 	this->UnitsUnsellable.Read(exINI, GameStrings::General, "UnitsUnsellable");
+	
+	this->DisableOveroptimizationInTargeting.Read(exINI, GameStrings::General, "DisableOveroptimizationInTargeting");
 
 	this->DriverKilled_KillPassengers.Read(exINI, GameStrings::CombatDamage, "DriverKilled.KillPassengers");
 
@@ -686,6 +688,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->PenetratesTransport_Level)
 		.Process(this->UnitsUnsellable)
 		.Process(this->DriverKilled_KillPassengers)
+		.Process(this->DisableOveroptimizationInTargeting)
 		;
 }
 

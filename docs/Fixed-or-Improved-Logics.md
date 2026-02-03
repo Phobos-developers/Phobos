@@ -1385,6 +1385,18 @@ AllowAirstrike=             ; boolean
 AirstrikeTargets=buildings  ; List of Affected Target Enumeration (none|infantry|units|buildings|all)
 ```
 
+### Allow disable an over-optimization in targeting
+
+- In vanilla, there is an optimization in targeting: if a unit finds a valid target within the 1/4 or 1/2 range, it will stop looking for other targets. Now you can disable it.
+  - This optimization has a negligible effect on average performance, as most targeting calls fail to find a valid target.
+  - At the same time, it can affect the gaming experience, as it will make units attack nearby targets while ignoring more threatening targets that are farther away.
+
+In `rulesmd.ini`:
+```ini
+[General]
+DisableOveroptimizationInTargeting=false  ; boolean
+```
+
 ### Alternate FLH customizations
 
 - `AlternateFLH.OnTurret` can be used to customize whether or not `AlternateFLH` used for `OpenTopped` transport firing coordinates, multiple mind control link offsets etc. is calculated relative to the unit's turret if available or body.
