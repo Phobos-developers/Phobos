@@ -1142,10 +1142,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DrainMoneyAmount.Read(exINI, pSection, "DrainMoneyAmount");
 	this->DrainAnimationType.Read(exINI, pSection, "DrainAnimationType");
 	this->DrainMoneyDisplay.Read(exINI, pSection, "DrainMoneyDisplay");
-	this->DrainMoneyDisplay_House.Read(exINI, pSection, "DrainMoneyDisplay.House");
-	this->DrainMoneyDisplay_AtFirer.Read(exINI, pSection, "DrainMoneyDisplay.AtFirer");
-	this->DrainMoneyDisplay_AtTarget.Read(exINI, pSection, "DrainMoneyDisplay.AtTarget");
+	this->DrainMoneyDisplay_Houses.Read(exINI, pSection, "DrainMoneyDisplay.Houses");
 	this->DrainMoneyDisplay_Offset.Read(exINI, pSection, "DrainMoneyDisplay.Offset");
+	this->DrainMoneyDisplay_OnTarget.Read(exINI, pSection, "DrainMoneyDisplay.OnTarget");
+	this->DrainMoneyDisplay_OnTarget_UseDisplayIncome.Read(exINI, pSection, "DrainMoneyDisplay.OnTarget.UseDisplayIncome");
 	
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -1841,10 +1841,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DrainMoneyAmount)
 		.Process(this->DrainAnimationType)
 		.Process(this->DrainMoneyDisplay)
-		.Process(this->DrainMoneyDisplay_House)
-		.Process(this->DrainMoneyDisplay_AtFirer)
-		.Process(this->DrainMoneyDisplay_AtTarget)
+		.Process(this->DrainMoneyDisplay_Houses)
 		.Process(this->DrainMoneyDisplay_Offset)
+		.Process(this->DrainMoneyDisplay_OnTarget)
+		.Process(this->DrainMoneyDisplay_OnTarget_UseDisplayIncome)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

@@ -189,15 +189,27 @@ DEFINE_HOOK(0x6FA167, TechnoClass_AI_DrainMoney, 0x5)
 	pThis->Owner->TransactMoney(-amount);
 	pSource->Owner->TransactMoney(amount);
 
-	if (pTypeExt->DrainMoneyDisplay.Get(RulesExt::Global()->DrainMoneyDisplay))
+	if (pTypeExt->DrainMoneyDisplay.Get(RulesExt::Global()->DrainMoneyDisplay) && pSource->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
 	{
-		const auto displayTo = pTypeExt->DrainMoneyDisplay_House.Get(RulesExt::Global()->DrainMoneyDisplay_House);
+		const auto displayTo = pTypeExt->DrainMoneyDisplay_Houses.Get(RulesExt::Global()->DrainMoneyDisplay_Houses);
+		FlyingStrings::AddMoneyString(amount, pSource, pSource->Owner, displayTo, pSource->Location, pTypeExt->DrainMoneyDisplay_Offset);
+	}
 
-		if (pTypeExt->DrainMoneyDisplay_AtFirer.Get(RulesExt::Global()->DrainMoneyDisplay_AtFirer) && pSource->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
-			FlyingStrings::AddMoneyString(amount, pSource, pSource->Owner, displayTo, pSource->Location, pTypeExt->DrainMoneyDisplay_Offset);
-
-		if (pTypeExt->DrainMoneyDisplay_AtTarget.Get(RulesExt::Global()->DrainMoneyDisplay_AtTarget) && pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
-			FlyingStrings::AddMoneyString(-amount, pThis, pThis->Owner, displayTo, pThis->Location, pTypeExt->DrainMoneyDisplay_Offset);
+	if (pTypeExt->DrainMoneyDisplay_OnTarget.Get(RulesExt::Global()->DrainMoneyDisplay_OnTarget) && pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+	{
+		if (!pTypeExt->DrainMoneyDisplay_OnTarget_UseDisplayIncome.Get(RulesExt::Global()->DrainMoneyDisplay_OnTarget_UseDisplayIncome))
+		{
+			const auto displayTo = pTypeExt->DrainMoneyDisplay_Houses.Get(RulesExt::Global()->DrainMoneyDisplay_Houses);
+			// use firer for owner check
+			FlyingStrings::AddMoneyString(-amount, pThis, pSource->Owner, displayTo, pThis->GetRenderCoords(), pTypeExt->DrainMoneyDisplay_Offset);
+		}
+		else if (const auto pBld = abstract_cast<BuildingClass*, true>(pThis))
+		{
+			const auto pBldTypeExt = BuildingTypeExt::ExtMap.Find(pBld->Type);
+			const auto displayTo = pBldTypeExt->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses);
+			// use target for owner check
+			FlyingStrings::AddMoneyString(-amount, pThis, pThis->Owner, displayTo, pThis->GetRenderCoords(), pBldTypeExt->DisplayIncome_Offset);
+		}
 	}
 
 	return SkipGameCode;

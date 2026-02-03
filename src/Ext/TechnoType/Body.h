@@ -467,10 +467,10 @@ public:
 		Nullable<int> DrainMoneyAmount;
 		Nullable<AnimTypeClass*> DrainAnimationType;
 		Nullable<bool> DrainMoneyDisplay;
-		Nullable<AffectedHouse> DrainMoneyDisplay_House;
-		Nullable<bool> DrainMoneyDisplay_AtFirer;
-		Nullable<bool> DrainMoneyDisplay_AtTarget;
+		Nullable<AffectedHouse> DrainMoneyDisplay_Houses;
 		Valueable<Point2D> DrainMoneyDisplay_Offset;
+		Nullable<bool> DrainMoneyDisplay_OnTarget;
+		Nullable<bool> DrainMoneyDisplay_OnTarget_UseDisplayIncome;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -893,10 +893,10 @@ public:
 			, DrainMoneyAmount {}
 			, DrainAnimationType {}
 			, DrainMoneyDisplay {}
-			, DrainMoneyDisplay_House {}
-			, DrainMoneyDisplay_AtFirer {}
-			, DrainMoneyDisplay_AtTarget {}
+			, DrainMoneyDisplay_Houses {}
 			, DrainMoneyDisplay_Offset { Point2D::Empty }
+			, DrainMoneyDisplay_OnTarget {}
+			, DrainMoneyDisplay_OnTarget_UseDisplayIncome {}
 		{ }
 
 		virtual ~ExtData() = default;

@@ -117,9 +117,9 @@ public:
 		Valueable<AffectedHouse> DisplayIncome_Houses;
 
 		Valueable<bool> DrainMoneyDisplay;
-		Valueable<AffectedHouse> DrainMoneyDisplay_House;
-		Valueable<bool> DrainMoneyDisplay_AtFirer;
-		Valueable<bool> DrainMoneyDisplay_AtTarget;
+		Valueable<AffectedHouse> DrainMoneyDisplay_Houses;
+		Valueable<bool> DrainMoneyDisplay_OnTarget;
+		Valueable<bool> DrainMoneyDisplay_OnTarget_UseDisplayIncome;
 
 		Valueable<bool> AllowDeployControlledMCV;
 
@@ -413,9 +413,9 @@ public:
 			, DisplayIncome_AllowAI { true }
 			, DisplayIncome_Houses { AffectedHouse::All }
 			, DrainMoneyDisplay { false }
-			, DrainMoneyDisplay_House { AffectedHouse::All }
-			, DrainMoneyDisplay_AtFirer { true }
-			, DrainMoneyDisplay_AtTarget { true }
+			, DrainMoneyDisplay_Houses { AffectedHouse::All }
+			, DrainMoneyDisplay_OnTarget { false }
+			, DrainMoneyDisplay_OnTarget_UseDisplayIncome { true }
 			, CrateOnlyOnLand { false }
 			, UnitCrateVehicleCap { 50 }
 			, FreeMCV_CreditsThreshold { 1500 }
