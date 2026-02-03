@@ -200,6 +200,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DisplayIncome_Houses.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.Houses");
 	this->DisplayIncome_AllowAI.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.AllowAI");
 
+	this->DrainMoneyDisplay.Read(exINI, GameStrings::AudioVisual, "DrainMoneyDisplay");
+	this->DrainMoneyDisplay_Houses.Read(exINI, GameStrings::AudioVisual, "DrainMoneyDisplay.Houses");
+	this->DrainMoneyDisplay_OnTarget.Read(exINI, GameStrings::AudioVisual, "DrainMoneyDisplay.OnTarget");
+	this->DrainMoneyDisplay_OnTarget_UseDisplayIncome.Read(exINI, GameStrings::AudioVisual, "DrainMoneyDisplay.OnTarget.UseDisplayIncome");
+
 	this->IsVoiceCreatedGlobal.Read(exINI, GameStrings::AudioVisual, "IsVoiceCreatedGlobal");
 	this->SelectionFlashDuration.Read(exINI, GameStrings::AudioVisual, "SelectionFlashDuration");
 	this->DrawInsignia_OnlyOnSelected.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.OnlyOnSelected");
@@ -350,6 +355,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->AutoTarget_NoThreatBuildings.Read(exINI, GameStrings::General, "AutoTarget.NoThreatBuildings");
 	this->AutoTargetAI_NoThreatBuildings.Read(exINI, GameStrings::General, "AutoTargetAI.NoThreatBuildings");
+
+	this->ParadropMission.Read(exINI, GameStrings::General, "ParadropMission");
+	this->AIParadropMission.Read(exINI, GameStrings::General, "AIParadropMission");
 
 	this->PenetratesTransport_Level.Read(exINI, GameStrings::CombatDamage, "PenetratesTransport.Level");
 
@@ -522,6 +530,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DisplayIncome)
 		.Process(this->DisplayIncome_AllowAI)
 		.Process(this->DisplayIncome_Houses)
+		.Process(this->DrainMoneyDisplay)
+		.Process(this->DrainMoneyDisplay_Houses)
+		.Process(this->DrainMoneyDisplay_OnTarget)
+		.Process(this->DrainMoneyDisplay_OnTarget_UseDisplayIncome)
 		.Process(this->CrateOnlyOnLand)
 		.Process(this->UnitCrateVehicleCap)
 		.Process(this->FreeMCV_CreditsThreshold)
@@ -643,6 +655,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraRange_Prefiring_IncludeBurst)
 		.Process(this->AutoTarget_NoThreatBuildings)
 		.Process(this->AutoTargetAI_NoThreatBuildings)
+		.Process(this->ParadropMission)
+		.Process(this->AIParadropMission)
 		.Process(this->PenetratesTransport_Level)
 		;
 }

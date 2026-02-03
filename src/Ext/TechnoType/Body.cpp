@@ -1138,6 +1138,18 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->TeamMember_ConsideredAs.Read(exINI, pSection, "TeamMember.ConsideredAs");
 
+	this->DrainMoneyFrameDelay.Read(exINI, pSection, "DrainMoneyFrameDelay");
+	this->DrainMoneyAmount.Read(exINI, pSection, "DrainMoneyAmount");
+	this->DrainAnimationType.Read(exINI, pSection, "DrainAnimationType");
+	this->DrainMoneyDisplay.Read(exINI, pSection, "DrainMoneyDisplay");
+	this->DrainMoneyDisplay_Houses.Read(exINI, pSection, "DrainMoneyDisplay.Houses");
+	this->DrainMoneyDisplay_Offset.Read(exINI, pSection, "DrainMoneyDisplay.Offset");
+	this->DrainMoneyDisplay_OnTarget.Read(exINI, pSection, "DrainMoneyDisplay.OnTarget");
+	this->DrainMoneyDisplay_OnTarget_UseDisplayIncome.Read(exINI, pSection, "DrainMoneyDisplay.OnTarget.UseDisplayIncome");
+
+	this->ParadropMission.Read(exINI, pSection, "ParadropMission");
+	this->AIParadropMission.Read(exINI, pSection, "AIParadropMission");
+
 	this->PenetratesTransport_Level.Read(exINI, pSection, "PenetratesTransport.Level");
 	this->PenetratesTransport_PassThroughMultiplier.Read(exINI, pSection, "PenetratesTransport.PassThroughMultiplier");
 	this->PenetratesTransport_FatalRateMultiplier.Read(exINI, pSection, "PenetratesTransport.FatalRateMultiplier");
@@ -1832,6 +1844,18 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Deploy_SkipPassengerUnload)
 		.Process(this->Deploy_NoPassenger)
 		.Process(this->Deploy_NoTiberium)
+		
+		.Process(this->DrainMoneyFrameDelay)
+		.Process(this->DrainMoneyAmount)
+		.Process(this->DrainAnimationType)
+		.Process(this->DrainMoneyDisplay)
+		.Process(this->DrainMoneyDisplay_Houses)
+		.Process(this->DrainMoneyDisplay_Offset)
+		.Process(this->DrainMoneyDisplay_OnTarget)
+		.Process(this->DrainMoneyDisplay_OnTarget_UseDisplayIncome)
+
+		.Process(this->ParadropMission)
+		.Process(this->AIParadropMission)
 
 		.Process(this->PenetratesTransport_Level)
 		.Process(this->PenetratesTransport_PassThroughMultiplier)

@@ -440,11 +440,6 @@ public:
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
 		Valueable<bool> AttackMove_PursuitTarget;
 
-		Nullable<int> PenetratesTransport_Level;
-		Valueable<double> PenetratesTransport_PassThroughMultiplier;
-		Valueable<double> PenetratesTransport_FatalRateMultiplier;
-		Valueable<double> PenetratesTransport_DamageMultiplier;
-
 		Valueable<bool> MultiWeapon;
 		ValueableVector<bool> MultiWeapon_IsSecondary;
 		Valueable<int> MultiWeapon_SelectCount;
@@ -467,6 +462,23 @@ public:
 		Valueable<bool> Deploy_SkipPassengerUnload;
 		Valueable<bool> Deploy_NoPassenger;
 		Valueable<bool> Deploy_NoTiberium;
+
+		Nullable<int> DrainMoneyFrameDelay;
+		Nullable<int> DrainMoneyAmount;
+		Nullable<AnimTypeClass*> DrainAnimationType;
+		Nullable<bool> DrainMoneyDisplay;
+		Nullable<AffectedHouse> DrainMoneyDisplay_Houses;
+		Valueable<Point2D> DrainMoneyDisplay_Offset;
+		Nullable<bool> DrainMoneyDisplay_OnTarget;
+		Nullable<bool> DrainMoneyDisplay_OnTarget_UseDisplayIncome;
+
+		Nullable<Mission> ParadropMission;
+		Nullable<Mission> AIParadropMission;
+
+		Nullable<int> PenetratesTransport_Level;
+		Valueable<double> PenetratesTransport_PassThroughMultiplier;
+		Valueable<double> PenetratesTransport_FatalRateMultiplier;
+		Valueable<double> PenetratesTransport_DamageMultiplier;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -862,11 +874,6 @@ public:
 			, AttackMove_StopWhenTargetAcquired { }
 			, AttackMove_PursuitTarget { false }
 
-			, PenetratesTransport_Level {}
-			, PenetratesTransport_PassThroughMultiplier { 1.0 }
-			, PenetratesTransport_FatalRateMultiplier { 1.0 }
-			, PenetratesTransport_DamageMultiplier { 1.0 }
-
 			, MultiWeapon { false }
 			, MultiWeapon_IsSecondary {}
 			, MultiWeapon_SelectCount { 2 }
@@ -889,6 +896,23 @@ public:
 			, Deploy_SkipPassengerUnload { false }
 			, Deploy_NoPassenger { false }
 			, Deploy_NoTiberium { false }
+
+			, DrainMoneyFrameDelay {}
+			, DrainMoneyAmount {}
+			, DrainAnimationType {}
+			, DrainMoneyDisplay {}
+			, DrainMoneyDisplay_Houses {}
+			, DrainMoneyDisplay_Offset { Point2D::Empty }
+			, DrainMoneyDisplay_OnTarget {}
+			, DrainMoneyDisplay_OnTarget_UseDisplayIncome {}
+
+			, ParadropMission {}
+			, AIParadropMission {}
+
+			, PenetratesTransport_Level {}
+			, PenetratesTransport_PassThroughMultiplier { 1.0 }
+			, PenetratesTransport_FatalRateMultiplier { 1.0 }
+			, PenetratesTransport_DamageMultiplier { 1.0 }
 		{ }
 
 		virtual ~ExtData() = default;

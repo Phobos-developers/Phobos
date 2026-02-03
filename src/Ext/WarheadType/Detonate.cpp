@@ -747,15 +747,11 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 					passenger->SetLocation(transporterCoords);
 					int applyDamage = pPassengerType->Strength;
 
-					if (passenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, true, true, pInvokerHouse) == DamageState::NowDead)
+					if (passenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, true, true, pInvokerHouse) == DamageState::NowDead
+						&& isFirst && pTargetType->Gunner && pTargetFoot)
 					{
-						passenger->Owner->RecheckTechTree = true;
-
-						if (isFirst && pTargetType->Gunner && pTargetFoot)
-						{
-							pTargetFoot->RemoveGunner(passenger);
-							gunnerRemoved = true;
-						}
+						pTargetFoot->RemoveGunner(passenger);
+						gunnerRemoved = true;
 					}
 				}
 
@@ -776,15 +772,11 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 					passenger->SetLocation(transporterCoords);
 					int applyDamage = adjustedDamage;
 
-					if (passenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, false, true, pInvokerHouse) == DamageState::NowDead)
+					if (passenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, false, true, pInvokerHouse) == DamageState::NowDead
+						&& isFirst && pTargetType->Gunner && pTargetFoot)
 					{
-						passenger->Owner->RecheckTechTree = true;
-
-						if (isFirst && pTargetType->Gunner && pTargetFoot)
-						{
-							pTargetFoot->RemoveGunner(passenger);
-							gunnerRemoved = true;
-						}
+						pTargetFoot->RemoveGunner(passenger);
+						gunnerRemoved = true;
 					}
 				}
 
@@ -816,30 +808,22 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 		{
 			int applyDamage = pPassengerType->Strength;
 
-			if (passenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, true, true, pInvokerHouse) == DamageState::NowDead)
+			if (passenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, true, true, pInvokerHouse) == DamageState::NowDead
+				&& isFirst && pTargetType->Gunner && pTargetFoot)
 			{
-				passenger->Owner->RecheckTechTree = true;
-
-				if (isFirst && pTargetType->Gunner && pTargetFoot)
-				{
-					pTargetFoot->RemoveGunner(passenger);
-					gunnerRemoved = true;
-				}
+				pTargetFoot->RemoveGunner(passenger);
+				gunnerRemoved = true;
 			}
 		}
 		else
 		{
 			int adjustedDamage = static_cast<int>(std::ceil(damage * this->PenetratesTransport_DamageMultiplier * pTargetTypeExt->PenetratesTransport_DamageMultiplier));
 
-			if (passenger->ReceiveDamage(&adjustedDamage, distance, pWH, pInvoker, false, true, pInvokerHouse) == DamageState::NowDead)
+			if (passenger->ReceiveDamage(&adjustedDamage, distance, pWH, pInvoker, false, true, pInvokerHouse) == DamageState::NowDead
+				&& isFirst && pTargetType->Gunner && pTargetFoot)
 			{
-				passenger->Owner->RecheckTechTree = true;
-
-				if (isFirst && pTargetType->Gunner && pTargetFoot)
-				{
-					pTargetFoot->RemoveGunner(passenger);
-					gunnerRemoved = true;
-				}
+				pTargetFoot->RemoveGunner(passenger);
+				gunnerRemoved = true;
 			}
 		}
 	}

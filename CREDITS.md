@@ -489,6 +489,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize whether weapon can be used to targeting ironcurtained technos or not
   - Fix the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon
   - Fix the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally
+  - Customizable disk drain logic
   - Penetrates damage on transporter
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
@@ -687,6 +688,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies
   - `AllowBerzerkOnAllies`
   - Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat
+  - Fix an issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
