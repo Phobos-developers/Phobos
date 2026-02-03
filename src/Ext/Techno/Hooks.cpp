@@ -168,7 +168,7 @@ DEFINE_HOOK(0x6FA167, TechnoClass_AI_DrainMoney, 0x5)
 
 	GET(TechnoClass*, pThis, ESI);
 	const auto pSource = pThis->DrainingMe;
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pSource)->TypeExtData;
 
 	if (Unsorted::CurrentFrame % pTypeExt->DrainMoneyFrameDelay.Get(RulesClass::Instance->DrainMoneyFrameDelay))
 		return SkipGameCode;
@@ -189,15 +189,15 @@ DEFINE_HOOK(0x6FA167, TechnoClass_AI_DrainMoney, 0x5)
 	pThis->Owner->TransactMoney(-amount);
 	pSource->Owner->TransactMoney(amount);
 
-	if (pTypeExt->DrainMoney_Display)
+	if (pTypeExt->DrainMoneyDisplay.Get(RulesExt::Global()->DrainMoneyDisplay))
 	{
-		const auto displayAt = pTypeExt->DrainMoney_Display_AtFirer ? pSource : pThis;
+		const auto displayTo = pTypeExt->DrainMoneyDisplay_House.Get(RulesExt::Global()->DrainMoneyDisplay_House);
 
-		if (displayAt->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
-		{
-			const int displayAmount = pTypeExt->DrainMoney_Display_AtFirer ? amount : -amount;
-			FlyingStrings::AddMoneyString(displayAmount, pSource, pSource->Owner, pTypeExt->DrainMoney_Display_House, displayAt->Location, pTypeExt->DrainMoney_Display_Offset);
-		}
+		if (pTypeExt->DrainMoneyDisplay_AtFirer.Get(RulesExt::Global()->DrainMoneyDisplay_AtFirer) && pSource->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+			FlyingStrings::AddMoneyString(amount, pSource, pSource->Owner, displayTo, pSource->Location, pTypeExt->DrainMoneyDisplay_Offset);
+
+		if (pTypeExt->DrainMoneyDisplay_AtTarget.Get(RulesExt::Global()->DrainMoneyDisplay_AtTarget) && pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+			FlyingStrings::AddMoneyString(-amount, pThis, pThis->Owner, displayTo, pThis->Location, pTypeExt->DrainMoneyDisplay_Offset);
 	}
 
 	return SkipGameCode;

@@ -913,7 +913,7 @@ DEFINE_HOOK(0x70FDF5, TechnoClass_DrawDrainAnimation_Custom, 0x6)
 	enum { SkipGameCode = 0x70FDFB };
 
 	GET(TechnoClass*, pThis, ESI);
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
 	R->EDX(pTypeExt->DrainAnimationType.Get(RulesClass::Instance->DrainAnimationType));
 	return SkipGameCode;

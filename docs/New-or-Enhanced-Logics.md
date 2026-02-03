@@ -2155,17 +2155,25 @@ WarpOutWeapon=                          ; WeaponType
 ### Customizable disk drain logic
 
 - It is possible to set properties of drain logic per technotypes.
+  - `DrainMoneyDisplay.AtFirer` and `DrainMoneyDisplay.AtTarget` determine whether drain money will be displayed at firer (get money) and target (lose money) respectively.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                            ; TechnoType
-DrainMoneyFrameDelay=               ; integer
-DrainMoneyAmount=                       ; integer
-DrainAnimationType=                     ; AnimationType
-DrainMoney.Display=false            ; boolean
-DrainMoney.Display.House=all        ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-DrainMoney.Display.AtFirer=true         ; boolean
-DrainMoney.Display.Offset=0,0           ; integer - X, Y
+[AudioVisual]
+DrainMoneyDisplay=false            ; boolean
+DrainMoneyDisplay.House=all        ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DrainMoneyDisplay.AtFirer=true     ; boolean
+DrainMoneyDisplay.AtTarget=true    ; boolean
+
+[SOMETECHNO]                       ; TechnoType
+DrainMoneyFrameDelay=              ; integer, default to [CombatDamage] -> DrainMoneyFrameDelay
+DrainMoneyAmount=                  ; integer, default to [CombatDamage] -> DrainMoneyAmount
+DrainAnimationType=                ; AnimationType, default to [CombatDamage] -> DrainAnimationType
+DrainMoneyDisplay=                 ; boolean, default to [AudioVisual] -> DrainMoneyDisplay
+DrainMoneyDisplay.House=           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to [AudioVisual] -> DrainMoneyDisplay.House
+DrainMoneyDisplay.AtFirer=         ; boolean, default to [AudioVisual] -> DrainMoneyDisplay.AtFirer
+DrainMoneyDisplay.AtTarget=        ; boolean, default to [AudioVisual] -> DrainMoneyDisplay.AtTarget
+DrainMoneyDisplay.Offset=0,0       ; X,Y, pixels relative to default
 ```
 
 ## Terrain

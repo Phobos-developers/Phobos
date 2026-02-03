@@ -200,6 +200,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DisplayIncome_Houses.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.Houses");
 	this->DisplayIncome_AllowAI.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.AllowAI");
 
+	this->DrainMoneyDisplay.Read(exINI, GameStrings::AudioVisual, "DrainMoneyDisplay");
+	this->DrainMoneyDisplay_House.Read(exINI, GameStrings::AudioVisual, "DrainMoneyDisplay.House");
+	this->DrainMoneyDisplay_AtFirer.Read(exINI, GameStrings::AudioVisual, "DrainMoneyDisplay.AtFirer");
+	this->DrainMoneyDisplay_AtTarget.Read(exINI, GameStrings::AudioVisual, "DrainMoneyDisplay.AtTarget");
+
 	this->IsVoiceCreatedGlobal.Read(exINI, GameStrings::AudioVisual, "IsVoiceCreatedGlobal");
 	this->SelectionFlashDuration.Read(exINI, GameStrings::AudioVisual, "SelectionFlashDuration");
 	this->DrawInsignia_OnlyOnSelected.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.OnlyOnSelected");
@@ -520,6 +525,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DisplayIncome)
 		.Process(this->DisplayIncome_AllowAI)
 		.Process(this->DisplayIncome_Houses)
+		.Process(this->DrainMoneyDisplay)
+		.Process(this->DrainMoneyDisplay_House)
+		.Process(this->DrainMoneyDisplay_AtFirer)
+		.Process(this->DrainMoneyDisplay_AtTarget)
 		.Process(this->CrateOnlyOnLand)
 		.Process(this->UnitCrateVehicleCap)
 		.Process(this->FreeMCV_CreditsThreshold)
