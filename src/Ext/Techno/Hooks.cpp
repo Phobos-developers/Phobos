@@ -12,6 +12,7 @@
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/AresHelper.h>
 #include <Utilities/AresFunctions.h>
+#include <Misc/FlyingStrings.h>
 
 #pragma region GetTechnoType
 
@@ -158,6 +159,59 @@ DEFINE_HOOK(0x6FA07A, TechnoClass_AI_PromoteAnim, 0x5)
 
 	// Restore overridden instructions.
 	R->EAX(pVet->GetRemainingLevel());
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x6FA167, TechnoClass_AI_DrainMoney, 0x5)
+{
+	enum { SkipGameCode = 0x6FA1C5 };
+
+	GET(TechnoClass*, pThis, ESI);
+	const auto pSource = pThis->DrainingMe;
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pSource)->TypeExtData;
+
+	if (Unsorted::CurrentFrame % pTypeExt->DrainMoneyFrameDelay.Get(RulesClass::Instance->DrainMoneyFrameDelay))
+		return SkipGameCode;
+
+	int amount = pTypeExt->DrainMoneyAmount.Get(RulesClass::Instance->DrainMoneyAmount);
+
+	if (!amount)
+		return SkipGameCode;
+
+	if (amount > 0)
+		amount = Math::min(amount, pThis->Owner->Available_Money());
+	else
+		amount = Math::max(amount, -pSource->Owner->Available_Money());
+
+	if (!amount)
+		return SkipGameCode;
+
+	pThis->Owner->TransactMoney(-amount);
+	pSource->Owner->TransactMoney(amount);
+
+	if (pTypeExt->DrainMoneyDisplay.Get(RulesExt::Global()->DrainMoneyDisplay) && pSource->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+	{
+		const auto displayTo = pTypeExt->DrainMoneyDisplay_Houses.Get(RulesExt::Global()->DrainMoneyDisplay_Houses);
+		FlyingStrings::AddMoneyString(amount, pSource, pSource->Owner, displayTo, pSource->Location, pTypeExt->DrainMoneyDisplay_Offset);
+	}
+
+	if (pTypeExt->DrainMoneyDisplay_OnTarget.Get(RulesExt::Global()->DrainMoneyDisplay_OnTarget))
+	{
+		if (!pTypeExt->DrainMoneyDisplay_OnTarget_UseDisplayIncome.Get(RulesExt::Global()->DrainMoneyDisplay_OnTarget_UseDisplayIncome))
+		{
+			const auto displayTo = pTypeExt->DrainMoneyDisplay_Houses.Get(RulesExt::Global()->DrainMoneyDisplay_Houses);
+			// use firer for owner check
+			FlyingStrings::AddMoneyString(-amount, pThis, pSource->Owner, displayTo, pThis->GetRenderCoords(), pTypeExt->DrainMoneyDisplay_Offset);
+		}
+		else if (const auto pBld = abstract_cast<BuildingClass*, true>(pThis))
+		{
+			const auto pBldTypeExt = BuildingTypeExt::ExtMap.Find(pBld->Type);
+			const auto displayTo = pBldTypeExt->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses);
+			// use target for owner check
+			FlyingStrings::AddMoneyString(-amount, pThis, pThis->Owner, displayTo, pThis->GetRenderCoords(), pBldTypeExt->DisplayIncome_Offset);
+		}
+	}
+
 	return SkipGameCode;
 }
 
@@ -1590,5 +1644,33 @@ DEFINE_HOOK(0x6F85CF, TechnoClass_CanAutoTarget_AttackNoThreatBuildings, 0xA)
 	R->EAX(pTarget->GetTurretWeapon());
 	return Continue;
 }
+
+#pragma endregion
+
+#pragma region ParadropMission
+
+static bool __fastcall FootClass_Paradrop(FootClass* pThis, void*, const CoordStruct& coords)
+{
+	if (!pThis->ObjectClass::SpawnParachuted(coords))
+		return false;
+
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	Mission mission;
+
+	if (pThis->Owner->IsControlledByHuman())
+		mission = pTypeExt->ParadropMission.Get(RulesExt::Global()->ParadropMission);
+	else
+		mission = pTypeExt->AIParadropMission.Get(RulesExt::Global()->AIParadropMission);
+
+	pThis->QueueMission(mission, false);
+
+	if (pThis->WhatAmI() == AbstractType::Infantry)
+		static_cast<InfantryClass*>(pThis)->PlayAnim(Sequence::Paradrop, true, false);
+
+	return true;
+}
+
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB140, FootClass_Paradrop) // Replace game's original function for infantry paradrops for consistency.
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5D58, FootClass_Paradrop) // Replace ObjectClass::Paradrop in UnitClass virtual table.
 
 #pragma endregion
