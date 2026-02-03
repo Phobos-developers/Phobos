@@ -2821,6 +2821,7 @@ msgid ""
 "`AreTeamMembersRecruitable=false` cannot be recruited even if they have "
 "been liberated by that team (by TaranDahl)"
 msgstr ""
+"修复了单位被 `AreTeamMembersRecruitable=false` 的小队招募过则即便原小队解散也无法再被其他小队招募的 Bug（by TaranDahl）"
 
 #: ../../Whats-New.md:588 ../../Whats-New.md:633 ../../Whats-New.md:651
 #: ../../Whats-New.md:979 ../../Whats-New.md:1064 ../../Whats-New.md:1228

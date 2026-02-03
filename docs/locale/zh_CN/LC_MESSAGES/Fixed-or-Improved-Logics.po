@@ -1789,6 +1789,7 @@ msgid ""
 "`AreTeamMembersRecruitable=false` cannot be recruited even if they have "
 "been liberated by that team."
 msgstr ""
+"修复了单位被 `AreTeamMembersRecruitable=false` 的小队招募过则即便原小队解散也无法再被其他小队招募的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:298
 msgid "Fixes / interactions with other extensions"
