@@ -1,9 +1,4 @@
 #include <Helpers/Macro.h>
-
-#include <LaserDrawClass.h>
-#include <GeneralStructures.h>
-#include <Utilities/Debug.h>
-#include <Utilities/Macro.h>
 #include <Utilities/GeneralUtils.h>
 
 namespace LaserDrawTemp

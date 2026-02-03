@@ -1,13 +1,8 @@
-#include <Phobos.h>
-
-#include <Helpers/Macro.h>
 #include <PreviewClass.h>
-#include <Surface.h>
 #include <ThemeClass.h>
 
 #include <Ext/House/Body.h>
 #include <Ext/Side/Body.h>
-#include <Ext/Rules/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/SWType/Body.h>
@@ -15,7 +10,6 @@
 #include <Misc/FlyingStrings.h>
 
 #include <New/Entity/BannerClass.h>
-#include <New/Type/BannerTypeClass.h>
 
 #include <Utilities/Debug.h>
 
@@ -93,9 +87,9 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 	{
 		const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
-		const auto nActive = HouseExt::ActiveHarvesterCount(pPlayer);
-		const auto nTotal = HouseExt::TotalHarvesterCount(pPlayer);
-		const auto nPercentage = nTotal == 0 ? 1.0 : (double)nActive / (double)nTotal;
+		const int nActive = HouseExt::ActiveHarvesterCount(pPlayer);
+		const int nTotal = HouseExt::TotalHarvesterCount(pPlayer);
+		const double nPercentage = nTotal == 0 ? 1.0 : (double)nActive / (double)nTotal;
 
 		const ColorStruct clrToolTip = nPercentage > Phobos::UI::HarvesterCounter_ConditionYellow
 			? Drawing::TooltipColor : nPercentage > Phobos::UI::HarvesterCounter_ConditionRed

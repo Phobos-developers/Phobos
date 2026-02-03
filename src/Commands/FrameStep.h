@@ -3,6 +3,7 @@
 #include "Commands.h"
 
 #include "FrameByFrame.h"
+#include <Utilities/Debug.h>
 
 template<size_t Frame>
 class FrameStepCommandClass : public CommandClass

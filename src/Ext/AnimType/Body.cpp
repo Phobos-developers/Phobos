@@ -1,18 +1,11 @@
 #include "Body.h"
-#include <Phobos.h>
-#include <Helpers/Macro.h>
-#include <Utilities/TemplateDef.h>
-#include <HouseTypeClass.h>
-#include <HouseClass.h>
-#include <ScenarioClass.h>
-#include <UnitClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/TechnoType/Body.h>
 
 AnimTypeExt::ExtContainer AnimTypeExt::ExtMap;
 
-void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
+void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, HouseClass* pKiller)
 {
 	if (!pThis)
 		return;
@@ -48,7 +41,7 @@ void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
 		if (pAnimType)
 		{
 			auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location);
-			auto const pInvoker = pKiller ? pKiller->Owner : nullptr;
+			auto const pInvoker = pKiller;
 
 			//auto VictimOwner = pThis->IsMindControlled() && pThis->GetOriginalOwner()
 			//	? pThis->GetOriginalOwner() : pThis->Owner;

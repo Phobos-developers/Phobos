@@ -37,17 +37,21 @@
 #include "Template.h"
 
 #include "INIParser.h"
-#include "Enum.h"
-#include "Constructs.h"
+#include "EnumFunctions.h"
 #include "SavegameDef.h"
+#include "Macro.h"
 
 #include <InfantryTypeClass.h>
 #include <AircraftTypeClass.h>
 #include <UnitTypeClass.h>
 #include <BuildingTypeClass.h>
 #include <WarheadTypeClass.h>
+#include <WeaponTypeClass.h>
 #include <SuperWeaponTypeClass.h>
-#include <FootClass.h>
+#include <InfantryClass.h>
+#include <AircraftClass.h>
+#include <UnitClass.h>
+#include <BuildingClass.h>
 #include <Powerups.h>
 #include <VocClass.h>
 #include <VoxClass.h>
@@ -273,10 +277,13 @@ namespace detail
 	template <>
 	inline bool read<PartialVector2D<int>>(PartialVector2D<int>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
-		value.ValueCount = parser.ReadMultipleIntegers(pSection, pKey, (int*)&value, 2);
+		int valueCount = parser.ReadMultipleIntegers(pSection, pKey, (int*)&value, 2);
 
-		if (value.ValueCount > 0)
+		if (valueCount > 0)
+		{
+			value.ValueCount = valueCount;
 			return true;
+		}
 
 		return false;
 	}
@@ -284,10 +291,13 @@ namespace detail
 	template <>
 	inline bool read<PartialVector2D<double>>(PartialVector2D<double>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
-		value.ValueCount = parser.ReadMultipleDoubles(pSection, pKey, (double*)&value, 2);
+		int valueCount = parser.ReadMultipleDoubles(pSection, pKey, (double*)&value, 2);
 
-		if (value.ValueCount > 0)
+		if (valueCount > 0)
+		{
+			value.ValueCount = valueCount;
 			return true;
+		}
 
 		return false;
 	}
@@ -295,10 +305,13 @@ namespace detail
 	template <>
 	inline bool read<PartialVector3D<int>>(PartialVector3D<int>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
-		value.ValueCount = parser.ReadMultipleIntegers(pSection, pKey, (int*)&value, 3);
+		int valueCount = parser.ReadMultipleIntegers(pSection, pKey, (int*)&value, 3);
 
-		if (value.ValueCount > 0)
+		if (valueCount > 0)
+		{
+			value.ValueCount = valueCount;
 			return true;
+		}
 
 		return false;
 	}
@@ -306,10 +319,13 @@ namespace detail
 	template <>
 	inline bool read<PartialVector3D<double>>(PartialVector3D<double>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
-		value.ValueCount = parser.ReadMultipleDoubles(pSection, pKey, (double*)&value, 3);
+		int valueCount = parser.ReadMultipleDoubles(pSection, pKey, (double*)&value, 3);
 
-		if (value.ValueCount > 0)
+		if (valueCount > 0)
+		{
+			value.ValueCount = valueCount;
 			return true;
+		}
 
 		return false;
 	}
@@ -782,6 +798,52 @@ namespace detail
 
 		return false;
 	}
+
+	template <>
+	inline bool read<AffectedVeterancy>(AffectedVeterancy& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			static const std::pair<const char*, AffectedVeterancy> Names[] =
+			{
+				{"rookie",  AffectedVeterancy::Rookie},
+				{"veteran", AffectedVeterancy::Veteran},
+				{"elite",   AffectedVeterancy::Elite},
+				{"all",     AffectedVeterancy::All},
+				{"none",    AffectedVeterancy::None},
+			};
+
+
+			auto parsed = AffectedVeterancy::None;
+			for (auto&& part : std::string_view { parser.value() } | std::views::split(','))
+			{
+				std::string_view&& cur { part.begin(),part.end() };
+				*const_cast<char*>(cur.data() + cur.find_last_not_of(" \t\r") + 1) = 0;
+				auto pCur = cur.data() + cur.find_first_not_of(" \t\r");
+				bool matched = false;
+				for (auto const& [name, val] : Names)
+				{
+					if (_strcmpi(pCur, name) == 0)
+					{
+						parsed |= val;
+						matched = true;
+						break;
+					}
+				}
+				if (!matched)
+				{
+					Debug::INIParseFailed(pSection, pKey, pCur, "Expected an affected veterancy");
+					return false;
+				}
+			}
+
+			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
+
 
 	template <>
 	inline bool read<AttachedAnimFlag>(AttachedAnimFlag& value, INI_EX& parser, const char* pSection, const char* pKey)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-20 14:21+0800\n"
+"POT-Creation-Date: 2026-01-11 22:24+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -158,7 +158,7 @@ msgstr ""
 
 #: ../../AI-Scripting-and-Mapping.md:38 ../../AI-Scripting-and-Mapping.md:116
 #: ../../AI-Scripting-and-Mapping.md:218 ../../AI-Scripting-and-Mapping.md:458
-#: ../../AI-Scripting-and-Mapping.md:729
+#: ../../AI-Scripting-and-Mapping.md:776
 msgid "In `rulesmd.ini`:"
 msgstr "在 `rulesmd.ini`："
 
@@ -456,7 +456,7 @@ msgstr ""
 msgid "*Action*"
 msgstr "*行为*"
 
-#: ../../AI-Scripting-and-Mapping.md:66
+#: ../../AI-Scripting-and-Mapping.md:66 ../../AI-Scripting-and-Mapping.md:522
 msgid "*Argument*"
 msgstr "*参数*"
 
@@ -469,7 +469,7 @@ msgid "*Target Priority*"
 msgstr "*目标优先级*"
 
 #: ../../AI-Scripting-and-Mapping.md:66 ../../AI-Scripting-and-Mapping.md:522
-#: ../../AI-Scripting-and-Mapping.md:864
+#: ../../AI-Scripting-and-Mapping.md:911
 msgid "*Description*"
 msgstr "*描述*"
 
@@ -1373,6 +1373,7 @@ msgstr ""
 "x=12002,n\n"
 
 #: ../../AI-Scripting-and-Mapping.md:335 ../../AI-Scripting-and-Mapping.md:395
+#: ../../AI-Scripting-and-Mapping.md:735
 msgid "The possible argument values are:"
 msgstr "可选参数有："
 
@@ -1492,17 +1493,16 @@ msgstr ""
 
 #: ../../AI-Scripting-and-Mapping.md:385
 msgid ""
-"`14004` Force Global `OnlyTargetHouseEnemy` value in Teams for new attack /"
-" move actions introduced by Phobos"
-msgstr ""
-"`14004` 为 Phobos 新增的攻击／移动脚本强制全局更改小队中的 `OnlyTargetHouseEnemy` 值"
+"`14004` Force Global `OnlyTargetHouseEnemy` value in Teams for new attack"
+" / move actions introduced by Phobos"
+msgstr "`14004` 为 Phobos 新增的攻击／移动脚本强制全局更改小队中的 `OnlyTargetHouseEnemy` 值"
 
 #: ../../AI-Scripting-and-Mapping.md:387
 msgid ""
-"Globally forcibly set a value for the `OnlyTargetHouseEnemy` tag on TeamType. "
-"Only affects the new attack / move actions introduced by Phobos."
-msgstr ""
-"全局性地强制为小队上的 `OnlyTargetHouseEnemy` 标签设置一个值。仅适用于 Phobos 新增的攻击／移动脚本。"
+"Globally forcibly set a value for the `OnlyTargetHouseEnemy` tag on "
+"TeamType. Only affects the new attack / move actions introduced by "
+"Phobos."
+msgstr "全局性地强制为小队上的 `OnlyTargetHouseEnemy` 标签设置一个值。仅适用于 Phobos 新增的攻击／移动脚本。"
 
 #: ../../AI-Scripting-and-Mapping.md:390
 msgid ""
@@ -1513,7 +1513,7 @@ msgstr ""
 "x=14004,n         ; integer\n"
 
 #: ../../AI-Scripting-and-Mapping.md:66 ../../AI-Scripting-and-Mapping.md:522
-#: ../../AI-Scripting-and-Mapping.md:864
+#: ../../AI-Scripting-and-Mapping.md:911
 msgid "-1"
 msgstr "-1"
 
@@ -1804,12 +1804,13 @@ msgstr "例如：`盟军战役25: 僵僵の钱 - 钱全被偷光了!`。"
 #: ../../AI-Scripting-and-Mapping.md:571 ../../AI-Scripting-and-Mapping.md:583
 #: ../../AI-Scripting-and-Mapping.md:596 ../../AI-Scripting-and-Mapping.md:622
 #: ../../AI-Scripting-and-Mapping.md:635 ../../AI-Scripting-and-Mapping.md:647
-#: ../../AI-Scripting-and-Mapping.md:660 ../../AI-Scripting-and-Mapping.md:688
-#: ../../AI-Scripting-and-Mapping.md:702 ../../AI-Scripting-and-Mapping.md:747
-#: ../../AI-Scripting-and-Mapping.md:763 ../../AI-Scripting-and-Mapping.md:790
-#: ../../AI-Scripting-and-Mapping.md:817 ../../AI-Scripting-and-Mapping.md:842
-#: ../../AI-Scripting-and-Mapping.md:856 ../../AI-Scripting-and-Mapping.md:874
-#: ../../AI-Scripting-and-Mapping.md:896
+#: ../../AI-Scripting-and-Mapping.md:660 ../../AI-Scripting-and-Mapping.md:673
+#: ../../AI-Scripting-and-Mapping.md:701 ../../AI-Scripting-and-Mapping.md:715
+#: ../../AI-Scripting-and-Mapping.md:727 ../../AI-Scripting-and-Mapping.md:749
+#: ../../AI-Scripting-and-Mapping.md:794 ../../AI-Scripting-and-Mapping.md:810
+#: ../../AI-Scripting-and-Mapping.md:837 ../../AI-Scripting-and-Mapping.md:864
+#: ../../AI-Scripting-and-Mapping.md:889 ../../AI-Scripting-and-Mapping.md:903
+#: ../../AI-Scripting-and-Mapping.md:921 ../../AI-Scripting-and-Mapping.md:943
 msgid "In `mycampaign.map`:"
 msgstr "在 `mycampaign.map`："
 
@@ -1995,15 +1996,15 @@ msgstr "在指定位置发射 `[SuperWeaponTypes]` 列表中的超级武器。"
 msgid "`HouseIndex` can take various values:"
 msgstr "`HouseIndex` 可取以下值："
 
-#: ../../AI-Scripting-and-Mapping.md:522 ../../AI-Scripting-and-Mapping.md:864
+#: ../../AI-Scripting-and-Mapping.md:522 ../../AI-Scripting-and-Mapping.md:911
 msgid "*House Index*"
 msgstr "*所属方索引*"
 
-#: ../../AI-Scripting-and-Mapping.md:522 ../../AI-Scripting-and-Mapping.md:864
+#: ../../AI-Scripting-and-Mapping.md:522 ../../AI-Scripting-and-Mapping.md:911
 msgid ">= 0"
 msgstr ">= 0"
 
-#: ../../AI-Scripting-and-Mapping.md:522 ../../AI-Scripting-and-Mapping.md:864
+#: ../../AI-Scripting-and-Mapping.md:522 ../../AI-Scripting-and-Mapping.md:911
 msgid "The index of the current House in the map"
 msgstr "地图上当前所属方的索引"
 
@@ -2019,7 +2020,7 @@ msgstr "类似范围 0-7 的索引"
 msgid "Pick a random House that isn't Neutral"
 msgstr "选择一个非中立的随机所属方"
 
-#: ../../AI-Scripting-and-Mapping.md:522 ../../AI-Scripting-and-Mapping.md:864
+#: ../../AI-Scripting-and-Mapping.md:522 ../../AI-Scripting-and-Mapping.md:911
 msgid "-2"
 msgstr "-2"
 
@@ -2100,68 +2101,100 @@ msgstr ""
 "...\n"
 
 #: ../../AI-Scripting-and-Mapping.md:655
-msgid "`606` Edit Hate-Value"
-msgstr "`606` 编辑仇恨值"
+msgid "`511` Undeploy Building to Waypoint"
+msgstr "`511` 反部署建筑至路径点"
 
 #: ../../AI-Scripting-and-Mapping.md:657
-msgid "Edit the hate-value that trigger houses to other houses."
-msgstr "编辑触发所属方对指定所属方的仇恨值。"
+msgid ""
+"Undeploy specific BuildingTypes into VehicleTypes and move them to a "
+"specific Waypoint."
+msgstr ""
+"反部署特定建筑类型为载具并移动至一个特定路径点。"
 
-#: ../../AI-Scripting-and-Mapping.md:658 ../../AI-Scripting-and-Mapping.md:686
-msgid "-1 works for all houses."
-msgstr "-1为 所有国家。"
+#: ../../AI-Scripting-and-Mapping.md:658
+msgid ""
+"If `<All>` is entered for the Building Type here, then undeploy all "
+"BuildingTypes."
+msgstr ""
+"若将此处建筑类型设为 `<All>` 则反部署所有建筑。"
 
 #: ../../AI-Scripting-and-Mapping.md:661
 msgid ""
 "[Actions]\n"
 "...\n"
-"ID=ActionCount,[Action1],606,0,[HouseIndex],[Operation],[Number],0,0,A,[ActionX]"
+"ID=ActionCount,[Action1],511,-10,[BuildingTypesID],[HouseIndex],0,0,0,[WaypointIndex],[ActionX]"
 "\n"
 "...\n"
 msgstr ""
 "[Actions]\n"
 "...\n"
-"ID=ActionCount,[Action1],606,0,[HouseIndex],[Operation],[Number],0,0,A,[ActionX]"
+"ID=ActionCount,[Action1],511,-10,[BuildingTypesID],[HouseIndex],0,0,0,[WaypointIndex],[ActionX]"
 "\n"
 "...\n"
 
-#: ../../AI-Scripting-and-Mapping.md:683
-msgid "`607` Clear Hate-Value"
-msgstr "`607` 清除仇恨值"
+#: ../../AI-Scripting-and-Mapping.md:668
+msgid "`606` Edit Hate-Value"
+msgstr "`606` 编辑仇恨值"
 
-#: ../../AI-Scripting-and-Mapping.md:685
-msgid "Clear the hate-value that trigger houses to other houses."
-msgstr "清空触发所属方对指定所属方的仇恨值。"
+#: ../../AI-Scripting-and-Mapping.md:670
+msgid "Edit the hate-value that trigger houses to other houses."
+msgstr "编辑触发所属方对指定所属方的仇恨值。"
 
-#: ../../AI-Scripting-and-Mapping.md:689
+#: ../../AI-Scripting-and-Mapping.md:671 ../../AI-Scripting-and-Mapping.md:699
+msgid "-1 works for all houses."
+msgstr "-1为 所有国家。"
+
+#: ../../AI-Scripting-and-Mapping.md:674
 msgid ""
 "[Actions]\n"
 "...\n"
-"ID=ActionCount,[Action1],607,0,[HouseIndex],0,0,0,0,A,[ActionX]\n"
+"ID=ActionCount,[Action1],606,0,[HouseIndex],[Operation],[Number],0,0,A,[ActionX]"
+"\n"
 "...\n"
 msgstr ""
 "[Actions]\n"
 "...\n"
-"ID=ActionCount,[Action1],607,0,[HouseIndex],0,0,0,0,A,[ActionX]\n"
+"ID=ActionCount,[Action1],606,0,[HouseIndex],[Operation],[Number],0,0,A,[ActionX]"
+"\n"
 "...\n"
 
 #: ../../AI-Scripting-and-Mapping.md:696
+msgid "`607` Clear Hate-Value"
+msgstr "`607` 清除仇恨值"
+
+#: ../../AI-Scripting-and-Mapping.md:698
+msgid "Clear the hate-value that trigger houses to other houses."
+msgstr "清空触发所属方对指定所属方的仇恨值。"
+
+#: ../../AI-Scripting-and-Mapping.md:702
+msgid ""
+"[Actions]\n"
+"...\n"
+"ID=ActionCount,[Action1],607,0,[HouseIndex],0,0,0,0,A,[ActionX]\n"
+"...\n"
+msgstr ""
+"[Actions]\n"
+"...\n"
+"ID=ActionCount,[Action1],607,0,[HouseIndex],0,0,0,0,A,[ActionX]\n"
+"...\n"
+
+#: ../../AI-Scripting-and-Mapping.md:709
 msgid "`608` Set Force Enemy"
 msgstr "`608` 强制宣战"
 
-#: ../../AI-Scripting-and-Mapping.md:698
+#: ../../AI-Scripting-and-Mapping.md:711
 msgid "Force an enemy, it will not change with the change of hate-value."
 msgstr "强制和指定所属方成为敌人且不会因任何因素发生改变。"
 
-#: ../../AI-Scripting-and-Mapping.md:699
+#: ../../AI-Scripting-and-Mapping.md:712
 msgid "-1 will remove the forced enemy."
 msgstr "-1 会解除强制宣战。"
 
-#: ../../AI-Scripting-and-Mapping.md:700
+#: ../../AI-Scripting-and-Mapping.md:713
 msgid "-2 will never have any enemies."
 msgstr "-2 则强制没有敌人。"
 
-#: ../../AI-Scripting-and-Mapping.md:703
+#: ../../AI-Scripting-and-Mapping.md:716
 msgid ""
 "[Actions]\n"
 "...\n"
@@ -2173,33 +2206,96 @@ msgstr ""
 "ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]\n"
 "...\n"
 
-#: ../../AI-Scripting-and-Mapping.md:710
+#: ../../AI-Scripting-and-Mapping.md:723
+msgid "`609` Set Radar Mode"
+msgstr "`609` 设置雷达模式"
+
+#: ../../AI-Scripting-and-Mapping.md:725
+msgid "Change the current radar mode of the trigger house."
+msgstr "更改触发所属方的当前雷达模式"
+
+#: ../../AI-Scripting-and-Mapping.md:728
+msgid ""
+"[Actions]\n"
+"...\n"
+"ID=ActionCount,[Action1],609,0,0,[RadarMode],0,0,0,A,[ActionX]\n"
+"...\n"
+msgstr ""
+"[Actions]\n"
+"...\n"
+"ID=ActionCount,[Action1],609,0,0,[RadarMode],0,0,0,A,[ActionX]\n"
+"...\n"
+
+#: ../../AI-Scripting-and-Mapping.md:522
+msgid "Normal mode, requires buildings that provide radar and sufficient power"
+msgstr "常规模式，需要提供雷达的建筑并且电力充足。"
+
+#: ../../AI-Scripting-and-Mapping.md:522
+msgid "Change to [FreeRadar](https://modenc.renegadeprojects.com/FreeRadar) mode"
+msgstr "改为 [FreeRadar](https://modenc.renegadeprojects.com/FreeRadar) 模式"
+
+#: ../../AI-Scripting-and-Mapping.md:522
+msgid "Force enable radar"
+msgstr "强制开启雷达"
+
+#: ../../AI-Scripting-and-Mapping.md:522
+msgid "Force disable radar"
+msgstr "强制关闭雷达"
+
+#: ../../AI-Scripting-and-Mapping.md:744
+msgid "`610` Set house's `TeamDelays` value"
+msgstr "`610` 设置所属方的 `TeamDelays` 值"
+
+#: ../../AI-Scripting-and-Mapping.md:746
+msgid "Set the `TeamDelays` value of the trigger's house."
+msgstr "设置触发所属方的 `TeamDelays` 值。"
+
+#: ../../AI-Scripting-and-Mapping.md:747
+msgid ""
+"If this value is less than 0, then use the value of `[General] -> "
+"TeamDelays`."
+msgstr ""
+"若该值小于 0 则使用 `[General] -> TeamDelays` 的值。"
+
+#: ../../AI-Scripting-and-Mapping.md:750
+msgid ""
+"[Actions]\n"
+"...\n"
+"ID=ActionCount,[Action1],610,0,0,[Number],0,0,0,A,[ActionX]\n"
+"...\n"
+msgstr ""
+"[Actions]\n"
+"...\n"
+"ID=ActionCount,[Action1],610,0,0,[Number],0,0,0,A,[ActionX]\n"
+"...\n"
+
+#: ../../AI-Scripting-and-Mapping.md:757
 msgid "`800-802` Display Banner"
 msgstr "`800-802` 显示横幅"
 
-#: ../../AI-Scripting-and-Mapping.md:712
+#: ../../AI-Scripting-and-Mapping.md:759
 msgid "Display a 'banner' at a fixed location that is relative to the screen."
 msgstr "在屏幕固定位置显示一个“横幅”。"
 
-#: ../../AI-Scripting-and-Mapping.md:713
+#: ../../AI-Scripting-and-Mapping.md:760
 msgid ""
 "Action `800` will create a new banner or replace the banner with the same"
 " Banner ID if it exists. Using a local variable's value when displaying a"
 " text banner."
 msgstr "结果 `800` 将会创建一个新的横幅或替换掉拥有相同 Banner ID 的旧有横幅。显示文本横幅时将使用 **局部** 变量的值。"
 
-#: ../../AI-Scripting-and-Mapping.md:714
+#: ../../AI-Scripting-and-Mapping.md:761
 msgid ""
 "Action `801` will create a new banner or replace the banner with the same"
 " Banner ID if it exists. Using a global variable's value when displaying "
 "a text banner."
 msgstr "结果 `801` 将会创建一个新的横幅或替换掉拥有相同 Banner ID 的旧有横幅。显示文本横幅时将使用 **全局** 变量的值。"
 
-#: ../../AI-Scripting-and-Mapping.md:715
+#: ../../AI-Scripting-and-Mapping.md:762
 msgid "Action `802` will delete the banner corresponding to the set Banner ID."
 msgstr "结果 `802` 将会删除与设定 Banner ID 相同的横幅。"
 
-#: ../../AI-Scripting-and-Mapping.md:716
+#: ../../AI-Scripting-and-Mapping.md:763
 msgid ""
 "To make use of this, you need to set the properties of a `BannerType` in "
 "your ini file. The banner can either be a `PCX` file, a Shape (`SHP`) "
@@ -2209,74 +2305,74 @@ msgstr ""
 "使用该功能前需在 ini 文件中配置 `BannerType` 属性。横幅支持使用一个 PCX 文件，一个 SHP 文件，或一个 CSF "
 "条目。若多项同时设置则同样按此处所列的优先级顺序生效。"
 
-#: ../../AI-Scripting-and-Mapping.md:717
+#: ../../AI-Scripting-and-Mapping.md:764
 msgid ""
 "`SHP.Palette` controls the palette that'll be used when drawing a banner "
 "for Shape file."
 msgstr "`SHP.Palette` 控制绘制 SHP 横幅时所使用的色盘。"
 
-#: ../../AI-Scripting-and-Mapping.md:718
+#: ../../AI-Scripting-and-Mapping.md:765
 msgid ""
 "`CSF.Color` controls the color of the text that'll be used when drawing a"
 " text banner."
 msgstr "`CSF.Color` 控制使用 CSF 条目横幅时的文本颜色"
 
-#: ../../AI-Scripting-and-Mapping.md:719
+#: ../../AI-Scripting-and-Mapping.md:766
 msgid ""
 "`CSF.Background` controls whether a black background will be displayed "
 "below the text banner."
 msgstr "`CSF.Background` 控制使用 CSF 条目横幅时是否具有黑色底色。"
 
-#: ../../AI-Scripting-and-Mapping.md:720
+#: ../../AI-Scripting-and-Mapping.md:767
 msgid ""
 "`CSF.VariableFormat` controls the way to print a variable together with "
 "the text banner."
 msgstr "`CSF.VariableFormat` 控制使用 CSF 条目横幅时的变量显示方式。"
 
-#: ../../AI-Scripting-and-Mapping.md:721
+#: ../../AI-Scripting-and-Mapping.md:768
 msgid "`none` will make the text banner not display the variable."
 msgstr "`none` - 不显示变量。"
 
-#: ../../AI-Scripting-and-Mapping.md:722
+#: ../../AI-Scripting-and-Mapping.md:769
 msgid ""
 "`variable` will make the text banner display the variable alone and will "
 "ignore the text in `CSF`."
 msgstr "`variable` - 仅显示变量，并忽略 CSF 条目文本。"
 
-#: ../../AI-Scripting-and-Mapping.md:723
+#: ../../AI-Scripting-and-Mapping.md:770
 msgid ""
 "`prefix`/`prefixed` will make the text banner display the variable before"
 " any other text."
 msgstr "`prefix`/`prefixed` - 变量在其他文本 **前** 显示。"
 
-#: ../../AI-Scripting-and-Mapping.md:724
+#: ../../AI-Scripting-and-Mapping.md:771
 msgid ""
 "`suffix`/`suffixed` will make the text banner display the variable after "
 "any other text."
 msgstr "`suffix`/`suffixed` - 变量在其他文本 **后** 显示。"
 
-#: ../../AI-Scripting-and-Mapping.md:725
+#: ../../AI-Scripting-and-Mapping.md:772
 msgid ""
 "`Duration` determines how long the banner will be displayed. Negative "
 "values mean the banner can always be displayed until being deleted. The "
 "banner itself won't be deleted when it's not displaying."
 msgstr "`Duration` 决定横幅的显示时长。负值代表会在被删除前一直显示。横幅自身不会在不显示时被删除。"
 
-#: ../../AI-Scripting-and-Mapping.md:726
+#: ../../AI-Scripting-and-Mapping.md:773
 msgid ""
 "`Delay` determines when the banner will be displayed again after it stops"
 " displaying by a positive `Duration`. Neagtive values mean it can't be "
 "displayed again."
 msgstr "`Delay` 决定横幅因一个正值 `Duration` 而结束显示后多久才会再次显示。负值代表不会再次显示。"
 
-#: ../../AI-Scripting-and-Mapping.md:727
+#: ../../AI-Scripting-and-Mapping.md:774
 msgid ""
 "If an `SHP` banner displays again after the delay, it'll start from the "
 "frame when it's stopped last time. This can also be changed to its first "
 "frame if `SHP.RefreshAfterDelay` set to true."
 msgstr "一个 `SHP` 横幅会在再次显示时从上次结束时的帧开始。这可以通过 `SHP.RefreshAfterDelay=true` 更改为从头开始。"
 
-#: ../../AI-Scripting-and-Mapping.md:730
+#: ../../AI-Scripting-and-Mapping.md:777
 msgid ""
 "[BannerTypes]\n"
 "0=SOMEBANNER\n"
@@ -2312,7 +2408,7 @@ msgstr ""
 "Duration=-1                 ; integer\n"
 "Delay=-1                    ; integer\n"
 
-#: ../../AI-Scripting-and-Mapping.md:748
+#: ../../AI-Scripting-and-Mapping.md:795
 msgid ""
 "[Actions]\n"
 "...\n"
@@ -2332,19 +2428,19 @@ msgstr ""
 "ID=ActionCount,[Action1],802,0,[Unique ID],0,0,0,0,A,[ActionX]\n"
 "...\n"
 
-#: ../../AI-Scripting-and-Mapping.md:757
+#: ../../AI-Scripting-and-Mapping.md:804
 msgid "Trigger events"
 msgstr "触发条件"
 
-#: ../../AI-Scripting-and-Mapping.md:759
+#: ../../AI-Scripting-and-Mapping.md:806
 msgid "`500-511` Variable comparation"
 msgstr "`500-511` 变量比较"
 
-#: ../../AI-Scripting-and-Mapping.md:761
+#: ../../AI-Scripting-and-Mapping.md:808
 msgid "Compares the variable's value with given number."
 msgstr "比较变量值与给定值。"
 
-#: ../../AI-Scripting-and-Mapping.md:764
+#: ../../AI-Scripting-and-Mapping.md:811
 msgid ""
 "[Events]\n"
 "...\n"
@@ -2432,15 +2528,15 @@ msgstr "510"
 msgid "511"
 msgstr "511"
 
-#: ../../AI-Scripting-and-Mapping.md:786
+#: ../../AI-Scripting-and-Mapping.md:833
 msgid "`512-523` Variable comparation with local variable"
 msgstr "`512-523` 变量与局部变量比较"
 
-#: ../../AI-Scripting-and-Mapping.md:788
+#: ../../AI-Scripting-and-Mapping.md:835
 msgid "Compares the variable's value with given local variable value."
 msgstr "比较变量值与给定局部变量值。"
 
-#: ../../AI-Scripting-and-Mapping.md:791
+#: ../../AI-Scripting-and-Mapping.md:838
 msgid ""
 "[Events]\n"
 "...\n"
@@ -2526,15 +2622,15 @@ msgstr "522"
 msgid "523"
 msgstr "523"
 
-#: ../../AI-Scripting-and-Mapping.md:813
+#: ../../AI-Scripting-and-Mapping.md:860
 msgid "`524-535` Variable comparation with global variable"
 msgstr "`524-535` 变量与全局变量比较"
 
-#: ../../AI-Scripting-and-Mapping.md:815
+#: ../../AI-Scripting-and-Mapping.md:862
 msgid "Compares the variable's value with given global variable value."
 msgstr "比较变量值与给定全局变量值。"
 
-#: ../../AI-Scripting-and-Mapping.md:818
+#: ../../AI-Scripting-and-Mapping.md:865
 msgid ""
 "[Events]\n"
 "...\n"
@@ -2620,11 +2716,11 @@ msgstr "534"
 msgid "535"
 msgstr "535"
 
-#: ../../AI-Scripting-and-Mapping.md:840
+#: ../../AI-Scripting-and-Mapping.md:887
 msgid "`600` The shield of the attached object is broken"
 msgstr "`600` 对象护盾被摧毁"
 
-#: ../../AI-Scripting-and-Mapping.md:843
+#: ../../AI-Scripting-and-Mapping.md:890
 msgid ""
 "[Events]\n"
 "...\n"
@@ -2636,27 +2732,27 @@ msgstr ""
 "ID=EventCount,...,600,2,0,0,...\n"
 "...\n"
 
-#: ../../AI-Scripting-and-Mapping.md:850
+#: ../../AI-Scripting-and-Mapping.md:897
 msgid "`601-602` House owns/doesn't own Techno Type"
 msgstr "`601-602` 检查所属方是否有／无科技类型"
 
-#: ../../AI-Scripting-and-Mapping.md:852
+#: ../../AI-Scripting-and-Mapping.md:899
 msgid ""
 "`601`: Springs when specified house owns at least 1 instance of set "
 "TechnoType."
 msgstr "`601`：当指定所属方至少拥有一个设定的科技类型时触发。"
 
-#: ../../AI-Scripting-and-Mapping.md:853
+#: ../../AI-Scripting-and-Mapping.md:900
 msgid ""
 "`602`: Springs when specified house doesn't own a single instance of set "
 "TechnoType."
 msgstr "`602`：当指定所属方没有任何一个设定的科技类型时触发。"
 
-#: ../../AI-Scripting-and-Mapping.md:854
+#: ../../AI-Scripting-and-Mapping.md:901
 msgid "Multiplayer houses (indices 4475 through 4482) are supported."
 msgstr "多人游戏所属方（索引 4475 至 4482）支持。"
 
-#: ../../AI-Scripting-and-Mapping.md:857
+#: ../../AI-Scripting-and-Mapping.md:904
 msgid ""
 "[Events]\n"
 "...\n"
@@ -2668,7 +2764,7 @@ msgstr ""
 "ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...\n"
 "...\n"
 
-#: ../../AI-Scripting-and-Mapping.md:865
+#: ../../AI-Scripting-and-Mapping.md:912
 msgid ""
 "These events, as opposed to [events 81 & 82 from Ares](https://ares-"
 "developers.github.io/Ares-docs/new/triggerevents.html#house-owns-techno-"
@@ -2679,39 +2775,39 @@ msgstr ""
 "docs/new/triggerevents.html#house-owns-techno-"
 "type-81-82)不同，这里的所属方使用触发条件中的所属方参数而不是触发自身的所有者。"
 
-#: ../../AI-Scripting-and-Mapping.md:868
+#: ../../AI-Scripting-and-Mapping.md:915
 msgid "`604-605` Checking if a specific Techno enters in a cell"
 msgstr "`604-605` 检查特定科技类型进入单元格"
 
-#: ../../AI-Scripting-and-Mapping.md:870
+#: ../../AI-Scripting-and-Mapping.md:917
 msgid ""
 "`604`: Checks if the techno that entered in the cell has the same ID "
 "specified in the event."
 msgstr "`604`：检查进入单元格的科技类型是否与条件中指定的 ID相同。"
 
-#: ../../AI-Scripting-and-Mapping.md:871
+#: ../../AI-Scripting-and-Mapping.md:918
 msgid ""
 "`605`: Checks if the techno that entered in the cell appears in the "
 "selected list in `AITargetTypes`."
 msgstr "`605`：检查进入单元格的科技类型是否出现在选定的 `AITargetTypes` 列表中。"
 
-#: ../../AI-Scripting-and-Mapping.md:872
+#: ../../AI-Scripting-and-Mapping.md:919
 msgid "`HouseIndex` can be customized to focus in a specified house."
 msgstr "`HouseIndex` 可以自定义为指定所属方。"
 
-#: ../../AI-Scripting-and-Mapping.md:864
+#: ../../AI-Scripting-and-Mapping.md:911
 msgid "This value is ignored (any house is valid)"
 msgstr "该值将被忽略（任何所属方均有效）"
 
-#: ../../AI-Scripting-and-Mapping.md:864
+#: ../../AI-Scripting-and-Mapping.md:911
 msgid "Pick the owner of the map trigger"
 msgstr "选择地图触发的所有者"
 
-#: ../../AI-Scripting-and-Mapping.md:889
+#: ../../AI-Scripting-and-Mapping.md:936
 msgid "`606` AttachEffect is attaching to a Techno"
 msgstr "`606` AttachEffect 已被附加到单位"
 
-#: ../../AI-Scripting-and-Mapping.md:891
+#: ../../AI-Scripting-and-Mapping.md:938
 msgid ""
 "Checks if an `AttachEffectType` is attaching to a techno. Doesn't work "
 "for [attached effects](New-or-Enhanced-Logics.md#attached-effects) that "
@@ -2720,11 +2816,11 @@ msgstr ""
 "检查一个 `AttachEffectType` 是否已附加到某个单位上。不适用于触发器启动前就已附加的 [Attach Effect](New-"
 "or-Enhanced-Logics.md#attached-effects)。"
 
-#: ../../AI-Scripting-and-Mapping.md:892
+#: ../../AI-Scripting-and-Mapping.md:939
 msgid "To be elaborate, the event will be triggered during these occasions:"
 msgstr "具体而言，该条件将在下述情况被满足："
 
-#: ../../AI-Scripting-and-Mapping.md:893
+#: ../../AI-Scripting-and-Mapping.md:940
 msgid ""
 "Self-owned effects: initial granted (triggered after "
 "`AttachEffect.InitialDelays` amount of frames), recreation (triggered "
@@ -2734,13 +2830,13 @@ msgstr ""
 "初始 AE：初始赋予时（在 `AttachEffect.InitialDelays` 帧后）、重新创建时（在 "
 "`AttachEffect.Delays` 或 `AttachEffect.RecreationDelays` 帧后）。"
 
-#: ../../AI-Scripting-and-Mapping.md:894
+#: ../../AI-Scripting-and-Mapping.md:941
 msgid ""
 "Effects from other sources: granted, refreshing when trying to apply the "
 "same type of attached effect to the techno."
 msgstr "外源 AE：赋予时、对同一单位赋予同一 AE 使其刷新时。"
 
-#: ../../AI-Scripting-and-Mapping.md:897
+#: ../../AI-Scripting-and-Mapping.md:944
 msgid ""
 "[Events]\n"
 "...\n"

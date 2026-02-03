@@ -217,9 +217,9 @@ DEFINE_HOOK(0x738A3E, UnitClass_EnterIdleMode_SubterraneanHarvester, 0x5)
 {
 	enum { ReturnFromFunction = 0x738D21 };
 
-	GET(UnitClass*, pThis, ESI);
+	GET(UnitClass*, pUnit, ESI);
 
-	if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+	if (pUnit)
 	{
 		auto const pType = pUnit->Type;
 

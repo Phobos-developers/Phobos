@@ -2,9 +2,7 @@
 
 #include <CommandClass.h>
 #include <StringTable.h>
-#include <MessageListClass.h>
 #include <Phobos.h>
-#include <Utilities/Debug.h>
 
 template <typename T>
 T* MakeCommand()

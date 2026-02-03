@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <Misc/FlyingStrings.h>
+
 // The method of calculating the income is subject to each specific situation,
 // which may probably subject to further changes if anyone wants to extend the harvesting logic in the future.
 // I don't want to investigate the details so I check the balance difference directly. --Trsdy

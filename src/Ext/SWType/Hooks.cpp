@@ -1,9 +1,5 @@
 #include "Body.h"
 
-#include <SuperClass.h>
-
-#include <Ext/House/Body.h>
-
 //this hook just for phobos NewSWType
 DEFINE_HOOK(0x6CC390, SuperClass_Launch, 0x6)
 {
@@ -267,3 +263,28 @@ DEFINE_HOOK(0x6AC67A, SidebarClass_6AC5F0_TabIndex, 0x5)
 
 DEFINE_JUMP(LJMP, 0x6A8D07, 0x6A8D17) // Skip tabIndex check
 #pragma endregion
+
+DEFINE_HOOK(0x53B276, PsyDom_Fire_Select, 0x6)
+{
+	enum { SkipGameCode = 0x53B29E };
+
+	GET(TechnoClass*, pTechno, ESI);
+	const bool selected = pTechno->IsSelected;
+
+	if (const auto pController = pTechno->MindControlledBy)
+	{
+		if (const auto pManager = pController->CaptureManager)
+			pManager->FreeUnit(pTechno);
+	}
+
+	pTechno->SetOwningHouse(PsyDom::Owner);
+
+	if (selected && pTechno->Owner->IsCurrentPlayer())
+	{
+		const bool moveFeedBack = std::exchange(Unsorted::MoveFeedback, false);
+		pTechno->Select();
+		Unsorted::MoveFeedback = moveFeedBack;
+	}
+
+	return SkipGameCode;
+}

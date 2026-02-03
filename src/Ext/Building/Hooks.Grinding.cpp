@@ -1,6 +1,5 @@
 #include "Body.h"
 
-#include <InfantryClass.h>
 #include <InputManagerClass.h>
 
 DEFINE_HOOK(0x43C30A, BuildingClass_ReceiveMessage_Grinding, 0x6)
