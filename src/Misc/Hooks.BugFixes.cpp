@@ -1161,6 +1161,16 @@ DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
 
 #pragma endregion
 
+DEFINE_HOOK(0x7185A9, TeleportLocomotionClass_MakeRoom_GetMovement_CellFix, 0x7)
+{
+	enum { UseCell = 0x7185AD };
+
+	REF_STACK(CoordStruct, coords, STACK_OFFSET(0x5C, 0x4));
+
+	R->EDX(MapClass::Instance.GetCellAt(coords));
+	return UseCell;
+}
+
 DEFINE_HOOK(0x7185DA, TeleportLocomotionClass_MakeRoom_DestFix, 0x6)
 {
 	enum { ReturnTrue = 0x71878F };
