@@ -934,7 +934,6 @@ msgstr ""
 "那样的部署功能，现在它们会先像运输工具释放乘客那样先钻出地面。"
 
 #: ../../Fixed-or-Improved-Logics.md:154
-#, fuzzy
 msgid ""
 "The otherwise unused setting `[AI] -> PowerSurplus` (defaults to 50) "
 "which determines how much surplus power AI players will strive to have "
@@ -945,6 +944,7 @@ msgid ""
 msgstr ""
 "可以通过将 `[AI] -> EnablePowerSurplus` 设置为 true 来复原 `[AI] -> "
 "PowerSurplus`（默认为 50）以决定 AI 玩家将尽力保持的富余电力值。"
+"若额外设置项 `[AI] -> PowerSurplus.ScaleToDrainAmount` 设为高于 0 的值则使得电力盈余值 × 当前负载 / `PowerSurplus.ScaleToDrainAmount`。"
 
 #: ../../Fixed-or-Improved-Logics.md:155
 msgid ""
