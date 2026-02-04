@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <RulesClass.h>
 #include <Utilities/Container.h>
@@ -310,6 +310,7 @@ public:
 		Valueable<Mission> ParadropMission;
 		Valueable<Mission> AIParadropMission;
 
+		Valueable<bool> DefaultToGuardArea;
 		Valueable<bool> AreaGuard_UseSelfAsCenter;
 		Valueable<bool> AreaGuard_TargetingInRange;
 		Valueable<bool> AreaGuard_StrayIgnoreDestination;
@@ -567,6 +568,7 @@ public:
 			, ParadropMission { Mission::Guard }
 			, AIParadropMission { Mission::Hunt }
 
+			, DefaultToGuardArea { false }
 			, AreaGuard_UseSelfAsCenter { false }
 			, AreaGuard_TargetingInRange { false }
 			, AreaGuard_StrayIgnoreDestination { false }
