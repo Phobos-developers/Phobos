@@ -108,7 +108,8 @@ Those roles are assigned based on the complexity of the PRs and the experience o
 
 ### Suggested reviewing amount
 
-Considering that we already have a large backlog of PRs at present, we suggest that each maintainer should try to ensure that the amount of code they review is approximately 25% to 50% higher than the amount of code they submit (that needs to be reviewed). Only in this way can we continuously reduce the number of backlogged PRs.
+The amount of code that maintainers should review should be roughly the same as the amount of code in the PRs they submit themselves.
+However, considering that we already have a large backlog of PRs at present, we suggest that maintainers review an additional 25% to 50% of the code. Only in this way can we continuously reduce the number of backlogged PRs.
 This is not a hard and fast rule, but we hope that each maintainer can try their best to achieve this. The lead will regularly remind maintainers who participate less in code reviews.
 
 ### Types of contributions
