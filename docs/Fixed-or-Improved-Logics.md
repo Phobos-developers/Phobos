@@ -1180,6 +1180,7 @@ CrusherLevel=5                            ; integer
 CrushableLevel=5                          ; integer
 OmniCrusherLevel=10                       ; integer
 OmniCrushResistantLevel=10                ; integer
+BuildingCrushableLevel=                      ; integer
 
 [WallModel]
 WallCrushableLevel=10                     ; integer

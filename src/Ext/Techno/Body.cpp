@@ -561,7 +561,10 @@ int TechnoExt::GetCrushableLevel(TechnoClass* pThis)
 				return pTypeExt->CrushableLevel.Rookie;
 		}
 
-		if (pType->OmniCrushResistant || whatAmI == AbstractType::Building)
+		if (whatAmI == AbstractType::Building)
+			return RulesExt::Global()->BuildingCrushableLevel.Get(RulesExt::Global()->OmniCrushResistantLevel);
+
+		if (pType->OmniCrushResistant)
 			return RulesExt::Global()->OmniCrushResistantLevel;
 
 		if (!pType->Crushable)

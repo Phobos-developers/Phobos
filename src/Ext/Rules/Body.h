@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <RulesClass.h>
 #include <Utilities/Container.h>
@@ -280,6 +280,7 @@ public:
 		Valueable<int> CrushableLevel;
 		Valueable<int> OmniCrusherLevel;
 		Valueable<int> OmniCrushResistantLevel;
+		Nullable<int> BuildingCrushableLevel;
 		Valueable<int> WallCrushableLevel;
 
 		// cache tint color
@@ -548,6 +549,7 @@ public:
 			, CrushableLevel { 5 }
 			, OmniCrusherLevel { 10 }
 			, OmniCrushResistantLevel { 10 }
+			, BuildingCrushableLevel {}
 			, WallCrushableLevel { 10 }
 			, InfantryAutoDeploy { false }
 			, AdjacentWallDamage { 200 }

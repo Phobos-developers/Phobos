@@ -331,10 +331,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->CanTarget_IronCurtained.Read(exINI, GameStrings::CombatDamage, "CanTarget.IronCurtained");
 	this->AutoTarget_IronCurtained.Read(exINI, GameStrings::CombatDamage, "AutoTarget.IronCurtained");
   
-  this->CrusherLevel.Read(exINI, GameStrings::General, "CrusherLevel");
+	this->CrusherLevel.Read(exINI, GameStrings::General, "CrusherLevel");
 	this->CrushableLevel.Read(exINI, GameStrings::General, "CrushableLevel");
 	this->OmniCrusherLevel.Read(exINI, GameStrings::General, "OmniCrusherLevel");
 	this->OmniCrushResistantLevel.Read(exINI, GameStrings::General, "OmniCrushResistantLevel");
+	this->BuildingCrushableLevel.Read(exINI, GameStrings::General, "BuildingCrushableLevel");
 	
 	this->InfantryAutoDeploy.Read(exINI, GameStrings::General, "InfantryAutoDeploy");
 
@@ -651,6 +652,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CrushableLevel)
 		.Process(this->OmniCrusherLevel)
 		.Process(this->OmniCrushResistantLevel)
+		.Process(this->BuildingCrushableLevel)
 		.Process(this->WallCrushableLevel)
 		.Process(this->InfantryAutoDeploy)
 		.Process(this->AdjacentWallDamage)
