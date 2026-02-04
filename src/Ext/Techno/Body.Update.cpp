@@ -363,6 +363,7 @@ void TechnoExt::ExtData::EatPassengers()
 			auto pCurrentPassenger = pThis->Passengers.GetFirstPassenger();
 			const auto allowedHouses = pDelType->AllowedHouses;
 			const auto pOwner = pThis->Owner;
+			const bool displayCash = pDelType->DisplaySoylent && pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer);
 
 			// Find the first entered passenger that is eligible for deletion.
 			while (pCurrentPassenger)
@@ -435,7 +436,7 @@ void TechnoExt::ExtData::EatPassengers()
 					{
 						pOwner->GiveMoney(nMoneyToGive);
 
-						if (pDelType->DisplaySoylent)
+						if (displayCash)
 						{
 							FlyingStrings::AddMoneyString(nMoneyToGive, pThis, pOwner,
 								pDelType->DisplaySoylentToHouses, pThis->Location, pDelType->DisplaySoylentOffset);

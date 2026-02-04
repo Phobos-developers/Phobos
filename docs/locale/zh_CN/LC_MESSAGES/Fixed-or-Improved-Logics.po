@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-03 13:48+0800\n"
+"POT-Creation-Date: 2026-02-04 08:23+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -176,14 +176,14 @@ msgstr ""
 #: ../../Fixed-or-Improved-Logics.md:649 ../../Fixed-or-Improved-Logics.md:1007
 #: ../../Fixed-or-Improved-Logics.md:1290
 #: ../../Fixed-or-Improved-Logics.md:1403
-#: ../../Fixed-or-Improved-Logics.md:1428
-#: ../../Fixed-or-Improved-Logics.md:1532
-#: ../../Fixed-or-Improved-Logics.md:1831
-#: ../../Fixed-or-Improved-Logics.md:1904
-#: ../../Fixed-or-Improved-Logics.md:2147
-#: ../../Fixed-or-Improved-Logics.md:2523
-#: ../../Fixed-or-Improved-Logics.md:2568
-#: ../../Fixed-or-Improved-Logics.md:2593
+#: ../../Fixed-or-Improved-Logics.md:1443
+#: ../../Fixed-or-Improved-Logics.md:1547
+#: ../../Fixed-or-Improved-Logics.md:1846
+#: ../../Fixed-or-Improved-Logics.md:1919
+#: ../../Fixed-or-Improved-Logics.md:2162
+#: ../../Fixed-or-Improved-Logics.md:2538
+#: ../../Fixed-or-Improved-Logics.md:2583
+#: ../../Fixed-or-Improved-Logics.md:2608
 msgid "image"
 msgstr "图像"
 
@@ -934,10 +934,14 @@ msgstr ""
 "那样的部署功能，现在它们会先像运输工具释放乘客那样先钻出地面。"
 
 #: ../../Fixed-or-Improved-Logics.md:154
+#, fuzzy
 msgid ""
 "The otherwise unused setting `[AI] -> PowerSurplus` (defaults to 50) "
 "which determines how much surplus power AI players will strive to have "
-"can be restored by setting `[AI] -> EnablePowerSurplus` to true."
+"can be restored by setting `[AI] -> EnablePowerSurplus` to true. "
+"Additional option `[AI] -> PowerSurplus.ScaleToDrainAmount` if set to "
+"value higher than 0 makes it so that power surplus multiplied by current "
+"power drain / `PowerSurplus.ScaleToDrainAmount`."
 msgstr ""
 "可以通过将 `[AI] -> EnablePowerSurplus` 设置为 true 来复原 `[AI] -> "
 "PowerSurplus`（默认为 50）以决定 AI 玩家将尽力保持的富余电力值。"
@@ -1788,8 +1792,7 @@ msgid ""
 "Fixed the issue where units recruited by a team with "
 "`AreTeamMembersRecruitable=false` cannot be recruited even if they have "
 "been liberated by that team."
-msgstr ""
-"修复了单位被 `AreTeamMembersRecruitable=false` 的小队招募过则即便原小队解散也无法再被其他小队招募的 Bug。"
+msgstr "修复了单位被 `AreTeamMembersRecruitable=false` 的小队招募过则即便原小队解散也无法再被其他小队招募的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:298
 msgid "Fixes / interactions with other extensions"
@@ -2067,73 +2070,74 @@ msgstr "在原版中你不能将一个被心灵控制的载具部署为 `Constru
 #: ../../Fixed-or-Improved-Logics.md:1386
 #: ../../Fixed-or-Improved-Logics.md:1408
 #: ../../Fixed-or-Improved-Logics.md:1420
-#: ../../Fixed-or-Improved-Logics.md:1437
-#: ../../Fixed-or-Improved-Logics.md:1469
-#: ../../Fixed-or-Improved-Logics.md:1522
-#: ../../Fixed-or-Improved-Logics.md:1540
-#: ../../Fixed-or-Improved-Logics.md:1552
-#: ../../Fixed-or-Improved-Logics.md:1566
-#: ../../Fixed-or-Improved-Logics.md:1595
-#: ../../Fixed-or-Improved-Logics.md:1621
+#: ../../Fixed-or-Improved-Logics.md:1435
+#: ../../Fixed-or-Improved-Logics.md:1452
+#: ../../Fixed-or-Improved-Logics.md:1484
+#: ../../Fixed-or-Improved-Logics.md:1537
+#: ../../Fixed-or-Improved-Logics.md:1555
+#: ../../Fixed-or-Improved-Logics.md:1567
+#: ../../Fixed-or-Improved-Logics.md:1581
+#: ../../Fixed-or-Improved-Logics.md:1610
 #: ../../Fixed-or-Improved-Logics.md:1636
-#: ../../Fixed-or-Improved-Logics.md:1656
-#: ../../Fixed-or-Improved-Logics.md:1674
-#: ../../Fixed-or-Improved-Logics.md:1693
+#: ../../Fixed-or-Improved-Logics.md:1651
+#: ../../Fixed-or-Improved-Logics.md:1671
+#: ../../Fixed-or-Improved-Logics.md:1689
 #: ../../Fixed-or-Improved-Logics.md:1708
-#: ../../Fixed-or-Improved-Logics.md:1735
-#: ../../Fixed-or-Improved-Logics.md:1765
-#: ../../Fixed-or-Improved-Logics.md:1778
-#: ../../Fixed-or-Improved-Logics.md:1789
-#: ../../Fixed-or-Improved-Logics.md:1810
-#: ../../Fixed-or-Improved-Logics.md:1850
-#: ../../Fixed-or-Improved-Logics.md:1866
-#: ../../Fixed-or-Improved-Logics.md:1882
-#: ../../Fixed-or-Improved-Logics.md:1911
-#: ../../Fixed-or-Improved-Logics.md:1929
-#: ../../Fixed-or-Improved-Logics.md:1948
-#: ../../Fixed-or-Improved-Logics.md:1960
-#: ../../Fixed-or-Improved-Logics.md:1973
-#: ../../Fixed-or-Improved-Logics.md:1987
-#: ../../Fixed-or-Improved-Logics.md:2000
-#: ../../Fixed-or-Improved-Logics.md:2014
-#: ../../Fixed-or-Improved-Logics.md:2025
-#: ../../Fixed-or-Improved-Logics.md:2042
-#: ../../Fixed-or-Improved-Logics.md:2059
-#: ../../Fixed-or-Improved-Logics.md:2078
-#: ../../Fixed-or-Improved-Logics.md:2090
-#: ../../Fixed-or-Improved-Logics.md:2102
-#: ../../Fixed-or-Improved-Logics.md:2119
-#: ../../Fixed-or-Improved-Logics.md:2136
-#: ../../Fixed-or-Improved-Logics.md:2154
-#: ../../Fixed-or-Improved-Logics.md:2175
+#: ../../Fixed-or-Improved-Logics.md:1723
+#: ../../Fixed-or-Improved-Logics.md:1750
+#: ../../Fixed-or-Improved-Logics.md:1780
+#: ../../Fixed-or-Improved-Logics.md:1793
+#: ../../Fixed-or-Improved-Logics.md:1804
+#: ../../Fixed-or-Improved-Logics.md:1825
+#: ../../Fixed-or-Improved-Logics.md:1865
+#: ../../Fixed-or-Improved-Logics.md:1881
+#: ../../Fixed-or-Improved-Logics.md:1897
+#: ../../Fixed-or-Improved-Logics.md:1926
+#: ../../Fixed-or-Improved-Logics.md:1944
+#: ../../Fixed-or-Improved-Logics.md:1963
+#: ../../Fixed-or-Improved-Logics.md:1975
+#: ../../Fixed-or-Improved-Logics.md:1988
+#: ../../Fixed-or-Improved-Logics.md:2002
+#: ../../Fixed-or-Improved-Logics.md:2015
+#: ../../Fixed-or-Improved-Logics.md:2029
+#: ../../Fixed-or-Improved-Logics.md:2040
+#: ../../Fixed-or-Improved-Logics.md:2057
+#: ../../Fixed-or-Improved-Logics.md:2074
+#: ../../Fixed-or-Improved-Logics.md:2093
+#: ../../Fixed-or-Improved-Logics.md:2105
+#: ../../Fixed-or-Improved-Logics.md:2117
+#: ../../Fixed-or-Improved-Logics.md:2134
+#: ../../Fixed-or-Improved-Logics.md:2151
+#: ../../Fixed-or-Improved-Logics.md:2169
 #: ../../Fixed-or-Improved-Logics.md:2190
-#: ../../Fixed-or-Improved-Logics.md:2208
-#: ../../Fixed-or-Improved-Logics.md:2233
-#: ../../Fixed-or-Improved-Logics.md:2250
-#: ../../Fixed-or-Improved-Logics.md:2272
-#: ../../Fixed-or-Improved-Logics.md:2285
-#: ../../Fixed-or-Improved-Logics.md:2295
-#: ../../Fixed-or-Improved-Logics.md:2311
-#: ../../Fixed-or-Improved-Logics.md:2327
-#: ../../Fixed-or-Improved-Logics.md:2339
-#: ../../Fixed-or-Improved-Logics.md:2352
-#: ../../Fixed-or-Improved-Logics.md:2370
-#: ../../Fixed-or-Improved-Logics.md:2395
-#: ../../Fixed-or-Improved-Logics.md:2409
-#: ../../Fixed-or-Improved-Logics.md:2420
+#: ../../Fixed-or-Improved-Logics.md:2205
+#: ../../Fixed-or-Improved-Logics.md:2223
+#: ../../Fixed-or-Improved-Logics.md:2248
+#: ../../Fixed-or-Improved-Logics.md:2265
+#: ../../Fixed-or-Improved-Logics.md:2287
+#: ../../Fixed-or-Improved-Logics.md:2300
+#: ../../Fixed-or-Improved-Logics.md:2310
+#: ../../Fixed-or-Improved-Logics.md:2326
+#: ../../Fixed-or-Improved-Logics.md:2342
+#: ../../Fixed-or-Improved-Logics.md:2354
+#: ../../Fixed-or-Improved-Logics.md:2367
+#: ../../Fixed-or-Improved-Logics.md:2385
+#: ../../Fixed-or-Improved-Logics.md:2410
+#: ../../Fixed-or-Improved-Logics.md:2424
 #: ../../Fixed-or-Improved-Logics.md:2435
-#: ../../Fixed-or-Improved-Logics.md:2449
-#: ../../Fixed-or-Improved-Logics.md:2466
-#: ../../Fixed-or-Improved-Logics.md:2480
-#: ../../Fixed-or-Improved-Logics.md:2492
-#: ../../Fixed-or-Improved-Logics.md:2503
-#: ../../Fixed-or-Improved-Logics.md:2515
-#: ../../Fixed-or-Improved-Logics.md:2526
-#: ../../Fixed-or-Improved-Logics.md:2537
-#: ../../Fixed-or-Improved-Logics.md:2550
-#: ../../Fixed-or-Improved-Logics.md:2560
-#: ../../Fixed-or-Improved-Logics.md:2576
-#: ../../Fixed-or-Improved-Logics.md:2598
+#: ../../Fixed-or-Improved-Logics.md:2450
+#: ../../Fixed-or-Improved-Logics.md:2464
+#: ../../Fixed-or-Improved-Logics.md:2481
+#: ../../Fixed-or-Improved-Logics.md:2495
+#: ../../Fixed-or-Improved-Logics.md:2507
+#: ../../Fixed-or-Improved-Logics.md:2518
+#: ../../Fixed-or-Improved-Logics.md:2530
+#: ../../Fixed-or-Improved-Logics.md:2541
+#: ../../Fixed-or-Improved-Logics.md:2552
+#: ../../Fixed-or-Improved-Logics.md:2565
+#: ../../Fixed-or-Improved-Logics.md:2575
+#: ../../Fixed-or-Improved-Logics.md:2591
+#: ../../Fixed-or-Improved-Logics.md:2613
 msgid "In `rulesmd.ini`:"
 msgstr "在 `rulesmd.ini`："
 
@@ -2324,9 +2328,9 @@ msgstr "为了正常使用该功能，你需要移除或替换下面这些 YR IN
 #: ../../Fixed-or-Improved-Logics.md:923 ../../Fixed-or-Improved-Logics.md:933
 #: ../../Fixed-or-Improved-Logics.md:1102
 #: ../../Fixed-or-Improved-Logics.md:1343
-#: ../../Fixed-or-Improved-Logics.md:1837
-#: ../../Fixed-or-Improved-Logics.md:1892
-#: ../../Fixed-or-Improved-Logics.md:2256
+#: ../../Fixed-or-Improved-Logics.md:1852
+#: ../../Fixed-or-Improved-Logics.md:1907
+#: ../../Fixed-or-Improved-Logics.md:2271
 msgid "In `artmd.ini`:"
 msgstr "在 `artmd.ini`："
 
@@ -3369,7 +3373,7 @@ msgstr ""
 "AttachedAnimPosition=default ; Attached animation position enumeration "
 "(default|center|ground)\n"
 
-#: ../../Fixed-or-Improved-Logics.md:795 ../../Fixed-or-Improved-Logics.md:2264
+#: ../../Fixed-or-Improved-Logics.md:795 ../../Fixed-or-Improved-Logics.md:2279
 msgid "Customizable debris & meteor impact and warhead detonation behaviour"
 msgstr "自定义碎片 & 流星撞击和弹头引爆行为"
 
@@ -5156,10 +5160,34 @@ msgstr ""
 "OreGathering.Tiberiums=0         ; List of Tiberium IDs\n"
 
 #: ../../Fixed-or-Improved-Logics.md:1416
+msgid "Customizable paradrop missions"
+msgstr ""
+
+#: ../../Fixed-or-Improved-Logics.md:1418
+msgid ""
+"By default paradropped infantry default to `Guard` for human players and "
+"`Hunt` for AI players. This has now been changed to be the default for "
+"vehicles as well which defaulted to `Guard` for all players and "
+"customizable globally and per TechnoType which default to the global "
+"settings under `[General]`."
+msgstr ""
+
+#: ../../Fixed-or-Improved-Logics.md:1421
+msgid ""
+"[General]\n"
+"ParadropMission=Guard   ; MissionType\n"
+"AIParadropMission=Hunt  ; MissionType\n"
+"\n"
+"[SOMETECHNO]            ; TechnoType\n"
+"ParadropMission=        ; MissionType\n"
+"AIParadropMission=      ; MissionType\n"
+msgstr ""
+
+#: ../../Fixed-or-Improved-Logics.md:1431
 msgid "Customizable target evaluation map zone check behaviour"
 msgstr "自定义目标评估地图区域检查行为"
 
-#: ../../Fixed-or-Improved-Logics.md:1418
+#: ../../Fixed-or-Improved-Logics.md:1433
 msgid ""
 "By default, any non-AircraftType units seeking targets via ScriptType "
 "team mission (action) `0 Attack Target Type` or any [attack team missions"
@@ -5175,7 +5203,7 @@ msgstr ""
 "(`TargetZoneScanType=any`) 或者仅当目标在武器射程内时才允许选择 "
 "(`TargetZoneScanType=inrange`)。"
 
-#: ../../Fixed-or-Improved-Logics.md:1421
+#: ../../Fixed-or-Improved-Logics.md:1436
 msgid ""
 "[SOMETECHNO]             ; TechnoType\n"
 "TargetZoneScanType=same  ; target zone scan enumeration "
@@ -5185,11 +5213,11 @@ msgstr ""
 "TargetZoneScanType=same  ; target zone scan enumeration "
 "(same|any|inrange)\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1426
+#: ../../Fixed-or-Improved-Logics.md:1441
 msgid "Customizable Teleport/Chrono Locomotor settings per TechnoType"
 msgstr "自定义超时空运动设置"
 
-#: ../../Fixed-or-Improved-Logics.md:1428
+#: ../../Fixed-or-Improved-Logics.md:1443
 msgid ""
 "![image](_static/images/cust-Chrono.gif) *Chrono Legionnaire and Ronco "
 "using different teleportation settings in [YR: New "
@@ -5199,20 +5227,20 @@ msgstr ""
 "War](https://www.moddb.com/mods/yuris-revenge-new-war) 中的超时空军团兵与 Ronco "
 "使用不同的超时空设置*"
 
-#: ../../Fixed-or-Improved-Logics.md:1431
+#: ../../Fixed-or-Improved-Logics.md:1446
 msgid ""
 "You can now specify Teleport/Chrono Locomotor settings per TechnoType to "
 "override default rules values. Unfilled values default to values in "
 "`[General]`."
 msgstr "现在你可以为每个科技类型指定其超时空运动方式设置以覆盖默认规则的值。未填充值则默认使用 `[General]` 中的值。"
 
-#: ../../Fixed-or-Improved-Logics.md:1432
+#: ../../Fixed-or-Improved-Logics.md:1447
 msgid ""
 "Applicable to Techno that have Teleport/Chrono Locomotor attached, or "
 "being chronowarped by chronosphere."
 msgstr "对使用超时空运动方式或者被超时空传送超武移动的科技类型有效。"
 
-#: ../../Fixed-or-Improved-Logics.md:1433
+#: ../../Fixed-or-Improved-Logics.md:1448
 msgid ""
 "`Chronoshift.WarpOut` and `Chronoshift.WarpIn` will override `WarpOut` "
 "and `WarpIn` respectively when the techno is being chronowarped by "
@@ -5221,7 +5249,7 @@ msgstr ""
 "当单位被 `Type=ChronoSphere` 的超级武器传送时 `Chronoshift.WarpOut` 和 "
 "`Chronoshift.WarpIn` 会分别替代 `WarpOut` 和  `WarpIn` 使用。"
 
-#: ../../Fixed-or-Improved-Logics.md:1434
+#: ../../Fixed-or-Improved-Logics.md:1449
 msgid ""
 "`WarpAway` specify the anim when the techno is being erased by "
 "`Temporal=yes` warhead. Will override Ares' `Temporal.WarpAway` tag on "
@@ -5230,13 +5258,13 @@ msgstr ""
 "单位上的 `[TechnoType] -> WarpAway` 会在其被 `Temporal=yes` 的弹头抹除时覆盖 Ares 引入的 "
 "`[WarheadType] -> Temporal.WarpAway=` 生效。"
 
-#: ../../Fixed-or-Improved-Logics.md:1435
+#: ../../Fixed-or-Improved-Logics.md:1450
 msgid ""
 "If more than one animation is listed in `WarpOut`, `WarpIn` or "
 "`WarpAway`, a random one is selected."
 msgstr "如果 `WarpOut`、`WarpIn` 或 `WarpAway` 中列出了多个动画，则将随机选择一个。"
 
-#: ../../Fixed-or-Improved-Logics.md:1438
+#: ../../Fixed-or-Improved-Logics.md:1453
 msgid ""
 "[SOMETECHNO]            ; TechnoType\n"
 "WarpOut=                ; List of AnimationTypes (played when Techno "
@@ -5280,15 +5308,15 @@ msgstr ""
 "within which the delay is constant\n"
 "ChronoDelay=            ; integer, delay after teleport for chronosphere\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1452
+#: ../../Fixed-or-Improved-Logics.md:1467
 msgid "Customizable veterancy insignias"
 msgstr "自定义等级军衔"
 
-#: ../../Fixed-or-Improved-Logics.md:1454
+#: ../../Fixed-or-Improved-Logics.md:1469
 msgid "You can now customize veterancy insignia of TechnoTypes."
 msgstr "现在可以自定义科技类型的等级军衔。"
 
-#: ../../Fixed-or-Improved-Logics.md:1455
+#: ../../Fixed-or-Improved-Logics.md:1470
 msgid ""
 "`Insignia.(Rookie|Veteran|Elite)` can be used to set a custom insignia "
 "file, optionally for each veterancy stage. Like the original / default "
@@ -5297,7 +5325,7 @@ msgstr ""
 "`Insignia.(Rookie|Veteran|Elite)` 可用于为每个等级设置一个自定义军衔文件。与原本／默认的文件 "
 "`pips.shp` 一样，它们使用 `palette.pal` 作为色盘进行绘制。"
 
-#: ../../Fixed-or-Improved-Logics.md:1456
+#: ../../Fixed-or-Improved-Logics.md:1471
 msgid ""
 "`InsigniaFrame(.Rookie|Veteran|Elite)` can be used to set (zero-based) "
 "frame index of the insignia to display, optionally for each veterancy "
@@ -5307,7 +5335,7 @@ msgstr ""
 "`InsigniaFrame(.Rookie|Veteran|Elite)` 可用于为每个等级阶段设置军衔的（从 0 开始的）帧索引。使用 -1 "
 "表示使用默认设置。默认设置对新兵为 -1（无），对老兵为 14，对精英为 15。"
 
-#: ../../Fixed-or-Improved-Logics.md:1457
+#: ../../Fixed-or-Improved-Logics.md:1472
 msgid ""
 "A shorthand `InsigniaFrames` can be used to list them in order from "
 "rookie, veteran and elite instead as well. "
@@ -5316,7 +5344,7 @@ msgstr ""
 "也可以使用简写 `InsigniaFrames` "
 "按顺序列出新兵、老兵和精英的帧索引。`InsigniaFrame(.Rookie|Veteran|Elite)` 的优先级高于此。"
 
-#: ../../Fixed-or-Improved-Logics.md:1458
+#: ../../Fixed-or-Improved-Logics.md:1473
 msgid ""
 "These settings will be overriden by the properties set in "
 "[InsigniaType](Miscellanous.md#insignia-type), if `InsigniaType` is set."
@@ -5324,7 +5352,7 @@ msgstr ""
 "如果设置了 `InsigniaType` 则上述设置会被 [InsigniaType](Miscellanous.md#insignia-"
 "type) 中定义的属性覆盖。"
 
-#: ../../Fixed-or-Improved-Logics.md:1459
+#: ../../Fixed-or-Improved-Logics.md:1474
 msgid ""
 "Normal insignia can be overridden for specific weapon modes of "
 "`Gunner=true` units by setting `Insignia(.Frame/.Frames).WeaponN` where "
@@ -5334,7 +5362,7 @@ msgstr ""
 "可以通过设置 `Insignia(.Frame/.Frames).WeaponN` 来为 `Gunner=true` "
 "的单位使用不同武器时换成不同的军衔，其中 `N` 表示基于 1 的武器模式索引。如果不设置，默认使用非特定模式的军衔设置。"
 
-#: ../../Fixed-or-Improved-Logics.md:1460
+#: ../../Fixed-or-Improved-Logics.md:1475
 msgid ""
 "These settings will be overriden by the properties set in "
 "[InsigniaType](Miscellanous.md#insignia-type), if `InsigniaType.WeaponN` "
@@ -5343,7 +5371,7 @@ msgstr ""
 "如果设置了 `InsigniaType.WeaponN` 则上述设置会被 [InsigniaType](Miscellanous.md"
 "#insignia-type) 中定义的属性覆盖。"
 
-#: ../../Fixed-or-Improved-Logics.md:1461
+#: ../../Fixed-or-Improved-Logics.md:1476
 msgid ""
 "Normal insignia can be overridden when its current passenger size reaches"
 " a certain amount by setting `Insignia(.Frame/.Frames).PassengersN` where"
@@ -5356,7 +5384,7 @@ msgstr ""
 " `N` 表示当前载员数量（从 0 到运输工具 `Passengers` 的值）。如果不设置，默认无载员模式的军衔设置。如果已经设置了 "
 "`Insignia(.Frame/.Frames).WeaponN` 则覆盖该语句的效果。"
 
-#: ../../Fixed-or-Improved-Logics.md:1462
+#: ../../Fixed-or-Improved-Logics.md:1477
 msgid ""
 "These settings will be overriden by the properties set in "
 "[InsigniaType](Miscellanous.md#insignia-type), if "
@@ -5365,19 +5393,19 @@ msgstr ""
 "如果设置了 `InsigniaType.PassengersN` 则上述设置会被 [InsigniaType](Miscellanous.md"
 "#insignia-type) 中定义的属性覆盖。"
 
-#: ../../Fixed-or-Improved-Logics.md:1463
+#: ../../Fixed-or-Improved-Logics.md:1478
 msgid ""
 "`Insignia.ShowEnemy` controls whether or not the insignia is shown to "
 "enemy players."
 msgstr "`Insignia.ShowEnemy` 控制军衔是否对敌方玩家可见。"
 
-#: ../../Fixed-or-Improved-Logics.md:1464
+#: ../../Fixed-or-Improved-Logics.md:1479
 msgid ""
 "You can make insignias appear only on selected units using "
 "`DrawInsignia.OnlyOnSelected`."
 msgstr "你可以使用 `DrawInsignia.OnlyOnSelected` 来使军衔仅出现在被选中的单位上。"
 
-#: ../../Fixed-or-Improved-Logics.md:1465
+#: ../../Fixed-or-Improved-Logics.md:1480
 msgid ""
 "Position for insignias can be adjusted by setting "
 "`DrawInsignia.AdjustPos.Infantry` for infantry, "
@@ -5388,7 +5416,7 @@ msgstr ""
 "`DrawInsignia.AdjustPos.Buildings`、为其他单位设置 `DrawInsignia.AdjustPos.Units`"
 " 来调整军衔的位置。"
 
-#: ../../Fixed-or-Improved-Logics.md:1466
+#: ../../Fixed-or-Improved-Logics.md:1481
 msgid ""
 "`DrawInsignia.AdjustPos.BuildingsAnchor` can be set to an anchor point to"
 " anchor the insignia position relative to the building's selection "
@@ -5398,7 +5426,7 @@ msgstr ""
 "`DrawInsignia.AdjustPos.BuildingsAnchor` "
 "可以设置一个锚点，用于相对建筑选择框锚定军衔位置。默认情况下军衔位置未锚定到选择框。"
 
-#: ../../Fixed-or-Improved-Logics.md:1467
+#: ../../Fixed-or-Improved-Logics.md:1482
 msgid ""
 "`DrawInsignia.UsePixelSelectionBracketDelta` can be set to use techno's "
 "`PixelSelectionBracketDelta` to additionally adjust insignias vertically."
@@ -5406,7 +5434,7 @@ msgstr ""
 "`DrawInsignia.UsePixelSelectionBracketDelta` 可以让军衔位置根据单位的 "
 "`PixelSelectionBracketDelta` 在竖直方向上调整位置。"
 
-#: ../../Fixed-or-Improved-Logics.md:1470
+#: ../../Fixed-or-Improved-Logics.md:1485
 msgid ""
 "[General]\n"
 "EnemyInsignia=true                                          ; boolean\n"
@@ -5554,7 +5582,7 @@ msgstr ""
 "Insignia.ShowEnemy=                                         ; boolean, "
 "defaults to [General] -> EnemyInsignia\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1514
+#: ../../Fixed-or-Improved-Logics.md:1529
 msgid ""
 "Insignia customization besides the `InsigniaFrames` shorthand should "
 "function similarly to the equivalent feature introduced by Ares and takes"
@@ -5563,23 +5591,23 @@ msgstr ""
 "除了使用 `InsigniaFrames` 简写外，自定义军衔功能类似于 Ares 引入的相应功能，并且如果 Phobos 与 Ares "
 "一起使用则优先于 Ares 的。"
 
-#: ../../Fixed-or-Improved-Logics.md:1517
+#: ../../Fixed-or-Improved-Logics.md:1532
 msgid "Customizable wake anim"
 msgstr "自定义水波动画"
 
-#: ../../Fixed-or-Improved-Logics.md:1519
+#: ../../Fixed-or-Improved-Logics.md:1534
 msgid ""
 "You can now specify the `Wake` anim per TechnoType to override default "
 "rules value."
 msgstr "现在你可以为每个科技类型指定 `Wake` 动画以覆盖默认规则值。"
 
-#: ../../Fixed-or-Improved-Logics.md:1520
+#: ../../Fixed-or-Improved-Logics.md:1535
 msgid ""
 "`Wake.Grapple` and `Wake.Sinking` can be used to further customize wake "
 "anim when the techno is being parasited or sunken."
 msgstr "`Wake.Grapple` 和 `Wake.Sinking` 可用于在科技类型被寄生或沉没时进一步自定义水波动画。"
 
-#: ../../Fixed-or-Improved-Logics.md:1523
+#: ../../Fixed-or-Improved-Logics.md:1538
 msgid ""
 "[SOMETECHNO]         ; TechnoType\n"
 "Wake=                ; Anim (played when Techno moving on the water), "
@@ -5597,11 +5625,11 @@ msgstr ""
 "Wake.Sinking=        ; Anim (played when Techno sinking), defaults to "
 "[TechnoType] -> Wake\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1530
+#: ../../Fixed-or-Improved-Logics.md:1545
 msgid "Customize bridge falling down damage"
 msgstr "自定义桥上坠落伤害"
 
-#: ../../Fixed-or-Improved-Logics.md:1532
+#: ../../Fixed-or-Improved-Logics.md:1547
 msgid ""
 "![image](_static/images/fallingdowndamage.gif) *Use different fall damage"
 " depending on whether it lands in water in **Zero Boundary** by "
@@ -5611,31 +5639,31 @@ msgstr ""
 "*@[暴风硫](https://space.bilibili.com/11638715/lists/5358986) 在 **零点界限** "
 "中根据是否落入水中使用不同的坠落伤害*"
 
-#: ../../Fixed-or-Improved-Logics.md:1535
+#: ../../Fixed-or-Improved-Logics.md:1550
 msgid ""
 "Now you can customize the damage a unit receives when it falls from a "
 "bridge."
 msgstr "现在你可以自定义单位从桥上坠落时受到的伤害。"
 
-#: ../../Fixed-or-Improved-Logics.md:1536
+#: ../../Fixed-or-Improved-Logics.md:1551
 msgid ""
 "`FallingDownDamage` customizes the damage a unit receives at the end of a"
 " fall. It can be a percentage or an integer."
 msgstr "`FallingDownDamage` 用于自定义单位坠落触底时所受到的伤害值，可以是比率或固定整数值。"
 
-#: ../../Fixed-or-Improved-Logics.md:1537
+#: ../../Fixed-or-Improved-Logics.md:1552
 msgid ""
 "`FallingDownDamage.Water` customizes the damage a unit receives when it "
 "falls onto the water. Defaults to `FallingDownDamage`."
 msgstr "`FallingDownDamage.Water` 用于自定义单位坠落到水中时所受的伤害值，默认同 `FallingDownDamage`。"
 
-#: ../../Fixed-or-Improved-Logics.md:1538
+#: ../../Fixed-or-Improved-Logics.md:1553
 msgid ""
 "If it is a negative percentage, corresponding damage will be dealt based "
 "on the current health of the unit."
 msgstr "若设置负百分比则会根据单位当前生命值按比例造成对应伤害。"
 
-#: ../../Fixed-or-Improved-Logics.md:1541
+#: ../../Fixed-or-Improved-Logics.md:1556
 msgid ""
 "[SOMETECHNO]                    ; TechnoType\n"
 "FallingDownDamage=              ; integer / percentage\n"
@@ -5645,23 +5673,23 @@ msgstr ""
 "FallingDownDamage=              ; integer / percentage\n"
 "FallingDownDamage.Water=        ; integer / percentage\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1547
+#: ../../Fixed-or-Improved-Logics.md:1562
 msgid "Damaged speed customization"
 msgstr "自定义伤残速度"
 
-#: ../../Fixed-or-Improved-Logics.md:1549
+#: ../../Fixed-or-Improved-Logics.md:1564
 msgid ""
 "In vanilla, units using drive/ship loco will has hardcoded speed "
 "multiplier when damaged. Now you can customize it."
 msgstr "原版中 `Locomotor` 使用 `Drive`／`Ship` 的单位在伤残时有一个硬编码的速度倍率。现在你可以自由定义了。"
 
-#: ../../Fixed-or-Improved-Logics.md:1550
+#: ../../Fixed-or-Improved-Logics.md:1565
 msgid ""
 "The max valuebale value is 1.0, you cannot make unit get faster on yellow"
 " condition by it."
 msgstr "最大有效值为 1.0，你无法凭借这个逻辑让单位在黄血时变得更快。"
 
-#: ../../Fixed-or-Improved-Logics.md:1553
+#: ../../Fixed-or-Improved-Logics.md:1568
 msgid ""
 "[General]\n"
 "DamagedSpeed=0.75        ; floating point value, multiplier\n"
@@ -5675,12 +5703,12 @@ msgstr ""
 "[SOMETECHNO]             ; TechnoType\n"
 "DamagedSpeed=            ; floating point value, multiplier\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1561
+#: ../../Fixed-or-Improved-Logics.md:1576
 msgid "Debris voxel animations limitation"
 msgstr "Voxel 碎片数量限制"
 
-#: ../../Fixed-or-Improved-Logics.md:1563
-#: ../../Fixed-or-Improved-Logics.md:2336
+#: ../../Fixed-or-Improved-Logics.md:1578
+#: ../../Fixed-or-Improved-Logics.md:2351
 msgid ""
 "Now, the original `DebrisMaximums` can be used in conjunction with new "
 "`DebrisMinimums` to limit the quantity of `DebrisTypes` when "
@@ -5689,15 +5717,15 @@ msgstr ""
 "当启用 `DebrisTypes.Limit` 时可通过原有的 `DebrisMaximums` 结合新增的 `DebrisMinimums` "
 "共同限制 `DebrisTypes` 的数量。"
 
-#: ../../Fixed-or-Improved-Logics.md:1564
-#: ../../Fixed-or-Improved-Logics.md:2337
+#: ../../Fixed-or-Improved-Logics.md:1579
+#: ../../Fixed-or-Improved-Logics.md:2352
 msgid ""
 "The default value of `DebrisTypes.Limit` is whether the number of "
 "`DebrisMaximums` is greater than (not equal to) 1 (for compatibility "
 "reasons)."
 msgstr "出于兼容目的，若 `DebrisMaximums` 大于（不包括等于）1 则默认启用 `DebrisTypes.Limit`。"
 
-#: ../../Fixed-or-Improved-Logics.md:1567
+#: ../../Fixed-or-Improved-Logics.md:1582
 msgid ""
 "[SOMETECHNO]        ; TechnoType\n"
 "DebrisTypes.Limit=  ; boolean\n"
@@ -5709,84 +5737,84 @@ msgstr ""
 "DebrisMaximums=     ; List of integers\n"
 "DebrisMinimums=     ; List of integers\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1575
+#: ../../Fixed-or-Improved-Logics.md:1590
 msgid "How to generate `DebrisTypes` in the game:"
 msgstr "游戏如何生成 `DebrisTypes`："
 
-#: ../../Fixed-or-Improved-Logics.md:1576
+#: ../../Fixed-or-Improved-Logics.md:1591
 msgid ""
 "Generate the total number of debris through `MaxDebris` and `MinDebris` "
 "first."
 msgstr "首先通过 `MaxDebris` 与 `MinDebris` 确定所要生成碎片的总量。"
 
-#: ../../Fixed-or-Improved-Logics.md:1577
+#: ../../Fixed-or-Improved-Logics.md:1592
 msgid ""
 "Traverse `DebrisTypes` and limit the quantity range through "
 "`DebrisMaximums` and `DebrisMinimums`."
 msgstr "遍历 `DebrisTypes` 列表并通过 `DebrisMaximums` 和 `DebrisMinimums` 限制数量范围。"
 
-#: ../../Fixed-or-Improved-Logics.md:1578
+#: ../../Fixed-or-Improved-Logics.md:1593
 msgid ""
 "When the number of generated debris will exceeds the total number, limit "
 "the quantity and end the traversal."
 msgstr "当已生成碎片数量将要超过总量时限制数量并停止遍历。"
 
-#: ../../Fixed-or-Improved-Logics.md:1579
+#: ../../Fixed-or-Improved-Logics.md:1594
 msgid ""
 "When the number of debris generated after a single traversal is not "
 "enough to exceed the total number, it will end if `DebrisTypes.Limit` is "
 "enabled, otherwise the traversal will restart like vanilla game do."
 msgstr "当遍历完成但碎片的数量并未达到总量时，若启用 `DebrisTypes.Limit` 则直接结束，否则按原版游戏机制重新进行遍历。"
 
-#: ../../Fixed-or-Improved-Logics.md:1582
+#: ../../Fixed-or-Improved-Logics.md:1597
 msgid "DropPod"
 msgstr "空降仓"
 
-#: ../../Fixed-or-Improved-Logics.md:1584
+#: ../../Fixed-or-Improved-Logics.md:1599
 msgid ""
 "DropPod properties can now be customized on a per-TechnoType (non-"
 "building) basis."
 msgstr "现在可以在每个非建筑类单位上微观定义 DropPod 属性。"
 
-#: ../../Fixed-or-Improved-Logics.md:1585
+#: ../../Fixed-or-Improved-Logics.md:1600
 msgid ""
 "If you want to attach the trailer animation to the pod, set "
 "`DropPod.Trailer.Attached` to yes."
 msgstr "如果你要将尾烟动画附加到空降仓上，请将 `DropPod.Trailer.Attached` 设为 yes。"
 
-#: ../../Fixed-or-Improved-Logics.md:1586
+#: ../../Fixed-or-Improved-Logics.md:1601
 msgid ""
 "By default LaserTrails that are attached to the infantry will not be "
 "drawn if it's on DropPod."
 msgstr "默认情况下附加到步兵上的激光尾焰如果处于 DropPod 状态将不会绘制。"
 
-#: ../../Fixed-or-Improved-Logics.md:1587
+#: ../../Fixed-or-Improved-Logics.md:1602
 msgid ""
 "If you really want to use it, set `DropPodOnly` on the LaserTrail's type "
 "entry in art."
 msgstr "如果你实在想要使用它，那么请在 art 中的激光尾焰条目下设置 `DropPodOnly`。"
 
-#: ../../Fixed-or-Improved-Logics.md:1588
+#: ../../Fixed-or-Improved-Logics.md:1603
 msgid ""
 "If you want `DropPod.Weapon` to be fired only upon hard landing, set "
 "`DropPod.Weapon.HitLandOnly` to true."
 msgstr "如果要在着陆时才发射 `DropPod.Weapon`，请将 `DropPod.Weapon.HitLandOnly` 设为 true。"
 
-#: ../../Fixed-or-Improved-Logics.md:1589
+#: ../../Fixed-or-Improved-Logics.md:1604
 msgid ""
 "The landing speed is not smaller than it's current height /10 + 2 for "
 "unknown reason. A small `DropPod.Speed` value therefore results in "
 "exponential deceleration."
 msgstr "由于某些未知原因着陆速度不小于其当前高度 / 20 + 2 的值。因此较小的 `DropPod.Speed` 值会导致指数级减速。"
 
-#: ../../Fixed-or-Improved-Logics.md:1592
+#: ../../Fixed-or-Improved-Logics.md:1607
 msgid ""
 "Due to technical constraints `DropPod.AirImage` is only drawn for "
 "InfantryTypes (as the DropPod is the infantry itself with its image "
 "swapped). This may change in future."
 msgstr "由于技术限制，`DropPod.AirImage` 仅在步兵类单位上绘制（因为空降仓本身就是替换了图像的步兵自身）。未来可能会进行更改。"
 
-#: ../../Fixed-or-Improved-Logics.md:1596
+#: ../../Fixed-or-Improved-Logics.md:1611
 msgid ""
 "[SOMETECHNO]                  ; TechnoType\n"
 "DropPod.Angle=                ; double, default to [General] -> "
@@ -5834,7 +5862,7 @@ msgstr ""
 "DropPodWeapon\n"
 "DropPod.Weapon.HitLandOnly=   ; boolean, default to no\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1613
+#: ../../Fixed-or-Improved-Logics.md:1628
 msgid ""
 "`[General] -> DropPodTrailer` is [Ares feature](https://ares-"
 "developers.github.io/Ares-docs/new/droppod.html)."
@@ -5842,11 +5870,11 @@ msgstr ""
 "`[General] -> DropPodTrailer` 是一个 [Ares 功能](https://ares-"
 "developers.github.io/Ares-docs/new/droppod.html)。"
 
-#: ../../Fixed-or-Improved-Logics.md:1616
+#: ../../Fixed-or-Improved-Logics.md:1631
 msgid "Exploding object customizations"
 msgstr "爆炸对象的自定义"
 
-#: ../../Fixed-or-Improved-Logics.md:1618
+#: ../../Fixed-or-Improved-Logics.md:1633
 msgid ""
 "By default `Explodes=true` TechnoTypes have all of their passengers "
 "killed when they are destroyed. This behaviour can now be disabled by "
@@ -5855,7 +5883,7 @@ msgstr ""
 "默认情况下 `Explodes=true` 的科技类型被摧毁时它们的所有乘客都会被击杀。现在可以通过设置 "
 "`Explodes.KillPassengers=false` 禁用此行为。"
 
-#: ../../Fixed-or-Improved-Logics.md:1619
+#: ../../Fixed-or-Improved-Logics.md:1634
 msgid ""
 "BuildingTypes with `Explodes=true` can by default explode even when they "
 "are still being built or sold. This can be disabled by setting "
@@ -5866,7 +5894,7 @@ msgstr ""
 "`Explodes.DuringBuildup` 为 false 来禁用。这样它们在建造或出售过程中会表现得像是 `Explodes` 被设为 "
 "false 一样。"
 
-#: ../../Fixed-or-Improved-Logics.md:1622
+#: ../../Fixed-or-Improved-Logics.md:1637
 msgid ""
 "[SOMETECHNO]                 ; TechnoType\n"
 "Explodes.KillPassengers=true ; boolean\n"
@@ -5880,30 +5908,30 @@ msgstr ""
 "[SOMEBUILDING]               ; BuildingType\n"
 "Explodes.DuringBuildup=true  ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1630
+#: ../../Fixed-or-Improved-Logics.md:1645
 msgid "Forbid parallel AI queues"
 msgstr "禁止 AI 并行生产队列"
 
-#: ../../Fixed-or-Improved-Logics.md:1632
+#: ../../Fixed-or-Improved-Logics.md:1647
 msgid ""
 "You can now set if specific types of factories do not have AI production "
 "cloning issue instead of Ares' indiscriminate behavior of "
 "`AllowParallelAIQueues=no`."
 msgstr "现在你可以设置特定类型的工厂是否禁用 AI 克隆生产而不是 Ares 的 `AllowParallelAIQueues=no` 那样全部禁用。"
 
-#: ../../Fixed-or-Improved-Logics.md:1633
+#: ../../Fixed-or-Improved-Logics.md:1648
 msgid ""
 "If `AllowParallelAIQueues=no` *(Ares feature)* is set, the tags have no "
 "effect."
 msgstr "如果 `AllowParallelAIQueues=no`（*Ares 功能*）被设置，该标签无效。"
 
-#: ../../Fixed-or-Improved-Logics.md:1634
+#: ../../Fixed-or-Improved-Logics.md:1649
 msgid ""
 "You can also exclude specific TechnoTypes from being built in parallel by"
 " AI by setting `ForbidParallelAIQueues` to true on a TechnoType."
 msgstr "你还可以通过在科技类型上将 `ForbidParallelAIQueues` 设为 true 来禁止特定科技类型被 AI 克隆生产。"
 
-#: ../../Fixed-or-Improved-Logics.md:1637
+#: ../../Fixed-or-Improved-Logics.md:1652
 msgid ""
 "[GlobalControls]\n"
 "AllowParallelAIQueues=yes           ; must be set yes/true unless you "
@@ -5929,11 +5957,11 @@ msgstr ""
 "[SOMETECHNO]                        ; TechnoType\n"
 "ForbidParallelAIQueues=false        ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1650
+#: ../../Fixed-or-Improved-Logics.md:1665
 msgid "Force techno targeting in distributed frames to improve performance"
 msgstr "强制单位索敌行为分散到不同帧以提升性能"
 
-#: ../../Fixed-or-Improved-Logics.md:1652
+#: ../../Fixed-or-Improved-Logics.md:1667
 msgid ""
 "When you create many technos in a same frame (i.e. starting the game with"
 " a campaign map that initially has a large number of technos), they will "
@@ -5942,7 +5970,7 @@ msgid ""
 "targeting is still synchronized."
 msgstr "当你在同一帧内创建大量单位（例如进入一个初始预置了大量单位的战役地图）时它们总是会同时扫描目标从而导致游戏卡顿。仅通过增大索敌间隔并不能改善这点，因为它们仍会同时索敌。"
 
-#: ../../Fixed-or-Improved-Logics.md:1653
+#: ../../Fixed-or-Improved-Logics.md:1668
 msgid ""
 "It is now possible to force them to seek targets separately. If "
 "`DistributeTargetingFrame=true` is set, techno's targeting timer will be "
@@ -5954,13 +5982,13 @@ msgstr ""
 "`DistributeTargetingFrame=true`，单位的瞄准计时器将在随机延迟后启动，延迟范围在 `[0,15]` "
 "之间。这可以将它们的瞄准时间分散在 15 帧内，从而缓解上述卡顿问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:1654
+#: ../../Fixed-or-Improved-Logics.md:1669
 msgid ""
 "You can use `DistributeTargetingFrame.AIOnly` to make it only work for AI"
 " (Players are not likely to have so many technos.)"
 msgstr "你可以使用 `DistributeTargetingFrame.AIOnly` 使其仅对 AI 生效（人类玩家通常不太可能有那么多单位）。"
 
-#: ../../Fixed-or-Improved-Logics.md:1657
+#: ../../Fixed-or-Improved-Logics.md:1672
 msgid ""
 "[General]\n"
 "DistributeTargetingFrame=false         ; boolean\n"
@@ -5976,11 +6004,11 @@ msgstr ""
 "[SOMETECHNO]                           ; TechnoType\n"
 "DistributeTargetingFrame=              ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1666
+#: ../../Fixed-or-Improved-Logics.md:1681
 msgid "Iron Curtain & Force Shield effects on organics customization"
 msgstr "铁幕和力场护盾对有机体效果的自定义"
 
-#: ../../Fixed-or-Improved-Logics.md:1668
+#: ../../Fixed-or-Improved-Logics.md:1683
 msgid ""
 "In vanilla game, when Iron Curtain is applied on `Organic=true` units "
 "like squids or infantry, they could only get killed instantly by "
@@ -5992,28 +6020,28 @@ msgstr ""
 "瞬间击杀。现在此行为已被解除硬编码，并且可以通过全局的 `IronCurtain.EffectOnOrganics` 和每个科技类型的 "
 "`IronCurtain.Effect` 属性来自定义。可接受的值如下："
 
-#: ../../Fixed-or-Improved-Logics.md:1669
+#: ../../Fixed-or-Improved-Logics.md:1684
 msgid ""
 "`kill` : Iron Curtain kills the organic object with a specifc warhead. "
 "This is the default value for `Organic=true` units and infantry if not "
 "otherwise specified."
 msgstr "`kill`：铁幕会用特定的弹头杀死有机体，这是 `Organic=true` 单位和步兵的默认值，除非专门指定。"
 
-#: ../../Fixed-or-Improved-Logics.md:1670
+#: ../../Fixed-or-Improved-Logics.md:1685
 msgid ""
 "`invulnerable` : Iron Curtain makes the organic object invulnerable like "
 "buildings and vehicles."
 msgstr "`invulnerable`：铁幕会使有机体像建筑和载具一样获得无敌效果。"
 
-#: ../../Fixed-or-Improved-Logics.md:1671
+#: ../../Fixed-or-Improved-Logics.md:1686
 msgid "`ignore` : Iron Curtain doesn't give any effect on the organic object."
 msgstr "`ignore`：铁幕不会对有机体造成任何影响。"
 
-#: ../../Fixed-or-Improved-Logics.md:1672
+#: ../../Fixed-or-Improved-Logics.md:1687
 msgid "Identical controls are available for Force Shield as well."
 msgstr "力场护盾也有相同的控制选项。"
 
-#: ../../Fixed-or-Improved-Logics.md:1675
+#: ../../Fixed-or-Improved-Logics.md:1690
 msgid ""
 "[CombatDamage]\n"
 "IronCurtain.EffectOnOrganics=kill  ; Iron Curtain effect Enumeration "
@@ -6055,17 +6083,17 @@ msgstr ""
 "ForceShield.KillWarhead=           ; WarheadType, default to "
 "[CombatDamage] -> ForceShield.KillOrganicsWarhead\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1689
+#: ../../Fixed-or-Improved-Logics.md:1704
 msgid "Jumpjet rotating on crashing toggle"
 msgstr "Jumpjet 旋转着坠毁的开关"
 
-#: ../../Fixed-or-Improved-Logics.md:1691
+#: ../../Fixed-or-Improved-Logics.md:1706
 msgid ""
 "Jumpjet that is going to crash starts to change its facing "
 "uncontrollably, this can now be turned off."
 msgstr "即将坠毁的 Jumpjet 会开始不可控地改变其朝向，现在可以将其关闭。"
 
-#: ../../Fixed-or-Improved-Logics.md:1694
+#: ../../Fixed-or-Improved-Logics.md:1709
 msgid ""
 "[SOMETECHNO]               ; TechnoType\n"
 "JumpjetRotateOnCrash=true  ; boolean\n"
@@ -6073,25 +6101,25 @@ msgstr ""
 "[SOMETECHNO]               ; TechnoType\n"
 "JumpjetRotateOnCrash=true  ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1700
+#: ../../Fixed-or-Improved-Logics.md:1715
 msgid "This may subject to further changes."
 msgstr "这可能会在未来进一步更改。"
 
-#: ../../Fixed-or-Improved-Logics.md:1703
+#: ../../Fixed-or-Improved-Logics.md:1718
 msgid "Kill spawns on low power"
 msgstr "断电时击杀子机"
 
-#: ../../Fixed-or-Improved-Logics.md:1705
+#: ../../Fixed-or-Improved-Logics.md:1720
 msgid ""
 "`Powered=yes` structures that spawn aircraft like Aircraft Carriers will "
 "stop targeting the enemy if low power."
 msgstr "拥有 `Powered=yes` 的建筑航母在断电时将会停止攻击敌人。"
 
-#: ../../Fixed-or-Improved-Logics.md:1706
+#: ../../Fixed-or-Improved-Logics.md:1721
 msgid "Spawned aircraft self-destruct if they are flying."
 msgstr "被生成的战机如果正在飞行那么会自毁。"
 
-#: ../../Fixed-or-Improved-Logics.md:1709
+#: ../../Fixed-or-Improved-Logics.md:1724
 msgid ""
 "[SOMESTRUCTURE]          ; BuildingType\n"
 "Powered.KillSpawns=false ; boolean\n"
@@ -6099,17 +6127,17 @@ msgstr ""
 "[SOMESTRUCTURE]          ; BuildingType\n"
 "Powered.KillSpawns=false ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1714
+#: ../../Fixed-or-Improved-Logics.md:1729
 msgid "PipScale pip customizations"
 msgstr "自定义 PipScale"
 
-#: ../../Fixed-or-Improved-Logics.md:1716
+#: ../../Fixed-or-Improved-Logics.md:1731
 msgid ""
 "It is now possible to change the size of pips (or more accurately the "
 "pixel increment to the next pip drawn) displayed on `PipScale`."
 msgstr "现在可以更改在 `PipScale` 中显示的 pip 的大小（或者更确切的说是绘制下一个 pip 的像素增量）。"
 
-#: ../../Fixed-or-Improved-Logics.md:1717
+#: ../../Fixed-or-Improved-Logics.md:1732
 msgid ""
 "`Pips.Generic.(Buildings.)Size` is for non-ammo pips on non-building "
 "TechnoTypes / buildings, accordingly, and `Pips.Ammo.(Buildings.)Size` is"
@@ -6119,17 +6147,17 @@ msgstr ""
 "`Pips.Generic.(Buildings.)Size` 用于非建筑科技类型／建筑的非弹药 "
 "pip，相应的，`Pips.Ammo.(Buildings.)Size` 则是针对弹药 pip，同样分别对应非建筑科技类型／建筑。"
 
-#: ../../Fixed-or-Improved-Logics.md:1718
+#: ../../Fixed-or-Improved-Logics.md:1733
 msgid ""
 "Ammo pip size can also be overridden on per TechnoType-basis using "
 "`AmmoPipSize`."
 msgstr "还可以通过 `AmmoPipSize` 为每个科技类型重写弹药 pip 的大小。"
 
-#: ../../Fixed-or-Improved-Logics.md:1719
+#: ../../Fixed-or-Improved-Logics.md:1734
 msgid "Ammo pip frames can now also be customized."
 msgstr "现在也可以自定义弹药  pip 的帧。"
 
-#: ../../Fixed-or-Improved-Logics.md:1720
+#: ../../Fixed-or-Improved-Logics.md:1735
 msgid ""
 "`AmmoPipFrame` and `EmptyAmmoPipFrame` are frames (zero-based) of "
 "`pips2.shp` used for ammo pip and empty ammo pip (this is not set by "
@@ -6138,7 +6166,7 @@ msgstr ""
 "`AmmoPipFrame` 和 `EmptyAmmoPipFrame` 是在 `PipWrap=0`（这是默认行为）时使用的 "
 "`pips2.shp` 中（从 0 开始的）帧，用于弹药 pip 和空弹药 pip。"
 
-#: ../../Fixed-or-Improved-Logics.md:1721
+#: ../../Fixed-or-Improved-Logics.md:1736
 msgid ""
 "`AmmoPipWrapStartFrame` is used as start frame (zero-based, from "
 "`pips2.shp`) for when `PipWrap` is above 0. The start frame is the empty "
@@ -6148,21 +6176,21 @@ msgstr ""
 "`AmmoPipWrapStartFrame` 用作 `PipWrap` 大于 0 时将 `pips2.shp` 中（从 0 "
 "开始的）帧设为起始帧。起始帧是空帧，从起始帧之后最多有 `Ammo` 除以 `PipWrap` 个帧用于不同的装填阶段。"
 
-#: ../../Fixed-or-Improved-Logics.md:1722
+#: ../../Fixed-or-Improved-Logics.md:1737
 msgid "`AmmoPipOffset` can be used to shift the starting position of ammo pips."
 msgstr "`AmmoPipOffset` 可用于移动弹药 pip 的起始位置。"
 
-#: ../../Fixed-or-Improved-Logics.md:1723
+#: ../../Fixed-or-Improved-Logics.md:1738
 msgid "Pips for TechnoTypes with `Spawns` can now also be customized."
 msgstr "现在带有 `Spawns` 的科技类型的 pip 也可以进行自定义。"
 
-#: ../../Fixed-or-Improved-Logics.md:1724
+#: ../../Fixed-or-Improved-Logics.md:1739
 msgid ""
 "`ShowSpawnsPips` determines whether or not these pips are shown at all, "
 "as they are independent from `PipScale` setting."
 msgstr "`ShowSpawnsPips` 决定这些 pip 是否显示，因为它们与 `PipScale` 设置无关。"
 
-#: ../../Fixed-or-Improved-Logics.md:1725
+#: ../../Fixed-or-Improved-Logics.md:1740
 msgid ""
 "`SpawnsPipFrame` and `EmptySpawnsPipFrame` are frames (zero-based) of "
 "`pips.shp` (for buildings) or `pips2.shp` (for others) used for a spawnee"
@@ -6171,7 +6199,7 @@ msgstr ""
 "`SpawnsPipFrame` 和 `EmptySpawnsPipFrame` 分别是 `pips.shp`（对于建筑）或 "
 "`pips2.shp`（对于其他）中（从 0 开始的）帧，用于子机 pip 和空子机 pip。"
 
-#: ../../Fixed-or-Improved-Logics.md:1726
+#: ../../Fixed-or-Improved-Logics.md:1741
 msgid ""
 "`SpawnsPipSize` determines the pixel increment to the next pip drawn. "
 "Defaults to `[AudioVisual] -> Pips.Generic.(Buildings.)Size` if not set."
@@ -6179,19 +6207,19 @@ msgstr ""
 "`SpawnsPipSize` 决定了到下一个 pip 绘制的像素增量。若未设置则默认为 `[AudioVisual] -> "
 "Pips.Generic.(Buildings.)Size`。"
 
-#: ../../Fixed-or-Improved-Logics.md:1727
+#: ../../Fixed-or-Improved-Logics.md:1742
 msgid ""
 "`SpawnsPipoffset` can be used to shift the starting position of spawnee "
 "pips."
 msgstr "`SpawnsPipoffset` 可以被用于移动子机 pip 的起始位置。"
 
-#: ../../Fixed-or-Improved-Logics.md:1728
+#: ../../Fixed-or-Improved-Logics.md:1743
 msgid ""
 "Pips for `Storage` can now also be customized via new keys in "
 "`[AudioVisual]`."
 msgstr "现在可以通过 `[AudioVisual]` 中的新标签来自定义 `Storage` 的 pip。"
 
-#: ../../Fixed-or-Improved-Logics.md:1729
+#: ../../Fixed-or-Improved-Logics.md:1744
 msgid ""
 "`Pips.Tiberiums.Frames` can be used to list frames (zero-based) of "
 "`pips.shp` (for buildings) or `pips2.shp` (for others) used for tiberium "
@@ -6201,13 +6229,13 @@ msgstr ""
 "`Pips.Tiberiums.Frames` 可用于列出用于泰伯利亚类型的 `pips.shp`（用于建筑）或 "
 "`pips2.shp`（用于其他）中（从 0 开始的）帧，按与泰伯利亚类型序数对应的列表排列顺序，泰伯利亚类型为 1 时默认为 5，否则为 2。"
 
-#: ../../Fixed-or-Improved-Logics.md:1730
+#: ../../Fixed-or-Improved-Logics.md:1745
 msgid ""
 "`Pips.Tiberiums.EmptyFrame` can be used to set the frame for empty slots,"
 " defaults to 0."
 msgstr "`Pips.Tiberiums.EmptyFrame` 可用于设置空槽的帧，默认为 0。"
 
-#: ../../Fixed-or-Improved-Logics.md:1731
+#: ../../Fixed-or-Improved-Logics.md:1746
 msgid ""
 "`Pips.Tiberiums.DisplayOrder` controls in which order the tiberium type "
 "pips are displayed, takes a list of tiberium type indices. Any tiberium "
@@ -6217,7 +6245,7 @@ msgstr ""
 "`Pips.Tiberiums.DisplayOrder` 控制泰伯利亚类型 pip "
 "显示的顺序，取一个泰伯利亚类型索引列表。任何未列出的将在列出后按顺序显示。"
 
-#: ../../Fixed-or-Improved-Logics.md:1732
+#: ../../Fixed-or-Improved-Logics.md:1747
 msgid ""
 "`Pips.Tiberiums.WeedFrame` controls which frame is displayed on Technos "
 "with `Weeder=yes`, takes a (zero-based) index of a frame in `pips.shp` "
@@ -6226,13 +6254,13 @@ msgstr ""
 "`Pips.Tiberiums.WeedFrame` 控制在 `Weeder=yes` 科技类型上显示的帧，使用 "
 "`pips.shp`（用于建筑）或 `pips2.shp`（用于其他）中（从 0 开始的）索引，默认为 1。"
 
-#: ../../Fixed-or-Improved-Logics.md:1733
+#: ../../Fixed-or-Improved-Logics.md:1748
 msgid ""
 "`Pips.Tiberiums.WeedEmptyFrame` can be used to set the frame for empty "
 "weed slots, defaults to 0."
 msgstr "`Pips.Tiberiums.WeedEmptyFrame` 可用于设置空置废矿槽的帧，默认为 0。"
 
-#: ../../Fixed-or-Improved-Logics.md:1736
+#: ../../Fixed-or-Improved-Logics.md:1751
 msgid ""
 "[AudioVisual]\n"
 "Pips.Generic.Size=4,0                ; X,Y, increment in pixels to next "
@@ -6312,17 +6340,17 @@ msgstr ""
 "pip\n"
 "SpawnsPipOffset=0,0                  ; X,Y, position offset from default\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1761
+#: ../../Fixed-or-Improved-Logics.md:1776
 msgid "Power drain for units"
 msgstr "单位消耗电力"
 
-#: ../../Fixed-or-Improved-Logics.md:1763
+#: ../../Fixed-or-Improved-Logics.md:1778
 msgid ""
 "Infantry, vehicles and aircraft can now drain or provide `Power` if "
 "`UnitPowerDrain=true` is set."
 msgstr "如果设置了 `UnitPowerDrain=true`，步兵、载具和战机现在都将可以消耗或提供 `Power`。"
 
-#: ../../Fixed-or-Improved-Logics.md:1766
+#: ../../Fixed-or-Improved-Logics.md:1781
 msgid ""
 "[General]\n"
 "UnitPowerDrain=false  ; boolean\n"
@@ -6338,17 +6366,17 @@ msgstr ""
 "Power=0               ; integer, positive means output, negative means "
 "drain\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1774
+#: ../../Fixed-or-Improved-Logics.md:1789
 msgid "RadarInvisible for non-enemy house"
 msgstr "不仅限于敌方的 `RadarInvisible`"
 
-#: ../../Fixed-or-Improved-Logics.md:1776
+#: ../../Fixed-or-Improved-Logics.md:1791
 msgid ""
 "In vanilla, `RadarInvisible` is ignored if the techno is allied with the "
 "current player. Now you can change this behavior."
 msgstr "在原版游戏中 `RadarInvisible` 仅对当前非友军的玩家有效，现在你可以更改这一行为。"
 
-#: ../../Fixed-or-Improved-Logics.md:1779
+#: ../../Fixed-or-Improved-Logics.md:1794
 msgid ""
 "[SOMETECHNO]                         ; TechnoType\n"
 "RadarInvisibleToHouse=               ; Affected House Enumeration "
@@ -6360,17 +6388,17 @@ msgstr ""
 "(none|owner/self|allies/ally|team|enemies/enemy|all), default to enemy if"
 " RadarInvisible=true, none otherwise\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1784
+#: ../../Fixed-or-Improved-Logics.md:1799
 msgid "Subterranean unit travel height and speed"
 msgstr "潜地单位移动高度和速度"
 
-#: ../../Fixed-or-Improved-Logics.md:1786
+#: ../../Fixed-or-Improved-Logics.md:1801
 msgid ""
 "It is now possible to control the height at which units with subterranean"
 " (Tunnel) `Locomotor` travel, globally or per TechnoType."
 msgstr "现在可以控制拥有潜地（Tunnel）`Locomotor` 的单位移动的高度，可以在全局和每个科技类型上定义。"
 
-#: ../../Fixed-or-Improved-Logics.md:1787
+#: ../../Fixed-or-Improved-Logics.md:1802
 msgid ""
 "Subterranean movement speed is now also customizable, both globally and "
 "per TechnoType. If per-TechnoType value is negative, global value is "
@@ -6381,7 +6409,7 @@ msgstr ""
 "潜地移动速度现在也可以自定义，同样拥有全局和微观标签。如果微观标签的值为负数则使用全局值。这不会影响单位在潜地时的垂直移动速度。该速度由 "
 "`Speed` * `[General] -> TunnelSpeed` 决定。"
 
-#: ../../Fixed-or-Improved-Logics.md:1790
+#: ../../Fixed-or-Improved-Logics.md:1805
 msgid ""
 "[General]\n"
 "SubterraneanHeight=-256  ; integer, height in leptons (1/256th of a cell)"
@@ -6403,17 +6431,17 @@ msgstr ""
 "\n"
 "SubterraneanSpeed=-1     ; floating point value\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1801
+#: ../../Fixed-or-Improved-Logics.md:1816
 msgid ""
 "`SubterraneanHeight` expects negative values to be used and may behave "
 "erratically if set to above -50."
 msgstr "`SubterraneanHeight` 最好使用一个负值并且如果设置为大于 -50 的值可能会出现异常行为。"
 
-#: ../../Fixed-or-Improved-Logics.md:1804
+#: ../../Fixed-or-Improved-Logics.md:1819
 msgid "Target scanning delay optimization"
 msgstr "索敌间隔优化"
 
-#: ../../Fixed-or-Improved-Logics.md:1806
+#: ../../Fixed-or-Improved-Logics.md:1821
 msgid ""
 "In vanilla, the game used `NormalTargetingDelay` and "
 "`GuardAreaTargetingDelay` to globally control the target searching "
@@ -6423,20 +6451,20 @@ msgstr ""
 "原版中游戏使用 `NormalTargetingDelay` 和 `GuardAreaTargetingDelay` "
 "来全局控制单位的索敌间隔。增大这些值会导致单位反应迟钝，减小这些值则可能导致游戏卡顿。"
 
-#: ../../Fixed-or-Improved-Logics.md:1807
+#: ../../Fixed-or-Improved-Logics.md:1822
 msgid ""
 "Now, you can define them per techno, also allowing different values for "
 "AI and players. The default values are the same as those originally "
 "defined by the vanilla flags."
 msgstr "现在可以在每种单位上微观定义这些参数，且可为 AI 玩家和人类玩家分离设置。默认值取自原版全局。"
 
-#: ../../Fixed-or-Improved-Logics.md:1808
+#: ../../Fixed-or-Improved-Logics.md:1823
 msgid ""
 "You can also specific this delay for attack move mission. The default "
 "value is `NormalTargetingDelay`."
 msgstr "你还可以为移动攻击指令单独设定间隔。默认使用 `NormalTargetingDelay` 的值。"
 
-#: ../../Fixed-or-Improved-Logics.md:1811
+#: ../../Fixed-or-Improved-Logics.md:1826
 msgid ""
 "[General]\n"
 "AINormalTargetingDelay=              ; integer, game frames\n"
@@ -6470,11 +6498,11 @@ msgstr ""
 "AIAttackMoveTargetingDelay=          ; integer, game frames\n"
 "PlayerAttackMoveTargetingDelay=      ; integer, game frames\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1829
+#: ../../Fixed-or-Improved-Logics.md:1844
 msgid "Voxel body multi-section shadows"
 msgstr "Voxel 主体多组件阴影"
 
-#: ../../Fixed-or-Improved-Logics.md:1831
+#: ../../Fixed-or-Improved-Logics.md:1846
 msgid ""
 "![image](_static/images/uh0-be.gif) *UH-0 helicopter with dynamic "
 "propeller and its shadow in [Bellum "
@@ -6483,7 +6511,7 @@ msgstr ""
 "![image](_static/images/uh0-be.gif) "
 "*[万世之战](https://ra2be.com/zh/download.html) 中拥有可动螺旋桨及其影子的 UH-0 直升机*"
 
-#: ../../Fixed-or-Improved-Logics.md:1834
+#: ../../Fixed-or-Improved-Logics.md:1849
 msgid ""
 "It is also now possible for vehicles and aircraft to display shadows for "
 "multiple sections of the voxel body at once, instead of just one section "
@@ -6495,7 +6523,7 @@ msgstr ""
 "`ShadowIndex`）指定多个组件索引来一性次显示出 Voxel 主体中多个组件的影子，而不再仅限于绘制 `ShadowIndex` "
 "所指定的单个组件。"
 
-#: ../../Fixed-or-Improved-Logics.md:1835
+#: ../../Fixed-or-Improved-Logics.md:1850
 msgid ""
 "`ShadowIndex.Frame` and `ShadowIndices.Frame` can be used to customize "
 "which frame of the HVA animation for the section from `ShadowIndex` and "
@@ -6507,7 +6535,7 @@ msgstr ""
 "`ShadowIndices` 所指定组件的 HVA 动画中显示影子时所使用的帧。-1 是一个用于表示使用当前帧的特殊值，并且 "
 "`ShadowIndices.Frame` 默认如此。"
 
-#: ../../Fixed-or-Improved-Logics.md:1838
+#: ../../Fixed-or-Improved-Logics.md:1853
 msgid ""
 "[SOMETECHNO]          ; TechnoType\n"
 "ShadowIndices=        ; List of integers (voxel section indices)\n"
@@ -6519,11 +6547,11 @@ msgstr ""
 "ShadowIndex.Frame=0   ; integer (HVA animation frame index)\n"
 "ShadowIndices.Frame=  ; List of integers (HVA animation frame indices)\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1845
+#: ../../Fixed-or-Improved-Logics.md:1860
 msgid "Voxel shadow scaling in air"
 msgstr "Voxel 在空中时的影子缩放"
 
-#: ../../Fixed-or-Improved-Logics.md:1847
+#: ../../Fixed-or-Improved-Logics.md:1862
 msgid ""
 "It is now possible to adjust how voxel air units (`VehicleType` & "
 "`AircraftType`) shadows scale in air. By default the shadows scale by "
@@ -6533,7 +6561,7 @@ msgstr ""
 "现在可以调整 Voxel 空中单位（载具和战机）的影子如何缩放。默认情况下如果单位拥有 `ConsideredAircraft=true` "
 "那么影子会按 `AirShadowBaseScale` （默认为 0.5）进行缩放"
 
-#: ../../Fixed-or-Improved-Logics.md:1848
+#: ../../Fixed-or-Improved-Logics.md:1863
 msgid ""
 "If `HeightShadowScaling=true`, the shadow is scaled by amount that is "
 "determined by following formula: `Max(AirShadowBaseScale ^ (currentHeight"
@@ -6550,7 +6578,7 @@ msgstr ""
 "是一个可覆盖的值，默认为最大巡航高度（`JumpjetHeight`、`FlightLevel` 等），而 "
 "`HeightShadowScaling.MinScale` 设置了缩放的下限。"
 
-#: ../../Fixed-or-Improved-Logics.md:1851
+#: ../../Fixed-or-Improved-Logics.md:1866
 msgid ""
 "[AudioVisual]\n"
 "AirShadowBaseScale=0.5            ; floating point value\n"
@@ -6568,26 +6596,26 @@ msgstr ""
 "[SOMETECHNO]                      ; TechnoType\n"
 "ShadowSizeCharacteristicHeight=   ; integer, height in leptons\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1861
+#: ../../Fixed-or-Improved-Logics.md:1876
 msgid ""
 "Allow techno type considered as other type when recruiting techno for "
 "teams"
 msgstr "允许单位作为其他类型的单位参与小队招募"
 
-#: ../../Fixed-or-Improved-Logics.md:1863
+#: ../../Fixed-or-Improved-Logics.md:1878
 msgid ""
 "It is now possible to make techno type considered as other type when "
 "recruiting techno for teams, both for AI team recruitment and `Create "
 "Team` action."
 msgstr "现在小队（包括 AI 小队招募和 `建立作战小队...` 行为）招募单位时可以将一个单位视为其他类型的单位。"
 
-#: ../../Fixed-or-Improved-Logics.md:1864
+#: ../../Fixed-or-Improved-Logics.md:1879
 msgid ""
 "Only affect techno that's presented on the map. Cannot make AI produce "
 "this type of techno if it doesn't have any."
 msgstr "仅影响存在于地图上的单位。AI 不会在没有作为其他类型参与招募的单位时使从工厂生产它们。"
 
-#: ../../Fixed-or-Improved-Logics.md:1867
+#: ../../Fixed-or-Improved-Logics.md:1882
 msgid ""
 "[SOMETECHNO]                      ; TechnoType\n"
 "TeamMember.ConsideredAs=          ; List of TechnoTypes\n"
@@ -6595,15 +6623,15 @@ msgstr ""
 "[SOMETECHNO]                      ; TechnoType\n"
 "TeamMember.ConsideredAs=          ; List of TechnoTypes\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1872
+#: ../../Fixed-or-Improved-Logics.md:1887
 msgid "Terrains"
 msgstr "地形对象"
 
-#: ../../Fixed-or-Improved-Logics.md:1874
+#: ../../Fixed-or-Improved-Logics.md:1889
 msgid "Animated TerrainTypes"
 msgstr "动画化地形对象"
 
-#: ../../Fixed-or-Improved-Logics.md:1876
+#: ../../Fixed-or-Improved-Logics.md:1891
 msgid ""
 "![Waving trees](_static/images/tree-shake.gif) *Animated trees used in "
 "[Ion Shock](https://www.moddb.com/mods/tiberian-war-ionshock)*"
@@ -6611,11 +6639,11 @@ msgstr ""
 "![Waving trees](_static/images/tree-shake.gif) *[Ion "
 "Shock](https://www.moddb.com/mods/tiberian-war-ionshock) 中会动的树*"
 
-#: ../../Fixed-or-Improved-Logics.md:1876
+#: ../../Fixed-or-Improved-Logics.md:1891
 msgid "Waving trees"
 msgstr "会动的树"
 
-#: ../../Fixed-or-Improved-Logics.md:1879
+#: ../../Fixed-or-Improved-Logics.md:1894
 msgid ""
 "By default `IsAnimated`, `AnimationRate` and `AnimationProbability` only "
 "work on TerrainTypes with `SpawnsTiberium` set to true. This restriction "
@@ -6624,7 +6652,7 @@ msgstr ""
 "默认情况下 `IsAnimated`、`AnimationRate` 和 `AnimationProbability` 仅适用于 "
 "`SpawnsTiberium` 设置为 true 的地形对象。这一限制已被解除。"
 
-#: ../../Fixed-or-Improved-Logics.md:1880
+#: ../../Fixed-or-Improved-Logics.md:1895
 msgid ""
 "Length of the animation can now be customized by setting "
 "`AnimationLength` as well, defaulting to half (or quarter if [damaged "
@@ -6634,7 +6662,7 @@ msgstr ""
 "现在动画的长度可以通过设置 `AnimationLength` 来自定义，默认为地形对象图像帧数的一半（如果启用了[破损帧](#damaged-"
 "frames-and-crumbling-animation)则为四分之一）。"
 
-#: ../../Fixed-or-Improved-Logics.md:1883
+#: ../../Fixed-or-Improved-Logics.md:1898
 msgid ""
 "[SOMETERRAINTYPE]  ; TerrainType\n"
 "AnimationLength=   ; integer, number of frames\n"
@@ -6642,17 +6670,17 @@ msgstr ""
 "[SOMETERRAINTYPE]  ; TerrainType\n"
 "AnimationLength=   ; integer, number of frames\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1888
+#: ../../Fixed-or-Improved-Logics.md:1903
 msgid "Custom palette"
 msgstr "自定义色盘"
 
-#: ../../Fixed-or-Improved-Logics.md:1890
+#: ../../Fixed-or-Improved-Logics.md:1905
 msgid ""
 "You can now specify custom palette for TerrainTypes in similar manner as "
 "TechnoTypes can."
 msgstr "现在你可以像为科技类型那样为地形对象指定自定义色盘。"
 
-#: ../../Fixed-or-Improved-Logics.md:1893
+#: ../../Fixed-or-Improved-Logics.md:1908
 msgid ""
 "[SOMETERRAINTYPE]  ; TerrainType\n"
 "Palette=           ; filename - excluding .pal extension and three-"
@@ -6662,18 +6690,18 @@ msgstr ""
 "Palette=           ; filename - excluding .pal extension and three-"
 "character theater-specific suffix\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1899
+#: ../../Fixed-or-Improved-Logics.md:1914
 msgid ""
 "This palette behaves like an object palette and does not use tint etc. "
 "that have been applied to the tile the TerrainType resides on like a "
 "TerrainType using tile palette would."
 msgstr "此色盘的行为就像原有的对象色盘那样不受光效影响。也就是地形对象将不会同步使用应用于地形对象所在地块上的色调。"
 
-#: ../../Fixed-or-Improved-Logics.md:1902
+#: ../../Fixed-or-Improved-Logics.md:1917
 msgid "Customizable ore spawners"
 msgstr "自定义矿柱"
 
-#: ../../Fixed-or-Improved-Logics.md:1904
+#: ../../Fixed-or-Improved-Logics.md:1919
 msgid ""
 "![image](_static/images/ore-01.png) *Different ore spawners in [Rise of "
 "the East](https://www.moddb.com/mods/riseoftheeast)*"
@@ -6681,18 +6709,18 @@ msgstr ""
 "![image](_static/images/ore-01.png) "
 "*[东方崛起](https://www.moddb.com/mods/riseoftheeast) 中不同的矿柱*"
 
-#: ../../Fixed-or-Improved-Logics.md:1907
+#: ../../Fixed-or-Improved-Logics.md:1922
 msgid "You can now specify which type of ore certain TerrainType would generate."
 msgstr "现在你可以指定地形对象将会生成哪种矿石。"
 
-#: ../../Fixed-or-Improved-Logics.md:1908
+#: ../../Fixed-or-Improved-Logics.md:1923
 msgid ""
 "It's also now possible to specify a range value for an ore generation "
 "area different compared to standard 3x3 rectangle. Ore will be uniformly "
 "distributed across all affected cells in a spread range."
 msgstr "现在还可以指定与标准 3x3 矩形不同的矿石生成区域范围值。矿石将均匀地分布在扩散范围内所有受影响的单元格中。"
 
-#: ../../Fixed-or-Improved-Logics.md:1909
+#: ../../Fixed-or-Improved-Logics.md:1924
 msgid ""
 "You can specify which ore growth stage will be spawned and how many cells"
 " will be filled with ore per ore generation animation. Corresponding tags"
@@ -6700,7 +6728,7 @@ msgid ""
 "allow randomized growth stages from the range (inclusive)."
 msgstr "此外也可以指定将生成哪个矿石生长阶段以及每次播放矿石生成动画将会填充多少个单元格。相对应的标签接受单个整数值或两个逗号分隔的值以允许范围内（含）随机化的生长阶段。"
 
-#: ../../Fixed-or-Improved-Logics.md:1912
+#: ../../Fixed-or-Improved-Logics.md:1927
 msgid ""
 "[SOMETERRAINTYPE]             ; TerrainType\n"
 "SpawnsTiberium.Type=0         ; tiberium/ore type index\n"
@@ -6714,11 +6742,11 @@ msgstr ""
 "SpawnsTiberium.GrowthStage=3  ; integer - single or comma-sep. range\n"
 "SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1920
+#: ../../Fixed-or-Improved-Logics.md:1935
 msgid "Damaged frames and crumbling animation"
 msgstr "伤残和倒坍动画"
 
-#: ../../Fixed-or-Improved-Logics.md:1922
+#: ../../Fixed-or-Improved-Logics.md:1937
 msgid ""
 "By default game shows damage frame only for TerrainTypes alive at only 1 "
 "point of health left. Because none of the original game TerrainType "
@@ -6728,7 +6756,7 @@ msgstr ""
 "默认情况下游戏在地形对象仅 1 点血时显示破损帧。由于原本游戏中的地形对象资源文件并未考虑这一点因此目前该逻辑仅限添加了 "
 "`HasDamagedFrames` 的情况下使用。"
 
-#: ../../Fixed-or-Improved-Logics.md:1923
+#: ../../Fixed-or-Improved-Logics.md:1938
 msgid ""
 "Instead of showing at 1 point of HP left, TerrainTypes switch to damaged "
 "frames once their health reaches `[AudioVisual] -> "
@@ -6737,7 +6765,7 @@ msgstr ""
 "地形对象不再在仅剩 1 点血时显示破损帧，而是在其血量达到 `[AudioVisual] -> ConditionYellow.Terrain` "
 "的百分比时才进行切换。"
 
-#: ../../Fixed-or-Improved-Logics.md:1924
+#: ../../Fixed-or-Improved-Logics.md:1939
 msgid ""
 "In addition, TerrainTypes can now show 'crumbling' animation after their "
 "health has reached zero and before they are deleted from the map by "
@@ -6746,25 +6774,25 @@ msgstr ""
 "此外，地形对象现在可以在其血量归 0 后到从地图中删除前的这段时间中通过设置 `HasCrumblingFrames` 为 true 来显示一个 "
 "“倒坍” 动画。"
 
-#: ../../Fixed-or-Improved-Logics.md:1925
+#: ../../Fixed-or-Improved-Logics.md:1940
 msgid ""
 "Crumbling frames start from first frame after both regular & damaged "
 "frames and ends at halfway point of the frames in TerrainType's image."
 msgstr "倒坍所用的帧从紧随于常规帧和破损帧之后的第一帧开始直到地形对象图像帧的一半处中止（另一半是影子）。"
 
-#: ../../Fixed-or-Improved-Logics.md:1926
+#: ../../Fixed-or-Improved-Logics.md:1941
 msgid ""
 "Sound event from `CrumblingSound` (if set) is played when crumbling "
 "animation starts playing."
 msgstr "当倒坍动画开始播放时将会播放 `CrumblingSound`（如果设置）指定的音效。"
 
-#: ../../Fixed-or-Improved-Logics.md:1927
+#: ../../Fixed-or-Improved-Logics.md:1942
 msgid ""
 "[Destroy animation & sound](New-or-Enhanced-Logics.md#destroy-animation--"
 "sound) only play after crumbling animation has finished."
 msgstr "[摧毁动画和音效](New-or-Enhanced-Logics.md#destroy-animation--sound) 仅在倒坍动画结束后播放。"
 
-#: ../../Fixed-or-Improved-Logics.md:1930
+#: ../../Fixed-or-Improved-Logics.md:1945
 msgid ""
 "[AudioVisual]\n"
 "ConditionYellow.Terrain=  ; floating-point value, default to "
@@ -6784,7 +6812,7 @@ msgstr ""
 "HasCrumblingFrames=false  ; boolean\n"
 "CrumblingSound=           ; Sound entry\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1941
+#: ../../Fixed-or-Improved-Logics.md:1956
 msgid ""
 "The number of regular & damage frames considered for this depends on "
 "value of `HasDamagedFrames` and for `IsAnimated` TerrainTypes, "
@@ -6796,18 +6824,18 @@ msgstr ""
 "`AnimationLength` 的值（见 [动画化地形对象](#animated-"
 "terraintypes)）。请谨慎操作以确保显示的帧数正确。"
 
-#: ../../Fixed-or-Improved-Logics.md:1944
-#: ../../Fixed-or-Improved-Logics.md:1969
+#: ../../Fixed-or-Improved-Logics.md:1959
+#: ../../Fixed-or-Improved-Logics.md:1984
 msgid "Minimap color customization"
 msgstr "自定义小地图颜色"
 
-#: ../../Fixed-or-Improved-Logics.md:1946
+#: ../../Fixed-or-Improved-Logics.md:1961
 msgid ""
 "TerrainTypes can now be made to display on minimap with different colors "
 "by setting `MinimapColor`."
 msgstr "现在地形对象可以通过设置 `MinimapColor` 使用不同的颜色显示在小地图上。"
 
-#: ../../Fixed-or-Improved-Logics.md:1949
+#: ../../Fixed-or-Improved-Logics.md:1964
 msgid ""
 "[SOMETERRAINTYPE]  ; TerrainType\n"
 "MinimapColor=      ; integer - Red,Green,Blue\n"
@@ -6815,29 +6843,29 @@ msgstr ""
 "[SOMETERRAINTYPE]  ; TerrainType\n"
 "MinimapColor=      ; integer - Red,Green,Blue\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1954
+#: ../../Fixed-or-Improved-Logics.md:1969
 msgid "Passable & buildable-upon TerrainTypes"
 msgstr "可通行和可建造于其上的地形对象"
 
-#: ../../Fixed-or-Improved-Logics.md:1956
+#: ../../Fixed-or-Improved-Logics.md:1971
 msgid ""
 "TerrainTypes can now be made passable or buildable upon by setting "
 "`IsPassable` or `CanBeBuiltOn`, respectively."
 msgstr "现在可以分别通过设置 `IsPassable` 或 `CanBeBuiltOn` 来让地形对象可通行或可以将建筑建造于其上。"
 
-#: ../../Fixed-or-Improved-Logics.md:1957
+#: ../../Fixed-or-Improved-Logics.md:1972
 msgid ""
 "Movement cursor is displayed on `IsPassable` TerrainTypes unless force-"
 "firing."
 msgstr "除非使用强制开火否则 `IsPassable` 的地形对象上会显示移动光标。"
 
-#: ../../Fixed-or-Improved-Logics.md:1958
+#: ../../Fixed-or-Improved-Logics.md:1973
 msgid ""
 "`CanBeBuiltOn=true` terrain objects are removed when building is placed "
 "on them."
 msgstr "`CanBeBuiltOn=true` 的地形对象在建筑建造于其上时会被移除。"
 
-#: ../../Fixed-or-Improved-Logics.md:1961
+#: ../../Fixed-or-Improved-Logics.md:1976
 msgid ""
 "[SOMETERRAINTYPE]   ; TerrainType\n"
 "IsPassable=false    ; boolean\n"
@@ -6847,17 +6875,17 @@ msgstr ""
 "IsPassable=false    ; boolean\n"
 "CanBeBuiltOn=false  ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1967
+#: ../../Fixed-or-Improved-Logics.md:1982
 msgid "Tiberiums (ores)"
 msgstr "泰伯利亚（矿石）"
 
-#: ../../Fixed-or-Improved-Logics.md:1971
+#: ../../Fixed-or-Improved-Logics.md:1986
 msgid ""
 "Ore can now be made to display on minimap with different colors by "
 "setting `MinimapColor` on Tiberiums."
 msgstr "矿石现在可以通过设置 `MinimapColor` 使用不同的颜色显示在小地图上。"
 
-#: ../../Fixed-or-Improved-Logics.md:1974
+#: ../../Fixed-or-Improved-Logics.md:1989
 msgid ""
 "[SOMEORE]      ; Tiberium\n"
 "MinimapColor=  ; integer - Red,Green,Blue\n"
@@ -6865,15 +6893,15 @@ msgstr ""
 "[SOMEORE]      ; Tiberium\n"
 "MinimapColor=  ; integer - Red,Green,Blue\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1979
+#: ../../Fixed-or-Improved-Logics.md:1994
 msgid "Vehicles"
 msgstr "载具类型"
 
-#: ../../Fixed-or-Improved-Logics.md:1981
+#: ../../Fixed-or-Improved-Logics.md:1996
 msgid "Allow miners do area guard"
 msgstr "允许矿车区域警戒"
 
-#: ../../Fixed-or-Improved-Logics.md:1983
+#: ../../Fixed-or-Improved-Logics.md:1998
 msgid ""
 "In vanilla, when miners enter area guard mission, they immediately switch"
 " to harvest mission. Now you can make them perform area guard mission "
@@ -6882,13 +6910,13 @@ msgstr ""
 "在原版中当一个矿车进入 `Area Guard` 任务时会立即切换为 `Havrest` 任务。现在你可以让它们像其他单位那样正常执行 `Area"
 " Guard` 任务了。"
 
-#: ../../Fixed-or-Improved-Logics.md:1984
+#: ../../Fixed-or-Improved-Logics.md:1999
 msgid ""
 "We made it work only for miners controlled by the player, because this "
 "will prevent AI's miners from going work."
 msgstr "这仅对玩家控制的矿车有效，因为这会阻断 AI 矿车正常工作。"
 
-#: ../../Fixed-or-Improved-Logics.md:1985
+#: ../../Fixed-or-Improved-Logics.md:2000
 msgid ""
 "If `Harvester.CanGuardArea.RequireTarget` set to true, it'll switch back "
 "to regular harvest mission when there's no valid target within its guard "
@@ -6897,7 +6925,7 @@ msgstr ""
 "若 `Harvester.CanGuardArea.RequireTarget` 设为 "
 "true，当单位警戒范围内不存在有效目标时将会切换回通常所用的 `Havrest` 任务。"
 
-#: ../../Fixed-or-Improved-Logics.md:1988
+#: ../../Fixed-or-Improved-Logics.md:2003
 msgid ""
 "[SOMEVEHICLE]                               ; VehicleType\n"
 "Harvester.CanGuardArea=false                ; boolean\n"
@@ -6907,11 +6935,11 @@ msgstr ""
 "Harvester.CanGuardArea=false                ; boolean\n"
 "Harvester.CanGuardArea.RequireTarget=false  ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:1994
+#: ../../Fixed-or-Improved-Logics.md:2009
 msgid "Bunker entering check dehardcode"
 msgstr "去除坦克碉堡准入检查的硬编码"
 
-#: ../../Fixed-or-Improved-Logics.md:1996
+#: ../../Fixed-or-Improved-Logics.md:2011
 msgid ""
 "In vanilla, vehicles entering tank bunkers are subject to a series of "
 "hardcoding restrictions, including having to have turrets, having to have"
@@ -6921,17 +6949,17 @@ msgstr ""
 "在原版，载具进入坦克碉堡时受到一系列硬编码限制，包括必须拥有炮塔、必须拥有武器以及速度类型不能为 "
 "`SpeedType=Hover`。现在你可以跳过这些限制。"
 
-#: ../../Fixed-or-Improved-Logics.md:1997
+#: ../../Fixed-or-Improved-Logics.md:2012
 msgid "This needs to be used with `Bunkerable=yes`."
 msgstr "这需要与 `Bunkerable=yes` 共同使用。"
 
-#: ../../Fixed-or-Improved-Logics.md:1998
+#: ../../Fixed-or-Improved-Logics.md:2013
 msgid ""
 "This flag only skips the static check, that is, the check on the unit "
 "type. The dynamic check (cannot be parasitized) remains unchanged."
 msgstr "这个标签仅跳过静态检查，即对单位类型的检查。动态检查（不能处于被寄生状态）保持不变。"
 
-#: ../../Fixed-or-Improved-Logics.md:2001
+#: ../../Fixed-or-Improved-Logics.md:2016
 msgid ""
 "[SOMEVEHICLE]              ; VehicleType\n"
 "BunkerableAnyway=false     ; boolean\n"
@@ -6939,7 +6967,7 @@ msgstr ""
 "[SOMEVEHICLE]              ; VehicleType\n"
 "BunkerableAnyway=false     ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2007
+#: ../../Fixed-or-Improved-Logics.md:2022
 msgid ""
 "Skipping checks with this feature doesn't mean that vehicles and tank "
 "bunkers will interact correctly. Following the simple checks performed by"
@@ -6950,11 +6978,11 @@ msgstr ""
 "使用此功能跳过检查并不就意味着载具和坦克碉堡可以正确的交互。根据次功能提供者的简单检查，坦克碉堡的效果主要受到运动模式影响。不同运动模式进入坦克碉堡的详细信息可以在"
 " [MODENC](https://modenc.renegadeprojects.com/Bunkerable) 上找到。"
 
-#: ../../Fixed-or-Improved-Logics.md:2010
+#: ../../Fixed-or-Improved-Logics.md:2025
 msgid "Custom Unit Crate Reroll Chance"
 msgstr "自定义单位箱子重新随机选取的概率"
 
-#: ../../Fixed-or-Improved-Logics.md:2012
+#: ../../Fixed-or-Improved-Logics.md:2027
 msgid ""
 "It is possible to influence weighting of units given from crates "
 "(`CrateGoodie=true`) via `CrateGoodie.RerollChance`, which determines the"
@@ -6964,7 +6992,7 @@ msgstr ""
 "现在可以通过 `CrateGoodie.RerollChance` 来影响从升级工具箱 (`CrateGoodie=true`) "
 "中获得一个单位的权重，该值决定了如果随机到这种类型的单位，那么它将重新随机另一种单位的概率。"
 
-#: ../../Fixed-or-Improved-Logics.md:2015
+#: ../../Fixed-or-Improved-Logics.md:2030
 msgid ""
 "[SOMEVEHICLE]                  ; VehicleType\n"
 "CrateGoodie.RerollChance=0.0   ; floating point value, percents or "
@@ -6974,23 +7002,23 @@ msgstr ""
 "CrateGoodie.RerollChance=0.0   ; floating point value, percents or "
 "absolute (0.0-1.0)\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2020
+#: ../../Fixed-or-Improved-Logics.md:2035
 msgid "Customize harvester dump amount"
 msgstr "自定义矿车单次倒矿量"
 
-#: ../../Fixed-or-Improved-Logics.md:2022
+#: ../../Fixed-or-Improved-Logics.md:2037
 msgid ""
 "Now you can limit how much ore the harvester can dump out per time, like "
 "it in Tiberium Sun."
 msgstr "现在你可以限制矿车每次倒矿时卸载的矿石量，就像《泰伯利亚之日》中的设定"
 
-#: ../../Fixed-or-Improved-Logics.md:2023
+#: ../../Fixed-or-Improved-Logics.md:2038
 msgid ""
 "Less than or equal to 0 means no limit, it will always dump out all at "
 "one time."
 msgstr "若该值小于等于 0 则表示一次倒完，就像《红色警戒2》中原本的行为"
 
-#: ../../Fixed-or-Improved-Logics.md:2026
+#: ../../Fixed-or-Improved-Logics.md:2041
 msgid ""
 "[General]\n"
 "HarvesterDumpAmount=0.0               ; float point value\n"
@@ -7004,18 +7032,18 @@ msgstr ""
 "[SOMEVEHICLE]                         ; VehicleType\n"
 "HarvesterDumpAmount=                  ; float point value\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2034
+#: ../../Fixed-or-Improved-Logics.md:2049
 msgid "Customize type selection for IFV"
 msgstr "自定义 IFV 的类型选择"
 
-#: ../../Fixed-or-Improved-Logics.md:2036
+#: ../../Fixed-or-Improved-Logics.md:2051
 msgid ""
 "In vanilla game, when using type selection command on IFVs, all of them "
 "will be selected regardless of their current modes, which is allowed to "
 "customize now."
 msgstr "在原文的游戏中，当对 IFV 使用类型选择命令时会直接选中所有 IFV 而无论其当前的模式，现在这可以自定义了。"
 
-#: ../../Fixed-or-Improved-Logics.md:2037
+#: ../../Fixed-or-Improved-Logics.md:2052
 msgid ""
 "`WeaponGroupAsN` determines which group the IFV is in when enabling "
 "`WeaponN`, where N stands for 1-based weapon mode index. IFVs in the same"
@@ -7025,26 +7053,26 @@ msgstr ""
 "`WeaponGroupAsN` 决定当 IFV 启用 `WeaponN` 时所属的组别，N 为从 1 "
 "开始的武器模式序号。进行类型选择时将会选中同组 IFV 而不会包含非同组的。"
 
-#: ../../Fixed-or-Improved-Logics.md:2038
+#: ../../Fixed-or-Improved-Logics.md:2053
 msgid ""
 "`TypeSelectUseIFVMode` determines whether all IFV modes will be "
 "considered as its own group by default during a type selection."
 msgstr "`TypeSelectUseIFVMode` 决定类型选择时所有 IFVMode 是否默认自成一组。"
 
-#: ../../Fixed-or-Improved-Logics.md:2039
+#: ../../Fixed-or-Improved-Logics.md:2054
 msgid ""
 "If it's set to true, `WeaponGroupAsN` will be default to N for each "
 "`WeaponN`, which makes each of them become a standalone type during a "
 "type selection."
 msgstr "若设为 true 则 `WeaponGroupAsN` 默认为 N 的值以使每个模式都作为独立的组。"
 
-#: ../../Fixed-or-Improved-Logics.md:2040
+#: ../../Fixed-or-Improved-Logics.md:2055
 msgid ""
 "If it's set to false, `WeaponGroupAsN` will be default to 0 for all "
 "weapons, which makes type selection on IFVs work the same as before."
 msgstr "若设为 false 则 `WeaponGroupAsN` 将默认为 0 以保持原有行为。"
 
-#: ../../Fixed-or-Improved-Logics.md:2043
+#: ../../Fixed-or-Improved-Logics.md:2058
 msgid ""
 "[General]\n"
 "TypeSelectUseIFVMode=false   ; boolean\n"
@@ -7060,11 +7088,11 @@ msgstr ""
 "WeaponGroupAsN=              ; string, default to N if [General] -> "
 "TypeSelectUseIFVMode=true, and 0 if false\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2051
+#: ../../Fixed-or-Improved-Logics.md:2066
 msgid "Customizing crushing tilt and slowdown"
 msgstr "自定义碾压倾斜和减速"
 
-#: ../../Fixed-or-Improved-Logics.md:2053
+#: ../../Fixed-or-Improved-Logics.md:2068
 msgid ""
 "Vehicles with `Crusher=true` and `OmniCrusher=true` / "
 "`MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles /"
@@ -7078,7 +7106,7 @@ msgstr ""
 "`TiltsWhenCrusher.Vehicles` 和 `TiltsWhenCrusher.Overlays` "
 "对两种情况分别进行定义，它们都默认为 `TiltsWhenCrushes`。"
 
-#: ../../Fixed-or-Improved-Logics.md:2054
+#: ../../Fixed-or-Improved-Logics.md:2069
 msgid ""
 "`CrushForwardTiltPerFrame` determines how much the forward tilt is "
 "adjusted per frame when crushing overlays or vehicles. Defaults to -0.02 "
@@ -7088,13 +7116,13 @@ msgstr ""
 "`CrushForwardTiltPerFrame` 决定在碾压覆盖物或载具时每帧前倾的幅度。对于 `Locomotor=Ship` "
 "的载具碾压覆盖物的时默认为 -0.02，其他情况默认为 -0.050000001。"
 
-#: ../../Fixed-or-Improved-Logics.md:2055
+#: ../../Fixed-or-Improved-Logics.md:2070
 msgid ""
 "`CrushOverlayExtraForwardTilt` is additional forward tilt applied after "
 "an overlay has been crushed by the vehicle."
 msgstr "`CrushOverlayExtraForwardTilt` 是载具碾压覆盖物后额外的向前倾斜量"
 
-#: ../../Fixed-or-Improved-Logics.md:2056
+#: ../../Fixed-or-Improved-Logics.md:2071
 msgid ""
 "It is possible to customize the movement speed slowdown when "
 "`MovementZone=CrusherAll` vehicle crushes walls by setting "
@@ -7103,7 +7131,7 @@ msgstr ""
 "可以通过设置 `CrushSlowdownMultiplier` 来自定义 `MovementZone=CrusherAll` "
 "的载具碾压围墙时移动速度的减速幅度。"
 
-#: ../../Fixed-or-Improved-Logics.md:2057
+#: ../../Fixed-or-Improved-Logics.md:2072
 msgid ""
 "You can also disable the slowdown completely by using the flag "
 "`SkipCrushSlowdown`. This is not the same as "
@@ -7115,7 +7143,7 @@ msgstr ""
 "`CrushSlowdownMultiplier=1.0`。它可以避免 `Accelerates=true` 与 "
 "`MovementZone=CrushAll` 共用时单位有时会减速的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:2060
+#: ../../Fixed-or-Improved-Logics.md:2075
 msgid ""
 "[SOMEVEHICLE]                      ; VehicleType\n"
 "TiltsWhenCrushes.Vehicles=         ; boolean\n"
@@ -7133,11 +7161,11 @@ msgstr ""
 "CrushSlowdownMultiplier=0.2        ; floating point value\n"
 "SkipCrushSlowdown=false            ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2070
+#: ../../Fixed-or-Improved-Logics.md:2085
 msgid "Deployment Enhancement"
 msgstr "部署增强"
 
-#: ../../Fixed-or-Improved-Logics.md:2072
+#: ../../Fixed-or-Improved-Logics.md:2087
 msgid ""
 "When a vehicle has `Passengers` and possesses "
 "`DeployFire/IsSimpleDeployer/DeploysInto`, it can perform custom "
@@ -7146,32 +7174,32 @@ msgstr ""
 "当载具有 `Passengers` 的同时还有 `DeployFire/IsSimpleDeployer/DeploysInto` "
 "则可以执行释放乘客以外的其他部署动作。"
 
-#: ../../Fixed-or-Improved-Logics.md:2073
+#: ../../Fixed-or-Improved-Logics.md:2088
 msgid ""
 "`Deploy.SkipPassengerUnload` allows vehicles to bypass the passenger "
 "release process and perform other deployment actions."
 msgstr "`Deploy.SkipPassengerUnload` 允许载具跳过乘客释放流程执行其他部署动作。"
 
-#: ../../Fixed-or-Improved-Logics.md:2074
+#: ../../Fixed-or-Improved-Logics.md:2089
 msgid ""
 "`Deploy.NoPassenger` allows vehicles to perform other deployment actions "
 "after losing all passengers."
 msgstr "`Deploy.NoPassenger` 允许载具在释放所有乘客后执行其他部署动作。"
 
-#: ../../Fixed-or-Improved-Logics.md:2075
+#: ../../Fixed-or-Improved-Logics.md:2090
 msgid ""
 "Harvester can now perform other deployment operations. Can't deploy when "
 "it's unloading minerals."
 msgstr "矿车现在可以执行其他部署操作，不过倒矿期间不能部署。"
 
-#: ../../Fixed-or-Improved-Logics.md:2076
+#: ../../Fixed-or-Improved-Logics.md:2091
 msgid ""
 "`Deploy.NoTiberium` controls whether the deployment actions can only be "
 "performed when the harvester carries no mineral. If set to false, the "
 "harvester can deploy regardless of carrying minerals or not."
 msgstr "`Deploy.NoTiberium` 控制是否仅在矿车未装载矿石时才能执行部署动作。若设为 false 则无论是否携带矿石均可。"
 
-#: ../../Fixed-or-Improved-Logics.md:2079
+#: ../../Fixed-or-Improved-Logics.md:2094
 msgid ""
 "[SOMEVEHICLE]                       ; VehicleType\n"
 "Deploy.SkipPassengerUnload=false    ; boolean\n"
@@ -7183,11 +7211,11 @@ msgstr ""
 "Deploy.NoPassenger=false            ; boolean\n"
 "Deploy.NoTiberium=false             ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2086
+#: ../../Fixed-or-Improved-Logics.md:2101
 msgid "Destroy animations"
 msgstr "摧毁动画"
 
-#: ../../Fixed-or-Improved-Logics.md:2088
+#: ../../Fixed-or-Improved-Logics.md:2103
 msgid ""
 "`DestroyAnim` has been extended to work with VehicleTypes, with option to"
 " pick random animation if `DestroyAnim.Random` is set to true. These "
@@ -7198,7 +7226,7 @@ msgstr ""
 "那么可以随机选取其中一个动画。这些动画存储了所属方和朝向信息以供 [动画生成单位](New-or-Enhanced-Logics.md#anim-"
 "to-unit) 逻辑使用。"
 
-#: ../../Fixed-or-Improved-Logics.md:2091
+#: ../../Fixed-or-Improved-Logics.md:2106
 msgid ""
 "[SOMEVEHICLE]                          ; VehicleType\n"
 "DestroyAnim=                           ; List of AnimationTypes\n"
@@ -7208,24 +7236,24 @@ msgstr ""
 "DestroyAnim=                           ; List of AnimationTypes\n"
 "DestroyAnim.Random=true                ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2097
+#: ../../Fixed-or-Improved-Logics.md:2112
 msgid "`IsSimpleDeployer` vehicle ammo change on deploy"
 msgstr "`IsSimpleDeployer` 载具在部署时更改弹药"
 
-#: ../../Fixed-or-Improved-Logics.md:2099
+#: ../../Fixed-or-Improved-Logics.md:2114
 msgid ""
 "`Ammo.AddOnDeploy` determines the number of ammo added or subtracted "
 "after the vehicle has deployed or undeployed."
 msgstr "`Ammo.AddOnDeploy` 决定载具部署或反部署后增加或减少的弹药量。"
 
-#: ../../Fixed-or-Improved-Logics.md:2100
+#: ../../Fixed-or-Improved-Logics.md:2115
 msgid ""
 "Ammo count cannot go below 0 or above the maximum ammo for vehicle's type"
 " (in case the deploy results in type conversion, type is the one after "
 "the conversion)."
 msgstr "弹药数不得低于 0 或高于该载具类型的最大弹药量（若部署操作导致单位转换则以转换后的量为准）。"
 
-#: ../../Fixed-or-Improved-Logics.md:2103
+#: ../../Fixed-or-Improved-Logics.md:2118
 msgid ""
 "[SOMEVEHICLE]       ; VehicleType\n"
 "Ammo.AddOnDeploy=0  ; integer\n"
@@ -7233,11 +7261,11 @@ msgstr ""
 "[SOMEVEHICLE]       ; VehicleType\n"
 "Ammo.AddOnDeploy=0  ; integer\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2108
+#: ../../Fixed-or-Improved-Logics.md:2123
 msgid "IsSimpleDeployer customizations"
 msgstr "自定义 IsSimpleDeployer"
 
-#: ../../Fixed-or-Improved-Logics.md:2110
+#: ../../Fixed-or-Improved-Logics.md:2125
 msgid ""
 "It is possible to enable checking if the deployed unit (if type "
 "conversion is in use, the conversion result will be used for these "
@@ -7248,7 +7276,7 @@ msgstr ""
 "现在可以通过 `IsSimpleDeployer.ConsiderPathfinding=true` "
 "来开启对将部署的单位（若使用单位转换则检查作为转换目标的单位）是否允许在当前单元格上部署的检查，部署光标也会跟随变化。"
 
-#: ../../Fixed-or-Improved-Logics.md:2111
+#: ../../Fixed-or-Improved-Logics.md:2126
 msgid ""
 "You can explicitly disable deploying on cells of specified land types "
 "using `IsSimpleDeployer.DisallowedLandTypes`. Defaults to `water,beach` "
@@ -7259,7 +7287,7 @@ msgstr ""
 "`Locomotor=Jumpjet` 或 `Locomotor=Hover` 且拥有 `DeployToLand=true` 的单位默认为 "
 "`water,beach`；对于其他单位则默认为 `none`。"
 
-#: ../../Fixed-or-Improved-Logics.md:2112
+#: ../../Fixed-or-Improved-Logics.md:2127
 msgid ""
 "In vanilla game only units with `DeployingAnim` were constrained to a "
 "specific deploy facing and it was not customizable per unit. `DeployDir` "
@@ -7271,11 +7299,11 @@ msgstr ""
 "`DeployDir`（对于拥有 `DeployingAnim` 的单位默认为 `[AudioVisual] -> DeployDir`，否则为 "
 "-1）来为每个单位单独设定，Phobos 允许使用特殊值 -1 来解除朝向限制。"
 
-#: ../../Fixed-or-Improved-Logics.md:2113
+#: ../../Fixed-or-Improved-Logics.md:2128
 msgid "Multiple new options for deploy animations:"
 msgstr "部署动画相关的多个新增选项："
 
-#: ../../Fixed-or-Improved-Logics.md:2114
+#: ../../Fixed-or-Improved-Logics.md:2129
 msgid ""
 "`DeployingAnims` can be used instead of `DeployingAnim` (if both are set,"
 " `DeployingAnims` takes precedence) to define a list of direction-"
@@ -7288,26 +7316,26 @@ msgstr ""
 "`DeployingAnim`（当都被设置时优先使用前者）来定义一组与方向对应的部署动画。根据所列动画的最大数量取 2 "
 "的幂值作为方向数／动画数。若少于 8 个则仅适用列出的第一个动画。"
 
-#: ../../Fixed-or-Improved-Logics.md:2115
+#: ../../Fixed-or-Improved-Logics.md:2130
 msgid ""
 "`DeployingAnim.KeepUnitVisible` determines if the unit is **not** hidden "
 "while the animation is playing."
 msgstr "`DeployingAnim.KeepUnitVisible` 决定单位是否在动画播放期间**不**被隐藏。"
 
-#: ../../Fixed-or-Improved-Logics.md:2116
+#: ../../Fixed-or-Improved-Logics.md:2131
 msgid ""
 "`DeployingAnim.ReverseForUndeploy` controls whether or not the animation "
 "is played in reverse for undeploying."
 msgstr "`DeployingAnim.ReverseForUndeploy` 控制反部署时是否使动画反向播放。"
 
-#: ../../Fixed-or-Improved-Logics.md:2117
+#: ../../Fixed-or-Improved-Logics.md:2132
 msgid ""
 "`DeployingAnim.UseUnitDrawer` controls whether or not the animation is "
 "displayed in the unit's palette and team colours or regular animation "
 "palette, including a potential custom palette."
 msgstr "`DeployingAnim.UseUnitDrawer` 控制动画使用 unit 色盘以及所属色还是常规动画色盘，包括潜在的自定义色盘。"
 
-#: ../../Fixed-or-Improved-Logics.md:2120
+#: ../../Fixed-or-Improved-Logics.md:2135
 msgid ""
 "[SOMEVEHICLE]                               ; VehicleType\n"
 "IsSimpleDeployer.ConsiderPathfinding=false  ; boolean\n"
@@ -7333,25 +7361,25 @@ msgstr ""
 "DeployingAnim.ReverseForUndeploy=true       ; boolean\n"
 "DeployingAnim.UseUnitDrawer=true            ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2131
+#: ../../Fixed-or-Improved-Logics.md:2146
 msgid "Make harvesters do addtional scan after unload"
 msgstr "使矿车卸载后重新扫描较近的矿区"
 
-#: ../../Fixed-or-Improved-Logics.md:2133
+#: ../../Fixed-or-Improved-Logics.md:2148
 msgid ""
 "In vanilla, miners will remember their current location when they reach "
 "full load and move to that location after unloading. This makes miners to"
 " gradually move deeper into the mine and ignore the closer minerals."
 msgstr "在原版中矿车在满载时会记录当前位置并在卸载后返回该坐标。这一机制会让矿车逐渐向原矿区深处探索但却容易忽略距离更近的矿区。"
 
-#: ../../Fixed-or-Improved-Logics.md:2134
+#: ../../Fixed-or-Improved-Logics.md:2149
 msgid ""
 "Now you can have the miner search for the nearest mineral again after "
 "unloading. If a closer mineral is found, the miner will go to that "
 "location instead of the previously recorded location."
 msgstr "现在你可以让矿车在卸载后重新搜索最近的矿区。如果发现了更近的矿区那么矿车会优先前往它而不是返回先前记录的坐标。"
 
-#: ../../Fixed-or-Improved-Logics.md:2137
+#: ../../Fixed-or-Improved-Logics.md:2152
 msgid ""
 "[General]\n"
 "HarvesterScanAfterUnload=false     ; boolean\n"
@@ -7367,32 +7395,32 @@ msgstr ""
 "HarvesterScanAfterUnload=          ; boolean, default to [General] -> "
 "HarvesterScanAfterUnload\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2145
+#: ../../Fixed-or-Improved-Logics.md:2160
 msgid "Preserve Iron Curtain / Force Shield status on type conversion"
 msgstr "在单位转换时保留铁幕／力场护盾状态"
 
-#: ../../Fixed-or-Improved-Logics.md:2147
+#: ../../Fixed-or-Improved-Logics.md:2162
 msgid "![image](_static/images/preserve-ic.gif) *Bugfix in action*"
 msgstr "![image](_static/images/preserve-ic.gif) *Bug 修复后的行为*"
 
-#: ../../Fixed-or-Improved-Logics.md:2150
+#: ../../Fixed-or-Improved-Logics.md:2165
 msgid ""
 "Iron Curtain status is now preserved by default when converting between "
 "TechnoTypes via `DeploysInto` / `UndeploysInto`. Force Shield status "
 "preservation is turned off by default."
 msgstr "通过 `DeploysInto`／`UndeploysInto` 在科技类型之间的转换现在默认保留铁幕状态。力场护盾则默认不保留。"
 
-#: ../../Fixed-or-Improved-Logics.md:2151
+#: ../../Fixed-or-Improved-Logics.md:2166
 msgid "This behavior can be turned on/off per-TechnoType and on global basis."
 msgstr "这一行为可以对每个科技类型和全局进行开启／关闭。"
 
-#: ../../Fixed-or-Improved-Logics.md:2152
+#: ../../Fixed-or-Improved-Logics.md:2167
 msgid ""
 "`IronCurtain.Modifier` / `ForceShield.Modifier` (whichever is applicable)"
 " is re-applied upon type conversion."
 msgstr "`IronCurtain.Modifier`／`ForceShield.Modifier`（视情况而定）将在单位转换时刷新。"
 
-#: ../../Fixed-or-Improved-Logics.md:2155
+#: ../../Fixed-or-Improved-Logics.md:2170
 msgid ""
 "[CombatDamage]\n"
 "IronCurtain.KeptOnDeploy=true   ; boolean\n"
@@ -7416,49 +7444,49 @@ msgstr ""
 "ForceShield.KeptOnDeploy=       ; boolean, default to [CombatDamage] -> "
 "ForceShield.KeptOnDeploy\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2165
+#: ../../Fixed-or-Improved-Logics.md:2180
 msgid "Retain target on movement command"
 msgstr "在命令移动后保留目标"
 
-#: ../../Fixed-or-Improved-Logics.md:2167
+#: ../../Fixed-or-Improved-Logics.md:2182
 msgid ""
 "It is now possible for vehicles to retain their target when issued "
 "movement command by setting `KeepTargetOnMove` to true."
 msgstr "现在可以通过设置 `KeepTargetOnMove` 为 true 来使载具在接收到移动命令时保留其目标。"
 
-#: ../../Fixed-or-Improved-Logics.md:2168
+#: ../../Fixed-or-Improved-Logics.md:2183
 msgid ""
 "Note that no check is done whether or not the vehicle or the weapon can "
 "actually fire while moving, this is on modder's discretion."
 msgstr "注意这不会检查载具或武器实际上能否在移动中开火，这由 modder 自行决定。"
 
-#: ../../Fixed-or-Improved-Logics.md:2169
+#: ../../Fixed-or-Improved-Logics.md:2184
 msgid ""
 "The target is automatically reset if the vehicle moves beyond the "
 "weapon's range from the target."
 msgstr "如果由于载具移动导致目标超出武器射程那么目标将自动重置。"
 
-#: ../../Fixed-or-Improved-Logics.md:2170
+#: ../../Fixed-or-Improved-Logics.md:2185
 msgid ""
 "`KeepTargetOnMove.Weapon` determines the weapon to be used for range "
 "check. If set to -1, the game will select the weapon against the target "
 "by default logic."
 msgstr "`KeepTargetOnMove.Weapon` 决定用于射程检查的武器。如果设为 -1，游戏将会根据默认武器选用规则针对目标对象选取。"
 
-#: ../../Fixed-or-Improved-Logics.md:2171
+#: ../../Fixed-or-Improved-Logics.md:2186
 msgid ""
 "It's recommended to set it to a specific weapon for better performance, "
 "unless there's a need to use multiple weapons for different targets."
 msgstr "建议将其设为特定武器以优化性能，除非需要针对不同目标使用多种武器。"
 
-#: ../../Fixed-or-Improved-Logics.md:2172
+#: ../../Fixed-or-Improved-Logics.md:2187
 msgid ""
 "`KeepTargetOnMove.NoMorePursuit` controls whether the unit will restart "
 "chasing the target for attack when it stops again, otherwise it will "
 "clear the target when it moves away."
 msgstr "`KeepTargetOnMove.NoMorePursuit` 控制单位是否会在再次停止后重新开始追击目标以发起攻击，否则会在移动时清除目标。"
 
-#: ../../Fixed-or-Improved-Logics.md:2173
+#: ../../Fixed-or-Improved-Logics.md:2188
 msgid ""
 "`KeepTargetOnMove.ExtraDistance` can be used to modify the distance "
 "considered 'out of range' from the target (it is added to weapon range), "
@@ -7467,7 +7495,7 @@ msgstr ""
 "`KeepTargetOnMove.ExtraDistance` 可以用来修改被认为 “超出射程” "
 "的范围（基于武器射程的修正值），负值会缩短判定距离。"
 
-#: ../../Fixed-or-Improved-Logics.md:2176
+#: ../../Fixed-or-Improved-Logics.md:2191
 msgid ""
 "[SOMEVEHICLE]                        ; VehicleType\n"
 "KeepTargetOnMove=false               ; boolean\n"
@@ -7483,25 +7511,25 @@ msgstr ""
 "KeepTargetOnMove.ExtraDistance=0     ; floating point value, distance in "
 "cells\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2184
+#: ../../Fixed-or-Improved-Logics.md:2199
 msgid "Sinking behavior dehardcode"
 msgstr "自定义沉没行为"
 
-#: ../../Fixed-or-Improved-Logics.md:2186
+#: ../../Fixed-or-Improved-Logics.md:2201
 msgid ""
 "In vanilla, whether a ship sinks when it dies on the water is determined "
 "by multiple settings of hardcoding. The speed of the sinking is hardcoded"
 " to 5 Leptons per frame."
 msgstr "原版中一艘舰船在水上死亡是否会沉没由多个硬编码设置决定。沉没速度硬编码为每帧 5 leptons。"
 
-#: ../../Fixed-or-Improved-Logics.md:2187
+#: ../../Fixed-or-Improved-Logics.md:2202
 msgid ""
 "Now you can determine whether a ship sinks with a dedicated flag "
 "`Sinkable`, and use `SinkSpeed` to customize the speed at which the ship "
 "sinks."
 msgstr "现在你可以通过专门的标签 `Sinkable` 来决定一艘舰船是否会沉没，并且可以使用 `SinkSpeed` 来定义舰船的沉没速度。"
 
-#: ../../Fixed-or-Improved-Logics.md:2188
+#: ../../Fixed-or-Improved-Logics.md:2203
 msgid ""
 "`Sinkable.SquidGrab` controls the behavior of a ship when it is killed by"
 " a squid. Set it to `false` to cause the ship to take a lethal damage "
@@ -7511,7 +7539,7 @@ msgstr ""
 "`Sinkable.SquidGrab` 控制一艘船在被巨型乌贼击杀时的行为。将其设为 false "
 "会导致舰船受到致命伤害而非在此时直接沉没（从而遵循 `Sinkable` 的设置）。"
 
-#: ../../Fixed-or-Improved-Logics.md:2191
+#: ../../Fixed-or-Improved-Logics.md:2206
 msgid ""
 "[SOMEVEHICLE]              ; VehicleType\n"
 "Sinkable=                  ; boolean\n"
@@ -7523,11 +7551,11 @@ msgstr ""
 "SinkSpeed=5                ; integer, leptons per frame\n"
 "Sinkable.SquidGrab=true    ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2198
+#: ../../Fixed-or-Improved-Logics.md:2213
 msgid "Stationary vehicles"
 msgstr "静止的载具"
 
-#: ../../Fixed-or-Improved-Logics.md:2200
+#: ../../Fixed-or-Improved-Logics.md:2215
 msgid ""
 "Setting VehicleType `Speed` to 0 now makes game treat them as stationary,"
 " behaving in very similar manner to deployed vehicles with "
@@ -7537,27 +7565,27 @@ msgstr ""
 "现在载具将在 `Speed` 设置为 0 时使游戏将它们视为静止，其行为方式非常类似于 `IsSimpleDeployer` 设置为 true "
 "的部署状态载具。不应用于可生产的载具，否则它们将无法退出工厂。"
 
-#: ../../Fixed-or-Improved-Logics.md:2202
+#: ../../Fixed-or-Improved-Logics.md:2217
 msgid "Turret recoil"
 msgstr "炮塔制退"
 
-#: ../../Fixed-or-Improved-Logics.md:2204
+#: ../../Fixed-or-Improved-Logics.md:2219
 msgid ""
 "Now you can use `TurretRecoil` to control units' turret/barrel recoil "
 "effect when firing."
 msgstr "现在你可以使用 `TurretRecoil` 来控制单位开火时的炮塔／炮管制退效果。"
 
-#: ../../Fixed-or-Improved-Logics.md:2205
+#: ../../Fixed-or-Improved-Logics.md:2220
 msgid "`TurretTravel` and `BarrelTravel` control the maximum recoil distance."
 msgstr "`TurretTravel` 和 `BarrelTravel` 控制最大制退距离。"
 
-#: ../../Fixed-or-Improved-Logics.md:2206
+#: ../../Fixed-or-Improved-Logics.md:2221
 msgid ""
 "`TurretRecoil.Suppress` can prevent the weapon from producing this effect"
 " when firing."
 msgstr "`TurretRecoil.Suppress` 可以在特定武器上阻止其产生此效果。"
 
-#: ../../Fixed-or-Improved-Logics.md:2209
+#: ../../Fixed-or-Improved-Logics.md:2224
 msgid ""
 "[SOMEVEHICLE]             ; VehicleType\n"
 "TurretRecoil=no           ; boolean\n"
@@ -7587,18 +7615,18 @@ msgstr ""
 "[SOMEWEAPON]              ; WeaponType\n"
 "TurretRecoil.Suppress=no  ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2226
+#: ../../Fixed-or-Improved-Logics.md:2241
 msgid ""
 "The logic above was not reverse-engineered but reimplemented to achieve "
 "the same effect, hence there might be some differences in behavior "
 "compared to Tiberian Sun version."
 msgstr "上面的逻辑并非来自逆向工程复原而是模拟复刻效果，因此与《泰伯利亚之日》中的行为相比可能存在一些差异。"
 
-#: ../../Fixed-or-Improved-Logics.md:2229
+#: ../../Fixed-or-Improved-Logics.md:2244
 msgid "Unit Without Turret Always Turn To Target"
 msgstr "无炮塔单位始终面向目标"
 
-#: ../../Fixed-or-Improved-Logics.md:2231
+#: ../../Fixed-or-Improved-Logics.md:2246
 msgid ""
 "Now vehicles without turret will attempt to turn to the target while the "
 "weapon is cooling down, rather than after the weapon has cooled down, by "
@@ -7607,7 +7635,7 @@ msgstr ""
 "现在可以通过将 `NoTurret.TrackTarget` 设为 true "
 "来让没有炮塔的载具在武器冷却期间就尝试更改朝向以面向目标而不是等到武器冷却完成后。"
 
-#: ../../Fixed-or-Improved-Logics.md:2234
+#: ../../Fixed-or-Improved-Logics.md:2249
 msgid ""
 "[General]\n"
 "NoTurret.TrackTarget=false   ; boolean\n"
@@ -7623,7 +7651,7 @@ msgstr ""
 "NoTurret.TrackTarget=        ; boolean, defaults to [General] -> "
 "NoTurret.TrackTarget\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2243
+#: ../../Fixed-or-Improved-Logics.md:2258
 msgid ""
 "Jumpjet can also be affected by this if firing an `OmniFire` weapon with "
 "`OmniFire.TurnToTarget` set to true."
@@ -7631,11 +7659,11 @@ msgstr ""
 "如果 Jumpjet 在 `OmniFire.TurnToTarget` 设为 true 的情况下发射一个 `OmniFire` "
 "武器那么也会受到影响。"
 
-#: ../../Fixed-or-Improved-Logics.md:2246
+#: ../../Fixed-or-Improved-Logics.md:2261
 msgid "Voxel turret shadow"
 msgstr "Voxel 炮塔影子"
 
-#: ../../Fixed-or-Improved-Logics.md:2248
+#: ../../Fixed-or-Improved-Logics.md:2263
 msgid ""
 "Vehicle voxel turrets can now draw shadows if `[AudioVisual] -> "
 "DrawTurretShadow` is set to true. This can be overridden per VehicleType "
@@ -7644,7 +7672,7 @@ msgstr ""
 "如果 `[AudioVisual] -> DrawTurretShadow` 被设为 true 那么载具的 Voxel "
 "炮塔现在可以绘制影子。这可以在载具的 `artmd.ini` 小节中设置 `TurretShadow` 来覆盖。"
 
-#: ../../Fixed-or-Improved-Logics.md:2251
+#: ../../Fixed-or-Improved-Logics.md:2266
 msgid ""
 "[AudioVisual]\n"
 "DrawTurretShadow=false  ; boolean\n"
@@ -7652,7 +7680,7 @@ msgstr ""
 "[AudioVisual]\n"
 "DrawTurretShadow=false  ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2257
+#: ../../Fixed-or-Improved-Logics.md:2272
 msgid ""
 "[SOMEVEHICLE]   ; VehicleType\n"
 "TurretShadow=   ; boolean\n"
@@ -7660,11 +7688,11 @@ msgstr ""
 "[SOMEVEHICLE]   ; VehicleType\n"
 "TurretShadow=   ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2262
+#: ../../Fixed-or-Improved-Logics.md:2277
 msgid "VoxelAnims"
 msgstr "Voxel 碎片"
 
-#: ../../Fixed-or-Improved-Logics.md:2266
+#: ../../Fixed-or-Improved-Logics.md:2281
 msgid ""
 "The INI keys and behaviour is mostly identical to the [equivalent "
 "behaviour available to regular animations](#customizable-debris--meteor-"
@@ -7676,17 +7704,17 @@ msgstr ""
 "detonation-behaviour)基本相同。主要区别是这些标签必须列在 `rulesmd.ini` 中的 Voxel 碎片条目中，而不是 "
 "`artmd.ini` 中。"
 
-#: ../../Fixed-or-Improved-Logics.md:2268
+#: ../../Fixed-or-Improved-Logics.md:2283
 msgid "Customizable debris trailer anim spawn delay"
 msgstr "自定义 Voxel 碎片尾烟动画生成间隔"
 
-#: ../../Fixed-or-Improved-Logics.md:2270
+#: ../../Fixed-or-Improved-Logics.md:2285
 msgid ""
 "You can now customize the generation interval of VoxelAnim's trailer "
 "animation."
 msgstr "现在你可以自定义 Voxel 碎片的尾烟动画生成间隔。"
 
-#: ../../Fixed-or-Improved-Logics.md:2273
+#: ../../Fixed-or-Improved-Logics.md:2288
 msgid ""
 "[SOMEVOXELANIM]       ; VoxelAnimType\n"
 "Trailer.SpawnDelay=2  ; integer, game frames\n"
@@ -7694,15 +7722,15 @@ msgstr ""
 "[SOMEVOXELANIM]       ; VoxelAnimType\n"
 "Trailer.SpawnDelay=2  ; integer, game frames\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2278
+#: ../../Fixed-or-Improved-Logics.md:2293
 msgid "Warheads"
 msgstr "弹头"
 
-#: ../../Fixed-or-Improved-Logics.md:2280
+#: ../../Fixed-or-Improved-Logics.md:2295
 msgid "Allowing damage dealt to firer"
 msgstr "允许杀伤开火者"
 
-#: ../../Fixed-or-Improved-Logics.md:2282
+#: ../../Fixed-or-Improved-Logics.md:2297
 msgid ""
 "You can now allow warhead to deal damage (and apply damage-adjacent "
 "effects such as `KillDriver` and `DisableWeapons/Sonar/Flash.Duration` "
@@ -7712,14 +7740,14 @@ msgstr ""
 "现在即使对象没有 `DamageSelf=true` 你也可以允许弹头对被视为开火者的对象造成杀伤（并使用诸如 `KillDriver` 和 "
 "`DisableWeapons/Sonar/Flash.Duration`（*Ares 功能*）这些与杀伤相关的效果。）"
 
-#: ../../Fixed-or-Improved-Logics.md:2283
+#: ../../Fixed-or-Improved-Logics.md:2298
 msgid ""
 "Note that effect of `Psychedelic=true`, despite being tied to damage will"
 " still fail to apply on the firer as it does not affect any objects "
 "belonging to same house as the firer, including itself."
 msgstr "注意尽管 `Psychedelic=true` 的效果与杀伤相关但由于其不会影响任何包括开火者在内所有与开火者同一所属的对象因此仍然无法生效。"
 
-#: ../../Fixed-or-Improved-Logics.md:2286
+#: ../../Fixed-or-Improved-Logics.md:2301
 msgid ""
 "[SOMEWARHEAD]            ; WarheadType\n"
 "AllowDamageOnSelf=false  ; boolean\n"
@@ -7727,17 +7755,17 @@ msgstr ""
 "[SOMEWARHEAD]            ; WarheadType\n"
 "AllowDamageOnSelf=false  ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2291
+#: ../../Fixed-or-Improved-Logics.md:2306
 msgid "Berzerk on allies"
 msgstr "友军狂暴效果"
 
-#: ../../Fixed-or-Improved-Logics.md:2293
+#: ../../Fixed-or-Improved-Logics.md:2308
 msgid ""
 "In vanilla, `Psychedelic` warheads is hardcoded to ignore allies' target."
 " Now you can turn this off."
 msgstr "在原版中，`Psychedelic` 弹头硬编码忽略友军目标。现在你可以关闭这个。"
 
-#: ../../Fixed-or-Improved-Logics.md:2296
+#: ../../Fixed-or-Improved-Logics.md:2311
 msgid ""
 "[CombatDamage]\n"
 "AllowBerzerkOnAllies=false  ; boolean\n"
@@ -7745,15 +7773,15 @@ msgstr ""
 "[CombatDamage]\n"
 "AllowBerzerkOnAllies=false  ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2302
+#: ../../Fixed-or-Improved-Logics.md:2317
 msgid "No per-warhead setting because `AffectsAllies` etc. is respected."
 msgstr "没有弹头微观语句，因为生效与否仍会遵守 `AffectsAllies` 等设置。"
 
-#: ../../Fixed-or-Improved-Logics.md:2305
+#: ../../Fixed-or-Improved-Logics.md:2320
 msgid "Combat light customizations"
 msgstr "自定义战斗闪光"
 
-#: ../../Fixed-or-Improved-Logics.md:2307
+#: ../../Fixed-or-Improved-Logics.md:2322
 msgid ""
 "You can now set minimum detail level at which combat light effects are "
 "shown by setting `[AudioVisual] -> CombatLightDetailLevel` or "
@@ -7762,20 +7790,20 @@ msgstr ""
 "现在你可以通过设置 `[AudioVisual] -> CombatLightDetailLevel` 或在弹头上设置 "
 "`CombatLightDetailLevel` 来限定显示闪光效果的最小画质级别。"
 
-#: ../../Fixed-or-Improved-Logics.md:2308
+#: ../../Fixed-or-Improved-Logics.md:2323
 msgid ""
 "You can now set a percentage chance a combat light effect is shown on "
 "Warhead impact by setting `CombatLightChance`."
 msgstr "现在你可以通过设置 `CombatLightChance` 来限定弹头命中时显示战斗闪光效果的概率百分比。"
 
-#: ../../Fixed-or-Improved-Logics.md:2309
+#: ../../Fixed-or-Improved-Logics.md:2324
 msgid ""
 "Setting `CLIsBlack` to true on Warhead will now turn the flash black like"
 " on hitting an Iron Curtained object, irregardless of other color "
 "settings."
 msgstr "现在可以通过在弹头上设置 `CLIsBlack` 为 true 来让闪光就像击中在铁幕保护下的物体一样使用黑色，无视其他颜色设置。"
 
-#: ../../Fixed-or-Improved-Logics.md:2312
+#: ../../Fixed-or-Improved-Logics.md:2327
 msgid ""
 "[AudioVisual]\n"
 "CombatLightDetailLevel=0  ; integer\n"
@@ -7797,11 +7825,11 @@ msgstr ""
 "(0.0-1.0)\n"
 "CLIsBlack=false           ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2322
+#: ../../Fixed-or-Improved-Logics.md:2337
 msgid "Custom debris animations and additional debris spawn settings"
 msgstr "自定义碎片动画和额外的碎片生成设置"
 
-#: ../../Fixed-or-Improved-Logics.md:2324
+#: ../../Fixed-or-Improved-Logics.md:2339
 msgid ""
 "You can now use `DebrisAnims` to specify a list of debris animations to "
 "spawn instead of animations from `[General] -> MetallicDebris` when "
@@ -7811,7 +7839,7 @@ msgstr ""
 "现在可以使用 `DebrisAnims` 指定要生成的碎片动画列表，而不是仅能在引爆拥有 `MaxDebris` > 0 且没有 "
 "`DebrisTypes`（指定 Voxel 碎片）的弹头时使用 `[General] -> MetallicDebris` 列表中的动画。"
 
-#: ../../Fixed-or-Improved-Logics.md:2325
+#: ../../Fixed-or-Improved-Logics.md:2340
 msgid ""
 "`Debris.Conventional`, if set to true, makes `DebrisTypes` or "
 "`DebrisAnims` only spawn if Warhead is fired on non-water cell."
@@ -7819,7 +7847,7 @@ msgstr ""
 "`Debris.Conventional` 如果设为 true，那么仅在弹头在非水面单元格上引爆时才会使用 `DebrisTypes` 或 "
 "`DebrisAnims`。"
 
-#: ../../Fixed-or-Improved-Logics.md:2328
+#: ../../Fixed-or-Improved-Logics.md:2343
 msgid ""
 "[SOMEWARHEAD]              ; WarheadType\n"
 "DebrisAnims=               ; List of AnimationTypes\n"
@@ -7829,11 +7857,11 @@ msgstr ""
 "DebrisAnims=               ; List of AnimationTypes\n"
 "Debris.Conventional=false  ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2334
+#: ../../Fixed-or-Improved-Logics.md:2349
 msgid "Custom debris voxel animations limitation"
 msgstr "自定义 Voxel 碎片数量限制"
 
-#: ../../Fixed-or-Improved-Logics.md:2340
+#: ../../Fixed-or-Improved-Logics.md:2355
 msgid ""
 "[SOMEWARHEAD]       ; WarheadType\n"
 "DebrisTypes.Limit=  ; boolean\n"
@@ -7845,22 +7873,22 @@ msgstr ""
 "DebrisMaximums=     ; List of integers\n"
 "DebrisMinimums=     ; List of integers\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2347
+#: ../../Fixed-or-Improved-Logics.md:2362
 msgid "Customizable rocker amplitude"
 msgstr "自定义掀起幅度"
 
-#: ../../Fixed-or-Improved-Logics.md:2349
+#: ../../Fixed-or-Improved-Logics.md:2364
 msgid ""
 "The rocker amplitude of warheads with `Rocker=yes` used to be determined "
 "by `Damage` value of the weapon. You can now override it with fixed value"
 " and add a multiplier to it."
 msgstr "拥有 `Rocker=yes` 的弹头其气波掀起载具的幅度过去由武器的 `Damage` 值所决定。现在可以通过固定值覆盖它并添加一个倍率。"
 
-#: ../../Fixed-or-Improved-Logics.md:2350
+#: ../../Fixed-or-Improved-Logics.md:2365
 msgid "When both multiplier and override values are set - both are used."
 msgstr "当同时设置了倍率和覆盖值时两者都会被使用。"
 
-#: ../../Fixed-or-Improved-Logics.md:2353
+#: ../../Fixed-or-Improved-Logics.md:2368
 msgid ""
 "[SOMEWARHEAD]                   ; WarheadType\n"
 "Rocker.AmplitudeMultiplier=1.0  ; floating point value, multiplier\n"
@@ -7870,11 +7898,11 @@ msgstr ""
 "Rocker.AmplitudeMultiplier=1.0  ; floating point value, multiplier\n"
 "Rocker.AmplitudeOverride=       ; integer\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2359
+#: ../../Fixed-or-Improved-Logics.md:2374
 msgid "Customizable Warhead animation behaviour"
 msgstr "自定义弹头动画行为"
 
-#: ../../Fixed-or-Improved-Logics.md:2361
+#: ../../Fixed-or-Improved-Logics.md:2376
 msgid ""
 "It is possible to make game play random animation from `AnimList` by "
 "setting `AnimList.PickRandom` to true. The result is similar to what "
@@ -7886,7 +7914,7 @@ msgstr ""
 "`EMEffect=true` 时的效果，但它不会带来副作用（`EMEffect=true` 会影响 `Inviso=true` "
 "的抛射体锁定目标，导致它们无法击中移动目标）。"
 
-#: ../../Fixed-or-Improved-Logics.md:2362
+#: ../../Fixed-or-Improved-Logics.md:2377
 msgid ""
 "If `AnimList.CreateAll` is set to true, all animations from `AnimList` "
 "are created, instead of a single anim based on damage or random if "
@@ -7896,7 +7924,7 @@ msgstr ""
 "列表中的动画都将会被创建，而不再是只创建单个基于杀伤值计算或随机选取的动画，前提是 `AnimList.PickRandom` 没有被设为 "
 "true。"
 
-#: ../../Fixed-or-Improved-Logics.md:2363
+#: ../../Fixed-or-Improved-Logics.md:2378
 msgid ""
 "If `AnimList.CreationInterval` is set to a value higher than 0, there "
 "will be that number of detonations of the Warhead before animations from "
@@ -7911,20 +7939,20 @@ msgstr ""
 "中的动画前需要爆炸一定数量的该弹头。如果该弹头是由一个单位发射的，那么该单位只会检查它自己所发射该弹头的次数，否则会对全图所有同一弹头的引爆次数进行计数。如果你希望像"
 " `Airburst` 这种具有大范围扩散的效果其弹头动画可以均匀出现而不是每次引爆都出现的话那么这会非常有用。"
 
-#: ../../Fixed-or-Improved-Logics.md:2364
+#: ../../Fixed-or-Improved-Logics.md:2379
 msgid ""
 "`AnimList.ScatterMin` & `AnimList.ScatterMax` can be used to set a range "
 "in cells around which any created animations will randomly scatter around"
 " from the impact point."
 msgstr "`AnimList.ScatterMin` 和 `AnimList.ScatterMax` 可用于设置从爆炸中心点开始一定范围内的动画随机散布范围。"
 
-#: ../../Fixed-or-Improved-Logics.md:2365
+#: ../../Fixed-or-Improved-Logics.md:2380
 msgid ""
 "`SplashList` can be used to override animations displayed if the Warhead "
 "has `Conventional=true` and it hits water."
 msgstr "`SplashList` 可以在拥有 `Conventional=true` 的弹头击中水面时覆盖显示的动画。"
 
-#: ../../Fixed-or-Improved-Logics.md:2366
+#: ../../Fixed-or-Improved-Logics.md:2381
 msgid ""
 "`SplashList.PickRandom`, `SplashList.CreateAll`, "
 "`SplashList.CreationInterval` and `SplashList.Scatter(Min/Max)` apply to "
@@ -7933,7 +7961,7 @@ msgstr ""
 "`SplashList.PickRandom`、`SplashList.CreateAll`、`SplashList.CreationInterval`"
 " 和 `SplashList.Scatter(Min/Max)` 与 `AnimList` 同类语句相同。"
 
-#: ../../Fixed-or-Improved-Logics.md:2367
+#: ../../Fixed-or-Improved-Logics.md:2382
 msgid ""
 "`CreateAnimsOnZeroDamage`, if set to true, makes it so that `AnimList` or"
 " `SplashList` animations are created even if the weapon that fired the "
@@ -7942,7 +7970,7 @@ msgstr ""
 "`CreateAnimsOnZeroDamage` 如果设为 true，即便发射该弹头的武器只会造成 0 点伤害也会正常创建 `AnimList`"
 " 或 `SplashList` 动画。"
 
-#: ../../Fixed-or-Improved-Logics.md:2368
+#: ../../Fixed-or-Improved-Logics.md:2383
 msgid ""
 "Setting `Conventional.IgnoreUnits` to true on Warhead with "
 "`Conventional=true` will make the Warhead detonate on non-underwater "
@@ -7954,7 +7982,7 @@ msgstr ""
 "会使弹头命中位于水中的非水下载具类型时视为在水中引爆而不是视为在陆地上引爆。这决定了命中水面舰船时使用 `AnimList` 还是 "
 "`SplashList`。"
 
-#: ../../Fixed-or-Improved-Logics.md:2371
+#: ../../Fixed-or-Improved-Logics.md:2386
 msgid ""
 "[SOMEWARHEAD]                   ; WarheadType\n"
 "AnimList.PickRandom=false       ; boolean\n"
@@ -7996,11 +8024,11 @@ msgstr ""
 "CreateAnimsOnZeroDamage=false   ; boolean\n"
 "Conventional.IgnoreUnits=false  ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2388
+#: ../../Fixed-or-Improved-Logics.md:2403
 msgid "Customizable Warhead trigger conditions"
 msgstr "自定义弹头效果触发条件"
 
-#: ../../Fixed-or-Improved-Logics.md:2390
+#: ../../Fixed-or-Improved-Logics.md:2405
 msgid ""
 "`AffectsBelowPercent` and `AffectsAbovePercent` can be used to set the "
 "health percentage thresholds that target needs to be below/equal and/or "
@@ -8010,19 +8038,19 @@ msgstr ""
 "`AffectsBelowPercent` 和 `AffectsAbovePercent` "
 "可用于设置目标被弹头作用所需的血量百分比必须高于和／或低于／等于的限制。若目标血量为 0 则跳过该检查。"
 
-#: ../../Fixed-or-Improved-Logics.md:2391
+#: ../../Fixed-or-Improved-Logics.md:2406
 msgid ""
 "`AffectsVeterancy` sets the veterancy levels that allow the Warhead to "
 "detonate on the target."
 msgstr "`AffectsVeterancy` 设置允许受到弹头效果影响的经验等级。"
 
-#: ../../Fixed-or-Improved-Logics.md:2392
+#: ../../Fixed-or-Improved-Logics.md:2407
 msgid ""
 "If set to `false`, `AffectsNeutral` makes the warhead can't damage or "
 "affect target that belongs to neutral house."
 msgstr "若设置 `AffectsNeutral=false` 那么弹头将无法杀伤或作用于所属于中立所属方的目标。"
 
-#: ../../Fixed-or-Improved-Logics.md:2393
+#: ../../Fixed-or-Improved-Logics.md:2408
 #, python-format
 msgid ""
 "If set to `false`, `EffectsRequireVerses` makes the Phobos-introduced "
@@ -8032,7 +8060,7 @@ msgstr ""
 "若设置 `EffectsRequireVerses=false` 那么即便由于目标当前装甲类型导致弹头无法对其造成杀伤（例如 "
 "`Verses=0%`）Phobos 所引入的弹头效果也仍会触发。"
 
-#: ../../Fixed-or-Improved-Logics.md:2396
+#: ../../Fixed-or-Improved-Logics.md:2411
 msgid ""
 "[SOMEWARHEAD]               ; WarheadType\n"
 "AffectsBelowPercent=1.0     ; floating point value, percents or absolute\n"
@@ -8050,17 +8078,17 @@ msgstr ""
 "AffectsNeutral=true         ; boolean\n"
 "EffectsRequireVerses=false  ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2405
+#: ../../Fixed-or-Improved-Logics.md:2420
 msgid "Customizing decloak on damaging targets"
 msgstr "自定义被伤害目标解除隐形"
 
-#: ../../Fixed-or-Improved-Logics.md:2407
+#: ../../Fixed-or-Improved-Logics.md:2422
 msgid ""
 "You can now specify whether or not the warhead decloaks objects that are "
 "damaged by the warhead."
 msgstr "现在你可以指定被这个弹头杀伤的对象是否解除隐形。"
 
-#: ../../Fixed-or-Improved-Logics.md:2410
+#: ../../Fixed-or-Improved-Logics.md:2425
 msgid ""
 "[SOMEWARHEAD]               ; WarheadType\n"
 "DecloakDamagedTargets=true  ; boolean\n"
@@ -8068,21 +8096,21 @@ msgstr ""
 "[SOMEWARHEAD]               ; WarheadType\n"
 "DecloakDamagedTargets=true  ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2415
+#: ../../Fixed-or-Improved-Logics.md:2430
 msgid "Customizing parasite"
 msgstr "自定义寄生"
 
-#: ../../Fixed-or-Improved-Logics.md:2417
+#: ../../Fixed-or-Improved-Logics.md:2432
 msgid "Now you can specify which targets the parasite will culling them."
 msgstr "现在你可以指定哪些目标会被寄生所秒杀"
 
-#: ../../Fixed-or-Improved-Logics.md:2418
+#: ../../Fixed-or-Improved-Logics.md:2433
 msgid ""
 "Squid grapple anim is hardcoded to use `SQDG` in vanilla, Now you can "
 "choose it."
 msgstr "在原版中乌贼拖拽的动画被硬编码为 `SQDG`，现在选择权归你了。"
 
-#: ../../Fixed-or-Improved-Logics.md:2421
+#: ../../Fixed-or-Improved-Logics.md:2436
 msgid ""
 "[AudioVisual]\n"
 "Parasite.GrappleAnim=             ; animation\n"
@@ -8100,23 +8128,23 @@ msgstr ""
 "(none|aircraft|infantry|units|all)\n"
 "Parasite.GrappleAnim=             ; animation\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2430
+#: ../../Fixed-or-Improved-Logics.md:2445
 msgid "Dehardcode the `ZAdjust` of warhead anim"
 msgstr "弹头动画 `ZAdjust` 去硬编码"
 
-#: ../../Fixed-or-Improved-Logics.md:2432
+#: ../../Fixed-or-Improved-Logics.md:2447
 msgid ""
 "In vanilla, the animations generated by `AnimList` have a hard-coded "
 "`ZAdjust=-15`. Now you can customize it in the following ways."
 msgstr "在原版中由 `AnimList` 生成的动画被硬编码为 `ZAdjust=-15`。现在你可以通过下述方式进行自定义。"
 
-#: ../../Fixed-or-Improved-Logics.md:2433
+#: ../../Fixed-or-Improved-Logics.md:2448
 msgid ""
 "If these flags are set to 0, the `ZAdjust` defined by the anim will be "
 "used."
 msgstr "若这些语句设为 0 则将会使用动画自身的 `ZAdjust` 值。"
 
-#: ../../Fixed-or-Improved-Logics.md:2436
+#: ../../Fixed-or-Improved-Logics.md:2451
 msgid ""
 "[AudioVisual]\n"
 "WarheadAnimZAdjust=-15           ; Integer\n"
@@ -8132,11 +8160,11 @@ msgstr ""
 "AnimZAdjust=                     ; Integer, default to [AudioVisual] -> "
 "WarheadAnimZAdjust\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2444
+#: ../../Fixed-or-Improved-Logics.md:2459
 msgid "Delay automatic attack on the controlled unit"
 msgstr "攻击被心控单位的延迟"
 
-#: ../../Fixed-or-Improved-Logics.md:2446
+#: ../../Fixed-or-Improved-Logics.md:2461
 msgid ""
 "Now you can make the techno that has just been mind controlled not be "
 "automatically attacked by its original friendly forces for a period of "
@@ -8145,13 +8173,13 @@ msgstr ""
 "现在你可以让刚被心灵控制的科技类型在一段时间内不会自动遭到来自原所属方友军的攻击，持续时间由心灵控制弹头的 "
 "`MindControl.ThreatDelay` 参数控制。"
 
-#: ../../Fixed-or-Improved-Logics.md:2447
+#: ../../Fixed-or-Improved-Logics.md:2462
 msgid ""
 "This will not affect the manual selection of attacks and is useless with "
 "permanent mind control."
 msgstr "这不会影响手动攻击，并且不（也没必要）作用于永久心控的情况。"
 
-#: ../../Fixed-or-Improved-Logics.md:2450
+#: ../../Fixed-or-Improved-Logics.md:2465
 msgid ""
 "[General]\n"
 "MindControl.ThreatDelay=0     ; integer, game frames\n"
@@ -8167,41 +8195,41 @@ msgstr ""
 "MindControl.ThreatDelay=      ; integer, game frames, default to "
 "[General] -> MindControl.ThreatDelay\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2458
+#: ../../Fixed-or-Improved-Logics.md:2473
 msgid "Nonprovocative Warheads"
 msgstr "非挑衅弹头"
 
-#: ../../Fixed-or-Improved-Logics.md:2460
+#: ../../Fixed-or-Improved-Logics.md:2475
 msgid ""
 "You can now make Warheads behave in nonprovocative fashion. Warheads with"
 " `Nonprovocative=true` exhibit following behaviours:"
 msgstr "现在你可以让弹头以非挑衅的方式表现。设置为 `Nonprovocative=true` 的弹头会表现出以下行为："
 
-#: ../../Fixed-or-Improved-Logics.md:2461
+#: ../../Fixed-or-Improved-Logics.md:2476
 msgid ""
 "They will not generate any EVA announcements upon hitting targets, be it "
 "for attacking ore miners, base buildings or ally base buildings."
 msgstr "当命中目标时无论是是矿车、基地建筑还是盟友的基地建筑都不会播放任何 EVA 通报。"
 
-#: ../../Fixed-or-Improved-Logics.md:2462
+#: ../../Fixed-or-Improved-Logics.md:2477
 msgid ""
 "They will not spring 'attacked' / 'attacked by' events. Note that if the "
 "Warhead deals actual damage, events that check for that can still be "
 "sprung."
 msgstr "它们不会触发 “受到攻击”／“被...攻击” 事件。注意如果弹头造成了实际杀伤那么检查杀伤的事件仍可能被触发。"
 
-#: ../../Fixed-or-Improved-Logics.md:2463
+#: ../../Fixed-or-Improved-Logics.md:2478
 msgid ""
 "They will not evoke defense response from AI players when used to attack "
 "base buildings, `ToProtect=true` TechnoTypes or members of TeamTypes with"
 " `Whiner=true`."
 msgstr "它们不会在攻击基地建筑、`ToProtect=true` 的科技类型或具有 `Whiner=true` 的小队的成员时引发 AI 玩家的防御反应。"
 
-#: ../../Fixed-or-Improved-Logics.md:2464
+#: ../../Fixed-or-Improved-Logics.md:2479
 msgid "They will not evoke retaliation from TechnoTypes hit by the Warhead."
 msgstr "它们不会引发弹头所命中科技类型的反击。"
 
-#: ../../Fixed-or-Improved-Logics.md:2467
+#: ../../Fixed-or-Improved-Logics.md:2482
 msgid ""
 "[SOMEWARHEAD]         ; WarheadType\n"
 "Nonprovocative=false  ; boolean\n"
@@ -8209,24 +8237,24 @@ msgstr ""
 "[SOMEWARHEAD]         ; WarheadType\n"
 "Nonprovocative=false  ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2473
+#: ../../Fixed-or-Improved-Logics.md:2488
 msgid ""
 "Due to technical constraints, this does not suppress warnings from Ares' "
 "EMP effect."
 msgstr "由于技术限制，这不会去除 Ares 的 EMP 效果所产生的警告。"
 
-#: ../../Fixed-or-Improved-Logics.md:2476
+#: ../../Fixed-or-Improved-Logics.md:2491
 msgid "Restricting screen shaking to current view"
 msgstr "限制屏幕抖动于当前视角"
 
-#: ../../Fixed-or-Improved-Logics.md:2478
+#: ../../Fixed-or-Improved-Logics.md:2493
 msgid ""
 "You can now specify whether or not the warhead can only shake screen "
 "(`ShakeX/Ylo/hi`) if it is detonated while visible on current screen "
 "view."
 msgstr "现在你可以指定这个弹头是否只能在可视的当前屏幕可见区域内爆炸时才能抖动（`ShakeX/Ylo/hi`）屏幕"
 
-#: ../../Fixed-or-Improved-Logics.md:2481
+#: ../../Fixed-or-Improved-Logics.md:2496
 msgid ""
 "[SOMEWARHEAD]       ; WarheadType\n"
 "ShakeIsLocal=false  ; boolean\n"
@@ -8234,15 +8262,15 @@ msgstr ""
 "[SOMEWARHEAD]       ; WarheadType\n"
 "ShakeIsLocal=false  ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2486
+#: ../../Fixed-or-Improved-Logics.md:2501
 msgid "Weapons"
 msgstr "武器"
 
-#: ../../Fixed-or-Improved-Logics.md:2488
+#: ../../Fixed-or-Improved-Logics.md:2503
 msgid "AmbientDamage customizations"
 msgstr "自定义穿透伤害"
 
-#: ../../Fixed-or-Improved-Logics.md:2490
+#: ../../Fixed-or-Improved-Logics.md:2505
 msgid ""
 "You can now specify separate Warhead used for `AmbientDamage` via "
 "`AmbientDamage.Warhead` or make it never apply to weapon's main target by"
@@ -8251,7 +8279,7 @@ msgstr ""
 "现在你可以通过 `AmbientDamage.Warhead` 指定用于 `AmbientDamage` 的弹头或通过将 "
 "`AmbientDamage.IgnoreTarget` 设为 true 使其永远不会对武器的直接目标生效。"
 
-#: ../../Fixed-or-Improved-Logics.md:2493
+#: ../../Fixed-or-Improved-Logics.md:2508
 msgid ""
 "[SOMEWEAPON]                      ; WeaponType\n"
 "AmbientDamage.Warhead=            ; WarheadType\n"
@@ -8261,11 +8289,11 @@ msgstr ""
 "AmbientDamage.Warhead=            ; WarheadType\n"
 "AmbientDamage.IgnoreTarget=false  ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2499
+#: ../../Fixed-or-Improved-Logics.md:2514
 msgid "Can attack allies"
 msgstr "武器层面的攻击友军定义"
 
-#: ../../Fixed-or-Improved-Logics.md:2501
+#: ../../Fixed-or-Improved-Logics.md:2516
 msgid ""
 "Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`. "
 "They override the firer's `AttackFriendlies` and "
@@ -8274,7 +8302,7 @@ msgstr ""
 "现在支持在武器上使用 `AttackFriendlies` 和 "
 "`AttackCursorOnFriendlies`。它们会覆盖开火者自身的这两项生效。"
 
-#: ../../Fixed-or-Improved-Logics.md:2504
+#: ../../Fixed-or-Improved-Logics.md:2519
 msgid ""
 "[SOMEWEAPON]                ; WeaponType\n"
 "AttackFriendlies=           ; boolean\n"
@@ -8284,11 +8312,11 @@ msgstr ""
 "AttackFriendlies=           ; boolean\n"
 "AttackCursorOnFriendlies=   ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2510
+#: ../../Fixed-or-Improved-Logics.md:2525
 msgid "Charge turret delays"
 msgstr "炮塔充能间隔"
 
-#: ../../Fixed-or-Improved-Logics.md:2512
+#: ../../Fixed-or-Improved-Logics.md:2527
 msgid ""
 "It is now possible to customize the delay of `IsChargeTurret=true` unit "
 "turret animation per weapon, per `Burst` shot instead of defaulting to "
@@ -8302,13 +8330,13 @@ msgstr ""
 "等）。使用列表中与 `Burst` 一一对应值的间隔，若当前连发的次数高于列表中值的数量那么使用列表中最后一个值。间隔为 0 "
 "或更小将不会被使用，并且不会重置先前的充能序列（目前仍会重置序列但不会重置充能动画播放时间）。"
 
-#: ../../Fixed-or-Improved-Logics.md:2513
+#: ../../Fixed-or-Improved-Logics.md:2528
 msgid ""
 "Note that unlike the default rearm timer that uses `ROF`, any modifiers "
 "are not applied to explicitly set charge turret delays."
 msgstr "注意与使用 `ROF` 的默认重新装填计时器不同，任何倍率都不会对明确指定的充能炮塔间隔生效。"
 
-#: ../../Fixed-or-Improved-Logics.md:2516
+#: ../../Fixed-or-Improved-Logics.md:2531
 msgid ""
 "[SOMEWEAPON]          ; WeaponType\n"
 "ChargeTurret.Delays=  ; List of integers - game frames\n"
@@ -8316,19 +8344,19 @@ msgstr ""
 "[SOMEWEAPON]          ; WeaponType\n"
 "ChargeTurret.Delays=  ; List of integers - game frames\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2521
+#: ../../Fixed-or-Improved-Logics.md:2536
 msgid "Customizable disk laser radius"
 msgstr "自定义飞碟激光半径"
 
-#: ../../Fixed-or-Improved-Logics.md:2523
+#: ../../Fixed-or-Improved-Logics.md:2538
 msgid "![image](_static/images/disklaser-radius-values-01.gif)"
 msgstr "![image](_static/images/disklaser-radius-values-01.gif)"
 
-#: ../../Fixed-or-Improved-Logics.md:2524
+#: ../../Fixed-or-Improved-Logics.md:2539
 msgid "You can now set disk laser animation radius using a new tag."
 msgstr "现在你可以通过一个新的标签来设置飞碟激光动画效果的半径。"
 
-#: ../../Fixed-or-Improved-Logics.md:2527
+#: ../../Fixed-or-Improved-Logics.md:2542
 msgid ""
 "[SOMEWEAPON]          ; WeaponType\n"
 "DiskLaser.Radius=240  ; integer\n"
@@ -8338,18 +8366,18 @@ msgstr ""
 "DiskLaser.Radius=240  ; integer\n"
 "; 240 is the default saucer disk radius\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2533
+#: ../../Fixed-or-Improved-Logics.md:2548
 msgid "Customizable ROF random delay"
 msgstr "自定义 ROF 随机延迟"
 
-#: ../../Fixed-or-Improved-Logics.md:2535
+#: ../../Fixed-or-Improved-Logics.md:2550
 msgid ""
 "By default weapon `ROF` has a random delay of 0 to 2 frames added to it. "
 "This random delay is now customizable, globally and on per-WeaponType "
 "basis."
 msgstr "默认情况下武器的 `ROF` 会添加 0 到 2 的随机延迟。现在可以在全局和武器微观层面定义此随机延迟。"
 
-#: ../../Fixed-or-Improved-Logics.md:2538
+#: ../../Fixed-or-Improved-Logics.md:2553
 msgid ""
 "[CombatDamage]\n"
 "ROF.RandomDelay=0,2  ; integer - single or comma-sep. range (game frames)"
@@ -8367,17 +8395,17 @@ msgstr ""
 "ROF.RandomDelay=     ; integer - single or comma-sep. range (game "
 "frames), default to [CombatDamage] -> ROF.RandomDelay\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2546
+#: ../../Fixed-or-Improved-Logics.md:2561
 msgid "Customizing whether passengers are kicked out when an aircraft fires"
 msgstr "自定义战机开火时是否踢出乘客"
 
-#: ../../Fixed-or-Improved-Logics.md:2548
+#: ../../Fixed-or-Improved-Logics.md:2563
 msgid ""
 "You can now customize whether aircraft will forcefully eject passengers "
 "(vanilla behavior) or fire its weapon when attempting to fire."
 msgstr "现在你可以自定义战机在尝试开火时是强行踢出乘客（默认行为）还是发射这个武器。"
 
-#: ../../Fixed-or-Improved-Logics.md:2551
+#: ../../Fixed-or-Improved-Logics.md:2566
 msgid ""
 "[SOMEWEAPON]            ; WeaponType\n"
 "KickOutPassengers=true  ; boolean\n"
@@ -8385,11 +8413,11 @@ msgstr ""
 "[SOMEWEAPON]            ; WeaponType\n"
 "KickOutPassengers=true  ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2556
+#: ../../Fixed-or-Improved-Logics.md:2571
 msgid "Disable FireOnce resetting infantry sequence"
 msgstr "禁止 FireOnce 重置步兵序列"
 
-#: ../../Fixed-or-Improved-Logics.md:2558
+#: ../../Fixed-or-Improved-Logics.md:2573
 msgid ""
 "It is now possible to disable `FireOnce=true` weapon resetting infantry "
 "sequences after firing via `FireOnce.ResetSequence`. Target will be "
@@ -8399,7 +8427,7 @@ msgstr ""
 "现在可以通过 `FireOnce.ResetSequence` 来禁用 `FireOnce=true` "
 "武器在开火后重置步兵序列的效果。目标将像以前一样被遗忘，如果开火后还有剩余帧，那么开火序列将简单地照常继续播放。"
 
-#: ../../Fixed-or-Improved-Logics.md:2561
+#: ../../Fixed-or-Improved-Logics.md:2576
 msgid ""
 "[SOMEWEAPON]                 ; WeaponType\n"
 "FireOnce.ResetSequence=true  ; boolean\n"
@@ -8407,11 +8435,11 @@ msgstr ""
 "[SOMEWEAPON]                 ; WeaponType\n"
 "FireOnce.ResetSequence=true  ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2566
+#: ../../Fixed-or-Improved-Logics.md:2581
 msgid "Electric bolt customizations"
 msgstr "自定义 EBolt"
 
-#: ../../Fixed-or-Improved-Logics.md:2568
+#: ../../Fixed-or-Improved-Logics.md:2583
 msgid ""
 "![image](_static/images/ebolt.gif) *EBolt customization utilized for "
 "different Tesla bolt weapon usage ([RA2: "
@@ -8420,13 +8448,13 @@ msgstr ""
 "![image](_static/images/ebolt.gif) *[RA2: "
 "Reboot](https://www.moddb.com/mods/reboot) 中自定义用于不同磁爆电流武器的 EBolt 效果*"
 
-#: ../../Fixed-or-Improved-Logics.md:2571
+#: ../../Fixed-or-Improved-Logics.md:2586
 msgid ""
 "You can now specify individual bolts you want to disable for "
 "`IsElectricBolt=true` weapons. Note that this is only a visual change."
 msgstr "现在你可以为 `IsElectricBolt=true` 的武器指定你想要关闭的特定电流。注意这只是视觉变化。"
 
-#: ../../Fixed-or-Improved-Logics.md:2572
+#: ../../Fixed-or-Improved-Logics.md:2587
 msgid ""
 "By default `IsElectricBolt=true` effect draws a bolt with 8 arcs. This "
 "can now be customized per WeaponType with `Bolt.Arcs`. Value of 0 results"
@@ -8435,14 +8463,14 @@ msgstr ""
 "默认情况下，`IsElectricBolt=true` 效果会绘制带有 8 条电弧的电流。现在可以通过 `Bolt.Arcs` "
 "为每种武器自定义这一效果。值为 0 将会绘制一条直线。"
 
-#: ../../Fixed-or-Improved-Logics.md:2573
+#: ../../Fixed-or-Improved-Logics.md:2588
 msgid ""
 "`Bolt.Duration` can be specified to explicitly set the overall duration "
 "of the visual electric bolt effect. Only values in range of 1 to 31 are "
 "accepted, values outside this range are clamped into it."
 msgstr "`Bolt.Duration` 可用于明确指定 EBolt 视觉效果的总持续时间，仅支持 1 到 31 范围内的值，超出此范围将会写回该范围内。"
 
-#: ../../Fixed-or-Improved-Logics.md:2574
+#: ../../Fixed-or-Improved-Logics.md:2589
 msgid ""
 "`Bolt.FollowFLH` can be used to override the default behaviour where the "
 "electric bolt source coordinates change to match the unit's firing coord "
@@ -8452,7 +8480,7 @@ msgstr ""
 "`Bolt.FollowFLH` 可用于覆盖 EBolt 起始坐标跟随单位开火坐标每帧改变（时期跟随单位的移动、旋转等）的默认行为。载具默认为 "
 "true 其他所有情况默认为 false。"
 
-#: ../../Fixed-or-Improved-Logics.md:2577
+#: ../../Fixed-or-Improved-Logics.md:2592
 msgid ""
 "[SOMEWEAPON]           ; WeaponType\n"
 "Bolt.Disable1=false    ; boolean\n"
@@ -8470,7 +8498,7 @@ msgstr ""
 "Bolt.Duration=17       ; integer, game frames\n"
 "Bolt.FollowFLH=        ; boolean\n"
 
-#: ../../Fixed-or-Improved-Logics.md:2588
+#: ../../Fixed-or-Improved-Logics.md:2603
 msgid ""
 "Due to technical constraints, these features do not work with electric "
 "bolts created from support weapon of [Ares' Prism Forwarding](https"
@@ -8481,11 +8509,11 @@ msgstr ""
 "docs/new/buildings/prismforwarding.html) 或那些 `AirburstWeapon` 所创建的 EBolt "
 "效果。"
 
-#: ../../Fixed-or-Improved-Logics.md:2591
+#: ../../Fixed-or-Improved-Logics.md:2606
 msgid "Single-color lasers"
 msgstr "单色激光"
 
-#: ../../Fixed-or-Improved-Logics.md:2593
+#: ../../Fixed-or-Improved-Logics.md:2608
 msgid ""
 "![image](_static/images/issinglecolor.gif) *Comparison of "
 "`IsSingleColor=yes` lasers with higher thickness to regular ones ([RA2: "
@@ -8495,7 +8523,7 @@ msgstr ""
 "Reboot](https://www.moddb.com/mods/reboot) 中宽度更大的 `IsSingleColor=yes` "
 "激光与常规激光的比较*"
 
-#: ../../Fixed-or-Improved-Logics.md:2596
+#: ../../Fixed-or-Improved-Logics.md:2611
 msgid ""
 "You can now set laser to draw using only `LaserInnerColor` by setting "
 "`IsSingleColor`, in same manner as `IsHouseColor` lasers do using "
@@ -8505,7 +8533,7 @@ msgstr ""
 "现在你可以通过设置 `IsSingleColor` 使激光仅使用 `LaserInnerColor` 进行绘制，就像 `IsHouseColor`"
 " 的激光使用玩家所属方的颜色一样。这样的激光同样尊重激光宽度。注意这在光棱塔递光武器上并不可用。"
 
-#: ../../Fixed-or-Improved-Logics.md:2599
+#: ../../Fixed-or-Improved-Logics.md:2614
 msgid ""
 "[SOMEWEAPON]         ; WeaponType\n"
 "IsSingleColor=false  ; boolean\n"
