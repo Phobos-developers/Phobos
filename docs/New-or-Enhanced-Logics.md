@@ -1727,6 +1727,20 @@ RateDown.Cover.Value=0        ; integer
 RateDown.Cover.AmmoBelow=-2   ; integer
 ```
 
+### Extended auto-targeting
+
+- Now you can activate multiple auto-targeting optimizations by setting `ExtendedAutoTargeting=true`. These include:
+  - When using stop, guard, or mouse commands, refresh the auto-targeting cooldown.
+  - When the target becomes invalid, refresh the auto-targeting cooldown (In vanilla, this cooldown will be reduced to less than 10 frames).
+  - When a unit is on a task that allows auto-targeting but already has a target, it will still auto-target. If a target with a threat level higher than the original target by more than `ExtendedAutoTargeting.SwitchTargetThreshold` is found, switch the target.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ExtendedAutoTargeting=false                        ; boolean
+ExtendedAutoTargeting.SwitchTargetThreshold=1000   ; integer
+```
+
 ### Extra threat
 
 - Now you can adjust the techno's evaluation of the threat posed by the target in more ways. This will help the techno in auto - targeting.

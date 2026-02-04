@@ -325,6 +325,8 @@ public:
 		Valueable<bool> DefaultToGuardArea;
 
 		Valueable<bool> DisableOveroptimizationInTargeting;
+		Valueable<bool> ExtendedAutoTargeting;
+		Valueable<int> ExtendedAutoTargeting_SwitchTargetThreshold;
     
 		Valueable<bool> CylinderRangefinding;
 
@@ -631,6 +633,8 @@ public:
 			, ShipLocomotorMakesWake { true }
 			, FiringAnim_Update { false }
 			, ExtendedPlayerRepair { false }
+			, ExtendedAutoTargeting { false }
+			, ExtendedAutoTargeting_SwitchTargetThreshold { 1000 }
 		{ }
 
 		virtual ~ExtData() = default;
