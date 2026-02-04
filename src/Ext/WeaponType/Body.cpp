@@ -1,4 +1,4 @@
-#include "Body.h"
+﻿#include "Body.h"
 #include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
 
@@ -167,6 +167,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackFriendlies.Read(exINI, pSection, "AttackFriendlies");
 	this->AttackCursorOnFriendlies.Read(exINI, pSection, "AttackCursorOnFriendlies");
 	this->AttackNoThreatBuildings.Read(exINI, pSection, "AttackNoThreatBuildings");
+	this->CylinderRangefinding.Read(exINI, pSection, "CylinderRangefinding");
 
 	// handle SkipWeaponPicking
 	if (this->CanTarget != AffectedTarget::All || this->CanTargetHouses != AffectedHouse::All
@@ -262,6 +263,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackFriendlies)
 		.Process(this->AttackCursorOnFriendlies)
 		.Process(this->AttackNoThreatBuildings)
+		.Process(this->CylinderRangefinding)
 		;
 };
 

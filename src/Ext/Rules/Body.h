@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <RulesClass.h>
 #include <Utilities/Container.h>
@@ -310,6 +310,10 @@ public:
 		Valueable<Mission> ParadropMission;
 		Valueable<Mission> AIParadropMission;
 
+		Valueable<bool> DefaultToGuardArea;
+    
+		Valueable<bool> CylinderRangefinding;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -562,6 +566,10 @@ public:
 
 			, ParadropMission { Mission::Guard }
 			, AIParadropMission { Mission::Hunt }
+
+			, DefaultToGuardArea { false }
+			
+			, CylinderRangefinding { false }
 		{ }
 
 		virtual ~ExtData() = default;
