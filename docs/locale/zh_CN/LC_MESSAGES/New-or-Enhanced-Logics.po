@@ -7825,29 +7825,30 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:2155
 msgid "Customizable disk drain logic"
-msgstr ""
+msgstr "自定义镭射幽浮吸取"
 
 #: ../../New-or-Enhanced-Logics.md:2157
 msgid "It is possible to set properties of drain logic per technotypes."
-msgstr ""
+msgstr "可以单位微观定义吸取逻辑的属性。"
 
 #: ../../New-or-Enhanced-Logics.md:2158
 msgid ""
 "`DrainMoneyDisplay` and `DrainMoneyDisplay.OnTarget` determine whether "
 "drain money will be displayed at firer and target respectively."
 msgstr ""
+"`DrainMoneyDisplay` 和 `DrainMoneyDisplay.OnTarget` 分别决定吸取金额是否会在开火者和目标上显示。"
 
 #: ../../New-or-Enhanced-Logics.md:2159
 msgid ""
 "`DrainMoneyDisplay.Houses` determines which houses can see the credits "
 "display on firer."
-msgstr ""
+msgstr "`DrainMoneyDisplay.Houses` 决定哪些所属方可以看到资金显示。"
 
 #: ../../New-or-Enhanced-Logics.md:2160
 msgid ""
 "`DrainMoneyDisplay.Offset` is additional pixel offset for the center of "
 "the credits display, by default `0,0` at firer's center."
-msgstr ""
+msgstr "`DrainMoneyDisplay.Offset` 是资金显示中心的额外像素偏移量，默认为 0,0 即开火者的中心。"
 
 #: ../../New-or-Enhanced-Logics.md:2161
 msgid ""
@@ -7857,6 +7858,7 @@ msgid ""
 "firer's `DrainMoneyDisplay.Houses` and `DrainMoneyDisplay.Offset` "
 "settings instead."
 msgstr ""
+"`DrainMoneyDisplay.OnTarget.UseDisplayIncome` 决定目标单位上的吸取金额是否使用期自身的 `DisplayIncome.Houses` 和 `DisplayIncome.Offset` 设置。若设为 false 则遵循开火者的 `DisplayIncome.Houses` 和 `DisplayIncome.Offset` 设置"
 
 #: ../../New-or-Enhanced-Logics.md:2164
 msgid ""

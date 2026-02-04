@@ -530,7 +530,7 @@ New:
 - [Return warhead](New-or-Enhanced-Logics.md#return-warhead) (by Ollerus)
 - [`AllowBerzerkOnAllies`](Fixed-or-Improved-Logics.md#berzerk-on-allies) (by TaranDahl)
 - [Customize whether weapon can be used to targeting ironcurtained technos or not](New-or-Enhanced-Logics.md#customize-whether-weapon-can-target-iron-curtained-technos) (by NetsuNegi)
-- Customizable disk drain logic (by NetsuNegi)
+- [Customizable disk drain logic](New-or-Enhanced-Logics.md#customizable-disk-drain-logic) (by NetsuNegi)
 - [Customizable paradropped unit missions](Fixed-or-Improved-Logics.md#customizable-paradrop-missions) (by Starkku)
 - Option to scale `PowerSurplus` setting if enabled to current power drain with `PowerSurplus.ScaleToDrainAmount` (by Starkku)
 

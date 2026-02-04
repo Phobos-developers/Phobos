@@ -2493,9 +2493,8 @@ msgstr ""
 "can-target-iron-curtained-technos)（by NetsuNegi）"
 
 #: ../../Whats-New.md:533
-#, fuzzy
-msgid "Customizable disk drain logic (by NetsuNegi)"
-msgstr "自定义乌贼拖拽动画（by NetsuNegi）"
+msgid "[Customizable disk drain logic](New-or-Enhanced-Logics.md#customizable-disk-drain-logic) (by NetsuNegi)"
+msgstr "[自定义镭射幽浮吸取](New-or-Enhanced-Logics.md#customizable-disk-drain-logic)（by NetsuNegi）"
 
 #: ../../Whats-New.md:534
 msgid ""

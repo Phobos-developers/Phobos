@@ -2048,7 +2048,7 @@ msgstr "修复了使用 Ares 废墟逻辑的 `Explodes=yes` 建筑会导致其�
 
 #: ../../../CREDITS.md:493
 msgid "Customizable disk drain logic"
-msgstr ""
+msgstr "自定义镭射幽浮吸取"
 
 #: ../../../CREDITS.md:494
 msgid "**Apollo** - Translucent SHP drawing patches"
