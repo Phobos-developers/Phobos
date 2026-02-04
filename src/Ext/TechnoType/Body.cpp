@@ -1880,6 +1880,8 @@ DEFINE_HOOK(0x711835, TechnoTypeClass_CTOR, 0x5)
 
 	TechnoTypeExt::ExtMap.TryAllocate(pItem);
 
+	pItem->DefaultToGuardArea = RulesExt::Global()->DefaultToGuardArea;
+
 	return 0;
 }
 
