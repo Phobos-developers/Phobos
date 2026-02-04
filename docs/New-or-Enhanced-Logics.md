@@ -1156,6 +1156,7 @@ EMPulse.SuspendOthers=false  ; boolean
 - Created buildings are not affected by any on-map threats. The only way to remove them from the game is by using a Superweapon with `LimboKill.IDs` set.
   - `LimboKill.AffectsHouse` sets which houses are affected by this feature.
   - `LimboKill.IDs` lists IDs that will be targeted. Buildings with these IDs will be removed from the game instantly.
+  - `LimboKill.Counts` sets how many buildings of each type will be removed. Value from position matching the position from `LimboKill.IDs` is used if found, or no limitation if not found. If list is empty, there's no limitation for all types.
 
 - Delivery can be made random with these optional tags. The game will randomly choose only a single building from the list for each roll chance provided.
   - `LimboDelivery.RollChances` lists chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
@@ -1177,12 +1178,12 @@ In `rulesmd.ini`:
 ```ini
 [SOMESW]                        ; SuperWeaponType
 LimboDelivery.Types=            ; List of BuildingTypes
-LimboDelivery.IDs=              ; List of numeric IDs. -1 cannot be used.
-LimboDelivery.RollChances=      ; List of percentages.
-LimboDelivery.RandomWeightsN=   ; List of integers.
+LimboDelivery.IDs=              ; List of numeric IDs, -1 cannot be used
+LimboDelivery.RollChances=      ; List of percentages
+LimboDelivery.RandomWeightsN=   ; List of integers
 LimboKill.AffectsHouse=self     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-LimboKill.IDs=                  ; List of numeric IDs.
-LimboKill.Counts=               ; List of counts
+LimboKill.IDs=                  ; List of numeric IDs
+LimboKill.Counts=               ; List of integers
 ```
 
 ```{warning}
