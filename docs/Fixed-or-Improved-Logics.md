@@ -1559,6 +1559,27 @@ FallingDownDamage=              ; integer / percentage
 FallingDownDamage.Water=        ; integer / percentage
 ```
 
+### Customize several behavior of mission area guard
+
+- In vanilla, technos in area guard mission will use the focus as the center of targeting and stray.
+  - Now you can change the center to itself by using `AreaGuard.UseSelfAsCenter=true`. (For stray, what is checked is the distance between the techno and the current target)
+- In vanilla, technos in area guard mission will do targeting in an extended range (roughly 2 times of the guard range).
+  - Now you can change the range to the guard range by using `AreaGuard.TargetingInRange=true`.
+- In vanilla, technos in area guard mission will not stray unless it has no destination.
+  - Now you can change the behavior by using `AreaGuard.StrayIgnoreDestination=true`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AreaGuard.UseSelfAsCenter=         ; boolean
+AreaGuard.TargetingInRange=        ; boolean
+AreaGuard.StrayIgnoreDestination=  ; boolean
+```
+
+```{note}
+In vanilla, if `GuardRange` is not set, then the guard range will be automatically deduced based on the weapon range.
+```
+
 ### Damaged speed customization
 
 - In vanilla, units using drive/ship loco will has hardcoded speed multiplier when damaged. Now you can customize it.
