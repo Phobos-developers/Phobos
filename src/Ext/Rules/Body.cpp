@@ -69,7 +69,9 @@ void RulesExt::ExtData::InitializeConstants()
 // earliest loader - can't really do much because nothing else is initialized yet, so lookups won't work
 void RulesExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 {
+	INI_EX exINI(pINI);
 
+	this->DefaultToGuardArea.Read(exINI, GameStrings::General, "DefaultToGuardArea");
 }
 
 void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
@@ -171,6 +173,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ForbidParallelAIQueues_Vehicle.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Vehicle");
 
 	this->EnablePowerSurplus.Read(exINI, GameStrings::AI, "EnablePowerSurplus");
+	this->PowerSurplus_ScaleToDrainAmount.Read(exINI, GameStrings::AI, "PowerSurplus.ScaleToDrainAmount");
 
 	this->AllowDeployControlledMCV.Read(exINI, GameStrings::General, "AllowDeployControlledMCV");
 
@@ -199,6 +202,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DisplayIncome.Read(exINI, GameStrings::AudioVisual, "DisplayIncome");
 	this->DisplayIncome_Houses.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.Houses");
 	this->DisplayIncome_AllowAI.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.AllowAI");
+
+	this->DrainMoneyDisplay.Read(exINI, GameStrings::AudioVisual, "DrainMoneyDisplay");
+	this->DrainMoneyDisplay_Houses.Read(exINI, GameStrings::AudioVisual, "DrainMoneyDisplay.Houses");
+	this->DrainMoneyDisplay_OnTarget.Read(exINI, GameStrings::AudioVisual, "DrainMoneyDisplay.OnTarget");
+	this->DrainMoneyDisplay_OnTarget_UseDisplayIncome.Read(exINI, GameStrings::AudioVisual, "DrainMoneyDisplay.OnTarget.UseDisplayIncome");
 
 	this->IsVoiceCreatedGlobal.Read(exINI, GameStrings::AudioVisual, "IsVoiceCreatedGlobal");
 	this->SelectionFlashDuration.Read(exINI, GameStrings::AudioVisual, "SelectionFlashDuration");
@@ -351,8 +359,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AutoTarget_NoThreatBuildings.Read(exINI, GameStrings::General, "AutoTarget.NoThreatBuildings");
 	this->AutoTargetAI_NoThreatBuildings.Read(exINI, GameStrings::General, "AutoTargetAI.NoThreatBuildings");
 
-	this->CylinderRangefinding.Read(exINI, GameStrings::General, "CylinderRangefinding");
+	this->ParadropMission.Read(exINI, GameStrings::General, "ParadropMission");
+	this->AIParadropMission.Read(exINI, GameStrings::General, "AIParadropMission");
 
+	this->CylinderRangefinding.Read(exINI, GameStrings::General, "CylinderRangefinding");
+	
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -501,6 +512,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForbidParallelAIQueues_Navy)
 		.Process(this->ForbidParallelAIQueues_Vehicle)
 		.Process(this->EnablePowerSurplus)
+		.Process(this->PowerSurplus_ScaleToDrainAmount)
 		.Process(this->AllowDeployControlledMCV)
 		.Process(this->TypeSelectUseIFVMode)
 		.Process(this->IronCurtain_KeptOnDeploy)
@@ -522,6 +534,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DisplayIncome)
 		.Process(this->DisplayIncome_AllowAI)
 		.Process(this->DisplayIncome_Houses)
+		.Process(this->DrainMoneyDisplay)
+		.Process(this->DrainMoneyDisplay_Houses)
+		.Process(this->DrainMoneyDisplay_OnTarget)
+		.Process(this->DrainMoneyDisplay_OnTarget_UseDisplayIncome)
 		.Process(this->CrateOnlyOnLand)
 		.Process(this->UnitCrateVehicleCap)
 		.Process(this->FreeMCV_CreditsThreshold)
@@ -643,6 +659,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraRange_Prefiring_IncludeBurst)
 		.Process(this->AutoTarget_NoThreatBuildings)
 		.Process(this->AutoTargetAI_NoThreatBuildings)
+		.Process(this->ParadropMission)
+		.Process(this->AIParadropMission)
+		.Process(this->DefaultToGuardArea)
 		.Process(this->CylinderRangefinding)
 		;
 }

@@ -908,6 +908,17 @@ DEFINE_HOOK(0x6FF29E, TechnoClass_FireAt_ChargeTurret2, 0x6)
 
 #pragma endregion
 
+DEFINE_HOOK(0x70FDF5, TechnoClass_DrawDrainAnimation_Custom, 0x6)
+{
+	enum { SkipGameCode = 0x70FDFB };
+
+	GET(TechnoClass*, pThis, ESI);
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+
+	R->EDX(pTypeExt->DrainAnimationType.Get(RulesClass::Instance->DrainAnimationType));
+	return SkipGameCode;
+}
+
 #pragma region TechnoClass_GetFLH
 
 namespace GetFLHTemp

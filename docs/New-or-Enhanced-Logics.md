@@ -2152,6 +2152,33 @@ WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
 
+### Customizable disk drain logic
+
+- It is possible to set properties of drain logic per technotypes.
+  - `DrainMoneyDisplay` and `DrainMoneyDisplay.OnTarget` determine whether drain money will be displayed at firer and target respectively.
+  - `DrainMoneyDisplay.Houses` determines which houses can see the credits display on firer.
+  - `DrainMoneyDisplay.Offset` is additional pixel offset for the center of the credits display, by default `0,0` at firer's center.
+  - `DrainMoneyDisplay.OnTarget.UseDisplayIncome` determines whether drain money display on target will use its `DisplayIncome.Houses` and `DisplayIncome.Offset` settings. If set to false, it'll respect the firer's `DrainMoneyDisplay.Houses` and `DrainMoneyDisplay.Offset` settings instead.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+DrainMoneyDisplay=false                             ; boolean
+DrainMoneyDisplay.Houses=all                        ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DrainMoneyDisplay.OnTarget=false                    ; boolean
+DrainMoneyDisplay.OnTarget.UseDisplayIncome=true    ; boolean
+
+[SOMETECHNO]                                        ; TechnoType
+DrainMoneyFrameDelay=                               ; integer, default to [CombatDamage] -> DrainMoneyFrameDelay
+DrainMoneyAmount=                                   ; integer, default to [CombatDamage] -> DrainMoneyAmount
+DrainAnimationType=                                 ; AnimationType, default to [CombatDamage] -> DrainAnimationType
+DrainMoneyDisplay=                                  ; boolean, default to [AudioVisual] -> DrainMoneyDisplay
+DrainMoneyDisplay.Houses=                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to [AudioVisual] -> DrainMoneyDisplay.Houses
+DrainMoneyDisplay.Offset=0,0                        ; X,Y, pixels relative to default
+DrainMoneyDisplay.OnTarget=                         ; boolean, default to [AudioVisual] -> DrainMoneyDisplay.OnTarget
+DrainMoneyDisplay.OnTarget.UseDisplayIncome=        ; boolean
+```
+
 ## Terrain
 
 ### Destroy animation & sound

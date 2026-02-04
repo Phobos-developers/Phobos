@@ -111,10 +111,16 @@ public:
 		Valueable<bool> ForbidParallelAIQueues_Vehicle;
 
 		Valueable<bool> EnablePowerSurplus;
+		Valueable<int> PowerSurplus_ScaleToDrainAmount;
 
 		Valueable<bool> DisplayIncome;
 		Valueable<bool> DisplayIncome_AllowAI;
 		Valueable<AffectedHouse> DisplayIncome_Houses;
+
+		Valueable<bool> DrainMoneyDisplay;
+		Valueable<AffectedHouse> DrainMoneyDisplay_Houses;
+		Valueable<bool> DrainMoneyDisplay_OnTarget;
+		Valueable<bool> DrainMoneyDisplay_OnTarget_UseDisplayIncome;
 
 		Valueable<bool> AllowDeployControlledMCV;
 
@@ -300,6 +306,11 @@ public:
 		
 		Valueable<bool> AutoTarget_NoThreatBuildings;
 		Valueable<bool> AutoTargetAI_NoThreatBuildings;
+
+		Valueable<Mission> ParadropMission;
+		Valueable<Mission> AIParadropMission;
+
+		Valueable<bool> DefaultToGuardArea;
     
 		Valueable<bool> CylinderRangefinding;
 
@@ -385,6 +396,7 @@ public:
 			, ForbidParallelAIQueues_Vehicle { false }
 
 			, EnablePowerSurplus { false }
+			, PowerSurplus_ScaleToDrainAmount { 0 }
 
 			, AllowDeployControlledMCV { false }
 
@@ -409,6 +421,10 @@ public:
 			, DisplayIncome { false }
 			, DisplayIncome_AllowAI { true }
 			, DisplayIncome_Houses { AffectedHouse::All }
+			, DrainMoneyDisplay { false }
+			, DrainMoneyDisplay_Houses { AffectedHouse::All }
+			, DrainMoneyDisplay_OnTarget { false }
+			, DrainMoneyDisplay_OnTarget_UseDisplayIncome { true }
 			, CrateOnlyOnLand { false }
 			, UnitCrateVehicleCap { 50 }
 			, FreeMCV_CreditsThreshold { 1500 }
@@ -547,6 +563,11 @@ public:
 
 			, AutoTarget_NoThreatBuildings { false }
 			, AutoTargetAI_NoThreatBuildings { true }
+
+			, ParadropMission { Mission::Guard }
+			, AIParadropMission { Mission::Hunt }
+
+			, DefaultToGuardArea { false }
 			
 			, CylinderRangefinding { false }
 		{ }

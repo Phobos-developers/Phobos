@@ -2963,3 +2963,11 @@ DEFINE_HOOK(0x708A81, TechnoClass_CanRetaliate_CheckThreat, 0x5)
 
 	return pThis->ThreatCoeffients(pAttacker, &CoordStruct::Empty) <= pThis->ThreatCoeffients((ObjectClass*)(pThis->Target), &CoordStruct::Empty) ? SkipRetaliate : GoOtherChecks;
 }
+
+// Fixed the issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team.
+DEFINE_HOOK(0x6EA870, TeamClass_LiberateMember_Start, 0x6)
+{
+	GET_STACK(FootClass*, pMember, 0x4);
+	pMember->RecruitableB = true;
+	return 0;
+}
