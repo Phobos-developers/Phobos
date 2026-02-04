@@ -147,6 +147,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			{
 				const int baseDamage = static_cast<int>(static_cast<double>(damage) / pExt->AE.TransferDamageCount);
 				auto& random = ScenarioClass::Instance->Random;
+				int count = 0;
 				nDamageLeft = 0;
 
 				for (const auto& attachEffect : pExt->AttachedEffects)
@@ -213,7 +214,13 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 					pWHExtRef->Transfered = false;
 					nDamageLeft += static_cast<int>(baseDamage * pType->TransferDamage_SelfMultiplier);
+					count++;
+
+					if (count >= pExt->AE.TransferDamageCount)
+						break;
 				}
+
+				damage = nDamageLeft;
 			}
 		}
 
