@@ -2971,3 +2971,16 @@ DEFINE_HOOK(0x6EA870, TeamClass_LiberateMember_Start, 0x6)
 	pMember->RecruitableB = true;
 	return 0;
 }
+
+// Fixed the issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions
+DEFINE_HOOK(0x707A2E, TechnoClass_PointerExpired_TargetExpired, 0x5)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (pThis->GetCurrentMission() == Mission::Area_Guard)
+	{
+		if (pThis->UpdateTimer.GetTimeLeft() > 10 && !Unsorted::ScenarioInit)
+			pThis->UpdateTimer.Start(pThis->TargetingTimer.GetTimeLeft());
+	}
+	return 0;
+}

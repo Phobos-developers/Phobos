@@ -690,6 +690,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team
   - Global default value for `DefaultToGuardArea`
   - Weapon range finding in cylinder
+  - Fix an issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
