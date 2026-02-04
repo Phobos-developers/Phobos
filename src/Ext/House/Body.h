@@ -1,13 +1,8 @@
 #pragma once
 #include <HouseClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
-
-#include <Ext/Building/Body.h>
-
-#include <map>
 
 class HouseExt
 {
@@ -68,6 +63,9 @@ public:
 		std::vector<SWExt> SuperExts;
 
 		int ForceEnemyIndex;
+		int TeamDelay;
+		bool FreeRadar;
+		bool ForceRadar;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
@@ -99,6 +97,9 @@ public:
 			, ForceEnemyIndex(-1)
 			, ForceOnlyTargetHouseEnemy { false }
 			, ForceOnlyTargetHouseEnemyMode { -1 }
+			, TeamDelay(-1)
+			, FreeRadar(false)
+			, ForceRadar(false)
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;
@@ -199,4 +200,6 @@ public:
 
 	static CanBuildResult BuildLimitGroupCheck(const HouseClass* pThis, const TechnoTypeClass* pItem, bool buildLimitOnly, bool includeQueued);
 	static bool ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* pType, bool ignoreQueued);
+
+	static void CalculatePowerSurplus(HouseClass* pThis);
 };

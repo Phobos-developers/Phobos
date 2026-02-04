@@ -1,7 +1,6 @@
 #include "Body.h"
 
 #include <Ext/Scenario/Body.h>
-
 #include <Utilities/AresHelper.h>
 #include <Utilities/AresFunctions.h>
 

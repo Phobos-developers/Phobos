@@ -1,9 +1,6 @@
 #include "Body.h"
 
-#include <BuildingClass.h>
-
 #include <Ext/BuildingType/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 // TODO: Implement proper extended AircraftClass.

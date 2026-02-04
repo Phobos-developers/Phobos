@@ -1,23 +1,18 @@
 #include "Body.h"
 
-#include <AircraftClass.h>
-#include <ScenarioClass.h>
 #include <TunnelLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
-#include <AlphaShapeClass.h>
-#include <TacticalClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
-#include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Ext/TechnoType/Body.h>
-#include <Utilities/EnumFunctions.h>
+#include <Ext/WarheadType/Body.h>
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/AresHelper.h>
 #include <Utilities/AresFunctions.h>
+#include <Misc/FlyingStrings.h>
 
 #pragma region GetTechnoType
 
@@ -164,6 +159,59 @@ DEFINE_HOOK(0x6FA07A, TechnoClass_AI_PromoteAnim, 0x5)
 
 	// Restore overridden instructions.
 	R->EAX(pVet->GetRemainingLevel());
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x6FA167, TechnoClass_AI_DrainMoney, 0x5)
+{
+	enum { SkipGameCode = 0x6FA1C5 };
+
+	GET(TechnoClass*, pThis, ESI);
+	const auto pSource = pThis->DrainingMe;
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pSource)->TypeExtData;
+
+	if (Unsorted::CurrentFrame % pTypeExt->DrainMoneyFrameDelay.Get(RulesClass::Instance->DrainMoneyFrameDelay))
+		return SkipGameCode;
+
+	int amount = pTypeExt->DrainMoneyAmount.Get(RulesClass::Instance->DrainMoneyAmount);
+
+	if (!amount)
+		return SkipGameCode;
+
+	if (amount > 0)
+		amount = Math::min(amount, pThis->Owner->Available_Money());
+	else
+		amount = Math::max(amount, -pSource->Owner->Available_Money());
+
+	if (!amount)
+		return SkipGameCode;
+
+	pThis->Owner->TransactMoney(-amount);
+	pSource->Owner->TransactMoney(amount);
+
+	if (pTypeExt->DrainMoneyDisplay.Get(RulesExt::Global()->DrainMoneyDisplay) && pSource->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+	{
+		const auto displayTo = pTypeExt->DrainMoneyDisplay_Houses.Get(RulesExt::Global()->DrainMoneyDisplay_Houses);
+		FlyingStrings::AddMoneyString(amount, pSource, pSource->Owner, displayTo, pSource->Location, pTypeExt->DrainMoneyDisplay_Offset);
+	}
+
+	if (pTypeExt->DrainMoneyDisplay_OnTarget.Get(RulesExt::Global()->DrainMoneyDisplay_OnTarget))
+	{
+		if (!pTypeExt->DrainMoneyDisplay_OnTarget_UseDisplayIncome.Get(RulesExt::Global()->DrainMoneyDisplay_OnTarget_UseDisplayIncome))
+		{
+			const auto displayTo = pTypeExt->DrainMoneyDisplay_Houses.Get(RulesExt::Global()->DrainMoneyDisplay_Houses);
+			// use firer for owner check
+			FlyingStrings::AddMoneyString(-amount, pThis, pSource->Owner, displayTo, pThis->GetRenderCoords(), pTypeExt->DrainMoneyDisplay_Offset);
+		}
+		else if (const auto pBld = abstract_cast<BuildingClass*, true>(pThis))
+		{
+			const auto pBldTypeExt = BuildingTypeExt::ExtMap.Find(pBld->Type);
+			const auto displayTo = pBldTypeExt->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses);
+			// use target for owner check
+			FlyingStrings::AddMoneyString(-amount, pThis, pThis->Owner, displayTo, pThis->GetRenderCoords(), pBldTypeExt->DisplayIncome_Offset);
+		}
+	}
+
 	return SkipGameCode;
 }
 
@@ -1065,7 +1113,7 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 		// it will not execute properly as it interrupts it with movement.
 		if (mission == Mission::Unload)
 		{
-			if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+			if (auto const pUnit = abstract_cast<UnitClass*, true>(pThis))
 			{
 				if (pUnit->Type->IsSimpleDeployer)
 					continueMission = false;
@@ -1078,7 +1126,7 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 
 	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
-	if (pTypeExt->AttackMove_Follow || pTypeExt->AttackMove_Follow_IfMindControlIsFull && pThis->CaptureManager && pThis->CaptureManager->CannotControlAnyMore())
+	if (pTypeExt->AttackMove_Follow || (pTypeExt->AttackMove_Follow_IfMindControlIsFull && pThis->CaptureManager && pThis->CaptureManager->CannotControlAnyMore()))
 	{
 		auto const& pTechnoVectors = Helpers::Alex::getCellSpreadItems(pThis->GetCoords(),
 			pThis->GetGuardRange(2) / (double)Unsorted::LeptonsPerCell, pTypeExt->AttackMove_Follow_IncludeAir);
@@ -1487,5 +1535,142 @@ DEFINE_HOOK(0x6F9398, TechnoClass_SelectAutoTarget_Scan_FallingDown, 0x9)
 
 	return FuncRet;
 }
+
+#pragma endregion
+
+DEFINE_HOOK(0x6FBFA3, TechnoClass_Select_SkipLimboDelivery, 0x6)
+{
+	enum { SkipSelect = 0x6FC029 };
+
+	GET(TechnoClass* const, pThis, ESI);
+
+	if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pThis))
+	{
+		const auto& limboDelivereds = HouseExt::ExtMap.Find(pBuilding->Owner)->OwnedLimboDeliveredBuildings;
+		const auto vectorEnd = limboDelivereds.end();
+
+		if (std::find(limboDelivereds.begin(), vectorEnd, pBuilding) != vectorEnd)
+			return SkipSelect;
+	}
+
+	return 0;
+}
+
+#pragma region AutoTargetExtension
+
+DEFINE_JUMP(LJMP, 0x700387, 0x7003BD)
+
+DEFINE_HOOK(0x700358, TechnoClass_MouseOverObject_AttackFriendlies, 0x6)
+{
+	enum { CanAttack = 0x700381, Continue = 0x700385 };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(WeaponTypeClass*, pWeapon, EBP);
+	GET_STACK(const bool, IvanBomb, STACK_OFFSET(0x1C, -0xC));
+
+	const auto pType = pThis->GetTechnoType();
+	const auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+	if (pWeaponTypeExt->AttackFriendlies.Get(pType->AttackFriendlies)
+		|| (pWeaponTypeExt->AttackCursorOnFriendlies.Get(pType->AttackCursorOnFriendlies) && !IvanBomb))
+	{
+		return CanAttack;
+	}
+
+	return Continue;
+}
+
+DEFINE_HOOK_AGAIN(0x6F9CE9, TechnoClass_CheckAutoTarget_AttackFriendlies, 0xA)	// TechnoClass::SelectAutoTarget
+DEFINE_HOOK_AGAIN(0x6F9BAE, TechnoClass_CheckAutoTarget_AttackFriendlies, 0xA)
+DEFINE_HOOK_AGAIN(0x6F9204, TechnoClass_CheckAutoTarget_AttackFriendlies, 0xA)
+DEFINE_HOOK_AGAIN(0x6F8BBC, TechnoClass_CheckAutoTarget_AttackFriendlies, 0xA)	// TechnoClass::TryAutoTargetObject
+DEFINE_HOOK(0x6F8A92, TechnoClass_CheckAutoTarget_AttackFriendlies, 0xA)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+
+	R->CL(pThis->Veterancy.IsElite() ? pTypeExt->AttackFriendlies.Y : pTypeExt->AttackFriendlies.X);
+	return R->Origin() + 0x10;
+}
+
+namespace CanAutoTargetTemp
+{
+	TechnoTypeExt::ExtData* TypeExtData = nullptr;
+	WeaponTypeExt::ExtData* WeaponExt = nullptr;
+}
+
+DEFINE_HOOK(0x6F7E30, TechnoClass_CanAutoTarget_SetContent, 0x6)
+{
+	GET(TechnoClass*, pThis, EDI);
+	GET(WeaponTypeClass*, pWeapon, EBP);
+
+	CanAutoTargetTemp::TypeExtData = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	CanAutoTargetTemp::WeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F7EF4, TechnoClass_CanAutoTarget_AttackFriendlies, 0xA)
+{
+	enum { SkipGameCode = 0x6F7F04 };
+
+	GET(TechnoClass*, pThis, EDI);
+
+	bool attackFriendlies = pThis->GetTechnoType()->AttackFriendlies;
+
+	if (const auto pWeaponExt = CanAutoTargetTemp::WeaponExt)
+		attackFriendlies = pWeaponExt->AttackFriendlies.Get(attackFriendlies);
+
+	R->CL(attackFriendlies);
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x6F85CF, TechnoClass_CanAutoTarget_AttackNoThreatBuildings, 0xA)
+{
+	enum { CanAttack = 0x6F8604, Continue = 0x6F85D9 };
+
+	GET(TechnoClass*, pThis, EDI);
+	GET(BuildingClass*, pTarget, ESI);
+
+	bool canAttack = pThis->Owner->IsControlledByHuman() ? RulesExt::Global()->AutoTarget_NoThreatBuildings : RulesExt::Global()->AutoTargetAI_NoThreatBuildings;
+
+	if (const auto pWeaponExt = CanAutoTargetTemp::WeaponExt)
+		canAttack = pWeaponExt->AttackNoThreatBuildings.Get(canAttack);
+
+	if (canAttack)
+		return CanAttack;
+
+	R->EAX(pTarget->GetTurretWeapon());
+	return Continue;
+}
+
+#pragma endregion
+
+#pragma region ParadropMission
+
+static bool __fastcall FootClass_Paradrop(FootClass* pThis, void*, const CoordStruct& coords)
+{
+	if (!pThis->ObjectClass::SpawnParachuted(coords))
+		return false;
+
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	Mission mission;
+
+	if (pThis->Owner->IsControlledByHuman())
+		mission = pTypeExt->ParadropMission.Get(RulesExt::Global()->ParadropMission);
+	else
+		mission = pTypeExt->AIParadropMission.Get(RulesExt::Global()->AIParadropMission);
+
+	pThis->QueueMission(mission, false);
+
+	if (pThis->WhatAmI() == AbstractType::Infantry)
+		static_cast<InfantryClass*>(pThis)->PlayAnim(Sequence::Paradrop, true, false);
+
+	return true;
+}
+
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB140, FootClass_Paradrop) // Replace game's original function for infantry paradrops for consistency.
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5D58, FootClass_Paradrop) // Replace ObjectClass::Paradrop in UnitClass virtual table.
 
 #pragma endregion

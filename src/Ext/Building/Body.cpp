@@ -1,8 +1,8 @@
 #include "Body.h"
 
 #include <BitFont.h>
+#include <Misc/FlyingStrings.h>
 #include <Utilities/AresHelper.h>
-#include <Utilities/EnumFunctions.h>
 
 BuildingExt::ExtContainer BuildingExt::ExtMap;
 
@@ -474,6 +474,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentLaserWeaponIndex)
 		.Process(this->PoweredUpToLevel)
 		.Process(this->CurrentEMPulseSW)
+		//.Process(this->IsFiringNow) It is set and reset within a same function.
 		;
 }
 
