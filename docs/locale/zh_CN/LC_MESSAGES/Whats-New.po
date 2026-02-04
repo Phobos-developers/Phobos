@@ -53,6 +53,8 @@ msgid ""
 "`AIParadropMission` on the VehicleType, defaults to `[General]` -> "
 "`AIParadropMission`."
 msgstr ""
+"AI 玩家空降的载具现在默认为 `Hunt` 任务而不是 `Guard`，与步兵一致。可以通过在载具上设置 `AIParadropMission` 来自定义，默认为 `[General]` -> "
+"`AIParadropMission`。"
 
 #: ../../Whats-New.md:14
 msgid ""
@@ -2501,6 +2503,8 @@ msgid ""
 "[Customizable paradropped unit missions](Fixed-or-Improved-Logics.md"
 "#customizable-paradrop-missions) (by Starkku)"
 msgstr ""
+"[自定义空降单位任务](Fixed-or-Improved-Logics.md"
+"#customizable-paradrop-missions)（by Starkku）"
 
 #: ../../Whats-New.md:535
 msgid ""

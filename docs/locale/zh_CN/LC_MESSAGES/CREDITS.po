@@ -1125,6 +1125,9 @@ msgid "Deploy priority filtering"
 msgstr "低优先级部署"
 
 #: ../../../CREDITS.md:289
+msgid "Customizable paradrop missions"
+msgstr "自定义空降单位任务"
+
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
 

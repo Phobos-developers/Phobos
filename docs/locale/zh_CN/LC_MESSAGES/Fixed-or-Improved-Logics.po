@@ -5161,7 +5161,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:1416
 msgid "Customizable paradrop missions"
-msgstr ""
+msgstr "自定义空降单位任务"
 
 #: ../../Fixed-or-Improved-Logics.md:1418
 msgid ""
@@ -5171,6 +5171,9 @@ msgid ""
 "customizable globally and per TechnoType which default to the global "
 "settings under `[General]`."
 msgstr ""
+"默认情况下被空降的步兵对人类玩家默认为 `Guard`，对 AI 玩家默认为 `Hunt`。"
+"原本被空降时对所有玩家都默认为 `Guard` 的载具类现在默认行为也改为与此一致，"
+"并且可以在全局和默认使用全局 `[General]` 设置的单位微观层面进行自定义。"
 
 #: ../../Fixed-or-Improved-Logics.md:1421
 msgid ""
@@ -5182,6 +5185,13 @@ msgid ""
 "ParadropMission=        ; MissionType\n"
 "AIParadropMission=      ; MissionType\n"
 msgstr ""
+"[General]\n"
+"ParadropMission=Guard   ; MissionType\n"
+"AIParadropMission=Hunt  ; MissionType\n"
+"\n"
+"[SOMETECHNO]            ; TechnoType\n"
+"ParadropMission=        ; MissionType\n"
+"AIParadropMission=      ; MissionType\n"
 
 #: ../../Fixed-or-Improved-Logics.md:1431
 msgid "Customizable target evaluation map zone check behaviour"
