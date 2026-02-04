@@ -1182,6 +1182,7 @@ LimboDelivery.RollChances=      ; List of percentages.
 LimboDelivery.RandomWeightsN=   ; List of integers.
 LimboKill.AffectsHouse=self     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 LimboKill.IDs=                  ; List of numeric IDs.
+LimboKill.Counts=               ; List of counts
 ```
 
 ```{warning}

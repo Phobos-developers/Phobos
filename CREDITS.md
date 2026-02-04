@@ -490,6 +490,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon
   - Fix the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally
   - Customizable disk drain logic
+  - Add amount limit of `LimboKill`
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
