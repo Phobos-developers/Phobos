@@ -280,6 +280,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SuppressReflectDamage.Read(exINI, pSection, "SuppressReflectDamage");
 	this->SuppressReflectDamage_Types.Read(exINI, pSection, "SuppressReflectDamage.Types");
 	exINI.ParseStringList(this->SuppressReflectDamage_Groups, pSection, "SuppressReflectDamage.Groups");
+	this->SuppressTransferDamage.Read(exINI, pSection, "SuppressTransferDamage");
+	this->SuppressTransferDamage_Types.Read(exINI, pSection, "SuppressTransferDamage.Types");
+	exINI.ParseStringList(this->SuppressTransferDamage_Groups, pSection, "SuppressTransferDamage.Groups");
 
 	this->BuildingSell.Read(exINI, pSection, "BuildingSell");
 	this->BuildingSell_IgnoreUnsellable.Read(exINI, pSection, "BuildingSell.IgnoreUnsellable");
@@ -565,6 +568,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SuppressReflectDamage)
 		.Process(this->SuppressReflectDamage_Types)
 		.Process(this->SuppressReflectDamage_Groups)
+		.Process(this->SuppressTransferDamage)
+		.Process(this->SuppressTransferDamage_Types)
+		.Process(this->SuppressTransferDamage_Groups)
 
 		.Process(this->AffectsBelowPercent)
 		.Process(this->AffectsAbovePercent)
@@ -646,6 +652,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->RemainingAnimCreationInterval)
 		.Process(this->PossibleCellSpreadDetonate)
 		.Process(this->Reflected)
+		.Process(this->Transfered)
 		.Process(this->DamageAreaTarget)
 		;
 }

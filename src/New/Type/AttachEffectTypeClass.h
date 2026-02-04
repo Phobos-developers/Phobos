@@ -92,11 +92,25 @@ public:
 	Valueable<bool> ReflectDamage;
 	Nullable<WarheadTypeClass*> ReflectDamage_Warhead;
 	Valueable<bool> ReflectDamage_Warhead_Detonate;
+	Valueable<bool> ReflectDamage_UseOriginalWarhead;
 	Valueable<double> ReflectDamage_Multiplier;
 	Valueable<AffectedHouse> ReflectDamage_AffectsHouse;
 	Valueable<double> ReflectDamage_Chance;
 	Nullable<int> ReflectDamage_Override;
 	Valueable<bool> ReflectDamage_UseInvokerAsOwner;
+	Valueable<bool> TransferDamage;
+	Valueable<double> TransferDamage_SelfMultiplier;
+	Valueable<double> TransferDamage_InvokerMultiplier;
+	Valueable<double> TransferDamage_Invoker_BelowPercent;
+	Valueable<double> TransferDamage_Invoker_AbovePercent;
+	Nullable<WarheadTypeClass*> TransferDamage_Warhead;
+	Valueable<bool> TransferDamage_Warhead_Detonate;
+	Valueable<bool> TransferDamage_UseOriginalWarhead;
+	Valueable<AffectedHouse> TransferDamage_AffectsHouse;
+	Valueable<double> TransferDamage_Chance;
+	Valueable<bool> TransferDamage_SelfOwned;
+	Valueable<int> TransferDamage_Minimum;
+	Valueable<int> TransferDamage_Maximum;
 	Valueable<bool> DisableWeapons;
 	Valueable<bool> Unkillable;
 	ValueableIdx<LaserTrailTypeClass> LaserTrail_Type;
@@ -155,11 +169,25 @@ public:
 		, RevengeWeapon_UseInvokerAsOwner { false }
 		, ReflectDamage_Warhead {}
 		, ReflectDamage_Warhead_Detonate { false }
+		, ReflectDamage_UseOriginalWarhead { false }
 		, ReflectDamage_Multiplier { 1.0 }
 		, ReflectDamage_AffectsHouse { AffectedHouse::All }
 		, ReflectDamage_Chance { 1.0 }
 		, ReflectDamage_Override {}
 		, ReflectDamage_UseInvokerAsOwner { false }
+		, TransferDamage { false }
+		, TransferDamage_SelfMultiplier { 0.5 }
+		, TransferDamage_InvokerMultiplier { 0.5 }
+		, TransferDamage_Invoker_BelowPercent { 1.0 }
+		, TransferDamage_Invoker_AbovePercent { 0.0 }
+		, TransferDamage_Warhead {}
+		, TransferDamage_Warhead_Detonate { true }
+		, TransferDamage_UseOriginalWarhead { false }
+		, TransferDamage_AffectsHouse { AffectedHouse::All }
+		, TransferDamage_Chance { 1.0 }
+		, TransferDamage_SelfOwned { false }
+		, TransferDamage_Minimum { INT32_MIN }
+		, TransferDamage_Maximum { INT32_MAX }
 		, DisableWeapons { false }
 		, Unkillable { false }
 		, LaserTrail_Type { -1 }

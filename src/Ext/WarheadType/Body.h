@@ -178,6 +178,9 @@ public:
 		Valueable<bool> SuppressReflectDamage;
 		ValueableVector<AttachEffectTypeClass*> SuppressReflectDamage_Types;
 		std::vector<std::string> SuppressReflectDamage_Groups;
+		Valueable<bool> SuppressTransferDamage;
+		ValueableVector<AttachEffectTypeClass*> SuppressTransferDamage_Types;
+		std::vector<std::string> SuppressTransferDamage_Groups;
 
 		Valueable<bool> BuildingSell;
 		Valueable<bool> BuildingSell_IgnoreUnsellable;
@@ -239,6 +242,7 @@ public:
 		bool WasDetonatedOnAllMapObjects;
 		bool Splashed;
 		bool Reflected;
+		bool Transfered;
 		int RemainingAnimCreationInterval;
 		bool PossibleCellSpreadDetonate;
 		bool HealthCheck;
@@ -411,6 +415,9 @@ public:
 			, SuppressReflectDamage { false }
 			, SuppressReflectDamage_Types {}
 			, SuppressReflectDamage_Groups {}
+			, SuppressTransferDamage { false }
+			, SuppressTransferDamage_Types {}
+			, SuppressTransferDamage_Groups {}
 
 			, BuildingSell { false }
 			, BuildingSell_IgnoreUnsellable { false }
@@ -445,6 +452,7 @@ public:
 			, WasDetonatedOnAllMapObjects { false }
 			, Splashed { false }
 			, Reflected { false }
+			, Transfered { false }
 			, RemainingAnimCreationInterval { 0 }
 			, PossibleCellSpreadDetonate { false }
 			, HealthCheck { false }
