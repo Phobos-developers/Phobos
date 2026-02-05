@@ -10397,7 +10397,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:3019
 msgid "Range finding in cylinder"
-msgstr ""
+msgstr "圆柱形射程"
 
 #: ../../New-or-Enhanced-Logics.md:3021
 msgid ""
@@ -10405,12 +10405,15 @@ msgid ""
 "checking if the target is in range. Now you can use the following flags "
 "to make technos always range finding like that."
 msgstr ""
+"在原版中，处于空中的单位在检查目标是否处于射程内时会忽略 Z 轴的距离。"
+"现在你可以用下面的语句使单位总是这样进行射程计算。"
 
 #: ../../New-or-Enhanced-Logics.md:3022
 msgid ""
-"`[General]->CylinderRangefinding` controls this globally, and can be "
+"`[General] -> CylinderRangefinding` controls this globally, and can be "
 "customized per weapon type."
 msgstr ""
+"用 `[General] -> CylinderRangefinding` 进行全局控制，也可在每个武器上自定义。"
 
 #: ../../New-or-Enhanced-Logics.md:3023
 msgid ""
@@ -10418,6 +10421,7 @@ msgid ""
 "\"disable\". Technos in air will always range finding in cylinder like "
 "vanilla, despite what you set."
 msgstr ""
+"注意将语句设为 `false` 意味着「使用默认规则」而不是「禁用」。空中单位无论此值如何始终使用圆柱形射程。"
 
 #: ../../New-or-Enhanced-Logics.md:3026
 msgid ""

@@ -2525,6 +2525,8 @@ msgid ""
 "[Weapon range finding in cylinder](New-or-Enhanced-Logics.md#range-"
 "finding-in-cylinder) (by TaranDahl)"
 msgstr ""
+"[武器使用圆柱形射程](New-or-Enhanced-Logics.md#range-"
+"finding-in-cylinder)（by TaranDahl）"
 
 #: ../../Whats-New.md:539 ../../Whats-New.md:655 ../../Whats-New.md:841
 #: ../../Whats-New.md:1199 ../../Whats-New.md:1308 ../../Whats-New.md:1333

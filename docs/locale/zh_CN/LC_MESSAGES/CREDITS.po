@@ -2928,7 +2928,7 @@ msgstr "`DefaultToGuardArea` 的全局默认值"
 
 #: ../../../CREDITS.md:695
 msgid "Weapon range finding in cylinder"
-msgstr ""
+msgstr "武器使用圆柱形射程"
 
 #: ../../../CREDITS.md:696
 msgid "**solar-III (凤九歌)**"
