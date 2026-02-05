@@ -474,7 +474,7 @@ public:
 
 		Nullable<Mission> ParadropMission;
 		Nullable<Mission> AIParadropMission;
-
+		
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, HealthBar_HidePips { false }

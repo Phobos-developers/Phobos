@@ -84,6 +84,15 @@ DEFINE_HOOK(0x51EE6B, InfantryClass_WhatAction_ObjectClass_InfiltrateForceAttack
 	return WhatActionObjectTemp::Fire ? 0x51F05E : 0;
 }
 
+// Setting Ares' NoSelfGuardArea to yes will also disable this feature. I'm not sure if it should be removed.
+DEFINE_HOOK(0x51E748, InfantryClass_WhatAction_ObjectClass_SkipGuardArea, 0x8)
+{
+	GET(InfantryClass* const, pThis, EDI);
+	enum { SkipGameCode = 0x51E7A6 };
+
+	return pThis->IsDeployed() ? SkipGameCode : 0;
+}
+
 DEFINE_HOOK(0x51ECC0, InfantryClass_WhatAction_ObjectClass_IsAreaFire, 0xA)
 {
 	enum { IsAreaFire = 0x51ECE5, NotAreaFire = 0x51ECEC };
