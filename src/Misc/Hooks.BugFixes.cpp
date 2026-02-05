@@ -1175,7 +1175,15 @@ DEFINE_HOOK(0x7185DA, TeleportLocomotionClass_MakeRoom_DestFix, 0x6)
 
 	GET(CellStruct*, pCellAt, EAX);
 
-	return *pCellAt == CellStruct::Empty ? ReturnTrue : 0;
+	if (*pCellAt == CellStruct::Empty)
+	{
+		GET(const LocomotionClass* const, pLoco, EBP);
+		// cannot find location ? dont move
+		pLoco->LinkedTo->ChronoDestCoords = pLoco->LinkedTo->Location;
+		return ReturnTrue;
+	}
+
+	return 0;
 }
 
 #pragma region TeleportLocomotionOccupationFix
@@ -1361,6 +1369,9 @@ DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_RequestUntether, 0x7)
 }
 
 #pragma endregion
+
+// Fix the bug that techno in attack move will move to target if it cannot attack it
+DEFINE_JUMP(LJMP, 0x4D77BD, 0x4D769F)
 
 #pragma region JumpjetShadowPointFix
 
