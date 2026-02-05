@@ -249,7 +249,7 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 	Phobos::Config::UnitPowerDrain = pINI_RULESMD->ReadBool(GameStrings::General, "UnitPowerDrain", false);
 
 	// Custom FPS settings
-	Phobos::Misc::EnableCustomFPS = pINI_RULESMD->ReadBool(GameStrings::General, "EnableCustomFPS", true);
+	Phobos::Misc::EnableCustomFPS = pINI_RULESMD->ReadBool(GameStrings::General, "EnableCustomFPS", false);
 
 	char tempBuffer[32];
 	for (int i = 0; i < 7; ++i)

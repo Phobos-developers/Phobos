@@ -12,7 +12,7 @@ DEFINE_HOOK(0x69BAE7, SessionClass_Resume_CampaignGameSpeed, 0xA)
 
 // For custom game speeds:
 // Add to rulesmd.ini under [General]:
-//   EnableCustomFPS=yes              ; Enable/disable custom FPS (default: yes)
+//   EnableCustomFPS=yes              ; Enable/disable custom FPS
 //   CustomGameSpeedFPS.0=120         ; Per-speed FPS. 0 = vanilla. Vanilla: 0=60, 1=45, 2=30, 3=20, 4=15, 5=12, 6=10
 //
 //   -Each speed slot with a non-zero CustomGameSpeedFPS.N runs at that target FPS
