@@ -108,7 +108,7 @@ CampaignDefaultGameSpeed=4  ; integer
 ### Custom game speed
 
 - Each of the 7 game speed slider positions (GameSpeed 0-6) can have a custom target FPS set independently. A value of `0` keeps that position at its vanilla FPS.
-- Works in skirmish, campaign, and multiplayer.
+- When used, **game speeds are unified across all game modes** - skirmish, campaign, and multiplayer all use the same FPS values for each speed position.
 - Per-speed keys (`CustomGameSpeedFPS.N`) set individual positions.
 - Practical maximum is ~1000 FPS (limited by `timeGetTime()` resolution).
 
