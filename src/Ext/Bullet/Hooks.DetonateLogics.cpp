@@ -450,6 +450,8 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 		CoordStruct location = *coords;
 		const auto pTarget = pThis->Target;
 		const bool isInAir = pTarget && pTarget->AbstractFlags & AbstractFlags::Foot ? static_cast<FootClass*>(pTarget)->IsInAir() : false;
+
+		const auto pFoot = abstract_cast<FootClass*, true>(pTechno);
 		bool success = false;
 
 		if (!pWHExt->UnlimboDetonate_ForceLocation)
@@ -474,7 +476,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			if (isInAir)
 				location.Z = coords->Z;
 
-			if (pTechno->AbstractFlags & AbstractFlags::Foot)
+			if (pFoot)
 				static_cast<FootClass*>(pTechno)->Locomotor->Force_Track(-1, location);
 
 			success = pTechno->Unlimbo(location, pTechno->PrimaryFacing.Current().GetDir());
@@ -484,7 +486,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			const auto pCell = MapClass::Instance.TryGetCellAt(location);
 			pTechno->OnBridge = pCell && pCell->ContainsBridge();
 
-			if (pTechno->AbstractFlags & AbstractFlags::Foot)
+			if (pFoot)
 				static_cast<FootClass*>(pTechno)->Locomotor->Force_Track(-1, location);
 
 			++Unsorted::ScenarioInit;
