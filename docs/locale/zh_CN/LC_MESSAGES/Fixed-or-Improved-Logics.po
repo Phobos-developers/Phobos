@@ -1800,6 +1800,7 @@ msgid ""
 "Allow the default value of `DefaultToGuardArea` to be defined by "
 "`[General] -> DefaultToGuardArea`."
 msgstr ""
+"已允许通过 `[General] -> DefaultToGuardArea` 设置 `DefaultToGuardArea` 的全局默认值。"
 
 #: ../../Fixed-or-Improved-Logics.md:298
 msgid ""

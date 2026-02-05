@@ -2518,7 +2518,7 @@ msgstr ""
 
 #: ../../Whats-New.md:536
 msgid "Global default value for `DefaultToGuardArea` (by TaranDahl)"
-msgstr ""
+msgstr "`DefaultToGuardArea` 的全局默认值（by TaranDahl）"
 
 #: ../../Whats-New.md:537
 msgid ""

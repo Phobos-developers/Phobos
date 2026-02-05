@@ -2924,7 +2924,7 @@ msgstr "修复了单位被 `AreTeamMembersRecruitable=false` 的小队招募过�
 
 #: ../../../CREDITS.md:694
 msgid "Global default value for `DefaultToGuardArea`"
-msgstr ""
+msgstr "`DefaultToGuardArea` 的全局默认值"
 
 #: ../../../CREDITS.md:695
 msgid "Weapon range finding in cylinder"
