@@ -69,7 +69,9 @@ void RulesExt::ExtData::InitializeConstants()
 // earliest loader - can't really do much because nothing else is initialized yet, so lookups won't work
 void RulesExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 {
+	INI_EX exINI(pINI);
 
+	this->DefaultToGuardArea.Read(exINI, GameStrings::General, "DefaultToGuardArea");
 }
 
 void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
@@ -360,6 +362,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ParadropMission.Read(exINI, GameStrings::General, "ParadropMission");
 	this->AIParadropMission.Read(exINI, GameStrings::General, "AIParadropMission");
 
+	this->CylinderRangefinding.Read(exINI, GameStrings::General, "CylinderRangefinding");
+	
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -657,6 +661,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AutoTargetAI_NoThreatBuildings)
 		.Process(this->ParadropMission)
 		.Process(this->AIParadropMission)
+		.Process(this->DefaultToGuardArea)
+		.Process(this->CylinderRangefinding)
 		;
 }
 

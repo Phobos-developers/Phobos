@@ -1,4 +1,4 @@
-#include "Body.h"
+﻿#include "Body.h"
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>
@@ -1138,4 +1138,14 @@ DEFINE_HOOK(0x708AD0, TechnoClass_ShouldRetaliate_IronCurtain, 0x6)
 	// Restore overriden instructions
 	R->ESI(pWeapon);
 	return pWeapon ? ContinueCheck : ReturnTrue;
+}
+
+DEFINE_HOOK(0x6F755A, TechnoClass_IsCloseEnough_CylinderRangefinding, 0x7)
+{
+	GET_BASE(WeaponTypeClass* const, pWeaponType, 0x10);
+	GET(CoordStruct* const, pCoord, ESI);
+	GET(TechnoClass* const, pThis, EDI);
+	const bool cylinder = WeaponTypeExt::ExtMap.Find(pWeaponType)->CylinderRangefinding.Get(RulesExt::Global()->CylinderRangefinding);
+	R->EAX(pCoord->X);
+	return (cylinder || pThis->WhatAmI() == AbstractType::Aircraft) ? 0x6F75B2 : 0x6F7568;
 }
