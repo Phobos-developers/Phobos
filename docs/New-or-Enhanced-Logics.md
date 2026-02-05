@@ -52,9 +52,18 @@ This page describes all the engine features that are either new and introduced b
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouse` customizes which houses can trigger the revenge weapon.
     - `RevengeWeapon.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the weapon's owner & invoker instead of the object the effect is attached to.
-  - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage] -> C4Warhead`. If `ReflectDamage.Warhead.Detonate` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Chance` determines the chance of reflection. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back, while `ReflectDamage.Override` directly overrides the damage. Already reflected damage cannot be further reflected back.
+  - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker.
+    - `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage] -> C4Warhead`. If `ReflectDamage.Warhead.Detonate` is set to true, the Warhead is fully detonated instead of used to simply deal damage. If `ReflectDamage.UseOriginalWarhead` is set to true, it'll reuse the Warhead that dealt damage to the object.
+    - `ReflectDamage.Chance` determines the chance of reflection, while `ReflectDamage.AffectsHouse` customizes which houses can trigger the reflect damage.
+    - `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back, while `ReflectDamage.Override` directly overrides the damage. Already reflected damage cannot be further reflected back.
     - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed. `SuppressReflectDamage.Groups` does the same thing but for all AttachEffectTypes in the listed groups.
     - `ReflectDamage.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the reflected damage's owner & invoker instead of the object the effect is attached to.
+  - `TransferDamage` can be set to true to have any damage dealt to the object the effect is attached to be transfered to the invoker of the effect if it's alive.
+    - `TransferDamage.SelfMultiplier` and `TransferDamage.InvokerMultiplier` are multuipliers of damage that'll be applied to the attached object and the invoker if a transfer happens. If an object has multiple effects with `TransferDamage`, the damage will be equally divided and calculated for each effect independently. `TransferDamage.Minimum` and `TransferDamage.Maximum` further restrict the bound of damage transfering to the invoker.
+    - `TransferDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage] -> C4Warhead`. If `TransferDamage.Warhead.Detonate` is set to true, the Warhead is fully detonated instead of used to simply deal damage. If `TransferDamage.UseOriginalWarhead` is set to true, it'll reuse the Warhead that dealt damage to the object.
+    - `TransferDamage.Chance` determines the chance of transfer, while `TransferDamage.AffectsHouse` customizes which houses can trigger the transfer damage. `TransferDamage.Invoker.AbovePercent` and `TransferDamage.Invoker.BelowPercent` determine if the transfer can happen when the invoker's health is above or below the given values.
+    - Warheads can prevent transfer damage from occuring by setting `SuppressTransferDamage` to true. `SuppressTransferDamage.Types` can control which AttachEffectTypes' transfer damage is suppressed, if none are listed then all of them are suppressed. `SuppressTransferDamage.Groups` does the same thing but for all AttachEffectTypes in the listed groups.
+    - `SuppressTransferDamage.SelfOwned` can be used to set the house and TechnoType that the object the effect is attached to as the transfered damage's owner & invoker. Otherwise, it'll be set to the original damage dealer that trigger this transfer.
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
   - `Unkillable` can be used to prevent the techno from being killed by taken damage (minimum health will be 1).
@@ -142,11 +151,25 @@ RevengeWeapon.UseInvokerAsOwner=false              ; boolean
 ReflectDamage=false                                ; boolean
 ReflectDamage.Warhead=                             ; WarheadType
 ReflectDamage.Warhead.Detonate=false               ; WarheadType
+ReflectDamage.UseOriginalWarhead=false             ; boolean
 ReflectDamage.Multiplier=1.0                       ; floating point value, percents or absolute
 ReflectDamage.AffectsHouse=all                     ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ReflectDamage.Chance=1.0                           ; floating point value
 ReflectDamage.Override=                            ; integer
 ReflectDamage.UseInvokerAsOwner=false              ; boolean
+TransferDamage=false                               ; boolean
+TransferDamage.SelfMultiplier=0.5                  ; floating point value
+TransferDamage.InvokerMultiplier=0.5               ; floating point value
+TransferDamage.Minimum=-2147483648                 ; integer
+TransferDamage.Maximum=2147483647                  ; integer
+TransferDamage.Warhead=                            ; WarheadType
+TransferDamage.Warhead.Detonate=false              ; WarheadType
+TransferDamage.UseOriginalWarhead=false            ; boolean
+TransferDamage.AffectsHouse=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+TransferDamage.Chance=1.0                          ; floating point value
+TransferDamage.Invoker.AbovePercent=0.0            ; floating point value
+TransferDamage.Invoker.BelowPercent=1.0            ; floating point value
+TransferDamage.SelfOwned=false                     ; boolean
 DisableWeapons=false                               ; boolean
 Unkillable=false                                   ; boolean
 LaserTrail.Type=                                   ; LaserTrailType
@@ -187,6 +210,9 @@ AttachEffect.DurationOverrides=                    ; integer - duration override
 SuppressReflectDamage=false                        ; boolean
 SuppressReflectDamage.Types=                       ; List of AttachEffectTypes
 SuppressReflectDamage.Groups=                      ; comma-separated list of strings (group IDs)
+SuppressTransferDamage=false                       ; boolean
+SuppressTransferDamage.Types=                      ; List of AttachEffectTypes
+SuppressTransferDamage.Groups=                     ; comma-separated list of strings (group IDs)
 ```
 
 ### Custom Radiation Types

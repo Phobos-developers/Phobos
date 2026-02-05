@@ -16,7 +16,8 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	GET(TechnoClass*, pThis, ECX);
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
 
-	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
+	const auto pWarhead = args->WH;
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 	int& damage = *args->Damage;
 
 	// AffectsAbove/BelowPercent & AffectsNeutral can ignore IgnoreDefenses like AffectsAllies/Enmies/Owner
@@ -28,19 +29,20 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	}
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pSource = args->Attacker;
 	const auto pSourceHouse = args->SourceHouse;
 	const auto pTargetHouse = pThis->Owner;
 
 	// Apply warhead effects
 	if (damage && !pWHExt->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate))
-		pWHExt->DetonateOnOneUnit(args->SourceHouse, pThis, args->Attacker);
+		pWHExt->DetonateOnOneUnit(args->SourceHouse, pThis, pSource);
 
 	// Calculate Damage Multiplier
 	if (!args->IgnoreDefenses && damage)
 	{
 		double multiplier = 1.0;
 
-		if (args->Attacker && args->Attacker->Berzerk)
+		if (pSource && pSource->Berzerk)
 		{
 			if (!pSourceHouse || !pTargetHouse || !pSourceHouse->IsAlliedWith(pTargetHouse))
 				multiplier = pWHExt->DamageEnemiesMultiplier_Berzerk.Get(RulesExt::Global()->DamageEnemiesMultiplier_Berzerk.Get(RulesExt::Global()->DamageEnemiesMultiplier));
@@ -128,10 +130,99 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		raiseCombatAlert();
 	}
 
-	// Shield Receive Damage
+	// Transfer Damage and Shield Receive Damage
 	if (!args->IgnoreDefenses)
 	{
 		int nDamageLeft = damage;
+
+		if (pExt->AE.TransferDamageCount > 0 && !pWHExt->Transfered)
+		{
+			const auto& suppressType = pWHExt->SuppressTransferDamage_Types;
+			const auto& suppressGroup = pWHExt->SuppressTransferDamage_Groups;
+			const bool suppress = pWHExt->SuppressTransferDamage;
+			const bool suppressByType = suppressType.size() > 0;
+			const bool suppressByGroup = suppressGroup.size() > 0;
+
+			if (!suppress || suppressByType || suppressByGroup)
+			{
+				const int baseDamage = static_cast<int>(static_cast<double>(damage) / pExt->AE.TransferDamageCount);
+				auto& random = ScenarioClass::Instance->Random;
+				int count = 0;
+				nDamageLeft = 0;
+
+				for (const auto& attachEffect : pExt->AttachedEffects)
+				{
+					const auto pType = attachEffect->GetType();
+
+					if (!pType->TransferDamage)
+						continue;
+
+					if (pType->TransferDamage_Chance < random.RandomDouble())
+					{
+						nDamageLeft += baseDamage;
+						continue;
+					}
+
+					const auto pInvoker = attachEffect->GetInvoker();
+
+					if (!pInvoker || TechnoExt::IsHealthInThreshold(pInvoker, pType->TransferDamage_Invoker_BelowPercent, pType->TransferDamage_Invoker_AbovePercent))
+					{
+						nDamageLeft += baseDamage;
+						continue;
+					}
+
+					if (suppress)
+					{
+						if (suppressByType && suppressType.Contains(pType))
+						{
+							nDamageLeft += baseDamage;
+							continue;
+						}
+
+						if (suppressByGroup && pType->HasGroups(suppressGroup, false))
+						{
+							nDamageLeft += baseDamage;
+							continue;
+						}
+					}
+
+					if (!EnumFunctions::CanTargetHouse(pType->TransferDamage_AffectsHouse, pSourceHouse, pTargetHouse))
+					{
+						nDamageLeft += baseDamage;
+						continue;
+					}
+
+					int invokerDamage = std::clamp(static_cast<int>(baseDamage * pType->TransferDamage_InvokerMultiplier), pType->TransferDamage_Minimum.Get(), pType->TransferDamage_Maximum.Get());
+					auto const pWH = pType->TransferDamage_UseOriginalWarhead ? pWarhead : pType->TransferDamage_Warhead.Get(RulesClass::Instance->C4Warhead);
+					auto const pWHExtRef = WarheadTypeExt::ExtMap.Find(pWH);
+					pWHExtRef->Transfered = true;
+
+					if (pType->TransferDamage_SelfOwned)
+					{
+						if (pType->TransferDamage_Warhead_Detonate)
+							WarheadTypeExt::DetonateAt(pWH, pInvoker, pThis, invokerDamage, pTargetHouse);
+						else
+							pInvoker->ReceiveDamage(&invokerDamage, 0, pWH, pThis, false, false, pTargetHouse);
+					}
+					else
+					{
+						if (pType->TransferDamage_Warhead_Detonate)
+							WarheadTypeExt::DetonateAt(pWH, pInvoker, pSource, invokerDamage, pSourceHouse);
+						else
+							pInvoker->ReceiveDamage(&invokerDamage, 0, pWH, pSource, false, false, pSourceHouse);
+					}
+
+					pWHExtRef->Transfered = false;
+					nDamageLeft += static_cast<int>(baseDamage * pType->TransferDamage_SelfMultiplier);
+					count++;
+
+					if (count >= pExt->AE.TransferDamageCount)
+						break;
+				}
+
+				damage = nDamageLeft;
+			}
+		}
 
 		if (const auto pShieldData = pExt->Shield.get())
 		{
@@ -373,15 +464,14 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 					continue;
 			}
 
-			auto const pWH = pType->ReflectDamage_Warhead.Get(RulesClass::Instance->C4Warhead);
-			int damage = pType->ReflectDamage_Override.Get(static_cast<int>(*pDamage * pType->ReflectDamage_Multiplier));
-
 			if (pType->ReflectDamage_UseInvokerAsOwner)
 			{
 				auto const pInvoker = attachEffect->GetInvoker();
 
 				if (pInvoker && EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, pInvoker->Owner, pSourceHouse))
 				{
+					int damage = pType->ReflectDamage_Override.Get(static_cast<int>(*pDamage * pType->ReflectDamage_Multiplier));
+					auto const pWH = pType->ReflectDamage_UseOriginalWarhead ? pWarhead : pType->ReflectDamage_Warhead.Get(RulesClass::Instance->C4Warhead);
 					auto const pWHExtRef = WarheadTypeExt::ExtMap.Find(pWH);
 					pWHExtRef->Reflected = true;
 
@@ -395,6 +485,8 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 			}
 			else if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, pThis->Owner, pSourceHouse))
 			{
+				int damage = pType->ReflectDamage_Override.Get(static_cast<int>(*pDamage * pType->ReflectDamage_Multiplier));
+				auto const pWH = pType->ReflectDamage_UseOriginalWarhead ? pWarhead : pType->ReflectDamage_Warhead.Get(RulesClass::Instance->C4Warhead);
 				auto const pWHExtRef = WarheadTypeExt::ExtMap.Find(pWH);
 				pWHExtRef->Reflected = true;
 

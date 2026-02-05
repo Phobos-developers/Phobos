@@ -117,6 +117,7 @@ struct AttachEffectTechnoProperties
 	bool HasRangeModifier;
 	bool HasTint;
 	bool ReflectDamage;
+	int TransferDamageCount;
 	bool HasOnFireDiscardables;
 	bool HasRestrictedArmorMultipliers;
 	bool HasCritModifiers;
@@ -133,6 +134,7 @@ struct AttachEffectTechnoProperties
 		, HasRangeModifier { false }
 		, HasTint { false }
 		, ReflectDamage { false }
+		, TransferDamageCount { 0 }
 		, HasOnFireDiscardables { false }
 		, HasRestrictedArmorMultipliers { false }
 		, HasCritModifiers { false }

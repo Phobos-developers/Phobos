@@ -153,11 +153,29 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ReflectDamage.Read(exINI, pSection, "ReflectDamage");
 	this->ReflectDamage_Warhead.Read(exINI, pSection, "ReflectDamage.Warhead");
 	this->ReflectDamage_Warhead_Detonate.Read(exINI, pSection, "ReflectDamage.Warhead.Detonate");
+	this->ReflectDamage_UseOriginalWarhead.Read(exINI, pSection, "ReflectDamage.UseOriginalWarhead");
 	this->ReflectDamage_Multiplier.Read(exINI, pSection, "ReflectDamage.Multiplier");
 	this->ReflectDamage_AffectsHouse.Read(exINI, pSection, "ReflectDamage.AffectsHouse");
 	this->ReflectDamage_Chance.Read(exINI, pSection, "ReflectDamage.Chance");
 	this->ReflectDamage_Override.Read(exINI, pSection, "ReflectDamage.Override");
 	this->ReflectDamage_UseInvokerAsOwner.Read(exINI, pSection, "ReflectDamage.UseInvokerAsOwner");
+
+	this->TransferDamage.Read(exINI, pSection, "TransferDamage");
+	this->TransferDamage_SelfMultiplier.Read(exINI, pSection, "TransferDamage.SelfMultiplier");
+	this->TransferDamage_InvokerMultiplier.Read(exINI, pSection, "TransferDamage.InvokerMultiplier");
+	this->TransferDamage_Invoker_BelowPercent.Read(exINI, pSection, "TransferDamage.Invoker.BelowPercent");
+	this->TransferDamage_Invoker_AbovePercent.Read(exINI, pSection, "TransferDamage.Invoker.AbovePercent");
+	this->TransferDamage_Warhead.Read(exINI, pSection, "TransferDamage.Warhead");
+	this->TransferDamage_Warhead_Detonate.Read(exINI, pSection, "TransferDamage.Warhead.Detonate");
+	this->TransferDamage_UseOriginalWarhead.Read(exINI, pSection, "TransferDamage.UseOriginalWarhead");
+	this->TransferDamage_AffectsHouse.Read(exINI, pSection, "TransferDamage.AffectsHouse");
+	this->TransferDamage_Chance.Read(exINI, pSection, "TransferDamage.Chance");
+	this->TransferDamage_SelfOwned.Read(exINI, pSection, "TransferDamage.SelfOwned");
+	this->TransferDamage_Minimum.Read(exINI, pSection, "TransferDamage.Minimum");
+	this->TransferDamage_Maximum.Read(exINI, pSection, "TransferDamage.Maximum");
+
+	if (this->TransferDamage_Invoker_AbovePercent > this->TransferDamage_Invoker_BelowPercent)
+		Debug::Log("[Developer warning][%s] TransferDamage.Invoker.AbovePercent is bigger than TransferDamage.Invoker.BelowPercent, transfer damage will never activate!\n", pSection);
 
 	this->DisableWeapons.Read(exINI, pSection, "DisableWeapons");
 	this->Unkillable.Read(exINI, pSection, "Unkillable");
@@ -223,11 +241,25 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ReflectDamage)
 		.Process(this->ReflectDamage_Warhead)
 		.Process(this->ReflectDamage_Warhead_Detonate)
+		.Process(this->ReflectDamage_UseOriginalWarhead)
 		.Process(this->ReflectDamage_Multiplier)
 		.Process(this->ReflectDamage_AffectsHouse)
 		.Process(this->ReflectDamage_Chance)
 		.Process(this->ReflectDamage_Override)
 		.Process(this->ReflectDamage_UseInvokerAsOwner)
+		.Process(this->TransferDamage)
+		.Process(this->TransferDamage_SelfMultiplier)
+		.Process(this->TransferDamage_InvokerMultiplier)
+		.Process(this->TransferDamage_Invoker_BelowPercent)
+		.Process(this->TransferDamage_Invoker_AbovePercent)
+		.Process(this->TransferDamage_Warhead)
+		.Process(this->TransferDamage_Warhead_Detonate)
+		.Process(this->TransferDamage_UseOriginalWarhead)
+		.Process(this->TransferDamage_AffectsHouse)
+		.Process(this->TransferDamage_Chance)
+		.Process(this->TransferDamage_SelfOwned)
+		.Process(this->TransferDamage_Minimum)
+		.Process(this->TransferDamage_Maximum)
 		.Process(this->DisableWeapons)
 		.Process(this->Unkillable)
 		.Process(this->LaserTrail_Type)

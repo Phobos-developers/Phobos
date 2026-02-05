@@ -619,6 +619,7 @@ This page lists all the individual contributions to the project by their author.
   - AutoDeath upon ownership change
   - Maximum amount for power plant enhancer
   - Return warhead
+  - Attached effect for transfering damage to invoker
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:

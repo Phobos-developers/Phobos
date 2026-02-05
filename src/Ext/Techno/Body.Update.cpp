@@ -2030,6 +2030,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	bool hasRangeModifier = false;
 	bool hasTint = false;
 	bool reflectsDamage = false;
+	int transferDamageCount = 0;
 	bool hasOnFireDiscardables = false;
 	bool hasRestrictedArmorMultipliers = false;
 	bool hasCritModifiers = false;
@@ -2056,6 +2057,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		hasRangeModifier |= (type->WeaponRange_ExtraRange != 0.0 || type->WeaponRange_Multiplier != 0.0);
 		hasTint |= type->HasTint();
 		reflectsDamage |= type->ReflectDamage;
+		transferDamageCount += type->TransferDamage ? 1 : 0;
 		hasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
 		hasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
 	}
@@ -2071,6 +2073,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	pAE.HasRangeModifier = hasRangeModifier;
 	pAE.HasTint = hasTint;
 	pAE.ReflectDamage = reflectsDamage;
+	pAE.TransferDamageCount = transferDamageCount;
 	pAE.HasOnFireDiscardables = hasOnFireDiscardables;
 	pAE.HasRestrictedArmorMultipliers = hasRestrictedArmorMultipliers;
 	pAE.HasCritModifiers = hasCritModifiers;

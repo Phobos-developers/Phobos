@@ -124,6 +124,9 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 	}
 	else if ((abs->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 	{
+		if (!removed)
+			return;
+
 		auto const pTechno = abstract_cast<TechnoClass*, true>(abs);
 
 		if (int count = TechnoExt::ExtMap.Find(pTechno)->AttachedEffectInvokerCount)
