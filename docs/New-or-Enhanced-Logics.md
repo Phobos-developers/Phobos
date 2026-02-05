@@ -3024,11 +3024,11 @@ OmniFire.TurnToTarget=no  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[General]                         ; WeaponType
-CylinderRangefinding=false  ; boolean
+[General]
+CylinderRangefinding=false        ; boolean
 
 [SOMEWEAPON]                      ; WeaponType
-CylinderRangefinding=       ; boolean
+CylinderRangefinding=             ; boolean
 ```
 
 ### Strafing aircraft weapon customization
