@@ -2873,6 +2873,7 @@ msgid ""
 "Fixed the bug that cause technos teleport to cell 0,0 by ChronoSphere "
 "superweapon (by NetsuNegi)"
 msgstr ""
+"修复了超时空传送超武会把单位传送到 0,0 单元格的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:595 ../../Whats-New.md:640 ../../Whats-New.md:658
 #: ../../Whats-New.md:986 ../../Whats-New.md:1071 ../../Whats-New.md:1235

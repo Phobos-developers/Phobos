@@ -1807,6 +1807,7 @@ msgid ""
 "Fixed the bug that cause technos teleport to cell 0,0 by ChronoSphere "
 "superweapon."
 msgstr ""
+"修复了超时空传送超武会把单位传送到 0,0 单元格的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:300
 msgid "Fixes / interactions with other extensions"

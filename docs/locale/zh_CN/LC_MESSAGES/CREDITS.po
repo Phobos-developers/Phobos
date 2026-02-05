@@ -2059,6 +2059,7 @@ msgid ""
 "Fix the bug that cause technos teleport to cell 0,0 by ChronoSphere "
 "superweapon"
 msgstr ""
+"修复了超时空传送超武会把单位传送到 0,0 单元格的 Bug"
 
 #: ../../../CREDITS.md:496
 msgid "**Apollo** - Translucent SHP drawing patches"
