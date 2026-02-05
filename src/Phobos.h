@@ -117,10 +117,8 @@ public:
 	class Misc
 	{
 	public:
-		static bool CustomGS;
-		static int CustomGS_ChangeInterval[7];
-		static int CustomGS_ChangeDelay[7];
-		static int CustomGS_DefaultDelay[7];
+		static int CustomGameSpeedFPS[7];
+		static bool EnableCustomFPS;
 	};
 
 	class Optimizations
