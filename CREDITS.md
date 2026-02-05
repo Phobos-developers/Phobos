@@ -491,6 +491,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally
   - Customizable disk drain logic
   - Fix the bug that cause technos teleport to cell 0,0 by ChronoSphere superweapon
+  - Fix the bug that techno in attack move will move to target if it cannot attack it
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

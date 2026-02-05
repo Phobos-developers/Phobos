@@ -1370,6 +1370,9 @@ DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_RequestUntether, 0x7)
 
 #pragma endregion
 
+// Fix the bug that techno in attack move will move to target if it cannot attack it
+DEFINE_JUMP(LJMP, 0x4D77BD, 0x4D77EC)
+
 #pragma region JumpjetShadowPointFix
 
 static Point2D *__stdcall JumpjetLoco_ILoco_Shadow_Point(ILocomotion * iloco, Point2D *pPoint)
