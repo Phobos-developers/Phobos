@@ -295,6 +295,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon.
 - Fixed the issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team.
 - Allow the default value of `DefaultToGuardArea` to be defined by `[General] -> DefaultToGuardArea`.
+- Fixed the bug that cause technos teleport to cell 0,0 by ChronoSphere superweapon.
 
 ## Fixes / interactions with other extensions
 
