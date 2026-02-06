@@ -2065,6 +2065,7 @@ msgid ""
 "Fix the bug that techno in attack move will move to target if it cannot "
 "attack it"
 msgstr ""
+"修复了单位在移动攻击一个它不能攻击的目标时会移动到对方脸上的 Bug"
 
 #: ../../../CREDITS.md:497
 msgid "**Apollo** - Translucent SHP drawing patches"

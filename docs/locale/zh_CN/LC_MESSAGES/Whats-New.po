@@ -2879,6 +2879,7 @@ msgid ""
 "Fixed the bug that techno in attack move will move to target if it cannot"
 " attack it (by NetsuNegi)"
 msgstr ""
+"修复了单位在移动攻击一个它不能攻击的目标时会移动到对方脸上的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:596 ../../Whats-New.md:641 ../../Whats-New.md:659
 #: ../../Whats-New.md:987 ../../Whats-New.md:1072 ../../Whats-New.md:1236
