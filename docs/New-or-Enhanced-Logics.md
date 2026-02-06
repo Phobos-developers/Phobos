@@ -1766,7 +1766,7 @@ InitialSpawnsNumber=      ; integer
 
 In `rulesmd.ini`:
 ```ini
-[General]
+[CombatDamage]
 GroupRetaliate.AllowAI=false             ; boolean
 GroupRetaliate.AllowPlayer=false         ; boolean
 GroupRetaliate.ThreatThreshold=1000.0    ; float, range in cell
