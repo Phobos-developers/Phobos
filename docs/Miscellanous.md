@@ -115,14 +115,14 @@ CampaignDefaultGameSpeed=4  ; integer
 In `rulesmd.ini`:
 ```ini
 [General]
-EnableCustomFPS=true             ; boolean
-CustomGameSpeedFPS.0=140         ; integer, GameSpeed 0 target FPS
-CustomGameSpeedFPS.1=120         ; integer, GameSpeed 1 target FPS
-CustomGameSpeedFPS.2=100         ; integer, GameSpeed 2 target FPS
-CustomGameSpeedFPS.3=90          ; integer, GameSpeed 3 target FPS
-CustomGameSpeedFPS.4=80          ; integer, GameSpeed 4 target FPS
-CustomGameSpeedFPS.5=70          ; integer, GameSpeed 5 target FPS
-CustomGameSpeedFPS.6=0           ; integer, GameSpeed 6 target FPS (0 = default)
+EnableCustomFPS=false            ; boolean (default: false)
+CustomGameSpeedFPS.0=0           ; integer, GameSpeed 0 target FPS (default: 0 = vanilla 60 FPS)
+CustomGameSpeedFPS.1=0           ; integer, GameSpeed 1 target FPS (default: 0 = vanilla 45 FPS)
+CustomGameSpeedFPS.2=0           ; integer, GameSpeed 2 target FPS (default: 0 = vanilla 30 FPS)
+CustomGameSpeedFPS.3=0           ; integer, GameSpeed 3 target FPS (default: 0 = vanilla 20 FPS)
+CustomGameSpeedFPS.4=0           ; integer, GameSpeed 4 target FPS (default: 0 = vanilla 15 FPS)
+CustomGameSpeedFPS.5=0           ; integer, GameSpeed 5 target FPS (default: 0 = vanilla 12 FPS)
+CustomGameSpeedFPS.6=0           ; integer, GameSpeed 6 target FPS (default: 0 = vanilla 10 FPS)
 ```
 
 

@@ -55,26 +55,10 @@ DEFINE_HOOK(0x647C4D, Queue_AI_Multiplayer_CustomFPSCalculation, 0x1F)
 	return 0x647C6C;
 }
 
-struct NFTTimerStruct
-{
-	DWORD StartTime;
-	DWORD CurrentTime;
-	int   TimeLeft;
-};
-DEFINE_REFERENCE(NFTTimerStruct, NFTTimer, 0x887328);
-
-struct FrameTimerStruct
-{
-	DWORD StartTime;
-	DWORD CurrentTime;
-	int   DelayTime;
-};
-DEFINE_REFERENCE(FrameTimerStruct, GameFrameTimer, 0x887348);
-
 // Hook MainLoop skirmish/campaign FPS calculation
-// The normal route FrameTimer.DelayTime rounds to 0 for >60 FPS (tick-based timeGetTime >> 4),
-// NFTTimer (ms-based timeGetTime) provides the frame timing that SyncDelay's NFTTimer loop uses.
-// We need to set up NFTTimer like multiplayer mode does for >60 FPS support.
+// The normal route FrameTimer.TimeLeft rounds to 0 for >60 FPS (tick-based timeGetTime >> 4),
+// NetworkFrameTimer (ms-based timeGetTime) provides the frame timing that SyncDelay's NetworkFrameTimer loop uses.
+// We need to set up NetworkFrameTimer like multiplayer mode does for >60 FPS support.
 DEFINE_HOOK(0x55D7B6, MainLoop_SkirmishFPSFix, 0xC)
 {
 	const DWORD timerValue = R->ECX();
@@ -87,8 +71,8 @@ DEFINE_HOOK(0x55D7B6, MainLoop_SkirmishFPSFix, 0xC)
 	if (!shouldUseCustomFPS)
 	{
 		// Use vanilla behavior
-		GameFrameTimer.CurrentTime = timerValue;
-		GameFrameTimer.DelayTime = gameSpeed;
+		Unsorted::GameFrameTimer.CurrentTime = timerValue;
+		Unsorted::GameFrameTimer.TimeLeft = gameSpeed;
 		return 0x55D7C2;
 	}
 
@@ -101,13 +85,13 @@ DEFINE_HOOK(0x55D7B6, MainLoop_SkirmishFPSFix, 0xC)
 	const DWORD currentTime = timeGetTime();
 
 	// just in case
-	GameFrameTimer.CurrentTime = timerValue;
-	GameFrameTimer.DelayTime = targetFrameDelayTicks;
+	Unsorted::GameFrameTimer.CurrentTime = timerValue;
+	Unsorted::GameFrameTimer.TimeLeft = targetFrameDelayTicks;
 
 	// SyncDelay compares elapsed time since CurrentTime against TimeLeft.
-	NFTTimer.StartTime = currentTime;
-	NFTTimer.CurrentTime = currentTime;
-	NFTTimer.TimeLeft = targetFrameTimeMs;
+	Unsorted::NetworkFrameTimer.StartTime = currentTime;
+	Unsorted::NetworkFrameTimer.CurrentTime = currentTime;
+	Unsorted::NetworkFrameTimer.TimeLeft = targetFrameTimeMs;
 
 	// "Requested FPS"
 	SessionClass::Instance.DesiredFrameRate = customFPS;
@@ -116,13 +100,13 @@ DEFINE_HOOK(0x55D7B6, MainLoop_SkirmishFPSFix, 0xC)
 }
 
 // SyncDelay
-// Redirect skirmish/campaign to the NFTTimer path
-DEFINE_HOOK(0x55E1B6, SyncDelay_RedirectSkirmishToNFTTimer, 0x6)
+// Redirect skirmish/campaign to the NetworkFrameTimer path
+DEFINE_HOOK(0x55E1B6, SyncDelay_RedirectSkirmishToNetworkFrameTimer, 0x6)
 {
 	if (SessionClass::IsSkirmish() || SessionClass::IsCampaign())
 	{
 		if (Phobos::Misc::EnableCustomFPS && Phobos::Misc::CustomGameSpeedFPS[GameOptionsClass::Instance.GameSpeed] > 0)
-			return 0x55E1BC; // Custom FPS: use NFTTimer path like multiplayer
+			return 0x55E1BC; // Custom FPS: use NetworkFrameTimer path like multiplayer
 
 		return 0x55E2B4; // Vanilla FrameTimer path
 	}
