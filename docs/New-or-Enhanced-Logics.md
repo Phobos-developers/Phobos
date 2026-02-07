@@ -2065,6 +2065,20 @@ SuppressRevengeWeapons=false    ; boolean
 SuppressRevengeWeapons.Types=   ; List of WeaponTypes
 ```
 
+### Separation AutoTarget
+
+- `DeployFireWeapon`, `OpenTransportWeapon`, and `NoAmmoWeapon` can use separate auto-targeting instead of all weapons sharing a common decision.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                ; TechnoType
+SeparateWeaponTypes=none    ; List of SeparateWeaponType Enumeration (none|deployfireweapon|opentransport|noammo|all)
+```
+
+```{warning}
+Please note that weapons using separate automatic targeting will not perform automatic attacks on certain descending aerial targets if the projectile has `AG=no` and `AA=yes`
+```
+
 ### Shared Ammo
 
 - Transports with `OpenTopped=yes` and `Ammo.Shared=yes` will transfer ammo to passengers that have `Ammo.Shared=yes`.

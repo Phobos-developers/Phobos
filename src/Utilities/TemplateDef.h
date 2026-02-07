@@ -1508,6 +1508,50 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 				Debug::INIParseFailed(pSection, pKey, pCur);
 		}
 	}
+
+	template <>
+	inline bool read<SeparateWeaponType>(SeparateWeaponType& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			static const std::pair<const char*, SeparateWeaponType> Names[] =
+			{
+				{"deployfire", SeparateWeaponType::DeployFire},
+				{"opentransport", SeparateWeaponType::OpenTransport},
+				{"noammo", SeparateWeaponType::NoAmmo},
+				{"all", SeparateWeaponType::All},
+				{ "none", SeparateWeaponType::None },
+			};
+
+			auto parsed = SeparateWeaponType::None;
+			for (auto&& part : std::string_view { parser.value() } | std::views::split(','))
+			{
+				std::string_view&& cur { part.begin(), part.end() };
+				*const_cast<char*>(cur.data() + cur.find_last_not_of(" \t\r") + 1) = 0;
+				auto pCur = cur.data() + cur.find_first_not_of(" \t\r");
+				bool matched = false;
+				for (auto const& [name, val] : Names)
+				{
+					if (_strcmpi(pCur, name) == 0)
+					{
+						parsed |= val;
+						matched = true;
+						break;
+					}
+				}
+				if (!matched)
+				{
+					Debug::INIParseFailed(pSection, pKey, pCur, "Expected an separate weapon type");
+					return false;
+				}
+			}
+
+			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
 }
 
 

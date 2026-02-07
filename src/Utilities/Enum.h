@@ -394,3 +394,15 @@ public:
 		return false;
 	}
 };
+
+enum class SeparateWeaponType : unsigned char
+{
+	None = 0x0,
+	DeployFire = 0x1,
+	OpenTransport = 0x2,
+	NoAmmo = 0x4,
+
+	All = DeployFire | OpenTransport | NoAmmo
+};
+
+MAKE_ENUM_FLAGS(SeparateWeaponType);

@@ -474,7 +474,9 @@ public:
 
 		Nullable<Mission> ParadropMission;
 		Nullable<Mission> AIParadropMission;
-		
+
+		Valueable<SeparateWeaponType> SeparateWeaponTypes;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, HealthBar_HidePips { false }
@@ -903,6 +905,8 @@ public:
 
 			, ParadropMission {}
 			, AIParadropMission {}
+
+			, SeparateWeaponTypes { SeparateWeaponType::None }
 		{ }
 
 		virtual ~ExtData() = default;

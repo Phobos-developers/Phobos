@@ -186,44 +186,55 @@ DEFINE_HOOK(0x7431C9, FootClass_SelectAutoTarget_MultiWeapon, 0x7)			// UnitClas
 		return UnitGunner;
 	}
 
-	const AbstractType rtti = isUnit ? AbstractType::Unit : AbstractType::Infantry;
-	const int deployFireWeapon = pType->DeployFireWeapon;
+	const SeparateWeaponType weaponTypes = pTypeExt->SeparateWeaponTypes;
 
-	if (IsDeployed(pThis, rtti) && pType->DeployFire && deployFireWeapon >= 0)
+	if (weaponTypes & SeparateWeaponType::DeployFire)
 	{
-		ThreatType flags = result;
+		const AbstractType rtti = isUnit ? AbstractType::Unit : AbstractType::Infantry;
+		const int deployFireWeapon = pType->DeployFireWeapon;
 
-		if (const auto pWeapon = pThis->GetWeapon(deployFireWeapon)->WeaponType)
-			flags |= pWeapon->AllowedThreats();
+		if (IsDeployed(pThis, rtti) && pType->DeployFire && deployFireWeapon >= 0)
+		{
+			ThreatType flags = result;
 
-		R->EDI(flags);
-		return isUnit ? UnitReturn : InfantryReturn;
+			if (const auto pWeapon = pThis->GetWeapon(deployFireWeapon)->WeaponType)
+				flags |= pWeapon->AllowedThreats();
+
+			R->EDI(flags);
+			return isUnit ? UnitReturn : InfantryReturn;
+		}
 	}
 
-	const int openTransportWeapon = pType->OpenTransportWeapon;
-
-	if (pThis->InOpenToppedTransport && openTransportWeapon >= 0)
+	if (weaponTypes & SeparateWeaponType::OpenTransport)
 	{
-		ThreatType flags = result;
+		const int openTransportWeapon = pType->OpenTransportWeapon;
 
-		if (const auto pWeapon = pThis->GetWeapon(openTransportWeapon)->WeaponType)
-			flags |= pWeapon->AllowedThreats();
+		if (pThis->InOpenToppedTransport && openTransportWeapon >= 0)
+		{
+			ThreatType flags = result;
 
-		R->EDI(flags);
-		return isUnit ? UnitReturn : InfantryReturn;
+			if (const auto pWeapon = pThis->GetWeapon(openTransportWeapon)->WeaponType)
+				flags |= pWeapon->AllowedThreats();
+
+			R->EDI(flags);
+			return isUnit ? UnitReturn : InfantryReturn;
+		}
 	}
 
-	const int noAmmoWeapon = pTypeExt->NoAmmoWeapon;
-
-	if (pType->Ammo >= 0 && noAmmoWeapon >= 0 && pThis->Ammo <= pTypeExt->NoAmmoAmount)
+	if (weaponTypes & SeparateWeaponType::NoAmmo)
 	{
-		ThreatType flags = result;
+		const int noAmmoWeapon = pTypeExt->NoAmmoWeapon;
 
-		if (const auto pWeapon = pThis->GetWeapon(noAmmoWeapon)->WeaponType)
-			flags |= pWeapon->AllowedThreats();
+		if (pType->Ammo >= 0 && noAmmoWeapon >= 0 && pThis->Ammo <= pTypeExt->NoAmmoAmount)
+		{
+			ThreatType flags = result;
 
-		R->EDI(flags);
-		return isUnit ? UnitReturn : InfantryReturn;
+			if (const auto pWeapon = pThis->GetWeapon(noAmmoWeapon)->WeaponType)
+				flags |= pWeapon->AllowedThreats();
+
+			R->EDI(flags);
+			return isUnit ? UnitReturn : InfantryReturn;
+		}
 	}
 
 	R->EDI(GetThreatType(pThis, pTypeExt, result));
@@ -245,17 +256,21 @@ DEFINE_HOOK(0x445F04, BuildingClass_SelectAutoTarget_MultiWeapon, 0xA)
 
 	const auto pType = pThis->Type;
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	const int noAmmoWeapon = pTypeExt->NoAmmoWeapon;
 
-	if (pType->Ammo >= 0 && noAmmoWeapon >= 0 && pThis->Ammo <= pTypeExt->NoAmmoAmount)
+	if (pTypeExt->SeparateWeaponTypes & SeparateWeaponType::NoAmmo)
 	{
-		ThreatType flags = result;
+		const int noAmmoWeapon = pTypeExt->NoAmmoWeapon;
 
-		if (const auto pWeapon = pThis->GetWeapon(noAmmoWeapon)->WeaponType)
-			flags |= pWeapon->AllowedThreats();
+		if (pType->Ammo >= 0 && noAmmoWeapon >= 0 && pThis->Ammo <= pTypeExt->NoAmmoAmount)
+		{
+			ThreatType flags = result;
 
-		R->EDI(flags);
-		return ReturnThreatType;
+			if (const auto pWeapon = pThis->GetWeapon(noAmmoWeapon)->WeaponType)
+				flags |= pWeapon->AllowedThreats();
+
+			R->EDI(flags);
+			return ReturnThreatType;
+		}
 	}
 
 	R->EDI(GetThreatType(pThis, pTypeExt, result));
@@ -288,43 +303,54 @@ DEFINE_HOOK(0x6F398E, TechnoClass_CombatDamage_MultiWeapon, 0x7)
 		return GunnerDamage;
 	}
 
-	const int deployFireWeapon = pType->DeployFireWeapon;
+	const SeparateWeaponType weaponTypes = pTypeExt->SeparateWeaponTypes;
 
-	if (IsDeployed(pThis, rtti) && pType->DeployFire && deployFireWeapon >= 0)
+	if (weaponTypes & SeparateWeaponType::DeployFire)
 	{
-		int damage = 0;
+		const int deployFireWeapon = pType->DeployFireWeapon;
 
-		if (auto const pWeapon = pThis->GetWeapon(deployFireWeapon)->WeaponType)
-			damage = (pWeapon->Damage + pWeapon->AmbientDamage);
+		if (IsDeployed(pThis, rtti) && pType->DeployFire && deployFireWeapon >= 0)
+		{
+			int damage = 0;
 
-		R->EAX(damage);
-		return ReturnDamage;
+			if (auto const pWeapon = pThis->GetWeapon(deployFireWeapon)->WeaponType)
+				damage = (pWeapon->Damage + pWeapon->AmbientDamage);
+
+			R->EAX(damage);
+			return ReturnDamage;
+		}
 	}
 
-	const int openTransportWeapon = pType->OpenTransportWeapon;
-
-	if (pThis->InOpenToppedTransport && openTransportWeapon >= 0)
+	if (weaponTypes & SeparateWeaponType::OpenTransport)
 	{
-		int damage = 0;
+		const int openTransportWeapon = pType->OpenTransportWeapon;
 
-		if (auto const pWeapon = pThis->GetWeapon(openTransportWeapon)->WeaponType)
-			damage = (pWeapon->Damage + pWeapon->AmbientDamage);
+		if (pThis->InOpenToppedTransport && openTransportWeapon >= 0)
+		{
+			int damage = 0;
 
-		R->EAX(damage);
-		return ReturnDamage;
+			if (auto const pWeapon = pThis->GetWeapon(openTransportWeapon)->WeaponType)
+				damage = (pWeapon->Damage + pWeapon->AmbientDamage);
+
+			R->EAX(damage);
+			return ReturnDamage;
+		}
 	}
 
-	const int noAmmoWeapon = pTypeExt->NoAmmoWeapon;
-
-	if (pType->Ammo >= 0 && noAmmoWeapon >= 0 && pThis->Ammo <= pTypeExt->NoAmmoAmount)
+	if (weaponTypes & SeparateWeaponType::NoAmmo)
 	{
-		int damage = 0;
+		const int noAmmoWeapon = pTypeExt->NoAmmoWeapon;
 
-		if (auto const pWeapon = pThis->GetWeapon(noAmmoWeapon)->WeaponType)
-			damage = (pWeapon->Damage + pWeapon->AmbientDamage);
+		if (pType->Ammo >= 0 && noAmmoWeapon >= 0 && pThis->Ammo <= pTypeExt->NoAmmoAmount)
+		{
+			int damage = 0;
 
-		R->EAX(damage);
-		return ReturnDamage;
+			if (auto const pWeapon = pThis->GetWeapon(noAmmoWeapon)->WeaponType)
+				damage = (pWeapon->Damage + pWeapon->AmbientDamage);
+
+			R->EAX(damage);
+			return ReturnDamage;
+		}
 	}
 
 	R->EAX(pThis->Veterancy.IsElite() ? pTypeExt->CombatDamages.Y : pTypeExt->CombatDamages.X);
@@ -350,34 +376,45 @@ DEFINE_HOOK(0x707ED0, TechnoClass_GetGuardRange_MultiWeapon, 0x6)
 	}
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	const int deployFireWeapon = pType->DeployFireWeapon;
+	const SeparateWeaponType weaponTypes = pTypeExt->SeparateWeaponTypes;
 
-	if (IsDeployed(pThis, rtti) && pType->DeployFire && deployFireWeapon >= 0)
+	if (weaponTypes & SeparateWeaponType::DeployFire)
 	{
-		int range = pThis->GetWeaponRange(deployFireWeapon);
+		const int deployFireWeapon = pType->DeployFireWeapon;
 
-		R->EAX(range);
-		return ReturnRange;
+		if (IsDeployed(pThis, rtti) && pType->DeployFire && deployFireWeapon >= 0)
+		{
+			const int range = pThis->GetWeaponRange(deployFireWeapon);
+
+			R->EAX(range);
+			return ReturnRange;
+		}
 	}
 
-	const int openTransportWeapon = pType->OpenTransportWeapon;
-
-	if (pThis->InOpenToppedTransport && openTransportWeapon >= 0)
+	if (weaponTypes & SeparateWeaponType::OpenTransport)
 	{
-		int range = pThis->GetWeaponRange(openTransportWeapon);
+		const int openTransportWeapon = pType->OpenTransportWeapon;
 
-		R->EAX(range);
-		return ReturnRange;
+		if (pThis->InOpenToppedTransport && openTransportWeapon >= 0)
+		{
+			const int range = pThis->GetWeaponRange(openTransportWeapon);
+
+			R->EAX(range);
+			return ReturnRange;
+		}
 	}
 
-	const int noAmmoWeapon = pTypeExt->NoAmmoWeapon;
-
-	if (pType->Ammo >= 0 && noAmmoWeapon >= 0 && pThis->Ammo <= pTypeExt->NoAmmoAmount)
+	if (weaponTypes & SeparateWeaponType::NoAmmo)
 	{
-		int range = pThis->GetWeaponRange(noAmmoWeapon);
+		const int noAmmoWeapon = pTypeExt->NoAmmoWeapon;
 
-		R->EAX(range);
-		return ReturnRange;
+		if (pType->Ammo >= 0 && noAmmoWeapon >= 0 && pThis->Ammo <= pTypeExt->NoAmmoAmount)
+		{
+			const int range = pThis->GetWeaponRange(noAmmoWeapon);
+
+			R->EAX(range);
+			return ReturnRange;
+		}
 	}
 
 	if (pTypeExt->MultiWeapon && specialWeapon)
