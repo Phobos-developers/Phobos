@@ -162,18 +162,18 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_ExtraDamage_ApplyFirepowerMult.Read(exINI, pSection, "Crit.ExtraDamage.ApplyFirepowerMult");
 	this->Crit_Warhead.Read<true>(exINI, pSection, "Crit.Warhead");
 	this->Crit_Warhead_FullDetonation.Read(exINI, pSection, "Crit.Warhead.FullDetonation");
-	this->Crit_AffectsTarget.Read(exINI, pSection, "Crit.Affects");
+	this->Crit_AffectsTarget.Read(exINI, pSection, "Crit.Affects"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->Crit_AffectsTarget.Read(exINI, pSection, "Crit.AffectsTarget");
-	this->Crit_AffectsHouse.Read(exINI, pSection, "Crit.AffectsHouses");
+	this->Crit_AffectsHouse.Read(exINI, pSection, "Crit.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->Crit_AffectsHouse.Read(exINI, pSection, "Crit.AffectsHouse");
 	this->Crit_AnimList.Read(exINI, pSection, "Crit.AnimList");
 	this->Crit_AnimList_PickRandom.Read(exINI, pSection, "Crit.AnimList.PickRandom");
 	this->Crit_AnimList_CreateAll.Read(exINI, pSection, "Crit.AnimList.CreateAll");
 	this->Crit_ActiveChanceAnims.Read(exINI, pSection, "Crit.ActiveChanceAnims");
 	this->Crit_AnimOnAffectedTargets.Read(exINI, pSection, "Crit.AnimOnAffectedTargets");
-	this->Crit_AffectsBelowPercent.Read(exINI, pSection, "Crit.AffectBelowPercent");
+	this->Crit_AffectsBelowPercent.Read(exINI, pSection, "Crit.AffectBelowPercent"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->Crit_AffectsBelowPercent.Read(exINI, pSection, "Crit.AffectsBelowPercent");
-	this->Crit_AffectsBelowPercent.Read(exINI, pSection, "Crit.AffectAbovePercent");
+	this->Crit_AffectsBelowPercent.Read(exINI, pSection, "Crit.AffectAbovePercent"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->Crit_AffectsAbovePercent.Read(exINI, pSection, "Crit.AffectsAbovePercent");
 	this->Crit_SuppressWhenIntercepted.Read(exINI, pSection, "Crit.SuppressWhenIntercepted");
 
@@ -253,9 +253,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects.Read(exINI, pSection, "DetonateOnAllMapObjects");
 	this->DetonateOnAllMapObjects_Full.Read(exINI, pSection, "DetonateOnAllMapObjects.Full");
 	this->DetonateOnAllMapObjects_RequireVerses.Read(exINI, pSection, "DetonateOnAllMapObjects.RequireVerses");
-	this->DetonateOnAllMapObjects_AffectsTarget.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTargets");
+	this->DetonateOnAllMapObjects_AffectsTarget.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTargets"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->DetonateOnAllMapObjects_AffectsTarget.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectsTarget");
-	this->DetonateOnAllMapObjects_AffectsHouse.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectHouses");
+	this->DetonateOnAllMapObjects_AffectsHouse.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->DetonateOnAllMapObjects_AffectsHouse.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectsHouse");
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
@@ -298,13 +298,13 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->KillWeapon.Read(exINI, pSection, "KillWeapon");
 	this->KillWeapon_OnFirer.Read(exINI, pSection, "KillWeapon.OnFirer");
-	this->KillWeapon_AffectsHouse.Read(exINI, pSection, "KillWeapon.AffectsHouses");
+	this->KillWeapon_AffectsHouse.Read(exINI, pSection, "KillWeapon.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->KillWeapon_AffectsHouse.Read(exINI, pSection, "KillWeapon.AffectsHouse");
-	this->KillWeapon_OnFirer_AffectsHouse.Read(exINI, pSection, "KillWeapon.OnFirer.AffectsHouses");
+	this->KillWeapon_OnFirer_AffectsHouse.Read(exINI, pSection, "KillWeapon.OnFirer.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->KillWeapon_OnFirer_AffectsHouse.Read(exINI, pSection, "KillWeapon.OnFirer.AffectsHouse");
-	this->KillWeapon_AffectsTarget.Read(exINI, pSection, "KillWeapon.Affects");
+	this->KillWeapon_AffectsTarget.Read(exINI, pSection, "KillWeapon.Affects"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->KillWeapon_AffectsTarget.Read(exINI, pSection, "KillWeapon.AffectsTarget");
-	this->KillWeapon_OnFirer_AffectsTarget.Read(exINI, pSection, "KillWeapon.OnFirer.Affects");
+	this->KillWeapon_OnFirer_AffectsTarget.Read(exINI, pSection, "KillWeapon.OnFirer.Affects"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->KillWeapon_OnFirer_AffectsTarget.Read(exINI, pSection, "KillWeapon.OnFirer.AffectsTarget");
 
 	this->ElectricAssaultLevel.Read(exINI, pSection, "ElectricAssaultLevel");

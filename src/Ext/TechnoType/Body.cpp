@@ -861,9 +861,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->OpenTransport_RangeBonus.Read(exINI, pSection, "OpenTransport.RangeBonus");
 	this->OpenTransport_DamageMultiplier.Read(exINI, pSection, "OpenTransport.DamageMultiplier");
 
-	this->AutoTargetOwnPosition.Read(exINI, pSection, "AutoFire");
+	this->AutoTargetOwnPosition.Read(exINI, pSection, "AutoFire"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->AutoTargetOwnPosition.Read(exINI, pSection, "AutoTargetOwnPosition");
-	this->AutoTargetOwnPosition_Self.Read(exINI, pSection, "AutoFire.TargetSelf");
+	this->AutoTargetOwnPosition_Self.Read(exINI, pSection, "AutoFire.TargetSelf"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->AutoTargetOwnPosition_Self.Read(exINI, pSection, "AutoTargetOwnPosition.Self");
 
 	this->NoSecondaryWeaponFallback.Read(exINI, pSection, "NoSecondaryWeaponFallback");
@@ -1006,7 +1006,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Tint_VisibleToHouses.Read(exINI, pSection, "Tint.VisibleToHouses");
 
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
-	this->RevengeWeapon_AffectsHouse.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
+	this->RevengeWeapon_AffectsHouse.Read(exINI, pSection, "RevengeWeapon.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->RevengeWeapon_AffectsHouse.Read(exINI, pSection, "RevengeWeapon.AffectsHouse");
 
 	this->RecountBurst.Read(exINI, pSection, "RecountBurst");

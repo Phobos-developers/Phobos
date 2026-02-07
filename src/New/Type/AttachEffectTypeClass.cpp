@@ -105,7 +105,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->PenetratesForceShield.Read(exINI, pSection, "PenetratesForceShield");
 	this->AffectTypes.Read(exINI, pSection, "AffectTypes");
 	this->IgnoreTypes.Read(exINI, pSection, "IgnoreTypes");
-	this->AffectsTarget.Read(exINI, pSection, "AffectTargets");
+	this->AffectsTarget.Read(exINI, pSection, "AffectTargets"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->AffectsTarget.Read(exINI, pSection, "AffectsTarget");
 
 	this->Animation.Read(exINI, pSection, "Animation");
@@ -148,7 +148,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Crit_DisallowWarheads.Read(exINI, pSection, "Crit.DisallowWarheads");
 
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
-	this->RevengeWeapon_AffectsHouse.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
+	this->RevengeWeapon_AffectsHouse.Read(exINI, pSection, "RevengeWeapon.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->RevengeWeapon_AffectsHouse.Read(exINI, pSection, "RevengeWeapon.AffectsHouse");
 	this->RevengeWeapon_UseInvokerAsOwner.Read(exINI, pSection, "RevengeWeapon.UseInvokerAsOwner");
 
@@ -156,7 +156,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ReflectDamage_Warhead.Read(exINI, pSection, "ReflectDamage.Warhead");
 	this->ReflectDamage_Warhead_Detonate.Read(exINI, pSection, "ReflectDamage.Warhead.Detonate");
 	this->ReflectDamage_Multiplier.Read(exINI, pSection, "ReflectDamage.Multiplier");
-	this->ReflectDamage_AffectsHouse.Read(exINI, pSection, "ReflectDamage.AffectsHouses");
+	this->ReflectDamage_AffectsHouse.Read(exINI, pSection, "ReflectDamage.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->ReflectDamage_AffectsHouse.Read(exINI, pSection, "ReflectDamage.AffectsHouse");
 	this->ReflectDamage_Chance.Read(exINI, pSection, "ReflectDamage.Chance");
 	this->ReflectDamage_Override.Read(exINI, pSection, "ReflectDamage.Override");
