@@ -2065,18 +2065,6 @@ SuppressRevengeWeapons=false    ; boolean
 SuppressRevengeWeapons.Types=   ; List of WeaponTypes
 ```
 
-### Separation AutoTarget
-
-- In Vanilla, when `TurretCount` is less than or equal to 0, units can only repair/heal targets if the average of all weapons' `Damage + AmbientDamage` is less than 0. This mechanism may prevent units equipped with both healing and lethal weapons from correctly using specific weapons like `DeployFireWeapon`, `OpenTransportWeapon`, or `NoAmmoWeapon`. Now you can use a new flag `SeparateWeaponTypes` to overcome this problem.
-  - Please note that weapons using separate automatic targeting will not perform automatic attacks on certain descending aerial targets if the projectile has `AG=no` and `AA=yes`.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                ; TechnoType
-SeparateWeaponTypes=none    ; List of SeparateWeaponType Enumeration (none|deployfireweapon|opentransport|noammo|all)
-```
-
-
 ### Shared Ammo
 
 - Transports with `OpenTopped=yes` and `Ammo.Shared=yes` will transfer ammo to passengers that have `Ammo.Shared=yes`.

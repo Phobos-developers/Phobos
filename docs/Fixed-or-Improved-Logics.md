@@ -1798,6 +1798,16 @@ In `rulesmd.ini`:
 RadarInvisibleToHouse=               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to enemy if RadarInvisible=true, none otherwise
 ```
 
+### Separation AutoTarget
+
+- In Vanilla, when `IsGattling=no` and `TurretCount` is less than or equal to 0, units will only repair/heal targets if the following condition is met: the total `Damage + AmbientDamage` of all weapons divided by the total number of weapons is less than 0. This may cause units equipped with both healing and lethal weapons to fail to properly execute `DeployFireWeapon`, `OpenTransportWeapon`, and `NoAmmoWeapon`. Now you can use a new flag `SeparateWeaponTypes` to overcome this problem.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                ; TechnoType
+SeparateWeaponTypes=none    ; List of SeparateWeaponType Enumeration (none|deployfireweapon|opentransport|noammo|all)
+```
+
 ### Subterranean unit travel height and speed
 
 - It is now possible to control the height at which units with subterranean (Tunnel) `Locomotor` travel, globally or per TechnoType.
