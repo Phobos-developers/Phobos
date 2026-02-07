@@ -4,6 +4,7 @@
 #include <Ext/TEvent/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Utilities/AresHelper.h>
 
 namespace ReceiveDamageTemp
 {
@@ -431,6 +432,15 @@ DEFINE_HOOK(0x5F5480, ObjectClass_ReceiveDamage_FlashDuration, 0x6)
 
 DEFINE_HOOK(0x701CFC, TechnoClass_ReceiveDamage_AllowBerzerkOnAllies, 0x5)
 {
-	enum { IgnoreOwnerCheckFailed = 0x701D0B };
-	return RulesExt::Global()->AllowBerzerkOnAllies ? IgnoreOwnerCheckFailed : 0;
+	enum { SkipCodeYR = 0x701D0B, SkipCodeAres = 0x701D2E };
+
+	// If AllowBerzerkOnAllies not enabled, just return from function
+	// and don't apply berzerk.
+	if (!RulesExt::Global()->AllowBerzerkOnAllies)
+		return 0;
+
+	// Ares already checked immunities by this point if it is enabled.
+	// Rechecking them causes issues, so only check ImmuneToPsionics
+	// again if Ares is not present.
+	return AresHelper::CanUseAres ? SkipCodeAres : SkipCodeYR;
 }
