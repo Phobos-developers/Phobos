@@ -1801,6 +1801,7 @@ RadarInvisibleToHouse=               ; Affected House Enumeration (none|owner/se
 ### Separation AutoTarget
 
 - In Vanilla, when `IsGattling=no` and `TurretCount` is less than or equal to 0, units will only repair/heal targets if the following condition is met: the total `Damage + AmbientDamage` of all weapons divided by the total number of weapons is less than 0. This may cause units equipped with both healing and lethal weapons to fail to properly execute `DeployFireWeapon`, `OpenTransportWeapon`, and `NoAmmoWeapon`. Now you can use a new flag `SeparateWeaponTypes` to overcome this problem.
+  - When using a separate auto-aiming device, the effective range will use the current weapon's range rather than the unit's maximum weapon range, `GuardRange` remains effective. Whether ground or air targets can be attacked is also entirely determined by the current weapon.
 
 In `rulesmd.ini`:
 ```ini
