@@ -2537,8 +2537,8 @@ msgstr ""
 "TaranDahl）"
 
 #: ../../Whats-New.md:539
-msgid "Penetrates damage on transporter (by NetsuNegi)"
-msgstr ""
+msgid "[Penetrates damage on transporter](New-or-Enhanced-Logics.md#penetrates-damage-on-transporter) (by NetsuNegi)"
+msgstr "[对运输工具的穿透伤害](New-or-Enhanced-Logics.md#penetrates-damage-on-transporter)（by NetsuNegi）"
 
 #: ../../Whats-New.md:540
 msgid "Added amount limit of `LimboKill` (by NetsuNegi)"

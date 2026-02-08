@@ -2643,8 +2643,11 @@ RemoveParasite=   ; boolean
   - `PenetratesTransport.DamageMultiplier` is multiplier of damage on passenger.
   - `PenetratesTransport.CleanSound` will play when all passengers has been killed.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+PenetratesTransport.Level=10                    ; integer, default value of [TechnoType] -> PenetratesTransport.Level
+
 [SOMEWARHEAD]                                   ; WarheadType
 PenetratesTransport.Level=0                     ; integer
 PenetratesTransport.PassThrough=1.0             ; double
@@ -2654,13 +2657,10 @@ PenetratesTransport.DamageAll=false             ; boolean
 PenetratesTransport.CleanSound=                 ; sound entry
 
 [SOMETECHNO]                                    ; TechnoType
-PenetratesTransport.Level=                      ; integer
+PenetratesTransport.Level=                      ; integer, default to [CombatDamage] -> PenetratesTransport.Level
 PenetratesTransport.PassThroughMultiplier=1.0   ; double
 PenetratesTransport.FatalRateMultiplier=1.0     ; double
 PenetratesTransport.DamageMultiplier=1.0        ; double
-
-[CombatDamage]
-PenetratesTransport.Level=10                    ; integer, default value of technotype's penetrate level
 ```
 
 ### Remove disguise on impact

@@ -2072,7 +2072,7 @@ msgstr "修复了单位在移动攻击一个它不能攻击的目标时会移动
 
 #: ../../../CREDITS.md:498
 msgid "Penetrates damage on transporter"
-msgstr ""
+msgstr "对运输工具的穿透伤害"
 
 #: ../../../CREDITS.md:499
 msgid "Add amount limit of `LimboKill`"
