@@ -46,7 +46,6 @@ public:
 
 	static UnitClass* Deployer;
 
-	static bool CannotMove(UnitClass* pThis);
 	static bool HasAmmoToDeploy(UnitClass* pThis);
 	static void HandleOnDeployAmmoChange(UnitClass* pThis, int maxAmmoOverride = -1);
 	static bool SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue, bool alwaysCheckLandTypes);

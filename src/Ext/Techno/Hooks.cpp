@@ -50,6 +50,27 @@ DEFINE_HOOK(0x4DA54E, FootClass_AI, 0x6)
 	if (pExt->AttackMoveFollowerTempCount)
 		pExt->AttackMoveFollowerTempCount--;
 
+	// Check speed multipliers for zero, update things like allowing
+	// locomotor to process destination again.
+	if (FootExt::GetCurrentSpeedMultiplier(pThis) > 0.0)
+	{
+		bool wasZeroSpeed = pExt->IsZeroSpeed;
+		pExt->IsZeroSpeed = false;
+
+		if (wasZeroSpeed)
+		{
+			if (auto const pDest = pThis->Destination)
+			{
+				pThis->Destination = nullptr; // Force it to update.
+				pThis->SetDestination(pDest, false);
+			}
+		}
+	}
+	else
+	{
+		pExt->IsZeroSpeed = true;
+	}
+
 	return 0;
 }
 
@@ -1368,7 +1389,7 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 
 #pragma endregion
 
-DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
+DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove, 0x5)
 {
 	enum { SkipResponse = 0x709015 };
 
@@ -1395,11 +1416,11 @@ DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
 			}
 		}
 	}
-	else if (rtti == AbstractType::Unit)
+	else
 	{
-		auto const pUnit = static_cast<UnitClass*>(pThis);
+		auto const pFoot = static_cast<FootClass*>(pThis);
 
-		if (UnitExt::CannotMove(pUnit))
+		if (FootExt::CannotMove(pFoot, true))
 			return SkipResponse;
 	}
 
