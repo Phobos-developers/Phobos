@@ -1745,12 +1745,41 @@ Note that this logic is used for [Passenger](https://modenc.renegadeprojects.com
 ```
 
 ### Initial spawns number
+
 - It is now possible to set the initial amount of spawnees for a spawner, instead of always being filled. Won't work if it's larger than `SpawnsNumber`.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]              ; TechnoType
 InitialSpawnsNumber=      ; integer
+```
+
+### Group retaliate
+
+- In vanilla, only the unit itself will counter - attack when it takes damage. This often makes units stupidly lured away one by one and eliminated.
+- Now you can make units "seek support from nearby friendly units" when they take damage. They will retaliate the attacker together with the victim.
+  - `GroupRetaliate.AllowAI` and `GroupRetaliate.AllowPlayer` control whether this effect applies to AI units and player units respectively.
+  - The attacker's threat must be higher than the `GroupRetaliate.ThreatThreshold` of the unit's current target to trigger retaliation.
+  - `GroupRetaliate.GroupRange` controls the range within which the victim can call for friendly forces.
+  - `GroupRetaliate.TraceExtraRange` controls the distance for retaliating against the attacker. When the attacker is farther from the unit than the unit's guard range + TraceExtraRange, retaliation will not be triggered.
+- An additional option `DisableVanillaRetaliateBehavior` is provided to turn off the vanilla retaliation behavior.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+GroupRetaliate.AllowAI=false             ; boolean
+GroupRetaliate.AllowPlayer=false         ; boolean
+GroupRetaliate.ThreatThreshold=1000.0    ; float, range in cell
+GroupRetaliate.GroupRange=7.0            ; float, range in cell
+GroupRetaliate.TraceExtraRange=20.0      ; float, range in cell
+DisableVanillaRetaliateBehavior=false    ; boolean
+
+[SOMETECHNO]                             ; TechnoType
+GroupRetaliate.GroupRange=               ; float, range in cell, default to [General] -> GroupRetaliate.GroupRange
+```
+
+```{note}
+The unit must be able to trigger the vanilla retaliation behavior in order to trigger group retaliate.
 ```
 
 ### Initial strength for TechnoTypes and cloned infantry

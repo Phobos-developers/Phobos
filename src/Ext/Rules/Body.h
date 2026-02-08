@@ -313,6 +313,14 @@ public:
 		Valueable<bool> DefaultToGuardArea;
     
 		Valueable<bool> CylinderRangefinding;
+		Valueable<bool> GroupRetaliate_AllowAI;
+		Valueable<bool> GroupRetaliate_AllowPlayer;
+		Valueable<double> GroupRetaliate_ThreatThreshold;
+		Valueable<Leptons> GroupRetaliate_GroupRange;
+		Valueable<Leptons> GroupRetaliate_TraceExtraRange;
+		Valueable<int> GroupRetaliate_Delay;
+
+		Valueable<bool> DisableVanillaRetaliateBehavior;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -570,6 +578,14 @@ public:
 			, DefaultToGuardArea { false }
 			
 			, CylinderRangefinding { false }
+			, GroupRetaliate_AllowAI { false }
+			, GroupRetaliate_AllowPlayer { false }
+			, GroupRetaliate_ThreatThreshold { 1000.0 }
+			, GroupRetaliate_GroupRange { Leptons(7 * Unsorted::LeptonsPerCell) }
+			, GroupRetaliate_TraceExtraRange { Leptons(20 * Unsorted::LeptonsPerCell) }
+			, GroupRetaliate_Delay { 15 }
+
+			, DisableVanillaRetaliateBehavior { false }
 		{ }
 
 		virtual ~ExtData() = default;

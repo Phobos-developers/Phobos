@@ -1,4 +1,4 @@
-#include "Body.h"
+﻿#include "Body.h"
 
 #include <Ext/TechnoType/Body.h>
 #include <New/Type/RadTypeClass.h>
@@ -364,6 +364,15 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->CylinderRangefinding.Read(exINI, GameStrings::General, "CylinderRangefinding");
 	
+	this->GroupRetaliate_AllowAI.Read(exINI, GameStrings::CombatDamage, "GroupRetaliate.AllowAI");
+	this->GroupRetaliate_AllowPlayer.Read(exINI, GameStrings::CombatDamage, "GroupRetaliate.AllowPlayer");
+	this->GroupRetaliate_ThreatThreshold.Read(exINI, GameStrings::CombatDamage, "GroupRetaliate.ThreatThreshold");
+	this->GroupRetaliate_GroupRange.Read(exINI, GameStrings::CombatDamage, "GroupRetaliate.GroupRange");
+	this->GroupRetaliate_TraceExtraRange.Read(exINI, GameStrings::CombatDamage, "GroupRetaliate.TraceExtraRange");
+	this->GroupRetaliate_Delay.Read(exINI, GameStrings::CombatDamage, "GroupRetaliate.Delay");
+
+	this->DisableVanillaRetaliateBehavior.Read(exINI, GameStrings::CombatDamage, "DisableVanillaRetaliateBehavior");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -663,6 +672,13 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AIParadropMission)
 		.Process(this->DefaultToGuardArea)
 		.Process(this->CylinderRangefinding)
+		.Process(this->GroupRetaliate_AllowAI)
+		.Process(this->GroupRetaliate_AllowPlayer)
+		.Process(this->GroupRetaliate_ThreatThreshold)
+		.Process(this->GroupRetaliate_GroupRange)
+		.Process(this->GroupRetaliate_TraceExtraRange)
+		.Process(this->GroupRetaliate_Delay)
+		.Process(this->DisableVanillaRetaliateBehavior)
 		;
 }
 

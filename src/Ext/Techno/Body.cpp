@@ -8,6 +8,7 @@
 #include <Ext/WeaponType/Body.h>
 
 #include <Utilities/AresFunctions.h>
+#include <Utilities/Helpers.Alex.h>
 
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 UnitClass* TechnoExt::Deployer = nullptr;
@@ -982,6 +983,150 @@ bool TechnoExt::EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool sel
 	return true;
 }
 
+void TechnoExt::ApplyGroupRetaliate(TechnoClass* pThis, ObjectClass* pAttacker, WarheadTypeClass* pWH)
+{
+	auto range = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->GroupRetaliate_GroupRange.Get(RulesExt::Global()->GroupRetaliate_GroupRange);
+
+	if (range <= 0)
+		return;
+
+	auto canApproachTarget = [](TechnoClass* pTechno) -> bool
+		{
+			if ((pTechno->AbstractFlags & AbstractFlags::Foot) == AbstractFlags::None)
+				return false;
+
+			auto mission = pTechno->GetCurrentMission();
+			if (mission == Mission::Sticky)
+				return false;
+
+			if (pTechno->DrainTarget)
+				return false;
+
+			auto pUnit = abstract_cast<UnitClass*>(pTechno);
+			if (pUnit && TechnoExt::CannotMove(pUnit))
+				return false;
+
+			if (!pTechno->GetTechnoType()->CanApproachTarget)
+				return false;
+
+			if (pTechno->BunkerLinkedItem)
+				return false;
+
+			if (pTechno->InOpenToppedTransport)
+				return false;
+
+			return true;
+		};
+	auto missionAllowAreaSearch = [](Mission mission)
+		{
+			switch (mission)
+			{
+			case Mission::Patrol:
+			case Mission::Hunt:
+			case Mission::Area_Guard:
+			case Mission::Rescue:
+				return true;
+			default :
+				return false;
+			}
+		};
+	auto missionAllowRangeSearch = [](Mission mission)
+		{
+			switch (mission)
+			{
+			case Mission::Move:
+			case Mission::Guard:
+			case Mission::Harvest:
+				return true;
+			default:
+				return false;
+			}
+		};
+	auto canRespondGroupRetaliate = [pThis, pAttacker, pWH, range, canApproachTarget, missionAllowAreaSearch, missionAllowRangeSearch](TechnoClass* pTechno) -> bool
+		{
+			// Must be ally
+			if (!pTechno->Owner->IsAlliedWith(pThis))
+				return false;
+
+			// Skip if same target
+			if (pTechno->Target == pAttacker)
+				return false;
+
+			// Check timer
+			if (!TechnoExt::ExtMap.Find(pTechno)->GroupRetaliateTimer.Expired())
+				return false;
+
+			// IsAI chcek
+			if (pTechno->Owner->IsControlledByHuman())
+			{
+				if (!RulesExt::Global()->GroupRetaliate_AllowPlayer)
+					return false;
+			}
+			else
+			{
+				if (!RulesExt::Global()->GroupRetaliate_AllowAI)
+					return false;
+			}
+
+			// Has less important target
+			if (auto pTarget = pTechno->Target)
+			{
+				auto attackerThreat = pTechno->ThreatCoeffients(pAttacker, &CoordStruct::Empty);
+				auto currentThreat = (pTechno->Target->AbstractFlags & AbstractFlags::Object) != AbstractFlags::None ? pTechno->ThreatCoeffients(static_cast<ObjectClass*>(pTechno->Target), &CoordStruct::Empty) : 0.0;
+
+				if (attackerThreat - currentThreat < RulesExt::Global()->GroupRetaliate_ThreatThreshold)
+					return false;
+			}
+
+			// Must check mission
+			bool closeEnough = pTechno->IsCloseEnoughToAttack(pAttacker);
+			auto mission = pTechno->GetCurrentMission();
+			bool attackMove = pTechno->MegaMissionIsAttackMove() && pTechno->InAuxiliarySearchRange(pAttacker);
+			bool canApproach = missionAllowAreaSearch(mission) && canApproachTarget(pTechno); // TODO : && InAreaStrayRange
+			bool canRangeFire = missionAllowRangeSearch(mission) && closeEnough;
+
+			if (!attackMove && !canApproach && !canRangeFire)
+				return false;
+
+			// Check simple can retaliate
+			if (!pTechno->CanRetaliateToAttacker(pAttacker, pWH))
+				return false;
+
+			// In search range
+			if (pThis->DistanceFrom(pTechno) > range)
+				return false;
+
+			// Attacker not too far
+			if (pAttacker->DistanceFrom(pTechno) > (int)RulesExt::Global()->GroupRetaliate_TraceExtraRange.Get() + pTechno->GetGuardRange(0))
+				return false;
+
+			return true;
+		};
+	auto callForHelp = [pThis, pAttacker, pWH, range, missionAllowRangeSearch](TechnoClass* pTechno) -> void
+		{
+			TechnoExt::ExtMap.Find(pTechno)->GroupRetaliateTimer.Start(RulesExt::Global()->GroupRetaliate_Delay);
+			pTechno->SetTarget(pAttacker);
+
+			if (pTechno->MegaMissionIsAttackMove())
+			{
+				pTechno->QueueMission(Mission::Attack, true);
+				//pTechno->SetDestination(nullptr, true);
+				((FootClass*)pTechno)->HaveAttackMoveTarget = true;
+			}
+			else if (missionAllowRangeSearch(pTechno->GetCurrentMission()))
+			{
+				pTechno->ShouldLoseTargetNow = true;
+			}
+		};
+
+	auto list = Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), (double)range / Unsorted::LeptonsPerCell, true);
+	for (auto techno : list)
+	{
+		if (canRespondGroupRetaliate(techno))
+			callForHelp(techno);
+	}
+}
+
 // =============================
 // load / save
 
@@ -1053,6 +1198,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpecialTracked)
 		.Process(this->FallingDownTracked)
 		.Process(this->JumpjetStraightAscend)
+		.Process(this->GroupRetaliateTimer)
 		;
 }
 
