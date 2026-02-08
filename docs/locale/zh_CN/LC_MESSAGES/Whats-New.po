@@ -2542,7 +2542,7 @@ msgstr "[对运输工具的穿透伤害](New-or-Enhanced-Logics.md#penetrates-da
 
 #: ../../Whats-New.md:540
 msgid "Added amount limit of `LimboKill` (by NetsuNegi)"
-msgstr ""
+msgstr "添加了 `LimboKill` 的数量限制（by NetsuNegi）"
 
 #: ../../Whats-New.md:541
 msgid ""

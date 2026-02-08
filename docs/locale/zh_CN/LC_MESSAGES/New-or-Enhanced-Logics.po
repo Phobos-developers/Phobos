@@ -4756,6 +4756,7 @@ msgid ""
 " found, or no limitation if not found. If list is empty, there's no "
 "limitation for all types."
 msgstr ""
+"`LimboKill.Counts` 设置每种类型的建筑将被移除的数量。如果一个 `LimboKill.IDs` 列表中的值在此列表有对应项则使用此处设置的值，否则按无数量限制进行移除。若此列表留空则所有类型均无数量限制。"
 
 #: ../../New-or-Enhanced-Logics.md:1161
 msgid ""

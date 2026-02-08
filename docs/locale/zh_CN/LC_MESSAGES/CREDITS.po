@@ -2076,7 +2076,7 @@ msgstr "对运输工具的穿透伤害"
 
 #: ../../../CREDITS.md:499
 msgid "Add amount limit of `LimboKill`"
-msgstr ""
+msgstr "添加了 `LimboKill` 的数量限制"
 
 #: ../../../CREDITS.md:500
 msgid "**Apollo** - Translucent SHP drawing patches"
