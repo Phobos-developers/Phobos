@@ -475,6 +475,11 @@ public:
 		Nullable<Mission> ParadropMission;
 		Nullable<Mission> AIParadropMission;
 
+		Nullable<int> PenetratesTransport_Level;
+		Valueable<double> PenetratesTransport_PassThroughMultiplier;
+		Valueable<double> PenetratesTransport_FatalRateMultiplier;
+		Valueable<double> PenetratesTransport_DamageMultiplier;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, HealthBar_HidePips { false }
@@ -903,6 +908,11 @@ public:
 
 			, ParadropMission {}
 			, AIParadropMission {}
+
+			, PenetratesTransport_Level {}
+			, PenetratesTransport_PassThroughMultiplier { 1.0 }
+			, PenetratesTransport_FatalRateMultiplier { 1.0 }
+			, PenetratesTransport_DamageMultiplier { 1.0 }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -535,6 +535,7 @@ New:
 - Option to scale `PowerSurplus` setting if enabled to current power drain with `PowerSurplus.ScaleToDrainAmount` (by Starkku)
 - Global default value for `DefaultToGuardArea` (by TaranDahl)
 - [Weapon range finding in cylinder](New-or-Enhanced-Logics.md#range-finding-in-cylinder) (by TaranDahl)
+- Penetrates damage on transporter (by NetsuNegi)
 - Added amount limit of `LimboKill` (by NetsuNegi)
 
 Vanilla fixes:

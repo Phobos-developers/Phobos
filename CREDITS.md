@@ -492,6 +492,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizable disk drain logic
   - Fix the bug that cause technos teleport to cell 0,0 by ChronoSphere superweapon
   - Fix the bug that techno in attack move will move to target if it cannot attack it
+  - Penetrates damage on transporter
   - Add amount limit of `LimboKill`
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
