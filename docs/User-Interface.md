@@ -288,9 +288,8 @@ ShowPlacementPreview=yes   ; boolean
 ### Real time timers
 
 - Timers can now display values in real time, taking game speed into account. This can be enabled with `RealTimeTimers=true`.
-- By default, time is calculated relative to desired framerate. Enabling `RealTimeTimers.Adaptive` (always true for unlimited FPS and custom speeds) will calculate time relative to *current* FPS, accounting for lag.
-  - When playing with unlimited FPS (or custom speed above 60 FPS), the timers might constantly change value because of the unstable nature.
-- This option respects custom game speeds.
+- By default, time is calculated relative to the desired framerate for the current GameSpeed. Enabling `RealTimeTimers.Adaptive` (always forced on when GameSpeed is 0/Fastest or a custom game speed is active) will calculate time relative to *current* FPS, accounting for lag.
+  - When playing with a custom FPS above 60, the timers might constantly fluctuate due to frame-to-frame variance.
 
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
 

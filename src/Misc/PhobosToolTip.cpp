@@ -109,7 +109,7 @@ inline static int TickTimeToSeconds(int tickTime)
 
 	if (Phobos::Config::RealTimeTimers_Adaptive
 		|| GameOptionsClass::Instance.GameSpeed == 0
-		|| (Phobos::Misc::CustomGS && !SessionClass::IsMultiplayer()))
+		|| (Phobos::Misc::EnableCustomFPS && Phobos::Misc::CustomGameSpeedFPS[GameOptionsClass::Instance.GameSpeed] > 0))
 	{
 		return tickTime / std::max((int)FPSCounter::CurrentFrameRate, 1);
 	}

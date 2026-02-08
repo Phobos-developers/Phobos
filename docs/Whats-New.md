@@ -32,6 +32,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From post-0.3 devbuilds
 
+- `CustomGS` and related keys (`CustomGSN.ChangeInterval`, `CustomGSN.ChangeDelay`, `CustomGSN.DefaultDelay`) have been deprecated and replaced by the new direct FPS control system. Use `EnableCustomFPS=true` and `CustomGameSpeedFPS.N` keys instead to set target FPS for each game speed position. The new system works across skirmish, campaign, and multiplayer modes. See [Custom game speed](Miscellanous.md#custom-game-speed) for details.
 - Ivan bombs no longer automatically center on building when attached. Set `[CombatDamage] -> IvanBombAttachToCenter` to true to restore this behaviour. Due to technical constraints this cannot be customized per WeaponType.
 - `AlternateFLH` no longer affects vehicle passengers by default. To re-enable it, set `AlternateFLH.ApplyVehicle=true` on the transport unit.
 - Parsing priority of `ShowBriefing` and `BriefingTheme` between map file and `missionmd.ini` has been switched (from latter taking priority over former to vice-versa) due to technical limitations and compatibility issues with spawner DLL.
@@ -535,6 +536,7 @@ New:
 - Option to scale `PowerSurplus` setting if enabled to current power drain with `PowerSurplus.ScaleToDrainAmount` (by Starkku)
 - Global default value for `DefaultToGuardArea` (by TaranDahl)
 - [Weapon range finding in cylinder](New-or-Enhanced-Logics.md#range-finding-in-cylinder) (by TaranDahl)
+- [Enhanced custom game speed with direct FPS control and multiplayer support](Miscellanous.md#custom-game-speed) (by 11EJDE11)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
