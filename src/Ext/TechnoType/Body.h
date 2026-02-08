@@ -232,6 +232,8 @@ public:
 		Nullable<int> DeployFireWeapon;
 		Valueable<TargetZoneScanType> TargetZoneScanType;
 
+		Nullable<Leptons> AreaGuardRange;
+
 		Promotable<SHPStruct*> Insignia;
 		Valueable<Vector3D<int>> InsigniaFrames;
 		Promotable<int> InsigniaFrame;
@@ -682,6 +684,8 @@ public:
 			, Explodes_DuringBuildup { true }
 			, DeployFireWeapon {}
 			, TargetZoneScanType { TargetZoneScanType::Same }
+
+			, AreaGuardRange {}
 
 			, Insignia {}
 			, InsigniaFrames { { -1, -1, -1 } }

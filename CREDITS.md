@@ -285,6 +285,7 @@ This page lists all the individual contributions to the project by their author.
   - Subterranean harvester pathfinding fix
   - Toggle to exclude technos from base center calculations
   - Deploy priority filtering
+  - Guard range customizations
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

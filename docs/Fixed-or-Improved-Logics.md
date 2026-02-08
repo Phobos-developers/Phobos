@@ -1844,6 +1844,17 @@ AIAttackMoveTargetingDelay=          ; integer, game frames
 PlayerAttackMoveTargetingDelay=      ; integer, game frames
 ```
 
+### Target scan/guard range customizations
+
+- Target scan range is no longer capped to 16 cells under some circumstances f.ex on `Area Guard` or `Patrol` mission.
+- `AreaGuardRange` overrides explicit `GuardRange` setting for technos currently on `Area Guard` mission (f.ex guard mode command). As per usual, `GuardRange` in itself defaults to highest range between technos weapons if set to 0 or omitted.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]     ; TechnoType
+AreaGuardRange=  ; floating point value, distance in cells
+```
+
 ### Voxel body multi-section shadows
 
 ![image](_static/images/uh0-be.gif)
