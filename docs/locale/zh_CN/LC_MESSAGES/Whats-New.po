@@ -53,6 +53,7 @@ msgid ""
 "limit on units with higher weapon range, set `AreaGuardRange=16` or on "
 "the unit(s)."
 msgstr ""
+"处于 `Area Guard` 或 `Patrol` 任务的单位其有效扫描范围不再被硬编码限制为 16 个单元格。如果你希望为使用较远武器射程的单位复原此限制，请在单位上设置 `AreaGuardRange=16`。"
 
 #: ../../Whats-New.md:14
 msgid ""
@@ -2549,6 +2550,8 @@ msgid ""
 "[Customizations for techno type target scan/guard range](Fixed-or-"
 "Improved-Logics.md#target-scan-guard-range-customizations) (by Starkku)"
 msgstr ""
+"[自定义单位目标搜索／警戒的距离](Fixed-or-"
+"Improved-Logics.md#target-scan-guard-range-customizations)（by Starkku）"
 
 #: ../../Whats-New.md:543 ../../Whats-New.md:660 ../../Whats-New.md:846
 #: ../../Whats-New.md:1204 ../../Whats-New.md:1313 ../../Whats-New.md:1338

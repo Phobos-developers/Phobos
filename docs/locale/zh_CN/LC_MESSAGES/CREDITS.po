@@ -1130,7 +1130,7 @@ msgstr "自定义空降单位任务"
 
 #: ../../../CREDITS.md:290
 msgid "Guard range customizations"
-msgstr ""
+msgstr "自定义警戒范围"
 
 #: ../../../CREDITS.md:291
 msgid "**Morton (MortonPL)**:"

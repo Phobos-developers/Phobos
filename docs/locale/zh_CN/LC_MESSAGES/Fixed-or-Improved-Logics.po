@@ -6530,13 +6530,14 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:1847
 msgid "Target scan/guard range customizations"
-msgstr ""
+msgstr "自定义目标扫描／警戒的距离"
 
 #: ../../Fixed-or-Improved-Logics.md:1849
 msgid ""
 "Target scan range is no longer capped to 16 cells under some "
 "circumstances f.ex on `Area Guard` or `Patrol` mission."
 msgstr ""
+"例如处于 `Area Guard` 或 `Patrol` 任务的某些情况下目标扫描距离不再限制为 16 个单元格。"
 
 #: ../../Fixed-or-Improved-Logics.md:1850
 msgid ""
@@ -6545,12 +6546,16 @@ msgid ""
 "usual, `GuardRange` in itself defaults to highest range between technos "
 "weapons if set to 0 or omitted."
 msgstr ""
+"`AreaGuardRange` 会覆盖当前处于 `Area Guard` 任务中（例如被下达警戒命令）的单位自身显式设置的 `GuardRange` 值。"
+"一般来说，如果 `GuardRange` 为 0 或未设置则它会默认使用单位所有武器射程中最大的那个。"
 
 #: ../../Fixed-or-Improved-Logics.md:1853
 msgid ""
 "[SOMETECHNO]     ; TechnoType\n"
 "AreaGuardRange=  ; floating point value, distance in cells\n"
 msgstr ""
+"[SOMETECHNO]     ; TechnoType\n"
+"AreaGuardRange=  ; floating point value, distance in cells\n"
 
 #: ../../Fixed-or-Improved-Logics.md:1858
 msgid "Voxel body multi-section shadows"
