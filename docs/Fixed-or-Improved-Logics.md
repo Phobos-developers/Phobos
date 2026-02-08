@@ -151,7 +151,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed disguised units not using the correct palette if target has custom palette.
 - Building upgrades now consistently use building's `PowerUpN` animation settings corresponding to the upgrade's `PowersUpToLevel` where possible.
 - Subterranean units are no longer allowed to perform deploy functions like firing weapons or `IsSimpleDeployer` while burrowed or burrowing, they will instead emerge first like they do for transport unloading.
-- The otherwise unused setting `[AI] -> PowerSurplus` (defaults to 50) which determines how much surplus power AI players will strive to have can be restored by setting `[AI] -> EnablePowerSurplus` to true.
+- The otherwise unused setting `[AI] -> PowerSurplus` (defaults to 50) which determines how much surplus power AI players will strive to have can be restored by setting `[AI] -> EnablePowerSurplus` to true. Additional option `[AI] -> PowerSurplus.ScaleToDrainAmount` if set to value higher than 0 makes it so that power surplus multiplied by current power drain / `PowerSurplus.ScaleToDrainAmount`.
 - Planning paths are now shown for all units under player control or when `[GlobalControls] -> DebugPlanningPaths=yes` in singleplayer game modes.
 - Fixed `Temporal=true` Warheads potentially crashing game if used to attack `Slaved=true` infantry.
 - Fixed some locomotors (Tunnel, Walk, Mech) getting stuck when moving too fast.
@@ -294,6 +294,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `ProductionAnim` is now available for `Factory=InfantryType` as well as non-`ConstructionYard=true` `Factory=BuildingType` buildings. `IdleAnim` will cease to play for its duration normally as well.
 - Fixed the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon.
 - Fixed the issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team.
+- Allow the default value of `DefaultToGuardArea` to be defined by `[General] -> DefaultToGuardArea`.
+- Fixed the bug that cause technos teleport to cell 0,0 by ChronoSphere superweapon.
+- Fixed the bug that techno in attack move will move to target if it cannot attack it.
 
 ## Fixes / interactions with other extensions
 

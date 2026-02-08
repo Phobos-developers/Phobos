@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <RulesClass.h>
 #include <Utilities/Container.h>
@@ -111,6 +111,7 @@ public:
 		Valueable<bool> ForbidParallelAIQueues_Vehicle;
 
 		Valueable<bool> EnablePowerSurplus;
+		Valueable<int> PowerSurplus_ScaleToDrainAmount;
 
 		Valueable<bool> DisplayIncome;
 		Valueable<bool> DisplayIncome_AllowAI;
@@ -309,6 +310,10 @@ public:
 		Valueable<Mission> ParadropMission;
 		Valueable<Mission> AIParadropMission;
 
+		Valueable<bool> DefaultToGuardArea;
+
+		Valueable<bool> CylinderRangefinding;
+
 		Valueable<int> PenetratesTransport_Level;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
@@ -393,6 +398,7 @@ public:
 			, ForbidParallelAIQueues_Vehicle { false }
 
 			, EnablePowerSurplus { false }
+			, PowerSurplus_ScaleToDrainAmount { 0 }
 
 			, AllowDeployControlledMCV { false }
 
@@ -562,6 +568,10 @@ public:
 
 			, ParadropMission { Mission::Guard }
 			, AIParadropMission { Mission::Hunt }
+
+			, DefaultToGuardArea { false }
+
+			, CylinderRangefinding { false }
 
 			, PenetratesTransport_Level { 10 }
 		{ }

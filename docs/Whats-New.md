@@ -532,6 +532,9 @@ New:
 - [Customize whether weapon can be used to targeting ironcurtained technos or not](New-or-Enhanced-Logics.md#customize-whether-weapon-can-target-iron-curtained-technos) (by NetsuNegi)
 - Customizable disk drain logic (by NetsuNegi)
 - [Customizable paradropped unit missions](Fixed-or-Improved-Logics.md#customizable-paradrop-missions) (by Starkku)
+- Option to scale `PowerSurplus` setting if enabled to current power drain with `PowerSurplus.ScaleToDrainAmount` (by Starkku)
+- Global default value for `DefaultToGuardArea` (by TaranDahl)
+- [Weapon range finding in cylinder](New-or-Enhanced-Logics.md#range-finding-in-cylinder) (by TaranDahl)
 - Penetrates damage on transporter (by NetsuNegi)
 
 Vanilla fixes:
@@ -588,6 +591,8 @@ Vanilla fixes:
 - Fixed the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon (by NetsuNegi)
 - Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat (by TaranDahl)
 - Fixed the issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team (by TaranDahl)
+- Fixed the bug that cause technos teleport to cell 0,0 by ChronoSphere superweapon (by NetsuNegi)
+- Fixed the bug that techno in attack move will move to target if it cannot attack it (by NetsuNegi)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
