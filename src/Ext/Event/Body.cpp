@@ -16,22 +16,8 @@ void EventExt::RespondEvent()
 	switch (this->Type)
 	{
 	case EventTypeExt::ApproachObject:
-	{
-		const auto pSource = this->ApproachObject.Whom.As_Foot();
-
-		if (!pSource || pSource->Owner->ArrayIndex != this->HouseIndex)
-			break;
-
-		const auto pObject = this->ApproachObject.Target.As_Object();
-
-		if (!pObject)
-			break;
-
-		const auto pOriginalTarget = std::exchange(pSource->Target, pObject);
-		pSource->vt_entry_53C(0);
-		pSource->Target = pOriginalTarget;
+		this->RespondApproachObject();
 		break;
-	}
 
 	default:
 		break;
@@ -55,6 +41,23 @@ size_t EventExt::GetDataSize(EventTypeExt type)
 bool EventExt::IsValidType(EventTypeExt type)
 {
 	return (type >= EventTypeExt::FIRST && type <= EventTypeExt::LAST);
+}
+
+void EventExt::RespondApproachObject()
+{
+	const auto pSource = this->ApproachObject.Whom.As_Foot();
+
+	if (!pSource || pSource->Owner->ArrayIndex != this->HouseIndex)
+		return;
+
+	const auto pObject = this->ApproachObject.Target.As_Object();
+
+	if (!pObject)
+		return;
+
+	const auto pOriginalTarget = std::exchange(pSource->Target, pObject);
+	pSource->vt_entry_53C(0);
+	pSource->Target = pOriginalTarget;
 }
 
 // hooks

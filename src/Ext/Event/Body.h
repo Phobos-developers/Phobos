@@ -38,6 +38,8 @@ public:
 	bool AddEvent();
 	void RespondEvent();
 
+	void RespondApproachObject();
+
 	static size_t GetDataSize(EventTypeExt type);
 	static bool IsValidType(EventTypeExt type);
 };

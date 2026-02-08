@@ -8,7 +8,6 @@
 #include <Ext/SWType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
-#include <Ext/Event/Body.h>
 
 /*
 	Allow usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable
@@ -1386,21 +1385,14 @@ DEFINE_HOOK(0x4D77BD, FootClass_ObjectClickedAction_NoMove, 0x6)
 		return 0;
 
 	GET(FootClass*, pThis, ESI);
-	const auto pOwner = pThis->Owner;
 
-	if (pOwner->IsAlliedWith(pTargetTechno->Owner))
+	if (pThis->Owner->IsAlliedWith(pTargetTechno->Owner))
 		return 0;
 
 	if (!pThis->IsActive())
 		return ReturnFalse;
 
-	EventExt event {};
-	event.Type = EventTypeExt::ApproachObject;
-	event.HouseIndex = pOwner->ArrayIndex;
-	event.Frame = Unsorted::CurrentFrame;
-	event.ApproachObject.Whom = TargetClass(pThis);
-	event.ApproachObject.Target = TargetClass(pTarget);
-	event.AddEvent();
+	TechnoExt::ClickedApproachObject(pThis, pTarget);
 	return ReturnTrue;
 }
 
