@@ -1152,7 +1152,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AttackMove_KeepTargetRange.Read(exINI, pSection, "AttackMove.KeepTargetRange");
 	this->AttackMove_KeepTargetRangeAddend.Read(exINI, pSection, "AttackMove.KeepTargetRangeAddend");
-	this->AttackMove_KeepTargetRangeMultiplier.Read(exINI, pSection, "AttackMove.KeepTaragetRangeMultiplier");
+	this->AttackMove_KeepTargetRangeMultiplier.Read(exINI, pSection, "AttackMove.KeepTargetRangeMultiplier");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");

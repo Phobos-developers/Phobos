@@ -365,7 +365,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->CylinderRangefinding.Read(exINI, GameStrings::General, "CylinderRangefinding");
 
 	this->AttackMove_KeepTargetRangeAddend.Read(exINI, GameStrings::General, "AttackMove.KeepTargetRangeAddend");
-	this->AttackMove_KeepTargetRangeMultiplier.Read(exINI, GameStrings::General, "AttackMove.KeepTaragetRangeMultiplier");
+	this->AttackMove_KeepTargetRangeMultiplier.Read(exINI, GameStrings::General, "AttackMove.KeepTargetRangeMultiplier");
 	
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
