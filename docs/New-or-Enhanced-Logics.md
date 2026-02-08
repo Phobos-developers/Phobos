@@ -1521,6 +1521,33 @@ Tint.Intensity=0.0        ; floating point value
 Tint.VisibleToHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
+### Customizable disk drain logic
+
+- It is possible to set properties of drain logic per technotypes.
+  - `DrainMoneyDisplay` and `DrainMoneyDisplay.OnTarget` determine whether drain money will be displayed at firer and target respectively.
+  - `DrainMoneyDisplay.Houses` determines which houses can see the credits display on firer.
+  - `DrainMoneyDisplay.Offset` is additional pixel offset for the center of the credits display, by default `0,0` at firer's center.
+  - `DrainMoneyDisplay.OnTarget.UseDisplayIncome` determines whether drain money display on target will use its `DisplayIncome.Houses` and `DisplayIncome.Offset` settings. If set to false, it'll respect the firer's `DrainMoneyDisplay.Houses` and `DrainMoneyDisplay.Offset` settings instead.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+DrainMoneyDisplay=false                             ; boolean
+DrainMoneyDisplay.Houses=all                        ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DrainMoneyDisplay.OnTarget=false                    ; boolean
+DrainMoneyDisplay.OnTarget.UseDisplayIncome=true    ; boolean
+
+[SOMETECHNO]                                        ; TechnoType
+DrainMoneyFrameDelay=                               ; integer, default to [CombatDamage] -> DrainMoneyFrameDelay
+DrainMoneyAmount=                                   ; integer, default to [CombatDamage] -> DrainMoneyAmount
+DrainAnimationType=                                 ; AnimationType, default to [CombatDamage] -> DrainAnimationType
+DrainMoneyDisplay=                                  ; boolean, default to [AudioVisual] -> DrainMoneyDisplay
+DrainMoneyDisplay.Houses=                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to [AudioVisual] -> DrainMoneyDisplay.Houses
+DrainMoneyDisplay.Offset=0,0                        ; X,Y, pixels relative to default
+DrainMoneyDisplay.OnTarget=                         ; boolean, default to [AudioVisual] -> DrainMoneyDisplay.OnTarget
+DrainMoneyDisplay.OnTarget.UseDisplayIncome=        ; boolean
+```
+
 ### Customizable OpenTopped properties
 
 - You can now override global `OpenTopped` transport properties per TechnoType.
@@ -2154,33 +2181,6 @@ WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
 
-### Customizable disk drain logic
-
-- It is possible to set properties of drain logic per technotypes.
-  - `DrainMoneyDisplay` and `DrainMoneyDisplay.OnTarget` determine whether drain money will be displayed at firer and target respectively.
-  - `DrainMoneyDisplay.Houses` determines which houses can see the credits display on firer.
-  - `DrainMoneyDisplay.Offset` is additional pixel offset for the center of the credits display, by default `0,0` at firer's center.
-  - `DrainMoneyDisplay.OnTarget.UseDisplayIncome` determines whether drain money display on target will use its `DisplayIncome.Houses` and `DisplayIncome.Offset` settings. If set to false, it'll respect the firer's `DrainMoneyDisplay.Houses` and `DrainMoneyDisplay.Offset` settings instead.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-DrainMoneyDisplay=false                             ; boolean
-DrainMoneyDisplay.Houses=all                        ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-DrainMoneyDisplay.OnTarget=false                    ; boolean
-DrainMoneyDisplay.OnTarget.UseDisplayIncome=true    ; boolean
-
-[SOMETECHNO]                                        ; TechnoType
-DrainMoneyFrameDelay=                               ; integer, default to [CombatDamage] -> DrainMoneyFrameDelay
-DrainMoneyAmount=                                   ; integer, default to [CombatDamage] -> DrainMoneyAmount
-DrainAnimationType=                                 ; AnimationType, default to [CombatDamage] -> DrainAnimationType
-DrainMoneyDisplay=                                  ; boolean, default to [AudioVisual] -> DrainMoneyDisplay
-DrainMoneyDisplay.Houses=                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to [AudioVisual] -> DrainMoneyDisplay.Houses
-DrainMoneyDisplay.Offset=0,0                        ; X,Y, pixels relative to default
-DrainMoneyDisplay.OnTarget=                         ; boolean, default to [AudioVisual] -> DrainMoneyDisplay.OnTarget
-DrainMoneyDisplay.OnTarget.UseDisplayIncome=        ; boolean
-```
-
 ## Terrain
 
 ### Destroy animation & sound
@@ -2643,8 +2643,11 @@ RemoveParasite=   ; boolean
   - `PenetratesTransport.DamageMultiplier` is multiplier of damage on passenger.
   - `PenetratesTransport.CleanSound` will play when all passengers has been killed.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+PenetratesTransport.Level=10                    ; integer, default value of [TechnoType] -> PenetratesTransport.Level
+
 [SOMEWARHEAD]                                   ; WarheadType
 PenetratesTransport.Level=0                     ; integer
 PenetratesTransport.PassThrough=1.0             ; double
@@ -2654,13 +2657,10 @@ PenetratesTransport.DamageAll=false             ; boolean
 PenetratesTransport.CleanSound=                 ; sound entry
 
 [SOMETECHNO]                                    ; TechnoType
-PenetratesTransport.Level=                      ; integer
+PenetratesTransport.Level=                      ; integer, default to [CombatDamage] -> PenetratesTransport.Level
 PenetratesTransport.PassThroughMultiplier=1.0   ; double
 PenetratesTransport.FatalRateMultiplier=1.0     ; double
 PenetratesTransport.DamageMultiplier=1.0        ; double
-
-[CombatDamage]
-PenetratesTransport.Level=10                    ; integer, default value of technotype's penetrate level
 ```
 
 ### Remove disguise on impact
@@ -3051,16 +3051,16 @@ OmniFire.TurnToTarget=no  ; boolean
 ### Range finding in cylinder
 
 - In vanilla, technos in air will ignore the distance in Z axis when checking if the target is in range. Now you can use the following flags to make technos always range finding like that.
-- `[General]->CylinderRangefinding` controls this globally, and can be customized per weapon type.
+- `[General] -> CylinderRangefinding` controls this globally, and can be customized per weapon type.
 - Mind that set the flags to `false` meaning "use default" rather than "disable". Technos in air will always range finding in cylinder like vanilla, despite what you set.
 
 In `rulesmd.ini`:
 ```ini
-[General]                         ; WeaponType
-CylinderRangefinding=false  ; boolean
+[General]
+CylinderRangefinding=false        ; boolean
 
 [SOMEWEAPON]                      ; WeaponType
-CylinderRangefinding=       ; boolean
+CylinderRangefinding=             ; boolean
 ```
 
 ### Strafing aircraft weapon customization

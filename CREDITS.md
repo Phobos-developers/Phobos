@@ -285,6 +285,7 @@ This page lists all the individual contributions to the project by their author.
   - Subterranean harvester pathfinding fix
   - Toggle to exclude technos from base center calculations
   - Deploy priority filtering
+  - Customizable paradrop missions
   - Guard range customizations
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
@@ -408,8 +409,8 @@ This page lists all the individual contributions to the project by their author.
   - Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`
   - Attack non-threatening structures extensions
   - Vehicle Deployment Enhancement
-  - Fixed an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals
-  - Fixed an issue where mining vehicles could not move after leaving a tank bunker
+  - Fix an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals
+  - Fix an issue where mining vehicles could not move after leaving a tank bunker
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -691,7 +692,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the AI would set anger towards friendly houses, causing it to act stupidly
   - Fix an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies
   - `AllowBerzerkOnAllies`
-  - Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat
+  - Fix an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat
   - Fix an issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team
   - Global default value for `DefaultToGuardArea`
   - Weapon range finding in cylinder
