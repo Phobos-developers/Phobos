@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-11 22:24+0800\n"
+"POT-Creation-Date: 2026-02-09 02:29+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -162,30 +162,10 @@ msgstr ""
 msgid "In `rulesmd.ini`:"
 msgstr "在 `rulesmd.ini`："
 
-#: ../../AI-Scripting-and-Mapping.md:39
-msgid ""
-"[Basic]\n"
-"RepairBaseNodes=false              ; boolean\n"
-msgstr ""
-"[Basic]\n"
-"RepairBaseNodes=false              ; boolean\n"
-
 #: ../../AI-Scripting-and-Mapping.md:44 ../../AI-Scripting-and-Mapping.md:74
 #: ../../AI-Scripting-and-Mapping.md:109
 msgid "In map file:"
 msgstr "在地图文件："
-
-#: ../../AI-Scripting-and-Mapping.md:45
-msgid ""
-"[Country House]\n"
-"RepairBaseNodes=                   ; List of 3 booleans indicating "
-"whether AI repair basenodes in Easy / Normal / Difficult game diffculty."
-"\n"
-msgstr ""
-"[Country House]\n"
-"RepairBaseNodes=                   ; List of 3 booleans indicating "
-"whether AI repair basenodes in Easy / Normal / Difficult game diffculty."
-"\n"
 
 #: ../../AI-Scripting-and-Mapping.md:50
 msgid "Default loading screen and briefing offsets"
@@ -203,26 +183,6 @@ msgstr "现在可以为单人战役地图的载入图像素偏移值和载入图
 #: ../../AI-Scripting-and-Mapping.md:102
 msgid "In `missionmd.ini`:"
 msgstr "在 `missionmd.ini`："
-
-#: ../../AI-Scripting-and-Mapping.md:55
-msgid ""
-"[Defaults]\n"
-"DefaultLS640BriefLocX=0  ; integer\n"
-"DefaultLS640BriefLocY=0  ; integer\n"
-"DefaultLS800BriefLocX=0  ; integer\n"
-"DefaultLS800BriefLocY=0  ; integer\n"
-"DefaultLS640BkgdName=    ; filename - including the .shp extension.\n"
-"DefaultLS800BkgdName=    ; filename - including the .shp extension.\n"
-"DefaultLS800BkgdPal=     ; filename - including the .pal extension\n"
-msgstr ""
-"[Defaults]\n"
-"DefaultLS640BriefLocX=0  ; integer\n"
-"DefaultLS640BriefLocY=0  ; integer\n"
-"DefaultLS800BriefLocX=0  ; integer\n"
-"DefaultLS800BriefLocY=0  ; integer\n"
-"DefaultLS640BkgdName=    ; filename - including the .shp extension.\n"
-"DefaultLS800BkgdName=    ; filename - including the .shp extension.\n"
-"DefaultLS800BkgdPal=     ; filename - including the .pal extension\n"
 
 #: ../../AI-Scripting-and-Mapping.md:67
 msgid ""
@@ -244,14 +204,6 @@ msgstr ""
 "现在你可以通过设置 `[Basic] -> MCVRedeploys` 来决定单人战役中的基地车能否重部署。这会覆盖 "
 "`[MultiplayerDialogSettings] -> MCVRedeploys` 但仅生效于单人战役地图中。"
 
-#: ../../AI-Scripting-and-Mapping.md:75
-msgid ""
-"[Basic]\n"
-"MCVRedeploys=                 ; boolean\n"
-msgstr ""
-"[Basic]\n"
-"MCVRedeploys=                 ; boolean\n"
-
 #: ../../AI-Scripting-and-Mapping.md:80
 msgid "Set par times and related string labels in missionmd.ini"
 msgstr "在 missionmd.ini 中设置最佳时间和相关字符串条目"
@@ -265,26 +217,6 @@ msgid ""
 msgstr ""
 "默认情况下单人战役地图的最佳通关时间和消息文本是在地图文件自身的 `[Ranking]` 小节中定义的。现在也可以在 "
 "`missionmd.ini` 的地图文件小节中设置这些值，并且这些值会优先于地图文件中的设置，若未设置则使用地图文件中的内容为默认值。"
-
-#: ../../AI-Scripting-and-Mapping.md:85
-msgid ""
-"[SOMEMISSION]             ; Filename of mission map\n"
-"Ranking.ParTimeEasy=      ; time string (hh:mm:ss)\n"
-"Ranking.ParTimeMedium=    ; time string (hh:mm:ss)\n"
-"Ranking.ParTimeHard=      ; time string (hh:mm:ss)\n"
-"Ranking.UnderParTitle=    ; CSF entry key\n"
-"Ranking.UnderParMessage=  ; CSF entry key\n"
-"Ranking.OverParTitle=     ; CSF entry key\n"
-"Ranking.OverParMessage=   ; CSF entry key\n"
-msgstr ""
-"[SOMEMISSION]             ; Filename of mission map\n"
-"Ranking.ParTimeEasy=      ; time string (hh:mm:ss)\n"
-"Ranking.ParTimeMedium=    ; time string (hh:mm:ss)\n"
-"Ranking.ParTimeHard=      ; time string (hh:mm:ss)\n"
-"Ranking.UnderParTitle=    ; CSF entry key\n"
-"Ranking.UnderParMessage=  ; CSF entry key\n"
-"Ranking.OverParTitle=     ; CSF entry key\n"
-"Ranking.OverParMessage=   ; CSF entry key\n"
 
 #: ../../AI-Scripting-and-Mapping.md:96
 msgid "Show briefing dialog on startup"
@@ -324,63 +256,13 @@ msgstr ""
 "`ShowBriefingResumeButtonStatusLabel` "
 "来自定义启动简报对话框界面恢复按钮的字符串标签以及按钮的状态文本。它们默认为在其他情况下打开简报对话框界面时使用相同的标签"
 
-#: ../../AI-Scripting-and-Mapping.md:103
-msgid ""
-"[SOMEMISSION]   ; Filename of mission map\n"
-"ShowBriefing=   ; boolean\n"
-"BriefingTheme=  ; Theme name\n"
-msgstr ""
-"[SOMEMISSION]   ; Filename of mission map\n"
-"ShowBriefing=   ; boolean\n"
-"BriefingTheme=  ; Theme name\n"
-
-#: ../../AI-Scripting-and-Mapping.md:110
-msgid ""
-"[Basic]\n"
-"ShowBriefing=false  ; boolean\n"
-"BriefingTheme=      ; Theme name\n"
-msgstr ""
-"[Basic]\n"
-"ShowBriefing=false  ; boolean\n"
-"BriefingTheme=      ; Theme name\n"
-
-#: ../../AI-Scripting-and-Mapping.md:117
-msgid ""
-"[SOMESIDE]      ; Side\n"
-"BriefingTheme=  ; Theme name\n"
-msgstr ""
-"[SOMESIDE]      ; Side\n"
-"BriefingTheme=  ; Theme name\n"
-
 #: ../../AI-Scripting-and-Mapping.md:122
 msgid "In `uimd.ini`:"
 msgstr "在 `uimd.ini`："
 
-#: ../../AI-Scripting-and-Mapping.md:123
-msgid ""
-"[UISettings]\n"
-"ShowBriefingResumeButtonLabel=GUI:Resume                      ; CSF entry"
-" key\n"
-"ShowBriefingResumeButtonStatusLabel=STT:BriefingButtonReturn  ; CSF entry"
-" key\n"
-msgstr ""
-"[UISettings]\n"
-"ShowBriefingResumeButtonLabel=GUI:Resume                      ; CSF entry"
-" key\n"
-"ShowBriefingResumeButtonStatusLabel=STT:BriefingButtonReturn  ; CSF entry"
-" key\n"
-
 #: ../../AI-Scripting-and-Mapping.md:129
 msgid "In `RA2MD.INI`:"
 msgstr "在 `RA2MD.INI`："
-
-#: ../../AI-Scripting-and-Mapping.md:130
-msgid ""
-"[Phobos]\n"
-"ShowBriefing=true  ; boolean\n"
-msgstr ""
-"[Phobos]\n"
-"ShowBriefing=true  ; boolean\n"
 
 #: ../../AI-Scripting-and-Mapping.md:135
 msgid "Script Actions"
@@ -443,14 +325,6 @@ msgstr ""
 #: ../../AI-Scripting-and-Mapping.md:495 ../../AI-Scripting-and-Mapping.md:506
 msgid "In `aimd.ini`:"
 msgstr "在 `aimd.ini`："
-
-#: ../../AI-Scripting-and-Mapping.md:147 ../../AI-Scripting-and-Mapping.md:231
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=i,n             ; For i values check the next table\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=i,n             ; For i values check the next table\n"
 
 #: ../../AI-Scripting-and-Mapping.md:66
 msgid "*Action*"
@@ -1100,18 +974,6 @@ msgstr ""
 "**`AITargetTypes` 索引 #** 值在新的 `AITargetTypes` 小节中获取，该小节必须在 `rulesmd.ini` "
 "中声明："
 
-#: ../../AI-Scripting-and-Mapping.md:219
-msgid ""
-"[AITargetTypes]  ; List of TechnoType lists\n"
-"0=SOMETECHNOTYPE,SOMEOTHERTECHNOTYPE,SAMPLETECHNOTYPE\n"
-"1=ANOTHERTECHNOTYPE,YETANOTHERTECHNOTYPE\n"
-"...\n"
-msgstr ""
-"[AITargetTypes]  ; List of TechnoType lists\n"
-"0=SOMETECHNOTYPE,SOMEOTHERTECHNOTYPE,SAMPLETECHNOTYPE\n"
-"1=ANOTHERTECHNOTYPE,YETANOTHERTECHNOTYPE\n"
-"...\n"
-
 #: ../../AI-Scripting-and-Mapping.md:226
 msgid "`10050-10099` Move Team to Techno Location actions"
 msgstr "`10050-10099` 移动小队至科技类型位置行为"
@@ -1207,14 +1069,6 @@ msgid ""
 "attacking nearby invaders or defending units that needs protection."
 msgstr "可以让特遣部队中的单位一定时间内进入区域警戒模式。与原本只能待在运抵进行基本的警戒命令（`5,n`）不同：它可以更主动地攻击入侵附近区域的目标或保护需要保护的单位。"
 
-#: ../../AI-Scripting-and-Mapping.md:258
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=10100,n         ; integer, time in ingame seconds\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=10100,n         ; integer, time in ingame seconds\n"
-
 #: ../../AI-Scripting-and-Mapping.md:263
 msgid "`10101` Wait Until Ammo is Full"
 msgstr "`10101` 等待弹药满载"
@@ -1224,14 +1078,6 @@ msgid ""
 "If the TaskForce contains unit(s) that use ammo then the the script will "
 "not continue until all these units have fully refilled the ammo."
 msgstr "如果特遣部队中包含使用弹药的单位那么在这些单位弹药满载前脚本不会继续。"
-
-#: ../../AI-Scripting-and-Mapping.md:268
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=10101,0\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=10101,0\n"
 
 #: ../../AI-Scripting-and-Mapping.md:273
 msgid "`10102` Regroup Temporarily Around the Team Leader"
@@ -1247,14 +1093,6 @@ msgstr ""
 "将特遣部队围绕小队队长（该单位在此期间几乎保持不动）进入区域警戒模式给定的事件值。默认的半径是 `[General] -> "
 "CloseEnough` 且单位不会离开此区域。"
 
-#: ../../AI-Scripting-and-Mapping.md:278
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=10102,n\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=10102,n\n"
-
 #: ../../AI-Scripting-and-Mapping.md:283
 msgid "`10103` Load onto Transports"
 msgstr "`10103` 装载入运输载具"
@@ -1266,14 +1104,6 @@ msgid ""
 "transports. In single player missions the next action must be \"Wait "
 "until fully loaded\" (`43,0`) or the script will not continue."
 msgstr "如果特遣部队中包含可以被同一特遣部队的运输工具装载的单位，那么该行为会让这些单位进入运输工具。在单人任务地图中，下一个操作必须是等待到满载（`43,0`）否则脚本将不会继续执行。"
-
-#: ../../AI-Scripting-and-Mapping.md:288
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=10103,0\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=10103,0\n"
 
 #: ../../AI-Scripting-and-Mapping.md:293
 msgid "`10104` Chronoshift to Enemy Base"
@@ -1291,14 +1121,6 @@ msgstr ""
 "使用第一个可用的 `Type=ChronoSphere` 超级武器将小队类型的成员超时空传送到敌方基地附近 `[General] -> "
 "AISafeDistance`（加上参数中定义的可为负值的额外距离）格的位置。超级武器必须先加载到 `[General] -> "
 "AIMinorSuperReadyPercent` 所指定百分比才能被此行为考虑。"
-
-#: ../../AI-Scripting-and-Mapping.md:298
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=10104,n         ; integer, additional distance in cells\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=10104,n         ; integer, additional distance in cells\n"
 
 #: ../../AI-Scripting-and-Mapping.md:303
 msgid "`12000-12999` Suplementary/Setup Pre-actions"
@@ -1321,14 +1143,6 @@ msgstr ""
 "当在例如新的 `通用目标类型攻击` 动作和 `AITargetTypes 攻击` 动作脚本执行前小队类型会考虑如果未选择目标则必须等待 1 "
 "秒。第二个参数是一个用于指定未找到目标时充实多少次然后才放弃新的攻击动作脚本并跳转到下一行的参数。默认值 `0` 表示无限次重试。"
 
-#: ../../AI-Scripting-and-Mapping.md:310
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=12000,n         ; integer n=0\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=12000,n         ; integer n=0\n"
-
 #: ../../AI-Scripting-and-Mapping.md:315
 msgid "`12001` Modify Target Distance"
 msgstr "`12001` 修改目标距离"
@@ -1345,14 +1159,6 @@ msgstr ""
 "距离时结束。当该行为在`移动小队至科技类型位置`前执行时会覆盖 `CloseEnough` "
 "值。这一行为仅对接下来的第一次执行效果有影响而之后再下一次移动时仍会继续使用 `CloseEnough`。"
 
-#: ../../AI-Scripting-and-Mapping.md:320
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=12001,n\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=12001,n\n"
-
 #: ../../AI-Scripting-and-Mapping.md:325
 msgid "`12002` Set Move Action End Mode"
 msgstr "`12002` 设置移动结束参数"
@@ -1363,14 +1169,6 @@ msgid ""
 "action works only the first time and `CloseEnough` will be used again the"
 " next Movement action."
 msgstr "设置移动动作结束并跳转到下一行的方式。此操作仅在第一次执行时有效，下次移动时仍会恢复使用 `CloseEnough`。"
-
-#: ../../AI-Scripting-and-Mapping.md:330
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=12002,n\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=12002,n\n"
 
 #: ../../AI-Scripting-and-Mapping.md:335 ../../AI-Scripting-and-Mapping.md:395
 #: ../../AI-Scripting-and-Mapping.md:735
@@ -1419,14 +1217,6 @@ msgstr ""
 "动作脚本执行前小队类型会考虑如果小队目标被小队成员杀死则必须奖励增加 AI "
 "触发的当前权重。当前权重不会超过AI触发最小权重和最大权重的限制。第二个参数是一个正整数。"
 
-#: ../../AI-Scripting-and-Mapping.md:350
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=14000,n         ; integer n=0\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=14000,n         ; integer n=0\n"
-
 #: ../../AI-Scripting-and-Mapping.md:355
 msgid "`14001` Increase AI Trigger Current Weight"
 msgstr "`14001` 增加AI触发权重"
@@ -1447,14 +1237,6 @@ msgstr ""
 "AI 触发当前权重。第二个参数是一个正整数。注意原版游戏在 AI 触发周期结束时会使用两个小队中的第一个来计算 AI "
 "触发当前权重，此行为不检查小队是 AI 触发中的第一个还是第二个并在执行行为时计算当前权重。"
 
-#: ../../AI-Scripting-and-Mapping.md:360
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=14001,n\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=14001,n\n"
-
 #: ../../AI-Scripting-and-Mapping.md:365
 msgid "`14002` Decrease AI Trigger Current Weight"
 msgstr "`14002` 降低AI触发权重"
@@ -1465,14 +1247,6 @@ msgid ""
 "Details same as above."
 msgstr "当执行此行为时减少 AI 触发的当前权重。细则同上。"
 
-#: ../../AI-Scripting-and-Mapping.md:370
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=14002,n\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=14002,n\n"
-
 #: ../../AI-Scripting-and-Mapping.md:375
 msgid "`14003` Unregister Team Success"
 msgstr "`14003` 撤销小队成功"
@@ -1482,14 +1256,6 @@ msgid ""
 "Is just the opposite effect of the script action `49,0`. Like if the Team"
 " failed."
 msgstr "与动作脚本 `49,0` 相反的效果。类似小队失败。"
-
-#: ../../AI-Scripting-and-Mapping.md:380
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=14003,0\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=14003,0\n"
 
 #: ../../AI-Scripting-and-Mapping.md:385
 msgid ""
@@ -1503,14 +1269,6 @@ msgid ""
 "TeamType. Only affects the new attack / move actions introduced by "
 "Phobos."
 msgstr "全局性地强制为小队上的 `OnlyTargetHouseEnemy` 标签设置一个值。仅适用于 Phobos 新增的攻击／移动脚本。"
-
-#: ../../AI-Scripting-and-Mapping.md:390
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=14004,n         ; integer\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=14004,n         ; integer\n"
 
 #: ../../AI-Scripting-and-Mapping.md:66 ../../AI-Scripting-and-Mapping.md:522
 #: ../../AI-Scripting-and-Mapping.md:911
@@ -1548,14 +1306,6 @@ msgid ""
 " stopped with action `16002` or the team is destroyed."
 msgstr "当计时器结束时当前动作脚本结束并重新开始同一动作。计时器会会一直重复跳转（无限循环）直到被 `16002` 号结果打断或小队被摧毁。"
 
-#: ../../AI-Scripting-and-Mapping.md:411
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=16000,n         ; integer n=0, in ingame seconds\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=16000,n         ; integer n=0, in ingame seconds\n"
-
 #: ../../AI-Scripting-and-Mapping.md:416
 msgid "`16001` Start a Timed Jump to the Next Line"
 msgstr "`16001` 定时跳转至下一行"
@@ -1566,14 +1316,6 @@ msgid ""
 " in the script type list."
 msgstr "当计时器结束时当前动作脚本结束并开始脚本类型列表中下一个动作。"
 
-#: ../../AI-Scripting-and-Mapping.md:421
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=16001,n         ; integer n=0, in ingame seconds\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=16001,n         ; integer n=0, in ingame seconds\n"
-
 #: ../../AI-Scripting-and-Mapping.md:426
 msgid "`16002` Stop the Timed Jumps"
 msgstr "`16002` 停止定时跳转"
@@ -1581,14 +1323,6 @@ msgstr "`16002` 停止定时跳转"
 #: ../../AI-Scripting-and-Mapping.md:428
 msgid "If the Timed Jumps were activated this action stop the process."
 msgstr "如果激活了定时跳转则该动作将停止进程。"
-
-#: ../../AI-Scripting-and-Mapping.md:431
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=16002,0\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=16002,0\n"
 
 #: ../../AI-Scripting-and-Mapping.md:436
 msgid "`16003` Randomly Skip Next Action"
@@ -1604,14 +1338,6 @@ msgstr ""
 "执行该动作时会挑选一个在 1 和 100 之间的随机数，如果数值小于等于第二个参数则跳过下一个动作。第二个参数为 0 表示永远不会跳过下一个动作而"
 " 100 表示永远跳过下一个动作。"
 
-#: ../../AI-Scripting-and-Mapping.md:441
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=16003,n         ; where 0 > n <= 100\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=16003,n         ; where 0 > n <= 100\n"
-
 #: ../../AI-Scripting-and-Mapping.md:446
 msgid "`16004` Pick a Random Script"
 msgstr "`16004` 随机选取脚本"
@@ -1623,14 +1349,6 @@ msgid ""
 "index from the new section `AIScriptsList` explained below."
 msgstr "当执行此行为时会随机选取一个新的脚本类型并替换当前脚本。第二个参数是新的 `AIScriptsList` 小节下从 0 开始的索引。"
 
-#: ../../AI-Scripting-and-Mapping.md:451
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=16004,n\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=16004,n\n"
-
 #: ../../AI-Scripting-and-Mapping.md:456
 msgid ""
 "The second parameter is a 0-based index for the `AIScriptsList` section "
@@ -1638,18 +1356,6 @@ msgid ""
 "The new `AIScriptsList` section must be declared in `rulesmd.ini` for "
 "making this script work:"
 msgstr "第二个参数是 `AIScriptsList` 小节下从 0 开始的索引，该小节必须在 `rulesmd.ini` 中声明才能使此脚本生效："
-
-#: ../../AI-Scripting-and-Mapping.md:459
-msgid ""
-"[AIScriptsList]  ; List of ScriptType lists\n"
-"0=SOMESCRIPTTYPE,SOMEOTHERSCRIPTTYPE,SAMPLESCRIPTTYPE\n"
-"1=ANOTHERSCRIPTTYPE,YETANOTHERSCRIPTTYPE\n"
-"...\n"
-msgstr ""
-"[AIScriptsList]  ; List of ScriptType lists\n"
-"0=SOMESCRIPTTYPE,SOMEOTHERSCRIPTTYPE,SAMPLESCRIPTTYPE\n"
-"1=ANOTHERSCRIPTTYPE,YETANOTHERSCRIPTTYPE\n"
-"...\n"
 
 #: ../../AI-Scripting-and-Mapping.md:466
 msgid "`16005` Jump Back To Previous Script"
@@ -1660,14 +1366,6 @@ msgid ""
 "Used in a Random Script picked by action `94`. It can jump back to the "
 "previous script, and continue in the line after `x=94,n`."
 msgstr "在由 `94` 号动作选择的随机脚本中使用可以使其跳回到上一个脚本，并继续执行 `x=94,n` 之后的行。"
-
-#: ../../AI-Scripting-and-Mapping.md:471
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=16005,0\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=16005,0\n"
 
 #: ../../AI-Scripting-and-Mapping.md:476
 msgid "`18000-18999` Variable Manipulation"
@@ -1691,18 +1389,6 @@ msgstr "变量值由于某些原因在触发行为中值类型为 int16 而非 i
 msgid "**Any numbers exceeding this limit will lead to unexpected results!**"
 msgstr "**任何超出此范围限制的数值都可能导致无法预测的结果！**"
 
-#: ../../AI-Scripting-and-Mapping.md:485
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=i,n             ; where 18000 <= i <= 18023, n is made up of two parts,"
-" the low 16 bits is being used to store the variable index, the high 16 "
-"bits is being used for storing the param value.\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=i,n             ; where 18000 <= i <= 18023, n is made up of two parts,"
-" the low 16 bits is being used to store the variable index, the high 16 "
-"bits is being used for storing the param value.\n"
-
 #: ../../AI-Scripting-and-Mapping.md:490
 msgid "`18024 - 18047` Edit Variable using Local Variable"
 msgstr "`18024 - 18047` 使用局部变量编辑变量"
@@ -1717,18 +1403,6 @@ msgid ""
 "read from a local variable."
 msgstr "类似于 `18000-18023`，但用于操作值的数字是从局部变量中读取的。"
 
-#: ../../AI-Scripting-and-Mapping.md:496
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=i,n             ; where 18024 <= i <= 18047, n is made up of two parts,"
-" the low 16 bits is being used to store the variable index, the high 16 "
-"bits is being used for storing the local variable index.\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=i,n             ; where 18024 <= i <= 18047, n is made up of two parts,"
-" the low 16 bits is being used to store the variable index, the high 16 "
-"bits is being used for storing the local variable index.\n"
-
 #: ../../AI-Scripting-and-Mapping.md:501
 msgid "`18000 - 18071` Edit Variable using Global Variable"
 msgstr "`18000 - 18071` 使用全局变量编辑变量"
@@ -1742,18 +1416,6 @@ msgid ""
 "Similar to `18000-18023`, but the number to operate the value is being "
 "read from a global variable."
 msgstr "类似于 `18000-18023`，但用于操作值的数字是从全局变量中读取的。"
-
-#: ../../AI-Scripting-and-Mapping.md:507
-msgid ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=i,n             ; where 18048 <= i <= 18071, n is made up of two parts,"
-" the low 16 bits is being used to store the variable index, the high 16 "
-"bits is being used for storing the global variable index.\n"
-msgstr ""
-"[SOMESCRIPTTYPE]  ; ScriptType\n"
-"x=i,n             ; where 18048 <= i <= 18071, n is made up of two parts,"
-" the low 16 bits is being used to store the variable index, the high 16 "
-"bits is being used for storing the global variable index.\n"
 
 #: ../../AI-Scripting-and-Mapping.md:512
 msgid "`19000-19999` Miscellanous/Uncategorized"
@@ -1814,18 +1476,6 @@ msgstr "例如：`盟军战役25: 僵僵の钱 - 钱全被偷光了!`。"
 msgid "In `mycampaign.map`:"
 msgstr "在 `mycampaign.map`："
 
-#: ../../AI-Scripting-and-Mapping.md:531
-msgid ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],500,4,[CSFKey],0,0,0,0,A,[ActionX]\n"
-"...\n"
-msgstr ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],500,4,[CSFKey],0,0,0,0,A,[ActionX]\n"
-"...\n"
-
 #: ../../AI-Scripting-and-Mapping.md:538
 msgid "`501` Edit Variable"
 msgstr "`501` 编辑变量"
@@ -1835,20 +1485,6 @@ msgid ""
 "The variable's value type is int32, which means it ranges from -2^31 to "
 "2^31-1."
 msgstr "变量值为 int32，这表示它的范围是从 -2^31 到 2^31-1。"
-
-#: ../../AI-Scripting-and-Mapping.md:545
-msgid ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],501,0,[VariableIndex],[Operation],[Number],[IsGlobalVariable],0,A,[ActionX]"
-"\n"
-"...\n"
-msgstr ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],501,0,[VariableIndex],[Operation],[Number],[IsGlobalVariable],0,A,[ActionX]"
-"\n"
-"...\n"
 
 #: ../../AI-Scripting-and-Mapping.md:522
 msgid "*Operation*"
@@ -1912,20 +1548,6 @@ msgid ""
 "variable."
 msgstr "在 [Min, Max] 范围内生成一个随机整数并存入给定变量。"
 
-#: ../../AI-Scripting-and-Mapping.md:572
-msgid ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],502,0,[VariableIndex],[Min],[Max],[IsGlobalVariable],0,A,[ActionX]"
-"\n"
-"...\n"
-msgstr ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],502,0,[VariableIndex],[Min],[Max],[IsGlobalVariable],0,A,[ActionX]"
-"\n"
-"...\n"
-
 #: ../../AI-Scripting-and-Mapping.md:579
 msgid "`503` Print variable value"
 msgstr "`503` 输出变量的值"
@@ -1933,20 +1555,6 @@ msgstr "`503` 输出变量的值"
 #: ../../AI-Scripting-and-Mapping.md:581
 msgid "Print a variable value to the message list."
 msgstr "输出变量值至消息列表。"
-
-#: ../../AI-Scripting-and-Mapping.md:584
-msgid ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],503,0,[VariableIndex],[IsGlobalVariable],0,0,0,A,[ActionX]"
-"\n"
-"...\n"
-msgstr ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],503,0,[VariableIndex],[IsGlobalVariable],0,0,0,A,[ActionX]"
-"\n"
-"...\n"
 
 #: ../../AI-Scripting-and-Mapping.md:591
 msgid "`504` Binary Operation"
@@ -1959,20 +1567,6 @@ msgstr "将两个变量的值进行计算。"
 #: ../../AI-Scripting-and-Mapping.md:594
 msgid "Similar to `501`, but the operation number is read from another variable."
 msgstr "类似 `501`，但计算数值读取自另一变量。"
-
-#: ../../AI-Scripting-and-Mapping.md:597
-msgid ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperationIndex],[IsGlobalVariable],[IsOperationGlobalVariable],A,[ActionX]"
-"\n"
-"...\n"
-msgstr ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperationIndex],[IsGlobalVariable],[IsOperationGlobalVariable],A,[ActionX]"
-"\n"
-"...\n"
 
 #: ../../AI-Scripting-and-Mapping.md:604
 msgid "`Operation` can be looked up at action `501`."
@@ -2042,20 +1636,6 @@ msgid ""
 "values can take a random value from the visible map area."
 msgstr "坐标的 X 和 Y 可以使用正数值或使用 -1 来表示在可视区域内随机。"
 
-#: ../../AI-Scripting-and-Mapping.md:623
-msgid ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],505,0,0,[SuperWeaponTypesIndex],[HouseIndex],[CoordinateX],[CoordinateY],A,[ActionX]"
-"\n"
-"...\n"
-msgstr ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],505,0,0,[SuperWeaponTypesIndex],[HouseIndex],[CoordinateX],[CoordinateY],A,[ActionX]"
-"\n"
-"...\n"
-
 #: ../../AI-Scripting-and-Mapping.md:630
 msgid "`506` Fire Super Weapon at specified Waypoint"
 msgstr "`506` 在路径点释放超级武器"
@@ -2066,20 +1646,6 @@ msgid ""
 "waypoint."
 msgstr "在指定路径点发射 `[SuperWeaponTypes]` 列表中的超级武器。"
 
-#: ../../AI-Scripting-and-Mapping.md:636
-msgid ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],506,0,0,[SuperWeaponTypesIndex],[HouseIndex],[WaypointIndex],0,A,[ActionX]"
-"\n"
-"...\n"
-msgstr ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],506,0,0,[SuperWeaponTypesIndex],[HouseIndex],[WaypointIndex],0,A,[ActionX]"
-"\n"
-"...\n"
-
 #: ../../AI-Scripting-and-Mapping.md:643
 msgid "`510` Toggle MCV redeployablility"
 msgstr "`510` 切换基地重新部署设定"
@@ -2087,18 +1653,6 @@ msgstr "`510` 切换基地重新部署设定"
 #: ../../AI-Scripting-and-Mapping.md:645
 msgid "Force MCV's redeployablility by setting the third parameter."
 msgstr "通过设置第三个参数强制基地车能否重部署。"
-
-#: ../../AI-Scripting-and-Mapping.md:648
-msgid ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],510,0,0,[MCVRedeploy],0,0,0,A,[ActionX]\n"
-"...\n"
-msgstr ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],510,0,0,[MCVRedeploy],0,0,0,A,[ActionX]\n"
-"...\n"
 
 #: ../../AI-Scripting-and-Mapping.md:655
 msgid "`511` Undeploy Building to Waypoint"
@@ -2108,29 +1662,13 @@ msgstr "`511` 反部署建筑至路径点"
 msgid ""
 "Undeploy specific BuildingTypes into VehicleTypes and move them to a "
 "specific Waypoint."
-msgstr ""
-"反部署特定建筑类型为载具并移动至一个特定路径点。"
+msgstr "反部署特定建筑类型为载具并移动至一个特定路径点。"
 
 #: ../../AI-Scripting-and-Mapping.md:658
 msgid ""
 "If `<All>` is entered for the Building Type here, then undeploy all "
 "BuildingTypes."
-msgstr ""
-"若将此处建筑类型设为 `<All>` 则反部署所有建筑。"
-
-#: ../../AI-Scripting-and-Mapping.md:661
-msgid ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],511,-10,[BuildingTypesID],[HouseIndex],0,0,0,[WaypointIndex],[ActionX]"
-"\n"
-"...\n"
-msgstr ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],511,-10,[BuildingTypesID],[HouseIndex],0,0,0,[WaypointIndex],[ActionX]"
-"\n"
-"...\n"
+msgstr "若将此处建筑类型设为 `<All>` 则反部署所有建筑。"
 
 #: ../../AI-Scripting-and-Mapping.md:668
 msgid "`606` Edit Hate-Value"
@@ -2144,20 +1682,6 @@ msgstr "编辑触发所属方对指定所属方的仇恨值。"
 msgid "-1 works for all houses."
 msgstr "-1为 所有国家。"
 
-#: ../../AI-Scripting-and-Mapping.md:674
-msgid ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],606,0,[HouseIndex],[Operation],[Number],0,0,A,[ActionX]"
-"\n"
-"...\n"
-msgstr ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],606,0,[HouseIndex],[Operation],[Number],0,0,A,[ActionX]"
-"\n"
-"...\n"
-
 #: ../../AI-Scripting-and-Mapping.md:696
 msgid "`607` Clear Hate-Value"
 msgstr "`607` 清除仇恨值"
@@ -2165,18 +1689,6 @@ msgstr "`607` 清除仇恨值"
 #: ../../AI-Scripting-and-Mapping.md:698
 msgid "Clear the hate-value that trigger houses to other houses."
 msgstr "清空触发所属方对指定所属方的仇恨值。"
-
-#: ../../AI-Scripting-and-Mapping.md:702
-msgid ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],607,0,[HouseIndex],0,0,0,0,A,[ActionX]\n"
-"...\n"
-msgstr ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],607,0,[HouseIndex],0,0,0,0,A,[ActionX]\n"
-"...\n"
 
 #: ../../AI-Scripting-and-Mapping.md:709
 msgid "`608` Set Force Enemy"
@@ -2194,18 +1706,6 @@ msgstr "-1 会解除强制宣战。"
 msgid "-2 will never have any enemies."
 msgstr "-2 则强制没有敌人。"
 
-#: ../../AI-Scripting-and-Mapping.md:716
-msgid ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]\n"
-"...\n"
-msgstr ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]\n"
-"...\n"
-
 #: ../../AI-Scripting-and-Mapping.md:723
 msgid "`609` Set Radar Mode"
 msgstr "`609` 设置雷达模式"
@@ -2213,18 +1713,6 @@ msgstr "`609` 设置雷达模式"
 #: ../../AI-Scripting-and-Mapping.md:725
 msgid "Change the current radar mode of the trigger house."
 msgstr "更改触发所属方的当前雷达模式"
-
-#: ../../AI-Scripting-and-Mapping.md:728
-msgid ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],609,0,0,[RadarMode],0,0,0,A,[ActionX]\n"
-"...\n"
-msgstr ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],609,0,0,[RadarMode],0,0,0,A,[ActionX]\n"
-"...\n"
 
 #: ../../AI-Scripting-and-Mapping.md:522
 msgid "Normal mode, requires buildings that provide radar and sufficient power"
@@ -2254,20 +1742,7 @@ msgstr "设置触发所属方的 `TeamDelays` 值。"
 msgid ""
 "If this value is less than 0, then use the value of `[General] -> "
 "TeamDelays`."
-msgstr ""
-"若该值小于 0 则使用 `[General] -> TeamDelays` 的值。"
-
-#: ../../AI-Scripting-and-Mapping.md:750
-msgid ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],610,0,0,[Number],0,0,0,A,[ActionX]\n"
-"...\n"
-msgstr ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],610,0,0,[Number],0,0,0,A,[ActionX]\n"
-"...\n"
+msgstr "若该值小于 0 则使用 `[General] -> TeamDelays` 的值。"
 
 #: ../../AI-Scripting-and-Mapping.md:757
 msgid "`800-802` Display Banner"
@@ -2372,62 +1847,6 @@ msgid ""
 "frame if `SHP.RefreshAfterDelay` set to true."
 msgstr "一个 `SHP` 横幅会在再次显示时从上次结束时的帧开始。这可以通过 `SHP.RefreshAfterDelay=true` 更改为从头开始。"
 
-#: ../../AI-Scripting-and-Mapping.md:777
-msgid ""
-"[BannerTypes]\n"
-"0=SOMEBANNER\n"
-"\n"
-"[SOMEBANNER]                ; BannerType\n"
-"PCX=                        ; filename - including the .pcx extension\n"
-"SHP=                        ; filename - excluding the .shp extension\n"
-"SHP.Palette=palette.pal     ; filename - including the .pal extension\n"
-"SHP.RefreshAfterDelay=false ; boolean\n"
-"CSF=                        ; CSF entry key\n"
-"CSF.Color=                  ; integer - R,G,B, defaults to "
-"MessageTextColor of the owner Side\n"
-"CSF.Background=false        ; boolean\n"
-"CSF.VariableFormat=none     ; List of Variable Format Enumeration "
-"(none|variable|prefix/prefixed|surfix/surfixed)\n"
-"Duration=-1                 ; integer\n"
-"Delay=-1                    ; integer\n"
-msgstr ""
-"[BannerTypes]\n"
-"0=SOMEBANNER\n"
-"\n"
-"[SOMEBANNER]                ; BannerType\n"
-"PCX=                        ; filename - including the .pcx extension\n"
-"SHP=                        ; filename - excluding the .shp extension\n"
-"SHP.Palette=palette.pal     ; filename - including the .pal extension\n"
-"SHP.RefreshAfterDelay=false ; boolean\n"
-"CSF=                        ; CSF entry key\n"
-"CSF.Color=                  ; integer - R,G,B, defaults to "
-"MessageTextColor of the owner Side\n"
-"CSF.Background=false        ; boolean\n"
-"CSF.VariableFormat=none     ; List of Variable Format Enumeration "
-"(none|variable|prefix/prefixed|surfix/surfixed)\n"
-"Duration=-1                 ; integer\n"
-"Delay=-1                    ; integer\n"
-
-#: ../../AI-Scripting-and-Mapping.md:795
-msgid ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],800,4,[SOMEBANNER],[Unique ID],[Horizontal "
-"position],[Vertical position],[VariableIndex],A,[ActionX]\n"
-"ID=ActionCount,[Action1],801,4,[SOMEBANNER],[Unique ID],[Horizontal "
-"position],[Vertical position],[VariableIndex],A,[ActionX]\n"
-"ID=ActionCount,[Action1],802,0,[Unique ID],0,0,0,0,A,[ActionX]\n"
-"...\n"
-msgstr ""
-"[Actions]\n"
-"...\n"
-"ID=ActionCount,[Action1],800,4,[SOMEBANNER],[Unique ID],[Horizontal "
-"position],[Vertical position],[VariableIndex],A,[ActionX]\n"
-"ID=ActionCount,[Action1],801,4,[SOMEBANNER],[Unique ID],[Horizontal "
-"position],[Vertical position],[VariableIndex],A,[ActionX]\n"
-"ID=ActionCount,[Action1],802,0,[Unique ID],0,0,0,0,A,[ActionX]\n"
-"...\n"
-
 #: ../../AI-Scripting-and-Mapping.md:804
 msgid "Trigger events"
 msgstr "触发条件"
@@ -2439,18 +1858,6 @@ msgstr "`500-511` 变量比较"
 #: ../../AI-Scripting-and-Mapping.md:808
 msgid "Compares the variable's value with given number."
 msgstr "比较变量值与给定值。"
-
-#: ../../AI-Scripting-and-Mapping.md:811
-msgid ""
-"[Events]\n"
-"...\n"
-"ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[Param],[EventX]\n"
-"...\n"
-msgstr ""
-"[Events]\n"
-"...\n"
-"ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[Param],[EventX]\n"
-"...\n"
 
 #: ../../AI-Scripting-and-Mapping.md:522
 msgid "*Event ID*"
@@ -2536,20 +1943,6 @@ msgstr "`512-523` 变量与局部变量比较"
 msgid "Compares the variable's value with given local variable value."
 msgstr "比较变量值与给定局部变量值。"
 
-#: ../../AI-Scripting-and-Mapping.md:838
-msgid ""
-"[Events]\n"
-"...\n"
-"ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[LocalVariableIndex],[EventX]"
-"\n"
-"...\n"
-msgstr ""
-"[Events]\n"
-"...\n"
-"ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[LocalVariableIndex],[EventX]"
-"\n"
-"...\n"
-
 #: ../../AI-Scripting-and-Mapping.md:522
 msgid "512"
 msgstr "512"
@@ -2630,20 +2023,6 @@ msgstr "`524-535` 变量与全局变量比较"
 msgid "Compares the variable's value with given global variable value."
 msgstr "比较变量值与给定全局变量值。"
 
-#: ../../AI-Scripting-and-Mapping.md:865
-msgid ""
-"[Events]\n"
-"...\n"
-"ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[GlobalVariableIndex],[EventX]"
-"\n"
-"...\n"
-msgstr ""
-"[Events]\n"
-"...\n"
-"ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[GlobalVariableIndex],[EventX]"
-"\n"
-"...\n"
-
 #: ../../AI-Scripting-and-Mapping.md:522
 msgid "524"
 msgstr "524"
@@ -2720,18 +2099,6 @@ msgstr "535"
 msgid "`600` The shield of the attached object is broken"
 msgstr "`600` 对象护盾被摧毁"
 
-#: ../../AI-Scripting-and-Mapping.md:890
-msgid ""
-"[Events]\n"
-"...\n"
-"ID=EventCount,...,600,2,0,0,...\n"
-"...\n"
-msgstr ""
-"[Events]\n"
-"...\n"
-"ID=EventCount,...,600,2,0,0,...\n"
-"...\n"
-
 #: ../../AI-Scripting-and-Mapping.md:897
 msgid "`601-602` House owns/doesn't own Techno Type"
 msgstr "`601-602` 检查所属方是否有／无科技类型"
@@ -2751,18 +2118,6 @@ msgstr "`602`：当指定所属方没有任何一个设定的科技类型时触�
 #: ../../AI-Scripting-and-Mapping.md:901
 msgid "Multiplayer houses (indices 4475 through 4482) are supported."
 msgstr "多人游戏所属方（索引 4475 至 4482）支持。"
-
-#: ../../AI-Scripting-and-Mapping.md:904
-msgid ""
-"[Events]\n"
-"...\n"
-"ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...\n"
-"...\n"
-msgstr ""
-"[Events]\n"
-"...\n"
-"ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...\n"
-"...\n"
 
 #: ../../AI-Scripting-and-Mapping.md:912
 msgid ""
@@ -2835,16 +2190,4 @@ msgid ""
 "Effects from other sources: granted, refreshing when trying to apply the "
 "same type of attached effect to the techno."
 msgstr "外源 AE：赋予时、对同一单位赋予同一 AE 使其刷新时。"
-
-#: ../../AI-Scripting-and-Mapping.md:944
-msgid ""
-"[Events]\n"
-"...\n"
-"ID=EventCount,...,606,2,0,[AttachEffectType],...\n"
-"...\n"
-msgstr ""
-"[Events]\n"
-"...\n"
-"ID=EventCount,...,606,2,0,[AttachEffectType],...\n"
-"...\n"
 
