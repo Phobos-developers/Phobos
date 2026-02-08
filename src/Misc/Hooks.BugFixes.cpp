@@ -1,6 +1,7 @@
 #include <AircraftTrackerClass.h>
 #include <JumpjetLocomotionClass.h>
 #include <TunnelLocomotionClass.h>
+#include <FileFormats/HVA.h>
 
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Techno/Body.h>
@@ -2716,7 +2717,7 @@ DEFINE_HOOK(0x5218C2, InfantryClass_UnmarkAllOccupationBits_ResetOwnerIdx, 0x6)
 	const auto pExt = CellExt::ExtMap.Find(pCell);
 	pExt->InfantryCount--;
 
-	// Vanilla check only the flag to decide if the InfantryOwnerIndex should be reset. 
+	// Vanilla check only the flag to decide if the InfantryOwnerIndex should be reset.
 	// But the tree take one of the flag bit. So if a infantry walk through a cell with a tree, the InfantryOwnerIndex won't be reset.
 	return (newFlag & 0x1C) == 0 || pExt->InfantryCount == 0 ? Reset : NoReset;
 }
@@ -3013,4 +3014,27 @@ DEFINE_HOOK(0x6EA870, TeamClass_LiberateMember_Start, 0x6)
 	GET_STACK(FootClass*, pMember, 0x4);
 	pMember->RecruitableB = true;
 	return 0;
+}
+
+DEFINE_HOOK(0x706F64, TechnoClass_RenderVoxelObject_SkipInvisibleSections, 0x0)
+{
+	enum { SkipLayer = 0x706FDF };
+
+	GET(MotLib* const, pMotLib, EDI);
+
+	// stolen code
+	if (!pMotLib)
+		return 0x706FBD;
+
+	GET(int const, layer, EBX);
+	GET_STACK(unsigned int const, frame, STACK_OFFSET(0x13C, 0x18));
+
+	auto mtx = pMotLib->GetLayerMatrix(layer, frame);
+
+	if (CLOSE_ENOUGH(mtx.row[0][0], 0.0) && CLOSE_ENOUGH(mtx.row[1][1], 0.0) && CLOSE_ENOUGH(mtx.row[2][2], 0.0))
+		return SkipLayer;
+
+	// stolen code
+	R->EAX(frame);
+	return 0x706F6F;
 }
