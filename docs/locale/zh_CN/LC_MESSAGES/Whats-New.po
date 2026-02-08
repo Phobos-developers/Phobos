@@ -59,11 +59,11 @@ msgstr ""
 msgid ""
 "Vehicles paradropped by AI players now default to `Hunt` mission instead "
 "of `Guard`, matching what infantry do. This can be customized by setting "
-"`AIParadropMission` on the VehicleType, defaults to `[General]` -> "
-"`AIParadropMission`."
+"`AIParadropMission` on the VehicleType, defaults to `[General] -> "
+"AIParadropMission`."
 msgstr ""
 "AI 玩家空降的载具现在默认为 `Hunt` 任务而不是 `Guard`，与步兵一致。可以通过在载具上设置 `AIParadropMission`"
-" 来自定义，默认为 `[General]` -> `AIParadropMission`。"
+" 来自定义，默认为 `[General] -> AIParadropMission`。"
 
 #: ../../Whats-New.md:15
 msgid ""
@@ -2524,6 +2524,7 @@ msgid ""
 "Option to scale `PowerSurplus` setting if enabled to current power drain "
 "with `PowerSurplus.ScaleToDrainAmount` (by Starkku)"
 msgstr ""
+"可选的设置项：通过 `PowerSurplus.ScaleToDrainAmount` 使 `PowerSurplus` 随着当前负载量缩放（by Starkku）"
 
 #: ../../Whats-New.md:537
 msgid "Global default value for `DefaultToGuardArea` (by TaranDahl)"
