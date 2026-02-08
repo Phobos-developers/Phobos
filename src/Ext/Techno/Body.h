@@ -100,6 +100,8 @@ public:
 
 		bool JumpjetStraightAscend; // Is set to true jumpjet units will ascend straight and do not adjust rotation or position during it.
 
+		CDTimerClass GroupRetaliateTimer;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -166,6 +168,7 @@ public:
 			, SpecialTracked { false }
 			, FallingDownTracked { false }
 			, JumpjetStraightAscend { false }
+			, GroupRetaliateTimer {}
 		{ }
 
 		void OnEarlyUpdate();

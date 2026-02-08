@@ -435,6 +435,13 @@ DEFINE_HOOK(0x701CFC, TechnoClass_ReceiveDamage_AllowBerzerkOnAllies, 0x5)
 	return RulesExt::Global()->AllowBerzerkOnAllies ? IgnoreOwnerCheckFailed : 0;
 }
 
+#pragma region GroupRetaliate
+
+namespace GroupRetaliateContext
+{
+	bool Processing = false;
+}
+
 DEFINE_HOOK(0x702A31, TechnoClass_ReceiveDamage_GroupRetaliate, 0x7)
 {
 	if (!RulesExt::Global()->GroupRetaliate_AllowAI && !RulesExt::Global()->GroupRetaliate_AllowPlayer)
@@ -443,14 +450,25 @@ DEFINE_HOOK(0x702A31, TechnoClass_ReceiveDamage_GroupRetaliate, 0x7)
 	GET_STACK(WarheadTypeClass*, pWH, STACK_OFFSET(0xC4, 0xC));
 	GET_STACK(ObjectClass*, pAttacker, STACK_OFFSET(0xC4, 0x10));
 	GET(TechnoClass*, pThis, ESI);
-
+	GroupRetaliateContext::Processing = true;
 	if (pAttacker)
 		TechnoExt::ApplyGroupRetaliate(pThis, pAttacker, pWH);
+	GroupRetaliateContext::Processing = false;
 	return 0;
+}
+
+// Skip mission check in vanilla checker. We'll check it by ourselves.
+DEFINE_HOOK(0x708A13, TechnoClass_CanRetaliateToAttacker_GroupRetaliate1, 0x6)
+{
+	return GroupRetaliateContext::Processing ? 0x708A2C : 0;
 }
 
 DEFINE_HOOK(0x702A58, TechnoClass_ReceiveDamage_DisableVanilla, 0x5)
 {
 	enum { SkipGameCode = 0x702B47 };
-	return RulesExt::Global()->DisableVanillaRetaliateBehavior ? SkipGameCode : 0;
+	GET(TechnoClass*, pThis, ESI);
+	bool canGroupRetaliate = pThis->Owner->IsControlledByHuman() ? RulesExt::Global()->GroupRetaliate_AllowPlayer : RulesExt::Global()->GroupRetaliate_AllowAI;
+	return RulesExt::Global()->DisableVanillaRetaliateBehavior && canGroupRetaliate ? SkipGameCode : 0;
 }
+
+#pragma endregion

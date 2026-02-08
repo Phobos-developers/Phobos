@@ -1052,6 +1052,10 @@ void TechnoExt::ApplyGroupRetaliate(TechnoClass* pThis, ObjectClass* pAttacker, 
 			if (pTechno->Target == pAttacker)
 				return false;
 
+			// Check timer
+			if (!TechnoExt::ExtMap.Find(pTechno)->GroupRetaliateTimer.Expired())
+				return false;
+
 			// IsAI chcek
 			if (pTechno->Owner->IsControlledByHuman())
 			{
@@ -1100,12 +1104,13 @@ void TechnoExt::ApplyGroupRetaliate(TechnoClass* pThis, ObjectClass* pAttacker, 
 		};
 	auto callForHelp = [pThis, pAttacker, pWH, range, missionAllowRangeSearch](TechnoClass* pTechno) -> void
 		{
+			TechnoExt::ExtMap.Find(pTechno)->GroupRetaliateTimer.Start(RulesExt::Global()->GroupRetaliate_Delay);
 			pTechno->SetTarget(pAttacker);
 
 			if (pTechno->MegaMissionIsAttackMove())
 			{
 				pTechno->QueueMission(Mission::Attack, true);
-				pTechno->SetDestination(nullptr, true);
+				//pTechno->SetDestination(nullptr, true);
 				((FootClass*)pTechno)->HaveAttackMoveTarget = true;
 			}
 			else if (missionAllowRangeSearch(pTechno->GetCurrentMission()))
@@ -1193,6 +1198,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpecialTracked)
 		.Process(this->FallingDownTracked)
 		.Process(this->JumpjetStraightAscend)
+		.Process(this->GroupRetaliateTimer)
 		;
 }
 

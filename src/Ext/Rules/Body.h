@@ -318,6 +318,7 @@ public:
 		Valueable<double> GroupRetaliate_ThreatThreshold;
 		Valueable<Leptons> GroupRetaliate_GroupRange;
 		Valueable<Leptons> GroupRetaliate_TraceExtraRange;
+		Valueable<int> GroupRetaliate_Delay;
 
 		Valueable<bool> DisableVanillaRetaliateBehavior;
 
@@ -582,6 +583,7 @@ public:
 			, GroupRetaliate_ThreatThreshold { 1000.0 }
 			, GroupRetaliate_GroupRange { Leptons(7 * Unsorted::LeptonsPerCell) }
 			, GroupRetaliate_TraceExtraRange { Leptons(20 * Unsorted::LeptonsPerCell) }
+			, GroupRetaliate_Delay { 15 }
 
 			, DisableVanillaRetaliateBehavior { false }
 		{ }

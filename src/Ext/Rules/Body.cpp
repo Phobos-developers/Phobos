@@ -369,6 +369,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->GroupRetaliate_ThreatThreshold.Read(exINI, GameStrings::CombatDamage, "GroupRetaliate.ThreatThreshold");
 	this->GroupRetaliate_GroupRange.Read(exINI, GameStrings::CombatDamage, "GroupRetaliate.GroupRange");
 	this->GroupRetaliate_TraceExtraRange.Read(exINI, GameStrings::CombatDamage, "GroupRetaliate.TraceExtraRange");
+	this->GroupRetaliate_Delay.Read(exINI, GameStrings::CombatDamage, "GroupRetaliate.Delay");
 
 	this->DisableVanillaRetaliateBehavior.Read(exINI, GameStrings::CombatDamage, "DisableVanillaRetaliateBehavior");
 
@@ -676,6 +677,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->GroupRetaliate_ThreatThreshold)
 		.Process(this->GroupRetaliate_GroupRange)
 		.Process(this->GroupRetaliate_TraceExtraRange)
+		.Process(this->GroupRetaliate_Delay)
 		.Process(this->DisableVanillaRetaliateBehavior)
 		;
 }
