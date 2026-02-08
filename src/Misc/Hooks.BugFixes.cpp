@@ -137,6 +137,9 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_Debris, 0xA)
 
 	GET(TechnoClass* const, pThis, ESI);
 
+	if (pThis->Transporter)
+		return SkipGameCode;
+
 	const auto pType = pThis->GetTechnoType();
 
 	// Fix the debris count to be in range of Min, Max instead of Min, Max-1.
@@ -1379,7 +1382,7 @@ DEFINE_HOOK(0x4D77BD, FootClass_ObjectClickedAction_NoMove, 0x6)
 	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
 
 	if (!pTargetTechno)
-		return Attack;
+		return 0;
 
 	GET(FootClass*, pThis, ESI);
 	return pThis->Owner->IsAlliedWith(pTargetTechno->Owner) ? 0 : Attack;

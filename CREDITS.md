@@ -286,6 +286,7 @@ This page lists all the individual contributions to the project by their author.
   - Toggle to exclude technos from base center calculations
   - Deploy priority filtering
   - Customizable paradrop missions
+  - Guard range customizations
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -493,6 +494,8 @@ This page lists all the individual contributions to the project by their author.
   - Customizable disk drain logic
   - Fix the bug that cause technos teleport to cell 0,0 by ChronoSphere superweapon
   - Fix the bug that techno in attack move will move to target if it cannot attack it
+  - Penetrates damage on transporter
+  - Add amount limit of `LimboKill`
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
