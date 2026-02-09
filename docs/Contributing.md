@@ -215,15 +215,21 @@ DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
 The styleguide is not exhaustive and may be adjusted in the future.
 ```
 
-### Git branching model
+### Git branching model / Version lifecycle and release strategy
 
-Couple of notes regarding the Git practices. We use [git-flow](https://nvie.com/posts/a-successful-git-branching-model/)-like workflow:
-  - `master` is for stable releases, can have hotfixes pushed to it or branched off like a feature branch with the requirement of version increment and `master` being merged into `develop` after that;
-  - `develop` is the main development branch;
-  - `feature/`-prefixed branches (sometimes the prefix may be different if appropriate, like for big fixes or changes) are so called "feature branches" - those are branched off `develop` for every new feature to be introduced into it and then merged back. We use squash merge to merge them back in case of smaller branches and sometimes merge commit in case the branch is so big it would be viable to keep it as is.
-  - `hotfix/`-prefixed branches may be used in a same manner as `feature/`, but with `master` branch, with a requirement of `master` being merged into `develop` after `hotfix/` branch was squash merged into `master`.
-  - `release/`-prefixed branches are branched off `develop` when a new stable release is slated to allow working on features for a next release and stability improvements for this release. Those are merged with a merge commit into `master` and `develop` with a stable version number increase, after which the stable version is released.
-- When you're working with your local & remote branches use **fast-forward** pulls to get the changes from remote branch to local, **don't merge remote branch into local and vice versa**, this creates junk commits and makes things unsquashable.
+Starting from version 0.5, Phobos adopts a new release strategy to enable faster and more frequent releases. The lifecycle of a version is as follows:
+
+1. **Development phase**: New features and changes are committed to the `develop` branch.
+2. **Pre-release phase**: When enough features have accumulated on `develop`, a pre-release build (e.g., `v0.5-beta1`) is created. This build marks the start of a new *release branch* (e.g., `release/v0.5`) and signifies that active feature development for version 0.5 is complete. This branch will be used for all subsequent testing and the final stable release.
+   - During this phase, multiple pre-release builds (which can be called beta, alpha, or release candidate) may be published for wider testing. Between pre-releases on the same branch, there shall be no changes that warrant a changelog addition; in other words — only bug fixes, minor additions, and polish to the existing feature set are allowed.
+   - Documentation for the version (e.g., `v0.5`) is created at this point and is shared across all its pre-releases and the final stable release, rather than generating separate docs for each pre-release.
+3. **Stable release**: When the pre-release builds are deemed stable enough, a stable release (e.g., `v0.5`) is published from the release branch.
+4. **Maintenance phase**: After the stable release, the release branch enters maintenance mode, where only bug fixes are applied, resulting in patch releases (e.g., `v0.5.0.1`, `v0.5.0.2`).
+5. **End of maintenance**: When a new stable release is published (e.g., `v0.6`), the previous minor version branch (e.g., `v0.5.0.x`) is officially deprecated and enters end-of-life, ceasing to receive any further updates, including bug fixes. Concurrently, the new stable release (e.g., `v0.6`) enters its own maintenance phase, and a new release branch for the next version (e.g., `release/v0.7`) may already have been created from the `develop` branch, initiating its pre-release cycle.
+
+```{important}
+The `master` branch is deprecated; all development occurs in `develop`, and each version branches off from it.
+```
 
 These commands will do the following for all repositories on your PC:
 1) remove the automatic merge upon pull and replace it with a rebase;
