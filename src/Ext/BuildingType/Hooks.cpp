@@ -236,6 +236,7 @@ DEFINE_HOOK(0x4A8FD7, DisplayClass_BuildingProximityCheck_BuildArea, 0x6)
 	enum { SkipBuilding = 0x4A902C, ReturnFromFunction = 0x4A9052 };
 
 	GET(BuildingClass*, pCellBuilding, ESI);
+	GET_STACK(const int, houseArrayIndex, STACK_OFFSET(0x30, 0x8));
 
 	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pCellBuilding->Type);
 
@@ -248,7 +249,7 @@ DEFINE_HOOK(0x4A8FD7, DisplayClass_BuildingProximityCheck_BuildArea, 0x6)
 	if (pBuildingsAllowed.size() > 0 && !pBuildingsAllowed.Contains(pCellBuilding->Type))
 		return SkipBuilding;
 
-	if (!ProximityTemp::SkipDisallowed)
+	if (!ProximityTemp::SkipDisallowed && pCellBuilding->Owner->ArrayIndex == houseArrayIndex)
 	{
 		auto const& pBuildingsDisallowed = pTmpTypeExt->Adjacent_Disallowed;
 
