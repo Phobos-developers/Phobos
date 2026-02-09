@@ -47,7 +47,7 @@ void EventExt::RespondApproachObject()
 {
 	const auto pSource = this->ApproachObject.Whom.As_Foot();
 
-	if (!pSource || pSource->Owner->ArrayIndex != this->HouseIndex)
+	if (!pSource || static_cast<char>(pSource->Owner->ArrayIndex) != this->HouseIndex)
 		return;
 
 	const auto pObject = this->ApproachObject.Target.As_Object();

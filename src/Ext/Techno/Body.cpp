@@ -881,7 +881,7 @@ void TechnoExt::ClickedApproachObject(FootClass* pThis, ObjectClass* pObject)
 
 	EventExt event {};
 	event.Type = EventTypeExt::ApproachObject;
-	event.HouseIndex = pThis->Owner->ArrayIndex;
+	event.HouseIndex = static_cast<char>(pThis->Owner->ArrayIndex);
 	event.Frame = Unsorted::CurrentFrame;
 	event.ApproachObject.Whom = TargetClass(pThis);
 	event.ApproachObject.Target = TargetClass(pObject);
