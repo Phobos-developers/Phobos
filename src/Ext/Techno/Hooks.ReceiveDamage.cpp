@@ -383,7 +383,7 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 				auto const pInvoker = attachEffect->GetInvoker();
 				const auto pInvokerHouse = pInvoker ? pInvoker->Owner : attachEffect->GetInvokerHouse();
 
-				if (pInvokerHouse && EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouses, pInvokerHouse, pSourceHouse))
+				if (pInvokerHouse && EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, pInvokerHouse, pSourceHouse))
 				{
 					auto const pWHExtRef = WarheadTypeExt::ExtMap.Find(pWH);
 					pWHExtRef->Reflected = true;
