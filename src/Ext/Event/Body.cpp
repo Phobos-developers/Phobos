@@ -1,8 +1,10 @@
-/*
 #include "Body.h"
 
-#include <Helpers/Macro.h>
 #include <EventClass.h>
+#include <FootClass.h>
+#include <HouseClass.h>
+
+#include <Helpers/Macro.h>
 
 bool EventExt::AddEvent()
 {
@@ -13,8 +15,11 @@ void EventExt::RespondEvent()
 {
 	switch (this->Type)
 	{
-	case EventTypeExt::Sample:
-		// Place the handler here
+	case EventTypeExt::ApproachObject:
+		this->RespondApproachObject();
+		break;
+
+	default:
 		break;
 	}
 }
@@ -23,8 +28,11 @@ size_t EventExt::GetDataSize(EventTypeExt type)
 {
 	switch (type)
 	{
-	case EventTypeExt::Sample:
-		return sizeof(EventExt::Sample);
+	case EventTypeExt::ApproachObject:
+		return sizeof(EventExt::ApproachObject);
+
+	default:
+		break;
 	}
 
 	return 0;
@@ -35,6 +43,23 @@ bool EventExt::IsValidType(EventTypeExt type)
 	return (type >= EventTypeExt::FIRST && type <= EventTypeExt::LAST);
 }
 
+void EventExt::RespondApproachObject()
+{
+	const auto pSource = this->ApproachObject.Whom.As_Foot();
+
+	if (!pSource || static_cast<char>(pSource->Owner->ArrayIndex) != this->HouseIndex)
+		return;
+
+	const auto pObject = this->ApproachObject.Target.As_Object();
+
+	if (!pObject)
+		return;
+
+	const auto pOriginalTarget = std::exchange(pSource->Target, pObject);
+	pSource->vt_entry_53C(0);
+	pSource->Target = pOriginalTarget;
+}
+
 // hooks
 
 DEFINE_HOOK(0x4C6CC8, Networking_RespondToEvent, 0x5)
@@ -42,9 +67,7 @@ DEFINE_HOOK(0x4C6CC8, Networking_RespondToEvent, 0x5)
 	GET(EventExt*, pEvent, ESI);
 
 	if (EventExt::IsValidType(pEvent->Type))
-	{
 		pEvent->RespondEvent();
-	}
 
 	return 0;
 }
@@ -98,4 +121,3 @@ DEFINE_HOOK(0x64C30E, sub_64BDD0_GetEventSize2, 0x6)
 
 	return 0;
 }
-*/

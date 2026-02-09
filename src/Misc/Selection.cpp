@@ -1,12 +1,5 @@
-#include "Phobos.h"
-#include "Utilities/Macro.h"
 #include <Utilities/AresHelper.h>
-#include "Ext/Techno/Body.h"
-#include "Ext/TechnoType/Body.h"
-
-#include <TacticalClass.h>
-#include <HouseClass.h>
-#include <Unsorted.h>
+#include <Ext/Techno/Body.h>
 
 class ExtSelection
 {

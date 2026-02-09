@@ -51,37 +51,37 @@ void TypeConvertGroup::Parse(std::vector<TypeConvertGroup>& list, INI_EX& exINI,
 		char tempBuffer[32];
 		ValueableVector<TechnoTypeClass*> convertFrom;
 		Nullable<TechnoTypeClass*> convertTo;
-		Nullable<AffectedHouse> convertAffectedHouses;
+		Nullable<AffectedHouse> convertAffectsHouse;
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.From", i);
 		convertFrom.Read(exINI, pSection, tempBuffer);
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.To", i);
 		convertTo.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.AffectedHouses", i);
-		convertAffectedHouses.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.AffectsHouse", i);
+		convertAffectsHouse.Read(exINI, pSection, tempBuffer);
 
 		if (!convertTo.isset())
 			break;
 
-		if (!convertAffectedHouses.isset())
-			convertAffectedHouses = defaultAffectHouse;
+		if (!convertAffectsHouse.isset())
+			convertAffectsHouse = defaultAffectHouse;
 
-		list.emplace_back(convertFrom, convertTo, convertAffectedHouses);
+		list.emplace_back(convertFrom, convertTo, convertAffectsHouse);
 	}
 	ValueableVector<TechnoTypeClass*> convertFrom;
 	Nullable<TechnoTypeClass*> convertTo;
-	Nullable<AffectedHouse> convertAffectedHouses;
+	Nullable<AffectedHouse> convertAffectsHouse;
 	convertFrom.Read(exINI, pSection, "Convert.From");
 	convertTo.Read(exINI, pSection, "Convert.To");
-	convertAffectedHouses.Read(exINI, pSection, "Convert.AffectedHouses");
+	convertAffectsHouse.Read(exINI, pSection, "Convert.AffectsHouse");
 	if (convertTo.isset())
 	{
-		if (!convertAffectedHouses.isset())
-			convertAffectedHouses = defaultAffectHouse;
+		if (!convertAffectsHouse.isset())
+			convertAffectsHouse = defaultAffectHouse;
 
 		if (list.size())
-			list[0] = { convertFrom, convertTo, convertAffectedHouses };
+			list[0] = { convertFrom, convertTo, convertAffectsHouse };
 		else
-			list.emplace_back(convertFrom, convertTo, convertAffectedHouses);
+			list.emplace_back(convertFrom, convertTo, convertAffectsHouse);
 	}
 }
 

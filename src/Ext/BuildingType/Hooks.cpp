@@ -1,10 +1,6 @@
 #include "Body.h"
 
-#include <TacticalClass.h>
 #include <Ext/Rules/Body.h>
-
-#include <Utilities/Macro.h>
-#include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x460285, BuildingTypeClass_LoadFromINI_Muzzle, 0x6)
 {
@@ -198,23 +194,49 @@ DEFINE_HOOK(0x5F5416, ObjectClass_ReceiveDamage_CanC4DamageRounding, 0x6)
 
 namespace ProximityTemp
 {
+	int ExtraDistance = 0;
+	bool SkipDisallowed = false;
 	BuildingTypeClass* pType = nullptr;
 }
 
-DEFINE_HOOK(0x4A8F20, DisplayClass_BuildingProximityCheck_SetContext, 0x5)
+DEFINE_HOOK(0x4A8F3E, DisplayClass_BuildingProximityCheck_BeforeChecks, 0x6)
 {
+	enum { SkipGameCode = 0x4A8F44, ReturnFromFunction = 0x4A9052 };
+
 	GET(BuildingTypeClass*, pType, ESI);
+	GET_STACK(const int, houseArrayIndex, STACK_OFFSET(0x30, 0x8));
+	LEA_STACK(CellStruct*, foundationData, STACK_OFFSET(0x30, 0xC));
+	LEA_STACK(CellStruct*, currentPosition, STACK_OFFSET(0x30, 0x10));
 
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
 	ProximityTemp::pType = pType;
+	ProximityTemp::SkipDisallowed = false;
 
-	return 0;
+	if (pTypeExt->Adjacent_Disallowed_ExtraDistance != 0 && ProximityTemp::ExtraDistance == 0)
+	{
+		ProximityTemp::ExtraDistance = pTypeExt->Adjacent_Disallowed_ExtraDistance;
+
+		if (!DisplayClass::Instance.PassesProximityCheck(pType, houseArrayIndex, foundationData, currentPosition))
+		{
+			R->EAX(false);
+			return ReturnFromFunction;
+		}
+
+		ProximityTemp::ExtraDistance = 0;
+		ProximityTemp::SkipDisallowed = true;
+	}
+
+	R->EAX(pType->Adjacent + ProximityTemp::ExtraDistance);
+
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x4A8FD7, DisplayClass_BuildingProximityCheck_BuildArea, 0x6)
 {
-	enum { SkipBuilding = 0x4A902C };
+	enum { SkipBuilding = 0x4A902C, ReturnFromFunction = 0x4A9052 };
 
 	GET(BuildingClass*, pCellBuilding, ESI);
+	GET_STACK(const int, houseArrayIndex, STACK_OFFSET(0x30, 0x8));
 
 	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pCellBuilding->Type);
 
@@ -227,10 +249,16 @@ DEFINE_HOOK(0x4A8FD7, DisplayClass_BuildingProximityCheck_BuildArea, 0x6)
 	if (pBuildingsAllowed.size() > 0 && !pBuildingsAllowed.Contains(pCellBuilding->Type))
 		return SkipBuilding;
 
-	auto const& pBuildingsDisallowed = pTmpTypeExt->Adjacent_Disallowed;
+	if (!ProximityTemp::SkipDisallowed && pCellBuilding->Owner->ArrayIndex == houseArrayIndex)
+	{
+		auto const& pBuildingsDisallowed = pTmpTypeExt->Adjacent_Disallowed;
 
-	if (pBuildingsDisallowed.size() > 0 && pBuildingsDisallowed.Contains(pCellBuilding->Type))
-		return SkipBuilding;
+		if (pBuildingsDisallowed.size() > 0 && pBuildingsDisallowed.Contains(pCellBuilding->Type))
+		{
+			R->EAX(false);
+			return ReturnFromFunction;
+		}
+	}
 
 	return 0;
 }

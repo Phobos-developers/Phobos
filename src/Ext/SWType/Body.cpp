@@ -2,8 +2,6 @@
 
 #include "NewSWType/NewSWType.h"
 
-#include <StringTable.h>
-
 SWTypeExt::ExtContainer SWTypeExt::ExtMap;
 
 void SWTypeExt::ExtData::Initialize()
@@ -55,8 +53,9 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LimboDelivery_IDs)
 		.Process(this->LimboDelivery_RandomWeightsData)
 		.Process(this->LimboDelivery_RollChances)
-		.Process(this->LimboKill_Affected)
+		.Process(this->LimboKill_AffectsHouse)
 		.Process(this->LimboKill_IDs)
+		.Process(this->LimboKill_Counts)
 		.Process(this->RandomBuffer)
 		.Process(this->Detonate_Warhead)
 		.Process(this->Detonate_Weapon)
@@ -143,8 +142,9 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->LimboDelivery_Types.Read(exINI, pSection, "LimboDelivery.Types");
 	this->LimboDelivery_IDs.Read(exINI, pSection, "LimboDelivery.IDs");
 	this->LimboDelivery_RollChances.Read(exINI, pSection, "LimboDelivery.RollChances");
-	this->LimboKill_Affected.Read(exINI, pSection, "LimboKill.Affected");
+	this->LimboKill_AffectsHouse.Read(exINI, pSection, "LimboKill.AffectsHouse");
 	this->LimboKill_IDs.Read(exINI, pSection, "LimboKill.IDs");
+	this->LimboKill_Counts.Read(exINI, pSection, "LimboKill.Counts");
 	this->SW_Next.Read(exINI, pSection, "SW.Next");
 	this->SW_Next_RealLaunch.Read(exINI, pSection, "SW.Next.RealLaunch");
 	this->SW_Next_IgnoreInhibitors.Read(exINI, pSection, "SW.Next.IgnoreInhibitors");

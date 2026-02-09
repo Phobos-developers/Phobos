@@ -1,8 +1,6 @@
 #pragma once
 
-#include <Utilities/Constructs.h>
-#include <Utilities/Enum.h>
-#include <Utilities/Template.h>
+#include <Utilities/TemplateDef.h>
 
 class PassengerDeletionTypeClass
 {

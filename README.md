@@ -103,7 +103,7 @@ Every maintenance crew member is welcome to put a donation link to their entry i
 
 - **Kerbiter ([@Metadorius](https://github.com/Metadorius))** - T3 maintainer (lead)
   - [Patreon](https://www.patreon.com/kerbiter) · PayPal (preferable because of no fees) on request
-- **[@Starkku](https://github.com/Starkku)** - T2 maintainer
+- **[@Starkku](https://github.com/Starkku)** - T3 maintainer (co-lead)
   - [Patreon](https://www.patreon.com/Starkku)
 - **[@CrimRecya](https://github.com/CrimRecya) (绯红热茶)** - T2 maintainer
   - [Alipay](https://i2.hdslb.com/bfs/new_dyn/8de77b17b8fc2e005613821b62008e37362533219.jpg)

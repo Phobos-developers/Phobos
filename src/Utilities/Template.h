@@ -469,12 +469,56 @@ template<typename T>
 class PartialVector2D : public Vector2D<T> // Same as Vector2D except parsing only one value is valid.
 {
 public:
-	size_t ValueCount;
+	size_t ValueCount = 0;
+
+	PartialVector2D() = default;
+
+	PartialVector2D(std::initializer_list<T> values)
+	{
+		if (values.size() == 1)
+		{
+			this->X = *values.begin();
+			ValueCount = 1;
+		}
+		else if (values.size() >= 2)
+		{
+			auto it = values.begin();
+			this->X = *it++;
+			this->Y = *it;
+			ValueCount = 2;
+		}
+	}
 };
 
 template<typename T>
 class PartialVector3D : public Vector3D<T> // Same as Vector3D except parsing only one or two values is valid.
 {
 public:
-	size_t ValueCount;
+	size_t ValueCount = 0;
+
+	PartialVector3D() = default;
+
+	PartialVector3D(std::initializer_list<T> values)
+	{
+		if (values.size() == 1)
+		{
+			this->X = *values.begin();
+			ValueCount = 1;
+		}
+		else if (values.size() == 2)
+		{
+			auto it = values.begin();
+			this->X = *it++;
+			this->Y = *it;
+			ValueCount = 2;
+		}
+		else if (values.size() >= 3)
+		{
+			auto it = values.begin();
+			this->X = *it++;
+			this->Y = *it++;
+			this->Z = *it;
+			ValueCount = 3;
+		}
+	}
 };

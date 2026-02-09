@@ -1,14 +1,6 @@
 #include "Body.h"
 
-#include <HouseClass.h>
-#include <ScenarioClass.h>
-#include <SpecificStructures.h>
-#include <TacticalClass.h>
-#include <TiberiumClass.h>
-#include <TerrainClass.h>
-
 #include <Ext/Rules/Body.h>
-#include <Utilities/GeneralUtils.h>
 
 namespace TerrainTypeTemp
 {
