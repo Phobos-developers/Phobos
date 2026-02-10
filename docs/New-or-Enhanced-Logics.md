@@ -595,17 +595,18 @@ DetachedReport=  ; Sound entry
 
 - There are now additional customizations available for building placement next to other buildings.
   - `Adjacent.Allowed` lists BuildingTypes this BuildingType can be placed off (within distance defined by `Adjacent`). If empty, any BuildingType not listed in `Adjacent.Disallowed` is okay.
-  - `Adjacent.Disallowed` lists BuildingTypes this BuildingType cannot be placed next to. If empty, any BuildingTypes are okay as long as `Adjacent.Allowed` is empty or they are listed on it.
-    - If `Adjacent.Disallowed.ExtraDistance` is set to value other than 0, this value is added to `Adjacent` value when checking for disallowed buildings.
+  - `Adjacent.Disallowed` lists BuildingTypes this BuildingType cannot be placed off from. If empty, any BuildingTypes are okay as long as `Adjacent.Allowed` is empty or they are listed on it.
+    - `Adjacent.Disallowed.Prohibit` if set to true makes this behaviour strict and disallows placement even if there are eligible buildings around if the placement is within range of a disallowed one. `Adjacent.Disallowed.ProhibitDistance` can be used to override `Adjacent` for this check if set to value higher than 0.
   - If `NoBuildAreaOnBuildup` is set to true, no building can be built next to this building regardless of any other settings if it is currently displaying its buildup animation.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEBUILDING]                       ; BuildingType
-Adjacent.Allowed=                    ; List of BuildingTypes
-Adjacent.Disallowed=                 ; List of BuildingTypes
-Adjacent.Disallowed.ExtraDistance=0  ; integer, cell offset
-NoBuildAreaOnBuildup=false           ; boolean
+[SOMEBUILDING]                          ; BuildingType
+Adjacent.Allowed=                       ; List of BuildingTypes
+Adjacent.Disallowed=                    ; List of BuildingTypes
+Adjacent.Disallowed.Prohibit=false      ; boolean
+Adjacent.Disallowed.ProhibitDistance=0  ; integer, cell offset
+NoBuildAreaOnBuildup=false              ; boolean
 ```
 
 ### Destroyable pathfinding obstacles

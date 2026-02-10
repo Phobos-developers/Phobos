@@ -525,7 +525,7 @@ New:
 - [Warhead effect filtering by target veterancy](Fixed-or-Improved-Logics.md#customizable-warhead-trigger-conditions) (by Flactine)
 - [Vehicle Deployment Enhancement](Fixed-or-Improved-Logics.md#deployment-enhancement) (by FlyStar)
 - `ProductionAnim` is now available for `Factory=InfantryType` as well as non-`ConstructionYard=true` `Factory=BuildingType` buildings (by Starkku)
-- [Extra distance modifier for `Adjacent.Disallowed`](New-or-Enhanced-Logics.md#build-area-customizations) (by Starkku)
+- [Extra settings for `Adjacent.Disallowed`](New-or-Enhanced-Logics.md#build-area-customizations) (by Starkku)
 - [Allow customizing how many times `FactoryPlant` bonuses can be applied from a BuildingType](Fixed-or-Improved-Logics.md#factoryplant-customizations) (by Starkku)
 - [Maximum amount for power plant enhancer](New-or-Enhanced-Logics.md#power-plant-enhancer) (by Ollerus)
 - [Return warhead](New-or-Enhanced-Logics.md#return-warhead) (by Ollerus)
