@@ -3031,7 +3031,7 @@ DEFINE_HOOK(0x706F64, TechnoClass_RenderVoxelObject_SkipInvisibleSections, 0x0)
 
 	auto mtx = pMotLib->GetLayerMatrix(layer, frame);
 
-	if (mtx.row[0][0] == 0.0 && mtx.row[1][1] == 0.0 && mtx.row[2][2] == 0.0)
+	if (mtx.row[0][0] == 0.0 || mtx.row[1][1] == 0.0 || mtx.row[2][2] == 0.0)
 		return SkipLayer;
 
 	// stolen code
