@@ -173,7 +173,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_AnimOnAffectedTargets.Read(exINI, pSection, "Crit.AnimOnAffectedTargets");
 	this->Crit_AffectsBelowPercent.Read(exINI, pSection, "Crit.AffectBelowPercent"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->Crit_AffectsBelowPercent.Read(exINI, pSection, "Crit.AffectsBelowPercent");
-	this->Crit_AffectsBelowPercent.Read(exINI, pSection, "Crit.AffectAbovePercent"); // Temporary solution for the INI tags renaming issue, see #2093
+	this->Crit_AffectsAbovePercent.Read(exINI, pSection, "Crit.AffectAbovePercent"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->Crit_AffectsAbovePercent.Read(exINI, pSection, "Crit.AffectsAbovePercent");
 	this->Crit_SuppressWhenIntercepted.Read(exINI, pSection, "Crit.SuppressWhenIntercepted");
 
