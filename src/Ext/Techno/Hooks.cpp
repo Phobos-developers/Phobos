@@ -1674,3 +1674,135 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB140, FootClass_Paradrop) // Replace game's ori
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5D58, FootClass_Paradrop) // Replace ObjectClass::Paradrop in UnitClass virtual table.
 
 #pragma endregion
+
+#pragma region GuardRange
+
+static int GetMultiWeaponRange(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
+{
+	int range = -1;
+
+	if (pTypeExt->MultiWeapon)
+	{
+		int selectCount = Math::min(pTypeExt->OwnerObject()->WeaponCount, pTypeExt->MultiWeapon_SelectCount);
+		range = 0;
+
+		for (int index = selectCount - 1; index >= 0; --index)
+		{
+			int weaponRange = pThis->GetWeaponRange(index);
+
+			if (weaponRange > range)
+				range = weaponRange;
+		}
+	}
+
+	return range;
+}
+
+static int GetGuardRange(TechnoClass* pThis, int control)
+{
+	if (control == -1)
+		return -1;
+
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto const pType = pTypeExt->OwnerObject();
+	int range = pType->GuardRange;
+
+	if (pThis->CurrentMission == Mission::Area_Guard && pTypeExt->AreaGuardRange.isset())
+		range = pTypeExt->AreaGuardRange.Get();
+
+	if (!control) // Control = 0, used for ThreatType=Range target acquisition.
+	{
+		if (range && !pThis->IsEngineer())
+			return range;
+
+		return 0;
+	}
+
+	// Set range from weapon range if GuardRange is not set.
+	if (!range)
+	{
+		// Handle special weapon configurations.
+		if (!pType->IsGattling && (pType->HasMultipleTurrets() || pTypeExt->MultiWeapon))
+		{
+			if (pType->HasMultipleTurrets())
+				range = pThis->GetWeaponRange(pThis->CurrentWeaponNumber);
+			else
+				range = GetMultiWeaponRange(pThis, pTypeExt);
+		}
+		else
+		{
+			int weaponRange0 = pThis->GetWeaponRange(0);
+			int weaponRange1 = pThis->GetWeaponRange(1);
+
+			if (weaponRange0 < weaponRange1)
+				range = weaponRange1;
+			else
+				range = weaponRange0;
+		}
+	}
+
+	//int maxRange = 4096; // Game caps the guard range in certain cases, but this is disabled here.
+	range *= 2; // Uncertain why the range gets doubled here, but it doesn't seem to reflect to the actual target scan range.
+
+	if (control == 2) // Control = 2, used for Patrol mission.
+	{
+		range = range < 1792 ? 1792 : range;
+
+		/*
+		int patrolMinRange = 1792;
+
+		if (range >= patrolMinRange)
+		{
+			if (range > maxRange)
+				range = maxRange;
+		}
+		else
+		{
+			range = patrolMinRange;
+		*/
+	}
+	else // Control = 1 and other values, used for Area Guard, ThreatType != Range threat scans etc.
+	{
+		range = range < 0 ? 0 : range;
+
+		/*
+		if (range < 0)
+			range = 0;
+		else if (range > maxRange)
+			range = maxRange;
+		*/
+	}
+
+	return range;
+}
+
+// Replace function.
+DEFINE_HOOK(0x707E63, TechnoClass_GetGuardRange, 0x7)
+{
+	enum { SkipGameCode = 0x707F4B };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(int, control, EDI);
+
+	R->EAX(GetGuardRange(pThis, control));
+
+	return SkipGameCode;
+}
+
+// Check MultiWeapon setups for weapon range incase threat scan range was 0.
+DEFINE_HOOK(0x6F90DE, TechnoClass_GreatestThreat_MultiWeapon, 0x6)
+{
+	enum { SkipGameCode = 0x6F9116 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	if (int result = GetMultiWeaponRange(pThis, TechnoExt::ExtMap.Find(pThis)->TypeExtData); result != -1)
+	{
+		R->EAX(result);
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+#pragma endregion

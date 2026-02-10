@@ -329,6 +329,13 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ApplyPerTargetEffectsOnDetonate.Read(exINI, pSection, "ApplyPerTargetEffectsOnDetonate");
 
+	this->PenetratesTransport_Level.Read(exINI, pSection, "PenetratesTransport.Level");
+	this->PenetratesTransport_PassThrough.Read(exINI, pSection, "PenetratesTransport.PassThrough");
+	this->PenetratesTransport_FatalRate.Read(exINI, pSection, "PenetratesTransport.FatalRate");
+	this->PenetratesTransport_DamageMultiplier.Read(exINI, pSection, "PenetratesTransport.DamageMultiplier");
+	this->PenetratesTransport_DamageAll.Read(exINI, pSection, "PenetratesTransport.DamageAll");
+	this->PenetratesTransport_CleanSound.Read(exINI, pSection, "PenetratesTransport.CleanSound");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -387,6 +394,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->BuildingUndeploy
 		|| this->ReverseEngineer
 		|| this->ReturnWarhead
+		|| this->PenetratesTransport_Level > 0
 	);
 
 	char tempBuffer[32];
@@ -575,6 +583,13 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CellSpread_Cylinder)
 		.Process(this->HealthCheck)
 		.Process(this->VeterancyCheck)
+
+		.Process(this->PenetratesTransport_Level)
+		.Process(this->PenetratesTransport_PassThrough)
+		.Process(this->PenetratesTransport_FatalRate)
+		.Process(this->PenetratesTransport_DamageMultiplier)
+		.Process(this->PenetratesTransport_DamageAll)
+		.Process(this->PenetratesTransport_CleanSound)
 
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)

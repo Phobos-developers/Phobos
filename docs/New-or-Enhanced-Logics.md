@@ -1156,6 +1156,7 @@ EMPulse.SuspendOthers=false  ; boolean
 - Created buildings are not affected by any on-map threats. The only way to remove them from the game is by using a Superweapon with `LimboKill.IDs` set.
   - `LimboKill.AffectsHouse` sets which houses are affected by this feature.
   - `LimboKill.IDs` lists IDs that will be targeted. Buildings with these IDs will be removed from the game instantly.
+  - `LimboKill.Counts` sets how many buildings of each type will be removed. Value from position matching the position from `LimboKill.IDs` is used if found, or no limitation if not found. If list is empty, there's no limitation for all types.
 
 - Delivery can be made random with these optional tags. The game will randomly choose only a single building from the list for each roll chance provided.
   - `LimboDelivery.RollChances` lists chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
@@ -1177,11 +1178,12 @@ In `rulesmd.ini`:
 ```ini
 [SOMESW]                        ; SuperWeaponType
 LimboDelivery.Types=            ; List of BuildingTypes
-LimboDelivery.IDs=              ; List of numeric IDs. -1 cannot be used.
-LimboDelivery.RollChances=      ; List of percentages.
-LimboDelivery.RandomWeightsN=   ; List of integers.
+LimboDelivery.IDs=              ; List of numeric IDs, -1 cannot be used
+LimboDelivery.RollChances=      ; List of percentages
+LimboDelivery.RandomWeightsN=   ; List of integers
 LimboKill.AffectsHouse=self     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-LimboKill.IDs=                  ; List of numeric IDs.
+LimboKill.IDs=                  ; List of numeric IDs
+LimboKill.Counts=               ; List of integers
 ```
 
 ```{warning}
@@ -1517,6 +1519,33 @@ In `rulesmd.ini`:
 Tint.Color=               ; integer - R,G,B
 Tint.Intensity=0.0        ; floating point value
 Tint.VisibleToHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
+### Customizable disk drain logic
+
+- It is possible to set properties of drain logic per technotypes.
+  - `DrainMoneyDisplay` and `DrainMoneyDisplay.OnTarget` determine whether drain money will be displayed at firer and target respectively.
+  - `DrainMoneyDisplay.Houses` determines which houses can see the credits display on firer.
+  - `DrainMoneyDisplay.Offset` is additional pixel offset for the center of the credits display, by default `0,0` at firer's center.
+  - `DrainMoneyDisplay.OnTarget.UseDisplayIncome` determines whether drain money display on target will use its `DisplayIncome.Houses` and `DisplayIncome.Offset` settings. If set to false, it'll respect the firer's `DrainMoneyDisplay.Houses` and `DrainMoneyDisplay.Offset` settings instead.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+DrainMoneyDisplay=false                             ; boolean
+DrainMoneyDisplay.Houses=all                        ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DrainMoneyDisplay.OnTarget=false                    ; boolean
+DrainMoneyDisplay.OnTarget.UseDisplayIncome=true    ; boolean
+
+[SOMETECHNO]                                        ; TechnoType
+DrainMoneyFrameDelay=                               ; integer, default to [CombatDamage] -> DrainMoneyFrameDelay
+DrainMoneyAmount=                                   ; integer, default to [CombatDamage] -> DrainMoneyAmount
+DrainAnimationType=                                 ; AnimationType, default to [CombatDamage] -> DrainAnimationType
+DrainMoneyDisplay=                                  ; boolean, default to [AudioVisual] -> DrainMoneyDisplay
+DrainMoneyDisplay.Houses=                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to [AudioVisual] -> DrainMoneyDisplay.Houses
+DrainMoneyDisplay.Offset=0,0                        ; X,Y, pixels relative to default
+DrainMoneyDisplay.OnTarget=                         ; boolean, default to [AudioVisual] -> DrainMoneyDisplay.OnTarget
+DrainMoneyDisplay.OnTarget.UseDisplayIncome=        ; boolean
 ```
 
 ### Customizable OpenTopped properties
@@ -2152,33 +2181,6 @@ WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
 
-### Customizable disk drain logic
-
-- It is possible to set properties of drain logic per technotypes.
-  - `DrainMoneyDisplay` and `DrainMoneyDisplay.OnTarget` determine whether drain money will be displayed at firer and target respectively.
-  - `DrainMoneyDisplay.Houses` determines which houses can see the credits display on firer.
-  - `DrainMoneyDisplay.Offset` is additional pixel offset for the center of the credits display, by default `0,0` at firer's center.
-  - `DrainMoneyDisplay.OnTarget.UseDisplayIncome` determines whether drain money display on target will use its `DisplayIncome.Houses` and `DisplayIncome.Offset` settings. If set to false, it'll respect the firer's `DrainMoneyDisplay.Houses` and `DrainMoneyDisplay.Offset` settings instead.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-DrainMoneyDisplay=false                             ; boolean
-DrainMoneyDisplay.Houses=all                        ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-DrainMoneyDisplay.OnTarget=false                    ; boolean
-DrainMoneyDisplay.OnTarget.UseDisplayIncome=true    ; boolean
-
-[SOMETECHNO]                                        ; TechnoType
-DrainMoneyFrameDelay=                               ; integer, default to [CombatDamage] -> DrainMoneyFrameDelay
-DrainMoneyAmount=                                   ; integer, default to [CombatDamage] -> DrainMoneyAmount
-DrainAnimationType=                                 ; AnimationType, default to [CombatDamage] -> DrainAnimationType
-DrainMoneyDisplay=                                  ; boolean, default to [AudioVisual] -> DrainMoneyDisplay
-DrainMoneyDisplay.Houses=                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to [AudioVisual] -> DrainMoneyDisplay.Houses
-DrainMoneyDisplay.Offset=0,0                        ; X,Y, pixels relative to default
-DrainMoneyDisplay.OnTarget=                         ; boolean, default to [AudioVisual] -> DrainMoneyDisplay.OnTarget
-DrainMoneyDisplay.OnTarget.UseDisplayIncome=        ; boolean
-```
-
 ## Terrain
 
 ### Destroy animation & sound
@@ -2631,6 +2633,36 @@ In `rulesmd.ini`:
 RemoveParasite=   ; boolean
 ```
 
+### Penetrates damage on transporter
+
+- Warheads can now damage passenger on impact.
+  - If `PenetratesTransport.Level` of warhead larger than `PenetratesTransport.Level` of target and it's passengers, it will enable penetrates damage logic on passenger.
+  - `PenetratesTransport.PassThrough` is the chance of penetration, actual chance will multiply by `PenetratesTransport.PassThroughMultiplier` of target.
+  - `PenetratesTransport.FatalRate` is the chance of one hit kill passenger, actual change will multiply by `PenetratesTransport.FatalRateMultiplier` of target.
+  - `PenetratesTransport.DamageAll` control whether it will damage all passengers or random one passenger in transport.
+  - `PenetratesTransport.DamageMultiplier` is multiplier of damage on passenger.
+  - `PenetratesTransport.CleanSound` will play when all passengers has been killed.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+PenetratesTransport.Level=10                    ; integer, default value of [TechnoType] -> PenetratesTransport.Level
+
+[SOMEWARHEAD]                                   ; WarheadType
+PenetratesTransport.Level=0                     ; integer
+PenetratesTransport.PassThrough=1.0             ; double
+PenetratesTransport.FatalRate=0.0               ; double
+PenetratesTransport.DamageMultiplier=1.0        ; double
+PenetratesTransport.DamageAll=false             ; boolean
+PenetratesTransport.CleanSound=                 ; sound entry
+
+[SOMETECHNO]                                    ; TechnoType
+PenetratesTransport.Level=                      ; integer, default to [CombatDamage] -> PenetratesTransport.Level
+PenetratesTransport.PassThroughMultiplier=1.0   ; double
+PenetratesTransport.FatalRateMultiplier=1.0     ; double
+PenetratesTransport.DamageMultiplier=1.0        ; double
+```
+
 ### Remove disguise on impact
 
 - Warheads can now remove disguise from disguised spies or mirage tanks. This will work even if the disguised was acquired by default through `PermaDisguise`.
@@ -3019,16 +3051,16 @@ OmniFire.TurnToTarget=no  ; boolean
 ### Range finding in cylinder
 
 - In vanilla, technos in air will ignore the distance in Z axis when checking if the target is in range. Now you can use the following flags to make technos always range finding like that.
-- `[General]->CylinderRangefinding` controls this globally, and can be customized per weapon type.
+- `[General] -> CylinderRangefinding` controls this globally, and can be customized per weapon type.
 - Mind that set the flags to `false` meaning "use default" rather than "disable". Technos in air will always range finding in cylinder like vanilla, despite what you set.
 
 In `rulesmd.ini`:
 ```ini
-[General]                         ; WeaponType
-CylinderRangefinding=false  ; boolean
+[General]
+CylinderRangefinding=false        ; boolean
 
 [SOMEWEAPON]                      ; WeaponType
-CylinderRangefinding=       ; boolean
+CylinderRangefinding=             ; boolean
 ```
 
 ### Strafing aircraft weapon customization
