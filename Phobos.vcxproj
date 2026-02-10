@@ -19,6 +19,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Ext\Cell\Hooks.cpp" />
+    <ClCompile Include="src\Ext\Event\Body.cpp" />
     <ClCompile Include="src\Ext\Infantry\Hooks.cpp" />
     <ClCompile Include="src\Ext\Infantry\Hooks.Firing.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hooks.MultiWeapon.cpp" />
@@ -219,6 +220,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Ext\EBolt\Body.h" />
+    <ClInclude Include="src\Ext\Event\Body.h" />
     <ClInclude Include="src\New\Entity\Ares\RadarJammerClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\CreateUnitTypeClass.h" />
     <ClInclude Include="src\Blowfish\blowfish.h" />
