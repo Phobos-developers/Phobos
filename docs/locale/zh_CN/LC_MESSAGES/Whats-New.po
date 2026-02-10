@@ -1865,12 +1865,11 @@ msgstr ""
 " `ConstructionYard=false` 的建筑的适配。`IdleAnim` 也会在其播放期间停止播放（by Starkku）"
 
 #: ../../Whats-New.md:528
-#, fuzzy
 msgid ""
 "[Extra settings for `Adjacent.Disallowed`](New-or-Enhanced-Logics.md"
 "#build-area-customizations) (by Starkku)"
 msgstr ""
-"[`Adjacent.Disallowed` 的额外距离修正](New-or-Enhanced-Logics.md#build-area-"
+"[`Adjacent.Disallowed` 的额外设置](New-or-Enhanced-Logics.md#build-area-"
 "customizations)（by Starkku）"
 
 #: ../../Whats-New.md:529

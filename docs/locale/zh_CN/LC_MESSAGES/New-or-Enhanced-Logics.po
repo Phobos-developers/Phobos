@@ -1835,18 +1835,17 @@ msgid ""
 "off (within distance defined by `Adjacent`). If empty, any BuildingType "
 "not listed in `Adjacent.Disallowed` is okay."
 msgstr ""
-"`Adjacent.Allowed` 列出了可以放置在其附近（由 `Adjacent` 定义的距离内）的建筑类型。如果留空则任何未列在 "
+"`Adjacent.Allowed` 列出了可以放置在其附近（由 `Adjacent` 定义的距离内）的建筑类型（白名单）。如果留空则任何未列在 "
 "`Adjacent.Disallowed` 的建筑类型都可以。"
 
 #: ../../New-or-Enhanced-Logics.md:598
-#, fuzzy
 msgid ""
 "`Adjacent.Disallowed` lists BuildingTypes this BuildingType cannot be "
 "placed off from. If empty, any BuildingTypes are okay as long as "
 "`Adjacent.Allowed` is empty or they are listed on it."
 msgstr ""
 "`Adjacent.Disallowed` 列出了不得放置在其附近（由 `Adjacent` "
-"定义的距离内）的建筑类型。如果留空则任何建筑类型都可以。"
+"定义的距离内）的建筑类型（黑名单）。如果留空则只看白名单。"
 
 #: ../../New-or-Enhanced-Logics.md:599
 msgid ""
@@ -1856,6 +1855,8 @@ msgid ""
 "`Adjacent.Disallowed.ProhibitDistance` can be used to override `Adjacent`"
 " for this check if set to value higher than 0."
 msgstr ""
+"上一条的黑名单在默认情景下只是不拓展建造范围，但如果 `Adjacent.Disallowed.Prohibit` 设为 true，它将真正禁止建筑放置在所规定的范围内，并且优先于白名单。"
+"当 `Adjacent.Disallowed.ProhibitDistance` 设为大于 0 的值时将会覆盖 `Adjacent` 以实现对禁止放置范围的独立控制。"
 
 #: ../../New-or-Enhanced-Logics.md:600
 msgid ""
@@ -7608,13 +7609,4 @@ msgstr "`CanTarget` 要求明确列出 `all` 或 `empty` 才能对不包含任�
 #~ "Deploy.SkipPassengerUnload=false    ; boolean\n"
 #~ "Deploy.NoPassenger=false            ; boolean\n"
 #~ "Deploy.NoTiberium=false             ; boolean\n"
-
-#~ msgid ""
-#~ "If `Adjacent.Disallowed.ExtraDistance` is set "
-#~ "to value other than 0, this value"
-#~ " is added to `Adjacent` value when"
-#~ " checking for disallowed buildings."
-#~ msgstr ""
-#~ "如果 `Adjacent.Disallowed.ExtraDistance` 设为了非 0 "
-#~ "数值则该值将在判定不得放置的距离时与 `Adjacent` 加算。"
 
