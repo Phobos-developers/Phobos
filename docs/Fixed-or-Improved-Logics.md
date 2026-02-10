@@ -295,6 +295,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon.
 - Fixed the issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team.
 - Allow the default value of `DefaultToGuardArea` to be defined by `[General] -> DefaultToGuardArea`.
+- Fixed the bug that cause technos teleport to cell 0,0 by ChronoSphere superweapon.
+- Fixed the bug that techno in attack move will move to target if it cannot attack it.
 
 ## Fixes / interactions with other extensions
 
@@ -1874,6 +1876,17 @@ AIGuardAreaTargetingDelay=           ; integer, game frames
 PlayerGuardAreaTargetingDelay=       ; integer, game frames
 AIAttackMoveTargetingDelay=          ; integer, game frames
 PlayerAttackMoveTargetingDelay=      ; integer, game frames
+```
+
+### Target scan/guard range customizations
+
+- Target scan range is no longer capped to 16 cells under some circumstances f.ex on `Area Guard` or `Patrol` mission.
+- `AreaGuardRange` overrides explicit `GuardRange` setting for technos currently on `Area Guard` mission (f.ex guard mode command). As per usual, `GuardRange` in itself defaults to highest range between technos weapons if set to 0 or omitted.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]     ; TechnoType
+AreaGuardRange=  ; floating point value, distance in cells
 ```
 
 ### Voxel body multi-section shadows

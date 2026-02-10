@@ -6,6 +6,7 @@
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Event/Body.h>
 
 #include <Utilities/AresFunctions.h>
 
@@ -839,31 +840,26 @@ bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max
 
 bool TechnoExt::CannotMove(UnitClass* pThis)
 {
-	const auto loco = pThis->Locomotor;
+	const auto pType = pThis->Type;
 
-	if (!locomotion_cast<JumpjetLocomotionClass*>(loco))
-	{
-		const auto pType = pThis->Type;
+	if (pType->Speed == 0)
+		return true;
 
-		if (pType->Speed == 0 && !locomotion_cast<TeleportLocomotionClass*>(loco))
-			return true;
+	const auto movementRestrictedTo = pType->MovementRestrictedTo;
 
-		const auto movementRestrictedTo = pType->MovementRestrictedTo;
+	if (movementRestrictedTo == LandType::None)
+		return false;
 
-		if (movementRestrictedTo == LandType::None)
-			return false;
+	auto landType = pThis->GetCell()->LandType;
 
-		auto landType = pThis->GetCell()->LandType;
+	if (landType == LandType::Tunnel)
+		return false;
 
-		if (landType == LandType::Tunnel)
-			return false;
+	if (pThis->OnBridge && (landType == LandType::Water || landType == LandType::Beach))
+		landType = LandType::Road;
 
-		if (pThis->OnBridge && (landType == LandType::Water || landType == LandType::Beach))
-			landType = LandType::Road;
-
-		if (movementRestrictedTo != landType)
-			return true;
-	}
+	if (movementRestrictedTo != landType)
+		return true;
 
 	return false;
 }
@@ -962,6 +958,20 @@ bool TechnoExt::SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValu
 	}
 
 	return true;
+}
+
+void TechnoExt::ClickedApproachObject(FootClass* pThis, ObjectClass* pObject)
+{
+	if (Unsorted::MoveFeedback)
+		pThis->VoiceMove();
+
+	EventExt event {};
+	event.Type = EventTypeExt::ApproachObject;
+	event.HouseIndex = static_cast<char>(pThis->Owner->ArrayIndex);
+	event.Frame = Unsorted::CurrentFrame;
+	event.ApproachObject.Whom = TargetClass(pThis);
+	event.ApproachObject.Target = TargetClass(pObject);
+	event.AddEvent();
 }
 
 bool TechnoExt::EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, int distance, bool select)

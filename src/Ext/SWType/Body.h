@@ -56,6 +56,7 @@ public:
 		ValueableVector<float> LimboDelivery_RollChances;
 		Valueable<AffectedHouse> LimboKill_AffectsHouse;
 		ValueableVector<int> LimboKill_IDs;
+		ValueableVector<int> LimboKill_Counts;
 		Valueable<double> RandomBuffer;
 		ValueableIdxVector<SuperWeaponTypeClass> SW_Next;
 		Valueable<bool> SW_Next_RealLaunch;
@@ -143,6 +144,7 @@ public:
 			, LimboDelivery_RandomWeightsData {}
 			, LimboKill_AffectsHouse { AffectedHouse::Owner }
 			, LimboKill_IDs {}
+			, LimboKill_Counts {}
 			, RandomBuffer { 0.0 }
 			, Detonate_Warhead {}
 			, Detonate_Weapon {}
