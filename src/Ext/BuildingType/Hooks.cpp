@@ -194,7 +194,7 @@ DEFINE_HOOK(0x5F5416, ObjectClass_ReceiveDamage_CanC4DamageRounding, 0x6)
 
 namespace ProximityTemp
 {
-	int ExtraDistance = 0;
+	int DistanceOverride = 0;
 	bool SkipDisallowed = false;
 	BuildingTypeClass* pType = nullptr;
 }
@@ -205,29 +205,30 @@ DEFINE_HOOK(0x4A8F3E, DisplayClass_BuildingProximityCheck_BeforeChecks, 0x6)
 
 	GET(BuildingTypeClass*, pType, ESI);
 	GET_STACK(const int, houseArrayIndex, STACK_OFFSET(0x30, 0x8));
-	LEA_STACK(CellStruct*, foundationData, STACK_OFFSET(0x30, 0xC));
-	LEA_STACK(CellStruct*, currentPosition, STACK_OFFSET(0x30, 0x10));
+	GET_STACK(CellStruct*, foundationData, STACK_OFFSET(0x30, 0xC));
+	GET_STACK(CellStruct*, currentPosition, STACK_OFFSET(0x30, 0x10));
 
 	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
 	ProximityTemp::pType = pType;
 	ProximityTemp::SkipDisallowed = false;
 
-	if (pTypeExt->Adjacent_Disallowed_ExtraDistance != 0 && ProximityTemp::ExtraDistance == 0)
+	if (pTypeExt->Adjacent_Disallowed_Prohibit && pTypeExt->Adjacent_Disallowed_ProhibitDistance > 0 && ProximityTemp::DistanceOverride == 0)
 	{
-		ProximityTemp::ExtraDistance = pTypeExt->Adjacent_Disallowed_ExtraDistance;
+		ProximityTemp::DistanceOverride = pTypeExt->Adjacent_Disallowed_ProhibitDistance;
+		bool result = DisplayClass::Instance.PassesProximityCheck(pType, houseArrayIndex, foundationData, currentPosition);
+		ProximityTemp::DistanceOverride = 0;
 
-		if (!DisplayClass::Instance.PassesProximityCheck(pType, houseArrayIndex, foundationData, currentPosition))
+		if (!result)
 		{
 			R->EAX(false);
 			return ReturnFromFunction;
 		}
 
-		ProximityTemp::ExtraDistance = 0;
 		ProximityTemp::SkipDisallowed = true;
 	}
 
-	R->EAX(pType->Adjacent + ProximityTemp::ExtraDistance);
-
+	int distance = ProximityTemp::DistanceOverride > 0 ? ProximityTemp::DistanceOverride : pType->Adjacent;
+	R->EAX(distance);
 	return SkipGameCode;
 }
 
@@ -255,8 +256,15 @@ DEFINE_HOOK(0x4A8FD7, DisplayClass_BuildingProximityCheck_BuildArea, 0x6)
 
 		if (pBuildingsDisallowed.size() > 0 && pBuildingsDisallowed.Contains(pCellBuilding->Type))
 		{
-			R->EAX(false);
-			return ReturnFromFunction;
+			if (pTmpTypeExt->Adjacent_Disallowed_Prohibit)
+			{
+				R->EAX(false);
+				return ReturnFromFunction;
+			}
+			else
+			{
+				return SkipBuilding;
+			}
 		}
 	}
 

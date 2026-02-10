@@ -77,7 +77,8 @@ public:
 		Valueable<bool> NoBuildAreaOnBuildup;
 		ValueableVector<BuildingTypeClass*> Adjacent_Allowed;
 		ValueableVector<BuildingTypeClass*> Adjacent_Disallowed;
-		Valueable<int> Adjacent_Disallowed_ExtraDistance;
+		Valueable<bool> Adjacent_Disallowed_Prohibit;
+		Valueable<int> Adjacent_Disallowed_ProhibitDistance;
 
 		Nullable<Point2D> BarracksExitCell;
 
@@ -160,7 +161,8 @@ public:
 			, NoBuildAreaOnBuildup { false }
 			, Adjacent_Allowed {}
 			, Adjacent_Disallowed {}
-			, Adjacent_Disallowed_ExtraDistance { 0 }
+			, Adjacent_Disallowed_Prohibit { false }
+			, Adjacent_Disallowed_ProhibitDistance { 0 }
 			, BarracksExitCell {}
 			, Overpower_KeepOnline { 2 }
 			, Overpower_ChargeWeapon { 1 }

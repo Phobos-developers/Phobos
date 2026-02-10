@@ -496,6 +496,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that techno in attack move will move to target if it cannot attack it
   - Penetrates damage on transporter
   - Add amount limit of `LimboKill`
+  - Spawns particle when spawns tiberium by terrain
   - Crush level system
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:

@@ -242,10 +242,6 @@ void AttachEffectClass::AI()
 
 	this->CloakCheck();
 	this->OnlineCheck();
-
-	if (!this->Animation && this->CanShowAnim())
-		this->CreateAnim();
-
 	this->AnimCheck();
 }
 
@@ -256,9 +252,7 @@ void AttachEffectClass::AI_Temporal()
 		this->IsUnderTemporal = true;
 
 		this->CloakCheck();
-
-		if (!this->Animation && this->CanShowAnim())
-			this->CreateAnim();
+		this->AnimCheck();
 
 		if (this->Animation)
 		{
@@ -281,8 +275,6 @@ void AttachEffectClass::AI_Temporal()
 				break;
 			}
 		}
-
-		this->AnimCheck();
 	}
 }
 
@@ -296,15 +288,14 @@ void AttachEffectClass::AnimCheck()
 		{
 			this->KillAnim();
 			this->IsAnimHidden = true;
-		}
-		else
-		{
-			this->IsAnimHidden = false;
-
-			if (!this->Animation && this->CanShowAnim())
-				this->CreateAnim();
+			return;
 		}
 	}
+
+	this->IsAnimHidden = false;
+
+	if (!this->Animation && this->CanShowAnim())
+		this->CreateAnim();
 }
 
 void AttachEffectClass::OnlineCheck()
