@@ -1702,6 +1702,13 @@ msgstr ""
 "[自定义单位目标搜索／警戒的距离](Fixed-or-Improved-Logics.md#target-scan-guard-range-"
 "customizations)（by Starkku）"
 
+msgid ""
+"[Spawns particle when spawns tiberium by terrain](Fixed-or-Improved-"
+"Logics.md#customizable-ore-spawners) (by NetsuNegi)"
+msgstr ""
+"[地形对象在产生矿石时也产生粒子](Fixed-or-Improved-Logics.md#customizable-ore-"
+"spawners)（by NetsuNegi）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
