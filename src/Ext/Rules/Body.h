@@ -182,6 +182,7 @@ public:
 
 		Valueable<bool> JumpjetClimbPredictHeight;
 		Valueable<bool> JumpjetClimbWithoutCutOut;
+		Valueable<bool> JumpjetClimbIgnoreBuilding;
 
 		Valueable<bool> MergeBuildingDamage;
 
@@ -301,9 +302,9 @@ public:
 		Valueable<Leptons> ExtraRange_FirerMoving;
 		Valueable<Leptons> ExtraRange_Prefiring;
 		Valueable<bool> ExtraRange_Prefiring_IncludeBurst;
-		
+
 		Valueable<bool> ApplyPerTargetEffectsOnDetonate;
-		
+
 		Valueable<bool> AutoTarget_NoThreatBuildings;
 		Valueable<bool> AutoTargetAI_NoThreatBuildings;
 
@@ -311,8 +312,10 @@ public:
 		Valueable<Mission> AIParadropMission;
 
 		Valueable<bool> DefaultToGuardArea;
-    
+
 		Valueable<bool> CylinderRangefinding;
+
+		Valueable<int> PenetratesTransport_Level;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -456,6 +459,8 @@ public:
 			, PodImage { }
 			, JumpjetClimbPredictHeight { false }
 			, JumpjetClimbWithoutCutOut { false }
+			, JumpjetClimbIgnoreBuilding { false }
+
 			, DamageOwnerMultiplier { 1.0 }
 			, DamageAlliesMultiplier { 1.0 }
 			, DamageEnemiesMultiplier { 1.0 }
@@ -548,11 +553,11 @@ public:
 			, AIAirTargetingFix { false }
 
 			, SortCameoByName { false }
-			
+
 			, MergeBuildingDamage { false }
 
 			, BuildingRadioLink_SyncOwner { true }
-			
+
 			, ApplyPerTargetEffectsOnDetonate { true }
 
 			, ExtraRange_TargetMoving { Leptons(0) }
@@ -568,8 +573,10 @@ public:
 			, AIParadropMission { Mission::Hunt }
 
 			, DefaultToGuardArea { false }
-			
+
 			, CylinderRangefinding { false }
+
+			, PenetratesTransport_Level { 10 }
 		{ }
 
 		virtual ~ExtData() = default;
