@@ -1169,40 +1169,6 @@ ProneSpeed.NoCrawls=1.5       ; floating point value, multiplier
 ProneSpeed=                   ; floating point value, multiplier, by default, use the corresponding global value according to Crawls
 ```
 
-## Unit
-
-### Crush level system
-
-- It's possible to customize crush level and crushable level for now. Rolling is only allowed when the `CrushLevel` of the crusher is greater than the `CrushableLevel` of the crushed object.
-
-In `rulesmd.ini`:
-```ini
-[General]
-CrusherLevel=5                            ; integer
-CrushableLevel=5                          ; integer
-OmniCrusherLevel=10                       ; integer
-OmniCrushResistantLevel=10                ; integer
-BuildingCrushableLevel=                   ; integer
-
-[WallModel]
-WallCrushableLevel=10                     ; integer
-
-[SOMEVEHICLE]                             ; VehicleType, as the crusher
-CrushLevel=                               ; integer
-CrushLevel.Veteran=                       ; integer
-CrushLevel.Elite=                         ; integer
-
-[SOMETECHNO]                              ; TechnoType, as the crushed
-CrushableLevel=                           ; integer
-CrushableLevel.Veteran=                   ; integer
-CrushableLevel.Elite=                     ; integer
-
-[SOMEINFANTRY]                            ; InfantryType, as the crushed
-DeployedCrushableLevel=                   ; integer
-DeployedCrushableLevel.Veteran=           ; integer
-DeployedCrushableLevel.Elite=             ; integer
-```
-
 <!--
 ## Overlays
 -->
@@ -1594,6 +1560,38 @@ In `rulesmd.ini`:
 [SOMETECHNO]                    ; TechnoType
 FallingDownDamage=              ; integer / percentage
 FallingDownDamage.Water=        ; integer / percentage
+```
+
+### Crush level system
+
+- It's possible to customize crush level and crushable level for now. Rolling is only allowed when the `CrushLevel` of the crusher is greater than the `CrushableLevel` of the crushed object.
+
+In `rulesmd.ini`:
+```ini
+[General]
+CrusherLevel=5                            ; integer
+CrushableLevel=5                          ; integer
+OmniCrusherLevel=10                       ; integer
+OmniCrushResistantLevel=10                ; integer
+BuildingCrushableLevel=                   ; integer
+
+[WallModel]
+WallCrushableLevel=10                     ; integer
+
+[SOMEVEHICLE]                             ; VehicleType, as the crusher
+CrushLevel=                               ; integer
+CrushLevel.Veteran=                       ; integer
+CrushLevel.Elite=                         ; integer
+
+[SOMETECHNO]                              ; TechnoType, as the crushed
+CrushableLevel=                           ; integer
+CrushableLevel.Veteran=                   ; integer
+CrushableLevel.Elite=                     ; integer
+
+[SOMEINFANTRY]                            ; InfantryType, as the crushed
+DeployedCrushableLevel=                   ; integer
+DeployedCrushableLevel.Veteran=           ; integer
+DeployedCrushableLevel.Elite=             ; integer
 ```
 
 ### Damaged speed customization
