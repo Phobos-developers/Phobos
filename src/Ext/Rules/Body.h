@@ -182,6 +182,7 @@ public:
 
 		Valueable<bool> JumpjetClimbPredictHeight;
 		Valueable<bool> JumpjetClimbWithoutCutOut;
+		Valueable<bool> JumpjetClimbIgnoreBuilding;
 
 		Valueable<bool> MergeBuildingDamage;
 
@@ -458,6 +459,8 @@ public:
 			, PodImage { }
 			, JumpjetClimbPredictHeight { false }
 			, JumpjetClimbWithoutCutOut { false }
+			, JumpjetClimbIgnoreBuilding { false }
+
 			, DamageOwnerMultiplier { 1.0 }
 			, DamageAlliesMultiplier { 1.0 }
 			, DamageEnemiesMultiplier { 1.0 }

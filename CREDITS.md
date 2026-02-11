@@ -697,6 +697,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team
   - Global default value for `DefaultToGuardArea`
   - Weapon range finding in cylinder
+  - Allow jumpjet climbing ignore building height
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
