@@ -1175,29 +1175,29 @@ ProneSpeed=                   ; floating point value, multiplier, by default, us
 
 - It's possible to customize crush level and crushable level for now. Rolling is only allowed when the CrushLevel of the compactor is greater than the CrushableLevel of the crushed object.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [General]
 CrusherLevel=5                            ; integer
 CrushableLevel=5                          ; integer
 OmniCrusherLevel=10                       ; integer
 OmniCrushResistantLevel=10                ; integer
-BuildingCrushableLevel=                      ; integer
+BuildingCrushableLevel=                   ; integer
 
 [WallModel]
 WallCrushableLevel=10                     ; integer
 
-[SOMEUNIT]                                ; Crusher
+[SOMEVEHICLE]                             ; VehicleType, as the crusher
 CrushLevel=                               ; integer
 CrushLevel.Veteran=                       ; integer
 CrushLevel.Elite=                         ; integer
 
-[SOMETECHNO]                              ; infantry, unit, aircraft
+[SOMETECHNO]                              ; TechnoType, as the crushed
 CrushableLevel=                           ; integer
 CrushableLevel.Veteran=                   ; integer
 CrushableLevel.Elite=                     ; integer
 
-[SOMEINFANTRY]
+[SOMEINFANTRY]                            ; InfantryType, as the crushed
 DeployedCrushableLevel=                   ; integer
 DeployedCrushableLevel.Veteran=           ; integer
 DeployedCrushableLevel.Elite=             ; integer
