@@ -148,38 +148,38 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		if (this->Crit_ActiveChanceAnims.size() > 0 && this->Crit_CurrentChance > 0.0)
 			AnimExt::CreateRandomAnim(Crit_ActiveChanceAnims, coords, pOwner, pHouse, true);
 
+		const int damage = pBullet ? pBullet->Health : 0;
 		const bool bulletWasIntercepted = pBulletExt && (pBulletExt->InterceptedStatus & InterceptedStatus::Intercepted);
-		const float cellSpread = this->OwnerObject()->CellSpread;
 
-		if (cellSpread)
+		if (const float cellSpread = this->OwnerObject()->CellSpread)
 		{
 			Helpers::Alex::GetCellSpreadItems::SetParams(this);
 			auto const items = Helpers::Alex::getCellSpreadItems(coords, cellSpread, true);
 			Helpers::Alex::GetCellSpreadItems::ResetParams();
 
 			for (auto const pTarget : items)
-				this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
+				this->DetonateOnOneUnit(pHouse, pTarget, coords, damage, pOwner, bulletWasIntercepted);
 		}
 		else if (pBullet)
 		{
-			if (auto const pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
+			if (const auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
 			{
 				// Jun 2, 2024 - Starkku: We should only detonate on the target if the bullet, at the moment of detonation is within acceptable distance of the target.
 				// Ares uses 64 leptons / quarter of a cell as a tolerance, so for sake of consistency we're gonna do the same here.
 				// Skip the distance checking process for Inviso projectiles.
 				if (pBullet->Type->Inviso || pBullet->DistanceFrom(pTarget) <= 64.0) // Unsorted::LeptonsPerCell / 4.0
-					this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
+					this->DetonateOnOneUnit(pHouse, pTarget, coords, damage, pOwner, bulletWasIntercepted);
 			}
 		}
 		else if (auto const pTarget = this->DamageAreaTarget)
 		{
 			if (coords.DistanceFromSquared(pTarget->GetCoords()) <= 4096.0) // (Unsorted::LeptonsPerCell / 4.0) * (Unsorted::LeptonsPerCell / 4.0)
-				this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
+				this->DetonateOnOneUnit(pHouse, pTarget, coords, damage, pOwner, bulletWasIntercepted);
 		}
 	}
 }
 
-void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, bool bulletWasIntercepted)
+void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, const CoordStruct& coords, int damage, TechnoClass* pOwner, bool bulletWasIntercepted, int distance)
 {
 	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking || pTarget->BeingWarpedOut)
 		return;
@@ -207,6 +207,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->ReturnWarhead && pOwner)
 		this->ApplyReturnWarhead(pHouse, pTarget, pOwner);
+
+	if (this->PenetratesTransport_Level > 0 && damage)
+		this->ApplyPenetratesTransport(pTarget, pOwner, pHouse, coords, damage, distance);
 
 	// This might change the target's armor type
 	this->ApplyShieldModifiers(pTarget);
@@ -696,4 +699,147 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
 	}
 
 	return critChance + extraChance;
+}
+
+void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, TechnoClass* pInvoker, HouseClass* pInvokerHouse, const CoordStruct& coords, int damage, int distance)
+{
+	auto& passengers = pTarget->Passengers;
+	auto passenger = passengers.GetFirstPassenger();
+
+	if (!passenger)
+		return;
+
+	const auto pTargetTypeExt = TechnoExt::ExtMap.Find(pTarget)->TypeExtData;
+	const auto pTargetType = pTargetTypeExt->OwnerObject();
+
+	if (this->PenetratesTransport_Level <= pTargetTypeExt->PenetratesTransport_Level.Get(RulesExt::Global()->PenetratesTransport_Level))
+		return;
+
+	const double passThrough = this->PenetratesTransport_PassThrough * pTargetTypeExt->PenetratesTransport_PassThroughMultiplier;
+
+	if (passThrough < 1.0 && ScenarioClass::Instance->Random.RandomDouble() > passThrough)
+		return;
+
+	const double fatalRate = this->PenetratesTransport_FatalRate * pTargetTypeExt->PenetratesTransport_FatalRateMultiplier;
+	const bool fatal = fatalRate > 0.0 && ScenarioClass::Instance->Random.RandomDouble() <= fatalRate;
+	const auto pTargetFoot = abstract_cast<FootClass*>(pTarget);
+	const auto transporterCoords = pTarget->GetCoords();
+	const auto pWH = this->OwnerObject();
+	bool gunnerRemoved = false;
+
+	if (distance < 0)
+		distance = static_cast<int>(coords.DistanceFrom(transporterCoords));
+
+	if (this->PenetratesTransport_DamageAll)
+	{
+		bool isFirst = true;
+
+		if (fatal)
+		{
+			while (passenger)
+			{
+				const auto nextPassenger = abstract_cast<FootClass*>(passenger->NextObject);
+				const auto pPassengerTypeExt = TechnoExt::ExtMap.Find(passenger)->TypeExtData;
+				const auto pPassengerType = pPassengerTypeExt->OwnerObject();
+
+				if (this->PenetratesTransport_Level > pPassengerTypeExt->PenetratesTransport_Level.Get(RulesExt::Global()->PenetratesTransport_Level))
+				{
+					passenger->SetLocation(transporterCoords);
+					int applyDamage = pPassengerType->Strength;
+
+					if (passenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, true, true, pInvokerHouse) == DamageState::NowDead
+						&& isFirst && pTargetType->Gunner && pTargetFoot)
+					{
+						pTargetFoot->RemoveGunner(passenger);
+						gunnerRemoved = true;
+					}
+				}
+
+				passenger = nextPassenger;
+				isFirst = false;
+			}
+		}
+		else
+		{
+			const int adjustedDamage = static_cast<int>(std::ceil(damage * this->PenetratesTransport_DamageMultiplier * pTargetTypeExt->PenetratesTransport_DamageMultiplier));
+
+			while (passenger)
+			{
+				const auto nextPassenger = abstract_cast<FootClass*>(passenger->NextObject);
+
+				if (this->PenetratesTransport_Level > TechnoExt::ExtMap.Find(passenger)->TypeExtData->PenetratesTransport_Level.Get(RulesExt::Global()->PenetratesTransport_Level))
+				{
+					passenger->SetLocation(transporterCoords);
+					int applyDamage = adjustedDamage;
+
+					if (passenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, false, true, pInvokerHouse) == DamageState::NowDead
+						&& isFirst && pTargetType->Gunner && pTargetFoot)
+					{
+						pTargetFoot->RemoveGunner(passenger);
+						gunnerRemoved = true;
+					}
+				}
+
+				passenger = nextPassenger;
+				isFirst = false;
+			}
+		}
+	}
+	else
+	{
+		int poorBastardIdx = ScenarioClass::Instance->Random(0, passengers.NumPassengers - 1);
+		const bool isFirst = poorBastardIdx == 0;
+
+		while (poorBastardIdx > 0 && abstract_cast<FootClass*>(passenger->NextObject))
+		{
+			passenger = static_cast<FootClass*>(passenger->NextObject);
+			--poorBastardIdx;
+		}
+
+		const auto pPassengerTypeExt = TechnoExt::ExtMap.Find(passenger)->TypeExtData;
+		const auto pPassengerType = pPassengerTypeExt->OwnerObject();
+
+		if (this->PenetratesTransport_Level <= pPassengerTypeExt->PenetratesTransport_Level.Get(RulesExt::Global()->PenetratesTransport_Level))
+			return;
+
+		passenger->SetLocation(transporterCoords);
+
+		if (fatal)
+		{
+			int applyDamage = pPassengerType->Strength;
+
+			if (passenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, true, true, pInvokerHouse) == DamageState::NowDead
+				&& isFirst && pTargetType->Gunner && pTargetFoot)
+			{
+				pTargetFoot->RemoveGunner(passenger);
+				gunnerRemoved = true;
+			}
+		}
+		else
+		{
+			int adjustedDamage = static_cast<int>(std::ceil(damage * this->PenetratesTransport_DamageMultiplier * pTargetTypeExt->PenetratesTransport_DamageMultiplier));
+
+			if (passenger->ReceiveDamage(&adjustedDamage, distance, pWH, pInvoker, false, true, pInvokerHouse) == DamageState::NowDead
+				&& isFirst && pTargetType->Gunner && pTargetFoot)
+			{
+				pTargetFoot->RemoveGunner(passenger);
+				gunnerRemoved = true;
+			}
+		}
+	}
+
+	passenger = passengers.GetFirstPassenger();
+
+	if (passenger)
+	{
+		if (gunnerRemoved)
+			pTargetFoot->ReceiveGunner(passenger);
+	}
+	else
+	{
+		const int cleanSound = this->PenetratesTransport_CleanSound;
+
+		if (cleanSound != -1)
+			VocClass::PlayAt(cleanSound, transporterCoords);
+	}
 }
