@@ -5703,6 +5703,12 @@ msgstr ""
 "FallingDownDamage=              ; integer / percentage\n"
 "FallingDownDamage.Water=        ; integer / percentage\n"
 
+msgid "Crush level system"
+msgstr "碾压等级系统"
+
+msgid "It's possible to customize crush level and crushable level for now. Rolling is only allowed when the `CrushLevel` of the crusher is greater than the `CrushableLevel` of the crushed object."
+msgstr "现已允许自定义碾压等级和被碾压等级。仅当碾压者的 `CrushLevel` 高于被碾压者的 `CrushableLevel` 时才允许进行碾压。"
+
 #: ../../Fixed-or-Improved-Logics.md:1565
 msgid "Damaged speed customization"
 msgstr "自定义伤残速度"

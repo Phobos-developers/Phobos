@@ -2078,6 +2078,9 @@ msgstr "对运输工具的穿透伤害"
 msgid "Add amount limit of `LimboKill`"
 msgstr "添加了 `LimboKill` 的数量限制"
 
+msgid "Crush level system"
+msgstr "碾压等级系统"
+
 #: ../../../CREDITS.md:500
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"

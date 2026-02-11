@@ -1173,7 +1173,7 @@ ProneSpeed=                   ; floating point value, multiplier, by default, us
 
 ### Crush level system
 
-- It's possible to customize crush level and crushable level for now. Rolling is only allowed when the CrushLevel of the compactor is greater than the CrushableLevel of the crushed object.
+- It's possible to customize crush level and crushable level for now. Rolling is only allowed when the `CrushLevel` of the crusher is greater than the `CrushableLevel` of the crushed object.
 
 In `rulesmd.ini`:
 ```ini

@@ -2554,6 +2554,9 @@ msgstr ""
 "[自定义单位目标搜索／警戒的距离](Fixed-or-"
 "Improved-Logics.md#target-scan-guard-range-customizations)（by Starkku）"
 
+msgid "[Crush level system](Fixed-or-Improved-Logics.md#crush-level-system) (by NetsuNegi)"
+msgstr "[碾压等级系统](Fixed-or-Improved-Logics.md#crush-level-system)（by NetsuNegi）"
+
 #: ../../Whats-New.md:543 ../../Whats-New.md:660 ../../Whats-New.md:846
 #: ../../Whats-New.md:1204 ../../Whats-New.md:1313 ../../Whats-New.md:1338
 #: ../../Whats-New.md:1377 ../../Whats-New.md:1422
