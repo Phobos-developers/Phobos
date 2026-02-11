@@ -252,7 +252,7 @@ int JumpjetRushHelpers::JumpjetLocomotionPredictHeight(JumpjetLocomotionClass* p
 {
 	const auto pFoot = pThis->LinkedTo;
 	const auto pLocation = &pFoot->Location;
-	const bool ignoreOccupy = TechnoTypeExt::ExtMap.Find(pThis->LinkedTo->GetTechnoType())->JumpjetClimbIgnoreBuilding.Get(RulesExt::Global()->JumpjetClimbIgnoreBuilding);
+	const bool ignoreOccupy = TechnoExt::ExtMap.Find(pFoot)->TypeExtData->JumpjetClimbIgnoreBuilding.Get(RulesExt::Global()->JumpjetClimbIgnoreBuilding);
 
 	constexpr int shift = 8; // >> shift -> / Unsorted::LeptonsPerCell
 	constexpr auto point2Cell = [](const Point2D& point) -> CellStruct
@@ -436,9 +436,11 @@ namespace JumpjetClimbIgnoreBuilding
 DEFINE_HOOK(0x54D820, JumpjetLocomotionClass_GetFloorZ_SetContext, 0x6)
 {
 	GET(JumpjetLocomotionClass*, pThis, ESI);
-	JumpjetClimbIgnoreBuilding::Ignore = TechnoTypeExt::ExtMap.Find(pThis->LinkedTo->GetTechnoType())->JumpjetClimbIgnoreBuilding.Get(RulesExt::Global()->JumpjetClimbIgnoreBuilding);
+	JumpjetClimbIgnoreBuilding::Ignore = TechnoExt::ExtMap.Find(pThis->LinkedTo)->TypeExtData->JumpjetClimbIgnoreBuilding.Get(RulesExt::Global()->JumpjetClimbIgnoreBuilding);
+
 	if (JumpjetClimbIgnoreBuilding::Ignore)
 		JumpjetClimbIgnoreBuilding::Z = MapClass::Instance.GetCellFloorHeight(pThis->LinkedTo->Location);
+
 	return 0;
 }
 
@@ -447,6 +449,7 @@ DEFINE_HOOK(0x54D859, JumpjetLocomotionClass_GetFloorZ_IgnoreBuilding, 0x9)
 {
 	if (JumpjetClimbIgnoreBuilding::Ignore)
 		R->EAX(JumpjetClimbIgnoreBuilding::Z);
+
 	return 0;
 }
 
