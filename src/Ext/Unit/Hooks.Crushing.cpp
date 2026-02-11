@@ -67,8 +67,18 @@ DEFINE_HOOK(0x73F42E, UnitClass_IsCellOccupied_CrushWall, 0x6)
 	enum { CanCrush = 0x73F46E, CannotCrush = 0x73F483 };
 
 	GET(UnitClass*, pThis, EBX);
+	const int crushLevel = TechnoExt::GetCrushLevel(pThis);
 
-	return pThis->Type->MovementZone == MovementZone::CrusherAll || TechnoExt::GetCrushLevel(pThis) > RulesExt::Global()->WallCrushableLevel ? CanCrush : CannotCrush;
+	if (crushLevel <= 0)
+		return CannotCrush;
+
+	GET(OverlayTypeClass*, pOverlayType, ESI);
+
+	if (pOverlayType->Crushable
+		|| (pOverlayType->Wall && (pThis->Type->MovementZone == MovementZone::CrusherAll || crushLevel > RulesExt::Global()->WallCrushableLevel)))
+		return CanCrush;
+
+	return CannotCrush;
 }
 
 DEFINE_HOOK(0x4B19B8, DriveLocomotionClass_ProcessMoving_CrushWall, 0x8)
@@ -90,50 +100,11 @@ DEFINE_HOOK(0x4B1A1B, DriveLocomotionClass_ProcessMoving_CrusherAll, 0x8)
 	return pLinkedTo->GetTechnoType()->MovementZone == MovementZone::CrusherAll || TechnoExt::GetCrushLevel(pLinkedTo) > RulesExt::Global()->OmniCrusherLevel ? CanCrush : CannotCrush;
 }
 
-DEFINE_HOOK(0x4B3569, DriveLocomotionClass_PassableCheck_CrusherAll, 0x8)
+DEFINE_HOOK_AGAIN(0x6A2BB8, LocomotionClass_PassableCheck_CrusherAll, 0x8) // Ship
+DEFINE_HOOK(0x4B3569, LocomotionClass_PassableCheck_CrusherAll, 0x8) // Drive
 {
-	enum { CanCrush = 0x4B357A, CannotCrush = 0x4B357F };
-
 	GET(FootClass*, pLinkedTo, ECX);
-
-	return pLinkedTo->GetTechnoType()->MovementZone == MovementZone::CrusherAll || TechnoExt::GetCrushLevel(pLinkedTo) > RulesExt::Global()->OmniCrusherLevel ? CanCrush : CannotCrush;
-}
-
-DEFINE_HOOK(0x4B3FC3, DriveLocomotionClass_PassableCheck_CrusherAll2, 0x6)
-{
-	enum { CanCrush = 0x4B400A, CannotCrush = 0x4B4002 };
-
-	GET(DriveLocomotionClass*, pLoco, EBP);
-	const auto pLinkedTo = pLoco->LinkedTo;
-
-	if (pLinkedTo->GetTechnoType()->MovementZone == MovementZone::CrusherAll || TechnoExt::GetCrushLevel(pLinkedTo) > RulesExt::Global()->OmniCrusherLevel)
-	{
-		GET(OverlayTypeClass*, pOverlayType, EAX);
-		GET(CellClass*, pCell, EDI);
-
-		if (pOverlayType->Wall || pCell->GetUnit(false))
-			return CanCrush;
-	}
-
-	return CannotCrush;
-}
-
-DEFINE_HOOK(0x6A2BB8, ShipLocomotionClass_PassableCheck_CrusherAll, 0x8)
-{
-	enum { CanCrush = 0x6A2BC9, CannotCrush = 0x6A2BCE };
-
-	GET(FootClass*, pLinkedTo, ECX);
-
-	return pLinkedTo->GetTechnoType()->MovementZone == MovementZone::CrusherAll || TechnoExt::GetCrushLevel(pLinkedTo) > RulesExt::Global()->OmniCrusherLevel ? CanCrush : CannotCrush;
-}
-
-DEFINE_HOOK(0x6A361D, ShipLocomotionClass_PassableCheck_CrusherAll2, 0x8)
-{
-	enum { CanCrush = 0x6A3636, CannotCrush = 0x6A362E };
-
-	GET(FootClass*, pLinkedTo, ECX);
-
-	return pLinkedTo->GetTechnoType()->MovementZone == MovementZone::CrusherAll || TechnoExt::GetCrushLevel(pLinkedTo) > RulesExt::Global()->OmniCrusherLevel ? CanCrush : CannotCrush;
+	return R->Origin() + (pLinkedTo->GetTechnoType()->MovementZone == MovementZone::CrusherAll || TechnoExt::GetCrushLevel(pLinkedTo) > RulesExt::Global()->WallCrushableLevel ? 0x11 : 0x16);
 }
 
 DEFINE_HOOK(0x5F6CD0, ObjectClass_IsCrushable, 0x6)
