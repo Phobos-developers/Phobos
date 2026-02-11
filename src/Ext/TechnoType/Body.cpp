@@ -1,4 +1,4 @@
-#include "Body.h"
+﻿#include "Body.h"
 
 #include <JumpjetLocomotionClass.h>
 
@@ -1161,6 +1161,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PenetratesTransport_FatalRateMultiplier.Read(exINI, pSection, "PenetratesTransport.FatalRateMultiplier");
 	this->PenetratesTransport_DamageMultiplier.Read(exINI, pSection, "PenetratesTransport.DamageMultiplier");
 
+	this->JumpjetClimbIgnoreBuilding.Read(exINI, pSection, "JumpjetClimbIgnoreBuilding");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1856,7 +1858,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Deploy_SkipPassengerUnload)
 		.Process(this->Deploy_NoPassenger)
 		.Process(this->Deploy_NoTiberium)
-		
+
 		.Process(this->DrainMoneyFrameDelay)
 		.Process(this->DrainMoneyAmount)
 		.Process(this->DrainAnimationType)
@@ -1873,6 +1875,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PenetratesTransport_PassThroughMultiplier)
 		.Process(this->PenetratesTransport_FatalRateMultiplier)
 		.Process(this->PenetratesTransport_DamageMultiplier)
+
+		.Process(this->JumpjetClimbIgnoreBuilding)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
