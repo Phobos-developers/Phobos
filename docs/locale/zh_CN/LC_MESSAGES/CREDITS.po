@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-10 22:05+0800\n"
+"POT-Creation-Date: 2026-02-11 16:46+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2287,6 +2287,9 @@ msgstr "`DefaultToGuardArea` 的全局默认值"
 
 msgid "Weapon range finding in cylinder"
 msgstr "武器使用圆柱形射程"
+
+msgid "Allow jumpjet climbing ignore building height"
+msgstr "允许 Jumpjet 爬升时忽略建筑高度"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"

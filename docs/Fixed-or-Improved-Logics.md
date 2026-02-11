@@ -495,7 +495,7 @@ JumpjetClimbPredictHeight=false   ; boolean
 JumpjetClimbWithoutCutOut=false   ; boolean
 JumpjetClimbIgnoreBuilding=false  ; boolean
 
-[SOMETECHNO]                      ; technotype
+[SOMETECHNO]                      ; TechnoType
 JumpjetClimbIgnoreBuilding=       ; boolean, default to [General] -> JumpjetClimbIgnoreBuilding
 ```
 
