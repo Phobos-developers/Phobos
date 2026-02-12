@@ -2455,13 +2455,13 @@ DecloakDamagedTargets=true  ; boolean
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-Parasite.GrappleAnim=             ; animation
+Parasite.GrappleAnim=SQDG               ; AnimationType
 
-[SOMEWARHEAD]                     ; WarheadType
-Parasite.ParticleSystem=            ; particle system, default to [CombatDamage] -> DefaultSparkSystem
+[SOMEWARHEAD]                           ; WarheadType
+Parasite.ParticleSystem=                ; ParticleSystemType, default to [CombatDamage] -> DefaultSparkSystem
 Parasite.DisableParticleSystem=false    ; boolean
-Parasite.CullingTarget=infantry   ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
-Parasite.GrappleAnim=             ; animation
+Parasite.CullingTarget=infantry         ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
+Parasite.GrappleAnim=                   ; AnimationType, default to [AudioVisual] -> Parasite.GrappleAnim
 ```
 
 ### Dehardcode the `ZAdjust` of warhead anim
