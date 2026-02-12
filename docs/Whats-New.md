@@ -598,6 +598,7 @@ Vanilla fixes:
 - Fixed the issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team (by TaranDahl)
 - Fixed the bug that cause technos teleport to cell 0,0 by ChronoSphere superweapon (by NetsuNegi)
 - Fixed the bug that techno in attack move will move to target if it cannot attack it (by NetsuNegi)
+- Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4 (by FlyStar)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -625,6 +626,7 @@ Phobos fixes:
 - LimboDelivery buildings cannot be selected (by FlyStar)
 - Fixed the positive value of `Reveal` on warhead (by NetsuNegi)
 - Fixed `Adjacent.Disallowed` not blocking placement if other eligible buildings were in range (by Starkku)
+- Fixed the issue where `AIChronoSphereSW` and `AIChronoWarpSW` did not function correctly with AI scripts 56 and 57 (by FlyStar)
 
 Fixes / interactions with other extensions:
 <!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->

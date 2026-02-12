@@ -411,6 +411,7 @@ This page lists all the individual contributions to the project by their author.
   - Vehicle Deployment Enhancement
   - Fix an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals
   - Fix an issue where mining vehicles could not move after leaving a tank bunker
+  - Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
