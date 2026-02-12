@@ -2458,6 +2458,8 @@ In `rulesmd.ini`:
 Parasite.GrappleAnim=             ; animation
 
 [SOMEWARHEAD]                     ; WarheadType
+Parasite.ParticleSystem=            ; particle system, default to [CombatDamage] -> DefaultSparkSystem
+Parasite.DisableParticleSystem=false    ; boolean
 Parasite.CullingTarget=infantry   ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
 Parasite.GrappleAnim=             ; animation
 ```

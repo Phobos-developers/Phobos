@@ -497,6 +497,7 @@ This page lists all the individual contributions to the project by their author.
   - Penetrates damage on transporter
   - Add amount limit of `LimboKill`
   - Spawns particle when spawns tiberium by terrain
+  - Customize particle system of parasite logic
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

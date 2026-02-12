@@ -795,6 +795,26 @@ DEFINE_HOOK(0x62A0AA, ParasiteClass_AI_CullingTarget, 0x5)
 	return EnumFunctions::IsTechnoEligible(pThis->Victim, pWHExt->Parasite_CullingTarget) ? ExecuteCulling : CannotCulling;
 }
 
+DEFINE_HOOK(0x62A0D3, ParasiteClass_AI_ParticleSystem, 0x5)
+{
+	enum { SkipGameCode = 0x62A108 };
+
+	//GET(ParasiteClass*, pThis, ESI);
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x4C, -0x2C));
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+
+	if (pWHExt->Parasite_DisableParticleSystem)
+		return SkipGameCode;
+
+	if (const auto pParticleSysType = pWHExt->Parasite_ParticleSystem.Get(RulesClass::Instance->DefaultSparkSystem))
+	{
+		REF_STACK(CoordStruct, coords, STACK_OFFSET(0x4C, -0x18));
+		GameCreate<ParticleSystemClass>(pParticleSysType, coords, nullptr, nullptr, CoordStruct::Empty, nullptr);
+	}
+
+	return SkipGameCode;
+}
+
 DEFINE_HOOK(0x6298CC, ParasiteClass_AI_GrippleAnim, 0x5)
 {
 	enum { SkipGameCode = 0x6298D6 };
