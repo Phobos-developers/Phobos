@@ -546,9 +546,11 @@ msgid ""
 "[![GPL "
 "v3](https://www.gnu.org/graphics/gplv3-127x51.png)](https://opensource.org/license/GPL-3.0)"
 msgstr ""
+"[![GPL "
+"v3](https://www.gnu.org/graphics/gplv3-127x51.png)](https://opensource.org/license/GPL-3.0)"
 
 msgid "GPL v3"
-msgstr ""
+msgstr "GPL v3"
 
 msgid ""
 "The Phobos project is an unofficial open-source community collaboration "
