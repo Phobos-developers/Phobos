@@ -296,6 +296,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team.
 - Allow the default value of `DefaultToGuardArea` to be defined by `[General] -> DefaultToGuardArea`.
 - Fixed the bug that cause technos teleport to cell 0,0 by ChronoSphere superweapon.
+- Fixed the bug that techno in attack move will move to target if it cannot attack it.
 - Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4.
 
 ## Fixes / interactions with other extensions
@@ -486,12 +487,17 @@ ForceShield.ExtraTintIntensity=0.0  ; floating point value
 - You can now let the jumpjets increase their height earlier by set `JumpjetClimbPredictHeight` to true. The jumpjet will raise its height 5 cells in advance, instead of only raising its height when encountering cliffs or buildings in front of it.
 - You can also let them simply skip the stop check by set `JumpjetClimbWithoutCutOut` to true. The jumpjet will not stop moving horizontally when encountering cliffs or buildings in front of it, but will continue to move forward while raising its altitude.
   - When `JumpjetClimbPredictHeight` is enabled, if the height raised five grids in advance is still not enough to cross cliffs or buildings, it will stop and move horizontally as before, unless `JumpjetClimbWithoutCutOut` is also enabled.
+- You can set `JumpjetClimbIgnoreBuilding` to true to make the jumpjet treat the building height as 0 when climbing.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-JumpjetClimbPredictHeight=false  ; boolean
-JumpjetClimbWithoutCutOut=false  ; boolean
+JumpjetClimbPredictHeight=false   ; boolean
+JumpjetClimbWithoutCutOut=false   ; boolean
+JumpjetClimbIgnoreBuilding=false  ; boolean
+
+[SOMETECHNO]                      ; technotype
+JumpjetClimbIgnoreBuilding=       ; boolean, default to [General] -> JumpjetClimbIgnoreBuilding
 ```
 
 ### Move IvanBomb Position
@@ -1844,6 +1850,17 @@ AIAttackMoveTargetingDelay=          ; integer, game frames
 PlayerAttackMoveTargetingDelay=      ; integer, game frames
 ```
 
+### Target scan/guard range customizations
+
+- Target scan range is no longer capped to 16 cells under some circumstances f.ex on `Area Guard` or `Patrol` mission.
+- `AreaGuardRange` overrides explicit `GuardRange` setting for technos currently on `Area Guard` mission (f.ex guard mode command). As per usual, `GuardRange` in itself defaults to highest range between technos weapons if set to 0 or omitted.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]     ; TechnoType
+AreaGuardRange=  ; floating point value, distance in cells
+```
+
 ### Voxel body multi-section shadows
 
 ![image](_static/images/uh0-be.gif)
@@ -1933,6 +1950,7 @@ SpawnsTiberium.Type=0         ; tiberium/ore type index
 SpawnsTiberium.Range=1        ; integer, radius in cells
 SpawnsTiberium.GrowthStage=3  ; integer - single or comma-sep. range
 SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
+SpawnsTiberium.Particle=        ; particle
 ```
 
 ### Damaged frames and crumbling animation

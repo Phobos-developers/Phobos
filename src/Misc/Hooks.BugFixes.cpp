@@ -137,6 +137,9 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_Debris, 0xA)
 
 	GET(TechnoClass* const, pThis, ESI);
 
+	if (pThis->Transporter)
+		return SkipGameCode;
+
 	const auto pType = pThis->GetTechnoType();
 
 	// Fix the debris count to be in range of Min, Max instead of Min, Max-1.
@@ -1369,6 +1372,29 @@ DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_RequestUntether, 0x7)
 }
 
 #pragma endregion
+
+// Fix the bug that techno in attack move will move to target if it cannot attack it
+DEFINE_HOOK(0x4D77BD, FootClass_ObjectClickedAction_NoMove, 0x6)
+{
+	enum { ReturnFalse = 0x4D77EC, ReturnTrue = 0x4D7CC0 };
+
+	GET(ObjectClass*, pTarget, EBX);
+	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
+
+	if (!pTargetTechno)
+		return 0;
+
+	GET(FootClass*, pThis, ESI);
+
+	if (pThis->Owner->IsAlliedWith(pTargetTechno->Owner))
+		return 0;
+
+	if (!pThis->IsActive())
+		return ReturnFalse;
+
+	TechnoExt::ClickedApproachObject(pThis, pTarget);
+	return ReturnTrue;
+}
 
 #pragma region JumpjetShadowPointFix
 
