@@ -30,6 +30,19 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 
 ## Battle screen UI/UX
 
+### Allow draw SuperWeapon timer as percentage
+
+- Superweapon cd timer can now draw as percentage.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+SuperWeaponTimer.Percentage=false  ; boolean
+
+[SOMESW]                           ; SuperWeaponType, with ShowTimer=yes
+ShowTimer.Percentage=              ; boolean
+```
+
 ### Digital display
 
 ![image](_static/images/digital_display_shapes.png)
@@ -389,19 +402,6 @@ In `rulesmd.ini`:
 ```ini
 [SOMESW]              ; SuperWeaponType, with ShowTimer=yes
 ShowTimer.Priority=0  ; integer
-```
-
-### Allow draw SuperWeapon timer as percentage
-
-- Superweapon cd timer can now draw as percentage.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-SuperWeaponTimer.Percentage=false  ; boolean
-
-[SOMESW]              ; SuperWeaponType, with ShowTimer=yes
-ShowTimer.Percentage=     ; boolean
 ```
 
 ### Task subtitles display in the middle of the screen

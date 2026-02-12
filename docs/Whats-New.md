@@ -541,7 +541,7 @@ New:
 - [Customizations for techno type target scan/guard range](Fixed-or-Improved-Logics.md#target-scan-guard-range-customizations) (by Starkku)
 - [Spawns particle when spawns tiberium by terrain](Fixed-or-Improved-Logics.md#customizable-ore-spawners) (by NetsuNegi)
 - Allow jumpjet climbing ignore building height (by TaranDahl)
-- Allow draw SuperWeapon timer as percentage (by NetsuNegi)
+- [Allow draw SuperWeapon timer as percentage](User-Interface.md#allow-draw-superweapon-timer-as-percentage) (by NetsuNegi)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

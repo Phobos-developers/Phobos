@@ -1612,7 +1612,7 @@ msgid "Spawns particle when spawns tiberium by terrain"
 msgstr "地形对象在产生矿石时也产生粒子"
 
 msgid "Allow draw SuperWeapon timer as percentage"
-msgstr ""
+msgstr "允许以百分比形式绘制超武计时器"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"

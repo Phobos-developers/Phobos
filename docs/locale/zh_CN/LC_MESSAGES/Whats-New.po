@@ -1716,6 +1716,8 @@ msgid ""
 "[Allow draw SuperWeapon timer as percentage](User-Interface.md#allow-"
 "draw-superweapon-timer-as-percentage) (by NetsuNegi)"
 msgstr ""
+"[允许以百分比形式绘制超武计时器](User-Interface.md#allow-"
+"draw-superweapon-timer-as-percentage)（by NetsuNegi）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
