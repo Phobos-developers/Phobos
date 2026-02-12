@@ -65,7 +65,7 @@ public:
 		ValueableVector<float> SW_Next_RollChances;
 
 		Valueable<int> ShowTimer_Priority;
-		Valueable<bool> ShowTimer_Percentage;
+		Nullable<bool> ShowTimer_Percentage;
 
 		Valueable<WarheadTypeClass*> Detonate_Warhead;
 		Valueable<WeaponTypeClass*> Detonate_Weapon;

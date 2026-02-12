@@ -537,7 +537,7 @@ DEFINE_HOOK(0x6D4A10, TacticalClass_Render_DrawSuperTimer_PercentageTimer, 0x6)
 	const int timeLeft = pSuper->RechargeTimer.GetTimeLeft();
 	const auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 
-	if (pSWTypeExt->ShowTimer_Percentage)
+	if (pSWTypeExt->ShowTimer_Percentage.Get(RulesExt::Global()->SuperWeaponTimer_Percentage))
 	{
 		DrawTimerTemp::IsPercentage = true;
 		const int recharge = pSuper->GetRechargeTime();

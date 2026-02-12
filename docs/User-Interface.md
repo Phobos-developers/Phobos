@@ -397,8 +397,11 @@ ShowTimer.Priority=0  ; integer
 
 In `rulesmd.ini`:
 ```ini
+[AudioVisual]
+SuperWeaponTimer.Percentage=false  ; boolean
+
 [SOMESW]              ; SuperWeaponType, with ShowTimer=yes
-ShowTimer.Percentage=false  ; boolean
+ShowTimer.Percentage=     ; boolean
 ```
 
 ### Task subtitles display in the middle of the screen
