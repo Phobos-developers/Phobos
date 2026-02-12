@@ -2141,6 +2141,7 @@ msgid ""
 "Fixed `Adjacent.Disallowed` not blocking placement if other eligible "
 "buildings were in range (by Starkku)"
 msgstr ""
+"修复了 `Adjacent.Disallowed` 未能对友军建筑摆放生效的问题（by Starkku）"
 
 msgid ""
 "Fixed the issue where `AIChronoSphereSW` and `AIChronoWarpSW` did not "
