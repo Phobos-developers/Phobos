@@ -881,11 +881,19 @@ DEFINE_HOOK(0x4C7512, EventClass_Execute_StopCommand, 0x6)
 			pUnit->SetTarget(nullptr);
 			pThis->QueueMission(Mission::Guard, true);
 		}
-
+		
 		// Explicit stop command should reset subterranean harvester state machine.
 		auto const pExt = TechnoExt::ExtMap.Find(pUnit);
 		pExt->SubterraneanHarvStatus = 0;
 		pExt->SubterraneanHarvRallyPoint = nullptr;
+	}
+	else if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pThis))
+	{
+		if (pBuilding->CurrentMission == Mission::Unload && pBuilding->Type->DeployFire)
+		{
+			pBuilding->QueueMission(Mission::Guard, false);
+			pBuilding->NextMission();
+		}
 	}
 
 	return 0;
