@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -482,6 +482,8 @@ public:
 		Valueable<double> PenetratesTransport_FatalRateMultiplier;
 		Valueable<double> PenetratesTransport_DamageMultiplier;
 
+		Nullable<bool> JumpjetClimbIgnoreBuilding;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, HealthBar_HidePips { false }
@@ -917,6 +919,8 @@ public:
 			, PenetratesTransport_PassThroughMultiplier { 1.0 }
 			, PenetratesTransport_FatalRateMultiplier { 1.0 }
 			, PenetratesTransport_DamageMultiplier { 1.0 }
+
+			, JumpjetClimbIgnoreBuilding {}
 		{ }
 
 		virtual ~ExtData() = default;

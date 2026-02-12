@@ -1806,3 +1806,38 @@ DEFINE_HOOK(0x6F90DE, TechnoClass_GreatestThreat_MultiWeapon, 0x6)
 }
 
 #pragma endregion
+
+#pragma region ThreatPosed
+
+static int __fastcall FootClass_GetThreatValue_Wrapper(FootClass* pThis)
+{
+	return pThis->GetTechnoType()->ThreatPosed;
+}
+
+static int __fastcall Building_GetThreatValue_Wrapper(BuildingClass* pThis)
+{
+	int occupantCount = pThis->Occupants.Count;
+
+	if (occupantCount > 0)
+		return RulesClass::Instance->ThreatPerOccupant * occupantCount;
+
+	if (auto const pLinked = pThis->BunkerLinkedItem)
+		return pLinked->GetThreatValue();
+
+	auto const pType = pThis->Type;
+
+	// Set threat value of uncaptured tech buildings to 0.
+	if (pType->NeedsEngineer && pThis->Owner->Type->MultiplayPassive)
+		return 0;
+
+	return pType->ThreatPosed;
+}
+
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2564, FootClass_GetThreatValue_Wrapper);  // AircraftClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E8F54, FootClass_GetThreatValue_Wrapper);  // FootClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB318, FootClass_GetThreatValue_Wrapper);  // InfantryClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F4C20, FootClass_GetThreatValue_Wrapper);  // TechnoClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5F30, FootClass_GetThreatValue_Wrapper);  // UnitClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E417C, Building_GetThreatValue_Wrapper);   // BuildingClass
+
+#pragma endregion
