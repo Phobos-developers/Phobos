@@ -7,11 +7,26 @@ DEFINE_HOOK(0x447358, BuildingClass_MouseOverObject_DeployFire, 0x6)
 	return pType->DeployFire ? 0x4472EC : 0;
 }
 
-DEFINE_HOOK(0x4434FF, BuildingClass_ObjectClickedAction_DeployFire, 0x6)
+DEFINE_HOOK(0x443459, BuildingClass_ObjectClickedAction_DeployFire, 0x6)
 {
-	GET(BuildingTypeClass* const, pType, EAX);
+	GET(BuildingClass*, pThis, EBX);
+	enum { SkipGameCode = 0x443568, SkipFactory = 0x4434F2 };
 
-	return pType->DeployFire ? 0x443509 : 0;
+	auto const pType = pThis->Type;
+
+	// Perhaps Factory should not allow the use of DeployFire.
+	if (pType->Factory != AbstractType::None)
+	{
+		if (!pThis->IsPrimaryFactory)
+			pThis->ClickedEvent(EventType::Primary);
+	}
+	else if (pType->DeployFire)
+	{
+		pThis->ClickedMission(Mission::Unload, pThis, nullptr, nullptr);
+		return SkipGameCode;
+	}
+
+	return SkipFactory;
 }
 
 DEFINE_HOOK(0x44E29D, BuildingClass_Mission_Unload_DeployFire, 0x6)
@@ -20,7 +35,9 @@ DEFINE_HOOK(0x44E29D, BuildingClass_Mission_Unload_DeployFire, 0x6)
 	GET(BuildingTypeClass* const, pType, EAX);
 	enum { SkipGameCode = 0x44E37F, ReturnGuard = 0x44E371, Continue = 0x44E2BE };
 
-	if (!pType->GapGenerator || !pType->SuperGapRadiusInCells)
+	const int cells = static_cast<int>(pType->SuperGapRadiusInCells);
+
+	if (!pType->GapGenerator || !cells)
 	{
 		if (pType->DeployFire)
 		{
@@ -38,7 +55,13 @@ DEFINE_HOOK(0x44E29D, BuildingClass_Mission_Unload_DeployFire, 0x6)
 				auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 
 				if (pWeapon->FireOnce)
-					return ReturnGuard;
+				{
+					// When Turret=yes, the Unload task may not be canceled, so this handling is performed.
+					pThis->QueueMission(Mission::Guard, false);
+					pThis->NextMission();
+
+					return SkipGameCode;
+				}
 			}
 
 			R->EBX(ScenarioClass::Instance->Random.RandomRanged(0, 2) + 14);
@@ -75,6 +98,25 @@ DEFINE_HOOK(0x730B09, DeployCommandClass_Execute_BuildingDeploy, 0x5)
 			continue;
 
 		pBuilding->ClickedMission(Mission::Unload, nullptr, nullptr, nullptr);
+	}
+
+	return 0;
+}
+
+// I don't know why it doesn't allow OmniFire to function properly.
+DEFINE_HOOK(0x447FED, BuildingClass_GetFireError_DeployFire, 0x7)
+{
+	enum { SkipGameCode = 0x448052 };
+
+	GET(BuildingClass* const, pThis, ESI);
+	GET_STACK(const int, weaponIndex, STACK_OFFSET(0xC, 0x8));
+
+	if (pThis->Type->DeployFire && pThis->CurrentMission == Mission::Unload)
+	{
+		auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+
+		if (pWeapon->OmniFire)
+			return SkipGameCode;
 	}
 
 	return 0;
