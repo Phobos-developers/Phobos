@@ -65,7 +65,7 @@ DEFINE_HOOK(0x44E29D, BuildingClass_Mission_Unload_DeployFire, 0x6)
 			}
 
 			const int undeployDelay = pType->UndeployDelay;
-			const int result = undeployDelay < 0 ? (ScenarioClass::Instance->Random.RandomRanged(0, 2) + 14) : std::max(undeployDelay, 1);
+			const int result = undeployDelay < 0 ? (ScenarioClass::Instance->Random.RandomRanged(0, 2) + 14) : undeployDelay;
 
 			R->EBX(result);
 			return SkipGameCode;
