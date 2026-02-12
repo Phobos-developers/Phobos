@@ -4106,6 +4106,7 @@ msgid ""
 "Fixed an issue where Ares' `Convert.Deploy` triggers repeatedly when the "
 "unit is turning or moving (by CrimRecya)"
 msgstr ""
+"修复了 Ares 的 `Convert.Deploy` 会在单位转向或移动中反复触发的问题（by CrimRecya）"
 
 msgid ""
 "Fixed quicksave command and save game trigger action to work with YRpp "
