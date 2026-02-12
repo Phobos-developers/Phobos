@@ -1266,6 +1266,7 @@ msgid ""
 "Fixed the bug in AI scripts 56 and 57 that forced the launch of "
 "superweapons with index numbers 3 and 4"
 msgstr ""
+"修复了 56 和 57 号 AI 动作脚本强制发射注册索引 3 和 4 的超武的 Bug"
 
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："
