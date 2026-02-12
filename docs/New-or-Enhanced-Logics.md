@@ -609,6 +609,11 @@ Adjacent.Disallowed.ProhibitDistance=0  ; integer, cell offset
 NoBuildAreaOnBuildup=false              ; boolean
 ```
 
+### DeployFire supports
+
+- Building types now also support using `DeployFire` and `DeployFireWeapon`.
+  - If a building has other configurations such as `Factory`, `GapGenerator`, or `Passengers`, it will prioritize executing those deployment actions instead.
+
 ### Destroyable pathfinding obstacles
 
 - It is possible to make buildings be considered pathfinding obstacles that can be destroyed by setting `IsDestroyableBlockage` to true. What this does is make the building be considered impassable and impenetrable pathfinding obstacle to every unit that is not flying or have appropriate `MovementZone` (ones that allow destroyable obstacles to be overcome, e.g `(Infantry|Amphibious)Destroyer`) akin to wall overlays and TerrainTypes.
