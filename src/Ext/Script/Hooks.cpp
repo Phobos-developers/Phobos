@@ -92,7 +92,7 @@ DEFINE_HOOK_AGAIN(0x6F005F, TMission_ChronoShiftToBuilding_SWIndex, 0x6)
 DEFINE_HOOK(0x6F0008, TMission_ChronoShiftToBuilding_SWIndex, 0x6)
 {
 	const DWORD address = R->Origin();
-	const bool isChronoSphere = address == 0x6F02AD;
+	const bool isChronoSphere = address == 0x6F0008;
 
 	SuperWeaponTypeClass* const pSWType = isChronoSphere ?
 		R->EAX<SuperWeaponTypeClass* const>() : R->ECX<SuperWeaponTypeClass* const>();
