@@ -391,6 +391,19 @@ In `rulesmd.ini`:
 ShowTimer.Priority=0  ; integer
 ```
 
+### Allow draw SuperWeapon timer as percentage
+
+- Superweapon cd timer can now draw as percentage.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+SuperWeaponTimer.Percentage=false  ; boolean
+
+[SOMESW]              ; SuperWeaponType, with ShowTimer=yes
+ShowTimer.Percentage=     ; boolean
+```
+
 ### Task subtitles display in the middle of the screen
 
 ![Message Display In Center](_static/images/messagedisplayincenter.gif)
