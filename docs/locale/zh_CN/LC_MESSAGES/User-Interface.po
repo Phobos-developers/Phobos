@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-10 22:05+0800\n"
+"POT-Creation-Date: 2026-02-12 23:27+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -103,6 +103,12 @@ msgstr "在 `rulesmd.ini`："
 
 msgid "Battle screen UI/UX"
 msgstr "战斗界面 UI／UX"
+
+msgid "Allow draw SuperWeapon timer as percentage"
+msgstr ""
+
+msgid "Superweapon cd timer can now draw as percentage."
+msgstr ""
 
 msgid "Digital display"
 msgstr "数字化显示"

@@ -411,6 +411,7 @@ This page lists all the individual contributions to the project by their author.
   - Vehicle Deployment Enhancement
   - Fix an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals
   - Fix an issue where mining vehicles could not move after leaving a tank bunker
+  - Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -497,6 +498,7 @@ This page lists all the individual contributions to the project by their author.
   - Penetrates damage on transporter
   - Add amount limit of `LimboKill`
   - Spawns particle when spawns tiberium by terrain
+  - Allow draw SuperWeapon timer as percentage
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
