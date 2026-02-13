@@ -2,6 +2,37 @@
 
 OverlayTypeExt::ExtContainer OverlayTypeExt::ExtMap;
 
+bool OverlayTypeExt::CanPlaceBuildingOnOverlay(int overlayTypeIndex, BuildingTypeClass* pBuildingType, bool requireToBeRemovable)
+{
+	auto const pOverlayType = OverlayTypeClass::Array[overlayTypeIndex];
+	auto const pTypeExt = OverlayTypeExt::Fetch(pOverlayType);
+
+	if (!pTypeExt->CanBeBuiltOn)
+		return false;
+
+	if (((pBuildingType && pBuildingType->Wall) || pOverlayType->Wall) && !pTypeExt->CanBeBuiltOn_Remove)
+		return false;
+
+	return requireToBeRemovable ? pTypeExt->CanBeBuiltOn_Remove : true;
+}
+
+void OverlayTypeExt::RemoveOverlayFromCell(int overlayTypeIndex, CellClass* pCell, HouseClass* pSource)
+{
+	if (overlayTypeIndex != -1 && OverlayTypeClass::Array[overlayTypeIndex]->Wall)
+	{
+		if (pSource && pCell->WallOwnerIndex == pSource->ArrayIndex)
+			pSource->SellWall(pCell->MapCoords, true);
+		else
+			pCell->DamageWall(-1);
+	}
+	else
+	{
+		pCell->OverlayTypeIndex = -1;
+		pCell->OverlayData = 0;
+		pCell->RecalcAttributes(-1);
+	}
+}
+
 // =============================
 // load / save
 
@@ -9,6 +40,8 @@ template <typename T>
 void OverlayTypeExt::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->CanBeBuiltOn)
+		.Process(this->CanBeBuiltOn_Remove)
 		.Process(this->ZAdjust)
 		.Process(this->PaletteFile)
 		;
@@ -18,12 +51,15 @@ void OverlayTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 
-	//const char* pSection = pThis->ID;
-	//
-	//if (!pINI->GetSection(pSection))
-	//	return;
-	//
-	//INI_EX exINI(pINI);
+	const char* pSection = pThis->ID;
+	
+	if (!pINI->GetSection(pSection))
+		return;
+
+	INI_EX exINI(pINI);
+
+	this->CanBeBuiltOn.Read(exINI, pSection, "CanBeBuiltOn");
+	this->CanBeBuiltOn_Remove.Read(exINI, pSection, "CanBeBuiltOn.Remove");
 
 	auto pArtSection = pThis->ImageFile;
 	INI_EX exArtINI(&CCINIClass::INI_Art);
