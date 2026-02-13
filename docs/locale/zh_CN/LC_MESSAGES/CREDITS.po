@@ -1614,7 +1614,7 @@ msgid "Allow draw SuperWeapon timer as percentage"
 msgstr "允许以百分比形式绘制超武计时器"
 
 msgid "Customize particle system of parasite logic"
-msgstr ""
+msgstr "自定义寄生粒子系统"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
