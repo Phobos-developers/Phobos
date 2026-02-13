@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <Ext/OverlayType/Body.h>
 
 #include <Ext/Rules/Body.h>
 
@@ -141,6 +142,16 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableTerrain, 0x6)
 				pCell->RemoveContent(pTerrain, false);
 				TerrainTypeExt::Remove(pTerrain);
 			}
+		}
+
+		int overlayTypeIndex = pCell->OverlayTypeIndex;
+
+		if (overlayTypeIndex != -1)
+		{
+			auto const pBuildingType = static_cast<BuildingTypeClass*>(pObject->GetType());
+
+			if (OverlayTypeExt::CanPlaceBuildingOnOverlay(overlayTypeIndex, pBuildingType, true))
+				OverlayTypeExt::RemoveOverlayFromCell(overlayTypeIndex, pCell, pObject->GetOwningHouse());
 		}
 	}
 
