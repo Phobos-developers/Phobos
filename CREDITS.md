@@ -499,6 +499,7 @@ This page lists all the individual contributions to the project by their author.
   - Add amount limit of `LimboKill`
   - Spawns particle when spawns tiberium by terrain
   - Allow draw SuperWeapon timer as percentage
+  - Customize particle system of parasite logic
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
