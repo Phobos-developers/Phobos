@@ -2164,6 +2164,7 @@ msgid ""
 " a refund when the infected infantry enters a Grinding building (by "
 "NetsuNegi)"
 msgstr ""
+"修复了被寄生步兵进入部队回收站后寄生者不会一同返还资金的问题（by NetsuNegi）"
 
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
