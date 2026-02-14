@@ -101,9 +101,10 @@ DEFINE_HOOK(0x730B09, DeployCommandClass_Execute_BuildingDeploy, 0x5)
 			continue;
 
 		const auto pBuilding = static_cast<BuildingClass*>(pObject);
+		auto const pType = pBuilding->Type;
 		const auto pHouse = pBuilding->Owner;
 
-		if (!pHouse->IsControlledByCurrentPlayer() || !pBuilding->Type->DeployFire)
+		if (!pHouse->IsControlledByCurrentPlayer() || !pType->DeployFire || pType->Factory != AbstractType::None)
 			continue;
 
 		const Mission currentMission = pBuilding->CurrentMission;
