@@ -33,61 +33,55 @@ DEFINE_HOOK(0x443459, BuildingClass_ObjectClickedAction_DeployFire, 0x6)
 	return SkipFactory;
 }
 
-DEFINE_HOOK(0x44E29D, BuildingClass_Mission_Unload_DeployFire, 0x6)
+DEFINE_HOOK(0x44E371, BuildingClass_Mission_Unload_DeployFire, 0x6)
 {
 	GET(BuildingClass* const, pThis, EBP);
-	GET(BuildingTypeClass* const, pType, EAX);
-	enum { SkipGameCode = 0x44E37F, ReturnGuard = 0x44E371, Continue = 0x44E2BE };
+	enum { SkipGameCode = 0x44E37F };
 
-	const int cells = static_cast<int>(pType->SuperGapRadiusInCells);
+	auto const pType = pThis->Type;
 
-	if (!pType->GapGenerator || !cells)
+	if (!pType->GapGenerator && pType->DeployFire)
 	{
-		if (pType->DeployFire)
+		auto const pCell = pThis->GetCell();
+
+		if (pThis->Target != pCell)
+			pThis->SetTarget(pCell);
+
+		const int deployFireWeapon = pType->DeployFireWeapon;
+		const int weaponIndex = deployFireWeapon >= 0 ? deployFireWeapon : pThis->SelectWeapon(pCell);
+		const FireError fireError = pThis->GetFireError(pCell, weaponIndex, true);
+
+		if (fireError == FireError::ILLEGAL)
 		{
-			auto const pCell = pThis->GetCell();
+			// Do not allow the building to remain in the Unload task indefinitely.
+			pThis->QueueMission(Mission::Guard, false);
+			pThis->NextMission();
 
-			if (pThis->Target != pCell)
-				pThis->SetTarget(pCell);
+			return SkipGameCode;
+		}
+		else if (fireError == FireError::OK && pThis->Fire(pCell, weaponIndex))
+		{
+			auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 
-			const int deployFireWeapon = pType->DeployFireWeapon;
-			const int weaponIndex = deployFireWeapon >= 0 ? deployFireWeapon : pThis->SelectWeapon(pCell);
-			const FireError fireError = pThis->GetFireError(pCell, weaponIndex, true);
-
-			if (fireError == FireError::ILLEGAL)
+			if (pWeapon->FireOnce)
 			{
-				// Do not allow the building to remain in the Unload task indefinitely.
+				// When Turret=yes, the Unload task may not be canceled, so this handling is performed.
 				pThis->QueueMission(Mission::Guard, false);
 				pThis->NextMission();
 
 				return SkipGameCode;
 			}
-			else if (fireError == FireError::OK && pThis->Fire(pCell, weaponIndex))
-			{
-				auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-
-				if (pWeapon->FireOnce)
-				{
-					// When Turret=yes, the Unload task may not be canceled, so this handling is performed.
-					pThis->QueueMission(Mission::Guard, false);
-					pThis->NextMission();
-
-					return SkipGameCode;
-				}
-			}
-
-			auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
-			const int result = pTypeExt->DeployFireDelay.isset()
-				? pTypeExt->DeployFireDelay : (ScenarioClass::Instance->Random.RandomRanged(0, 2) + 14);
-
-			R->EBX(result);
-			return SkipGameCode;
 		}
 
-		return ReturnGuard;
+		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+		const int result = pTypeExt->DeployFireDelay.isset()
+			? pTypeExt->DeployFireDelay : (ScenarioClass::Instance->Random.RandomRanged(0, 2) + 14);
+
+		R->EBX(result);
+		return SkipGameCode;
 	}
 
-	return Continue;
+	return 0;
 }
 
 DEFINE_HOOK(0x730B09, DeployCommandClass_Execute_BuildingDeploy, 0x5)
@@ -103,8 +97,11 @@ DEFINE_HOOK(0x730B09, DeployCommandClass_Execute_BuildingDeploy, 0x5)
 		auto const pType = pBuilding->Type;
 		const auto pHouse = pBuilding->Owner;
 
-		if (!pHouse->IsControlledByCurrentPlayer() || !pType->DeployFire || pType->Factory != AbstractType::None)
+		if (!pHouse->IsControlledByCurrentPlayer()
+			|| !pType->DeployFire || pType->Factory != AbstractType::None || pType->GapGenerator)
+		{
 			continue;
+		}
 
 		const Mission currentMission = pBuilding->CurrentMission;
 
