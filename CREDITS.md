@@ -500,6 +500,7 @@ This page lists all the individual contributions to the project by their author.
   - Spawns particle when spawns tiberium by terrain
   - Allow draw SuperWeapon timer as percentage
   - Customize particle system of parasite logic
+  - Fix an issue where parasites that have infected infantry do not provide a refund when the infected infantry enters a Grinding building
   - Fix the issue that `PassengerDeletion` dont consider passenger's passenger, parasite and hijacker
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
