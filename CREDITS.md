@@ -413,6 +413,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where mining vehicles could not move after leaving a tank bunker
   - Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4
   - DeployFire supports buildings
+  - Fixed an issue where `OmniFire` was ineffective on buildings with `Turret=yes`
+  - Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building

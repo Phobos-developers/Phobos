@@ -18,10 +18,15 @@ DEFINE_HOOK(0x443459, BuildingClass_ObjectClickedAction_DeployFire, 0x6)
 	if (pType->Factory != AbstractType::None)
 	{
 		if (!pThis->IsPrimaryFactory)
+		{
+			// Do not enter unloading tasks simultaneously, as this may prevent buildings from producing units in a timely manner.
 			pThis->ClickedEvent(EventType::Primary);
+			return SkipGameCode;
+		}
 	}
 	else if (pType->DeployFire)
 	{
+		// 
 		pThis->ClickedMission(Mission::Unload, pThis, nullptr, nullptr);
 		return SkipGameCode;
 	}
@@ -48,7 +53,7 @@ DEFINE_HOOK(0x44E29D, BuildingClass_Mission_Unload_DeployFire, 0x6)
 
 			const int deployFireWeapon = pType->DeployFireWeapon;
 			const int weaponIndex = deployFireWeapon >= 0 ? deployFireWeapon : pThis->SelectWeapon(pCell);
-
+		
 			if (pThis->GetFireError(pCell, weaponIndex, true) == FireError::OK &&
 				pThis->Fire(pCell, weaponIndex))
 			{
@@ -64,8 +69,9 @@ DEFINE_HOOK(0x44E29D, BuildingClass_Mission_Unload_DeployFire, 0x6)
 				}
 			}
 
-			const int undeployDelay = pType->UndeployDelay;
-			const int result = undeployDelay < 0 ? (ScenarioClass::Instance->Random.RandomRanged(0, 2) + 14) : undeployDelay;
+			auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+			const int result = pTypeExt->DeployFireDelay.isset() ?
+				pTypeExt->DeployFireDelay : (ScenarioClass::Instance->Random.RandomRanged(0, 2) + 14);
 
 			R->EBX(result);
 			return SkipGameCode;
@@ -101,25 +107,6 @@ DEFINE_HOOK(0x730B09, DeployCommandClass_Execute_BuildingDeploy, 0x5)
 			continue;
 
 		pBuilding->ClickedMission(Mission::Unload, nullptr, nullptr, nullptr);
-	}
-
-	return 0;
-}
-
-// I don't know why it doesn't allow OmniFire to function properly.
-DEFINE_HOOK(0x447FED, BuildingClass_GetFireError_DeployFire, 0x7)
-{
-	enum { SkipGameCode = 0x448052 };
-
-	GET(BuildingClass* const, pThis, ESI);
-	GET_STACK(const int, weaponIndex, STACK_OFFSET(0xC, 0x8));
-
-	if (pThis->Type->DeployFire && pThis->CurrentMission == Mission::Unload)
-	{
-		auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-
-		if (pWeapon->OmniFire)
-			return SkipGameCode;
 	}
 
 	return 0;

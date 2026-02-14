@@ -201,7 +201,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
 	this->UndeploysInto_Sellable.Read(exINI, pSection, "UndeploysInto.Sellable");
 	this->BuildingRadioLink_SyncOwner.Read(exINI, pSection, "BuildingRadioLink.SyncOwner");
-
+	
 	if (pThis->NumberOfDocks > 0)
 	{
 		std::optional<DirType> empty;
@@ -225,6 +225,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->Refinery_UseNormalActiveAnim.Read(exArtINI, pArtSection, "Refinery.UseNormalActiveAnim");
+
+	this->DeployFireDelay.Read(exINI, pSection, "DeployFireDelay");
 
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
@@ -353,6 +355,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->HasPowerUpAnim)
 		.Process(this->UndeploysInto_Sellable)
 		.Process(this->BuildingRadioLink_SyncOwner)
+		.Process(this->DeployFireDelay)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)

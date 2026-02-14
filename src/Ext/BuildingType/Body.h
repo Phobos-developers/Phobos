@@ -103,6 +103,8 @@ public:
 
 		Nullable<bool> BuildingRadioLink_SyncOwner;
 
+		Nullable<int> DeployFireDelay;
+
 		// Ares 0.2
 		Valueable<bool> CloningFacility;
 
@@ -178,6 +180,7 @@ public:
 			, HasPowerUpAnim {}
 			, UndeploysInto_Sellable { false }
 			, BuildingRadioLink_SyncOwner {}
+			, DeployFireDelay {}
 
 			// Ares 0.2
 			, CloningFacility { false }
