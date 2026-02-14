@@ -893,7 +893,8 @@ DEFINE_HOOK(0x4C7512, EventClass_Execute_StopCommand, 0x6)
 	{
 		auto const pType = pBuilding->Type;
 
-		if (pBuilding->CurrentMission == Mission::Unload && pType->DeployFire && !pType->WeaponsFactory)
+		if (pBuilding->CurrentMission == Mission::Unload
+			&& pType->DeployFire && pType->Factory == AbstractType::None)
 		{
 			pBuilding->SetTarget(nullptr);
 			pBuilding->QueueMission(Mission::Guard, false);
