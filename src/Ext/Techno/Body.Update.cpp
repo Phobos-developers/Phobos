@@ -466,6 +466,14 @@ void TechnoExt::ExtData::EatPassengers()
 						}
 					}
 				}
+				else
+				{
+					if (const auto pParasite = pPassenger->ParasiteEatingMe)
+					{
+						pParasite->ParasiteImUsing->SuppressionTimer.Start(50);
+						pParasite->ParasiteImUsing->ExitUnit();
+					}
+				}
 
 				// Handle gunner change.
 				auto const pTransportType = pTypeExt->OwnerObject();
