@@ -26,7 +26,6 @@ DEFINE_HOOK(0x443459, BuildingClass_ObjectClickedAction_DeployFire, 0x6)
 	}
 	else if (pType->DeployFire)
 	{
-		// 
 		pThis->ClickedMission(Mission::Unload, pThis, nullptr, nullptr);
 		return SkipGameCode;
 	}
@@ -78,8 +77,8 @@ DEFINE_HOOK(0x44E29D, BuildingClass_Mission_Unload_DeployFire, 0x6)
 			}
 
 			auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
-			const int result = pTypeExt->DeployFireDelay.isset() ?
-				pTypeExt->DeployFireDelay : (ScenarioClass::Instance->Random.RandomRanged(0, 2) + 14);
+			const int result = pTypeExt->DeployFireDelay.isset()
+				? pTypeExt->DeployFireDelay : (ScenarioClass::Instance->Random.RandomRanged(0, 2) + 14);
 
 			R->EBX(result);
 			return SkipGameCode;
