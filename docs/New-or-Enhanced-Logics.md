@@ -614,11 +614,11 @@ NoBuildAreaOnBuildup=false              ; boolean
 - Building types now also support using `DeployFire` and `DeployFireWeapon`.
   - If a building has other configurations such as `Factory`, `GapGenerator`, or `Passengers`, it will prioritize executing those deployment actions instead.
   - `DeployFireDelay` specifies the frame interval at which deployed weapons attempt to fire. If the weapon is unavailable due to `ROF`, `CanTarget`, or other reasons, the deployed weapon will not fire.
-  
+
 In `rulesmd.ini`:
 ```ini
-[SOMEBUILDING]      ; BuildingType
-DeployFireDelay=    ; integer, The default value is in the range of 14 to 16.
+[SOMEBUILDING]      ; BuildingType, with DeployFire=yes
+DeployFireDelay=    ; integer, default value ranges from 14 to 16
 ```
 
 ### Destroyable pathfinding obstacles
