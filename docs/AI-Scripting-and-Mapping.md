@@ -780,7 +780,7 @@ In `rulesmd.ini`:
 
 [SOMEBANNER]                ; BannerType
 PCX=                        ; filename - including the .pcx extension
-SHP=                        ; filename - excluding the .shp extension
+SHP=                        ; filename - including the .shp extension
 SHP.Palette=palette.pal     ; filename - including the .pal extension
 SHP.RefreshAfterDelay=false ; boolean
 CSF=                        ; CSF entry key
