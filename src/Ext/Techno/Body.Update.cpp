@@ -430,15 +430,38 @@ void TechnoExt::ExtData::EatPassengers()
 				if (pDelType->Soylent
 					&& EnumFunctions::CanTargetHouse(pDelType->SoylentAllowedHouses, pOwner, pPassenger->Owner))
 				{
-					const int nMoneyToGive = (int)(pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true) * pDelType->SoylentMultiplier);
+					const double multiplier = pDelType->SoylentMultiplier;
+					int moneyToGive = static_cast<int>(pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true) * multiplier);
 
-					if (nMoneyToGive > 0)
+					while (pPassenger->Passengers.GetFirstPassenger())
 					{
-						pOwner->GiveMoney(nMoneyToGive);
+						const auto passenger = pPassenger->Passengers.RemoveFirstPassenger();
+						moneyToGive += static_cast<int>(passenger->GetTechnoType()->GetRefund(passenger->Owner, true) * multiplier);
+						passenger->UnInit();
+					}
+
+					if (const auto pParasite = pPassenger->ParasiteEatingMe)
+					{
+						moneyToGive += static_cast<int>(pParasite->GetTechnoType()->GetRefund(pParasite->Owner, true) * multiplier);
+						pParasite->ParasiteImUsing->SuppressionTimer.Start(50);
+						pParasite->ParasiteImUsing->ExitUnit();
+					}
+
+					const int hijack = pPassenger->HijackerInfantryType;
+
+					if (hijack != -1)
+					{
+						const auto pHijackerType = InfantryTypeClass::Array[hijack];
+						moneyToGive += static_cast<int>(pHijackerType->GetRefund(pPassenger->Owner, true) * multiplier);
+					}
+
+					if (moneyToGive > 0)
+					{
+						pOwner->GiveMoney(moneyToGive);
 
 						if (displayCash)
 						{
-							FlyingStrings::AddMoneyString(nMoneyToGive, pThis, pOwner,
+							FlyingStrings::AddMoneyString(moneyToGive, pThis, pOwner,
 								pDelType->DisplaySoylentToHouses, pThis->Location, pDelType->DisplaySoylentOffset);
 						}
 					}
