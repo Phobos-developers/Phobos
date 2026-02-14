@@ -874,9 +874,11 @@ DEFINE_HOOK(0x4C7512, EventClass_Execute_StopCommand, 0x6)
 
 	if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
 	{
+		auto const pType = pUnit->Type;
+
 		// issue #112 Make FireOnce=yes work on other TechnoType
 		// Author: Starkku
-		if (pUnit->CurrentMission == Mission::Unload && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer)
+		if (pUnit->CurrentMission == Mission::Unload && pType->DeployFire && !pType->IsSimpleDeployer)
 		{
 			pUnit->SetTarget(nullptr);
 			pThis->QueueMission(Mission::Guard, true);
@@ -889,8 +891,11 @@ DEFINE_HOOK(0x4C7512, EventClass_Execute_StopCommand, 0x6)
 	}
 	else if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pThis))
 	{
-		if (pBuilding->CurrentMission == Mission::Unload && pBuilding->Type->DeployFire)
+		auto const pType = pBuilding->Type;
+
+		if (pBuilding->CurrentMission == Mission::Unload && pType->DeployFire && !pType->WeaponsFactory)
 		{
+			pBuilding->SetTarget(nullptr);
 			pBuilding->QueueMission(Mission::Guard, false);
 			pBuilding->NextMission();
 		}
