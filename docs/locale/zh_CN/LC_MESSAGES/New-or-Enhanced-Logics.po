@@ -3469,7 +3469,7 @@ msgid ""
 "is affected by modifiers such as `FactoryPlant`)."
 msgstr ""
 "如果 `PassengerDeletion.Soylent` 设为 true 则会向运输工具的所有者返还一定数量的资金。具体金额由乘客的 "
-"`Soylent` 决定，若为设置则由 `Cost` 决定（这里可受到 `FactoryPlant` 等修正的影响）。"
+"`Soylent` 决定，若未设置则由 `Cost` 决定（这里可受到 `FactoryPlant` 等修正的影响）。"
 
 msgid ""
 "`PassengerDeletion.SoylentMultiplier` is a direct multiplier applied to "
