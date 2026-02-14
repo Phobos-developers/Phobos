@@ -53,11 +53,20 @@ DEFINE_HOOK(0x44E29D, BuildingClass_Mission_Unload_DeployFire, 0x6)
 
 			const int deployFireWeapon = pType->DeployFireWeapon;
 			const int weaponIndex = deployFireWeapon >= 0 ? deployFireWeapon : pThis->SelectWeapon(pCell);
-			auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+			const FireError fireError = pThis->GetFireError(pCell, weaponIndex, true);
 
-			if (pThis->GetFireError(pCell, weaponIndex, true) == FireError::OK &&
-				pThis->Fire(pCell, weaponIndex))
+			if (fireError == FireError::ILLEGAL)
 			{
+				// Do not allow the building to remain in the Unload task indefinitely.
+				pThis->QueueMission(Mission::Guard, false);
+				pThis->NextMission();
+
+				return SkipGameCode;
+			}
+			else if (fireError == FireError::OK && pThis->Fire(pCell, weaponIndex))
+			{
+				auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+
 				if (pWeapon->FireOnce)
 				{
 					// When Turret=yes, the Unload task may not be canceled, so this handling is performed.
@@ -66,15 +75,6 @@ DEFINE_HOOK(0x44E29D, BuildingClass_Mission_Unload_DeployFire, 0x6)
 
 					return SkipGameCode;
 				}
-			}
-
-			if (!pWeapon)
-			{
-				// Do not allow the building to remain in the Unload task indefinitely.
-				pThis->QueueMission(Mission::Guard, false);
-				pThis->NextMission();
-
-				return SkipGameCode;
 			}
 
 			auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
