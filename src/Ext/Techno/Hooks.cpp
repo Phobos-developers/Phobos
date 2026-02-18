@@ -1761,14 +1761,13 @@ static int GetGuardRange(TechnoClass* pThis, int control)
 		}
 	}
 
-	//int maxRange = 4096; // Game caps the guard range in certain cases, but this is disabled here.
-	range *= 2; // Uncertain why the range gets doubled here, but it doesn't seem to reflect to the actual target scan range.
+	// Game doubles the range likely to make area guard behave better for shorter range units.
+	// From observed results does not seem to affect target scan range otherwise f.ex on guard mission.
+	range *= 2;
+	int maxRange = pTypeExt->MaxGuardRange.Get();
 
 	if (control == 2) // Control = 2, used for Patrol mission.
 	{
-		range = range < 1792 ? 1792 : range;
-
-		/*
 		int patrolMinRange = 1792;
 
 		if (range >= patrolMinRange)
@@ -1779,18 +1778,14 @@ static int GetGuardRange(TechnoClass* pThis, int control)
 		else
 		{
 			range = patrolMinRange;
-		*/
+		}
 	}
 	else // Control = 1 and other values, used for Area Guard, ThreatType != Range threat scans etc.
 	{
-		range = range < 0 ? 0 : range;
-
-		/*
 		if (range < 0)
 			range = 0;
 		else if (range > maxRange)
 			range = maxRange;
-		*/
 	}
 
 	return range;
@@ -1802,7 +1797,7 @@ DEFINE_HOOK(0x707E63, TechnoClass_GetGuardRange, 0x7)
 	enum { SkipGameCode = 0x707F4B };
 
 	GET(TechnoClass*, pThis, ESI);
-	GET(int, control, EDI);
+	GET_STACK(int, control, STACK_OFFSET(0xC, 0x4));
 
 	R->EAX(GetGuardRange(pThis, control));
 

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -233,6 +233,7 @@ public:
 		Valueable<TargetZoneScanType> TargetZoneScanType;
 
 		Nullable<Leptons> AreaGuardRange;
+		Valueable<Leptons> MaxGuardRange;
 
 		Promotable<SHPStruct*> Insignia;
 		Valueable<Vector3D<int>> InsigniaFrames;
@@ -688,6 +689,7 @@ public:
 			, TargetZoneScanType { TargetZoneScanType::Same }
 
 			, AreaGuardRange {}
+			, MaxGuardRange { Leptons(4096) }
 
 			, Insignia {}
 			, InsigniaFrames { { -1, -1, -1 } }

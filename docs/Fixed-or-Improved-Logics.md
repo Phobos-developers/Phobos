@@ -1853,12 +1853,13 @@ PlayerAttackMoveTargetingDelay=      ; integer, game frames
 
 ### Target scan/guard range customizations
 
-- Target scan range is no longer capped to 16 cells under some circumstances f.ex on `Area Guard` or `Patrol` mission.
+- `MaxGuardRange` can be used to customize the hard cap on target scan range (e.g `GuardRange` or highest weapon range if zero or not set). Keep in mind that game doubles the effective range before this cap is applied, e.g range of 8 will hit the cap.
 - `AreaGuardRange` overrides explicit `GuardRange` setting for technos currently on `Area Guard` mission (f.ex guard mode command). As per usual, `GuardRange` in itself defaults to highest range between technos weapons if set to 0 or omitted.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]     ; TechnoType
+MaxGuardRange=16 ; floating point value, distance in cells
 AreaGuardRange=  ; floating point value, distance in cells
 ```
 

@@ -1,4 +1,4 @@
-﻿#include "Body.h"
+#include "Body.h"
 
 #include <JumpjetLocomotionClass.h>
 
@@ -939,6 +939,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TargetZoneScanType.Read(exINI, pSection, "TargetZoneScanType");
 
 	this->AreaGuardRange.Read(exINI, pSection, "AreaGuardRange");
+	this->MaxGuardRange.Read(exINI, pSection, "MaxGuardRange");
 
 	// insignia type
 	Nullable<InsigniaTypeClass*> InsigniaType;
@@ -1635,6 +1636,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TargetZoneScanType)
 
 		.Process(this->AreaGuardRange)
+		.Process(this->MaxGuardRange)
 
 		.Process(this->Insignia)
 		.Process(this->InsigniaFrames)
