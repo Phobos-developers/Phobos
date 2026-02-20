@@ -216,6 +216,24 @@ DEFINE_HOOK(0x519790, InfantryClass_PerCellProcess_SkipDieSoundBeforeGrinding, 0
 	return SkipVoiceDie;
 }
 
+DEFINE_HOOK(0x51986A, InfantryClass_UpdatePosition_Grinding_Parasite, 0xA)
+{
+	enum { SkipGameCode = 0x519880 };
+
+	GET(InfantryClass*, pThis, ESI);
+	GET(BuildingClass*, pBuilding, EBX);
+	GrinderRefundTemp::BalanceBefore = pBuilding->Owner->Balance;
+
+	if (const auto parasite = pThis->ParasiteEatingMe)
+	{
+		pBuilding->Owner->GiveMoney(parasite->GetRefund());
+		parasite->ParasiteImUsing->SuppressionTimer.Start(50);
+		parasite->ParasiteImUsing->ExitUnit();
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x5198B3, InfantryClass_PerCellProcess_DoGrindingExtras, 0x5)
 {
 	enum { Continue = 0x5198CE };
@@ -223,17 +241,19 @@ DEFINE_HOOK(0x5198B3, InfantryClass_PerCellProcess_DoGrindingExtras, 0x5)
 	GET(InfantryClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EBX);
 
-	return BuildingExt::DoGrindingExtras(pBuilding, pThis, pThis->GetRefund()) ? Continue : 0;
+	const int totalRefund = pBuilding->Owner->Balance - GrinderRefundTemp::BalanceBefore;
+
+	return BuildingExt::DoGrindingExtras(pBuilding, pThis, totalRefund) ? Continue : 0;
 }
 
 DEFINE_HOOK(0x739FBC, UnitClass_PerCellProcess_BeforeGrinding, 0x5)
 {
 	enum { SkipDieSound = 0x73A0A5 };
-	GET(BuildingClass*, pBuilding, EBX);
 
+	GET(BuildingClass*, pBuilding, EBX);
 	GrinderRefundTemp::BalanceBefore = pBuilding->Owner->Balance;
 
-	if (BuildingTypeExt::ExtMap.Find(pBuilding->Type)->Grinding_PlayDieSound.Get())
+	if (BuildingTypeExt::ExtMap.Find(pBuilding->Type)->Grinding_PlayDieSound)
 		return 0;
 
 	return SkipDieSound;

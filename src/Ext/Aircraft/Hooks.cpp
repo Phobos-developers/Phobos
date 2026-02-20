@@ -589,11 +589,10 @@ DEFINE_HOOK(0x4CF190, FlyLocomotionClass_FlightUpdate_SetPrimaryFacing, 0x6) // 
 
 		const auto pFoot = *pFootPtr;
 		const auto pAircraft = abstract_cast<AircraftClass*, true>(pFoot);
-		const auto pType = pAircraft->Type;
-		const bool extendedMissions = TechnoTypeExt::ExtMap.Find(pType)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions);
 
 		// Rewrite vanilla implement
-		if (!pAircraft || !TechnoTypeExt::ExtMap.Find(pType)->ExtendedAircraftMissions_RearApproach.Get(extendedMissions))
+		if (!pAircraft || !TechnoTypeExt::ExtMap.Find(pAircraft->Type)->ExtendedAircraftMissions_RearApproach
+			.Get(TechnoTypeExt::ExtMap.Find(pAircraft->Type)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)))
 		{
 			const auto footCoords = pFoot->GetCoords();
 			const auto desired = DirStruct(Math::atan2(footCoords.Y - destination.Y, destination.X - footCoords.X));
@@ -616,7 +615,7 @@ DEFINE_HOOK(0x4CF190, FlyLocomotionClass_FlightUpdate_SetPrimaryFacing, 0x6) // 
 				const int turningRadius = GetTurningRadius(pAircraft);
 
 				// diameter = 2 * radius
-				const int cellCounts = Math::max((pType->SlowdownDistance / Unsorted::LeptonsPerCell), (turningRadius / 128));
+				const int cellCounts = Math::max((pAircraft->Type->SlowdownDistance / Unsorted::LeptonsPerCell), (turningRadius / 128));
 
 				// The direction of the airport
 				const auto currentDir = DirStruct(Math::atan2(footCoords.Y - destination.Y, destination.X - footCoords.X));

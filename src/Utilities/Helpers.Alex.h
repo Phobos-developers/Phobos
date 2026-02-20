@@ -150,7 +150,7 @@ namespace Helpers
 				{
 					bool isInAir = pTechno->IsInAir();
 
-					if ((AffectsAir && isInAir) || (!AffectsGround && !isInAir))
+					if ((!AffectsAir && isInAir) || (!AffectsGround && !isInAir))
 						return false;
 				}
 

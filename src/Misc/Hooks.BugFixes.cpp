@@ -1,4 +1,5 @@
 #include <AircraftTrackerClass.h>
+#include <EventClass.h>
 #include <JumpjetLocomotionClass.h>
 #include <TunnelLocomotionClass.h>
 
@@ -136,6 +137,9 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_Debris, 0xA)
 	enum { SkipGameCode = 0x702572 };
 
 	GET(TechnoClass* const, pThis, ESI);
+
+	if (pThis->Transporter)
+		return SkipGameCode;
 
 	const auto pType = pThis->GetTechnoType();
 
@@ -1161,6 +1165,31 @@ DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
 
 #pragma endregion
 
+DEFINE_HOOK(0x7184CE, TeleportLocomotionClass_MakeRoom_GetMovement_CellFix, 0x7)
+{
+	REF_STACK(CoordStruct, coords, STACK_OFFSET(0x5C, 0x4));
+
+	R->Stack(STACK_OFFSET(0x38, -0x18), MapClass::Instance.GetCellAt(coords));
+	return 0;
+}
+
+DEFINE_HOOK(0x7185DA, TeleportLocomotionClass_MakeRoom_DestFix, 0x6)
+{
+	enum { ReturnTrue = 0x71878F };
+
+	GET(CellStruct*, pCellAt, EAX);
+
+	if (*pCellAt == CellStruct::Empty)
+	{
+		GET(const LocomotionClass* const, pLoco, EBP);
+		// cannot find location ? dont move
+		pLoco->LinkedTo->ChronoDestCoords = pLoco->LinkedTo->Location;
+		return ReturnTrue;
+	}
+
+	return 0;
+}
+
 #pragma region TeleportLocomotionOccupationFix
 
 DEFINE_HOOK(0x71872C, TeleportLocomotionClass_MakeRoom_OccupationFix, 0x9)
@@ -1344,6 +1373,29 @@ DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_RequestUntether, 0x7)
 }
 
 #pragma endregion
+
+// Fix the bug that techno in attack move will move to target if it cannot attack it
+DEFINE_HOOK(0x4D77BD, FootClass_ObjectClickedAction_NoMove, 0x6)
+{
+	enum { ReturnFalse = 0x4D77EC, ReturnTrue = 0x4D7CC0 };
+
+	GET(ObjectClass*, pTarget, EBX);
+	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
+
+	if (!pTargetTechno)
+		return 0;
+
+	GET(FootClass*, pThis, ESI);
+
+	if (pThis->Owner->IsAlliedWith(pTargetTechno->Owner))
+		return 0;
+
+	if (!pThis->IsActive())
+		return ReturnFalse;
+
+	TechnoExt::ClickedApproachObject(pThis, pTarget);
+	return ReturnTrue;
+}
 
 #pragma region JumpjetShadowPointFix
 
@@ -2673,7 +2725,7 @@ DEFINE_HOOK(0x5218C2, InfantryClass_UnmarkAllOccupationBits_ResetOwnerIdx, 0x6)
 	const auto pExt = CellExt::ExtMap.Find(pCell);
 	pExt->InfantryCount--;
 
-	// Vanilla check only the flag to decide if the InfantryOwnerIndex should be reset. 
+	// Vanilla check only the flag to decide if the InfantryOwnerIndex should be reset.
 	// But the tree take one of the flag bit. So if a infantry walk through a cell with a tree, the InfantryOwnerIndex won't be reset.
 	return (newFlag & 0x1C) == 0 || pExt->InfantryCount == 0 ? Reset : NoReset;
 }
@@ -2878,6 +2930,17 @@ DEFINE_HOOK(0x4440B0, BuildingClass_KickOutUnit_CloningFacility, 0x6)
 	return ContinueIn;
 }
 
+// Fixed the bug that building with Explodes=yes use Ares's rubble logic will cause it's owner cannot defeat normally
+DEFINE_HOOK(0x441C76, BuildingClass_Destroy_Explode_RubbleFix, 0x5)
+{
+	enum { AfterSetC4Timer = 0x441C8F };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	pThis->C4Timer.Start(pThis->Type->Explodes);
+	return AfterSetC4Timer;
+}
+
 DEFINE_HOOK(0x65DE82, TeamTypeClass_CreateTeamMembers_Veterancy, 0x6)
 {
 	enum { SkipVeterancy = 0x65DEC0 };
@@ -2885,6 +2948,32 @@ DEFINE_HOOK(0x65DE82, TeamTypeClass_CreateTeamMembers_Veterancy, 0x6)
 	GET(TechnoTypeClass*, pTechnoType, EDI);
 
 	return pTechnoType->Trainable ? 0 : SkipVeterancy;
+}
+
+// Disallow sell action on wall overlays if mouse cursor is hovering on another object.
+DEFINE_HOOK(0x692AD6, ScrollClass_ChooseAction_SellWall, 0x6)
+{
+	enum { NoSell = 0x692AFE };
+
+	GET(ObjectClass*, pObject, ESI);
+
+	if (pObject)
+		return NoSell;
+
+	return 0;
+}
+
+// Disallow sell action on wall overlays at event/network level if there's an object on the cell.
+DEFINE_HOOK(0x4C6FCE, HouseClass_SellOverlay_ObjectCheck, 0x5)
+{
+	enum { SkipSellOverlay = 0x4C6FD3 };
+
+	GET(EventClass*, pEvent, ESI);
+
+	if (MapClass::Instance.GetCellAt(pEvent->SellCell.Location)->GetContent())
+		return SkipSellOverlay;
+
+	return 0;
 }
 
 // Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.
@@ -2939,4 +3028,24 @@ DEFINE_HOOK(0x7B8536, StartMouseThread_AdjustMouseInterval, 0xA)
 	Game::MouseThread.Interval = 1;
 
 	return 0x7B8540;
+}
+
+// It should be <= instead of < here, because this will cause the unit to keep switching among multiple targets with the same amount of threat.
+// Also <= is matched with the auto-targetting code.
+DEFINE_HOOK(0x708A81, TechnoClass_CanRetaliate_CheckThreat, 0x5)
+{
+	enum { SkipRetaliate = 0x708B17, GoOtherChecks = 0x708AAA };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(ObjectClass*, pAttacker, EBP);
+
+	return pThis->ThreatCoeffients(pAttacker, &CoordStruct::Empty) <= pThis->ThreatCoeffients((ObjectClass*)(pThis->Target), &CoordStruct::Empty) ? SkipRetaliate : GoOtherChecks;
+}
+
+// Fixed the issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team.
+DEFINE_HOOK(0x6EA870, TeamClass_LiberateMember_Start, 0x6)
+{
+	GET_STACK(FootClass*, pMember, 0x4);
+	pMember->RecruitableB = true;
+	return 0;
 }

@@ -254,6 +254,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
+	this->Parasite_ParticleSystem.Read(exINI, pSection, "Parasite.ParticleSystem");
+	this->Parasite_DisableParticleSystem.Read(exINI, pSection, "Parasite.DisableParticleSystem");
 	this->Parasite_CullingTarget.Read(exINI, pSection, "Parasite.CullingTarget");
 	this->Parasite_GrappleAnim.Read(exINI, pSection, "Parasite.GrappleAnim");
 
@@ -329,6 +331,13 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ApplyPerTargetEffectsOnDetonate.Read(exINI, pSection, "ApplyPerTargetEffectsOnDetonate");
 
+	this->PenetratesTransport_Level.Read(exINI, pSection, "PenetratesTransport.Level");
+	this->PenetratesTransport_PassThrough.Read(exINI, pSection, "PenetratesTransport.PassThrough");
+	this->PenetratesTransport_FatalRate.Read(exINI, pSection, "PenetratesTransport.FatalRate");
+	this->PenetratesTransport_DamageMultiplier.Read(exINI, pSection, "PenetratesTransport.DamageMultiplier");
+	this->PenetratesTransport_DamageAll.Read(exINI, pSection, "PenetratesTransport.DamageAll");
+	this->PenetratesTransport_CleanSound.Read(exINI, pSection, "PenetratesTransport.CleanSound");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -387,6 +396,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->BuildingUndeploy
 		|| this->ReverseEngineer
 		|| this->ReturnWarhead
+		|| this->PenetratesTransport_Level > 0
 	);
 
 	char tempBuffer[32];
@@ -576,6 +586,13 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->HealthCheck)
 		.Process(this->VeterancyCheck)
 
+		.Process(this->PenetratesTransport_Level)
+		.Process(this->PenetratesTransport_PassThrough)
+		.Process(this->PenetratesTransport_FatalRate)
+		.Process(this->PenetratesTransport_DamageMultiplier)
+		.Process(this->PenetratesTransport_DamageAll)
+		.Process(this->PenetratesTransport_CleanSound)
+
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)
 
@@ -588,6 +605,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DamageSourceHealthMultiplier)
 		.Process(this->DamageTargetHealthMultiplier)
 
+		.Process(this->Parasite_ParticleSystem)
+		.Process(this->Parasite_DisableParticleSystem)
 		.Process(this->Parasite_CullingTarget)
 		.Process(this->Parasite_GrappleAnim)
 

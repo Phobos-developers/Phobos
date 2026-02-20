@@ -152,6 +152,8 @@ public:
 		Valueable<bool> InflictLocomotor;
 		Valueable<bool> RemoveInflictedLocomotor;
 
+		Nullable<ParticleSystemTypeClass*> Parasite_ParticleSystem;
+		Valueable<bool> Parasite_DisableParticleSystem;
 		Valueable<AffectedTarget> Parasite_CullingTarget;
 		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
 
@@ -222,6 +224,13 @@ public:
 		Nullable<int> AnimZAdjust;
 
 		Nullable<bool> ApplyPerTargetEffectsOnDetonate;
+
+		Valueable<int> PenetratesTransport_Level;
+		Valueable<double> PenetratesTransport_PassThrough;
+		Valueable<double> PenetratesTransport_FatalRate;
+		Valueable<double> PenetratesTransport_DamageMultiplier;
+		Valueable<bool> PenetratesTransport_DamageAll;
+		ValueableIdx<VocClass> PenetratesTransport_CleanSound;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -385,6 +394,8 @@ public:
 			, InflictLocomotor { false }
 			, RemoveInflictedLocomotor { false }
 
+			, Parasite_ParticleSystem {}
+			, Parasite_DisableParticleSystem { false }
 			, Parasite_CullingTarget { AffectedTarget::Infantry }
 			, Parasite_GrappleAnim {}
 
@@ -430,6 +441,13 @@ public:
 			, AffectsGround { true }
 			, AffectsAir { true }
 			, CellSpread_Cylinder { false }
+
+			, PenetratesTransport_Level { 0 }
+			, PenetratesTransport_PassThrough { 1.0 }
+			, PenetratesTransport_FatalRate { 0.0 }
+			, PenetratesTransport_DamageMultiplier { 1.0 }
+			, PenetratesTransport_DamageAll { false }
+			, PenetratesTransport_CleanSound { -1 }
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}
@@ -500,7 +518,7 @@ public:
 	public:
 		// Detonate.cpp
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
-		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
+		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, const CoordStruct& coords, int damage, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false, int distance = -1);
 		void InterceptBullets(TechnoClass* pOwner, BulletClass* pInterceptor, const CoordStruct& coords);
 		DamageAreaResult DamageAreaWithTarget(const CoordStruct& coords, int damage, TechnoClass* pSource, WarheadTypeClass* pWH, bool affectsTiberium, HouseClass* pSourceHouse, TechnoClass* pTarget);
 	private:
@@ -512,6 +530,7 @@ public:
 		void ApplyBuildingUndeploy(TechnoClass* pTarget);
 		void ApplyReverseEngineer(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyReturnWarhead(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
+		void ApplyPenetratesTransport(TechnoClass* pTarget, TechnoClass* pInvoker, HouseClass* pInvokerHouse, const CoordStruct& coords, int damage, int distance);
 		double GetCritChance(TechnoClass* pFirer) const;
 	};
 

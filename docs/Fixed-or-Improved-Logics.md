@@ -17,6 +17,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that temporaryed unit cannot be erased correctly and no longer raise an error.
 - Fixed building and defense tab hotkeys not enabling the placement mode after *Cannot build here.* triggered and the placement mode cancelled.
 - Fixed buildings with `UndeployInto` playing `EVA_NewRallypointEstablished` on undeploying.
+- Vehicles overlapping wall overlaytypes are no longer sellable through exploits.
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water.
 - Fixed AI Aircraft docks bug when Ares tag `[GlobalControls] -> AllowParallelAIQueues=no` is set.
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode.
@@ -151,7 +152,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed disguised units not using the correct palette if target has custom palette.
 - Building upgrades now consistently use building's `PowerUpN` animation settings corresponding to the upgrade's `PowersUpToLevel` where possible.
 - Subterranean units are no longer allowed to perform deploy functions like firing weapons or `IsSimpleDeployer` while burrowed or burrowing, they will instead emerge first like they do for transport unloading.
-- The otherwise unused setting `[AI] -> PowerSurplus` (defaults to 50) which determines how much surplus power AI players will strive to have can be restored by setting `[AI] -> EnablePowerSurplus` to true.
+- The otherwise unused setting `[AI] -> PowerSurplus` (defaults to 50) which determines how much surplus power AI players will strive to have can be restored by setting `[AI] -> EnablePowerSurplus` to true. Additional option `[AI] -> PowerSurplus.ScaleToDrainAmount` if set to value higher than 0 makes it so that power surplus multiplied by current power drain / `PowerSurplus.ScaleToDrainAmount`.
 - Planning paths are now shown for all units under player control or when `[GlobalControls] -> DebugPlanningPaths=yes` in singleplayer game modes.
 - Fixed `Temporal=true` Warheads potentially crashing game if used to attack `Slaved=true` infantry.
 - Fixed some locomotors (Tunnel, Walk, Mech) getting stuck when moving too fast.
@@ -291,9 +292,14 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue that warhead with `IsLocomotor=yes` can be used to vehicles who is in tank bunker.
 - Fixed an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals.
 - Fixed an issue where mining vehicles could not move after leaving a tank bunker.
-- Fixed the bug that if there's a tank in tank bunker, tank bunker use auto death by vanish will cause tank get stuck and game will crash quickly.
 - `ProductionAnim` is now available for `Factory=InfantryType` as well as non-`ConstructionYard=true` `Factory=BuildingType` buildings. `IdleAnim` will cease to play for its duration normally as well.
 - Fixed the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon.
+- Fixed the issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team.
+- Allow the default value of `DefaultToGuardArea` to be defined by `[General] -> DefaultToGuardArea`.
+- Fixed the bug that cause technos teleport to cell 0,0 by ChronoSphere superweapon.
+- Fixed the bug that techno in attack move will move to target if it cannot attack it.
+- Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4.
+- Buildings with `NeedsEngineer=true` are now considered to have threat value of 0 under ownership of `MultiplayPassive=true` houses regardless of their `ThreatPosed` value.
 
 ## Fixes / interactions with other extensions
 
@@ -335,6 +341,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType`.
 - Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed.
 - Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed.
+- Fixed the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally.
+- Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat.
 
 ## Newly added global settings
 
@@ -481,12 +489,17 @@ ForceShield.ExtraTintIntensity=0.0  ; floating point value
 - You can now let the jumpjets increase their height earlier by set `JumpjetClimbPredictHeight` to true. The jumpjet will raise its height 5 cells in advance, instead of only raising its height when encountering cliffs or buildings in front of it.
 - You can also let them simply skip the stop check by set `JumpjetClimbWithoutCutOut` to true. The jumpjet will not stop moving horizontally when encountering cliffs or buildings in front of it, but will continue to move forward while raising its altitude.
   - When `JumpjetClimbPredictHeight` is enabled, if the height raised five grids in advance is still not enough to cross cliffs or buildings, it will stop and move horizontally as before, unless `JumpjetClimbWithoutCutOut` is also enabled.
+- You can set `JumpjetClimbIgnoreBuilding` to true to make the jumpjet treat the building height as 0 when climbing.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-JumpjetClimbPredictHeight=false  ; boolean
-JumpjetClimbWithoutCutOut=false  ; boolean
+JumpjetClimbPredictHeight=false   ; boolean
+JumpjetClimbWithoutCutOut=false   ; boolean
+JumpjetClimbIgnoreBuilding=false  ; boolean
+
+[SOMETECHNO]                      ; TechnoType
+JumpjetClimbIgnoreBuilding=       ; boolean, default to [General] -> JumpjetClimbIgnoreBuilding
 ```
 
 ### Move IvanBomb Position
@@ -637,7 +650,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMESW]                                        ; SuperWeaponType
 UseWeeds=no                                     ; boolean - should the SW use weeds to recharge?
-UseWeeds.Amount=                                ; integer - how many? default is General->WeedCapacity
+UseWeeds.Amount=                                ; integer - how many weeds? default is [General] -> WeedCapacity
 UseWeeds.StorageTimer=no                        ; boolean - should the counter on the sidebar display the % of weeds stored?
 UseWeeds.ReadinessAnimationPercentage=0.9       ; double - when this many weeds % are stored, the SW will show it's ready on the building (open nuke/open chrono, etc.)
 ```
@@ -1411,6 +1424,21 @@ OreGathering.FramesPerDir=15     ; List of integers
 OreGathering.Tiberiums=0         ; List of Tiberium IDs
 ```
 
+### Customizable paradrop missions
+
+- By default paradropped infantry default to `Guard` for human players and `Hunt` for AI players. This has now been changed to be the default for vehicles as well which defaulted to `Guard` for all players and customizable globally and per TechnoType which default to the global settings under `[General]`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ParadropMission=Guard   ; MissionType
+AIParadropMission=Hunt  ; MissionType
+
+[SOMETECHNO]            ; TechnoType
+ParadropMission=        ; MissionType
+AIParadropMission=      ; MissionType
+```
+
 ### Customizable target evaluation map zone check behaviour
 
 - By default, any non-AircraftType units seeking targets via ScriptType team mission (action) `0 Attack Target Type` or any [attack team missions introduced in Phobos](AI-Scripting-and-Mapping.md#attack-actions) check if the potential target is in same map zone as the attacking unit to be able to pick it as a target. This can now be customized to allow objects from any map zone with no constraints (`TargetZoneScanType=any`) or only if they are within weapon range (`TargetZoneScanType=inrange`).
@@ -1824,6 +1852,18 @@ AIAttackMoveTargetingDelay=          ; integer, game frames
 PlayerAttackMoveTargetingDelay=      ; integer, game frames
 ```
 
+### Target scan/guard range customizations
+
+- `MaxGuardRange` can be used to customize the hard cap on target scan range (e.g `GuardRange` or highest weapon range if zero or not set). Keep in mind that game doubles the effective range before this cap is applied, e.g range of 8 will hit the cap.
+- `AreaGuardRange` overrides explicit `GuardRange` setting for technos currently on `Area Guard` mission (f.ex guard mode command). As per usual, `GuardRange` in itself defaults to highest range between technos weapons if set to 0 or omitted.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]     ; TechnoType
+MaxGuardRange=16 ; floating point value, distance in cells
+AreaGuardRange=  ; floating point value, distance in cells
+```
+
 ### Voxel body multi-section shadows
 
 ![image](_static/images/uh0-be.gif)
@@ -1913,6 +1953,7 @@ SpawnsTiberium.Type=0         ; tiberium/ore type index
 SpawnsTiberium.Range=1        ; integer, radius in cells
 SpawnsTiberium.GrowthStage=3  ; integer - single or comma-sep. range
 SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
+SpawnsTiberium.Particle=      ; Particle
 ```
 
 ### Damaged frames and crumbling animation
@@ -2063,6 +2104,22 @@ CrushForwardTiltPerFrame=          ; floating point value
 CrushOverlayExtraForwardTilt=0.02  ; floating point value
 CrushSlowdownMultiplier=0.2        ; floating point value
 SkipCrushSlowdown=false            ; boolean
+```
+
+### Deployment Enhancement
+
+- When a vehicle has `Passengers` and possesses `DeployFire/IsSimpleDeployer/DeploysInto`, it can perform custom deployment actions beyond merely releasing passengers.
+  - `Deploy.SkipPassengerUnload` allows vehicles to bypass the passenger release process and perform other deployment actions.
+  - `Deploy.NoPassenger` allows vehicles to perform other deployment actions after losing all passengers.
+- Harvester can now perform other deployment operations. Can't deploy when it's unloading minerals.
+  - `Deploy.NoTiberium` controls whether the deployment actions can only be performed when the harvester carries no mineral. If set to false, the harvester can deploy regardless of carrying minerals or not.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                       ; VehicleType
+Deploy.SkipPassengerUnload=false    ; boolean
+Deploy.NoPassenger=false            ; boolean
+Deploy.NoTiberium=false             ; boolean
 ```
 
 ### Destroy animations
@@ -2402,11 +2459,13 @@ DecloakDamagedTargets=true  ; boolean
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-Parasite.GrappleAnim=             ; animation
+Parasite.GrappleAnim=SQDG               ; AnimationType
 
-[SOMEWARHEAD]                     ; WarheadType
-Parasite.CullingTarget=infantry   ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
-Parasite.GrappleAnim=             ; animation
+[SOMEWARHEAD]                           ; WarheadType
+Parasite.ParticleSystem=                ; ParticleSystemType, default to [CombatDamage] -> DefaultSparkSystem
+Parasite.DisableParticleSystem=false    ; boolean
+Parasite.CullingTarget=infantry         ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
+Parasite.GrappleAnim=                   ; AnimationType, default to [AudioVisual] -> Parasite.GrappleAnim
 ```
 
 ### Dehardcode the `ZAdjust` of warhead anim

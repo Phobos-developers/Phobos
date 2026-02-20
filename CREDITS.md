@@ -285,6 +285,8 @@ This page lists all the individual contributions to the project by their author.
   - Subterranean harvester pathfinding fix
   - Toggle to exclude technos from base center calculations
   - Deploy priority filtering
+  - Customizable paradrop missions
+  - Guard range customizations
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -407,8 +409,9 @@ This page lists all the individual contributions to the project by their author.
   - Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`
   - Attack non-threatening structures extensions
   - Vehicle Deployment Enhancement
-  - Fixed an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals
-  - Fixed an issue where mining vehicles could not move after leaving a tank bunker
+  - Fix an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals
+  - Fix an issue where mining vehicles could not move after leaving a tank bunker
+  - Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -486,8 +489,19 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue that weapon selection don't check if secondary's warhead has `IsLocomotor=yes`
   - Fix the issue that warhead with `IsLocomotor=yes` can be used to vehicles who is in tank bunker
   - Fix the bug that if there's a tank in tank bunker, tank bunker use auto death by vanish will cause tank get stuck and game will crash quickly
-  - Customize whether warhead can be used to targeting ironcurtained technos or not
+  - Customize whether weapon can be used to targeting ironcurtained technos or not
   - Fix the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon
+  - Fix the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally
+  - Customizable disk drain logic
+  - Fix the bug that cause technos teleport to cell 0,0 by ChronoSphere superweapon
+  - Fix the bug that techno in attack move will move to target if it cannot attack it
+  - Penetrates damage on transporter
+  - Add amount limit of `LimboKill`
+  - Spawns particle when spawns tiberium by terrain
+  - Allow draw SuperWeapon timer as percentage
+  - Customize particle system of parasite logic
+  - Fix an issue where parasites that have infected infantry do not provide a refund when the infected infantry enters a Grinding building
+  - Fix the issue that `PassengerDeletion` dont consider passenger's passenger, parasite and hijacker
   - Customize reveal radius of `RevealToAll`
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
@@ -685,10 +699,15 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the AI would set anger towards friendly houses, causing it to act stupidly
   - Fix an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies
   - `AllowBerzerkOnAllies`
+  - Fix an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat
+  - Fix an issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team
+  - Global default value for `DefaultToGuardArea`
+  - Weapon range finding in cylinder
+  - Allow jumpjet climbing ignore building height
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
-- **Flactine** 
+- **Flactine**
   - Add target filtering options to attacheffect system
   - Add veterancy-based target filtering for weapons and warheads
 - **tyuah8**:
