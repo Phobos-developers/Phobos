@@ -2020,6 +2020,12 @@ msgstr ""
 "现在设置了 `NeedsEngineer=true` 的建筑在从属于 `MultiplayPassive=true` 的所属方时其威胁值将无视 "
 "`ThreatPosed` 设置始终被视为 0（by Starkku）"
 
+msgid ""
+"Vehicles overlapping wall overlaytypes are no longer sellable through "
+"exploits (by RAZER)"
+msgstr ""
+"图像与墙类覆盖物重叠的载具不再能够通过 Bug 出售（by RAZER）"
+
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
 
