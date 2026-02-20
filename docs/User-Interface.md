@@ -30,6 +30,38 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 
 ## Battle screen UI/UX
 
+### Allow draw SuperWeapon timer as percentage
+
+- Superweapon cd timer can now draw as percentage.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+SuperWeaponTimer.Percentage=false  ; boolean
+
+[SOMESW]                           ; SuperWeaponType, with ShowTimer=yes
+ShowTimer.Percentage=              ; boolean
+```
+
+### Custom health bars display
+
+![image](_static/images/healthbar.hide-01.png)
+*Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
+
+- Health bar display can now be turned off as needed, hiding both the health bar box and health pips.
+  - `HealthBar.HidePips` only hides the health bar without affecting anything else.
+  - `HealthBar.Permanent` will display health points at all times.
+  - `HealthBar.Permanent.PipScale` will always display additional pips and group numbers.
+
+In `rulesmd.ini`:
+```ini
+[SOMENAME]                           ; TechnoType
+HealthBar.Hide=false                 ; boolean
+HealthBar.HidePips=false             ; boolean
+HealthBar.Permanent=false            ; boolean
+HealthBar.Permanent.PipScale=false   ; boolean
+```
+
 ### Digital display
 
 ![image](_static/images/digital_display_shapes.png)
@@ -168,59 +200,6 @@ In `RA2MD.INI`:
 ```ini
 [Phobos]
 ShowFlashOnSelecting=false  ; boolean
-```
-
-### Custom health bars display
-
-![image](_static/images/healthbar.hide-01.png)
-*Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
-
-- Health bar display can now be turned off as needed, hiding both the health bar box and health pips.
-  - `HealthBar.HidePips` only hides the health bar without affecting anything else.
-  - `HealthBar.Permanent` will display health points at all times.
-  - `HealthBar.Permanent.PipScale` will always display additional pips and group numbers.
-
-In `rulesmd.ini`:
-```ini
-[SOMENAME]                           ; TechnoType
-HealthBar.Hide=false                 ; boolean
-HealthBar.HidePips=false             ; boolean
-HealthBar.Permanent=false            ; boolean
-HealthBar.Permanent.PipScale=false   ; boolean
-```
-
-### Visual effects toggling
-
-- It is possible to toggle certain light flash effects off. These light flash effects include:
-  - Combat light effects (`Bright=true`) and everything that uses same functionality e.g Iron Curtain / Force Field impact flashes.
-  - Alpha images attached to ParticleSystems or Particles that are generated through a Warhead's `Particle` if `[AudioVisual] -> WarheadParticleAlphaImageIsLightFlash` or on Warhead `Particle.AlphaImageIsLightFlash` is set to true, latter defaults to former.
-    - Additionally these alpha images are not created if `[AudioVisual] -> LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting.
-- It is possible to toggle shake screen effects (`ShakeX/Ylo/hi`) off by setting `HideShakeEffects=true`.
-- Phobos's [Laser Trail effects](New-or-Enhanced-Logics.md#laser-trails) can also be toggled off.
-  - If a LaserTrailType has `IsHideable=false`, it can't be toggled off by setting `HideLaserTrailEffects=true`.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-WarheadParticleAlphaImageIsLightFlash=false  ; boolean
-LightFlashAlphaImageDetailLevel=0            ; integer
-
-[SOMEWARHEAD]                                ; WarheadType
-Particle.AlphaImageIsLightFlash=             ; boolean
-```
-
-In `artmd.ini`:
-```ini
-[SOMETRAIL]                  ; LaserTrailType name
-IsHideable=true              ; boolean
-```
-
-In `RA2MD.INI`:
-```ini
-[Phobos]
-HideLightFlashEffects=false  ; boolean
-HideLaserTrailEffects=false  ; boolean
-HideShakeEffects=false       ; boolean
 ```
 
 ### Low priority for box selection
@@ -391,19 +370,6 @@ In `rulesmd.ini`:
 ShowTimer.Priority=0  ; integer
 ```
 
-### Allow draw SuperWeapon timer as percentage
-
-- Superweapon cd timer can now draw as percentage.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-SuperWeaponTimer.Percentage=false  ; boolean
-
-[SOMESW]              ; SuperWeaponType, with ShowTimer=yes
-ShowTimer.Percentage=     ; boolean
-```
-
 ### Task subtitles display in the middle of the screen
 
 ![Message Display In Center](_static/images/messagedisplayincenter.gif)
@@ -443,6 +409,40 @@ BuildingTypeSelectable=false  ; boolean
 
 ```{warning}
 Due to technical limitations, this feature is forcibly disabled without Ares.
+```
+
+### Visual effects toggling
+
+- It is possible to toggle certain light flash effects off. These light flash effects include:
+  - Combat light effects (`Bright=true`) and everything that uses same functionality e.g Iron Curtain / Force Field impact flashes.
+  - Alpha images attached to ParticleSystems or Particles that are generated through a Warhead's `Particle` if `[AudioVisual] -> WarheadParticleAlphaImageIsLightFlash` or on Warhead `Particle.AlphaImageIsLightFlash` is set to true, latter defaults to former.
+    - Additionally these alpha images are not created if `[AudioVisual] -> LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting.
+- It is possible to toggle shake screen effects (`ShakeX/Ylo/hi`) off by setting `HideShakeEffects=true`.
+- Phobos's [Laser Trail effects](New-or-Enhanced-Logics.md#laser-trails) can also be toggled off.
+  - If a LaserTrailType has `IsHideable=false`, it can't be toggled off by setting `HideLaserTrailEffects=true`.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+WarheadParticleAlphaImageIsLightFlash=false  ; boolean
+LightFlashAlphaImageDetailLevel=0            ; integer
+
+[SOMEWARHEAD]                                ; WarheadType
+Particle.AlphaImageIsLightFlash=             ; boolean
+```
+
+In `artmd.ini`:
+```ini
+[SOMETRAIL]                  ; LaserTrailType name
+IsHideable=true              ; boolean
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+HideLightFlashEffects=false  ; boolean
+HideLaserTrailEffects=false  ; boolean
+HideShakeEffects=false       ; boolean
 ```
 
 ### Visual indication of income from grinders and refineries

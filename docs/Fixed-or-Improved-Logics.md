@@ -497,7 +497,7 @@ JumpjetClimbPredictHeight=false   ; boolean
 JumpjetClimbWithoutCutOut=false   ; boolean
 JumpjetClimbIgnoreBuilding=false  ; boolean
 
-[SOMETECHNO]                      ; technotype
+[SOMETECHNO]                      ; TechnoType
 JumpjetClimbIgnoreBuilding=       ; boolean, default to [General] -> JumpjetClimbIgnoreBuilding
 ```
 
@@ -649,7 +649,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMESW]                                        ; SuperWeaponType
 UseWeeds=no                                     ; boolean - should the SW use weeds to recharge?
-UseWeeds.Amount=                                ; integer - how many? default is General->WeedCapacity
+UseWeeds.Amount=                                ; integer - how many weeds? default is [General] -> WeedCapacity
 UseWeeds.StorageTimer=no                        ; boolean - should the counter on the sidebar display the % of weeds stored?
 UseWeeds.ReadinessAnimationPercentage=0.9       ; double - when this many weeds % are stored, the SW will show it's ready on the building (open nuke/open chrono, etc.)
 ```
@@ -1853,12 +1853,13 @@ PlayerAttackMoveTargetingDelay=      ; integer, game frames
 
 ### Target scan/guard range customizations
 
-- Target scan range is no longer capped to 16 cells under some circumstances f.ex on `Area Guard` or `Patrol` mission.
+- `MaxGuardRange` can be used to customize the hard cap on target scan range (e.g `GuardRange` or highest weapon range if zero or not set). Keep in mind that game doubles the effective range before this cap is applied, e.g range of 8 will hit the cap.
 - `AreaGuardRange` overrides explicit `GuardRange` setting for technos currently on `Area Guard` mission (f.ex guard mode command). As per usual, `GuardRange` in itself defaults to highest range between technos weapons if set to 0 or omitted.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]     ; TechnoType
+MaxGuardRange=16 ; floating point value, distance in cells
 AreaGuardRange=  ; floating point value, distance in cells
 ```
 
@@ -1951,7 +1952,7 @@ SpawnsTiberium.Type=0         ; tiberium/ore type index
 SpawnsTiberium.Range=1        ; integer, radius in cells
 SpawnsTiberium.GrowthStage=3  ; integer - single or comma-sep. range
 SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
-SpawnsTiberium.Particle=        ; particle
+SpawnsTiberium.Particle=      ; Particle
 ```
 
 ### Damaged frames and crumbling animation
