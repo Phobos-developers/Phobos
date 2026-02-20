@@ -1,4 +1,5 @@
 #include <AircraftTrackerClass.h>
+#include <EventClass.h>
 #include <JumpjetLocomotionClass.h>
 #include <TunnelLocomotionClass.h>
 
@@ -2724,7 +2725,7 @@ DEFINE_HOOK(0x5218C2, InfantryClass_UnmarkAllOccupationBits_ResetOwnerIdx, 0x6)
 	const auto pExt = CellExt::ExtMap.Find(pCell);
 	pExt->InfantryCount--;
 
-	// Vanilla check only the flag to decide if the InfantryOwnerIndex should be reset. 
+	// Vanilla check only the flag to decide if the InfantryOwnerIndex should be reset.
 	// But the tree take one of the flag bit. So if a infantry walk through a cell with a tree, the InfantryOwnerIndex won't be reset.
 	return (newFlag & 0x1C) == 0 || pExt->InfantryCount == 0 ? Reset : NoReset;
 }
@@ -2947,6 +2948,32 @@ DEFINE_HOOK(0x65DE82, TeamTypeClass_CreateTeamMembers_Veterancy, 0x6)
 	GET(TechnoTypeClass*, pTechnoType, EDI);
 
 	return pTechnoType->Trainable ? 0 : SkipVeterancy;
+}
+
+// Disallow sell action on wall overlays if mouse cursor is hovering on another object.
+DEFINE_HOOK(0x692AD6, ScrollClass_ChooseAction_SellWall, 0x6)
+{
+	enum { NoSell = 0x692AFE };
+
+	GET(ObjectClass*, pObject, ESI);
+
+	if (pObject)
+		return NoSell;
+
+	return 0;
+}
+
+// Disallow sell action on wall overlays at event/network level if there's an object on the cell.
+DEFINE_HOOK(0x4C6FCE, HouseClass_SellOverlay_ObjectCheck, 0x5)
+{
+	enum { SkipSellOverlay = 0x4C6FD3 };
+
+	GET(EventClass*, pEvent, ESI);
+
+	if (MapClass::Instance.GetCellAt(pEvent->SellCell.Location)->GetContent())
+		return SkipSellOverlay;
+
+	return 0;
 }
 
 // Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.
