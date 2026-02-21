@@ -2999,3 +2999,7 @@ DEFINE_HOOK(0x6EA870, TeamClass_LiberateMember_Start, 0x6)
 	pMember->RecruitableB = true;
 	return 0;
 }
+
+// Fixes a desync caused by a check for shrouding at a specific cell
+// Sets Session.MPGameMode->SkipCheatCheck() to true
+DEFINE_PATCH(0x5C0E30, 0xB0, 0x01)
