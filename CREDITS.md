@@ -736,4 +736,6 @@ This page lists all the individual contributions to the project by their author.
 - **Damfoos** - extensive and thorough testing
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
-- **11EJDE11** - Prevent mpdebug number from being drawn when visibility toggled off
+- **11EJDE11**:
+  - Prevent mpdebug number from being drawn when visibility toggled off
+  - Fixed a desync caused by inconsistent shroud state
