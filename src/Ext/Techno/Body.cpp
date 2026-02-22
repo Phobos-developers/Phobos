@@ -1,4 +1,4 @@
-#include "Body.h"
+﻿#include "Body.h"
 
 #include <JumpjetLocomotionClass.h>
 
@@ -1223,6 +1223,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->JumpjetStraightAscend)
 		.Process(this->OnParachuted)
 		.Process(this->HoverShutdown)
+		.Process(this->LastTargetCrd)
+		.Process(this->LastTargetCrdClearTimer)
 		;
 }
 

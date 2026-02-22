@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -493,6 +493,13 @@ public:
 		Nullable<bool> JumpjetClimbIgnoreBuilding;
 
 		Valueable<bool> HoverDrownable;
+		bool ExtraThreat_Enabled;
+		Nullable<double> ExtraThreat_IsThreat;
+		Valueable<bool> AlwaysConsideredThreat;
+		Nullable<double> ExtraThreat_InRange;
+		Nullable<double> ExtraThreatCoefficient_InRangeDistance;
+		Nullable<double> ExtraThreatCoefficient_Facing;
+		Nullable<double> ExtraThreatCoefficient_DistanceToLastTarget;
 
 		Nullable<bool> Unsellable; // Ares 3.0
 
@@ -948,6 +955,13 @@ public:
 			, Unsellable {}
 
 			, TurretShape { nullptr }
+			, ExtraThreat_Enabled { false }
+			, ExtraThreat_IsThreat {}
+			, AlwaysConsideredThreat { false }
+			, ExtraThreat_InRange {}
+			, ExtraThreatCoefficient_InRangeDistance {}
+			, ExtraThreatCoefficient_Facing {}
+			, ExtraThreatCoefficient_DistanceToLastTarget {}
 		{ }
 
 		virtual ~ExtData() = default;

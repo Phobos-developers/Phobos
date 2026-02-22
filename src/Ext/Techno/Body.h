@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/Container.h>
@@ -103,6 +103,8 @@ public:
 
 		bool OnParachuted; // This is just a temporary patch. TODO: fully check HasParachuted and correct its maintenance method.
 		bool HoverShutdown;
+		CoordStruct LastTargetCrd;
+		CDTimerClass LastTargetCrdClearTimer;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -173,6 +175,8 @@ public:
 			, JumpjetStraightAscend { false }
 			, OnParachuted { false }
 			, HoverShutdown { false }
+			, LastTargetCrd { CoordStruct::Empty }
+			, LastTargetCrdClearTimer {}
 		{ }
 
 		void OnEarlyUpdate();
@@ -213,6 +217,7 @@ public:
 		void UpdateTintValues();
 
 		void AmmoAutoConvertActions();
+		void UpdateLastTargetCrd();
 
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
