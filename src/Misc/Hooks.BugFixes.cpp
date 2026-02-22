@@ -2492,7 +2492,7 @@ DEFINE_HOOK(0x692AD6, ScrollClass_ChooseAction_SellWall, 0x6)
 static bool inline CanBeSold(TechnoClass* pTechno, AbstractType rtti)
 {
 	if (rtti == AbstractType::Building)
-		return !static_cast<BuildingClass*>(pTechno)->Type->Unsellable;
+		return true;
 
 	if (rtti == AbstractType::Unit || rtti == AbstractType::Aircraft)
 	{
