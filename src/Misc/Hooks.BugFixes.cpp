@@ -2477,8 +2477,6 @@ DEFINE_PATCH(0x429E9B, 0xB7);
 
 #pragma endregion
 
-}
-
 // Disallow sell action on wall overlays if mouse cursor is hovering on another object.
 DEFINE_HOOK(0x692AD6, ScrollClass_ChooseAction_SellWall, 0x6)
 {
@@ -2486,20 +2484,5 @@ DEFINE_HOOK(0x692AD6, ScrollClass_ChooseAction_SellWall, 0x6)
 
 	GET(ObjectClass*, pObject, ESI);
 
-	if (pObject)
-		return NoSell;
-
-	return 0;
+	return pObject ? NoSell :0;
 }
-
-// Disallow sell action on wall overlays at event/network level if there's an object on the cell.
-DEFINE_HOOK(0x4C6FCE, HouseClass_SellOverlay_ObjectCheck, 0x5)
-{
-	enum { SkipSellOverlay = 0x4C6FD3 };
-
-	GET(EventClass*, pEvent, ESI);
-
-	if (MapClass::Instance.GetCellAt(pEvent->SellCell.Location)->GetContent())
-		return SkipSellOverlay;
-
-	return 0;

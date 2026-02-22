@@ -18,7 +18,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `DebrisMaximums` (spawned debris type amounts cannot go beyond specified maximums anymore). Only applied when `DebrisMaximums` values amount is more than 1 for compatibility reasons.
 - Fixed building and defense tab hotkeys not enabling the placement mode after *Cannot build here.* triggered and the placement mode cancelled.
 - Fixed buildings with `UndeployInto` playing `EVA_NewRallypointEstablished` on undeploying.
-- Vehicles overlapping wall overlaytypes are no longer sellable through exploits.
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water.
 - Fixed AI Aircraft docks bug when Ares tag `[GlobalControls] -> AllowParallelAIQueues=no` is set.
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode.
@@ -240,6 +239,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed pathfinding crashes (EIP 0x42A525, 0x42C507, 0x42C554) that happened on bigger maps due to too small pathfinding node buffer.
 - Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state.
 - Fixed preplaced aircraft outside visible map being incorrectly flagged as crashing under certain conditions.
+- Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold.
 
 ## Fixes / interactions with other extensions
 

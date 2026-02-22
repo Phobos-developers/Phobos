@@ -310,10 +310,16 @@ HideLightFlashEffects=false      ; boolean
 
 ## Changelog
 
-### 0.4.0.2
+### 0.4.0.3
 
 ```{dropdown} Click to show
 :open:
+Phobos fixes:
+- Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold (by CnCRAZER & Starkku)
+
+### 0.4.0.2
+
+```{dropdown} Click to show
 
 Phobos fixes:
 - Fixed `AircraftDockingDirs` being reset if the BuildingType section is redefined in map file (by Starkku)
