@@ -1222,6 +1222,12 @@ msgid ""
 "cursor and cannot be sold."
 msgstr "图像与 `Wall=true` 的覆盖物重叠的载具上不再会显示出售光标也不再能被出售。"
 
+msgid ""
+"Fixed vehicles disguised as trees incorrectly displaying veterancy "
+"insignia when they shouldn't."
+msgstr ""
+"修复了伪装成树的载具错误显示出军衔（能打人的精英树）的问题。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 

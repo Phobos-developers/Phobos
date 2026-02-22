@@ -776,6 +776,12 @@ msgstr "建筑拔起期间变更所属相关 Bug 的修复"
 msgid "Wall overlay unit sell exploit fix"
 msgstr "围墙卖坦克 Bug 的修复"
 
+msgid ""
+"Fix vehicles disguised as trees incorrectly displaying veterancy insignia"
+" when they shouldn't"
+msgstr ""
+"修复了伪装成树的载具错误显示出军衔（能打人的精英树）的问题"
+
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
 
