@@ -1177,6 +1177,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 2.0
 	this->Passengers_BySize.Read(exINI, pSection, "Passengers.BySize");
 
+	// Ares 3.0
+	this->Unsellable.Read(exINI, pSection, "Unsellable");
+
 	if (pThis->Gunner)
 	{
 		size_t weaponCount = pThis->WeaponCount;
@@ -1871,6 +1874,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PenetratesTransport_DamageMultiplier)
 
 		.Process(this->JumpjetClimbIgnoreBuilding)
+
+		.Process(this->Unsellable)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

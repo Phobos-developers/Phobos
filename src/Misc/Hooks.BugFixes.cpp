@@ -2950,6 +2950,8 @@ DEFINE_HOOK(0x65DE82, TeamTypeClass_CreateTeamMembers_Veterancy, 0x6)
 	return pTechnoType->Trainable ? 0 : SkipVeterancy;
 }
 
+#pragma region SellUnitFix
+
 // Disallow sell action on wall overlays if mouse cursor is hovering on another object.
 DEFINE_HOOK(0x692AD6, ScrollClass_ChooseAction_SellWall, 0x6)
 {
@@ -2957,24 +2959,50 @@ DEFINE_HOOK(0x692AD6, ScrollClass_ChooseAction_SellWall, 0x6)
 
 	GET(ObjectClass*, pObject, ESI);
 
-	if (pObject)
-		return NoSell;
-
-	return 0;
+	return pObject ? NoSell : 0;
 }
 
-// Disallow sell action on wall overlays at event/network level if there's an object on the cell.
-DEFINE_HOOK(0x4C6FCE, HouseClass_SellOverlay_ObjectCheck, 0x5)
+static bool inline CanBeSold(TechnoClass* pTechno, AbstractType rtti)
 {
-	enum { SkipSellOverlay = 0x4C6FD3 };
+	if (rtti == AbstractType::Building)
+		return true;
 
-	GET(EventClass*, pEvent, ESI);
+	if (rtti == AbstractType::Unit || rtti == AbstractType::Aircraft)
+	{
+		auto const pTypeExt = TechnoExt::ExtMap.Find(pTechno)->TypeExtData;
 
-	if (MapClass::Instance.GetCellAt(pEvent->SellCell.Location)->GetContent())
-		return SkipSellOverlay;
+		if (!pTypeExt->Unsellable.Get(RulesExt::Global()->UnitsUnsellable))
+			return false;
 
-	return 0;
+		auto const pCell = MapClass::Instance.GetCellAt(pTechno->GetCenterCoords());
+
+		if (auto const pBuilding = pCell->GetBuilding())
+		{
+			auto const pType = pBuilding->Type;
+
+			if (BuildingTypeExt::ExtMap.Find(pType)->UnitSell.Get(pType->UnitRepair))
+				return true;
+		}
+	}
+
+	return false;
 }
+
+// Verify if object can be sold at event level.
+DEFINE_HOOK(0x4C6F55, EventClass_Execute_Sell, 0x5)
+{
+	enum { SkipGameCode = 0x4C6FA8 };
+
+	GET(TechnoClass*, pTechno, EDI);
+	GET(AbstractType, rtti, EAX);
+
+	if (CanBeSold(pTechno, rtti))
+		pTechno->Sell(-1);
+
+	return SkipGameCode;
+}
+
+#pragma endregion
 
 // Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.
 DEFINE_JUMP(LJMP, 0x6FC278, 0x6FC289);

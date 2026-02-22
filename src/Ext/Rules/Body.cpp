@@ -368,6 +368,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->PenetratesTransport_Level.Read(exINI, GameStrings::CombatDamage, "PenetratesTransport.Level");
 
+	this->UnitsUnsellable.Read(exINI, GameStrings::General, "UnitsUnsellable");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -670,6 +672,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DefaultToGuardArea)
 		.Process(this->CylinderRangefinding)
 		.Process(this->PenetratesTransport_Level)
+		.Process(this->UnitsUnsellable)
 		;
 }
 

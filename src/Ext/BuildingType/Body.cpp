@@ -272,6 +272,9 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.A
 	this->RubbleIntact.Read(exINI, pSection, "Rubble.Intact");
 	this->RubbleIntactRemove.Read(exINI, pSection, "Rubble.Intact.Remove");
+
+	// Ares 3.0
+	this->UnitSell.Read(exINI, pSection, "UnitSell");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -360,6 +363,9 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		// Ares 0.A
 		.Process(this->RubbleIntact)
 		.Process(this->RubbleIntactRemove)
+
+		// Ares 3.0
+		.Process(this->UnitSell)
 		;
 }
 

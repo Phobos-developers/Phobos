@@ -318,6 +318,8 @@ public:
 
 		Valueable<int> PenetratesTransport_Level;
 
+		Valueable<bool> UnitsUnsellable;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -579,6 +581,8 @@ public:
 			, CylinderRangefinding { false }
 
 			, PenetratesTransport_Level { 10 }
+
+			, UnitsUnsellable { false }
 		{ }
 
 		virtual ~ExtData() = default;
