@@ -288,6 +288,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizable paradrop missions
   - Guard range customizations
   - Wall overlay unit sell exploit fix
+  - Fix vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

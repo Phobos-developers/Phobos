@@ -2231,6 +2231,7 @@ msgid ""
 "Fixed vehicles disguised as trees incorrectly displaying veterancy "
 "insignia when they shouldn't (by Starkku)"
 msgstr ""
+"修复了伪装成树的载具错误显示出军衔（能打人的精英树）的问题（by Starkku）"
 
 msgid "0.4.0.2"
 msgstr "0.4.0.2"
