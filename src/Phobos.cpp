@@ -271,6 +271,18 @@ void Phobos::ApplyOptimizations()
 
 	if (!SessionClass::IsMultiplayer())
 	{
+		// Disable TechnoClass_DeleteGap_CellCheck
+		Patch::Apply_RAW(0x6FB5E5, { 0xB9, 0xE8, 0xF7, 0x87, 0x00 });
+
+		// Disable TechnoClass_CreateGap_CellCheck
+		Patch::Apply_RAW(0x6FB2FB, { 0xB9, 0xE8, 0xF7, 0x87, 0x00 });
+
+		// Disable MapClass_ResetShroud_CellCheck
+		Patch::Apply_RAW(0x577AFF, { 0x8B, 0x86, 0xF4, 0x00, 0x00, 0x00 });
+
+		// Disable MapClass_ResetShroudForTMission_CellCheck
+		Patch::Apply_RAW(0x577BF1, { 0x8B, 0x86, 0xF4, 0x00, 0x00, 0x00 });
+
 		// Disable Random2Class_Random_SyncLog
 		Patch::Apply_RAW(0x65C7D0, { 0xC3, 0x90, 0x90, 0x90, 0x90 });
 

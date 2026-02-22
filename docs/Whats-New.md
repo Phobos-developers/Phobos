@@ -651,6 +651,7 @@ Fixes / interactions with other extensions:
 
 Vanilla fixes:
 - Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold (by CnCRAZER & Starkku)
+- Fixed a desync due to an inconsistent shroud state caused by `GapGenerator` and `SpySat` interaction (by Starkku)
 
 Phobos fixes:
 - Fixed vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't (by Starkku)

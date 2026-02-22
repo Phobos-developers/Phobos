@@ -3077,3 +3077,92 @@ DEFINE_HOOK(0x6EA870, TeamClass_LiberateMember_Start, 0x6)
 	pMember->RecruitableB = true;
 	return 0;
 }
+
+#pragma region ShroudFix
+
+// These map cells are what SpySat skips revealing in MP normally.
+static bool inline ShroudFix_IsCellInvalid(CellStruct* pMapCell)
+{
+	int x = pMapCell->X;
+	int y = pMapCell->Y;
+	auto const& rect = MapClass::Instance.MapRect;
+
+	if (x == 7 && y == rect.Width + 5)
+		return true;
+
+	if (x == 13 && y == rect.Width + 11)
+		return true;
+
+	if (x == rect.Height + 13 && y == rect.Width + rect.Height -15 )
+		return true;
+
+	return false;
+}
+
+DEFINE_HOOK(0x6FB5E5, TechnoClass_DeleteGap_CellCheck, 0x5)
+{
+	enum { SkipCell = 0x6FB6F3 };
+
+	GET(CellStruct*, pMapCell, EDX);
+
+	if (ShroudFix_IsCellInvalid(pMapCell))
+		return SkipCell;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FB2FB, TechnoClass_CreateGap_CellCheck, 0x5)
+{
+	enum { SkipCell = 0x6FB416 };
+
+	GET(CellStruct*, pMapCell, EDX);
+
+	if (ShroudFix_IsCellInvalid(pMapCell))
+		return SkipCell;
+
+	return 0;
+}
+
+// Replace the entire cell iterator loop for perf reasons.
+DEFINE_HOOK(0x577AFF, MapClass_ResetShroud_CellCheck, 0x6)
+{
+	enum { SkipGameCode = 0x577B75 };
+
+	auto& map = MapClass::Instance;
+	map.CellIteratorReset();
+
+	for (auto pCell = map.CellIteratorNext(); pCell; pCell = map.CellIteratorNext())
+	{
+		if (ShroudFix_IsCellInvalid(&pCell->MapCoords))
+			continue;
+
+		pCell->Flags &= ~(CellFlags::CenterRevealed | CellFlags::EdgeRevealed);
+		pCell->AltFlags &= ~(AltCellFlags::Mapped | AltCellFlags::NoFog);
+		pCell->ShroudCounter = 1;
+		pCell->GapsCoveringThisCell = 0;
+	}
+
+	return SkipGameCode;
+}
+
+// Replace the entire cell iterator loop for perf reasons.
+DEFINE_HOOK(0x577BF1, MapClass_ResetShroudForTMission_CellCheck, 0x6)
+{
+	enum { SkipGameCode = 0x577C57 };
+
+	auto& map = MapClass::Instance;
+	map.CellIteratorReset();
+
+	for (auto pCell = map.CellIteratorNext(); pCell; pCell = map.CellIteratorNext())
+	{
+		if (ShroudFix_IsCellInvalid(&pCell->MapCoords))
+			continue;
+
+		pCell->Flags &= ~(CellFlags::CenterRevealed | CellFlags::EdgeRevealed);
+		pCell->AltFlags &= ~(AltCellFlags::Mapped | AltCellFlags::NoFog);
+	}
+
+	return SkipGameCode;
+}
+
+#pragma endregion
