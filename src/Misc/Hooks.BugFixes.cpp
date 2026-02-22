@@ -3083,7 +3083,7 @@ DEFINE_HOOK(0x6F833E, TechnoClass_CanAutoTargetObject_Garrisonable, 0x6)
 {
 	GET(TechnoClass*, pThis, EDI);
 	GET(const bool, garrisonable, EAX);
-	GET_BASE(const ThreatType, flags, 0x4);
+	GET_STACK(const ThreatType, flags, STACK_OFFSET(0x3C, 0x4));
 
 	const bool isFullMap = (flags & (ThreatType)3) == ThreatType::Normal; // Mission::Hunt and script is allowed
 	R->AL(garrisonable && (isFullMap || pThis->MegaMissionIsAttackMove())); // Attack move is allowed because it can switch to Mission::Attack
