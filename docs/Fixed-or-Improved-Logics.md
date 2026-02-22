@@ -2087,6 +2087,12 @@ TypeSelectUseIFVMode=false   ; boolean
 WeaponGroupAsN=              ; string, default to N if [General] -> TypeSelectUseIFVMode=true, and 0 if false
 ```
 
+In `ra2md.ini`
+```ini
+[Phobos]
+TypeSelectUseIFVMode=true   ; boolean
+```
+
 ### Customizing crushing tilt and slowdown
 
 - Vehicles with `Crusher=true` and `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrusher.Vehicles` and `TiltsWhenCrusher.Overlays`, which both default to `TiltsWhenCrushes`.
