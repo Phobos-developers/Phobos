@@ -1,0 +1,254 @@
+
+# Project guidelines and policies
+
+## Phobos maintenance crew structure
+
+Due to the size of the project and varying complexity of the codebase, we have established a maintenance crew structure to help with the project's development and maintenance. The structure is as follows:
+
+- **Leads** (or `T3` maintainers) - primary decision makers, define where the project is headed and have the final say in case of disputes. They are responsible for the project's vision and direction, and are the main point of contact for the community.
+- **`T2` maintainers** - assigned to more complex PRs, can make releases.
+- **`T1` maintainers** - assigned to less complex PRs.
+- **Triages** - help triage/label/assign PRs, issues, discussions, help with communication with the community.
+
+Those roles are assigned based on the complexity of the PRs and the experience of the contributors. The roles are not fixed and can change based on the contributor's experience and the complexity of the PRs they are working on. Also only the commonly occured roles are established in the list, in case of need - individual permissions can be assigned to contributors by leads (for example, to help with documentation translations).
+
+## Suggested reviewing amount
+
+The amount of code that maintainers should review should be roughly the same as the amount of code in the PRs they submit themselves. However, considering that we already have a large backlog of PRs at present, we suggest that maintainers review more code than they submit (f.ex., 125%-150% of they submit). Only in this way can we continuously reduce the number of backlogged PRs.
+
+At present this is not a hard rule, but we hope that each maintainer can try their best to achieve this.
+
+## Types of contributions
+
+To distribute the workload and make the project more manageable, we have established several commonly occuring types of contributions that can be made to the project. These types are as follows:
+
+- Phobos bugfixes, including reconnection error (desync), crash (fatal error) fixes, and documentation fixes
+  - `T1` complexity by default
+- Vanilla bugfixes
+  - `T1` complexity by default
+- Unhardcodings/customizations - contributions that only make something customizable through the INI or other way (by the modder usually), without adding too much code to handle the customization
+  - `T1` complexity by default
+- Restored featues (from TS, RA2 etc.), assuming no extra changes or additions apart from the ones necessary to function in YR with extensions (the reviewer has to verify that)
+  - `T1` complexity by default
+- New features
+  - Extensions of existing systems - add logic to existing systems, doesn't warrant it's own entity or type classes generally, but may introduce new hooks
+    - Examples: feedback weapon logic, superweapon launch warhead logic, a new type of trajectory that uses existing custom trajectory framework, etc.
+    - `T1` or `T2` complexity by default, depending on judgement of the one who assigns the PR
+  - New systems - generally with their own classes that don't extend game classes/logics (or have such amount of code that should be separated into separate classes)
+    - Examples: custom trajectories framework, interceptor logic, shield logic, etc.
+    - `T2` complexity by default
+- Contributions to project infrastructure - changes to the project's build system, CI, documentation, etc.
+  - `T2` complexity by default
+- Project policy changes - changes to the project's guidelines, contributing guidelines, etc.
+  - `T3` complexity by default (has to be reviewed by leads)
+
+```{hint}
+Modders are highly encouraged to submit feedback on reusability of added features (preferably most important takeaways should be tracked in pull requests, discussions and issues) in order to not bloat the project with one-off features.
+```
+
+The list is not exhaustive, you are welcome to propose/submit changes to it (or to any project policies in order to improve how the project is maintained).
+
+In absence of a fitting category - a lead should review it.
+
+What can make any PR more controversial and requiring a higher level maintainer's assignment:
+- Modifying/breaking previous (or vanilla) behavior
+- Requiring migration
+- Mixing contribution types
+- Current level of maintainers not being sure about whether they can judge this PR
+
+## Project structure
+
+Assuming you've successfully cloned and built the project before getting here, you should end up with the following project structure:
+- `src/` - all the project's source code resides here.
+  - `Commands/` - source code for new hotkey commands. Every command is a new class that inherits from `PhobosCommandClass` (defined in `Commands.h`) and is defined in a separate file with a few methods and then registered in `Commands.cpp`.
+  - `New/` - source code for new ingame classes.
+    - `Type/` - new enumerated types (types that are declared with a list section in an INI, for example, radiation types) implemented in the project. Every enumerated type class inherits `Enumerable<T>` (where `T` is an enum. type class) class that is defined in `Enumerable.h`.
+    - `Entity/` - classes that represent ingame entities are located here.
+  - `Ext/` - source code for vanilla engine class extensions. Each class extension is kept in a separate folder named after vanilla engine class name and contains the following:
+    - `Body.h` and `Body.cpp` contain class and method definitions/declarations and common extension hooks. Each extension class must contain the following to work correctly:
+      - `ExtData` - extension data class definition which inherits `Extension<T>` from `Container.h` (where `T` is the class that is being extended), which is the actual class that contains new data for vanilla classes;
+      - `ExtContainer` - a definition of a special map class to store and look up `ExtData` instances for base class instances which inherits `Container<T>` from `Container.h` (where `T` is the extension data class);
+      - `ExtMap` - a static instance of `ExtContainer` map;
+      - constructor, destructor, serialization, deserialization and (for appropriate classes) INI reading hooks.
+    - `Hooks.cpp` and `Hooks.*.cpp` contain non-common hooks to correctly patch in new custom logics.
+  - `ExtraHeaders/` - extra header files to interact with / describe types included in game binary that are not included in YRpp yet.
+  - `Misc/` - uncategorized source code, including hooks that don't belong to an extension class.
+  - `Utilities/` - common code that is used across the project.
+  - `Phobos.cpp`/`Phobos.h` - extension bootstrapping code.
+  - `Phobos.Ext.cpp` - contains common processing code new or extended classes. If you define a new or extended class you have to add your new class into `MassActions` global variable type declaration in this file.
+- `YRpp/` - contains the header files to interact with / describe types included in game binary and also macros to write hooks using Syringe. Included as a submodule.
+
+## Code styleguide
+
+We have established a couple of code style rules to keep things consistent. Some of the rules are enforced in `.editorconfig`, where applicable, so you can autoformat the code by pressing `Ctrl + K, D` hotkey chord in Visual studio. Still, it is advised to manually check the style before submitting the code.
+- We use tabs instead of spaces to indent code.
+- Curly braces are always to be placed on a new line ([Allman indentation style](https://en.wikipedia.org/wiki/Indentation_style#Allman_style)). One of the reasons for this is to clearly separate the end of the code block head and body in case of multiline bodies:
+```cpp
+if (SomeReallyLongCondition()
+    || ThatSplitsIntoMultipleLines())
+{
+    DoSomethingHere();
+    DoSomethingMore();
+}
+```
+- Braceless code block bodies should be made only when both code block head and body are single line,  statements split into multiple lines and nested braceless blocks are not allowed within braceless blocks:
+```cpp
+// OK
+if (Something())
+    DoSomething();
+
+// OK
+if (SomeReallyLongCondition()
+    || ThatSplitsIntoMultipleLines())
+{
+    DoSomething();
+}
+
+// OK
+if (SomeCondition())
+{
+    if (SomeOtherCondition())
+        DoSomething();
+}
+
+// OK
+if (SomeCondition())
+{
+    return VeryLongExpression()
+        || ThatSplitsIntoMultipleLines();
+}
+```
+- Only empty curly brace blocks may be left on the same line for both opening and closing braces (if appropriate).
+- If you use if-else you should either have all of the code blocks braced or braceless to keep things consistent.
+- Big conditions which span multiple lines and are hard to read otherwise should be split into smaller logical parts to improve readability:
+```cpp
+// Not OK
+if (This() && That() && AlsoThat()
+    || (OrOtherwiseThis && OtherwiseThat && WhateverElse))
+{
+    DoSomething();
+}
+
+// OK
+bool firstCondition = This() && That() && AlsoThat();
+bool secondCondition = OrOtherwiseThis && OtherwiseThat && WhateverElse;
+
+if (firstCondition || secondCondition)
+    DoSomething();
+```
+- Code should have empty lines to make it easier to read. Use an empty line to split code into logical parts. It's mandatory to have empty lines to separate:
+  - `return` statements (except when there is only one line of code except that statement);
+  - local variable assignments that are used in the further code (you shouldn't put an empty line after one-line local variable assignments that are used only in the following code block though);
+  - code blocks (braceless or not) or anything using code blocks (function or hook definitions, classes, namespaces etc.);
+  - hook register input/output.
+```cpp
+// OK
+auto localVar = Something();
+if (SomeConditionUsing(localVar))
+    ...
+
+// OK
+auto localVar = Something();
+auto anotherLocalVar = OtherSomething();
+
+if (SomeConditionUsing(localVar, anotherLocalVar))
+    ...
+
+// OK
+auto localVar = Something();
+
+if (SomeConditionUsing(localVar))
+    ...
+
+if (SomeOtherConditionUsing(localVar))
+    ...
+
+localVar = OtherSomething();
+
+// OK
+if (SomeCondition())
+{
+    Code();
+    OtherCode();
+
+    return;
+}
+
+// OK
+if (SomeCondition())
+{
+    SmallCode();
+    return;
+}
+
+```
+- `auto` may be used to hide an unnecessary type declaration if it doesn't make the code harder to read. `auto` may not be used on primitive types.
+- A space must be put between braces of empty curly brace blocks.
+- To have less Git merge conflicts member initializer lists and other list-like syntax structures used in frequently modified places should be split per-item with item separation characters (commas, for example) placed *after newline character*:
+```cpp
+ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
+    , SpawnsTiberium_Type(0)
+    , SpawnsTiberium_Range(1)
+    , SpawnsTiberium_GrowthStage({ 3, 0 })
+    , SpawnsTiberium_CellsPerAnim({ 1, 0 })
+{ }
+```
+- Local variables and function/method args are named in the `camelCase` (using a `p` prefix to denote pointer type for every pointer nesting level) and a descriptive name, like `pTechnoType` for a local `TechnoTypeClass*` variable.
+- Classes, namespaces, class fields and members are always written in `PascalCase`.
+- Class fields that can be set via INI tags should be named exactly like ini tags with dots replaced with underscores.
+- Pointer type declarations always have pointer sign `*` attached to the type declaration.
+- Non-static class extension methods faked by declaring a static method with `pThis` as a first argument are only to be placed in the extension class for the class instance of which `pThis` is.
+  - If it's crucial to fake `__thiscall` you may use `__fastcall` and use `void*` or `void* _` as a second argument to discard value passed through `EDX` register. Such methods are to be used for call replacement.
+- Hooks have to be named using a following scheme: `HookedFunction_HookPurpose`, or `ClassName_HookedMethod_HookPurpose`. Defined-again hooks are exempt from this scheme due to impossibility to define different names for the same hook.
+- Return addresses should use anonymous enums to make it clear what address means what, if applicable. The enum has to be placed right at the function start and include all addresses that are used in this hook:
+```cpp
+DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
+{
+    enum { SpreadReturn = 0x4838CA, NoSpreadReturn = 0x4838B0 };
+
+    ...
+}
+```
+- Even if the hook doesn't use `return 0x0` to execute the overriden instructions, you still have to write correct hook size (last parameter of `DEFINE_HOOK` macro) to reduce potential issues if the person editing this hook decides to use `return 0x0`.
+- New ingame "entity" classes are to be named with `Class` postfix (like `RadTypeClass`). Extension classes are to be named with `Ext` postfix instead (like `RadTypeExt`).
+- Do not pollute the namespace.
+- Avoid introducing unnecessary macros if they can be replaced by equivalent `constexpr` or `__forceinline` functions.
+
+```{note}
+The styleguide is not exhaustive and may be adjusted in the future.
+```
+
+## Git branching model
+
+Couple of notes regarding the Git practices. We use [git-flow](https://nvie.com/posts/a-successful-git-branching-model/)-like workflow:
+  - `master` is for stable releases, can have hotfixes pushed to it or branched off like a feature branch with the requirement of version increment and `master` being merged into `develop` after that;
+  - `develop` is the main development branch;
+  - `feature/`-prefixed branches (sometimes the prefix may be different if appropriate, like for big fixes or changes) are so called "feature branches" - those are branched off `develop` for every new feature to be introduced into it and then merged back. We use squash merge to merge them back in case of smaller branches and sometimes merge commit in case the branch is so big it would be viable to keep it as is.
+  - `hotfix/`-prefixed branches may be used in a same manner as `feature/`, but with `master` branch, with a requirement of `master` being merged into `develop` after `hotfix/` branch was squash merged into `master`.
+  - `release/`-prefixed branches are branched off `develop` when a new stable release is slated to allow working on features for a next release and stability improvements for this release. Those are merged with a merge commit into `master` and `develop` with a stable version number increase, after which the stable version is released.
+- When you're working with your local & remote branches use **fast-forward** pulls to get the changes from remote branch to local, **don't merge remote branch into local and vice versa**, this creates junk commits and makes things unsquashable.
+
+These commands will do the following for all repositories on your PC:
+1) remove the automatic merge upon pull and replace it with a rebase;
+2) highlight changes consisting of moving existing lines to another location with a different color.
+
+```bash
+git config --global pull.rebase true
+git config --global branch.autoSetupRebase always
+git config --global diff.colorMoved zebra
+```
+
+## Working with YRpp via submodules
+
+Often when working on Phobos and/or researching the YR engine you'll need to implement corrections for YRpp. Generally the corrections need to be submitted to [YRpp repository](https://github.com/Phobos-developers/YRpp) and can be done separately from the actual features in Phobos, but frequently the improvements are to be submitted as a part of Phobos contribution process. To submit improvements to YRpp you have to create a branch in YRpp, then you can push it and submit a pull request to YRpp repository.
+
+When you clone Phobos recursively - you also clone YRpp as a submodule. Basically submodules are just nested repositories. You can open it like any other repository, so the changes can be synchronized to Phobos and you don't need to rename stuff by hand.
+
+The suggested workflow is as follows:
+1. In your IDE of choice rename fields and functions using symbol renaming feature (`Rename...` feature in Visual Studio (regular or Code), `[F2]` by default), then you will have two "levels" of changes displayed in your Git client:
+   - for Phobos repository - changes in the Phobos code (as regular changes) and changes to YRpp (as one submodule change).
+   - for YRpp repository - changes to the field names and function names in YRpp as regular changes.
+2. Create a branch in YRpp repository (create a fork of it if you didn't yet), commit and push the changes and submit it as a pull request. After pushing it you have two options in Phobos repository:
+   - wait until it's accepted, then checkout YRpp at the newest commit, then commit and push - this will save you having to commit and push multiple times, but you won't be able to get a nightly build for people to test;
+   - don't wait for YRpp changes to be merged, commit and push right after you pushed the YRpp changes to your YRpp branch - you will have an up-to-date build on Phobos pull request this way. Note that you must do this only after you committed to and pushed your YRpp branch, otherwise the build system won't know what are the changes as they are not exposed to the world, only available to you locally.
+3. After the YRpp pull request gets accepted you will need to switch to the latest commit that was merged (you do that in the submodule), verify that it compiles like normal, and then commit and push it to your Phobos branch that you made for your pull request.
