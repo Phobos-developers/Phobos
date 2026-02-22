@@ -3094,7 +3094,7 @@ DEFINE_HOOK(0x6F833E, TechnoClass_CanAutoTargetObject_Garrisonable, 0x6)
 DEFINE_HOOK(0x4D4203, FootClass_MissionMove_EndCheckFix1, 0x6)
 {
 	GET(FootClass*, pThis, ESI);
-	R->EAX(pThis->Destination && pThis->DistanceFrom(pThis->Destination) > Unsorted::LeptonsPerCell);
+	R->EAX(pThis->Destination && (!locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor) || pThis->DistanceFrom(pThis->Destination) > Unsorted::LeptonsPerCell));
 	return 0x4D4209;
 }
 
