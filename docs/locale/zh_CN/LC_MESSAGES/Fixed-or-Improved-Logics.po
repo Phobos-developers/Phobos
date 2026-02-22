@@ -1530,11 +1530,10 @@ msgstr ""
 "现在设置了 `NeedsEngineer=true` 的建筑在从属于 `MultiplayPassive=true` 的所属方时其威胁值将无视 "
 "`ThreatPosed` 设置始终被视为 0。"
 
-#, fuzzy
 msgid ""
 "Vehicles overlapping `Wall=true` OverlayTypes no longer display sell "
 "cursor and cannot be sold."
-msgstr "图像与墙类覆盖物重叠的载具不再能够通过 Bug 出售。"
+msgstr "图像与 `Wall=true` 的覆盖物重叠的载具上不再会显示出售光标也不再能被出售。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"

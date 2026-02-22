@@ -856,7 +856,7 @@ msgid "Guard range customizations"
 msgstr "自定义警戒范围"
 
 msgid "Wall overlay unit sell exploit fix"
-msgstr ""
+msgstr "围墙卖坦克 Bug 的修复"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
@@ -2497,5 +2497,5 @@ msgid ""
 msgstr "**11EJDE11** - 阻止 MPDEBUG 数字在关闭可见时仍然绘制"
 
 msgid "**CnCRazer** - Wall overlay unit sell exploit fix"
-msgstr ""
+msgstr "**CnCRazer** - 围墙卖坦克 Bug 的修复"
 

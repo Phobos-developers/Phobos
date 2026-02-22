@@ -2020,11 +2020,6 @@ msgstr ""
 "现在设置了 `NeedsEngineer=true` 的建筑在从属于 `MultiplayPassive=true` 的所属方时其威胁值将无视 "
 "`ThreatPosed` 设置始终被视为 0（by Starkku）"
 
-msgid ""
-"Vehicles overlapping wall overlaytypes are no longer sellable through "
-"exploits (by RAZER)"
-msgstr "图像与墙类覆盖物重叠的载具不再能够通过 Bug 出售（by RAZER）"
-
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
 
@@ -2227,11 +2222,10 @@ msgstr "修复了使用 Ares 废墟逻辑的 `Explodes=yes` 建筑会导致其�
 msgid "0.4.0.3"
 msgstr "0.4.0.3"
 
-#, fuzzy
 msgid ""
 "Vehicles overlapping `Wall=true` OverlayTypes no longer display sell "
 "cursor and cannot be sold (by CnCRAZER & Starkku)"
-msgstr "图像与墙类覆盖物重叠的载具不再能够通过 Bug 出售（by RAZER）"
+msgstr "图像与 `Wall=true` 的覆盖物重叠的载具上不再会显示出售光标也不再能被出售（by RAZER & Starkku）"
 
 msgid ""
 "Fixed vehicles disguised as trees incorrectly displaying veterancy "
