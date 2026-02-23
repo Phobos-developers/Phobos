@@ -2193,7 +2193,7 @@ Bounty.KillerMultiplier=1.0         ; double
 
 [AudioVisual]
 Bounty.Display=false                ; boolean
-Bounty.Display.Houses=all            ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Bounty.Display.Houses=all           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 
 [SOMETECHNO]                        ; TechnoType
 Bounty=                             ; boolean, default to [General] -> Bounty.Default
@@ -2207,7 +2207,7 @@ Bounty.KillerMultiplier=            ; double, default to [General] -> Bounty.Kil
 Bounty.KillerMultiplier.Veteran=    ; double, default to [TechnoType] -> Bounty.KillerMultiplier
 Bounty.KillerMultiplier.Elite=      ; double, default to [TechnoType] -> Bounty.KillerMultiplier
 Bounty.Display=                     ; boolean, default to [AudioVisual] -> Bounty.Display
-Bounty.Display.Houses=               ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to [AudioVisual] -> Bounty.Display.Houses
+Bounty.Display.Houses=              ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to [AudioVisual] -> Bounty.Display.Houses
 Bounty.Display.Offset=0,0           ; X,Y, pixels relative to default
 ```
 
