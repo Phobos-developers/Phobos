@@ -927,41 +927,41 @@ void TechnoExt::GiveBounty(TechnoClass* pVictim, TechnoClass* pKiller, int victi
 		return;
 
 	const auto pVictimTypeExt = TechnoTypeExt::ExtMap.Find(pVictim->GetTechnoType());
-	double victimMultiplier = 1.0;
+	int value = pVictimTypeExt->Bounty_Value.Get(pVictim);
 
-	switch (pVictim->Veterancy.GetRemainingLevel())
+	if (!value)
 	{
-	case Rank::Elite:
-		if (pVictimTypeExt->Bounty_Multiplier_Elite.isset())
+		double victimMultiplier = 1.0;
+
+		switch (pVictim->Veterancy.GetRemainingLevel())
 		{
-			victimMultiplier = pVictimTypeExt->Bounty_Multiplier_Elite.Get();
-			break;
+		case Rank::Elite:
+			if (pVictimTypeExt->Bounty_Multiplier_Elite.isset())
+			{
+				victimMultiplier = pVictimTypeExt->Bounty_Multiplier_Elite.Get();
+				break;
+			}
+
+		case Rank::Veteran:
+			if (pVictimTypeExt->Bounty_Multiplier_Vet.isset())
+			{
+				victimMultiplier = pVictimTypeExt->Bounty_Multiplier_Elite.Get();
+				break;
+			}
+
+		default:
+			if (pVictimTypeExt->Bounty_Multiplier.isset())
+			{
+				victimMultiplier = pVictimTypeExt->Bounty_Multiplier.Get();
+				break;
+			}
+
+			victimMultiplier = RulesExt::Global()->Bounty_Multiplier;
 		}
 
-	case Rank::Veteran:
-		if (pVictimTypeExt->Bounty_Multiplier_Vet.isset())
-		{
-			victimMultiplier = pVictimTypeExt->Bounty_Multiplier_Elite.Get();
-			break;
-		}
+		value = static_cast<int>(std::round(victimCost * victimMultiplier));
 
-	default:
-		if (pVictimTypeExt->Bounty_Multiplier.isset())
-		{
-			victimMultiplier = pVictimTypeExt->Bounty_Multiplier.Get();
-			break;
-		}
-
-		victimMultiplier = RulesExt::Global()->Bounty_Multiplier;
-	}
-
-	int defaultCost = victimMultiplier ? static_cast<int>(std::round(victimCost * victimMultiplier)) : pVictimTypeExt->Bounty_Value.Get(pVictim);
-
-	if (!defaultCost)
-	{
-		defaultCost = victimCost;
-
-		if (!defaultCost)
+		if (!value)
 			return;
 	}
 
@@ -993,7 +993,7 @@ void TechnoExt::GiveBounty(TechnoClass* pVictim, TechnoClass* pKiller, int victi
 		killerMultiplier = RulesExt::Global()->Bounty_KillerMultiplier;
 	}
 
-	const int value = static_cast<int>(std::round(defaultCost * killerMultiplier));
+	value = static_cast<int>(std::round(value * killerMultiplier));
 
 	if (!value || !pKillerHouse->CanTransactMoney(value))
 		return;
@@ -1003,7 +1003,12 @@ void TechnoExt::GiveBounty(TechnoClass* pVictim, TechnoClass* pKiller, int victi
 	if (pKillerTypeExt->Bounty_Display.Get(RulesExt::Global()->Bounty_Display))
 	{
 		const auto displayTo = pKillerTypeExt->Bounty_Display_Houses.Get(RulesExt::Global()->Bounty_Display_Houses);
-		FlyingStrings::AddMoneyString(value, pKiller, pKiller->Owner, displayTo, pKiller->Location, pKillerTypeExt->Bounty_Display_Offset);
+		auto pDisplayOn = pKiller;
+
+		if (const auto pTransporter = pKiller->Transporter)
+			pDisplayOn = pTransporter;
+
+		FlyingStrings::AddMoneyString(value, pKiller, pKiller->Owner, displayTo, pDisplayOn->Location, pKillerTypeExt->Bounty_Display_Offset);
 	}
 }
 
