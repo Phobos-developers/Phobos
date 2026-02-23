@@ -58,7 +58,7 @@ This page describes all the engine features that are either new and introduced b
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
   - `Unkillable` can be used to prevent the techno from being killed by taken damage (minimum health will be 1).
-  - `Bounty` can be used to override the option with the same name in technology types, enabling it for technology types that originally did not have the Bounty Hunter ability, or conversely, disabling it.
+  - `Bounty` can be used to override the option with the same name in TechnoTypes, enabling it for TechnoTypes that originally did not have the Bounty Hunter ability, or conversely, disabling it.
     - If multiple AEs with this setting exist simultaneously, the last AE applied and in effect shall prevail.
   - It is possible to set groups for attach effect types by defining strings in `Groups`.
     - Groups can be used instead of types for removing effects and weapon filters.

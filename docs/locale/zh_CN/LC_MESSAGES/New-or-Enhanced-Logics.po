@@ -434,7 +434,7 @@ msgstr "`Unkillable` 可用于防止科技类型因受到伤害而死亡（最�
 
 msgid ""
 "`Bounty` can be used to override the option with the same name in "
-"technology types, enabling it for technology types that originally did "
+"TechnoTypes, enabling it for TechnoTypes that originally did "
 "not have the Bounty Hunter ability, or conversely, disabling it."
 msgstr ""
 "`Bounty` 可用于覆盖科技类型上的同名设置，以使得本没有赏金猎人能力的单位可以启动它，或反过来禁用赏金猎人能力。"
