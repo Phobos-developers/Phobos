@@ -45,6 +45,7 @@ public:
 	static void* (__thiscall* GetTunnel)(void*, HouseClass*);
 	static void(__thiscall* AddPassengerFromTunnel)(void*, BuildingClass*, FootClass*);
 private:
+	static constexpr bool AresWasWrongAboutSpawnSurvivors = false;
 
 	static void* _SWTypeExtMap;
 	static AresSWTypeExtData* (__thiscall* _SWTypeExtMapFind)(void*, SuperWeaponTypeClass*);

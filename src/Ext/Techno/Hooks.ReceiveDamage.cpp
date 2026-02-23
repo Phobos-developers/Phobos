@@ -4,6 +4,7 @@
 #include <Ext/TEvent/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Utilities/AresHelper.h>
 
 namespace ReceiveDamageTemp
 {
@@ -21,7 +22,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	// AffectsAbove/BelowPercent & AffectsNeutral can ignore IgnoreDefenses like AffectsAllies/Enmies/Owner
 	// They should be checked here to cover all cases that directly use ReceiveDamage to deal damage
-	if (!pWHExt->IsHealthInThreshold(pThis) || (!pWHExt->AffectsNeutral && pThis->Owner->IsNeutral()))
+	if (!pWHExt->IsHealthInThreshold(pThis) || !pWHExt->IsVeterancyInThreshold(pThis) || (!pWHExt->AffectsNeutral && pThis->Owner->IsNeutral()))
 	{
 		damage = 0;
 		return 0;
@@ -33,7 +34,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	// Apply warhead effects
 	if (damage && !pWHExt->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate))
-		pWHExt->DetonateOnOneUnit(args->SourceHouse, pThis, args->Attacker);
+		pWHExt->DetonateOnOneUnit(args->SourceHouse, pThis, CoordStruct { 0, 0, 0 }, damage, args->Attacker, args->DistanceToEpicenter);
 
 	// Calculate Damage Multiplier
 	if (!args->IgnoreDefenses && damage)
@@ -92,7 +93,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			if (!pTypeExt->CombatAlert.Get(RulesExt::Global()->CombatAlert_Default.Get(!pType->Insignificant && !pType->Spawned)) || !pThis->IsInPlayfield)
 				return;
 
-			const auto pBuilding = abstract_cast<BuildingClass*>(pThis);
+			const auto pBuilding = abstract_cast<BuildingClass*, true>(pThis);
 
 			if (RulesExt::Global()->CombatAlert_IgnoreBuilding && pBuilding && (pTypeExt->CombatAlert_NotBuilding.isset() ? !pTypeExt->CombatAlert_NotBuilding.Get() : !pBuilding->Type->IsVehicle()))
 				return;
@@ -251,6 +252,15 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x518434, InfantryClass_ReceiveDamage_SkipDeathAnim, 0x7)
+{
+	enum { SkipDeathAnim = 0x5185F1 };
+
+	GET(InfantryClass*, pThis, ESI);
+
+	return pThis->Transporter ? SkipDeathAnim : 0;
+}
+
 // Issue #237 NotHuman additional animations support
 // Author: Otamaa
 DEFINE_HOOK(0x518505, InfantryClass_ReceiveDamage_NotHuman, 0x4)
@@ -380,7 +390,7 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 			{
 				auto const pInvoker = attachEffect->GetInvoker();
 
-				if (pInvoker && EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouses, pInvoker->Owner, pSourceHouse))
+				if (pInvoker && EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, pInvoker->Owner, pSourceHouse))
 				{
 					auto const pWHExtRef = WarheadTypeExt::ExtMap.Find(pWH);
 					pWHExtRef->Reflected = true;
@@ -393,7 +403,7 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 					pWHExtRef->Reflected = false;
 				}
 			}
-			else if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouses, pThis->Owner, pSourceHouse))
+			else if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, pThis->Owner, pSourceHouse))
 			{
 				auto const pWHExtRef = WarheadTypeExt::ExtMap.Find(pWH);
 				pWHExtRef->Reflected = true;
@@ -410,6 +420,7 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 
 	return 0;
 }
+
 DEFINE_HOOK(0x5F5480, ObjectClass_ReceiveDamage_FlashDuration, 0x6)
 {
 	enum { SkipGameCode = 0x5F545C };
@@ -426,4 +437,44 @@ DEFINE_HOOK(0x5F5480, ObjectClass_ReceiveDamage_FlashDuration, 0x6)
 		pThis->Flash(nFlashDuration);
 
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x701CFC, TechnoClass_ReceiveDamage_AllowBerzerkOnAllies, 0x5)
+{
+	enum { SkipCodeYR = 0x701D0B, SkipCodeAres = 0x701D2E };
+
+	// If AllowBerzerkOnAllies not enabled, just return from function
+	// and don't apply berzerk.
+	if (!RulesExt::Global()->AllowBerzerkOnAllies)
+		return 0;
+
+	// Ares already checked immunities by this point if it is enabled.
+	// Rechecking them causes issues, so only check ImmuneToPsionics
+	// again if Ares is not present.
+	return AresHelper::CanUseAres ? SkipCodeAres : SkipCodeYR;
+}
+
+DEFINE_HOOK(0x702823, TechnoClass_ReceiveDamage_SkipDamagedParticle, 0x7)
+{
+	enum { SkipParticle = 0x702A25, RemoveParticle = 0x70283C, SpawnParticle = 0x702857 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	if (pThis->Transporter)
+		return SkipParticle;
+
+	return pThis->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow ? SpawnParticle : RemoveParticle;
+}
+
+DEFINE_HOOK(0x737E6E, UnitClass_ReceiveDamage_SkipExplode, 0xA)
+{
+	enum { ContinueCheck = 0x737E78, SkipExplode = 0x737F74 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	if (pThis->Transporter)
+		return SkipExplode;
+
+	R->EAX(pThis->GetHeight());
+	return ContinueCheck;
 }

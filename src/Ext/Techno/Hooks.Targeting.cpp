@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <Ext/WeaponType/Body.h>
+
 DEFINE_HOOK(0x6FA697, TechnoClass_Update_DontScanIfUnarmed, 0x6)
 {
 	enum { SkipTargeting = 0x6FA6F5 };
@@ -41,4 +43,29 @@ DEFINE_HOOK(0x70982C, TechnoClass_TargetAndEstimateDamage_TargetingDelay, 0x8)
 	R->EDX(frame);
 
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x6F7CE2, TechnoClass_CanAutoTargetObject_IronCurtain, 0x6)
+{
+	enum { ReturnFalse = 0x6F894F };
+
+	GET(TechnoClass*, pThis, EDI);
+	GET(TechnoClass*, pTarget, ESI);
+
+	if (pThis->Owner->IsControlledByHuman() && pTarget->IsIronCurtained())
+	{
+		GET(WeaponTypeClass*, pWeapon, EBP);
+
+		if (pWeapon)
+		{
+			const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+			if (pWeaponExt->AutoTarget_IronCurtained.isset())
+				return pWeaponExt->AutoTarget_IronCurtained.Get() ? 0 : ReturnFalse;
+		}
+
+		return RulesExt::Global()->AutoTarget_IronCurtained ? 0 : ReturnFalse;
+	}
+
+	return 0;
 }

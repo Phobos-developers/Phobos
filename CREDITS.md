@@ -283,6 +283,12 @@ This page lists all the individual contributions to the project by their author.
   - Bugfixes to map trigger action `125 Build At...`
   - Owner change during buildup bugfix
   - Subterranean harvester pathfinding fix
+  - Toggle to exclude technos from base center calculations
+  - Deploy priority filtering
+  - Customizable paradrop missions
+  - Guard range customizations
+  - Wall overlay unit sell exploit fix
+  - Fix vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -404,6 +410,10 @@ This page lists all the individual contributions to the project by their author.
   - Map Action 511, 609, 610
   - Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`
   - Attack non-threatening structures extensions
+  - Vehicle Deployment Enhancement
+  - Fix an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals
+  - Fix an issue where mining vehicles could not move after leaving a tank bunker
+  - Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4
   - SHP turret vehicles support the use of `*tur.shp` files
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
@@ -479,6 +489,22 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that if object has been removed from LogicClass in Update(), next object will be skip
   - Fix the bug that weapon cannot used to intercept on gound bullet if it's projectile has `AG=no`
   - Customize size for mind controlled unit
+  - Fix the issue that weapon selection don't check if secondary's warhead has `IsLocomotor=yes`
+  - Fix the issue that warhead with `IsLocomotor=yes` can be used to vehicles who is in tank bunker
+  - Fix the bug that if there's a tank in tank bunker, tank bunker use auto death by vanish will cause tank get stuck and game will crash quickly
+  - Customize whether weapon can be used to targeting ironcurtained technos or not
+  - Fix the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon
+  - Fix the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally
+  - Customizable disk drain logic
+  - Fix the bug that cause technos teleport to cell 0,0 by ChronoSphere superweapon
+  - Fix the bug that techno in attack move will move to target if it cannot attack it
+  - Penetrates damage on transporter
+  - Add amount limit of `LimboKill`
+  - Spawns particle when spawns tiberium by terrain
+  - Allow draw SuperWeapon timer as percentage
+  - Customize particle system of parasite logic
+  - Fix an issue where parasites that have infected infantry do not provide a refund when the infected infantry enters a Grinding building
+  - Fix the issue that `PassengerDeletion` dont consider passenger's passenger, parasite and hijacker
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -606,6 +632,8 @@ This page lists all the individual contributions to the project by their author.
   - Toggle off laser trail and shake effects
   - OpenTopped range bonus and damage multiplier customization for passengers
   - AutoDeath upon ownership change
+  - Maximum amount for power plant enhancer
+  - Return warhead
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
@@ -670,10 +698,20 @@ This page lists all the individual contributions to the project by their author.
   - Toggle per-target warhead effects apply timing
   - Extra range for chasing and pre-firing
   - Fix an issue that rockets do not consider the destination altitude during climbing
+  - Fix an issue that the AI would set anger towards friendly houses, causing it to act stupidly
+  - Fix an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies
+  - `AllowBerzerkOnAllies`
+  - Fix an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat
+  - Fix an issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team
+  - Global default value for `DefaultToGuardArea`
+  - Weapon range finding in cylinder
+  - Allow jumpjet climbing ignore building height
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
-- **Flactine** - add target filtering options to attacheffect system
+- **Flactine**
+  - Add target filtering options to attacheffect system
+  - Add veterancy-based target filtering for weapons and warheads
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
@@ -699,6 +737,7 @@ This page lists all the individual contributions to the project by their author.
 - **Joshy** - Original FlyingStrings implementation
 - **CnCVK** - Original custom locomotors experiment
 - **ZΞPHYɌUS** - win/lose themes code
+- **Fridge** - Cursor Fix code
 - **Neargye (Daniil Goncharov)** - [nameof library](https://github.com/Neargye/nameof) (MIT)
 - **ayylmao** - help with docs, extensive and thorough testing
 - **SMxReaver** - help with docs, extensive and thorough testing
@@ -712,3 +751,4 @@ This page lists all the individual contributions to the project by their author.
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
 - **11EJDE11** - Prevent mpdebug number from being drawn when visibility toggled off
+- **CnCRazer** - Wall overlay unit sell exploit fix
