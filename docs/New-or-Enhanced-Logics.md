@@ -2178,7 +2178,7 @@ TiberiumEater.AnimMove=true       ; boolean
   - If this list is empty, the bounty logic is enabled without requiring any prerequisite TechnoTypes.
 - `Bounty.Multiplier` is the multiplier applied to the bounty a hunter receives when a victim is killed. This is defined on the victim.
 - `Bounty.Value` is the fixed amount of funds a hunter receives when a victim is killed. This is also defined on the victim.
-  - If `Bounty.Multiplier` is not 0, the base bounty value is the victim's actual cost multiplied by this multiplier; otherwise, the base value is the amount set by `Bounty.Value`.
+  - If `Bounty.Value` is not 0, the base value is the amount set by `Bounty.Value`; otherwise, the base bounty value is the victim's actual cost multiplied by `Bounty.Multiplier`.
 - `Bounty.KillerMultiplier` is the multiplier applied to the bounty received when killing a target. This is defined on the hunter.
 - `Bounty.Display` controls whether the bounty amount is shown, displayed on the hunter.
 
