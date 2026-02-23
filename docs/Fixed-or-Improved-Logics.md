@@ -2087,6 +2087,8 @@ TypeSelectUseIFVMode=false   ; boolean
 WeaponGroupAsN=              ; string, default to N if [General] -> TypeSelectUseIFVMode=true, and 0 if false
 ```
 
+- You can turn it off when you don't need it.
+
 In `ra2md.ini`
 ```ini
 [Phobos]
