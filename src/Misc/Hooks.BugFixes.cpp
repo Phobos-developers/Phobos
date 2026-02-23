@@ -2476,3 +2476,13 @@ DEFINE_PATCH(0x429E9B, 0xB7);
 // movsx ecx, word ptr [eax] -> movzx ecx, word ptr [eax]
 
 #pragma endregion
+
+// Disallow sell action on wall overlays if mouse cursor is hovering on another object.
+DEFINE_HOOK(0x692AD6, ScrollClass_ChooseAction_SellWall, 0x6)
+{
+	enum { NoSell = 0x692AFE };
+
+	GET(ObjectClass*, pObject, ESI);
+
+	return pObject ? NoSell :0;
+}

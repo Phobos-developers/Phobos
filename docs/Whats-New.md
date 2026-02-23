@@ -310,10 +310,20 @@ HideLightFlashEffects=false      ; boolean
 
 ## Changelog
 
-### 0.4.0.2
+### 0.4.0.3
 
 ```{dropdown} Click to show
 :open:
+Vanilla fixes:
+- Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold (by CnCRAZER & Starkku)
+
+Phobos fixes:
+- Fixed vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't (by Starkku)
+```
+
+### 0.4.0.2
+
+```{dropdown} Click to show
 
 Phobos fixes:
 - Fixed `AircraftDockingDirs` being reset if the BuildingType section is redefined in map file (by Starkku)

@@ -261,6 +261,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizable electric bolt duration and electric bolt-related fixes
   - Bugfixes to map trigger action `125 Build At...`
   - Owner change during buildup bugfix
+  - Wall overlay unit sell exploit fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -510,3 +511,4 @@ This page lists all the individual contributions to the project by their author.
 - **Damfoos** - extensive and thorough testing
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
+- **CnCRazer** - Wall overlay unit sell exploit fix

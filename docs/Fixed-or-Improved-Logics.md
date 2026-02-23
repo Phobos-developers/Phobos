@@ -239,6 +239,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed pathfinding crashes (EIP 0x42A525, 0x42C507, 0x42C554) that happened on bigger maps due to too small pathfinding node buffer.
 - Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state.
 - Fixed preplaced aircraft outside visible map being incorrectly flagged as crashing under certain conditions.
+- Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold.
 
 ## Fixes / interactions with other extensions
 
