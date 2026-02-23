@@ -374,7 +374,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Bounty_Multiplier.Read(exINI, GameStrings::General, "Bounty.Multiplier");
 	this->Bounty_KillerMultiplier.Read(exINI, GameStrings::General, "Bounty.KillerMultiplier");
 	this->Bounty_Display.Read(exINI, GameStrings::AudioVisual, "Bounty.Display");
-	this->Bounty_Display_House.Read(exINI, GameStrings::AudioVisual, "Bounty.Display.House");
+	this->Bounty_Display_Houses.Read(exINI, GameStrings::AudioVisual, "Bounty.Display.Houses");
 
 	this->UnitsUnsellable.Read(exINI, GameStrings::General, "UnitsUnsellable");
 
@@ -686,7 +686,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Bounty_Multiplier)
 		.Process(this->Bounty_KillerMultiplier)
 		.Process(this->Bounty_Display)
-		.Process(this->Bounty_Display_House)
+		.Process(this->Bounty_Display_Houses)
 		.Process(this->UnitsUnsellable)
 		;
 }

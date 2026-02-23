@@ -324,7 +324,7 @@ public:
 		Valueable<double> Bounty_Multiplier;
 		Valueable<double> Bounty_KillerMultiplier;
 		Valueable<bool> Bounty_Display;
-		Valueable<AffectedHouse> Bounty_Display_House;
+		Valueable<AffectedHouse> Bounty_Display_Houses;
 
 		Valueable<bool> UnitsUnsellable;
 
@@ -596,7 +596,7 @@ public:
 			, Bounty_Multiplier { 1.0 }
 			, Bounty_KillerMultiplier { 1.0 }
 			, Bounty_Display { false }
-			, Bounty_Display_House { AffectedHouse::All }
+			, Bounty_Display_Houses { AffectedHouse::All }
 
 			, UnitsUnsellable { false }
 		{ }

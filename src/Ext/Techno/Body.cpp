@@ -1002,7 +1002,7 @@ void TechnoExt::GiveBounty(TechnoClass* pVictim, TechnoClass* pKiller, int victi
 
 	if (pKillerTypeExt->Bounty_Display.Get(RulesExt::Global()->Bounty_Display))
 	{
-		const auto displayTo = pKillerTypeExt->Bounty_Display_House.Get(RulesExt::Global()->Bounty_Display_House);
+		const auto displayTo = pKillerTypeExt->Bounty_Display_Houses.Get(RulesExt::Global()->Bounty_Display_Houses);
 		FlyingStrings::AddMoneyString(value, pKiller, pKiller->Owner, displayTo, pKiller->Location, pKillerTypeExt->Bounty_Display_Offset);
 	}
 }

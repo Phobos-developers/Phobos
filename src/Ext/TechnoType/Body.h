@@ -494,7 +494,7 @@ public:
 		Nullable<double> Bounty_KillerMultiplier_Vet;
 		Nullable<double> Bounty_KillerMultiplier_Elite;
 		Nullable<bool> Bounty_Display;
-		Nullable<AffectedHouse> Bounty_Display_House;
+		Nullable<AffectedHouse> Bounty_Display_Houses;
 		Valueable<Point2D> Bounty_Display_Offset;
 
 		Nullable<bool> Unsellable; // Ares 3.0
@@ -947,7 +947,7 @@ public:
 			, Bounty_KillerMultiplier_Vet {}
 			, Bounty_KillerMultiplier_Elite {}
 			, Bounty_Display {}
-			, Bounty_Display_House {}
+			, Bounty_Display_Houses {}
 			, Bounty_Display_Offset { Point2D::Empty }
 
 			, Unsellable {}

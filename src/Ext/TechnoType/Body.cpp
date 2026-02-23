@@ -1169,7 +1169,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Bounty_KillerMultiplier_Vet.Read(exINI, pSection, "Bounty.KillerMultiplier.Veteran");
 	this->Bounty_KillerMultiplier_Elite.Read(exINI, pSection, "Bounty.KillerMultiplier.Elite");
 	this->Bounty_Display.Read(exINI, pSection, "Bounty.Display");
-	this->Bounty_Display_House.Read(exINI, pSection, "Bounty.Display.House");
+	this->Bounty_Display_Houses.Read(exINI, pSection, "Bounty.Display.Houses");
 	this->Bounty_Display_Offset.Read(exINI, pSection, "Bounty.Display.Offset");
 
 	// Ares 0.2
@@ -1896,7 +1896,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Bounty_KillerMultiplier_Vet)
 		.Process(this->Bounty_KillerMultiplier_Elite)
 		.Process(this->Bounty_Display)
-		.Process(this->Bounty_Display_House)
+		.Process(this->Bounty_Display_Houses)
 		.Process(this->Bounty_Display_Offset)
 
 		.Process(this->Unsellable)
