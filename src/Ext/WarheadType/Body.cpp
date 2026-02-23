@@ -399,6 +399,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->ReverseEngineer
 		|| this->ReturnWarhead
 		|| this->PenetratesTransport_Level > 0
+		|| this->Taunt
 	);
 
 	char tempBuffer[32];
