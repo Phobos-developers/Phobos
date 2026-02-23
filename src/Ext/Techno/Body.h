@@ -295,6 +295,7 @@ public:
 	static bool SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue, bool alwaysCheckLandTypes);
 	static void ShowPromoteAnim(TechnoClass* pThis);
 	static void ClickedApproachObject(FootClass* pThis, ObjectClass* pObject);
+	static void GiveBounty(TechnoClass* pVictim, TechnoClass* pKiller, int victimCost);
 
 	static bool EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, int distance, bool select);
 	static bool EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool select);

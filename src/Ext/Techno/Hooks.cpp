@@ -1856,3 +1856,14 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5F30, FootClass_GetThreatValue_Wrapper);  // Un
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E417C, Building_GetThreatValue_Wrapper);   // BuildingClass
 
 #pragma endregion
+
+DEFINE_HOOK(0x702E64, TechnoClass_RegisterDestruction_Bounty, 0x6)
+{
+	GET(TechnoClass*, pKiller, EDI);
+	GET(TechnoClass*, pVictim, ESI);
+	GET(int, victimCost, EBP);
+
+	TechnoExt::GiveBounty(pVictim, pKiller, victimCost);
+
+	return 0;
+}

@@ -485,6 +485,18 @@ public:
 
 		Nullable<bool> JumpjetClimbIgnoreBuilding;
 
+		Nullable<bool> Bounty;
+		Nullable<double> Bounty_Multiplier;
+		Nullable<double> Bounty_Multiplier_Vet;
+		Nullable<double> Bounty_Multiplier_Elite;
+		Promotable<int> Bounty_Value;
+		Nullable<double> Bounty_KillerMultiplier;
+		Nullable<double> Bounty_KillerMultiplier_Vet;
+		Nullable<double> Bounty_KillerMultiplier_Elite;
+		Nullable<bool> Bounty_Display;
+		Nullable<AffectedHouse> Bounty_Display_House;
+		Valueable<Point2D> Bounty_Display_Offset;
+
 		Nullable<bool> Unsellable; // Ares 3.0
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
@@ -925,6 +937,18 @@ public:
 			, PenetratesTransport_DamageMultiplier { 1.0 }
 
 			, JumpjetClimbIgnoreBuilding {}
+
+			, Bounty {}
+			, Bounty_Multiplier {}
+			, Bounty_Multiplier_Vet {}
+			, Bounty_Multiplier_Elite {}
+			, Bounty_Value { 0 }
+			, Bounty_KillerMultiplier {}
+			, Bounty_KillerMultiplier_Vet {}
+			, Bounty_KillerMultiplier_Elite {}
+			, Bounty_Display {}
+			, Bounty_Display_House {}
+			, Bounty_Display_Offset { Point2D::Empty }
 
 			, Unsellable {}
 		{ }

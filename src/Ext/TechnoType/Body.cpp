@@ -1160,6 +1160,18 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->JumpjetClimbIgnoreBuilding.Read(exINI, pSection, "JumpjetClimbIgnoreBuilding");
 
+	this->Bounty.Read(exINI, pSection, "Bounty");
+	this->Bounty_Multiplier.Read(exINI, pSection, "Bounty.Multiplier");
+	this->Bounty_Multiplier_Vet.Read(exINI, pSection, "Bounty.Multiplier.Veteran");
+	this->Bounty_Multiplier_Elite.Read(exINI, pSection, "Bounty.Multiplier.Elite");
+	this->Bounty_Value.Read(exINI, pSection, "Bounty.Value.%s");
+	this->Bounty_KillerMultiplier.Read(exINI, pSection, "Bounty.KillerMultiplier");
+	this->Bounty_KillerMultiplier_Vet.Read(exINI, pSection, "Bounty.KillerMultiplier.Veteran");
+	this->Bounty_KillerMultiplier_Elite.Read(exINI, pSection, "Bounty.KillerMultiplier.Elite");
+	this->Bounty_Display.Read(exINI, pSection, "Bounty.Display");
+	this->Bounty_Display_House.Read(exINI, pSection, "Bounty.Display.House");
+	this->Bounty_Display_Offset.Read(exINI, pSection, "Bounty.Display.Offset");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1874,6 +1886,18 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PenetratesTransport_DamageMultiplier)
 
 		.Process(this->JumpjetClimbIgnoreBuilding)
+			
+		.Process(this->Bounty)
+		.Process(this->Bounty_Multiplier)
+		.Process(this->Bounty_Multiplier_Vet)
+		.Process(this->Bounty_Multiplier_Elite)
+		.Process(this->Bounty_Value)
+		.Process(this->Bounty_KillerMultiplier)
+		.Process(this->Bounty_KillerMultiplier_Vet)
+		.Process(this->Bounty_KillerMultiplier_Elite)
+		.Process(this->Bounty_Display)
+		.Process(this->Bounty_Display_House)
+		.Process(this->Bounty_Display_Offset)
 
 		.Process(this->Unsellable)
 		;

@@ -149,6 +149,7 @@ ReflectDamage.Override=                            ; integer
 ReflectDamage.UseInvokerAsOwner=false              ; boolean
 DisableWeapons=false                               ; boolean
 Unkillable=false                                   ; boolean
+Bounty=                                         ; boolean
 LaserTrail.Type=                                   ; LaserTrailType
 Groups=                                            ; comma-separated list of strings (group IDs)
 
@@ -2165,6 +2166,40 @@ TiberiumEater.Anims.Tiberium1=    ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium2=    ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium3=    ; List of AnimationTypes
 TiberiumEater.AnimMove=true       ; boolean
+```
+
+### New bounty logic
+
+- Like ares's bounty logic, but it's easyer to use than ares.
+
+
+In `rulesmd.ini`:
+```ini
+[General]
+Bounty.Enable=false             ; boolean
+Bounty.Enablers=                ; list ot TechnoTypes
+Bounty.Default=false            ; boolean
+Bounty.Multiplier=1.0           ; double
+Bounty.KillerMultiplier=1.0     ; double
+
+[AudioVisual]
+Bounty.Display=false            ; boolean
+Bounty.Display.House=all        ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+
+[SOMETECHNO]                      ; TechnoType
+Bounty=                                     ; boolean
+Bounty.Multiplier=                      ; double
+Bounty.Multiplier.Veteran=          ; double
+Bounty.Multiplier.Elite                 ; double
+Bounty.Value=0                          ; integer
+Bounty.Value.Veteran=               ; integer
+Bounty.Value.Elite=                     ; integer
+Bounty.KillerMultiplier=                ; double
+Bounty.KillerMultiplier.Veteran=    ; double
+Bounty.KillerMultiplier.Elite=          ; double
+Bounty.Display=                         ; boolean
+Bounty.Display.House=               ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Bounty.Display.Offset=0,0           ; X,Y
 ```
 
 ### Weapons fired on warping in / out
