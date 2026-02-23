@@ -3078,6 +3078,18 @@ DEFINE_HOOK(0x6EA870, TeamClass_LiberateMember_Start, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK_AGAIN(0x6F845D, TechnoClass_CanAutoTargetObject_Garrisonable, 0x6);
+DEFINE_HOOK(0x6F833E, TechnoClass_CanAutoTargetObject_Garrisonable, 0x6)
+{
+	GET(TechnoClass*, pThis, EDI);
+	GET(const bool, garrisonable, EAX);
+	GET_STACK(const ThreatType, flags, STACK_OFFSET(0x3C, 0x4));
+
+	const bool isFullMap = (flags & (ThreatType)3) == ThreatType::Normal; // Mission::Hunt and script is allowed
+	R->AL(garrisonable && (isFullMap || pThis->MegaMissionIsAttackMove())); // Attack move is allowed because it can switch to Mission::Attack
+	return 0;
+}
+
 #pragma region SetHealthPercentageFix
 
 DEFINE_HOOK(0x5F5C80, ObjectClass_SetHealthPercentage_Round, 0xA)

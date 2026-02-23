@@ -705,6 +705,7 @@ This page lists all the individual contributions to the project by their author.
   - Global default value for `DefaultToGuardArea`
   - Weapon range finding in cylinder
   - Allow jumpjet climbing ignore building height
+  - Fix an issue where the AI's regular targeting would also target garrisonable buildings
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

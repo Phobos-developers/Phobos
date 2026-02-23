@@ -301,6 +301,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Buildings with `NeedsEngineer=true` are now considered to have threat value of 0 under ownership of `MultiplayPassive=true` houses regardless of their `ThreatPosed` value.
 - Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold.
 - Fixed vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't.
+- Fixed the issue where the AI's regular targeting would also target garrisonable buildings.
 
 ## Fixes / interactions with other extensions
 
