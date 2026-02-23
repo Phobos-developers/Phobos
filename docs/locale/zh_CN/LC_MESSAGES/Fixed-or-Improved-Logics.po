@@ -1220,7 +1220,7 @@ msgstr "修复了处于可视地图范围外的预置战机某些情况下被错
 msgid ""
 "Vehicles overlapping `Wall=true` OverlayTypes no longer display sell "
 "cursor and cannot be sold."
-msgstr ""
+msgstr "图像与 `Wall=true` 的覆盖物重叠的载具上不再会显示出售光标也不再能被出售。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"

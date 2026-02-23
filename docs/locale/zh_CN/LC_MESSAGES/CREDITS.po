@@ -774,7 +774,7 @@ msgid "Owner change during buildup bugfix"
 msgstr "建筑拔起期间变更所属相关 Bug 的修复"
 
 msgid "Wall overlay unit sell exploit fix"
-msgstr ""
+msgstr "围墙卖坦克 Bug 的修复"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
@@ -1660,5 +1660,5 @@ msgid "**Rise of the East community** - extensive playtesting of in-dev features
 msgstr "**东方崛起社区** - 对开发功能的广泛测试"
 
 msgid "**CnCRazer** - Wall overlay unit sell exploit fix"
-msgstr ""
+msgstr "**CnCRazer** - 围墙卖坦克 Bug 的修复"
 
