@@ -888,7 +888,6 @@ msgstr "请提供适当尺寸的截图／GIF／视频，避免冗余内容与过
 msgid "Promoting the work"
 msgstr "促进工作"
 
-#, fuzzy
 msgid ""
 "You can always help us by spreading the word about the project among "
 "people, whether you're an influential youtuber, a C&C related community "
