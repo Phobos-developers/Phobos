@@ -1845,6 +1845,7 @@ msgid ""
 "Fixed the issue where the AI's regular targeting would also target "
 "garrisonable buildings."
 msgstr ""
+"修复了 AI 常规索敌也会瞄准可驻军建筑的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:306
 msgid "Fixes / interactions with other extensions"

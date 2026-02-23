@@ -2997,6 +2997,7 @@ msgid ""
 "Fix an issue where the AI's regular targeting would also target "
 "garrisonable buildings"
 msgstr ""
+"修复了 AI 常规索敌也会瞄准可驻军建筑的问题"
 
 #: ../../../CREDITS.md:710
 msgid "**solar-III (凤九歌)**"

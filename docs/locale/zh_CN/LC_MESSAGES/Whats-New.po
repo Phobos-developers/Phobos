@@ -5690,6 +5690,7 @@ msgid ""
 "Fixed the issue where the AI's regular targeting would also target "
 "garrisonable buildings (by TaranDahl)"
 msgstr ""
+"修复了 AI 常规索敌也会瞄准可驻军建筑的问题（by TaranDahl）"
 
 #: ../../Whats-New.md:1259
 msgid ""
