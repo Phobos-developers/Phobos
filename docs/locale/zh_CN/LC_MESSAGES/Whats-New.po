@@ -1713,6 +1713,11 @@ msgstr ""
 msgid "Customize particle system of parasite logic (by NetsuNegi)"
 msgstr "自定义寄生粒子系统（by NetsuNegi）"
 
+msgid ""
+"[New bounty logic](New-or-Enhanced-Logics.md#new-bounty-logic) (by "
+"NetsuNegi)"
+msgstr "[新版赏金逻辑](New-or-Enhanced-Logics.md#new-bounty-logic)（by NetsuNegi）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 

@@ -58,6 +58,8 @@ This page describes all the engine features that are either new and introduced b
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
   - `Unkillable` can be used to prevent the techno from being killed by taken damage (minimum health will be 1).
+  - `Bounty` can be used to override the option with the same name in technology types, enabling it for technology types that originally did not have the Bounty Hunter ability, or conversely, disabling it.
+    - If multiple AEs with this setting exist simultaneously, the last AE applied and in effect shall prevail.
   - It is possible to set groups for attach effect types by defining strings in `Groups`.
     - Groups can be used instead of types for removing effects and weapon filters.
 
@@ -2170,8 +2172,15 @@ TiberiumEater.AnimMove=true       ; boolean
 
 ### New bounty logic
 
-- Like ares's bounty logic, but it's easyer to use than ares.
-
+- Similar to [Ares' bounty logic](https://ares-developers.github.io/Ares-docs/new/bounty.html), but with more configurable options and easier to use.
+- `Bounty.Enable` is the master switch for the new bounty logic; it must be turned on first to utilize the new bounty system.
+- `Bounty.Enablers` specifies the TechnoTypes that grant the bounty capability, not limited to buildings.
+  - If this list is empty, the bounty logic is enabled without requiring any prerequisite TechnoTypes.
+- `Bounty.Multiplier` is the multiplier applied to the bounty a hunter receives when a victim is killed. This is defined on the victim.
+- `Bounty.Value` is the fixed amount of funds a hunter receives when a victim is killed. This is also defined on the victim.
+  - If `Bounty.Multiplier` is not 0, the base bounty value is the victim's actual cost multiplied by this multiplier; otherwise, the base value is the amount set by `Bounty.Value`.
+- `Bounty.KillerMultiplier` is the multiplier applied to the bounty received when killing a target. This is defined on the hunter.
+- `Bounty.Display` controls whether the bounty amount is shown, displayed on the hunter.
 
 In `rulesmd.ini`:
 ```ini
@@ -2187,19 +2196,23 @@ Bounty.Display=false                ; boolean
 Bounty.Display.House=all            ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 
 [SOMETECHNO]                        ; TechnoType
-Bounty=                             ; boolean
-Bounty.Multiplier=                  ; double
-Bounty.Multiplier.Veteran=          ; double
-Bounty.Multiplier.Elite=            ; double
+Bounty=                             ; boolean, default to [General] -> Bounty.Default
+Bounty.Multiplier=                  ; double, default to [General] -> Bounty.Multiplier
+Bounty.Multiplier.Veteran=          ; double, default to [TechnoType] -> Bounty.Multiplier
+Bounty.Multiplier.Elite=            ; double, default to [TechnoType] -> Bounty.Multiplier
 Bounty.Value=0                      ; integer
-Bounty.Value.Veteran=               ; integer
-Bounty.Value.Elite=                 ; integer
-Bounty.KillerMultiplier=            ; double
-Bounty.KillerMultiplier.Veteran=    ; double
-Bounty.KillerMultiplier.Elite=      ; double
-Bounty.Display=                     ; boolean
-Bounty.Display.House=               ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-Bounty.Display.Offset=0,0           ; X,Y
+Bounty.Value.Veteran=               ; integer, default to [TechnoType] -> Bounty.Value
+Bounty.Value.Elite=                 ; integer, default to [TechnoType] -> Bounty.Value
+Bounty.KillerMultiplier=            ; double, default to [General] -> Bounty.KillerMultiplier
+Bounty.KillerMultiplier.Veteran=    ; double, default to [TechnoType] -> Bounty.KillerMultiplier
+Bounty.KillerMultiplier.Elite=      ; double, default to [TechnoType] -> Bounty.KillerMultiplier
+Bounty.Display=                     ; boolean, default to [AudioVisual] -> Bounty.Display
+Bounty.Display.House=               ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to [AudioVisual] -> Bounty.Display.House
+Bounty.Display.Offset=0,0           ; X,Y, pixels relative to default
+```
+
+```{note}
+Do not use this alongside Ares' bounty logic; although it will not cause a crash, the hunter will receive a bounty from each logic.
 ```
 
 ### Weapons fired on warping in / out

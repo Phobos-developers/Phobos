@@ -1635,6 +1635,9 @@ msgid ""
 "passenger, parasite and hijacker"
 msgstr "修复了 `PassengerDeletion` 未考虑乘客的乘客、寄生者和偷车贼的问题"
 
+msgid "New bounty logic"
+msgstr "新版赏金逻辑"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
