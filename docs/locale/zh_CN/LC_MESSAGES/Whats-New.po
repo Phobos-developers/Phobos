@@ -4767,6 +4767,7 @@ msgid ""
 "Fixed the issue that the move mission of the jumpjet does not end "
 "correctly (by TaranDahl)"
 msgstr ""
+"修复了 Jumpjet 单位无法正确结束移动任务的问题（by TaranDahl）"
 
 msgid ""
 "Fixed shields being able to take damage when the parent TechnoType was "
