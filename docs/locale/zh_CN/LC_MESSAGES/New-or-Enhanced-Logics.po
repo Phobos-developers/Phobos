@@ -4852,7 +4852,7 @@ msgid ""
 "`Bounty.Value`; otherwise, the base bounty value is the victim's "
 "actual cost multiplied by `Bounty.Multiplier`."
 msgstr ""
-"若 `Bounty.Value` 非 0 则以`Bounty.Value` 设定的值作为基准值，否则使用"
+"若 `Bounty.Value` 非 0 则以 `Bounty.Value` 设定的值作为基准值，否则使用"
 "猎物的实际造价乘以 `Bounty.Multiplier` 。"
 
 msgid ""
