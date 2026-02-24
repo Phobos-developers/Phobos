@@ -48,6 +48,9 @@
     <ClCompile Include="src\Commands\ToggleMessageList.cpp" />
     <ClCompile Include="src\Commands\ToggleSWSidebar.cpp" />
     <!-- src\Ext -->
+    <!-- src\Ext\AITriggerType -->
+    <ClCompile Include="src\Ext\AITriggerType\Body.cpp" />
+    <ClCompile Include="src\Ext\AITriggerType\Hooks.cpp" />
     <!-- src\Ext\Aircraft -->
     <ClCompile Include="src\Ext\Aircraft\Body.cpp" />
     <ClCompile Include="src\Ext\Aircraft\Hooks.cpp" />
@@ -326,6 +329,7 @@
     <ClInclude Include="src\Commands\ToggleMessageList.h" />
     <ClInclude Include="src\Commands\ToggleSWSidebar.h" />
     <!-- src\Ext -->
+    <ClInclude Include="src\Ext\AITriggerType\Body.h" />
     <ClInclude Include="src\Ext\Aircraft\Body.h" />
     <ClInclude Include="src\Ext\Anim\Body.h" />
     <ClInclude Include="src\Ext\AnimType\Body.h" />

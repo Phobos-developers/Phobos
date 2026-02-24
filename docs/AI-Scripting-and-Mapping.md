@@ -548,6 +548,25 @@ x=i,n             ; where 18048 <= i <= 18071, n is made up of two parts, the lo
 
 This category is empty for now.
 
+## AI Trigger Condition Types
+
+Phobos adds new AI trigger condition types. AI trigger's condition type is defined as the number in fifth comma-separated parameter in `AITriggerType` declaration.
+
+F.ex
+```ini
+ID=Name,Team1,OwnerHouse,TechLevel,ConditionType,ConditionObject,Comparator,StartingWeight,MinimumWeight,MaximumWeight,IsForSkirmish,unused,Side,IsBaseDefense,Team2,EnabledInE,EnabledInM,EnabledInH
+```
+
+Some condition types operate on or with `ConditionObject` and `Comperator` as well. More information on defining AITriggerTypes can be found on [ModEnc](https://modenc.renegadeprojects.com/AITriggerTypes).
+
+### `8` Amount of Capturable Tech Buildings Exists
+
+Trigger can spring if a number of `Capturable=true` + `NeedsEngineer=true` buildings owned in total by all houses the trigger owner is not allied with satisfies `Comparator`.
+
+### `9` Amount of Bridge Repair Huts Exists
+
+Trigger can spring if a number of `BridgeRepairHut=true` buildings linked to broken bridges owned by first house belonging to `Civilian` side satisfies `Comparator`.
+
 ## Trigger Actions
 
 ### `500` Save Game

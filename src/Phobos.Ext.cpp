@@ -3,6 +3,7 @@
 #include <LoadOptionsClass.h>
 
 #include <Ext/Aircraft/Body.h>
+#include <Ext/AITriggerType/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/Infantry/Body.h>
 #include <Ext/Unit/Body.h>
@@ -280,6 +281,7 @@ using PhobosTypeRegistry = TypeRegistry <
 	// Ext classes
 	AircraftExt,
 	AircraftTypeExt,
+	AITriggerTypeExt,
 	AnimTypeExt,
 	AnimExt,
 	BuildingExt,
