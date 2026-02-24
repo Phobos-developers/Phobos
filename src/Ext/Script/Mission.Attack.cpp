@@ -458,16 +458,21 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 			continue;
 
 		const auto pTargetType = pTarget->GetTechnoType();
+		bool skipImmune = false;
 
-		if (!pTargetType->LegalTarget || pTargetType->Immune)
-			continue;
-
-		// Discard invisible structures
-		if (const auto pTargetBuildingType = abstract_cast<BuildingTypeClass*, true>(pTargetType))
+		if (const auto pTargetBuilding = abstract_cast<BuildingClass*>(pTarget))
 		{
-			if (pTargetBuildingType->InvisibleInGame)
+			// Discard invisible structures
+			if (pTargetBuilding->Type->InvisibleInGame)
 				continue;
+
+			// Skip immunity check for buildings in agent mode.
+			if (agentMode)
+				skipImmune = true;
 		}
+
+		if (!pTargetType->LegalTarget || (!skipImmune && pTargetType->Immune))
+			continue;
 
 		// Note: the TEAM LEADER is picked for this task, be careful with leadership values in your mod
 		const auto pWeaponType = pTechno->GetWeapon(pTechno->SelectWeapon(pTarget))->WeaponType;
