@@ -1555,7 +1555,12 @@ msgid ""
 "of trying to garrison ungarrisonable building before changing target."
 msgstr ""
 "AI 小队的驻军脚本现在可以立即重新计算目标而不是在改变目标前先尝试进驻已经不再可进驻的建筑。"
+
+msgid ""
+"Fixed the bug that `DeploysInto` and `UndeploysInto` will make damaged "
+"techno lose 1 health."
 msgstr ""
+"修复了 `DeploysInto` 和 `UndeploysInto` 会让受损单位失去 1 点生命的 Bug。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"

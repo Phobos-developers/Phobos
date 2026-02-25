@@ -1987,6 +1987,12 @@ msgstr "允许战机执行区域警戒任务且在无机场的情况下不会立
 msgid "Allow merging AOE damage to buildings into one"
 msgstr "允许将建筑所受的 AOE 伤害合而为一"
 
+msgid ""
+"Fix the bug that `DeploysInto` and `UndeploysInto` will make damaged "
+"techno lose 1 health"
+msgstr ""
+"修复了 `DeploysInto` 和 `UndeploysInto` 会让受损单位失去 1 点生命的 Bug"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
