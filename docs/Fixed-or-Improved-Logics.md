@@ -302,6 +302,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold.
 - Fixed vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't.
 - Fixed the issue where the AI's regular targeting would also target garrisonable buildings.
+- Fixed the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health
 
 ## Fixes / interactions with other extensions
 

@@ -2994,7 +2994,7 @@ DEFINE_HOOK(0x4C6F55, EventClass_Execute_Sell, 0x5)
 	enum { SkipGameCode = 0x4C6FA8 };
 
 	GET(TechnoClass*, pTechno, EDI);
-	GET(AbstractType, rtti, EAX);
+	GET(const AbstractType, rtti, EAX);
 
 	if (CanBeSold(pTechno, rtti))
 		pTechno->Sell(-1);

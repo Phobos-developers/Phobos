@@ -606,6 +606,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos
   - Allow the aircraft to enter area guard mission and not crash immediately without any airport
   - Allow merging AOE damage to buildings into one
+  - Fix the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
