@@ -2994,7 +2994,7 @@ DEFINE_HOOK(0x4C6F55, EventClass_Execute_Sell, 0x5)
 	enum { SkipGameCode = 0x4C6FA8 };
 
 	GET(TechnoClass*, pTechno, EDI);
-	GET(AbstractType, rtti, EAX);
+	GET(const AbstractType, rtti, EAX);
 
 	if (CanBeSold(pTechno, rtti))
 		pTechno->Sell(-1);
@@ -3105,3 +3105,43 @@ DEFINE_HOOK(0x4D4221, FootClass_MissionMove_EndCheckFix2, 0x6)
 	R->AL(pThis->Locomotor.GetInterfacePtr()->Is_Moving_Now());
 	return 0x4D422D;
 }
+
+#pragma region SetHealthPercentageFix
+
+DEFINE_HOOK(0x5F5C80, ObjectClass_SetHealthPercentage_Round, 0xA)
+{
+	enum { SkipGameCode = 0x5F5CBA };
+
+	GET(ObjectClass* const, pThis, ECX);
+	GET_STACK(const double, percentage, STACK_OFFSET(0x0, 0x4));
+
+	pThis->Health = (percentage <= 0.0) ? 0 : Math::max(1, Game::F2I(pThis->GetType()->Strength * percentage + 0.5));
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x44A010, BuildingClass_Mission_Selling_SetUnitHealthPercentage, 0xA)
+{
+	enum { SkipGameCode = 0x44A03C };
+
+	GET(UnitClass* const, pUnit, EBX);
+	GET_STACK(const double, percentage, STACK_OFFSET(0xD0, -0xAC));
+
+	pUnit->SetHealthPercentage(percentage);
+	pUnit->EstimatedHealth = pUnit->Health;
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x73992B, UnitClass_TryToDeploy_SetBuildingHealthPercentage, 0x7)
+{
+	enum { SkipGameCode = 0x739956 };
+
+	GET(const UnitClass* const, pThis, EBP);
+	GET(BuildingClass* const, pBuilding, EBX);
+
+	pBuilding->SetHealthPercentage(pThis->GetHealthPercentage());
+	pBuilding->EstimatedHealth = pBuilding->Health;
+	return SkipGameCode;
+}
+
+#pragma endregion
