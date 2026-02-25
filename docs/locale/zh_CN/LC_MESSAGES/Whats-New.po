@@ -2161,6 +2161,12 @@ msgid ""
 "passenger, parasite and hijacker (by NetsuNegi)"
 msgstr "修复了 `PassengerDeletion` 未考虑乘客的乘客、寄生者和偷车贼的问题（by NetsuNegi）"
 
+msgid ""
+"Fixed the issue that power output of building on tooltip won't consider "
+"power enhancer (by NetsuNegi)"
+msgstr ""
+"修复了建筑拓展工具提示信息中的发电量数值未考虑电厂增幅器的问题（by NetsuNegi）"
+
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
 
