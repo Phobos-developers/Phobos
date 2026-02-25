@@ -607,7 +607,6 @@ DeployedSecondaryFireFLH=  ; integer - Forward,Lateral,Height
 - `SlavesFreeSound` is now dehardcoded from `[AudioVisual]` and can be set individually for each enslavable infantry type.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEINFANTRY]        ; InfantryType, with Slaved=yes
 SlavesFreeSound=      ; Sound entry, default to [AudioVisual] -> SlavesFreeSound
@@ -1085,6 +1084,7 @@ Tint.VisibleToHouses=all  ; List of Affected House Enumeration (none|owner/self|
 - `OpenTopped.AllowFiringIfDeactivated` can be used to customize whether or not passengers can fire out when the transport is deactivated (EMP, powered unit etc).
 - `OpenTopped.ShareTransportTarget` controls whether or not the current target of the transport itself is passed to the passengers as well.
 
+In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                              ; TechnoType, transport with OpenTopped=yes
 OpenTopped.RangeBonus=                    ; integer, default to [CombatDamage] -> OpenToppedRangeBonus
