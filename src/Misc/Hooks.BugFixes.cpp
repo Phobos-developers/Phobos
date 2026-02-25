@@ -3090,6 +3090,22 @@ DEFINE_HOOK(0x6F833E, TechnoClass_CanAutoTargetObject_Garrisonable, 0x6)
 	return 0;
 }
 
+// Fix the issue that the movement mission of jumpjet does not end correctly.
+DEFINE_HOOK(0x4D4203, FootClass_MissionMove_EndCheckFix1, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+	R->EAX(pThis->Destination && (!locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor) || pThis->DistanceFrom(pThis->Destination) > Unsorted::LeptonsPerCell));
+	return 0x4D4209;
+}
+
+// Replace IsMoving by IsMovingNow.
+DEFINE_HOOK(0x4D4221, FootClass_MissionMove_EndCheckFix2, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+	R->AL(pThis->Locomotor.GetInterfacePtr()->Is_Moving_Now());
+	return 0x4D422D;
+}
+
 #pragma region SetHealthPercentageFix
 
 DEFINE_HOOK(0x5F5C80, ObjectClass_SetHealthPercentage_Round, 0xA)
