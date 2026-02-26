@@ -504,6 +504,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize particle system of parasite logic
   - Fix an issue where parasites that have infected infantry do not provide a refund when the infected infantry enters a Grinding building
   - Fix the issue that `PassengerDeletion` dont consider passenger's passenger, parasite and hijacker
+  - Fix the bug that power enhance of upgrade plugin depends only on the building it is installed in and is not related to the plugin itself
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
