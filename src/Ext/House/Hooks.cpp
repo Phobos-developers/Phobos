@@ -39,9 +39,10 @@ DEFINE_HOOK(0x44E826, BuildingClass_GetPowerOutput_Enhancer, 0x6)
 {
 	GET(BuildingClass*, pBuilding, ESI);
 	GET(int, powerBonus, EDI);
+	powerBonus = BuildingTypeExt::GetEnhancedPower(pBuilding->Type, powerBonus, pBuilding->Owner);
 
-	R->EDI(BuildingTypeExt::GetEnhancedPower(pBuilding->Type, powerBonus, pBuilding->Owner));
-
+	R->EDI(powerBonus);
+	R->Stack(STACK_OFFSET(0xC, -0x4), powerBonus);
 	return 0;
 }
 
