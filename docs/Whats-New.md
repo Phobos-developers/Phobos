@@ -601,6 +601,10 @@ Vanilla fixes:
 - Fixed the bug that techno in attack move will move to target if it cannot attack it (by NetsuNegi)
 - Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4 (by FlyStar)
 - Buildings with `NeedsEngineer=true` are now considered to have threat value of 0 under ownership of `MultiplayPassive=true` houses regardless of their `ThreatPosed` value (by Starkku)
+- AI team garrison scripts now re-evaluate destination immediately instead of trying to garrison ungarrisonable building before changing target (by Starkku)
+- Fixed the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health (by CrimRecya)
+- Fixed rare cases where paradropped techno killed by falling down (by FlyStar & Ollerus)
+- Fixed the issue that the Jumpjet must end its movement before starting the next mission (by TaranDahl)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -1254,6 +1258,7 @@ Vanilla fixes:
 - Allowed observers to see a selected building's radial indicator (by Trsdy)
 - Allow voxel projectiles to use `AnimPalette` and `FirersPalette` (by NetsuNegi)
 - Fixed the issue where the AI's regular targeting would also target garrisonable buildings (by TaranDahl)
+- Fixed the issue that the move mission of the jumpjet does not end correctly (by TaranDahl)
 - Taunt warhead (by TaranDahl)
 
 Phobos fixes:
