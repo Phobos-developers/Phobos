@@ -42,9 +42,6 @@ int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
 
 int BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse)
 {
-	if (output <= 0)
-		return 0;
-	
 	int amount = 0;
 	float factor = 1.0f;
 
