@@ -38,9 +38,9 @@ DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 DEFINE_HOOK(0x44E826, BuildingClass_GetPowerOutput_Enhancer, 0x6)
 {
 	GET(BuildingClass*, pBuilding, ESI);
-	REF_STACK(int, powerBonus, STACK_OFFSET(0xC, -0x4));
+	GET(int, powerBonus, EDI);
 
-	powerBonus = BuildingTypeExt::GetEnhancedPower(pBuilding->Type, powerBonus, pBuilding->Owner);
+	R->EDI(BuildingTypeExt::GetEnhancedPower(pBuilding->Type, powerBonus, pBuilding->Owner));
 
 	return 0;
 }
