@@ -2212,7 +2212,7 @@ Bounty.Display.Offset=0,0           ; X,Y, pixels relative to default
 ```
 
 ```{note}
-Do not use this alongside Ares' bounty logic; although it will not cause a crash, the hunter will receive a bounty from each logic.
+When this new bounty logic is enabled, Ares' bounty logic will be disabled.
 ```
 
 ### Weapons fired on warping in / out
