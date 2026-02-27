@@ -542,6 +542,7 @@ New:
 - Allow jumpjet climbing ignore building height (by TaranDahl)
 - [Allow draw SuperWeapon timer as percentage](User-Interface.md#allow-draw-superweapon-timer-as-percentage) (by NetsuNegi)
 - Customize particle system of parasite logic (by NetsuNegi)
+- [Taunt warhead](New-or-Enhanced-Logics.md#taunt-warhead) (by TaranDahl)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -1259,7 +1260,6 @@ Vanilla fixes:
 - Allow voxel projectiles to use `AnimPalette` and `FirersPalette` (by NetsuNegi)
 - Fixed the issue where the AI's regular targeting would also target garrisonable buildings (by TaranDahl)
 - Fixed the issue that the move mission of the jumpjet does not end correctly (by TaranDahl)
-- Taunt warhead (by TaranDahl)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)

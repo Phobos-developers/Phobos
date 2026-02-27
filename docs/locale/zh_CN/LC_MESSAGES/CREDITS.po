@@ -2344,7 +2344,7 @@ msgstr ""
 "修复了 Jumpjet 单位在开始下一个任务前必须先停止移动的问题"
 
 msgid "Taunt warhead"
-msgstr ""
+msgstr "嘲讽弹头"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"

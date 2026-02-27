@@ -1713,6 +1713,9 @@ msgstr ""
 msgid "Customize particle system of parasite logic (by NetsuNegi)"
 msgstr "自定义寄生粒子系统（by NetsuNegi）"
 
+msgid "[Taunt warhead](New-or-Enhanced-Logics.md#taunt-warhead) (by TaranDahl)"
+msgstr "[嘲讽弹头](New-or-Enhanced-Logics.md#taunt-warhead)（by TaranDahl）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
@@ -4791,9 +4794,6 @@ msgid ""
 "Fixed the issue that the move mission of the jumpjet does not end "
 "correctly (by TaranDahl)"
 msgstr "修复了 Jumpjet 单位无法正确结束移动任务的问题（by TaranDahl）"
-
-msgid "Taunt warhead (by TaranDahl)"
-msgstr ""
 
 msgid ""
 "Fixed shields being able to take damage when the parent TechnoType was "
