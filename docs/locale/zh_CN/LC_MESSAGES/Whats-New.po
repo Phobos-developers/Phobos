@@ -2036,6 +2036,7 @@ msgid ""
 "Fixed rare cases where paradropped techno killed by falling down (by "
 "FlyStar & Ollerus)"
 msgstr ""
+"修复了被空降单位会被摔死的罕见问题（FlyStar & Ollerus）"
 
 msgid ""
 "Fixed the issue that the Jumpjet must end its movement before starting "

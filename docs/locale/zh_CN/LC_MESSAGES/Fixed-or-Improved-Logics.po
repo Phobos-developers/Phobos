@@ -1563,6 +1563,7 @@ msgstr ""
 
 msgid "Fixed rare cases where paradropped techno killed by falling down."
 msgstr ""
+"修复了被空降单位会被摔死的罕见问题"
 
 msgid ""
 "Fixed the issue that the Jumpjet must end its movement before starting "
