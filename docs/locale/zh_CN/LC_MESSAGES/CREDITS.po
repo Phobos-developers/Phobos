@@ -2341,6 +2341,7 @@ msgid ""
 "Fix the issue that the Jumpjet must end its movement before starting the "
 "next mission"
 msgstr ""
+"修复了 Jumpjet 单位在开始下一个任务前必须先停止移动的问题"
 
 msgid "Taunt warhead"
 msgstr ""
