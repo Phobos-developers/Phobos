@@ -10,6 +10,8 @@
 #include "Utilities/AresHelper.h"
 #include "Utilities/Parser.h"
 
+#include <Ext/Rules/Body.h>
+
 #ifndef IS_RELEASE_VER
 bool HideWarning = false;
 #endif
@@ -268,6 +270,10 @@ void Phobos::ApplyOptimizations()
 	// Disable BuildingClass_AI_Radiation
 	if (Phobos::Optimizations::DisableRadDamageOnBuildings)
 		Patch::Apply_RAW(0x43FB23, { 0x53, 0x55, 0x56, 0x8B, 0xF1 });
+
+	// Disable Ares's bounty logic
+	if (RulesExt::Global()->Bounty_Enable)
+		Patch::Apply_RAW(0x702E64, { 0x8B, 0x8F, 0x1C, 0x2, 0x0, 0x0 });
 
 	if (!SessionClass::IsMultiplayer())
 	{
