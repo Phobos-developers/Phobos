@@ -4495,6 +4495,14 @@ msgid ""
 "weapons, which makes type selection on IFVs work the same as before."
 msgstr "若设为 false 则 `WeaponGroupAsN` 将默认为 0 以保持原有行为。"
 
+msgid ""
+"This behavior is designed to be toggleable by users. For now you can only"
+" do that externally via client or manually."
+msgstr "此行为设计为可由用户切换。目前你只能通过客户端或进行手动设置。"
+
+msgid "In `RA2MD.INI`:"
+msgstr "在 `RA2MD.INI`："
+
 msgid "Customizing crushing tilt and slowdown"
 msgstr "自定义碾压倾斜和减速"
 
