@@ -4870,7 +4870,7 @@ msgstr ""
 msgid ""
 "When this new bounty logic is enabled, Ares' bounty logic will be disabled."
 msgstr ""
-"当这个新赏金逻辑启用时，Ares的赏金逻辑会被禁用。"
+"当这个新赏金逻辑启用时，Ares 的赏金逻辑会被禁用。"
 
 msgid "Weapons fired on warping in / out"
 msgstr "武器在传送时开火"
