@@ -32,34 +32,6 @@ DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 	return 0;
 }
 
-// Power Plant Enhancer #131
-#pragma region Power Plant Enhancer
-
-DEFINE_HOOK(0x44E826, BuildingClass_GetPowerOutput_Enhancer, 0x6)
-{
-	GET(BuildingClass*, pBuilding, ESI);
-	GET(int, powerBonus, EDI);
-	powerBonus = BuildingTypeExt::GetEnhancedPower(pBuilding->Type, powerBonus, pBuilding->Owner);
-
-	R->EDI(powerBonus);
-	R->Stack(STACK_OFFSET(0xC, -0x4), powerBonus);
-	return 0;
-}
-
-DEFINE_HOOK(0x44E841, BuildingClass_GetPowerOutput_Upgrade_Enhancer, 0x6)
-{
-	enum { SkipGameCode = 0x44E847 };
-
-	GET(BuildingClass*, pBuilding, ESI);
-	GET(BuildingTypeClass*, pUpgrade, EAX);
-	GET(int, powerBonus, EDI);
-
-	R->EDI(powerBonus + BuildingTypeExt::GetEnhancedPower(pUpgrade, pUpgrade->PowerBonus, pBuilding->Owner));
-	return SkipGameCode;
-}
-
-#pragma endregion
-
 // Trigger power recalculation on gain/loss of any techno, not just buildings.
 DEFINE_HOOK_AGAIN(0x5025F0, HouseClass_RegisterGain, 0x5) // RegisterLoss
 DEFINE_HOOK(0x502A80, HouseClass_RegisterGain, 0x8)
