@@ -3145,3 +3145,22 @@ DEFINE_HOOK(0x73992B, UnitClass_TryToDeploy_SetBuildingHealthPercentage, 0x7)
 }
 
 #pragma endregion
+
+// According to the code comments of the open-sourced RA1, I believe that the check of IsMovingNow here is to prevent foots from starting a new mission at an unstoppable position in the cell.
+// Then it is obvious that Jumpjet should not perform this check because Jumpjet's movement does not take the cell into account.
+DEFINE_HOOK_AGAIN(0x521BA7, FootClass_ReadyToNextMission_MovingCheck, 0x6); // Infantry
+DEFINE_HOOK(0x7442D6, FootClass_ReadyToNextMission_MovingCheck, 0x6) // Unit
+{
+	GET(FootClass*, pThis, ESI);
+	const auto pLoco = pThis->Locomotor.GetInterfacePtr();
+	R->AL(!locomotion_cast<JumpjetLocomotionClass*>(pLoco) && pLoco->Is_Moving_Now());
+	return R->Origin() + 0xF;
+}
+
+// Although this may seem useless because locomotor also checks IsFallingDown. But just in case.
+DEFINE_HOOK(0x7442AB, UnitClass_ReadyToNextMission_FallingDown, 0x6)
+{
+	enum { ReturnZero = 0x744383 };
+	GET(FootClass*, pThis, ESI);
+	return pThis->IsFallingDown ? ReturnZero : 0;
+}

@@ -211,6 +211,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->PenetratesTransport_Level > 0 && damage)
 		this->ApplyPenetratesTransport(pTarget, pOwner, pHouse, coords, damage, distance);
 
+	if (this->Taunt && pOwner)
+		pTarget->Override_Mission(Mission::Attack, pOwner, nullptr);
+
 	// This might change the target's armor type
 	this->ApplyShieldModifiers(pTarget);
 

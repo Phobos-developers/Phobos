@@ -2766,6 +2766,18 @@ SpawnsCrate(N).Type=     ; Powerup crate type enum (money|unit|healbase|cloak|ex
 SpawnsCrate(N).Weight=1  ; integer
 ```
 
+### Taunt warhead
+
+- Now you can use the following tags to make the warhead "taunt" the target, override its current mission, and force it to attack the source of the damage.
+  - The taunted target will behaves like doing retaliation.
+  - If there is no source unit for the damage, the taunt will not take effect.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]    ; WarheadType
+Taunt=false      ; boolean
+```
+
 ### Toggle per-target warhead effects apply timing
 
 - Now you can set the following flag to `false` to apply the **Phobos** warhead effects that take effect on each target when taking damage, rather than when the projectiles detonate.

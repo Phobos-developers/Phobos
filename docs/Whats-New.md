@@ -603,6 +603,8 @@ Vanilla fixes:
 - Buildings with `NeedsEngineer=true` are now considered to have threat value of 0 under ownership of `MultiplayPassive=true` houses regardless of their `ThreatPosed` value (by Starkku)
 - AI team garrison scripts now re-evaluate destination immediately instead of trying to garrison ungarrisonable building before changing target (by Starkku)
 - Fixed the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health (by CrimRecya)
+- Fixed rare cases where paradropped techno killed by falling down (by FlyStar & Ollerus)
+- Fixed the issue that the Jumpjet must end its movement before starting the next mission (by TaranDahl)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -633,6 +635,7 @@ Phobos fixes:
 - Fixed the issue where `AIChronoSphereSW` and `AIChronoWarpSW` did not function correctly with AI scripts 56 and 57 (by FlyStar)
 - Fixed an issue where parasites that have infected infantry do not provide a refund when the infected infantry enters a Grinding building (by NetsuNegi)
 - Fixed the issue that `PassengerDeletion` dont consider passenger's passenger, parasite and hijacker (by NetsuNegi)
+- Fixed the issue that power output of building on tooltip won't consider power enhancer (by NetsuNegi)
 - Fixed the bug that the upgrade building's power-enhancing effect depends only on its parent building and is not related to the upgrade building itself (by NetsuNegi)
 
 Fixes / interactions with other extensions:
@@ -1258,6 +1261,7 @@ Vanilla fixes:
 - Allow voxel projectiles to use `AnimPalette` and `FirersPalette` (by NetsuNegi)
 - Fixed the issue where the AI's regular targeting would also target garrisonable buildings (by TaranDahl)
 - Fixed the issue that the move mission of the jumpjet does not end correctly (by TaranDahl)
+- Taunt warhead (by TaranDahl)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
