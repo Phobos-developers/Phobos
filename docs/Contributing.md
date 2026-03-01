@@ -19,10 +19,20 @@ Reverse-engineering is a complex task, but don't be discouraged, if you want to 
 
 When you found out how the engine works and where you need to extend the logic you'd need to develop the code to achieve what you want. This is done by declaring a *hook* - some code which would be executed after the program execution reaches the certain address in binary. All the development is done in C++ using [YRpp](https://github.com/Phobos-developers/YRpp) (which provides a way to interact with YR code and inject code using Syringe) and usually [Visual Studio 2017/2019](https://visualstudio.microsoft.com) or newer.
 
+### Quickstart guide for AI-assisted development
+
+The repository includes a [Copilot instructions file](https://github.com/Phobos-developers/Phobos/blob/develop/.github/copilot-instructions.md) that serves as a quickstart guide for the project - it covers building, project structure, hook patterns, patching macros, YRpp usage and more. It is automatically picked up by GitHub Copilot and similar AI coding agents, but is also a useful read for any new contributor looking to understand the codebase quickly.
+
+We encourage contributors to try AI coding agents (such as GitHub Copilot in agent mode, Cursor, or similar tools) to assist with development tasks - writing hooks, reviewing code, generating documentation, and exploring the disassembly via [IDA Pro MCP](https://github.com/mrexodia/ida-pro-mcp). Agent skills (such as the [IDAPython skill](https://skills.sh/mrexodia/ida-pro-mcp/idapython)) can further extend agent capabilities with domain-specific knowledge. AI agents can significantly speed up routine work.
+
+```{note}
+AI agents are a tool to assist development, but they are not perfect and can make mistakes. Always review and test any code generated or modified by an AI agent to ensure it meets the project's standards and works correctly. **You are responsible for the final code**, not the tool you use to write it.
+```
+
 (contributing-changes-to-the-project)=
 ## Contributing changes to the project
 
-To ensure harmonious coexistence, developers and maintainers should first read our [Project guidelines and policies](/docs/Project-guidelines-and-policies.md).
+To ensure harmonious coexistence, developers and maintainers should first read our [Project guidelines and policies](Project-guidelines-and-policies.md).
 
 To contribute a feature or some sort of a change you you would need a Git client (I recommend [GitKraken](https://www.gitkraken.com/) personally). Fork, clone the repo, preferably make a new branch, then edit/add the code or whatever you want to contribute. Commit, push, start a pull request, wait for it to get reviewed, or merged.
 
@@ -64,7 +74,7 @@ Knowledge on how to mod YR and having an inquisitive mind, being attentive to de
 
 ## Writing docs
 
-No explanation needed. If you fully understand how some stuff in Phobos works you can help by writing a detailed description in these docs, or you can just improve the pieces of docs you think are not detailed enough.
+No explanation needed. If you fully understand how some stuff in Phobos works you can help by writing a detailed description in these docs, or you can just improve the pieces of docs you think are not detailed enough. AI coding agents can also help with writing and improving documentation - see [Quickstart guide for AI-assisted development](#quickstart-guide-for-ai-assisted-development) above.
 
 The docs are written in Markdown (which is dead simple, [learn MD in 60 seconds](https://commonmark.org/help/); if you need help on extended syntax have a look at [MyST parser reference](https://myst-parser.readthedocs.io/)). We use [Sphinx](https://sphinx-doc.org/) to build docs, [Read the Docs](https://readthedocs.io/) to host.
 

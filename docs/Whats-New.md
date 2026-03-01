@@ -542,6 +542,7 @@ New:
 - Allow jumpjet climbing ignore building height (by TaranDahl)
 - [Allow draw SuperWeapon timer as percentage](User-Interface.md#allow-draw-superweapon-timer-as-percentage) (by NetsuNegi)
 - Customize particle system of parasite logic (by NetsuNegi)
+- [Taunt warhead](New-or-Enhanced-Logics.md#taunt-warhead) (by TaranDahl)
 - Custom hover vehicles shutdown drowning death (by FlyStar)
 
 Vanilla fixes:
@@ -602,9 +603,10 @@ Vanilla fixes:
 - Fixed the bug that techno in attack move will move to target if it cannot attack it (by NetsuNegi)
 - Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4 (by FlyStar)
 - Buildings with `NeedsEngineer=true` are now considered to have threat value of 0 under ownership of `MultiplayPassive=true` houses regardless of their `ThreatPosed` value (by Starkku)
+- Fixed the issue where the AI's regular targeting would also target garrisonable buildings (by TaranDahl)
+- Fixed the issue that the move mission of the jumpjet does not end correctly (by TaranDahl)
 - AI team garrison scripts now re-evaluate destination immediately instead of trying to garrison ungarrisonable building before changing target (by Starkku)
 - Fixed the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health (by CrimRecya)
-- Fixed rare cases where paradropped techno killed by falling down (by FlyStar & Ollerus)
 - Fixed the issue that the Jumpjet must end its movement before starting the next mission (by TaranDahl)
 - Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent (by FlyStar)
 
@@ -1261,9 +1263,6 @@ Vanilla fixes:
 - Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines (by Starkku)
 - Allowed observers to see a selected building's radial indicator (by Trsdy)
 - Allow voxel projectiles to use `AnimPalette` and `FirersPalette` (by NetsuNegi)
-- Fixed the issue where the AI's regular targeting would also target garrisonable buildings (by TaranDahl)
-- Fixed the issue that the move mission of the jumpjet does not end correctly (by TaranDahl)
-- Taunt warhead (by TaranDahl)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
