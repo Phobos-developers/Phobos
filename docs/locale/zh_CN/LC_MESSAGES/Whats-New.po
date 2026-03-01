@@ -2024,6 +2024,16 @@ msgstr ""
 "`ThreatPosed` 设置始终被视为 0（by Starkku）"
 
 msgid ""
+"Fixed the issue where the AI's regular targeting would also target "
+"garrisonable buildings (by TaranDahl)"
+msgstr "修复了 AI 常规索敌也会瞄准可驻军建筑的问题（by TaranDahl）"
+
+msgid ""
+"Fixed the issue that the move mission of the jumpjet does not end "
+"correctly (by TaranDahl)"
+msgstr "修复了 Jumpjet 单位无法正确结束移动任务的问题（by TaranDahl）"
+
+msgid ""
 "AI team garrison scripts now re-evaluate destination immediately instead "
 "of trying to garrison ungarrisonable building before changing target (by "
 "Starkku)"
@@ -4790,16 +4800,6 @@ msgid ""
 "Allow voxel projectiles to use `AnimPalette` and `FirersPalette` (by "
 "NetsuNegi)"
 msgstr "允许了 Voxel 抛射体使用 `AnimPalette` 和 `FirersPalette`（by NetsuNegi）"
-
-msgid ""
-"Fixed the issue where the AI's regular targeting would also target "
-"garrisonable buildings (by TaranDahl)"
-msgstr "修复了 AI 常规索敌也会瞄准可驻军建筑的问题（by TaranDahl）"
-
-msgid ""
-"Fixed the issue that the move mission of the jumpjet does not end "
-"correctly (by TaranDahl)"
-msgstr "修复了 Jumpjet 单位无法正确结束移动任务的问题（by TaranDahl）"
 
 msgid ""
 "Fixed shields being able to take damage when the parent TechnoType was "
