@@ -898,22 +898,29 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 
 			const auto pType = pTechno->GetTechnoType();
 			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+			int damage = 0;
 
-			if ((!pTypeExt->FallingDownDamage_AllowEMP && pTechno->EMPLockRemaining > 0) ||
-				!pCell->IsClearToMove(pType->SpeedType, true, true, -1, pType->MovementZone, -1, onBridge))
+			if (!pCell->IsClearToMove(pType->SpeedType, true, true, -1, pType->MovementZone, -1, onBridge))
 			{
-				int damage = pThis->Health;
+				damage = pThis->Health;
 				pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
 
 				return SkipGameCode;
 			}
 
-			int damage = 0;
 			const LandType landType = pCell->LandType;
 			const bool inWater = !onBridge && (landType == LandType::Water || landType == LandType::Beach);
 
 			if (!onParachuted)
 			{
+				if (!pTypeExt->FallingDownDamage_AllowEMP && pTechno->EMPLockRemaining > 0)
+				{
+					damage = pThis->Health;
+					pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+
+					return SkipGameCode;
+				}
+
 				double ratio = 0.0;
 
 				if (inWater)
