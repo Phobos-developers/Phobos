@@ -288,6 +288,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizable paradrop missions
   - Guard range customizations
   - Wall overlay unit sell exploit fix
+  - Fix vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't
   - GapGen + SpySat desync fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
@@ -414,6 +415,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals
   - Fix an issue where mining vehicles could not move after leaving a tank bunker
   - Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4
+  - Fix rare cases where paradropped techno killed by falling down
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -504,6 +506,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize particle system of parasite logic
   - Fix an issue where parasites that have infected infantry do not provide a refund when the infected infantry enters a Grinding building
   - Fix the issue that `PassengerDeletion` dont consider passenger's passenger, parasite and hijacker
+  - Fix the issue that power output of building on tooltip won't consider power enhancer
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -606,6 +609,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos
   - Allow the aircraft to enter area guard mission and not crash immediately without any airport
   - Allow merging AOE damage to buildings into one
+  - Fix the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -633,6 +637,7 @@ This page lists all the individual contributions to the project by their author.
   - AutoDeath upon ownership change
   - Maximum amount for power plant enhancer
   - Return warhead
+  - Fix rare cases where paradropped techno killed by falling down
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
@@ -705,6 +710,10 @@ This page lists all the individual contributions to the project by their author.
   - Global default value for `DefaultToGuardArea`
   - Weapon range finding in cylinder
   - Allow jumpjet climbing ignore building height
+  - Fix an issue where the AI's regular targeting would also target garrisonable buildings
+  - Fix an issue that the move mission of the jumpjet does not end correctly
+  - Fix the issue that the Jumpjet must end its movement before starting the next mission
+  - Taunt warhead
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

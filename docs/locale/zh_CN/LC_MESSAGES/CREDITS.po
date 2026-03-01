@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-14 21:57+0800\n"
+"POT-Creation-Date: 2026-02-23 06:09+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -855,6 +855,15 @@ msgstr "自定义空降单位任务"
 msgid "Guard range customizations"
 msgstr "自定义警戒范围"
 
+msgid "Wall overlay unit sell exploit fix"
+msgstr "围墙卖坦克 Bug 的修复"
+
+msgid ""
+"Fix vehicles disguised as trees incorrectly displaying veterancy insignia"
+" when they shouldn't"
+msgstr ""
+"修复了伪装成树的载具错误显示出军衔（能打人的精英树）的问题"
+
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
 
@@ -1624,8 +1633,13 @@ msgstr "修复了被寄生步兵进入部队回收站后寄生者不会一同返
 msgid ""
 "Fix the issue that `PassengerDeletion` dont consider passenger's "
 "passenger, parasite and hijacker"
+msgstr "修复了 `PassengerDeletion` 未考虑乘客的乘客、寄生者和偷车贼的问题"
+
+msgid ""
+"Fix the issue that power output of building on tooltip won't consider "
+"power enhancer"
 msgstr ""
-"修复了 `PassengerDeletion` 未考虑乘客的乘客、寄生者和偷车贼的问题"
+"修复了建筑拓展工具提示信息中的发电量数值未考虑电厂增幅器的问题"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
@@ -2493,4 +2507,7 @@ msgid ""
 "**11EJDE11** - Prevent mpdebug number from being drawn when visibility "
 "toggled off"
 msgstr "**11EJDE11** - 阻止 MPDEBUG 数字在关闭可见时仍然绘制"
+
+msgid "**CnCRazer** - Wall overlay unit sell exploit fix"
+msgstr "**CnCRazer** - 围墙卖坦克 Bug 的修复"
 
