@@ -82,9 +82,10 @@ msgstr "向项目提交更改"
 
 msgid ""
 "To ensure harmonious coexistence, developers and maintainers should first"
-" read our [Project guidelines and policies](/docs/Project-guidelines-and-"
+" read our [Project guidelines and policies](Project-guidelines-and-"
 "policies.md)."
 msgstr ""
+"为了确保顺畅协作，开发者和维护者应首先阅读我们的 [项目准则与政策](Project-guidelines-and-policies.md)。"
 
 msgid ""
 "To contribute a feature or some sort of a change you you would need a Git"

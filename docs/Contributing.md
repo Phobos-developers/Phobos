@@ -22,7 +22,7 @@ When you found out how the engine works and where you need to extend the logic y
 (contributing-changes-to-the-project)=
 ## Contributing changes to the project
 
-To ensure harmonious coexistence, developers and maintainers should first read our [Project guidelines and policies](/docs/Project-guidelines-and-policies.md).
+To ensure harmonious coexistence, developers and maintainers should first read our [Project guidelines and policies](Project-guidelines-and-policies.md).
 
 To contribute a feature or some sort of a change you you would need a Git client (I recommend [GitKraken](https://www.gitkraken.com/) personally). Fork, clone the repo, preferably make a new branch, then edit/add the code or whatever you want to contribute. Commit, push, start a pull request, wait for it to get reviewed, or merged.
 

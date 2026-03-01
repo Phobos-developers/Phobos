@@ -59,6 +59,7 @@ msgstr "这些角色根据拉取请求的复杂性和贡献者的经验进行分
 
 msgid "Suggested reviewing amount"
 msgstr ""
+"关于审查工作量的建议"
 
 #, python-format
 msgid ""
@@ -69,11 +70,13 @@ msgid ""
 "125%-150% of they submit). Only in this way can we continuously reduce "
 "the number of backlogged PRs."
 msgstr ""
+"维护者审查的代码量应大致与其自身提交的 PR 代码量相当。然而，考虑到目前已有大量 PR 积压，我们建议维护者审查的代码量应超过其提交量（例如，达到其提交量的 125% 至 150%）。唯有如此，我们才能持续减少积压的 PR 数量。"
 
 msgid ""
 "At present this is not a hard rule, but we hope that each maintainer can "
 "try their best to achieve this."
 msgstr ""
+"目前这并非硬性规定，但我们希望每位维护者都能尽力遵循这一建议。"
 
 msgid "Types of contributions"
 msgstr "贡献类型"
