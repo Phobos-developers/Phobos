@@ -912,7 +912,10 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 			if ((!pTypeExt->FallingDownDamage_AllowEMP && pTechno->EMPLockRemaining > 0) ||
 				!pCell->IsClearToMove(pType->SpeedType, true, true, -1, pType->MovementZone, -1, onBridge))
 			{
-				return 0;
+				int damage = pThis->Health;
+				pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+
+				return SkipGameCode;
 			}
 
 			int damage = 0;
@@ -937,7 +940,7 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 			}
 
 			if (damage == 0 ||
-				pThis->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, true, nullptr) != DamageState::NowDead)
+				pThis->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr) != DamageState::NowDead)
 			{
 				pThis->IsABomb = false;
 				const auto abs = pThis->WhatAmI();
