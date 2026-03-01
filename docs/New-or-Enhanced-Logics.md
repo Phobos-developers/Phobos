@@ -2228,7 +2228,7 @@ Ammo.DeployUnlockMinimumAmount=-1  ; integer
 Ammo.DeployUnlockMaximumAmount=-1  ; integer
 ```
 
-### Custom hover unit shutdown drowning death
+### Custom hover vehicles shutdown drowning death
 
 - `HoverDrowned` allows customization of whether hover vehicles crash and cause death when deactivated.
 
