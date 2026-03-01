@@ -606,7 +606,6 @@ Vanilla fixes:
 - Fixed the issue that the move mission of the jumpjet does not end correctly (by TaranDahl)
 - AI team garrison scripts now re-evaluate destination immediately instead of trying to garrison ungarrisonable building before changing target (by Starkku)
 - Fixed the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health (by CrimRecya)
-- Fixed rare cases where paradropped techno killed by falling down (by FlyStar & Ollerus)
 - Fixed the issue that the Jumpjet must end its movement before starting the next mission (by TaranDahl)
 
 Phobos fixes:
