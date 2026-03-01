@@ -28,6 +28,10 @@ This page describes every change in Phobos that wasn't categorized into a proper
 - There's a [new hotkey](User-Interface.md#toggle-frame-by-frame-mode) to execute the game frame by frame for development usage.
   - You can switch to frame by frame mode and then use frame step in command to forward 1, 5, 10, 15, 30 or 60 frames by one hit.
 
+### Logging missing audio files (samples)
+
+- While parsing `soundmd.ini`, Phobos prints information in debug log about any missing audio files (samples).
+
 ### Save variables to file
 
 - There's a [new hotkey](User-Interface.md#save-variables) to write all local variables to `locals.ini` and all global variables to `globals.ini`. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`.

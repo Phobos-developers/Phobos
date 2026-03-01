@@ -1,13 +1,12 @@
+#include "Constructs.h"
 #include "GeneralUtils.h"
 #include "Debug.h"
 #include <Theater.h>
-#include <ScenarioClass.h>
 #include <BitFont.h>
 
 #include <Ext/Rules/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Misc/FlyingStrings.h>
-#include <Utilities/Constructs.h>
 #include "AresHelper.h"
 
 bool GeneralUtils::IsValidString(const char* str)
@@ -86,10 +85,10 @@ struct DummyTypeExtHere
 
 const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor armorType)
 {
-	if (!AresHelper::CanUseAres)
-		return pWH->Verses[static_cast<int>(armorType)];
+	if (AresHelper::CanUseAres)
+		return reinterpret_cast<DummyTypeExtHere*>(*(uintptr_t*)((char*)pWH + 0x1CC))->Verses[static_cast<int>(armorType)].Verses;
 
-	return reinterpret_cast<DummyTypeExtHere*>(*(uintptr_t*)((char*)pWH + 0x1CC))->Verses[static_cast<int>(armorType)].Verses;
+	return static_cast<double>(MapClass::GetTotalDamage(100, pWH, armorType, 0)) / 100.0;
 }
 
 const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, TechnoClass* pThis, TechnoTypeClass* pType)

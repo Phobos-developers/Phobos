@@ -1,14 +1,8 @@
 #include "AttachEffectClass.h"
-#include "Memory.h"
 
-#include <AnimClass.h>
-#include <BuildingClass.h>
-
-#include <Ext/TEvent/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Utilities/EnumFunctions.h>
 
 std::vector<AttachEffectClass*> AttachEffectClass::Array;
 
@@ -248,10 +242,6 @@ void AttachEffectClass::AI()
 
 	this->CloakCheck();
 	this->OnlineCheck();
-
-	if (!this->Animation && this->CanShowAnim())
-		this->CreateAnim();
-
 	this->AnimCheck();
 }
 
@@ -262,9 +252,7 @@ void AttachEffectClass::AI_Temporal()
 		this->IsUnderTemporal = true;
 
 		this->CloakCheck();
-
-		if (!this->Animation && this->CanShowAnim())
-			this->CreateAnim();
+		this->AnimCheck();
 
 		if (this->Animation)
 		{
@@ -287,8 +275,6 @@ void AttachEffectClass::AI_Temporal()
 				break;
 			}
 		}
-
-		this->AnimCheck();
 	}
 }
 
@@ -302,15 +288,14 @@ void AttachEffectClass::AnimCheck()
 		{
 			this->KillAnim();
 			this->IsAnimHidden = true;
-		}
-		else
-		{
-			this->IsAnimHidden = false;
-
-			if (!this->Animation && this->CanShowAnim())
-				this->CreateAnim();
+			return;
 		}
 	}
+
+	this->IsAnimHidden = false;
+
+	if (!this->Animation && this->CanShowAnim())
+		this->CreateAnim();
 }
 
 void AttachEffectClass::OnlineCheck()
@@ -615,7 +600,7 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 		return false;
 
 	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-	auto const pTargetType = pTarget->GetTechnoType();
+	auto const pTargetType = pTargetExt->TypeExtData->OwnerObject();
 	int attachedCount = 0;
 	bool markForRedraw = false;
 	double ROFModifier = 1.0;
@@ -671,9 +656,10 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 /// <param name="pInvoker">Techno that invoked the attachment.</param>
 /// <param name="pSource">Source object for the attachment e.g a Warhead or Techno.</param>
 /// <param name="attachParams">Attachment parameters.</param>
+/// <param name="checkCumulative">Whether cumulative AE needs to be processed.</param>
 /// <returns>The created and attached AttachEffect if successful, nullptr if not.</returns>
 AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, TechnoTypeClass* pTargetType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs,
-	HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachParams const& attachParams)
+	HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachParams const& attachParams, bool checkCumulative)
 {
 	if (!pType)
 		return nullptr;
@@ -686,13 +672,15 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 			return nullptr;
 	}
 
-	if (!EnumFunctions::IsTechnoEligible(pTarget, pType->AffectTargets, true))
+	if (!EnumFunctions::IsTechnoEligible(pTarget, pType->AffectsTarget, true))
 		return nullptr;
 
 	if ((!pType->AffectTypes.empty() && !pType->AffectTypes.Contains(pTargetType)) || pType->IgnoreTypes.Contains(pTargetType))
 		return nullptr;
 
 	int currentTypeCount = 0;
+	int currentSourceCount = 0;
+	const bool cumulative = pType->Cumulative && checkCumulative;
 	AttachEffectClass* match = nullptr;
 	std::vector<AttachEffectClass*> cumulativeMatches;
 	cumulativeMatches.reserve(targetAEs.size());
@@ -704,18 +692,33 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 		if (attachEffect->GetType() == pType)
 		{
 			currentTypeCount++;
-			match = attachEffect;
 
-			if (!pType->Cumulative)
-				break;
-			else if (!attachParams.CumulativeRefreshSameSourceOnly || (attachEffect->Source == pSource && attachEffect->Invoker == pInvoker))
-				cumulativeMatches.push_back(attachEffect);
+			if (!cumulative)
+			{
+				attachEffect->RefreshDuration(attachParams.DurationOverride);
+				AttachEffectTypeClass::HandleEvent(pTarget);
+				return nullptr;
+			}
+			else
+			{
+				if (attachEffect->IsFromSource(pInvoker, pSource))
+					currentSourceCount++;
+
+				if (!attachParams.CumulativeRefreshSameSourceOnly || attachEffect->IsFromSource(pInvoker, pSource))
+				{
+					cumulativeMatches.push_back(attachEffect);
+
+					if (!match || attachEffect->Duration < match->Duration)
+						match = attachEffect;
+				}
+			}
 		}
 	}
 
-	if (cumulativeMatches.size() > 0)
+	if (cumulative)
 	{
-		if (pType->Cumulative_MaxCount >= 0 && currentTypeCount >= pType->Cumulative_MaxCount)
+		if ((pType->Cumulative_MaxCount >= 0 && currentTypeCount >= pType->Cumulative_MaxCount)
+			|| (attachParams.CumulativeSourceMaxCount >= 0 && currentSourceCount >= attachParams.CumulativeSourceMaxCount))
 		{
 			if (attachParams.CumulativeRefreshAll)
 			{
@@ -724,17 +727,9 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 					ae->RefreshDuration(attachParams.DurationOverride);
 				}
 			}
-			else
+			else if (match)
 			{
-				AttachEffectClass* best = nullptr;
-
-				for (auto const& ae : cumulativeMatches)
-				{
-					if (!best || ae->Duration < best->Duration)
-						best = ae;
-				}
-
-				best->RefreshDuration(attachParams.DurationOverride);
+				match->RefreshDuration(attachParams.DurationOverride);
 			}
 
 			AttachEffectTypeClass::HandleEvent(pTarget);
@@ -749,23 +744,13 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 		}
 	}
 
-	if (!pType->Cumulative && currentTypeCount > 0 && match)
-	{
-		match->RefreshDuration(attachParams.DurationOverride);
-		AttachEffectTypeClass::HandleEvent(pTarget);
-	}
-	else
-	{
-		targetAEs.emplace_back(std::make_unique<AttachEffectClass>(pType, pTarget, pInvokerHouse, pInvoker, pSource, attachParams.DurationOverride, attachParams.Delay, attachParams.InitialDelay, attachParams.RecreationDelay));
-		auto const pAE = targetAEs.back().get();
+	targetAEs.emplace_back(std::make_unique<AttachEffectClass>(pType, pTarget, pInvokerHouse, pInvoker, pSource, attachParams.DurationOverride, attachParams.Delay, attachParams.InitialDelay, attachParams.RecreationDelay));
+	auto const pAE = targetAEs.back().get();
 
-		if (!currentTypeCount && pType->Cumulative && pType->CumulativeAnimations.size() > 0)
-			pAE->HasCumulativeAnim = true;
+	if (!currentTypeCount && cumulative && pType->CumulativeAnimations.size() > 0)
+		pAE->HasCumulativeAnim = true;
 
-		return pAE;
-	}
-
-	return nullptr;
+	return pAE;
 }
 
 /// <summary>
@@ -961,18 +946,18 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 		}
 
 		auto const type = attachEffect->GetType();
-		const bool isValid = EnumFunctions::IsTechnoEligible(pTarget, type->AffectTargets, true)
+		const bool isValid = EnumFunctions::IsTechnoEligible(pTarget, type->AffectsTarget, true)
 			&& (type->AffectTypes.empty() || type->AffectTypes.Contains(pTargetType)) && !type->IgnoreTypes.Contains(pTargetType);
 
 		if (!isValid)
 		{
-			++it;
+			it = pSourceExt->AttachedEffects.erase(it);
 			continue;
 		}
 
 		int currentTypeCount = 0;
+		const bool cumulative = type->Cumulative;
 		AttachEffectClass* match = nullptr;
-		AttachEffectClass* sourceMatch = nullptr;
 
 		for (auto const& aePtr : pTargetExt->AttachedEffects)
 		{
@@ -980,28 +965,32 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 
 			if (targetAttachEffect->GetType() == type)
 			{
-				currentTypeCount++;
-				match = targetAttachEffect;
+				currentTypeCount++;	
 
-				if (targetAttachEffect->Source == attachEffect->Source && targetAttachEffect->Invoker == attachEffect->Invoker)
-					sourceMatch = targetAttachEffect;
+				if (!cumulative)
+				{
+					match = targetAttachEffect;
+					break;
+				}
+				else if (targetAttachEffect->IsFromSource(attachEffect->Invoker, attachEffect->Source))
+				{
+					if (!match || targetAttachEffect->Duration < match->Duration)
+						match = targetAttachEffect;
+				}
 			}
 		}
 
-		if (type->Cumulative && type->Cumulative_MaxCount >= 0 && currentTypeCount >= type->Cumulative_MaxCount && sourceMatch)
+		if (match)
 		{
-			sourceMatch->Duration = Math::max(sourceMatch->Duration, attachEffect->Duration);
-		}
-		else if (!type->Cumulative && currentTypeCount > 0 && match)
-		{
-			match->Duration = Math::max(match->Duration, attachEffect->Duration);
+			if (!cumulative || (type->Cumulative_MaxCount >= 0 && currentTypeCount >= type->Cumulative_MaxCount))
+				match->Duration = Math::max(match->Duration, attachEffect->Duration);
 		}
 		else
 		{
 			AEAttachParams info {};
 			info.DurationOverride = attachEffect->DurationOverride;
 
-			if (auto const pAE = AttachEffectClass::CreateAndAttach(type, pTarget, pTargetType, pTargetExt->AttachedEffects, attachEffect->InvokerHouse, attachEffect->Invoker, attachEffect->Source, info))
+			if (auto const pAE = AttachEffectClass::CreateAndAttach(type, pTarget, pTargetType, pTargetExt->AttachedEffects, attachEffect->InvokerHouse, attachEffect->Invoker, attachEffect->Source, info, false))
 				pAE->Duration = attachEffect->Duration;
 		}
 

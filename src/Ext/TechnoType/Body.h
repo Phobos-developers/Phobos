@@ -1,17 +1,14 @@
 #pragma once
-#include <TechnoTypeClass.h>
-
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
+#include <New/Type/AttachEffectTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
-#include <New/Type/AttachEffectTypeClass.h>
-#include <New/Type/Affiliated/InterceptorTypeClass.h>
-#include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
+#include <New/Type/Affiliated/InterceptorTypeClass.h>
+#include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
 #include <New/Type/Affiliated/TiberiumEaterTypeClass.h>
 #include <New/Type/Affiliated/CreateUnitTypeClass.h>
@@ -36,6 +33,7 @@ public:
 		Valueable<bool> HealthBar_Permanent_PipScale;
 		Valueable<CSFText> UIDescription;
 		Valueable<bool> LowSelectionPriority;
+		Valueable<bool> LowDeployPriority;
 		PhobosFixedString<0x20> GroupAs;
 		std::vector<PhobosFixedString<0x20>> WeaponGroupAs;
 		Valueable<int> RadarJamRadius;
@@ -47,6 +45,8 @@ public:
 		Nullable<int> DesignatorRange;
 		Valueable<float> FactoryPlant_Multiplier;
 		Valueable<Leptons> MindControlRangeLimit;
+		Valueable<bool> MindControl_IgnoreSize;
+		Valueable<int> MindControlSize;
 		Valueable<AffectedHouse> MindControlLink_VisibleToHouse;
 
 		std::unique_ptr<InterceptorTypeClass> InterceptorType;
@@ -67,10 +67,12 @@ public:
 		Valueable<bool> ImmuneToCrit;
 		Valueable<bool> MultiMindControl_ReleaseVictim;
 		Valueable<int> CameoPriority;
+		PhobosPCXFile AltCameoPCX;
 		Valueable<bool> NoManualMove;
 		Nullable<int> InitialStrength;
 		Valueable<bool> ReloadInTransport;
 		Valueable<bool> ForbidParallelAIQueues;
+		Valueable<bool> IgnoreForBaseCenter;
 
 		int TintColorAirstrike;
 		Nullable<int> LaserTargetColor;
@@ -92,6 +94,9 @@ public:
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
 		ValueableVector<AnimTypeClass*> AutoDeath_VanishAnimation;
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
+		Valueable<bool> AutoDeath_OnOwnerChange;
+		Nullable<bool> AutoDeath_OnOwnerChange_HumanToComputer;
+		Nullable<bool> AutoDeath_OnOwnerChange_ComputerToHuman;
 		Valueable<int> AutoDeath_AfterDelay;
 		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosDontExist;
 		Valueable<bool> AutoDeath_TechnosDontExist_Any;
@@ -162,12 +167,15 @@ public:
 		Valueable<bool> OpenTopped_ShareTransportTarget;
 		Valueable<bool> OpenTopped_UseTransportRangeModifiers;
 		Valueable<bool> OpenTopped_CheckTransportDisableWeapons;
+		Valueable<int> OpenTransport_RangeBonus;
+		Valueable<float> OpenTransport_DamageMultiplier;
 
-		Valueable<bool> AutoFire;
-		Valueable<bool> AutoFire_TargetSelf;
+		Valueable<bool> AutoTargetOwnPosition;
+		Valueable<bool> AutoTargetOwnPosition_Self;
 
 		Valueable<bool> NoSecondaryWeaponFallback;
 		Valueable<bool> NoSecondaryWeaponFallback_AllowAA;
+		Nullable<bool> AllowWeaponSelectAgainstWalls;
 
 		Valueable<int> NoAmmoWeapon;
 		Valueable<int> NoAmmoAmount;
@@ -224,6 +232,9 @@ public:
 		Valueable<bool> Explodes_DuringBuildup;
 		Nullable<int> DeployFireWeapon;
 		Valueable<TargetZoneScanType> TargetZoneScanType;
+
+		Nullable<Leptons> AreaGuardRange;
+		Valueable<Leptons> MaxGuardRange;
 
 		Promotable<SHPStruct*> Insignia;
 		Valueable<Vector3D<int>> InsigniaFrames;
@@ -283,7 +294,7 @@ public:
 		Valueable<AffectedHouse> Tint_VisibleToHouses;
 
 		Valueable<WeaponTypeClass*> RevengeWeapon;
-		Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
+		Valueable<AffectedHouse> RevengeWeapon_AffectsHouse;
 
 		AEAttachInfoTypeClass AttachEffects;
 
@@ -345,6 +356,7 @@ public:
 		Nullable<TechnoTypeClass*> Image_ConditionRed;
 		Nullable<UnitTypeClass*> WaterImage_ConditionYellow;
 		Nullable<UnitTypeClass*> WaterImage_ConditionRed;
+		bool NeedDamagedImage;
 
 		Nullable<int> InitialSpawnsNumber;
 		ValueableVector<AircraftTypeClass*> Spawns_Queue;
@@ -419,8 +431,10 @@ public:
 		Valueable<int> Overload_ParticleSysCount;
 
 		Valueable<bool> Harvester_CanGuardArea;
+		Valueable<bool> Harvester_CanGuardArea_RequireTarget;
 		Nullable<bool> HarvesterScanAfterUnload;
 
+		Nullable<bool> ExtendedAircraftMissions;
 		Nullable<bool> ExtendedAircraftMissions_SmoothMoving;
 		Nullable<bool> ExtendedAircraftMissions_EarlyDescend;
 		Nullable<bool> ExtendedAircraftMissions_RearApproach;
@@ -429,6 +443,10 @@ public:
 
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
+
+		Valueable<int> Ammo_AutoConvertMinimumAmount;
+		Valueable<int> Ammo_AutoConvertMaximumAmount;
+		Nullable<TechnoTypeClass*> Ammo_AutoConvertType;
 
 		Valueable<bool> FiringForceScatter;
 
@@ -460,7 +478,36 @@ public:
 
 		Nullable<bool> InfantryAutoDeploy;
 
+		ValueableVector<TechnoTypeClass*> TeamMember_ConsideredAs;
+
 		Nullable<bool> TurretResponse;
+
+		Vector2D<bool> AttackFriendlies;
+
+		Valueable<bool> Deploy_SkipPassengerUnload;
+		Valueable<bool> Deploy_NoPassenger;
+		Valueable<bool> Deploy_NoTiberium;
+
+		Nullable<int> DrainMoneyFrameDelay;
+		Nullable<int> DrainMoneyAmount;
+		Nullable<AnimTypeClass*> DrainAnimationType;
+		Nullable<bool> DrainMoneyDisplay;
+		Nullable<AffectedHouse> DrainMoneyDisplay_Houses;
+		Valueable<Point2D> DrainMoneyDisplay_Offset;
+		Nullable<bool> DrainMoneyDisplay_OnTarget;
+		Nullable<bool> DrainMoneyDisplay_OnTarget_UseDisplayIncome;
+
+		Nullable<Mission> ParadropMission;
+		Nullable<Mission> AIParadropMission;
+
+		Nullable<int> PenetratesTransport_Level;
+		Valueable<double> PenetratesTransport_PassThroughMultiplier;
+		Valueable<double> PenetratesTransport_FatalRateMultiplier;
+		Valueable<double> PenetratesTransport_DamageMultiplier;
+
+		Nullable<bool> JumpjetClimbIgnoreBuilding;
+
+		Nullable<bool> Unsellable; // Ares 3.0
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -469,6 +516,7 @@ public:
 			, HealthBar_Permanent_PipScale { false }
 			, UIDescription {}
 			, LowSelectionPriority { false }
+			, LowDeployPriority { false }
 			, GroupAs { NONE_STR }
 			, WeaponGroupAs {}
 			, RadarJamRadius { 0 }
@@ -480,6 +528,8 @@ public:
 			, DesignatorRange { }
 			, FactoryPlant_Multiplier { 1.0 }
 			, MindControlRangeLimit {}
+			, MindControl_IgnoreSize { true }
+			, MindControlSize { 1 }
 			, MindControlLink_VisibleToHouse{ AffectedHouse::All }
 
 			, InterceptorType { nullptr }
@@ -500,10 +550,12 @@ public:
 			, ImmuneToCrit { false }
 			, MultiMindControl_ReleaseVictim { false }
 			, CameoPriority { 0 }
+			, AltCameoPCX {}
 			, NoManualMove { false }
 			, InitialStrength {}
 			, ReloadInTransport { false }
 			, ForbidParallelAIQueues { false }
+			, IgnoreForBaseCenter { false }
 			, TintColorAirstrike { 0 }
 			, LaserTargetColor {}
 			, AirstrikeLineColor {}
@@ -550,11 +602,14 @@ public:
 			, OpenTopped_ShareTransportTarget { true }
 			, OpenTopped_UseTransportRangeModifiers { false }
 			, OpenTopped_CheckTransportDisableWeapons { false }
+			, OpenTransport_RangeBonus { 0 }
+			, OpenTransport_DamageMultiplier { 1.0 }
 
-			, AutoFire { false }
-			, AutoFire_TargetSelf { false }
+			, AutoTargetOwnPosition { false }
+			, AutoTargetOwnPosition_Self { false }
 			, NoSecondaryWeaponFallback { false }
 			, NoSecondaryWeaponFallback_AllowAA { false }
+			, AllowWeaponSelectAgainstWalls {}
 			, NoAmmoWeapon { -1 }
 			, NoAmmoAmount { 0 }
 			, JumpjetRotateOnCrash { true }
@@ -579,6 +634,9 @@ public:
 			, AutoDeath_Behavior { }
 			, AutoDeath_VanishAnimation {}
 			, AutoDeath_OnAmmoDepletion { false }
+			, AutoDeath_OnOwnerChange { false }
+			, AutoDeath_OnOwnerChange_HumanToComputer {}
+			, AutoDeath_OnOwnerChange_ComputerToHuman {}
 			, AutoDeath_AfterDelay { 0 }
 			, AutoDeath_TechnosDontExist {}
 			, AutoDeath_TechnosDontExist_Any { false }
@@ -654,6 +712,9 @@ public:
 			, DeployFireWeapon {}
 			, TargetZoneScanType { TargetZoneScanType::Same }
 
+			, AreaGuardRange {}
+			, MaxGuardRange { Leptons(4096) }
+
 			, Insignia {}
 			, InsigniaFrames { { -1, -1, -1 } }
 			, InsigniaFrame { -1 }
@@ -714,7 +775,7 @@ public:
 			, Tint_VisibleToHouses { AffectedHouse::All }
 
 			, RevengeWeapon {}
-			, RevengeWeapon_AffectsHouses { AffectedHouse::All }
+			, RevengeWeapon_AffectsHouse { AffectedHouse::All }
 
 			, AttachEffects {}
 
@@ -778,6 +839,7 @@ public:
 			, Image_ConditionRed { }
 			, WaterImage_ConditionYellow { }
 			, WaterImage_ConditionRed { }
+			, NeedDamagedImage { false }
 
 			, InitialSpawnsNumber { }
 			, Spawns_Queue { }
@@ -810,8 +872,10 @@ public:
 			, Overload_ParticleSysCount { 5 }
 
 			, Harvester_CanGuardArea { false }
+			, Harvester_CanGuardArea_RequireTarget { false }
 			, HarvesterScanAfterUnload {}
 
+			, ExtendedAircraftMissions {}
 			, ExtendedAircraftMissions_SmoothMoving {}
 			, ExtendedAircraftMissions_EarlyDescend {}
 			, ExtendedAircraftMissions_RearApproach {}
@@ -820,6 +884,10 @@ public:
 
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
+
+			, Ammo_AutoConvertMinimumAmount { -1 }
+			, Ammo_AutoConvertMaximumAmount { -1 }
+			, Ammo_AutoConvertType { nullptr }
 
 			, FiringForceScatter { true }
 
@@ -851,7 +919,36 @@ public:
 
 			, InfantryAutoDeploy {}
 
+			, TeamMember_ConsideredAs {}
+
 			, TurretResponse {}
+
+			, AttackFriendlies { false,false }
+
+			, Deploy_SkipPassengerUnload { false }
+			, Deploy_NoPassenger { false }
+			, Deploy_NoTiberium { false }
+
+			, DrainMoneyFrameDelay {}
+			, DrainMoneyAmount {}
+			, DrainAnimationType {}
+			, DrainMoneyDisplay {}
+			, DrainMoneyDisplay_Houses {}
+			, DrainMoneyDisplay_Offset { Point2D::Empty }
+			, DrainMoneyDisplay_OnTarget {}
+			, DrainMoneyDisplay_OnTarget_UseDisplayIncome {}
+
+			, ParadropMission {}
+			, AIParadropMission {}
+
+			, PenetratesTransport_Level {}
+			, PenetratesTransport_PassThroughMultiplier { 1.0 }
+			, PenetratesTransport_FatalRateMultiplier { 1.0 }
+			, PenetratesTransport_DamageMultiplier { 1.0 }
+
+			, JumpjetClimbIgnoreBuilding {}
+
+			, Unsellable {}
 
 			, AttachmentTopLayerMinHeight { RulesExt::Global()->AttachmentTopLayerMinHeight }
 			, AttachmentUndergroundLayerMaxHeight { RulesExt::Global()->AttachmentUndergroundLayerMaxHeight }
@@ -871,12 +968,15 @@ public:
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 		void CalculateSpawnerRange();
-		bool IsSecondary(int nWeaponIndex);
+		bool IsSecondary(int nWeaponIndex) const;
 
-		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget);
-		int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget);
+		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget) const;
+		int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget) const;
 
 		void UpdateAdditionalAttributes();
+
+		// Ares 0.2
+		bool CameoIsVeteran(HouseClass* pHouse) const;
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;

@@ -1,13 +1,7 @@
 #include "Body.h"
 
-#include <Utilities/SavegameDef.h>
-#include <New/Entity/ShieldClass.h>
 #include <Ext/Scenario/Body.h>
-#include <BuildingClass.h>
-#include <InfantryClass.h>
-#include <UnitClass.h>
-#include <AircraftClass.h>
-#include <HouseClass.h>
+#include <New/Entity/ShieldClass.h>
 
 //Static init
 TEventExt::ExtContainer TEventExt::ExtMap;
@@ -206,13 +200,29 @@ bool TEventExt::VariableCheckBinary(TEventClass* pThis)
 
 bool TEventExt::HouseOwnsTechnoTypeTEvent(TEventClass* pThis)
 {
-	auto pType = TechnoTypeClass::Find(pThis->String);
+	auto const pType = TechnoTypeClass::Find(pThis->String);
+
 	if (!pType)
 		return false;
 
-	auto pHouse = HouseClass::Index_IsMP(pThis->Value) ? HouseClass::FindByIndex(pThis->Value) : HouseClass::FindByCountryIndex(pThis->Value);
+	auto const pHouse = HouseClass::Index_IsMP(pThis->Value) ? HouseClass::FindByIndex(pThis->Value) : HouseClass::FindByCountryIndex(pThis->Value);
+
 	if (!pHouse)
 		return false;
+
+	if (pType->WhatAmI() == AbstractType::BuildingType)
+	{
+		for (auto const pBuilding : pHouse->Buildings)
+		{
+			if (pBuilding->Type != pType)
+				continue;
+
+			if (pBuilding->IsAlive && pBuilding->Health > 0 && !pBuilding->InLimbo)
+				return true;
+		}
+
+		return false;
+	}
 
 	return pHouse->CountOwnedNow(pType) > 0;
 }

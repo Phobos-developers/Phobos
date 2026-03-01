@@ -185,7 +185,7 @@ x=i,n             ; For i values check the next table
 | 8       | House Threats            | Any object that targets anything of the Team's House or any enemy that is near to the Team Leader |
 | 9       | Power Plants             | Any enemy `BuildingTypes` with positive `Power=` values |
 | 10      | Occupied                 | Any `BuildingTypes` with garrisoned infantry |
-| 11      | Tech Buildings           | Any `BuildingTypes` with `Unsellable=yes`, `Capturable=yes`, negative `TechLevel=` values or appears in `[AI] -> NeutralTechBuildings=` list |
+| 11      | Tech Buildings           | Any `BuildingTypes` with `Capturable=yes` and `NeedsEngineer=yes` |
 | 12      | Refinery                 | Any enemy `BuildingTypes` with `Refinery=yes` or `ResourceGatherer=yes`, `VehicleTypes` with `ResourceGatherer=yes` & `Harvester=no` (i.e. Slave Miner) |
 | 13      | Mind Controller          | Anything `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` with `MindControl=yes` in the weapons Warheads |
 | 14      | Air Units (incl. landed) | Any enemy, `AircraftTypes` and `Jumpjet=yes` `VehicleTypes` or `InfantryTypes`, including landed ones as well as any other currently airborne units |
@@ -207,10 +207,11 @@ x=i,n             ; For i values check the next table
 | 30      | Inhibitors               | Any enemy objects with positive `InhibitorRange=` values |
 | 31      | Naval Units              | Any enemy `VehicleTypes` with a `Naval=yes` or any enemy `VehicleTypes`, `AircraftTypes`, `InfantryTypes` in a water cell |
 | 32      | Mobile Units             | Anything `VehicleTypes`, `AircraftTypes` and `InfantryTypes` |
-| 33      | Capturable               | Any `BuildingTypes` with `Capturable=yes` or any `BuildingTypes` with `BridgeRepairHut=yes` and `Repairable=yes` |
+| 33      | Capturable               | Any `BuildingTypes` with `Capturable=yes` or any `BuildingTypes` with `BridgeRepairHut=yes` that are linked to broken bridges |
 | 34      | Area Threats             | Any enemy object that is inside of the Team Leader's Guard Area |
 | 35      | Vehicle & Naval Factory  | Any enemy `BuildingTypes` with `Factory=UnitType` |
 | 36      | Non-defensive Structures | Any enemy `BuildingTypes` with `IsBaseDefense=no` |
+| 37      | Bridge Repair Huts       | Any `BuildingTypes`with `BridgeRepairHut=yes` that are linked to broken bridges |
 
 - The second parameter with a 0-based index for the `AITargetTypes` section specifies the list of possible `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` that can be evaluated.
 - The *`AITargetTypes` index#* values are obtained in the new `AITargetTypes` section that must be declared in `rulesmd.ini`:
@@ -381,6 +382,25 @@ In `aimd.ini`:
 [SOMESCRIPTTYPE]  ; ScriptType
 x=14003,0
 ```
+
+### `14004` Force Global `OnlyTargetHouseEnemy` value in Teams for new attack / move actions introduced by Phobos
+
+- Globally forcibly set a value for the `OnlyTargetHouseEnemy` tag on TeamType. Only affects the new attack / move actions introduced by Phobos.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=14004,n         ; integer
+```
+
+- The possible argument values are:
+
+| *Argument* | *Description*                                                            |
+| :--------: | :----------------------------------------------------------------------: |
+| -1         | Disable Global value for Force `OnlyTargetHouseEnemy` tag. Default value |
+| 0          | Force `OnlyTargetHouseEnemy` = false                                     |
+| 1          | Force `OnlyTargetHouseEnemy` = true                                      |
+| 2          | Force random boolean value                                               |
 
 ### `16000-16999` Flow Control
 
@@ -633,6 +653,19 @@ ID=ActionCount,[Action1],510,0,0,[MCVRedeploy],0,0,0,A,[ActionX]
 ...
 ```
 
+### `511` Undeploy Building to Waypoint
+
+- Undeploy specific BuildingTypes into VehicleTypes and move them to a specific Waypoint.
+  - If `<All>` is entered for the Building Type here, then undeploy all BuildingTypes.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],511,-10,[BuildingTypesID],[HouseIndex],0,0,0,[WaypointIndex],[ActionX]
+...
+```
+
 ### `606` Edit Hate-Value
 
 - Edit the hate-value that trigger houses to other houses.
@@ -688,6 +721,40 @@ ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]
 ...
 ```
 
+### `609` Set Radar Mode
+
+- Change the current radar mode of the trigger house.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],609,0,0,[RadarMode],0,0,0,A,[ActionX]
+...
+```
+
+- The possible argument values are:
+
+| *Argument* | *Description*                                                             |
+| :--------: | :-----------------------------------------------------------------------: |
+| 0          | Normal mode, requires buildings that provide radar and sufficient power   |
+| 1          | Change to [FreeRadar](https://modenc.renegadeprojects.com/FreeRadar) mode |
+| 2          | Force enable radar                                                        |
+| 3          | Force disable radar                                                       |
+
+### `610` Set house's `TeamDelays` value
+
+- Set the `TeamDelays` value of the trigger's house.
+  - If this value is less than 0, then use the value of `[General] -> TeamDelays`.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],610,0,0,[Number],0,0,0,A,[ActionX]
+...
+```
+
 ### `800-802` Display Banner
 
 - Display a 'banner' at a fixed location that is relative to the screen.
@@ -714,7 +781,7 @@ In `rulesmd.ini`:
 
 [SOMEBANNER]                ; BannerType
 PCX=                        ; filename - including the .pcx extension
-SHP=                        ; filename - excluding the .shp extension
+SHP=                        ; filename - including the .shp extension
 SHP.Palette=palette.pal     ; filename - including the .pal extension
 SHP.RefreshAfterDelay=false ; boolean
 CSF=                        ; CSF entry key

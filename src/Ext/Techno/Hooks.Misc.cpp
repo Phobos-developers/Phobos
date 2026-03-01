@@ -1,7 +1,6 @@
 #include "Body.h"
 
 #include <EventClass.h>
-#include <SpawnManagerClass.h>
 #include <TunnelLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
 
@@ -527,7 +526,7 @@ DEFINE_HOOK(0x74691D, UnitClass_UpdateDisguise_EMP, 0x6)
 
 #pragma region AttackMindControlledDelay
 
-bool __fastcall CanAttackMindControlled(TechnoClass* pControlled, TechnoClass* pRetaliator)
+static bool __fastcall CanAttackMindControlled(TechnoClass* pControlled, TechnoClass* pRetaliator)
 {
 	const auto pMind = pControlled->MindControlledBy;
 
@@ -762,7 +761,7 @@ DEFINE_HOOK(0x51B20E, InfantryClass_AssignTarget_FireOnce, 0x6)
 }
 
 // Update attached anim layers after parent unit changes layer.
-void __fastcall DisplayClass_Submit_Wrapper(DisplayClass* pThis, void* _, ObjectClass* pObject)
+static void __fastcall DisplayClass_Submit_Wrapper(DisplayClass* pThis, void* _, ObjectClass* pObject)
 {
 	pThis->Submit(pObject);
 
@@ -796,7 +795,7 @@ DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
 	return Continue;
 }
 
-bool __fastcall LocomotorCheckForBunkerable(TechnoTypeClass* pType)
+static bool __fastcall LocomotorCheckForBunkerable(TechnoTypeClass* pType)
 {
 	auto const loco = pType->Locomotor;
 
@@ -827,38 +826,49 @@ DEFINE_HOOK(0x70FB73, FootClass_IsBunkerableNow_Dehardcode, 0x6)
 	return pTypeExt->BunkerableAnyway ? CanEnter : 0;
 }
 
-DEFINE_HOOK(0x730D1F, DeployCommandClass_Execute_VoiceDeploy, 0x5)
+DEFINE_HOOK(0x730D0F, ProcessDeployCommand_LowDeployPriority, 0x6)
 {
-	GET_STACK(const int, unitsToDeploy, STACK_OFFSET(0x18, -0x4));
+	enum { SkipDeploy = 0x730D24 };
 
-	if (unitsToDeploy != 1)
+	GET_STACK(const int, selectedObjectCount, STACK_OFFSET(0x18, -0x4));
+
+	if (Phobos::Config::PriorityDeployFiltering && selectedObjectCount > 1)
+	{
+		GET(TechnoClass* const, pTechno, ESI);
+
+		auto const pExt = TechnoExt::ExtMap.Find(pTechno);
+
+		if (pExt->TypeExtData->LowDeployPriority)
+		{
+			for (const auto pObject : ObjectClass::CurrentObjects)
+			{
+				if ((pObject->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
+				{
+					if (!TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pObject))->TypeExtData->LowDeployPriority)
+						return SkipDeploy;
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x730D1F, ProcessDeployCommand_VoiceDeploy, 0x5)
+{
+	GET_STACK(const int, selectedObjectCount, STACK_OFFSET(0x18, -0x4));
+
+	if (selectedObjectCount != 1)
 		return 0;
 
-	GET(TechnoClass* const, pThis, ESI);
+	GET(TechnoClass* const, pTechno, ESI);
 
-	pThis->VoiceDeploy();
+	pTechno->VoiceDeploy();
 
 	return 0;
 }
 
 #pragma endregion
-
-
-// Prevent subterranean units from deploying while underground.
-DEFINE_HOOK(0x73D6E6, UnitClass_Unload_Subterranean, 0x6)
-{
-	enum { ReturnFromFunction = 0x73DFB0 };
-
-	GET(UnitClass*, pThis, ESI);
-
-	if (auto const pLoco = locomotion_cast<TunnelLocomotionClass*>(pThis->Locomotor))
-	{
-		if (pLoco->State != TunnelLocomotionClass::State::Idle)
-			return ReturnFromFunction;
-	}
-
-	return 0;
-}
 
 #pragma region Events
 

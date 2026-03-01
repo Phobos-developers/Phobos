@@ -1,11 +1,8 @@
 #include "Body.h"
-#include <LocomotionClass.h>
-#include <TeleportLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <TacticalClass.h>
 
 #define GET_LOCO(reg_Loco) \
 	GET(ILocomotion *, Loco, reg_Loco); \
@@ -38,7 +35,7 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 
 	if (const auto pImage = pType->AlphaImage)
 	{
-		auto [xy, _] = TacticalClass::Instance->CoordsToClient(pLinked->Location);
+		const auto [xy, _] = TacticalClass::Instance->CoordsToClient(pLinked->Location);
 		RectangleStruct Dirty = {
 			xy.X - (pImage->Width / 2),
 			xy.Y - (pImage->Height / 2),

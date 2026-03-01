@@ -1,14 +1,7 @@
-#include <BuildingClass.h>
-#include <CellClass.h>
-#include <MapClass.h>
-#include <ParticleSystemClass.h>
-#include <FootClass.h>
-#include <WaveClass.h>
+#include "Body.h"
 
 #include <Ext/ParticleSystemType/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Utilities/Macro.h>
 
 // Contains hooks that fix weapon graphical effects like lasers, railguns, electric bolts, beams and waves not interacting
 // correctly with obstacles between firer and target, as well as railgun / railgun particles being cut off by elevation.
@@ -210,10 +203,11 @@ DEFINE_HOOK(0x62B8BC, ParticleClass_CTOR_CoordAdjust, 0x6)
 	enum { SkipCoordAdjust = 0x62B8CB };
 
 	GET(ParticleClass*, pThis, ESI);
+	const auto pParticleSys = pThis->ParticleSystem;
 
-	if (pThis->ParticleSystem)
+	if (pParticleSys && pParticleSys->Type)
 	{
-		const auto behavesLike = pThis->ParticleSystem->Type->BehavesLike;
+		const auto behavesLike = pParticleSys->Type->BehavesLike;
 
 		if (behavesLike == BehavesLike::Railgun || behavesLike == BehavesLike::Fire)
 			return SkipCoordAdjust;

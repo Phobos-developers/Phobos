@@ -1,7 +1,6 @@
 #include "Body.h"
 
 #include <Ext/House/Body.h>
-#include <Utilities/GeneralUtils.h>
 #include <Ext/SWType/Body.h>
 
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
@@ -41,25 +40,25 @@ int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
 	return -1;
 }
 
-int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse)
+int BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse)
 {
-	int nAmount = 0;
-	float fFactor = 1.0f;
+	int amount = 0;
+	float factor = 1.0f;
 
-	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
-	for (const auto& [bTypeIdx, nCount] : pHouseExt->PowerPlantEnhancers)
+	for (const auto& [typeIdx, count] : pHouseExt->PowerPlantEnhancers)
 	{
-		auto const bTypeExt = BuildingTypeExt::ExtMap.Find(BuildingTypeClass::Array[bTypeIdx]);
+		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(BuildingTypeClass::Array[typeIdx]);
 
-		if (bTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
+		if (pTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding))
 		{
-			fFactor *= std::powf(bTypeExt->PowerPlantEnhancer_Factor, static_cast<float>(nCount));
-			nAmount += bTypeExt->PowerPlantEnhancer_Amount * nCount;
+			factor *= std::powf(pTypeExt->PowerPlantEnhancer_Factor, static_cast<float>(count));
+			amount += pTypeExt->PowerPlantEnhancer_Amount * count;
 		}
 	}
 
-	return static_cast<int>(std::round(pBuilding->GetPowerOutput() * fFactor)) + nAmount;
+	return static_cast<int>(std::round(output * factor)) + amount;
 }
 
 void BuildingTypeExt::PlayBunkerSound(BuildingClass const* pThis, bool buildUp)
@@ -141,6 +140,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PowerPlantEnhancer_Buildings.Read(exINI, pSection, "PowerPlantEnhancer.PowerPlants");
 	this->PowerPlantEnhancer_Amount.Read(exINI, pSection, "PowerPlantEnhancer.Amount");
 	this->PowerPlantEnhancer_Factor.Read(exINI, pSection, "PowerPlantEnhancer.Factor");
+	this->PowerPlantEnhancer_MaxCount.Read(exINI, pSection, "PowerPlantEnhancer.MaxCount");
 	this->Powered_KillSpawns.Read(exINI, pSection, "Powered.KillSpawns");
 
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
@@ -171,6 +171,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->FactoryPlant_AllowTypes.Read(exINI, pSection, "FactoryPlant.AllowTypes");
 	this->FactoryPlant_DisallowTypes.Read(exINI, pSection, "FactoryPlant.DisallowTypes");
+	this->FactoryPlant_MaxCount.Read(exINI, pSection, "FactoryPlant.MaxCount");
 
 	this->Units_RepairRate.Read(exINI, pSection, "Units.RepairRate");
 	this->Units_RepairStep.Read(exINI, pSection, "Units.RepairStep");
@@ -180,6 +181,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoBuildAreaOnBuildup.Read(exINI, pSection, "NoBuildAreaOnBuildup");
 	this->Adjacent_Allowed.Read(exINI, pSection, "Adjacent.Allowed");
 	this->Adjacent_Disallowed.Read(exINI, pSection, "Adjacent.Disallowed");
+	this->Adjacent_Disallowed_Prohibit.Read(exINI, pSection, "Adjacent.Disallowed.Prohibit");
+	this->Adjacent_Disallowed_ProhibitDistance.Read(exINI, pSection, "Adjacent.Disallowed.ProhibitDistance");
 
 	this->BarracksExitCell.Read(exINI, pSection, "BarracksExitCell");
 
@@ -195,11 +198,14 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BunkerWallsUpSound.Read(exINI, pSection, "BunkerWallsUpSound");
 	this->BunkerWallsDownSound.Read(exINI, pSection, "BunkerWallsDownSound");
 	this->BuildingRepairedSound.Read(exINI, pSection, "BuildingRepairedSound");
+	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
+	this->UndeploysInto_Sellable.Read(exINI, pSection, "UndeploysInto.Sellable");
+	this->BuildingRadioLink_SyncOwner.Read(exINI, pSection, "BuildingRadioLink.SyncOwner");
 
 	if (pThis->NumberOfDocks > 0)
 	{
-		this->AircraftDockingDirs.clear();
-		this->AircraftDockingDirs.resize(pThis->NumberOfDocks);
+		std::optional<DirType> empty;
+		this->AircraftDockingDirs.resize(pThis->NumberOfDocks, empty);
 
 		Nullable<DirType> nLandingDir;
 		nLandingDir.Read(exINI, pSection, "AircraftDockingDir");
@@ -245,9 +251,6 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		}
 	}
 
-	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
-	this->UndeploysInto_Sellable.Read(exINI, pSection, "UndeploysInto.Sellable");
-
 	// PlacementPreview
 	{
 		this->PlacementPreview.Read(exINI, pSection, "PlacementPreview");
@@ -269,6 +272,9 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.A
 	this->RubbleIntact.Read(exINI, pSection, "Rubble.Intact");
 	this->RubbleIntactRemove.Read(exINI, pSection, "Rubble.Intact.Remove");
+
+	// Ares 3.0
+	this->UnitSell.Read(exINI, pSection, "UnitSell");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -287,6 +293,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PowerPlantEnhancer_Buildings)
 		.Process(this->PowerPlantEnhancer_Amount)
 		.Process(this->PowerPlantEnhancer_Factor)
+		.Process(this->PowerPlantEnhancer_MaxCount)
 		.Process(this->SuperWeapons)
 		.Process(this->OccupierMuzzleFlashes)
 		.Process(this->Powered_KillSpawns)
@@ -322,6 +329,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AircraftDockingDirs)
 		.Process(this->FactoryPlant_AllowTypes)
 		.Process(this->FactoryPlant_DisallowTypes)
+		.Process(this->FactoryPlant_MaxCount)
 		.Process(this->IsAnimDelayedBurst)
 		.Process(this->IsDestroyableObstacle)
 		.Process(this->Units_RepairRate)
@@ -331,6 +339,8 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoBuildAreaOnBuildup)
 		.Process(this->Adjacent_Allowed)
 		.Process(this->Adjacent_Disallowed)
+		.Process(this->Adjacent_Disallowed_Prohibit)
+		.Process(this->Adjacent_Disallowed_ProhibitDistance)
 		.Process(this->BarracksExitCell)
 		.Process(this->Overpower_KeepOnline)
 		.Process(this->Overpower_ChargeWeapon)
@@ -345,6 +355,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Refinery_UseNormalActiveAnim)
 		.Process(this->HasPowerUpAnim)
 		.Process(this->UndeploysInto_Sellable)
+		.Process(this->BuildingRadioLink_SyncOwner)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)
@@ -352,6 +363,9 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		// Ares 0.A
 		.Process(this->RubbleIntact)
 		.Process(this->RubbleIntactRemove)
+
+		// Ares 3.0
+		.Process(this->UnitSell)
 		;
 }
 

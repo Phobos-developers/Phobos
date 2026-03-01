@@ -1,6 +1,5 @@
 #include "Body.h"
 
-#include <InfantryClass.h>
 #include <InputManagerClass.h>
 
 DEFINE_HOOK(0x43C30A, BuildingClass_ReceiveMessage_Grinding, 0x6)
@@ -53,40 +52,6 @@ DEFINE_HOOK(0x4D4CD3, FootClass_Mission_Eaten_Grinding, 0x6)
 	}
 
 	return 0;
-}
-
-DEFINE_HOOK(0x4D4B43, FootClass_Mission_Capture_ForbidUnintended, 0x6)
-{
-	GET(InfantryClass*, pThis, EDI);
-	enum { LosesDestination = 0x4D4BD1 };
-
-	if (!pThis || pThis->Target)
-		return 0;
-
-	auto const pBld = specific_cast<BuildingClass*>(pThis->Destination);
-	if (!pBld)
-		return 0;
-
-	auto const pType = pThis->Type;
-
-	if (pType->Engineer)
-		return 0;
-
-	// interaction issues with Ares, no more further checking to make life easier. If someone still try to abuse the bug I won't try to stop them
-	if (pType->Infiltrate && !pThis->Owner->IsAlliedWith(pBld->Owner))
-		return 0;
-	if (pBld->IsStrange())
-		return 0;
-
-	if (pBld->Type->CanBeOccupied && (pType->Occupier || pType->Assaulter))
-		return 0;
-
-	if (pType->C4 || pThis->HasAbility(Ability::C4))
-		return 0;
-
-	// If you can't do any of these then why are you here?
-	pThis->SetDestination(nullptr, false);
-	return LosesDestination;
 }
 
 DEFINE_HOOK(0x51F0AF, InfantryClass_WhatAction_Grinding, 0x0)
@@ -217,6 +182,24 @@ DEFINE_HOOK(0x519790, InfantryClass_PerCellProcess_SkipDieSoundBeforeGrinding, 0
 	return SkipVoiceDie;
 }
 
+DEFINE_HOOK(0x51986A, InfantryClass_UpdatePosition_Grinding_Parasite, 0xA)
+{
+	enum { SkipGameCode = 0x519880 };
+
+	GET(InfantryClass*, pThis, ESI);
+	GET(BuildingClass*, pBuilding, EBX);
+	GrinderRefundTemp::BalanceBefore = pBuilding->Owner->Balance;
+
+	if (const auto parasite = pThis->ParasiteEatingMe)
+	{
+		pBuilding->Owner->GiveMoney(parasite->GetRefund());
+		parasite->ParasiteImUsing->SuppressionTimer.Start(50);
+		parasite->ParasiteImUsing->ExitUnit();
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x5198B3, InfantryClass_PerCellProcess_DoGrindingExtras, 0x5)
 {
 	enum { Continue = 0x5198CE };
@@ -224,17 +207,19 @@ DEFINE_HOOK(0x5198B3, InfantryClass_PerCellProcess_DoGrindingExtras, 0x5)
 	GET(InfantryClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EBX);
 
-	return BuildingExt::DoGrindingExtras(pBuilding, pThis, pThis->GetRefund()) ? Continue : 0;
+	const int totalRefund = pBuilding->Owner->Balance - GrinderRefundTemp::BalanceBefore;
+
+	return BuildingExt::DoGrindingExtras(pBuilding, pThis, totalRefund) ? Continue : 0;
 }
 
 DEFINE_HOOK(0x739FBC, UnitClass_PerCellProcess_BeforeGrinding, 0x5)
 {
 	enum { SkipDieSound = 0x73A0A5 };
-	GET(BuildingClass*, pBuilding, EBX);
 
+	GET(BuildingClass*, pBuilding, EBX);
 	GrinderRefundTemp::BalanceBefore = pBuilding->Owner->Balance;
 
-	if (BuildingTypeExt::ExtMap.Find(pBuilding->Type)->Grinding_PlayDieSound.Get())
+	if (BuildingTypeExt::ExtMap.Find(pBuilding->Type)->Grinding_PlayDieSound)
 		return 0;
 
 	return SkipDieSound;

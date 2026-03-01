@@ -1,7 +1,8 @@
 #include "Body.h"
 
-#include <SessionClass.h>
 #include <VeinholeMonsterClass.h>
+
+#include <Ext/House/Body.h>
 
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
@@ -90,6 +91,11 @@ void ScenarioExt::Remove(ScenarioClass* pThis)
 void ScenarioExt::LoadFromINIFile(ScenarioClass* pThis, CCINIClass* pINI)
 {
 	Data->LoadFromINI(pINI);
+
+	for (auto const pHouse : HouseClass::Array)
+	{
+		HouseExt::ExtMap.Find(pHouse)->FreeRadar = ScenarioClass::Instance->FreeRadar;
+	}
 }
 
 void ScenarioExt::ExtData::UpdateAutoDeathObjectsInLimbo()

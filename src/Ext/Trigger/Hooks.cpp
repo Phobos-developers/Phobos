@@ -1,7 +1,3 @@
-#include <TriggerClass.h>
-
-#include <Helpers/Macro.h>
-
 #include <Ext/TEvent/Body.h>
 
 DEFINE_HOOK(0x727064, TriggerTypeClass_HasLocalSetOrClearedEvent, 0x5)

@@ -1,9 +1,7 @@
-#include <TerrainClass.h>
 #include <IsometricTileTypeClass.h>
 
 #include <Ext/TerrainType/Body.h>
 #include <Ext/CaptureManager/Body.h>
-#include <Ext/WarheadType/Body.h>
 #include <Ext/Building/Body.h>
 
 #pragma region AllowDeployControlledMCV
@@ -18,7 +16,7 @@ DEFINE_HOOK(0x700ED0, TechnoClass_AllowDeployControlledMCV, 0x6)// UnitClass::Ca
 
 #pragma endregion
 
-static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
+static inline void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
 {
 	const auto pAnimType = pTechnoFrom->MindControlRingAnim
 		? pTechnoFrom->MindControlRingAnim->Type

@@ -1,18 +1,9 @@
-#include <AircraftClass.h>
-#include <BounceClass.h>
-#include <FlyLocomotionClass.h>
-#include <JumpjetLocomotionClass.h>
-#include <RocketLocomotionClass.h>
-#include <SpawnManagerClass.h>
-#include <TacticalClass.h>
-#include <TunnelLocomotionClass.h>
-#include <UnitClass.h>
-#include <Utilities/AresHelper.h>
-#include <Utilities/Macro.h>
-#include <Ext/Techno/Body.h>
-
 #include "Body.h"
 
+#include <JumpjetLocomotionClass.h>
+#include <TunnelLocomotionClass.h>
+#include <Utilities/AresHelper.h>
+#include <Ext/Techno/Body.h>
 
 DEFINE_REFERENCE(double, Pixel_Per_Lepton, 0xB1D008)
 
@@ -104,7 +95,17 @@ DEFINE_HOOK(0x73BA12, UnitClass_DrawAsVXL_RewriteTurretDrawing, 0x6)
 	{
 		auto mtxTurret = mtx;
 		pDrawTypeExt->ApplyTurretOffset(&mtxTurret, Pixel_Per_Lepton);
-		mtxTurret.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
+
+		double primaryRad = pThis->PrimaryFacing.Current().GetRadian<32>();
+
+		// Align with the jj Draw_Matrix calc changing.
+		if (auto pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+		{
+			if (!pThis->IsAttackedByLocomotor)
+				primaryRad = pJJLoco->LocomotionFacing.Current().GetRadian<32>();
+		}
+
+		mtxTurret.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - primaryRad));
 
 		if (pThis->TurretRecoil.State != RecoilData::RecoilState::Inactive)
 			mtxTurret.TranslateX(-pThis->TurretRecoil.TravelSoFar);
@@ -296,7 +297,7 @@ namespace JumpjetTiltReference
 }
 
 // Just rewrite this completely to avoid headache
-Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, PhobosVoxelIndexKey* key)
+static Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, PhobosVoxelIndexKey* key)
 {
 	__assume(iloco != nullptr);
 	auto const pThis = static_cast<JumpjetLocomotionClass*>(iloco);
@@ -431,7 +432,7 @@ DEFINE_HOOK(0x73B748, UnitClass_DrawVXL_ResetKeyForTurretUse, 0x7)
 }
 
 // Visual bugfix : Teleport loco vxls could not tilt
-Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, VoxelIndexKey* pIndex)
+static Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, VoxelIndexKey* pIndex)
 {
 	__assume(iloco != nullptr);
 	auto const pThis = static_cast<LocomotionClass*>(iloco);
@@ -491,14 +492,14 @@ constexpr double Pade2_2(double in)
 		* (12. - 6 * s + s * s) / (12. + 6 * s + s * s);
 }
 
-Matrix3D* __fastcall sub7559B0(Matrix3D* ret, int idx)
+static Matrix3D* __fastcall sub7559B0(Matrix3D* ret, int idx)
 {
 	*ret = Matrix3D::VoxelRampMatrix[idx] * Matrix3D { 1,0,0,0,0,1,0,0,0,0,0,0 };
 	return ret;
 }
 DEFINE_FUNCTION_JUMP(CALL, 0x55A814, sub7559B0);
 
-Matrix3D* __stdcall TunnelLocomotionClass_ShadowMatrix(ILocomotion* iloco, Matrix3D* ret, VoxelIndexKey* key)
+static Matrix3D* __stdcall TunnelLocomotionClass_ShadowMatrix(ILocomotion* iloco, Matrix3D* ret, VoxelIndexKey* key)
 {
 	__assume(iloco != nullptr);
 	const auto tLoco = static_cast<TunnelLocomotionClass*>(iloco);
@@ -926,9 +927,9 @@ DEFINE_HOOK(0x7072A1, cyka707280_WhichMatrix, 0x6)
 	GET_STACK(const int, shadow_index_now, STACK_OFFSET(0xE8, 0x18));// it's used later, otherwise I could have chosen the frame index earlier
 
 	REF_STACK(Matrix3D, matRet, STACK_OFFSET(0xE8, -0x60));
-	auto pType = pThis->GetTechnoType();
 
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto pType = pTypeExt->OwnerObject();
 
 	const auto hva = pVXL->HVA;
 

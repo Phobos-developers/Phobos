@@ -1,12 +1,5 @@
-#include "Phobos.h"
-#include "Utilities/Macro.h"
 #include <Utilities/AresHelper.h>
-#include "Ext/Techno/Body.h"
-#include "Ext/TechnoType/Body.h"
-
-#include <TacticalClass.h>
-#include <HouseClass.h>
-#include <Unsorted.h>
+#include <Ext/Techno/Body.h>
 
 class ExtSelection
 {
@@ -157,7 +150,7 @@ public:
 				char* gunnerID = pTypeExt->WeaponGroupAs[pTechno->CurrentWeaponNumber];
 
 				if (!GeneralUtils::IsValidString(gunnerID))
-					sprintf_s(gunnerID, 0x20, "%d", RulesExt::Global()->TypeSelectUseIFVMode ? pTechno->CurrentWeaponNumber + 1 : 0);
+					sprintf_s(gunnerID, 0x20, "%d", RulesExt::Global()->TypeSelectUseIFVMode && Phobos::Config::TypeSelectUseIFVMode ? pTechno->CurrentWeaponNumber + 1 : 0);
 
 				if (std::ranges::none_of(ExtSelection::IFVGroups, [gunnerID](const char* pID) { return !_stricmp(pID, gunnerID); }))
 					break;
@@ -207,7 +200,7 @@ DEFINE_FUNCTION_JUMP(LJMP, 0x6D9FF0, ExtSelection::Tactical_MakeFilteredSelectio
 
 DEFINE_HOOK(0x73298D, TypeSelectExecute_UseIFVMode, 0x5)
 {
-	const bool useIFVMode = RulesExt::Global()->TypeSelectUseIFVMode;
+	const bool useIFVMode = RulesExt::Global()->TypeSelectUseIFVMode && Phobos::Config::TypeSelectUseIFVMode;
 
 	for (const auto pObject : ObjectClass::CurrentObjects)
 	{

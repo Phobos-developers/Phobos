@@ -1,13 +1,8 @@
 #include "Body.h"
 
-#include <ScenarioClass.h>
-#include <WarheadTypeClass.h>
-
-#include <Ext/AnimType/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
-
-#include <Utilities/Macro.h>
 
 namespace AnimLoggingTemp
 {
@@ -135,7 +130,7 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 
 	if (pTypeExt->Weapon)
 	{
-		WeaponTypeExt::DetonateAt(pTypeExt->Weapon, pThis->GetCoords(), pInvoker, appliedDamage, pOwner);
+		WeaponTypeExt::DetonateAt(pTypeExt->Weapon, pThis->GetCoords(), pInvoker, appliedDamage, pOwner, pOwnerObject);
 	}
 	else
 	{
@@ -332,9 +327,8 @@ CoordStruct* AnimClassFake::_GetCenterCoords(CoordStruct* pCrd) const
 {
 	CoordStruct* coords = pCrd;
 	*coords = this->Location;
-	auto const pObject = this->OwnerObject;
 
-	if (pObject)
+	if (auto const pObject = this->OwnerObject)
 	{
 		*coords += pObject->GetCoords();
 
