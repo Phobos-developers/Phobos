@@ -1058,6 +1058,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->FallingDownTracked)
 		.Process(this->JumpjetStraightAscend)
 		.Process(this->OnParachuted)
+		.Process(this->HoverShutdown)
 		;
 }
 

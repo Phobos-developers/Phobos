@@ -421,7 +421,7 @@ public:
 
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
-		Nullable<bool> FallingDownDamage_AllowEMP;
+		Valueable<bool> FallingDownDamage_AllowEMP;
 
 		Valueable<int> Ammo_AutoConvertMinimumAmount;
 		Valueable<int> Ammo_AutoConvertMaximumAmount;
@@ -863,7 +863,7 @@ public:
 
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
-			, FallingDownDamage_AllowEMP {}
+			, FallingDownDamage_AllowEMP { true }
 
 			, Ammo_AutoConvertMinimumAmount { -1 }
 			, Ammo_AutoConvertMaximumAmount { -1 }

@@ -605,6 +605,7 @@ Vanilla fixes:
 - Fixed the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health (by CrimRecya)
 - Fixed rare cases where paradropped techno killed by falling down (by FlyStar & Ollerus)
 - Fixed the issue that the Jumpjet must end its movement before starting the next mission (by TaranDahl)
+- Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent (by FlyStar)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -636,6 +637,7 @@ Phobos fixes:
 - Fixed an issue where parasites that have infected infantry do not provide a refund when the infected infantry enters a Grinding building (by NetsuNegi)
 - Fixed the issue that `PassengerDeletion` dont consider passenger's passenger, parasite and hijacker (by NetsuNegi)
 - Fixed the issue that power output of building on tooltip won't consider power enhancer (by NetsuNegi)
+- Fixed an issue where hover vehicles could not be destroyed after malfunctioning on water surfaces (by FlyStar)
 
 Fixes / interactions with other extensions:
 <!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->

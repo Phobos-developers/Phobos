@@ -863,6 +863,19 @@ DEFINE_HOOK(0x5F5B36, ObjectClass_SpawnParachuted_OnParachuted, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x514C07, ObjectClass_SpawnParachuted_HoverShutdown, 0x5)
+{
+	enum { SkipGameCode = 0x514C12 };
+
+	GET(LocomotionClass* const, pThis, ESI);
+
+	const auto pTechno = pThis->Owner;
+	pTechno->DropAsBomb();
+	TechnoExt::ExtMap.Find(pTechno)->HoverShutdown = true;
+
+	return SkipGameCode;
+}
+
 DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 {
 	enum { SkipGameCode = 0x5F405B };
@@ -879,16 +892,24 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 
 		if (pThis->IsABomb && pThis->IsAlive)
 		{
+			const bool hoverShutdown = pExt->HoverShutdown;
+			pExt->HoverShutdown = false;
+
+			if (hoverShutdown)
+			{
+				int damage = pThis->Health;
+				pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+
+				return SkipGameCode;
+			}
+
 			const auto pCell = pTechno->GetCell();
 			const bool onBridge = pCell->ContainsBridge();
 
 			const auto pType = pTechno->GetTechnoType();
 			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-			const bool allowEMP = pTypeExt->FallingDownDamage_AllowEMP.isset() ?
-				pTypeExt->FallingDownDamage_AllowEMP : pType->Locomotor != LocomotionClass::CLSIDs::Hover;
-
-			if ((!allowEMP && pTechno->EMPLockRemaining > 0) ||
+			if ((!pTypeExt->FallingDownDamage_AllowEMP && pTechno->EMPLockRemaining > 0) ||
 				!pCell->IsClearToMove(pType->SpeedType, true, true, -1, pType->MovementZone, -1, onBridge))
 			{
 				return 0;

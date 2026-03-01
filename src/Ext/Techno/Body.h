@@ -101,6 +101,7 @@ public:
 		bool JumpjetStraightAscend; // Is set to true jumpjet units will ascend straight and do not adjust rotation or position during it.
 
 		bool OnParachuted;
+		bool HoverShutdown;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -169,6 +170,7 @@ public:
 			, FallingDownTracked { false }
 			, JumpjetStraightAscend { false }
 			, OnParachuted { false }
+			, HoverShutdown { false }
 		{ }
 
 		void OnEarlyUpdate();
