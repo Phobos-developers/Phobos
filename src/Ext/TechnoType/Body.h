@@ -930,7 +930,7 @@ public:
 
 			, JumpjetClimbIgnoreBuilding {}
 
-			, HoverDrowned {}
+			, HoverDrowned { true }
 
 			, Unsellable {}
 		{ }
