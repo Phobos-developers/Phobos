@@ -853,17 +853,7 @@ DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
 
 #pragma region Customized FallingDown Damage
 
-DEFINE_HOOK(0x5F5B36, ObjectClass_SpawnParachuted_OnParachuted, 0x5)
-{
-	GET(ObjectClass* const, pThis, ESI);
-
-	if (const auto pTechno = abstract_cast<TechnoClass*, true>(pThis))
-		TechnoExt::ExtMap.Find(pTechno)->OnParachuted = true;
-
-	return 0;
-}
-
-DEFINE_HOOK(0x514C07, ObjectClass_SpawnParachuted_HoverShutdown, 0x5)
+DEFINE_HOOK(0x514C07, HoverLocomotionClass_Process_HoverShutdown, 0x5)
 {
 	enum { SkipGameCode = 0x514C12 };
 
@@ -1728,8 +1718,11 @@ static bool __fastcall FootClass_Paradrop(FootClass* pThis, void*, const CoordSt
 	if (!pThis->ObjectClass::SpawnParachuted(coords))
 		return false;
 
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pTypeExt = pExt->TypeExtData;
 	Mission mission;
+
+	pExt->OnParachuted = true;
 
 	if (pThis->Owner->IsControlledByHuman())
 		mission = pTypeExt->ParadropMission.Get(RulesExt::Global()->ParadropMission);
