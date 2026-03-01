@@ -853,81 +853,108 @@ DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
 
 #pragma region Customized FallingDown Damage
 
-DEFINE_HOOK(0x5F416A, ObjectClass_DropAsBomb_ResetFallRateRate, 0x7)
+DEFINE_HOOK(0x5F5B36, ObjectClass_SpawnParachuted_OnParachuted, 0x5)
 {
-	GET(ObjectClass*, pThis, ESI);
+	GET(ObjectClass* const, pThis, ESI);
 
-	// Reset value, otherwise it'll keep accelerating.
-	pThis->FallRate = 0;
+	if (const auto pTechno = abstract_cast<TechnoClass*, true>(pThis))
+		TechnoExt::ExtMap.Find(pTechno)->OnParachuted = true;
+
 	return 0;
 }
 
-DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
+DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 {
-	GET(ObjectClass*, pThis, ESI);
+	enum { SkipGameCode = 0x5F405B };
+
+	GET(ObjectClass* const, pThis, ESI);
 
 	pThis->FallRate = 0;
 
 	if (const auto pTechno = abstract_cast<TechnoClass*, true>(pThis))
 	{
-		const auto pType = pTechno->GetTechnoType();
-		const auto pCell = pTechno->GetCell();
+		const auto pExt = TechnoExt::ExtMap.Find(pTechno);
+		const bool onParachuted = pExt->OnParachuted;
+		pExt->OnParachuted = false;
 
-		if (!pCell->IsClearToMove(pType->SpeedType, true, true, -1, pType->MovementZone, pCell->GetLevel(), pCell->ContainsBridge()))
-			return 0;
-
-		int damage = 0;
-
-		if (!pTechno->HasParachute)
+		if (pThis->IsABomb && pThis->IsAlive)
 		{
+			const auto pCell = pTechno->GetCell();
+			const bool onBridge = pCell->ContainsBridge();
+
+			const auto pType = pTechno->GetTechnoType();
 			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-			double ratio = 0.0;
 
-			if (pCell->LandType == LandType::Water && !pTechno->OnBridge)
-				ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get());
-			else
-				ratio = pTypeExt->FallingDownDamage.Get();
+			const bool allowEMP = pTypeExt->FallingDownDamage_AllowEMP.isset() ?
+				pTypeExt->FallingDownDamage_AllowEMP : pType->Locomotor != LocomotionClass::CLSIDs::Hover;
 
-			if (ratio < 0.0)
-				damage = static_cast<int>(pThis->Health * std::abs(ratio));
-			else if (ratio >= 0.0 && ratio <= 1.0)
-				damage = static_cast<int>(pType->Strength * ratio);
-			else
-				damage = static_cast<int>(ratio);
+			if ((!allowEMP && pTechno->EMPLockRemaining > 0) ||
+				!pCell->IsClearToMove(pType->SpeedType, true, true, -1, pType->MovementZone, -1, onBridge))
+			{
+				return 0;
+			}
+
+			int damage = 0;
+			const LandType landType = pCell->LandType;
+			const bool inWater = !onBridge && (landType == LandType::Water || landType == LandType::Beach);
+
+			if (!onParachuted)
+			{
+				double ratio = 0.0;
+
+				if (inWater)
+					ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get());
+				else
+					ratio = pTypeExt->FallingDownDamage.Get();
+
+				if (ratio < 0.0)
+					damage = static_cast<int>(pThis->Health * std::abs(ratio));
+				else if (ratio >= 0.0 && ratio <= 1.0)
+					damage = static_cast<int>(pType->Strength * ratio);
+				else
+					damage = static_cast<int>(ratio);
+			}
+
+			if (damage == 0 ||
+				pThis->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, true, nullptr) != DamageState::NowDead)
+			{
+				pThis->IsABomb = false;
+				const auto abs = pThis->WhatAmI();
+
+				if (abs == AbstractType::Infantry)
+				{
+					const auto pInf = static_cast<InfantryClass*>(pTechno);
+					const auto sequenceAnim = pInf->SequenceAnim;
+					pInf->ShouldDeploy = false;
+
+					if (inWater)
+					{
+						if (sequenceAnim != Sequence::Swim)
+							pInf->PlayAnim(Sequence::Swim, true, false);
+					}
+					else if (sequenceAnim != Sequence::Guard)
+					{
+						pInf->PlayAnim(Sequence::Ready, true, false);
+					}
+
+					ObjectClass* pObject = pCell->GetContent();
+
+					while (pObject->NextObject)
+					{
+						pObject = pObject->NextObject;
+					}
+
+					if (pObject != pInf)
+						pInf->Scatter(pInf->GetCoords(), true, false);
+				}
+				else if (abs == AbstractType::Unit)
+				{
+					static_cast<UnitClass*>(pTechno)->UpdatePosition(PCPType::During);
+				}
+			}
 		}
 
-		pThis->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, true, nullptr);
-
-		if (pThis->Health > 0 && pThis->IsAlive)
-		{
-			pThis->IsABomb = false;
-			const auto abs = pThis->WhatAmI();
-
-			if (abs == AbstractType::Infantry)
-			{
-				const auto pInf = static_cast<InfantryClass*>(pTechno);
-				const auto sequenceAnim = pInf->SequenceAnim;
-				pInf->ShouldDeploy = false;
-
-				if (pCell->LandType == LandType::Water && !pInf->OnBridge)
-				{
-					if (sequenceAnim != Sequence::Swim)
-						pInf->PlayAnim(Sequence::Swim, true, false);
-				}
-				else if (sequenceAnim != Sequence::Guard)
-				{
-					pInf->PlayAnim(Sequence::Ready, true, false);
-				}
-
-				pInf->Scatter(pInf->GetCoords(), true, false);
-			}
-			else if (abs == AbstractType::Unit)
-			{
-				static_cast<UnitClass*>(pTechno)->UpdatePosition(PCPType::During);
-			}
-		}
-
-		return 0x5F405B;
+		return SkipGameCode;
 	}
 
 	return 0;

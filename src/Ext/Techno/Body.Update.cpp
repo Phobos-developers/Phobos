@@ -1297,8 +1297,8 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 			else if (isinAir)
 			{
 				// Let it go into free fall.
-				pThis->FallRate = 0;
 				pThis->IsFallingDown = true;
+				this->OnParachuted = true;
 
 				const auto pCell = MapClass::Instance.TryGetCellAt(pThis->Location);
 

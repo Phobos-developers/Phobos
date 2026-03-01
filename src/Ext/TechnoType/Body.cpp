@@ -667,6 +667,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 						else if (inAir && !parachuted)
 						{
 							pTechno->IsFallingDown = true;
+							TechnoExt::ExtMap.Find(pTechno)->OnParachuted = true;
 						}
 					}
 
@@ -1116,6 +1117,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->FallingDownDamage.Read(exINI, pSection, "FallingDownDamage");
 	this->FallingDownDamage_Water.Read(exINI, pSection, "FallingDownDamage.Water");
+	this->FallingDownDamage_AllowEMP.Read(exINI, pSection, "FallingDownDamage.AllowEMP");
 
 	this->FiringForceScatter.Read(exINI, pSection, "FiringForceScatter");
 
@@ -1811,6 +1813,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->FallingDownDamage)
 		.Process(this->FallingDownDamage_Water)
+		.Process(this->FallingDownDamage_AllowEMP)
 
 		.Process(this->Ammo_AutoConvertMinimumAmount)
 		.Process(this->Ammo_AutoConvertMaximumAmount)
