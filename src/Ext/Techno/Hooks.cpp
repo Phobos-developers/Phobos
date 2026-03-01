@@ -897,7 +897,6 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 			const bool onBridge = pCell->ContainsBridge();
 
 			const auto pType = pTechno->GetTechnoType();
-			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 			int damage = 0;
 
 			if (!pCell->IsClearToMove(pType->SpeedType, true, true, -1, pType->MovementZone, -1, onBridge))
@@ -913,6 +912,8 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 
 			if (!onParachuted)
 			{
+				const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
 				if (!pTypeExt->FallingDownDamage_AllowEMP && pTechno->EMPLockRemaining > 0)
 				{
 					damage = pThis->Health;
