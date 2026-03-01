@@ -1277,7 +1277,6 @@ msgstr "修复了 56 和 57 号 AI 动作脚本强制发射注册索引 3 和 4 
 
 msgid "Fix rare cases where paradropped techno killed by falling down"
 msgstr ""
-"修复了被空降单位会被摔死的罕见问题"
 
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："
