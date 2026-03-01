@@ -3248,6 +3248,8 @@ DEFINE_HOOK(0x577BF1, MapClass_ResetShroudForTMission_CellCheck, 0x6)
 		pCell->Flags &= ~(CellFlags::CenterRevealed | CellFlags::EdgeRevealed);
 		pCell->AltFlags &= ~(AltCellFlags::Mapped | AltCellFlags::NoFog);
 	}
+
+	return SkipGameCode;
 }
 
 #pragma endregion
