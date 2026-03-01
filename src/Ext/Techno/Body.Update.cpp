@@ -1298,7 +1298,6 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 			{
 				// Let it go into free fall.
 				pThis->IsFallingDown = true;
-				this->OnParachuted = true;
 
 				const auto pCell = MapClass::Instance.TryGetCellAt(pThis->Location);
 
@@ -1312,6 +1311,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 				{
 					// If it's gonna land on the bridge, then it needs this.
 					pThis->OnBridge = pCell ? pCell->ContainsBridge() : false;
+					this->OnParachuted = true;
 				}
 
 				if (abs == AbstractType::Infantry)
