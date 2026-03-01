@@ -38,7 +38,7 @@ DEFINE_HOOK(0x508CF2, HouseClass_UpdatePower_PowerOutput, 0x7)
 	GET(HouseClass*, pThis, ESI);
 	GET(BuildingClass*, pBld, EDI);
 
-	pThis->PowerOutput += BuildingTypeExt::GetEnhancedPower(pBld, pThis);
+	pThis->PowerOutput += BuildingTypeExt::GetEnhancedPower(pBld->Type, pBld->GetPowerOutput(), pThis);
 
 	return 0x508D07;
 }
