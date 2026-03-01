@@ -887,9 +887,13 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 
 			if (hoverShutdown)
 			{
-				int damage = pThis->Health;
-				pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+				if (pExt->TypeExtData->HoverDrowned)
+				{
+					int damage = pThis->Health;
+					pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+				}
 
+				pThis->IsABomb = false;
 				return SkipGameCode;
 			}
 
@@ -937,8 +941,8 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 					damage = static_cast<int>(ratio);
 			}
 
-			if (damage == 0 ||
-				pThis->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr) != DamageState::NowDead)
+			if (damage == 0
+				|| pThis->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr) != DamageState::NowDead)
 			{
 				pThis->IsABomb = false;
 				const auto abs = pThis->WhatAmI();

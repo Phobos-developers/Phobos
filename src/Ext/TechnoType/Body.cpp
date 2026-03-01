@@ -1161,7 +1161,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PenetratesTransport_DamageMultiplier.Read(exINI, pSection, "PenetratesTransport.DamageMultiplier");
 
 	this->JumpjetClimbIgnoreBuilding.Read(exINI, pSection, "JumpjetClimbIgnoreBuilding");
-
+	
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1421,6 +1421,7 @@ void TechnoTypeExt::ExtData::LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSe
 		this->Deploy_SkipPassengerUnload.Read(exINI, pSection, "Deploy.SkipPassengerUnload");
 		this->Deploy_NoPassenger.Read(exINI, pSection, "Deploy.NoPassenger");
 		this->Deploy_NoTiberium.Read(exINI, pSection, "Deploy.NoTiberium");
+		this->HoverDrowned.Read(exINI, pSection, "HoverDrowned");
 		//this->SecondaryFire.Read(exArtINI, pArtSection, "SecondaryFire");
 		break;
 	}
@@ -1877,6 +1878,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PenetratesTransport_DamageMultiplier)
 
 		.Process(this->JumpjetClimbIgnoreBuilding)
+			
+		.Process(this->HoverDrowned)
 
 		.Process(this->Unsellable)
 		;

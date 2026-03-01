@@ -486,6 +486,8 @@ public:
 
 		Nullable<bool> JumpjetClimbIgnoreBuilding;
 
+		Valueable<bool> HoverDrowned;
+
 		Nullable<bool> Unsellable; // Ares 3.0
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
@@ -927,6 +929,8 @@ public:
 			, PenetratesTransport_DamageMultiplier { 1.0 }
 
 			, JumpjetClimbIgnoreBuilding {}
+
+			, HoverDrowned {}
 
 			, Unsellable {}
 		{ }
