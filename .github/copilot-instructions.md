@@ -318,7 +318,7 @@ The project uses Sphinx internationalization with `.po` files. Currently only **
    ```
    This runs `sphinx-build -b gettext` then `sphinx-intl update -p ./locale -l zh_CN`.
 
-2. **Edit translations** in `docs/locale/zh_CN/LC_MESSAGES/*.po` - each `.po` file corresponds to a doc page.
+2. **Edit translations** in `docs/locale/zh_CN/LC_MESSAGES/*.po` - each `.po` file corresponds to a doc page. Key translation conventions: translate "AI agent" as **智能体** (not 代理, which means "proxy").
 
 3. **Build localized docs** with `sphinx-build -D language=zh_CN`.
 
