@@ -4874,6 +4874,14 @@ msgstr ""
 "`Ammo.DeployUnlockMinimumAmount` & `Ammo.DeployUnlockMaximumAmount` "
 "分别设定载具启用部署功能所需的最低与最高弹药量阈值，负值表示禁用检查。"
 
+msgid "Custom hover vehicles shutdown drowning death"
+msgstr ""
+
+msgid ""
+"`HoverDrowned` allows customization of whether hover vehicles crash and "
+"cause death when deactivated."
+msgstr ""
+
 msgid "Damaged unit image changes"
 msgstr "载具伤残更换图像"
 
