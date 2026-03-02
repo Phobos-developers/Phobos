@@ -2046,11 +2046,6 @@ msgstr ""
 "修复了 `DeploysInto` 和 `UndeploysInto` 会让受损单位失去 1 点生命的 Bug（by CrimRecya）"
 
 msgid ""
-"Fixed rare cases where paradropped techno killed by falling down (by "
-"FlyStar & Ollerus)"
-msgstr ""
-
-msgid ""
 "Fixed the issue that the Jumpjet must end its movement before starting "
 "the next mission (by TaranDahl)"
 msgstr ""
@@ -3595,6 +3590,11 @@ msgid ""
 msgstr "修复了 Jumpjet 在桥梁上方时其影子残留在地面的问题（by CrimRecya）"
 
 msgid ""
+"Allow voxel projectiles to use `AnimPalette` and `FirersPalette` (by "
+"NetsuNegi)"
+msgstr "允许了 Voxel 抛射体使用 `AnimPalette` 和 `FirersPalette`（by NetsuNegi）"
+
+msgid ""
 "Fixed an issue where AI would select unreachable buildings and get stuck "
 "when looking for buildings like tank bunkers, bio reactors, etc. (by "
 "TaranDahl)"
@@ -4794,11 +4794,6 @@ msgstr "修复了建筑 `TargetCoordOffset` 未将开火角度和目标指示线
 
 msgid "Allowed observers to see a selected building's radial indicator (by Trsdy)"
 msgstr "允许了观察者查看选中建筑的范围指示器（by Trsdy）"
-
-msgid ""
-"Allow voxel projectiles to use `AnimPalette` and `FirersPalette` (by "
-"NetsuNegi)"
-msgstr "允许了 Voxel 抛射体使用 `AnimPalette` 和 `FirersPalette`（by NetsuNegi）"
 
 msgid ""
 "Fixed shields being able to take damage when the parent TechnoType was "
