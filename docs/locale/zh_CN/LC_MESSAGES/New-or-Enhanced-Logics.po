@@ -816,6 +816,12 @@ msgstr ""
 "`InheritArmor.Allowed` 为空或者这些科技类型列在该列表中。"
 
 msgid ""
+"`ApplyArmorMultiplier` can be set to true to allow the shield to benefit "
+"from the armor multiplier."
+msgstr ""
+"ApplyArmorMultiplier` 可设为 true 以允许护盾享受护甲倍率。"
+
+msgid ""
 "`InitialStrength` can be used to set a different initial strength value "
 "from maximum."
 msgstr "`InitialStrength` 可用于设置一个不同于最大值的初始护盾值。"
