@@ -199,9 +199,18 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	if (pWHExt->CanTargetHouse(args->SourceHouse, pTechno) && !pWH->Temporal)
 	{
 		if (damage > 0)
-			nDamage = MapClass::GetTotalDamage(damage, pWH, this->GetArmorType(pTechnoType), args->DistanceToEpicenter);
+		{
+			nDamage = damage;
+
+			if (pType->UseArmorplier.Get(RulesExt::Global()->ShieldUseArmorplier))
+				nDamage = Math::max(static_cast<int>(nDamage / (pTechno->ArmorMultiplier * TechnoExt::ExtMap.Find(pTechno)->AE.ArmorMultiplier)), 0);
+
+			nDamage = MapClass::GetTotalDamage(nDamage, pWH, this->GetArmorType(pTechnoType), args->DistanceToEpicenter);
+		}
 		else
+		{
 			nDamage = -MapClass::GetTotalDamage(-damage, pWH, this->GetArmorType(pTechnoType), args->DistanceToEpicenter);
+		}
 
 		const bool affectsShield = pWHExt->Shield_AffectTypes.size() <= 0 || pWHExt->Shield_AffectTypes.Contains(pType);
 		const double absorbPercent = affectsShield ? pWHExt->Shield_AbsorbPercent.Get(pType->AbsorbPercent) : pType->AbsorbPercent;
