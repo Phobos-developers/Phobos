@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <RulesClass.h>
 #include <Utilities/Container.h>
@@ -313,6 +313,7 @@ public:
 		Valueable<bool> ApplyPerTargetEffectsOnDetonate;
 
 		Valueable<bool> FiringAnim_Update;
+		Valueable<bool> ExtendedPlayerRepair;
 		
 		Valueable<bool> AutoTarget_NoThreatBuildings;
 		Valueable<bool> AutoTargetAI_NoThreatBuildings;
@@ -627,6 +628,7 @@ public:
 			, HoverLocomotorMakesWake { true }
 			, ShipLocomotorMakesWake { true }
 			, FiringAnim_Update { false }
+			, ExtendedPlayerRepair { false }
 		{ }
 
 		virtual ~ExtData() = default;

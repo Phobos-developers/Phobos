@@ -568,6 +568,7 @@ New:
 - [Technos with Walk locomotor spawn wake like ship](Fixed-or-Improved-Logics.md#customizable-wake-anim) (by TaranDahl)
 - [Hotkey for deselect object from current selection](User-Interface.md#deselect-object) (by FrozenFog)
 - [Updateable firing anim](Fixed-or-Improved-Logics.md#updateable-firing-anim) (by TaranDahl)
+- [Replace vanilla repairing with togglable auto repairing](User-Interface.md#replace-vanilla-repairing-with-togglable-auto-repairing) (by TaranDahl)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
