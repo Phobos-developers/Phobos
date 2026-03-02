@@ -388,6 +388,7 @@ public:
 			Valueable<CoordStruct> FLH;
 			Valueable<bool> IsOnTurret;
 			Valueable<DirType> RotationAdjust;
+			PhobosFixedString<32> ID;
 
 			bool Load(PhobosStreamReader& stm, bool registerForChange);
 			bool Save(PhobosStreamWriter& stm) const;

@@ -695,6 +695,9 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	auto const pNewTypeExt = TechnoTypeExt::ExtMap.Find(pCurrentType);
 	this->TypeExtData = pNewTypeExt;
 
+	// Handle attachment slot matching and conversion
+	TechnoExt::HandleAttachmentConversion(pThis, pOldType, pCurrentType);
+
 	this->UpdateSelfOwnedAttachEffects();
 
 	if (auto const pShield = this->Shield.get())

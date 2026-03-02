@@ -57,6 +57,10 @@ public:
 	bool AttachChild(TechnoClass* pChild);
 	bool DetachChild();
 
+	// Core link/unlink without side effects (locomotor changes, missions, owner resets)
+	void AttachChildCore(TechnoClass* pChild);
+	void DetachChildCore();
+
 	void InvalidatePointer(void* ptr);
 
 	bool Load(PhobosStreamReader& stm, bool registerForChange);

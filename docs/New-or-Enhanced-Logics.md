@@ -201,6 +201,18 @@ This feature is not final and is under development.
 - Technos now can be attached one to another in a tree like way. The attached units won't process any locomotion code and act like a part of a parent unit in a configurable.
   - Currently the attached techno may only be a vehicle.
   - When attached, the special `Attachment` (`{C5D54B98-8C98-4275-8CE4-EF75CB0CBE3E}`) locomotor is automatically casted on a unit. You may also specify it in the child unit types manually if the unit is not intended to move without a parent (f. ex. a turret).
+- Attachment slots can now be assigned an `AttachmentX.ID` string. This enables child techno preservation across type conversions (see below).
+
+**Behavior during type conversion** (e.g. Ares `UpdateType`):
+
+Each TechnoType owns its own set of attachment slots. When a techno undergoes type conversion, the following happens:
+1. The current type's slots (and any children inside them) are placed in a per-type dormant storage.
+2. The new type's slots are set up - restored from dormant storage if the unit previously had this type, or created fresh otherwise.
+3. For each new slot that has an `AttachmentX.ID`, the dormant slots from the old type are searched for a matching ID. If found, that child is transferred into the new slot.
+   - If the new slot specifies an `AttachmentX.TechnoType` that differs from the child's current type, the child is automatically converted to the new slot's TechnoType.
+   - If the new slot has no `AttachmentX.TechnoType`, or if the old slot has a `AttachmentX.TechnoType` set and contained a child of type that doesn't match the old slot defined type, the child is transferred as-is regardless of its type.
+   - Slots without an `AttachmentX.ID` are never matched and their children are not transferred.
+4. Old dormant slots not matched by any new slot have their children placed in limbo. New slots that ended up empty are unlimboed (unless the parent is currently in limbo).
 
 In `rulesmd.ini`:
 ```ini
@@ -237,6 +249,7 @@ AttachmentX.TechnoType=                   ; TechnoType that can be attached, cur
 AttachmentX.FLH=0,0,0                     ; integer - Forward, Lateral, Height
 AttachmentX.IsOnTurret=false              ; boolean
 AttachmentX.RotationAdjust=0              ; rotation in DirType, from -255 to 255
+AttachmentX.ID=                           ; string, max 32 chars - ID for child transfer on type conversion; must be unique per TechnoType
 
 [General]
 AttachmentTopLayerMinHeight=500           ; integer

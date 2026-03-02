@@ -1,5 +1,7 @@
 #pragma once
 
+#include <map>
+
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
@@ -103,6 +105,7 @@ public:
 
 		AttachmentClass* ParentAttachment;
 		ValueableVector<std::unique_ptr<AttachmentClass>> ChildAttachments;
+		std::map<int, ValueableVector<std::unique_ptr<AttachmentClass>>> DormantAttachments;
 
 		// Ares
 		std::optional<bool> AltOccupation; // if the unit marks cell occupation flags, this is set to whether it uses the "high" occupation members
@@ -175,6 +178,7 @@ public:
 			, JumpjetStraightAscend { false }
 			, ParentAttachment {}
 			, ChildAttachments {}
+			, DormantAttachments {}
 			, AltOccupation {}
 		{ }
 
@@ -278,6 +282,7 @@ public:
 	static void UnlimboAttachments(TechnoClass* pThis);
 	static void LimboAttachments(TechnoClass* pThis);
 	static void TransferAttachments(TechnoClass* pThis, TechnoClass* pThat);
+	static void HandleAttachmentConversion(TechnoClass* pThis, TechnoTypeClass* pOldType, TechnoTypeClass* pNewType);
 
 	static bool IsAttached(TechnoClass* pThis);
 	static bool HasAttachmentLoco(FootClass* pThis); // FIXME shouldn't be here

@@ -1067,6 +1067,10 @@ void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 
 	for (auto const& pAttachment : ChildAttachments)
 		pAttachment->InvalidatePointer(ptr);
+
+	for (auto& [key, vec] : DormantAttachments)
+		for (auto const& pAttachment : vec)
+			pAttachment->InvalidatePointer(ptr);
 }
 
 void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

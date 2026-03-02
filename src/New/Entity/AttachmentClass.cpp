@@ -231,10 +231,7 @@ bool AttachmentClass::AttachChild(TechnoClass* pChild)
 		}
 	}
 
-	this->Child = pChild;
-
-	auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
-	pChildExt->ParentAttachment = this;
+	this->AttachChildCore(pChild);
 
 	// bandaid for jitterless drawing. TODO fix properly
 	// this->Child->GetTechnoType()->DisableVoxelCache = true;
@@ -268,9 +265,7 @@ bool AttachmentClass::DetachChild()
 		if (auto const pChildAsFoot = abstract_cast<FootClass*>(this->Child))
 			LocomotionClass::End_Piggyback(pChildAsFoot->Locomotor);
 
-		auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
-		pChildExt->ParentAttachment = nullptr;
-		this->Child = nullptr;
+		this->DetachChildCore();
 
 		return true;
 	}
@@ -278,6 +273,21 @@ bool AttachmentClass::DetachChild()
 	return false;
 }
 
+
+void AttachmentClass::AttachChildCore(TechnoClass* pChild)
+{
+	this->Child = pChild;
+	TechnoExt::ExtMap.Find(pChild)->ParentAttachment = this;
+}
+
+void AttachmentClass::DetachChildCore()
+{
+	if (this->Child)
+	{
+		TechnoExt::ExtMap.Find(this->Child)->ParentAttachment = nullptr;
+		this->Child = nullptr;
+	}
+}
 
 void AttachmentClass::InvalidatePointer(void* ptr)
 {

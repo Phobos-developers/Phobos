@@ -895,11 +895,31 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.RotationAdjust", i);
 		rotationAdjust.Read(exINI, pSection, tempBuffer);
 
-		AttachmentDataEntry const entry { ValueableIdx<AttachmentTypeClass>(type), technoType, flh, isOnTurret, rotationAdjust };
+		PhobosFixedString<32> id;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.ID", i);
+		id.Read(pINI, pSection, tempBuffer);
+
+		AttachmentDataEntry const entry { ValueableIdx<AttachmentTypeClass>(type), technoType, flh, isOnTurret, rotationAdjust, id };
 		if (i == AttachmentData.size())
 			this->AttachmentData.push_back(entry);
 		else
 			this->AttachmentData[i] = entry;
+	}
+
+	// Validate attachment ID uniqueness
+	std::set<PhobosFixedString<32>> usedIds;
+	for (size_t i = 0; i < this->AttachmentData.size(); ++i)
+	{
+		const auto& id = this->AttachmentData[i].ID;
+
+		if (!id)
+			continue;
+
+		if (!usedIds.insert(id).second)
+		{
+			Debug::FatalErrorAndExit("[%s] Duplicate Attachment ID '%s'\n",
+				pSection, id);
+		}
 	}
 
 	this->NoSecondaryWeaponFallback.Read(exINI, pSection, "NoSecondaryWeaponFallback");
@@ -1953,6 +1973,7 @@ bool TechnoTypeExt::ExtData::AttachmentDataEntry::Serialize(T& stm)
 		.Process(this->FLH)
 		.Process(this->IsOnTurret)
 		.Process(this->RotationAdjust)
+		.Process(this->ID)
 		.Success();
 }
 
