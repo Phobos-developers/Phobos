@@ -202,7 +202,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		{
 			nDamage = damage;
 
-			if (pType->UseArmorplier.Get(RulesExt::Global()->ShieldUseArmorplier))
+			if (pType->ApplyArmorMultiplier.Get(RulesExt::Global()->ShieldApplyArmorMultiplier))
 			{
 				double armorMultiplier = pTechno->Owner->GetArmorMultiplier(pTechnoType) * pTechno->ArmorMultiplier;
 

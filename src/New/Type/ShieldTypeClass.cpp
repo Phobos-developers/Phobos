@@ -23,7 +23,7 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->InheritArmorFromTechno.Read(exINI, pSection, "InheritArmorFromTechno");
 	this->InheritArmor_Allowed.Read(exINI, pSection, "InheritArmor.Allowed");
 	this->InheritArmor_Disallowed.Read(exINI, pSection, "InheritArmor.Disallowed");
-	this->UseArmorplier.Read(exINI, pSection, "UseArmorplier");
+	this->ApplyArmorMultiplier.Read(exINI, pSection, "ApplyArmorMultiplier");
 	this->Powered.Read(exINI, pSection, "Powered");
 
 	this->Respawn.Read(exINI, pSection, "Respawn");
@@ -100,7 +100,7 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->InheritArmorFromTechno)
 		.Process(this->InheritArmor_Allowed)
 		.Process(this->InheritArmor_Disallowed)
-		.Process(this->UseArmorplier)
+		.Process(this->ApplyArmorMultiplier)
 		.Process(this->Powered)
 		.Process(this->Respawn)
 		.Process(this->Respawn_Rate)

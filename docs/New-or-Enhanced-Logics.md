@@ -313,7 +313,7 @@ Pips.Shield.Background=PIPBRD.SHP           ; filename - including the .shp/.pcx
 Pips.Shield.Building.Empty=0                ; integer, frame of pips.shp (zero-based) for empty building pip
 
 [CombatDamage]
-ShieldUseArmorplier=false                   ; boolean
+ShieldApplyArmorMultiplier=false                   ; boolean
 
 [ShieldTypes]
 0=SOMESHIELDTYPE
@@ -328,7 +328,7 @@ InheritArmorFromTechno=false                ; boolean
 InheritArmor.Allowed=                       ; List of TechnoTypes
 InheritArmor.Disallowed=                    ; List of TechnoTypes
 Powered=false                               ; boolean
-UseArmorplier=                              ; boolean, default to [CombatDamage] -> ShieldUseArmorplier
+ApplyArmorMultiplier=                              ; boolean, default to [CombatDamage] -> ShieldApplyArmorMultiplier
 AbsorbOverDamage=false                      ; boolean
 SelfHealing=0.0                             ; floating point value, percents or absolute
 SelfHealing.Rate=0.0                        ; floating point value, ingame minutes
