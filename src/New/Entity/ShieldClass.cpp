@@ -183,7 +183,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 	const bool IC = pWHExt->CanAffectInvulnerable(pTechno);
 
-	if (!IC || CanBePenetrated(pWH) || TechnoExt::IsTypeImmune(pTechno, args->Attacker))
+	if (!IC || this->CanBePenetrated(pWH) || TechnoExt::IsTypeImmune(pTechno, args->Attacker))
 		return damage;
 
 	auto const pTechnoType = pTechno->GetTechnoType();
@@ -203,7 +203,14 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 			nDamage = damage;
 
 			if (pType->UseArmorplier.Get(RulesExt::Global()->ShieldUseArmorplier))
-				nDamage = Math::max(static_cast<int>(nDamage / (pTechno->ArmorMultiplier * TechnoExt::ExtMap.Find(pTechno)->AE.ArmorMultiplier)), 0);
+			{
+				double armorMultiplier = pTechno->Owner->GetArmorMultiplier(pTechnoType) * pTechno->ArmorMultiplier;
+
+				if (pTechno->HasAbility(Ability::Stronger))
+					armorMultiplier *= RulesClass::Instance->VeteranArmor;
+
+				nDamage = Math::max(TechnoExt::CalculateArmorMultipliers(pTechno, static_cast<int>(nDamage / armorMultiplier), pWH), 0);
+			}
 
 			nDamage = MapClass::GetTotalDamage(nDamage, pWH, this->GetArmorType(pTechnoType), args->DistanceToEpicenter);
 		}
