@@ -198,7 +198,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 
 	if (pWHExt->CanTargetHouse(args->SourceHouse, pTechno) && !pWH->Temporal)
 	{
-		if (damage > 0)
+		if (damage >= 0)
 		{
 			nDamage = damage;
 
