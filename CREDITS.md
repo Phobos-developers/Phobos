@@ -756,4 +756,6 @@ This page lists all the individual contributions to the project by their author.
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
 - **11EJDE11** - Prevent mpdebug number from being drawn when visibility toggled off
-- **CnCRazer** - Wall overlay unit sell exploit fix
+- **RAZER**:
+  - Wall overlay unit sell exploit fix
+  - Multiplayer gamespeed fix for RealTimeTimers
