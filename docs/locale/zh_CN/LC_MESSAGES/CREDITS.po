@@ -2531,5 +2531,5 @@ msgid "**RAZER**:"
 msgstr "**RAZER**："
 
 msgid "Multiplayer gamespeed fix for RealTimeTimers"
-msgstr ""
+msgstr "多人联机所用游戏速度下的实时计时器修复"
 

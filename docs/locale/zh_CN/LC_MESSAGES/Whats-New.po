@@ -2199,6 +2199,7 @@ msgid ""
 "`RealTimeTimers` now support independent gamespeed index values for "
 "Multiplayer and Skirmish (by RAZER)"
 msgstr ""
+"现在 `RealTimeTimers` 支持多人联机和遭遇战拥有彼此独立的游戏速度档位数值。"
 
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
