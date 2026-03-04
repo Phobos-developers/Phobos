@@ -876,25 +876,22 @@ DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
 		if (!pCell->IsClearToMove(pType->SpeedType, true, true, -1, pType->MovementZone, pCell->GetLevel(), pCell->ContainsBridge()))
 			return 0;
 
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		double ratio = 0.0;
+
+		if (pCell->LandType == LandType::Water && !pTechno->OnBridge)
+			ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get());
+		else
+			ratio = pTypeExt->FallingDownDamage.Get();
+
 		int damage = 0;
 
-		if (!pTechno->HasParachute)
-		{
-			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-			double ratio = 0.0;
-
-			if (pCell->LandType == LandType::Water && !pTechno->OnBridge)
-				ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get());
-			else
-				ratio = pTypeExt->FallingDownDamage.Get();
-
-			if (ratio < 0.0)
-				damage = static_cast<int>(pThis->Health * std::abs(ratio));
-			else if (ratio >= 0.0 && ratio <= 1.0)
-				damage = static_cast<int>(pType->Strength * ratio);
-			else
-				damage = static_cast<int>(ratio);
-		}
+		if (ratio < 0.0)
+			damage = static_cast<int>(pThis->Health * std::abs(ratio));
+		else if (ratio >= 0.0 && ratio <= 1.0)
+			damage = static_cast<int>(pType->Strength * ratio);
+		else
+			damage = static_cast<int>(ratio);
 
 		pThis->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, true, nullptr);
 
