@@ -1648,6 +1648,13 @@ msgid ""
 msgstr ""
 "修复了建筑拓展工具提示信息中的发电量数值未考虑电厂增幅器的问题"
 
+msgid ""
+"Fix the bug that the upgrade building's power-enhancing effect depends "
+"only on its parent building and is not related to the upgrade building "
+"itself"
+msgstr ""
+"修复了加载物建筑的电厂增幅效果仅取决于其基底建筑而非加载物建筑自身的 Bug"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
