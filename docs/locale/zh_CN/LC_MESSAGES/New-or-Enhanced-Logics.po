@@ -4878,8 +4878,8 @@ msgid "Custom hover vehicles shutdown drowning death"
 msgstr ""
 
 msgid ""
-"`HoverDrowned` allows customization of whether hover vehicles crash and "
-"cause death when deactivated."
+"`HoverDrownable` allows customization of whether hover vehicles will "
+"drown and die when deactivated on water zone."
 msgstr ""
 
 msgid "Damaged unit image changes"
