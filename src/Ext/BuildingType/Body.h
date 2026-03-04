@@ -110,6 +110,9 @@ public:
 		Valueable<BuildingTypeClass*> RubbleIntact;
 		Valueable<bool> RubbleIntactRemove;
 
+		// Ares 3.0
+		Nullable<bool> UnitSell;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -185,6 +188,9 @@ public:
 			// Ares 0.A
 			, RubbleIntact { nullptr }
 			, RubbleIntactRemove { false }
+
+			// Ares 3.0
+			, UnitSell {}
 		{ }
 
 		// Ares 0.A functions
@@ -223,7 +229,7 @@ public:
 
 	static void PlayBunkerSound(BuildingClass const* pThis, bool buildUp = false);
 
-	static int GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse);
+	static std::pair<int, int> GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
 	static int CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pBuilding, HouseClass* pHouse);
 	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);

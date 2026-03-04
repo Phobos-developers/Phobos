@@ -11,7 +11,7 @@
 
 # Phobos
 
-...is a community engine extension project providing a set of new features and fixes for Yuri's Revenge based on [modified YRpp](https://github.com/Metadorius/YRpp) and [Syringe](https://github.com/Ares-Developers/Syringe) to allow injecting code. It's meant to accompany [Ares](https://github.com/Ares-Developers/Ares) rather than replace it, thus it won't introduce incompatibilities.
+...is a community engine extension project providing a set of new features and fixes for Yuri's Revenge based on [modified YRpp](https://github.com/Phobos-developers/YRpp) and [Syringe](https://github.com/Ares-Developers/Syringe) to allow injecting code. It's meant to accompany [Ares](https://github.com/Ares-Developers/Ares) rather than replace it, thus it won't introduce incompatibilities.
 
 While Phobos is independent of Ares and does NOT require Ares specifically to function, Phobos complements some of the features found in Ares and vice versa.
 
@@ -23,7 +23,7 @@ Community
 As the project is international and English is currently studied the most commonly as a second language, it's the main project language. We do not limit the creation of language-specific community groups though, because we understand that many may not know English as well as their native language and/or may have trouble accessing Discord.
 
 - **[🌐 International Discord channel on C&C Mod Haven](https://discord.gg/sZeMzz6qVg)**
-- [🇨🇳 Chinese QQ Phobos group](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=f_h7TZoVX_8--ZedVFBMmjRrLBIzjMKJ&authKey=QfNyW4DZUFqL3ZKzGL5PgLUWTnISj0myWn4WGtPPQmi3F%2FP3vfnuBd3YjLFk%2BU94&noverify=0&group_code=630590659) (630590659)
+- **[🇨🇳 Chinese Phobos Communication Forum - Phobos CN](https://phoboscn.top)**
 
 Downloads
 ---------
@@ -106,17 +106,17 @@ Every maintenance crew member is welcome to put a donation link to their entry i
 - **[@Starkku](https://github.com/Starkku)** - T3 maintainer (co-lead)
   - [Patreon](https://www.patreon.com/Starkku)
 - **[@CrimRecya](https://github.com/CrimRecya) (绯红热茶)** - T2 maintainer
-  - [Alipay](https://i2.hdslb.com/bfs/new_dyn/8de77b17b8fc2e005613821b62008e37362533219.jpg)
+  - [Alipay](https://www.phoboscn.top/t/topic/45#crimrecya)
 - **[@ZivDero](https://github.com/ZivDero)** - T2 maintainer
   - [Patreon](https://www.patreon.com/c/ZivDero)
 - **Ollerus ([@Coronia](https://github.com/Coronia))** - T1 maintainer
-  - [Alipay](https://i2.hdslb.com/bfs/new_dyn/7c5f82c5530c88dc076a6f1ca2c02b46362533219.jpg)
+  - [Alipay](https://www.phoboscn.top/t/topic/45#ollerus)
 - **[@NetsuNegi](https://github.com/NetsuNegi)** - T1 maintainer
-  - [Alipay](https://i2.hdslb.com/bfs/new_dyn/cb69d2b5eb08c13d03bc79664e68b6c2362533219.png)
+  - [Alipay](https://www.phoboscn.top/t/topic/45#netsunegi)
 - **[@TaranDahl](https://github.com/TaranDahl) (航味麻酱)** - T1 maintainer
-  - [WeChatPay](https://i2.hdslb.com/bfs/new_dyn/ffd5d36cc5efcdd83d93138062ec116e362533219.jpg)
+  - [WeChatPay](https://www.phoboscn.top/t/topic/45#tarandahl)
 - **Noble_Fish ([@DeathFishAtEase](https://github.com/DeathFishAtEase))** - triage, doc maintainer
-  - [Alipay](https://i2.hdslb.com/bfs/new_dyn/b080641faea49ae3e10b4728679ef2e5362533219.jpg)
+  - [Alipay](https://www.phoboscn.top/t/topic/45#noble_fish)
 - **FlyStar ([@Fly-Star-him](https://github.com/Fly-Star-him))** - triage
 - **[@Fryone](https://github.com/Fryone)** - triage
 
@@ -148,6 +148,6 @@ Legal and License
 
 The Phobos project is an unofficial open-source community collaboration project to extend the Red Alert 2 Yuri's Revenge engine for modding and compatibility purposes.
 
-As a modification, the project complies with [EA C&C modding guidelines](https://www.ea.com/games/command-and-conquer/modding-faq); should there be conflict between the project's license and modding guidelines - the rules imposed by guidelines shall take precedence (for example, the project should not be commercial or used to make money).
+As a modification, the project complies with [EA C&C modding guidelines](https://www.ea.com/games/command-and-conquer/command-and-conquer-remastered/news/modding-faq); should there be conflict between the project's license and modding guidelines - the rules imposed by guidelines shall take precedence (for example, the project should not be commercial or used to make money).
 
 This project has no direct affiliation with Electronic Arts Inc. Command & Conquer, Command & Conquer Red Alert 2, Command & Conquer Yuri's Revenge are registered trademarks of Electronic Arts Inc. All Rights Reserved.

@@ -484,16 +484,21 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 			continue;
 
 		const auto pTargetType = pTarget->GetTechnoType();
+		bool skipImmune = false;
 
-		if (!pTargetType->LegalTarget || pTargetType->Immune)
-			continue;
-
-		// Discard invisible structures
-		if (const auto pTargetBuildingType = abstract_cast<BuildingTypeClass*, true>(pTargetType))
+		if (const auto pTargetBuilding = abstract_cast<BuildingClass*>(pTarget))
 		{
-			if (pTargetBuildingType->InvisibleInGame)
+			// Discard invisible structures
+			if (pTargetBuilding->Type->InvisibleInGame)
 				continue;
+
+			// Skip immunity check for buildings in agent mode.
+			if (agentMode)
+				skipImmune = true;
 		}
+
+		if (!pTargetType->LegalTarget || (!skipImmune && pTargetType->Immune))
+			continue;
 
 		// Note: the TEAM LEADER is picked for this task, be careful with leadership values in your mod
 		const auto pWeaponType = pTechno->GetWeapon(pTechno->SelectWeapon(pTarget))->WeaponType;
@@ -871,26 +876,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 
 		if (const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pTechnoType))
 		{
-			const auto& neutralTechBuildings = RulesClass::Instance->NeutralTechBuildings;
-
-			if (const int count = neutralTechBuildings.Count)
-			{
-				for (int i = 0; i < count; ++i)
-				{
-					if (neutralTechBuildings.GetItem(i) == pTechnoType)
-						return true;
-				}
-			}
-
-			// Other cases of civilian Tech Structures
-			if (pBuildingType->Unsellable
-				&& pBuildingType->Capturable
-				&& pBuildingType->TechLevel < 0
-				&& pBuildingType->NeedsEngineer
-				&& !pBuildingType->BridgeRepairHut)
-			{
+			if (pBuildingType->Capturable && pBuildingType->NeedsEngineer)
 				return true;
-			}
 		}
 
 		break;
@@ -1300,7 +1287,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 		{
 			if (pBuildingType->Capturable
 				|| (pBuildingType->BridgeRepairHut
-					&& pBuildingType->Repairable))
+					&& MapClass::Instance.IsLinkedBridgeDestroyed(pTechno->GetMapCoords())))
 			{
 				return true;
 			}
@@ -1313,14 +1300,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 
 		if (pTeamLeader && !pTechno->Owner->IsNeutral())
 		{
-			const int distanceToTarget = pTeamLeader->DistanceFrom(pTechno);
-			const int guardRange = pTeamLeader->GetTechnoType()->GuardRange;
-
-			if (guardRange > 0
-				&& distanceToTarget <= (guardRange * 2))
-			{
+			if (pTeamLeader->DistanceFrom(pTechno) <= pTeamLeader->GetGuardRange(1))
 				return true;
-			}
 		}
 
 		break;
@@ -1351,6 +1332,20 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 				{
 					return true;
 				}
+			}
+		}
+
+		break;
+
+	case 37:
+		// Bridge Repair Hut
+
+		if (const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pTechnoType))
+		{
+			if (pBuildingType->BridgeRepairHut
+				&& MapClass::Instance.IsLinkedBridgeDestroyed(pTechno->GetMapCoords()))
+			{
+				return true;
 			}
 		}
 
