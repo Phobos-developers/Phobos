@@ -4876,11 +4876,13 @@ msgstr ""
 
 msgid "Custom hover vehicles shutdown drowning death"
 msgstr ""
+"自定义悬浮载具溺死"
 
 msgid ""
 "`HoverDrownable` allows customization of whether hover vehicles will "
 "drown and die when deactivated on water zone."
 msgstr ""
+"`HoverDrownable` 允许自定义悬浮载具在水域上失灵时是否会溺死。"
 
 msgid "Damaged unit image changes"
 msgstr "载具伤残更换图像"
