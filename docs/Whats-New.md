@@ -640,6 +640,7 @@ Phobos fixes:
 - Fixed an issue where parasites that have infected infantry do not provide a refund when the infected infantry enters a Grinding building (by NetsuNegi)
 - Fixed the issue that `PassengerDeletion` dont consider passenger's passenger, parasite and hijacker (by NetsuNegi)
 - Fixed the issue that power output of building on tooltip won't consider power enhancer (by NetsuNegi)
+- `RealTimeTimers` now support independent gamespeed index values for Multiplayer and Skirmish (by RAZER)
 - Fixed an issue where hover vehicles could not be destroyed after malfunctioning on water surfaces (by FlyStar)
 
 Fixes / interactions with other extensions:
@@ -976,6 +977,7 @@ Vanilla fixes:
 - Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges (by CrimRecya & TaranDahl)
 - Fixed an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge (by CrimRecya)
 - Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge (by CrimRecya)
+- Allow voxel projectiles to use `AnimPalette` and `FirersPalette` (by NetsuNegi)
 - Fixed an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc. (by TaranDahl)
 - Fixed the bug that `EnterBioReactorSound`, `LeaveBioReactorSound`, `EnterGrinderSound` on technotype does not used (by NetsuNegi)
 - Fixed the bug that harvester dont stop unloading and cannot unload cargos anymore when lifting by `IsLocomotor=yes` warhead (by NetsuNegi)
@@ -1262,7 +1264,6 @@ Vanilla fixes:
 - Fixed railgun particles being drawn to wrong coordinate against buildings with non-default `TargetCoordOffset` or when force-firing on bridges (by Starkku)
 - Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines (by Starkku)
 - Allowed observers to see a selected building's radial indicator (by Trsdy)
-- Allow voxel projectiles to use `AnimPalette` and `FirersPalette` (by NetsuNegi)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)

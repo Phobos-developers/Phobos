@@ -1561,9 +1561,6 @@ msgid ""
 msgstr ""
 "修复了 `DeploysInto` 和 `UndeploysInto` 会让受损单位失去 1 点生命的 Bug。"
 
-msgid "Fixed rare cases where paradropped techno killed by falling down."
-msgstr ""
-
 msgid ""
 "Fixed the issue that the Jumpjet must end its movement before starting "
 "the next mission."
