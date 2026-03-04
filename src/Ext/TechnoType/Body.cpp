@@ -1421,7 +1421,7 @@ void TechnoTypeExt::ExtData::LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSe
 		this->Deploy_SkipPassengerUnload.Read(exINI, pSection, "Deploy.SkipPassengerUnload");
 		this->Deploy_NoPassenger.Read(exINI, pSection, "Deploy.NoPassenger");
 		this->Deploy_NoTiberium.Read(exINI, pSection, "Deploy.NoTiberium");
-		this->HoverDrowned.Read(exINI, pSection, "HoverDrowned");
+		this->HoverDrownable.Read(exINI, pSection, "HoverDrownable");
 		//this->SecondaryFire.Read(exArtINI, pArtSection, "SecondaryFire");
 		break;
 	}
@@ -1879,7 +1879,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->JumpjetClimbIgnoreBuilding)
 			
-		.Process(this->HoverDrowned)
+		.Process(this->HoverDrownable)
 
 		.Process(this->Unsellable)
 		;

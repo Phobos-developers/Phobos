@@ -2230,12 +2230,12 @@ Ammo.DeployUnlockMaximumAmount=-1  ; integer
 
 ### Custom hover vehicles shutdown drowning death
 
-- `HoverDrowned` allows customization of whether hover vehicles crash and cause death when deactivated.
+- `HoverDrownable` allows customization of whether hover vehicles will drown and die when deactivated on water zone.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEVEHICLE]           ; VehicleType
-HoverDrowned=true       ; boolean
+HoverDrownable=true     ; boolean
 ```
 
 ### Damaged unit image changes

@@ -486,7 +486,7 @@ public:
 
 		Nullable<bool> JumpjetClimbIgnoreBuilding;
 
-		Valueable<bool> HoverDrowned;
+		Valueable<bool> HoverDrownable;
 
 		Nullable<bool> Unsellable; // Ares 3.0
 
@@ -930,7 +930,7 @@ public:
 
 			, JumpjetClimbIgnoreBuilding {}
 
-			, HoverDrowned { true }
+			, HoverDrownable { true }
 
 			, Unsellable {}
 		{ }
