@@ -114,7 +114,6 @@ msgstr ""
 "Spawner](https://github.com/CnCNet/cncnet-for-ares) "
 "搭配使用。新增或改进功能时都会考虑与它们的兼容性。"
 
-#, fuzzy
 msgid ""
 "While we would also like to support HAres we can't guarantee "
 "compatibility with it due to the separation of it's userbase and "

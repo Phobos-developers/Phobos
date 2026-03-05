@@ -421,6 +421,7 @@ public:
 
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
+		Valueable<bool> FallingDownDamage_AllowEMP;
 
 		Valueable<int> Ammo_AutoConvertMinimumAmount;
 		Valueable<int> Ammo_AutoConvertMaximumAmount;
@@ -484,6 +485,8 @@ public:
 		Valueable<double> PenetratesTransport_DamageMultiplier;
 
 		Nullable<bool> JumpjetClimbIgnoreBuilding;
+
+		Valueable<bool> HoverDrownable;
 
 		Nullable<bool> Unsellable; // Ares 3.0
 
@@ -864,6 +867,7 @@ public:
 
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
+			, FallingDownDamage_AllowEMP { true }
 
 			, Ammo_AutoConvertMinimumAmount { -1 }
 			, Ammo_AutoConvertMaximumAmount { -1 }
@@ -927,6 +931,8 @@ public:
 			, PenetratesTransport_DamageMultiplier { 1.0 }
 
 			, JumpjetClimbIgnoreBuilding {}
+
+			, HoverDrownable { true }
 
 			, Unsellable {}
 

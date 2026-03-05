@@ -47,6 +47,7 @@ bool Phobos::Config::ToolTipDescriptions = true;
 bool Phobos::Config::ToolTipBlur = false;
 bool Phobos::Config::PrioritySelectionFiltering = true;
 bool Phobos::Config::PriorityDeployFiltering = true;
+bool Phobos::Config::TypeSelectUseIFVMode = true;
 bool Phobos::Config::DevelopmentCommands = true;
 bool Phobos::Config::SuperWeaponSidebarCommands = false;
 bool Phobos::Config::ShowPlanningPath = false;
@@ -90,6 +91,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::ToolTipBlur = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ToolTipBlur", false);
 	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "PrioritySelectionFiltering", true);
 	Phobos::Config::PriorityDeployFiltering = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "PriorityDeployFiltering", true);
+	Phobos::Config::TypeSelectUseIFVMode = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "TypeSelectUseIFVMode", true);
 	Phobos::Config::ShowPlacementPreview = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowPlacementPreview", true);
 	Phobos::Config::MessageApplyHoverState = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "MessageApplyHoverState", false);
 	Phobos::Config::MessageDisplayInCenter = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "MessageDisplayInCenter", false);
