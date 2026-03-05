@@ -667,6 +667,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 						else if (inAir && !parachuted)
 						{
 							pTechno->IsFallingDown = true;
+							TechnoExt::ExtMap.Find(pTechno)->OnParachuted = true;
 						}
 					}
 
@@ -939,6 +940,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TargetZoneScanType.Read(exINI, pSection, "TargetZoneScanType");
 
 	this->AreaGuardRange.Read(exINI, pSection, "AreaGuardRange");
+	this->MaxGuardRange.Read(exINI, pSection, "MaxGuardRange");
 
 	// insignia type
 	Nullable<InsigniaTypeClass*> InsigniaType;
@@ -1115,6 +1117,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->FallingDownDamage.Read(exINI, pSection, "FallingDownDamage");
 	this->FallingDownDamage_Water.Read(exINI, pSection, "FallingDownDamage.Water");
+	this->FallingDownDamage_AllowEMP.Read(exINI, pSection, "FallingDownDamage.AllowEMP");
 
 	this->FiringForceScatter.Read(exINI, pSection, "FiringForceScatter");
 
@@ -1157,6 +1160,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PenetratesTransport_FatalRateMultiplier.Read(exINI, pSection, "PenetratesTransport.FatalRateMultiplier");
 	this->PenetratesTransport_DamageMultiplier.Read(exINI, pSection, "PenetratesTransport.DamageMultiplier");
 
+	this->JumpjetClimbIgnoreBuilding.Read(exINI, pSection, "JumpjetClimbIgnoreBuilding");
+	
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1173,6 +1178,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Ares 2.0
 	this->Passengers_BySize.Read(exINI, pSection, "Passengers.BySize");
+
+	// Ares 3.0
+	this->Unsellable.Read(exINI, pSection, "Unsellable");
 
 	if (pThis->Gunner)
 	{
@@ -1413,6 +1421,7 @@ void TechnoTypeExt::ExtData::LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSe
 		this->Deploy_SkipPassengerUnload.Read(exINI, pSection, "Deploy.SkipPassengerUnload");
 		this->Deploy_NoPassenger.Read(exINI, pSection, "Deploy.NoPassenger");
 		this->Deploy_NoTiberium.Read(exINI, pSection, "Deploy.NoTiberium");
+		this->HoverDrownable.Read(exINI, pSection, "HoverDrownable");
 		//this->SecondaryFire.Read(exArtINI, pArtSection, "SecondaryFire");
 		break;
 	}
@@ -1633,6 +1642,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TargetZoneScanType)
 
 		.Process(this->AreaGuardRange)
+		.Process(this->MaxGuardRange)
 
 		.Process(this->Insignia)
 		.Process(this->InsigniaFrames)
@@ -1804,6 +1814,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->FallingDownDamage)
 		.Process(this->FallingDownDamage_Water)
+		.Process(this->FallingDownDamage_AllowEMP)
 
 		.Process(this->Ammo_AutoConvertMinimumAmount)
 		.Process(this->Ammo_AutoConvertMaximumAmount)
@@ -1848,7 +1859,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Deploy_SkipPassengerUnload)
 		.Process(this->Deploy_NoPassenger)
 		.Process(this->Deploy_NoTiberium)
-		
+
 		.Process(this->DrainMoneyFrameDelay)
 		.Process(this->DrainMoneyAmount)
 		.Process(this->DrainAnimationType)
@@ -1865,6 +1876,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PenetratesTransport_PassThroughMultiplier)
 		.Process(this->PenetratesTransport_FatalRateMultiplier)
 		.Process(this->PenetratesTransport_DamageMultiplier)
+
+		.Process(this->JumpjetClimbIgnoreBuilding)
+			
+		.Process(this->HoverDrownable)
+
+		.Process(this->Unsellable)
+
+		.Process(this->TurretShape)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

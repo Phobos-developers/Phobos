@@ -252,15 +252,16 @@ int JumpjetRushHelpers::JumpjetLocomotionPredictHeight(JumpjetLocomotionClass* p
 {
 	const auto pFoot = pThis->LinkedTo;
 	const auto pLocation = &pFoot->Location;
+	const bool ignoreOccupy = TechnoExt::ExtMap.Find(pFoot)->TypeExtData->JumpjetClimbIgnoreBuilding.Get(RulesExt::Global()->JumpjetClimbIgnoreBuilding);
 
 	constexpr int shift = 8; // >> shift -> / Unsorted::LeptonsPerCell
 	constexpr auto point2Cell = [](const Point2D& point) -> CellStruct
 	{
 		return CellStruct { static_cast<short>(point.X >> shift), static_cast<short>(point.Y >> shift) };
 	};
-	auto getJumpjetHeight = [](const CellClass* const pCell, const Point2D& point) -> int
+	auto getJumpjetHeight = [ignoreOccupy](const CellClass* const pCell, const Point2D& point) -> int
 	{
-		return pCell->GetFloorHeight(Point2D { point.X, point.Y }) + JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(pCell);
+		return pCell->GetFloorHeight(Point2D { point.X, point.Y }) + (ignoreOccupy ? 0 : JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(pCell));
 	};
 
 	// Initialize
@@ -282,9 +283,9 @@ int JumpjetRushHelpers::JumpjetLocomotionPredictHeight(JumpjetLocomotionClass* p
 		const int checkSteps = (largeStep > Unsorted::LeptonsPerCell) ? (largeStep / Unsorted::LeptonsPerCell + 1) : 1;
 		const auto stepCoord = Point2D { (checkCoord.X / checkSteps), (checkCoord.Y / checkSteps) };
 
-		auto getSideHeight = [](const CellClass* const pCell) -> int
+		auto getSideHeight = [ignoreOccupy](const CellClass* const pCell) -> int
 		{
-			return (pCell->Level * Unsorted::LevelHeight) + JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(pCell);
+			return (pCell->Level * Unsorted::LevelHeight) + (ignoreOccupy ? 0 : JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(pCell));
 		};
 		auto getAntiAliasingCell = [&stepCoord, &checkCoord](const Point2D& curCoord, const Point2D& lastCoord) -> CellClass*
 		{
@@ -417,6 +418,37 @@ DEFINE_HOOK(0x54D600, JumpjetLocomotionClass_MovementAI_JumpjetStraightAscend, 0
 		else
 			pTechnoExt->JumpjetStraightAscend = false;
 	}
+
+	return 0;
+}
+
+#pragma endregion
+
+
+#pragma region JumpjetClimbIgnoreBuilding
+
+namespace JumpjetClimbIgnoreBuilding
+{
+	bool Ignore = false;
+	int Z = 0;
+}
+
+DEFINE_HOOK(0x54D820, JumpjetLocomotionClass_GetFloorZ_SetContext, 0x6)
+{
+	GET(JumpjetLocomotionClass*, pThis, ESI);
+	JumpjetClimbIgnoreBuilding::Ignore = TechnoExt::ExtMap.Find(pThis->LinkedTo)->TypeExtData->JumpjetClimbIgnoreBuilding.Get(RulesExt::Global()->JumpjetClimbIgnoreBuilding);
+
+	if (JumpjetClimbIgnoreBuilding::Ignore)
+		JumpjetClimbIgnoreBuilding::Z = MapClass::Instance.GetCellFloorHeight(pThis->LinkedTo->Location);
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x54D8EA, JumpjetLocomotionClass_GetFloorZ_IgnoreBuilding, 0x6);
+DEFINE_HOOK(0x54D859, JumpjetLocomotionClass_GetFloorZ_IgnoreBuilding, 0x9)
+{
+	if (JumpjetClimbIgnoreBuilding::Ignore)
+		R->EAX(JumpjetClimbIgnoreBuilding::Z);
 
 	return 0;
 }

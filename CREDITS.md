@@ -286,7 +286,10 @@ This page lists all the individual contributions to the project by their author.
   - Subterranean harvester pathfinding fix
   - Toggle to exclude technos from base center calculations
   - Deploy priority filtering
+  - Customizable paradrop missions
   - Guard range customizations
+  - Wall overlay unit sell exploit fix
+  - Fix vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -409,8 +412,12 @@ This page lists all the individual contributions to the project by their author.
   - Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`
   - Attack non-threatening structures extensions
   - Vehicle Deployment Enhancement
-  - Fixed an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals
-  - Fixed an issue where mining vehicles could not move after leaving a tank bunker
+  - Fix an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals
+  - Fix an issue where mining vehicles could not move after leaving a tank bunker
+  - Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4
+  - Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent
+  - Custom hover vehicles shutdown drowning death
+  - SHP turret vehicles support the use of `*tur.shp` files
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -496,6 +503,13 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that techno in attack move will move to target if it cannot attack it
   - Penetrates damage on transporter
   - Add amount limit of `LimboKill`
+  - Spawns particle when spawns tiberium by terrain
+  - Allow draw SuperWeapon timer as percentage
+  - Customize particle system of parasite logic
+  - Fix an issue where parasites that have infected infantry do not provide a refund when the infected infantry enters a Grinding building
+  - Fix the issue that `PassengerDeletion` dont consider passenger's passenger, parasite and hijacker
+  - Fix the issue that power output of building on tooltip won't consider power enhancer
+  - Fix the bug that the upgrade building's power-enhancing effect depends only on its parent building and is not related to the upgrade building itself
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -599,6 +613,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos
   - Allow the aircraft to enter area guard mission and not crash immediately without any airport
   - Allow merging AOE damage to buildings into one
+  - Fix the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -693,10 +708,15 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the AI would set anger towards friendly houses, causing it to act stupidly
   - Fix an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies
   - `AllowBerzerkOnAllies`
-  - Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat
+  - Fix an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat
   - Fix an issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team
   - Global default value for `DefaultToGuardArea`
   - Weapon range finding in cylinder
+  - Allow jumpjet climbing ignore building height
+  - Fix an issue where the AI's regular targeting would also target garrisonable buildings
+  - Fix an issue that the move mission of the jumpjet does not end correctly
+  - Fix the issue that the Jumpjet must end its movement before starting the next mission
+  - Taunt warhead
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
@@ -742,3 +762,6 @@ This page lists all the individual contributions to the project by their author.
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
 - **11EJDE11** - Prevent mpdebug number from being drawn when visibility toggled off
+- **RAZER**:
+  - Wall overlay unit sell exploit fix
+  - Multiplayer gamespeed fix for RealTimeTimers

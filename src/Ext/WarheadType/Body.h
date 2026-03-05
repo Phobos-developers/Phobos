@@ -152,6 +152,8 @@ public:
 		Valueable<bool> InflictLocomotor;
 		Valueable<bool> RemoveInflictedLocomotor;
 
+		Nullable<ParticleSystemTypeClass*> Parasite_ParticleSystem;
+		Valueable<bool> Parasite_DisableParticleSystem;
 		Valueable<AffectedTarget> Parasite_CullingTarget;
 		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
 
@@ -229,6 +231,8 @@ public:
 		Valueable<double> PenetratesTransport_DamageMultiplier;
 		Valueable<bool> PenetratesTransport_DamageAll;
 		ValueableIdx<VocClass> PenetratesTransport_CleanSound;
+
+		Valueable<bool> Taunt;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -392,6 +396,8 @@ public:
 			, InflictLocomotor { false }
 			, RemoveInflictedLocomotor { false }
 
+			, Parasite_ParticleSystem {}
+			, Parasite_DisableParticleSystem { false }
 			, Parasite_CullingTarget { AffectedTarget::Infantry }
 			, Parasite_GrappleAnim {}
 
@@ -488,6 +494,8 @@ public:
 			, AnimZAdjust {}
 
 			, ApplyPerTargetEffectsOnDetonate {}
+
+			, Taunt { false }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);

@@ -100,6 +100,9 @@ public:
 
 		bool JumpjetStraightAscend; // Is set to true jumpjet units will ascend straight and do not adjust rotation or position during it.
 
+		bool OnParachuted; // This is just a temporary patch. TODO: fully check HasParachuted and correct its maintenance method.
+		bool HoverShutdown;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -166,6 +169,8 @@ public:
 			, SpecialTracked { false }
 			, FallingDownTracked { false }
 			, JumpjetStraightAscend { false }
+			, OnParachuted { false }
+			, HoverShutdown { false }
 		{ }
 
 		void OnEarlyUpdate();
@@ -294,6 +299,7 @@ public:
 	static void HandleOnDeployAmmoChange(TechnoClass* pThis, int maxAmmoOverride = -1);
 	static bool SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue, bool alwaysCheckLandTypes);
 	static void ShowPromoteAnim(TechnoClass* pThis);
+	static void ClickedApproachObject(FootClass* pThis, ObjectClass* pObject);
 
 	static bool EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, int distance, bool select);
 	static bool EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool select);

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <RulesClass.h>
 #include <Utilities/Container.h>
@@ -63,6 +63,7 @@ public:
 		Valueable<bool> PlacementPreview;
 		TranslucencyLevel PlacementPreview_Translucency;
 
+		Valueable<bool> SuperWeaponTimer_Percentage;
 		Valueable<bool> SuperWeaponSidebar_AllowByDefault;
 
 		Nullable<double> ConditionYellow_Terrain;
@@ -182,6 +183,7 @@ public:
 
 		Valueable<bool> JumpjetClimbPredictHeight;
 		Valueable<bool> JumpjetClimbWithoutCutOut;
+		Valueable<bool> JumpjetClimbIgnoreBuilding;
 
 		Valueable<bool> MergeBuildingDamage;
 
@@ -316,6 +318,8 @@ public:
 
 		Valueable<int> PenetratesTransport_Level;
 
+		Valueable<bool> UnitsUnsellable;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -352,6 +356,7 @@ public:
 			, PlacementPreview { false }
 			, PlacementPreview_Translucency { 75 }
 
+			, SuperWeaponTimer_Percentage { false }
 			, SuperWeaponSidebar_AllowByDefault { false }
 
 			, Shield_ConditionYellow { }
@@ -458,6 +463,8 @@ public:
 			, PodImage { }
 			, JumpjetClimbPredictHeight { false }
 			, JumpjetClimbWithoutCutOut { false }
+			, JumpjetClimbIgnoreBuilding { false }
+
 			, DamageOwnerMultiplier { 1.0 }
 			, DamageAlliesMultiplier { 1.0 }
 			, DamageEnemiesMultiplier { 1.0 }
@@ -574,6 +581,8 @@ public:
 			, CylinderRangefinding { false }
 
 			, PenetratesTransport_Level { 10 }
+
+			, UnitsUnsellable { false }
 		{ }
 
 		virtual ~ExtData() = default;
