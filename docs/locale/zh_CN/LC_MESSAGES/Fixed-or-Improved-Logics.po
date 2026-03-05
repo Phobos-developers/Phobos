@@ -1567,6 +1567,12 @@ msgid ""
 msgstr ""
 "修复了 Jumpjet 单位在开始下一个任务前必须先停止移动的问题。"
 
+msgid ""
+"Fixed an issue where parachute units would die upon landing if bridges "
+"were destroyed during their descent."
+msgstr ""
+"修复了空降到桥上的单位会由于降落过程中桥梁被毁而在着陆后死亡的问题、"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 
@@ -3743,6 +3749,13 @@ msgid ""
 "`FallingDownDamage.Water` customizes the damage a unit receives when it "
 "falls onto the water. Defaults to `FallingDownDamage`."
 msgstr "`FallingDownDamage.Water` 用于自定义单位坠落到水中时所受的伤害值，默认同 `FallingDownDamage`。"
+
+msgid ""
+"`FallingDownDamage.AllowEMP` determines whether units incapacitated by "
+"EMP can use `FallingDownDamage/FallingDownDamage.Water`. The default "
+"value is `true`."
+msgstr ""
+"`FallingDownDamage.AllowEMP` 决定被 EMP 瘫痪的单位能否使用 `FallingDownDamage/FallingDownDamage.Water`。默认值为 `true`。"
 
 msgid ""
 "If it is a negative percentage, corresponding damage will be dealt based "

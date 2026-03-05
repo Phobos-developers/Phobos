@@ -421,6 +421,7 @@ public:
 
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
+		Valueable<bool> FallingDownDamage_AllowEMP;
 
 		Valueable<int> Ammo_AutoConvertMinimumAmount;
 		Valueable<int> Ammo_AutoConvertMaximumAmount;
@@ -485,7 +486,11 @@ public:
 
 		Nullable<bool> JumpjetClimbIgnoreBuilding;
 
+		Valueable<bool> HoverDrownable;
+
 		Nullable<bool> Unsellable; // Ares 3.0
+
+		SHPStruct* TurretShape;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -862,6 +867,7 @@ public:
 
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
+			, FallingDownDamage_AllowEMP { true }
 
 			, Ammo_AutoConvertMinimumAmount { -1 }
 			, Ammo_AutoConvertMaximumAmount { -1 }
@@ -926,7 +932,11 @@ public:
 
 			, JumpjetClimbIgnoreBuilding {}
 
+			, HoverDrownable { true }
+
 			, Unsellable {}
+
+			, TurretShape { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;

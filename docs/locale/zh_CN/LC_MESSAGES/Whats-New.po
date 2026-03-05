@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-03 16:11+0800\n"
+"POT-Creation-Date: 2026-03-05 20:03+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1716,6 +1716,16 @@ msgstr "自定义寄生粒子系统（by NetsuNegi）"
 msgid "[Taunt warhead](New-or-Enhanced-Logics.md#taunt-warhead) (by TaranDahl)"
 msgstr "[嘲讽弹头](New-or-Enhanced-Logics.md#taunt-warhead)（by TaranDahl）"
 
+msgid ""
+"[Custom hover vehicles shutdown drowning death](New-or-Enhanced-Logics.md"
+"#custom-hover-vehicles-shutdown-drowning-death) (by FlyStar)"
+msgstr ""
+"[自定义悬浮载具溺死](New-or-Enhanced-Logics.md#custom-hover-vehicles-shutdown-"
+"drowning-death)（by FlyStar）"
+
+msgid "SHP turret vehicles support the use of `*tur.shp` files (by FlyStar)"
+msgstr ""
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
@@ -2049,6 +2059,11 @@ msgid ""
 "the next mission (by TaranDahl)"
 msgstr "修复了 Jumpjet 单位在开始下一个任务前必须先停止移动的问题（by TaranDahl）"
 
+msgid ""
+"Fixed an issue where parachute units would die upon landing if bridges "
+"were destroyed during their descent (by FlyStar)"
+msgstr "修复了空降到桥上的单位会由于降落过程中桥梁被毁而在着陆后死亡的问题（by FlyStar）"
+
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
 
@@ -2198,8 +2213,18 @@ msgstr "修复了建筑拓展工具提示信息中的发电量数值未考虑电
 msgid ""
 "`RealTimeTimers` now support independent gamespeed index values for "
 "Multiplayer and Skirmish (by RAZER)"
-msgstr ""
-"现在 `RealTimeTimers` 支持多人联机和遭遇战拥有彼此独立的游戏速度档位数值。"
+msgstr "现在 `RealTimeTimers` 支持多人联机和遭遇战拥有彼此独立的游戏速度档位数值。"
+
+msgid ""
+"Fixed the bug that the upgrade building's power-enhancing effect depends "
+"only on its parent building and is not related to the upgrade building "
+"itself (by NetsuNegi)"
+msgstr "修复了加载物建筑的电厂增幅效果仅取决于其基底建筑而非加载物建筑自身的 Bug（by NetsuNegi）"
+
+msgid ""
+"Fixed an issue where hover vehicles could not be destroyed after "
+"malfunctioning on water surfaces (by FlyStar)"
+msgstr "修复了悬浮载具在水面上失灵后无法被摧毁的问题（by FlyStar）"
 
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："

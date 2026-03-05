@@ -497,7 +497,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			if (isInAir)
 			{
 				pTechno->IsFallingDown = true;
-				pTechno->FallRate = 0;
+				TechnoExt::ExtMap.Find(pTechno)->OnParachuted = true;
 			}
 
 			if (pWHExt->UnlimboDetonate_KeepTarget

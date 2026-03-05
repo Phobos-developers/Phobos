@@ -414,6 +414,9 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals
   - Fix an issue where mining vehicles could not move after leaving a tank bunker
   - Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4
+  - Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent
+  - Custom hover vehicles shutdown drowning death
+  - SHP turret vehicles support the use of `*tur.shp` files
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -505,6 +508,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where parasites that have infected infantry do not provide a refund when the infected infantry enters a Grinding building
   - Fix the issue that `PassengerDeletion` dont consider passenger's passenger, parasite and hijacker
   - Fix the issue that power output of building on tooltip won't consider power enhancer
+  - Fix the bug that the upgrade building's power-enhancing effect depends only on its parent building and is not related to the upgrade building itself
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
