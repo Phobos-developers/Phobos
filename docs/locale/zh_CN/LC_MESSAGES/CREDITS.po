@@ -1285,6 +1285,7 @@ msgstr "自定义悬浮载具溺死"
 
 msgid "SHP turret vehicles support the use of `*tur.shp` files"
 msgstr ""
+"Shape 有炮塔载具支持使用 `*tur.shp` 文件。"
 
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："

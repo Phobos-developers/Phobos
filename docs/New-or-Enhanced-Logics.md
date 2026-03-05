@@ -2260,9 +2260,9 @@ Note that the VehicleTypes had to be defined under [VehicleTypes] and use same i
 ### Independent SHP Vehicle Turret Files
 
 - SHP turret vehicles support the use of `*tur.shp` files.
-  - If the SHP vehicle has a Shape file named `* tur.shp` when drawing the turret, the start frame becomes 0; Otherwise, it is still `WalkFrames * Facings`.
-  - If you want to split the existing shape file in two, you only need to separate the 32-frame image of the turret and the corresponding 32-frame shadow from the source file and combine them into a new shape file. 
-  - When the turrets of carrier-based vehicles need to be replaced, dividing them into two files can reduce troublesome steps.
+  - If the SHP vehicle has a Shape file named `*tur.shp` when drawing the turret, the turret starts from frame 0 of that file; otherwise, it starts from the frame at index `WalkFrames * Facings` (0-based) within the vehicle's main body shape.
+  - If you want to split the existing shape file in two, simply extract the 32 frames of the turret image along with their corresponding 32 frames of shadow from the source file, and combine them into a new shape file.
+  - When you need to change the turret used by a vehicle, splitting it into two files can simplify the process.
 
 ### Jumpjet Tilts While Moving
 

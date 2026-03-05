@@ -544,7 +544,7 @@ New:
 - Customize particle system of parasite logic (by NetsuNegi)
 - [Taunt warhead](New-or-Enhanced-Logics.md#taunt-warhead) (by TaranDahl)
 - [Custom hover vehicles shutdown drowning death](New-or-Enhanced-Logics.md#custom-hover-vehicles-shutdown-drowning-death) (by FlyStar)
-- SHP turret vehicles support the use of `*tur.shp` files (by FlyStar)
+- [SHP turret vehicles support the use of `*tur.shp` files](New-or-Enhanced-Logics.md#independent-shp-vehicle-turret-files) (by FlyStar)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

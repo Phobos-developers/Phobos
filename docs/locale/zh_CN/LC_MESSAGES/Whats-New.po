@@ -1723,8 +1723,12 @@ msgstr ""
 "[自定义悬浮载具溺死](New-or-Enhanced-Logics.md#custom-hover-vehicles-shutdown-"
 "drowning-death)（by FlyStar）"
 
-msgid "SHP turret vehicles support the use of `*tur.shp` files (by FlyStar)"
+msgid ""
+"[SHP turret vehicles support the use of `*tur.shp` files](New-or-"
+"Enhanced-Logics.md#independent-shp-vehicle-turret-files) (by FlyStar)"
 msgstr ""
+"[Shape 有炮塔载具支持使用 `*tur.shp` 文件。](New-or-"
+"Enhanced-Logics.md#independent-shp-vehicle-turret-files)（by FlyStar）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
