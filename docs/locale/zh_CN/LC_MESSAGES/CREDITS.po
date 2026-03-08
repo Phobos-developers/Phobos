@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-05 20:03+0800\n"
+"POT-Creation-Date: 2026-03-09 02:14+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -164,6 +164,9 @@ msgstr "移植了 XNA CNCNet Client 的多人游戏存档处理"
 
 msgid "Retint fix toggle"
 msgstr "为地图光照重绘时的建筑光源问题修复添加开关"
+
+msgid "Voxel drawing invisible sections skip"
+msgstr ""
 
 msgid "**Uranusian (Thrifinesma)**:"
 msgstr "**Uranusian (Thrifinesma)**："
@@ -1284,8 +1287,7 @@ msgid "Custom hover vehicles shutdown drowning death"
 msgstr "自定义悬浮载具溺死"
 
 msgid "SHP turret vehicles support the use of `*tur.shp` files"
-msgstr ""
-"Shape 有炮塔载具支持使用 `*tur.shp` 文件。"
+msgstr "Shape 有炮塔载具支持使用 `*tur.shp` 文件。"
 
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："

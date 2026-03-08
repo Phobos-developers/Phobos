@@ -52,6 +52,7 @@ This page lists all the individual contributions to the project by their author.
   - MP saves support for quicksave command and savegame trigger action
   - Ported XNA CnCNet Client MP save handling
   - Retint fix toggle
+  - Voxel drawing invisible sections skip
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -546,6 +547,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix a jumpjet crash related to voxel shadow drawing
   - Replace `BLOWFISH.DLL` using Red Alert source code
   - Adjust the dehardcoding of the 255 `OverlayType` limit to a different format
+  - Voxel drawing invisible sections skip
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft

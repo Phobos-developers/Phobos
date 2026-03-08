@@ -2,6 +2,7 @@
 #include <EventClass.h>
 #include <JumpjetLocomotionClass.h>
 #include <TunnelLocomotionClass.h>
+#include <FileFormats/HVA.h>
 
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Techno/Body.h>
@@ -3163,4 +3164,28 @@ DEFINE_HOOK(0x7442AB, UnitClass_ReadyToNextMission_FallingDown, 0x6)
 	enum { ReturnZero = 0x744383 };
 	GET(FootClass*, pThis, ESI);
 	return pThis->IsFallingDown ? ReturnZero : 0;
+}
+
+// sadly, useful for uncached voxels specifically, but no reason for the code to go to waste
+DEFINE_HOOK(0x706F64, TechnoClass_RenderVoxelObject_SkipInvisibleSections, 0x0)
+{
+	enum { SkipLayer = 0x706FDF };
+
+	GET(MotLib* const, pMotLib, EDI);
+
+	// stolen code
+	if (!pMotLib)
+		return 0x706FBD;
+
+	GET(int const, layer, EBX);
+	GET_STACK(unsigned int const, frame, STACK_OFFSET(0x13C, 0x18));
+
+	auto mtx = pMotLib->GetLayerMatrix(layer, frame);
+
+	if (mtx.row[0][0] == 0.0 && mtx.row[1][1] == 0.0 && mtx.row[2][2] == 0.0)
+		return SkipLayer;
+
+	// stolen code
+	R->EAX(frame);
+	return 0x706F6F;
 }
