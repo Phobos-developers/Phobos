@@ -3166,6 +3166,7 @@ DEFINE_HOOK(0x7442AB, UnitClass_ReadyToNextMission_FallingDown, 0x6)
 	return pThis->IsFallingDown ? ReturnZero : 0;
 }
 
+// sadly, useful for uncached voxels specifically, but no reason for the code to go to waste
 DEFINE_HOOK(0x706F64, TechnoClass_RenderVoxelObject_SkipInvisibleSections, 0x0)
 {
 	enum { SkipLayer = 0x706FDF };
