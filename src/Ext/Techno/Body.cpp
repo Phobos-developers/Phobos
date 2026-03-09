@@ -6,6 +6,7 @@
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Event/Body.h>
 
 #include <Utilities/AresFunctions.h>
 
@@ -324,14 +325,8 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 
 	if (AresFunctions::ConvertTypeTo)
 	{
-		const int oldHealth = pThis->Health;
-
 		if (AresFunctions::ConvertTypeTo(pThis, pToType))
 		{
-			// Fixed an issue where morphing could result in -1 health.
-			const double ratio = static_cast<double>(pToType->Strength) / pType->Strength;
-			pThis->Health = static_cast<int>(oldHealth * ratio + 0.5);
-
 			auto const pTypeExt = TechnoExt::ExtMap.Find(pThis);
 			pTypeExt->UpdateTypeData(pToType);
 			pTypeExt->UpdateTypeData_Foot();
@@ -832,7 +827,7 @@ bool TechnoExt::SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValu
 			const bool isLander = pType->DeployToLand && (isJumpjet || isHover);
 			disallowedLandTypes = isLander ? (LandTypeFlags)(LandTypeFlags::Water | LandTypeFlags::Beach) : LandTypeFlags::None;
 		}
-		
+
 		if (IsLandTypeInFlags(disallowedLandTypes, pThis->GetCell()->LandType))
 			return false;
 
@@ -866,6 +861,20 @@ bool TechnoExt::SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValu
 	}
 
 	return true;
+}
+
+void TechnoExt::ClickedApproachObject(FootClass* pThis, ObjectClass* pObject)
+{
+	if (Unsorted::MoveFeedback)
+		pThis->VoiceMove();
+
+	EventExt event {};
+	event.Type = EventTypeExt::ApproachObject;
+	event.HouseIndex = static_cast<char>(pThis->Owner->ArrayIndex);
+	event.Frame = Unsorted::CurrentFrame;
+	event.ApproachObject.Whom = TargetClass(pThis);
+	event.ApproachObject.Target = TargetClass(pObject);
+	event.AddEvent();
 }
 
 bool TechnoExt::EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, int distance, bool select)
@@ -1048,6 +1057,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpecialTracked)
 		.Process(this->FallingDownTracked)
 		.Process(this->JumpjetStraightAscend)
+		.Process(this->OnParachuted)
+		.Process(this->HoverShutdown)
 		;
 }
 

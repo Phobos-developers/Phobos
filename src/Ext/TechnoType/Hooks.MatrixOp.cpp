@@ -95,7 +95,17 @@ DEFINE_HOOK(0x73BA12, UnitClass_DrawAsVXL_RewriteTurretDrawing, 0x6)
 	{
 		auto mtxTurret = mtx;
 		pDrawTypeExt->ApplyTurretOffset(&mtxTurret, Pixel_Per_Lepton);
-		mtxTurret.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
+
+		double primaryRad = pThis->PrimaryFacing.Current().GetRadian<32>();
+
+		// Align with the jj Draw_Matrix calc changing.
+		if (auto pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+		{
+			if (!pThis->IsAttackedByLocomotor)
+				primaryRad = pJJLoco->LocomotionFacing.Current().GetRadian<32>();
+		}
+
+		mtxTurret.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - primaryRad));
 
 		if (pThis->TurretRecoil.State != RecoilData::RecoilState::Inactive)
 			mtxTurret.TranslateX(-pThis->TurretRecoil.TravelSoFar);

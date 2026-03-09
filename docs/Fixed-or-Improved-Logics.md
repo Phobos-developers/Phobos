@@ -297,6 +297,17 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allow the default value of `DefaultToGuardArea` to be defined by `[General] -> DefaultToGuardArea`.
 - Fixed the bug that cause technos teleport to cell 0,0 by ChronoSphere superweapon.
 - Fixed the bug that techno in attack move will move to target if it cannot attack it.
+- Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4.
+- Buildings with `NeedsEngineer=true` are now considered to have threat value of 0 under ownership of `MultiplayPassive=true` houses regardless of their `ThreatPosed` value.
+- Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold.
+- Fixed vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't.
+- Fixed the issue where the AI's regular targeting would also target garrisonable buildings.
+- Fixed the issue that the move mission of the jumpjet does not end correctly.
+- AI team garrison scripts now re-evaluate destination immediately instead of trying to garrison ungarrisonable building before changing target.
+- Fixed the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health.
+- Fixed the issue that the Jumpjet must end its movement before starting the next mission.
+- Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent.
+- Voxel drawing code now skips sections that are invisible (have all zeros in the transform matrix main diagonal, meaning that the scale is 0% on all axes), thus increasing drawing performance for some voxels.
 
 ## Fixes / interactions with other extensions
 
@@ -486,12 +497,17 @@ ForceShield.ExtraTintIntensity=0.0  ; floating point value
 - You can now let the jumpjets increase their height earlier by set `JumpjetClimbPredictHeight` to true. The jumpjet will raise its height 5 cells in advance, instead of only raising its height when encountering cliffs or buildings in front of it.
 - You can also let them simply skip the stop check by set `JumpjetClimbWithoutCutOut` to true. The jumpjet will not stop moving horizontally when encountering cliffs or buildings in front of it, but will continue to move forward while raising its altitude.
   - When `JumpjetClimbPredictHeight` is enabled, if the height raised five grids in advance is still not enough to cross cliffs or buildings, it will stop and move horizontally as before, unless `JumpjetClimbWithoutCutOut` is also enabled.
+- You can set `JumpjetClimbIgnoreBuilding` to true to make the jumpjet treat the building height as 0 when climbing.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-JumpjetClimbPredictHeight=false  ; boolean
-JumpjetClimbWithoutCutOut=false  ; boolean
+JumpjetClimbPredictHeight=false   ; boolean
+JumpjetClimbWithoutCutOut=false   ; boolean
+JumpjetClimbIgnoreBuilding=false  ; boolean
+
+[SOMETECHNO]                      ; TechnoType
+JumpjetClimbIgnoreBuilding=       ; boolean, default to [General] -> JumpjetClimbIgnoreBuilding
 ```
 
 ### Move IvanBomb Position
@@ -642,7 +658,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMESW]                                        ; SuperWeaponType
 UseWeeds=no                                     ; boolean - should the SW use weeds to recharge?
-UseWeeds.Amount=                                ; integer - how many? default is General->WeedCapacity
+UseWeeds.Amount=                                ; integer - how many weeds? default is [General] -> WeedCapacity
 UseWeeds.StorageTimer=no                        ; boolean - should the counter on the sidebar display the % of weeds stored?
 UseWeeds.ReadinessAnimationPercentage=0.9       ; double - when this many weeds % are stored, the SW will show it's ready on the building (open nuke/open chrono, etc.)
 ```
@@ -1553,13 +1569,15 @@ Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [TechnoTyp
 - Now you can customize the damage a unit receives when it falls from a bridge.
  - `FallingDownDamage` customizes the damage a unit receives at the end of a fall. It can be a percentage or an integer.
  - `FallingDownDamage.Water` customizes the damage a unit receives when it falls onto the water. Defaults to `FallingDownDamage`.
+ - `FallingDownDamage.AllowEMP` determines whether units incapacitated by EMP can use `FallingDownDamage/FallingDownDamage.Water`. The default value is `true`.
  - If it is a negative percentage, corresponding damage will be dealt based on the current health of the unit.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                    ; TechnoType
-FallingDownDamage=              ; integer / percentage
-FallingDownDamage.Water=        ; integer / percentage
+[SOMETECHNO]                        ; TechnoType
+FallingDownDamage=                  ; integer / percentage
+FallingDownDamage.Water=            ; integer / percentage
+FallingDownDamage.AllowEMP=true     ; boolean
 ```
 
 ### Damaged speed customization
@@ -1846,12 +1864,13 @@ PlayerAttackMoveTargetingDelay=      ; integer, game frames
 
 ### Target scan/guard range customizations
 
-- Target scan range is no longer capped to 16 cells under some circumstances f.ex on `Area Guard` or `Patrol` mission.
+- `MaxGuardRange` can be used to customize the hard cap on target scan range (e.g `GuardRange` or highest weapon range if zero or not set). Keep in mind that game doubles the effective range before this cap is applied, e.g range of 8 will hit the cap.
 - `AreaGuardRange` overrides explicit `GuardRange` setting for technos currently on `Area Guard` mission (f.ex guard mode command). As per usual, `GuardRange` in itself defaults to highest range between technos weapons if set to 0 or omitted.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]     ; TechnoType
+MaxGuardRange=16 ; floating point value, distance in cells
 AreaGuardRange=  ; floating point value, distance in cells
 ```
 
@@ -1944,6 +1963,7 @@ SpawnsTiberium.Type=0         ; tiberium/ore type index
 SpawnsTiberium.Range=1        ; integer, radius in cells
 SpawnsTiberium.GrowthStage=3  ; integer - single or comma-sep. range
 SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
+SpawnsTiberium.Particle=      ; Particle
 ```
 
 ### Damaged frames and crumbling animation
@@ -2075,6 +2095,14 @@ TypeSelectUseIFVMode=false   ; boolean
 
 [SOMEVEHICLE]                ; VehicleType
 WeaponGroupAsN=              ; string, default to N if [General] -> TypeSelectUseIFVMode=true, and 0 if false
+```
+
+- This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+TypeSelectUseIFVMode=true   ; boolean
 ```
 
 ### Customizing crushing tilt and slowdown
@@ -2449,11 +2477,13 @@ DecloakDamagedTargets=true  ; boolean
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-Parasite.GrappleAnim=             ; animation
+Parasite.GrappleAnim=SQDG               ; AnimationType
 
-[SOMEWARHEAD]                     ; WarheadType
-Parasite.CullingTarget=infantry   ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
-Parasite.GrappleAnim=             ; animation
+[SOMEWARHEAD]                           ; WarheadType
+Parasite.ParticleSystem=                ; ParticleSystemType, default to [CombatDamage] -> DefaultSparkSystem
+Parasite.DisableParticleSystem=false    ; boolean
+Parasite.CullingTarget=infantry         ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
+Parasite.GrappleAnim=                   ; AnimationType, default to [AudioVisual] -> Parasite.GrappleAnim
 ```
 
 ### Dehardcode the `ZAdjust` of warhead anim

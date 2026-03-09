@@ -595,17 +595,18 @@ DetachedReport=  ; Sound entry
 
 - There are now additional customizations available for building placement next to other buildings.
   - `Adjacent.Allowed` lists BuildingTypes this BuildingType can be placed off (within distance defined by `Adjacent`). If empty, any BuildingType not listed in `Adjacent.Disallowed` is okay.
-  - `Adjacent.Disallowed` lists BuildingTypes this BuildingType cannot be placed next to. If empty, any BuildingTypes are okay as long as `Adjacent.Allowed` is empty or they are listed on it.
-    - If `Adjacent.Disallowed.ExtraDistance` is set to value other than 0, this value is added to `Adjacent` value when checking for disallowed buildings.
+  - `Adjacent.Disallowed` lists BuildingTypes this BuildingType cannot be placed off from. If empty, any BuildingTypes are okay as long as `Adjacent.Allowed` is empty or they are listed on it.
+    - `Adjacent.Disallowed.Prohibit` if set to true makes this behaviour strict and disallows placement even if there are eligible buildings around if the placement is within range of a disallowed one. `Adjacent.Disallowed.ProhibitDistance` can be used to override `Adjacent` for this check if set to value higher than 0.
   - If `NoBuildAreaOnBuildup` is set to true, no building can be built next to this building regardless of any other settings if it is currently displaying its buildup animation.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEBUILDING]                       ; BuildingType
-Adjacent.Allowed=                    ; List of BuildingTypes
-Adjacent.Disallowed=                 ; List of BuildingTypes
-Adjacent.Disallowed.ExtraDistance=0  ; integer, cell offset
-NoBuildAreaOnBuildup=false           ; boolean
+[SOMEBUILDING]                          ; BuildingType
+Adjacent.Allowed=                       ; List of BuildingTypes
+Adjacent.Disallowed=                    ; List of BuildingTypes
+Adjacent.Disallowed.Prohibit=false      ; boolean
+Adjacent.Disallowed.ProhibitDistance=0  ; integer, cell offset
+NoBuildAreaOnBuildup=false              ; boolean
 ```
 
 ### Destroyable pathfinding obstacles
@@ -705,7 +706,6 @@ DeployedSecondaryFireFLH=  ; integer - Forward,Lateral,Height
 - `SlavesFreeSound` can now be set individually for each enslavable infantry type.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEINFANTRY]        ; InfantryType, with Slaved=yes
 SlavesFreeSound=      ; Sound entry, default to [AudioVisual] -> SlavesFreeSound
@@ -1556,6 +1556,7 @@ DrainMoneyDisplay.OnTarget.UseDisplayIncome=        ; boolean
 - `OpenTopped.ShareTransportTarget` controls whether or not the current target of the transport itself is passed to the passengers as well.
 - You can also customize range bonus and damage multiplier for passenger inside the transport with `OpenTransport.RangeBonus/DamageMultiplier`, which works independently from transport's `OpenTopped.RangeBonus/DamageMultiplier`.
 
+In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                              ; TechnoType, transport with OpenTopped=yes
 OpenTopped.RangeBonus=                    ; integer, default to [CombatDamage] -> OpenToppedRangeBonus
@@ -2227,6 +2228,16 @@ Ammo.DeployUnlockMinimumAmount=-1  ; integer
 Ammo.DeployUnlockMaximumAmount=-1  ; integer
 ```
 
+### Custom hover vehicles shutdown drowning death
+
+- `HoverDrownable` allows customization of whether hover vehicles will drown and die when deactivated on water zone.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]           ; VehicleType
+HoverDrownable=true     ; boolean
+```
+
 ### Damaged unit image changes
 
 - When a unit is damaged (health points percentage is lower than `[AudioVisual] -> ConditionYellow` percentage), it now may use different image set by `Image.ConditionYellow` VehicleType.
@@ -2245,6 +2256,13 @@ WaterImage.ConditionRed=              ; VehicleType entry
 ```{warning}
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
 ```
+
+### Independent SHP Vehicle Turret Files
+
+- SHP turret vehicles support the use of `*tur.shp` files.
+  - If the SHP vehicle has a Shape file named `*tur.shp` when drawing the turret, the turret starts from frame 0 of that file; otherwise, it starts from the frame at index `WalkFrames * Facings` (0-based) within the vehicle's main body shape.
+  - If you want to split the existing shape file in two, simply extract the 32 frames of the turret image along with their corresponding 32 frames of shadow from the source file, and combine them into a new shape file.
+  - When you need to change the turret used by a vehicle, splitting it into two files can simplify the process.
 
 ### Jumpjet Tilts While Moving
 
@@ -2763,6 +2781,18 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]            ; WarheadType
 SpawnsCrate(N).Type=     ; Powerup crate type enum (money|unit|healbase|cloak|explosion|napalm|squad|reveal|armor|speed|firepower|icbm|invulnerability|veteran|ionstorm|gas|tiberium|pod)
 SpawnsCrate(N).Weight=1  ; integer
+```
+
+### Taunt warhead
+
+- Now you can use the following tags to make the warhead "taunt" the target, override its current mission, and force it to attack the source of the damage.
+  - The taunted target will behaves like doing retaliation.
+  - If there is no source unit for the damage, the taunt will not take effect.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]    ; WarheadType
+Taunt=false      ; boolean
 ```
 
 ### Toggle per-target warhead effects apply timing

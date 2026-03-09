@@ -233,6 +233,7 @@ public:
 		Valueable<TargetZoneScanType> TargetZoneScanType;
 
 		Nullable<Leptons> AreaGuardRange;
+		Valueable<Leptons> MaxGuardRange;
 
 		Promotable<SHPStruct*> Insignia;
 		Valueable<Vector3D<int>> InsigniaFrames;
@@ -420,6 +421,7 @@ public:
 
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
+		Valueable<bool> FallingDownDamage_AllowEMP;
 
 		Valueable<int> Ammo_AutoConvertMinimumAmount;
 		Valueable<int> Ammo_AutoConvertMaximumAmount;
@@ -481,6 +483,14 @@ public:
 		Valueable<double> PenetratesTransport_PassThroughMultiplier;
 		Valueable<double> PenetratesTransport_FatalRateMultiplier;
 		Valueable<double> PenetratesTransport_DamageMultiplier;
+
+		Nullable<bool> JumpjetClimbIgnoreBuilding;
+
+		Valueable<bool> HoverDrownable;
+
+		Nullable<bool> Unsellable; // Ares 3.0
+
+		SHPStruct* TurretShape;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -686,6 +696,7 @@ public:
 			, TargetZoneScanType { TargetZoneScanType::Same }
 
 			, AreaGuardRange {}
+			, MaxGuardRange { Leptons(4096) }
 
 			, Insignia {}
 			, InsigniaFrames { { -1, -1, -1 } }
@@ -856,6 +867,7 @@ public:
 
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
+			, FallingDownDamage_AllowEMP { true }
 
 			, Ammo_AutoConvertMinimumAmount { -1 }
 			, Ammo_AutoConvertMaximumAmount { -1 }
@@ -917,6 +929,14 @@ public:
 			, PenetratesTransport_PassThroughMultiplier { 1.0 }
 			, PenetratesTransport_FatalRateMultiplier { 1.0 }
 			, PenetratesTransport_DamageMultiplier { 1.0 }
+
+			, JumpjetClimbIgnoreBuilding {}
+
+			, HoverDrownable { true }
+
+			, Unsellable {}
+
+			, TurretShape { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;
