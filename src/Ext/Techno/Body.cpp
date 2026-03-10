@@ -8,6 +8,7 @@
 
 #include <Utilities/AresFunctions.h>
 #include <Utilities/AresHelper.h>
+#include <Interop/TechnoExt.h>
 
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 UnitClass* TechnoExt::Deployer = nullptr;
@@ -1190,7 +1191,15 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 
 int TechnoExt::ExtData::GetSight()
 {
-	return this->TypeExtData->OwnerObject()->Sight;
+	double sight = this->TypeExtData->OwnerObject()->Sight;
+	
+	for (auto& callback : TechnoExtInterop::CalculateSightCallbacks)
+	{
+		if (callback)
+			sight = callback(this->OwnerObject(), sight);
+	}
+	
+	return static_cast<int>(sight);
 }
 
 bool TechnoExt::HasWeaponsDisabled(TechnoClass* pThis)

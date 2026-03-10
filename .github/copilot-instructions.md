@@ -271,6 +271,69 @@ When the type or function you need is missing or incorrect in YRpp, add or fix i
 
 **Important:** Always push your YRpp branch *before* pushing the Phobos commit that references it, otherwise CI cannot resolve the submodule.
 
+### Interop API design
+
+#### Key macros
+
+Interop exports are declared in `src/Interop/*.h` using macros from `src/Utilities/Macro.h`:
+
+| Macro | Purpose | Notes |
+|---|---|---|
+| `DEFINE_CALLBACK(returnType, FuncName, params...)` | Declares a callback type. Callbacks are chain-able (each receives previous result) and stored in a static `std::vector`. Use null-checks when invoking. | Declare in header, initialize in `.cpp` |
+| `DEFINE_EXPORT(returnType, FuncName, params...)` | Exports a C function for P/Invoke. Signature: `extern "C" __declspec(dllexport)`. Use `_Phobos` suffix to avoid naming collisions with Ares. | See `src/Interop/TechnoExt.h/cpp` for examples |
+
+#### Interop API version management
+
+Interop API versions are defined in `src/Interop/Version.h` and follow **Semantic Versioning 2.0.0** (see https://semver.org/):
+
+| Version Component | Increment When | Example |
+|---|---|---|
+| **Major** | Breaking change (backward incompatible). Existing external code **will not work** without modification. | Changing callback signature: `double f(int a)` → `double f(int a, int b)` |
+| **Minor** | New backward-compatible feature added. External code continues to work without change. | Adding a new `DEFINE_EXPORT` function or new callback type. |
+| **Patch** | Backward-compatible bug fix only. No API changes. | Fixing a logic error in an exported function implementation. |
+
+**Version constants in `Version.h`:**
+```cpp
+#define INTEROP_API_VERSION_MAJOR 1
+#define INTEROP_API_VERSION_MINOR 2
+#define INTEROP_API_VERSION_PATCH 0
+```
+
+**When to increment:**
+
+- **MAJOR bump** (1.0.0 → 2.0.0):
+  - Change callback/function signature (parameter type, return type, count).
+  - Remove or rename a callback/export.
+  - Change callback return value semantics (e.g., return value now used differently).
+
+- **MINOR bump** (1.0.0 → 1.1.0):
+  - Add a new callback type and its registration function.
+  - Add a new `DEFINE_EXPORT` function.
+  - Extend callback behavior with new optional parameters (if backward compatible).
+
+- **PATCH bump** (1.0.0 → 1.0.1):
+  - Fix a bug in an exported function's implementation.
+  - Clarify documentation/comments.
+  - No API signature changes.
+
+**Example workflow:**
+
+1. You add `DEFINE_EXPORT(void, NewFeature_Phobos, ...)` - this is a new feature → **MINOR** bump (1.0.0 → 1.1.0).
+2. You change the signature of an existing callback from `int f(ptr)` to `int f(ptr, int extra)` → **MAJOR** bump (1.1.0 → 2.0.0).
+3. You fix a logic bug in `ConvertToType_Phobos` without changing its signature → **PATCH** bump (2.0.0 → 2.0.1).
+
+**Deprecated APIs:**
+
+When an exported function or callback becomes obsolete but must remain for compatibility, keep its stub but document it with a version range and deprecation note:
+
+```cpp
+/// <summary>
+/// DEPRECATED: Use RegisterCalculateSightCallback_Phobos (available since 1.1.0).
+/// This function will be removed in version 3.0.0.
+/// </summary>
+DEFINE_EXPORT(void, RegisterSightModifier_Phobos, OldCallbackType callback);  // Removed in 3.0.0
+```
+
 ## Code Style (enforced by .editorconfig)
 
 - **Tabs** for indentation (size 4).

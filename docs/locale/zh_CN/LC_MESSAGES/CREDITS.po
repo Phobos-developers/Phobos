@@ -2546,6 +2546,8 @@ msgstr "修复了处于 `Area Guard` 任务中的单位消灭目标后重新获�
 
 msgid "Framework for dynamic sight"
 msgstr "动态视野框架"
+msgid "Export interface for external call"
+msgstr "用于外部调用的导出接口"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"

@@ -2741,6 +2741,11 @@ msgstr ""
 "[超级武器的辅助单位和科技等级限制](New-or-Enhanced-Logics.md#aux-technos-and-techlevel-"
 "requirement-of-superweapon)（by NetsuNegi 与 Ollerus）"
 
+msgid ""
+"[Export interface for external call](index.md#interoperability) (by "
+"TaranDahl)"
+msgstr "用于外部调用的导出接口（by TaranDahl）"
+
 msgid "0.4.0.3"
 msgstr "0.4.0.3"
 
