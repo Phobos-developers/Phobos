@@ -1730,6 +1730,13 @@ msgstr ""
 "[Shape 有炮塔载具支持使用 `*tur.shp` 文件。](New-or-Enhanced-Logics.md#independent-"
 "shp-vehicle-turret-files)（by FlyStar）"
 
+msgid ""
+"[Implement `CurleyShuffle` for AircraftTypes](Fixed-or-Improved-Logics.md"
+"#implement-curleyshuffle-for-aircrafttypes) (ported from Vinifera by "
+"Noble_Fish)"
+msgstr ""
+"[实现战机微观 `CurleyShuffle` 设置](Fixed-or-Improved-Logics.md#implement-curleyshuffle-for-aircrafttypes)（由 Noble_Fish 移植自 Vinifera）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
