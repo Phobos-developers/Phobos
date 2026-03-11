@@ -158,9 +158,6 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 
 	if (const auto pTargetTechno = abstract_cast<TechnoClass*, true>(pTarget))
 	{
-		if (pTargetTechno->Health <= 0 || !pTargetTechno->IsAlive)
-			return 0;
-
 		bool getNavalTargeting = false;
 
 		auto checkSecondary = [&](int weaponIndex) -> bool
