@@ -16,6 +16,9 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 	else if (!pWeaponStructOne)
 		return weaponIndexTwo;
 
+	if (pTargetTechno && (pTargetTechno->Health <= 0 || !pTargetTechno->IsAlive))
+		return weaponIndexOne;
+
 	auto const pWeaponTwo = pWeaponStructTwo->WeaponType;
 	auto const pSecondExt = WeaponTypeExt::ExtMap.Find(pWeaponTwo);
 

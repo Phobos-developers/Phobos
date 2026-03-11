@@ -217,9 +217,8 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 		};
 
 		const LandType landType = pTargetTechno->GetCell()->LandType;
-		const bool targetOnWater = landType == LandType::Water || landType == LandType::Beach;
 
-		if (!pTargetTechno->OnBridge && targetOnWater)
+		if (!pTargetTechno->OnBridge && (landType == LandType::Water || landType == LandType::Beach) && !pTargetTechno->IsInAir())
 		{
 			const int result = pThis->SelectNavalTargeting(pTargetTechno);
 
