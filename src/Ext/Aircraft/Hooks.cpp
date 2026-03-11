@@ -1221,3 +1221,39 @@ DEFINE_HOOK(0x66295A, RocketLocomotionClass_Process_IsHighEnoughForCruise, 0x8)
 }
 
 #pragma endregion
+
+#pragma region CurleyShuffle
+
+DEFINE_HOOK(0x4183C3, AircraftClass_CurleyShuffle_FireAtTarget, 0x6)
+{
+	GET(AircraftClass*, pThis, ESI);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	R->DL(pTypeExt->CurleyShuffle);
+	return 0x4183C9;
+}
+
+DEFINE_HOOK(0x418671, AircraftClass_CurleyShuffle_FireOk, 0x6)
+{
+	GET(AircraftClass*, pThis, ESI);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	R->AL(pTypeExt->CurleyShuffle);
+	return 0x418677;
+}
+
+DEFINE_HOOK(0x418733, AircraftClass_CurleyShuffle_FireFacing, 0x6)
+{
+	GET(AircraftClass*, pThis, ESI);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	R->CL(pTypeExt->CurleyShuffle);
+	return 0x418739;
+}
+
+DEFINE_HOOK(0x418782, AircraftClass_CurleyShuffle_Default, 0x6)
+{
+	GET(AircraftClass*, pThis, ESI);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	R->DL(pTypeExt->CurleyShuffle);
+	return 0x418788;
+}
+
+#pragma endregion
