@@ -281,7 +281,7 @@ public:
 		Nullable<int> SpawnHeight;
 		Nullable<int> LandingDir;
 
-		Valueable<bool> CurleyShuffle;
+		Nullable<bool> CurleyShuffle;
 
 		Valueable<TechnoTypeClass*> Convert_Deploy; // Ares
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
