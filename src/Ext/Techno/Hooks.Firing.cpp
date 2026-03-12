@@ -220,13 +220,13 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 
 		auto isWeaponValid = [&](WeaponTypeClass* pWeapon)
 			{
-				if (pShield && pShield->IsActive() && !pShield->CanBeTargeted(pWeapon))
-					return false;
-				if (GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, armor) == 0.0)
+				if (inAir && !pWeapon->Projectile->AA)
 					return false;
 				if (isUnderground && !BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->AU)
 					return false;
-				if (inAir && !pWeapon->Projectile->AA)
+				if (pShield && pShield->IsActive() && !pShield->CanBeTargeted(pWeapon))
+					return false;
+				if (GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, armor) == 0.0)
 					return false;
 				return true;
 			};
