@@ -74,7 +74,7 @@ void EventExt::RespondApproachObject()
 	pSource->LastDestination = nullptr;
 
 	if (const auto pManager = pSource->SlaveManager)
-		reinterpret_cast<void(__thiscall*)(SlaveManagerClass*)>(0x6B0C80)(pManager); // pManager->AllGuard();
+		pManager->AllGuard();
 
 	pSource->ClearNavigationList();
 	pSource->SetDestination(nullptr, true);
@@ -87,7 +87,7 @@ void EventExt::RespondApproachObject()
 		return;
 
 	pSource->Target = pObject;
-	pSource->vt_entry_53C(0);
+	pSource->ApproachTarget(0);
 	pSource->Target = nullptr;
 }
 
