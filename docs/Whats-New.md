@@ -543,6 +543,9 @@ New:
 - [Allow draw SuperWeapon timer as percentage](User-Interface.md#allow-draw-superweapon-timer-as-percentage) (by NetsuNegi)
 - Customize particle system of parasite logic (by NetsuNegi)
 - [Taunt warhead](New-or-Enhanced-Logics.md#taunt-warhead) (by TaranDahl)
+- [Custom hover vehicles shutdown drowning death](New-or-Enhanced-Logics.md#custom-hover-vehicles-shutdown-drowning-death) (by FlyStar)
+- [SHP turret vehicles support the use of `*tur.shp` files](New-or-Enhanced-Logics.md#independent-shp-vehicle-turret-files) (by FlyStar)
+- [Implement `CurleyShuffle` for AircraftTypes](Fixed-or-Improved-Logics.md#implement-curleyshuffle-for-aircrafttypes) (ported from Vinifera by Noble_Fish)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -607,6 +610,8 @@ Vanilla fixes:
 - AI team garrison scripts now re-evaluate destination immediately instead of trying to garrison ungarrisonable building before changing target (by Starkku)
 - Fixed the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health (by CrimRecya)
 - Fixed the issue that the Jumpjet must end its movement before starting the next mission (by TaranDahl)
+- Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent (by FlyStar)
+- Voxel drawing code now skips sections that are invisible (have all zeros in the transform matrix main diagonal, meaning that the scale is 0% on all axes), thus increasing drawing performance for some voxels (by Kerbiter & ZivDero)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -640,6 +645,7 @@ Phobos fixes:
 - Fixed the issue that power output of building on tooltip won't consider power enhancer (by NetsuNegi)
 - `RealTimeTimers` now support independent gamespeed index values for Multiplayer and Skirmish (by RAZER)
 - Fixed the bug that the upgrade building's power-enhancing effect depends only on its parent building and is not related to the upgrade building itself (by NetsuNegi)
+- Fixed an issue where hover vehicles could not be destroyed after malfunctioning on water surfaces (by FlyStar)
 
 Fixes / interactions with other extensions:
 <!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->

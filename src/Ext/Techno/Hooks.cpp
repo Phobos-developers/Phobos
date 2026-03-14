@@ -853,78 +853,134 @@ DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
 
 #pragma region Customized FallingDown Damage
 
-DEFINE_HOOK(0x5F416A, ObjectClass_DropAsBomb_ResetFallRateRate, 0x7)
+DEFINE_HOOK(0x514C07, HoverLocomotionClass_Process_HoverShutdown, 0x5)
 {
-	GET(ObjectClass*, pThis, ESI);
+	enum { SkipGameCode = 0x514C12 };
 
-	// Reset value, otherwise it'll keep accelerating.
-	pThis->FallRate = 0;
-	return 0;
+	GET(LocomotionClass* const, pThis, ESI);
+
+	const auto pTechno = pThis->Owner;
+	pTechno->DropAsBomb();
+	TechnoExt::ExtMap.Find(pTechno)->HoverShutdown = true;
+
+	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
+DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 {
-	GET(ObjectClass*, pThis, ESI);
+	enum { SkipGameCode = 0x5F405B };
+
+	GET(ObjectClass* const, pThis, ESI);
 
 	pThis->FallRate = 0;
 
 	if (const auto pTechno = abstract_cast<TechnoClass*, true>(pThis))
 	{
-		const auto pType = pTechno->GetTechnoType();
-		const auto pCell = pTechno->GetCell();
+		const auto pExt = TechnoExt::ExtMap.Find(pTechno);
+		const bool onParachuted = pExt->OnParachuted;
+		pExt->OnParachuted = false;
 
-		if (!pCell->IsClearToMove(pType->SpeedType, true, true, -1, pType->MovementZone, pCell->GetLevel(), pCell->ContainsBridge()))
-			return 0;
-
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-		double ratio = 0.0;
-
-		if (pCell->LandType == LandType::Water && !pTechno->OnBridge)
-			ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get());
-		else
-			ratio = pTypeExt->FallingDownDamage.Get();
-
-		int damage = 0;
-
-		if (ratio < 0.0)
-			damage = static_cast<int>(pThis->Health * std::abs(ratio));
-		else if (ratio >= 0.0 && ratio <= 1.0)
-			damage = static_cast<int>(pType->Strength * ratio);
-		else
-			damage = static_cast<int>(ratio);
-
-		pThis->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, true, nullptr);
-
-		if (pThis->Health > 0 && pThis->IsAlive)
+		if (pThis->IsABomb && pThis->IsAlive)
 		{
-			pThis->IsABomb = false;
-			const auto abs = pThis->WhatAmI();
+			const bool hoverShutdown = pExt->HoverShutdown;
+			pExt->HoverShutdown = false;
 
-			if (abs == AbstractType::Infantry)
+			if (hoverShutdown)
 			{
-				const auto pInf = static_cast<InfantryClass*>(pTechno);
-				const auto sequenceAnim = pInf->SequenceAnim;
-				pInf->ShouldDeploy = false;
-
-				if (pCell->LandType == LandType::Water && !pInf->OnBridge)
+				if (pExt->TypeExtData->HoverDrownable)
 				{
-					if (sequenceAnim != Sequence::Swim)
-						pInf->PlayAnim(Sequence::Swim, true, false);
-				}
-				else if (sequenceAnim != Sequence::Guard)
-				{
-					pInf->PlayAnim(Sequence::Ready, true, false);
+					int damage = pThis->Health;
+					pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
 				}
 
-				pInf->Scatter(pInf->GetCoords(), true, false);
+				pThis->IsABomb = false;
+				return SkipGameCode;
 			}
-			else if (abs == AbstractType::Unit)
+
+			const auto pCell = pTechno->GetCell();
+			const bool onBridge = pCell->ContainsBridge();
+
+			const auto pType = pTechno->GetTechnoType();
+			int damage = 0;
+
+			if (!pCell->IsClearToMove(pType->SpeedType, true, true, -1, pType->MovementZone, -1, onBridge))
 			{
-				static_cast<UnitClass*>(pTechno)->UpdatePosition(PCPType::During);
+				damage = pThis->Health;
+				pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+
+				return SkipGameCode;
+			}
+
+			const LandType landType = pCell->LandType;
+			const bool inWater = !onBridge && (landType == LandType::Water || landType == LandType::Beach);
+
+			if (!onParachuted)
+			{
+				const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+				if (!pTypeExt->FallingDownDamage_AllowEMP && pTechno->EMPLockRemaining > 0)
+				{
+					damage = pThis->Health;
+					pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+
+					return SkipGameCode;
+				}
+
+				double ratio = 0.0;
+
+				if (inWater)
+					ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get());
+				else
+					ratio = pTypeExt->FallingDownDamage.Get();
+
+				if (ratio < 0.0)
+					damage = static_cast<int>(pThis->Health * std::abs(ratio));
+				else if (ratio >= 0.0 && ratio <= 1.0)
+					damage = static_cast<int>(pType->Strength * ratio);
+				else
+					damage = static_cast<int>(ratio);
+			}
+
+			if (damage == 0
+				|| pThis->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr) != DamageState::NowDead)
+			{
+				pThis->IsABomb = false;
+				const auto abs = pThis->WhatAmI();
+
+				if (abs == AbstractType::Infantry)
+				{
+					const auto pInf = static_cast<InfantryClass*>(pTechno);
+					const auto sequenceAnim = pInf->SequenceAnim;
+					pInf->ShouldDeploy = false;
+
+					if (inWater)
+					{
+						if (sequenceAnim != Sequence::Swim)
+							pInf->PlayAnim(Sequence::Swim, true, false);
+					}
+					else if (sequenceAnim != Sequence::Guard)
+					{
+						pInf->PlayAnim(Sequence::Ready, true, false);
+					}
+
+					ObjectClass* pObject = pCell->GetContent();
+
+					while (pObject->NextObject)
+					{
+						pObject = pObject->NextObject;
+					}
+
+					if (pObject != pInf)
+						pInf->Scatter(pInf->GetCoords(), true, false);
+				}
+				else if (abs == AbstractType::Unit)
+				{
+					static_cast<UnitClass*>(pTechno)->UpdatePosition(PCPType::During);
+				}
 			}
 		}
 
-		return 0x5F405B;
+		return SkipGameCode;
 	}
 
 	return 0;
@@ -1674,8 +1730,11 @@ static bool __fastcall FootClass_Paradrop(FootClass* pThis, void*, const CoordSt
 	if (!pThis->ObjectClass::SpawnParachuted(coords))
 		return false;
 
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pTypeExt = pExt->TypeExtData;
 	Mission mission;
+
+	pExt->OnParachuted = true;
 
 	if (pThis->Owner->IsControlledByHuman())
 		mission = pTypeExt->ParadropMission.Get(RulesExt::Global()->ParadropMission);

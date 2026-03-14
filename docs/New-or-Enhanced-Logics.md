@@ -2228,6 +2228,16 @@ Ammo.DeployUnlockMinimumAmount=-1  ; integer
 Ammo.DeployUnlockMaximumAmount=-1  ; integer
 ```
 
+### Custom hover vehicles shutdown drowning death
+
+- `HoverDrownable` allows customization of whether hover vehicles will drown and die when deactivated on water zone.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]           ; VehicleType
+HoverDrownable=true     ; boolean
+```
+
 ### Damaged unit image changes
 
 - When a unit is damaged (health points percentage is lower than `[AudioVisual] -> ConditionYellow` percentage), it now may use different image set by `Image.ConditionYellow` VehicleType.
@@ -2246,6 +2256,13 @@ WaterImage.ConditionRed=              ; VehicleType entry
 ```{warning}
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
 ```
+
+### Independent SHP Vehicle Turret Files
+
+- SHP turret vehicles support the use of `*tur.shp` files.
+  - If the SHP vehicle has a Shape file named `*tur.shp` when drawing the turret, the turret starts from frame 0 of that file; otherwise, it starts from the frame at index `WalkFrames * Facings` (0-based) within the vehicle's main body shape.
+  - If you want to split the existing shape file in two, simply extract the 32 frames of the turret image along with their corresponding 32 frames of shadow from the source file, and combine them into a new shape file.
+  - When you need to change the turret used by a vehicle, splitting it into two files can simplify the process.
 
 ### Jumpjet Tilts While Moving
 

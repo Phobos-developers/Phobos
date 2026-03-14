@@ -1,6 +1,5 @@
 #pragma once
-#include <TargetClass.h>
-
+/*
 #include <cstddef>
 #include <stdint.h>
 
@@ -10,10 +9,10 @@ enum class EventTypeExt : uint8_t
 	// CnCNet reserved Events from 0x30 to 0x3F
 	// Ares used Events 0x60 and 0x61
 
-	ApproachObject = 0x40,
+	Sample = 0x40, // Sample event, remove it when Phobos needs its own events
 
-	FIRST = ApproachObject,
-	LAST = ApproachObject
+	FIRST = Sample,
+	LAST = Sample
 };
 
 #pragma pack(push, 1)
@@ -28,17 +27,14 @@ public:
 	{
 		char DataBuffer[104];
 
-		struct APPROACHOBJECT
+		struct Sample
 		{
-			TargetClass Whom;
-			TargetClass Target;
-		} ApproachObject;
+			char DataBuffer[104];
+		} Sample;
 	};
 
 	bool AddEvent();
 	void RespondEvent();
-
-	void RespondApproachObject();
 
 	static size_t GetDataSize(EventTypeExt type);
 	static bool IsValidType(EventTypeExt type);
@@ -47,3 +43,4 @@ public:
 static_assert(sizeof(EventExt) == 111);
 static_assert(offsetof(EventExt, DataBuffer) == 7);
 #pragma pack(pop)
+*/

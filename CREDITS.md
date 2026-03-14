@@ -52,6 +52,7 @@ This page lists all the individual contributions to the project by their author.
   - MP saves support for quicksave command and savegame trigger action
   - Ported XNA CnCNet Client MP save handling
   - Retint fix toggle
+  - Voxel drawing invisible sections skip
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -414,6 +415,9 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals
   - Fix an issue where mining vehicles could not move after leaving a tank bunker
   - Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4
+  - Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent
+  - Custom hover vehicles shutdown drowning death
+  - SHP turret vehicles support the use of `*tur.shp` files
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -543,6 +547,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix a jumpjet crash related to voxel shadow drawing
   - Replace `BLOWFISH.DLL` using Red Alert source code
   - Adjust the dehardcoding of the 255 `OverlayType` limit to a different format
+  - Voxel drawing invisible sections skip
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft
@@ -731,6 +736,8 @@ This page lists all the individual contributions to the project by their author.
   - Superweapon launch site & availability code
   - AI vehicle production update code
   - parts of TechnoType conversion placeholder code
+- **[Vinifera Contributors](https://github.com/Vinifera-developers/Vinifera/blob/develop/CREDITS.md)**:
+  - Implement `CurleyShuffle` for AircraftTypes
 - **ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, CrimRecya** - Digital Display
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix

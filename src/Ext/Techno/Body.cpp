@@ -6,7 +6,6 @@
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Ext/Event/Body.h>
 
 #include <Utilities/AresFunctions.h>
 
@@ -863,20 +862,6 @@ bool TechnoExt::SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValu
 	return true;
 }
 
-void TechnoExt::ClickedApproachObject(FootClass* pThis, ObjectClass* pObject)
-{
-	if (Unsorted::MoveFeedback)
-		pThis->VoiceMove();
-
-	EventExt event {};
-	event.Type = EventTypeExt::ApproachObject;
-	event.HouseIndex = static_cast<char>(pThis->Owner->ArrayIndex);
-	event.Frame = Unsorted::CurrentFrame;
-	event.ApproachObject.Whom = TargetClass(pThis);
-	event.ApproachObject.Target = TargetClass(pObject);
-	event.AddEvent();
-}
-
 bool TechnoExt::EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, int distance, bool select)
 {
 	std::vector<CoordStruct> usableCoords;
@@ -1057,6 +1042,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpecialTracked)
 		.Process(this->FallingDownTracked)
 		.Process(this->JumpjetStraightAscend)
+		.Process(this->OnParachuted)
+		.Process(this->HoverShutdown)
 		;
 }
 

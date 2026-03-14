@@ -2,6 +2,7 @@
 #include <EventClass.h>
 #include <JumpjetLocomotionClass.h>
 #include <TunnelLocomotionClass.h>
+#include <FileFormats/HVA.h>
 
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Techno/Body.h>
@@ -1377,7 +1378,7 @@ DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_RequestUntether, 0x7)
 // Fix the bug that techno in attack move will move to target if it cannot attack it
 DEFINE_HOOK(0x4D77BD, FootClass_ObjectClickedAction_NoMove, 0x6)
 {
-	enum { ReturnFalse = 0x4D77EC, ReturnTrue = 0x4D7CC0 };
+	enum { Attack = 0x4D769F };
 
 	GET(ObjectClass*, pTarget, EBX);
 	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
@@ -1386,15 +1387,7 @@ DEFINE_HOOK(0x4D77BD, FootClass_ObjectClickedAction_NoMove, 0x6)
 		return 0;
 
 	GET(FootClass*, pThis, ESI);
-
-	if (pThis->Owner->IsAlliedWith(pTargetTechno->Owner))
-		return 0;
-
-	if (!pThis->IsActive())
-		return ReturnFalse;
-
-	TechnoExt::ClickedApproachObject(pThis, pTarget);
-	return ReturnTrue;
+	return pThis->Owner->IsAlliedWith(pTargetTechno->Owner) ? 0 : Attack;
 }
 
 #pragma region JumpjetShadowPointFix
@@ -3163,4 +3156,28 @@ DEFINE_HOOK(0x7442AB, UnitClass_ReadyToNextMission_FallingDown, 0x6)
 	enum { ReturnZero = 0x744383 };
 	GET(FootClass*, pThis, ESI);
 	return pThis->IsFallingDown ? ReturnZero : 0;
+}
+
+// sadly, useful for uncached voxels specifically, but no reason for the code to go to waste
+DEFINE_HOOK(0x706F64, TechnoClass_RenderVoxelObject_SkipInvisibleSections, 0x0)
+{
+	enum { SkipLayer = 0x706FDF };
+
+	GET(MotLib* const, pMotLib, EDI);
+
+	// stolen code
+	if (!pMotLib)
+		return 0x706FBD;
+
+	GET(int const, layer, EBX);
+	GET_STACK(unsigned int const, frame, STACK_OFFSET(0x13C, 0x18));
+
+	auto mtx = pMotLib->GetLayerMatrix(layer, frame);
+
+	if (mtx.row[0][0] == 0.0 && mtx.row[1][1] == 0.0 && mtx.row[2][2] == 0.0)
+		return SkipLayer;
+
+	// stolen code
+	R->EAX(frame);
+	return 0x706F6F;
 }
