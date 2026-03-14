@@ -2649,6 +2649,8 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]     ; WarheadType
 RemoveParasite=   ; boolean
+RemoveParasite.Allow=   ; List of TechnoTypes
+RemoveParasite.Disallow=   ; List of TechnoTypes
 ```
 
 ### Penetrates damage on transporter
