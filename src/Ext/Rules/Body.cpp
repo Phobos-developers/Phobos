@@ -860,5 +860,17 @@ DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
 	return 0;
 }
 
+DEFINE_JUMP(LJMP, 0x66919B, 0x6691B7) // Don't read warhead here!
+DEFINE_JUMP(LJMP, 0x668EED, 0x668EF5) // Load types later
+DEFINE_HOOK(0x668F6A, RulesClass_Read_File_LoadTypes, 0x5)
+{
+	GET(RulesClass*, pRules, EDI);
+	GET(CCINIClass*, pINI, ESI);
+
+	pRules->LoadTypesFromINI(pINI);
+
+	return 0;
+}
+
 // skip vanilla JumpjetControls and make it earlier load
 // DEFINE_JUMP(LJMP, 0x668EB5, 0x668EBD); // RulesClass_Process_SkipJumpjetControls // Really necessary? won't hurt to read again
