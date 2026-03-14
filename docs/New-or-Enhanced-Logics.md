@@ -2647,10 +2647,10 @@ Due to the nature of some superweapon types, not all superweapons are suitable f
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]     ; WarheadType
-RemoveParasite=   ; boolean
-RemoveParasite.Allow=   ; List of TechnoTypes
-RemoveParasite.Disallow=   ; List of TechnoTypes
+[SOMEWARHEAD]             ; WarheadType
+RemoveParasite=           ; boolean
+RemoveParasite.Allow=     ; List of TechnoTypes
+RemoveParasite.Disallow=  ; List of TechnoTypes
 ```
 
 ### Penetrates damage on transporter
