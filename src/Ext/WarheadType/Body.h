@@ -261,6 +261,7 @@ public:
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
 		Valueable<double> Shield_SelfHealing_Rate_InMinutes;
+		uintptr_t lastLoadedINI;
 
 	public:
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject)
@@ -500,6 +501,8 @@ public:
 			, ApplyPerTargetEffectsOnDetonate {}
 
 			, Taunt { false }
+
+			, lastLoadedINI { 0 }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);

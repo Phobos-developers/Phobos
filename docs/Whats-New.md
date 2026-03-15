@@ -120,8 +120,13 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   - `[WarheadType/SuperWeaponType] -> Convert(N).AffectedHouses` -> `[WarheadType/SuperWeaponType] -> Convert(N).AffectsHouse`
   - `[SuperWeaponType] -> LimboKill.Affected` -> `[SuperWeaponType] -> LimboKill.AffectsHouse`
 
-```{note}
+```{hint}
 - You can use the [*MigrationUtility*](https://github.com/Phobos-developers/PhobosSupplementaries/tree/develop/MigrationUtility) in the PhobosSupplementaries repository to conveniently complete these migrations.
+```
+
+```{note}
+- If it is detected that you are using the old INI flags, a warning log will be output to `debug.log`.
+- The old INI flags will still take effect, but if there are corresponding new version flags at the same time, the new version will take precedence.
 ```
 
 ### New user settings in RA2MD.INI
