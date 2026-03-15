@@ -119,6 +119,9 @@ DamageAreaResult WarheadTypeExt::ExtData::DamageAreaWithTarget(const CoordStruct
 
 void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
+	if (lastLoadedINI == reinterpret_cast<uintptr_t>(pINI))
+		return;
+	lastLoadedINI = reinterpret_cast<uintptr_t>(pINI);
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
 	INI_EX exINI(pINI);
@@ -162,14 +165,34 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_ExtraDamage_ApplyFirepowerMult.Read(exINI, pSection, "Crit.ExtraDamage.ApplyFirepowerMult");
 	this->Crit_Warhead.Read<true>(exINI, pSection, "Crit.Warhead");
 	this->Crit_Warhead_FullDetonation.Read(exINI, pSection, "Crit.Warhead.FullDetonation");
+	if (exINI.ReadString(pSection, "Crit.Affects") > 0)
+	{
+		Debug::Log("[Developer warning][%s] Crit.Affects is deprecated and has been replaced by Crit.AffectsTarget! If both are set, the latter will be used.\n", pSection);
+	}
+	this->Crit_AffectsTarget.Read(exINI, pSection, "Crit.Affects"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->Crit_AffectsTarget.Read(exINI, pSection, "Crit.AffectsTarget");
+	if (exINI.ReadString(pSection, "Crit.AffectsHouses") > 0)
+	{
+		Debug::Log("[Developer warning][%s] Crit.AffectsHouses is deprecated and has been replaced by Crit.AffectsHouse! If both are set, the latter will be used.\n", pSection);
+	}
+	this->Crit_AffectsHouse.Read(exINI, pSection, "Crit.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->Crit_AffectsHouse.Read(exINI, pSection, "Crit.AffectsHouse");
 	this->Crit_AnimList.Read(exINI, pSection, "Crit.AnimList");
 	this->Crit_AnimList_PickRandom.Read(exINI, pSection, "Crit.AnimList.PickRandom");
 	this->Crit_AnimList_CreateAll.Read(exINI, pSection, "Crit.AnimList.CreateAll");
 	this->Crit_ActiveChanceAnims.Read(exINI, pSection, "Crit.ActiveChanceAnims");
 	this->Crit_AnimOnAffectedTargets.Read(exINI, pSection, "Crit.AnimOnAffectedTargets");
+	if (exINI.ReadString(pSection, "Crit.AffectBelowPercent") > 0)
+	{
+		Debug::Log("[Developer warning][%s] Crit.AffectBelowPercent is deprecated and has been replaced by Crit.AffectsBelowPercent! If both are set, the latter will be used.\n", pSection);
+	}
+	this->Crit_AffectsBelowPercent.Read(exINI, pSection, "Crit.AffectBelowPercent"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->Crit_AffectsBelowPercent.Read(exINI, pSection, "Crit.AffectsBelowPercent");
+	if (exINI.ReadString(pSection, "Crit.AffectAbovePercent") > 0)
+	{
+		Debug::Log("[Developer warning][%s] Crit.AffectAbovePercent is deprecated and has been replaced by Crit.AffectsAbovePercent! If both are set, the latter will be used.\n", pSection);
+	}
+	this->Crit_AffectsAbovePercent.Read(exINI, pSection, "Crit.AffectAbovePercent"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->Crit_AffectsAbovePercent.Read(exINI, pSection, "Crit.AffectsAbovePercent");
 	this->Crit_SuppressWhenIntercepted.Read(exINI, pSection, "Crit.SuppressWhenIntercepted");
 
@@ -249,7 +272,17 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects.Read(exINI, pSection, "DetonateOnAllMapObjects");
 	this->DetonateOnAllMapObjects_Full.Read(exINI, pSection, "DetonateOnAllMapObjects.Full");
 	this->DetonateOnAllMapObjects_RequireVerses.Read(exINI, pSection, "DetonateOnAllMapObjects.RequireVerses");
+	if (exINI.ReadString(pSection, "DetonateOnAllMapObjects.AffectTargets") > 0)
+	{
+		Debug::Log("[Developer warning][%s] DetonateOnAllMapObjects.AffectTargets is deprecated and has been replaced by DetonateOnAllMapObjects.AffectsTarget! If both are set, the latter will be used.\n", pSection);
+	}
+	this->DetonateOnAllMapObjects_AffectsTarget.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTargets"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->DetonateOnAllMapObjects_AffectsTarget.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectsTarget");
+	if (exINI.ReadString(pSection, "DetonateOnAllMapObjects.AffectHouses") > 0)
+	{
+		Debug::Log("[Developer warning][%s] DetonateOnAllMapObjects.AffectHouses is deprecated and has been replaced by DetonateOnAllMapObjects.AffectsHouse! If both are set, the latter will be used.\n", pSection);
+	}
+	this->DetonateOnAllMapObjects_AffectsHouse.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->DetonateOnAllMapObjects_AffectsHouse.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectsHouse");
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
@@ -294,9 +327,29 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->KillWeapon.Read(exINI, pSection, "KillWeapon");
 	this->KillWeapon_OnFirer.Read(exINI, pSection, "KillWeapon.OnFirer");
+	if (exINI.ReadString(pSection, "KillWeapon.AffectsHouses") > 0)
+	{
+		Debug::Log("[Developer warning][%s] KillWeapon.AffectsHouses is deprecated and has been replaced by KillWeapon.AffectsHouse! If both are set, the latter will be used.\n", pSection);
+	}
+	this->KillWeapon_AffectsHouse.Read(exINI, pSection, "KillWeapon.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->KillWeapon_AffectsHouse.Read(exINI, pSection, "KillWeapon.AffectsHouse");
+	if (exINI.ReadString(pSection, "KillWeapon.OnFirer.AffectsHouses") > 0)
+	{
+		Debug::Log("[Developer warning][%s] KillWeapon.OnFirer.AffectsHouses is deprecated and has been replaced by KillWeapon.OnFirer.AffectsHouse! If both are set, the latter will be used.\n", pSection);
+	}
+	this->KillWeapon_OnFirer_AffectsHouse.Read(exINI, pSection, "KillWeapon.OnFirer.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->KillWeapon_OnFirer_AffectsHouse.Read(exINI, pSection, "KillWeapon.OnFirer.AffectsHouse");
+	if (exINI.ReadString(pSection, "KillWeapon.Affects") > 0)
+	{
+		Debug::Log("[Developer warning][%s] KillWeapon.Affects is deprecated and has been replaced by KillWeapon.AffectsTarget! If both are set, the latter will be used.\n", pSection);
+	}
+	this->KillWeapon_AffectsTarget.Read(exINI, pSection, "KillWeapon.Affects"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->KillWeapon_AffectsTarget.Read(exINI, pSection, "KillWeapon.AffectsTarget");
+	if (exINI.ReadString(pSection, "KillWeapon.OnFirer.Affects") > 0)
+	{
+		Debug::Log("[Developer warning][%s] KillWeapon.OnFirer.Affects is deprecated and has been replaced by KillWeapon.OnFirer.AffectsTarget! If both are set, the latter will be used.\n", pSection);
+	}
+	this->KillWeapon_OnFirer_AffectsTarget.Read(exINI, pSection, "KillWeapon.OnFirer.Affects"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->KillWeapon_OnFirer_AffectsTarget.Read(exINI, pSection, "KillWeapon.OnFirer.AffectsTarget");
 
 	this->ElectricAssaultLevel.Read(exINI, pSection, "ElectricAssaultLevel");

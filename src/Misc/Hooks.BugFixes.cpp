@@ -1378,7 +1378,7 @@ DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_RequestUntether, 0x7)
 // Fix the bug that techno in attack move will move to target if it cannot attack it
 DEFINE_HOOK(0x4D77BD, FootClass_ObjectClickedAction_NoMove, 0x6)
 {
-	enum { ReturnFalse = 0x4D77EC, ReturnTrue = 0x4D7CC0 };
+	enum { Attack = 0x4D769F };
 
 	GET(ObjectClass*, pTarget, EBX);
 	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
@@ -1387,15 +1387,7 @@ DEFINE_HOOK(0x4D77BD, FootClass_ObjectClickedAction_NoMove, 0x6)
 		return 0;
 
 	GET(FootClass*, pThis, ESI);
-
-	if (pThis->Owner->IsAlliedWith(pTargetTechno->Owner))
-		return 0;
-
-	if (!pThis->IsActive())
-		return ReturnFalse;
-
-	TechnoExt::ClickedApproachObject(pThis, pTarget);
-	return ReturnTrue;
+	return pThis->Owner->IsAlliedWith(pTargetTechno->Owner) ? 0 : Attack;
 }
 
 #pragma region JumpjetShadowPointFix
