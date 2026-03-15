@@ -2644,6 +2644,8 @@ Due to the nature of some superweapon types, not all superweapons are suitable f
 ### Parasite removal
 
 - By default if unit takes negative damage from a Warhead (before `Verses` are calculated), any parasites infecting it are removed and deleted. This behaviour can now be customized to disable the removal for negative damage, or enable it for any arbitrary warhead.
+- `RemoveParasite.Allow` can be used to define which parasites can be removed.
+- `RemoveParasite.Disallow` can be used to define which parasites cannot be removed.
 
 In `rulesmd.ini`:
 ```ini
