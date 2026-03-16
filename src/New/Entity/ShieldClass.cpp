@@ -194,6 +194,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	int nDamage = 0;
 	int shieldDamage = 0;
 	int healthDamage = 0;
+	double armorMultiplier = 1.0;
 	auto const pType = this->Type;
 
 	if (pWHExt->CanTargetHouse(args->SourceHouse, pTechno) && !pWH->Temporal)
@@ -204,7 +205,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 
 			if (pType->ApplyArmorMultiplier.Get(RulesExt::Global()->ShieldApplyArmorMultiplier))
 			{
-				double armorMultiplier = pTechno->Owner->GetArmorMultiplier(pTechnoType) * pTechno->ArmorMultiplier;
+				armorMultiplier = pTechno->Owner->GetArmorMultiplier(pTechnoType) * pTechno->ArmorMultiplier;
 
 				if (pTechno->HasAbility(Ability::Stronger))
 					armorMultiplier *= RulesClass::Instance->VeteranArmor;
@@ -269,12 +270,17 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 
 		if (residueDamage >= 0)
 		{
-			const int actualResidueDamage = Math::max(0, int((double)(originalShieldDamage - health) /
+			if (pType->AbsorbOverDamage)
+			{
+				this->BreakShield(pWHExt->Shield_BreakAnim, pWHExt->Shield_BreakWeapon.Get(nullptr));
+				return healthDamage;
+			}
+
+			const int actualResidueDamage = Math::max(0, int((double)(originalShieldDamage - health) * armorMultiplier /
 				GeneralUtils::GetWarheadVersusArmor(pWH, this->GetArmorType(pTechnoType)))); //only absord percentage damage
 
 			this->BreakShield(pWHExt->Shield_BreakAnim, pWHExt->Shield_BreakWeapon.Get(nullptr));
-
-			return pType->AbsorbOverDamage ? healthDamage : actualResidueDamage + healthDamage;
+			return actualResidueDamage + healthDamage;
 		}
 		else
 		{
