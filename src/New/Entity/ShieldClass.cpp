@@ -210,7 +210,8 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 				if (pTechno->HasAbility(Ability::Stronger))
 					armorMultiplier *= RulesClass::Instance->VeteranArmor;
 
-				nDamage = Math::max(TechnoExt::CalculateArmorMultipliers(pTechno, static_cast<int>(nDamage / armorMultiplier), pWH), 0);
+				armorMultiplier *= TechnoExt::CalculateArmorMultipliers(pTechno, pWH);
+				nDamage = Math::max(static_cast<int>(nDamage / armorMultiplier), 0);
 			}
 
 			nDamage = MapClass::GetTotalDamage(nDamage, pWH, this->GetArmorType(pTechnoType), args->DistanceToEpicenter);
