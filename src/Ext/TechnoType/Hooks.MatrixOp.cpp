@@ -564,6 +564,8 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	const auto height = pThis->GetHeight();
 	const double baseScale_log = RulesExt::Global()->AirShadowBaseScale_log;
 
+	double currentScale = 1.0;
+
 	if (RulesExt::Global()->HeightShadowScaling && height > 0)
 	{
 		const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
@@ -573,7 +575,9 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 
 			if (cHeight > 0)
 			{
-				shadowMatrix.Scale((float)std::max(Pade2_2(baseScale_log * height / cHeight), minScale));
+				double scale = std::max(Pade2_2(baseScale_log * height / cHeight), minScale);
+				shadowMatrix.Scale((float)scale);
+				currentScale = scale;
 
 				if (jjloco->State != JumpjetLocomotionClass::State::Hovering)
 					vxlIndexKey.Invalidate();
@@ -585,14 +589,16 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 
 			if (cHeight > 0 && height > 208)
 			{
-				shadowMatrix.Scale((float)std::max(Pade2_2(baseScale_log * (height - 208) / cHeight), minScale));
+				double scale = std::max(Pade2_2(baseScale_log * (height - 208) / cHeight), minScale);
 				vxlIndexKey.Invalidate();
 			}
 		}
 	}
 	else if (!RulesExt::Global()->HeightShadowScaling && pThis->Type->ConsideredAircraft)
 	{
-		shadowMatrix.Scale((float)Pade2_2(baseScale_log));
+		double scale = Pade2_2(baseScale_log);
+		shadowMatrix.Scale((float)scale);
+		currentScale = scale;
 	}
 
 	auto GetMainVoxel = [&]()
@@ -742,7 +748,8 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		return nullptr;
 	};
 
-	pDrawTypeExt->ApplyTurretOffset(&mtx, Pixel_Per_Lepton);
+	double adjustedFactor = Pixel_Per_Lepton / currentScale;
+	pDrawTypeExt->ApplyTurretOffset(&mtx, adjustedFactor);
 	mtx.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
 
 	const bool inRecoil = pDrawType->TurretRecoil && pThis->TurretRecoil.State != RecoilData::RecoilState::Inactive;

@@ -2260,6 +2260,12 @@ msgid ""
 "malfunctioning on water surfaces (by FlyStar)"
 msgstr "修复了悬浮载具在水面上失灵后无法被摧毁的问题（by FlyStar）"
 
+msgid ""
+"Fixed an issue where shadow matrix scaling was incorrectly applied to "
+"`TurretOffset` causing turret shadow misplacement (by Noble_Fish)"
+msgstr ""
+"修复了一个影子矩阵缩放错误地应用于 `TurretOffset` 而导致炮塔影子错位的问题（by Noble_Fish）"
+
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
 
