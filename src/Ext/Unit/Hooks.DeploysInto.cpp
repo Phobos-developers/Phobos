@@ -92,6 +92,7 @@ DEFINE_HOOK(0x739956, UnitClass_Deploy_Transfer, 0x6)
 	ShieldClass::SyncShieldToAnother(pUnit, pStructure);
 	TechnoExt::SyncInvulnerability(pUnit, pStructure);
 	AttachEffectClass::TransferAttachedEffects(pUnit, pStructure);
+	TechnoExt::HandleAttachmentDeployTransfer(pUnit, pStructure);
 
 	return 0;
 }
@@ -105,6 +106,7 @@ DEFINE_HOOK(0x44A03C, BuildingClass_Mi_Selling_Transfer, 0x6)
 	ShieldClass::SyncShieldToAnother(pStructure, pUnit);
 	TechnoExt::SyncInvulnerability(pStructure, pUnit);
 	AttachEffectClass::TransferAttachedEffects(pStructure, pUnit);
+	TechnoExt::HandleAttachmentDeployTransfer(pStructure, pUnit);
 
 	// This line will break the bahavior of UnDeploysInto buildings. However, it might serve a purpose that no one knows yet
 	// Comment out the line instead of removing it for now, so we can turn to it if something related goes wrong in the future
@@ -116,6 +118,8 @@ DEFINE_HOOK(0x449E2E, BuildingClass_Mi_Selling_CreateUnit, 0x6)
 {
 	GET(BuildingClass*, pStructure, EBP);
 	R->ECX<HouseClass*>(pStructure->GetOriginalOwner());
+
+	TechnoExt::DeployTransferSource = pStructure;
 
 	// Remember MC ring animation.
 	if (pStructure->IsMindControlled())
@@ -131,6 +135,8 @@ DEFINE_HOOK(0x7396AD, UnitClass_Deploy_CreateBuilding, 0x6)
 {
 	GET(UnitClass*, pUnit, EBP);
 	R->EDX<HouseClass*>(pUnit->GetOriginalOwner());
+
+	TechnoExt::DeployTransferSource = pUnit;
 
 	return 0x7396B3;
 }

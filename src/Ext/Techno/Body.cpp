@@ -12,6 +12,7 @@
 
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 UnitClass* TechnoExt::Deployer = nullptr;
+TechnoClass* TechnoExt::DeployTransferSource = nullptr;
 
 TechnoExt::ExtData::~ExtData()
 {

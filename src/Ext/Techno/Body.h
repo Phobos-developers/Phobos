@@ -255,6 +255,7 @@ public:
 	static ExtContainer ExtMap;
 
 	static UnitClass* Deployer;
+	static TechnoClass* DeployTransferSource;  // Set before deploy-target construction to skip InitializeAttachments and possibly other things
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
@@ -283,6 +284,7 @@ public:
 	static void LimboAttachments(TechnoClass* pThis);
 	static void TransferAttachments(TechnoClass* pThis, TechnoClass* pThat);
 	static void HandleAttachmentConversion(TechnoClass* pThis, TechnoTypeClass* pOldType, TechnoTypeClass* pNewType);
+	static void HandleAttachmentDeployTransfer(TechnoClass* pFrom, TechnoClass* pTo);
 
 	static bool IsAttached(TechnoClass* pThis);
 	static bool HasAttachmentLoco(FootClass* pThis); // FIXME shouldn't be here
