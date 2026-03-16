@@ -119,9 +119,6 @@ DamageAreaResult WarheadTypeExt::ExtData::DamageAreaWithTarget(const CoordStruct
 
 void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
-	if (lastLoadedINI == reinterpret_cast<uintptr_t>(pINI))
-		return;
-	lastLoadedINI = reinterpret_cast<uintptr_t>(pINI);
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
 	INI_EX exINI(pINI);
