@@ -2291,6 +2291,16 @@ msgid ""
 "for when commanding it to pick up vehicles by setting `VoicePickup`."
 msgstr "现在可以通过设置 `VoicePickup` 来覆盖 `Carryall=true` 战机在命令其拾取载具时的 `VoiceMove` 音效。"
 
+msgid "Implement `CurleyShuffle` for AircraftTypes"
+msgstr "实现战机微观 `CurleyShuffle` 设置"
+
+msgid ""
+"In vanilla, this is always controlled by a global flag under `[General]`."
+" Now, this allows customization per aircraft. For detailed functionality,"
+" see [ModEnc](https://modenc.renegadeprojects.com/CurleyShuffle)."
+msgstr ""
+"在原版中这总是由 `[General]` 下的全局标签控制。现在，这允许为每一架飞行器自定义。具体功能详见 [ModEnc](https://modenc.renegadeprojects.com/CurleyShuffle)"
+
 msgid "Customize the scatter caused by aircraft attack mission"
 msgstr "自定义战机攻击任务引发分散"
 

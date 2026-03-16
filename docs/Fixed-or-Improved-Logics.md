@@ -708,6 +708,16 @@ In `rulesmd.ini`:
 VoicePickup=    ; Sound entry
 ```
 
+### Implement `CurleyShuffle` for AircraftTypes
+
+- In vanilla, this is always controlled by a global flag under `[General]`. Now, this allows customization per aircraft. For detailed functionality, see [ModEnc](https://modenc.renegadeprojects.com/CurleyShuffle).
+
+In `rulesmd.ini`:
+```ini
+[SOMEAIRCRAFT]            ; AircraftType
+CurleyShuffle=            ; boolean, default to [General] -> CurleyShuffle
+```
+
 ### Customize the scatter caused by aircraft attack mission
 
 - In vanilla, when an aircraft attacks, it forces the target's cell to trigger a scatter. Now you can disable this behavior by setting the following flag to `false`.

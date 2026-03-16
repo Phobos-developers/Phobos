@@ -281,6 +281,8 @@ public:
 		Nullable<int> SpawnHeight;
 		Nullable<int> LandingDir;
 
+		Nullable<bool> CurleyShuffle;
+
 		Valueable<TechnoTypeClass*> Convert_Deploy; // Ares
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
@@ -745,6 +747,8 @@ public:
 			, LandingDir {}
 			, DroppodType {}
 			, TiberiumEaterType {}
+
+			, CurleyShuffle {}
 
 			, Convert_Deploy { }
 			, Convert_HumanToComputer { }

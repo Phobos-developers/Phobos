@@ -2434,6 +2434,16 @@ msgid "parts of TechnoType conversion placeholder code"
 msgstr "单位转换占位符代码的一部分"
 
 msgid ""
+"**[Vinifera Contributors](https://github.com/Vinifera-"
+"developers/Vinifera/blob/develop/CREDITS.md)**:"
+msgstr ""
+"**[Vinifera 贡献者](https://github.com/Vinifera-"
+"developers/Vinifera/blob/develop/CREDITS.md)**："
+
+msgid "Implement `CurleyShuffle` for AircraftTypes"
+msgstr "实现战机微观 `CurleyShuffle` 设置"
+
+msgid ""
 "**ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, CrimRecya** - "
 "Digital Display"
 msgstr ""
