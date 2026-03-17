@@ -273,7 +273,7 @@ DEFINE_HOOK(0x4CF68D, FlyLocomotionClass_DrawMatrix_OnAirport, 0x5)
 		mat = Matrix3D::VoxelRampMatrix[slope_idx] * mat;
 		const float ars = pThis->AngleRotatedSideways;
 		const float arf = pThis->AngleRotatedForwards;
-		if (std::abs(ars) > 0.005 || std::abs(arf) > 0.005)
+		if (std::abs(ars) > 0.005f || std::abs(arf) > 0.005f)
 		{
 			const auto pType = pThis->Type;
 			mat.TranslateZ(float(std::abs(Math::sin(ars)) * pType->VoxelScaleX
@@ -315,7 +315,7 @@ static Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco
 	size_t arfFace = 0;
 	size_t arsFace = 0;
 
-	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
+	if (std::abs(ars) >= 0.005f || std::abs(arf) >= 0.005f)
 	{
 		if (key)
 			key->Base.Invalidate();
@@ -447,7 +447,7 @@ static Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloc
 	const float arf = linked->AngleRotatedForwards;
 	const float ars = linked->AngleRotatedSideways;
 
-	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
+	if (std::abs(ars) >= 0.005f || std::abs(arf) >= 0.005f)
 	{
 		if (pIndex)
 			pIndex->Invalidate();
@@ -622,7 +622,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	float arf = pThis->AngleRotatedForwards;
 	float ars = pThis->AngleRotatedSideways;
 	// lazy, don't want to hook inside Shadow_Matrix
-	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
+	if (std::abs(ars) >= 0.005f || std::abs(arf) >= 0.005f)
 	{
 		// index key should have been already invalid, so it won't hurt to invalidate again
 		vxlIndexKey.Invalidate();
@@ -657,7 +657,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 				* JumpjetTiltReference::SidewaysBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
 		}
 
-		if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
+		if (std::abs(ars) >= 0.005f || std::abs(arf) >= 0.005f)
 		{
 			vxlIndexKey.Invalidate();
 			shadowMatrix.RotateX(ars);
@@ -746,8 +746,8 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 
 		return nullptr;
 	};
-	double adjustedFactor = Pixel_Per_Lepton / currentScale;
 
+	const double adjustedFactor = Pixel_Per_Lepton / currentScale;
 	pDrawTypeExt->ApplyTurretOffset(&mtx, adjustedFactor);
 	mtx.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
 
@@ -860,12 +860,13 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 		double arf = pThis->AngleRotatedForwards;
 		if (flyLoco->CurrentSpeed > pAircraftType->PitchSpeed)
 			arf += pAircraftType->PitchAngle;
-		float ars = pThis->AngleRotatedSideways;
-		if (key.Is_Valid_Key() && (std::abs(arf) > 0.005 || std::abs(ars) > 0.005))
+		const float newArf = (float)arf;
+		const float ars = pThis->AngleRotatedSideways;
+		if (key.Is_Valid_Key() && (std::abs(newArf) > 0.005f || std::abs(ars) > 0.005f))
 			key.Invalidate();
 
 		shadow_mtx.RotateX(ars);
-		shadow_mtx.RotateY((float)arf);
+		shadow_mtx.RotateY(newArf);
 	}
 	else if (height > 0)
 	{
