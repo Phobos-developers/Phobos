@@ -41,6 +41,8 @@ public:
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
 		Nullable<bool> RemoveParasite;
+		ValueableVector<TechnoTypeClass*> RemoveParasite_Allow;
+		ValueableVector<TechnoTypeClass*> RemoveParasite_Disallow;
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 		Valueable<bool> ApplyModifiersOnNegativeDamage;
@@ -259,7 +261,6 @@ public:
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
 		Valueable<double> Shield_SelfHealing_Rate_InMinutes;
-		uintptr_t lastLoadedINI;
 
 	public:
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject)
@@ -286,6 +287,8 @@ public:
 			, RemoveDisguise { false }
 			, RemoveMindControl { false }
 			, RemoveParasite {}
+			, RemoveParasite_Allow {}
+			, RemoveParasite_Disallow {}
 			, DecloakDamagedTargets { true }
 			, ShakeIsLocal { false }
 			, ApplyModifiersOnNegativeDamage { false }
@@ -497,8 +500,6 @@ public:
 			, ApplyPerTargetEffectsOnDetonate {}
 
 			, Taunt { false }
-
-			, lastLoadedINI { 0 }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);

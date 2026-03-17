@@ -119,9 +119,6 @@ DamageAreaResult WarheadTypeExt::ExtData::DamageAreaWithTarget(const CoordStruct
 
 void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
-	if (lastLoadedINI == reinterpret_cast<uintptr_t>(pINI))
-		return;
-	lastLoadedINI = reinterpret_cast<uintptr_t>(pINI);
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
 	INI_EX exINI(pINI);
@@ -150,6 +147,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
 	this->RemoveMindControl.Read(exINI, pSection, "RemoveMindControl");
 	this->RemoveParasite.Read(exINI, pSection, "RemoveParasite");
+	this->RemoveParasite_Allow.Read(exINI, pSection, "RemoveParasite.Allow");
+	this->RemoveParasite_Disallow.Read(exINI, pSection, "RemoveParasite.Disallow");
 	this->DecloakDamagedTargets.Read(exINI, pSection, "DecloakDamagedTargets");
 	this->ShakeIsLocal.Read(exINI, pSection, "ShakeIsLocal");
 	this->ApplyModifiersOnNegativeDamage.Read(exINI, pSection, "ApplyModifiersOnNegativeDamage");
@@ -521,6 +520,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->RemoveDisguise)
 		.Process(this->RemoveMindControl)
 		.Process(this->RemoveParasite)
+		.Process(this->RemoveParasite_Allow)
+		.Process(this->RemoveParasite_Disallow)
 		.Process(this->DecloakDamagedTargets)
 		.Process(this->ShakeIsLocal)
 		.Process(this->ApplyModifiersOnNegativeDamage)

@@ -1659,6 +1659,9 @@ msgid ""
 "itself"
 msgstr "修复了加载物建筑的电厂增幅效果仅取决于其基底建筑而非加载物建筑自身的 Bug"
 
+msgid "Customize which parasite can remove by warhead"
+msgstr "自定义哪些寄生者可被弹头移除"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 

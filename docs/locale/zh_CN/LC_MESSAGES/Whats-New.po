@@ -1750,6 +1750,9 @@ msgstr ""
 "[实现战机微观 `CurleyShuffle` 设置](Fixed-or-Improved-Logics.md#implement-"
 "curleyshuffle-for-aircrafttypes)（由 Noble_Fish 移植自 Vinifera）"
 
+msgid "Customize which parasite can remove by warhead (by NetsuNegi)"
+msgstr "自定义哪些寄生者可被弹头移除（by NetsuNegi）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
@@ -2259,6 +2262,12 @@ msgid ""
 "Fixed an issue where hover vehicles could not be destroyed after "
 "malfunctioning on water surfaces (by FlyStar)"
 msgstr "修复了悬浮载具在水面上失灵后无法被摧毁的问题（by FlyStar）"
+
+msgid ""
+"Fixed an issue where shadow matrix scaling was incorrectly applied to "
+"`TurretOffset` causing turret shadow misplacement (by Noble_Fish)"
+msgstr ""
+"修复了一个影子矩阵缩放错误地应用于 `TurretOffset` 而导致炮塔影子错位的问题（by Noble_Fish）"
 
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："

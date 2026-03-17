@@ -5600,6 +5600,18 @@ msgstr ""
 "默认情况下如果单位从弹头收到负伤害（在 `Verses` "
 "前计算）任何寄生单位都会被移除和删除。现在可以自定义此行为以禁用负伤害的移除效果或为任意弹头启用它。"
 
+msgid ""
+"`RemoveParasite.Allow` can be used to define which parasites can be "
+"removed."
+msgstr ""
+"`RemoveParasite.Allow` 定义哪些寄生者可以被移除。"
+
+msgid ""
+"`RemoveParasite.Disallow` can be used to define which parasites cannot be"
+" removed."
+msgstr ""
+"`RemoveParasite.Disallow` 定义哪些寄生者不能被移除。"
+
 msgid "Penetrates damage on transporter"
 msgstr "对运输工具的穿透伤害"
 
