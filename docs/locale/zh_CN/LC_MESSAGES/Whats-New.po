@@ -1750,6 +1750,9 @@ msgstr ""
 "[实现战机微观 `CurleyShuffle` 设置](Fixed-or-Improved-Logics.md#implement-"
 "curleyshuffle-for-aircrafttypes)（由 Noble_Fish 移植自 Vinifera）"
 
+msgid "Customize which parasite can remove by warhead (by NetsuNegi)"
+msgstr "自定义哪些寄生者可被弹头移除（by NetsuNegi）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
