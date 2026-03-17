@@ -652,7 +652,7 @@ DEFINE_HOOK(0x51A996, InfantryClass_PerCellProcess_KillOnImpassable, 0x5)
 	{
 		const float multiplier = GroundType::Array[static_cast<int>(landType)].Cost[static_cast<int>(pThis->Type->SpeedType)];
 
-		if (multiplier == 0.0)
+		if (multiplier == 0.0f)
 			return ContinueChecks;
 	}
 
@@ -1379,6 +1379,9 @@ DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_RequestUntether, 0x7)
 DEFINE_HOOK(0x4D77BD, FootClass_ObjectClickedAction_NoMove, 0x6)
 {
 	enum { ReturnFalse = 0x4D77EC, ReturnTrue = 0x4D7CC0 };
+
+	if (PlanningNodeClass::PlanningModeActive)
+		return 0;
 
 	GET(ObjectClass*, pTarget, EBX);
 	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
@@ -3182,7 +3185,7 @@ DEFINE_HOOK(0x706F64, TechnoClass_RenderVoxelObject_SkipInvisibleSections, 0x0)
 
 	auto mtx = pMotLib->GetLayerMatrix(layer, frame);
 
-	if (mtx.row[0][0] == 0.0 && mtx.row[1][1] == 0.0 && mtx.row[2][2] == 0.0)
+	if (mtx.row[0][0] == 0.0f && mtx.row[1][1] == 0.0f && mtx.row[2][2] == 0.0f)
 		return SkipLayer;
 
 	// stolen code

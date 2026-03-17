@@ -41,6 +41,8 @@ public:
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
 		Nullable<bool> RemoveParasite;
+		ValueableVector<TechnoTypeClass*> RemoveParasite_Allow;
+		ValueableVector<TechnoTypeClass*> RemoveParasite_Disallow;
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 		Valueable<bool> ApplyModifiersOnNegativeDamage;
@@ -285,6 +287,8 @@ public:
 			, RemoveDisguise { false }
 			, RemoveMindControl { false }
 			, RemoveParasite {}
+			, RemoveParasite_Allow {}
+			, RemoveParasite_Disallow {}
 			, DecloakDamagedTargets { true }
 			, ShakeIsLocal { false }
 			, ApplyModifiersOnNegativeDamage { false }

@@ -50,14 +50,45 @@ void EventExt::RespondApproachObject()
 	if (!pSource || static_cast<char>(pSource->Owner->ArrayIndex) != this->HouseIndex)
 		return;
 
+	pSource->ClearPlanningTokens(nullptr);
+
+	if (!pSource->IsAlive || pSource->Health <= 0 || pSource->InLimbo)
+		return;
+
+	if (pSource->IsTether)
+	{
+		const auto pLink = abstract_cast<BuildingClass*>(pSource->GetNthLink());
+
+		if (pLink && pLink->IsAlive && pLink->Type->DockUnload)
+		{
+			pSource->SendToFirstLink(RadioCommand::NotifyUnlink);
+			pSource->IsTether = false;
+		}
+	}
+	else
+	{
+		pSource->SendToFirstLink(RadioCommand::NotifyUnlink);
+	}
+
+	pSource->QueueUpToEnter = nullptr;
+	pSource->LastDestination = nullptr;
+
+	if (const auto pManager = pSource->SlaveManager)
+		pManager->AllGuard();
+
+	pSource->ClearNavigationList();
+	pSource->SetDestination(nullptr, true);
+	pSource->SetTarget(nullptr);
+	pSource->SetArchiveTarget(nullptr);
+
 	const auto pObject = this->ApproachObject.Target.As_Object();
 
 	if (!pObject)
 		return;
 
-	const auto pOriginalTarget = std::exchange(pSource->Target, pObject);
-	pSource->vt_entry_53C(0);
-	pSource->Target = pOriginalTarget;
+	pSource->Target = pObject;
+	pSource->ApproachTarget(0);
+	pSource->Target = nullptr;
 }
 
 // hooks

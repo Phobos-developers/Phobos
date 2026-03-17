@@ -512,7 +512,7 @@ DEFINE_HOOK(0x74691D, UnitClass_UpdateDisguise_EMP, 0x6)
 	GET(UnitClass*, pThis, ESI);
 	// Remove mirage disguise if under emp or being flipped, approximately 15 deg
 	// Deactivated mirage should still be able to keep disguise
-	if (pThis->IsUnderEMP() || std::abs(pThis->AngleRotatedForwards) > 0.25 || std::abs(pThis->AngleRotatedSideways) > 0.25)
+	if (pThis->IsUnderEMP() || std::abs(pThis->AngleRotatedForwards) > 0.25f || std::abs(pThis->AngleRotatedSideways) > 0.25f)
 	{
 		pThis->ClearDisguise();
 		R->EAX(pThis->MindControlRingAnim);
