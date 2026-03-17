@@ -590,6 +590,8 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 			if (cHeight > 0 && height > 208)
 			{
 				double scale = std::max(Pade2_2(baseScale_log * (height - 208) / cHeight), minScale);
+				shadowMatrix.Scale((float)scale);
+				currentScale = scale;
 				vxlIndexKey.Invalidate();
 			}
 		}
@@ -747,8 +749,8 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 
 		return nullptr;
 	};
-
 	double adjustedFactor = Pixel_Per_Lepton / currentScale;
+
 	pDrawTypeExt->ApplyTurretOffset(&mtx, adjustedFactor);
 	mtx.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
 
