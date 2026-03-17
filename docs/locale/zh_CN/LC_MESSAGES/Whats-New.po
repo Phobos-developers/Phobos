@@ -2101,6 +2101,11 @@ msgstr ""
 "现在 Voxel 绘制代码会跳过那些不可见组件（变换矩阵主对角线全为 0，意味着所有轴上的缩放比例全为 0%）的绘制，因而提高了一些 Voxel "
 "的绘制性能（by Kerbiter & ZivDero）"
 
+msgid ""
+"Fixed the bug that unit will play crashing voice & sound when dropped by "
+"warhead with `IsLocomotor=yes` (by NetsuNegi)"
+msgstr "修复了载具被 `IsLocomotor=yes` 的弹头丢下时会播放坠毁语音和音效的 Bug（by NetsuNegi）"
+
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
 

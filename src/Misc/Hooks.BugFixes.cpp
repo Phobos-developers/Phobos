@@ -2841,6 +2841,20 @@ DEFINE_HOOK(0x54CC9C, JumpjetLocomotionClass_ProcessCrashing_DropFix, 0x5)
 	return fallOnSomething ? SkipGameCode2 : SkipGameCode;
 }
 
+DEFINE_HOOK(0x4DAD06, FootClass_AI_IsCrashing_VoiceAndSound, 0xA)
+{
+	enum { SkipVoiceAndSound = 0x4DADBC, ContinueAfter = 0x4DAD10 };
+
+	GET(FootClass*, pThis, ESI);
+
+	if (pThis->IsAttackedByLocomotor)
+		return SkipVoiceAndSound;
+
+	// Restore overriden instructions
+	R->EAX(pThis->GetTechnoType());
+	return ContinueAfter;
+}
+
 #pragma region ClearTargetOnOwnerChanged
 
 DEFINE_HOOK(0x70D4A0, AbstractClass_ClearTargetToMe_ClearManagerTarget, 0x5)

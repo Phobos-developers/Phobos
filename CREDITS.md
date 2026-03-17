@@ -511,6 +511,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue that power output of building on tooltip won't consider power enhancer
   - Fix the bug that the upgrade building's power-enhancing effect depends only on its parent building and is not related to the upgrade building itself
   - Customize which parasite can remove by warhead
+  - Fix the bug that unit will play crashing voice & sound when dropped by warhead with `IsLocomotor=yes`
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

@@ -1568,7 +1568,7 @@ msgstr "修复了 Jumpjet 单位在开始下一个任务前必须先停止移动
 msgid ""
 "Fixed an issue where parachute units would die upon landing if bridges "
 "were destroyed during their descent."
-msgstr "修复了空降到桥上的单位会由于降落过程中桥梁被毁而在着陆后死亡的问题、"
+msgstr "修复了空降到桥上的单位会由于降落过程中桥梁被毁而在着陆后死亡的问题。"
 
 #, python-format
 msgid ""
@@ -1577,6 +1577,11 @@ msgid ""
 "all axes), thus increasing drawing performance for some voxels."
 msgstr ""
 "现在 Voxel 绘制代码会跳过那些不可见组件（变换矩阵主对角线全为 0，意味着所有轴上的缩放比例全为 0%）的绘制，因而提高了一些 Voxel 的绘制性能。"
+
+msgid ""
+"Fixed the bug that unit will play crashing voice & sound when dropped by "
+"warhead with `IsLocomotor=yes`."
+msgstr "修复了载具被 `IsLocomotor=yes` 的弹头丢下时会播放坠毁语音和音效的 Bug。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
