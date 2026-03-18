@@ -7,13 +7,14 @@
 bool LaserTrailClass::Update(CoordStruct location)
 {
 	bool result = false;
+	const int segmentLength = this->Type->SegmentLength;
 
 	if (!this->LastLocation.isset())
 	{
 		// The trail was just inited
 		this->LastLocation = location;
 	}
-	else if (location.DistanceFrom(this->LastLocation.Get()) > this->Type->SegmentLength) // TODO reimplement IgnoreVertical properly?
+	else if (location.DistanceFromSquared(this->LastLocation.Get()) > segmentLength * segmentLength) // TODO reimplement IgnoreVertical properly?
 	{
 		if (this->Visible && !this->Cloaked && (this->Type->IgnoreVertical ? (abs(location.X - this->LastLocation.Get().X) > 16 || abs(location.Y - this->LastLocation.Get().Y) > 16) : true))
 		{
