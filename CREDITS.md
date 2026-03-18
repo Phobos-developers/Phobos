@@ -510,6 +510,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue that `PassengerDeletion` dont consider passenger's passenger, parasite and hijacker
   - Fix the issue that power output of building on tooltip won't consider power enhancer
   - Fix the bug that the upgrade building's power-enhancing effect depends only on its parent building and is not related to the upgrade building itself
+  - Customize which parasite can remove by warhead
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -736,6 +737,8 @@ This page lists all the individual contributions to the project by their author.
   - Superweapon launch site & availability code
   - AI vehicle production update code
   - parts of TechnoType conversion placeholder code
+- **[Vinifera Contributors](https://github.com/Vinifera-developers/Vinifera/blob/develop/CREDITS.md)**:
+  - Implement `CurleyShuffle` for AircraftTypes
 - **ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, CrimRecya** - Digital Display
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
