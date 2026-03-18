@@ -267,6 +267,7 @@ public:
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static double GetCurrentFirepowerMultiplier(TechnoClass* pThis);
+	static double CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass* pWarhead);
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);

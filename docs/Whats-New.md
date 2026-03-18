@@ -552,6 +552,7 @@ New:
 - [SHP turret vehicles support the use of `*tur.shp` files](New-or-Enhanced-Logics.md#independent-shp-vehicle-turret-files) (by FlyStar)
 - [Implement `CurleyShuffle` for AircraftTypes](Fixed-or-Improved-Logics.md#implement-curleyshuffle-for-aircrafttypes) (ported from Vinifera by Noble_Fish)
 - Customize which parasite can remove by warhead (by NetsuNegi)
+- Add toggle of whether shield use ArmorMultiplier or not (by NetsuNegi)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -618,6 +619,7 @@ Vanilla fixes:
 - Fixed the issue that the Jumpjet must end its movement before starting the next mission (by TaranDahl)
 - Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent (by FlyStar)
 - Voxel drawing code now skips sections that are invisible (have all zeros in the transform matrix main diagonal, meaning that the scale is 0% on all axes), thus increasing drawing performance for some voxels (by Kerbiter & ZivDero)
+- Fixed the bug that unit will play crashing voice & sound when dropped by warhead with `IsLocomotor=yes` (by NetsuNegi)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -665,6 +667,8 @@ Fixes / interactions with other extensions:
 - Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed (by NetsuNegi)
 - Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed (by NetsuNegi)
 - Fixed the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally (by NetsuNegi)
+- Fixed ares hook which stopped OpenTopped transports from firing if cloaked. This can now be customized (by RAZER & Morton)
+
 ```
 
 ### 0.4.0.3

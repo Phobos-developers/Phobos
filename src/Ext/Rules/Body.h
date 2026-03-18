@@ -51,6 +51,7 @@ public:
 		Valueable<bool> RadSiteWarhead_Detonate_Full;
 		Valueable<bool> RadHasOwner;
 		Valueable<bool> RadHasInvoker;
+		Valueable<bool> ShieldApplyArmorMult;
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
 
@@ -293,6 +294,7 @@ public:
 
 		Valueable<bool> FallingDownTargetingFix;
 		Valueable<bool> AIAirTargetingFix;
+		Valueable<bool> OpenTopped_DecloakToFire;
 
 		Valueable<bool> SortCameoByName;
 
@@ -346,6 +348,7 @@ public:
 			, RadSiteWarhead_Detonate_Full { true }
 			, RadHasOwner { false }
 			, RadHasInvoker { false }
+			, ShieldApplyArmorMult { false }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, VeinholeWarhead {}
@@ -555,6 +558,7 @@ public:
 
 			, FallingDownTargetingFix { false }
 			, AIAirTargetingFix { false }
+			, OpenTopped_DecloakToFire { false }
 
 			, SortCameoByName { false }
 

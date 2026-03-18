@@ -104,6 +104,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->RadSiteWarhead_Detonate_Full.Read(exINI, GameStrings::Radiation, "RadSiteWarhead.Detonate.Full");
 	this->RadHasOwner.Read(exINI, GameStrings::Radiation, "RadHasOwner");
 	this->RadHasInvoker.Read(exINI, GameStrings::Radiation, "RadHasInvoker");
+	this->ShieldApplyArmorMult.Read(exINI, GameStrings::CombatDamage, "ShieldApplyArmorMult");
 	this->VeinholeWarhead.Read<true>(exINI, GameStrings::CombatDamage, "VeinholeWarhead");
 	this->MissingCameo.Read(pINI, GameStrings::AudioVisual, "MissingCameo");
 
@@ -343,6 +344,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->FallingDownTargetingFix.Read(exINI, GameStrings::General, "FallingDownTargetingFix");
 	this->AIAirTargetingFix.Read(exINI, GameStrings::General, "AIAirTargetingFix");
+	this->OpenTopped_DecloakToFire.Read(exINI, GameStrings::General, "OpenTopped.DecloakToFire");
 
 	this->SortCameoByName.Read(exINI, GameStrings::General, "SortCameoByName");
 
@@ -468,6 +470,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->RadSiteWarhead_Detonate_Full)
 		.Process(this->RadHasOwner)
 		.Process(this->RadHasInvoker)
+		.Process(this->ShieldApplyArmorMult)
 		.Process(this->JumpjetCrash)
 		.Process(this->JumpjetNoWobbles)
 		.Process(this->VeinholeWarhead)
@@ -656,6 +659,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->IvanBombAttachToCenter)
 		.Process(this->FallingDownTargetingFix)
 		.Process(this->AIAirTargetingFix)
+		.Process(this->OpenTopped_DecloakToFire)
 		.Process(this->SortCameoByName)
 		.Process(this->MergeBuildingDamage)
 		.Process(this->BuildingRadioLink_SyncOwner)

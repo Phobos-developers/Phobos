@@ -308,6 +308,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue that the Jumpjet must end its movement before starting the next mission.
 - Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent.
 - Voxel drawing code now skips sections that are invisible (have all zeros in the transform matrix main diagonal, meaning that the scale is 0% on all axes), thus increasing drawing performance for some voxels.
+- Fixed the bug that unit will play crashing voice & sound when dropped by warhead with `IsLocomotor=yes`.
 
 ## Fixes / interactions with other extensions
 
@@ -351,6 +352,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed.
 - Fixed the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally.
 - Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat.
+- Fixed ares hook which stopped OpenTopped transports from firing if cloaked. This can now be customized.
 
 ## Newly added global settings
 
