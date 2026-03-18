@@ -196,7 +196,7 @@ DEFINE_HOOK(0x6FC3A1, TechnoClass_CanFire_InBunkerRangeCheck, 0x5)
 	GET(TechnoClass*, pThis, EBP);
 	GET(WeaponTypeClass*, pWeapon, EDI);
 
-	if (pThis->WhatAmI() == AbstractType::Unit && WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis) < 384.0)
+	if (pThis->WhatAmI() == AbstractType::Unit && WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis) < 384)
 		return CannotFire;
 
 	return ContinueChecks;

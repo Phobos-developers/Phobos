@@ -511,7 +511,7 @@ public:
 			, RadarJamIgnore {}
 			, InhibitorRange {}
 			, DesignatorRange { }
-			, FactoryPlant_Multiplier { 1.0 }
+			, FactoryPlant_Multiplier { 1.0f }
 			, MindControlRangeLimit {}
 			, MindControl_IgnoreSize { true }
 			, MindControlSize { 1 }
@@ -588,7 +588,7 @@ public:
 			, OpenTopped_UseTransportRangeModifiers { false }
 			, OpenTopped_CheckTransportDisableWeapons { false }
 			, OpenTransport_RangeBonus { 0 }
-			, OpenTransport_DamageMultiplier { 1.0 }
+			, OpenTransport_DamageMultiplier { 1.0f }
 
 			, AutoTargetOwnPosition { false }
 			, AutoTargetOwnPosition_Self { false }

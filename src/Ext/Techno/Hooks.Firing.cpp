@@ -1,4 +1,4 @@
-﻿#include "Body.h"
+#include "Body.h"
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>
@@ -199,59 +199,68 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 	auto const pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
 	const int oddWeaponIndex = 2 * pThis->CurrentGattlingStage;
 	const int evenWeaponIndex = oddWeaponIndex + 1;
-	int chosenWeaponIndex = oddWeaponIndex;
 	const int eligibleWeaponIndex = TechnoExt::PickWeaponIndex(pThis, pTargetTechno, pTarget, oddWeaponIndex, evenWeaponIndex, true);
 
 	if (eligibleWeaponIndex != -1)
 	{
-		chosenWeaponIndex = eligibleWeaponIndex;
+		R->EAX(eligibleWeaponIndex);
+		return UseWeaponIndex;
 	}
-	else if (pTargetTechno)
+
+	int chosenWeaponIndex = oddWeaponIndex;
+
+	if (pTargetTechno)
 	{
 		auto const pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
-		auto const pWeaponOdd = pThis->GetWeapon(oddWeaponIndex)->WeaponType;
 		auto const pWeaponEven = pThis->GetWeapon(evenWeaponIndex)->WeaponType;
-		bool skipRemainingChecks = false;
+		auto const pShield = pTargetExt->Shield.get();
+		auto const armor = pTargetTechno->GetTechnoType()->Armor;
+		const bool inAir = pTargetTechno->IsInAir();
+		const bool isUnderground = pTargetTechno->InWhichLayer() == Layer::Underground;
 
-		if (const auto pShield = pTargetExt->Shield.get())
-		{
-			if (pShield->IsActive() && !pShield->CanBeTargeted(pWeaponOdd))
+		auto isWeaponValid = [&](WeaponTypeClass* pWeapon)
 			{
-				chosenWeaponIndex = evenWeaponIndex;
-				skipRemainingChecks = true;
+				if (inAir && !pWeapon->Projectile->AA)
+					return false;
+				if (isUnderground && !BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->AU)
+					return false;
+				if (pShield && pShield->IsActive() && !pShield->CanBeTargeted(pWeapon))
+					return false;
+				if (GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, armor) == 0.0)
+					return false;
+				return true;
+			};
+
+		// check even weapon first
+
+		if (!isWeaponValid(pWeaponEven))
+		{
+			R->EAX(chosenWeaponIndex);
+			return UseWeaponIndex;
+		}
+
+		// handle naval targeting
+
+		if (!pTargetTechno->OnBridge && !inAir)
+		{
+			auto const landType = pTargetTechno->GetCell()->LandType;
+
+			if (landType == LandType::Water || landType == LandType::Beach)
+			{
+				if (pThis->SelectNavalTargeting(pTargetTechno) == 1)
+					chosenWeaponIndex = evenWeaponIndex;
+
+				R->EAX(chosenWeaponIndex);
+				return UseWeaponIndex;
 			}
 		}
 
-		if (!skipRemainingChecks)
-		{
-			if (GeneralUtils::GetWarheadVersusArmor(pWeaponOdd->Warhead, pTargetTechno->GetTechnoType()->Armor) == 0.0)
-			{
-				chosenWeaponIndex = evenWeaponIndex;
-			}
-			else if (pTargetTechno->InWhichLayer() == Layer::Underground)
-			{
-				if (BulletTypeExt::ExtMap.Find(pWeaponEven->Projectile)->AU && !BulletTypeExt::ExtMap.Find(pWeaponOdd->Projectile)->AU)
-					chosenWeaponIndex = evenWeaponIndex;
-			}
-			else
-			{
-				auto const landType = pTargetTechno->GetCell()->LandType;
-				const bool isOnWater = (landType == LandType::Water || landType == LandType::Beach) && !pTargetTechno->IsInAir();
+		// check odd weapon
 
-				if (!pTargetTechno->OnBridge && isOnWater && pThis->SelectNavalTargeting(pTargetTechno) == 2)
-				{
-					chosenWeaponIndex = evenWeaponIndex;
-				}
-				else if (pTargetTechno->IsInAir() && !pWeaponOdd->Projectile->AA && pWeaponEven->Projectile->AA)
-				{
-					chosenWeaponIndex = evenWeaponIndex;
-				}
-				else if (pThis->GetTechnoType()->LandTargeting == LandTargetingType::Land_Secondary)
-				{
-					chosenWeaponIndex = evenWeaponIndex;
-				}
-			}
-		}
+		auto const pWeaponOdd = pThis->GetWeapon(oddWeaponIndex)->WeaponType;
+
+		if (!isWeaponValid(pWeaponOdd) || pThis->GetTechnoType()->LandTargeting == LandTargetingType::Land_Secondary)
+			chosenWeaponIndex = evenWeaponIndex;
 	}
 
 	R->EAX(chosenWeaponIndex);
