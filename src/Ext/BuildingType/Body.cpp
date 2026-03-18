@@ -40,25 +40,25 @@ int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
 	return -1;
 }
 
-int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse)
+std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse)
 {
-	int nAmount = 0;
-	float fFactor = 1.0f;
+	int amount = 0;
+	float factor = 1.0f;
 
-	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
-	for (const auto& [bTypeIdx, nCount] : pHouseExt->PowerPlantEnhancers)
+	for (const auto& [typeIdx, count] : pHouseExt->PowerPlantEnhancers)
 	{
-		auto const bTypeExt = BuildingTypeExt::ExtMap.Find(BuildingTypeClass::Array[bTypeIdx]);
+		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(BuildingTypeClass::Array[typeIdx]);
 
-		if (bTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
+		if (pTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding))
 		{
-			fFactor *= std::powf(bTypeExt->PowerPlantEnhancer_Factor, static_cast<float>(nCount));
-			nAmount += bTypeExt->PowerPlantEnhancer_Amount * nCount;
+			factor *= std::powf(pTypeExt->PowerPlantEnhancer_Factor, static_cast<float>(count));
+			amount += pTypeExt->PowerPlantEnhancer_Amount * count;
 		}
 	}
 
-	return static_cast<int>(std::round(pBuilding->GetPowerOutput() * fFactor)) + nAmount;
+	return std::make_pair(static_cast<int>(std::round(output * factor)), amount);
 }
 
 void BuildingTypeExt::PlayBunkerSound(BuildingClass const* pThis, bool buildUp)
@@ -274,6 +274,9 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.A
 	this->RubbleIntact.Read(exINI, pSection, "Rubble.Intact");
 	this->RubbleIntactRemove.Read(exINI, pSection, "Rubble.Intact.Remove");
+
+	// Ares 3.0
+	this->UnitSell.Read(exINI, pSection, "UnitSell");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -363,6 +366,9 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		// Ares 0.A
 		.Process(this->RubbleIntact)
 		.Process(this->RubbleIntactRemove)
+
+		// Ares 3.0
+		.Process(this->UnitSell)
 		;
 }
 

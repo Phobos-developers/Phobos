@@ -71,7 +71,7 @@ void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiber
 	float depositableTiberiumAmount = 0.0f; // Number of 'bails' that will be stored.
 	auto const pTiberium = TiberiumClass::Array.GetItem(idxTiberiumType);
 
-	if (amount > 0.0)
+	if (amount > 0.0f)
 	{
 		auto const pExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 
