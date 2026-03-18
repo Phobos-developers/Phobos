@@ -247,7 +247,7 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 
 			if (landType == LandType::Water || landType == LandType::Beach)
 			{
-				if (pThis->SelectNavalTargeting(pTargetTechno) != 1)
+				if (pThis->SelectNavalTargeting(pTargetTechno) == 1)
 					chosenWeaponIndex = evenWeaponIndex;
 
 				R->EAX(chosenWeaponIndex);
