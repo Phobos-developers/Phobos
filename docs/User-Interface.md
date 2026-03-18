@@ -521,6 +521,24 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
 - Switches on/off [Task subtitles' label in the middle of the screen](#task-subtitles-display-in-the-middle-of-the-screen).
 - For localization add `TXT_TOGGLE_MESSAGE` and `TXT_TOGGLE_MESSAGE_DESC` into your `.csf` file.
 
+### `[ ]` Rebuild Structure
+- Re-queue the last produced Power/Resource/Tech Building you placed.
+
+### `[ ]` Rebuild Defense
+- Re-queue the last produced Defensive Building you placed.
+
+### `[ ]` Rebuild Infantry
+- Re-queue the last produced Infantry Unit you built.
+
+### `[ ]` Rebuild Vehicle
+- Re-queue the last produced Vehicle Unit you built.
+
+### `[ ]` Rebuild Aircraft
+- Re-queue the last produced Aircraft Unit you built.
+
+### `[ ]` Rebuild Naval
+- Re-queue the last produced Naval Unit you built.
+
 ## Loading screen
 
 - PCX files can now be used as loadscreen images.

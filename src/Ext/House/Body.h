@@ -46,6 +46,20 @@ public:
 		int LastBuiltNavalVehicleType;
 		int ProducingNavalUnitTypeIndex;
 
+		// Per-tab last-built tracking for the Build Last commands.
+		// Indexed by sidebar tab: 0=Power/Infra, 1=Combat, 2=Infantry, 3=Vehicles/Aircraft.
+		int LastBuiltPerTab[4];
+		AbstractType LastBuiltRTTIPerTab[4];
+		bool LastBuiltIsNavalPerTab[4];
+
+		// Per-subtype tracking within tab 3 for dedicated rebuild commands.
+		int LastBuiltVehicleTypeIndex;   // Last non-naval UnitType
+		int LastBuiltAircraftTypeIndex;  // Last AircraftType
+		int LastBuiltNavalTypeIndex;     // Last naval UnitType
+		AbstractType LastBuiltVehicleRTTI;
+		AbstractType LastBuiltAircraftRTTI;
+		AbstractType LastBuiltNavalRTTI;
+
 		// Factories that exist but don't count towards multiple factory bonus.
 		int NumAirpads_NonMFB;
 		int NumBarracks_NonMFB;
@@ -85,6 +99,15 @@ public:
 			, RestrictedFactoryPlants {}
 			, LastBuiltNavalVehicleType { -1 }
 			, ProducingNavalUnitTypeIndex { -1 }
+			, LastBuiltPerTab { -1, -1, -1, -1 }
+			, LastBuiltRTTIPerTab { AbstractType::None, AbstractType::None, AbstractType::None, AbstractType::None }
+			, LastBuiltIsNavalPerTab { false, false, false, false }
+			, LastBuiltVehicleTypeIndex { -1 }
+			, LastBuiltAircraftTypeIndex { -1 }
+			, LastBuiltNavalTypeIndex { -1 }
+			, LastBuiltVehicleRTTI { AbstractType::None }
+			, LastBuiltAircraftRTTI { AbstractType::None }
+			, LastBuiltNavalRTTI { AbstractType::None }
 			, CombatAlertTimer {}
 			, NumAirpads_NonMFB { 0 }
 			, NumBarracks_NonMFB { 0 }
