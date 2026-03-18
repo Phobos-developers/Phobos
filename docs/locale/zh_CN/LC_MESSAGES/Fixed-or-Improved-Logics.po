@@ -1771,6 +1771,7 @@ msgid ""
 "Modified the ares hook that stopped OpenTopped transports from firing if "
 "cloaked."
 msgstr ""
+"修改了一个会阻止 `OpenTopped` 的运输工具在隐形状态下开火的 Ares 钩子。"
 
 msgid "Newly added global settings"
 msgstr "新增的全局设定"

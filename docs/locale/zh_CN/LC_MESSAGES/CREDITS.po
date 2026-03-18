@@ -2576,4 +2576,5 @@ msgstr "多人联机所用游戏速度下的实时计时器修复"
 
 msgid "Revert Ares patch to allow OpenTopped transport customization"
 msgstr ""
+"撤销 Ares 的补丁以允许为 OpenTopped 的运输工具自定义"
 

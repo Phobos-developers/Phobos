@@ -2336,6 +2336,7 @@ msgid ""
 "Modified the ares hook that stopped OpenTopped transports from firing if "
 "cloaked (by RAZER & Morton)"
 msgstr ""
+"修改了一个会阻止 `OpenTopped` 的运输工具在隐形状态下开火的 Ares 钩子（by RAZER & Morton）"
 
 msgid "0.4.0.3"
 msgstr "0.4.0.3"
