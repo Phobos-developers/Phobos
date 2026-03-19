@@ -5013,6 +5013,12 @@ msgid ""
 "target."
 msgstr "`FireUp.ResetInRetarget` 决定当前载具目标改变时其前摇是否重置。失去目标强制重置。"
 
+msgid "Default mirage disguise for individual VehicleTypes"
+msgstr "载具类型默认幻影伪装"
+
+msgid "Vehicle can now have its `DefaultMirageDisguises` overridden per-type."
+msgstr "现在可以单独为每个载具类型设置其 `DefaultMirageDisguises`。"
+
 msgid "Warheads"
 msgstr "弹头"
 

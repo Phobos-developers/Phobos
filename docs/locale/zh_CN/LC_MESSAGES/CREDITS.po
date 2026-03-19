@@ -1671,6 +1671,11 @@ msgid ""
 msgstr ""
 "添加了护盾是否使用护甲倍率的开关"
 
+msgid ""
+"Customize default mirage disguises per vehicletypes"
+msgstr ""
+"为每个载具类型单独定义默认的幻影伪装类型"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
