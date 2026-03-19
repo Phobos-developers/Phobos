@@ -2320,6 +2320,16 @@ FireUp=                         ; integer
 FireUp.ResetInRetarget=true     ; boolean
 ```
 
+### Default mirage disguise for individual VehicleTypes
+
+- Vehicle can now have its `DefaultMirageDisguises` overridden per-type.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]      ; VehicleType
+DefaultMirageDisguises=    ; List of TerrainTypes
+```
+
 ## Warheads
 
 ```{hint}
