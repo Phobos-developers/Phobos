@@ -2863,6 +2863,14 @@ DEFINE_HOOK(0x4DEC7F, FootClass_Crash_FallingDownFix, 0x7)
 	{
 		if (const auto pJumpjet = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 			pJumpjet->State = JumpjetLocomotionClass::State::Crashing;
+
+		const auto pInfantry = abstract_cast<InfantryClass*>(pThis);
+
+		if (pInfantry && pInfantry->SequenceAnim == Sequence::Paradrop)
+		{
+			pInfantry->SequenceAnim = Sequence::Ready;
+			pInfantry->PlayAnim(Sequence::AirDeathStart, true);
+		}
 	}
 
 	return 0;
