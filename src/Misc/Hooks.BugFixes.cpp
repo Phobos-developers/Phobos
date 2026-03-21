@@ -2859,7 +2859,7 @@ DEFINE_HOOK(0x4DEC7F, FootClass_Crash_FallingDownFix, 0x7)
 {
 	GET(FootClass*, pThis, ESI);
 
-	if (pThis->Locomotor)
+	if (pThis->IsFallingDown && !pThis->IsABomb && pThis->Locomotor)
 	{
 		if (const auto pJumpjet = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 			pJumpjet->State = JumpjetLocomotionClass::State::Crashing;
