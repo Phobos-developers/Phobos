@@ -1672,9 +1672,11 @@ msgstr ""
 "添加了护盾是否使用护甲倍率的开关"
 
 msgid ""
-"Fix the bug that parasite always be set on victim's location"
+"Fix an Ares bug that led to erroneous interactions where the parasite "
+"would frequently reset to the victim's position under specific "
+"circumstances and that was highly prone to crashes"
 msgstr ""
-"修复了寄生者总是被设置到被寄生者的位置的 Bug"
+"修复了一个极易崩溃且导致寄生者特定条件下会被高频重设至受害者位置这一错误交互的 Ares Bug"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
