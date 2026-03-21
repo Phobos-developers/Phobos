@@ -1762,6 +1762,10 @@ msgid ""
 msgstr "修复了使用 Ares 废墟逻辑的 `Explodes=yes` 建筑会导致其所有者无法正常败北的 Bug。"
 
 msgid ""
+"Fixed the bug that parasite always be set on victim's location."
+msgstr "修复了寄生者总是被设置到被寄生者的位置的 Bug。"
+
+msgid ""
 "Fixed an issue that retaliation will make the unit keep switching among "
 "multiple targets with the same amount of threat."
 msgstr "修复了反击行为会让单位在多个相同威胁值的目标间不断切换的问题。"

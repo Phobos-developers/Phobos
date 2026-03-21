@@ -2334,6 +2334,10 @@ msgid ""
 "will cause it's owner cannot defeat normally (by NetsuNegi)"
 msgstr "修复了使用 Ares 废墟逻辑的 `Explodes=yes` 建筑会导致其所有者无法正常败北的 Bug（by NetsuNegi）"
 
+msgid ""
+"Fixed the bug that parasite always be set on victim's location (by NetsuNegi)"
+msgstr "修复了寄生者总是被设置到被寄生者的位置的 Bug（by NetsuNegi）"
+
 msgid "0.4.0.3"
 msgstr "0.4.0.3"
 
