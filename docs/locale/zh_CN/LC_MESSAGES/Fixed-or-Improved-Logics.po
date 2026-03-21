@@ -1583,6 +1583,11 @@ msgid ""
 "warhead with `IsLocomotor=yes`."
 msgstr "修复了载具被 `IsLocomotor=yes` 的弹头丢下时会播放坠毁语音和音效的 Bug。"
 
+msgid ""
+"Fixed the bug that if paradropping technos with `Crashable=yes` has "
+"been destroyed in air, they will falling down on ground but not dead."
+msgstr "修复了当`Crashable=yes`的科技类型在空降时被于半空中摧毁，它会落地但不会死亡的 Bug。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 

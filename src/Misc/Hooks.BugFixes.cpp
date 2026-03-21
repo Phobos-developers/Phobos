@@ -2855,6 +2855,16 @@ DEFINE_HOOK(0x4DAD06, FootClass_AI_IsCrashing_VoiceAndSound, 0xA)
 	return ContinueAfter;
 }
 
+DEFINE_HOOK(0x4DEC7F, FootClass_Crash_FallingDownFix, 0x7)
+{
+	GET(FootClass*, pThis, ESI);
+
+	if (!pThis->IsABomb)
+		pThis->IsFallingDown = false;
+
+	return 0;
+}
+
 #pragma region ClearTargetOnOwnerChanged
 
 DEFINE_HOOK(0x70D4A0, AbstractClass_ClearTargetToMe_ClearManagerTarget, 0x5)

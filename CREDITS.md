@@ -513,6 +513,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize which parasite can remove by warhead
   - Fix the bug that unit will play crashing voice & sound when dropped by warhead with `IsLocomotor=yes`
   - Add toggle of whether shield use ArmorMultiplier or not
+  - Fix the bug that if paradropping technos with `Crashable=yes` has been destroyed in air, they will falling down on ground but not dead
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
