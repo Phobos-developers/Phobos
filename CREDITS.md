@@ -513,7 +513,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize which parasite can remove by warhead
   - Fix the bug that unit will play crashing voice & sound when dropped by warhead with `IsLocomotor=yes`
   - Add toggle of whether shield use ArmorMultiplier or not
-  - Fix the bug that crashing technos can be attack and gain expirence
+  - Fix the bug where corpses of technos that had already died could be targeted and grant experience to attackers before they fell to the ground and were removed
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

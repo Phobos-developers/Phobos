@@ -309,7 +309,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent.
 - Voxel drawing code now skips sections that are invisible (have all zeros in the transform matrix main diagonal, meaning that the scale is 0% on all axes), thus increasing drawing performance for some voxels.
 - Fixed the bug that unit will play crashing voice & sound when dropped by warhead with `IsLocomotor=yes`.
-- Fixed the bug that crashing technos can be attack and gain expirence.
+- Fixed the bug where corpses of technos that had already died could be targeted and grant experience to attackers before they fell to the ground and were removed.
 
 ## Fixes / interactions with other extensions
 
