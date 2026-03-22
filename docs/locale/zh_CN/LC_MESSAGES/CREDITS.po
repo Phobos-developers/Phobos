@@ -1671,6 +1671,11 @@ msgid ""
 msgstr ""
 "添加了护盾是否使用护甲倍率的开关"
 
+msgid ""
+"Fix the bug that crashing technos can be attack and gain expirence"
+msgstr ""
+"修复了坠落中的科技类型可以被攻击并获得经验的 Bug"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 

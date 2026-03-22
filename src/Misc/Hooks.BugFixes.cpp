@@ -70,13 +70,17 @@ DEFINE_HOOK(0x5F53AA, ObjectClass_ReceiveDamage_DyingFix, 0x6)
 	return ContinueCheck;
 }
 
-DEFINE_HOOK(0x4D7431, FootClass_ReceiveDamage_DyingFix, 0x5)
+DEFINE_HOOK(0x4D7413, FootClass_ReceiveDamage_DyingFix, 0x8)
 {
-	GET(FootClass*, pThis, ESI);
-	GET(const DamageState, result, EAX);
+	enum { ReturnFromFunction = 0x4D74CF };
 
-	if (result != DamageState::PostMortem && (pThis->IsSinking || (!pThis->IsAttackedByLocomotor && pThis->IsCrashing)))
+	GET(FootClass*, pThis, ESI);
+
+	if ((pThis->IsCrashing && !pThis->IsAttackedByLocomotor) || pThis->IsSinking)
+	{
 		R->EAX(DamageState::PostMortem);
+		return ReturnFromFunction;
+	}
 
 	return 0;
 }
@@ -94,6 +98,17 @@ DEFINE_HOOK(0x737D57, UnitClass_ReceiveDamage_DyingFix, 0x7)
 		R->EAX(DamageState::PostMortem);
 
 	return 0;
+}
+
+// Prevent attack dead target
+DEFINE_HOOK(0x6FCBCD, TechnoClass_GetFireError_DyingFix, 0x6)
+{
+	enum { FireErrorIllegal = 0x6FCBD7 };
+
+	GET(TechnoClass*, pTargetTechno, EBP);
+	const auto pTargetFoot = abstract_cast<FootClass*, true>(pTargetTechno);
+
+	return pTargetFoot && pTargetTechno->IsCrashing && !pTargetFoot->IsAttackedByLocomotor ? FireErrorIllegal : 0;
 }
 
 // Nov 22, 2025 - Starkku: Fixes an issue that causes preplaced aircraft placed outside visible map to be flagged as crashing even if

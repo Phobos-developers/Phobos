@@ -1583,6 +1583,10 @@ msgid ""
 "warhead with `IsLocomotor=yes`."
 msgstr "修复了载具被 `IsLocomotor=yes` 的弹头丢下时会播放坠毁语音和音效的 Bug。"
 
+msgid ""
+"Fixed the bug that crashing technos can be attack and gain expirence."
+msgstr "修复了坠落中的科技类型可以被攻击并获得经验的 Bug。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 
