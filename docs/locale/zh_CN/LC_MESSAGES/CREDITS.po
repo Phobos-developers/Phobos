@@ -1672,6 +1672,13 @@ msgstr ""
 "添加了护盾是否使用护甲倍率的开关"
 
 msgid ""
+"Fix an Ares bug that led to erroneous interactions where the parasite "
+"would frequently reset to the victim's position under specific "
+"circumstances and that was highly prone to crashes"
+msgstr ""
+"修复了一个极易崩溃且导致寄生者特定条件下会被高频重设至受害者位置这一错误交互的 Ares Bug"
+
+msgid ""
 "Fix the bug that if paradropping technos with `Crashable=yes` has "
 "been destroyed in air, they will falling down on ground but not dead"
 msgstr ""
