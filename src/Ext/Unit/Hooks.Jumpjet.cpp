@@ -463,13 +463,14 @@ DEFINE_HOOK(0x54AD41, JumpjetLocomotionClass_Link_To_Object_LocomotorWarhead, 0x
 	GET(ILocomotion*, pThis, EBP);
 	GET(FootClass*, pLinkedTo, EBX);
 	const auto pLoco = static_cast<JumpjetLocomotionClass*>(pThis);
+	const auto pLinkedToExt = TechnoExt::ExtMap.Find(pLinkedTo);
 	const auto pType = pLinkedTo->GetTechnoType();
 
 	if (const auto pLocomotorWarhead = WarheadTypeExt::LocomotorWarhead)
 	{
 		const auto pWHExt = WarheadTypeExt::ExtMap.Find(pLocomotorWarhead);
 		pLoco->TurnRate = pWHExt->JumpjetTurnRate.Get(pType->JumpjetTurnRate);
-		pLoco->Speed = pWHExt->JumpjetSpeed.Get(pType->JumpjetSpeed);
+		pLoco->Speed = pLinkedToExt->JumpjetSpeed = pWHExt->JumpjetSpeed.Get(pType->JumpjetSpeed);
 		pLoco->Climb = pWHExt->JumpjetClimb.Get(pType->JumpjetClimb);
 		pLoco->Crash = pWHExt->JumpjetCrash.Get(pType->JumpjetCrash);
 		pLoco->Height = std::max(pWHExt->JumpjetHeight.Get(pType->JumpjetHeight), Unsorted::CellHeight);
@@ -481,7 +482,7 @@ DEFINE_HOOK(0x54AD41, JumpjetLocomotionClass_Link_To_Object_LocomotorWarhead, 0x
 	else
 	{
 		pLoco->TurnRate = pType->JumpjetTurnRate;
-		pLoco->Speed = pType->JumpjetSpeed;
+		pLoco->Speed = pLinkedToExt->JumpjetSpeed = pType->JumpjetSpeed;
 		pLoco->Climb = pType->JumpjetClimb;
 		pLoco->Crash = pType->JumpjetCrash;
 		pLoco->Height = std::max(pType->JumpjetHeight, Unsorted::CellHeight);

@@ -443,7 +443,7 @@ DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
 	const double multiplier = TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
-	pThis->Speed = (int)(pThis->LinkedTo->GetTechnoType()->JumpjetSpeed * multiplier);
+	pThis->Speed = static_cast<int>(TechnoExt::ExtMap.Find(pThis->LinkedTo)->JumpjetSpeed * multiplier);
 
 	return 0;
 }
