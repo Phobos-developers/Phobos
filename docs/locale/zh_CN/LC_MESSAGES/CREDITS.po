@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-27 12:29+0800\n"
+"POT-Creation-Date: 2026-03-09 02:14+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -164,6 +164,9 @@ msgstr "移植了 XNA CNCNet Client 的多人游戏存档处理"
 
 msgid "Retint fix toggle"
 msgstr "为地图光照重绘时的建筑光源问题修复添加开关"
+
+msgid "Voxel drawing invisible sections skip"
+msgstr "跳过 Voxel 不可见组件的绘制"
 
 msgid "**Uranusian (Thrifinesma)**:"
 msgstr "**Uranusian (Thrifinesma)**："
@@ -1275,6 +1278,17 @@ msgid ""
 "superweapons with index numbers 3 and 4"
 msgstr "修复了 56 和 57 号 AI 动作脚本强制发射注册索引 3 和 4 的超武的 Bug"
 
+msgid ""
+"Fixed an issue where parachute units would die upon landing if bridges "
+"were destroyed during their descent"
+msgstr "修复了空降到桥上的单位会由于降落过程中桥梁被毁而在着陆后死亡的问题"
+
+msgid "Custom hover vehicles shutdown drowning death"
+msgstr "自定义悬浮载具溺死"
+
+msgid "SHP turret vehicles support the use of `*tur.shp` files"
+msgstr "Shape 有炮塔载具支持使用 `*tur.shp` 文件。"
+
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："
 
@@ -1637,8 +1651,25 @@ msgstr "修复了 `PassengerDeletion` 未考虑乘客的乘客、寄生者和偷
 msgid ""
 "Fix the issue that power output of building on tooltip won't consider "
 "power enhancer"
+msgstr "修复了建筑拓展工具提示信息中的发电量数值未考虑电厂增幅器的问题"
+
+msgid ""
+"Fix the bug that the upgrade building's power-enhancing effect depends "
+"only on its parent building and is not related to the upgrade building "
+"itself"
+msgstr "修复了加载物建筑的电厂增幅效果仅取决于其基底建筑而非加载物建筑自身的 Bug"
+
+msgid "Customize which parasite can remove by warhead"
+msgstr "自定义哪些寄生者可被弹头移除"
+
+msgid "Fix the bug that unit will play crashing voice & sound when dropped by "
+"warhead with `IsLocomotor=yes`"
+msgstr "修复了载具被 `IsLocomotor=yes` 的弹头丢下时会播放坠毁语音和音效的 Bug"
+
+msgid ""
+"Add toggle of whether shield use ArmorMultiplier or not"
 msgstr ""
-"修复了建筑拓展工具提示信息中的发电量数值未考虑电厂增幅器的问题"
+"添加了护盾是否使用护甲倍率的开关"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
@@ -2342,8 +2373,7 @@ msgstr "修复了 Jumpjet 单位无法正确结束移动任务的问题"
 msgid ""
 "Fix the issue that the Jumpjet must end its movement before starting the "
 "next mission"
-msgstr ""
-"修复了 Jumpjet 单位在开始下一个任务前必须先停止移动的问题"
+msgstr "修复了 Jumpjet 单位在开始下一个任务前必须先停止移动的问题"
 
 msgid "Taunt warhead"
 msgstr "嘲讽弹头"
@@ -2414,6 +2444,16 @@ msgstr "AI 载具生产更新代码"
 
 msgid "parts of TechnoType conversion placeholder code"
 msgstr "单位转换占位符代码的一部分"
+
+msgid ""
+"**[Vinifera Contributors](https://github.com/Vinifera-"
+"developers/Vinifera/blob/develop/CREDITS.md)**:"
+msgstr ""
+"**[Vinifera 贡献者](https://github.com/Vinifera-"
+"developers/Vinifera/blob/develop/CREDITS.md)**："
+
+msgid "Implement `CurleyShuffle` for AircraftTypes"
+msgstr "实现战机微观 `CurleyShuffle` 设置"
 
 msgid ""
 "**ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, CrimRecya** - "
@@ -2529,6 +2569,9 @@ msgid ""
 "toggled off"
 msgstr "**11EJDE11** - 阻止 MPDEBUG 数字在关闭可见时仍然绘制"
 
-msgid "**CnCRazer** - Wall overlay unit sell exploit fix"
-msgstr "**CnCRazer** - 围墙卖坦克 Bug 的修复"
+msgid "**RAZER**:"
+msgstr "**RAZER**："
+
+msgid "Multiplayer gamespeed fix for RealTimeTimers"
+msgstr "多人联机所用游戏速度下的实时计时器修复"
 
