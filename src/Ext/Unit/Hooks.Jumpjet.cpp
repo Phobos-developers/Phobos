@@ -2,6 +2,7 @@
 
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/WarheadType/Body.h>
 
 // Misc jumpjet facing, turning, drawing fix -- Author: Trsdy
 // Jumpjets stuck at FireError::FACING because Jumpjet has its own facing just for JumpjetTurnRate
@@ -454,3 +455,41 @@ DEFINE_HOOK(0x54D859, JumpjetLocomotionClass_GetFloorZ_IgnoreBuilding, 0x9)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x54AD41, JumpjetLocomotionClass_Link_To_Object_LocomotorWarhead, 0x8)
+{
+	enum { SkipGameCode = 0x54ADF8 };
+
+	GET(ILocomotion*, pThis, EBP);
+	GET(FootClass*, pLinkedTo, EBX);
+	const auto pLoco = static_cast<JumpjetLocomotionClass*>(pThis);
+	const auto pType = pLinkedTo->GetTechnoType();
+
+	if (const auto pLocomotorWarhead = WarheadTypeExt::LocomotorWarhead)
+	{
+		const auto pWHExt = WarheadTypeExt::ExtMap.Find(pLocomotorWarhead);
+		pLoco->TurnRate = pWHExt->JumpjetTurnRate.Get(pType->JumpjetTurnRate);
+		pLoco->Speed = pWHExt->JumpjetSpeed.Get(pType->JumpjetSpeed);
+		pLoco->Climb = pWHExt->JumpjetClimb.Get(pType->JumpjetClimb);
+		pLoco->Crash = pWHExt->JumpjetCrash.Get(pType->JumpjetCrash);
+		pLoco->Height = std::max(pWHExt->JumpjetHeight.Get(pType->JumpjetHeight), Unsorted::CellHeight);
+		pLoco->Accel = pWHExt->JumpjetAccel.Get(pType->JumpjetAccel);
+		pLoco->Wobbles = pWHExt->JumpjetWobbles.Get(pType->JumpjetWobbles);
+		pLoco->Deviation = pWHExt->JumpjetDeviation.Get(pType->JumpjetDeviation);
+		pLoco->NoWobbles = pWHExt->JumpjetNoWobbles.Get(pType->JumpjetNoWobbles);
+	}
+	else
+	{
+		pLoco->TurnRate = pType->JumpjetTurnRate;
+		pLoco->Speed = pType->JumpjetSpeed;
+		pLoco->Climb = pType->JumpjetClimb;
+		pLoco->Crash = pType->JumpjetCrash;
+		pLoco->Height = std::max(pType->JumpjetHeight, Unsorted::CellHeight);
+		pLoco->Accel = pType->JumpjetAccel;
+		pLoco->Wobbles = pType->JumpjetWobbles;
+		pLoco->Deviation = pType->JumpjetDeviation;
+		pLoco->NoWobbles = pType->JumpjetNoWobbles;
+	}
+
+	return SkipGameCode;
+}

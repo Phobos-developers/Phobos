@@ -5136,6 +5136,12 @@ msgid ""
 "choose it."
 msgstr "在原版中乌贼拖拽的动画被硬编码为 `SQDG`，现在选择权归你了。"
 
+msgid "Customizing locomotor warhead"
+msgstr "自定义 Locomotor 弹头"
+
+msgid "Now you can customize jumpjet properties on warhead."
+msgstr "现在你可以在弹头上指定 Jumpjet 属性了。"
+
 msgid "Dehardcode the `ZAdjust` of warhead anim"
 msgstr "弹头动画 `ZAdjust` 去硬编码"
 

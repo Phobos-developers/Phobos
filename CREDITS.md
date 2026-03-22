@@ -513,6 +513,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize which parasite can remove by warhead
   - Fix the bug that unit will play crashing voice & sound when dropped by warhead with `IsLocomotor=yes`
   - Add toggle of whether shield use ArmorMultiplier or not
+  - Allow customize jumpjet properties on warhead
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

@@ -1671,6 +1671,11 @@ msgid ""
 msgstr ""
 "添加了护盾是否使用护甲倍率的开关"
 
+msgid ""
+"Allow customize jumpjet properties on warhead"
+msgstr ""
+"允许在弹头上自定义 Jumpjet 属性"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
