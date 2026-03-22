@@ -83,6 +83,8 @@ DEFINE_HOOK(0x71A88D, TemporalClass_AI, 0x0)
 {
 	GET(TemporalClass*, pThis, ESI);
 
+	// TODO maybe handle attachments on temporal?
+
 	if (auto const pTarget = pThis->Target)
 	{
 		pTarget->IsMouseHovering = false;

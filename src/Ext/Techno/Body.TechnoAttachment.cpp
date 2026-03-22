@@ -35,7 +35,7 @@ void TechnoExt::InitializeAttachments(TechnoClass* pThis)
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	for (auto& entry : pTypeExt->AttachmentData)
-		pExt->ChildAttachments.emplace_back(std::make_unique<AttachmentClass>(&entry, pThis, nullptr))->Initialize();
+		pExt->ChildAttachments.emplace_back(std::make_unique<AttachmentClass>(&entry, pThis, nullptr))->OnCreated();
 }
 
 void TechnoExt::DestroyAttachments(TechnoClass* pThis, TechnoClass* pSource)
@@ -121,6 +121,7 @@ void TechnoExt::HandleAttachmentConversion(TechnoClass* pThis, TechnoTypeClass* 
 	// We preserve old attachments as is so we can then restore them as is
 	pThisExt->DormantAttachments[oldTypeIndex] = std::move(pThisExt->ChildAttachments);
 
+	bool areNewAttachments = false;
 	// Step 2: Establish new mount points - restore from dormant or create fresh
 	if (auto node = pThisExt->DormantAttachments.extract(newTypeIndex))
 	{
@@ -128,8 +129,11 @@ void TechnoExt::HandleAttachmentConversion(TechnoClass* pThis, TechnoTypeClass* 
 	}
 	else
 	{
+		// Do NOT call OnCreated() here - we do not consider all of "technically" new attachments as new.
 		for (auto& entry : pNewTypeExt->AttachmentData)
-			pThisExt->ChildAttachments.emplace_back(std::make_unique<AttachmentClass>(&entry, pThis, nullptr))->Initialize();
+			pThisExt->ChildAttachments.emplace_back(std::make_unique<AttachmentClass>(&entry, pThis, nullptr));
+
+		areNewAttachments = true;
 	}
 
 	// Step 3: Match old mount points to new active ones by ID; transfer children and synchronize timers.
@@ -146,6 +150,7 @@ void TechnoExt::HandleAttachmentConversion(TechnoClass* pThis, TechnoTypeClass* 
 		if (!newID)
 			continue;
 
+		bool gotConverted = false;
 		for (auto it = oldMountsCopy.begin(); it != oldMountsCopy.end(); ++it)
 		{
 			const auto& oldID = (*it)->Data->ID;
@@ -182,11 +187,18 @@ void TechnoExt::HandleAttachmentConversion(TechnoClass* pThis, TechnoTypeClass* 
 				int newRemaining = (oldRemaining * newDelay) / oldDelay;
 				pNewMount->RespawnTimer.TimeLeft = newDelay;
 				pNewMount->RespawnTimer.StartTime = static_cast<int>(Unsorted::CurrentFrame) - (newDelay - newRemaining);
+
+				(*it)->RespawnTimer.Stop();  // old must giveth teh state to teh new
 			}
 
 			oldMountsCopy.erase(it);
+			gotConverted = true;
 			break;
 		}
+
+		// now that's what I call new - Kerbiter
+		if (!gotConverted && areNewAttachments)
+			pNewMount->OnCreated();
 	}
 
 	// Step 4: Limbo all old mount points (matched ones have no child, so Limbo is a no-op for them);

@@ -44,7 +44,7 @@ AttachmentClass::~AttachmentClass()
 		Array.erase(position);
 }
 
-void AttachmentClass::Initialize()
+void AttachmentClass::OnCreated()
 {
 	if (this->Child)
 		return;

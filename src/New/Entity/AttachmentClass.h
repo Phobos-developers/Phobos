@@ -45,7 +45,7 @@ public:
 	TechnoTypeClass* GetChildType();
 	CoordStruct GetChildLocation();
 
-	void Initialize();
+	void OnCreated();
 	void CreateChild();
 	void AI();
 	void Destroy(TechnoClass* pSource);
