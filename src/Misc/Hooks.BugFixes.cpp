@@ -2893,6 +2893,7 @@ DEFINE_HOOK(0x4DEC7F, FootClass_Crash_FallingDownFix, 0x7)
 	}
 
 	return 0;
+}
 
 #pragma region ClearTargetOnOwnerChanged
 
