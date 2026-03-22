@@ -181,13 +181,14 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7ECDF4, JumpjetLocomotionClass_Can_Fire);
 DEFINE_HOOK(0x54DAC4, JumpjetLocomotionClass_EndPiggyback_Blyat, 0x6)
 {
 	GET(FootClass*, pLinkedTo, EAX);
-	auto const* pType = pLinkedTo->GetTechnoType();
+	const auto pType = pLinkedTo->GetTechnoType();
+	const auto pExt = TechnoExt::ExtMap.Find(pLinkedTo);
 
+	pExt->JumpjetSpeed = pType->JumpjetSpeed;
 	pLinkedTo->PrimaryFacing.SetROT(pType->ROT);
 
 	if (pType->SensorsSight)
 	{
-		const auto pExt = TechnoExt::ExtMap.Find(pLinkedTo);
 		pLinkedTo->RemoveSensorsAt(pExt->LastSensorsMapCoords);
 		pLinkedTo->AddSensorsAt(CellStruct::Empty);
 	}
