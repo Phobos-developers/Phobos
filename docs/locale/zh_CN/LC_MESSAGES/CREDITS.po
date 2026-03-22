@@ -1670,6 +1670,13 @@ msgstr "修复了载具被 `IsLocomotor=yes` 的弹头丢下时会播放坠毁�
 msgid "Add toggle of whether shield use ArmorMultiplier or not"
 msgstr "添加了护盾是否使用护甲倍率的开关"
 
+msgid ""
+"Fix an Ares bug that led to erroneous interactions where the parasite "
+"would frequently reset to the victim's position under specific "
+"circumstances and that was highly prone to crashes"
+msgstr ""
+"修复了一个极易崩溃且导致寄生者特定条件下会被高频重设至受害者位置这一错误交互的 Ares Bug"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 

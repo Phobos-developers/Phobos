@@ -2338,6 +2338,13 @@ msgid ""
 msgstr ""
 "修改了一个会阻止 `OpenTopped` 的运输工具在隐形状态下开火的 Ares 钩子（by RAZER & Morton）"
 
+msgid ""
+"Fixed an Ares bug that led to erroneous interactions where the parasite "
+"would frequently reset to the victim's position under specific "
+"circumstances and that was highly prone to crashes (by NetsuNegi)"
+msgstr ""
+"修复了一个极易崩溃且导致寄生者特定条件下会被高频重设至受害者位置这一错误交互的 Ares Bug（by NetsuNegi）"
+
 msgid "0.4.0.3"
 msgstr "0.4.0.3"
 

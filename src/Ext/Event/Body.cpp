@@ -78,6 +78,9 @@ void EventExt::RespondApproachObject()
 
 	pSource->ClearNavigationList();
 	pSource->SetDestination(nullptr, true);
+	// According to the report at https://github.com/Phobos-developers/Phobos/pull/2134#issuecomment-4062110663:
+	// If the target is not cleared here, it may cause desync. The specific reason has not been fully investigated.
+	// Anyone is welcome to provide a more detailed explanation.
 	pSource->SetTarget(nullptr);
 	pSource->SetArchiveTarget(nullptr);
 

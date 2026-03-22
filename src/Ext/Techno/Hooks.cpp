@@ -466,11 +466,14 @@ double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass
 
 			auto const type = attachEffect->GetType();
 
-			if (type->ArmorMultiplier_DisallowWarheads.Contains(pWarhead))
-				continue;
+			if (pWarhead)
+			{
+				if (type->ArmorMultiplier_DisallowWarheads.Contains(pWarhead))
+					continue;
 
-			if (type->ArmorMultiplier_AllowWarheads.size() > 0 && !type->ArmorMultiplier_AllowWarheads.Contains(pWarhead))
-				continue;
+				if (type->ArmorMultiplier_AllowWarheads.size() > 0 && !type->ArmorMultiplier_AllowWarheads.Contains(pWarhead))
+					continue;
+			}
 
 			mult *= type->ArmorMultiplier;
 		}

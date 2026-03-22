@@ -206,6 +206,12 @@ double TechnoExt::GetCurrentFirepowerMultiplier(TechnoClass* pThis)
 		(pThis->HasAbility(Ability::Firepower) ? RulesClass::Instance->VeteranCombat : 1.0);
 }
 
+double TechnoExt::GetCurrentArmorMultiplier(TechnoClass* pThis, TechnoTypeClass* pType, WarheadTypeClass* pWarhead)
+{
+	return pThis->ArmorMultiplier * pThis->Owner->GetArmorMultiplier(pType) * TechnoExt::CalculateArmorMultipliers(pThis, pWarhead) *
+		(pThis->HasAbility(Ability::Stronger) ? RulesClass::Instance->VeteranArmor : 1.0);
+}
+
 CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger, int maxAttempts = 1)
 {
 	if (!pThis || !pPassenger)

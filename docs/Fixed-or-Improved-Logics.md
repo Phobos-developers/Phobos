@@ -353,6 +353,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed.
 - Fixed the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally.
 - Modified the ares hook that stopped OpenTopped transports from firing if cloaked.
+- Fixed an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes.
 
 ## Newly added global settings
 
