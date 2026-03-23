@@ -502,3 +502,106 @@ DEFINE_HOOK(0x55F1F8, MPDebugPrint_CheckDrawFlag, 0x8)
 {
     return Game::DrawMPDebugStats ? 0 : 0x55F280;
 }
+
+#pragma region Draw Timer
+
+namespace DrawTimerTemp
+{
+	bool AdjustLocation = false;
+	bool IsPercentage = false;
+	double Percentage = 0.0;
+	int TimeLeft = 0;
+}
+
+DEFINE_HOOK(0x6D3D10, TacticalClass_Render_BeforeAll, 0x6)
+{
+	using namespace DrawTimerTemp;
+	AdjustLocation = false;
+	IsPercentage = false;
+	return 0;
+}
+
+DEFINE_HOOK(0x6D4992, TacticalClass_Render_DrawMissionTimer_TimeLeft, 0x6)
+{
+	DrawTimerTemp::TimeLeft = R->EDX<int>();
+	return 0;
+}
+
+DEFINE_HOOK(0x6D4A10, TacticalClass_Render_DrawSuperTimer_PercentageTimer, 0x6)
+{
+	enum { SkipGetTimeLeft = 0x6D4A35 };
+
+	GET(SuperClass*, pSuper, ECX);
+
+	DrawTimerTemp::IsPercentage = false;
+	const int timeLeft = pSuper->RechargeTimer.GetTimeLeft();
+	const auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+
+	if (pSWTypeExt->ShowTimer_Percentage.Get(RulesExt::Global()->SuperWeaponTimer_Percentage))
+	{
+		DrawTimerTemp::IsPercentage = true;
+		const int recharge = pSuper->GetRechargeTime();
+		const double percentage = DrawTimerTemp::Percentage = std::min(static_cast<double>(recharge - timeLeft) / recharge, 1.0);
+		R->ESI(percentage >= 1.0 ? 0 : 15);
+	}
+	else
+	{
+		DrawTimerTemp::TimeLeft = timeLeft / 15;
+		R->ESI(timeLeft);
+	}
+
+	return SkipGetTimeLeft;
+}
+
+DEFINE_HOOK(0x6D4B03, TacticalClass_Render_DrawBlackoutTimer_TimeLeft, 0x5)
+{
+	DrawTimerTemp::TimeLeft = R->EDX<int>();
+	return 0;
+}
+
+static int __fastcall TacticalClass_DrawTimer_swprintf(wchar_t* pBuffer, size_t bufferCount, wchar_t* pFormat, ...)
+{
+	using namespace DrawTimerTemp;
+
+	if (IsPercentage)
+		return swprintf(pBuffer, bufferCount, L"%.2lf%s", Percentage * 100, L"%%");
+	else
+		return swprintf(pBuffer, bufferCount, L"%02d:%02d", TimeLeft / 60 % 60, TimeLeft % 60);
+}
+DEFINE_FUNCTION_JUMP(CALL, 0x6D4C4C, TacticalClass_DrawTimer_swprintf)
+
+static Point2D* __fastcall TacticalClass_DrawTimer_Print_Wide
+(
+Point2D& retBuffer,
+const wchar_t* pText,
+Surface* pSurface,
+const RectangleStruct& bounds,
+Point2D& location,
+ColorScheme* pForeScheme,
+ColorScheme* pBackScheme,
+TextPrintType flag,
+...
+)
+{
+	using namespace DrawTimerTemp;
+	AdjustLocation = !AdjustLocation;
+
+	if (AdjustLocation)
+	{
+		if (IsPercentage)
+		{
+			IsPercentage = false;
+			location.X += 8;
+		}
+		else
+		{
+			location.X -= 2;
+		}
+	}
+
+	return Fancy_Text_Print_Wide(retBuffer, pText, pSurface, bounds, location, pForeScheme, pBackScheme, flag);
+}
+DEFINE_FUNCTION_JUMP(CALL, 0x6D4D42, TacticalClass_DrawTimer_Print_Wide)// UIName
+DEFINE_FUNCTION_JUMP(CALL, 0x6D4D9A, TacticalClass_DrawTimer_Print_Wide)// Time
+
+#pragma endregion

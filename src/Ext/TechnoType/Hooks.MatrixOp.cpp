@@ -95,7 +95,17 @@ DEFINE_HOOK(0x73BA12, UnitClass_DrawAsVXL_RewriteTurretDrawing, 0x6)
 	{
 		auto mtxTurret = mtx;
 		pDrawTypeExt->ApplyTurretOffset(&mtxTurret, Pixel_Per_Lepton);
-		mtxTurret.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
+
+		double primaryRad = pThis->PrimaryFacing.Current().GetRadian<32>();
+
+		// Align with the jj Draw_Matrix calc changing.
+		if (auto pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+		{
+			if (!pThis->IsAttackedByLocomotor)
+				primaryRad = pJJLoco->LocomotionFacing.Current().GetRadian<32>();
+		}
+
+		mtxTurret.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - primaryRad));
 
 		if (pThis->TurretRecoil.State != RecoilData::RecoilState::Inactive)
 			mtxTurret.TranslateX(-pThis->TurretRecoil.TravelSoFar);
@@ -263,7 +273,7 @@ DEFINE_HOOK(0x4CF68D, FlyLocomotionClass_DrawMatrix_OnAirport, 0x5)
 		mat = Matrix3D::VoxelRampMatrix[slope_idx] * mat;
 		const float ars = pThis->AngleRotatedSideways;
 		const float arf = pThis->AngleRotatedForwards;
-		if (std::abs(ars) > 0.005 || std::abs(arf) > 0.005)
+		if (std::abs(ars) > 0.005f || std::abs(arf) > 0.005f)
 		{
 			const auto pType = pThis->Type;
 			mat.TranslateZ(float(std::abs(Math::sin(ars)) * pType->VoxelScaleX
@@ -305,7 +315,7 @@ static Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco
 	size_t arfFace = 0;
 	size_t arsFace = 0;
 
-	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
+	if (std::abs(ars) >= 0.005f || std::abs(arf) >= 0.005f)
 	{
 		if (key)
 			key->Base.Invalidate();
@@ -437,7 +447,7 @@ static Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloc
 	const float arf = linked->AngleRotatedForwards;
 	const float ars = linked->AngleRotatedSideways;
 
-	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
+	if (std::abs(ars) >= 0.005f || std::abs(arf) >= 0.005f)
 	{
 		if (pIndex)
 			pIndex->Invalidate();
@@ -554,6 +564,8 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	const auto height = pThis->GetHeight();
 	const double baseScale_log = RulesExt::Global()->AirShadowBaseScale_log;
 
+	double currentScale = 1.0;
+
 	if (RulesExt::Global()->HeightShadowScaling && height > 0)
 	{
 		const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
@@ -563,7 +575,8 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 
 			if (cHeight > 0)
 			{
-				shadowMatrix.Scale((float)std::max(Pade2_2(baseScale_log * height / cHeight), minScale));
+				currentScale = std::max(Pade2_2(baseScale_log * height / cHeight), minScale);
+				shadowMatrix.Scale((float)currentScale);
 
 				if (jjloco->State != JumpjetLocomotionClass::State::Hovering)
 					vxlIndexKey.Invalidate();
@@ -575,14 +588,16 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 
 			if (cHeight > 0 && height > 208)
 			{
-				shadowMatrix.Scale((float)std::max(Pade2_2(baseScale_log * (height - 208) / cHeight), minScale));
+				currentScale = std::max(Pade2_2(baseScale_log * (height - 208) / cHeight), minScale);
+				shadowMatrix.Scale((float)currentScale);
 				vxlIndexKey.Invalidate();
 			}
 		}
 	}
 	else if (!RulesExt::Global()->HeightShadowScaling && pThis->Type->ConsideredAircraft)
 	{
-		shadowMatrix.Scale((float)Pade2_2(baseScale_log));
+		currentScale = Pade2_2(baseScale_log);
+		shadowMatrix.Scale((float)currentScale);
 	}
 
 	auto GetMainVoxel = [&]()
@@ -607,7 +622,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	float arf = pThis->AngleRotatedForwards;
 	float ars = pThis->AngleRotatedSideways;
 	// lazy, don't want to hook inside Shadow_Matrix
-	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
+	if (std::abs(ars) >= 0.005f || std::abs(arf) >= 0.005f)
 	{
 		// index key should have been already invalid, so it won't hurt to invalidate again
 		vxlIndexKey.Invalidate();
@@ -642,7 +657,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 				* JumpjetTiltReference::SidewaysBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
 		}
 
-		if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
+		if (std::abs(ars) >= 0.005f || std::abs(arf) >= 0.005f)
 		{
 			vxlIndexKey.Invalidate();
 			shadowMatrix.RotateX(ars);
@@ -732,7 +747,8 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		return nullptr;
 	};
 
-	pDrawTypeExt->ApplyTurretOffset(&mtx, Pixel_Per_Lepton);
+	const double adjustedFactor = Pixel_Per_Lepton / currentScale;
+	pDrawTypeExt->ApplyTurretOffset(&mtx, adjustedFactor);
 	mtx.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
 
 	const bool inRecoil = pDrawType->TurretRecoil && pThis->TurretRecoil.State != RecoilData::RecoilState::Inactive;
@@ -844,12 +860,13 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 		double arf = pThis->AngleRotatedForwards;
 		if (flyLoco->CurrentSpeed > pAircraftType->PitchSpeed)
 			arf += pAircraftType->PitchAngle;
-		float ars = pThis->AngleRotatedSideways;
-		if (key.Is_Valid_Key() && (std::abs(arf) > 0.005 || std::abs(ars) > 0.005))
+		const float newArf = (float)arf;
+		const float ars = pThis->AngleRotatedSideways;
+		if (key.Is_Valid_Key() && (std::abs(newArf) > 0.005f || std::abs(ars) > 0.005f))
 			key.Invalidate();
 
 		shadow_mtx.RotateX(ars);
-		shadow_mtx.RotateY((float)arf);
+		shadow_mtx.RotateY(newArf);
 	}
 	else if (height > 0)
 	{

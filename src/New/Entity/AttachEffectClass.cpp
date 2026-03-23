@@ -61,7 +61,10 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 
 	if (pType->Duration_ApplyArmorMultOnTarget && duration > 0) // count its own ArmorMultiplier as well
-		duration = Math::max(static_cast<int>(duration / pTechno->ArmorMultiplier / pTechnoExt->AE.ArmorMultiplier / pType->ArmorMultiplier), 0);
+	{
+		const double armorMultiplier = TechnoExt::GetCurrentArmorMultiplier(pTechno, pTechnoExt->TypeExtData->OwnerObject()) * pType->ArmorMultiplier;
+		duration = Math::max(static_cast<int>(duration / armorMultiplier), 0);
+	}
 
 	const int laserTrailIdx = pType->LaserTrail_Type;
 
@@ -475,7 +478,11 @@ void AttachEffectClass::RefreshDuration(int durationOverride)
 		duration = Math::max(static_cast<int>(duration * TechnoExt::GetCurrentFirepowerMultiplier(this->Invoker)), 0);
 
 	if (pType->Duration_ApplyArmorMultOnTarget && duration > 0) // no need to count its own effect again
-		duration = Math::max(static_cast<int>(duration / this->Techno->ArmorMultiplier / TechnoExt::ExtMap.Find(this->Techno)->AE.ArmorMultiplier), 0);
+	{
+		const auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
+		const double armorMultiplier = TechnoExt::GetCurrentArmorMultiplier(this->Techno, pTechnoExt->TypeExtData->OwnerObject());
+		duration = Math::max(static_cast<int>(duration / armorMultiplier), 0);
+	}
 
 	if (pType->Animation_ResetOnReapply)
 	{

@@ -567,9 +567,16 @@ DEFINE_HOOK(0x4D73DE, FootClass_ReceiveDamage_RemoveParasite, 0x5)
 	GET(WarheadTypeClass*, pWarhead, EBP);
 	GET(const int*, damage, EDI);
 
-	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+	const auto pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
 	if (!pTypeExt->RemoveParasite.Get(*damage < 0))
+		return Skip;
+
+	GET(FootClass*, pParasite, EDX);
+	const auto pParasiteType = pParasite->GetTechnoType();
+
+	if (pTypeExt->RemoveParasite_Disallow.Contains(pParasiteType)
+		|| (!pTypeExt->RemoveParasite_Allow.empty() && !pTypeExt->RemoveParasite_Allow.Contains(pParasiteType)))
 		return Skip;
 
 	return Continue;

@@ -10,7 +10,6 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From vanilla
 
-- Units on `Area Guard` or `Patrol` missions no longer have their effective target scan range hardcapped to 16 cells. If you wish to restore this limit on units with higher weapon range, set `AreaGuardRange=16` or on the unit(s).
 - Vehicles paradropped by AI players now default to `Hunt` mission instead of `Guard`, matching what infantry do. This can be customized by setting `AIParadropMission` on the VehicleType, defaults to `[General] -> AIParadropMission`.
 - `IsSimpleDeployer` units now obey deploying facing constraint even without deploying animation if `DeployDir` is explicitly set on the unit.
 - `Vertical=true` projectiles now default to completely downwards initial trajectory/facing regardless of if their projectile image has `Voxel=true` or not. This behavior can be reverted by setting `VerticalInitialFacing=false` on projectile in `rulesmd.ini`.
@@ -121,8 +120,13 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   - `[WarheadType/SuperWeaponType] -> Convert(N).AffectedHouses` -> `[WarheadType/SuperWeaponType] -> Convert(N).AffectsHouse`
   - `[SuperWeaponType] -> LimboKill.Affected` -> `[SuperWeaponType] -> LimboKill.AffectsHouse`
 
-```{note}
+```{hint}
 - You can use the [*MigrationUtility*](https://github.com/Phobos-developers/PhobosSupplementaries/tree/develop/MigrationUtility) in the PhobosSupplementaries repository to conveniently complete these migrations.
+```
+
+```{note}
+- If it is detected that you are using the old INI flags, a warning log will be output to `debug.log`.
+- The old INI flags will still take effect, but if there are corresponding new version flags at the same time, the new version will take precedence.
 ```
 
 ### New user settings in RA2MD.INI
@@ -539,8 +543,16 @@ New:
 - [Penetrates damage on transporter](New-or-Enhanced-Logics.md#penetrates-damage-on-transporter) (by NetsuNegi)
 - Added amount limit of `LimboKill` (by NetsuNegi)
 - [Customizations for techno type target scan/guard range](Fixed-or-Improved-Logics.md#target-scan-guard-range-customizations) (by Starkku)
-- Spawns particle when spawns tiberium by terrain (by NetsuNegi)
+- [Spawns particle when spawns tiberium by terrain](Fixed-or-Improved-Logics.md#customizable-ore-spawners) (by NetsuNegi)
 - Allow jumpjet climbing ignore building height (by TaranDahl)
+- [Allow draw SuperWeapon timer as percentage](User-Interface.md#allow-draw-superweapon-timer-as-percentage) (by NetsuNegi)
+- Customize particle system of parasite logic (by NetsuNegi)
+- [Taunt warhead](New-or-Enhanced-Logics.md#taunt-warhead) (by TaranDahl)
+- [Custom hover vehicles shutdown drowning death](New-or-Enhanced-Logics.md#custom-hover-vehicles-shutdown-drowning-death) (by FlyStar)
+- [SHP turret vehicles support the use of `*tur.shp` files](New-or-Enhanced-Logics.md#independent-shp-vehicle-turret-files) (by FlyStar)
+- [Implement `CurleyShuffle` for AircraftTypes](Fixed-or-Improved-Logics.md#implement-curleyshuffle-for-aircrafttypes) (ported from Vinifera by Noble_Fish)
+- Customize which parasite can remove by warhead (by NetsuNegi)
+- Add toggle of whether shield use ArmorMultiplier or not (by NetsuNegi)
 - [Crush level system](Fixed-or-Improved-Logics.md#crush-level-system) (by NetsuNegi)
 
 Vanilla fixes:
@@ -599,6 +611,16 @@ Vanilla fixes:
 - Fixed the issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team (by TaranDahl)
 - Fixed the bug that cause technos teleport to cell 0,0 by ChronoSphere superweapon (by NetsuNegi)
 - Fixed the bug that techno in attack move will move to target if it cannot attack it (by NetsuNegi)
+- Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4 (by FlyStar)
+- Buildings with `NeedsEngineer=true` are now considered to have threat value of 0 under ownership of `MultiplayPassive=true` houses regardless of their `ThreatPosed` value (by Starkku)
+- Fixed the issue where the AI's regular targeting would also target garrisonable buildings (by TaranDahl)
+- Fixed the issue that the move mission of the jumpjet does not end correctly (by TaranDahl)
+- AI team garrison scripts now re-evaluate destination immediately instead of trying to garrison ungarrisonable building before changing target (by Starkku)
+- Fixed the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health (by CrimRecya)
+- Fixed the issue that the Jumpjet must end its movement before starting the next mission (by TaranDahl)
+- Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent (by FlyStar)
+- Voxel drawing code now skips sections that are invisible (have all zeros in the transform matrix main diagonal, meaning that the scale is 0% on all axes), thus increasing drawing performance for some voxels (by Kerbiter & ZivDero)
+- Fixed the bug that unit will play crashing voice & sound when dropped by warhead with `IsLocomotor=yes` (by NetsuNegi)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -626,6 +648,14 @@ Phobos fixes:
 - LimboDelivery buildings cannot be selected (by FlyStar)
 - Fixed the positive value of `Reveal` on warhead (by NetsuNegi)
 - Fixed `Adjacent.Disallowed` not blocking placement if other eligible buildings were in range (by Starkku)
+- Fixed the issue where `AIChronoSphereSW` and `AIChronoWarpSW` did not function correctly with AI scripts 56 and 57 (by FlyStar)
+- Fixed an issue where parasites that have infected infantry do not provide a refund when the infected infantry enters a Grinding building (by NetsuNegi)
+- Fixed the issue that `PassengerDeletion` dont consider passenger's passenger, parasite and hijacker (by NetsuNegi)
+- Fixed the issue that power output of building on tooltip won't consider power enhancer (by NetsuNegi)
+- `RealTimeTimers` now support independent gamespeed index values for Multiplayer and Skirmish (by RAZER)
+- Fixed the bug that the upgrade building's power-enhancing effect depends only on its parent building and is not related to the upgrade building itself (by NetsuNegi)
+- Fixed an issue where hover vehicles could not be destroyed after malfunctioning on water surfaces (by FlyStar)
+- Fixed an issue where shadow matrix scaling was incorrectly applied to `TurretOffset` causing turret shadow misplacement (by Noble_Fish)
 
 Fixes / interactions with other extensions:
 <!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->
@@ -638,8 +668,21 @@ Fixes / interactions with other extensions:
 - Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed (by NetsuNegi)
 - Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed (by NetsuNegi)
 - Fixed the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally (by NetsuNegi)
+- Modified the ares hook that stopped OpenTopped transports from firing if cloaked (by RAZER & Morton)
+- Fixed an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes (by NetsuNegi)
+
 ```
 
+### 0.4.0.3
+
+```{dropdown} Click to show
+
+Vanilla fixes:
+- Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold (by CnCRAZER & Starkku)
+
+Phobos fixes:
+- Fixed vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't (by Starkku)
+```
 
 ### 0.4.0.2
 
@@ -951,6 +994,7 @@ Vanilla fixes:
 - Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges (by CrimRecya & TaranDahl)
 - Fixed an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge (by CrimRecya)
 - Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge (by CrimRecya)
+- Allow voxel projectiles to use `AnimPalette` and `FirersPalette` (by NetsuNegi)
 - Fixed an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc. (by TaranDahl)
 - Fixed the bug that `EnterBioReactorSound`, `LeaveBioReactorSound`, `EnterGrinderSound` on technotype does not used (by NetsuNegi)
 - Fixed the bug that harvester dont stop unloading and cannot unload cargos anymore when lifting by `IsLocomotor=yes` warhead (by NetsuNegi)
@@ -1214,7 +1258,6 @@ Vanilla fixes:
 - Fixed the bug when reading a map which puts `Preview(Pack)` after `Map` lead to the game fail to draw the preview (by secsome)
 - Fixed the bug that GameModeOptions are not correctly saved (by secsome)
 - Fixed the bug that AITriggerTypes do not recognize building upgrades (by Uranusian)
-- Fixed AI Aircraft docks bug when Ares tag `[GlobalControls] -> AllowParallelAIQueues=no` is set (by FS-21)
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10 (by Otamaa)
 - Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead (by Starkku)
 - Fixed aircraft & jumpjet units not being affected by speed modifiers (by Starkku)
@@ -1238,7 +1281,6 @@ Vanilla fixes:
 - Fixed railgun particles being drawn to wrong coordinate against buildings with non-default `TargetCoordOffset` or when force-firing on bridges (by Starkku)
 - Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines (by Starkku)
 - Allowed observers to see a selected building's radial indicator (by Trsdy)
-- Allow voxel projectiles to use `AnimPalette` and `FirersPalette` (by NetsuNegi)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
@@ -1270,6 +1312,7 @@ Phobos fixes:
 - Fixed GlobalVariables failed working among scenarios (by Trsdy)
 
 Fixes / interactions with other extensions:
+- Fixed AI Aircraft docks bug when Ares tag `[GlobalControls] -> AllowParallelAIQueues=no` is set (by FS-21)
 - Weapons fired by EMPulse superweapons *(Ares feature)* without `EMPulse.TargetSelf=true` can now create radiation (by Starkku)
 
 Non-DLL:

@@ -422,23 +422,43 @@ DEFINE_HOOK(0x70272E, BuildingClass_ReceiveDamage_DisableDamageSound, 0x8)
 	return 0;
 }
 
-DEFINE_HOOK(0x44E85F, BuildingClass_Power_DamageFactor, 0x7)
+DEFINE_HOOK(0x44E826, BuildingClass_GetPowerOutput_Enhancer, 0x6)
 {
-	enum { Handled = 0x44E86F };
+	enum { ReturnZero = 0x44E873, ApplyPower = 0x44E86F };
 
 	GET(BuildingClass*, pThis, ESI);
-	GET_STACK(const int, powerMultiplier, STACK_OFFSET(0xC, -0x4));
+
+	if (!pThis->HasPower || pThis->IsUnderEMP())
+		return ReturnZero;
+
+	const auto pOwner = pThis->Owner;
+	auto [power, extraPower] = BuildingTypeExt::GetEnhancedPower(pThis->Type, R->EDI<int>(), pOwner);
+	 
+	if (pThis->UpgradeLevel)
+	{
+		for (const auto pUpgrade : pThis->Upgrades)
+		{
+			if (pUpgrade)
+			{
+				const auto [upgradePower, extraUpgradePower] = BuildingTypeExt::GetEnhancedPower(pUpgrade, pUpgrade->PowerBonus, pOwner);
+				power += upgradePower;
+				extraPower += extraUpgradePower;
+			}
+		}
+	}
+
+	if (power + extraPower <= 0)
+		return ReturnZero;
 
 	const double factor = BuildingTypeExt::ExtMap.Find(pThis->Type)->PowerPlant_DamageFactor;
 
 	if (factor == 1.0)
-		R->EAX(Game::F2I(powerMultiplier * pThis->GetHealthPercentage()));
-	else if (factor == 0.0)
-		R->EAX(powerMultiplier);
-	else
-		R->EAX(Math::max(Game::F2I(powerMultiplier * (1.0 - factor + factor * pThis->GetHealthPercentage())), 0));
+		power = static_cast<int>(power * pThis->GetHealthPercentage());
+	else if (factor != 0.0)
+		power = Math::max(static_cast<int>(power * (1.0 - factor + factor * pThis->GetHealthPercentage())), 0);
 
-	return Handled;
+	R->EAX(power + extraPower);
+	return ApplyPower;
 }
 
 #pragma region WeaponFactoryPath

@@ -52,6 +52,7 @@ This page lists all the individual contributions to the project by their author.
   - MP saves support for quicksave command and savegame trigger action
   - Ported XNA CnCNet Client MP save handling
   - Retint fix toggle
+  - Voxel drawing invisible sections skip
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -287,6 +288,8 @@ This page lists all the individual contributions to the project by their author.
   - Deploy priority filtering
   - Customizable paradrop missions
   - Guard range customizations
+  - Wall overlay unit sell exploit fix
+  - Fix vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -411,6 +414,10 @@ This page lists all the individual contributions to the project by their author.
   - Vehicle Deployment Enhancement
   - Fix an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals
   - Fix an issue where mining vehicles could not move after leaving a tank bunker
+  - Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4
+  - Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent
+  - Custom hover vehicles shutdown drowning death
+  - SHP turret vehicles support the use of `*tur.shp` files
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -497,6 +504,16 @@ This page lists all the individual contributions to the project by their author.
   - Penetrates damage on transporter
   - Add amount limit of `LimboKill`
   - Spawns particle when spawns tiberium by terrain
+  - Allow draw SuperWeapon timer as percentage
+  - Customize particle system of parasite logic
+  - Fix an issue where parasites that have infected infantry do not provide a refund when the infected infantry enters a Grinding building
+  - Fix the issue that `PassengerDeletion` dont consider passenger's passenger, parasite and hijacker
+  - Fix the issue that power output of building on tooltip won't consider power enhancer
+  - Fix the bug that the upgrade building's power-enhancing effect depends only on its parent building and is not related to the upgrade building itself
+  - Customize which parasite can remove by warhead
+  - Fix the bug that unit will play crashing voice & sound when dropped by warhead with `IsLocomotor=yes`
+  - Add toggle of whether shield use ArmorMultiplier or not
+  - Fix an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes
   - Crush level system
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
@@ -535,6 +552,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix a jumpjet crash related to voxel shadow drawing
   - Replace `BLOWFISH.DLL` using Red Alert source code
   - Adjust the dehardcoding of the 255 `OverlayType` limit to a different format
+  - Voxel drawing invisible sections skip
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft
@@ -600,6 +618,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the currently hovered planning node not update up-to-date, such as using hotkeys to select technos
   - Allow the aircraft to enter area guard mission and not crash immediately without any airport
   - Allow merging AOE damage to buildings into one
+  - Fix the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -699,6 +718,10 @@ This page lists all the individual contributions to the project by their author.
   - Global default value for `DefaultToGuardArea`
   - Weapon range finding in cylinder
   - Allow jumpjet climbing ignore building height
+  - Fix an issue where the AI's regular targeting would also target garrisonable buildings
+  - Fix an issue that the move mission of the jumpjet does not end correctly
+  - Fix the issue that the Jumpjet must end its movement before starting the next mission
+  - Taunt warhead
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
@@ -718,6 +741,8 @@ This page lists all the individual contributions to the project by their author.
   - Superweapon launch site & availability code
   - AI vehicle production update code
   - parts of TechnoType conversion placeholder code
+- **[Vinifera Contributors](https://github.com/Vinifera-developers/Vinifera/blob/develop/CREDITS.md)**:
+  - Implement `CurleyShuffle` for AircraftTypes
 - **ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, CrimRecya** - Digital Display
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
@@ -744,3 +769,7 @@ This page lists all the individual contributions to the project by their author.
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
 - **11EJDE11** - Prevent mpdebug number from being drawn when visibility toggled off
+- **RAZER**:
+  - Wall overlay unit sell exploit fix
+  - Multiplayer gamespeed fix for RealTimeTimers
+  - Revert Ares patch to allow OpenTopped transport customization

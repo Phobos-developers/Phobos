@@ -51,6 +51,7 @@ public:
 		Valueable<bool> RadSiteWarhead_Detonate_Full;
 		Valueable<bool> RadHasOwner;
 		Valueable<bool> RadHasInvoker;
+		Valueable<bool> ShieldApplyArmorMult;
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
 
@@ -63,6 +64,7 @@ public:
 		Valueable<bool> PlacementPreview;
 		TranslucencyLevel PlacementPreview_Translucency;
 
+		Valueable<bool> SuperWeaponTimer_Percentage;
 		Valueable<bool> SuperWeaponSidebar_AllowByDefault;
 
 		Nullable<double> ConditionYellow_Terrain;
@@ -299,6 +301,7 @@ public:
 
 		Valueable<bool> FallingDownTargetingFix;
 		Valueable<bool> AIAirTargetingFix;
+		Valueable<bool> OpenTopped_DecloakToFire;
 
 		Valueable<bool> SortCameoByName;
 
@@ -323,6 +326,8 @@ public:
 		Valueable<bool> CylinderRangefinding;
 
 		Valueable<int> PenetratesTransport_Level;
+
+		Valueable<bool> UnitsUnsellable;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -350,6 +355,7 @@ public:
 			, RadSiteWarhead_Detonate_Full { true }
 			, RadHasOwner { false }
 			, RadHasInvoker { false }
+			, ShieldApplyArmorMult { false }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, VeinholeWarhead {}
@@ -360,6 +366,7 @@ public:
 			, PlacementPreview { false }
 			, PlacementPreview_Translucency { 75 }
 
+			, SuperWeaponTimer_Percentage { false }
 			, SuperWeaponSidebar_AllowByDefault { false }
 
 			, Shield_ConditionYellow { }
@@ -565,6 +572,7 @@ public:
 
 			, FallingDownTargetingFix { false }
 			, AIAirTargetingFix { false }
+			, OpenTopped_DecloakToFire { false }
 
 			, SortCameoByName { false }
 
@@ -591,6 +599,8 @@ public:
 			, CylinderRangefinding { false }
 
 			, PenetratesTransport_Level { 10 }
+
+			, UnitsUnsellable { false }
 		{ }
 
 		virtual ~ExtData() = default;

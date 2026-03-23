@@ -41,6 +41,8 @@ public:
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
 		Nullable<bool> RemoveParasite;
+		ValueableVector<TechnoTypeClass*> RemoveParasite_Allow;
+		ValueableVector<TechnoTypeClass*> RemoveParasite_Disallow;
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 		Valueable<bool> ApplyModifiersOnNegativeDamage;
@@ -152,6 +154,8 @@ public:
 		Valueable<bool> InflictLocomotor;
 		Valueable<bool> RemoveInflictedLocomotor;
 
+		Nullable<ParticleSystemTypeClass*> Parasite_ParticleSystem;
+		Valueable<bool> Parasite_DisableParticleSystem;
 		Valueable<AffectedTarget> Parasite_CullingTarget;
 		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
 
@@ -230,6 +234,8 @@ public:
 		Valueable<bool> PenetratesTransport_DamageAll;
 		ValueableIdx<VocClass> PenetratesTransport_CleanSound;
 
+		Valueable<bool> Taunt;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -281,6 +287,8 @@ public:
 			, RemoveDisguise { false }
 			, RemoveMindControl { false }
 			, RemoveParasite {}
+			, RemoveParasite_Allow {}
+			, RemoveParasite_Disallow {}
 			, DecloakDamagedTargets { true }
 			, ShakeIsLocal { false }
 			, ApplyModifiersOnNegativeDamage { false }
@@ -392,6 +400,8 @@ public:
 			, InflictLocomotor { false }
 			, RemoveInflictedLocomotor { false }
 
+			, Parasite_ParticleSystem {}
+			, Parasite_DisableParticleSystem { false }
 			, Parasite_CullingTarget { AffectedTarget::Infantry }
 			, Parasite_GrappleAnim {}
 
@@ -488,6 +498,8 @@ public:
 			, AnimZAdjust {}
 
 			, ApplyPerTargetEffectsOnDetonate {}
+
+			, Taunt { false }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
