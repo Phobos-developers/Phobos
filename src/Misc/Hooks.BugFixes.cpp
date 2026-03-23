@@ -76,7 +76,7 @@ DEFINE_HOOK(0x4D7413, FootClass_ReceiveDamage_DyingFix, 0x8)
 
 	GET(FootClass*, pThis, ESI);
 
-	if ((pThis->IsCrashing && !pThis->IsAttackedByLocomotor) || pThis->IsSinking)
+	if (pThis->IsSinking)
 	{
 		R->EAX(DamageState::PostMortem);
 		return ReturnFromFunction;
@@ -96,6 +96,21 @@ DEFINE_HOOK(0x737D57, UnitClass_ReceiveDamage_DyingFix, 0x7)
 
 	if (result != DamageState::PostMortem && pThis->DeathFrameCounter > 0)
 		R->EAX(DamageState::PostMortem);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x518016, InfantryClass_ReceiveDamage_DyingFix, 0x7)
+{
+	enum { ReturnFromFunction = 0x51804E };
+
+	GET(InfantryClass*, pThis, ESI);
+
+	if (pThis->IsCrashing && !pThis->IsAttackedByLocomotor)
+	{
+		R->EAX(DamageState::PostMortem);
+		return ReturnFromFunction;
+	}
 
 	return 0;
 }
