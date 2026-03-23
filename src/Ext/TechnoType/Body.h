@@ -166,6 +166,7 @@ public:
 		Valueable<bool> OpenTopped_ShareTransportTarget;
 		Valueable<bool> OpenTopped_UseTransportRangeModifiers;
 		Valueable<bool> OpenTopped_CheckTransportDisableWeapons;
+		Nullable<bool> OpenTopped_DecloakToFire;
 		Valueable<int> OpenTransport_RangeBonus;
 		Valueable<float> OpenTransport_DamageMultiplier;
 
@@ -587,6 +588,7 @@ public:
 			, OpenTopped_ShareTransportTarget { true }
 			, OpenTopped_UseTransportRangeModifiers { false }
 			, OpenTopped_CheckTransportDisableWeapons { false }
+			, OpenTopped_DecloakToFire {}
 			, OpenTransport_RangeBonus { 0 }
 			, OpenTransport_DamageMultiplier { 1.0f }
 

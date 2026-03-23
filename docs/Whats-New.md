@@ -552,6 +552,7 @@ New:
 - [SHP turret vehicles support the use of `*tur.shp` files](New-or-Enhanced-Logics.md#independent-shp-vehicle-turret-files) (by FlyStar)
 - [Implement `CurleyShuffle` for AircraftTypes](Fixed-or-Improved-Logics.md#implement-curleyshuffle-for-aircrafttypes) (ported from Vinifera by Noble_Fish)
 - Customize which parasite can remove by warhead (by NetsuNegi)
+- Add toggle of whether shield use ArmorMultiplier or not (by NetsuNegi)
 - Customize reveal radius of `RevealToAll` (by NetsuNegi)
 
 Vanilla fixes:
@@ -667,6 +668,9 @@ Fixes / interactions with other extensions:
 - Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed (by NetsuNegi)
 - Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed (by NetsuNegi)
 - Fixed the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally (by NetsuNegi)
+- Modified the ares hook that stopped OpenTopped transports from firing if cloaked (by RAZER & Morton)
+- Fixed an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes (by NetsuNegi)
+
 ```
 
 ### 0.4.0.3

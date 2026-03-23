@@ -512,6 +512,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that the upgrade building's power-enhancing effect depends only on its parent building and is not related to the upgrade building itself
   - Customize which parasite can remove by warhead
   - Fix the bug that unit will play crashing voice & sound when dropped by warhead with `IsLocomotor=yes`
+  - Add toggle of whether shield use ArmorMultiplier or not
+  - Fix an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes
   - Customize reveal radius of `RevealToAll`
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
@@ -770,3 +772,4 @@ This page lists all the individual contributions to the project by their author.
 - **RAZER**:
   - Wall overlay unit sell exploit fix
   - Multiplayer gamespeed fix for RealTimeTimers
+  - Revert Ares patch to allow OpenTopped transport customization

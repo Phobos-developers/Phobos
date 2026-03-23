@@ -2855,6 +2855,25 @@ DEFINE_HOOK(0x4DAD06, FootClass_AI_IsCrashing_VoiceAndSound, 0xA)
 	return ContinueAfter;
 }
 
+DEFINE_HOOK(0x4DB874, FootClass_SetLocation_Extra, 0xA)
+{
+	enum { SkipGameCode = 0x4DB88F };
+
+	GET(FootClass*, pThis, ESI);
+	const auto pParasite = pThis->ParasiteEatingMe;
+
+	// Fix Ares's bug that parasite always on victim's location
+	if (pParasite && pParasite->InLimbo)
+		pParasite->SetLocation(pThis->Location);
+
+	// Restore overriden instructions
+	if (pThis->GetTechnoType()->OpenTopped)
+		pThis->UpdatePassengerCoords();
+
+	// Skip Ares's hook
+	return SkipGameCode;
+}
+
 #pragma region ClearTargetOnOwnerChanged
 
 DEFINE_HOOK(0x70D4A0, AbstractClass_ClearTargetToMe_ClearManagerTarget, 0x5)

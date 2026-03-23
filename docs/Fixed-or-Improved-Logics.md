@@ -309,6 +309,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent.
 - Voxel drawing code now skips sections that are invisible (have all zeros in the transform matrix main diagonal, meaning that the scale is 0% on all axes), thus increasing drawing performance for some voxels.
 - Fixed the bug that unit will play crashing voice & sound when dropped by warhead with `IsLocomotor=yes`.
+- Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat.
 
 ## Fixes / interactions with other extensions
 
@@ -351,7 +352,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed.
 - Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed.
 - Fixed the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally.
-- Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat.
+- Modified the ares hook that stopped OpenTopped transports from firing if cloaked.
+- Fixed an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes.
 
 ## Newly added global settings
 

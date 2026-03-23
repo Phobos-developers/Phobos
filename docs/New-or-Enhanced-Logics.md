@@ -304,6 +304,9 @@ Laser trails are very resource intensive! Due to the game not utilizing GPU havi
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+ShieldApplyArmorMult=false                  ; boolean
+
 [AudioVisual]
 Shield.ConditionYellow=                     ; floating point value, percents or absolute
 Shield.ConditionRed=                        ; floating point value, percents or absolute
@@ -324,6 +327,7 @@ Armor=none                                  ; ArmorType
 InheritArmorFromTechno=false                ; boolean
 InheritArmor.Allowed=                       ; List of TechnoTypes
 InheritArmor.Disallowed=                    ; List of TechnoTypes
+ApplyArmorMult=                             ; boolean, default to [CombatDamage] -> ShieldApplyArmorMult
 Powered=false                               ; boolean
 AbsorbOverDamage=false                      ; boolean
 SelfHealing=0.0                             ; floating point value, percents or absolute
@@ -424,6 +428,7 @@ Shield.InheritStateOnReplace=false          ; boolean
     - `InheritArmorFromTechno` can be set to true to override this so that `[TechnoType] -> Armor` is used even if shield is active and `[ShieldType] -> Armor` is ignored.
     - `InheritArmor.Allowed` lists TechnoTypes whose armor can be overridden. If empty, any TechnoType not listed in `InheritArmor.Disallowed` is okay.
     - `InheritArmor.Disallowed` lists TechnoTypes whose armor can't be overridden. If empty, any TechnoTypes are okay as long as `InheritArmor.Allowed` is empty or they are listed on it.
+    - `ApplyArmorMult` can be set to true to allow the shield to benefit from the armor multiplier.
   - `InitialStrength` can be used to set a different initial strength value from maximum.
   - `ConditionYellow` and `ConditionRed` can be used to set the thresholds for shield damage states, defaulting to `[AudioVisual] -> Shield.ConditionYellow & Shield.ConditionRed` respectively which in turn default to just `ConditionYellow & ConditionRed`.
 - When executing `DeploysInto` or `UndeploysInto`, if both of the TechnoTypes have shields, the transformed unit/building would keep relative shield health (in percents), same as with `Strength`. If one of the TechnoTypes doesn't have shields, it's shield's state on conversion will be preserved until converted back.
@@ -1565,9 +1570,13 @@ DrainMoneyDisplay.OnTarget.UseDisplayIncome=        ; boolean
 - `OpenTopped.AllowFiringIfDeactivated` can be used to customize whether or not passengers can fire out when the transport is deactivated (EMP, powered unit etc).
 - `OpenTopped.ShareTransportTarget` controls whether or not the current target of the transport itself is passed to the passengers as well.
 - You can also customize range bonus and damage multiplier for passenger inside the transport with `OpenTransport.RangeBonus/DamageMultiplier`, which works independently from transport's `OpenTopped.RangeBonus/DamageMultiplier`.
+- `OpenTopped.DecloakToFire` can customize if a transport has to uncloak to have passengers fireout if transport is also OpenTopped.
 
 In `rulesmd.ini`:
 ```ini
+[General]
+OpenTopped.DecloakToFire=true             ; boolean
+
 [SOMETECHNO]                              ; TechnoType, transport with OpenTopped=yes
 OpenTopped.RangeBonus=                    ; integer, default to [CombatDamage] -> OpenToppedRangeBonus
 OpenTopped.DamageMultiplier=              ; floating point value, default to [CombatDamage] -> OpenToppedDamageMultiplier
@@ -1575,6 +1584,7 @@ OpenTopped.WarpDistance=                  ; integer, default to [CombatDamage] -
 OpenTopped.IgnoreRangefinding=false       ; boolean
 OpenTopped.AllowFiringIfDeactivated=true  ; boolean
 OpenTopped.ShareTransportTarget=true      ; boolean
+OpenTopped.DecloakToFire=                 ; boolean, defaults to [General] -> OpenTopped.DecloakToFire
 
 [SOMETECHNO]                              ; TechnoType, passenger
 OpenTransport.RangeBonus=0                ; integer
