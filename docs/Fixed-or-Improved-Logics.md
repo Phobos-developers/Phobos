@@ -310,6 +310,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Voxel drawing code now skips sections that are invisible (have all zeros in the transform matrix main diagonal, meaning that the scale is 0% on all axes), thus increasing drawing performance for some voxels.
 - Fixed the bug that unit will play crashing voice & sound when dropped by warhead with `IsLocomotor=yes`.
 - Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat.
+- Fixed the bug where paratrooper with `NotHuman=yes` will ignore `Crashable=no` and crash on ground when killed in air.
 
 ## Fixes / interactions with other extensions
 
