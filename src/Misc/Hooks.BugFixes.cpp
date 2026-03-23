@@ -11,6 +11,8 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
 
+#include <unordered_set>
+
 /*
 	Allow usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable
 
@@ -2322,6 +2324,39 @@ DEFINE_HOOK(0x489E47, DamageArea_RockerItemsFix2, 0x6)
 		DamageAreaTemp::CheckingCellAlt = true;
 
 	R->EDI(pObject);
+	return 0;
+}
+
+#pragma endregion
+
+#pragma region Low Air Damage Fix
+
+namespace DamageArea_LowAirDamageTemp
+{
+	std::unordered_set<ObjectClass*> Scanned;
+}
+
+DEFINE_HOOK(0x4894B6, MapClass_DamageArea_AirTechno_Record, 0x5)
+{
+	GET(TechnoClass*, pAirTechno, EBX);
+
+	DamageArea_LowAirDamageTemp::Scanned.emplace(pAirTechno);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x489767, MapClass_DamageArea_CheckScanned, 0x6)
+{
+	enum { GoNextObject = 0x4899B3 };
+
+	GET(ObjectClass*, pObject, ESI);
+
+	return DamageArea_LowAirDamageTemp::Scanned.contains(pObject) ? GoNextObject : 0;
+}
+
+DEFINE_HOOK(0x4899DA, MapClass_DamageArea_ClearScanned, 0x7)
+{
+	DamageArea_LowAirDamageTemp::Scanned.clear();
 	return 0;
 }
 

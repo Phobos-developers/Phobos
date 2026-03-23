@@ -1676,6 +1676,11 @@ msgid ""
 "circumstances and that was highly prone to crashes"
 msgstr "修复了一个极易崩溃且导致寄生者特定条件下会被高频重设至受害者位置这一错误交互的 Ares Bug"
 
+msgid ""
+"Fix the bug that low-air taking off / landing objects will receive "
+"twice damage"
+msgstr "修复了低空起飞/降落的物体会受到两次伤害的 Bug"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
