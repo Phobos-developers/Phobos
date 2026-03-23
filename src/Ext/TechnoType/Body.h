@@ -166,6 +166,7 @@ public:
 		Valueable<bool> OpenTopped_ShareTransportTarget;
 		Valueable<bool> OpenTopped_UseTransportRangeModifiers;
 		Valueable<bool> OpenTopped_CheckTransportDisableWeapons;
+		Nullable<bool> OpenTopped_DecloakToFire;
 		Valueable<int> OpenTransport_RangeBonus;
 		Valueable<float> OpenTransport_DamageMultiplier;
 
@@ -280,6 +281,8 @@ public:
 		Nullable<Leptons> SpawnDistanceFromTarget;
 		Nullable<int> SpawnHeight;
 		Nullable<int> LandingDir;
+
+		Nullable<bool> CurleyShuffle;
 
 		Valueable<TechnoTypeClass*> Convert_Deploy; // Ares
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
@@ -421,6 +424,7 @@ public:
 
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
+		Valueable<bool> FallingDownDamage_AllowEMP;
 
 		Valueable<int> Ammo_AutoConvertMinimumAmount;
 		Valueable<int> Ammo_AutoConvertMaximumAmount;
@@ -485,6 +489,8 @@ public:
 
 		Nullable<bool> JumpjetClimbIgnoreBuilding;
 
+		Valueable<bool> HoverDrownable;
+
 		Nullable<bool> Bounty;
 		Nullable<double> Bounty_Multiplier;
 		Nullable<double> Bounty_Multiplier_Vet;
@@ -498,6 +504,8 @@ public:
 		Valueable<Point2D> Bounty_Display_Offset;
 
 		Nullable<bool> Unsellable; // Ares 3.0
+
+		SHPStruct* TurretShape;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -516,7 +524,7 @@ public:
 			, RadarJamIgnore {}
 			, InhibitorRange {}
 			, DesignatorRange { }
-			, FactoryPlant_Multiplier { 1.0 }
+			, FactoryPlant_Multiplier { 1.0f }
 			, MindControlRangeLimit {}
 			, MindControl_IgnoreSize { true }
 			, MindControlSize { 1 }
@@ -592,8 +600,9 @@ public:
 			, OpenTopped_ShareTransportTarget { true }
 			, OpenTopped_UseTransportRangeModifiers { false }
 			, OpenTopped_CheckTransportDisableWeapons { false }
+			, OpenTopped_DecloakToFire {}
 			, OpenTransport_RangeBonus { 0 }
-			, OpenTransport_DamageMultiplier { 1.0 }
+			, OpenTransport_DamageMultiplier { 1.0f }
 
 			, AutoTargetOwnPosition { false }
 			, AutoTargetOwnPosition_Self { false }
@@ -753,6 +762,8 @@ public:
 			, DroppodType {}
 			, TiberiumEaterType {}
 
+			, CurleyShuffle {}
+
 			, Convert_Deploy { }
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
@@ -874,6 +885,7 @@ public:
 
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
+			, FallingDownDamage_AllowEMP { true }
 
 			, Ammo_AutoConvertMinimumAmount { -1 }
 			, Ammo_AutoConvertMaximumAmount { -1 }
@@ -938,6 +950,8 @@ public:
 
 			, JumpjetClimbIgnoreBuilding {}
 
+			, HoverDrownable { true }
+
 			, Bounty {}
 			, Bounty_Multiplier {}
 			, Bounty_Multiplier_Vet {}
@@ -951,6 +965,8 @@ public:
 			, Bounty_Display_Offset { Point2D::Empty }
 
 			, Unsellable {}
+
+			, TurretShape { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -119,7 +119,7 @@ public:
 			, PowerPlant_DamageFactor { 1.0 }
 			, PowerPlantEnhancer_Buildings {}
 			, PowerPlantEnhancer_Amount { 0 }
-			, PowerPlantEnhancer_Factor { 1.0 }
+			, PowerPlantEnhancer_Factor { 1.0f }
 			, PowerPlantEnhancer_MaxCount { -1 }
 			, OccupierMuzzleFlashes()
 			, Powered_KillSpawns { false }
@@ -229,7 +229,7 @@ public:
 
 	static void PlayBunkerSound(BuildingClass const* pThis, bool buildUp = false);
 
-	static int GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse);
+	static std::pair<int, int> GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
 	static int CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pBuilding, HouseClass* pHouse);
 	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);

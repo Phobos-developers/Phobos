@@ -104,6 +104,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->RadSiteWarhead_Detonate_Full.Read(exINI, GameStrings::Radiation, "RadSiteWarhead.Detonate.Full");
 	this->RadHasOwner.Read(exINI, GameStrings::Radiation, "RadHasOwner");
 	this->RadHasInvoker.Read(exINI, GameStrings::Radiation, "RadHasInvoker");
+	this->ShieldApplyArmorMult.Read(exINI, GameStrings::CombatDamage, "ShieldApplyArmorMult");
 	this->VeinholeWarhead.Read<true>(exINI, GameStrings::CombatDamage, "VeinholeWarhead");
 	this->MissingCameo.Read(pINI, GameStrings::AudioVisual, "MissingCameo");
 
@@ -343,6 +344,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->FallingDownTargetingFix.Read(exINI, GameStrings::General, "FallingDownTargetingFix");
 	this->AIAirTargetingFix.Read(exINI, GameStrings::General, "AIAirTargetingFix");
+	this->OpenTopped_DecloakToFire.Read(exINI, GameStrings::General, "OpenTopped.DecloakToFire");
 
 	this->SortCameoByName.Read(exINI, GameStrings::General, "SortCameoByName");
 
@@ -476,6 +478,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->RadSiteWarhead_Detonate_Full)
 		.Process(this->RadHasOwner)
 		.Process(this->RadHasInvoker)
+		.Process(this->ShieldApplyArmorMult)
 		.Process(this->JumpjetCrash)
 		.Process(this->JumpjetNoWobbles)
 		.Process(this->VeinholeWarhead)
@@ -664,6 +667,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->IvanBombAttachToCenter)
 		.Process(this->FallingDownTargetingFix)
 		.Process(this->AIAirTargetingFix)
+		.Process(this->OpenTopped_DecloakToFire)
 		.Process(this->SortCameoByName)
 		.Process(this->MergeBuildingDamage)
 		.Process(this->BuildingRadioLink_SyncOwner)
@@ -871,6 +875,18 @@ DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
 
 	pRulesExt->JumpjetCrash.Read(exINI, GameStrings::JumpjetControls, "Crash");
 	pRulesExt->JumpjetNoWobbles.Read(exINI, GameStrings::JumpjetControls, "NoWobbles");
+
+	return 0;
+}
+
+DEFINE_JUMP(LJMP, 0x66919B, 0x6691B7) // Don't read warhead here!
+DEFINE_JUMP(LJMP, 0x668EED, 0x668EF5) // Load types later
+DEFINE_HOOK(0x668F6A, RulesClass_Read_File_LoadTypes, 0x5)
+{
+	GET(RulesClass*, pRules, EDI);
+	GET(CCINIClass*, pINI, ESI);
+
+	pRules->LoadTypesFromINI(pINI);
 
 	return 0;
 }

@@ -208,6 +208,12 @@ double TechnoExt::GetCurrentFirepowerMultiplier(TechnoClass* pThis)
 		(pThis->HasAbility(Ability::Firepower) ? RulesClass::Instance->VeteranCombat : 1.0);
 }
 
+double TechnoExt::GetCurrentArmorMultiplier(TechnoClass* pThis, TechnoTypeClass* pType, WarheadTypeClass* pWarhead)
+{
+	return pThis->ArmorMultiplier * pThis->Owner->GetArmorMultiplier(pType) * TechnoExt::CalculateArmorMultipliers(pThis, pWarhead) *
+		(pThis->HasAbility(Ability::Stronger) ? RulesClass::Instance->VeteranArmor : 1.0);
+}
+
 CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger, int maxAttempts = 1)
 {
 	if (!pThis || !pPassenger)
@@ -302,9 +308,10 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 				pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 			}
 
-			const double distance = pCell->GetCoordsWithBridge().DistanceFrom(pTarget->GetCenterCoords());
+			const double distanceSq = pCell->GetCoordsWithBridge().DistanceFromSquared(pTarget->GetCenterCoords());
+			const int range = pWeapon->Range;
 
-			if (distance > pWeapon->Range)
+			if (distanceSq > range * range)
 				return false;
 		}
 	}
@@ -1186,6 +1193,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpecialTracked)
 		.Process(this->FallingDownTracked)
 		.Process(this->JumpjetStraightAscend)
+		.Process(this->OnParachuted)
+		.Process(this->HoverShutdown)
 		;
 }
 

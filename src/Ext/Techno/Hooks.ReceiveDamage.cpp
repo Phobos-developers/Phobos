@@ -117,9 +117,9 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			if (!RulesExt::Global()->CombatAlert_MakeAVoice) // No one want to play two sound at a time, I guess?
 				return;
 			else if (pTypeExt->CombatAlert_UseFeedbackVoice.Get(RulesExt::Global()->CombatAlert_UseFeedbackVoice) && pType->VoiceFeedback.Count > 0) // Use VoiceFeedback first
-				VocClass::PlayGlobal(pType->VoiceFeedback.GetItem(0), 0x2000, 1.0);
+				VocClass::PlayGlobal(pType->VoiceFeedback.GetItem(0), 0x2000, 1.0f);
 			else if (pTypeExt->CombatAlert_UseAttackVoice.Get(RulesExt::Global()->CombatAlert_UseAttackVoice) && pType->VoiceAttack.Count > 0) // Use VoiceAttack then
-				VocClass::PlayGlobal(pType->VoiceAttack.GetItem(0), 0x2000, 1.0);
+				VocClass::PlayGlobal(pType->VoiceAttack.GetItem(0), 0x2000, 1.0f);
 			else if (pTypeExt->CombatAlert_UseEVA.Get(RulesExt::Global()->CombatAlert_UseEVA)) // Use Eva finally
 				index = pTypeExt->CombatAlert_EVA.Get(VoxClass::FindIndex((const char*)"EVA_UnitsInCombat"));
 

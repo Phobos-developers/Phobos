@@ -2,6 +2,7 @@
 #include <EventClass.h>
 #include <JumpjetLocomotionClass.h>
 #include <TunnelLocomotionClass.h>
+#include <FileFormats/HVA.h>
 
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Techno/Body.h>
@@ -651,7 +652,7 @@ DEFINE_HOOK(0x51A996, InfantryClass_PerCellProcess_KillOnImpassable, 0x5)
 	{
 		const float multiplier = GroundType::Array[static_cast<int>(landType)].Cost[static_cast<int>(pThis->Type->SpeedType)];
 
-		if (multiplier == 0.0)
+		if (multiplier == 0.0f)
 			return ContinueChecks;
 	}
 
@@ -1378,6 +1379,9 @@ DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_RequestUntether, 0x7)
 DEFINE_HOOK(0x4D77BD, FootClass_ObjectClickedAction_NoMove, 0x6)
 {
 	enum { ReturnFalse = 0x4D77EC, ReturnTrue = 0x4D7CC0 };
+
+	if (PlanningNodeClass::PlanningModeActive)
+		return 0;
 
 	GET(ObjectClass*, pTarget, EBX);
 	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
@@ -2837,6 +2841,39 @@ DEFINE_HOOK(0x54CC9C, JumpjetLocomotionClass_ProcessCrashing_DropFix, 0x5)
 	return fallOnSomething ? SkipGameCode2 : SkipGameCode;
 }
 
+DEFINE_HOOK(0x4DAD06, FootClass_AI_IsCrashing_VoiceAndSound, 0xA)
+{
+	enum { SkipVoiceAndSound = 0x4DADBC, ContinueAfter = 0x4DAD10 };
+
+	GET(FootClass*, pThis, ESI);
+
+	if (pThis->IsAttackedByLocomotor)
+		return SkipVoiceAndSound;
+
+	// Restore overriden instructions
+	R->EAX(pThis->GetTechnoType());
+	return ContinueAfter;
+}
+
+DEFINE_HOOK(0x4DB874, FootClass_SetLocation_Extra, 0xA)
+{
+	enum { SkipGameCode = 0x4DB88F };
+
+	GET(FootClass*, pThis, ESI);
+	const auto pParasite = pThis->ParasiteEatingMe;
+
+	// Fix Ares's bug that parasite always on victim's location
+	if (pParasite && pParasite->InLimbo)
+		pParasite->SetLocation(pThis->Location);
+
+	// Restore overriden instructions
+	if (pThis->GetTechnoType()->OpenTopped)
+		pThis->UpdatePassengerCoords();
+
+	// Skip Ares's hook
+	return SkipGameCode;
+}
+
 #pragma region ClearTargetOnOwnerChanged
 
 DEFINE_HOOK(0x70D4A0, AbstractClass_ClearTargetToMe_ClearManagerTarget, 0x5)
@@ -3163,4 +3200,28 @@ DEFINE_HOOK(0x7442AB, UnitClass_ReadyToNextMission_FallingDown, 0x6)
 	enum { ReturnZero = 0x744383 };
 	GET(FootClass*, pThis, ESI);
 	return pThis->IsFallingDown ? ReturnZero : 0;
+}
+
+// sadly, useful for uncached voxels specifically, but no reason for the code to go to waste
+DEFINE_HOOK(0x706F64, TechnoClass_RenderVoxelObject_SkipInvisibleSections, 0x0)
+{
+	enum { SkipLayer = 0x706FDF };
+
+	GET(MotLib* const, pMotLib, EDI);
+
+	// stolen code
+	if (!pMotLib)
+		return 0x706FBD;
+
+	GET(int const, layer, EBX);
+	GET_STACK(unsigned int const, frame, STACK_OFFSET(0x13C, 0x18));
+
+	auto mtx = pMotLib->GetLayerMatrix(layer, frame);
+
+	if (mtx.row[0][0] == 0.0f && mtx.row[1][1] == 0.0f && mtx.row[2][2] == 0.0f)
+		return SkipLayer;
+
+	// stolen code
+	R->EAX(frame);
+	return 0x706F6F;
 }
