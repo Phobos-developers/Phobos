@@ -70,12 +70,16 @@ DEFINE_HOOK(0x5F53AA, ObjectClass_ReceiveDamage_DyingFix, 0x6)
 	return ContinueCheck;
 }
 
+// Should hook before ObjectClass::ReceiveDamage if you don't want gain expirence from dead technos
+// See 0x5F578D and 0x5F579A
+// 1 HP sinking technos can pass inspection, but actually it should not
 DEFINE_HOOK(0x4D7413, FootClass_ReceiveDamage_DyingFix, 0x8)
 {
 	enum { ReturnFromFunction = 0x4D74CF };
 
 	GET(FootClass*, pThis, ESI);
 
+	// Why consider infantry ? It's for code robustness, see 0x54CEB7
 	if (pThis->IsSinking)
 	{
 		R->EAX(DamageState::PostMortem);
@@ -106,6 +110,7 @@ DEFINE_HOOK(0x518016, InfantryClass_ReceiveDamage_DyingFix, 0x7)
 
 	GET(InfantryClass*, pThis, ESI);
 
+	// Falling rockteer body has 1 HP
 	if (pThis->IsCrashing && !pThis->IsAttackedByLocomotor)
 	{
 		R->EAX(DamageState::PostMortem);
