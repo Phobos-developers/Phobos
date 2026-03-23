@@ -2112,6 +2112,12 @@ msgid ""
 "been destroyed in air, they will falling down on ground but not dead (by NetsuNegi)"
 msgstr "修复了当 `Crashable=yes` 的科技类型在空降时被于半空中摧毁，它会落地但不会死亡的 Bug（by NetsuNegi）"
 
+msgid ""
+"Fixed the bug where Jumpjet locomotor weapons (`IsLocomotor=yes`, "
+"`Locomotor=Jumpjet`) would cause `BalloonHover=yes` targets to land "
+"directly on the attacker unit upon arrival (by NetsuNegi)"
+msgstr "修复了 Jumpjet 运动模式弹头（`IsLocomotor=yes`， `Locomotor=Jumpjet`）会导致 `BalloonHover=yes` 的目标直接落到攻击者头上的 Bug（by NetsuNegi）"
+
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
 

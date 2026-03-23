@@ -1594,6 +1594,12 @@ msgid ""
 "been destroyed in air, they will falling down on ground but not dead."
 msgstr "修复了当 `Crashable=yes` 的科技类型在空降时被于半空中摧毁，它会落地但不会死亡的 Bug。"
 
+msgid ""
+"Fixed the bug where Jumpjet locomotor weapons (`IsLocomotor=yes`, "
+"`Locomotor=Jumpjet`) would cause `BalloonHover=yes` targets to land "
+"directly on the attacker unit upon arrival."
+msgstr "修复了 Jumpjet 运动模式弹头（`IsLocomotor=yes`， `Locomotor=Jumpjet`）会导致 `BalloonHover=yes` 的目标直接落到攻击者头上的 Bug。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 
