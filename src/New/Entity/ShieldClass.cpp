@@ -205,12 +205,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 
 			if (pType->ApplyArmorMult.Get(RulesExt::Global()->ShieldApplyArmorMult))
 			{
-				armorMultiplier = pTechno->Owner->GetArmorMultiplier(pTechnoType) * pTechno->ArmorMultiplier;
-
-				if (pTechno->HasAbility(Ability::Stronger))
-					armorMultiplier *= RulesClass::Instance->VeteranArmor;
-
-				armorMultiplier *= TechnoExt::CalculateArmorMultipliers(pTechno, pWH);
+				armorMultiplier = TechnoExt::GetCurrentArmorMultiplier(pTechno, pTechnoType, pWH);
 				nDamage = Math::max(static_cast<int>(nDamage / armorMultiplier), 0);
 			}
 
