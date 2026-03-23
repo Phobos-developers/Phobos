@@ -1677,9 +1677,9 @@ msgid ""
 msgstr "修复了一个极易崩溃且导致寄生者特定条件下会被高频重设至受害者位置这一错误交互的 Ares Bug"
 
 msgid ""
-"Fix the bug where paratrooper with `NotHuman=yes` will ignore `Crashable=no` "
+"Fix the bug where paradropped infantry with `NotHuman=yes` will ignore `Crashable=no` "
 "and crash on ground when killed in air"
-msgstr "修复了 `NotHuman=yes` 的伞兵在空中被击杀时会无视 `Crashable=no` 坠落到地面的 Bug"
+msgstr "修复了 `NotHuman=yes` 的空降步兵在空中被击杀时会无视 `Crashable=no` 坠落到地面的 Bug"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"

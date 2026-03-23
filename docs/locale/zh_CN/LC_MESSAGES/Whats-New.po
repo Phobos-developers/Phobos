@@ -2108,9 +2108,9 @@ msgid ""
 msgstr "修复了载具被 `IsLocomotor=yes` 的弹头丢下时会播放坠毁语音和音效的 Bug（by NetsuNegi）"
 
 msgid ""
-"Fixed the bug where paratrooper with `NotHuman=yes` will ignore `Crashable=no` "
+"Fixed the bug where paradropped infantry with `NotHuman=yes` will ignore `Crashable=no` "
 "and crash on ground when killed in air (by NetsuNegi)"
-msgstr "修复了 `NotHuman=yes` 的伞兵在空中被击杀时会无视 `Crashable=no` 坠落到地面的 Bug（by NetsuNegi）"
+msgstr "修复了 `NotHuman=yes` 的空降步兵在空中被击杀时会无视 `Crashable=no` 坠落到地面的 Bug（by NetsuNegi）"
 
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："

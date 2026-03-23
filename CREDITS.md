@@ -514,7 +514,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that unit will play crashing voice & sound when dropped by warhead with `IsLocomotor=yes`
   - Add toggle of whether shield use ArmorMultiplier or not
   - Fix an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes
-  - Fix the bug where paratrooper with `NotHuman=yes` will ignore `Crashable=no` and crash on ground when killed in air
+  - Fix the bug where paradropped infantry with `NotHuman=yes` will ignore `Crashable=no` and crash on ground when killed in air
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
