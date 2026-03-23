@@ -1590,6 +1590,11 @@ msgid ""
 msgstr "修复了反击行为会让单位在多个相同威胁值的目标间不断切换的问题。"
 
 msgid ""
+"Fixed the bug that if paradropping technos with `Crashable=yes` has "
+"been destroyed in air, they will falling down on ground but not dead."
+msgstr "修复了当 `Crashable=yes` 的科技类型在空降时被于半空中摧毁，它会落地但不会死亡的 Bug。"
+
+msgid ""
 "Fixed the bug that low-air taking off / landing objects will receive "
 "twice damage."
 msgstr "修复了低空起飞/降落的物体会受到两次伤害的 Bug。"
