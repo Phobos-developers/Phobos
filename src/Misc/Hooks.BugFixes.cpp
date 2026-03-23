@@ -111,7 +111,7 @@ DEFINE_HOOK(0x518016, InfantryClass_ReceiveDamage_DyingFix, 0x7)
 	GET(InfantryClass*, pThis, ESI);
 
 	// Falling rockteer body has 1 HP
-	if (pThis->IsCrashing && !pThis->IsAttackedByLocomotor)
+	if (pThis->IsCrashing)
 	{
 		R->EAX(DamageState::PostMortem);
 		return ReturnFromFunction;
