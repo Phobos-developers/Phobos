@@ -1677,6 +1677,12 @@ msgid ""
 msgstr "修复了一个极易崩溃且导致寄生者特定条件下会被高频重设至受害者位置这一错误交互的 Ares Bug"
 
 msgid ""
+"Fix the bug that if paradropping technos with `Crashable=yes` has "
+"been destroyed in air, they will falling down on ground but not dead"
+msgstr ""
+"修复了当 `Crashable=yes` 的科技类型在空降时被于半空中摧毁，它会落地但不会死亡的 Bug"
+
+msgid ""
 "Fix the bug where paradropped infantry with `NotHuman=yes` will ignore `Crashable=no` "
 "and crash on ground when killed in air"
 msgstr "修复了 `NotHuman=yes` 的空降步兵在空中被击杀时会无视 `Crashable=no` 坠落到地面的 Bug"

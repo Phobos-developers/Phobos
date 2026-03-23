@@ -2874,6 +2874,19 @@ DEFINE_HOOK(0x4DB874, FootClass_SetLocation_Extra, 0xA)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x4DEC7F, FootClass_Crash_FallingDownFix, 0x7)
+{
+	GET(FootClass*, pThis, ESI);
+
+	if (pThis->IsFallingDown && !pThis->IsABomb && pThis->Locomotor)
+	{
+		if (const auto pJumpjet = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+			pJumpjet->State = JumpjetLocomotionClass::State::Crashing;
+	}
+
+	return 0;
+}
+
 #pragma region ClearTargetOnOwnerChanged
 
 DEFINE_HOOK(0x70D4A0, AbstractClass_ClearTargetToMe_ClearManagerTarget, 0x5)
