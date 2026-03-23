@@ -716,17 +716,6 @@ In `rulesmd.ini`:
 SlavesFreeSound=      ; Sound entry, default to [AudioVisual] -> SlavesFreeSound
 ```
 
-### Default disguise for individual InfantryTypes
-
-- Infantry can now have its `DefaultDisguise` overridden per-type.
-  - This tag's priority is higher than Ares' per-side `DefaultDisguise`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEINFANTRY]      ; InfantryType
-DefaultDisguise=    ; InfantryType
-```
-
 ### Random death animaton for NotHuman infantry
 
 - Infantry with `NotHuman=yes` can now play random death anim sequence between `Die1` to `Die5` instead of the hardcoded `Die1`.
@@ -1659,6 +1648,17 @@ NoSecondaryWeaponFallback.AllowAA=false  ; boolean
 AllowWeaponSelectAgainstWalls=           ; boolean, default to [CombatDamage] -> AllowWeaponSelectAgainstWalls
 ```
 
+### Default disguise for individual InfantryTypes or UnitTypes
+
+- Infantry can now have its `DefaultDisguise` overridden per-type.
+  - This tag's priority is higher than Ares' per-side `DefaultDisguise`.
+- Now you can make vehicle disguise to other vehicles, like spy.
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]      ; InfantryType or UnitType 
+DefaultDisguise=    ; InfantryType or UnitType
+```
+
 ### Disguise logic additions (disguise-based movement speed, disguise blinking visibility)
 
 - `DisguiseBlinkingVisibility` can be used to customize which players can see disguises blinking on units. This does not affect targeting but does affect veterancy insignia visibility - blinking disguise means the original unit's insignia is visible always instead of disguise's.
@@ -2190,6 +2190,18 @@ WarpInWeapon=                           ; WeaponType
 WarpInMinRangeWeapon=                   ; WeaponType
 WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
+```
+
+### Default disguise for individual InfantryTypes or UnitTypes
+
+- Infantry can now have its `DefaultDisguise` overridden per-type.
+  - This tag's priority is higher than Ares' per-side `DefaultDisguise`.
+- Now you can make vehicle disguise to other vehicles, like spy.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]      ; InfantryType or UnitType
+DefaultDisguise=    ; InfantryType or UnitType
 ```
 
 ## Terrain

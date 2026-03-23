@@ -491,20 +491,39 @@ DEFINE_HOOK(0x7295E2, TunnelLocomotionClass_ProcessStateDigging_SubterraneanHeig
 
 DEFINE_HOOK(0x522790, InfantryClass_ClearDisguise_DefaultDisguise, 0x6)
 {
-	GET(InfantryClass*, pThis, ECX);
-	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	enum { SetDisguise = 0x5227BF };
 
-	if (pExt->DefaultDisguise)
+	GET(InfantryClass*, pThis, ECX);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	const auto pDefault = pTypeExt->DefaultDisguise.Get();
+
+	if (pDefault && pDefault->WhatAmI() == AbstractType::InfantryType)
 	{
-		pThis->Disguise = pExt->DefaultDisguise;
+		pThis->Disguise = pDefault;
 		pThis->DisguisedAsHouse = pThis->Owner;
 		pThis->Disguised = true;
-		return 0x5227BF;
+		return SetDisguise;
 	}
 
-	pThis->Disguised = false;
-
 	return 0;
+}
+
+DEFINE_HOOK(0x746720, UnitClass_ClearDisguise_DefaultDisguise, 0x5)
+{
+	enum { SetDisguise = 0x746747 };
+
+	GET(UnitClass*, pThis, ECX);
+	const auto pType = pThis->Type;
+
+	if (!pType->PermaDisguise)
+		return 0;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto pDefault = pTypeExt->DefaultDisguise.Get();
+	pThis->Disguise = pDefault && pDefault->WhatAmI() == AbstractType::UnitType ? pDefault : pType;
+	pThis->DisguisedAsHouse = pThis->Owner;
+	pThis->Disguised = true;
+	return SetDisguise;
 }
 
 DEFINE_HOOK(0x74691D, UnitClass_UpdateDisguise_EMP, 0x6)
@@ -512,7 +531,7 @@ DEFINE_HOOK(0x74691D, UnitClass_UpdateDisguise_EMP, 0x6)
 	GET(UnitClass*, pThis, ESI);
 	// Remove mirage disguise if under emp or being flipped, approximately 15 deg
 	// Deactivated mirage should still be able to keep disguise
-	if (pThis->IsUnderEMP() || std::abs(pThis->AngleRotatedForwards) > 0.25f || std::abs(pThis->AngleRotatedSideways) > 0.25f)
+	if (pThis->Deactivated || pThis->IsUnderEMP() || std::abs(pThis->AngleRotatedForwards) > 0.25 || std::abs(pThis->AngleRotatedSideways) > 0.25)
 	{
 		pThis->ClearDisguise();
 		R->EAX(pThis->MindControlRingAnim);
@@ -521,6 +540,196 @@ DEFINE_HOOK(0x74691D, UnitClass_UpdateDisguise_EMP, 0x6)
 
 	return 0x746931;
 }
+
+DEFINE_HOOK(0x7466D8, UnitClass_DisguiseAs_DisguiseAsVehicle, 0xA)
+{
+	enum { SkipGameCode = 0x746712 };
+
+	GET(UnitClass*, pThis, EDI);
+	GET(UnitClass*, pTarget, ESI);
+	const bool targetDisguised = pTarget->IsDisguised();
+
+	pThis->Disguise = targetDisguised ? pTarget->GetDisguise(true) : pTarget->Type;
+	pThis->DisguisedAsHouse = targetDisguised ? pTarget->GetDisguiseHouse(true) : pTarget->Owner;
+	pThis->TechnoClass::DisguiseAs(pTarget);
+
+	if (const auto pDisguise = abstract_cast<UnitTypeClass*>(pThis->Disguise))
+		pThis->BarrelFacing.SetCurrent(DirStruct(0x4000 - (pDisguise->FireAngle << 8)));
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x746AFF, UnitClass_Desguise_Update_MoveToClear, 0xA)
+{
+	enum { DontClearDisguise = 0x746A9C };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	const auto pDisguise = pThis->Disguise;
+	return pDisguise && pDisguise->WhatAmI() == UnitTypeClass::AbsID ? DontClearDisguise : 0;
+}
+
+DEFINE_HOOK(0x74659B, UnitClass_RemoveGunner_ClearDisguise, 0x6)
+{
+	GET(UnitClass*, pThis, EDI);
+
+	if (!pThis->IsDisguised())
+		return 0;
+
+	if (const auto pWeapon = pThis->GetWeapon(pThis->CurrentWeaponNumber)->WeaponType)
+	{
+		const auto pWarhead = pWeapon->Warhead;
+
+		if (pWarhead && pWarhead->MakesDisguise)
+			return 0;
+	}
+
+	pThis->ClearDisguise();
+	return 0;
+}
+
+#pragma region UnitClass DrawSHP
+
+// Override Ares's hook
+DEFINE_HOOK(0x73C60E, UnitClass_DrawSHP_FacingsA, 0x5)
+{
+	enum { SkipGameCode = 0x73C64B };
+
+	// Restore overriden instuctions
+	R->Stack(STACK_OFFSET(0x128, -0x115), true);
+
+	GET(UnitClass*, pThis, EBP);
+	GET(UnitTypeClass*, pType, ECX);
+	unsigned int facing = 0u;
+	const unsigned int highest = Conversions::Int2Highest(pType->Facings);
+
+	// 2^highest is the frame count, 3 means 8 frames
+	if (highest >= 3 && (!pThis->Disguise || pThis->Disguise->WhatAmI() == AbstractType::UnitType || pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer)))
+	{
+		const unsigned int offset = 1u << (highest - 3);
+		facing = Conversions::TranslateFixedPoint(16, highest, pThis->PrimaryFacing.Current().GetValue<16>(), offset);
+	}
+
+	R->EBX(facing);
+	return SkipGameCode;
+}
+
+DEFINE_HOOK_AGAIN(0x73C88A, UnitClass_DrawSHP_TechnoType, 0x6)
+DEFINE_HOOK_AGAIN(0x73C702, UnitClass_DrawSHP_TechnoType, 0x6)
+DEFINE_HOOK_AGAIN(0x73C69D, UnitClass_DrawSHP_TechnoType, 0x6)
+DEFINE_HOOK(0x73C655, UnitClass_DrawSHP_TechnoType, 0x6)
+{
+	GET(UnitClass*, pThis, EBP);
+
+	if (pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+	{
+		if (const auto pDisguise = TechnoTypeExt::GetTechnoType(pThis->GetDisguise(true)))
+		{
+			if (R->Origin() == 0x73C88A)
+				R->EAX(pDisguise);
+			else
+				R->ECX(pDisguise);
+
+			return R->Origin() + 0x6;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x73C725, UnitClass_DrawSHP_HasTurret, 0x6)
+{
+	enum { SkipDrawTurret = 0x73CE0D };
+
+	GET(UnitClass*, pThis, EBP);
+
+	if (pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+	{
+		if (const auto pDisguise = pThis->GetDisguise(true))
+		{
+			const auto pTargetType = TechnoTypeExt::GetTechnoType(pDisguise);
+
+			if (pTargetType && !pTargetType->Turret)
+				return SkipDrawTurret;
+		}
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
+#pragma region UnitClass DrawVoxel
+
+DEFINE_HOOK_AGAIN(0x73BA6C, UnitClass_DrawVoxel_Disguise_TurretFacing, 0x6)
+DEFINE_HOOK(0x73B75A, UnitClass_DrawVoxel_Disguise_TurretFacing, 0x6)
+{
+	GET(UnitClass*, pThis, EBP);
+
+	if (!pThis->Type->Turret && pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+	{
+		const auto pTargetType = TechnoTypeExt::GetTechnoType(pThis->GetDisguise(true));
+
+		if (pTargetType && pTargetType->Turret)
+		{
+			R->ECX(&pThis->PrimaryFacing);
+			return R->Origin() + 0x6;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x73BC49, UnitClass_DrawVoxel_Disguise_TurretFacing, 0x6)
+DEFINE_HOOK(0x73BD79, UnitClass_DrawVoxel_Disguise_TurretFacing2, 0x6)
+{
+	GET(UnitClass*, pThis, EBP);
+
+	if (!pThis->Type->Turret && pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+	{
+		const auto pTargetType = TechnoTypeExt::GetTechnoType(pThis->GetDisguise(true));
+
+		if (pTargetType && pTargetType->Turret)
+		{
+			R->ESI(&pThis->PrimaryFacing);
+			return R->Origin() + 0x6;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x73B8E3, UnitClass_DrawVoxel_HasChargeTurret, 0x5)
+{
+	GET(UnitClass*, pThis, EBP);
+	GET(UnitTypeClass*, pType, EBX);
+
+	if (!pType->HasMultipleTurrets() || pType->IsGattling)
+		return 0x73B92F;
+
+	return pType != pThis->Type ? 0x73B8EC : 0x73B8FC;
+}
+
+DEFINE_HOOK(0x73BC28, UnitClass_DrawVoxel_HasChargeTurret2, 0x5)
+{
+	GET(UnitClass*, pThis, EBP);
+	GET(UnitTypeClass*, pType, EBX);
+
+	if (!pType->HasMultipleTurrets() || pType->IsGattling)
+		return 0x73BD79;
+
+	if (pType != pThis->Type)
+	{
+		if (pThis->CurrentTurretNumber == -1)
+			R->Stack<int>(0x1C, 0);
+
+		return 0x73BC35;
+	}
+
+	return 0x73BC49;
+}
+
+#pragma endregion
 
 #pragma endregion
 
