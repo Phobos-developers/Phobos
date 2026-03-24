@@ -2874,6 +2874,19 @@ DEFINE_HOOK(0x4DB874, FootClass_SetLocation_Extra, 0xA)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x4DEC7F, FootClass_Crash_FallingDownFix, 0x7)
+{
+	GET(FootClass*, pThis, ESI);
+
+	if (pThis->IsFallingDown && !pThis->IsABomb && pThis->Locomotor)
+	{
+		if (const auto pJumpjet = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+			pJumpjet->State = JumpjetLocomotionClass::State::Crashing;
+	}
+
+	return 0;
+}
+
 #pragma region ClearTargetOnOwnerChanged
 
 DEFINE_HOOK(0x70D4A0, AbstractClass_ClearTargetToMe_ClearManagerTarget, 0x5)
@@ -3224,4 +3237,26 @@ DEFINE_HOOK(0x706F64, TechnoClass_RenderVoxelObject_SkipInvisibleSections, 0x0)
 	// stolen code
 	R->EAX(frame);
 	return 0x706F6F;
+}
+
+// https://modenc.renegadeprojects.com/IsLocomotor
+// The natural landing position of the affected unit is controlled by its own pathfinding rules.
+// This means that if the target is a unit that can originally move to the firer's cell, such as the original [ZEP],
+// it will be attracted directly above the firer, then fall vertically to crush the firer while being destroyed itself.
+namespace ImbueLocomotorTemp
+{
+	bool Imbuing = false;
+}
+
+static void __fastcall _ImbueLocomotor_SetDestination(FootClass* pThis, void*, AbstractClass* pDest, bool unk)
+{
+	ImbueLocomotorTemp::Imbuing = true;
+	pThis->SetDestination(pDest, true);
+	ImbueLocomotorTemp::Imbuing = false;
+}
+DEFINE_FUNCTION_JUMP(CALL6, 0x710326, _ImbueLocomotor_SetDestination)
+
+DEFINE_HOOK(0x54B3E7, JumpjetLocomotionClass_Move_To_LocomotorWarheadFix, 0x5)
+{
+	return ImbueLocomotorTemp::Imbuing ? 0x54B3FC : 0;
 }
