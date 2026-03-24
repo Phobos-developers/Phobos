@@ -37,7 +37,7 @@ To distribute the workload and make the project more manageable, we have establi
   - New systems - generally with their own classes that don't extend game classes/logics (or have such amount of code that should be separated into separate classes)
     - Examples: custom trajectories framework, interceptor logic, shield logic, etc.
     - `T2` complexity by default
-- Contributions to project infrastructure - changes to the (project)'s build system, CI, documentation, etc.
+- Contributions to project infrastructure - changes to the project's build system, CI, documentation, etc.
   - `T2` complexity by default
 - Project policy changes - changes to the project's guidelines, contributing guidelines, etc.
   - `T3` complexity by default (has to be reviewed by leads)
