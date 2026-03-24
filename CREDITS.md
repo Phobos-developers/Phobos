@@ -515,6 +515,7 @@ This page lists all the individual contributions to the project by their author.
   - Add toggle of whether shield use ArmorMultiplier or not
   - Fix an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes
   - Fix the bug that if paradropping technos with `Crashable=yes` has been destroyed in air, they will falling down on ground but not dead
+  - Fix the bug where paradropped infantry with `NotHuman=yes` will ignore `Crashable=no` and crash on ground when killed in air
   - Fix an issue where a unit might cause the target to fall from above its own head when using a locomotor warhead with `Locomotor=Jumpjet` to pull a target with `BalloonHover=yes`
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:

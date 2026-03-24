@@ -2113,6 +2113,11 @@ msgid ""
 msgstr "修复了当 `Crashable=yes` 的科技类型在空降时被于半空中摧毁，它会落地但不会死亡的 Bug（by NetsuNegi）"
 
 msgid ""
+"Fixed the bug where paradropped infantry with `NotHuman=yes` will ignore `Crashable=no` "
+"and crash on ground when killed in air (by NetsuNegi)"
+msgstr "修复了 `NotHuman=yes` 的空降步兵在空中被击杀时会无视 `Crashable=no` 坠落到地面的 Bug（by NetsuNegi）"
+
+msgid ""
 "Fixed an issue where a unit might cause the target to fall from above its"
 " own head when using a locomotor warhead with `Locomotor=Jumpjet` to pull"
 " a target with `BalloonHover=yes` (by NetsuNegi)"
