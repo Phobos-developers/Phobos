@@ -1,10 +1,6 @@
 #include "Body.h"
 
-#include <TacticalClass.h>
 #include <Ext/Rules/Body.h>
-
-#include <Utilities/Macro.h>
-#include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x460285, BuildingTypeClass_LoadFromINI_Muzzle, 0x6)
 {
@@ -198,23 +194,50 @@ DEFINE_HOOK(0x5F5416, ObjectClass_ReceiveDamage_CanC4DamageRounding, 0x6)
 
 namespace ProximityTemp
 {
+	int DistanceOverride = 0;
+	bool SkipDisallowed = false;
 	BuildingTypeClass* pType = nullptr;
 }
 
-DEFINE_HOOK(0x4A8F20, DisplayClass_BuildingProximityCheck_SetContext, 0x5)
+DEFINE_HOOK(0x4A8F3E, DisplayClass_BuildingProximityCheck_BeforeChecks, 0x6)
 {
+	enum { SkipGameCode = 0x4A8F44, ReturnFromFunction = 0x4A9052 };
+
 	GET(BuildingTypeClass*, pType, ESI);
+	GET_STACK(const int, houseArrayIndex, STACK_OFFSET(0x30, 0x8));
+	GET_STACK(CellStruct*, foundationData, STACK_OFFSET(0x30, 0xC));
+	GET_STACK(CellStruct*, currentPosition, STACK_OFFSET(0x30, 0x10));
 
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
 	ProximityTemp::pType = pType;
+	ProximityTemp::SkipDisallowed = false;
 
-	return 0;
+	if (pTypeExt->Adjacent_Disallowed_Prohibit && pTypeExt->Adjacent_Disallowed_ProhibitDistance > 0 && ProximityTemp::DistanceOverride == 0)
+	{
+		ProximityTemp::DistanceOverride = pTypeExt->Adjacent_Disallowed_ProhibitDistance;
+		bool result = DisplayClass::Instance.PassesProximityCheck(pType, houseArrayIndex, foundationData, currentPosition);
+		ProximityTemp::DistanceOverride = 0;
+
+		if (!result)
+		{
+			R->EAX(false);
+			return ReturnFromFunction;
+		}
+
+		ProximityTemp::SkipDisallowed = true;
+	}
+
+	int distance = ProximityTemp::DistanceOverride > 0 ? ProximityTemp::DistanceOverride : pType->Adjacent;
+	R->EAX(distance);
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x4A8FD7, DisplayClass_BuildingProximityCheck_BuildArea, 0x6)
 {
-	enum { SkipBuilding = 0x4A902C };
+	enum { SkipBuilding = 0x4A902C, ReturnFromFunction = 0x4A9052 };
 
 	GET(BuildingClass*, pCellBuilding, ESI);
+	GET_STACK(const int, houseArrayIndex, STACK_OFFSET(0x30, 0x8));
 
 	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pCellBuilding->Type);
 
@@ -227,10 +250,23 @@ DEFINE_HOOK(0x4A8FD7, DisplayClass_BuildingProximityCheck_BuildArea, 0x6)
 	if (pBuildingsAllowed.size() > 0 && !pBuildingsAllowed.Contains(pCellBuilding->Type))
 		return SkipBuilding;
 
-	auto const& pBuildingsDisallowed = pTmpTypeExt->Adjacent_Disallowed;
+	if (!ProximityTemp::SkipDisallowed && pCellBuilding->Owner->ArrayIndex == houseArrayIndex)
+	{
+		auto const& pBuildingsDisallowed = pTmpTypeExt->Adjacent_Disallowed;
 
-	if (pBuildingsDisallowed.size() > 0 && pBuildingsDisallowed.Contains(pCellBuilding->Type))
-		return SkipBuilding;
+		if (pBuildingsDisallowed.size() > 0 && pBuildingsDisallowed.Contains(pCellBuilding->Type))
+		{
+			if (pTmpTypeExt->Adjacent_Disallowed_Prohibit)
+			{
+				R->EAX(false);
+				return ReturnFromFunction;
+			}
+			else
+			{
+				return SkipBuilding;
+			}
+		}
+	}
 
 	return 0;
 }
@@ -386,23 +422,43 @@ DEFINE_HOOK(0x70272E, BuildingClass_ReceiveDamage_DisableDamageSound, 0x8)
 	return 0;
 }
 
-DEFINE_HOOK(0x44E85F, BuildingClass_Power_DamageFactor, 0x7)
+DEFINE_HOOK(0x44E826, BuildingClass_GetPowerOutput_Enhancer, 0x6)
 {
-	enum { Handled = 0x44E86F };
+	enum { ReturnZero = 0x44E873, ApplyPower = 0x44E86F };
 
 	GET(BuildingClass*, pThis, ESI);
-	GET_STACK(const int, powerMultiplier, STACK_OFFSET(0xC, -0x4));
+
+	if (!pThis->HasPower || pThis->IsUnderEMP())
+		return ReturnZero;
+
+	const auto pOwner = pThis->Owner;
+	auto [power, extraPower] = BuildingTypeExt::GetEnhancedPower(pThis->Type, R->EDI<int>(), pOwner);
+	 
+	if (pThis->UpgradeLevel)
+	{
+		for (const auto pUpgrade : pThis->Upgrades)
+		{
+			if (pUpgrade)
+			{
+				const auto [upgradePower, extraUpgradePower] = BuildingTypeExt::GetEnhancedPower(pUpgrade, pUpgrade->PowerBonus, pOwner);
+				power += upgradePower;
+				extraPower += extraUpgradePower;
+			}
+		}
+	}
+
+	if (power + extraPower <= 0)
+		return ReturnZero;
 
 	const double factor = BuildingTypeExt::ExtMap.Find(pThis->Type)->PowerPlant_DamageFactor;
 
 	if (factor == 1.0)
-		R->EAX(Game::F2I(powerMultiplier * pThis->GetHealthPercentage()));
-	else if (factor == 0.0)
-		R->EAX(powerMultiplier);
-	else
-		R->EAX(Math::max(Game::F2I(powerMultiplier * (1.0 - factor + factor * pThis->GetHealthPercentage())), 0));
+		power = static_cast<int>(power * pThis->GetHealthPercentage());
+	else if (factor != 0.0)
+		power = Math::max(static_cast<int>(power * (1.0 - factor + factor * pThis->GetHealthPercentage())), 0);
 
-	return Handled;
+	R->EAX(power + extraPower);
+	return ApplyPower;
 }
 
 #pragma region WeaponFactoryPath

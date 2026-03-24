@@ -1,7 +1,6 @@
 #include "ToggleSWButtonClass.h"
 #include "SWSidebarClass.h"
 #include <GameOptionsClass.h>
-#include <ScenarioClass.h>
 
 #include <Ext/Side/Body.h>
 
@@ -101,7 +100,7 @@ void ToggleSWButtonClass::UpdatePosition()
 
 bool ToggleSWButtonClass::SwitchSidebar()
 {
-	VocClass::PlayGlobal(RulesClass::Instance->GUIMainButtonSound, 0x2000, 1.0);
+	VocClass::PlayGlobal(RulesClass::Instance->GUIMainButtonSound, 0x2000, 1.0f);
 	ScenarioExt::Global()->SWSidebar_Enable = !ScenarioExt::Global()->SWSidebar_Enable;
 
 	const bool disabled = !SWSidebarClass::IsEnabled();

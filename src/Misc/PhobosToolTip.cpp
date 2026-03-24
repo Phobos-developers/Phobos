@@ -1,18 +1,8 @@
-#include <Helpers/Macro.h>
-
 #include "PhobosToolTip.h"
-
-#include <AircraftClass.h>
-#include <BuildingClass.h>
-#include <UnitClass.h>
-#include <InfantryClass.h>
 
 #include <GameOptionsClass.h>
 #include <CCToolTip.h>
-#include <BitFont.h>
-#include <BitText.h>
 #include <FPSCounter.h>
-#include <Phobos.h>
 
 #include <Ext/Side/Body.h>
 #include <Ext/Surface/Body.h>
@@ -91,8 +81,9 @@ inline int PhobosToolTip::GetPower(TechnoTypeClass* pType) const
 		}
 	case AbstractType::BuildingType:
 		{
-			const auto pBldType = (BuildingTypeClass*)pType;
-			return pBldType->PowerBonus - pBldType->PowerDrain;
+			const auto pBldType = static_cast<BuildingTypeClass*>(pType);
+			const auto [enhancedPower, extraPower] = BuildingTypeExt::GetEnhancedPower(pBldType, pBldType->PowerBonus, HouseClass::CurrentPlayer);
+			return enhancedPower + extraPower - pBldType->PowerDrain;
 		}
 	default:
 		return 0;

@@ -2,10 +2,7 @@
 #include "SWSidebarClass.h"
 #include <EventClass.h>
 #include <CCToolTip.h>
-#include <CommandClass.h>
-#include <UI.h>
 
-#include <Ext/SWType/Body.h>
 #include <Utilities/AresFunctions.h>
 
 SWButtonClass::SWButtonClass(int superIdx, int x, int y, int width, int height)
@@ -166,7 +163,7 @@ bool SWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier)
 	if (flags & GadgetFlag::LeftPress)
 	{
 		MouseClass::Instance.UpdateCursor(MouseCursorType::Default, false);
-		VocClass::PlayGlobal(RulesClass::Instance->GUIBuildSound, 0x2000, 1.0);
+		VocClass::PlayGlobal(RulesClass::Instance->GUIBuildSound, 0x2000, 1.0f);
 		this->LaunchSuper();
 	}
 

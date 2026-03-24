@@ -1,10 +1,8 @@
 #pragma once
 #include <OverlayTypeClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
-#include <Utilities/Macro.h>
 
 class OverlayTypeExt
 {

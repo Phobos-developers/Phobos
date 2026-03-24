@@ -2,10 +2,6 @@
 
 #include <Ext/Scenario/Body.h>
 
-#include <New/Type/BannerTypeClass.h>
-
-#include <Utilities/SavegameDef.h>
-
 std::vector<std::unique_ptr<BannerClass>> BannerClass::Array;
 
 BannerClass::BannerClass
@@ -137,7 +133,7 @@ void BannerClass::RenderCSF(Point2D position)
 		text = pType->CSF.Get().Text;
 	}
 
-	TextPrintType textFlags = TextPrintType::UseGradPal
+	const TextPrintType textFlags = TextPrintType::UseGradPal
 		| TextPrintType::Center
 		| TextPrintType::Metal12
 		| (pType->CSF_Background
