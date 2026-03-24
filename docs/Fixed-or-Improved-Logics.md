@@ -311,7 +311,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that unit will play crashing voice & sound when dropped by warhead with `IsLocomotor=yes`.
 - Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat.
 - Fixed the bug that if paradropping technos with `Crashable=yes` has been destroyed in air, they will falling down on ground but not dead.
-- Fixed the bug where Jumpjet locomotor weapons (`IsLocomotor=yes`, `Locomotor=Jumpjet`) would cause `BalloonHover=yes` targets to land directly on the attacker unit upon arrival.
+- Fixed an issue where a unit might cause the target to fall from above its own head when using a locomotor warhead with `Locomotor=Jumpjet` to pull a target with `BalloonHover=yes`.
 
 ## Fixes / interactions with other extensions
 
