@@ -313,6 +313,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that if paradropping technos with `Crashable=yes` has been destroyed in air, they will falling down on ground but not dead.
 - Fixed the bug where paradropped infantry with `NotHuman=yes` will ignore `Crashable=no` and crash on ground when killed in air.
 - Fixed an issue where a unit might cause the target to fall from above its own head when using a locomotor warhead with `Locomotor=Jumpjet` to pull a target with `BalloonHover=yes`.
+- Fixed an issue where techno's `Strength` was less than `[General] -> RepairStep`, which caused crashes during repairs.
 
 ## Fixes / interactions with other extensions
 

@@ -3260,3 +3260,14 @@ DEFINE_HOOK(0x54B3E7, JumpjetLocomotionClass_Move_To_LocomotorWarheadFix, 0x5)
 {
 	return ImbueLocomotorTemp::Imbuing ? 0x54B3FC : 0;
 }
+
+DEFINE_HOOK(0x7120DD, TechnoTypeClass_GetRepairStepCost, 0x6)
+{
+	enum { SkipGameCode = 0x71210C };
+
+	GET(TechnoTypeClass*, pType, ESI);
+	GET(int, cost, EAX);
+
+	R->EAX(static_cast<int>((cost / (static_cast<double>(pType->Strength) / RulesClass::Instance->RepairStep)) * RulesClass::Instance->RepairPercent));
+	return SkipGameCode;
+}

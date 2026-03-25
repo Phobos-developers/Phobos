@@ -1606,6 +1606,12 @@ msgid ""
 msgstr ""
 "修复了单位使用 `Locomotor=Jumpjet` 的运动模式弹头牵引拥有 `BalloonHover=yes` 的目标时可能使其从自己头顶下落的问题。"
 
+msgid ""
+"Fixed an issue where techno's `Strength` was less than `[General] -> RepairStep`, "
+"which caused crashes during repairs"
+msgstr ""
+"修复了当科技类型的 `Strength` 小于 `[General] -> RepairStep` 时可能导致在维修时发生崩溃的问题。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 
