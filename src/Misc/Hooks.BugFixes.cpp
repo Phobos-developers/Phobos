@@ -3265,6 +3265,9 @@ DEFINE_HOOK(0x7120DD, TechnoTypeClass_GetRepairStepCost, 0x6)
 {
 	enum { SkipGameCode = 0x71210C };
 
+	if (!RulesExt::Global()->FixRepairStepCost)
+		return 0;
+
 	GET(TechnoTypeClass*, pType, ESI);
 	GET(int, cost, EAX);
 
