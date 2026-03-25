@@ -1754,6 +1754,14 @@ msgstr "自定义哪些寄生者可被弹头移除（by NetsuNegi）"
 msgid "Add toggle of whether shield use ArmorMultiplier or not (by NetsuNegi)"
 msgstr "添加了护盾是否使用护甲倍率的开关（by NetsuNegi）"
 
+msgid ""
+"[Allow the use of more precise calculation of repair costs](Fixed-or-"
+"Improved-Logics.md#use-of-more-precise-calculation-of-repair-costs) (by "
+"NetsuNegi)"
+msgstr ""
+"[允许使用更精确的维修费用计算](Fixed-or-Improved-Logics.md#use-of-more-"
+"precise-calculation-of-repair-costs)（by NetsuNegi）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
@@ -2123,12 +2131,6 @@ msgid ""
 " a target with `BalloonHover=yes` (by NetsuNegi)"
 msgstr ""
 "修复了单位使用 `Locomotor=Jumpjet` 的运动模式弹头牵引拥有 `BalloonHover=yes` 的目标时可能使其从自己头顶下落的问题（by NetsuNegi）"
-
-msgid ""
-"Fixed an issue where techno's `Strength` was less than `[General] -> RepairStep`, "
-"which caused crashes during repairs (by NetsuNegi)"
-msgstr ""
-"修复了当科技类型的 `Strength` 小于 `[General] -> RepairStep` 时可能导致在维修时发生崩溃的问题（by NetsuNegi）"
 
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
