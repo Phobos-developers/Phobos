@@ -19,6 +19,9 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 	const auto pTechnoExt = pBuildingExt->TechnoExtData;
 	pTechnoExt->UpdateLaserTrails(); // Mainly for on turret trails
 
+	for (auto const& attachment : pTechnoExt->ChildAttachments)
+		attachment->AI();
+
 	// Force airstrike targets to redraw every frame to account for tint intensity fluctuations.
 	if (pTechnoExt->AirstrikeTargetingMe)
 		pThis->Mark(MarkType::Change);
@@ -751,6 +754,7 @@ DEFINE_HOOK(0x44EFD8, BuildingClass_FindExitCell_BarracksExitCell, 0x6)
 
 	return 0;
 }
+
 
 DEFINE_HOOK(0x444B83, BuildingClass_ExitObject_BarracksExitCell, 0x7)
 {

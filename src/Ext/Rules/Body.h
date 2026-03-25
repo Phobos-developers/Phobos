@@ -322,6 +322,10 @@ public:
 
 		Valueable<bool> UnitsUnsellable;
 
+		
+		Valueable<int> AttachmentTopLayerMinHeight;
+		Valueable<int> AttachmentUndergroundLayerMaxHeight;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -587,6 +591,8 @@ public:
 			, PenetratesTransport_Level { 10 }
 
 			, UnitsUnsellable { false }
+			, AttachmentTopLayerMinHeight { 500 }
+			, AttachmentUndergroundLayerMaxHeight { -256 }
 		{ }
 
 		virtual ~ExtData() = default;

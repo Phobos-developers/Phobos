@@ -189,6 +189,69 @@ SuppressReflectDamage.Types=                       ; List of AttachEffectTypes
 SuppressReflectDamage.Groups=                      ; comma-separated list of strings (group IDs)
 ```
 
+### Attachments
+
+![Unit Attachment](your image here)
+*Attachments used in [mod name](link)*
+
+```{warning}
+This feature is not final and is under development.
+```
+
+- Technos now can be attached one to another in a tree like way. The attached units won't process any locomotion code and act like a part of a parent unit in a configurable.
+  - Currently the attached techno may only be a vehicle.
+  - When attached, the special `Attachment` (`{C5D54B98-8C98-4275-8CE4-EF75CB0CBE3E}`) locomotor is automatically casted on a unit. You may also specify it in the child unit types manually if the unit is not intended to move without a parent (f. ex. a turret).
+- Attachment slots can now be assigned an `AttachmentX.ID` string. This enables child techno preservation across type conversions (e.g. Ares `UpdateType`) and deploys between building and unit. Each TechnoType owns its own set of attachment slots, and the following happens when a techno is type-converted:
+  1. The current type's slots (and any children inside them) are placed in a per-type dormant storage.
+  2. The new type's slots are set up - restored from dormant storage if the unit previously had this type, or created fresh otherwise.
+  3. For each new slot that has an `AttachmentX.ID`, the old type's dormant slots are searched for a matching ID. If found, the child and its attachment state (e.g. the respawn timer, scaled proportionally to the new slot's `RespawnDelay`) are transferred into the new slot.
+     - If the new slot specifies an `AttachmentX.TechnoType` that differs from the child's current type, the child is automatically converted to the new slot's TechnoType.
+     - If the new slot has no `AttachmentX.TechnoType`, or if the old slot had `AttachmentX.TechnoType` set and the child's type does not match it, the child is transferred as-is regardless of its type.
+     - Slots without an `AttachmentX.ID` are never matched and their children are not transferred.
+  4. Unmatched old dormant slots have their children placed in limbo. New slots that ended up empty are unlimboed (unless the parent is currently in limbo).
+
+In `rulesmd.ini`:
+```ini
+[AttachmentTypes]
+0=MNT                                     ; (example)
+
+[MNT]
+RespawnAtCreation=true                    ; boolean
+RespawnDelay=-1                           ; integer, non-negative values enable the respawn timer
+InheritOwner=true                         ; boolean, whether the child inherits owner of the parent while it's attached
+InheritStateEffects=true                  ; boolean (state effects = chaos, iron curtain etc.)
+InheritCommands=true                      ; boolean
+InheritCommands.StopCommand=true          ; boolean
+InheritCommands.DeployCommand=true        ; boolean
+LowSelectionPriority=true                 ; boolean, whether the child is low priority while attached
+PassSelection=true                        ; boolean, whether the child selection propagates to parent
+TransparentToMouse=false                  ; boolean, can't click on attached techno if set
+YSortPosition=default                     ; Attachment YSort position enumeration - default|underparent|overparent
+InheritDestruction=true                   ; boolean
+InheritHeightStatus=true                  ; boolean, whether the layer and InAir/OnGround/IsSurfaced inherited from parent
+OccupiesCell=true                         ; boolean
+DestructionWeapon.Child=                  ; WeaponType, detonated on child when parent is destroyed
+DestructionWeapon.Parent=                 ; WeaponType, detonated on parent when child is destroyed
+ParentDestructionMission=                 ; MissionType, queued to child when parent is destroyed
+ParentDetachmentMission=                  ; MissionType, queued to child when it's detached from parent
+
+[SOMETECHNO]                              ; TechnoType
+; used when this techno is attached
+AttachmentTopLayerMinHeight=              ; integer
+AttachmentUndergroundLayerMaxHeight=      ; integer
+; used for attaching other technos
+AttachmentX.Type=MNT                      ; AttachmentType (example)
+AttachmentX.TechnoType=                   ; TechnoType that can be attached, currently only units are supported
+AttachmentX.FLH=0,0,0                     ; integer - Forward, Lateral, Height
+AttachmentX.IsOnTurret=false              ; boolean
+AttachmentX.RotationAdjust=0              ; rotation in DirType, from -255 to 255
+AttachmentX.ID=                           ; string, max 32 chars - ID for child transfer on type conversion; must be unique per TechnoType
+
+[General]
+AttachmentTopLayerMinHeight=500           ; integer
+AttachmentUndergroundLayerMaxHeight=-256  ; integer
+```
+
 ### Custom Radiation Types
 
 ![image](_static/images/radtype-01.png)

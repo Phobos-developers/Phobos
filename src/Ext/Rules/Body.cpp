@@ -9,6 +9,7 @@
 #include <New/Type/BannerTypeClass.h>
 #include <New/Type/InsigniaTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
+#include <New/Type/AttachmentTypeClass.h>
 
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
 
@@ -37,6 +38,7 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	AttachEffectTypeClass::LoadFromINIList(pINI);
 	BannerTypeClass::LoadFromINIList(pINI);
 	InsigniaTypeClass::LoadFromINIList(pINI);
+	AttachmentTypeClass::LoadFromINIList(pINI);
 
 	Data->LoadBeforeTypeData(pThis, pINI);
 }
@@ -372,6 +374,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->UnitsUnsellable.Read(exINI, GameStrings::General, "UnitsUnsellable");
 
+	this->AttachmentTopLayerMinHeight.Read(exINI, GameStrings::General, "AttachmentTopLayerMinHeight");
+	this->AttachmentUndergroundLayerMaxHeight.Read(exINI, GameStrings::General, "AttachmentUndergroundLayerMaxHeight");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -677,6 +682,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CylinderRangefinding)
 		.Process(this->PenetratesTransport_Level)
 		.Process(this->UnitsUnsellable)
+		.Process(this->AttachmentTopLayerMinHeight)
+		.Process(this->AttachmentUndergroundLayerMaxHeight)
 		;
 }
 

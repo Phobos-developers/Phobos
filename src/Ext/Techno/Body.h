@@ -1,11 +1,14 @@
 #pragma once
 
+#include <map>
+
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Entity/AttachEffectClass.h>
+#include <New/Entity/AttachmentClass.h>
 
 class BulletClass;
 
@@ -103,6 +106,13 @@ public:
 		bool OnParachuted; // This is just a temporary patch. TODO: fully check HasParachuted and correct its maintenance method.
 		bool HoverShutdown;
 
+		AttachmentClass* ParentAttachment;
+		ValueableVector<std::unique_ptr<AttachmentClass>> ChildAttachments;
+		std::map<int, ValueableVector<std::unique_ptr<AttachmentClass>>> DormantAttachments;
+
+		// Ares
+		std::optional<bool> AltOccupation; // if the unit marks cell occupation flags, this is set to whether it uses the "high" occupation members
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -171,6 +181,10 @@ public:
 			, JumpjetStraightAscend { false }
 			, OnParachuted { false }
 			, HoverShutdown { false }
+			, ParentAttachment {}
+			, ChildAttachments {}
+			, DormantAttachments {}
+			, AltOccupation {}
 		{ }
 
 		void OnEarlyUpdate();
@@ -214,6 +228,7 @@ public:
 
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
+
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
@@ -245,6 +260,7 @@ public:
 	static ExtContainer ExtMap;
 
 	static UnitClass* Deployer;
+	static TechnoClass* DeployTransferSource;  // Set before deploy-target construction to skip InitializeAttachments and possibly other things
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
@@ -257,12 +273,35 @@ public:
 	static bool HasRadioLinkWithDock(TechnoClass* pThis);
 
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);
+	static void InitializeShield(TechnoClass* pThis);
+
 
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
 	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
 
+	static bool AttachTo(TechnoClass* pThis, TechnoClass* pParent);
+	static bool DetachFromParent(TechnoClass* pThis);
+
+	static void InitializeAttachments(TechnoClass* pThis);
+	static void DestroyAttachments(TechnoClass* pThis, TechnoClass* pSource);
+	static void HandleDestructionAsChild(TechnoClass* pThis);
+	static void UnlimboAttachments(TechnoClass* pThis);
+	static void LimboAttachments(TechnoClass* pThis);
+	static void TransferAttachments(TechnoClass* pThis, TechnoClass* pThat);
+	static void HandleAttachmentConversion(TechnoClass* pThis, TechnoTypeClass* pOldType, TechnoTypeClass* pNewType);
+	static void HandleAttachmentDeployTransfer(TechnoClass* pFrom, TechnoClass* pTo);
+
+	static bool IsAttached(TechnoClass* pThis);
+	static bool HasAttachmentLoco(FootClass* pThis); // FIXME shouldn't be here
+	static bool DoesntOccupyCellAsChild(TechnoClass* pThis);
+	static bool IsChildOf(TechnoClass* pThis, TechnoClass* pParent, bool deep = true);
+	static bool AreRelatives(TechnoClass* pThis, TechnoClass* pThat);
+	static TechnoClass* GetTopLevelParent(TechnoClass* pThis);
+
 	static void ChangeOwnerMissionFix(FootClass* pThis);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, const std::vector<AnimTypeClass*>& pVanishAnimation, bool isInLimbo = false);
+	static void Kill(TechnoClass* pThis, ObjectClass* pAttacker, HouseClass* pAttackingHouse);
+	static void Kill(TechnoClass* pThis, TechnoClass* pAttacker);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);

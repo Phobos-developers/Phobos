@@ -553,6 +553,7 @@ New:
 - [Implement `CurleyShuffle` for AircraftTypes](Fixed-or-Improved-Logics.md#implement-curleyshuffle-for-aircrafttypes) (ported from Vinifera by Noble_Fish)
 - Customize which parasite can remove by warhead (by NetsuNegi)
 - Add toggle of whether shield use ArmorMultiplier or not (by NetsuNegi)
+- [Techno attachment system](New-or-Enhanced-Logics.md#attachments) (by Kerbiter)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

@@ -31,7 +31,7 @@ DEFINE_HOOK(0x7363C9, UnitClass_AI_AnimationPaused, 0x6)
 	enum { SkipGameCode = 0x7363DE };
 
 	GET(UnitClass*, pThis, ESI);
-	
+
 	if (TechnoExt::ExtMap.Find(pThis)->DelayedFireSequencePaused)
 		return SkipGameCode;
 
@@ -82,6 +82,8 @@ DEFINE_HOOK(0x736480, UnitClass_AI, 0x6)
 DEFINE_HOOK(0x71A88D, TemporalClass_AI, 0x0)
 {
 	GET(TemporalClass*, pThis, ESI);
+
+	// TODO maybe handle attachments on temporal?
 
 	if (auto const pTarget = pThis->Target)
 	{
@@ -259,6 +261,8 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 
 	if (!pType) // Critical sanity check in s/l
 		return 0;
+
+	TechnoExt::InitializeAttachments(pThis);
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
@@ -1351,7 +1355,7 @@ DEFINE_HOOK(0x71A8BD, TemporalClass_Update_WarpAwayAnim, 0x5)
 		AnimExt::CreateRandomAnim(pExt->WarpAway, pTarget->Location, nullptr, pTarget->Owner);
 		return 0x71A90E;
 	}
-	
+
 	return 0;
 }
 

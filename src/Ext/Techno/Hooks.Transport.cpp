@@ -312,6 +312,7 @@ static inline void DoEnterNow(UnitClass* pTransport, FootClass* pPassenger, Tech
 }
 
 // Update after unit location update
+// why is this hook in this file of all places?
 DEFINE_HOOK(0x4DA8A0, FootClass_Update_AfterLocomotorProcess, 0x6)
 {
 	GET(FootClass* const, pThis, ESI);
@@ -319,6 +320,9 @@ DEFINE_HOOK(0x4DA8A0, FootClass_Update_AfterLocomotorProcess, 0x6)
 	// Update laser trails after locomotor process, to ensure that the updated position is not the previous frame's position
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	pExt->UpdateLaserTrails();
+
+	for (auto const& attachment : pExt->ChildAttachments)
+		attachment->AI();
 
 	// The core part of the fast enter action
 	if (const auto pDest = abstract_cast<UnitClass*>(pThis->CurrentMission == Mission::Enter ? pThis->GetNthLink() : pThis->QueueUpToEnter))
