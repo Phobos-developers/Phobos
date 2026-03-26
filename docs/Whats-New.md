@@ -553,7 +553,7 @@ New:
 - [Implement `CurleyShuffle` for AircraftTypes](Fixed-or-Improved-Logics.md#implement-curleyshuffle-for-aircrafttypes) (ported from Vinifera by Noble_Fish)
 - Customize which parasite can remove by warhead (by NetsuNegi)
 - Add toggle of whether shield use ArmorMultiplier or not (by NetsuNegi)
-- Allow the [use of more precise calculation of repair costs](Fixed-or-Improved-Logics.md#use-more-precise-calculation-of-repair-costs) and fix the [EIP#007120F7](https://modenc.renegadeprojects.com/Internal_Error#eip_007120F7) caused when the `Strength` value is lower than `RepairStep` (by NetsuNegi)
+- Allow the [use of more precise calculation of repair costs](Fixed-or-Improved-Logics.md#use-more-precise-calculation-of-repair-costs) (by NetsuNegi)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -624,6 +624,7 @@ Vanilla fixes:
 - Fixed the bug that if paradropping technos with `Crashable=yes` has been destroyed in air, they will falling down on ground but not dead (by NetsuNegi)
 - Fixed the bug where paradropped infantry with `NotHuman=yes` will ignore `Crashable=no` and crash on ground when killed in air (by NetsuNegi)
 - Fixed an issue where a unit might cause the target to fall from above its own head when using a locomotor warhead with `Locomotor=Jumpjet` to pull a target with `BalloonHover=yes` (by NetsuNegi)
+- Fixed the [EIP#007120F7](https://modenc.renegadeprojects.com/Internal_Error#eip_007120F7) caused when the `Strength` value is lower than `RepairStep` (by NetsuNegi)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
