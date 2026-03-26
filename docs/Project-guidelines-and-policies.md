@@ -56,7 +56,7 @@ What can make any PR more controversial and requiring a higher level maintainer'
 - Mixing contribution types
 - Current level of maintainers not being sure about whether they can judge this PR
 
-### Contribution process
+## Contribution process
 
 To ensure your contribution goes smoothly, please stick to the following process when contributing to the project:
 1. **Check whether there is already an open Pull Request** for whatever you want to contribute. If there is - comment on it and see if you can help with it instead of starting your own first. We hate to discard otherwise valid work just because it's a duplicate.
