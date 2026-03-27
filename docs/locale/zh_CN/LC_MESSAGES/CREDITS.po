@@ -1694,6 +1694,11 @@ msgid ""
 msgstr ""
 "修复了单位使用 `Locomotor=Jumpjet` 的运动模式弹头牵引拥有 `BalloonHover=yes` 的目标时可能使其从自己头顶下落的问题"
 
+msgid ""
+"Fix the initial direction of building placed by Ares's UnitDelivery superweapon"
+msgstr ""
+"修复了 Ares 的单位投放超级武器投放的建筑物的初始朝向"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 

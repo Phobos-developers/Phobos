@@ -672,6 +672,7 @@ Fixes / interactions with other extensions:
 - Fixed the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally (by NetsuNegi)
 - Modified the ares hook that stopped OpenTopped transports from firing if cloaked (by RAZER & Morton)
 - Fixed an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes (by NetsuNegi)
+- Fixed the initial direction of building placed by Ares's UnitDelivery superweapon (by NetsuNegi)
 
 ```
 
