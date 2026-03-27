@@ -275,13 +275,13 @@ public:
 			, SplashList_PickRandom { false }
 			, SplashList_CreateAll { false }
 			, SplashList_CreationInterval { 0 }
-			, SplashList_ScatterMin { Leptons(0) }
-			, SplashList_ScatterMax { Leptons(0) }
+			, SplashList_ScatterMin { Leptons(-1) }
+			, SplashList_ScatterMax { Leptons(-1) }
 			, AnimList_PickRandom { false }
 			, AnimList_CreateAll { false }
 			, AnimList_CreationInterval { 0 }
-			, AnimList_ScatterMin { Leptons(0) }
-			, AnimList_ScatterMax { Leptons(0) }
+			, AnimList_ScatterMin { Leptons(-1) }
+			, AnimList_ScatterMax { Leptons(-1) }
 			, CreateAnimsOnZeroDamage { false }
 			, Conventional_IgnoreUnits { false }
 			, RemoveDisguise { false }

@@ -2301,6 +2301,11 @@ msgid ""
 "`TurretOffset` causing turret shadow misplacement (by Noble_Fish)"
 msgstr "修复了一个影子矩阵缩放错误地应用于 `TurretOffset` 而导致炮塔影子错位的问题（by Noble_Fish）"
 
+msgid ""
+"Fixed an issue that customizable warhead animation scatter cannot "
+"override 32 leptons scatter of `Inviso=yes` projectile (by NetsuNegi)"
+msgstr "修复了自定义弹头动画散布范围不能覆盖 `Inviso=yes` 抛射体的32Leptons散布的问题（by NetsuNegi）"
+
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
 
