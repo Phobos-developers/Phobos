@@ -724,6 +724,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the move mission of the jumpjet does not end correctly
   - Fix the issue that the Jumpjet must end its movement before starting the next mission
   - Taunt warhead
+  - Fix the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
