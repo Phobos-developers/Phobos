@@ -1620,6 +1620,7 @@ msgid ""
 "Fixed the bug where non-Teleporter miners would not return to work after "
 "minerals are depleted and then regenerated."
 msgstr ""
+"修复了非超时空矿车在矿区无矿后即便矿石已重新生成也不会恢复工作的 Bug。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
