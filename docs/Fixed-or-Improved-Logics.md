@@ -359,6 +359,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally.
 - Modified the ares hook that stopped OpenTopped transports from firing if cloaked.
 - Fixed an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes.
+- Fixed the initial direction of building placed by Ares's UnitDelivery superweapon.
 
 ## Newly added global settings
 

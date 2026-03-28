@@ -519,6 +519,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where a unit might cause the target to fall from above its own head when using a locomotor warhead with `Locomotor=Jumpjet` to pull a target with `BalloonHover=yes`
   - Fix the EIP#007120F7 caused when the `Strength` value is lower than `RepairStep`
   - Allow the use of more precise calculation of repair costs
+  - Fix the initial direction of building placed by Ares's UnitDelivery superweapon
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

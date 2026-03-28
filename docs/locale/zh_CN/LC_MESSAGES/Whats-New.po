@@ -2389,6 +2389,10 @@ msgid ""
 "circumstances and that was highly prone to crashes (by NetsuNegi)"
 msgstr "修复了一个极易崩溃且导致寄生者特定条件下会被高频重设至受害者位置这一错误交互的 Ares Bug（by NetsuNegi）"
 
+msgid ""
+"Fixed the initial direction of building placed by Ares's UnitDelivery superweapon (by NetsuNegi)"
+msgstr "修复了 Ares 的单位投放超级武器投放的建筑物的初始朝向（by NetsuNegi）"
+
 msgid "0.4.0.3"
 msgstr "0.4.0.3"
 

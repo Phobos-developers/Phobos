@@ -1700,6 +1700,11 @@ msgstr "修复了由于 `Strength` 值低于 `RepairStep` 时引发的 EIP#00712
 msgid "Allow the use of more precise calculation of repair costs"
 msgstr "允许使用更精确的维修费用计算"
 
+msgid ""
+"Fix the initial direction of building placed by Ares's UnitDelivery superweapon"
+msgstr ""
+"修复了 Ares 的单位投放超级武器投放的建筑物的初始朝向"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
