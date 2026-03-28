@@ -11,6 +11,7 @@ This page lists all user interface additions, changes, fixes that are implemente
 - Fixed position and layer of info tip and reveal production cameo on selected building.
 - Timer (superweapon, mission etc) blinking color scheme can be customized by setting `[AudioVisual] -> TimerBlinkColorScheme`. Defaults to third color scheme listed in `[Colors]`.
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold.
+- Increased cursor update frequency by setting interval to 1ms instead of 16ms.
 
 ```{note}
 You can use the improved vanilla font which can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries) which has way more Unicode character coverage than the default one.
@@ -28,6 +29,38 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 ```
 
 ## Battle screen UI/UX
+
+### Allow draw SuperWeapon timer as percentage
+
+- Superweapon cd timer can now draw as percentage.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+SuperWeaponTimer.Percentage=false  ; boolean
+
+[SOMESW]                           ; SuperWeaponType, with ShowTimer=yes
+ShowTimer.Percentage=              ; boolean
+```
+
+### Custom health bars display
+
+![image](_static/images/healthbar.hide-01.png)
+*Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
+
+- Health bar display can now be turned off as needed, hiding both the health bar box and health pips.
+  - `HealthBar.HidePips` only hides the health bar without affecting anything else.
+  - `HealthBar.Permanent` will display health points at all times.
+  - `HealthBar.Permanent.PipScale` will always display additional pips and group numbers.
+
+In `rulesmd.ini`:
+```ini
+[SOMENAME]                           ; TechnoType
+HealthBar.Hide=false                 ; boolean
+HealthBar.HidePips=false             ; boolean
+HealthBar.Permanent=false            ; boolean
+HealthBar.Permanent.PipScale=false   ; boolean
+```
 
 ### Digital display
 
@@ -169,48 +202,6 @@ In `RA2MD.INI`:
 ShowFlashOnSelecting=false  ; boolean
 ```
 
-### Hide health bars
-
-![image](_static/images/healthbar.hide-01.png)
-*Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
-
-- Health bar display can now be turned off as needed, hiding both the health bar box and health pips.
-  - `HealthBar.HidePips` only hides the health bar without affecting anything else.
-  - `HealthBar.Permanent` will display health points at all times.
-  - `HealthBar.Permanent.PipScale` will always display additional pips and group numbers.
-
-In `rulesmd.ini`:
-```ini
-[SOMENAME]                           ; TechnoType
-HealthBar.Hide=false                 ; boolean
-HealthBar.HidePips=false             ; boolean
-HealthBar.Permanent=false            ; boolean
-HealthBar.Permanent.PipScale=false   ; boolean
-```
-
-### Light flash effect toggling
-
-- It is possible to toggle certain light flash effects off. These light flash effects include:
-  - Combat light effects (`Bright=true`) and everything that uses same functionality e.g Iron Curtain / Force Field impact flashes.
-  - Alpha images attached to ParticleSystems or Particles that are generated through a Warhead's `Particle` if `[AudioVisual] -> WarheadParticleAlphaImageIsLightFlash` or on Warhead `Particle.AlphaImageIsLightFlash` is set to true, latter defaults to former.
-    - Additionally these alpha images are not created if `[AudioVisual] -> LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-WarheadParticleAlphaImageIsLightFlash=false  ; boolean
-LightFlashAlphaImageDetailLevel=0            ; integer
-
-[SOMEWARHEAD]                                ; WarheadType
-Particle.AlphaImageIsLightFlash=             ; boolean
-```
-
-In `RA2MD.INI`:
-```ini
-[Phobos]
-HideLightFlashEffects=false  ; boolean
-```
-
 ### Low priority for box selection
 
 ![smartvesters](_static/images/lowpriority-01.gif)
@@ -296,7 +287,6 @@ RealTimeTimers.Adaptive=false   ; boolean
 
 - Now you can use and customize select box for infantry, vehicle and aircraft. No select box for buildings in default case, but you still can specific for some building if you want.
   - `Frames` can be used to list frames of `Shape` file that'll be drawn as a select box when the TechnoType's health is at or below full health/the percentage defined in `[AudioVisual] -> ConditionYellow/ConditionRed`, respectively.
-  - If `Grounded` set to true, the select box will be drawn on the ground below the TechnoType.
   - Select box's translucency setting can be adjusted via `Translucency`.
   - `VisibleToHouses` and `VisibleToHouses.Observer` can limit visibility to specific players.
   - `DrawAboveTechno` specific whether the select box will be drawn before drawing the TechnoType. If set to false, the select box can be obscured by the TechnoType, and the draw location will ignore `PixelSelectionBracketDelta`.
@@ -313,7 +303,7 @@ DefaultInfantrySelectBox=               ; Select box for infantry
 DefaultUnitSelectBox=                   ; Select box for vehicle and aircraft
 
 [SOMESELECTBOXTYPE]                     ; Select box Type name
-Shape=select.shp                        ; filename with .shp extension
+Shape=                                  ; filename with .shp extension
 Palette=palette.pal                     ; filename with .pal extension
 Frames=                                 ; List of integer, default 1,1,1 for infantry, 0,0,0 for vehicle and aircraft
 Offset=0,0                              ; integers - horizontal, vertical
@@ -398,7 +388,7 @@ In `RA2MD.INI`:
 [Phobos]
 MessageApplyHoverState=false            ; boolean
 MessageDisplayInCenter=false            ; boolean
-MessageDisplayInCenter.BoardOpacity=30  ; integer
+MessageDisplayInCenter.BoardOpacity=40  ; integer
 MessageDisplayInCenter.LabelsCount=6    ; integer
 MessageDisplayInCenter.RecordsCount=12  ; integer
 ```
@@ -419,6 +409,40 @@ BuildingTypeSelectable=false  ; boolean
 
 ```{warning}
 Due to technical limitations, this feature is forcibly disabled without Ares.
+```
+
+### Visual effects toggling
+
+- It is possible to toggle certain light flash effects off. These light flash effects include:
+  - Combat light effects (`Bright=true`) and everything that uses same functionality e.g Iron Curtain / Force Field impact flashes.
+  - Alpha images attached to ParticleSystems or Particles that are generated through a Warhead's `Particle` if `[AudioVisual] -> WarheadParticleAlphaImageIsLightFlash` or on Warhead `Particle.AlphaImageIsLightFlash` is set to true, latter defaults to former.
+    - Additionally these alpha images are not created if `[AudioVisual] -> LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting.
+- It is possible to toggle shake screen effects (`ShakeX/Ylo/hi`) off by setting `HideShakeEffects=true`.
+- Phobos's [Laser Trail effects](New-or-Enhanced-Logics.md#laser-trails) can also be toggled off.
+  - If a LaserTrailType has `IsHideable=false`, it can't be toggled off by setting `HideLaserTrailEffects=true`.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+WarheadParticleAlphaImageIsLightFlash=false  ; boolean
+LightFlashAlphaImageDetailLevel=0            ; integer
+
+[SOMEWARHEAD]                                ; WarheadType
+Particle.AlphaImageIsLightFlash=             ; boolean
+```
+
+In `artmd.ini`:
+```ini
+[SOMETRAIL]                  ; LaserTrailType name
+IsHideable=true              ; boolean
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+HideLightFlashEffects=false  ; boolean
+HideLaserTrailEffects=false  ; boolean
+HideShakeEffects=false       ; boolean
 ```
 
 ### Visual indication of income from grinders and refineries
@@ -549,10 +573,15 @@ When the building becomes ready to be placed, the next building's construction w
 ### Cameo Sorting
 
 - You can now specify Cameo Priority for any TechnoType/SuperWeaponType. Vanilla sorting rules are [here](https://modenc.renegadeprojects.com/Cameo_Sorting).
-  - The Cameo Priority is checked just before evevything vanilla. Greater `CameoPriority` wins.
+  - The Cameo Priority is checked just before everything vanilla. Greater `CameoPriority` wins.
+- You can also use `Name` of TechnoType/SuperWeaponType to sort the cameo. They'll be compared after all the other rules but before comparing the CSF text of `UIName`.
+  - This is to prevent cameo order being disrupted by CSF change accidentally, like when you're using a translation pack of different language.
 
 In `rulesmd.ini`:
 ```ini
+[General]
+SortCameoByName=false  ; boolean
+
 [SOMENAME]             ; TechnoType / SuperWeaponType
 CameoPriority=0        ; integer
 ```

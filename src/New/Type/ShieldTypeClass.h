@@ -1,10 +1,8 @@
 #pragma once
 
 #include <Utilities/Enumerable.h>
-#include <Utilities/Template.h>
-#include <Utilities/GeneralUtils.h>
-#include <Ext/Rules/Body.h>
 #include <Utilities/TemplateDef.h>
+#include <Ext/Rules/Body.h>
 
 class ShieldTypeClass final : public Enumerable<ShieldTypeClass>
 {
@@ -17,6 +15,7 @@ public:
 	Valueable<bool> InheritArmorFromTechno;
 	ValueableVector<TechnoTypeClass*> InheritArmor_Allowed;
 	ValueableVector<TechnoTypeClass*> InheritArmor_Disallowed;
+	Nullable<bool> ApplyArmorMult;
 	Valueable<bool> Powered;
 	Valueable<double> Respawn;
 	Valueable<int> Respawn_Rate;
@@ -74,6 +73,7 @@ public:
 		, InheritArmorFromTechno { false }
 		, InheritArmor_Allowed { }
 		, InheritArmor_Disallowed { }
+		, ApplyArmorMult {}
 		, Powered { false }
 		, Respawn { 0.0 }
 		, Respawn_Rate { 0 }
@@ -127,9 +127,19 @@ public:
 		return this->Tint_Color.isset() || this->Tint_Intensity != 0.0;
 	}
 
-	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio) const;
-	double GetConditionYellow() const;
-	double GetConditionRed() const;
+	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio) const
+	{
+		if (isDamaged)
+		{
+			if (const auto damagedAnim = this->IdleAnimDamaged.Get(healthRatio))
+				return damagedAnim;
+		}
+
+		return this->IdleAnim.Get(healthRatio, this->GetConditionYellow(), this->GetConditionRed());
+	}
+
+	double GetConditionYellow() const { return this->ConditionYellow.Get(RulesExt::Global()->Shield_ConditionYellow.Get(RulesClass::Instance->ConditionYellow)); }
+	double GetConditionRed() const { return this->ConditionRed.Get(RulesExt::Global()->Shield_ConditionRed.Get(RulesClass::Instance->ConditionRed)); }
 
 private:
 	template <typename T>

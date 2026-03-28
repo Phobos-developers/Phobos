@@ -81,6 +81,8 @@ public:
 		static bool ToolTipDescriptions;
 		static bool ToolTipBlur;
 		static bool PrioritySelectionFiltering;
+		static bool PriorityDeployFiltering;
+		static bool TypeSelectUseIFVMode;
 		static bool DevelopmentCommands;
 		static bool SuperWeaponSidebarCommands;
 		static bool ArtImageSwap;
@@ -106,6 +108,8 @@ public:
 		static bool ShowWeedsCounter;
 		static bool ShowPlanningPath;
 		static bool HideLightFlashEffects;
+		static bool HideLaserTrailEffects;
+		static bool HideShakeEffects;
 		static bool ShowFlashOnSelecting;
 		static bool UnitPowerDrain;
 		static int SuperWeaponSidebar_RequiredSignificance;

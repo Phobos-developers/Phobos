@@ -19,7 +19,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v6
+        with:
+            fetch-depth: 0
       - name: Check that Changelog has been updated
         run: |
           # Check that Changelog has been updated
@@ -29,7 +31,7 @@ jobs:
             exit 0
           else
             echo "It looks like you forgot to update the Changelog! 🧐"
-            echo "Please, mention your changes in 'docs/Whats-New.md' or use [Minor] label for your Pull Request."
+            echo "Please, mention your changes in 'docs/Whats-New.md' or use [No Documentation Needed] label for your Pull Request."
             exit 1
           fi
 
@@ -40,7 +42,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v6
+        with:
+            fetch-depth: 0
       - name: Check that Credits List has been updated
         run: |
           # Check that Credits List has been updated
@@ -50,7 +54,7 @@ jobs:
             exit 0
           else
             echo "It looks like you forgot to update the Credits List! 🧐"
-            echo "Please, mention your contribution in 'CREDITS.md' or use [Minor] label for your Pull Request."
+            echo "Please, mention your contribution in 'CREDITS.md' or use [No Documentation Needed] label for your Pull Request."
             exit 1
           fi
 
@@ -61,7 +65,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v6
+        with:
+            fetch-depth: 0
       - name: Check that Documentation has been updated
         run: |
           # Check that Documentation has been updated
@@ -78,6 +84,6 @@ jobs:
             exit 0
           else
             echo "It looks like you forgot to add your changes to the docs! 🧐"
-            echo "Please, document your changes or use [Minor] label for your Pull Request."
+            echo "Please, document your changes or use [No Documentation Needed] label for your Pull Request."
             exit 1
           fi

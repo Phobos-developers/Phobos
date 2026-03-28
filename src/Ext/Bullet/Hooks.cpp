@@ -1,13 +1,7 @@
 #include "Body.h"
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
-#include <Ext/BulletType/Body.h>
-#include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Utilities/EnumFunctions.h>
-#include <Utilities/Macro.h>
-
-#include <ScenarioClass.h>
 
 // has everything inited except SpawnNextAnim at this point
 DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
@@ -280,7 +274,7 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 			if (!pWeaponExt->SkipWeaponPicking)
 			{
 				if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechno->Owner) || !EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget)
-					|| !pWeaponExt->IsHealthInThreshold(pTechno) || !pWeaponExt->HasRequiredAttachedEffects(pTechno, pSource))
+					|| !pWeaponExt->IsHealthInThreshold(pTechno) || !pWeaponExt->IsVeterancyInThreshold(pTechno) || !pWeaponExt->HasRequiredAttachedEffects(pTechno, pSource))
 				{
 					return SkipObject;
 				}
@@ -370,7 +364,9 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 
 	GET(BulletClass*, pThis, ESI);
 
-	if (pThis == ScenarioExt::Global()->MasterDetonationBullet)
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (pExt->IsInstantDetonation)
 		return SkipChecks;
 
 	auto const pType = pThis->Type;
@@ -385,8 +381,6 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 	{
 		return 0;
 	}
-
-	auto const pExt = BulletExt::ExtMap.Find(pThis);
 
 	if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
 	{
@@ -403,7 +397,9 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 
 	GET(BulletClass*, pThis, ESI);
 
-	if (pThis == ScenarioExt::Global()->MasterDetonationBullet)
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (pExt->IsInstantDetonation)
 		return SkipChecks;
 
 	auto const pType = pThis->Type;
@@ -421,8 +417,6 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 
 	// Do not force Trajectory=Straight projectiles to detonate at target coordinates under certain circumstances.
 	// Fixes issues with walls etc.
-	auto const pExt = BulletExt::ExtMap.Find(pThis);
-
 	if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
 		return SkipSetCoordinate;
 
@@ -522,7 +516,7 @@ DEFINE_HOOK(0x415F25, AircraftClass_Fire_TrajectorySkipInertiaEffect, 0x6)
 DEFINE_PATCH(0x46867F, 0x6A, 0x00, 0x8B, 0xD9, 0x50);
 
 // Add in our own.
-bool __fastcall ObjectClass_Unlimbo_Parachuted_Wrapper(BulletClass* pThis, void*, const CoordStruct& coords, DirType facing)
+static bool __fastcall ObjectClass_Unlimbo_Parachuted_Wrapper(BulletClass* pThis, void*, const CoordStruct& coords, DirType facing)
 {
 	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 

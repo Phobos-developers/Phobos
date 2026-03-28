@@ -1,13 +1,7 @@
 #pragma once
-#include <WarheadTypeClass.h>
-#include <WeaponTypeClass.h>
-#include <SuperWeaponTypeClass.h>
-
-#include <Helpers/Macro.h>
+#include <Ext/Building/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
-
-#include <Ext/Building/Body.h>
 #include <New/Type/Affiliated/TypeConvertGroup.h>
 
 class SWTypeExt
@@ -60,8 +54,9 @@ public:
 		ValueableVector<BuildingTypeClass*> LimboDelivery_Types;
 		ValueableVector<int> LimboDelivery_IDs;
 		ValueableVector<float> LimboDelivery_RollChances;
-		Valueable<AffectedHouse> LimboKill_Affected;
+		Valueable<AffectedHouse> LimboKill_AffectsHouse;
 		ValueableVector<int> LimboKill_IDs;
+		ValueableVector<int> LimboKill_Counts;
 		Valueable<double> RandomBuffer;
 		ValueableIdxVector<SuperWeaponTypeClass> SW_Next;
 		Valueable<bool> SW_Next_RealLaunch;
@@ -70,6 +65,7 @@ public:
 		ValueableVector<float> SW_Next_RollChances;
 
 		Valueable<int> ShowTimer_Priority;
+		Nullable<bool> ShowTimer_Percentage;
 
 		Valueable<WarheadTypeClass*> Detonate_Warhead;
 		Valueable<WeaponTypeClass*> Detonate_Weapon;
@@ -147,8 +143,9 @@ public:
 			, LimboDelivery_IDs {}
 			, LimboDelivery_RollChances {}
 			, LimboDelivery_RandomWeightsData {}
-			, LimboKill_Affected { AffectedHouse::Owner }
+			, LimboKill_AffectsHouse { AffectedHouse::Owner }
 			, LimboKill_IDs {}
+			, LimboKill_Counts {}
 			, RandomBuffer { 0.0 }
 			, Detonate_Warhead {}
 			, Detonate_Weapon {}
@@ -162,6 +159,7 @@ public:
 			, SW_Next_RollChances {}
 			, SW_Next_RandomWeightsData {}
 			, ShowTimer_Priority { 0 }
+			, ShowTimer_Percentage { false }
 			, Convert_Pairs {}
 			, ShowDesignatorRange { true }
 			, TabIndex { 1 }

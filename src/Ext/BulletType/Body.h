@@ -1,7 +1,6 @@
 #pragma once
 #include <BulletTypeClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -72,6 +71,8 @@ public:
 		Nullable<int> Parachuted_MaxFallRate;
 		Nullable<AnimTypeClass*> BombParachute;
 
+		Valueable<bool> AU;
+
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
 		Nullable<Leptons> BallisticScatter_Max;
@@ -122,6 +123,7 @@ public:
 			, Parachuted_FallRate { 1 }
 			, Parachuted_MaxFallRate {}
 			, BombParachute {}
+			, AU { false }
 		{ }
 
 		virtual ~ExtData() = default;

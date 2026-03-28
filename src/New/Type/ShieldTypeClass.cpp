@@ -6,26 +6,6 @@ const char* Enumerable<ShieldTypeClass>::GetMainSection()
 	return "ShieldTypes";
 }
 
-AnimTypeClass* ShieldTypeClass::GetIdleAnimType(bool isDamaged, double healthRatio) const
-{
-	auto damagedAnim = this->IdleAnimDamaged.Get(healthRatio);
-
-	if (isDamaged && damagedAnim)
-		return damagedAnim;
-	else
-		return this->IdleAnim.Get(healthRatio, this->GetConditionYellow(), this->GetConditionRed());
-}
-
-double ShieldTypeClass::GetConditionYellow() const
-{
-	return this->ConditionYellow.Get(RulesExt::Global()->Shield_ConditionYellow.Get(RulesClass::Instance->ConditionYellow));
-}
-
-double ShieldTypeClass::GetConditionRed() const
-{
-	return this->ConditionRed.Get(RulesExt::Global()->Shield_ConditionRed.Get(RulesClass::Instance->ConditionRed));
-}
-
 void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* pSection = this->Name;
@@ -43,6 +23,7 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->InheritArmorFromTechno.Read(exINI, pSection, "InheritArmorFromTechno");
 	this->InheritArmor_Allowed.Read(exINI, pSection, "InheritArmor.Allowed");
 	this->InheritArmor_Disallowed.Read(exINI, pSection, "InheritArmor.Disallowed");
+	this->ApplyArmorMult.Read(exINI, pSection, "ApplyArmorMult");
 	this->Powered.Read(exINI, pSection, "Powered");
 
 	this->Respawn.Read(exINI, pSection, "Respawn");
@@ -119,6 +100,7 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->InheritArmorFromTechno)
 		.Process(this->InheritArmor_Allowed)
 		.Process(this->InheritArmor_Disallowed)
+		.Process(this->ApplyArmorMult)
 		.Process(this->Powered)
 		.Process(this->Respawn)
 		.Process(this->Respawn_Rate)

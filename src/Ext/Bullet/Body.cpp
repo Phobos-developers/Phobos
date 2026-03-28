@@ -1,16 +1,11 @@
 #include "Body.h"
 
 #include <Ext/Anim/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/RadSite/Body.h>
-#include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
 #include <Ext/EBolt/Body.h>
-#include <Utilities/EnumFunctions.h>
-#include <Utilities/AresFunctions.h>
-#include <Misc/FlyingStrings.h>
+#include <New/Entity/LaserTrailClass.h>
 
 BulletExt::ExtContainer BulletExt::ExtMap;
 
@@ -395,38 +390,23 @@ void BulletExt::ApplyArcingFix(BulletClass* pThis, const CoordStruct& sourceCoor
 	}
 }
 
-// Detonate weapon/warhead using master bullet instance.
+// Detonate weapon/warhead using a bullet.
 void BulletExt::Detonate(const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse, AbstractClass* pTarget, bool isBright, WeaponTypeClass* pWeapon, WarheadTypeClass* pWarhead)
 {
-	auto pBullet = ScenarioExt::Global()->MasterDetonationBullet;
+	auto const pType = pWeapon ? pWeapon->Projectile : BulletTypeExt::GetDefaultBulletType();
+	auto const pBullet = pType->CreateBullet(pTarget, pOwner, damage, pWarhead, 100, isBright);
+	pBullet->WeaponType = pWeapon;
 
-	if (pWeapon)
-	{
-		pBullet->Type = pWeapon->Projectile;
-		pBullet->SetWeaponType(pWeapon);
-	}
-	else
-	{
-		pBullet->Type = BulletTypeExt::GetDefaultBulletType();
-		pBullet->SetWeaponType(nullptr);
-	}
-
-	pBullet->Owner = pOwner;
-	pBullet->Health = damage;
-	pBullet->Target = pTarget;
-	pBullet->WH = pWarhead;
-	pBullet->Bright = isBright;
+	auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	pBulletExt->IsInstantDetonation = true;
 
 	if (pFiringHouse)
-	{
-		auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
 		pBulletExt->FirerHouse = pFiringHouse;
-	}
 
 	pBullet->SetLocation(coords);
 	pBullet->Explode(true);
+	pBullet->UnInit();
 }
-
 
 // =============================
 // load / save
@@ -445,6 +425,7 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->SnappedToTarget)
 		.Process(this->DamageNumberOffset)
 		.Process(this->ParabombFallRate)
+		.Process(this->IsInstantDetonation)
 
 		.Process(this->Trajectory) // Keep this shit at last
 		;

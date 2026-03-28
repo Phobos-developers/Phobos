@@ -1,14 +1,12 @@
 #include "Body.h"
 
-#include <AircraftClass.h>
-#include <HouseClass.h>
-#include <ScenarioClass.h>
 #include <JumpjetLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Event/Body.h>
 
 #include <Utilities/AresFunctions.h>
 
@@ -57,6 +55,15 @@ TechnoExt::ExtData::~ExtData()
 	}
 
 	this->ElectricBolts.clear();
+
+	if (this->UndergroundTracked)
+		ScenarioExt::Global()->UndergroundTracker.Remove(pThis);
+
+	if (this->SpecialTracked)
+		ScenarioExt::Global()->SpecialTracker.Remove(pThis);
+
+	if (this->FallingDownTracked)
+		ScenarioExt::Global()->FallingDownTracker.Remove(pThis);
 }
 
 bool TechnoExt::IsActiveIgnoreEMP(TechnoClass* pThis)
@@ -117,7 +124,7 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 			}
 			return true;
 		case Mission::Guard:
-			if (auto pUnit = abstract_cast<UnitClass*, true>(pThis))
+			if (auto const pUnit = abstract_cast<UnitClass*, true>(pThis))
 			{
 				if (pUnit->ArchiveTarget && pUnit->GetStoragePercentage() > 0.0 && pUnit->Locomotor->Is_Moving()) // Edge-case, waiting to be able to unload.
 					return true;
@@ -199,6 +206,12 @@ double TechnoExt::GetCurrentFirepowerMultiplier(TechnoClass* pThis)
 		(pThis->HasAbility(Ability::Firepower) ? RulesClass::Instance->VeteranCombat : 1.0);
 }
 
+double TechnoExt::GetCurrentArmorMultiplier(TechnoClass* pThis, TechnoTypeClass* pType, WarheadTypeClass* pWarhead)
+{
+	return pThis->ArmorMultiplier * pThis->Owner->GetArmorMultiplier(pType) * TechnoExt::CalculateArmorMultipliers(pThis, pWarhead) *
+		(pThis->HasAbility(Ability::Stronger) ? RulesClass::Instance->VeteranArmor : 1.0);
+}
+
 CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger, int maxAttempts = 1)
 {
 	if (!pThis || !pPassenger)
@@ -251,14 +264,14 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 
 	auto const pType = pThis->GetTechnoType();
 	auto const mZone = pType->MovementZone;
-	int currentZone = useZone ? zone : MapClass::Instance.GetMovementZoneType(pThis->GetMapCoords(), mZone, pThis->OnBridge);
+	const int currentZone = useZone ? zone : MapClass::Instance.GetMovementZoneType(pThis->GetMapCoords(), mZone, pThis->OnBridge);
 
 	if (currentZone != -1)
 	{
 		if (zoneScanType == TargetZoneScanType::Any)
 			return true;
 
-		int targetZone = MapClass::Instance.GetMovementZoneType(pTarget->GetMapCoords(), mZone, pTarget->OnBridge);
+		const int targetZone = MapClass::Instance.GetMovementZoneType(pTarget->GetMapCoords(), mZone, pTarget->OnBridge);
 
 		if (zoneScanType == TargetZoneScanType::Same)
 		{
@@ -285,7 +298,7 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 
 			if (!pWeapon)
 			{
-				int weaponIndex = pThis->SelectWeapon(pTarget);
+				const int weaponIndex = pThis->SelectWeapon(pTarget);
 
 				if (weaponIndex < 0)
 					return false;
@@ -293,9 +306,10 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 				pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 			}
 
-			const double distance = pCell->GetCoordsWithBridge().DistanceFrom(pTarget->GetCenterCoords());
+			const double distanceSq = pCell->GetCoordsWithBridge().DistanceFromSquared(pTarget->GetCenterCoords());
+			const int range = pWeapon->Range;
 
-			if (distance > pWeapon->Range)
+			if (distanceSq > range * range)
 				return false;
 		}
 	}
@@ -318,18 +332,11 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 
 	if (AresFunctions::ConvertTypeTo)
 	{
-		const int oldHealth = pThis->Health;
-
 		if (AresFunctions::ConvertTypeTo(pThis, pToType))
 		{
-			// Fixed an issue where morphing could result in -1 health.
-			const double ratio = static_cast<double>(pToType->Strength) / pType->Strength;
-			pThis->Health = static_cast<int>(oldHealth * ratio + 0.5);
-
 			auto const pTypeExt = TechnoExt::ExtMap.Find(pThis);
 			pTypeExt->UpdateTypeData(pToType);
 			pTypeExt->UpdateTypeData_Foot();
-			pTypeExt->UpdateTintValues();
 			return true;
 		}
 
@@ -392,7 +399,13 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	// Ares RecalculateStats -- skipped
 
 	// Adjust ammo
-	pThis->Ammo = Math::min(pThis->Ammo, pToType->Ammo);
+	const int originalAmmo = pThis->Ammo;
+	const int maxAmmo = pToType->Ammo;
+	pThis->Ammo = Math::min(originalAmmo, maxAmmo);
+
+	if (originalAmmo > maxAmmo)
+		pThis->Mark(MarkType::Change);
+
 	// Ares ResetSpotlights -- skipped
 
 	// Adjust ROT
@@ -428,7 +441,6 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis);
 	pTypeExt->UpdateTypeData(pToType);
 	pTypeExt->UpdateTypeData_Foot();
-	pTypeExt->UpdateTintValues();
 	return true;
 }
 
@@ -569,7 +581,7 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
-UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit)
+UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit, TechnoTypeExt::ExtData* pData)
 {
 	if (pUnit->IsGreenHP())
 	{
@@ -577,8 +589,6 @@ UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit)
 	}
 	else if (pUnit->IsYellowHP())
 	{
-		auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
-
 		if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
 		{
 			if (auto const imageYellow = pData->WaterImage_ConditionYellow)
@@ -591,8 +601,6 @@ UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit)
 	}
 	else
 	{
-		auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
-
 		if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
 		{
 			if (auto const imageRed = pData->WaterImage_ConditionRed)
@@ -615,29 +623,27 @@ UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit)
 
 AircraftTypeClass* TechnoExt::GetAircraftTypeExtra(AircraftClass* pAircraft)
 {
-	if (pAircraft->IsGreenHP())
+	auto const pType = pAircraft->Type;
+	auto const pData = TechnoTypeExt::ExtMap.Find(pType);
+
+	if (!pData->NeedDamagedImage || pAircraft->IsGreenHP())
 	{
-		return pAircraft->Type;
+		return pType;
 	}
 	else if (pAircraft->IsYellowHP())
 	{
-		auto const pData = TechnoTypeExt::ExtMap.Find(pAircraft->Type);
-
 		if (auto const imageYellow = pData->Image_ConditionYellow)
 			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
 	}
 	else
 	{
-		auto const pType = pAircraft->Type;
-		auto const pData = TechnoTypeExt::ExtMap.Find(pType);
-
 		if (auto const imageRed = pData->Image_ConditionRed)
 			return abstract_cast<AircraftTypeClass*, true>(imageRed);
 		else if (auto const imageYellow = pData->Image_ConditionYellow)
 			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
 	}
 
-	return pAircraft->Type;
+	return pType;
 
 }
 
@@ -680,11 +686,10 @@ void TechnoExt::CreateDelayedFireAnim(TechnoClass* pThis, AnimTypeClass* pAnimTy
 	}
 }
 
-bool TechnoExt::HandleDelayedFireWithPauseSequence(TechnoClass* pThis, int weaponIndex, int firingFrame)
+bool TechnoExt::HandleDelayedFireWithPauseSequence(TechnoClass* pThis, WeaponTypeClass* pWeapon, int weaponIndex, int frame, int firingFrame)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto& timer = pExt->DelayedFireTimer;
-	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
 	if (pExt->DelayedFireWeaponIndex >= 0 && pExt->DelayedFireWeaponIndex != weaponIndex)
@@ -697,7 +702,7 @@ bool TechnoExt::HandleDelayedFireWithPauseSequence(TechnoClass* pThis, int weapo
 	{
 		if (pWeapon->Burst <= 1 || !pWeaponExt->DelayedFire_OnlyOnInitialBurst || pThis->CurrentBurstIndex == 0)
 		{
-			if (pThis->Animation.Value == firingFrame)
+			if (frame == firingFrame)
 				pExt->DelayedFireSequencePaused = true;
 
 			if (!timer.HasStarted())
@@ -750,24 +755,21 @@ bool TechnoExt::CannotMove(UnitClass* pThis)
 	if (pType->Speed == 0)
 		return true;
 
-	if (!locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
-	{
-		LandType landType = pThis->GetCell()->LandType;
-		const LandType movementRestrictedTo = pType->MovementRestrictedTo;
+	const auto movementRestrictedTo = pType->MovementRestrictedTo;
 
-		if (pThis->OnBridge
-			&& (landType == LandType::Water || landType == LandType::Beach))
-		{
-			landType = LandType::Road;
-		}
+	if (movementRestrictedTo == LandType::None)
+		return false;
 
-		if (movementRestrictedTo != LandType::None
-			&& movementRestrictedTo != landType
-			&& landType != LandType::Tunnel)
-		{
-			return true;
-		}
-	}
+	auto landType = pThis->GetCell()->LandType;
+
+	if (landType == LandType::Tunnel)
+		return false;
+
+	if (pThis->OnBridge && (landType == LandType::Water || landType == LandType::Beach))
+		landType = LandType::Road;
+
+	if (movementRestrictedTo != landType)
+		return true;
 
 	return false;
 }
@@ -793,17 +795,12 @@ bool TechnoExt::HasAmmoToDeploy(TechnoClass* pThis)
 void TechnoExt::HandleOnDeployAmmoChange(TechnoClass* pThis, int maxAmmoOverride)
 {
 	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
-	int add = pTypeExt->Ammo_AddOnDeploy;
 
-	if (add != 0)
+	if (const int add = pTypeExt->Ammo_AddOnDeploy)
 	{
-		int maxAmmo = pTypeExt->OwnerObject()->Ammo;
-
-		if (maxAmmoOverride >= 0)
-			maxAmmo = maxAmmoOverride;
-
-		int originalAmmo = pThis->Ammo;
-		pThis->Ammo = std::clamp(pThis->Ammo + add, 0, maxAmmo);
+		const int maxAmmo = maxAmmoOverride >= 0 ? maxAmmoOverride : pTypeExt->OwnerObject()->Ammo;
+		const int originalAmmo = pThis->Ammo;
+		pThis->Ammo = std::clamp(originalAmmo + add, 0, maxAmmo);
 
 		if (originalAmmo != pThis->Ammo)
 		{
@@ -821,16 +818,22 @@ bool TechnoExt::SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValu
 		return defaultValue;
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	auto const pTypeConvert = pTypeExt->Convert_Deploy;
-	bool enabledChecks = alwaysCheckLandTypes || pTypeExt->IsSimpleDeployer_ConsiderPathfinding;
 
-	if (enabledChecks)
+	if (alwaysCheckLandTypes || pTypeExt->IsSimpleDeployer_ConsiderPathfinding)
 	{
-		bool isHover = pType->Locomotor == LocomotionClass::CLSIDs::Hover;
-		bool isJumpjet = pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet;
-		bool isLander = pType->DeployToLand && (isJumpjet || isHover);
-		auto const defaultLandTypes = isLander ? (LandTypeFlags)(LandTypeFlags::Water | LandTypeFlags::Beach) : LandTypeFlags::None;
-		auto const disallowedLandTypes = pTypeExt->IsSimpleDeployer_DisallowedLandTypes.Get(defaultLandTypes);
+		LandTypeFlags disallowedLandTypes;
+
+		if (pTypeExt->IsSimpleDeployer_DisallowedLandTypes.isset())
+		{
+			disallowedLandTypes = pTypeExt->IsSimpleDeployer_DisallowedLandTypes.Get();
+		}
+		else
+		{
+			const bool isHover = pType->Locomotor == LocomotionClass::CLSIDs::Hover;
+			const bool isJumpjet = pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet;
+			const bool isLander = pType->DeployToLand && (isJumpjet || isHover);
+			disallowedLandTypes = isLander ? (LandTypeFlags)(LandTypeFlags::Water | LandTypeFlags::Beach) : LandTypeFlags::None;
+		}
 
 		if (IsLandTypeInFlags(disallowedLandTypes, pThis->GetCell()->LandType))
 			return false;
@@ -843,6 +846,7 @@ bool TechnoExt::SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValu
 		return defaultValue;
 	}
 
+	auto const pTypeConvert = pTypeExt->Convert_Deploy;
 	SpeedType speed = SpeedType::None;
 	MovementZone mZone = MovementZone::None;
 
@@ -866,6 +870,129 @@ bool TechnoExt::SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValu
 	return true;
 }
 
+void TechnoExt::ClickedApproachObject(FootClass* pThis, ObjectClass* pObject)
+{
+	if (Unsorted::MoveFeedback)
+		pThis->VoiceMove();
+
+	EventExt event {};
+	event.Type = EventTypeExt::ApproachObject;
+	event.HouseIndex = static_cast<char>(pThis->Owner->ArrayIndex);
+	event.Frame = Unsorted::CurrentFrame;
+	event.ApproachObject.Whom = TargetClass(pThis);
+	event.ApproachObject.Target = TargetClass(pObject);
+	event.AddEvent();
+}
+
+bool TechnoExt::EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, int distance, bool select)
+{
+	std::vector<CoordStruct> usableCoords;
+
+	for (int direction = 0; direction < 8; ++direction)
+	{
+		const CellStruct tmpCoords = Unsorted::AdjacentCell[direction];
+		CoordStruct ejectCoords { coords.X + tmpCoords.X * distance, coords.Y + tmpCoords.Y * distance, coords.Z };
+		const auto pCell = MapClass::Instance.TryGetCellAt(ejectCoords);
+
+		if (!pCell)
+			continue;
+
+		const auto occupied = pEjectee->IsCellOccupied(pCell, FacingType::None, -1, nullptr, true);
+
+		if (occupied != Move::OK && occupied != Move::MovingBlock)
+			continue;
+
+		if (pEjectee->WhatAmI() == InfantryClass::AbsID)
+		{
+			ejectCoords = pCell->FindInfantrySubposition(ejectCoords, false, false, false);
+
+			// Jan 31, 2026 - Starkku: FindInfantrySubposition has several code paths that return empty CoordStruct. We should ignore those.
+			if (ejectCoords == CoordStruct::Empty)
+				continue;
+
+			ejectCoords.Z = coords.Z;
+		}
+		else
+		{
+			ejectCoords = CellClass::Cell2Coord(pCell->MapCoords, coords.Z);
+		}
+
+		usableCoords.emplace_back(ejectCoords);
+	}
+
+	const int count = static_cast<int>(usableCoords.size());
+
+	if (!count)
+		return false;
+
+	return TechnoExt::EjectSurvivor(pEjectee, usableCoords[ScenarioClass::Instance->Random(0, count - 1)], select);
+}
+
+bool TechnoExt::EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool select)
+{
+	const auto pCell = MapClass::Instance.GetCellAt(coords);
+
+	pSurvivor->OnBridge = pCell->ContainsBridge();
+
+	const int floorZ = pCell->GetCoordsWithBridge().Z;
+	const bool chuted = (coords.Z - floorZ > 2 * Unsorted::LevelHeight);
+
+	if (chuted)
+	{
+		pSurvivor->Limbo();
+
+		++Unsorted::ScenarioInit;
+		const bool result = pSurvivor->SpawnParachuted(coords);
+		--Unsorted::ScenarioInit;
+
+		if (!result)
+			return false;
+	}
+	else
+	{
+		coords.Z = floorZ;
+
+		++Unsorted::ScenarioInit;
+		const bool result = pSurvivor->Unlimbo(coords, static_cast<DirType>(ScenarioClass::Instance->Random(0, 7)));
+		--Unsorted::ScenarioInit;
+
+		if (!result)
+			return false;
+	}
+
+	if (const auto pTransporter = pSurvivor->Transporter)
+	{
+		if (pTransporter->GetTechnoType()->OpenTopped)
+			pTransporter->ExitedOpenTopped(pSurvivor);
+
+		pSurvivor->Transporter = nullptr;
+	}
+
+	pSurvivor->LastMapCoords = pCell->MapCoords;
+
+	if (chuted)
+	{
+		const bool scat = pSurvivor->OnBridge;
+		const auto occupation = scat ? pCell->AltOccupationFlags : pCell->OccupationFlags;
+
+		if (occupation & 0x1C)
+			pCell->ScatterContent(CoordStruct::Empty, true, true, scat);
+	}
+	else
+	{
+		pSurvivor->Scatter(CoordStruct::Empty, true, false);
+		pSurvivor->QueueMission(pSurvivor->Owner->IsControlledByHuman() ? Mission::Guard : Mission::Hunt, 0);
+	}
+
+	pSurvivor->ShouldEnterOccupiable = false;
+	pSurvivor->ShouldGarrisonStructure = false;
+
+	if (select)
+		pSurvivor->Select();
+
+	return true;
+}
+
 // =============================
 // load / save
 
@@ -880,11 +1007,14 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->AE)
 		.Process(this->PreviousType)
 		.Process(this->AnimRefCount)
+		.Process(this->SubterraneanHarvStatus)
+		.Process(this->SubterraneanHarvRallyPoint)
 		.Process(this->ReceiveDamage)
 		.Process(this->LastKillWasTeamTarget)
 		.Process(this->PassengerDeletionTimer)
 		.Process(this->CurrentShieldType)
 		.Process(this->LastWarpDistance)
+		.Process(this->JumpjetSpeed)
 		.Process(this->ChargeTurretTimer)
 		.Process(this->AutoDeathTimer)
 		.Process(this->MindControlRingAnimType)
@@ -916,7 +1046,6 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastSensorsMapCoords)
 		.Process(this->TiberiumEater_Timer)
 		.Process(this->AirstrikeTargetingMe)
-		.Process(this->FiringAnimationTimer)
 		.Process(this->SimpleDeployerAnimationTimer)
 		.Process(this->DelayedFireSequencePaused)
 		.Process(this->DelayedFireTimer)
@@ -924,6 +1053,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentDelayedFireAnim)
 		.Process(this->AttachedEffectInvokerCount)
 		.Process(this->IsSelected)
+		.Process(this->ResetLocomotor)
 		.Process(this->TintColorOwner)
 		.Process(this->TintColorAllies)
 		.Process(this->TintColorEnemies)
@@ -931,6 +1061,12 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TintIntensityAllies)
 		.Process(this->TintIntensityEnemies)
 		.Process(this->AttackMoveFollowerTempCount)
+		.Process(this->UndergroundTracked)
+		.Process(this->SpecialTracked)
+		.Process(this->FallingDownTracked)
+		.Process(this->JumpjetStraightAscend)
+		.Process(this->OnParachuted)
+		.Process(this->HoverShutdown)
 		;
 }
 

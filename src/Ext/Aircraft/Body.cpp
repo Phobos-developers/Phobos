@@ -1,9 +1,6 @@
 #include "Body.h"
 
-#include <BuildingClass.h>
-
 #include <Ext/BuildingType/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 // TODO: Implement proper extended AircraftClass.
@@ -11,7 +8,7 @@
 void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	int weaponIndex = pExt->CurrentAircraftWeaponIndex;
+	const int weaponIndex = pExt->CurrentAircraftWeaponIndex;
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	const int burstCount = pWeapon->Burst;

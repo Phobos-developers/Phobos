@@ -1,8 +1,8 @@
 #include "Body.h"
 
 #include <BitFont.h>
-
-#include <Utilities/EnumFunctions.h>
+#include <Misc/FlyingStrings.h>
+#include <Utilities/AresHelper.h>
 
 BuildingExt::ExtContainer BuildingExt::ExtMap;
 
@@ -10,17 +10,18 @@ void BuildingExt::ExtData::DisplayIncomeString()
 {
 	if (this->AccumulatedIncome && Unsorted::CurrentFrame % 15 == 0)
 	{
-		auto const pOwnerObject = this->OwnerObject();
+		auto const pThis = this->OwnerObject();
 		auto const pTypeExt = this->TypeExtData;
 
-		if ((RulesExt::Global()->DisplayIncome_AllowAI || pOwnerObject->Owner->IsControlledByHuman())
+		if ((RulesExt::Global()->DisplayIncome_AllowAI || pThis->Owner->IsControlledByHuman())
 			&& pTypeExt->DisplayIncome.Get(RulesExt::Global()->DisplayIncome))
 		{
 			FlyingStrings::AddMoneyString(
 				this->AccumulatedIncome,
-				pOwnerObject->Owner,
+				pThis,
+				pThis->Owner,
 				pTypeExt->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
-				pOwnerObject->GetRenderCoords(),
+				pThis->GetRenderCoords(),
 				pTypeExt->DisplayIncome_Offset
 			);
 		}
@@ -70,7 +71,7 @@ void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiber
 	float depositableTiberiumAmount = 0.0f; // Number of 'bails' that will be stored.
 	auto const pTiberium = TiberiumClass::Array.GetItem(idxTiberiumType);
 
-	if (amount > 0.0)
+	if (amount > 0.0f)
 	{
 		auto const pExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 
@@ -286,7 +287,7 @@ void BuildingExt::ExtData::ApplyPoweredKillSpawns()
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (pTypeExt->Powered_KillSpawns && pThis->Type->Powered && !pThis->IsPowerOnline())
+	if (pTypeExt->Powered_KillSpawns && !pThis->IsPowerOnline())
 	{
 		if (auto const pManager = pThis->SpawnManager)
 		{
@@ -306,20 +307,15 @@ void BuildingExt::ExtData::ApplyPoweredKillSpawns()
 
 bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore)
 {
-	const auto pVictimHouse = this->OwnerObject()->Owner;
+	const auto pThis = this->OwnerObject();
+	const auto pVictimHouse = pThis->Owner;
 	const auto pTypeExt = this->TypeExtData;
 	this->AccumulatedIncome += pVictimHouse->Available_Money() - moneybefore;
 
 	if (!pVictimHouse->IsControlledByHuman() && !RulesExt::Global()->DisplayIncome_AllowAI)
 	{
-		// TODO there should be a better way...
-		FlyingStrings::AddMoneyString(
-				this->AccumulatedIncome,
-				pVictimHouse,
-				pTypeExt->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
-				this->OwnerObject()->GetRenderCoords(),
-				pTypeExt->DisplayIncome_Offset
-		);
+		if (AresHelper::CanUseAres)
+			*reinterpret_cast<int*>(reinterpret_cast<char*>(this->OwnerObject()->align_154) + 168) += pVictimHouse->Available_Money() - moneybefore;
 	}
 
 	if (!pTypeExt->SpyEffect_Custom)
@@ -438,6 +434,27 @@ const std::vector<CellStruct> BuildingExt::GetFoundationCells(BuildingClass* con
 	return foundationCells;
 }
 
+WeaponStruct* BuildingExt::GetLaserWeapon(BuildingClass* pThis)
+{
+	auto const pExt = BuildingExt::ExtMap.Find(pThis);
+
+	if (pExt->CurrentLaserWeaponIndex.has_value())
+		return pThis->GetWeapon(pExt->CurrentLaserWeaponIndex.value());
+
+	return pThis->GetPrimaryWeapon();
+}
+
+void BuildingExt::KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, void*, BuildingClass* pFactory)
+{
+	if (!pFactory->IsAlive || pFactory->InLimbo || (BuildingTypeExt::ExtMap.Find(pFactory->Type)->Cloning_Powered && !pFactory->IsPowerOnline()) || pFactory->IsBeingWarpedOut())
+		return;
+
+	const auto pClone = static_cast<TechnoClass*>(info.first->CreateObject(info.second));
+
+	if (pFactory->KickOutUnit(pClone, CellStruct::Empty) != KickOutResult::Succeeded)
+		pClone->UnInit();
+}
+
 // =============================
 // load / save
 
@@ -457,6 +474,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentLaserWeaponIndex)
 		.Process(this->PoweredUpToLevel)
 		.Process(this->CurrentEMPulseSW)
+		//.Process(this->IsFiringNow) It is set and reset within a same function.
 		;
 }
 
@@ -533,7 +551,7 @@ DEFINE_HOOK(0x454174, BuildingClass_Load_LightSource, 0xA)
 {
 	GET(BuildingClass*, pThis, EDI);
 
-	SwizzleManagerClass::Instance.Swizzle((void**)&pThis->LightSource);
+	SWIZZLE(pThis->LightSource);
 
 	return 0x45417E;
 }
@@ -555,8 +573,7 @@ DEFINE_HOOK(0x454244, BuildingClass_Save_Suffix, 0x7)
 // Removes setting otherwise unused field (0x6FC) in BuildingClass when building has airstrike applied on it so that it can safely be used to store BuildingExt pointer.
 DEFINE_JUMP(LJMP, 0x41D9FB, 0x41DA05);
 
-
-void __fastcall BuildingClass_InfiltratedBy_Wrapper(BuildingClass* pThis, void*, HouseClass* pInfiltratorHouse)
+static void __fastcall BuildingClass_InfiltratedBy_Wrapper(BuildingClass* pThis, void*, HouseClass* pInfiltratorHouse)
 {
 	const int oldBalance = pThis->Owner->Available_Money();
 	// explicitly call because Ares rewrote it

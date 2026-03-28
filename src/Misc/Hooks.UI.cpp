@@ -1,13 +1,8 @@
-#include <Phobos.h>
-
-#include <Helpers/Macro.h>
 #include <PreviewClass.h>
-#include <Surface.h>
 #include <ThemeClass.h>
 
 #include <Ext/House/Body.h>
 #include <Ext/Side/Body.h>
-#include <Ext/Rules/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/SWType/Body.h>
@@ -15,7 +10,6 @@
 #include <Misc/FlyingStrings.h>
 
 #include <New/Entity/BannerClass.h>
-#include <New/Type/BannerTypeClass.h>
 
 #include <Utilities/Debug.h>
 
@@ -93,9 +87,9 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 	{
 		const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
-		const auto nActive = HouseExt::ActiveHarvesterCount(pPlayer);
-		const auto nTotal = HouseExt::TotalHarvesterCount(pPlayer);
-		const auto nPercentage = nTotal == 0 ? 1.0 : (double)nActive / (double)nTotal;
+		const int nActive = HouseExt::ActiveHarvesterCount(pPlayer);
+		const int nTotal = HouseExt::TotalHarvesterCount(pPlayer);
+		const double nPercentage = nTotal == 0 ? 1.0 : (double)nActive / (double)nTotal;
 
 		const ColorStruct clrToolTip = nPercentage > Phobos::UI::HarvesterCounter_ConditionYellow
 			? Drawing::TooltipColor : nPercentage > Phobos::UI::HarvesterCounter_ConditionRed
@@ -198,8 +192,8 @@ DEFINE_HOOK(0x6A8463, StripClass_OperatorLessThan_CameoPriority, 0x5)
 	GET_STACK(TechnoTypeClass*, pRight, STACK_OFFSET(0x1C, -0x4));
 	GET_STACK(const int, idxLeft, STACK_OFFSET(0x1C, 0x8));
 	GET_STACK(const int, idxRight, STACK_OFFSET(0x1C, 0x10));
-	GET_STACK(AbstractType, rttiLeft, STACK_OFFSET(0x1C, 0x4));
-	GET_STACK(AbstractType, rttiRight, STACK_OFFSET(0x1C, 0xC));
+	GET_STACK(const AbstractType, rttiLeft, STACK_OFFSET(0x1C, 0x4));
+	GET_STACK(const AbstractType, rttiRight, STACK_OFFSET(0x1C, 0xC));
 	const auto pLeftTechnoExt = TechnoTypeExt::ExtMap.TryFind(pLeft);
 	const auto pRightTechnoExt = TechnoTypeExt::ExtMap.TryFind(pRight);
 	const auto pLeftSWExt = (rttiLeft == AbstractType::Special || rttiLeft == AbstractType::Super || rttiLeft == AbstractType::SuperWeaponType)
@@ -220,8 +214,48 @@ DEFINE_HOOK(0x6A8463, StripClass_OperatorLessThan_CameoPriority, 0x5)
 	}
 
 	// Restore overridden instructions
-	GET(AbstractType, rtti1, ESI);
+	GET(const AbstractType, rtti1, ESI);
 	return rtti1 == AbstractType::Special ? 0x6A8477 : 0x6A8468;
+}
+
+DEFINE_HOOK(0x6A84DB, StripClass_OperatorLessThan_SortCameoByNameSW, 0x5)
+{
+	enum { rTrue = 0x6A8692, rFalse = 0x6A86A0 };
+
+	GET(SuperWeaponTypeClass*, pLeftSW, EAX);
+	GET(SuperWeaponTypeClass*, pRightSW, ECX);
+
+	if (RulesExt::Global()->SortCameoByName)
+	{
+		const int result = strcmp(pLeftSW->Name, pRightSW->Name);
+
+		if (result < 0)
+			return rTrue;
+		else if (result > 0)
+			return rFalse;
+	}
+
+	return wcscmp(pLeftSW->UIName, pRightSW->UIName) <= 0 ? rTrue : rFalse;
+}
+
+DEFINE_HOOK(0x6A86ED, StripClass_OperatorLessThan_SortCameoByNameTechno, 0x5)
+{
+	enum { rTrue = 0x6A8692, rFalse = 0x6A86A0 };
+
+	GET(TechnoTypeClass*, pLeft, EDI);
+	GET(TechnoTypeClass*, pRight, EBP);
+
+	if (RulesExt::Global()->SortCameoByName)
+	{
+		const int result = strcmp(pLeft->Name, pRight->Name);
+
+		if (result < 0)
+			return rTrue;
+		else if (result > 0)
+			return rFalse;
+	}
+
+	return wcscmp(pLeft->UIName, pRight->UIName) <= 0 ? rTrue : rFalse;
 }
 
 DEFINE_HOOK(0x6D4684, TacticalClass_Draw_FlyingStrings, 0x6)
@@ -260,7 +294,7 @@ namespace BriefingTemp
 	bool ShowBriefing = false;
 }
 
-__forceinline void ShowBriefing()
+static __forceinline void ShowBriefing()
 {
 	if (BriefingTemp::ShowBriefing)
 	{
@@ -362,7 +396,7 @@ DEFINE_HOOK(0x65F764, BriefingDialog_ShowBriefing, 0x5)
 {
 	if (BriefingTemp::ShowBriefing)
 	{
-		GET(HWND, hDlg, ESI);
+		GET(const HWND, hDlg, ESI);
 
 		auto const hResumeBtn = GetDlgItem(hDlg, 1059);
 		SendMessageA(hResumeBtn, 1202, 0, reinterpret_cast<LPARAM>(Phobos::UI::ShowBriefingResumeButtonLabel));
@@ -388,7 +422,7 @@ DEFINE_HOOK(0x604985, GetDialogUIStatusLabels_ShowBriefing, 0x5)
 
 #pragma endregion
 
-bool __fastcall Fake_HouseIsAlliedWith(HouseClass* pThis, void*, HouseClass* CurrentPlayer)
+static bool __fastcall Fake_HouseIsAlliedWith(HouseClass* pThis, void*, HouseClass* CurrentPlayer)
 {
 	return (Phobos::Config::ShowPlanningPath && SessionClass::IsSingleplayer())
 		|| pThis->IsControlledByCurrentPlayer()
@@ -405,7 +439,7 @@ DEFINE_HOOK(0x69A317, SessionClass_PlayerColorIndexToColorSchemeIndex, 0x0)
 {
 	GET_STACK(int, index, 0x4);
 
-	bool isRandom = index == PlayerColorSlot::Random;
+	const bool isRandom = index == PlayerColorSlot::Random;
 
 	if (Phobos::Config::SkirmishUnlimitedColors)
 	{
@@ -433,7 +467,7 @@ DEFINE_HOOK(0x552F79, LoadProgressManager_Draw_MissingLoadingScreenDefaults, 0x6
 {
 	GET(LoadProgressManager*, pThis, EBP);
 	GET(ConvertClass*, pDrawer, EBX);
-	GET_STACK(bool, isLowRes, STACK_OFFSET(0x1268, -0x1235));
+	GET_STACK(const bool, isLowRes, STACK_OFFSET(0x1268, -0x1235));
 
 	auto const pScenarioExt = ScenarioExt::Global();
 
@@ -462,3 +496,112 @@ DEFINE_HOOK(0x552F79, LoadProgressManager_Draw_MissingLoadingScreenDefaults, 0x6
 
 	return 0;
 }
+
+// Hides the number at top-left of screen when debug stats are not being drawn
+DEFINE_HOOK(0x55F1F8, MPDebugPrint_CheckDrawFlag, 0x8)
+{
+    return Game::DrawMPDebugStats ? 0 : 0x55F280;
+}
+
+#pragma region Draw Timer
+
+namespace DrawTimerTemp
+{
+	bool AdjustLocation = false;
+	bool IsPercentage = false;
+	double Percentage = 0.0;
+	int TimeLeft = 0;
+}
+
+DEFINE_HOOK(0x6D3D10, TacticalClass_Render_BeforeAll, 0x6)
+{
+	using namespace DrawTimerTemp;
+	AdjustLocation = false;
+	IsPercentage = false;
+	return 0;
+}
+
+DEFINE_HOOK(0x6D4992, TacticalClass_Render_DrawMissionTimer_TimeLeft, 0x6)
+{
+	DrawTimerTemp::TimeLeft = R->EDX<int>();
+	return 0;
+}
+
+DEFINE_HOOK(0x6D4A10, TacticalClass_Render_DrawSuperTimer_PercentageTimer, 0x6)
+{
+	enum { SkipGetTimeLeft = 0x6D4A35 };
+
+	GET(SuperClass*, pSuper, ECX);
+
+	DrawTimerTemp::IsPercentage = false;
+	const int timeLeft = pSuper->RechargeTimer.GetTimeLeft();
+	const auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+
+	if (pSWTypeExt->ShowTimer_Percentage.Get(RulesExt::Global()->SuperWeaponTimer_Percentage))
+	{
+		DrawTimerTemp::IsPercentage = true;
+		const int recharge = pSuper->GetRechargeTime();
+		const double percentage = DrawTimerTemp::Percentage = std::min(static_cast<double>(recharge - timeLeft) / recharge, 1.0);
+		R->ESI(percentage >= 1.0 ? 0 : 15);
+	}
+	else
+	{
+		DrawTimerTemp::TimeLeft = timeLeft / 15;
+		R->ESI(timeLeft);
+	}
+
+	return SkipGetTimeLeft;
+}
+
+DEFINE_HOOK(0x6D4B03, TacticalClass_Render_DrawBlackoutTimer_TimeLeft, 0x5)
+{
+	DrawTimerTemp::TimeLeft = R->EDX<int>();
+	return 0;
+}
+
+static int __fastcall TacticalClass_DrawTimer_swprintf(wchar_t* pBuffer, size_t bufferCount, wchar_t* pFormat, ...)
+{
+	using namespace DrawTimerTemp;
+
+	if (IsPercentage)
+		return swprintf(pBuffer, bufferCount, L"%.2lf%s", Percentage * 100, L"%%");
+	else
+		return swprintf(pBuffer, bufferCount, L"%02d:%02d", TimeLeft / 60 % 60, TimeLeft % 60);
+}
+DEFINE_FUNCTION_JUMP(CALL, 0x6D4C4C, TacticalClass_DrawTimer_swprintf)
+
+static Point2D* __fastcall TacticalClass_DrawTimer_Print_Wide
+(
+Point2D& retBuffer,
+const wchar_t* pText,
+Surface* pSurface,
+const RectangleStruct& bounds,
+Point2D& location,
+ColorScheme* pForeScheme,
+ColorScheme* pBackScheme,
+TextPrintType flag,
+...
+)
+{
+	using namespace DrawTimerTemp;
+	AdjustLocation = !AdjustLocation;
+
+	if (AdjustLocation)
+	{
+		if (IsPercentage)
+		{
+			IsPercentage = false;
+			location.X += 8;
+		}
+		else
+		{
+			location.X -= 2;
+		}
+	}
+
+	return Fancy_Text_Print_Wide(retBuffer, pText, pSurface, bounds, location, pForeScheme, pBackScheme, flag);
+}
+DEFINE_FUNCTION_JUMP(CALL, 0x6D4D42, TacticalClass_DrawTimer_Print_Wide)// UIName
+DEFINE_FUNCTION_JUMP(CALL, 0x6D4D9A, TacticalClass_DrawTimer_Print_Wide)// Time
+
+#pragma endregion

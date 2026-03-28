@@ -3,11 +3,7 @@
 
 #include <Ext/BulletType/Body.h>
 #include <Ext/TechnoType/Body.h>
-#include <Helpers/Macro.h>
-#include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
 #include <New/Entity/LaserTrailClass.h>
-#include "Trajectories/PhobosTrajectory.h"
 
 class BulletExt
 {
@@ -30,6 +26,7 @@ public:
 		bool SnappedToTarget; // Used for custom trajectory projectile target snap checks
 		int DamageNumberOffset;
 		int ParabombFallRate;
+		bool IsInstantDetonation;
 
 		TrajectoryPointer Trajectory;
 
@@ -45,6 +42,7 @@ public:
 			, SnappedToTarget { false }
 			, DamageNumberOffset { INT32_MIN }
 			, ParabombFallRate { 0 }
+			, IsInstantDetonation { false }
 		{ }
 
 		virtual ~ExtData() = default;
