@@ -303,7 +303,7 @@ DefaultInfantrySelectBox=               ; Select box for infantry
 DefaultUnitSelectBox=                   ; Select box for vehicle and aircraft
 
 [SOMESELECTBOXTYPE]                     ; Select box Type name
-Shape=select.shp                        ; filename with .shp extension
+Shape=                                  ; filename with .shp extension
 Palette=palette.pal                     ; filename with .pal extension
 Frames=                                 ; List of integer, default 1,1,1 for infantry, 0,0,0 for vehicle and aircraft
 Offset=0,0                              ; integers - horizontal, vertical
