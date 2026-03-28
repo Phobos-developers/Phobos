@@ -1,4 +1,4 @@
-#include <Ext/Techno/Body.h>
+﻿#include <Ext/Techno/Body.h>
 
 #pragma region EnterRefineryFix
 
@@ -245,6 +245,9 @@ DEFINE_JUMP(LJMP, 0x740943, 0x740957);
 DEFINE_HOOK(0x73EEA6, UnitClass_MissionHarvest_AllOreGathered, 0x6)
 {
 	enum { SkipGameCode = 0x73EFA4 };
+
+	if (!RulesExt::Global()->MinerAutoBackToWork)
+		return 0;
 
 	GET(UnitClass*, pThis, EBP);
 
