@@ -141,6 +141,10 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 			pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 			pOwner = pThis->DisguisedAsHouse;
 		}
+		else if (pThis->Disguise->WhatAmI() == AbstractType::TerrainType && (!isObserver && !pOwner->IsAlliedWith(HouseClass::CurrentPlayer)))
+		{
+			return;
+		}
 	}
 
 	const bool isVisibleToPlayer = (pOwner && pOwner->IsAlliedWith(HouseClass::CurrentPlayer))

@@ -36,6 +36,7 @@ public:
 		CDTimerClass PassengerDeletionTimer;
 		ShieldTypeClass* CurrentShieldType;
 		int LastWarpDistance;
+		int JumpjetSpeed;
 		CDTimerClass ChargeTurretTimer; // Used for charge turrets instead of RearmTimer if weapon has ChargeTurret.Delays set.
 		CDTimerClass AutoDeathTimer;
 		AnimTypeClass* MindControlRingAnimType;
@@ -100,6 +101,9 @@ public:
 
 		bool JumpjetStraightAscend; // Is set to true jumpjet units will ascend straight and do not adjust rotation or position during it.
 
+		bool OnParachuted; // This is just a temporary patch. TODO: fully check HasParachuted and correct its maintenance method.
+		bool HoverShutdown;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -116,6 +120,7 @@ public:
 			, PassengerDeletionTimer {}
 			, CurrentShieldType { nullptr }
 			, LastWarpDistance {}
+			, JumpjetSpeed { 14 } // 0x7115B8
 			, ChargeTurretTimer {}
 			, AutoDeathTimer {}
 			, MindControlRingAnimType { nullptr }
@@ -166,6 +171,8 @@ public:
 			, SpecialTracked { false }
 			, FallingDownTracked { false }
 			, JumpjetStraightAscend { false }
+			, OnParachuted { false }
+			, HoverShutdown { false }
 		{ }
 
 		void OnEarlyUpdate();
@@ -262,6 +269,8 @@ public:
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static double GetCurrentFirepowerMultiplier(TechnoClass* pThis);
+	static double GetCurrentArmorMultiplier(TechnoClass* pThis, TechnoTypeClass* pType, WarheadTypeClass* pWarhead = nullptr);
+	static double CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass* pWarhead = nullptr);
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);

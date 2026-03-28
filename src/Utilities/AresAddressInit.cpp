@@ -9,6 +9,7 @@ decltype(AresFunctions::CreateAresEBolt) AresFunctions::CreateAresEBolt = nullpt
 decltype(AresFunctions::SpawnSurvivors) AresFunctions::SpawnSurvivors = nullptr;
 decltype(AresFunctions::ReverseEngineer) AresFunctions::ReverseEngineer = nullptr;
 decltype(AresFunctions::IsTargetConstraintsEligible) AresFunctions::IsTargetConstraintsEligible = nullptr;
+decltype(AresFunctions::UnitDeliveryStateMachine_Update) AresFunctions::UnitDeliveryStateMachine_Update = nullptr;
 std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> AresFunctions::SWTypeExtMap_Find;
 PhobosMap<ObjectClass*, AlphaShapeClass*>* AresFunctions::AlphaExtMap = nullptr;
 
@@ -41,6 +42,8 @@ void AresFunctions::InitAres3_0()
 	NOTE_ARES_FUN(ReverseEngineer, 0x022360);
 
 	NOTE_ARES_FUN(IsTargetConstraintsEligible, 0x032110);
+
+	NOTE_ARES_FUN(UnitDeliveryStateMachine_Update, 0x075DE0);
 
 	NOTE_ARES_FUN(_SWTypeExtMapFind, 0x57C70);
 	NOTE_ARES_FUN(_SWTypeExtMap, 0xC1C54);
@@ -77,6 +80,8 @@ void AresFunctions::InitAres3_0p1()
 	NOTE_ARES_FUN(ReverseEngineer, 0x022DE0);
 
 	NOTE_ARES_FUN(IsTargetConstraintsEligible, 0x032AF0);
+
+	NOTE_ARES_FUN(UnitDeliveryStateMachine_Update, 0x076E90);
 
 	NOTE_ARES_FUN(_SWTypeExtMapFind, 0x58900);
 	NOTE_ARES_FUN(_SWTypeExtMap, 0xC2C50);

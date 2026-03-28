@@ -77,7 +77,8 @@ public:
 		Valueable<bool> NoBuildAreaOnBuildup;
 		ValueableVector<BuildingTypeClass*> Adjacent_Allowed;
 		ValueableVector<BuildingTypeClass*> Adjacent_Disallowed;
-		Valueable<int> Adjacent_Disallowed_ExtraDistance;
+		Valueable<bool> Adjacent_Disallowed_Prohibit;
+		Valueable<int> Adjacent_Disallowed_ProhibitDistance;
 
 		Nullable<Point2D> BarracksExitCell;
 
@@ -109,13 +110,16 @@ public:
 		Valueable<BuildingTypeClass*> RubbleIntact;
 		Valueable<bool> RubbleIntactRemove;
 
+		// Ares 3.0
+		Nullable<bool> UnitSell;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
 			, PowerPlant_DamageFactor { 1.0 }
 			, PowerPlantEnhancer_Buildings {}
 			, PowerPlantEnhancer_Amount { 0 }
-			, PowerPlantEnhancer_Factor { 1.0 }
+			, PowerPlantEnhancer_Factor { 1.0f }
 			, PowerPlantEnhancer_MaxCount { -1 }
 			, OccupierMuzzleFlashes()
 			, Powered_KillSpawns { false }
@@ -160,7 +164,8 @@ public:
 			, NoBuildAreaOnBuildup { false }
 			, Adjacent_Allowed {}
 			, Adjacent_Disallowed {}
-			, Adjacent_Disallowed_ExtraDistance { 0 }
+			, Adjacent_Disallowed_Prohibit { false }
+			, Adjacent_Disallowed_ProhibitDistance { 0 }
 			, BarracksExitCell {}
 			, Overpower_KeepOnline { 2 }
 			, Overpower_ChargeWeapon { 1 }
@@ -183,6 +188,9 @@ public:
 			// Ares 0.A
 			, RubbleIntact { nullptr }
 			, RubbleIntactRemove { false }
+
+			// Ares 3.0
+			, UnitSell {}
 		{ }
 
 		// Ares 0.A functions
@@ -221,7 +229,7 @@ public:
 
 	static void PlayBunkerSound(BuildingClass const* pThis, bool buildUp = false);
 
-	static int GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse);
+	static std::pair<int, int> GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
 	static int CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pBuilding, HouseClass* pHouse);
 	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);

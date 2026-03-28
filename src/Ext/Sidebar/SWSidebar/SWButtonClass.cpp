@@ -163,7 +163,7 @@ bool SWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier)
 	if (flags & GadgetFlag::LeftPress)
 	{
 		MouseClass::Instance.UpdateCursor(MouseCursorType::Default, false);
-		VocClass::PlayGlobal(RulesClass::Instance->GUIBuildSound, 0x2000, 1.0);
+		VocClass::PlayGlobal(RulesClass::Instance->GUIBuildSound, 0x2000, 1.0f);
 		this->LaunchSuper();
 	}
 

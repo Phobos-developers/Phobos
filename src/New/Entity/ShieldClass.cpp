@@ -183,7 +183,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 	const bool IC = pWHExt->CanAffectInvulnerable(pTechno);
 
-	if (!IC || CanBePenetrated(pWH) || TechnoExt::IsTypeImmune(pTechno, args->Attacker))
+	if (!IC || this->CanBePenetrated(pWH) || TechnoExt::IsTypeImmune(pTechno, args->Attacker))
 		return damage;
 
 	auto const pTechnoType = pTechno->GetTechnoType();
@@ -194,14 +194,27 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	int nDamage = 0;
 	int shieldDamage = 0;
 	int healthDamage = 0;
+	double armorMultiplier = 1.0;
 	auto const pType = this->Type;
 
 	if (pWHExt->CanTargetHouse(args->SourceHouse, pTechno) && !pWH->Temporal)
 	{
-		if (damage > 0)
-			nDamage = MapClass::GetTotalDamage(damage, pWH, this->GetArmorType(pTechnoType), args->DistanceToEpicenter);
+		if (damage >= 0)
+		{
+			nDamage = damage;
+
+			if (pType->ApplyArmorMult.Get(RulesExt::Global()->ShieldApplyArmorMult))
+			{
+				armorMultiplier = TechnoExt::GetCurrentArmorMultiplier(pTechno, pTechnoType, pWH);
+				nDamage = Math::max(static_cast<int>(nDamage / armorMultiplier), 0);
+			}
+
+			nDamage = MapClass::GetTotalDamage(nDamage, pWH, this->GetArmorType(pTechnoType), args->DistanceToEpicenter);
+		}
 		else
+		{
 			nDamage = -MapClass::GetTotalDamage(-damage, pWH, this->GetArmorType(pTechnoType), args->DistanceToEpicenter);
+		}
 
 		const bool affectsShield = pWHExt->Shield_AffectTypes.size() <= 0 || pWHExt->Shield_AffectTypes.Contains(pType);
 		const double absorbPercent = affectsShield ? pWHExt->Shield_AbsorbPercent.Get(pType->AbsorbPercent) : pType->AbsorbPercent;
@@ -253,12 +266,17 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 
 		if (residueDamage >= 0)
 		{
-			const int actualResidueDamage = Math::max(0, int((double)(originalShieldDamage - health) /
+			if (pType->AbsorbOverDamage)
+			{
+				this->BreakShield(pWHExt->Shield_BreakAnim, pWHExt->Shield_BreakWeapon.Get(nullptr));
+				return healthDamage;
+			}
+
+			const int actualResidueDamage = Math::max(0, int((double)(originalShieldDamage - health) * armorMultiplier /
 				GeneralUtils::GetWarheadVersusArmor(pWH, this->GetArmorType(pTechnoType)))); //only absord percentage damage
 
 			this->BreakShield(pWHExt->Shield_BreakAnim, pWHExt->Shield_BreakWeapon.Get(nullptr));
-
-			return pType->AbsorbOverDamage ? healthDamage : actualResidueDamage + healthDamage;
+			return actualResidueDamage + healthDamage;
 		}
 		else
 		{

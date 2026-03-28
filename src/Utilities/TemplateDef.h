@@ -55,6 +55,7 @@
 #include <Powerups.h>
 #include <VocClass.h>
 #include <VoxClass.h>
+#include <ParticleTypeClass.h>
 #include <CRT.h>
 #include <LocomotionClass.h>
 #include <Locomotion/TestLocomotionClass.h>
