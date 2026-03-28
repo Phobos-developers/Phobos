@@ -4922,6 +4922,12 @@ msgid ""
 " same image type (SHP/VXL) for vanilla/damaged states."
 msgstr "注意这些被使用的载具必须在 `[VehicleTypes]` 下注册并且在常规／伤残状态下使用相同的图像类型（Shape／Voxel）。"
 
+msgid "Default mirage disguise for individual VehicleTypes"
+msgstr "载具类型默认幻影伪装"
+
+msgid "Vehicle can now have its `DefaultMirageDisguises` overridden per-type."
+msgstr "现在可以单独为每个载具类型设置其 `DefaultMirageDisguises`。"
+
 msgid "Independent SHP Vehicle Turret Files"
 msgstr "独立的 Shape 载具炮塔文件"
 

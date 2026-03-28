@@ -156,6 +156,7 @@ public:
 		Valueable<bool> NotHuman_RandomDeathSequence;
 
 		Valueable<InfantryTypeClass*> DefaultDisguise;
+		NullableVector<TerrainTypeClass*> DefaultMirageDisguises;
 		Valueable<bool> UseDisguiseMovementSpeed;
 
 		Nullable<int> OpenTopped_RangeBonus;

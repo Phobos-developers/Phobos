@@ -236,3 +236,7 @@ DEFINE_HOOK(0x738A3E, UnitClass_EnterIdleMode_SubterraneanHarvester, 0x5)
 }
 
 #pragma endregion
+
+// Skip the check for Teleporter here; this is an unreasonable check.
+// This check determines whether miners on a Guard mission near the refinery should return to the Harvest mission.
+DEFINE_JUMP(LJMP, 0x740943, 0x740957);
