@@ -2229,6 +2229,17 @@ HarvesterScanAfterUnload=false     ; boolean
 HarvesterScanAfterUnload=          ; boolean, default to [General] -> HarvesterScanAfterUnload
 ```
 
+### Miners back to work when ore regenerated
+
+- In vanilla, miners will idle after all ore are gathered. When the ore regenerated, only miners beside the refinery will back to work.
+- Now you can make the miners do so no matter where they are.
+
+In `rulesmd.ini`:
+```ini
+[General]
+MinerAutoBackToWork=false      ; boolean
+```
+
 ### Preserve Iron Curtain / Force Shield status on type conversion
 
 ![image](_static/images/preserve-ic.gif)
