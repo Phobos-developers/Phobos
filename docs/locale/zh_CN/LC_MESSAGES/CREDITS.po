@@ -1694,6 +1694,22 @@ msgid ""
 msgstr ""
 "修复了单位使用 `Locomotor=Jumpjet` 的运动模式弹头牵引拥有 `BalloonHover=yes` 的目标时可能使其从自己头顶下落的问题"
 
+msgid "Fix the EIP#007120F7 caused when the `Strength` value is lower than `RepairStep`"
+msgstr "修复了由于 `Strength` 值低于 `RepairStep` 时引发的 EIP#007120F7"
+
+msgid "Allow the use of more precise calculation of repair costs"
+msgstr "允许使用更精确的维修费用计算"
+
+msgid ""
+"Fix the initial direction of building placed by Ares's UnitDelivery superweapon"
+msgstr ""
+"修复了 Ares 的单位投放超级武器投放的建筑物的初始朝向"
+
+msgid ""
+"Customize default mirage disguises per vehicletypes"
+msgstr ""
+"为每个载具类型单独定义默认的幻影伪装类型"
+
 msgid ""
 "Allow customize jumpjet properties on warhead"
 msgstr ""

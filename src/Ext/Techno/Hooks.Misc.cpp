@@ -507,6 +507,21 @@ DEFINE_HOOK(0x522790, InfantryClass_ClearDisguise_DefaultDisguise, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x746A30, UnitClass_UpdateDisguise_DefaultMirageDisguises, 0x5)
+{
+	enum { Apply = 0x746A6C };
+
+	GET(UnitClass*, pThis, ESI);
+	const auto& disguises = TechnoTypeExt::ExtMap.Find(pThis->Type)->DefaultMirageDisguises.GetElements(RulesClass::Instance->DefaultMirageDisguises);
+	TerrainTypeClass* pDisguiseAs = nullptr;
+
+	if (const int size = static_cast<int>(disguises.size()))
+		pDisguiseAs = disguises[ScenarioClass::Instance->Random.RandomRanged(0, size - 1)];
+
+	R->EAX(pDisguiseAs);
+	return Apply;
+}
+
 DEFINE_HOOK(0x74691D, UnitClass_UpdateDisguise_EMP, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);

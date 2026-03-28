@@ -252,6 +252,8 @@ DEFINE_HOOK(0x469B44, BulletClass_Logics_LandTypeCheck, 0x6)
 	return 0;
 }
 
+DEFINE_JUMP(LJMP, 0x469AC1, 0x469AF0) // Skip random scatter in vanilla code
+
 DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 {
 	enum { SkipGameCode = 0x469C98 };
@@ -280,7 +282,7 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 		int* remainingInterval = &pWHExt->RemainingAnimCreationInterval;
 		const int scatterMin = splashed ? pWHExt->SplashList_ScatterMin.Get() : pWHExt->AnimList_ScatterMin.Get();
 		const int scatterMax = splashed ? pWHExt->SplashList_ScatterMax.Get() : pWHExt->AnimList_ScatterMax.Get();
-		const bool allowScatter = scatterMax != 0 || scatterMin != 0;
+		const bool allowScatter = scatterMax >= 0 || scatterMin >= 0 || pThis->Type->Inviso;
 
 		if (creationInterval > 0 && pOwner)
 			remainingInterval = &TechnoExt::ExtMap.Find(pOwner)->WHAnimRemainingCreationInterval;
@@ -329,7 +331,11 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 
 				if (allowScatter)
 				{
-					const int distance = random.RandomRanged(scatterMin, scatterMax);
+					int distance = 32;
+
+					if (scatterMax >= 0 || scatterMin >= 0)
+						distance = random(scatterMin, scatterMax);
+
 					animCoords = MapClass::GetRandomCoordsNear(animCoords, distance, false);
 				}
 

@@ -25,6 +25,10 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From older Phobos versions
 
+#### From pre-0.5 devbuilds
+
+- Due to the format issue with `select.shp` in vanilla Yuri's Revenge that prevents the [Select box logic](User-Interface.md#select-box) from rendering correctly, `select.shp` no longer serves as the default value for `[SelectBoxType] -> Shape=`, and you need to manually specify a value for this flag.
+
 #### From 0.4
 
 - `[TechnoType] -> WarpAway=` has now been changed to set the animation when units are erased to maintain semantic consistency with `[General] -> WarpAway=`. The animation that was originally controlled by `[TechnoType] -> WarpAway=`, which played instead of `[General] -> WarpOut=` when a Techno is chronowarped by chronosphere, now needs to be specified using `[TechnoType] -> Chronoshift.WarpOut=`, which defaults to the value of `[TechnoType] -> WarpOut=`.
@@ -553,6 +557,8 @@ New:
 - [Implement `CurleyShuffle` for AircraftTypes](Fixed-or-Improved-Logics.md#implement-curleyshuffle-for-aircrafttypes) (ported from Vinifera by Noble_Fish)
 - Customize which parasite can remove by warhead (by NetsuNegi)
 - Add toggle of whether shield use ArmorMultiplier or not (by NetsuNegi)
+- Allow the [use of more precise calculation of repair costs](Fixed-or-Improved-Logics.md#use-more-precise-calculation-of-repair-costs) (by NetsuNegi)
+- [Customize default mirage disguises per vehicletypes](New-or-Enhanced-Logics.md#default-mirage-disguise-for-individual-vehicletypes) (by NetsuNegi)
 - [Allow customize jumpjet properties on warhead](Fixed-or-Improved-Logics.md#customizing-locomotor-warhead) (by NetsuNegi)
 
 Vanilla fixes:
@@ -624,6 +630,7 @@ Vanilla fixes:
 - Fixed the bug that if paradropping technos with `Crashable=yes` has been destroyed in air, they will falling down on ground but not dead (by NetsuNegi)
 - Fixed the bug where paradropped infantry with `NotHuman=yes` will ignore `Crashable=no` and crash on ground when killed in air (by NetsuNegi)
 - Fixed an issue where a unit might cause the target to fall from above its own head when using a locomotor warhead with `Locomotor=Jumpjet` to pull a target with `BalloonHover=yes` (by NetsuNegi)
+- Fixed the [EIP#007120F7](https://modenc.renegadeprojects.com/Internal_Error#eip_007120F7) caused when the `Strength` value is lower than `RepairStep` (by NetsuNegi)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -659,6 +666,7 @@ Phobos fixes:
 - Fixed the bug that the upgrade building's power-enhancing effect depends only on its parent building and is not related to the upgrade building itself (by NetsuNegi)
 - Fixed an issue where hover vehicles could not be destroyed after malfunctioning on water surfaces (by FlyStar)
 - Fixed an issue where shadow matrix scaling was incorrectly applied to `TurretOffset` causing turret shadow misplacement (by Noble_Fish)
+- Fixed an issue that customizable warhead animation scatter cannot override 32 leptons scatter of `Inviso=yes` projectile (by NetsuNegi)
 
 Fixes / interactions with other extensions:
 <!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->
@@ -673,6 +681,8 @@ Fixes / interactions with other extensions:
 - Fixed the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally (by NetsuNegi)
 - Modified the ares hook that stopped OpenTopped transports from firing if cloaked (by RAZER & Morton)
 - Fixed an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes (by NetsuNegi)
+- Fixed the initial direction of building placed by Ares's UnitDelivery superweapon (by NetsuNegi)
+- Fixed the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated (by TaranDahl)
 
 ```
 

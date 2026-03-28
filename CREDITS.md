@@ -517,6 +517,10 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that if paradropping technos with `Crashable=yes` has been destroyed in air, they will falling down on ground but not dead
   - Fix the bug where paradropped infantry with `NotHuman=yes` will ignore `Crashable=no` and crash on ground when killed in air
   - Fix an issue where a unit might cause the target to fall from above its own head when using a locomotor warhead with `Locomotor=Jumpjet` to pull a target with `BalloonHover=yes`
+  - Fix the EIP#007120F7 caused when the `Strength` value is lower than `RepairStep`
+  - Allow the use of more precise calculation of repair costs
+  - Fix the initial direction of building placed by Ares's UnitDelivery superweapon
+  - Customize default mirage disguises per vehicletypes
   - Allow customize jumpjet properties on warhead
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
@@ -725,6 +729,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the move mission of the jumpjet does not end correctly
   - Fix the issue that the Jumpjet must end its movement before starting the next mission
   - Taunt warhead
+  - Fix the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

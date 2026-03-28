@@ -2267,6 +2267,16 @@ WaterImage.ConditionRed=              ; VehicleType entry
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
 ```
 
+### Default mirage disguise for individual VehicleTypes
+
+- Vehicle can now have its `DefaultMirageDisguises` overridden per-type.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]              ; VehicleType
+DefaultMirageDisguises=    ; List of TerrainTypes
+```
+
 ### Independent SHP Vehicle Turret Files
 
 - SHP turret vehicles support the use of `*tur.shp` files.
