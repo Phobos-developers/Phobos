@@ -1710,6 +1710,11 @@ msgstr "修复了 Ares 的单位投放超级武器投放的建筑物的初始朝
 msgid "Customize default mirage disguises per vehicletypes"
 msgstr "为每个载具类型单独定义默认的幻影伪装类型"
 
+msgid ""
+"Allow customize jumpjet properties on warhead"
+msgstr ""
+"允许在弹头上自定义 Jumpjet 属性"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 

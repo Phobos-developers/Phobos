@@ -5189,6 +5189,12 @@ msgid ""
 "damaged by the warhead."
 msgstr "现在你可以指定被这个弹头杀伤的对象是否解除隐形。"
 
+msgid "Customizing locomotor warhead"
+msgstr "自定义运动模式弹头"
+
+msgid "Now you can customize jumpjet properties on warhead."
+msgstr "现在你可以在弹头上指定 Jumpjet 属性了。"
+
 msgid "Customizing parasite"
 msgstr "自定义寄生"
 

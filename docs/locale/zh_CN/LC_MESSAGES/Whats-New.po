@@ -1781,6 +1781,13 @@ msgstr ""
 "[为每个载具类型单独定义默认的幻影伪装类型](New-or-Enhanced-Logics.md#default-mirage-disguise-"
 "for-individual-vehicletypes)（by NetsuNegi）"
 
+msgid ""
+"[Allow customize jumpjet properties on warhead](Fixed-or-Improved-"
+"Logics.md#customizing-locomotor-warhead) (by NetsuNegi)"
+msgstr ""
+"[允许在弹头上自定义 Jumpjet 属性](Fixed-or-Improved-"
+"Logics.md#customizing-locomotor-warhead)（by NetsuNegi）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 

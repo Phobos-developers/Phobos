@@ -159,6 +159,16 @@ public:
 		Valueable<AffectedTarget> Parasite_CullingTarget;
 		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
 
+		Nullable<int> JumpjetTurnRate;
+		Nullable<int> JumpjetSpeed;
+		Nullable<float> JumpjetClimb;
+		Nullable<float> JumpjetCrash;
+		Nullable<int> JumpjetHeight;
+		Nullable<float> JumpjetAccel;
+		Nullable<float> JumpjetWobbles;
+		Nullable<bool> JumpjetNoWobbles;
+		Nullable<int> JumpjetDeviation;
+
 		Valueable<bool> Nonprovocative;
 
 		Nullable<bool> MergeBuildingDamage;
@@ -405,6 +415,16 @@ public:
 			, Parasite_CullingTarget { AffectedTarget::Infantry }
 			, Parasite_GrappleAnim {}
 
+			, JumpjetTurnRate {}
+			, JumpjetSpeed {}
+			, JumpjetClimb {}
+			, JumpjetCrash {}
+			, JumpjetHeight {}
+			, JumpjetAccel {}
+			, JumpjetWobbles {}
+			, JumpjetNoWobbles {}
+			, JumpjetDeviation {}
+
 			, Nonprovocative { false }
 
 			, MergeBuildingDamage {}
@@ -552,6 +572,8 @@ public:
 	static ExtContainer ExtMap;
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static WarheadTypeClass* LocomotorWarhead;
 
 	static void DetonateAt(WarheadTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
 	static void DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr, AbstractClass* pTarget = nullptr);

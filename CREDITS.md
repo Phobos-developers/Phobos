@@ -521,6 +521,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow the use of more precise calculation of repair costs
   - Fix the initial direction of building placed by Ares's UnitDelivery superweapon
   - Customize default mirage disguises per vehicletypes
+  - Allow customize jumpjet properties on warhead
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

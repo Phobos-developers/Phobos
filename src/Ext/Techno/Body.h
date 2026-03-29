@@ -36,6 +36,7 @@ public:
 		CDTimerClass PassengerDeletionTimer;
 		ShieldTypeClass* CurrentShieldType;
 		int LastWarpDistance;
+		int JumpjetSpeed;
 		CDTimerClass ChargeTurretTimer; // Used for charge turrets instead of RearmTimer if weapon has ChargeTurret.Delays set.
 		CDTimerClass AutoDeathTimer;
 		AnimTypeClass* MindControlRingAnimType;
@@ -119,6 +120,7 @@ public:
 			, PassengerDeletionTimer {}
 			, CurrentShieldType { nullptr }
 			, LastWarpDistance {}
+			, JumpjetSpeed { 14 } // 0x7115B8
 			, ChargeTurretTimer {}
 			, AutoDeathTimer {}
 			, MindControlRingAnimType { nullptr }
