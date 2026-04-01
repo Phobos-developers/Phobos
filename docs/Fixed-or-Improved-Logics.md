@@ -317,7 +317,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the [EIP#007120F7](https://modenc.renegadeprojects.com/Internal_Error#eip_007120F7) that was triggered when repairing because the `Strength` value was lower than `RepairStep`.
 - Fixed the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated.
 - Fixed a desync due to an inconsistent shroud state caused by `GapGenerator` and `SpySat` interaction.
-- Now, miners will no longer withdraw from the Harvest mission due to mineral depletion and will periodically attempt to return to work.
+- Now miners will no longer withdraw from the Harvest mission due to mineral depletion and will periodically attempt to return to work.
 
 ## Fixes / interactions with other extensions
 
@@ -2228,17 +2228,6 @@ HarvesterScanAfterUnload=false     ; boolean
 
 [SOMEVEHICLE]                      ; VehicleType
 HarvesterScanAfterUnload=          ; boolean, default to [General] -> HarvesterScanAfterUnload
-```
-
-### Miners back to work when ore regenerated
-
-- In vanilla, miners will idle after all ore are gathered. When the ore regenerated, only miners beside the refinery will back to work.
-- Now you can make the miners do so no matter where they are.
-
-In `rulesmd.ini`:
-```ini
-[General]
-MinerAutoBackToWork=false      ; boolean
 ```
 
 ### Preserve Iron Curtain / Force Shield status on type conversion
