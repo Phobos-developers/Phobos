@@ -117,9 +117,9 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			if (!RulesExt::Global()->CombatAlert_MakeAVoice) // No one want to play two sound at a time, I guess?
 				return;
 			else if (pTypeExt->CombatAlert_UseFeedbackVoice.Get(RulesExt::Global()->CombatAlert_UseFeedbackVoice) && pType->VoiceFeedback.Count > 0) // Use VoiceFeedback first
-				VocClass::PlayGlobal(pType->VoiceFeedback.GetItem(0), 0x2000, 1.0);
+				VocClass::PlayGlobal(pType->VoiceFeedback.GetItem(0), 0x2000, 1.0f);
 			else if (pTypeExt->CombatAlert_UseAttackVoice.Get(RulesExt::Global()->CombatAlert_UseAttackVoice) && pType->VoiceAttack.Count > 0) // Use VoiceAttack then
-				VocClass::PlayGlobal(pType->VoiceAttack.GetItem(0), 0x2000, 1.0);
+				VocClass::PlayGlobal(pType->VoiceAttack.GetItem(0), 0x2000, 1.0f);
 			else if (pTypeExt->CombatAlert_UseEVA.Get(RulesExt::Global()->CombatAlert_UseEVA)) // Use Eva finally
 				index = pTypeExt->CombatAlert_EVA.Get(VoxClass::FindIndex((const char*)"EVA_UnitsInCombat"));
 
@@ -265,7 +265,16 @@ DEFINE_HOOK(0x518434, InfantryClass_ReceiveDamage_SkipDeathAnim, 0x7)
 // Author: Otamaa
 DEFINE_HOOK(0x518505, InfantryClass_ReceiveDamage_NotHuman, 0x4)
 {
+	enum { SkipPlayAnim = 0x518515, SkipGameCode = 0x5185F1 };
+
 	GET(InfantryClass* const, pThis, ESI);
+
+	if (pThis->SequenceAnim == Sequence::Paradrop && pThis->IsFallingDown)
+	{
+		GameCreate<AnimClass>(RulesClass::Instance->InfantryExplode, pThis->Location);
+		return SkipGameCode;
+	}
+
 	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFSET(0xD0, 0x4));
 
 	// Die1-Die5 sequences are offset by 10
@@ -288,8 +297,7 @@ DEFINE_HOOK(0x518505, InfantryClass_ReceiveDamage_NotHuman, 0x4)
 
 	R->ECX(pThis);
 	pThis->PlayAnim(static_cast<Sequence>(resultSequence), true);
-
-	return 0x518515;
+	return SkipPlayAnim;
 }
 
 DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)

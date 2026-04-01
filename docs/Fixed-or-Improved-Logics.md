@@ -304,9 +304,17 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue where the AI's regular targeting would also target garrisonable buildings.
 - Fixed the issue that the move mission of the jumpjet does not end correctly.
 - AI team garrison scripts now re-evaluate destination immediately instead of trying to garrison ungarrisonable building before changing target.
-- Fixed the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health
-- Fixed rare cases where paradropped techno killed by falling down.
+- Fixed the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health.
 - Fixed the issue that the Jumpjet must end its movement before starting the next mission.
+- Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent.
+- Voxel drawing code now skips sections that are invisible (have all zeros in the transform matrix main diagonal, meaning that the scale is 0% on all axes), thus increasing drawing performance for some voxels.
+- Fixed the bug that unit will play crashing voice & sound when dropped by warhead with `IsLocomotor=yes`.
+- Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat.
+- Fixed the bug that if paradropping technos with `Crashable=yes` has been destroyed in air, they will falling down on ground but not dead.
+- Fixed the bug where paradropped infantry with `NotHuman=yes` will ignore `Crashable=no` and crash on ground when killed in air.
+- Fixed an issue where a unit might cause the target to fall from above its own head when using a locomotor warhead with `Locomotor=Jumpjet` to pull a target with `BalloonHover=yes`.
+- Fixed the [EIP#007120F7](https://modenc.renegadeprojects.com/Internal_Error#eip_007120F7) that was triggered when repairing because the `Strength` value was lower than `RepairStep`.
+- Fixed the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated.
 - Fixed a desync due to an inconsistent shroud state caused by `GapGenerator` and `SpySat` interaction.
 
 ## Fixes / interactions with other extensions
@@ -350,7 +358,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed.
 - Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed.
 - Fixed the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally.
-- Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat.
+- Modified the ares hook that stopped OpenTopped transports from firing if cloaked.
+- Fixed an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes.
+- Fixed the initial direction of building placed by Ares's UnitDelivery superweapon.
 
 ## Newly added global settings
 
@@ -580,6 +590,15 @@ In `rulesmd.ini`:
 ColorAddUse8BitRGB=false  ; boolean
 ```
 
+### Use more precise calculation of repair costs
+
+- In vanilla, a calculation step for repairing technos performs a floor operation on the value after `Strength`/`RepairStep` and then uses it as a divisor for other calculations. This results in incorrect actual fund amounts. Now you can use a more precise cost calculation via the following flag.
+
+```ini
+[General]
+FixRepairStepCost=false   ; boolean
+```
+
 ### Veinholes & Weeds
 
 #### Veinholes
@@ -706,6 +725,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEAIRCRAFT]  ; AircraftType
 VoicePickup=    ; Sound entry
+```
+
+### Implement `CurleyShuffle` for AircraftTypes
+
+- In vanilla, this is always controlled by a global flag under `[General]`. Now, this allows customization per aircraft. For detailed functionality, see [ModEnc](https://modenc.renegadeprojects.com/CurleyShuffle).
+
+In `rulesmd.ini`:
+```ini
+[SOMEAIRCRAFT]            ; AircraftType
+CurleyShuffle=            ; boolean, default to [General] -> CurleyShuffle
 ```
 
 ### Customize the scatter caused by aircraft attack mission
@@ -1569,13 +1598,15 @@ Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [TechnoTyp
 - Now you can customize the damage a unit receives when it falls from a bridge.
  - `FallingDownDamage` customizes the damage a unit receives at the end of a fall. It can be a percentage or an integer.
  - `FallingDownDamage.Water` customizes the damage a unit receives when it falls onto the water. Defaults to `FallingDownDamage`.
+ - `FallingDownDamage.AllowEMP` determines whether units incapacitated by EMP can use `FallingDownDamage/FallingDownDamage.Water`. The default value is `true`.
  - If it is a negative percentage, corresponding damage will be dealt based on the current health of the unit.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                    ; TechnoType
-FallingDownDamage=              ; integer / percentage
-FallingDownDamage.Water=        ; integer / percentage
+[SOMETECHNO]                        ; TechnoType
+FallingDownDamage=                  ; integer / percentage
+FallingDownDamage.Water=            ; integer / percentage
+FallingDownDamage.AllowEMP=true     ; boolean
 ```
 
 ### Damaged speed customization
@@ -2428,8 +2459,8 @@ In `rulesmd.ini`:
 AnimList.PickRandom=false       ; boolean
 AnimList.CreateAll=false        ; boolean
 AnimList.CreationInterval=0     ; integer
-AnimList.ScatterMin=0.0         ; floating point value, distance in cells
-AnimList.ScatterMax=0.0         ; floating point value, distance in cells
+AnimList.ScatterMin=0.0         ; floating point value, distance in cells, default to 0.125 if [Projectile] -> Inviso=true, and 0 if false
+AnimList.ScatterMax=            ; floating point value, distance in cells, default to 0.125 if [Projectile] -> Inviso=true, and 0 if false
 SplashList=                     ; List of AnimationTypes, default to [CombatDamage] -> SplashList
 SplashList.PickRandom=false     ; boolean
 SplashList.CreateAll=false      ; boolean
@@ -2465,6 +2496,24 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]               ; WarheadType
 DecloakDamagedTargets=true  ; boolean
+```
+
+### Customizing locomotor warhead
+
+- Now you can customize jumpjet properties on warhead.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                           ; WarheadType with IsLocomotor and Locomotor=Jumpjet
+JumpjetTurnRate=                        ; Integer, default to [TechnoType] -> JumpjetTurnRate
+JumpjetSpeed=                           ; Integer, default to [TechnoType] -> JumpjetSpeed
+JumpjetClimb=                           ; floating point value, default to [TechnoType] -> JumpjetClimb
+JumpjetCrash=                           ; floating point value, default to [TechnoType] -> JumpjetCrash
+JumpjetHeight=                          ; Integer, default to [TechnoType] -> JumpjetHeight
+JumpjetAccel=                           ; floating point value, default to [TechnoType] -> JumpjetAccel
+JumpjetWobbles=                         ; floating point value, default to [TechnoType] -> JumpjetWobbles
+JumpjetNoWobbles=                       ; boolean, default to [TechnoType] -> JumpjetNoWobbles
+JumpjetDeviation=                       ; Integer, default to [TechnoType] -> JumpjetDeviation
 ```
 
 ### Customizing parasite

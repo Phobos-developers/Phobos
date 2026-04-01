@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-10 19:40+0800\n"
+"POT-Creation-Date: 2026-03-23 02:31+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -814,6 +814,11 @@ msgid ""
 msgstr ""
 "`InheritArmor.Disallowed` 列出了其护甲不可被覆盖的科技类型。如果为空，则相当于任何科技类型都可以被覆盖，只要 "
 "`InheritArmor.Allowed` 为空或者这些科技类型列在该列表中。"
+
+msgid ""
+"`ApplyArmorMult` can be set to true to allow the shield to benefit from "
+"the armor multiplier."
+msgstr "ApplyArmorMult` 可设为 true 以允许护盾享受护甲倍率。"
 
 msgid ""
 "`InitialStrength` can be used to set a different initial strength value "
@@ -3753,6 +3758,11 @@ msgstr ""
 "`OpenTopped.RangeBonus/DamageMultiplier` 生效。"
 
 msgid ""
+"`OpenTopped.DecloakToFire` can customize if a transport has to uncloak to"
+" have passengers fireout if transport is also OpenTopped."
+msgstr "`OpenTopped.DecloakToFire` 可自定义 OpenTopped 的运输工具是否必须解除隐形才能使其乘客开火。"
+
+msgid ""
 "Range of passive acquiring of passengers in an OpenTopped transport won't"
 " be affected by these RangeBonus values."
 msgstr "乘客在 OpenTopped 载具中的主动寻敌范围不受这些射程加成值的影响。"
@@ -4874,6 +4884,14 @@ msgstr ""
 "`Ammo.DeployUnlockMinimumAmount` & `Ammo.DeployUnlockMaximumAmount` "
 "分别设定载具启用部署功能所需的最低与最高弹药量阈值，负值表示禁用检查。"
 
+msgid "Custom hover vehicles shutdown drowning death"
+msgstr "自定义悬浮载具溺死"
+
+msgid ""
+"`HoverDrownable` allows customization of whether hover vehicles will "
+"drown and die when deactivated on water zone."
+msgstr "`HoverDrownable` 允许自定义悬浮载具在水域上失灵时是否会溺死。"
+
 msgid "Damaged unit image changes"
 msgstr "载具伤残更换图像"
 
@@ -4903,6 +4921,40 @@ msgid ""
 "Note that the VehicleTypes had to be defined under [VehicleTypes] and use"
 " same image type (SHP/VXL) for vanilla/damaged states."
 msgstr "注意这些被使用的载具必须在 `[VehicleTypes]` 下注册并且在常规／伤残状态下使用相同的图像类型（Shape／Voxel）。"
+
+msgid "Default mirage disguise for individual VehicleTypes"
+msgstr "载具类型默认幻影伪装"
+
+msgid "Vehicle can now have its `DefaultMirageDisguises` overridden per-type."
+msgstr "现在可以单独为每个载具类型设置其 `DefaultMirageDisguises`。"
+
+msgid "Independent SHP Vehicle Turret Files"
+msgstr "独立的 Shape 载具炮塔文件"
+
+msgid "SHP turret vehicles support the use of `*tur.shp` files."
+msgstr "Shape 有炮塔载具支持使用 `*tur.shp` 文件。。"
+
+msgid ""
+"If the SHP vehicle has a Shape file named `*tur.shp` when drawing the "
+"turret, the turret starts from frame 0 of that file; otherwise, it starts"
+" from the frame at index `WalkFrames * Facings` (0-based) within the "
+"vehicle's main body shape."
+msgstr ""
+"若 Shape 载具在绘制炮塔时存在名为 `*tur.shp` 的 Shape 文件，则炮塔从该文件的第 0 帧开始；否则它仍然开始自 Shape"
+" 载具本体图像的第 `WalkFrames * Facings` 帧（0 始序列）。"
+
+msgid ""
+"If you want to split the existing shape file in two, simply extract the "
+"32 frames of the turret image along with their corresponding 32 frames of"
+" shadow from the source file, and combine them into a new shape file."
+msgstr ""
+"如果你想要将现有 Shape 文件拆分成两部分，那么只需要从原文件中分离作为炮塔图像的 32 帧及其对应的 32 帧影子图像，再将其合并成一个新的"
+" Shape 文件即可。"
+
+msgid ""
+"When you need to change the turret used by a vehicle, splitting it into "
+"two files can simplify the process."
+msgstr "当需要更改载具所使用的炮塔时，将其分为两个文件有助于简化操作。"
 
 msgid "Jumpjet Tilts While Moving"
 msgstr "Jumpjet 在移动时倾斜"
@@ -5563,6 +5615,16 @@ msgstr ""
 "默认情况下如果单位从弹头收到负伤害（在 `Verses` "
 "前计算）任何寄生单位都会被移除和删除。现在可以自定义此行为以禁用负伤害的移除效果或为任意弹头启用它。"
 
+msgid ""
+"`RemoveParasite.Allow` can be used to define which parasites can be "
+"removed."
+msgstr "`RemoveParasite.Allow` 定义哪些寄生者可以被移除。"
+
+msgid ""
+"`RemoveParasite.Disallow` can be used to define which parasites cannot be"
+" removed."
+msgstr "`RemoveParasite.Disallow` 定义哪些寄生者不能被移除。"
+
 msgid "Penetrates damage on transporter"
 msgstr "对运输工具的穿透伤害"
 
@@ -5757,6 +5819,21 @@ msgid ""
 "`SpawnsCrate.Type/Weight` is an alias for `SpawnsCrate0.Type/Weight` if "
 "latter is not set."
 msgstr "如果未设置 `SpawnsCrate0.Type/Weight` 则 `SpawnsCrate.Type/Weight` 是其别名。"
+
+msgid "Taunt warhead"
+msgstr "嘲讽弹头"
+
+msgid ""
+"Now you can use the following tags to make the warhead \"taunt\" the "
+"target, override its current mission, and force it to attack the source "
+"of the damage."
+msgstr "现在你可以使用以下标签使弹头“嘲讽”目标，这会覆盖其当前任务并强制其攻击伤害的来源。"
+
+msgid "The taunted target will behaves like doing retaliation."
+msgstr "被嘲讽的目标将表现为进行反击的形式。"
+
+msgid "If there is no source unit for the damage, the taunt will not take effect."
+msgstr "如果是无源伤害，那么嘲讽将不会生效。"
 
 msgid "Toggle per-target warhead effects apply timing"
 msgstr "设置按目标生效的弹头效果应用时机"

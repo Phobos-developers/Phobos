@@ -51,6 +51,7 @@ public:
 		Valueable<bool> RadSiteWarhead_Detonate_Full;
 		Valueable<bool> RadHasOwner;
 		Valueable<bool> RadHasInvoker;
+		Valueable<bool> ShieldApplyArmorMult;
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
 
@@ -239,6 +240,8 @@ public:
 		Valueable<bool> AIAllToHunt;
 		Valueable<bool> RepairBaseNodes;
 
+		Valueable<bool> FixRepairStepCost;
+
 		Valueable<bool> WarheadParticleAlphaImageIsLightFlash;
 		Valueable<int> CombatLightDetailLevel;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
@@ -293,6 +296,7 @@ public:
 
 		Valueable<bool> FallingDownTargetingFix;
 		Valueable<bool> AIAirTargetingFix;
+		Valueable<bool> OpenTopped_DecloakToFire;
 
 		Valueable<bool> SortCameoByName;
 
@@ -346,6 +350,7 @@ public:
 			, RadSiteWarhead_Detonate_Full { true }
 			, RadHasOwner { false }
 			, RadHasInvoker { false }
+			, ShieldApplyArmorMult { false }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, VeinholeWarhead {}
@@ -509,6 +514,7 @@ public:
 			, AIFireSaleDelay { 0 }
 			, AIAllToHunt { true }
 			, RepairBaseNodes { false }
+			, FixRepairStepCost { false }
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
 			, LightFlashAlphaImageDetailLevel { 0 }
@@ -555,6 +561,7 @@ public:
 
 			, FallingDownTargetingFix { false }
 			, AIAirTargetingFix { false }
+			, OpenTopped_DecloakToFire { false }
 
 			, SortCameoByName { false }
 

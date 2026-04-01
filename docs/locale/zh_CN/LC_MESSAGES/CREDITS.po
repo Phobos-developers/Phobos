@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-23 06:09+0800\n"
+"POT-Creation-Date: 2026-03-28 14:10+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -164,6 +164,9 @@ msgstr "移植了 XNA CNCNet Client 的多人游戏存档处理"
 
 msgid "Retint fix toggle"
 msgstr "为地图光照重绘时的建筑光源问题修复添加开关"
+
+msgid "Voxel drawing invisible sections skip"
+msgstr "跳过 Voxel 不可见组件的绘制"
 
 msgid "**Uranusian (Thrifinesma)**:"
 msgstr "**Uranusian (Thrifinesma)**："
@@ -861,8 +864,7 @@ msgstr "围墙卖坦克 Bug 的修复"
 msgid ""
 "Fix vehicles disguised as trees incorrectly displaying veterancy insignia"
 " when they shouldn't"
-msgstr ""
-"修复了伪装成树的载具错误显示出军衔（能打人的精英树）的问题"
+msgstr "修复了伪装成树的载具错误显示出军衔（能打人的精英树）的问题"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
@@ -1276,6 +1278,17 @@ msgid ""
 "superweapons with index numbers 3 and 4"
 msgstr "修复了 56 和 57 号 AI 动作脚本强制发射注册索引 3 和 4 的超武的 Bug"
 
+msgid ""
+"Fixed an issue where parachute units would die upon landing if bridges "
+"were destroyed during their descent"
+msgstr "修复了空降到桥上的单位会由于降落过程中桥梁被毁而在着陆后死亡的问题"
+
+msgid "Custom hover vehicles shutdown drowning death"
+msgstr "自定义悬浮载具溺死"
+
+msgid "SHP turret vehicles support the use of `*tur.shp` files"
+msgstr "Shape 有炮塔载具支持使用 `*tur.shp` 文件。"
+
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："
 
@@ -1638,8 +1651,69 @@ msgstr "修复了 `PassengerDeletion` 未考虑乘客的乘客、寄生者和偷
 msgid ""
 "Fix the issue that power output of building on tooltip won't consider "
 "power enhancer"
+msgstr "修复了建筑拓展工具提示信息中的发电量数值未考虑电厂增幅器的问题"
+
+msgid ""
+"Fix the bug that the upgrade building's power-enhancing effect depends "
+"only on its parent building and is not related to the upgrade building "
+"itself"
+msgstr "修复了加载物建筑的电厂增幅效果仅取决于其基底建筑而非加载物建筑自身的 Bug"
+
+msgid "Customize which parasite can remove by warhead"
+msgstr "自定义哪些寄生者可被弹头移除"
+
+msgid ""
+"Fix the bug that unit will play crashing voice & sound when dropped by "
+"warhead with `IsLocomotor=yes`"
+msgstr "修复了载具被 `IsLocomotor=yes` 的弹头丢下时会播放坠毁语音和音效的 Bug"
+
+msgid "Add toggle of whether shield use ArmorMultiplier or not"
+msgstr "添加了护盾是否使用护甲倍率的开关"
+
+msgid ""
+"Fix an Ares bug that led to erroneous interactions where the parasite "
+"would frequently reset to the victim's position under specific "
+"circumstances and that was highly prone to crashes"
+msgstr "修复了一个极易崩溃且导致寄生者特定条件下会被高频重设至受害者位置这一错误交互的 Ares Bug"
+
+msgid ""
+"Fix the bug that if paradropping technos with `Crashable=yes` has been "
+"destroyed in air, they will falling down on ground but not dead"
+msgstr "修复了当 `Crashable=yes` 的科技类型在空降时被于半空中摧毁，它会落地但不会死亡的 Bug"
+
+msgid ""
+"Fix the bug where paradropped infantry with `NotHuman=yes` will ignore "
+"`Crashable=no` and crash on ground when killed in air"
+msgstr "修复了 `NotHuman=yes` 的空降步兵在空中被击杀时会无视 `Crashable=no` 坠落到地面的 Bug"
+
+msgid ""
+"Fix an issue where a unit might cause the target to fall from above its "
+"own head when using a locomotor warhead with `Locomotor=Jumpjet` to pull "
+"a target with `BalloonHover=yes`"
 msgstr ""
-"修复了建筑拓展工具提示信息中的发电量数值未考虑电厂增幅器的问题"
+"修复了单位使用 `Locomotor=Jumpjet` 的运动模式弹头牵引拥有 `BalloonHover=yes` "
+"的目标时可能使其从自己头顶下落的问题"
+
+msgid ""
+"Fix the EIP#007120F7 caused when the `Strength` value is lower than "
+"`RepairStep`"
+msgstr "修复了由于 `Strength` 值低于 `RepairStep` 时引发的 EIP#007120F7"
+
+msgid "Allow the use of more precise calculation of repair costs"
+msgstr "允许使用更精确的维修费用计算"
+
+msgid ""
+"Fix the initial direction of building placed by Ares's UnitDelivery "
+"superweapon"
+msgstr "修复了 Ares 的单位投放超级武器投放的建筑物的初始朝向"
+
+msgid "Customize default mirage disguises per vehicletypes"
+msgstr "为每个载具类型单独定义默认的幻影伪装类型"
+
+msgid ""
+"Allow customize jumpjet properties on warhead"
+msgstr ""
+"允许在弹头上自定义 Jumpjet 属性"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
@@ -1994,6 +2068,11 @@ msgstr "允许战机执行区域警戒任务且在无机场的情况下不会立
 msgid "Allow merging AOE damage to buildings into one"
 msgstr "允许将建筑所受的 AOE 伤害合而为一"
 
+msgid ""
+"Fix the bug that `DeploysInto` and `UndeploysInto` will make damaged "
+"techno lose 1 health"
+msgstr "修复了 `DeploysInto` 和 `UndeploysInto` 会让受损单位失去 1 点生命的 Bug"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
@@ -2327,6 +2406,28 @@ msgstr "武器使用圆柱形射程"
 msgid "Allow jumpjet climbing ignore building height"
 msgstr "允许 Jumpjet 爬升时忽略建筑高度"
 
+msgid ""
+"Fix an issue where the AI's regular targeting would also target "
+"garrisonable buildings"
+msgstr "修复了 AI 常规索敌也会瞄准可驻军建筑的问题"
+
+msgid "Fix an issue that the move mission of the jumpjet does not end correctly"
+msgstr "修复了 Jumpjet 单位无法正确结束移动任务的问题"
+
+msgid ""
+"Fix the issue that the Jumpjet must end its movement before starting the "
+"next mission"
+msgstr "修复了 Jumpjet 单位在开始下一个任务前必须先停止移动的问题"
+
+msgid "Taunt warhead"
+msgstr "嘲讽弹头"
+
+msgid ""
+"Fix the bug where non-Teleporter miners would not return to work after "
+"minerals are depleted and then regenerated"
+msgstr ""
+"修复了非超时空矿车在矿区无矿后即便矿石已重新生成也不会恢复工作的 Bug"
+
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
 
@@ -2393,6 +2494,16 @@ msgstr "AI 载具生产更新代码"
 
 msgid "parts of TechnoType conversion placeholder code"
 msgstr "单位转换占位符代码的一部分"
+
+msgid ""
+"**[Vinifera Contributors](https://github.com/Vinifera-"
+"developers/Vinifera/blob/develop/CREDITS.md)**:"
+msgstr ""
+"**[Vinifera 贡献者](https://github.com/Vinifera-"
+"developers/Vinifera/blob/develop/CREDITS.md)**："
+
+msgid "Implement `CurleyShuffle` for AircraftTypes"
+msgstr "实现战机微观 `CurleyShuffle` 设置"
 
 msgid ""
 "**ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, CrimRecya** - "
@@ -2508,6 +2619,12 @@ msgid ""
 "toggled off"
 msgstr "**11EJDE11** - 阻止 MPDEBUG 数字在关闭可见时仍然绘制"
 
-msgid "**CnCRazer** - Wall overlay unit sell exploit fix"
-msgstr "**CnCRazer** - 围墙卖坦克 Bug 的修复"
+msgid "**RAZER**:"
+msgstr "**RAZER**："
+
+msgid "Multiplayer gamespeed fix for RealTimeTimers"
+msgstr "多人联机所用游戏速度下的实时计时器修复"
+
+msgid "Revert Ares patch to allow OpenTopped transport customization"
+msgstr "撤销 Ares 的补丁以允许为 OpenTopped 的运输工具自定义"
 

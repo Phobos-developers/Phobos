@@ -1,4 +1,5 @@
 #include <Utilities/AresHelper.h>
+#include <Utilities/AresFunctions.h>
 #include <Utilities/Helpers.Alex.h>
 
 #include <Ext/Building/Body.h>
@@ -86,6 +87,26 @@ static bool __fastcall PermaMC_SetOwningHouse_Select(TechnoClass* pTechno, void*
 	return result;
 }
 
+namespace UnitDeliveryTemp
+{
+	bool Placing = false;
+}
+
+static void __fastcall UnitDeliveryStateMachine_Update_Wrapper(void* pThis)
+{
+	UnitDeliveryTemp::Placing = true;
+	AresFunctions::UnitDeliveryStateMachine_Update(pThis);
+	UnitDeliveryTemp::Placing = false;
+}
+
+DEFINE_HOOK(0x440580, BuildingClass_Unlimbo_UnitDeliveryFix, 0x5)
+{
+	if (UnitDeliveryTemp::Placing)
+		R->Stack(0x8, DirType::North);
+
+	return 0;
+}
+
 _GET_FUNCTION_ADDRESS(RadarJammerClass::Update, AresRadarJammerClass_Update_GetAddr)
 
 void Apply_Ares3_0_Patches()
@@ -159,6 +180,9 @@ void Apply_Ares3_0_Patches()
 	// Handle select of MindControl.Permanent
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x45EAF, &PermaMC_FreeUnit_SetContext);
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x45EBE, &PermaMC_SetOwningHouse_Select);
+
+	// Fix building direction of Ares's UnitDelivery
+	Patch::Apply_VTABLE(AresHelper::AresBaseAddress + 0xA8D94, &UnitDeliveryStateMachine_Update_Wrapper);
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -234,4 +258,7 @@ void Apply_Ares3_0p1_Patches()
 	// Handle select of MindControl.Permanent
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x46A1F, &PermaMC_FreeUnit_SetContext);
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x46A2E, &PermaMC_SetOwningHouse_Select);
+
+	// Fix building direction of Ares's UnitDelivery
+	Patch::Apply_VTABLE(AresHelper::AresBaseAddress + 0xA9F28, &UnitDeliveryStateMachine_Update_Wrapper);
 }

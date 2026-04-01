@@ -41,6 +41,8 @@ public:
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
 		Nullable<bool> RemoveParasite;
+		ValueableVector<TechnoTypeClass*> RemoveParasite_Allow;
+		ValueableVector<TechnoTypeClass*> RemoveParasite_Disallow;
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 		Valueable<bool> ApplyModifiersOnNegativeDamage;
@@ -156,6 +158,16 @@ public:
 		Valueable<bool> Parasite_DisableParticleSystem;
 		Valueable<AffectedTarget> Parasite_CullingTarget;
 		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
+
+		Nullable<int> JumpjetTurnRate;
+		Nullable<int> JumpjetSpeed;
+		Nullable<float> JumpjetClimb;
+		Nullable<float> JumpjetCrash;
+		Nullable<int> JumpjetHeight;
+		Nullable<float> JumpjetAccel;
+		Nullable<float> JumpjetWobbles;
+		Nullable<bool> JumpjetNoWobbles;
+		Nullable<int> JumpjetDeviation;
 
 		Valueable<bool> Nonprovocative;
 
@@ -273,18 +285,20 @@ public:
 			, SplashList_PickRandom { false }
 			, SplashList_CreateAll { false }
 			, SplashList_CreationInterval { 0 }
-			, SplashList_ScatterMin { Leptons(0) }
-			, SplashList_ScatterMax { Leptons(0) }
+			, SplashList_ScatterMin { Leptons(-1) }
+			, SplashList_ScatterMax { Leptons(-1) }
 			, AnimList_PickRandom { false }
 			, AnimList_CreateAll { false }
 			, AnimList_CreationInterval { 0 }
-			, AnimList_ScatterMin { Leptons(0) }
-			, AnimList_ScatterMax { Leptons(0) }
+			, AnimList_ScatterMin { Leptons(-1) }
+			, AnimList_ScatterMax { Leptons(-1) }
 			, CreateAnimsOnZeroDamage { false }
 			, Conventional_IgnoreUnits { false }
 			, RemoveDisguise { false }
 			, RemoveMindControl { false }
 			, RemoveParasite {}
+			, RemoveParasite_Allow {}
+			, RemoveParasite_Disallow {}
 			, DecloakDamagedTargets { true }
 			, ShakeIsLocal { false }
 			, ApplyModifiersOnNegativeDamage { false }
@@ -400,6 +414,16 @@ public:
 			, Parasite_DisableParticleSystem { false }
 			, Parasite_CullingTarget { AffectedTarget::Infantry }
 			, Parasite_GrappleAnim {}
+
+			, JumpjetTurnRate {}
+			, JumpjetSpeed {}
+			, JumpjetClimb {}
+			, JumpjetCrash {}
+			, JumpjetHeight {}
+			, JumpjetAccel {}
+			, JumpjetWobbles {}
+			, JumpjetNoWobbles {}
+			, JumpjetDeviation {}
 
 			, Nonprovocative { false }
 
@@ -548,6 +572,8 @@ public:
 	static ExtContainer ExtMap;
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static WarheadTypeClass* LocomotorWarhead;
 
 	static void DetonateAt(WarheadTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
 	static void DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr, AbstractClass* pTarget = nullptr);
