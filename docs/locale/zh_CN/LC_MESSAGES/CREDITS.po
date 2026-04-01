@@ -1715,6 +1715,11 @@ msgid ""
 msgstr ""
 "允许在弹头上自定义 Jumpjet 属性"
 
+msgid ""
+"Customize effects range of power plant enhancer"
+msgstr ""
+"自定义电厂增幅器的效果范围"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 

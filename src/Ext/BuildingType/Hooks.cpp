@@ -432,7 +432,8 @@ DEFINE_HOOK(0x44E826, BuildingClass_GetPowerOutput_Enhancer, 0x6)
 		return ReturnZero;
 
 	const auto pOwner = pThis->Owner;
-	auto [power, extraPower] = BuildingTypeExt::GetEnhancedPower(pThis->Type, R->EDI<int>(), pOwner);
+	const auto coords = pThis->GetCoords();
+	auto [power, extraPower] = BuildingTypeExt::GetEnhancedPower(pThis->Type, R->EDI<int>(), pOwner, &coords);
 	 
 	if (pThis->UpgradeLevel)
 	{
@@ -440,7 +441,7 @@ DEFINE_HOOK(0x44E826, BuildingClass_GetPowerOutput_Enhancer, 0x6)
 		{
 			if (pUpgrade)
 			{
-				const auto [upgradePower, extraUpgradePower] = BuildingTypeExt::GetEnhancedPower(pUpgrade, pUpgrade->PowerBonus, pOwner);
+				const auto [upgradePower, extraUpgradePower] = BuildingTypeExt::GetEnhancedPower(pUpgrade, pUpgrade->PowerBonus, pOwner, &coords);
 				power += upgradePower;
 				extraPower += extraUpgradePower;
 			}

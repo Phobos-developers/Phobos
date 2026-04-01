@@ -1788,6 +1788,10 @@ msgstr ""
 "[允许在弹头上自定义 Jumpjet 属性](Fixed-or-Improved-"
 "Logics.md#customizing-locomotor-warhead)（by NetsuNegi）"
 
+msgid ""
+"Customize effects range of power plant enhancer (by NetsuNegi)"
+msgstr "自定义电厂增幅器的效果范围（by NetsuNegi）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
