@@ -40,7 +40,7 @@ int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
 	return -1;
 }
 
-std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse, const CoordStruct* pCoords)
+std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse, BuildingClass* pPowerPlant)
 {
 	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
 	int amount = 0;
@@ -58,13 +58,10 @@ std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuildi
 		if (!pEnhancerTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding))
 			continue;
 
-		if (pCoords)
-		{
-			const int range = pEnhancerTypeExt->PowerPlantEnhancer_Range.Get();
+		const int range = pEnhancerTypeExt->PowerPlantEnhancer_Range.Get();
 
-			if (range > 0 && static_cast<int>(pCoords->DistanceFrom(pEnhancer->GetCoords())) > range)
-				continue;
-		}
+		if (range > 0 && (!pPowerPlant || pPowerPlant->DistanceFrom(pEnhancer) > range))
+			continue;
 
 		const int max = pEnhancerTypeExt->PowerPlantEnhancer_MaxCount;
 
