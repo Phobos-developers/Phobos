@@ -1070,3 +1070,20 @@ DEFINE_HOOK(0x444D11, BuildingClass_ExitObject_ProductionAnimForInfantryFactory,
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x45670D, BuildingClass_GetRadialIndicatorRange_Extras, 0x7)
+{
+	enum { ApplyRange = 0x45674B, ApplyTurretWeapon = 0x456714 };
+
+	GET(BuildingClass*, pThis, ESI);
+	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	if (!pTypeExt->PowerPlantEnhancer_Buildings.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
+	{
+		R->EAX(pTypeExt->PowerPlantEnhancer_Range.Get() / Unsorted::LeptonsPerCell);
+		return ApplyRange;
+	}
+
+	R->EAX(pThis->TechnoClass::GetTurretWeapon());
+	return ApplyTurretWeapon;
+}
