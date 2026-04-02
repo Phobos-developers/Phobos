@@ -168,6 +168,7 @@ public:
 		Valueable<Leptons> VisualScatter_Max;
 
 		Valueable<bool> ShowDesignatorRange;
+		Valueable<bool> ShowPowerPlantEnhancerRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
 		Valueable<int> SelectionFlashDuration;
 		Nullable<AnimTypeClass*> DropPodTrailer;
@@ -463,6 +464,7 @@ public:
 			, VisualScatter_Min { Leptons(8) }
 			, VisualScatter_Max { Leptons(32) }
 			, ShowDesignatorRange { true }
+			, ShowPowerPlantEnhancerRange { true }
 			, DropPodTrailer { }
 			, DropPodDefaultTrailer { }
 			, PodImage { }

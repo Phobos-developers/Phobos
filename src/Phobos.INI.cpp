@@ -65,6 +65,7 @@ bool Phobos::Config::RealTimeTimers_Adaptive = false;
 int Phobos::Config::CampaignDefaultGameSpeed = 2;
 bool Phobos::Config::SkirmishUnlimitedColors = false;
 bool Phobos::Config::ShowDesignatorRange = false;
+bool Phobos::Config::ShowPowerPlantEnhancerRange = false;
 bool Phobos::Config::SaveVariablesOnScenarioEnd = false;
 bool Phobos::Config::SaveGameOnScenarioStart = true;
 bool Phobos::Config::ShowBriefing = true;
@@ -128,6 +129,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	}
 
 	Phobos::Config::ShowDesignatorRange = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowDesignatorRange", false);
+	Phobos::Config::ShowPowerPlantEnhancerRange = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowPowerPlantEnhancerRange", false);
 
 	CCINIClass ini_uimd {};
 	ini_uimd.LoadFromFile(GameStrings::UIMD_INI);

@@ -467,6 +467,22 @@ DisplayIncome.Houses=     ; Affected House Enumeration, defaults to [AudioVisual
 DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
 ```
 
+### Show power plant enhancer range
+
+- It is possible to show range of power plant enhancer when placing a building.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+ShowPowerPlantEnhancerRange=true   ; boolean
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ShowPowerPlantEnhancerRange=false  ; boolean
+```
+
 ## Hotkey Commands
 
 ### `[ ]` Display Damage Numbers
