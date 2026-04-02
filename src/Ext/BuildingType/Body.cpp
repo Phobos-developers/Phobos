@@ -60,7 +60,7 @@ std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuildi
 
 		const int range = pEnhancerTypeExt->PowerPlantEnhancer_Range.Get();
 
-		if (range > 0 && (!pPowerPlant || pPowerPlant->DistanceFrom(pEnhancer) > range))
+		if (range > 0 && (!pPowerPlant || pEnhancer->DistanceFrom(pPowerPlant) > range))
 			continue;
 
 		const int max = pEnhancerTypeExt->PowerPlantEnhancer_MaxCount;
