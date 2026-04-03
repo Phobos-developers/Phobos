@@ -867,7 +867,7 @@ msgid ""
 msgstr "修复了伪装成树的载具错误显示出军衔（能打人的精英树）的问题"
 
 msgid "GapGen + SpySat desync fix"
-msgstr ""
+msgstr "裂缝产生器和间谍卫星的 RE 修复"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："

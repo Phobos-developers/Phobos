@@ -1632,6 +1632,7 @@ msgid ""
 "Fixed a desync due to an inconsistent shroud state caused by "
 "`GapGenerator` and `SpySat` interaction."
 msgstr ""
+"修复了一个由于 `GapGenerator` 和 `SpySat` 交互导致黑幕状态不一致而引发的不同步问题。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"

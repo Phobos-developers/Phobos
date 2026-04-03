@@ -2440,6 +2440,7 @@ msgid ""
 "Fixed a desync due to an inconsistent shroud state caused by "
 "`GapGenerator` and `SpySat` interaction (by Starkku)"
 msgstr ""
+"修复了一个由于 `GapGenerator` 和 `SpySat` 交互导致黑幕状态不一致而引发的不同步问题（by Starkku）"
 
 msgid ""
 "Fixed vehicles disguised as trees incorrectly displaying veterancy "
