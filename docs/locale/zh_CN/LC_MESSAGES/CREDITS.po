@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-28 14:10+0800\n"
+"POT-Creation-Date: 2026-04-03 18:01+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -866,6 +866,9 @@ msgid ""
 " when they shouldn't"
 msgstr "修复了伪装成树的载具错误显示出军衔（能打人的精英树）的问题"
 
+msgid "GapGen + SpySat desync fix"
+msgstr ""
+
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
 
@@ -1710,10 +1713,8 @@ msgstr "修复了 Ares 的单位投放超级武器投放的建筑物的初始朝
 msgid "Customize default mirage disguises per vehicletypes"
 msgstr "为每个载具类型单独定义默认的幻影伪装类型"
 
-msgid ""
-"Allow customize jumpjet properties on warhead"
-msgstr ""
-"允许在弹头上自定义 Jumpjet 属性"
+msgid "Allow customize jumpjet properties on warhead"
+msgstr "允许在弹头上自定义 Jumpjet 属性"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
@@ -2425,8 +2426,7 @@ msgstr "嘲讽弹头"
 msgid ""
 "Fix the bug where non-Teleporter miners would not return to work after "
 "minerals are depleted and then regenerated"
-msgstr ""
-"修复了非超时空矿车在矿区无矿后即便矿石已重新生成也不会恢复工作的 Bug"
+msgstr "修复了非超时空矿车在矿区无矿后即便矿石已重新生成也不会恢复工作的 Bug"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
@@ -2627,4 +2627,9 @@ msgstr "多人联机所用游戏速度下的实时计时器修复"
 
 msgid "Revert Ares patch to allow OpenTopped transport customization"
 msgstr "撤销 Ares 的补丁以允许为 OpenTopped 的运输工具自定义"
+
+msgid ""
+"Fix for units with Fly, Jumpjet or Rocket locomotors crashing off-map not"
+" being cleaned up"
+msgstr ""
 
