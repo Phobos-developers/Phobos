@@ -735,7 +735,7 @@ msgid "Aircraft landing / docking direction"
 msgstr "战机着陆／对接方向"
 
 msgid "`DeploysInto` cursor desync fix"
-msgstr "`DeploysInto` 光标异步修复"
+msgstr "`DeploysInto` 光标的不同步修复"
 
 msgid "Minor crate logic improvements"
 msgstr "箱子逻辑的小小改进"
@@ -867,7 +867,7 @@ msgid ""
 msgstr "修复了伪装成树的载具错误显示出军衔（能打人的精英树）的问题"
 
 msgid "GapGen + SpySat desync fix"
-msgstr "裂缝产生器和间谍卫星的 RE 修复"
+msgstr "裂缝产生器和间谍卫星的不同步修复"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
