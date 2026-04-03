@@ -273,7 +273,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that vehicle fall on infantry will make all cell content has been removed.
 - Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state.
 - Fixed preplaced aircraft outside visible map being incorrectly flagged as crashing under certain conditions.
-- Fixed units with Fly, Jumpjet or Rocket locomotors destroyed while crashing off-map never being fully cleaned up, permanently blocking production slots and counting towards unit limits.
 - Fixed `MovementZone=Subterannean` harvesters being unable to find docks if in area enclosed by water, cliffs etc.
 - Fixed an issue where some effects pointing to a unit were not properly cleared when the unit changed its owner.
 - Allow Reveal Crate to take effect when picking up by another player controlled house in campaign.
@@ -316,6 +315,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where a unit might cause the target to fall from above its own head when using a locomotor warhead with `Locomotor=Jumpjet` to pull a target with `BalloonHover=yes`.
 - Fixed the [EIP#007120F7](https://modenc.renegadeprojects.com/Internal_Error#eip_007120F7) that was triggered when repairing because the `Strength` value was lower than `RepairStep`.
 - Fixed the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated.
+- Fixed units with Fly, Jumpjet or Rocket locomotors destroyed while crashing off-map never being fully cleaned up, permanently blocking production slots and counting towards unit limits.
 - Fixed a desync due to an inconsistent shroud state caused by `GapGenerator` and `SpySat` interaction.
 
 ## Fixes / interactions with other extensions
