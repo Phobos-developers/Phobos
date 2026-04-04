@@ -494,6 +494,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc
   - Fix the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target
   - Skip target scanning function calling for unarmed technos (code)
+  - Miners back to work when ore regenerated
 - **solar-III (凤九歌)**
   - Skip target scanning function calling for unarmed technos (documentation)
 - **tyuah8**:

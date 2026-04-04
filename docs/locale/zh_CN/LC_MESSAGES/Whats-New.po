@@ -508,6 +508,9 @@ msgid ""
 "`GapGenerator` and `SpySat` interaction (by Starkku)"
 msgstr "修复了一个由于 `GapGenerator` 和 `SpySat` 交互导致黑幕状态不一致而引发的不同步问题（by Starkku）"
 
+msgid "Miners back to work when ore regenerated (by TaranDahl)"
+msgstr "矿车在矿石再生后返回工作"
+
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
 

@@ -131,3 +131,28 @@ DEFINE_HOOK(0x73E730, UnitClass_MissionHarvest_HarvesterScanAfterUnload, 0x5)
 }
 
 #pragma endregion
+
+// Now, miners will no longer actively withdraw from the Harvest mission due to mineral depletion.
+DEFINE_HOOK(0x73EEA6, UnitClass_MissionHarvest_AllOreGathered, 0x6)
+{
+	enum { SkipGameCode = 0x73EFA4 };
+
+	GET(UnitClass*, pThis, EBP);
+
+	const auto pBuilding = MapClass::Instance.GetCellAt(pThis->GetCoords())->GetBuilding();
+	if (pBuilding && (pBuilding->Type->Refinery || pBuilding->Type->Weeder))
+	{
+		CellStruct buffer = CellStruct::Empty;
+		pThis->NearbyLocation(&buffer, pBuilding);
+		const auto pDest = MapClass::Instance.GetCellAt(buffer);
+		pThis->SetDestination(pDest, false);
+		R->EAX(15);
+	}
+	else
+	{
+		pThis->MissionStatus = 0;
+		R->EAX(100);
+	}
+
+	return SkipGameCode;
+}

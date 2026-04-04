@@ -1608,6 +1608,9 @@ msgstr "修复了建筑类目标 `OpenToppedWarpDistance` 计算错误的 Bug"
 msgid "Skip target scanning function calling for unarmed technos (code)"
 msgstr "禁用了无武器单位的索敌（代码）"
 
+msgid "Miners back to work when ore regenerated"
+msgstr "矿车在矿石再生后返回工作"
+
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
 
