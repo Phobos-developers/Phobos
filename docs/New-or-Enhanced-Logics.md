@@ -1621,7 +1621,7 @@ RadarJamIgnore=                   ; List of BuildingTypes
 
 ### Customize whether transport can kept or kill passengers when driver has been killed
 
-- It is now possible to customize whether transport can kept or kill passengers when driver has been killed.
+- It is now possible to customize whether transport can kept or kill passengers when [driver has been killed](http://ares-developers.github.io/Ares-docs/new/killingdrivers.html).
 
 In `rulesmd.ini`:
 ```ini
@@ -1631,6 +1631,10 @@ DriverKilled.KillPassengers=false   ; boolean
 [SOMETECHNO]                        ; TechnoType
 DriverKilled.KeptPassengers=false   ; boolean
 DriverKilled.KillPassengers=        ; boolean, default to [CombatDamage] -> DriverKilled.KillPassengers
+```
+
+```{note}
+When `DriverKilled.KeptPassengers=true` is set, passengers will always be retained regardless of the `DriverKilled.KillPassengers` setting. If the transport also has `OpenTopped=true` and [`OpenTopped.AllowFiringIfDeactivated=false`](New-or-Enhanced-Logics.md#customizable-opentopped-properties) is not set, then passengers will continue attacking the target they were originally attacking, whether that target is inherited from the transport or acquired by themselves.
 ```
 
 ### Customize EVA voice and `SellSound` when selling units
