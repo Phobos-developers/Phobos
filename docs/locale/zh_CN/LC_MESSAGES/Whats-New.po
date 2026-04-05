@@ -2427,9 +2427,10 @@ msgid ""
 msgstr "修复了 Ares 的单位投放超级武器投放的建筑物的初始朝向（by NetsuNegi）"
 
 msgid ""
-"Customize whether transport can kept or kill "
-"passengers when driver has been killed (by NetsuNegi)"
-msgstr "自定义载具被击杀驾驶员时是否保留或杀死乘客（by NetsuNegi）"
+"[Customize whether transport can kept or kill passengers when driver has "
+"been killed](New-or-Enhanced-Logics.md#customize-whether-transport-can-"
+"kept-or-kill-passengers-when-driver-has-been-killed) (by NetsuNegi)"
+msgstr "[自定义载具被击杀驾驶员时是否保留或杀死乘客](New-or-Enhanced-Logics.md#customize-whether-transport-can-kept-or-kill-passengers-when-driver-has-been-killed)（by NetsuNegi）"
 
 msgid "0.4.0.3"
 msgstr "0.4.0.3"
