@@ -1619,9 +1619,9 @@ RadarJamAffect=                   ; List of BuildingTypes
 RadarJamIgnore=                   ; List of BuildingTypes
 ```
 
-### Customize whether transport can kept or eject passengers when driver has been killed
+### Customize whether transport can kept or kill passengers when driver has been killed
 
-- It is now possible to customize whether transport can kept or eject passengers when driver has been killed.
+- It is now possible to customize whether transport can kept or kill passengers when driver has been killed.
 
 In `rulesmd.ini`:
 ```ini

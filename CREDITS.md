@@ -524,7 +524,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize default mirage disguises per vehicletypes
   - Allow customize jumpjet properties on warhead
   - Customize effects range of power plant enhancer
-  - Customize whether transport can kept or eject passengers when driver has been killed
+  - Customize whether transport can kept or kill passengers when driver has been killed
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
