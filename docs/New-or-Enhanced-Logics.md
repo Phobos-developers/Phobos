@@ -116,7 +116,7 @@ ExpireWeapon=                                      ; WeaponType
 ExpireWeapon.TriggerOn=expire                      ; List of expire weapon trigger condition enumeration (none|expire|remove|death|discard|all)
 ExpireWeapon.CumulativeOnlyOnce=false              ; boolean
 ExpireWeapon.UseInvokerAsOwner=false               ; boolean
-Tint.Color=                                        ; integer - R,G,B
+Tint.Color=                                        ; integer - Red,Green,Blue
 Tint.Intensity=                                    ; floating point value
 Tint.VisibleToHouses=all                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 FirepowerMultiplier=1.0                            ; floating point value
@@ -224,7 +224,7 @@ RadLightDelay=90                   ; integer
 RadLevelFactor=0.2                 ; floating point value
 RadLightFactor=0.1                 ; floating point value
 RadTintFactor=1.0                  ; floating point value
-RadColor=0,255,0                   ; integer - R,G,B
+RadColor=0,255,0                   ; integer - Red,Green,Blue
 RadSiteWarhead=RadSite             ; WarheadType
 RadSiteWarhead.Detonate=false      ; boolean
 RadSiteWarhead.Detonate.Full=true  ; boolean
@@ -258,20 +258,20 @@ IgnoreVertical=false             ; boolean, whether the trail won't be drawn on 
 CloakVisible=false               ; boolean, whether the laser is visible when the attached unit is cloaked
 CloakVisible.DetectedOnly=false  ; boolean, whether CloakVisible=true laser is visible only to those who can detect the attached unit
 ; laser
-Color=255,0,0                    ; integer - R,G,B
+Color=255,0,0                    ; integer - Red,Green,Blue
 IsHouseColor=false               ; boolean
 Thickness=4                      ; integer
 IsIntense=false                  ; boolean, whether the laser is "supported" (AKA prism forwarding)
 ; ebolt
 IsAlternateColor=false           ; boolean
-Bolt.Color1=                     ; integer - R,G,B
+Bolt.Color1=                     ; integer - Red,Green,Blue
 Bolt.Disable1=false              ; boolean
-Bolt.Color2=                     ; integer - R,G,B
+Bolt.Color2=                     ; integer - Red,Green,Blue
 Bolt.Disable2=false              ; boolean
-Bolt.Color3=                     ; integer - R,G,B
+Bolt.Color3=                     ; integer - Red,Green,Blue
 Bolt.Disable3=false              ; boolean
 ; radbeam
-Beam.Color=                      ; integer - R,G,B
+Beam.Color=                      ; integer - Red,Green,Blue
 Beam.Amplitude=40.0              ; floating point value
 
 [SOMEPROJECTILE]                 ; Projectile Image
@@ -371,7 +371,7 @@ ReceivedDamage.Maximum=2147483647           ; integer
 AllowTransfer=                              ; boolean
 ImmuneToBerserk=no                          ; boolean
 ImmuneToCrit=no                             ; boolean
-Tint.Color=                                 ; integer - R,G,B
+Tint.Color=                                 ; integer - Red,Green,Blue
 Tint.Intensity=0.0                          ; floating point value
 Tint.VisibleToHouses=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 
@@ -1371,7 +1371,7 @@ Spawner.ExtraLimitRange=0          ; integer, range in cells
 Spawner.DelayFrames=               ; integer, game frames
 Spawner.AttackImmediately=false    ; boolean
 Spawner.UseTurretFacing=false      ; boolean
-Spawner.RecycleRange=-1            ; float, range in cells
+Spawner.RecycleRange=-1            ; floating point value, range in cells
 Spawner.RecycleAnim=               ; List of AnimationTypes
 Spawner.RecycleCoord=0,0,0         ; integer - Forward,Lateral,Height
 Spawner.RecycleOnTurret=false      ; boolean
@@ -1433,7 +1433,7 @@ PassengerDeletion.CostRateCap=                  ; integer, game frames
 PassengerDeletion.AllowedHouses=all             ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 PassengerDeletion.DontScore=false               ; boolean
 PassengerDeletion.Soylent=false                 ; boolean
-PassengerDeletion.SoylentMultiplier=1.0         ; float, percents or absolute
+PassengerDeletion.SoylentMultiplier=1.0         ; floating point value, percents or absolute
 PassengerDeletion.SoylentAllowedHouses=enemies  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 PassengerDeletion.DisplaySoylent=false          ; boolean
 PassengerDeletion.DisplaySoylentToHouses=All    ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
@@ -1522,7 +1522,7 @@ Convert.ComputerToHuman=    ; TechnoType
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]              ; TechnoType
-Tint.Color=               ; integer - R,G,B
+Tint.Color=               ; integer - Red,Green,Blue
 Tint.Intensity=0.0        ; floating point value
 Tint.VisibleToHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
@@ -2750,7 +2750,11 @@ If you set `ReturnWarhead` to the same Warhead it is defined on, or create a cha
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; WarheadType
-Reveal=0       ; integer - cell radius, negative values mean reveal the entire map
+Reveal=0       ; integer, range in cells
+```
+
+```{note}
+Negative values mean reveal the entire map.
 ```
 
 ### Reverse engineer warhead
@@ -2791,7 +2795,11 @@ BuildingUndeploy.Leave=false         ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; WarheadType
-CreateGap=0    ; integer - cell radius, negative values mean shroud the entire map
+CreateGap=0    ; integer, range in cells
+```
+
+```{note}
+Negative values mean shroud the entire map.
 ```
 
 ### Spawn powerup crate
@@ -3017,16 +3025,16 @@ AircraftTypes, due to their different attack patterns, will not wait for the del
 In `rulesmd.ini`:
 ```ini
 [General]
-ExtraRange.TargetMoving=0.0                     ; float, range in cells
+ExtraRange.TargetMoving=0.0                     ; floating point value, range in cells
 ExtraRange.TargetMoving.CloseRangeOnly=false    ; boolean
-ExtraRange.FirerMoving=0.0                      ; float, range in cells
-ExtraRange.Prefiring=0.0                        ; float, range in cells
+ExtraRange.FirerMoving=0.0                      ; floating point value, range in cells
+ExtraRange.Prefiring=0.0                        ; floating point value, range in cells
 ExtraRange.Prefiring.IncludeBurst=true          ; boolean
 
 [SOMEWEAPON]                                    ; WeaponType
-ExtraRange.TargetMoving=                        ; float, range in cells, the default values refer to the descriptions above
-ExtraRange.FirerMoving=                         ; float, range in cells, default to [General] -> ExtraRange.FirerMoving
-ExtraRange.Prefiring=                           ; float, range in cells, default to [General] -> ExtraRange.Prefiring
+ExtraRange.TargetMoving=                        ; floating point value, range in cells, the default values refer to the descriptions above
+ExtraRange.FirerMoving=                         ; floating point value, range in cells, default to [General] -> ExtraRange.FirerMoving
+ExtraRange.Prefiring=                           ; floating point value, range in cells, default to [General] -> ExtraRange.Prefiring
 ExtraRange.Prefiring.IncludeBurst=              ; boolean, default to [General] -> ExtraRange.Prefiring.IncludeBurst
 ```
 

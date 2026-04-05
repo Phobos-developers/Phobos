@@ -1991,7 +1991,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMETERRAINTYPE]             ; TerrainType
 SpawnsTiberium.Type=0         ; tiberium/ore type index
-SpawnsTiberium.Range=1        ; integer, radius in cells
+SpawnsTiberium.Range=1        ; integer, range in cells
 SpawnsTiberium.GrowthStage=3  ; integer - single or comma-sep. range
 SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
 SpawnsTiberium.Particle=      ; Particle
@@ -2009,7 +2009,7 @@ SpawnsTiberium.Particle=      ; Particle
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-ConditionYellow.Terrain=  ; floating-point value, default to [AudioVisual] -> ConditionYellow
+ConditionYellow.Terrain=  ; floating point value, default to [AudioVisual] -> ConditionYellow
 
 [SOMETERRAINTYPE]         ; TerrainType
 HasDamagedFrames=false    ; boolean
@@ -2105,10 +2105,10 @@ CrateGoodie.RerollChance=0.0   ; floating point value, percents or absolute (0.0
 In `rulesmd.ini`:
 ```ini
 [General]
-HarvesterDumpAmount=0.0               ; float point value
+HarvesterDumpAmount=0.0               ; floating point value
 
 [SOMEVEHICLE]                         ; VehicleType
-HarvesterDumpAmount=                  ; float point value
+HarvesterDumpAmount=                  ; floating point value
 ```
 
 ### Customize type selection for IFV

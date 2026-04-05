@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-23 02:31+0800\n"
+"POT-Creation-Date: 2026-04-05 22:08+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -5744,6 +5744,9 @@ msgstr "现在弹头可以在引爆时揭示部分区域或整个地图的黑幕
 msgid "Reveal only applies to the owner of the warhead."
 msgstr "仅适用于弹头所有者。"
 
+msgid "Negative values mean reveal the entire map."
+msgstr "负值意味着揭示整张地图。"
+
 msgid "Reverse engineer warhead"
 msgstr "逆向工程弹头"
 
@@ -5790,6 +5793,9 @@ msgstr "现在弹头可以在引爆时填充部分区域或整个地图的黑幕
 
 msgid "Shroud only applies to enemies of the warhead owner."
 msgstr "仅适用于敌对所属方。"
+
+msgid "Negative values mean shroud the entire map."
+msgstr "负值意味着遮蔽整张地图。"
 
 msgid "Spawn powerup crate"
 msgstr "生成工具箱"
