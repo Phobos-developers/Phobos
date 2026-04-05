@@ -1638,6 +1638,7 @@ msgid ""
 "Now miners will no longer withdraw from the Harvest mission due to "
 "mineral depletion and will periodically attempt to return to work."
 msgstr ""
+"现在矿车将不再由于矿物枯竭而推出 `Harvest` 任务并且会定期尝试返回工作。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"

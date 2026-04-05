@@ -2179,7 +2179,7 @@ msgid ""
 msgstr "修复了非超时空矿车在矿区无矿后即便矿石已重新生成也不会恢复工作的 Bug（by TaranDahl）"
 
 msgid "Miners back to work when ore regenerated (by TaranDahl)"
-msgstr ""
+msgstr "矿车在矿石再生后返回工作"
 
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
