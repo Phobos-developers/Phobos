@@ -4,34 +4,6 @@
 #include <Ext/Scenario/Body.h>
 #include <Ext/Building/Body.h>
 
-DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
-{
-	GET(HouseClass*, pThis, ECX);
-	auto const pHouseExt = HouseExt::ExtMap.Find(pThis);
-
-	pHouseExt->PowerPlantEnhancers.clear();
-
-	// This pre-iterating ensure our process to be done in O(NM) instead of O(N^2),
-	// as M should be much less than N, this will be a great improvement. - secsome
-	for (auto const pBld : pThis->Buildings)
-	{
-		if (TechnoExt::IsActive(pBld) && pBld->IsOnMap && pBld->HasPower)
-		{
-			const auto pType = pBld->Type;
-			const auto pExt = BuildingTypeExt::ExtMap.Find(pType);
-
-			if (pExt->PowerPlantEnhancer_Buildings.size()
-				&& (pExt->PowerPlantEnhancer_Amount != 0 || pExt->PowerPlantEnhancer_Factor != 1.0f)
-				&& (pExt->PowerPlantEnhancer_MaxCount < 0 || pHouseExt->PowerPlantEnhancers[pType->ArrayIndex] < pExt->PowerPlantEnhancer_MaxCount))
-			{
-				++pHouseExt->PowerPlantEnhancers[pType->ArrayIndex];
-			}
-		}
-	}
-
-	return 0;
-}
-
 // Trigger power recalculation on gain/loss of any techno, not just buildings.
 DEFINE_HOOK_AGAIN(0x5025F0, HouseClass_RegisterGain, 0x5) // RegisterLoss
 DEFINE_HOOK(0x502A80, HouseClass_RegisterGain, 0x8)

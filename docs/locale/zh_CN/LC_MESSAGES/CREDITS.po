@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-03 18:01+0800\n"
+"POT-Creation-Date: 2026-04-05 21:55+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1716,6 +1716,9 @@ msgstr "为每个载具类型单独定义默认的幻影伪装类型"
 msgid "Allow customize jumpjet properties on warhead"
 msgstr "允许在弹头上自定义 Jumpjet 属性"
 
+msgid "Customize effects range of power plant enhancer"
+msgstr "自定义电厂增幅器的效果范围"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
@@ -2428,6 +2431,9 @@ msgid ""
 "minerals are depleted and then regenerated"
 msgstr "修复了非超时空矿车在矿区无矿后即便矿石已重新生成也不会恢复工作的 Bug"
 
+msgid "Miners back to work when ore regenerated"
+msgstr ""
+
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
 
@@ -2631,6 +2637,5 @@ msgstr "撤销 Ares 的补丁以允许为 OpenTopped 的运输工具自定义"
 msgid ""
 "Fix for units with Fly, Jumpjet or Rocket locomotors crashing off-map not"
 " being cleaned up"
-msgstr ""
-"修复了 `Locomotor` 为 `Fly`、`Jumpjet` 或 `Rocket` 的单位在地图外坠毁时未能清除的问题"
+msgstr "修复了 `Locomotor` 为 `Fly`、`Jumpjet` 或 `Rocket` 的单位在地图外坠毁时未能清除的问题"
 

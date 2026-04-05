@@ -40,22 +40,42 @@ int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
 	return -1;
 }
 
-std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse)
+std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse, BuildingClass* pPowerPlant)
 {
+	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
 	int amount = 0;
 	float factor = 1.0f;
+	std::map<int, int> applied; // index, count
 
-	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
-
-	for (const auto& [typeIdx, count] : pHouseExt->PowerPlantEnhancers)
+	for (const auto pEnhancer : pHouseExt->PowerPlantEnhancers)
 	{
-		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(BuildingTypeClass::Array[typeIdx]);
+		if (!TechnoExt::IsActive(pEnhancer) || pEnhancer->InLimbo || !pEnhancer->HasPower)
+			continue;
 
-		if (pTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding))
+		const auto pEnhancerType = pEnhancer->Type;
+		const auto pEnhancerTypeExt = BuildingTypeExt::ExtMap.Find(pEnhancerType);
+
+		if (!pEnhancerTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding))
+			continue;
+
+		const int range = pEnhancerTypeExt->PowerPlantEnhancer_Range.Get();
+
+		if (range > 0 && (!pPowerPlant || pEnhancer->DistanceFrom(pPowerPlant) > range))
+			continue;
+
+		const int max = pEnhancerTypeExt->PowerPlantEnhancer_MaxCount;
+
+		if (max > 0)
 		{
-			factor *= std::powf(pTypeExt->PowerPlantEnhancer_Factor, static_cast<float>(count));
-			amount += pTypeExt->PowerPlantEnhancer_Amount * count;
+			const auto it = applied.find(pEnhancerType->ArrayIndex);
+
+			if (it != applied.cend() && it->second >= max)
+				continue;
 		}
+
+		factor *= pEnhancerTypeExt->PowerPlantEnhancer_Factor;
+		amount += pEnhancerTypeExt->PowerPlantEnhancer_Amount;
+		++applied[pEnhancerType->ArrayIndex];
 	}
 
 	return std::make_pair(static_cast<int>(std::round(output * factor)), amount);
@@ -138,6 +158,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PowersUp_Buildings.Read(exINI, pSection, "PowersUp.Buildings");
 	this->PowerPlant_DamageFactor.Read(exINI, pSection, "PowerPlant.DamageFactor");
 	this->PowerPlantEnhancer_Buildings.Read(exINI, pSection, "PowerPlantEnhancer.PowerPlants");
+	this->PowerPlantEnhancer_Range.Read(exINI, pSection, "PowerPlantEnhancer.Range");
 	this->PowerPlantEnhancer_Amount.Read(exINI, pSection, "PowerPlantEnhancer.Amount");
 	this->PowerPlantEnhancer_Factor.Read(exINI, pSection, "PowerPlantEnhancer.Factor");
 	this->PowerPlantEnhancer_MaxCount.Read(exINI, pSection, "PowerPlantEnhancer.MaxCount");
@@ -291,6 +312,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PowersUp_Buildings)
 		.Process(this->PowerPlant_DamageFactor)
 		.Process(this->PowerPlantEnhancer_Buildings)
+		.Process(this->PowerPlantEnhancer_Range)
 		.Process(this->PowerPlantEnhancer_Amount)
 		.Process(this->PowerPlantEnhancer_Factor)
 		.Process(this->PowerPlantEnhancer_MaxCount)

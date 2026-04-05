@@ -317,6 +317,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated.
 - Fixed units with Fly, Jumpjet or Rocket locomotors destroyed while crashing off-map never being fully cleaned up, permanently blocking production slots and counting towards unit limits.
 - Fixed a desync due to an inconsistent shroud state caused by `GapGenerator` and `SpySat` interaction.
+- Now miners will no longer withdraw from the Harvest mission due to mineral depletion and will periodically attempt to return to work.
 
 ## Fixes / interactions with other extensions
 

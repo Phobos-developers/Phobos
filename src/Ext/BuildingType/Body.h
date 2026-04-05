@@ -19,6 +19,7 @@ public:
 
 		Valueable<double> PowerPlant_DamageFactor;
 		ValueableVector<BuildingTypeClass*> PowerPlantEnhancer_Buildings;
+		Valueable<Leptons> PowerPlantEnhancer_Range;
 		Valueable<int> PowerPlantEnhancer_Amount;
 		Nullable<float> PowerPlantEnhancer_Factor;
 		Valueable<int> PowerPlantEnhancer_MaxCount;
@@ -118,6 +119,7 @@ public:
 			, PowersUp_Buildings {}
 			, PowerPlant_DamageFactor { 1.0 }
 			, PowerPlantEnhancer_Buildings {}
+			, PowerPlantEnhancer_Range { Leptons(0) }
 			, PowerPlantEnhancer_Amount { 0 }
 			, PowerPlantEnhancer_Factor { 1.0f }
 			, PowerPlantEnhancer_MaxCount { -1 }
@@ -229,7 +231,7 @@ public:
 
 	static void PlayBunkerSound(BuildingClass const* pThis, bool buildUp = false);
 
-	static std::pair<int, int> GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse);
+	static std::pair<int, int> GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse, BuildingClass* pPowerPlant = nullptr);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
 	static int CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pBuilding, HouseClass* pHouse);
 	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);

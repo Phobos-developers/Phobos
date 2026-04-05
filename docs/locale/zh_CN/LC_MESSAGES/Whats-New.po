@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-03 18:01+0800\n"
+"POT-Creation-Date: 2026-04-05 21:55+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1788,6 +1788,9 @@ msgstr ""
 "[允许在弹头上自定义 Jumpjet 属性](Fixed-or-Improved-Logics.md#customizing-locomotor-"
 "warhead)（by NetsuNegi）"
 
+msgid "Customize effects range of power plant enhancer (by NetsuNegi)"
+msgstr "自定义电厂增幅器的效果范围（by NetsuNegi）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
@@ -2175,6 +2178,9 @@ msgid ""
 "minerals are depleted and then regenerated (by TaranDahl)"
 msgstr "修复了非超时空矿车在矿区无矿后即便矿石已重新生成也不会恢复工作的 Bug（by TaranDahl）"
 
+msgid "Miners back to work when ore regenerated (by TaranDahl)"
+msgstr ""
+
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
 
@@ -2352,7 +2358,8 @@ msgid ""
 "crashing off-map never being fully cleaned up, permanently blocking "
 "production slots and counting towards unit limits (by RAZER)"
 msgstr ""
-"修复了 `Locomotor` 为 `Fly`、`Jumpjet` 或 `Rocket` 的单位在地图外坠毁时未能彻底清除并且永久占用生产槽位和计入单位上限的问题（by RAZER）"
+"修复了 `Locomotor` 为 `Fly`、`Jumpjet` 或 `Rocket` "
+"的单位在地图外坠毁时未能彻底清除并且永久占用生产槽位和计入单位上限的问题（by RAZER）"
 
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
@@ -2439,8 +2446,7 @@ msgstr "图像与 `Wall=true` 的覆盖物重叠的载具上不再会显示出�
 msgid ""
 "Fixed a desync due to an inconsistent shroud state caused by "
 "`GapGenerator` and `SpySat` interaction (by Starkku)"
-msgstr ""
-"修复了一个由于 `GapGenerator` 和 `SpySat` 交互导致黑幕状态不一致而引发的不同步问题（by Starkku）"
+msgstr "修复了一个由于 `GapGenerator` 和 `SpySat` 交互导致黑幕状态不一致而引发的不同步问题（by Starkku）"
 
 msgid ""
 "Fixed vehicles disguised as trees incorrectly displaying veterancy "

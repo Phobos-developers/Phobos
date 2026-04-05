@@ -359,6 +359,51 @@ DEFINE_HOOK(0x4511D6, BuildingClass_AnimationAI_SellBuildup, 0x7)
 	return BuildingTypeExt::ExtMap.Find(pThis->Type)->SellBuildupLength == pThis->Animation.Value ? Continue : Skip;
 }
 
+#pragma region PowerPlantEnhancer
+
+DEFINE_HOOK(0x441553, BuildingClass_Unlimbo_AddOwned, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	const auto pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
+
+	if (!pTypeExt->PowerPlantEnhancer_Buildings.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
+		pOwnerExt->PowerPlantEnhancers.push_back(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x448A78, BuildingClass_SetOwningHouse_RemoveOwned, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+	GET(HouseClass*, pOwner, EBX);
+	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	const auto pOwnerExt = HouseExt::ExtMap.Find(pOwner);
+
+	if (!pTypeExt->PowerPlantEnhancer_Buildings.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
+	{
+		auto& vec = pOwnerExt->PowerPlantEnhancers;
+		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x449197, BuildingClass_SetOwningHouse_AddOwned, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+	GET(HouseClass*, pNewOwner, EBP);
+	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	const auto pNewOwnerExt = HouseExt::ExtMap.Find(pNewOwner);
+
+	if (!pTypeExt->PowerPlantEnhancer_Buildings.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
+		pNewOwnerExt->PowerPlantEnhancers.push_back(pThis);
+
+	return 0;
+}
+
+#pragma endregion
+
 #pragma region FactoryPlant
 
 DEFINE_HOOK(0x441501, BuildingClass_Unlimbo_FactoryPlant, 0x6)
@@ -1025,3 +1070,20 @@ DEFINE_HOOK(0x444D11, BuildingClass_ExitObject_ProductionAnimForInfantryFactory,
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x45670D, BuildingClass_GetRadialIndicatorRange_Extras, 0x7)
+{
+	enum { ApplyRange = 0x45674B, ApplyTurretWeapon = 0x456714 };
+
+	GET(BuildingClass*, pThis, ESI);
+	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	if (!pTypeExt->PowerPlantEnhancer_Buildings.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
+	{
+		R->EAX(pTypeExt->PowerPlantEnhancer_Range.Get() / Unsorted::LeptonsPerCell);
+		return ApplyRange;
+	}
+
+	R->EAX(pThis->TechnoClass::GetTurretWeapon());
+	return ApplyTurretWeapon;
+}

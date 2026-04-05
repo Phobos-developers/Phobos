@@ -605,3 +605,40 @@ DEFINE_FUNCTION_JUMP(CALL, 0x6D4D42, TacticalClass_DrawTimer_Print_Wide)// UINam
 DEFINE_FUNCTION_JUMP(CALL, 0x6D4D9A, TacticalClass_DrawTimer_Print_Wide)// Time
 
 #pragma endregion
+
+DEFINE_HOOK(0x6DBEA3, TacticalClass_DrawRadialIndicator_Building_Extras, 0x7)
+{
+	enum { ContinueAfter = 0x6DBEAA };
+
+	GET(BuildingClass*, pCurrentBuilding, EBX);
+
+	if (Phobos::Config::ShowPowerPlantEnhancerRange && RulesExt::Global()->ShowPowerPlantEnhancerRange)
+	{
+		const auto pCurrentExt = HouseExt::ExtMap.Find(HouseClass::CurrentPlayer);
+		const auto center = DisplayClass::Instance.CurrentFoundation_CenterCell;
+
+		for (const auto pEnhancer : pCurrentExt->PowerPlantEnhancers)
+		{
+			if (!TechnoExt::IsActive(pEnhancer) || pEnhancer->InLimbo || !pEnhancer->HasPower)
+				continue;
+
+			const auto pEnhancerTypeExt = BuildingTypeExt::ExtMap.Find(pEnhancer->Type);
+			const int range = pEnhancerTypeExt->PowerPlantEnhancer_Range.Get() / Unsorted::LeptonsPerCell;
+
+			if (range <= 0 || !pEnhancerTypeExt->PowerPlantEnhancer_Buildings.Contains(pCurrentBuilding->Type))
+				continue;
+
+			CoordStruct enhancerCoords = pEnhancer->GetCoords();
+
+			if (center.DistanceFrom(CellClass::Coord2Cell(enhancerCoords)) > range * 1.5)
+				continue;
+
+			enhancerCoords.Z = MapClass::Instance.GetCellFloorHeight(enhancerCoords);
+			const auto& color = pEnhancer->Owner->Color;
+			Game::DrawRadialIndicator(false, true, enhancerCoords, color, range, false, true);
+		}
+	}
+
+	R->EAX(pCurrentBuilding->GetRadialIndicatorRange());
+	return ContinueAfter;
+}

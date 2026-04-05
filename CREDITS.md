@@ -523,6 +523,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the initial direction of building placed by Ares's UnitDelivery superweapon
   - Customize default mirage disguises per vehicletypes
   - Allow customize jumpjet properties on warhead
+  - Customize effects range of power plant enhancer
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -731,6 +732,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue that the Jumpjet must end its movement before starting the next mission
   - Taunt warhead
   - Fix the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated
+  - Miners back to work when ore regenerated
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
