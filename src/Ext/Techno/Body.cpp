@@ -993,6 +993,157 @@ bool TechnoExt::EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool sel
 	return true;
 }
 
+struct DummyExtHere
+{
+	char _[0x9C];
+	bool DriverKilled;
+};
+
+struct DummyTypeExtHere
+{
+	char _[0xF4];
+	ValueableVector<TechnoTypeClass*> Operators;
+	bool Operator_Any;
+};
+
+bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClass* pToHouse, TechnoClass* pKiller, bool resetVeterancy)
+{
+	const auto pThis = abstract_cast<FootClass*, true>(*pData);
+
+	if (!pThis)
+		return false;
+
+	const bool passive = pToHouse->IsNeutral();
+	const auto pExt_Ares = reinterpret_cast<DummyExtHere*>(pThis->align_154);
+	pExt_Ares->DriverKilled = passive;
+
+	if (pThis->Owner == pToHouse)
+		return false;
+
+	const auto pType = pThis->GetTechnoType();
+	const auto pTypeExt_Ares = reinterpret_cast<DummyTypeExtHere*>(pType->align_2FC);
+	auto& passengers = pThis->Passengers;
+
+	do
+	{
+		if (!passengers.GetFirstPassenger())
+			break;
+
+		if (pTypeExt_Ares->Operator_Any)
+		{
+			const auto pOperator = pThis->RemoveFirstPassenger();
+			pOperator->RegisterDestruction(pKiller);
+			pOperator->UnInit();
+		}
+		else if (!pTypeExt_Ares->Operators.empty())
+		{
+			for (NextObject passenger(passengers.GetFirstPassenger()); passenger; ++passenger)
+			{
+				if (!pTypeExt_Ares->Operators.Contains(passenger->GetTechnoType()))
+					continue;
+
+				const auto pOperator = pThis->RemoveFirstPassenger();
+				pOperator->RegisterDestruction(pKiller);
+				pOperator->UnInit();
+				break;
+			}
+		}
+
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (passive && pTypeExt->DriverKilled_KeptPassengers)
+			break;
+
+		const bool kill = pTypeExt->DriverKilled_KillPassengers.Get(RulesExt::Global()->DriverKilled_KillPassengers);
+
+		while (auto pPassenger = passengers.GetFirstPassenger())
+		{
+			const auto pNextPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
+			passengers.RemovePassenger(pPassenger);
+
+			if (pType->Gunner && !passengers.NumPassengers)
+				pThis->RemoveGunner(pPassenger);
+
+			if (kill || !TechnoExt::EjectRandomly(pPassenger, pThis->Location, 128, false))
+			{
+				pPassenger->RegisterDestruction(nullptr);
+				pPassenger->UnInit();
+			}
+			else if (pType->OpenTopped)
+			{
+				pThis->ExitedOpenTopped(pPassenger);
+			}
+
+			pPassenger = pNextPassenger;
+		}
+	}
+	while (false);
+
+	pThis->HijackerInfantryType = -1;
+
+	if (resetVeterancy)
+		pThis->Veterancy.SetRookie(false);
+
+	if (const auto pControlledBy = pThis->MindControlledBy)
+	{
+		if (const auto pManager = pControlledBy->CaptureManager)
+			pManager->FreeUnit(pThis);
+	}
+
+	pThis->MindControlledByAUnit = false;
+	pThis->MindControlledByHouse = nullptr;
+
+	if (const auto pRingAnim = pThis->MindControlRingAnim)
+	{
+		pRingAnim->UnInit();
+		pThis->MindControlRingAnim = nullptr;
+	}
+
+	if (const auto pTeam = pThis->Team)
+		pTeam->LiberateMember(pThis);
+
+	if (const auto pManager = pThis->CaptureManager)
+		pManager->FreeAll();
+
+	if (const auto pManager = pThis->SpawnManager)
+	{
+		pManager->KillNodes();
+		pManager->ResetTarget();
+	}
+
+	if (const auto pManager = pThis->SlaveManager)
+	{
+		pManager->Killed(pKiller);
+		pManager->AllGuard();
+		pManager->Owner = pThis;
+
+		if (passive)
+			pManager->SuspendWork();
+		else
+			pManager->ResumeWork();
+	}
+
+	pThis->SetOwningHouse(pToHouse);
+
+	if (passive)
+		pThis->QueueMission(Mission::Harmless, true);
+
+	pThis->SetTarget(nullptr);
+	pThis->SetDestination(nullptr, false);
+
+	auto pTag = pThis->AttachedTag;
+
+	if (pTag)
+		pTag->RaiseEvent(static_cast<TriggerEvent>(0x44), pThis, CellStruct::Empty, false, pKiller);
+
+	pTag = pThis->AttachedTag;
+
+	if (pTag && pThis->IsAlive)
+		pTag->RaiseEvent(static_cast<TriggerEvent>(0x43), pThis, CellStruct::Empty);
+
+	return true;
+}
+
 // =============================
 // load / save
 

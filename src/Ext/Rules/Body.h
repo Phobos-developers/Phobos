@@ -325,6 +325,8 @@ public:
 
 		Valueable<bool> UnitsUnsellable;
 
+		Valueable<bool> DriverKilled_KillPassengers;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -592,6 +594,8 @@ public:
 			, PenetratesTransport_Level { 10 }
 
 			, UnitsUnsellable { false }
+
+			, DriverKilled_KillPassengers { false }
 		{ }
 
 		virtual ~ExtData() = default;

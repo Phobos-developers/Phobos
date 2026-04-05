@@ -3829,6 +3829,16 @@ msgid ""
 "`SpySat=yes` that couldn't be affected by the jam."
 msgstr "`RadarJamIgnore` 决定哪些拥有 `Radar=yes` 或 `SpySat=yes` 的建筑不受到干扰。"
 
+msgid ""
+"Customize whether transport can kept or eject "
+"passengers when driver has been killed"
+msgstr "自定义载具被击杀驾驶员时是否保留或弹出乘客"
+
+msgid ""
+"It is now possible to customize whether transport can kept or eject "
+"passengers when driver has been killed."
+msgstr "现在可以自定义载具被击杀驾驶员时是否保留或弹出乘客了。"
+
 msgid "Customize EVA voice and `SellSound` when selling units"
 msgstr "单位出售音效"
 

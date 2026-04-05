@@ -1720,6 +1720,12 @@ msgid ""
 msgstr ""
 "自定义电厂增幅器的效果范围"
 
+msgid ""
+"Customize whether transport can kept or eject "
+"passengers when driver has been killed"
+msgstr ""
+"自定义载具被击杀驾驶员时是否保留或弹出乘客"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 

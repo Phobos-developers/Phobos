@@ -1619,6 +1619,20 @@ RadarJamAffect=                   ; List of BuildingTypes
 RadarJamIgnore=                   ; List of BuildingTypes
 ```
 
+### Customize whether transport can kept or eject passengers when driver has been killed
+
+- It is now possible to customize whether transport can kept or eject passengers when driver has been killed.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+DriverKilled.KillPassengers=false   ; boolean
+
+[SOMETECHNO]                        ; TechnoType
+DriverKilled.KeptPassengers=false   ; boolean
+DriverKilled.KillPassengers=        ; boolean, default to [CombatDamage] -> DriverKilled.KillPassengers
+```
+
 ### Customize EVA voice and `SellSound` when selling units
 
 - When a building or a unit is sold, a sell sound as well as an EVA is played to the owner. These configurations have been deglobalized.

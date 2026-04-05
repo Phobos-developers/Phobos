@@ -231,6 +231,8 @@ public:
 		Nullable<WarheadTypeClass*> ForceShield_KillWarhead;
 		Valueable<bool> Explodes_KillPassengers;
 		Valueable<bool> Explodes_DuringBuildup;
+		Valueable<bool> DriverKilled_KeptPassengers;
+		Nullable<bool> DriverKilled_KillPassengers;
 		Nullable<int> DeployFireWeapon;
 		Valueable<TargetZoneScanType> TargetZoneScanType;
 
@@ -697,6 +699,8 @@ public:
 
 			, Explodes_KillPassengers { true }
 			, Explodes_DuringBuildup { true }
+			, DriverKilled_KeptPassengers { false }
+			, DriverKilled_KillPassengers {}
 			, DeployFireWeapon {}
 			, TargetZoneScanType { TargetZoneScanType::Same }
 
