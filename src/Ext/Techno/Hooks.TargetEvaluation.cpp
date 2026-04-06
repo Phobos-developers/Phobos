@@ -486,7 +486,7 @@ DEFINE_HOOK(0x70CF87, TechnoClass_ThreatCoefficient_CanAttackMeThreatBonus, 0x9)
 				return;
 
 			DirStruct dir = DirStruct();
-			int deltaFacing = std::abs(pThis->GetTargetDirection(&dir, pTarget)->Raw - pFacing->Current().Raw);
+			int deltaFacing = std::abs(pThis->GetTargetDirection(&dir, pTarget)->Raw - pFacing->Current().Raw) % 65536;
 			totalThreat += deltaFacing * bonus;
 		};
 	ApplyFacingBonus();
