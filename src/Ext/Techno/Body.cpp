@@ -1042,7 +1042,12 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 				if (!pTypeExt_Ares->Operators.Contains(passenger->GetTechnoType()))
 					continue;
 
-				const auto pOperator = pThis->RemoveFirstPassenger();
+				const auto pOperator = static_cast<FootClass*>(*passenger);
+				passengers.RemovePassenger(pOperator);
+
+				if (pType->Gunner && !passengers.NumPassengers)
+					pThis->RemoveGunner(pOperator);
+
 				pOperator->RegisterDestruction(pKiller);
 				pOperator->UnInit();
 				break;
