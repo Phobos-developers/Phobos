@@ -2188,7 +2188,7 @@ void TechnoExt::ExtData::UpdateLastTargetCrd()
 	else
 	{
 		if (!pTimer->IsTicking())
-			pTimer->Start(15);
+			pTimer->Start(45);
 
 		if (pTimer->Completed())
 		{
