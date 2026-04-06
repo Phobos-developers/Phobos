@@ -20,6 +20,7 @@ public:
 		Valueable<int> IngameScore_WinTheme;
 		Valueable<int> IngameScore_LoseTheme;
 		Valueable<Point2D> Sidebar_HarvesterCounter_Offset;
+		Nullable<ColorStruct> Sidebar_HarvesterCounter_Green;
 		Valueable<ColorStruct> Sidebar_HarvesterCounter_Yellow;
 		Valueable<ColorStruct> Sidebar_HarvesterCounter_Red;
 		Valueable<Point2D> Sidebar_WeedsCounter_Offset;
@@ -48,6 +49,7 @@ public:
 			, IngameScore_WinTheme { -2 }
 			, IngameScore_LoseTheme { -2 }
 			, Sidebar_HarvesterCounter_Offset { { 0, 0 } }
+			, Sidebar_HarvesterCounter_Green { }
 			, Sidebar_HarvesterCounter_Yellow { { 255, 255, 0 } }
 			, Sidebar_HarvesterCounter_Red { { 255, 0, 0 } }
 			, Sidebar_WeedsCounter_Offset { { 0, 0 } }
