@@ -69,7 +69,7 @@ public:
 		PhobosPCXFile AltCameoPCX;
 		Valueable<bool> NoManualMove;
 		Nullable<int> InitialStrength;
-		Valueable<bool> ReloadInTransport;
+		Nullable<bool> ReloadInTransport;
 		Valueable<bool> ForbidParallelAIQueues;
 		Valueable<bool> IgnoreForBaseCenter;
 
@@ -162,14 +162,14 @@ public:
 		Nullable<int> OpenTopped_RangeBonus;
 		Nullable<float> OpenTopped_DamageMultiplier;
 		Nullable<int> OpenTopped_WarpDistance;
-		Valueable<bool> OpenTopped_IgnoreRangefinding;
-		Valueable<bool> OpenTopped_AllowFiringIfDeactivated;
-		Valueable<bool> OpenTopped_ShareTransportTarget;
-		Valueable<bool> OpenTopped_UseTransportRangeModifiers;
-		Valueable<bool> OpenTopped_CheckTransportDisableWeapons;
+		Nullable<bool> OpenTopped_IgnoreRangefinding;
+		Nullable<bool> OpenTopped_AllowFiringIfDeactivated;
+		Nullable<bool> OpenTopped_ShareTransportTarget;
+		Nullable<bool> OpenTopped_UseTransportRangeModifiers;
+		Nullable<bool> OpenTopped_CheckTransportDisableWeapons;
 		Nullable<bool> OpenTopped_DecloakToFire;
-		Valueable<int> OpenTransport_RangeBonus;
-		Valueable<float> OpenTransport_DamageMultiplier;
+		Nullable<int> OpenTransport_RangeBonus;
+		Nullable<float> OpenTransport_DamageMultiplier;
 
 		Valueable<bool> AutoTargetOwnPosition;
 		Valueable<bool> AutoTargetOwnPosition_Self;
@@ -220,8 +220,8 @@ public:
 		Valueable<int> Ammo_Shared_Group;
 
 		Nullable<SelfHealGainType> SelfHealGainType;
-		Valueable<bool> Passengers_SyncOwner;
-		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
+		Nullable<bool> Passengers_SyncOwner;
+		Nullable<bool> Passengers_SyncOwner_RevertOnExit;
 
 		Nullable<bool> IronCurtain_KeptOnDeploy;
 		Nullable<IronCurtainEffect> IronCurtain_Effect;
@@ -229,8 +229,8 @@ public:
 		Nullable<bool> ForceShield_KeptOnDeploy;
 		Nullable<IronCurtainEffect> ForceShield_Effect;
 		Nullable<WarheadTypeClass*> ForceShield_KillWarhead;
-		Valueable<bool> Explodes_KillPassengers;
-		Valueable<bool> Explodes_DuringBuildup;
+		Nullable<bool> Explodes_KillPassengers;
+		Nullable<bool> Explodes_DuringBuildup;
 		Nullable<int> DeployFireWeapon;
 		Valueable<TargetZoneScanType> TargetZoneScanType;
 
@@ -431,7 +431,7 @@ public:
 		Valueable<int> Ammo_AutoConvertMaximumAmount;
 		Nullable<TechnoTypeClass*> Ammo_AutoConvertType;
 
-		Valueable<bool> FiringForceScatter;
+		Nullable<bool> FiringForceScatter;
 
 		Valueable<int> FireUp;
 		Valueable<bool> FireUp_ResetInRetarget;
@@ -490,7 +490,7 @@ public:
 
 		Nullable<bool> JumpjetClimbIgnoreBuilding;
 
-		Valueable<bool> HoverDrownable;
+		Nullable<bool> HoverDrownable;
 
 		Nullable<bool> Unsellable; // Ares 3.0
 
@@ -540,7 +540,7 @@ public:
 			, AltCameoPCX {}
 			, NoManualMove { false }
 			, InitialStrength {}
-			, ReloadInTransport { false }
+			, ReloadInTransport {}
 			, ForbidParallelAIQueues { false }
 			, IgnoreForBaseCenter { false }
 			, TintColorAirstrike { 0 }
@@ -584,14 +584,14 @@ public:
 			, OpenTopped_RangeBonus {}
 			, OpenTopped_DamageMultiplier {}
 			, OpenTopped_WarpDistance {}
-			, OpenTopped_IgnoreRangefinding { false }
-			, OpenTopped_AllowFiringIfDeactivated { true }
-			, OpenTopped_ShareTransportTarget { true }
-			, OpenTopped_UseTransportRangeModifiers { false }
-			, OpenTopped_CheckTransportDisableWeapons { false }
+			, OpenTopped_IgnoreRangefinding {}
+			, OpenTopped_AllowFiringIfDeactivated {}
+			, OpenTopped_ShareTransportTarget {}
+			, OpenTopped_UseTransportRangeModifiers {}
+			, OpenTopped_CheckTransportDisableWeapons {}
 			, OpenTopped_DecloakToFire {}
-			, OpenTransport_RangeBonus { 0 }
-			, OpenTransport_DamageMultiplier { 1.0f }
+			, OpenTransport_RangeBonus {}
+			, OpenTransport_DamageMultiplier {}
 
 			, AutoTargetOwnPosition { false }
 			, AutoTargetOwnPosition_Self { false }
@@ -678,8 +678,8 @@ public:
 			, Ammo_Shared_Group { -1 }
 
 			, SelfHealGainType {}
-			, Passengers_SyncOwner { false }
-			, Passengers_SyncOwner_RevertOnExit { true }
+			, Passengers_SyncOwner {}
+			, Passengers_SyncOwner_RevertOnExit {}
 
 			, OnlyUseLandSequences { false }
 
@@ -695,8 +695,8 @@ public:
 			, ForceShield_Effect {}
 			, ForceShield_KillWarhead {}
 
-			, Explodes_KillPassengers { true }
-			, Explodes_DuringBuildup { true }
+			, Explodes_KillPassengers {}
+			, Explodes_DuringBuildup {}
 			, DeployFireWeapon {}
 			, TargetZoneScanType { TargetZoneScanType::Same }
 
@@ -880,7 +880,7 @@ public:
 			, Ammo_AutoConvertMaximumAmount { -1 }
 			, Ammo_AutoConvertType { nullptr }
 
-			, FiringForceScatter { true }
+			, FiringForceScatter {}
 
 			, FireUp { -1 }
 			, FireUp_ResetInRetarget { true }
@@ -939,7 +939,7 @@ public:
 
 			, JumpjetClimbIgnoreBuilding {}
 
-			, HoverDrownable { true }
+			, HoverDrownable {}
 
 			, Unsellable {}
 

@@ -1,4 +1,4 @@
-﻿#include "Body.h"
+#include "Body.h"
 #include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
 
@@ -341,7 +341,7 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 	{
 		auto const pTypeExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData;
 
-		if (pTypeExt->OpenTopped_UseTransportRangeModifiers && pTypeExt->OwnerObject()->OpenTopped)
+		if (pTypeExt->OpenTopped_UseTransportRangeModifiers.Get(RulesExt::Global()->OpenTopped_UseTransportRangeModifiers) && pTypeExt->OwnerObject()->OpenTopped)
 			pTechno = pTransport;
 	}
 

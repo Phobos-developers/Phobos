@@ -894,7 +894,7 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 
 			if (hoverShutdown)
 			{
-				if (pExt->TypeExtData->HoverDrownable)
+				if (pExt->TypeExtData->HoverDrownable.Get(RulesExt::Global()->HoverDrownable))
 				{
 					int damage = pThis->Health;
 					pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);

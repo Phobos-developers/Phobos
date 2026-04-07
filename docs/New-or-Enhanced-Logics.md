@@ -46,7 +46,7 @@ This page describes all the engine features that are either new and introduced b
   - `ForceDecloak`, if set to true, will uncloak and make the object the effect is attached to unable to cloak itself for duration of the effect.
   - `WeaponRange.Multiplier` and `WeaponRange.ExtraRange` can be used to multiply the weapon firing range of the object the effect is attached to, or give it an increase / decrease (measured in cells), respectively. `ExtraRange` is cumulatively applied from all attached effects after all `Multiplier` values have been applied.
     - `WeaponRange.AllowWeapons` can be used to list only weapons that can benefit from this range bonus and `WeaponRange.DisallowWeapons` weapons that are not allowed to, respectively.
-    - On TechnoTypes with `OpenTopped=true`, `OpenTopped.UseTransportRangeModifiers` can be set to true to make passengers firing out use the transport's active range bonuses instead.
+    - On TechnoTypes with `OpenTopped=true`, `OpenTopped.UseTransportRangeModifiers` can be set to true to make passengers firing out use the transport's active range bonuses instead. `[General] -> OpenTopped.UseTransportRangeModifiers` defines its global default value.
   - `Crit.Multiplier` and `Crit.ExtraChance` can be used to multiply the [critical hit](#chance-based-extra-damage-or-warhead-detonation--critical-hits) chance or grant a fixed bonus to it for the object the effect is attached to, respectively.
     - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
@@ -56,7 +56,7 @@ This page describes all the engine features that are either new and introduced b
     - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed. `SuppressReflectDamage.Groups` does the same thing but for all AttachEffectTypes in the listed groups.
     - `ReflectDamage.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the reflected damage's owner & invoker instead of the object the effect is attached to.
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
-    - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
+    - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`. `[General] -> OpenTopped.CheckTransportDisableWeapons` defines its global default value.
   - `Unkillable` can be used to prevent the techno from being killed by taken damage (minimum health will be 1).
   - It is possible to set groups for attach effect types by defining strings in `Groups`.
     - Groups can be used instead of types for removing effects and weapon filters.
@@ -152,14 +152,19 @@ Unkillable=false                                   ; boolean
 LaserTrail.Type=                                   ; LaserTrailType
 Groups=                                            ; comma-separated list of strings (group IDs)
 
+[General]
+OpenTopped.UseTransportRangeModifiers=false        ; boolean
+OpenTopped.UseTransportRangeModifiers=false        ; boolean
+OpenTopped.CheckTransportDisableWeapons=false      ; boolean
+
 [SOMETECHNO]                                       ; TechnoType
 AttachEffect.AttachTypes=                          ; List of AttachEffectTypes
 AttachEffect.DurationOverrides=                    ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
 AttachEffect.Delays=                               ; integer - delays (comma-separated) for AttachTypes in order from first to last.
 AttachEffect.InitialDelays=                        ; integer - initial delays (comma-separated) for AttachTypes in order from first to last.
 AttachEffect.RecreationDelays=                     ; integer - recreation delays (comma-separated) for AttachTypes in order from first to last.
-OpenTopped.UseTransportRangeModifiers=false        ; boolean
-OpenTopped.CheckTransportDisableWeapons=false      ; boolean
+OpenTopped.UseTransportRangeModifiers=             ; boolean, default to [General] -> OpenTopped.UseTransportRangeModifiers
+OpenTopped.CheckTransportDisableWeapons=           ; boolean, default to [General] -> OpenTopped.CheckTransportDisableWeapons
 
 [SOMEWEAPON]                                       ; WeaponType
 AttachEffect.RequiredTypes=                        ; List of AttachEffectTypes
@@ -1452,9 +1457,13 @@ PassengerDeletion.UnderEMP=false                ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                            ; TechnoType
+[General]
 Passengers.SyncOwner=false              ; boolean
 Passengers.SyncOwner.RevertOnExit=true  ; boolean
+
+[SOMETECHNO]                            ; TechnoType
+Passengers.SyncOwner=                   ; boolean, default to [General] -> Passengers.SyncOwner
+Passengers.SyncOwner.RevertOnExit=      ; boolean, default to [General] -> Passengers.SyncOwner.RevertOnExit
 ```
 
 ### Automatically firing weapons
@@ -1566,20 +1575,27 @@ DrainMoneyDisplay.OnTarget.UseDisplayIncome=        ; boolean
 In `rulesmd.ini`:
 ```ini
 [General]
+OpenTopped.IgnoreRangefinding=false       ; boolean
+OpenTopped.AllowFiringIfDeactivated=true  ; boolean
+OpenTopped.ShareTransportTarget=true      ; boolean
 OpenTopped.DecloakToFire=true             ; boolean
 
 [SOMETECHNO]                              ; TechnoType, transport with OpenTopped=yes
 OpenTopped.RangeBonus=                    ; integer, default to [CombatDamage] -> OpenToppedRangeBonus
 OpenTopped.DamageMultiplier=              ; floating point value, default to [CombatDamage] -> OpenToppedDamageMultiplier
 OpenTopped.WarpDistance=                  ; integer, default to [CombatDamage] -> OpenToppedWarpDistance
-OpenTopped.IgnoreRangefinding=false       ; boolean
-OpenTopped.AllowFiringIfDeactivated=true  ; boolean
-OpenTopped.ShareTransportTarget=true      ; boolean
+OpenTopped.IgnoreRangefinding=            ; boolean, defaults to [General] -> OpenTopped.IgnoreRangefinding
+OpenTopped.AllowFiringIfDeactivated=      ; boolean, defaults to [General] -> OpenTopped.AllowFiringIfDeactivated
+OpenTopped.ShareTransportTarget=          ; boolean, defaults to [General] -> OpenTopped.ShareTransportTarget
 OpenTopped.DecloakToFire=                 ; boolean, defaults to [General] -> OpenTopped.DecloakToFire
 
-[SOMETECHNO]                              ; TechnoType, passenger
+[CombatDamage]
 OpenTransport.RangeBonus=0                ; integer
 OpenTransport.DamageMultiplier=1.0        ; floating point value
+
+[SOMETECHNO]                              ; TechnoType, passenger
+OpenTransport.RangeBonus=                 ; integer, defaults to [CombatDamage] -> OpenTransport.RangeBonus
+OpenTransport.DamageMultiplier=           ; floating point value, defaults to [CombatDamage] -> OpenTransport.DamageMultiplier
 ```
 
 ```{note}
@@ -2245,8 +2261,11 @@ Ammo.DeployUnlockMaximumAmount=-1  ; integer
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]           ; VehicleType
+[General]
 HoverDrownable=true     ; boolean
+
+[SOMEVEHICLE]           ; VehicleType
+HoverDrownable=         ; boolean, default to [General] -> HoverDrownable
 ```
 
 ### Damaged unit image changes

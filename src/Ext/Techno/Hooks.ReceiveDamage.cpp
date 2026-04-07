@@ -228,11 +228,14 @@ DEFINE_HOOK(0x702603, TechnoClass_ReceiveDamage_Explodes, 0x6)
 
 	if (pThis->WhatAmI() == AbstractType::Building)
 	{
-		if (!pTypeExt->Explodes_DuringBuildup && (pThis->CurrentMission == Mission::Construction || pThis->CurrentMission == Mission::Selling))
+		if (!pTypeExt->Explodes_DuringBuildup.Get(RulesExt::Global()->Explodes_DuringBuildup)
+			&& (pThis->CurrentMission == Mission::Construction || pThis->CurrentMission == Mission::Selling))
+		{
 			return SkipExploding;
+		}
 	}
 
-	if (!pTypeExt->Explodes_KillPassengers)
+	if (!pTypeExt->Explodes_KillPassengers.Get(RulesExt::Global()->Explodes_KillPassengers))
 		return SkipKillingPassengers;
 
 	return 0;

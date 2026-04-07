@@ -348,7 +348,26 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->FallingDownTargetingFix.Read(exINI, GameStrings::General, "FallingDownTargetingFix");
 	this->AIAirTargetingFix.Read(exINI, GameStrings::General, "AIAirTargetingFix");
+
+	this->ReloadInTransport.Read(exINI, GameStrings::General, "ReloadInTransport");
+	this->OpenTopped_IgnoreRangefinding.Read(exINI, GameStrings::General, "OpenTopped.IgnoreRangefinding");
+	this->OpenTopped_AllowFiringIfDeactivated.Read(exINI, GameStrings::General, "OpenTopped.AllowFiringIfDeactivated");
+	this->OpenTopped_ShareTransportTarget.Read(exINI, GameStrings::General, "OpenTopped.ShareTransportTarget");
+	this->OpenTopped_UseTransportRangeModifiers.Read(exINI, GameStrings::General, "OpenTopped.UseTransportRangeModifiers");
+	this->OpenTopped_CheckTransportDisableWeapons.Read(exINI, GameStrings::General, "OpenTopped.CheckTransportDisableWeapons");
 	this->OpenTopped_DecloakToFire.Read(exINI, GameStrings::General, "OpenTopped.DecloakToFire");
+	this->OpenTransport_RangeBonus.Read(exINI, GameStrings::CombatDamage, "OpenTransport.RangeBonus");
+	this->OpenTransport_DamageMultiplier.Read(exINI, GameStrings::CombatDamage, "OpenTransport.DamageMultiplier");
+
+	this->Passengers_SyncOwner.Read(exINI, GameStrings::General, "Passengers.SyncOwner");
+	this->Passengers_SyncOwner_RevertOnExit.Read(exINI, GameStrings::General, "Passengers.SyncOwner.RevertOnExit");
+
+	this->Explodes_KillPassengers.Read(exINI, GameStrings::General, "Explodes.KillPassengers");
+	this->Explodes_DuringBuildup.Read(exINI, GameStrings::General, "Explodes.DuringBuildup");
+
+	this->AircraftFiringForceScatter.Read(exINI, GameStrings::General, "AircraftFiringForceScatter");
+
+	this->HoverDrownable.Read(exINI, GameStrings::General, "HoverDrownable");
 
 	this->SortCameoByName.Read(exINI, GameStrings::General, "SortCameoByName");
 
@@ -665,7 +684,21 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->IvanBombAttachToCenter)
 		.Process(this->FallingDownTargetingFix)
 		.Process(this->AIAirTargetingFix)
+		.Process(this->ReloadInTransport)
+		.Process(this->OpenTopped_IgnoreRangefinding)
+		.Process(this->OpenTopped_AllowFiringIfDeactivated)
+		.Process(this->OpenTopped_ShareTransportTarget)
+		.Process(this->OpenTopped_UseTransportRangeModifiers)
+		.Process(this->OpenTopped_CheckTransportDisableWeapons)
 		.Process(this->OpenTopped_DecloakToFire)
+		.Process(this->OpenTransport_RangeBonus)
+		.Process(this->OpenTransport_DamageMultiplier)
+		.Process(this->Passengers_SyncOwner)
+		.Process(this->Passengers_SyncOwner_RevertOnExit)
+		.Process(this->Explodes_KillPassengers)
+		.Process(this->Explodes_DuringBuildup)
+		.Process(this->AircraftFiringForceScatter)
+		.Process(this->HoverDrownable)
 		.Process(this->SortCameoByName)
 		.Process(this->MergeBuildingDamage)
 		.Process(this->BuildingRadioLink_SyncOwner)

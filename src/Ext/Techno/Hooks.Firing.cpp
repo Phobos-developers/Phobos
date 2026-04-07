@@ -433,14 +433,17 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 
 	auto const pTypeExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData;
 
-	if (pTransport->Deactivated && !pTypeExt->OpenTopped_AllowFiringIfDeactivated)
+	if (pTransport->Deactivated && !pTypeExt->OpenTopped_AllowFiringIfDeactivated.Get(RulesExt::Global()->OpenTopped_AllowFiringIfDeactivated))
 		return Illegal;
 
 	if (pTransport->Transporter)
 		return Illegal;
 
-	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons && TechnoExt::ExtMap.Find(pTransport)->AE.DisableWeapons && pThis->GetWeapon(weaponIndex)->WeaponType)
+	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons.Get(RulesExt::Global()->OpenTopped_CheckTransportDisableWeapons)
+		&& TechnoExt::ExtMap.Find(pTransport)->AE.DisableWeapons && pThis->GetWeapon(weaponIndex)->WeaponType)
+	{
 		return OutOfRange;
+	}
 
 	return Continue;
 }
@@ -676,7 +679,7 @@ DEFINE_HOOK(0x6FE43B, TechnoClass_FireAt_OpenToppedDmgMult, 0x8)
 			nDamageMult = pExt->OpenTopped_DamageMultiplier.Get(nDamageMult);
 		}
 
-		nDamageMult *= TechnoExt::ExtMap.Find(pThis)->TypeExtData->OpenTransport_DamageMultiplier;
+		nDamageMult *= TechnoExt::ExtMap.Find(pThis)->TypeExtData->OpenTransport_DamageMultiplier.Get(RulesExt::Global()->OpenTransport_DamageMultiplier);
 
 		R->EAX(static_cast<int>(nDamage * nDamageMult));
 		return ApplyDamageMult;

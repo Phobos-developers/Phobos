@@ -28,7 +28,7 @@ TechnoExt::ExtData::~ExtData()
 	}
 
 	if (whatAmI != AbstractType::AircraftType && whatAmI != AbstractType::BuildingType
-		&& pType->Ammo > 0 && pTypeExt->ReloadInTransport)
+		&& pType->Ammo > 0 && pTypeExt->ReloadInTransport.Get(RulesExt::Global()->ReloadInTransport))
 	{
 		auto& vec = ScenarioExt::Global()->TransportReloaders;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());

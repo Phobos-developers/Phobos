@@ -119,7 +119,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy.
 - `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false`.
 - Wall overlays are now drawn with the custom palette defined in `Palette` in `artmd.ini` if possible.
-- Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport.
+- Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport. Can also be defined at `[General] -> ReloadInTransport` for a global default value.
 - It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead.
 - Attached animations on flying units now have their layer updated immediately after the parent unit, if on same layer they always draw above the parent.
 - Fixed an issue where the powered anims of `Powered` / `PoweredSpecial` buildings cease to update when being captured by enemies.
@@ -745,8 +745,11 @@ CurleyShuffle=            ; boolean, default to [General] -> CurleyShuffle
 
 In `rulesmd.ini`:
 ```ini
-[SOMEAIRCRAFT]            ; AircraftType
-FiringForceScatter=true   ; boolean
+[General]
+AircraftFiringForceScatter=true     ; boolean
+
+[SOMEAIRCRAFT]                      ; AircraftType
+FiringForceScatter=                 ; boolean, default to [General] -> AircraftFiringForceScatter
 ```
 
 ### Extended Aircraft Missions
@@ -1687,11 +1690,15 @@ DropPod.Weapon.HitLandOnly=   ; boolean, default to no
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                 ; TechnoType
+[General]
 Explodes.KillPassengers=true ; boolean
+Explodes.DuringBuildup=true  ; boolean
+
+[SOMETECHNO]                 ; TechnoType
+Explodes.KillPassengers=     ; boolean, default to [General] -> Explodes.KillPassengers
 
 [SOMEBUILDING]               ; BuildingType
-Explodes.DuringBuildup=true  ; boolean
+Explodes.DuringBuildup=      ; boolean, default to [General] -> Explodes.DuringBuildup
 ```
 
 ### Forbid parallel AI queues

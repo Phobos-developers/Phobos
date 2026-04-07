@@ -297,7 +297,26 @@ public:
 
 		Valueable<bool> FallingDownTargetingFix;
 		Valueable<bool> AIAirTargetingFix;
+
+		Valueable<bool> ReloadInTransport;
+		Valueable<bool> OpenTopped_IgnoreRangefinding;
+		Valueable<bool> OpenTopped_AllowFiringIfDeactivated;
+		Valueable<bool> OpenTopped_ShareTransportTarget;
+		Valueable<bool> OpenTopped_UseTransportRangeModifiers;
+		Valueable<bool> OpenTopped_CheckTransportDisableWeapons;
 		Valueable<bool> OpenTopped_DecloakToFire;
+		Valueable<int> OpenTransport_RangeBonus;
+		Valueable<float> OpenTransport_DamageMultiplier;
+
+		Valueable<bool> Passengers_SyncOwner;
+		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
+
+		Valueable<bool> Explodes_KillPassengers;
+		Valueable<bool> Explodes_DuringBuildup;
+
+		Valueable<bool> AircraftFiringForceScatter;
+
+		Valueable<bool> HoverDrownable;
 
 		Valueable<bool> SortCameoByName;
 
@@ -563,7 +582,26 @@ public:
 
 			, FallingDownTargetingFix { false }
 			, AIAirTargetingFix { false }
+
+			, ReloadInTransport { false }
+			, OpenTopped_IgnoreRangefinding { false }
+			, OpenTopped_AllowFiringIfDeactivated { true }
+			, OpenTopped_ShareTransportTarget { true }
+			, OpenTopped_UseTransportRangeModifiers { false }
+			, OpenTopped_CheckTransportDisableWeapons { false }
 			, OpenTopped_DecloakToFire { false }
+			, OpenTransport_RangeBonus { 0 }
+			, OpenTransport_DamageMultiplier { 1.0f }
+
+			, Passengers_SyncOwner { false }
+			, Passengers_SyncOwner_RevertOnExit { true }
+
+			, Explodes_KillPassengers { true }
+			, Explodes_DuringBuildup { true }
+
+			, AircraftFiringForceScatter { true }
+
+			, HoverDrownable { true }
 
 			, SortCameoByName { false }
 
