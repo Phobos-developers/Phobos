@@ -363,6 +363,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Modified the ares hook that stopped OpenTopped transports from firing if cloaked.
 - Fixed an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes.
 - Fixed the initial direction of building placed by Ares's UnitDelivery superweapon.
+- Fixed the bug where initial payload cannot fire in `OpenTopped=yes` transporter when transporter step on a location that payload cannot reach there.
 
 ## Newly added global settings
 

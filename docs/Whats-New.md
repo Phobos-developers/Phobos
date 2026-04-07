@@ -690,6 +690,7 @@ Fixes / interactions with other extensions:
 - Fixed an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes (by NetsuNegi)
 - Fixed the initial direction of building placed by Ares's UnitDelivery superweapon (by NetsuNegi)
 - [Customize whether transport can kept or kill passengers when driver has been killed](New-or-Enhanced-Logics.md#customize-whether-transport-can-kept-or-kill-passengers-when-driver-has-been-killed) (by NetsuNegi)
+- Fixed the bug where initial payload cannot fire in `OpenTopped=yes` transporter when transporter step on a location that payload cannot reach there (by NetsuNegi)
 
 ```
 

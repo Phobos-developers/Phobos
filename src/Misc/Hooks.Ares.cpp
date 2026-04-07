@@ -21,6 +21,12 @@ static ObjectClass* __fastcall CreateInitialPayload(TechnoTypeClass* type, void*
 	return instance;
 }
 
+static void __fastcall InitialPayload_OpenToppedFix(TechnoClass* pThis)
+{
+	pThis->IsInPlayfield = true;
+	pThis->Limbo();
+}
+
 static void __fastcall LetGo(TemporalClass* pTemporal)
 {
 	pTemporal->LetGo();
@@ -133,6 +139,7 @@ void Apply_Ares3_0_Patches()
 
 	// InitialPayload creation:
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x43D5D, &CreateInitialPayload);
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x43E4F, GET_OFFSET(InitialPayload_OpenToppedFix));
 
 	// Replace the TemporalClass::Detach call by LetGo in convert function:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x436DA, &LetGo);
@@ -214,6 +221,7 @@ void Apply_Ares3_0p1_Patches()
 
 	// InitialPayload creation:
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x4483D, &CreateInitialPayload);
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x4492F, GET_OFFSET(InitialPayload_OpenToppedFix));
 
 	// Replace the TemporalClass::Detach call by LetGo in convert function:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x441BA, &LetGo);
