@@ -3857,6 +3857,26 @@ msgstr ""
 "#customizable-opentopped-"
 "properties)，那么乘客将继续攻击他们原本正在攻击的目标，无论这个目标是从运输工具继承来的还是他们自己获取的。"
 
+msgid ""
+"If `DriverKilled.KeptPassengers=true` is set, even if there are other "
+"passengers that can be matched by `Operator` besides the killed driver, "
+"the transport unit will still change its owner to `Special House` and "
+"change its mission to `Harmless`, but it will not be disabled or have its"
+" brightness adjusted."
+msgstr ""
+"如果设置了 `DriverKilled.KeptPassengers=true`，即便除被击杀的驾驶员外还有其他乘客可以被 `Operator` "
+"匹配，运输工具也仍会更改所属方为治安并将任务更改为 `Harmless`，只是并不瘫痪或调整亮度。"
+
+msgid ""
+"If a new passenger enters the transport unit and can be matched by "
+"`Operator`, then the owner will be changed normally."
+msgstr "如果有新的乘客进入运输工具并且可被 `Operator` 匹配，那么将会正常更改所属方。"
+
+msgid ""
+"This feature was originally designed for some special `OpenTopped` units,"
+" and has not yet been fully adapted to situations outside the design."
+msgstr "该功能本是为一些特殊 `OpenTopped` 单位设计的，暂未对设计外的情况进行充分适配。"
+
 msgid "Customize EVA voice and `SellSound` when selling units"
 msgstr "单位出售音效"
 
