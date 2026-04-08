@@ -563,6 +563,7 @@ New:
 - Customize effects range of power plant enhancer (by NetsuNegi)
 - Allow each side to customize the color when the proportion of working miners is higher than `HarvesterCounter.ConditionYellow` (by Noble_Fish)
 - [DeployFire supports buildings](New-or-Enhanced-Logics.md#deployfire-supports) (By FlyStar)
+- `OmniFire` supports buildings with `Turret=yes` (by FlyStar)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -638,7 +639,6 @@ Vanilla fixes:
 - Miners back to work when ore regenerated (by TaranDahl)
 - [Allow disable an over-optimization in targeting](Fixed-or-Improved-Logics.md#allow-disable-an-over-optimization-in-targeting) (by TaranDahl)
 - Extra threat (by TaranDahl)
-- Fixed an issue where `OmniFire` was ineffective on buildings with `Turret=yes` (by FlyStar)
 - Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state (by FlyStar)
 
 Phobos fixes:
@@ -796,9 +796,7 @@ New:
 - TechnoType conversion warhead & superweapon (by Morton)
 - TechnoType conversion on ownership change (by Trsdy)
 - Unlimited skirmish colors (by Morton)
-- Example custom locomotor that circles around the target (*NOTE: For 
-
-er use only*) (by Kerbiter, CCHyper, with help from Otamaa; based on earlier experiment by CnCVK)
+- Example custom locomotor that circles around the target (*NOTE: For developer use only*) (by Kerbiter, CCHyper, with help from Otamaa; based on earlier experiment by CnCVK)
 - Vehicle voxel turret shadows & body multi-section shadows (by TwinkleStar & Trsdy)
 - Crushing tilt and slowdown customization (by Starkku)
 - Extra warhead detonations on weapon (by Starkku)

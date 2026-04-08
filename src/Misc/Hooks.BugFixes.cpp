@@ -3421,15 +3421,3 @@ DEFINE_HOOK(0x577BF1, MapClass_ResetShroudForTMission_CellCheck, 0x6)
 }
 
 #pragma endregion
-
-DEFINE_HOOK(0x447FED, BuildingClass_GetFireError_OmniFire, 0x7)
-{
-	enum { SkipGameCode = 0x448052 };
-
-	GET(BuildingClass* const, pThis, ESI);
-	GET_STACK(const int, weaponIndex, STACK_OFFSET(0xC, 0x8));
-
-	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-
-	return pWeapon->OmniFire ? SkipGameCode : 0;
-}

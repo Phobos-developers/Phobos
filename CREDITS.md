@@ -420,7 +420,7 @@ This page lists all the individual contributions to the project by their author.
   - Custom hover vehicles shutdown drowning death
   - SHP turret vehicles support the use of `*tur.shp` files
   - DeployFire supports buildings
-  - Fixed an issue where `OmniFire` was ineffective on buildings with `Turret=yes`
+  - `OmniFire` supports buildings with `Turret=yes`
   - Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
