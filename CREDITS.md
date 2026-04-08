@@ -525,7 +525,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow customize jumpjet properties on warhead
   - Customize effects range of power plant enhancer
   - Customize whether transport can kept or kill passengers when driver has been killed
-  - Fix the bug where initial payload cannot fire in `OpenTopped=yes` transporter when transporter step on a location that payload cannot reach there
+  - Fix a bug where passengers created by the InitialPayload logic would fail to fire when the transport unit with `OpenTopped=yes` moved to an area that the passengers' `MovementZone` cannot move into.
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
