@@ -1795,6 +1795,7 @@ msgid ""
 "Allow each side to customize the color when the proportion of working "
 "miners is higher than `HarvesterCounter.ConditionYellow` (by Noble_Fish)"
 msgstr ""
+"允许每个阵营自定义正在工作的矿车比例高于 `HarvesterCounter.ConditionYellow` 时的颜色（by Noble_Fish）"
 
 msgid ""
 "[Allow disable an over-optimization in targeting](Fixed-or-Improved-"
