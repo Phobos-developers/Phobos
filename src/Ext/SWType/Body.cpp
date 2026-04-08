@@ -143,6 +143,11 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->LimboDelivery_Types.Read(exINI, pSection, "LimboDelivery.Types");
 	this->LimboDelivery_IDs.Read(exINI, pSection, "LimboDelivery.IDs");
 	this->LimboDelivery_RollChances.Read(exINI, pSection, "LimboDelivery.RollChances");
+	if (exINI.ReadString(pSection, "LimboKill.Affected") > 0)
+	{
+		Debug::Log("[Developer warning][%s] LimboKill.Affected is deprecated and has been replaced by LimboKill.AffectsHouse! If both are set, the latter will be used.\n", pSection);
+	}
+	this->LimboKill_AffectsHouse.Read(exINI, pSection, "LimboKill.Affected"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->LimboKill_AffectsHouse.Read(exINI, pSection, "LimboKill.AffectsHouse");
 	this->LimboKill_IDs.Read(exINI, pSection, "LimboKill.IDs");
 	this->LimboKill_Counts.Read(exINI, pSection, "LimboKill.Counts");

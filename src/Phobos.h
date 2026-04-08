@@ -82,6 +82,7 @@ public:
 		static bool ToolTipBlur;
 		static bool PrioritySelectionFiltering;
 		static bool PriorityDeployFiltering;
+		static bool TypeSelectUseIFVMode;
 		static bool DevelopmentCommands;
 		static bool SuperWeaponSidebarCommands;
 		static bool ArtImageSwap;
@@ -99,6 +100,7 @@ public:
 		static int CampaignDefaultGameSpeed;
 		static bool SkirmishUnlimitedColors;
 		static bool ShowDesignatorRange;
+		static bool ShowPowerPlantEnhancerRange;
 		static bool SaveVariablesOnScenarioEnd;
 		static bool SaveGameOnScenarioStart;
 		static bool ShowBriefing;

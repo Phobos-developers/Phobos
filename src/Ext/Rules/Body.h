@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <RulesClass.h>
 #include <Utilities/Container.h>
@@ -51,6 +51,7 @@ public:
 		Valueable<bool> RadSiteWarhead_Detonate_Full;
 		Valueable<bool> RadHasOwner;
 		Valueable<bool> RadHasInvoker;
+		Valueable<bool> ShieldApplyArmorMult;
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
 
@@ -167,6 +168,7 @@ public:
 		Valueable<Leptons> VisualScatter_Max;
 
 		Valueable<bool> ShowDesignatorRange;
+		Valueable<bool> ShowPowerPlantEnhancerRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
 		Valueable<int> SelectionFlashDuration;
 		Nullable<AnimTypeClass*> DropPodTrailer;
@@ -239,6 +241,8 @@ public:
 		Valueable<bool> AIAllToHunt;
 		Valueable<bool> RepairBaseNodes;
 
+		Valueable<bool> FixRepairStepCost;
+
 		Valueable<bool> WarheadParticleAlphaImageIsLightFlash;
 		Valueable<int> CombatLightDetailLevel;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
@@ -293,6 +297,7 @@ public:
 
 		Valueable<bool> FallingDownTargetingFix;
 		Valueable<bool> AIAirTargetingFix;
+		Valueable<bool> OpenTopped_DecloakToFire;
 
 		Valueable<bool> SortCameoByName;
 
@@ -314,9 +319,20 @@ public:
 
 		Valueable<bool> DefaultToGuardArea;
 
+		Valueable<bool> DisableOveroptimizationInTargeting;
+    
 		Valueable<bool> CylinderRangefinding;
 
 		Valueable<int> PenetratesTransport_Level;
+
+		Valueable<bool> UnitsUnsellable;
+
+		Valueable<bool> DriverKilled_KillPassengers;
+		Valueable<double> ExtraThreat_IsThreat;
+		Valueable<double> ExtraThreat_InRange;
+		Valueable<double> ExtraThreatCoefficient_InRangeDistance;
+		Valueable<double> ExtraThreatCoefficient_Facing;
+		Valueable<double> ExtraThreatCoefficient_DistanceToLastTarget;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -344,6 +360,7 @@ public:
 			, RadSiteWarhead_Detonate_Full { true }
 			, RadHasOwner { false }
 			, RadHasInvoker { false }
+			, ShieldApplyArmorMult { false }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, VeinholeWarhead {}
@@ -456,6 +473,7 @@ public:
 			, VisualScatter_Min { Leptons(8) }
 			, VisualScatter_Max { Leptons(32) }
 			, ShowDesignatorRange { true }
+			, ShowPowerPlantEnhancerRange { true }
 			, DropPodTrailer { }
 			, DropPodDefaultTrailer { }
 			, PodImage { }
@@ -507,6 +525,7 @@ public:
 			, AIFireSaleDelay { 0 }
 			, AIAllToHunt { true }
 			, RepairBaseNodes { false }
+			, FixRepairStepCost { false }
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
 			, LightFlashAlphaImageDetailLevel { 0 }
@@ -553,6 +572,7 @@ public:
 
 			, FallingDownTargetingFix { false }
 			, AIAirTargetingFix { false }
+			, OpenTopped_DecloakToFire { false }
 
 			, SortCameoByName { false }
 
@@ -579,6 +599,16 @@ public:
 			, CylinderRangefinding { false }
 
 			, PenetratesTransport_Level { 10 }
+
+			, UnitsUnsellable { false }
+
+			, DriverKilled_KillPassengers { false }
+			, DisableOveroptimizationInTargeting { false }
+			, ExtraThreat_IsThreat { 0.0 }
+			, ExtraThreat_InRange { 0.0 }
+			, ExtraThreatCoefficient_InRangeDistance { 0.0 }
+			, ExtraThreatCoefficient_Facing { 0.0 }
+			, ExtraThreatCoefficient_DistanceToLastTarget { 0.0 }
 		{ }
 
 		virtual ~ExtData() = default;

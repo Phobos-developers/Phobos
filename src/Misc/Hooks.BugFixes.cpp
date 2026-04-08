@@ -1,6 +1,8 @@
 #include <AircraftTrackerClass.h>
+#include <EventClass.h>
 #include <JumpjetLocomotionClass.h>
 #include <TunnelLocomotionClass.h>
+#include <FileFormats/HVA.h>
 
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Techno/Body.h>
@@ -441,7 +443,7 @@ DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
 	const double multiplier = TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
-	pThis->Speed = (int)(pThis->LinkedTo->GetTechnoType()->JumpjetSpeed * multiplier);
+	pThis->Speed = static_cast<int>(TechnoExt::ExtMap.Find(pThis->LinkedTo)->JumpjetSpeed * multiplier);
 
 	return 0;
 }
@@ -650,7 +652,7 @@ DEFINE_HOOK(0x51A996, InfantryClass_PerCellProcess_KillOnImpassable, 0x5)
 	{
 		const float multiplier = GroundType::Array[static_cast<int>(landType)].Cost[static_cast<int>(pThis->Type->SpeedType)];
 
-		if (multiplier == 0.0)
+		if (multiplier == 0.0f)
 			return ContinueChecks;
 	}
 
@@ -1377,6 +1379,9 @@ DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_RequestUntether, 0x7)
 DEFINE_HOOK(0x4D77BD, FootClass_ObjectClickedAction_NoMove, 0x6)
 {
 	enum { ReturnFalse = 0x4D77EC, ReturnTrue = 0x4D7CC0 };
+
+	if (PlanningNodeClass::PlanningModeActive)
+		return 0;
 
 	GET(ObjectClass*, pTarget, EBX);
 	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
@@ -2724,7 +2729,7 @@ DEFINE_HOOK(0x5218C2, InfantryClass_UnmarkAllOccupationBits_ResetOwnerIdx, 0x6)
 	const auto pExt = CellExt::ExtMap.Find(pCell);
 	pExt->InfantryCount--;
 
-	// Vanilla check only the flag to decide if the InfantryOwnerIndex should be reset. 
+	// Vanilla check only the flag to decide if the InfantryOwnerIndex should be reset.
 	// But the tree take one of the flag bit. So if a infantry walk through a cell with a tree, the InfantryOwnerIndex won't be reset.
 	return (newFlag & 0x1C) == 0 || pExt->InfantryCount == 0 ? Reset : NoReset;
 }
@@ -2834,6 +2839,109 @@ DEFINE_HOOK(0x54CC9C, JumpjetLocomotionClass_ProcessCrashing_DropFix, 0x5)
 	}
 
 	return fallOnSomething ? SkipGameCode2 : SkipGameCode;
+}
+
+DEFINE_HOOK(0x4DAD06, FootClass_AI_IsCrashing_VoiceAndSound, 0xA)
+{
+	enum { SkipVoiceAndSound = 0x4DADBC, ContinueAfter = 0x4DAD10 };
+
+	GET(FootClass*, pThis, ESI);
+
+	if (pThis->IsAttackedByLocomotor)
+		return SkipVoiceAndSound;
+
+	// Restore overriden instructions
+	R->EAX(pThis->GetTechnoType());
+	return ContinueAfter;
+}
+
+DEFINE_HOOK(0x4DB874, FootClass_SetLocation_Extra, 0xA)
+{
+	enum { SkipGameCode = 0x4DB88F };
+
+	GET(FootClass*, pThis, ESI);
+	const auto pParasite = pThis->ParasiteEatingMe;
+
+	// Fix Ares's bug that parasite always on victim's location
+	if (pParasite && pParasite->InLimbo)
+		pParasite->SetLocation(pThis->Location);
+
+	// Restore overriden instructions
+	if (pThis->GetTechnoType()->OpenTopped)
+		pThis->UpdatePassengerCoords();
+
+	// Skip Ares's hook
+	return SkipGameCode;
+}
+
+// Fix crash descent for aircraft/units off-map.
+// In all three locomotors below, MapClass::In_Radar blocks position/coordinate updates
+// when outside the map. This means crashing units off-map never descend to ground level
+// (or reach their destination), so the cleanup code (fire death weapon, UnInit) never runs.
+// The fix: at each locomotor's height/health check, treat off-map as ground-touch.
+// FlyLocomotionClass::Process - height check after crash descent calculation.
+// If off-map and crashing, skip the height > 0 check and go straight to ground-touch cleanup.
+// The IsCrashing guard is needed because healthy non-moving airborne aircraft also reach this
+// code path (Is_Moving()==false && Height>0) and must not be sent to cleanup.
+DEFINE_HOOK(0x4CD797, FlyLocomotionClass_CrashDescent_OffMap, 0x5)
+{
+	enum { GroundTouchCleanup = 0x4CD7AA };
+
+	GET(FlyLocomotionClass*, pThis, ESI);
+
+	const auto pLinkedTo = pThis->LinkedTo;
+
+	if (pLinkedTo->IsCrashing && !MapClass::Instance.IsWithinUsableArea(pLinkedTo->GetCoords()))
+		return GroundTouchCleanup;
+
+	return 0;
+}
+
+// JumpjetLocomotionClass::Process - height check before IsCrashing gate.
+// If off-map, skip height check and go to the IsCrashing check directly.
+DEFINE_HOOK(0x54CC16, JumpjetLocomotionClass_CrashDescent_OffMap, 0x8)
+{
+	enum { IsCrashingCheck = 0x54CC36 };
+
+	GET(JumpjetLocomotionClass*, pThis, EDI);
+
+	if (!MapClass::Instance.IsWithinUsableArea(pThis->LinkedTo->GetCoords()))
+	{
+		// Replicate the stack init from the stolen bytes (mov byte ptr [esp+11h], 0)
+		// so the "fell on something" flag is properly zeroed for the crash path.
+		REF_STACK(BYTE, fellOnSomething, STACK_OFFSET(0x34, -0x23));
+		fellOnSomething = 0;
+		return IsCrashingCheck;
+	}
+
+	return 0;
+}
+
+// RocketLocomotionClass::Process - health check after position update.
+// If off-map, bypass the Health > 0 skip and force detonation/cleanup.
+DEFINE_HOOK(0x662FD5, RocketLocomotionClass_Process_OffMap, 0x6)
+{
+	enum { ForceCleanup = 0x662FDF };
+
+	GET(RocketLocomotionClass*, pThis, EDI);
+
+	if (!MapClass::Instance.IsWithinUsableArea(pThis->LinkedTo->GetCoords()))
+		return ForceCleanup;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4DEC7F, FootClass_Crash_FallingDownFix, 0x7)
+{
+	GET(FootClass*, pThis, ESI);
+
+	if (pThis->IsFallingDown && !pThis->IsABomb && pThis->Locomotor)
+	{
+		if (const auto pJumpjet = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+			pJumpjet->State = JumpjetLocomotionClass::State::Crashing;
+	}
+
+	return 0;
 }
 
 #pragma region ClearTargetOnOwnerChanged
@@ -2949,6 +3057,60 @@ DEFINE_HOOK(0x65DE82, TeamTypeClass_CreateTeamMembers_Veterancy, 0x6)
 	return pTechnoType->Trainable ? 0 : SkipVeterancy;
 }
 
+#pragma region SellUnitFix
+
+// Disallow sell action on wall overlays if mouse cursor is hovering on another object.
+DEFINE_HOOK(0x692AD6, ScrollClass_ChooseAction_SellWall, 0x6)
+{
+	enum { NoSell = 0x692AFE };
+
+	GET(ObjectClass*, pObject, ESI);
+
+	return pObject ? NoSell : 0;
+}
+
+static bool inline CanBeSold(TechnoClass* pTechno, AbstractType rtti)
+{
+	if (rtti == AbstractType::Building)
+		return true;
+
+	if (rtti == AbstractType::Unit || rtti == AbstractType::Aircraft)
+	{
+		auto const pTypeExt = TechnoExt::ExtMap.Find(pTechno)->TypeExtData;
+
+		if (!pTypeExt->Unsellable.Get(RulesExt::Global()->UnitsUnsellable))
+			return false;
+
+		auto const pCell = MapClass::Instance.GetCellAt(pTechno->GetCenterCoords());
+
+		if (auto const pBuilding = pCell->GetBuilding())
+		{
+			auto const pType = pBuilding->Type;
+
+			if (BuildingTypeExt::ExtMap.Find(pType)->UnitSell.Get(pType->UnitRepair))
+				return true;
+		}
+	}
+
+	return false;
+}
+
+// Verify if object can be sold at event level.
+DEFINE_HOOK(0x4C6F55, EventClass_Execute_Sell, 0x5)
+{
+	enum { SkipGameCode = 0x4C6FA8 };
+
+	GET(TechnoClass*, pTechno, EDI);
+	GET(const AbstractType, rtti, EAX);
+
+	if (CanBeSold(pTechno, rtti))
+		pTechno->Sell(-1);
+
+	return SkipGameCode;
+}
+
+#pragma endregion
+
 // Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.
 DEFINE_JUMP(LJMP, 0x6FC278, 0x6FC289);
 
@@ -3022,6 +3184,243 @@ DEFINE_HOOK(0x6EA870, TeamClass_LiberateMember_Start, 0x6)
 	pMember->RecruitableB = true;
 	return 0;
 }
+
+DEFINE_HOOK_AGAIN(0x6F845D, TechnoClass_CanAutoTargetObject_Garrisonable, 0x6);
+DEFINE_HOOK(0x6F833E, TechnoClass_CanAutoTargetObject_Garrisonable, 0x6)
+{
+	GET(TechnoClass*, pThis, EDI);
+	GET(const bool, garrisonable, EAX);
+	GET_STACK(const ThreatType, flags, STACK_OFFSET(0x3C, 0x4));
+
+	const bool isFullMap = (flags & (ThreatType)3) == ThreatType::Normal; // Mission::Hunt and script is allowed
+	R->AL(garrisonable && (isFullMap || pThis->MegaMissionIsAttackMove())); // Attack move is allowed because it can switch to Mission::Attack
+	return 0;
+}
+
+// Fix the issue that the movement mission of jumpjet does not end correctly.
+DEFINE_HOOK(0x4D4203, FootClass_MissionMove_EndCheckFix1, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+	R->EAX(pThis->Destination && (!locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor) || pThis->DistanceFrom(pThis->Destination) > Unsorted::LeptonsPerCell));
+	return 0x4D4209;
+}
+
+// Replace IsMoving by IsMovingNow.
+DEFINE_HOOK(0x4D4221, FootClass_MissionMove_EndCheckFix2, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+	R->AL(pThis->Locomotor.GetInterfacePtr()->Is_Moving_Now());
+	return 0x4D422D;
+}
+
+#pragma region SetHealthPercentageFix
+
+DEFINE_HOOK(0x5F5C80, ObjectClass_SetHealthPercentage_Round, 0xA)
+{
+	enum { SkipGameCode = 0x5F5CBA };
+
+	GET(ObjectClass* const, pThis, ECX);
+	GET_STACK(const double, percentage, STACK_OFFSET(0x0, 0x4));
+
+	pThis->Health = (percentage <= 0.0) ? 0 : Math::max(1, Game::F2I(pThis->GetType()->Strength * percentage + 0.5));
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x44A010, BuildingClass_Mission_Selling_SetUnitHealthPercentage, 0xA)
+{
+	enum { SkipGameCode = 0x44A03C };
+
+	GET(UnitClass* const, pUnit, EBX);
+	GET_STACK(const double, percentage, STACK_OFFSET(0xD0, -0xAC));
+
+	pUnit->SetHealthPercentage(percentage);
+	pUnit->EstimatedHealth = pUnit->Health;
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x73992B, UnitClass_TryToDeploy_SetBuildingHealthPercentage, 0x7)
+{
+	enum { SkipGameCode = 0x739956 };
+
+	GET(const UnitClass* const, pThis, EBP);
+	GET(BuildingClass* const, pBuilding, EBX);
+
+	pBuilding->SetHealthPercentage(pThis->GetHealthPercentage());
+	pBuilding->EstimatedHealth = pBuilding->Health;
+	return SkipGameCode;
+}
+
+#pragma endregion
+
+// According to the code comments of the open-sourced RA1, I believe that the check of IsMovingNow here is to prevent foots from starting a new mission at an unstoppable position in the cell.
+// Then it is obvious that Jumpjet should not perform this check because Jumpjet's movement does not take the cell into account.
+DEFINE_HOOK_AGAIN(0x521BA7, FootClass_ReadyToNextMission_MovingCheck, 0x6); // Infantry
+DEFINE_HOOK(0x7442D6, FootClass_ReadyToNextMission_MovingCheck, 0x6) // Unit
+{
+	GET(FootClass*, pThis, ESI);
+	const auto pLoco = pThis->Locomotor.GetInterfacePtr();
+	R->AL(!locomotion_cast<JumpjetLocomotionClass*>(pLoco) && pLoco->Is_Moving_Now());
+	return R->Origin() + 0xF;
+}
+
+// Although this may seem useless because locomotor also checks IsFallingDown. But just in case.
+DEFINE_HOOK(0x7442AB, UnitClass_ReadyToNextMission_FallingDown, 0x6)
+{
+	enum { ReturnZero = 0x744383 };
+	GET(FootClass*, pThis, ESI);
+	return pThis->IsFallingDown ? ReturnZero : 0;
+}
+
+// sadly, useful for uncached voxels specifically, but no reason for the code to go to waste
+DEFINE_HOOK(0x706F64, TechnoClass_RenderVoxelObject_SkipInvisibleSections, 0x0)
+{
+	enum { SkipLayer = 0x706FDF };
+
+	GET(MotLib* const, pMotLib, EDI);
+
+	// stolen code
+	if (!pMotLib)
+		return 0x706FBD;
+
+	GET(int const, layer, EBX);
+	GET_STACK(unsigned int const, frame, STACK_OFFSET(0x13C, 0x18));
+
+	auto mtx = pMotLib->GetLayerMatrix(layer, frame);
+
+	if (mtx.row[0][0] == 0.0f && mtx.row[1][1] == 0.0f && mtx.row[2][2] == 0.0f)
+		return SkipLayer;
+
+	// stolen code
+	R->EAX(frame);
+	return 0x706F6F;
+}
+
+// https://modenc.renegadeprojects.com/IsLocomotor
+// The natural landing position of the affected unit is controlled by its own pathfinding rules.
+// This means that if the target is a unit that can originally move to the firer's cell, such as the original [ZEP],
+// it will be attracted directly above the firer, then fall vertically to crush the firer while being destroyed itself.
+namespace ImbueLocomotorTemp
+{
+	bool Imbuing = false;
+}
+
+static void __fastcall _ImbueLocomotor_SetDestination(FootClass* pThis, void*, AbstractClass* pDest, bool unk)
+{
+	ImbueLocomotorTemp::Imbuing = true;
+	pThis->SetDestination(pDest, true);
+	ImbueLocomotorTemp::Imbuing = false;
+}
+DEFINE_FUNCTION_JUMP(CALL6, 0x710326, _ImbueLocomotor_SetDestination)
+
+DEFINE_HOOK(0x54B3E7, JumpjetLocomotionClass_Move_To_LocomotorWarheadFix, 0x5)
+{
+	return ImbueLocomotorTemp::Imbuing ? 0x54B3FC : 0;
+}
+
+DEFINE_HOOK(0x7120DD, TechnoTypeClass_GetRepairStepCost, 0x6)
+{
+	enum { SkipGameCode = 0x71210C };
+
+	GET(TechnoTypeClass*, pType, ESI);
+	GET(int, cost, EAX);
+
+	if (RulesExt::Global()->FixRepairStepCost)
+		R->EAX(static_cast<int>((cost / std::max(static_cast<double>(pType->Strength) / RulesClass::Instance->RepairStep, 1.0)) * RulesClass::Instance->RepairPercent));
+	else
+		R->EAX(static_cast<int>((cost / std::max(pType->Strength / RulesClass::Instance->RepairStep, 1))* RulesClass::Instance->RepairPercent));
+
+	return SkipGameCode;
+}
+
+#pragma region ShroudFix
+
+// These map cells are what SpySat skips revealing in MP normally.
+static bool inline ShroudFix_IsCellInvalid(CellStruct* pMapCell)
+{
+	const int x = pMapCell->X;
+	const int y = pMapCell->Y;
+	auto const& rect = MapClass::Instance.MapRect;
+
+	if (x == 7 && y == rect.Width + 5)
+		return true;
+
+	if (x == 13 && y == rect.Width + 11)
+		return true;
+
+	if (x == rect.Height + 13 && y == rect.Width + rect.Height - 15)
+		return true;
+
+	return false;
+}
+
+DEFINE_HOOK(0x6FB5E5, TechnoClass_DeleteGap_CellCheck, 0x5)
+{
+	enum { SkipCell = 0x6FB6F3 };
+
+	GET(CellStruct*, pMapCell, EDX);
+
+	if (ShroudFix_IsCellInvalid(pMapCell))
+		return SkipCell;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FB2FB, TechnoClass_CreateGap_CellCheck, 0x5)
+{
+	enum { SkipCell = 0x6FB416 };
+
+	GET(CellStruct*, pMapCell, EDX);
+
+	if (ShroudFix_IsCellInvalid(pMapCell))
+		return SkipCell;
+
+	return 0;
+}
+
+// Replace the entire cell iterator loop for perf reasons.
+DEFINE_HOOK(0x577AFF, MapClass_ResetShroud_CellCheck, 0x6)
+{
+	enum { SkipGameCode = 0x577B75 };
+
+	auto& map = MapClass::Instance;
+	map.CellIteratorReset();
+
+	for (auto pCell = map.CellIteratorNext(); pCell; pCell = map.CellIteratorNext())
+	{
+		if (ShroudFix_IsCellInvalid(&pCell->MapCoords))
+			continue;
+
+		pCell->Flags &= ~(CellFlags::CenterRevealed | CellFlags::EdgeRevealed);
+		pCell->AltFlags &= ~(AltCellFlags::Mapped | AltCellFlags::NoFog);
+		pCell->ShroudCounter = 1;
+		pCell->GapsCoveringThisCell = 0;
+	}
+
+	return SkipGameCode;
+}
+
+// Replace the entire cell iterator loop for perf reasons.
+DEFINE_HOOK(0x577BF1, MapClass_ResetShroudForTMission_CellCheck, 0x6)
+{
+	enum { SkipGameCode = 0x577C57 };
+
+	auto& map = MapClass::Instance;
+	map.CellIteratorReset();
+
+	for (auto pCell = map.CellIteratorNext(); pCell; pCell = map.CellIteratorNext())
+	{
+		if (ShroudFix_IsCellInvalid(&pCell->MapCoords))
+			continue;
+
+		pCell->Flags &= ~(CellFlags::CenterRevealed | CellFlags::EdgeRevealed);
+		pCell->AltFlags &= ~(AltCellFlags::Mapped | AltCellFlags::NoFog);
+	}
+
+	return SkipGameCode;
+}
+
+#pragma endregion
 
 DEFINE_HOOK(0x447FED, BuildingClass_GetFireError_OmniFire, 0x7)
 {

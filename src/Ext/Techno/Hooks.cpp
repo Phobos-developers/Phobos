@@ -452,7 +452,7 @@ DEFINE_HOOK(0x4DB218, FootClass_GetMovementSpeed_SpeedMultiplier, 0x6)
 	return 0;
 }
 
-static int CalculateArmorMultipliers(TechnoClass* pThis, int damage, WarheadTypeClass* pWarhead)
+double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass* pWarhead)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	double mult = pExt->AE.ArmorMultiplier;
@@ -466,17 +466,24 @@ static int CalculateArmorMultipliers(TechnoClass* pThis, int damage, WarheadType
 
 			auto const type = attachEffect->GetType();
 
-			if (type->ArmorMultiplier_DisallowWarheads.Contains(pWarhead))
-				continue;
+			if (pWarhead)
+			{
+				if (type->ArmorMultiplier_DisallowWarheads.Contains(pWarhead))
+					continue;
 
-			if (type->ArmorMultiplier_AllowWarheads.size() > 0 && !type->ArmorMultiplier_AllowWarheads.Contains(pWarhead))
+				if (type->ArmorMultiplier_AllowWarheads.size() > 0 && !type->ArmorMultiplier_AllowWarheads.Contains(pWarhead))
+					continue;
+			}
+			else if (type->ArmorMultiplier_DisallowWarheads.size() <= 0 && type->ArmorMultiplier_AllowWarheads.size() <= 0) // already calculated
+			{
 				continue;
+			}
 
 			mult *= type->ArmorMultiplier;
 		}
 	}
 
-	return static_cast<int>(damage / mult);
+	return mult;
 }
 
 DEFINE_HOOK(0x6FDC87, TechnoClass_AdjustDamage_ArmorMultiplier, 0x6)
@@ -485,7 +492,7 @@ DEFINE_HOOK(0x6FDC87, TechnoClass_AdjustDamage_ArmorMultiplier, 0x6)
 	GET(const int, damage, EAX);
 	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x18, 0x8));
 
-	R->EAX(CalculateArmorMultipliers(pTarget, damage, pWeapon->Warhead));
+	R->EAX(static_cast<int>(damage / TechnoExt::CalculateArmorMultipliers(pTarget, pWeapon->Warhead)));
 
 	return 0;
 }
@@ -496,7 +503,7 @@ DEFINE_HOOK(0x701966, TechnoClass_ReceiveDamage_ArmorMultiplier, 0x6)
 	GET(const int, damage, EAX);
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
-	R->EAX(CalculateArmorMultipliers(pThis, damage, pWarhead));
+	R->EAX(static_cast<int>(damage / TechnoExt::CalculateArmorMultipliers(pThis, pWarhead)));
 
 	return 0;
 }
@@ -853,78 +860,134 @@ DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
 
 #pragma region Customized FallingDown Damage
 
-DEFINE_HOOK(0x5F416A, ObjectClass_DropAsBomb_ResetFallRateRate, 0x7)
+DEFINE_HOOK(0x514C07, HoverLocomotionClass_Process_HoverShutdown, 0x5)
 {
-	GET(ObjectClass*, pThis, ESI);
+	enum { SkipGameCode = 0x514C12 };
 
-	// Reset value, otherwise it'll keep accelerating.
-	pThis->FallRate = 0;
-	return 0;
+	GET(LocomotionClass* const, pThis, ESI);
+
+	const auto pTechno = pThis->Owner;
+	pTechno->DropAsBomb();
+	TechnoExt::ExtMap.Find(pTechno)->HoverShutdown = true;
+
+	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
+DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 {
-	GET(ObjectClass*, pThis, ESI);
+	enum { SkipGameCode = 0x5F405B };
+
+	GET(ObjectClass* const, pThis, ESI);
 
 	pThis->FallRate = 0;
 
 	if (const auto pTechno = abstract_cast<TechnoClass*, true>(pThis))
 	{
-		const auto pType = pTechno->GetTechnoType();
-		const auto pCell = pTechno->GetCell();
+		const auto pExt = TechnoExt::ExtMap.Find(pTechno);
+		const bool onParachuted = pExt->OnParachuted;
+		pExt->OnParachuted = false;
 
-		if (!pCell->IsClearToMove(pType->SpeedType, true, true, -1, pType->MovementZone, pCell->GetLevel(), pCell->ContainsBridge()))
-			return 0;
-
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-		double ratio = 0.0;
-
-		if (pCell->LandType == LandType::Water && !pTechno->OnBridge)
-			ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get());
-		else
-			ratio = pTypeExt->FallingDownDamage.Get();
-
-		int damage = 0;
-
-		if (ratio < 0.0)
-			damage = static_cast<int>(pThis->Health * std::abs(ratio));
-		else if (ratio >= 0.0 && ratio <= 1.0)
-			damage = static_cast<int>(pType->Strength * ratio);
-		else
-			damage = static_cast<int>(ratio);
-
-		pThis->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, true, nullptr);
-
-		if (pThis->Health > 0 && pThis->IsAlive)
+		if (pThis->IsABomb && pThis->IsAlive)
 		{
-			pThis->IsABomb = false;
-			const auto abs = pThis->WhatAmI();
+			const bool hoverShutdown = pExt->HoverShutdown;
+			pExt->HoverShutdown = false;
 
-			if (abs == AbstractType::Infantry)
+			if (hoverShutdown)
 			{
-				const auto pInf = static_cast<InfantryClass*>(pTechno);
-				const auto sequenceAnim = pInf->SequenceAnim;
-				pInf->ShouldDeploy = false;
-
-				if (pCell->LandType == LandType::Water && !pInf->OnBridge)
+				if (pExt->TypeExtData->HoverDrownable)
 				{
-					if (sequenceAnim != Sequence::Swim)
-						pInf->PlayAnim(Sequence::Swim, true, false);
-				}
-				else if (sequenceAnim != Sequence::Guard)
-				{
-					pInf->PlayAnim(Sequence::Ready, true, false);
+					int damage = pThis->Health;
+					pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
 				}
 
-				pInf->Scatter(pInf->GetCoords(), true, false);
+				pThis->IsABomb = false;
+				return SkipGameCode;
 			}
-			else if (abs == AbstractType::Unit)
+
+			const auto pCell = pTechno->GetCell();
+			const bool onBridge = pCell->ContainsBridge();
+
+			const auto pType = pTechno->GetTechnoType();
+			int damage = 0;
+
+			if (!pCell->IsClearToMove(pType->SpeedType, true, true, -1, pType->MovementZone, -1, onBridge))
 			{
-				static_cast<UnitClass*>(pTechno)->UpdatePosition(PCPType::During);
+				damage = pThis->Health;
+				pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+
+				return SkipGameCode;
+			}
+
+			const LandType landType = pCell->LandType;
+			const bool inWater = !onBridge && (landType == LandType::Water || landType == LandType::Beach);
+
+			if (!onParachuted)
+			{
+				const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+				if (!pTypeExt->FallingDownDamage_AllowEMP && pTechno->EMPLockRemaining > 0)
+				{
+					damage = pThis->Health;
+					pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+
+					return SkipGameCode;
+				}
+
+				double ratio = 0.0;
+
+				if (inWater)
+					ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get());
+				else
+					ratio = pTypeExt->FallingDownDamage.Get();
+
+				if (ratio < 0.0)
+					damage = static_cast<int>(pThis->Health * std::abs(ratio));
+				else if (ratio >= 0.0 && ratio <= 1.0)
+					damage = static_cast<int>(pType->Strength * ratio);
+				else
+					damage = static_cast<int>(ratio);
+			}
+
+			if (damage == 0
+				|| pThis->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr) != DamageState::NowDead)
+			{
+				pThis->IsABomb = false;
+				const auto abs = pThis->WhatAmI();
+
+				if (abs == AbstractType::Infantry)
+				{
+					const auto pInf = static_cast<InfantryClass*>(pTechno);
+					const auto sequenceAnim = pInf->SequenceAnim;
+					pInf->ShouldDeploy = false;
+
+					if (inWater)
+					{
+						if (sequenceAnim != Sequence::Swim)
+							pInf->PlayAnim(Sequence::Swim, true, false);
+					}
+					else if (sequenceAnim != Sequence::Guard)
+					{
+						pInf->PlayAnim(Sequence::Ready, true, false);
+					}
+
+					ObjectClass* pObject = pCell->GetContent();
+
+					while (pObject->NextObject)
+					{
+						pObject = pObject->NextObject;
+					}
+
+					if (pObject != pInf)
+						pInf->Scatter(pInf->GetCoords(), true, false);
+				}
+				else if (abs == AbstractType::Unit)
+				{
+					static_cast<UnitClass*>(pTechno)->UpdatePosition(PCPType::During);
+				}
 			}
 		}
 
-		return 0x5F405B;
+		return SkipGameCode;
 	}
 
 	return 0;
@@ -1674,8 +1737,11 @@ static bool __fastcall FootClass_Paradrop(FootClass* pThis, void*, const CoordSt
 	if (!pThis->ObjectClass::SpawnParachuted(coords))
 		return false;
 
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pTypeExt = pExt->TypeExtData;
 	Mission mission;
+
+	pExt->OnParachuted = true;
 
 	if (pThis->Owner->IsControlledByHuman())
 		mission = pTypeExt->ParadropMission.Get(RulesExt::Global()->ParadropMission);
@@ -1761,14 +1827,13 @@ static int GetGuardRange(TechnoClass* pThis, int control)
 		}
 	}
 
-	//int maxRange = 4096; // Game caps the guard range in certain cases, but this is disabled here.
-	range *= 2; // Uncertain why the range gets doubled here, but it doesn't seem to reflect to the actual target scan range.
+	// Game doubles the range likely to make area guard behave better for shorter range units.
+	// From observed results does not seem to affect target scan range otherwise f.ex on guard mission.
+	range *= 2;
+	int maxRange = pTypeExt->MaxGuardRange.Get();
 
 	if (control == 2) // Control = 2, used for Patrol mission.
 	{
-		range = range < 1792 ? 1792 : range;
-
-		/*
 		int patrolMinRange = 1792;
 
 		if (range >= patrolMinRange)
@@ -1779,18 +1844,14 @@ static int GetGuardRange(TechnoClass* pThis, int control)
 		else
 		{
 			range = patrolMinRange;
-		*/
+		}
 	}
 	else // Control = 1 and other values, used for Area Guard, ThreatType != Range threat scans etc.
 	{
-		range = range < 0 ? 0 : range;
-
-		/*
 		if (range < 0)
 			range = 0;
 		else if (range > maxRange)
 			range = maxRange;
-		*/
 	}
 
 	return range;
@@ -1801,8 +1862,8 @@ DEFINE_HOOK(0x707E63, TechnoClass_GetGuardRange, 0x7)
 {
 	enum { SkipGameCode = 0x707F4B };
 
-	GET(TechnoClass*, pThis, ESI);
-	GET(int, control, EDI);
+	GET(TechnoClass*, pThis, ECX);
+	GET_STACK(int, control, STACK_OFFSET(0xC, 0x4));
 
 	R->EAX(GetGuardRange(pThis, control));
 
@@ -1861,3 +1922,52 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5F30, FootClass_GetThreatValue_Wrapper);  // Un
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E417C, Building_GetThreatValue_Wrapper);   // BuildingClass
 
 #pragma endregion
+
+DEFINE_HOOK(0x4D4B43, FootClass_Mission_Capture, 0x6)
+{
+	enum { LosesDestination = 0x4D4BD1 };
+
+	GET(InfantryClass*, pThis, EDI);
+
+	if (!pThis || pThis->Target)
+		return 0;
+
+	auto const pBld = specific_cast<BuildingClass*>(pThis->Destination);
+
+	if (!pBld || pBld->IsStrange())
+		return 0;
+
+	auto const pType = pThis->Type;
+
+	if (pType->Engineer)
+		return 0;
+
+	// interaction issues with Ares, no more further checking to make life easier. If someone still try to abuse the bug I won't try to stop them
+	if (pType->Infiltrate && !pThis->Owner->IsAlliedWith(pBld->Owner))
+		return 0;
+
+	if (pType->C4 || pThis->HasAbility(Ability::C4))
+		return 0;
+
+	auto const pBldType = pBld->Type;
+
+	if (pBldType->CanBeOccupied && (pType->Occupier || pType->Assaulter))
+	{
+		// Re-evaluate destination if order to garrison came from TMission.
+		if (pType->Occupier && (pThis->ShouldEnterOccupiable || pThis->ShouldGarrisonStructure) && !pBld->CanBeOccupiedBy(pThis))
+		{
+			if (!(pThis->ShouldEnterOccupiable ? pThis->EnterBattleBunker() : pThis->GarrisonStructure()))
+			{
+				pThis->SetDestination(nullptr, false);
+				return LosesDestination;
+			}
+		}
+
+		return 0;
+	}
+
+	// If you can't do any of these then why are you here?
+	pThis->SetDestination(nullptr, false);
+
+	return LosesDestination;
+}
