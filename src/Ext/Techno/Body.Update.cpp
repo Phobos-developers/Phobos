@@ -39,6 +39,8 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 
 	if (this->AttackMoveFollowerTempCount)
 		this->AttackMoveFollowerTempCount--;
+
+	this->UpdateLastTargetCrd();
 }
 
 void TechnoExt::ExtData::ApplyInterceptor()
@@ -2167,5 +2169,31 @@ void TechnoExt::ExtData::UpdateTintValues()
 	{
 		auto const pShieldType = this->Shield->GetType();
 		calculateTint(Drawing::RGB_To_Int(pShieldType->Tint_Color), static_cast<int>(pShieldType->Tint_Intensity * 1000), pShieldType->Tint_VisibleToHouses);
+	}
+}
+
+void TechnoExt::ExtData::UpdateLastTargetCrd()
+{
+	if (!this->TypeExtData->ExtraThreat_Enabled)
+		return;
+
+	auto const pThis = this->OwnerObject();
+	auto pTimer = &this->LastTargetCrdClearTimer;
+
+	if (pThis->Target)
+	{
+		this->LastTargetCrd = pThis->Target->GetCoords();
+		pTimer->Stop();
+	}
+	else
+	{
+		if (!pTimer->IsTicking())
+			pTimer->Start(45);
+
+		if (pTimer->Completed())
+		{
+			this->LastTargetCrd = CoordStruct::Empty;
+			pTimer->Stop();
+		}
 	}
 }

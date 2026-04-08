@@ -561,6 +561,7 @@ New:
 - [Customize default mirage disguises per vehicletypes](New-or-Enhanced-Logics.md#default-mirage-disguise-for-individual-vehicletypes) (by NetsuNegi)
 - [Allow customize jumpjet properties on warhead](Fixed-or-Improved-Logics.md#customizing-locomotor-warhead) (by NetsuNegi)
 - Customize effects range of power plant enhancer (by NetsuNegi)
+- Allow each side to customize the color when the proportion of working miners is higher than `HarvesterCounter.ConditionYellow` (by Noble_Fish)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -634,6 +635,8 @@ Vanilla fixes:
 - Fixed the [EIP#007120F7](https://modenc.renegadeprojects.com/Internal_Error#eip_007120F7) caused when the `Strength` value is lower than `RepairStep` (by NetsuNegi)
 - Fixed the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated (by TaranDahl)
 - Miners back to work when ore regenerated (by TaranDahl)
+- [Allow disable an over-optimization in targeting](Fixed-or-Improved-Logics.md#allow-disable-an-over-optimization-in-targeting) (by TaranDahl)
+- Extra threat (by TaranDahl)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -686,6 +689,7 @@ Fixes / interactions with other extensions:
 - Modified the ares hook that stopped OpenTopped transports from firing if cloaked (by RAZER & Morton)
 - Fixed an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes (by NetsuNegi)
 - Fixed the initial direction of building placed by Ares's UnitDelivery superweapon (by NetsuNegi)
+- [Customize whether transport can kept or kill passengers when driver has been killed](New-or-Enhanced-Logics.md#customize-whether-transport-can-kept-or-kill-passengers-when-driver-has-been-killed) (by NetsuNegi)
 
 ```
 

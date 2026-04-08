@@ -1619,6 +1619,30 @@ RadarJamAffect=                   ; List of BuildingTypes
 RadarJamIgnore=                   ; List of BuildingTypes
 ```
 
+### Customize whether transport can kept or kill passengers when driver has been killed
+
+- It is now possible to customize whether transport can kept or kill passengers when [driver has been killed](http://ares-developers.github.io/Ares-docs/new/killingdrivers.html).
+
+```{note}
+When `DriverKilled.KeptPassengers=true` is set, passengers will always be retained regardless of the `DriverKilled.KillPassengers` setting. If the transport also has `OpenTopped=true` and [`OpenTopped.AllowFiringIfDeactivated=false`](New-or-Enhanced-Logics.md#customizable-opentopped-properties) is not set, then passengers will continue attacking the target they were originally attacking, whether that target is inherited from the transport or acquired by themselves.
+```
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+DriverKilled.KillPassengers=false   ; boolean
+
+[SOMETECHNO]                        ; TechnoType, transport
+DriverKilled.KeptPassengers=false   ; boolean
+DriverKilled.KillPassengers=        ; boolean, defaults to [CombatDamage] -> DriverKilled.KillPassengers
+```
+
+```{warning}
+If `DriverKilled.KeptPassengers=true` is set, even if there are other passengers that can be matched by `Operator` besides the killed driver, the transport unit will still change its owner to `Special House` and change its mission to `Harmless`, but it will not be disabled or have its brightness adjusted.
+- If a new passenger enters the transport unit and can be matched by `Operator`, then the owner will be changed normally.
+- This feature was originally designed for some special `OpenTopped` units, and has not yet been fully adapted to situations outside the design.
+```
+
 ### Customize EVA voice and `SellSound` when selling units
 
 - When a building or a unit is sold, a sell sound as well as an EVA is played to the owner. These configurations have been deglobalized.
@@ -1699,6 +1723,40 @@ RateDown.Delay=0              ; integer, game frames
 RateDown.Reset=false          ; boolean
 RateDown.Cover.Value=0        ; integer
 RateDown.Cover.AmmoBelow=-2   ; integer
+```
+
+### Extra threat
+
+- Now you can adjust the techno's evaluation of the threat posed by the target in more ways. This will help the techno in auto - targeting.
+  - When the target poses a threat to the techno, it will receive an additional threat value defined by `ExtraThreat.IsThreat`.
+    - Generally speaking, "Posing a threat" means the target can fire at the techno.
+    - Using `AlwaysConsideredThreat` makes the target always considered to be a threat.
+  - When the target is within the techno's range, it will receive an additional threat value defined by `ExtraThreat.InRange`.
+  - When the target is within the techno's range, it will receive an additional threat value equal to `ExtraThreatCoefficient.InRangeDistance` multiplied by the distance (in cells) from the target to the techno.
+    - Only considering in-range is because the vanilla flag `TargetDistanceCoefficientDefault` only considers outside-range. This flag is complementary to that.
+  - The target will receive an additional threat value equal to `ExtraThreatCoefficient.Facing` multiplied by the difference in facing from the techno's current firing-facing to the target's facing.
+    - "Firing-facing" refers to the facing the techno uses to check if it "is already facing the target and can fire". Infantry doesn't check the facing when firing, so this is also invalid for infantry.
+    - The unit of facing is the in-game internal numerical scale. A full circle corresponds to 65536.
+  - The target will receive an additional threat value equal to `ExtraThreatCoefficient.DistanceToLastTarget` multiplied by the distance (in cells) from the target to the techno's last target.
+    - Each techno will record its current target as the "last target" per frame. This record will be retained for at most 15 frames after the target becomes invalid.
+    - If the techno doesn't have a "last target", then this will not take effect.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ExtraThreat.IsThreat=0.0                            ; double
+ExtraThreat.InRange=0.0                             ; double
+ExtraThreatCoefficient.InRangeDistance=0.0          ; double
+ExtraThreatCoefficient.Facing=0.0                   ; double
+ExtraThreatCoefficient.DistanceToLastTarget=0.0     ; double
+
+[SOMETECHNO]                                        ; TechnoType
+AlwaysConsideredThreat=false
+ExtraThreat.IsThreat=                               ; double, default to the flag in [General] with same name
+ExtraThreat.InRange=                                ; double, default to the flag in [General] with same name
+ExtraThreatCoefficient.InRangeDistance=             ; double, default to the flag in [General] with same name
+ExtraThreatCoefficient.Facing=                      ; double, default to the flag in [General] with same name
+ExtraThreatCoefficient.DistanceToLastTarget=        ; double, default to the flag in [General] with same name
 ```
 
 ### Firing offsets for specific Burst shots

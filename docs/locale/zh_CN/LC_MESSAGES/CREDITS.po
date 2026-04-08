@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-05 21:55+0800\n"
+"POT-Creation-Date: 2026-04-09 00:57+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1719,6 +1719,11 @@ msgstr "允许在弹头上自定义 Jumpjet 属性"
 msgid "Customize effects range of power plant enhancer"
 msgstr "自定义电厂增幅器的效果范围"
 
+msgid ""
+"Customize whether transport can kept or kill passengers when driver has "
+"been killed"
+msgstr "自定义载具被击杀驾驶员时是否保留或杀死乘客"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
@@ -2433,6 +2438,12 @@ msgstr "修复了非超时空矿车在矿区无矿后即便矿石已重新生成
 
 msgid "Miners back to work when ore regenerated"
 msgstr "矿车在矿石再生后返回工作"
+
+msgid "Allow disable an over-optimization in targeting"
+msgstr ""
+
+msgid "Extra threat"
+msgstr ""
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"

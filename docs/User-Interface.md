@@ -638,10 +638,10 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
 In `uimd.ini`:
 ```ini
 [Sidebar]
-HarvesterCounter.Show=false           ; boolean
-HarvesterCounter.Label=<none>         ; CSF entry key
-HarvesterCounter.ConditionYellow=99%  ; floating point value, percents
-HarvesterCounter.ConditionRed=50%     ; floating point value, percents
+HarvesterCounter.Show=false                     ; boolean
+HarvesterCounter.Label=<none>                   ; CSF entry key
+HarvesterCounter.ConditionYellow=99%            ; floating point value, percents
+HarvesterCounter.ConditionRed=50%               ; floating point value, percents
 ```
 
 In `rulesmd.ini`:
@@ -651,6 +651,7 @@ Harvester.Counted=                              ; boolean
 
 [SOMESIDE]                                      ; Side
 Sidebar.HarvesterCounter.Offset=0,0             ; X,Y, pixels relative to default
+Sidebar.HarvesterCounter.ColorGreen=            ; integer - Red,Green,Blue, default to [Side] -> ToolTipColor=
 Sidebar.HarvesterCounter.ColorYellow=255,255,0  ; integer - Red,Green,Blue
 Sidebar.HarvesterCounter.ColorRed=255,0,0       ; integer - Red,Green,Blue
 ```
