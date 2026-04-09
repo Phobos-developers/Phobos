@@ -2441,6 +2441,7 @@ msgstr "矿车在矿石再生后返回工作"
 
 msgid "Allow disable an over-optimization in targeting"
 msgstr ""
+"允许禁用索敌中的过度优化"
 
 msgid "Extra threat"
 msgstr ""

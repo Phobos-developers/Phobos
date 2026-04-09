@@ -1801,6 +1801,7 @@ msgid ""
 "[Allow disable an over-optimization in targeting](Fixed-or-Improved-"
 "Logics.md#allow-disable-an-over-optimization-in-targeting) (by TaranDahl)"
 msgstr ""
+"[允许禁用索敌中的过度优化](Fixed-or-Improved-Logics.md#allow-disable-an-over-optimization-in-targeting)（by TaranDahl）"
 
 msgid "[Extra threat](New-or-Enhanced-Logics.md#extra-threat) (by TaranDahl)"
 msgstr ""
