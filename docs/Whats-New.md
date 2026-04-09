@@ -563,6 +563,7 @@ New:
 - Customize effects range of power plant enhancer (by NetsuNegi)
 - Allow each side to customize the color when the proportion of working miners is higher than `HarvesterCounter.ConditionYellow` (by Noble_Fish)
 - [Allow disable an over-optimization in targeting](Fixed-or-Improved-Logics.md#allow-disable-an-over-optimization-in-targeting) (by TaranDahl)
+- [Extra threat](New-or-Enhanced-Logics.md#extra-threat) (by TaranDahl)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -636,7 +637,6 @@ Vanilla fixes:
 - Fixed the [EIP#007120F7](https://modenc.renegadeprojects.com/Internal_Error#eip_007120F7) caused when the `Strength` value is lower than `RepairStep` (by NetsuNegi)
 - Fixed the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated (by TaranDahl)
 - Miners back to work when ore regenerated (by TaranDahl)
-- Extra threat (by TaranDahl)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

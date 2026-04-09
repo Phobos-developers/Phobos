@@ -2444,7 +2444,7 @@ msgstr ""
 "允许禁用索敌中的过度优化"
 
 msgid "Extra threat"
-msgstr ""
+msgstr "额外威胁"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"

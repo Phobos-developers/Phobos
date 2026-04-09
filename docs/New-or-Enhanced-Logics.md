@@ -1751,7 +1751,7 @@ ExtraThreatCoefficient.Facing=0.0                   ; double
 ExtraThreatCoefficient.DistanceToLastTarget=0.0     ; double
 
 [SOMETECHNO]                                        ; TechnoType
-AlwaysConsideredThreat=false
+AlwaysConsideredThreat=false                        ; boolean
 ExtraThreat.IsThreat=                               ; double, default to the flag in [General] with same name
 ExtraThreat.InRange=                                ; double, default to the flag in [General] with same name
 ExtraThreatCoefficient.InRangeDistance=             ; double, default to the flag in [General] with same name

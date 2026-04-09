@@ -1804,7 +1804,7 @@ msgstr ""
 "[允许禁用索敌中的过度优化](Fixed-or-Improved-Logics.md#allow-disable-an-over-optimization-in-targeting)（by TaranDahl）"
 
 msgid "[Extra threat](New-or-Enhanced-Logics.md#extra-threat) (by TaranDahl)"
-msgstr ""
+msgstr "[额外威胁](New-or-Enhanced-Logics.md#extra-threat)（by TaranDahl）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
