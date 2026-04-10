@@ -10,7 +10,7 @@
 #include "Utilities/AresHelper.h"
 #include "Utilities/Parser.h"
 
-#ifndef IS_RELEASE_VER
+#ifndef RELEASE
 bool HideWarning = false;
 #endif
 
@@ -30,7 +30,7 @@ bool Phobos::Optimizations::DisableSyncLogging = false;
 
 #ifdef STR_GIT_COMMIT
 const wchar_t* Phobos::VersionDescription = L"Phobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
-#elif !defined(IS_RELEASE_VER)
+#elif !defined(RELEASE)
 const wchar_t* Phobos::VersionDescription = L"Phobos development build #" _STR(BUILD_NUMBER) L". Please test the build before shipping.";
 #else
 //const wchar_t* Phobos::VersionDescription = L"Phobos release build v" FILE_VERSION_STR L".";
@@ -59,7 +59,7 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		{
 			Phobos::AppIconPath = ppArgs[++i];
 		}
-#ifndef IS_RELEASE_VER
+#ifndef RELEASE
 		if (_stricmp(pArg, "-b=" _STR(BUILD_NUMBER)) == 0)
 		{
 			HideWarning = true;
@@ -232,7 +232,7 @@ DEFINE_HOOK(0x683E7F, ScenarioClass_Start_Optimizations, 0x7)
 	return 0;
 }
 
-#ifndef IS_RELEASE_VER
+#ifndef RELEASE
 DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 {
 #ifndef STR_GIT_COMMIT

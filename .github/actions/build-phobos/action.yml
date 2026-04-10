@@ -7,6 +7,10 @@ inputs:
   build-config:
     description: 'Configuration to build'
     required: true
+  build-type:
+    description: 'Build type e.g nightly, prerelease or release'
+    required: true
+    default: 'NIGHTLY'
 runs:
   using: "composite"
   steps:
@@ -21,7 +25,7 @@ runs:
     working-directory: ${{env.GITHUB_WORKSPACE}}
     # Add additional options to the MSBuild command line here (like platform or verbosity level).
     # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
-    run: msbuild /m /p:Configuration=${{inputs.build-config}} /p:GitCommit=${{github.sha}} /p:GitBranch=${{github.ref}} ${{inputs.sln-path}}
+    run: msbuild /m /p:Configuration=${{inputs.build-config}} /p:GitCommit=${{github.sha}} /p:GitBranch=${{github.ref}} /p:BuildType=${{inputs.build-type}} ${{inputs.sln-path}}
     shell: cmd
 
   - name: Upload Artifact

@@ -9,7 +9,7 @@ ID_VERSION VERSIONINFO
 FILEVERSION FILE_VERSION
 PRODUCTVERSION FILE_VERSION
 FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
-#ifndef IS_RELEASE_VER
+#ifndef RELEASE
 FILEFLAGS VS_FF_PRERELEASE | VS_FF_SPECIALBUILD
 #endif
 
@@ -29,7 +29,7 @@ BEGIN
    VALUE "InternalName", "Phobos.dll\0"
    VALUE "OriginalFilename", "Phobos.dll\0"
 
-#ifndef IS_RELEASE_VER
+#ifndef RELEASE
    VALUE "SpecialBuild", "Testing version. Use at your own risk.\0"
 #endif
   END
