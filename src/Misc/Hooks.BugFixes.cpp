@@ -3213,6 +3213,9 @@ DEFINE_HOOK(0x4D4221, FootClass_MissionMove_EndCheckFix2, 0x6)
 	return 0x4D422D;
 }
 
+// Skip incorrect mission queued in InfantryClass::EnterIdleMode
+DEFINE_JUMP(LJMP, 0x51CBE5, 0x51CC1F);
+
 #pragma region SetHealthPercentageFix
 
 DEFINE_HOOK(0x5F5C80, ObjectClass_SetHealthPercentage_Round, 0xA)

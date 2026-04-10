@@ -737,6 +737,7 @@ This page lists all the individual contributions to the project by their author.
   - Miners back to work when ore regenerated
   - Allow disable an over-optimization in targeting
   - Extra threat
+  - Fixed the incorrect mission switching in infantry EnterIdleMode
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
