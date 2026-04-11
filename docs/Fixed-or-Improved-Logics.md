@@ -1880,7 +1880,7 @@ RadarInvisibleToHouse=               ; Affected House Enumeration (none|owner/se
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                ; TechnoType
-SeparateWeaponTypes=none    ; List of SeparateWeaponType Enumeration (none|deployfireweapon|opentransport|noammo|all)
+SeparateWeaponTypes=none    ; List of SeparateWeaponType Enumeration (none|deployfire|opentransport|noammo|all)
 ```
 
 ### Subterranean unit travel height and speed
