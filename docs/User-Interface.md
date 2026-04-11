@@ -467,6 +467,22 @@ DisplayIncome.Houses=     ; Affected House Enumeration, defaults to [AudioVisual
 DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
 ```
 
+### Show power plant enhancer range
+
+- It is possible to show range of power plant enhancer when placing a building.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+ShowPowerPlantEnhancerRange=true   ; boolean
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ShowPowerPlantEnhancerRange=false  ; boolean
+```
+
 ## Hotkey Commands
 
 ### `[ ]` Display Damage Numbers
@@ -622,10 +638,10 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
 In `uimd.ini`:
 ```ini
 [Sidebar]
-HarvesterCounter.Show=false           ; boolean
-HarvesterCounter.Label=<none>         ; CSF entry key
-HarvesterCounter.ConditionYellow=99%  ; floating point value, percents
-HarvesterCounter.ConditionRed=50%     ; floating point value, percents
+HarvesterCounter.Show=false                     ; boolean
+HarvesterCounter.Label=<none>                   ; CSF entry key
+HarvesterCounter.ConditionYellow=99%            ; floating point value, percents
+HarvesterCounter.ConditionRed=50%               ; floating point value, percents
 ```
 
 In `rulesmd.ini`:
@@ -635,8 +651,9 @@ Harvester.Counted=                              ; boolean
 
 [SOMESIDE]                                      ; Side
 Sidebar.HarvesterCounter.Offset=0,0             ; X,Y, pixels relative to default
-Sidebar.HarvesterCounter.ColorYellow=255,255,0  ; integer - R,G,B
-Sidebar.HarvesterCounter.ColorRed=255,0,0       ; integer - R,G,B
+Sidebar.HarvesterCounter.ColorGreen=            ; integer - Red,Green,Blue, default to [Side] -> ToolTipColor=
+Sidebar.HarvesterCounter.ColorYellow=255,255,0  ; integer - Red,Green,Blue
+Sidebar.HarvesterCounter.ColorRed=255,0,0       ; integer - Red,Green,Blue
 ```
 
 In `RA2MD.INI`:
@@ -677,10 +694,10 @@ In `rulesmd.ini`:
 ```ini
 [SOMESIDE]                                ; Side
 Sidebar.PowerDelta.Offset=0,0             ; X,Y, pixels relative to default
-Sidebar.PowerDelta.ColorGreen=0,255,0     ; integer - R,G,B
-Sidebar.PowerDelta.ColorYellow=255,255,0  ; integer - R,G,B
-Sidebar.PowerDelta.ColorRed=255,0,0       ; integer - R,G,B
-Sidebar.PowerDelta.ColorGrey=128,128,128  ; integer - R,G,B
+Sidebar.PowerDelta.ColorGreen=0,255,0     ; integer - Red,Green,Blue
+Sidebar.PowerDelta.ColorYellow=255,255,0  ; integer - Red,Green,Blue
+Sidebar.PowerDelta.ColorRed=255,0,0       ; integer - Red,Green,Blue
+Sidebar.PowerDelta.ColorGrey=128,128,128  ; integer - Red,Green,Blue
 Sidebar.PowerDelta.Align=left             ; Alignment enumeration - left | center/centre | right
 ```
 
@@ -815,7 +832,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMESIDE]                       ; Side
 Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default
-Sidebar.WeedsCounter.Color=      ; integer - R,G,B
+Sidebar.WeedsCounter.Color=      ; integer - Red,Green,Blue
 ```
 
 In `RA2MD.INI`:
@@ -877,9 +894,9 @@ Same as with harvester counter, you can download the improved font (v4 and highe
 In `rulesmd.ini`:
 ```ini
 [SOMESIDE]                          ; Side
-ToolTip.Background.Color=0,0,0      ; integer - R,G,B, defaults to [AudioVisual] -> ToolTip.Background.Color, which defaults to 0,0,0
+ToolTip.Background.Color=0,0,0      ; integer - Red,Green,Blue, defaults to [AudioVisual] -> ToolTip.Background.Color, which defaults to 0,0,0
 ToolTip.Background.Opacity=100      ; integer, ranged in [0, 100], defaults to [AudioVisual] -> ToolTip.Background.Opacity, which defaults to 100
-ToolTip.Background.BlurSize=0.0     ; float, defaults to [AudioVisual] -> ToolTip.Background.BlurSize, which defaults to 0.0
+ToolTip.Background.BlurSize=0.0     ; floating point value, defaults to [AudioVisual] -> ToolTip.Background.BlurSize, which defaults to 0.0
 ```
 
 ```{note}

@@ -1,4 +1,4 @@
-#include <Ext/Techno/Body.h>
+﻿#include <Ext/Techno/Body.h>
 
 #pragma region EnterRefineryFix
 
@@ -240,3 +240,28 @@ DEFINE_HOOK(0x738A3E, UnitClass_EnterIdleMode_SubterraneanHarvester, 0x5)
 // Skip the check for Teleporter here; this is an unreasonable check.
 // This check determines whether miners on a Guard mission near the refinery should return to the Harvest mission.
 DEFINE_JUMP(LJMP, 0x740943, 0x740957);
+
+// Now, miners will no longer actively withdraw from the Harvest mission due to mineral depletion.
+DEFINE_HOOK(0x73EEA6, UnitClass_MissionHarvest_AllOreGathered, 0x6)
+{
+	enum { SkipGameCode = 0x73EFA4 };
+
+	GET(UnitClass*, pThis, EBP);
+
+	auto pBuilding = MapClass::Instance.GetCellAt(pThis->GetCoords())->GetBuilding();
+	if (pBuilding && (pBuilding->Type->Refinery || pBuilding->Type->Weeder))
+	{
+		CellStruct buffer = CellStruct::Empty;
+		pThis->NearbyLocation(&buffer, pBuilding);
+		auto pDest = MapClass::Instance.GetCellAt(buffer);
+		pThis->SetDestination(pDest, false);
+		R->EAX(15);
+	}
+	else
+	{
+		pThis->MissionStatus = 0;
+		R->EAX(100);
+	}
+
+	return SkipGameCode;
+}

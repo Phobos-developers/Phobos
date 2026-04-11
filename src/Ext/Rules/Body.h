@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <RulesClass.h>
 #include <Utilities/Container.h>
@@ -168,6 +168,7 @@ public:
 		Valueable<Leptons> VisualScatter_Max;
 
 		Valueable<bool> ShowDesignatorRange;
+		Valueable<bool> ShowPowerPlantEnhancerRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
 		Valueable<int> SelectionFlashDuration;
 		Nullable<AnimTypeClass*> DropPodTrailer;
@@ -318,11 +319,20 @@ public:
 
 		Valueable<bool> DefaultToGuardArea;
 
+		Valueable<bool> DisableOveroptimizationInTargeting;
+    
 		Valueable<bool> CylinderRangefinding;
 
 		Valueable<int> PenetratesTransport_Level;
 
 		Valueable<bool> UnitsUnsellable;
+
+		Valueable<bool> DriverKilled_KillPassengers;
+		Valueable<double> ExtraThreat_IsThreat;
+		Valueable<double> ExtraThreat_InRange;
+		Valueable<double> ExtraThreatCoefficient_InRangeDistance;
+		Valueable<double> ExtraThreatCoefficient_Facing;
+		Valueable<double> ExtraThreatCoefficient_DistanceToLastTarget;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -463,6 +473,7 @@ public:
 			, VisualScatter_Min { Leptons(8) }
 			, VisualScatter_Max { Leptons(32) }
 			, ShowDesignatorRange { true }
+			, ShowPowerPlantEnhancerRange { true }
 			, DropPodTrailer { }
 			, DropPodDefaultTrailer { }
 			, PodImage { }
@@ -590,6 +601,14 @@ public:
 			, PenetratesTransport_Level { 10 }
 
 			, UnitsUnsellable { false }
+
+			, DriverKilled_KillPassengers { false }
+			, DisableOveroptimizationInTargeting { false }
+			, ExtraThreat_IsThreat { 0.0 }
+			, ExtraThreat_InRange { 0.0 }
+			, ExtraThreatCoefficient_InRangeDistance { 0.0 }
+			, ExtraThreatCoefficient_Facing { 0.0 }
+			, ExtraThreatCoefficient_DistanceToLastTarget { 0.0 }
 		{ }
 
 		virtual ~ExtData() = default;

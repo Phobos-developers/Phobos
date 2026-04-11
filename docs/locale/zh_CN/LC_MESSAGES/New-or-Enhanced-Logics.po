@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-23 02:31+0800\n"
+"POT-Creation-Date: 2026-04-05 22:08+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3829,6 +3829,54 @@ msgid ""
 "`SpySat=yes` that couldn't be affected by the jam."
 msgstr "`RadarJamIgnore` 决定哪些拥有 `Radar=yes` 或 `SpySat=yes` 的建筑不受到干扰。"
 
+msgid ""
+"Customize whether transport can kept or kill passengers when driver has "
+"been killed"
+msgstr "自定义载具被击杀驾驶员时是否保留或杀死乘客"
+
+msgid ""
+"It is now possible to customize whether transport can kept or kill "
+"passengers when [driver has been killed](http://ares-developers.github.io"
+"/Ares-docs/new/killingdrivers.html)."
+msgstr ""
+"现在可以自定义载具被 [击杀驾驶员](http://ares-developers.github.io/Ares-"
+"docs/new/killingdrivers.html) 时是否保留或杀死乘客了。"
+
+msgid ""
+"When `DriverKilled.KeptPassengers=true` is set, passengers will always be"
+" retained regardless of the `DriverKilled.KillPassengers` setting. If the"
+" transport also has `OpenTopped=true` and "
+"[`OpenTopped.AllowFiringIfDeactivated=false`](New-or-Enhanced-Logics.md"
+"#customizable-opentopped-properties) is not set, then passengers will "
+"continue attacking the target they were originally attacking, whether "
+"that target is inherited from the transport or acquired by themselves."
+msgstr ""
+"当设置 `DriverKilled.KeptPassengers=true` 时乘客将总是被保留而无论 "
+"`DriverKilled.KillPassengers` 的设置，如果运输工具还拥有 `OpenTopped=true` 且未设置 "
+"[`OpenTopped.AllowFiringIfDeactivated=false`](New-or-Enhanced-Logics.md"
+"#customizable-opentopped-"
+"properties)，那么乘客将继续攻击他们原本正在攻击的目标，无论这个目标是从运输工具继承来的还是他们自己获取的。"
+
+msgid ""
+"If `DriverKilled.KeptPassengers=true` is set, even if there are other "
+"passengers that can be matched by `Operator` besides the killed driver, "
+"the transport unit will still change its owner to `Special House` and "
+"change its mission to `Harmless`, but it will not be disabled or have its"
+" brightness adjusted."
+msgstr ""
+"如果设置了 `DriverKilled.KeptPassengers=true`，即便除被击杀的驾驶员外还有其他乘客可以被 `Operator` "
+"匹配，运输工具也仍会更改所属方为治安并将任务更改为 `Harmless`，只是并不瘫痪或调整亮度。"
+
+msgid ""
+"If a new passenger enters the transport unit and can be matched by "
+"`Operator`, then the owner will be changed normally."
+msgstr "如果有新的乘客进入运输工具并且可被 `Operator` 匹配，那么将会正常更改所属方。"
+
+msgid ""
+"This feature was originally designed for some special `OpenTopped` units,"
+" and has not yet been fully adapted to situations outside the design."
+msgstr "该功能本是为一些特殊 `OpenTopped` 单位设计的，暂未对设计外的情况进行充分适配。"
+
 msgid "Customize EVA voice and `SellSound` when selling units"
 msgstr "单位出售音效"
 
@@ -5744,6 +5792,9 @@ msgstr "现在弹头可以在引爆时揭示部分区域或整个地图的黑幕
 msgid "Reveal only applies to the owner of the warhead."
 msgstr "仅适用于弹头所有者。"
 
+msgid "Negative values mean reveal the entire map."
+msgstr "负值意味着揭示整张地图。"
+
 msgid "Reverse engineer warhead"
 msgstr "逆向工程弹头"
 
@@ -5790,6 +5841,9 @@ msgstr "现在弹头可以在引爆时填充部分区域或整个地图的黑幕
 
 msgid "Shroud only applies to enemies of the warhead owner."
 msgstr "仅适用于敌对所属方。"
+
+msgid "Negative values mean shroud the entire map."
+msgstr "负值意味着遮蔽整张地图。"
 
 msgid "Spawn powerup crate"
 msgstr "生成工具箱"

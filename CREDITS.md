@@ -290,6 +290,7 @@ This page lists all the individual contributions to the project by their author.
   - Guard range customizations
   - Wall overlay unit sell exploit fix
   - Fix vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't
+  - GapGen + SpySat desync fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -523,6 +524,9 @@ This page lists all the individual contributions to the project by their author.
   - Fix the initial direction of building placed by Ares's UnitDelivery superweapon
   - Customize default mirage disguises per vehicletypes
   - Allow customize jumpjet properties on warhead
+  - Customize effects range of power plant enhancer
+  - Customize whether transport can kept or kill passengers when driver has been killed
+  - Fix a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to fire when the transport unit with `OpenTopped=yes` moved to an area that the passengers' `MovementZone` cannot move into.
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -731,6 +735,9 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue that the Jumpjet must end its movement before starting the next mission
   - Taunt warhead
   - Fix the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated
+  - Miners back to work when ore regenerated
+  - Allow disable an over-optimization in targeting
+  - Extra threat
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
@@ -782,3 +789,4 @@ This page lists all the individual contributions to the project by their author.
   - Wall overlay unit sell exploit fix
   - Multiplayer gamespeed fix for RealTimeTimers
   - Revert Ares patch to allow OpenTopped transport customization
+  - Fix for units with Fly, Jumpjet or Rocket locomotors crashing off-map not being cleaned up

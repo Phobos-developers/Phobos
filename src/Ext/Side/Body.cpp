@@ -31,16 +31,17 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->IngameScore_WinTheme = pINI->ReadTheme(pSection, "IngameScore.WinTheme", this->IngameScore_WinTheme);
 	this->IngameScore_LoseTheme = pINI->ReadTheme(pSection, "IngameScore.LoseTheme", this->IngameScore_LoseTheme);
 	this->Sidebar_HarvesterCounter_Offset.Read(exINI, pSection, "Sidebar.HarvesterCounter.Offset");
-	this->Sidebar_HarvesterCounter_Yellow.Read(exINI, pSection, "Sidebar.HarvesterCounter.ColorYellow");
-	this->Sidebar_HarvesterCounter_Red.Read(exINI, pSection, "Sidebar.HarvesterCounter.ColorRed");
+	this->Sidebar_HarvesterCounter_ColorGreen.Read(exINI, pSection, "Sidebar.HarvesterCounter.ColorGreen");
+	this->Sidebar_HarvesterCounter_ColorYellow.Read(exINI, pSection, "Sidebar.HarvesterCounter.ColorYellow");
+	this->Sidebar_HarvesterCounter_ColorRed.Read(exINI, pSection, "Sidebar.HarvesterCounter.ColorRed");
 	this->Sidebar_WeedsCounter_Offset.Read(exINI, pSection, "Sidebar.WeedsCounter.Offset");
 	this->Sidebar_WeedsCounter_Color.Read(exINI, pSection, "Sidebar.WeedsCounter.Color");
 	this->Sidebar_ProducingProgress_Offset.Read(exINI, pSection, "Sidebar.ProducingProgress.Offset");
 	this->Sidebar_PowerDelta_Offset.Read(exINI, pSection, "Sidebar.PowerDelta.Offset");
-	this->Sidebar_PowerDelta_Green.Read(exINI, pSection, "Sidebar.PowerDelta.ColorGreen");
-	this->Sidebar_PowerDelta_Yellow.Read(exINI, pSection, "Sidebar.PowerDelta.ColorYellow");
-	this->Sidebar_PowerDelta_Red.Read(exINI, pSection, "Sidebar.PowerDelta.ColorRed");
-	this->Sidebar_PowerDelta_Grey.Read(exINI, pSection, "Sidebar.PowerDelta.ColorGrey");
+	this->Sidebar_PowerDelta_ColorGreen.Read(exINI, pSection, "Sidebar.PowerDelta.ColorGreen");
+	this->Sidebar_PowerDelta_ColorYellow.Read(exINI, pSection, "Sidebar.PowerDelta.ColorYellow");
+	this->Sidebar_PowerDelta_ColorRed.Read(exINI, pSection, "Sidebar.PowerDelta.ColorRed");
+	this->Sidebar_PowerDelta_ColorGrey.Read(exINI, pSection, "Sidebar.PowerDelta.ColorGrey");
 	this->Sidebar_PowerDelta_Align.Read(exINI, pSection, "Sidebar.PowerDelta.Align");
 	this->ToolTip_Background_Color.Read(exINI, pSection, "ToolTip.Background.Color");
 	this->ToolTip_Background_Opacity.Read(exINI, pSection, "ToolTip.Background.Opacity");
@@ -64,16 +65,17 @@ void SideExt::ExtData::Serialize(T& Stm)
 		.Process(this->ArrayIndex)
 		.Process(this->Sidebar_GDIPositions)
 		.Process(this->Sidebar_HarvesterCounter_Offset)
-		.Process(this->Sidebar_HarvesterCounter_Yellow)
-		.Process(this->Sidebar_HarvesterCounter_Red)
+		.Process(this->Sidebar_HarvesterCounter_ColorGreen)
+		.Process(this->Sidebar_HarvesterCounter_ColorYellow)
+		.Process(this->Sidebar_HarvesterCounter_ColorRed)
 		.Process(this->Sidebar_WeedsCounter_Offset)
 		.Process(this->Sidebar_WeedsCounter_Color)
 		.Process(this->Sidebar_ProducingProgress_Offset)
 		.Process(this->Sidebar_PowerDelta_Offset)
-		.Process(this->Sidebar_PowerDelta_Green)
-		.Process(this->Sidebar_PowerDelta_Yellow)
-		.Process(this->Sidebar_PowerDelta_Red)
-		.Process(this->Sidebar_PowerDelta_Grey)
+		.Process(this->Sidebar_PowerDelta_ColorGreen)
+		.Process(this->Sidebar_PowerDelta_ColorYellow)
+		.Process(this->Sidebar_PowerDelta_ColorRed)
+		.Process(this->Sidebar_PowerDelta_ColorGrey)
 		.Process(this->Sidebar_PowerDelta_Align)
 		.Process(this->ToolTip_Background_Color)
 		.Process(this->ToolTip_Background_Opacity)

@@ -38,8 +38,9 @@ DEFINE_HOOK(0x65DF67, TeamTypeClass_CreateMembers_LoadOntoTransport, 0x6)
 		pNext && pNext != pTransport && pNext->Team == pTeam;
 		pNext = abstract_cast<FootClass*>(pNext->NextObject))
 	{
-		pPayload->Transporter = pTransport;
 		pGunner = pNext;
+		pNext->IsInPlayfield = true;
+		pNext->Transporter = pTransport;
 
 		if (isTransportOpenTopped)
 			pTransport->EnteredOpenTopped(pNext);

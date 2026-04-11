@@ -807,6 +807,13 @@ msgid ""
 "credits when selling a unit on a repair bay."
 msgstr "`[AudioVisual] -> DisplayIncome` 还允许在维修厂出售单位时显示资金点数。"
 
+msgid "Show power plant enhancer range"
+msgstr "显示电厂增幅器的范围"
+
+msgid ""
+"It is possible to show range of power plant enhancer when placing a building."
+msgstr "现在可以在摆放建筑物时显示电厂增幅器的作用范围了。"
+
 msgid "Hotkey Commands"
 msgstr "快捷键命令"
 

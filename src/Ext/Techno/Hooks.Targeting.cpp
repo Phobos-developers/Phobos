@@ -69,3 +69,9 @@ DEFINE_HOOK(0x6F7CE2, TechnoClass_CanAutoTargetObject_IronCurtain, 0x6)
 
 	return 0;
 }
+
+// WW adds an optimization that: If the techno get a target in 1/4 or 1/2 of their targeting range, then it will not checking other targets.
+DEFINE_HOOK(0x6F9AF4, TechnoClass_SelectAutoTarget_DisableStupid, 0x6)
+{
+	return RulesExt::Global()->DisableOveroptimizationInTargeting ? 0x6F9B1B : 0;
+}

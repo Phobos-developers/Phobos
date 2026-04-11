@@ -231,6 +231,8 @@ public:
 		Nullable<WarheadTypeClass*> ForceShield_KillWarhead;
 		Valueable<bool> Explodes_KillPassengers;
 		Valueable<bool> Explodes_DuringBuildup;
+		Valueable<bool> DriverKilled_KeptPassengers;
+		Nullable<bool> DriverKilled_KillPassengers;
 		Nullable<int> DeployFireWeapon;
 		Valueable<TargetZoneScanType> TargetZoneScanType;
 
@@ -491,6 +493,13 @@ public:
 		Nullable<bool> JumpjetClimbIgnoreBuilding;
 
 		Valueable<bool> HoverDrownable;
+		bool ExtraThreat_Enabled;
+		Nullable<double> ExtraThreat_IsThreat;
+		Valueable<bool> AlwaysConsideredThreat;
+		Nullable<double> ExtraThreat_InRange;
+		Nullable<double> ExtraThreatCoefficient_InRangeDistance;
+		Nullable<double> ExtraThreatCoefficient_Facing;
+		Nullable<double> ExtraThreatCoefficient_DistanceToLastTarget;
 
 		Nullable<bool> Unsellable; // Ares 3.0
 
@@ -699,6 +708,8 @@ public:
 
 			, Explodes_KillPassengers { true }
 			, Explodes_DuringBuildup { true }
+			, DriverKilled_KeptPassengers { false }
+			, DriverKilled_KillPassengers {}
 			, DeployFireWeapon {}
 			, TargetZoneScanType { TargetZoneScanType::Same }
 
@@ -946,6 +957,13 @@ public:
 			, Unsellable {}
 
 			, TurretShape { nullptr }
+			, ExtraThreat_Enabled { false }
+			, ExtraThreat_IsThreat {}
+			, AlwaysConsideredThreat { false }
+			, ExtraThreat_InRange {}
+			, ExtraThreatCoefficient_InRangeDistance {}
+			, ExtraThreatCoefficient_Facing {}
+			, ExtraThreatCoefficient_DistanceToLastTarget {}
 
 			, SeparateWeaponTypes { SeparateWeaponType::None }
 		{ }
