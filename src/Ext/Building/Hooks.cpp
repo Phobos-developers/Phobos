@@ -1087,3 +1087,45 @@ DEFINE_HOOK(0x45670D, BuildingClass_GetRadialIndicatorRange_Extras, 0x7)
 	R->EAX(pThis->TechnoClass::GetTurretWeapon());
 	return ApplyTurretWeapon;
 }
+
+#pragma region TurretAnim
+
+DEFINE_HOOK(0x451242, BuildingClass_AnimationAI_TurretAnim, 0xA)
+{
+	enum { SkipGameCode = 0x451296 };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	if (auto const pAnim = pThis->Anims[(int)BuildingAnimSlot::Turret])
+	{
+		pAnim->Animation.Value = BuildingExt::GetTurretFrame(pThis);
+		pAnim->Animation.Step = 0;
+	}
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x44B6C7, BuildingClass_Mission_Attack_TurretAnim, 0x6)
+{
+	enum { SkipFiring = 0x44B6FE };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	if (pThis->HasTurret())
+	{
+		if (auto const pAnim = pThis->Anims[(int)BuildingAnimSlot::Turret])
+		{
+			auto const pExt = BuildingExt::ExtMap.Find(pThis);
+			auto const pTypeExt = pExt->TypeExtData;
+			bool isLowPower = !pThis->StuffEnabled || !pThis->IsPowerOnline();
+			bool firingFrames = isLowPower ? pTypeExt->TurretAnim_LowPowerFiringFrames : pTypeExt->TurretAnim_FiringFrames;
+
+			if (firingFrames > 0 && pExt->TurretAnimFiringFrame == -1)
+				pExt->TurretAnimFiringFrame = 0;
+		}
+	}
+
+	return 0;
+}
+
+#pragma endregion

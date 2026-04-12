@@ -455,6 +455,74 @@ void BuildingExt::KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, v
 		pClone->UnInit();
 }
 
+int BuildingExt::GetTurretFrame(BuildingClass* pThis)
+{
+	auto const pExt = BuildingExt::ExtMap.Find(pThis);
+	auto const pTypeExt = pExt->TypeExtData;
+	int facing = pThis->PrimaryFacing.Current().GetValue<5>();
+	int shapeFacing = ObjectClass::BodyShape[facing];
+
+	bool isLowPower = !pThis->StuffEnabled || !pThis->IsPowerOnline();
+	bool isFiring = pExt->TurretAnimFiringFrame != -1;
+
+	int idleBlockSize = 32 * pTypeExt->TurretAnim_IdleFrames;
+	int lowPowerIdleBlockSize = 32 * pTypeExt->TurretAnim_LowPowerIdleFrames;
+	int firingBlockSize = 32 * pTypeExt->TurretAnim_FiringFrames;
+	int offsetIdle = 0;
+	int offsetLowPowerIdle = offsetIdle + idleBlockSize;
+	int offsetFiring = offsetLowPowerIdle + lowPowerIdleBlockSize;
+	int offsetLowPowerFiring = offsetFiring + firingBlockSize;
+
+	int framesPerFacing = pTypeExt->TurretAnim_IdleFrames;
+	int baseOffset = offsetIdle;
+
+	if (isLowPower)
+	{
+		if (isFiring)
+		{
+			framesPerFacing = pTypeExt->TurretAnim_LowPowerFiringFrames;
+			baseOffset = offsetLowPowerFiring;
+		}
+		else if (pTypeExt->TurretAnim_LowPowerIdleFrames > 0)
+		{
+			framesPerFacing = pTypeExt->TurretAnim_LowPowerIdleFrames;
+			baseOffset = offsetLowPowerIdle;
+		}
+	}
+	else
+	{
+		if (isFiring)
+		{
+			framesPerFacing = pTypeExt->TurretAnim_FiringFrames;
+			baseOffset = offsetFiring;
+		}
+	}
+
+	int animFrame = 0;
+
+	if (framesPerFacing > 1)
+	{
+		if (isFiring)
+		{
+			animFrame = pExt->TurretAnimFiringFrame;
+			pExt->TurretAnimFiringFrame++;
+
+			if (pExt->TurretAnimFiringFrame >= framesPerFacing)
+			{
+				pExt->TurretAnimFiringFrame = -1;
+				pExt->TurretAnimIdleFrame = 0; // Reset idle anim frame.
+			}
+		}
+		else
+		{
+			animFrame = pExt->TurretAnimIdleFrame;
+			++pExt->TurretAnimIdleFrame %= framesPerFacing;
+		}
+	}
+
+	return baseOffset + (shapeFacing * framesPerFacing) + animFrame;
+}
+
 // =============================
 // load / save
 
@@ -474,6 +542,8 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentLaserWeaponIndex)
 		.Process(this->PoweredUpToLevel)
 		.Process(this->CurrentEMPulseSW)
+		.Process(this->TurretAnimIdleFrame)
+		.Process(this->TurretAnimFiringFrame)
 		//.Process(this->IsFiringNow) It is set and reset within a same function.
 		;
 }

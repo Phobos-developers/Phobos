@@ -139,6 +139,7 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 	return isUpgrade ? result : -1;
 }
 
+
 void BuildingTypeExt::ExtData::Initialize()
 { }
 
@@ -222,6 +223,12 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
 	this->UndeploysInto_Sellable.Read(exINI, pSection, "UndeploysInto.Sellable");
 	this->BuildingRadioLink_SyncOwner.Read(exINI, pSection, "BuildingRadioLink.SyncOwner");
+
+	// Existing TurretAnim characteristics are read from rules so following the pattern here.
+	this->TurretAnim_IdleFrames.Read(exINI, pSection, "TurretAnim.IdleFrames");
+	this->TurretAnim_LowPowerIdleFrames.Read(exINI, pSection, "TurretAnim.LowPowerIdleFrames");
+	this->TurretAnim_FiringFrames.Read(exINI, pSection, "TurretAnim.FiringFrames");
+	this->TurretAnim_LowPowerFiringFrames.Read(exINI, pSection, "TurretAnim.LowPowerFiringFrames");
 
 	if (pThis->NumberOfDocks > 0)
 	{
@@ -378,6 +385,10 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->HasPowerUpAnim)
 		.Process(this->UndeploysInto_Sellable)
 		.Process(this->BuildingRadioLink_SyncOwner)
+	    .Process(this->TurretAnim_IdleFrames)
+	    .Process(this->TurretAnim_LowPowerIdleFrames)
+	    .Process(this->TurretAnim_FiringFrames)
+	    .Process(this->TurretAnim_LowPowerFiringFrames)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)

@@ -104,6 +104,11 @@ public:
 
 		Nullable<bool> BuildingRadioLink_SyncOwner;
 
+		Valueable<int> TurretAnim_IdleFrames;
+		Valueable<int> TurretAnim_LowPowerIdleFrames;
+		Valueable<int> TurretAnim_FiringFrames;
+		Valueable<int> TurretAnim_LowPowerFiringFrames;
+
 		// Ares 0.2
 		Valueable<bool> CloningFacility;
 
@@ -183,6 +188,10 @@ public:
 			, HasPowerUpAnim {}
 			, UndeploysInto_Sellable { false }
 			, BuildingRadioLink_SyncOwner {}
+		    , TurretAnim_IdleFrames { 1 }
+		    , TurretAnim_LowPowerIdleFrames { 0 }
+		    , TurretAnim_FiringFrames { 0 }
+			, TurretAnim_LowPowerFiringFrames { 0 }
 
 			// Ares 0.2
 			, CloningFacility { false }

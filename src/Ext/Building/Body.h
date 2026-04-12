@@ -27,6 +27,8 @@ public:
 		int PoweredUpToLevel; // Distinct from UpgradeLevel, and set to highest PowersUpToLevel out of applied upgrades regardless of how many are currently applied to this building.
 		SuperClass* CurrentEMPulseSW;
 		bool IsFiringNow;
+		int TurretAnimIdleFrame;
+		int TurretAnimFiringFrame;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -42,6 +44,8 @@ public:
 			, PoweredUpToLevel { 0 }
 			, CurrentEMPulseSW {}
 			, IsFiringNow { false }
+			, TurretAnimIdleFrame { 0 }
+			, TurretAnimFiringFrame { -1 }
 		{ }
 
 		void DisplayIncomeString();
@@ -102,4 +106,5 @@ public:
 	static const std::vector<CellStruct> GetFoundationCells(BuildingClass* pThis, CellStruct baseCoords, bool includeOccupyHeight = false);
 	static WeaponStruct* GetLaserWeapon(BuildingClass* pThis);
 	static void __fastcall KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, void*, BuildingClass* pFactory);
+	static int GetTurretFrame(BuildingClass* pThis);
 };

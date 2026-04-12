@@ -1008,6 +1008,21 @@ In `rulesmd.ini`:
 ConsideredVehicle=  ; boolean
 ```
 
+### Building turret animations
+
+- By default building `TurretAnim(Damaged)` with `TurretAnimIsVoxel=false` only displays one frame per each of the 32 facings. This can now be increased and there are additional animations available for low power state and firing weapons.
+  - The frames in the .shp file should be in the order: `IdleFrames`, `LowPowerIdleFrames`, `FiringFrames`, `LowPowerFiringFrames`, animations with frame count set to 0 will be skipped / ignored.
+  - Note that `FiringFrames` starts playing when attacking and weapon can fire, it will not stop firing of weapon until it has finished playing nor will anything prevent it from looping multiple times if weapon firing is blocked by [delayed firing](New-or-Enhanced-Logics.md#delayed-firing) for longer than there are frames for. Matching delayed firing duration with firing frame count can be used to make pre-firing animation.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType
+TurretAnim.IdleFrames=1            ; integer
+TurretAnim.LowPowerIdleFrames=0    ; integer
+TurretAnim.FiringFrames=0          ; integer
+TurretAnim.LowPowerFiringFrames=0  ; integer
+```
+
 ### Custom exit cell for infantry factory
 
 - By default `Factory=InfantryType` buildings use exit cell for the created infantry based on hardcoded settings if any of `GDIBarracks`, `NODBarracks` or `YuriBarracks` are set to true. It is now possible to define arbitrary exit cell for such building via `BarracksExitCell`. Below is a reference of the cell offsets for the hardcoded values.

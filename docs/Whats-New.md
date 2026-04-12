@@ -576,6 +576,7 @@ New:
 - Customize `HarvesterLoadRate` (by Noble_Fish)
 - [Toggle to prevent `ShrapnelWeapon` from targeting buildings multiple times](Fixed-or-Improved-Logics.md#shrapnel-enhancements) (by Starkku)
 - [Laser drawing Z-adjust customization](Fixed-or-Improved-Logics.md#laser-z-adjust) (by Starkku)
+- [Building turret idle/firing/low power animations](Fixed-or-Improved-Logics.md#building-turret-animations) (by Starkku)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
