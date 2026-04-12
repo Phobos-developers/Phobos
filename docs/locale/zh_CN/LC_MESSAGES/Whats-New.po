@@ -2361,6 +2361,12 @@ msgstr ""
 "修复了 `Locomotor` 为 `Fly`、`Jumpjet` 或 `Rocket` "
 "的单位在地图外坠毁时未能彻底清除并且永久占用生产槽位和计入单位上限的问题（by RAZER）"
 
+msgid ""
+"Fixed the issue that `NoQueueUpToEnter` will clear passenger's "
+"planning tokens when entered transport (by NetsuNegi)"
+msgstr ""
+"修复了 `NoQueueUpToEnter` 会在乘客进入载具时清除计划节点的问题（by NetsuNegi）"
+
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
 

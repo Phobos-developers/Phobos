@@ -1734,6 +1734,12 @@ msgstr ""
 "修复了 `OpenTopped=yes` 的运输工具移动到乘客 `MovementZone` 所不支持的区域时由初始载员逻辑或勾选了 "
 "`预装载小队` 的作战小队创建的乘客无法开火的 Bug"
 
+msgid ""
+"Fix the issue that `NoQueueUpToEnter` will clear passenger's "
+"planning tokens when entered transport"
+msgstr ""
+"修复了 `NoQueueUpToEnter` 会在乘客进入载具时清除计划节点的问题"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 

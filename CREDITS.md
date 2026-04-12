@@ -526,6 +526,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize effects range of power plant enhancer
   - Customize whether transport can kept or kill passengers when driver has been killed
   - Fix a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to fire when the transport unit with `OpenTopped=yes` moved to an area that the passengers' `MovementZone` cannot move into.
+  - Fix the issue that `NoQueueUpToEnter` will clear passenger's planning tokens when entered transport
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
