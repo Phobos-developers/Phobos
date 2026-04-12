@@ -318,6 +318,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed units with Fly, Jumpjet or Rocket locomotors destroyed while crashing off-map never being fully cleaned up, permanently blocking production slots and counting towards unit limits.
 - Fixed a desync due to an inconsistent shroud state caused by `GapGenerator` and `SpySat` interaction.
 - Now miners will no longer withdraw from the Harvest mission due to mineral depletion and will periodically attempt to return to work.
+- Fixed the incorrect mission switching in infantry EnterIdleMode.
 
 ## Fixes / interactions with other extensions
 
@@ -363,6 +364,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Modified the ares hook that stopped OpenTopped transports from firing if cloaked.
 - Fixed an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes.
 - Fixed the initial direction of building placed by Ares's UnitDelivery superweapon.
+- Fixed a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to fire when the transport unit with `OpenTopped=yes` moved to an area that the passengers' `MovementZone` cannot move into.
 
 ## Newly added global settings
 
