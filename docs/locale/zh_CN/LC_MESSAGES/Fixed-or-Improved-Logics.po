@@ -1640,7 +1640,7 @@ msgid ""
 msgstr "现在矿车将不再由于矿物枯竭而推出 `Harvest` 任务并且会定期尝试返回工作。"
 
 msgid "Fixed the incorrect mission switching in infantry EnterIdleMode."
-msgstr ""
+msgstr "修复了步兵进入闲置状态时的错误任务切换。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"

@@ -2455,7 +2455,7 @@ msgid "Extra threat"
 msgstr "额外威胁"
 
 msgid "Fixed the incorrect mission switching in infantry EnterIdleMode"
-msgstr ""
+msgstr "修复了步兵进入闲置状态时的错误任务切换"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"

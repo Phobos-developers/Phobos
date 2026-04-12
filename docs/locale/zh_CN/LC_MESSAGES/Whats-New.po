@@ -2201,7 +2201,7 @@ msgstr "矿车在矿石再生后返回工作"
 msgid ""
 "Fixed the incorrect mission switching in infantry EnterIdleMode (by "
 "TaranDahl)"
-msgstr ""
+msgstr "修复了步兵进入闲置状态时的错误任务切换（by TaranDahl）"
 
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
