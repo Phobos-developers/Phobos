@@ -1376,7 +1376,7 @@ Phobos fixes:
 New:
 - Customizable producing progress "bars" like CnC:Remastered did (by Uranusian)
 - Customizable cameo sorting priority (by Uranusian)
-- Customizable harvester ore gathering animation (by secsome, Uranusian)
+- Customizable harvester ore gathering animation (by secsome & Uranusian)
 - Allow making technos unable to be issued with movement order (by Uranusian)
 
 Vanilla fixes:

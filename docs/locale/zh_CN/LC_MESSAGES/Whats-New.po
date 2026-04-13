@@ -5231,8 +5231,8 @@ msgstr "自定义像 CNC 重置版那样的生产进度「条」（by Uranusian�
 msgid "Customizable cameo sorting priority (by Uranusian)"
 msgstr "自定义图标排序优先级（by Uranusian）"
 
-msgid "Customizable harvester ore gathering animation (by secsome, Uranusian)"
-msgstr "自定义矿车采矿动画（by secsome, Uranusian）"
+msgid "Customizable harvester ore gathering animation (by secsome & Uranusian)"
+msgstr "自定义矿车采矿动画（by secsome & Uranusian）"
 
 msgid ""
 "Allow making technos unable to be issued with movement order (by "
