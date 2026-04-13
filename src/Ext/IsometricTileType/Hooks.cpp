@@ -14,18 +14,15 @@ DEFINE_HOOK(0x544E70, IsometricTileTypeClass_Init_Drawer, 0x8)
 	LightConvertClass* pLightConvert = nullptr;
 	const int isoTileTypeIndex = pCell->IsoTileTypeIndex;
 
-	if (isoTileTypeIndex == 0xFFFF)
+	if (isoTileTypeIndex == 0xFFFF && IsometricTileTypeExt::InRender)
 	{
-		if (IsometricTileTypeExt::InRender && !pLightConvert)
+		if (const auto pIsoTypeExt = IsometricTileTypeExt::ExtMap.Find(IsometricTileTypeClass::Array.Items[0]))
 		{
-			auto const theater = ScenarioClass::Instance->Theater;
-			auto const extension = Theater::GetTheater(theater).Extension;
-
 			char paletteName[64];
-			_snprintf(paletteName, sizeof(paletteName), "ISO%s.PAL", extension);
+			_snprintf(paletteName, sizeof(paletteName), pIsoTypeExt->PaletteName.data());
 			_strupr(paletteName);
 
-			pLightConvert = IsometricTileTypeExt::GetLightConvert(paletteName, red, green, blue, true);
+			pLightConvert = IsometricTileTypeExt::GetLightConvert(paletteName, red, green, blue, false);
 		}
 	}
 	else if (isoTileTypeIndex >= 0 && isoTileTypeIndex < IsometricTileTypeClass::Array.Count)
