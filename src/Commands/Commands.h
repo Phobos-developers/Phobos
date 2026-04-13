@@ -1,17 +1,15 @@
 #pragma once
 
 #include <CommandClass.h>
-#include <GameStrings.h>
 #include <StringTable.h>
-#include <MessageListClass.h>
 #include <Phobos.h>
-#include <Utilities/Debug.h>
 
 template <typename T>
-void MakeCommand()
+T* MakeCommand()
 {
 	T* command = GameCreate<T>();
-	CommandClass::Array->AddItem(command);
+	CommandClass::Array.AddItem(command);
+	return command;
 };
 
 #define CATEGORY_TEAM StringTable::LoadString(GameStrings::TXT_TEAM)

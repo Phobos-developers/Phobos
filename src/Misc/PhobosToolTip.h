@@ -1,15 +1,7 @@
 #pragma once
 
-#include <SidebarClass.h>
-#include <SuperWeaponTypeClass.h>
-#include <TechnoTypeClass.h>
-
-#include <Phobos.h>
-
 #include <Ext/TechnoType/Body.h>
 #include <Ext/SWType/Body.h>
-
-#include <string>
 
 struct StripClass;
 
@@ -29,10 +21,10 @@ public:
 	inline const wchar_t* GetBuffer() const;
 
 	void HelpText(BuildType& cameo);
-	void HelpText(TechnoTypeClass* pType);
-	void HelpText(SuperWeaponTypeClass* pType);
+	void HelpText_Techno(TechnoTypeClass* pType);
+	void HelpText_Super(int swidx);
 
-// Properties
+	// Properties
 private:
 	std::wstring TextBuffer {};
 

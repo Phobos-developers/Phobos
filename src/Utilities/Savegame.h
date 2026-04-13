@@ -5,7 +5,8 @@
 #include <memory>
 #include <type_traits>
 
-namespace Savegame {
+namespace Savegame
+{
 	template <typename T>
 	bool ReadPhobosStream(PhobosStreamReader& Stm, T& Value, bool RegisterForChange = true);
 

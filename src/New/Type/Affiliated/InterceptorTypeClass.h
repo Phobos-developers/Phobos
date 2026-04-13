@@ -1,8 +1,6 @@
 #pragma once
 
-#include <Utilities/Constructs.h>
-#include <Utilities/Enum.h>
-#include <Utilities/Template.h>
+#include <Utilities/TemplateDef.h>
 
 class InterceptorTypeClass
 {
@@ -14,6 +12,7 @@ public:
 
 	TechnoTypeClass* OwnerType;
 
+	Valueable<int> TargetingDelay;
 	Valueable<AffectedHouse> CanTargetHouses;
 	Promotable<Leptons> GuardRange;
 	Promotable<Leptons> MinimumGuardRange;
@@ -22,6 +21,7 @@ public:
 	Valueable<bool> WeaponReplaceProjectile;
 	Valueable<bool> WeaponCumulativeDamage;
 	Valueable<bool> KeepIntact;
+	Valueable<bool> ApplyFirepowerMult;
 	Nullable<bool> DeleteOnIntercept;
 
 	void LoadFromINI(CCINIClass* pINI, const char* pSection);

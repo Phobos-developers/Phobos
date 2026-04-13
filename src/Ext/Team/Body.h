@@ -1,11 +1,8 @@
 #pragma once
 #include <TeamClass.h>
 
-#include <Helpers/Enumerators.h>
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
-#include <Phobos.h>
 
 class TeamExt
 {
@@ -14,6 +11,7 @@ public:
 
 	static constexpr DWORD Canary = 0x414B4B41;
 	static constexpr size_t ExtPointerOffset = 0x18;
+	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
 	class ExtData final : public Extension<TeamClass>
 	{
@@ -30,6 +28,7 @@ public:
 		int ForceJump_InitialCountdown;
 		bool ForceJump_RepeatMode;
 		FootClass* TeamLeader;
+		std::vector<ScriptClass*> PreviousScriptList;
 
 		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject)
 			, WaitNoTargetAttempts { 0 }
@@ -44,6 +43,7 @@ public:
 			, ForceJump_InitialCountdown { -1 }
 			, ForceJump_RepeatMode { false }
 			, TeamLeader { nullptr }
+			, PreviousScriptList { }
 		{ }
 
 		virtual ~ExtData() = default;

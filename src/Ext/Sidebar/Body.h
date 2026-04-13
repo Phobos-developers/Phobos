@@ -2,11 +2,8 @@
 
 #include <SidebarClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
-
-#include <map>
 
 class SidebarExt
 {
@@ -51,7 +48,7 @@ public:
 
 	static void Clear()
 	{
-		Allocate(SidebarClass::Instance);
+		Allocate(&SidebarClass::Instance);
 	}
 
 	static void PointerGotInvalid(void* ptr, bool removed)
@@ -59,6 +56,5 @@ public:
 		Global()->InvalidatePointer(ptr, removed);
 	}
 
-	static bool LoadGlobals(PhobosStreamReader& Stm);
-	static bool SaveGlobals(PhobosStreamWriter& Stm);
+	static bool __stdcall AresTabCameo_RemoveCameo(BuildType* pItem);
 };

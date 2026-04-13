@@ -25,5 +25,5 @@ const wchar_t* DummyCommandClass::GetUIDescription() const
 void DummyCommandClass::Execute(WWKey eInput) const
 {
 	Debug::Log("[Phobos] Dummy command runs.\n");
-	MessageListClass::Instance->PrintMessage(L"[Phobos] Dummy command runs.");
+	MessageListClass::Instance.PrintMessage(L"[Phobos] Dummy command runs.");
 }

@@ -1,108 +1,89 @@
-#include <UnitClass.h>
-#include <TechnoClass.h>
+#include <Helpers/Macro.h>
+#include <TunnelLocomotionClass.h>
 
 #include <Ext/TechnoType/Body.h>
-#include <Utilities/EnumFunctions.h>
-#include <Utilities/GeneralUtils.h>
-#include <Utilities/Macro.h>
 
-namespace UnitDeployConvertHelpers
+namespace UnitUnloadTemp
 {
-	void RemoveDeploying(REGISTERS* R);
-	void ChangeAmmo(REGISTERS* R);
-	void ChangeAmmoOnUnloading(REGISTERS* R);
+	TechnoTypeExt::ExtData* TypeExtData = nullptr;
 }
 
-void UnitDeployConvertHelpers::RemoveDeploying(REGISTERS* R)
+// Prevent subterranean units from deploying while underground.
+DEFINE_HOOK(0x73D63B, UnitClass_Mi_Unload_Subterranean, 0x6)
 {
-	GET(TechnoClass*, pThis, ESI);
-	auto const pThisType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	enum { ReturnFromFunction = 0x73DFB0, SkipHarvester = 0x73D694, SkipPassengers = 0x73DCD3, Harvester = 0x73DEE7, Continue = 0x73D6EC };
 
-	const bool canDeploy = pThis->CanDeploySlashUnload();
-	R->AL(canDeploy);
-	if (!canDeploy)
-		return;
+	GET(UnitClass* const, pThis, ESI);
 
-	const bool skipMinimum = pThisType->Ammo_DeployUnlockMinimumAmount < 0;
-	const bool skipMaximum = pThisType->Ammo_DeployUnlockMaximumAmount < 0;
-
-	if (skipMinimum && skipMaximum)
-		return;
-
-	const bool moreThanMinimum = pThis->Ammo >= pThisType->Ammo_DeployUnlockMinimumAmount;
-	const bool lessThanMaximum = pThis->Ammo <= pThisType->Ammo_DeployUnlockMaximumAmount;
-
-	if ((skipMinimum || moreThanMinimum) && (skipMaximum || lessThanMaximum))
-		return;
-
-	R->AL(false);
-}
-
-void UnitDeployConvertHelpers::ChangeAmmo(REGISTERS* R)
-{
-	GET(UnitClass*, pThis, ECX);
-	auto const pThisExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-
-	if (pThis->Deployed && !pThis->Deploying && pThisExt->Ammo_AddOnDeploy)
+	if (auto const pLoco = locomotion_cast<TunnelLocomotionClass*>(pThis->Locomotor))
 	{
-		const int ammoCalc = std::max(pThis->Ammo + pThisExt->Ammo_AddOnDeploy, 0);
-		pThis->Ammo = std::min(pThis->Type->Ammo, ammoCalc);
+		if (pLoco->State != TunnelLocomotionClass::State::Idle)
+			return ReturnFromFunction;
 	}
 
-	R->EAX(pThis->Type);
-}
+	auto const pType = pThis->Type;
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	UnitUnloadTemp::TypeExtData = pTypeExt;
 
-void UnitDeployConvertHelpers::ChangeAmmoOnUnloading(REGISTERS* R)
-{
-	GET(UnitClass*, pThis, ESI);
-	auto const pThisExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-
-	if (pThis->Type->IsSimpleDeployer && pThisExt->Ammo_AddOnDeploy && (pThis->Type->UnloadingClass == nullptr))
+	// It should be the highest priority.
+	if (pThis->BunkerLinkedItem)
 	{
-		const int ammoCalc = std::max(pThis->Ammo + pThisExt->Ammo_AddOnDeploy, 0);
-		pThis->Ammo = std::min(pThis->Type->Ammo, ammoCalc);
+		if (auto const pBuilding = pThis->GetCell()->GetBuilding())
+			pBuilding->EmptyBunker();
+
+		// It can fix the issue where mining carts cannot move.
+		R->EAX(pType);
+		return SkipHarvester;
 	}
 
-	R->AL(pThis->Deployed);
-}
+	// Miners should not be hindered by other deployment actions while unloading minerals.
+	if (pType->Harvester || pType->Weeder)
+	{
+		const bool hasAnyLink = pThis->HasAnyLink();
 
-DEFINE_HOOK(0x73FFE6, UnitClass_WhatAction_RemoveDeploying, 0xA)
-{
-	enum { Continue = 0x73FFF0 };
-	UnitDeployConvertHelpers::RemoveDeploying(R);
+		if (hasAnyLink || pThis->Unloading)
+		{
+			R->AL(hasAnyLink);
+			return Harvester;
+		}
+	}
+
+	R->EAX(pType);
+
+	if (pTypeExt->Deploy_SkipPassengerUnload)
+		return SkipPassengers;
+	else if (pTypeExt->Deploy_NoPassenger && pThis->Passengers.NumPassengers <= 0 && pThis->MissionStatus == 0)
+		return SkipPassengers;
+
 	return Continue;
 }
 
-DEFINE_HOOK(0x730C70, DeployClass_Execute_RemoveDeploying, 0xA)
+DEFINE_HOOK(0x73DEEB, UnitClass_Mi_Unload_SkipHarvester, 0x5)
 {
-	enum { Continue = 0x730C7A };
-	GET(TechnoClass*, pThis, ESI);
+	GET(UnitClass* const, pThis, ESI);
+	enum { SkipHarvester = 0x73D694 };
 
-	if (abstract_cast<UnitClass*>(pThis))
-		UnitDeployConvertHelpers::RemoveDeploying(R);
-	else
-		R->AL(pThis->CanDeploySlashUnload());
+	auto const pTypeExt = UnitUnloadTemp::TypeExtData;
 
-	return Continue;
+	if (!pThis->Unloading && (!pTypeExt->Deploy_NoTiberium || pThis->Tiberium.GetTotalValue() == 0))
+	{
+		R->EAX(pThis->Type);
+		return SkipHarvester;
+	}
+
+	return 0;
 }
 
-DEFINE_HOOK(0x739C74, UnitClass_ToggleDeployState_ChangeAmmo, 0x6) // deploying
+DEFINE_HOOK(0x740015, UnitClass_MouseOverObject_SkipPassengers, 0x6)
 {
-	enum { Continue = 0x739C7A };
-	UnitDeployConvertHelpers::ChangeAmmo(R);
-	return Continue;
-}
+	enum { SkipPassengers = 0x7400F0 };
 
-DEFINE_HOOK(0x739E5A, UnitClass_ToggleSimpleDeploy_ChangeAmmo, 0x6) // undeploying
-{
-	enum { Continue = 0x739E60 };
-	UnitDeployConvertHelpers::ChangeAmmo(R);
-	return Continue;
-}
+	GET(UnitClass* const, pThis, ESI);
+	GET(UnitTypeClass* const, pType, EAX);
 
-DEFINE_HOOK(0x73DE78, UnitClass_Unload_ChangeAmmo, 0x6) // converters
-{
-	enum { Continue = 0x73DE7E };
-	UnitDeployConvertHelpers::ChangeAmmoOnUnloading(R);
-	return Continue;
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+	return pTypeExt->Deploy_SkipPassengerUnload
+		|| (pTypeExt->Deploy_NoPassenger && pThis->Passengers.NumPassengers <= 0)
+		? SkipPassengers : 0;
 }

@@ -3,6 +3,8 @@
 #include <AbstractClass.h>
 #include <GeneralDefinitions.h>
 #include <Randomizer.h>
+#include <TeamClass.h>
+
 #include <vector>
 
 // These determine how many of each type of sync log event are stored in the buffers.
@@ -14,6 +16,11 @@ static constexpr unsigned int DestinationChanges_Size = 1024;
 static constexpr unsigned int MissionOverrides_Size = 256;
 static constexpr unsigned int AnimCreations_Size = 512;
 
+// Intention: Data structure that stores sync event records.
+// Stores fixed amount of items determined by size template arg. Any further additions
+// start to overwrite items from oldest to newest, cycling endlessly where need be.
+// Likewise read/get returns items in order they were added from oldest to newest.
+// TODO: Clean up / improve
 template <typename T, unsigned int size>
 class SyncLogEventBuffer
 {
@@ -21,7 +28,7 @@ private:
 	std::vector<T> Data;
 	int LastWritePosition;
 	int LastReadPosition;
-	bool HasBeenFilled = true;
+	bool HasBeenFilled;
 public:
 	SyncLogEventBuffer() : Data(size), LastWritePosition(0), LastReadPosition(-1), HasBeenFilled(false) { };
 
@@ -46,7 +53,7 @@ public:
 			return T();
 
 		if (LastReadPosition == -1 && HasBeenFilled)
-			LastReadPosition = LastWritePosition ;
+			LastReadPosition = LastWritePosition;
 		else if (LastReadPosition == -1 || static_cast<size_t>(LastReadPosition) >= Data.size())
 			LastReadPosition = 0;
 
@@ -84,8 +91,7 @@ struct RNGCallSyncLogEvent : SyncLogEvent
 
 	RNGCallSyncLogEvent(int Type, bool IsCritical, unsigned int Index1, unsigned int Index2, unsigned int Caller, unsigned int Frame, int Min, int Max)
 		: Type(Type), IsCritical(IsCritical), Index1(Index1), Index2(Index2), Min(Min), Max(Max), SyncLogEvent(Caller, Frame)
-	{
-	}
+	{ }
 };
 
 struct FacingChangeSyncLogEvent : SyncLogEvent
@@ -96,8 +102,7 @@ struct FacingChangeSyncLogEvent : SyncLogEvent
 
 	FacingChangeSyncLogEvent(unsigned short Facing, unsigned int Caller, unsigned int Frame)
 		: Facing(Facing), SyncLogEvent(Caller, Frame)
-	{
-	}
+	{ }
 };
 
 struct TargetChangeSyncLogEvent : SyncLogEvent
@@ -111,8 +116,7 @@ struct TargetChangeSyncLogEvent : SyncLogEvent
 
 	TargetChangeSyncLogEvent(const AbstractType& Type, const DWORD& ID, const AbstractType& TargetType, const DWORD& TargetID, unsigned int Caller, unsigned int Frame)
 		: Type(Type), ID(ID), TargetType(TargetType), TargetID(TargetID), SyncLogEvent(Caller, Frame)
-	{
-	}
+	{ }
 };
 
 struct MissionOverrideSyncLogEvent : SyncLogEvent
@@ -125,8 +129,7 @@ struct MissionOverrideSyncLogEvent : SyncLogEvent
 
 	MissionOverrideSyncLogEvent(const AbstractType& Type, const DWORD& ID, int Mission, unsigned int Caller, unsigned int Frame)
 		: Type(Type), ID(ID), Mission(Mission), SyncLogEvent(Caller, Frame)
-	{
-	}
+	{ }
 };
 
 struct AnimCreationSyncLogEvent : SyncLogEvent
@@ -137,8 +140,7 @@ struct AnimCreationSyncLogEvent : SyncLogEvent
 
 	AnimCreationSyncLogEvent(const CoordStruct& Coords, unsigned int Caller, unsigned int Frame)
 		: Coords(Coords), SyncLogEvent(Caller, Frame)
-	{
-	}
+	{ }
 };
 
 class SyncLogger
@@ -157,11 +159,15 @@ private:
 	static void WriteDestinationChanges(FILE* const pLogFile, int frameDigits);
 	static void WriteMissionOverrides(FILE* const pLogFile, int frameDigits);
 	static void WriteAnimCreations(FILE* const pLogFile, int frameDigits);
+	static void WriteTeams(FILE* const pLogFile);
 public:
-	static bool HooksDisabled;
 	static int AnimCreations_HighestX;
 	static int AnimCreations_HighestY;
 	static int AnimCreations_HighestZ;
+	static int TeamTypeClass_MaxIDLength;
+	static int ScriptTypeClass_MaxIDLength;
+	static int HouseTypeClass_MaxIDLength;
+	static int HouseName_MaxIDLength;
 
 	static void AddRNGCallSyncLogEvent(Randomizer* pRandomizer, int type, unsigned int callerAddress, int min = 0, int max = 0);
 	static void AddFacingChangeSyncLogEvent(unsigned short facing, unsigned int callerAddress);
@@ -170,4 +176,5 @@ public:
 	static void AddMissionOverrideSyncLogEvent(AbstractClass* pObject, int mission, unsigned int callerAddress);
 	static void AddAnimCreationSyncLogEvent(const CoordStruct& coords, unsigned int callerAddress);
 	static void WriteSyncLog(const char* logFilename);
+	static void SetTeamLoggingPadding(TeamClass* pTeam);
 };

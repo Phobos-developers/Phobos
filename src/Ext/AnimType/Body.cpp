@@ -1,70 +1,65 @@
 #include "Body.h"
-#include <Phobos.h>
-#include <Helpers/Macro.h>
-#include <Utilities/TemplateDef.h>
-#include <HouseTypeClass.h>
-#include <HouseClass.h>
-#include <ScenarioClass.h>
-#include <UnitClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/TechnoType/Body.h>
 
 AnimTypeExt::ExtContainer AnimTypeExt::ExtMap;
 
-void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
+void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, HouseClass* pKiller)
 {
 	if (!pThis)
 		return;
 
-	HouseClass* pInvoker = pKiller ? pKiller->Owner : nullptr;
+	auto const pType = pThis->Type;
 
-	if (pThis->Type->DestroyAnim.Count > 0)
+	if (pType->DestroyAnim.Count > 0)
 	{
 		auto const facing = pThis->PrimaryFacing.Current().GetDir();
 		AnimTypeClass* pAnimType = nullptr;
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 		if (!pTypeExt->DestroyAnim_Random.Get())
 		{
 			int idxAnim = 0;
 
-			if (pThis->Type->DestroyAnim.Count >= 8)
+			if (pType->DestroyAnim.Count >= 8)
 			{
-				idxAnim = pThis->Type->DestroyAnim.Count;
-				if (pThis->Type->DestroyAnim.Count % 2 == 0)
-					idxAnim *= static_cast<int>(static_cast<unsigned char>(facing) / 256.0);
+				idxAnim = pType->DestroyAnim.Count - 1;
+				if (pType->DestroyAnim.Count % 2 == 0)
+					idxAnim = static_cast<int>(static_cast<unsigned char>(facing) / 256.0 * idxAnim);
 			}
 
-			pAnimType = pThis->Type->DestroyAnim[idxAnim];
+			pAnimType = pType->DestroyAnim[idxAnim];
 		}
 		else
 		{
-			int const nIDx_Rand = pThis->Type->DestroyAnim.Count == 1 ?
-				0 : ScenarioClass::Instance->Random.RandomRanged(0, (pThis->Type->DestroyAnim.Count - 1));
-			pAnimType = pThis->Type->DestroyAnim[nIDx_Rand];
-
+			int const nIDx_Rand = pType->DestroyAnim.Count == 1
+				? 0 : ScenarioClass::Instance->Random.RandomRanged(0, (pType->DestroyAnim.Count - 1));
+			pAnimType = pType->DestroyAnim[nIDx_Rand];
 		}
 
 		if (pAnimType)
 		{
-			if (auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->GetCoords()))
+			auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location);
+			auto const pInvoker = pKiller;
+
+			//auto VictimOwner = pThis->IsMindControlled() && pThis->GetOriginalOwner()
+			//	? pThis->GetOriginalOwner() : pThis->Owner;
+
+			auto const pAnimTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
+			auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pThis->Owner);
+
+			pAnimExt->SetInvoker(pThis);
+			pAnimExt->FromDeathUnit = true;
+
+			if (auto const pCreateUnit = pAnimTypeExt->CreateUnitType.get())
 			{
-				//auto VictimOwner = pThis->IsMindControlled() && pThis->GetOriginalOwner()
-				//	? pThis->GetOriginalOwner() : pThis->Owner;
-
-				auto const pAnimTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
-				auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
-
-				AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pThis->Owner);
-
-				pAnimExt->SetInvoker(pThis);
-				pAnimExt->FromDeathUnit = true;
-
-				if (pAnimTypeExt->CreateUnit_InheritDeathFacings.Get())
+				if (pCreateUnit->InheritDeathFacings)
 					pAnimExt->DeathUnitFacing = facing;
 
-				if (pAnimTypeExt->CreateUnit_InheritTurretFacings.Get())
+				if (pCreateUnit->InheritTurretFacings)
 				{
 					if (pThis->HasTurret())
 					{
@@ -84,25 +79,15 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->Palette.LoadFromINI(pINI, pID, "CustomPalette");
-	this->CreateUnit.Read(exINI, pID, "CreateUnit");
-	this->CreateUnit_Facing.Read(exINI, pID, "CreateUnit.Facing");
-	this->CreateUnit_InheritDeathFacings.Read(exINI, pID, "CreateUnit.InheritFacings");
-	this->CreateUnit_InheritTurretFacings.Read(exINI, pID, "CreateUnit.InheritTurretFacings");
-	this->CreateUnit_RemapAnim.Read(exINI, pID, "CreateUnit.RemapAnim");
-	this->CreateUnit_Mission.Read(exINI, pID, "CreateUnit.Mission");
-	this->CreateUnit_Owner.Read(exINI, pID, "CreateUnit.Owner");
-	this->CreateUnit_RandomFacing.Read(exINI, pID, "CreateUnit.RandomFacing");
-	this->CreateUnit_AlwaysSpawnOnGround.Read(exINI, pID, "CreateUnit.AlwaysSpawnOnGround");
-	this->CreateUnit_ConsiderPathfinding.Read(exINI, pID, "CreateUnit.ConsiderPathfinding");
-	this->CreateUnit_SpawnAnim.Read(exINI, pID, "CreateUnit.SpawnAnim");
 	this->XDrawOffset.Read(exINI, pID, "XDrawOffset");
 	this->HideIfNoOre_Threshold.Read(exINI, pID, "HideIfNoOre.Threshold");
 	this->Layer_UseObjectLayer.Read(exINI, pID, "Layer.UseObjectLayer");
-	this->UseCenterCoordsIfAttached.Read(exINI, pID, "UseCenterCoordsIfAttached");
+	this->AttachedAnimPosition.Read(exINI, pID, "AttachedAnimPosition");
 	this->Weapon.Read<true>(exINI, pID, "Weapon");
 	this->Damage_Delay.Read(exINI, pID, "Damage.Delay");
 	this->Damage_DealtByInvoker.Read(exINI, pID, "Damage.DealtByInvoker");
 	this->Damage_ApplyOncePerLoop.Read(exINI, pID, "Damage.ApplyOncePerLoop");
+	this->Damage_ApplyFirepowerMult.Read(exINI, pID, "Damage.ApplyFirepowerMult");
 	this->ExplodeOnWater.Read(exINI, pID, "ExplodeOnWater");
 	this->Warhead_Detonate.Read(exINI, pID, "Warhead.Detonate");
 	this->WakeAnim.Read(exINI, pID, "WakeAnim");
@@ -113,6 +98,38 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->MakeInfantryOwner.Read(exINI, pID, "MakeInfantryOwner");
 	this->ExtraShadow.Read(exINI, pID, "ExtraShadow");
 	this->DetachedReport.Read(exINI, pID, "DetachedReport");
+	this->VisibleTo.Read(exINI, pID, "VisibleTo");
+	this->VisibleTo_ConsiderInvokerAsOwner.Read(exINI, pID, "VisibleTo.ConsiderInvokerAsOwner");
+	this->RestrictVisibilityIfCloaked.Read(exINI, pID, "RestrictVisibilityIfCloaked");
+	this->DetachOnCloak.Read(exINI, pID, "DetachOnCloak");
+	this->ConstrainFireAnimsToCellSpots.Read(exINI, pID, "ConstrainFireAnimsToCellSpots");
+	this->FireAnimDisallowedLandTypes.Read<false, true>(exINI, pID, "FireAnimDisallowedLandTypes");
+	this->AttachFireAnimsToParent.Read(exINI, pID, "AttachFireAnimsToParent");
+	this->SmallFireCount.Read(exINI, pID, "SmallFireCount");
+	this->SmallFireAnims.Read(exINI, pID, "SmallFireAnims");
+	this->SmallFireChances.Read(exINI, pID, "SmallFireChances");
+	this->SmallFireDistances.Read(exINI, pID, "SmallFireDistances");
+	this->LargeFireCount.Read(exINI, pID, "LargeFireCount");
+	this->LargeFireAnims.Read(exINI, pID, "LargeFireAnims");
+	this->LargeFireChances.Read(exINI, pID, "LargeFireChances");
+	this->LargeFireDistances.Read(exINI, pID, "LargeFireDistances");
+	this->Crater_DestroyTiberium.Read(exINI, pID, "Crater.DestroyTiberium");
+
+	// Parasitic types
+	Nullable<TechnoTypeClass*> createUnit;
+	createUnit.Read(exINI, pID, "CreateUnit");
+
+	if (createUnit)
+	{
+		if (this->CreateUnitType == nullptr)
+			this->CreateUnitType = std::make_unique<CreateUnitTypeClass>();
+
+		this->CreateUnitType->LoadFromINI(pINI, pID);
+	}
+	else if (createUnit.isset())
+	{
+		this->CreateUnitType.reset();
+	}
 }
 
 template <typename T>
@@ -120,25 +137,16 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Palette)
-		.Process(this->CreateUnit)
-		.Process(this->CreateUnit_Facing)
-		.Process(this->CreateUnit_InheritDeathFacings)
-		.Process(this->CreateUnit_RemapAnim)
-		.Process(this->CreateUnit_Mission)
-		.Process(this->CreateUnit_InheritTurretFacings)
-		.Process(this->CreateUnit_Owner)
-		.Process(this->CreateUnit_RandomFacing)
-		.Process(this->CreateUnit_AlwaysSpawnOnGround)
-		.Process(this->CreateUnit_ConsiderPathfinding)
-		.Process(this->CreateUnit_SpawnAnim)
+		.Process(this->CreateUnitType)
 		.Process(this->XDrawOffset)
 		.Process(this->HideIfNoOre_Threshold)
 		.Process(this->Layer_UseObjectLayer)
-		.Process(this->UseCenterCoordsIfAttached)
+		.Process(this->AttachedAnimPosition)
 		.Process(this->Weapon)
 		.Process(this->Damage_Delay)
 		.Process(this->Damage_DealtByInvoker)
 		.Process(this->Damage_ApplyOncePerLoop)
+		.Process(this->Damage_ApplyFirepowerMult)
 		.Process(this->ExplodeOnWater)
 		.Process(this->Warhead_Detonate)
 		.Process(this->WakeAnim)
@@ -149,6 +157,22 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MakeInfantryOwner)
 		.Process(this->ExtraShadow)
 		.Process(this->DetachedReport)
+		.Process(this->VisibleTo)
+		.Process(this->VisibleTo_ConsiderInvokerAsOwner)
+		.Process(this->RestrictVisibilityIfCloaked)
+		.Process(this->DetachOnCloak)
+		.Process(this->ConstrainFireAnimsToCellSpots)
+		.Process(this->FireAnimDisallowedLandTypes)
+		.Process(this->AttachFireAnimsToParent)
+		.Process(this->SmallFireCount)
+		.Process(this->SmallFireAnims)
+		.Process(this->SmallFireChances)
+		.Process(this->SmallFireDistances)
+		.Process(this->LargeFireCount)
+		.Process(this->LargeFireAnims)
+		.Process(this->LargeFireChances)
+		.Process(this->LargeFireDistances)
+		.Process(this->Crater_DestroyTiberium)
 		;
 }
 
@@ -207,7 +231,7 @@ DEFINE_HOOK(0x42898A, AnimTypeClass_Save_Suffix, 0x3)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x4287E9, AnimTypeClass_LoadFromINI, 0xA)
+//DEFINE_HOOK_AGAIN(0x4287E9, AnimTypeClass_LoadFromINI, 0xA)// Section dont exist!
 DEFINE_HOOK(0x4287DC, AnimTypeClass_LoadFromINI, 0xA)
 {
 	GET(AnimTypeClass*, pItem, ESI);
@@ -215,4 +239,35 @@ DEFINE_HOOK(0x4287DC, AnimTypeClass_LoadFromINI, 0xA)
 
 	AnimTypeExt::ExtMap.LoadFromINI(pItem, pINI);
 	return 0;
+}
+
+namespace detail
+{
+	template <>
+	inline bool read<AttachedAnimPosition>(AttachedAnimPosition& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "default") == 0)
+			{
+				value = AttachedAnimPosition::Default;
+			}
+			else if (_strcmpi(str, "center") == 0 || _strcmpi(str, "centre") == 0)
+			{
+				value = AttachedAnimPosition::Center;
+			}
+			else if (_strcmpi(str, "ground") == 0)
+			{
+				value = AttachedAnimPosition::Ground;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Expected attached animation position type");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
 }

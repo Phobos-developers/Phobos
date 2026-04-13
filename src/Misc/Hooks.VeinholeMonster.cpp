@@ -1,19 +1,6 @@
-#include <AnimClass.h>
-#include <BuildingClass.h>
-#include <BuildingTypeClass.h>
-#include <GameOptionsClass.h>
-#include <GeneralDefinitions.h>
-#include <IonBlastClass.h>
-#include <OverlayTypeClass.h>
-#include <ScenarioClass.h>
-#include <TeleportLocomotionClass.h>
-#include <UnitClass.h>
-#include <VeinholeMonsterClass.h>
-
 #include <Ext/Anim/Body.h>
-#include <Ext/Rules/Body.h>
 
-#include <Utilities/Macro.h>
+#include <VeinholeMonsterClass.h>
 
 ///
 /// Veinhole Monster
@@ -23,7 +10,7 @@
 // Call removed from YR by WW
 DEFINE_HOOK(0x4AD097, DisplayClass_ReadIni_LoadVeinholeArt, 0x6)
 {
-	int theater = static_cast<int>(ScenarioClass::Instance->Theater);
+	const int theater = static_cast<int>(ScenarioClass::Instance->Theater);
 	VeinholeMonsterClass::LoadVeinholeArt(theater);
 
 	return 0;
@@ -65,11 +52,7 @@ DEFINE_HOOK(0x5349A5, Map_ClearVectors_Veinhole, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x55B4E1, LogicClass_Update_Veinhole, 0x5)
-{
-	VeinholeMonsterClass::UpdateAllVeinholes();
-	return 0;
-}
+// DEFINE_HOOK(0x55B4E1, LogicClass_Update_Veinhole, 0x5) // Goto ScenarioExt
 
 // Handles the veins' attack animation
 DEFINE_HOOK(0x4243BC, AnimClass_Update_VeinholeAttack, 0x6)
@@ -181,7 +164,12 @@ DEFINE_HOOK(0x73D0DB, UnitClass_DrawAt_Weeder_Oregath, 0x6)
 
 	GET(UnitClass*, pUnit, ESI);
 
-	if (pUnit->Type->Harvester || pUnit->Type->Weeder || pUnit->IsHarvesting)
+	if (pUnit->IsHarvesting)
+		return DrawOregath;
+
+	const auto pType = pUnit->Type;
+
+	if (pType->Harvester || pType->Weeder)
 		return DrawOregath;
 
 	return Skip;
@@ -217,9 +205,10 @@ DEFINE_HOOK(0x73D49E, UnitClass_Harvesting_Weeder, 0x7)
 	GET(CellClass*, pCell, EBP);
 	constexpr unsigned char weedOverlayData = 0x30;
 
-	bool harvesterCanHarvest = pUnit->Type->Harvester && pCell->LandType == LandType::Tiberium;
-	bool weederCanWeed = pUnit->Type->Weeder && pCell->LandType == LandType::Weeds && pCell->OverlayData >= weedOverlayData;
-
+	const auto pType = pUnit->Type;
+	const auto landType = pCell->LandType;
+	const bool harvesterCanHarvest = pType->Harvester && landType == LandType::Tiberium;
+	const bool weederCanWeed = pType->Weeder && landType == LandType::Weeds && pCell->OverlayData >= weedOverlayData;
 
 	if ((harvesterCanHarvest || weederCanWeed) && pUnit->GetStoragePercentage() < 1.0)
 		return Harvest;
@@ -279,25 +268,7 @@ DEFINE_HOOK(0x446EAD, BuildingClass_GrandOpening_FreeWeeder_Mission, 0x6)
 }
 
 // Teleport cooldown for weeders
-DEFINE_HOOK(0x719580, TeleportLocomotion_Weeder, 0x6)
-{
-	enum
-	{
-		Skip = 0x7195A0,
-		TeleportChargeTimer = 0x7195BC
-	};
-
-	GET(TeleportLocomotionClass*, pTeleport, ESI);
-
-	if (pTeleport->Owner->WhatAmI() == AbstractType::Unit)
-	{
-		UnitClass* pUnit = (UnitClass*)pTeleport->Owner;
-		if (pUnit->Type->Harvester || pUnit->Type->Weeder)
-			return Skip;
-	}
-
-	return TeleportChargeTimer;
-}
+// DEFINE_HOOK(0x719580, TeleportLocomotion_Weeder, 0x6) //Goto Hooks.Teleport.cpp
 
 // DockUnload bypass for Weeders when teleporting
 DEFINE_HOOK(0x7424BD, UnitClass_AssignDestination_Weeder_Teleport, 0x6)
@@ -335,9 +306,11 @@ DEFINE_HOOK(0x73E9A0, UnitClass_Weeder_StopHarvesting, 0x6)
 
 	GET(UnitClass*, pUnit, EBP);
 
-	if ((pUnit->Type->Harvester || pUnit->Type->Weeder) && pUnit->GetStoragePercentage() == 1.0)
+	const auto pType = pUnit->Type;
+
+	if ((pType->Harvester || pType->Weeder) && pUnit->GetStoragePercentage() == 1.0)
 	{
-		return StopHarvesting;	
+		return StopHarvesting;
 	}
 
 	return Skip;

@@ -1,8 +1,6 @@
 #pragma once
 
-#include <Utilities/Constructs.h>
-#include <Utilities/Enum.h>
-#include <Utilities/Template.h>
+#include <Utilities/TemplateDef.h>
 
 class PassengerDeletionTypeClass
 {
@@ -27,14 +25,15 @@ public:
 	Valueable<bool> DisplaySoylent;
 	Valueable<AffectedHouse> DisplaySoylentToHouses;
 	Valueable<Point2D> DisplaySoylentOffset;
-	NullableIdx<VocClass> ReportSound;
-	Nullable<AnimTypeClass*> Anim;
+	ValueableIdx<VocClass> ReportSound;
+	ValueableVector<AnimTypeClass*> Anim;
+	Valueable<bool> UnderEMP;
 
 	void LoadFromINI(CCINIClass* pINI, const char* pSection);
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;
 
-	static std::pair<bool,bool> CanParse(INI_EX exINI, const char* pSection);
+	static std::pair<bool, bool> CanParse(INI_EX exINI, const char* pSection);
 
 private:
 

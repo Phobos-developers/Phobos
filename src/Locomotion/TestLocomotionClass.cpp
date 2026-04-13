@@ -23,7 +23,8 @@ bool TestLocomotionClass::Is_Moving()
 
 CoordStruct TestLocomotionClass::Destination()
 {
-	if (IsMoving) {
+	if (IsMoving)
+	{
 		return DestinationCoord;
 	}
 
@@ -40,7 +41,7 @@ CoordStruct TestLocomotionClass::Head_To_Coord()
 
 Move TestLocomotionClass::Can_Enter_Cell(CellStruct cell)
 {
-	return LinkedTo->IsCellOccupied(MapClass::Instance->GetCellAt(cell), FacingType::None, -1, nullptr, false);
+	return LinkedTo->IsCellOccupied(MapClass::Instance.GetCellAt(cell), FacingType::None, -1, nullptr, false);
 }
 
 bool TestLocomotionClass::Process()
@@ -50,7 +51,7 @@ bool TestLocomotionClass::Process()
 		CoordStruct coord = DestinationCoord;
 
 		// Rotate the object around the center coord
-		int radius = Unsorted::LeptonsPerCell*2;
+		int radius = Unsorted::LeptonsPerCell * 2;
 		coord.X += static_cast<int>(radius * Math::sin(Angle));
 		coord.Y += static_cast<int>(radius * Math::cos(Angle));
 		//coord.Z // No need to adjust the height of the object.

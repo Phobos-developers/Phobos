@@ -1,7 +1,6 @@
 #include "SaveVariablesToFile.h"
 
 #include <Ext/Scenario/Body.h>
-#include <HouseClass.h>
 
 const char* SaveVariablesToFileCommandClass::GetName() const
 {
@@ -25,7 +24,7 @@ const wchar_t* SaveVariablesToFileCommandClass::GetUIDescription() const
 
 void SaveVariablesToFileCommandClass::Execute(WWKey eInput) const
 {
-	MessageListClass::Instance->PrintMessage(
+	MessageListClass::Instance.PrintMessage(
 		L"Variables saved.",
 		RulesClass::Instance->MessageDelay,
 		HouseClass::CurrentPlayer->ColorSchemeIndex,

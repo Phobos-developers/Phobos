@@ -1,10 +1,6 @@
-#include <GameStrings.h>
 #include <FactoryClass.h>
 
-#include <Ext/TechnoType/Body.h>
-#include <Utilities/EnumFunctions.h>
-#include <Utilities/GeneralUtils.h>
-#include <Utilities/Macro.h>
+#include <Ext/Techno/Body.h>
 
 DEFINE_HOOK(0x4FB63A, HouseClass_UnitFromFactory_DisablingEVAUnitReady, 0xF)
 {
@@ -19,7 +15,7 @@ DEFINE_HOOK(0x4FB64B, HouseClass_UnitFromFactory_VoiceCreated, 0x5)
 	GET(TechnoClass* const, pThisTechno, ESI);
 	GET(FactoryClass* const, pThisFactory, EBX);
 
-	auto const pThisTechnoType = TechnoTypeExt::ExtMap.Find(pThisTechno->GetTechnoType());
+	auto const pThisTechnoType = TechnoExt::ExtMap.Find(pThisTechno)->TypeExtData;
 	if (pThisTechno->Owner->IsControlledByCurrentPlayer() && pThisTechnoType->VoiceCreated.isset())
 	{
 		if (RulesExt::Global()->IsVoiceCreatedGlobal.Get())
