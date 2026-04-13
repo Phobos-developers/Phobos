@@ -1782,6 +1782,18 @@ msgid ""
 "the regular sequences used on land even if it is in water."
 msgstr "设置 `OnlyUseLandSequences` 为 true 可以使步兵即使在水中也只显示在陆地上使用的常规序列。"
 
+msgid "Isometric Tile"
+msgstr "地形"
+
+msgid "Custom palette"
+msgstr "自定义色盘"
+
+msgid "You can now use custom palette for isometric tile."
+msgstr "现在你可以为地形使用自定义色盘。"
+
+msgid "In `[temperat|snow|urban|urbann|desert|lunar]md.ini`:"
+msgstr "在 `[temperat|snow|urban|urbann|desert|lunar]md.ini`："
+
 msgid "Projectiles"
 msgstr "抛射体"
 

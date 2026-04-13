@@ -168,6 +168,9 @@ msgstr "为地图光照重绘时的建筑光源问题修复添加开关"
 msgid "Voxel drawing invisible sections skip"
 msgstr "跳过 Voxel 不可见组件的绘制"
 
+msgid "Custom isometric tile palette"
+msgstr "自定义地形色盘"
+
 msgid "**Uranusian (Thrifinesma)**:"
 msgstr "**Uranusian (Thrifinesma)**："
 
