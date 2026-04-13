@@ -4,9 +4,12 @@
 
 #include <IsometricTileTypeClass.h>
 
+#include <Helpers/Macro.h>
+
 #include <Utilities/Constructs.h>
 #include <Utilities/Container.h>
 #include <Utilities/Template.h>
+#include <Utilities/TemplateDef.h>
 
 class IsometricTileTypeExt
 {
@@ -17,18 +20,12 @@ public:
 	class ExtData final : public Extension<IsometricTileTypeClass>
 	{
 	public:
-
-		static int CurrentTileset;
-		static std::map<std::string, std::map<TintStruct, LightConvertClass*>> LightConvertEntities;
-
 		Valueable<int> Tileset;
-		CustomPalette Palette;
+		PhobosFixedString<32U> PaletteName;
 
 		ExtData(IsometricTileTypeClass* OwnerObject);
 
 		virtual ~ExtData() = default;
-
-		LightConvertClass* GetLightConvert(int r, int g, int b);
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
@@ -51,7 +48,11 @@ public:
 
 	static ExtContainer ExtMap;
 
-	static bool LoadGlobals(PhobosStreamReader& stm);
-	static bool SaveGlobals(PhobosStreamWriter& stm);
+	static int CurrentTileset;
+	static std::map<std::string, std::vector<LightConvertClass*>> LightConvertEntities;
+	static bool InRender;
+
+	static LightConvertClass* GetLightConvert(const char* paletteName, int r, int g, int b, const bool isDefault);
+
 	static void Clear();
 };

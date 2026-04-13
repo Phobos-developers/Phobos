@@ -421,6 +421,7 @@ This page lists all the individual contributions to the project by their author.
   - Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent
   - Custom hover vehicles shutdown drowning death
   - SHP turret vehicles support the use of `*tur.shp` files
+  - Custom isometric tile palette
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -539,7 +540,7 @@ This page lists all the individual contributions to the project by their author.
   - Display banner by triggers
   - New SuperWeapon Type template
   - Fix the issue where some units crashed after the deployment transformation
-   - Custom isometric tile palette
+  - Custom isometric tile palette
 - **TwinkleStar**:
   - Custom slaves free sound
   - Jumpjet crash rotation control
