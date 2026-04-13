@@ -765,11 +765,11 @@ OnlyUseLandSequences=false  ; boolean
 
 ## Isometric Tile
 
-### Custom Palette
+### Custom palette
 
 - You can now use custom palette for isometric tile.
 
-In `SomeTheater.ini`
+In `[temperat|snow|urban|urbann|desert|lunar]md.ini`:
 ```ini
 [SOMETILETYPE]        ; TileSetType
 CustomPalette=        ; filename with .pal extension
