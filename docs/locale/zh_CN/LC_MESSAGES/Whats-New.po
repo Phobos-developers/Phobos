@@ -1808,6 +1808,13 @@ msgstr ""
 msgid "[Extra threat](New-or-Enhanced-Logics.md#extra-threat) (by TaranDahl)"
 msgstr "[额外威胁](New-or-Enhanced-Logics.md#extra-threat)（by TaranDahl）"
 
+msgid ""
+"[Custom isometric tile palette](New-or-Enhanced-Logics.md#custom-palette)"
+" (by Kerbiter, secsome, ststl, FlyStar, Noble_Fish)"
+msgstr ""
+"[自定义地形色盘](New-or-Enhanced-Logics.md#custom-palette)"
+"（by Kerbiter、secsome、ststl、FlyStar、Noble_Fish）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
