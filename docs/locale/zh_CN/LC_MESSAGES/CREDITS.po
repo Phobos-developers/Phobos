@@ -2468,6 +2468,7 @@ msgid ""
 "Fix the issue that `BombSight` not being updated correctly in techno "
 "conversion"
 msgstr ""
+"修复了单位的 `BombSight` 在类型转换时不会被正确更新的问题"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
