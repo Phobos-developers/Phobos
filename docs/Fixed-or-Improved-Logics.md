@@ -365,6 +365,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes.
 - Fixed the initial direction of building placed by Ares's UnitDelivery superweapon.
 - Fixed a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to fire when the transport unit with `OpenTopped=yes` moved to an area that the passengers' `MovementZone` cannot move into.
+- Fixed a bug where if a techno converts from type has `AlphaImage` to non `AlphaImage` type, game will crash after load.
 
 ## Newly added global settings
 
