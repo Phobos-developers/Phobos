@@ -529,8 +529,6 @@ New:
 - [Return warhead](New-or-Enhanced-Logics.md#return-warhead) (by Ollerus)
 - [`AllowBerzerkOnAllies`](Fixed-or-Improved-Logics.md#berzerk-on-allies) (by TaranDahl)
 - Customize whether warhead can be used to targeting ironcurtained technos or not (by NetsuNegi)
-- Allow techno conversion working on buildings (by TaranDahl)
-- Fixed the issue that multiple attributes such as cloaking and sensor would not be updated correctly in techno conversion (by TaranDahl)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -623,6 +621,8 @@ Fixes / interactions with other extensions:
 - Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed (by NetsuNegi)
 - Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed (by NetsuNegi)
 - Fixed the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally (by NetsuNegi)
+- Allow techno conversion working on buildings (by TaranDahl)
+- Fixed the issue that multiple attributes such as cloaking and sensor would not be updated correctly in techno conversion (by TaranDahl)
 ```
 
 
