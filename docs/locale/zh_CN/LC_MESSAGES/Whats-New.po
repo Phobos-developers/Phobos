@@ -2480,6 +2480,7 @@ msgid ""
 "`AlphaImage` converts to a type without it, or an anim with `AlphaImage` "
 "changes to a type without it through `Next` (by NetsuNegi & FlyStar)"
 msgstr ""
+"修复了有 `AlphaImage` 的单位转换为无 AlphaImage 的类型，或有 `AlphaImage` 的动画通过 `Next` 更改为无 AlphaImage 的类型后读档会导致游戏崩溃的 Bug（by NetsuNegi & FlyStar）"
 
 msgid ""
 "Fixed the issue that `BombSight` not being updated correctly in techno "
