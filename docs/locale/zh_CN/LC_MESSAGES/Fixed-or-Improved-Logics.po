@@ -1845,6 +1845,17 @@ msgstr ""
 "修复了 `OpenTopped=yes` 的运输工具移动到乘客 `MovementZone` 所不支持的区域时由初始载员逻辑或勾选了 "
 "`预装载小队` 的作战小队创建的乘客无法开火的 Bug。"
 
+msgid ""
+"Fixed a bug where game will crash after loading if a techno with "
+"`AlphaImage` converts to a type without it, or an anim with `AlphaImage` "
+"changes to a type without it through `Next`."
+msgstr ""
+
+msgid ""
+"Fixed the issue that `BombSight` not being updated correctly in techno "
+"conversion."
+msgstr ""
+
 msgid "Newly added global settings"
 msgstr "新增的全局设定"
 

@@ -3326,7 +3326,7 @@ DEFINE_HOOK(0x7120DD, TechnoTypeClass_GetRepairStepCost, 0x6)
 	enum { SkipGameCode = 0x71210C };
 
 	GET(TechnoTypeClass*, pType, ESI);
-	GET(int, cost, EAX);
+	GET(const int, cost, EAX);
 
 	if (RulesExt::Global()->FixRepairStepCost)
 		R->EAX(static_cast<int>((cost / std::max(static_cast<double>(pType->Strength) / RulesClass::Instance->RepairStep, 1.0)) * RulesClass::Instance->RepairPercent));

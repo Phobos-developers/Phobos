@@ -419,6 +419,7 @@ This page lists all the individual contributions to the project by their author.
   - Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent
   - Custom hover vehicles shutdown drowning death
   - SHP turret vehicles support the use of `*tur.shp` files
+  - Fix a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next`
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -525,7 +526,8 @@ This page lists all the individual contributions to the project by their author.
   - Allow customize jumpjet properties on warhead
   - Customize effects range of power plant enhancer
   - Customize whether transport can kept or kill passengers when driver has been killed
-  - Fix a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to fire when the transport unit with `OpenTopped=yes` moved to an area that the passengers' `MovementZone` cannot move into.
+  - Fix a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to fire when the transport unit with `OpenTopped=yes` moved to an area that the passengers' `MovementZone` cannot move into
+  - Fix a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next`
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -737,7 +739,8 @@ This page lists all the individual contributions to the project by their author.
   - Miners back to work when ore regenerated
   - Allow disable an over-optimization in targeting
   - Extra threat
-  - Fixed the incorrect mission switching in infantry EnterIdleMode
+  - Fix the incorrect mission switching in infantry EnterIdleMode
+  - Fix the issue that `BombSight` not being updated correctly in techno conversion
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
