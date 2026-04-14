@@ -1087,11 +1087,6 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		pThis->Uncloak(true);
 	pThis->Cloakable = pCurrentType->Cloakable;
 
-	if (pOldType->BombSight)
-		BombListClass::Instance.RemoveDetector(pThis);
-	if (pCurrentType->BombSight)
-		BombListClass::Instance.AddDetector(pThis);
-
 	// TODO : Fix this
 	//pThis->UpdateSight(0, 0, 0, 0, 0);
 	//MapClass::Instance.RevealArea3(&pThis->Location, 0, pThis->LastSightRange + 3, 0);
