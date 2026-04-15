@@ -1637,7 +1637,7 @@ msgstr "修复了一个由于 `GapGenerator` 和 `SpySat` 交互导致黑幕状�
 msgid ""
 "Now miners will no longer withdraw from the Harvest mission due to "
 "mineral depletion and will periodically attempt to return to work."
-msgstr "现在矿车将不再由于矿物枯竭而推出 `Harvest` 任务并且会定期尝试返回工作。"
+msgstr "现在矿车将不再由于矿物枯竭而退出 `Harvest` 任务并且会定期尝试返回工作。"
 
 msgid "Fixed the incorrect mission switching in infantry EnterIdleMode."
 msgstr "修复了步兵进入闲置状态时的错误任务切换。"
