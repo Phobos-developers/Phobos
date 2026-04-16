@@ -87,13 +87,13 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 	{
 		const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
-		const auto nActive = HouseExt::ActiveHarvesterCount(pPlayer);
-		const auto nTotal = HouseExt::TotalHarvesterCount(pPlayer);
-		const auto nPercentage = nTotal == 0 ? 1.0 : (double)nActive / (double)nTotal;
+		const int nActive = HouseExt::ActiveHarvesterCount(pPlayer);
+		const int nTotal = HouseExt::TotalHarvesterCount(pPlayer);
+		const double nPercentage = nTotal == 0 ? 1.0 : (double)nActive / (double)nTotal;
 
 		const ColorStruct clrToolTip = nPercentage > Phobos::UI::HarvesterCounter_ConditionYellow
-			? Drawing::TooltipColor : nPercentage > Phobos::UI::HarvesterCounter_ConditionRed
-			? pSideExt->Sidebar_HarvesterCounter_Yellow : pSideExt->Sidebar_HarvesterCounter_Red;
+			? pSideExt->Sidebar_HarvesterCounter_ColorGreen.Get(Drawing::TooltipColor) : nPercentage > Phobos::UI::HarvesterCounter_ConditionRed
+			? pSideExt->Sidebar_HarvesterCounter_ColorYellow : pSideExt->Sidebar_HarvesterCounter_ColorRed;
 
 		swprintf_s(counter, L"%ls%d/%d", Phobos::UI::HarvesterLabel, nActive, nTotal);
 
@@ -115,7 +115,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 
 		if (pPlayer->PowerBlackoutTimer.InProgress())
 		{
-			clrToolTip = pSideExt->Sidebar_PowerDelta_Grey;
+			clrToolTip = pSideExt->Sidebar_PowerDelta_ColorGrey;
 			swprintf_s(counter, L"%ls", Phobos::UI::PowerBlackoutLabel);
 		}
 		else
@@ -127,8 +127,8 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 				? Phobos::UI::PowerDelta_ConditionRed * 2.f : Phobos::UI::PowerDelta_ConditionYellow;
 
 			clrToolTip = percent < Phobos::UI::PowerDelta_ConditionYellow
-				? pSideExt->Sidebar_PowerDelta_Green : LESS_EQUAL(percent, Phobos::UI::PowerDelta_ConditionRed)
-				? pSideExt->Sidebar_PowerDelta_Yellow : pSideExt->Sidebar_PowerDelta_Red;
+				? pSideExt->Sidebar_PowerDelta_ColorGreen : LESS_EQUAL(percent, Phobos::UI::PowerDelta_ConditionRed)
+				? pSideExt->Sidebar_PowerDelta_ColorYellow : pSideExt->Sidebar_PowerDelta_ColorRed;
 
 			swprintf_s(counter, L"%ls%+d", Phobos::UI::PowerLabel, delta);
 		}
@@ -501,4 +501,144 @@ DEFINE_HOOK(0x552F79, LoadProgressManager_Draw_MissingLoadingScreenDefaults, 0x6
 DEFINE_HOOK(0x55F1F8, MPDebugPrint_CheckDrawFlag, 0x8)
 {
     return Game::DrawMPDebugStats ? 0 : 0x55F280;
+}
+
+#pragma region Draw Timer
+
+namespace DrawTimerTemp
+{
+	bool AdjustLocation = false;
+	bool IsPercentage = false;
+	double Percentage = 0.0;
+	int TimeLeft = 0;
+}
+
+DEFINE_HOOK(0x6D3D10, TacticalClass_Render_BeforeAll, 0x6)
+{
+	using namespace DrawTimerTemp;
+	AdjustLocation = false;
+	IsPercentage = false;
+	return 0;
+}
+
+DEFINE_HOOK(0x6D4992, TacticalClass_Render_DrawMissionTimer_TimeLeft, 0x6)
+{
+	DrawTimerTemp::TimeLeft = R->EDX<int>();
+	return 0;
+}
+
+DEFINE_HOOK(0x6D4A10, TacticalClass_Render_DrawSuperTimer_PercentageTimer, 0x6)
+{
+	enum { SkipGetTimeLeft = 0x6D4A35 };
+
+	GET(SuperClass*, pSuper, ECX);
+
+	DrawTimerTemp::IsPercentage = false;
+	const int timeLeft = pSuper->RechargeTimer.GetTimeLeft();
+	const auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+
+	if (pSWTypeExt->ShowTimer_Percentage.Get(RulesExt::Global()->SuperWeaponTimer_Percentage))
+	{
+		DrawTimerTemp::IsPercentage = true;
+		const int recharge = pSuper->GetRechargeTime();
+		const double percentage = DrawTimerTemp::Percentage = std::min(static_cast<double>(recharge - timeLeft) / recharge, 1.0);
+		R->ESI(percentage >= 1.0 ? 0 : 15);
+	}
+	else
+	{
+		DrawTimerTemp::TimeLeft = timeLeft / 15;
+		R->ESI(timeLeft);
+	}
+
+	return SkipGetTimeLeft;
+}
+
+DEFINE_HOOK(0x6D4B03, TacticalClass_Render_DrawBlackoutTimer_TimeLeft, 0x5)
+{
+	DrawTimerTemp::TimeLeft = R->EDX<int>();
+	return 0;
+}
+
+static int __fastcall TacticalClass_DrawTimer_swprintf(wchar_t* pBuffer, size_t bufferCount, wchar_t* pFormat, ...)
+{
+	using namespace DrawTimerTemp;
+
+	if (IsPercentage)
+		return swprintf(pBuffer, bufferCount, L"%.2lf%s", Percentage * 100, L"%%");
+	else
+		return swprintf(pBuffer, bufferCount, L"%02d:%02d", TimeLeft / 60 % 60, TimeLeft % 60);
+}
+DEFINE_FUNCTION_JUMP(CALL, 0x6D4C4C, TacticalClass_DrawTimer_swprintf)
+
+static Point2D* __fastcall TacticalClass_DrawTimer_Print_Wide
+(
+Point2D& retBuffer,
+const wchar_t* pText,
+Surface* pSurface,
+const RectangleStruct& bounds,
+Point2D& location,
+ColorScheme* pForeScheme,
+ColorScheme* pBackScheme,
+TextPrintType flag,
+...
+)
+{
+	using namespace DrawTimerTemp;
+	AdjustLocation = !AdjustLocation;
+
+	if (AdjustLocation)
+	{
+		if (IsPercentage)
+		{
+			IsPercentage = false;
+			location.X += 8;
+		}
+		else
+		{
+			location.X -= 2;
+		}
+	}
+
+	return Fancy_Text_Print_Wide(retBuffer, pText, pSurface, bounds, location, pForeScheme, pBackScheme, flag);
+}
+DEFINE_FUNCTION_JUMP(CALL, 0x6D4D42, TacticalClass_DrawTimer_Print_Wide)// UIName
+DEFINE_FUNCTION_JUMP(CALL, 0x6D4D9A, TacticalClass_DrawTimer_Print_Wide)// Time
+
+#pragma endregion
+
+DEFINE_HOOK(0x6DBEA3, TacticalClass_DrawRadialIndicator_Building_Extras, 0x7)
+{
+	enum { ContinueAfter = 0x6DBEAA };
+
+	GET(BuildingClass*, pCurrentBuilding, EBX);
+
+	if (Phobos::Config::ShowPowerPlantEnhancerRange && RulesExt::Global()->ShowPowerPlantEnhancerRange)
+	{
+		const auto pCurrentExt = HouseExt::ExtMap.Find(HouseClass::CurrentPlayer);
+		const auto center = DisplayClass::Instance.CurrentFoundation_CenterCell;
+
+		for (const auto pEnhancer : pCurrentExt->PowerPlantEnhancers)
+		{
+			if (!TechnoExt::IsActive(pEnhancer) || pEnhancer->InLimbo || !pEnhancer->HasPower)
+				continue;
+
+			const auto pEnhancerTypeExt = BuildingTypeExt::ExtMap.Find(pEnhancer->Type);
+			const int range = pEnhancerTypeExt->PowerPlantEnhancer_Range.Get() / Unsorted::LeptonsPerCell;
+
+			if (range <= 0 || !pEnhancerTypeExt->PowerPlantEnhancer_Buildings.Contains(pCurrentBuilding->Type))
+				continue;
+
+			CoordStruct enhancerCoords = pEnhancer->GetCoords();
+
+			if (center.DistanceFrom(CellClass::Coord2Cell(enhancerCoords)) > range * 1.5)
+				continue;
+
+			enhancerCoords.Z = MapClass::Instance.GetCellFloorHeight(enhancerCoords);
+			const auto& color = pEnhancer->Owner->Color;
+			Game::DrawRadialIndicator(false, true, enhancerCoords, color, (float)range, false, true);
+		}
+	}
+
+	R->EAX(pCurrentBuilding->GetRadialIndicatorRange());
+	return ContinueAfter;
 }

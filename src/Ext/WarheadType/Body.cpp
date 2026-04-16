@@ -4,6 +4,8 @@
 
 WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
 
+WarheadTypeClass* WarheadTypeExt::LocomotorWarhead = nullptr;
+
 bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pTarget) const
 {
 	if (pHouse && pTarget)
@@ -37,6 +39,9 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 	if (!IsHealthInThreshold(pTarget))
 		return false;
 
+	if (!IsVeterancyInThreshold(pTarget))
+		return false;
+
 	if (!this->EffectsRequireVerses)
 		return true;
 
@@ -49,6 +54,14 @@ bool WarheadTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
 		return true;
 
 	return TechnoExt::IsHealthInThreshold(pTarget, this->AffectsAbovePercent, this->AffectsBelowPercent);
+}
+
+bool WarheadTypeExt::ExtData::IsVeterancyInThreshold(TechnoClass* pTarget) const
+{
+	if (!this->VeterancyCheck)
+		return true;
+
+	return EnumFunctions::CanTargetVeterancy(this->AffectsVeterancy, pTarget);
 }
 
 // Checks if Warhead can affect target that might or might be currently invulnerable.
@@ -136,6 +149,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
 	this->RemoveMindControl.Read(exINI, pSection, "RemoveMindControl");
 	this->RemoveParasite.Read(exINI, pSection, "RemoveParasite");
+	this->RemoveParasite_Allow.Read(exINI, pSection, "RemoveParasite.Allow");
+	this->RemoveParasite_Disallow.Read(exINI, pSection, "RemoveParasite.Disallow");
 	this->DecloakDamagedTargets.Read(exINI, pSection, "DecloakDamagedTargets");
 	this->ShakeIsLocal.Read(exINI, pSection, "ShakeIsLocal");
 	this->ApplyModifiersOnNegativeDamage.Read(exINI, pSection, "ApplyModifiersOnNegativeDamage");
@@ -151,19 +166,48 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_ExtraDamage_ApplyFirepowerMult.Read(exINI, pSection, "Crit.ExtraDamage.ApplyFirepowerMult");
 	this->Crit_Warhead.Read<true>(exINI, pSection, "Crit.Warhead");
 	this->Crit_Warhead_FullDetonation.Read(exINI, pSection, "Crit.Warhead.FullDetonation");
+	if (exINI.ReadString(pSection, "Crit.Affects") > 0)
+	{
+		Debug::Log("[Developer warning][%s] Crit.Affects is deprecated and has been replaced by Crit.AffectsTarget! If both are set, the latter will be used.\n", pSection);
+	}
+	this->Crit_AffectsTarget.Read(exINI, pSection, "Crit.Affects"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->Crit_AffectsTarget.Read(exINI, pSection, "Crit.AffectsTarget");
+	if (exINI.ReadString(pSection, "Crit.AffectsHouses") > 0)
+	{
+		Debug::Log("[Developer warning][%s] Crit.AffectsHouses is deprecated and has been replaced by Crit.AffectsHouse! If both are set, the latter will be used.\n", pSection);
+	}
+	this->Crit_AffectsHouse.Read(exINI, pSection, "Crit.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->Crit_AffectsHouse.Read(exINI, pSection, "Crit.AffectsHouse");
 	this->Crit_AnimList.Read(exINI, pSection, "Crit.AnimList");
 	this->Crit_AnimList_PickRandom.Read(exINI, pSection, "Crit.AnimList.PickRandom");
 	this->Crit_AnimList_CreateAll.Read(exINI, pSection, "Crit.AnimList.CreateAll");
 	this->Crit_ActiveChanceAnims.Read(exINI, pSection, "Crit.ActiveChanceAnims");
 	this->Crit_AnimOnAffectedTargets.Read(exINI, pSection, "Crit.AnimOnAffectedTargets");
+	if (exINI.ReadString(pSection, "Crit.AffectBelowPercent") > 0)
+	{
+		Debug::Log("[Developer warning][%s] Crit.AffectBelowPercent is deprecated and has been replaced by Crit.AffectsBelowPercent! If both are set, the latter will be used.\n", pSection);
+	}
+	this->Crit_AffectsBelowPercent.Read(exINI, pSection, "Crit.AffectBelowPercent"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->Crit_AffectsBelowPercent.Read(exINI, pSection, "Crit.AffectsBelowPercent");
+	if (exINI.ReadString(pSection, "Crit.AffectAbovePercent") > 0)
+	{
+		Debug::Log("[Developer warning][%s] Crit.AffectAbovePercent is deprecated and has been replaced by Crit.AffectsAbovePercent! If both are set, the latter will be used.\n", pSection);
+	}
+	this->Crit_AffectsAbovePercent.Read(exINI, pSection, "Crit.AffectAbovePercent"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->Crit_AffectsAbovePercent.Read(exINI, pSection, "Crit.AffectsAbovePercent");
 	this->Crit_SuppressWhenIntercepted.Read(exINI, pSection, "Crit.SuppressWhenIntercepted");
 
 	if (this->Crit_AffectsAbovePercent > this->Crit_AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] Crit.AffectsAbovePercent is bigger than Crit.AffectsBelowPercent, crit will never activate!\n", pSection);
+
+	// Return warhead
+	this->ReturnWarhead.Read(exINI, pSection, "ReturnWarhead");
+	this->ReturnWarhead_Damage.Read(exINI, pSection, "ReturnWarhead.Damage");
+	this->ReturnWarhead_Chance.Read(exINI, pSection, "ReturnWarhead.Chance");
+	this->ReturnWarhead_ApplyChancePerTarget.Read(exINI, pSection, "ReturnWarhead.ApplyChancePerTarget");
+	this->ReturnWarhead_FullDetonation.Read(exINI, pSection, "ReturnWarhead.FullDetonation");
+	this->ReturnWarhead_AffectsTarget.Read(exINI, pSection, "ReturnWarhead.AffectsTarget");
+	this->ReturnWarhead_AffectsHouse.Read(exINI, pSection, "ReturnWarhead.AffectsHouse");
 
 	this->MindControl_Anim.Read(exINI, pSection, "MindControl.Anim");
 	this->MindControl_ThreatDelay.Read(exINI, pSection, "MindControl.ThreatDelay");
@@ -229,13 +273,35 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects.Read(exINI, pSection, "DetonateOnAllMapObjects");
 	this->DetonateOnAllMapObjects_Full.Read(exINI, pSection, "DetonateOnAllMapObjects.Full");
 	this->DetonateOnAllMapObjects_RequireVerses.Read(exINI, pSection, "DetonateOnAllMapObjects.RequireVerses");
+	if (exINI.ReadString(pSection, "DetonateOnAllMapObjects.AffectTargets") > 0)
+	{
+		Debug::Log("[Developer warning][%s] DetonateOnAllMapObjects.AffectTargets is deprecated and has been replaced by DetonateOnAllMapObjects.AffectsTarget! If both are set, the latter will be used.\n", pSection);
+	}
+	this->DetonateOnAllMapObjects_AffectsTarget.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTargets"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->DetonateOnAllMapObjects_AffectsTarget.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectsTarget");
+	if (exINI.ReadString(pSection, "DetonateOnAllMapObjects.AffectHouses") > 0)
+	{
+		Debug::Log("[Developer warning][%s] DetonateOnAllMapObjects.AffectHouses is deprecated and has been replaced by DetonateOnAllMapObjects.AffectsHouse! If both are set, the latter will be used.\n", pSection);
+	}
+	this->DetonateOnAllMapObjects_AffectsHouse.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->DetonateOnAllMapObjects_AffectsHouse.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectsHouse");
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
+	this->Parasite_ParticleSystem.Read(exINI, pSection, "Parasite.ParticleSystem");
+	this->Parasite_DisableParticleSystem.Read(exINI, pSection, "Parasite.DisableParticleSystem");
 	this->Parasite_CullingTarget.Read(exINI, pSection, "Parasite.CullingTarget");
 	this->Parasite_GrappleAnim.Read(exINI, pSection, "Parasite.GrappleAnim");
+
+	this->JumpjetTurnRate.Read(exINI, pSection, "JumpjetTurnRate");
+	this->JumpjetSpeed.Read(exINI, pSection, "JumpjetSpeed");
+	this->JumpjetClimb.Read(exINI, pSection, "JumpjetClimb");
+	this->JumpjetCrash.Read(exINI, pSection, "JumpjetCrash");
+	this->JumpjetHeight.Read(exINI, pSection, "JumpjetHeight");
+	this->JumpjetAccel.Read(exINI, pSection, "JumpjetAccel");
+	this->JumpjetWobbles.Read(exINI, pSection, "JumpjetWobbles");
+	this->JumpjetNoWobbles.Read(exINI, pSection, "JumpjetNoWobbles");
+	this->JumpjetDeviation.Read(exINI, pSection, "JumpjetDeviation");
 
 	this->Nonprovocative.Read(exINI, pSection, "Nonprovocative");
 
@@ -272,9 +338,29 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->KillWeapon.Read(exINI, pSection, "KillWeapon");
 	this->KillWeapon_OnFirer.Read(exINI, pSection, "KillWeapon.OnFirer");
+	if (exINI.ReadString(pSection, "KillWeapon.AffectsHouses") > 0)
+	{
+		Debug::Log("[Developer warning][%s] KillWeapon.AffectsHouses is deprecated and has been replaced by KillWeapon.AffectsHouse! If both are set, the latter will be used.\n", pSection);
+	}
+	this->KillWeapon_AffectsHouse.Read(exINI, pSection, "KillWeapon.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->KillWeapon_AffectsHouse.Read(exINI, pSection, "KillWeapon.AffectsHouse");
+	if (exINI.ReadString(pSection, "KillWeapon.OnFirer.AffectsHouses") > 0)
+	{
+		Debug::Log("[Developer warning][%s] KillWeapon.OnFirer.AffectsHouses is deprecated and has been replaced by KillWeapon.OnFirer.AffectsHouse! If both are set, the latter will be used.\n", pSection);
+	}
+	this->KillWeapon_OnFirer_AffectsHouse.Read(exINI, pSection, "KillWeapon.OnFirer.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->KillWeapon_OnFirer_AffectsHouse.Read(exINI, pSection, "KillWeapon.OnFirer.AffectsHouse");
+	if (exINI.ReadString(pSection, "KillWeapon.Affects") > 0)
+	{
+		Debug::Log("[Developer warning][%s] KillWeapon.Affects is deprecated and has been replaced by KillWeapon.AffectsTarget! If both are set, the latter will be used.\n", pSection);
+	}
+	this->KillWeapon_AffectsTarget.Read(exINI, pSection, "KillWeapon.Affects"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->KillWeapon_AffectsTarget.Read(exINI, pSection, "KillWeapon.AffectsTarget");
+	if (exINI.ReadString(pSection, "KillWeapon.OnFirer.Affects") > 0)
+	{
+		Debug::Log("[Developer warning][%s] KillWeapon.OnFirer.Affects is deprecated and has been replaced by KillWeapon.OnFirer.AffectsTarget! If both are set, the latter will be used.\n", pSection);
+	}
+	this->KillWeapon_OnFirer_AffectsTarget.Read(exINI, pSection, "KillWeapon.OnFirer.Affects"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->KillWeapon_OnFirer_AffectsTarget.Read(exINI, pSection, "KillWeapon.OnFirer.AffectsTarget");
 
 	this->ElectricAssaultLevel.Read(exINI, pSection, "ElectricAssaultLevel");
@@ -283,11 +369,13 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AffectsBelowPercent.Read(exINI, pSection, "AffectsBelowPercent");
 	this->AffectsAbovePercent.Read(exINI, pSection, "AffectsAbovePercent");
+	this->AffectsVeterancy.Read(exINI, pSection, "AffectsVeterancy");
 	this->AffectsNeutral.Read(exINI, pSection, "AffectsNeutral");
 	this->AffectsGround.Read(exINI, pSection, "AffectsGround");
 	this->AffectsAir.Read(exINI, pSection, "AffectsAir");
 	this->CellSpread_Cylinder.Read(exINI, pSection, "CellSpread.Cylinder");
 	this->HealthCheck = this->AffectsAbovePercent > 0.0 || this->AffectsBelowPercent < 1.0;
+	this->VeterancyCheck = this->AffectsVeterancy != AffectedVeterancy::All;
 
 	if (this->AffectsAbovePercent > this->AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] AffectsAbovePercent is bigger than AffectsBelowPercent, the warhead will never activate!\n", pSection);
@@ -306,6 +394,15 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AnimZAdjust.Read(exINI, pSection, "AnimZAdjust");
 
 	this->ApplyPerTargetEffectsOnDetonate.Read(exINI, pSection, "ApplyPerTargetEffectsOnDetonate");
+
+	this->PenetratesTransport_Level.Read(exINI, pSection, "PenetratesTransport.Level");
+	this->PenetratesTransport_PassThrough.Read(exINI, pSection, "PenetratesTransport.PassThrough");
+	this->PenetratesTransport_FatalRate.Read(exINI, pSection, "PenetratesTransport.FatalRate");
+	this->PenetratesTransport_DamageMultiplier.Read(exINI, pSection, "PenetratesTransport.DamageMultiplier");
+	this->PenetratesTransport_DamageAll.Read(exINI, pSection, "PenetratesTransport.DamageAll");
+	this->PenetratesTransport_CleanSound.Read(exINI, pSection, "PenetratesTransport.CleanSound");
+
+	this->Taunt.Read(exINI, pSection, "Taunt");
 
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
@@ -364,6 +461,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->BuildingSell
 		|| this->BuildingUndeploy
 		|| this->ReverseEngineer
+		|| this->ReturnWarhead
+		|| this->PenetratesTransport_Level > 0
+		|| this->Taunt
 	);
 
 	char tempBuffer[32];
@@ -432,6 +532,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->RemoveDisguise)
 		.Process(this->RemoveMindControl)
 		.Process(this->RemoveParasite)
+		.Process(this->RemoveParasite_Allow)
+		.Process(this->RemoveParasite_Disallow)
 		.Process(this->DecloakDamagedTargets)
 		.Process(this->ShakeIsLocal)
 		.Process(this->ApplyModifiersOnNegativeDamage)
@@ -456,6 +558,14 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_AffectsBelowPercent)
 		.Process(this->Crit_AffectsAbovePercent)
 		.Process(this->Crit_SuppressWhenIntercepted)
+
+		.Process(this->ReturnWarhead)
+		.Process(this->ReturnWarhead_Damage)
+		.Process(this->ReturnWarhead_Chance)
+		.Process(this->ReturnWarhead_ApplyChancePerTarget)
+		.Process(this->ReturnWarhead_FullDetonation)
+		.Process(this->ReturnWarhead_AffectsTarget)
+		.Process(this->ReturnWarhead_AffectsHouse)
 
 		.Process(this->MindControl_Anim)
 		.Process(this->MindControl_ThreatDelay)
@@ -537,11 +647,20 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AffectsBelowPercent)
 		.Process(this->AffectsAbovePercent)
+		.Process(this->AffectsVeterancy)
 		.Process(this->AffectsNeutral)
 		.Process(this->AffectsGround)
 		.Process(this->AffectsAir)
 		.Process(this->CellSpread_Cylinder)
 		.Process(this->HealthCheck)
+		.Process(this->VeterancyCheck)
+
+		.Process(this->PenetratesTransport_Level)
+		.Process(this->PenetratesTransport_PassThrough)
+		.Process(this->PenetratesTransport_FatalRate)
+		.Process(this->PenetratesTransport_DamageMultiplier)
+		.Process(this->PenetratesTransport_DamageAll)
+		.Process(this->PenetratesTransport_CleanSound)
 
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)
@@ -555,8 +674,20 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DamageSourceHealthMultiplier)
 		.Process(this->DamageTargetHealthMultiplier)
 
+		.Process(this->Parasite_ParticleSystem)
+		.Process(this->Parasite_DisableParticleSystem)
 		.Process(this->Parasite_CullingTarget)
 		.Process(this->Parasite_GrappleAnim)
+			
+		.Process(this->JumpjetTurnRate)
+		.Process(this->JumpjetSpeed)
+		.Process(this->JumpjetClimb)
+		.Process(this->JumpjetCrash)
+		.Process(this->JumpjetHeight)
+		.Process(this->JumpjetAccel)
+		.Process(this->JumpjetWobbles)
+		.Process(this->JumpjetNoWobbles)
+		.Process(this->JumpjetDeviation)
 
 		.Process(this->Nonprovocative)
 
@@ -601,6 +732,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AnimZAdjust)
 
 		.Process(this->ApplyPerTargetEffectsOnDetonate)
+
+		.Process(this->Taunt)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

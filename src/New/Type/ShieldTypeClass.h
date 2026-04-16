@@ -15,6 +15,7 @@ public:
 	Valueable<bool> InheritArmorFromTechno;
 	ValueableVector<TechnoTypeClass*> InheritArmor_Allowed;
 	ValueableVector<TechnoTypeClass*> InheritArmor_Disallowed;
+	Nullable<bool> ApplyArmorMult;
 	Valueable<bool> Powered;
 	Valueable<double> Respawn;
 	Valueable<int> Respawn_Rate;
@@ -72,6 +73,7 @@ public:
 		, InheritArmorFromTechno { false }
 		, InheritArmor_Allowed { }
 		, InheritArmor_Disallowed { }
+		, ApplyArmorMult {}
 		, Powered { false }
 		, Respawn { 0.0 }
 		, Respawn_Rate { 0 }

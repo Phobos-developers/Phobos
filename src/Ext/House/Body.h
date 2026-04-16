@@ -16,7 +16,7 @@ public:
 	class ExtData final : public Extension<HouseClass>
 	{
 	public:
-		std::map<int, int> PowerPlantEnhancers;
+		std::vector<BuildingClass*> PowerPlantEnhancers;
 		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
 		std::vector<TechnoClass*> OwnedCountedHarvesters;
 		bool ForceOnlyTargetHouseEnemy;
@@ -200,4 +200,6 @@ public:
 
 	static CanBuildResult BuildLimitGroupCheck(const HouseClass* pThis, const TechnoTypeClass* pItem, bool buildLimitOnly, bool includeQueued);
 	static bool ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* pType, bool ignoreQueued);
+
+	static void CalculatePowerSurplus(HouseClass* pThis);
 };

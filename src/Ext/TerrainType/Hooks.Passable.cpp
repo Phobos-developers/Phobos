@@ -139,3 +139,20 @@ DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
 
 	return Unlimbo;
 }
+
+// Buildable-upon TerrainTypes Hook #5 -> Ignore when flushing building foundations for placement.
+DEFINE_HOOK(0x45EF3A, BuildingTypeClass_FlushForPlacement_BuildableTerrain, 0x7)
+{
+	enum { Disallow = 0x45F00B, Continue = 0x45EF4A };
+
+	GET(ObjectClass* const, pObject, ESI);
+
+	if (auto const pTerrain = abstract_cast<TerrainClass*>(pObject))
+	{
+		if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+			return Disallow;
+	}
+
+	return Continue;
+}
+

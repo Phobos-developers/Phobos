@@ -40,6 +40,7 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 			if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget)
 				|| !EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
 				|| !pSecondExt->IsHealthInThreshold(pTargetTechno)
+				|| !pSecondExt->IsVeterancyInThreshold(pTargetTechno)
 				|| !pSecondExt->HasRequiredAttachedEffects(pTargetTechno, pThis))
 			{
 				return weaponIndexOne;
@@ -70,6 +71,7 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 			if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget)
 				|| !EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
 				|| !pFirstExt->IsHealthInThreshold(pTargetTechno)
+				|| !pFirstExt->IsVeterancyInThreshold(pTargetTechno)
 				|| !firstAllowedAE)
 			{
 				return weaponIndexTwo;
@@ -232,8 +234,8 @@ void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, Warhea
 	const bool hasFilters = pTypeExt->SuppressKillWeapons_Types.size() > 0;
 
 	// KillWeapon can be triggered without the source
-	if (pWHExt->KillWeapon && (!pSource || (EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_AffectsHouse, pSource->Owner, pThis->Owner)
-		&& EnumFunctions::IsTechnoEligible(pThis, pWHExt->KillWeapon_AffectsTarget))))
+	if (pWHExt->KillWeapon && (!pSource || EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_AffectsHouse, pSource->Owner, pThis->Owner))
+		&& EnumFunctions::IsTechnoEligible(pThis, pWHExt->KillWeapon_AffectsTarget))
 	{
 		if (!pTypeExt->SuppressKillWeapons || (hasFilters && !pTypeExt->SuppressKillWeapons_Types.Contains(pWHExt->KillWeapon)))
 			WeaponTypeExt::DetonateAt(pWHExt->KillWeapon, pThis, pSource);

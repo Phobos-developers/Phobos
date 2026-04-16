@@ -4,44 +4,6 @@
 #include <Ext/Scenario/Body.h>
 #include <Ext/Building/Body.h>
 
-DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
-{
-	GET(HouseClass*, pThis, ECX);
-	auto const pHouseExt = HouseExt::ExtMap.Find(pThis);
-
-	pHouseExt->PowerPlantEnhancers.clear();
-
-	// This pre-iterating ensure our process to be done in O(NM) instead of O(N^2),
-	// as M should be much less than N, this will be a great improvement. - secsome
-	for (auto const pBld : pThis->Buildings)
-	{
-		if (TechnoExt::IsActive(pBld) && pBld->IsOnMap && pBld->HasPower)
-		{
-			const auto pType = pBld->Type;
-			const auto pExt = BuildingTypeExt::ExtMap.Find(pType);
-
-			if (pExt->PowerPlantEnhancer_Buildings.size()
-				&& (pExt->PowerPlantEnhancer_Amount != 0 || pExt->PowerPlantEnhancer_Factor != 1.0f))
-			{
-				++pHouseExt->PowerPlantEnhancers[pType->ArrayIndex];
-			}
-		}
-	}
-
-	return 0;
-}
-
-// Power Plant Enhancer #131
-DEFINE_HOOK(0x508CF2, HouseClass_UpdatePower_PowerOutput, 0x7)
-{
-	GET(HouseClass*, pThis, ESI);
-	GET(BuildingClass*, pBld, EDI);
-
-	pThis->PowerOutput += BuildingTypeExt::GetEnhancedPower(pBld, pThis);
-
-	return 0x508D07;
-}
-
 // Trigger power recalculation on gain/loss of any techno, not just buildings.
 DEFINE_HOOK_AGAIN(0x5025F0, HouseClass_RegisterGain, 0x5) // RegisterLoss
 DEFINE_HOOK(0x502A80, HouseClass_RegisterGain, 0x8)
@@ -56,32 +18,34 @@ DEFINE_HOOK(0x502A80, HouseClass_RegisterGain, 0x8)
 	return 0;
 }
 
-DEFINE_HOOK(0x508D8D, HouseClass_UpdatePower_Techno, 0x6)
+DEFINE_HOOK(0x508D8D, HouseClass_UpdatePower_AfterBuildings, 0x6)
 {
-	if (!Phobos::Config::UnitPowerDrain)
-		return 0;
-
 	GET(HouseClass*, pThis, ESI);
 
-	auto updateDrainForThisType = [pThis](const TechnoTypeClass* pType)
+	if (Phobos::Config::UnitPowerDrain)
 	{
-			const int count = pThis->CountOwnedAndPresent(pType);
-			if (count == 0)
-				return;
-			const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
-			if (pExt->Power > 0)
-				pThis->PowerOutput += pExt->Power * count;
-			else
-				pThis->PowerDrain -= pExt->Power * count;
-	};
+		auto updateDrainForThisType = [pThis](const TechnoTypeClass* pType)
+			{
+				const int count = pThis->CountOwnedAndPresent(pType);
+				if (count == 0)
+					return;
+				const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
+				if (pExt->Power > 0)
+					pThis->PowerOutput += pExt->Power * count;
+				else
+					pThis->PowerDrain -= pExt->Power * count;
+			};
 
-	for (const auto pType : InfantryTypeClass::Array)
-		updateDrainForThisType(pType);
-	for (const auto pType : UnitTypeClass::Array)
-		updateDrainForThisType(pType);
-	for (const auto pType : AircraftTypeClass::Array)
-		updateDrainForThisType(pType);
-	// Don't do this for buildings, they've already been counted.
+		for (const auto pType : InfantryTypeClass::Array)
+			updateDrainForThisType(pType);
+		for (const auto pType : UnitTypeClass::Array)
+			updateDrainForThisType(pType);
+		for (const auto pType : AircraftTypeClass::Array)
+			updateDrainForThisType(pType);
+		// Don't do this for buildings, they've already been counted.
+	}
+
+	HouseExt::CalculatePowerSurplus(pThis);
 
 	return 0;
 }
@@ -503,27 +467,27 @@ DEFINE_HOOK(0x508E17, HouseClass_UpdateRadar_FreeRadar, 0x8)
 	enum { ForceRadar = 0x508F2F, Continue = 0x508E4A };
 
 	GET(HouseClass*, pThis, ECX);
+	REF_STACK(bool, enableRadar, STACK_OFFSET(0x1C, -0xC));
 
 	auto const pExt = HouseExt::ExtMap.Find(pThis);
-	const bool freeRadar = pExt->FreeRadar;
+	bool const freeRadar = pExt->FreeRadar;
+	enableRadar = false;
 
 	if (pExt->ForceRadar)
 	{
-		R->Stack(STACK_OFFSET(0x1C, -0xC), freeRadar);
+		enableRadar = freeRadar;
 		return ForceRadar;
 	}
-	else if (pThis->PowerBlackoutTimer.InProgress())
+	else if (pThis->RadarBlackoutTimer.HasTimeLeft())
 	{
-		R->Stack(STACK_OFFSET(0x1C, -0xC), false);
 		return ForceRadar;
 	}
 	else if (freeRadar)
 	{
-		R->Stack(STACK_OFFSET(0x1C, -0xC), true);
+		enableRadar = true;
 		return ForceRadar;
 	}
 
-	R->Stack(STACK_OFFSET(0x1C, -0xC), false);
 	return Continue;
 }
 
@@ -545,5 +509,39 @@ DEFINE_HOOK(0x4FD635, HouseClass_UpdateAI_DistCalcFix, 0x5)
 	GET(HouseClass*, pTargetHouse, ESI);
 	auto baseMapCrd = pTargetHouse->BaseCenter == CellStruct::Empty ? pTargetHouse->BaseSpawnCell : pTargetHouse->BaseCenter;
 	R->EAX(*(int*)&baseMapCrd);
+	return SkipGameCode;
+}
+
+// Replace game function.
+DEFINE_HOOK(0x50BF60, HouseClass_CalculateCostMultipliers, 0x5)
+{
+	enum { SkipGameCode = 0x50C04A };
+
+	GET(HouseClass*, pThis, ECX);
+
+	std::unordered_map<int, int> counts;
+	pThis->CostAircraftMult = 1.0f;
+	pThis->CostBuildingsMult = 1.0f;
+	pThis->CostDefensesMult = 1.0f;
+	pThis->CostInfantryMult = 1.0f;
+	pThis->CostUnitsMult = 1.0f;
+
+	for (auto const& pBuilding : pThis->FactoryPlants)
+	{
+		auto const pType = pBuilding->Type;
+		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+		const int max = pTypeExt->FactoryPlant_MaxCount;
+
+		if (max > -1 && counts[pType->ArrayIndex] >= max)
+			continue;
+
+		counts[pType->ArrayIndex]++;
+		pThis->CostAircraftMult *= pType->AircraftCostBonus;
+		pThis->CostBuildingsMult *= pType->BuildingsCostBonus;
+		pThis->CostDefensesMult *= pType->DefensesCostBonus;
+		pThis->CostInfantryMult *= pType->InfantryCostBonus;
+		pThis->CostUnitsMult *= pType->UnitsCostBonus;
+	}
+
 	return SkipGameCode;
 }

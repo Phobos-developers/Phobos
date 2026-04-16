@@ -37,6 +37,8 @@ public:
 
 	static bool(__thiscall* IsTargetConstraintsEligible)(void*, HouseClass*, bool);
 
+	static void(__thiscall* UnitDeliveryStateMachine_Update)(void*);
+
 	static std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> SWTypeExtMap_Find;
 
 	static PhobosMap<ObjectClass*, AlphaShapeClass*>* AlphaExtMap;
@@ -45,6 +47,7 @@ public:
 	static void* (__thiscall* GetTunnel)(void*, HouseClass*);
 	static void(__thiscall* AddPassengerFromTunnel)(void*, BuildingClass*, FootClass*);
 private:
+	static constexpr bool AresWasWrongAboutSpawnSurvivors = false;
 
 	static void* _SWTypeExtMap;
 	static AresSWTypeExtData* (__thiscall* _SWTypeExtMapFind)(void*, SuperWeaponTypeClass*);

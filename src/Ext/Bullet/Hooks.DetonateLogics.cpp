@@ -19,7 +19,7 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 	if (auto const pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
 	{
 		// Check if the WH should affect the techno target or skip it
-		if (!pExt->IsHealthInThreshold(pTarget) || (!pExt->AffectsNeutral && pTarget->Owner->IsNeutral()))
+		if (!pExt->IsHealthInThreshold(pTarget) || !pExt->IsVeterancyInThreshold(pTarget) || (!pExt->AffectsNeutral && pTarget->Owner->IsNeutral()))
 			return GoToExtras;
 	}
 
@@ -47,6 +47,15 @@ DEFINE_HOOK(0x4692BD, BulletClass_Logics_ApplyMindControl, 0x6)
 	R->AL(CaptureManagerExt::CaptureUnit(pThis->Owner->CaptureManager, pThis->Target, pControlledAnimType, threatDelay));
 
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x46954C, BulletClass_Logics_IsLocomotor_Bunker, 0x6)
+{
+	enum { CannotImbue = 0x4695E6 };
+
+	GET(UnitClass*, pTarget, ECX);
+
+	return pTarget->BunkerLinkedItem ? CannotImbue : 0;
 }
 
 DEFINE_HOOK(0x469A75, BulletClass_Logics_DamageHouse, 0x7)
@@ -243,6 +252,8 @@ DEFINE_HOOK(0x469B44, BulletClass_Logics_LandTypeCheck, 0x6)
 	return 0;
 }
 
+DEFINE_JUMP(LJMP, 0x469AC1, 0x469AF0) // Skip random scatter in vanilla code
+
 DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 {
 	enum { SkipGameCode = 0x469C98 };
@@ -271,7 +282,7 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 		int* remainingInterval = &pWHExt->RemainingAnimCreationInterval;
 		const int scatterMin = splashed ? pWHExt->SplashList_ScatterMin.Get() : pWHExt->AnimList_ScatterMin.Get();
 		const int scatterMax = splashed ? pWHExt->SplashList_ScatterMax.Get() : pWHExt->AnimList_ScatterMax.Get();
-		const bool allowScatter = scatterMax != 0 || scatterMin != 0;
+		const bool allowScatter = scatterMax >= 0 || scatterMin >= 0 || pThis->Type->Inviso;
 
 		if (creationInterval > 0 && pOwner)
 			remainingInterval = &TechnoExt::ExtMap.Find(pOwner)->WHAnimRemainingCreationInterval;
@@ -320,13 +331,17 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 
 				if (allowScatter)
 				{
-					const int distance = random.RandomRanged(scatterMin, scatterMax);
+					int distance = 32;
+
+					if (scatterMax >= 0 || scatterMin >= 0)
+						distance = random(scatterMin, scatterMax);
+
 					animCoords = MapClass::GetRandomCoordsNear(animCoords, distance, false);
 				}
 
 				auto const pAnim = GameCreate<AnimClass>(pType, animCoords, 0, 1, 0x2600, pWHExt->AnimZAdjust.Get(RulesExt::Global()->WarheadAnimZAdjust), false);
 				createdAnim = true;
-				AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim);
 
 				if (!pAnim->Owner)
 					pAnim->Owner = pInvoker;
@@ -373,7 +388,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 			auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target);
 
-			if (pTarget && !pWHExt->IsHealthInThreshold(pTarget))
+			if (pTarget && !pWHExt->IsHealthInThreshold(pTarget) && !pWHExt->IsVeterancyInThreshold(pTarget))
 				continue;
 
 			int damage = defaultDamage;
@@ -488,7 +503,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			if (isInAir)
 			{
 				pTechno->IsFallingDown = true;
-				pTechno->FallRate = 0;
+				TechnoExt::ExtMap.Find(pTechno)->OnParachuted = true;
 			}
 
 			if (pWHExt->UnlimboDetonate_KeepTarget
@@ -547,7 +562,8 @@ static bool IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, Weap
 		if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTarget->Owner)
 			|| !EnumFunctions::IsCellEligible(pTarget->GetCell(), pWeaponExt->CanTarget, true, true)
 			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget)
-			|| !pWeaponExt->IsHealthInThreshold(pTarget))
+			|| !pWeaponExt->IsHealthInThreshold(pTarget)
+			|| !pWeaponExt->IsVeterancyInThreshold(pTarget))
 		{
 			return false;
 		}
