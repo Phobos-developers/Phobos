@@ -62,43 +62,10 @@ public:
 	// Vector is expected to have 2^n items where n >= 3 and n <= 16 for the logic to work correctly, other cases return first item.
 	// Do not pass an empty vector, size/indices are not sanity checked here.
 	template<typename T>
-	static T GetItemForDirection(std::vector<T> const& items, DirStruct const& direction)
+	static T GetItemForDirection(Iterator<T> const& items, DirStruct const& direction)
 	{
 		// Log base 2
 		unsigned int bitsTo = Conversions::Int2Highest(static_cast<int>(items.size()));
-
-		if (bitsTo >= 3 && bitsTo <= 16)
-		{
-			// Same shit as DirStruct::TranslateFixedPoint().
-			// Because it uses template args and it is necessary to use
-			// non-compile time values here, it is duplicated & inlined.
-			unsigned int index = direction.Raw;
-			const unsigned int offset = 1 << (bitsTo - 3);
-			const unsigned int bitsFrom = 16;
-			const unsigned int maskIn = ((1 << bitsFrom) - 1);
-			const unsigned int maskOut = (1 << bitsTo) - 1;
-
-			if (bitsFrom > bitsTo)
-				index = (((((index & maskIn) >> (bitsFrom - bitsTo - 1)) + 1) >> 1) + offset) & maskOut;
-			else if (bitsFrom < bitsTo)
-				index = (((index - offset) & maskIn) << (bitsTo - bitsFrom)) & maskOut;
-			else
-				index = index & maskOut;
-
-			return items[index];
-		}
-
-		return items[0];
-	}
-
-	// Returns item from vector based on given direction and number of items in the vector, f.ex directional animations.
-	// Vector is expected to have 2^n items where n >= 3 and n <= 16 for the logic to work correctly, other cases return first item.
-	// Do not pass an empty vector, size/indices are not sanity checked here.
-	template<typename T>
-	static T GetItemForDirection(DynamicVectorClass<T> const& items, DirStruct const& direction)
-	{
-		// Log base 2
-		unsigned int bitsTo = Conversions::Int2Highest(static_cast<int>(items.Count));
 
 		if (bitsTo >= 3 && bitsTo <= 16)
 		{
