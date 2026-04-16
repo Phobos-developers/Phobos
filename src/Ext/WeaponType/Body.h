@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -98,6 +98,8 @@ public:
 
 		bool SkipWeaponPicking;
 
+		Nullable<bool> CylinderRangefinding;
+		
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
 			, ProjectileRange { Leptons(100000) }
@@ -178,6 +180,7 @@ public:
 			, AttackFriendlies {}
 			, AttackCursorOnFriendlies {}
 			, AttackNoThreatBuildings {}
+			, CylinderRangefinding {}
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;

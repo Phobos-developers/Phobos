@@ -3,6 +3,7 @@
 #include <Ext/Techno/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Utilities/AresFunctions.h>
 
 namespace AnimLoggingTemp
 {
@@ -244,6 +245,12 @@ DEFINE_HOOK(0x424807, AnimClass_AI_Next, 0x6)
 
 	if (!pExt->AttachedSystem && pTypeExt->AttachedSystem)
 		pExt->CreateAttachedSystem();
+
+	if (const auto pAlphaMap = AresFunctions::AlphaExtMap)
+	{
+		if (const auto pAlpha = pAlphaMap->get_or_default(pThis))
+			GameDelete(pAlpha);
+	}
 
 	return 0;
 }

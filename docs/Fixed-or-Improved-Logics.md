@@ -294,6 +294,32 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `ProductionAnim` is now available for `Factory=InfantryType` as well as non-`ConstructionYard=true` `Factory=BuildingType` buildings. `IdleAnim` will cease to play for its duration normally as well.
 - Fixed the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon.
 - Fixed the issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team.
+- Allow the default value of `DefaultToGuardArea` to be defined by `[General] -> DefaultToGuardArea`.
+- Fixed the bug that cause technos teleport to cell 0,0 by ChronoSphere superweapon.
+- Fixed the bug that techno in attack move will move to target if it cannot attack it.
+- Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4.
+- Buildings with `NeedsEngineer=true` are now considered to have threat value of 0 under ownership of `MultiplayPassive=true` houses regardless of their `ThreatPosed` value.
+- Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold.
+- Fixed vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't.
+- Fixed the issue where the AI's regular targeting would also target garrisonable buildings.
+- Fixed the issue that the move mission of the jumpjet does not end correctly.
+- AI team garrison scripts now re-evaluate destination immediately instead of trying to garrison ungarrisonable building before changing target.
+- Fixed the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health.
+- Fixed the issue that the Jumpjet must end its movement before starting the next mission.
+- Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent.
+- Voxel drawing code now skips sections that are invisible (have all zeros in the transform matrix main diagonal, meaning that the scale is 0% on all axes), thus increasing drawing performance for some voxels.
+- Fixed the bug that unit will play crashing voice & sound when dropped by warhead with `IsLocomotor=yes`.
+- Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat.
+- Fixed the bug that if paradropping technos with `Crashable=yes` has been destroyed in air, they will falling down on ground but not dead.
+- Fixed the bug where paradropped infantry with `NotHuman=yes` will ignore `Crashable=no` and crash on ground when killed in air.
+- Fixed an issue where a unit might cause the target to fall from above its own head when using a locomotor warhead with `Locomotor=Jumpjet` to pull a target with `BalloonHover=yes`.
+- Fixed the [EIP#007120F7](https://modenc.renegadeprojects.com/Internal_Error#eip_007120F7) that was triggered when repairing because the `Strength` value was lower than `RepairStep`.
+- Fixed the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated.
+- Fixed units with Fly, Jumpjet or Rocket locomotors destroyed while crashing off-map never being fully cleaned up, permanently blocking production slots and counting towards unit limits.
+- Fixed a desync due to an inconsistent shroud state caused by `GapGenerator` and `SpySat` interaction.
+- Now miners will no longer withdraw from the Harvest mission due to mineral depletion and will periodically attempt to return to work.
+- Fixed the incorrect mission switching in infantry EnterIdleMode.
+- Fixed the bug where technos with `BalloonHover=yes` incorrectly considered ground factors when setting the destination and distributing moving commands. Use `[General] -> BalloonHoverPathingFix=true` to enable this.
 
 ## Fixes / interactions with other extensions
 
@@ -336,7 +362,12 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed.
 - Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed.
 - Fixed the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally.
-- Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat.
+- Modified the ares hook that stopped OpenTopped transports from firing if cloaked.
+- Fixed an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes.
+- Fixed the initial direction of building placed by Ares's UnitDelivery superweapon.
+- Fixed a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to fire when the transport unit with `OpenTopped=yes` moved to an area that the passengers' `MovementZone` cannot move into.
+- Fixed a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next`.
+- Fixed the issue that `BombSight` not being updated correctly in techno conversion.
 
 ## Newly added global settings
 
@@ -483,12 +514,17 @@ ForceShield.ExtraTintIntensity=0.0  ; floating point value
 - You can now let the jumpjets increase their height earlier by set `JumpjetClimbPredictHeight` to true. The jumpjet will raise its height 5 cells in advance, instead of only raising its height when encountering cliffs or buildings in front of it.
 - You can also let them simply skip the stop check by set `JumpjetClimbWithoutCutOut` to true. The jumpjet will not stop moving horizontally when encountering cliffs or buildings in front of it, but will continue to move forward while raising its altitude.
   - When `JumpjetClimbPredictHeight` is enabled, if the height raised five grids in advance is still not enough to cross cliffs or buildings, it will stop and move horizontally as before, unless `JumpjetClimbWithoutCutOut` is also enabled.
+- You can set `JumpjetClimbIgnoreBuilding` to true to make the jumpjet treat the building height as 0 when climbing.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-JumpjetClimbPredictHeight=false  ; boolean
-JumpjetClimbWithoutCutOut=false  ; boolean
+JumpjetClimbPredictHeight=false   ; boolean
+JumpjetClimbWithoutCutOut=false   ; boolean
+JumpjetClimbIgnoreBuilding=false  ; boolean
+
+[SOMETECHNO]                      ; TechnoType
+JumpjetClimbIgnoreBuilding=       ; boolean, default to [General] -> JumpjetClimbIgnoreBuilding
 ```
 
 ### Move IvanBomb Position
@@ -559,6 +595,15 @@ In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 ColorAddUse8BitRGB=false  ; boolean
+```
+
+### Use more precise calculation of repair costs
+
+- In vanilla, a calculation step for repairing technos performs a floor operation on the value after `Strength`/`RepairStep` and then uses it as a divisor for other calculations. This results in incorrect actual fund amounts. Now you can use a more precise cost calculation via the following flag.
+
+```ini
+[General]
+FixRepairStepCost=false   ; boolean
 ```
 
 ### Veinholes & Weeds
@@ -639,7 +684,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMESW]                                        ; SuperWeaponType
 UseWeeds=no                                     ; boolean - should the SW use weeds to recharge?
-UseWeeds.Amount=                                ; integer - how many? default is General->WeedCapacity
+UseWeeds.Amount=                                ; integer - how many weeds? default is [General] -> WeedCapacity
 UseWeeds.StorageTimer=no                        ; boolean - should the counter on the sidebar display the % of weeds stored?
 UseWeeds.ReadinessAnimationPercentage=0.9       ; double - when this many weeds % are stored, the SW will show it's ready on the building (open nuke/open chrono, etc.)
 ```
@@ -687,6 +732,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEAIRCRAFT]  ; AircraftType
 VoicePickup=    ; Sound entry
+```
+
+### Implement `CurleyShuffle` for AircraftTypes
+
+- In vanilla, this is always controlled by a global flag under `[General]`. Now, this allows customization per aircraft. For detailed functionality, see [ModEnc](https://modenc.renegadeprojects.com/CurleyShuffle).
+
+In `rulesmd.ini`:
+```ini
+[SOMEAIRCRAFT]            ; AircraftType
+CurleyShuffle=            ; boolean, default to [General] -> CurleyShuffle
 ```
 
 ### Customize the scatter caused by aircraft attack mission
@@ -1335,6 +1390,29 @@ AllowAirstrike=             ; boolean
 AirstrikeTargets=buildings  ; List of Affected Target Enumeration (none|infantry|units|buildings|all)
 ```
 
+### Allow disable an over-optimization in targeting
+
+- In vanilla, there is an optimization in targeting: if a unit finds a valid target within the 1/4 or 1/2 range, it will stop looking for other targets. Now you can disable it.
+  - This optimization has a negligible effect on average performance, as most targeting calls fail to find a valid target.
+  - At the same time, it can affect the gaming experience, as it will make units attack nearby targets while ignoring more threatening targets that are farther away.
+
+In `rulesmd.ini`:
+```ini
+[General]
+DisableOveroptimizationInTargeting=false  ; boolean
+```
+
+### Allow techno type considered as other type when recruiting techno for teams
+
+- It is now possible to make techno type considered as other type when recruiting techno for teams, both for AI team recruitment and `Create Team` action.
+  - Only affect techno that's presented on the map. Cannot make AI produce this type of techno if it doesn't have any.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType
+TeamMember.ConsideredAs=          ; List of TechnoTypes
+```
+
 ### Alternate FLH customizations
 
 - `AlternateFLH.OnTurret` can be used to customize whether or not `AlternateFLH` used for `OpenTopped` transport firing coordinates, multiple mind control link offsets etc. is calculated relative to the unit's turret if available or body.
@@ -1561,13 +1639,15 @@ Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [TechnoTyp
 - Now you can customize the damage a unit receives when it falls from a bridge.
  - `FallingDownDamage` customizes the damage a unit receives at the end of a fall. It can be a percentage or an integer.
  - `FallingDownDamage.Water` customizes the damage a unit receives when it falls onto the water. Defaults to `FallingDownDamage`.
+ - `FallingDownDamage.AllowEMP` determines whether units incapacitated by EMP can use `FallingDownDamage/FallingDownDamage.Water`. The default value is `true`.
  - If it is a negative percentage, corresponding damage will be dealt based on the current health of the unit.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                    ; TechnoType
-FallingDownDamage=              ; integer / percentage
-FallingDownDamage.Water=        ; integer / percentage
+[SOMETECHNO]                        ; TechnoType
+FallingDownDamage=                  ; integer / percentage
+FallingDownDamage.Water=            ; integer / percentage
+FallingDownDamage.AllowEMP=true     ; boolean
 ```
 
 ### Damaged speed customization
@@ -1852,6 +1932,18 @@ AIAttackMoveTargetingDelay=          ; integer, game frames
 PlayerAttackMoveTargetingDelay=      ; integer, game frames
 ```
 
+### Target scan/guard range customizations
+
+- `MaxGuardRange` can be used to customize the hard cap on target scan range (e.g `GuardRange` or highest weapon range if zero or not set). Keep in mind that game doubles the effective range before this cap is applied, e.g range of 8 will hit the cap.
+- `AreaGuardRange` overrides explicit `GuardRange` setting for technos currently on `Area Guard` mission (f.ex guard mode command). As per usual, `GuardRange` in itself defaults to highest range between technos weapons if set to 0 or omitted.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]     ; TechnoType
+MaxGuardRange=16 ; floating point value, distance in cells
+AreaGuardRange=  ; floating point value, distance in cells
+```
+
 ### Voxel body multi-section shadows
 
 ![image](_static/images/uh0-be.gif)
@@ -1882,17 +1974,6 @@ HeightShadowScaling.MinScale=0.0  ; floating point value
 
 [SOMETECHNO]                      ; TechnoType
 ShadowSizeCharacteristicHeight=   ; integer, height in leptons
-```
-
-### Allow techno type considered as other type when recruiting techno for teams
-
-- It is now possible to make techno type considered as other type when recruiting techno for teams, both for AI team recruitment and `Create Team` action.
-  - Only affect techno that's presented on the map. Cannot make AI produce this type of techno if it doesn't have any.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                      ; TechnoType
-TeamMember.ConsideredAs=          ; List of TechnoTypes
 ```
 
 ## Terrains
@@ -1938,9 +2019,10 @@ In `rulesmd.ini`:
 ```ini
 [SOMETERRAINTYPE]             ; TerrainType
 SpawnsTiberium.Type=0         ; tiberium/ore type index
-SpawnsTiberium.Range=1        ; integer, radius in cells
+SpawnsTiberium.Range=1        ; integer, range in cells
 SpawnsTiberium.GrowthStage=3  ; integer - single or comma-sep. range
 SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
+SpawnsTiberium.Particle=      ; Particle
 ```
 
 ### Damaged frames and crumbling animation
@@ -1955,7 +2037,7 @@ SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-ConditionYellow.Terrain=  ; floating-point value, default to [AudioVisual] -> ConditionYellow
+ConditionYellow.Terrain=  ; floating point value, default to [AudioVisual] -> ConditionYellow
 
 [SOMETERRAINTYPE]         ; TerrainType
 HasDamagedFrames=false    ; boolean
@@ -2051,10 +2133,10 @@ CrateGoodie.RerollChance=0.0   ; floating point value, percents or absolute (0.0
 In `rulesmd.ini`:
 ```ini
 [General]
-HarvesterDumpAmount=0.0               ; float point value
+HarvesterDumpAmount=0.0               ; floating point value
 
 [SOMEVEHICLE]                         ; VehicleType
-HarvesterDumpAmount=                  ; float point value
+HarvesterDumpAmount=                  ; floating point value
 ```
 
 ### Customize type selection for IFV
@@ -2072,6 +2154,14 @@ TypeSelectUseIFVMode=false   ; boolean
 
 [SOMEVEHICLE]                ; VehicleType
 WeaponGroupAsN=              ; string, default to N if [General] -> TypeSelectUseIFVMode=true, and 0 if false
+```
+
+- This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+TypeSelectUseIFVMode=true   ; boolean
 ```
 
 ### Customizing crushing tilt and slowdown
@@ -2399,8 +2489,8 @@ In `rulesmd.ini`:
 AnimList.PickRandom=false       ; boolean
 AnimList.CreateAll=false        ; boolean
 AnimList.CreationInterval=0     ; integer
-AnimList.ScatterMin=0.0         ; floating point value, distance in cells
-AnimList.ScatterMax=0.0         ; floating point value, distance in cells
+AnimList.ScatterMin=0.0         ; floating point value, distance in cells, default to 0.125 if [Projectile] -> Inviso=true, and 0 if false
+AnimList.ScatterMax=            ; floating point value, distance in cells, default to 0.125 if [Projectile] -> Inviso=true, and 0 if false
 SplashList=                     ; List of AnimationTypes, default to [CombatDamage] -> SplashList
 SplashList.PickRandom=false     ; boolean
 SplashList.CreateAll=false      ; boolean
@@ -2438,6 +2528,24 @@ In `rulesmd.ini`:
 DecloakDamagedTargets=true  ; boolean
 ```
 
+### Customizing locomotor warhead
+
+- Now you can customize jumpjet properties on warhead.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                           ; WarheadType with IsLocomotor and Locomotor=Jumpjet
+JumpjetTurnRate=                        ; Integer, default to [TechnoType] -> JumpjetTurnRate
+JumpjetSpeed=                           ; Integer, default to [TechnoType] -> JumpjetSpeed
+JumpjetClimb=                           ; floating point value, default to [TechnoType] -> JumpjetClimb
+JumpjetCrash=                           ; floating point value, default to [TechnoType] -> JumpjetCrash
+JumpjetHeight=                          ; Integer, default to [TechnoType] -> JumpjetHeight
+JumpjetAccel=                           ; floating point value, default to [TechnoType] -> JumpjetAccel
+JumpjetWobbles=                         ; floating point value, default to [TechnoType] -> JumpjetWobbles
+JumpjetNoWobbles=                       ; boolean, default to [TechnoType] -> JumpjetNoWobbles
+JumpjetDeviation=                       ; Integer, default to [TechnoType] -> JumpjetDeviation
+```
+
 ### Customizing parasite
 
 - Now you can specify which targets the parasite will culling them.
@@ -2446,11 +2554,13 @@ DecloakDamagedTargets=true  ; boolean
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-Parasite.GrappleAnim=             ; animation
+Parasite.GrappleAnim=SQDG               ; AnimationType
 
-[SOMEWARHEAD]                     ; WarheadType
-Parasite.CullingTarget=infantry   ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
-Parasite.GrappleAnim=             ; animation
+[SOMEWARHEAD]                           ; WarheadType
+Parasite.ParticleSystem=                ; ParticleSystemType, default to [CombatDamage] -> DefaultSparkSystem
+Parasite.DisableParticleSystem=false    ; boolean
+Parasite.CullingTarget=infantry         ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
+Parasite.GrappleAnim=                   ; AnimationType, default to [AudioVisual] -> Parasite.GrappleAnim
 ```
 
 ### Dehardcode the `ZAdjust` of warhead anim

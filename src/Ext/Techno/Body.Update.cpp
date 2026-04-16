@@ -39,6 +39,8 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 
 	if (this->AttackMoveFollowerTempCount)
 		this->AttackMoveFollowerTempCount--;
+
+	this->UpdateLastTargetCrd();
 }
 
 void TechnoExt::ExtData::ApplyInterceptor()
@@ -357,7 +359,7 @@ void TechnoExt::ExtData::EatPassengers()
 		if (pThis->Passengers.NumPassengers > 0)
 		{
 			// Passengers / CargoClass is essentially a stack, last in, first out (LIFO) kind of data structure
-			FootClass* pPassenger = nullptr;          // Passenger to potentially delete
+			FootClass* pPoorGuy = nullptr;          // Passenger to potentially delete
 			FootClass* pPreviousPassenger = nullptr;  // Passenger immediately prior to the deleted one in the stack
 			ObjectClass* pLastPassenger = nullptr;    // Passenger that is last in the stack
 			auto pCurrentPassenger = pThis->Passengers.GetFirstPassenger();
@@ -371,14 +373,14 @@ void TechnoExt::ExtData::EatPassengers()
 				if (EnumFunctions::CanTargetHouse(allowedHouses, pOwner, pCurrentPassenger->Owner))
 				{
 					pPreviousPassenger = abstract_cast<FootClass*>(pLastPassenger);
-					pPassenger = pCurrentPassenger;
+					pPoorGuy = pCurrentPassenger;
 				}
 
 				pLastPassenger = pCurrentPassenger;
 				pCurrentPassenger = abstract_cast<FootClass*>(pCurrentPassenger->NextObject);
 			}
 
-			if (!pPassenger)
+			if (!pPoorGuy)
 			{
 				this->PassengerDeletionTimer.Stop();
 				return;
@@ -391,7 +393,7 @@ void TechnoExt::ExtData::EatPassengers()
 				if (pDelType->UseCostAsRate)
 				{
 					// Use passenger cost as countdown.
-					timerLength = (int)(pPassenger->GetTechnoType()->Cost * pDelType->CostMultiplier);
+					timerLength = (int)(pPoorGuy->GetTechnoType()->Cost * pDelType->CostMultiplier);
 
 					if (pDelType->CostRateCap.isset())
 						timerLength = std::min(timerLength, pDelType->CostRateCap.Get());
@@ -400,7 +402,7 @@ void TechnoExt::ExtData::EatPassengers()
 				{
 					// Use explicit rate optionally multiplied by unit size as countdown.
 					timerLength = pDelType->Rate;
-					const double size = (double)pPassenger->GetTechnoType()->Size;
+					const double size = (double)pPoorGuy->GetTechnoType()->Size;
 
 					if (pDelType->Rate_SizeMultiply && size > 1.0)
 						timerLength *= (int)(size + 0.5);
@@ -416,7 +418,7 @@ void TechnoExt::ExtData::EatPassengers()
 					pLastPassenger->NextObject = nullptr;
 
 				if (pPreviousPassenger)
-					pPreviousPassenger->NextObject = pPassenger->NextObject;
+					pPreviousPassenger->NextObject = pPoorGuy->NextObject;
 
 				if (pThis->Passengers.NumPassengers <= 0)
 					pThis->Passengers.FirstPassenger = nullptr;
@@ -428,19 +430,46 @@ void TechnoExt::ExtData::EatPassengers()
 
 				// Check if there is money refund
 				if (pDelType->Soylent
-					&& EnumFunctions::CanTargetHouse(pDelType->SoylentAllowedHouses, pOwner, pPassenger->Owner))
+					&& EnumFunctions::CanTargetHouse(pDelType->SoylentAllowedHouses, pOwner, pPoorGuy->Owner))
 				{
-					const int nMoneyToGive = (int)(pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true) * pDelType->SoylentMultiplier);
+					const double multiplier = pDelType->SoylentMultiplier;
+					int moneyToGive = static_cast<int>(pPoorGuy->GetTechnoType()->GetRefund(pPoorGuy->Owner, true) * multiplier);
 
-					if (nMoneyToGive > 0)
+					for (auto pPassenger = pPoorGuy->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
+						moneyToGive += static_cast<int>(pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true) * multiplier);
+
+					if (const auto pParasite = pPoorGuy->ParasiteEatingMe)
 					{
-						pOwner->GiveMoney(nMoneyToGive);
+						moneyToGive += static_cast<int>(pParasite->GetTechnoType()->GetRefund(pParasite->Owner, true) * multiplier);
+						pParasite->ParasiteImUsing->SuppressionTimer.Start(50);
+						pParasite->ParasiteImUsing->ExitUnit();
+					}
+
+					const int hijack = pPoorGuy->HijackerInfantryType;
+
+					if (hijack != -1)
+					{
+						const auto pHijackerType = InfantryTypeClass::Array[hijack];
+						moneyToGive += static_cast<int>(pHijackerType->GetRefund(pPoorGuy->Owner, true) * multiplier);
+					}
+
+					if (moneyToGive > 0)
+					{
+						pOwner->GiveMoney(moneyToGive);
 
 						if (displayCash)
 						{
-							FlyingStrings::AddMoneyString(nMoneyToGive, pThis, pOwner,
+							FlyingStrings::AddMoneyString(moneyToGive, pThis, pOwner,
 								pDelType->DisplaySoylentToHouses, pThis->Location, pDelType->DisplaySoylentOffset);
 						}
+					}
+				}
+				else
+				{
+					if (const auto pParasite = pPoorGuy->ParasiteEatingMe)
+					{
+						pParasite->ParasiteImUsing->SuppressionTimer.Start(50);
+						pParasite->ParasiteImUsing->ExitUnit();
 					}
 				}
 
@@ -451,7 +480,7 @@ void TechnoExt::ExtData::EatPassengers()
 				{
 					if (auto const pFoot = abstract_cast<FootClass*, true>(pThis))
 					{
-						pFoot->RemoveGunner(pPassenger);
+						pFoot->RemoveGunner(pPoorGuy);
 
 						if (auto pGunner = pFoot->Passengers.GetFirstPassenger())
 						{
@@ -464,9 +493,9 @@ void TechnoExt::ExtData::EatPassengers()
 				}
 
 				auto const pSource = pDelType->DontScore ? nullptr : pThis;
-				pPassenger->KillPassengers(pSource);
-				pPassenger->RegisterDestruction(pSource);
-				pPassenger->UnInit();
+				pPoorGuy->KillPassengers(pSource);
+				pPoorGuy->RegisterDestruction(pSource);
+				pPoorGuy->UnInit();
 
 				// Handle extra power
 				if (auto const pBldType = abstract_cast<BuildingTypeClass*, true>(pTransportType))
@@ -1088,6 +1117,11 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		barrelRecoil.HoldFrames = barrelAnimData.HoldFrames;
 	}
 
+	if (pOldType->BombSight && !pCurrentType->BombSight)
+		BombListClass::Instance.RemoveDetector(pThis);
+	else if (!pOldType->BombSight && pCurrentType->BombSight)
+		BombListClass::Instance.AddDetector(pThis);
+
 	// Only FootClass* can use this.
 	if (const auto pFoot = abstract_cast<FootClass*, true>(pThis))
 	{
@@ -1118,6 +1152,13 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	// handle AutoTargetOwnPosition
 	if (pOldTypeExt->AutoTargetOwnPosition && !pNewTypeExt->AutoTargetOwnPosition)
 		pThis->SetTarget(nullptr);
+
+	// Clear AlphaImage
+	if (const auto pAlphaMap = AresFunctions::AlphaExtMap)
+	{
+		if (const auto pAlpha = pAlphaMap->get_or_default(pThis))
+			GameDelete(pAlpha);
+	}
 }
 
 void TechnoExt::ExtData::UpdateTypeData_Foot()
@@ -1252,18 +1293,16 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 
 				if (isinAir)
 				{
-					const bool inMove = pJJLoco->Is_Really_Moving_Now();
-
 					if (pCurrentType->BalloonHover)
 					{
 						// Makes the jumpjet think it is hovering without actually moving.
 						pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
 						pJJLoco->IsMoving = true;
 
-						if (!inMove)
+						if (!pJJLoco->Is_Moving_Now())
 							pJJLoco->DestinationCoords = pThis->Location;
 					}
-					else if (!inMove)
+					else if (!pJJLoco->Is_Moving_Now())
 					{
 						pJJLoco->Move_To(pThis->Location);
 					}
@@ -1272,7 +1311,6 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 			else if (isinAir)
 			{
 				// Let it go into free fall.
-				pThis->FallRate = 0;
 				pThis->IsFallingDown = true;
 
 				const auto pCell = MapClass::Instance.TryGetCellAt(pThis->Location);
@@ -1287,6 +1325,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 				{
 					// If it's gonna land on the bridge, then it needs this.
 					pThis->OnBridge = pCell ? pCell->ContainsBridge() : false;
+					this->OnParachuted = true;
 				}
 
 				if (abs == AbstractType::Infantry)
@@ -2142,5 +2181,31 @@ void TechnoExt::ExtData::UpdateTintValues()
 	{
 		auto const pShieldType = this->Shield->GetType();
 		calculateTint(Drawing::RGB_To_Int(pShieldType->Tint_Color), static_cast<int>(pShieldType->Tint_Intensity * 1000), pShieldType->Tint_VisibleToHouses);
+	}
+}
+
+void TechnoExt::ExtData::UpdateLastTargetCrd()
+{
+	if (!this->TypeExtData->ExtraThreat_Enabled)
+		return;
+
+	auto const pThis = this->OwnerObject();
+	auto pTimer = &this->LastTargetCrdClearTimer;
+
+	if (pThis->Target)
+	{
+		this->LastTargetCrd = pThis->Target->GetCoords();
+		pTimer->Stop();
+	}
+	else
+	{
+		if (!pTimer->IsTicking())
+			pTimer->Start(45);
+
+		if (pTimer->Completed())
+		{
+			this->LastTargetCrd = CoordStruct::Empty;
+			pTimer->Stop();
+		}
 	}
 }

@@ -16,7 +16,7 @@ public:
 	class ExtData final : public Extension<HouseClass>
 	{
 	public:
-		std::map<int, int> PowerPlantEnhancers;
+		std::vector<BuildingClass*> PowerPlantEnhancers;
 		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
 		std::vector<TechnoClass*> OwnedCountedHarvesters;
 		bool ForceOnlyTargetHouseEnemy;

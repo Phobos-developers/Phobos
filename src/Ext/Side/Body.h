@@ -20,16 +20,17 @@ public:
 		Valueable<int> IngameScore_WinTheme;
 		Valueable<int> IngameScore_LoseTheme;
 		Valueable<Point2D> Sidebar_HarvesterCounter_Offset;
-		Valueable<ColorStruct> Sidebar_HarvesterCounter_Yellow;
-		Valueable<ColorStruct> Sidebar_HarvesterCounter_Red;
+		Nullable<ColorStruct> Sidebar_HarvesterCounter_ColorGreen;
+		Valueable<ColorStruct> Sidebar_HarvesterCounter_ColorYellow;
+		Valueable<ColorStruct> Sidebar_HarvesterCounter_ColorRed;
 		Valueable<Point2D> Sidebar_WeedsCounter_Offset;
 		Nullable<ColorStruct> Sidebar_WeedsCounter_Color;
 		Valueable<Point2D> Sidebar_ProducingProgress_Offset;
 		Valueable<Point2D> Sidebar_PowerDelta_Offset;
-		Valueable<ColorStruct> Sidebar_PowerDelta_Green;
-		Valueable<ColorStruct> Sidebar_PowerDelta_Yellow;
-		Valueable<ColorStruct> Sidebar_PowerDelta_Red;
-		Valueable<ColorStruct> Sidebar_PowerDelta_Grey;
+		Valueable<ColorStruct> Sidebar_PowerDelta_ColorGreen;
+		Valueable<ColorStruct> Sidebar_PowerDelta_ColorYellow;
+		Valueable<ColorStruct> Sidebar_PowerDelta_ColorRed;
+		Valueable<ColorStruct> Sidebar_PowerDelta_ColorGrey;
 		Valueable<TextAlign> Sidebar_PowerDelta_Align;
 		Nullable<ColorStruct> ToolTip_Background_Color;
 		Nullable<int> ToolTip_Background_Opacity;
@@ -48,16 +49,17 @@ public:
 			, IngameScore_WinTheme { -2 }
 			, IngameScore_LoseTheme { -2 }
 			, Sidebar_HarvesterCounter_Offset { { 0, 0 } }
-			, Sidebar_HarvesterCounter_Yellow { { 255, 255, 0 } }
-			, Sidebar_HarvesterCounter_Red { { 255, 0, 0 } }
+			, Sidebar_HarvesterCounter_ColorGreen { }
+			, Sidebar_HarvesterCounter_ColorYellow { { 255, 255, 0 } }
+			, Sidebar_HarvesterCounter_ColorRed { { 255, 0, 0 } }
 			, Sidebar_WeedsCounter_Offset { { 0, 0 } }
 			, Sidebar_WeedsCounter_Color {}
 			, Sidebar_ProducingProgress_Offset { { 0, 0 } }
 			, Sidebar_PowerDelta_Offset { { 0, 0 } }
-			, Sidebar_PowerDelta_Green { { 0, 255, 0 } }
-			, Sidebar_PowerDelta_Yellow { { 255, 255, 0 } }
-			, Sidebar_PowerDelta_Red { { 255, 0, 0 } }
-			, Sidebar_PowerDelta_Grey { { 0x80,0x80,0x80 } }
+			, Sidebar_PowerDelta_ColorGreen { { 0, 255, 0 } }
+			, Sidebar_PowerDelta_ColorYellow { { 255, 255, 0 } }
+			, Sidebar_PowerDelta_ColorRed { { 255, 0, 0 } }
+			, Sidebar_PowerDelta_ColorGrey { { 0x80,0x80,0x80 } }
 			, Sidebar_PowerDelta_Align { TextAlign::Left }
 			, ToolTip_Background_Color { }
 			, ToolTip_Background_Opacity { }

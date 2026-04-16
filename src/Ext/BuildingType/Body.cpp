@@ -40,25 +40,45 @@ int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
 	return -1;
 }
 
-int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse)
+std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse, BuildingClass* pPowerPlant)
 {
-	int nAmount = 0;
-	float fFactor = 1.0f;
+	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	int amount = 0;
+	float factor = 1.0f;
+	std::map<int, int> applied; // index, count
 
-	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
-
-	for (const auto& [bTypeIdx, nCount] : pHouseExt->PowerPlantEnhancers)
+	for (const auto pEnhancer : pHouseExt->PowerPlantEnhancers)
 	{
-		auto const bTypeExt = BuildingTypeExt::ExtMap.Find(BuildingTypeClass::Array[bTypeIdx]);
+		if (!TechnoExt::IsActive(pEnhancer) || pEnhancer->InLimbo || !pEnhancer->HasPower)
+			continue;
 
-		if (bTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
+		const auto pEnhancerType = pEnhancer->Type;
+		const auto pEnhancerTypeExt = BuildingTypeExt::ExtMap.Find(pEnhancerType);
+
+		if (!pEnhancerTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding))
+			continue;
+
+		const int range = pEnhancerTypeExt->PowerPlantEnhancer_Range.Get();
+
+		if (range > 0 && (!pPowerPlant || pEnhancer->DistanceFrom(pPowerPlant) > range))
+			continue;
+
+		const int max = pEnhancerTypeExt->PowerPlantEnhancer_MaxCount;
+
+		if (max > 0)
 		{
-			fFactor *= std::powf(bTypeExt->PowerPlantEnhancer_Factor, static_cast<float>(nCount));
-			nAmount += bTypeExt->PowerPlantEnhancer_Amount * nCount;
+			const auto it = applied.find(pEnhancerType->ArrayIndex);
+
+			if (it != applied.cend() && it->second >= max)
+				continue;
 		}
+
+		factor *= pEnhancerTypeExt->PowerPlantEnhancer_Factor;
+		amount += pEnhancerTypeExt->PowerPlantEnhancer_Amount;
+		++applied[pEnhancerType->ArrayIndex];
 	}
 
-	return static_cast<int>(std::round(pBuilding->GetPowerOutput() * fFactor)) + nAmount;
+	return std::make_pair(static_cast<int>(std::round(output * factor)), amount);
 }
 
 void BuildingTypeExt::PlayBunkerSound(BuildingClass const* pThis, bool buildUp)
@@ -138,6 +158,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PowersUp_Buildings.Read(exINI, pSection, "PowersUp.Buildings");
 	this->PowerPlant_DamageFactor.Read(exINI, pSection, "PowerPlant.DamageFactor");
 	this->PowerPlantEnhancer_Buildings.Read(exINI, pSection, "PowerPlantEnhancer.PowerPlants");
+	this->PowerPlantEnhancer_Range.Read(exINI, pSection, "PowerPlantEnhancer.Range");
 	this->PowerPlantEnhancer_Amount.Read(exINI, pSection, "PowerPlantEnhancer.Amount");
 	this->PowerPlantEnhancer_Factor.Read(exINI, pSection, "PowerPlantEnhancer.Factor");
 	this->PowerPlantEnhancer_MaxCount.Read(exINI, pSection, "PowerPlantEnhancer.MaxCount");
@@ -181,7 +202,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoBuildAreaOnBuildup.Read(exINI, pSection, "NoBuildAreaOnBuildup");
 	this->Adjacent_Allowed.Read(exINI, pSection, "Adjacent.Allowed");
 	this->Adjacent_Disallowed.Read(exINI, pSection, "Adjacent.Disallowed");
-	this->Adjacent_Disallowed_ExtraDistance.Read(exINI, pSection, "Adjacent.Disallowed.ExtraDistance");
+	this->Adjacent_Disallowed_Prohibit.Read(exINI, pSection, "Adjacent.Disallowed.Prohibit");
+	this->Adjacent_Disallowed_ProhibitDistance.Read(exINI, pSection, "Adjacent.Disallowed.ProhibitDistance");
 
 	this->BarracksExitCell.Read(exINI, pSection, "BarracksExitCell");
 
@@ -271,6 +293,9 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.A
 	this->RubbleIntact.Read(exINI, pSection, "Rubble.Intact");
 	this->RubbleIntactRemove.Read(exINI, pSection, "Rubble.Intact.Remove");
+
+	// Ares 3.0
+	this->UnitSell.Read(exINI, pSection, "UnitSell");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -287,6 +312,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PowersUp_Buildings)
 		.Process(this->PowerPlant_DamageFactor)
 		.Process(this->PowerPlantEnhancer_Buildings)
+		.Process(this->PowerPlantEnhancer_Range)
 		.Process(this->PowerPlantEnhancer_Amount)
 		.Process(this->PowerPlantEnhancer_Factor)
 		.Process(this->PowerPlantEnhancer_MaxCount)
@@ -334,8 +360,9 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Units_UseRepairCost)
 		.Process(this->NoBuildAreaOnBuildup)
 		.Process(this->Adjacent_Allowed)
-		.Process(this->Adjacent_Disallowed_ExtraDistance)
 		.Process(this->Adjacent_Disallowed)
+		.Process(this->Adjacent_Disallowed_Prohibit)
+		.Process(this->Adjacent_Disallowed_ProhibitDistance)
 		.Process(this->BarracksExitCell)
 		.Process(this->Overpower_KeepOnline)
 		.Process(this->Overpower_ChargeWeapon)
@@ -358,6 +385,9 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		// Ares 0.A
 		.Process(this->RubbleIntact)
 		.Process(this->RubbleIntactRemove)
+
+		// Ares 3.0
+		.Process(this->UnitSell)
 		;
 }
 
