@@ -392,6 +392,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->HoverLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "HoverLocomotionClassMakesWake");
 	this->ShipLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "ShipLocomotionClassMakesWake");
 	
+	this->FiringAnim_Update.Read(exINI, GameStrings::AudioVisual, "FiringAnim.Update");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -711,6 +713,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DriveLocomotorMakesWake)
 		.Process(this->HoverLocomotorMakesWake)
 		.Process(this->ShipLocomotorMakesWake)
+		.Process(this->FiringAnim_Update)
 		;
 }
 

@@ -96,6 +96,8 @@ public:
 		Nullable<bool> AttackCursorOnFriendlies;
 		Nullable<bool> AttackNoThreatBuildings;
 
+		Nullable<bool> Anim_Update;
+
 		bool SkipWeaponPicking;
 
 		Nullable<bool> CylinderRangefinding;
@@ -181,6 +183,7 @@ public:
 			, AttackCursorOnFriendlies {}
 			, AttackNoThreatBuildings {}
 			, CylinderRangefinding {}
+			, Anim_Update {}
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;
