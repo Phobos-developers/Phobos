@@ -886,8 +886,6 @@ void TechnoExt::ClickedApproachObject(FootClass* pThis, ObjectClass* pObject)
 
 bool TechnoExt::CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse)
 {
-	if (!pThis || !pHouse) return false;
-
 	const bool inTeam = pThis->Team != nullptr;
 	const bool available = pThis->IsAlive && pThis->Health > 0 && !pThis->InLimbo;
 	const bool wrongOwner = pThis->Owner != pHouse;
