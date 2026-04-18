@@ -3424,3 +3424,56 @@ DEFINE_HOOK(0x577BF1, MapClass_ResetShroudForTMission_CellCheck, 0x6)
 }
 
 #pragma endregion
+
+
+#pragma region BalloonHoverPathingFix
+
+DEFINE_HOOK(0x64D592, Game_PreProcessMegaMissionList_CheckForTargetCrdRecal1, 0x6)
+{
+	enum { SkipTargetCrdRecal = 0x64D598 };
+	GET(TechnoClass*, pTechno, EBP);
+	return pTechno->GetTechnoType()->BalloonHover ? SkipTargetCrdRecal : 0;
+}
+
+DEFINE_HOOK(0x64D575, Game_PreProcessMegaMissionList_CheckForTargetCrdRecal2, 0x6)
+{
+	enum { SkipTargetCrdRecal = 0x64D598 };
+	GET(TechnoClass*, pTechno, EBP);
+	return pTechno->GetTechnoType()->BalloonHover ? SkipTargetCrdRecal : 0;
+}
+
+DEFINE_HOOK(0x64D5C5, Game_PreProcessMegaMissionList_CheckForTargetCrdRecal3, 0x6)
+{
+	enum { SkipTargetCrdRecal = 0x64D659 };
+	GET(TechnoClass*, pTechno, EBP);
+	return pTechno->GetTechnoType()->BalloonHover ? SkipTargetCrdRecal : 0;
+}
+
+DEFINE_HOOK(0x51BFA2, InfantryClass_IsCellOccupied_Start, 0x6)
+{
+	enum { MoveOK = 0x51C02D };
+	GET(InfantryClass*, pThis, EBP);
+	return pThis->Type->BalloonHover && pThis->IsInAir() ? MoveOK : 0;
+}
+
+DEFINE_HOOK(0x73F0A7, UnitClass_IsCellOccupied_Start, 0x9)
+{
+	enum { MoveOK = 0x73F23F };
+	GET(UnitClass*, pThis, ECX);
+	return pThis->Type->BalloonHover && pThis->IsInAir() ? MoveOK : 0;
+}
+
+DEFINE_HOOK(0x4D62C0, FootClass_ApproachTarget_CheckArcCell, 0x6)
+{
+	GET(FootClass*, pThis, EBX);
+
+	if (pThis->GetTechnoType()->BalloonHover && pThis->IsInAir())
+	{
+		R->AL(true);
+		return 0x4D6425;
+	}
+
+	return 0;
+}
+
+#pragma endregion

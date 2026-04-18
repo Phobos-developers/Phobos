@@ -335,6 +335,7 @@ public:
 		Nullable<AnimTypeClass*> Wake;
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
+		Nullable<bool> MakesWake;
 
 		Nullable<int> AINormalTargetingDelay;
 		Nullable<int> PlayerNormalTargetingDelay;
@@ -812,6 +813,7 @@ public:
 			, Wake { }
 			, Wake_Grapple { }
 			, Wake_Sinking { }
+			, MakesWake { }
 
 			, AINormalTargetingDelay {}
 			, PlayerNormalTargetingDelay {}

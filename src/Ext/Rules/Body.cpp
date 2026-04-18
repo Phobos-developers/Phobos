@@ -384,7 +384,14 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ExtraThreatCoefficient_InRangeDistance.Read(exINI, GameStrings::General, "ExtraThreatCoefficient.InRangeDistance");
 	this->ExtraThreatCoefficient_Facing.Read(exINI, GameStrings::General, "ExtraThreatCoefficient.Facing");
 	this->ExtraThreatCoefficient_DistanceToLastTarget.Read(exINI, GameStrings::General, "ExtraThreatCoefficient.DistanceToLastTarget");
+	this->BalloonHoverPathingFix.Read(exINI, GameStrings::General, "BalloonHoverPathingFix");
+	Phobos::Optimizations::DisableBalloonHoverPathingFix = !this->BalloonHoverPathingFix;
 
+	this->WalkLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "WalkLocomotorMakesWake");
+	this->DriveLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "DriveLocomotorMakesWake");
+	this->HoverLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "HoverLocomotionClassMakesWake");
+	this->ShipLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "ShipLocomotionClassMakesWake");
+	
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -699,6 +706,11 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraThreatCoefficient_InRangeDistance)
 		.Process(this->ExtraThreatCoefficient_Facing)
 		.Process(this->ExtraThreatCoefficient_DistanceToLastTarget)
+		.Process(this->BalloonHoverPathingFix)
+		.Process(this->WalkLocomotorMakesWake)
+		.Process(this->DriveLocomotorMakesWake)
+		.Process(this->HoverLocomotorMakesWake)
+		.Process(this->ShipLocomotorMakesWake)
 		;
 }
 
@@ -708,6 +720,7 @@ void RulesExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 	this->Serialize(Stm);
 
 	this->ReplaceVoxelLightSources();
+	Phobos::Optimizations::DisableBalloonHoverPathingFix = !this->BalloonHoverPathingFix;
 }
 
 void RulesExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)

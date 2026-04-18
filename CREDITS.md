@@ -741,12 +741,14 @@ This page lists all the individual contributions to the project by their author.
   - Extra threat
   - Fix the incorrect mission switching in infantry EnterIdleMode
   - Fix the issue that `BombSight` not being updated correctly in techno conversion
+  - Technos with Walk locomotor spawn wake like ship
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
 - **Flactine**
   - Add target filtering options to attacheffect system
   - Add veterancy-based target filtering for weapons and warheads
+  - Fix BalloonHover incorrectly considering ground factors when pathfinding
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

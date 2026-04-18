@@ -319,6 +319,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed a desync due to an inconsistent shroud state caused by `GapGenerator` and `SpySat` interaction.
 - Now miners will no longer withdraw from the Harvest mission due to mineral depletion and will periodically attempt to return to work.
 - Fixed the incorrect mission switching in infantry EnterIdleMode.
+- Fixed the bug where technos with `BalloonHover=yes` incorrectly considered ground factors when setting the destination and distributing moving commands. Use `[General] -> BalloonHoverPathingFix=true` to enable this.
 
 ## Fixes / interactions with other extensions
 
@@ -1611,9 +1612,20 @@ Insignia customization besides the `InsigniaFrames` shorthand should function si
 - You can now specify the `Wake` anim per TechnoType to override default rules value.
   - `Wake.Grapple` and `Wake.Sinking` can be used to further customize wake anim when the techno is being parasited or sunken.
 
+- Also, you can now custom whether the techno makes wake when moving.
+  - Walk locomotor is able to make wake like ship now.
+  - Use `MakesWake` to custom this per type.
+
 In `rulesmd.ini`:
 ```ini
+[AudioVisual]
+WalkLocomotorMakesWake=false   ; boolean
+HoverLocomotorMakesWake=true   ; boolean
+DriveLocomotorMakesWake=true   ; boolean
+ShipLocomotorMakesWake=true    ; boolean
+
 [SOMETECHNO]         ; TechnoType
+MakesWake=           ; boolean, default to the global value that matches the techno's current locomotor
 Wake=                ; Anim (played when Techno moving on the water), default to [General] -> Wake
 Wake.Grapple=        ; Anim (played when Techno being parasited on the water), defaults to [TechnoType] -> Wake
 Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [TechnoType] -> Wake
