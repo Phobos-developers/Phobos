@@ -10,7 +10,7 @@ const char* DeselectObject5CommandClass::GetName() const
 
 const wchar_t* DeselectObject5CommandClass::GetUIName() const
 {
-	return GeneralUtils::LoadStringUnlessMissing("TXT_DESELECT", L"Deselect 5 Object");
+	return GeneralUtils::LoadStringUnlessMissing("TXT_DESELECT5", L"Deselect 5 Object");
 }
 
 const wchar_t* DeselectObject5CommandClass::GetUICategory() const
@@ -20,7 +20,7 @@ const wchar_t* DeselectObject5CommandClass::GetUICategory() const
 
 const wchar_t* DeselectObject5CommandClass::GetUIDescription() const
 {
-	return GeneralUtils::LoadStringUnlessMissing("TXT_DESELECT_DESC", L"Deselect 5 object from current selection.");
+	return GeneralUtils::LoadStringUnlessMissing("TXT_DESELECT5_DESC", L"Deselect 5 object from current selection.");
 }
 
 void DeselectObject5CommandClass::Execute(WWKey eInput) const
