@@ -540,6 +540,7 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
 ### `[ ]` Deselect Object
 
 - Deselect 1 or 5 object(s) from current selected objects.
+- For localization add `TXT_DESELECT`, `TXT_DESELECT_DESC`, `TXT_DESELECT5` and `TXT_DESELECT5_DESC` into your `.csf` file.
 
 ## Loading screen
 
