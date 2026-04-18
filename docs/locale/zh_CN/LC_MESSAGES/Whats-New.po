@@ -1812,6 +1812,7 @@ msgid ""
 "[Technos with Walk locomotor spawn wake like ship](Fixed-or-Improved-"
 "Logics.md#customizable-wake-anim) (by TaranDahl)"
 msgstr ""
+"[使用 Walk 运动模式的单位像船只一样生成水波](Fixed-or-Improved-Logics.md#customizable-wake-anim)（by TaranDahl）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："

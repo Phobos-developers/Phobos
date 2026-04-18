@@ -3895,12 +3895,15 @@ msgstr "`Wake.Grapple` 和 `Wake.Sinking` 可用于在科技类型被寄生或�
 
 msgid "Also, you can now custom whether the techno makes wake when moving."
 msgstr ""
+"此外，你现在可以自定义单位移动时是否生成水波。"
 
 msgid "Walk locomotor is able to make wake like ship now."
 msgstr ""
+"Walk 运动模式现在也同样可以生成水波。"
 
 msgid "Use `MakesWake` to custom this per type."
 msgstr ""
+"使用 `MakesWake` 在每个单位上自定义。"
 
 msgid "Customize bridge falling down damage"
 msgstr "自定义桥上坠落伤害"

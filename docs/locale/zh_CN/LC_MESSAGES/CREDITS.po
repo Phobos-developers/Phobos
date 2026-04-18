@@ -2472,6 +2472,7 @@ msgstr "修复了单位的 `BombSight` 在类型转换时不会被正确更新�
 
 msgid "Technos with Walk locomotor spawn wake like ship"
 msgstr ""
+"使用 Walk 运动模式的单位像船只一样生成水波"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
