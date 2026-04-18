@@ -1648,6 +1648,7 @@ msgid ""
 "moving commands. Use `[General] -> BalloonHoverPathingFix=true` to enable"
 " this."
 msgstr ""
+"修复了拥有 `BalloonHover=yes` 的单位在设置目的地和分配移动命令时错误考虑了地面因素的 Bug。通过 `[General] -> BalloonHoverPathingFix=true` 来启用该修复。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"

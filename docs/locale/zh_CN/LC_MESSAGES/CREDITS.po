@@ -2493,6 +2493,7 @@ msgstr "为武器和弹头添加基于经验等级的目标过滤"
 
 msgid "Fix BalloonHover incorrectly considering ground factors when pathfinding"
 msgstr ""
+"修复了 BalloonHover 寻路时错误考虑了地面因素的问题"
 
 msgid "**tyuah8**:"
 msgstr "**tyuah8**："

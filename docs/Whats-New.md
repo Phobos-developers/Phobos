@@ -639,7 +639,7 @@ Vanilla fixes:
 - Fixed the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated (by TaranDahl)
 - Miners back to work when ore regenerated (by TaranDahl)
 - Fixed the incorrect mission switching in infantry EnterIdleMode (by TaranDahl)
-- Fix BalloonHover incorrectly considering ground factors when pathfinding
+- Fix BalloonHover incorrectly considering ground factors when pathfinding (by TaranDahl)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

@@ -2212,6 +2212,7 @@ msgid ""
 "Fix BalloonHover incorrectly considering ground factors when pathfinding "
 "(by TaranDahl)"
 msgstr ""
+"修复了 BalloonHover 寻路时错误考虑了地面因素的问题（by TaranDahl）"
 
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
