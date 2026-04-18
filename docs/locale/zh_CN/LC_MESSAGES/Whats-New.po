@@ -2399,6 +2399,7 @@ msgid ""
 "Fixed a bug where a unit's turrets would also get locked when the unit "
 "became deactivated for reasons other than being under EMP (by Noble_Fish)"
 msgstr ""
+"修复了由于非 EMP 原因而进入瘫痪状态的单位其炮塔也同样会被锁死的 Bug（by Noble_Fish）"
 
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
