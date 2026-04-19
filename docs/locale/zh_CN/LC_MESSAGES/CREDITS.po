@@ -2510,6 +2510,7 @@ msgstr "单位被摧毁后遗留反隐区域的 bug 修复"
 
 msgid "**FrozenFog** - Hotkey for deselect object from current selection"
 msgstr ""
+"**FrozenFog** - 从当前已选中中取消选择对象的快捷键"
 
 msgid ""
 "**Aephiex** - initial fix for Ares academy not working on the initial "

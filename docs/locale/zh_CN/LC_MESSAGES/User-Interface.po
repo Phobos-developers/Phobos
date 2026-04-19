@@ -968,14 +968,17 @@ msgstr "为了本地化请将 `TXT_TOGGLE_MESSAGE` 和 `TXT_TOGGLE_MESSAGE_DESC`
 
 msgid "`[ ]` Deselect Object"
 msgstr ""
+"`[ ]` 取消选中对象"
 
 msgid "Deselect 1 or 5 object(s) from current selected objects."
 msgstr ""
+"从当前已选中对象中取消选中 1 或 5 个对象"
 
 msgid ""
 "For localization add `TXT_DESELECT`, `TXT_DESELECT_DESC`, `TXT_DESELECT5`"
 " and `TXT_DESELECT5_DESC` into your `.csf` file."
 msgstr ""
+"为了本地化请将 `TXT_DESELECT`、`TXT_DESELECT_DESC`、`TXT_DESELECT5` 和 `TXT_DESELECT5_DESC` 添加到你的 `.csf` 文件。"
 
 msgid "Loading screen"
 msgstr "载入图"

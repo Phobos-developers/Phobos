@@ -1826,6 +1826,7 @@ msgid ""
 "[Hotkey for deselect object from current selection](User-Interface.md"
 "#deselect-object) (by FrozenFog)"
 msgstr ""
+"[从当前已选中中取消选择对象的快捷键](User-Interface.md#deselect-object)（by FrozenFog）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
