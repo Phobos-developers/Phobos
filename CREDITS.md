@@ -743,6 +743,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue that `BombSight` not being updated correctly in techno conversion
   - Technos with Walk locomotor spawn wake like ship
   - Updateable firing anim
+  - Fix the issue where the sidebar would not refresh when an unit dies in limbo
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

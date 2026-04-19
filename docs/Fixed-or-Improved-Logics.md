@@ -320,6 +320,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Now miners will no longer withdraw from the Harvest mission due to mineral depletion and will periodically attempt to return to work.
 - Fixed the incorrect mission switching in infantry EnterIdleMode.
 - Fixed the bug where technos with `BalloonHover=yes` incorrectly considered ground factors when setting the destination and distributing moving commands. Use `[General] -> BalloonHoverPathingFix=true` to enable this.
+- Fixed the issue where the sidebar would not refresh when an unit dies in limbo.
 
 ## Fixes / interactions with other extensions
 
