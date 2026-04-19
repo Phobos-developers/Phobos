@@ -641,6 +641,7 @@ Vanilla fixes:
 - Miners back to work when ore regenerated (by TaranDahl)
 - Fixed the incorrect mission switching in infantry EnterIdleMode (by TaranDahl)
 - Fix BalloonHover incorrectly considering ground factors when pathfinding
+- Fixed the issue where the sidebar would not refresh when an unit dies in limbo (by TaranDahl)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -698,7 +699,6 @@ Fixes / interactions with other extensions:
 - Fixed a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to fire when the transport unit with `OpenTopped=yes` moved to an area that the passengers' `MovementZone` cannot move into (by NetsuNegi)
 - Fixed a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next` (by NetsuNegi & FlyStar)
 - Fixed the issue that `BombSight` not being updated correctly in techno conversion (by TaranDahl)
-- Fixed the issue where the sidebar would not refresh when an unit dies in limbo (by TaranDahl)
 
 ```
 
