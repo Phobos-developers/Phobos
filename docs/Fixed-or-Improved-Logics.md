@@ -2751,5 +2751,5 @@ Anim.Update=              ; boolean, default to [AudioVisual] -> FiringAnim.Upda
 ```
 
 ```{note}
-This effect will cause problem when used together with `[AnimType] -> Next`. `Next` modifies the Anim type over time, while this function changes it back, resulting in the Anim being unable to end.
+This effect will cause problem when used together with `[Animation] -> Next`. `Next` modifies the Anim type over time, while this function changes it back, resulting in the Anim being unable to end.
 ```

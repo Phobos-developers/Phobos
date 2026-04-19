@@ -1819,6 +1819,7 @@ msgid ""
 "[Updateable firing anim](Fixed-or-Improved-Logics.md#updateable-firing-"
 "anim) (by TaranDahl)"
 msgstr ""
+"[可更新开火动画](Fixed-or-Improved-Logics.md#updateable-firing-anim)（by TaranDahl）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："

@@ -5513,16 +5513,19 @@ msgstr ""
 
 msgid "Updateable firing anim"
 msgstr ""
+"可更新开火动画"
 
 msgid ""
 "In vanilla, firing anims is attached to the firer, but it won't update "
 "its type and location to fit the firer's facing. This is now customizable"
 " by the following flags."
 msgstr ""
+"在原版中，开火动画会附着于开火者，但却不会随着开火者的朝向更新类型和位置。现在这可以通过下列语句自定义。"
 
 msgid ""
 "This effect will cause problem when used together with `[Animation] -> "
 "Next`. `Next` modifies the Anim type over time, while this function "
 "changes it back, resulting in the Anim being unable to end."
 msgstr ""
+"该效果与 `[Animation] -> Next` 共用会导致问题。`Next` 会随时间更改动画类型，而本功能会把它改回去，导致动画无法结束。"
 

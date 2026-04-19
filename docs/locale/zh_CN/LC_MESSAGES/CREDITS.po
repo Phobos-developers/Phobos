@@ -2476,6 +2476,7 @@ msgstr ""
 
 msgid "Updateable firing anim"
 msgstr ""
+"可更新开火动画"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
