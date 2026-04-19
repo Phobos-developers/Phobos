@@ -43,7 +43,7 @@ public:
 		Valueable<Leptons> ClusterScatter_Max;
 
 		Valueable<bool> AAOnly;
-		Valueable<bool> Arcing_AllowElevationInaccuracy;
+		Nullable<bool> Arcing_AllowElevationInaccuracy;
 		Valueable<WeaponTypeClass*> ReturnWeapon;
 		Valueable<bool> ReturnWeapon_ApplyFirepowerMult;
 
@@ -99,7 +99,7 @@ public:
 			, SubjectToWater {}
 			, SubjectToWater_Detonate { true }
 			, AAOnly { false }
-			, Arcing_AllowElevationInaccuracy { true }
+			, Arcing_AllowElevationInaccuracy {}
 			, ReturnWeapon {}
 			, ReturnWeapon_ApplyFirepowerMult { false }
 			, SubjectToGround { false }

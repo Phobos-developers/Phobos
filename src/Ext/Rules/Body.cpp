@@ -369,6 +369,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->HoverDrownable.Read(exINI, GameStrings::General, "HoverDrownable");
 
+	this->Arcing_AllowElevationInaccuracy.Read(exINI, GameStrings::CombatDamage, "Arcing.AllowElevationInaccuracy");
+
+	this->Terrain_IsPassable.Read(exINI, GameStrings::General, "Terrain.IsPassable");
+	this->Terrain_CanBeBuiltOn.Read(exINI, GameStrings::General, "Terrain.CanBeBuiltOn");
+
 	this->SortCameoByName.Read(exINI, GameStrings::General, "SortCameoByName");
 
 	this->MergeBuildingDamage.Read(exINI, GameStrings::CombatDamage, "MergeBuildingDamage");
@@ -699,6 +704,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Explodes_DuringBuildup)
 		.Process(this->AircraftFiringForceScatter)
 		.Process(this->HoverDrownable)
+		.Process(this->Arcing_AllowElevationInaccuracy)
+		.Process(this->Terrain_IsPassable)
+		.Process(this->Terrain_CanBeBuiltOn)
 		.Process(this->SortCameoByName)
 		.Process(this->MergeBuildingDamage)
 		.Process(this->BuildingRadioLink_SyncOwner)

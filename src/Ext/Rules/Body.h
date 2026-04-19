@@ -318,6 +318,11 @@ public:
 
 		Valueable<bool> HoverDrownable;
 
+		Valueable<bool> Arcing_AllowElevationInaccuracy;
+
+		Valueable<bool> Terrain_IsPassable;
+		Valueable<bool> Terrain_CanBeBuiltOn;
+
 		Valueable<bool> SortCameoByName;
 
 		Valueable<bool> BuildingRadioLink_SyncOwner;
@@ -602,6 +607,11 @@ public:
 			, AircraftFiringForceScatter { true }
 
 			, HoverDrownable { true }
+
+			, Arcing_AllowElevationInaccuracy {}
+
+			, Terrain_IsPassable { false }
+			, Terrain_CanBeBuiltOn { false }
 
 			, SortCameoByName { false }
 

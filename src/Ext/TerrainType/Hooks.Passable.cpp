@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <Ext/Rules/Body.h>
+
 constexpr bool IS_CELL_OCCUPIED(CellClass* pCell)
 {
 	return pCell->OccupationFlags & 0x20 || pCell->OccupationFlags & 0x40 || pCell->OccupationFlags & 0x80 || pCell->GetInfantry(false);
@@ -14,7 +16,7 @@ DEFINE_HOOK(0x71C110, TerrainClass_SetOccupyBit_PassableTerrain, 0x6)
 
 	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pTypeExt->IsPassable)
+	if (pTypeExt->IsPassable.Get(RulesExt::Global()->Terrain_IsPassable))
 		return Skip;
 
 	return 0;
@@ -34,7 +36,7 @@ DEFINE_HOOK(0x7002E9, TechnoClass_WhatAction_PassableTerrain, 0x5)
 
 	if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pTarget))
 	{
-		if (!isForceFire && TerrainTypeExt::ExtMap.Find(pTerrain->Type)->IsPassable)
+		if (!isForceFire && TerrainTypeExt::ExtMap.Find(pTerrain->Type)->IsPassable.Get(RulesExt::Global()->Terrain_IsPassable))
 		{
 			R->EBP(Action::Move);
 			return ReturnAction;
@@ -54,7 +56,7 @@ DEFINE_HOOK(0x483DDF, CellClass_CheckPassability_PassableTerrain, 0x6)
 
 	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
 
-	if (pTypeExt->IsPassable)
+	if (pTypeExt->IsPassable.Get(RulesExt::Global()->Terrain_IsPassable))
 	{
 		pThis->Passability = PassabilityType::Passable;
 		return ReturnFromFunction;
@@ -74,7 +76,7 @@ DEFINE_HOOK(0x73FB71, UnitClass_CanEnterCell_PassableTerrain, 0x6)
 	{
 		auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
 
-		if (pTypeExt->IsPassable)
+		if (pTypeExt->IsPassable.Get(RulesExt::Global()->Terrain_IsPassable))
 			return SkipTerrainChecks;
 	}
 
@@ -92,7 +94,7 @@ DEFINE_HOOK(0x6D57C1, TacticalClass_DrawLaserFencePlacement_BuildableTerrain, 0x
 	GET(CellClass*, pCell, ESI);
 
 	if (auto const pTerrain = pCell->GetTerrain(false))
-		return TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn ? ContinueChecks : DontDraw;
+		return TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn) ? ContinueChecks : DontDraw;
 
 	return ContinueChecks;
 }
@@ -107,7 +109,7 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableTerrain, 0x6)
 	{
 		if (auto const pTerrain = pCell->GetTerrain(false))
 		{
-			if (TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+			if (TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn))
 			{
 				pCell->RemoveContent(pTerrain, false);
 				TerrainTypeExt::Remove(pTerrain);
@@ -130,7 +132,7 @@ DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
 
 	if (auto const pTerrain = pCell->GetTerrain(false))
 	{
-		if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+		if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn))
 			return NoUnlimbo;
 
 		pCell->RemoveContent(pTerrain, false);
@@ -149,7 +151,7 @@ DEFINE_HOOK(0x45EF3A, BuildingTypeClass_FlushForPlacement_BuildableTerrain, 0x7)
 
 	if (auto const pTerrain = abstract_cast<TerrainClass*>(pObject))
 	{
-		if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+		if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn))
 			return Disallow;
 	}
 

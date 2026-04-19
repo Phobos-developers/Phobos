@@ -232,10 +232,10 @@ DEFINE_HOOK(0x46A3D6, BulletClass_Shrapnel_Forced, 0xA)
 
 	if (auto const pObject = pThis->GetCell()->FirstObject)
 	{
-		if (pObject->WhatAmI() != AbstractType::Building || pTypeExt->Shrapnel_AffectsBuildings)
+		if (pObject->WhatAmI() != AbstractType::Building || pTypeExt->Shrapnel_AffectsBuildings.Get(RulesExt::Global()->Shrapnel_AffectsBuildings))
 			return Shrapnel;
 	}
-	else if (pTypeExt->Shrapnel_AffectsGround)
+	else if (pTypeExt->Shrapnel_AffectsGround.Get(RulesExt::Global()->Shrapnel_AffectsGround))
 	{
 		return Shrapnel;
 	}
@@ -255,7 +255,7 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 	auto const pOwner = pSource->Owner;
 	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pTypeExt->Shrapnel_UseWeaponTargeting)
+	if (pTypeExt->Shrapnel_UseWeaponTargeting.Get(RulesExt::Global()->Shrapnel_UseWeaponTargeting))
 	{
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pShrapnelWeapon);
 		auto const pType = pObject->GetType();
@@ -465,7 +465,7 @@ DEFINE_HOOK(0x6FF008, TechnoClass_Fire_BeforeMoveTo, 0x8)
 
 	const auto pBulletType = pBullet->Type;
 
-	if (pBulletType->Arcing && !BulletTypeExt::ExtMap.Find(pBulletType)->Arcing_AllowElevationInaccuracy)
+	if (pBulletType->Arcing && !BulletTypeExt::ExtMap.Find(pBulletType)->Arcing_AllowElevationInaccuracy.Get(RulesExt::Global()->Arcing_AllowElevationInaccuracy))
 	{
 		REF_STACK(BulletVelocity, velocity, STACK_OFFSET(0xB0, -0x60));
 		REF_STACK(const CoordStruct, crdSrc, STACK_OFFSET(0xB0, -0x6C));
@@ -485,7 +485,7 @@ DEFINE_HOOK(0x44D46E, BuildingClass_Mission_Missile_BeforeMoveTo, 0x8)
 
 	const auto pBulletType = pBullet->Type;
 
-	if (pBulletType->Arcing && !BulletTypeExt::ExtMap.Find(pBulletType)->Arcing_AllowElevationInaccuracy)
+	if (pBulletType->Arcing && !BulletTypeExt::ExtMap.Find(pBulletType)->Arcing_AllowElevationInaccuracy.Get(RulesExt::Global()->Arcing_AllowElevationInaccuracy))
 	{
 		REF_STACK(BulletVelocity, velocity, STACK_OFFSET(0xE8, -0xD0));
 		REF_STACK(const CoordStruct, crdSrc, STACK_OFFSET(0xE8, -0x8C));

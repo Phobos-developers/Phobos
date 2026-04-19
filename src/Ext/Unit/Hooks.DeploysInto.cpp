@@ -178,7 +178,7 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 			}
 			else if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
 			{
-				if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+				if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn))
 					return CanNotExistHere;
 			}
 		}
@@ -192,7 +192,7 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 		{
 			if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
 			{
-				if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+				if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn))
 					return CanNotExistHere;
 
 				builtOnCanBeBuiltOn = true;
@@ -248,7 +248,7 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 			}
 			else if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
 			{
-				if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+				if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn))
 					return CanNotExistHere;
 
 				builtOnCanBeBuiltOn = true;
