@@ -771,8 +771,8 @@ OnlyUseLandSequences=false  ; boolean
 
 In `SomeTheater.ini`
 ```ini
-[IsometricTileType]
-CustomPalette=        ; palette
+[SOMETILETYPE]        ; TileSetType
+CustomPalette=        ; filename with .pal extension
 ```
 
 ## Projectiles

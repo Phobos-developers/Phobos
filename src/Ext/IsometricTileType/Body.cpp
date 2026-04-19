@@ -1,39 +1,42 @@
 #include "Body.h"
 
-#include <Helpers/Macro.h>
-
 #include <ScenarioClass.h>
 
-#include <Utilities/TemplateDef.h>
-
 IsometricTileTypeExt::ExtContainer IsometricTileTypeExt::ExtMap;
-int IsometricTileTypeExt::ExtData::CurrentTileset = -1;
-std::map<std::string, std::map<TintStruct, LightConvertClass*>> IsometricTileTypeExt::ExtData::LightConvertEntities;
+int IsometricTileTypeExt::CurrentTileset = -1;
+std::map<std::string, std::vector<LightConvertClass*>> IsometricTileTypeExt::LightConvertEntities {};
+bool IsometricTileTypeExt::InRender = false;
 
 IsometricTileTypeExt::ExtData::ExtData(IsometricTileTypeClass* ownerObject)
 	: Extension<IsometricTileTypeClass>(ownerObject)
 	, Tileset { -1 }
-	, Palette {}
+	, PaletteName { "" }
 {}
 
-LightConvertClass* IsometricTileTypeExt::ExtData::GetLightConvert(int r, int g, int b)
+LightConvertClass* IsometricTileTypeExt::GetLightConvert(const char* paletteName, int r, int g, int b, const bool isDefault)
 {
 	int shadeCount = 53;
 
 	if (r + g + b < 2000)
 		shadeCount = 27;
 
-	auto& entities = LightConvertEntities[this->Palette.Name];
-
 	ScenarioClass::Instance->ScenarioLighting(&r, &g, &b);
 	TintStruct tint(r, g, b);
 
-	if (entities.contains(tint) && entities.at(tint) != nullptr)
-		return entities.at(tint);
+	auto& entities = IsometricTileTypeExt::LightConvertEntities[paletteName];
 
-	LightConvertClass* pLightConvert= GameCreate<LightConvertClass>
+	if (!entities.empty())
+	{
+		for (auto const pLightConvert : entities)
+		{
+			if (pLightConvert->Color1 == tint)
+				return pLightConvert;
+		}
+	}
+
+	LightConvertClass* pLightConvert = GameCreate<LightConvertClass>
 		(
-			this->Palette.Palette.get(),
+			isDefault ? &FileSystem::ISOx_PAL : FileSystem::AllocatePalette(paletteName),
 			&FileSystem::TEMPERAT_PAL,
 			DSurface::Primary,
 			r,
@@ -44,8 +47,8 @@ LightConvertClass* IsometricTileTypeExt::ExtData::GetLightConvert(int r, int g, 
 			shadeCount
 		);
 
-	LightConvertClass::Array->AddItem(pLightConvert);
-	entities[tint] = pLightConvert;
+	LightConvertClass::Array.AddItem(pLightConvert);
+	entities.push_back(pLightConvert);
 
 	return pLightConvert;
 }
@@ -55,10 +58,10 @@ LightConvertClass* IsometricTileTypeExt::ExtData::GetLightConvert(int r, int g, 
 
 void IsometricTileTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
-	this->Tileset = IsometricTileTypeExt::ExtData::CurrentTileset;
+	this->Tileset = IsometricTileTypeExt::CurrentTileset;
 
 	char section[0x20];
-	sprintf(section, "TileSet%04d", IsometricTileTypeExt::ExtData::CurrentTileset);
+	sprintf(section, "TileSet%04d", IsometricTileTypeExt::CurrentTileset);
 
 	auto const theater = ScenarioClass::Instance->Theater;
 	auto const pExtension = Theater::GetTheater(theater).Extension;
@@ -66,7 +69,8 @@ void IsometricTileTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	pDefault[3] = pExtension[0];
 	pDefault[4] = pExtension[1];
 	pDefault[5] = pExtension[2];
-	this->Palette.LoadFromINI(pINI, section, "CustomPalette", pDefault);
+
+	this->PaletteName.Read(pINI, section, "CustomPalette", pDefault);
 }
 
 template <typename T>
@@ -74,7 +78,7 @@ void IsometricTileTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Tileset)
-		.Process(this->Palette)
+		.Process(this->PaletteName)
 		;
 }
 
@@ -90,25 +94,9 @@ void IsometricTileTypeExt::ExtData::SaveToStream(PhobosStreamWriter& stm)
 	this->Serialize(stm);
 }
 
-bool IsometricTileTypeExt::LoadGlobals(PhobosStreamReader& stm)
-{
-	return stm
-		.Process(ExtData::CurrentTileset)
-		//.Process(ExtData::LightConvertEntities)
-		.Success();
-}
-
-bool IsometricTileTypeExt::SaveGlobals(PhobosStreamWriter& stm)
-{
-	return stm
-		.Process(IsometricTileTypeExt::ExtData::CurrentTileset)
-		//.Process(ExtData::LightConvertEntities)
-		.Success();
-}
-
 void IsometricTileTypeExt::Clear()
 {
-	ExtData::LightConvertEntities.clear();
+	IsometricTileTypeExt::LightConvertEntities.clear();
 }
 
 // =============================
@@ -121,18 +109,20 @@ IsometricTileTypeExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
-DEFINE_HOOK(0x5449F2, IsometricTileTypeClass_CTOR, 0x5)
+DEFINE_HOOK_AGAIN(0x544A5D, IsometricTileTypeClass_CTOR, 0x6)	// IsometricTileTypeClass::CTOR_Load
+DEFINE_HOOK(0x5449F2, IsometricTileTypeClass_CTOR, 0x5)			// IsometricTileTypeClass::CTOR
 {
-	GET(IsometricTileTypeClass*, pItem, EBP);
+	IsometricTileTypeClass* const pItem = R->Origin() == 0x544A5D ?
+		R->ESI<IsometricTileTypeClass* const>() : R->EBP<IsometricTileTypeClass* const>();
 
-	IsometricTileTypeExt::ExtMap.TryAllocate(pItem);
+	IsometricTileTypeExt::ExtMap.Allocate(pItem);
 
 	return 0;
 }
 
 DEFINE_HOOK(0x544BC2, IsometricTileTypeClass_DTOR, 0x8)
 {
-	GET(IsometricTileTypeClass*, pItem, ESI);
+	GET(IsometricTileTypeClass* const, pItem, ESI);
 
 	IsometricTileTypeExt::ExtMap.Remove(pItem);
 
@@ -142,8 +132,8 @@ DEFINE_HOOK(0x544BC2, IsometricTileTypeClass_DTOR, 0x8)
 DEFINE_HOOK_AGAIN(0x549D70, IsometricTileTypeClass_SaveLoad_Prefix, 0x8)
 DEFINE_HOOK(0x549C80, IsometricTileTypeClass_SaveLoad_Prefix, 0x5)
 {
-	GET_STACK(IsometricTileTypeClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
+	GET_STACK(IsometricTileTypeClass* const, pItem, 0x4);
+	GET_STACK(IStream* const, pStm, 0x8);
 
 	IsometricTileTypeExt::ExtMap.PrepareStream(pItem, pStm);
 
@@ -164,18 +154,28 @@ DEFINE_HOOK(0x549D8A, IsometricTileTypeClass_Save_Suffix, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x54642E, IsometricTileTypeClass_LoadFromINI, 0x6)
+DEFINE_HOOK(0x545FA3, IsometricTileTypeClass_LoadFromINI_SetTileSet, 0x8)
 {
-	GET(IsometricTileTypeClass*, pItem, EBP);
-	LEA_STACK(CCINIClass*, pINI, STACK_OFFSET(0xA10, -0x9D8));
+	GET(const int, tileset, EDI);
 
-	IsometricTileTypeExt::ExtMap.LoadFromINI(pItem, pINI);
+	IsometricTileTypeExt::CurrentTileset = tileset;
+
 	return 0;
 }
 
-DEFINE_HOOK(0x545FA3, IsometricTileTypeClass_LoadFromINI_SetTileSet, 0x8)
+DEFINE_HOOK(0x54642E, IsometricTileTypeClass_LoadFromINI, 0x6)
 {
-	IsometricTileTypeExt::ExtData::CurrentTileset = R->EDI();
+	GET(IsometricTileTypeClass* const, pItem, EBP);
+	LEA_STACK(CCINIClass* const, pINI, STACK_OFFSET(0xA10, -0x9D8));
+
+	IsometricTileTypeExt::ExtMap.LoadFromINI(pItem, pINI);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4AD059, IsometricTileTypeClass_LoadFromINI_After, 0x6)
+{
+	IsometricTileTypeExt::CurrentTileset = -1;
 
 	return 0;
 }
