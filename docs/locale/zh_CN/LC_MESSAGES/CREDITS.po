@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-19 20:27+0800\n"
+"POT-Creation-Date: 2026-04-19 22:29+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2471,12 +2471,10 @@ msgid ""
 msgstr "修复了单位的 `BombSight` 在类型转换时不会被正确更新的问题"
 
 msgid "Technos with Walk locomotor spawn wake like ship"
-msgstr ""
-"使用 Walk 运动模式的单位像船只一样生成水波"
+msgstr "使用 Walk 运动模式的单位像船只一样生成水波"
 
 msgid "Updateable firing anim"
-msgstr ""
-"可更新开火动画"
+msgstr "可更新开火动画"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
@@ -2509,6 +2507,9 @@ msgstr "修复了 Drive/Jumpjet/Ship/Teleport 运动方式在退出 piggybacked 
 
 msgid "Destroyed unit leaves sensors bugfix"
 msgstr "单位被摧毁后遗留反隐区域的 bug 修复"
+
+msgid "**FrozenFog** - Hotkey for deselect object from current selection"
+msgstr ""
 
 msgid ""
 "**Aephiex** - initial fix for Ares academy not working on the initial "

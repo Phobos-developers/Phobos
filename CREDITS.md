@@ -753,6 +753,7 @@ This page lists all the individual contributions to the project by their author.
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
+- **FrozenFog** - Hotkey for deselect object from current selection
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Multfinite** - Allow to toggle main exception handler via command line argument `-ExceptionHandler=boolean`
 - **hejiajun107, Xkein** - Fix a jumpjet crash related to voxel shadow drawing
