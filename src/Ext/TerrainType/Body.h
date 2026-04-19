@@ -30,8 +30,7 @@ public:
 		ValueableIdx<VocClass> CrumblingSound;
 		Nullable<int> AnimationLength;
 
-		PhobosFixedString<32u> PaletteFile;
-		DynamicVectorClass<ColorScheme*>* Palette; // Intentionally not serialized - rebuilt from the palette file on load.
+		std::string PaletteFile;
 
 		ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
 			, SpawnsTiberium_Type { 0 }
@@ -49,7 +48,6 @@ public:
 			, CrumblingSound {}
 			, AnimationLength {}
 			, PaletteFile {}
-			, Palette {}
 		{ }
 
 		virtual ~ExtData() = default;

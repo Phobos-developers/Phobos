@@ -85,18 +85,37 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	//Strength is already part of ObjecTypeClass::ReadIni Duh!
 	//this->TerrainStrength.Read(exINI, pSection, "Strength");
 
-	this->PaletteFile.Read(&CCINIClass::INI_Art, pThis->ImageFile, "Palette");
-	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
+	PhobosFixedString<32U> paletteText;
+	paletteText.Read(&CCINIClass::INI_Art, pThis->ImageFile, "Palette", "ISO");
 
-	if (GeneralUtils::IsValidString(this->PaletteFile) && !this->Palette)
-		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pThis->ImageFile, this->PaletteFile.data());
+	if (GeneralUtils::IsValidString(paletteText.data()))
+	{
+		char name[32];
+		char paletteName[64];
+
+		strcpy_s(name, paletteText.data());
+		_strupr(name);
+
+		if (strstr(name, ".PAL"))
+		{
+			_snprintf(paletteName, sizeof(paletteName), name);
+		}
+		else
+		{
+			auto const theater = ScenarioClass::Instance->Theater;
+			auto const extension = Theater::GetTheater(theater).Extension;
+
+			_snprintf(paletteName, sizeof(paletteName), "%s%s.PAL", name, extension);
+		}
+
+		this->PaletteFile = paletteName;
+	}
 }
 
 void TerrainTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<TerrainTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
-	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
 }
 
 void TerrainTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)

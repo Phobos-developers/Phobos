@@ -49,8 +49,10 @@ public:
 	static ExtContainer ExtMap;
 
 	static int CurrentTileset;
-	static std::map<std::string, std::vector<LightConvertClass*>> LightConvertEntities;
 	static bool InRender;
+
+	static std::map<std::string, BytePalette*> BytePalettes;
+	static std::map<std::string, std::map<TintStruct, LightConvertClass*>> LightConvertEntities;
 
 	static LightConvertClass* GetLightConvert(const char* paletteName, int r, int g, int b, const bool isDefault);
 

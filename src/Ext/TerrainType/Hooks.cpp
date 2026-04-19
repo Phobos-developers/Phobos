@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <Ext/Rules/Body.h>
+#include <Ext/IsometricTileType/Body.h>
 
 namespace TerrainTypeTemp
 {
@@ -121,23 +122,21 @@ DEFINE_HOOK(0x71C1FE, TerrainClass_Draw_PickFrame, 0x6)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x71C2BC, TerrainClass_Draw_Palette, 0x6)
+DEFINE_HOOK(0x71C2B5, TerrainClass_Draw_Palette, 0x7)
 {
 	GET(TerrainClass*, pThis, ESI);
+	GET(CellClass*, pCell, EBP);
 
-	auto const pCell = pThis->GetCell();
-	const int wallOwnerIndex = pCell->WallOwnerIndex;
-	int colorSchemeIndex = HouseClass::CurrentPlayer->ColorSchemeIndex;
-
-	if (wallOwnerIndex >= 0)
-		colorSchemeIndex = HouseClass::Array[wallOwnerIndex]->ColorSchemeIndex;
-
-	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type);
-
-	if (pTypeExt->Palette)
+	if (auto const pLightConvert = pCell->LightConvert)
 	{
-		R->EDX(pTypeExt->Palette->Items[colorSchemeIndex]->LightConvert);
-		R->EBP(pCell->Intensity_Normal);
+		auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type);
+		const auto& string = pTypeExt->PaletteFile;
+
+		if (!string.empty())
+		{
+			TintStruct tint = pLightConvert->Color1;
+			R->EDX(IsometricTileTypeExt::GetLightConvert(string.c_str(), tint.Red, tint.Green, tint.Blue, false));
+		}
 	}
 
 	return 0;

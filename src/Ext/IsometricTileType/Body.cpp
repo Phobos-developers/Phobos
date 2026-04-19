@@ -1,11 +1,12 @@
 #include "Body.h"
-
 #include <ScenarioClass.h>
 
 IsometricTileTypeExt::ExtContainer IsometricTileTypeExt::ExtMap;
 int IsometricTileTypeExt::CurrentTileset = -1;
-std::map<std::string, std::vector<LightConvertClass*>> IsometricTileTypeExt::LightConvertEntities {};
 bool IsometricTileTypeExt::InRender = false;
+
+std::map<std::string, BytePalette*> IsometricTileTypeExt::BytePalettes {};
+std::map<std::string, std::map<TintStruct, LightConvertClass*>> IsometricTileTypeExt::LightConvertEntities {};
 
 IsometricTileTypeExt::ExtData::ExtData(IsometricTileTypeClass* ownerObject)
 	: Extension<IsometricTileTypeClass>(ownerObject)
@@ -15,11 +16,6 @@ IsometricTileTypeExt::ExtData::ExtData(IsometricTileTypeClass* ownerObject)
 
 LightConvertClass* IsometricTileTypeExt::GetLightConvert(const char* paletteName, int r, int g, int b, const bool isDefault)
 {
-	int shadeCount = 53;
-
-	if (r + g + b < 2000)
-		shadeCount = 27;
-
 	ScenarioClass::Instance->ScenarioLighting(&r, &g, &b);
 	TintStruct tint(r, g, b);
 
@@ -27,16 +23,36 @@ LightConvertClass* IsometricTileTypeExt::GetLightConvert(const char* paletteName
 
 	if (!entities.empty())
 	{
-		for (auto const pLightConvert : entities)
+		if (entities.count(tint))
+			return entities[tint];
+	}
+
+	BytePalette* palette = nullptr;
+
+	if (isDefault)
+	{
+		palette = &FileSystem::ISOx_PAL;
+	}
+	else
+	{
+		auto& vectors = IsometricTileTypeExt::BytePalettes;
+
+		if (vectors.count(paletteName))
 		{
-			if (pLightConvert->Color1 == tint)
-				return pLightConvert;
+			palette = vectors[paletteName];
+		}
+		else
+		{
+			palette = FileSystem::AllocatePalette(paletteName);
+			vectors[paletteName] = palette;
 		}
 	}
 
+	const int shadeCount = (r + g + b < 2000) ? 27 : 53;
+
 	LightConvertClass* pLightConvert = GameCreate<LightConvertClass>
 		(
-			isDefault ? &FileSystem::ISOx_PAL : FileSystem::AllocatePalette(paletteName),
+			palette,
 			&FileSystem::TEMPERAT_PAL,
 			DSurface::Primary,
 			r,
@@ -48,7 +64,7 @@ LightConvertClass* IsometricTileTypeExt::GetLightConvert(const char* paletteName
 		);
 
 	LightConvertClass::Array.AddItem(pLightConvert);
-	entities.push_back(pLightConvert);
+	entities[tint] = pLightConvert;
 
 	return pLightConvert;
 }
@@ -96,7 +112,17 @@ void IsometricTileTypeExt::ExtData::SaveToStream(PhobosStreamWriter& stm)
 
 void IsometricTileTypeExt::Clear()
 {
-	IsometricTileTypeExt::LightConvertEntities.clear();
+	auto& bytePalettes = IsometricTileTypeExt::BytePalettes;
+	auto& entities = IsometricTileTypeExt::LightConvertEntities;
+
+	for (auto& item : bytePalettes)
+		delete item.second;
+
+	for (auto& item : entities)
+		item.second.clear();
+
+	bytePalettes.clear();
+	entities.clear();
 }
 
 // =============================

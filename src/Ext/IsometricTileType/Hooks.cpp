@@ -1,4 +1,6 @@
 #include "Body.h"
+#include <LightSourceClass.h>
+
 #include <Utilities/Macro.h>
 
 DEFINE_HOOK(0x544E70, IsometricTileTypeClass_Init_Drawer, 0x8)
@@ -6,7 +8,6 @@ DEFINE_HOOK(0x544E70, IsometricTileTypeClass_Init_Drawer, 0x8)
 	enum { SkipGameCode = 0x544FDE };
 
 	GET(CellClass* const, pCell, ESI); // Luckily, pCell is just ESI, so we don't need other hooks to set it
-
 	GET(const int, red, ECX);
 	GET(const int, green, EDX);
 	GET_STACK(const int, blue, 0x4);
@@ -45,19 +46,26 @@ DEFINE_HOOK(0x53ADD6, ScenarioClass_RecalcLighting_Reset, 0x5)
 {
 	enum { SkipGameCode = 0x53ADE0 };
 
-	for (auto& item : IsometricTileTypeExt::LightConvertEntities)
+	for (auto& entities : IsometricTileTypeExt::LightConvertEntities)
 	{
-		auto& vectors = item.second;
+		auto& vectors = entities.second;
 
-		for (int index = int(vectors.size()) - 1; index > 0; --index)
+		for (auto& item : vectors)
 		{
-			auto const pLightConvert = vectors[index];
-			LightConvertClass::Array.Remove(pLightConvert);
-			GameDelete(pLightConvert);
+			if (auto const pLightConvert = item.second)
+			{
+				LightConvertClass::Array.Remove(pLightConvert);
+				GameDelete(pLightConvert);
 
-			vectors.erase(vectors.begin() + index);
+				item.second = nullptr;
+			}
 		}
+
+		vectors.clear();
 	}
+
+	IsometricTileTypeExt::LightConvertEntities.clear();
+	IsometricTileTypeExt::InRender = true;
 
 	MapClass::Instance.CellIteratorReset();
 
@@ -73,11 +81,13 @@ DEFINE_HOOK(0x53ADD6, ScenarioClass_RecalcLighting_Reset, 0x5)
 
 		pCell->UpdateCellLighting();
 	}
-	
-	return 0x53ADE0;
+
+	IsometricTileTypeExt::InRender = false;
+
+	return SkipGameCode;
 }
 
-static void __fastcall IsometricTileTypeClass_DrawIt_InitLightConvert(CellClass* pThis, void*,
+static void __fastcall CellClass_InitLightConvert_CustomPalette(CellClass* pThis, void*,
 	LightConvertClass* pDrawer,
 	int Intensity,
 	int Ambient,
@@ -90,4 +100,23 @@ static void __fastcall IsometricTileTypeClass_DrawIt_InitLightConvert(CellClass*
 	IsometricTileTypeExt::InRender = false;
 }
 
-DEFINE_FUNCTION_JUMP(CALL, 0x480384, IsometricTileTypeClass_DrawIt_InitLightConvert)
+DEFINE_FUNCTION_JUMP(CALL, 0x480384, CellClass_InitLightConvert_CustomPalette)	// IsometricTileTypeClass_DrawIt
+DEFINE_FUNCTION_JUMP(CALL, 0x423273, CellClass_InitLightConvert_CustomPalette)	// AnimClass::DrawIt
+DEFINE_FUNCTION_JUMP(CALL, 0x47F748, CellClass_InitLightConvert_CustomPalette)	// CellClass::DrawOverlay
+DEFINE_FUNCTION_JUMP(CALL, 0x47F5C9, CellClass_InitLightConvert_CustomPalette)	// CellClass::DrawOverlayShadow
+DEFINE_FUNCTION_JUMP(CALL, 0x71C27B, CellClass_InitLightConvert_CustomPalette)	// TerrainClass::DrawIt
+DEFINE_FUNCTION_JUMP(CALL, 0x71C40A, CellClass_InitLightConvert_CustomPalette)	// TerrainClass::DrawAgain
+DEFINE_FUNCTION_JUMP(CALL, 0x705F42, CellClass_InitLightConvert_CustomPalette)	// TechnoClass::DrawShape
+DEFINE_FUNCTION_JUMP(CALL, 0x7060F7, CellClass_InitLightConvert_CustomPalette)
+DEFINE_FUNCTION_JUMP(CALL, 0x4D1BC9, CellClass_InitLightConvert_CustomPalette)	// sub_4D1890
+DEFINE_FUNCTION_JUMP(CALL, 0x4D1EC9, CellClass_InitLightConvert_CustomPalette)
+
+static void __fastcall LightSourceClass_UpdateLightConverts_CustomPalette(int value)
+{
+	IsometricTileTypeExt::InRender = true;
+	LightSourceClass::UpdateLightConverts(value);
+	IsometricTileTypeExt::InRender = false;
+}
+
+DEFINE_JUMP(CALL, 0x554B2E, GET_OFFSET(LightSourceClass_UpdateLightConverts_CustomPalette))
+DEFINE_JUMP(CALL, 0x55B5F1, GET_OFFSET(LightSourceClass_UpdateLightConverts_CustomPalette))
