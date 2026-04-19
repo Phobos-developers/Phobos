@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-19 00:16+0800\n"
+"POT-Creation-Date: 2026-04-19 20:27+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2474,6 +2474,9 @@ msgid "Technos with Walk locomotor spawn wake like ship"
 msgstr ""
 "使用 Walk 运动模式的单位像船只一样生成水波"
 
+msgid "Updateable firing anim"
+msgstr ""
+
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
 
@@ -2493,8 +2496,7 @@ msgid "Add veterancy-based target filtering for weapons and warheads"
 msgstr "为武器和弹头添加基于经验等级的目标过滤"
 
 msgid "Fix BalloonHover incorrectly considering ground factors when pathfinding"
-msgstr ""
-"修复了 BalloonHover 寻路时错误考虑了地面因素的问题"
+msgstr "修复了 BalloonHover 寻路时错误考虑了地面因素的问题"
 
 msgid "**tyuah8**:"
 msgstr "**tyuah8**："

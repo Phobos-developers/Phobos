@@ -2736,3 +2736,20 @@ In `rulesmd.ini`:
 [SOMEWEAPON]         ; WeaponType
 IsSingleColor=false  ; boolean
 ```
+
+### Updateable firing anim
+
+- In vanilla, firing anims is attached to the firer, but it won't update its type and location to fit the firer's facing. This is now customizable by the following flags.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+FiringAnim.Update=false   ; boolean
+
+[SOMEWEAPON]              ; WeaponType
+Anim.Update=              ; boolean, default to [AudioVisual] -> FiringAnim.Update
+```
+
+```{note}
+This effect will cause problem when used together with `[AnimType] -> Next`. `Next` modifies the Anim type over time, while this function changes it back, resulting in the Anim being unable to end.
+```

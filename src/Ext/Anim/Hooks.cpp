@@ -25,6 +25,8 @@ DEFINE_HOOK(0x423B95, AnimClass_AI_HideIfNoOre_Threshold, 0x8)
 		pThis->Invisible = pThis->GetCell()->GetContainedTiberiumValue() <= nThreshold;
 	}
 
+	AnimExt::ExtMap.Find(pThis)->UpdateAsFiringAnim();
+
 	return 0x423BBF;
 }
 
@@ -551,3 +553,27 @@ DEFINE_HOOK(0x4250E1, AnimClass_Middle_CraterDestroyTiberium, 0x6)
 	return AnimTypeExt::ExtMap.Find(pType)->Crater_DestroyTiberium.Get(RulesExt::Global()->AnimCraterDestroyTiberium) ? 0 : SkipDestroyTiberium;
 }
 
+#pragma region FiringAnimUpdate
+
+DEFINE_HOOK(0x6FF42B, TechnoClass_Fire_Anim, 0x7)
+{
+	enum { SkipBuildingCheck = 0x6FF437 };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(AnimClass*, pAnim, EDI);
+	GET(WeaponTypeClass*, pWeapon, EBX);
+	GET_BASE(int, wpIdx, 0xC);
+
+	auto pAnimExt = AnimExt::ExtMap.Find(pAnim);
+
+	if (WeaponTypeExt::ExtMap.Find(pWeapon)->Anim_Update.Get(RulesExt::Global()->FiringAnim_Update))
+	{
+		pAnimExt->FromWeapon = pWeapon;
+		pAnimExt->FromWeaponIdx = wpIdx;
+		pAnimExt->FromBurstIdx = pThis->CurrentBurstIndex;
+	}
+
+	return SkipBuildingCheck;
+}
+
+#pragma endregion

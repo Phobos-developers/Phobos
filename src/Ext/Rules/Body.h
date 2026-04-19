@@ -311,6 +311,8 @@ public:
 
 		Valueable<bool> ApplyPerTargetEffectsOnDetonate;
 
+		Valueable<bool> FiringAnim_Update;
+		
 		Valueable<bool> AutoTarget_NoThreatBuildings;
 		Valueable<bool> AutoTargetAI_NoThreatBuildings;
 
@@ -622,6 +624,7 @@ public:
 			, DriveLocomotorMakesWake { true }
 			, HoverLocomotorMakesWake { true }
 			, ShipLocomotorMakesWake { true }
+			, FiringAnim_Update { false }
 		{ }
 
 		virtual ~ExtData() = default;
