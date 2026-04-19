@@ -1921,6 +1921,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			if (shouldDiscard && attachEffect->ResetIfRecreatable())
 			{
 				++it;
+				altered = true;
 				continue;
 			}
 

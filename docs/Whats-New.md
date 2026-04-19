@@ -565,6 +565,7 @@ New:
 - [Allow disable an over-optimization in targeting](Fixed-or-Improved-Logics.md#allow-disable-an-over-optimization-in-targeting) (by TaranDahl)
 - [Extra threat](New-or-Enhanced-Logics.md#extra-threat) (by TaranDahl)
 - [Technos with Walk locomotor spawn wake like ship](Fixed-or-Improved-Logics.md#customizable-wake-anim) (by TaranDahl)
+- [Hotkey for deselect object from current selection](User-Interface.md#deselect-object) (by FrozenFog)
 - [Updateable firing anim](Fixed-or-Improved-Logics.md#updateable-firing-anim) (by TaranDahl)
 
 Vanilla fixes:
@@ -640,7 +641,7 @@ Vanilla fixes:
 - Fixed the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated (by TaranDahl)
 - Miners back to work when ore regenerated (by TaranDahl)
 - Fixed the incorrect mission switching in infantry EnterIdleMode (by TaranDahl)
-- Fix BalloonHover incorrectly considering ground factors when pathfinding
+- Fix BalloonHover incorrectly considering ground factors when pathfinding (by TaranDahl)
 - Fixed the issue where the sidebar would not refresh when an unit dies in limbo (by TaranDahl)
 
 Phobos fixes:
@@ -680,6 +681,7 @@ Phobos fixes:
 - Fixed an issue that customizable warhead animation scatter cannot override 32 leptons scatter of `Inviso=yes` projectile (by NetsuNegi)
 - Fixed units with Fly, Jumpjet or Rocket locomotors destroyed while crashing off-map never being fully cleaned up, permanently blocking production slots and counting towards unit limits (by RAZER)
 - Fixed a bug where a unit's turrets would also get locked when the unit became deactivated for reasons other than being under EMP (by Noble_Fish)
+- Fixed a bug that prevented recalculation of stats etc. on discarding self-owned AE (by Starkku)
 
 Fixes / interactions with other extensions:
 <!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->
@@ -1383,7 +1385,7 @@ Phobos fixes:
 New:
 - Customizable producing progress "bars" like CnC:Remastered did (by Uranusian)
 - Customizable cameo sorting priority (by Uranusian)
-- Customizable harvester ore gathering animation (by secsome, Uranusian)
+- Customizable harvester ore gathering animation (by secsome & Uranusian)
 - Allow making technos unable to be issued with movement order (by Uranusian)
 
 Vanilla fixes:
