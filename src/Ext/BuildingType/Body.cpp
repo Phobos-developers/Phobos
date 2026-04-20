@@ -229,6 +229,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TurretAnim_LowPowerIdleFrames.Read(exINI, pSection, "TurretAnim.LowPowerIdleFrames");
 	this->TurretAnim_FiringFrames.Read(exINI, pSection, "TurretAnim.FiringFrames");
 	this->TurretAnim_LowPowerFiringFrames.Read(exINI, pSection, "TurretAnim.LowPowerFiringFrames");
+	this->TurretAnim_IdleRate.Read(exINI, pSection, "TurretAnim.IdleRate");
+	this->TurretAnim_FiringRate.Read(exINI, pSection, "TurretAnim.FiringRate");
 
 	if (pThis->NumberOfDocks > 0)
 	{
@@ -389,6 +391,8 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 	    .Process(this->TurretAnim_LowPowerIdleFrames)
 	    .Process(this->TurretAnim_FiringFrames)
 	    .Process(this->TurretAnim_LowPowerFiringFrames)
+		.Process(this->TurretAnim_IdleRate)
+		.Process(this->TurretAnim_FiringFrames)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)

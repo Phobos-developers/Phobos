@@ -1013,6 +1013,7 @@ ConsideredVehicle=  ; boolean
 - By default building `TurretAnim(Damaged)` with `TurretAnimIsVoxel=false` only displays one frame per each of the 32 facings. This can now be increased and there are additional animations available for low power state and firing weapons.
   - The frames in the .shp file should be in the order: `IdleFrames`, `LowPowerIdleFrames`, `FiringFrames`, `LowPowerFiringFrames`, animations with frame count set to 0 will be skipped / ignored.
   - Note that `FiringFrames` starts playing when attacking and weapon can fire, it will not stop firing of weapon until it has finished playing nor will anything prevent it from looping multiple times if weapon firing is blocked by [delayed firing](New-or-Enhanced-Logics.md#delayed-firing) for longer than there are frames for. Matching delayed firing duration with firing frame count can be used to make pre-firing animation.
+  - `TurretAnim.IdleRate` and `TurretAnim.FiringRate` can be used to customize animation frame playback rate for idle and firing frames respectively.
 
 In `rulesmd.ini`:
 ```ini
@@ -1021,6 +1022,8 @@ TurretAnim.IdleFrames=1            ; integer
 TurretAnim.LowPowerIdleFrames=0    ; integer
 TurretAnim.FiringFrames=0          ; integer
 TurretAnim.LowPowerFiringFrames=0  ; integer
+TurretAnim.IdleRate=1              ; integer, game frames
+TurretAnim.FiringRate=1            ; integer, game frames
 ```
 
 ### Custom exit cell for infantry factory

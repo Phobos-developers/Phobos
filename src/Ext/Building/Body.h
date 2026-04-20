@@ -29,6 +29,7 @@ public:
 		bool IsFiringNow;
 		int TurretAnimIdleFrame;
 		int TurretAnimFiringFrame;
+		int TurretAnimRateTick;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -46,6 +47,7 @@ public:
 			, IsFiringNow { false }
 			, TurretAnimIdleFrame { 0 }
 			, TurretAnimFiringFrame { -1 }
+			, TurretAnimRateTick { 0 }
 		{ }
 
 		void DisplayIncomeString();

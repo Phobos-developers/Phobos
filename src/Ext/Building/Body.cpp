@@ -475,13 +475,15 @@ int BuildingExt::GetTurretFrame(BuildingClass* pThis)
 
 	int framesPerFacing = pTypeExt->TurretAnim_IdleFrames;
 	int baseOffset = offsetIdle;
+	bool hasFiringFrames = false;
 
 	if (isLowPower)
 	{
-		if (isFiring)
+		if (isFiring && pTypeExt->TurretAnim_LowPowerFiringFrames > 0)
 		{
 			framesPerFacing = pTypeExt->TurretAnim_LowPowerFiringFrames;
 			baseOffset = offsetLowPowerFiring;
+			hasFiringFrames = true;
 		}
 		else if (pTypeExt->TurretAnim_LowPowerIdleFrames > 0)
 		{
@@ -491,32 +493,49 @@ int BuildingExt::GetTurretFrame(BuildingClass* pThis)
 	}
 	else
 	{
-		if (isFiring)
+		if (isFiring && pTypeExt->TurretAnim_FiringFrames > 0)
 		{
 			framesPerFacing = pTypeExt->TurretAnim_FiringFrames;
 			baseOffset = offsetFiring;
+			hasFiringFrames = true;
 		}
 	}
 
 	int animFrame = 0;
 
-	if (framesPerFacing > 1)
+	if (isFiring && hasFiringFrames)
 	{
-		if (isFiring)
-		{
-			animFrame = pExt->TurretAnimFiringFrame;
-			pExt->TurretAnimFiringFrame++;
+		animFrame = pExt->TurretAnimFiringFrame;
+		pExt->TurretAnimRateTick++;
 
-			if (pExt->TurretAnimFiringFrame >= framesPerFacing)
-			{
-				pExt->TurretAnimFiringFrame = -1;
-				pExt->TurretAnimIdleFrame = 0; // Reset idle anim frame.
-			}
-		}
-		else
+		if (pExt->TurretAnimRateTick >= pTypeExt->TurretAnim_FiringRate)
 		{
-			animFrame = pExt->TurretAnimIdleFrame;
-			++pExt->TurretAnimIdleFrame %= framesPerFacing;
+			pExt->TurretAnimRateTick = 0;
+			pExt->TurretAnimFiringFrame++;
+		}
+
+		if (pExt->TurretAnimFiringFrame >= framesPerFacing)
+		{
+			pExt->TurretAnimFiringFrame = -1;
+			pExt->TurretAnimIdleFrame = 0; // Reset idle anim frame.
+			pExt->TurretAnimRateTick = 0;
+		}
+	}
+	else if (framesPerFacing > 1)
+	{
+		animFrame = pExt->TurretAnimIdleFrame;
+		pExt->TurretAnimRateTick++;
+
+		if (pExt->TurretAnimRateTick >= pTypeExt->TurretAnim_IdleRate)
+		{
+			pExt->TurretAnimRateTick = 0;
+			pExt->TurretAnimIdleFrame++;
+		}
+
+		if (pExt->TurretAnimIdleFrame >= framesPerFacing)
+		{
+			pExt->TurretAnimIdleFrame = 0;
+			pExt->TurretAnimRateTick = 0;
 		}
 	}
 
@@ -544,6 +563,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentEMPulseSW)
 		.Process(this->TurretAnimIdleFrame)
 		.Process(this->TurretAnimFiringFrame)
+		.Process(this->TurretAnimRateTick)
 		//.Process(this->IsFiringNow) It is set and reset within a same function.
 		;
 }
@@ -575,7 +595,7 @@ bool BuildingExt::SaveGlobals(PhobosStreamWriter& Stm)
 // =============================
 // container
 
-BuildingExt::ExtContainer::ExtContainer() : Container("BuildingClass") { }
+BuildingExt::ExtContainer::ExtContainer() : Container("BuildingClass") {}
 
 BuildingExt::ExtContainer::~ExtContainer() = default;
 

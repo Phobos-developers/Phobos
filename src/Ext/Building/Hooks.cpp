@@ -1121,7 +1121,10 @@ DEFINE_HOOK(0x44B6C7, BuildingClass_Mission_Attack_TurretAnim, 0x6)
 			bool firingFrames = isLowPower ? pTypeExt->TurretAnim_LowPowerFiringFrames : pTypeExt->TurretAnim_FiringFrames;
 
 			if (firingFrames > 0 && pExt->TurretAnimFiringFrame == -1)
+			{
 				pExt->TurretAnimFiringFrame = 0;
+				pExt->TurretAnimRateTick = 0;
+			}
 		}
 	}
 
