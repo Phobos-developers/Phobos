@@ -3477,3 +3477,26 @@ DEFINE_HOOK(0x4D62C0, FootClass_ApproachTarget_CheckArcCell, 0x6)
 }
 
 #pragma endregion
+
+#pragma region TabOnTechnoDestroyedFix
+
+// Skip the vanilla call at HouseClass::RegisterUnpresent.
+// This should be called when the techno is destroyed, not disappeared.
+DEFINE_JUMP(LJMP, 0x502630, 0x50263B);
+
+DEFINE_HOOK(0x7015A2, TechnoClass_SetOwningHouse_RefreshSidebar, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	SidebarClass::Instance.OnTechnoDestroyed(pThis);
+	return 0;
+}
+
+DEFINE_HOOK(0x5F6609, ObjectClass_UnInit_RefreshSidebar, 0x9)
+{
+	GET(TechnoClass*, pThis, ESI);
+	pThis->KillPassengers(nullptr);
+	SidebarClass::Instance.OnTechnoDestroyed(pThis);
+	return 0x5F6612;
+}
+
+#pragma endregion

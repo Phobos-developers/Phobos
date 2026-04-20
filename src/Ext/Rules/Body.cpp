@@ -1,4 +1,4 @@
-﻿#include "Body.h"
+#include "Body.h"
 
 #include <Ext/TechnoType/Body.h>
 #include <New/Type/RadTypeClass.h>
@@ -303,6 +303,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->WarheadParticleAlphaImageIsLightFlash.Read(exINI, GameStrings::AudioVisual, "WarheadParticleAlphaImageIsLightFlash");
 	this->CombatLightDetailLevel.Read(exINI, GameStrings::AudioVisual, "CombatLightDetailLevel");
+	this->CombatLightDetailLevel_CheckColored.Read(exINI, GameStrings::AudioVisual, "CombatLightDetailLevel.CheckColored");
 	this->LightFlashAlphaImageDetailLevel.Read(exINI, GameStrings::AudioVisual, "LightFlashAlphaImageDetailLevel");
 	this->BuildingTypeSelectable.Read(exINI, GameStrings::General, "BuildingTypeSelectable");
 
@@ -392,6 +393,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->HoverLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "HoverLocomotionClassMakesWake");
 	this->ShipLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "ShipLocomotionClassMakesWake");
 	
+	this->FiringAnim_Update.Read(exINI, GameStrings::AudioVisual, "FiringAnim.Update");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -648,6 +651,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->FixRepairStepCost)
 		.Process(this->WarheadParticleAlphaImageIsLightFlash)
 		.Process(this->CombatLightDetailLevel)
+		.Process(this->CombatLightDetailLevel_CheckColored)
 		.Process(this->LightFlashAlphaImageDetailLevel)
 		.Process(this->UseRetintFix)
 		.Process(this->AINormalTargetingDelay)
@@ -711,6 +715,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DriveLocomotorMakesWake)
 		.Process(this->HoverLocomotorMakesWake)
 		.Process(this->ShipLocomotorMakesWake)
+		.Process(this->FiringAnim_Update)
 		;
 }
 

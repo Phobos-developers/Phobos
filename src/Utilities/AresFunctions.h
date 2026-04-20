@@ -39,6 +39,8 @@ public:
 
 	static void(__thiscall* UnitDeliveryStateMachine_Update)(void*);
 
+	static bool (*DetailsCurrentlyEnabled)();
+
 	static std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> SWTypeExtMap_Find;
 
 	static PhobosMap<ObjectClass*, AlphaShapeClass*>* AlphaExtMap;

@@ -320,6 +320,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Now miners will no longer withdraw from the Harvest mission due to mineral depletion and will periodically attempt to return to work.
 - Fixed the incorrect mission switching in infantry EnterIdleMode.
 - Fixed the bug where technos with `BalloonHover=yes` incorrectly considered ground factors when setting the destination and distributing moving commands. Use `[General] -> BalloonHoverPathingFix=true` to enable this.
+- Fixed the issue where the sidebar would not refresh when an unit dies in limbo.
 - Enable playing ingame movie in non-campaign modes (i.e. trigger action 100 and 117).
 
 ## Fixes / interactions with other extensions
@@ -2422,18 +2423,21 @@ No per-warhead setting because `AffectsAllies` etc. is respected.
 ### Combat light customizations
 
 - You can now set minimum detail level at which combat light effects are shown by setting `[AudioVisual] -> CombatLightDetailLevel` or `CombatLightDetailLevel` on Warhead.
+  - Normally any effect that is non-default color (e.g `CLDisableX` keys have been set to true) ignores detail level checks. This can be disabled by setting `CombatLightDetailLevel.CheckColored` under `[AudioVisual]` or Warhead.
 - You can now set a percentage chance a combat light effect is shown on Warhead impact by setting `CombatLightChance`.
 - Setting `CLIsBlack` to true on Warhead will now turn the flash black like on hitting an Iron Curtained object, irregardless of other color settings.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-CombatLightDetailLevel=0  ; integer
+CombatLightDetailLevel=0                   ; integer
+CombatLightDetailLevel.CheckColored=false  ; boolean
 
-[SOMEWARHEAD]             ; WarheadType
-CombatLightDetailLevel=   ; integer, default to [AudioVisual] -> CombatLightDetailLevel
-CombatLightChance=1.0     ; floating point value, percents or absolute (0.0-1.0)
-CLIsBlack=false           ; boolean
+[SOMEWARHEAD]                              ; WarheadType
+CombatLightDetailLevel=                    ; integer, default to [AudioVisual] -> CombatLightDetailLevel
+CombatLightDetailLevel.CheckColored=       ; boolean, default to [AudioVisual] -> CombatLightDetailLevel.CheckColored
+CombatLightChance=1.0                      ; floating point value, percents or absolute (0.0-1.0)
+CLIsBlack=false                            ; boolean
 ```
 
 ### Custom debris animations and additional debris spawn settings
@@ -2736,4 +2740,21 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]         ; WeaponType
 IsSingleColor=false  ; boolean
+```
+
+### Updateable firing anim
+
+- In vanilla, firing anims is attached to the firer, but it won't update its type and location to fit the firer's facing. This is now customizable by the following flags.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+FiringAnim.Update=false   ; boolean
+
+[SOMEWEAPON]              ; WeaponType
+Anim.Update=              ; boolean, default to [AudioVisual] -> FiringAnim.Update
+```
+
+```{note}
+This effect will cause problem when used together with `[Animation] -> Next`. `Next` modifies the Anim type over time, while this function changes it back, resulting in the Anim being unable to end.
 ```

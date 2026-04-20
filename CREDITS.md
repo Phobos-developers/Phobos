@@ -742,6 +742,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix the incorrect mission switching in infantry EnterIdleMode
   - Fix the issue that `BombSight` not being updated correctly in techno conversion
   - Technos with Walk locomotor spawn wake like ship
+  - Updateable firing anim
+  - Fix the issue where the sidebar would not refresh when an unit dies in limbo
   - Enable playing ingame movie in non-campaign modes (i.e. trigger action 100 and 117)
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
@@ -753,6 +755,7 @@ This page lists all the individual contributions to the project by their author.
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
+- **FrozenFog** - Hotkey for deselect object from current selection
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Multfinite** - Allow to toggle main exception handler via command line argument `-ExceptionHandler=boolean`
 - **hejiajun107, Xkein** - Fix a jumpjet crash related to voxel shadow drawing
