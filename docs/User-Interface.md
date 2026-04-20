@@ -574,6 +574,18 @@ SaveGameOnScenarioStart=true ; boolean
 ## Sidebar / Battle UI
 
 
+### Allow replacing vanilla repairing with togglable auto repairing
+
+- Now you can replace the vanilla repair method with a togglable auto-repair.
+  - Pressing repair button or hotkey will no longer change your mouse, but will toggle your auto-repair state on/off.
+  - When auto-repair state is toggled off, buildings will stop repairing.
+
+  In `rulesmd.ini`:
+```ini
+[General]
+ExtendedPlayerRepair=false    ; boolean
+```
+
 ### Building Production Queue
 
 ![Building Production Queue](_static/images/buildingQueue.png)
@@ -734,18 +746,6 @@ In `rulesmd.ini`:
 ```ini
 [SOMESIDE]                            ; Side
 Sidebar.ProducingProgress.Offset=0,0  ; X,Y, pixels relative to default
-```
-
-### Replace vanilla repairing with togglable auto repairing
-
-- Now you can replace the vanilla repair method with a togglable auto-repair.
-  - Pressing repair button or hotkey will no longer change your mouse, but will toggle your auto-repair state on/off.
-  - When auto-repair state is toggled off, buildings will stop repairing.
-
-  In `rulesmd.ini`:
-```ini
-[General]
-ExtendedPlayerRepair=false    ; boolean
 ```
 
 ### Specify Sidebar style

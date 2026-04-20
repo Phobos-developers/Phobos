@@ -34,7 +34,7 @@ void EventExt::RaiseTogglePlayerAutoRepair()
 {
 	EventExt eventExt {};
 	eventExt.Type = EventTypeExt::TogglePlayerAutoRepair;
-	eventExt.HouseIndex = (char)HouseClass::CurrentPlayer->ArrayIndex; // not used
+	eventExt.HouseIndex = (char)HouseClass::CurrentPlayer->ArrayIndex;
 	eventExt.Frame = Unsorted::CurrentFrame;
 	eventExt.AddEvent();
 	Debug::LogGame("Adding event TOGGLE_PLAYER_AUTOREPAIR\n");

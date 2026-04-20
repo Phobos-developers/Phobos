@@ -744,7 +744,7 @@ This page lists all the individual contributions to the project by their author.
   - Technos with Walk locomotor spawn wake like ship
   - Updateable firing anim
   - Fix the issue where the sidebar would not refresh when an unit dies in limbo
-  - Replace vanilla repairing with togglable auto repairing
+  - Allow replacing vanilla repairing with togglable auto repairing
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
