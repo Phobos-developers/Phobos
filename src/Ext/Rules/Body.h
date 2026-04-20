@@ -318,6 +318,8 @@ public:
 
 		Valueable<bool> HoverDrownable;
 
+		Valueable<bool> CreateAnimsOnZeroDamage;
+
 		Valueable<bool> SortCameoByName;
 
 		Valueable<bool> BuildingRadioLink_SyncOwner;
@@ -602,6 +604,8 @@ public:
 			, AircraftFiringForceScatter { true }
 
 			, HoverDrownable { true }
+
+			, CreateAnimsOnZeroDamage { false }
 
 			, SortCameoByName { false }
 

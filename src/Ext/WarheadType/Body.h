@@ -36,7 +36,7 @@ public:
 		Valueable<int> AnimList_CreationInterval;
 		Valueable<Leptons> AnimList_ScatterMin;
 		Valueable<Leptons> AnimList_ScatterMax;
-		Valueable<bool> CreateAnimsOnZeroDamage;
+		Nullable<bool> CreateAnimsOnZeroDamage;
 		Valueable<bool> Conventional_IgnoreUnits;
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
@@ -292,7 +292,7 @@ public:
 			, AnimList_CreationInterval { 0 }
 			, AnimList_ScatterMin { Leptons(-1) }
 			, AnimList_ScatterMax { Leptons(-1) }
-			, CreateAnimsOnZeroDamage { false }
+			, CreateAnimsOnZeroDamage {}
 			, Conventional_IgnoreUnits { false }
 			, RemoveDisguise { false }
 			, RemoveMindControl { false }

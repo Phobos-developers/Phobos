@@ -305,7 +305,7 @@ DEFINE_HOOK(0x48A4F3, SelectDamageAnimation_NegativeZeroDamage, 0x6)
 
 	pWHExt->Splashed = false;
 
-	if (damage == 0 && !pWHExt->CreateAnimsOnZeroDamage)
+	if (damage == 0 && !pWHExt->CreateAnimsOnZeroDamage.Get(RulesExt::Global()->CreateAnimsOnZeroDamage))
 		return NoAnim;
 	else if (damage < 0)
 		damage = -damage;

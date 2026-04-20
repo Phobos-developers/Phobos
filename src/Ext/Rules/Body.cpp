@@ -369,6 +369,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->HoverDrownable.Read(exINI, GameStrings::General, "HoverDrownable");
 
+	this->CreateAnimsOnZeroDamage.Read(exINI, GameStrings::General, "CreateAnimsOnZeroDamage");
+
 	this->SortCameoByName.Read(exINI, GameStrings::General, "SortCameoByName");
 
 	this->MergeBuildingDamage.Read(exINI, GameStrings::CombatDamage, "MergeBuildingDamage");
@@ -699,6 +701,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Explodes_DuringBuildup)
 		.Process(this->AircraftFiringForceScatter)
 		.Process(this->HoverDrownable)
+		.Process(this->CreateAnimsOnZeroDamage)
 		.Process(this->SortCameoByName)
 		.Process(this->MergeBuildingDamage)
 		.Process(this->BuildingRadioLink_SyncOwner)

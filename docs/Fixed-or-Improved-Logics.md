@@ -2464,6 +2464,9 @@ Rocker.AmplitudeOverride=       ; integer
 
 In `rulesmd.ini`:
 ```ini
+[General]
+CreateAnimsOnZeroDamage=false   ; boolean
+
 [SOMEWARHEAD]                   ; WarheadType
 AnimList.PickRandom=false       ; boolean
 AnimList.CreateAll=false        ; boolean
@@ -2476,7 +2479,7 @@ SplashList.CreateAll=false      ; boolean
 SplashList.CreationInterval=0   ; integer
 SplashList.ScatterMin=0.0       ; floating point value, distance in cells
 SplashList.ScatterMax=0.0       ; floating point value, distance in cells
-CreateAnimsOnZeroDamage=false   ; boolean
+CreateAnimsOnZeroDamage=        ; boolean, default to [General] -> CreateAnimsOnZeroDamage
 Conventional.IgnoreUnits=false  ; boolean
 ```
 
