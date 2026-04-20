@@ -742,7 +742,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the incorrect mission switching in infantry EnterIdleMode
   - Fix the issue that `BombSight` not being updated correctly in techno conversion
   - Technos with Walk locomotor spawn wake like ship
-  - Enable playing ingame movie in non-campaign modes (i.e. trigger action 100)
+  - Enable playing ingame movie in non-campaign modes (i.e. trigger action 100 and 117)
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
