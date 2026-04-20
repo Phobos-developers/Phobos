@@ -319,6 +319,7 @@ public:
 		Valueable<bool> HoverDrownable;
 
 		Valueable<bool> CreateAnimsOnZeroDamage;
+		Valueable<bool> Conventional_IgnoreUnits;
 
 		Valueable<bool> SortCameoByName;
 
@@ -606,6 +607,7 @@ public:
 			, HoverDrownable { true }
 
 			, CreateAnimsOnZeroDamage { false }
+			, Conventional_IgnoreUnits { false }
 
 			, SortCameoByName { false }
 

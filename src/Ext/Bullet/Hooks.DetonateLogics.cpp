@@ -246,7 +246,7 @@ DEFINE_HOOK(0x469B44, BulletClass_Logics_LandTypeCheck, 0x6)
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
 
-	if (pWHExt->Conventional_IgnoreUnits)
+	if (pWHExt->Conventional_IgnoreUnits.Get(RulesExt::Global()->Conventional_IgnoreUnits))
 		return SkipChecks;
 
 	return 0;

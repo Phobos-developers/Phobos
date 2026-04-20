@@ -37,7 +37,7 @@ public:
 		Valueable<Leptons> AnimList_ScatterMin;
 		Valueable<Leptons> AnimList_ScatterMax;
 		Nullable<bool> CreateAnimsOnZeroDamage;
-		Valueable<bool> Conventional_IgnoreUnits;
+		Nullable<bool> Conventional_IgnoreUnits;
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
 		Nullable<bool> RemoveParasite;
@@ -293,7 +293,7 @@ public:
 			, AnimList_ScatterMin { Leptons(-1) }
 			, AnimList_ScatterMax { Leptons(-1) }
 			, CreateAnimsOnZeroDamage {}
-			, Conventional_IgnoreUnits { false }
+			, Conventional_IgnoreUnits {}
 			, RemoveDisguise { false }
 			, RemoveMindControl { false }
 			, RemoveParasite {}
