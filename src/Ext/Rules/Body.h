@@ -320,6 +320,7 @@ public:
 
 		Valueable<bool> CreateAnimsOnZeroDamage;
 		Valueable<bool> Conventional_IgnoreUnits;
+		Valueable<bool> DecloakDamagedTargets;
 
 		Valueable<bool> Interceptable;
 
@@ -610,6 +611,7 @@ public:
 
 			, CreateAnimsOnZeroDamage { false }
 			, Conventional_IgnoreUnits { false }
+			, DecloakDamagedTargets { true }
 
 			, Interceptable { false }
 

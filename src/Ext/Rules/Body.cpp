@@ -371,6 +371,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->CreateAnimsOnZeroDamage.Read(exINI, GameStrings::General, "CreateAnimsOnZeroDamage");
 	this->Conventional_IgnoreUnits.Read(exINI, GameStrings::General, "Conventional.IgnoreUnits");
+	this->DecloakDamagedTargets.Read(exINI, GameStrings::General, "DecloakDamagedTargets");
 
 	this->Interceptable.Read(exINI, GameStrings::General, "Interceptable");
 
@@ -706,6 +707,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->HoverDrownable)
 		.Process(this->CreateAnimsOnZeroDamage)
 		.Process(this->Conventional_IgnoreUnits)
+		.Process(this->DecloakDamagedTargets)
 		.Process(this->Interceptable)
 		.Process(this->SortCameoByName)
 		.Process(this->MergeBuildingDamage)

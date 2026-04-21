@@ -43,7 +43,7 @@ public:
 		Nullable<bool> RemoveParasite;
 		ValueableVector<TechnoTypeClass*> RemoveParasite_Allow;
 		ValueableVector<TechnoTypeClass*> RemoveParasite_Disallow;
-		Valueable<bool> DecloakDamagedTargets;
+		Nullable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 		Valueable<bool> ApplyModifiersOnNegativeDamage;
 		Valueable<bool> PenetratesIronCurtain;
@@ -299,7 +299,7 @@ public:
 			, RemoveParasite {}
 			, RemoveParasite_Allow {}
 			, RemoveParasite_Disallow {}
-			, DecloakDamagedTargets { true }
+			, DecloakDamagedTargets {}
 			, ShakeIsLocal { false }
 			, ApplyModifiersOnNegativeDamage { false }
 			, PenetratesIronCurtain { false }

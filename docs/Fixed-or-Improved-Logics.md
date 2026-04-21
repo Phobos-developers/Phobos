@@ -2507,8 +2507,11 @@ EffectsRequireVerses=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]               ; WarheadType
+[General]
 DecloakDamagedTargets=true  ; boolean
+
+[SOMEWARHEAD]               ; WarheadType
+DecloakDamagedTargets=      ; boolean, default to [General] -> DecloakDamagedTargets
 ```
 
 ### Customizing locomotor warhead

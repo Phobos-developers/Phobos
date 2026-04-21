@@ -197,7 +197,7 @@ DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
 
 	if (auto const pExt = WarheadTypeExt::ExtMap.TryFind(pWarhead))
 	{
-		if (pExt->DecloakDamagedTargets)
+		if (pExt->DecloakDamagedTargets.Get(RulesExt::Global()->DecloakDamagedTargets))
 			pThis->Uncloak(false);
 	}
 
