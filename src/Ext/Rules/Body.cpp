@@ -369,6 +369,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->HoverDrownable.Read(exINI, GameStrings::General, "HoverDrownable");
 
+	this->Sinkable.Read(exINI, GameStrings::General, "Sinkable");
+	this->Sinkable_SquidGrab.Read(exINI, GameStrings::General, "Sinkable.SquidGrab");
+	this->SinkSpeed.Read(exINI, GameStrings::General, "SinkSpeed");
+
 	this->CreateAnimsOnZeroDamage.Read(exINI, GameStrings::General, "CreateAnimsOnZeroDamage");
 	this->Conventional_IgnoreUnits.Read(exINI, GameStrings::General, "Conventional.IgnoreUnits");
 	this->DecloakDamagedTargets.Read(exINI, GameStrings::General, "DecloakDamagedTargets");
@@ -705,6 +709,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Explodes_DuringBuildup)
 		.Process(this->AircraftFiringForceScatter)
 		.Process(this->HoverDrownable)
+		.Process(this->Sinkable)
+		.Process(this->Sinkable_SquidGrab)
+		.Process(this->SinkSpeed)
 		.Process(this->CreateAnimsOnZeroDamage)
 		.Process(this->Conventional_IgnoreUnits)
 		.Process(this->DecloakDamagedTargets)

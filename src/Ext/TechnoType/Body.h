@@ -370,8 +370,8 @@ public:
 		Valueable<bool> Spawner_RecycleOnTurret;
 
 		Nullable<bool> Sinkable;
-		Valueable<bool> Sinkable_SquidGrab;
-		Valueable<int> SinkSpeed;
+		Nullable<bool> Sinkable_SquidGrab;
+		Nullable<int> SinkSpeed;
 
 		Nullable<double> ProneSpeed;
 		Nullable<double> DamagedSpeed;
@@ -840,8 +840,8 @@ public:
 			, Spawner_RecycleOnTurret { false }
 
 			, Sinkable { }
-			, Sinkable_SquidGrab { true }
-			, SinkSpeed { 5 }
+			, Sinkable_SquidGrab { }
+			, SinkSpeed { }
 
 			, ProneSpeed { }
 			, DamagedSpeed { }

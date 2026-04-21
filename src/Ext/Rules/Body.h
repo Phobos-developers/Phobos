@@ -318,6 +318,10 @@ public:
 
 		Valueable<bool> HoverDrownable;
 
+		Nullable<bool> Sinkable;
+		Valueable<bool> Sinkable_SquidGrab;
+		Valueable<int> SinkSpeed;
+
 		Valueable<bool> CreateAnimsOnZeroDamage;
 		Valueable<bool> Conventional_IgnoreUnits;
 		Valueable<bool> DecloakDamagedTargets;
@@ -608,6 +612,10 @@ public:
 			, AircraftFiringForceScatter { true }
 
 			, HoverDrownable { true }
+
+			, Sinkable {}
+			, Sinkable_SquidGrab { true }
+			, SinkSpeed { 5 }
 
 			, CreateAnimsOnZeroDamage { false }
 			, Conventional_IgnoreUnits { false }

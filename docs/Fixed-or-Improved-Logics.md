@@ -2284,10 +2284,15 @@ KeepTargetOnMove.ExtraDistance=0     ; floating point value, distance in cells
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]              ; VehicleType
+[General]
 Sinkable=                  ; boolean
 SinkSpeed=5                ; integer, leptons per frame
 Sinkable.SquidGrab=true    ; boolean
+
+[SOMEVEHICLE]              ; VehicleType
+Sinkable=                  ; boolean, default to [General] -> Sinkable
+SinkSpeed=5                ; integer, leptons per frame, default to [General] -> SinkSpeed
+Sinkable.SquidGrab=true    ; boolean, default to [General] -> Sinkable.SquidGrab
 ```
 
 ### Stationary vehicles
