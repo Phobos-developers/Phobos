@@ -154,7 +154,6 @@ Groups=                                            ; comma-separated list of str
 
 [General]
 OpenTopped.UseTransportRangeModifiers=false        ; boolean
-OpenTopped.UseTransportRangeModifiers=false        ; boolean
 OpenTopped.CheckTransportDisableWeapons=false      ; boolean
 
 [SOMETECHNO]                                       ; TechnoType
