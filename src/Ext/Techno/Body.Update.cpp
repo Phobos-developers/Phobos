@@ -81,7 +81,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 		const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 		const auto pBulletTypeExt = pBulletExt->TypeExtData;
 
-		if (!pBulletTypeExt->Interceptable || pBullet->SpawnNextAnim)
+		if (!pBulletTypeExt->Interceptable.Get(RulesExt::Global()->Interceptable) || pBullet->SpawnNextAnim)
 			continue;
 
 		const bool isTargetedOrLocked = static_cast<bool>(pBulletExt->InterceptedStatus & (InterceptedStatus::Targeted | InterceptedStatus::Locked));

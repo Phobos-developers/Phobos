@@ -21,7 +21,7 @@ public:
 	public:
 		// Valueable<int> Strength; //Use OwnerObject()->ObjectTypeClass::Strength
 		Nullable<ArmorType> Armor;
-		Valueable<bool> Interceptable;
+		Nullable<bool> Interceptable;
 		Valueable<bool> Interceptable_DeleteOnIntercept;
 		Valueable<WeaponTypeClass*> Interceptable_WeaponOverride;
 		ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
@@ -79,7 +79,7 @@ public:
 
 		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject)
 			, Armor {}
-			, Interceptable { false }
+			, Interceptable {}
 			, Interceptable_DeleteOnIntercept { false }
 			, Interceptable_WeaponOverride {}
 			, LaserTrail_Types {}

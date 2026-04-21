@@ -372,6 +372,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->CreateAnimsOnZeroDamage.Read(exINI, GameStrings::General, "CreateAnimsOnZeroDamage");
 	this->Conventional_IgnoreUnits.Read(exINI, GameStrings::General, "Conventional.IgnoreUnits");
 
+	this->Interceptable.Read(exINI, GameStrings::General, "Interceptable");
+
 	this->SortCameoByName.Read(exINI, GameStrings::General, "SortCameoByName");
 
 	this->MergeBuildingDamage.Read(exINI, GameStrings::CombatDamage, "MergeBuildingDamage");
@@ -704,6 +706,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->HoverDrownable)
 		.Process(this->CreateAnimsOnZeroDamage)
 		.Process(this->Conventional_IgnoreUnits)
+		.Process(this->Interceptable)
 		.Process(this->SortCameoByName)
 		.Process(this->MergeBuildingDamage)
 		.Process(this->BuildingRadioLink_SyncOwner)

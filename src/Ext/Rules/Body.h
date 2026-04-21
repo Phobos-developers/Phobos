@@ -321,6 +321,8 @@ public:
 		Valueable<bool> CreateAnimsOnZeroDamage;
 		Valueable<bool> Conventional_IgnoreUnits;
 
+		Valueable<bool> Interceptable;
+
 		Valueable<bool> SortCameoByName;
 
 		Valueable<bool> BuildingRadioLink_SyncOwner;
@@ -608,6 +610,8 @@ public:
 
 			, CreateAnimsOnZeroDamage { false }
 			, Conventional_IgnoreUnits { false }
+
+			, Interceptable { false }
 
 			, SortCameoByName { false }
 

@@ -824,6 +824,9 @@ BombParachute=           ; AnimationType, default to [General] -> BombParachute
 
 In `rulesmd.ini`:
 ```ini
+[General]
+Interceptable=false                        ; boolean
+
 [SOMETECHNO]                               ; TechnoType
 Interceptor=false                          ; boolean
 Interceptor.Weapon=0                       ; integer, weapon slot index (0 or 1)
@@ -844,7 +847,7 @@ Interceptor.KeepIntact=false               ; boolean
 
 [SOMEPROJECTILE]                           ; Projectile
 Interceptable=false                        ; boolean
-Interceptable.DeleteOnIntercept=false      ; boolean
+Interceptable.DeleteOnIntercept=           ; boolean, default to [General] -> Interceptable
 Interceptable.WeaponOverride=              ; WeaponType
 Strength=0                                 ; integer
 Armor=                                     ; ArmorType
