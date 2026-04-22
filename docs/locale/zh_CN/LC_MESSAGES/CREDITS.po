@@ -2171,6 +2171,7 @@ msgid ""
 "`ElectricAssault` weapons can now auto acquire allies' overpowerable "
 "defenses"
 msgstr ""
+"`ElectricAssault` 武器现在可以自动索敌盟友的可过载防御建筑"
 
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"

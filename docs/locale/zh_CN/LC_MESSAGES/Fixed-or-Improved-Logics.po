@@ -1667,6 +1667,7 @@ msgid ""
 "`ElectricAssault` weapons can now auto acquire allies' overpowerable "
 "defenses."
 msgstr ""
+"`ElectricAssault` 武器现在可以自动索敌盟友的可过载防御建筑。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"

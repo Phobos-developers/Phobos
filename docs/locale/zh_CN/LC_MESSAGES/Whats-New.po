@@ -2273,6 +2273,7 @@ msgid ""
 "`ElectricAssault` weapons can now auto acquire allies' overpowerable "
 "defenses (by Ollerus)"
 msgstr ""
+"`ElectricAssault` 武器现在可以自动索敌盟友的可过载防御建筑（by Ollerus）"
 
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
