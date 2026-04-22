@@ -3422,6 +3422,7 @@ msgid ""
 "`AirburstWeapon.UseFiringEffects` if set to true makes `AirburstWeapon` "
 "display weapon `Anim` and play `Report` sound if available."
 msgstr ""
+"`AirburstWeapon.UseFiringEffects` 若设为 true 则 `AirburstWeapon` 会在可用时显示武器 `Anim` 并播放 `Report` 音效。"
 
 msgid ""
 "`Splits`, `AirburstSpread`, `RetargetAccuracy`, `RetargetSelf` and "

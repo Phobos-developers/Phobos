@@ -955,7 +955,7 @@ msgstr "激光、EBolt 和辐射波的散布（by CrimRecya）"
 msgid ""
 "[Airburst weapon firing/source coordinate & firing effects customizations"
 "](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)"
-msgstr "[自定义空爆武器中心坐标](Fixed-or-Improved-Logics.md#airburst--splits)（by Starkku）"
+msgstr "[自定义空爆武器中心坐标和开火效果](Fixed-or-Improved-Logics.md#airburst--splits)（by Starkku）"
 
 msgid ""
 "[AlternateFLH on-turret toggle](Fixed-or-Improved-Logics.md#alternate-"
