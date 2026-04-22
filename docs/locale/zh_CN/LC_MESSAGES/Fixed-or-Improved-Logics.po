@@ -5156,6 +5156,7 @@ msgid ""
 "setting `CombatLightDetailLevel.CheckColored` under `[AudioVisual]` or "
 "Warhead."
 msgstr ""
+"一般来说任何非默认颜色（例如 `CLDisableX` 等语句设为 true）的效果都会忽略细节等级检查。这可以通过在 `[AudioVisual]` 或弹头下设置 `CombatLightDetailLevel.CheckColored` 来禁用。"
 
 msgid ""
 "You can now set a percentage chance a combat light effect is shown on "
