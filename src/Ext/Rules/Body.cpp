@@ -303,6 +303,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->WarheadParticleAlphaImageIsLightFlash.Read(exINI, GameStrings::AudioVisual, "WarheadParticleAlphaImageIsLightFlash");
 	this->CombatLightDetailLevel.Read(exINI, GameStrings::AudioVisual, "CombatLightDetailLevel");
+	this->CombatLightDetailLevel_CheckColored.Read(exINI, GameStrings::AudioVisual, "CombatLightDetailLevel.CheckColored");
 	this->LightFlashAlphaImageDetailLevel.Read(exINI, GameStrings::AudioVisual, "LightFlashAlphaImageDetailLevel");
 	this->BuildingTypeSelectable.Read(exINI, GameStrings::General, "BuildingTypeSelectable");
 
@@ -393,6 +394,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ShipLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "ShipLocomotionClassMakesWake");
 	
 	this->FiringAnim_Update.Read(exINI, GameStrings::AudioVisual, "FiringAnim.Update");
+	this->ExtendedPlayerRepair.Read(exINI, GameStrings::General, "ExtendedPlayerRepair");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -650,6 +652,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->FixRepairStepCost)
 		.Process(this->WarheadParticleAlphaImageIsLightFlash)
 		.Process(this->CombatLightDetailLevel)
+		.Process(this->CombatLightDetailLevel_CheckColored)
 		.Process(this->LightFlashAlphaImageDetailLevel)
 		.Process(this->UseRetintFix)
 		.Process(this->AINormalTargetingDelay)
@@ -714,6 +717,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->HoverLocomotorMakesWake)
 		.Process(this->ShipLocomotorMakesWake)
 		.Process(this->FiringAnim_Update)
+		.Process(this->ExtendedPlayerRepair)
 		;
 }
 

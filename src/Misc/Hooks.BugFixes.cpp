@@ -2174,7 +2174,7 @@ DEFINE_HOOK(0x4D6FE1, FootClass_ElectricAssultFix2, 0x7)		// Mission_AreaGuard
 	const auto pWeapon = ElectricAssultTemp::WeaponType;
 	const bool InGuard = (R->Origin() == 0x4D5184);
 
-	if (pBuilding->Owner == pThis->Owner
+	if (pBuilding->Owner->IsAlliedWith(pThis->Owner)
 		&& GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBuilding, pBuilding->Type) != 0.0)
 	{
 		return InGuard ? SkipGuard : SkipAreaGuard;
@@ -3474,6 +3474,29 @@ DEFINE_HOOK(0x4D62C0, FootClass_ApproachTarget_CheckArcCell, 0x6)
 	}
 
 	return 0;
+}
+
+#pragma endregion
+
+#pragma region TabOnTechnoDestroyedFix
+
+// Skip the vanilla call at HouseClass::RegisterUnpresent.
+// This should be called when the techno is destroyed, not disappeared.
+DEFINE_JUMP(LJMP, 0x502630, 0x50263B);
+
+DEFINE_HOOK(0x7015A2, TechnoClass_SetOwningHouse_RefreshSidebar, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	SidebarClass::Instance.OnTechnoDestroyed(pThis);
+	return 0;
+}
+
+DEFINE_HOOK(0x5F6609, ObjectClass_UnInit_RefreshSidebar, 0x9)
+{
+	GET(TechnoClass*, pThis, ESI);
+	pThis->KillPassengers(nullptr);
+	SidebarClass::Instance.OnTechnoDestroyed(pThis);
+	return 0x5F6612;
 }
 
 #pragma endregion

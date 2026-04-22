@@ -245,6 +245,7 @@ public:
 
 		Valueable<bool> WarheadParticleAlphaImageIsLightFlash;
 		Valueable<int> CombatLightDetailLevel;
+		Valueable<bool> CombatLightDetailLevel_CheckColored;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
 		Valueable<bool> UseRetintFix;
@@ -312,6 +313,7 @@ public:
 		Valueable<bool> ApplyPerTargetEffectsOnDetonate;
 
 		Valueable<bool> FiringAnim_Update;
+		Valueable<bool> ExtendedPlayerRepair;
 		
 		Valueable<bool> AutoTarget_NoThreatBuildings;
 		Valueable<bool> AutoTargetAI_NoThreatBuildings;
@@ -536,6 +538,7 @@ public:
 			, FixRepairStepCost { false }
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
+			, CombatLightDetailLevel_CheckColored { false }
 			, LightFlashAlphaImageDetailLevel { 0 }
 			, UseRetintFix { true }
 			, AINormalTargetingDelay {}
@@ -625,6 +628,7 @@ public:
 			, HoverLocomotorMakesWake { true }
 			, ShipLocomotorMakesWake { true }
 			, FiringAnim_Update { false }
+			, ExtendedPlayerRepair { false }
 		{ }
 
 		virtual ~ExtData() = default;

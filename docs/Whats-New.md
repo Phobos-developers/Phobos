@@ -31,6 +31,8 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From 0.4
 
+- `Splits.TargetCellRange` < 0 now applies special behaviour where the projectile does not consider nearby cells as additional targets if there are not enough techno targets to match `Cluster` count at all.
+- Combat light customizations introduced a bug that removed vanilla behaviour of ignoring detail level / framerate checks for colored combat light. This bug has been fixed but the previous behaviour can be restored by setting `CombatLightDetailLevel.CheckColored` on Warhead or globally under `[AudioVisual]`.
 - `[TechnoType] -> WarpAway=` has now been changed to set the animation when units are erased to maintain semantic consistency with `[General] -> WarpAway=`. The animation that was originally controlled by `[TechnoType] -> WarpAway=`, which played instead of `[General] -> WarpOut=` when a Techno is chronowarped by chronosphere, now needs to be specified using `[TechnoType] -> Chronoshift.WarpOut=`, which defaults to the value of `[TechnoType] -> WarpOut=`.
 - `UseCenterCoordsIfAttached` has been replaced by enumeration key `AttachedAnimPosition`. Set `AttachedAnimPosition=center` to replicate effects of `UseCenterCoordsIfAttached=true`.
 
@@ -423,7 +425,7 @@ New:
 - [Sinkablity and sinking speed customization](Fixed-or-Improved-Logics.md#sinking-behavior-dehardcode) (by TaranDahl)
 - [Fast access vehicle](New-or-Enhanced-Logics.md#fast-access-vehicle) (by CrimRecya)
 - Laser, electric bolt and rad beam scatter (by CrimRecya)
-- [Airburst weapon firing/source coordinate customizations](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
+- [Airburst weapon firing/source coordinate & firing effects customizations](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
 - [AlternateFLH on-turret toggle](Fixed-or-Improved-Logics.md#alternate-flh-customizations) (by Starkku)
 - [Fire weapon when Warhead kills something](New-or-Enhanced-Logics.md#fire-weapon-when-warhead-kills-something) (by Ollerus)
 - [Prone speed customization](Fixed-or-Improved-Logics.md#prone-speed-customization) (by TaranDahl)
@@ -566,7 +568,9 @@ New:
 - [Extra threat](New-or-Enhanced-Logics.md#extra-threat) (by TaranDahl)
 - [Technos with Walk locomotor spawn wake like ship](Fixed-or-Improved-Logics.md#customizable-wake-anim) (by TaranDahl)
 - [Updateable firing anim](Fixed-or-Improved-Logics.md#updateable-firing-anim) (by TaranDahl)
-- [Hotkey for deselect object from current selection](User-Interface.md#deselect-object) (by FrozenFog)
+- [Hotkey for deselect object from current selection](User-Interface.md#deselect-object-s) (by FrozenFog)
+- [Additional customizations for `Splits` concerning target selection](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
+- [Allow replacing vanilla repairing with togglable auto repairing](User-Interface.md#allow-replacing-vanilla-repairing-with-togglable-auto-repairing) (by TaranDahl)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -642,6 +646,9 @@ Vanilla fixes:
 - Miners back to work when ore regenerated (by TaranDahl)
 - Fixed the incorrect mission switching in infantry EnterIdleMode (by TaranDahl)
 - Fix BalloonHover incorrectly considering ground factors when pathfinding (by TaranDahl)
+- Fixed the issue where the sidebar would not refresh when an unit dies in limbo (by TaranDahl)
+- Enabled playing ingame movie in non-campaign modes (i.e. trigger action 100 and 117) (by TaranDahl)
+- `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses (by Ollerus)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -680,6 +687,8 @@ Phobos fixes:
 - Fixed an issue that customizable warhead animation scatter cannot override 32 leptons scatter of `Inviso=yes` projectile (by NetsuNegi)
 - Fixed units with Fly, Jumpjet or Rocket locomotors destroyed while crashing off-map never being fully cleaned up, permanently blocking production slots and counting towards unit limits (by RAZER)
 - Fixed a bug where a unit's turrets would also get locked when the unit became deactivated for reasons other than being under EMP (by Noble_Fish)
+- Fixed a bug that prevented recalculation of stats etc. on discarding self-owned AE (by Starkku)
+- Fixed combat light ignoring / behaving differently from vanilla game regarding detail level and framerate checks (by Starkku)
 
 Fixes / interactions with other extensions:
 <!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->

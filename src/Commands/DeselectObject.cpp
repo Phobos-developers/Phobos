@@ -1,11 +1,10 @@
 #pragma once
 #include "DeselectObject.h"
 #include <Utilities/GeneralUtils.h>
-#include <Ext/Techno/Body.h>
 
 const char* DeselectObjectCommandClass::GetName() const
 {
-	return "Deselect 1 object from current selection";
+	return "DeselectOne";
 }
 
 const wchar_t* DeselectObjectCommandClass::GetUIName() const

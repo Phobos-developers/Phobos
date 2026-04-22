@@ -67,6 +67,8 @@ public:
 		bool FreeRadar;
 		bool ForceRadar;
 
+		bool PlayerAutoRepair;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
@@ -100,6 +102,7 @@ public:
 			, TeamDelay(-1)
 			, FreeRadar(false)
 			, ForceRadar(false)
+			, PlayerAutoRepair(true)
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;

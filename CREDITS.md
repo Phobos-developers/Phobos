@@ -659,6 +659,7 @@ This page lists all the individual contributions to the project by their author.
   - AutoDeath upon ownership change
   - Maximum amount for power plant enhancer
   - Return warhead
+  - `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
@@ -743,6 +744,9 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue that `BombSight` not being updated correctly in techno conversion
   - Technos with Walk locomotor spawn wake like ship
   - Updateable firing anim
+  - Fix the issue where the sidebar would not refresh when an unit dies in limbo
+  - Enable playing ingame movie in non-campaign modes (i.e. trigger action 100 and 117)
+  - Allow replacing vanilla repairing with togglable auto repairing
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
