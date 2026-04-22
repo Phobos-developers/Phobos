@@ -552,6 +552,20 @@ DEFINE_HOOK(0x50BF60, HouseClass_CalculateCostMultipliers, 0x5)
 
 #pragma region PlayerAutoRepair
 
+DEFINE_HOOK(0x6A5395, SidebarClass_InitIO_InitRepairButton, 0x6)
+{
+	if (!RulesExt::Global()->ExtendedPlayerRepair)
+		return 0;
+
+	if (HouseExt::ExtMap.Find(HouseClass::CurrentPlayer)->PlayerAutoRepair)
+	{
+		SidebarClass::Instance.SidebarNeedsRedraw = true;
+		SidebarClass::ToggelRepairButton.IsOn = true;
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x536FA0, ToggleRepariModeCommandClass_Execute_PlayerAutoRepair, 0x7)
 {
 	if (!RulesExt::Global()->ExtendedPlayerRepair)

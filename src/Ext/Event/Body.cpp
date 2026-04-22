@@ -126,12 +126,11 @@ void EventExt::RespondToTogglePlayerAutoRepair()
 	if (HouseClass::CurrentPlayer == pHouse)
 	{
 		SidebarClass::Instance.SidebarNeedsRedraw = true;
-		auto pButton = &Make_Global<ShapeButtonClass>(0xB0B3A0);
 
 		if (pHouseExt->PlayerAutoRepair)
-			pButton->TurnOn();
+			SidebarClass::ToggelRepairButton.TurnOn();
 		else
-			pButton->TurnOff();
+			SidebarClass::ToggelRepairButton.TurnOff();
 	}
 }
 
