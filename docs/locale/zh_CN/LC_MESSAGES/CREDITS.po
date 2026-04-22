@@ -2485,6 +2485,7 @@ msgid ""
 "Fix the issue where the sidebar would not refresh when an unit dies in "
 "limbo"
 msgstr ""
+"修复了单位在 Limbo 状态下死亡时侧边栏不会刷新的问题"
 
 msgid ""
 "Enable playing ingame movie in non-campaign modes (i.e. trigger action "
