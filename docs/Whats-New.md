@@ -31,6 +31,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From 0.4
 
+- `Splits.TargetCellRange` < 0 now applies special behaviour where the projectile does not consider nearby cells as additional targets if there are not enough techno targets to match `Cluster` count at all.
 - Combat light customizations introduced a bug that removed vanilla behaviour of ignoring detail level / framerate checks for colored combat light. This bug has been fixed but the previous behaviour can be restored by setting `CombatLightDetailLevel.CheckColored` on Warhead or globally under `[AudioVisual]`.
 - `[TechnoType] -> WarpAway=` has now been changed to set the animation when units are erased to maintain semantic consistency with `[General] -> WarpAway=`. The animation that was originally controlled by `[TechnoType] -> WarpAway=`, which played instead of `[General] -> WarpOut=` when a Techno is chronowarped by chronosphere, now needs to be specified using `[TechnoType] -> Chronoshift.WarpOut=`, which defaults to the value of `[TechnoType] -> WarpOut=`.
 - `UseCenterCoordsIfAttached` has been replaced by enumeration key `AttachedAnimPosition`. Set `AttachedAnimPosition=center` to replicate effects of `UseCenterCoordsIfAttached=true`.
@@ -424,7 +425,7 @@ New:
 - [Sinkablity and sinking speed customization](Fixed-or-Improved-Logics.md#sinking-behavior-dehardcode) (by TaranDahl)
 - [Fast access vehicle](New-or-Enhanced-Logics.md#fast-access-vehicle) (by CrimRecya)
 - Laser, electric bolt and rad beam scatter (by CrimRecya)
-- [Airburst weapon firing/source coordinate customizations](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
+- [Airburst weapon firing/source coordinate & firing effects customizations](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
 - [AlternateFLH on-turret toggle](Fixed-or-Improved-Logics.md#alternate-flh-customizations) (by Starkku)
 - [Fire weapon when Warhead kills something](New-or-Enhanced-Logics.md#fire-weapon-when-warhead-kills-something) (by Ollerus)
 - [Prone speed customization](Fixed-or-Improved-Logics.md#prone-speed-customization) (by TaranDahl)
@@ -568,6 +569,7 @@ New:
 - [Technos with Walk locomotor spawn wake like ship](Fixed-or-Improved-Logics.md#customizable-wake-anim) (by TaranDahl)
 - [Hotkey for deselect object from current selection](User-Interface.md#deselect-object) (by FrozenFog)
 - [Updateable firing anim](Fixed-or-Improved-Logics.md#updateable-firing-anim) (by TaranDahl)
+- [Additional customizations for `Splits` concerning target selection](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
 - [Allow replacing vanilla repairing with togglable auto repairing](User-Interface.md#allow-replacing-vanilla-repairing-with-togglable-auto-repairing) (by TaranDahl)
 
 Vanilla fixes:
