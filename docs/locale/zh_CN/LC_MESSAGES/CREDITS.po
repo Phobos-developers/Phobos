@@ -2496,6 +2496,7 @@ msgstr ""
 
 msgid "Allow replacing vanilla repairing with togglable auto repairing"
 msgstr ""
+"允许使用可切换的自动维修替换原版维修"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"

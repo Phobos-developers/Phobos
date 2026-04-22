@@ -1042,19 +1042,23 @@ msgstr "侧边栏／战斗界面 UI"
 
 msgid "Allow replacing vanilla repairing with togglable auto repairing"
 msgstr ""
+"允许使用可切换的自动维修替换原版维修"
 
 msgid ""
 "Now you can replace the vanilla repair method with a togglable auto-"
 "repair."
 msgstr ""
+"现在你可以使用可切换的自动维修来替换掉原版维修方式。"
 
 msgid ""
 "Pressing repair button or hotkey will no longer change your mouse, but "
 "will toggle your auto-repair state on/off."
 msgstr ""
+"按下维修按钮或快捷键将不再更改你的鼠标，而是切换自动维修的开／关状态。"
 
 msgid "When auto-repair state is toggled off, buildings will stop repairing."
 msgstr ""
+"当自动维修被切换为关闭时建筑将停止维修。"
 
 msgid "Building Production Queue"
 msgstr "建筑生产队列"
