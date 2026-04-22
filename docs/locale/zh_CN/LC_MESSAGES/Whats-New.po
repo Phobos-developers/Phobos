@@ -2456,6 +2456,7 @@ msgid ""
 "Fixed a bug that prevented recalculation of stats etc. on discarding "
 "self-owned AE (by Starkku)"
 msgstr ""
+"修复了一个在弃用自己所拥有的 AE 时阻止数据重新计算的 Bug（by Starkku）"
 
 msgid ""
 "Fixed combat light ignoring / behaving differently from vanilla game "
