@@ -2261,8 +2261,10 @@ msgstr ""
 
 msgid ""
 "Enabled playing ingame movie in non-campaign modes (i.e. trigger action "
-"100 and 117) (by TaranDahl)"
+"`100 Play Sidebar Movie...` and `117 Play Sidebar Movie and pause...`) "
+"(by TaranDahl)"
 msgstr ""
+"启用了在非战役模式下游戏内播放电影的功能（例如触发结果 `100 在小地图窗口播放影片` 和 `177 在小地图窗口播放影片(游戏暂停)...`）（by TaranDahl）"
 
 msgid ""
 "`ElectricAssault` weapons can now auto acquire allies' overpowerable "
