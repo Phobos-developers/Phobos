@@ -30,6 +30,38 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 
 ## Battle screen UI/UX
 
+### Allow draw SuperWeapon timer as percentage
+
+- Superweapon cd timer can now draw as percentage.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+SuperWeaponTimer.Percentage=false  ; boolean
+
+[SOMESW]                           ; SuperWeaponType, with ShowTimer=yes
+ShowTimer.Percentage=              ; boolean
+```
+
+### Custom health bars display
+
+![image](_static/images/healthbar.hide-01.png)
+*Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
+
+- Health bar display can now be turned off as needed, hiding both the health bar box and health pips.
+  - `HealthBar.HidePips` only hides the health bar without affecting anything else.
+  - `HealthBar.Permanent` will display health points at all times.
+  - `HealthBar.Permanent.PipScale` will always display additional pips and group numbers.
+
+In `rulesmd.ini`:
+```ini
+[SOMENAME]                           ; TechnoType
+HealthBar.Hide=false                 ; boolean
+HealthBar.HidePips=false             ; boolean
+HealthBar.Permanent=false            ; boolean
+HealthBar.Permanent.PipScale=false   ; boolean
+```
+
 ### Digital display
 
 ![image](_static/images/digital_display_shapes.png)
@@ -170,59 +202,6 @@ In `RA2MD.INI`:
 ShowFlashOnSelecting=false  ; boolean
 ```
 
-### Custom health bars display
-
-![image](_static/images/healthbar.hide-01.png)
-*Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
-
-- Health bar display can now be turned off as needed, hiding both the health bar box and health pips.
-  - `HealthBar.HidePips` only hides the health bar without affecting anything else.
-  - `HealthBar.Permanent` will display health points at all times.
-  - `HealthBar.Permanent.PipScale` will always display additional pips and group numbers.
-
-In `rulesmd.ini`:
-```ini
-[SOMENAME]                           ; TechnoType
-HealthBar.Hide=false                 ; boolean
-HealthBar.HidePips=false             ; boolean
-HealthBar.Permanent=false            ; boolean
-HealthBar.Permanent.PipScale=false   ; boolean
-```
-
-### Visual effects toggling
-
-- It is possible to toggle certain light flash effects off. These light flash effects include:
-  - Combat light effects (`Bright=true`) and everything that uses same functionality e.g Iron Curtain / Force Field impact flashes.
-  - Alpha images attached to ParticleSystems or Particles that are generated through a Warhead's `Particle` if `[AudioVisual] -> WarheadParticleAlphaImageIsLightFlash` or on Warhead `Particle.AlphaImageIsLightFlash` is set to true, latter defaults to former.
-    - Additionally these alpha images are not created if `[AudioVisual] -> LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting.
-- It is possible to toggle shake screen effects (`ShakeX/Ylo/hi`) off by setting `HideShakeEffects=true`.
-- Phobos's [Laser Trail effects](New-or-Enhanced-Logics.md#laser-trails) can also be toggled off.
-  - If a LaserTrailType has `IsHideable=false`, it can't be toggled off by setting `HideLaserTrailEffects=true`.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-WarheadParticleAlphaImageIsLightFlash=false  ; boolean
-LightFlashAlphaImageDetailLevel=0            ; integer
-
-[SOMEWARHEAD]                                ; WarheadType
-Particle.AlphaImageIsLightFlash=             ; boolean
-```
-
-In `artmd.ini`:
-```ini
-[SOMETRAIL]                  ; LaserTrailType name
-IsHideable=true              ; boolean
-```
-
-In `RA2MD.INI`:
-```ini
-[Phobos]
-HideLightFlashEffects=false  ; boolean
-HideLaserTrailEffects=false  ; boolean
-HideShakeEffects=false       ; boolean
-```
-
 ### Low priority for box selection
 
 ![smartvesters](_static/images/lowpriority-01.gif)
@@ -324,7 +303,7 @@ DefaultInfantrySelectBox=               ; Select box for infantry
 DefaultUnitSelectBox=                   ; Select box for vehicle and aircraft
 
 [SOMESELECTBOXTYPE]                     ; Select box Type name
-Shape=select.shp                        ; filename with .shp extension
+Shape=                                  ; filename with .shp extension
 Palette=palette.pal                     ; filename with .pal extension
 Frames=                                 ; List of integer, default 1,1,1 for infantry, 0,0,0 for vehicle and aircraft
 Offset=0,0                              ; integers - horizontal, vertical
@@ -432,6 +411,40 @@ BuildingTypeSelectable=false  ; boolean
 Due to technical limitations, this feature is forcibly disabled without Ares.
 ```
 
+### Visual effects toggling
+
+- It is possible to toggle certain light flash effects off. These light flash effects include:
+  - Combat light effects (`Bright=true`) and everything that uses same functionality e.g Iron Curtain / Force Field impact flashes.
+  - Alpha images attached to ParticleSystems or Particles that are generated through a Warhead's `Particle` if `[AudioVisual] -> WarheadParticleAlphaImageIsLightFlash` or on Warhead `Particle.AlphaImageIsLightFlash` is set to true, latter defaults to former.
+    - Additionally these alpha images are not created if `[AudioVisual] -> LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting.
+- It is possible to toggle shake screen effects (`ShakeX/Ylo/hi`) off by setting `HideShakeEffects=true`.
+- Phobos's [Laser Trail effects](New-or-Enhanced-Logics.md#laser-trails) can also be toggled off.
+  - If a LaserTrailType has `IsHideable=false`, it can't be toggled off by setting `HideLaserTrailEffects=true`.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+WarheadParticleAlphaImageIsLightFlash=false  ; boolean
+LightFlashAlphaImageDetailLevel=0            ; integer
+
+[SOMEWARHEAD]                                ; WarheadType
+Particle.AlphaImageIsLightFlash=             ; boolean
+```
+
+In `artmd.ini`:
+```ini
+[SOMETRAIL]                  ; LaserTrailType name
+IsHideable=true              ; boolean
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+HideLightFlashEffects=false  ; boolean
+HideLaserTrailEffects=false  ; boolean
+HideShakeEffects=false       ; boolean
+```
+
 ### Visual indication of income from grinders and refineries
 
 - `DisplayIncome` can be set to display the amount of credits acquired when a building is grinding units / receiving ore dump from harvesters or slaves.
@@ -452,6 +465,22 @@ DisplayIncome.AllowAI=yes ; boolean
 DisplayIncome=            ; boolean, defaults to [AudioVisual] -> DisplayIncome
 DisplayIncome.Houses=     ; Affected House Enumeration, defaults to [AudioVisual] -> DisplayIncome.Houses
 DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
+```
+
+### Show power plant enhancer range
+
+- It is possible to show range of power plant enhancer when placing a building.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+ShowPowerPlantEnhancerRange=true   ; boolean
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ShowPowerPlantEnhancerRange=false  ; boolean
 ```
 
 ## Hotkey Commands
@@ -508,6 +537,11 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
 - Switches on/off [Task subtitles' label in the middle of the screen](#task-subtitles-display-in-the-middle-of-the-screen).
 - For localization add `TXT_TOGGLE_MESSAGE` and `TXT_TOGGLE_MESSAGE_DESC` into your `.csf` file.
 
+### `[ ]` Deselect Object(s)
+
+- Deselect 1 or 5 object(s) from current selected objects.
+- For localization add `TXT_DESELECT`, `TXT_DESELECT_DESC`, `TXT_DESELECT5` and `TXT_DESELECT5_DESC` into your `.csf` file.
+
 ## Loading screen
 
 - PCX files can now be used as loadscreen images.
@@ -539,6 +573,18 @@ SaveGameOnScenarioStart=true ; boolean
 
 ## Sidebar / Battle UI
 
+
+### Allow replacing vanilla repairing with togglable auto repairing
+
+- Now you can replace the vanilla repair method with a togglable auto-repair.
+  - Pressing repair button or hotkey will no longer change your mouse, but will toggle your auto-repair state on/off.
+  - When auto-repair state is toggled off, buildings will stop repairing.
+
+  In `rulesmd.ini`:
+```ini
+[General]
+ExtendedPlayerRepair=false    ; boolean
+```
 
 ### Building Production Queue
 
@@ -609,10 +655,10 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
 In `uimd.ini`:
 ```ini
 [Sidebar]
-HarvesterCounter.Show=false           ; boolean
-HarvesterCounter.Label=<none>         ; CSF entry key
-HarvesterCounter.ConditionYellow=99%  ; floating point value, percents
-HarvesterCounter.ConditionRed=50%     ; floating point value, percents
+HarvesterCounter.Show=false                     ; boolean
+HarvesterCounter.Label=<none>                   ; CSF entry key
+HarvesterCounter.ConditionYellow=99%            ; floating point value, percents
+HarvesterCounter.ConditionRed=50%               ; floating point value, percents
 ```
 
 In `rulesmd.ini`:
@@ -622,8 +668,9 @@ Harvester.Counted=                              ; boolean
 
 [SOMESIDE]                                      ; Side
 Sidebar.HarvesterCounter.Offset=0,0             ; X,Y, pixels relative to default
-Sidebar.HarvesterCounter.ColorYellow=255,255,0  ; integer - R,G,B
-Sidebar.HarvesterCounter.ColorRed=255,0,0       ; integer - R,G,B
+Sidebar.HarvesterCounter.ColorGreen=            ; integer - Red,Green,Blue, default to [Side] -> ToolTipColor=
+Sidebar.HarvesterCounter.ColorYellow=255,255,0  ; integer - Red,Green,Blue
+Sidebar.HarvesterCounter.ColorRed=255,0,0       ; integer - Red,Green,Blue
 ```
 
 In `RA2MD.INI`:
@@ -664,10 +711,10 @@ In `rulesmd.ini`:
 ```ini
 [SOMESIDE]                                ; Side
 Sidebar.PowerDelta.Offset=0,0             ; X,Y, pixels relative to default
-Sidebar.PowerDelta.ColorGreen=0,255,0     ; integer - R,G,B
-Sidebar.PowerDelta.ColorYellow=255,255,0  ; integer - R,G,B
-Sidebar.PowerDelta.ColorRed=255,0,0       ; integer - R,G,B
-Sidebar.PowerDelta.ColorGrey=128,128,128  ; integer - R,G,B
+Sidebar.PowerDelta.ColorGreen=0,255,0     ; integer - Red,Green,Blue
+Sidebar.PowerDelta.ColorYellow=255,255,0  ; integer - Red,Green,Blue
+Sidebar.PowerDelta.ColorRed=255,0,0       ; integer - Red,Green,Blue
+Sidebar.PowerDelta.ColorGrey=128,128,128  ; integer - Red,Green,Blue
 Sidebar.PowerDelta.Align=left             ; Alignment enumeration - left | center/centre | right
 ```
 
@@ -802,7 +849,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMESIDE]                       ; Side
 Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default
-Sidebar.WeedsCounter.Color=      ; integer - R,G,B
+Sidebar.WeedsCounter.Color=      ; integer - Red,Green,Blue
 ```
 
 In `RA2MD.INI`:
@@ -864,9 +911,9 @@ Same as with harvester counter, you can download the improved font (v4 and highe
 In `rulesmd.ini`:
 ```ini
 [SOMESIDE]                          ; Side
-ToolTip.Background.Color=0,0,0      ; integer - R,G,B, defaults to [AudioVisual] -> ToolTip.Background.Color, which defaults to 0,0,0
+ToolTip.Background.Color=0,0,0      ; integer - Red,Green,Blue, defaults to [AudioVisual] -> ToolTip.Background.Color, which defaults to 0,0,0
 ToolTip.Background.Opacity=100      ; integer, ranged in [0, 100], defaults to [AudioVisual] -> ToolTip.Background.Opacity, which defaults to 100
-ToolTip.Background.BlurSize=0.0     ; float, defaults to [AudioVisual] -> ToolTip.Background.BlurSize, which defaults to 0.0
+ToolTip.Background.BlurSize=0.0     ; floating point value, defaults to [AudioVisual] -> ToolTip.Background.BlurSize, which defaults to 0.0
 ```
 
 ```{note}

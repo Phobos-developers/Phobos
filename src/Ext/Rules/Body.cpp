@@ -1,4 +1,4 @@
-#include "Body.h"
+﻿#include "Body.h"
 
 #include <Ext/TechnoType/Body.h>
 #include <New/Type/RadTypeClass.h>
@@ -104,6 +104,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->RadSiteWarhead_Detonate_Full.Read(exINI, GameStrings::Radiation, "RadSiteWarhead.Detonate.Full");
 	this->RadHasOwner.Read(exINI, GameStrings::Radiation, "RadHasOwner");
 	this->RadHasInvoker.Read(exINI, GameStrings::Radiation, "RadHasInvoker");
+	this->ShieldApplyArmorMult.Read(exINI, GameStrings::CombatDamage, "ShieldApplyArmorMult");
 	this->VeinholeWarhead.Read<true>(exINI, GameStrings::CombatDamage, "VeinholeWarhead");
 	this->MissingCameo.Read(pINI, GameStrings::AudioVisual, "MissingCameo");
 
@@ -112,6 +113,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PlacementPreview.Read(exINI, GameStrings::AudioVisual, "PlacementPreview");
 	this->PlacementPreview_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementPreview.Translucency");
 
+	this->SuperWeaponTimer_Percentage.Read(exINI, GameStrings::AudioVisual, "SuperWeaponTimer.Percentage");
 	this->SuperWeaponSidebar_AllowByDefault.Read(exINI, GameStrings::AudioVisual, "SuperWeaponSidebar.AllowByDefault");
 
 	this->ConditionYellow_Terrain.Read(exINI, GameStrings::AudioVisual, "ConditionYellow.Terrain");
@@ -144,6 +146,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AnimRemapDefaultColorScheme.Read(exINI, GameStrings::AudioVisual, "AnimRemapDefaultColorScheme");
 	this->TimerBlinkColorScheme.Read(exINI, GameStrings::AudioVisual, "TimerBlinkColorScheme");
 	this->ShowDesignatorRange.Read(exINI, GameStrings::AudioVisual, "ShowDesignatorRange");
+	this->ShowPowerPlantEnhancerRange.Read(exINI, GameStrings::AudioVisual, "ShowPowerPlantEnhancerRange");
+
 	Nullable<double>AirShadowBaseScale;
 	AirShadowBaseScale.Read(exINI, GameStrings::AudioVisual, "AirShadowBaseScale");
 	if (AirShadowBaseScale.isset() && AirShadowBaseScale.Get() > 0)
@@ -238,6 +242,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->JumpjetClimbPredictHeight.Read(exINI, GameStrings::General, "JumpjetClimbPredictHeight");
 	this->JumpjetClimbWithoutCutOut.Read(exINI, GameStrings::General, "JumpjetClimbWithoutCutOut");
+	this->JumpjetClimbIgnoreBuilding.Read(exINI, GameStrings::General, "JumpjetClimbIgnoreBuilding");
 
 	this->DamageOwnerMultiplier.Read(exINI, GameStrings::CombatDamage, "DamageOwnerMultiplier");
 	this->DamageAlliesMultiplier.Read(exINI, GameStrings::CombatDamage, "DamageAlliesMultiplier");
@@ -247,7 +252,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DamageOwnerMultiplier_Berzerk.Read(exINI, GameStrings::CombatDamage, "DamageOwnerMultiplier.Berzerk");
 	this->DamageAlliesMultiplier_Berzerk.Read(exINI, GameStrings::CombatDamage, "DamageAlliesMultiplier.Berzerk");
 	this->DamageEnemiesMultiplier_Berzerk.Read(exINI, GameStrings::CombatDamage, "DamageEnemiesMultiplier.Berzerk");
-		
+
 	this->AircraftLevelLightMultiplier.Read(exINI, GameStrings::AudioVisual, "AircraftLevelLightMultiplier");
 	this->JumpjetLevelLightMultiplier.Read(exINI, GameStrings::AudioVisual, "JumpjetLevelLightMultiplier");
 
@@ -294,8 +299,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AIAllToHunt.Read(exINI, GameStrings::General, "AIAllToHunt");
 	this->RepairBaseNodes.Read(exINI, GameStrings::Basic, "RepairBaseNodes");
 
+	this->FixRepairStepCost.Read(exINI, GameStrings::General, "FixRepairStepCost");
+
 	this->WarheadParticleAlphaImageIsLightFlash.Read(exINI, GameStrings::AudioVisual, "WarheadParticleAlphaImageIsLightFlash");
 	this->CombatLightDetailLevel.Read(exINI, GameStrings::AudioVisual, "CombatLightDetailLevel");
+	this->CombatLightDetailLevel_CheckColored.Read(exINI, GameStrings::AudioVisual, "CombatLightDetailLevel.CheckColored");
 	this->LightFlashAlphaImageDetailLevel.Read(exINI, GameStrings::AudioVisual, "LightFlashAlphaImageDetailLevel");
 	this->BuildingTypeSelectable.Read(exINI, GameStrings::General, "BuildingTypeSelectable");
 
@@ -330,7 +338,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->CanTargetAI_IronCurtained.Read(exINI, GameStrings::CombatDamage, "CanTargetAI.IronCurtained");
 	this->CanTarget_IronCurtained.Read(exINI, GameStrings::CombatDamage, "CanTarget.IronCurtained");
 	this->AutoTarget_IronCurtained.Read(exINI, GameStrings::CombatDamage, "AutoTarget.IronCurtained");
-	
+
 	this->InfantryAutoDeploy.Read(exINI, GameStrings::General, "InfantryAutoDeploy");
 
 	this->AdjacentWallDamage.Read(exINI, GameStrings::CombatDamage, "AdjacentWallDamage");
@@ -341,13 +349,14 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->FallingDownTargetingFix.Read(exINI, GameStrings::General, "FallingDownTargetingFix");
 	this->AIAirTargetingFix.Read(exINI, GameStrings::General, "AIAirTargetingFix");
+	this->OpenTopped_DecloakToFire.Read(exINI, GameStrings::General, "OpenTopped.DecloakToFire");
 
 	this->SortCameoByName.Read(exINI, GameStrings::General, "SortCameoByName");
 
 	this->MergeBuildingDamage.Read(exINI, GameStrings::CombatDamage, "MergeBuildingDamage");
 
 	this->ApplyPerTargetEffectsOnDetonate.Read(exINI, GameStrings::CombatDamage, "ApplyPerTargetEffectsOnDetonate");
-	
+
 	this->BuildingRadioLink_SyncOwner.Read(exINI, GameStrings::General, "BuildingRadioLink.SyncOwner");
 
 	this->ExtraRange_TargetMoving.Read(exINI, GameStrings::General, "ExtraRange.TargetMoving");
@@ -363,7 +372,30 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AIParadropMission.Read(exINI, GameStrings::General, "AIParadropMission");
 
 	this->CylinderRangefinding.Read(exINI, GameStrings::General, "CylinderRangefinding");
+
+	this->PenetratesTransport_Level.Read(exINI, GameStrings::CombatDamage, "PenetratesTransport.Level");
+
+	this->UnitsUnsellable.Read(exINI, GameStrings::General, "UnitsUnsellable");
 	
+	this->DisableOveroptimizationInTargeting.Read(exINI, GameStrings::General, "DisableOveroptimizationInTargeting");
+
+	this->DriverKilled_KillPassengers.Read(exINI, GameStrings::CombatDamage, "DriverKilled.KillPassengers");
+	this->ExtraThreat_IsThreat.Read(exINI, GameStrings::General, "ExtraThreat.IsThreat");
+	this->ExtraThreat_InRange.Read(exINI, GameStrings::General, "ExtraThreat.InRange");
+	this->ExtraThreatCoefficient_InRangeDistance.Read(exINI, GameStrings::General, "ExtraThreatCoefficient.InRangeDistance");
+	this->ExtraThreatCoefficient_Facing.Read(exINI, GameStrings::General, "ExtraThreatCoefficient.Facing");
+	this->ExtraThreatCoefficient_DistanceToLastTarget.Read(exINI, GameStrings::General, "ExtraThreatCoefficient.DistanceToLastTarget");
+	this->BalloonHoverPathingFix.Read(exINI, GameStrings::General, "BalloonHoverPathingFix");
+	Phobos::Optimizations::DisableBalloonHoverPathingFix = !this->BalloonHoverPathingFix;
+
+	this->WalkLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "WalkLocomotorMakesWake");
+	this->DriveLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "DriveLocomotorMakesWake");
+	this->HoverLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "HoverLocomotionClassMakesWake");
+	this->ShipLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "ShipLocomotionClassMakesWake");
+	
+	this->FiringAnim_Update.Read(exINI, GameStrings::AudioVisual, "FiringAnim.Update");
+	this->ExtendedPlayerRepair.Read(exINI, GameStrings::General, "ExtendedPlayerRepair");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -462,6 +494,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->RadSiteWarhead_Detonate_Full)
 		.Process(this->RadHasOwner)
 		.Process(this->RadHasInvoker)
+		.Process(this->ShieldApplyArmorMult)
 		.Process(this->JumpjetCrash)
 		.Process(this->JumpjetNoWobbles)
 		.Process(this->VeinholeWarhead)
@@ -470,6 +503,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlacementGrid_TranslucencyWithPreview)
 		.Process(this->PlacementPreview)
 		.Process(this->PlacementPreview_Translucency)
+		.Process(this->SuperWeaponTimer_Percentage)
 		.Process(this->SuperWeaponSidebar_AllowByDefault)
 		.Process(this->ConditionYellow_Terrain)
 		.Process(this->Shield_ConditionYellow)
@@ -564,11 +598,13 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->VisualScatter_Min)
 		.Process(this->VisualScatter_Max)
 		.Process(this->ShowDesignatorRange)
+		.Process(this->ShowPowerPlantEnhancerRange)
 		.Process(this->DropPodTrailer)
 		.Process(this->DropPodDefaultTrailer)
 		.Process(this->PodImage)
 		.Process(this->JumpjetClimbPredictHeight)
 		.Process(this->JumpjetClimbWithoutCutOut)
+		.Process(this->JumpjetClimbIgnoreBuilding)
 		.Process(this->DamageOwnerMultiplier)
 		.Process(this->DamageAlliesMultiplier)
 		.Process(this->DamageEnemiesMultiplier)
@@ -613,8 +649,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AIFireSaleDelay)
 		.Process(this->AIAllToHunt)
 		.Process(this->RepairBaseNodes)
+		.Process(this->FixRepairStepCost)
 		.Process(this->WarheadParticleAlphaImageIsLightFlash)
 		.Process(this->CombatLightDetailLevel)
+		.Process(this->CombatLightDetailLevel_CheckColored)
 		.Process(this->LightFlashAlphaImageDetailLevel)
 		.Process(this->UseRetintFix)
 		.Process(this->AINormalTargetingDelay)
@@ -648,6 +686,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->IvanBombAttachToCenter)
 		.Process(this->FallingDownTargetingFix)
 		.Process(this->AIAirTargetingFix)
+		.Process(this->OpenTopped_DecloakToFire)
 		.Process(this->SortCameoByName)
 		.Process(this->MergeBuildingDamage)
 		.Process(this->BuildingRadioLink_SyncOwner)
@@ -663,6 +702,22 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AIParadropMission)
 		.Process(this->DefaultToGuardArea)
 		.Process(this->CylinderRangefinding)
+		.Process(this->PenetratesTransport_Level)
+		.Process(this->UnitsUnsellable)
+		.Process(this->DriverKilled_KillPassengers)
+		.Process(this->DisableOveroptimizationInTargeting)
+		.Process(this->ExtraThreat_IsThreat)
+		.Process(this->ExtraThreat_InRange)
+		.Process(this->ExtraThreatCoefficient_InRangeDistance)
+		.Process(this->ExtraThreatCoefficient_Facing)
+		.Process(this->ExtraThreatCoefficient_DistanceToLastTarget)
+		.Process(this->BalloonHoverPathingFix)
+		.Process(this->WalkLocomotorMakesWake)
+		.Process(this->DriveLocomotorMakesWake)
+		.Process(this->HoverLocomotorMakesWake)
+		.Process(this->ShipLocomotorMakesWake)
+		.Process(this->FiringAnim_Update)
+		.Process(this->ExtendedPlayerRepair)
 		;
 }
 
@@ -672,6 +727,7 @@ void RulesExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 	this->Serialize(Stm);
 
 	this->ReplaceVoxelLightSources();
+	Phobos::Optimizations::DisableBalloonHoverPathingFix = !this->BalloonHoverPathingFix;
 }
 
 void RulesExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
@@ -846,6 +902,18 @@ DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
 
 	pRulesExt->JumpjetCrash.Read(exINI, GameStrings::JumpjetControls, "Crash");
 	pRulesExt->JumpjetNoWobbles.Read(exINI, GameStrings::JumpjetControls, "NoWobbles");
+
+	return 0;
+}
+
+DEFINE_JUMP(LJMP, 0x66919B, 0x6691B7) // Don't read warhead here!
+DEFINE_JUMP(LJMP, 0x668EED, 0x668EF5) // Load types later
+DEFINE_HOOK(0x668F6A, RulesClass_Read_File_LoadTypes, 0x5)
+{
+	GET(RulesClass*, pRules, EDI);
+	GET(CCINIClass*, pINI, ESI);
+
+	pRules->LoadTypesFromINI(pINI);
 
 	return 0;
 }

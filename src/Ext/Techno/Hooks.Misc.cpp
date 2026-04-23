@@ -337,6 +337,30 @@ DEFINE_HOOK(0x514AB4, Locomotion_Process_Wake, 0x6)  // Hover
 	return R->Origin() + 0xC;
 }
 
+DEFINE_HOOK(0x4B079D, DriveLocomotionClass_Process_MakesWake, 0x5)
+{
+	enum { NoWake = 0x4B0828 };
+	GET(ILocomotion* const, pThis, ESI);
+	const auto pLinkedTo = static_cast<LocomotionClass*>(pThis)->LinkedTo;
+	return TechnoExt::ExtMap.Find(pLinkedTo)->TypeExtData->MakesWake.Get(RulesExt::Global()->DriveLocomotorMakesWake) ? 0 : NoWake;
+}
+
+DEFINE_HOOK(0x514A32, HoverLocomotionClass_Process_MakesWake, 0x5)
+{
+	enum { NoWake = 0x514AC8 };
+	GET(ILocomotion* const, pThis, ESI);
+	const auto pLinkedTo = static_cast<LocomotionClass*>(pThis)->LinkedTo;
+	return TechnoExt::ExtMap.Find(pLinkedTo)->TypeExtData->MakesWake.Get(RulesExt::Global()->HoverLocomotorMakesWake) ? 0 : NoWake;
+}
+
+DEFINE_HOOK(0x69FE4A, ShipLocomotionClass_Process_MakesWake, 0x6)
+{
+	enum { NoWake = 0x69FEF0 };
+	GET(ILocomotion* const, pThis, ESI);
+	const auto pLinkedTo = static_cast<LocomotionClass*>(pThis)->LinkedTo;
+	return TechnoExt::ExtMap.Find(pLinkedTo)->TypeExtData->MakesWake.Get(RulesExt::Global()->ShipLocomotorMakesWake) ? 0 : NoWake;
+}
+
 namespace GrappleUpdateTemp
 {
 	TechnoClass* pThis;
@@ -376,6 +400,24 @@ DEFINE_HOOK(0x737F05, UnitClass_ReceiveDamage_SinkingWake, 0x6)
 	R->ECX(pTypeExt->Wake_Sinking.Get(pTypeExt->Wake.Get(RulesClass::Instance->Wake)));
 
 	return 0x737F0B;
+}
+
+DEFINE_HOOK(0x75AC93, WalkLocomotionClass_Process_Wake, 0x6)
+{
+	GET(ILocomotion* const, pThis, ESI);
+	const auto pLinkedTo = static_cast<LocomotionClass*>(pThis)->LinkedTo;
+
+	if (!TechnoExt::ExtMap.Find(pLinkedTo)->TypeExtData->MakesWake.Get(RulesExt::Global()->WalkLocomotorMakesWake))
+		return 0;
+
+	if (pThis->Is_Really_Moving_Now() && !(Unsorted::CurrentFrame % 10) && !pLinkedTo->OnBridge && pLinkedTo->GetCell()->LandType == LandType::Water)
+	{
+		const auto pAnimType = TechnoExt::ExtMap.Find(pLinkedTo)->TypeExtData->Wake.Get(RulesClass::Instance->Wake);
+		auto location = pLinkedTo->GetCoords();
+		GameCreate<AnimClass>(pAnimType, location, 0, 1, 0x600u, false);
+	}
+	
+	return 0;
 }
 
 #pragma endregion
@@ -507,12 +549,27 @@ DEFINE_HOOK(0x522790, InfantryClass_ClearDisguise_DefaultDisguise, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x746A30, UnitClass_UpdateDisguise_DefaultMirageDisguises, 0x5)
+{
+	enum { Apply = 0x746A6C };
+
+	GET(UnitClass*, pThis, ESI);
+	const auto& disguises = TechnoTypeExt::ExtMap.Find(pThis->Type)->DefaultMirageDisguises.GetElements(RulesClass::Instance->DefaultMirageDisguises);
+	TerrainTypeClass* pDisguiseAs = nullptr;
+
+	if (const int size = static_cast<int>(disguises.size()))
+		pDisguiseAs = disguises[ScenarioClass::Instance->Random.RandomRanged(0, size - 1)];
+
+	R->EAX(pDisguiseAs);
+	return Apply;
+}
+
 DEFINE_HOOK(0x74691D, UnitClass_UpdateDisguise_EMP, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 	// Remove mirage disguise if under emp or being flipped, approximately 15 deg
 	// Deactivated mirage should still be able to keep disguise
-	if (pThis->IsUnderEMP() || std::abs(pThis->AngleRotatedForwards) > 0.25 || std::abs(pThis->AngleRotatedSideways) > 0.25)
+	if (pThis->IsUnderEMP() || std::abs(pThis->AngleRotatedForwards) > 0.25f || std::abs(pThis->AngleRotatedSideways) > 0.25f)
 	{
 		pThis->ClearDisguise();
 		R->EAX(pThis->MindControlRingAnim);

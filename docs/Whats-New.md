@@ -10,7 +10,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From vanilla
 
-- Vehicles paradropped by AI players now default to `Hunt` mission instead of `Guard`, matching what infantry do. This can be customized by setting `AIParadropMission` on the VehicleType, defaults to `[General]` -> `AIParadropMission`.
+- Vehicles paradropped by AI players now default to `Hunt` mission instead of `Guard`, matching what infantry do. This can be customized by setting `AIParadropMission` on the VehicleType, defaults to `[General] -> AIParadropMission`.
 - `IsSimpleDeployer` units now obey deploying facing constraint even without deploying animation if `DeployDir` is explicitly set on the unit.
 - `Vertical=true` projectiles now default to completely downwards initial trajectory/facing regardless of if their projectile image has `Voxel=true` or not. This behavior can be reverted by setting `VerticalInitialFacing=false` on projectile in `rulesmd.ini`.
 - `Vertical=true` projectiles no longer move horizontally if fired by aircraft by default. To re-enable this behaviour set `Vertical.AircraftFix=false` on the projectile.
@@ -25,8 +25,14 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From older Phobos versions
 
+#### From pre-0.5 devbuilds
+
+- Due to the format issue with `select.shp` in vanilla Yuri's Revenge that prevents the [Select box logic](User-Interface.md#select-box) from rendering correctly, `select.shp` no longer serves as the default value for `[SelectBoxType] -> Shape=`, and you need to manually specify a value for this flag.
+
 #### From 0.4
 
+- `Splits.TargetCellRange` < 0 now applies special behaviour where the projectile does not consider nearby cells as additional targets if there are not enough techno targets to match `Cluster` count at all.
+- Combat light customizations introduced a bug that removed vanilla behaviour of ignoring detail level / framerate checks for colored combat light. This bug has been fixed but the previous behaviour can be restored by setting `CombatLightDetailLevel.CheckColored` on Warhead or globally under `[AudioVisual]`.
 - `[TechnoType] -> WarpAway=` has now been changed to set the animation when units are erased to maintain semantic consistency with `[General] -> WarpAway=`. The animation that was originally controlled by `[TechnoType] -> WarpAway=`, which played instead of `[General] -> WarpOut=` when a Techno is chronowarped by chronosphere, now needs to be specified using `[TechnoType] -> Chronoshift.WarpOut=`, which defaults to the value of `[TechnoType] -> WarpOut=`.
 - `UseCenterCoordsIfAttached` has been replaced by enumeration key `AttachedAnimPosition`. Set `AttachedAnimPosition=center` to replicate effects of `UseCenterCoordsIfAttached=true`.
 
@@ -120,8 +126,13 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   - `[WarheadType/SuperWeaponType] -> Convert(N).AffectedHouses` -> `[WarheadType/SuperWeaponType] -> Convert(N).AffectsHouse`
   - `[SuperWeaponType] -> LimboKill.Affected` -> `[SuperWeaponType] -> LimboKill.AffectsHouse`
 
-```{note}
+```{hint}
 - You can use the [*MigrationUtility*](https://github.com/Phobos-developers/PhobosSupplementaries/tree/develop/MigrationUtility) in the PhobosSupplementaries repository to conveniently complete these migrations.
+```
+
+```{note}
+- If it is detected that you are using the old INI flags, a warning log will be output to `debug.log`.
+- The old INI flags will still take effect, but if there are corresponding new version flags at the same time, the new version will take precedence.
 ```
 
 ### New user settings in RA2MD.INI
@@ -414,7 +425,7 @@ New:
 - [Sinkablity and sinking speed customization](Fixed-or-Improved-Logics.md#sinking-behavior-dehardcode) (by TaranDahl)
 - [Fast access vehicle](New-or-Enhanced-Logics.md#fast-access-vehicle) (by CrimRecya)
 - Laser, electric bolt and rad beam scatter (by CrimRecya)
-- [Airburst weapon firing/source coordinate customizations](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
+- [Airburst weapon firing/source coordinate & firing effects customizations](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
 - [AlternateFLH on-turret toggle](Fixed-or-Improved-Logics.md#alternate-flh-customizations) (by Starkku)
 - [Fire weapon when Warhead kills something](New-or-Enhanced-Logics.md#fire-weapon-when-warhead-kills-something) (by Ollerus)
 - [Prone speed customization](Fixed-or-Improved-Logics.md#prone-speed-customization) (by TaranDahl)
@@ -524,17 +535,42 @@ New:
 - [Warhead effect filtering by target veterancy](Fixed-or-Improved-Logics.md#customizable-warhead-trigger-conditions) (by Flactine)
 - [Vehicle Deployment Enhancement](Fixed-or-Improved-Logics.md#deployment-enhancement) (by FlyStar)
 - `ProductionAnim` is now available for `Factory=InfantryType` as well as non-`ConstructionYard=true` `Factory=BuildingType` buildings (by Starkku)
-- [Extra distance modifier for `Adjacent.Disallowed`](New-or-Enhanced-Logics.md#build-area-customizations) (by Starkku)
+- [Extra settings for `Adjacent.Disallowed`](New-or-Enhanced-Logics.md#build-area-customizations) (by Starkku)
 - [Allow customizing how many times `FactoryPlant` bonuses can be applied from a BuildingType](Fixed-or-Improved-Logics.md#factoryplant-customizations) (by Starkku)
 - [Maximum amount for power plant enhancer](New-or-Enhanced-Logics.md#power-plant-enhancer) (by Ollerus)
 - [Return warhead](New-or-Enhanced-Logics.md#return-warhead) (by Ollerus)
 - [`AllowBerzerkOnAllies`](Fixed-or-Improved-Logics.md#berzerk-on-allies) (by TaranDahl)
 - [Customize whether weapon can be used to targeting ironcurtained technos or not](New-or-Enhanced-Logics.md#customize-whether-weapon-can-target-iron-curtained-technos) (by NetsuNegi)
-- Customizable disk drain logic (by NetsuNegi)
+- [Customizable disk drain logic](New-or-Enhanced-Logics.md#customizable-disk-drain-logic) (by NetsuNegi)
 - [Customizable paradropped unit missions](Fixed-or-Improved-Logics.md#customizable-paradrop-missions) (by Starkku)
 - Option to scale `PowerSurplus` setting if enabled to current power drain with `PowerSurplus.ScaleToDrainAmount` (by Starkku)
 - Global default value for `DefaultToGuardArea` (by TaranDahl)
 - [Weapon range finding in cylinder](New-or-Enhanced-Logics.md#range-finding-in-cylinder) (by TaranDahl)
+- [Penetrates damage on transporter](New-or-Enhanced-Logics.md#penetrates-damage-on-transporter) (by NetsuNegi)
+- Added amount limit of `LimboKill` (by NetsuNegi)
+- [Customizations for techno type target scan/guard range](Fixed-or-Improved-Logics.md#target-scan-guard-range-customizations) (by Starkku)
+- [Spawns particle when spawns tiberium by terrain](Fixed-or-Improved-Logics.md#customizable-ore-spawners) (by NetsuNegi)
+- Allow jumpjet climbing ignore building height (by TaranDahl)
+- [Allow draw SuperWeapon timer as percentage](User-Interface.md#allow-draw-superweapon-timer-as-percentage) (by NetsuNegi)
+- Customize particle system of parasite logic (by NetsuNegi)
+- [Taunt warhead](New-or-Enhanced-Logics.md#taunt-warhead) (by TaranDahl)
+- [Custom hover vehicles shutdown drowning death](New-or-Enhanced-Logics.md#custom-hover-vehicles-shutdown-drowning-death) (by FlyStar)
+- [SHP turret vehicles support the use of `*tur.shp` files](New-or-Enhanced-Logics.md#independent-shp-vehicle-turret-files) (by FlyStar)
+- [Implement `CurleyShuffle` for AircraftTypes](Fixed-or-Improved-Logics.md#implement-curleyshuffle-for-aircrafttypes) (ported from Vinifera by Noble_Fish)
+- Customize which parasite can remove by warhead (by NetsuNegi)
+- Add toggle of whether shield use ArmorMultiplier or not (by NetsuNegi)
+- Allow the [use of more precise calculation of repair costs](Fixed-or-Improved-Logics.md#use-more-precise-calculation-of-repair-costs) (by NetsuNegi)
+- [Customize default mirage disguises per vehicletypes](New-or-Enhanced-Logics.md#default-mirage-disguise-for-individual-vehicletypes) (by NetsuNegi)
+- [Allow customize jumpjet properties on warhead](Fixed-or-Improved-Logics.md#customizing-locomotor-warhead) (by NetsuNegi)
+- Customize effects range of power plant enhancer (by NetsuNegi)
+- Allow each side to customize the color when the proportion of working miners is higher than `HarvesterCounter.ConditionYellow` (by Noble_Fish)
+- [Allow disable an over-optimization in targeting](Fixed-or-Improved-Logics.md#allow-disable-an-over-optimization-in-targeting) (by TaranDahl)
+- [Extra threat](New-or-Enhanced-Logics.md#extra-threat) (by TaranDahl)
+- [Technos with Walk locomotor spawn wake like ship](Fixed-or-Improved-Logics.md#customizable-wake-anim) (by TaranDahl)
+- [Hotkey for deselect object from current selection](User-Interface.md#deselect-object-s) (by FrozenFog)
+- [Updateable firing anim](Fixed-or-Improved-Logics.md#updateable-firing-anim) (by TaranDahl)
+- [Additional customizations for `Splits` concerning target selection](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
+- [Allow replacing vanilla repairing with togglable auto repairing](User-Interface.md#allow-replacing-vanilla-repairing-with-togglable-auto-repairing) (by TaranDahl)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -590,6 +626,29 @@ Vanilla fixes:
 - Fixed the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon (by NetsuNegi)
 - Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat (by TaranDahl)
 - Fixed the issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team (by TaranDahl)
+- Fixed the bug that cause technos teleport to cell 0,0 by ChronoSphere superweapon (by NetsuNegi)
+- Fixed the bug that techno in attack move will move to target if it cannot attack it (by NetsuNegi)
+- Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4 (by FlyStar)
+- Buildings with `NeedsEngineer=true` are now considered to have threat value of 0 under ownership of `MultiplayPassive=true` houses regardless of their `ThreatPosed` value (by Starkku)
+- Fixed the issue where the AI's regular targeting would also target garrisonable buildings (by TaranDahl)
+- Fixed the issue that the move mission of the jumpjet does not end correctly (by TaranDahl)
+- AI team garrison scripts now re-evaluate destination immediately instead of trying to garrison ungarrisonable building before changing target (by Starkku)
+- Fixed the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health (by CrimRecya)
+- Fixed the issue that the Jumpjet must end its movement before starting the next mission (by TaranDahl)
+- Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent (by FlyStar)
+- Voxel drawing code now skips sections that are invisible (have all zeros in the transform matrix main diagonal, meaning that the scale is 0% on all axes), thus increasing drawing performance for some voxels (by Kerbiter & ZivDero)
+- Fixed the bug that unit will play crashing voice & sound when dropped by warhead with `IsLocomotor=yes` (by NetsuNegi)
+- Fixed the bug that if paradropping technos with `Crashable=yes` has been destroyed in air, they will falling down on ground but not dead (by NetsuNegi)
+- Fixed the bug where paradropped infantry with `NotHuman=yes` will ignore `Crashable=no` and crash on ground when killed in air (by NetsuNegi)
+- Fixed an issue where a unit might cause the target to fall from above its own head when using a locomotor warhead with `Locomotor=Jumpjet` to pull a target with `BalloonHover=yes` (by NetsuNegi)
+- Fixed the [EIP#007120F7](https://modenc.renegadeprojects.com/Internal_Error#eip_007120F7) caused when the `Strength` value is lower than `RepairStep` (by NetsuNegi)
+- Fixed the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated (by TaranDahl)
+- Miners back to work when ore regenerated (by TaranDahl)
+- Fixed the incorrect mission switching in infantry EnterIdleMode (by TaranDahl)
+- Fix BalloonHover incorrectly considering ground factors when pathfinding (by TaranDahl)
+- Fixed the issue where the sidebar would not refresh when an unit dies in limbo (by TaranDahl)
+- Enabled playing ingame movie in non-campaign modes (i.e. trigger action 100 and 117) (by TaranDahl)
+- `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses (by Ollerus)
 - Fixed the issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions (by TaranDahl)
 
 Phobos fixes:
@@ -618,6 +677,19 @@ Phobos fixes:
 - LimboDelivery buildings cannot be selected (by FlyStar)
 - Fixed the positive value of `Reveal` on warhead (by NetsuNegi)
 - Fixed `Adjacent.Disallowed` not blocking placement if other eligible buildings were in range (by Starkku)
+- Fixed the issue where `AIChronoSphereSW` and `AIChronoWarpSW` did not function correctly with AI scripts 56 and 57 (by FlyStar)
+- Fixed an issue where parasites that have infected infantry do not provide a refund when the infected infantry enters a Grinding building (by NetsuNegi)
+- Fixed the issue that `PassengerDeletion` dont consider passenger's passenger, parasite and hijacker (by NetsuNegi)
+- Fixed the issue that power output of building on tooltip won't consider power enhancer (by NetsuNegi)
+- `RealTimeTimers` now support independent gamespeed index values for Multiplayer and Skirmish (by RAZER)
+- Fixed the bug that the upgrade building's power-enhancing effect depends only on its parent building and is not related to the upgrade building itself (by NetsuNegi)
+- Fixed an issue where hover vehicles could not be destroyed after malfunctioning on water surfaces (by FlyStar)
+- Fixed an issue where shadow matrix scaling was incorrectly applied to `TurretOffset` causing turret shadow misplacement (by Noble_Fish)
+- Fixed an issue that customizable warhead animation scatter cannot override 32 leptons scatter of `Inviso=yes` projectile (by NetsuNegi)
+- Fixed units with Fly, Jumpjet or Rocket locomotors destroyed while crashing off-map never being fully cleaned up, permanently blocking production slots and counting towards unit limits (by RAZER)
+- Fixed a bug where a unit's turrets would also get locked when the unit became deactivated for reasons other than being under EMP (by Noble_Fish)
+- Fixed a bug that prevented recalculation of stats etc. on discarding self-owned AE (by Starkku)
+- Fixed combat light ignoring / behaving differently from vanilla game regarding detail level and framerate checks (by Starkku)
 
 Fixes / interactions with other extensions:
 <!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->
@@ -630,8 +702,27 @@ Fixes / interactions with other extensions:
 - Fixed the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed (by NetsuNegi)
 - Fixed the bug that vehicle survivor can spawn on wrong position when transport has been destroyed (by NetsuNegi)
 - Fixed the bug that building with `Explodes=yes` use Ares's rubble logic will cause it's owner cannot defeat normally (by NetsuNegi)
+- Modified the ares hook that stopped OpenTopped transports from firing if cloaked (by RAZER & Morton)
+- Fixed an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes (by NetsuNegi)
+- Fixed the initial direction of building placed by Ares's UnitDelivery superweapon (by NetsuNegi)
+- [Customize whether transport can kept or kill passengers when driver has been killed](New-or-Enhanced-Logics.md#customize-whether-transport-can-kept-or-kill-passengers-when-driver-has-been-killed) (by NetsuNegi)
+- Fixed a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to fire when the transport unit with `OpenTopped=yes` moved to an area that the passengers' `MovementZone` cannot move into (by NetsuNegi)
+- Fixed a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next` (by NetsuNegi & FlyStar)
+- Fixed the issue that `BombSight` not being updated correctly in techno conversion (by TaranDahl)
+
 ```
 
+### 0.4.0.3
+
+```{dropdown} Click to show
+
+Vanilla fixes:
+- Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold (by CnCRAZER & Starkku)
+- Fixed a desync due to an inconsistent shroud state caused by `GapGenerator` and `SpySat` interaction (by Starkku)
+
+Phobos fixes:
+- Fixed vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't (by Starkku)
+```
 
 ### 0.4.0.2
 
@@ -943,6 +1034,7 @@ Vanilla fixes:
 - Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges (by CrimRecya & TaranDahl)
 - Fixed an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge (by CrimRecya)
 - Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge (by CrimRecya)
+- Allow voxel projectiles to use `AnimPalette` and `FirersPalette` (by NetsuNegi)
 - Fixed an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc. (by TaranDahl)
 - Fixed the bug that `EnterBioReactorSound`, `LeaveBioReactorSound`, `EnterGrinderSound` on technotype does not used (by NetsuNegi)
 - Fixed the bug that harvester dont stop unloading and cannot unload cargos anymore when lifting by `IsLocomotor=yes` warhead (by NetsuNegi)
@@ -1206,7 +1298,6 @@ Vanilla fixes:
 - Fixed the bug when reading a map which puts `Preview(Pack)` after `Map` lead to the game fail to draw the preview (by secsome)
 - Fixed the bug that GameModeOptions are not correctly saved (by secsome)
 - Fixed the bug that AITriggerTypes do not recognize building upgrades (by Uranusian)
-- Fixed AI Aircraft docks bug when Ares tag `[GlobalControls] -> AllowParallelAIQueues=no` is set (by FS-21)
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10 (by Otamaa)
 - Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead (by Starkku)
 - Fixed aircraft & jumpjet units not being affected by speed modifiers (by Starkku)
@@ -1230,7 +1321,6 @@ Vanilla fixes:
 - Fixed railgun particles being drawn to wrong coordinate against buildings with non-default `TargetCoordOffset` or when force-firing on bridges (by Starkku)
 - Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines (by Starkku)
 - Allowed observers to see a selected building's radial indicator (by Trsdy)
-- Allow voxel projectiles to use `AnimPalette` and `FirersPalette` (by NetsuNegi)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
@@ -1262,6 +1352,7 @@ Phobos fixes:
 - Fixed GlobalVariables failed working among scenarios (by Trsdy)
 
 Fixes / interactions with other extensions:
+- Fixed AI Aircraft docks bug when Ares tag `[GlobalControls] -> AllowParallelAIQueues=no` is set (by FS-21)
 - Weapons fired by EMPulse superweapons *(Ares feature)* without `EMPulse.TargetSelf=true` can now create radiation (by Starkku)
 
 Non-DLL:
@@ -1302,7 +1393,7 @@ Phobos fixes:
 New:
 - Customizable producing progress "bars" like CnC:Remastered did (by Uranusian)
 - Customizable cameo sorting priority (by Uranusian)
-- Customizable harvester ore gathering animation (by secsome, Uranusian)
+- Customizable harvester ore gathering animation (by secsome & Uranusian)
 - Allow making technos unable to be issued with movement order (by Uranusian)
 
 Vanilla fixes:

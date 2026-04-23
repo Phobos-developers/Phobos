@@ -81,8 +81,9 @@ inline int PhobosToolTip::GetPower(TechnoTypeClass* pType) const
 		}
 	case AbstractType::BuildingType:
 		{
-			const auto pBldType = (BuildingTypeClass*)pType;
-			return pBldType->PowerBonus - pBldType->PowerDrain;
+			const auto pBldType = static_cast<BuildingTypeClass*>(pType);
+			const auto [enhancedPower, extraPower] = BuildingTypeExt::GetEnhancedPower(pBldType, pBldType->PowerBonus, HouseClass::CurrentPlayer);
+			return enhancedPower + extraPower - pBldType->PowerDrain;
 		}
 	default:
 		return 0;

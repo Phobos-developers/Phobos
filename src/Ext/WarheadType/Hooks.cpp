@@ -21,6 +21,21 @@ DEFINE_HOOK(0x46920B, BulletClass_Detonate, 0x6)
 	return 0;
 }
 
+// Customize Jumpjet properties on warhead
+DEFINE_HOOK(0x4696CE, BulletClass_Detonate_ImbueLocomotor, 0x6)
+{
+	enum { SkipGameCode = 0x469AA4 };
+
+	GET(BulletClass* const, pBullet, ESI);
+	GET(FootClass* const, pTarget, EDI);
+	const auto pWH = pBullet->WH;
+
+	WarheadTypeExt::LocomotorWarhead = pWH;
+	pBullet->Owner->ImbueLocomotor(pTarget, pWH->Locomotor);
+	WarheadTypeExt::LocomotorWarhead = nullptr;
+	return SkipGameCode;
+}
+
 DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
 {
 	GET_BASE(const WarheadTypeClass*, pWH, 0xC);
@@ -567,9 +582,16 @@ DEFINE_HOOK(0x4D73DE, FootClass_ReceiveDamage_RemoveParasite, 0x5)
 	GET(WarheadTypeClass*, pWarhead, EBP);
 	GET(const int*, damage, EDI);
 
-	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+	const auto pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
 	if (!pTypeExt->RemoveParasite.Get(*damage < 0))
+		return Skip;
+
+	GET(FootClass*, pParasite, EDX);
+	const auto pParasiteType = pParasite->GetTechnoType();
+
+	if (pTypeExt->RemoveParasite_Disallow.Contains(pParasiteType)
+		|| (!pTypeExt->RemoveParasite_Allow.empty() && !pTypeExt->RemoveParasite_Allow.Contains(pParasiteType)))
 		return Skip;
 
 	return Continue;

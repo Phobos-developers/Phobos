@@ -5,6 +5,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/BulletType/Body.h>
+#include <RulesClass.h>
 
 #pragma region Mission_Attack
 
@@ -589,11 +590,10 @@ DEFINE_HOOK(0x4CF190, FlyLocomotionClass_FlightUpdate_SetPrimaryFacing, 0x6) // 
 
 		const auto pFoot = *pFootPtr;
 		const auto pAircraft = abstract_cast<AircraftClass*, true>(pFoot);
-		const auto pType = pAircraft->Type;
-		const bool extendedMissions = TechnoTypeExt::ExtMap.Find(pType)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions);
 
 		// Rewrite vanilla implement
-		if (!pAircraft || !TechnoTypeExt::ExtMap.Find(pType)->ExtendedAircraftMissions_RearApproach.Get(extendedMissions))
+		if (!pAircraft || !TechnoTypeExt::ExtMap.Find(pAircraft->Type)->ExtendedAircraftMissions_RearApproach
+			.Get(TechnoTypeExt::ExtMap.Find(pAircraft->Type)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)))
 		{
 			const auto footCoords = pFoot->GetCoords();
 			const auto desired = DirStruct(Math::atan2(footCoords.Y - destination.Y, destination.X - footCoords.X));
@@ -616,7 +616,7 @@ DEFINE_HOOK(0x4CF190, FlyLocomotionClass_FlightUpdate_SetPrimaryFacing, 0x6) // 
 				const int turningRadius = GetTurningRadius(pAircraft);
 
 				// diameter = 2 * radius
-				const int cellCounts = Math::max((pType->SlowdownDistance / Unsorted::LeptonsPerCell), (turningRadius / 128));
+				const int cellCounts = Math::max((pAircraft->Type->SlowdownDistance / Unsorted::LeptonsPerCell), (turningRadius / 128));
 
 				// The direction of the airport
 				const auto currentDir = DirStruct(Math::atan2(footCoords.Y - destination.Y, destination.X - footCoords.X));
@@ -1219,6 +1219,42 @@ DEFINE_HOOK(0x66295A, RocketLocomotionClass_Process_IsHighEnoughForCruise, 0x8)
 	//R->EAX(pLinkedTo->GetHeight()); Vanilla behavior
 
 	return R->Origin() + 0x8;
+}
+
+#pragma endregion
+
+#pragma region CurleyShuffle
+
+DEFINE_HOOK(0x4183C3, AircraftClass_CurleyShuffle_FireAtTarget, 0x6)
+{
+	GET(AircraftClass*, pThis, ESI);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	R->DL(pTypeExt->CurleyShuffle.Get(RulesClass::Instance->CurleyShuffle));
+	return 0x4183C9;
+}
+
+DEFINE_HOOK(0x418671, AircraftClass_CurleyShuffle_FireOk, 0x6)
+{
+	GET(AircraftClass*, pThis, ESI);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	R->AL(pTypeExt->CurleyShuffle.Get(RulesClass::Instance->CurleyShuffle));
+	return 0x418677;
+}
+
+DEFINE_HOOK(0x418733, AircraftClass_CurleyShuffle_FireFacing, 0x6)
+{
+	GET(AircraftClass*, pThis, ESI);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	R->CL(pTypeExt->CurleyShuffle.Get(RulesClass::Instance->CurleyShuffle));
+	return 0x418739;
+}
+
+DEFINE_HOOK(0x418782, AircraftClass_CurleyShuffle_Default, 0x6)
+{
+	GET(AircraftClass*, pThis, ESI);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	R->DL(pTypeExt->CurleyShuffle.Get(RulesClass::Instance->CurleyShuffle));
+	return 0x418788;
 }
 
 #pragma endregion

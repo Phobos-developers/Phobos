@@ -56,6 +56,7 @@ public:
 		ValueableVector<float> LimboDelivery_RollChances;
 		Valueable<AffectedHouse> LimboKill_AffectsHouse;
 		ValueableVector<int> LimboKill_IDs;
+		ValueableVector<int> LimboKill_Counts;
 		Valueable<double> RandomBuffer;
 		ValueableIdxVector<SuperWeaponTypeClass> SW_Next;
 		Valueable<bool> SW_Next_RealLaunch;
@@ -64,6 +65,7 @@ public:
 		ValueableVector<float> SW_Next_RollChances;
 
 		Valueable<int> ShowTimer_Priority;
+		Nullable<bool> ShowTimer_Percentage;
 
 		Valueable<WarheadTypeClass*> Detonate_Warhead;
 		Valueable<WeaponTypeClass*> Detonate_Weapon;
@@ -143,6 +145,7 @@ public:
 			, LimboDelivery_RandomWeightsData {}
 			, LimboKill_AffectsHouse { AffectedHouse::Owner }
 			, LimboKill_IDs {}
+			, LimboKill_Counts {}
 			, RandomBuffer { 0.0 }
 			, Detonate_Warhead {}
 			, Detonate_Weapon {}
@@ -156,6 +159,7 @@ public:
 			, SW_Next_RollChances {}
 			, SW_Next_RandomWeightsData {}
 			, ShowTimer_Priority { 0 }
+			, ShowTimer_Percentage { false }
 			, Convert_Pairs {}
 			, ShowDesignatorRange { true }
 			, TabIndex { 1 }

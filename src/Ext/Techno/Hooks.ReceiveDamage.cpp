@@ -4,6 +4,7 @@
 #include <Ext/TEvent/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Utilities/AresHelper.h>
 
 namespace ReceiveDamageTemp
 {
@@ -33,7 +34,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	// Apply warhead effects
 	if (damage && !pWHExt->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate))
-		pWHExt->DetonateOnOneUnit(args->SourceHouse, pThis, args->Attacker);
+		pWHExt->DetonateOnOneUnit(args->SourceHouse, pThis, CoordStruct { 0, 0, 0 }, damage, args->Attacker, args->DistanceToEpicenter);
 
 	// Calculate Damage Multiplier
 	if (!args->IgnoreDefenses && damage)
@@ -116,9 +117,9 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			if (!RulesExt::Global()->CombatAlert_MakeAVoice) // No one want to play two sound at a time, I guess?
 				return;
 			else if (pTypeExt->CombatAlert_UseFeedbackVoice.Get(RulesExt::Global()->CombatAlert_UseFeedbackVoice) && pType->VoiceFeedback.Count > 0) // Use VoiceFeedback first
-				VocClass::PlayGlobal(pType->VoiceFeedback.GetItem(0), 0x2000, 1.0);
+				VocClass::PlayGlobal(pType->VoiceFeedback.GetItem(0), 0x2000, 1.0f);
 			else if (pTypeExt->CombatAlert_UseAttackVoice.Get(RulesExt::Global()->CombatAlert_UseAttackVoice) && pType->VoiceAttack.Count > 0) // Use VoiceAttack then
-				VocClass::PlayGlobal(pType->VoiceAttack.GetItem(0), 0x2000, 1.0);
+				VocClass::PlayGlobal(pType->VoiceAttack.GetItem(0), 0x2000, 1.0f);
 			else if (pTypeExt->CombatAlert_UseEVA.Get(RulesExt::Global()->CombatAlert_UseEVA)) // Use Eva finally
 				index = pTypeExt->CombatAlert_EVA.Get(VoxClass::FindIndex((const char*)"EVA_UnitsInCombat"));
 
@@ -251,11 +252,29 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x518434, InfantryClass_ReceiveDamage_SkipDeathAnim, 0x7)
+{
+	enum { SkipDeathAnim = 0x5185F1 };
+
+	GET(InfantryClass*, pThis, ESI);
+
+	return pThis->Transporter ? SkipDeathAnim : 0;
+}
+
 // Issue #237 NotHuman additional animations support
 // Author: Otamaa
 DEFINE_HOOK(0x518505, InfantryClass_ReceiveDamage_NotHuman, 0x4)
 {
+	enum { SkipPlayAnim = 0x518515, SkipGameCode = 0x5185F1 };
+
 	GET(InfantryClass* const, pThis, ESI);
+
+	if (pThis->SequenceAnim == Sequence::Paradrop && pThis->IsFallingDown)
+	{
+		GameCreate<AnimClass>(RulesClass::Instance->InfantryExplode, pThis->Location);
+		return SkipGameCode;
+	}
+
 	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFSET(0xD0, 0x4));
 
 	// Die1-Die5 sequences are offset by 10
@@ -278,8 +297,7 @@ DEFINE_HOOK(0x518505, InfantryClass_ReceiveDamage_NotHuman, 0x4)
 
 	R->ECX(pThis);
 	pThis->PlayAnim(static_cast<Sequence>(resultSequence), true);
-
-	return 0x518515;
+	return SkipPlayAnim;
 }
 
 DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
@@ -431,6 +449,40 @@ DEFINE_HOOK(0x5F5480, ObjectClass_ReceiveDamage_FlashDuration, 0x6)
 
 DEFINE_HOOK(0x701CFC, TechnoClass_ReceiveDamage_AllowBerzerkOnAllies, 0x5)
 {
-	enum { IgnoreOwnerCheckFailed = 0x701D0B };
-	return RulesExt::Global()->AllowBerzerkOnAllies ? IgnoreOwnerCheckFailed : 0;
+	enum { SkipCodeYR = 0x701D0B, SkipCodeAres = 0x701D2E };
+
+	// If AllowBerzerkOnAllies not enabled, just return from function
+	// and don't apply berzerk.
+	if (!RulesExt::Global()->AllowBerzerkOnAllies)
+		return 0;
+
+	// Ares already checked immunities by this point if it is enabled.
+	// Rechecking them causes issues, so only check ImmuneToPsionics
+	// again if Ares is not present.
+	return AresHelper::CanUseAres ? SkipCodeAres : SkipCodeYR;
+}
+
+DEFINE_HOOK(0x702823, TechnoClass_ReceiveDamage_SkipDamagedParticle, 0x7)
+{
+	enum { SkipParticle = 0x702A25, RemoveParticle = 0x70283C, SpawnParticle = 0x702857 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	if (pThis->Transporter)
+		return SkipParticle;
+
+	return pThis->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow ? SpawnParticle : RemoveParticle;
+}
+
+DEFINE_HOOK(0x737E6E, UnitClass_ReceiveDamage_SkipExplode, 0xA)
+{
+	enum { ContinueCheck = 0x737E78, SkipExplode = 0x737F74 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	if (pThis->Transporter)
+		return SkipExplode;
+
+	R->EAX(pThis->GetHeight());
+	return ContinueCheck;
 }
