@@ -36,82 +36,6 @@ namespace TextRenderer
 		auto it = gHbFontMap.find(pFont);
 		return it != gHbFontMap.end() ? it->second : nullptr;
 	}
-	// Reading File
-	std::string readIniValue(const std::string& iniPath, const std::string& section, const std::string& key)
-	{
-		std::ifstream file(iniPath);
-		std::string line;
-		std::string currentSection = "";
-		std::string value = "";
-
-		if (file.is_open())
-		{
-			while (getline(file, line))
-			{
-				// Check for section [SectionName]
-				if (line.find("[") != std::string::npos && line.find("]") != std::string::npos)
-				{
-					currentSection = line.substr(1, line.find("]") - 1);
-				}
-				// Check for key=value in the correct section
-				else if (currentSection == section && line.find(key + "=") != std::string::npos)
-				{
-					size_t pos = line.find("=");
-					value = line.substr(pos + 1);
-					break;
-				}
-			}
-			file.close();
-		}
-
-		return value;
-	}
-	bool ReadBoolFromConfig(const char* section, const char* key, bool defVal)
-	{
-		std::string v = readIniValue("Fonts\\config.ini", section, key);
-		if (v.empty()) return defVal;
-
-		// Convert to lowercase for case-insensitive comparison
-		std::transform(v.begin(), v.end(), v.begin(), ::tolower);
-
-		// Trim whitespace
-		v.erase(0, v.find_first_not_of(" \t\r\n"));
-		v.erase(v.find_last_not_of(" \t\r\n") + 1);
-
-		// Check for true values
-		if (v == "true" || v == "1" || v == "yes" || v == "on" || v == "enabled" || v == "TRUE")
-			return true;
-
-		// Check for false values
-		if (v == "false" || v == "0" || v == "no" || v == "off" || v == "disabled" || v == "FALSE")
-			return false;
-
-		// If numeric, treat non-zero as true
-		try
-		{
-			int intVal = std::stoi(v);
-			return intVal != 0;
-		}
-		catch (...)
-		{
-			// Invalid value, return default
-			return defVal;
-		}
-	}
-	int ReadIntFromConfig(const char* section, const char* key, int defVal)
-	{
-		std::string v = TextRenderer::readIniValue("Fonts\\config.ini", section, key);
-		if (v.empty()) return defVal;
-		try
-		{
-			int x = std::stoi(v);
-			return x > 0 ? x : defVal;
-		}
-		catch (...)
-		{
-			return defVal;
-		}
-	}
 
 	std::wstring FixUtf8InWchar(const wchar_t* ws)
 	{
@@ -686,6 +610,8 @@ namespace TextRenderer
 	}
 	BitFont* BitFont_CTOR_(BitFont* pFont, const char* pFileName)
 	{
+		CCINIClass ini_uimd {};
+		ini_uimd.LoadFromFile(GameStrings::UIMD_INI);
 		//  Basic defaults 
 		pFont->InternalPTR = nullptr;
 		pFont->Pointer_8 = nullptr;
@@ -713,8 +639,8 @@ namespace TextRenderer
 		pFont->field_1C = pFont->InternalPTR->Lines;
 
 		// Read config
-		int latinSize = ReadIntFromConfig("Size", "LatinSize", 0);
-		int arabicSize = ReadIntFromConfig("Size", "ArabicSize", 0);
+		int latinSize = ini_uimd.ReadInteger("FontSize", "LatinSize", 0);
+		int arabicSize = ini_uimd.ReadInteger("FontSize", "ArabicSize", 0);
 		int targetH = pFont->InternalPTR->FontHeight;
 		if (targetH <= 0) targetH = 14;
 		if (latinSize <= 0) latinSize = targetH;
@@ -883,8 +809,10 @@ namespace TextRenderer
 
 	BitFont::InternalData* LoadTTFAsInternalData(const char* pFileName)
 	{
-		int LatinSize = stoi(readIniValue("Fonts\\config.ini", "Size", "LatinSize"));
-		//int ArabicSize = stoi(readIniValue("Fonts\\config.ini", "Font", "ArabicSize"));
+		CCINIClass ini_uimd {};
+		ini_uimd.LoadFromFile(GameStrings::UIMD_INI);
+		int LatinSize = ini_uimd.ReadInteger("FontSize", "LatinSize", 0);
+		//int ArabicSize = ini_uimd.ReadInteger("FontSize", "ArabicSize",0));
 		FT_Library gFTLibrary = nullptr;
 		if (!gFTLibrary)
 			if (FT_Init_FreeType(&gFTLibrary) != 0) return nullptr;

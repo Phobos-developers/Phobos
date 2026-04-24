@@ -60,8 +60,6 @@ namespace TextRenderer
 	std::wstring FixUtf8InWchar(const wchar_t* ws);
 	int MeasureRealAscender(FT_Face face, const wchar_t* testSet);
 	int MeasureRealDescender(FT_Face face, const wchar_t* testSet);
-	std::string readIniValue(const std::string& iniPath, const std::string& section, const std::string& key);
-	bool ReadBoolFromConfig(const char* section, const char* key, bool defVal);
 	int GetCharacterWidth(BitFont* pFont, wchar_t ch);
 	const wchar_t* FindLineEnd(BitFont* pFont, const wchar_t* start, int nMaxWidth);
 	BitFont::InternalData* LoadTTFAsInternalData(const char* pFileName);

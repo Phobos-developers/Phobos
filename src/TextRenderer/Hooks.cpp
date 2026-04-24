@@ -5,10 +5,16 @@
 #include <CCINIClass.h>
 #include <BitFont.h>
 #include <BitText.h>
+#include <Phobos.h>
+#include <Utilities/GeneralUtils.h>
+#include <Utilities/Debug.h>
 
-static bool Enable = TextRenderer::ReadBoolFromConfig("EnableTTF", "Enabled", false);
-
-
+static bool IsTTFEnabled()
+{
+	static CCINIClass ini_uimd;
+	ini_uimd.LoadFromFile(GameStrings::UIMD_INI);
+	return ini_uimd.ReadBool("Render", "EnableTTF", false);
+}
 // Best fix Unicode
 DEFINE_HOOK(0x5D3BA0, sub_433F50, 7)
 {
@@ -24,11 +30,15 @@ DEFINE_HOOK(0x5D3BA0, sub_433F50, 7)
 // 43393A
 DEFINE_HOOK(0x433880, BitFont_CTOR, 8)
 {
-	if (Enable)
+
+	if (IsTTFEnabled())
 		return 0;
 	GET(BitFont*, pFont, ECX);
-	std::string FileName = TextRenderer::readIniValue("Fonts\\config.ini", "Font", "FileName");
-	pFont = TextRenderer::BitFont_CTOR_(pFont, ("Fonts\\" + FileName).c_str());
+	CCINIClass ini_uimd {};
+	ini_uimd.LoadFromFile(GameStrings::UIMD_INI);
+	ini_uimd.ReadString("Font", "FileName", "default.ttf", Phobos::readBuffer);
+	std::string fontPath = std::string("Fonts\\") + Phobos::readBuffer;
+	pFont = TextRenderer::BitFont_CTOR_(pFont, fontPath.c_str());
 
 	return  pFont ? 0x43393A : 0;
 }
@@ -36,7 +46,7 @@ DEFINE_HOOK(0x433880, BitFont_CTOR, 8)
 
 DEFINE_HOOK(0x433CF0, BitFont_GetTextDimension, 8)
 {
-	if (Enable)
+	if (IsTTFEnabled())
 		return 0;
 	GET(BitFont*, pFont, ECX);
 	GET_STACK(const wchar_t*, pText, 0x4);
@@ -52,7 +62,8 @@ DEFINE_HOOK(0x433CF0, BitFont_GetTextDimension, 8)
 }
 DEFINE_HOOK(0x434CD0, BitText_DrawText, 10)
 {
-	if (Enable) return 0;
+	if (IsTTFEnabled())
+		return 0;
 	GET_STACK(BitFont*, pFont, 0x4);
 	GET_STACK(Surface*, pSurface, 0x8);
 	GET_STACK(const wchar_t*, pWideString, 0xC);
@@ -71,7 +82,8 @@ DEFINE_HOOK(0x434CD0, BitText_DrawText, 10)
 
 DEFINE_HOOK(0x434500, sub_434500, 7)
 {
-	if (Enable) return 0;
+	if (IsTTFEnabled())
+		return 0;
 	GET(BitFont*, pFont, ECX);
 	GET_STACK(wchar_t*, pText, 0x4);
 	GET_STACK(int, xLeft, 0x8);
@@ -85,5 +97,6 @@ DEFINE_HOOK(0x434500, sub_434500, 7)
 	R->EAX(TextRenderer::BitFont_434500_(pFont, pText, xLeft, yTop, charCount, nColorAdjust));
 	return 0x4346B4;
 }
+
 
 
