@@ -6,8 +6,10 @@
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Entity/AttachEffectClass.h>
+#include <New/Entity/ShiftSchedule.h>
 
 class BulletClass;
+struct ShiftSchedule;
 
 class TechnoExt
 {
@@ -106,6 +108,10 @@ public:
 		CoordStruct LastTargetCrd;
 		CDTimerClass LastTargetCrdClearTimer;
 
+		std::unique_ptr<ShiftSchedule> QueuedShift;
+		TechnoClass* ShiftApplier;
+		HouseClass* ShiftApplierHouse;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -177,6 +183,9 @@ public:
 			, HoverShutdown { false }
 			, LastTargetCrd { CoordStruct::Empty }
 			, LastTargetCrdClearTimer {}
+			, QueuedShift {}
+			, ShiftApplier { nullptr }
+			, ShiftApplierHouse { nullptr }
 		{ }
 
 		void OnEarlyUpdate();
@@ -235,18 +244,7 @@ public:
 		ExtContainer();
 		~ExtContainer();
 
-		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
-		{
-			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-
-			switch (abs)
-			{
-			case AbstractType::Airstrike:
-				return false;
-			default:
-				return true;
-			}
-		}
+		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override;
 	};
 
 	static ExtContainer ExtMap;

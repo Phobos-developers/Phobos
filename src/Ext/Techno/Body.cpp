@@ -1225,12 +1225,17 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->HoverShutdown)
 		.Process(this->LastTargetCrd)
 		.Process(this->LastTargetCrdClearTimer)
+		/*.Process(this->QueuedShift)*/ // Always set and reset in one function
+		.Process(this->ShiftApplier)
+		.Process(this->ShiftApplierHouse)
 		;
 }
 
 void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 {
 	AnnounceInvalidPointer(this->AirstrikeTargetingMe, ptr);
+	AnnounceInvalidPointer(this->ShiftApplier, ptr);
+	AnnounceInvalidPointer(this->ShiftApplierHouse, ptr);
 }
 
 void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -1264,6 +1269,23 @@ TechnoExt::ExtContainer::ExtContainer() : Container("TechnoClass") { }
 
 TechnoExt::ExtContainer::~ExtContainer() = default;
 
+bool TechnoExt::ExtContainer::InvalidateExtDataIgnorable(void* const ptr) const
+{
+	auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+
+	switch (abs)
+	{
+	case AbstractType::Airstrike:
+	case AbstractType::Aircraft:
+	case AbstractType::Building:
+	case AbstractType::Infantry:
+	case AbstractType::Unit:
+	case AbstractType::House:
+		return false;
+	}
+
+	return true;
+}
 
 // =============================
 // container hooks

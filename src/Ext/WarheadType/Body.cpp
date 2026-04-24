@@ -405,6 +405,15 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Taunt.Read(exINI, pSection, "Taunt");
 
+	this->KnockUp.Read(exINI, pSection, "KnockUp");
+	this->KnockUp_Range.Read(exINI, pSection, "KnockUp.Range");
+	this->KnockUp_Speed.Read(exINI, pSection, "KnockUp.Speed");
+	this->KnockUp_Angle.Read(exINI, pSection, "KnockUp.Angle");
+
+	this->Traction.Read(exINI, pSection, "Traction");
+	this->Traction_Range.Read(exINI, pSection, "Traction.Range");
+	this->Traction_Speed.Read(exINI, pSection, "Traction.Speed");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -465,6 +474,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->ReturnWarhead
 		|| this->PenetratesTransport_Level > 0
 		|| this->Taunt
+		|| this->KnockUp
+		|| this->Traction
 	);
 
 	char tempBuffer[32];
@@ -736,6 +747,15 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ApplyPerTargetEffectsOnDetonate)
 
 		.Process(this->Taunt)
+
+		.Process(this->KnockUp)
+		.Process(this->KnockUp_Range)
+		.Process(this->KnockUp_Speed)
+		.Process(this->KnockUp_Angle)
+
+		.Process(this->Traction)
+		.Process(this->Traction_Range)
+		.Process(this->Traction_Speed)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

@@ -247,6 +247,15 @@ public:
 
 		Valueable<bool> Taunt;
 
+		Valueable<bool> KnockUp;
+		Valueable<Leptons> KnockUp_Range;
+		Valueable<Leptons> KnockUp_Speed;
+		Valueable<double> KnockUp_Angle;
+
+		Valueable<bool> Traction;
+		Valueable<Leptons> Traction_Range;
+		Valueable<Leptons> Traction_Speed;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -522,6 +531,15 @@ public:
 			, ApplyPerTargetEffectsOnDetonate {}
 
 			, Taunt { false }
+
+			, KnockUp { false }
+			, KnockUp_Range { Leptons(0) }
+			, KnockUp_Speed { Leptons(0) }
+			, KnockUp_Angle { 45.0 }
+
+			, Traction { false }
+			, Traction_Range { Leptons(0) }
+			, Traction_Speed { Leptons(0) }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
@@ -561,6 +579,8 @@ public:
 		void ApplyReverseEngineer(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyReturnWarhead(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
 		void ApplyPenetratesTransport(TechnoClass* pTarget, TechnoClass* pInvoker, HouseClass* pInvokerHouse, const CoordStruct& coords, int damage, int distance);
+		void ApplyKnockUp(TechnoClass* pTarget);
+		void ApplyTraction(TechnoClass* pTarget, const CoordStruct& coords);
 		double GetCritChance(TechnoClass* pFirer) const;
 	};
 
