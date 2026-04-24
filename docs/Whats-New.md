@@ -571,6 +571,9 @@ New:
 - [Updateable firing anim](Fixed-or-Improved-Logics.md#updateable-firing-anim) (by TaranDahl)
 - [Additional customizations for `Splits` concerning target selection](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
 - [Allow replacing vanilla repairing with togglable auto repairing](User-Interface.md#allow-replacing-vanilla-repairing-with-togglable-auto-repairing) (by TaranDahl)
+- Forced displacement locomotor implementation (by TaranDahl)
+- [Knock-up warhead](New-or-Enhanced-Logics.md#knock-up-warhead) (by TaranDahl)
+- [Traction warhead](New-or-Enhanced-Logics.md#traction-warhead) (by TaranDahl)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
