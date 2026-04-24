@@ -88,7 +88,7 @@ CoordStruct ShiftLocomotionClass::FindShiftDestination(FootClass* pTechno, Coord
 		return CoordStruct::Empty;
 	}
 
-	CellStruct finalMapCrd = bestMapCrds[ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(bestMapCrds.size()))];
+	CellStruct finalMapCrd = bestMapCrds[ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(bestMapCrds.size() - 1))];
 
 	return MapClass::Instance.GetCellAt(finalMapCrd)->GetCoordsWithBridge() + offset;
 }
