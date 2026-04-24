@@ -2688,6 +2688,24 @@ PenetratesIronCurtain=false  ; boolean
 PenetratesForceShield=       ; boolean
 ```
 
+### Knock-up warhead
+
+- You can now launch targets in an arc with projectiles. The target will be knocked up in the opposite direction of its current facing.
+  - `KnockUp` controls whether to enable this logic.
+  - `KnockUp.Range` defines the knock-up distance.
+  - `KnockUp.Speed` defines the horizontal knock-up velocity.
+  - `KnockUp.Angle` defines the knock-up angle.
+
+In `rulesmd.ini`:
+
+```ini
+[SOMEWARHEAD]            ; WarheadType
+KnockUp=false            ; boolean
+KnockUp.Range=0.0        ; floating point, cells
+KnockUp.Speed=0.0        ; floating point, cells/frame (horizontal component)
+KnockUp.Angle=45.0       ; floating point, degrees
+```
+
 ### Launch superweapons on impact
 
 - Superweapons can now be launched when a warhead is detonated.
@@ -2915,6 +2933,22 @@ ApplyPerTargetEffectsOnDetonate=      ; boolean, default to [CombatDamage] -> Ap
 ```{note}
 - Ares' warhead effects, such as EMP or IronCurtain warhead, will not be affected.
 - Ares' warhead effect controllers, such as `EffectsRequireDamage`, only affect Ares' effects. So they have nothing to do with this.
+```
+
+### Traction warhead
+
+- `Traction` pulls affected targets toward the explosion point.
+  - `Traction` controls whether to enable this logic.
+  - `Traction.Range` is treated as a movement "budget" (floating point, in cells) used to limit how far the pull can progress.
+  - `Traction.Speed` controls the linear movement speed applied when the pull occurs (cells/frame).
+
+In `rulesmd.ini`:
+
+```ini
+[SOMEWARHEAD]            ; WarheadType
+Traction=false           ; boolean
+Traction.Range=0.0       ; floating point, cells
+Traction.Speed=0.0       ; floating point, cells/frame
 ```
 
 ### Trigger specific NotHuman infantry Death anim sequence
