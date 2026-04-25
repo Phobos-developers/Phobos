@@ -433,7 +433,11 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 
 	auto const pTypeExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData;
 
-	if (pTransport->Deactivated && !pTypeExt->OpenTopped_AllowFiringIfDeactivated)
+	const bool isDeactivatedOrAttackedByLocomotor = pTransport->Deactivated
+		|| (pTransport->WhatAmI() != AbstractType::BuildingType
+			&& static_cast<FootClass*>(pTransport)->IsAttackedByLocomotor);
+
+	if (isDeactivatedOrAttackedByLocomotor && !pTypeExt->OpenTopped_AllowFiringIfDeactivated)
 		return Illegal;
 
 	if (pTransport->Transporter)
