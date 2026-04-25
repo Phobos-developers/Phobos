@@ -1671,6 +1671,7 @@ msgid ""
 "reacquire targets after eliminating the target is significantly longer "
 "than that in other missions."
 msgstr ""
+"修复了处于 `Area Guard` 任务中的单位消灭目标后重新获取目标所用时间明显长于其他任务的问题。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"

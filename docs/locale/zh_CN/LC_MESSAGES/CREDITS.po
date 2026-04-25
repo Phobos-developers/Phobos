@@ -2499,6 +2499,7 @@ msgid ""
 "reacquire targets after eliminating the target is significantly longer "
 "than that in other missions"
 msgstr ""
+"修复了处于 `Area Guard` 任务中的单位消灭目标后重新获取目标所用时间明显长于其他任务的问题"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
