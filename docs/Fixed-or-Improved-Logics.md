@@ -323,6 +323,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue where the sidebar would not refresh when an unit dies in limbo.
 - Enabled playing ingame movie in non-campaign modes (i.e. trigger action `100 Play Sidebar Movie...` and `117 Play Sidebar Movie and pause...`).
 - `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses.
+- Fixed the issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions.
 
 ## Fixes / interactions with other extensions
 
