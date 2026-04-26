@@ -2516,8 +2516,8 @@ msgstr "0.4.0.3"
 
 msgid ""
 "Vehicles overlapping `Wall=true` OverlayTypes no longer display sell "
-"cursor and cannot be sold (by CnCRAZER & Starkku)"
-msgstr "图像与 `Wall=true` 的覆盖物重叠的载具上不再会显示出售光标也不再能被出售（by RAZER & Starkku）"
+"cursor and cannot be sold (by CnCRAZER, Starkku, Noble_Fish)"
+msgstr "图像与 `Wall=true` 的覆盖物重叠的载具上不再会显示出售光标也不再能被出售（by RAZER、Starkku、Noble_Fish）"
 
 msgid ""
 "Fixed a desync due to an inconsistent shroud state caused by "
