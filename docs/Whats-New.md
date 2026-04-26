@@ -571,6 +571,7 @@ New:
 - [Hotkey for deselect object from current selection](User-Interface.md#deselect-object-s) (by FrozenFog)
 - [Additional customizations for `Splits` concerning target selection](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
 - [Allow replacing vanilla repairing with togglable auto repairing](User-Interface.md#allow-replacing-vanilla-repairing-with-togglable-auto-repairing) (by TaranDahl)
+- Use `OpenTopped.AllowFiringIfAttackedByLocomotor` to control the state where a non-building transport unit is being attacked by a weapon that uses a warhead with `IsLocomotor=true` (by Noble_Fish)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -717,7 +718,7 @@ Fixes / interactions with other extensions:
 ```{dropdown} Click to show
 
 Vanilla fixes:
-- Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold (by CnCRAZER & Starkku)
+- Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold (by CnCRAZER, Starkku, Noble_Fish)
 - Fixed a desync due to an inconsistent shroud state caused by `GapGenerator` and `SpySat` interaction (by Starkku)
 
 Phobos fixes:

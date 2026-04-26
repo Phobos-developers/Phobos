@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <RulesClass.h>
 #include <Utilities/Container.h>
@@ -299,6 +299,7 @@ public:
 		Valueable<bool> FallingDownTargetingFix;
 		Valueable<bool> AIAirTargetingFix;
 		Valueable<bool> OpenTopped_DecloakToFire;
+		Valueable<bool> OpenTopped_AllowFiringIfAttackedByLocomotor;
 
 		Valueable<bool> SortCameoByName;
 
@@ -584,6 +585,7 @@ public:
 			, FallingDownTargetingFix { false }
 			, AIAirTargetingFix { false }
 			, OpenTopped_DecloakToFire { false }
+			, OpenTopped_AllowFiringIfAttackedByLocomotor { true }
 
 			, SortCameoByName { false }
 
