@@ -31,6 +31,8 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From 0.4
 
+- `Splits.TargetCellRange` < 0 now applies special behaviour where the projectile does not consider nearby cells as additional targets if there are not enough techno targets to match `Cluster` count at all.
+- Combat light customizations introduced a bug that removed vanilla behaviour of ignoring detail level / framerate checks for colored combat light. This bug has been fixed but the previous behaviour can be restored by setting `CombatLightDetailLevel.CheckColored` on Warhead or globally under `[AudioVisual]`.
 - `[TechnoType] -> WarpAway=` has now been changed to set the animation when units are erased to maintain semantic consistency with `[General] -> WarpAway=`. The animation that was originally controlled by `[TechnoType] -> WarpAway=`, which played instead of `[General] -> WarpOut=` when a Techno is chronowarped by chronosphere, now needs to be specified using `[TechnoType] -> Chronoshift.WarpOut=`, which defaults to the value of `[TechnoType] -> WarpOut=`.
 - `UseCenterCoordsIfAttached` has been replaced by enumeration key `AttachedAnimPosition`. Set `AttachedAnimPosition=center` to replicate effects of `UseCenterCoordsIfAttached=true`.
 
@@ -423,7 +425,7 @@ New:
 - [Sinkablity and sinking speed customization](Fixed-or-Improved-Logics.md#sinking-behavior-dehardcode) (by TaranDahl)
 - [Fast access vehicle](New-or-Enhanced-Logics.md#fast-access-vehicle) (by CrimRecya)
 - Laser, electric bolt and rad beam scatter (by CrimRecya)
-- [Airburst weapon firing/source coordinate customizations](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
+- [Airburst weapon firing/source coordinate & firing effects customizations](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
 - [AlternateFLH on-turret toggle](Fixed-or-Improved-Logics.md#alternate-flh-customizations) (by Starkku)
 - [Fire weapon when Warhead kills something](New-or-Enhanced-Logics.md#fire-weapon-when-warhead-kills-something) (by Ollerus)
 - [Prone speed customization](Fixed-or-Improved-Logics.md#prone-speed-customization) (by TaranDahl)
@@ -561,6 +563,15 @@ New:
 - [Customize default mirage disguises per vehicletypes](New-or-Enhanced-Logics.md#default-mirage-disguise-for-individual-vehicletypes) (by NetsuNegi)
 - [Allow customize jumpjet properties on warhead](Fixed-or-Improved-Logics.md#customizing-locomotor-warhead) (by NetsuNegi)
 - Customize effects range of power plant enhancer (by NetsuNegi)
+- Allow each side to customize the color when the proportion of working miners is higher than `HarvesterCounter.ConditionYellow` (by Noble_Fish)
+- [Allow disable an over-optimization in targeting](Fixed-or-Improved-Logics.md#allow-disable-an-over-optimization-in-targeting) (by TaranDahl)
+- [Extra threat](New-or-Enhanced-Logics.md#extra-threat) (by TaranDahl)
+- [Technos with Walk locomotor spawn wake like ship](Fixed-or-Improved-Logics.md#customizable-wake-anim) (by TaranDahl)
+- [Hotkey for deselect object from current selection](User-Interface.md#deselect-object-s) (by FrozenFog)
+- [Updateable firing anim](Fixed-or-Improved-Logics.md#updateable-firing-anim) (by TaranDahl)
+- [Additional customizations for `Splits` concerning target selection](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
+- [Allow replacing vanilla repairing with togglable auto repairing](User-Interface.md#allow-replacing-vanilla-repairing-with-togglable-auto-repairing) (by TaranDahl)
+- Use `OpenTopped.AllowFiringIfAttackedByLocomotor` to control the state where a non-building transport unit is being attacked by a weapon that uses a warhead with `IsLocomotor=true` (by Noble_Fish)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -634,6 +645,12 @@ Vanilla fixes:
 - Fixed the [EIP#007120F7](https://modenc.renegadeprojects.com/Internal_Error#eip_007120F7) caused when the `Strength` value is lower than `RepairStep` (by NetsuNegi)
 - Fixed the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated (by TaranDahl)
 - Miners back to work when ore regenerated (by TaranDahl)
+- Fixed the incorrect mission switching in infantry EnterIdleMode (by TaranDahl)
+- Fix BalloonHover incorrectly considering ground factors when pathfinding (by TaranDahl)
+- Fixed the issue where the sidebar would not refresh when an unit dies in limbo (by TaranDahl)
+- Enabled playing ingame movie in non-campaign modes (i.e. trigger action 100 and 117) (by TaranDahl)
+- `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses (by Ollerus)
+- Fixed the issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions (by TaranDahl)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -671,6 +688,9 @@ Phobos fixes:
 - Fixed an issue where shadow matrix scaling was incorrectly applied to `TurretOffset` causing turret shadow misplacement (by Noble_Fish)
 - Fixed an issue that customizable warhead animation scatter cannot override 32 leptons scatter of `Inviso=yes` projectile (by NetsuNegi)
 - Fixed units with Fly, Jumpjet or Rocket locomotors destroyed while crashing off-map never being fully cleaned up, permanently blocking production slots and counting towards unit limits (by RAZER)
+- Fixed a bug where a unit's turrets would also get locked when the unit became deactivated for reasons other than being under EMP (by Noble_Fish)
+- Fixed a bug that prevented recalculation of stats etc. on discarding self-owned AE (by Starkku)
+- Fixed combat light ignoring / behaving differently from vanilla game regarding detail level and framerate checks (by Starkku)
 
 Fixes / interactions with other extensions:
 <!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->
@@ -686,6 +706,10 @@ Fixes / interactions with other extensions:
 - Modified the ares hook that stopped OpenTopped transports from firing if cloaked (by RAZER & Morton)
 - Fixed an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes (by NetsuNegi)
 - Fixed the initial direction of building placed by Ares's UnitDelivery superweapon (by NetsuNegi)
+- [Customize whether transport can kept or kill passengers when driver has been killed](New-or-Enhanced-Logics.md#customize-whether-transport-can-kept-or-kill-passengers-when-driver-has-been-killed) (by NetsuNegi)
+- Fixed a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to fire when the transport unit with `OpenTopped=yes` moved to an area that the passengers' `MovementZone` cannot move into (by NetsuNegi)
+- Fixed a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next` (by NetsuNegi & FlyStar)
+- Fixed the issue that `BombSight` not being updated correctly in techno conversion (by TaranDahl)
 
 ```
 
@@ -694,7 +718,7 @@ Fixes / interactions with other extensions:
 ```{dropdown} Click to show
 
 Vanilla fixes:
-- Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold (by CnCRAZER & Starkku)
+- Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold (by CnCRAZER, Starkku, Noble_Fish)
 - Fixed a desync due to an inconsistent shroud state caused by `GapGenerator` and `SpySat` interaction (by Starkku)
 
 Phobos fixes:
@@ -1370,7 +1394,7 @@ Phobos fixes:
 New:
 - Customizable producing progress "bars" like CnC:Remastered did (by Uranusian)
 - Customizable cameo sorting priority (by Uranusian)
-- Customizable harvester ore gathering animation (by secsome, Uranusian)
+- Customizable harvester ore gathering animation (by secsome & Uranusian)
 - Allow making technos unable to be issued with movement order (by Uranusian)
 
 Vanilla fixes:

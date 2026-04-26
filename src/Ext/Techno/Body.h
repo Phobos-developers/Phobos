@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/Container.h>
@@ -103,6 +103,8 @@ public:
 
 		bool OnParachuted; // This is just a temporary patch. TODO: fully check HasParachuted and correct its maintenance method.
 		bool HoverShutdown;
+		CoordStruct LastTargetCrd;
+		CDTimerClass LastTargetCrdClearTimer;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -173,6 +175,8 @@ public:
 			, JumpjetStraightAscend { false }
 			, OnParachuted { false }
 			, HoverShutdown { false }
+			, LastTargetCrd { CoordStruct::Empty }
+			, LastTargetCrdClearTimer {}
 		{ }
 
 		void OnEarlyUpdate();
@@ -213,6 +217,7 @@ public:
 		void UpdateTintValues();
 
 		void AmmoAutoConvertActions();
+		void UpdateLastTargetCrd();
 
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
@@ -307,6 +312,7 @@ public:
 
 	static bool EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, int distance, bool select);
 	static bool EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool select);
+	static bool __fastcall ApplyKillDriver(TechnoClass** pData, void*, HouseClass* pToHouse, TechnoClass* pKiller, bool resetVeterancy);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);
@@ -321,4 +327,5 @@ public:
 	static void ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 	static void ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 	static bool MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType);
+
 };

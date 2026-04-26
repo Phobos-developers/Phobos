@@ -245,6 +245,7 @@ public:
 
 		Valueable<bool> WarheadParticleAlphaImageIsLightFlash;
 		Valueable<int> CombatLightDetailLevel;
+		Valueable<bool> CombatLightDetailLevel_CheckColored;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
 		Valueable<bool> UseRetintFix;
@@ -301,6 +302,7 @@ public:
 		Valueable<bool> ReloadInTransport;
 		Valueable<bool> OpenTopped_IgnoreRangefinding;
 		Valueable<bool> OpenTopped_AllowFiringIfDeactivated;
+		Valueable<bool> OpenTopped_AllowFiringIfAttackedByLocomotor;
 		Valueable<bool> OpenTopped_ShareTransportTarget;
 		Valueable<bool> OpenTopped_UseTransportRangeModifiers;
 		Valueable<bool> OpenTopped_CheckTransportDisableWeapons;
@@ -340,6 +342,9 @@ public:
 
 		Valueable<bool> ApplyPerTargetEffectsOnDetonate;
 
+		Valueable<bool> FiringAnim_Update;
+		Valueable<bool> ExtendedPlayerRepair;
+		
 		Valueable<bool> AutoTarget_NoThreatBuildings;
 		Valueable<bool> AutoTargetAI_NoThreatBuildings;
 
@@ -348,12 +353,27 @@ public:
 
 		Valueable<bool> DefaultToGuardArea;
 
+		Valueable<bool> DisableOveroptimizationInTargeting;
+    
 		Valueable<bool> CylinderRangefinding;
 
 		Valueable<int> PenetratesTransport_Level;
 
 		Valueable<bool> UnitsUnsellable;
 
+		Valueable<bool> DriverKilled_KillPassengers;
+		Valueable<double> ExtraThreat_IsThreat;
+		Valueable<double> ExtraThreat_InRange;
+		Valueable<double> ExtraThreatCoefficient_InRangeDistance;
+		Valueable<double> ExtraThreatCoefficient_Facing;
+		Valueable<double> ExtraThreatCoefficient_DistanceToLastTarget;
+		Valueable<bool> BalloonHoverPathingFix;
+
+		Valueable<bool> WalkLocomotorMakesWake;
+		Valueable<bool> DriveLocomotorMakesWake;
+		Valueable<bool> HoverLocomotorMakesWake;
+		Valueable<bool> ShipLocomotorMakesWake;
+    
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -548,6 +568,7 @@ public:
 			, FixRepairStepCost { false }
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
+			, CombatLightDetailLevel_CheckColored { false }
 			, LightFlashAlphaImageDetailLevel { 0 }
 			, UseRetintFix { true }
 			, AINormalTargetingDelay {}
@@ -596,6 +617,7 @@ public:
 			, ReloadInTransport { false }
 			, OpenTopped_IgnoreRangefinding { false }
 			, OpenTopped_AllowFiringIfDeactivated { true }
+			, OpenTopped_AllowFiringIfAttackedByLocomotor { true }
 			, OpenTopped_ShareTransportTarget { true }
 			, OpenTopped_UseTransportRangeModifiers { false }
 			, OpenTopped_CheckTransportDisableWeapons { false }
@@ -650,6 +672,23 @@ public:
 			, PenetratesTransport_Level { 10 }
 
 			, UnitsUnsellable { false }
+
+			, DriverKilled_KillPassengers { false }
+			, DisableOveroptimizationInTargeting { false }
+			, ExtraThreat_IsThreat { 0.0 }
+			, ExtraThreat_InRange { 0.0 }
+			, ExtraThreatCoefficient_InRangeDistance { 0.0 }
+			, ExtraThreatCoefficient_Facing { 0.0 }
+			, ExtraThreatCoefficient_DistanceToLastTarget { 0.0 }
+			
+			, BalloonHoverPathingFix { false }
+			
+			, WalkLocomotorMakesWake { false }
+			, DriveLocomotorMakesWake { true }
+			, HoverLocomotorMakesWake { true }
+			, ShipLocomotorMakesWake { true }
+			, FiringAnim_Update { false }
+			, ExtendedPlayerRepair { false }
 		{ }
 
 		virtual ~ExtData() = default;

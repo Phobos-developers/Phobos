@@ -92,8 +92,8 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 		const double nPercentage = nTotal == 0 ? 1.0 : (double)nActive / (double)nTotal;
 
 		const ColorStruct clrToolTip = nPercentage > Phobos::UI::HarvesterCounter_ConditionYellow
-			? Drawing::TooltipColor : nPercentage > Phobos::UI::HarvesterCounter_ConditionRed
-			? pSideExt->Sidebar_HarvesterCounter_Yellow : pSideExt->Sidebar_HarvesterCounter_Red;
+			? pSideExt->Sidebar_HarvesterCounter_ColorGreen.Get(Drawing::TooltipColor) : nPercentage > Phobos::UI::HarvesterCounter_ConditionRed
+			? pSideExt->Sidebar_HarvesterCounter_ColorYellow : pSideExt->Sidebar_HarvesterCounter_ColorRed;
 
 		swprintf_s(counter, L"%ls%d/%d", Phobos::UI::HarvesterLabel, nActive, nTotal);
 
@@ -115,7 +115,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 
 		if (pPlayer->PowerBlackoutTimer.InProgress())
 		{
-			clrToolTip = pSideExt->Sidebar_PowerDelta_Grey;
+			clrToolTip = pSideExt->Sidebar_PowerDelta_ColorGrey;
 			swprintf_s(counter, L"%ls", Phobos::UI::PowerBlackoutLabel);
 		}
 		else
@@ -127,8 +127,8 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 				? Phobos::UI::PowerDelta_ConditionRed * 2.f : Phobos::UI::PowerDelta_ConditionYellow;
 
 			clrToolTip = percent < Phobos::UI::PowerDelta_ConditionYellow
-				? pSideExt->Sidebar_PowerDelta_Green : LESS_EQUAL(percent, Phobos::UI::PowerDelta_ConditionRed)
-				? pSideExt->Sidebar_PowerDelta_Yellow : pSideExt->Sidebar_PowerDelta_Red;
+				? pSideExt->Sidebar_PowerDelta_ColorGreen : LESS_EQUAL(percent, Phobos::UI::PowerDelta_ConditionRed)
+				? pSideExt->Sidebar_PowerDelta_ColorYellow : pSideExt->Sidebar_PowerDelta_ColorRed;
 
 			swprintf_s(counter, L"%ls%+d", Phobos::UI::PowerLabel, delta);
 		}

@@ -174,6 +174,7 @@ public:
 		Nullable<bool> MergeBuildingDamage;
 
 		Nullable<int> CombatLightDetailLevel;
+		Nullable<bool> CombatLightDetailLevel_CheckColored;
 		Valueable<double> CombatLightChance;
 		Valueable<bool> CLIsBlack;
 		Nullable<bool> Particle_AlphaImageIsLightFlash;
@@ -430,6 +431,7 @@ public:
 			, MergeBuildingDamage {}
 
 			, CombatLightDetailLevel {}
+			, CombatLightDetailLevel_CheckColored {}
 			, CombatLightChance { 1.0 }
 			, CLIsBlack { false }
 			, Particle_AlphaImageIsLightFlash {}

@@ -537,6 +537,11 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
 - Switches on/off [Task subtitles' label in the middle of the screen](#task-subtitles-display-in-the-middle-of-the-screen).
 - For localization add `TXT_TOGGLE_MESSAGE` and `TXT_TOGGLE_MESSAGE_DESC` into your `.csf` file.
 
+### `[ ]` Deselect Object(s)
+
+- Deselect 1 or 5 object(s) from current selected objects.
+- For localization add `TXT_DESELECT`, `TXT_DESELECT_DESC`, `TXT_DESELECT5` and `TXT_DESELECT5_DESC` into your `.csf` file.
+
 ## Loading screen
 
 - PCX files can now be used as loadscreen images.
@@ -568,6 +573,18 @@ SaveGameOnScenarioStart=true ; boolean
 
 ## Sidebar / Battle UI
 
+
+### Allow replacing vanilla repairing with togglable auto repairing
+
+- Now you can replace the vanilla repair method with a togglable auto-repair.
+  - Pressing repair button or hotkey will no longer change your mouse, but will toggle your auto-repair state on/off.
+  - When auto-repair state is toggled off, buildings will stop repairing.
+
+  In `rulesmd.ini`:
+```ini
+[General]
+ExtendedPlayerRepair=false    ; boolean
+```
 
 ### Building Production Queue
 
@@ -638,10 +655,10 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
 In `uimd.ini`:
 ```ini
 [Sidebar]
-HarvesterCounter.Show=false           ; boolean
-HarvesterCounter.Label=<none>         ; CSF entry key
-HarvesterCounter.ConditionYellow=99%  ; floating point value, percents
-HarvesterCounter.ConditionRed=50%     ; floating point value, percents
+HarvesterCounter.Show=false                     ; boolean
+HarvesterCounter.Label=<none>                   ; CSF entry key
+HarvesterCounter.ConditionYellow=99%            ; floating point value, percents
+HarvesterCounter.ConditionRed=50%               ; floating point value, percents
 ```
 
 In `rulesmd.ini`:
@@ -651,6 +668,7 @@ Harvester.Counted=                              ; boolean
 
 [SOMESIDE]                                      ; Side
 Sidebar.HarvesterCounter.Offset=0,0             ; X,Y, pixels relative to default
+Sidebar.HarvesterCounter.ColorGreen=            ; integer - Red,Green,Blue, default to [Side] -> ToolTipColor=
 Sidebar.HarvesterCounter.ColorYellow=255,255,0  ; integer - Red,Green,Blue
 Sidebar.HarvesterCounter.ColorRed=255,0,0       ; integer - Red,Green,Blue
 ```
