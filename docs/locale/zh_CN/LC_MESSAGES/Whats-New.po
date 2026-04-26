@@ -4527,7 +4527,7 @@ msgid ""
 "Ported XNA CnCNet Client multiplayer save handling to get rid of "
 "occasional multiplayer save file overwriting when saving too fast (by "
 "Kerbiter)"
-msgstr "移植了 XNA CNCNet Client 的多人游戏存档处理以解决保存过快时偶发的多人存档文件覆盖文件（by Kerbiter）"
+msgstr "移植了 XNA CnCNet Client 的多人游戏存档处理以解决保存过快时偶发的多人存档文件覆盖文件（by Kerbiter）"
 
 msgid "0.3.0.1"
 msgstr "0.3.0.1"

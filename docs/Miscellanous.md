@@ -272,7 +272,7 @@ SkirmishUnlimitedColors=false  ; boolean
 ```
 
 ```{note}
-This feature should only be used if you use a spawner/outside client (i.e. CNCNet client). Using it in the original YR launcher will produce undesireable effects.
+This feature should only be used if you use a spawner/outside client (i.e. CnCNet Client). Using it in the original YR launcher will produce undesireable effects.
 ```
 
 ```{warning}
