@@ -567,10 +567,11 @@ New:
 - [Allow disable an over-optimization in targeting](Fixed-or-Improved-Logics.md#allow-disable-an-over-optimization-in-targeting) (by TaranDahl)
 - [Extra threat](New-or-Enhanced-Logics.md#extra-threat) (by TaranDahl)
 - [Technos with Walk locomotor spawn wake like ship](Fixed-or-Improved-Logics.md#customizable-wake-anim) (by TaranDahl)
-- [Hotkey for deselect object from current selection](User-Interface.md#deselect-object-s) (by FrozenFog)
 - [Updateable firing anim](Fixed-or-Improved-Logics.md#updateable-firing-anim) (by TaranDahl)
+- [Hotkey for deselect object from current selection](User-Interface.md#deselect-object-s) (by FrozenFog)
 - [Additional customizations for `Splits` concerning target selection](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
 - [Allow replacing vanilla repairing with togglable auto repairing](User-Interface.md#allow-replacing-vanilla-repairing-with-togglable-auto-repairing) (by TaranDahl)
+- Use `OpenTopped.AllowFiringIfAttackedByLocomotor` to control whether the passengers of a non-building transport unit can fire when the unit is being attacked by a weapon whose warhead has `IsLocomotor=true` (by Noble_Fish)
 - Framework for dynamic sight (by TaranDahl)
 
 Vanilla fixes:
@@ -646,9 +647,9 @@ Vanilla fixes:
 - Fixed the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated (by TaranDahl)
 - Miners back to work when ore regenerated (by TaranDahl)
 - Fixed the incorrect mission switching in infantry EnterIdleMode (by TaranDahl)
-- Fix BalloonHover incorrectly considering ground factors when pathfinding (by TaranDahl)
+- Fixed BalloonHover incorrectly considering ground factors when pathfinding (by TaranDahl)
 - Fixed the issue where the sidebar would not refresh when an unit dies in limbo (by TaranDahl)
-- Enabled playing ingame movie in non-campaign modes (i.e. trigger action 100 and 117) (by TaranDahl)
+- Enabled playing ingame movie in non-campaign modes (i.e. trigger action `100 Play Sidebar Movie...` and `117 Play Sidebar Movie and pause...`) (by TaranDahl)
 - `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses (by Ollerus)
 - Fixed the issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions (by TaranDahl)
 
@@ -718,7 +719,7 @@ Fixes / interactions with other extensions:
 ```{dropdown} Click to show
 
 Vanilla fixes:
-- Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold (by CnCRAZER & Starkku)
+- Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold (by CnCRAZER, Starkku, Noble_Fish)
 - Fixed a desync due to an inconsistent shroud state caused by `GapGenerator` and `SpySat` interaction (by Starkku)
 
 Phobos fixes:

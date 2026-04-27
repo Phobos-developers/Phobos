@@ -1566,20 +1566,22 @@ DrainMoneyDisplay.OnTarget.UseDisplayIncome=        ; boolean
 In `rulesmd.ini`:
 ```ini
 [General]
-OpenTopped.DecloakToFire=true             ; boolean
+OpenTopped.AllowFiringIfAttackedByLocomotor=true  ; boolean
+OpenTopped.DecloakToFire=true                     ; boolean
 
-[SOMETECHNO]                              ; TechnoType, transport with OpenTopped=yes
-OpenTopped.RangeBonus=                    ; integer, default to [CombatDamage] -> OpenToppedRangeBonus
-OpenTopped.DamageMultiplier=              ; floating point value, default to [CombatDamage] -> OpenToppedDamageMultiplier
-OpenTopped.WarpDistance=                  ; integer, default to [CombatDamage] -> OpenToppedWarpDistance
-OpenTopped.IgnoreRangefinding=false       ; boolean
-OpenTopped.AllowFiringIfDeactivated=true  ; boolean
-OpenTopped.ShareTransportTarget=true      ; boolean
-OpenTopped.DecloakToFire=                 ; boolean, defaults to [General] -> OpenTopped.DecloakToFire
+[SOMETECHNO]                                      ; TechnoType, transport with OpenTopped=yes
+OpenTopped.RangeBonus=                            ; integer, default to [CombatDamage] -> OpenToppedRangeBonus
+OpenTopped.DamageMultiplier=                      ; floating point value, default to [CombatDamage] -> OpenToppedDamageMultiplier
+OpenTopped.WarpDistance=                          ; integer, default to [CombatDamage] -> OpenToppedWarpDistance
+OpenTopped.IgnoreRangefinding=false               ; boolean
+OpenTopped.AllowFiringIfDeactivated=true          ; boolean
+OpenTopped.AllowFiringIfAttackedByLocomotor=      ; boolean, defaults to [General] -> OpenTopped.AllowFiringIfAttackedByLocomotor
+OpenTopped.ShareTransportTarget=true              ; boolean
+OpenTopped.DecloakToFire=                         ; boolean, defaults to [General] -> OpenTopped.DecloakToFire
 
-[SOMETECHNO]                              ; TechnoType, passenger
-OpenTransport.RangeBonus=0                ; integer
-OpenTransport.DamageMultiplier=1.0        ; floating point value
+[SOMETECHNO]                                      ; TechnoType, passenger
+OpenTransport.RangeBonus=0                        ; integer
+OpenTransport.DamageMultiplier=1.0                ; floating point value
 ```
 
 ```{note}

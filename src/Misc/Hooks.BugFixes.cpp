@@ -3078,7 +3078,7 @@ static bool inline CanBeSold(TechnoClass* pTechno, AbstractType rtti)
 	{
 		auto const pTypeExt = TechnoExt::ExtMap.Find(pTechno)->TypeExtData;
 
-		if (!pTypeExt->Unsellable.Get(RulesExt::Global()->UnitsUnsellable))
+		if (pTypeExt->Unsellable.Get(RulesExt::Global()->UnitsUnsellable))
 			return false;
 
 		auto const pCell = MapClass::Instance.GetCellAt(pTechno->GetCenterCoords());

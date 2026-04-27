@@ -745,7 +745,7 @@ This page lists all the individual contributions to the project by their author.
   - Technos with Walk locomotor spawn wake like ship
   - Updateable firing anim
   - Fix the issue where the sidebar would not refresh when an unit dies in limbo
-  - Enable playing ingame movie in non-campaign modes (i.e. trigger action 100 and 117)
+  - Enable playing ingame movie in non-campaign modes (i.e. trigger action `100 Play Sidebar Movie...` and `117 Play Sidebar Movie and pause...`)
   - Allow replacing vanilla repairing with togglable auto repairing
   - Fix an issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions
   - Framework for dynamic sight

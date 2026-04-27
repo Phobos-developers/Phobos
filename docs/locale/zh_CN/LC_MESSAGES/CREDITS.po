@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-19 20:27+0800\n"
+"POT-Creation-Date: 2026-04-25 18:06+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2167,6 +2167,11 @@ msgstr "电厂增幅次数上限"
 msgid "Return warhead"
 msgstr "归返弹头"
 
+msgid ""
+"`ElectricAssault` weapons can now auto acquire allies' overpowerable "
+"defenses"
+msgstr "`ElectricAssault` 武器现在可以自动索敌盟友的可过载防御建筑"
+
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
 
@@ -2471,12 +2476,30 @@ msgid ""
 msgstr "修复了单位的 `BombSight` 在类型转换时不会被正确更新的问题"
 
 msgid "Technos with Walk locomotor spawn wake like ship"
-msgstr ""
-"使用 Walk 运动模式的单位像船只一样生成水波"
+msgstr "使用 Walk 运动模式的单位像船只一样生成水波"
 
 msgid "Updateable firing anim"
+msgstr "可更新开火动画"
+
+msgid ""
+"Fix the issue where the sidebar would not refresh when an unit dies in "
+"limbo"
+msgstr "修复了单位在 Limbo 状态下死亡时侧边栏不会刷新的问题"
+
+msgid ""
+"Enable playing ingame movie in non-campaign modes (i.e. trigger action "
+"`100 Play Sidebar Movie...` and `117 Play Sidebar Movie and pause...`)"
+msgstr "启用了在非战役模式下游戏内播放电影的功能（例如触发结果 `100 在小地图窗口播放影片` 和 `177 在小地图窗口播放影片(游戏暂停)...`）"
+
+msgid "Allow replacing vanilla repairing with togglable auto repairing"
+msgstr "允许使用可切换的自动维修替换原版维修"
+
+msgid ""
+"Fix an issue that the time for units in the area guard mission to "
+"reacquire targets after eliminating the target is significantly longer "
+"than that in other missions"
 msgstr ""
-"可更新开火动画"
+"修复了处于 `Area Guard` 任务中的单位消灭目标后重新获取目标所用时间明显长于其他任务的问题"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
@@ -2509,6 +2532,9 @@ msgstr "修复了 Drive/Jumpjet/Ship/Teleport 运动方式在退出 piggybacked 
 
 msgid "Destroyed unit leaves sensors bugfix"
 msgstr "单位被摧毁后遗留反隐区域的 bug 修复"
+
+msgid "**FrozenFog** - Hotkey for deselect object from current selection"
+msgstr "**FrozenFog** - 从当前已选中中取消选择对象的快捷键"
 
 msgid ""
 "**Aephiex** - initial fix for Ares academy not working on the initial "

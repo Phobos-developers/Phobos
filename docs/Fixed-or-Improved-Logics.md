@@ -321,7 +321,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the incorrect mission switching in infantry EnterIdleMode.
 - Fixed the bug where technos with `BalloonHover=yes` incorrectly considered ground factors when setting the destination and distributing moving commands. Use `[General] -> BalloonHoverPathingFix=true` to enable this.
 - Fixed the issue where the sidebar would not refresh when an unit dies in limbo.
-- Enable playing ingame movie in non-campaign modes (i.e. trigger action 100 and 117).
+- Enabled playing ingame movie in non-campaign modes (i.e. trigger action `100 Play Sidebar Movie...` and `117 Play Sidebar Movie and pause...`).
 - `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses.
 - Fixed the issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions.
 
