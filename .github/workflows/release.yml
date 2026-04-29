@@ -1,0 +1,63 @@
+name: Release Build
+
+on:
+  release:
+    types: [published]
+
+env:
+  SOLUTION_FILE_PATH: .
+  BUILD_CONFIGURATION: Release
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        submodules: recursive
+
+    - name: Determine Build Type and Version Info
+      id: info
+      shell: pwsh
+      run: |
+        $tag = "${{ github.ref_name }}"
+        $version = $tag.TrimStart('v')
+        $isPrerelease = "${{ github.event.release.prerelease }}"
+        if ($isPrerelease -eq "true") {
+          $buildType = "PRERELEASE"
+          $releaseName = "Phobos $tag (Pre-release)"
+        } else {
+          $buildType = "RELEASE"
+          $releaseName = "Phobos $tag"
+        }
+        echo "build-type=$buildType" >> $env:GITHUB_OUTPUT
+        echo "version=$version" >> $env:GITHUB_OUTPUT
+        echo "release-name=$releaseName" >> $env:GITHUB_OUTPUT
+
+    - name: Build Phobos
+      uses: ./.github/actions/build-phobos
+      with:
+        sln-path: ${{env.SOLUTION_FILE_PATH}}
+        build-config: ${{ env.BUILD_CONFIGURATION }}
+        build-type: ${{ steps.info.outputs.build-type }}
+
+    - name: Extract Changelog
+      shell: pwsh
+      run: |
+        .\scripts\extract_changelog.ps1 `
+          -Tag "${{ github.ref_name }}" `
+          -WhatsNewPath docs\Whats-New.md `
+          -OutputPath RELEASE_NOTES.md
+
+    - name: Upload Release Assets
+      uses: softprops/action-gh-release@v2
+      with:
+        name: ${{ steps.info.outputs.release-name }}
+        files: |
+          ${{ env.BUILD_CONFIGURATION }}/Phobos.dll
+          ${{ env.BUILD_CONFIGURATION }}/Phobos.pdb
+        body_path: RELEASE_NOTES.md
