@@ -2018,33 +2018,76 @@ bool Damageable<T>::Save(PhobosStreamWriter& Stm) const
 		&& Savegame::WritePhobosStream(Stm, this->ConditionRed);
 }
 
+namespace MultiflagVectorHelpers
+{
+	inline bool ShouldResetValues(INI_EX& parser, const char* pSection, const char* pBaseFlag)
+	{
+		char flagName[256];
+		const char* dot = strchr(pBaseFlag, '.');
+
+		if (dot)
+		{
+			size_t prefixLen = static_cast<size_t>(dot - pBaseFlag) + 1;
+
+			strncpy_s(flagName, sizeof(flagName), pBaseFlag, prefixLen);
+			flagName[prefixLen] = '\0';
+
+			strcat_s(flagName, sizeof(flagName), "ResetValues");
+		}
+		else
+		{
+			_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s.ResetValues", pBaseFlag);
+		}
+
+		Valueable<bool> resetValues {};
+		resetValues.Read(parser, pSection, flagName);
+		return resetValues.Get();
+	}
+
+	template<typename Vec, typename T, typename... TExtraArgs>
+	void ReadVectorBase(Vec& vec, bool& hasValue, INI_EX& parser, const char* pSection, const char* pBaseFlag, TExtraArgs&... extraArgs)
+	{
+		char flagName[0x40];
+
+		for (size_t i = 0; ; ++i)
+		{
+			_snprintf_s(flagName, sizeof(flagName), pBaseFlag, i, "%s");
+
+			if (i < vec.size())
+			{
+				T temp = vec[i];
+
+				if (!temp.Read(parser, pSection, flagName, extraArgs...))
+					continue;
+
+				vec[i] = std::move(temp);
+			}
+			else
+			{
+				T dataEntry {};
+
+				if (!dataEntry.Read(parser, pSection, flagName, extraArgs...))
+					break;
+
+				vec.push_back(std::move(dataEntry));
+			}
+
+			hasValue = true;
+		}
+	}
+}
+
 // MultiflagValueableVector
 
 template<typename T, typename... TExtraArgs>
 requires MultiflagReadable<T, TExtraArgs...>
 void __declspec(noinline) MultiflagValueableVector<T, TExtraArgs...>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs&... extraArgs)
 {
-	char flagName[0x40];
-	for (size_t i = 0; ; ++i)
-	{
-		T dataEntry {};
+	if (MultiflagVectorHelpers::ShouldResetValues(parser, pSection, pBaseFlag))
+		this->clear();
 
-		// we expect %d for array number then %s for the subflag name, so we replace %s with itself (but escaped)
-		_snprintf_s(flagName, sizeof(flagName), pBaseFlag, i, "%s");
-
-		if (!dataEntry.Read(parser, pSection, flagName, extraArgs...))
-		{
-			if (i < this->size())
-				continue;
-			else
-				break;
-		}
-
-		if (this->size() > i)
-			this->at(i) = dataEntry;
-		else
-			this->push_back(dataEntry);
-	}
+	bool dummyHasValue = false;
+	MultiflagVectorHelpers::ReadVectorBase<decltype(*this), T>(*this, dummyHasValue, parser, pSection, pBaseFlag, extraArgs...);
 }
 
 // MultiflagNullableVector
@@ -2053,29 +2096,10 @@ template<typename T, typename... TExtraArgs>
 requires MultiflagReadable<T, TExtraArgs...>
 void __declspec(noinline) MultiflagNullableVector<T, TExtraArgs...>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs&... extraArgs)
 {
-	char flagName[0x40];
-	for (size_t i = 0; ; ++i)
-	{
-		T dataEntry {};
+	if (MultiflagVectorHelpers::ShouldResetValues(parser, pSection, pBaseFlag))
+		this->clear();
 
-		// we expect %d for array number then %s for the subflag name, so we replace %s with itself (but escaped)
-		_snprintf_s(flagName, sizeof(flagName), pBaseFlag, i, "%s");
-
-		if (!dataEntry.Read(parser, pSection, flagName, extraArgs...))
-		{
-			if (i < this->size())
-				continue;
-			else
-				break;
-		}
-
-		if (this->size() > i)
-			this->at(i) = dataEntry;
-		else
-			this->push_back(dataEntry);
-
-		this->hasValue = true;
-	}
+	MultiflagVectorHelpers::ReadVectorBase<decltype(*this), T>(*this, this->hasValue, parser, pSection, pBaseFlag, extraArgs...);
 }
 
 // Animatable
@@ -2086,13 +2110,14 @@ template <typename TValue>
 bool __declspec(noinline) Animatable<TValue>::KeyframeDataEntry::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength)
 {
 	char flagName[0x40];
-
 	Nullable<double> percentageTemp {};
 	Nullable<absolute_length_t> absoluteTemp {};
-
 	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Percentage");
 	percentageTemp.Read(parser, pSection, flagName);
 	bool useNonAbs = true;
+
+	if (!percentageTemp.isset() && this->Percentage >= 0.0)
+		percentageTemp = this->Percentage;
 
 	if (absoluteLength > absolute_length_t(0))
 	{
@@ -2108,7 +2133,7 @@ bool __declspec(noinline) Animatable<TValue>::KeyframeDataEntry::Read(INI_EX& pa
 
 	if (useNonAbs)
 	{
-		if (!percentageTemp.isset())
+		if (!percentageTemp.isset() || percentageTemp < 0.0)
 			return false;
 		else
 			this->Percentage = percentageTemp;
@@ -2116,7 +2141,6 @@ bool __declspec(noinline) Animatable<TValue>::KeyframeDataEntry::Read(INI_EX& pa
 
 	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Value");
 	this->Value.Read(parser, pSection, flagName);
-
 	return true;
 };
 
@@ -2141,7 +2165,7 @@ bool Animatable<TValue>::HasValues() const
 }
 
 template <typename TValue>
-TValue Animatable<TValue>::Get(double const percentage) const noexcept
+TValue Animatable<TValue>::Get(double const percentage) const
 {
 	TValue match {};
 
@@ -2160,8 +2184,8 @@ TValue Animatable<TValue>::Get(double const percentage) const noexcept
 
 	// Binary search for a matching keyframe.
 	auto it = std::lower_bound(
-		this->KeyframeData.begin(),
-		this->KeyframeData.end(),
+		this->SortedKeyFrames.begin(),
+		this->SortedKeyFrames.end(),
 		percentage,
 		[](const KeyframeDataEntry& entry, double p)
 		{
@@ -2170,7 +2194,7 @@ TValue Animatable<TValue>::Get(double const percentage) const noexcept
 	);
 
 	// We found a match.
-	if (it != this->KeyframeData.begin())
+	if (it != this->SortedKeyFrames.begin())
 	{
 		--it;
 		double startPercentage = it->Percentage;
@@ -2178,7 +2202,7 @@ TValue Animatable<TValue>::Get(double const percentage) const noexcept
 		auto it_next = std::next(it);
 
 		// Only interpolate if an interpolation mode is enabled and there's keyframes remaining.
-		if (this->InterpolationMode != InterpolationMode::None && it_next != this->KeyframeData.end())
+		if (this->InterpolationMode != InterpolationMode::None && it_next != this->SortedKeyFrames.end())
 		{
 			auto const& nextKeyFrame = *it_next;
 			TValue nextValue = nextKeyFrame.Value.Get();
@@ -2188,7 +2212,7 @@ TValue Animatable<TValue>::Get(double const percentage) const noexcept
 	}
 
 	// Add value to cache.
-	this->KeyframeValueCache.emplace(percentage, match);
+	this->KeyframeValueCache.try_emplace(percentage, match);
 
 	return match;
 }
@@ -2201,15 +2225,11 @@ void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* c
 	char flagName[0x40];
 	_snprintf_s(baseFlagName, sizeof(baseFlagName), "%s.%%s", pBaseFlag);
 
-	// Reset value cache.
+	// Clear value cache.
 	this->KeyframeValueCache.clear();
 
-	_snprintf_s(flagName, sizeof(flagName), baseFlagName, "ResetData");
-	Valueable<bool> resetData {};
-	resetData.Read(parser, pSection, flagName);
-
-	if (resetData)
-		this->KeyframeData.clear();
+	// Clear sorted keyframes.
+	this->SortedKeyFrames.clear();
 
 	_snprintf_s(flagName, sizeof(flagName), baseFlagName, "Keyframe%d.%s");
 	this->KeyframeData.Read(parser, pSection, flagName, absoluteLength);
@@ -2217,22 +2237,21 @@ void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* c
 	_snprintf_s(flagName, sizeof(flagName), baseFlagName, "Interpolation");
 	detail::read(this->InterpolationMode, parser, pSection, flagName);
 
-	if (!this->HasValues() && useFallback)
+	if (!this->HasValues())
 	{
-		TValue value { DefaultValue };
-		KeyframeDataEntry keyframe {};
-		detail::read(value, parser, pSection, pBaseFlag);
-		keyframe.Value = value;
-		this->KeyframeData.push_back(keyframe);
+		if (useFallback)
+		{
+			TValue value { DefaultValue };
+			KeyframeDataEntry keyframe {};
+			detail::read(value, parser, pSection, pBaseFlag);
+			keyframe.Percentage = 0.0;
+			keyframe.Value = value;
+			this->KeyframeData.push_back(keyframe);
+			this->SortedKeyFrames.push_back(keyframe);
+		}
+
 		return;
 	}
-
-	// Sort the keyframe data based on percentages.
-	std::sort(KeyframeData.begin(), KeyframeData.end(),
-		  [](KeyframeDataEntry const& a, KeyframeDataEntry const& b)
-		  {
-			  return a.Percentage < b.Percentage;
-		  });
 
 	// Error handling
 	bool foundError = false;
@@ -2250,19 +2269,36 @@ void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* c
 			foundError = true;
 		}
 
+		if (value.Percentage <= 0.0)
+		{
+			Debug::Log("[Developer warning] [%s] %s has invalid keyframe percentage value %.3f.\n", pSection, flagName, value.Percentage);
+			foundError = true;
+		}
+
 		percentages.insert(value.Percentage);
 	}
 
 	if (foundError)
-	{
-		_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "%s");
-		int len = strlen(pBaseFlag);
+		Debug::FatalErrorAndExit("[%s] '%s' has invalid keyframe data defined. Check debug log for more details.\n", pSection, pBaseFlag);
 
-		if (len >= 4)
-			flagName[len - 3] = '\0';
+	// Copy keyframes over to sorted vector.
+	this->SortedKeyFrames.reserve(this->KeyframeData.size());
 
-		Debug::FatalErrorAndExit("[%s] %s has invalid keyframe data defined. Check debug log for more details.\n", pSection, flagName);
-	}
+	std::copy(
+		this->KeyframeData.begin(),
+		this->KeyframeData.end(),
+		std::back_inserter(this->SortedKeyFrames)
+	);
+
+	// Sort keyframes based on percentages.
+	std::sort(
+		this->SortedKeyFrames.begin(),
+		this->SortedKeyFrames.end(),
+		[](KeyframeDataEntry const& a, KeyframeDataEntry const& b)
+		{
+			return a.Percentage < b.Percentage;
+		}
+	);
 };
 
 template <typename TValue>

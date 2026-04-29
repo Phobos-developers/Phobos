@@ -556,7 +556,7 @@ public:
 	class KeyframeDataEntry
 	{
 	public:
-		double Percentage;
+		double Percentage = -1.0;
 		Valueable<TValue> Value;
 
 		inline bool Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength = absolute_length_t(0));
@@ -569,11 +569,12 @@ public:
 	TValue DefaultValue;
 	InterpolationMode InterpolationMode;
 	MultiflagValueableVector<KeyframeDataEntry, absolute_length_t> KeyframeData;
+	std::vector<KeyframeDataEntry> SortedKeyFrames;
 	mutable std::map<double, TValue> KeyframeValueCache;
 
 	inline bool HasValues() const;
 
-	inline TValue Get(double const percentage) const noexcept;
+	inline TValue Get(double const percentage) const;
 
 	inline void Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength = absolute_length_t(0), bool useFallback = true);
 
