@@ -557,20 +557,25 @@ bool ObjectFake::_IsCRCHashable()
 
 	if (rtti == AbstractType::Anim)
 	{
+		// Game creates animation from [General] -> MoveFlash with this UniqueID
+		// in FootClass::Active_Click_With() (0x4D7D50) - this is local-client only code
+		// which is why these animations have to be ignored in sync check.
 		if (this->UniqueID == -2)
 			return false;
 
-		auto const pAnim = static_cast<AnimClass*>((ObjectClass*)this);
+		auto const pAnim = reinterpret_cast<AnimClass*>(this);
 		auto pType = pAnim->Type;
 
 		while (pType)
 		{
+			// If animation type has logic that affects game simulation, don't ignore.
 			if (pType->Damage != 0.0 || pType->Bouncer || pType->IsMeteor || pType->IsTiberium || pType->TiberiumChainReaction
 				|| pType->IsAnimatedTiberium || pType->MakeInfantry != -1 || AnimTypeExt::ExtMap.Find(pType)->CreateUnitType.get())
 			{
 				return true;
 			}
 
+			// Check anim's Next type recursively until not present.
 			pType = pType->Next;
 		}
 
@@ -578,12 +583,14 @@ bool ObjectFake::_IsCRCHashable()
 	}
 	else if (rtti == AbstractType::Particle)
 	{
-		auto const pParticle = static_cast<ParticleClass*>((ObjectClass*)this);
+		auto const pParticle = reinterpret_cast<ParticleClass*>(this);
 		auto pType = pParticle->Type;
 
+		// If particle type deals damage don't ignore.
 		if (pType->Damage)
 			return true;
 
+		// Check particle's NextParticle type recursively until not present.
 		int index = pType->NextParticle;
 
 		while (index != -1)
@@ -602,12 +609,12 @@ bool ObjectFake::_IsCRCHashable()
 	return true;
 }
 
-static void __forceinline AddCRC(DWORD* crc, unsigned int val)
+static void inline AddCRC(DWORD* crc, unsigned int val)
 {
 	*crc = val + (*crc >> 31) + (*crc << 1);
 }
 
-static int __forceinline GetCoordHash(CoordStruct location)
+static int inline GetCoordHash(CoordStruct location)
 {
 	return location.X / 10 + ((location.Y / 10) << 16);
 }
