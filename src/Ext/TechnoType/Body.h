@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -164,6 +164,7 @@ public:
 		Nullable<int> OpenTopped_WarpDistance;
 		Valueable<bool> OpenTopped_IgnoreRangefinding;
 		Valueable<bool> OpenTopped_AllowFiringIfDeactivated;
+		Nullable<bool> OpenTopped_AllowFiringIfAttackedByLocomotor;
 		Valueable<bool> OpenTopped_ShareTransportTarget;
 		Valueable<bool> OpenTopped_UseTransportRangeModifiers;
 		Valueable<bool> OpenTopped_CheckTransportDisableWeapons;
@@ -595,6 +596,7 @@ public:
 			, OpenTopped_DamageMultiplier {}
 			, OpenTopped_WarpDistance {}
 			, OpenTopped_IgnoreRangefinding { false }
+			, OpenTopped_AllowFiringIfAttackedByLocomotor {}
 			, OpenTopped_AllowFiringIfDeactivated { true }
 			, OpenTopped_ShareTransportTarget { true }
 			, OpenTopped_UseTransportRangeModifiers { false }

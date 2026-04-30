@@ -567,10 +567,12 @@ New:
 - [Allow disable an over-optimization in targeting](Fixed-or-Improved-Logics.md#allow-disable-an-over-optimization-in-targeting) (by TaranDahl)
 - [Extra threat](New-or-Enhanced-Logics.md#extra-threat) (by TaranDahl)
 - [Technos with Walk locomotor spawn wake like ship](Fixed-or-Improved-Logics.md#customizable-wake-anim) (by TaranDahl)
-- [Hotkey for deselect object from current selection](User-Interface.md#deselect-object-s) (by FrozenFog)
 - [Updateable firing anim](Fixed-or-Improved-Logics.md#updateable-firing-anim) (by TaranDahl)
+- [Hotkey for deselect object from current selection](User-Interface.md#deselect-object-s) (by FrozenFog)
 - [Additional customizations for `Splits` concerning target selection](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
 - [Allow replacing vanilla repairing with togglable auto repairing](User-Interface.md#allow-replacing-vanilla-repairing-with-togglable-auto-repairing) (by TaranDahl)
+- Use `OpenTopped.AllowFiringIfAttackedByLocomotor` to control whether the passengers of a non-building transport unit can fire when the unit is being attacked by a weapon whose warhead has `IsLocomotor=true` (by Noble_Fish)
+- Framework for dynamic sight (by TaranDahl)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -645,10 +647,11 @@ Vanilla fixes:
 - Fixed the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated (by TaranDahl)
 - Miners back to work when ore regenerated (by TaranDahl)
 - Fixed the incorrect mission switching in infantry EnterIdleMode (by TaranDahl)
-- Fix BalloonHover incorrectly considering ground factors when pathfinding (by TaranDahl)
+- Fixed BalloonHover incorrectly considering ground factors when pathfinding (by TaranDahl)
 - Fixed the issue where the sidebar would not refresh when an unit dies in limbo (by TaranDahl)
-- Enabled playing ingame movie in non-campaign modes (i.e. trigger action 100 and 117) (by TaranDahl)
+- Enabled playing ingame movie in non-campaign modes (i.e. trigger action `100 Play Sidebar Movie...` and `117 Play Sidebar Movie and pause...`) (by TaranDahl)
 - `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses (by Ollerus)
+- Fixed the issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions (by TaranDahl)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -689,6 +692,7 @@ Phobos fixes:
 - Fixed a bug where a unit's turrets would also get locked when the unit became deactivated for reasons other than being under EMP (by Noble_Fish)
 - Fixed a bug that prevented recalculation of stats etc. on discarding self-owned AE (by Starkku)
 - Fixed combat light ignoring / behaving differently from vanilla game regarding detail level and framerate checks (by Starkku)
+- Fixed a bug causing transfering AttachEffects (e.g on `DeploysInto`/`UndeploysInto`) not to immediately recalculate stats or tint (by Starkku)
 
 Fixes / interactions with other extensions:
 <!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->
@@ -708,7 +712,6 @@ Fixes / interactions with other extensions:
 - Fixed a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to fire when the transport unit with `OpenTopped=yes` moved to an area that the passengers' `MovementZone` cannot move into (by NetsuNegi)
 - Fixed a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next` (by NetsuNegi & FlyStar)
 - Fixed the issue that `BombSight` not being updated correctly in techno conversion (by TaranDahl)
-
 ```
 
 ### 0.4.0.3
@@ -716,7 +719,7 @@ Fixes / interactions with other extensions:
 ```{dropdown} Click to show
 
 Vanilla fixes:
-- Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold (by CnCRAZER & Starkku)
+- Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold (by CnCRAZER, Starkku, Noble_Fish)
 - Fixed a desync due to an inconsistent shroud state caused by `GapGenerator` and `SpySat` interaction (by Starkku)
 
 Phobos fixes:

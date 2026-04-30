@@ -1,4 +1,4 @@
-﻿#include "Body.h"
+#include "Body.h"
 
 #include <Ext/TechnoType/Body.h>
 #include <New/Type/RadTypeClass.h>
@@ -350,6 +350,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->FallingDownTargetingFix.Read(exINI, GameStrings::General, "FallingDownTargetingFix");
 	this->AIAirTargetingFix.Read(exINI, GameStrings::General, "AIAirTargetingFix");
 	this->OpenTopped_DecloakToFire.Read(exINI, GameStrings::General, "OpenTopped.DecloakToFire");
+	this->OpenTopped_AllowFiringIfAttackedByLocomotor.Read(exINI, GameStrings::General, "OpenTopped.AllowFiringIfAttackedByLocomotor");
 
 	this->SortCameoByName.Read(exINI, GameStrings::General, "SortCameoByName");
 
@@ -687,6 +688,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->FallingDownTargetingFix)
 		.Process(this->AIAirTargetingFix)
 		.Process(this->OpenTopped_DecloakToFire)
+		.Process(this->OpenTopped_AllowFiringIfAttackedByLocomotor)
 		.Process(this->SortCameoByName)
 		.Process(this->MergeBuildingDamage)
 		.Process(this->BuildingRadioLink_SyncOwner)
