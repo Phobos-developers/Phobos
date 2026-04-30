@@ -3513,3 +3513,6 @@ DEFINE_HOOK(0x707A2E, TechnoClass_PointerExpired_TargetExpired, 0x5)
 	}
 	return 0;
 }
+
+// Fix infantry with Engineer=yes ignores cell occupier in AreaGuard, Parol and Guard mission.
+DEFINE_JUMP(LJMP, 0x51C335, 0x51C41C);
