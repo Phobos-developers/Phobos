@@ -2269,7 +2269,7 @@ void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* c
 			foundError = true;
 		}
 
-		if (value.Percentage <= 0.0)
+		if (value.Percentage < 0.0)
 		{
 			Debug::Log("[Developer warning] [%s] %s has invalid keyframe percentage value %.3f.\n", pSection, flagName, value.Percentage);
 			foundError = true;
