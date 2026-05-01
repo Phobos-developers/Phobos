@@ -946,7 +946,7 @@ void TechnoExt::GiveBounty(TechnoClass* pVictim, TechnoClass* pKiller, int victi
 		case Rank::Veteran:
 			if (pVictimTypeExt->Bounty_Multiplier_Vet.isset())
 			{
-				victimMultiplier = pVictimTypeExt->Bounty_Multiplier_Elite.Get();
+				victimMultiplier = pVictimTypeExt->Bounty_Multiplier_Vet.Get();
 				break;
 			}
 
@@ -980,7 +980,7 @@ void TechnoExt::GiveBounty(TechnoClass* pVictim, TechnoClass* pKiller, int victi
 	case Rank::Veteran:
 		if (pKillerTypeExt->Bounty_KillerMultiplier_Vet.isset())
 		{
-			killerMultiplier = pKillerTypeExt->Bounty_KillerMultiplier_Elite.Get();
+			killerMultiplier = pKillerTypeExt->Bounty_KillerMultiplier_Vet.Get();
 			break;
 		}
 
