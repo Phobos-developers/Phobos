@@ -1873,6 +1873,7 @@ msgstr ""
 
 msgid "Framework for dynamic sight (by TaranDahl)"
 msgstr ""
+"动态视野框架（by TaranDahl）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
