@@ -436,6 +436,12 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 	if (pTransport->Deactivated && !pTypeExt->OpenTopped_AllowFiringIfDeactivated)
 		return Illegal;
 
+	if (const auto pTransportFoot = abstract_cast<FootClass*>(pTransport))
+	{
+		if (pTransportFoot->IsAttackedByLocomotor && !pTypeExt->OpenTopped_AllowFiringIfAttackedByLocomotor.Get(RulesExt::Global()->OpenTopped_AllowFiringIfAttackedByLocomotor))
+			return Illegal;
+	}
+
 	if (pTransport->Transporter)
 		return Illegal;
 

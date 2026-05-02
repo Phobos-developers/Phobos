@@ -164,6 +164,7 @@ public:
 		Nullable<int> OpenTopped_WarpDistance;
 		Valueable<bool> OpenTopped_IgnoreRangefinding;
 		Valueable<bool> OpenTopped_AllowFiringIfDeactivated;
+		Nullable<bool> OpenTopped_AllowFiringIfAttackedByLocomotor;
 		Valueable<bool> OpenTopped_ShareTransportTarget;
 		Valueable<bool> OpenTopped_UseTransportRangeModifiers;
 		Valueable<bool> OpenTopped_CheckTransportDisableWeapons;
@@ -335,6 +336,7 @@ public:
 		Nullable<AnimTypeClass*> Wake;
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
+		Nullable<bool> MakesWake;
 
 		Nullable<int> AINormalTargetingDelay;
 		Nullable<int> PlayerNormalTargetingDelay;
@@ -596,6 +598,7 @@ public:
 			, OpenTopped_DamageMultiplier {}
 			, OpenTopped_WarpDistance {}
 			, OpenTopped_IgnoreRangefinding { false }
+			, OpenTopped_AllowFiringIfAttackedByLocomotor {}
 			, OpenTopped_AllowFiringIfDeactivated { true }
 			, OpenTopped_ShareTransportTarget { true }
 			, OpenTopped_UseTransportRangeModifiers { false }
@@ -814,6 +817,7 @@ public:
 			, Wake { }
 			, Wake_Grapple { }
 			, Wake_Sinking { }
+			, MakesWake { }
 
 			, AINormalTargetingDelay {}
 			, PlayerNormalTargetingDelay {}

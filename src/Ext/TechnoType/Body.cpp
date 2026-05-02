@@ -847,6 +847,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->OpenTopped_WarpDistance.Read(exINI, pSection, "OpenTopped.WarpDistance");
 	this->OpenTopped_IgnoreRangefinding.Read(exINI, pSection, "OpenTopped.IgnoreRangefinding");
 	this->OpenTopped_AllowFiringIfDeactivated.Read(exINI, pSection, "OpenTopped.AllowFiringIfDeactivated");
+	this->OpenTopped_AllowFiringIfAttackedByLocomotor.Read(exINI, pSection, "OpenTopped.AllowFiringIfAttackedByLocomotor");
 	this->OpenTopped_ShareTransportTarget.Read(exINI, pSection, "OpenTopped.ShareTransportTarget");
 	this->OpenTopped_UseTransportRangeModifiers.Read(exINI, pSection, "OpenTopped.UseTransportRangeModifiers");
 	this->OpenTopped_CheckTransportDisableWeapons.Read(exINI, pSection, "OpenTopped.CheckTransportDisableWeapons");
@@ -1052,6 +1053,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Wake.Read(exINI, pSection, "Wake");
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
+	this->MakesWake.Read(exINI, pSection, "MakesWake");
 
 	this->AINormalTargetingDelay.Read(exINI, pSection, "AINormalTargetingDelay");
 	this->PlayerNormalTargetingDelay.Read(exINI, pSection, "PlayerNormalTargetingDelay");
@@ -1591,6 +1593,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->OpenTopped_WarpDistance)
 		.Process(this->OpenTopped_IgnoreRangefinding)
 		.Process(this->OpenTopped_AllowFiringIfDeactivated)
+		.Process(this->OpenTopped_AllowFiringIfAttackedByLocomotor)
 		.Process(this->OpenTopped_ShareTransportTarget)
 		.Process(this->OpenTopped_UseTransportRangeModifiers)
 		.Process(this->OpenTopped_CheckTransportDisableWeapons)
@@ -1773,6 +1776,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)
 		.Process(this->Wake_Sinking)
+		.Process(this->MakesWake)
 
 		.Process(this->AINormalTargetingDelay)
 		.Process(this->PlayerNormalTargetingDelay)

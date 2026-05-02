@@ -318,6 +318,12 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed units with Fly, Jumpjet or Rocket locomotors destroyed while crashing off-map never being fully cleaned up, permanently blocking production slots and counting towards unit limits.
 - Fixed a desync due to an inconsistent shroud state caused by `GapGenerator` and `SpySat` interaction.
 - Now miners will no longer withdraw from the Harvest mission due to mineral depletion and will periodically attempt to return to work.
+- Fixed the incorrect mission switching in infantry EnterIdleMode.
+- Fixed the bug where technos with `BalloonHover=yes` incorrectly considered ground factors when setting the destination and distributing moving commands. Use `[General] -> BalloonHoverPathingFix=true` to enable this.
+- Fixed the issue where the sidebar would not refresh when an unit dies in limbo.
+- Enabled playing ingame movie in non-campaign modes (i.e. trigger action `100 Play Sidebar Movie...` and `117 Play Sidebar Movie and pause...`).
+- `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses.
+- Fixed the issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions.
 
 ## Fixes / interactions with other extensions
 
@@ -364,6 +370,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes.
 - Fixed the initial direction of building placed by Ares's UnitDelivery superweapon.
 - Fixed a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to fire when the transport unit with `OpenTopped=yes` moved to an area that the passengers' `MovementZone` cannot move into.
+- Fixed a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next`.
+- Fixed the issue that `BombSight` not being updated correctly in techno conversion.
 
 ## Newly added global settings
 
@@ -1255,8 +1263,11 @@ Gas.MaxDriftSpeed=2    ; integer (TS default is 5)
   - `RetargetSelf` determines if it is possible for the splitted projectiles to aim at the firer of the original projectile.
     - `RetargetSelf.Probability` is the probability that if the original firer is chosen as a target, it is kept as the target instead of rerolled to another.
   - `Splits.TargetingDistance` is the distance in cells that any potential target has to be within from the original target coordinates to be eligible for targeting by the splitted projectiles.
+    - `Splits.TargetingDistance.Cylindrical` if set to true makes it so that height/elevation of potential target is ignored in distance calculations.
   - `Splits.TargetCellRange` is the distance in whole cells from the original target cell from which the splitted projectiles can pick new target cells if not enough TechnoType targets were found nearby.
-  - `Splits.UseWeaponTargeting`, if set to true, enables weapon targeting filter for when checking targets for splitted projectiles. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `AirburstWeapon` [weapon targeting filters](New-or-Enhanced-Logics.md#weapon-targeting-filter) & [AttachEffect filters](New-or-Enhanced-Logics.md#attached-effects) will be checked.
+    - Setting this to values below 0 results in no cells being considered as targets at all - only technos will be targeted.
+  - `Splits.AllowRepeatTargets` allows same techno selected as target be targeted more than once if `Cluster` count exceeds number of available targets. The initial order is randomized and targets will be cycled until `Cluster` count of projectiles have been fired.
+  - `Splits.UseWeaponTargeting`, if set to true, enables weapon targeting filter for when checking targets for splitted projectiles. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `AirburstWeapon` [weapon targeting filters](New-or-Enhanced-Logics.md#weapon-targeting-filter) & [AttachEffect filters](New-or-Enhanced-Logics.md#attached-effects) will be checked. Additionally it checks `AA` (and `AAOnly`) on the split weapon Projectile instead of the original one.
     - Do note that this overrides checking Warhead for `AffectsAllies/Owner/Enemies` for targeting. You can use `CanTargetHouses` on `AirburstWeapon` to achieve similar behaviour, however.
 - Behaviour for if `Airburst` is set to true can also be customized.
   - `AirburstSpread` is the distance in cells that the effect covers, with each cell in range being targeted by `AirburstWeapon` by default.
@@ -1267,26 +1278,30 @@ Gas.MaxDriftSpeed=2    ; integer (TS default is 5)
 - `AroundTarget` controls whether or not targets for projectiles created by `Airburst` or `Splits` are checked for in area around the original projectile's intended target, or where the original projectile detonated. Defaults to value of `Splits`.
 - `AirburstWeapon.ApplyFirepowerMult` determines whether or not firepower modifiers from the firer of the original projectile are applied on the projectiles created from `AirburstWeapon`.
 - `AirburstWeapon.SourceScatterMin` and `AirburstWeapon.SourceScatterMax` can be used to scatter the source or 'firing' coordinate around the original coordinate.
+- `AirburstWeapon.UseFiringEffects` if set to true makes `AirburstWeapon` display weapon `Anim` and play `Report` sound if available.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]                          ; Projectile
-Splits=                                   ; boolean
-RetargetAccuracy=0.0                      ; floating point value, percents or absolute (0.0-1.0)
-RetargetSelf=true                         ; boolean
-RetargetSelf.Probability=0.5              ; floating point value, percents or absolute (0.0-1.0)
-Splits.TargetingDistance=5.0              ; floating point value, distance in cells
-Splits.TargetCellRange=3                  ; integer, cell offset
-Splits.UseWeaponTargeting=false           ; boolean
-AirburstSpread=1.5                        ; floating point value, distance in cells
-Airburst.UseCluster=false                 ; boolean
-Airburst.RandomClusters=false             ; boolean
-Airburst.TargetAsSource=false             ; boolean
-Airburst.TargetAsSource.SkipHeight=false  ; boolean
-AroundTarget=                             ; boolean
-AirburstWeapon.ApplyFirepowerMult=false   ; boolean
-AirburstWeapon.SourceScatterMin=0.0       ; floating point value, distance in cells
-AirburstWeapon.SourceScatterMax=0.0       ; floating point value, distance in cells
+[SOMEPROJECTILE]                            ; Projectile
+Splits=false                                ; boolean
+RetargetAccuracy=0.0                        ; floating point value, percents or absolute (0.0-1.0)
+RetargetSelf=true                           ; boolean
+RetargetSelf.Probability=0.5                ; floating point value, percents or absolute (0.0-1.0)
+Splits.TargetingDistance=5.0                ; floating point value, distance in cells
+Splits.TargetingDistance.Cylindrical=false  ; boolean
+Splits.TargetCellRange=3                    ; integer, cell offset
+Splits.AllowRepeatTargets=false             ; boolean
+Splits.UseWeaponTargeting=false             ; boolean
+AirburstSpread=1.5                          ; floating point value, distance in cells
+Airburst.UseCluster=false                   ; boolean
+Airburst.RandomClusters=false               ; boolean
+Airburst.TargetAsSource=false               ; boolean
+Airburst.TargetAsSource.SkipHeight=false    ; boolean
+AroundTarget=                               ; boolean
+AirburstWeapon.ApplyFirepowerMult=false     ; boolean
+AirburstWeapon.SourceScatterMin=0.0         ; floating point value, distance in cells
+AirburstWeapon.SourceScatterMax=0.0         ; floating point value, distance in cells
+AirburstWeapon.UseFiringEffects=false       ; boolean
 ```
 
 ```{note}
@@ -1608,9 +1623,20 @@ Insignia customization besides the `InsigniaFrames` shorthand should function si
 - You can now specify the `Wake` anim per TechnoType to override default rules value.
   - `Wake.Grapple` and `Wake.Sinking` can be used to further customize wake anim when the techno is being parasited or sunken.
 
+- Also, you can now custom whether the techno makes wake when moving.
+  - Walk locomotor is able to make wake like ship now.
+  - Use `MakesWake` to custom this per type.
+
 In `rulesmd.ini`:
 ```ini
+[AudioVisual]
+WalkLocomotorMakesWake=false   ; boolean
+HoverLocomotorMakesWake=true   ; boolean
+DriveLocomotorMakesWake=true   ; boolean
+ShipLocomotorMakesWake=true    ; boolean
+
 [SOMETECHNO]         ; TechnoType
+MakesWake=           ; boolean, default to the global value that matches the techno's current locomotor
 Wake=                ; Anim (played when Techno moving on the water), default to [General] -> Wake
 Wake.Grapple=        ; Anim (played when Techno being parasited on the water), defaults to [TechnoType] -> Wake
 Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [TechnoType] -> Wake
@@ -2417,18 +2443,21 @@ No per-warhead setting because `AffectsAllies` etc. is respected.
 ### Combat light customizations
 
 - You can now set minimum detail level at which combat light effects are shown by setting `[AudioVisual] -> CombatLightDetailLevel` or `CombatLightDetailLevel` on Warhead.
+  - Normally any effect that is non-default color (e.g `CLDisableX` keys have been set to true) ignores detail level checks. This can be disabled by setting `CombatLightDetailLevel.CheckColored` under `[AudioVisual]` or Warhead.
 - You can now set a percentage chance a combat light effect is shown on Warhead impact by setting `CombatLightChance`.
 - Setting `CLIsBlack` to true on Warhead will now turn the flash black like on hitting an Iron Curtained object, irregardless of other color settings.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-CombatLightDetailLevel=0  ; integer
+CombatLightDetailLevel=0                   ; integer
+CombatLightDetailLevel.CheckColored=false  ; boolean
 
-[SOMEWARHEAD]             ; WarheadType
-CombatLightDetailLevel=   ; integer, default to [AudioVisual] -> CombatLightDetailLevel
-CombatLightChance=1.0     ; floating point value, percents or absolute (0.0-1.0)
-CLIsBlack=false           ; boolean
+[SOMEWARHEAD]                              ; WarheadType
+CombatLightDetailLevel=                    ; integer, default to [AudioVisual] -> CombatLightDetailLevel
+CombatLightDetailLevel.CheckColored=       ; boolean, default to [AudioVisual] -> CombatLightDetailLevel.CheckColored
+CombatLightChance=1.0                      ; floating point value, percents or absolute (0.0-1.0)
+CLIsBlack=false                            ; boolean
 ```
 
 ### Custom debris animations and additional debris spawn settings
@@ -2731,4 +2760,21 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]         ; WeaponType
 IsSingleColor=false  ; boolean
+```
+
+### Updateable firing anim
+
+- In vanilla, firing anims is attached to the firer, but it won't update its type and location to fit the firer's facing. This is now customizable by the following flags.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+FiringAnim.Update=false   ; boolean
+
+[SOMEWEAPON]              ; WeaponType
+Anim.Update=              ; boolean, default to [AudioVisual] -> FiringAnim.Update
+```
+
+```{note}
+This effect will cause problem when used together with `[Animation] -> Next`. `Next` modifies the Anim type over time, while this function changes it back, resulting in the Anim being unable to end.
 ```

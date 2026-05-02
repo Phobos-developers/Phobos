@@ -711,6 +711,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->TeamDelay)
 		.Process(this->FreeRadar)
 		.Process(this->ForceRadar)
+		.Process(this->PlayerAutoRepair)
 		;
 }
 

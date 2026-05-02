@@ -127,7 +127,7 @@ DEFINE_HOOK(0x736990, UnitClass_UpdateRotation_TurretFacing_EMP, 0x6)
 	GET(UnitClass* const, pThis, ECX);
 	enum { SkipAll = 0x736C0E };
 
-	if (pThis->Deactivated || pThis->IsUnderEMP())
+	if (pThis->IsUnderEMP())
 		return SkipAll;
 
 	return 0;
