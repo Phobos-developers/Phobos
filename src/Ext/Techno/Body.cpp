@@ -1,4 +1,4 @@
-﻿#include "Body.h"
+#include "Body.h"
 
 #include <JumpjetLocomotionClass.h>
 
@@ -750,9 +750,13 @@ bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max
 
 bool TechnoExt::CannotMove(UnitClass* pThis)
 {
+	if (pThis->LocomotorSource)
+		return false;
+
 	const auto pType = pThis->Type;
 
-	if (pType->Speed == 0)
+	if (pType->Speed == 0
+		&& !(pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet && !pType->Teleporter))
 		return true;
 
 	const auto movementRestrictedTo = pType->MovementRestrictedTo;
