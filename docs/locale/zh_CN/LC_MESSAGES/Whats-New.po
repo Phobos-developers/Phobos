@@ -2499,6 +2499,7 @@ msgid ""
 "`DeploysInto`/`UndeploysInto`) not to immediately recalculate stats or "
 "tint (by Starkku)"
 msgstr ""
+"修复了一个导致（例如在 `DeploysInto`／`UndeploysInto` 时）转移的 AE 不会立即重新计算属性或染色的 Bug（by Starkku）"
 
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
