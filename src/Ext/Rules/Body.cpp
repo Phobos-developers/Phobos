@@ -1,4 +1,4 @@
-#include "Body.h"
+﻿#include "Body.h"
 
 #include <Ext/TechnoType/Body.h>
 #include <New/Type/RadTypeClass.h>
@@ -396,6 +396,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	
 	this->FiringAnim_Update.Read(exINI, GameStrings::AudioVisual, "FiringAnim.Update");
 	this->ExtendedPlayerRepair.Read(exINI, GameStrings::General, "ExtendedPlayerRepair");
+	this->ExtendedAutoTargeting.Read(exINI, GameStrings::General, "ExtendedAutoTargeting");
+	this->ExtendedAutoTargeting_SwitchTargetThreshold.Read(exINI, GameStrings::General, "ExtendedAutoTargeting.SwitchTargetThreshold");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -720,6 +722,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShipLocomotorMakesWake)
 		.Process(this->FiringAnim_Update)
 		.Process(this->ExtendedPlayerRepair)
+		.Process(this->ExtendedAutoTargeting)
+		.Process(this->ExtendedAutoTargeting_SwitchTargetThreshold)
 		;
 }
 
