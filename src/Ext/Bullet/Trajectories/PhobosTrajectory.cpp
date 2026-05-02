@@ -468,7 +468,7 @@ DEFINE_HOOK(0x4674DA, BulletClass_AI_SkipBridgeCheck2, 0x6)
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 	if (pExt && pExt->Trajectory && pExt->Trajectory->ShouldSkipBridgeCheck())
 		return 0x467519;
-	return 0;
+	return 0x4674F6;
 }
 
 DEFINE_HOOK(0x467E53, BulletClass_AI_PreDetonation_Trajectories, 0x6)
