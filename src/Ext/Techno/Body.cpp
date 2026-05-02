@@ -755,8 +755,12 @@ bool TechnoExt::CannotMove(UnitClass* pThis)
 
 	const auto pType = pThis->Type;
 
-	if (pType->Speed == 0
-		&& !(pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet && !pType->Teleporter))
+	if ((pType->Speed == 0
+		&& (pType->Locomotor != LocomotionClass::CLSIDs::Jumpjet
+			|| pType->Teleporter))
+		|| (pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet
+			&& !pType->Teleporter
+			&& pType->JumpjetAccel == 0.0))
 		return true;
 
 	const auto movementRestrictedTo = pType->MovementRestrictedTo;
