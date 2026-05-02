@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <RulesClass.h>
 #include <Utilities/Container.h>
@@ -245,6 +245,7 @@ public:
 
 		Valueable<bool> WarheadParticleAlphaImageIsLightFlash;
 		Valueable<int> CombatLightDetailLevel;
+		Valueable<bool> CombatLightDetailLevel_CheckColored;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
 		Valueable<bool> UseRetintFix;
@@ -298,6 +299,7 @@ public:
 		Valueable<bool> FallingDownTargetingFix;
 		Valueable<bool> AIAirTargetingFix;
 		Valueable<bool> OpenTopped_DecloakToFire;
+		Valueable<bool> OpenTopped_AllowFiringIfAttackedByLocomotor;
 
 		Valueable<bool> SortCameoByName;
 
@@ -311,6 +313,9 @@ public:
 
 		Valueable<bool> ApplyPerTargetEffectsOnDetonate;
 
+		Valueable<bool> FiringAnim_Update;
+		Valueable<bool> ExtendedPlayerRepair;
+		
 		Valueable<bool> AutoTarget_NoThreatBuildings;
 		Valueable<bool> AutoTargetAI_NoThreatBuildings;
 
@@ -333,7 +338,13 @@ public:
 		Valueable<double> ExtraThreatCoefficient_InRangeDistance;
 		Valueable<double> ExtraThreatCoefficient_Facing;
 		Valueable<double> ExtraThreatCoefficient_DistanceToLastTarget;
+		Valueable<bool> BalloonHoverPathingFix;
 
+		Valueable<bool> WalkLocomotorMakesWake;
+		Valueable<bool> DriveLocomotorMakesWake;
+		Valueable<bool> HoverLocomotorMakesWake;
+		Valueable<bool> ShipLocomotorMakesWake;
+    
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -528,6 +539,7 @@ public:
 			, FixRepairStepCost { false }
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
+			, CombatLightDetailLevel_CheckColored { false }
 			, LightFlashAlphaImageDetailLevel { 0 }
 			, UseRetintFix { true }
 			, AINormalTargetingDelay {}
@@ -573,6 +585,7 @@ public:
 			, FallingDownTargetingFix { false }
 			, AIAirTargetingFix { false }
 			, OpenTopped_DecloakToFire { false }
+			, OpenTopped_AllowFiringIfAttackedByLocomotor { true }
 
 			, SortCameoByName { false }
 
@@ -609,6 +622,15 @@ public:
 			, ExtraThreatCoefficient_InRangeDistance { 0.0 }
 			, ExtraThreatCoefficient_Facing { 0.0 }
 			, ExtraThreatCoefficient_DistanceToLastTarget { 0.0 }
+			
+			, BalloonHoverPathingFix { false }
+			
+			, WalkLocomotorMakesWake { false }
+			, DriveLocomotorMakesWake { true }
+			, HoverLocomotorMakesWake { true }
+			, ShipLocomotorMakesWake { true }
+			, FiringAnim_Update { false }
+			, ExtendedPlayerRepair { false }
 		{ }
 
 		virtual ~ExtData() = default;

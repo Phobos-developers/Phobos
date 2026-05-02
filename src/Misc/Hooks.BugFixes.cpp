@@ -2174,7 +2174,7 @@ DEFINE_HOOK(0x4D6FE1, FootClass_ElectricAssultFix2, 0x7)		// Mission_AreaGuard
 	const auto pWeapon = ElectricAssultTemp::WeaponType;
 	const bool InGuard = (R->Origin() == 0x4D5184);
 
-	if (pBuilding->Owner == pThis->Owner
+	if (pBuilding->Owner->IsAlliedWith(pThis->Owner)
 		&& GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBuilding, pBuilding->Type) != 0.0)
 	{
 		return InGuard ? SkipGuard : SkipAreaGuard;
@@ -3078,7 +3078,7 @@ static bool inline CanBeSold(TechnoClass* pTechno, AbstractType rtti)
 	{
 		auto const pTypeExt = TechnoExt::ExtMap.Find(pTechno)->TypeExtData;
 
-		if (!pTypeExt->Unsellable.Get(RulesExt::Global()->UnitsUnsellable))
+		if (pTypeExt->Unsellable.Get(RulesExt::Global()->UnitsUnsellable))
 			return false;
 
 		auto const pCell = MapClass::Instance.GetCellAt(pTechno->GetCenterCoords());
@@ -3424,3 +3424,92 @@ DEFINE_HOOK(0x577BF1, MapClass_ResetShroudForTMission_CellCheck, 0x6)
 }
 
 #pragma endregion
+
+
+#pragma region BalloonHoverPathingFix
+
+DEFINE_HOOK(0x64D592, Game_PreProcessMegaMissionList_CheckForTargetCrdRecal1, 0x6)
+{
+	enum { SkipTargetCrdRecal = 0x64D598 };
+	GET(TechnoClass*, pTechno, EBP);
+	return pTechno->GetTechnoType()->BalloonHover ? SkipTargetCrdRecal : 0;
+}
+
+DEFINE_HOOK(0x64D575, Game_PreProcessMegaMissionList_CheckForTargetCrdRecal2, 0x6)
+{
+	enum { SkipTargetCrdRecal = 0x64D598 };
+	GET(TechnoClass*, pTechno, EBP);
+	return pTechno->GetTechnoType()->BalloonHover ? SkipTargetCrdRecal : 0;
+}
+
+DEFINE_HOOK(0x64D5C5, Game_PreProcessMegaMissionList_CheckForTargetCrdRecal3, 0x6)
+{
+	enum { SkipTargetCrdRecal = 0x64D659 };
+	GET(TechnoClass*, pTechno, EBP);
+	return pTechno->GetTechnoType()->BalloonHover ? SkipTargetCrdRecal : 0;
+}
+
+DEFINE_HOOK(0x51BFA2, InfantryClass_IsCellOccupied_Start, 0x6)
+{
+	enum { MoveOK = 0x51C02D };
+	GET(InfantryClass*, pThis, EBP);
+	return pThis->Type->BalloonHover && pThis->IsInAir() ? MoveOK : 0;
+}
+
+DEFINE_HOOK(0x73F0A7, UnitClass_IsCellOccupied_Start, 0x9)
+{
+	enum { MoveOK = 0x73F23F };
+	GET(UnitClass*, pThis, ECX);
+	return pThis->Type->BalloonHover && pThis->IsInAir() ? MoveOK : 0;
+}
+
+DEFINE_HOOK(0x4D62C0, FootClass_ApproachTarget_CheckArcCell, 0x6)
+{
+	GET(FootClass*, pThis, EBX);
+
+	if (pThis->GetTechnoType()->BalloonHover && pThis->IsInAir())
+	{
+		R->AL(true);
+		return 0x4D6425;
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
+#pragma region TabOnTechnoDestroyedFix
+
+// Skip the vanilla call at HouseClass::RegisterUnpresent.
+// This should be called when the techno is destroyed, not disappeared.
+DEFINE_JUMP(LJMP, 0x502630, 0x50263B);
+
+DEFINE_HOOK(0x7015A2, TechnoClass_SetOwningHouse_RefreshSidebar, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	SidebarClass::Instance.OnTechnoDestroyed(pThis);
+	return 0;
+}
+
+DEFINE_HOOK(0x5F6609, ObjectClass_UnInit_RefreshSidebar, 0x9)
+{
+	GET(TechnoClass*, pThis, ESI);
+	pThis->KillPassengers(nullptr);
+	SidebarClass::Instance.OnTechnoDestroyed(pThis);
+	return 0x5F6612;
+}
+
+#pragma endregion
+
+// Fixed the issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions
+DEFINE_HOOK(0x707A2E, TechnoClass_PointerExpired_TargetExpired, 0x5)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (pThis->GetCurrentMission() == Mission::Area_Guard)
+	{
+		if (pThis->UpdateTimer.GetTimeLeft() > 10 && !Unsorted::ScenarioInit)
+			pThis->UpdateTimer.Start(pThis->TargetingTimer.GetTimeLeft());
+	}
+	return 0;
+}

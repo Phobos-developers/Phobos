@@ -1230,6 +1230,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 		{
 			if (toOpenTopped)
 			{
+				pFirstPassenger->SetLocation(pThis->Location);
 				// Add passengers to the logic layer.
 				pThis->EnteredOpenTopped(pFirstPassenger);
 			}
@@ -1921,6 +1922,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			if (shouldDiscard && attachEffect->ResetIfRecreatable())
 			{
 				++it;
+				altered = true;
 				continue;
 			}
 

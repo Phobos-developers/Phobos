@@ -528,6 +528,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize whether transport can kept or kill passengers when driver has been killed
   - Fix a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to fire when the transport unit with `OpenTopped=yes` moved to an area that the passengers' `MovementZone` cannot move into
   - Fix a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next`
+  - Fix a bug where updating the `OpenTopped` attribute during convert did not update the coordinates of passengers
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -659,6 +660,7 @@ This page lists all the individual contributions to the project by their author.
   - AutoDeath upon ownership change
   - Maximum amount for power plant enhancer
   - Return warhead
+  - `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`
@@ -743,15 +745,24 @@ This page lists all the individual contributions to the project by their author.
   - Extra threat
   - Fix the incorrect mission switching in infantry EnterIdleMode
   - Fix the issue that `BombSight` not being updated correctly in techno conversion
+  - Technos with Walk locomotor spawn wake like ship
+  - Updateable firing anim
+  - Fix the issue where the sidebar would not refresh when an unit dies in limbo
+  - Enable playing ingame movie in non-campaign modes (i.e. trigger action `100 Play Sidebar Movie...` and `117 Play Sidebar Movie and pause...`)
+  - Allow replacing vanilla repairing with togglable auto repairing
+  - Fix an issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions
+  - Framework for dynamic sight
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
 - **Flactine**
   - Add target filtering options to attacheffect system
   - Add veterancy-based target filtering for weapons and warheads
+  - Fix BalloonHover incorrectly considering ground factors when pathfinding
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
+- **FrozenFog** - Hotkey for deselect object from current selection
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Multfinite** - Allow to toggle main exception handler via command line argument `-ExceptionHandler=boolean`
 - **hejiajun107, Xkein** - Fix a jumpjet crash related to voxel shadow drawing

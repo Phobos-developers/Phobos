@@ -1176,6 +1176,11 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 	return true;
 }
 
+int TechnoExt::ExtData::GetSight()
+{
+	return this->TypeExtData->OwnerObject()->Sight;
+}
+
 // =============================
 // load / save
 
