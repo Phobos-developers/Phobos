@@ -18,6 +18,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Commands\DeselectObject5.cpp" />
+    <ClCompile Include="src\Commands\DeselectObject.cpp" />
     <ClCompile Include="src\Ext\Cell\Hooks.cpp" />
     <ClCompile Include="src\Ext\Event\Body.cpp" />
     <ClCompile Include="src\Ext\Infantry\Hooks.cpp" />
@@ -219,6 +221,8 @@
     <ClCompile Include="YRpp\StaticInits.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Commands\DeselectObject5.h" />
+    <ClInclude Include="src\Commands\DeselectObject.h" />
     <ClInclude Include="src\Ext\EBolt\Body.h" />
     <ClInclude Include="src\Ext\Event\Body.h" />
     <ClInclude Include="src\New\Entity\Ares\RadarJammerClass.h" />

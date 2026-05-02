@@ -635,7 +635,7 @@ DEFINE_HOOK(0x6DBEA3, TacticalClass_DrawRadialIndicator_Building_Extras, 0x7)
 
 			enhancerCoords.Z = MapClass::Instance.GetCellFloorHeight(enhancerCoords);
 			const auto& color = pEnhancer->Owner->Color;
-			Game::DrawRadialIndicator(false, true, enhancerCoords, color, range, false, true);
+			Game::DrawRadialIndicator(false, true, enhancerCoords, color, (float)range, false, true);
 		}
 	}
 

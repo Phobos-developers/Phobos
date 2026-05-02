@@ -1971,3 +1971,58 @@ DEFINE_HOOK(0x4D4B43, FootClass_Mission_Capture, 0x6)
 
 	return LosesDestination;
 }
+
+#pragma region DynamicSight
+
+DEFINE_HOOK(0x41AE00, AircraftClass_See_DynamicSight, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	R->EBX(TechnoExt::ExtMap.Find(pThis)->GetSight());
+	return R->Origin() + 0x6;
+}
+
+DEFINE_HOOK_AGAIN(0x440819, BuildingClass_Unlimbo_DynamicSight, 0x6);
+DEFINE_HOOK(0x440842, BuildingClass_Unlimbo_DynamicSight, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	R->EDX(TechnoExt::ExtMap.Find(pThis)->GetSight());
+	return R->Origin() + 0x6;
+}
+
+DEFINE_HOOK(0x51E0E5, InfantryClass_Unlimbo_DynamicSight, 0x6)
+{
+	GET(TechnoClass*, pThis, EDI);
+	R->EAX(TechnoExt::ExtMap.Find(pThis)->GetSight());
+	return R->Origin() + 0x6;
+}
+
+DEFINE_HOOK(0x702B14, TechnoClass_ReceiveDamage_DynamicSight, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET_STACK(double, nDeltaDist, STACK_OFFSET(0xC4, -0xB0));
+	R->AX((TechnoExt::ExtMap.Find(pThis)->GetSight() + 0.5) * Unsorted::LeptonsPerCell >= nDeltaDist);
+	return 0x702B2C;
+}
+
+DEFINE_HOOK(0x70AE48, TechnoClass_See_DynamicSight, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	R->EAX((int)(TechnoExt::ExtMap.Find(pThis)->GetSight() * (pThis->SightIncrease * 0.01 + 1.0)));
+	return 0x70AE69;
+}
+
+DEFINE_HOOK(0x70AF87, TechnoClass_UpdateSight_DynamicSight1, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	R->ECX(TechnoExt::ExtMap.Find(pThis)->GetSight());
+	return R->Origin() + 0x6;
+}
+
+DEFINE_HOOK(0x70AFEF, TechnoClass_UpdateSight_DynamicSight2, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	R->EAX((int)(TechnoExt::ExtMap.Find(pThis)->GetSight() * (pThis->SightIncrease * 0.01 + 1.0)));
+	return 0x70B010;
+}
+
+#pragma endregion

@@ -218,6 +218,7 @@ public:
 
 		void AmmoAutoConvertActions();
 		void UpdateLastTargetCrd();
+		int GetSight();
 
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
