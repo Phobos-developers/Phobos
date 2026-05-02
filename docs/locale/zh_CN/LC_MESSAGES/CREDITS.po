@@ -1741,6 +1741,12 @@ msgstr ""
 "修复了 `OpenTopped=yes` 的运输工具移动到乘客 `MovementZone` 所不支持的区域时由初始载员逻辑或勾选了 "
 "`预装载小队` 的作战小队创建的乘客无法开火的 Bug"
 
+msgid ""
+"Fix a bug where updating the `OpenTopped` attribute during convert did "
+"not update the coordinates of passengers"
+msgstr ""
+"修复了类型转换会更新 `OpenTopped` 属性却不更新乘客坐标的 Bug"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 

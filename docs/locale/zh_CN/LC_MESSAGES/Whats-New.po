@@ -2490,6 +2490,12 @@ msgid ""
 "regarding detail level and framerate checks (by Starkku)"
 msgstr "修复了战斗光照在细节等级和帧率检查方面与原版游戏忽略／行为不同的问题（by Starkku）"
 
+msgid ""
+"Fixed a bug where updating the `OpenTopped` attribute during convert did "
+"not update the coordinates of passengers (by NetsuNegi)"
+msgstr ""
+"修复了类型转换会更新 `OpenTopped` 属性却不更新乘客坐标的 Bug（by NetsuNegi）"
+
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
 
