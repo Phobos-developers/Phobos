@@ -652,6 +652,7 @@ Vanilla fixes:
 - Enabled playing ingame movie in non-campaign modes (i.e. trigger action `100 Play Sidebar Movie...` and `117 Play Sidebar Movie and pause...`) (by TaranDahl)
 - `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses (by Ollerus)
 - Fixed the issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions (by TaranDahl)
+- Purely visual animations and particles excluded from sync checks (by Starkku)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

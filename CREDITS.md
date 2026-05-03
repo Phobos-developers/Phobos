@@ -291,6 +291,7 @@ This page lists all the individual contributions to the project by their author.
   - Wall overlay unit sell exploit fix
   - Fix vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't
   - GapGen + SpySat desync fix
+  - Frame CRC generation rewrite
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

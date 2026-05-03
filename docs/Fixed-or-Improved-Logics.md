@@ -324,6 +324,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Enabled playing ingame movie in non-campaign modes (i.e. trigger action `100 Play Sidebar Movie...` and `117 Play Sidebar Movie and pause...`).
 - `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses.
 - Fixed the issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions.
+- Purely visual animations and particles are no longer included in frame CRC generation and are thus exempt from any sync checks between players in multiplayer games.
 
 ## Fixes / interactions with other extensions
 

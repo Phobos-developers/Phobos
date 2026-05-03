@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-02 10:26+0800\n"
+"POT-Creation-Date: 2026-05-04 01:48+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -868,6 +868,9 @@ msgstr "修复了伪装成树的载具错误显示出军衔（能打人的精英
 
 msgid "GapGen + SpySat desync fix"
 msgstr "裂缝产生器和间谍卫星的不同步修复"
+
+msgid "Frame CRC generation rewrite"
+msgstr ""
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
@@ -1744,8 +1747,7 @@ msgstr ""
 msgid ""
 "Fix a bug where updating the `OpenTopped` attribute during convert did "
 "not update the coordinates of passengers"
-msgstr ""
-"修复了类型转换会更新 `OpenTopped` 属性却不更新乘客坐标的 Bug"
+msgstr "修复了类型转换会更新 `OpenTopped` 属性却不更新乘客坐标的 Bug"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
@@ -2507,8 +2509,7 @@ msgid ""
 msgstr "修复了处于 `Area Guard` 任务中的单位消灭目标后重新获取目标所用时间明显长于其他任务的问题"
 
 msgid "Framework for dynamic sight"
-msgstr ""
-"动态视野框架"
+msgstr "动态视野框架"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
