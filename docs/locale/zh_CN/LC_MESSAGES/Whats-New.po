@@ -2501,6 +2501,12 @@ msgid ""
 msgstr ""
 "修复了一个导致（例如在 `DeploysInto`／`UndeploysInto` 时）转移的 AE 不会立即重新计算属性或染色的 Bug（by Starkku）"
 
+msgid ""
+"Fixed a bug where updating the `OpenTopped` attribute during convert did "
+"not update the coordinates of passengers (by NetsuNegi)"
+msgstr ""
+"修复了类型转换会更新 `OpenTopped` 属性却不更新乘客坐标的 Bug（by NetsuNegi）"
+
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
 
