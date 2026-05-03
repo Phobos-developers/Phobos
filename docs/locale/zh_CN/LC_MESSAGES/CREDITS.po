@@ -870,7 +870,7 @@ msgid "GapGen + SpySat desync fix"
 msgstr "裂缝产生器和间谍卫星的不同步修复"
 
 msgid "Frame CRC generation rewrite"
-msgstr ""
+msgstr "重写帧 CRC 生成"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："

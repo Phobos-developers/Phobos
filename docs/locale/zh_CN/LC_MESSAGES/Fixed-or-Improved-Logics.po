@@ -1677,6 +1677,7 @@ msgid ""
 "CRC generation and are thus exempt from any sync checks between players "
 "in multiplayer games."
 msgstr ""
+"纯视觉效果的动画和粒子不再包含在帧 CRC 生成中并因此不会受多人游戏中玩家间同步检查的限制。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
