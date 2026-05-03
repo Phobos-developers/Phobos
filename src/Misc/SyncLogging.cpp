@@ -609,12 +609,12 @@ bool ObjectFake::_IsCRCHashable()
 	return true;
 }
 
-static void inline AddCRC(DWORD* crc, unsigned int val)
+static void AddCRC(DWORD* crc, unsigned int val)
 {
 	*crc = val + (*crc >> 31) + (*crc << 1);
 }
 
-static int inline GetCoordHash(CoordStruct location)
+static int GetCoordHash(CoordStruct location)
 {
 	return location.X / 10 + ((location.Y / 10) << 16);
 }
