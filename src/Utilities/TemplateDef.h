@@ -1135,6 +1135,55 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<StackingMode>(StackingMode& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "override") == 0)
+			{
+				value = StackingMode::Override;
+			}
+			if (_strcmpi(parser.value(), "setifzero") == 0)
+			{
+				value = StackingMode::SetIfZero;
+			}
+			else if (_strcmpi(parser.value(), "min") == 0)
+			{
+				value = StackingMode::Min;
+			}
+			else if (_strcmpi(parser.value(), "max") == 0)
+			{
+				value = StackingMode::Max;
+			}
+			else if (_strcmpi(parser.value(), "add") == 0)
+			{
+				value = StackingMode::Add;
+			}
+			else if (_strcmpi(parser.value(), "subtract") == 0)
+			{
+				value = StackingMode::Subtract;
+			}
+			else if (_strcmpi(parser.value(), "multiply") == 0)
+			{
+				value = StackingMode::Multiply;
+			}
+			else if (_strcmpi(parser.value(), "divide") == 0)
+			{
+				value = StackingMode::Divide;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a stacking mode type");
+				return false;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
 	inline bool read<ChronoSparkleDisplayPosition>(ChronoSparkleDisplayPosition& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))

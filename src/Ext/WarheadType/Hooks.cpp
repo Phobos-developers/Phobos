@@ -674,3 +674,18 @@ DEFINE_HOOK(0x48DC90, MapClass_UnselectAll_ClearLimboLaunchers, 0x5)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x701D6B, TechnoClass_ReceiveDamage_Psychedelic, 0x6)
+{
+	enum { SkipGameCode = 0x701D71 };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(WarheadTypeClass*, pWH, EBP);
+	GET(int, damage, EAX);
+
+	auto const pWHExt = WarheadTypeExt::Fetch(pWH);
+	auto const stackingMode = pWHExt->Psychedelic_StackingMode.Get(RulesExt::Global()->Psychedelic_StackingMode);
+	EnumFunctions::CalcValueWithStackingMode(pThis->BerzerkDurationLeft, damage, stackingMode);
+
+	return SkipGameCode;
+}

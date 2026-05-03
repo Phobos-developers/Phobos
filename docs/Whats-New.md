@@ -636,6 +636,7 @@ HideShakeEffects=false           ; boolean
 - Separately define the global default values of TerrainTypes' `IsPassable` and `CanBeBuiltOn` based on `SpawnsTiberium` (by Noble_Fish)
 - Customize reveal radius of `RevealToAll` (by NetsuNegi)
 - [Customize whether aircraft is a cargo plane](Fixed-or-Improved-Logics.md#customize-whether-aircraft-is-a-cargo-plane) (by TaranDahl)
+- [Berzerk / `Psychedelic` duration stacking customization](Fixed-or-Improved-Logics.md#berzerk-psychedelic-duration-stacking-customization) (by Starkku)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
