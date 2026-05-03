@@ -10,6 +10,11 @@ inputs:
 runs:
   using: "composite"
   steps:
+  - name: Checkout with submodules and LFS
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        lfs: true
   - name: Add MSBuild to PATH
     uses: microsoft/setup-msbuild@v1.1
     with:
