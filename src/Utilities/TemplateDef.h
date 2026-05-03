@@ -2023,21 +2023,7 @@ namespace MultiflagVectorHelpers
 	inline bool ShouldResetValues(INI_EX& parser, const char* pSection, const char* pBaseFlag)
 	{
 		char flagName[256];
-		const char* dot = strchr(pBaseFlag, '.');
-
-		if (dot)
-		{
-			size_t prefixLen = static_cast<size_t>(dot - pBaseFlag) + 1;
-
-			strncpy_s(flagName, sizeof(flagName), pBaseFlag, prefixLen);
-			flagName[prefixLen] = '\0';
-
-			strcat_s(flagName, sizeof(flagName), "ResetValues");
-		}
-		else
-		{
-			_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s.ResetValues", pBaseFlag);
-		}
+		_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s.ResetValues", pBaseFlag);
 
 		Valueable<bool> resetValues {};
 		resetValues.Read(parser, pSection, flagName);
@@ -2051,7 +2037,7 @@ namespace MultiflagVectorHelpers
 
 		for (size_t i = 0; ; ++i)
 		{
-			_snprintf_s(flagName, sizeof(flagName), pBaseFlag, i, "%s");
+			_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s%zu", pBaseFlag, i);
 
 			if (i < vec.size())
 			{
@@ -2112,7 +2098,7 @@ bool __declspec(noinline) Animatable<TValue>::KeyframeDataEntry::Read(INI_EX& pa
 	char flagName[0x40];
 	Nullable<double> percentageTemp {};
 	Nullable<absolute_length_t> absoluteTemp {};
-	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Percentage");
+	_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s.Percentage", pBaseFlag);
 	percentageTemp.Read(parser, pSection, flagName);
 	bool useNonAbs = true;
 
@@ -2121,7 +2107,7 @@ bool __declspec(noinline) Animatable<TValue>::KeyframeDataEntry::Read(INI_EX& pa
 
 	if (absoluteLength > absolute_length_t(0))
 	{
-		_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Absolute");
+		_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s.Absolute", pBaseFlag);
 		absoluteTemp.Read(parser, pSection, flagName);
 
 		if (absoluteTemp.isset())
@@ -2139,7 +2125,7 @@ bool __declspec(noinline) Animatable<TValue>::KeyframeDataEntry::Read(INI_EX& pa
 			this->Percentage = percentageTemp;
 	}
 
-	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Value");
+	_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s.Value", pBaseFlag);
 	this->Value.Read(parser, pSection, flagName);
 	return true;
 };
@@ -2178,7 +2164,7 @@ TValue Animatable<TValue>::Get(double const percentage) const
 
 	// Check if there is cached value for given percentage and return it if found.
 	auto it_cache = KeyframeValueCache.find(percentage);
-	
+
 	if (it_cache != KeyframeValueCache.end())
 		return it_cache->second;
 
@@ -2221,9 +2207,7 @@ template <typename TValue>
 void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength, bool useFallback)
 {
 	// Set up buffers.
-	char baseFlagName[0x40];
 	char flagName[0x40];
-	_snprintf_s(baseFlagName, sizeof(baseFlagName), "%s.%%s", pBaseFlag);
 
 	// Clear value cache.
 	this->KeyframeValueCache.clear();
@@ -2231,10 +2215,10 @@ void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* c
 	// Clear sorted keyframes.
 	this->SortedKeyFrames.clear();
 
-	_snprintf_s(flagName, sizeof(flagName), baseFlagName, "Keyframe%d.%s");
+	_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s.Keyframe", pBaseFlag);
 	this->KeyframeData.Read(parser, pSection, flagName, absoluteLength);
 
-	_snprintf_s(flagName, sizeof(flagName), baseFlagName, "Interpolation");
+	_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s.Interpolation", pBaseFlag);
 	detail::read(this->InterpolationMode, parser, pSection, flagName);
 
 	if (!this->HasValues())
@@ -2260,8 +2244,7 @@ void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* c
 	for (size_t i = 0; i < this->KeyframeData.size(); i++)
 	{
 		auto const& value = this->KeyframeData[i];
-		_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Keyframe%d");
-		_snprintf_s(flagName, sizeof(flagName), flagName, i);
+		_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s.Keyframe%zu", pBaseFlag, i);
 
 		if (percentages.contains(value.Percentage))
 		{
