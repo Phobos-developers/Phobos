@@ -2041,12 +2041,8 @@ namespace MultiflagVectorHelpers
 
 			if (i < vec.size())
 			{
-				T temp = vec[i];
-
-				if (!temp.Read(parser, pSection, flagName, extraArgs...))
+				if (!vec[i].Read(parser, pSection, flagName, extraArgs...))
 					continue;
-
-				vec[i] = std::move(temp);
 			}
 			else
 			{
