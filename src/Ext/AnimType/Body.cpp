@@ -103,7 +103,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->RestrictVisibilityIfCloaked.Read(exINI, pID, "RestrictVisibilityIfCloaked");
 	this->DetachOnCloak.Read(exINI, pID, "DetachOnCloak");
 	this->Translucency.Read(exINI, pID, "Translucency", this->OwnerObject()->End);
-	this->Translucency_Cloaked.Read(exINI, pID, "Translucency.Cloaked", this->OwnerObject()->End, false);
+	this->Translucency_Cloaked.Read(exINI, pID, "Translucency.Cloaked", this->OwnerObject()->End, true);
 	this->ConstrainFireAnimsToCellSpots.Read(exINI, pID, "ConstrainFireAnimsToCellSpots");
 	this->FireAnimDisallowedLandTypes.Read<false, true>(exINI, pID, "FireAnimDisallowedLandTypes");
 	this->AttachFireAnimsToParent.Read(exINI, pID, "AttachFireAnimsToParent");

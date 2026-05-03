@@ -576,7 +576,7 @@ public:
 
 	inline TValue Get(double const percentage) const;
 
-	inline void Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength = absolute_length_t(0), bool useFallback = true);
+	inline void Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength = absolute_length_t(0), bool requireParsedFallback = false);
 
 	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 

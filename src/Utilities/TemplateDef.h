@@ -2203,8 +2203,10 @@ TValue Animatable<TValue>::Get(double const percentage) const
 	return match;
 }
 
+// pBaseFlag - Expects clean INI key name without format strings.
+// requireParsedFallback - If set to true behaves like Nullable<> template and doesn't set default value as fallback if parsing from base INI key fails.
 template <typename TValue>
-void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength, bool useFallback)
+void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength, bool requireParsedFallback)
 {
 	// Set up buffers.
 	char flagName[0x40];
@@ -2223,11 +2225,12 @@ void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* c
 
 	if (!this->HasValues())
 	{
-		if (useFallback)
+		TValue value { DefaultValue };
+		KeyframeDataEntry keyframe {};
+		bool parsed = detail::read(value, parser, pSection, pBaseFlag);
+
+		if (!requireParsedFallback || parsed)
 		{
-			TValue value { DefaultValue };
-			KeyframeDataEntry keyframe {};
-			detail::read(value, parser, pSection, pBaseFlag);
 			keyframe.Percentage = 0.0;
 			keyframe.Value = value;
 			this->KeyframeData.push_back(keyframe);
