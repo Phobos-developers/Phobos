@@ -1696,6 +1696,23 @@ inline void ValueableVector<WeaponTypeClass*>::Read(INI_EX& parser, const char* 
 	}
 }
 
+// Specialization: use FindOrAllocate for warhead vectors, avoiding dependency on [Warheads] table
+template <>
+inline void ValueableVector<WarheadTypeClass*>::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	if (parser.ReadString(pSection, pKey))
+	{
+		this->clear();
+		char* str = parser.value();
+		char* context = nullptr;
+		for (char* cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			if (auto pWarhead = WarheadTypeClass::FindOrAllocate(cur))
+				this->push_back(pWarhead);
+		}
+	}
+}
+
 template <typename T>
 bool ValueableVector<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
