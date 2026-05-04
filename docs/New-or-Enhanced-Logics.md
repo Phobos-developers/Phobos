@@ -1153,13 +1153,14 @@ EMPulse.SuspendOthers=false  ; boolean
 `Type=EMPulse` superweapon and any associated keys are [Ares features](https://ares-developers.github.io/Ares-docs/new/superweapons/types/empulse.html).
 ```
 
-### Firer-only EVA on superweapon activated
+### Firer-only message and EVA on superweapon activated
 
-- Unlike `EVA.Activated`, this EVA message is played only for the player who fires the superweapon, instead of being broadcast to all players.
+- Unlike `Message.Activated` and `EVA.Activated`, this message and EVA are played only for the player who fires the superweapon, instead of being broadcast to all players.
 
 In `rulesmd.ini`:
 ```ini
 [SOMESW]                    ; SuperWeaponType
+Message.Activated.Firer=    ; CSF entry key
 EVA.Activated.Firer=        ; EVA entry
 ```
 

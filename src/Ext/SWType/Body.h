@@ -107,6 +107,7 @@ public:
 		ValueableVector<float> SW_Link_RollChances;
 		Valueable<CSFText> Message_LinkedSWAcquired;
 		NullableIdx<VoxClass> EVA_LinkedSWAcquired;
+		Valueable<CSFText> Message_Activated_Firer;
 		NullableIdx<VoxClass> EVA_Activated_Firer;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
@@ -186,6 +187,7 @@ public:
 			, SW_Link_RandomWeightsData {}
 			, Message_LinkedSWAcquired {}
 			, EVA_LinkedSWAcquired {}
+			, Message_Activated_Firer {}
 			, EVA_Activated_Firer {}
 		{ }
 
@@ -213,7 +215,8 @@ public:
 
 		void ApplyLinkedSW(SuperClass* pSW);
 
-		void ApplyActivatedFirerEva(SuperClass* pSW);
+		void ApplyActivatedFirerMessage(SuperClass* pSW) const;
+		void ApplyActivatedFirerEva(SuperClass* pSW) const;
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual void Initialize() override;

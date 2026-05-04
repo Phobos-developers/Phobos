@@ -758,7 +758,7 @@ This page lists all the individual contributions to the project by their author.
 - **Flactine**
   - Add target filtering options to attacheffect system
   - Add veterancy-based target filtering for weapons and warheads
-  - Firer-only EVA on superweapon activation
+  - Firer-only message and EVA on superweapon activation
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
