@@ -493,9 +493,9 @@ void SWTypeExt::ExtData::ApplyChangeEVAIndex(SuperClass* pSW)
 	if (!pHouse->IsControlledByCurrentPlayer())
 		return;
 
-	int newEvaIndex = VoxClass::EVAIndex;
+	VoxClass::EVAIndex = this->ChangeEVAIndex;
 
-	newEvaIndex = this->ChangeEVAIndex;
-
-	VoxClass::EVAIndex = newEvaIndex;
+	Debug::Log("Before - ForceEvaIndex is: [%d]\n", HouseExt::ExtMap.Find(pHouse)->ForceEvaIndex);
+	HouseExt::ExtMap.Find(pHouse)->ForceEvaIndex = this->ChangeEVAIndex;
+	Debug::Log("After - ForceEvaIndex is: [%d]\n", HouseExt::ExtMap.Find(pHouse)->ForceEvaIndex);
 }

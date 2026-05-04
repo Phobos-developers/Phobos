@@ -719,10 +719,24 @@ void HouseExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<HouseClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
+
+	Debug::Log("Loading - ForceEvaIndex is: [%d]\n", ForceEvaIndex);
+
+	if (ForceEvaIndex != -1)
+	{
+		VoxClass::EVAIndex = ForceEvaIndex;
+	}
 }
 
 void HouseExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
+	Debug::Log("Saving - ForceEvaIndex is: [%d]\n", ForceEvaIndex);
+
+	if (VoxClass::EVAIndex != -1)
+	{
+		ForceEvaIndex = VoxClass::EVAIndex;
+	}
+
 	Extension<HouseClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }

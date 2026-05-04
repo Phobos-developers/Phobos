@@ -69,6 +69,8 @@ public:
 
 		bool PlayerAutoRepair;
 
+		int ForceEvaIndex;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
@@ -103,6 +105,7 @@ public:
 			, FreeRadar(false)
 			, ForceRadar(false)
 			, PlayerAutoRepair(true)
+			, ForceEvaIndex(-1)
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;
