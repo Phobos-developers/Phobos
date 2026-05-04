@@ -1899,6 +1899,17 @@ In `rulesmd.ini`:
 RadarInvisibleToHouse=               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to enemy if RadarInvisible=true, none otherwise
 ```
 
+### Separation AutoTarget
+
+- In vanilla, when a unit's `TurretCount` is not greater than 0 and `IsGattling=yes` is not set, it calculates the sum of all weapons' `Damage` and all weapons' `AmbientDamage`, then divides by the number of weapons (rounding towards zero). If the result is less than 0, the unit is considered to use a repair weapon; otherwise, it is an offensive weapon. This may cause units that have both repair and damage weapons to be unable to properly use `DeployFireWeapon`, `OpenTransportWeapon`, and `NoAmmoWeapon`. Now this issue can be resolved by the newly added `SeparateWeaponTypes` list.
+  - When using separation auto target, if `GuardRange` is not set, the effective range will use the current weapon's own `Range`, rather than the maximum `Range` among all the unit's weapons. Functions such as whether it can attack ground or air targets, and whether it uses repair behavior, which were originally based on average calculations, are now entirely determined by the current weapon's own settings.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                ; TechnoType
+SeparateWeaponTypes=none    ; List of SeparateWeaponType Enumeration (none|deployfire|opentransport|noammo|all)
+```
+
 ### Subterranean unit travel height and speed
 
 - It is now possible to control the height at which units with subterranean (Tunnel) `Locomotor` travel, globally or per TechnoType.

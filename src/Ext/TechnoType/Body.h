@@ -507,6 +507,8 @@ public:
 
 		SHPStruct* TurretShape;
 
+		Valueable<SeparateWeaponType> SeparateWeaponTypes;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, HealthBar_HidePips { false }
@@ -966,6 +968,8 @@ public:
 			, ExtraThreatCoefficient_InRangeDistance {}
 			, ExtraThreatCoefficient_Facing {}
 			, ExtraThreatCoefficient_DistanceToLastTarget {}
+
+			, SeparateWeaponTypes { SeparateWeaponType::None }
 		{ }
 
 		virtual ~ExtData() = default;

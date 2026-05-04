@@ -448,33 +448,27 @@ void TechnoTypeExt::ExtData::UpdateAdditionalAttributes()
 		if (!pWeapon)
 			return;
 
+		const int combatDamage = (pWeapon->Damage + pWeapon->AmbientDamage);
+		const ThreatType threats = pWeapon->Projectile ? pWeapon->AllowedThreats() : ThreatType::Normal;
+		const bool attackFriendlies = WeaponTypeExt::ExtMap.Find(pWeapon)->AttackFriendlies.Get(false);
+
 		if (isElite)
 		{
-			if (pWeapon->Projectile)
-				this->ThreatTypes.Y |= pWeapon->AllowedThreats();
-
-			this->CombatDamages.Y += (pWeapon->Damage + pWeapon->AmbientDamage);
+			this->ThreatTypes.Y |= threats;
+			this->CombatDamages.Y += combatDamage;
 			eliteNum++;
 
-			if (!this->AttackFriendlies.Y
-				&& WeaponTypeExt::ExtMap.Find(pWeapon)->AttackFriendlies.Get(false))
-			{
+			if (!this->AttackFriendlies.Y && attackFriendlies)
 				this->AttackFriendlies.Y = true;
-			}
 		}
 		else
 		{
-			if (pWeapon->Projectile)
-				this->ThreatTypes.X |= pWeapon->AllowedThreats();
-
-			this->CombatDamages.X += (pWeapon->Damage + pWeapon->AmbientDamage);
+			this->ThreatTypes.X |= threats;
+			this->CombatDamages.X += combatDamage;
 			num++;
 
-			if (!this->AttackFriendlies.X
-				&& WeaponTypeExt::ExtMap.Find(pWeapon)->AttackFriendlies.Get(false))
-			{
+			if (!this->AttackFriendlies.X && attackFriendlies)
 				this->AttackFriendlies.X = true;
-			}
 		}
 	};
 
@@ -1194,6 +1188,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| ExtraThreatCoefficient_Facing.Get(RulesExt::Global()->ExtraThreatCoefficient_Facing) != 0
 		|| ExtraThreatCoefficient_DistanceToLastTarget.Get(RulesExt::Global()->ExtraThreatCoefficient_DistanceToLastTarget) != 0;
 
+	this->SeparateWeaponTypes.Read(exINI, pSection, "SeparateWeaponTypes");
+	
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1931,6 +1927,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraThreatCoefficient_InRangeDistance)
 		.Process(this->ExtraThreatCoefficient_Facing)
 		.Process(this->ExtraThreatCoefficient_DistanceToLastTarget)
+
+		.Process(this->SeparateWeaponTypes)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
