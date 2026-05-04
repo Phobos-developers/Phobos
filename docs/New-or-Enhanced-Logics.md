@@ -1153,6 +1153,16 @@ EMPulse.SuspendOthers=false  ; boolean
 `Type=EMPulse` superweapon and any associated keys are [Ares features](https://ares-developers.github.io/Ares-docs/new/superweapons/types/empulse.html).
 ```
 
+### Firer-only EVA on superweapon activated
+
+- Unlike `EVA.Activated`, this EVA message is played only for the player who fires the superweapon, instead of being broadcast to all players.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]                    ; SuperWeaponType
+EVA.Activated.Firer=        ; EVA entry
+```
+
 ### LimboDelivery
 
 - Superweapons can now deliver off-map buildings that act as if they were on the field.
@@ -1266,17 +1276,6 @@ Detonate.Warhead.Full=true  ; boolean
 Detonate.Weapon=            ; WeaponType
 Detonate.Damage=            ; integer
 Detonate.AtFirer=false      ; boolean
-```
-
-### Firer-only EVA on superweapon activated
-
-Adds `EVA.Activated.Firer` for superweapons.
-Unlike `EVA.Activated`, this EVA message is played only for the player who fires the superweapon, instead of being broadcast to all players.
-In `rulesmd.ini`:
-
-```ini
-[SOMESW]
-EVA.Activated.Firer=        ; EVA entry
 ```
 
 ## Technos
