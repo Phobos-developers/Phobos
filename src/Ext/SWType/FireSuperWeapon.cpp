@@ -494,8 +494,5 @@ void SWTypeExt::ExtData::ApplyChangeEVAIndex(SuperClass* pSW)
 		return;
 
 	VoxClass::EVAIndex = this->ChangeEVAIndex;
-
-	Debug::Log("Before - ForceEvaIndex is: [%d]\n", HouseExt::ExtMap.Find(pHouse)->ForceEvaIndex);
 	HouseExt::ExtMap.Find(pHouse)->ForceEvaIndex = this->ChangeEVAIndex;
-	Debug::Log("After - ForceEvaIndex is: [%d]\n", HouseExt::ExtMap.Find(pHouse)->ForceEvaIndex);
 }
