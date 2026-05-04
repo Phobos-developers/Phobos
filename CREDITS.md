@@ -744,6 +744,7 @@ This page lists all the individual contributions to the project by their author.
   - Extra threat
   - Fix the incorrect mission switching in infantry EnterIdleMode
   - Fix the issue that `BombSight` not being updated correctly in techno conversion
+  - Fix BalloonHover incorrectly considering ground factors when pathfinding
   - Technos with Walk locomotor spawn wake like ship
   - Updateable firing anim
   - Fix the issue where the sidebar would not refresh when an unit dies in limbo
@@ -751,7 +752,6 @@ This page lists all the individual contributions to the project by their author.
   - Allow replacing vanilla repairing with togglable auto repairing
   - Fix an issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions
   - Framework for dynamic sight
-  - Fix BalloonHover incorrectly considering ground factors when pathfinding
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
