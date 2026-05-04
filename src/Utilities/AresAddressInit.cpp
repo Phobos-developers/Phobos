@@ -61,7 +61,7 @@ void AresFunctions::InitAres3_0()
 	NOTE_ARES_FUN(AresFunctions::AddPassengerFromTunnel, 0x09000);
 
 	// VoxClass
-	NOTE_ARES_FUN(AresFunctions::AddPassengerFromTunnel, 0x063560);
+	NOTE_ARES_FUN(AresFunctions::FindEVAIndex, 0x063560);
 
 #ifndef USING_MULTIFINITE_SYRINGE
 	Apply_Ares3_0_Patches();
@@ -104,7 +104,7 @@ void AresFunctions::InitAres3_0p1()
 	NOTE_ARES_FUN(AresFunctions::AddPassengerFromTunnel, 0x09040);
 
 	// VoxClass
-	NOTE_ARES_FUN(AresFunctions::AddPassengerFromTunnel, 0x0642B0);
+	NOTE_ARES_FUN(AresFunctions::FindEVAIndex, 0x0642B0);
 
 #ifndef USING_MULTIFINITE_SYRINGE
 	Apply_Ares3_0p1_Patches();
