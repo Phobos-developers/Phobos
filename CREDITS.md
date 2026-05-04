@@ -758,6 +758,7 @@ This page lists all the individual contributions to the project by their author.
   - Add target filtering options to attacheffect system
   - Add veterancy-based target filtering for weapons and warheads
   - Fix BalloonHover incorrectly considering ground factors when pathfinding
+  - EVA voice switching on superweapon activation
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
