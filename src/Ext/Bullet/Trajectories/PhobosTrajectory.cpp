@@ -462,13 +462,29 @@ DEFINE_HOOK(0x46703E, BulletClass_AI_SkipBridgeCheck1, 0x6)
 }
 */
 
-DEFINE_HOOK(0x4674DA, BulletClass_AI_SkipBridgeCheck2, 0x6)
+DEFINE_HOOK(0x4674D4, BulletClass_AI_SkipBridgeCheck2, 0x6)
 {
+	__asm { push esi }
+
 	GET(BulletClass*, pThis, EBP);
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
-	if (pExt && pExt->Trajectory && pExt->Trajectory->ShouldSkipBridgeCheck())
-		return 0x467519;
-	return 0x4674F6;
+
+	__asm { pop esi }
+
+	CellClass* pCell = nullptr;
+	__asm { mov pCell, esi }
+
+	if (pCell && pCell->ContainsBridge())
+	{
+		if (pExt && pExt->Trajectory && pExt->Trajectory->ShouldSkipBridgeCheck())
+			return 0x4674DC;
+		else
+			return 0x4674F6;
+	}
+	else
+	{
+		return 0x4674DC;
+	}
 }
 
 DEFINE_HOOK(0x467E53, BulletClass_AI_PreDetonation_Trajectories, 0x6)
