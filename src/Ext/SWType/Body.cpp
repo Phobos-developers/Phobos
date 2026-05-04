@@ -95,6 +95,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_Link_RollChances)
 		.Process(this->Message_LinkedSWAcquired)
 		.Process(this->EVA_LinkedSWAcquired)
+		.Process(this->EVA_Activated_Firer)
 		;
 }
 
@@ -224,6 +225,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_Link_Reset.Read(exINI, pSection, "SW.Link.Reset");
 	this->Message_LinkedSWAcquired.Read(exINI, pSection, "Message.LinkedSWAcquired");
 	this->EVA_LinkedSWAcquired.Read(exINI, pSection, "EVA.LinkedSWAcquired");
+	this->EVA_Activated_Firer.Read(exINI, pSection, "EVA.Activated.Firer");
 	this->SW_Link_RollChances.Read(exINI, pSection, "SW.Link.RollChances");
 
 	// SW.Link.RandomWeights

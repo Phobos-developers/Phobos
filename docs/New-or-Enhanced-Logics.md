@@ -1268,6 +1268,17 @@ Detonate.Damage=            ; integer
 Detonate.AtFirer=false      ; boolean
 ```
 
+### Firer-only EVA on superweapon activated
+
+Adds `EVA.Activated.Firer` for superweapons.
+Unlike `EVA.Activated`, this EVA message is played only for the player who fires the superweapon, instead of being broadcast to all players.
+In `rulesmd.ini`:
+
+```ini
+[SOMESW]
+EVA.Activated.Firer=        ; EVA entry
+```
+
 ## Technos
 
 ### Aggressive attack move mission
