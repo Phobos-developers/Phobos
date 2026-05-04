@@ -721,9 +721,9 @@ void HouseExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 	Extension<HouseClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 
-	if (ForceEvaIndex != -1)
+	if (this->ForceEvaIndex != -1)
 	{
-		VoxClass::EVAIndex = ForceEvaIndex;
+		VoxClass::EVAIndex = this->ForceEvaIndex;
 	}
 }
 
