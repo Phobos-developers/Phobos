@@ -8,7 +8,6 @@ DEFINE_HOOK(0x535005, ScenarioClass_LoadSide_SetEVAIndex, 0x6)
 	if (ScenarioExt::Global()->EVAIndex != -2)
 	{
 		VoxClass::EVAIndex = ScenarioExt::Global()->EVAIndex;
-		ScenarioExt::Global()->EVAIndex = -2;
 	}
 	// I don't know why, but if you don't do it this way, it might not work.
 	else if (SessionClass::Instance.IsCampaign())
