@@ -19,7 +19,6 @@ You can use the improved vanilla font which can be found on [Phobos supplementar
 
 ## Audio
 
-- You can now set the `EVAType` for a specific country.
 - You can now specify which soundtrack themes would play on win or lose.
 
 In `rulesmd.ini`:

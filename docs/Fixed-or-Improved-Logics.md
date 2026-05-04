@@ -325,7 +325,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses.
 - Fixed the issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions.
 - Purely visual animations and particles are no longer included in frame CRC generation and are thus exempt from any sync checks between players in multiplayer games.
-- EVAIndex now supports saving and loading game states.
 
 ## Fixes / interactions with other extensions
 
@@ -374,6 +373,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to fire when the transport unit with `OpenTopped=yes` moved to an area that the passengers' `MovementZone` cannot move into.
 - Fixed a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next`.
 - Fixed the issue that `BombSight` not being updated correctly in techno conversion.
+- `EVA.Tag` already supports being set for specific countries, and `EVAIndex` is no longer reset after load game.
 
 ## Newly added global settings
 

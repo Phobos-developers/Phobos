@@ -573,7 +573,6 @@ New:
 - [Allow replacing vanilla repairing with togglable auto repairing](User-Interface.md#allow-replacing-vanilla-repairing-with-togglable-auto-repairing) (by TaranDahl)
 - Use `OpenTopped.AllowFiringIfAttackedByLocomotor` to control whether the passengers of a non-building transport unit can fire when the unit is being attacked by a weapon whose warhead has `IsLocomotor=true` (by Noble_Fish)
 - Framework for dynamic sight (by TaranDahl)
-- You can now set the `EVAType` for a specific country (by FlyStar)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -654,7 +653,6 @@ Vanilla fixes:
 - `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses (by Ollerus)
 - Fixed the issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions (by TaranDahl)
 - Purely visual animations and particles excluded from sync checks (by Starkku)
-- EVAIndex now supports saving and loading game states (by FlyStar)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -716,6 +714,7 @@ Fixes / interactions with other extensions:
 - Fixed a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to fire when the transport unit with `OpenTopped=yes` moved to an area that the passengers' `MovementZone` cannot move into (by NetsuNegi)
 - Fixed a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next` (by NetsuNegi & FlyStar)
 - Fixed the issue that `BombSight` not being updated correctly in techno conversion (by TaranDahl)
+- `EVA.Tag` already supports being set for specific countries, and `EVAIndex` is no longer reset after load game (by FlyStar)
 ```
 
 ### 0.4.0.3
