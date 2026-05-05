@@ -291,6 +291,7 @@ This page lists all the individual contributions to the project by their author.
   - Wall overlay unit sell exploit fix
   - Fix vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't
   - GapGen + SpySat desync fix
+  - Frame CRC generation rewrite
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -745,6 +746,7 @@ This page lists all the individual contributions to the project by their author.
   - Extra threat
   - Fix the incorrect mission switching in infantry EnterIdleMode
   - Fix the issue that `BombSight` not being updated correctly in techno conversion
+  - Fix BalloonHover incorrectly considering ground factors when pathfinding
   - Technos with Walk locomotor spawn wake like ship
   - Updateable firing anim
   - Fix the issue where the sidebar would not refresh when an unit dies in limbo
@@ -758,7 +760,6 @@ This page lists all the individual contributions to the project by their author.
 - **Flactine**
   - Add target filtering options to attacheffect system
   - Add veterancy-based target filtering for weapons and warheads
-  - Fix BalloonHover incorrectly considering ground factors when pathfinding
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
