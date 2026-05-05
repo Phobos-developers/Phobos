@@ -1,6 +1,3 @@
 [submodule "YRpp"]
 	path = YRpp
 	url = https://github.com/Phobos-developers/YRpp.git
-[submodule "hbftfr"]
-	path = hbftfr
-	url = https://github.com/G-LimeJuice/hbftfr.git
