@@ -886,29 +886,37 @@ void TechnoExt::ClickedApproachObject(FootClass* pThis, ObjectClass* pObject)
 
 bool TechnoExt::CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse)
 {
-	const bool inTeam = pThis->Team != nullptr;
-	const bool available = pThis->IsAlive && pThis->Health > 0 && !pThis->InLimbo;
-	const bool wrongOwner = pThis->Owner != pHouse;
+    if (pThis->Team != nullptr ||
+        !pThis->IsAlive ||
+        pThis->Health <= 0 ||
+        pThis->InLimbo ||
+        pThis->Owner != pHouse)
+    {
+        return false;
+    }
 
-	if (inTeam || !available || wrongOwner)
-		return false;
+    if (!(pThis->RecruitableA && pThis->RecruitableB))
+    {
+        return false;
+    }
 
-	const bool canRecruit = pThis->RecruitableA && pThis->RecruitableB;
-	if (!canRecruit)
-		return false;
+    const Mission mission = pThis->GetCurrentMission();
+    if (!MissionClass::IsRecruitableMission(mission))
+    {
+        return false;
+    }
 
-	const Mission mission = pThis->GetCurrentMission();
+    if (pThis->ShouldEnterAbsorber ||
+        pThis->ShouldEnterOccupiable ||
+        pThis->ShouldGarrisonStructure ||
+        pThis->DrainTarget != nullptr ||
+        pThis->BunkerLinkedItem ||
+        pThis->LocomotorSource != nullptr)
+    {
+        return false;
+    }
 
-	if (!MissionClass::IsRecruitableMission(mission))
-		return false;
-
-	const bool validState =
-		!(pThis->ShouldEnterAbsorber || pThis->ShouldEnterOccupiable || pThis->ShouldGarrisonStructure) &&
-		pThis->DrainTarget == nullptr &&
-		!pThis->BunkerLinkedItem &&
-		pThis->LocomotorSource == nullptr;
-
-	return validState;
+    return true;
 }
 
 bool TechnoExt::EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, int distance, bool select)
