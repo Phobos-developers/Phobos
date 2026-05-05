@@ -1,3 +1,9 @@
 [submodule "YRpp"]
 	path = YRpp
 	url = https://github.com/Phobos-developers/YRpp.git
+[submodule "harfbuzz"]
+	path = harfbuzz
+	url = https://github.com/G-LimeJuice/harfbuzz
+[submodule "fribidi"]
+	path = fribidi
+	url = https://github.com/G-LimeJuice/fribidi
