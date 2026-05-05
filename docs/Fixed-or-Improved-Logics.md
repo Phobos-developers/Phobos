@@ -2151,6 +2151,16 @@ HarvesterDumpAmount=0.0               ; floating point value
 HarvesterDumpAmount=                  ; floating point value
 ```
 
+### Customize `HarvesterLoadRate`
+
+- Now `HarvesterLoadRate` can be customized on each unit.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                         ; VehicleType
+HarvesterLoadRate=                    ; integer, default to [General] -> HarvesterLoadRate
+```
+
 ### Customize type selection for IFV
 
 In vanilla game, when using type selection command on IFVs, all of them will be selected regardless of their current modes, which is allowed to customize now.
