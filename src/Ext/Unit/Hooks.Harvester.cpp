@@ -1,4 +1,4 @@
-﻿#include <Ext/Techno/Body.h>
+#include <Ext/Techno/Body.h>
 
 #pragma region EnterRefineryFix
 
@@ -101,6 +101,27 @@ DEFINE_HOOK(0x4D6D34, FootClass_MissionAreaGuard_Miner, 0x5)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x73D508, UnitClass_Harvesting_HarvesterLoadRate, 6)
+DEFINE_HOOK(0x73D5D5, UnitClass_Harvesting_HarvesterLoadRate, 6)
+{
+	GET(UnitClass* const, pThis, ESI);
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+
+	R->EAX(pTypeExt->HarvesterLoadRate.Get(RulesClass::Instance->HarvesterLoadRate));
+
+	return R->Origin() == 0x73D508 ? 0x73D50E : 0x73D5DB;
+}
+
+DEFINE_HOOK(0x73E951, UnitClass_Harvest_HarvesterLoadRate, 6)
+{
+	GET(UnitClass* const, pThis, EBP);
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+
+	R->EAX(pTypeExt->HarvesterLoadRate.Get(RulesClass::Instance->HarvesterLoadRate));
+
+	return 0x73E957;
 }
 
 #pragma region HarvesterScanAfterUnload

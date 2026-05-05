@@ -573,6 +573,7 @@ New:
 - [Allow replacing vanilla repairing with togglable auto repairing](User-Interface.md#allow-replacing-vanilla-repairing-with-togglable-auto-repairing) (by TaranDahl)
 - Use `OpenTopped.AllowFiringIfAttackedByLocomotor` to control whether the passengers of a non-building transport unit can fire when the unit is being attacked by a weapon whose warhead has `IsLocomotor=true` (by Noble_Fish)
 - Framework for dynamic sight (by TaranDahl)
+- Customize `HarvesterLoadRate` (by Noble_Fish)
 - [EVA voice switching on superweapon activation](New-or-Enhanced-Logics.md#change-eva-voice) (by Flactine)
 
 Vanilla fixes:
