@@ -7,3 +7,6 @@
 [submodule "fribidi"]
 	path = fribidi
 	url = https://github.com/G-LimeJuice/fribidi
+[submodule "freetype"]
+	path = freetype
+	url = https://github.com/G-LimeJuice/freetype
