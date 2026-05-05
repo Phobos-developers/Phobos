@@ -4723,9 +4723,10 @@ msgstr "若该值小于等于 0 则表示一次倒完，就像《红色警戒2�
 
 msgid "Customize `HarvesterLoadRate`"
 msgstr ""
+"自定义 `HarvesterLoadRate`"
 
 msgid "Now `HarvesterLoadRate` can be customized on each unit."
-msgstr ""
+msgstr "现在 `HarvesterLoadRate` 可以在每个单位上自定义了。"
 
 msgid "Customize type selection for IFV"
 msgstr "自定义 IFV 的类型选择"

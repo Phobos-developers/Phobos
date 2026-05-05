@@ -1878,6 +1878,8 @@ msgid ""
 "[Customize `HarvesterLoadRate`](Fixed-or-Improved-Logics.md#customize-"
 "harvesterloadrate) (by Noble_Fish)"
 msgstr ""
+"[自定义 `HarvesterLoadRate`](Fixed-or-Improved-Logics.md#customize-"
+"harvesterloadrate)（by Noble_Fish）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
