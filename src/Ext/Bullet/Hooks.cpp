@@ -222,6 +222,11 @@ DEFINE_HOOK(0x44D074, BuildingClass_Mission_Missile_ApplyGravity, 0x6)
 
 #pragma endregion
 
+namespace ShrapnelTemp
+{
+	BuildingClass* pTargetBuilding = nullptr;
+}
+
 DEFINE_HOOK(0x46A3D6, BulletClass_Shrapnel_Forced, 0xA)
 {
 	enum { Shrapnel = 0x46A40C, Skip = 0x46ADCD };
@@ -229,11 +234,21 @@ DEFINE_HOOK(0x46A3D6, BulletClass_Shrapnel_Forced, 0xA)
 	GET(BulletClass*, pThis, EDI);
 
 	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	ShrapnelTemp::pTargetBuilding = nullptr;
 
 	if (auto const pObject = pThis->GetCell()->FirstObject)
 	{
-		if (pObject->WhatAmI() != AbstractType::Building || pTypeExt->Shrapnel_AffectsBuildings)
+		auto const rtti = pObject->WhatAmI();
+
+		if (rtti != AbstractType::Building)
+		{
 			return Shrapnel;
+		}
+		else if (pTypeExt->Shrapnel_AffectsBuildings)
+		{
+			ShrapnelTemp::pTargetBuilding = static_cast<BuildingClass*>(pObject);
+			return Shrapnel;
+		}
 	}
 	else if (pTypeExt->Shrapnel_AffectsGround)
 	{
@@ -251,6 +266,10 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 	GET(ObjectClass*, pObject, EBP);
 	GET(TechnoClass*, pSource, EAX);
 	GET(WeaponTypeClass*, pShrapnelWeapon, ESI);
+
+	// Do not fire shrapnels on the building itself if bouncing off one.
+	if (pObject == ShrapnelTemp::pTargetBuilding)
+		return SkipObject;
 
 	auto const pOwner = pSource->Owner;
 	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
