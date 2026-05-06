@@ -713,9 +713,8 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 			const double cellSpread = static_cast<double>(pTypeExt->Splits_TargetingDistance.Get()) / (double)Unsorted::LeptonsPerCell;
 			const bool retargetSelf = pTypeExt->RetargetSelf;
 			const bool useWeaponTargeting = pTypeExt->Splits_UseWeaponTargeting;
-			Helpers::Alex::GetCellSpreadItems::IsCylindrical = pTypeExt->Splits_TargetingDistance_Cylindrical;
-			auto const& technos = Helpers::Alex::getCellSpreadItems(coordsTarget, cellSpread, true);
-			Helpers::Alex::GetCellSpreadItems::IsCylindrical = false;
+			const bool cylindrical = pTypeExt->Splits_TargetingDistance_Cylindrical;
+			auto const& technos = Helpers::Alex::getCellSpreadItemsExt(coordsTarget, cellSpread, true, cylindrical);
 
 			for (auto const pTechno : technos)
 			{

@@ -95,7 +95,7 @@ public:
 	bool IsRedSP() const
 	{
 		auto const pType = this->Type;
-		return this->HP <= pType->GetConditionYellow() * pType->Strength.Get();
+		return this->HP <= pType->GetConditionRed() * pType->Strength.Get();
 	}
 
 	static void PointerGotInvalid(void* ptr, bool removed);
