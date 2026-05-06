@@ -1194,6 +1194,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| ExtraThreatCoefficient_Facing.Get(RulesExt::Global()->ExtraThreatCoefficient_Facing) != 0
 		|| ExtraThreatCoefficient_DistanceToLastTarget.Get(RulesExt::Global()->ExtraThreatCoefficient_DistanceToLastTarget) != 0;
 
+	this->HarvesterLoadRate.Read(exINI, pSection, "HarvesterLoadRate");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1931,6 +1933,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraThreatCoefficient_InRangeDistance)
 		.Process(this->ExtraThreatCoefficient_Facing)
 		.Process(this->ExtraThreatCoefficient_DistanceToLastTarget)
+
+		.Process(this->HarvesterLoadRate)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
