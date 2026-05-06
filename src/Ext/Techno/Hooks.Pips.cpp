@@ -57,6 +57,13 @@ DEFINE_HOOK(0x6F64A0, TechnoClass_DrawHealthBar, 0x5)
 
 	if (pBuilding)
 	{
+		if (pThis->IsSelected && Phobos::Config::EnableSelectBox && !pExt->TypeExtData->HideSelectBox)
+		{
+			GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
+			UNREFERENCED_PARAMETER(pLocation); // choom thought he was clever and recomputed the same shit again and again
+			TechnoExt::DrawSelectBox(pThis, pLocation, pBounds);
+		}
+
 		if (AresHelper::CanUseAres && reinterpret_cast<DummyBuildingTypeExtHere*>(pBuilding->Type->align_E24)->Firestorm_Wall)
 			return SkipDrawCode;
 
