@@ -1,13 +1,8 @@
 #pragma once
 #include <HouseClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
-
-#include <Ext/Building/Body.h>
-
-#include <map>
 
 class HouseExt
 {
@@ -21,9 +16,11 @@ public:
 	class ExtData final : public Extension<HouseClass>
 	{
 	public:
-		std::map<int, int> PowerPlantEnhancers;
+		std::vector<BuildingClass*> PowerPlantEnhancers;
 		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
 		std::vector<TechnoClass*> OwnedCountedHarvesters;
+		bool ForceOnlyTargetHouseEnemy;
+		int ForceOnlyTargetHouseEnemyMode;
 
 		CounterClass LimboAircraft;  // Currently owned aircraft in limbo
 		CounterClass LimboBuildings; // Currently owned buildings in limbo
@@ -57,12 +54,20 @@ public:
 		int NumShipyards_NonMFB;
 
 		std::map<int, std::vector<int>> SuspendedEMPulseSWs;
+
 		// standalone? no need and not a good idea
 		struct SWExt
 		{
 			int ShotCount;
 		};
 		std::vector<SWExt> SuperExts;
+
+		int ForceEnemyIndex;
+		int TeamDelay;
+		bool FreeRadar;
+		bool ForceRadar;
+
+		bool PlayerAutoRepair;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
@@ -91,15 +96,25 @@ public:
 			, AIFireSaleDelayTimer {}
 			, SuspendedEMPulseSWs {}
 			, SuperExts(SuperWeaponTypeClass::Array.Count)
+			, ForceEnemyIndex(-1)
+			, ForceOnlyTargetHouseEnemy { false }
+			, ForceOnlyTargetHouseEnemyMode { -1 }
+			, TeamDelay(-1)
+			, FreeRadar(false)
+			, ForceRadar(false)
+			, PlayerAutoRepair(true)
 		{ }
 
-		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
+		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;
 		void AddToLimboTracking(TechnoTypeClass* pTechnoType);
 		void RemoveFromLimboTracking(TechnoTypeClass* pTechnoType);
-		int CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType);
+		int CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType) const;
 		void UpdateNonMFBFactoryCounts(AbstractType rtti, bool remove, bool isNaval);
-		int GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNaval);
+		int GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNaval) const;
 		float GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoType) const;
+
+		int GetForceEnemyIndex();
+		void SetForceEnemyIndex(int EnemyIndex);
 
 		virtual ~ExtData() = default;
 
@@ -149,6 +164,9 @@ public:
 	static CellClass* GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass* pCurrentHouse, CoordStruct defaultCurrentCoords, SpeedType speedTypeZone, int extraDistance = 0);
 	static void GetAIChronoshiftSupers(HouseClass* pThis, SuperClass*& pSuperCSphere, SuperClass*& pSuperCWarp);
 
+	static void ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode = -1);
+	static void SetSkirmishHouseName(HouseClass* pHouse);
+
 	static bool IsDisabledFromShell(
 	HouseClass const* pHouse, BuildingTypeClass const* pItem);
 
@@ -185,4 +203,6 @@ public:
 
 	static CanBuildResult BuildLimitGroupCheck(const HouseClass* pThis, const TechnoTypeClass* pItem, bool buildLimitOnly, bool includeQueued);
 	static bool ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* pType, bool ignoreQueued);
+
+	static void CalculatePowerSurplus(HouseClass* pThis);
 };

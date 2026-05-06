@@ -32,8 +32,9 @@ public:
 	static const wchar_t* VersionDescription;
 	static bool DisplayDamageNumbers;
 	static bool IsLoadingSaveGame;
-	static bool ShouldQuickSave;
+	static bool ShouldSave;
 	static std::wstring CustomGameSaveDescription;
+	static void ScheduleGameSave(const std::wstring& description);
 	static void PassiveSaveGame();
 #ifdef DEBUG
 	static bool DetachFromDebugger();
@@ -54,6 +55,13 @@ public:
 		static double PowerDelta_ConditionYellow;
 		static double PowerDelta_ConditionRed;
 		static bool CenterPauseMenuBackground;
+		static bool SuperWeaponSidebar;
+		static bool SuperWeaponSidebar_Pyramid;
+		static int SuperWeaponSidebar_Interval;
+		static int SuperWeaponSidebar_LeftOffset;
+		static int SuperWeaponSidebar_CameoHeight;
+		static int SuperWeaponSidebar_Max;
+		static int SuperWeaponSidebar_MaxColumns;
 		static bool WeedsCounter_Show;
 		static bool AnchoredToolTips;
 
@@ -73,16 +81,26 @@ public:
 		static bool ToolTipDescriptions;
 		static bool ToolTipBlur;
 		static bool PrioritySelectionFiltering;
+		static bool PriorityDeployFiltering;
+		static bool TypeSelectUseIFVMode;
 		static bool DevelopmentCommands;
+		static bool SuperWeaponSidebarCommands;
 		static bool ArtImageSwap;
 		static bool ShowPlacementPreview;
 		static bool EnableBuildingPlacementPreview;
+		static bool EnableSelectBox;
 		static bool DigitalDisplay_Enable;
+		static bool MessageApplyHoverState;
+		static bool MessageDisplayInCenter;
+		static int MessageDisplayInCenter_BoardOpacity;
+		static int MessageDisplayInCenter_LabelsCount;
+		static int MessageDisplayInCenter_RecordsCount;
 		static bool RealTimeTimers;
 		static bool RealTimeTimers_Adaptive;
 		static int CampaignDefaultGameSpeed;
 		static bool SkirmishUnlimitedColors;
 		static bool ShowDesignatorRange;
+		static bool ShowPowerPlantEnhancerRange;
 		static bool SaveVariablesOnScenarioEnd;
 		static bool SaveGameOnScenarioStart;
 		static bool ShowBriefing;
@@ -91,8 +109,11 @@ public:
 		static bool ShowWeedsCounter;
 		static bool ShowPlanningPath;
 		static bool HideLightFlashEffects;
+		static bool HideLaserTrailEffects;
+		static bool HideShakeEffects;
 		static bool ShowFlashOnSelecting;
 		static bool UnitPowerDrain;
+		static int SuperWeaponSidebar_RequiredSignificance;
 	};
 
 	class Misc
@@ -108,6 +129,7 @@ public:
 	{
 	public:
 		static bool Applied;
+		static bool DisableBalloonHoverPathingFix;
 		static bool DisableRadDamageOnBuildings;
 		static bool DisableSyncLogging;
 	};

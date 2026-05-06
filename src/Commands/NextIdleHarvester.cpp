@@ -1,13 +1,7 @@
 #include "NextIdleHarvester.h"
 
-#include <BuildingTypeClass.h>
-#include <MessageListClass.h>
-#include <MapClass.h>
-#include <ObjectClass.h>
 #include <Utilities/GeneralUtils.h>
-#include <Utilities/Debug.h>
 #include <Ext/Techno/Body.h>
-#include <Ext/TechnoType/Body.h>
 
 const char* NextIdleHarvesterCommandClass::GetName() const
 {
@@ -47,16 +41,15 @@ void NextIdleHarvesterCommandClass::Execute(WWKey eInput) const
 
 	do
 	{
-		if (auto pTechno = abstract_cast<TechnoClass*>(pNextObject))
+		if (auto const pTechno = abstract_cast<TechnoClass*>(pNextObject))
 		{
-			if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType()))
+			auto const pTypeExt = TechnoExt::ExtMap.Find(pTechno)->TypeExtData;
+
+			if (pTypeExt->Harvester_Counted && !TechnoExt::IsHarvesting(pTechno))
 			{
-				if (pTypeExt->Harvester_Counted && !TechnoExt::IsHarvesting(pTechno))
-				{
-					pObjectToSelect = pNextObject;
-					idleHarvestersPresent = true;
-					break;
-				}
+				pObjectToSelect = pNextObject;
+				idleHarvestersPresent = true;
+				break;
 			}
 		}
 

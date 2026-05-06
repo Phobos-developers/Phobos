@@ -17,10 +17,6 @@ void TiberiumExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
-
-	if (!pINI->GetSection(pSection))
-		return;
-
 	INI_EX exINI(pINI);
 
 	this->MinimapColor.Read(exINI, pSection, "MinimapColor");
@@ -102,8 +98,8 @@ DEFINE_HOOK(0x72212C, TiberiumClass_Save_Suffix, 0x5)
 	return 0;
 }
 
+//DEFINE_HOOK_AGAIN(0x721CE9, TiberiumClass_LoadFromINI, 0xA)// Section dont exist!
 DEFINE_HOOK_AGAIN(0x721CDC, TiberiumClass_LoadFromINI, 0xA)
-DEFINE_HOOK_AGAIN(0x721CE9, TiberiumClass_LoadFromINI, 0xA)
 DEFINE_HOOK(0x721C7B, TiberiumClass_LoadFromINI, 0xA)
 {
 	GET(TiberiumClass*, pItem, ESI);

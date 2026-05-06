@@ -88,8 +88,8 @@ class BlowfishEngine {
 		/*
 		**	Permutation tables for encryption and decryption.
 		*/
- 		unsigned long P_Encrypt[(int)ROUNDS+2];
- 		unsigned long P_Decrypt[(int)ROUNDS+2];
+		unsigned long P_Encrypt[(int)ROUNDS+2];
+		unsigned long P_Decrypt[(int)ROUNDS+2];
 
 		/*
 		**	S-Box tables (four).

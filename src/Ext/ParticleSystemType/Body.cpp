@@ -17,10 +17,6 @@ void ParticleSystemTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
-
-	if (!pINI->GetSection(pSection))
-		return;
-
 	INI_EX exINI(pINI);
 
 	this->AdjustTargetCoordsOnRotation.Read(exINI, pSection, "AdjustTargetCoordsOnRotation");
@@ -102,8 +98,8 @@ DEFINE_HOOK(0x644844, ParticleSystemTypeClass_Save_Suffix, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x644615, ParticleSystemTypeClass_LoadFromINI, 0x5)
-DEFINE_HOOK(0x644620, ParticleSystemTypeClass_LoadFromINI, 0x5)
+//DEFINE_HOOK_AGAIN(0x644620, ParticleSystemTypeClass_LoadFromINI, 0x5)// Section dont exist!
+DEFINE_HOOK(0x644615, ParticleSystemTypeClass_LoadFromINI, 0x5)
 {
 	GET(ParticleSystemTypeClass*, pItem, ESI);
 	GET(CCINIClass*, pINI, EBX);

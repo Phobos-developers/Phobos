@@ -1,10 +1,5 @@
 #include "Body.h"
 
-#include <MapClass.h>
-
-#include <Ext/House/Body.h>
-#include <Helpers/Macro.h>
-
 DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8)
 {
 	GET(TeamClass*, pTeam, ESI);
@@ -22,7 +17,7 @@ DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8)
 			pTeam->Focus = nullptr;
 			pTeam->QueuedFocus = nullptr;
 			//pTeamData->selectedTarget; // TO-DO When a specific PR is merged
-			ScriptExt::Log("AI Scripts - Team Update: [%s] [%s](line: %d = %d,%d): Jump to the same line -> (Reason: Timed Jump loop)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
+			//ScriptExt::Log("AI Scripts - Team Update: [%s] [%s](line: %d = %d,%d): Jump to the same line -> (Reason: Timed Jump loop)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
 
 			if (pTeamData->ForceJump_InitialCountdown > 0)
 			{
@@ -33,7 +28,7 @@ DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8)
 		else
 		{
 			pTeamData->ForceJump_InitialCountdown = -1;
-			ScriptExt::Log("AI Scripts - Team Update: [%s] [%s](line: %d = %d,%d): Jump to line: %d = %d,%d -> (Reason: Timed Jump)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
+			//ScriptExt::Log("AI Scripts - Team Update: [%s] [%s](line: %d = %d,%d): Jump to line: %d = %d,%d -> (Reason: Timed Jump)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
 		}
 
 		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
@@ -62,7 +57,7 @@ DEFINE_HOOK(0x6E95B3, TeamClass_AI_MoveToCell, 0x6)
 	if (!R->BL())
 		return 0x6E95A4;
 
-	GET(int, nCoord, ECX);
+	GET(const int, nCoord, ECX);
 	REF_STACK(CellStruct, cell, STACK_OFFSET(0x38, -0x28));
 
 	// if ( NewINIFormat < 4 ) then divide 128
@@ -75,31 +70,75 @@ DEFINE_HOOK(0x6E95B3, TeamClass_AI_MoveToCell, 0x6)
 	return 0x6E959C;
 }
 
+#pragma region ChronoShiftToBuildingFix
+
 DEFINE_HOOK(0x6EFEFB, TMission_ChronoShiftToBuilding_SuperWeapons, 0x6)
 {
 	enum { SkipGameCode = 0x6EFF22 };
 
-	GET(HouseClass*, pHouse, EBP);
+	GET(HouseClass* const, pHouse, EBP);
 
 	SuperClass* pSuperCSphere = nullptr;
 	SuperClass* pSuperCWarp = nullptr;
 	HouseExt::GetAIChronoshiftSupers(pHouse, pSuperCSphere, pSuperCWarp);
+
 	R->ESI(pSuperCSphere);
 	R->EBX(pSuperCWarp);
 
 	return SkipGameCode;
 }
 
+DEFINE_HOOK_AGAIN(0x6F005F, TMission_ChronoShiftToBuilding_SWIndex, 0x6)
+DEFINE_HOOK(0x6F0008, TMission_ChronoShiftToBuilding_SWIndex, 0x6)
+{
+	const DWORD address = R->Origin();
+	const bool isChronoSphere = address == 0x6F0008;
+
+	SuperWeaponTypeClass* const pSWType = isChronoSphere ?
+		R->EAX<SuperWeaponTypeClass* const>() : R->ECX<SuperWeaponTypeClass* const>();
+
+	if (isChronoSphere)
+		R->ECX(pSWType->GetArrayIndex());
+	else
+		R->EDX(pSWType->GetArrayIndex());
+
+	return address + 0x6;
+}
+
+#pragma endregion
+
+#pragma region ChronoShiftToTargetFix
+
 DEFINE_HOOK(0x6F01B0, TMission_ChronoShiftToTarget_SuperWeapons, 0x6)
 {
 	enum { SkipGameCode = 0x6F01D9 };
 
-	GET(HouseClass*, pHouse, EDI);
+	GET(HouseClass* const, pHouse, EDI);
 	REF_STACK(SuperClass*, pSuperCWarp, STACK_OFFSET(0x30, -0x1C));
 
 	SuperClass* pSuperCSphere = nullptr;
 	HouseExt::GetAIChronoshiftSupers(pHouse, pSuperCSphere, pSuperCWarp);
+
 	R->EBX(pSuperCSphere);
 
 	return SkipGameCode;
 }
+
+DEFINE_HOOK_AGAIN(0x6F0304, TMission_ChronoShiftToTarget_SWIndex, 0x6)
+DEFINE_HOOK(0x6F02AD, TMission_ChronoShiftToTarget_SWIndex, 0x6)
+{
+	const DWORD address = R->Origin();
+	const bool isChronoSphere = address == 0x6F02AD;
+
+	SuperWeaponTypeClass* const pSWType = isChronoSphere ?
+		R->EAX<SuperWeaponTypeClass* const>() : R->ECX<SuperWeaponTypeClass* const>();
+
+	if (isChronoSphere)
+		R->ECX(pSWType->GetArrayIndex());
+	else
+		R->EDX(pSWType->GetArrayIndex());
+
+	return address + 0x6;
+}
+
+#pragma endregion

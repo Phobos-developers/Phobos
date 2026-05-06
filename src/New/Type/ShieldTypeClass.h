@@ -1,10 +1,8 @@
 #pragma once
 
 #include <Utilities/Enumerable.h>
-#include <Utilities/Template.h>
-#include <Utilities/GeneralUtils.h>
-#include <Ext/Rules/Body.h>
 #include <Utilities/TemplateDef.h>
+#include <Ext/Rules/Body.h>
 
 #include "HealthBarTypeClass.h"
 
@@ -19,13 +17,19 @@ public:
 	Valueable<bool> InheritArmorFromTechno;
 	ValueableVector<TechnoTypeClass*> InheritArmor_Allowed;
 	ValueableVector<TechnoTypeClass*> InheritArmor_Disallowed;
+	Nullable<bool> ApplyArmorMult;
 	Valueable<bool> Powered;
 	Valueable<double> Respawn;
 	Valueable<int> Respawn_Rate;
+	Valueable<bool> Respawn_RestartInCombat;
+	Valueable<int> Respawn_RestartInCombatDelay;
+	ValueableVector<AnimTypeClass*> Respawn_Anim;
+	Valueable<WeaponTypeClass*> Respawn_Weapon;
 	Valueable<double> SelfHealing;
 	Valueable<int> SelfHealing_Rate;
 	Valueable<bool> SelfHealing_RestartInCombat;
 	Valueable<int> SelfHealing_RestartInCombatDelay;
+	ValueableVector<BuildingTypeClass*> SelfHealing_EnabledBy;
 
 	Valueable<bool> AbsorbOverDamage;
 	Valueable<int> BracketDelta;
@@ -33,8 +37,8 @@ public:
 	Valueable<AttachedAnimFlag> IdleAnim_TemporalAction;
 	Damageable<AnimTypeClass*> IdleAnim;
 	Damageable<AnimTypeClass*> IdleAnimDamaged;
-	Valueable<AnimTypeClass*> BreakAnim;
-	Valueable<AnimTypeClass*> HitAnim;
+	ValueableVector<AnimTypeClass*> BreakAnim;
+	ValueableVector<AnimTypeClass*> HitAnim;
 	Valueable<bool> HitFlash;
 	Nullable<int> HitFlash_FixedSize;
 	Valueable<bool> HitFlash_Red;
@@ -54,6 +58,7 @@ public:
 	Nullable<SHPStruct*> Pips_Background;
 	Nullable<Vector3D<int>> Pips_Building;
 	Nullable<int> Pips_Building_Empty;
+	Valueable<bool> Pips_HideIfNoStrength;
 	Valueable<bool> ImmuneToCrit;
 	Valueable<bool> ImmuneToBerserk;
 
@@ -71,13 +76,19 @@ public:
 		, InheritArmorFromTechno { false }
 		, InheritArmor_Allowed { }
 		, InheritArmor_Disallowed { }
+		, ApplyArmorMult {}
 		, Powered { false }
 		, Respawn { 0.0 }
 		, Respawn_Rate { 0 }
+		, Respawn_RestartInCombat { true }
+		, Respawn_RestartInCombatDelay { 0 }
+		, Respawn_Anim { }
+		, Respawn_Weapon { }
 		, SelfHealing { 0.0 }
 		, SelfHealing_Rate { 0 }
 		, SelfHealing_RestartInCombat { true }
 		, SelfHealing_RestartInCombatDelay { 0 }
+		, SelfHealing_EnabledBy { }
 		, AbsorbOverDamage { false }
 		, BracketDelta { 0 }
 		, IdleAnim_OfflineAction { AttachedAnimFlag::Hides }
@@ -103,6 +114,7 @@ public:
 		, Pips_Background { }
 		, Pips_Building { }
 		, Pips_Building_Empty { }
+		, Pips_HideIfNoStrength { false }
 		, ImmuneToBerserk { false }
 		, ImmuneToCrit { false }
 		, Tint_Color { }
@@ -119,9 +131,19 @@ public:
 		return this->Tint_Color.isset() || this->Tint_Intensity != 0.0;
 	}
 
-	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio) const;
-	double GetConditionYellow() const;
-	double GetConditionRed() const;
+	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio) const
+	{
+		if (isDamaged)
+		{
+			if (const auto damagedAnim = this->IdleAnimDamaged.Get(healthRatio))
+				return damagedAnim;
+		}
+
+		return this->IdleAnim.Get(healthRatio, this->GetConditionYellow(), this->GetConditionRed());
+	}
+
+	double GetConditionYellow() const { return this->ConditionYellow.Get(RulesExt::Global()->Shield_ConditionYellow.Get(RulesClass::Instance->ConditionYellow)); }
+	double GetConditionRed() const { return this->ConditionRed.Get(RulesExt::Global()->Shield_ConditionRed.Get(RulesClass::Instance->ConditionRed)); }
 
 private:
 	template <typename T>

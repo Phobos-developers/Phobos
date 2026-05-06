@@ -1,6 +1,3 @@
-#include <AlphaShapeClass.h>
-#include <TacticalClass.h>
-
 #include <Ext/Building/Body.h>
 #include <Utilities/AresFunctions.h>
 
@@ -25,7 +22,7 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 	// the owner object as source, so the display is refreshed
 	// whenever the owner object moves.
 	auto pOwner = pSource;
-	const auto pAnim = abstract_cast<AnimClass*>(pSource);
+	const auto pAnim = abstract_cast<AnimClass*, true>(pSource);
 
 	if (pAnim && pAnim->OwnerObject)
 		pOwner = pAnim->OwnerObject;
@@ -33,7 +30,7 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 	const Point2D* tacticalPos = &TacticalClass::Instance->TacticalPos;
 	const Point2D off = { tacticalPos->X - ((pImage->Width + 1) / 2), tacticalPos->Y - ((pImage->Height + 1) / 2) };
 
-	if (const auto pFoot = abstract_cast<FootClass*>(pOwner))
+	if (const auto pFoot = abstract_cast<FootClass*, true>(pOwner))
 	{
 		if (pFoot->LastMapCoords != pFoot->CurrentMapCoords)
 		{
@@ -52,7 +49,7 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 			point.Y += cellDimensions.Y / 2;
 			point += off;
 
-			RectangleStruct dirty = { point.X - tacticalPos->X - cellDimensions.X,
+			const RectangleStruct dirty = { point.X - tacticalPos->X - cellDimensions.X,
 				point.Y - tacticalPos->Y - cellDimensions.Y,
 				pImage->Width + cellDimensions.X * 2,
 				pImage->Height + cellDimensions.Y * 2 };
@@ -62,7 +59,7 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 
 	bool inactive = pSource->InLimbo;
 
-	if (const auto pTechno = abstract_cast<TechnoClass*>(pSource))
+	if (const auto pTechno = abstract_cast<TechnoClass*, true>(pSource))
 	{
 		inactive |= pTechno->Deactivated || pTechno->CloakState == CloakState::Cloaked || pTechno->GetHeight() < -10;
 
@@ -73,21 +70,16 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 		}
 	}
 
-	const auto pBuilding = abstract_cast<BuildingClass*>(pSource);
+	const auto pBuilding = abstract_cast<BuildingClass*, true>(pSource);
 
-	if (pBuilding)
-	{
-		const auto currMission = pBuilding->GetCurrentMission();
-
-		if (currMission != Mission::Construction && currMission != Mission::Selling)
-			inactive |= !pBuilding->IsPowerOnline() || BuildingExt::ExtMap.Find(pBuilding)->LimboID != -1;
-	}
+	if (pBuilding && !inactive && pBuilding->GetCurrentMission() != Mission::Construction)
+		inactive |= !pBuilding->IsPowerOnline() || BuildingExt::ExtMap.Find(pBuilding)->LimboID != -1;
 
 	auto& alphaExt = *AresFunctions::AlphaExtMap;
 
 	if (inactive)
 	{
-		if (auto pAlpha = alphaExt.get_or_default(pSource))
+		if (const auto pAlpha = alphaExt.get_or_default(pSource))
 			GameDelete(pAlpha);
 
 		return;
@@ -95,7 +87,7 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 
 	if (Unsorted::CurrentFrame % 2) // lag reduction - don't draw a new alpha every frame
 	{
-		if (alphaExt.get_or_default(pSource) && pBuilding && (pImage->Frames <= 1 || !pBuilding->HasTurret() || !pBuilding->TurretIsRotating))
+		if (alphaExt.get_or_default(pSource) && pBuilding && (pImage->Frames <= 1 || !pBuilding->HasTurret()))
 			return;
 
 		Point2D point = TacticalClass::Instance->CoordsToClient(pSource->GetCoords()).first;
@@ -105,8 +97,8 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 		GameCreate<AlphaShapeClass>(pSource, point.X, point.Y);
 		--Unsorted::ScenarioInit;
 		//int Margin = 40;
-		RectangleStruct Dirty = { point.X - tacticalPos->X, point.Y - tacticalPos->Y, pImage->Width, pImage->Height };
-		TacticalClass::Instance->RegisterDirtyArea(Dirty, true);
+		const RectangleStruct dirty = { point.X - tacticalPos->X, point.Y - tacticalPos->Y, pImage->Width, pImage->Height };
+		TacticalClass::Instance->RegisterDirtyArea(dirty, true);
 	}
 }
 

@@ -1,7 +1,5 @@
 #include "Body.h"
 
-#include <ThemeClass.h>
-
 SideExt::ExtContainer SideExt::ExtMap;
 
 void SideExt::ExtData::Initialize()
@@ -10,6 +8,14 @@ void SideExt::ExtData::Initialize()
 
 	this->ArrayIndex = SideClass::FindIndex(pID);
 	this->Sidebar_GDIPositions = this->ArrayIndex == 0; // true = Allied
+
+	// Init MessageTextColor like Ares
+	if (!_strcmpi(pID, "Nod")) //Soviets
+		this->MessageTextColor = 11;
+	else if (!_strcmpi(pID, "ThirdSide")) //Yuri
+		this->MessageTextColor = 25;
+	else //Allies or any other country
+		this->MessageTextColor = 21;
 };
 
 void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
@@ -18,30 +24,35 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	const char* pSection = pThis->ID;
 
 	if (!pINI->GetSection(pSection))
-	{
 		return;
-	}
 
 	INI_EX exINI(pINI);
 	this->Sidebar_GDIPositions.Read(exINI, pSection, "Sidebar.GDIPositions");
 	this->IngameScore_WinTheme = pINI->ReadTheme(pSection, "IngameScore.WinTheme", this->IngameScore_WinTheme);
 	this->IngameScore_LoseTheme = pINI->ReadTheme(pSection, "IngameScore.LoseTheme", this->IngameScore_LoseTheme);
 	this->Sidebar_HarvesterCounter_Offset.Read(exINI, pSection, "Sidebar.HarvesterCounter.Offset");
-	this->Sidebar_HarvesterCounter_Yellow.Read(exINI, pSection, "Sidebar.HarvesterCounter.ColorYellow");
-	this->Sidebar_HarvesterCounter_Red.Read(exINI, pSection, "Sidebar.HarvesterCounter.ColorRed");
+	this->Sidebar_HarvesterCounter_ColorGreen.Read(exINI, pSection, "Sidebar.HarvesterCounter.ColorGreen");
+	this->Sidebar_HarvesterCounter_ColorYellow.Read(exINI, pSection, "Sidebar.HarvesterCounter.ColorYellow");
+	this->Sidebar_HarvesterCounter_ColorRed.Read(exINI, pSection, "Sidebar.HarvesterCounter.ColorRed");
 	this->Sidebar_WeedsCounter_Offset.Read(exINI, pSection, "Sidebar.WeedsCounter.Offset");
 	this->Sidebar_WeedsCounter_Color.Read(exINI, pSection, "Sidebar.WeedsCounter.Color");
 	this->Sidebar_ProducingProgress_Offset.Read(exINI, pSection, "Sidebar.ProducingProgress.Offset");
 	this->Sidebar_PowerDelta_Offset.Read(exINI, pSection, "Sidebar.PowerDelta.Offset");
-	this->Sidebar_PowerDelta_Green.Read(exINI, pSection, "Sidebar.PowerDelta.ColorGreen");
-	this->Sidebar_PowerDelta_Yellow.Read(exINI, pSection, "Sidebar.PowerDelta.ColorYellow");
-	this->Sidebar_PowerDelta_Red.Read(exINI, pSection, "Sidebar.PowerDelta.ColorRed");
-	this->Sidebar_PowerDelta_Grey.Read(exINI, pSection, "Sidebar.PowerDelta.ColorGrey");
+	this->Sidebar_PowerDelta_ColorGreen.Read(exINI, pSection, "Sidebar.PowerDelta.ColorGreen");
+	this->Sidebar_PowerDelta_ColorYellow.Read(exINI, pSection, "Sidebar.PowerDelta.ColorYellow");
+	this->Sidebar_PowerDelta_ColorRed.Read(exINI, pSection, "Sidebar.PowerDelta.ColorRed");
+	this->Sidebar_PowerDelta_ColorGrey.Read(exINI, pSection, "Sidebar.PowerDelta.ColorGrey");
 	this->Sidebar_PowerDelta_Align.Read(exINI, pSection, "Sidebar.PowerDelta.Align");
 	this->ToolTip_Background_Color.Read(exINI, pSection, "ToolTip.Background.Color");
 	this->ToolTip_Background_Opacity.Read(exINI, pSection, "ToolTip.Background.Opacity");
 	this->ToolTip_Background_BlurSize.Read(exINI, pSection, "ToolTip.Background.BlurSize");
 	this->BriefingTheme = pINI->ReadTheme(pSection, "BriefingTheme", this->BriefingTheme);
+	this->MessageTextColor.Read(exINI, pSection, "MessageTextColor");
+	this->SuperWeaponSidebar_OnPCX.Read(pINI, pSection, "SuperWeaponSidebar.OnPCX");
+	this->SuperWeaponSidebar_OffPCX.Read(pINI, pSection, "SuperWeaponSidebar.OffPCX");
+	this->SuperWeaponSidebar_TopPCX.Read(pINI, pSection, "SuperWeaponSidebar.TopPCX");
+	this->SuperWeaponSidebar_CenterPCX.Read(pINI, pSection, "SuperWeaponSidebar.CenterPCX");
+	this->SuperWeaponSidebar_BottomPCX.Read(pINI, pSection, "SuperWeaponSidebar.BottomPCX");
 }
 
 // =============================
@@ -54,16 +65,17 @@ void SideExt::ExtData::Serialize(T& Stm)
 		.Process(this->ArrayIndex)
 		.Process(this->Sidebar_GDIPositions)
 		.Process(this->Sidebar_HarvesterCounter_Offset)
-		.Process(this->Sidebar_HarvesterCounter_Yellow)
-		.Process(this->Sidebar_HarvesterCounter_Red)
+		.Process(this->Sidebar_HarvesterCounter_ColorGreen)
+		.Process(this->Sidebar_HarvesterCounter_ColorYellow)
+		.Process(this->Sidebar_HarvesterCounter_ColorRed)
 		.Process(this->Sidebar_WeedsCounter_Offset)
 		.Process(this->Sidebar_WeedsCounter_Color)
 		.Process(this->Sidebar_ProducingProgress_Offset)
 		.Process(this->Sidebar_PowerDelta_Offset)
-		.Process(this->Sidebar_PowerDelta_Green)
-		.Process(this->Sidebar_PowerDelta_Yellow)
-		.Process(this->Sidebar_PowerDelta_Red)
-		.Process(this->Sidebar_PowerDelta_Grey)
+		.Process(this->Sidebar_PowerDelta_ColorGreen)
+		.Process(this->Sidebar_PowerDelta_ColorYellow)
+		.Process(this->Sidebar_PowerDelta_ColorRed)
+		.Process(this->Sidebar_PowerDelta_ColorGrey)
 		.Process(this->Sidebar_PowerDelta_Align)
 		.Process(this->ToolTip_Background_Color)
 		.Process(this->ToolTip_Background_Opacity)
@@ -71,6 +83,12 @@ void SideExt::ExtData::Serialize(T& Stm)
 		.Process(this->IngameScore_WinTheme)
 		.Process(this->IngameScore_LoseTheme)
 		.Process(this->BriefingTheme)
+		.Process(this->MessageTextColor)
+		.Process(this->SuperWeaponSidebar_OnPCX)
+		.Process(this->SuperWeaponSidebar_OffPCX)
+		.Process(this->SuperWeaponSidebar_TopPCX)
+		.Process(this->SuperWeaponSidebar_CenterPCX)
+		.Process(this->SuperWeaponSidebar_BottomPCX)
 		;
 }
 

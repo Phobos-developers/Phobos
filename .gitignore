@@ -18,9 +18,7 @@ docs/locale/.doctrees/
 *.pot
 *.mo
 
-/.vscode/c_cpp_properties.json
-/.vscode/cspell.json
-/.vscode/settings.json
+/.vscode
 
 build
 cmake-*
