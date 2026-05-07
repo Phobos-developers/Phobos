@@ -285,13 +285,13 @@ int GeneralUtils::GetColorFromColorAdd(int colorIndex)
 	switch (Drawing::ColorMode)
 	{
 	case RGBMode::RGB565:
-		colorValue |= blue | (32 * (green | (red << 6)));
+		colorValue |= (red << 6 | green) << 5 | blue;
 		break;
 	case RGBMode::RGB556:
-		colorValue |= blue | (((32 * red) | (green >> 1)) << 6);
+		colorValue |= (red << 5 | green) << 6 | blue;
 		break;
 	default:
-		colorValue |= blue | (32 * ((32 * red) | (green >> 1)));
+		colorValue |= (red << 5 | green) << 5 | blue;
 		break;
 	}
 
