@@ -397,6 +397,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->FiringAnim_Update.Read(exINI, GameStrings::AudioVisual, "FiringAnim.Update");
 	this->ExtendedPlayerRepair.Read(exINI, GameStrings::General, "ExtendedPlayerRepair");
 
+	this->Shrapnel_IgnoreHitBuildings.Read(exINI, GameStrings::CombatDamage, "Shrapnel.IgnoreHitBuildings");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -720,6 +722,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShipLocomotorMakesWake)
 		.Process(this->FiringAnim_Update)
 		.Process(this->ExtendedPlayerRepair)
+		.Process(this->Shrapnel_IgnoreHitBuildings)
 		;
 }
 

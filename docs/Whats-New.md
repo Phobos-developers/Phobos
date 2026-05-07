@@ -574,6 +574,7 @@ New:
 - Use `OpenTopped.AllowFiringIfAttackedByLocomotor` to control whether the passengers of a non-building transport unit can fire when the unit is being attacked by a weapon whose warhead has `IsLocomotor=true` (by Noble_Fish)
 - Framework for dynamic sight (by TaranDahl)
 - [Customize `HarvesterLoadRate`](Fixed-or-Improved-Logics.md#customize-harvesterloadrate) (by Noble_Fish)
+- [Toggle to prevent `ShrapnelWeapon` from targeting buildings multiple times](Fixed-or-Improved-Logics.md#shrapnel-enhancements) (by Starkku)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
