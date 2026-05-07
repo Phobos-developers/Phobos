@@ -1,9 +1,7 @@
 #pragma once
 
-#include <Phobos.h>
-#include <CCINIClass.h>
-
-#include <Utilities/Template.h>
+#include <Utilities/Enumerable.h>
+#include <Utilities/TemplateDef.h>
 #include <Utilities/AresFunctions.h>
 #include <Utilities/AresHelper.h>
 

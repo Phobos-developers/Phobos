@@ -1,5 +1,4 @@
 #include "Body.h"
-#include <HouseClass.h>
 
 #include <Ext/Scenario/Body.h>
 

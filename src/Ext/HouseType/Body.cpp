@@ -1,7 +1,5 @@
 #include "Body.h"
 
-#include <BuildingClass.h>
-
 #include <Ext/Side/Body.h>
 #include <Utilities/GeneralUtils.h>
 

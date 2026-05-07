@@ -1,14 +1,11 @@
 #pragma once
-#include <CCINIClass.h>
+
 #include <HouseTypeClass.h>
-#include <Helpers/Macro.h>
 
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
 #include <New/Type/EVATypeClass.h>
-
-class ExtraSWClass;
 
 class HouseTypeExt
 {
