@@ -288,10 +288,10 @@ int GeneralUtils::GetColorFromColorAdd(int colorIndex)
 		colorValue |= (red << 6 | green) << 5 | blue;
 		break;
 	case RGBMode::RGB556:
-		colorValue |= (red << 5 | green) << 6 | blue;
+		colorValue |= (red << 5 | green >> 1) << 6 | blue;
 		break;
 	default:
-		colorValue |= (red << 5 | green) << 5 | blue;
+		colorValue |= (red << 5 | green >> 1) << 5 | blue;
 		break;
 	}
 
