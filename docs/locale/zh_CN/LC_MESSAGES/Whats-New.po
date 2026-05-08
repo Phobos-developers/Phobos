@@ -2547,6 +2547,7 @@ msgid ""
 "Fixed the bug where the `.SubjectToGround` of the Trajectory type did not"
 " consider bridges (by Noble_Fish)"
 msgstr ""
+"修复了新类型弹道的 `.SubjectToGround` 未考虑桥梁的 Bug（by Noble_Fish）"
 
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
