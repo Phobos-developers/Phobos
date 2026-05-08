@@ -2196,6 +2196,7 @@ msgstr "AI 动作脚本 `16005 跳回上一个脚本`"
 
 msgid "Fix AI team recruitment inconsistency causing underfilled teams"
 msgstr ""
+"修复了 AI 小队招募数量与生产计划不一致导致不足以建立小队的问题"
 
 msgid "**TaranDahl (航味麻酱)**:"
 msgstr "**TaranDahl (航味麻酱)**："

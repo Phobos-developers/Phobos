@@ -2321,6 +2321,7 @@ msgid ""
 "Fixed AI team recruitment inconsistency causing underfilled teams (by "
 "handama)"
 msgstr ""
+"修复了 AI 小队招募数量与生产计划不一致导致不足以建立小队的问题（by handama）"
 
 msgid ""
 "Fixed the issue where tint color RGB mode conversion was incorrect (by "
