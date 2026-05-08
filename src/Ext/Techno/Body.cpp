@@ -1,7 +1,5 @@
 #include "Body.h"
 
-#include <JumpjetLocomotionClass.h>
-
 #include <Ext/Anim/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
@@ -9,6 +7,7 @@
 #include <Ext/Event/Body.h>
 
 #include <Utilities/AresFunctions.h>
+#include <Utilities/AresHelper.h>
 
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 UnitClass* TechnoExt::Deployer = nullptr;
@@ -1030,8 +1029,10 @@ bool TechnoExt::EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool sel
 
 struct DummyExtHere
 {
-	char _[0x9C];
-	bool DriverKilled;
+	char _pad0[0x50];
+	CDTimerClass DisableWeaponsTimer;
+	char _pad1[0x40];
+	bool DriverKilled; 
 };
 
 struct DummyTypeExtHere
@@ -1187,6 +1188,47 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 int TechnoExt::ExtData::GetSight()
 {
 	return this->TypeExtData->OwnerObject()->Sight;
+}
+
+bool TechnoExt::HasWeaponsDisabled(TechnoClass* pThis)
+{
+	if (TechnoExt::ExtMap.Find(pThis)->AE.DisableWeapons)
+		return true;
+
+	if (AresHelper::CanUseAres)
+	{
+		const auto pExt_Ares = reinterpret_cast<DummyExtHere*>(pThis->align_154);
+
+		if (pExt_Ares->DisableWeaponsTimer.InProgress())
+			return true;
+	}
+
+	return false;
+}
+
+FireError TechnoExt::GetFireErrorIgnoreDisableWeapons(TechnoClass* pThis, AbstractClass* pTarget, int weaponIndex, bool ignoreRange)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pExt_Ares = reinterpret_cast<DummyExtHere*>(pThis->align_154);
+	bool const canUseAres = AresHelper::CanUseAres;
+	bool const disableWeapons = pExt->AE.DisableWeapons;
+	int timeLeft = 0;
+
+	pExt->AE.DisableWeapons = false;
+
+	if (canUseAres)
+	{
+		timeLeft = pExt_Ares->DisableWeaponsTimer.GetTimeLeft();
+		pExt_Ares->DisableWeaponsTimer.Stop();
+	}
+
+	auto const fireError = pThis->GetFireError(pTarget, weaponIndex, ignoreRange);
+	pExt->AE.DisableWeapons = disableWeapons;
+
+	if (canUseAres && timeLeft > 0)
+		pExt_Ares->DisableWeaponsTimer.Start(timeLeft);
+
+	return fireError;
 }
 
 // =============================

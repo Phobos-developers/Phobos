@@ -374,6 +374,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next`.
 - Fixed the issue that `BombSight` not being updated correctly in techno conversion.
 - `EVA.Tag` already supports being set for specific countries, and `EVAIndex` is no longer reset after load game.
+- `DisableWeapons.Duration` now makes `Gattling=yes` rate tick down and stops the sounds from playing, no longer interferes with target acquisition and works together with Phobos' `OpenTopped.CheckTransportDisableWeapons`.
 
 ## Newly added global settings
 
