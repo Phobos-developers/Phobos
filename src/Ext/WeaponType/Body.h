@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -45,6 +45,7 @@ public:
 		Valueable<AreaFireTarget> AreaFire_Target;
 		Valueable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
+		Nullable<int> LaserZAdjust;
 		Valueable<bool> VisualScatter;
 		Nullable<PartialVector2D<int>> ROF_RandomDelay;
 		ValueableVector<int> ChargeTurret_Delays;
@@ -131,6 +132,7 @@ public:
 			, AreaFire_Target { AreaFireTarget::Base }
 			, FeedbackWeapon {}
 			, Laser_IsSingleColor { false }
+			, LaserZAdjust {}
 			, VisualScatter { false }
 			, ROF_RandomDelay {}
 			, ChargeTurret_Delays {}

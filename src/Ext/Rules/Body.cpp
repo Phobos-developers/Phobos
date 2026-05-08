@@ -197,6 +197,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AirstrikeLineColor.Read(exINI, GameStrings::AudioVisual, "AirstrikeLineColor");
 	this->AirstrikeLineZAdjust.Read(exINI, GameStrings::AudioVisual, "AirstrikeLineZAdjust");
 
+	this->LaserZAdjust.Read(exINI, GameStrings::AudioVisual, "LaserZAdjust");
+
 	this->CrateOnlyOnLand.Read(exINI, GameStrings::CrateRules, "CrateOnlyOnLand");
 	this->UnitCrateVehicleCap.Read(exINI, GameStrings::CrateRules, "UnitCrateVehicleCap");
 	this->FreeMCV_CreditsThreshold.Read(exINI, GameStrings::CrateRules, "FreeMCV.CreditsThreshold");
@@ -564,6 +566,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ColorAddUse8BitRGB)
 		.Process(this->AirstrikeLineColor)
 		.Process(this->AirstrikeLineZAdjust)
+		.Process(this->LaserZAdjust)
 		.Process(this->ROF_RandomDelay)
 		.Process(this->ToolTip_Background_Color)
 		.Process(this->ToolTip_Background_Opacity)

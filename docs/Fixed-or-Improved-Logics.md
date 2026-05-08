@@ -2755,6 +2755,19 @@ Bolt.FollowFLH=        ; boolean
 Due to technical constraints, these features do not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html) or those from `AirburstWeapon`.
 ```
 
+### Laser Z-adjust
+
+- It is now possible to change the Z-adjust for weapon laser drawing via `LaserZAdjust` per weapon, defaults to `[AudioVisual]` -> `LaserZAdjust`. Note that this is not available on prism support weapons.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+LaserZAdjust=0  ; integer
+
+[SOMEWEAPON]    ; WeaponType
+LaserZAdjust=  ; integer
+```
+
 ### Single-color lasers
 
 ![image](_static/images/issinglecolor.gif)
