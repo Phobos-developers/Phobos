@@ -574,6 +574,7 @@ New:
 - Use `OpenTopped.AllowFiringIfAttackedByLocomotor` to control whether the passengers of a non-building transport unit can fire when the unit is being attacked by a weapon whose warhead has `IsLocomotor=true` (by Noble_Fish)
 - Framework for dynamic sight (by TaranDahl)
 - Customize `HarvesterLoadRate` (by Noble_Fish)
+- [Toggle to prevent `ShrapnelWeapon` from targeting buildings multiple times](Fixed-or-Improved-Logics.md#shrapnel-enhancements) (by Starkku)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -654,6 +655,7 @@ Vanilla fixes:
 - `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses (by Ollerus)
 - Fixed the issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions (by TaranDahl)
 - Purely visual animations and particles excluded from sync checks (by Starkku)
+- Fixed AI team recruitment inconsistency causing underfilled teams (by handama)
 - Fixed the issue where tint color RGB mode conversion was incorrect (by Shatyuka)
 
 Phobos fixes:
@@ -698,6 +700,7 @@ Phobos fixes:
 - Fixed a bug causing transfering AttachEffects (e.g on `DeploysInto`/`UndeploysInto`) not to immediately recalculate stats or tint (by Starkku)
 - Fixed a bug where updating the `OpenTopped` attribute during convert did not update the coordinates of passengers (by NetsuNegi)
 - Fixed `Shrapnel.AffectsBuildings=true` shrapnel weapons being able to hit the building itself, potentially multiple times, if it had foundation larger than 1x1 (by Starkku)
+- Fixed the bug where the `.SubjectToGround` of the Trajectory type did not consider bridges (by Noble_Fish)
 
 Fixes / interactions with other extensions:
 <!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->

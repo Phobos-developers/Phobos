@@ -663,7 +663,9 @@ This page lists all the individual contributions to the project by their author.
   - Return warhead
   - `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
-- **handama** - AI script action to `16005 Jump Back To Previous Script`
+- **handama**:
+  - AI script action to `16005 Jump Back To Previous Script`
+  - Fix AI team recruitment inconsistency causing underfilled teams
 - **TaranDahl (航味麻酱)**:
   - Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode
   - Skirmish AI "gather when MCV deploy" behavior dehardcode

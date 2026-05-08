@@ -344,6 +344,8 @@ public:
 		Valueable<bool> DriveLocomotorMakesWake;
 		Valueable<bool> HoverLocomotorMakesWake;
 		Valueable<bool> ShipLocomotorMakesWake;
+
+		Valueable<bool> Shrapnel_IgnoreHitBuildings;
     
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -631,6 +633,7 @@ public:
 			, ShipLocomotorMakesWake { true }
 			, FiringAnim_Update { false }
 			, ExtendedPlayerRepair { false }
+			, Shrapnel_IgnoreHitBuildings { false }
 		{ }
 
 		virtual ~ExtData() = default;

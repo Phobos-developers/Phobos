@@ -1972,6 +1972,18 @@ DEFINE_HOOK(0x4D4B43, FootClass_Mission_Capture, 0x6)
 	return LosesDestination;
 }
 
+DEFINE_HOOK(0x4DA230, FootClass_CanBeRecruited, 0x5)
+{
+	enum { SkipGameCode = 0x4DA294 };
+
+	GET(FootClass*, pThis, ECX);
+	GET_STACK(HouseClass*, pHouse, 0x4);
+
+	R->AL(TechnoExt::CanBeRecruitedFix(pThis, pHouse));
+
+	return SkipGameCode;
+}
+
 #pragma region DynamicSight
 
 DEFINE_HOOK(0x41AE00, AircraftClass_See_DynamicSight, 0x6)

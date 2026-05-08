@@ -1,4 +1,4 @@
-﻿#include "Body.h"
+#include "Body.h"
 
 #include <JumpjetLocomotionClass.h>
 
@@ -882,6 +882,41 @@ void TechnoExt::ClickedApproachObject(FootClass* pThis, ObjectClass* pObject)
 	event.ApproachObject.Whom = TargetClass(pThis);
 	event.ApproachObject.Target = TargetClass(pObject);
 	event.AddEvent();
+}
+
+bool TechnoExt::CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse)
+{
+    if (pThis->Team != nullptr ||
+        !pThis->IsAlive ||
+        pThis->Health <= 0 ||
+        pThis->InLimbo ||
+        pThis->Owner != pHouse)
+    {
+        return false;
+    }
+
+    if (!(pThis->RecruitableA && pThis->RecruitableB))
+    {
+        return false;
+    }
+
+    const Mission mission = pThis->GetCurrentMission();
+    if (!MissionClass::IsRecruitableMission(mission))
+    {
+        return false;
+    }
+
+    if (pThis->ShouldEnterAbsorber ||
+        pThis->ShouldEnterOccupiable ||
+        pThis->ShouldGarrisonStructure ||
+        pThis->DrainTarget != nullptr ||
+        pThis->BunkerLinkedItem ||
+        pThis->LocomotorSource != nullptr)
+    {
+        return false;
+    }
+
+    return true;
 }
 
 bool TechnoExt::EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, int distance, bool select)
