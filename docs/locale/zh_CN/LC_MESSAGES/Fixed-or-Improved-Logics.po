@@ -1898,6 +1898,7 @@ msgid ""
 "`EVA.Tag` already supports being set for specific countries, and "
 "`EVAIndex` is no longer reset after load game."
 msgstr ""
+"`EVA.Tag` 已经支持在国家层面设置并且 `EVAIndex` 不再在读档后重置。"
 
 msgid "Newly added global settings"
 msgstr "新增的全局设定"

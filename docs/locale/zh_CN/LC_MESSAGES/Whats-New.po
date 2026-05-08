@@ -2660,6 +2660,7 @@ msgid ""
 "`EVA.Tag` already supports being set for specific countries, and "
 "`EVAIndex` is no longer reset after load game (by FlyStar)"
 msgstr ""
+"`EVA.Tag` 已经支持在国家层面设置并且 `EVAIndex` 不再在读档后重置（by FlyStar）"
 
 msgid "0.4.0.3"
 msgstr "0.4.0.3"
