@@ -165,13 +165,13 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_Debris, 0xA)
 			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 			const auto& debrisMinimums = pTypeExt->DebrisMinimums;
 			const bool limit = pTypeExt->DebrisTypes_Limit.Get(count > 1);
-			const int minIndex = static_cast<int>(debrisMinimums.size()) - 1;
+			const int minimumsMaxIndex = static_cast<int>(debrisMinimums.size()) - 1;
 			int currentIndex = 0;
 
 			while (totalSpawnAmount > 0)
 			{
-				const int currentMaxDebris = Math::min(1, debrisMaximums[currentIndex]);
-				const int currentMinDebris = (minIndex >= 0) ? Math::max(0, debrisMinimums[Math::min(currentIndex, minIndex)]) : 0;
+				const int currentMaxDebris = Math::max(1, debrisMaximums[currentIndex]);
+				const int currentMinDebris = (minimumsMaxIndex >= 0) ? Math::max(0, debrisMinimums[Math::min(currentIndex, minimumsMaxIndex)]) : 0;
 				int amountToSpawn = Math::min(totalSpawnAmount, ScenarioClass::Instance->Random.RandomRanged(currentMinDebris, currentMaxDebris));
 				totalSpawnAmount -= amountToSpawn;
 

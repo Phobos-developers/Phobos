@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-04 01:48+0800\n"
+"POT-Creation-Date: 2026-05-08 19:23+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1303,6 +1303,11 @@ msgstr ""
 "修复了有 `AlphaImage` 的单位转换为无 AlphaImage 的类型，或有 `AlphaImage` 的动画通过 `Next` "
 "更改为无 AlphaImage 的类型后读档会导致游戏崩溃的 Bug"
 
+msgid ""
+"`EVA.Tag` already supports being set for specific countries, and "
+"`EVAIndex` is no longer reset after load game"
+msgstr ""
+
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："
 
@@ -2183,8 +2188,14 @@ msgstr "`ElectricAssault` 武器现在可以自动索敌盟友的可过载防御
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
 
-msgid "**handama** - AI script action to `16005 Jump Back To Previous Script`"
-msgstr "**handama** - AI 动作脚本 `16005 跳回上一个脚本`"
+msgid "**handama**:"
+msgstr "**handama**："
+
+msgid "AI script action to `16005 Jump Back To Previous Script`"
+msgstr "AI 动作脚本 `16005 跳回上一个脚本`"
+
+msgid "Fix AI team recruitment inconsistency causing underfilled teams"
+msgstr ""
 
 msgid "**TaranDahl (航味麻酱)**:"
 msgstr "**TaranDahl (航味麻酱)**："
@@ -2483,6 +2494,9 @@ msgid ""
 "conversion"
 msgstr "修复了单位的 `BombSight` 在类型转换时不会被正确更新的问题"
 
+msgid "Fix BalloonHover incorrectly considering ground factors when pathfinding"
+msgstr "修复了 BalloonHover 寻路时错误考虑了地面因素的问题"
+
 msgid "Technos with Walk locomotor spawn wake like ship"
 msgstr "使用 Walk 运动模式的单位像船只一样生成水波"
 
@@ -2528,9 +2542,6 @@ msgstr "为 AE 系统添加目标过滤选项"
 
 msgid "Add veterancy-based target filtering for weapons and warheads"
 msgstr "为武器和弹头添加基于经验等级的目标过滤"
-
-msgid "Fix BalloonHover incorrectly considering ground factors when pathfinding"
-msgstr "修复了 BalloonHover 寻路时错误考虑了地面因素的问题"
 
 msgid "**tyuah8**:"
 msgstr "**tyuah8**："
