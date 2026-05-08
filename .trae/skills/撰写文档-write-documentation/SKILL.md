@@ -68,14 +68,14 @@ After user approval, write the approved text into the appropriate doc file. For 
 
 Continue with the INI code block following existing conventions:
 
-```markdown
+````markdown
 In `rulesmd.ini`:
 ```ini
 [SECTION]                        ; ObjectType
 KeyName=default                  ; accepted type
 KeyName.WithDots=default         ; accepted type with optional explanation
 ```
-```
+````
 
 Key rules for INI documentation:
 - Use ` ```ini ` fenced code blocks.
