@@ -2210,3 +2210,4 @@ int WarpPerStep::TemporalClassFake::_GetWarpPerStep(int helperCount)
 	return sum;
 }
 DEFINE_FUNCTION_JUMP(LJMP, 0x71AB10, WarpPerStep::TemporalClassFake::_GetWarpPerStep)
+
