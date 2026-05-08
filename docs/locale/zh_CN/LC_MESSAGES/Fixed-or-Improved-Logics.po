@@ -5578,12 +5578,14 @@ msgstr ""
 
 msgid "Laser Z-adjust"
 msgstr ""
+"激光 Z 深校正"
 
 msgid ""
 "It is now possible to change the Z-adjust for weapon laser drawing via "
-"`LaserZAdjust` per weapon, defaults to `[AudioVisual]` -> `LaserZAdjust`."
+"`LaserZAdjust` per weapon, defaults to `[AudioVisual] -> LaserZAdjust`."
 " Note that this is not available on prism support weapons."
 msgstr ""
+"现在可以在每个武器上通过 `LaserZAdjust` 更改武器激光绘制的 Z 深校正值，默认为 `[AudioVisual] -> LaserZAdjust`。注意这不适用于 [光棱塔递光武器](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html)。"
 
 msgid "Single-color lasers"
 msgstr "单色激光"

@@ -1892,6 +1892,8 @@ msgid ""
 "[Laser drawing Z-adjust customization](Fixed-or-Improved-"
 "Logics.md#laser-z-adjust) (by Starkku)"
 msgstr ""
+"[自定义激光绘制的 Z 深校正值](Fixed-or-Improved-"
+"Logics.md#laser-z-adjust)（by Starkku）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："

@@ -874,6 +874,7 @@ msgstr "重写帧 CRC 生成"
 
 msgid "Laser drawing Z-adjust customization"
 msgstr ""
+"自定义激光绘制的 Z 深校正值"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
