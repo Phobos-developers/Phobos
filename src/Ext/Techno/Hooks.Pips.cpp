@@ -102,20 +102,23 @@ DEFINE_HOOK(0x6F64A0, TechnoClass_DrawHealthBar, 0x5)
 	if (!RulesClass::Instance->EnemyHealth && !HouseClass::IsCurrentPlayerObserver() && !isAllied)
 		return SkipDrawCode;
 
-	const auto pShield = pExt->Shield.get();
-
-	if (pShield && pShield->IsAvailable() && !pShield->IsBrokenAndNonRespawning())
+	if (!pTypeExt->HealthBar_HidePips)
 	{
-		if (pBuilding)
-			pShield->DrawShieldBar_Building(pipsLength, &position, pBounds);
-		else
-			pShield->DrawShieldBar_Other(pipsLength, &position, pBounds);
-	}
+		const auto pShield = pExt->Shield.get();
 
-	if (pBuilding)
-		TechnoExt::DrawHealthBar_Building(pThis, pHealthBar, pipsLength, &position, pBounds);
-	else
-		TechnoExt::DrawHealthBar_Other(pThis, pHealthBar, pipsLength, &position, pBounds);
+		if (pShield && pShield->IsAvailable() && !pShield->IsBrokenAndNonRespawning())
+		{
+			if (pBuilding)
+				pShield->DrawShieldBar_Building(pipsLength, &position, pBounds);
+			else
+				pShield->DrawShieldBar_Other(pipsLength, &position, pBounds);
+		}
+
+		if (pBuilding)
+			TechnoExt::DrawHealthBar_Building(pThis, pHealthBar, pipsLength, &position, pBounds);
+		else
+			TechnoExt::DrawHealthBar_Other(pThis, pHealthBar, pipsLength, &position, pBounds);
+	}
 
 	TechnoExt::ProcessDigitalDisplays(pThis, &position);
 
