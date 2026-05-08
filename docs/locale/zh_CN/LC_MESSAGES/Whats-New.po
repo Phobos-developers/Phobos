@@ -2327,6 +2327,7 @@ msgid ""
 "Fixed the issue where tint color RGB mode conversion was incorrect (by "
 "Shatyuka)"
 msgstr ""
+"修复了染色颜色的 RGB 模式转换不正确的问题（by Shatyuka）"
 
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
