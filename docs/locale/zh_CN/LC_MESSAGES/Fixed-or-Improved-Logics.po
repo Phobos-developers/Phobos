@@ -1905,6 +1905,7 @@ msgid ""
 "acquisition and works together with Phobos' "
 "`OpenTopped.CheckTransportDisableWeapons`."
 msgstr ""
+"现在 `DisableWeapons.Duration` 会使 `Gattling=yes` 的速率降低并停止播放音效，不再干扰目标获取并且可以和 Phobos 的 `OpenTopped.CheckTransportDisableWeapons` 共用。"
 
 msgid "Newly added global settings"
 msgstr "新增的全局设定"
