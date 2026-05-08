@@ -125,7 +125,7 @@ private:
 	void EnabledByCheck();
 
 	int DrawShieldBar_Pip(Vector3D<int> const& pips, const bool isBuilding) const;
-	int DrawShieldBar_PipAmount(const int length) const;
+	int DrawShieldBar_PipAmount(const double ratio, const int length) const;
 
 	/// Properties ///
 	TechnoClass* Techno;

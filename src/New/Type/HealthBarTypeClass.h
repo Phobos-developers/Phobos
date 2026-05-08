@@ -21,6 +21,7 @@ public:
 	CustomPalette PipBrdPalette {};
 	Valueable<int> PipBrdXOffset { 0 };
 
+	Valueable<bool> IsAnimated { false };
 	Valueable<int> XOffset { 0 };
 
 	HealthBarTypeClass(const char* pTitle = NONE_STR) : Enumerable<HealthBarTypeClass>(pTitle)

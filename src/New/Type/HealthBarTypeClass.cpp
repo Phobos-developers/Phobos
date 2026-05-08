@@ -9,6 +9,7 @@ const char* Enumerable<HealthBarTypeClass>::GetMainSection()
 void HealthBarTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* pSection = this->Name;
+
 	if (!_stricmp(pSection, NONE_STR))
 		return;
 
@@ -28,6 +29,7 @@ void HealthBarTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->PipBrdPalette.LoadFromINI(pINI, pSection, "PipBrdPalette");
 	this->PipBrdXOffset.Read(exINI, pSection, "PipBrdXOffset");
 
+	this->IsAnimated.Read(exINI, pSection, "IsAnimated");
 	this->XOffset.Read(exINI, pSection, "XOffset");
 }
 
@@ -47,6 +49,7 @@ void HealthBarTypeClass::Serialize(T& Stm)
 		.Process(this->PipBrdShape)
 		.Process(this->PipBrdPalette)
 		.Process(this->PipBrdXOffset)
+		.Process(this->IsAnimated)
 		.Process(this->XOffset)
 		;
 }
