@@ -28,6 +28,8 @@ public:
 		Valueable<bool> SW_ManualFire;
 		Valueable<bool> SW_ShowCameo;
 		Valueable<bool> SW_Unstoppable;
+		Valueable<bool> SW_AllowPlayer;
+		Valueable<bool> SW_AllowAI;
 		ValueableVector<TechnoTypeClass*> SW_Inhibitors;
 		Valueable<bool> SW_AnyInhibitor;
 		ValueableVector<TechnoTypeClass*> SW_Designators;
@@ -40,6 +42,8 @@ public:
 		DWORD SW_ForbiddenHouses;
 		ValueableVector<BuildingTypeClass*> SW_AuxBuildings;
 		ValueableVector<BuildingTypeClass*> SW_NegBuildings;
+		ValueableVector<TechnoTypeClass*> SW_AuxTechnos;
+		ValueableVector<TechnoTypeClass*> SW_NegTechnos;
 		Valueable<bool> SW_InitialReady;
 		ValueableIdx<SuperWeaponTypeClass> SW_PostDependent;
 		Valueable<int> SW_MaxCount;
@@ -119,6 +123,8 @@ public:
 			, SW_ManualFire { true }
 			, SW_ShowCameo { true }
 			, SW_Unstoppable { false }
+			, SW_AllowPlayer { true }
+			, SW_AllowAI { true }
 			, SW_Inhibitors {}
 			, SW_AnyInhibitor { false }
 			, SW_Designators { }
@@ -129,6 +135,8 @@ public:
 			, SW_ForbiddenHouses { 0u }
 			, SW_AuxBuildings {}
 			, SW_NegBuildings {}
+			, SW_AuxTechnos {}
+			, SW_NegTechnos {}
 			, SW_InitialReady { false }
 			, SW_PostDependent {}
 			, SW_MaxCount { -1 }

@@ -1747,6 +1747,10 @@ msgid ""
 msgstr ""
 "修复了类型转换会更新 `OpenTopped` 属性却不更新乘客坐标的 Bug"
 
+msgid ""
+"Aux technos of superweapon"
+msgstr "超级武器的辅助单位"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 

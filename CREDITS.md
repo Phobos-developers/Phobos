@@ -531,6 +531,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to fire when the transport unit with `OpenTopped=yes` moved to an area that the passengers' `MovementZone` cannot move into
   - Fix a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next`
   - Fix a bug where updating the `OpenTopped` attribute during convert did not update the coordinates of passengers
+  - Aux technos of superweapon
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

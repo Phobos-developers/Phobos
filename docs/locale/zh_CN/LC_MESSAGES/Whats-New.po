@@ -2612,6 +2612,10 @@ msgid ""
 "conversion (by TaranDahl)"
 msgstr "修复了单位的 `BombSight` 在类型转换时不会被正确更新的问题（by TaranDahl）"
 
+msgid ""
+"Aux technos of superweapon (by NetsuNegi)"
+msgstr "超级武器的辅助单位（by NetsuNegi）"
+
 msgid "0.4.0.3"
 msgstr "0.4.0.3"
 
