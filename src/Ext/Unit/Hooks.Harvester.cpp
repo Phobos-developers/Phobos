@@ -124,6 +124,18 @@ DEFINE_HOOK(0x73E951, UnitClass_Harvest_HarvesterLoadRate, 6)
 	return 0x73E957;
 }
 
+DEFINE_HOOK(0x73E361, UnitClass_Harvesting_HarvesterDumpRate, 6)
+{
+	GET(UnitClass* const, pThis, ESI);
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+
+	double dumpRate = pTypeExt->HarvesterDumpRate.Get(RulesClass::Instance->HarvesterDumpRate);
+
+	__asm { fld dumpRate }
+
+	return 0x73E367;
+}
+
 #pragma region HarvesterScanAfterUnload
 
 DEFINE_HOOK(0x73E730, UnitClass_MissionHarvest_HarvesterScanAfterUnload, 0x5)
