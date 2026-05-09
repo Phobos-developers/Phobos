@@ -2962,6 +2962,25 @@ UnlimboDetonate.KeepSelected=false     ; boolean
 `UnlimboDetonate` cannot be used in conjunction with `Parasite`.
 ```
 
+### Radar / Power Outage warhead
+
+- Now you can use the following tags to cause a radar or power outage to the affected houses for a specified duration.
+  - The radar outage disables the radar display, identical to the effect of a Lightning Storm.
+  - The power outage causes a blackout, identical to the spy infiltration on a Power Plant.
+  - Positive duration stacks onto any existing outage timer up to the specified maximum, if set.
+  - Negative duration reduces the existing outage timer, down to a minimum of 0.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]   ; WarheadType
+RadarOutage.Duration=0          ; integer, game frames. Positive stacks, negative reduces.
+RadarOutage.Max=0               ; integer, max stacked duration in frames. 0 = no limit.
+RadarOutage.AffectsHouse=owner  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+PowerOutage.Duration=0          ; integer, game frames. Positive stacks, negative reduces.
+PowerOutage.Max=0               ; integer, max stacked duration in frames. 0 = no limit.
+PowerOutage.AffectsHouse=owner  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
 ## Weapons
 
 ### AreaFire target customization
