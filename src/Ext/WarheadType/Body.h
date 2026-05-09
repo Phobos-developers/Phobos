@@ -170,8 +170,10 @@ public:
 		Nullable<int> JumpjetDeviation;
 
 		Valueable<int> RadarOutage_Duration;
+		Valueable<int> RadarOutage_Max;
 		Valueable<AffectedHouse> RadarOutage_AffectsHouse;
 		Valueable<int> PowerOutage_Duration;
+		Valueable<int> PowerOutage_Max;
 		Valueable<AffectedHouse> PowerOutage_AffectsHouse;
 
 		Valueable<bool> Nonprovocative;
@@ -432,9 +434,11 @@ public:
 			, JumpjetDeviation {}
 
 			, RadarOutage_Duration { 0 }
-			, RadarOutage_AffectsHouse { AffectedHouse::Owner }
+			, RadarOutage_Max { 0 }
+			, RadarOutage_AffectsHouse { AffectedHouse::Enemies }
 			, PowerOutage_Duration { 0 }
-			, PowerOutage_AffectsHouse { AffectedHouse::Owner }
+			, PowerOutage_Max { 0 }
+			, PowerOutage_AffectsHouse { AffectedHouse::Enemies }
 
 			, Nonprovocative { false }
 

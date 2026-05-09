@@ -99,7 +99,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				MapClass::Instance.PlacePowerupCrate(CellClass::Coord2Cell(coords), this->SpawnsCrate_Types.at(index));
 		}
 
-        if (this->RadarOutage_Duration > 0)
+        if (this->RadarOutage_Duration)
         {
             for (const auto pTargetHouse : HouseClass::Array)
             {
@@ -107,12 +107,31 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
                     && !pTargetHouse->Type->MultiplayPassive 
                     && EnumFunctions::CanTargetHouse(this->RadarOutage_AffectsHouse, pHouse, pTargetHouse))
                 {
-                    pTargetHouse->CreateRadarOutage(this->RadarOutage_Duration);
+                    int duration = this->RadarOutage_Duration;
+                    int currentLeft = pTargetHouse->RadarBlackoutTimer.GetTimeLeft();
+ 
+                    if (duration < 0)
+                    {
+                        int newLeft = currentLeft + duration;
+                        if (newLeft < 0)
+                            newLeft = 0;
+                        pTargetHouse->RadarBlackoutTimer.Start(newLeft);
+                    }
+                    else
+                    {
+                        int newLeft = currentLeft + duration;
+                        int maxOutage = this->RadarOutage_Max;
+                        if (maxOutage > 0 && newLeft > maxOutage)
+                            newLeft = maxOutage;
+                        pTargetHouse->RadarBlackoutTimer.Start(newLeft);
+                    }
+
+                    pTargetHouse->RecheckRadar = true;
                 }
             }
         }
 
-        if (this->PowerOutage_Duration > 0)
+        if (this->PowerOutage_Duration)
         {
             for (const auto pTargetHouse : HouseClass::Array)
             {
@@ -120,7 +139,26 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
                     && !pTargetHouse->Type->MultiplayPassive 
                     && EnumFunctions::CanTargetHouse(this->PowerOutage_AffectsHouse, pHouse, pTargetHouse))
                 {
-                    pTargetHouse->CreatePowerOutage(this->PowerOutage_Duration);
+                    int duration = this->PowerOutage_Duration;
+                    int currentLeft = pTargetHouse->PowerBlackoutTimer.GetTimeLeft();
+ 
+                    if (duration < 0)
+                    {
+                        int newLeft = currentLeft + duration;
+                        if (newLeft < 0)
+                            newLeft = 0;
+                        pTargetHouse->PowerBlackoutTimer.Start(newLeft);
+                    }
+                    else
+                    {
+                        int newLeft = currentLeft + duration;
+                        int maxOutage = this->PowerOutage_Max;
+                        if (maxOutage > 0 && newLeft > maxOutage)
+                            newLeft = maxOutage;
+                        pTargetHouse->PowerBlackoutTimer.Start(newLeft);
+                    }
+
+                    pTargetHouse->RecheckPower = true;
                 }
             }
         }
