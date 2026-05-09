@@ -981,8 +981,9 @@ void ShieldClass::DrawShieldBar_Building(const int length, Point2D* pLocation, R
 		const auto pBrdPalette = pShieldBar->PipBrdPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 		const auto pBrdShape = pShieldBar->PipBrdShape.Get(nullptr);
 		const int brdXOffset = pShieldBar->PipBrdXOffset;
+		const double ratio = pShieldBar->IsAnimated_Reverse ? 1.0 - percentage : percentage;
 		const int brdFrame = this->Techno->IsSelected ? pShieldBar->PipBrd.Get(0) : -1;
-		TechnoExt::DrawAnimatedBar(pBrdPalette, pBrdShape, pPipsPalette, pPipsShape, &position, pBound, brdXOffset, percentage, brdFrame);
+		TechnoExt::DrawAnimatedBar(pBrdPalette, pBrdShape, pPipsPalette, pPipsShape, &position, pBound, brdXOffset, ratio, brdFrame);
 	}
 	else
 	{
@@ -1020,7 +1021,8 @@ void ShieldClass::DrawShieldBar_Other(const int length, Point2D* pLocation, Rect
 
 	if (pShieldBar->IsAnimated)
 	{
-		TechnoExt::DrawAnimatedBar(pBrdPalette, pBrdShape, pPipsPalette, pPipsShape, &position, pBound, brdXOffset, percentage, brdFrame);
+		const double ratio = pShieldBar->IsAnimated_Reverse ? 1.0 - percentage : percentage;
+		TechnoExt::DrawAnimatedBar(pBrdPalette, pBrdShape, pPipsPalette, pPipsShape, &position, pBound, brdXOffset, ratio, brdFrame);
 	}
 	else
 	{

@@ -30,6 +30,7 @@ void HealthBarTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->PipBrdXOffset.Read(exINI, pSection, "PipBrdXOffset");
 
 	this->IsAnimated.Read(exINI, pSection, "IsAnimated");
+	this->IsAnimated_Reverse.Read(exINI, pSection, "IsAnimated.Reverse");
 	this->XOffset.Read(exINI, pSection, "XOffset");
 }
 
@@ -50,6 +51,7 @@ void HealthBarTypeClass::Serialize(T& Stm)
 		.Process(this->PipBrdPalette)
 		.Process(this->PipBrdXOffset)
 		.Process(this->IsAnimated)
+		.Process(this->IsAnimated_Reverse)
 		.Process(this->XOffset)
 		;
 }

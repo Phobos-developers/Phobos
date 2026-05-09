@@ -22,6 +22,7 @@ public:
 	Valueable<int> PipBrdXOffset { 0 };
 
 	Valueable<bool> IsAnimated { false };
+	Valueable<bool> IsAnimated_Reverse { false };
 	Valueable<int> XOffset { 0 };
 
 	HealthBarTypeClass(const char* pTitle = NONE_STR) : Enumerable<HealthBarTypeClass>(pTitle)
