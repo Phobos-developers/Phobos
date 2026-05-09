@@ -336,7 +336,7 @@ int TechnoExt::HealthBar_GetPip(Vector3D<int> const& pips, double percentage, co
 	else if (pips.Z != -1 || pips.X != -1)
 		return pips.Z == -1 ? pips.X : pips.Z;
 
-	return isBuilding ? 5 : 16;
+	return isBuilding ? 1 : 16;
 }
 
 int TechnoExt::HealthBar_GetPipAmount(double percentage, int pipsLength)
@@ -416,7 +416,7 @@ void TechnoExt::DrawHealthBar_Building(TechnoClass* pThis, HealthBarTypeClass* p
 		const auto pBrdShape = pHealthBar->PipBrdShape.Get(nullptr);
 		const int brdXOffset = pHealthBar->PipBrdXOffset;
 		const double ratio = pHealthBar->IsAnimated_Reverse ? 1.0 - percentage : percentage;
-		const int brdFrame = pThis->IsSelected ? pHealthBar->PipBrd.Get(Vector3D<int>::Empty).X : -1;
+		const int brdFrame = pThis->IsSelected ? TechnoExt::HealthBar_GetPip(pHealthBar->GetPipBrd(), percentage, true) : -1;
 		TechnoExt::DrawAnimatedBar(pBrdPalette, pBrdShape, pPipsPalette, pPipsShape, &position, pBounds, brdXOffset, ratio, brdFrame);
 	}
 	else
@@ -447,7 +447,7 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHea
 
 	const int brdXOffset = pHealthBar->PipBrdXOffset.Get();
 	const double percentage = pThis->GetHealthPercentage();
-	const int brdFrame = pThis->IsSelected ? pHealthBar->PipBrd.Get(whatAmI == InfantryClass::AbsID ? 1 : 0) : -1;
+	const int brdFrame = pThis->IsSelected ? TechnoExt::HealthBar_GetPip(pHealthBar->GetPipBrd(whatAmI == InfantryClass::AbsID ? 1 : 0), percentage, false) : -1;
 
 	if (pHealthBar->IsAnimated)
 	{

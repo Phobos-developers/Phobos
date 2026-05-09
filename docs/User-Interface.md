@@ -480,7 +480,7 @@ Pips.Building=                     ; integer, frames of pips.shp (zero-based) fo
 PipsEmpty=                         ; integer
 PipsInterval=2,0                   ; integer, interval per two pips
 PipsInterval.Building=-4,2         ; integer, interval per two pips
-PipsLength=                        ; integer, default to 8 for infantry, 17 for vehicle and aircraft
+PipsLength=                        ; integer, default to 8 for infantry, 17 for others
 PipsShape=pips.shp                 ; filename - including the .shp/.pcx extension
 PipsPalette=palette.pal            ; filename - including the .pal extension
 
@@ -490,6 +490,7 @@ PipBrdPalette=palette.pal          ; filename - including the .pal extension
 PipBrdXOffset=0                    ; integer
 
 IsAnimated=false                   ; boolean
+IsAnimated.Reverse=false           ; boolean
 XOffset=0                          ; integer
 ```
 

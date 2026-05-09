@@ -16,7 +16,7 @@ public:
 	Valueable<SHPStruct*> PipsShape { FileSystem::PIPS_SHP };
 	CustomPalette PipsPalette {};
 
-	Nullable<int> PipBrd {};
+	Valueable<PartialVector3D<int>> PipBrd {};
 	Nullable<SHPStruct*> PipBrdShape {};
 	CustomPalette PipBrdPalette {};
 	Valueable<int> PipBrdXOffset { 0 };
@@ -27,6 +27,25 @@ public:
 
 	HealthBarTypeClass(const char* pTitle = NONE_STR) : Enumerable<HealthBarTypeClass>(pTitle)
 	{ }
+
+	Vector3D<int> GetPipBrd(int defaultValue = 0) const
+	{
+		const auto& pipBrd = this->PipBrd.Get();
+
+		switch (pipBrd.ValueCount)
+		{
+		case 1:
+			return Vector3D<int>(pipBrd.X, pipBrd.X, pipBrd.X);
+
+		case 3:
+			return Vector3D<int>(pipBrd.X, pipBrd.Y, pipBrd.Z);
+
+		default:
+			break;
+		}
+
+		return Vector3D<int>(defaultValue, defaultValue, defaultValue);
+	}
 
 	void LoadFromINI(CCINIClass* pINI);
 	void LoadFromStream(PhobosStreamReader& Stm);
