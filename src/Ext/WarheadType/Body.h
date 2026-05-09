@@ -169,6 +169,11 @@ public:
 		Nullable<bool> JumpjetNoWobbles;
 		Nullable<int> JumpjetDeviation;
 
+        Valueable<int> RadarOutage_Duration;
+		Valueable<AffectedHouse> RadarOutage_AffectsHouse;
+		Valueable<int> PowerOutage_Duration;
+		Valueable<AffectedHouse> PowerOutage_AffectsHouse;
+
 		Valueable<bool> Nonprovocative;
 
 		Nullable<bool> MergeBuildingDamage;
@@ -425,6 +430,11 @@ public:
 			, JumpjetWobbles {}
 			, JumpjetNoWobbles {}
 			, JumpjetDeviation {}
+
+            , RadarOutage_Duration { 0 }
+			, RadarOutage_AffectsHouse { AffectedHouse::Owner }
+			, PowerOutage_Duration { 0 }
+			, PowerOutage_AffectsHouse { AffectedHouse::Owner }
 
 			, Nonprovocative { false }
 
