@@ -467,6 +467,9 @@ Pips=16,17,18                      ; integer, frames of pips.shp (zero-based) fo
 Pips.Building=1,2,4                ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
 Pips.Building.Empty=0              ; integer
 
+[HealthBarTypes]
++=SOMEHEALTHBAR
+
 [SOMETECHNO]
 HealthBar=                         ; healthbar
 ShieldBar=                         ; healthbar, priority over settings on the shield
