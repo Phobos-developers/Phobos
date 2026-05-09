@@ -5,12 +5,12 @@
 #include <cstdlib>
 #include <vector>
 #include <string>
-#include <harfbuzz\hb.h>
-#include <harfbuzz\hb-ft.h>
-#include <fribidi\fribidi.h>
+#include <hb.h>
+#include <hb-ft.h>
+#include <fribidi.h>
 #include <ft2build.h>
-#include <BitFont.h>
-#include <BitText.h>
+#include "BitFont.h"
+#include "BitText.h"
 #include <Surface.h>
 #include <unordered_map>
 #include <wchar.h>
