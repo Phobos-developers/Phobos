@@ -1363,6 +1363,9 @@ DEFINE_HOOK(0x6F4500, TechnoClass_DTOR, 0x5)
 {
 	GET(TechnoClass*, pItem, ECX);
 
+	if (pItem->AbstractFlags & AbstractFlags::Foot)
+		pItem->Owner->RecheckTechTree = true; // for SW.AuxTechons and SW.NegTechnos
+
 	TechnoExt::ExtMap.Remove(pItem);
 
 	return 0;
