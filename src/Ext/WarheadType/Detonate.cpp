@@ -132,6 +132,28 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				}
 			}
 		}
+
+		if (this->RadarOutage_Duration > 0)
+		{
+            for (const auto pTargetHouse : HouseClass::Array)
+			{
+                if(!pHouse->Defeated && !pHouse->IsObserver() && !pHouse->Type->MultiplayPassive && EnumFunctions::CanTargetHouse(this->RadarOutage_AffectsHouse, pHouse, pTargetHouse)
+				{
+                    pTargetHouse->CreateRadarOutage(this->RadarOutage_Duration)
+				}
+			}
+		}
+
+		if (this->PowerOutage_Duration > 0)
+		{
+            for (const auto pTargetHouse : HouseClass::Array)
+			{
+                if(!pHouse->Defeated && !pHouse->IsObserver() && !pHouse->Type->MultiplayPassive && EnumFunctions::CanTargetHouse(this->PowerOutage_AffectsHouse, pHouse, pTargetHouse)
+				{
+                    pTargetHouse->CreatePowerOutage(this->PowerOutage_Duration)
+				}
+			}
+		}
 	}
 
 	this->Crit_Active = false;
