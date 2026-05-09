@@ -1,6 +1,6 @@
 ---
 name: 检查钩子 Check Hooks
-description: "Checks newly added Syringe hooks (DEFINE_HOOK / DEFINE_HOOK_AGAIN) on the current branch for common errors: insufficient size (< 5 bytes), conflicts with hooks from other engine extensions, instruction boundary misalignment, and register/stack variable extraction issues. Uses HookAnalysis.log for conflict detection and IDA MCP for deep instruction analysis."
+description: "Checks newly added Syringe hooks (DEFINE_HOOK / DEFINE_HOOK_AGAIN) on the current branch for common errors: insufficient size (< 5 bytes), conflicts with hooks from other engine extensions, instruction boundary misalignment, relative instruction coverage (jumps/calls with relative offsets and RIP-relative addressing), and register/stack variable extraction issues (GET_STACK vs GET_BASE, stack alignment). Uses HookAnalysis.log for conflict detection and IDA MCP for deep instruction analysis."
 ---
 
 #### Helper Scripts
@@ -16,7 +16,7 @@ All scripts in this directory. The AI MUST use them — do not reimplement parsi
 
 #### Workflow
 
-This skill checks all newly added `DEFINE_HOOK` and `DEFINE_HOOK_AGAIN` macro invocations on the current branch for four classes of problems.
+This skill checks all newly added `DEFINE_HOOK` and `DEFINE_HOOK_AGAIN` macro invocations on the current branch for the following problem classes.
 
 **Step 0: Discover new hooks**
 
@@ -128,6 +128,32 @@ If any check fails:
 > ❌ **Problem 2: Instruction boundary issue**
 > Hook `HookName` at `0x<addr>` (size `0x<size>`) — <specific issue, e.g. "address is in the middle of an instruction" or "size does not end at an instruction boundary" or "return address 0x<ret> is not at an instruction start">. Disassemble the area at this address to find the correct boundaries.
 
+**Problem 2b — Relative instruction coverage check:**
+
+For each new hook, disassemble the full address range `[addr, addr + size)` and check for any relative-offset instructions. These instructions encode their target as `current_address + instruction_length + relative_offset`. When Syringe copies these bytes to a trampoline at a different address, the relative offset points to the wrong location, causing control flow to jump/call to an unintended address.
+
+Hooks that cover any of the following instructions **MUST return a fixed value (not 0)** — returning 0 would execute the trampolined original code and trigger the bug:
+
+Relative jump/call instructions:
+- `jmp short`, `jmp near`, `jz`, `jnz`, `je`, `jne`, `jg`, `jge`, `jl`, `jle`
+- `ja`, `jae`, `jb`, `jbe`, `jo`, `jno`, `js`, `jns`, `jp`, `jnp`, `jpe`, `jpo`
+- `jcxz`, `jecxz`, `jrcxz`
+- `call` (relative call, i.e. `call rel32`)
+- `loop`, `loope`, `loopne`, `loopz`, `loopnz`
+- `xbegin`
+
+RIP-relative addressing instructions (x64 style, but also relevant for x86 with `[eip+disp32]`):
+- `mov`, `lea`, `cmp`, `add`, `sub`, `and`, `or`, `xor`, `test`
+- `push`, `pop`, `movsxd`, `movzx`, `movsx`
+- When any of the above uses RIP-relative addressing mode
+
+Use IDA MCP to disassemble each instruction in the hook range and check for these patterns. Check the `returns` field from Step 0. If the hook returns `"0"` but covers any of these instructions, report:
+
+> ❌ **Problem 2b: Hook covers relative-offset instruction but returns 0**
+> Hook `HookName` at `0x<addr>` covers instruction `<mnemonic>` at `0x<instruction_addr>` which uses relative addressing (encoded relative offset `<encoded_value>` → target `<computed_target>`). When this instruction is copied to a trampoline, the relative offset will point to the wrong address. This hook MUST return a fixed value (e.g. `return 0x<fixed_addr>` or `return R->Origin() + <offset>`), not `return 0`.
+
+If no relative-offset instructions are found, or the hook already returns a fixed value: "✓ No relative instruction issues found."
+
 **Problem 3 — Variable extraction validation:**
 
 For each new hook, inspect the function body for `GET`, `GET_STACK`, `REF_STACK`, `LEA_STACK` macros and register writes (`R->EAX(value)`, `R->ECX(value)`, `R->STACK(offset, value)`, etc.). Use IDA MCP to decompile or disassemble the code around the hook address and verify the register/stack state matches.
@@ -137,12 +163,30 @@ For `GET(type, var, reg)`:
 - If the type declared in GET differs from what IDA suggests, warn the user
 
 For `GET_STACK(type, var, offset)` / `REF_STACK(type, var, offset)`:
-- Check the stack layout at the hook point per IDA
-- If the offset suggests a different type or value, warn the user
+- **Do NOT rely on IDA's offset labels alone** — they may reference a virtual frame pointer that is not ESP. `R->Stack` always reads from `captured_ESP`, so you MUST compute the actual ESP at the hook point.
+- **Verify EBP is a real frame pointer:** Disassemble the first 5-10 instructions of the function. If EBP is overwritten (e.g. `mov ebp, [esp+...]`) instead of set to `mov ebp, esp`, then EBP is NOT a frame pointer — do NOT use EBP-relative offsets from IDA as ESP offsets.
+- **Trace ESP from function entry to the hook point.** Manually compute the cumulative offset:
+
+  1. Start from `ESP_entry` — the ESP value immediately after the `call` that entered the function (i.e. the stack pointer at function entry, with the return address already pushed by `call`)
+  2. Account for every `push` (subtract 4 per push), `pop` (add 4 per pop), and `sub esp, X` / `add esp, X` between function entry and the hook address
+  3. The resulting ESP at the hook point = `ESP_entry + cumulative_offset` (where cumulative_offset is negative for pushes/subs, positive for pops/adds)
+  4. The offset passed to `R->Stack` (after resolving `STACK_OFFSET` macros) is then added to this value
+
+- **Resolve `STACK_OFFSET` macros explicitly.** `STACK_OFFSET(a, b)` is simply `(a + b)` — it is pure addition. Do NOT assign special semantics to the parameter names `cur_offset` or `wanted_offset`. Compute the numeric result before using it.
+- **Map the final address back to the function's parameter list.** Once you have `captured_ESP + resolved_offset`, subtract `ESP_entry` to get the offset from the function entry point. This tells you which parameter slot or local variable the macro is accessing. Cross-reference with the function's signature (parameters start at `ESP_entry + 0x04` for the first param after the return address).
+
+- **Check for stack alignment (`and esp, alignment_mask`) in the function prologue.** Disassemble the first ~20 instructions of the function. Look for `and esp, <mask>` where `<mask>` is an alignment boundary (e.g. `0FFFFFFF8h` for 8-byte, `0FFFFFFF0h` for 16-byte, `0FFFFFFFCh` for 4-byte, or their equivalents `-8`, `-16`, `-4`). After this instruction, ESP is aligned down to the mask boundary and is no longer at a known offset from `ESP_entry` — `GET_STACK` cannot reliably access function parameters. In this case, the hook MUST use `GET_BASE(type, name, offset)` instead of `GET_STACK(type, name, STACK_OFFSET(...))` for any parameter access. If a hook uses `GET_STACK` to access a parameter (offset maps to `ESP_entry + positive_offset`) and the function prologue contains stack alignment, report:
+
+> ❌ **Problem 3: GET_STACK used after stack alignment — should use GET_BASE**
+> Hook `HookName` at `0x<addr>` uses `GET_STACK` to access what appears to be a function parameter (resolved to entry offset `+<entry_offset>`). The function prologue at `0x<prologue_addr>` contains `and esp, <alignment_mask>` which realigns ESP, making `GET_STACK` unreliable for parameter access. Replace with `GET_BASE(type, name, <entry_offset - 4>)` (the offset from EBP after a standard `push ebp; mov ebp, esp` frame, adjusting for the alignment loss).
 
 If a mismatch is found:
 > ⚠️ **Problem 3: Variable extraction may be incorrect**
-> At `0x<addr>`: `GET(<type>, <var>, <reg>)` — `<reg>` appears to hold `<actual_type>` based on IDA analysis. Verify the register assignment at this address.
+> At `0x<addr>`: `GET_STACK(<type>, <var>, <offset>)` — resolved offset `<computed_offset>` maps to function entry `+<entry_offset>`, expected parameter `<param_name>` of type `<expected_type>` at that position. The declared type `<declared_type>` does not match.
+
+For register writes like `R->EAX(value)`:
+- Disassemble after the hook point to verify the register will be read as expected by the original code
+- If the return address is a fixed address (not `R->Origin()`), verify the original code at that address uses the register being set
 
 If all Problem 3 checks pass: "✓ Variable extraction checks passed."
 
