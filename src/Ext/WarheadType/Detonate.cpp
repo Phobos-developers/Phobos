@@ -99,6 +99,28 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				MapClass::Instance.PlacePowerupCrate(CellClass::Coord2Cell(coords), this->SpawnsCrate_Types.at(index));
 		}
 
+		if (this->RadarOutage_Duration > 0)
+		{
+            for (const auto pTargetHouse : HouseClass::Array)
+			{
+                if(!pHouse->Defeated && !pHouse->IsObserver() && !pHouse->Type->MultiplayPassive && EnumFunctions::CanTargetHouse(this->RadarOutage_AffectsHouse, pHouse, pTargetHouse)
+				{
+                    pTargetHouse->CreateRadarOutage(this->RadarOutage_Duration);
+				}
+			}
+		}
+
+		if (this->PowerOutage_Duration > 0)
+		{
+            for (const auto pTargetHouse : HouseClass::Array)
+			{
+                if(!pHouse->Defeated && !pHouse->IsObserver() && !pHouse->Type->MultiplayPassive && EnumFunctions::CanTargetHouse(this->PowerOutage_AffectsHouse, pHouse, pTargetHouse)
+				{
+                    pTargetHouse->CreatePowerOutage(this->PowerOutage_Duration);
+				}
+			}
+		}
+
 		for (const int swIdx : this->LaunchSW)
 		{
 			if (const auto pSuper = pHouse->Supers.GetItem(swIdx))
@@ -129,28 +151,6 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 							pSuper->RechargeTimer.TimeLeft = oldleft;
 						}
 					}
-				}
-			}
-		}
-
-		if (this->RadarOutage_Duration > 0)
-		{
-            for (const auto pTargetHouse : HouseClass::Array)
-			{
-                if(!pHouse->Defeated && !pHouse->IsObserver() && !pHouse->Type->MultiplayPassive && EnumFunctions::CanTargetHouse(this->RadarOutage_AffectsHouse, pHouse, pTargetHouse)
-				{
-                    pTargetHouse->CreateRadarOutage(this->RadarOutage_Duration)
-				}
-			}
-		}
-
-		if (this->PowerOutage_Duration > 0)
-		{
-            for (const auto pTargetHouse : HouseClass::Array)
-			{
-                if(!pHouse->Defeated && !pHouse->IsObserver() && !pHouse->Type->MultiplayPassive && EnumFunctions::CanTargetHouse(this->PowerOutage_AffectsHouse, pHouse, pTargetHouse)
-				{
-                    pTargetHouse->CreatePowerOutage(this->PowerOutage_Duration)
 				}
 			}
 		}
