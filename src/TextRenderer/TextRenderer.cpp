@@ -153,17 +153,21 @@ namespace TextRenderer
 	// RTL Arabic Text 
 	bool IsRTLText(const wchar_t* text, int len)
 	{
-		for (int i = 0; i < len; i++)
-		{
-			wchar_t ch = text[i];
-			if ((ch >= 0x0600 && ch <= 0x06FF) || // Arabic
-				(ch >= 0x0750 && ch <= 0x077F) || // Arabic Supplement
-				(ch >= 0x08A0 && ch <= 0x08FF) || // Arabic Extended-A
-				(ch >= 0xFB50 && ch <= 0xFDFF) || // Arabic Presentation Forms-A
-				(ch >= 0xFE70 && ch <= 0xFEFF))  // Arabic Presentation Forms-B
-				return true;
-		}
-		return false;
+		if (len <= 0) return false;
+
+		// Convert wchar_t to UTF-32 (or use hb_buffer_add_utf16 directly)
+		hb_buffer_t* buffer = hb_buffer_create();
+		hb_buffer_add_utf16(buffer, (const uint16_t*)text, len, 0, len);
+
+		// Guess the script and direction
+		hb_buffer_guess_segment_properties(buffer);
+
+		// Get the direction
+		hb_direction_t dir = hb_buffer_get_direction(buffer);
+
+		hb_buffer_destroy(buffer);
+
+		return dir == HB_DIRECTION_RTL;
 	}
 
 	const wchar_t* FindLineEnd(BitFont* pFont, const wchar_t* start, int nMaxWidth)
