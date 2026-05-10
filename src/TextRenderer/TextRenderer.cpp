@@ -175,202 +175,55 @@ namespace TextRenderer
 		if (!pFont || !start || !*start)
 			return start;
 
-		// No wrapping → stop only at newline
-		if (nMaxWidth <= 0)
-		{
-			const wchar_t* p = start;
-			while (*p && *p != L'\n' && *p != L'\r')
-				++p;
-			return p;
-		}
+		// Find logical line length like stop at newline
+		int line_len = 0;
+		while (start[line_len] && start[line_len] != L'\n' && start[line_len] != L'\r')
+			line_len++;
 
-		// Count logical characters until newline
-		int len = 0;
-		while (start[len] && start[len] != L'\n' && start[len] != L'\r')
-			++len;
+		if (line_len == 0 || nMaxWidth <= 0)
+			return start + line_len;
 
-		if (len == 0)
-			return start;
-
-		// Shape entire logical segment once (cluster‑safe)
-		auto shaped = ShapeText(pFont, start, len);
+		// Shape the full line once
+		auto shaped = ShapeText(pFont, start, line_len);
 		if (shaped.empty())
-			return start + len;
+			return start + line_len;
 
-		// Per‑codepoint width map
-		std::vector<int> charWidth(len, 0);
-		std::vector<bool> isTab(len, false);
+		// Build per character advance widths
+		int tab_size = (pFont->Unknown_28 > 0) ? pFont->Unknown_28 : 64;
+		std::vector<int> char_width(line_len, 0);
 
-		const int tabSize = (pFont->Unknown_28 > 0) ? pFont->Unknown_28 : 64;
-
-		// Accumulate cluster advances
 		for (const auto& g : shaped)
 		{
-			int idx = (int)g.cluster;
-			if (idx < 0 || idx >= len)
-				continue;
-
-			wchar_t ch = start[idx];
-
-			if (ch == L'\t')
-			{
-				isTab[idx] = true;
-			}
-			else if (ch == 0x200C || ch == 0x200D || ch == 0x200B) // ZWNJ, ZWJ, ZWSP
-			{
-				charWidth[idx] = 0;
-			}
-			else
-			{
-				charWidth[idx] += g.x_advance;
-			}
+			if (g.cluster < (unsigned)line_len)
+				char_width[g.cluster] += g.x_advance;
 		}
 
-		// Helpers
-		auto isHigh = [](wchar_t c) { return (c >= 0xD800 && c <= 0xDBFF); };
-		auto isLow = [](wchar_t c) { return (c >= 0xDC00 && c <= 0xDFFF); };
+		// Walk forward and tracking last safe break point
+		int width = 0;
+		int last_break = 0;
 
-		auto isBreakable = [](wchar_t ch)
-			{
-				switch (ch)
-				{
-				case L' ': case L'\t': case L'-': case 0x00AD: case 0x200B:
-					return true;
-				case 0x00A0: case 0x2011: case 0x2060: case 0xFEFF:
-					return false;
-				}
-				return (ch <= 0x20 || (ch >= 0x2000 && ch <= 0x200A));
-			};
-
-		auto script = [](wchar_t ch)
-			{
-				// Arabic family
-				if ((ch >= 0x0600 && ch <= 0x06FF) || (ch >= 0x0750 && ch <= 0x077F) || (ch >= 0x08A0 && ch <= 0x08FF) ||
-					(ch >= 0xFB50 && ch <= 0xFDFF) || (ch >= 0xFE70 && ch <= 0xFEFF))
-					return 1;
-
-				// Hebrew
-				if (ch >= 0x0590 && ch <= 0x05FF)
-					return 2;
-
-				// Latin
-				if ((ch >= L'A' && ch <= L'Z') || (ch >= L'a' && ch <= L'z') ||
-					(ch >= 0x00C0 && ch <= 0x00FF) || (ch >= 0x0100 && ch <= 0x017F))
-					return 3;
-
-				// Cyrillic
-				if ((ch >= 0x0400 && ch <= 0x04FF) || (ch >= 0x0500 && ch <= 0x052F))
-					return 4;
-
-				// Greek
-				if ((ch >= 0x0370 && ch <= 0x03FF) || (ch >= 0x1F00 && ch <= 0x1FFF))
-					return 5;
-
-				// CJK
-				if ((ch >= 0x4E00 && ch <= 0x9FFF) || (ch >= 0x3400 && ch <= 0x4DBF) ||
-					(ch >= 0x20000 && ch <= 0x2A6DF) || (ch >= 0xF900 && ch <= 0xFAFF) ||
-					(ch >= 0x3040 && ch <= 0x309F) || (ch >= 0x30A0 && ch <= 0x30FF) ||
-					(ch >= 0xAC00 && ch <= 0xD7AF))
-					return 6;
-
-				return 0;
-			};
-
-		// Main scan
-		int currentW = 0;
-		int lastBreakIdx = -1;
-
-		for (int i = 0; i < len; i++)
+		for (int i = 0; i < line_len; i++)
 		{
 			wchar_t ch = start[i];
 
-			// Skip isolated low surrogate
-			if (isLow(ch))
+			// Skip zero width chars
+			if (ch == 0x200B || ch == 0x200C || ch == 0x200D)
 				continue;
 
-			// Resolve advance
-			int adv = charWidth[i];
+			int reminder = width % tab_size;
+			int adv = (ch == L'\t') ? (tab_size - (reminder ? reminder : tab_size)) : char_width[i];
 
-			if (isTab[i])
-			{
-				adv = tabSize - (currentW % tabSize);
-				if (adv == 0) adv = tabSize;
-			}
+			if (width + adv > nMaxWidth)
+				return start + (last_break > 0 ? last_break : i > 0 ? i : 1);
 
-			// Surrogate pair: merge width of low surrogate
-			if (isHigh(ch) && i + 1 < len && isLow(start[i + 1]))
-				adv += charWidth[i + 1];
+			width += adv;
 
-			// Wrap BEFORE adding this character
-			if (currentW + adv > nMaxWidth)
-			{
-				if (lastBreakIdx >= 0)
-				{
-					// Avoid splitting surrogate pair
-					if (isHigh(start[lastBreakIdx]) &&
-						lastBreakIdx + 1 < len &&
-						isLow(start[lastBreakIdx + 1]))
-					{
-						return start + lastBreakIdx + 2;
-					}
-					return start + lastBreakIdx + 1;
-				}
-
-				// Hard break
-				if (i > 0)
-				{
-					if (isLow(ch) && isHigh(start[i - 1]))
-						return start + i - 1;
-					return start + i;
-				}
-
-				// Single wide character
-				if (isHigh(ch) && i + 1 < len && isLow(start[i + 1]))
-					return start + i + 2;
-				return start + i + 1;
-			}
-
-			currentW += adv;
-
-			// Skip low surrogate (already merged)
-			if (isHigh(ch) && i + 1 < len && isLow(start[i + 1]))
-				continue;
-
-			// Standard break opportunities
-			if (isBreakable(ch))
-				lastBreakIdx = i;
-
-			// Script boundary break (Arabic/Hebrew excluded)
-			int sPrev = (i > 0) ? script(start[i - 1]) : 0;
-			int sCurr = script(ch);
-
-			if (i > 0 &&
-				sPrev != 0 && sCurr != 0 &&
-				sPrev != sCurr &&
-				sPrev != 1 && sCurr != 1 &&   // Arabic
-				sPrev != 2 && sCurr != 2)     // Hebrew
-			{
-				lastBreakIdx = i - 1;
-			}
-
-			// CJK: break after any char except forbidden starts
-			if (sCurr == 6 && i > 0)
-			{
-				wchar_t next = (i + 1 < len) ? start[i + 1] : 0;
-				bool forbidden = (next == 0x3002 ||  // 。 Ideographic full stop
-				  next == 0x3001 ||  // 、 Ideographic comma
-				  next == 0x300B ||  // 》 Right angle bracket
-				  next == 0x300D ||  // 」 Right corner bracket
-				  next == 0x3011 ||  // 』 Right black lenticular bracket
-				  next == 0x3009);   // 〉 Right angle bracket
-
-				if (!forbidden)
-					lastBreakIdx = i;
-			}
+			// Record break opportunity after spaces
+			if (ch == L' ' || ch == L'\t')
+				last_break = i + 1;
 		}
 
-		// Entire line fits
-		return start + len;
+		return start + line_len; // entire line fits
 	}
 	// Measures the visual width of a shaped line [lineStart, lineEnd)
 	// Uses HarfBuzz clusters so multi‑glyph clusters (Arabic, ligatures) are handled correctly.
