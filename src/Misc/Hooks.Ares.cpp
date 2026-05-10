@@ -189,6 +189,7 @@ void Apply_Ares3_0_Patches()
 
 	// Redirect Ares's SWTypeExt::ExtData::IsAvailable to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x32BE0, &SW_IsAvailable);
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x329E0, &SWTypeExt::IsSuperAvailable);
 
 	// Remove Ares check for houses for Psychedelic=yes Warheads.
 	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4AAAA, { 0x31, 0xC0, 0x90, 0x90, 0x90, 0x90 });
@@ -274,6 +275,7 @@ void Apply_Ares3_0p1_Patches()
 
 	// Redirect Ares's SWTypeExt::ExtData::IsAvailable to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x335E0, &SW_IsAvailable);
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x333E0, &SWTypeExt::IsSuperAvailable);
 
 	// Remove Ares check for houses for Psychedelic=yes Warheads.
 	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4B70A, { 0x31, 0xC0, 0x90, 0x90, 0x90, 0x90 });

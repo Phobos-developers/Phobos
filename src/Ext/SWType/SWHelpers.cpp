@@ -320,3 +320,16 @@ void SWTypeExt::ExtData::PrintMessage(const CSFText& message, HouseClass* pFirer
 	// print the message
 	MessageListClass::Instance.PrintMessage(message, RulesClass::Instance->MessageDelay, color);
 }
+
+SuperClass* __stdcall SWTypeExt::IsSuperAvailable(int swIdx, HouseClass* pHouse)
+{
+	if (const auto pSuper = pHouse->Supers.GetItemOrDefault(swIdx))
+	{
+		const auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+
+		if (pExt->IsAvailable(pHouse))
+			return pSuper;
+	}
+
+	return nullptr;
+}
