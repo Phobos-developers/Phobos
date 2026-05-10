@@ -2559,9 +2559,10 @@ msgid ""
 msgstr "现有有 `DisableWeapons=true` 的 AE 会使 `Gattling=yes` 的速率降低并停止播放音效（by Starkku）"
 
 msgid ""
-"Fix cells with `CanBeBuiltOn=true` TerrainTypes on them not being "
+"Fixed cells with `CanBeBuiltOn=true` TerrainTypes on them not being "
 "considered valid build locations by AI (by Starkku)"
 msgstr ""
+"修复了 AI 不把有 `CanBeBuiltOn=true` 地形对象的单元格视为可建造位置的问题（by Starkku）"
 
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
