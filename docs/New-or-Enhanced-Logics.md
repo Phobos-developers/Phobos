@@ -2972,12 +2972,12 @@ UnlimboDetonate.KeepSelected=false     ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]   ; WarheadType
-RadarOutage.Duration=0          ; integer, game frames. Positive stacks, negative reduces.
-RadarOutage.Max=0               ; integer, max stacked duration in frames. 0 = no limit.
+[SOMEWARHEAD]                     ; WarheadType
+RadarOutage.Duration=0            ; integer, game frames
+RadarOutage.Max=0                 ; integer, max stacked duration in frames. 0 = no limit.
 RadarOutage.AffectsHouse=enemies  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-PowerOutage.Duration=0          ; integer, game frames. Positive stacks, negative reduces.
-PowerOutage.Max=0               ; integer, max stacked duration in frames. 0 = no limit.
+PowerOutage.Duration=0            ; integer, game frames
+PowerOutage.Max=0                 ; integer, max stacked duration in frames. 0 = no limit.
 PowerOutage.AffectsHouse=enemies  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
