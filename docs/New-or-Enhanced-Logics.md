@@ -2964,20 +2964,18 @@ UnlimboDetonate.KeepSelected=false     ; boolean
 
 ### Radar / Power Outage warhead
 
-- Now you can use the following tags to cause a radar or power outage to the affected houses for a specified duration.
-  - The radar outage disables the radar display, identical to the effect of a Lightning Storm.
-  - The power outage causes a blackout, identical to the spy infiltration on a Power Plant.
-  - Positive duration stacks onto any existing outage timer up to the specified maximum, if set.
-  - Negative duration reduces the existing outage timer, down to a minimum of 0.
+- These tags cause a radar or power outage to the affected houses for a specified duration.
+- Radar outage disables the radar display (identical to a Lightning Storm), while power outage causes a blackout (identical to spy infiltration on a Power Plant).
+- Positive duration stacks onto any existing outage timer, up to a configurable maximum. Negative duration reduces the existing timer, down to a minimum of 0.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                     ; WarheadType
 RadarOutage.Duration=0            ; integer, game frames
-RadarOutage.Max=0                 ; integer, max stacked duration in frames. 0 = no limit.
+RadarOutage.Max=0                 ; integer, max duration or 0 for no limit
 RadarOutage.AffectsHouse=enemies  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 PowerOutage.Duration=0            ; integer, game frames
-PowerOutage.Max=0                 ; integer, max stacked duration in frames. 0 = no limit.
+PowerOutage.Max=0                 ; integer, max duration or 0 for no limit
 PowerOutage.AffectsHouse=enemies  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
