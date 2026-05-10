@@ -42,6 +42,7 @@ public:
 		Valueable<bool> Grinding_PlayDieSound;
 
 		Nullable<bool> DisplayIncome;
+		Nullable<int> DisplayIncome_Delay;
 		Nullable<AffectedHouse> DisplayIncome_Houses;
 		Valueable<Point2D> DisplayIncome_Offset;
 
@@ -138,6 +139,7 @@ public:
 			, Grinding_Weapon {}
 			, Grinding_Weapon_RequiredCredits { 0 }
 			, DisplayIncome { }
+			, DisplayIncome_Delay { }
 			, DisplayIncome_Houses { }
 			, DisplayIncome_Offset { { 0,0 } }
 			, PlacementPreview { true }

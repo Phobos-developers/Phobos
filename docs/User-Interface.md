@@ -448,7 +448,9 @@ HideShakeEffects=false       ; boolean
 ### Visual indication of income from grinders and refineries
 
 - `DisplayIncome` can be set to display the amount of credits acquired when a building is grinding units / receiving ore dump from harvesters or slaves.
-- Multiple income within less than one in-game second have their amounts coalesced into single display.
+  - `DisplayIncome.Delay` is the interval in frames between two consecutive income displays, defaults to 15 (one in-game second on middle speed).
+    - Multiple income within less than the time defined by `DisplayIncome.Delay` have their amounts coalesced into single display.
+    - Delay cannot be set to 0, this will change the delay to 1 and outputs a developer warning to log.
   - `DisplayIncome.Houses` determines which houses can see the credits display.
     - If you don't want players to see how AI cheats with `VirtualPurifiers` for example, `DisplayIncome.AllowAI` can be set to false to disable the display. It overrides the previous option.
   - `DisplayIncome.Offset` is additional pixel offset for the center of the credits display, by default `0,0` at building's center.
@@ -458,11 +460,13 @@ In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 DisplayIncome=false       ; boolean
+DisplayIncome.Delay=15    ; integer
 DisplayIncome.Houses=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 DisplayIncome.AllowAI=yes ; boolean
 
 [SOMEBUILDING]            ; BuildingType
 DisplayIncome=            ; boolean, defaults to [AudioVisual] -> DisplayIncome
+DisplayIncome.Delay=15    ; integer, defaults to [AudioVisual] -> DisplayIncome.Delay
 DisplayIncome.Houses=     ; Affected House Enumeration, defaults to [AudioVisual] -> DisplayIncome.Houses
 DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
 ```
