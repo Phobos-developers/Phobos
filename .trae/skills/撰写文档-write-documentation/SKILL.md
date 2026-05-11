@@ -29,13 +29,12 @@ Determine which doc pages need updating:
 | User interface change (new hotkey, display, sidebar, tooltip) | `docs/User-Interface.md` |
 | AI, scripting, trigger, or mapping change | `docs/AI-Scripting-and-Mapping.md` |
 | Uncategorized change | `docs/Miscellanous.md` |
-| New user setting in RA2MD.INI | `docs/Whats-New.md` (under "New user settings") |
 
 Primary doc page mapping:
 - Most game logic features → `docs/New-or-Enhanced-Logics.md`
   - Within this file, `## ` headings are categories (e.g., `## Buildings`, `## Projectiles`, `## Warheads`). Place new `### ` sections under the appropriate category, sorted alphabetically.
 
-Additionally, every non-trivial change requires:
+Additionally, every change requires:
 - **`docs/Whats-New.md`** — changelog entry.
 - **`CREDITS.md`** — credit the author.
 
@@ -66,14 +65,20 @@ Wait for the user to approve the drafted text before proceeding to write it into
 
 After user approval, write the approved text into the appropriate doc file. For sections in `docs/New-or-Enhanced-Logics.md` or similar, insert the new `### ` section in alphabetical order among existing sibling headings under the correct `## ` category. Look at existing sibling `### ` headings to determine the correct insertion point.
 
-Continue with the INI code block following existing conventions:
+Continue with the INI code block following existing conventions from the [README's "How to read code snippets" section](../../README.md#how-to-read-code-snippets):
 
 ````markdown
-In `rulesmd.ini`:
-```ini
-[SECTION]                        ; ObjectType
-KeyName=default                  ; accepted type
-KeyName.WithDots=default         ; accepted type with optional explanation
+; which section the entries should be in
+; can be a freeform name - in this case the comment would explain what it is
+; if no comment to be found - then it's a precise name
+[SOMENAME]           ; BuildingType
+; KeyName=DefaultValue ; accepted type with optional explanation
+; if there's nothing to the right of equals sign - the default value is empty/absent
+; if these keys have had their value set, they can only be set to their default
+; unset state again by setting the value to <default>, <none> or none
+; for list of values only <default> clears the entire list
+; if the default value is not static - it's written and explained in a comment
+UIDescription=<none> ; CSF entry key
 ```
 ````
 
