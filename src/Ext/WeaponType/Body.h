@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -45,6 +45,7 @@ public:
 		Valueable<AreaFireTarget> AreaFire_Target;
 		Valueable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
+		Nullable<int> LaserZAdjust;
 		Valueable<bool> VisualScatter;
 		Nullable<PartialVector2D<int>> ROF_RandomDelay;
 		ValueableVector<int> ChargeTurret_Delays;
@@ -96,6 +97,8 @@ public:
 		Nullable<bool> AttackCursorOnFriendlies;
 		Nullable<bool> AttackNoThreatBuildings;
 
+		Nullable<bool> Anim_Update;
+
 		bool SkipWeaponPicking;
 
 		Nullable<bool> CylinderRangefinding;
@@ -129,6 +132,7 @@ public:
 			, AreaFire_Target { AreaFireTarget::Base }
 			, FeedbackWeapon {}
 			, Laser_IsSingleColor { false }
+			, LaserZAdjust {}
 			, VisualScatter { false }
 			, ROF_RandomDelay {}
 			, ChargeTurret_Delays {}
@@ -181,6 +185,7 @@ public:
 			, AttackCursorOnFriendlies {}
 			, AttackNoThreatBuildings {}
 			, CylinderRangefinding {}
+			, Anim_Update {}
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;

@@ -4,6 +4,8 @@
 
 WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
 
+WarheadTypeClass* WarheadTypeExt::LocomotorWarhead = nullptr;
+
 bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pTarget) const
 {
 	if (pHouse && pTarget)
@@ -42,6 +44,11 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 
 	if (!this->EffectsRequireVerses)
 		return true;
+
+	bool isAir = pTarget->IsInAir();
+
+	if ((isAir && !this->AffectsAir) || (!isAir && !this->AffectsGround))
+		return false;
 
 	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget, pTarget->GetTechnoType()) != 0.0;
 }
@@ -291,11 +298,22 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Parasite_CullingTarget.Read(exINI, pSection, "Parasite.CullingTarget");
 	this->Parasite_GrappleAnim.Read(exINI, pSection, "Parasite.GrappleAnim");
 
+	this->JumpjetTurnRate.Read(exINI, pSection, "JumpjetTurnRate");
+	this->JumpjetSpeed.Read(exINI, pSection, "JumpjetSpeed");
+	this->JumpjetClimb.Read(exINI, pSection, "JumpjetClimb");
+	this->JumpjetCrash.Read(exINI, pSection, "JumpjetCrash");
+	this->JumpjetHeight.Read(exINI, pSection, "JumpjetHeight");
+	this->JumpjetAccel.Read(exINI, pSection, "JumpjetAccel");
+	this->JumpjetWobbles.Read(exINI, pSection, "JumpjetWobbles");
+	this->JumpjetNoWobbles.Read(exINI, pSection, "JumpjetNoWobbles");
+	this->JumpjetDeviation.Read(exINI, pSection, "JumpjetDeviation");
+
 	this->Nonprovocative.Read(exINI, pSection, "Nonprovocative");
 
 	this->MergeBuildingDamage.Read(exINI, pSection, "MergeBuildingDamage");
 
 	this->CombatLightDetailLevel.Read(exINI, pSection, "CombatLightDetailLevel");
+	this->CombatLightDetailLevel_CheckColored.Read(exINI, pSection, "CombatLightDetailLevel.CheckColored");
 	this->CombatLightChance.Read(exINI, pSection, "CombatLightChance");
 	this->CLIsBlack.Read(exINI, pSection, "CLIsBlack");
 	this->Particle_AlphaImageIsLightFlash.Read(exINI, pSection, "Particle.AlphaImageIsLightFlash");
@@ -666,12 +684,23 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Parasite_DisableParticleSystem)
 		.Process(this->Parasite_CullingTarget)
 		.Process(this->Parasite_GrappleAnim)
+			
+		.Process(this->JumpjetTurnRate)
+		.Process(this->JumpjetSpeed)
+		.Process(this->JumpjetClimb)
+		.Process(this->JumpjetCrash)
+		.Process(this->JumpjetHeight)
+		.Process(this->JumpjetAccel)
+		.Process(this->JumpjetWobbles)
+		.Process(this->JumpjetNoWobbles)
+		.Process(this->JumpjetDeviation)
 
 		.Process(this->Nonprovocative)
 
 		.Process(this->MergeBuildingDamage)
 
 		.Process(this->CombatLightDetailLevel)
+		.Process(this->CombatLightDetailLevel_CheckColored)
 		.Process(this->CombatLightChance)
 		.Process(this->CLIsBlack)
 		.Process(this->Particle_AlphaImageIsLightFlash)

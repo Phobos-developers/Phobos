@@ -1,6 +1,8 @@
 #include "SyncLogging.h"
 
 #include <Helpers/Macro.h>
+#include <EventClass.h>
+#include <Ext/AnimType/Body.h>
 #include <Utilities/Debug.h>
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/AresHelper.h>
@@ -19,7 +21,6 @@ SyncLogEventBuffer<TargetChangeSyncLogEvent, TargetChanges_Size> SyncLogger::Tar
 SyncLogEventBuffer<TargetChangeSyncLogEvent, DestinationChanges_Size> SyncLogger::DestinationChanges;
 SyncLogEventBuffer<MissionOverrideSyncLogEvent, MissionOverrides_Size> SyncLogger::MissionOverrides;
 SyncLogEventBuffer<AnimCreationSyncLogEvent, AnimCreations_Size> SyncLogger::AnimCreations;
-
 
 void __forceinline MakeCallerRelative(unsigned int& caller)
 {
@@ -541,3 +542,135 @@ DEFINE_HOOK(0x7013A0, TechnoClass_OverrideMission_SyncLog, 0x5)
 
 	return 0;
 }
+
+#pragma region FrameCRC
+
+class ObjectFake : public ObjectClass
+{
+public:
+	inline bool _IsCRCHashable();
+};
+
+bool ObjectFake::_IsCRCHashable()
+{
+	auto const rtti = this->WhatAmI();
+
+	if (rtti == AbstractType::Anim)
+	{
+		// Game creates animation from [General] -> MoveFlash with this UniqueID
+		// in FootClass::Active_Click_With() (0x4D7D50) - this is local-client only code
+		// which is why these animations have to be ignored in sync check.
+		if (this->UniqueID == -2)
+			return false;
+
+		auto const pAnim = reinterpret_cast<AnimClass*>(this);
+		auto pType = pAnim->Type;
+
+		while (pType)
+		{
+			// If animation type has logic that affects game simulation, don't ignore.
+			if (pType->Damage != 0.0 || pType->Bouncer || pType->IsMeteor || pType->IsTiberium || pType->TiberiumChainReaction
+				|| pType->IsAnimatedTiberium || pType->MakeInfantry != -1 || AnimTypeExt::ExtMap.Find(pType)->CreateUnitType.get())
+			{
+				return true;
+			}
+
+			// Check anim's Next type recursively until not present.
+			pType = pType->Next;
+		}
+
+		return false;
+	}
+	else if (rtti == AbstractType::Particle)
+	{
+		auto const pParticle = reinterpret_cast<ParticleClass*>(this);
+		auto pType = pParticle->Type;
+
+		// If particle type deals damage don't ignore.
+		if (pType->Damage)
+			return true;
+
+		// Check particle's NextParticle type recursively until not present.
+		int index = pType->NextParticle;
+
+		while (index != -1)
+		{
+			pType = ParticleTypeClass::Array[index];
+
+			if (pType->Damage)
+				return true;
+
+			index = pType->NextParticle;
+		}
+
+		return false;
+	}
+
+	return true;
+}
+
+static void AddCRC(DWORD* crc, unsigned int val)
+{
+	*crc = val + (*crc >> 31) + (*crc << 1);
+}
+
+static int GetCoordHash(CoordStruct location)
+{
+	return location.X / 10 + ((location.Y / 10) << 16);
+}
+
+static void ComputeGameCRC()
+{
+	EventClass::CurrentFrameCRC = 0;
+
+	for (auto const pInf : InfantryClass::Array)
+	{
+		int primaryFacing = pInf->PrimaryFacing.Current().GetValue<8>();
+		AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pInf->Location) + primaryFacing);
+	}
+
+	for (auto const pUnit : UnitClass::Array)
+	{
+		int primaryFacing = pUnit->PrimaryFacing.Current().GetValue<8>();
+		int secondaryFacing = pUnit->SecondaryFacing.Current().GetValue<8>();
+		AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pUnit->Location) + primaryFacing + secondaryFacing);
+	}
+
+	for (auto const pBuilding : BuildingClass::Array)
+	{
+		int primaryFacing = pBuilding->PrimaryFacing.Current().GetValue<8>();
+		AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pBuilding->Location) + primaryFacing);
+	}
+
+	for (auto const pHouse : HouseClass::Array)
+	{
+		AddCRC(&EventClass::CurrentFrameCRC, pHouse->MapIsClear);
+	}
+
+	for (int i = 0; i < 5; i++)
+	{
+		auto const layer = DisplayClass::GetLayer((Layer)i);
+
+		for (auto const pObj : *layer)
+		{
+			if (((ObjectFake*)pObj)->_IsCRCHashable())
+				AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pObj->Location) + (int)pObj->WhatAmI());
+		}
+	}
+
+	LogicClass const& logic = LogicClass::Instance;
+
+	for (auto const pObj : logic)
+	{
+		if (((ObjectFake*)pObj)->_IsCRCHashable())
+			AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pObj->Location) + (int)pObj->WhatAmI());
+	}
+
+	AddCRC(&EventClass::CurrentFrameCRC, ScenarioClass::Instance->Random.Random());
+	Game::LogFrameCRC(Unsorted::CurrentFrame % 256);
+}
+
+DEFINE_FUNCTION_JUMP(CALL, 0x64731C, ComputeGameCRC);
+DEFINE_FUNCTION_JUMP(CALL, 0x647684, ComputeGameCRC);
+
+#pragma endregion

@@ -103,6 +103,27 @@ DEFINE_HOOK(0x4D6D34, FootClass_MissionAreaGuard_Miner, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK_AGAIN(0x73D508, UnitClass_Harvesting_HarvesterLoadRate, 6)
+DEFINE_HOOK(0x73D5D5, UnitClass_Harvesting_HarvesterLoadRate, 6)
+{
+	GET(UnitClass* const, pThis, ESI);
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+
+	R->EAX(pTypeExt->HarvesterLoadRate.Get(RulesClass::Instance->HarvesterLoadRate));
+
+	return R->Origin() == 0x73D508 ? 0x73D50E : 0x73D5DB;
+}
+
+DEFINE_HOOK(0x73E951, UnitClass_Harvest_HarvesterLoadRate, 6)
+{
+	GET(UnitClass* const, pThis, EBP);
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+
+	R->EAX(pTypeExt->HarvesterLoadRate.Get(RulesClass::Instance->HarvesterLoadRate));
+
+	return 0x73E957;
+}
+
 #pragma region HarvesterScanAfterUnload
 
 DEFINE_HOOK(0x73E730, UnitClass_MissionHarvest_HarvesterScanAfterUnload, 0x5)
@@ -236,3 +257,32 @@ DEFINE_HOOK(0x738A3E, UnitClass_EnterIdleMode_SubterraneanHarvester, 0x5)
 }
 
 #pragma endregion
+
+// Skip the check for Teleporter here; this is an unreasonable check.
+// This check determines whether miners on a Guard mission near the refinery should return to the Harvest mission.
+DEFINE_JUMP(LJMP, 0x740943, 0x740957);
+
+// Now, miners will no longer actively withdraw from the Harvest mission due to mineral depletion.
+DEFINE_HOOK(0x73EEA6, UnitClass_MissionHarvest_AllOreGathered, 0x6)
+{
+	enum { SkipGameCode = 0x73EFA4 };
+
+	GET(UnitClass*, pThis, EBP);
+
+	auto pBuilding = MapClass::Instance.GetCellAt(pThis->GetCoords())->GetBuilding();
+	if (pBuilding && (pBuilding->Type->Refinery || pBuilding->Type->Weeder))
+	{
+		CellStruct buffer = CellStruct::Empty;
+		pThis->NearbyLocation(&buffer, pBuilding);
+		auto pDest = MapClass::Instance.GetCellAt(buffer);
+		pThis->SetDestination(pDest, false);
+		R->EAX(15);
+	}
+	else
+	{
+		pThis->MissionStatus = 0;
+		R->EAX(100);
+	}
+
+	return SkipGameCode;
+}

@@ -265,7 +265,16 @@ DEFINE_HOOK(0x518434, InfantryClass_ReceiveDamage_SkipDeathAnim, 0x7)
 // Author: Otamaa
 DEFINE_HOOK(0x518505, InfantryClass_ReceiveDamage_NotHuman, 0x4)
 {
+	enum { SkipPlayAnim = 0x518515, SkipGameCode = 0x5185F1 };
+
 	GET(InfantryClass* const, pThis, ESI);
+
+	if (pThis->SequenceAnim == Sequence::Paradrop && pThis->IsFallingDown)
+	{
+		GameCreate<AnimClass>(RulesClass::Instance->InfantryExplode, pThis->Location);
+		return SkipGameCode;
+	}
+
 	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFSET(0xD0, 0x4));
 
 	// Die1-Die5 sequences are offset by 10
@@ -288,8 +297,7 @@ DEFINE_HOOK(0x518505, InfantryClass_ReceiveDamage_NotHuman, 0x4)
 
 	R->ECX(pThis);
 	pThis->PlayAnim(static_cast<Sequence>(resultSequence), true);
-
-	return 0x518515;
+	return SkipPlayAnim;
 }
 
 DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
@@ -439,19 +447,21 @@ DEFINE_HOOK(0x5F5480, ObjectClass_ReceiveDamage_FlashDuration, 0x6)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x701CFC, TechnoClass_ReceiveDamage_AllowBerzerkOnAllies, 0x5)
+// Remove the YR Psychedelic ally check before our hook incase Phobos is ran without Ares.
+DEFINE_JUMP(LJMP, 0x701CE5, 0x701D0B);
+
+// Check houses for Psychedelic at the address Ares returns to after immunity checks.
+DEFINE_HOOK(0x701D2E, TechnoClass_ReceiveDamage_AllowBerzerkOnAllies, 0x6)
 {
-	enum { SkipCodeYR = 0x701D0B, SkipCodeAres = 0x701D2E };
+	enum { DisallowBerzerk = 0x701D3E };
 
-	// If AllowBerzerkOnAllies not enabled, just return from function
-	// and don't apply berzerk.
-	if (!RulesExt::Global()->AllowBerzerkOnAllies)
-		return 0;
+	GET(TechnoClass*, pThis, ESI);
+	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFSET(0xC4, 0x4));
 
-	// Ares already checked immunities by this point if it is enabled.
-	// Rechecking them causes issues, so only check ImmuneToPsionics
-	// again if Ares is not present.
-	return AresHelper::CanUseAres ? SkipCodeAres : SkipCodeYR;
+	if (!RulesExt::Global()->AllowBerzerkOnAllies && pThis->Owner->IsAlliedWith(receiveDamageArgs.SourceHouse))
+		return DisallowBerzerk;
+
+	return 0;
 }
 
 DEFINE_HOOK(0x702823, TechnoClass_ReceiveDamage_SkipDamagedParticle, 0x7)

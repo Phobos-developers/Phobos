@@ -36,6 +36,7 @@ public:
 		CDTimerClass PassengerDeletionTimer;
 		ShieldTypeClass* CurrentShieldType;
 		int LastWarpDistance;
+		int JumpjetSpeed;
 		CDTimerClass ChargeTurretTimer; // Used for charge turrets instead of RearmTimer if weapon has ChargeTurret.Delays set.
 		CDTimerClass AutoDeathTimer;
 		AnimTypeClass* MindControlRingAnimType;
@@ -102,6 +103,8 @@ public:
 
 		bool OnParachuted; // This is just a temporary patch. TODO: fully check HasParachuted and correct its maintenance method.
 		bool HoverShutdown;
+		CoordStruct LastTargetCrd;
+		CDTimerClass LastTargetCrdClearTimer;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -119,6 +122,7 @@ public:
 			, PassengerDeletionTimer {}
 			, CurrentShieldType { nullptr }
 			, LastWarpDistance {}
+			, JumpjetSpeed { 14 } // 0x7115B8
 			, ChargeTurretTimer {}
 			, AutoDeathTimer {}
 			, MindControlRingAnimType { nullptr }
@@ -171,6 +175,8 @@ public:
 			, JumpjetStraightAscend { false }
 			, OnParachuted { false }
 			, HoverShutdown { false }
+			, LastTargetCrd { CoordStruct::Empty }
+			, LastTargetCrdClearTimer {}
 		{ }
 
 		void OnEarlyUpdate();
@@ -211,6 +217,8 @@ public:
 		void UpdateTintValues();
 
 		void AmmoAutoConvertActions();
+		void UpdateLastTargetCrd();
+		int GetSight();
 
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
@@ -302,9 +310,11 @@ public:
 	static bool SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue, bool alwaysCheckLandTypes);
 	static void ShowPromoteAnim(TechnoClass* pThis);
 	static void ClickedApproachObject(FootClass* pThis, ObjectClass* pObject);
+	static bool CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse);
 
 	static bool EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, int distance, bool select);
 	static bool EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool select);
+	static bool __fastcall ApplyKillDriver(TechnoClass** pData, void*, HouseClass* pToHouse, TechnoClass* pKiller, bool resetVeterancy);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);
@@ -319,4 +329,6 @@ public:
 	static void ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 	static void ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 	static bool MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType);
+	static bool HasWeaponsDisabled(TechnoClass* pThis);
+	static FireError GetFireErrorIgnoreDisableWeapons(TechnoClass* pThis, AbstractClass* pTarget, int weaponIndex, bool ignoreRange);
 };

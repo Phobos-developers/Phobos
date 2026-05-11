@@ -122,6 +122,10 @@ static inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int
 		auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
 		auto const pOwnerExt = HouseExt::ExtMap.Find(pOwner);
 
+		if (!pBuildingExt->TypeExtData->PowerPlantEnhancer_Buildings.empty()
+			&& (pBuildingExt->TypeExtData->PowerPlantEnhancer_Amount != 0 || pBuildingExt->TypeExtData->PowerPlantEnhancer_Factor != 1.0f))
+			pOwnerExt->PowerPlantEnhancers.push_back(pBuilding);
+
 		if (pType->FactoryPlant)
 		{
 			if (pBuildingExt->TypeExtData->FactoryPlant_AllowTypes.size() > 0 || pBuildingExt->TypeExtData->FactoryPlant_DisallowTypes.size() > 0)
