@@ -309,10 +309,10 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->JumpjetDeviation.Read(exINI, pSection, "JumpjetDeviation");
 
 	this->RadarOutage_Duration.Read(exINI, pSection, "RadarOutage.Duration");
-	this->RadarOutage_Max.Read(exINI, pSection, "RadarOutage.Max");
+	this->RadarOutage_Cap.Read(exINI, pSection, "RadarOutage.Cap");
 	this->RadarOutage_AffectsHouse.Read(exINI, pSection, "RadarOutage.AffectsHouse");
 	this->PowerOutage_Duration.Read(exINI, pSection, "PowerOutage.Duration");
-	this->PowerOutage_Max.Read(exINI, pSection, "PowerOutage.Max");
+	this->PowerOutage_Cap.Read(exINI, pSection, "PowerOutage.Cap");
 	this->PowerOutage_AffectsHouse.Read(exINI, pSection, "PowerOutage.AffectsHouse");
 
 	this->Nonprovocative.Read(exINI, pSection, "Nonprovocative");
@@ -703,10 +703,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->JumpjetDeviation)
 
 		.Process(this->RadarOutage_Duration)
-		.Process(this->RadarOutage_Max)
+		.Process(this->RadarOutage_Cap)
 		.Process(this->RadarOutage_AffectsHouse)
 		.Process(this->PowerOutage_Duration)
-		.Process(this->PowerOutage_Max)
+		.Process(this->PowerOutage_Cap)
 		.Process(this->PowerOutage_AffectsHouse)
 
 		.Process(this->Nonprovocative)
