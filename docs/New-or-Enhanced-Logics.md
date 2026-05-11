@@ -2965,7 +2965,7 @@ UnlimboDetonate.KeepSelected=false     ; boolean
 ### Radar / Power Outage warhead
 
 - Now you can use the following tags to make the warhead cause a radar or power outage to the affected houses for a specified duration.  
-- Radar outage disables the radar display (identical to a Lightning Storm), while power outage causes a blackout (identical to spy infiltration on a Power Plant).  
+- `RadarOutage` disables the radar display (identical to a Lightning Storm), while `PowerOutage` causes a blackout (identical to spy infiltration on a Power Plant).  
 - If `Duration` is **positive**, it stacks onto the current outage timer, unless `Cap` is **negative** — then the effect does not stack and only the longest single duration is kept.  
 - If `Duration` is **negative**, it reduces the current outage timer.  
 - When `Cap` is **positive**, it acts as a ceiling for stacking or a floor for reduction.  
