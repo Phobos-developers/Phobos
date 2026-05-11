@@ -126,6 +126,21 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
                         pTargetHouse->RadarBlackoutTimer.Start(newLeft);
                     }
 
+if (this->RadarOutage_Duration)
+        {
+            for (const auto pTargetHouse : HouseClass::Array)
+            {
+                if (!pTargetHouse->Defeated && !pTargetHouse->IsObserver()
+                    && !pTargetHouse->Type->MultiplayPassive
+                    && EnumFunctions::CanTargetHouse(this->RadarOutage_AffectsHouse, pHouse, pTargetHouse))
+                {
+                    int newLeft = Helpers::Alex::getCappedDuration(
+                        pTargetHouse->RadarBlackoutTimer.GetTimeLeft(),
+                        this->RadarOutage_Duration,
+                        this->RadarOutage_Cap
+                    );
+                    newLeft = Math::max(newLeft, 0);
+                    pTargetHouse->RadarBlackoutTimer.Start(newLeft);
                     pTargetHouse->RecheckRadar = true;
                 }
             }
@@ -135,33 +150,21 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
         {
             for (const auto pTargetHouse : HouseClass::Array)
             {
-                if (!pTargetHouse->Defeated && !pTargetHouse->IsObserver() 
-                    && !pTargetHouse->Type->MultiplayPassive 
+                if (!pTargetHouse->Defeated && !pTargetHouse->IsObserver()
+                    && !pTargetHouse->Type->MultiplayPassive
                     && EnumFunctions::CanTargetHouse(this->PowerOutage_AffectsHouse, pHouse, pTargetHouse))
                 {
-                    int duration = this->PowerOutage_Duration;
-                    int currentLeft = pTargetHouse->PowerBlackoutTimer.GetTimeLeft();
- 
-                    if (duration < 0)
-                    {
-                        int newLeft = currentLeft + duration;
-                        if (newLeft < 0)
-                            newLeft = 0;
-                        pTargetHouse->PowerBlackoutTimer.Start(newLeft);
-                    }
-                    else
-                    {
-                        int newLeft = currentLeft + duration;
-                        int maxOutage = this->PowerOutage_Max;
-                        if (maxOutage > 0 && newLeft > maxOutage)
-                            newLeft = maxOutage;
-                        pTargetHouse->PowerBlackoutTimer.Start(newLeft);
-                    }
-
+                    int newLeft = Helpers::Alex::getCappedDuration(
+                        pTargetHouse->PowerBlackoutTimer.GetTimeLeft(),
+                        this->PowerOutage_Duration,
+                        this->PowerOutage_Cap
+                    );
+                    newLeft = Math::max(newLeft, 0);
+                    pTargetHouse->PowerBlackoutTimer.Start(newLeft);
                     pTargetHouse->RecheckPower = true;
                 }
             }
-        }
+		}
 
 		for (const int swIdx : this->LaunchSW)
 		{
