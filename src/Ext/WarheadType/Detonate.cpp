@@ -103,33 +103,6 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
         {
             for (const auto pTargetHouse : HouseClass::Array)
             {
-                if (!pTargetHouse->Defeated && !pTargetHouse->IsObserver() 
-                    && !pTargetHouse->Type->MultiplayPassive 
-                    && EnumFunctions::CanTargetHouse(this->RadarOutage_AffectsHouse, pHouse, pTargetHouse))
-                {
-                    int duration = this->RadarOutage_Duration;
-                    int currentLeft = pTargetHouse->RadarBlackoutTimer.GetTimeLeft();
- 
-                    if (duration < 0)
-                    {
-                        int newLeft = currentLeft + duration;
-                        if (newLeft < 0)
-                            newLeft = 0;
-                        pTargetHouse->RadarBlackoutTimer.Start(newLeft);
-                    }
-                    else
-                    {
-                        int newLeft = currentLeft + duration;
-                        int maxOutage = this->RadarOutage_Max;
-                        if (maxOutage > 0 && newLeft > maxOutage)
-                            newLeft = maxOutage;
-                        pTargetHouse->RadarBlackoutTimer.Start(newLeft);
-                    }
-
-if (this->RadarOutage_Duration)
-        {
-            for (const auto pTargetHouse : HouseClass::Array)
-            {
                 if (!pTargetHouse->Defeated && !pTargetHouse->IsObserver()
                     && !pTargetHouse->Type->MultiplayPassive
                     && EnumFunctions::CanTargetHouse(this->RadarOutage_AffectsHouse, pHouse, pTargetHouse))
