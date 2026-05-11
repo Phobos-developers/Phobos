@@ -11,8 +11,6 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
 
-#include <unordered_set>
-
 /*
 	Allow usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable
 
