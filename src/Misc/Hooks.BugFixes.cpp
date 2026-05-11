@@ -2329,7 +2329,7 @@ DEFINE_HOOK(0x489E47, DamageArea_RockerItemsFix2, 0x6)
 
 #pragma endregion
 
-DEFINE_HOOK(0x4898A7, MapClass_DamageArea_LowAirFix, 0x9)
+DEFINE_HOOK(0x489710, MapClass_DamageArea_LowAirFix, 0x7)
 {
 	enum { GoNextObject = 0x4899B3 };
 
