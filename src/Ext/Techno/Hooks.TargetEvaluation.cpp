@@ -25,12 +25,7 @@ DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
 
 static FireError __fastcall TechnoClass_TargetSomethingNearby_CanFire_Wrapper(TechnoClass* pThis, void* _, AbstractClass* pTarget, int weaponIndex, bool ignoreRange)
 {
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	const bool disableWeapons = pExt->AE.DisableWeapons;
-	pExt->AE.DisableWeapons = false;
-	auto const fireError = pThis->GetFireError(pTarget, weaponIndex, ignoreRange);
-	pExt->AE.DisableWeapons = disableWeapons;
-	return fireError;
+	return TechnoExt::GetFireErrorIgnoreDisableWeapons(pThis, pTarget, weaponIndex, ignoreRange);
 }
 
 DEFINE_FUNCTION_JUMP(CALL6, 0x7098E6, TechnoClass_TargetSomethingNearby_CanFire_Wrapper);

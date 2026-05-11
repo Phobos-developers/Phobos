@@ -2,6 +2,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <unordered_set>
 
 // has everything inited except SpawnNextAnim at this point
 DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
@@ -222,6 +223,12 @@ DEFINE_HOOK(0x44D074, BuildingClass_Mission_Missile_ApplyGravity, 0x6)
 
 #pragma endregion
 
+namespace ShrapnelTemp
+{
+	BuildingClass* InitialTargetBuilding = nullptr;
+	std::unordered_set<ObjectClass*> TargetsToIgnore;
+}
+
 DEFINE_HOOK(0x46A3D6, BulletClass_Shrapnel_Forced, 0xA)
 {
 	enum { Shrapnel = 0x46A40C, Skip = 0x46ADCD };
@@ -229,11 +236,22 @@ DEFINE_HOOK(0x46A3D6, BulletClass_Shrapnel_Forced, 0xA)
 	GET(BulletClass*, pThis, EDI);
 
 	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	ShrapnelTemp::InitialTargetBuilding = nullptr;
+	ShrapnelTemp::TargetsToIgnore.clear();
 
 	if (auto const pObject = pThis->GetCell()->FirstObject)
 	{
-		if (pObject->WhatAmI() != AbstractType::Building || pTypeExt->Shrapnel_AffectsBuildings)
+		auto const rtti = pObject->WhatAmI();
+
+		if (rtti != AbstractType::Building)
+		{
 			return Shrapnel;
+		}
+		else if (pTypeExt->Shrapnel_AffectsBuildings)
+		{
+			ShrapnelTemp::InitialTargetBuilding = static_cast<BuildingClass*>(pObject);
+			return Shrapnel;
+		}
 	}
 	else if (pTypeExt->Shrapnel_AffectsGround)
 	{
@@ -252,8 +270,21 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 	GET(TechnoClass*, pSource, EAX);
 	GET(WeaponTypeClass*, pShrapnelWeapon, ESI);
 
-	auto const pOwner = pSource->Owner;
 	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	bool isBuilding = pObject->WhatAmI() == AbstractType::Building;
+	bool ignorePreviouslyHit = pTypeExt->Shrapnel_IgnoreHitBuildings.Get(RulesExt::Global()->Shrapnel_IgnoreHitBuildings);
+
+	if (isBuilding)
+	{
+		// Do not fire shrapnels on the building itself if bouncing off one.
+		if (pObject == ShrapnelTemp::InitialTargetBuilding)
+			return SkipObject;
+
+		if (ignorePreviouslyHit && ShrapnelTemp::TargetsToIgnore.contains(pObject))
+			return SkipObject;
+	}
+
+	auto const pOwner = pSource->Owner;
 
 	if (pTypeExt->Shrapnel_UseWeaponTargeting)
 	{
@@ -293,6 +324,9 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 	{
 		return SkipObject;
 	}
+
+	if (isBuilding && ignorePreviouslyHit)
+		ShrapnelTemp::TargetsToIgnore.insert(pObject);
 
 	return Continue;
 }

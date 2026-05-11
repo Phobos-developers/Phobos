@@ -181,8 +181,8 @@ void Apply_Ares3_0_Patches()
 	// Redirect Ares's TechnoTypeExt::ExtData::CameoIsElite() to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3D800, &CameoIsVeteran);
 
-	// Redirect Ares's return address in ImmuneToBerserk related checks
-	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4AB37, { 0x1F, 0x1D });
+	// Remove Ares check for houses for Psychedelic=yes Warheads.
+	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4AAAA, { 0x31, 0xC0, 0x90, 0x90, 0x90, 0x90 });
 
 	// Handle select of PsyDom
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x36107, &PermaMC_FreeUnit_SetContext);
@@ -263,8 +263,8 @@ void Apply_Ares3_0p1_Patches()
 	// Redirect Ares's TechnoTypeExt::ExtData::CameoIsElite() to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3E210, &CameoIsVeteran);
 
-	// Redirect Ares's return address in ImmuneToBerserk related checks
-	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4B797, { 0x1F, 0x1D });
+	// Remove Ares check for houses for Psychedelic=yes Warheads.
+	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4B70A, { 0x31, 0xC0, 0x90, 0x90, 0x90, 0x90 });
 
 	// Handle select of PsyDom
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x36BA7, &PermaMC_FreeUnit_SetContext);

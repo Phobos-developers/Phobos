@@ -291,6 +291,8 @@ This page lists all the individual contributions to the project by their author.
   - Wall overlay unit sell exploit fix
   - Fix vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't
   - GapGen + SpySat desync fix
+  - Frame CRC generation rewrite
+  - Laser drawing Z-adjust customization
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -420,6 +422,7 @@ This page lists all the individual contributions to the project by their author.
   - Custom hover vehicles shutdown drowning death
   - SHP turret vehicles support the use of `*tur.shp` files
   - Fix a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next`
+  - `EVA.Tag` already supports being set for specific countries, and `EVAIndex` is no longer reset after load game
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -528,6 +531,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize whether transport can kept or kill passengers when driver has been killed
   - Fix a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to fire when the transport unit with `OpenTopped=yes` moved to an area that the passengers' `MovementZone` cannot move into
   - Fix a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next`
+  - Fix a bug where updating the `OpenTopped` attribute during convert did not update the coordinates of passengers
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -661,7 +665,9 @@ This page lists all the individual contributions to the project by their author.
   - Return warhead
   - `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
-- **handama** - AI script action to `16005 Jump Back To Previous Script`
+- **handama**:
+  - AI script action to `16005 Jump Back To Previous Script`
+  - Fix AI team recruitment inconsistency causing underfilled teams
 - **TaranDahl (航味麻酱)**:
   - Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode
   - Skirmish AI "gather when MCV deploy" behavior dehardcode
@@ -742,6 +748,7 @@ This page lists all the individual contributions to the project by their author.
   - Extra threat
   - Fix the incorrect mission switching in infantry EnterIdleMode
   - Fix the issue that `BombSight` not being updated correctly in techno conversion
+  - Fix BalloonHover incorrectly considering ground factors when pathfinding
   - Technos with Walk locomotor spawn wake like ship
   - Updateable firing anim
   - Fix the issue where the sidebar would not refresh when an unit dies in limbo
@@ -755,7 +762,6 @@ This page lists all the individual contributions to the project by their author.
 - **Flactine**
   - Add target filtering options to attacheffect system
   - Add veterancy-based target filtering for weapons and warheads
-  - Fix BalloonHover incorrectly considering ground factors when pathfinding
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

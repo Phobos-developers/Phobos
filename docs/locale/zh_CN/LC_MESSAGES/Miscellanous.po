@@ -428,7 +428,7 @@ msgid ""
 "The CnCNet 5 spawner uses the main loop exception handler for fixes. If "
 "you get any issues (crashes, bugs) in combination with that then please "
 "first test with the exception handler enabled."
-msgstr "CNCNet 5 启动器使用主循环异常处理程序进行修复。如果你在使用它时遇到任何问题（崩溃、错误），请先在异常处理程序开启的情况下进行测试。"
+msgstr "CnCNet 5 启动器使用主循环异常处理程序进行修复。如果你在使用它时遇到任何问题（崩溃、错误），请先在异常处理程序开启的情况下进行测试。"
 
 msgid "Player colors"
 msgstr "玩家颜色"
@@ -458,9 +458,9 @@ msgstr "例如，在原本的规则中，索引 6 将对应颜色 `Orange=25,230
 
 msgid ""
 "This feature should only be used if you use a spawner/outside client "
-"(i.e. CNCNet client). Using it in the original YR launcher will produce "
+"(i.e. CnCNet Client). Using it in the original YR launcher will produce "
 "undesireable effects."
-msgstr "此功能仅在使用 spanwer／外部客户端（例如 XNA CNCNet Client）时使用。在原本的 YR 启动器下使用会产生不良效果。"
+msgstr "此功能仅在使用 spanwer／外部客户端（例如 XNA CnCNet Client）时使用。在原本的 YR 启动器下使用会产生不良效果。"
 
 msgid ""
 "Due to technical incompatibilities, enabling this feature disables [Ares'"
