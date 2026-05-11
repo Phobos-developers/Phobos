@@ -2216,6 +2216,19 @@ namespace DamageAreaTemp
 {
 	const CellClass* CheckingCell = nullptr;
 	bool CheckingCellAlt = false;
+	bool AircraftTrackerChecked = false;
+}
+
+DEFINE_HOOK(0x489286, MapClass_DamageArea_BeforeAll, 0x6)
+{
+	DamageAreaTemp::AircraftTrackerChecked = false;
+	return 0;
+}
+
+DEFINE_HOOK(0x4893C3, MapClass_DamageArea_DamageAir, 0x6)
+{
+	DamageAreaTemp::AircraftTrackerChecked = true;
+	return 0;
 }
 
 // Skip useless alt check, so it will only start checking from the cell's FirstObject
@@ -2327,17 +2340,24 @@ DEFINE_HOOK(0x489E47, DamageArea_RockerItemsFix2, 0x6)
 	return 0;
 }
 
-#pragma endregion
-
+// https://github.com/Phobos-developers/Phobos/pull/2146
 DEFINE_HOOK(0x489710, MapClass_DamageArea_LowAirFix, 0x7)
 {
 	enum { GoNextObject = 0x4899B3 };
 
-	GET(ObjectClass*, pObject, ESI);
-	const auto pTechno = abstract_cast<TechnoClass*, true>(pObject);
+	if (DamageAreaTemp::AircraftTrackerChecked) // have we checked AircraftTracker ?
+	{
+		GET(ObjectClass*, pObject, ESI);
+		const auto pTechno = abstract_cast<TechnoClass*, true>(pObject);
 
-	return pTechno && pTechno->GetLastFlightMapCoords() != CellStruct::Empty /* this means it is in AircraftTracker */ ? GoNextObject : 0;
+		if (pTechno && pTechno->GetLastFlightMapCoords() != CellStruct::Empty) // this means it is in AircraftTracker
+			return GoNextObject;
+	}
+
+	return 0;
 }
+
+#pragma endregion
 
 DEFINE_HOOK(0x71A7BC, TemporalClass_Update_DistCheck, 0x6)
 {
