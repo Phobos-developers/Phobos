@@ -2329,38 +2329,15 @@ DEFINE_HOOK(0x489E47, DamageArea_RockerItemsFix2, 0x6)
 
 #pragma endregion
 
-#pragma region Low Air Damage Fix
-
-namespace DamageArea_LowAirDamageTemp
-{
-	std::unordered_set<ObjectClass*> Scanned;
-}
-
-DEFINE_HOOK(0x4894B6, MapClass_DamageArea_AirTechno_Record, 0x5)
-{
-	GET(TechnoClass*, pAirTechno, EBX);
-
-	DamageArea_LowAirDamageTemp::Scanned.emplace(pAirTechno);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x489767, MapClass_DamageArea_CheckScanned, 0x6)
+DEFINE_HOOK(0x4898A7, MapClass_DamageArea_LowAirFix, 0x9)
 {
 	enum { GoNextObject = 0x4899B3 };
 
 	GET(ObjectClass*, pObject, ESI);
+	const auto pTechno = abstract_cast<TechnoClass*, true>(pObject);
 
-	return DamageArea_LowAirDamageTemp::Scanned.contains(pObject) ? GoNextObject : 0;
+	return pTechno && pTechno->GetLastFlightMapCoords() != CellStruct::Empty /* this means it is in AircraftTracker */ ? GoNextObject : 0;
 }
-
-DEFINE_HOOK(0x4899DA, MapClass_DamageArea_ClearScanned, 0x7)
-{
-	DamageArea_LowAirDamageTemp::Scanned.clear();
-	return 0;
-}
-
-#pragma endregion
 
 DEFINE_HOOK(0x71A7BC, TemporalClass_Update_DistCheck, 0x6)
 {
