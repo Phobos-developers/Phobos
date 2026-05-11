@@ -187,7 +187,7 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 			if (pBuildingType && (!BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.empty() || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))
 				return BuildingTypeExt::GetUpgradesAmount(pBuildingType, pHouse) > 0;
 
-			return pHouse->CountOwnedAndPresent(pType) > 0;
+			return HouseExt::ExtMap.Find(pHouse)->CountOwnedPresentAndLimboed(pType) > 0;
 		};
 
 	// check whether the optional aux building exists
