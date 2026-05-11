@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-02 10:26+0800\n"
+"POT-Creation-Date: 2026-05-08 21:24+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -869,6 +869,13 @@ msgstr "修复了伪装成树的载具错误显示出军衔（能打人的精英
 msgid "GapGen + SpySat desync fix"
 msgstr "裂缝产生器和间谍卫星的不同步修复"
 
+msgid "Frame CRC generation rewrite"
+msgstr "重写帧 CRC 生成"
+
+msgid "Laser drawing Z-adjust customization"
+msgstr ""
+"自定义激光绘制的 Z 深校正值"
+
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
 
@@ -1299,6 +1306,11 @@ msgid ""
 msgstr ""
 "修复了有 `AlphaImage` 的单位转换为无 AlphaImage 的类型，或有 `AlphaImage` 的动画通过 `Next` "
 "更改为无 AlphaImage 的类型后读档会导致游戏崩溃的 Bug"
+
+msgid ""
+"`EVA.Tag` already supports being set for specific countries, and "
+"`EVAIndex` is no longer reset after load game"
+msgstr "`EVA.Tag` 已经支持在国家层面设置并且 `EVAIndex` 不再在读档后重置"
 
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："
@@ -1744,8 +1756,7 @@ msgstr ""
 msgid ""
 "Fix a bug where updating the `OpenTopped` attribute during convert did "
 "not update the coordinates of passengers"
-msgstr ""
-"修复了类型转换会更新 `OpenTopped` 属性却不更新乘客坐标的 Bug"
+msgstr "修复了类型转换会更新 `OpenTopped` 属性却不更新乘客坐标的 Bug"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
@@ -2181,8 +2192,14 @@ msgstr "`ElectricAssault` 武器现在可以自动索敌盟友的可过载防御
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
 
-msgid "**handama** - AI script action to `16005 Jump Back To Previous Script`"
-msgstr "**handama** - AI 动作脚本 `16005 跳回上一个脚本`"
+msgid "**handama**:"
+msgstr "**handama**："
+
+msgid "AI script action to `16005 Jump Back To Previous Script`"
+msgstr "AI 动作脚本 `16005 跳回上一个脚本`"
+
+msgid "Fix AI team recruitment inconsistency causing underfilled teams"
+msgstr "修复了 AI 小队招募数量与生产计划不一致导致不足以建立小队的问题"
 
 msgid "**TaranDahl (航味麻酱)**:"
 msgstr "**TaranDahl (航味麻酱)**："
@@ -2481,6 +2498,9 @@ msgid ""
 "conversion"
 msgstr "修复了单位的 `BombSight` 在类型转换时不会被正确更新的问题"
 
+msgid "Fix BalloonHover incorrectly considering ground factors when pathfinding"
+msgstr "修复了 BalloonHover 寻路时错误考虑了地面因素的问题"
+
 msgid "Technos with Walk locomotor spawn wake like ship"
 msgstr "使用 Walk 运动模式的单位像船只一样生成水波"
 
@@ -2507,8 +2527,7 @@ msgid ""
 msgstr "修复了处于 `Area Guard` 任务中的单位消灭目标后重新获取目标所用时间明显长于其他任务的问题"
 
 msgid "Framework for dynamic sight"
-msgstr ""
-"动态视野框架"
+msgstr "动态视野框架"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
@@ -2527,9 +2546,6 @@ msgstr "为 AE 系统添加目标过滤选项"
 
 msgid "Add veterancy-based target filtering for weapons and warheads"
 msgstr "为武器和弹头添加基于经验等级的目标过滤"
-
-msgid "Fix BalloonHover incorrectly considering ground factors when pathfinding"
-msgstr "修复了 BalloonHover 寻路时错误考虑了地面因素的问题"
 
 msgid "**tyuah8**:"
 msgstr "**tyuah8**："

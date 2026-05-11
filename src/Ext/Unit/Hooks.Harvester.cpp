@@ -68,24 +68,6 @@ DEFINE_HOOK(0x74613C, UnitClass_INoticeSink_CheckJumpjetHarvester, 0x6)
 
 #pragma endregion
 
-DEFINE_HOOK(0x73E411, UnitClass_Mission_Unload_DumpAmount, 0x7)
-{
-	enum { SkipGameCode = 0x73E41D };
-
-	GET(UnitClass*, pThis, ESI);
-	GET(const int, tiberiumIdx, EBP);
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-	const float totalAmount = pThis->Tiberium.GetAmount(tiberiumIdx);
-	float dumpAmount = pTypeExt->HarvesterDumpAmount.Get(RulesExt::Global()->HarvesterDumpAmount);
-
-	if (dumpAmount <= 0.0f || totalAmount < dumpAmount)
-		dumpAmount = totalAmount;
-
-	__asm fld dumpAmount;
-
-	return SkipGameCode;
-}
-
 DEFINE_HOOK(0x4D6D34, FootClass_MissionAreaGuard_Miner, 0x5)
 {
 	enum { GoGuardArea = 0x4D6D69 };
@@ -112,6 +94,36 @@ DEFINE_HOOK(0x73D5D5, UnitClass_Harvesting_HarvesterLoadRate, 6)
 	R->EAX(pTypeExt->HarvesterLoadRate.Get(RulesClass::Instance->HarvesterLoadRate));
 
 	return R->Origin() == 0x73D508 ? 0x73D50E : 0x73D5DB;
+}
+
+DEFINE_HOOK(0x73E361, UnitClass_Harvesting_HarvesterDumpRate, 6)
+{
+	GET(UnitClass* const, pThis, ESI);
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+
+	double dumpRate = pTypeExt->HarvesterDumpRate.Get(RulesClass::Instance->HarvesterDumpRate);
+
+	__asm { fld dumpRate }
+
+	return 0x73E367;
+}
+
+DEFINE_HOOK(0x73E411, UnitClass_Mission_Unload_DumpAmount, 0x7)
+{
+	enum { SkipGameCode = 0x73E41D };
+
+	GET(UnitClass*, pThis, ESI);
+	GET(const int, tiberiumIdx, EBP);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	const float totalAmount = pThis->Tiberium.GetAmount(tiberiumIdx);
+	float dumpAmount = pTypeExt->HarvesterDumpAmount.Get(RulesExt::Global()->HarvesterDumpAmount);
+
+	if (dumpAmount <= 0.0f || totalAmount < dumpAmount)
+		dumpAmount = totalAmount;
+
+	__asm fld dumpAmount;
+
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x73E951, UnitClass_Harvest_HarvesterLoadRate, 6)
