@@ -116,6 +116,7 @@ public:
 		Valueable<int> PowerSurplus_ScaleToDrainAmount;
 
 		Valueable<bool> DisplayIncome;
+		Valueable<int> DisplayIncome_Delay;
 		Valueable<bool> DisplayIncome_AllowAI;
 		Valueable<AffectedHouse> DisplayIncome_Houses;
 
@@ -457,6 +458,7 @@ public:
 			, ToolTip_Background_Opacity { 100 }
 			, ToolTip_Background_BlurSize { 0.0f }
 			, DisplayIncome { false }
+			, DisplayIncome_Delay { 15 }
 			, DisplayIncome_AllowAI { true }
 			, DisplayIncome_Houses { AffectedHouse::All }
 			, DrainMoneyDisplay { false }

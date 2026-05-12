@@ -2158,6 +2158,16 @@ HarvesterDumpAmount=0.0               ; floating point value
 HarvesterDumpAmount=                  ; floating point value
 ```
 
+### Customize `HarvesterDumpRate`
+
+- Now `HarvesterDumpRate` can be customized on each unit.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                         ; VehicleType
+HarvesterDumpRate=                    ; floating point value, default to [General] -> HarvesterDumpRate
+```
+
 ### Customize `HarvesterLoadRate`
 
 - Now `HarvesterLoadRate` can be customized on each unit.
@@ -2758,7 +2768,7 @@ Due to technical constraints, these features do not work with electric bolts cre
 
 ### Laser Z-adjust
 
-- It is now possible to change the Z-adjust for weapon laser drawing via `LaserZAdjust` per weapon, defaults to `[AudioVisual]` -> `LaserZAdjust`. Note that this is not available on prism support weapons.
+- It is now possible to change the Z-adjust for weapon laser drawing via `LaserZAdjust` per weapon, defaults to `[AudioVisual] -> LaserZAdjust`. Note that this is not available on prism support weapons.
 
 In `rulesmd.ini`:
 ```ini
@@ -2766,7 +2776,7 @@ In `rulesmd.ini`:
 LaserZAdjust=0  ; integer
 
 [SOMEWEAPON]    ; WeaponType
-LaserZAdjust=  ; integer
+LaserZAdjust=   ; integer
 ```
 
 ### Single-color lasers
