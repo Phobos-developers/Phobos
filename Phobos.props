@@ -74,7 +74,11 @@
       <PreprocessorDefinitions>IS_RELEASE_VER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Optimization>MaxSpeed</Optimization>
       <OmitFramePointers>true</OmitFramePointers>
+      <!-- <WholeProgramOptimization>true</WholeProgramOptimization> -->
     </ClCompile>
+    <Link>
+      <!-- <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration> -->
+    </Link>
     <ResourceCompile>
       <PreprocessorDefinitions>IS_RELEASE_VER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
@@ -84,7 +88,11 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <OmitFramePointers>true</OmitFramePointers>
+      <!-- <WholeProgramOptimization>true</WholeProgramOptimization> -->
     </ClCompile>
+    <Link>
+      <!-- <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration> -->
+    </Link>
   </ItemDefinitionGroup>
   <!-- Debug -->
   <ItemDefinitionGroup Condition="$(Configuration.Contains('Debug'))">
