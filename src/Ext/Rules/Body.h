@@ -145,6 +145,8 @@ public:
 		Valueable<int> AirstrikeLineZAdjust;
 
 		Valueable<int> LaserZAdjust;
+		Valueable<int> EBoltZAdjust;
+		Valueable<bool> EBoltZAdjust_ClampInitialDepthForBuilding;
 
 		Valueable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<ColorStruct> ToolTip_Background_Color;
@@ -453,6 +455,8 @@ public:
 			, AirstrikeLineColor { { 255, 0, 0 } }
 			, AirstrikeLineZAdjust { 0 }
 			, LaserZAdjust { 0 }
+			, EBoltZAdjust { 0 }
+			, EBoltZAdjust_ClampInitialDepthForBuilding { true }
 			, ROF_RandomDelay { { 0 ,2 } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }

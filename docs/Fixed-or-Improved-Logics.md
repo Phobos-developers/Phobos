@@ -2766,6 +2766,23 @@ Bolt.FollowFLH=        ; boolean
 Due to technical constraints, these features do not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html) or those from `AirburstWeapon`.
 ```
 
+### Electric bolt Z-adjust
+
+- It is now possible to change the Z-adjust for weapon EBolt drawing via `EBoltZAdjust` per weapon.
+- In vanilla, the EBolt effect fired by BuildingType takes `min(the Z-depth obtained from coordinate transformation, 0)`, this is to ensure that the EBolt effect is not blocked by other images such as tiles in some cases, and now this processing can be turned off to meet some specific needs.
+  - This only determines whether the Z-depth of the EBolt effect created by BuildingType can be positive; `EBoltZAdjust` can always be normally added to it.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+EBoltZAdjust=0                                  ; integer
+EBoltZAdjust.ClampInitialDepthForBuilding=true  ; boolean
+
+[SOMEWEAPON]                                    ; WeaponType
+EBoltZAdjust=                                   ; integer, defaults to [AudioVisual] -> EBoltZAdjust
+EBoltZAdjust.ClampInitialDepthForBuilding=      ; boolean, defaults to [AudioVisual] -> EBoltZAdjust.ClampInitialDepthForBuilding
+```
+
 ### Laser Z-adjust
 
 - It is now possible to change the Z-adjust for weapon laser drawing via `LaserZAdjust` per weapon, defaults to `[AudioVisual] -> LaserZAdjust`. Note that this is not available on prism support weapons.

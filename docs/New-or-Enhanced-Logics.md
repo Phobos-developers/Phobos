@@ -270,6 +270,7 @@ Bolt.Color2=                     ; integer - Red,Green,Blue
 Bolt.Disable2=false              ; boolean
 Bolt.Color3=                     ; integer - Red,Green,Blue
 Bolt.Disable3=false              ; boolean
+Bolt.ZAdjust=0                   ; integer
 ; radbeam
 Beam.Color=                      ; integer - Red,Green,Blue
 Beam.Amplitude=40.0              ; floating point value

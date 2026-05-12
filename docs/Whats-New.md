@@ -578,6 +578,9 @@ New:
 - [Laser drawing Z-adjust customization](Fixed-or-Improved-Logics.md#laser-z-adjust) (by Starkku)
 - Customize `HarvesterDumpRate` (by Noble_Fish)
 - Allow users to define the time interval of `DisplayIncome` (by Noble_Fish)
+- [Electric bolt Z-adjust](Fixed-or-Improved-Logics.md#electric-bolt-z-adjust) (by Noble_Fish)
+- Allow disabling the processing of the Z-depth of EBolt drawn by BuildingType being clamped to non-positive numbers (by Noble_Fish)
+- Add the `Bolt.ZAdjust` setting item to the LaserTrailType with `DrawType=ebolt` (by Noble_Fish)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
