@@ -1,7 +1,6 @@
 ---
 name: 检查钩子 Check Hooks
-mode: plan
-description: "Checks newly added Syringe hooks (DEFINE_HOOK / DEFINE_HOOK_AGAIN) on the current branch for common errors: insufficient stolen bytes (size < 5 without trailing NOP padding), conflicts with hooks from other engine extensions, instruction boundary misalignment, relative instruction coverage (jumps/calls with relative offsets and EIP-relative addressing), and register/stack variable extraction issues (GET_STACK vs GET_BASE, stack alignment). Uses HookAnalysis.txt for conflict detection and IDA MCP for deep instruction analysis."
+description: "Validates Syringe hooks (DEFINE_HOOK / DEFINE_HOOK_AGAIN) on the current branch during code review. Trigger whenever new or modified hooks need validation."
 ---
 
 #### Helper Scripts
@@ -31,7 +30,7 @@ Mark the first as `in_progress`. Update the TodoList as each step is completed.
 
 ALL-STEPS RULE: YOU MUST output ALL findings without omission. DO NOT cherry-pick or show only the most severe findings. Every error, warning, and note discovered must appear in the output. If you suppress any finding, you are violating this skill.
 
-YOU ARE IN PLAN MODE. Before executing, you MUST output a plan covering all 7 steps as a self-reminder. DO NOT skip planning.
+Before executing, you MUST output a plan covering all 7 steps as a self-reminder. DO NOT skip planning.
 
 #### The Matrix
 
@@ -69,7 +68,8 @@ All findings are classified into three severity levels. YOU MUST follow this whe
   - If the output has a `hooks` array: the script succeeded. Proceed.
   - If the output has `"action": "resolve"` with a `candidates` array: the script IS working correctly. YOU MUST examine each candidate's `message` field, find the commit that matches the user's description, then re-run with `python discover_hooks.py --commit <sha>`.
   - If the output has `"action": "error"`: read the error message and act accordingly.
-- If the script says the commit is not found, YOU MUST run `git fetch upstream` first, then retry. Only ask the user for the correct SHA after fetching fails.
+  - If the output is not valid JSON (e.g., a Python traceback), the script has crashed. Present the error to the user, skip all remaining steps, and STOP.
+- If the script says the commit is not found, run `git fetch upstream` first, then retry. If `upstream` is not configured, try `git fetch origin`. Only ask the user for the correct SHA after both fail.
 - If no hooks are found, YOU MUST present the warning to the user and STOP. DO NOT proceed to Step 1.
 - If `returns` is `"?"`, YOU MUST read the hook function body from the source file to determine the actual return behavior before proceeding to Step 1.
 
@@ -95,10 +95,10 @@ After completing Step 0, YOU MUST build the empty matrix and output it:
 - Hooks discovered: <count> — <names>
 
 Matrix (empty, awaiting checks):
-| Hook | Address | P0 (size) | P1 (conflict) | P2 (boundary) | P3 (variable) | P4 (relative) |
-|------|---------|-----------|---------------|---------------|---------------|---------------|
-| A    | 0x...   | ?         | ?             | ?             | ?             | ?             |
-| B    | 0x...   | ?         | ?             | ?             | ?             | ?             |
+| Hook | Address | P0 | P1 | P2 | P3 | P4 |
+|------|---------|----|----|----|----|----|
+| A    | 0x...   | ?   | ?   | ?   | ?   | ?   |
+| B    | 0x...   | ?   | ?   | ?   | ?   | ?   |
 ```
 
 Then mark the TodoList item as complete and move to Step 1. From this point on, the matrix is your progress tracker — refer to it before and after each step.
@@ -119,6 +119,7 @@ Then mark the TodoList item as complete and move to Step 1. From this point on, 
   ```
 - If `returns` was `"?"` in Step 0 and you determined the actual value: fix it in the JSON before piping, or save the corrected JSON to a temp file and pass it as a file argument.
 - YOU MUST examine the JSON output of `check_hook_conflicts.py`. The `errors` array contains issues that need fixing. The `notes` array contains informational items.
+  - If the output is not valid JSON (e.g., a Python traceback), the script has crashed. Present the error to the user, skip all remaining steps, and STOP.
 - DO NOT silently ignore any error. For each error, present it to the user using the exact format below.
 - For Problem 0 (size < 5) findings: NOP padding verification is deferred to Step 2 (after IDA MCP check). Present the finding as either a tentative error or a note based on whether verification has been done. Update the matrix P0 cell in Step 1 as `?` with a note that NOP verification is pending.
 
@@ -172,10 +173,10 @@ After completing Step 1, YOU MUST output the summary AND the updated matrix with
 - Stacked hooks (warning): <count>
 
 Updated matrix (P0 tentative, P1 filled):
-| Hook | Address | P0 (size) | P1 (conflict) | P2 (boundary) | P3 (variable) | P4 (relative) |
-|------|---------|-----------|---------------|---------------|---------------|---------------|
-| A    | 0x...   | ?         | ❌            | ?             | ?             | ?             |
-| B    | 0x...   | ?         | ✓             | ?             | ?             | ?             |
+| Hook | Address | P0 | P1 | P2 | P3 | P4 |
+|------|---------|----|----|----|----|----|
+| A    | 0x...   | ?  | ❌ | ?  | ?  | ?  |
+| B    | 0x...   | ?  | ✓  | ?  | ?  | ?  |
 ```
 
 Then mark the TodoList item as complete and move to Step 2.
@@ -197,7 +198,7 @@ Then mark the TodoList item as complete and move to Step 2.
   - YOU MUST mark P2, P3, P4 columns as `—` (skipped) for ALL hooks in the matrix.
   - **For each tentative Problem 0 finding**: downgrade from potential error to `⚠️` (cannot verify NOP padding without IDA MCP). State this explicitly.
   - YOU MUST output the reason.
-  - Steps 3-5 will still execute but with no work to do.
+  - Steps 3-5 will be checked but immediately marked as completed with `—` for all hooks.
   - DO NOT silently skip this step.
 
 ### OUTPUT REQUIREMENT
@@ -214,12 +215,12 @@ After completing Step 2, YOU MUST output:
   - Downgraded to warning (IDA unavailable): <count>
 
 Updated matrix (P0 verified, P2-P4 status determined):
-| Hook | Address | P0 (size) | P1 (conflict) | P2 (boundary) | P3 (variable) | P4 (relative) |
-|------|---------|-----------|---------------|---------------|---------------|---------------|
-| A    | 0x...   | ✓         | ❌            | ? / —         | ? / —         | ? / —         |
-| B    | 0x...   | ℹ️        | ✓             | ? / —         | ? / —         | ? / —         |
-| C    | 0x...   | ❌        | ✓             | ? / —         | ? / —         | ? / —         |
-| D    | 0x...   | ⚠️        | ✓             | —             | —             | —             |
+| Hook | Address | P0 | P1 | P2 | P3 | P4 |
+|------|---------|----|----|----|----|----|
+| A    | 0x...   | ✓  | ❌ | ?  | ?  | ?  |
+| B    | 0x...   | ℹ️ | ✓  | ?  | ?  | ?  |
+| C    | 0x...   | ❌ | ✓  | ?  | ?  | ?  |
+| D    | 0x...   | ⚠️ | ✓  | —  | —  | —  |
 ```
 
 If IDA MCP is available, the P2-P4 cells remain `?` (to be filled in Steps 3-5). If unavailable, they are `—`.
@@ -233,6 +234,7 @@ Then mark the TodoList item as complete and move to Step 3.
 ### RULES
 
 - If IDA MCP was unavailable in Step 2, YOU MUST skip the checks below (P2 column is already `—`).
+- If an individual `mcp_ida-pro-mcp_disasm` call fails for a specific hook, mark that hook's P2 cell as `—` (skipped due to MCP error), add a note in the findings, and continue with the remaining hooks.
 - YOU MUST fill the P2 column for every hook. DO NOT skip any hook.
 
 ### Check
@@ -283,6 +285,7 @@ Then mark the TodoList item as complete and move to Step 4.
 ### RULES
 
 - If IDA MCP was unavailable in Step 2, YOU MUST skip the checks below (P3 column is already `—`).
+- If an individual IDA MCP call fails for a specific hook, mark that hook's P3 cell as `—` (skipped due to MCP error), add a note in the findings, and continue with the remaining hooks.
 - YOU MUST fill the P3 column for every hook. DO NOT skip any hook.
 - P3 has sub-checks 3a–3e. The matrix cell shows the worst severity across all sub-checks.
 
@@ -403,6 +406,7 @@ Then mark the TodoList item as complete and move to Step 5.
 ### RULES
 
 - If IDA MCP was unavailable in Step 2, YOU MUST skip the checks below (P4 column is already `—`).
+- If an individual IDA MCP call fails for a specific hook, mark that hook's P4 cell as `—` (skipped due to MCP error), add a note in the findings, and continue with the remaining hooks.
 - YOU MUST fill the P4 column for every hook. DO NOT skip any hook.
 
 ### Check
@@ -514,3 +518,200 @@ Total hooks checked: <N>
 ```
 
 Then mark the TodoList item as complete.
+
+---
+
+## Appendix: Complete run example
+
+This appendix shows the full output of a real hook check from end to end, using commit `47b471302 Add customization for laser Z-adjust`.
+
+### Step 0
+
+```
+$ python discover_hooks.py --commit 47b471302
+{
+  "mode": "commit",
+  "description": "commit 47b471302",
+  "count": 1,
+  "hooks": [
+    {
+      "address": "0x6FD3FD",
+      "name": "TechnoClass_LaserZap_ZAdjust",
+      "size": 5,
+      "file": "src/Misc/Hooks.LaserDraw.cpp",
+      "returns": "0"
+    }
+  ]
+}
+```
+
+```
+[Step 0 Complete]
+- Mode used: A (commit 47b471302)
+- Hooks discovered: 1 — TechnoClass_LaserZap_ZAdjust
+
+Matrix (empty, awaiting checks):
+| Hook | Address | P0 | P1 | P2 | P3 | P4 |
+|------|---------|----|----|----|----|----|
+| TechnoClass_LaserZap_ZAdjust | 0x6FD3FD | ?  | ?  | ?  | ?  | ?  |
+```
+
+### Step 1
+
+```
+$ python discover_hooks.py --commit 47b471302 --json-only | python check_hook_conflicts.py
+{
+  "errors": [],
+  "notes": [
+    {
+      "problem": "Problem 1",
+      "hook": "TechnoClass_LaserZap_ZAdjust",
+      "address": "0x6FD3FD",
+      "type": "ok",
+      "message": "No conflicts detected for hook 'TechnoClass_LaserZap_ZAdjust' at 0x6FD3FD."
+    }
+  ]
+}
+```
+
+✓ No conflicts for hook `TechnoClass_LaserZap_ZAdjust`.
+
+```
+[Step 1 Complete]
+- Hooks checked: 1
+- Problem 0 tentative errors (pending NOP verification): 0
+- Problem 1 conflicts (overlap): 0
+- Problem 1 conflicts (return): 0
+- Stacked hooks (warning): 0
+
+Updated matrix (P0 tentative, P1 filled):
+| Hook | Address | P0 | P1 | P2 | P3 | P4 |
+|------|---------|----|----|----|----|----|
+| TechnoClass_LaserZap_ZAdjust | 0x6FD3FD | ?  | ✓  | ?  | ?  | ?  |
+```
+
+### Step 2
+
+IDA MCP health check: **pass**
+Module: `gamemd.exe` — loaded
+
+Hook size is 5 (exactly the JMP instruction size). No NOP padding verification needed.
+
+P0 cell: ✓ (size >= 5)
+
+```
+[Step 2 Complete]
+- IDA MCP health check: pass
+- gamemd.exe loaded: yes
+- NOP padding verification: N/A (size = 5)
+
+Updated matrix (P0 verified, P2-P4 status determined):
+| Hook | Address | P0 | P1 | P2 | P3 | P4 |
+|------|---------|----|----|----|----|----|
+| TechnoClass_LaserZap_ZAdjust | 0x6FD3FD | ✓  | ✓  | ?  | ?  | ?  |
+```
+
+### Step 3
+
+Disassembly at hook address `0x6FD3FD` (inside `TechnoClass::CreateLaser`):
+
+```
+6fd3fd  push    eax             ; 1 byte → [0x6FD3FD, 0x6FD3FE)
+6fd3fe  mov     eax, [esp+70h]  ; 4 bytes → [0x6FD3FE, 0x6FD402)
+```
+
+- Hook address `0x6FD3FD` is at `push eax` start → ✓ instruction boundary
+- `addr + size = 0x6FD402` → next instruction is `sub esp, 0Ch` → ✓ instruction boundary
+- Returns `"0"` (no fixed return address) → skip return address boundary check
+
+✓ No instruction boundary issues.
+
+```
+[Step 3 Complete]
+- Hooks checked: 1
+- Problem 2 errors: 0
+
+Updated matrix (P2 filled):
+| Hook | Address | P0 | P1 | P2 | P3 | P4 |
+|------|---------|----|----|----|----|----|
+| TechnoClass_LaserZap_ZAdjust | 0x6FD3FD | ✓  | ✓  | ✓  | ?  | ?  |
+```
+
+### Step 4
+
+Source code of the hook body:
+
+```cpp
+GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x6C, 0xC));
+GET(int, zAdjust, EAX);
+zAdjust += WeaponTypeExt::ExtMap.Find(pWeapon)->LaserZAdjust.Get(
+    RulesExt::Global()->LaserZAdjust);
+R->EAX(zAdjust);
+```
+
+**4a — Register extraction (GET):** EAX holds the zAdjust value at hook point (confirmed by `push eax; zAdjust`). ✓
+
+**4b — Stack variable extraction (GET_STACK):** `STACK_OFFSET(0x6C, 0xC) = 0x78`. At hook point, ESP = ESP_entry - 8 (after 2 preceding pushes). The resolved offset `ESP + 0x78 = ESP_entry + 0x70` maps to `pWeapon`, which is at `[EBP + 0x5C]` in IDA's stack frame. ✓
+
+**4c — GET_STACK vs GET_BASE:** Function has no stack alignment (`and esp, ...` not found). No EBP frame pointer set up. `GET_STACK` via ESP is the correct approach. ✓
+
+**4d — Register writes:** `R->EAX(zAdjust)` writes the modified zAdjust back to EAX. The trampoline then executes `push eax`, pushing the corrected value. ✓
+
+**4e — Stack depth balance:** Hook returns `"0"` (R->Origin() → trampoline). No fixed return address to compare spd against. ✓ (skipped)
+
+✓ All variable extraction and stack access checks passed.
+
+```
+[Step 4 Complete]
+- Hooks checked: 1
+- Problem 3a errors (register extraction): 0
+- Problem 3b errors (stack variable extraction): 0
+- Problem 3c errors (GET_STACK vs GET_BASE): 0
+- Problem 3d errors (register writes): 0
+- Problem 3e errors (stack depth imbalance): 0
+
+Updated matrix (P3 filled):
+| Hook | Address | P0 | P1 | P2 | P3 | P4 |
+|------|---------|----|----|----|----|----|
+| TechnoClass_LaserZap_ZAdjust | 0x6FD3FD | ✓  | ✓  | ✓  | ✓  | ?  |
+```
+
+### Step 5
+
+Disassembly of stolen bytes `[0x6FD3FD, 0x6FD402)`:
+
+```
+6fd3fd  push    eax             ; opcode 50 — not relative
+6fd3fe  mov     eax, [esp+70h]  ; ESP-relative, not EIP-relative
+```
+
+No relative jump/call or EIP-relative addressing found. Hook returns `"0"` — safe because no relative instructions are covered.
+
+✓ No relative instruction issues.
+
+```
+[Step 5 Complete]
+- Hooks checked: 1
+- Problem 4 errors (relative instruction): 0
+
+Updated matrix (P4 filled — matrix now complete):
+| Hook | Address | P0 | P1 | P2 | P3 | P4 |
+|------|---------|----|----|----|----|----|
+| TechnoClass_LaserZap_ZAdjust | 0x6FD3FD | ✓  | ✓  | ✓  | ✓  | ✓  |
+```
+
+### Step 6 — Final summary
+
+```
+========================================
+  Check Hooks Summary
+========================================
+Total hooks checked: 1
+
+| Hook | Address | P0 | P1 | P2 | P3 | P4 |
+|------|---------|----|----|----|----|----|
+| TechnoClass_LaserZap_ZAdjust | 0x6FD3FD | ✓  | ✓  | ✓  | ✓  | ✓  |
+
+✅ All checks passed. No issues found with the new hooks.
+========================================
+```
