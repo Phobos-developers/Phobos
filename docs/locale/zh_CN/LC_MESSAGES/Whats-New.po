@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-10 21:11+0800\n"
+"POT-Creation-Date: 2026-05-12 23:33+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1893,6 +1893,14 @@ msgid ""
 "Logics.md#laser-z-adjust) (by Starkku)"
 msgstr "[自定义激光绘制的 Z 深校正值](Fixed-or-Improved-Logics.md#laser-z-adjust)（by Starkku）"
 
+msgid ""
+"[Customize `HarvesterDumpRate`](Fixed-or-Improved-Logics.md#customize-"
+"harvesterdumprate) (by Noble_Fish)"
+msgstr ""
+
+msgid "Allow users to define the time interval of `DisplayIncome` (by Noble_Fish)"
+msgstr ""
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
@@ -2561,8 +2569,7 @@ msgstr "现有有 `DisableWeapons=true` 的 AE 会使 `Gattling=yes` 的速率�
 msgid ""
 "Fixed cells with `CanBeBuiltOn=true` TerrainTypes on them not being "
 "considered valid build locations by AI (by Starkku)"
-msgstr ""
-"修复了 AI 不把有 `CanBeBuiltOn=true` 地形对象的单元格视为可建造位置的问题（by Starkku）"
+msgstr "修复了 AI 不把有 `CanBeBuiltOn=true` 地形对象的单元格视为可建造位置的问题（by Starkku）"
 
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
