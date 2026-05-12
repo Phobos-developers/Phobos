@@ -1897,6 +1897,8 @@ msgid ""
 "[Customize `HarvesterDumpRate`](Fixed-or-Improved-Logics.md#customize-"
 "harvesterdumprate) (by Noble_Fish)"
 msgstr ""
+"[自定义 `HarvesterDumpRate`](Fixed-or-Improved-Logics.md#customize-"
+"harvesterdumprate)（by Noble_Fish）"
 
 msgid "Allow users to define the time interval of `DisplayIncome` (by Noble_Fish)"
 msgstr ""
