@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check new hooks against existing hooks in HookAnalysis.log for conflicts.
+"""Check new hooks against existing hooks in HookAnalysis.txt for conflicts.
 
 Usage:
   python check_hook_conflicts.py <new_hooks_json>
@@ -27,7 +27,7 @@ if _script_dir not in sys.path:
     sys.path.insert(0, _script_dir)
 
 def parse_existing_hooks(log_path):
-    """Parse HookAnalysis.log and return list of existing hook dicts."""
+    """Parse HookAnalysis.txt and return list of existing hook dicts."""
     import parse_hook_log
     return parse_hook_log.parse_hook_log(log_path)
 
@@ -120,7 +120,7 @@ def check_hooks(new_hooks, existing_hooks):
                 found_conflict = True
 
             # Check return address
-            if ret_addr is not None:
+            if ret_addr is not None and ret_addr != addr_int:
                 if e_range_start <= ret_addr < e_range_end:
                     errors.append({
                         'problem': 'Problem 1',
@@ -163,7 +163,7 @@ def main():
                 new_hooks = json.load(f)
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    log_path = os.path.join(script_dir, 'HookAnalysis.log')
+    log_path = os.path.join(script_dir, 'HookAnalysis.txt')
     existing_hooks = parse_existing_hooks(log_path)
 
     results = check_hooks(new_hooks, existing_hooks)

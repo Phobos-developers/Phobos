@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Parse HookAnalysis.log and output JSON with all hooks."""
+"""Parse HookAnalysis.txt and output JSON with all hooks."""
 import re
 import json
 import sys
 import os
 
 def parse_hook_log(filepath):
-    with open(filepath, 'r', encoding='gbk', errors='replace') as f:
+    with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
         lines = f.readlines()
 
     hooks = []
@@ -70,7 +70,7 @@ def _make_hook(addr, name, dll, size, priority):
 
 def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    filepath = os.path.join(script_dir, 'HookAnalysis.log')
+    filepath = os.path.join(script_dir, 'HookAnalysis.txt')
     hooks = parse_hook_log(filepath)
 
     # Output as JSON

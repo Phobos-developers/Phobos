@@ -1,7 +1,7 @@
 ---
 name: 检查钩子 Check Hooks
 mode: plan
-description: "Checks newly added Syringe hooks (DEFINE_HOOK / DEFINE_HOOK_AGAIN) on the current branch for common errors: insufficient size (< 5 bytes), conflicts with hooks from other engine extensions, instruction boundary misalignment, relative instruction coverage (jumps/calls with relative offsets and RIP-relative addressing), and register/stack variable extraction issues (GET_STACK vs GET_BASE, stack alignment). Uses HookAnalysis.log for conflict detection and IDA MCP for deep instruction analysis."
+description: "Checks newly added Syringe hooks (DEFINE_HOOK / DEFINE_HOOK_AGAIN) on the current branch for common errors: insufficient stolen bytes (size < 5 without trailing NOP padding), conflicts with hooks from other engine extensions, instruction boundary misalignment, relative instruction coverage (jumps/calls with relative offsets and EIP-relative addressing), and register/stack variable extraction issues (GET_STACK vs GET_BASE, stack alignment). Uses HookAnalysis.txt for conflict detection and IDA MCP for deep instruction analysis."
 ---
 
 #### Helper Scripts
@@ -11,9 +11,9 @@ YOU MUST use these scripts. DO NOT reimplement parsing logic.
 | Script | Purpose |
 |--------|---------|
 | `discover_hooks.py` | Discovers new/modified DEFINE_HOOK / DEFINE_HOOK_AGAIN from git. Two modes: auto-detect (no args) or `--commit <sha/name>`. Supports fuzzy commit name resolution (searches last 30 commits). Outputs JSON with `hooks` array, each having `address`, `size`, `name`, `file`, `returns`. Use `--json-only` for piping. |
-| `check_hook_conflicts.py` | Reads a JSON array of new hooks from stdin (or a file argument) and checks them against `HookAnalysis.log` for Problem 0 (size < 5) and Problem 1 (conflicts). Outputs JSON with `errors` and `notes` arrays. |
-| `parse_hook_log.py` | Parses `HookAnalysis.log` (GBK encoding) and outputs all existing hooks as JSON. Typically not called directly — used by `check_hook_conflicts.py`. |
-| `HookAnalysis.log` | Pre-generated hook analysis report from SyringeIH. Read-only reference. |
+| `check_hook_conflicts.py` | Reads a JSON array of new hooks from stdin (or a file argument) and checks them against `HookAnalysis.txt` for Problem 0 (size < 5 — requires NOP padding verification) and Problem 1 (conflicts). Outputs JSON with `errors` and `notes` arrays. |
+| `parse_hook_log.py` | Parses `HookAnalysis.txt` (UTF-8 encoding) and outputs all existing hooks as JSON. Typically not called directly — used by `check_hook_conflicts.py`. |
+| `HookAnalysis.txt` | Pre-generated hook analysis report from SyringeIH. Read-only reference. |
 
 #### Before You Begin
 
@@ -45,7 +45,7 @@ Cell symbols:
 - `—` — skipped (IDA MCP unavailable)
 - `?` — not yet checked (should never appear in the final output)
 
-For Problem 3 (which has sub-checks 3a–3d), use the worst severity across all sub-checks as the cell value.
+For Problem 3 (which has sub-checks 3a–3e), use the worst severity across all sub-checks as the cell value.
 
 #### Severity classification
 
@@ -53,7 +53,7 @@ All findings are classified into three severity levels. YOU MUST follow this whe
 
 | Level | Emoji | Label | Criteria | Examples |
 |-------|-------|-------|----------|----------|
-| Error | ❌ | ERROR | Causes incorrect behavior at runtime — MUST be fixed | Size < 5, address conflict, instruction misalignment, wrong macro (GET_STACK vs GET_BASE), relative instruction with return 0 |
+| Error | ❌ | ERROR | Causes incorrect behavior at runtime — MUST be fixed | Size < 5 with non-NOP trailing bytes, address conflict, instruction misalignment, wrong macro (GET_STACK vs GET_BASE), relative instruction with return 0 |
 | Warning | ⚠️ | WARNING | May indicate incorrect behavior — should be reviewed | Type mismatch in GET_STACK, stacked hook (exact overlap with another hook) |
 | Note | ℹ️ | NOTE | Informational, not necessarily a bug | All-clear confirmation |
 
@@ -120,14 +120,25 @@ Then mark the TodoList item as complete and move to Step 1. From this point on, 
 - If `returns` was `"?"` in Step 0 and you determined the actual value: fix it in the JSON before piping, or save the corrected JSON to a temp file and pass it as a file argument.
 - YOU MUST examine the JSON output of `check_hook_conflicts.py`. The `errors` array contains issues that need fixing. The `notes` array contains informational items.
 - DO NOT silently ignore any error. For each error, present it to the user using the exact format below.
+- For Problem 0 (size < 5) findings: NOP padding verification is deferred to Step 2 (after IDA MCP check). Present the finding as either a tentative error or a note based on whether verification has been done. Update the matrix P0 cell in Step 1 as `?` with a note that NOP verification is pending.
 
 ### Error display formats
 
 For each error in the `errors` array, YOU MUST output the corresponding formatted message:
 
 **Problem 0** (type: `"size"`):
-> ❌ **Problem 0: Insufficient hook size**
-> Hook `HookName` at `0x<addr>` has size `0x<size>` (< 5). The JMP instruction requires at least 5 bytes. Increase the size to cover the full instruction(s) at this address.
+
+The JMP instruction always occupies 5 bytes, but the stolen bytes (`size`) can be less than 5 if the remaining bytes `[addr + size, addr + 5)` are NOP padding (0x90) from function epilog alignment. You MUST verify this before classifying a size < 5 finding as an error.
+
+To verify NOP padding, use IDA MCP (if available) to disassemble `[addr, addr + 5)` and check whether `[addr + size, addr + 5)` are all NOPs. If IDA MCP is unavailable, mark the finding as a warning (see Step 2 for details).
+
+**If trailing bytes are NOT all NOPs** — actual error:
+> ❌ **Problem 0: Insufficient stolen bytes**
+> Hook `HookName` at `0x<addr>` has size `0x<size>` (< 5) and the trailing bytes at `[0x<addr+size>, 0x<addr+5>)` are not NOP padding. The JMP always overwrites 5 bytes. Increase the size to cover the full instruction(s) at this address.
+
+**If trailing bytes ARE all NOPs** — legitimate, informational only:
+> ℹ️ **Problem 0: Small stolen bytes due to trailing NOP padding**
+> Hook `HookName` at `0x<addr>` has size `0x<size>` (< 5), but the trailing bytes `[0x<addr+size>, 0x<addr+5>)` are NOP padding (0x90). The size is correct — only the real instructions are stolen, and the NOPs are safely overwritten by the JMP.
 
 **Problem 1 — Partial overlap** (type: `"conflict"`):
 > ❌ **Problem 1: Hook address range conflict**
@@ -136,6 +147,8 @@ For each error in the `errors` array, YOU MUST output the corresponding formatte
 **Problem 1 — Return address conflict** (type: `"return_conflict"`):
 > ❌ **Problem 1: Return address conflict**
 > Hook `NewHookName` at `0x<addr>` returns to `0x<ret_addr>`, which falls within existing hook `ExistingHookName` from `<DLL>` covering `[0x<start>, 0x<end>)`.
+
+A return address equal to the hook's own start address (`ret_addr == addr`) is **explicitly excluded** from this check — it is equivalent to `R->Origin()` and handled correctly by Syringe.
 
 For each note in the `notes` array:
 
@@ -153,31 +166,36 @@ After completing Step 1, YOU MUST output the summary AND the updated matrix with
 ```
 [Step 1 Complete]
 - Hooks checked: <count>
-- Problem 0 errors: <count>
+- Problem 0 tentative errors (pending NOP verification): <count>
 - Problem 1 conflicts (overlap): <count>
 - Problem 1 conflicts (return): <count>
 - Stacked hooks (warning): <count>
 
-Updated matrix (P0, P1 filled):
+Updated matrix (P0 tentative, P1 filled):
 | Hook | Address | P0 (size) | P1 (conflict) | P2 (boundary) | P3 (variable) | P4 (relative) |
 |------|---------|-----------|---------------|---------------|---------------|---------------|
-| A    | 0x...   | ✓         | ❌            | ?             | ?             | ?             |
-| B    | 0x...   | ❌        | ✓             | ?             | ?             | ?             |
+| A    | 0x...   | ?         | ❌            | ?             | ?             | ?             |
+| B    | 0x...   | ?         | ✓             | ?             | ?             | ?             |
 ```
 
 Then mark the TodoList item as complete and move to Step 2.
 
 ---
 
-## Step 2: Check IDA MCP availability
+## Step 2: Check IDA MCP availability and verify NOP padding
 
 ### RULES
 
 - YOU MUST attempt to connect to IDA MCP by calling `mcp_ida-pro-mcp_server_health`.
 - If the health check succeeds AND the loaded IDB is `gamemd.exe`:
   - P2, P3, P4 columns will be filled in Steps 3-5.
+  - **NOP padding verification**: For any hook with a tentative Problem 0 (size < 5) from Step 1, use IDA MCP to disassemble the range `[addr, addr + 5)` and check whether `[addr + size, addr + 5)` are all NOP instructions (0x90).
+    - If trailing bytes are all NOPs → downgrade P0 cell to `ℹ️` (legitimate, informational)
+    - If trailing bytes are NOT all NOPs → P0 cell remains `❌` (confirmed error)
+    - Update the Step 1 Problem 0 counts accordingly in your output
 - If the health check fails OR `gamemd.exe` is not loaded:
   - YOU MUST mark P2, P3, P4 columns as `—` (skipped) for ALL hooks in the matrix.
+  - **For each tentative Problem 0 finding**: downgrade from potential error to `⚠️` (cannot verify NOP padding without IDA MCP). State this explicitly.
   - YOU MUST output the reason.
   - Steps 3-5 will still execute but with no work to do.
   - DO NOT silently skip this step.
@@ -190,11 +208,18 @@ After completing Step 2, YOU MUST output:
 [Step 2 Complete]
 - IDA MCP health check: <pass/fail>
 - gamemd.exe loaded: <yes/no>
+- NOP padding verification:
+  - Confirmed errors (non-NOP trailing bytes): <count>
+  - Legitimate (NOP padding): <count>
+  - Downgraded to warning (IDA unavailable): <count>
 
-Updated matrix (P2-P4 status determined):
+Updated matrix (P0 verified, P2-P4 status determined):
 | Hook | Address | P0 (size) | P1 (conflict) | P2 (boundary) | P3 (variable) | P4 (relative) |
 |------|---------|-----------|---------------|---------------|---------------|---------------|
 | A    | 0x...   | ✓         | ❌            | ? / —         | ? / —         | ? / —         |
+| B    | 0x...   | ℹ️        | ✓             | ? / —         | ? / —         | ? / —         |
+| C    | 0x...   | ❌        | ✓             | ? / —         | ? / —         | ? / —         |
+| D    | 0x...   | ⚠️        | ✓             | —             | —             | —             |
 ```
 
 If IDA MCP is available, the P2-P4 cells remain `?` (to be filled in Steps 3-5). If unavailable, they are `—`.
@@ -259,7 +284,7 @@ Then mark the TodoList item as complete and move to Step 4.
 
 - If IDA MCP was unavailable in Step 2, YOU MUST skip the checks below (P3 column is already `—`).
 - YOU MUST fill the P3 column for every hook. DO NOT skip any hook.
-- P3 has sub-checks 3a–3d. The matrix cell shows the worst severity across all sub-checks.
+- P3 has sub-checks 3a–3e. The matrix cell shows the worst severity across all sub-checks.
 
 ### Validation
 
@@ -288,20 +313,53 @@ If a type mismatch is found:
 > ⚠️ **Problem 3b: Variable extraction may be incorrect**
 > At `0x<addr>`: `GET_STACK(<type>, <var>, <offset>)` — resolved offset `<computed_offset>` maps to function entry `+<entry_offset>`, expected parameter `<param_name>` of type `<expected_type>` at that position. The declared type `<declared_type>` does not match.
 
-#### 4c — Macro selection error: GET_STACK vs GET_BASE after stack alignment
+#### 4c — Stack data macro selection check
 
-Check for stack alignment (`and esp, alignment_mask`) in the function prologue. Disassemble the first ~20 instructions of the function. Look for `and esp, <mask>` where `<mask>` is an alignment boundary (e.g. `0FFFFFFF8h` for 8-byte, `0FFFFFFF0h` for 16-byte, `0FFFFFFFCh` for 4-byte, or their equivalents `-8`, `-16`, `-4`). After this instruction, ESP is aligned down to the mask boundary and is no longer at a known offset from `ESP_entry` — `GET_STACK` cannot reliably access function parameters.
+Determine whether `GET_STACK` (also `REF_STACK`, `LEA_STACK`) or `GET_BASE` is the correct macro based on stack alignment in the function prologue.
 
-If a hook uses `GET_STACK` to access what appears to be a function parameter (offset maps to `ESP_entry + positive_offset`) and the function prologue contains stack alignment:
+Start by checking for stack alignment: disassemble the first ~20 instructions of the function. Look for `and esp, <mask>` where `<mask>` is an alignment boundary (e.g. `0FFFFFFF8h` for 8-byte, `0FFFFFFF0h` for 16-byte).
 
-> ❌ **Problem 3c: GET_STACK used after stack alignment — should use GET_BASE**
-> Hook `HookName` at `0x<addr>` uses `GET_STACK` to access what appears to be a function parameter (resolved to entry offset `+<entry_offset>`). The function prologue at `0x<prologue_addr>` contains `and esp, <alignment_mask>` which realigns ESP, making `GET_STACK` unreliable for parameter access. Replace with `GET_BASE(type, name, <entry_offset - 4>)`.
+**If no stack alignment** — ESP is at a known offset from `ESP_entry`, so `GET_STACK` (and `REF_STACK`/`LEA_STACK`) works correctly for all parameter and local access. `GET_BASE` is not recommended here because EBP can be used for other purpose by the compiler; verify that EBP actually holds a valid frame pointer before using it:
+> ⚠️ **Problem 3c: GET_BASE used without stack alignment — verify EBP**
+> Hook `HookName` at `0x<addr>` uses `GET_BASE(<type>, <var>, <offset>)` but the function has no stack alignment. `GET_STACK` via ESP is the preferred approach. If EBP is a valid frame pointer (`mov ebp, esp` at entry, not overwritten), `GET_BASE` may still work — otherwise replace with `GET_STACK(<type>, <var>, <offset>)`.
+
+**If stack alignment exists** — `and esp, <mask>` realigns ESP to an unpredictable offset, making it unreliable for function parameter access. Check the offsets used in `GET_STACK` and `GET_BASE`:
+
+1. **If any `GET_STACK` or `GET_BASE` has a positive offset** — positive offsets aim at function parameters above the entry stack. These should use `GET_BASE`:
+   - `GET_STACK` with positive offset → ❌ error, should use `GET_BASE`
+     > ❌ **Problem 3c: GET_STACK should be GET_BASE after stack alignment**
+     > Hook `HookName` at `0x<addr>` uses `GET_STACK(<type>, <var>, <offset>)` with a positive offset (`<offset>`) after stack alignment. Parameters should be accessed via EBP. Replace with `GET_BASE(<type>, <var>, <offset>)`.
+   - `GET_BASE` with positive offset → ✓ correct usage, no issue
+
+2. **If all offsets are non-positive** (zero or negative) — these access local variables in the hook's own stack frame. `GET_STACK` should be used:
+   - `GET_STACK` with non-positive offset → ✓ correct usage, no issue
+   - `GET_BASE` with non-positive offset → ❌ error, should use `GET_STACK`
+     > ❌ **Problem 3c: GET_BASE should be GET_STACK after stack alignment**
+     > Hook `HookName` at `0x<addr>` uses `GET_BASE(<type>, <var>, <offset>)` with a non-positive offset (`<offset>`) after stack alignment. Local variables should be accessed via ESP. Replace with `GET_STACK(<type>, <var>, <offset>)`.
 
 #### 4d — Register writes (R->EAX, R->ECX, etc.)
 
 For register writes like `R->EAX(value)`:
 - Disassemble after the hook point to verify the register will be read as expected by the original code
 - If the return address is a fixed address (not `R->Origin()`), verify the original code at that address uses the register being set
+
+#### 4e — Stack depth balance
+
+The optimal approach is to select a return address whose spd matches the hook entry spd — no stack adjustment is needed. If a suitable return address is unavailable (e.g. the only viable target has a different spd), the hook must use inline ASM (`__asm { add esp, X }` / `__asm { sub esp, X }`) to adjust ESP before returning, so that the stack depth at the return point matches the return address's expected spd.
+
+For each hook:
+
+1. Use IDA MCP (`mcp_ida-pro-mcp_disasm`) to disassemble the function containing the hook address
+2. Record the `spd` at the hook entry address
+3. If the hook has a fixed return address (`returns` is not `"0"` or `"?"`), record the `spd` at that return address
+4. Compare the two:
+   - **spd matches** → ✓ The return address is well-chosen; no stack adjustment needed
+   - **spd differs** → Check the hook body for inline ASM that adjusts ESP to compensate for the difference (`spd_entry + adjustment == spd_ret`)
+     - If adjustment is present and correct → ✓ Stack is balanced via manual adjustment
+     - If no adjustment is found or adjustment incorrect → ❌ **Problem 3e: Stack depth imbalance**
+       > Hook `HookName` at `0x<addr>` — the return address `0x<ret_addr>` has spd `<ret_spd>` but the hook entry has spd `<entry_spd>` (difference: `<diff>`). No inline ASM adjustment found to compensate. Either change the return address to one with matching spd, or add `__asm { add esp, <diff> }` / `__asm { sub esp, <-diff> }` before the return.
+
+If `spd` is unavailable (IDA could not analyze the function), skip this check and note it: `ℹ️ spd unavailable for hook HookName.`
 
 If all Problem 3 checks pass: "✓ Variable extraction and stack access checks passed."
 
@@ -316,6 +374,7 @@ After completing Step 4, YOU MUST output the per-hook detail blocks AND the upda
 - Problem 3b errors (stack variable extraction): <count>
 - Problem 3c errors (GET_STACK vs GET_BASE): <count>
 - Problem 3d errors (register writes): <count>
+- Problem 3e errors (stack depth imbalance): <count>
 
 Details for hooks with P3 findings:
 
@@ -360,10 +419,10 @@ Relative jump/call instructions:
 - `loop`, `loope`, `loopne`, `loopz`, `loopnz`
 - `xbegin`
 
-RIP-relative addressing instructions:
+EIP-relative addressing instructions:
 - `mov`, `lea`, `cmp`, `add`, `sub`, `and`, `or`, `xor`, `test`
 - `push`, `pop`, `movsxd`, `movzx`, `movsx`
-- When any of the above uses RIP-relative addressing mode
+- When any of the above uses EIP-relative addressing mode
 
 Check the `returns` field from Step 0. If the hook returns `"0"` but covers any of these instructions:
 > ❌ **Problem 4: Hook covers relative-offset instruction but returns 0**
@@ -423,18 +482,20 @@ Total hooks checked: <N>
 | Hook | Address | P0 | P1 | P2 | P3 | P4 |
 |------|---------|----|----|----|----|----|
 | A    | 0x...   | ✓  | ❌ | ❌ | ✓  | ✓  |
-| B    | 0x...   | ❌ | ✓  | ✓  | ⚠️ | ❌ |
+| B    | 0x...   | ℹ️ | ✓  | ✓  | ⚠️ | ❌ |
+| C    | 0x...   | ❌ | ✓  | ✓  | ✓  | ✓  |
 
 ### Issues by hook
 
 ### HookA (0x...)
 - **P1 — Conflict with ExistingHook:** overlaps [0x..., 0x...)
-- **P2 — Instruction boundary:** <details>
 
 ### HookB (0x...)
-- **P0 — Size < 5:** size is 0x3, needs at least 5 bytes
 - **P3b — Variable type mismatch:** declared <type>, IDA suggests <other_type>
 - **P4 — Relative instruction:** covers `call rel32` at 0x... but returns 0
+
+### HookC (0x...)
+- **P0 — Insufficient stolen bytes:** size is 0x3, trailing bytes `[0x... + 3, 0x... + 5)` are not NOP padding, increase to at least 5
 ```
 
 If no problems were found at all:

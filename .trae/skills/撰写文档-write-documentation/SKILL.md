@@ -102,10 +102,10 @@ After the English documentation has been written and confirmed, produce a Chines
 
 **Step 6: Write `docs/Whats-New.md` entry**
 
-Whats-New entries go under the `### Version TBD (develop branch nightly builds)` section. Use the author identity determined in Step 0. The entry should be a bullet point briefly describing the change and how it might affect existing mods:
+Whats-New entries go under the `### Version TBD (develop branch nightly builds)` section. Use the author identity determined in Step 0. The entry should be a bullet point with a feature description matching the phrasing used in other entries:
 
 ```markdown
-- <description of what changed and what modders need to do to adapt> (by <AuthorName>)
+- <feature description matching the phrasing used in other entries> (by <AuthorName>)
 ```
 
 If new INI keys are user-facing settings in `RA2MD.INI`, also add them under the `### New user settings in RA2MD.INI` section:
