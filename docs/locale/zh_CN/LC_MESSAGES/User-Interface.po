@@ -783,17 +783,18 @@ msgid ""
 "`DisplayIncome.Delay` is the interval in frames between two consecutive "
 "income displays, defaults to 15 (one in-game second on middle speed)."
 msgstr ""
+"`DisplayIncome.Delay` 设置了每两次连续收入提示之间间隔的帧数，默认 15（中速下的 1 秒）。"
 
-#, fuzzy
 msgid ""
 "Multiple income within less than the time defined by "
 "`DisplayIncome.Delay` have their amounts coalesced into single display."
-msgstr "在游戏内不到一秒的时间内多次收入的金额将会合并成一个来显示。"
+msgstr "在游戏内不到 `DisplayIncome.Delay` 定义的时间内多次收入的金额将会合并成一个来显示。"
 
 msgid ""
 "Delay cannot be set to 0, this will change the delay to 1 and outputs a "
 "developer warning to log."
 msgstr ""
+"该间隔不得设为 0，否则将会自动调整为 1 并在日志中输出开发者警告。"
 
 msgid ""
 "`DisplayIncome.Houses` determines which houses can see the credits "

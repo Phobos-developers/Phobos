@@ -1902,6 +1902,7 @@ msgstr ""
 
 msgid "Allow users to define the time interval of `DisplayIncome` (by Noble_Fish)"
 msgstr ""
+"允许用户定义 `DisplayIncome` 的时间间隔（by Noble_Fish）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
