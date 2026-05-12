@@ -573,8 +573,11 @@ New:
 - [Allow replacing vanilla repairing with togglable auto repairing](User-Interface.md#allow-replacing-vanilla-repairing-with-togglable-auto-repairing) (by TaranDahl)
 - Use `OpenTopped.AllowFiringIfAttackedByLocomotor` to control whether the passengers of a non-building transport unit can fire when the unit is being attacked by a weapon whose warhead has `IsLocomotor=true` (by Noble_Fish)
 - Framework for dynamic sight (by TaranDahl)
-- Customize `HarvesterLoadRate` (by Noble_Fish)
+- [Customize `HarvesterLoadRate`](Fixed-or-Improved-Logics.md#customize-harvesterloadrate) (by Noble_Fish)
 - [Toggle to prevent `ShrapnelWeapon` from targeting buildings multiple times](Fixed-or-Improved-Logics.md#shrapnel-enhancements) (by Starkku)
+- [Laser drawing Z-adjust customization](Fixed-or-Improved-Logics.md#laser-z-adjust) (by Starkku)
+- Customize `HarvesterDumpRate` (by Noble_Fish)
+- Allow users to define the time interval of `DisplayIncome` (by Noble_Fish)
 - Universal customize health bar (by NetsuNegi)
 
 Vanilla fixes:
@@ -656,6 +659,8 @@ Vanilla fixes:
 - `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses (by Ollerus)
 - Fixed the issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions (by TaranDahl)
 - Purely visual animations and particles excluded from sync checks (by Starkku)
+- Fixed AI team recruitment inconsistency causing underfilled teams (by handama)
+- Fixed the issue where tint color RGB mode conversion was incorrect (by Shatyuka)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -699,6 +704,9 @@ Phobos fixes:
 - Fixed a bug causing transfering AttachEffects (e.g on `DeploysInto`/`UndeploysInto`) not to immediately recalculate stats or tint (by Starkku)
 - Fixed a bug where updating the `OpenTopped` attribute during convert did not update the coordinates of passengers (by NetsuNegi)
 - Fixed `Shrapnel.AffectsBuildings=true` shrapnel weapons being able to hit the building itself, potentially multiple times, if it had foundation larger than 1x1 (by Starkku)
+- Fixed the bug where the `.SubjectToGround` of the Trajectory type did not consider bridges (by Noble_Fish)
+- AttachEffect `DisableWeapons=true` now makes `Gattling=yes` rate tick down and stops the sounds from playing (by Starkku)
+- Fixed cells with `CanBeBuiltOn=true` TerrainTypes on them not being considered valid build locations by AI (by Starkku)
 
 Fixes / interactions with other extensions:
 <!--  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)  -->
@@ -718,6 +726,8 @@ Fixes / interactions with other extensions:
 - Fixed a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to fire when the transport unit with `OpenTopped=yes` moved to an area that the passengers' `MovementZone` cannot move into (by NetsuNegi)
 - Fixed a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next` (by NetsuNegi & FlyStar)
 - Fixed the issue that `BombSight` not being updated correctly in techno conversion (by TaranDahl)
+- `EVA.Tag` already supports being set for specific countries, and `EVAIndex` is no longer reset after load game (by FlyStar)
+- `DisableWeapons.Duration` now makes `Gattling=yes` rate tick down and stops the sounds from playing, no longer interferes with target acquisition and works together with Phobos' `OpenTopped.CheckTransportDisableWeapons` (by Starkku)
 ```
 
 ### 0.4.0.3

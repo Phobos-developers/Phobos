@@ -512,6 +512,7 @@ public:
 		SHPStruct* TurretShape;
 
 		Nullable<int> HarvesterLoadRate;
+		Nullable<double> HarvesterDumpRate;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -977,6 +978,7 @@ public:
 			, ExtraThreatCoefficient_DistanceToLastTarget {}
 
 			, HarvesterLoadRate {}
+			, HarvesterDumpRate {}
 		{ }
 
 		virtual ~ExtData() = default;

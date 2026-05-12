@@ -451,6 +451,26 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 	return 0;
 }
 
+/* ROT > 0. We temporarily do not need to make changes to the Bridge interaction for this scenario, but we will leave it here for now, as it may be used later.
+DEFINE_HOOK(0x46703E, BulletClass_AI_SkipBridgeCheck1, 0x6)
+{
+	GET(BulletClass*, pThis, EBP);
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+	if (pExt && pExt->Trajectory)
+		return 0x467B7A;
+	return 0;
+}
+*/
+
+DEFINE_HOOK(0x4674D4, BulletClass_AI_SkipBridgeCheck2, 0x6)
+{
+	GET(BulletClass*, pThis, EBP);
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+	if (pExt && pExt->Trajectory && pExt->Trajectory->ShouldSkipBridgeCheck())
+		return 0x467519;
+	return 0;
+}
+
 DEFINE_HOOK(0x467E53, BulletClass_AI_PreDetonation_Trajectories, 0x6)
 {
 	GET(BulletClass*, pThis, EBP);

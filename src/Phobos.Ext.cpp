@@ -12,6 +12,7 @@
 #include <Ext/Cell/Body.h>
 #include <Ext/EBolt/Body.h>
 #include <Ext/House/Body.h>
+#include <Ext/HouseType/Body.h>
 #include <Ext/OverlayType/Body.h>
 #include <Ext/ParticleSystemType/Body.h>
 #include <Ext/RadSite/Body.h>
@@ -214,6 +215,7 @@ using PhobosTypeRegistry = TypeRegistry <
 	CellExt,
 	EBoltExt,
 	HouseExt,
+	HouseTypeExt,
 	OverlayTypeExt,
 	ParticleSystemTypeExt,
 	RadSiteExt,
