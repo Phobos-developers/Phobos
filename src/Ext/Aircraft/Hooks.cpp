@@ -777,13 +777,13 @@ DEFINE_HOOK(0x414DA8, AircraftClass_Update_UnlandableDamage, 0x6) // After FootC
 					return 0;
 
 				// Injury every four frames
-				if (!((Unsorted::CurrentFrame - pThis->LastFireBulletFrame + pThis->UniqueID) & 0x3))
+				if (!pThis->Target && !pThis->Destination && !((Unsorted::CurrentFrame - pThis->LastFireBulletFrame + pThis->UniqueID) & 0x3))
 					pThis->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
 			}
 			else if (damage < 0)
 			{
 				// Avoid using circular movement paths to prevent the aircraft from crashing
-				if (extendedMissions)
+				if (extendedMissions && !pThis->Target && !pThis->Destination)
 					pThis->Crash(nullptr);
 			}
 		}
