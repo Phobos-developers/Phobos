@@ -251,4 +251,5 @@ public:
 
 	static bool Activate(SuperClass* pSuper, CellStruct cell, bool isPlayer);
 	static SuperClass* __stdcall IsSuperAvailable(int swIdx, HouseClass* pHouse);
+
 };

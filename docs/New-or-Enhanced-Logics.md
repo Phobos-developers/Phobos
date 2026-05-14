@@ -1086,6 +1086,15 @@ In `rulesmd.ini`:
 AISuperWeaponDelay=  ; integer, game frames
 ```
 
+### Aux technos of superweapon
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]        ; SuperWeaponType
+SW.AuxTechnos=  ; List of TechnoTypes
+SW.NegTechnos=  ; List of TechnoTypes
+```
+
 ### Convert TechnoType
 
 - Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft).
@@ -1133,15 +1142,6 @@ In `rulesmd.ini`:
 ```ini
 [SOMESW]    ; SuperWeaponType
 TabIndex=1  ; integer
-```
-
-### Aux technos of superweapon
-
-In `rulesmd.ini`:
-```ini
-[SOMESW]        ; SuperWeaponType
-SW.AuxTechnos=  ; List of TechnoTypes
-SW.NegTechnos=  ; List of TechnoTypes
 ```
 
 ### EMPulse settings
