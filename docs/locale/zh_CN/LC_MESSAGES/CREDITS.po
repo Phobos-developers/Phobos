@@ -1758,6 +1758,11 @@ msgid ""
 "not update the coordinates of passengers"
 msgstr "修复了类型转换会更新 `OpenTopped` 属性却不更新乘客坐标的 Bug"
 
+msgid ""
+"Fix the bug that low-air taking off / landing objects will receive "
+"twice damage"
+msgstr "修复了低空起飞/降落的物体会受到两次伤害的 Bug"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 

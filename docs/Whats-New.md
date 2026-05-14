@@ -660,6 +660,7 @@ Vanilla fixes:
 - Purely visual animations and particles excluded from sync checks (by Starkku)
 - Fixed AI team recruitment inconsistency causing underfilled teams (by handama)
 - Fixed the issue where tint color RGB mode conversion was incorrect (by Shatyuka)
+- Fixed the bug that low-air taking off / landing objects will receive twice damage (by NetsuNegi)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
