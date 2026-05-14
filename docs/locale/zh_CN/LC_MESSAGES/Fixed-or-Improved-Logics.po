@@ -1678,6 +1678,11 @@ msgid ""
 "in multiplayer games."
 msgstr "纯视觉效果的动画和粒子不再包含在帧 CRC 生成中并因此不会受多人游戏中玩家间同步检查的限制。"
 
+msgid ""
+"Fixed the bug that low-air taking off / landing objects will receive "
+"twice damage."
+msgstr "修复了低空起飞/降落的物体会受到两次伤害的 Bug。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 
