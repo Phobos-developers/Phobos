@@ -250,7 +250,7 @@ In `artmd.ini`:
 [LaserTrailTypes]
 0=SOMETRAIL
 
-[SOMETRAIL]                      ; LaserTrailType name
+[SOMETRAIL]                      ; LaserTrailType
 DrawType=laser                   ; laser trail type (laser | ebolt | radbeam)
 FadeDuration=                    ; integer, default to 64 for laser, 17 for ebolt, 15 for radbeam
 SegmentLength=128                ; integer, minimal length of each trail segment
@@ -270,6 +270,7 @@ Bolt.Color2=                     ; integer - Red,Green,Blue
 Bolt.Disable2=false              ; boolean
 Bolt.Color3=                     ; integer - Red,Green,Blue
 Bolt.Disable3=false              ; boolean
+Bolt.Arcs=8                      ; integer
 ; radbeam
 Beam.Color=                      ; integer - Red,Green,Blue
 Beam.Amplitude=40.0              ; floating point value
@@ -318,7 +319,7 @@ Pips.Shield.Building.Empty=0                ; integer, frame of pips.shp (zero-b
 [ShieldTypes]
 0=SOMESHIELDTYPE
 
-[SOMESHIELDTYPE]                            ; ShieldType name
+[SOMESHIELDTYPE]                            ; ShieldType
 Strength=0                                  ; integer
 InitialStrength=0                           ; integer
 ConditionYellow=                            ; floating point value, percents or absolute
