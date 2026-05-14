@@ -1681,7 +1681,7 @@ msgstr "纯视觉效果的动画和粒子不再包含在帧 CRC 生成中并因�
 msgid ""
 "Fixed the bug that low-air taking off / landing objects will receive "
 "twice damage."
-msgstr "修复了低空起飞/降落的物体会受到两次伤害的 Bug。"
+msgstr "修复了低空起飞／降落的物体会受到两次伤害的 Bug。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
