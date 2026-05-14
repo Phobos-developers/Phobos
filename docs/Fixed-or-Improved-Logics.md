@@ -325,6 +325,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses.
 - Fixed the issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions.
 - Purely visual animations and particles are no longer included in frame CRC generation and are thus exempt from any sync checks between players in multiplayer games.
+- Fixed the bug that low-air taking off / landing objects will receive twice damage.
 
 ## Fixes / interactions with other extensions
 
