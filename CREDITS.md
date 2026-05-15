@@ -642,7 +642,6 @@ This page lists all the individual contributions to the project by their author.
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
-  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
   - Type select for buildings (doc)
   - Enhanced Bombard trajectory
   - Shield armor inheritance customization
@@ -667,6 +666,7 @@ This page lists all the individual contributions to the project by their author.
   - Maximum amount for power plant enhancer
   - Return warhead
   - `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses
+  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`

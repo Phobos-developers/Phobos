@@ -709,7 +709,6 @@ Phobos fixes:
 - Fixed cells with `CanBeBuiltOn=true` TerrainTypes on them not being considered valid build locations by AI (by Starkku)
 
 Fixes / interactions with other extensions:
-- Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus & NetsuNegi)
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
 - Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle` (by TaranDahl)
 - Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect (by Sovietianqi, based on knowledge of DeathFish)
@@ -728,7 +727,8 @@ Fixes / interactions with other extensions:
 - Fixed the issue that `BombSight` not being updated correctly in techno conversion (by TaranDahl)
 - `EVA.Tag` already supports being set for specific countries, and `EVAIndex` is no longer reset after load game (by FlyStar)
 - `DisableWeapons.Duration` now makes `Gattling=yes` rate tick down and stops the sounds from playing, no longer interferes with target acquisition and works together with Phobos' `OpenTopped.CheckTransportDisableWeapons` (by Starkku)
-- [Aux technos and TechLevel requirement of superweapon](New-or-Enhanced-Logics.md#aux-technos-and-techlevel-requirement-of-superweapon) (by NetsuNegi)
+- Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus & NetsuNegi)
+- [Aux technos and TechLevel requirement of superweapon](New-or-Enhanced-Logics.md#aux-technos-and-techlevel-requirement-of-superweapon) (by NetsuNegi & Ollerus)
 ```
 
 ### 0.4.0.3

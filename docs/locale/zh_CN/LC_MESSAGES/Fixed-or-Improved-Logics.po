@@ -1683,6 +1683,9 @@ msgid ""
 "twice damage."
 msgstr "修复了低空起飞/降落的物体会受到两次伤害的 Bug。"
 
+msgid "Allowed `AuxBuilding` to count building upgrades."
+msgstr "允许了 `AuxBuilding` 计入建筑加载物。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 
@@ -1911,6 +1914,11 @@ msgid ""
 "`OpenTopped.CheckTransportDisableWeapons`."
 msgstr ""
 "现在 `DisableWeapons.Duration` 会使 `Gattling=yes` 的速率降低并停止播放音效，不再干扰目标获取并且可以和 Phobos 的 `OpenTopped.CheckTransportDisableWeapons` 共用。"
+
+msgid ""
+"Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades."
+msgstr ""
+"允许了 Ares 的 `SW.AuxBuildings` 和 `SW.NegBuildings` 计入建筑加载物。"
 
 msgid "Newly added global settings"
 msgstr "新增的全局设定"

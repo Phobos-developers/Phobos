@@ -1088,6 +1088,10 @@ AISuperWeaponDelay=  ; integer, game frames
 
 ### Aux technos and TechLevel requirement of superweapon
 
+- `SW.AuxTechnos` specifies the auxiliary technos without which this super weapon cannot become available. The player has to own at least one techno of any of these types to get access to this super weapon.
+- `SW.NegTechnos` specifies the negative auxiliary technos whose presence will cause the super weapon to become unavailable. This super weapon can become available only if the player does not own any techno of any of these types.
+- `SW.TechLevel` specifies the TechLevel that the owner must not fall below in order to use this super weapon. The super weapon becomes available only if the player's TechLevel reaches that level.
+
 In `rulesmd.ini`:
 ```ini
 [SOMESW]        ; SuperWeaponType
@@ -1097,7 +1101,7 @@ SW.TechLevel=0  ; integer
 ```
 
 ```{note}
-`SW.TechLevel` will only compare if the owning house's TechLevel is greater than or equal to it. Setting it to -1 won't make it only useable by AI as `SW.AllowPlayer` exists.
+`SW.TechLevel` does not treat `-1` as a special value. If you want to restrict a super weapon to be available only to AI players, please use `SW.AllowPlayer` and `SW.AllowAI`.
 ```
 
 ### Convert TechnoType

@@ -2689,8 +2689,12 @@ msgstr ""
 " Phobos 的 `OpenTopped.CheckTransportDisableWeapons` 共用（by Starkku）"
 
 msgid ""
-"Aux technos and TechLevel requirement of superweapon (by NetsuNegi)"
-msgstr "超级武器的辅助单位和科技等级限制（by NetsuNegi）"
+"Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus & NetsuNegi)"
+msgstr ""
+"允许了 Ares 的 `SW.AuxBuildings` 和 `SW.NegBuildings` 计入建筑加载物（by Ollerus 与 NetsuNegi）"
+
+msgid "[Aux technos and TechLevel requirement of superweapon](New-or-Enhanced-Logics.md#aux-technos-and-techlevel-requirement-of-superweapon) (by NetsuNegi & Ollerus)"
+msgstr "[超级武器的辅助单位和科技等级限制](New-or-Enhanced-Logics.md#aux-technos-and-techlevel-requirement-of-superweapon)（by NetsuNegi 与 Ollerus）"
 
 msgid "0.4.0.3"
 msgstr "0.4.0.3"
