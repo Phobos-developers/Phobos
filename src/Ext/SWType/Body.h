@@ -138,7 +138,7 @@ public:
 			, SW_NegBuildings {}
 			, SW_AuxTechnos {}
 			, SW_NegTechnos {}
-			, SW_TechLevel { 1 }
+			, SW_TechLevel { 0 }
 			, SW_InitialReady { false }
 			, SW_PostDependent {}
 			, SW_MaxCount { -1 }

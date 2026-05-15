@@ -1093,7 +1093,11 @@ In `rulesmd.ini`:
 [SOMESW]        ; SuperWeaponType
 SW.AuxTechnos=  ; List of TechnoTypes
 SW.NegTechnos=  ; List of TechnoTypes
-SW.TechLevel=1  ; integer
+SW.TechLevel=0  ; integer
+```
+
+```{note}
+`SW.TechLevel` will only compare if the owning house's TechLevel is greater than or equal to it. Setting it to -1 won't make it only useable by AI as `SW.AllowPlayer` exists.
 ```
 
 ### Convert TechnoType
