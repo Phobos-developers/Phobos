@@ -181,6 +181,16 @@ enum class SlaveChangeOwnerType
 	Neutral = 4,
 };
 
+enum class PositionFollow : BYTE
+{
+	None = 0x0,
+	Firer = 0x1,
+	Target = 0x2,
+	All = Firer | Target
+};
+
+MAKE_ENUM_FLAGS(PositionFollow)
+
 enum class AutoDeathBehavior
 {
 	Kill = 0,     // default death option

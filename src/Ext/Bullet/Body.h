@@ -27,6 +27,7 @@ public:
 		int DamageNumberOffset;
 		int ParabombFallRate;
 		bool IsInstantDetonation;
+		bool IsSplitFromAirburst = false;
 
 		TrajectoryPointer Trajectory;
 

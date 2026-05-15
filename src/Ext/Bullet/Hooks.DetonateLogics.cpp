@@ -833,6 +833,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 						coords = MapClass::GetRandomCoordsNear(coords, distance, false);
 					}
 
+					BulletExt::ExtMap.Find(pBullet)->IsSplitFromAirburst = true;
 					BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, coords, true);
 					BulletExt::SimulatedFiringEffects(pBullet, pOwner, nullptr, useFiringEffects, true);
 				}

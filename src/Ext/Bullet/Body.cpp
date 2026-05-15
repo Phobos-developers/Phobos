@@ -7,6 +7,11 @@
 #include <Ext/EBolt/Body.h>
 #include <New/Entity/LaserTrailClass.h>
 
+namespace LaserRT
+{
+	void SetLaserTrackingData(LaserDrawClass* pLaser, TechnoClass* pShooter, AbstractClass* pTarget, int weaponIdx, PositionFollow mode, bool ignoreShooter);
+}
+
 BulletExt::ExtContainer BulletExt::ExtMap;
 
 void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, BulletClass* pInterceptor)
@@ -197,6 +202,9 @@ inline void BulletExt::SimulatedFiringReport(BulletClass* pBullet)
 inline void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pHouse)
 {
 	// Can not use 0x6FD210 because the firer may die
+	if (!pBullet || !pBullet->WeaponType)
+		return;
+
 	const auto pWeapon = pBullet->WeaponType;
 
 	if (!pWeapon->IsLaser)
@@ -204,10 +212,12 @@ inline void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pH
 
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
+	LaserDrawClass* pLaser = nullptr;
+
 	if (pWeapon->IsHouseColor || pWeaponExt->Laser_IsSingleColor)
 	{
 		const auto black = ColorStruct { 0, 0, 0 };
-		const auto pLaser = GameCreate<LaserDrawClass>(pBullet->SourceCoords, ((pBullet->Type->Inviso && pBullet->Type->FlakScatter) ? pBullet->Location : pBullet->TargetCoords),
+		pLaser = GameCreate<LaserDrawClass>(pBullet->SourceCoords, ((pBullet->Type->Inviso && pBullet->Type->FlakScatter) ? pBullet->Location : pBullet->TargetCoords),
 			((pWeapon->IsHouseColor && pHouse) ? pHouse->LaserColor : pWeapon->LaserInnerColor), black, black, pWeapon->LaserDuration);
 
 		pLaser->IsHouseColor = true;
@@ -216,12 +226,34 @@ inline void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pH
 	}
 	else
 	{
-		const auto pLaser = GameCreate<LaserDrawClass>(pBullet->SourceCoords, ((pBullet->Type->Inviso && pBullet->Type->FlakScatter) ? pBullet->Location : pBullet->TargetCoords),
+		pLaser = GameCreate<LaserDrawClass>(pBullet->SourceCoords, ((pBullet->Type->Inviso && pBullet->Type->FlakScatter) ? pBullet->Location : pBullet->TargetCoords),
 			pWeapon->LaserInnerColor, pWeapon->LaserOuterColor, pWeapon->LaserOuterSpread, pWeapon->LaserDuration);
 
 		pLaser->IsHouseColor = false;
 		pLaser->Thickness = 3;
 		pLaser->IsSupported = false;
+	}
+
+	// LaserPositionUpdate
+	if (pLaser && pWeaponExt)
+	{
+		auto mode = pWeaponExt->LaserPositionUpdate;
+		const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+		const bool isSplit = (pBulletExt && pBulletExt->IsSplitFromAirburst);
+
+		if (isSplit)
+		{
+			if (mode == PositionFollow::Firer)
+				mode = PositionFollow::None;
+			else if (mode == PositionFollow::All)
+				mode = PositionFollow::Target;
+		}
+
+		if (mode != PositionFollow::None)
+		{
+			auto const pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
+			LaserRT::SetLaserTrackingData(pLaser, pBullet->Owner, pTarget, 0, mode, isSplit);
+		}
 	}
 }
 
