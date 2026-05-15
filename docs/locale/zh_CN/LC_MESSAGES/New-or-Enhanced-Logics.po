@@ -2870,8 +2870,8 @@ msgid ""
 " (vehicle tab)."
 msgstr "有效值为：0（建筑栏）、1（防御栏）、2（步兵栏）、3（载具栏）。"
 
-msgid "Aux technos of superweapon"
-msgstr "超级武器的辅助单位"
+msgid "Aux technos and TechLevel requirement of superweapon"
+msgstr "超级武器的辅助单位和科技等级限制"
 
 msgid "EMPulse settings"
 msgstr "EMPulse 设置"

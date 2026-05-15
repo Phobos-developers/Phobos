@@ -171,6 +171,9 @@ std::pair<double, double> SWTypeExt::ExtData::GetLaunchSiteRange(BuildingClass* 
 
 bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 {
+	if (pHouse->TechLevel < this->SW_TechLevel)
+		return false;
+
 	const auto pThis = this->OwnerObject();
 	const int shots = this->SW_Shots;
 

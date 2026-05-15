@@ -2689,8 +2689,8 @@ msgstr ""
 " Phobos 的 `OpenTopped.CheckTransportDisableWeapons` 共用（by Starkku）"
 
 msgid ""
-"Aux technos of superweapon (by NetsuNegi)"
-msgstr "超级武器的辅助单位（by NetsuNegi）"
+"Aux technos and TechLevel requirement of superweapon (by NetsuNegi)"
+msgstr "超级武器的辅助单位和科技等级限制（by NetsuNegi）"
 
 msgid "0.4.0.3"
 msgstr "0.4.0.3"

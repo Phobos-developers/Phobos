@@ -43,6 +43,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_NegBuildings)
 		.Process(this->SW_AuxTechnos)
 		.Process(this->SW_NegTechnos)
+		.Process(this->SW_TechLevel)
 		.Process(this->SW_InitialReady)
 		.Process(this->SW_PostDependent)
 		.Process(this->SW_MaxCount)
@@ -134,6 +135,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_NegBuildings.Read(exINI, pSection, "SW.NegBuildings");
 	this->SW_AuxTechnos.Read(exINI, pSection, "SW.AuxTechnos");
 	this->SW_NegTechnos.Read(exINI, pSection, "SW.NegTechnos");
+	this->SW_TechLevel.Read(exINI, pSection, "SW.TechLevel");
 	this->SW_InitialReady.Read(exINI, pSection, "SW.InitialReady");
 	this->SW_PostDependent.Read(exINI, pSection, "SW.PostDependent");
 	this->SW_MaxCount.Read(exINI, pSection, "SW.MaxCount");

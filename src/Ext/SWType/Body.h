@@ -44,6 +44,7 @@ public:
 		ValueableVector<BuildingTypeClass*> SW_NegBuildings;
 		ValueableVector<TechnoTypeClass*> SW_AuxTechnos;
 		ValueableVector<TechnoTypeClass*> SW_NegTechnos;
+		Valueable<int> SW_TechLevel;
 		Valueable<bool> SW_InitialReady;
 		ValueableIdx<SuperWeaponTypeClass> SW_PostDependent;
 		Valueable<int> SW_MaxCount;
@@ -137,6 +138,7 @@ public:
 			, SW_NegBuildings {}
 			, SW_AuxTechnos {}
 			, SW_NegTechnos {}
+			, SW_TechLevel { 1 }
 			, SW_InitialReady { false }
 			, SW_PostDependent {}
 			, SW_MaxCount { -1 }

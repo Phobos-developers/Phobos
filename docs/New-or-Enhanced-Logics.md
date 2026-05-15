@@ -1086,13 +1086,14 @@ In `rulesmd.ini`:
 AISuperWeaponDelay=  ; integer, game frames
 ```
 
-### Aux technos of superweapon
+### Aux technos and TechLevel requirement of superweapon
 
 In `rulesmd.ini`:
 ```ini
 [SOMESW]        ; SuperWeaponType
 SW.AuxTechnos=  ; List of TechnoTypes
 SW.NegTechnos=  ; List of TechnoTypes
+SW.TechLevel=1  ; integer
 ```
 
 ### Convert TechnoType
