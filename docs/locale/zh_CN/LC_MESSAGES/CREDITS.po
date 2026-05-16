@@ -1763,6 +1763,16 @@ msgid ""
 "twice damage"
 msgstr "修复了低空起飞／降落的物体会受到两次伤害的 Bug"
 
+msgid ""
+"Aux technos and TechLevel requirement of superweapon"
+msgstr "超级武器的辅助单位和科技等级限制"
+
+msgid ""
+"Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building "
+"upgrades"
+msgstr ""
+"允许了 Ares 的 `SW.AuxBuildings` 和 `SW.NegBuildings` 计入建筑加载物"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 

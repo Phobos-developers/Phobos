@@ -2799,6 +2799,38 @@ msgstr ""
 "默认情况下 AI 所属方只检查它是否拥有能够发射的超级武器并在 106 到 112 "
 "个游戏帧的随机间隔内发射它们。这一行为现在可以自定义设置为明确的间隔时间或予以禁用。0 及更小的值会禁用间隔并导致 AI 所属方每帧检查超级武器。"
 
+msgid "Aux technos and TechLevel requirement of superweapon"
+msgstr "超级武器的辅助单位和科技等级限制"
+
+msgid ""
+"`SW.AuxTechnos` specifies the auxiliary technos without which this super "
+"weapon cannot become available. The player has to own at least one techno"
+" of any of these types to get access to this super weapon."
+msgstr ""
+"`SW.AuxTechnos` 指定了在没有它们时超武无法变得可用的辅助单位。玩家至少拥有这些单位中的一种才能获得该超武的使用权。"
+
+msgid ""
+"`SW.NegTechnos` specifies the negative auxiliary technos whose presence "
+"will cause the super weapon to become unavailable. This super weapon can "
+"become available only if the player does not own any techno of any of "
+"these types."
+msgstr ""
+"`SW.NegTechnos` 指定了在存在它们时超武会变得不可用的否决单位，超武仅在玩家没有这些单位中的任意一种时才能变得可用。"
+
+msgid ""
+"`SW.TechLevel` specifies the TechLevel that the owner must not fall below"
+" in order to use this super weapon. The super weapon becomes available "
+"only if the player's TechLevel reaches that level."
+msgstr ""
+"`SW.TechLevel` 指定了所属方为了能用该超武所不能低于的科技等级。超武仅在玩家所属方的科技达到这一等级时才能变得可用。"
+
+msgid ""
+"`SW.TechLevel` does not treat `-1` as a special value. If you want to "
+"restrict a super weapon to be available only to AI players, please use "
+"`SW.AllowPlayer` and `SW.AllowAI`."
+msgstr ""
+"`SW.TechLevel` 并不以 `-1` 为特殊值。如果你想要限制一个超级武器仅 AI 玩家可用，请使用 `SW.AllowPlayer` 和 `SW.AllowAI`。"
+
 msgid "Convert TechnoType"
 msgstr "单位转换超武"
 

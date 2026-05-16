@@ -238,7 +238,18 @@ inline void BulletExt::SimulatedFiringElectricBolt(BulletClass* pBullet)
 	pBolt->AlternateColor = pWeapon->IsAlternateColor;
 
 	const auto targetCoords = pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords;
-	pBolt->Fire(pBullet->SourceCoords, targetCoords, 0);
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	int zAdjust = pWeaponExt->EBoltZAdjust.Get(RulesExt::Global()->EBoltZAdjust);
+
+	const auto pOwner = pBullet->Owner;
+	if (pOwner && pOwner->WhatAmI() == AbstractType::Building)
+	{
+		const bool clamp = pWeaponExt->EBoltZAdjust_ClampInitialDepthForBuilding.Get(RulesExt::Global()->EBoltZAdjust_ClampInitialDepthForBuilding);
+		if (clamp && zAdjust > 0)
+			zAdjust = 0;
+	}
+
+	pBolt->Fire(pBullet->SourceCoords, targetCoords, zAdjust);
 
 	if (const auto particle = WeaponTypeExt::ExtMap.Find(pWeapon)->Bolt_ParticleSystem.Get(RulesClass::Instance->DefaultSparkSystem))
 		GameCreate<ParticleSystemClass>(particle, targetCoords, nullptr, nullptr, CoordStruct::Empty, nullptr);

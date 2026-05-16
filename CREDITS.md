@@ -533,6 +533,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next`
   - Fix a bug where updating the `OpenTopped` attribute during convert did not update the coordinates of passengers
   - Fix the bug that low-air taking off / landing objects will receive twice damage
+  - Aux technos and TechLevel requirement of superweapon
+  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -640,7 +642,6 @@ This page lists all the individual contributions to the project by their author.
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
-  <!--  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades  -->
   - Type select for buildings (doc)
   - Enhanced Bombard trajectory
   - Shield armor inheritance customization
@@ -665,6 +666,7 @@ This page lists all the individual contributions to the project by their author.
   - Maximum amount for power plant enhancer
   - Return warhead
   - `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses
+  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`

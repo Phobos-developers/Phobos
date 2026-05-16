@@ -282,6 +282,9 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 		pThis->TargetingTimer.Start(ScenarioClass::Instance->Random.RandomRanged(0, 15));
 	}
 
+	if (pThis->AbstractFlags & AbstractFlags::Foot)
+		pThis->Owner->RecheckTechTree = true; // for SW.AuxTechons and SW.NegTechnos
+
 	return 0;
 }
 
