@@ -12,3 +12,16 @@ static DXSurface* __fastcall _DXSurface_CTOR(DXSurface* surface, void*, int widt
 }
 DEFINE_FUNCTION_JUMP(LJMP, 0x4BA5A0, _DXSurface_CTOR);
 
+static int __stdcall _BinkDDSurfaceType(void*)
+{
+	return 10; // BINKSURFACE565
+}
+DEFINE_PATCH_TYPED(void*, 0x7E15A8, _BinkDDSurfaceType);
+
+static int __stdcall _BinkCopyToBuffer(void* bnk, void* dest, int destpitch, unsigned int destheight, unsigned int destx, unsigned int desty, unsigned int flags)
+{
+	// Skip the bink movie render for now to avoid the crash. The movie will be rendered as black screen, but at least it won't crash.
+	// So we can test the other features without worrying about the movie rendering. We will try to implement the movie rendering later.
+	return 0;
+}
+DEFINE_PATCH_TYPED(void*, 0x7E15B8, _BinkCopyToBuffer);
