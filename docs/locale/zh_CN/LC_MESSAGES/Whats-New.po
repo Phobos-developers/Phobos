@@ -1907,6 +1907,8 @@ msgid ""
 "[Electric bolt Z-adjust](Fixed-or-Improved-Logics.md#electric-"
 "bolt-z-adjust) (by Noble_Fish)"
 msgstr ""
+"[自定义 EBolt 的 Z 深校正值](Fixed-or-Improved-Logics.md#electric-"
+"bolt-z-adjust)（by Noble_Fish）"
 
 msgid ""
 "Allow disabling the processing of the Z-depth of EBolt drawn by "
