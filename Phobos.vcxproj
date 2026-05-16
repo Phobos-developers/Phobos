@@ -265,6 +265,15 @@
     <ClCompile Include="src\New\Type\Affiliated\TiberiumEaterTypeClass.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\TypeConvertGroup.cpp" />
     <!-- src\Utilities -->
+    <ClCompile Include="src\Render\Functions.cpp" />
+    <ClCompile Include="src\Render\Hooks.cpp" />
+    <ClCompile Include="src\Render\Hooks.Mouse.cpp" />
+    <ClCompile Include="src\Render\Hooks.Options.cpp" />
+    <ClCompile Include="src\Render\Hooks.Surface.cpp" />
+    <ClCompile Include="src\Render\Mouse.cpp" />
+    <ClCompile Include="src\Render\Options.cpp" />
+    <ClCompile Include="src\Render\Renderer.cpp" />
+    <ClCompile Include="src\Render\Surface.cpp" />
     <ClCompile Include="src\Utilities\Anchor.cpp" />
     <ClCompile Include="src\Utilities\AresAddressInit.cpp" />
     <ClCompile Include="src\Utilities\AresHelper.cpp" />
@@ -388,6 +397,11 @@
     <ClInclude Include="src\New\Type\Affiliated\TiberiumEaterTypeClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\TypeConvertGroup.h" />
     <!-- src\Utilities -->
+    <ClInclude Include="src\Render\Functions.h" />
+    <ClInclude Include="src\Render\Mouse.h" />
+    <ClInclude Include="src\Render\Options.h" />
+    <ClInclude Include="src\Render\Renderer.h" />
+    <ClInclude Include="src\Render\Surface.h" />
     <ClInclude Include="src\Utilities\Anchor.h" />
     <ClInclude Include="src\Utilities\AresFunctions.h" />
     <ClInclude Include="src\Utilities\AresHelper.h" />
