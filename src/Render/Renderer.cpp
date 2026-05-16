@@ -558,26 +558,29 @@ void DXRenderer::UnloadImports() {
 }
 
 bool DXRenderer::CreateDevice() {
+	HRESULT hr = S_OK;
 	UINT dxgiFactoryFlags = 0;
 #if DXRENDER_DEBUG
 	Microsoft::WRL::ComPtr<ID3D12Debug> debugController;
-	if (SUCCEEDED(FP_D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
+	if (SUCCEEDED(hr = FP_D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
+		Debug::Log("[RenderDX] D3D12 debug layer enabled.\n");
 		debugController->EnableDebugLayer();
 	}
 	dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
 #endif
-	if (FAILED(FP_CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&Factory)))) {
+	if (FAILED(hr = FP_CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&Factory)))) {
+		Debug::Log("[RenderDX] Failed to create DXGI factory: 0x%08X\n", static_cast<unsigned int>(hr));
 		return false;
 	}
 	constexpr bool kUseWarpDevice = false;
 	if (kUseWarpDevice) {
 		Microsoft::WRL::ComPtr<IDXGIAdapter> warpAdapter;
-		if (FAILED(Factory->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter)))) {
-			Debug::Log("[RenderDX] Failed to create WARP adapter.\n");
+		if (FAILED(hr = Factory->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter)))) {
+			Debug::Log("[RenderDX] Failed to create WARP adapter: 0x%08X\n", static_cast<unsigned int>(hr));
 			return false;
 		}
-		if (FAILED(FP_D3D12CreateDevice(warpAdapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&Device)))) {
-			Debug::Log("[RenderDX] Failed to create WARP adapter.\n");
+		if (FAILED(hr = FP_D3D12CreateDevice(warpAdapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&Device)))) {
+			Debug::Log("[RenderDX] Failed to create WARP adapter: 0x%08X\n", static_cast<unsigned int>(hr));
 			return false;
 		}
 
@@ -591,7 +594,7 @@ bool DXRenderer::CreateDevice() {
 			if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) {
 				continue;
 			}
-			if (SUCCEEDED(FP_D3D12CreateDevice(hardwareAdapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&Device)))) {
+			if (SUCCEEDED(hr = FP_D3D12CreateDevice(hardwareAdapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&Device)))) {
 				Debug::Log("[RenderDX] D3D12 device created successfully on adapter: %ls\n", desc.Description);
 				break;
 			}
@@ -607,14 +610,16 @@ bool DXRenderer::CreateDevice() {
 }
 
 bool DXRenderer::CreateCommandQueue() {
+	HRESULT hr = S_OK;
+
 	D3D12_COMMAND_QUEUE_DESC queueDesc {};
 	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 	queueDesc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 	queueDesc.NodeMask = 0;
 
-	if (FAILED(Device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&CommandQueue)))) {
-		Debug::Log("[RenderDX] Failed to create command queue.\n");
+	if (FAILED(hr = Device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&CommandQueue)))) {
+		Debug::Log("[RenderDX] Failed to create command queue: 0x%08X\n", static_cast<unsigned int>(hr));
 		return false;
 	}
 
@@ -623,6 +628,8 @@ bool DXRenderer::CreateCommandQueue() {
 }
 
 bool DXRenderer::CreateSwapChain() {
+	HRESULT hr = S_OK;
+
 	DXGI_SWAP_CHAIN_DESC1 desc {};
 	desc.Width = WindowWidth;
 	desc.Height = WindowHeight;
@@ -638,18 +645,18 @@ bool DXRenderer::CreateSwapChain() {
 	desc.Flags = 0;
 
 	Microsoft::WRL::ComPtr<IDXGISwapChain1> swapChain1;
-	if (FAILED(Factory->CreateSwapChainForHwnd(CommandQueue.Get(), Hwnd, &desc, nullptr, nullptr, &swapChain1))) {
-		Debug::Log("[RenderDX] Failed to create swap chain.\n");
+	if (FAILED(hr = Factory->CreateSwapChainForHwnd(CommandQueue.Get(), Hwnd, &desc, nullptr, nullptr, &swapChain1))) {
+		Debug::Log("[RenderDX] Failed to create swap chain: 0x%08X\n", static_cast<unsigned int>(hr));
 		return false;
 	}
 
-	if (FAILED(Factory->MakeWindowAssociation(Hwnd, DXGI_MWA_NO_WINDOW_CHANGES | DXGI_MWA_NO_ALT_ENTER | DXGI_MWA_NO_PRINT_SCREEN))) {
-		Debug::Log("[RenderDX] Failed to set window association.\n");
+	if (FAILED(hr = Factory->MakeWindowAssociation(Hwnd, DXGI_MWA_NO_WINDOW_CHANGES | DXGI_MWA_NO_ALT_ENTER | DXGI_MWA_NO_PRINT_SCREEN))) {
+		Debug::Log("[RenderDX] Failed to set window association: 0x%08X\n", static_cast<unsigned int>(hr));
 		return false;
 	}
 
-	if (FAILED(swapChain1->QueryInterface(IID_PPV_ARGS(&SwapChain)))) {
-		Debug::Log("[RenderDX] Failed to query IDXGISwapChain3 interface.\n");
+	if (FAILED(hr = swapChain1->QueryInterface(IID_PPV_ARGS(&SwapChain)))) {
+		Debug::Log("[RenderDX] Failed to query IDXGISwapChain3 interface: 0x%08X\n", static_cast<unsigned int>(hr));
 		return false;
 	}
 
@@ -659,14 +666,16 @@ bool DXRenderer::CreateSwapChain() {
 }
 
 bool DXRenderer::CreateRtvHeap() {
+	HRESULT hr = S_OK;
+
 	D3D12_DESCRIPTOR_HEAP_DESC desc {};
 	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	desc.NumDescriptors = kFrameCount;
 	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	desc.NodeMask = 0;
 
-	if (FAILED(Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&RtvHeap)))) {
-		Debug::Log("[RenderDX] Failed to create RTV descriptor heap.\n");
+	if (FAILED(hr = Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&RtvHeap)))) {
+		Debug::Log("[RenderDX] Failed to create RTV descriptor heap: 0x%08X\n", static_cast<unsigned int>(hr));
 		return false;
 	}
 
@@ -676,10 +685,12 @@ bool DXRenderer::CreateRtvHeap() {
 }
 
 bool DXRenderer::CreateRenderTargetViews() {
+	HRESULT hr = S_OK;
+
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = RtvHeap->GetCPUDescriptorHandleForHeapStart();
 	for (UINT i = 0; i < kFrameCount; ++i) {
-		if (FAILED(SwapChain->GetBuffer(i, IID_PPV_ARGS(&RenderTargets[i])))) {
-			Debug::Log("[RenderDX] Failed to get back buffer %u.\n", i);
+		if (FAILED(hr = SwapChain->GetBuffer(i, IID_PPV_ARGS(&RenderTargets[i])))) {
+			Debug::Log("[RenderDX] Failed to get back buffer %u: 0x%08X\n", i, static_cast<unsigned int>(hr));
 			return false;
 		}
 		Device->CreateRenderTargetView(RenderTargets[i].Get(), nullptr, rtvHandle);
@@ -691,14 +702,16 @@ bool DXRenderer::CreateRenderTargetViews() {
 }
 
 bool DXRenderer::CreateSrvHeap() {
+	HRESULT hr = S_OK;
+
 	D3D12_DESCRIPTOR_HEAP_DESC desc {};
 	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	desc.NumDescriptors = 1; // For surface texture SRV
 	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	desc.NodeMask = 0;
 
-	if (FAILED(Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&SrvHeap)))) {
-		Debug::Log("[RenderDX] Failed to create SRV descriptor heap.\n");
+	if (FAILED(hr = Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&SrvHeap)))) {
+		Debug::Log("[RenderDX] Failed to create SRV descriptor heap: 0x%08X\n", static_cast<unsigned int>(hr));
 		return false;
 	}
 
@@ -760,8 +773,8 @@ bool DXRenderer::CreateSurfacePipeline() {
 		return false;
 	}
 
-	if (FAILED(Device->CreateRootSignature(0, rootSigBlob->GetBufferPointer(), rootSigBlob->GetBufferSize(), IID_PPV_ARGS(&RootSignature)))) {
-		Debug::Log("[RenderDX] Failed to create root signature.\n");
+	if (FAILED(hr = Device->CreateRootSignature(0, rootSigBlob->GetBufferPointer(), rootSigBlob->GetBufferSize(), IID_PPV_ARGS(&RootSignature)))) {
+		Debug::Log("[RenderDX] Failed to create root signature: 0x%08X\n", static_cast<unsigned int>(hr));
 		return false;
 	}
 
@@ -860,8 +873,8 @@ float4 PSMain(VSOut input) : SV_Target0
 	psoDesc.SampleDesc.Count = 1;
 	psoDesc.SampleDesc.Quality = 0;
 
-	if (FAILED(Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&PipelineState)))) {
-		Debug::Log("[RenderDX] Failed to create pipeline state.\n");
+	if (FAILED(hr = Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&PipelineState)))) {
+		Debug::Log("[RenderDX] Failed to create pipeline state: 0x%08X\n", static_cast<unsigned int>(hr));
 		return false;
 	}
 
@@ -870,15 +883,17 @@ float4 PSMain(VSOut input) : SV_Target0
 }
 
 bool DXRenderer::CreateCommandObjects() {
+	HRESULT hr = S_OK;
+
 	for (UINT i = 0; i < kFrameCount; ++i) {
-		if (FAILED(Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&CommandAllocators[i])))) {
-			Debug::Log("[RenderDX] Failed to create command allocator %u.\n", i);
+		if (FAILED(hr = Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&CommandAllocators[i])))) {
+			Debug::Log("[RenderDX] Failed to create command allocator %u: 0x%08X\n", i, static_cast<unsigned int>(hr));
 			return false;
 		}
 	}
 
-	if (FAILED(Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, CommandAllocators[FrameIndex].Get(), PipelineState.Get(), IID_PPV_ARGS(&CommandList)))) {
-		Debug::Log("[RenderDX] Failed to create command list.\n");
+	if (FAILED(hr = Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, CommandAllocators[FrameIndex].Get(), PipelineState.Get(), IID_PPV_ARGS(&CommandList)))) {
+		Debug::Log("[RenderDX] Failed to create command list: 0x%08X\n", static_cast<unsigned int>(hr));
 		return false;
 	}
 
@@ -888,10 +903,12 @@ bool DXRenderer::CreateCommandObjects() {
 }
 
 bool DXRenderer::CreateFenceObjects() {
+	HRESULT hr = S_OK;
+
 	FenceValues.fill(0);
 
-	if (FAILED(Device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&Fence)))) {
-		Debug::Log("[RenderDX] Failed to create fence.\n");
+	if (FAILED(hr = Device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&Fence)))) {
+		Debug::Log("[RenderDX] Failed to create fence: 0x%08X\n", static_cast<unsigned int>(hr));
 		return false;
 	}
 
@@ -899,7 +916,7 @@ bool DXRenderer::CreateFenceObjects() {
 	FenceEvent = ::CreateEventW(nullptr, FALSE, FALSE, nullptr);
 
 	if (!FenceEvent) {
-		Debug::Log("[RenderDX] Failed to create fence event.\n");
+		Debug::Log("[RenderDX] Failed to create fence event: 0x%08X\n", ::GetLastError());
 		return false;
 	}
 
@@ -908,6 +925,8 @@ bool DXRenderer::CreateFenceObjects() {
 }
 
 bool DXRenderer::CreateFixedSurfaceGpuResources() {
+	HRESULT hr = S_OK;
+
 	const UINT sourceRowBytes = RenderWidth * sizeof(std::uint16_t);
 	SurfaceUploadRowPitch = (sourceRowBytes + D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1) & ~(D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1); // Align up
 	SurfaceUploadBufferSize = static_cast<UINT64>(SurfaceUploadRowPitch) * static_cast<UINT64>(RenderHeight);
@@ -934,7 +953,7 @@ bool DXRenderer::CreateFixedSurfaceGpuResources() {
 
 	SurfaceTextureState = D3D12_RESOURCE_STATE_COPY_DEST;
 
-	if (FAILED(Device->CreateCommittedResource(
+	if (FAILED(hr = Device->CreateCommittedResource(
 		&defaultHeap,
 		D3D12_HEAP_FLAG_NONE,
 		&textureDesc,
@@ -942,7 +961,7 @@ bool DXRenderer::CreateFixedSurfaceGpuResources() {
 		nullptr,
 		IID_PPV_ARGS(&SurfaceTexture)
 	))) {
-		Debug::Log("[RenderDX] Failed to create surface texture resource.\n");
+		Debug::Log("[RenderDX] Failed to create surface texture resource: 0x%08X\n", static_cast<unsigned int>(hr));
 		return false;
 	}
 
@@ -967,7 +986,7 @@ bool DXRenderer::CreateFixedSurfaceGpuResources() {
 	uploadDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
 	for (UINT i = 0; i < kFrameCount; ++i) {
-		if (FAILED(Device->CreateCommittedResource(
+		if (FAILED(hr = Device->CreateCommittedResource(
 			&uploadHeap,
 			D3D12_HEAP_FLAG_NONE,
 			&uploadDesc,
@@ -975,7 +994,7 @@ bool DXRenderer::CreateFixedSurfaceGpuResources() {
 			nullptr,
 			IID_PPV_ARGS(&SurfaceUploadBuffers[i])
 		))) {
-			Debug::Log("[RenderDX] Failed to create surface upload buffer %u.\n", i);
+			Debug::Log("[RenderDX] Failed to create surface upload buffer %u: 0x%08X\n", i, static_cast<unsigned int>(hr));
 			return false;
 		}
 
@@ -984,7 +1003,7 @@ bool DXRenderer::CreateFixedSurfaceGpuResources() {
 		readRange.End = 0;
 
 		if (FAILED(SurfaceUploadBuffers[i]->Map(0, &readRange, reinterpret_cast<void**>(&SurfaceUploadMapped[i])))) {
-			Debug::Log("[RenderDX] Failed to map surface upload buffer %u.\n", i);
+			Debug::Log("[RenderDX] Failed to map surface upload buffer %u: 0x%08X\n", i, static_cast<unsigned int>(hr));
 			return false;
 		}
 	}
@@ -1060,24 +1079,26 @@ void DXRenderer::UpdateViewportAndScissor() {
 }
 
 bool DXRenderer::WaitForGpu() {
+	HRESULT hr = S_OK;
+
 	if (!CommandQueue || !Fence || !FenceEvent) {
 		return true; // If we don't have the necessary objects, we can't wait, but also can't report an error. 
 	}
 
 	const UINT64 currentFenceValue = FenceValues[FrameIndex];
-	if (FAILED(CommandQueue->Signal(Fence.Get(), currentFenceValue))) {
-		Debug::Log("[RenderDX] Failed to signal command queue for GPU synchronization.\n");
+	if (FAILED(hr = CommandQueue->Signal(Fence.Get(), currentFenceValue))) {
+		Debug::Log("[RenderDX] Failed to signal command queue for GPU synchronization: 0x%08X\n", static_cast<unsigned int>(hr));
 		return false;
 	}
 
-	if (FAILED(Fence->SetEventOnCompletion(currentFenceValue, FenceEvent))) {
-		Debug::Log("[RenderDX] Failed to set event on fence completion for GPU synchronization.\n");
+	if (FAILED(hr = Fence->SetEventOnCompletion(currentFenceValue, FenceEvent))) {
+		Debug::Log("[RenderDX] Failed to set event on fence completion for GPU synchronization: 0x%08X\n", static_cast<unsigned int>(hr));
 		return false;
 	}
 
 	DWORD waitResult = ::WaitForSingleObjectEx(FenceEvent, INFINITE, FALSE);
 	if (waitResult != WAIT_OBJECT_0) {
-		Debug::Log("[RenderDX] Wait for GPU synchronization event failed with error code: %lu\n", GetLastError());
+		Debug::Log("[RenderDX] Wait for GPU synchronization event failed with error code: 0x%08X\n", ::GetLastError());
 		return false;
 	}
 
@@ -1103,13 +1124,15 @@ Microsoft::WRL::ComPtr<ID3DBlob> DXRenderer::CompileShader(std::string_view sour
 }
 
 bool DXRenderer::PopulateCommandListForCPUSurface(const void* pixels, int source_pitch) {
-	if (FAILED(CommandAllocators[FrameIndex]->Reset())) {
-		Debug::Log("[RenderDX] Failed to reset command allocator for populating command list.\n");
+	HRESULT hr = S_OK;
+
+	if (FAILED(hr = CommandAllocators[FrameIndex]->Reset())) {
+		Debug::Log("[RenderDX] Failed to reset command allocator for populating command list: 0x%08X\n", static_cast<unsigned int>(hr));
 		return false;
 	}
 
-	if (FAILED(CommandList->Reset(CommandAllocators[FrameIndex].Get(), PipelineState.Get()))) {
-		Debug::Log("[RenderDX] Failed to reset command list for populating commands.\n");
+	if (FAILED(hr = CommandList->Reset(CommandAllocators[FrameIndex].Get(), PipelineState.Get()))) {
+		Debug::Log("[RenderDX] Failed to reset command list for populating commands: 0x%08X\n", static_cast<unsigned int>(hr));
 		return false;
 	}
 
@@ -1148,8 +1171,8 @@ bool DXRenderer::PopulateCommandListForCPUSurface(const void* pixels, int source
 
 	CommandList->ResourceBarrier(1, &backBufferToPresent);
 
-	if (FAILED(CommandList->Close())) {
-		Debug::Log("[RenderDX] Failed to close command list after populating commands.\n");
+	if (FAILED(hr = CommandList->Close())) {
+		Debug::Log("[RenderDX] Failed to close command list after populating commands: 0x%08X\n", static_cast<unsigned int>(hr));
 		return false;
 	}
 
@@ -1207,21 +1230,23 @@ void DXRenderer::TransitionSurfaceTexture(D3D12_RESOURCE_STATES before, D3D12_RE
 }
 
 bool DXRenderer::MoveToNextFrame() {
+	HRESULT hr = S_OK;
+
 	const UINT64 currentFenceValue = FenceValues[FrameIndex];
-	if (FAILED(CommandQueue->Signal(Fence.Get(), currentFenceValue))) {
-		Debug::Log("[RenderDX] Failed to signal command queue for moving to next frame.\n");
+	if (FAILED(hr = CommandQueue->Signal(Fence.Get(), currentFenceValue))) {
+		Debug::Log("[RenderDX] Failed to signal command queue for moving to next frame: 0x%08X\n", static_cast<unsigned int>(hr));
 		return false;
 	}
 
 	FrameIndex = SwapChain->GetCurrentBackBufferIndex();
 	if (Fence->GetCompletedValue() < FenceValues[FrameIndex]) {
-		if (FAILED(Fence->SetEventOnCompletion(FenceValues[FrameIndex], FenceEvent))) {
-			Debug::Log("[RenderDX] Failed to set event on fence completion for moving to next frame.\n");
+		if (FAILED(hr = Fence->SetEventOnCompletion(FenceValues[FrameIndex], FenceEvent))) {
+			Debug::Log("[RenderDX] Failed to set event on fence completion for moving to next frame: 0x%08X\n", static_cast<unsigned int>(hr));
 			return false;
 		}
 		DWORD waitResult = ::WaitForSingleObjectEx(FenceEvent, INFINITE, FALSE);
 		if (waitResult != WAIT_OBJECT_0) {
-			Debug::Log("[RenderDX] Wait for fence event failed while moving to next frame with error code: %lu\n", GetLastError());
+			Debug::Log("[RenderDX] Wait for fence event failed while moving to next frame with error code: 0x%08X\n", ::GetLastError());
 			return false;
 		}
 	}
