@@ -268,7 +268,7 @@ DXSurface* __fastcall DXSurface::CreatePrimary()
 
 	Debug::Log("[RenderDX] D3D12 surface created as primary surface.\n");
 
-	auto surface = new DXSurface(DSurface::WindowBounds.Width, DSurface::WindowBounds.Height);
+	auto surface = new DXSurface(Drawing::RenderWidth, Drawing::RenderHeight);
 
 	// RGB565 color shifts
 	Drawing::RedShiftLeft = 11;
