@@ -282,13 +282,18 @@ int GeneralUtils::GetColorFromColorAdd(int colorIndex)
 	const int green = color.G;
 	const int blue = color.B;
 
-	if (Drawing::ColorMode == RGBMode::RGB565)
-		colorValue |= blue | (32 * (green | (red << 6)));
-
-	if (Drawing::ColorMode != RGBMode::RGB655)
-		colorValue |= blue | (((32 * red) | (green >> 1)) << 6);
-
-	colorValue |= blue | (32 * ((32 * red) | (green >> 1)));
+	switch (Drawing::ColorMode)
+	{
+	case RGBMode::RGB565:
+		colorValue |= (red << 6 | green) << 5 | blue;
+		break;
+	case RGBMode::RGB556:
+		colorValue |= (red << 5 | green >> 1) << 6 | blue;
+		break;
+	default:
+		colorValue |= (red << 5 | green >> 1) << 5 | blue;
+		break;
+	}
 
 	return colorValue;
 }

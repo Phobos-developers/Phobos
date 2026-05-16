@@ -17,6 +17,8 @@ PhobosMap<ObjectClass*, AlphaShapeClass*>* AresFunctions::AlphaExtMap = nullptr;
 decltype(AresFunctions::GetTunnel) AresFunctions::GetTunnel = nullptr;
 decltype(AresFunctions::AddPassengerFromTunnel) AresFunctions::AddPassengerFromTunnel = nullptr;
 
+decltype(AresFunctions::FindEVAIndex) AresFunctions::FindEVAIndex = nullptr;
+
 void* AresFunctions::_SWTypeExtMap = nullptr;
 decltype(AresFunctions::_SWTypeExtMapFind) AresFunctions::_SWTypeExtMapFind = nullptr;
 
@@ -58,6 +60,9 @@ void AresFunctions::InitAres3_0()
 	NOTE_ARES_FUN(AresFunctions::GetTunnel, 0x0D740);
 	NOTE_ARES_FUN(AresFunctions::AddPassengerFromTunnel, 0x09000);
 
+	// VoxClass
+	NOTE_ARES_FUN(AresFunctions::FindEVAIndex, 0x063560);
+
 #ifndef USING_MULTIFINITE_SYRINGE
 	Apply_Ares3_0_Patches();
 #endif
@@ -97,6 +102,9 @@ void AresFunctions::InitAres3_0p1()
 	// BuildingTypeExt::ExtData
 	NOTE_ARES_FUN(AresFunctions::GetTunnel, 0x0DA30);
 	NOTE_ARES_FUN(AresFunctions::AddPassengerFromTunnel, 0x09040);
+
+	// VoxClass
+	NOTE_ARES_FUN(AresFunctions::FindEVAIndex, 0x0642B0);
 
 #ifndef USING_MULTIFINITE_SYRINGE
 	Apply_Ares3_0p1_Patches();

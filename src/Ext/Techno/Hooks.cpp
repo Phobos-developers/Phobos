@@ -282,6 +282,9 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 		pThis->TargetingTimer.Start(ScenarioClass::Instance->Random.RandomRanged(0, 15));
 	}
 
+	if (pThis->AbstractFlags & AbstractFlags::Foot)
+		pThis->Owner->RecheckTechTree = true; // for SW.AuxTechons and SW.NegTechnos
+
 	return 0;
 }
 
@@ -1970,6 +1973,18 @@ DEFINE_HOOK(0x4D4B43, FootClass_Mission_Capture, 0x6)
 	pThis->SetDestination(nullptr, false);
 
 	return LosesDestination;
+}
+
+DEFINE_HOOK(0x4DA230, FootClass_CanBeRecruited, 0x5)
+{
+	enum { SkipGameCode = 0x4DA294 };
+
+	GET(FootClass*, pThis, ECX);
+	GET_STACK(HouseClass*, pHouse, 0x4);
+
+	R->AL(TechnoExt::CanBeRecruitedFix(pThis, pHouse));
+
+	return SkipGameCode;
 }
 
 #pragma region DynamicSight
