@@ -503,7 +503,7 @@ void __fastcall RenderDX::ResetScale() {
 	ViewportY = 0.0f;
 }
 
-int* __fastcall RenderDX::EnumDisplayModes(DWORD minw, DWORD minh, DWORD maxw, DWORD maxh, DWORD bitdepth) {
+int* __fastcall RenderDX::EnumDisplayModes(DWORD minw, DWORD minh, DWORD maxw, DWORD maxh, DWORD) {
 	std::vector<std::pair<int, int>> modes;
 	DEVMODE devmode{};
 	DWORD mode_index = 0;
@@ -513,7 +513,7 @@ int* __fastcall RenderDX::EnumDisplayModes(DWORD minw, DWORD minh, DWORD maxw, D
 		const DWORD h = devmode.dmPelsHeight;
 		const DWORD bpp = devmode.dmBitsPerPel;
 
-		if (w >= minw && h >= minh && w <= maxw && h <= maxh && bpp == bitdepth) {
+		if (w >= minw && h >= minh && w <= maxw && h <= maxh && bpp == 32) {
 			modes.emplace_back(static_cast<int>(w), static_cast<int>(h));
 		}
 	}
