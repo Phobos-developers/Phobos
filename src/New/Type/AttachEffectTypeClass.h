@@ -89,6 +89,12 @@ public:
 	Valueable<WeaponTypeClass*> RevengeWeapon;
 	Valueable<AffectedHouse> RevengeWeapon_AffectsHouse;
 	Valueable<bool> RevengeWeapon_UseInvokerAsOwner;
+	Valueable<WeaponTypeClass*> PeriodicWeapon;
+	Valueable<int> PeriodicWeapon_Delay;
+	Valueable<int> PeriodicWeapon_Range;
+	Valueable<AffectedHouse> PeriodicWeapon_AffectsHouses;
+	Valueable<bool> PeriodicWeapon_UseInvokerAsOwner;
+	Valueable<bool> PeriodicWeapon_FireAll;
 	Valueable<bool> ReflectDamage;
 	Nullable<WarheadTypeClass*> ReflectDamage_Warhead;
 	Valueable<bool> ReflectDamage_Warhead_Detonate;
@@ -163,6 +169,12 @@ public:
 		, DisableWeapons { false }
 		, Unkillable { false }
 		, LaserTrail_Type { -1 }
+		, PeriodicWeapon {}
+		, PeriodicWeapon_Delay { 0 }
+		, PeriodicWeapon_Range { 0 }
+		, PeriodicWeapon_AffectsHouses { AffectedHouse::All }
+		, PeriodicWeapon_UseInvokerAsOwner { false }
+		, PeriodicWeapon_FireAll { false }
 		, Groups {}
 	{};
 

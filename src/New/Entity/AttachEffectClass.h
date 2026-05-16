@@ -79,6 +79,7 @@ private:
 	int CurrentDelay;
 	int InitialDelay;
 	int RecreationDelay;
+	int PeriodicWeaponTimer;
 	AttachEffectTypeClass* Type;
 	TechnoClass* Techno;
 	HouseClass* InvokerHouse;

@@ -160,6 +160,13 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->RevengeWeapon_AffectsHouse.Read(exINI, pSection, "RevengeWeapon.AffectsHouse");
 	this->RevengeWeapon_UseInvokerAsOwner.Read(exINI, pSection, "RevengeWeapon.UseInvokerAsOwner");
 
+	this->PeriodicWeapon.Read(exINI, pSection, "PeriodicWeapon");
+	this->PeriodicWeapon_Delay.Read(exINI, pSection, "PeriodicWeapon.Delay");
+	this->PeriodicWeapon_Range.Read(exINI, pSection, "PeriodicWeapon.Range");
+	this->PeriodicWeapon_AffectsHouses.Read(exINI, pSection, "PeriodicWeapon.AffectsHouses");
+	this->PeriodicWeapon_UseInvokerAsOwner.Read(exINI, pSection, "PeriodicWeapon.UseInvokerAsOwner");
+	this->PeriodicWeapon_FireAll.Read(exINI, pSection, "PeriodicWeapon.FireAll");
+
 	this->ReflectDamage.Read(exINI, pSection, "ReflectDamage");
 	this->ReflectDamage_Warhead.Read(exINI, pSection, "ReflectDamage.Warhead");
 	this->ReflectDamage_Warhead_Detonate.Read(exINI, pSection, "ReflectDamage.Warhead.Detonate");
@@ -235,6 +242,12 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->RevengeWeapon)
 		.Process(this->RevengeWeapon_AffectsHouse)
 		.Process(this->RevengeWeapon_UseInvokerAsOwner)
+		.Process(this->PeriodicWeapon)
+		.Process(this->PeriodicWeapon_Delay)
+		.Process(this->PeriodicWeapon_Range)
+		.Process(this->PeriodicWeapon_AffectsHouses)
+		.Process(this->PeriodicWeapon_UseInvokerAsOwner)
+		.Process(this->PeriodicWeapon_FireAll)
 		.Process(this->ReflectDamage)
 		.Process(this->ReflectDamage_Warhead)
 		.Process(this->ReflectDamage_Warhead_Detonate)

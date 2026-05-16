@@ -1,10 +1,45 @@
 #include "AttachEffectClass.h"
 
+#include <Utilities/EnumFunctions.h>
+#include <algorithm>
+#include <Ext/Bullet/Body.h>
+
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 std::vector<AttachEffectClass*> AttachEffectClass::Array;
+
+void FirePeriodicBullet(WeaponTypeClass* pWeapon, AbstractClass* pTarget, TechnoClass* pFirer, HouseClass* pFirerHouse, CoordStruct sourceCoords)
+{
+	if (!pWeapon || !pTarget || !pFirer)
+		return;
+
+	auto const pBulletType = pWeapon->Projectile;
+
+	if (!pBulletType)
+		return;
+
+	auto const pBullet = pBulletType->CreateBullet(
+		pTarget, pFirer,
+		pWeapon->Damage, pWeapon->Warhead,
+		pWeapon->Speed, pWeapon->Bright);
+
+	if (!pBullet)
+		return;
+
+	//Set weapon type, range, and faction,
+	pBullet->WeaponType = pWeapon;
+	pBullet->Range = WeaponTypeExt::ExtMap.Find(pWeapon)->ProjectileRange.Get();
+	BulletExt::ExtMap.Find(pBullet)->FirerHouse = pFirerHouse;
+
+	// Launch trajectory (SimulatedFiringUnlimbo internally calls MoveTo),
+	BulletExt::SimulatedFiringUnlimbo(pBullet, pFirerHouse, pWeapon, sourceCoords, false);
+
+	//Play shooting effects
+	BulletExt::SimulatedFiringEffects(pBullet, pFirerHouse, pFirer, true, true);
+}
+
 
 AttachEffectClass::AttachEffectClass()
 	: Type { nullptr }, Techno { nullptr }, InvokerHouse { nullptr }, Invoker { nullptr },
@@ -17,6 +52,7 @@ AttachEffectClass::AttachEffectClass()
 	, NeedsRecalculateStat { false }
 	, LastDiscardCheckFrame { -1 }
 	, LastDiscardCheckValue { false }
+	, PeriodicWeaponTimer { 0 }
 {
 	this->HasInitialized = false;
 	AttachEffectClass::Array.emplace_back(this);
@@ -42,6 +78,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, NeedsRecalculateStat { false }
 	, LastDiscardCheckFrame { -1 }
 	, LastDiscardCheckValue { false }
+	, PeriodicWeaponTimer { 0 }
 {
 	this->HasInitialized = false;
 
@@ -246,6 +283,118 @@ void AttachEffectClass::AI()
 	this->CloakCheck();
 	this->OnlineCheck();
 	this->AnimCheck();
+
+	// PeriodicWeapon
+	if (pType->PeriodicWeapon && pType->PeriodicWeapon_Delay > 0)
+	{
+		if (!this->IsOnline)
+		{
+			this->PeriodicWeaponTimer = pType->PeriodicWeapon_Delay;
+		}
+		else if (this->PeriodicWeaponTimer > 0)
+		{
+			this->PeriodicWeaponTimer--;
+		}
+
+		if (this->PeriodicWeaponTimer == 0 && this->IsOnline)
+		{
+			this->PeriodicWeaponTimer = pType->PeriodicWeapon_Delay;
+
+			auto const pWeapon = pType->PeriodicWeapon;
+			auto const pTechno = this->Techno;
+
+			TechnoClass* pFirer = pType->PeriodicWeapon_UseInvokerAsOwner
+				? this->Invoker : pTechno;
+			HouseClass* pFirerHouse = pType->PeriodicWeapon_UseInvokerAsOwner
+				? this->InvokerHouse : pTechno->Owner;
+
+			if (pFirer && !pFirer->InLimbo)
+			{
+				int range = pType->PeriodicWeapon_Range * Unsorted::LeptonsPerCell;
+				auto const cellStruct = CellClass::Coord2Cell(pTechno->Location);
+				int cellRange = pType->PeriodicWeapon_Range + 1;
+
+				std::vector<TechnoClass*> targets;
+
+				for (int x = cellStruct.X - cellRange; x <= cellStruct.X + cellRange; x++)
+				{
+					for (int y = cellStruct.Y - cellRange; y <= cellStruct.Y + cellRange; y++)
+					{
+						CellStruct cs = { (short)x, (short)y };
+						auto const pCell = MapClass::Instance.TryGetCellAt(cs);
+						if (!pCell)
+							continue;
+
+						for (NextObject iter(pCell->FirstObject); iter; ++iter)
+						{
+							auto const pObject = *iter;
+
+							auto const absType = pObject->WhatAmI();
+							if (absType != AbstractType::Infantry
+								&& absType != AbstractType::Unit
+								&& absType != AbstractType::Building
+								&& absType != AbstractType::Aircraft)
+								continue;
+
+							auto const pTarget = static_cast<TechnoClass*>(pObject);
+
+							if (pTarget == pTechno || pTarget->InLimbo)
+								continue;
+
+							// Search Range: PeriodicWeapon.Range
+							int dist = static_cast<int>(pTechno->Location.DistanceFrom(pTarget->Location));
+							if (dist > range)
+								continue;
+
+							// Faction Selection: PeriodicWeapon.AffectsHouses
+							if (!EnumFunctions::CanTargetHouse(pType->PeriodicWeapon_AffectsHouses.Get(), pTechno->Owner, pTarget->Owner))
+								continue;
+
+							// Weapon's own target type filtering
+							auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+							if (!EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget))
+								continue;
+
+							// Weapon health threshold filter
+							if (!pWeaponExt->IsHealthInThreshold(pTarget))
+								continue;
+
+							// Weapon AE Requirement Filtering
+							if (!pWeaponExt->HasRequiredAttachedEffects(pTarget, pFirer))
+								continue;
+
+							//Remove duplicates
+							if (std::find(targets.begin(), targets.end(), pTarget) != targets.end())
+								continue;
+
+							targets.push_back(pTarget);
+						}
+					}
+				}
+
+				if (!targets.empty())
+				{
+					auto const sourceCoords = pTechno->Location;
+
+					if (pType->PeriodicWeapon_FireAll)
+					{
+						for (auto const pTarget : targets)
+							FirePeriodicBullet(pWeapon, pTarget, pFirer, pFirerHouse, sourceCoords);
+					}
+					else
+					{
+						auto const pBest = *std::min_element(targets.begin(), targets.end(),
+							[pTechno](TechnoClass* a, TechnoClass* b)
+							{
+								return pTechno->Location.DistanceFrom(a->Location) < pTechno->Location.DistanceFrom(b->Location);
+							});
+						FirePeriodicBullet(pWeapon, pBest, pFirer, pFirerHouse, sourceCoords);
+					}
+				}
+			}
+		}
+	}
+
 }
 
 void AttachEffectClass::AI_Temporal()
