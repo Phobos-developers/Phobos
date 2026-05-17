@@ -1773,6 +1773,13 @@ msgid ""
 msgstr ""
 "允许了 Ares 的 `SW.AuxBuildings` 和 `SW.NegBuildings` 计入建筑加载物"
 
+msgid ""
+"Fix the bug where units with passengers being removed were incorrectly "
+"counted in `LimboTracker` due to bypassing `UnInit`, affecting auto-death"
+" and superweapon auxiliary techno checks"
+msgstr ""
+"修复了带有乘客的单位被移除时因绕过 `UnInit` 而错误计入 `LimboTracker`，进而影响自动死亡及超武辅助科技判定的问题"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 

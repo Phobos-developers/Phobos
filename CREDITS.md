@@ -535,6 +535,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that low-air taking off / landing objects will receive twice damage
   - Aux technos and TechLevel requirement of superweapon
   - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
+  - Fix the bug where units with passengers being removed were incorrectly counted in `LimboTracker` due to bypassing `UnInit`, affecting auto-death and superweapon auxiliary techno checks
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
