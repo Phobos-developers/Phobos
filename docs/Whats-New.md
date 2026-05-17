@@ -710,6 +710,7 @@ Phobos fixes:
 - Fixed the bug where the `.SubjectToGround` of the Trajectory type did not consider bridges (by Noble_Fish)
 - AttachEffect `DisableWeapons=true` now makes `Gattling=yes` rate tick down and stops the sounds from playing (by Starkku)
 - Fixed cells with `CanBeBuiltOn=true` TerrainTypes on them not being considered valid build locations by AI (by Starkku)
+- Fixed the bug where `WeaponRange.AllowWeapons` and `WeaponRange.DisallowWeapons` only support weapons listed in the `[WeaponTypes]` list (by Noble_Fish)
 
 Fixes / interactions with other extensions:
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
