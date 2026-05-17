@@ -1,10 +1,8 @@
 #pragma once
 
-struct DXRenderOptions
-{
-	static DXRenderOptions& Config()
-	{
-		static DXRenderOptions instance;
+struct RenderOptions {
+	static RenderOptions& Config() {
+		static RenderOptions instance;
 		return instance;
 	}
 

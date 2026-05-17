@@ -6,147 +6,145 @@
 
 #include "Functions.h"
 
+#include <algorithm>
 #include <cmath>
+#include <utility>
 
 #include <Utilities/Debug.h>
 
-DXMouse::DXMouse(Surface* surface, HWND hwnd) {}
+DXMouse::DXMouse(Surface* pSurface, HWND hWnd) {}
 
 DXMouse::~DXMouse() {
-	Delete_Cursor_Image();
+	DeleteCursorImage();
 	if (Cursor) {
 		::DestroyCursor(Cursor);
 		Cursor = nullptr;
 	}
 }
 
-void DXMouse::Set_Cursor(Point2D const& hotspot, SHPStruct const* cursor, int shape) {
-	if (cursor == nullptr || shape < 0 || shape >= cursor->Frames) {
-		Delete_Cursor_Image();
-		Set_System_Cursor();
+void DXMouse::SetCursor(Point2D const& hotspot, SHPStruct const* pCursor, int shape) {
+	if (pCursor == nullptr || shape < 0 || shape >= pCursor->Frames) {
+		DeleteCursorImage();
+		SetSystemCursor();
 		return;
 	}
 
-	if (MouseShape == cursor && ShapeNumber == shape) {
-		return; // No change needed
+	if (MouseShape == pCursor && ShapeNumber == shape)
+		return;
+
+	if (pCursor != MouseShape) {
+		DeleteCursorImage();
+		ConvertCursorImage(pCursor);
 	}
 
-	if (cursor != MouseShape) {
-		Delete_Cursor_Image();
-		Convert_Custor_Image(cursor);
-	}
-
-	MouseShape = cursor;
+	MouseShape = pCursor;
 	ShapeNumber = shape;
 
 	const auto& info = CursorInfo[shape];
 
 	Hotspot = hotspot;
-	Point2D scaled_hotspot;
-	scaled_hotspot.X = std::clamp(Hotspot.X * Get_Cursor_Scale(), 0, info.Width - 1);
-	scaled_hotspot.Y = std::clamp(Hotspot.Y * Get_Cursor_Scale(), 0, info.Height - 1);
+	Point2D scaledHotspot;
+	scaledHotspot.X = std::clamp(Hotspot.X * GetCursorScale(), 0, info.Width - 1);
+	scaledHotspot.Y = std::clamp(Hotspot.Y * GetCursorScale(), 0, info.Height - 1);
 
-	Replace_Cursor(Build_Cursor(info, scaled_hotspot.X, scaled_hotspot.Y));
+	ReplaceCursor(BuildCursor(info, scaledHotspot.X, scaledHotspot.Y));
 }
 
-bool DXMouse::Is_Hidden() const {
-	return !IsVisible;
+bool DXMouse::IsHidden() const {
+	return !Visible;
 }
 
-void DXMouse::Hide_Mouse() {
+void DXMouse::HideMouse() {
 	Debug::Log("Hiding mouse cursor\n");
 
-	if (!IsVisible)
+	if (!Visible)
 		return;
 
 	::SetCursor(nullptr);
-	IsVisible = false;
+	Visible = false;
 }
 
-void DXMouse::Show_Mouse() {
+void DXMouse::ShowMouse() {
 	Debug::Log("Showing mouse cursor\n");
 
-	if (IsVisible)
+	if (Visible)
 		return;
 
 	::SetCursor(Cursor);
-	IsVisible = true;
+	Visible = true;
 }
 
-void DXMouse::Release_Mouse() {
-	if (!IsCaptured)
+void DXMouse::ReleaseMouse() {
+	if (!Captured)
 		return;
 
 	::ClipCursor(nullptr);
-	IsCaptured = false;
+	Captured = false;
 }
 
-void DXMouse::Capture_Mouse() {
-	if (IsCaptured)
+void DXMouse::CaptureMouse() {
+	if (Captured)
 		return;
 
-	RECT client_rect;
-	::GetClientRect(Game::hWnd, &client_rect);
-	::MapWindowPoints(Game::hWnd, nullptr, reinterpret_cast<LPPOINT>(&client_rect), 2);
-	::ClipCursor(&client_rect);
+	RECT clientRect;
+	::GetClientRect(Game::hWnd, &clientRect);
+	::MapWindowPoints(Game::hWnd, nullptr, reinterpret_cast<LPPOINT>(&clientRect), 2);
+	::ClipCursor(&clientRect);
 
-	IsCaptured = true;
+	Captured = true;
 }
 
-bool DXMouse::Is_Captured() const {
-	return IsCaptured;
+bool DXMouse::IsCaptured() const {
+	return Captured;
 }
 
-void DXMouse::Conditional_Hide_Mouse(RectangleStruct region) {
-	Hide_Mouse();
+void DXMouse::ConditionalHideMouse(RectangleStruct region) {
+	HideMouse();
 }
 
-void DXMouse::Conditional_Show_Mouse() {
-	Show_Mouse();
+void DXMouse::ConditionalShowMouse() {
+	ShowMouse();
 }
 
-int DXMouse::Get_Mouse_State() const {
-	return IsVisible ? 0 : -1;
+int DXMouse::GetMouseState() const {
+	return Visible ? 0 : -1;
 }
 
-int DXMouse::Get_Mouse_X() const {
+int DXMouse::GetMouseX() const {
 	return MouseX;
 }
 
-int DXMouse::Get_Mouse_Y() const {
+int DXMouse::GetMouseY() const {
 	return MouseY;
 }
 
-Point2D DXMouse::Get_Mouse_Point() const {
+Point2D DXMouse::GetMousePoint() const {
 	return Point2D { MouseX, MouseY };
 }
 
-void DXMouse::Set_Mouse_Point(int x, int y) {
+void DXMouse::SetMousePoint(int x, int y) {
 	MouseX = x;
 	MouseY = y;
 }
 
 // Hardware cursor drawing is handled by the OS, so these functions are no-ops.
-void DXMouse::Draw_Mouse(Surface* scr, bool issidebarsurface) {}
+void DXMouse::DrawMouse(Surface* pSurface, bool isSidebarSurface) {}
 
-void DXMouse::Erase_Mouse(Surface* scr, bool issidebarsurface) {}
+void DXMouse::EraseMouse(Surface* pSurface, bool isSidebarSurface) {}
 
 // Coordinate conversion is not needed when using hardware cursor, so this is a no-op.
-void DXMouse::Convert_Coordinate(int& x, int& y) const {}
+void DXMouse::ConvertCoordinate(int& x, int& y) const {}
 
-void DXMouse::Process_Mouse() {
-	// Update mouse position via GetCursorPos and ScreenToClient
+void DXMouse::ProcessMouse() {
 	if (!Unsorted::GameInFocus)
 		return;
 
 	POINT pt;
-	if (!::GetCursorPos(&pt)) {
+	if (!::GetCursorPos(&pt))
 		return;
-	}
 
-	if (!::ScreenToClient(Game::hWnd, &pt)) {
+	if (!::ScreenToClient(Game::hWnd, &pt))
 		return;
-	}
 
 	if (RenderDX::ShouldScale()) {
 		MouseX = RenderDX::ClientToRenderX(pt.x);
@@ -159,64 +157,64 @@ void DXMouse::Process_Mouse() {
 
 }
 
-void DXMouse::Recalc_Capture_Region() {
-	if (Is_Captured()) {
-		Release_Mouse();
-		Capture_Mouse();
+void DXMouse::RecalcCaptureRegion() {
+	if (IsCaptured()) {
+		ReleaseMouse();
+		CaptureMouse();
 	}
 }
 
-void DXMouse::Set_Cached_Cursor() {
-	if (IsVisible)
+void DXMouse::SetCachedCursor() {
+	if (Visible)
 		::SetCursor(Cursor);
 	else
 		::SetCursor(nullptr);
 }
 
-void DXMouse::Rebuild_Cursor_Image() {
+void DXMouse::RebuildCursorImage() {
 	SHPStruct const* shape = MouseShape;
 	int number = ShapeNumber;
 
-	Delete_Cursor_Image();
-	Set_Cursor(Hotspot, shape, number);
+	DeleteCursorImage();
+	SetCursor(Hotspot, shape, number);
 }
 
-void DXMouse::Delete_Cursor_Image() {
+void DXMouse::DeleteCursorImage() {
 	CursorInfo.clear();
 
 	MouseShape = nullptr;
 	ShapeNumber = 0;
 }
 
-void DXMouse::Convert_Custor_Image(SHPStruct const* cursor) {
-	if (!cursor || cursor->Frames <= 0)
+void DXMouse::ConvertCursorImage(SHPStruct const* pCursor) {
+	if (!pCursor || pCursor->Frames <= 0)
 		return;
 
 	for (int i = 0; i < 256; ++i) {
 		const auto color = static_cast<uint16_t*>(FileSystem::MOUSE_PAL->PaletteData)[i];
-		auto clr = ColorStruct { color };
+		auto clr = ColorStruct { static_cast<WORD>(color) };
 		MousePalette[i] = ((i == 0 ? 0 : 255) << 24) | (clr.R << 16) | (clr.G << 8) | clr.B;
 	}
 
-	CursorInfo.resize(cursor->Frames);
-	for (int i = 0; i < cursor->Frames; ++i)
-		Shape_To_Cursor(cursor, i, CursorInfo[i]);
+	CursorInfo.resize(pCursor->Frames);
+	for (int i = 0; i < pCursor->Frames; ++i)
+		ShapeToCursor(pCursor, i, CursorInfo[i]);
 }
 
-void DXMouse::Shape_To_Cursor(SHPStruct const* cursor, int frame, CursorData& result) {
-	int width = cursor->Width;
-	int height = cursor->Height;
+void DXMouse::ShapeToCursor(SHPStruct const* pCursor, int frame, CursorData& result) {
+	int width = pCursor->Width;
+	int height = pCursor->Height;
 
-	std::vector<uint32_t> original_colors;
-	original_colors.resize(width * height);
+	std::vector<uint32_t> originalColors;
+	originalColors.resize(width * height);
 
-	int scaled_width = static_cast<int>(width * Get_Cursor_Scale());
-	int scaled_height = static_cast<int>(height * Get_Cursor_Scale());
+	int scaledWidth = static_cast<int>(width * GetCursorScale());
+	int scaledHeight = static_cast<int>(height * GetCursorScale());
 
 	BITMAPV5HEADER bi {};
 	bi.bV5Size = sizeof(BITMAPV5HEADER);
-	bi.bV5Width = scaled_width;
-	bi.bV5Height = -scaled_height; // Negative height for top-down bitmap
+	bi.bV5Width = scaledWidth;
+	bi.bV5Height = -scaledHeight; // Negative height creates a top-down bitmap.
 	bi.bV5Planes = 1;
 	bi.bV5BitCount = 32;
 	bi.bV5Compression = BI_BITFIELDS;
@@ -225,108 +223,104 @@ void DXMouse::Shape_To_Cursor(SHPStruct const* cursor, int frame, CursorData& re
 	bi.bV5BlueMask = 0x000000FF;
 	bi.bV5AlphaMask = 0xFF000000;
 
-	HDC hdc = ::GetDC(nullptr);
-	void* dst = nullptr;
-	HBITMAP bitmap = ::CreateDIBSection(hdc, reinterpret_cast<const BITMAPINFO*>(&bi), DIB_RGB_COLORS, &dst, nullptr, 0);
-	::ReleaseDC(nullptr, hdc);
+	HDC hDC = ::GetDC(nullptr);
+	void* pDestPixels = nullptr;
+	HBITMAP bitmap = ::CreateDIBSection(hDC, reinterpret_cast<const BITMAPINFO*>(&bi), DIB_RGB_COLORS, &pDestPixels, nullptr, 0);
+	::ReleaseDC(nullptr, hDC);
 
-	if (!dst || !bitmap) {
+	if (!pDestPixels || !bitmap)
 		return;
-	}
 
-	const auto* src = static_cast<const uint8_t*>(cursor->GetPixels(frame));
-	const auto r = cursor->GetFrameBounds(frame);
+	const auto* pSource = static_cast<const uint8_t*>(pCursor->GetPixels(frame));
+	const auto rect = pCursor->GetFrameBounds(frame);
 
-	if (cursor->HasCompression(frame)) {
-		const uint8_t* psrc = src;
-		for (int y = 0; y < r.Height; ++y) {
-			uint32_t* dst_row = original_colors.data() + (r.Y + y) * width + r.X;
-			int len = psrc[0] | (psrc[1] << 8);
+	if (pCursor->HasCompression(frame)) {
+		const uint8_t* pSrc = pSource;
+		for (int y = 0; y < rect.Height; ++y) {
+			uint32_t* pDestRow = originalColors.data() + (rect.Y + y) * width + rect.X;
+			int length = pSrc[0] | (pSrc[1] << 8);
 			int pos = 0;
-			for (int k = 2; k < len; ++k) {
-				uint8_t b = psrc[k];
-				if (b == 0) {
-					uint8_t count = psrc[++k];
-					for (int i = 0; i < count; ++i) {
-						dst_row[pos++] = MousePalette[0];
-					}
+			for (int k = 2; k < length; ++k) {
+				uint8_t value = pSrc[k];
+				if (value == 0) {
+					uint8_t count = pSrc[++k];
+					for (int i = 0; i < count; ++i)
+						pDestRow[pos++] = MousePalette[0];
 				}
 				else
-					dst_row[pos++] = MousePalette[b];
+					pDestRow[pos++] = MousePalette[value];
 			}
-			psrc += len;
+			pSrc += length;
 		}
 	}
 	else {
-		for (int y = 0; y < r.Height; ++y) {
-			uint32_t* dst_row = original_colors.data() + (r.Y + y) * width + r.X;
-			const uint8_t* src_row = src + y * r.Width;
-			for (int x = 0; x < r.Width; ++x) {
-				const auto color = MousePalette[src_row[x]];
-				dst_row[x] = color;
+		for (int y = 0; y < rect.Height; ++y) {
+			uint32_t* pDestRow = originalColors.data() + (rect.Y + y) * width + rect.X;
+			const uint8_t* pSourceRow = pSource + y * rect.Width;
+			for (int x = 0; x < rect.Width; ++x) {
+				const auto color = MousePalette[pSourceRow[x]];
+				pDestRow[x] = color;
 			}
 		}
 	}
 
-	Scale_Bitmap_Image(original_colors.data(), width, height, static_cast<uint32_t*>(dst), scaled_width, scaled_height);
+	ScaleBitmapImage(originalColors.data(), width, height, static_cast<uint32_t*>(pDestPixels), scaledWidth, scaledHeight);
 
-	HBITMAP mask = ::CreateBitmap(scaled_width, scaled_height, 1, 1, nullptr);
-	
-	result.Width = scaled_width;
-	result.Height = scaled_height;
+	HBITMAP mask = ::CreateBitmap(scaledWidth, scaledHeight, 1, 1, nullptr);
+
+	result.Width = scaledWidth;
+	result.Height = scaledHeight;
 	result.Color = bitmap;
 	result.Mask = mask;
 }
 
-void DXMouse::Scale_Bitmap_Image(const uint32_t* src_ptr, int src_w, int src_h, uint32_t* dst, int dst_w, int dst_h) {
-	// Using nearest neighbor scaling for simplicity
-	const uint64_t inc_y = (static_cast<uint64_t>(src_h) << 16) / dst_h;
-	const uint64_t inc_x = (static_cast<uint64_t>(src_w) << 16) / dst_w;
+void DXMouse::ScaleBitmapImage(const uint32_t* pSource, int sourceWidth, int sourceHeight, uint32_t* pDest, int destWidth, int destHeight) {
+	const uint64_t yStep = (static_cast<uint64_t>(sourceHeight) << 16) / destHeight;
+	const uint64_t xStep = (static_cast<uint64_t>(sourceWidth) << 16) / destWidth;
 
-	uint64_t pos_y = inc_y / 2;
+	uint64_t yPosition = yStep / 2;
 
-	for (int y = 0; y < dst_h; ++y) {
-		const uint64_t src_y = pos_y >> 16;
-		const uint32_t* src_row = src_ptr + src_y * src_w;
+	for (int y = 0; y < destHeight; ++y) {
+		const uint64_t sourceY = yPosition >> 16;
+		const uint32_t* pSourceRow = pSource + sourceY * sourceWidth;
 
-		pos_y += inc_y;
+		yPosition += yStep;
 
-		uint64_t pos_x = inc_x / 2;
+		uint64_t xPosition = xStep / 2;
 
-		for (int x = 0; x < dst_w; ++x) {
-			const uint64_t src_x = pos_x >> 16;
-			pos_x += inc_x;
-			*dst++ = src_row[src_x];
+		for (int x = 0; x < destWidth; ++x) {
+			const uint64_t sourceX = xPosition >> 16;
+			xPosition += xStep;
+			*pDest++ = pSourceRow[sourceX];
 		}
 	}
 }
 
-
-void DXMouse::Replace_Cursor(HCURSOR cursor) {
-	auto old_cursor = std::exchange(Cursor, cursor);
+void DXMouse::ReplaceCursor(HCURSOR cursor) {
+	auto oldCursor = std::exchange(Cursor, cursor);
 	::SetCursor(Cursor);
-	if (old_cursor) {
-		::DestroyCursor(old_cursor);
-	}
+	if (oldCursor)
+		::DestroyCursor(oldCursor);
 }
 
-void DXMouse::Set_System_Cursor() { Replace_Cursor(::LoadCursorA(nullptr, IDC_ARROW)); }
+void DXMouse::SetSystemCursor() {
+	ReplaceCursor(::LoadCursorA(nullptr, IDC_ARROW));
+}
 
-HCURSOR DXMouse::Build_Cursor(const CursorData& data, int hotspot_x, int hotspot_y) {
+HCURSOR DXMouse::BuildCursor(const CursorData& data, int hotspotX, int hotspotY) {
 	ICONINFO ii {};
 	ii.fIcon = FALSE;
-	ii.xHotspot = static_cast<DWORD>(hotspot_x);
-	ii.yHotspot = static_cast<DWORD>(hotspot_y);
+	ii.xHotspot = static_cast<DWORD>(hotspotX);
+	ii.yHotspot = static_cast<DWORD>(hotspotY);
 	ii.hbmColor = data.Color;
 	ii.hbmMask = data.Mask;
 
 	return static_cast<HCURSOR>(::CreateIconIndirect(&ii));
 }
 
-int DXMouse::Get_Cursor_Scale() {
-	if (!RenderDX::ShouldScale()) {
+int DXMouse::GetCursorScale() {
+	if (!RenderDX::ShouldScale())
 		return 1;
-	}
 
 	return std::max(1, static_cast<int>(std::round(1.0f / RenderDX::GetYScale())));
 }

@@ -15,9 +15,10 @@
 #include <windowsx.h>
 
 #include <algorithm>
+#include <cstring>
 #include <vector>
 
-bool __fastcall RenderDX::AllocateSurfaces(const RectangleStruct& hidden_rect, const RectangleStruct& composite_rect, const RectangleStruct& tile_rect, const RectangleStruct& sidebar_rect, bool hidden_first) {
+bool __fastcall RenderDX::AllocateSurfaces(const RectangleStruct& hiddenRect, const RectangleStruct& compositeRect, const RectangleStruct& tileRect, const RectangleStruct& sidebarRect, bool hiddenFirst) {
 	Debug::Log("[RenderDX] Allocating new surfaces\n");
 
 	if (DSurface::Alternate) {
@@ -50,47 +51,47 @@ bool __fastcall RenderDX::AllocateSurfaces(const RectangleStruct& hidden_rect, c
 		DSurface::Sidebar = nullptr;
 	}
 
-	if (hidden_first && hidden_rect.Width > 0 && hidden_rect.Height > 0) {
-		DSurface::Hidden = GameCreate<DXSurface>(hidden_rect.Width, hidden_rect.Height);
+	if (hiddenFirst && hiddenRect.Width > 0 && hiddenRect.Height > 0) {
+		DSurface::Hidden = GameCreate<DXSurface>(hiddenRect.Width, hiddenRect.Height);
 		DSurface::Hidden->Fill(0);
-		Debug::Log("[RenderDX] HiddenSurface (%dx%d)\n", hidden_rect.Width, hidden_rect.Height);
+		Debug::Log("[RenderDX] HiddenSurface (%dx%d)\n", hiddenRect.Width, hiddenRect.Height);
 	}
 
-	if (composite_rect.Width > 0 && composite_rect.Height > 0) {
-		DSurface::Composite = GameCreate<DXSurface>(composite_rect.Width, composite_rect.Height);
+	if (compositeRect.Width > 0 && compositeRect.Height > 0) {
+		DSurface::Composite = GameCreate<DXSurface>(compositeRect.Width, compositeRect.Height);
 		DSurface::Composite->Fill(0);
-		Debug::Log("[RenderDX] CompositeSurface (%dx%d)\n", composite_rect.Width, composite_rect.Height);
+		Debug::Log("[RenderDX] CompositeSurface (%dx%d)\n", compositeRect.Width, compositeRect.Height);
 	}
 
-	if (tile_rect.Width > 0 && tile_rect.Height > 0) {
-		DSurface::Tile = GameCreate<DXSurface>(tile_rect.Width, tile_rect.Height);
+	if (tileRect.Width > 0 && tileRect.Height > 0) {
+		DSurface::Tile = GameCreate<DXSurface>(tileRect.Width, tileRect.Height);
 		DSurface::Tile->Fill(0);
-		Debug::Log("[RenderDX] TileSurface (%dx%d)\n", tile_rect.Width, tile_rect.Height);
+		Debug::Log("[RenderDX] TileSurface (%dx%d)\n", tileRect.Width, tileRect.Height);
 	}
 
-	if (sidebar_rect.Width > 0 && sidebar_rect.Height > 0) {
-		DSurface::Sidebar = GameCreate<DXSurface>(sidebar_rect.Width, sidebar_rect.Height);
+	if (sidebarRect.Width > 0 && sidebarRect.Height > 0) {
+		DSurface::Sidebar = GameCreate<DXSurface>(sidebarRect.Width, sidebarRect.Height);
 		DSurface::Sidebar->Fill(0);
-		Debug::Log("[RenderDX] SidebarSurface (%dx%d)\n", sidebar_rect.Width, sidebar_rect.Height);
+		Debug::Log("[RenderDX] SidebarSurface (%dx%d)\n", sidebarRect.Width, sidebarRect.Height);
 	}
 
-	if (!hidden_first && hidden_rect.Width > 0 && hidden_rect.Height > 0) {
-		DSurface::Hidden = GameCreate<DXSurface>(hidden_rect.Width, hidden_rect.Height);
+	if (!hiddenFirst && hiddenRect.Width > 0 && hiddenRect.Height > 0) {
+		DSurface::Hidden = GameCreate<DXSurface>(hiddenRect.Width, hiddenRect.Height);
 		DSurface::Hidden->Fill(0);
-		Debug::Log("[RenderDX] HiddenSurface (%dx%d)\n", hidden_rect.Width, hidden_rect.Height);
+		Debug::Log("[RenderDX] HiddenSurface (%dx%d)\n", hiddenRect.Width, hiddenRect.Height);
 	}
 
-	if (hidden_rect.Width > 0 && hidden_rect.Height > 0) {
-		DSurface::Alternate = GameCreate<DXSurface>(hidden_rect.Width, hidden_rect.Height);
+	if (hiddenRect.Width > 0 && hiddenRect.Height > 0) {
+		DSurface::Alternate = GameCreate<DXSurface>(hiddenRect.Width, hiddenRect.Height);
 		DSurface::Alternate->Fill(0);
-		Debug::Log("[RenderDX] AlternateSurface (%dx%d)\n", hidden_rect.Width, hidden_rect.Height);
+		Debug::Log("[RenderDX] AlternateSurface (%dx%d)\n", hiddenRect.Width, hiddenRect.Height);
 	}
 
 	return true;
 }
 
-bool __fastcall RenderDX::SetVideoMode(HWND, int width, int height, int bits_per_pixel) {
-	Debug::Log("[RenderDX] Setting video mode to %dx%d@%d\n", width, height, bits_per_pixel);
+bool __fastcall RenderDX::SetVideoMode(HWND, int width, int height, int bitsPerPixel) {
+	Debug::Log("[RenderDX] Setting video mode to %dx%d@%d\n", width, height, bitsPerPixel);
 
 	if (!DXRenderer::Instance().IsRendererReady()) {
 		Debug::Log("[RenderDX] Renderer is not ready\n");
@@ -98,14 +99,14 @@ bool __fastcall RenderDX::SetVideoMode(HWND, int width, int height, int bits_per
 	}
 
 	ResetVideoMode();
-	if (!DXRenderer::Instance().CreateRenderer(width, height, bits_per_pixel)) {
+	if (!DXRenderer::Instance().CreateRenderer(width, height, bitsPerPixel)) {
 		Debug::Log("[RenderDX] Failed to create renderer\n");
 		return false;
 	}
 
 	Drawing::RenderWidth = width;
 	Drawing::RenderHeight = height;
-	Drawing::RenderBitsPerPixel = bits_per_pixel;
+	Drawing::RenderBitsPerPixel = bitsPerPixel;
 
 	RenderDX::UpdateScale();
 
@@ -133,9 +134,9 @@ static void RecalcMouseWindowRegion(bool rebuildCursor) {
 	if (!DXMouse::Instance)
 		return;
 
-	DXMouse::Instance->Recalc_Capture_Region();
+	DXMouse::Instance->RecalcCaptureRegion();
 	if (rebuildCursor)
-		DXMouse::Instance->Rebuild_Cursor_Image();
+		DXMouse::Instance->RebuildCursorImage();
 }
 
 static void ApplyWindowResize(int width, int height) {
@@ -143,8 +144,8 @@ static void ApplyWindowResize(int width, int height) {
 	RecalcMouseWindowRegion(true);
 }
 
-static LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-	switch (msg) {
+static LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+	switch (message) {
 	case WM_MOUSEMOVE:
 	case WM_LBUTTONDOWN:
 	case WM_LBUTTONUP:
@@ -161,13 +162,13 @@ static LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 	{
 		// Scale mouse inputs before they are processed by SDL or the game.
 		if (RenderDX::ShouldScale()) {
-			int x = GET_X_LPARAM(lparam);
-			int y = GET_Y_LPARAM(lparam);
+			int x = GET_X_LPARAM(lParam);
+			int y = GET_Y_LPARAM(lParam);
 
 			x = RenderDX::ClientToRenderX(x);
 			y = RenderDX::ClientToRenderY(y);
 
-			lparam = MAKELPARAM(x, y);
+			lParam = MAKELPARAM(x, y);
 		}
 		break;
 	}
@@ -175,7 +176,7 @@ static LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 	case WM_MOVE:
 	{
 		if (DXMouse::Instance) {
-			DXMouse::Instance->Recalc_Capture_Region();
+			DXMouse::Instance->RecalcCaptureRegion();
 		}
 		return 0; // handled
 	}
@@ -198,7 +199,7 @@ static LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 			int height = DeferredWindowHeight;
 
 			RECT clientRect {};
-			if (::GetClientRect(hwnd, &clientRect)) {
+			if (::GetClientRect(hWnd, &clientRect)) {
 				width = clientRect.right - clientRect.left;
 				height = clientRect.bottom - clientRect.top;
 			}
@@ -216,9 +217,9 @@ static LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 
 	case WM_SIZE:
 	{
-		const int width = LOWORD(lparam);
-		const int height = HIWORD(lparam);
-		if (wparam == SIZE_MINIMIZED || width == 0 || height == 0) {
+		const int width = LOWORD(lParam);
+		const int height = HIWORD(lParam);
+		if (wParam == SIZE_MINIMIZED || width == 0 || height == 0) {
 			DeferredWindowResize = false;
 			RecalcMouseWindowRegion(false);
 		}
@@ -228,7 +229,7 @@ static LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 			DeferredWindowHeight = height;
 			RecalcMouseWindowRegion(false);
 		}
-		else { 
+		else {
 			ApplyWindowResize(width, height);
 		}
 
@@ -238,11 +239,11 @@ static LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 	case WM_SYSKEYDOWN:
 	{
 		// Handle Alt+Enter for fullscreen toggle
-		if (wparam == VK_RETURN && (lparam & (1 << 29))) {
+		if (wParam == VK_RETURN && (lParam & (1 << 29))) {
 			DXRenderer::Instance().ToggleFullscreen();
 			if (DXMouse::Instance) {
-				DXMouse::Instance->Recalc_Capture_Region();
-				DXMouse::Instance->Rebuild_Cursor_Image();
+				DXMouse::Instance->RecalcCaptureRegion();
+				DXMouse::Instance->RebuildCursorImage();
 			}
 			return 0; // handled
 		}
@@ -252,9 +253,9 @@ static LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 	case WM_SETCURSOR:
 	{
 		// Prevent the system from setting the cursor when it's over our window, since we handle it ourselves.
-		if (LOWORD(lparam) == HTCLIENT) {
+		if (LOWORD(lParam) == HTCLIENT) {
 			if (DXMouse::Instance)
-				DXMouse::Instance->Set_Cached_Cursor();
+				DXMouse::Instance->SetCachedCursor();
 			return TRUE; // handled
 		}
 		break;
@@ -262,19 +263,19 @@ static LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 
 	case WM_ACTIVATEAPP:
 	{
-		if (DXRenderOptions::Config().PauseGameWhenLoseFocus)
+		if (RenderOptions::Config().PauseGameWhenLoseFocus)
 			break; // goto the original window procedure to allow the game to pause when losing focus
-		if (hwnd == Game::hWnd) {
-			Unsorted::ScenarioInit = true; // game is always active
-			if (wparam) {
+		if (hWnd == Game::hWnd) {
+			Unsorted::GameInFocus = true; // game is always active
+			if (wParam) {
 				Debug::Log("[RenderDX] Game window activated\n");
 				if (DXMouse::Instance)
-					DXMouse::Instance->Capture_Mouse();
+					DXMouse::Instance->CaptureMouse();
 			}
 			else {
 				Debug::Log("[RenderDX] Game window deactivated\n");
 				if (DXMouse::Instance)
-					DXMouse::Instance->Release_Mouse();
+					DXMouse::Instance->ReleaseMouse();
 			}
 		}
 		return 0; // handled - prevent the game from pausing when the window is deactivated
@@ -282,12 +283,12 @@ static LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 	}
 
 	// Call original window procedure for default processing
-	return reinterpret_cast<LRESULT(CALLBACK*)(HWND, UINT, WPARAM, LPARAM)>(0x7775C0)(hwnd, msg, wparam, lparam);
+	return reinterpret_cast<LRESULT(CALLBACK*)(HWND, UINT, WPARAM, LPARAM)>(0x7775C0)(hWnd, message, wParam, lParam);
 }
 
-void __fastcall RenderDX::CreateMainWindow(HINSTANCE instance, int cmd_show, int width, int height) {
+void __fastcall RenderDX::CreateMainWindow(HINSTANCE instance, int cmdShow, int width, int height) {
 	Debug::Log("[RenderDX] Creating main window\n");
-	if (!DXRenderer::Instance().CreateMainWindow(instance, cmd_show, width, height, MainWindowProc)) {
+	if (!DXRenderer::Instance().CreateMainWindow(instance, cmdShow, width, height, MainWindowProc)) {
 		Debug::Log("[RenderDX] Failed to create main window\n");
 		::MessageBoxA(nullptr, "Failed to create main window", "Error", MB_ICONERROR);
 		::ExitProcess(0xC0DEBEEF);
@@ -299,8 +300,8 @@ void __fastcall RenderDX::DestroyMainWindow() {
 	DXRenderer::Instance().DestroyMainWindow();
 }
 
-bool __fastcall RenderDX::UpdateScreen(Surface* surface) {
-	if (!surface) {
+bool __fastcall RenderDX::UpdateScreen(Surface* pSurface) {
+	if (!pSurface) {
 		Debug::Log("[RenderDX] UpdateScreen called with null surface\n");
 		return false;
 	}
@@ -309,13 +310,13 @@ bool __fastcall RenderDX::UpdateScreen(Surface* surface) {
 	DXRenderer::Instance().SetRenderScale(shouldScale);
 
 	// Retrieve the game surface data
-	if (void* pixels = surface->Lock(0, 0)) {
-		if (!DXRenderer::Instance().UploadSurfaceToTexture(pixels, surface->GetPitch())) {
+	if (void* pPixels = pSurface->Lock(0, 0)) {
+		if (!DXRenderer::Instance().UploadSurfaceToTexture(pPixels, pSurface->GetPitch())) {
 			Debug::Log("[RenderDX] Failed to upload surface to texture\n");
-			surface->Unlock();
+			pSurface->Unlock();
 			return false;
 		}
-		surface->Unlock();
+		pSurface->Unlock();
 	}
 
 	static bool scaled = ShouldScale();
@@ -324,7 +325,7 @@ bool __fastcall RenderDX::UpdateScreen(Surface* surface) {
 	if (scaled != shouldScale) {
 		scaled = shouldScale;
 		if (DXMouse::Instance)
-			DXMouse::Instance->Rebuild_Cursor_Image();
+			DXMouse::Instance->RebuildCursorImage();
 	}
 
 	DXRenderer::Instance().Present();
@@ -336,62 +337,62 @@ bool __fastcall RenderDX::ShouldScale() {
 	return Unsorted::SpecialDialog == 0 && Unsorted::WSDialogCount == 0;
 }
 
-static void RebuildDisplayState(const RectangleStruct& view_rect) {
-	auto temp = view_rect;
-	temp.X = GameOptionsClass::Instance.SidebarMode ? 0 : 168;
-	temp.Y = 16;
-	temp.Width -= 168;
-	temp.Height -= 16;
+static void RebuildDisplayState(const RectangleStruct& viewRect) {
+	auto sidebarRect = viewRect;
+	sidebarRect.X = GameOptionsClass::Instance.SidebarMode ? 0 : 168;
+	sidebarRect.Y = 16;
+	sidebarRect.Width -= 168;
+	sidebarRect.Height -= 16;
 
-	DSurface::ViewBounds = view_rect;
-	Drawing::RenderWidth = view_rect.Width;
-	Drawing::RenderHeight = view_rect.Height;
+	DSurface::ViewBounds = viewRect;
+	Drawing::RenderWidth = viewRect.Width;
+	Drawing::RenderHeight = viewRect.Height;
 
 	DSurface::Primary = DXSurface::CreatePrimary();
 
 	RenderDX::AllocateSurfaces(
-		view_rect,
-		RectangleStruct { 0,0,temp.Width,view_rect.Height },
-		RectangleStruct { 0,0,temp.Width,view_rect.Height },
-		RectangleStruct { 0,0,168,view_rect.Height },
+		viewRect,
+		RectangleStruct { 0, 0, sidebarRect.Width, viewRect.Height },
+		RectangleStruct { 0, 0, sidebarRect.Width, viewRect.Height },
+		RectangleStruct { 0, 0, 168, viewRect.Height },
 		false
 	);
 	DSurface::Temp = DSurface::Hidden;
 
 	if (DXMouse::Instance) {
-		DXMouse::Instance->Rebuild_Cursor_Image();
+		DXMouse::Instance->RebuildCursorImage();
 	}
 
-	SidebarClass::Instance.Set_View_Dimensions(temp);
+	SidebarClass::Instance.Set_View_Dimensions(sidebarRect);
 	SidebarClass::Instance.Init_IO();
 	SidebarClass::Instance.Activate(1);
 	SidebarClass::Instance.InitGUI();
 	SidebarClass::Instance.MarkNeedsRedraw(2); // REDRAW_ALL
-	DXMouse::Instance->Show_Mouse();
+	DXMouse::Instance->ShowMouse();
 }
 
 bool __fastcall RenderDX::ChangeDisplayMode(int width, int height) {
 	Debug::Log("[RenderDX] Changing display mode to %dx%d\n", width, height);
 
 	// Save current window position
-	RectangleStruct old_rect = DSurface::ViewBounds;
-	if (old_rect.Width <= 0 || old_rect.Height <= 0) {
+	RectangleStruct oldRect = DSurface::ViewBounds;
+	if (oldRect.Width <= 0 || oldRect.Height <= 0) {
 		if (Drawing::RenderWidth > 0 && Drawing::RenderHeight > 0) {
 			Debug::Log("[RenderDX] Current view bounds are invalid, using RenderWidth/RenderHeight\n");
-			old_rect = RectangleStruct { 0, 0, Drawing::RenderWidth, Drawing::RenderHeight };
+			oldRect = RectangleStruct { 0, 0, Drawing::RenderWidth, Drawing::RenderHeight };
 		}
 	}
 
-	const int old_render_width = Drawing::RenderWidth;
-	const int old_render_height = Drawing::RenderHeight;
-	const int old_render_bpp = Drawing::RenderBitsPerPixel;
+	const int oldRenderWidth = Drawing::RenderWidth;
+	const int oldRenderHeight = Drawing::RenderHeight;
+	const int oldRenderBpp = Drawing::RenderBitsPerPixel;
 
-	int old_window_x = 0;
-	int old_window_y = 0;
-	int old_window_width = DXRenderer::Instance().GetWindowWidth();
-	int old_window_height = DXRenderer::Instance().GetWindowHeight();
+	int oldWindowX = 0;
+	int oldWindowY = 0;
+	int oldWindowWidth = DXRenderer::Instance().GetWindowWidth();
+	int oldWindowHeight = DXRenderer::Instance().GetWindowHeight();
 
-	DXMouse::Instance->Hide_Mouse();
+	DXMouse::Instance->HideMouse();
 
 	// Delete the old primary surface
 	if (DSurface::Primary) {
@@ -401,53 +402,53 @@ bool __fastcall RenderDX::ChangeDisplayMode(int width, int height) {
 	}
 
 	if (DXRenderer::Instance().IsWindowed()) {
-		int window_width = width;
-		int window_height = height;
+		int windowWidth = width;
+		int windowHeight = height;
 
 		RECT temp;
 		::GetWindowRect(Game::hWnd, &temp);
-		old_window_x = temp.left;
-		old_window_y = temp.top;
-		old_window_width = temp.right - temp.left;
-		old_window_height = temp.bottom - temp.top;
+		oldWindowX = temp.left;
+		oldWindowY = temp.top;
+		oldWindowWidth = temp.right - temp.left;
+		oldWindowHeight = temp.bottom - temp.top;
 
-		int center_x = old_window_x + old_window_width / 2;
-		int center_y = old_window_y + old_window_height / 2;
-		
-		int new_x = center_x - window_width / 2;
-		int new_y = center_y - window_height / 2;
+		int centerX = oldWindowX + oldWindowWidth / 2;
+		int centerY = oldWindowY + oldWindowHeight / 2;
 
-		DXRenderer::Instance().MoveWindow(new_x, new_y, window_width, window_height);
+		int newX = centerX - windowWidth / 2;
+		int newY = centerY - windowHeight / 2;
 
-		Debug::Log("[RenderDX] Moved window to (%d, %d) with size %dx%d\n", new_x, new_y, window_width, window_height);
+		DXRenderer::Instance().MoveWindow(newX, newY, windowWidth, windowHeight);
+
+		Debug::Log("[RenderDX] Moved window to (%d, %d) with size %dx%d\n", newX, newY, windowWidth, windowHeight);
 	}
 
 	// Recreate all intermediates
 	if (!SetVideoMode(Game::hWnd, width, height, 16)) {
 		if (DXRenderer::Instance().IsWindowed()) {
-			DXRenderer::Instance().MoveWindow(old_window_x, old_window_y, old_window_width, old_window_height);
-			Debug::Log("[RenderDX] Restore window to (%d, %d) with size %dx%d\n", old_window_x, old_window_y, old_window_width, old_window_height);
+			DXRenderer::Instance().MoveWindow(oldWindowX, oldWindowY, oldWindowWidth, oldWindowHeight);
+			Debug::Log("[RenderDX] Restore window to (%d, %d) with size %dx%d\n", oldWindowX, oldWindowY, oldWindowWidth, oldWindowHeight);
 		}
 
-		if (old_rect.X > 0 && old_rect.Y > 0 && old_render_width > 0 && old_render_height > 0) {
+		if (oldRect.X > 0 && oldRect.Y > 0 && oldRenderWidth > 0 && oldRenderHeight > 0) {
 			Debug::Log("[RenderDX] Restoring old display mode.\n");
-			if (!SetVideoMode(Game::hWnd, old_render_width, old_render_height, old_render_bpp)) {
+			if (!SetVideoMode(Game::hWnd, oldRenderWidth, oldRenderHeight, oldRenderBpp)) {
 				Debug::Log("[RenderDX] Failed to restore old display mode.\n");
-				DXMouse::Instance->Show_Mouse();
+				DXMouse::Instance->ShowMouse();
 				return false;
 			}
-			RebuildDisplayState(old_rect);
+			RebuildDisplayState(oldRect);
 		}
 		else {
 			Debug::Log("[RenderDX] Old view bounds are invalid, cannot restore\n");
 		}
 
-		DXMouse::Instance->Show_Mouse();
+		DXMouse::Instance->ShowMouse();
 		return false;
 	}
 
-	RectangleStruct new_view_rect = { 0, 0, width, height };
-	RebuildDisplayState(new_view_rect);
+	RectangleStruct newViewRect = { 0, 0, width, height };
+	RebuildDisplayState(newViewRect);
 	Debug::Log("[RenderDX]: ViewBounds: %dx%d\n", width, height);
 	Debug::Log("[RenderDX] Mode change complete.\n");
 
@@ -503,17 +504,17 @@ void __fastcall RenderDX::ResetScale() {
 	ViewportY = 0.0f;
 }
 
-int* __fastcall RenderDX::EnumDisplayModes(DWORD minw, DWORD minh, DWORD maxw, DWORD maxh, DWORD) {
+int* __fastcall RenderDX::EnumDisplayModes(DWORD minWidth, DWORD minHeight, DWORD maxWidth, DWORD maxHeight, DWORD) {
 	std::vector<std::pair<int, int>> modes;
 	DEVMODE devmode{};
-	DWORD mode_index = 0;
+	DWORD modeIndex = 0;
 
-	while (::EnumDisplaySettingsA(nullptr, mode_index++, &devmode)) {
+	while (::EnumDisplaySettingsA(nullptr, modeIndex++, &devmode)) {
 		const DWORD w = devmode.dmPelsWidth;
 		const DWORD h = devmode.dmPelsHeight;
 		const DWORD bpp = devmode.dmBitsPerPel;
 
-		if (w >= minw && h >= minh && w <= maxw && h <= maxh && bpp == 32) {
+		if (w >= minWidth && h >= minHeight && w <= maxWidth && h <= maxHeight && bpp == 32) {
 			modes.emplace_back(static_cast<int>(w), static_cast<int>(h));
 		}
 	}
@@ -543,14 +544,14 @@ int* __fastcall RenderDX::EnumDisplayModes(DWORD minw, DWORD minh, DWORD maxw, D
 void __fastcall RenderDX::MainProcHandlePaint() {
 	if (DXMouse::Instance && DSurface::Primary && DSurface::Hidden && DSurface::Composite) {
 		if (Unsorted::ScenarioStarted) {
-			GScreenClass::UpdatePrimarySurface(DXMouse::Instance->Is_Captured(), DSurface::Composite, nullptr);
+			GScreenClass::UpdatePrimarySurface(DXMouse::Instance->IsCaptured(), DSurface::Composite, nullptr);
 			SidebarClass::Instance.BlitSidebar(true);
 		}
 		else if (Game::IsMoviePlaying()) {
 			Game::BlitMovie();
 		}
 		else {
-			GScreenClass::UpdatePrimarySurface(DXMouse::Instance->Is_Captured(), DSurface::Hidden, nullptr);
+			GScreenClass::UpdatePrimarySurface(DXMouse::Instance->IsCaptured(), DSurface::Hidden, nullptr);
 		}
 	}
 }

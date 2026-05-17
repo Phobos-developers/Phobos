@@ -271,7 +271,6 @@
     <ClCompile Include="src\Render\Hooks.Options.cpp" />
     <ClCompile Include="src\Render\Hooks.Surface.cpp" />
     <ClCompile Include="src\Render\Mouse.cpp" />
-    <ClCompile Include="src\Render\Options.cpp" />
     <ClCompile Include="src\Render\Renderer.cpp" />
     <ClCompile Include="src\Render\Surface.cpp" />
     <ClCompile Include="src\Utilities\Anchor.cpp" />
@@ -401,6 +400,8 @@
     <ClInclude Include="src\Render\Mouse.h" />
     <ClInclude Include="src\Render\Options.h" />
     <ClInclude Include="src\Render\Renderer.h" />
+    <ClInclude Include="src\Render\Renderer.SurfacePS.h" />
+    <ClInclude Include="src\Render\Renderer.SurfaceVS.h" />
     <ClInclude Include="src\Render\Surface.h" />
     <ClInclude Include="src\Utilities\Anchor.h" />
     <ClInclude Include="src\Utilities\AresFunctions.h" />

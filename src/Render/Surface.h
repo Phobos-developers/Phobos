@@ -2,16 +2,14 @@
 
 #include <Surface.h>
 
-// CPU render
-class DXSurfaceImpl;
 class DXSurface : public DSurface {
 private:
-	DXSurfaceImpl* Impl() const {
-		return reinterpret_cast<DXSurfaceImpl*>(Buffer);
+	void** InternalGetBuffer() {
+		return reinterpret_cast<void**>(reinterpret_cast<uintptr_t>(this) + 0x14);
 	}
 
-	DXSurfaceImpl*& ImplRef() {
-		return reinterpret_cast<DXSurfaceImpl*&>(Buffer);
+	int* InternalGetPitch() {
+		return reinterpret_cast<int*>(reinterpret_cast<uintptr_t>(this) + 0x18);
 	}
 
 public:
@@ -24,30 +22,29 @@ public:
 
 	virtual ~DXSurface() override;
 
-	//Surface
-	virtual bool CopyFromWhole(Surface* pSrc, bool trans, bool same_copy_cpu) override;
+	virtual bool CopyFromWhole(Surface* pSrc, bool transparent, bool sameCopyCpu) override;
 
 	virtual bool CopyFromPart(
-		RectangleStruct* pClipRect, //ignored and retrieved again...
+		RectangleStruct* pClipRect,
 		Surface* pSrc,
-		RectangleStruct* pSrcRect,	//desired source rect of pSrc ?
-		bool trans,
-		bool same_copy_cpu) override;
+		RectangleStruct* pSrcRect,
+		bool transparent,
+		bool sameCopyCpu) override;
 
 	virtual bool CopyFrom(
 		RectangleStruct* pClipRect,
-		RectangleStruct* pClipRect2,	//again? hmm
+		RectangleStruct* pClipRect2,
 		Surface* pSrc,
-		RectangleStruct* pDestRect,	//desired dest rect of pSrc ? (stretched? clipped?)
-		RectangleStruct* pSrcRect,	//desired source rect of pSrc ?
-		bool trans,
-		bool same_copy_cpu) override;
+		RectangleStruct* pDestRect,
+		RectangleStruct* pSrcRect,
+		bool transparent,
+		bool sameCopyCpu) override;
 
 	virtual bool FillRectEx(RectangleStruct* pClipRect, RectangleStruct* pFillRect, COLORREF nColor) override;
 	virtual bool FillRect(RectangleStruct* pFillRect, COLORREF nColor) override;
 	virtual bool Fill(COLORREF nColor) override;
-	virtual bool FillRectTrans(RectangleStruct* pClipRect, ColorStruct* pColor, int Opacity) override;
-	virtual bool DrawEllipse(int XOff, int YOff, int CenterX, int CenterY, RectangleStruct Rect, COLORREF nColor) override;
+	virtual bool FillRectTrans(RectangleStruct* pClipRect, ColorStruct* pColor, int nOpacity) override;
+	virtual bool DrawEllipse(int xOffset, int yOffset, int centerX, int centerY, RectangleStruct rect, COLORREF nColor) override;
 	virtual bool SetPixel(Point2D* pPoint, COLORREF nColor) override;
 	virtual COLORREF GetPixel(Point2D* pPoint) override;
 	virtual bool DrawLineEx(RectangleStruct* pClipRect, Point2D* pStart, Point2D* pEnd, COLORREF nColor) override;
@@ -69,16 +66,13 @@ public:
 		RectangleStruct* pRect, Point2D* pStart, Point2D* pEnd, ColorStruct* pColor,
 		float Intensity, int zSource, int zTarget) override;
 
-	virtual bool PlotLine(
-		RectangleStruct* pRect, Point2D* pStart, Point2D* pEnd, bool(__fastcall* fpDrawCallback)(int*)) override;
-	virtual bool DrawDashedLine(
-		Point2D* pStart, Point2D* pEnd, int nColor, bool* Pattern, int nOffset) override;
-	virtual bool DrawDashedLine_(
-		Point2D* pStart, Point2D* pEnd, int nColor, bool* Pattern, int nOffset, bool bUkn) override;
+	virtual bool PlotLine(RectangleStruct* pRect, Point2D* pStart, Point2D* pEnd, bool(__fastcall* AddRedrawPoint)(int*)) override;
+	virtual bool DrawDashedLine(Point2D* pStart, Point2D* pEnd, int nColor, bool* Pattern, int nOffset) override;
+	virtual bool DrawDashedLine_(Point2D* pStart, Point2D* pEnd, int nColor, bool* Pattern, int nOffset, bool bUkn) override;
 	virtual bool DrawLine_(Point2D* pStart, Point2D* pEnd, int nColor, bool bUnk) override;
 	virtual bool DrawRectEx(RectangleStruct* pClipRect, RectangleStruct* pDrawRect, int nColor) override;
 	virtual bool DrawRect(RectangleStruct* pDrawRect, DWORD dwColor) override;
-	virtual void* Lock(int X, int Y) override;
+	virtual void* Lock(int x, int y) override;
 	virtual bool Unlock() override;
 	virtual bool CanLock(DWORD dwUkn1 = 0, DWORD dwUkn2 = 0) override;
 	virtual bool vt_entry_68(DWORD dwUnk1, DWORD dwUnk2) override;
@@ -96,4 +90,7 @@ public:
 	virtual bool CanBlit() override;
 
 	void* GetBuffer();
+
+private:
+	BYTE* RawLock(int x, int y);
 };

@@ -12,60 +12,60 @@ class Surface;
 class Mouse {
 public:
 	virtual ~Mouse() {}
-	virtual void Set_Cursor(Point2D const& hotspot, SHPStruct const* cursor, int shape) = 0;
-	virtual bool Is_Hidden() const = 0;
-	virtual void Hide_Mouse() = 0;
-	virtual void Show_Mouse() = 0;
-	virtual void Release_Mouse() = 0;
-	virtual void Capture_Mouse() = 0;
-	virtual bool Is_Captured() const = 0;
-	virtual void Conditional_Hide_Mouse(RectangleStruct region) = 0;
-	virtual void Conditional_Show_Mouse() = 0;
-	virtual int Get_Mouse_State() const = 0;
-	virtual int Get_Mouse_X() const = 0;
-	virtual int Get_Mouse_Y() const = 0;
-	virtual Point2D Get_Mouse_Point() const = 0;
-	virtual void Set_Mouse_Point(int x, int y) = 0;
-	virtual void Draw_Mouse(Surface* scr, bool issidebarsurface = false) = 0;
-	virtual void Erase_Mouse(Surface* scr, bool issidebarsurface = false) = 0;
-	virtual void Convert_Coordinate(int& x, int& y) const = 0;
+	virtual void SetCursor(Point2D const& hotspot, SHPStruct const* pCursor, int shape) = 0;
+	virtual bool IsHidden() const = 0;
+	virtual void HideMouse() = 0;
+	virtual void ShowMouse() = 0;
+	virtual void ReleaseMouse() = 0;
+	virtual void CaptureMouse() = 0;
+	virtual bool IsCaptured() const = 0;
+	virtual void ConditionalHideMouse(RectangleStruct region) = 0;
+	virtual void ConditionalShowMouse() = 0;
+	virtual int GetMouseState() const = 0;
+	virtual int GetMouseX() const = 0;
+	virtual int GetMouseY() const = 0;
+	virtual Point2D GetMousePoint() const = 0;
+	virtual void SetMousePoint(int x, int y) = 0;
+	virtual void DrawMouse(Surface* pSurface, bool isSidebarSurface = false) = 0;
+	virtual void EraseMouse(Surface* pSurface, bool isSidebarSurface = false) = 0;
+	virtual void ConvertCoordinate(int& x, int& y) const = 0;
 };
 
 class DXMouse : public Mouse {
 public:
 	DEFINE_REFERENCE(DXMouse*, Instance, 0x887640u)
 
-	DXMouse(Surface* surface, HWND hwnd);
+	DXMouse(Surface* pSurface, HWND hWnd);
 
 	virtual ~DXMouse() override;
-	virtual void Set_Cursor(Point2D const& hotspot, SHPStruct const* cursor, int shape) override;
-	virtual bool Is_Hidden() const override;
-	virtual void Hide_Mouse() override;
-	virtual void Show_Mouse() override;
-	virtual void Release_Mouse() override;
-	virtual void Capture_Mouse() override;
-	virtual bool Is_Captured() const override;
-	virtual void Conditional_Hide_Mouse(RectangleStruct region) override;
-	virtual void Conditional_Show_Mouse() override;
-	virtual int Get_Mouse_State() const override;
-	virtual int Get_Mouse_X() const override;
-	virtual int Get_Mouse_Y() const override;
-	virtual Point2D Get_Mouse_Point() const override;
-	virtual void Set_Mouse_Point(int x, int y) override;
-	virtual void Draw_Mouse(Surface* scr, bool issidebarsurface = false) override;
-	virtual void Erase_Mouse(Surface* scr, bool issidebarsurface = false) override;
-	virtual void Convert_Coordinate(int& x, int& y) const override;
+	virtual void SetCursor(Point2D const& hotspot, SHPStruct const* pCursor, int shape) override;
+	virtual bool IsHidden() const override;
+	virtual void HideMouse() override;
+	virtual void ShowMouse() override;
+	virtual void ReleaseMouse() override;
+	virtual void CaptureMouse() override;
+	virtual bool IsCaptured() const override;
+	virtual void ConditionalHideMouse(RectangleStruct region) override;
+	virtual void ConditionalShowMouse() override;
+	virtual int GetMouseState() const override;
+	virtual int GetMouseX() const override;
+	virtual int GetMouseY() const override;
+	virtual Point2D GetMousePoint() const override;
+	virtual void SetMousePoint(int x, int y) override;
+	virtual void DrawMouse(Surface* pSurface, bool isSidebarSurface = false) override;
+	virtual void EraseMouse(Surface* pSurface, bool isSidebarSurface = false) override;
+	virtual void ConvertCoordinate(int& x, int& y) const override;
 
-	void Process_Mouse();
-	void Recalc_Capture_Region();
-	void Set_Cached_Cursor();
+	void ProcessMouse();
+	void RecalcCaptureRegion();
+	void SetCachedCursor();
 
-	void Rebuild_Cursor_Image();
+	void RebuildCursorImage();
 private:
-	SHPStruct const* MouseShape { nullptr };
-	int ShapeNumber { 0 };
+	SHPStruct const* MouseShape { nullptr }; // Current SHP cursor data.
+	int ShapeNumber { 0 }; // Current cursor frame index.
 
-	DWORD MousePalette[256] { 0 };
+	DWORD MousePalette[256] { 0 }; // ARGB palette converted from mouse.pal.
 
 	struct CursorData {
 		~CursorData() {
@@ -77,30 +77,30 @@ private:
 			}
 		}
 
-		int Width { 0 };
-		int Height { 0 };
-		HBITMAP Color { nullptr };
-		HBITMAP Mask { nullptr };
+		int Width { 0 }; // Cursor bitmap width.
+		int Height { 0 }; // Cursor bitmap height.
+		HBITMAP Color { nullptr }; // Color bitmap handle.
+		HBITMAP Mask { nullptr }; // Mask bitmap handle.
 	};
-	std::vector<CursorData> CursorInfo;
+	std::vector<CursorData> CursorInfo; // Cached cursor frames.
 
-	Point2D Hotspot { 0,0 };
-	HCURSOR Cursor { nullptr };
+	Point2D Hotspot { 0, 0 }; // Cursor hotspot in render coordinates.
+	HCURSOR Cursor { nullptr }; // Current Win32 cursor handle.
 
-	bool IsCaptured { false };
-	bool IsVisible { true };
+	bool Captured { false }; // Whether the cursor is clipped to the game window.
+	bool Visible { true }; // Whether the cursor should be displayed.
 
-	int MouseX { 0 };
-	int MouseY { 0 };
+	int MouseX { 0 }; // Current render-space cursor X.
+	int MouseY { 0 }; // Current render-space cursor Y.
 
-	void Delete_Cursor_Image();
-	void Convert_Custor_Image(SHPStruct const* cursor);
-	void Shape_To_Cursor(SHPStruct const* cursor, int frame, CursorData& result);
-	void Scale_Bitmap_Image(const uint32_t* src_ptr, int src_w, int src_h, uint32_t* dst, int dst_w, int dst_h);
-	void Replace_Cursor(HCURSOR cursor);
-	void Set_System_Cursor();
-	HCURSOR Build_Cursor(const CursorData& data, int hotspot_x, int hotspot_y);
+	void DeleteCursorImage();
+	void ConvertCursorImage(SHPStruct const* pCursor);
+	void ShapeToCursor(SHPStruct const* pCursor, int frame, CursorData& result);
+	void ScaleBitmapImage(const uint32_t* pSource, int sourceWidth, int sourceHeight, uint32_t* pDest, int destWidth, int destHeight);
+	void ReplaceCursor(HCURSOR cursor);
+	void SetSystemCursor();
+	HCURSOR BuildCursor(const CursorData& data, int hotspotX, int hotspotY);
 
-	static int Get_Cursor_Scale();
+	static int GetCursorScale();
 
 };
