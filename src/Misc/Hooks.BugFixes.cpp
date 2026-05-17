@@ -3543,3 +3543,12 @@ DEFINE_HOOK(0x707A2E, TechnoClass_PointerExpired_TargetExpired, 0x5)
 	}
 	return 0;
 }
+
+DEFINE_HOOK_AGAIN(0x73583C, Remove_UnInitFix, 0x6) // UnitClass::DTOR
+DEFINE_HOOK(0x71A9CD, Remove_UnInitFix, 0x6) // TemporalClass::Update
+{
+	GET(FootClass*, pPassenger, EAX);
+
+	pPassenger->UnInit();
+	return R->Origin() + 0x9;
+}
