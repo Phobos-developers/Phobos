@@ -2353,7 +2353,7 @@ Sinkable.SquidGrab=true    ; boolean
 
 ### Stationary vehicles
 
-- Setting `JumpjetAccel` to 0 for VehicleTypes with `Locomotor=Jumpjet` or setting `Speed` to 0 for other now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
+- Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
 
 ### Turret recoil
 
