@@ -2602,6 +2602,11 @@ msgid ""
 msgstr ""
 "修复了 `WeaponRange.AllowWeapons` 和 `WeaponRange.DisallowWeapons` 仅支持通过 `[WeaponTypes]` 注册的武器这一 Bug（by Noble_Fish）"
 
+msgid ""
+"Fixed the bug where passengers, when their transport unit is removed, would cause incorrect `LimboTracker` counts due to either having their destructor called directly (bypassing `UnInit`) or nested `UnInit` calls resetting the deletion flag too early, thereby breaking auto-death and superweapon auxiliary techno checks (by NetsuNegi)"
+msgstr ""
+"修复了乘客在其所在的运输工具被移除时，因被直接调用析构函数（绕过 `UnInit` ）或 `UnInit` 嵌套调用导致删除标志过早重置，从而使 `LimboTracker` 计数错误，进而影响自动死亡及超武辅助单位判定的 Bug（by NetsuNegi）"
+
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
 

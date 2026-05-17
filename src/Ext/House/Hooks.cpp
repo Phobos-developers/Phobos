@@ -125,7 +125,7 @@ DEFINE_HOOK(0x4AC534, DisplayClass_ComputeStartPosition_IllegalCoords, 0x6)
 namespace LimboTrackingTemp
 {
 	bool Enabled = false;
-	bool IsBeingDeleted = false;
+	int IsBeingDeleted = 0;
 }
 
 DEFINE_HOOK(0x687B18, ScenarioClass_ReadINI_StartTracking, 0x7)
@@ -157,9 +157,9 @@ static void __fastcall TechnoClass_UnInit_Wrapper(TechnoClass* pThis)
 			HouseExt::ExtMap.Find(pThis->Owner)->RemoveFromLimboTracking(pType);
 	}
 
-	LimboTrackingTemp::IsBeingDeleted = true;
+	++LimboTrackingTemp::IsBeingDeleted;
 	pThis->ObjectClass::UnInit();
-	LimboTrackingTemp::IsBeingDeleted = false;
+	--LimboTrackingTemp::IsBeingDeleted;
 }
 
 DEFINE_FUNCTION_JUMP(CALL, 0x4DE60B, TechnoClass_UnInit_Wrapper);   // FootClass
