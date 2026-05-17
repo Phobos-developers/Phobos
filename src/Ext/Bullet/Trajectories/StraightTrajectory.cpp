@@ -1054,3 +1054,8 @@ bool StraightTrajectory::PassAndConfineAtHeight(BulletClass* pBullet)
 
 	return false;
 }
+
+bool StraightTrajectory::ShouldSkipBridgeCheck() const
+{
+	return !this->Type->SubjectToGround;
+}

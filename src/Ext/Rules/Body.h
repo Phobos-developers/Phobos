@@ -116,6 +116,7 @@ public:
 		Valueable<int> PowerSurplus_ScaleToDrainAmount;
 
 		Valueable<bool> DisplayIncome;
+		Valueable<int> DisplayIncome_Delay;
 		Valueable<bool> DisplayIncome_AllowAI;
 		Valueable<AffectedHouse> DisplayIncome_Houses;
 
@@ -142,6 +143,10 @@ public:
 		Valueable<bool> ColorAddUse8BitRGB;
 		Valueable<ColorStruct> AirstrikeLineColor;
 		Valueable<int> AirstrikeLineZAdjust;
+
+		Valueable<int> LaserZAdjust;
+		Valueable<int> EBoltZAdjust;
+		Valueable<bool> EBoltZAdjust_ClampInitialDepthForBuilding;
 
 		Valueable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<ColorStruct> ToolTip_Background_Color;
@@ -344,6 +349,8 @@ public:
 		Valueable<bool> DriveLocomotorMakesWake;
 		Valueable<bool> HoverLocomotorMakesWake;
 		Valueable<bool> ShipLocomotorMakesWake;
+
+		Valueable<bool> Shrapnel_IgnoreHitBuildings;
     
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -447,11 +454,15 @@ public:
 			, ColorAddUse8BitRGB { false }
 			, AirstrikeLineColor { { 255, 0, 0 } }
 			, AirstrikeLineZAdjust { 0 }
+			, LaserZAdjust { 0 }
+			, EBoltZAdjust { 0 }
+			, EBoltZAdjust_ClampInitialDepthForBuilding { true }
 			, ROF_RandomDelay { { 0 ,2 } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
 			, ToolTip_Background_BlurSize { 0.0f }
 			, DisplayIncome { false }
+			, DisplayIncome_Delay { 15 }
 			, DisplayIncome_AllowAI { true }
 			, DisplayIncome_Houses { AffectedHouse::All }
 			, DrainMoneyDisplay { false }
@@ -631,6 +642,7 @@ public:
 			, ShipLocomotorMakesWake { true }
 			, FiringAnim_Update { false }
 			, ExtendedPlayerRepair { false }
+			, Shrapnel_IgnoreHitBuildings { false }
 		{ }
 
 		virtual ~ExtData() = default;
