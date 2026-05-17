@@ -2607,7 +2607,7 @@ msgid ""
 "counted in `LimboTracker` due to bypassing `UnInit`, affecting auto-death"
 " and superweapon auxiliary techno checks (by NetsuNegi)"
 msgstr ""
-"修复了带有乘客的单位被移除时因绕过 `UnInit` 而错误计入 `LimboTracker`，进而影响自动死亡及超武辅助科技判定的问题（by NetsuNegi）"
+"修复了带有乘客的单位被移除时因绕过 `UnInit` 而错误计入 `LimboTracker`，进而影响自动死亡及超武辅助单位判定的问题（by NetsuNegi）"
 
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
