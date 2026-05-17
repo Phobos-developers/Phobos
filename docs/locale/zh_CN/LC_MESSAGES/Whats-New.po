@@ -2600,6 +2600,7 @@ msgid ""
 "`WeaponRange.DisallowWeapons` only support weapons listed in the "
 "`[WeaponTypes]` list (by Noble_Fish)"
 msgstr ""
+"修复了 `WeaponRange.AllowWeapons` 和 `WeaponRange.DisallowWeapons` 仅支持通过 `[WeaponTypes]` 注册的武器这一 Bug（by Noble_Fish）"
 
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
