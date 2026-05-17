@@ -126,6 +126,15 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ExpireWeapon_CumulativeOnlyOnce.Read(exINI, pSection, "ExpireWeapon.CumulativeOnlyOnce");
 	this->ExpireWeapon_UseInvokerAsOwner.Read(exINI, pSection, "ExpireWeapon.UseInvokerAsOwner");
 
+	this->PeriodicWeapon.Read<true>(exINI, pSection, "PeriodicWeapon");
+	this->PeriodicWeapon_AffectsHouse.Read(exINI, pSection, "PeriodicWeapon.AffectsHouse");
+	this->PeriodicWeapon_UseInvokerAsOwner.Read(exINI, pSection, "PeriodicWeapon.UseInvokerAsOwner");
+	this->PeriodicWeapon_Range.Read(exINI, pSection, "PeriodicWeapon.Range");
+	this->PeriodicWeapon_FiringDelay.Read(exINI, pSection, "PeriodicWeapon.FiringDelay");
+	this->PeriodicWeapon_FireAll.Read(exINI, pSection, "PeriodicWeapon.FireAll");
+	this->PeriodicWeapon_AffectTypes.Read(exINI, pSection, "PeriodicWeapon.AffectTypes");
+	this->PeriodicWeapon_IgnoreTypes.Read(exINI, pSection, "PeriodicWeapon.IgnoreTypes");
+
 	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
 	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
 	this->Tint_VisibleToHouses.Read(exINI, pSection, "Tint.VisibleToHouses");
@@ -212,6 +221,14 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ExpireWeapon_TriggerOn)
 		.Process(this->ExpireWeapon_CumulativeOnlyOnce)
 		.Process(this->ExpireWeapon_UseInvokerAsOwner)
+		.Process(this->PeriodicWeapon)
+		.Process(this->PeriodicWeapon_AffectsHouse)
+		.Process(this->PeriodicWeapon_UseInvokerAsOwner)
+		.Process(this->PeriodicWeapon_Range)
+		.Process(this->PeriodicWeapon_FiringDelay)
+		.Process(this->PeriodicWeapon_FireAll)
+		.Process(this->PeriodicWeapon_AffectTypes)
+		.Process(this->PeriodicWeapon_IgnoreTypes)
 		.Process(this->Tint_Color)
 		.Process(this->Tint_Intensity)
 		.Process(this->Tint_VisibleToHouses)

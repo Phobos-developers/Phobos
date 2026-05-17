@@ -556,6 +556,8 @@ This page lists all the individual contributions to the project by their author.
   - Initial effort on optimization for crates' random distribution
   - Customizable spawns queue
   - Initial spawns number
+- **AGAGUGUG**:
+  - Periodic weapon for attached effects
 - **Fryone**:
   - Customizable ElectricBolt Arcs
   - Sound entry on unit's creation

@@ -3,6 +3,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Bullet/Body.h> 
 
 std::vector<AttachEffectClass*> AttachEffectClass::Array;
 
@@ -11,6 +12,7 @@ AttachEffectClass::AttachEffectClass()
 	Source { nullptr }, DurationOverride { 0 }, Delay { 0 }, InitialDelay { 0 }, RecreationDelay { -1 }
 	, Duration { 0 }
 	, CurrentDelay { 0 }
+	, PeriodicWeaponTimer { 0 }
 	, NeedsDurationRefresh { false }
 	, HasCumulativeAnim { false }
 	, ShouldBeDiscarded { false }
@@ -42,6 +44,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, NeedsRecalculateStat { false }
 	, LastDiscardCheckFrame { -1 }
 	, LastDiscardCheckValue { false }
+	, PeriodicWeaponTimer { pType->PeriodicWeapon_FiringDelay }
 {
 	this->HasInitialized = false;
 
@@ -246,6 +249,21 @@ void AttachEffectClass::AI()
 	this->CloakCheck();
 	this->OnlineCheck();
 	this->AnimCheck();
+
+	// --- Periodic Weapon Logic ---
+	if (pType->PeriodicWeapon && pType->PeriodicWeapon_FiringDelay > 0 && pType->PeriodicWeapon_Range.Get() > 0)
+	{
+		
+		this->PeriodicWeaponTimer--;
+
+		if (this->PeriodicWeaponTimer <= 0)
+		{
+			this->PeriodicWeaponTimer = pType->PeriodicWeapon_FiringDelay;
+			this->FirePeriodicWeapon();
+		}
+	}
+
+
 }
 
 void AttachEffectClass::AI_Temporal()
@@ -586,6 +604,147 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 
 	this->LastDiscardCheckValue = false;
 	return false;
+}
+void AttachEffectClass::FirePeriodicWeapon()
+{
+	auto const pType = this->Type;
+	auto const pWeapon = pType->PeriodicWeapon;
+
+	if (!pWeapon)
+		return;
+
+	auto const pTechno = this->Techno;
+
+	if (!pTechno || pTechno->InLimbo || pTechno->IsImmobilized)
+		return;
+
+	// 确定开火者
+	TechnoClass* pFirer = pType->PeriodicWeapon_UseInvokerAsOwner ? this->Invoker : pTechno;
+	HouseClass* pFirerHouse = pType->PeriodicWeapon_UseInvokerAsOwner
+		? (this->InvokerHouse ? this->InvokerHouse : pTechno->Owner)
+		: pTechno->Owner;
+
+	if (!pFirer)
+		pFirer = pTechno;
+
+	if (!pFirerHouse)
+		pFirerHouse = pTechno->Owner;
+
+	auto const pWH = pWeapon->Warhead;
+	const int searchRange = pType->PeriodicWeapon_Range.Get();  // ← 只定义一次，int类型
+	const auto firePos = pTechno->Location;
+
+	// === 索敌 ===
+	std::vector<TechnoClass*> validTargets;
+
+	for (auto const pTarget : TechnoClass::Array)
+	{
+		if (!pTarget || pTarget == pTechno || pTarget->InLimbo)
+			continue;
+
+		// 1) 距离检查
+		const int dist = pTarget->DistanceFrom(pTechno);
+		if (dist > searchRange)
+			continue;
+
+		// 2) AffectsHouse 检查
+		if (!EnumFunctions::CanTargetHouse(pType->PeriodicWeapon_AffectsHouse, pFirerHouse, pTarget->Owner))
+			continue;
+
+		// 3) AffectTypes / IgnoreTypes 检查
+		auto const pTargetType = pTarget->GetTechnoType();
+
+		if (pType->PeriodicWeapon_AffectTypes.size() > 0)
+		{
+			bool found = false;
+			for (auto const& pAllowed : pType->PeriodicWeapon_AffectTypes)
+			{
+				if (pTargetType == pAllowed) { found = true; break; }
+			}
+			if (!found) continue;
+		}
+
+		if (pType->PeriodicWeapon_IgnoreTypes.size() > 0)
+		{
+			bool ignored = false;
+			for (auto const& pIgnored : pType->PeriodicWeapon_IgnoreTypes)
+			{
+				if (pTargetType == pIgnored) { ignored = true; break; }
+			}
+			if (ignored) continue;
+		}
+
+		// 4) 弹头护甲比率检查
+		const double versus = GeneralUtils::GetWarheadVersusArmor(pWH, pTarget->GetTechnoType()->Armor);
+		if (versus == 0.0)
+			continue;
+
+		// 5) 存活检查
+		if (!pTarget->IsAlive || pTarget->Health <= 0)
+			continue;
+
+		validTargets.push_back(pTarget);
+	}
+
+	if (validTargets.empty())
+		return;
+
+	// === 开火（内联，不走 LaunchPeriodicBullet）===
+	if (pType->PeriodicWeapon_FireAll)
+	{
+		for (auto const pTarget : validTargets)
+		{
+			auto const pBulletType = pWeapon->Projectile;
+			if (!pBulletType) continue;
+
+			BulletClass* pBullet = pBulletType->CreateBullet(
+				pTarget, pFirer, pWeapon->Damage, pWeapon->Warhead,
+				static_cast<int>(pWeapon->Speed), pWeapon->Bright);
+
+			if (!pBullet) continue;
+
+			pBullet->Owner = pFirer;
+			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+			pBulletExt->FirerHouse = pFirerHouse;
+			BulletExt::SimulatedFiringUnlimbo(pBullet, pFirerHouse, pWeapon, firePos, false);
+			BulletExt::SimulatedFiringEffects(pBullet, pFirerHouse, pFirer, true, true);
+		}
+	}
+	else
+	{
+		TechnoClass* pClosest = nullptr;
+		double closestDistSq = DBL_MAX;
+
+		for (auto const pTarget : validTargets)
+		{
+			const int d = pTarget->DistanceFrom(pTechno);
+			if (d < closestDistSq)
+			{
+				closestDistSq = d;
+				pClosest = pTarget;
+			}
+		}
+
+		if (pClosest)
+		{
+			auto const pBulletType = pWeapon->Projectile;
+			if (pBulletType)
+			{
+				BulletClass* pBullet = pBulletType->CreateBullet(
+					pClosest, pFirer, pWeapon->Damage, pWeapon->Warhead,
+					pWeapon->Speed, pWeapon->Bright);
+
+				if (pBullet)
+				{
+					pBullet->Owner = pFirer;
+					auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+					pBulletExt->FirerHouse = pFirerHouse;
+					BulletExt::SimulatedFiringUnlimbo(pBullet, pFirerHouse, pWeapon, firePos, false);
+					BulletExt::SimulatedFiringEffects(pBullet, pFirerHouse, pFirer, true, true);
+				}
+			}
+		}
+	}
 }
 
 #pragma region StaticFunctions_AttachDetachTransfer
@@ -1056,6 +1215,7 @@ bool AttachEffectClass::Serialize(T& Stm)
 		.Process(this->HasCumulativeAnim)
 		.Process(this->ShouldBeDiscarded)
 		.Process(this->LastActiveStat)
+		.Process(this->PeriodicWeaponTimer)
 		.Process(this->LaserTrail)
 		.Process(this->NeedsRecalculateStat)
 		.Success();

@@ -66,6 +66,14 @@ public:
 	Valueable<ExpireWeaponCondition> ExpireWeapon_TriggerOn;
 	Valueable<bool> ExpireWeapon_CumulativeOnlyOnce;
 	Valueable<bool> ExpireWeapon_UseInvokerAsOwner;
+	Valueable<WeaponTypeClass*> PeriodicWeapon;
+	Valueable<AffectedHouse> PeriodicWeapon_AffectsHouse;
+	Valueable<bool> PeriodicWeapon_UseInvokerAsOwner;
+	Valueable<Leptons> PeriodicWeapon_Range;
+	Valueable<int> PeriodicWeapon_FiringDelay;
+	Valueable<bool> PeriodicWeapon_FireAll;
+	ValueableVector<TechnoTypeClass*> PeriodicWeapon_AffectTypes;
+	ValueableVector<TechnoTypeClass*> PeriodicWeapon_IgnoreTypes;
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
@@ -129,6 +137,14 @@ public:
 		, ExpireWeapon_TriggerOn { ExpireWeaponCondition::Expire }
 		, ExpireWeapon_CumulativeOnlyOnce { false }
 		, ExpireWeapon_UseInvokerAsOwner { false }
+		, PeriodicWeapon {}
+		, PeriodicWeapon_AffectsHouse { AffectedHouse::All }
+		, PeriodicWeapon_UseInvokerAsOwner { false }
+		, PeriodicWeapon_Range { Leptons(0) }
+		, PeriodicWeapon_FiringDelay { 0 }
+		, PeriodicWeapon_FireAll { false }
+		, PeriodicWeapon_AffectTypes {}
+		, PeriodicWeapon_IgnoreTypes {}
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
 		, Tint_VisibleToHouses { AffectedHouse::All }

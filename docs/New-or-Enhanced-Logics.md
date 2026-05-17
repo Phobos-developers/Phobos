@@ -37,6 +37,16 @@ This page describes all the engine features that are either new and introduced b
     - `ExpireWeapon.TriggerOn` determines the exact conditions upon which the weapon is fired, defaults to `expire` which means only if the effect naturally expires.
     - `ExpireWeapon.CumulativeOnlyOnce`, if set to true, makes it so that `Cumulative=true` attached effects only detonate the weapon once period, instead of once per active instance. On `remove` and `expire` condition this means it will only detonate after last instance has expired or been removed.
     - `ExpireWeapon.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the weapon's owner & invoker instead of the object the effect is attached to.
+  - While an attached effect is active, it can periodically fire a weapon at valid targets within range.
+    - `PeriodicWeapon` sets the `WeaponType` to fire on each interval.
+    - `PeriodicWeapon.FiringDelay` sets the interval in game frames between firing attempts; must be greater than `0` for periodic firing to run. The timer is initialized to this value when the effect is attached.
+    - `PeriodicWeapon.Range` sets the targeting range in cells from the object the effect is attached to. This value is used for periodic target search instead of the configured weapon's own `Range`; must be greater than `0` for periodic firing to run.
+    - `PeriodicWeapon.AffectsHouse` controls which owners' units can be targeted, using the same house enumeration as other attached-effect weapon filters (defaults to `all`).
+    - `PeriodicWeapon.UseInvokerAsOwner`, if set to true, uses the house and techno that applied the effect as the weapon's owner and firer instead of the object the effect is attached to.
+    - `PeriodicWeapon.FireAll`, if set to false (default), fires at only the nearest valid target within range; if set to true, fires at every valid target within range on each interval.
+    - `PeriodicWeapon.AffectTypes`, if set to a non-empty list, restricts targets to the listed `TechnoType`s.
+    - `PeriodicWeapon.IgnoreTypes`, if set to a non-empty list, excludes the listed `TechnoType`s from targeting.
+    - Valid targets must be alive, within range, pass the house and type filters, and not be immune to the weapon's warhead armor modifier (`versus` not `0`). The attached object itself is never targeted. Weapons are fired via simulated firing from the attached object's location.
   - `Tint.Color` & `Tint.Intensity` can be used to set a color tint effect and additive lighting increase/decrease on the object the effect is attached to, respectively.
     - `Tint.VisibleToHouses` can be used to control which houses can see the tint effect.
   - `FirepowerMultiplier`, `ArmorMultiplier`, `SpeedMultiplier` and `ROFMultiplier` can be used to modify the object's firepower, armor strength, movement speed and weapon reload rate, respectively.
@@ -116,6 +126,14 @@ ExpireWeapon=                                      ; WeaponType
 ExpireWeapon.TriggerOn=expire                      ; List of expire weapon trigger condition enumeration (none|expire|remove|death|discard|all)
 ExpireWeapon.CumulativeOnlyOnce=false              ; boolean
 ExpireWeapon.UseInvokerAsOwner=false               ; boolean
+PeriodicWeapon=                                    ; WeaponType
+PeriodicWeapon.AffectsHouse=all                      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+PeriodicWeapon.UseInvokerAsOwner=false               ; boolean
+PeriodicWeapon.Range=0                               ; floating point value, distance in cells
+PeriodicWeapon.FiringDelay=0                         ; integer - game frames
+PeriodicWeapon.FireAll=false                         ; boolean
+PeriodicWeapon.AffectTypes=                          ; List of TechnoTypes
+PeriodicWeapon.IgnoreTypes=                          ; List of TechnoTypes
 Tint.Color=                                        ; integer - Red,Green,Blue
 Tint.Intensity=                                    ; floating point value
 Tint.VisibleToHouses=all                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)

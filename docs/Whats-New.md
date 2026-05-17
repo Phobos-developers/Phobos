@@ -514,6 +514,7 @@ New:
 - [Allow deploy controlled MCV](Fixed-or-Improved-Logics.md#allow-deploy-controlled-mcv) (by NetsuNegi)
 - [Customize if cloning need power](Fixed-or-Improved-Logics.md#customize-if-cloning-need-power) (by NetsuNegi)
 - [Added Target Filtering Options to AttachEffect System](New-or-Enhanced-Logics.md#attached-effects) (by Flactine)
+- [Periodic weapon for attached effects](New-or-Enhanced-Logics.md#attached-effects) (by AGAGUGUG)
 - [Customize type selection for IFV](Fixed-or-Improved-Logics.md#customize-type-selection-for-ifv) (by NetsuNegi)
 - [CellSpread in cylinder shape](New-or-Enhanced-Logics.md#cellspread-enhancement) (by TaranDahl)
 - [CellSpread damage check if victim is in air or on floor](New-or-Enhanced-Logics.md#cellspread-enhancement) (by TaranDahl)
