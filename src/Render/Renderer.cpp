@@ -572,41 +572,66 @@ bool DXRenderer::CreateDevice() {
 		Debug::Log("[RenderDX] Failed to create DXGI factory: 0x%08X\n", static_cast<unsigned int>(hr));
 		return false;
 	}
-	constexpr bool kUseWarpDevice = false;
-	if (kUseWarpDevice) {
+
+	Microsoft::WRL::ComPtr<IDXGIFactory6> factory6;
+	if (FAILED(hr = Factory.As(&factory6)))
+	{
+		Debug::Log("[RenderDX] Failed to query IDXGIFactory6 interface: 0x%08X\nFalling back to EnumAdapters1()", static_cast<unsigned int>(hr));
+		Microsoft::WRL::ComPtr<IDXGIAdapter1> hardwareAdapter;
+		for (UINT adapterIndex = 0; Factory->EnumAdapters1(adapterIndex, &hardwareAdapter) != DXGI_ERROR_NOT_FOUND; ++adapterIndex)
+		{
+			DXGI_ADAPTER_DESC1 desc;
+			hardwareAdapter->GetDesc1(&desc);
+			if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
+			{
+				continue;
+			}
+			if (SUCCEEDED(hr = FP_D3D12CreateDevice(hardwareAdapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&Device))))
+			{
+				Debug::Log("[RenderDX] D3D12 device created successfully on adapter: %ls\n", desc.Description);
+				break;
+			}
+		}
+	}
+	else
+	{
+		Debug::Log("[RenderDX] IDXGIFactory6 interface is available. Using EnumAdapterByGpuPreference to select the adapter.\n");
+		Microsoft::WRL::ComPtr<IDXGIAdapter1> hardwareAdapter;
+		for (UINT adapterIndex = 0; factory6->EnumAdapterByGpuPreference(adapterIndex, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&hardwareAdapter)) != DXGI_ERROR_NOT_FOUND; ++adapterIndex)
+		{
+			DXGI_ADAPTER_DESC1 desc;
+			hardwareAdapter->GetDesc1(&desc);
+			if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
+			{
+				continue;
+			}
+			if (SUCCEEDED(hr = FP_D3D12CreateDevice(hardwareAdapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&Device))))
+			{
+				Debug::Log("[RenderDX] D3D12 device created successfully on adapter: %ls\n", desc.Description);
+				break;
+			}
+		}
+	}
+	if (!Device)
+	{
+		Debug::Log("[RenderDX] Failed to create D3D12 device on a hardware adapter. Attempting to create WARP device.\n");
+
 		Microsoft::WRL::ComPtr<IDXGIAdapter> warpAdapter;
-		if (FAILED(hr = Factory->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter)))) {
+		if (FAILED(hr = Factory->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter))))
+		{
 			Debug::Log("[RenderDX] Failed to create WARP adapter: 0x%08X\n", static_cast<unsigned int>(hr));
 			return false;
 		}
-		if (FAILED(hr = FP_D3D12CreateDevice(warpAdapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&Device)))) {
+		if (FAILED(hr = FP_D3D12CreateDevice(warpAdapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&Device))))
+		{
 			Debug::Log("[RenderDX] Failed to create WARP adapter: 0x%08X\n", static_cast<unsigned int>(hr));
 			return false;
 		}
 
 		Debug::Log("[RenderDX] D3D12 WARP device created successfully.\n");
 	}
-	else {
-		Microsoft::WRL::ComPtr<IDXGIAdapter1> hardwareAdapter;
-		for (UINT adapterIndex = 0; Factory->EnumAdapterByGpuPreference(adapterIndex, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&hardwareAdapter)) != DXGI_ERROR_NOT_FOUND; ++adapterIndex) {
-			DXGI_ADAPTER_DESC1 desc;
-			hardwareAdapter->GetDesc1(&desc);
-			if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) {
-				continue;
-			}
-			if (SUCCEEDED(hr = FP_D3D12CreateDevice(hardwareAdapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&Device)))) {
-				Debug::Log("[RenderDX] D3D12 device created successfully on adapter: %ls\n", desc.Description);
-				break;
-			}
-		}
-		if (!Device) {
-			return false;
-		}
 
-		Debug::Log("[RenderDX] D3D12 device created successfully.\n");
-	}
-
-	return true;
+	return Device != nullptr;
 }
 
 bool DXRenderer::CreateCommandQueue() {

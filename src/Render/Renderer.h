@@ -108,7 +108,7 @@ private:
 	UINT FrameIndex { 0 };
 	UINT RtvDescriptorSize { 0 };
 
-	Microsoft::WRL::ComPtr<IDXGIFactory6> Factory;
+	Microsoft::WRL::ComPtr<IDXGIFactory4> Factory;
 	Microsoft::WRL::ComPtr<ID3D12Device> Device;
 	Microsoft::WRL::ComPtr<ID3D12CommandQueue> CommandQueue;
 	Microsoft::WRL::ComPtr<IDXGISwapChain3> SwapChain;
