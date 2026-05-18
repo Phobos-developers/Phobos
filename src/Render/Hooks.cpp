@@ -38,7 +38,7 @@ DEFINE_HOOK(0x690228, DXRenderUpdateScreenScoreClassCallBackDelay, 0x6) {
 	return 0;
 }
 
-DEFINE_NAKED_HOOK(0x5C0477, DXRenderUpdateScreenMovieBlitToScreen) {
+DEFINE_NAKED_HOOK(0x5C0477, DXRenderUpdateScreenVQMovieBlitToScreen) {
 	__asm {
 		call dword ptr[edx + 8]
 		mov ecx, dword ptr ds:[0x887308]
@@ -49,6 +49,12 @@ DEFINE_NAKED_HOOK(0x5C0477, DXRenderUpdateScreenMovieBlitToScreen) {
 		add esp, 0x20
 		ret
 	}
+}
+
+DEFINE_HOOK(0x432FF1, DXRenderUpdateScreenBinkMovieBlitToScreen, 0x7)
+{
+	RenderDX::UpdateScreen(DSurface::Primary);
+	return 0;
 }
 
 static LRESULT CALLBACK OwnerDrawWindowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
