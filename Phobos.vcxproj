@@ -267,12 +267,13 @@
     <!-- src\Utilities -->
     <ClCompile Include="src\Render\Functions.cpp" />
     <ClCompile Include="src\Render\Hooks.cpp" />
-    <ClCompile Include="src\Render\Hooks.Mouse.cpp" />
-    <ClCompile Include="src\Render\Hooks.Options.cpp" />
-    <ClCompile Include="src\Render\Hooks.Surface.cpp" />
     <ClCompile Include="src\Render\Mouse.cpp" />
+    <ClCompile Include="src\Render\Mouse.Hooks.cpp" />
+    <ClCompile Include="src\Render\Options.Hooks.cpp" />
     <ClCompile Include="src\Render\Renderer.cpp" />
     <ClCompile Include="src\Render\Surface.cpp" />
+    <ClCompile Include="src\Render\Surface.Hooks.cpp" />
+    <ClCompile Include="src\Render\WWUI.Hooks.cpp" />
     <ClCompile Include="src\Utilities\Anchor.cpp" />
     <ClCompile Include="src\Utilities\AresAddressInit.cpp" />
     <ClCompile Include="src\Utilities\AresHelper.cpp" />
