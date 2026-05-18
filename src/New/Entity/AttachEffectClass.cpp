@@ -674,12 +674,16 @@ void AttachEffectClass::FirePeriodicWeapon()
 			if (ignored) continue;
 		}
 
-		// 4) 弹头护甲比率检查
+		// 4) 抛射体 AA / AG / AAOnly / AU 索敌检查
+		if (!TechnoExt::IsProjectileEligibleTarget(pWeapon, pTarget, pFirer))
+			continue;
+
+		// 5) 弹头护甲比率检查
 		const double versus = GeneralUtils::GetWarheadVersusArmor(pWH, pTarget->GetTechnoType()->Armor);
 		if (versus == 0.0)
 			continue;
 
-		// 5) 存活检查
+		// 6) 存活检查
 		if (!pTarget->IsAlive || pTarget->Health <= 0)
 			continue;
 

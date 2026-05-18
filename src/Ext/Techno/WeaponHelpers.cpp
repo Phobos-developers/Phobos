@@ -1,7 +1,44 @@
 #include "Body.h"
 
+#include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
+
+bool TechnoExt::IsProjectileEligibleTarget(WeaponTypeClass* const pWeapon, TechnoClass* const pTarget, TechnoClass* const pFirer)
+{
+	if (!pWeapon || !pTarget)
+		return false;
+
+	const auto pBulletType = pWeapon->Projectile;
+
+	if (!pBulletType)
+		return false;
+
+	const auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
+	const bool inAir = pTarget->IsInAir();
+
+	if (inAir)
+	{
+		if (!pBulletType->AA)
+			return false;
+	}
+	else
+	{
+		if (pFirer && pFirer->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK
+			&& pBulletType->AA && pBulletTypeExt->AAOnly)
+		{
+			return false;
+		}
+
+		if (!pBulletType->AG)
+			return false;
+	}
+
+	if (pTarget->InWhichLayer() == Layer::Underground && !pBulletTypeExt->AU)
+		return false;
+
+	return true;
+}
 
 // Compares two weapons and returns index of which one is eligible to fire against current target (0 = first, 1 = second), or -1 if neither works.
 int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback, bool allowAAFallback)
