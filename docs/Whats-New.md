@@ -422,6 +422,7 @@ New:
 - [Projectile subject to ground check before firing](New-or-Enhanced-Logics.md#projectiles-blocked-by-land-or-water) (by CrimRecya)
 - [Delay automatic attack on the controlled unit](Fixed-or-Improved-Logics.md#delay-automatic-attack-on-the-controlled-unit) (by CrimRecya)
 - [Parabombs](New-or-Enhanced-Logics.md#parabombs) (by Starkku & TaranDahl)
+- [Periodic weapon on attached effects](New-or-Enhanced-Logics.md#attached-effects)
 - [Sinkablity and sinking speed customization](Fixed-or-Improved-Logics.md#sinking-behavior-dehardcode) (by TaranDahl)
 - [Fast access vehicle](New-or-Enhanced-Logics.md#fast-access-vehicle) (by CrimRecya)
 - Laser, electric bolt and rad beam scatter (by CrimRecya)

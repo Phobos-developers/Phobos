@@ -940,6 +940,12 @@ msgid "[Parabombs](New-or-Enhanced-Logics.md#parabombs) (by Starkku & TaranDahl)
 msgstr "[伞降炸弹](New-or-Enhanced-Logics.md#parabombs)（by Starkku 与 TaranDahl）"
 
 msgid ""
+"[Periodic weapon on attached effects](New-or-Enhanced-Logics.md#attached-"
+"effects)"
+msgstr ""
+"[附加效果周期性武器](New-or-Enhanced-Logics.md#attached-effects)"
+
+msgid ""
 "[Sinkablity and sinking speed customization](Fixed-or-Improved-Logics.md"
 "#sinking-behavior-dehardcode) (by TaranDahl)"
 msgstr ""
