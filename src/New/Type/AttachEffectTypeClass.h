@@ -3,6 +3,9 @@
 #include <set>
 #include <unordered_map>
 
+#include <string>
+
+#include <New/PeriodicWeaponTargeting.h>
 #include <Utilities/Enumerable.h>
 #include <Utilities/TemplateDef.h>
 #include "LaserTrailTypeClass.h"
@@ -67,13 +70,12 @@ public:
 	Valueable<bool> ExpireWeapon_CumulativeOnlyOnce;
 	Valueable<bool> ExpireWeapon_UseInvokerAsOwner;
 	Valueable<WeaponTypeClass*> PeriodicWeapon;
-	Valueable<AffectedHouse> PeriodicWeapon_AffectsHouse;
 	Valueable<bool> PeriodicWeapon_UseInvokerAsOwner;
 	Valueable<Leptons> PeriodicWeapon_Range;
-	Valueable<int> PeriodicWeapon_FiringDelay;
-	Valueable<bool> PeriodicWeapon_FireAll;
-	ValueableVector<TechnoTypeClass*> PeriodicWeapon_AffectTypes;
-	ValueableVector<TechnoTypeClass*> PeriodicWeapon_IgnoreTypes;
+	Valueable<int> PeriodicWeapon_Delay;
+	Valueable<int> PeriodicWeapon_InitialDelay;
+	Valueable<std::string> PeriodicWeapon_TargetingMode;
+	Valueable<bool> PeriodicWeapon_TargetSelf;
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
@@ -138,13 +140,12 @@ public:
 		, ExpireWeapon_CumulativeOnlyOnce { false }
 		, ExpireWeapon_UseInvokerAsOwner { false }
 		, PeriodicWeapon {}
-		, PeriodicWeapon_AffectsHouse { AffectedHouse::All }
 		, PeriodicWeapon_UseInvokerAsOwner { false }
 		, PeriodicWeapon_Range { Leptons(0) }
-		, PeriodicWeapon_FiringDelay { 0 }
-		, PeriodicWeapon_FireAll { false }
-		, PeriodicWeapon_AffectTypes {}
-		, PeriodicWeapon_IgnoreTypes {}
+		, PeriodicWeapon_Delay { 0 }
+		, PeriodicWeapon_InitialDelay { 0 }
+		, PeriodicWeapon_TargetingMode { PeriodicWeaponTargeting::ModeClosest }
+		, PeriodicWeapon_TargetSelf { false }
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
 		, Tint_VisibleToHouses { AffectedHouse::All }

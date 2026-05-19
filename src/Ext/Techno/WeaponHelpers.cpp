@@ -3,38 +3,76 @@
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
+#include <Utilities/EnumFunctions.h>
+#include <Utilities/GeneralUtils.h>
 
-bool TechnoExt::IsProjectileEligibleTarget(WeaponTypeClass* const pWeapon, TechnoClass* const pTarget, TechnoClass* const pFirer)
+bool TechnoExt::IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, WeaponTypeClass* pWeapon, TechnoClass* pTarget, bool useWeaponTargeting)
 {
-	if (!pWeapon || !pTarget)
-		return false;
+	auto const pWH = pWeapon->Warhead;
 
-	const auto pBulletType = pWeapon->Projectile;
-
-	if (!pBulletType)
-		return false;
-
-	const auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
-	const bool inAir = pTarget->IsInAir();
-
-	if (inAir)
+	if (useWeaponTargeting)
 	{
-		if (!pBulletType->AA)
+		auto const pType = pTarget->GetTechnoType();
+
+		if (!pType->LegalTarget || GeneralUtils::GetWarheadVersusArmor(pWH, pTarget, pType) == 0.0)
 			return false;
-	}
-	else
-	{
-		if (pFirer && pFirer->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK
-			&& pBulletType->AA && pBulletTypeExt->AAOnly)
+
+		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+		if (pWeaponExt->SkipWeaponPicking)
+			return true;
+
+		if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTarget->Owner)
+			|| !EnumFunctions::IsCellEligible(pTarget->GetCell(), pWeaponExt->CanTarget, true, true)
+			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget)
+			|| !pWeaponExt->IsHealthInThreshold(pTarget)
+			|| !pWeaponExt->IsVeterancyInThreshold(pTarget))
 		{
 			return false;
 		}
 
-		if (!pBulletType->AG)
+		if (!pWeaponExt->HasRequiredAttachedEffects(pTarget, pSource))
+			return false;
+	}
+	else
+	{
+		if (!WarheadTypeExt::ExtMap.Find(pWH)->CanTargetHouse(pOwner, pTarget))
 			return false;
 	}
 
-	if (pTarget->InWhichLayer() == Layer::Underground && !pBulletTypeExt->AU)
+	return true;
+}
+
+bool TechnoExt::SplitsProjectileCheck(BulletTypeClass* pProjectile, WeaponTypeClass* pWeapon, TechnoClass* pTarget, bool useWeaponTargeting, TechnoClass* pFirer)
+{
+	if (!pProjectile || !pTarget)
+		return false;
+
+	if (!useWeaponTargeting)
+		return pProjectile->AA || !pTarget->IsInAir();
+
+	const bool inAir = pTarget->IsInAir();
+
+	if (inAir)
+	{
+		if (!pProjectile->AA)
+			return false;
+	}
+	else
+	{
+		auto const pProjectileExt = BulletTypeExt::ExtMap.Find(pProjectile);
+
+		if (pFirer && pFirer->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK
+			&& pProjectile->AA && pProjectileExt->AAOnly)
+		{
+			return false;
+		}
+
+		if (!pProjectile->AG)
+			return false;
+	}
+
+	if (pTarget->InWhichLayer() == Layer::Underground && !BulletTypeExt::ExtMap.Find(pProjectile)->AU)
 		return false;
 
 	return true;

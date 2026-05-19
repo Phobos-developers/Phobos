@@ -127,13 +127,46 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ExpireWeapon_UseInvokerAsOwner.Read(exINI, pSection, "ExpireWeapon.UseInvokerAsOwner");
 
 	this->PeriodicWeapon.Read<true>(exINI, pSection, "PeriodicWeapon");
-	this->PeriodicWeapon_AffectsHouse.Read(exINI, pSection, "PeriodicWeapon.AffectsHouse");
 	this->PeriodicWeapon_UseInvokerAsOwner.Read(exINI, pSection, "PeriodicWeapon.UseInvokerAsOwner");
 	this->PeriodicWeapon_Range.Read(exINI, pSection, "PeriodicWeapon.Range");
-	this->PeriodicWeapon_FiringDelay.Read(exINI, pSection, "PeriodicWeapon.FiringDelay");
-	this->PeriodicWeapon_FireAll.Read(exINI, pSection, "PeriodicWeapon.FireAll");
-	this->PeriodicWeapon_AffectTypes.Read(exINI, pSection, "PeriodicWeapon.AffectTypes");
-	this->PeriodicWeapon_IgnoreTypes.Read(exINI, pSection, "PeriodicWeapon.IgnoreTypes");
+	if (exINI.ReadString(pSection, "PeriodicWeapon.FiringDelay") > 0)
+	{
+		Debug::Log("[Developer warning][%s] PeriodicWeapon.FiringDelay is deprecated and has been replaced by PeriodicWeapon.Delay! If both are set, the latter will be used.\n", pSection);
+	}
+	this->PeriodicWeapon_Delay.Read(exINI, pSection, "PeriodicWeapon.FiringDelay");
+	this->PeriodicWeapon_Delay.Read(exINI, pSection, "PeriodicWeapon.Delay");
+	this->PeriodicWeapon_InitialDelay.Read(exINI, pSection, "PeriodicWeapon.InitialDelay");
+	if (exINI.ReadString(pSection, "PeriodicWeapon.Target") > 0)
+	{
+		Debug::Log("[Developer warning][%s] PeriodicWeapon.Target is deprecated and has been replaced by PeriodicWeapon.TargetingMode! If both are set, the latter will be used.\n", pSection);
+
+		const char* const pValue = exINI.value();
+
+		if (!_strcmpi(pValue, "nearest"))
+			this->PeriodicWeapon_TargetingMode = PeriodicWeaponTargeting::ModeClosest;
+		else if (!_strcmpi(pValue, "all"))
+			this->PeriodicWeapon_TargetingMode = PeriodicWeaponTargeting::ModeAll;
+		else if (!_strcmpi(pValue, "random"))
+		{
+			Debug::Log("[Developer warning][%s] PeriodicWeapon.Target=random is no longer supported. Use a registered callback name or closest/all.\n", pSection);
+			this->PeriodicWeapon_TargetingMode = PeriodicWeaponTargeting::ModeClosest;
+		}
+		else
+			this->PeriodicWeapon_TargetingMode = pValue;
+	}
+
+	if (exINI.ReadString(pSection, "PeriodicWeapon.FireAll") > 0)
+	{
+		Debug::Log("[Developer warning][%s] PeriodicWeapon.FireAll is deprecated and has been replaced by PeriodicWeapon.TargetingMode=all! If both are set, the latter will be used.\n", pSection);
+
+		bool fireAll = false;
+
+		if (detail::read<bool>(fireAll, exINI, pSection, "PeriodicWeapon.FireAll") && fireAll)
+			this->PeriodicWeapon_TargetingMode = PeriodicWeaponTargeting::ModeAll;
+	}
+
+	this->PeriodicWeapon_TargetingMode.Read(exINI, pSection, "PeriodicWeapon.TargetingMode");
+	this->PeriodicWeapon_TargetSelf.Read(exINI, pSection, "PeriodicWeapon.TargetSelf");
 
 	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
 	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
@@ -222,13 +255,12 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ExpireWeapon_CumulativeOnlyOnce)
 		.Process(this->ExpireWeapon_UseInvokerAsOwner)
 		.Process(this->PeriodicWeapon)
-		.Process(this->PeriodicWeapon_AffectsHouse)
 		.Process(this->PeriodicWeapon_UseInvokerAsOwner)
 		.Process(this->PeriodicWeapon_Range)
-		.Process(this->PeriodicWeapon_FiringDelay)
-		.Process(this->PeriodicWeapon_FireAll)
-		.Process(this->PeriodicWeapon_AffectTypes)
-		.Process(this->PeriodicWeapon_IgnoreTypes)
+		.Process(this->PeriodicWeapon_Delay)
+		.Process(this->PeriodicWeapon_InitialDelay)
+		.Process(this->PeriodicWeapon_TargetingMode)
+		.Process(this->PeriodicWeapon_TargetSelf)
 		.Process(this->Tint_Color)
 		.Process(this->Tint_Intensity)
 		.Process(this->Tint_VisibleToHouses)
@@ -381,6 +413,23 @@ namespace detail
 			}
 
 			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<std::string>(std::string& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			const char* pValue = parser.value();
+
+			if (INIClass::IsBlank(pValue))
+				return false;
+
+			value = pValue;
 			return true;
 		}
 

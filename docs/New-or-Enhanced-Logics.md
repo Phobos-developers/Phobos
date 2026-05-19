@@ -39,14 +39,13 @@ This page describes all the engine features that are either new and introduced b
     - `ExpireWeapon.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the weapon's owner & invoker instead of the object the effect is attached to.
   - While an attached effect is active, it can periodically fire a weapon at valid targets within range.
     - `PeriodicWeapon` sets the `WeaponType` to fire on each interval.
-    - `PeriodicWeapon.FiringDelay` sets the interval in game frames between firing attempts; must be greater than `0` for periodic firing to run. The timer is initialized to this value when the effect is attached.
+    - `PeriodicWeapon.Delay` sets the interval in game frames between firing attempts; must be greater than `0` for periodic firing to run.
+    - `PeriodicWeapon.InitialDelay` sets the delay in game frames before the first firing attempt. If not set or `0`, the timer is initialized to `PeriodicWeapon.Delay` when the effect is attached. After the first shot, the timer resets to `PeriodicWeapon.Delay`.
     - `PeriodicWeapon.Range` sets the targeting range in cells from the object the effect is attached to. This value is used for periodic target search instead of the configured weapon's own `Range`; must be greater than `0` for periodic firing to run.
-    - `PeriodicWeapon.AffectsHouse` controls which owners' units can be targeted, using the same house enumeration as other attached-effect weapon filters (defaults to `all`).
     - `PeriodicWeapon.UseInvokerAsOwner`, if set to true, uses the house and techno that applied the effect as the weapon's owner and firer instead of the object the effect is attached to.
-    - `PeriodicWeapon.FireAll`, if set to false (default), fires at only the nearest valid target within range; if set to true, fires at every valid target within range on each interval.
-    - `PeriodicWeapon.AffectTypes`, if set to a non-empty list, restricts targets to the listed `TechnoType`s.
-    - `PeriodicWeapon.IgnoreTypes`, if set to a non-empty list, excludes the listed `TechnoType`s from targeting.
-    - Valid targets must be alive, within range, pass the house and type filters, and not be immune to the weapon's warhead armor modifier (`versus` not `0`). The attached object itself is never targeted. Weapons are fired via simulated firing from the attached object's location.
+    - `PeriodicWeapon.TargetingMode` controls which valid targets are fired at on each interval. Built-in modes are `closest` (default; fires at the nearest valid target) and `all` (fires at every valid target). Any other value is treated as a registered callback name and must be registered via `PeriodicWeaponTargeting::Register` before use (for example from a `DEFINE_HOOK` during game init in Phobos or another loaded DLL that links against Phobos).
+    - `PeriodicWeapon.TargetSelf`, if set to true, allows the attached object to be included as a valid target within range and be fired at. If false (default), the attached object is excluded from periodic target search.
+    - Target eligibility uses the configured weapon's targeting settings (`CanTarget`, `CanTargetHouses`, health/veterancy thresholds, attached-effect requirements, projectile AA/AG/AU behaviour, and warhead `versus`). Weapons are fired via simulated firing from the attached object's location and apply the firer's current firepower multiplier.
   - `Tint.Color` & `Tint.Intensity` can be used to set a color tint effect and additive lighting increase/decrease on the object the effect is attached to, respectively.
     - `Tint.VisibleToHouses` can be used to control which houses can see the tint effect.
   - `FirepowerMultiplier`, `ArmorMultiplier`, `SpeedMultiplier` and `ROFMultiplier` can be used to modify the object's firepower, armor strength, movement speed and weapon reload rate, respectively.
@@ -127,13 +126,12 @@ ExpireWeapon.TriggerOn=expire                      ; List of expire weapon trigg
 ExpireWeapon.CumulativeOnlyOnce=false              ; boolean
 ExpireWeapon.UseInvokerAsOwner=false               ; boolean
 PeriodicWeapon=                                    ; WeaponType
-PeriodicWeapon.AffectsHouse=all                      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 PeriodicWeapon.UseInvokerAsOwner=false               ; boolean
 PeriodicWeapon.Range=0                               ; floating point value, distance in cells
-PeriodicWeapon.FiringDelay=0                         ; integer - game frames
-PeriodicWeapon.FireAll=false                         ; boolean
-PeriodicWeapon.AffectTypes=                          ; List of TechnoTypes
-PeriodicWeapon.IgnoreTypes=                          ; List of TechnoTypes
+PeriodicWeapon.Delay=0                               ; integer - game frames
+PeriodicWeapon.InitialDelay=0                        ; integer - game frames
+PeriodicWeapon.TargetingMode=closest                 ; closest | all | <registered callback name>
+PeriodicWeapon.TargetSelf=false                      ; boolean
 Tint.Color=                                        ; integer - Red,Green,Blue
 Tint.Intensity=                                    ; floating point value
 Tint.VisibleToHouses=all                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)

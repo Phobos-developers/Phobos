@@ -1,9 +1,15 @@
 #include "AttachEffectClass.h"
 
+#include <algorithm>
+
+#include <New/PeriodicWeaponTargeting.h>
+
+#include <Utilities/Debug.h>
+
 #include <Ext/Anim/Body.h>
+#include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Ext/Bullet/Body.h> 
 
 std::vector<AttachEffectClass*> AttachEffectClass::Array;
 
@@ -44,7 +50,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, NeedsRecalculateStat { false }
 	, LastDiscardCheckFrame { -1 }
 	, LastDiscardCheckValue { false }
-	, PeriodicWeaponTimer { pType->PeriodicWeapon_FiringDelay }
+	, PeriodicWeaponTimer { pType->PeriodicWeapon_InitialDelay > 0 ? pType->PeriodicWeapon_InitialDelay : pType->PeriodicWeapon_Delay }
 {
 	this->HasInitialized = false;
 
@@ -251,14 +257,13 @@ void AttachEffectClass::AI()
 	this->AnimCheck();
 
 	// --- Periodic Weapon Logic ---
-	if (pType->PeriodicWeapon && pType->PeriodicWeapon_FiringDelay > 0 && pType->PeriodicWeapon_Range.Get() > 0)
+	if (pType->PeriodicWeapon && pType->PeriodicWeapon_Delay > 0 && pType->PeriodicWeapon_Range.Get() > 0)
 	{
-		
 		this->PeriodicWeaponTimer--;
 
 		if (this->PeriodicWeaponTimer <= 0)
 		{
-			this->PeriodicWeaponTimer = pType->PeriodicWeapon_FiringDelay;
+			this->PeriodicWeaponTimer = pType->PeriodicWeapon_Delay;
 			this->FirePeriodicWeapon();
 		}
 	}
@@ -613,12 +618,16 @@ void AttachEffectClass::FirePeriodicWeapon()
 	if (!pWeapon)
 		return;
 
+	auto const pBulletType = pWeapon->Projectile;
+
+	if (!pBulletType)
+		return;
+
 	auto const pTechno = this->Techno;
 
 	if (!pTechno || pTechno->InLimbo || pTechno->IsImmobilized)
 		return;
 
-	// 确定开火者
 	TechnoClass* pFirer = pType->PeriodicWeapon_UseInvokerAsOwner ? this->Invoker : pTechno;
 	HouseClass* pFirerHouse = pType->PeriodicWeapon_UseInvokerAsOwner
 		? (this->InvokerHouse ? this->InvokerHouse : pTechno->Owner)
@@ -630,124 +639,86 @@ void AttachEffectClass::FirePeriodicWeapon()
 	if (!pFirerHouse)
 		pFirerHouse = pTechno->Owner;
 
-	auto const pWH = pWeapon->Warhead;
-	const int searchRange = pType->PeriodicWeapon_Range.Get();  // ← 只定义一次，int类型
+	const bool targetSelf = pType->PeriodicWeapon_TargetSelf;
+	const bool useWeaponTargeting = true;
+	const int searchRange = pType->PeriodicWeapon_Range.Get();
 	const auto firePos = pTechno->Location;
 
-	// === 索敌 ===
-	std::vector<TechnoClass*> validTargets;
+	std::vector<std::pair<TechnoClass*, int>> validTargets;
 
 	for (auto const pTarget : TechnoClass::Array)
 	{
-		if (!pTarget || pTarget == pTechno || pTarget->InLimbo)
+		if (!pTarget || pTarget->InLimbo)
 			continue;
 
-		// 1) 距离检查
+		if (!targetSelf && pTarget == pTechno)
+			continue;
+
+		if (!pTarget->IsInPlayfield || !pTarget->IsOnMap || !pTarget->IsAlive || pTarget->Health <= 0)
+			continue;
+
 		const int dist = pTarget->DistanceFrom(pTechno);
+
 		if (dist > searchRange)
 			continue;
 
-		// 2) AffectsHouse 检查
-		if (!EnumFunctions::CanTargetHouse(pType->PeriodicWeapon_AffectsHouse, pFirerHouse, pTarget->Owner))
+		if (!TechnoExt::SplitsProjectileCheck(pBulletType, pWeapon, pTarget, useWeaponTargeting, pFirer))
 			continue;
 
-		// 3) AffectTypes / IgnoreTypes 检查
-		auto const pTargetType = pTarget->GetTechnoType();
-
-		if (pType->PeriodicWeapon_AffectTypes.size() > 0)
-		{
-			bool found = false;
-			for (auto const& pAllowed : pType->PeriodicWeapon_AffectTypes)
-			{
-				if (pTargetType == pAllowed) { found = true; break; }
-			}
-			if (!found) continue;
-		}
-
-		if (pType->PeriodicWeapon_IgnoreTypes.size() > 0)
-		{
-			bool ignored = false;
-			for (auto const& pIgnored : pType->PeriodicWeapon_IgnoreTypes)
-			{
-				if (pTargetType == pIgnored) { ignored = true; break; }
-			}
-			if (ignored) continue;
-		}
-
-		// 4) 抛射体 AA / AG / AAOnly / AU 索敌检查
-		if (!TechnoExt::IsProjectileEligibleTarget(pWeapon, pTarget, pFirer))
+		if (!TechnoExt::IsAllowedSplitsTarget(pFirer, pFirerHouse, pWeapon, pTarget, useWeaponTargeting))
 			continue;
 
-		// 5) 弹头护甲比率检查
-		const double versus = GeneralUtils::GetWarheadVersusArmor(pWH, pTarget->GetTechnoType()->Armor);
-		if (versus == 0.0)
-			continue;
-
-		// 6) 存活检查
-		if (!pTarget->IsAlive || pTarget->Health <= 0)
-			continue;
-
-		validTargets.push_back(pTarget);
+		validTargets.emplace_back(pTarget, dist);
 	}
 
 	if (validTargets.empty())
 		return;
 
-	// === 开火（内联，不走 LaunchPeriodicBullet）===
-	if (pType->PeriodicWeapon_FireAll)
+	std::sort(validTargets.begin(), validTargets.end(),
+		[](const auto& a, const auto& b) { return a.second < b.second; });
+
+	const int damage = static_cast<int>(pWeapon->Damage * TechnoExt::GetCurrentFirepowerMultiplier(pFirer));
+
+	auto const fireAt = [&](TechnoClass* pTarget)
 	{
-		for (auto const pTarget : validTargets)
+		BulletClass* pBullet = pBulletType->CreateBullet(
+			pTarget, pFirer, damage, pWeapon->Warhead,
+			static_cast<int>(pWeapon->Speed), pWeapon->Bright);
+
+		if (!pBullet)
+			return;
+
+		pBullet->Owner = pFirer;
+		auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+		pBulletExt->FirerHouse = pFirerHouse;
+		BulletExt::SimulatedFiringUnlimbo(pBullet, pFirerHouse, pWeapon, firePos, false);
+		BulletExt::SimulatedFiringEffects(pBullet, pFirerHouse, pFirer, true, true);
+	};
+
+	const char* const mode = pType->PeriodicWeapon_TargetingMode.c_str();
+
+	if (!_strcmpi(mode, PeriodicWeaponTargeting::ModeAll))
+	{
+		for (auto const& [pTarget, _] : validTargets)
+			fireAt(pTarget);
+	}
+	else if (!_strcmpi(mode, PeriodicWeaponTargeting::ModeClosest) || !_strcmpi(mode, "nearest"))
+	{
+		fireAt(validTargets.front().first);
+	}
+	else if (auto const pCallback = PeriodicWeaponTargeting::Find(mode))
+	{
+		const auto selected = pCallback(this, pTechno, pWeapon, pFirer, pFirerHouse, validTargets);
+
+		for (auto const pTarget : selected)
 		{
-			auto const pBulletType = pWeapon->Projectile;
-			if (!pBulletType) continue;
-
-			BulletClass* pBullet = pBulletType->CreateBullet(
-				pTarget, pFirer, pWeapon->Damage, pWeapon->Warhead,
-				static_cast<int>(pWeapon->Speed), pWeapon->Bright);
-
-			if (!pBullet) continue;
-
-			pBullet->Owner = pFirer;
-			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
-			pBulletExt->FirerHouse = pFirerHouse;
-			BulletExt::SimulatedFiringUnlimbo(pBullet, pFirerHouse, pWeapon, firePos, false);
-			BulletExt::SimulatedFiringEffects(pBullet, pFirerHouse, pFirer, true, true);
+			if (pTarget)
+				fireAt(pTarget);
 		}
 	}
 	else
 	{
-		TechnoClass* pClosest = nullptr;
-		double closestDistSq = DBL_MAX;
-
-		for (auto const pTarget : validTargets)
-		{
-			const int d = pTarget->DistanceFrom(pTechno);
-			if (d < closestDistSq)
-			{
-				closestDistSq = d;
-				pClosest = pTarget;
-			}
-		}
-
-		if (pClosest)
-		{
-			auto const pBulletType = pWeapon->Projectile;
-			if (pBulletType)
-			{
-				BulletClass* pBullet = pBulletType->CreateBullet(
-					pClosest, pFirer, pWeapon->Damage, pWeapon->Warhead,
-					pWeapon->Speed, pWeapon->Bright);
-
-				if (pBullet)
-				{
-					pBullet->Owner = pFirer;
-					auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
-					pBulletExt->FirerHouse = pFirerHouse;
-					BulletExt::SimulatedFiringUnlimbo(pBullet, pFirerHouse, pWeapon, firePos, false);
-					BulletExt::SimulatedFiringEffects(pBullet, pFirerHouse, pFirer, true, true);
-				}
-			}
-		}
+		Debug::Log("[AttachEffect] Unregistered PeriodicWeapon.TargetingMode '%s' on [%s].\n", mode, pType->Name.data());
 	}
 }
 
