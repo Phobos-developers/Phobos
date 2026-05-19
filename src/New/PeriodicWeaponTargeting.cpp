@@ -38,7 +38,6 @@ bool PeriodicWeaponTargeting::IsBuiltinMode(const char* mode)
 		return false;
 
 	return !_strcmpi(mode, ModeClosest)
-		|| !_strcmpi(mode, "nearest")
 		|| !_strcmpi(mode, ModeAll);
 }
 

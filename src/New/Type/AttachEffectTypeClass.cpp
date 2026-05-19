@@ -129,42 +129,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->PeriodicWeapon.Read<true>(exINI, pSection, "PeriodicWeapon");
 	this->PeriodicWeapon_UseInvokerAsOwner.Read(exINI, pSection, "PeriodicWeapon.UseInvokerAsOwner");
 	this->PeriodicWeapon_Range.Read(exINI, pSection, "PeriodicWeapon.Range");
-	if (exINI.ReadString(pSection, "PeriodicWeapon.FiringDelay") > 0)
-	{
-		Debug::Log("[Developer warning][%s] PeriodicWeapon.FiringDelay is deprecated and has been replaced by PeriodicWeapon.Delay! If both are set, the latter will be used.\n", pSection);
-	}
-	this->PeriodicWeapon_Delay.Read(exINI, pSection, "PeriodicWeapon.FiringDelay");
 	this->PeriodicWeapon_Delay.Read(exINI, pSection, "PeriodicWeapon.Delay");
 	this->PeriodicWeapon_InitialDelay.Read(exINI, pSection, "PeriodicWeapon.InitialDelay");
-	if (exINI.ReadString(pSection, "PeriodicWeapon.Target") > 0)
-	{
-		Debug::Log("[Developer warning][%s] PeriodicWeapon.Target is deprecated and has been replaced by PeriodicWeapon.TargetingMode! If both are set, the latter will be used.\n", pSection);
-
-		const char* const pValue = exINI.value();
-
-		if (!_strcmpi(pValue, "nearest"))
-			this->PeriodicWeapon_TargetingMode = PeriodicWeaponTargeting::ModeClosest;
-		else if (!_strcmpi(pValue, "all"))
-			this->PeriodicWeapon_TargetingMode = PeriodicWeaponTargeting::ModeAll;
-		else if (!_strcmpi(pValue, "random"))
-		{
-			Debug::Log("[Developer warning][%s] PeriodicWeapon.Target=random is no longer supported. Use a registered callback name or closest/all.\n", pSection);
-			this->PeriodicWeapon_TargetingMode = PeriodicWeaponTargeting::ModeClosest;
-		}
-		else
-			this->PeriodicWeapon_TargetingMode = pValue;
-	}
-
-	if (exINI.ReadString(pSection, "PeriodicWeapon.FireAll") > 0)
-	{
-		Debug::Log("[Developer warning][%s] PeriodicWeapon.FireAll is deprecated and has been replaced by PeriodicWeapon.TargetingMode=all! If both are set, the latter will be used.\n", pSection);
-
-		bool fireAll = false;
-
-		if (detail::read<bool>(fireAll, exINI, pSection, "PeriodicWeapon.FireAll") && fireAll)
-			this->PeriodicWeapon_TargetingMode = PeriodicWeaponTargeting::ModeAll;
-	}
-
 	this->PeriodicWeapon_TargetingMode.Read(exINI, pSection, "PeriodicWeapon.TargetingMode");
 	this->PeriodicWeapon_TargetSelf.Read(exINI, pSection, "PeriodicWeapon.TargetSelf");
 

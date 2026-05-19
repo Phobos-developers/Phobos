@@ -702,7 +702,7 @@ void AttachEffectClass::FirePeriodicWeapon()
 		for (auto const& [pTarget, _] : validTargets)
 			fireAt(pTarget);
 	}
-	else if (!_strcmpi(mode, PeriodicWeaponTargeting::ModeClosest) || !_strcmpi(mode, "nearest"))
+	else if (!_strcmpi(mode, PeriodicWeaponTargeting::ModeClosest))
 	{
 		fireAt(validTargets.front().first);
 	}
