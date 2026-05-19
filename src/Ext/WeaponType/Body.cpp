@@ -1,8 +1,55 @@
 #include "Body.h"
 #include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/WarheadType/Body.h>
+#include <Utilities/EnumFunctions.h>
+#include <Utilities/GeneralUtils.h>
 
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
+
+bool WeaponTypeExt::IsAllowedTarget(WeaponTypeClass* pWeapon, TechnoClass* pTarget, bool useWeaponTargeting, TechnoClass* pSource, HouseClass* pOwner)
+{
+	if (!pWeapon || !pTarget)
+		return false;
+
+	if (!pOwner && pSource)
+		pOwner = pSource->Owner;
+
+	auto const pWH = pWeapon->Warhead;
+
+	if (useWeaponTargeting)
+	{
+		auto const pType = pTarget->GetTechnoType();
+
+		if (!pType->LegalTarget || GeneralUtils::GetWarheadVersusArmor(pWH, pTarget, pType) == 0.0)
+			return false;
+
+		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+		if (pWeaponExt->SkipWeaponPicking)
+			return true;
+
+		if (!pOwner
+			|| !EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTarget->Owner)
+			|| !EnumFunctions::IsCellEligible(pTarget->GetCell(), pWeaponExt->CanTarget, true, true)
+			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget)
+			|| !pWeaponExt->IsHealthInThreshold(pTarget)
+			|| !pWeaponExt->IsVeterancyInThreshold(pTarget))
+		{
+			return false;
+		}
+
+		if (!pWeaponExt->HasRequiredAttachedEffects(pTarget, pSource))
+			return false;
+	}
+	else
+	{
+		if (!pOwner || !WarheadTypeExt::ExtMap.Find(pWH)->CanTargetHouse(pOwner, pTarget))
+			return false;
+	}
+
+	return true;
+}
 
 bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTarget, TechnoClass* pFirer) const
 {

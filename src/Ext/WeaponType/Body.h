@@ -231,4 +231,5 @@ public:
 	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer);
 	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer, int range);
 	static int GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFirer, bool isMinimum);
+	static bool IsAllowedTarget(WeaponTypeClass* pWeapon, TechnoClass* pTarget, bool useWeaponTargeting, TechnoClass* pSource = nullptr, HouseClass* pOwner = nullptr);
 };

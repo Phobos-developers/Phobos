@@ -2,8 +2,8 @@
 
 #include <Ext/Anim/Body.h>
 #include <Ext/CaptureManager/Body.h>
+#include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Utilities/Helpers.Alex.h>
 
@@ -663,8 +663,8 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 				if (pTechno->IsInPlayfield && pTechno->IsOnMap && pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo
 					&& (retargetSelf || pTechno != pSource))
 				{
-					if (TechnoExt::SplitsProjectileCheck(pType, pWeapon, pTechno, useWeaponTargeting, pSource) &&
-						TechnoExt::IsAllowedSplitsTarget(pSource, pOwner, pWeapon, pTechno, useWeaponTargeting))
+					if (BulletTypeExt::IsAllowedTarget(pType, pTechno, useWeaponTargeting, pSource) &&
+						WeaponTypeExt::IsAllowedTarget(pWeapon, pTechno, useWeaponTargeting, pSource, pOwner))
 					{
 						targets.AddItem(pTechno);
 					}

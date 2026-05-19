@@ -8,6 +8,7 @@
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
+#include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
@@ -662,10 +663,10 @@ void AttachEffectClass::FirePeriodicWeapon()
 		if (dist > searchRange)
 			continue;
 
-		if (!TechnoExt::SplitsProjectileCheck(pBulletType, pWeapon, pTarget, useWeaponTargeting, pFirer))
+		if (!BulletTypeExt::IsAllowedTarget(pBulletType, pTarget, useWeaponTargeting, pFirer))
 			continue;
 
-		if (!TechnoExt::IsAllowedSplitsTarget(pFirer, pFirerHouse, pWeapon, pTarget, useWeaponTargeting))
+		if (!WeaponTypeExt::IsAllowedTarget(pWeapon, pTarget, useWeaponTargeting, pFirer, pFirerHouse))
 			continue;
 
 		validTargets.emplace_back(pTarget, dist);
