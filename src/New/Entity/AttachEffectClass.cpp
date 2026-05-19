@@ -695,7 +695,7 @@ void AttachEffectClass::FirePeriodicWeapon()
 		BulletExt::SimulatedFiringEffects(pBullet, pFirerHouse, pFirer, true, true);
 	};
 
-	const char* const mode = pType->PeriodicWeapon_TargetingMode.c_str();
+	const char* const mode = pType->PeriodicWeapon_TargetingMode.Get().c_str();
 
 	if (!_strcmpi(mode, PeriodicWeaponTargeting::ModeAll))
 	{
