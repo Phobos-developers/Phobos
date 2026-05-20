@@ -182,7 +182,7 @@ You can create a circular health bar for technos, where the different frames of 
 The arrangement of static images on the plane is entirely up to you to draw freely, without being constrained by pre-established frameworks (e.g., the original rule for health bars was to start at a fixed coordinate, fetch a pip from a fixed frame of a fixed file at fixed intervals, and then arrange them horizontally), choosing from inherently limited options.
 ```
 
-Of course, this is just the implementation method. To balance freedom with efficiency—that is, how to efficiently draw the patterns you need—you still need to independently explore a workflow that suits you.
+Of course, this is just the implementation method. To balance freedom with efficiency - that is, how to efficiently draw the patterns you need - you still need to independently explore a workflow that suits you.
 ````
 
 ### Flashing Technos on selecting
