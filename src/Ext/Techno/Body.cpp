@@ -749,6 +749,9 @@ bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max
 
 bool TechnoExt::CannotMove(UnitClass* pThis)
 {
+	if (pThis->LocomotorSource)
+		return false;
+
 	const auto pType = pThis->Type;
 
 	if (pType->Speed == 0)
