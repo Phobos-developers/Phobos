@@ -2617,6 +2617,7 @@ msgid ""
 "Fixed a bug where stationary vehicles would also block movement caused by"
 " external factors (by Noble_Fish)"
 msgstr ""
+"修复了 *静止的载具* 也会阻碍外部力量引发移动的 Bug（by Noble_Fish）"
 
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
