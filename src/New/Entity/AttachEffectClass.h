@@ -98,7 +98,7 @@ private:
 	int LastDiscardCheckFrame;
 	bool LastDiscardCheckValue;
 	bool LastActiveStat;
-	int PeriodicWeaponTimer;  // 周期性武器计时器
+	int PeriodicWeaponTimer;  // periodic weapon fire timer
 	LaserTrailClass* LaserTrail;
 
 public:

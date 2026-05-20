@@ -10,6 +10,8 @@
 #include <Utilities/TemplateDef.h>
 #include "LaserTrailTypeClass.h"
 
+class INI_EX;
+
 // AE discard condition
 enum class DiscardCondition : unsigned char
 {
@@ -71,10 +73,10 @@ public:
 	Valueable<bool> ExpireWeapon_UseInvokerAsOwner;
 	Valueable<WeaponTypeClass*> PeriodicWeapon;
 	Valueable<bool> PeriodicWeapon_UseInvokerAsOwner;
-	Valueable<Leptons> PeriodicWeapon_Range;
 	Valueable<int> PeriodicWeapon_Delay;
 	Valueable<int> PeriodicWeapon_InitialDelay;
-	Valueable<std::string> PeriodicWeapon_TargetingMode;
+	PeriodicWeaponTargetingMode PeriodicWeapon_TargetingMode;
+	std::string PeriodicWeapon_TargetingModeCustom;
 	Valueable<bool> PeriodicWeapon_TargetSelf;
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
@@ -141,10 +143,10 @@ public:
 		, ExpireWeapon_UseInvokerAsOwner { false }
 		, PeriodicWeapon {}
 		, PeriodicWeapon_UseInvokerAsOwner { false }
-		, PeriodicWeapon_Range { Leptons(0) }
 		, PeriodicWeapon_Delay { 0 }
 		, PeriodicWeapon_InitialDelay { 0 }
-		, PeriodicWeapon_TargetingMode { PeriodicWeaponTargeting::ModeClosest }
+		, PeriodicWeapon_TargetingMode { PeriodicWeaponTargetingMode::Closest }
+		, PeriodicWeapon_TargetingModeCustom {}
 		, PeriodicWeapon_TargetSelf { false }
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
@@ -217,6 +219,7 @@ private:
 	template <typename T>
 	void Serialize(T& Stm);
 	void AddToGroupsMap();
+	static void ReadPeriodicWeaponTargetingMode(INI_EX& parser, const char* pSection, PeriodicWeaponTargetingMode& mode, std::string& customName);
 };
 
 // Container for AttachEffect attachment for an individual effect passed to AE attach function.

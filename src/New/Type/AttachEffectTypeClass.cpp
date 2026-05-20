@@ -84,6 +84,30 @@ void AttachEffectTypeClass::AddToGroupsMap()
 	}
 }
 
+void AttachEffectTypeClass::ReadPeriodicWeaponTargetingMode(INI_EX& parser, const char* pSection, PeriodicWeaponTargetingMode& mode, std::string& customName)
+{
+	if (parser.ReadString(pSection, "PeriodicWeapon.TargetingMode") <= 0)
+		return;
+
+	const char* const buffer = parser.value();
+
+	if (!_strcmpi(buffer, PeriodicWeaponTargeting::ModeClosest))
+	{
+		mode = PeriodicWeaponTargetingMode::Closest;
+		customName.clear();
+	}
+	else if (!_strcmpi(buffer, PeriodicWeaponTargeting::ModeAll))
+	{
+		mode = PeriodicWeaponTargetingMode::All;
+		customName.clear();
+	}
+	else
+	{
+		mode = PeriodicWeaponTargetingMode::Custom;
+		customName = buffer;
+	}
+}
+
 void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* pSection = this->Name;
@@ -128,11 +152,10 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->PeriodicWeapon.Read<true>(exINI, pSection, "PeriodicWeapon");
 	this->PeriodicWeapon_UseInvokerAsOwner.Read(exINI, pSection, "PeriodicWeapon.UseInvokerAsOwner");
-	this->PeriodicWeapon_Range.Read(exINI, pSection, "PeriodicWeapon.Range");
 	this->PeriodicWeapon_Delay.Read(exINI, pSection, "PeriodicWeapon.Delay");
 	this->PeriodicWeapon_InitialDelay.Read(exINI, pSection, "PeriodicWeapon.InitialDelay");
-	this->PeriodicWeapon_TargetingMode.Read(exINI, pSection, "PeriodicWeapon.TargetingMode");
 	this->PeriodicWeapon_TargetSelf.Read(exINI, pSection, "PeriodicWeapon.TargetSelf");
+	ReadPeriodicWeaponTargetingMode(exINI, pSection, this->PeriodicWeapon_TargetingMode, this->PeriodicWeapon_TargetingModeCustom);
 
 	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
 	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
@@ -222,10 +245,10 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ExpireWeapon_UseInvokerAsOwner)
 		.Process(this->PeriodicWeapon)
 		.Process(this->PeriodicWeapon_UseInvokerAsOwner)
-		.Process(this->PeriodicWeapon_Range)
 		.Process(this->PeriodicWeapon_Delay)
 		.Process(this->PeriodicWeapon_InitialDelay)
 		.Process(this->PeriodicWeapon_TargetingMode)
+		.Process(this->PeriodicWeapon_TargetingModeCustom)
 		.Process(this->PeriodicWeapon_TargetSelf)
 		.Process(this->Tint_Color)
 		.Process(this->Tint_Intensity)

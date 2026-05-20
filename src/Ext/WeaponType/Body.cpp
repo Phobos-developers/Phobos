@@ -1,6 +1,10 @@
 #include "Body.h"
+
+#include <Ext/Building/Body.h>
 #include <Ext/Bullet/Body.h>
+#include <Ext/Rules/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/GeneralUtils.h>
@@ -494,6 +498,199 @@ int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFire
 		return (checkRange > 443) ? checkRange : 443; // 1.73 * Unsorted::LeptonsPerCell
 
 	return -keepRange;
+}
+
+int WeaponTypeExt::GetWeaponIndex(TechnoClass* pTechno, WeaponTypeClass* pWeapon)
+{
+	if (!pTechno || !pWeapon)
+		return -1;
+
+	for (int i = 0; i < TechnoTypeClass::MaxWeapons; ++i)
+	{
+		auto const pWeaponStruct = pTechno->GetWeapon(i);
+
+		if (pWeaponStruct && pWeaponStruct->WeaponType == pWeapon)
+			return i;
+	}
+
+	return -1;
+}
+
+namespace InRangeEvaluation
+{
+	static bool IsChasing(TechnoClass* pThis, AbstractClass* pTarget)
+	{
+		if ((pThis->AbstractFlags & AbstractFlags::Foot) == AbstractFlags::None)
+			return false;
+
+		const auto pFootTarget = abstract_cast<FootClass*>(pTarget);
+
+		if (!pFootTarget || !pFootTarget->Locomotor.GetInterfacePtr()->Is_Really_Moving_Now())
+			return false;
+
+		return true;
+	}
+
+	static bool IsMovingFire(TechnoClass* pThis)
+	{
+		const auto pFoot = abstract_cast<FootClass*>(pThis);
+
+		if (!pFoot || !pFoot->Locomotor.GetInterfacePtr()->Is_Really_Moving_Now())
+			return false;
+
+		return true;
+	}
+
+	static bool IsPrefiring(TechnoClass* pThis, WeaponTypeClass* pWeapon)
+	{
+		const auto pTypeExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+		const int currentBurst = pThis->CurrentBurstIndex % pWeapon->Burst;
+
+		if (pTypeExt->ExtraRange_Prefiring_IncludeBurst.Get(RulesExt::Global()->ExtraRange_Prefiring_IncludeBurst) && currentBurst != 0)
+			return true;
+
+		const auto pTechnoExt = TechnoExt::ExtMap.Find(pThis);
+
+		if (pTechnoExt->DelayedFireTimer.InProgress())
+			return true;
+
+		switch (pThis->WhatAmI())
+		{
+		case AbstractType::Unit:
+		{
+			const auto pUnit = static_cast<UnitClass*>(pThis);
+			int syncFrame = -1;
+
+			if (currentBurst == 0)
+				syncFrame = pUnit->Type->FiringSyncFrame0;
+			else if (currentBurst == 1)
+				syncFrame = pUnit->Type->FiringSyncFrame1;
+
+			if (syncFrame == -1)
+				return false;
+
+			return pUnit->CurrentFiringFrame >= syncFrame;
+		}
+		case AbstractType::Aircraft:
+		{
+			const auto pAircraft = static_cast<AircraftClass*>(pThis);
+			const auto status = (AirAttackStatus)pAircraft->MissionStatus;
+			return status == AirAttackStatus::FireAtTarget
+				|| status == AirAttackStatus::FireAtTarget2
+				|| status == AirAttackStatus::FireAtTarget2_Strafe
+				|| status == AirAttackStatus::FireAtTarget3_Strafe
+				|| status == AirAttackStatus::FireAtTarget4_Strafe
+				|| status == AirAttackStatus::FireAtTarget5_Strafe;
+		}
+		case AbstractType::Building:
+		{
+			const auto pBuilding = static_cast<BuildingClass*>(pThis);
+			const auto pExt = BuildingExt::ExtMap.Find(pBuilding);
+			return pBuilding->DelayBeforeFiring || pExt->IsFiringNow;
+		}
+		case AbstractType::Infantry:
+		{
+			const auto pInfantry = static_cast<InfantryClass*>(pThis);
+			return pInfantry->IsFiring;
+		}
+		default:
+			return false;
+		}
+	}
+}
+
+int WeaponTypeExt::EvaluateInRangeMaximumRange(WeaponTypeClass* pWeapon, TechnoClass* pTechno, AbstractClass* pTarget)
+{
+	if (!pWeapon || !pTechno)
+		return 0;
+
+	if (const int keepRange = WeaponTypeExt::GetTechnoKeepRange(pWeapon, pTechno, false))
+		return keepRange;
+
+	int range = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pTechno);
+
+	if (range == -512)
+		return range;
+
+	const auto pExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const auto prefiringExtraRange = pExt->ExtraRange_Prefiring.Get(RulesExt::Global()->ExtraRange_Prefiring);
+
+	if (prefiringExtraRange && InRangeEvaluation::IsPrefiring(pTechno, pWeapon))
+		range += prefiringExtraRange;
+
+	const auto targetMovingExtraRange = pExt->ExtraRange_TargetMoving.isset()
+		? pExt->ExtraRange_TargetMoving.Get() : (!RulesExt::Global()->ExtraRange_TargetMoving_CloseRangeOnly || pTechno->GetTechnoType()->CloseRange
+		? RulesExt::Global()->ExtraRange_TargetMoving : Leptons(0));
+
+	if (targetMovingExtraRange && pTarget && InRangeEvaluation::IsChasing(pTechno, pTarget))
+		range += targetMovingExtraRange;
+
+	const auto firerMovingExtraRange = pExt->ExtraRange_FirerMoving.Get(RulesExt::Global()->ExtraRange_FirerMoving);
+
+	if (firerMovingExtraRange && InRangeEvaluation::IsMovingFire(pTechno))
+		range += firerMovingExtraRange;
+
+	return range;
+}
+
+int WeaponTypeExt::EvaluateInRangeMinimumRange(WeaponTypeClass* pWeapon, TechnoClass* pTechno)
+{
+	if (!pWeapon || !pTechno)
+		return 0;
+
+	if (const int keepRange = WeaponTypeExt::GetTechnoKeepRange(pWeapon, pTechno, true))
+		return keepRange;
+
+	return pWeapon->MinimumRange;
+}
+
+int WeaponTypeExt::ApplyInRangeOccupyBonus(TechnoClass* pTechno, int range)
+{
+	if (!pTechno)
+		return range;
+
+	const int occupyRange = WeaponTypeExt::GetRangeWithModifiers(nullptr, pTechno) / Unsorted::LeptonsPerCell;
+
+	return range + occupyRange;
+}
+
+int WeaponTypeExt::EvaluateInRangeDistance(TechnoClass* pTechno, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
+{
+	if (!pTechno || !pTarget || !pWeapon || !pWeapon->Projectile)
+		return 0;
+
+	if (pTechno->IsInAir() || pWeapon->Projectile->Arcing || pTechno->WhatAmI() == AbstractType::Aircraft)
+		return pTarget->DistanceFrom(pTechno);
+
+	return pTarget->DistanceFrom3D(pTechno);
+}
+
+bool WeaponTypeExt::IsTargetInWeaponRange(TechnoClass* pSource, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
+{
+	if (!pSource || !pTarget || !pWeapon)
+		return false;
+
+	int maxRange = WeaponTypeExt::EvaluateInRangeMaximumRange(pWeapon, pSource, pTarget);
+
+	if (!maxRange)
+		return false;
+
+	maxRange = WeaponTypeExt::ApplyInRangeOccupyBonus(pSource, maxRange);
+
+	const int distance = WeaponTypeExt::EvaluateInRangeDistance(pSource, pTarget, pWeapon);
+
+	if (maxRange != -512 && distance > maxRange)
+		return false;
+
+	const int minRange = WeaponTypeExt::EvaluateInRangeMinimumRange(pWeapon, pSource);
+
+	if (minRange > 0 && distance < minRange)
+		return false;
+
+	if (WeaponTypeExt::CheckInRangeObstacle(pSource, pTarget, pWeapon))
+		return false;
+
+	return true;
 }
 
 // =============================

@@ -5,6 +5,7 @@
 #include <New/PeriodicWeaponTargeting.h>
 
 #include <Utilities/Debug.h>
+#include <Utilities/Helpers.Alex.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
@@ -258,7 +259,7 @@ void AttachEffectClass::AI()
 	this->AnimCheck();
 
 	// --- Periodic Weapon Logic ---
-	if (pType->PeriodicWeapon && pType->PeriodicWeapon_Delay > 0 && pType->PeriodicWeapon_Range.Get() > 0)
+	if (pType->PeriodicWeapon && pType->PeriodicWeapon_Delay > 0)
 	{
 		this->PeriodicWeaponTimer--;
 
@@ -629,47 +630,70 @@ void AttachEffectClass::FirePeriodicWeapon()
 	if (!pTechno || pTechno->InLimbo || pTechno->IsImmobilized)
 		return;
 
-	TechnoClass* pFirer = pType->PeriodicWeapon_UseInvokerAsOwner ? this->Invoker : pTechno;
-	HouseClass* pFirerHouse = pType->PeriodicWeapon_UseInvokerAsOwner
-		? (this->InvokerHouse ? this->InvokerHouse : pTechno->Owner)
+	const bool useInvoker = pType->PeriodicWeapon_UseInvokerAsOwner;
+
+	TechnoClass* pFirer = useInvoker && this->Invoker
+		? this->Invoker
+		: pTechno;
+
+	HouseClass* pFirerHouse = useInvoker && this->InvokerHouse
+		? this->InvokerHouse
 		: pTechno->Owner;
 
-	if (!pFirer)
-		pFirer = pTechno;
+	const int searchRange = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer);
 
-	if (!pFirerHouse)
-		pFirerHouse = pTechno->Owner;
+	if (!searchRange)
+		return;
 
 	const bool targetSelf = pType->PeriodicWeapon_TargetSelf;
 	const bool useWeaponTargeting = true;
-	const int searchRange = pType->PeriodicWeapon_Range.Get();
 	const auto firePos = pTechno->Location;
 
 	std::vector<std::pair<TechnoClass*, int>> validTargets;
 
-	for (auto const pTarget : TechnoClass::Array)
+	auto tryAddTarget = [&](TechnoClass* pTarget)
 	{
 		if (!pTarget || pTarget->InLimbo)
-			continue;
+			return;
 
 		if (!targetSelf && pTarget == pTechno)
-			continue;
+			return;
 
 		if (!pTarget->IsInPlayfield || !pTarget->IsOnMap || !pTarget->IsAlive || pTarget->Health <= 0)
-			continue;
+			return;
 
-		const int dist = pTarget->DistanceFrom(pTechno);
+		if (searchRange != -512)
+		{
+			const int dist = pTarget->DistanceFrom(pTechno);
 
-		if (dist > searchRange)
-			continue;
+			if (dist > searchRange)
+				return;
+		}
+
+		if (!WeaponTypeExt::IsTargetInWeaponRange(pTechno, pTarget, pWeapon))
+			return;
 
 		if (!BulletTypeExt::IsAllowedTarget(pBulletType, pTarget, useWeaponTargeting, pFirer))
-			continue;
+			return;
 
 		if (!WeaponTypeExt::IsAllowedTarget(pWeapon, pTarget, useWeaponTargeting, pFirer, pFirerHouse))
-			continue;
+			return;
 
-		validTargets.emplace_back(pTarget, dist);
+		validTargets.emplace_back(pTarget, pTarget->DistanceFrom(pTechno));
+	};
+
+	if (searchRange == -512)
+	{
+		for (auto const pTarget : TechnoClass::Array)
+			tryAddTarget(pTarget);
+	}
+	else
+	{
+		const double cellSpread = static_cast<double>(searchRange) / Unsorted::LeptonsPerCell;
+		auto const& technos = Helpers::Alex::getCellSpreadItems(firePos, cellSpread, true);
+
+		for (auto const pTarget : technos)
+			tryAddTarget(pTarget);
 	}
 
 	if (validTargets.empty())
@@ -696,30 +720,38 @@ void AttachEffectClass::FirePeriodicWeapon()
 		BulletExt::SimulatedFiringEffects(pBullet, pFirerHouse, pFirer, true, true);
 	};
 
-	const char* const mode = pType->PeriodicWeapon_TargetingMode.Get().c_str();
-
-	if (!_strcmpi(mode, PeriodicWeaponTargeting::ModeAll))
+	switch (pType->PeriodicWeapon_TargetingMode)
 	{
+	case PeriodicWeaponTargetingMode::All:
 		for (auto const& [pTarget, _] : validTargets)
 			fireAt(pTarget);
-	}
-	else if (!_strcmpi(mode, PeriodicWeaponTargeting::ModeClosest))
-	{
-		fireAt(validTargets.front().first);
-	}
-	else if (auto const pCallback = PeriodicWeaponTargeting::Find(mode))
-	{
-		const auto selected = pCallback(this, pTechno, pWeapon, pFirer, pFirerHouse, validTargets);
+		break;
 
-		for (auto const pTarget : selected)
+	case PeriodicWeaponTargetingMode::Closest:
+		fireAt(validTargets.front().first);
+		break;
+
+	case PeriodicWeaponTargetingMode::Custom:
+		if (auto const pCallback = PeriodicWeaponTargeting::Find(pType->PeriodicWeapon_TargetingModeCustom.c_str()))
 		{
-			if (pTarget)
-				fireAt(pTarget);
+			const PeriodicWeaponTargetingParams params {
+				this, pTechno, pWeapon, pFirer, pFirerHouse, &validTargets
+			};
+			const auto selected = pCallback(params);
+
+			for (auto const pTarget : selected)
+			{
+				if (pTarget)
+					fireAt(pTarget);
+			}
 		}
-	}
-	else
-	{
-		Debug::Log("[AttachEffect] Unregistered PeriodicWeapon.TargetingMode '%s' on [%s].\n", mode, pType->Name.data());
+		else
+		{
+			Debug::Log("[AttachEffect] Unregistered PeriodicWeapon.TargetingMode '%s' on [%s].\n",
+				pType->PeriodicWeapon_TargetingModeCustom.c_str(), pType->Name.data());
+		}
+
+		break;
 	}
 }
 

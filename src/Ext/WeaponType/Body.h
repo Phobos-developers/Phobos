@@ -231,5 +231,16 @@ public:
 	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer);
 	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer, int range);
 	static int GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFirer, bool isMinimum);
+	static int GetWeaponIndex(TechnoClass* pTechno, WeaponTypeClass* pWeapon);
+
+	/// Phobos InRange evaluation for an explicit weapon (no weapon slot required).
+	/// Matches TechnoClass::IsCloseEnough / InRange behaviour under Phobos hooks.
+	static int EvaluateInRangeMaximumRange(WeaponTypeClass* pWeapon, TechnoClass* pTechno, AbstractClass* pTarget);
+	static int EvaluateInRangeMinimumRange(WeaponTypeClass* pWeapon, TechnoClass* pTechno);
+	static int ApplyInRangeOccupyBonus(TechnoClass* pTechno, int range);
+	static int EvaluateInRangeDistance(TechnoClass* pTechno, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
+	static bool CheckInRangeObstacle(TechnoClass* pTechno, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
+	static bool IsTargetInWeaponRange(TechnoClass* pSource, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
+
 	static bool IsAllowedTarget(WeaponTypeClass* pWeapon, TechnoClass* pTarget, bool useWeaponTargeting, TechnoClass* pSource = nullptr, HouseClass* pOwner = nullptr);
 };
