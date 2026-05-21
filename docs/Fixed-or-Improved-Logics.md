@@ -1200,6 +1200,15 @@ In `rulesmd.ini`:
 Cloning.Powered=true  ; boolean
 ```
 
+### Improve occupants firing logic
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+FixOccupyFire=false         ; boolean
+UseGlobalOccupyRange=true   ; boolean
+```
+
 ## Infantry
 
 ### Auto deploy for GI-like infantry

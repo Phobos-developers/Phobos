@@ -3256,6 +3256,9 @@ msgstr "`Units.UseRepairCost` 可以用于自定义是否使用维修成本。�
 msgid "Customize if cloning need power"
 msgstr "自定义克隆耗电"
 
+msgid "Improve occupants firing logic"
+msgstr "改进驻扎开火逻辑"
+
 msgid ""
 "In vanilla, cloning vats can work fine even low power. Starting from Ares"
 " 2.0, they need power to work. Now you can specific it."
