@@ -912,6 +912,17 @@ DEFINE_HOOK(0x6FF905, TechnoClass_FireAt_FireOnce, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x6FF923, TechnoClass_FireAt_FireOnce_OccupyFire, 0x6)
+{
+	enum { SkipResetTarget = 0x6FF92F };
+
+	if (!RulesExt::Global()->FixOccupyFire && RulesExt::Global()->UseGlobalOccupyRange)
+		return 0;
+
+	GET(TechnoClass*, pThis, ESI);
+	return pThis->CanOccupyFire() ? SkipResetTarget : 0;
+}
+
 static inline void ToggleLaserWeaponIndex(TechnoClass* pThis, WeaponTypeClass* pWeapon, int weaponIndex)
 {
 	if (pWeapon->IsLaser)
