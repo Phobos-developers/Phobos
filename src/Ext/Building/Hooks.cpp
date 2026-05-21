@@ -954,6 +954,71 @@ DEFINE_HOOK(0x4555E4, BuildingClass_IsPowerOnline_Overpower, 0x6)
 	return overPower < keepOnline ? LowPower : (R->Origin() == 0x4555E4 ? Continue1 : Continue2);
 }
 
+DEFINE_HOOK(0x44AD07, BuildingClass_Mission_Attack_OccupyFire, 0x6)
+{
+	enum { ReturnFromFunction = 0x44AFE0 };
+
+	if (!RulesExt::Global()->FixOccupyFire && RulesExt::Global()->UseGlobalOccupyRange)
+		return 0;
+
+	GET(BuildingTypeClass*, pType, EAX);
+
+	if (!pType->CanBeOccupied)
+		return 0;
+
+	GET(BuildingClass*, pThis, ESI);
+	const auto pTarget = pThis->Target;
+	bool canFire = false;
+	const auto& occupants = pThis->Occupants;
+
+	if (pType->CanOccupyFire && occupants.Count && (!RulesExt::Global()->UseGlobalOccupyRange || pThis->IsCloseEnough(pTarget, 0)))
+	{
+		int& firingIdx = pThis->FiringOccupantIndex;
+
+		for (firingIdx = 0; firingIdx < occupants.Count;)
+		{
+			const auto pOccupier = occupants[firingIdx];
+			constexpr int weaponIdx = 0;
+			const auto fireError = pThis->GetFireError(pTarget, weaponIdx, !RulesExt::Global()->UseGlobalOccupyRange);
+
+			if (fireError == FireError::ILLEGAL
+				|| fireError == FireError::CANT
+				|| fireError == FireError::RANGE)
+			{
+				++firingIdx;
+				continue;
+			}
+
+			canFire = true;
+
+			if (fireError != FireError::OK)
+			{
+				++firingIdx;
+				continue;
+			}
+
+			pThis->Fire(pTarget, weaponIdx);
+
+			if (pOccupier->IsAlive && pOccupier->Health)
+				++firingIdx;
+		}
+	}
+
+	if (!canFire)
+	{
+		pThis->SetTarget(nullptr);
+		pThis->SupportingPrisms = 0;
+
+		if (pThis->IsNotWarpingIn())
+			pThis->TryNextPlanningTokenNode();
+
+		if (pThis->GetCurrentMission() != Mission::Wait)
+			pThis->ForceMission(Mission::Guard);
+	}
+
+	return ReturnFromFunction;
+}
+
 #pragma region OwnerChangeBuildupFix
 
 static void __fastcall BuildingClass_Place_Wrapper(BuildingClass* pThis, void*, bool captured)

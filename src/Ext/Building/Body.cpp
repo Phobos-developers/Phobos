@@ -448,6 +448,76 @@ WeaponStruct* BuildingExt::GetLaserWeapon(BuildingClass* pThis)
 	return pThis->GetPrimaryWeapon();
 }
 
+bool BuildingExt::CanOccupantsFire(BuildingClass* pThis, AbstractClass* pTarget)
+{
+	if (!pTarget)
+		return false;
+
+	if (RulesExt::Global()->UseGlobalOccupyRange && !pThis->IsCloseEnough(pTarget, 0))
+		return false;
+
+	int& firingIdx = pThis->FiringOccupantIndex;
+	const auto& occupants = pThis->Occupants;
+
+	for (firingIdx = 0; firingIdx < occupants.Count; ++firingIdx)
+	{
+		const auto pOccupier = occupants[firingIdx];
+		constexpr int weaponIdx = 0;
+
+		switch (pThis->GetFireError(pTarget, weaponIdx, !RulesExt::Global()->UseGlobalOccupyRange))
+		{
+		case FireError::ILLEGAL:
+		case FireError::CANT:
+		case FireError::RANGE:
+			continue;
+
+		default:
+			break;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+int BuildingExt::GetOccupantsRange(BuildingClass* pThis, AbstractClass* pTarget)
+{
+	if (RulesExt::Global()->UseGlobalOccupyRange)
+	{
+		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+		return (pThis->GetOccupyRangeBonus() + RulesClass::Instance->OccupyWeaponRange) << 8;
+	}
+
+	int maximumRange = 0;
+
+	for (const auto pOccupier : pThis->Occupants)
+	{
+		constexpr int weaponIdx = 0;
+		auto pWeapon = pOccupier->Veterancy.IsElite()
+			? pOccupier->Type->EliteOccupyWeapon.WeaponType
+			: pOccupier->Type->OccupyWeapon.WeaponType;
+
+		if (!pWeapon)
+		{
+			pWeapon = pOccupier->GetWeapon(weaponIdx)->WeaponType;
+
+			if (!pWeapon)
+				continue;
+		}
+
+		int range = pWeapon->Range;
+
+		if (pWeapon->Projectile->SubjectToElevation)
+			range += reinterpret_cast<int(__thiscall*)(TechnoClass*, AbstractClass*)>(0x6F6F60)(pThis, pTarget); // pThis->GetElevationRangeBouns(pTarget);
+
+		if (maximumRange < range)
+			maximumRange = range;
+	}
+
+	return maximumRange;
+}
+
 void BuildingExt::KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, void*, BuildingClass* pFactory)
 {
 	if (!pFactory->IsAlive || pFactory->InLimbo || (BuildingTypeExt::ExtMap.Find(pFactory->Type)->Cloning_Powered && !pFactory->IsPowerOnline()) || pFactory->IsBeingWarpedOut())

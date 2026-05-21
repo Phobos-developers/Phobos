@@ -540,6 +540,33 @@ DEFINE_HOOK(0x6FC7EB, TechnoClass_CanFire_InterceptBullet, 0x7)
 	return ContinueCheck;
 }
 
+DEFINE_HOOK(0x447F25, BuildingClass_CanFire_OccupyFire, 0x6)
+{
+	enum { FireErrorIllegal = 0x44805A, ApplyResult = 0x448052 };
+
+	if (!RulesExt::Global()->FixOccupyFire && RulesExt::Global()->UseGlobalOccupyRange)
+		return 0;
+
+	GET(BuildingClass*, pThis, ESI);
+	GET(BuildingTypeClass*, pType, EAX);
+
+	if (!pType->CanOccupyFire || !pThis->Occupants.Count)
+		return FireErrorIllegal;
+
+	const auto mission = pThis->GetCurrentMission();
+
+	if (mission == Mission::Construction || mission == Mission::Selling)
+		return FireErrorIllegal;
+
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0xC, 0x4));
+
+	if (!BuildingExt::CanOccupantsFire(pThis, pTarget))
+		return FireErrorIllegal;
+
+	R->EBP(FireError::OK);
+	return ApplyResult;
+}
+
 #pragma endregion
 
 #pragma region TechnoClass_Fire
@@ -662,6 +689,24 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_BeforeTruelyFire, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x6FDDCA, TechnoClass_FireAt_Suicide_OccupyFire, 0xA)
+{
+	enum { ReturnFromFunction = 0x6FDE03 };
+
+	GET(TechnoClass*, pThis, ESI);
+	TechnoClass* pDie = pThis;
+
+	if (RulesExt::Global()->FixOccupyFire && pThis->CanOccupyFire())
+	{
+		const auto pBuilding = static_cast<BuildingClass*>(pThis);
+		pDie = pBuilding->Occupants[pBuilding->FiringOccupantIndex];
+	}
+
+	int applyDamage = pDie->Health;
+	pDie->ReceiveDamage(&applyDamage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+	return ReturnFromFunction;
+}
+
 DEFINE_HOOK(0x6FE43B, TechnoClass_FireAt_OpenToppedDmgMult, 0x8)
 {
 	enum { ApplyDamageMult = 0x6FE45A, ContinueCheck = 0x6FE460 };
@@ -748,6 +793,32 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x6FE54B, TechnoClass_FireAt_CreateBullet_OccupyFire, 0x7)
+{
+	enum { SkipCreateBullet = 0x6FE562 };
+
+	if (!RulesExt::Global()->FixOccupyFire && RulesExt::Global()->UseGlobalOccupyRange)
+		return 0;
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(int, damage, EDI);
+	GET(int, speed, EAX);
+	GET(WeaponTypeClass*, pWeapon, EBX);
+	GET(WarheadTypeClass*, pWH, EDX);
+	GET_BASE(AbstractClass*, pTarget, 0x8);
+	const bool bridge = R->CL();
+	TechnoClass* pOwner = pThis;
+
+	if (pThis->CanOccupyFire())
+	{
+		const auto pBuilding = static_cast<BuildingClass*>(pThis);
+		pOwner = pBuilding->Occupants[pBuilding->FiringOccupantIndex];
+	}
+
+	R->EAX(pWeapon->Projectile->CreateBullet(pTarget, pOwner, damage, pWH, speed, bridge));
+	return SkipCreateBullet;
 }
 
 DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
@@ -1199,3 +1270,36 @@ DEFINE_HOOK(0x737086, UnitClass_FiringAI_Gattling, 0x9)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x6FD15E, TechnoClass_GetROF_OccupyFire, 0xA)
+{
+	if (!RulesExt::Global()->FixOccupyFire && RulesExt::Global()->UseGlobalOccupyRange)
+	{
+		GET(BuildingClass*, pThis, ESI);
+
+		R->EAX(pThis->GetOccupantCount());
+		return 0x6FD168;
+	}
+
+	return 0x6FD183;
+}
+
+DEFINE_HOOK(0x6F7288, TechnoClass_InRange_OccupyFire, 0xA)
+{
+	enum { SkipGameCode = 0x6F72A2 };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	if (!RulesExt::Global()->FixOccupyFire && RulesExt::Global()->UseGlobalOccupyRange)
+	{
+		R->EDI((RulesClass::Instance->OccupyWeaponRange + pThis->GetOccupyRangeBonus()) << 8);
+	}
+	else
+	{
+		GET(int, range, EDI);
+		range += pThis->GetOccupyRangeBonus() << 8;
+		R->EDI(range);
+	}
+
+	return SkipGameCode;
+}

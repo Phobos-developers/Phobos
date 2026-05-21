@@ -409,6 +409,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->Shrapnel_IgnoreHitBuildings.Read(exINI, GameStrings::CombatDamage, "Shrapnel.IgnoreHitBuildings");
 
+	this->FixOccupyFire.Read(exINI, GameStrings::CombatDamage, "FixOccupyFire");
+	this->UseGlobalOccupyRange.Read(exINI, GameStrings::CombatDamage, "UseGlobalOccupyRange");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -737,6 +740,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->FiringAnim_Update)
 		.Process(this->ExtendedPlayerRepair)
 		.Process(this->Shrapnel_IgnoreHitBuildings)
+		.Process(this->FixOccupyFire)
+		.Process(this->UseGlobalOccupyRange)
 		;
 }
 

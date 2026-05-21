@@ -351,6 +351,9 @@ public:
 		Valueable<bool> ShipLocomotorMakesWake;
 
 		Valueable<bool> Shrapnel_IgnoreHitBuildings;
+
+		Valueable<bool> FixOccupyFire;
+		Valueable<bool> UseGlobalOccupyRange;
     
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -643,6 +646,9 @@ public:
 			, FiringAnim_Update { false }
 			, ExtendedPlayerRepair { false }
 			, Shrapnel_IgnoreHitBuildings { false }
+
+			, FixOccupyFire { false }
+			, UseGlobalOccupyRange { true }
 		{ }
 
 		virtual ~ExtData() = default;
