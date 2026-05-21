@@ -465,7 +465,6 @@ bool BuildingExt::CanOccupantsFire(BuildingClass* pThis, AbstractClass* pTarget)
 
 	for (firingIdx = 0; firingIdx < occupants.Count; ++firingIdx)
 	{
-		const auto pOccupier = occupants[firingIdx];
 		constexpr int weaponIdx = 0;
 
 		switch (TechnoClass_GetFireError(pThis, pTarget, weaponIdx, !RulesExt::Global()->UseGlobalOccupyRange))
@@ -487,13 +486,10 @@ bool BuildingExt::CanOccupantsFire(BuildingClass* pThis, AbstractClass* pTarget)
 	return false;
 }
 
-int BuildingExt::GetOccupantsRange(BuildingClass* pThis, AbstractClass* pTarget)
+int BuildingExt::GetOccupantsRange(BuildingClass* pThis)
 {
 	if (RulesExt::Global()->UseGlobalOccupyRange)
-	{
-		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 		return (pThis->GetOccupyRangeBonus() + RulesClass::Instance->OccupyWeaponRange) << 8;
-	}
 
 	int maximumRange = 0;
 
@@ -513,9 +509,6 @@ int BuildingExt::GetOccupantsRange(BuildingClass* pThis, AbstractClass* pTarget)
 		}
 
 		int range = pWeapon->Range;
-
-		if (pWeapon->Projectile->SubjectToElevation)
-			range += reinterpret_cast<int(__thiscall*)(TechnoClass*, AbstractClass*)>(0x6F6F60)(pThis, pTarget); // pThis->GetElevationRangeBouns(pTarget);
 
 		if (maximumRange < range)
 			maximumRange = range;

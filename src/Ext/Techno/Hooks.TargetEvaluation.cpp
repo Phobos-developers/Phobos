@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <Ext/Building/Body.h>
+
 // Cursor & target acquisition stuff not directly tied to other features can go here.
 
 #pragma region TargetAcquisition
@@ -506,3 +508,13 @@ DEFINE_HOOK(0x70CF87, TechnoClass_ThreatCoefficient_CanAttackMeThreatBonus, 0x9)
 
 
 #pragma endregion
+
+DEFINE_HOOK(0x6F9189, TechnoClass_GreatestThreat_OccupyWeaponRange, 0xA)
+{
+	enum { ApplyRange = 0x6F91A3 };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	R->EAX((BuildingExt::GetOccupantsRange(pThis) >> 8) + 1);
+	return ApplyRange;
+}

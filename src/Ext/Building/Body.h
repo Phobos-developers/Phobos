@@ -104,6 +104,6 @@ public:
 	static const std::vector<CellStruct> GetFoundationCells(BuildingClass* pThis, CellStruct baseCoords, bool includeOccupyHeight = false);
 	static WeaponStruct* GetLaserWeapon(BuildingClass* pThis);
 	static bool CanOccupantsFire(BuildingClass* pThis, AbstractClass* pTarget);
-	static int GetOccupantsRange(BuildingClass* pThis, AbstractClass* pTarget);
+	static int GetOccupantsRange(BuildingClass* pThis);
 	static void __fastcall KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, void*, BuildingClass* pFactory);
 };
