@@ -88,6 +88,8 @@ public:
 
 	static ExtContainer ExtMap;
 
+	static bool ConsideringSpecificOccupant;
+
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 

@@ -567,6 +567,9 @@ DEFINE_HOOK(0x447F25, BuildingClass_CanFire_OccupyFire, 0x6)
 	if (!RulesExt::Global()->FixOccupyFire && RulesExt::Global()->UseGlobalOccupyRange)
 		return 0;
 
+	if (BuildingExt::ConsideringSpecificOccupant)
+		return 0;
+
 	GET(BuildingClass*, pThis, ESI);
 	GET(BuildingTypeClass*, pType, EAX);
 

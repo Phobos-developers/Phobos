@@ -6,6 +6,8 @@
 
 BuildingExt::ExtContainer BuildingExt::ExtMap;
 
+bool BuildingExt::ConsideringSpecificOccupant = false;
+
 void BuildingExt::ExtData::DisplayIncomeString()
 {
 	if (this->AccumulatedIncome)

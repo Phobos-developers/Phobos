@@ -975,6 +975,7 @@ DEFINE_HOOK(0x44AD07, BuildingClass_Mission_Attack_OccupyFire, 0x6)
 	{
 		int& firingIdx = pThis->FiringOccupantIndex;
 		const int originalFiringIdx = firingIdx;
+		BuildingExt::ConsideringSpecificOccupant = true;
 
 		for (firingIdx = 0; firingIdx < occupants.Count;)
 		{
@@ -1004,6 +1005,7 @@ DEFINE_HOOK(0x44AD07, BuildingClass_Mission_Attack_OccupyFire, 0x6)
 				++firingIdx;
 		}
 
+		BuildingExt::ConsideringSpecificOccupant = false;
 		firingIdx = originalFiringIdx;
 	}
 
