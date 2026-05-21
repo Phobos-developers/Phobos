@@ -1202,6 +1202,10 @@ Cloning.Powered=true  ; boolean
 
 ### Improve occupants firing logic
 
+- In vanilla, the range of all occupy weapons can only use the value specified by `[CombatDamage] -> OccupyWeaponRange` . Additionally, the original alternating-fire processing has many limitations; for example, if an occupying unit cannot attack the target due to issues such as `Versus` , `AA` , etc., the entire firing process will get stuck there and be unable to attack. Now you can use a new system.
+  - `FixOccupyFire` can be used to enable the new system, where all occupying infantry handle firing actions independently without affecting each other.
+  - `UseGlobalOccupyRange` can be used to determine whether occupy weapons use a unified range. If set to `false` , they will use their own `Range` to determine distance.
+
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]

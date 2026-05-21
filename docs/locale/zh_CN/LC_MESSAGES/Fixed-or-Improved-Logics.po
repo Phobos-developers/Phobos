@@ -3256,13 +3256,37 @@ msgstr "`Units.UseRepairCost` 可以用于自定义是否使用维修成本。�
 msgid "Customize if cloning need power"
 msgstr "自定义克隆耗电"
 
-msgid "Improve occupants firing logic"
-msgstr "改进驻扎开火逻辑"
-
 msgid ""
 "In vanilla, cloning vats can work fine even low power. Starting from Ares"
 " 2.0, they need power to work. Now you can specific it."
 msgstr "在原版中，克隆缸即便没电也可以工作。从 Ares 2.0 开始，它们需要电力运作。现在你可以指定。"
+
+msgid "Improve occupants firing logic"
+msgstr "改进的驻扎开火逻辑"
+
+msgid ""
+"In vanilla, the range of all occupy weapons can only use the value "
+"specified by `[CombatDamage] -> OccupyWeaponRange` . Additionally, the "
+"original alternating-fire processing has many limitations; for example, "
+"if an occupying unit cannot attack the target due to issues such as "
+"`Versus` , `AA` , etc., the entire firing process will get stuck there "
+"and be unable to attack. Now you can use a new system."
+msgstr ""
+"在原版中, 所有驻军武器的射程都只能使用 `[CombatDamage] -> OccupyWeaponRange` 指定的值，并且原有的轮流开火式处理存在诸多限制，例如只要一名驻员由于 `Versus`、`AA` 等问题而无法攻击目标，整个开火流程就会卡在那里而无法攻击。现在你可以使用一套新的系统。"
+
+msgid ""
+"`FixOccupyFire` can be used to enable the new system, where all occupying"
+" infantry handle firing actions independently without affecting each "
+"other."
+msgstr ""
+"`FixOccupyFire` 可用于开启新的系统，所有驻军步兵独立处理开火动作，互不影响。"
+
+msgid ""
+"`UseGlobalOccupyRange` can be used to determine whether occupy weapons "
+"use a unified range. If set to `false` , they will use their own `Range` "
+"to determine distance."
+msgstr ""
+"`UseGlobalOccupyRange` 可用于决定驻军武器是否使用统一射程。若设为 `false`，它们将会使用自身的 `Range` 决定距离。"
 
 msgid "Infantry"
 msgstr "步兵"

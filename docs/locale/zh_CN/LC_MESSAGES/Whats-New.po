@@ -1921,8 +1921,11 @@ msgid ""
 msgstr ""
 
 msgid ""
-"Improve occupants firing logic (by NetsuNegi)"
-msgstr "改进驻扎开火逻辑（by NetsuNegi）"
+"[Improve occupants firing logic](Fixed-or-Improved-Logics.md#improve-"
+"occupants-firing-logic) (by NetsuNegi)"
+msgstr ""
+"[改进的驻扎开火逻辑](Fixed-or-Improved-Logics.md#improve-occupants-firing-"
+"logic)（by NetsuNegi）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
