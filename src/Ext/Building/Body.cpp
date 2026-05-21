@@ -461,13 +461,12 @@ bool BuildingExt::CanOccupantsFire(BuildingClass* pThis, AbstractClass* pTarget)
 	int& firingIdx = pThis->FiringOccupantIndex;
 	const int originalFiringIdx = firingIdx;
 	const auto& occupants = pThis->Occupants;
-	auto TechnoClass_GetFireError = reinterpret_cast<FireError(__thiscall*)(TechnoClass*, AbstractClass*, int, bool)>(0x6FC0B0);
 
 	for (firingIdx = 0; firingIdx < occupants.Count; ++firingIdx)
 	{
 		constexpr int weaponIdx = 0;
 
-		switch (TechnoClass_GetFireError(pThis, pTarget, weaponIdx, !RulesExt::Global()->UseGlobalOccupyRange))
+		switch (pThis->TechnoClass::GetFireError(pTarget, weaponIdx, !RulesExt::Global()->UseGlobalOccupyRange))
 		{
 		case FireError::ILLEGAL:
 		case FireError::CANT:
