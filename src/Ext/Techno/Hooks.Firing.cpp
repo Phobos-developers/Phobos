@@ -540,6 +540,26 @@ DEFINE_HOOK(0x6FC7EB, TechnoClass_CanFire_InterceptBullet, 0x7)
 	return ContinueCheck;
 }
 
+DEFINE_HOOK(0x6FC94F, TechnoClass_CanFire_Rearm_OccupyFire, 0x6)
+{
+	enum { ApplyTimer = 0x6FC95B };
+
+	if (!RulesExt::Global()->FixOccupyFire && RulesExt::Global()->UseGlobalOccupyRange)
+		return 0;
+
+	GET(TechnoClass*, pThis, ESI);
+
+	if (!pThis->CanOccupyFire())
+		return 0;
+
+	const auto pBuilding = static_cast<BuildingClass*>(pThis);
+	const auto pOccupier = pBuilding->Occupants[pBuilding->FiringOccupantIndex];
+	const auto& timer = pOccupier->RearmTimer;
+	R->EDX(timer.StartTime);
+	R->EAX(timer.TimeLeft);
+	return ApplyTimer;
+}
+
 DEFINE_HOOK(0x447F25, BuildingClass_CanFire_OccupyFire, 0x6)
 {
 	enum { FireErrorIllegal = 0x44805A, ApplyResult = 0x448052 };
@@ -840,6 +860,14 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x6FF031, TechnoClass_FireAt_OccupyFire, 0xA)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	R->AL(!RulesExt::Global()->FixOccupyFire && RulesExt::Global()->UseGlobalOccupyRange && pThis->CanOccupyFire());
+	return 0x6FF03B;
+}
+
 DEFINE_HOOK(0x6FF0DD, TechnoClass_FireAt_TurretRecoil, 0x6)
 {
 	enum { SkipGameCode = 0x6FF15B };
@@ -847,6 +875,24 @@ DEFINE_HOOK(0x6FF0DD, TechnoClass_FireAt_TurretRecoil, 0x6)
 	GET_STACK(WeaponTypeClass* const, pWeapon, STACK_OFFSET(0xB0, -0x70));
 
 	return WeaponTypeExt::ExtMap.Find(pWeapon)->TurretRecoil_Suppress ? SkipGameCode : 0;
+}
+
+DEFINE_HOOK(0x6FF2AA, TechnoClass_FireAt_RearmTimer_OccupyFire, 0x6)
+{
+	enum { ApplyTimer = 0x6FF2B0 };
+
+	if (!RulesExt::Global()->FixOccupyFire && RulesExt::Global()->UseGlobalOccupyRange)
+		return 0;
+
+	GET(TechnoClass*, pThis, ESI);
+
+	if (!pThis->CanOccupyFire())
+		return 0;
+
+	const auto pBuilding = static_cast<BuildingClass*>(pThis);
+	const auto pOccupier = pBuilding->Occupants[pBuilding->FiringOccupantIndex];
+	R->EDX(&pOccupier->RearmTimer);
+	return ApplyTimer;
 }
 
 DEFINE_HOOK(0x6FF905, TechnoClass_FireAt_FireOnce, 0x6)

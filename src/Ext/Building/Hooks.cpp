@@ -974,6 +974,7 @@ DEFINE_HOOK(0x44AD07, BuildingClass_Mission_Attack_OccupyFire, 0x6)
 	if (pType->CanOccupyFire && occupants.Count && (!RulesExt::Global()->UseGlobalOccupyRange || pThis->IsCloseEnough(pTarget, 0)))
 	{
 		int& firingIdx = pThis->FiringOccupantIndex;
+		const int originalFiringIdx = firingIdx;
 
 		for (firingIdx = 0; firingIdx < occupants.Count;)
 		{
@@ -1002,6 +1003,8 @@ DEFINE_HOOK(0x44AD07, BuildingClass_Mission_Attack_OccupyFire, 0x6)
 			if (pOccupier->IsAlive && pOccupier->Health)
 				++firingIdx;
 		}
+
+		firingIdx = originalFiringIdx;
 	}
 
 	if (!canFire)
