@@ -234,9 +234,9 @@ RadHasOwner=false                  ; boolean
 RadHasInvoker=false                ; boolean
 ```
 
-```{warning}
+::: warning Warning
 Due to performance concerns, unless any radiation type has `RadApplicationDelay.Building` set to above 0, all functionality related to it is completely disabled in game. This decision is made at earliest available opportunity (at end of initial scenario start or after loading saved game) and will **not** update with further scenario changes or save game loadings during same game session.
-```
+:::
 
 ### Laser Trails
 
@@ -296,12 +296,12 @@ In `rulesmd.ini`:
 LaserTrail.Types=SOMETRAIL       ; List of LaserTrailTypes
 ```
 
-```{warning}
+::: warning Warning
 Laser trails are very resource intensive! Due to the game not utilizing GPU having a lot of trails can quickly drop the FPS on even good machines. To reduce that effect:
  - don't put too many laser trails on units and projectiles;
  - make sure you set as high `SegmentLength` value as possible without trails being too jagged;
  - try to keep the length of the trail minimal (can be achieved with smaller `FadeDuration` durations).
-```
+:::
 
 ### Shields
 
@@ -516,9 +516,9 @@ Image.ConditionYellow=        ; AircraftType entry
 Image.ConditionRed=           ; AircraftType entry
 ```
 
-```{warning}
+::: warning Warning
 Note that the AircraftTypes had to be defined under [AircraftTypes].
-```
+:::
 
 ## Animations
 
@@ -561,9 +561,9 @@ CreateUnit.SpawnAnim=                  ; List of AnimationTypes
 CreateUnit.SpawnHeight=-1              ; integer, height in leptons
 ```
 
-```{note}
+::: info Note
 Due to technical constraints, infantry death animations including Ares' `InfDeathAnim` cannot have `CreateUnit.Owner` correctly applied to them. You can use Ares' `MakeInfantryOwner` as a workaround instead, which should function for this use-case even without `MakeInfantry` set.
-```
+:::
 
 ### Attached particle system
 
@@ -674,9 +674,9 @@ PowersUp.Owner=Self ; List of Affected House Enumeration (none|owner/self|allies
 PowersUp.Buildings= ; List of BuildingTypes
 ```
 
-```{note}
+::: info Note
 Due to technical limitations, with Ares, upgrades placed through `PowersUp.Buildings` instead of `PowersUpBuilding` (note that internally `PowersUpBuilding` is set to first entry of `PowersUp.Buildings` if former is not set but latter is) **DO NOT** satisfy prerequisites. Suggested workaround is to use the upgrades to provide Superweapons that spawn in buildings via [LimboDelivery](#limbodelivery) logic to function as prerequisites, which are destroyed by another SW that becomes available if parent building is gone and so on.
-```
+:::
 
 ### Power plant enhancer
 
@@ -801,11 +801,11 @@ In `rulesmd.ini`:
 AU=false              ; boolean
 ```
 
-```{note}
+::: info Note
 Only vanilla projectiles with `Inviso=yes` set or [Phobos projectiles](#projectile-trajectories) `Straight` with `Trajectory.Straight.SubjectToGround=false` enabled and `Bombard` with `Trajectory.Bombard.SubjectToGround=false` enabled can go beneath the ground. Otherwise, the projectile will be forced to detonate upon hitting the ground.
 
 In order to attack units moving horizontally underground, the attacker needs to have `SensorsSight` settings.
-```
+:::
 
 ### Parabombs
 
@@ -872,9 +872,9 @@ Strength=0                                 ; integer
 Armor=                                     ; ArmorType
 ```
 
-```{note}
+::: info Note
 Currently interceptor weapons with projectiles that do not have `Inviso=true` will be unable to intercept projectiles if the firer of the interceptor weapon dies before the interceptor weapon projectile reaches its target. This may change in future.
-```
+:::
 
 ### Projectile trajectories
 
@@ -963,10 +963,10 @@ Trajectory.Straight.EdgeAttenuation=1.0         ; floating point value
 Trajectory.Straight.CountAttenuation=1.0        ; floating point value
 ```
 
-```{note}
+::: info Note
 - Make sure you set a low `Trajectory.Straight.ProximityRadius` value unless necessary.
 - The listed Warheads in `Trajectory.Straight.PassDetonateWarhead` and `Trajectory.Straight.ProximityWarhead` must be listed in `[Warheads]` for them to work.
-```
+:::
 
 #### Bombard trajectory
 
@@ -1072,10 +1072,10 @@ Trajectory.Parabola.UseDisperseBurst=no         ; boolean
 Trajectory.Parabola.AxisOfRotation=0,0,1        ; integer - Forward,Lateral,Height
 ```
 
-```{note}
+::: info Note
 - Compared to vanilla `Arcing`, this can also be used for aircraft and airburst weapon.
 - Certainly, `Gravity` can also affect the trajectory.
-```
+:::
 
 ### Projectiles blocked by land or water
 
@@ -1135,9 +1135,9 @@ SW.NegTechnos=  ; List of TechnoTypes
 SW.TechLevel=0  ; integer
 ```
 
-```{note}
+::: info Note
 `SW.TechLevel` does not treat `-1` as a special value. If you want to restrict a super weapon to be available only to AI players, please use `SW.AllowPlayer` and `SW.AllowAI`.
-```
+:::
 
 ### Convert TechnoType
 
@@ -1171,13 +1171,13 @@ Convert.To=                     ; TechnoType
 Convert.AffectsHouse=owner      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
-```{warning}
+::: warning Warning
 This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
-```
+:::
 
-```{warning}
+::: warning Warning
 This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
-```
+:::
 
 ### Customize SuperWeapon TabIndex
 
@@ -1206,9 +1206,9 @@ EMPulse.WeaponIndex=0        ; integer, weapon slot index
 EMPulse.SuspendOthers=false  ; boolean
 ```
 
-```{note}
+::: info Note
 `Type=EMPulse` superweapon and any associated keys are [Ares features](https://ares-developers.github.io/Ares-docs/new/superweapons/types/empulse.html).
-```
+:::
 
 ### LimboDelivery
 
@@ -1225,7 +1225,7 @@ EMPulse.SuspendOthers=false  ; boolean
   - `LimboDelivery.RollChances` lists chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
   - `LimboDelivery.RandomWeightsN` lists the weights for each "dice roll" that increase the probability of picking a specific building. Valid values are 0 (don't pick) and above (the higher value, the bigger the likelyhood). `RandomWeights` are a valid alias for `RandomWeights0`. If a roll attempt doesn't have weights specified, the last weights will be used.
 
-```{note}
+::: info Note
 - This feature might not support every building flag. Flags that are confirmed to work correctly are listed below:
   - FactoryPlant
   - OrePurifier
@@ -1235,7 +1235,7 @@ EMPulse.SuspendOthers=false  ; boolean
   - SuperWeapon, SuperWeapon2, SuperWeapons (Ares 0.9), SW.AuxBuildings (Ares 0.9), SW.NegBuildings (Ares 0.9)
 
 - In order for this feature to work with AITriggerTypes conditions ("Owning house owns ???" and "Enemy house owns ???"), `LegalTarget` must be set to true.
-```
+:::
 
 In `rulesmd.ini`:
 
@@ -1250,9 +1250,9 @@ LimboKill.IDs=                  ; List of numeric IDs
 LimboKill.Counts=               ; List of integers
 ```
 
-```{warning}
+::: warning Warning
 Remember that Limbo Delivered buildings don't exist physically! This means they should never have enabled machanics that require interaction with the game world (i.e. factories, cloning vats, service depots, helipads). They also **should have either `KeepAlive=no` set or be killable with LimboKill** - otherwise the game might never end.
-```
+:::
 
 ### Linked superweapons
 
@@ -1366,11 +1366,11 @@ AttackMove.StopWhenTargetAcquired=         ; boolean, default to [General] -> At
 AttackMove.PursuitTarget=                  ; boolean
 ```
 
-```{note}
+::: info Note
 1. Many units would have stopped when they found an enemy during an attack move command already. This behavior is independent from `AttackMove.StopWhenTargetAcquired`.
 2. Some units (f.ex. jumpjets) will not fire correctly under the vanilla attack move command. The exact reason is not clear, but this feature can fix this problem.
 3. Jumpjets with `AttackMove.StopWhenTargetAcquired=true` will stop immediatly and not scatter to a cell. This is designed for practical reason.
-```
+:::
 
 ### Attack move - follow
 
@@ -1443,9 +1443,9 @@ Spawner.RecycleCoord=0,0,0         ; integer - Forward,Lateral,Height
 Spawner.RecycleOnTurret=false      ; boolean
 ```
 
-```{note}
+::: info Note
 If you set recycle FLH, it is best to set a recycle range of at least `0.5` at the same time. Otherwise, the spawner may not recycle correctly.
-```
+:::
 
 ### Automatic conversion based on ammo
 
@@ -1464,13 +1464,13 @@ Ammo.AutoConvertMaximumAmount=-1  ; integer
 Ammo.AutoConvertType=             ; TechnoType, after conversion
 ```
 
-```{warning}
+::: warning Warning
 This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
-```
+:::
 
-```{warning}
+::: warning Warning
 This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
-```
+:::
 
 ### Automatic passenger deletion
 
@@ -1538,9 +1538,9 @@ AutoTargetOwnPosition=false             ; boolean
 AutoTargetOwnPosition.Self=false        ; boolean
 ```
 
-```{note}
+::: info Note
 To make this logic work properly, you need to ensure that there is no flag like `CanPassiveAquire=false` set on units that prevents target scanning.
-```
+:::
 
 ### Build limit group
 
@@ -1659,9 +1659,9 @@ OpenTransport.RangeBonus=0                        ; integer
 OpenTransport.DamageMultiplier=1.0                ; floating point value
 ```
 
-```{note}
+::: info Note
 Range of passive acquiring of passengers in an OpenTopped transport won't be affected by these RangeBonus values.
-```
+:::
 
 ### Customizable spawns queue
 
@@ -1677,9 +1677,9 @@ In `rulesmd.ini`:
 Spawns.Queue=       ; List of AircraftTypes, in order
 ```
 
-```{warning}
+::: warning Warning
 Note that all spawnees in a queue should have `MissileSpawn` set to the same value (all to true or false). Mixing them will make missile spawnees can't hit their targets.
-```
+:::
 
 ### Customize Ares's radar jam logic
 
@@ -1703,9 +1703,9 @@ RadarJamIgnore=                   ; List of BuildingTypes
 
 - It is now possible to customize whether transport can kept or kill passengers when [driver has been killed](http://ares-developers.github.io/Ares-docs/new/killingdrivers.html).
 
-```{note}
+::: info Note
 When `DriverKilled.KeptPassengers=true` is set, passengers will always be retained regardless of the `DriverKilled.KillPassengers` setting. If the transport also has `OpenTopped=true` and [`OpenTopped.AllowFiringIfDeactivated=false`](New-or-Enhanced-Logics.md#customizable-opentopped-properties) is not set, then passengers will continue attacking the target they were originally attacking, whether that target is inherited from the transport or acquired by themselves.
-```
+:::
 
 In `rulesmd.ini`:
 
@@ -1718,11 +1718,11 @@ DriverKilled.KeptPassengers=false   ; boolean
 DriverKilled.KillPassengers=        ; boolean, defaults to [CombatDamage] -> DriverKilled.KillPassengers
 ```
 
-```{warning}
+::: warning Warning
 If `DriverKilled.KeptPassengers=true` is set, even if there are other passengers that can be matched by `Operator` besides the killed driver, the transport unit will still change its owner to `Special House` and change its mission to `Harmless`, but it will not be disabled or have its brightness adjusted.
 - If a new passenger enters the transport unit and can be matched by `Operator`, then the owner will be changed normally.
 - This feature was originally designed for some special `OpenTopped` units, and has not yet been fully adapted to situations outside the design.
-```
+:::
 
 ### Customize EVA voice and `SellSound` when selling units
 
@@ -1738,9 +1738,9 @@ EVA.Sold=       ; EVA entry, default to EVA_StructureSold for buildings and EVA_
 SellSound=      ; Sound entry, default to [AudioVisual] -> SellSound
 ```
 
-```{note}
+::: info Note
 Vanilla game played vehicles' `SellSound` globally. This has been changed in consistency with buildings' `SellSound`.
-```
+:::
 
 ### Disabling fallback to (Elite)Secondary weapon
 
@@ -1907,9 +1907,9 @@ ForceAAWeapon.Units=-1                          ; integer, -1 to disable
 ForceAAWeapon.Aircraft=-1                       ; integer, -1 to disable
 ```
 
-```{note}
+::: info Note
 Specifically, if a position has `Force(AA)Weapon.InRange` set to -1 and `Force(AA)Weapon.InRange.Overrides` set to a positive value, it'll use default weapon selection logic once satisfied.
-```
+:::
 
 ### Fast access vehicle/structure
 
@@ -1929,9 +1929,9 @@ NoQueueUpToEnter=               ; boolean, default to [General] -> NoQueueUpToEn
 NoQueueUpToUnload=              ; boolean, default to [General] -> NoQueueUpToUnload(.Buildings)
 ```
 
-```{note}
+::: info Note
 Note that this logic is used for [Passenger](https://modenc.renegadeprojects.com/Passengers) logic, which is different from [Occupier](https://modenc.renegadeprojects.com/Occupier).
-```
+:::
 
 ### Initial spawns number
 
@@ -1962,9 +1962,9 @@ InitialStrength=          ; integer
 InitialStrength.Cloning=  ; floating point value - single or comma-sep. range (percentages)
 ```
 
-```{note}
+::: info Note
 Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `Strength`, even if your values are bigger than it.
-```
+:::
 
 ### Kill Object Automatically
 
@@ -2006,9 +2006,9 @@ AutoDeath.TechnosExist.AllowLimboed=false      ; boolean
 AutoDeath.TechnosExist.Houses=owner            ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
-```{note}
+::: info Note
 Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option **if you are not using Ares 3.0+**.
-```
+:::
 
 ### Low priority for deploy
 
@@ -2102,9 +2102,9 @@ In `rulesmd.ini`:
 NoManualMove=false  ; boolean
 ```
 
-```{note}
+::: info Note
 Note that you can still undeploy the building by using a `BuildingUndeploy=true` warhead or by setting a rally point and selling it.
-```
+:::
 
 ### No rearm and reload in EMP or temporal
 
@@ -2440,9 +2440,9 @@ WaterImage.ConditionYellow=           ; VehicleType entry
 WaterImage.ConditionRed=              ; VehicleType entry
 ```
 
-```{warning}
+::: warning Warning
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
-```
+:::
 
 ### Default mirage disguise for individual VehicleTypes
 
@@ -2513,13 +2513,13 @@ FireUp.ResetInRetarget=true     ; boolean
 
 ## Warheads
 
-```{hint}
+::: tip Hint
 All new Warhead effects
 - Can be used with `CellSpread` and Ares' GenericWarhead superweapon where applicable.
 - Cannot be used with `MindControl.Permanent=yes` of Ares.
 - Respect `Verses` where applicable unless `EffectsRequireVerses` is set to `false`.
 - If target has an active [shield](#shields), its armor type is used instead unless warhead can penetrate the shield.
-```
+:::
 
 ### Allow merging AOE damage to buildings into one
 
@@ -2535,10 +2535,10 @@ MergeBuildingDamage=false    ; boolean
 MergeBuildingDamage=         ; boolean
 ```
 
-```{note}
+::: info Note
 - This is different from `CellSpread.MaxAffect`.
 - Due to the rounding of damage, there may be a slight increase in damage.
-```
+:::
 
 ### Break Mind Control on impact
 
@@ -2569,10 +2569,10 @@ AffectsAir=true            ; boolean
 AffectsGround=true         ; boolean
 ```
 
-```{note}
+::: info Note
 - These features do not override the effects of the ares flag `DamageAirThreshold`: A warhead with `CellSpread.Cylinder` detonating on floor will not affect units in air, unless it has `DamageAirThreshold=-1`.
 - These will also affect application of Phobos' Warhead effects where relevant. Due to technical constraints Ares' Warhead effects such as EMP and Iron Curtain are excluded.
-```
+:::
 
 ### Chance-based extra damage or Warhead detonation / 'critical hits'
 
@@ -2616,9 +2616,9 @@ Crit.SuppressWhenIntercepted=false         ; boolean
 ImmuneToCrit=false                         ; boolean
 ```
 
-```{warning}
+::: warning Warning
 If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chain of Warheads with it that loops back to the first one there is a possibility for the game to get stuck in a loop and freeze or crash afterwards.
-```
+:::
 
 ### Convert TechnoType on impact
 
@@ -2654,13 +2654,13 @@ Convert.To=                     ; TechnoType
 Convert.AffectsHouse=all        ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
-```{warning}
+::: warning Warning
 This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
-```
+:::
 
-```{warning}
+::: warning Warning
 This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
-```
+:::
 
 ### Custom Mind Control Animation
 
@@ -2719,9 +2719,9 @@ DamageSourceHealthMultiplier=0.0                           ; floating point valu
 DamageTargetHealthMultiplier=0.0                           ; floating point value
 ```
 
-```{note}
+::: info Note
 `DamageAlliesMultiplier` won't affect your own units like `AffectsAllies` did.
-```
+:::
 
 ### Damage technos underground
 
@@ -2763,9 +2763,9 @@ DetonateOnAllMapObjects.IgnoreTypes=         ; List of TechnoTypes
 DetonateOnAllMapObjects.RequireVerses=false  ; boolean
 ```
 
-```{warning}
+::: warning Warning
 While this feature can provide better performance than a large `CellSpread` value, it still has potential to slow down the game, especially if used in conjunction with things like animations, alpha lights etc. Modder discretion and use of the filter keys (`AffectsTarget/House/Types` etc.) is advised.
-```
+:::
 
 ### Fire weapon when Warhead kills something
 
@@ -2837,10 +2837,10 @@ PenetratesForceShield=       ; boolean
     - `LaunchSW.DisplayMoney.Houses` determines which houses can see the credits display.
     - `LaunchSW.DisplayMoney.Offset` is additional pixel offset for the center of the credits display, by default `0,0` at superweapon's target cell.
 
-```{note}
+::: info Note
 - For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set.
 - The superweapons are launched on the *cell* where the warhead is detonated, instead of being click-fired.
-```
+:::
 
 In `rulesmd.ini`:
 
@@ -2855,9 +2855,9 @@ LaunchSW.DisplayMoney.Houses=all  ; Affected House Enumeration (none|owner/self|
 LaunchSW.DisplayMoney.Offset=0,0  ; X,Y, pixels relative to default
 ```
 
-```{warning}
+::: warning Warning
 Due to the nature of some superweapon types, not all superweapons are suitable for launch. **Please use with caution!**
-```
+:::
 
 ### Parasite removal
 
@@ -2939,9 +2939,9 @@ ReturnWarhead.AffectsTarget=all             ; List of Affected Target Enumeratio
 ReturnWarhead.AffectsHouse=all              ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
-```{warning}
+::: warning Warning
 If you set `ReturnWarhead` to the same Warhead it is defined on, or create a chain of Warheads with it that loops back to the first one there is a possibility for the game to get stuck in a loop and freeze or crash afterwards.
-```
+:::
 
 ### Reveal map for owner on impact
 
@@ -2955,9 +2955,9 @@ In `rulesmd.ini`:
 Reveal=0       ; integer, range in cells
 ```
 
-```{note}
+::: info Note
 Negative values mean reveal the entire map.
-```
+:::
 
 ### Reverse engineer warhead
 
@@ -2970,9 +2970,9 @@ In `rulesmd.ini`:
 ReverseEngineer=false  ; boolean
 ```
 
-```{warning}
+::: warning Warning
 This feature requires Ares 3.0 or higher to function!
-```
+:::
 
 ### Sell or undeploy building on impact
 
@@ -3003,9 +3003,9 @@ In `rulesmd.ini`:
 CreateGap=0    ; integer, range in cells
 ```
 
-```{note}
+::: info Note
 Negative values mean shroud the entire map.
-```
+:::
 
 ### Spawn powerup crate
 
@@ -3062,10 +3062,10 @@ ApplyPerTargetEffectsOnDetonate=true  ; boolean
 ApplyPerTargetEffectsOnDetonate=      ; boolean, default to [CombatDamage] -> ApplyPerTargetEffectsOnDetonate
 ```
 
-```{note}
+::: info Note
 - Ares' warhead effects, such as EMP or IronCurtain warhead, will not be affected.
 - Ares' warhead effect controllers, such as `EffectsRequireDamage`, only affect Ares' effects. So they have nothing to do with this.
-```
+:::
 
 ### Trigger specific NotHuman infantry Death anim sequence
 
@@ -3109,9 +3109,9 @@ UnlimboDetonate.KeepTarget=false       ; boolean
 UnlimboDetonate.KeepSelected=false     ; boolean
 ```
 
-```{warning}
+::: warning Warning
 `UnlimboDetonate` cannot be used in conjunction with `Parasite`.
-```
+:::
 
 ## Weapons
 
@@ -3168,10 +3168,10 @@ In `rulesmd.ini`:
 Burst.NoDelay=false   ; boolean
 ```
 
-```{note}
+::: info Note
 - This is useless for buildings and aircraft.
 - This will ignore `Burst.Delays` setting.
-```
+:::
 
 ### Customize whether weapon can target iron-curtained technos
 
@@ -3221,9 +3221,9 @@ DelayedFire.PauseFiringSequence=false  ; boolean
 DelayedFire.OnlyOnInitialBurst=false   ; boolean
 ```
 
-```{note}
+::: info Note
 AircraftTypes, due to their different attack patterns, will not wait for the delay to expire before attempting to fire and will instead continue without firing if the delay is too long.
-```
+:::
 
 ### Extra range
 
@@ -3256,11 +3256,11 @@ ExtraRange.Prefiring=                           ; floating point value, range in
 ExtraRange.Prefiring.IncludeBurst=              ; boolean, default to [General] -> ExtraRange.Prefiring.IncludeBurst
 ```
 
-```{note}
+::: info Note
 - In vanilla, melee units have difficulty attacking enemies that are moving away, even if they have a slightly higher speed than their targets. This is because the game's pathfinding algorithm searches for a firing position in units of cells, which creates an unacceptable error for melee units, causing the targets to move out of range before they can get close.
 - Units with various forms of pre-firing behavior have similar problems. The target may move out of range before they fire.
 - This feature can solve the above issues.
-```
+:::
 
 ### Extra warhead detonations
 
@@ -3303,9 +3303,9 @@ FeedbackWeapon=  ; WeaponType
     - `KeepRange.AllowPlayer` controls whether this function is effective for human.
     - The function won't take effect if the techno's rearm time left is shorter than `KeepRange.EarlyStopFrame`.
 
-```{note}
+::: info Note
 That is to say, the total duration of executing KeepRange equals the value of weapon `ROF` minus the value of `KeepRange.EarlyStopFrame`.
-```
+:::
 
 In `rulesmd.ini`:
 
@@ -3390,9 +3390,9 @@ VisualScatter.Max=0.13  ; floating point value, distance in cells
 VisualScatter=false     ; boolean
 ```
 
-```{note}
+::: info Note
 This function is only used as an additional scattering visual display, which is different from `BallisticScatter.(Min/Max)` and can be used simultaneously, without affecting the actual explosion position of the projectile.
-```
+:::
 
 ### Weapon targeting filter
 
@@ -3413,6 +3413,6 @@ CanTarget.MinHealth=0.0     ; floating point value, percents or absolute
 CanTargetVeterancy=all      ; List of Affected Veterancy Enumeration (none|rookie|veteran|elite|all)
 ```
 
-```{note}
+::: info Note
 `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
-```
+:::

@@ -1347,7 +1347,7 @@ msgstr "废矿计数器"
 
 msgid ""
 "Counter for amount of [weeds in "
-"storage](Fixed-or-Improved-Logics.md#weeds--weed-eaters) can be added near "
+"storage](Fixed-or-Improved-Logics.md#weeds-weed-eaters) can be added near "
 "the credits indicator."
 msgstr ""
 "你可以在资金示数器附近添加一个额外的计数器用于显示[存储的泰伯利亚废矿](Fixed-or-Improved-Logics.md#weeds--"

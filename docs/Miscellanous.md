@@ -65,9 +65,9 @@ SaveVariablesOnScenarioEnd=false    ; boolean
 |  Jumpjet | `{92612C46-F71F-11d1-AC9F-006008055BB5}` |
 |   Rocket | `{B7B49766-E576-11d3-9BD9-00104B972FE8}` |
 
-```{note}
+::: info Note
 `Chrono` is not a standard Alias, but since the default behavior of using `Teleport` will be triggered when the value of `Locomotor` is incorrect, the result of the operation will appear as if `Chrono` has taken effect.
-```
+:::
 
 ### Insignia Type
 
@@ -126,76 +126,21 @@ In `RA2MD.INI`:
 CampaignDefaultGameSpeed=4  ; integer
 ```
 
-```{note}
+::: info Note
 Currently there is no way to set desired FPS directly. Use the generator below to get required values. The generator supports values from 10 to 60.
-```
+:::
 
-```{dropdown} Click to show the generator
-Enter desired FPS
-<div>
-<input id="customGameSpeedIn" type=number oninput="onInput()" style="width:100%";>
-</div>
-
-Results (remember to replace N with your game speed number!):
-
-<div>
-</p>
-<div id="codeBlockHere1"></div>
-</div>
-```
-
-<script>
-makeINICodeBlock(document.getElementById("codeBlockHere1"), "customGameSpeedOut", 400);
-let fpsArray = [];
-for (let d = 0; d <= 5; d++) {
-	for (let c = 0; c <= 5; c++) {
-		for (let i = 1; i <= 40; i++) {
-			fpsArray.push(Math.round(formula(c, d, i)));
-		}
-	}
-}
-function formula(c, d, i) {
-	return (60/(6-c)+60/(6-d)*((i-1)/(6-c)))/(1+(i-1)/(6-c));
-}
-function onInput() {
-	let fps = document.getElementById("customGameSpeedIn");
-	let out = document.getElementById("customGameSpeedOut");
-	out.textContent = ''; // remove all children
-	out.appendChild(document.createElement("span"));
-	let j = 0;
-	let foundAny = false;
-	while (true) {
-		j = fpsArray.indexOf(parseInt(fps.value), j);
-		if (j == -1) {
-			break;
-		}
-		d = Math.floor(j / 240);
-		c = Math.floor(j % 240 / 40);
-		i = j % 40 + 1;
-		j += 1;
-		let content = [];
-		if (foundAny) {
-			content.push({key: null, value: null, comment: "// -- Or -- "});
-		}
-		content.push({key: "CustomGSN.DefaultDelay", value: d, comment: null});
-		content.push({key: "CustomGSN.ChangeDelay", value: c, comment: null});
-		content.push({key: "CustomGSN.ChangeInterval", value: i, comment: null});
-		content.forEach(line => addINILine(out, line));
-		foundAny = true;
-	}
-	if (!foundAny) {
-		addINILine(out, {key: null, value: null, comment: "// Sorry, couldn't find anything!  本工具无能为力"});
-	}
-}
-</script>
+::: details Click to show the generator
+<CustomGameSpeedGenerator />
+:::
 
 ## INI
 
 ### Include files
 
-```{note}
+::: info Note
 This feature must be enabled via a command line argument `-Include`.
-```
+:::
 
 - INI files can now include other files (merge them into self) using `[$Include]` section.
   - `[$Include]` section contains a list of files to read and include. Files can be directly in the Red Alert 2 directory or in a loaded MIX file.
@@ -211,19 +156,19 @@ In any file:
 0=somefile.ini  ; file name
 ```
 
-```{warning}
-Due to a technical issue, there is a chance that ***the first line of a included file will be skipped!*** To prevent this, included files should start with an empty line or a comment.
-```
+::: warning Warning
+Due to a technical issue, there is a chance that **_the first line of a included file will be skipped!_** To prevent this, included files should start with an empty line or a comment.
+:::
 
-```{warning}
+::: warning Warning
 When this feature is enabled, `[#include]` (equivalent [Ares feature](https://ares-developers.github.io/Ares-docs/new/misc/include.html)) is disabled because of technical incompatibilities.
-```
+:::
 
 ### Section inheritance
 
-```{note}
+::: info Note
 This feature must be enabled via a command line argument `-Inheritance`.
-```
+:::
 
 - You can now make sections (children) inherit entries from other sections (parents) with `$Inherits` entry.
   - When a section has no value set for an entry (or an entry is missing), the game will attempt to use parent's value. If no value is found, only then the default will be used.
@@ -242,25 +187,25 @@ In any file:
 $Inherits=PARENT1SECTION,PARENT2SECTION...  ; section names
 ```
 
-```{warning}
+::: warning Warning
 When this feature is enabled, the Ares equivalent of `$Inherits` (undocumented) is disabled!
-```
+:::
 
-```{warning}
+::: warning Warning
 This feature may noticeably increase game loading time, depending on the size of game rules and used hardware.
-```
+:::
 
 ### Turning off/on in-game exception handling
 
 You can turn on/off the exception handler of the game's main loop using the following command line arg: `-ExceptionHandler=boolean` where `boolean` is `(true|false|yes|no|1|0)`.
 
-```{note}
+::: info Note
 In **debug** builds the in-game exception handler is **turned off** by default.
-```
+:::
 
-```{warning}
+::: warning Warning
 The CnCNet 5 spawner uses the main loop exception handler for fixes. If you get any issues (crashes, bugs) in combination with that then please first test with the exception handler enabled.
-```
+:::
 
 ## Player colors
 
@@ -278,10 +223,10 @@ In `rulesmd.ini`:
 SkirmishUnlimitedColors=false  ; boolean
 ```
 
-```{note}
+::: info Note
 This feature should only be used if you use a spawner/outside client (i.e. CnCNet Client). Using it in the original YR launcher will produce undesireable effects.
-```
+:::
 
-```{warning}
+::: warning Warning
 Due to technical incompatibilities, enabling this feature disables [Ares' Customizable Dropdown Colors](https://ares-developers.github.io/Ares-docs/ui-features/customizabledropdowncolors.html).
-```
+:::

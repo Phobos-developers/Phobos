@@ -57,8 +57,8 @@ msgstr ""
 
 msgid ""
 "You can find the downloads for these versions on the document's [main "
-"page](index.md#downloads)."
-msgstr "你可以在文档 [主页面](index.md#downloads) 找到这些版本的下载。"
+"page](/#downloads)."
+msgstr "你可以在文档 [主页面](/zh_CN/#downloads) 找到这些版本的下载。"
 
 msgid "Disabling development build warning"
 msgstr "关闭开发版本警告"

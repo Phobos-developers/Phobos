@@ -5,7 +5,7 @@
 [![Workflow](https://img.shields.io/github/actions/workflow/status/Phobos-developers/Phobos/nightly.yml?branch=develop)](https://github.com/Phobos-developers/Phobos/actions)
 [![license](https://img.shields.io/github/license/Phobos-developers/Phobos.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
 
-> **Warning**
+> [!WARNING]
 > The project is currently not maintained actively enough and thus we are looking for active maintainers at the moment. Please message us [in Discord channel](https://discord.gg/sZeMzz6qVg) (or PM Kerbiter directly).
 
 # Phobos
@@ -58,7 +58,7 @@ Documentation
 - [Community Chinese docs](https://docs.qq.com/doc/p/dc3da1ce39a6e787b6e133f7d33d6aebef581cb4)
   - Because the Chinese translation of the official docs is currently underdeveloped, at the time it is recommended to use the community docs for Chinese users.
 
-You can switch between versions (displays latest develop nightly version by default) in the bottom right corner, as well as download a PDF version.
+You can switch between versions (displays latest develop nightly version by default) in the bottom right corner, as well as download a zipped offline HTML version.
 
 The documentation is split by a few major categories, each represented with a page on the sidebar. Each page has its contents grouped into multiple subcategories, be it buildings, technotypes, infantry, superweapons or something else.
 

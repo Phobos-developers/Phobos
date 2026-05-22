@@ -58,6 +58,57 @@ msgstr "杂项内容"
 msgid "Extension Documentation"
 msgstr "扩展文档"
 
+msgid "Phobos Documentation"
+msgstr "Phobos 文档"
+
+msgid "Community documentation for Phobos YR engine extension"
+msgstr "Phobos 引擎扩展社区文档"
+
+msgid "Home"
+msgstr "主页"
+
+msgid "New or Enhanced Logics"
+msgstr "新增或增强逻辑"
+
+msgid "Fixed or Improved Logics"
+msgstr "修复或改进逻辑"
+
+msgid "Simplified Chinese"
+msgstr "简体中文"
+
+msgid "On this page"
+msgstr "本页目录"
+
+msgid "Edit this page"
+msgstr "编辑此页"
+
+msgid "Last updated"
+msgstr "最后更新"
+
+msgid "Previous page"
+msgstr "上一页"
+
+msgid "Next page"
+msgstr "下一页"
+
+msgid "Appearance"
+msgstr "外观"
+
+msgid "Switch to light theme"
+msgstr "切换到浅色模式"
+
+msgid "Switch to dark theme"
+msgstr "切换到深色模式"
+
+msgid "Menu"
+msgstr "菜单"
+
+msgid "Return to top"
+msgstr "返回顶部"
+
+msgid "Select language"
+msgstr "选择语言"
+
 msgid "Phobos YR Engine Extension"
 msgstr "Phobos——尤里的复仇扩展引擎"
 
@@ -313,14 +364,15 @@ msgstr "由于官方文档的中文翻译尚不完善，目前建议中国用户
 
 msgid ""
 "You can switch between versions (displays latest develop nightly version by "
-"default) in the bottom right corner, as well as download a PDF version."
-msgstr "你可以在右下角切换版本（默认显示开发分支最新一次提交对应的版本），也可以在官方英文文档下载 PDF 版本。"
+"default) in the bottom right corner, as well as download a zipped offline "
+"HTML version."
+msgstr "你可以在右下角切换文档版本（默认显示最新的 develop 每夜构建版），也可以下载离线 HTML 压缩包版本。"
 
 msgid ""
-"The documentation is split by a few major categories, each represented with "
-"a page on the sidebar. Each page has its contents grouped into multiple "
-"subcategories, be it buildings, technotypes, infantry, superweapons or "
-"something else."
+"The documentation is split by a few major categories, each represented "
+"with a page on the sidebar. Each page has its contents grouped into "
+"multiple subcategories, be it buildings, technotypes, infantry, "
+"superweapons or something else."
 msgstr "文档分为几个大类，每类在侧边栏上都有一个页面。每个页面的内容又分为多个子类别，包括建筑、科技类型（四大类通用）、步兵、超级武器或其他。"
 
 msgid "How to read code snippets"
@@ -552,4 +604,5 @@ msgid ""
 "are registered trademarks of Electronic Arts Inc. All Rights Reserved."
 msgstr ""
 "本项目与艺电公司（Electronic Arts Inc.）没有任何直接关联。「Command & Conquer」、「Command & "
-"Conquer Red Alert 2」 和 「Command & Conquer Yuri's Revenge」均为艺电公司的注册商标。版权所有。"
+"Conquer Red Alert 2」 和 「Command & Conquer Yuri's "
+"Revenge」均为艺电公司的注册商标。版权所有。"

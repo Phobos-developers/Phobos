@@ -41,9 +41,9 @@ To distribute the workload and make the project more manageable, we have establi
 - Project policy changes - changes to the project's guidelines, contributing guidelines, etc.
   - `T3` complexity by default (has to be reviewed by leads)
 
-```{hint}
+::: tip Hint
 Modders are highly encouraged to submit feedback on reusability of added features (preferably most important takeaways should be tracked in pull requests, discussions and issues) in order to not bloat the project with one-off features.
-```
+:::
 
 The list is not exhaustive, you are welcome to propose/submit changes to it (or to any project policies in order to improve how the project is maintained).
 
@@ -240,9 +240,9 @@ DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
 - Do not pollute the namespace.
 - Avoid introducing unnecessary macros if they can be replaced by equivalent `constexpr` or `__forceinline` functions.
 
-```{note}
+::: info Note
 The styleguide is not exhaustive and may be adjusted in the future.
-```
+:::
 
 ## Git branching model
 
