@@ -27,6 +27,9 @@
 
 *.gif        -text
 *.jpg        -text
+*.jpeg       -text
 *.png        -text
+*.webm       -text
+*.mp4        -text
 *.exe        -text
 *.ico        -text

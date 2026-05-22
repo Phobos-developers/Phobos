@@ -238,8 +238,8 @@ Due to performance concerns, unless any radiation type has `RadApplicationDelay.
 
 ### Laser Trails
 
-![Laser Trails](_static/images/lasertrails.gif)
-*Laser trails used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
+[View video](_static/images/lasertrails.webm)
+_Laser trails used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)_
 
 - Technos, Projectiles, and VoxelAnims can now have colorful trails of different transparency, thickness and color, which are drawn via laser drawing code.
 - Technos, Projectiles, and VoxelAnims can have multiple laser trails. For technos each trail can have custom laser trail type and FLH offset relative to turret and body.
@@ -301,8 +301,8 @@ Laser trails are very resource intensive! Due to the game not utilizing GPU havi
 
 ### Shields
 
-![image](_static/images/technoshield-01.gif)
-*Buildings, Infantry and Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+[View video](_static/images/technoshield-01.webm)
+_Buildings, Infantry and Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)_
 
 In `rulesmd.ini`:
 ```ini
@@ -518,7 +518,7 @@ Note that the AircraftTypes had to be defined under [AircraftTypes].
 
 ### Anim-to-Unit
 
-![image](_static/images/animToUnit.gif)
+[View video](_static/images/animToUnit.webm)
 
 - Animations can now create (or "convert" to) any unit (vehicles, aircraft and infantry) when they end via `CreateUnit`. This offers more settings than `MakeInfantry` does for infantry.
   - `CreateUnit.Owner` determines which house will own the created unit. This only works as expected if the animation has owner set. If there is no owner or the owner house has been defeated, the created unit will be owned by first house from Civilian side unless `CreateUnit.RequireOwner` is set to true in which case no unit will be created.
@@ -802,8 +802,8 @@ BombParachute=           ; AnimationType, default to [General] -> BombParachute
 
 ### Projectile interception logic
 
-![image](_static/images/projectile-interception-01.gif)
-*Interception logic used in [Tiberium Crisis](https://www.moddb.com/mods/tiberium-crisis)*
+[View video](_static/images/projectile-interception-01.webm)
+_Interception logic used in [Tiberium Crisis](https://www.moddb.com/mods/tiberium-crisis)_
 
 - Projectiles can now be made interceptable by certain TechnoTypes by setting `Interceptable=true` on them. The TechnoType scans for interceptable projectiles within a range if it has no other target and will use one of its weapons to shoot at them. Projectiles can define `Armor` and `Strength`. Weapons that cannot target the projectile's armor type will not attempt to intercept it. On interception, if the projectile has `Armor` set, an amount equaling to the intercepting weapon's `Damage` adjusted by Warhead `Verses` is deducted from the projectile's current strength. Regardless of if the current projectile strength was reduced or not, if it sits at 0 or below after interception, the projectile is detonated.
   - `Interceptor.Weapon` determines the weapon (0 = `Primary`, 1 = `Secondary`) to be used for intercepting projectiles.
@@ -868,8 +868,8 @@ Trajectory.Speed=100.0  ; floating point value
 
 #### Straight trajectory
 
-![Straigh trajectory blasters](_static/images/straight.gif)
-*Straight trajectory used to make blasters in a private mod by @brsajo#9745*
+[View video](_static/images/straight.webm)
+_Straight trajectory used to make blasters in a private mod by @brsajo#9745_
 
 - Self-explanatory, is a straight-shot trajectory.
   - `Trajectory.Straight.DetonationDistance` controls the maximum distance in cells from intended target (checked at start of each game frame, before the projectile moves) at which the projectile will be forced to detonate. Set to 0 to disable forced detonation (note that this can cause the projectile to overshoot the target). If `Trajectory.Straight.ApplyRangeModifiers` is set to true, any applicable weapon range modifiers from the firer are applied here as well. By setting `Trajectory.Straight.PassThrough=true`, it refers to the distance that projectile should travel from itself when it above 0, and the distance that projectile should move behind the target when it below 0 (use the absolute value).
@@ -1247,8 +1247,8 @@ EVA.LinkedSWAcquired=        ; EVA entry
 
 ### Next
 
-![image](_static/images/swnext.gif)
-*Use of `SW.Next` to link multiple ChronoSphere and ChronoWarp superweapons into a chained SuperWeapon system in [Cylearun](https://www.moddb.com/mods/Cylearun)*
+[View video](_static/images/swnext.webm)
+_Use of `SW.Next` to link multiple ChronoSphere and ChronoWarp superweapons into a chained SuperWeapon system in [Cylearun](https://www.moddb.com/mods/Cylearun)_
 
 - Superweapons can now launch other superweapons at the same target. Launched types can be additionally randomized using the same rules as with LimboDelivery (see above).
   - `SW.Next.RealLaunch` controls whether the owner who fired the initial superweapon must own all listed superweapons and sufficient funds to support `Money.Amout`. Otherwise they will be launched forcibly.
@@ -1370,8 +1370,8 @@ AutoTargetAI.NoThreatBuildings=true     ; boolean
 
 ### Aircraft spawner customizations
 
-![image](_static/images/spawnrange-01.gif)
-*Limited pursue range for spawns in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+[View video](_static/images/spawnrange-01.webm)
+_Limited pursue range for spawns in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)_
 
 - If `Spawner.LimitRange` is set, the spawned units will abort their pursuit if the enemy is out of the range of the largest weapon `Range` of a `Spawner=true` weapon of the spawner.
   - `Spawner.ExtraLimitRange` adds extra pursuit range on top of the weapon range.
@@ -1794,11 +1794,11 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
 
 ### Forcing specific weapon against certain targets
 
-![image](_static/images/underwater-new-attack-tag.gif)
-*Naval underwater target behavior with `ForceWeapon.Naval.Decloaked` in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
+[View video](_static/images/underwater-new-attack-tag.webm)
+_Naval underwater target behavior with `ForceWeapon.Naval.Decloaked` in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)_
 
-![image](_static/images/forceweapon_emp.gif)
-*Enemy behavior against EMP targets with `ForceWeapon.UnderEMP` in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
+[View video](_static/images/forceweapon_emp.webm)
+_Enemy behavior against EMP targets with `ForceWeapon.UnderEMP` in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)_
 
 - Can be used to override normal weapon selection logic to force specific weapons to use against certain targets. If multiple are set and target satisfies the conditions, the first one in listed order satisfied takes effect.
   - `ForceWeapon.Naval.Decloaked` forces specified weapon to be used against uncloaked `Naval=yes` targets. Useful if your naval unit has one weapon only for underwater and another weapon for surface targets.
@@ -1958,10 +1958,10 @@ PriorityDeployFiltering=true  ; boolean
 
 ### Mind Control enhancement
 
-![image](_static/images/mindcontrol-max-range-01.gif)
-*Mind Control Range Limit used in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
-![image](_static/images/mindcontrol-multiple-01.gif)
-*Multiple Mind Control unit auto-releases the first victim in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+[View video](_static/images/mindcontrol-max-range-01.webm)
+_Mind Control Range Limit used in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)_
+[View video](_static/images/mindcontrol-multiple-01.webm)
+_Multiple Mind Control unit auto-releases the first victim in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)_
 
 - Mind controllers now can have the upper limit of the control distance. Tag values greater than 0 will activate this feature.
 - Mind controlled *targets* can have size of control, like passengers in transport.
@@ -1982,8 +1982,8 @@ MindControlSize=1                     ; integer
 
 ### Multi Weapon
 
-![image](_static/images/multiweapons.gif)
-*Multi Weapon used to release different weapons against different targets in **Zero Boundary** by @[Stormsulfur](https://space.bilibili.com/11638715/lists/5358986)*
+[View video](_static/images/multiweapons.webm)
+_Multi Weapon used to release different weapons against different targets in **Zero Boundary** by @[Stormsulfur](https://space.bilibili.com/11638715/lists/5358986)_
 
 - You can now use `WeaponX` to enable more than 2 weapons for a TechnoType without hardcoded `Gunner=yes`, `IsGattling=yes` or `IsChargeTurret=yes` restriction.
   - Set `MultiWeapon=yes` to enable this feature, be careful not to forget `WeaponCount`.
@@ -2065,8 +2065,8 @@ Overload.ParticleSysCount=5   ; integer
 
 ### Promoted Spawns
 
-![image](_static/images/promotedspawns-01.gif)
-*Promoted Spawns in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+[View video](_static/images/promotedspawns-01.webm)
+_Promoted Spawns in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)_
 
 - The spawned units will promote as their owner's veterancy.
 
@@ -2167,8 +2167,8 @@ Convert.ResetMindControl=false          ; boolean
 
 ### Revenge weapon
 
-![Revenge Weapon](_static/images/revengeweapon.gif)
-*Revenge Weapon usage in [RA2: Reboot](https://www.moddb.com/mods/reboot)*
+[View video](_static/images/revengeweapon.webm)
+_Revenge Weapon usage in [RA2: Reboot](https://www.moddb.com/mods/reboot)_
 
 - Similar to `DeathWeapon` in that it is fired after a TechnoType is killed, but with the difference that it will be fired on whoever dealt the damage that killed the TechnoType. If TechnoType died of sources other than direct damage dealt by another TechnoType, `RevengeWeapon` will not be fired.
   - `RevengeWeapon.AffectsHouse` can be used to filter which houses the damage that killed the TechnoType is allowed to come from to fire the weapon.
@@ -2367,8 +2367,8 @@ DefaultMirageDisguises=    ; List of TerrainTypes
 
 ### Jumpjet Tilts While Moving
 
-![image](_static/images/jumpjet-tilt.gif)
-*Jumpjet Tilts in [Project Rush - Conquer](https://www.moddb.com/mods/project-rush-conquer)*
+[View video](_static/images/jumpjet-tilt.webm)
+_Jumpjet Tilts in [Project Rush - Conquer](https://www.moddb.com/mods/project-rush-conquer)_
 
 - Now you can make jumpjets tilt forward when moving forward and sideways when turning by setting `JumpjetTilt` to true.
 - The maximum tilt angle will not exceed 90 degrees.
@@ -2398,8 +2398,8 @@ TurretResponse=     ; boolean
 
 ### Turretless Shape Vehicle FireUp
 
-![image](_static/images/vehiclefireup.gif)
-*Use the pre-firing animation effect for Shape vehicle-type mecha units in **Zero Boundary** by @[Stormsulfur](https://space.bilibili.com/11638715/lists/5358986)*
+[View video](_static/images/vehiclefireup.webm)
+_Use the pre-firing animation effect for Shape vehicle-type mecha units in **Zero Boundary** by @[Stormsulfur](https://space.bilibili.com/11638715/lists/5358986)_
 
 - `Voxel=no` turretless vehicles now support the use of `FireUp`.
  - `FireUp.ResetInRetarget` determines whether a vehicle's FireUp count is reset when its target changes. Forced to be `yes` when there is no target.
@@ -2441,8 +2441,8 @@ MergeBuildingDamage=         ; boolean
 
 ### Break Mind Control on impact
 
-![image](_static/images/remove-mc.gif)
-*Mind control break warhead being utilized in [RA2: Reboot](https://www.moddb.com/mods/reboot)*
+[View video](_static/images/remove-mc.webm)
+_Mind control break warhead being utilized in [RA2: Reboot](https://www.moddb.com/mods/reboot)_
 
 - Warheads can now break mind control (doesn't apply to perma-MC-ed objects).
 
@@ -2518,8 +2518,8 @@ If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chai
 
 ### Convert TechnoType on impact
 
-![image](_static/images/convertwh.gif)
-*Vehicle version of Genetic Converter in [NanoStorm](https://www.bilibili.com/opus/896077937747427433)*
+[View video](_static/images/convertwh.webm)
+_Vehicle version of Genetic Converter in [NanoStorm](https://www.bilibili.com/opus/896077937747427433)_
 
 - Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft).
   - `ConvertN.From` (where N is 0, 1, 2...) specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
@@ -2567,7 +2567,8 @@ MindControl.Anim=                     ; Animation, defaults to [CombatDamage] ->
 
 ### Custom 'SplashList' on Warheads
 
-![image](_static/images/splashlist-01.gif)
+[View video](_static/images/splashlist-01.webm)
+
 - Allows Warheads to play custom water splash animations. See vanilla's [Conventional](https://www.modenc.renegadeprojects.com/Conventional) system here. `SplashList.PickRandom` can be set to true to pick a random animation to play from the list.
 
 In `rulesmd.ini`:
@@ -2679,8 +2680,8 @@ SuppressKillWeapons.Types=            ; List of WeaponTypes
 
 ### Generate credits on impact
 
-![image](_static/images/hackerfinallyworks-01.gif)
-*`TransactMoney` used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
+[View video](_static/images/hackerfinallyworks-01.webm)
+_`TransactMoney` used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)_
 
 - Warheads can now give credits to its owner at impact.
   - `TransactMoney.Display` can be set to display the amount of credits given or deducted. The number is displayed in green if given, red if deducted and will move upwards after appearing.
@@ -2961,8 +2962,8 @@ CanKill=true   ; boolean
 
 ### Unlimbo detonate warhead
 
-![Unlimbo Detonate](_static/images/unlimbodetonate.gif)
-*Unlimbo Detonate used in **The Call of the Panic Spear** by @[Octagonal prism](https://space.bilibili.com/360577336)*
+[View video](_static/images/unlimbodetonate.webm)
+_Unlimbo Detonate used in **The Call of the Panic Spear** by @[Octagonal prism](https://space.bilibili.com/360577336)_
 
 - `UnlimboDetonate` allows units that have fired weapons with `LimboLaunch=yes` to reappear.
   - `UnlimboDetonate.ForceLocation` allows units to forcefully appear at the projectile explosion location, otherwise they will search for other available cells.
@@ -3143,8 +3144,8 @@ ExtraWarheads.FullDetonation=     ; List of booleans
 
 ### Feedback weapon
 
-![image](_static/images/feedbackweapon.gif)
-*`FeedbackWeapon` used to apply healing aura upon firing a weapon in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
+[View video](_static/images/feedbackweapon.webm)
+_`FeedbackWeapon` used to apply healing aura upon firing a weapon in [Project Phantom](https://www.moddb.com/mods/project-phantom)_
 
 - You can now specify an auxiliary weapon to be fired on the firer itself when a weapon is fired.
   - `FireInTransport` setting of the feedback weapon is respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If feedback weapon is fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on feedback weapons.
@@ -3208,8 +3209,8 @@ CylinderRangefinding=             ; boolean
 
 ### Strafing aircraft weapon customization
 
-![image](_static/images/strafing-01.gif)
-*Strafing aircraft weapon customization in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
+[View video](_static/images/strafing-01.webm)
+_Strafing aircraft weapon customization in [Project Phantom](https://www.moddb.com/mods/project-phantom)_
 
 - Some of the behavior of strafing aircraft weapons can now be customized.
   - `Strafing` controls if the aircraft can strafe when firing at the target. Default to `true` if the projectile's `ROT` < 2 and `Inviso=false` without `Trajectory`, otherwise `false`.
@@ -3251,8 +3252,8 @@ This function is only used as an additional scattering visual display, which is 
 
 ### Weapon targeting filter
 
-![image](_static/images/weaponfilter.gif)
-*`Weapon target filter - different weapon used against enemies & allies as well as units & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
+[View video](_static/images/weaponfilter.webm)
+_`Weapon target filter - different weapon used against enemies & allies as well as units & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)_
 
 - You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
   - `CanTarget.MaxHealth` and `CanTarget.MinHealth` set health percentage thresholds for allowed targets (TechnoTypes only) that the target's health must be above and/or below/equal to, respectively. If target has zero health left this check is bypassed.

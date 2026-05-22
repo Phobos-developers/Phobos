@@ -92,10 +92,10 @@ OK English grammar and understanding of docs structure would be enough. You woul
 
 ## Providing media to showcase features
 
-Those would be used in docs and with a link to the respective mod as a bonus for the mod author. To record GIFs you can use such apps as, for example, [GifCam](http://blog.bahraniapps.com/gifcam/).
+Those would be used in docs and with a link to the respective mod as a bonus for the mod author. Please provide silent demonstration videos as WebM files.
 
 ```{note}
-Please, provide screenshots, GIFs and videos in their natural size and without excess stuff or length.
+Please, provide screenshots and WebM videos in their natural size and without excess stuff or length.
 ```
 
 ## Promoting the work

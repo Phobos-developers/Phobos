@@ -176,7 +176,7 @@ An example shape file for digits can be found on [Phobos supplementaries repo](h
 ```{hint}
 You can create a circular health bar for technos, where the different frames of this ring Shape file correspond to the state of the circular health bar at varying degrees of damage.
 
-![image](_static/images/ring-health-bar.gif)
+[View video](_static/images/ring-health-bar.webm)
 *Example of a ring-shaped health bar*
 
 The arrangement of static images on the plane is entirely up to you to draw freely, without being constrained by pre-established frameworks (e.g., the original rule for health bars was to start at a fixed coordinate, fetch a pip from a fixed frame of a fixed file at fixed intervals, and then arrange them horizontally), choosing from inherently limited options.
@@ -204,8 +204,8 @@ ShowFlashOnSelecting=false  ; boolean
 
 ### Low priority for box selection
 
-![smartvesters](_static/images/lowpriority-01.gif)
-*Harvesters not selected together with battle units in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
+[View video](_static/images/lowpriority-01.webm)
+_Harvesters not selected together with battle units in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)_
 
 - You can now set lower priority for an ingame object (currently has effect on units mostly), which means it will be excluded from box selection if there's at least one normal priority unit in the box. Otherwise it would be selected as normal. Works with box+type selecting (type select hotkey + drag) and regular box selecting. Box shift-selection adds low-priority units to the group if there are no normal priority units among the appended ones.
 
@@ -372,8 +372,8 @@ ShowTimer.Priority=0  ; integer
 
 ### Task subtitles display in the middle of the screen
 
-![Message Display In Center](_static/images/messagedisplayincenter.gif)
-*Taking a campaign in [Mental Omega](https://www.mentalomega.com) as an example to display messages in center*
+[View video](_static/images/messagedisplayincenter.webm)
+_Taking a campaign in [Mental Omega](https://www.mentalomega.com) as an example to display messages in center_
 
 - Now you can set `MessageApplyHoverState` to true，to make the upper left messages not disappear while mouse hovering over the top of display area.
 - You can also let task subtitles (created by trigger 11) to display directly in the middle area of the screen instead of the upper left corner, with a semi transparent background, by setting `MessageDisplayInCenter` to true. In this case, all messages within this game can be saved, even after being s/l. The storage capacity of messages can reach thousands.
@@ -645,8 +645,8 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
 
 ### Harvester counter
 
-![image](_static/images/harvestercounter-01.gif)
-*Harvester Counter in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+[View video](_static/images/harvestercounter-01.webm)
+_Harvester Counter in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)_
 
 - An additional counter for your active / total harvesters can be added near the credits indicator.
   - You can specify which TechnoType should be counted as a Harvester with `Harvester.Counted`. If not set, the techno with `Harvester=yes` or `Enslaves=SOMESLAVE` will be counted.
@@ -691,8 +691,8 @@ Additionally, default position for harvester counter overlaps with [weeds counte
 
 ### Power delta counter
 
-![image](_static/images/powerdelta-01.gif)
-*Power delta Counter in [Assault Amerika](https://www.moddb.com/mods/assault-amerika)*
+[View video](_static/images/powerdelta-01.webm)
+_Power delta Counter in [Assault Amerika](https://www.moddb.com/mods/assault-amerika)_
 
 - An additional counter for your power delta (surplus) can be added near the credits indicator.
   - The counter is displayed with the format of `Label(sign)(Power Delta)`. The label is `PowerLabel` used in `ToolTips` (by default `⚡ U+26A1`).
@@ -734,8 +734,8 @@ If you use the vanilla font in your mod, you can use the improved font (v4 and h
 
 ### Producing Progress
 
-![image](_static/images/producing-progress-01.gif)
-*Producing Progress bars in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+[View video](_static/images/producing-progress-01.webm)
+_Producing Progress bars in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)_
 
 - You can now know your factories' status via sidebar!
 - You need to draw your own assets (`tab0xpp.shp`, x is replaced by 0-3) and put them into `sidec0x.mix`.
