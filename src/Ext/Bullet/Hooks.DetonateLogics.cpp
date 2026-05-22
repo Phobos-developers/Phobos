@@ -663,7 +663,9 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 				if (pTechno->IsInPlayfield && pTechno->IsOnMap && pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo
 					&& (retargetSelf || pTechno != pSource))
 				{
-					if (BulletTypeExt::IsAllowedTarget(pType, pTechno, useWeaponTargeting, pSource) &&
+					auto const pProjectile = useWeaponTargeting ? pWeapon->Projectile : pType;
+
+					if (BulletTypeExt::IsAllowedTarget(pProjectile, pTechno, useWeaponTargeting, pSource) &&
 						WeaponTypeExt::IsAllowedTarget(pWeapon, pTechno, useWeaponTargeting, pSource, pOwner))
 					{
 						targets.AddItem(pTechno);
