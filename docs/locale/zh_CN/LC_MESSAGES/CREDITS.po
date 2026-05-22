@@ -79,8 +79,8 @@ msgstr "建筑放置预览调整"
 msgid "Check for Changelog/Documentation/Credits in Pull Requests"
 msgstr "在拉取请求中检查更新日志／文档／鸣谢"
 
-msgid "Docs dark theme switcher"
-msgstr "文档暗色主题切换"
+msgid "VitePress documentation migration"
+msgstr "VitePress 文档迁移"
 
 msgid ""
 "Fix position and layer of info tip and reveal production cameo on selected "
