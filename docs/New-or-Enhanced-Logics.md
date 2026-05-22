@@ -86,6 +86,7 @@ This page describes all the engine features that are either new and introduced b
   - `AttachEffect.CheckOnFirer` is set to true makes it so that the required / disallowed attached effects are checked from the firer of the weapon instead of the target.
 
 In `rulesmd.ini`:
+
 ```ini
 [AttachEffectTypes]
 0=SOMEATTACHEFFECT
@@ -192,7 +193,7 @@ SuppressReflectDamage.Groups=                      ; comma-separated list of str
 ### Custom Radiation Types
 
 ![image](_static/images/radtype-01.png)
-*Mixing different radiation types*
+_Mixing different radiation types_
 
 - Any weapon can now have a custom radiation type. More details on radiation [here](https://www.modenc.renegadeprojects.com/Radiation).
 - There are several new properties available to all radiation types.
@@ -203,6 +204,7 @@ SuppressReflectDamage.Groups=                      ; comma-separated list of str
 - By default `UseGlobalRadApplicationDelay` is set to true. This makes game always use `RadApplicationDelay` and `RadApplicationDelay.Building` from `[Radiation]` rather than specific radiation types. This is a performance-optimizing measure that should be disabled if a radiation type declares different application delay.
 
 In `rulesmd.ini`:
+
 ```ini
 [RadiationTypes]
 0=SOMERADTYPE
@@ -246,6 +248,7 @@ _Laser trails used in [Rise of the East](https://www.moddb.com/mods/riseoftheeas
 - LaserTrail can also be drawn as EBolt or RadBeam.
 
 In `artmd.ini`:
+
 ```ini
 [LaserTrailTypes]
 0=SOMETRAIL
@@ -287,6 +290,7 @@ LaserTrailN.IsOnTurret=false     ; boolean, whether the trail origin is turret
 ```
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEVOXELANIM]                  ; VoxelAnim
 LaserTrail.Types=SOMETRAIL       ; List of LaserTrailTypes
@@ -305,6 +309,7 @@ Laser trails are very resource intensive! Due to the game not utilizing GPU havi
 _Buildings, Infantry and Vehicles with Shield in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)_
 
 In `rulesmd.ini`:
+
 ```ini
 [CombatDamage]
 ShieldApplyArmorMult=false                  ; boolean
@@ -457,7 +462,7 @@ Shield.InheritStateOnReplace=false          ; boolean
 - `HitFlash`, if set to true, makes it so that a light flash is generated when the shield is attacked by a Warhead unless it has `Shield.HitFlash=false`. Size of the flash is determined by damage dealt, unless `HitFlash.FixedSize` is set to a number, in which case that value is used instead (range of values that produces visible effect are increments of 4 from 81 to 252, anything higher or below does not have effect). Color can be customized via `HitFlash.Red/Green/Blue`. If `HitFlash.Black` is set to true, the generated flash will be black regardless of other color settings.
 - `BreakWeapon`, if set, will be fired at the TechnoType once the shield breaks.
 - `AbsorbPercent` controls the percentage of damage that will be absorbed by the shield. Defaults to 1.0, meaning full damage absorption.
-- `PassPercent` controls the percentage of damage that will *not* be absorbed by the shield, and will be dealt to the unit directly even if the shield is active. Defaults to 0.0 - no penetration.
+- `PassPercent` controls the percentage of damage that will _not_ be absorbed by the shield, and will be dealt to the unit directly even if the shield is active. Defaults to 0.0 - no penetration.
 - `ReceivedDamage.Minimum` & `ReceivedDamage.Maximum` control the minimum and maximum amount of damage that can be dealt to shield in a single hit. This is applied after armor type and `AbsorbPercent` adjustments. If `AbsorbOverDamage=false`, the residual damage dealt to the TechnoType is still based on the original damage before the clamping to the range.
 - `AllowTransfer` controls whether or not the shield can be transferred if the TechnoType changes (such as `(Un)DeploysInto` or Ares type conversion). If not set, defaults to true if shield was attached via `Shield.AttachTypes`, otherwise false.
 - `ImmuneToBerserk` gives the immunity against `Psychedelic=yes` warhead. Otherwise the berserk effect penetrates shields by default. Note that this shouldn't prevent the unit from targeting at the shielded object. `Versus.shieldArmor=0%` is still required in this case.
@@ -504,6 +509,7 @@ Shield.InheritStateOnReplace=false          ; boolean
 - Similar, `Image.ConditionRed` is used as image if aircraft health points percentage is lower than `[AudioVisual] -> ConditionRed` percentage.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEAIRCRAFT]                ; AircraftType
 Image.ConditionYellow=        ; AircraftType entry
@@ -535,6 +541,7 @@ Note that the AircraftTypes had to be defined under [AircraftTypes].
   - `CreateUnit.SpawnHeight` can be set to override the animation's height when determining where to spawn the created unit if set to positive value. Has no effect if `CreateUnit.AlwaysSpawnOnGround` is set to true.
 
 In `artmd.ini`:
+
 ```ini
 [SOMEANIM]                             ; AnimationType
 CreateUnit=                            ; TechnoType
@@ -564,6 +571,7 @@ Due to technical constraints, infantry death animations including Ares' `InfDeat
   - On animations with `Next`, the particle system will be deleted when the next animation starts playing and new one created in its stead if the `Next` animation defines a different particle system.
 
 In `artmd.ini`:
+
 ```ini
 [SOMEANIM]       ; AnimationType
 AttachedSystem=  ; ParticleSystemType
@@ -578,6 +586,7 @@ AttachedSystem=  ; ParticleSystemType
 - `DetachOnCloak` can be set to false to override vanilla game behaviour where attached animations are removed from cloaked objects.
 
 In `artmd.ini`:
+
 ```ini
 [SOMEANIM]                              ; AnimationType
 VisibleTo=all                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
@@ -591,6 +600,7 @@ DetachOnCloak=true                      ; boolean
 - It is now possible for animation to play a sound that is not attached to an audio event handler by using `DetachedReport`. By default animation `Report` / `StartSound` is played by an audio event handler, which allows the sound to loop and play at correct location even if it changes after its initial creation. This can also cause issues with animations that chain different types through `Next`, as the audio event handler resets when the animation restarts.
 
 In `artmd.ini`:
+
 ```ini
 [SOMEANIM]       ; AnimationType
 DetachedReport=  ; Sound entry
@@ -607,6 +617,7 @@ DetachedReport=  ; Sound entry
   - If `NoBuildAreaOnBuildup` is set to true, no building can be built next to this building regardless of any other settings if it is currently displaying its buildup animation.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEBUILDING]                          ; BuildingType
 Adjacent.Allowed=                       ; List of BuildingTypes
@@ -622,6 +633,7 @@ NoBuildAreaOnBuildup=false              ; boolean
   - Keep in mind that if an unit has appropriate `MovementZone` but no means to actually destroy an obstacle (such as a weapon that can fire and deal damage at them), they will get stuck trying to go through them instead of pathing around.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEBUILDING]               ; BuildingType
 IsDestroyableObstacle=false  ; boolean
@@ -635,6 +647,7 @@ IsDestroyableObstacle=false  ; boolean
 - `BuildingRepairedSound` can now be set individually for each building type.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEBUILDING]                     ; BuildingType
 EngineerRepairAmount=0             ; integer
@@ -647,13 +660,14 @@ EngineerRepairAmount=0             ; integer
 ### Extended building upgrades
 
 ![image](_static/images/powersup.owner-01.png)
-*Upgrading own and allied Power Plants in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
+_Upgrading own and allied Power Plants in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)_
 
 - Building upgrades now can be placed on own buildings, on allied buildings and/or on enemy buildings. These three owners can be specified by `PowersUp.Owner`. When upgrade is placed on building, it automatically changes it's owner to match the building's owner.
 - One upgrade can now be applied to multiple different types of buildings specified by `PowersUp.Buildings`.
   - Ares-introduced build limit for building upgrades works with this feature.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEBUILDING]      ; BuildingType, as an upgrade
 PowersUp.Owner=Self ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
@@ -671,6 +685,7 @@ Due to technical limitations, with Ares, upgrades placed through `PowersUp.Build
   - `PowerPlantEnhancer.MaxCount` determines the maximum amount of this type of building that can be used for power plant enhancement. Negative value means no limitation.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEBUILDING]                     ; BuildingType
 PowerPlantEnhancer.PowerPlants=    ; List of BuildingTypes
@@ -687,6 +702,7 @@ PowerPlantEnhancer.MaxCount=-1     ; integer
   - `SpyEffect.InfiltratorSuperWeapon` behaves the same as above, with the Super Weapon's owner being the owner of the spying unit.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEBUILDING]                     ; BuildingType
 SpyEffect.Custom=false             ; boolean
@@ -701,6 +717,7 @@ SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 - Now infantry can override `PrimaryFireFLH` and `SecondaryFireFLH` if is prone (crawling) or deployed. Also works in conjunction with [burst-index specific firing offsets](#firing-offsets-for-specific-burst-shots).
 
 In `artmd.ini`:
+
 ```ini
 [SOMEINFANTRY]             ; InfantryType image
 PronePrimaryFireFLH=       ; integer - Forward,Lateral,Height
@@ -714,6 +731,7 @@ DeployedSecondaryFireFLH=  ; integer - Forward,Lateral,Height
 - `SlavesFreeSound` can now be set individually for each enslavable infantry type.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEINFANTRY]        ; InfantryType, with Slaved=yes
 SlavesFreeSound=      ; Sound entry, default to [AudioVisual] -> SlavesFreeSound
@@ -725,6 +743,7 @@ SlavesFreeSound=      ; Sound entry, default to [AudioVisual] -> SlavesFreeSound
   - This tag's priority is higher than Ares' per-side `DefaultDisguise`.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEINFANTRY]      ; InfantryType
 DefaultDisguise=    ; InfantryType
@@ -736,6 +755,7 @@ DefaultDisguise=    ; InfantryType
   - Do not forget to tweak infantry anim sequences before enabling this feature, otherwise it will play invisible anim sequence.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEINFANTRY]                    ; InfantryType
 NotHuman.RandomDeathSequence=yes  ; boolean
@@ -750,6 +770,7 @@ NotHuman.RandomDeathSequence=yes  ; boolean
   - `killer`: Free the slaves and give them to the house of the slave miner's killer. (vanilla behavior)
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEINFANTRY]                       ; InfantryType, with Slaved=yes
 Slaved.OwnerWhenMasterKilled=killer  ; enumeration (suicide | master | killer | neutral)
@@ -760,6 +781,7 @@ Slaved.OwnerWhenMasterKilled=killer  ; enumeration (suicide | master | killer | 
 - Setting `OnlyUseLandSequences` to true will make infantry display only the regular sequences used on land even if it is in water.
 
 In `artmd.ini`:
+
 ```ini
 [SOMEINFANTRY]              ; InfantryType image
 OnlyUseLandSequences=false  ; boolean
@@ -773,6 +795,7 @@ OnlyUseLandSequences=false  ; boolean
   - To actually damage the technos, you need [AffectsUnderground](#damage-technos-underground).
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEPROJECTILE]      ; Projectile
 AU=false              ; boolean
@@ -792,6 +815,7 @@ In order to attack units moving horizontally underground, the attacker needs to 
   - `BombParachute` can be used to customize the parachute animation used. The animation is drawn in unit palette using team color of the firing house if available.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEPROJECTILE]         ; Projectile
 Parachuted=false         ; boolean
@@ -815,11 +839,12 @@ _Interception logic used in [Tiberium Crisis](https://www.moddb.com/mods/tiberiu
   - `Interceptor.ApplyFirepowerMult` determines whether or not the intercepting weapon's damage should multiply the TechnoType's firepower multipliers.
   - `Interceptable.DeleteOnIntercept` determines whether or not the projectile will simply be deleted on detonation upon interception, or if it will properly detonate. Will be overridden by `Interceptor.DeleteOnIntercept` setting on the interceptor.
   - `Interceptable.WeaponOverride` can be set to a WeaponType that will be used to override characteristics such as `Damage` and `Warhead` of the current projectile for detonation after interception. Will be overridden by `Interceptor.WeaponOverride` setting on the interceptor.
-    - On interceptors, `Interceptor.WeaponReplaceProjectile` can be set to true to make `Interceptor.WeaponOverride` also replace the intercepted projectile's type (including `Image` and other projectile characteristics) and `Speed` with its own. Does not replace particle systems (`AttachedSystem`, *Ares feature*).
+    - On interceptors, `Interceptor.WeaponReplaceProjectile` can be set to true to make `Interceptor.WeaponOverride` also replace the intercepted projectile's type (including `Image` and other projectile characteristics) and `Speed` with its own. Does not replace particle systems (`AttachedSystem`, _Ares feature_).
     - On interceptors, `Interceptor.WeaponCumulativeDamage` can be set to true to make `Damage` from `Interceptor.WeaponOverride` weapon be added on the projectile's damage rather than override it.
   - `Interceptor.KeepIntact` can be set to true to allow intercepted projectiles to continue traveling as if they were not intercepted, but effects such as `Interceptor.WeaponOverride` will still be applied.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                               ; TechnoType
 Interceptor=false                          ; boolean
@@ -861,6 +886,7 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
     - In `Trajectory=Parabola`, it refers to the horizontal velocity of the projectile and is only used for modes 0, 3, or 5 and it has no restrictions.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEPROJECTILE]        ; Projectile
 Trajectory.Speed=100.0  ; floating point value
@@ -901,6 +927,7 @@ _Straight trajectory used to make blasters in a private mod by @brsajo#9745_
   - `Trajectory.Straight.CountAttenuation` controls the attenuation coefficient of projectile damage (includes all types of the trajectory's damage), that is, how many times the next damage after each bounce is the damage just caused. Can NOT be set to a negative integer.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEPROJECTILE]                                ; Projectile
 Trajectory=Straight                             ; Trajectory type
@@ -965,6 +992,7 @@ Trajectory.Straight.CountAttenuation=1.0        ; floating point value
   - `Trajectory.Bombard.SubjectToGround` controls whether the projectile should explode when it hits the ground. Note that this will not make AI search for suitable attack locations.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEPROJECTILE]                              ; Projectile
 Trajectory=Bombard                            ; Trajectory type
@@ -1020,6 +1048,7 @@ Trajectory.Bombard.SubjectToGround=false      ; boolean
     - `Trajectory.Parabola.AxisOfRotation` controls the rotation axis when calculating `Trajectory.Parabola.RotateCoord`. The axis will rotates with the unit orientation or the vector that from target position to the source position.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEPROJECTILE]                                ; Projectile
 Trajectory=Parabola                             ; Trajectory type
@@ -1055,6 +1084,7 @@ Trajectory.Parabola.AxisOfRotation=0,0,1        ; integer - Forward,Lateral,Heig
 - As for `SubjectToGround`, if set it to true ,it will predict the height of the connecting straight line from the bullet's source coordinates to target coordinates. If the predicted height is lower than the ground height of the current predicted position, the firer will also consider targets blocked by such obstacles as out of range and will attempt to reposition themselves. Due to technical reasons, this feature will not be effective for the Air Force and buildings. Technos attacking in `OpenTopped=true` vehicles will not be affected either.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEPROJECTILE]              ; Projectile
 SubjectToLand=                ; boolean
@@ -1070,6 +1100,7 @@ SubjectToGround=false         ; boolean
   - `ReturnWeapon.ApplyFirepowerMult` determines whether or not the auxiliary weapon's damage should multiply the firer's firepower multipliers.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEPROJECTILE]                        ; Projectile
 ReturnWeapon=                           ; WeaponType
@@ -1083,6 +1114,7 @@ ReturnWeapon.ApplyFirepowerMult=false   ; boolean
 - By default AI houses only process superweapon logic e.g checks if it can fire any superweapons firing them at randomized intervals of 106 to 112 game frames. This behaviour can now be customized by setting explicit delay, or disabling it entirely. Values of 0 and below disable the delay and cause AI houses to check superweapons on every game frame.
 
 In `rulesmd.ini`:
+
 ```ini
 [General]
 AISuperWeaponDelay=  ; integer, game frames
@@ -1095,6 +1127,7 @@ AISuperWeaponDelay=  ; integer, game frames
 - `SW.TechLevel` specifies the TechLevel that the owner must not fall below in order to use this super weapon. The super weapon becomes available only if the player's TechLevel reaches that level.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMESW]        ; SuperWeaponType
 SW.AuxTechnos=  ; List of TechnoTypes
@@ -1113,9 +1146,10 @@ SW.TechLevel=0  ; integer
   - `ConvertN.To` specifies the TechnoType which is the result of conversion.
   - `ConvertN.AffectsHouse` specifies whose units can be converted.
   - `Convert.From`, `Convert.To` and `Convert.AffectsHouse` (without numbers) are a valid alternative to `Convert0.From`, `Convert0.To` and `Convert0.AffectsHouse` if only one pair is specified.
-  - Conversion affects *all* existing units of set TechnoTypes, this includes units in: transports, occupied buildings, buildings with `InfantryAbsorb=yes` or `UnitAbsorb=yes`, buildings with `Bunker=yes`.
+  - Conversion affects _all_ existing units of set TechnoTypes, this includes units in: transports, occupied buildings, buildings with `InfantryAbsorb=yes` or `UnitAbsorb=yes`, buildings with `Bunker=yes`.
 
 In example, this superweapon would convert all owned and friendly `SOLDIERA` and `SOLDIERB` to `NEWSOLDIER`:
+
 ```ini
 [ExampleSW]
 Convert.From=SOLDIERA,SOLDIERB
@@ -1124,6 +1158,7 @@ Convert.AffectsHouse=team
 ```
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMESW]                        ; SuperWeaponType
 ConvertN.From=                  ; List of TechnoTypes
@@ -1150,6 +1185,7 @@ This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not dete
   - Valid values are: 0 (buildings tab), 1 (arsenal tab), 2 (infantry tab), 3 (vehicle tab).
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMESW]    ; SuperWeaponType
 TabIndex=1  ; integer
@@ -1163,6 +1199,7 @@ TabIndex=1  ; integer
 - Is is now also possible to have all other `Type=EMPulse` superweapons that can be fired by same buildings as current one be put on hold until first of the buildings currently set to fire goes off if the firing superweapon has `EMPulse.SuspendOthers=true`.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMESW]                     ; SuperWeaponType
 EMPulse.WeaponIndex=0        ; integer, weapon slot index
@@ -1201,6 +1238,7 @@ EMPulse.SuspendOthers=false  ; boolean
 ```
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMESW]                        ; SuperWeaponType
 LimboDelivery.Types=            ; List of BuildingTypes
@@ -1233,6 +1271,7 @@ Remember that Limbo Delivered buildings don't exist physically! This means they 
   - `SW.Link.RandomWeightsN` lists the weights for each "dice roll" that increase the probability of picking a specific superweapon. Valid values are 0 (don't pick) and above (the higher value, the bigger the likelyhood). `RandomWeights` are a valid alias for `RandomWeights0`. If a roll attempt doesn't have weights specified, the last weights will be used.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMESW]                     ; SuperWeaponType
 SW.Link=                     ; List of SuperWeaponTypes
@@ -1259,6 +1298,7 @@ _Use of `SW.Next` to link multiple ChronoSphere and ChronoWarp superweapons into
   - `SW.Next.RandomWeightsN` lists the weights for each "dice roll" that increase the probability of picking a specific superweapon. Valid values are 0 (don't pick) and above (the higher value, the bigger the likelyhood). `RandomWeights` are a valid alias for `RandomWeights0`. If a roll attempt doesn't have weights specified, the last weights will be used.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMESW]                        ; SuperWeaponType
 SW.Next=                        ; List of SuperWeaponTypes
@@ -1279,6 +1319,7 @@ SW.Next.RandomWeightsN=         ; List of integers.
   - If `Detonate.AtFirer` is set to true, the weapon or Warhead is detonated at the firing building instead of the superweapon's target cell. If there is no firer, no detonation will occur.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMESW]                    ; SuperWeaponType
 Detonate.Warhead=           ; WarheadType
@@ -1296,6 +1337,7 @@ Detonate.AtFirer=false      ; boolean
 - `AttackMove.UpdateTarget` allows your technos to automatically change and select a higher threat target when in attack move mission (Ctrl+Shift).
 
 In `rulesmd.ini`:
+
 ```ini
 [General]
 AttackMove.Aggressive=false    ; boolean
@@ -1313,8 +1355,8 @@ AttackMove.UpdateTarget=       ; boolean, default to [General] -> AttackMove.Upd
 - You can also make them keep chasing on the spotted target using `AttackMove.PursuitTarget`.
   - This feature should be useful for close range units like ZEP.
 
-
 In `rulesmd.ini`:
+
 ```ini
 [General]
 AttackMove.StopWhenTargetAcquired=         ; boolean
@@ -1338,6 +1380,7 @@ AttackMove.PursuitTarget=                  ; boolean
 - This feature should be useful for supportive units such as medics and repairers.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                                     ; TechnoType
 AttackMove.Follow=false                          ; boolean
@@ -1351,6 +1394,7 @@ AttackMove.Follow.IfMindControlIsFull=false      ; boolean
   - Unarmed units cannot actually execute attack move commands. This feature is to prevent the attack move pointer from being disabled when you select unarmed units and other units at the same time.
 
 In `rulesmd.ini`:
+
 ```ini
 [General]
 AttackMove.IgnoreWeaponCheck=false    ; boolean
@@ -1362,6 +1406,7 @@ AttackMove.IgnoreWeaponCheck=false    ; boolean
   - `AutoTarget.NoThreatBuildings` affects player-controlled units, `AutoTargetAI.NoThreatBuildings` affects other units.
 
 In `rulesmd.ini`:
+
 ```ini
 [General]
 AutoTarget.NoThreatBuildings=false      ; boolean
@@ -1384,6 +1429,7 @@ _Limited pursue range for spawns in [Fantasy ADVENTURE](https://www.moddb.com/mo
   - `Spawner.RecycleOnTurret` defines if the FLH is relative to the turret rather than the body.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                       ; TechnoType
 Spawner.LimitRange=false           ; boolean
@@ -1410,6 +1456,7 @@ If you set recycle FLH, it is best to set a recycle range of at least `0.5` at t
 - Setting a negative number will disable the ammo count check, and when both checks are disabled, conversion will not occur.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                      ; TechnoType, before conversion
 Ammo.AutoConvertMinimumAmount=-1  ; integer
@@ -1443,6 +1490,7 @@ This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not dete
   - If `PassengerDeletion.UnderEMP` is set to true, the deletion will be processed when the transport is under EMP or deactivated.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                                    ; TechnoType
 PassengerDeletion.Rate=0                        ; integer, game frames
@@ -1468,9 +1516,10 @@ PassengerDeletion.UnderEMP=false                ; boolean
 - Transports with `Passengers.SyncOwner` set to true will have the owner of their passengers changed to match the transport if transport's owner changes.
   - On `OpenTopped=true` transports this will also disable checks that prevent target acquisition by passengers when the transport is temporarily mind controlled.
   - `Passengers.SyncOwner.RevertOnExit`, if set to true (which is the default), changes the passengers' owner back to whatever it was originally when they entered the transport when they are ejected.
-  - Does not work on passengers acquired through use of `Abductor=true` weapon *(Ares feature)*.
+  - Does not work on passengers acquired through use of `Abductor=true` weapon _(Ares feature)_.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                            ; TechnoType
 Passengers.SyncOwner=false              ; boolean
@@ -1482,6 +1531,7 @@ Passengers.SyncOwner.RevertOnExit=true  ; boolean
 - You can now make TechnoType automatically fire its weapon(s) without having to scan for suitable targets by setting `AutoTargetOwnPosition`, on either its base cell (in which case the weapon that is used for force-firing is used) or itself (in which case normal targeting and weapon selection rules and are respected) depending on if `AutoTargetOwnPosition.Self` is set or not.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                            ; TechnoType
 AutoTargetOwnPosition=false             ; boolean
@@ -1503,11 +1553,12 @@ To make this logic work properly, you need to ensure that there is no flag like 
 - `BuildLimitGroup.NotBuildableIfQueueMatch` determines the moment to stop the techno's production. If set to true, its production will be stopped once the condition is content by the sum of real technos and technos in production queue. If set to false, it'll only be stopped when the condition is content by real technos.
 - You can also add an extra value into `BuildLimitGroup.Nums`, determined by the amount of specific technos owned by its house.
   - `BuildLimitGroup.ExtraLimit.Types` determines the technos that'll be used for extra value calculation.
-  - `BuildLimitGroup.ExtraLimit.Nums` determines the actual value of increment. Value matching the position in `BuildLimitGroup.ExtraLimit.Types` is used for that type. For each of these technos, it'll increase the extra value by its amount * corresponding value from the list.
+  - `BuildLimitGroup.ExtraLimit.Nums` determines the actual value of increment. Value matching the position in `BuildLimitGroup.ExtraLimit.Types` is used for that type. For each of these technos, it'll increase the extra value by its amount \* corresponding value from the list.
   - `BuildLimitGroup.ExtraLimit.MaxCount` determines the maximum amount of technos being counted into the extra value calculation. Value matching the position in `BuildLimitGroup.ExtraLimit.Types` is used for that type. If not set or set to a value below 1, it'll be considered as no maximum count.
   - `BuildLimitGroup.ExtraLimit.MaxNum` determines the maximum of values in `BuildLimitGroup.Nums` after extra limit calculation. If not set or set to a value below 1, it'll be considered as no maximum value.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                                    ; TechnoType
 BuildLimitGroup.Types=                          ; List of TechnoTypes
@@ -1526,6 +1577,7 @@ BuildLimitGroup.ExtraLimit.MaxNum=0             ; integer
 - You can now change a unit's type when changing ownership from human to computer or from computer to human.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                ; TechnoType
 Convert.HumanToComputer=    ; TechnoType
@@ -1540,6 +1592,7 @@ Convert.ComputerToHuman=    ; TechnoType
   - Tint effects can also be applied by [attached effects](#attached-effects) and on [shields](#shields).
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]              ; TechnoType
 Tint.Color=               ; integer - Red,Green,Blue
@@ -1556,6 +1609,7 @@ Tint.VisibleToHouses=all  ; List of Affected House Enumeration (none|owner/self|
   - `DrainMoneyDisplay.OnTarget.UseDisplayIncome` determines whether drain money display on target will use its `DisplayIncome.Houses` and `DisplayIncome.Offset` settings. If set to false, it'll respect the firer's `DrainMoneyDisplay.Houses` and `DrainMoneyDisplay.Offset` settings instead.
 
 In `rulesmd.ini`:
+
 ```ini
 [AudioVisual]
 DrainMoneyDisplay=false                             ; boolean
@@ -1584,6 +1638,7 @@ DrainMoneyDisplay.OnTarget.UseDisplayIncome=        ; boolean
 - `OpenTopped.DecloakToFire` can customize if a transport has to uncloak to have passengers fireout if transport is also OpenTopped.
 
 In `rulesmd.ini`:
+
 ```ini
 [General]
 OpenTopped.AllowFiringIfAttackedByLocomotor=true  ; boolean
@@ -1609,12 +1664,14 @@ Range of passive acquiring of passengers in an OpenTopped transport won't be aff
 ```
 
 ### Customizable spawns queue
+
 - It is now possible to spawn multiple types of spawnees from a spawner with `Spawns.Queue`. The order of spawnees in this queue is the order of their respawn.
   - `Spawns` still needs to be set to enable the spawner logic and act as a default spawnee.
   - `SpawnsNumber` still needs to be set to determine the amount of spawnee slots.
   - If the length of the queue is longer than the spawner's `SpawnsNumber`, spawnee after this length will be omitted. If the length is shorter however, the rest of the positions will be filled by the spawnee defined by `Spawns`. Hence, it's recommended to make them the same.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]        ; TechnoType
 Spawns.Queue=       ; List of AircraftTypes, in order
@@ -1633,6 +1690,7 @@ Note that all spawnees in a queue should have `MissileSpawn` set to the same val
   - `RadarJamIgnore` determines a list of buildings with `Radar=yes` or `SpySat=yes` that couldn't be affected by the jam.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                      ; TechnoType, with RadarJamRadius=
 RadarJamHouses=enemies            ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
@@ -1650,6 +1708,7 @@ When `DriverKilled.KeptPassengers=true` is set, passengers will always be retain
 ```
 
 In `rulesmd.ini`:
+
 ```ini
 [CombatDamage]
 DriverKilled.KillPassengers=false   ; boolean
@@ -1672,6 +1731,7 @@ If `DriverKilled.KeptPassengers=true` is set, even if there are other passengers
   - `SellSound` is used to customize the report sound when selling.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]    ; BuildingType or VehicleType
 EVA.Sold=       ; EVA entry, default to EVA_StructureSold for buildings and EVA_UnitSold for vehicles
@@ -1686,7 +1746,7 @@ Vanilla game played vehicles' `SellSound` globally. This has been changed in con
 
 - It is now possible to disable the fallback to `(Elite)Secondary` weapon from `(Elite)Primary` weapon if it cannot fire at the chosen target by setting `NoSecondaryWeaponFallback` to true (defaults to false). `NoSecondaryWeaponFallback.AllowAA` controls whether or not fallback because of projectile `AA` setting and target being in air is still allowed. This does not apply to special cases where `(Elite)Secondary` weapon is always chosen, including but not necessarily limited to the following:
   - `OpenTransportWeapon=1` on an unit firing from inside `OpenTopped=true` transport.
-  - `NoAmmoWeapon=1` on an unit with `Ammo` value higher than 0 and current ammo count lower or  equal to `NoAmmoAmount`.
+  - `NoAmmoWeapon=1` on an unit with `Ammo` value higher than 0 and current ammo count lower or equal to `NoAmmoAmount`.
   - Deployed `IsSimpleDeployer=true` units with `DeployFireWeapon=1` set or omitted.
   - `DrainWeapon=true` weapons against enemy `Drainable=yes` buildings.
   - Units with `IsLocomotor=true` set on `Warhead` of `(Elite)Primary` weapon against buildings.
@@ -1696,6 +1756,7 @@ Vanilla game played vehicles' `SellSound` globally. This has been changed in con
 - If `[CombatDamage] -> AllowWeaponSelectAgainstWalls` is set to true, `Secondary` will now be used against walls if `Primary` weapon Warhead has `Wall=false`, `Secondary` has `Wall=true` and the firer does not have `NoSecondaryWeaponFallback` set to true. Can be overriden by setting `AllowWeaponSelectAgainstWalls` for a techno.
 
 In `rulesmd.ini`:
+
 ```ini
 [CombatDamage]
 AllowWeaponSelectAgainstWalls=false      ; boolean
@@ -1713,6 +1774,7 @@ AllowWeaponSelectAgainstWalls=           ; boolean, default to [CombatDamage] ->
 - `UseDisguiseMovementSpeed`, if set, makes disguised unit adjust its movement speed to match that of the disguise, if applicable. Note that this applies even when the disguise is revealed, as long as it has not been removed.
 
 In `rulesmd.ini`:
+
 ```ini
 [General]
 DisguiseBlinkingVisibility=owner  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
@@ -1726,6 +1788,7 @@ UseDisguiseMovementSpeed=false    ; boolean
 - It is possible to exclude TechnoType from base center calculations (used for number of things such as certain AI scripts and AI superweapon targeting modes etc). Normally only buildings are factored in, but the initial base center does count house's starting technos which this does affect.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]               ; TechnoType
 IgnoreForBaseCenter=false  ; boolean
@@ -1739,6 +1802,7 @@ IgnoreForBaseCenter=false  ; boolean
   - `RateDown.Cover.Value` replaces the original `RateDown` when techno's ammo is lower than `RateDown.Cover.AmmoBelow`.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                  ; TechnoType, with IsGattling=yes
 RateDown.Delay=0              ; integer, game frames
@@ -1764,6 +1828,7 @@ RateDown.Cover.AmmoBelow=-2   ; integer
     - If the techno doesn't have a "last target", then this will not take effect.
 
 In `rulesmd.ini`:
+
 ```ini
 [General]
 ExtraThreat.IsThreat=0.0                            ; double
@@ -1783,10 +1848,11 @@ ExtraThreatCoefficient.DistanceToLastTarget=        ; double, default to the fla
 
 ### Firing offsets for specific Burst shots
 
-- You can now specify separate firing offsets for each of the shots fired by weapon with `Burst` via using `(Elite)(Prone/Deployed)PrimaryFire|SecondaryFire|WeaponX|FLH.BurstN` keys, depending on which weapons your TechnoType makes use of. *N* in `BurstN` is zero-based burst shot index, and the values are parsed sequentially until no value for either regular or elite weapon is present, with elite weapon defaulting to regular weapon FLH if only it is missing. If no burst-index specific value is available, value from the base key (f.ex `PrimaryFireFLH`) is used.
+- You can now specify separate firing offsets for each of the shots fired by weapon with `Burst` via using `(Elite)(Prone/Deployed)PrimaryFire|SecondaryFire|WeaponX|FLH.BurstN` keys, depending on which weapons your TechnoType makes use of. _N_ in `BurstN` is zero-based burst shot index, and the values are parsed sequentially until no value for either regular or elite weapon is present, with elite weapon defaulting to regular weapon FLH if only it is missing. If no burst-index specific value is available, value from the base key (f.ex `PrimaryFireFLH`) is used.
 - Burst-index specific firing offsets are absolute firing offsets and the lateral shifting based on burst index that occurs with the base firing offsets is not applied.
 
 In `artmd.ini`:
+
 ```ini
 [SOMETECHNO]    ; TechnoType Image
 FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-specific FLH key name and N is zero-based burst shot index.
@@ -1816,6 +1882,7 @@ _Enemy behavior against EMP targets with `ForceWeapon.UnderEMP` in [C&C: Reloade
     - `ForceAAWeapon.Infantry/Units/Aircraft` do the same things but only for air target. Taking priority to `ForceWeapon.Infantry/Units/Naval.Units/Aircraft`, which means that they can only be applied to ground target when they're both set.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                                    ; TechnoType
 ForceWeapon.Naval.Decloaked=-1                  ; integer, -1 to disable
@@ -1849,6 +1916,7 @@ Specifically, if a position has `Force(AA)Weapon.InRange` set to -1 and `Force(A
 - Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles/structures without queuing.
 
 In `rulesmd.ini`:
+
 ```ini
 [General]
 NoQueueUpToEnter=false          ; boolean
@@ -1866,9 +1934,11 @@ Note that this logic is used for [Passenger](https://modenc.renegadeprojects.com
 ```
 
 ### Initial spawns number
+
 - It is now possible to set the initial amount of spawnees for a spawner, instead of always being filled. Won't work if it's larger than `SpawnsNumber`.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]              ; TechnoType
 InitialSpawnsNumber=      ; integer
@@ -1877,12 +1947,13 @@ InitialSpawnsNumber=      ; integer
 ### Initial strength for TechnoTypes and cloned infantry
 
 ![image](_static/images/initialstrength.cloning-01.png)
-*Initial strength for cloned infantry example in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
+_Initial strength for cloned infantry example in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)_
 
 - `InitialStrength` can be used to set how many hitpoints a TechnoType starts with.
 - `InitialStrength.Cloning` can be used to specify a percentage of hitpoints (single value or a range from which a random value is picked) cloned infantry produced by `Cloning=true` building start with.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]              ; TechnoType
 InitialStrength=          ; integer
@@ -1897,7 +1968,7 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
 
 ### Kill Object Automatically
 
-- Objects can be destroyed automatically if *any* of these conditions is met:
+- Objects can be destroyed automatically if _any_ of these conditions is met:
   - `OnAmmoDepletion`: The object will die if the remaining ammo reaches 0.
   - `OnOwnerChange`: The object's ownership has been changed.
     - `OnOwnerChange.HumanToComputer/ComputerToHuman`: The object's ownership has been changed from human to computer or from computer to human. Default to `OnOwnerChange` if not set.
@@ -1915,6 +1986,7 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
 - This logic also supports buildings delivered by [LimboDelivery](#limbodelivery). However in this case, all `AutoDeath.Behavior` values produce identical result where the building is simply deleted.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                                   ; TechnoType
 AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell), default not set
@@ -1943,6 +2015,7 @@ Please notice that if the object is a unit which carries passengers, they will n
 - You can now set lower priority for TechnoType deploying which means it will be excluded from deploy command if selected together with other units. This will not affect the cursor action which requires no other objects to be selected in the first place.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]             ; TechnoType
 LowDeployPriority=false  ; boolean
@@ -1951,6 +2024,7 @@ LowDeployPriority=false  ; boolean
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
 
 In `RA2MD.INI`:
+
 ```ini
 [Phobos]
 PriorityDeployFiltering=true  ; boolean
@@ -1964,11 +2038,12 @@ _Mind Control Range Limit used in [Fantasy ADVENTURE](https://www.moddb.com/mods
 _Multiple Mind Control unit auto-releases the first victim in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)_
 
 - Mind controllers now can have the upper limit of the control distance. Tag values greater than 0 will activate this feature.
-- Mind controlled *targets* can have size of control, like passengers in transport.
+- Mind controlled _targets_ can have size of control, like passengers in transport.
 - Mind controllers now can decide which house can see the link drawn between itself and the controlled units.
 - Mind controllers with multiple controlling slots can now release the first controlled unit when they have reached the control limit and are ordered to control a new target.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                          ; TechnoType, as Mind controllers
 MindControlRangeLimit=-1.0            ; floating point value
@@ -1993,6 +2068,7 @@ _Multi Weapon used to release different weapons against different targets in **Z
     - Other weapons can still be used for logic that specify a weapon index, such as [ForceWeapon](#forcing-specific-weapon-against-certain-targets).
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                    ; TechnoType
 MultiWeapon=false               ; boolean
@@ -2007,6 +2083,7 @@ MultiWeapon.SelectCount=2       ; integer
   - `VoiceEliteWeaponNAttack` can also be used to specify attack voices for `EliteWeaponN`. The default is `VoiceWeaponNAttack`.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                ; TechnoType
 VoiceWeaponNAttack=         ; Sound entry
@@ -2016,9 +2093,10 @@ VoiceEliteWeaponNAttack=    ; Sound entry
 ### No Manual Move
 
 - You can now specify whether a TechnoType is unable to receive move command.
- - Set this to `true` on a building with `UndeploysInto` set could prevent it from undeploying when setting the rally point.
+- Set this to `true` on a building with `UndeploysInto` set could prevent it from undeploying when setting the rally point.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]        ; TechnoType
 NoManualMove=false  ; boolean
@@ -2033,6 +2111,7 @@ Note that you can still undeploy the building by using a `BuildingUndeploy=true`
 - Now you can make technos unable to rearm and reload when they are in EMP or locked by a temporal weapon. Defaults to values in `[General]`. This will not affect the reloading of the airport aircraft.
 
 In `rulesmd.ini`:
+
 ```ini
 [General]
 NoRearm.UnderEMP=false   ; boolean
@@ -2052,6 +2131,7 @@ NoReload.Temporal=       ; boolean
 - It is now possible to customize `Overload` behaviors for a TechnoType with `InfiniteMindControl=yes` weapon.
 
 In `rulesmd.ini`:
+
 ```ini
 
 [SOMETECHNO]                  ; TechnoType
@@ -2071,6 +2151,7 @@ _Promoted Spawns in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adven
 - The spawned units will promote as their owner's veterancy.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                 ; TechnoType
 Promote.IncludeSpawns=false  ; boolean
@@ -2084,6 +2165,7 @@ Promote.IncludeSpawns=false  ; boolean
   - If `Promote.EliteAnimation` is not defined, `Promote.VeteranAnimation` will play instead when unit or structure is promoted to elite.
 
 In `rulesmd.ini`:
+
 ```ini
 [AudioVisual]
 Promote.VeteranAnimation=         ; List of AnimationTypes
@@ -2114,6 +2196,7 @@ Promote.EliteAnimation=           ; List of AnimationTypes, default to Promote.E
   - An example: You set `CombatAlert.UseFeedbackVoice` and `CombatAlert.UseEVA` to `true` and `CombatAlert.UseAttackVoice` to `false`. A unit with `VoiceFeedback` `VoiceAttack` and `CombatAlert.EVA` are all set will play `VoiceFeedback`. A unit with `VoiceAttack` set will play `EVA_UnitsInCombat`.
 
 In `rulesmd.ini`:
+
 ```ini
 [AudioVisual]
 CombatAlert=false                      ; boolean
@@ -2144,6 +2227,7 @@ CombatAlert.Suppress=                  ; boolean
 - You can now make technos recount their current burst index when they have changed the firing weapon or have maintained for a period of time without any targets (take the larger value of last firing weapon's `ROF` and 30 frames).
 
 In `rulesmd.ini`:
+
 ```ini
 [General]
 RecountBurst=false  ; boolean
@@ -2160,6 +2244,7 @@ RecountBurst=       ; boolean, default to [General] -> RecountBurst
   - If all weapons don't have `InfiniteMindControl=yes`, then `Convert.ResetMindControl=yes` release controlled units that exceed the limit.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                            ; TechnoType, before conversion
 Convert.ResetMindControl=false          ; boolean
@@ -2176,6 +2261,7 @@ _Revenge Weapon usage in [RA2: Reboot](https://www.moddb.com/mods/reboot)_
   - If a Warhead has `SuppressRevengeWeapons` set to true, it will not trigger revenge weapons. `SuppressRevengeWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                    ; TechnoType
 RevengeWeapon=                  ; WeaponType
@@ -2189,11 +2275,12 @@ SuppressRevengeWeapons.Types=   ; List of WeaponTypes
 ### Shared Ammo
 
 - Transports with `OpenTopped=yes` and `Ammo.Shared=yes` will transfer ammo to passengers that have `Ammo.Shared=yes`.
-In addition, a transport can filter who will receive ammo if passengers have the same value in `Ammo.Shared.Group=<integer>` of the transport, ignoring other passengers with different groups values.
+  In addition, a transport can filter who will receive ammo if passengers have the same value in `Ammo.Shared.Group=<integer>` of the transport, ignoring other passengers with different groups values.
 - Transports with `Ammo.Shared.Group=-1` will transfer ammo to any passenger with `Ammo.Shared=yes` ignoring the group.
 - Transports must have ammo and should be able to reload ammo.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO1]         ; TechnoType, transport with OpenTopped=yes
 Ammo.Shared=no        ; boolean
@@ -2210,6 +2297,7 @@ Ammo.Shared.Group=-1  ; integer
 - If `IsVoiceCreatedGlobal` is set to true, `VoiceCreated` will be played globally instead of `EVA_UnitReady`.
 
 In `rulesmd.ini`:
+
 ```ini
 [AudioVisual]
 IsVoiceCreatedGlobal=false   ; boolean
@@ -2223,6 +2311,7 @@ VoiceCreated=                ; Sound entry
 - Now you can specify which houses berzerk's technos can target and fire.
 
 In `rulesmd.ini`:
+
 ```ini
 [General]
 BerzerkTargeting=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
@@ -2242,6 +2331,7 @@ BerzerkTargeting=all  ; Affected House Enumeration (none|owner/self|allies/ally|
   - If `TiberiumEater.AnimMove` set to true, the animations will move with the TechnoType.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                      ; InfantryType, VehicleType or AircraftType
 TiberiumEater.TransDelay=-1       ; integer
@@ -2265,6 +2355,7 @@ TiberiumEater.AnimMove=true       ; boolean
   - If `WarpInWeapon.UseDistanceAsDamage` is set, `Damage` of `WarpIn(MinRange)Weapon` is overriden by the number of whole cells teleported across.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                            ; TechnoType
 WarpInWeapon=                           ; WeaponType
@@ -2281,6 +2372,7 @@ WarpOutWeapon=                          ; WeaponType
   - If more than one animation is listed in `DestroyAnim`, a random one is selected.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETERRAINTYPE]  ; TerrainType
 DestroyAnim=       ; List of AnimationTypes
@@ -2294,6 +2386,7 @@ DestroySound=      ; Sound entry
 - Now you can let amphibious infantry or vehicle passengers enter or leave amphibious transport vehicles on water surface.
 
 In `rulesmd.ini`:
+
 ```ini
 [General]
 AmphibiousEnter=false    ; boolean
@@ -2311,6 +2404,7 @@ AmphibiousUnload=        ; boolean, default to [General] -> AmphibiousUnload
   - `Ammo.DeployUnlockMinimumAmount` & `Ammo.DeployUnlockMaximumAmount` determine minimum and maximum ammo the vehicle should have for deploying to be available in general. Negative values disable the check.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEVEHICLE]                      ; VehicleType
 Ammo.AutoDeployMinimumAmount=-1    ; integer
@@ -2324,6 +2418,7 @@ Ammo.DeployUnlockMaximumAmount=-1  ; integer
 - `HoverDrownable` allows customization of whether hover vehicles will drown and die when deactivated on water zone.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEVEHICLE]           ; VehicleType
 HoverDrownable=true     ; boolean
@@ -2336,6 +2431,7 @@ HoverDrownable=true     ; boolean
 - It is also works on water by setting `WaterImage.ConditionYellow` and `WaterImage.ConditionRed` VehicleType, similar to Ares' `WaterImage`.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEVEHICLE]                         ; VehicleType
 Image.ConditionYellow=                ; VehicleType entry
@@ -2353,6 +2449,7 @@ Note that the VehicleTypes had to be defined under [VehicleTypes] and use same i
 - Vehicle can now have its `DefaultMirageDisguises` overridden per-type.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEVEHICLE]              ; VehicleType
 DefaultMirageDisguises=    ; List of TerrainTypes
@@ -2376,6 +2473,7 @@ _Jumpjet Tilts in [Project Rush - Conquer](https://www.moddb.com/mods/project-ru
   - The magnitude of the sideways tilt is related to the current speed and rotation angle. They are multiplied and also have two coefficients that can be adjusted for details.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEVEHICLE]                           ; VehicleType, with Locomotor=Jumpjet
 JumpjetTilt=false                       ; boolean
@@ -2391,6 +2489,7 @@ JumpjetTilt.SidewaysSpeedFactor=1.0     ; floating point value
   - When `Speed=0` or TechnoTypes cells cannot move due to `MovementRestrictedTo`, the default value is no; in other cases, it is yes.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEVEHICLE]       ; VehicleType
 TurretResponse=     ; boolean
@@ -2402,9 +2501,10 @@ TurretResponse=     ; boolean
 _Use the pre-firing animation effect for Shape vehicle-type mecha units in **Zero Boundary** by @[Stormsulfur](https://space.bilibili.com/11638715/lists/5358986)_
 
 - `Voxel=no` turretless vehicles now support the use of `FireUp`.
- - `FireUp.ResetInRetarget` determines whether a vehicle's FireUp count is reset when its target changes. Forced to be `yes` when there is no target.
+- `FireUp.ResetInRetarget` determines whether a vehicle's FireUp count is reset when its target changes. Forced to be `yes` when there is no target.
 
 In `artmd.ini`:
+
 ```ini
 [SOMEVEHICLE]                   ; VehicleType
 FireUp=                         ; integer
@@ -2426,6 +2526,7 @@ All new Warhead effects
 - Warheads are now able to damage building only once by merging the AOE damage when setting `MergeBuildingDamage` to true, which default to `[CombatDamage] -> MergeBuildingDamage`.
 
 In `rulesmd.ini`:
+
 ```ini
 [CombatDamage]
 MergeBuildingDamage=false    ; boolean
@@ -2447,6 +2548,7 @@ _Mind control break warhead being utilized in [RA2: Reboot](https://www.moddb.co
 - Warheads can now break mind control (doesn't apply to perma-MC-ed objects).
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]            ; WarheadType
 RemoveMindControl=false  ; boolean
@@ -2459,6 +2561,7 @@ RemoveMindControl=false  ; boolean
 - `AffectsGround` allow you to make a warhead only damage the units with height less than 208.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]              ; WarheadType
 CellSpread.Cylinder=false  ; boolean
@@ -2483,12 +2586,13 @@ AffectsGround=true         ; boolean
   - `Crit.AffectsHouse` can be used to customize houses that this Warhead can deal critical hits against.
   - `Crit.AffectsBelowPercent` and `Crit.AffectsAbovePercent` can be used to set the health percentage that targets must be above and/or below/equal to respectively to be affected by critical hits. If target has zero health left this check is bypassed.
   - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list. If `Crit.AnimList.CreateAll` is set (defaults to `AnimList.CreateAll`), all animations from the list are created.
-    - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation. Note that because these animations are independent from `AnimList`, `Crit.AnimList.PickRandom` and `Crit.AnimList.CreateAll` will not default to their `AnimList` counterparts here and need to be explicitly set if needed.
+    - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target _in addition_ to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation. Note that because these animations are independent from `AnimList`, `Crit.AnimList.PickRandom` and `Crit.AnimList.CreateAll` will not default to their `AnimList` counterparts here and need to be explicitly set if needed.
   - `Crit.ActiveChanceAnims` can be used to set animation to be always displayed at the Warhead's detonation coordinates if the current Warhead has a chance to critically hit. If more than one animation is listed, a random one is selected.
   - `Crit.SuppressWhenIntercepted`, if set, prevents critical hits from occuring at all if the warhead was detonated from a [projectile that was intercepted](#projectile-interception-logic).
   - `ImmuneToCrit` can be set on TechnoTypes and ShieldTypes to make them immune to critical hits.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]                              ; WarheadType
 Crit.Chance=0.0                            ; floating point value, percents or absolute (0.0-1.0)
@@ -2528,6 +2632,7 @@ _Vehicle version of Genetic Converter in [NanoStorm](https://www.bilibili.com/op
   - `Convert.From`, `Convert.To` and `Convert.AffectsHouse` (without numbers) are a valid alternative to `Convert0.From`, `Convert0.To` and `Convert0.AffectsHouse` if only one pair is specified.
 
 In example, this warhead would convert all affected owned and friendly `SOLDIERA` and `SOLDIERB` to `NEWSOLDIER`:
+
 ```ini
 [ExampleWH]
 Convert.From=SOLDIERA,SOLDIERB
@@ -2536,6 +2641,7 @@ Convert.AffectsHouse=team
 ```
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]                   ; WarheadType
 ConvertN.From=                  ; List of TechnoTypes
@@ -2557,9 +2663,11 @@ This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not dete
 ```
 
 ### Custom Mind Control Animation
+
 - Allows Warheads to play custom `MindControl.Anim`.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]                         ; WarheadType
 MindControl.Anim=                     ; Animation, defaults to [CombatDamage] -> ControlledAnimationType
@@ -2572,6 +2680,7 @@ MindControl.Anim=                     ; Animation, defaults to [CombatDamage] ->
 - Allows Warheads to play custom water splash animations. See vanilla's [Conventional](https://www.modenc.renegadeprojects.com/Conventional) system here. `SplashList.PickRandom` can be set to true to pick a random animation to play from the list.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]                ; WarheadType
 SplashList=                  ; List of AnimationTypes, default to [CombatDamage] -> SplashList
@@ -2587,6 +2696,7 @@ SplashList.PickRandom=false  ; boolean
 - These multipliers will not affect damage with ignore defenses like `Suicide`.etc .
 
 In `rulesmd.ini`:
+
 ```ini
 [CombatDamage]
 DamageOwnerMultiplier=1.0                                  ; floating point value
@@ -2622,6 +2732,7 @@ DamageTargetHealthMultiplier=0.0                           ; floating point valu
   - You can also use `[WarheadType] -> PlayAnimAboveSurface=true` to make the warhead animation play on the ground directly above when the projectile detonates underground.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]                         ; WarheadType
 AffectsUnderground=false              ; boolean
@@ -2631,7 +2742,7 @@ PlayAnimAboveSurface=false            ; boolean
 
 ### Detonate Warhead on all objects on map
 
-- Setting `DetonateOnAllMapObjects` to true allows a Warhead that is detonated by a projectile (for an example, this excludes things like animation `Warhead` and Ares' GenericWarhead superweapon but includes `Crit.Warhead` and animation `Weapon`) and consequently any `AirburstWeapon/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
+- Setting `DetonateOnAllMapObjects` to true allows a Warhead that is detonated by a projectile (for an example, this excludes things like animation `Warhead` and Ares' GenericWarhead superweapon but includes `Crit.Warhead` and animation `Weapon`) and consequently any `AirburstWeapon/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` _(Ares feature)_ has been displayed.
   - `DetonateOnAllMapObjects.Full` customizes whether or not the Warhead is detonated fully on the targets (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
   - `DetonateOnAllMapObjects.AffectsTarget` is used to filter which types of targets (TechnoTypes) are considered valid and must be set to a valid value other than `none` for this feature to work. Only `none`, `all`, `aircraft`, `buildings`, `infantry` and `units` are valid values. This is set to `none` by default as inclusion of all object types can be performance-heavy.
   - `DetonateOnAllMapObjects.AffectsHouse` is used to filter which houses targets can belong to be considered valid and must be set to a valid value other than `none` for this feature to work. Only applicable if the house that fired the projectile is known. This is set to `none` by default as inclusion of all houses can be performance-heavy.
@@ -2639,7 +2750,8 @@ PlayAnimAboveSurface=false            ; boolean
   - `DetonateOnAllMapObjects.IgnoreTypes` can be used to list specific TechnoTypes to be never considered as valid targets.
   - `DetonateOnAllMapObjects.RequireVerses`, if set to true, only considers targets whose armor type the warhead has non-zero `Verses` value against as valid. On targets with active shields, shield's armor type is used unless the Warhead has `Shield.Penetrate=true`. This is checked after all other filters listed above.
 
- In `rulesmd.ini`:
+In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]                                ; WarheadType
 DetonateOnAllMapObjects=false                ; boolean
@@ -2663,7 +2775,8 @@ While this feature can provide better performance than a large `CellSpread` valu
   - If the source of this Warhead is not another TechnoType, `KillWeapon` will be fired regardless of the target's house or type.
 - If a TechnoType has `SuppressKillWeapons` set to true, it will not trigger `KillWeapon` or `KillWeapon.OnFirer` upon being killed. `SuppressKillWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
 
- In `rulesmd.ini`:
+In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]                         ; WarheadType
 KillWeapon=                           ; WeaponType
@@ -2690,6 +2803,7 @@ _`TransactMoney` used in [Rise of the East](https://www.moddb.com/mods/riseofthe
     - `TransactMoney.Display.Offset` is additional pixel offset for the center of the credits display, by default `0,0` at target's/firer's center.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]                        ; WarheadType
 TransactMoney=0                      ; integer - credits added or subtracted
@@ -2705,6 +2819,7 @@ TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
   - Note that this does not affect any Warhead effects other than those adjacent to damage (e.g `Psychedelic`) and things like debris generation and detonation of `AirburstWeapon` that do not normally occur if the hit was nullified.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]                ; WarheadType
 PenetratesIronCurtain=false  ; boolean
@@ -2728,6 +2843,7 @@ PenetratesForceShield=       ; boolean
 ```
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]                     ; WarheadType
 LaunchSW=                         ; List of SuperWeaponTypes
@@ -2750,6 +2866,7 @@ Due to the nature of some superweapon types, not all superweapons are suitable f
 - `RemoveParasite.Disallow` can be used to define which parasites cannot be removed.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]             ; WarheadType
 RemoveParasite=           ; boolean
@@ -2768,6 +2885,7 @@ RemoveParasite.Disallow=  ; List of TechnoTypes
   - `PenetratesTransport.CleanSound` will play when all passengers has been killed.
 
 In `rulesmd.ini`:
+
 ```ini
 [CombatDamage]
 PenetratesTransport.Level=10                    ; integer, default value of [TechnoType] -> PenetratesTransport.Level
@@ -2792,6 +2910,7 @@ PenetratesTransport.DamageMultiplier=1.0        ; double
 - Warheads can now remove disguise from disguised spies or mirage tanks. This will work even if the disguised was acquired by default through `PermaDisguise`.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]         ; WarheadType
 RemoveDisguise=false  ; boolean
@@ -2808,6 +2927,7 @@ RemoveDisguise=false  ; boolean
   - `ReturnWarhead.AffectsHouse` can be used to customize houses that original warhead can trigger a return warhead.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]                               ; WarheadType
 ReturnWarhead=                              ; WarheadType
@@ -2829,6 +2949,7 @@ If you set `ReturnWarhead` to the same Warhead it is defined on, or create a cha
   - Reveal only applies to the owner of the warhead.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]  ; WarheadType
 Reveal=0       ; integer, range in cells
@@ -2840,9 +2961,10 @@ Negative values mean reveal the entire map.
 
 ### Reverse engineer warhead
 
-- Warheads can now uses the reverse-engineering logic *(Ares feature)* , the technology of the victim will be reversed.
+- Warheads can now uses the reverse-engineering logic _(Ares feature)_ , the technology of the victim will be reversed.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]          ; WarheadType
 ReverseEngineer=false  ; boolean
@@ -2860,6 +2982,7 @@ This feature requires Ares 3.0 or higher to function!
   - `BuildingUndeploy.Leave` controls whether need to let them move to low threat locations nearby. The threat degree here is calculated using the technos' cost. If a nearby techno has no primary weapons or is owned by your allies, it will not be included.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]                        ; WarheadType
 BuildingSell=false                   ; boolean
@@ -2874,6 +2997,7 @@ BuildingUndeploy.Leave=false         ; boolean
   - Shroud only applies to enemies of the warhead owner.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]  ; WarheadType
 CreateGap=0    ; integer, range in cells
@@ -2891,6 +3015,7 @@ Negative values mean shroud the entire map.
   - `SpawnsCrate.Type/Weight` is an alias for `SpawnsCrate0.Type/Weight` if latter is not set.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]            ; WarheadType
 SpawnsCrate(N).Type=     ; Powerup crate type enum (money|unit|healbase|cloak|explosion|napalm|squad|reveal|armor|speed|firepower|icbm|invulnerability|veteran|ionstorm|gas|tiberium|pod)
@@ -2904,6 +3029,7 @@ SpawnsCrate(N).Weight=1  ; integer
   - If there is no source unit for the damage, the taunt will not take effect.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]    ; WarheadType
 Taunt=false      ; boolean
@@ -2927,6 +3053,7 @@ Taunt=false      ; boolean
       - Due to technical reasons, `Crit.SuppressWhenIntercepted=false` and `Crit.ApplyChancePerTarget=true` will forced to be used.
 
 In `rulesmd.ini`:
+
 ```ini
 [CombatDamage]                        ; WarheadType
 ApplyPerTargetEffectsOnDetonate=true  ; boolean
@@ -2945,6 +3072,7 @@ ApplyPerTargetEffectsOnDetonate=      ; boolean, default to [CombatDamage] -> Ap
 - Warheads are now able to trigger specific `NotHuman=yes` infantry `Death` anim sequence using the corresponding tag. It's value represents sequences from `Die1` to `Die5`.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]            ; WarheadType
 NotHuman.DeathSequence=  ; integer (1 to 5)
@@ -2955,6 +3083,7 @@ NotHuman.DeathSequence=  ; integer (1 to 5)
 - Warheads can now damage the enemy without killing them (minimum health will be 1).
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]  ; WarheadType
 CanKill=true   ; boolean
@@ -2971,6 +3100,7 @@ _Unlimbo Detonate used in **The Call of the Panic Spear** by @[Octagonal prism](
   - `UnlimboDetonate.KeepSelected` allows units to retain their original selected state when they appear.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWARHEAD]                          ; WarheadType
 UnlimboDetonate=false                  ; boolean
@@ -2992,6 +3122,7 @@ UnlimboDetonate.KeepSelected=false     ; boolean
 - `AreaFire.Target=random` ignores cells that are ineligible or contain ineligible objects based on listed values in weapon's `CanTarget` & `CanTargetHouses`.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWEAPON]         ; WeaponType
 AreaFire.Target=base ; AreaFire Target Enumeration (base|self|random)
@@ -3002,6 +3133,7 @@ AreaFire.Target=base ; AreaFire Target Enumeration (base|self|random)
 - `AttackNoThreatBuildings` permits shooters to attack non-threatening structures. This setting overrides other configurations.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWEAPON]                ; WeaponType
 AttackNoThreatBuildings=    ; boolean
@@ -3018,6 +3150,7 @@ AttackNoThreatBuildings=    ; boolean
   - Burst shot counter is not immediately reset if firing is ceased mid-sequence after at least one shot, but the frame at which each burst shot is fired will not be influenced by this (in other words, resuming firing afterward without weapon reload taking place would restart firing sequence but no firing will take place until the frame at which next burst shot should be fired is hit).
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWEAPON]                    ; WeaponType
 Burst.Delays=-1                 ; integer - burst delays (comma-separated) for shots in order from first to last.
@@ -3029,6 +3162,7 @@ Burst.FireWithinSequence=false  ; boolean
 - In vanilla, vehicles and infantry will only fire once in one frame, even if their `ROF` or `BurstDelay` is set to 0. Now you can force units to fire all bursts in one frame by setting the `Burst.NoDelay` to true.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWEAPON]          ; WeaponType
 Burst.NoDelay=false   ; boolean
@@ -3046,6 +3180,7 @@ Burst.NoDelay=false   ; boolean
   - `AutoTarget.IronCurtained` determines whether player-controlled technos can fire at iron-curtained objects positively. Computer will ignore this setting while only following `CanTarget.IronCurtained`.
 
 In `rulesmd.ini`:
+
 ```ini
 [CombatDamage]
 CanTarget.IronCurtained=true        ; boolean
@@ -3070,6 +3205,7 @@ AutoTarget.IronCurtained=           ; boolean, default to [CombatDamage] -> Auto
   - If the weapon has `Burst` > 1 and `DelayedFire.OnlyOnInitialBurst` set to true, the delay occurs only before the initial burst shot. Note that if using Ares, `Burst` index does not reset if firing is interrupted or the firer loses target, meaning it will be able to resume firing without waiting for the delay.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWEAPON]                           ; WeaponType
 DelayedFire.Duration=                  ; integer - single or comma-sep. range (game frames)
@@ -3096,14 +3232,15 @@ AircraftTypes, due to their different attack patterns, will not wait for the del
   - `ExtraRange.TargetMoving.CloseRangeOnly` is used to restrict whether the global default value only applies to units with `CloseRange=yes`.
 - `ExtraRange.FirerMoving` grants the weapon extra range when the firer is in a moving state.
 - `ExtraRange.Prefiring` grants the weapon extra range when the firer is in a pre-firing state, including:
-    - Vehicles with tags such as `FiringSyncFrame%d`.
-    - Aircraft that are firing.
-    - Buildings with tags such as `IsAnimDelayedFire`.
-    - Infantry with tags such as `FireUp`.
-    - Any unit with [`DelayedFire`](#delayed-firing).
+  - Vehicles with tags such as `FiringSyncFrame%d`.
+  - Aircraft that are firing.
+  - Buildings with tags such as `IsAnimDelayedFire`.
+  - Infantry with tags such as `FireUp`.
+  - Any unit with [`DelayedFire`](#delayed-firing).
   - `ExtraRange.Prefiring.IncludeBurst` is used to decide whether the execution of burst is considered as being in a pre-firing state.
 
 In `rulesmd.ini`:
+
 ```ini
 [General]
 ExtraRange.TargetMoving=0.0                     ; floating point value, range in cells
@@ -3134,6 +3271,7 @@ ExtraRange.Prefiring.IncludeBurst=              ; boolean, default to [General] 
   - Note that the listed Warheads must be listed in `[Warheads]` for them to work.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWEAPON]                      ; WeaponType
 ExtraWarheads=                    ; List of WarheadTypes
@@ -3151,6 +3289,7 @@ _`FeedbackWeapon` used to apply healing aura upon firing a weapon in [Project Ph
   - `FireInTransport` setting of the feedback weapon is respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If feedback weapon is fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on feedback weapons.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWEAPON]     ; WeaponType
 FeedbackWeapon=  ; WeaponType
@@ -3169,6 +3308,7 @@ That is to say, the total duration of executing KeepRange equals the value of we
 ```
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWEAPON]                  ; WeaponType
 KeepRange=0                   ; floating point value
@@ -3183,6 +3323,7 @@ KeepRange.EarlyStopFrame=0    ; integer
   - Jumpjets are recommended to have the same value of body `ROT` and `JumpjetTurnRate`.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWEAPON]              ; WeaponType, with OmniFire=yes
 OmniFire.TurnToTarget=no  ; boolean
@@ -3199,6 +3340,7 @@ OmniFire.TurnToTarget=no  ; boolean
 - Mind that set the flags to `false` meaning "use default" rather than "disable". Technos in air will always range finding in cylinder like vanilla, despite what you set.
 
 In `rulesmd.ini`:
+
 ```ini
 [General]
 CylinderRangefinding=false        ; boolean
@@ -3218,10 +3360,11 @@ _Strafing aircraft weapon customization in [Project Phantom](https://www.moddb.c
   - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behavior of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined.
   - `Strafing.UseAmmoPerShot`, if set to `true` overrides the usual behaviour of only deducting ammo after a strafing run and instead doing it after each individual shot.
   - `Strafing.TargetCell` controls whether the aircraft will change the target of this round to the ground after firing the first shot, to ensure that all `Strafing.Shots` can be dropped. That is, the `Strafing` will not be interrupted by the premature death of the target.
-  - `Strafing.EndDelay` can be used to override the delay after firing last shot in strafing run before aircraft resumes another strafing run or returns to base. Defaults to (Weapon `Range` * 256 + 1024) / Aircraft `Speed`. Note that using a short delay with aircraft that can do multiple strafing runs with their ammo can cause undesired behaviour like dancing around or facing weird way depending on other factors like ROF and/or movement speed.
+  - `Strafing.EndDelay` can be used to override the delay after firing last shot in strafing run before aircraft resumes another strafing run or returns to base. Defaults to (Weapon `Range` \* 256 + 1024) / Aircraft `Speed`. Note that using a short delay with aircraft that can do multiple strafing runs with their ammo can cause undesired behaviour like dancing around or facing weird way depending on other factors like ROF and/or movement speed.
 - There is a special case for aircraft spawned by `Type=SpyPlane` superweapons on `SpyPlane Approach` or `SpyPlane Overfly` mission where `Strafing.Shots` only if explicitly set on its primary weapon, determines the maximum number of times the map revealing effect can activate irregardless of other factors.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWEAPON]                   ; WeaponType
 Strafing=                      ; boolean
@@ -3237,6 +3380,7 @@ Strafing.EndDelay=             ; integer, game frames
 - You can now add a random offset to visual effect's (`IsLaser=true`, `IsElectricBolt=true` or `IsRadBeam=true`) target location if set `VisualScatter` to true.
 
 In `rulesmd.ini`:
+
 ```ini
 [AudioVisual]
 VisualScatter.Min=0.03  ; floating point value, distance in cells
@@ -3259,6 +3403,7 @@ _`Weapon target filter - different weapon used against enemies & allies as well 
   - `CanTarget.MaxHealth` and `CanTarget.MinHealth` set health percentage thresholds for allowed targets (TechnoTypes only) that the target's health must be above and/or below/equal to, respectively. If target has zero health left this check is bypassed.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMEWEAPON]                ; WeaponType
 CanTarget=all               ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)

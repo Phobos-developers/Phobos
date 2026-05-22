@@ -22,6 +22,7 @@ You can use the improved vanilla font which can be found on [Phobos supplementar
 - You can now specify which soundtrack themes would play on win or lose.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMESIDE]             ; Side
 IngameScore.WinTheme=  ; Soundtrack theme ID
@@ -35,6 +36,7 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 - Superweapon cd timer can now draw as percentage.
 
 In `rulesmd.ini`:
+
 ```ini
 [AudioVisual]
 SuperWeaponTimer.Percentage=false  ; boolean
@@ -46,7 +48,7 @@ ShowTimer.Percentage=              ; boolean
 ### Custom health bars display
 
 ![image](_static/images/healthbar.hide-01.png)
-*Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
+_Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)_
 
 - Health bar display can now be turned off as needed, hiding both the health bar box and health pips.
   - `HealthBar.HidePips` only hides the health bar without affecting anything else.
@@ -54,6 +56,7 @@ ShowTimer.Percentage=              ; boolean
   - `HealthBar.Permanent.PipScale` will always display additional pips and group numbers.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMENAME]                           ; TechnoType
 HealthBar.Hide=false                 ; boolean
@@ -65,7 +68,7 @@ HealthBar.Permanent.PipScale=false   ; boolean
 ### Digital display
 
 ![image](_static/images/digital_display_shapes.png)
-*Default configuration of digital display using example shapes from [Phobos supplementaries](https://github.com/Phobos-developers/PhobosSupplementaries).*
+_Default configuration of digital display using example shapes from [Phobos supplementaries](https://github.com/Phobos-developers/PhobosSupplementaries)._
 
 - You can now configure various types of numerical counters to be displayed over Techno to represent its attributes, such as health points or shield points and can be turned on or off via a [new hotkey](#toggle-digital-display).
   - `InfoIndex` defines the specific `InfoType`.
@@ -73,28 +76,28 @@ HealthBar.Permanent.PipScale=false   ; boolean
       - 0 - alive spawns,
       - 1 - docked spawns,
       - 2 - launching spawns.
-      <br><br>
+        <br><br>
     - In `InfoType=Tiberium`,
       - 0 - all,
       - 1 - the first tiberium,
       - 2 - the second tiberium,
-      <br>...
+        <br>...
     - In `InfoType=SpawnTimer`,
       - 0 - the fastest spawnee,
       - 1 - the first spawnee,
       - 2 - the second spawnee,
-      <br>...
+        <br>...
     - In `InfoType=SuperWeapon`,
       - 0 - the first SW of all,
       - 1 - `[BuildingType] -> SuperWeapon`,
       - 2 - `[BuildingType] -> SuperWeapon2`,
       - 3 - the first SW in `[BuildingType] -> SuperWeapons`,
-      <br>...
+        <br>...
     - In `InfoType=FactoryProcess`,
       - 0 - the first factory in production,
       - 1 - primary factory,
       - 2 - secondary factory.
-      <br><br>
+        <br><br>
   - `Anchor.Horizontal` and `Anchor.Vertical` set the anchor point from which the display is drawn (depending on `Align`) relative to unit's center/selection box. For buildings, `Anchor.Building` is used instead.
     - `Offset` and `Offset.ShieldDelta` (the latter applied when a shield is active) can be used to further modify the position.
   - By default, values are displayed in `current/maximum` format (i.e. `20/40`).
@@ -115,6 +118,7 @@ HealthBar.Permanent.PipScale=false   ; boolean
   - `ShowType` specifies the conditions under which it can be displayed. Note that `idle` is only available when `HealthBar.Permanent=yes`.
 
 In `rulesmd.ini`:
+
 ```ini
 [DigitalDisplayTypes]
 0=SOMEDIGITALDISPLAYTYPE
@@ -161,6 +165,7 @@ DigitalDisplay.Health.FakeAtDisguise=true      ; boolean
 ```
 
 In `RA2MD.INI`:
+
 ```ini
 [Phobos]
 DigitalDisplay.Enable=false                    ; boolean
@@ -191,12 +196,14 @@ Of course, this is just the implementation method. To balance freedom with effic
   - The feature can be toggled on/off by user if enabled in mod via `ShowFlashOnSelecting` setting in `RA2MD.INI`.
 
 In `rulesmd.ini`:
+
 ```ini
 [AudioVisual]
 SelectionFlashDuration=0    ; integer, number of frames
 ```
 
 In `RA2MD.INI`:
+
 ```ini
 [Phobos]
 ShowFlashOnSelecting=false  ; boolean
@@ -210,6 +217,7 @@ _Harvesters not selected together with battle units in [Rise of the East](https:
 - You can now set lower priority for an ingame object (currently has effect on units mostly), which means it will be excluded from box selection if there's at least one normal priority unit in the box. Otherwise it would be selected as normal. Works with box+type selecting (type select hotkey + drag) and regular box selecting. Box shift-selection adds low-priority units to the group if there are no normal priority units among the appended ones.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                ; TechnoType
 LowSelectionPriority=false  ; boolean
@@ -218,6 +226,7 @@ LowSelectionPriority=false  ; boolean
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
 
 In `RA2MD.INI`:
+
 ```ini
 [Phobos]
 PrioritySelectionFiltering=true  ; boolean
@@ -226,7 +235,7 @@ PrioritySelectionFiltering=true  ; boolean
 ### Placement preview
 
 ![placepreview](_static/images/placepreview.png)
-*Building placement preview using 50% translucency in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
+_Building placement preview using 50% translucency in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)_
 
 - Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `[AudioVisual] -> PlacementPreview` and then further customized for each building with `[BuildingType] -> PlacementPreview`.
 - The building placement grid (`place.shp`) translucency setting can be adjusted via `PlacementGrid.Translucency` if `PlacementPreview` is disabled and `PlacementGrid.TranslucencyWithPreview` if enabled.
@@ -235,6 +244,7 @@ PrioritySelectionFiltering=true  ; boolean
 - `PlacementPreview.ShapeFrame` tag defaults to building's artmd.ini `Buildup` entry's last non-shadow frame. If there is no 'Buildup' specified it will instead attempt to default to the building's normal first frame (animation frames and bibs are not included in this preview).
 
 In `rulesmd.ini`:
+
 ```ini
 [AudioVisual]
 PlacementPreview=no                     ; boolean
@@ -259,6 +269,7 @@ The `PlacementPreview.Palette` option is not used when `PlacementPreview.Remap` 
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
 
 In `RA2MD.INI`:
+
 ```ini
 [Phobos]
 ShowPlacementPreview=yes   ; boolean
@@ -267,13 +278,14 @@ ShowPlacementPreview=yes   ; boolean
 ### Real time timers
 
 - Timers can now display values in real time, taking game speed into account. This can be enabled with `RealTimeTimers=true`.
-- By default, time is calculated relative to desired framerate. Enabling `RealTimeTimers.Adaptive` (always true for unlimited FPS and custom speeds) will calculate time relative to *current* FPS, accounting for lag.
+- By default, time is calculated relative to desired framerate. Enabling `RealTimeTimers.Adaptive` (always true for unlimited FPS and custom speeds) will calculate time relative to _current_ FPS, accounting for lag.
   - When playing with unlimited FPS (or custom speed above 60 FPS), the timers might constantly change value because of the unstable nature.
 - This option respects custom game speeds.
 
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
 
 In `RA2MD.INI`:
+
 ```ini
 [Phobos]
 RealTimeTimers=false            ; boolean
@@ -283,7 +295,7 @@ RealTimeTimers.Adaptive=false   ; boolean
 ### Select Box
 
 ![selectbox](_static/images/selectbox.png)
-*SelectBox and GroundLine in **Solar Flare** by [Netsu_Negi](https://space.bilibili.com/26486915/lists/3151060)*
+_SelectBox and GroundLine in **Solar Flare** by [Netsu_Negi](https://space.bilibili.com/26486915/lists/3151060)_
 
 - Now you can use and customize select box for infantry, vehicle and aircraft. No select box for buildings in default case, but you still can specific for some building if you want.
   - `Frames` can be used to list frames of `Shape` file that'll be drawn as a select box when the TechnoType's health is at or below full health/the percentage defined in `[AudioVisual] -> ConditionYellow/ConditionRed`, respectively.
@@ -294,6 +306,7 @@ RealTimeTimers.Adaptive=false   ; boolean
   - If `GroundLine=true`, the game will draw a line from techno's position to its vertical projection, `GroundLine.Dashed=true` means the projection line is a dashed line.
 
 In `rulesmd.ini`:
+
 ```ini
 [SelectBoxTypes]
 0=SOMESELECTBOXTYPE
@@ -328,6 +341,7 @@ HideSelectBox=false                     ; boolean
 ```
 
 In `RA2MD.INI`:
+
 ```ini
 [Phobos]
 EnableSelectBox=false                   ; boolean
@@ -343,9 +357,10 @@ EnableSelectBox=false                   ; boolean
 - It is now possible to display range of designator and inhibitor units when in super weapon targeting mode. Each instance of player owned techno types listed in `[SuperWeapon] -> SW.Designators` will display a circle with radius set in `[TechnoType] -> DesignatorRange` or `Sight`.
   - In a similar manner, each instance of enemy owned techno types listed in `[SuperWeapon] -> SW.Inhibitors` will display a circle with radius set in `[TechnoType] -> InhibitorRange` or `Sight`.
 - This feature can be disabled globally with `[AudioVisual] -> ShowDesignatorRange=false` or per SuperWeaponType with `[SuperWeapon] -> ShowDesignatorRange=false`.
-- This feature can be toggled *by the player* (if enabled in the mod) with `ShowDesignatorRange` in `RA2MD.INI` or with ["Toggle Designator Range" hotkey](#toggle-designator-range) in "Interface" category.
+- This feature can be toggled _by the player_ (if enabled in the mod) with `ShowDesignatorRange` in `RA2MD.INI` or with ["Toggle Designator Range" hotkey](#toggle-designator-range) in "Interface" category.
 
 In `rulesmd.ini`:
+
 ```ini
 [AudioVisual]
 ShowDesignatorRange=true    ; boolean
@@ -355,6 +370,7 @@ ShowDesignatorRange=true    ; boolean
 ```
 
 In `RA2MD.INI`:
+
 ```ini
 [Phobos]
 ShowDesignatorRange=false             ; boolean
@@ -365,6 +381,7 @@ ShowDesignatorRange=false             ; boolean
 - You can now sort the timers of superweapons in ascending order from top to bottom according to a given priority value.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMESW]              ; SuperWeaponType, with ShowTimer=yes
 ShowTimer.Priority=0  ; integer
@@ -384,6 +401,7 @@ _Taking a campaign in [Mental Omega](https://www.mentalomega.com) as an example 
   - The label can be toggled by ["Toggle Message Label" hotkey](#toggle-message-label) in "Interface" category.
 
 In `RA2MD.INI`:
+
 ```ini
 [Phobos]
 MessageApplyHoverState=false            ; boolean
@@ -402,6 +420,7 @@ In Vanilla, you can type select a building by holding down the T key in advance 
 ```
 
 In `rulesmd.ini`:
+
 ```ini
 [General]
 BuildingTypeSelectable=false  ; boolean
@@ -422,6 +441,7 @@ Due to technical limitations, this feature is forcibly disabled without Ares.
   - If a LaserTrailType has `IsHideable=false`, it can't be toggled off by setting `HideLaserTrailEffects=true`.
 
 In `rulesmd.ini`:
+
 ```ini
 [AudioVisual]
 WarheadParticleAlphaImageIsLightFlash=false  ; boolean
@@ -432,12 +452,14 @@ Particle.AlphaImageIsLightFlash=             ; boolean
 ```
 
 In `artmd.ini`:
+
 ```ini
 [SOMETRAIL]                  ; LaserTrailType name
 IsHideable=true              ; boolean
 ```
 
 In `RA2MD.INI`:
+
 ```ini
 [Phobos]
 HideLightFlashEffects=false  ; boolean
@@ -457,6 +479,7 @@ HideShakeEffects=false       ; boolean
   - `[AudioVisual] -> DisplayIncome` also allows to display the amount of credits when selling a unit on a repair bay.
 
 In `rulesmd.ini`:
+
 ```ini
 [AudioVisual]
 DisplayIncome=false       ; boolean
@@ -476,12 +499,14 @@ DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
 - It is possible to show range of power plant enhancer when placing a building.
 
 In `rulesmd.ini`:
+
 ```ini
 [AudioVisual]
 ShowPowerPlantEnhancerRange=true   ; boolean
 ```
 
 In `RA2MD.INI`:
+
 ```ini
 [Phobos]
 ShowPowerPlantEnhancerRange=false  ; boolean
@@ -551,13 +576,14 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
 - PCX files can now be used as loadscreen images.
   - You can specify custom loadscreen with Ares tag `File.LoadScreen`.
   - Campaign loading screen (`missionmd.ini -> [LS800BkgdName]`) can also use PCX image.
-  - Observer loading screen can use `ls800obs.pcx` *(or `ls640obs.pcx` when screen width is 640)* for this feature.
+  - Observer loading screen can use `ls800obs.pcx` _(or `ls640obs.pcx` when screen width is 640)_ for this feature.
 - The loadscreen size can now be different from the default `800x600` one; if the image is bigger than the screen it's centered and cropped.
   - This feature works in conjunction with CnCNet5 spawner DLL which resizes loadscreen window to actual monitor size and places the image in center. If there's no CnCNet5 spawner loaded, the window resolution will be always `800x600`.
   - Same applies to campaign loading screen (`missionmd.ini -> [LS800BkgdName]`).
 - You can now disable hardcoded black dots that YR engine shows over empty spawn locations, which allows to use prettier and more correctly placed markers that are produced by Map Renderer instead.
 
 In `uimd.ini`:
+
 ```ini
 [LoadingScreen]
 DisableEmptySpawnPositions=false  ; boolean
@@ -570,13 +596,13 @@ DisableEmptySpawnPositions=false  ; boolean
 When starting a new campaign, the game automatically saves the game. Now you can decide whether you want that to happen or not.
 
 In `RA2MD.INI`:
+
 ```ini
 [Phobos]
 SaveGameOnScenarioStart=true ; boolean
 ```
 
 ## Sidebar / Battle UI
-
 
 ### Allow replacing vanilla repairing with togglable auto repairing
 
@@ -585,6 +611,7 @@ SaveGameOnScenarioStart=true ; boolean
   - When auto-repair state is toggled off, buildings will stop repairing.
 
   In `rulesmd.ini`:
+
 ```ini
 [General]
 ExtendedPlayerRepair=false    ; boolean
@@ -593,11 +620,12 @@ ExtendedPlayerRepair=false    ; boolean
 ### Building Production Queue
 
 ![Building Production Queue](_static/images/buildingQueue.png)
-*Queueing multiple buildings*
+_Queueing multiple buildings_
 
 - Buildings can now be queued for construction like other units if `BuildingProductionQueue` is set to true.
 
 In `rulesmd.ini`:
+
 ```ini
 [General]
 BuildingProductionQueue=false  ; boolean
@@ -615,6 +643,7 @@ When the building becomes ready to be placed, the next building's construction w
   - This is to prevent cameo order being disrupted by CSF change accidentally, like when you're using a translation pack of different language.
 
 In `rulesmd.ini`:
+
 ```ini
 [General]
 SortCameoByName=false  ; boolean
@@ -628,6 +657,7 @@ CameoPriority=0        ; integer
 - Pause menu background (`bkgdXX(y).shp`) can now optionally be centered on the center of the available space instead of top-left corner. This allows for backgrounds to be better designed with resolutions larger than `1024x768` in mind.
 
 In `uimd.ini`:
+
 ```ini
 [Sidebar]
 CenterPauseMenuBackground=false  ; boolean
@@ -638,6 +668,7 @@ CenterPauseMenuBackground=false  ; boolean
 - You can now specify any SHP/PCX file as `XXICON.SHP` for missing cameo.
 
 In `rulesmd.ini`:
+
 ```ini
 [AudioVisual]
 MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
@@ -657,6 +688,7 @@ _Harvester Counter in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adv
   - The feature can be toggled on/off by user if enabled in mod via `ShowHarvesterCounter` setting in `RA2MD.INI`.
 
 In `uimd.ini`:
+
 ```ini
 [Sidebar]
 HarvesterCounter.Show=false                     ; boolean
@@ -666,6 +698,7 @@ HarvesterCounter.ConditionRed=50%               ; floating point value, percents
 ```
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMETECHNO]                                    ; TechnoType
 Harvester.Counted=                              ; boolean
@@ -678,6 +711,7 @@ Sidebar.HarvesterCounter.ColorRed=255,0,0       ; integer - Red,Green,Blue
 ```
 
 In `RA2MD.INI`:
+
 ```ini
 [Phobos]
 ShowHarvesterCounter=true  ; boolean
@@ -704,6 +738,7 @@ _Power delta Counter in [Assault Amerika](https://www.moddb.com/mods/assault-ame
   - The feature can be toggled on/off by user if enabled in mod via `ShowPowerDelta` setting in `RA2MD.INI`.
 
 In `uimd.ini`:
+
 ```ini
 [Sidebar]
 PowerDelta.Show=false           ; boolean
@@ -712,6 +747,7 @@ PowerDelta.ConditionRed=100%    ; floating point value, percents
 ```
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMESIDE]                                ; Side
 Sidebar.PowerDelta.Offset=0,0             ; X,Y, pixels relative to default
@@ -723,6 +759,7 @@ Sidebar.PowerDelta.Align=left             ; Alignment enumeration - left | cente
 ```
 
 In `RA2MD.INI`:
+
 ```ini
 [Phobos]
 ShowPowerDelta=true  ; boolean
@@ -741,12 +778,14 @@ _Producing Progress bars in [Fantasy ADVENTURE](https://www.moddb.com/mods/fanta
 - You need to draw your own assets (`tab0xpp.shp`, x is replaced by 0-3) and put them into `sidec0x.mix`.
 
 In `uimd.ini`:
+
 ```ini
 [Sidebar]
 ProducingProgress.Show=false  ; boolean
 ```
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMESIDE]                            ; Side
 Sidebar.ProducingProgress.Offset=0,0  ; X,Y, pixels relative to default
@@ -757,6 +796,7 @@ Sidebar.ProducingProgress.Offset=0,0  ; X,Y, pixels relative to default
 - It's now possible to switch hardcoded sidebar button coords to use GDI sidebar coords by setting `Sidebar.GDIPosition`. Defaults to true for first side, false for all others.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMESIDE]             ; Side
 Sidebar.GDIPositions=  ; boolean
@@ -765,7 +805,7 @@ Sidebar.GDIPositions=  ; boolean
 ### SuperWeapon Sidebar
 
 ![image](_static/images/sw_sidebar.png)
-*SuperWeapon Sidebar used with vanilla-like assets for from [Phobos supplementaries](https://github.com/Phobos-developers/PhobosSupplementaries)*
+_SuperWeapon Sidebar used with vanilla-like assets for from [Phobos supplementaries](https://github.com/Phobos-developers/PhobosSupplementaries)_
 
 - It is possible to put superweapon cameos on the left of screen like C&C3 when `SuperWeaponSidebar` is true.
   - Superweapon Sidebar is compatible with Ares superweapons.
@@ -781,18 +821,19 @@ Sidebar.GDIPositions=  ; boolean
 While a mod maker can "ban" certain superweapons from appearing on a sidebar completely using `SuperWeaponSidebar.Allow=false` and `SuperWeaponSidebar.AllowByDefault=false`, it is not recommended to use those keys outside of removing "technical" superweapons (like subfaction choosers). Instead, opt for `SuperWeaponSidebar.Significance` and `SuperWeaponSidebar.RequiredSignificance` to control which superweapons appear on the sidebar. This way users with different preferences and different display resolutions could control how many superweapons they would like to see on the sidebar (via client settings) without having to edit the mod files, and you would be able to specify your exact vision through the default significance value.
 ```
 
-  - There is a hotkey to toggle the sidebar on/off, which can be bound to a key in the hotkey settings.
-    - `TXT_TOGGLE_SW_SIDEBAR` and `TXT_TOGGLE_SW_SIDEBAR_DESC` are used for localization of the hotkey.
-  - `SuperWeaponSidebarKeysEnabled` enables users to use hotkeys for superweapons displayed on the sidebar.
-    - The hotkeys are positional and are only provided for the first 10 superweapons.
-    - If assigned, a hotkey will be displayed on a superweapon instead of the `Ready` (or its alternative) text.
-    - For localization of those hotkeys, add `TXT_FIRE_TACTICAL_SW_XX` and `TXT_FIRE_TACTICAL_SW_XX_DESC` into your `.csf` file.
+- There is a hotkey to toggle the sidebar on/off, which can be bound to a key in the hotkey settings.
+  - `TXT_TOGGLE_SW_SIDEBAR` and `TXT_TOGGLE_SW_SIDEBAR_DESC` are used for localization of the hotkey.
+- `SuperWeaponSidebarKeysEnabled` enables users to use hotkeys for superweapons displayed on the sidebar.
+  - The hotkeys are positional and are only provided for the first 10 superweapons.
+  - If assigned, a hotkey will be displayed on a superweapon instead of the `Ready` (or its alternative) text.
+  - For localization of those hotkeys, add `TXT_FIRE_TACTICAL_SW_XX` and `TXT_FIRE_TACTICAL_SW_XX_DESC` into your `.csf` file.
 
 ```{warning}
 Positional superweapon hotkeys are an experimental feature and currently the user experience may be not polished enough, due to superweapon positions not being fixed on the sidebar, thus the feature is disabled by default.
 ```
 
 In `uimd.ini`:
+
 ```ini
 [Sidebar]
 SuperWeaponSidebar=false                    ; boolean
@@ -805,6 +846,7 @@ SuperWeaponSidebar.MaxColumns=              ; integer
 ```
 
 In `rulesmd.ini`:
+
 ```ini
 [GlobalControls]
 SuperWeaponSidebarKeysEnabled=false         ; boolean
@@ -827,6 +869,7 @@ SuperWeaponSidebar.Significance=0           ; integer
 ```
 
 In `RA2MD.INI`:
+
 ```ini
 [Phobos]
 SuperWeaponSidebar.RequiredSignificance=0   ; integer
@@ -844,12 +887,14 @@ While the feature is usable without any extra graphics, you can find example ass
   - The feature can be toggled on/off by user if enabled in mod via `ShowWeedsCounter` setting in `RA2MD.INI`.
 
 In `uimd.ini`:
+
 ```ini
 [Sidebar]
 WeedsCounter.Show=false          ; boolean
 ```
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMESIDE]                       ; Side
 Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default
@@ -857,6 +902,7 @@ Sidebar.WeedsCounter.Color=      ; integer - Red,Green,Blue
 ```
 
 In `RA2MD.INI`:
+
 ```ini
 [Phobos]
 ShowWeedsCounter=true  ; boolean
@@ -869,11 +915,11 @@ Default position for weeds counter overlaps with [harvester counter](#harvester-
 ## Tooltips
 
 ![image](_static/images/tooltips-01.png)
-*Extended tooltips used in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
+_Extended tooltips used in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)_
 
 - Sidebar tooltips can now display extended information about the TechnoType/SWType when hovered over it's cameo. In addition the low character limit is lifted when the feature is enabled via the corresponding tag, allowing for 1024 character long tooltips.
 - TechnoType's tooltip would display it's name, cost, power, build time and description (when applicable).
-- SWType's tooltip would display it's name, cost,  and recharge time (when applicable).
+- SWType's tooltip would display it's name, cost, and recharge time (when applicable).
   - If `SW.Shots` from Ares is used, a C-style format string default to `Shots: %d` is appended. The format is customizable in csf. If a 2-parameter format (like `%d/%d shots left`) is used, the second integer is `SW.Shots`.
 - Extended tooltips don't use `TXT_MONEY_FORMAT_1` and `TXT_MONEY_FORMAT_2`. Instead you can specify cost, power and time labels (displayed before correspoding values) with the corresponding tags. Characters `$ U+0024`, `⚡ U+26A1` and `⌚ U+231A` are used by default.
 - Fixed a bug when switching build queue tabs via QWER didn't make tooltips disappear as they should, resulting in stuck tooltips.
@@ -881,6 +927,7 @@ Default position for weeds counter overlaps with [harvester counter](#harvester-
 - `AnchoredToolTips` positions the tooltip always to the left of sidebar, only applies to if `ExtendedToolTips` is set to true and they are enabled in user settings.
 
 In `uimd.ini`:
+
 ```ini
 [ToolTips]
 ExtendedToolTips=false     ; boolean
@@ -892,7 +939,9 @@ TimeLabel=<none>           ; CSF entry key
 SWShotsFormat=<none>       ; CSF entry key
 MaxWidth=0                 ; integer, pixels
 ```
+
 In `rulesmd.ini`:
+
 ```ini
 [SOMENAME]            ; TechnoType or SWType
 UIDescription=<none>  ; CSF entry key
@@ -901,6 +950,7 @@ UIDescription=<none>  ; CSF entry key
 - The descriptions are designed to be toggleable by users. For now you can only do that externally via client or manually.
 
 In `RA2MD.INI`:
+
 ```ini
 [Phobos]
 ToolTipDescriptions=true  ; boolean
@@ -913,6 +963,7 @@ Same as with harvester counter, you can download the improved font (v4 and highe
 - The background color and opacity of tooltips can now be customized globally or per side.
 
 In `rulesmd.ini`:
+
 ```ini
 [SOMESIDE]                          ; Side
 ToolTip.Background.Color=0,0,0      ; integer - Red,Green,Blue, defaults to [AudioVisual] -> ToolTip.Background.Color, which defaults to 0,0,0
@@ -925,6 +976,7 @@ The blur effect is resource intensive. Please make sure you really want to enabl
 ```
 
 In `RA2MD.INI`:
+
 ```ini
 [Phobos]
 ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enabled.

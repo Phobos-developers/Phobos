@@ -1,4 +1,3 @@
-
 # Contributing
 
 Engine modding is a complicated process which is pretty hard to pull off, but there are also easier parts which don't require mastering the art of reverse-engineering or becoming a dank magician in C++.
@@ -17,7 +16,7 @@ Reverse-engineering is a complex task, but don't be discouraged, if you want to 
 
 ## Development
 
-When you found out how the engine works and where you need to extend the logic you'd need to develop the code to achieve what you want. This is done by declaring a *hook* - some code which would be executed after the program execution reaches the certain address in binary. All the development is done in C++ using [YRpp](https://github.com/Phobos-developers/YRpp) (which provides a way to interact with YR code and inject code using Syringe) and usually [Visual Studio 2017/2019](https://visualstudio.microsoft.com) or newer.
+When you found out how the engine works and where you need to extend the logic you'd need to develop the code to achieve what you want. This is done by declaring a _hook_ - some code which would be executed after the program execution reaches the certain address in binary. All the development is done in C++ using [YRpp](https://github.com/Phobos-developers/YRpp) (which provides a way to interact with YR code and inject code using Syringe) and usually [Visual Studio 2017/2019](https://visualstudio.microsoft.com) or newer.
 
 ### Quickstart guide for AI-assisted development
 
@@ -30,6 +29,7 @@ AI agents are a tool to assist development, but they are not perfect and can mak
 ```
 
 (contributing-changes-to-the-project)=
+
 ## Contributing changes to the project
 
 To ensure harmonious coexistence, developers and maintainers should first read our [Project guidelines and policies](Project-guidelines-and-policies.md).
@@ -37,6 +37,7 @@ To ensure harmonious coexistence, developers and maintainers should first read o
 To contribute a feature or some sort of a change you you would need a Git client (I recommend [GitKraken](https://www.gitkraken.com/) personally). Fork, clone the repo, preferably make a new branch, then edit/add the code or whatever you want to contribute. Commit, push, start a pull request, wait for it to get reviewed, or merged.
 
 If you contribute something, please make sure:
+
 - you write documentation for the change;
 - you mention the change in the changelog and migration sections in the [what's new page](Whats-New.md);
 - you mention your contribution in the [credits page](CREDITS.md).
@@ -62,10 +63,10 @@ This is a job that any modder (and even sometimes player) can do. Look at a new 
 ## Testing check-list
 
 - **All possible valid use cases covered**. Try to check all of the valid feature use cases you can think of and verify that they work as intended with the feature.
-- **Correct saving and loading**. Most of the additions like new INI tags require storing them in saved object info. Sometimes this is not done correctly, especially on complex stuff (like radiation types). Please, ensure all the improvements work __identically__ before and after being saved and loaded (on the same version of Phobos, of course).
+- **Correct saving and loading**. Most of the additions like new INI tags require storing them in saved object info. Sometimes this is not done correctly, especially on complex stuff (like radiation types). Please, ensure all the improvements work **identically** before and after being saved and loaded (on the same version of Phobos, of course).
 - **Interaction with other features**. Try to use the feature chained or interacting with other features from vanilla or other libs (for example, mind control removal warhead initially was crashing when trying to remove mind control from a permanently mind-controlled unit).
 - **Overlapping features not working correctly** (including those from third-party libs like Ares, HAres, CnCNet spawner DLL). Think of what features' code could overlap (in a technical sense; means they modify the same code) with what you're currently testing. Due to the nature of the project some features from other libs could happen to not work as expected if they are overlapping (for example, when implementing mass selection filtering Ares' `GroupAs` was initially broken and units using it weren't being type selected properly).
-- **Edge cases**. Those are the cases of some specific cases usually induced by some extreme  parameter values (for example, vanilla game crashes on zero-size `PreviewPack` instead of not drawing it).
+- **Edge cases**. Those are the cases of some specific cases usually induced by some extreme parameter values (for example, vanilla game crashes on zero-size `PreviewPack` instead of not drawing it).
 - **Corner cases**. Those are similar to edge cases but are hard to reproduce and are usually induced by a combination of extreme parameter values.
 
 ```{note}
@@ -83,6 +84,7 @@ You don't need to install Python, Sphinx and modules to see changes - every pull
 ```
 
 There are two ways to edit the docs.
+
 - **Edit from your PC**. Pretty much the same like what's described in [contributing changes section](contributing-changes-to-the-project); the docs are located in the `docs` folder.
 - **Edit via online editor**. Navigate to the doc piece that you want to edit, press the button on the top right - and it will take you to the file at GitHub which you would need to edit (look for the pencil icon to the top right). Press it - the fork will be created and you'll edit the docs in your version of the repo (fork). You can commit those changes (preferably to a new branch) and make them into a pull request to main repo.
 
