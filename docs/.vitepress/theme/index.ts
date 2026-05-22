@@ -12,6 +12,7 @@ type ViewTransitionDocument = Document & {
 
 type PhobosWindow = Window & {
   __PHOBOS_SEARCH_HOTKEY_INSTALLED__?: boolean
+  __PHOBOS_RTD_FILETREEDIFF_POSITION_PATCH_INSTALLED__?: boolean
 }
 
 function isSearchKeyboardShortcut(event: KeyboardEvent) {
@@ -39,6 +40,60 @@ function installPhysicalSearchHotKey() {
 
     event.preventDefault()
     searchButton.click()
+  })
+}
+
+function shouldPatchReadTheDocsFileTreeDiffPosition() {
+  return window.location.hostname.endsWith('.readthedocs.build')
+}
+
+function patchReadTheDocsFileTreeDiffPosition(host: Element) {
+  const shadowRoot = host.shadowRoot
+
+  if (!shadowRoot || shadowRoot.querySelector('[data-phobos-rtd-filetreediff-position]')) {
+    return
+  }
+
+  const style = document.createElement('style')
+  style.dataset.phobosRtdFiletreediffPosition = 'true'
+  style.textContent = `
+    :host > div {
+      top: 72px !important;
+      right: 16px !important;
+      border-radius: 6px !important;
+    }
+
+    @media (max-width: 768px) {
+      :host > div {
+        top: 64px !important;
+      }
+    }
+  `
+
+  shadowRoot.append(style)
+}
+
+function installReadTheDocsFileTreeDiffPositionPatch() {
+  const phobosWindow = window as PhobosWindow
+
+  if (
+    phobosWindow.__PHOBOS_RTD_FILETREEDIFF_POSITION_PATCH_INSTALLED__ ||
+    !shouldPatchReadTheDocsFileTreeDiffPosition()
+  ) {
+    return
+  }
+
+  phobosWindow.__PHOBOS_RTD_FILETREEDIFF_POSITION_PATCH_INSTALLED__ = true
+
+  const patchAll = () => {
+    document.querySelectorAll('readthedocs-filetreediff').forEach(patchReadTheDocsFileTreeDiffPosition)
+  }
+
+  patchAll()
+
+  new MutationObserver(patchAll).observe(document.documentElement, {
+    childList: true,
+    subtree: true,
   })
 }
 
@@ -116,6 +171,7 @@ export default {
 
     if (typeof window !== 'undefined') {
       installPhysicalSearchHotKey()
+      installReadTheDocsFileTreeDiffPositionPatch()
     }
   },
 }
