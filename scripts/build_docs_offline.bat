@@ -1,6 +1,6 @@
 @if not defined _echo echo off
 
-rem Builds Phobos docs with VitePress.
+rem Builds Phobos offline docs bundle with VitePress.
 
 rem Ensure we're in correct directory.
 cd /D "%~dp0"
@@ -11,4 +11,4 @@ if not exist node_modules (
 	if errorlevel 1 exit /b %errorlevel%
 )
 
-call npm run build
+call npm run build:offline

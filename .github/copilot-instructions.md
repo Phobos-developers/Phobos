@@ -81,7 +81,7 @@ src/                    All Phobos source code
 └── Blowfish/           Blowfish encryption replacement
 YRpp/                   Game binary header definitions (git submodule)
 lib/                    Third-party headers (e.g. nameof)
-docs/                   Sphinx documentation (Markdown/MyST)
+docs/                   VitePress documentation site and source Markdown
 scripts/                Build and setup scripts
 .editorconfig           Code style enforcement (tabs, Allman braces, CRLF)
 .vsconfig               Required VS components
@@ -285,44 +285,66 @@ When the type or function you need is missing or incorrect in YRpp, add or fix i
 
 ## Documentation
 
-The docs live in `docs/` and are built with [Sphinx](https://sphinx-doc.org/) + [MyST parser](https://myst-parser.readthedocs.io/) (Markdown with Sphinx directives). They are hosted on [Read the Docs](https://readthedocs.io/).
+The docs live in `docs/` and are built with [VitePress](https://vitepress.dev/). Source pages are Markdown files in `docs/`; the VitePress config, theme, and build integration live under `docs/.vitepress/` and `docs/vitepress/build-scripts/`.
+
+Important documentation paths:
+
+| Path | Purpose |
+|---|---|
+| `docs/.vitepress/config.ts` | Main VitePress config, nav/sidebar, locales, rewrites, search, last-updated settings |
+| `docs/.vitepress/theme/` | Custom theme wrapper, CSS overrides, Vue components used by docs |
+| `docs/vitepress/build-scripts/` | Vite/VitePress plugins and offline export scripts |
+| `docs/_static/` | VitePress public directory (`publicDir` is `_static`) |
+| `docs/locale/<locale>/LC_MESSAGES/*.po` | Source translations for localized docs |
+| `docs/vitepress/generated/` | Generated root and locale pages; do not edit by hand |
+| `docs/.vitepress/.temp/`, `docs/.artifacts/` | Build artifacts; do not commit |
+
+`README.md`, `CREDITS.md`, `LICENSE.md`, `logo.png`, and `logo-mono.png` are sourced from the repository root by the VitePress root pages plugin. Do not create or edit duplicate copies under `docs/`; edit the root files instead. The home page is generated from the root `README.md`.
 
 ### Syntax and formatting
 
-Doc pages use **MyST-flavored Markdown** (`.md`), not reStructuredText. Key MyST features used in this project:
-- **Directives**: `` ```{directive} `` blocks (e.g., `{hint}`, `{note}`, `{warning}`, `{toctree}`, `{include}`).
-- **Colon fences**: `:::{directive}` / `:::` as an alternative to backtick fences.
-- **Dollar math**: `$inline$` and `$$block$$` via `dollarmath` and `amsmath` extensions.
-- **Heading anchors**: auto-generated up to depth 3 (`myst_heading_anchors = 3`).
-- **Cross-references**: `(target-label)=` above a heading, then `` {ref}`target-label` `` to link.
-- **sphinx-design components**: tabs (`{tab-set}`/`{tab-item}`), cards (`{card}`), grids (`{grid}`), badges (`` {bdg-primary}`text` ``), and icons (`` {octicon}`icon-name` ``).
+Doc pages use VitePress Markdown. Prefer VitePress-native syntax:
+- **Containers**: `::: tip`, `::: info`, `::: warning`, `::: danger`, and `::: details Click to show`.
+- **Code fences**: use language-tagged fenced blocks such as ` ```ini ` and ` ```cpp `.
+- **Links**: use normal Markdown links to source pages, e.g. `[what's new page](Whats-New.md)` or `[Credits](/CREDITS)`.
+- **Heading anchors**: VitePress generates anchors from headings. Link to headings with normal hash links such as `Fixed-or-Improved-Logics.md#target-scan-guard-range-customizations`.
+- **Vue components**: custom components registered in `docs/.vitepress/theme/index.ts` can be used directly in Markdown. For example, `CustomGameSpeedGenerator` is used in `docs/Miscellanous.md`.
 
 INI code snippets should use ` ```ini ` fenced blocks. See existing doc pages for the standard format of documenting INI keys (key name, default value, accepted types, explanatory comments).
+
+Do not introduce new Sphinx/MyST-only syntax such as `` ```{note} ``, `` ```{dropdown} ``, `{ref}` links, `toctree`, `sphinx-design` grids/cards/tabs, or `(target-label)=` labels. Convert old Sphinx blocks to VitePress containers when editing nearby content.
 
 ### Building docs locally
 
 ```
-pip install -r docs/requirements.txt
 scripts\build_docs.bat
 ```
 
-Output goes to `docs/_build/html/`. Pull requests are automatically built and served by Read the Docs - check the PR status checks for a preview link.
+The batch script installs `docs/node_modules` if needed and runs `npm run build` from `docs/`. You can also run the npm scripts directly:
+
+```
+cd docs
+npm ci
+npm run dev        # local dev server
+npm run build      # production VitePress build
+npm run build:offline    # production build plus single-entry offline documentation export
+npm run lint            # ESLint for docs scripts/config/theme
+npm run format:check    # Prettier check for docs files
+```
+
+Regular VitePress output goes to `docs/.artifacts/dist/`. Offline documentation output goes to `docs/.artifacts/phobos-offline-doc/`, with one top-level `Phobos-offline-doc.htm` and supporting files under `Phobos-offline-doc/`. Read the Docs publishes that offline output as an `htmlzip` download named `phobos-offline-doc.zip`.
 
 ### Translations
 
-The project uses Sphinx internationalization with `.po` files. Currently only **zh_CN** (Chinese) is maintained. The translation workflow:
+The project uses `.po` files, but not Sphinx i18n. VitePress localized pages are generated by `docs/vitepress/build-scripts/vitepress-po-locale-plugin.js`. Currently only **zh_CN** (Chinese) is maintained, but the plugin is written to support additional locales in the future.
 
-1. **Regenerate `.pot` templates and update `.po` files**:
-   ```
-   scripts\build_docs_locale.bat
-   ```
-   This runs `sphinx-build -b gettext` then `sphinx-intl update -p ./locale -l zh_CN`.
+- English source pages live in `docs/*.md` and selected root files (`README.md`, `CREDITS.md`, `LICENSE.md`).
+- Chinese translations live in `docs/locale/zh_CN/LC_MESSAGES/*.po`.
+- `docs/locale/zh_CN/LC_MESSAGES/index.po` also provides localized labels for VitePress theme text such as nav/sidebar labels, "On this page", "Last updated", and language names.
+- Generated localized Markdown is written to `docs/vitepress/generated/locales/zh_CN/` during VitePress startup/build. Do not edit generated files.
+- `scripts\build_docs_locale.bat` now runs the VitePress docs build; it does not run `sphinx-build` or `sphinx-intl`.
 
-2. **Edit translations** in `docs/locale/zh_CN/LC_MESSAGES/*.po` - each `.po` file corresponds to a doc page. Key translation conventions: translate "AI agent" as **智能体** (not 代理, which means "proxy").
-
-3. **Build localized docs** with `sphinx-build -D language=zh_CN`.
-
-When editing English source docs, be aware that changes will invalidate corresponding `.po` entries (marked fuzzy), so translators will need to update them.
+When editing English source docs, update the matching `.po` entries when appropriate. Key translation convention: translate "AI agent" as **智能体** (not 代理, which means "proxy").
 
 ### English quality and style
 

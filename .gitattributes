@@ -16,6 +16,12 @@
 *.ixx        text eol=crlf
 *.tlh        text eol=crlf
 *.tli        text eol=crlf
+*.css        text eol=crlf
+*.js         text eol=crlf
+*.json       text eol=crlf
+*.md         text eol=crlf
+*.po         text eol=crlf
+*.vue        text eol=crlf
 
 *.sh         text eol=lf
 
@@ -23,3 +29,4 @@
 *.jpg        -text
 *.png        -text
 *.exe        -text
+*.ico        -text

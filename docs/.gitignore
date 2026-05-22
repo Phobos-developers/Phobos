@@ -1,0 +1,8 @@
+node_modules/
+
+.vitepress/cache/
+.vitepress/.temp/
+.vitepress/config.ts.*.mjs
+/vitepress/generated/
+
+/.artifacts/

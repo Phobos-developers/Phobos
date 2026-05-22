@@ -1,0 +1,11 @@
+{
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+  "language": "en",
+  "allowCompoundWords": true,
+  "useGitignore": true,
+  "ignorePaths": [
+    //
+    "./package.json"
+  ],
+  "words": ["vitepress"]
+}

@@ -2,24 +2,26 @@
 # Read the Docs configuration file
 # See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
 
-# Required
 version: 2
 
-# Set the version of Python and other tools you might need
-build:
-   os: ubuntu-24.04
-   tools:
-      python: "3.11"
-
-# Build documentation in the docs/ directory with Sphinx
-sphinx:
-   configuration: docs/conf.py
-
-# Optionally build your docs in additional formats such as PDF
 formats:
-   - pdf
+  - htmlzip
 
-# We recommend specifying your dependencies to enable reproducible builds:
-python:
-   install:
-   - requirements: docs/requirements.txt
+build:
+  os: ubuntu-24.04
+  apt_packages:
+    - zip
+  tools:
+    nodejs: "22"
+  jobs:
+    install:
+      - cd docs && npm ci
+    build:
+      html:
+        - cd docs && npm run build
+        - mkdir -p $READTHEDOCS_OUTPUT/html
+        - cp -r docs/.artifacts/dist/* $READTHEDOCS_OUTPUT/html/
+      htmlzip:
+        - cd docs && npm run build:offline
+        - mkdir -p $READTHEDOCS_OUTPUT/htmlzip
+        - cd docs/.artifacts && zip -r $READTHEDOCS_OUTPUT/htmlzip/phobos-offline-doc.zip phobos-offline-doc

@@ -1,0 +1,30 @@
+{
+  "name": "phobos-docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev .",
+    "build": "vitepress build .",
+    "build:offline": "node ./vitepress/build-scripts/build-offline-docs.ts",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json",
+    "lint": "eslint \"./**/*.{js,cjs,ts,mts,cts}\"",
+    "lint:fix": "npm run lint -- --fix",
+    "format": "prettier --write \"**/*.{md,vue,ts,tsx,mts,cts,js,jsx,cjs,json,yml,yaml,scss,css}\"",
+    "format:check": "prettier --check \"**/*.{md,vue,ts,tsx,mts,cts,js,jsx,cjs,json,yml,yaml,scss,css}\""
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.9.1",
+    "eslint": "^10.4.0",
+    "gettext-parser": "^9.0.2",
+    "globals": "^17.6.0",
+    "image-size": "^2.0.2",
+    "jiti": "^2.7.0",
+    "prettier": "^3.8.3",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.4",
+    "vite": "^5.4.21",
+    "vitepress": "^1.6.4",
+    "vue-tsc": "^3.3.1"
+  }
+}
