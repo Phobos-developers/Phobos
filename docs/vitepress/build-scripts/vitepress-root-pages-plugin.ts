@@ -2,8 +2,8 @@ import { copyFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import type { Plugin, ViteDevServer } from 'vite'
 import { docsDir, normalizePath, rootDir } from './shared/paths.ts'
-import type { PhobosGeneratedPage } from './shared/pages.ts'
-export type { PhobosGeneratedPage } from './shared/pages.ts'
+import type { GeneratedPage } from './shared/pages.ts'
+export type { GeneratedPage } from './shared/pages.ts'
 
 type RootSourcePage = {
   page: string
@@ -25,7 +25,7 @@ type RootAsset = {
 const generatedRootRelPath = 'vitepress/generated/root'
 const generatedRootDir = resolve(docsDir, generatedRootRelPath)
 const repositoryDocsUrl = 'https://github.com/Phobos-developers/Phobos/tree/develop/docs/'
-let pendingRootPagesGeneration: Promise<PhobosGeneratedPage[]> | null = null
+let pendingRootPagesGeneration: Promise<GeneratedPage[]> | null = null
 
 function normalizeReadmeForVitePress(content: string): string {
   let output = content
@@ -92,7 +92,7 @@ const rootAssets: RootAsset[] = [
   { fileName: 'logo-mono.png', sourcePath: resolve(rootDir, 'logo-mono.png') },
 ]
 
-export function getPhobosRootAssetRelPath(fileName: string): string {
+export function getRootAssetRelPath(fileName: string): string {
   return getGeneratedRelPath(fileName)
 }
 
@@ -104,13 +104,13 @@ function getRootPagesWithGeneratedPaths(): RootGeneratedSourcePage[] {
   }))
 }
 
-export function getPhobosRootPageRewrites(
-  pages: PhobosGeneratedPage[] | RootGeneratedSourcePage[] = getRootPagesWithGeneratedPaths(),
+export function getRootPageRewrites(
+  pages: GeneratedPage[] | RootGeneratedSourcePage[] = getRootPagesWithGeneratedPaths(),
 ): Record<string, string> {
   return Object.fromEntries(pages.map(page => [page.generatedRelPath, page.outputPath]))
 }
 
-async function generateRootPagesOnce(): Promise<PhobosGeneratedPage[]> {
+async function generateRootPagesOnce(): Promise<GeneratedPage[]> {
   const pages = getRootPagesWithGeneratedPaths()
 
   await rm(generatedRootDir, { recursive: true, force: true })
@@ -136,7 +136,7 @@ async function generateRootPagesOnce(): Promise<PhobosGeneratedPage[]> {
   }))
 }
 
-export async function generatePhobosRootPages(): Promise<PhobosGeneratedPage[]> {
+export async function generateRootPages(): Promise<GeneratedPage[]> {
   pendingRootPagesGeneration ??= generateRootPagesOnce().finally(() => {
     pendingRootPagesGeneration = null
   })
@@ -144,15 +144,15 @@ export async function generatePhobosRootPages(): Promise<PhobosGeneratedPage[]> 
   return pendingRootPagesGeneration
 }
 
-export function phobosRootPagesPlugin(): Plugin {
+export function rootPagesPlugin(): Plugin {
   const sourcePaths = [...rootPages.map(page => page.sourcePath), ...rootAssets.map(asset => asset.sourcePath)]
   const normalizedSourcePaths = new Set(sourcePaths.map(normalizePath))
   const regenerate = async () => {
-    await generatePhobosRootPages()
+    await generateRootPages()
   }
 
   return {
-    name: 'phobos-root-pages',
+    name: 'docs-root-pages',
     enforce: 'pre',
     async buildStart() {
       await regenerate()

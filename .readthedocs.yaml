@@ -24,4 +24,4 @@ build:
       htmlzip:
         - cd docs && npm run build:offline
         - mkdir -p $READTHEDOCS_OUTPUT/htmlzip
-        - cd docs/.artifacts && zip -r $READTHEDOCS_OUTPUT/htmlzip/phobos-offline-doc.zip phobos-offline-doc
+        - cd docs/.artifacts && zip -r $READTHEDOCS_OUTPUT/htmlzip/offline-doc.zip offline-doc

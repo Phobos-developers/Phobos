@@ -4,18 +4,15 @@ import type { Plugin, ViteDevServer } from 'vite'
 import gettextParser from 'gettext-parser'
 import { isErrnoException, readDirSafe } from './shared/fs.ts'
 import { docsDir, normalizePath } from './shared/paths.ts'
-import type { PhobosLocalePage, PhobosSourcePage } from './shared/pages.ts'
-import { getPhobosRootAssetRelPath } from './vitepress-root-pages-plugin.ts'
+import type { LocalePage, SourcePage } from './shared/pages.ts'
+import { getRootAssetRelPath } from './vitepress-root-pages-plugin.ts'
 
 const localeRootDir = resolve(docsDir, 'locale')
 const localeMessagesDirName = 'LC_MESSAGES'
 const generatedRootRelPath = 'vitepress/generated/locales'
 const generatedRootDir = resolve(docsDir, generatedRootRelPath)
-const includeFuzzy = process.env.PHOBOS_PO_INCLUDE_FUZZY !== '0'
+const includeFuzzy = process.env.DOCS_PO_INCLUDE_FUZZY !== '0'
 const ignoredDocsMarkdownDirs = new Set(['.artifacts', '.vitepress', '_static', 'locale', 'node_modules', 'vitepress'])
-
-type SourcePage = PhobosSourcePage
-type LocalePage = PhobosLocalePage
 
 type PoLocaleOptions = {
   prepareSources?: () => Promise<SourcePage[]> | SourcePage[]
@@ -153,7 +150,7 @@ async function resolveSourcePageForPo(
   return null
 }
 
-export async function discoverPhobosPoLocalePages(options: PoLocaleOptions = {}): Promise<LocalePage[]> {
+export async function discoverPoLocalePages(options: PoLocaleOptions = {}): Promise<LocalePage[]> {
   const sourcePageMap = getSourcePageMap(options.sourcePages || [])
   const localeDirs = await readDirSafe(localeRootDir, { withFileTypes: true })
   const discoveredPages = []
@@ -228,7 +225,7 @@ async function readLocaleIndexTranslations(locale: string): Promise<Map<string, 
 
 const localeIndexTranslationsCache = new Map<string, Promise<Map<string, string>>>()
 
-export async function readPhobosLocaleIndexTranslations(locale: string): Promise<Map<string, string>> {
+export async function readLocaleIndexTranslationMap(locale: string): Promise<Map<string, string>> {
   if (!localeIndexTranslationsCache.has(locale)) {
     localeIndexTranslationsCache.set(locale, readLocaleIndexTranslations(locale))
   }
@@ -328,7 +325,7 @@ function normalizeLocalizedDocLinks(
 
     const rootAssetName = basename(rawPath)
     if (rootAssets.has(rootAssetName)) {
-      const assetLink = getRelativeGeneratedLink(generatedRelPath, getPhobosRootAssetRelPath(rootAssetName))
+      const assetLink = getRelativeGeneratedLink(generatedRelPath, getRootAssetRelPath(rootAssetName))
       return `](${assetLink}${hash})`
     }
 
@@ -376,11 +373,8 @@ function translateMarkdown(content: string, translations: Map<string, string>): 
   return restoreLineEndings(output, lineEnding)
 }
 
-export async function getPhobosPoLocaleRewrites(
-  localePages: LocalePage[] | null = null,
-  options: PoLocaleOptions = {},
-) {
-  const pages = localePages || (await discoverPhobosPoLocalePages(options))
+export async function getPoLocaleRewrites(localePages: LocalePage[] | null = null, options: PoLocaleOptions = {}) {
+  const pages = localePages || (await discoverPoLocalePages(options))
   return Object.fromEntries(pages.map(page => [page.generatedRelPath, page.outputPath]))
 }
 
@@ -390,9 +384,9 @@ async function prepareSourcePages(options: PoLocaleOptions): Promise<SourcePage[
   return options.sourcePages || preparedSourcePages || []
 }
 
-export async function generatePhobosPoLocalePages(options: PoLocaleOptions = {}): Promise<LocalePage[]> {
+export async function generatePoLocalePages(options: PoLocaleOptions = {}): Promise<LocalePage[]> {
   const sourcePages = await prepareSourcePages(options)
-  const localePages = await discoverPhobosPoLocalePages({ ...options, sourcePages })
+  const localePages = await discoverPoLocalePages({ ...options, sourcePages })
   const linkAliasesByLocale = await getLocalizedDocLinkAliasesByLocale(localePages, sourcePages)
 
   await rm(generatedRootDir, { recursive: true, force: true })
@@ -431,10 +425,10 @@ function shouldRegenerateForPath(changedPath: string, sourcePages: SourcePage[])
   return dirname(normalizedPath) === normalizedDocsDir && normalizedPath.endsWith('.md')
 }
 
-export function phobosPoLocalePlugin(options: PoLocaleOptions = {}): Plugin {
+export function poLocalePlugin(options: PoLocaleOptions = {}): Plugin {
   let pendingGeneration: Promise<LocalePage[]> | null = null
   const regenerate = async () => {
-    pendingGeneration ??= generatePhobosPoLocalePages(options).finally(() => {
+    pendingGeneration ??= generatePoLocalePages(options).finally(() => {
       pendingGeneration = null
     })
 
@@ -442,7 +436,7 @@ export function phobosPoLocalePlugin(options: PoLocaleOptions = {}): Plugin {
   }
 
   return {
-    name: 'phobos-po-locale-pages',
+    name: 'docs-po-locale-pages',
     enforce: 'pre',
     async buildStart() {
       await regenerate()

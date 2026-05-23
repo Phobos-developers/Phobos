@@ -219,7 +219,7 @@ const appDataPatch = `const data = initData(router.route);
             return normalizeOfflineHash(rawHash.value);
         }
     };
-    globalThis.__PHOBOS_VITEPRESS_DATA__ = data;`
+    globalThis.__DOCS_VITEPRESS_DATA__ = data;`
 
 // VitePress' lean initial module is an optimization for regular multi-file
 // builds. Offline docs bundle complete page modules into the runtime instead.
@@ -463,7 +463,7 @@ const vitePressAppPatches = [
     'client/app/index.js expose router',
     `const router = newRouter();`,
     `const router = newRouter();
-    globalThis.__PHOBOS_VITEPRESS_ROUTER__ = router;`,
+    globalThis.__DOCS_VITEPRESS_ROUTER__ = router;`,
   ),
   vitePressPatch('client/app/index.js expose data', `const data = initData(router.route);`, appDataPatch),
   vitePressPatch(
@@ -494,7 +494,7 @@ const vitePressAppPatches = [
   vitePressPatch(
     'client/app/index.js page loader',
     `pageModule = import(/*@vite-ignore*/ pageFilePath);`,
-    `pageModule = globalThis.__PHOBOS_OFFLINE_LOAD_PAGE__(pageFilePath);`,
+    `pageModule = globalThis.__DOCS_OFFLINE_LOAD_PAGE__(pageFilePath);`,
   ),
 ]
 
@@ -508,7 +508,7 @@ const localSearchBoxPatches = [
   vitePressPatch(
     'theme-default/VPLocalSearchBox.vue excerpt loader',
     /return\s+\{\s*id,\s*mod:\s*await\s+import\(\s*\/\*@vite-ignore\*\/\s*file\s*\)\s*\}/u,
-    `return { id, mod: await globalThis.__PHOBOS_OFFLINE_LOAD_PAGE__(file) }`,
+    `return { id, mod: await globalThis.__DOCS_OFFLINE_LOAD_PAGE__(file) }`,
   ),
   vitePressPatch('theme-default/VPLocalSearchBox.vue result href', `:href="p.id"`, `:href="'#' + p.id"`),
 ]
@@ -575,11 +575,11 @@ const vitePressModulePatchers: VitePressModulePatcher[] = [
   },
 ]
 
-export function phobosOfflineVitePressPlugin(): Plugin {
+export function offlineVitePressPlugin(): Plugin {
   let isSsrBuild = false
 
   return {
-    name: 'phobos-offline-vitepress',
+    name: 'docs-offline-vitepress',
     apply: 'build',
     enforce: 'pre',
     configResolved(config: ResolvedConfig) {

@@ -1,4 +1,4 @@
-export type PhobosGeneratedPage = {
+export type GeneratedPage = {
   page: string
   sourcePath: string
   originalSourcePath?: string
@@ -6,13 +6,13 @@ export type PhobosGeneratedPage = {
   outputPath: string
 }
 
-export type PhobosSourcePage = {
+export type SourcePage = {
   page: string
   sourcePath: string
   originalSourcePath?: string
 }
 
-export type PhobosLocalePage = PhobosSourcePage & {
+export type LocalePage = SourcePage & {
   locale: string
   poPath: string
   targetPath: string

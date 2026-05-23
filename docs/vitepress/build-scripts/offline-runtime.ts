@@ -27,7 +27,7 @@ function getOfflinePageLoaderSource(pageModuleRelPaths: string[], fromRelDir: st
 
   return `${imports.join('\n')}
 const __vpOfflinePageModules = new Map([${entries.join(',')}]);
-globalThis.__PHOBOS_OFFLINE_LOAD_PAGE__ = path => {
+globalThis.__DOCS_OFFLINE_LOAD_PAGE__ = path => {
   const key = String(path || '').replace(/^.*\\/assets\\//u, '/assets/');
   const load = __vpOfflinePageModules.get(key);
   if (!load) {
@@ -79,7 +79,7 @@ async function assertFileIncludes(filePath: string, snippets: string[], descript
 
   if (missingSnippet) {
     throw new Error(
-      `${description} is not offline-ready. Run docs build with PHOBOS_VITEPRESS_OFFLINE=1 before exporting.`,
+      `${description} is not offline-ready. Run docs build with DOCS_VITEPRESS_OFFLINE=1 before exporting.`,
     )
   }
 }
@@ -87,14 +87,14 @@ async function assertFileIncludes(filePath: string, snippets: string[], descript
 async function assertOfflineVitePressRuntime(appEntryPath: string, frameworkPath: string): Promise<void> {
   await assertFileIncludes(
     appEntryPath,
-    ['__PHOBOS_OFFLINE_LOAD_PAGE__', '__PHOBOS_VITEPRESS_DATA__', '__PHOBOS_VITEPRESS_ROUTER__'],
+    ['__DOCS_OFFLINE_LOAD_PAGE__', '__DOCS_VITEPRESS_DATA__', '__DOCS_VITEPRESS_ROUTER__'],
     'VitePress app bundle',
   )
   await assertFileIncludes(frameworkPath, [`./${offlineFilesDirName}/`, '#/'], 'VitePress framework bundle')
 
   const localSearchChunkPath = await getLocalSearchChunkPath()
   if (localSearchChunkPath) {
-    await assertFileIncludes(localSearchChunkPath, ['__PHOBOS_OFFLINE_LOAD_PAGE__'], 'VitePress local search bundle')
+    await assertFileIncludes(localSearchChunkPath, ['__DOCS_OFFLINE_LOAD_PAGE__'], 'VitePress local search bundle')
   }
 }
 

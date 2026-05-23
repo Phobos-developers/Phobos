@@ -13,11 +13,5 @@
     "types": ["node", "vitepress/client"]
   },
   "include": [".vitepress/**/*.ts", ".vitepress/**/*.vue", "eslint.config.ts", "vitepress/**/*.ts"],
-  "exclude": [
-    "node_modules",
-    ".vitepress/cache",
-    ".vitepress/.temp",
-    ".artifacts",
-    "vitepress/generated"
-  ]
+  "exclude": ["node_modules", ".vitepress/cache", ".vitepress/.temp", ".artifacts", "vitepress/generated"]
 }

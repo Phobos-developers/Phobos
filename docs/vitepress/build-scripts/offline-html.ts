@@ -64,7 +64,7 @@ export function rewriteHtmlForOffline(html: string, rootDepth: number): string {
   let output = html
 
   // Clean up any legacy offline layout overrides from previous exporter versions.
-  output = output.replace(/<style\s+id=(["'])phobos-offline-layout-fixes\1>[\s\S]*?<\/style>\s*/giu, '')
+  output = output.replace(/<style\s+id=(["'])docs-offline-layout-fixes\1>[\s\S]*?<\/style>\s*/giu, '')
   output = normalizeOfflineNavBarClasses(output)
 
   // The offline runtime is bundled into a classic script, so browsers do not

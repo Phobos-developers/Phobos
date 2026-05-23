@@ -10,9 +10,9 @@ type ViewTransitionDocument = Document & {
   }
 }
 
-type PhobosWindow = Window & {
-  __PHOBOS_SEARCH_HOTKEY_INSTALLED__?: boolean
-  __PHOBOS_RTD_FILETREEDIFF_POSITION_PATCH_INSTALLED__?: boolean
+type DocsWindow = Window & {
+  __DOCS_SEARCH_HOTKEY_INSTALLED__?: boolean
+  __DOCS_RTD_FILETREEDIFF_POSITION_PATCH_INSTALLED__?: boolean
 }
 
 function isSearchKeyboardShortcut(event: KeyboardEvent) {
@@ -20,13 +20,13 @@ function isSearchKeyboardShortcut(event: KeyboardEvent) {
 }
 
 function installPhysicalSearchHotKey() {
-  const phobosWindow = window as PhobosWindow
+  const docsWindow = window as DocsWindow
 
-  if (phobosWindow.__PHOBOS_SEARCH_HOTKEY_INSTALLED__) {
+  if (docsWindow.__DOCS_SEARCH_HOTKEY_INSTALLED__) {
     return
   }
 
-  phobosWindow.__PHOBOS_SEARCH_HOTKEY_INSTALLED__ = true
+  docsWindow.__DOCS_SEARCH_HOTKEY_INSTALLED__ = true
 
   window.addEventListener('keydown', event => {
     if (!isSearchKeyboardShortcut(event)) {
@@ -50,12 +50,12 @@ function shouldPatchReadTheDocsFileTreeDiffPosition() {
 function patchReadTheDocsFileTreeDiffPosition(host: Element) {
   const shadowRoot = host.shadowRoot
 
-  if (!shadowRoot || shadowRoot.querySelector('[data-phobos-rtd-filetreediff-position]')) {
+  if (!shadowRoot || shadowRoot.querySelector('[data-docs-rtd-filetreediff-position]')) {
     return
   }
 
   const style = document.createElement('style')
-  style.dataset.phobosRtdFiletreediffPosition = 'true'
+  style.dataset.docsRtdFiletreediffPosition = 'true'
   style.textContent = `
     :host > div {
       top: 72px !important;
@@ -74,16 +74,16 @@ function patchReadTheDocsFileTreeDiffPosition(host: Element) {
 }
 
 function installReadTheDocsFileTreeDiffPositionPatch() {
-  const phobosWindow = window as PhobosWindow
+  const docsWindow = window as DocsWindow
 
   if (
-    phobosWindow.__PHOBOS_RTD_FILETREEDIFF_POSITION_PATCH_INSTALLED__ ||
+    docsWindow.__DOCS_RTD_FILETREEDIFF_POSITION_PATCH_INSTALLED__ ||
     !shouldPatchReadTheDocsFileTreeDiffPosition()
   ) {
     return
   }
 
-  phobosWindow.__PHOBOS_RTD_FILETREEDIFF_POSITION_PATCH_INSTALLED__ = true
+  docsWindow.__DOCS_RTD_FILETREEDIFF_POSITION_PATCH_INSTALLED__ = true
 
   const patchAll = () => {
     document.querySelectorAll('readthedocs-filetreediff').forEach(patchReadTheDocsFileTreeDiffPosition)
@@ -151,7 +151,7 @@ function toggleAppearanceWithTransition(isDark: Ref<boolean>, event?: MouseEvent
 }
 
 const Layout = {
-  name: 'PhobosThemeLayout',
+  name: 'DocsThemeLayout',
   setup() {
     const { isDark } = useData()
 

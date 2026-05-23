@@ -1,6 +1,6 @@
 @if not defined _echo echo off
 
-rem Builds Phobos docs with VitePress.
+rem Builds docs with VitePress.
 
 rem Ensure we're in correct directory.
 cd /D "%~dp0"

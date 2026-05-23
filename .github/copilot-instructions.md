@@ -332,7 +332,7 @@ npm run lint            # ESLint for docs scripts/config/theme
 npm run format:check    # Prettier check for docs files
 ```
 
-Regular VitePress output goes to `docs/.artifacts/dist/`. Offline documentation output goes to `docs/.artifacts/phobos-offline-doc/`, with one top-level `Phobos-offline-doc.htm` and supporting files under `Phobos-offline-doc/`. Read the Docs publishes that offline output as an `htmlzip` download named `phobos-offline-doc.zip`.
+Regular VitePress output goes to `docs/.artifacts/dist/`. Offline documentation output goes to `docs/.artifacts/offline-doc/`, with one top-level `offline-doc.htm` and supporting files under `offline-doc/`. Read the Docs publishes that offline output as an `htmlzip` download named `offline-doc.zip`.
 
 ### Translations
 

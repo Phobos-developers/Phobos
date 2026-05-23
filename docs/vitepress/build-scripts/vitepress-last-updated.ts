@@ -3,14 +3,14 @@ import { relative } from 'node:path'
 import { promisify } from 'node:util'
 import { isErrnoException } from './shared/fs.ts'
 import { normalizePath, rootDir } from './shared/paths.ts'
-import type { PhobosGeneratedPage, PhobosLocalePage } from './shared/pages.ts'
+import type { GeneratedPage, LocalePage } from './shared/pages.ts'
 
 const execFileAsync = promisify(execFile)
 const gitTimestampCache = new Map<string, number | null>()
 
 type LastUpdatedTransformOptions = {
-  rootPages?: PhobosGeneratedPage[]
-  localePages?: PhobosLocalePage[]
+  rootPages?: GeneratedPage[]
+  localePages?: LocalePage[]
 }
 
 function getRepositoryRelativePath(filePath: string): string {
@@ -52,7 +52,7 @@ async function getMaxGitTimestampMs(filePaths: string[]): Promise<number | null>
   return validTimestamps.length ? Math.max(...validTimestamps) : null
 }
 
-export function createPhobosLastUpdatedTransform(options: LastUpdatedTransformOptions = {}) {
+export function createLastUpdatedTransform(options: LastUpdatedTransformOptions = {}) {
   const sourcePathsByGeneratedPage = new Map()
 
   for (const page of options.rootPages || []) {

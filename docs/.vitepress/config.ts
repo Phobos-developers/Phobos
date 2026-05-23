@@ -1,32 +1,32 @@
 import { defineConfig } from 'vitepress'
 import type { PluginOption } from 'vite'
 import {
-  generatePhobosPoLocalePages,
-  getPhobosPoLocaleRewrites,
-  phobosPoLocalePlugin,
-  readPhobosLocaleIndexTranslations,
+  generatePoLocalePages,
+  getPoLocaleRewrites,
+  poLocalePlugin,
+  readLocaleIndexTranslationMap,
 } from '../vitepress/build-scripts/vitepress-po-locale-plugin.ts'
 import {
-  generatePhobosRootPages,
-  getPhobosRootPageRewrites,
-  phobosRootPagesPlugin,
+  generateRootPages,
+  getRootPageRewrites,
+  rootPagesPlugin,
 } from '../vitepress/build-scripts/vitepress-root-pages-plugin.ts'
-import { createPhobosLastUpdatedTransform } from '../vitepress/build-scripts/vitepress-last-updated.ts'
-import { phobosOfflineVitePressPlugin } from '../vitepress/build-scripts/vitepress-offline-plugin.ts'
+import { createLastUpdatedTransform } from '../vitepress/build-scripts/vitepress-last-updated.ts'
+import { offlineVitePressPlugin } from '../vitepress/build-scripts/vitepress-offline-plugin.ts'
 import { mediaDimensionsPlugin } from '../vitepress/build-scripts/media-dimensions-plugin.ts'
 import { artifactsDistDir, outputDir as offlineOutputDir } from '../vitepress/build-scripts/shared/offline.ts'
 
-const isOfflineBuild = process.env.PHOBOS_VITEPRESS_OFFLINE === '1'
+const isOfflineBuild = process.env.DOCS_VITEPRESS_OFFLINE === '1'
 const vitePressBase = process.env.READTHEDOCS_CANONICAL_URL
   ? new URL(process.env.READTHEDOCS_CANONICAL_URL).pathname.replace(/\/$/u, '')
   : '/'
-const rootPages = await generatePhobosRootPages()
-const poLocalePages = await generatePhobosPoLocalePages({ sourcePages: rootPages })
-const rootPageRewrites = getPhobosRootPageRewrites(rootPages)
-const poLocaleRewrites = await getPhobosPoLocaleRewrites(poLocalePages)
-const transformPageData = createPhobosLastUpdatedTransform({ rootPages, localePages: poLocalePages })
-const phobosStaticPublicDirMarkdownPlugin: PluginOption = {
-  name: 'phobos-static-public-dir-markdown',
+const rootPages = await generateRootPages()
+const poLocalePages = await generatePoLocalePages({ sourcePages: rootPages })
+const rootPageRewrites = getRootPageRewrites(rootPages)
+const poLocaleRewrites = await getPoLocaleRewrites(poLocalePages)
+const transformPageData = createLastUpdatedTransform({ rootPages, localePages: poLocalePages })
+const staticPublicDirMarkdownPlugin: PluginOption = {
+  name: 'docs-static-public-dir-markdown',
   enforce: 'pre',
   transform(source, id) {
     const modulePath = id.split('?')[0]
@@ -41,17 +41,17 @@ const phobosStaticPublicDirMarkdownPlugin: PluginOption = {
   },
 }
 const vitePlugins: PluginOption[] = [
-  phobosStaticPublicDirMarkdownPlugin,
+  staticPublicDirMarkdownPlugin,
   mediaDimensionsPlugin(),
-  phobosRootPagesPlugin(),
-  phobosPoLocalePlugin({
+  rootPagesPlugin(),
+  poLocalePlugin({
     sourcePages: rootPages,
-    prepareSources: generatePhobosRootPages,
+    prepareSources: generateRootPages,
   }),
 ]
 
 if (isOfflineBuild) {
-  vitePlugins.push(phobosOfflineVitePressPlugin())
+  vitePlugins.push(offlineVitePressPlugin())
 }
 
 const englishNav = [
@@ -84,7 +84,7 @@ const englishSidebar = [
 ]
 
 async function translateLocaleThemeText(locale: string, msgid: string) {
-  const translations = await readPhobosLocaleIndexTranslations(locale)
+  const translations = await readLocaleIndexTranslationMap(locale)
   return translations.get(msgid) || msgid
 }
 
@@ -138,7 +138,7 @@ async function createLocaleConfig(locale: string, labelMsgid: string, lang: stri
         label: await translateLocaleThemeText(locale, 'On this page'),
       },
       editLink: {
-        pattern: getPhobosEditLink,
+        pattern: getEditLink,
         text: await translateLocaleThemeText(locale, 'Edit this page'),
       },
       lastUpdated: {
@@ -158,7 +158,7 @@ async function createLocaleConfig(locale: string, labelMsgid: string, lang: stri
   }
 }
 
-function getPhobosEditLink({ filePath }: { filePath: string }) {
+function getEditLink({ filePath }: { filePath: string }) {
   const repositoryEditRootUrl = 'https://github.com/Phobos-developers/Phobos/edit/develop/'
   const getPoPathForGeneratedLocalePage = (locale: string, pagePath: string) => {
     if (pagePath === 'README.md') {
@@ -273,7 +273,7 @@ export default defineConfig({
       },
     },
     editLink: {
-      pattern: getPhobosEditLink,
+      pattern: getEditLink,
       text: 'Edit this page',
     },
     socialLinks: [{ icon: 'github', link: 'https://github.com/Phobos-developers/Phobos' }],

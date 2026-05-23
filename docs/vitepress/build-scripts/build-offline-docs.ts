@@ -22,5 +22,5 @@ function runNpm(args: string[], env: NodeJS.ProcessEnv = {}): Promise<void> {
   })
 }
 
-await runNpm(['run', 'build'], { PHOBOS_VITEPRESS_OFFLINE: '1' })
+await runNpm(['run', 'build'], { DOCS_VITEPRESS_OFFLINE: '1' })
 await import('./build-export-offline-html.ts')

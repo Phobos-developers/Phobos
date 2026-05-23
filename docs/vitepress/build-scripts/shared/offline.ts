@@ -1,9 +1,9 @@
 import { resolve } from 'node:path'
 import { docsDir } from './paths.ts'
 
-export const offlineOutputDirName = 'phobos-offline-doc'
-export const offlineEntryFileName = 'Phobos-offline-doc.htm'
-export const offlineFilesDirName = 'Phobos-offline-doc'
+export const offlineOutputDirName = 'offline-doc'
+export const offlineEntryFileName = 'offline-doc.htm'
+export const offlineFilesDirName = 'offline-doc'
 export const offlineRuntimeFileName = 'vitepress-runtime.js'
 export const offlineRuntimeRelPath = offlineRuntimeFileName
 export const flattenedPayloadDirs = new Set(['assets', 'images', 'offline-assets'])

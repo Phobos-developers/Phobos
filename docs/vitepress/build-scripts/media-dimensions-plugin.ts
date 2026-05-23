@@ -318,7 +318,7 @@ function resolveVideoPath(src: string, markdownPath: string): string | null {
 }
 
 function escapeHtml(value: string): string {
-  return value
+  return value //
     .replace(/&/gu, '&amp;')
     .replace(/"/gu, '&quot;')
     .replace(/</gu, '&lt;')
@@ -470,7 +470,7 @@ async function rewriteMarkdownVideoLinks(
       didChange = true
 
       return [
-        `<video class="phobos-doc-video" src="${escapeHtml(normalizeHtmlMediaSrc(src))}"`,
+        `<video class="docs-video" src="${escapeHtml(normalizeHtmlMediaSrc(src))}"`,
         ' autoplay loop muted playsinline disablepictureinpicture',
         ` aria-label="image" width="${dimensions.width}" height="${dimensions.height}"></video>`,
       ].join('')
@@ -492,7 +492,12 @@ export function mediaDimensionsPlugin(): Plugin {
     async transformIndexHtml(html) {
       let rewritten = html
       const modulePath = resolve(docsDir, 'index.html')
-      const videoResult = await addDimensionsToHtmlMediaTags(rewritten, modulePath, htmlVideoTagRegExp, readVideoDimensions)
+      const videoResult = await addDimensionsToHtmlMediaTags(
+        rewritten,
+        modulePath,
+        htmlVideoTagRegExp,
+        readVideoDimensions,
+      )
       rewritten = videoResult.source
 
       const imageTagResult = await addDimensionsToHtmlMediaTags(
@@ -521,7 +526,12 @@ export function mediaDimensionsPlugin(): Plugin {
       rewritten = markdownVideoResult.source
       didChange ||= markdownVideoResult.didChange
 
-      const videoResult = await addDimensionsToHtmlMediaTags(rewritten, modulePath, htmlVideoTagRegExp, readVideoDimensions)
+      const videoResult = await addDimensionsToHtmlMediaTags(
+        rewritten,
+        modulePath,
+        htmlVideoTagRegExp,
+        readVideoDimensions,
+      )
       rewritten = videoResult.source
       didChange ||= videoResult.didChange
 
