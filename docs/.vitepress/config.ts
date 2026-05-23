@@ -239,7 +239,7 @@ export default defineConfig({
   description: 'Community documentation for Phobos YR engine extension',
   base: vitePressBase,
   outDir: isOfflineBuild ? offlineOutputDir : artifactsDistDir,
-  cleanUrls: true,
+  cleanUrls: false,
   lastUpdated: true,
   ignoreDeadLinks: true,
   transformPageData,
