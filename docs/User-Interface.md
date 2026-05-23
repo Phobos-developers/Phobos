@@ -55,7 +55,7 @@ ShowTimer.Percentage=              ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMENAME]                           ; TechnoType
+[SOMETECHNO]                         ; TechnoType
 HealthBar.Hide=false                 ; boolean
 HealthBar.HidePips=false             ; boolean
 HealthBar.Permanent=false            ; boolean
@@ -154,7 +154,7 @@ Palette=palette.pal                            ; filename with .pal extension
 Shape.Spacing=                                 ; integers - horizontal, vertical spacing between digits
 Shape.PercentageFrame=false                    ; boolean
 
-[SOMETECHNOTYPE]                               ; TechnoType
+[SOMETECHNO]                                   ; TechnoType
 DigitalDisplay.Disable=false                   ; boolean
 DigitalDisplayTypes=                           ; List of DigitalDisplayTypes
 DigitalDisplay.Health.FakeAtDisguise=true      ; boolean
@@ -619,7 +619,7 @@ In `rulesmd.ini`:
 [General]
 SortCameoByName=false  ; boolean
 
-[SOMENAME]             ; TechnoType / SuperWeaponType
+[SOMETECHNO/SOMESW]    ; TechnoType / SuperWeaponType
 CameoPriority=0        ; integer
 ```
 
@@ -894,8 +894,8 @@ MaxWidth=0                 ; integer, pixels
 ```
 In `rulesmd.ini`:
 ```ini
-[SOMENAME]            ; TechnoType or SWType
-UIDescription=<none>  ; CSF entry key
+[SOMETECHNO/SOMESW]        ; TechnoType or SWType
+UIDescription=<none>       ; CSF entry key
 ```
 
 - The descriptions are designed to be toggleable by users. For now you can only do that externally via client or manually.
