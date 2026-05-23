@@ -231,11 +231,11 @@ DEFINE_HOOK(0x6FD38D, TechnoClass_DrawSth_DrawToInvisoFlakScatterLocation, 0x7) 
 		{
 			const auto& pRulesExt = RulesExt::Global();
 			const auto radius = ScenarioClass::Instance->Random.RandomRanged(pRulesExt->VisualScatter_Min.Get(), pRulesExt->VisualScatter_Max.Get());
-			*pTargetCoords = MapClass::GetRandomCoordsNear((pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords), radius, false);
+			*pTargetCoords = MapClass::GetRandomCoordsNear(((pBullet->Type->Inviso && pBullet->Type->FlakScatter) ? pBullet->Location : abstract_cast<ObjectClass*>(pBullet->Target)->GetTargetCoords()), radius, false);
 		}
 		else
 		{
-			*pTargetCoords = (pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords);
+			*pTargetCoords = ((pBullet->Type->Inviso && pBullet->Type->FlakScatter) ? pBullet->Location : abstract_cast<ObjectClass*>(pBullet->Target)->GetTargetCoords());
 		}
 	}
 	else if (const auto pObstacleCell = FireAtTemp::pObstacleCell)
