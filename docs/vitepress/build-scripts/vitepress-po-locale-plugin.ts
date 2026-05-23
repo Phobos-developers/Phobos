@@ -11,7 +11,14 @@ const localeRootDir = resolve(docsDir, 'locale')
 const localeMessagesDirName = 'LC_MESSAGES'
 const generatedRootRelPath = 'vitepress/generated/locales'
 const generatedRootDir = resolve(docsDir, generatedRootRelPath)
+
+// Fuzzy translations are useful while the migration is still being reviewed,
+// but CI/release builds can opt out through DOCS_PO_INCLUDE_FUZZY=0.
 const includeFuzzy = process.env.DOCS_PO_INCLUDE_FUZZY !== '0'
+
+// Only real documentation sources should be discovered. Generated output,
+// VitePress internals, static assets, and locale sources would otherwise feed
+// back into the PO generation pass.
 const ignoredDocsMarkdownDirs = new Set(['.artifacts', '.vitepress', '_static', 'locale', 'node_modules', 'vitepress'])
 
 type PoLocaleOptions = {
@@ -88,6 +95,8 @@ function getSourcePageCandidatesForPoRelPath(poRelPath: string): string[] {
   }
 
   const parentDir = dir === '.' ? '' : dir
+  // gettext convention names the translated landing page index.po, while the
+  // source can be either README.md or index.md.
   return [normalizePath(join(parentDir, 'README.md')), normalizePath(join(parentDir, 'index.md'))]
 }
 
@@ -97,6 +106,7 @@ function getGeneratedRelPath(locale: string, page: string): string {
 
 function getLocalizedOutputPath(locale: string, page: string): string {
   if (basename(page) === 'README.md') {
+    // VitePress treats README.md as the directory index page.
     const pageDir = dirname(page)
     const localeDir = pageDir === '.' ? locale : `${locale}/${normalizePath(pageDir)}`
     return `${localeDir}/index.md`
@@ -112,6 +122,9 @@ function getSourcePageMap(sourcePages: SourcePage[]): Map<string, SourcePage> {
 async function collectMarkdownSourcePages(sourcePages: SourcePage[]): Promise<SourcePage[]> {
   const pages = new Map(sourcePages.map(page => [page.page, page]))
 
+  // sourcePages already includes generated root pages such as README.md and
+  // CREDITS.md. Fill the rest from docs/ so translated links can resolve both
+  // root-generated pages and normal documentation pages.
   for (const page of await collectDocsMarkdownFiles()) {
     if (pages.has(page.page)) {
       continue
@@ -131,6 +144,9 @@ async function resolveSourcePageForPo(
   for (const page of getSourcePageCandidatesForPoRelPath(poRelPath)) {
     const generatedSource = sourcePageMap.get(page)
     if (generatedSource) {
+      // Root pages are normalized into docs/vitepress/generated/root before PO
+      // translation, so use that generated markdown as the source but keep the
+      // original path for dev-server watch invalidation.
       return {
         page,
         sourcePath: generatedSource.sourcePath,
@@ -196,6 +212,9 @@ function parsePo(buffer: Buffer): Map<string, string> {
 
   for (const entry of Object.values(table)) {
     const msgid = entry.msgid || ''
+    // gettext-parser exposes plural forms as msgstr array entries. The docs
+    // extractor only emits singular markdown strings, so the first entry is the
+    // one used for this pipeline.
     const msgstr = Array.isArray(entry.msgstr) ? entry.msgstr[0] || '' : ''
     const fuzzy = Boolean(entry.comments?.flag?.includes('fuzzy'))
 
@@ -226,6 +245,9 @@ async function readLocaleIndexTranslations(locale: string): Promise<Map<string, 
 const localeIndexTranslationsCache = new Map<string, Promise<Map<string, string>>>()
 
 export async function readLocaleIndexTranslationMap(locale: string): Promise<Map<string, string>> {
+  // The VitePress config asks for several theme labels from index.po. Cache the
+  // parse result so each locale only reads and parses the file once per config
+  // evaluation.
   if (!localeIndexTranslationsCache.has(locale)) {
     localeIndexTranslationsCache.set(locale, readLocaleIndexTranslations(locale))
   }
@@ -247,6 +269,9 @@ async function getLocalizedDocLinkAliases(locale: string, sourcePages: SourcePag
   }
 
   for (const sourcePage of await collectMarkdownSourcePages(sourcePages)) {
+    // Users may write links to translated page titles in PO strings. Map those
+    // human-facing translated filenames back to the stable source filenames that
+    // VitePress actually generates.
     const title = getMarkdownTitle(await readFile(sourcePage.sourcePath, 'utf8'))
     const translatedTitle = title ? translations.get(title) : null
 
@@ -282,7 +307,87 @@ async function getLocalizedDocLinkAliasesByLocale(
 }
 
 function isUnsafeStandaloneToken(msgid: string): boolean {
+  // Plain identifiers are often INI values or code-like tokens. Translating
+  // them globally can corrupt examples, so only structured markdown contexts
+  // such as headings get a chance to use these translations.
   return /^[A-Za-z][A-Za-z0-9_-]*$/.test(msgid)
+}
+
+function translateExactText(text: string, translations: Map<string, string>): string | null {
+  const translatedText = translations.get(text)
+  return translatedText && translatedText !== text ? translatedText : null
+}
+
+function translateAtxMarkdownHeadingLine(line: string, translations: Map<string, string>): string {
+  const atxHeading = line.match(/^([ \t]{0,3}#{1,6}[ \t]+)(.*?)([ \t]+#+[ \t]*)?$/u)
+  if (!atxHeading) {
+    return line
+  }
+
+  const headingText = atxHeading[2].trim()
+  const translatedHeadingText = translateExactText(headingText, translations)
+  if (!translatedHeadingText) {
+    return line
+  }
+
+  return `${atxHeading[1]}${translatedHeadingText}${atxHeading[3] || ''}`
+}
+
+function translateSetextMarkdownHeadingLine(line: string, translations: Map<string, string>): string {
+  const setextHeading = line.match(/^([ \t]{0,3})(\S.*?)\s*$/u)
+  const headingText = setextHeading?.[2].trim() || ''
+  const translatedHeadingText = translateExactText(headingText, translations)
+  if (!setextHeading || !translatedHeadingText) {
+    return line
+  }
+
+  return `${setextHeading[1]}${translatedHeadingText}`
+}
+
+function getMarkdownFenceMarker(line: string): string | null {
+  return line.match(/^[ \t]*(`{3,}|~{3,})/u)?.[1] || null
+}
+
+function isClosingMarkdownFence(marker: string, openingMarker: string): boolean {
+  return marker[0] === openingMarker[0] && marker.length >= openingMarker.length
+}
+
+function isSetextHeadingUnderline(line: string): boolean {
+  return Boolean(line.match(/^[ \t]{0,3}(?:=+|-+)[ \t]*$/u))
+}
+
+function translateMarkdownHeadings(content: string, translations: Map<string, string>): string {
+  let openingFenceMarker: string | null = null
+  const lines = content.split('\n')
+
+  // Headings need a separate pass because some valid headings are single words
+  // like "Migrating" or "Downloads", which are intentionally skipped by the
+  // later global replacement pass.
+  return lines
+    .map((line, index) => {
+      const fenceMarker = getMarkdownFenceMarker(line)
+
+      // Keep code fences opaque. A line that looks like a markdown heading
+      // inside an INI or shell snippet must remain untranslated.
+      if (fenceMarker && (!openingFenceMarker || isClosingMarkdownFence(fenceMarker, openingFenceMarker))) {
+        openingFenceMarker = openingFenceMarker ? null : fenceMarker
+        return line
+      }
+
+      if (openingFenceMarker) {
+        return line
+      }
+
+      // Setext headings are two-line constructs, so the title line is only
+      // safe to translate when the following line is the underline marker.
+      const nextLine = lines[index + 1] || ''
+      if (isSetextHeadingUnderline(nextLine)) {
+        return translateSetextMarkdownHeadingLine(line, translations)
+      }
+
+      return translateAtxMarkdownHeadingLine(line, translations)
+    })
+    .join('\n')
 }
 
 function getLineEnding(content: string): '\n' | '\r\n' {
@@ -311,6 +416,9 @@ function normalizeLocalizedDocLinks(
   const rootAssets = new Set(['logo.png', 'logo-mono.png'])
 
   return content.replace(/\]\(([^)]+)\)/g, (full: string, target: string) => {
+    // Translated pages are generated into docs/vitepress/generated/locales.
+    // Relative links from the original markdown may therefore need to point
+    // back to generated root assets or untranslated source page names.
     const assetMatch = target.match(/^([^#\s]+)(#[^)]+)?$/)
     if (!assetMatch) {
       return full
@@ -351,6 +459,8 @@ function translateMarkdown(content: string, translations: Map<string, string>): 
   let output = normalizeLineEndings(content)
   const normalizedTranslations = new Map<string, string>()
 
+  // Normalize PO entries before matching so translators do not have to match
+  // the platform-specific line endings of the source markdown exactly.
   for (const [msgid, msgstr] of translations.entries()) {
     const normalizedMsgid = normalizeLineEndings(msgid)
     const normalizedMsgstr = normalizeLineEndings(msgstr)
@@ -360,6 +470,10 @@ function translateMarkdown(content: string, translations: Map<string, string>): 
     }
   }
 
+  output = translateMarkdownHeadings(output, normalizedTranslations)
+
+  // Longest-first replacement prevents a short msgid from partially replacing
+  // text that also has a more specific multi-word translation.
   const entries = [...normalizedTranslations.entries()]
     .filter(([msgid, msgstr]) => msgid && msgstr && msgid !== msgstr && !isUnsafeStandaloneToken(msgid))
     .sort((a, b) => b[0].length - a[0].length)
@@ -389,6 +503,9 @@ export async function generatePoLocalePages(options: PoLocaleOptions = {}): Prom
   const localePages = await discoverPoLocalePages({ ...options, sourcePages })
   const linkAliasesByLocale = await getLocalizedDocLinkAliasesByLocale(localePages, sourcePages)
 
+  // Generated locale pages are disposable build artifacts. Removing the whole
+  // directory prevents stale pages from surviving after a source page or PO file
+  // has been deleted.
   await rm(generatedRootDir, { recursive: true, force: true })
 
   for (const page of localePages) {
@@ -416,6 +533,8 @@ function shouldRegenerateForPath(changedPath: string, sourcePages: SourcePage[])
   }
 
   for (const sourcePage of sourcePages) {
+    // Generated root pages are derived from files outside docs/. Watch their
+    // original paths, not only their generated markdown output.
     const watchedSourcePath = sourcePage.originalSourcePath || sourcePage.sourcePath
     if (normalizedPath === normalizePath(watchedSourcePath)) {
       return true
@@ -428,6 +547,8 @@ function shouldRegenerateForPath(changedPath: string, sourcePages: SourcePage[])
 export function poLocalePlugin(options: PoLocaleOptions = {}): Plugin {
   let pendingGeneration: Promise<LocalePage[]> | null = null
   const regenerate = async () => {
+    // Several watcher events can fire for one save. Share the same generation
+    // promise so VitePress does not run overlapping writes into generated/.
     pendingGeneration ??= generatePoLocalePages(options).finally(() => {
       pendingGeneration = null
     })
