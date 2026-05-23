@@ -21,7 +21,7 @@ const markdownVideoLinkRegExp = /(?<!!)\[([^\]]*)\]\(([^)\s]+?\.(?:webm|mp4))(?:
 const htmlAttributeRegExp = /\s([^\s=]+)(?:=(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/gu
 const videoDimensionsCache = new Map<string, Promise<MediaDimensions | null>>()
 const imageDimensionsCache = new Map<string, Promise<MediaDimensions | null>>()
-const markdownCaptionAfterHtmlMediaRegExp = /((?:<img\b[^>]*>|<video\b[^>]*><\/video>))\n(?=[_*])/giu
+const markdownCaptionAfterHtmlMediaRegExp = /((?:<img\b[^>]*>|<video\b[^>]*><\/video>))(\r?\n)(?=[_*])/giu
 
 function readVint(buffer: Buffer, offset: number, keepMarker: boolean): Vint | null {
   if (offset >= buffer.length) {
@@ -174,7 +174,7 @@ function findWebmVideoDimensions(buffer: Buffer): MediaDimensions | null {
 }
 
 function separateMarkdownCaptionsFromHtmlMedia(source: string): string {
-  return source.replace(markdownCaptionAfterHtmlMediaRegExp, '$1\n\n')
+  return source.replace(markdownCaptionAfterHtmlMediaRegExp, '$1$2$2')
 }
 
 function readMp4BoxSize(buffer: Buffer, offset: number, end: number): { size: number; headerSize: number } | null {
