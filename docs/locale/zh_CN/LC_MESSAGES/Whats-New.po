@@ -6,7 +6,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Phobos\n"
+"Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-17 12:14+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -165,6 +165,9 @@ msgstr ""
 msgid "From 0.4"
 msgstr "由 0.4"
 
+msgid "0.4"
+msgstr "0.4"
+
 msgid ""
 "`Splits.TargetCellRange` < 0 now applies special behaviour where the "
 "projectile does not consider nearby cells as additional targets if there "
@@ -207,6 +210,9 @@ msgstr ""
 
 msgid "From post-0.3 devbuilds"
 msgstr "由 post-0.3 开发版"
+
+msgid "0.3"
+msgstr "0.3"
 
 msgid ""
 "Ivan bombs no longer automatically center on building when attached. Set "
@@ -531,6 +537,15 @@ msgstr "`DiskLaser.Radius` 的值曾被错误解释了一个大小为 1/2π 的�
 msgid "From 0.2.2.2"
 msgstr "由 0.2.2.2"
 
+msgid "0.2"
+msgstr "0.2"
+
+msgid "0.2.2"
+msgstr "0.2.2"
+
+msgid "0.2.2.2"
+msgstr "0.2.2.2"
+
 msgid ""
 "Keys `rulesmd.ini -> [WarheadType] -> PenetratesShield` and `rulesmd.ini -> "
 "[WarheadType] -> BreaksShield` have been changed to `Shield.Penetrate` and "
@@ -558,6 +573,12 @@ msgstr ""
 
 msgid "From 0.1.1"
 msgstr "由 0.1.1"
+
+msgid "0.1"
+msgstr "0.1"
+
+msgid "0.1.1"
+msgstr "0.1.1"
 
 msgid ""
 "Key `rulesmd.ini -> [TechnoType] -> Deployed.RememberTarget` is deprecated "
@@ -589,6 +610,117 @@ msgstr ""
 "你可以使用 Phobos 补充资源库 中的 "
 "[*迁移工具*](https://github.com/Phobos-developers/PhobosSupplementaries/tree/"
 "develop/MigrationUtility) 轻松完成这些迁移。"
+
+msgid ""
+"`[WarheadType] -> Crit.AffectAbovePercent` -> `[WarheadType] -> "
+"Crit.AffectsAbovePercent`."
+msgstr ""
+"`[WarheadType] -> Crit.AffectAbovePercent` -> `[WarheadType] -> "
+"Crit.AffectsAbovePercent`."
+
+msgid ""
+"`[AttachEffectType] -> AffectTargets` -> `[AttachEffectType] -> "
+"AffectsTarget`"
+msgstr ""
+"`[AttachEffectType] -> AffectTargets` -> `[AttachEffectType] -> "
+"AffectsTarget`"
+
+msgid ""
+"`[AttachEffectType] -> ReflectDamage.AffectsHouses` -> "
+"`[AttachEffectType] -> ReflectDamage.AffectsHouse`"
+msgstr ""
+"`[AttachEffectType] -> ReflectDamage.AffectsHouses` -> "
+"`[AttachEffectType] -> ReflectDamage.AffectsHouse`"
+
+msgid ""
+"`[AttachEffectType/TechnoType] -> RevengeWeapon.AffectsHouses` -> "
+"`[AttachEffectType/TechnoType] -> RevengeWeapon.AffectsHouse`"
+msgstr ""
+"`[AttachEffectType/TechnoType] -> RevengeWeapon.AffectsHouses` -> "
+"`[AttachEffectType/TechnoType] -> RevengeWeapon.AffectsHouse`"
+
+msgid "`[TechnoType] -> AutoFire` -> `[TechnoType] -> AutoTargetOwnPosition`"
+msgstr "`[TechnoType] -> AutoFire` -> `[TechnoType] -> AutoTargetOwnPosition`"
+
+msgid ""
+"`[TechnoType] -> AutoFire.TargetSelf` -> `[TechnoType] -> "
+"AutoTargetOwnPosition.Self`"
+msgstr ""
+"`[TechnoType] -> AutoFire.TargetSelf` -> `[TechnoType] -> "
+"AutoTargetOwnPosition.Self`"
+
+msgid ""
+"`[WarheadType] -> DetonateOnAllMapObjects.AffectHouses` -> `[WarheadType]"
+" -> DetonateOnAllMapObjects.AffectsHouse`"
+msgstr ""
+"`[WarheadType] -> DetonateOnAllMapObjects.AffectHouses` -> `[WarheadType]"
+" -> DetonateOnAllMapObjects.AffectsHouse`"
+
+msgid ""
+"`[WarheadType] -> DetonateOnAllMapObjects.AffectTargets` -> "
+"`[WarheadType] -> DetonateOnAllMapObjects.AffectsTarget`"
+msgstr ""
+"`[WarheadType] -> DetonateOnAllMapObjects.AffectTargets` -> "
+"`[WarheadType] -> DetonateOnAllMapObjects.AffectsTarget`"
+
+msgid ""
+"`[WarheadType] -> Crit.AffectBelowPercent` -> `[WarheadType] -> "
+"Crit.AffectsBelowPercent`."
+msgstr ""
+"`[WarheadType] -> Crit.AffectBelowPercent` -> `[WarheadType] -> "
+"Crit.AffectsBelowPercent`."
+
+msgid "`[WarheadType] -> Crit.Affects` -> `[WarheadType] -> Crit.AffectsTarget`"
+msgstr "`[WarheadType] -> Crit.Affects` -> `[WarheadType] -> Crit.AffectsTarget`"
+
+msgid ""
+"`[WarheadType] -> Crit.AffectsHouses` -> `[WarheadType] -> "
+"Crit.AffectsHouse`"
+msgstr ""
+"`[WarheadType] -> Crit.AffectsHouses` -> `[WarheadType] -> "
+"Crit.AffectsHouse`"
+
+msgid ""
+"`[WarheadType] -> KillWeapon.Affects` -> `[WarheadType] -> "
+"KillWeapon.AffectsTarget`"
+msgstr ""
+"`[WarheadType] -> KillWeapon.Affects` -> `[WarheadType] -> "
+"KillWeapon.AffectsTarget`"
+
+msgid ""
+"`[WarheadType] -> KillWeapon.AffectsHouses` -> `[WarheadType] -> "
+"KillWeapon.AffectsHouse`"
+msgstr ""
+"`[WarheadType] -> KillWeapon.AffectsHouses` -> `[WarheadType] -> "
+"KillWeapon.AffectsHouse`"
+
+msgid ""
+"`[WarheadType] -> KillWeapon.OnFirer.Affects` -> `[WarheadType] -> "
+"KillWeapon.OnFirer.AffectsTarget`"
+msgstr ""
+"`[WarheadType] -> KillWeapon.OnFirer.Affects` -> `[WarheadType] -> "
+"KillWeapon.OnFirer.AffectsTarget`"
+
+msgid ""
+"`[WarheadType] -> KillWeapon.OnFirer.AffectsHouses` -> `[WarheadType] -> "
+"KillWeapon.OnFirer.AffectsHouse`"
+msgstr ""
+"`[WarheadType] -> KillWeapon.OnFirer.AffectsHouses` -> `[WarheadType] -> "
+"KillWeapon.OnFirer.AffectsHouse`"
+
+msgid ""
+"`[WarheadType/SuperWeaponType] -> Convert(N).AffectedHouses` -> "
+"`[WarheadType/SuperWeaponType] -> Convert(N).AffectsHouse`"
+msgstr ""
+"`[WarheadType/SuperWeaponType] -> Convert(N).AffectedHouses` -> "
+"`[WarheadType/SuperWeaponType] -> Convert(N).AffectsHouse`"
+
+msgid ""
+"`[SuperWeaponType] -> LimboKill.Affected` -> `[SuperWeaponType] -> "
+"LimboKill.AffectsHouse`"
+msgstr ""
+"`[SuperWeaponType] -> LimboKill.Affected` -> `[SuperWeaponType] -> "
+"LimboKill.AffectsHouse`"
 
 msgid ""
 "If it is detected that you are using the old INI flags, a warning log will "
@@ -952,8 +1084,7 @@ msgid ""
 "targets](Fixed-or-Improved-Logics.md#customizing-parasite) "
 "(by NetsuNegi)"
 msgstr ""
-"[自定义寄生秒杀目标](Fixed-or-Improved-Logics.md#customizing-parasite-culling-"
-"targets)（by NetsuNegi）"
+"[自定义寄生秒杀目标](Fixed-or-Improved-Logics.md#customizing-parasite)（by NetsuNegi）"
 
 msgid ""
 "[Overload characteristic "
@@ -1588,9 +1719,9 @@ msgid ""
 msgstr "[低优先级部署](New-or-Enhanced-Logics.md#low-priority-for-deploy)（by Starkku）"
 
 msgid ""
-"[Weapon target filtering by target "
-"veterancy](New-or-Enhanced-Logics.md#weapon-targeting-filter) (by Flactine)"
-msgstr "[根据目标经验等级的武器目标筛选](New-or-Enhanced-Logics.md#attached-effects)（by Flactine）"
+"[Weapon target filtering by target veterancy](New-or-Enhanced-Logics.md"
+"#weapon-targeting-filter) (by Flactine)"
+msgstr "[根据目标经验等级的武器目标筛选](New-or-Enhanced-Logics.md#weapon-targeting-filter)（by Flactine）"
 
 msgid ""
 "[Warhead effect filtering by target "
@@ -1822,9 +1953,9 @@ msgid ""
 msgstr "[可更新开火动画](Fixed-or-Improved-Logics.md#updateable-firing-anim)（by TaranDahl）"
 
 msgid ""
-"[Hotkey for deselect object from current "
-"selection](User-Interface.md#deselect-object-s) (by FrozenFog)"
-msgstr "[从当前已选中中取消选择对象的快捷键](User-Interface.md#deselect-object)（by FrozenFog）"
+"[Hotkey for deselect object from current selection](User-Interface.md"
+"#deselect-object-s) (by FrozenFog)"
+msgstr "[从当前已选中中取消选择对象的快捷键](User-Interface.md#deselect-object-s)（by FrozenFog）"
 
 msgid ""
 "[Additional customizations for `Splits` concerning target "
@@ -2729,6 +2860,9 @@ msgstr ""
 "[超级武器的辅助单位和科技等级限制](New-or-Enhanced-Logics.md#aux-technos-and-techlevel-"
 "requirement-of-superweapon)（by NetsuNegi 与 Ollerus）"
 
+msgid "0.4.0.3"
+msgstr "0.4.0.3"
+
 msgid ""
 "Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor "
 "and cannot be sold (by CnCRAZER, Starkku, Noble_Fish)"
@@ -2743,6 +2877,9 @@ msgid ""
 "Fixed vehicles disguised as trees incorrectly displaying veterancy insignia "
 "when they shouldn't (by Starkku)"
 msgstr "修复了伪装成树的载具错误显示出军衔（能打人的精英树）的问题（by Starkku）"
+
+msgid "0.4.0.2"
+msgstr "0.4.0.2"
 
 msgid ""
 "Fixed `AircraftDockingDirs` being reset if the BuildingType section is "
@@ -2789,6 +2926,9 @@ msgid ""
 "Animation-fired weapons now snap on the object they are attached to if "
 "present (by TaranDahl)"
 msgstr "动画发射的武器现在会自动吸附到它们所附着的对象上（by TaranDahl）"
+
+msgid "0.4.0.1"
+msgstr "0.4.0.1"
 
 msgid ""
 "Fixed preplaced aircraft outside visible map being incorrectly flagged as "
@@ -4611,6 +4751,9 @@ msgid ""
 "multiplayer save file overwriting when saving too fast (by Kerbiter)"
 msgstr "移植了 XNA CnCNet Client 的多人游戏存档处理以解决保存过快时偶发的多人存档文件覆盖文件（by Kerbiter）"
 
+msgid "0.3.0.1"
+msgstr "0.3.0.1"
+
 msgid "Additional sync logging in case of desync errors occuring (by Starkku)"
 msgstr "现在发生 Reconnection Error 时所生成的 `SYNC#.txt` 将记录更多信息（by Starkku）"
 
@@ -5369,6 +5512,9 @@ msgid ""
 "correctly reset after firing (by Starkku)"
 msgstr "修复了战机开火后 Burst 索引未能正确重置导致的游戏卡死问题（by Starkku）"
 
+msgid "0.2.2.1"
+msgstr "0.2.2.1"
+
 msgid "Fixed random crashes about `CameoPriority` (by Uranusian)"
 msgstr "修复了 `CameoPriority` 导致的随机崩溃（by Uranusian）"
 
@@ -5418,6 +5564,12 @@ msgstr "修复了暴击伤害逻辑无法正常工作的问题（by Uranusian）
 
 msgid "Fixed the bug when executing the stop command game crashes (by Uranusian)"
 msgstr "修复了执行停止命令时游戏崩溃的 Bug（by Uranusian）"
+
+msgid "0.2.1"
+msgstr "0.2.1"
+
+msgid "0.2.1.1"
+msgstr "0.2.1.1"
 
 msgid ""
 "Fixed occasional crashes introduced by `Speed=0` stationary vehicles code "

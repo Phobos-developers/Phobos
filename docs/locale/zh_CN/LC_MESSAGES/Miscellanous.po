@@ -6,7 +6,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Phobos\n"
+"Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-10 22:05+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -141,7 +141,76 @@ msgid ""
 msgstr "现在可以在 `Locomotor` 标签值中写入运动模式的别称，而不再只能书写它们的 CLSID。使用下表查找运动模式所对应的别称。"
 
 msgid "_Alias_"
-msgstr "_别称_"
+msgstr "*别称*"
+
+msgid "_CLSID_"
+msgstr "_CLSID_"
+
+msgid "Drive"
+msgstr "Drive"
+
+msgid "`{4A582741-9839-11d1-B709-00A024DDAFD1}`"
+msgstr "`{4A582741-9839-11d1-B709-00A024DDAFD1}`"
+
+msgid "Hover"
+msgstr "Hover"
+
+msgid "`{4A582742-9839-11d1-B709-00A024DDAFD1}`"
+msgstr "`{4A582742-9839-11d1-B709-00A024DDAFD1}`"
+
+msgid "Tunnel"
+msgstr "Tunnel"
+
+msgid "`{4A582743-9839-11d1-B709-00A024DDAFD1}`"
+msgstr "`{4A582743-9839-11d1-B709-00A024DDAFD1}`"
+
+msgid "Walk"
+msgstr "Walk"
+
+msgid "`{4A582744-9839-11d1-B709-00A024DDAFD1}`"
+msgstr "`{4A582744-9839-11d1-B709-00A024DDAFD1}`"
+
+msgid "DropPod"
+msgstr "DropPod"
+
+msgid "`{4A582745-9839-11d1-B709-00A024DDAFD1}`"
+msgstr "`{4A582745-9839-11d1-B709-00A024DDAFD1}`"
+
+msgid "Fly"
+msgstr "Fly"
+
+msgid "`{4A582746-9839-11d1-B709-00A024DDAFD1}`"
+msgstr "`{4A582746-9839-11d1-B709-00A024DDAFD1}`"
+
+msgid "Teleport"
+msgstr "Teleport"
+
+msgid "`{4A582747-9839-11d1-B709-00A024DDAFD1}`"
+msgstr "`{4A582747-9839-11d1-B709-00A024DDAFD1}`"
+
+msgid "Mech"
+msgstr "Mech"
+
+msgid "`{55D141B8-DB94-11d1-AC98-006008055BB5}`"
+msgstr "`{55D141B8-DB94-11d1-AC98-006008055BB5}`"
+
+msgid "Ship"
+msgstr "Ship"
+
+msgid "`{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}`"
+msgstr "`{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}`"
+
+msgid "Jumpjet"
+msgstr "Jumpjet"
+
+msgid "`{92612C46-F71F-11d1-AC9F-006008055BB5}`"
+msgstr "`{92612C46-F71F-11d1-AC9F-006008055BB5}`"
+
+msgid "Rocket"
+msgstr "Rocket"
+
+msgid "`{B7B49766-E576-11d3-9BD9-00104B972FE8}`"
+msgstr "`{B7B49766-E576-11d3-9BD9-00104B972FE8}`"
 
 msgid ""
 "`Chrono` is not a standard Alias, but since the default behavior of using "
@@ -222,6 +291,9 @@ msgstr "目前无法直接设置所需的 FPS。需要使用下面的生成器�
 
 msgid "Click to show the generator"
 msgstr "点击显示生成器"
+
+msgid "INI"
+msgstr "INI"
 
 msgid "Include files"
 msgstr "包含文件"
@@ -389,5 +461,5 @@ msgid ""
 "_Object info dump from [CnC: "
 "Reloaded](https://www.moddb.com/mods/cncreloaded/)_"
 msgstr ""
-"![image](_static/images/objectinfo-01.png)\n"
-"_[CnC: Reloaded](https://www.moddb.com/mods/cncreloaded/) 中的对象信息输出效果_"
+"![image](_static/images/objectinfo-01.png) *[CnC: "
+"Reloaded](https://www.moddb.com/mods/cncreloaded/) 中的对象信息输出效果*"

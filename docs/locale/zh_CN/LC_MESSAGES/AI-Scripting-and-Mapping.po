@@ -6,7 +6,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Phobos\n"
+"Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-08 19:23+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -35,8 +35,50 @@ msgstr ""
 "动作脚本 `移动到单元格` 现在遵守 YR 的单元格计算规则。使用 `1000 * Y + X` 获取单元格值。（先前使用遗留自 RA1 的 `128 "
 "* Y + X`）"
 
+msgid "1"
+msgstr "1"
+
+msgid "10"
+msgstr "10"
+
+msgid "0"
+msgstr "0"
+
+msgid "12"
+msgstr "12"
+
+msgid "2"
+msgstr "2"
+
+msgid "28"
+msgstr "28"
+
+msgid "8"
+msgstr "8"
+
 msgid "The game now can reads waypoints ranges in [0, 2147483647]. (was [0,701])"
 msgstr "现在游戏可以读取的路径点范围拓展到了 [0, 2147483647]。（先前为 [0,701]）"
+
+msgid "21"
+msgstr "21"
+
+msgid "14"
+msgstr "14"
+
+msgid "4"
+msgstr "4"
+
+msgid "7"
+msgstr "7"
+
+msgid "3"
+msgstr "3"
+
+msgid "36"
+msgstr "36"
+
+msgid "6"
+msgstr "6"
 
 msgid ""
 "Map trigger action `41 Play Animation At...` can now create 'non-inert' "
@@ -47,6 +89,9 @@ msgstr ""
 "地图触发结果 `41 播放动画在...` 现在可以更完善地创建可以播放音效、造成杀伤以及使用设置了 `TiberiumChainReaction` "
 "参数的动画（需要 [修改 `FAData.ini`](Whats-New.md#for-map-editor-final-alert-2)）。"
 
+msgid "-2"
+msgstr "-2"
+
 msgid ""
 "Map trigger action `125 Build At...` can now play buildup anim and becomes "
 "singleplayer-AI-repairable optionally (needs [following changes to "
@@ -54,6 +99,12 @@ msgid ""
 msgstr ""
 "地图触发结果 `125 将建筑建于...` 现在可以设置是否播放建造动画（需要[修改 "
 "`FAData.ini`](Whats-New.md#for-map-editor-final-alert-2)）。"
+
+msgid "25"
+msgstr "25"
+
+msgid "5"
+msgstr "5"
 
 msgid ""
 "Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local "
@@ -101,6 +152,12 @@ msgstr "更高的覆盖物数量上限"
 msgid "Maps can now contain OverlayTypes with indices up to 65535."
 msgstr "现在可以让地图包含索引上限高达 65535 的覆盖物。"
 
+msgid "535"
+msgstr "535"
+
+msgid "35"
+msgstr "35"
+
 msgid "To enable this, set `[Basic] -> NewINIFormat=5` in the scenario file."
 msgstr "在地图文件中设置 `[Basic] -> NewINIFormat=5` 以启用该功能。"
 
@@ -125,7 +182,7 @@ msgstr "基地节点修复"
 msgid ""
 "In singleplayer campaign missions you can now decide whether AI can repair "
 "the base nodes / buildings delivered by SW _(Ares feature)_."
-msgstr "在单人战役中你可以决定 AI 是否修复由 Deliver 超武（_Ares 功能_）提供的基地节点／建筑。"
+msgstr "在单人战役中你可以决定 AI 是否修复由 Deliver 超武（*Ares 功能*）提供的基地节点／建筑。"
 
 msgid ""
 "You can control it globally by setting `[Basic] -> RepairBaseNodes`, or "
@@ -228,6 +285,15 @@ msgstr "动作脚本"
 msgid "`10000-10999` Ingame Actions"
 msgstr "`10000-10999` 游戏内行为"
 
+msgid "10000"
+msgstr "10000"
+
+msgid "-1"
+msgstr "-1"
+
+msgid "9"
+msgstr "9"
+
 msgid "`10000-10049` Attack Actions"
 msgstr "`10000-10049` 攻击行为"
 
@@ -267,19 +333,19 @@ msgid "In `aimd.ini`:"
 msgstr "在 `aimd.ini`："
 
 msgid "_Action_"
-msgstr "_行为_"
+msgstr "*行为*"
 
 msgid "_Argument_"
-msgstr "_参数_"
+msgstr "*参数*"
 
 msgid "_Repeats_"
-msgstr "_重复_"
+msgstr "*重复*"
 
 msgid "_Target Priority_"
-msgstr "_目标优先级_"
+msgstr "*目标优先级*"
 
 msgid "_Description_"
-msgstr "_描述_"
+msgstr "*描述*"
 
 msgid "Target Type#"
 msgstr "目标类型 #"
@@ -293,23 +359,89 @@ msgstr "较近的"
 msgid "No"
 msgstr "否"
 
+msgid "10001"
+msgstr "10001"
+
 msgid "Ends when a team member kill the designated target"
 msgstr "当一个小队成员击杀指定目标时结束"
+
+msgid "10002"
+msgstr "10002"
 
 msgid "`AITargetTypes` index#"
 msgstr "`AITargetTypes` 索引 #"
 
+msgid "10003"
+msgstr "10003"
+
+msgid "10004"
+msgstr "10004"
+
 msgid "Picks 1 random target from the list"
 msgstr "从列表中选取 1 个随机目标"
+
+msgid "10005"
+msgstr "10005"
 
 msgid "Farther"
 msgstr "较远的"
 
+msgid "10006"
+msgstr "10006"
+
+msgid "10007"
+msgstr "10007"
+
+msgid "10008"
+msgstr "10008"
+
+msgid "10009"
+msgstr "10009"
+
+msgid "10010"
+msgstr "10010"
+
 msgid "Closer, higher threat"
 msgstr "较近且威胁较高"
 
+msgid "10011"
+msgstr "10011"
+
+msgid "11"
+msgstr "11"
+
+msgid "10012"
+msgstr "10012"
+
+msgid "10013"
+msgstr "10013"
+
+msgid "13"
+msgstr "13"
+
+msgid "10014"
+msgstr "10014"
+
 msgid "Farther, higher threat"
 msgstr "较远且威胁较高"
+
+msgid "10015"
+msgstr "10015"
+
+msgid "15"
+msgstr "15"
+
+msgid "10016"
+msgstr "10016"
+
+msgid "16"
+msgstr "16"
+
+msgid "10017"
+msgstr "10017"
+
+msgid "17"
+msgstr "17"
 
 msgid ""
 "The following values are the _Target Type#_ which can be used as second "
@@ -325,10 +457,10 @@ msgstr ""
 "`ConsideredVehicle` 或者设置了 `ConsideredVehicle=true` 的建筑。"
 
 msgid "_Value_"
-msgstr "_值_"
+msgstr "*值*"
 
 msgid "_Target Type_"
-msgstr "_目标类型_"
+msgstr "*目标类型*"
 
 msgid "Anything"
 msgstr "任何事物"
@@ -458,6 +590,9 @@ msgid ""
 "buildings considered as vehicles"
 msgstr "任何敌方没有 `Naval=yes` 的`载具类型`、降落的`战机类型`或被视为载具的`建筑类型`"
 
+msgid "18"
+msgstr "18"
+
 msgid "Economy"
 msgstr "经济相关"
 
@@ -469,11 +604,17 @@ msgstr ""
 "任何敌方拥有 `Harvester=yes` 或 `ResourceGatherer=yes` 的`载具类型`、拥有 "
 "`Refinery=yes`、`ResourceGatherer=yes` 或 `OrePurifier=yes` 的`建筑类型`"
 
+msgid "19"
+msgstr "19"
+
 msgid "Infantry Factory"
 msgstr "兵营"
 
 msgid "Any enemy `BuildingTypes` with `Factory=InfantryType`"
 msgstr "任何敌方拥有 `Factory=InfantryType` 的`建筑类型`"
+
+msgid "20"
+msgstr "20"
 
 msgid "Vehicle Factory"
 msgstr "重工"
@@ -490,14 +631,23 @@ msgstr "任何敌方拥有 `Factory=AircraftType` 的`建筑类型`"
 msgid "Radar"
 msgstr "雷达"
 
+msgid "22"
+msgstr "22"
+
 msgid "Any enemy `BuildingTypes` with `Radar=yes` or `SpySat=yes`"
 msgstr "任何敌方拥有 `Radar=yes` 或 `SpySat=yes` 的`建筑类型`"
+
+msgid "23"
+msgstr "23"
 
 msgid "Tech Lab"
 msgstr "高科"
 
 msgid "Any enemy `BuildingTypes` in `[AI]>BuildTech=` list"
 msgstr "任何敌方位于 `[AI]>BuildTech=` 列表中的`建筑类型`"
+
+msgid "24"
+msgstr "24"
 
 msgid "Naval Factory"
 msgstr "船坞"
@@ -513,6 +663,9 @@ msgid ""
 "`SuperWeapons=`"
 msgstr "任何敌方拥有 `SuperWeapon=`、`SuperWeapon2=` 或 `SuperWeapons=` 的`建筑类型`"
 
+msgid "26"
+msgstr "26"
+
 msgid "Construction Yard"
 msgstr "建造厂"
 
@@ -520,6 +673,9 @@ msgid ""
 "Any enemy `BuildingTypes` with `ConstructionYard=yes` and "
 "`Factory=BuildingType`"
 msgstr "任何敌方拥有 `ConstructionYard=yes` 和 `Factory=BuildingType` 的`建筑类型`"
+
+msgid "27"
+msgstr "27"
 
 msgid "Neutrals"
 msgstr "中立"
@@ -533,17 +689,26 @@ msgstr "发生器"
 msgid "Any enemy `BuildingTypes` with `CloakGenerator=yes` or `GapGenerator=yes`"
 msgstr "任何敌方拥有 `CloakGenerator=yes` 或 `GapGenerator=yes` 的`建筑类型`"
 
+msgid "29"
+msgstr "29"
+
 msgid "Radar Jammer"
 msgstr "雷达干扰器"
 
 msgid "Any enemy objects with positive `RadarJamRadius=` values"
 msgstr "任何敌方拥有正值 `RadarJamRadius=` 的对象"
 
+msgid "30"
+msgstr "30"
+
 msgid "Inhibitors"
 msgstr "抑制者"
 
 msgid "Any enemy objects with positive `InhibitorRange=` values"
 msgstr "任何敌方拥有正值 `InhibitorRange=` 的对象"
+
+msgid "31"
+msgstr "31"
 
 msgid "Naval Units"
 msgstr "海军单位"
@@ -552,6 +717,9 @@ msgid ""
 "Any enemy `VehicleTypes` with a `Naval=yes` or any enemy `VehicleTypes`, "
 "`AircraftTypes`, `InfantryTypes` in a water cell"
 msgstr "任何敌方拥有 `Naval=yes` 的`载具类型`或任何在水上单元格的`载具类型`、`战机类型`、`步兵类型`"
+
+msgid "32"
+msgstr "32"
 
 msgid "Mobile Units"
 msgstr "机动单位"
@@ -562,10 +730,16 @@ msgstr "任何`载具类型`、`战机类型`和`步兵类型`"
 msgid "Capturable"
 msgstr "可占领"
 
+msgid "33"
+msgstr "33"
+
 msgid ""
 "Any `BuildingTypes` with `Capturable=yes` or any `BuildingTypes` with "
 "`BridgeRepairHut=yes` that are linked to broken bridges"
 msgstr "任何拥有 `Capturable=yes` 的建筑或任何拥有 `BridgeRepairHut=yes` 且与断桥关联的建筑"
+
+msgid "34"
+msgstr "34"
 
 msgid "Area Threats"
 msgstr "区域威胁"
@@ -584,6 +758,9 @@ msgstr "非防御建筑"
 
 msgid "Any enemy `BuildingTypes` with `IsBaseDefense=no`"
 msgstr "任何敌方拥有 `IsBaseDefense=no` 的`建筑类型`"
+
+msgid "37"
+msgstr "37"
 
 msgid "Bridge Repair Huts"
 msgstr "桥梁维修小屋"
@@ -609,6 +786,9 @@ msgstr ""
 msgid "`10050-10099` Move Team to Techno Location actions"
 msgstr "`10050-10099` 移动小队至科技类型位置行为"
 
+msgid "10050"
+msgstr "10050"
+
 msgid ""
 "These actions instructs the TeamType to use the TaskForce to approach the "
 "target specified by the second parameter. Look at the tables below for the "
@@ -616,19 +796,52 @@ msgid ""
 msgstr "这些行为通过第二个参数指示小队类型使用特遣部队接近由其指定的目标。请参阅下表以了解可能的行为（第一个参数值）。"
 
 msgid "_Target Owner_"
-msgstr "_目标所属_"
+msgstr "*目标所属*"
 
 msgid "Enemy"
 msgstr "敌方"
 
+msgid "10051"
+msgstr "10051"
+
 msgid "`[AITargetType]` index#"
 msgstr "`[AITargetType]` 索引 #"
+
+msgid "10052"
+msgstr "10052"
 
 msgid "Picks 1 random target from the selected list"
 msgstr "在选中列表中选取 1 个随机目标"
 
+msgid "10053"
+msgstr "10053"
+
 msgid "Friendly"
 msgstr "友方"
+
+msgid "10054"
+msgstr "10054"
+
+msgid "10055"
+msgstr "10055"
+
+msgid "10056"
+msgstr "10056"
+
+msgid "10057"
+msgstr "10057"
+
+msgid "10058"
+msgstr "10058"
+
+msgid "10059"
+msgstr "10059"
+
+msgid "10060"
+msgstr "10060"
+
+msgid "10061"
+msgstr "10061"
 
 msgid "`10100-10999` General Purpose"
 msgstr "`10100-10999` 一般用途"
@@ -737,7 +950,7 @@ msgid "The possible argument values are:"
 msgstr "可选参数有："
 
 msgid "_Action ends when..._"
-msgstr "_动作结束于..._"
+msgstr "*动作结束于...*"
 
 msgid "Team Leader reaches the minimum distance"
 msgstr "小队队长抵达最小距离"
@@ -934,6 +1147,9 @@ msgstr "触发结果"
 msgid "`500` Save Game"
 msgstr "`500` 单人任务存档"
 
+msgid "500"
+msgstr "500"
+
 msgid "Save the current game immediately."
 msgstr "立即保存当前游戏。"
 
@@ -964,13 +1180,16 @@ msgstr "在 `mycampaign.map`："
 msgid "`501` Edit Variable"
 msgstr "`501` 编辑变量"
 
+msgid "501"
+msgstr "501"
+
 msgid ""
 "The variable's value type is int32, which means it ranges from -2^31 to "
 "2^31-1."
 msgstr "变量值为 int32，这表示它的范围是从 -2^31 到 2^31-1。"
 
 msgid "_Operation_"
-msgstr "_操作_"
+msgstr "*操作*"
 
 msgid "CurrentValue = Number"
 msgstr "当前值 = 数字"
@@ -1011,6 +1230,9 @@ msgstr "当前值 = 当前值 位与 数字"
 msgid "`502` Generate random number"
 msgstr "`502` 生成随机数"
 
+msgid "502"
+msgstr "502"
+
 msgid ""
 "Generate a random integer ranged in [Min, Max] and store it in a given "
 "variable."
@@ -1019,11 +1241,17 @@ msgstr "在 [Min, Max] 范围内生成一个随机整数并存入给定变量。
 msgid "`503` Print variable value"
 msgstr "`503` 输出变量的值"
 
+msgid "503"
+msgstr "503"
+
 msgid "Print a variable value to the message list."
 msgstr "输出变量值至消息列表。"
 
 msgid "`504` Binary Operation"
 msgstr "`504` 变量间计算"
+
+msgid "504"
+msgstr "504"
 
 msgid "Operate a variable's value with another variable's value."
 msgstr "将两个变量的值进行计算。"
@@ -1037,6 +1265,9 @@ msgstr "`Operation` 可以见上 `501` 号动作。"
 msgid "`505` Fire Super Weapon at specified location"
 msgstr "`505` 在坐标释放超级武器"
 
+msgid "505"
+msgstr "505"
+
 msgid "**Use with caution**"
 msgstr "**谨慎使用**"
 
@@ -1049,10 +1280,16 @@ msgid "`HouseIndex` can take various values:"
 msgstr "`HouseIndex` 可取以下值："
 
 msgid "_House Index_"
-msgstr "_所属方索引_"
+msgstr "*所属方索引*"
+
+msgid ">= 0"
+msgstr ">= 0"
 
 msgid "The index of the current House in the map"
 msgstr "地图上当前所属方的索引"
+
+msgid "4475-4482"
+msgstr "4475-4482"
 
 msgid "Like in the index range 0-7"
 msgstr "类似范围 0-7 的索引"
@@ -1062,6 +1299,9 @@ msgstr "选择一个非中立的随机所属方"
 
 msgid "Pick the first Neutral House"
 msgstr "选择第一个中立所属方"
+
+msgid "-3"
+msgstr "-3"
 
 msgid "Pick a random Human Player"
 msgstr "选择随机人类玩家"
@@ -1074,6 +1314,9 @@ msgstr "坐标的 X 和 Y 可以使用正数值或使用 -1 来表示在可视�
 msgid "`506` Fire Super Weapon at specified Waypoint"
 msgstr "`506` 在路径点释放超级武器"
 
+msgid "506"
+msgstr "506"
+
 msgid ""
 "Launch a Super Weapon from `[SuperWeaponTypes]` list at a specified "
 "waypoint."
@@ -1082,11 +1325,17 @@ msgstr "在指定路径点发射 `[SuperWeaponTypes]` 列表中的超级武器�
 msgid "`510` Toggle MCV redeployablility"
 msgstr "`510` 切换基地重新部署设定"
 
+msgid "510"
+msgstr "510"
+
 msgid "Force MCV's redeployablility by setting the third parameter."
 msgstr "通过设置第三个参数强制基地车能否重部署。"
 
 msgid "`511` Undeploy Building to Waypoint"
 msgstr "`511` 反部署建筑至路径点"
+
+msgid "511"
+msgstr "511"
 
 msgid ""
 "Undeploy specific BuildingTypes into VehicleTypes and move them to a "
@@ -1250,7 +1499,7 @@ msgid "Compares the variable's value with given number."
 msgstr "比较变量值与给定值。"
 
 msgid "_Event ID_"
-msgstr "_条件 ID_"
+msgstr "*条件 ID*"
 
 msgid "_Global_"
 msgstr "全局"
@@ -1270,8 +1519,23 @@ msgstr "当前值 <= 数字"
 msgid "CurrentValue & Number"
 msgstr "当前值 & 数字 != 0"
 
+msgid "507"
+msgstr "507"
+
+msgid "508"
+msgstr "508"
+
+msgid "509"
+msgstr "509"
+
 msgid "`512-523` Variable comparation with local variable"
 msgstr "`512-523` 变量与局部变量比较"
+
+msgid "512"
+msgstr "512"
+
+msgid "523"
+msgstr "523"
 
 msgid "Compares the variable's value with given local variable value."
 msgstr "比较变量值与给定局部变量值。"
@@ -1279,23 +1543,56 @@ msgstr "比较变量值与给定局部变量值。"
 msgid "CurrentValue > LocalVariableValue"
 msgstr "当前值 > 局部变量值"
 
+msgid "513"
+msgstr "513"
+
 msgid "CurrentValue < LocalVariableValue"
 msgstr "当前值 < 局部变量值"
+
+msgid "514"
+msgstr "514"
 
 msgid "CurrentValue = LocalVariableValue"
 msgstr "当前值 = 局部变量值"
 
+msgid "515"
+msgstr "515"
+
 msgid "CurrentValue >= LocalVariableValue"
 msgstr "当前值 >= 局部变量值"
+
+msgid "516"
+msgstr "516"
 
 msgid "CurrentValue <= LocalVariableValue"
 msgstr "当前值 <= 局部变量值"
 
+msgid "517"
+msgstr "517"
+
 msgid "CurrentValue & LocalVariableValue"
 msgstr "当前值 & 局部变量值 != 0"
 
+msgid "518"
+msgstr "518"
+
+msgid "519"
+msgstr "519"
+
+msgid "520"
+msgstr "520"
+
+msgid "521"
+msgstr "521"
+
+msgid "522"
+msgstr "522"
+
 msgid "`524-535` Variable comparation with global variable"
 msgstr "`524-535` 变量与全局变量比较"
+
+msgid "524"
+msgstr "524"
 
 msgid "Compares the variable's value with given global variable value."
 msgstr "比较变量值与给定全局变量值。"
@@ -1303,20 +1600,50 @@ msgstr "比较变量值与给定全局变量值。"
 msgid "CurrentValue > GlobalVariableValue"
 msgstr "当前值 > 全局变量值"
 
+msgid "525"
+msgstr "525"
+
 msgid "CurrentValue < GlobalVariableValue"
 msgstr "当前值 < 全局变量值"
+
+msgid "526"
+msgstr "526"
 
 msgid "CurrentValue = GlobalVariableValue"
 msgstr "当前值 = 全局变量值"
 
+msgid "527"
+msgstr "527"
+
 msgid "CurrentValue >= GlobalVariableValue"
 msgstr "当前值 >= 全局变量值"
+
+msgid "528"
+msgstr "528"
 
 msgid "CurrentValue <= GlobalVariableValue"
 msgstr "当前值 <= 全局变量值"
 
+msgid "529"
+msgstr "529"
+
 msgid "CurrentValue & GlobalVariableValue"
 msgstr "当前值 & 全局变量值 != 0"
+
+msgid "530"
+msgstr "530"
+
+msgid "531"
+msgstr "531"
+
+msgid "532"
+msgstr "532"
+
+msgid "533"
+msgstr "533"
+
+msgid "534"
+msgstr "534"
 
 msgid "`600` The shield of the attached object is broken"
 msgstr "`600` 对象护盾被摧毁"

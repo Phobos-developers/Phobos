@@ -6,7 +6,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-03-01 12:45+0800\n"
 "PO-Revision-Date: 2025-02-07 13:02+0800\n"
@@ -31,8 +31,20 @@ msgstr "贡献"
 msgid "Project guidelines and policies"
 msgstr "项目准则与政策"
 
+msgid "![Phobos YR Engine Extension](logo.png)"
+msgstr "![Phobos YR Engine Extension](logo.png)"
+
+msgid "Phobos"
+msgstr "Phobos"
+
 msgid "Credits"
 msgstr "鸣谢"
+
+msgid "[Patreon](https://www.patreon.com/Starkku)"
+msgstr "[Patreon](https://www.patreon.com/Starkku)"
+
+msgid "[Patreon](https://www.patreon.com/c/ZivDero)"
+msgstr "[Patreon](https://www.patreon.com/c/ZivDero)"
 
 msgid "License"
 msgstr "许可证"
