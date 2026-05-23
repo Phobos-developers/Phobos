@@ -223,12 +223,6 @@ msgstr "目前无法直接设置所需的 FPS。需要使用下面的生成器�
 msgid "Click to show the generator"
 msgstr "点击显示生成器"
 
-msgid "Enter desired FPS"
-msgstr "输入所需的 FPS"
-
-msgid "Results (remember to replace N with your game speed number!):"
-msgstr "结果（别忘了把 N 替换成你的游戏速度编号）："
-
 msgid "Include files"
 msgstr "包含文件"
 
