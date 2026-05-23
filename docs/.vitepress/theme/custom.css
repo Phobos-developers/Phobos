@@ -39,14 +39,48 @@ html {
  */
 .vp-doc p > img + em,
 .vp-doc p > img ~ em,
+.vp-doc p > .docs-video + em,
+.vp-doc p > .docs-video ~ em,
 .vp-doc p:has(> a > img) > em {
   display: block !important;
-  margin-top: 0.35rem;
+  margin-top: 0.15rem !important;
 }
 
 .vp-doc p > img:first-child,
 .vp-doc p > a:first-child > img {
   display: block;
+}
+
+.vp-doc img {
+  border-radius: 8px;
+}
+
+.vp-doc p:has(> img:only-child),
+.vp-doc p:has(> a:only-child > img:only-child),
+.vp-doc p:has(> .docs-video:only-child),
+.vp-doc p:has(> img):has(+ p > em:only-child),
+.vp-doc p:has(> a > img):has(+ p > em:only-child) {
+  margin-bottom: 0 !important;
+}
+
+.vp-doc p:has(> img:only-child) + p:has(> em:only-child),
+.vp-doc p:has(> a:only-child > img:only-child) + p:has(> em:only-child),
+.vp-doc p:has(> .docs-video:only-child) + p:has(> em:only-child),
+.vp-doc p:has(> img) + p:has(> em:only-child),
+.vp-doc p:has(> a > img) + p:has(> em:only-child),
+.vp-doc img + p:has(> em:only-child),
+.vp-doc a:has(> img) + p:has(> em:only-child) {
+  margin-top: 0.15rem !important;
+}
+
+.vp-doc p:has(> img:only-child) + p > em:only-child,
+.vp-doc p:has(> a:only-child > img:only-child) + p > em:only-child,
+.vp-doc p:has(> .docs-video:only-child) + p > em:only-child,
+.vp-doc p:has(> img) + p > em:only-child,
+.vp-doc p:has(> a > img) + p > em:only-child,
+.vp-doc img + p > em:only-child,
+.vp-doc a:has(> img) + p > em:only-child {
+  display: block !important;
 }
 
 .vp-doc .docs-video {
@@ -57,7 +91,7 @@ html {
 }
 
 .vp-doc .docs-video + p {
-  margin-top: 0.35rem;
+  margin-top: 0.15rem !important;
 }
 
 .vp-doc .docs-video + p > em {
