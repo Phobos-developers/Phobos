@@ -298,10 +298,11 @@ LaserTrail.Types=SOMETRAIL       ; List of LaserTrailTypes
 
 ::: warning Warning
 Laser trails are very resource intensive! Due to the game not utilizing GPU having a lot of trails can quickly drop the FPS on even good machines. To reduce that effect:
- - don't put too many laser trails on units and projectiles;
- - make sure you set as high `SegmentLength` value as possible without trails being too jagged;
- - try to keep the length of the trail minimal (can be achieved with smaller `FadeDuration` durations).
-:::
+
+- don't put too many laser trails on units and projectiles;
+- make sure you set as high `SegmentLength` value as possible without trails being too jagged;
+- try to keep the length of the trail minimal (can be achieved with smaller `FadeDuration` durations).
+  :::
 
 ### Shields
 
@@ -964,9 +965,10 @@ Trajectory.Straight.CountAttenuation=1.0        ; floating point value
 ```
 
 ::: info Note
+
 - Make sure you set a low `Trajectory.Straight.ProximityRadius` value unless necessary.
 - The listed Warheads in `Trajectory.Straight.PassDetonateWarhead` and `Trajectory.Straight.ProximityWarhead` must be listed in `[Warheads]` for them to work.
-:::
+  :::
 
 #### Bombard trajectory
 
@@ -1073,9 +1075,10 @@ Trajectory.Parabola.AxisOfRotation=0,0,1        ; integer - Forward,Lateral,Heig
 ```
 
 ::: info Note
+
 - Compared to vanilla `Arcing`, this can also be used for aircraft and airburst weapon.
 - Certainly, `Gravity` can also affect the trajectory.
-:::
+  :::
 
 ### Projectiles blocked by land or water
 
@@ -1226,6 +1229,7 @@ EMPulse.SuspendOthers=false  ; boolean
   - `LimboDelivery.RandomWeightsN` lists the weights for each "dice roll" that increase the probability of picking a specific building. Valid values are 0 (don't pick) and above (the higher value, the bigger the likelyhood). `RandomWeights` are a valid alias for `RandomWeights0`. If a roll attempt doesn't have weights specified, the last weights will be used.
 
 ::: info Note
+
 - This feature might not support every building flag. Flags that are confirmed to work correctly are listed below:
   - FactoryPlant
   - OrePurifier
@@ -1235,7 +1239,7 @@ EMPulse.SuspendOthers=false  ; boolean
   - SuperWeapon, SuperWeapon2, SuperWeapons (Ares 0.9), SW.AuxBuildings (Ares 0.9), SW.NegBuildings (Ares 0.9)
 
 - In order for this feature to work with AITriggerTypes conditions ("Owning house owns ???" and "Enemy house owns ???"), `LegalTarget` must be set to true.
-:::
+  :::
 
 In `rulesmd.ini`:
 
@@ -1367,10 +1371,11 @@ AttackMove.PursuitTarget=                  ; boolean
 ```
 
 ::: info Note
+
 1. Many units would have stopped when they found an enemy during an attack move command already. This behavior is independent from `AttackMove.StopWhenTargetAcquired`.
 2. Some units (f.ex. jumpjets) will not fire correctly under the vanilla attack move command. The exact reason is not clear, but this feature can fix this problem.
 3. Jumpjets with `AttackMove.StopWhenTargetAcquired=true` will stop immediatly and not scatter to a cell. This is designed for practical reason.
-:::
+   :::
 
 ### Attack move - follow
 
@@ -1720,9 +1725,10 @@ DriverKilled.KillPassengers=        ; boolean, defaults to [CombatDamage] -> Dri
 
 ::: warning Warning
 If `DriverKilled.KeptPassengers=true` is set, even if there are other passengers that can be matched by `Operator` besides the killed driver, the transport unit will still change its owner to `Special House` and change its mission to `Harmless`, but it will not be disabled or have its brightness adjusted.
+
 - If a new passenger enters the transport unit and can be matched by `Operator`, then the owner will be changed normally.
 - This feature was originally designed for some special `OpenTopped` units, and has not yet been fully adapted to situations outside the design.
-:::
+  :::
 
 ### Customize EVA voice and `SellSound` when selling units
 
@@ -2515,11 +2521,12 @@ FireUp.ResetInRetarget=true     ; boolean
 
 ::: tip Hint
 All new Warhead effects
+
 - Can be used with `CellSpread` and Ares' GenericWarhead superweapon where applicable.
 - Cannot be used with `MindControl.Permanent=yes` of Ares.
 - Respect `Verses` where applicable unless `EffectsRequireVerses` is set to `false`.
 - If target has an active [shield](#shields), its armor type is used instead unless warhead can penetrate the shield.
-:::
+  :::
 
 ### Allow merging AOE damage to buildings into one
 
@@ -2536,9 +2543,10 @@ MergeBuildingDamage=         ; boolean
 ```
 
 ::: info Note
+
 - This is different from `CellSpread.MaxAffect`.
 - Due to the rounding of damage, there may be a slight increase in damage.
-:::
+  :::
 
 ### Break Mind Control on impact
 
@@ -2570,9 +2578,10 @@ AffectsGround=true         ; boolean
 ```
 
 ::: info Note
+
 - These features do not override the effects of the ares flag `DamageAirThreshold`: A warhead with `CellSpread.Cylinder` detonating on floor will not affect units in air, unless it has `DamageAirThreshold=-1`.
 - These will also affect application of Phobos' Warhead effects where relevant. Due to technical constraints Ares' Warhead effects such as EMP and Iron Curtain are excluded.
-:::
+  :::
 
 ### Chance-based extra damage or Warhead detonation / 'critical hits'
 
@@ -2838,9 +2847,10 @@ PenetratesForceShield=       ; boolean
     - `LaunchSW.DisplayMoney.Offset` is additional pixel offset for the center of the credits display, by default `0,0` at superweapon's target cell.
 
 ::: info Note
+
 - For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set.
-- The superweapons are launched on the *cell* where the warhead is detonated, instead of being click-fired.
-:::
+- The superweapons are launched on the _cell_ where the warhead is detonated, instead of being click-fired.
+  :::
 
 In `rulesmd.ini`:
 
@@ -3063,9 +3073,10 @@ ApplyPerTargetEffectsOnDetonate=      ; boolean, default to [CombatDamage] -> Ap
 ```
 
 ::: info Note
+
 - Ares' warhead effects, such as EMP or IronCurtain warhead, will not be affected.
 - Ares' warhead effect controllers, such as `EffectsRequireDamage`, only affect Ares' effects. So they have nothing to do with this.
-:::
+  :::
 
 ### Trigger specific NotHuman infantry Death anim sequence
 
@@ -3169,9 +3180,10 @@ Burst.NoDelay=false   ; boolean
 ```
 
 ::: info Note
+
 - This is useless for buildings and aircraft.
 - This will ignore `Burst.Delays` setting.
-:::
+  :::
 
 ### Customize whether weapon can target iron-curtained technos
 
@@ -3257,10 +3269,11 @@ ExtraRange.Prefiring.IncludeBurst=              ; boolean, default to [General] 
 ```
 
 ::: info Note
+
 - In vanilla, melee units have difficulty attacking enemies that are moving away, even if they have a slightly higher speed than their targets. This is because the game's pathfinding algorithm searches for a firing position in units of cells, which creates an unacceptable error for melee units, causing the targets to move out of range before they can get close.
 - Units with various forms of pre-firing behavior have similar problems. The target may move out of range before they fire.
 - This feature can solve the above issues.
-:::
+  :::
 
 ### Extra warhead detonations
 

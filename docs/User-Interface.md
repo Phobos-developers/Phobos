@@ -182,7 +182,7 @@ An example shape file for digits can be found on [Phobos supplementaries repo](h
 You can create a circular health bar for technos, where the different frames of this ring Shape file correspond to the state of the circular health bar at varying degrees of damage.
 
 [View video](_static/images/ring-health-bar.webm)
-*Example of a ring-shaped health bar*
+_Example of a ring-shaped health bar_
 
 The arrangement of static images on the plane is entirely up to you to draw freely, without being constrained by pre-established frameworks (e.g., the original rule for health bars was to start at a fixed coordinate, fetch a pip from a fixed frame of a fixed file at fixed intervals, and then arrange them horizontally), choosing from inherently limited options.
 :::
@@ -348,9 +348,10 @@ EnableSelectBox=false                   ; boolean
 ```
 
 ::: warning Warning
+
 - For your shp to work properly, you need to save it in `Force Compression 3` mode, otherwise it might be incorrectly rendered as something similar to AlphaImage.
 - For ImageShaper users, you need to choose a mode other than `Uncompressed` or `Uncompressed_Full_Frame` to create `*.shp` files.
-:::
+  :::
 
 ### Show designator & inhibitor range
 

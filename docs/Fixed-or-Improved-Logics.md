@@ -1779,11 +1779,12 @@ DebrisMinimums=     ; List of integers
 
 ::: tip Hint
 How to generate `DebrisTypes` in the game:
+
 1. Generate the total number of debris through `MaxDebris` and `MinDebris` first.
 2. Traverse `DebrisTypes` and limit the quantity range through `DebrisMaximums` and `DebrisMinimums`.
 3. When the number of generated debris will exceeds the total number, limit the quantity and end the traversal.
 4. When the number of debris generated after a single traversal is not enough to exceed the total number, it will end if `DebrisTypes.Limit` is enabled, otherwise the traversal will restart like vanilla game do.
-:::
+   :::
 
 ### DropPod
 
