@@ -6,6 +6,7 @@
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Entity/AttachEffectClass.h>
+#include <New/Type/HealthBarTypeClass.h>
 
 class BulletClass;
 
@@ -300,6 +301,7 @@ public:
 	static void DrawOtherBar(ConvertClass* pBrdPalette, SHPStruct* pBrdShape, ConvertClass* pPipsPalette, SHPStruct* pPipsShape, Point2D* pLocation, RectangleStruct* pBounds, const int brdXOffset, Point2D interval, const int pipsTotal, const int frame, const int brdFrame);
 	static void DrawAnimatedBar(ConvertClass* pBrdPalette, SHPStruct* pBrdShape, ConvertClass* pPipsPalette, SHPStruct* pPipsShape, Point2D* pLocation, RectangleStruct* pBounds, const int brdXOffset, const double ratio, const int brdFrame);
 	static void DrawHealthBar_Building(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const int pipsLength, Point2D* pLocation, RectangleStruct* pBounds);
+	static double GetHealthBarPercentage(TechnoClass* pThis, HealthBarTypeClass* pType);
 	static void DrawHealthBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const int pipsLength, Point2D* pLocation, RectangleStruct* pBounds);
 	static void DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds, bool drawBefore = false);
 	static void ProcessDigitalDisplays(TechnoClass* pThis, Point2D* pLocation);

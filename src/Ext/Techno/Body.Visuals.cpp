@@ -327,6 +327,23 @@ Point2D TechnoExt::GetBuildingSelectBracketPosition(BuildingTypeClass* pType, Po
 	return position;
 }
 
+double TechnoExt::GetHealthBarPercentage(TechnoClass* pThis, HealthBarTypeClass* pType)
+{
+	const auto pTechnoType = pThis->GetTechnoType();
+	int value = -1;
+	int maxValue = 0;
+
+	GetValuesForDisplay(pThis, pTechnoType, pType->InfoType, value, maxValue, pType->InfoIndex);
+
+	if (value <= -1 || maxValue <= 0)
+	{
+		value = pThis->Health;
+		maxValue = pTechnoType->Strength;
+	}
+
+	return static_cast<double>(value) / maxValue;
+}
+
 int TechnoExt::HealthBar_GetPip(Vector3D<int> const& pips, double percentage, const bool isBuilding)
 {
 	if (percentage > RulesClass::Instance->ConditionYellow && pips.X != -1)
@@ -408,7 +425,7 @@ void TechnoExt::DrawHealthBar_Building(TechnoClass* pThis, HealthBarTypeClass* p
 
 	auto position = *pLocation;
 
-	const double percentage = pThis->GetHealthPercentage();
+	const double percentage = GetHealthBarPercentage(pThis, pHealthBar);
 
 	if (pHealthBar->IsAnimated)
 	{
@@ -446,7 +463,7 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHea
 		position += { 2, -1 };
 
 	const int brdXOffset = pHealthBar->PipBrdXOffset.Get();
-	const double percentage = pThis->GetHealthPercentage();
+	const double percentage = GetHealthBarPercentage(pThis, pHealthBar);
 	const int brdFrame = pThis->IsSelected ? TechnoExt::HealthBar_GetPip(pHealthBar->GetPipBrd(whatAmI == InfantryClass::AbsID ? 1 : 0), percentage, false) : -1;
 
 	if (pHealthBar->IsAnimated)

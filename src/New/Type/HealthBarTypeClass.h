@@ -25,6 +25,9 @@ public:
 	Valueable<bool> IsAnimated_Reverse { false };
 	Valueable<int> XOffset { 0 };
 
+	Valueable<DisplayInfoType> InfoType { DisplayInfoType::Health };
+	Valueable<int> InfoIndex { 0 };
+
 	HealthBarTypeClass(const char* pTitle = NONE_STR) : Enumerable<HealthBarTypeClass>(pTitle)
 	{ }
 
