@@ -27,7 +27,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that prevents jumpjet units from turn to the target when firing from a different direction.
 - Fixed the bug allowing jumpjet units to continue firing at enemy target when crashing.
 
-[View video](_static/images/jumpjet-turning.webm)
+![image](_static/images/jumpjet-turning.gif)
 _Jumpjet turning to target applied in Robot Storm X_
 
 - Fixed the bug when turreted jumpjet units always facing bottom-right direction when motion stops.
@@ -47,7 +47,7 @@ _Side offset voxel turret in Breaking Blue project_
 - Vehicles using `DeployFire` will now use `DeployFireWeapon` for firing the deploy weapon if explicitly set, if not it behaves like previously (`Primary` if can fire, `Secondary` if not) and respect `FireOnce` setting on weapon and any stop commands issued during firing. If `FireOnce` is set to true the unit won't accept further deploy commands for number of frames that is equal to whichever is smaller between weapon `ROF` and `[Unload] -> Rate` times 900.
 - Infantry with `DeployFireWeapon=-1` can now fire both weapons (decided by its target), regardless of deployed or not.
 
-[View video](_static/images/remember-target-after-deploying-01.webm)
+![image](_static/images/remember-target-after-deploying-01.gif)
 _Nod arty keeping target on attack order in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded/)_
 
 - Vehicle to building deployers now keep their target when deploying with `DeployToFire`.
@@ -1112,7 +1112,7 @@ SellBuildupLength=23  ; integer, number of buildup frames to play
 
 ### Customizable & new grinder properties
 
-[View video](_static/images/grinding.webm)
+![image](_static/images/grinding.gif)
 _Using ally grinder, restricting to vehicles only and refund display ([Project Phantom](https://www.moddb.com/mods/project-phantom))_
 
 - You can now customize which types of objects a building with `Grinding` set can grind as well as the grinding sound.
@@ -1420,7 +1420,7 @@ BallisticScatter.Max= ; floating point value, distance in cells
 
 ### Shrapnel enhancements
 
-[View video](_static/images/shrapnel.webm)
+![image](_static/images/shrapnel.gif)
 _Shrapnel appearing against ground & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)_
 
 - `ShrapnelWeapon` can now be triggered against ground & buildings via `Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`.
@@ -1569,7 +1569,7 @@ Due to technical constraints, these settings do not apply to buildings teleporte
 
 ### Customizable harvester ore gathering animation
 
-[View video](_static/images/oregath.webm)
+![image](_static/images/oregath.gif)
 _Custom ore gathering anims in [Project Phantom](https://www.moddb.com/mods/project-phantom)_
 
 - You can now specify which anim should be drawn when a harvester of specified type is gathering specified type of ore.
@@ -1612,7 +1612,7 @@ TargetZoneScanType=same  ; target zone scan enumeration (same|any|inrange)
 
 ### Customizable Teleport/Chrono Locomotor settings per TechnoType
 
-[View video](_static/images/cust-Chrono.webm)
+![image](_static/images/cust-Chrono.gif)
 _Chrono Legionnaire and Ronco using different teleportation settings in [YR: New War](https://www.moddb.com/mods/yuris-revenge-new-war)_
 
 - You can now specify Teleport/Chrono Locomotor settings per TechnoType to override default rules values. Unfilled values default to values in `[General]`.
@@ -1730,7 +1730,7 @@ Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [TechnoTyp
 
 ### Customize bridge falling down damage
 
-[View video](_static/images/fallingdowndamage.webm)
+![image](_static/images/fallingdowndamage.gif)
 _Use different fall damage depending on whether it lands in water in **Zero Boundary** by @[Stormsulfur](https://space.bilibili.com/11638715/lists/5358986)_
 
 - Now you can customize the damage a unit receives when it falls from a bridge.
@@ -2060,7 +2060,7 @@ AreaGuardRange=  ; floating point value, distance in cells
 
 ### Voxel body multi-section shadows
 
-[View video](_static/images/uh0-be.webm)
+![image](_static/images/uh0-be.gif)
 _UH-0 helicopter with dynamic propeller and its shadow in [Bellum Æternum](https://ra2be.com/download.html)_
 
 - It is also now possible for vehicles and aircraft to display shadows for multiple sections of the voxel body at once, instead of just one section specified by `ShadowIndex`, by specifying the section indices in `ShadowIndices` (which defaults to `ShadowIndex`) in unit's `artmd.ini` entry.
@@ -2096,7 +2096,7 @@ ShadowSizeCharacteristicHeight=   ; integer, height in leptons
 
 ### Animated TerrainTypes
 
-[View video](_static/images/tree-shake.webm)
+![image](_static/images/tree-shake.gif)
 _Animated trees used in [Ion Shock](https://www.moddb.com/mods/tiberian-war-ionshock)_
 
 - By default `IsAnimated`, `AnimationRate` and `AnimationProbability` only work on TerrainTypes with `SpawnsTiberium` set to true. This restriction has now been lifted.
@@ -2418,7 +2418,7 @@ HarvesterScanAfterUnload=          ; boolean, default to [General] -> HarvesterS
 
 ### Preserve Iron Curtain / Force Shield status on type conversion
 
-[View video](_static/images/preserve-ic.webm)
+![image](_static/images/preserve-ic.gif)
 _Bugfix in action_
 
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto` / `UndeploysInto`. Force Shield status preservation is turned off by default.
@@ -2843,7 +2843,7 @@ ChargeTurret.Delays=  ; List of integers - game frames
 
 ### Customizable disk laser radius
 
-[View video](_static/images/disklaser-radius-values-01.webm)
+![image](_static/images/disklaser-radius-values-01.gif)
 
 - You can now set disk laser animation radius using a new tag.
 
@@ -2893,7 +2893,7 @@ FireOnce.ResetSequence=true  ; boolean
 
 ### Electric bolt customizations
 
-[View video](_static/images/ebolt.webm)
+![image](_static/images/ebolt.gif)
 _EBolt customization utilized for different Tesla bolt weapon usage ([RA2: Reboot](https://www.moddb.com/mods/reboot))_
 
 - You can now specify individual bolts you want to disable for `IsElectricBolt=true` weapons. Note that this is only a visual change.
@@ -2951,7 +2951,7 @@ LaserZAdjust=   ; integer
 
 ### Single-color lasers
 
-[View video](_static/images/issinglecolor.webm)
+![image](_static/images/issinglecolor.gif)
 _Comparison of `IsSingleColor=yes` lasers with higher thickness to regular ones ([RA2: Reboot](https://www.moddb.com/mods/reboot))_
 
 - You can now set laser to draw using only `LaserInnerColor` by setting `IsSingleColor`, in same manner as `IsHouseColor` lasers do using player's team color. These lasers respect laser thickness. Note that this is not available on prism support weapons.

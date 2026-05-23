@@ -181,7 +181,7 @@ An example shape file for digits can be found on [Phobos supplementaries repo](h
 ```{hint}
 You can create a circular health bar for technos, where the different frames of this ring Shape file correspond to the state of the circular health bar at varying degrees of damage.
 
-[View video](_static/images/ring-health-bar.webm)
+![image](_static/images/ring-health-bar.gif)
 _Example of a ring-shaped health bar_
 
 The arrangement of static images on the plane is entirely up to you to draw freely, without being constrained by pre-established frameworks (e.g., the original rule for health bars was to start at a fixed coordinate, fetch a pip from a fixed frame of a fixed file at fixed intervals, and then arrange them horizontally), choosing from inherently limited options.
@@ -211,7 +211,7 @@ ShowFlashOnSelecting=false  ; boolean
 
 ### Low priority for box selection
 
-[View video](_static/images/lowpriority-01.webm)
+![image](_static/images/lowpriority-01.gif)
 _Harvesters not selected together with battle units in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)_
 
 - You can now set lower priority for an ingame object (currently has effect on units mostly), which means it will be excluded from box selection if there's at least one normal priority unit in the box. Otherwise it would be selected as normal. Works with box+type selecting (type select hotkey + drag) and regular box selecting. Box shift-selection adds low-priority units to the group if there are no normal priority units among the appended ones.
@@ -390,7 +390,7 @@ ShowTimer.Priority=0  ; integer
 
 ### Task subtitles display in the middle of the screen
 
-[View video](_static/images/messagedisplayincenter.webm)
+![image](_static/images/messagedisplayincenter.gif)
 _Taking a campaign in [Mental Omega](https://www.mentalomega.com) as an example to display messages in center_
 
 - Now you can set `MessageApplyHoverState` to true，to make the upper left messages not disappear while mouse hovering over the top of display area.
@@ -677,7 +677,7 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
 
 ### Harvester counter
 
-[View video](_static/images/harvestercounter-01.webm)
+![image](_static/images/harvestercounter-01.gif)
 _Harvester Counter in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)_
 
 - An additional counter for your active / total harvesters can be added near the credits indicator.
@@ -726,7 +726,7 @@ Additionally, default position for harvester counter overlaps with [weeds counte
 
 ### Power delta counter
 
-[View video](_static/images/powerdelta-01.webm)
+![image](_static/images/powerdelta-01.gif)
 _Power delta Counter in [Assault Amerika](https://www.moddb.com/mods/assault-amerika)_
 
 - An additional counter for your power delta (surplus) can be added near the credits indicator.
@@ -772,7 +772,7 @@ If you use the vanilla font in your mod, you can use the improved font (v4 and h
 
 ### Producing Progress
 
-[View video](_static/images/producing-progress-01.webm)
+![image](_static/images/producing-progress-01.gif)
 _Producing Progress bars in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)_
 
 - You can now know your factories' status via sidebar!
