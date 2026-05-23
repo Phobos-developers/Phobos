@@ -721,7 +721,7 @@ UseWeeds.ReadinessAnimationPercentage=0.9       ; double - when this many weeds 
 
 ![image](_static/images/VoxelLightSourceComparison1.png)
 ![image](_static/images/VoxelLightSourceComparison2.png)
-_Voxel by <a class="reference external" href="https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index" target="_blank">C&CrispS</a>_
+_Voxel by [C&CrispS](https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index)_
 
 - It is now possible to change the position of the light relative to the voxels. This allows for better lighting to be set up.
   - Only the direction of the light is accounted, the distance to the voxel is not accounted.
