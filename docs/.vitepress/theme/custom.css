@@ -28,6 +28,11 @@ html {
   scrollbar-gutter: stable;
 }
 
+.VPNav:has(.VPFlyout:hover),
+.VPNav:has(.VPFlyout:focus-within) {
+  z-index: 2101;
+}
+
 /* Markdown image caption pattern:
  * ![alt](image)
  * *caption*
