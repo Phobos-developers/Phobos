@@ -365,6 +365,8 @@ For non-trivial changes (unless labeled `No Documentation Needed`):
 
 Use `[Minor]` in the PR title for small changes that don't need documentation updates.
 
+Use `[Docs]` at the start of the PR title for documentation-only changes that should skip the PR DLL build.
+
 ## Trust These Instructions
 
 Trust the information here and proceed directly with implementation. Only search the codebase if these instructions are incomplete or produce errors. The build scripts, project structure, and patterns described above have been validated against the current `develop` branch at commit `a67278ed95c9cdc611e659d677bd4c918a887d16`.

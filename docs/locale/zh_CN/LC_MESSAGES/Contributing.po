@@ -162,6 +162,11 @@ msgid ""
 msgstr "若变更不符合标准流程或规模过小无需上述步骤，请在拉取请求标题添加 `[Minor]`，以避免 CI 无故报错。"
 
 msgid ""
+"If the pull request only changes documentation, start its title with "
+"`[Docs]` to skip the DLL build."
+msgstr "如果拉取请求仅更改文档，请以 `[Docs]` 开头命名标题以跳过 DLL 构建。"
+
+msgid ""
 "Every pull request push trigger a nightly build for the latest pushed "
 "commit, so you can check the build status at the bottom of PR page, press "
 "`Show all checks`, go to details of a build run and get the zip containing "

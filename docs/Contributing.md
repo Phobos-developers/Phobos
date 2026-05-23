@@ -42,6 +42,8 @@ If you contribute something, please make sure:
 
 If your change does not fit in standard criteria or too small that it doesn't need the above - add `[Minor]` to your pull request's title, so the CI won't yell at you for no reason.
 
+If the pull request only changes documentation, start its title with `[Docs]` to skip the DLL build.
+
 ::: tip Hint
 Every pull request push trigger a nightly build for the latest pushed commit, so you can check the build status at the bottom of PR page, press `Show all checks`, go to details of a build run and get the zip containing built DLL and PDB (for your testers, f. ex.), or download a build from an automatically posted comment.
 :::
