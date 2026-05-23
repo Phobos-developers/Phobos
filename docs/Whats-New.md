@@ -392,7 +392,6 @@ BuiltInType=5
 ### Version TBD (develop branch nightly builds)
 
 ::: details Click to show
-:open:
 
 New:
 
@@ -798,7 +797,6 @@ Phobos fixes:
 ### 0.4
 
 ::: details Click to show
-
 New:
 
 - `Crit.AffectsHouses` for critical hit system (by Starkku)
