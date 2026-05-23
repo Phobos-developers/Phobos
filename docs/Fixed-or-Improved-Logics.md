@@ -352,13 +352,13 @@ _Example gradient SHP drawing with 75% translucency, before and after_
   - The previous `SVGM_XXX.NET` files are cleaned up before first copy if it's a new game, otherwise the highest numbered `SVGM_XXX.NET` file is found and the index is incremented, if possible.
   - The game also automatically copies `spawn.ini` to the save folder as `spawnSG.ini` when saving a game.
 
-  ::: info Note
+  ```{note}
   The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
-  :::
+  ```
 
-  ::: info Note
+  ```{note}
   At the moment this is only useful if you use a version of [YRpp Spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support (along with [XNA CnCNet Client](https://github.com/CnCNet/xna-cncnet-client)).
-  :::
+  ```
 
 - Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle`.
 - Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect.
@@ -379,9 +379,9 @@ _Example gradient SHP drawing with 75% translucency, before and after_
 
 ## Newly added global settings
 
-::: info Note
+```{note}
 This category lists all features that are globally effective without needing to be defined on any specific object.
-:::
+```
 
 <!--
 
@@ -450,9 +450,9 @@ In `rulesmd.ini`:
 ArtImageSwap=false  ; disabled by default
 ```
 
-::: warning Warning
+```{warning}
 To use this feature properly, you need to remove or replace the following segments in the YR INI code to avoid compatibility issues between the original Westwood INI code and this feature.
-:::
+```
 
 In `artmd.ini`:
 
@@ -464,9 +464,9 @@ Image=JOSH
 Image=SREF
 ```
 
-::: tip Hint
+```{hint}
 In vanilla, `[CLNT]` does not have its own image. Originally, in `artmd.ini`, it uses another image placeholder via `Image=ARND`, but due to the lack of this feature, it has no effect. Subsequently, it and `[UTNK]` etc. also switch to using `rulesmd.ini` to call image resources; however, unlike other art sections which merely changed the implementation method, it not only changes the implementation method but also switches to using `Image=CIVC` instead of `ARND`. Although this does not directly manifest as a conflict when `[General] -> ArtImageSwap=true`, modders may need to pay attention.
-:::
+```
 
 ### Customize resource storage
 
@@ -558,9 +558,9 @@ In `rulesmd.ini`:
 IvanBombAttachToCenter=false  ; boolean
 ```
 
-::: warning Warning
+```{warning}
 Due to technical constraints this cannot be customized per WeaponType.
-:::
+```
 
 ### RadialIndicator visibility
 
@@ -587,9 +587,9 @@ Crash=5.0        ; floating point value
 NoWobbles=false  ; boolean
 ```
 
-::: info Note
+```{note}
 `CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
-:::
+```
 
 ### Skirmish AI behavior dehardcode
 
@@ -643,12 +643,12 @@ FixRepairStepCost=false   ; boolean
 - Units can be made immune to veins the same way as in Tiberian Sun.
 - The monster itself is represented by the `VEINTREE` TerrainType, which has `IsVeinhole=true` set. Its strength is what determines the strength of the Veinhole.
 
-::: info Note
+```{note}
 Everything listed below functions identically to Tiberian Sun.
 Many of the tags from Tiberian Sun have been re-enabled. The values provided below are identical to those found in TS and YR rules. You can read more about them on ModENC:
 [VeinholeGrowthRate](https://modenc.renegadeprojects.com/VeinholeGrowthRate), [VeinholeShrinkRate](https://modenc.renegadeprojects.com/VeinholeShrinkRate), [MaxVeinholeGrowth](https://modenc.renegadeprojects.com/MaxVeinholeGrowth), [VeinDamage](https://modenc.renegadeprojects.com/VeinDamage), [VeinholeTypeClass](https://modenc.renegadeprojects.com/VeinholeTypeClass),
 [VeinholeWarhead](https://modenc.renegadeprojects.com/VeinholeWarhead), [Veinhole](https://modenc.renegadeprojects.com/Veinhole), [VeinAttack](https://modenc.renegadeprojects.com/VeinAttack), [ImmuneToVeins](https://modenc.renegadeprojects.com/ImmuneToVeins), [IsVeinhole](https://modenc.renegadeprojects.com/IsVeinhole)
-:::
+```
 
 In `rulesmd.ini`:
 
@@ -678,9 +678,9 @@ IsVeinhole=true
 Strength=1000                 ; integer - the strength of the Veinhole
 ```
 
-::: warning Warning
+```{warning}
 The game expects certain overlays related to Veinholes to have certain indices, they are listed below. Please keep in mind that the indices in the OverlayTypes list are 0-based, formed internally by the game, and the identifiers left of "=" don't matter. Vanilla `rulesmd.ini` already has the required overlays listed at the correct indices.
-:::
+```
 
 In `rulesmd.ini`:
 
@@ -703,9 +703,9 @@ In `rulesmd.ini`:
 
 - Superweapons can consume weeds to recharge, like the Chemical Missile special in Tiberian Sun.
 
-::: info Note
+```{note}
 As the code for the Chemical Missile had been removed, setting `Type=ChemMissile` will not work.
-:::
+```
 
 In `rulesmd.ini`:
 
@@ -735,11 +735,11 @@ UseFixedVoxelLighting=false  ; boolean, whether to fix the lighting
 VoxelLightSource=            ; X,Y,Z - position of the light in the world relative to each voxel, floating point values
 ```
 
-::: tip Hint
+```{hint}
 In order to easily preview the light source settings use the [VXL Viewer and VPL Generator tool by thomassneddon](https://github.com/ThomasSneddon/vxl-renderer/releases). To use the tool unpack it somewhere, then drag the main VXL file of a voxel that you will use to preview onto it (auxilliary VXL and HVA files must be in the same folder).
 
 Keep in mind that the tool doesn't account for `UseFixedVoxelLighting=true` as of yet, so the values shown in tool need to be offset when putting in the game with with fixed voxel lighting.
-:::
+```
 
 ### Waypoints for buildings
 
@@ -817,9 +817,9 @@ ExtendedAircraftMissions.FastScramble=    ; boolean, default to [SOMEAIRCRAFT] -
 ExtendedAircraftMissions.UnlandDamage=    ; integer, default to [General] -> ExtendedAircraftMissions.UnlandDamage
 ```
 
-::: info Note
+```{note}
 And now when `ExtendedAircraftMissions` is enabled, aircraft that can land at the airport will check at any time to see if they have a dock. Therefore, if there are aircraft in your mission that require dock and you have not provided enough or not disabled the feature, they will crash immediately
-:::
+```
 
 ### Fixed spawn distance & spawn height for airstrike / SpyPlane aircraft
 
@@ -867,9 +867,9 @@ Damage.ApplyOncePerLoop=false   ; boolean
 Damage.ApplyFirepowerMult=false ; boolean
 ```
 
-::: info Note
+```{note}
 `Weapon` and `Damage.Delay`, beyond the other additions, should function similarly to the equivalent features introduced by Ares and take precedence over them if Phobos is used together with Ares.
-:::
+```
 
 ### Attached animation position customization
 
@@ -956,9 +956,9 @@ LargeFireChances=0.5                ; List of floating point values (percent or 
 LargeFireDistances=0.4375           ; List of floating point values, distance in cells
 ```
 
-::: info Note
+```{note}
 Save for the change that `Flamer` does not spawn animations if the parent animation is in air, the default settings should provide identical results to similar feature from Ares.
-:::
+```
 
 ### Layer on animations attached to objects
 
@@ -1155,9 +1155,9 @@ Overpower.KeepOnline=2    ; integer, negative values mean that cannot keep onlin
 Overpower.ChargeWeapon=1  ; integer, negative values mean that weapons can never be switched
 ```
 
-::: info Note
+```{note}
 Ares' [Battery Super Weapon](https://ares-developers.github.io/Ares-docs/new/superweapons/types/battery.html) won't be affected by this.
-:::
+```
 
 ### Disable `DamageSound`
 
@@ -1220,9 +1220,9 @@ In `artmd.ini`:
 IsAnimDelayedBurst=true            ; boolean
 ```
 
-::: info Note
+```{note}
 The prism towers' fire is hardcoded to be delayed. Their fire will ignore this flag, just as they ignore `IsAnimDelayedFire`.
-:::
+```
 
 ### Unit repair customization
 
@@ -1367,9 +1367,9 @@ AirburstWeapon.SourceScatterMax=0.0         ; floating point value, distance in 
 AirburstWeapon.UseFiringEffects=false       ; boolean
 ```
 
-::: info Note
+```{note}
 `Splits`, `AirburstSpread`, `RetargetAccuracy`, `RetargetSelf` and `AroundTarget`, beyond the other additions, should function similarly to the equivalent features introduced by Ares and take precedence over them if Phobos is used together with Ares.
-:::
+```
 
 ### Cluster scatter distance customization
 
@@ -1563,9 +1563,9 @@ ChronoSphereDelay=      ; integer, game frames, default to [General] -> ChronoSp
 ChronoSpherePreDelay=   ; integer, game frames, default to [General] -> ChronoSpherePreDelay
 ```
 
-::: warning Warning
+```{warning}
 Due to technical constraints, these settings do not apply to buildings teleported by Ares' customizable ChronoSphere SW. They only have a pre-teleport delay equal to `[General] -> ChronoDelay`.
-:::
+```
 
 ### Customizable harvester ore gathering animation
 
@@ -1699,9 +1699,9 @@ InsigniaFrames.PassengersN=-1,-1,-1                         ; int, frames of ins
 Insignia.ShowEnemy=                                         ; boolean, defaults to [General] -> EnemyInsignia
 ```
 
-::: info Note
+```{note}
 Insignia customization besides the `InsigniaFrames` shorthand should function similarly to the equivalent feature introduced by Ares and takes precedence over it if Phobos is used together with Ares.
-:::
+```
 
 ### Customizable wake anim
 
@@ -1777,14 +1777,14 @@ DebrisMaximums=     ; List of integers
 DebrisMinimums=     ; List of integers
 ```
 
-::: tip Hint
+```{hint}
 How to generate `DebrisTypes` in the game:
 
 1. Generate the total number of debris through `MaxDebris` and `MinDebris` first.
 2. Traverse `DebrisTypes` and limit the quantity range through `DebrisMaximums` and `DebrisMinimums`.
 3. When the number of generated debris will exceeds the total number, limit the quantity and end the traversal.
 4. When the number of debris generated after a single traversal is not enough to exceed the total number, it will end if `DebrisTypes.Limit` is enabled, otherwise the traversal will restart like vanilla game do.
-   :::
+   ```
 
 ### DropPod
 
@@ -1795,9 +1795,9 @@ How to generate `DebrisTypes` in the game:
   - If you want `DropPod.Weapon` to be fired only upon hard landing, set `DropPod.Weapon.HitLandOnly` to true.
   - The landing speed is not smaller than it's current height /10 + 2 for unknown reason. A small `DropPod.Speed` value therefore results in exponential deceleration.
 
-::: info Note
+```{note}
 Due to technical constraints `DropPod.AirImage` is only drawn for InfantryTypes (as the DropPod is the infantry itself with its image swapped). This may change in future.
-:::
+```
 
 In `rulesmd.ini`:
 
@@ -1817,9 +1817,9 @@ DropPod.Weapon=               ; weapon, default to [General] -> DropPodWeapon
 DropPod.Weapon.HitLandOnly=   ; boolean, default to no
 ```
 
-::: info Note
+```{note}
 `[General] -> DropPodTrailer` is [Ares feature](https://ares-developers.github.io/Ares-docs/new/droppod.html).
-:::
+```
 
 ### Exploding object customizations
 
@@ -1909,9 +1909,9 @@ In `rulesmd.ini`:
 JumpjetRotateOnCrash=true  ; boolean
 ```
 
-::: warning Warning
+```{warning}
 This may subject to further changes.
-:::
+```
 
 ### Kill spawns on low power
 
@@ -2015,9 +2015,9 @@ SubterraneanHeight=      ; integer, height in leptons (1/256th of a cell)
 SubterraneanSpeed=-1     ; floating point value
 ```
 
-::: warning Warning
+```{warning}
 `SubterraneanHeight` expects negative values to be used and may behave erratically if set to above -50.
-:::
+```
 
 ### Target scanning delay optimization
 
@@ -2120,9 +2120,9 @@ In `artmd.ini`:
 Palette=           ; filename - excluding .pal extension and three-character theater-specific suffix
 ```
 
-::: info Note
+```{note}
 This palette behaves like an object palette and does not use tint etc. that have been applied to the tile the TerrainType resides on like a TerrainType using tile palette would.
-:::
+```
 
 ### Customizable ore spawners
 
@@ -2165,9 +2165,9 @@ HasCrumblingFrames=false  ; boolean
 CrumblingSound=           ; Sound entry
 ```
 
-::: info Note
+```{note}
 The number of regular & damage frames considered for this depends on value of `HasDamagedFrames` and for `IsAnimated` TerrainTypes, `AnimationLength` (see [Animated TerrainTypes](#animated-terraintypes)). Exercise caution and ensure there are correct amount of frames to display.
-:::
+```
 
 ### Minimap color customization
 
@@ -2236,9 +2236,9 @@ In `rulesmd.ini`:
 BunkerableAnyway=false     ; boolean
 ```
 
-::: warning Warning
+```{warning}
 Skipping checks with this feature doesn't mean that vehicles and tank bunkers will interact correctly. Following the simple checks performed by the provider of this feature, bunkerability is mainly determined by Locomotor. The details about locomotors' bunkerability can be found on [ModEnc](https://modenc.renegadeprojects.com/Bunkerable).
-:::
+```
 
 ### Custom Unit Crate Reroll Chance
 
@@ -2500,9 +2500,9 @@ BarrelRecoverFrames=1     ; integer, game frames
 TurretRecoil.Suppress=no  ; boolean
 ```
 
-::: info Note
+```{note}
 The logic above was not reverse-engineered but reimplemented to achieve the same effect, hence there might be some differences in behavior compared to Tiberian Sun version.
-:::
+```
 
 ### Unit Without Turret Always Turn To Target
 
@@ -2518,9 +2518,9 @@ NoTurret.TrackTarget=false   ; boolean
 NoTurret.TrackTarget=        ; boolean, defaults to [General] -> NoTurret.TrackTarget
 ```
 
-::: info Note
+```{note}
 Jumpjet can also be affected by this if firing an `OmniFire` weapon with `OmniFire.TurnToTarget` set to true.
-:::
+```
 
 ### Voxel turret shadow
 
@@ -2582,9 +2582,9 @@ In `rulesmd.ini`:
 AllowBerzerkOnAllies=false  ; boolean
 ```
 
-::: info Note
+```{note}
 No per-warhead setting because `AffectsAllies` etc. is respected.
-:::
+```
 
 ### Combat light customizations
 
@@ -2788,9 +2788,9 @@ In `rulesmd.ini`:
 Nonprovocative=false  ; boolean
 ```
 
-::: info Note
+```{note}
 Due to technical constraints, this does not suppress warnings from Ares' EMP effect.
-:::
+```
 
 ### Restricting screen shaking to current view
 
@@ -2913,9 +2913,9 @@ Bolt.Duration=17       ; integer, game frames
 Bolt.FollowFLH=        ; boolean
 ```
 
-::: info Note
+```{note}
 Due to technical constraints, these features do not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html) or those from `AirburstWeapon`.
-:::
+```
 
 ### Electric bolt Z-adjust
 
@@ -2977,6 +2977,6 @@ FiringAnim.Update=false   ; boolean
 Anim.Update=              ; boolean, default to [AudioVisual] -> FiringAnim.Update
 ```
 
-::: info Note
+```{note}
 This effect will cause problem when used together with `[Animation] -> Next`. `Next` modifies the Anim type over time, while this function changes it back, resulting in the Anim being unable to end.
-:::
+```

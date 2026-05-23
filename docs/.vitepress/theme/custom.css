@@ -96,6 +96,7 @@ html {
 
 .vp-doc .custom-block.info,
 .vp-doc .custom-block.tip,
+.vp-doc .custom-block.danger,
 .vp-doc .custom-block.warning {
   padding: 0 0 14px;
   border: 0;
@@ -118,8 +119,14 @@ html {
   background-color: var(--docs-warning-body-bg);
 }
 
+.vp-doc .custom-block.danger {
+  color: var(--docs-warning-text);
+  background-color: var(--docs-warning-body-bg);
+}
+
 .vp-doc .custom-block.info .custom-block-title,
 .vp-doc .custom-block.tip .custom-block-title,
+.vp-doc .custom-block.danger .custom-block-title,
 .vp-doc .custom-block.warning .custom-block-title {
   display: flex;
   align-items: center;
@@ -146,8 +153,13 @@ html {
   background-color: var(--docs-warning-title-bg);
 }
 
+.vp-doc .custom-block.danger .custom-block-title {
+  background-color: var(--docs-warning-title-bg);
+}
+
 .vp-doc .custom-block.info .custom-block-title::before,
 .vp-doc .custom-block.tip .custom-block-title::before,
+.vp-doc .custom-block.danger .custom-block-title::before,
 .vp-doc .custom-block.warning .custom-block-title::before {
   display: inline-block;
   width: 16px;
@@ -167,6 +179,7 @@ html {
   background-image: url('./icons/custom-block-info.svg');
 }
 
+.vp-doc .custom-block.danger .custom-block-title::before,
 .vp-doc .custom-block.warning .custom-block-title::before {
   width: 16px;
   height: 14px;
@@ -176,6 +189,7 @@ html {
 
 .vp-doc .custom-block.info > :not(.custom-block-title),
 .vp-doc .custom-block.tip > :not(.custom-block-title),
+.vp-doc .custom-block.danger > :not(.custom-block-title),
 .vp-doc .custom-block.warning > :not(.custom-block-title) {
   margin-right: 12px;
   margin-left: 12px;
@@ -183,6 +197,7 @@ html {
 
 .vp-doc .custom-block.info a,
 .vp-doc .custom-block.tip a,
+.vp-doc .custom-block.danger a,
 .vp-doc .custom-block.warning a {
   color: inherit;
   text-decoration: underline !important;
@@ -191,6 +206,7 @@ html {
 
 .vp-doc .custom-block.info code,
 .vp-doc .custom-block.tip code,
+.vp-doc .custom-block.danger code,
 .vp-doc .custom-block.warning code {
   color: var(--docs-container-code-text);
   background-color: var(--docs-container-code-bg);

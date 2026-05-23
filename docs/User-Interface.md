@@ -13,9 +13,9 @@ This page lists all user interface additions, changes, fixes that are implemente
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold.
 - Increased cursor update frequency by setting interval to 1ms instead of 16ms.
 
-::: info Note
+```{note}
 You can use the improved vanilla font which can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries) which has way more Unicode character coverage than the default one.
-:::
+```
 
 ## Audio
 
@@ -171,24 +171,24 @@ In `RA2MD.INI`:
 DigitalDisplay.Enable=false                    ; boolean
 ```
 
-::: info Note
+```{note}
 An example shape file for digits can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries).
-:::
+```
 
-:::: info Note
+````{note}
 `Shape.PercentageFrame` effectively provides the ultimate solution for all static data display effects: it allows mapping the current value to a specific static frame index in a shape file sequence by calculating its proportional ratio to the total value, where the concrete image on this frame is entirely user-defined.
 
-::: tip Hint
+```{hint}
 You can create a circular health bar for technos, where the different frames of this ring Shape file correspond to the state of the circular health bar at varying degrees of damage.
 
 [View video](_static/images/ring-health-bar.webm)
 _Example of a ring-shaped health bar_
 
 The arrangement of static images on the plane is entirely up to you to draw freely, without being constrained by pre-established frameworks (e.g., the original rule for health bars was to start at a fixed coordinate, fetch a pip from a fixed frame of a fixed file at fixed intervals, and then arrange them horizontally), choosing from inherently limited options.
-:::
+```
 
 Of course, this is just the implementation method. To balance freedom with efficiency—that is, how to efficiently draw the patterns you need—you still need to independently explore a workflow that suits you.
-::::
+````
 
 ### Flashing Technos on selecting
 
@@ -262,9 +262,9 @@ PlacementPreview.Palette=               ; filename - including the .pal extensio
 PlacementPreview.Translucency=          ; translucency level (0/25/50/75), defaults to [AudioVisual] -> PlacementPreview.Translucency
 ```
 
-::: info Note
+```{note}
 The `PlacementPreview.Palette` option is not used when `PlacementPreview.Remap` is set to yes. This may change in future.
-:::
+```
 
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
 
@@ -347,11 +347,11 @@ In `RA2MD.INI`:
 EnableSelectBox=false                   ; boolean
 ```
 
-::: warning Warning
+```{warning}
 
 - For your shp to work properly, you need to save it in `Force Compression 3` mode, otherwise it might be incorrectly rendered as something similar to AlphaImage.
 - For ImageShaper users, you need to choose a mode other than `Uncompressed` or `Uncompressed_Full_Frame` to create `*.shp` files.
-  :::
+  ```
 
 ### Show designator & inhibitor range
 
@@ -416,9 +416,9 @@ MessageDisplayInCenter.RecordsCount=12  ; integer
 
 - In vanilla game, type select can almost only be used on 1x1 buildings with `UndeploysInto`. Now it's possible to use it on all buildings if `BuildingTypeSelectable` set to true.
 
-::: info Note
+```{note}
 In Vanilla, you can type select a building by holding down the T key in advance and then clicking on the building. However, other type selection methods (such as selecting a building first and then pressing the T key, or selecting a building first and then pressing the type select button in the bottom sidebar) are not valid for buildings.
-:::
+```
 
 In `rulesmd.ini`:
 
@@ -427,9 +427,9 @@ In `rulesmd.ini`:
 BuildingTypeSelectable=false  ; boolean
 ```
 
-::: warning Warning
+```{warning}
 Due to technical limitations, this feature is forcibly disabled without Ares.
-:::
+```
 
 ### Visual effects toggling
 
@@ -554,9 +554,9 @@ ShowPowerPlantEnhancerRange=false  ; boolean
 
 - Saves the current game.
 
-::: info Note
+```{note}
 For this command to work in multiplayer - you need to use a version of [YRpp spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support.
-:::
+```
 
 - For localization, add `TXT_QUICKSAVE`, `TXT_QUICKSAVE_DESC`, `TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
   - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
@@ -632,9 +632,9 @@ In `rulesmd.ini`:
 BuildingProductionQueue=false  ; boolean
 ```
 
-::: info Note
+```{note}
 When the building becomes ready to be placed, the next building's construction will not begin until the player places the current building.
-:::
+```
 
 ### Cameo Sorting
 
@@ -718,11 +718,11 @@ In `RA2MD.INI`:
 ShowHarvesterCounter=true  ; boolean
 ```
 
-::: info Note
+```{note}
 If you use the vanilla font in your mod, you can use the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
 
 Additionally, default position for harvester counter overlaps with [weeds counter](#weeds-counter).
-:::
+```
 
 ### Power delta counter
 
@@ -766,9 +766,9 @@ In `RA2MD.INI`:
 ShowPowerDelta=true  ; boolean
 ```
 
-::: info Note
+```{note}
 If you use the vanilla font in your mod, you can use the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
-:::
+```
 
 ### Producing Progress
 
@@ -818,9 +818,9 @@ _SuperWeapon Sidebar used with vanilla-like assets for from [Phobos supplementar
   - `SuperWeaponSidebar.MaxColumns` controls that maximum count of columns.
   - `SuperWeaponSidebar.Significance` is needed for user to control which superweapons appear on the sidebar. Only superweapons with `SuperWeaponSidebar.Significance` not lower than user-defined `SuperWeaponSidebar.RequiredSignificance` are shown on the superweapon sidebar.
 
-::: warning Warning
+```{warning}
 While a mod maker can "ban" certain superweapons from appearing on a sidebar completely using `SuperWeaponSidebar.Allow=false` and `SuperWeaponSidebar.AllowByDefault=false`, it is not recommended to use those keys outside of removing "technical" superweapons (like subfaction choosers). Instead, opt for `SuperWeaponSidebar.Significance` and `SuperWeaponSidebar.RequiredSignificance` to control which superweapons appear on the sidebar. This way users with different preferences and different display resolutions could control how many superweapons they would like to see on the sidebar (via client settings) without having to edit the mod files, and you would be able to specify your exact vision through the default significance value.
-:::
+```
 
 - There is a hotkey to toggle the sidebar on/off, which can be bound to a key in the hotkey settings.
   - `TXT_TOGGLE_SW_SIDEBAR` and `TXT_TOGGLE_SW_SIDEBAR_DESC` are used for localization of the hotkey.
@@ -829,9 +829,9 @@ While a mod maker can "ban" certain superweapons from appearing on a sidebar com
   - If assigned, a hotkey will be displayed on a superweapon instead of the `Ready` (or its alternative) text.
   - For localization of those hotkeys, add `TXT_FIRE_TACTICAL_SW_XX` and `TXT_FIRE_TACTICAL_SW_XX_DESC` into your `.csf` file.
 
-::: warning Warning
+```{warning}
 Positional superweapon hotkeys are an experimental feature and currently the user experience may be not polished enough, due to superweapon positions not being fixed on the sidebar, thus the feature is disabled by default.
-:::
+```
 
 In `uimd.ini`:
 
@@ -876,9 +876,9 @@ In `RA2MD.INI`:
 SuperWeaponSidebar.RequiredSignificance=0   ; integer
 ```
 
-::: tip Hint
+```{hint}
 While the feature is usable without any extra graphics, you can find example assets to use with vanilla graphics on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries).
-:::
+```
 
 ### Weeds counter
 
@@ -909,9 +909,9 @@ In `RA2MD.INI`:
 ShowWeedsCounter=true  ; boolean
 ```
 
-::: info Note
+```{note}
 Default position for weeds counter overlaps with [harvester counter](#harvester-counter).
-:::
+```
 
 ## Tooltips
 
@@ -957,9 +957,9 @@ In `RA2MD.INI`:
 ToolTipDescriptions=true  ; boolean
 ```
 
-::: info Note
+```{note}
 Same as with harvester counter, you can download the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) or draw your own icons.
-:::
+```
 
 - The background color and opacity of tooltips can now be customized globally or per side.
 
@@ -972,9 +972,9 @@ ToolTip.Background.Opacity=100      ; integer, ranged in [0, 100], defaults to [
 ToolTip.Background.BlurSize=0.0     ; floating point value, defaults to [AudioVisual] -> ToolTip.Background.BlurSize, which defaults to 0.0
 ```
 
-::: info Note
+```{note}
 The blur effect is resource intensive. Please make sure you really want to enable this effect, otherwise leave it to 0.0 so it stays disabled.
-:::
+```
 
 In `RA2MD.INI`:
 

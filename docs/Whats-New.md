@@ -4,9 +4,9 @@ This page lists the history of changes across stable Phobos releases and also al
 
 ## Migrating
 
-::: tip Hint
+```{hint}
 You can use the migration utility (can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) to apply most of the changes automatically using a corresponding sed script file.
-:::
+```
 
 ### From vanilla
 
@@ -126,16 +126,16 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   - `[WarheadType/SuperWeaponType] -> Convert(N).AffectedHouses` -> `[WarheadType/SuperWeaponType] -> Convert(N).AffectsHouse`
   - `[SuperWeaponType] -> LimboKill.Affected` -> `[SuperWeaponType] -> LimboKill.AffectsHouse`
 
-::: info Note
+```{note}
 
 - You can use the [_MigrationUtility_](https://github.com/Phobos-developers/PhobosSupplementaries/tree/develop/MigrationUtility) in the PhobosSupplementaries repository to conveniently complete these migrations.
-  :::
+  ```
 
-::: info Note
+```{note}
 
 - If it is detected that you are using the old INI flags, a warning log will be output to `debug.log`.
 - The old INI flags will still take effect, but if there are corresponding new version flags at the same time, the new version will take precedence.
-  :::
+  ```
 
 ### New user settings in RA2MD.INI
 

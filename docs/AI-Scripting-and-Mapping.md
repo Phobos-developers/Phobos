@@ -21,13 +21,13 @@ This page describes all AI scripting and mapping related additions and changes i
 
 - To enable this, set `[Basic] -> NewINIFormat=5` in the scenario file.
 
-::: info Note
+```{note}
 Maps using this feature cannot be loaded by the vanilla game.
-:::
+```
 
-::: warning Warning
+```{warning}
 Not all tools properly support this feature yet, and may crash or corrupt the map. We recommend using the [World-Altering Editor](https://github.com/CnCNet/WorldAlteringEditor) map editor when using this feature.
-:::
+```
 
 ## Singleplayer Mission Maps
 
@@ -67,9 +67,9 @@ DefaultLS800BkgdName=    ; filename - including the .shp extension.
 DefaultLS800BkgdPal=     ; filename - including the .pal extension
 ```
 
-::: info Note
+```{note}
 Despite the key name being `DefaultLS800BkgdPal`, this applies to both shapes just like the original scenario-specific `LS800BkgdPal` does.
-:::
+```
 
 ### MCV redeploying
 
@@ -557,9 +557,9 @@ This category is empty for now.
 
 - Save the current game immediately.
 
-::: info Note
+```{note}
 For this action to work in multiplayer - you need to use a version of [YRpp spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support.
-:::
+```
 
 - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
 - The save's description will look like `MapDescName - CSFText`.
@@ -967,9 +967,9 @@ ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...
 ...
 ```
 
-::: info Note
+```{note}
 These events, as opposed to [events 81 & 82 from Ares](https://ares-developers.github.io/Ares-docs/new/triggerevents.html#house-owns-techno-type-81-82), take house as a parameter instead of using the trigger owner.
-:::
+```
 
 ### `604-605` Checking if a specific Techno enters in a cell
 

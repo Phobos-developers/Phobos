@@ -65,9 +65,9 @@ SaveVariablesOnScenarioEnd=false    ; boolean
 |  Jumpjet | `{92612C46-F71F-11d1-AC9F-006008055BB5}` |
 |   Rocket | `{B7B49766-E576-11d3-9BD9-00104B972FE8}` |
 
-::: info Note
+```{note}
 `Chrono` is not a standard Alias, but since the default behavior of using `Teleport` will be triggered when the value of `Locomotor` is incorrect, the result of the operation will appear as if `Chrono` has taken effect.
-:::
+```
 
 ### Insignia Type
 
@@ -126,9 +126,9 @@ In `RA2MD.INI`:
 CampaignDefaultGameSpeed=4  ; integer
 ```
 
-::: info Note
+```{note}
 Currently there is no way to set desired FPS directly. Use the generator below to get required values. The generator supports values from 10 to 60.
-:::
+```
 
 ::: details Click to show the generator
 <CustomGameSpeedGenerator />
@@ -138,9 +138,9 @@ Currently there is no way to set desired FPS directly. Use the generator below t
 
 ### Include files
 
-::: info Note
+```{note}
 This feature must be enabled via a command line argument `-Include`.
-:::
+```
 
 - INI files can now include other files (merge them into self) using `[$Include]` section.
   - `[$Include]` section contains a list of files to read and include. Files can be directly in the Red Alert 2 directory or in a loaded MIX file.
@@ -156,19 +156,19 @@ In any file:
 0=somefile.ini  ; file name
 ```
 
-::: warning Warning
+```{warning}
 Due to a technical issue, there is a chance that **_the first line of a included file will be skipped!_** To prevent this, included files should start with an empty line or a comment.
-:::
+```
 
-::: warning Warning
+```{warning}
 When this feature is enabled, `[#include]` (equivalent [Ares feature](https://ares-developers.github.io/Ares-docs/new/misc/include.html)) is disabled because of technical incompatibilities.
-:::
+```
 
 ### Section inheritance
 
-::: info Note
+```{note}
 This feature must be enabled via a command line argument `-Inheritance`.
-:::
+```
 
 - You can now make sections (children) inherit entries from other sections (parents) with `$Inherits` entry.
   - When a section has no value set for an entry (or an entry is missing), the game will attempt to use parent's value. If no value is found, only then the default will be used.
@@ -187,25 +187,25 @@ In any file:
 $Inherits=PARENT1SECTION,PARENT2SECTION...  ; section names
 ```
 
-::: warning Warning
+```{warning}
 When this feature is enabled, the Ares equivalent of `$Inherits` (undocumented) is disabled!
-:::
+```
 
-::: warning Warning
+```{warning}
 This feature may noticeably increase game loading time, depending on the size of game rules and used hardware.
-:::
+```
 
 ### Turning off/on in-game exception handling
 
 You can turn on/off the exception handler of the game's main loop using the following command line arg: `-ExceptionHandler=boolean` where `boolean` is `(true|false|yes|no|1|0)`.
 
-::: info Note
+```{note}
 In **debug** builds the in-game exception handler is **turned off** by default.
-:::
+```
 
-::: warning Warning
+```{warning}
 The CnCNet 5 spawner uses the main loop exception handler for fixes. If you get any issues (crashes, bugs) in combination with that then please first test with the exception handler enabled.
-:::
+```
 
 ## Player colors
 
@@ -223,10 +223,10 @@ In `rulesmd.ini`:
 SkirmishUnlimitedColors=false  ; boolean
 ```
 
-::: info Note
+```{note}
 This feature should only be used if you use a spawner/outside client (i.e. CnCNet Client). Using it in the original YR launcher will produce undesireable effects.
-:::
+```
 
-::: warning Warning
+```{warning}
 Due to technical incompatibilities, enabling this feature disables [Ares' Customizable Dropdown Colors](https://ares-developers.github.io/Ares-docs/ui-features/customizabledropdowncolors.html).
-:::
+```
