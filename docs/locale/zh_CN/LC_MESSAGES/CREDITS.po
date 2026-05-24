@@ -55,6 +55,9 @@ msgstr "建筑加载物逻辑增强"
 msgid "Option to hide health bar"
 msgstr "隐藏血条"
 
+msgid "`Sidebar.GDIPosition`"
+msgstr "`Sidebar.GDIPosition`"
+
 msgid "Help with `CellSpread`"
 msgstr "`CellSpread` 相关的协助"
 
@@ -147,6 +150,9 @@ msgstr "自定义 EBolt 电弧"
 msgid "Voxel light source position customization"
 msgstr "自定义 Voxel 光源"
 
+msgid "`UseFixedVoxelLighting`"
+msgstr "`UseFixedVoxelLighting`"
+
 msgid "Warhead activation target health thresholds"
 msgstr "目标血量作为弹头生效条件"
 
@@ -195,6 +201,9 @@ msgstr "生产进度指示器"
 msgid "Custom ore gathering anim"
 msgstr "自定义矿石采集动画"
 
+msgid "`NoManualMove`"
+msgstr "`NoManualMove`"
+
 msgid "Weapon target house filtering"
 msgstr "武器瞄准所属方筛选"
 
@@ -242,6 +251,9 @@ msgstr "解除心控弹头"
 
 msgid "Shields logic help"
 msgstr "护盾逻辑帮助"
+
+msgid "`AnimList.PickRandom`"
+msgstr "`AnimList.PickRandom`"
 
 msgid "`MoveToCell` fix"
 msgstr "`3 - 移动到坐标` 修复"
@@ -381,6 +393,12 @@ msgstr "**FS-21**："
 msgid "Dump Object Info enhancements"
 msgstr "输出对象信息增强"
 
+msgid "`Powered.KillSpawns`"
+msgstr "`Powered.KillSpawns`"
+
+msgid "`Spawner.LimitRange`"
+msgstr "`Spawner.LimitRange`"
+
 msgid "Majority of ScriptType actions"
 msgstr "大多数动作脚本行为"
 
@@ -500,6 +518,9 @@ msgstr "护盾修改弹头"
 msgid "Warhead decloaking toggle"
 msgstr "弹头解除隐形逻辑"
 
+msgid "`Warp(In/Out)Weapon`"
+msgstr "`Warp(In/Out)Weapon`"
+
 msgid "Grinder improvements / additions"
 msgstr "回收站改进／补充"
 
@@ -538,6 +559,9 @@ msgstr "核弹载体与载荷武器 `Bright` 修复"
 
 msgid "Display damage numbers hotkey command"
 msgstr "显示伤害数字快捷键命令"
+
+msgid "`TransactMoney.Display`"
+msgstr "`TransactMoney.Display`"
 
 msgid "Building-provided self-heal customization"
 msgstr "自定义建筑提供的自愈"
@@ -951,6 +975,9 @@ msgstr "无视 `TiltCrashJumpjet` 允许倾斜"
 
 msgid "Forbid firing when crashing"
 msgstr "禁止在坠毁中继续开火"
+
+msgid "`OmniFire.TurnToTarget`"
+msgstr "`OmniFire.TurnToTarget`"
 
 msgid "Object Self-destruction logic"
 msgstr "物体自毁逻辑"
@@ -2428,6 +2455,9 @@ msgid ""
 "an enemy instead of the nearest one when there were no enemies"
 msgstr "修复了没有敌人的 AI 寻找敌人时会使用数组中第一个所属方而非空间上最近者的问题"
 
+msgid "`AllowBerzerkOnAllies`"
+msgstr "`AllowBerzerkOnAllies`"
+
 msgid ""
 "Fix an issue that retaliation will make the unit keep switching among "
 "multiple targets with the same amount of threat"
@@ -2724,3 +2754,4 @@ msgid ""
 "Fix for units with Fly, Jumpjet or Rocket locomotors crashing off-map not"
 " being cleaned up"
 msgstr "修复了 `Locomotor` 为 `Fly`、`Jumpjet` 或 `Rocket` 的单位在地图外坠毁时未能清除的问题"
+

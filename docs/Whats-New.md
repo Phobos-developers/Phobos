@@ -568,7 +568,7 @@ New:
 - [Extra threat](New-or-Enhanced-Logics.md#extra-threat) (by TaranDahl)
 - [Technos with Walk locomotor spawn wake like ship](Fixed-or-Improved-Logics.md#customizable-wake-anim) (by TaranDahl)
 - [Updateable firing anim](Fixed-or-Improved-Logics.md#updateable-firing-anim) (by TaranDahl)
-- [Hotkey for deselect object from current selection](User-Interface.md#deselect-object-s) (by FrozenFog)
+- [Hotkey for deselect object from current selection](User-Interface.md#deselect-object) (by FrozenFog)
 - [Additional customizations for `Splits` concerning target selection](Fixed-or-Improved-Logics.md#airburst-splits) (by Starkku)
 - [Allow replacing vanilla repairing with togglable auto repairing](User-Interface.md#allow-replacing-vanilla-repairing-with-togglable-auto-repairing) (by TaranDahl)
 - Use `OpenTopped.AllowFiringIfAttackedByLocomotor` to control whether the passengers of a non-building transport unit can fire when the unit is being attacked by a weapon whose warhead has `IsLocomotor=true` (by Noble_Fish)

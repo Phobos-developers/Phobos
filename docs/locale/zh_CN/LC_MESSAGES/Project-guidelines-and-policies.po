@@ -407,7 +407,7 @@ msgstr ""
 
 msgid ""
 "Braceless code block bodies should be made only when both code block head"
-" and body are single line, statements split into multiple lines and "
+" and body are single line,  statements split into multiple lines and "
 "nested braceless blocks are not allowed within braceless blocks:"
 msgstr "只有代码块头部和代码块主体均为单行时才应当使用无大括号的代码块，且无大括号的块中不允许存在跨多行的语句拆分以及嵌套的无大括号块："
 
