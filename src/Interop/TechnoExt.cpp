@@ -5,19 +5,28 @@
 std::vector<CalculateExtraThreatCallback> TechnoExtInterop::CalculateExtraThreatCallbacks = {};
 std::vector<CalculateSightCallback> TechnoExtInterop::CalculateSightCallbacks = {};
 
-DEFINE_EXPORT(bool, ConvertToType_Phobos, FootClass* pThis, TechnoTypeClass* toType)
+DEFINE_EXPORT(HRESULT, ConvertToType_Phobos, FootClass* pThis, TechnoTypeClass* toType)
 {
-	return TechnoExt::ConvertToType(pThis, toType);
+	if (!TechnoExt::ConvertToType(pThis, toType))
+		return E_INVALIDARG;
+
+	return S_OK;
 }
 
-DEFINE_EXPORT(void, RegisterCalculateExtraThreatCallback, CalculateExtraThreatCallback callback)
+DEFINE_EXPORT(HRESULT, RegisterCalculateExtraThreatCallback, CalculateExtraThreatCallback callback)
 {
-	if (callback)
-		TechnoExtInterop::CalculateExtraThreatCallbacks.push_back(callback);
+	if (!callback)
+		return E_POINTER;
+
+	TechnoExtInterop::CalculateExtraThreatCallbacks.push_back(callback);
+	return S_OK;
 }
 
-DEFINE_EXPORT(void, RegisterCalculateSightCallback, CalculateSightCallback callback)
+DEFINE_EXPORT(HRESULT, RegisterCalculateSightCallback, CalculateSightCallback callback)
 {
-	if (callback)
-		TechnoExtInterop::CalculateSightCallbacks.push_back(callback);
+	if (!callback)
+		return E_POINTER;
+
+	TechnoExtInterop::CalculateSightCallbacks.push_back(callback);
+	return S_OK;
 }

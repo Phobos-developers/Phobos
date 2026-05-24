@@ -3,7 +3,7 @@
 #include "New/Entity/AttachEffectClass.h"
 #include "New/Type/AttachEffectTypeClass.h"
 
-DEFINE_EXPORT(int, AE_Attach,
+DEFINE_EXPORT(HRESULT, AE_Attach,
 	TechnoClass* pTarget,
 	HouseClass* pInvokerHouse,
 	TechnoClass* pInvoker,
@@ -13,11 +13,15 @@ DEFINE_EXPORT(int, AE_Attach,
 	int durationOverride,
 	int delay,
 	int initialDelay,
-	int recreationDelay
+	int recreationDelay,
+	int* pAttachedCount
 )
 {
-	if (!pTarget || !effectTypeNames || typeCount <= 0)
-		return 0;
+	if (!pTarget || !effectTypeNames || !pAttachedCount)
+		return E_POINTER;
+
+	if (typeCount <= 0)
+		return E_INVALIDARG;
 
 	AEAttachInfoTypeClass attachInfo;
 
@@ -31,7 +35,10 @@ DEFINE_EXPORT(int, AE_Attach,
 	}
 
 	if (attachInfo.AttachTypes.empty())
-		return 0;
+	{
+		*pAttachedCount = 0;
+		return S_FALSE;
+	}
 
 	if (durationOverride != 0)
 		attachInfo.DurationOverrides.push_back(durationOverride);
@@ -45,17 +52,22 @@ DEFINE_EXPORT(int, AE_Attach,
 	if (recreationDelay >= -1)
 		attachInfo.RecreationDelays.push_back(recreationDelay);
 
-	return AttachEffectClass::Attach(pTarget, pInvokerHouse, pInvoker, pSource, attachInfo);
+	*pAttachedCount = AttachEffectClass::Attach(pTarget, pInvokerHouse, pInvoker, pSource, attachInfo);
+	return S_OK;
 }
 
-DEFINE_EXPORT(int, AE_Detach,
+DEFINE_EXPORT(HRESULT, AE_Detach,
 	TechnoClass* pTarget,
 	const char** effectTypeNames,
-	int typeCount
+	int typeCount,
+	int* pRemovedCount
 )
 {
-	if (!pTarget || !effectTypeNames || typeCount <= 0)
-		return 0;
+	if (!pTarget || !effectTypeNames || !pRemovedCount)
+		return E_POINTER;
+
+	if (typeCount <= 0)
+		return E_INVALIDARG;
 
 	AEAttachInfoTypeClass detachInfo;
 
@@ -69,19 +81,27 @@ DEFINE_EXPORT(int, AE_Detach,
 	}
 
 	if (detachInfo.RemoveTypes.empty())
-		return 0;
+	{
+		*pRemovedCount = 0;
+		return S_FALSE;
+	}
 
-	return AttachEffectClass::Detach(pTarget, detachInfo);
+	*pRemovedCount = AttachEffectClass::Detach(pTarget, detachInfo);
+	return S_OK;
 }
 
-DEFINE_EXPORT(int, AE_DetachByGroups,
+DEFINE_EXPORT(HRESULT, AE_DetachByGroups,
 	TechnoClass* pTarget,
 	const char** groupNames,
-	int groupCount
+	int groupCount,
+	int* pRemovedCount
 )
 {
-	if (!pTarget || !groupNames || groupCount <= 0)
-		return 0;
+	if (!pTarget || !groupNames || !pRemovedCount)
+		return E_POINTER;
+
+	if (groupCount <= 0)
+		return E_INVALIDARG;
 
 	AEAttachInfoTypeClass detachInfo;
 
@@ -92,18 +112,23 @@ DEFINE_EXPORT(int, AE_DetachByGroups,
 	}
 
 	if (detachInfo.RemoveGroups.empty())
-		return 0;
+	{
+		*pRemovedCount = 0;
+		return S_FALSE;
+	}
 
-	return AttachEffectClass::DetachByGroups(pTarget, detachInfo);
+	*pRemovedCount = AttachEffectClass::DetachByGroups(pTarget, detachInfo);
+	return S_OK;
 }
 
-DEFINE_EXPORT(void, AE_TransferEffects,
+DEFINE_EXPORT(HRESULT, AE_TransferEffects,
 	TechnoClass* pSource,
 	TechnoClass* pTarget
 )
 {
 	if (!pSource || !pTarget)
-		return;
+		return E_POINTER;
 
 	AttachEffectClass::TransferAttachedEffects(pSource, pTarget);
+	return S_OK;
 }

@@ -17,8 +17,9 @@
 
 /// <summary>
 /// Attaches AttachEffect instances to a target unit.
+/// On success, pAttachedCount receives the number of effects attached.
 /// </summary>
-DEFINE_EXPORT(int, AE_Attach,
+DEFINE_EXPORT(HRESULT, AE_Attach,
 	TechnoClass* pTarget,
 	HouseClass* pInvokerHouse,
 	TechnoClass* pInvoker,
@@ -28,31 +29,36 @@ DEFINE_EXPORT(int, AE_Attach,
 	int durationOverride,
 	int delay,
 	int initialDelay,
-	int recreationDelay
+	int recreationDelay,
+	int* pAttachedCount
 );
 
 /// <summary>
 /// Removes AttachEffect instances matching given types from a unit.
+/// On success, pRemovedCount receives the number of effects removed.
 /// </summary>
-DEFINE_EXPORT(int, AE_Detach,
+DEFINE_EXPORT(HRESULT, AE_Detach,
 	TechnoClass* pTarget,
 	const char** effectTypeNames,
-	int typeCount
+	int typeCount,
+	int* pRemovedCount
 );
 
 /// <summary>
 /// Removes AttachEffect instances matching given groups from a unit.
+/// On success, pRemovedCount receives the number of effects removed.
 /// </summary>
-DEFINE_EXPORT(int, AE_DetachByGroups,
+DEFINE_EXPORT(HRESULT, AE_DetachByGroups,
 	TechnoClass* pTarget,
 	const char** groupNames,
-	int groupCount
+	int groupCount,
+	int* pRemovedCount
 );
 
 /// <summary>
 /// Transfers AttachEffect instances from one unit to another.
 /// </summary>
-DEFINE_EXPORT(void, AE_TransferEffects,
+DEFINE_EXPORT(HRESULT, AE_TransferEffects,
 	TechnoClass* pSource,
 	TechnoClass* pTarget
 );

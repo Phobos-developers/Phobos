@@ -4,4 +4,4 @@
 #include <Utilities/TemplateDef.h>
 #include <Ext/Bullet/Body.h>
 
-DEFINE_EXPORT(bool, Bullet_SetFirerOwner, BulletClass* pBullet, HouseClass* pHouse);
+DEFINE_EXPORT(HRESULT, Bullet_SetFirerOwner, BulletClass* pBullet, HouseClass* pHouse);

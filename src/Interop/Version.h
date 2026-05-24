@@ -30,7 +30,7 @@ struct InteropAPIVersion
 /// Each exported API is annotated with availability range [startVersion, endVersion).
 /// If endVersion == 0, the API is still active.
 /// </summary>
-DEFINE_EXPORT(InteropAPIVersion, GetInteropAPIVersion);
+DEFINE_EXPORT(HRESULT, GetInteropAPIVersion, InteropAPIVersion* pVersion);
 
 // ============================================================================
 // Deprecated API example (commented out for future use)

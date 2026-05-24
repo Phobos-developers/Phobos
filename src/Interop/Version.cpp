@@ -1,13 +1,16 @@
 #include "Version.h"
 #include "Utilities/Debug.h"
 
-DEFINE_EXPORT(InteropAPIVersion, GetInteropAPIVersion)
+DEFINE_EXPORT(HRESULT, GetInteropAPIVersion, InteropAPIVersion* pVersion)
 {
-	return InteropAPIVersion{
-		INTEROP_API_VERSION_MAJOR,
-		INTEROP_API_VERSION_MINOR,
-		INTEROP_API_VERSION_PATCH
-	};
+	if (!pVersion)
+		return E_POINTER;
+
+	pVersion->major = INTEROP_API_VERSION_MAJOR;
+	pVersion->minor = INTEROP_API_VERSION_MINOR;
+	pVersion->patch = INTEROP_API_VERSION_PATCH;
+
+	return S_OK;
 }
 
 // ============================================================================

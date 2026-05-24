@@ -1,16 +1,16 @@
 
 #include "BulletExt.h"
 
-DEFINE_EXPORT(bool, Bullet_SetFirerOwner, BulletClass* pBullet, HouseClass* pHouse)
+DEFINE_EXPORT(HRESULT, Bullet_SetFirerOwner, BulletClass* pBullet, HouseClass* pHouse)
 {
 	if (!pBullet)
-		return false;
+		return E_POINTER;
 
 	const auto pBulletExt = BulletExt::ExtMap.TryFind(pBullet);
 
 	if (!pBulletExt)
-		return false;
+		return E_UNEXPECTED;
 
 	pBulletExt->FirerHouse = pHouse;
-	return true;
+	return S_OK;
 }

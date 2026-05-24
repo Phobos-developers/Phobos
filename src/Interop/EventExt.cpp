@@ -1,10 +1,9 @@
 #include "EventExt.h"
 
-DEFINE_EXPORT(bool, EventExt_AddEvent, EventExt* pEventExt)
+DEFINE_EXPORT(HRESULT, EventExt_AddEvent, EventExt* pEventExt)
 {
-	if (pEventExt)
-	{
-		return pEventExt->AddEvent();
-	}
-	return false;
+	if (!pEventExt)
+		return E_POINTER;
+
+	return pEventExt->AddEvent() ? S_OK : S_FALSE;
 }

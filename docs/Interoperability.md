@@ -3,6 +3,21 @@
 
 This page documents the exported interfaces in [Interop](https://github.com/Phobos-developers/Phobos/tree/develop/src/Interop).
 
+## API Convention
+
+All exported API functions return `HRESULT` to indicate success or failure following COM convention:
+
+| HRESULT | Meaning |
+|---------|---------|
+| `S_OK` | Operation completed successfully. |
+| `S_FALSE` | Operation completed but had nothing to do (e.g., no matching effects found). |
+| `E_POINTER` | A required pointer parameter was null. |
+| `E_INVALIDARG` | One or more arguments are invalid. |
+| `E_UNEXPECTED` | An unexpected internal error occurred (e.g., extension data not found). |
+| `E_FAIL` | The operation failed. |
+
+Functions that produce output data take an additional output pointer parameter that receives the result. Use `SUCCEEDED(hr)` / `FAILED(hr)` to check the return value.
+
 ## API Version Tracking
 
 ### Semantic Versioning Rules
@@ -21,20 +36,33 @@ This page documents the exported interfaces in [Interop](https://github.com/Phob
 ### GetInteropAPIVersion
 
 ```cpp
-InteropAPIVersion GetInteropAPIVersion()
+HRESULT GetInteropAPIVersion(InteropAPIVersion* pVersion)
 ```
 
-Returns the current Interop API version as a structure `{ major, minor, patch }`.
+Returns the current Interop API version via `pVersion` output parameter.
+
+- Parameters:
+  - `pVersion`: Receives the version structure `{ major, minor, patch }`.
+- Returns `S_OK` on success, `E_POINTER` if `pVersion` is null.
 
 **Example (C# P/Invoke):**
 ```csharp
-[DllImport("Phobos.dll", CallingConvention = CallingConvention.StdCall)]
-public static extern InteropAPIVersion GetInteropAPIVersion();
-
-var version = GetInteropAPIVersion();
-if (version.major >= 1 && version.minor >= 1)
+[StructLayout(LayoutKind.Sequential)]
+public struct InteropAPIVersion
 {
-    // Safe to use features from v1.1.0 onwards
+    public uint major;
+    public uint minor;
+    public uint patch;
+}
+
+[DllImport("Phobos.dll", CallingConvention = CallingConvention.StdCall)]
+public static extern int GetInteropAPIVersion(out InteropAPIVersion pVersion);
+
+InteropAPIVersion version;
+int hr = GetInteropAPIVersion(out version);
+if (hr >= 0 && version.major >= 1)
+{
+    // Safe to use features from v1.0.0 onwards
 }
 ```
 
@@ -74,7 +102,7 @@ When an API is deprecated, its function stub is retained but with a fatal error 
 **Availability:** [1.0.0, ∞)
 
 ```cpp
-int AE_Attach(
+HRESULT AE_Attach(
 		TechnoClass* pTarget,
 		HouseClass* pInvokerHouse,
 		TechnoClass* pInvoker,
@@ -84,94 +112,83 @@ int AE_Attach(
 		int durationOverride,
 		int delay,
 		int initialDelay,
-		int recreationDelay
+		int recreationDelay,
+		int* pAttachedCount
 )
 ```
 
 Attaches one or more AttachEffect types to the target.
 
 - Parameters:
-	- pTarget: Target unit to receive effects.
-	- pInvokerHouse: Invoker house context.
-	- pInvoker: Invoker techno context.
-	- pSource: Optional source object context.
-	- effectTypeNames: Array of AttachEffect type names.
-	- typeCount: Number of entries in effectTypeNames.
-	- durationOverride: If non-zero, duration override is applied.
-	- delay: If >= 0, delay override is applied.
-	- initialDelay: If >= 0, initial delay override is applied.
-	- recreationDelay: If >= -1, recreation delay override is applied.
-- Returns:
-	- > 0 on success (value returned by internal attach routine).
-	- 0 on failure.
-- Fails when:
-	- pTarget is null.
-	- effectTypeNames is null.
-	- typeCount <= 0.
-	- No valid effect type name resolves to an existing AttachEffectType.
+  - pTarget: Target unit to receive effects.
+  - pInvokerHouse: Invoker house context.
+  - pInvoker: Invoker techno context.
+  - pSource: Optional source object context.
+  - effectTypeNames: Array of AttachEffect type names.
+  - typeCount: Number of entries in effectTypeNames.
+  - durationOverride: If non-zero, duration override is applied.
+  - delay: If >= 0, delay override is applied.
+  - initialDelay: If >= 0, initial delay override is applied.
+  - recreationDelay: If >= -1, recreation delay override is applied.
+  - pAttachedCount: Receives the number of effects attached.
+- Returns `S_OK` on success, `S_FALSE` if no valid effect type names were found.
+- Fails with `E_POINTER` when: pTarget, effectTypeNames, or pAttachedCount is null.
+- Fails with `E_INVALIDARG` when: typeCount <= 0.
 
 #### AE_Detach
 
 **Availability:** [1.0.0, ∞)
 
 ```cpp
-int AE_Detach(
+HRESULT AE_Detach(
 		TechnoClass* pTarget,
 		const char** effectTypeNames,
-		int typeCount
+		int typeCount,
+		int* pRemovedCount
 )
 ```
 
 Detaches effects by explicit effect type names.
 
 - Parameters:
-	- pTarget: Target unit to remove effects from.
-	- effectTypeNames: Array of AttachEffect type names to remove.
-	- typeCount: Number of entries in effectTypeNames.
-
-- Returns:
-	- > 0 on success (value returned by internal detach routine).
-	- 0 on failure.
-- Fails when:
-	- pTarget is null.
-	- effectTypeNames is null.
-	- typeCount <= 0.
-	- No valid effect type name resolves to an existing AttachEffectType.
+  - pTarget: Target unit to remove effects from.
+  - effectTypeNames: Array of AttachEffect type names to remove.
+  - typeCount: Number of entries in effectTypeNames.
+  - pRemovedCount: Receives the number of effects removed.
+- Returns `S_OK` on success, `S_FALSE` if no matching effects were found.
+- Fails with `E_POINTER` when: pTarget, effectTypeNames, or pRemovedCount is null.
+- Fails with `E_INVALIDARG` when: typeCount <= 0.
 
 #### AE_DetachByGroups
 
 **Availability:** [1.0.0, ∞)
 
 ```cpp
-int AE_DetachByGroups(
+HRESULT AE_DetachByGroups(
 		TechnoClass* pTarget,
 		const char** groupNames,
-		int groupCount
+		int groupCount,
+		int* pRemovedCount
 )
 ```
 
 Detaches effects by AttachEffect group name.
 
 - Parameters:
-	- pTarget: Target unit to remove effects from.
-	- groupNames: Array of group names.
-	- groupCount: Number of entries in groupNames.
-
-- Returns:
-	- > 0 on success (value returned by internal detach-by-group routine).
-	- 0 on failure.
-- Fails when:
-	- pTarget is null.
-	- groupNames is null.
-	- groupCount <= 0.
-	- groupNames contains no non-null entries.
+  - pTarget: Target unit to remove effects from.
+  - groupNames: Array of group names.
+  - groupCount: Number of entries in groupNames.
+  - pRemovedCount: Receives the number of effects removed.
+- Returns `S_OK` on success, `S_FALSE` if no matching groups were found.
+- Fails with `E_POINTER` when: pTarget, groupNames, or pRemovedCount is null.
+- Fails with `E_INVALIDARG` when: groupCount <= 0.
 
 #### AE_TransferEffects
 
 **Availability:** [1.0.0, ∞)
 
 ```cpp
-void AE_TransferEffects(
+HRESULT AE_TransferEffects(
 		TechnoClass* pSource,
 		TechnoClass* pTarget
 )
@@ -180,11 +197,10 @@ void AE_TransferEffects(
 Transfers all attached effects from source to target.
 
 - Parameters:
-	- pSource: Source unit.
-	- pTarget: Target unit.
-
-- Behavior:
-	- No operation if pSource or pTarget is null.
+  - pSource: Source unit.
+  - pTarget: Target unit.
+- Returns `S_OK` on success.
+- Fails with `E_POINTER` when: pSource or pTarget is null.
 
 ## Vanilla class extension
 
@@ -195,20 +211,18 @@ Transfers all attached effects from source to target.
 **Availability:** [1.0.0, ∞)
 
 ```cpp
-bool ConvertToType_Phobos(FootClass* pThis, TechnoTypeClass* toType)
+HRESULT ConvertToType_Phobos(FootClass* pThis, TechnoTypeClass* toType)
 ```
 
 Converts a FootClass instance to another TechnoType.
 
 - Parameters:
-	- pThis: Unit to convert.
-	- toType: Destination TechnoType.
-
-- Returns:
-	- true if conversion succeeds.
-	- false if conversion fails.
+  - pThis: Unit to convert.
+  - toType: Destination TechnoType.
+- Returns `S_OK` if conversion succeeds.
+- Returns `E_INVALIDARG` if types are incompatible.
 - Notes:
-	- This API forwards directly to TechnoExt::ConvertToType.
+  - This API forwards directly to TechnoExt::ConvertToType.
 
 #### RegisterCalculateExtraThreatCallback
 
@@ -217,21 +231,23 @@ Converts a FootClass instance to another TechnoType.
 ```cpp
 typedef double (*CalculateExtraThreatCallback)(TechnoClass* pThis, ObjectClass* pTarget, double originalThreat);
 
-void RegisterCalculateExtraThreatCallback(CalculateExtraThreatCallback callback)
+HRESULT RegisterCalculateExtraThreatCallback(CalculateExtraThreatCallback callback)
 ```
 
 Registers a callback function to calculate extra threat for a unit.
 
 - Parameters:
-	- callback: Callback function pointer that returns the calculated threat modifier. Signature: `double callback(TechnoClass* pThis, ObjectClass* pTarget, double originalThreat)`.
+  - callback: Callback function pointer that returns the calculated threat modifier. Signature: `double callback(TechnoClass* pThis, ObjectClass* pTarget, double originalThreat)`.
+- Returns `S_OK` on success.
+- Fails with `E_POINTER` when: callback is null.
 
 - Behavior:
-	- If callback is non-null, it is added to the internal callback list.
-	- When threat calculations occur, all registered callbacks are invoked to compute additional threat contributions.
-	- Multiple callbacks can be registered and are executed in registration order.
+  - If callback is non-null, it is added to the internal callback list.
+  - When threat calculations occur, all registered callbacks are invoked to compute additional threat contributions.
+  - Multiple callbacks can be registered and are executed in registration order.
 
 - Notes:
-	- The callback invocation method is `totalThreat = cb(pThis, pTarget, totalThreat)`.
+  - The callback invocation method is `totalThreat = cb(pThis, pTarget, totalThreat)`.
 
 ### BulletExt
 
@@ -240,21 +256,17 @@ Registers a callback function to calculate extra threat for a unit.
 **Availability:** [1.0.0, ∞)
 
 ```cpp
-bool Bullet_SetFirerOwner(BulletClass* pBullet, HouseClass* pHouse)
+HRESULT Bullet_SetFirerOwner(BulletClass* pBullet, HouseClass* pHouse)
 ```
 
 Updates the recorded firer house for a bullet extension.
 
 - Parameters:
-	- pBullet: Bullet instance.
-	- pHouse: New firer house (can be null if caller intentionally clears ownership).
-
-- Returns:
-	- true if the bullet extension is found and updated.
-	- false on failure.
-- Fails when:
-	- pBullet is null.
-	- No BulletExt entry exists for pBullet.
+  - pBullet: Bullet instance.
+  - pHouse: New firer house (can be null if caller intentionally clears ownership).
+- Returns `S_OK` if the bullet extension is found and updated.
+- Fails with `E_POINTER` when: pBullet is null.
+- Fails with `E_UNEXPECTED` when: no BulletExt entry exists for pBullet.
 
 ### EventExt
 
@@ -263,16 +275,12 @@ Updates the recorded firer house for a bullet extension.
 **Availability:** [1.0.0, ∞)
 
 ```cpp
-bool EventExt_AddEvent(EventExt* pEventExt)
+HRESULT EventExt_AddEvent(EventExt* pEventExt)
 ```
 
 Invokes AddEvent on an EventExt object.
 
 - Parameters:
-	- pEventExt: Event extension instance.
-
-- Returns:
-	- false if pEventExt is null.
-	- Otherwise, returns the result of pEventExt->AddEvent().
-
-
+  - pEventExt: Event extension instance.
+- Returns `S_OK` if AddEvent succeeds, `S_FALSE` if AddEvent returns false.
+- Fails with `E_POINTER` when: pEventExt is null.

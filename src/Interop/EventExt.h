@@ -3,4 +3,4 @@
 #include "Utilities/Macro.h"
 #include <Ext/Event/Body.h>
 
-DEFINE_EXPORT(bool, EventExt_AddEvent, EventExt* pEventExt);
+DEFINE_EXPORT(HRESULT, EventExt_AddEvent, EventExt* pEventExt);

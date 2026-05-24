@@ -33,9 +33,9 @@ public:
 /// </summary>
 /// <param name="pThis">Pointer to the FootClass instance to convert</param>
 /// <param name="toType">Pointer to the target TechnoTypeClass</param>
-/// <returns>true if conversion was successful, false otherwise</returns>
-DEFINE_EXPORT(bool, ConvertToType_Phobos, FootClass* pThis, TechnoTypeClass* toType);
+/// <returns>S_OK if conversion was successful, E_INVALIDARG if types are incompatible, E_FAIL if conversion failed</returns>
+DEFINE_EXPORT(HRESULT, ConvertToType_Phobos, FootClass* pThis, TechnoTypeClass* toType);
 
-DEFINE_EXPORT(void, RegisterCalculateExtraThreatCallback, CalculateExtraThreatCallback callback);
+DEFINE_EXPORT(HRESULT, RegisterCalculateExtraThreatCallback, CalculateExtraThreatCallback callback);
 
-DEFINE_EXPORT(void, RegisterCalculateSightCallback, CalculateSightCallback callback);
+DEFINE_EXPORT(HRESULT, RegisterCalculateSightCallback, CalculateSightCallback callback);
