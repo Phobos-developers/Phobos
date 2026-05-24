@@ -1076,6 +1076,25 @@ ReturnWeapon=                           ; WeaponType
 ReturnWeapon.ApplyFirepowerMult=false   ; boolean
 ```
 
+### Update the projectile immediately after firing to reduce useless firing
+
+- In vanilla, newly created projectiles are added to the end of the update list. This will result in some useless firing.
+  - For example: If two snipers aim at an infantry simultaneously (and either of them can kill the infantry), they will still fire together in the same frame. Because when the sniper who fires later shoots, the projectile of the sniper who fires first has not exploded yet, so the target infantry is still alive.
+- Now you can update the projectile once when it is fired through the following flag, so as to avoid the above situation.
+
+In `rulesmd.ini`:
+```ini
+[General]
+UpdateInvisoImmediately=false    ; boolean
+
+[SOMEPROJECTILE]                 ; Projectile
+UpdateImmediately=               ; boolean, default to (`[General] -> UpdateInvisoImmediately` && `Inviso=yes`)
+```
+
+```{note}
+- Interfering with the update sequence may cause problems. Please use this feature with caution. If you encounter any issues, please provide feedback.
+```
+
 ## Super Weapons
 
 ### AI Superweapon delay timer
