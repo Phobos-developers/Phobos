@@ -26,10 +26,34 @@ _script_dir = os.path.dirname(os.path.abspath(__file__))
 if _script_dir not in sys.path:
     sys.path.insert(0, _script_dir)
 
-def parse_existing_hooks(log_path):
-    """Parse HookAnalysis.txt and return list of existing hook dicts."""
-    import parse_hook_log
-    return parse_hook_log.parse_hook_log(log_path)
+def parse_existing_hooks(script_dir):
+    """Parse existing hooks from HookAnalysis.txt or ares_3.0p1_hooks.cpp.
+
+    Tries HookAnalysis.txt first (faster, richer metadata).
+    Falls back to ares_3.0p1_hooks.cpp if HookAnalysis.txt does not exist.
+    """
+    log_path = os.path.join(script_dir, 'HookAnalysis.txt')
+    if os.path.exists(log_path):
+        import parse_hook_log
+        return parse_hook_log.parse_hook_log(log_path)
+
+    cpp_path = os.path.join(script_dir, 'ares_3.0p1_hooks.cpp')
+    if os.path.exists(cpp_path):
+        import parse_hooks_cpp
+        return parse_hooks_cpp.parse_hooks_cpp(cpp_path)
+
+    print(json.dumps({
+        'errors': [],
+        'notes': [{
+            'problem': 'Setup',
+            'type': 'error',
+            'message': (
+                "Neither HookAnalysis.txt nor ares_3.0p1_hooks.cpp found "
+                f"in {script_dir}. Cannot perform conflict check."
+            )
+        }]
+    }, indent=2, ensure_ascii=False))
+    sys.exit(1)
 
 
 def check_hooks(new_hooks, existing_hooks):
@@ -163,8 +187,7 @@ def main():
                 new_hooks = json.load(f)
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    log_path = os.path.join(script_dir, 'HookAnalysis.txt')
-    existing_hooks = parse_existing_hooks(log_path)
+    existing_hooks = parse_existing_hooks(script_dir)
 
     results = check_hooks(new_hooks, existing_hooks)
     json.dump(results, sys.stdout, indent=2, ensure_ascii=False)

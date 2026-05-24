@@ -10,9 +10,11 @@ YOU MUST use these scripts. DO NOT reimplement parsing logic.
 | Script | Purpose |
 |--------|---------|
 | `discover_hooks.py` | Discovers new/modified DEFINE_HOOK / DEFINE_HOOK_AGAIN from git. Two modes: auto-detect (no args) or `--commit <sha/name>`. Supports fuzzy commit name resolution (searches last 30 commits). Outputs JSON with `hooks` array, each having `address`, `size`, `name`, `file`, `returns`. Use `--json-only` for piping. |
-| `check_hook_conflicts.py` | Reads a JSON array of new hooks from stdin (or a file argument) and checks them against `HookAnalysis.txt` for Problem 0 (size < 5 — requires NOP padding verification) and Problem 1 (conflicts). Outputs JSON with `errors` and `notes` arrays. |
+| `check_hook_conflicts.py` | Reads a JSON array of new hooks from stdin (or a file argument) and checks them against the existing hook reference for Problem 0 (size < 5 — requires NOP padding verification) and Problem 1 (conflicts). **References HookAnalysis.txt first; falls back to `ares_3.0p1_hooks.cpp` if that file is missing.** Outputs JSON with `errors` and `notes` arrays. |
 | `parse_hook_log.py` | Parses `HookAnalysis.txt` (UTF-8 encoding) and outputs all existing hooks as JSON. Typically not called directly — used by `check_hook_conflicts.py`. |
+| `parse_hooks_cpp.py` | Parses `ares_3.0p1_hooks.cpp` (DEFINE_HOOK / DEFINE_HOOK_AGAIN format) and outputs all existing hooks as JSON. Used by `check_hook_conflicts.py` as fallback when `HookAnalysis.txt` is absent. |
 | `HookAnalysis.txt` | Pre-generated hook analysis report from SyringeIH. Read-only reference. |
+| `ares_3.0p1_hooks.cpp` | Alternative hook reference in source form (DEFINE_HOOK entries used when `HookAnalysis.txt` does not exist). Read-only reference. |
 
 #### Before You Begin
 
