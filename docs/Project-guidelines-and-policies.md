@@ -1,3 +1,4 @@
+
 # Project guidelines and policies
 
 ## Phobos maintenance crew structure
@@ -50,7 +51,6 @@ The list is not exhaustive, you are welcome to propose/submit changes to it (or 
 In absence of a fitting category - a lead should review it.
 
 What can make any PR more controversial and requiring a higher level maintainer's assignment:
-
 - Modifying/breaking previous (or vanilla) behavior
 - Requiring migration
 - Mixing contribution types
@@ -59,10 +59,9 @@ What can make any PR more controversial and requiring a higher level maintainer'
 ## Contribution process
 
 To ensure your contribution goes smoothly, please stick to the following process when contributing to the project:
-
 1. **Check whether there is already an open Pull Request** for whatever you want to contribute. If there is - comment on it and see if you can help with it instead of starting your own first. We hate to discard otherwise valid work just because it's a duplicate.
 2. If all is clear - you should **get in touch with maintainers** of level respective to the complexity of your PR (see [Types of contributions](#types-of-contributions)) to review/merge your upcoming PR and **talk with them about key design aspects before you even submit a contribution**.
-   - This is _especially_ important for bigger and more fundamental improvements, when you're learning and when you're exploring "uncharted territories". Staying engaged in communication with the maintainers will help you to avoid unnecessary wasted effort and reworks later on and make sure that your contribution is aligned with how we do things. Not only that, but it also allows you to essentially get early reviews on important things and faster merges (which is especially important in light of our large amount of PRs) with higher level of confidence.
+   - This is *especially* important for bigger and more fundamental improvements, when you're learning and when you're exploring "uncharted territories". Staying engaged in communication with the maintainers will help you to avoid unnecessary wasted effort and reworks later on and make sure that your contribution is aligned with how we do things. Not only that, but it also allows you to essentially get early reviews on important things and faster merges (which is especially important in light of our large amount of PRs) with higher level of confidence.
    - Currently the Phobos channel on Discord is the best place to brainstorm things like that, as it's the most accessible place to reach out to maintainers and discuss your ideas (or if there's nobody around - try messaging experienced maintainers privately).
      - GitHub issues, discussions and draft PRs (with not a lot of work done yet) are also OK to discuss things, but they are not as fast as Discord and are better used for persistent storage of info, and usually it's easier to grab someone's attention if you approach them personally in chat.
    - It's also a good thing to get opinions of multiple maintainers and not always consult specific one or a separate part of them. We should try to stay interconnected with each other, even if initially divided by language or habitually.
@@ -71,7 +70,6 @@ To ensure your contribution goes smoothly, please stick to the following process
 ## Project structure
 
 Assuming you've successfully cloned and built the project before getting here, you should end up with the following project structure:
-
 - `src/` - all the project's source code resides here.
   - `Commands/` - source code for new hotkey commands. Every command is a new class that inherits from `PhobosCommandClass` (defined in `Commands.h`) and is defined in a separate file with a few methods and then registered in `Commands.cpp`.
   - `New/` - source code for new ingame classes.
@@ -94,10 +92,8 @@ Assuming you've successfully cloned and built the project before getting here, y
 ## Code styleguide
 
 We have established a couple of code style rules to keep things consistent. Some of the rules are enforced in `.editorconfig`, where applicable, so you can autoformat the code by pressing `Ctrl + K, D` hotkey chord in Visual studio. Still, it is advised to manually check the style before submitting the code.
-
 - We use tabs instead of spaces to indent code.
 - Curly braces are always to be placed on a new line ([Allman indentation style](https://en.wikipedia.org/wiki/Indentation_style#Allman_style)). One of the reasons for this is to clearly separate the end of the code block head and body in case of multiline bodies:
-
 ```cpp
 if (SomeReallyLongCondition()
     || ThatSplitsIntoMultipleLines())
@@ -106,9 +102,7 @@ if (SomeReallyLongCondition()
     DoSomethingMore();
 }
 ```
-
-- Braceless code block bodies should be made only when both code block head and body are single line, statements split into multiple lines and nested braceless blocks are not allowed within braceless blocks:
-
+- Braceless code block bodies should be made only when both code block head and body are single line,  statements split into multiple lines and nested braceless blocks are not allowed within braceless blocks:
 ```cpp
 // OK
 if (Something())
@@ -135,11 +129,9 @@ if (SomeCondition())
         || ThatSplitsIntoMultipleLines();
 }
 ```
-
 - Only empty curly brace blocks may be left on the same line for both opening and closing braces (if appropriate).
 - If you use if-else you should either have all of the code blocks braced or braceless to keep things consistent.
 - Big conditions which span multiple lines and are hard to read otherwise should be split into smaller logical parts to improve readability:
-
 ```cpp
 // Not OK
 if (This() && That() && AlsoThat()
@@ -155,13 +147,11 @@ bool secondCondition = OrOtherwiseThis && OtherwiseThat && WhateverElse;
 if (firstCondition || secondCondition)
     DoSomething();
 ```
-
 - Code should have empty lines to make it easier to read. Use an empty line to split code into logical parts. It's mandatory to have empty lines to separate:
   - `return` statements (except when there is only one line of code except that statement);
   - local variable assignments that are used in the further code (you shouldn't put an empty line after one-line local variable assignments that are used only in the following code block though);
   - code blocks (braceless or not) or anything using code blocks (function or hook definitions, classes, namespaces etc.);
   - hook register input/output.
-
 ```cpp
 // OK
 auto localVar = Something();
@@ -203,11 +193,9 @@ if (SomeCondition())
 }
 
 ```
-
 - `auto` may be used to hide an unnecessary type declaration if it doesn't make the code harder to read. `auto` may not be used on primitive types.
 - A space must be put between braces of empty curly brace blocks.
-- To have less Git merge conflicts member initializer lists and other list-like syntax structures used in frequently modified places should be split per-item with item separation characters (commas, for example) placed _after newline character_:
-
+- To have less Git merge conflicts member initializer lists and other list-like syntax structures used in frequently modified places should be split per-item with item separation characters (commas, for example) placed *after newline character*:
 ```cpp
 ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
     , SpawnsTiberium_Type(0)
@@ -216,7 +204,6 @@ ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject
     , SpawnsTiberium_CellsPerAnim({ 1, 0 })
 { }
 ```
-
 - Local variables and function/method args are named in the `camelCase` (using a `p` prefix to denote pointer type for every pointer nesting level) and a descriptive name, like `pTechnoType` for a local `TechnoTypeClass*` variable.
 - Classes, namespaces, class fields and members are always written in `PascalCase`.
 - Class fields that can be set via INI tags should be named exactly like ini tags with dots replaced with underscores.
@@ -225,7 +212,6 @@ ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject
   - If it's crucial to fake `__thiscall` you may use `__fastcall` and use `void*` or `void* _` as a second argument to discard value passed through `EDX` register. Such methods are to be used for call replacement.
 - Hooks have to be named using a following scheme: `HookedFunction_HookPurpose`, or `ClassName_HookedMethod_HookPurpose`. Defined-again hooks are exempt from this scheme due to impossibility to define different names for the same hook.
 - Return addresses should use anonymous enums to make it clear what address means what, if applicable. The enum has to be placed right at the function start and include all addresses that are used in this hook:
-
 ```cpp
 DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
 {
@@ -234,7 +220,6 @@ DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
     ...
 }
 ```
-
 - Even if the hook doesn't use `return 0x0` to execute the overriden instructions, you still have to write correct hook size (last parameter of `DEFINE_HOOK` macro) to reduce potential issues if the person editing this hook decides to use `return 0x0`.
 - New ingame "entity" classes are to be named with `Class` postfix (like `RadTypeClass`). Extension classes are to be named with `Ext` postfix instead (like `RadTypeExt`).
 - Do not pollute the namespace.
@@ -247,18 +232,16 @@ The styleguide is not exhaustive and may be adjusted in the future.
 ## Git branching model
 
 Couple of notes regarding the Git practices. We use [git-flow](https://nvie.com/posts/a-successful-git-branching-model/)-like workflow:
-
-- `master` is for stable releases, can have hotfixes pushed to it or branched off like a feature branch with the requirement of version increment and `master` being merged into `develop` after that;
-- `develop` is the main development branch;
-- `feature/`-prefixed branches (sometimes the prefix may be different if appropriate, like for big fixes or changes) are so called "feature branches" - those are branched off `develop` for every new feature to be introduced into it and then merged back. We use squash merge to merge them back in case of smaller branches and sometimes merge commit in case the branch is so big it would be viable to keep it as is.
-- `hotfix/`-prefixed branches may be used in a same manner as `feature/`, but with `master` branch, with a requirement of `master` being merged into `develop` after `hotfix/` branch was squash merged into `master`.
-- `release/`-prefixed branches are branched off `develop` when a new stable release is slated to allow working on features for a next release and stability improvements for this release. Those are merged with a merge commit into `master` and `develop` with a stable version number increase, after which the stable version is released.
+  - `master` is for stable releases, can have hotfixes pushed to it or branched off like a feature branch with the requirement of version increment and `master` being merged into `develop` after that;
+  - `develop` is the main development branch;
+  - `feature/`-prefixed branches (sometimes the prefix may be different if appropriate, like for big fixes or changes) are so called "feature branches" - those are branched off `develop` for every new feature to be introduced into it and then merged back. We use squash merge to merge them back in case of smaller branches and sometimes merge commit in case the branch is so big it would be viable to keep it as is.
+  - `hotfix/`-prefixed branches may be used in a same manner as `feature/`, but with `master` branch, with a requirement of `master` being merged into `develop` after `hotfix/` branch was squash merged into `master`.
+  - `release/`-prefixed branches are branched off `develop` when a new stable release is slated to allow working on features for a next release and stability improvements for this release. Those are merged with a merge commit into `master` and `develop` with a stable version number increase, after which the stable version is released.
 - When you're working with your local & remote branches use **fast-forward** pulls to get the changes from remote branch to local, **don't merge remote branch into local and vice versa**, this creates junk commits and makes things unsquashable.
 
 These commands will do the following for all repositories on your PC:
-
-1. remove the automatic merge upon pull and replace it with a rebase;
-2. highlight changes consisting of moving existing lines to another location with a different color.
+1) remove the automatic merge upon pull and replace it with a rebase;
+2) highlight changes consisting of moving existing lines to another location with a different color.
 
 ```bash
 git config --global pull.rebase true
@@ -273,7 +256,6 @@ Often when working on Phobos and/or researching the YR engine you'll need to imp
 When you clone Phobos recursively - you also clone YRpp as a submodule. Basically submodules are just nested repositories. You can open it like any other repository, so the changes can be synchronized to Phobos and you don't need to rename stuff by hand.
 
 The suggested workflow is as follows:
-
 1. In your IDE of choice rename fields and functions using symbol renaming feature (`Rename...` feature in Visual Studio (regular or Code), `[F2]` by default), then you will have two "levels" of changes displayed in your Git client:
    - for Phobos repository - changes in the Phobos code (as regular changes) and changes to YRpp (as one submodule change).
    - for YRpp repository - changes to the field names and function names in YRpp as regular changes.

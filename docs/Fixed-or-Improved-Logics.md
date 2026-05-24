@@ -15,20 +15,20 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug when units are already dead but still in map (for sinking, crashing, dying animation, etc.), they could die again.
 - Fixed the bug when cloaked Desolator was unable to fire his deploy weapon.
 - Fixed the bug that temporaryed unit cannot be erased correctly and no longer raise an error.
-- Fixed building and defense tab hotkeys not enabling the placement mode after _Cannot build here._ triggered and the placement mode cancelled.
+- Fixed building and defense tab hotkeys not enabling the placement mode after *Cannot build here.* triggered and the placement mode cancelled.
 - Fixed buildings with `UndeployInto` playing `EVA_NewRallypointEstablished` on undeploying.
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water.
 - Fixed AI Aircraft docks bug when Ares tag `[GlobalControls] -> AllowParallelAIQueues=no` is set.
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode.
 - Fixed `DeathWeapon` not detonating properly.
-  - Some settings are still ignored like `PreImpactAnim` _(Ares feature)_, this might change in future.
+  - Some settings are still ignored like `PreImpactAnim` *(Ares feature)*, this might change in future.
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10.
 - Fixed the bug where jumpjet units that are `Crashable` do not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
 - Fixed the bug that prevents jumpjet units from turn to the target when firing from a different direction.
 - Fixed the bug allowing jumpjet units to continue firing at enemy target when crashing.
 
 ![image](_static/images/jumpjet-turning.gif)
-_Jumpjet turning to target applied in Robot Storm X_
+*Jumpjet turning to target applied in Robot Storm X*
 
 - Fixed the bug when turreted jumpjet units always facing bottom-right direction when motion stops.
 - Fixed the bug when jumpjet objects are unable to use `Sensors`.
@@ -38,7 +38,7 @@ _Jumpjet turning to target applied in Robot Storm X_
 - Added a "Load Game" button to the retry dialog on mission failure.
 
 ![image](_static/images/turretoffset-01.png)
-_Side offset voxel turret in Breaking Blue project_
+*Side offset voxel turret in Breaking Blue project*
 
 - `TurretOffset` tag for voxel turreted TechnoTypes now accepts FLH (forward, lateral, height) values like `TurretOffset=F,L` or `TurretOffset=F,L,H`, which means turret location can be adjusted in all three axes.
 - `TurretOffset` is now supported for SHP vehicles.
@@ -48,7 +48,7 @@ _Side offset voxel turret in Breaking Blue project_
 - Infantry with `DeployFireWeapon=-1` can now fire both weapons (decided by its target), regardless of deployed or not.
 
 ![image](_static/images/remember-target-after-deploying-01.gif)
-_Nod arty keeping target on attack order in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded/)_
+*Nod arty keeping target on attack order in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded/)*
 
 - Vehicle to building deployers now keep their target when deploying with `DeployToFire`.
 - Effects like lasers are no longer drawn from wrong firing offset on weapons that use Burst.
@@ -59,12 +59,12 @@ _Nod arty keeping target on attack order in [C&C: Reloaded](https://www.moddb.co
 - Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
 - Fixed missing `No Enter` cursor for VehicleTypes being unable to enter a `Grinding` building.
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
-- Aircraft & jumpjet units are now affected by speed modifiers such as `Speed(Aircraft/Infantry/Units)Mult` on `Countries`, `VeteranSpeed` and Crates / AttachEffect _(Ares feature)_.
+- Aircraft & jumpjet units are now affected by speed modifiers such as `Speed(Aircraft/Infantry/Units)Mult` on `Countries`, `VeteranSpeed` and Crates / AttachEffect *(Ares feature)*.
 - Both voxel and SHP vehicle units should now correctly respect custom palette set through `Palette`.
 - Setting `RadarInvisible` to true on TerrainTypes now hides them from minimap display.
 - Mind control indicator animations will now correctly restore on mind controlled objects when uncloaked.
 - Animations from Warhead `AnimList` & `SplashList` etc. as well as animations created through map trigger `41 Play Anim At` now have the appropriate house set as owner of the animation by default.
-- Nuke carrier & payload weapons now respect `Bright` setting on the weapons always when appropriate (previously only payload did and only if Superweapon had `Nuke.SiloLaunch=false` _(Ares feature)_).
+- Nuke carrier & payload weapons now respect `Bright` setting on the weapons always when appropriate (previously only payload did and only if Superweapon had `Nuke.SiloLaunch=false` *(Ares feature)*).
 - Self-healing pips from `InfantryGainSelfHeal` & `UnitsGainSelfHeal` now respect unit's `PixelSelectionBracketDelta` like health bar pips do.
 - Fixed the bug where the health bar of a unit being attacked by temporal weapons would not disappear after mouse hover, causing it to remain visible even when the mouse moved away.
 - Buildings using `SelfHealing` will now correctly revert to undamaged graphics if their health is restored back by self-healing.
@@ -77,7 +77,7 @@ _Nod arty keeping target on attack order in [C&C: Reloaded](https://www.moddb.co
 - Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something.
 
 ![image](_static/images/translucency-fix.png)
-_Example gradient SHP drawing with 75% translucency, before and after_
+*Example gradient SHP drawing with 75% translucency, before and after*
 
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini -> [General] -> FixTransparencyBlitters=no`.
   - Only applies to Z-aware drawing mode for now.
@@ -329,9 +329,9 @@ _Example gradient SHP drawing with 75% translucency, before and after_
 
 ## Fixes / interactions with other extensions
 
-- Weapons fired by EMPulse superweapons _(Ares feature)_ now fully respect the firing building's FLH.
-- Weapons fired by EMPulse superweapons _(Ares feature)_ without `EMPulse.TargetSelf=true` can now create radiation.
-- Weapons fired by EMPulse superweapons _(Ares feature)_ now respect `Floater` and Phobos-added `Gravity` setting.
+- Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH.
+- Weapons fired by EMPulse superweapons *(Ares feature)* without `EMPulse.TargetSelf=true` can now create radiation.
+- Weapons fired by EMPulse superweapons *(Ares feature)* now respect `Floater` and Phobos-added `Gravity` setting.
 - `IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no longer get stuck after deploying or play their move sound indefinitely.
 - `Convert.Deploy` displays 'NoDeploy' cursor if the new type is not allowed to move to the cell due to `SpeedType` etc.
 - All forms of type conversion (including Ares') now correctly update the warp-in delay if unit with teleport `Locomotor` was converted while the delay was active.
@@ -340,7 +340,7 @@ _Example gradient SHP drawing with 75% translucency, before and after_
 - Fixed an issue introduced by Ares that caused building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed.
 - Fixed Ares' Abductor weapon leaves permanent placement stats when abducting moving vehicles.
 - Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (typically begin with `[Developer fatal]Pointer 00000000 declared change to both`).
-- Fixed Academy _(Ares feature)_ not working on the initial payloads _(Ares feature)_ of vehicles built from a war factory.
+- Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares feature)* of vehicles built from a war factory.
 - Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions.
 - Taking over Ares' AlphaImage respawn logic to make it not recreate in every frame for buildings, static techno and techno without turret, in order to reduce lags from it.
 - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully.
@@ -394,7 +394,6 @@ It was originally planned to list global features that are exclusively related t
 In vanilla, you cannot deploy a controlled vehicle to `ConstructionYard=true` building. Now you can customize it.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 AllowDeployControlledMCV=false   ; boolean
@@ -409,7 +408,6 @@ AllowDeployControlledMCV=false   ; boolean
 - The chrono sparkle animation that is displayed on building itself is also now displayed at the center of it rather than at center of its topmost cell.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 ChronoSparkleDisplayDelay=24                         ; integer, game frames
@@ -419,7 +417,6 @@ ChronoSparkleBuildingDisplayPositions=occupantslots  ; List of chrono sparkle po
 ### Crate improvements
 
 There are some improvements on goodie crate logic:
-
 - The statistic distribution of the randomly generated crates is now more uniform within the visible map region by using an optimized sampling procedure.
 - You can now limit the crates' spawn region to land only by setting `[CrateRules] -> CreateOnlyOnLand` to true.
 - The limit of vehicles a player can own before unit crates start giving money instead can now be customized by setting `UnitCrateVehicleCap`. Negative numbers disable the cap entirely.
@@ -427,7 +424,6 @@ There are some improvements on goodie crate logic:
   - The previously hardcoded credits threshold that must be passed can also now be customized via `FreeMCV.CreditsThreshold`.
 
 In `rulesmd.ini`:
-
 ```ini
 [CrateRules]
 CrateOnlyOnLand=false          ; boolean
@@ -444,7 +440,6 @@ FreeMCV.CreditsThreshold=1500  ; integer
 - This feature supports SHP images for InfantryTypes, SHP and VXL images for VehicleTypes and VXL images for AircraftTypes.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 ArtImageSwap=false  ; disabled by default
@@ -455,7 +450,6 @@ To use this feature properly, you need to remove or replace the following segmen
 ```
 
 In `artmd.ini`:
-
 ```ini
 [CAML]
 Image=JOSH
@@ -474,7 +468,6 @@ In vanilla, `[CLNT]` does not have its own image. Originally, in `artmd.ini`, it
 - This tag can not be used without Ares.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
@@ -486,7 +479,6 @@ Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
 - Now you can customize that damage by using the following flag.
 
 In `rulesmd.ini`:
-
 ```ini
 [CombatDamage]
 AdjacentWallDamage=200  ; integer
@@ -498,7 +490,6 @@ AdjacentWallDamage=200  ; integer
   - `AircraftLevelLightMultiplier` & `JumpjetLevelLightMultiplier` are direct multipliers to level lighting applied on the units, for height levels above the cell they are on.
 
 In `rulesmd.ini`:
-
 ```ini
 [AudioVisual]
 AircraftLevelLightMultiplier=1.0  ; floating point value, percents or absolute
@@ -510,7 +501,6 @@ JumpjetLevelLightMultiplier=0.0   ; floating point value, percents or absolute
 - In vanilla, an `AltPalette=yes` animation or `Voxel=yes` Projectile image that cannot properly remap will use the first Color Scheme in the `[Colors]` list; now it can be manually specified.
 
 In `rulesmd.ini`:
-
 ```ini
 [AudioVisual]
 AnimRemapDefaultColorScheme=      ; ColorScheme name
@@ -521,7 +511,6 @@ AnimRemapDefaultColorScheme=      ; ColorScheme name
 - It is now possible to specify additional tint intensity applied to Iron Curtained and Force Shielded units.
 
 In `rulesmd.ini`:
-
 ```ini
 [AudioVisual]
 IronCurtain.ExtraTintIntensity=0.0  ; floating point value
@@ -536,7 +525,6 @@ ForceShield.ExtraTintIntensity=0.0  ; floating point value
 - You can set `JumpjetClimbIgnoreBuilding` to true to make the jumpjet treat the building height as 0 when climbing.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 JumpjetClimbPredictHeight=false   ; boolean
@@ -552,7 +540,6 @@ JumpjetClimbIgnoreBuilding=       ; boolean, default to [General] -> JumpjetClim
 In vanilla, IvanBomb images display and the bombs detonate at the top-leftmost cell of the building foundation instead of at the center of buildings. This can now be changed.
 
 In `rulesmd.ini`:
-
 ```ini
 [CombatDamage]
 IvanBombAttachToCenter=false  ; boolean
@@ -568,7 +555,6 @@ In vanilla game, a structure's radial indicator can be drawn only when it belong
 On top of that, you can specify its visibility from other houses.
 
 In `rulesmd.ini`:
-
 ```ini
 [AudioVisual]
 RadialIndicatorVisibility=allies  ; List of Affected House Enumeration (owner/self | allies/ally | enemies/enemy | all)
@@ -580,7 +566,6 @@ RadialIndicatorVisibility=allies  ; List of Affected House Enumeration (owner/se
   - Moreover, added two tags for missing ones.
 
 In `rulesmd.ini`:
-
 ```ini
 [JumpjetControls]
 Crash=5.0        ; floating point value
@@ -601,7 +586,6 @@ NoWobbles=false  ; boolean
   - `[General] -> GatherWhenMCVDeploy` controls this behavior.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 AIFireSale=true           ; boolean
@@ -616,7 +600,6 @@ GatherWhenMCVDeploy=true  ; boolean
 - This works for `LaserTargetColor`, `IronCurtainColor`, `BerserkColor` and `ForceShieldColor`.
 
 In `rulesmd.ini`:
-
 ```ini
 [AudioVisual]
 ColorAddUse8BitRGB=false  ; boolean
@@ -651,7 +634,6 @@ Many of the tags from Tiberian Sun have been re-enabled. The values provided bel
 ```
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 VeinholeGrowthRate=300        ; integer
@@ -683,7 +665,6 @@ The game expects certain overlays related to Veinholes to have certain indices, 
 ```
 
 In `rulesmd.ini`:
-
 ```ini
 [OverlayTypes]
 126=VEINS                     ; The veins (weeds)
@@ -708,7 +689,6 @@ As the code for the Chemical Missile had been removed, setting `Type=ChemMissile
 ```
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMESW]                                        ; SuperWeaponType
 UseWeeds=no                                     ; boolean - should the SW use weeds to recharge?
@@ -721,14 +701,13 @@ UseWeeds.ReadinessAnimationPercentage=0.9       ; double - when this many weeds 
 
 ![image](_static/images/VoxelLightSourceComparison1.png)
 ![image](_static/images/VoxelLightSourceComparison2.png)
-_Voxel by [C&CrispS](https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index)_
+*Voxel by [C&CrispS](https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index)*
 
 - It is now possible to change the position of the light relative to the voxels. This allows for better lighting to be set up.
   - Only the direction of the light is accounted, the distance to the voxel is not accounted.
   - Vanilla light (assuming `UseFixedVoxelLighting=false`) is located roughly at `VoxelLightSource=0.201,-0.907,-0.362`.
 
 In `rulesmd.ini`:
-
 ```ini
 [AudioVisual]
 UseFixedVoxelLighting=false  ; boolean, whether to fix the lighting
@@ -746,7 +725,6 @@ Keep in mind that the tool doesn't account for `UseFixedVoxelLighting=true` as o
 - In vanilla, buildings are forbidden to use waypoints. Now you can allow that using the following flag.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 BuildingWaypoints=false  ; boolean
@@ -759,7 +737,6 @@ BuildingWaypoints=false  ; boolean
 - It is now possible to override `VoiceMove` for `Carryall=true` aircraft for when commanding it to pick up vehicles by setting `VoicePickup`.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEAIRCRAFT]  ; AircraftType
 VoicePickup=    ; Sound entry
@@ -770,7 +747,6 @@ VoicePickup=    ; Sound entry
 - In vanilla, this is always controlled by a global flag under `[General]`. Now, this allows customization per aircraft. For detailed functionality, see [ModEnc](https://modenc.renegadeprojects.com/CurleyShuffle).
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEAIRCRAFT]            ; AircraftType
 CurleyShuffle=            ; boolean, default to [General] -> CurleyShuffle
@@ -781,7 +757,6 @@ CurleyShuffle=            ; boolean, default to [General] -> CurleyShuffle
 - In vanilla, when an aircraft attacks, it forces the target's cell to trigger a scatter. Now you can disable this behavior by setting the following flag to `false`.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEAIRCRAFT]            ; AircraftType
 FiringForceScatter=true   ; boolean
@@ -802,7 +777,6 @@ FiringForceScatter=true   ; boolean
   - `ExtendedAircraftMissions.UnlandDamage` controls the damage suffered by the aircraft every 4 frames when there is no airport for the aircraft to land. If the value is negative, it will crash immediately. Not recommended to use when `ExtendedAircraftMissions` is not enabled.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 ExtendedAircraftMissions=false            ; boolean
@@ -827,7 +801,6 @@ And now when `ExtendedAircraftMissions` is enabled, aircraft that can land at th
 - `SpawnHeight` can also be used to override the initial height of the aircraft, which defaults to `FlightLevel`, or if not set then `[General] -> FlightLevel`.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEAIRCRAFT]            ; AircraftType
 SpawnDistanceFromTarget=  ; floating point value, distance in cells
@@ -840,7 +813,6 @@ SpawnHeight=              ; integer, height in leptons
   - Negative values are allowed as a special case for `AirportBound=false` aircraft which makes them land facing their current direction.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEAIRCRAFT]  ; AircraftType
 LandingDir=     ; Direction type (integers from 0-255). Accepts negative values as a special case.
@@ -857,7 +829,6 @@ LandingDir=     ; Direction type (integers from 0-255). Accepts negative values 
 - `Damage.ApplyOncePerLoop`, if set to true, makes `Damage` be dealt only once per animation loop (on single loop animations, only once, period) instead of on every frame or intervals defined by `Damage.Delay`. The frame on which it is dealt is determined by `Damage.Delay`, defaulting to after the first animation frame.
 
 In `artmd.ini`:
-
 ```ini
 [SOMEANIM]                      ; AnimationType
 Weapon=                         ; WeaponType
@@ -874,12 +845,11 @@ Damage.ApplyFirepowerMult=false ; boolean
 ### Attached animation position customization
 
 - You can now customize position of attached animations via different values for `AttachedAnimPosition`.
-  - `default`: Animation shows up at the parent object's logical position (for buildings, this is the top-leftmost cell / cell #0).
-  - `center`: Animation shows up at the parent object's visual center.
-  - `ground`: Animation shows up at the parent object's visual center but forced to ground level. Note that the animations is still considered attached to the object and is likely to be drawn above objects that the object itself would cover unless other settings are used to compensate.
+    - `default`: Animation shows up at the parent object's logical position (for buildings, this is the top-leftmost cell / cell #0).
+    - `center`: Animation shows up at the parent object's visual center.
+    - `ground`: Animation shows up at the parent object's visual center but forced to ground level. Note that the animations is still considered attached to the object and is likely to be drawn above objects that the object itself would cover unless other settings are used to compensate.
 
 In `artmd.ini`:
-
 ```ini
 [SOMEANIM]                   ; AnimationType
 AttachedAnimPosition=default ; Attached animation position enumeration (default|center|ground)
@@ -895,7 +865,6 @@ AttachedAnimPosition=default ; Attached animation position enumeration (default|
 - `ExtraShadow` can be set to false to disable the display of shadows on the ground.
 
 In `artmd.ini`:
-
 ```ini
 [SOMEANIM]                    ; AnimationType
 ExplodeOnWater=false          ; boolean
@@ -911,14 +880,12 @@ ExtraShadow=true              ; boolean
 - In vanilla, the anim with `Crater=yes` is hardcoded to destroy the tiberium in its cell. Now you can disable this behavior by setting the following tags to `false`.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 AnimCraterDestroyTiberium=true  ; boolean
 ```
 
 In `artmd.ini`:
-
 ```ini
 [SOMEANIM]                      ; AnimationType
 Crater.DestroyTiberium=         ; boolean, default to [General] -> AnimCraterDestroyTiberium
@@ -940,7 +907,6 @@ Crater.DestroyTiberium=         ; boolean, default to [General] -> AnimCraterDes
     - `LargeFireDistances` is a list of distances in cells for the animations to spawn at from the parent animation's coordinates, up to `LargeFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities.
 
 In `artmd.ini`:
-
 ```ini
 [SOMEANIM]                          ; AnimationType
 ConstrainFireAnimsToCellSpots=true  ; boolean
@@ -965,7 +931,6 @@ Save for the change that `Flamer` does not spawn animations if the parent animat
 - You can now customize whether or not animations attached to objects follow the object's layer or respect their own `Layer` setting. If this is unset, attached animations use `ground` layer.
 
 In `artmd.ini`:
-
 ```ini
 [SOMEANIM]             ; AnimationType
 Layer.UseObjectLayer=  ; boolean
@@ -976,7 +941,6 @@ Layer.UseObjectLayer=  ; boolean
 - You can now customize which growth stage should an ore/tiberium cell have to have animation with `HideIfNoOre` displayed. Cells with growth stage less than specified value won't allow the anim to display.
 
 In `artmd.ini`:
-
 ```ini
 [SOMEANIM]               ; AnimationType
 HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
@@ -995,7 +959,6 @@ HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
   - `AICleanWallNode` controls whether AI cannot place walls when there are no `ProtectWithWall` buildings around. If it cannot be placed, this base node will also be removed.
 
 In `rulesmd.ini`:
-
 ```ini
 [AI]
 AIAutoDeployMCV=true   ; boolean
@@ -1011,7 +974,6 @@ AICleanWallNode=false  ; boolean
 - It is now possible to customize the landing direction for docking aircraft via `AircraftDockingDir(N)` (`N` optionally replaced by 0-based index for each `DockingOffset` separately, `AircraftDockingDir` and `AircraftDockingDir0` are synonymous and will be used if direction is not set for a specific offset) on the dock building. This overrides the aircraft's own [landing direction](#landing-direction) setting and defaults to `[AudioVisual] -> PoseDir`.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEBUILDING]          ; BuildingType
 AircraftDockingDir(N)=  ; Direction type (integers from 0-255)
@@ -1022,7 +984,6 @@ AircraftDockingDir(N)=  ; Direction type (integers from 0-255)
 - In vanilla, the refinery uses different ActiveAnims depending on the storage. You can now make it use multiple ActiveAnims simultaneously like any other building.
 
 In `artmd.ini`:
-
 ```ini
 [SOMEBUILDING]                         ; BuildingType
 Refinery.UseNormalActiveAnim=false     ; boolean
@@ -1033,7 +994,6 @@ Refinery.UseNormalActiveAnim=false     ; boolean
 - By default buildings do not apply `ZShapePointMove` (which offsets the 'z shape' applied on buildings which is used to adjust them in depth buffer and is used to fix issues related to that such as corners of buildings getting cut off when drawn) when buildup is being displayed. This behaviour can now be toggled by setting `ZShapePointMove.OnBuildup`.
 
 In `artmd.ini`:
-
 ```ini
 [SOMEBUILDING]                   ; BuildingType
 ZShapePointMove.OnBuildup=false  ; boolean
@@ -1045,7 +1005,6 @@ ZShapePointMove.OnBuildup=false  ; boolean
 - When capturing such "buildings", the player won't be notified by EVA capture event.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEBUILDING]      ; BuildingType
 ConsideredVehicle=  ; boolean
@@ -1056,13 +1015,12 @@ ConsideredVehicle=  ; boolean
 - By default `Factory=InfantryType` buildings use exit cell for the created infantry based on hardcoded settings if any of `GDIBarracks`, `NODBarracks` or `YuriBarracks` are set to true. It is now possible to define arbitrary exit cell for such building via `BarracksExitCell`. Below is a reference of the cell offsets for the hardcoded values.
 
 | Key            | Cell Offset |
-| -------------- | ----------- |
+|----------------|-------------|
 | `GDIBarracks`  | 1,2         |
 | `NODBarracks`  | 2,2         |
 | `YuriBarracks` | 2,1         |
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEBUILDING]     ; BuildingType
 BarracksExitCell=  ; X,Y - cell offset
@@ -1073,7 +1031,6 @@ BarracksExitCell=  ; X,Y - cell offset
 - In vanilla, buildings with RadioLink (f.ex. war factory and air base) will change the owner of the RadioLink-linked units when the owner of the building changes. Now you can toggle this behaviour off by the following flags.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 BuildingRadioLink.SyncOwner=true ; boolean
@@ -1088,7 +1045,6 @@ BuildingRadioLink.SyncOwner=     ; boolean, default to [General] -> BuildingRadi
 - You can now customize enter or exit sound of a tank bunker building.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEBUILDING]              ; BuildingType
 OccupyDamageMultiplier=     ; floating point value, default to [CombatDamage] -> OccupyDamageMultiplier
@@ -1104,7 +1060,6 @@ BunkerWallsDownSound=       ; Sound entry, default to [AudioVisual] -> BunkerWal
 - By default buildings with `UndeploysInto` will only play 23 frames of their buildup sequence (in reverse starting from last frame) when being sold as opposed to being undeployed. This can now be customized via `SellBuildupLength`.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEBUILDING]        ; BuildingType
 SellBuildupLength=23  ; integer, number of buildup frames to play
@@ -1113,7 +1068,7 @@ SellBuildupLength=23  ; integer, number of buildup frames to play
 ### Customizable & new grinder properties
 
 ![image](_static/images/grinding.gif)
-_Using ally grinder, restricting to vehicles only and refund display ([Project Phantom](https://www.moddb.com/mods/project-phantom))_
+*Using ally grinder, restricting to vehicles only and refund display ([Project Phantom](https://www.moddb.com/mods/project-phantom))*
 
 - You can now customize which types of objects a building with `Grinding` set can grind as well as the grinding sound.
   - `Grinding.AllowAllies` changes whether or not to allow units to enter allies' buildings.
@@ -1127,7 +1082,6 @@ _Using ally grinder, restricting to vehicles only and refund display ([Project P
 - For money string indication upon grinding, please refer to [`DisplayIncome`](User-Interface.md#visual-indication-of-income-from-grinders-and-refineries).
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEBUILDING]                     ; BuildingType
 Grinding.AllowAllies=false         ; boolean
@@ -1145,7 +1099,6 @@ Grinding.Weapon.RequiredCredits=0  ; integer
 - Now you can specific how building can be overpowerd.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEWARHEAD]             ; WarheadType
 ElectricAssaultLevel=1    ; integer
@@ -1164,7 +1117,6 @@ Ares' [Battery Super Weapon](https://ares-developers.github.io/Ares-docs/new/sup
 - Now you can disable `DamageSound` of a building.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEBUILDING]            ; BuildingType
 DisableDamageSound=false  ; boolean
@@ -1175,7 +1127,6 @@ DisableDamageSound=false  ; boolean
 - It is now possible to exclude a building with `Factory` from counting towards `MultipleFactory` bonus.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEBUILDING]                         ; BuildingType
 ExcludeFromMultipleFactoryBonus=false  ; boolean
@@ -1184,11 +1135,10 @@ ExcludeFromMultipleFactoryBonus=false  ; boolean
 ### FactoryPlant customizations
 
 - It is now possible to customize which TechnoTypes benefit from bonuses of a `FactoryPlant=true` building by listing them on `FactoryPlant.AllowTypes` and/or `FactoryPlant.DisallowTypes`.
-  - `FactoryPlant.Multiplier` _(Ares feature)_ is still applied on the bonuses if they are in effect.
+  - `FactoryPlant.Multiplier` *(Ares feature)* is still applied on the bonuses if they are in effect.
 - `FactoryPlant.MaxCount` can be used to limit the number of times the bonuses are factored in from a particular type of building. Negative values mean no cap.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEBUILDING]               ; BuildingType
 FactoryPlant.AllowTypes=     ; List of TechnoTypes
@@ -1202,7 +1152,6 @@ FactoryPlant.MaxCount=-1     ; integer
   - Specifically, if the factor is set to 0.0, power output won't be decreased by losing health for this power plant.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEBUILDING]                     ; BuildingType
 PowerPlant.DamageFactor=1.0        ; floating point value
@@ -1214,7 +1163,6 @@ PowerPlant.DamageFactor=1.0        ; floating point value
 - Now you can implement the above logic using the following flag.
 
 In `artmd.ini`:
-
 ```ini
 [SOMEBUILDING]                     ; BuildingType
 IsAnimDelayedBurst=true            ; boolean
@@ -1227,14 +1175,13 @@ The prism towers' fire is hardcoded to be delayed. Their fire will ignore this f
 ### Unit repair customization
 
 - It is now possible to customize the repairing of units by `UnitRepair=true`, `UnitReload=true` and `Hospital=true` buildings.
-  - `Units.RepairRate` customizes the rate at which the units are repaired. This defaults to `[General] -> ReloadRate` if `UnitReload=true` and if overridden per AircraftType _(Ares feature)_ can tick at different time for each docked aircraft. Setting this overrides that behaviour. For `UnitRepair=true` buildings this defaults to `[General] -> URepairRate`.
+  - `Units.RepairRate` customizes the rate at which the units are repaired. This defaults to `[General] -> ReloadRate` if `UnitReload=true` and if overridden per AircraftType *(Ares feature)* can tick at different time for each docked aircraft. Setting this overrides that behaviour. For `UnitRepair=true` buildings this defaults to `[General] -> URepairRate`.
     - On `UnitReload=true` building setting this to negative value will fully disable the repair functionality.
   - `Units.RepairStep` how much `Strength` is restored per repair tick.
   - `Units.RepairPercent` is a multiplier to cost of repairing (cost / (maximum health / repair step)). Note that the final cost is set to 1 if it is less than that.
     - `Units.UseRepairCost` can be used to customize if repair cost is applied at all. Defaults to false for infantry, true for everything else.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEBUILDING]        ; BuildingType
 Units.RepairRate=     ; floating point value, ingame minutes
@@ -1248,7 +1195,6 @@ Units.UseRepairCost=  ; boolean
 - In vanilla, cloning vats can work fine even low power. Starting from Ares 2.0, they need power to work. Now you can specific it.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEBUILDING]        ; BuildingType
 Cloning.Powered=true  ; boolean
@@ -1261,7 +1207,6 @@ Cloning.Powered=true  ; boolean
 - In RA2, the GI-like infantry controlled by the AI will automatically deploy to use their more powerful secondary weapons when engaging the enemy. This feature was broken in Yuri's Revenge. Now you can use the following flags to re-enable this feature.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 InfantryAutoDeploy=false      ; boolean
@@ -1275,7 +1220,6 @@ InfantryAutoDeploy=           ; boolean, default to [General] -> InfantryAutoDep
 - In vanilla, infantry has hardcoded prone speed. Now you can customize it.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 ProneSpeed.Crawls=0.67        ; floating point value, multiplier
@@ -1296,7 +1240,6 @@ ProneSpeed=                   ; floating point value, multiplier, by default, us
 - By default particle systems with `BehavesLike=Fire` shift their target coordinates if the object that created the particle system (e.g firer of a weapon) is rotating. This behavior can now be disabled per particle system type.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEPARTICLESYSTEM]               ; ParticleSystemType
 AdjustTargetCoordsOnRotation=true  ; boolean
@@ -1309,7 +1252,6 @@ AdjustTargetCoordsOnRotation=true  ; boolean
 - Gas particles can now drift at a custom speed.
 
 In `rulesmd.ini`:
-
 ```ini
 [GASPARTICLE]          ; Particle with BehavesLike=Gas
 Gas.MaxDriftSpeed=2    ; integer (TS default is 5)
@@ -1343,7 +1285,6 @@ Gas.MaxDriftSpeed=2    ; integer (TS default is 5)
 - `AirburstWeapon.UseFiringEffects` if set to true makes `AirburstWeapon` display weapon `Anim` and play `Report` sound if available.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEPROJECTILE]                            ; Projectile
 Splits=false                                ; boolean
@@ -1376,7 +1317,6 @@ AirburstWeapon.UseFiringEffects=false       ; boolean
 - `ClusterScatter.Min` and `ClusterScatter.Max` can be used to set minimum and maximum distance, respectively, in cells from the original detonation coordinate any additional detonations if `Cluster` is set to value higher than 1 can appear at.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEPROJECTILE]        ; Projectile
 ClusterScatter.Min=1.0  ; floating point value, distance in cells
@@ -1389,7 +1329,6 @@ ClusterScatter.Max=2.0  ; floating point value, distance in cells
   - Setting `Gravity=0` is not recommended as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. We suggest to use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEPROJECTILE]        ; Projectile
 Gravity=6.0             ; floating point value
@@ -1400,7 +1339,6 @@ Gravity=6.0             ; floating point value
 - Previously projectiles that had `Voxel=true` images were hardcoded to have downwards initial trajectory. This behavior can now be toggled on for other types of projectiles or disabled for voxel projectiles. In addition to defaulting to `true` for `Voxel=true` projectiles, it also now defaults to true for any `Vertical=true` projectile.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEPROJECTILE]        ; Projectile
 VerticalInitialFacing=  ; boolean
@@ -1411,7 +1349,6 @@ VerticalInitialFacing=  ; boolean
 - By default `FlakScatter=true` makes `Inviso=true` projectiles scatter within a distance range calculated as `[Minimum * 2, Maximum * 2]` in cells, where the Minimum is 0 and Maximum is `[CombatDamage] -> BallisticScatter`, resulting in a range of `0` to `2 * BallisticScatter` cells. This behavior can now be customized using `BallisticScatter.Min` to set the Minimum value and `BallisticScatter.Max` to set the Maximum value. If not set, the default values are used. When estimating the actual scatter range, remember that the original `*2` multiplier mechanism still applies.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEPROJECTILE]      ; Projectile
 BallisticScatter.Min= ; floating point value, distance in cells
@@ -1421,7 +1358,7 @@ BallisticScatter.Max= ; floating point value, distance in cells
 ### Shrapnel enhancements
 
 ![image](_static/images/shrapnel.gif)
-_Shrapnel appearing against ground & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)_
+*Shrapnel appearing against ground & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
 - `ShrapnelWeapon` can now be triggered against ground & buildings via `Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`.
 - Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](New-or-Enhanced-Logics.md#weapon-targeting-filter) & [AttachEffect filters](New-or-Enhanced-Logics.md#attached-effects) will be checked.
@@ -1429,7 +1366,6 @@ _Shrapnel appearing against ground & buildings in [Project Phantom](https://www.
 - `Shrapnel.IgnoreHitBuildings` can be used to override default behaviour where shrapnels can snap onto building targets multiple times if the building occupies more than one cell. Defaults to `[CombatDamage]` -> `Shrapnel.IgnoreHitBuildings` which defaults to false. Note that this wont prevent random cells within the building's `Foundation` from being targeted if there are not enough objects around to satisfy `ShrapnelCount`.
 
 In `rulesmd.ini`:
-
 ```ini
 [CombatDamage]
 Shrapnel.IgnoreHitBuildings=false  ; boolean
@@ -1450,7 +1386,6 @@ Shrapnel.IgnoreHitBuildings=       ; boolean
   - `AirstrikeLineColor` sets the color of the line and dot drawn from firer to target.
 
 In `rulesmd.ini`:
-
 ```ini
 [AudioVisual]
 AirstrikeLineColor=255,0,0  ; integer - Red,Green,Blue
@@ -1467,7 +1402,6 @@ AirstrikeLineColor=         ; integer - Red,Green,Blue, default to [AudioVisual]
 - The airstrike aircraft will now aim at the target itself rather than the cell beneath its feet, therefore it is possible to properly designate air strikes against non-building targets.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMETECHNO]                ; TechnoType
 AllowAirstrike=             ; boolean
@@ -1483,7 +1417,6 @@ AirstrikeTargets=buildings  ; List of Affected Target Enumeration (none|infantry
   - At the same time, it can affect the gaming experience, as it will make units attack nearby targets while ignoring more threatening targets that are farther away.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 DisableOveroptimizationInTargeting=false  ; boolean
@@ -1495,7 +1428,6 @@ DisableOveroptimizationInTargeting=false  ; boolean
   - Only affect techno that's presented on the map. Cannot make AI produce this type of techno if it doesn't have any.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMETECHNO]                      ; TechnoType
 TeamMember.ConsideredAs=          ; List of TechnoTypes
@@ -1507,7 +1439,6 @@ TeamMember.ConsideredAs=          ; List of TechnoTypes
 - `AlternateFLH.ApplyVehicle` can be used to customize whether or not a transport applies its `AlternateFLH` to passengers of the VehicleType, who by default use their own FLH, as opposed to passengers of the InfantryType who adhere to `AlternateFLH`.
 
 In `artmd.ini`:
-
 ```ini
 [SOMETECHNO]                     ; TechnoType
 AlternateFLH.OnTurret=true       ; boolean
@@ -1526,7 +1457,6 @@ AlternateFLH.ApplyVehicle=false  ; boolean
   - If `SelfHealGainType` is not set, InfantryTypes and VehicleTypes with `Organic` set to true gain self-healing from `InfantryGainSelfHeal`, other VehicleTypes from `UnitsGainSelfHeal` and AircraftTypes & BuildingTypes never gain self-healing.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 InfantryGainSelfHealCap=                ; integer, maximum amount of InfantryGainSelfHeal that can be in effect at once, must be 1 or higher
@@ -1552,7 +1482,6 @@ SelfHealGainType=                       ; Self-Heal Gain Type Enumeration (nohea
 - It is now possible to customize (globally and per TechnoType) the warp-in delay for units teleporting through `Type=ChronoSphere/Warp` Superweapon, both before and after the jump.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 ChronoSphereDelay=0     ; integer, game frames
@@ -1570,12 +1499,11 @@ Due to technical constraints, these settings do not apply to buildings teleporte
 ### Customizable harvester ore gathering animation
 
 ![image](_static/images/oregath.gif)
-_Custom ore gathering anims in [Project Phantom](https://www.moddb.com/mods/project-phantom)_
+*Custom ore gathering anims in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
 - You can now specify which anim should be drawn when a harvester of specified type is gathering specified type of ore.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMETECHNO]                     ; TechnoType
 OreGathering.Anims=              ; List of AnimationTypes
@@ -1588,7 +1516,6 @@ OreGathering.Tiberiums=0         ; List of Tiberium IDs
 - By default paradropped infantry default to `Guard` for human players and `Hunt` for AI players. This has now been changed to be the default for vehicles as well which defaulted to `Guard` for all players and customizable globally and per TechnoType which default to the global settings under `[General]`.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 ParadropMission=Guard   ; MissionType
@@ -1601,10 +1528,9 @@ AIParadropMission=      ; MissionType
 
 ### Customizable target evaluation map zone check behaviour
 
-- By default, any non-AircraftType units seeking targets via ScriptType team mission (action) `0 Attack Target Type` or any [attack team missions introduced in Phobos](AI-Scripting-and-Mapping.md#_10000-10049-attack-actions) check if the potential target is in same map zone as the attacking unit to be able to pick it as a target. This can now be customized to allow objects from any map zone with no constraints (`TargetZoneScanType=any`) or only if they are within weapon range (`TargetZoneScanType=inrange`).
+- By default, any non-AircraftType units seeking targets via ScriptType team mission (action) `0 Attack Target Type` or any [attack team missions introduced in Phobos](AI-Scripting-and-Mapping.md#attack-actions) check if the potential target is in same map zone as the attacking unit to be able to pick it as a target. This can now be customized to allow objects from any map zone with no constraints (`TargetZoneScanType=any`) or only if they are within weapon range (`TargetZoneScanType=inrange`).
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMETECHNO]             ; TechnoType
 TargetZoneScanType=same  ; target zone scan enumeration (same|any|inrange)
@@ -1613,7 +1539,7 @@ TargetZoneScanType=same  ; target zone scan enumeration (same|any|inrange)
 ### Customizable Teleport/Chrono Locomotor settings per TechnoType
 
 ![image](_static/images/cust-Chrono.gif)
-_Chrono Legionnaire and Ronco using different teleportation settings in [YR: New War](https://www.moddb.com/mods/yuris-revenge-new-war)_
+*Chrono Legionnaire and Ronco using different teleportation settings in [YR: New War](https://www.moddb.com/mods/yuris-revenge-new-war)*
 
 - You can now specify Teleport/Chrono Locomotor settings per TechnoType to override default rules values. Unfilled values default to values in `[General]`.
 - Applicable to Techno that have Teleport/Chrono Locomotor attached, or being chronowarped by chronosphere.
@@ -1622,7 +1548,6 @@ _Chrono Legionnaire and Ronco using different teleportation settings in [YR: New
 - If more than one animation is listed in `WarpOut`, `WarpIn` or `WarpAway`, a random one is selected.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMETECHNO]            ; TechnoType
 WarpOut=                ; List of AnimationTypes (played when Techno warping out), default to [General] -> WarpOut
@@ -1655,7 +1580,6 @@ ChronoDelay=            ; integer, delay after teleport for chronosphere
   - `DrawInsignia.UsePixelSelectionBracketDelta` can be set to use techno's `PixelSelectionBracketDelta` to additionally adjust insignias vertically.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 EnemyInsignia=true                                          ; boolean
@@ -1713,7 +1637,6 @@ Insignia customization besides the `InsigniaFrames` shorthand should function si
   - Use `MakesWake` to custom this per type.
 
 In `rulesmd.ini`:
-
 ```ini
 [AudioVisual]
 WalkLocomotorMakesWake=false   ; boolean
@@ -1731,16 +1654,15 @@ Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [TechnoTyp
 ### Customize bridge falling down damage
 
 ![image](_static/images/fallingdowndamage.gif)
-_Use different fall damage depending on whether it lands in water in **Zero Boundary** by @[Stormsulfur](https://space.bilibili.com/11638715/lists/5358986)_
+*Use different fall damage depending on whether it lands in water in **Zero Boundary** by @[Stormsulfur](https://space.bilibili.com/11638715/lists/5358986)*
 
 - Now you can customize the damage a unit receives when it falls from a bridge.
-- `FallingDownDamage` customizes the damage a unit receives at the end of a fall. It can be a percentage or an integer.
-- `FallingDownDamage.Water` customizes the damage a unit receives when it falls onto the water. Defaults to `FallingDownDamage`.
-- `FallingDownDamage.AllowEMP` determines whether units incapacitated by EMP can use `FallingDownDamage/FallingDownDamage.Water`. The default value is `true`.
-- If it is a negative percentage, corresponding damage will be dealt based on the current health of the unit.
+ - `FallingDownDamage` customizes the damage a unit receives at the end of a fall. It can be a percentage or an integer.
+ - `FallingDownDamage.Water` customizes the damage a unit receives when it falls onto the water. Defaults to `FallingDownDamage`.
+ - `FallingDownDamage.AllowEMP` determines whether units incapacitated by EMP can use `FallingDownDamage/FallingDownDamage.Water`. The default value is `true`.
+ - If it is a negative percentage, corresponding damage will be dealt based on the current health of the unit.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMETECHNO]                        ; TechnoType
 FallingDownDamage=                  ; integer / percentage
@@ -1754,7 +1676,6 @@ FallingDownDamage.AllowEMP=true     ; boolean
 - The max valuebale value is 1.0, you cannot make unit get faster on yellow condition by it.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 DamagedSpeed=0.75        ; floating point value, multiplier
@@ -1769,7 +1690,6 @@ DamagedSpeed=            ; floating point value, multiplier
   - The default value of `DebrisTypes.Limit` is whether the number of `DebrisMaximums` is greater than (not equal to) 1 (for compatibility reasons).
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMETECHNO]        ; TechnoType
 DebrisTypes.Limit=  ; boolean
@@ -1779,12 +1699,11 @@ DebrisMinimums=     ; List of integers
 
 ```{hint}
 How to generate `DebrisTypes` in the game:
-
 1. Generate the total number of debris through `MaxDebris` and `MinDebris` first.
 2. Traverse `DebrisTypes` and limit the quantity range through `DebrisMaximums` and `DebrisMinimums`.
 3. When the number of generated debris will exceeds the total number, limit the quantity and end the traversal.
 4. When the number of debris generated after a single traversal is not enough to exceed the total number, it will end if `DebrisTypes.Limit` is enabled, otherwise the traversal will restart like vanilla game do.
-   ```
+```
 
 ### DropPod
 
@@ -1800,7 +1719,6 @@ Due to technical constraints `DropPod.AirImage` is only drawn for InfantryTypes 
 ```
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMETECHNO]                  ; TechnoType
 DropPod.Angle=                ; double, default to [General] -> DropPodAngle, measured in radians
@@ -1827,7 +1745,6 @@ DropPod.Weapon.HitLandOnly=   ; boolean, default to no
 - BuildingTypes with `Explodes=true` can by default explode even when they are still being built or sold. This can be disabled by setting `Explodes.DuringBuildup` to false. This causes them to behave as if `Explodes` was set to false while being built up or sold.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMETECHNO]                 ; TechnoType
 Explodes.KillPassengers=true ; boolean
@@ -1839,11 +1756,10 @@ Explodes.DuringBuildup=true  ; boolean
 ### Forbid parallel AI queues
 
 - You can now set if specific types of factories do not have AI production cloning issue instead of Ares' indiscriminate behavior of `AllowParallelAIQueues=no`.
-  - If `AllowParallelAIQueues=no` _(Ares feature)_ is set, the tags have no effect.
+  - If `AllowParallelAIQueues=no` *(Ares feature)* is set, the tags have no effect.
 - You can also exclude specific TechnoTypes from being built in parallel by AI by setting `ForbidParallelAIQueues` to true on a TechnoType.
 
 In `rulesmd.ini`:
-
 ```ini
 [GlobalControls]
 AllowParallelAIQueues=yes           ; must be set yes/true unless you don't use Ares
@@ -1864,7 +1780,6 @@ ForbidParallelAIQueues=false        ; boolean
   - You can use `DistributeTargetingFrame.AIOnly` to make it only work for AI (Players are not likely to have so many technos.)
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 DistributeTargetingFrame=false         ; boolean
@@ -1883,7 +1798,6 @@ DistributeTargetingFrame=              ; boolean
 - Identical controls are available for Force Shield as well.
 
 In `rulesmd.ini`:
-
 ```ini
 [CombatDamage]
 IronCurtain.EffectOnOrganics=kill  ; Iron Curtain effect Enumeration (kill | invulnerable | ignore)
@@ -1903,7 +1817,6 @@ ForceShield.KillWarhead=           ; WarheadType, default to [CombatDamage] -> F
 - Jumpjet that is going to crash starts to change its facing uncontrollably, this can now be turned off.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMETECHNO]               ; TechnoType
 JumpjetRotateOnCrash=true  ; boolean
@@ -1919,7 +1832,6 @@ This may subject to further changes.
 - Spawned aircraft self-destruct if they are flying.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMESTRUCTURE]          ; BuildingType
 Powered.KillSpawns=false ; boolean
@@ -1947,7 +1859,6 @@ Powered.KillSpawns=false ; boolean
     - `Pips.Tiberiums.WeedEmptyFrame` can be used to set the frame for empty weed slots, defaults to 0.
 
 In `rulesmd.ini`:
-
 ```ini
 [AudioVisual]
 Pips.Generic.Size=4,0                ; X,Y, increment in pixels to next pip
@@ -1978,7 +1889,6 @@ SpawnsPipOffset=0,0                  ; X,Y, position offset from default
 - Infantry, vehicles and aircraft can now drain or provide `Power` if `UnitPowerDrain=true` is set.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 UnitPowerDrain=false  ; boolean
@@ -1992,7 +1902,6 @@ Power=0               ; integer, positive means output, negative means drain
 - In vanilla, `RadarInvisible` is ignored if the techno is allied with the current player. Now you can change this behavior.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMETECHNO]                         ; TechnoType
 RadarInvisibleToHouse=               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to enemy if RadarInvisible=true, none otherwise
@@ -2004,7 +1913,6 @@ RadarInvisibleToHouse=               ; Affected House Enumeration (none|owner/se
 - Subterranean movement speed is now also customizable, both globally and per TechnoType. If per-TechnoType value is negative, global value is used. This does not affect the speed at which the unit moves vertically when burrowing which is determined by `Speed` multiplied by `[General] -> TunnelSpeed`.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 SubterraneanHeight=-256  ; integer, height in leptons (1/256th of a cell)
@@ -2026,7 +1934,6 @@ SubterraneanSpeed=-1     ; floating point value
   - You can also specific this delay for attack move mission. The default value is `NormalTargetingDelay`.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 AINormalTargetingDelay=              ; integer, game frames
@@ -2051,7 +1958,6 @@ PlayerAttackMoveTargetingDelay=      ; integer, game frames
 - `AreaGuardRange` overrides explicit `GuardRange` setting for technos currently on `Area Guard` mission (f.ex guard mode command). As per usual, `GuardRange` in itself defaults to highest range between technos weapons if set to 0 or omitted.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMETECHNO]     ; TechnoType
 MaxGuardRange=16 ; floating point value, distance in cells
@@ -2061,13 +1967,12 @@ AreaGuardRange=  ; floating point value, distance in cells
 ### Voxel body multi-section shadows
 
 ![image](_static/images/uh0-be.gif)
-_UH-0 helicopter with dynamic propeller and its shadow in [Bellum Æternum](https://ra2be.com/download.html)_
+*UH-0 helicopter with dynamic propeller and its shadow in [Bellum Æternum](https://ra2be.com/download.html)*
 
 - It is also now possible for vehicles and aircraft to display shadows for multiple sections of the voxel body at once, instead of just one section specified by `ShadowIndex`, by specifying the section indices in `ShadowIndices` (which defaults to `ShadowIndex`) in unit's `artmd.ini` entry.
   - `ShadowIndex.Frame` and `ShadowIndices.Frame` can be used to customize which frame of the HVA animation for the section from `ShadowIndex` and `ShadowIndices` is used to display the shadow, respectively. -1 is special value which means currently shown frame is used, and `ShadowIndices.Frame` defaults to this.
 
 In `artmd.ini`:
-
 ```ini
 [SOMETECHNO]          ; TechnoType
 ShadowIndices=        ; List of integers (voxel section indices)
@@ -2081,7 +1986,6 @@ ShadowIndices.Frame=  ; List of integers (HVA animation frame indices)
   - If `HeightShadowScaling=true`, the shadow is scaled by amount that is determined by following formula: `Max(AirShadowBaseScale ^ (currentHeight / ShadowSizeCharacteristicHeight), HeightShadowScaling.MinScale)`, where `currentHeight` is unit's current height in leptons, `ShadowSizeCharacteristicHeight` overrideable value that defaults to the maximum cruise height (`JumpjetHeight`, `FlightLevel` etc) and `HeightShadowScaling.MinScale` sets a floor for the scale.
 
 In `rulesmd.ini`:
-
 ```ini
 [AudioVisual]
 AirShadowBaseScale=0.5            ; floating point value
@@ -2096,14 +2000,13 @@ ShadowSizeCharacteristicHeight=   ; integer, height in leptons
 
 ### Animated TerrainTypes
 
-![image](_static/images/tree-shake.gif)
-_Animated trees used in [Ion Shock](https://www.moddb.com/mods/tiberian-war-ionshock)_
+![Waving trees](_static/images/tree-shake.gif)
+*Animated trees used in [Ion Shock](https://www.moddb.com/mods/tiberian-war-ionshock)*
 
 - By default `IsAnimated`, `AnimationRate` and `AnimationProbability` only work on TerrainTypes with `SpawnsTiberium` set to true. This restriction has now been lifted.
   - Length of the animation can now be customized by setting `AnimationLength` as well, defaulting to half (or quarter if [damaged frames](#damaged-frames-and-crumbling-animation) are enabled) the number of frames in TerrainType's image.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMETERRAINTYPE]  ; TerrainType
 AnimationLength=   ; integer, number of frames
@@ -2114,7 +2017,6 @@ AnimationLength=   ; integer, number of frames
 - You can now specify custom palette for TerrainTypes in similar manner as TechnoTypes can.
 
 In `artmd.ini`:
-
 ```ini
 [SOMETERRAINTYPE]  ; TerrainType
 Palette=           ; filename - excluding .pal extension and three-character theater-specific suffix
@@ -2127,14 +2029,13 @@ This palette behaves like an object palette and does not use tint etc. that have
 ### Customizable ore spawners
 
 ![image](_static/images/ore-01.png)
-_Different ore spawners in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)_
+*Different ore spawners in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
 
 - You can now specify which type of ore certain TerrainType would generate.
 - It's also now possible to specify a range value for an ore generation area different compared to standard 3x3 rectangle. Ore will be uniformly distributed across all affected cells in a spread range.
 - You can specify which ore growth stage will be spawned and how many cells will be filled with ore per ore generation animation. Corresponding tags accept either a single integer value or two comma-separated values to allow randomized growth stages from the range (inclusive).
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMETERRAINTYPE]             ; TerrainType
 SpawnsTiberium.Type=0         ; tiberium/ore type index
@@ -2154,7 +2055,6 @@ SpawnsTiberium.Particle=      ; Particle
   - [Destroy animation & sound](New-or-Enhanced-Logics.md#destroy-animation-sound) only play after crumbling animation has finished.
 
 In `rulesmd.ini`:
-
 ```ini
 [AudioVisual]
 ConditionYellow.Terrain=  ; floating point value, default to [AudioVisual] -> ConditionYellow
@@ -2174,7 +2074,6 @@ The number of regular & damage frames considered for this depends on value of `H
 - TerrainTypes can now be made to display on minimap with different colors by setting `MinimapColor`.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMETERRAINTYPE]  ; TerrainType
 MinimapColor=      ; integer - Red,Green,Blue
@@ -2187,7 +2086,6 @@ MinimapColor=      ; integer - Red,Green,Blue
   - `CanBeBuiltOn=true` terrain objects are removed when building is placed on them.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMETERRAINTYPE]   ; TerrainType
 IsPassable=false    ; boolean
@@ -2201,7 +2099,6 @@ CanBeBuiltOn=false  ; boolean
 - Ore can now be made to display on minimap with different colors by setting `MinimapColor` on Tiberiums.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEORE]      ; Tiberium
 MinimapColor=  ; integer - Red,Green,Blue
@@ -2216,7 +2113,6 @@ MinimapColor=  ; integer - Red,Green,Blue
   - If `Harvester.CanGuardArea.RequireTarget` set to true, it'll switch back to regular harvest mission when there's no valid target within its guard range.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEVEHICLE]                               ; VehicleType
 Harvester.CanGuardArea=false                ; boolean
@@ -2230,7 +2126,6 @@ Harvester.CanGuardArea.RequireTarget=false  ; boolean
 - This flag only skips the static check, that is, the check on the unit type. The dynamic check (cannot be parasitized) remains unchanged.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEVEHICLE]              ; VehicleType
 BunkerableAnyway=false     ; boolean
@@ -2245,7 +2140,6 @@ Skipping checks with this feature doesn't mean that vehicles and tank bunkers wi
 - It is possible to influence weighting of units given from crates (`CrateGoodie=true`) via `CrateGoodie.RerollChance`, which determines the chance that if this type of unit is rolled, it will reroll again for another type of unit.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEVEHICLE]                  ; VehicleType
 CrateGoodie.RerollChance=0.0   ; floating point value, percents or absolute (0.0-1.0)
@@ -2257,7 +2151,6 @@ CrateGoodie.RerollChance=0.0   ; floating point value, percents or absolute (0.0
 - Less than or equal to 0 means no limit, it will always dump out all at one time.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 HarvesterDumpAmount=0.0               ; floating point value
@@ -2271,7 +2164,6 @@ HarvesterDumpAmount=                  ; floating point value
 - Now `HarvesterDumpRate` can be customized on each unit.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEVEHICLE]                         ; VehicleType
 HarvesterDumpRate=                    ; floating point value, default to [General] -> HarvesterDumpRate
@@ -2282,7 +2174,6 @@ HarvesterDumpRate=                    ; floating point value, default to [Genera
 - Now `HarvesterLoadRate` can be customized on each unit.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEVEHICLE]                         ; VehicleType
 HarvesterLoadRate=                    ; integer, default to [General] -> HarvesterLoadRate
@@ -2291,14 +2182,12 @@ HarvesterLoadRate=                    ; integer, default to [General] -> Harvest
 ### Customize type selection for IFV
 
 In vanilla game, when using type selection command on IFVs, all of them will be selected regardless of their current modes, which is allowed to customize now.
-
 - `WeaponGroupAsN` determines which group the IFV is in when enabling `WeaponN`, where N stands for 1-based weapon mode index. IFVs in the same group will be selected together during type a selection, while not included those in different groups.
 - `TypeSelectUseIFVMode` determines whether all IFV modes will be considered as its own group by default during a type selection.
   - If it's set to true, `WeaponGroupAsN` will be default to N for each `WeaponN`, which makes each of them become a standalone type during a type selection.
   - If it's set to false, `WeaponGroupAsN` will be default to 0 for all weapons, which makes type selection on IFVs work the same as before.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 TypeSelectUseIFVMode=false   ; boolean
@@ -2310,7 +2199,6 @@ WeaponGroupAsN=              ; string, default to N if [General] -> TypeSelectUs
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
 
 In `RA2MD.INI`:
-
 ```ini
 [Phobos]
 TypeSelectUseIFVMode=true   ; boolean
@@ -2325,7 +2213,6 @@ TypeSelectUseIFVMode=true   ; boolean
 - You can also disable the slowdown completely by using the flag `SkipCrushSlowdown`. This is not the same as `CrushSlowdownMultiplier=1.0`. Used to avoid a bug where the vehicle sometimes loses speed when `Accelerates=true` and `MovementZone=CrushAll` are set.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEVEHICLE]                      ; VehicleType
 TiltsWhenCrushes.Vehicles=         ; boolean
@@ -2345,7 +2232,6 @@ SkipCrushSlowdown=false            ; boolean
   - `Deploy.NoTiberium` controls whether the deployment actions can only be performed when the harvester carries no mineral. If set to false, the harvester can deploy regardless of carrying minerals or not.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEVEHICLE]                       ; VehicleType
 Deploy.SkipPassengerUnload=false    ; boolean
@@ -2358,7 +2244,6 @@ Deploy.NoTiberium=false             ; boolean
 - `DestroyAnim` has been extended to work with VehicleTypes, with option to pick random animation if `DestroyAnim.Random` is set to true. These animations store owner and facing information for use with [CreateUnit logic](New-or-Enhanced-Logics.md#anim-to-unit).
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEVEHICLE]                          ; VehicleType
 DestroyAnim=                           ; List of AnimationTypes
@@ -2371,7 +2256,6 @@ DestroyAnim.Random=true                ; boolean
   - Ammo count cannot go below 0 or above the maximum ammo for vehicle's type (in case the deploy results in type conversion, type is the one after the conversion).
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEVEHICLE]       ; VehicleType
 Ammo.AddOnDeploy=0  ; integer
@@ -2389,7 +2273,6 @@ Ammo.AddOnDeploy=0  ; integer
   - `DeployingAnim.UseUnitDrawer` controls whether or not the animation is displayed in the unit's palette and team colours or regular animation palette, including a potential custom palette.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEVEHICLE]                               ; VehicleType
 IsSimpleDeployer.ConsiderPathfinding=false  ; boolean
@@ -2407,7 +2290,6 @@ DeployingAnim.UseUnitDrawer=true            ; boolean
 - Now you can have the miner search for the nearest mineral again after unloading. If a closer mineral is found, the miner will go to that location instead of the previously recorded location.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 HarvesterScanAfterUnload=false     ; boolean
@@ -2419,14 +2301,13 @@ HarvesterScanAfterUnload=          ; boolean, default to [General] -> HarvesterS
 ### Preserve Iron Curtain / Force Shield status on type conversion
 
 ![image](_static/images/preserve-ic.gif)
-_Bugfix in action_
+*Bugfix in action*
 
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto` / `UndeploysInto`. Force Shield status preservation is turned off by default.
   - This behavior can be turned on/off per-TechnoType and on global basis.
   - `IronCurtain.Modifier` / `ForceShield.Modifier` (whichever is applicable) is re-applied upon type conversion.
 
 In `rulesmd.ini`:
-
 ```ini
 [CombatDamage]
 IronCurtain.KeptOnDeploy=true   ; boolean
@@ -2448,7 +2329,6 @@ ForceShield.KeptOnDeploy=       ; boolean, default to [CombatDamage] -> ForceShi
 - `KeepTargetOnMove.ExtraDistance` can be used to modify the distance considered 'out of range' from the target (it is added to weapon range), negative values work to reduce the distance.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEVEHICLE]                        ; VehicleType
 KeepTargetOnMove=false               ; boolean
@@ -2464,7 +2344,6 @@ KeepTargetOnMove.ExtraDistance=0     ; floating point value, distance in cells
 - `Sinkable.SquidGrab` controls the behavior of a ship when it is killed by a squid. Set it to `false` to cause the ship to take a lethal damage instead of sinking directly at that time (and thus obey `Sinkable` settings).
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEVEHICLE]              ; VehicleType
 Sinkable=                  ; boolean
@@ -2483,7 +2362,6 @@ Sinkable.SquidGrab=true    ; boolean
   - `TurretRecoil.Suppress` can prevent the weapon from producing this effect when firing.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEVEHICLE]             ; VehicleType
 TurretRecoil=no           ; boolean
@@ -2509,7 +2387,6 @@ The logic above was not reverse-engineered but reimplemented to achieve the same
 - Now vehicles without turret will attempt to turn to the target while the weapon is cooling down, rather than after the weapon has cooled down, by setting `NoTurret.TrackTarget` to true.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 NoTurret.TrackTarget=false   ; boolean
@@ -2527,14 +2404,12 @@ Jumpjet can also be affected by this if firing an `OmniFire` weapon with `OmniFi
 - Vehicle voxel turrets can now draw shadows if `[AudioVisual] -> DrawTurretShadow` is set to true. This can be overridden per VehicleType by setting `TurretShadow` in the vehicle's `artmd.ini` section.
 
 In `rulesmd.ini`:
-
 ```ini
 [AudioVisual]
 DrawTurretShadow=false  ; boolean
 ```
 
 In `artmd.ini`:
-
 ```ini
 [SOMEVEHICLE]   ; VehicleType
 TurretShadow=   ; boolean
@@ -2551,7 +2426,6 @@ TurretShadow=   ; boolean
 - You can now customize the generation interval of VoxelAnim's trailer animation.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEVOXELANIM]       ; VoxelAnimType
 Trailer.SpawnDelay=2  ; integer, game frames
@@ -2561,11 +2435,10 @@ Trailer.SpawnDelay=2  ; integer, game frames
 
 ### Allowing damage dealt to firer
 
-- You can now allow warhead to deal damage (and apply damage-adjacent effects such as `KillDriver` and `DisableWeapons/Sonar/Flash.Duration` _(Ares features)_) on the object that is considered as the firer of the Warhead even if it does not have `DamageSelf=true`.
+- You can now allow warhead to deal damage (and apply damage-adjacent effects such as `KillDriver` and `DisableWeapons/Sonar/Flash.Duration` *(Ares features)*) on the object that is considered as the firer of the Warhead even if it does not have `DamageSelf=true`.
   - Note that effect of `Psychedelic=true`, despite being tied to damage will still fail to apply on the firer as it does not affect any objects belonging to same house as the firer, including itself.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEWARHEAD]            ; WarheadType
 AllowDamageOnSelf=false  ; boolean
@@ -2576,7 +2449,6 @@ AllowDamageOnSelf=false  ; boolean
 - In vanilla, `Psychedelic` warheads is hardcoded to ignore allies' target. Now you can turn this off.
 
 In `rulesmd.ini`:
-
 ```ini
 [CombatDamage]
 AllowBerzerkOnAllies=false  ; boolean
@@ -2594,7 +2466,6 @@ No per-warhead setting because `AffectsAllies` etc. is respected.
 - Setting `CLIsBlack` to true on Warhead will now turn the flash black like on hitting an Iron Curtained object, irregardless of other color settings.
 
 In `rulesmd.ini`:
-
 ```ini
 [AudioVisual]
 CombatLightDetailLevel=0                   ; integer
@@ -2613,7 +2484,6 @@ CLIsBlack=false                            ; boolean
 - `Debris.Conventional`, if set to true, makes `DebrisTypes` or `DebrisAnims` only spawn if Warhead is fired on non-water cell.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEWARHEAD]              ; WarheadType
 DebrisAnims=               ; List of AnimationTypes
@@ -2626,7 +2496,6 @@ Debris.Conventional=false  ; boolean
   - The default value of `DebrisTypes.Limit` is whether the number of `DebrisMaximums` is greater than (not equal to) 1 (for compatibility reasons).
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEWARHEAD]       ; WarheadType
 DebrisTypes.Limit=  ; boolean
@@ -2640,7 +2509,6 @@ DebrisMinimums=     ; List of integers
   - When both multiplier and override values are set - both are used.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEWARHEAD]                   ; WarheadType
 Rocker.AmplitudeMultiplier=1.0  ; floating point value, multiplier
@@ -2659,7 +2527,6 @@ Rocker.AmplitudeOverride=       ; integer
 - Setting `Conventional.IgnoreUnits` to true on Warhead with `Conventional=true` will make the Warhead detonate on non-underwater VehicleTypes on water tiles as if they are water tiles, instead of treating it as land. This determines whether to use `AnimList` or `SplashList` when hitting surface ships.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEWARHEAD]                   ; WarheadType
 AnimList.PickRandom=false       ; boolean
@@ -2685,7 +2552,6 @@ Conventional.IgnoreUnits=false  ; boolean
 - If set to `false`, `EffectsRequireVerses` makes the Phobos-introduced warhead effects trigger even if it can't damage the target because of it's current ArmorType (e.g. 0% in `Verses`).
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEWARHEAD]               ; WarheadType
 AffectsBelowPercent=1.0     ; floating point value, percents or absolute
@@ -2700,7 +2566,6 @@ EffectsRequireVerses=false  ; boolean
 - You can now specify whether or not the warhead decloaks objects that are damaged by the warhead.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEWARHEAD]               ; WarheadType
 DecloakDamagedTargets=true  ; boolean
@@ -2711,7 +2576,6 @@ DecloakDamagedTargets=true  ; boolean
 - Now you can customize jumpjet properties on warhead.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEWARHEAD]                           ; WarheadType with IsLocomotor and Locomotor=Jumpjet
 JumpjetTurnRate=                        ; Integer, default to [TechnoType] -> JumpjetTurnRate
@@ -2731,7 +2595,6 @@ JumpjetDeviation=                       ; Integer, default to [TechnoType] -> Ju
 - Squid grapple anim is hardcoded to use `SQDG` in vanilla, Now you can choose it.
 
 In `rulesmd.ini`:
-
 ```ini
 [AudioVisual]
 Parasite.GrappleAnim=SQDG               ; AnimationType
@@ -2749,7 +2612,6 @@ Parasite.GrappleAnim=                   ; AnimationType, default to [AudioVisual
   - If these flags are set to 0, the `ZAdjust` defined by the anim will be used.
 
 In `rulesmd.ini`:
-
 ```ini
 [AudioVisual]
 WarheadAnimZAdjust=-15           ; Integer
@@ -2764,7 +2626,6 @@ AnimZAdjust=                     ; Integer, default to [AudioVisual] -> WarheadA
   - This will not affect the manual selection of attacks and is useless with permanent mind control.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 MindControl.ThreatDelay=0     ; integer, game frames
@@ -2782,7 +2643,6 @@ MindControl.ThreatDelay=      ; integer, game frames, default to [General] -> Mi
   - They will not evoke retaliation from TechnoTypes hit by the Warhead.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEWARHEAD]         ; WarheadType
 Nonprovocative=false  ; boolean
@@ -2797,7 +2657,6 @@ Due to technical constraints, this does not suppress warnings from Ares' EMP eff
 - You can now specify whether or not the warhead can only shake screen (`ShakeX/Ylo/hi`) if it is detonated while visible on current screen view.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEWARHEAD]       ; WarheadType
 ShakeIsLocal=false  ; boolean
@@ -2810,7 +2669,6 @@ ShakeIsLocal=false  ; boolean
 - You can now specify separate Warhead used for `AmbientDamage` via `AmbientDamage.Warhead` or make it never apply to weapon's main target by setting `AmbientDamage.IgnoreTarget` to true.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEWEAPON]                      ; WeaponType
 AmbientDamage.Warhead=            ; WarheadType
@@ -2822,7 +2680,6 @@ AmbientDamage.IgnoreTarget=false  ; boolean
 - Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`. They override the firer's `AttackFriendlies` and `AttackCursorOnFriendlies`.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEWEAPON]                ; WeaponType
 AttackFriendlies=           ; boolean
@@ -2835,7 +2692,6 @@ AttackCursorOnFriendlies=   ; boolean
   - Note that unlike the default rearm timer that uses `ROF`, any modifiers are not applied to explicitly set charge turret delays.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEWEAPON]          ; WeaponType
 ChargeTurret.Delays=  ; List of integers - game frames
@@ -2844,11 +2700,9 @@ ChargeTurret.Delays=  ; List of integers - game frames
 ### Customizable disk laser radius
 
 ![image](_static/images/disklaser-radius-values-01.gif)
-
 - You can now set disk laser animation radius using a new tag.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEWEAPON]          ; WeaponType
 DiskLaser.Radius=240  ; integer
@@ -2860,7 +2714,6 @@ DiskLaser.Radius=240  ; integer
 - By default weapon `ROF` has a random delay of 0 to 2 frames added to it. This random delay is now customizable, globally and on per-WeaponType basis.
 
 In `rulesmd.ini`:
-
 ```ini
 [CombatDamage]
 ROF.RandomDelay=0,2  ; integer - single or comma-sep. range (game frames)
@@ -2874,7 +2727,6 @@ ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames), defau
 - You can now customize whether aircraft will forcefully eject passengers (vanilla behavior) or fire its weapon when attempting to fire.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEWEAPON]            ; WeaponType
 KickOutPassengers=true  ; boolean
@@ -2885,7 +2737,6 @@ KickOutPassengers=true  ; boolean
 - It is now possible to disable `FireOnce=true` weapon resetting infantry sequences after firing via `FireOnce.ResetSequence`. Target will be forgotten like before, the firing sequence will simply continue playing after firing if there are any frames left.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEWEAPON]                 ; WeaponType
 FireOnce.ResetSequence=true  ; boolean
@@ -2894,7 +2745,7 @@ FireOnce.ResetSequence=true  ; boolean
 ### Electric bolt customizations
 
 ![image](_static/images/ebolt.gif)
-_EBolt customization utilized for different Tesla bolt weapon usage ([RA2: Reboot](https://www.moddb.com/mods/reboot))_
+*EBolt customization utilized for different Tesla bolt weapon usage ([RA2: Reboot](https://www.moddb.com/mods/reboot))*
 
 - You can now specify individual bolts you want to disable for `IsElectricBolt=true` weapons. Note that this is only a visual change.
 - By default `IsElectricBolt=true` effect draws a bolt with 8 arcs. This can now be customized per WeaponType with `Bolt.Arcs`. Value of 0 results in a straight line being drawn.
@@ -2902,7 +2753,6 @@ _EBolt customization utilized for different Tesla bolt weapon usage ([RA2: Reboo
 - `Bolt.FollowFLH` can be used to override the default behaviour where the electric bolt source coordinates change to match the unit's firing coord on every frame (making it follow unit's movement, rotation etc). Defaults to true on vehicles, false for everything else.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEWEAPON]           ; WeaponType
 Bolt.Disable1=false    ; boolean
@@ -2924,7 +2774,6 @@ Due to technical constraints, these features do not work with electric bolts cre
   - This only determines whether the Z-depth of the EBolt effect created by BuildingType can be positive; `EBoltZAdjust` can always be normally added to it.
 
 In `rulesmd.ini`:
-
 ```ini
 [AudioVisual]
 EBoltZAdjust=0                                  ; integer
@@ -2940,7 +2789,6 @@ EBoltZAdjust.ClampInitialDepthForBuilding=      ; boolean, defaults to [AudioVis
 - It is now possible to change the Z-adjust for weapon laser drawing via `LaserZAdjust` per weapon, defaults to `[AudioVisual] -> LaserZAdjust`. Note that this is not available on prism support weapons.
 
 In `rulesmd.ini`:
-
 ```ini
 [AudioVisual]
 LaserZAdjust=0  ; integer
@@ -2952,12 +2800,11 @@ LaserZAdjust=   ; integer
 ### Single-color lasers
 
 ![image](_static/images/issinglecolor.gif)
-_Comparison of `IsSingleColor=yes` lasers with higher thickness to regular ones ([RA2: Reboot](https://www.moddb.com/mods/reboot))_
+*Comparison of `IsSingleColor=yes` lasers with higher thickness to regular ones ([RA2: Reboot](https://www.moddb.com/mods/reboot))*
 
 - You can now set laser to draw using only `LaserInnerColor` by setting `IsSingleColor`, in same manner as `IsHouseColor` lasers do using player's team color. These lasers respect laser thickness. Note that this is not available on prism support weapons.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEWEAPON]         ; WeaponType
 IsSingleColor=false  ; boolean
@@ -2968,7 +2815,6 @@ IsSingleColor=false  ; boolean
 - In vanilla, firing anims is attached to the firer, but it won't update its type and location to fit the firer's facing. This is now customizable by the following flags.
 
 In `rulesmd.ini`:
-
 ```ini
 [AudioVisual]
 FiringAnim.Update=false   ; boolean

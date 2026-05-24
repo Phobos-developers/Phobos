@@ -128,7 +128,7 @@ msgstr "基地节点修复"
 
 msgid ""
 "In singleplayer campaign missions you can now decide whether AI can "
-"repair the base nodes / buildings delivered by SW _(Ares feature)_."
+"repair the base nodes / buildings delivered by SW *(Ares feature)*."
 msgstr "在单人战役中你可以决定 AI 是否修复由 Deliver 超武（*Ares 功能*）提供的基地节点／建筑。"
 
 msgid ""
@@ -270,19 +270,19 @@ msgstr ""
 msgid "In `aimd.ini`:"
 msgstr "在 `aimd.ini`："
 
-msgid "_Action_"
+msgid "*Action*"
 msgstr "*行为*"
 
-msgid "_Argument_"
+msgid "*Argument*"
 msgstr "*参数*"
 
-msgid "_Repeats_"
+msgid "*Repeats*"
 msgstr "*重复*"
 
-msgid "_Target Priority_"
+msgid "*Target Priority*"
 msgstr "*目标优先级*"
 
-msgid "_Description_"
+msgid "*Description*"
 msgstr "*描述*"
 
 msgid "10000"
@@ -370,7 +370,7 @@ msgid "10017"
 msgstr "10017"
 
 msgid ""
-"The following values are the _Target Type#_ which can be used as second "
+"The following values are the *Target Type#* which can be used as second "
 "parameter of the new attack script actions:"
 msgstr "下列值为可用于新攻击动作脚本第二个参数的 **目标类型 #** 参数："
 
@@ -382,10 +382,10 @@ msgstr ""
 "「被视为载具的建筑」意为那些同时设置了 `UndeploysInto` 和 `Foundation=1x1` 且没有设置 "
 "`ConsideredVehicle` 或者设置了 `ConsideredVehicle=true` 的建筑。"
 
-msgid "_Value_"
+msgid "*Value*"
 msgstr "*值*"
 
-msgid "_Target Type_"
+msgid "*Target Type*"
 msgstr "*目标类型*"
 
 msgid "1"
@@ -769,7 +769,7 @@ msgid ""
 msgstr "第二个参数是 `AITargetTypes` 小节中从 0 开始的索引用于指定可选的`载具类型`、`战机类型`、`步兵类型`和`建筑类型`。"
 
 msgid ""
-"The _`AITargetTypes` index#_ values are obtained in the new "
+"The *`AITargetTypes` index#* values are obtained in the new "
 "`AITargetTypes` section that must be declared in `rulesmd.ini`:"
 msgstr ""
 "**`AITargetTypes` 索引 #** 值在新的 `AITargetTypes` 小节中获取，该小节必须在 `rulesmd.ini` "
@@ -784,7 +784,7 @@ msgid ""
 "the possible actions (first parameter value)."
 msgstr "这些行为通过第二个参数指示小队类型使用特遣部队接近由其指定的目标。请参阅下表以了解可能的行为（第一个参数值）。"
 
-msgid "_Target Owner_"
+msgid "*Target Owner*"
 msgstr "*目标所属*"
 
 msgid "10050"
@@ -937,7 +937,7 @@ msgstr "设置移动动作结束并跳转到下一行的方式。此操作仅在
 msgid "The possible argument values are:"
 msgstr "可选参数有："
 
-msgid "_Action ends when..._"
+msgid "*Action ends when...*"
 msgstr "*动作结束于...*"
 
 msgid "0"
@@ -1179,7 +1179,7 @@ msgid ""
 "2^31-1."
 msgstr "变量值为 int32，这表示它的范围是从 -2^31 到 2^31-1。"
 
-msgid "_Operation_"
+msgid "*Operation*"
 msgstr "*操作*"
 
 msgid "CurrentValue = Number"
@@ -1258,7 +1258,7 @@ msgstr "在指定位置发射 `[SuperWeaponTypes]` 列表中的超级武器。"
 msgid "`HouseIndex` can take various values:"
 msgstr "`HouseIndex` 可取以下值："
 
-msgid "_House Index_"
+msgid "*House Index*"
 msgstr "*所属方索引*"
 
 msgid ">= 0"
@@ -1471,10 +1471,10 @@ msgstr "`500-511` 变量比较"
 msgid "Compares the variable's value with given number."
 msgstr "比较变量值与给定值。"
 
-msgid "_Event ID_"
+msgid "*Event ID*"
 msgstr "*条件 ID*"
 
-msgid "_Global_"
+msgid "*Global*"
 msgstr "全局"
 
 msgid "500"

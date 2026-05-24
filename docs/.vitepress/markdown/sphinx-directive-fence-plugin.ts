@@ -3,7 +3,7 @@ import type StateBlock from 'markdown-it/lib/rules_block/state_block.mjs'
 
 type SphinxDirectiveContainer = {
   title: string
-  type: 'danger' | 'info' | 'tip' | 'warning'
+  type: 'danger' | 'details' | 'info' | 'tip' | 'warning'
 }
 
 const sphinxDirectiveContainers: Record<string, SphinxDirectiveContainer> = {
@@ -11,6 +11,7 @@ const sphinxDirectiveContainers: Record<string, SphinxDirectiveContainer> = {
   attention: { type: 'warning', title: 'Attention' },
   caution: { type: 'warning', title: 'Caution' },
   danger: { type: 'danger', title: 'Danger' },
+  dropdown: { type: 'details', title: 'Details' },
   error: { type: 'danger', title: 'Error' },
   hint: { type: 'tip', title: 'Hint' },
   important: { type: 'warning', title: 'Important' },
@@ -39,6 +40,18 @@ function findClosingFence(source: string, marker: string, startLine: number, end
   }
 
   return -1
+}
+
+function extractDropdownOptions(content: string) {
+  const lines = content.split('\n')
+  const firstContentLine = lines.findIndex((line) => line.trim() !== '')
+
+  if (firstContentLine === -1 || lines[firstContentLine].trim() !== ':open:') {
+    return { content, open: false }
+  }
+
+  lines.splice(firstContentLine, 1)
+  return { content: lines.join('\n'), open: true }
 }
 
 export function sphinxDirectiveFencePlugin(md: MarkdownIt) {
@@ -73,18 +86,28 @@ export function sphinxDirectiveFencePlugin(md: MarkdownIt) {
     const token = state.push('sphinx_directive_container', '', 0)
     token.block = true
     token.info = directiveContainer.type
-    token.content = state.getLines(startLine + 1, closingLine, state.blkIndent, true)
+    const content = state.getLines(startLine + 1, closingLine, state.blkIndent, true)
+    const dropdown = directiveName === 'dropdown' ? extractDropdownOptions(content) : undefined
+
+    token.content = dropdown?.content ?? content
     token.markup = title
+    token.meta = { open: dropdown?.open ?? false }
     token.map = [startLine, closingLine + 1]
 
     state.line = closingLine + 1
     return true
   })
 
-  md.renderer.rules.sphinx_directive_container = (tokens, index, options, env, self) => {
+  md.renderer.rules.sphinx_directive_container = (tokens, index, options, env) => {
     const token = tokens[index]
     const title = md.utils.escapeHtml(token.markup)
     const body = md.render(token.content, env)
+
+    if (token.info === 'details') {
+      const open = token.meta?.open ? ' open' : ''
+
+      return `<details${open} class="details custom-block"><summary>${title}</summary>\n${body}</details>\n`
+    }
 
     return `<div class="custom-block ${token.info}"><p class="custom-block-title">${title}</p>\n${body}</div>\n`
   }

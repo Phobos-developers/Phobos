@@ -19,7 +19,7 @@ This page describes every change in Phobos that wasn't categorized into a proper
 ### Dump Object Info
 
 ![image](_static/images/objectinfo-01.png)
-_Object info dump from [CnC: Reloaded](https://www.moddb.com/mods/cncreloaded/)_
+*Object info dump from [CnC: Reloaded](https://www.moddb.com/mods/cncreloaded/)*
 
 - There's a [new hotkey](User-Interface.md#dump-object-info) to dump selected/hovered object info on press. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`.
 
@@ -41,7 +41,6 @@ _Object info dump from [CnC: Reloaded](https://www.moddb.com/mods/cncreloaded/)_
 - If an INI file with the same name (`locals.ini`/`globals.ini`) doesn't exist, it will be created. If it exists, all sections will be preserved.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 SaveVariablesOnScenarioEnd=false    ; boolean
@@ -51,19 +50,19 @@ SaveVariablesOnScenarioEnd=false    ; boolean
 
 - It's now possible to write locomotor aliases instead of their CLSIDs in the `Locomotor` tag value. Use the table below to find the needed alias for a locomotor.
 
-|  _Alias_ |                 _CLSID_                  |
-| -------: | :--------------------------------------: |
-|    Drive | `{4A582741-9839-11d1-B709-00A024DDAFD1}` |
-|    Hover | `{4A582742-9839-11d1-B709-00A024DDAFD1}` |
-|   Tunnel | `{4A582743-9839-11d1-B709-00A024DDAFD1}` |
-|     Walk | `{4A582744-9839-11d1-B709-00A024DDAFD1}` |
-|  DropPod | `{4A582745-9839-11d1-B709-00A024DDAFD1}` |
-|      Fly | `{4A582746-9839-11d1-B709-00A024DDAFD1}` |
-| Teleport | `{4A582747-9839-11d1-B709-00A024DDAFD1}` |
-|     Mech | `{55D141B8-DB94-11d1-AC98-006008055BB5}` |
-|     Ship | `{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}` |
-|  Jumpjet | `{92612C46-F71F-11d1-AC9F-006008055BB5}` |
-|   Rocket | `{B7B49766-E576-11d3-9BD9-00104B972FE8}` |
+| *Alias* | *CLSID*                                  |
+|--------:|:----------------------------------------:|
+|Drive    | `{4A582741-9839-11d1-B709-00A024DDAFD1}` |
+|Hover    | `{4A582742-9839-11d1-B709-00A024DDAFD1}` |
+|Tunnel   | `{4A582743-9839-11d1-B709-00A024DDAFD1}` |
+|Walk     | `{4A582744-9839-11d1-B709-00A024DDAFD1}` |
+|DropPod  | `{4A582745-9839-11d1-B709-00A024DDAFD1}` |
+|Fly      | `{4A582746-9839-11d1-B709-00A024DDAFD1}` |
+|Teleport | `{4A582747-9839-11d1-B709-00A024DDAFD1}` |
+|Mech     | `{55D141B8-DB94-11d1-AC98-006008055BB5}` |
+|Ship     | `{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}` |
+|Jumpjet  | `{92612C46-F71F-11d1-AC9F-006008055BB5}` |
+|Rocket   | `{B7B49766-E576-11d3-9BD9-00104B972FE8}` |
 
 ```{note}
 `Chrono` is not a standard Alias, but since the default behavior of using `Teleport` will be triggered when the value of `Locomotor` is incorrect, the result of the operation will appear as if `Chrono` has taken effect.
@@ -74,7 +73,6 @@ SaveVariablesOnScenarioEnd=false    ; boolean
 - It is now possible to define the properties of insignia in an entity, so that all properties in it will be used once it's applied to a techno.
 
 In `rulesmd.ini`:
-
 ```ini
 [InsigniaTypes]
 0=SOMEINSIGNIATYPE
@@ -100,7 +98,7 @@ InsigniaType.PassengersN=                ; InsigniaType
 ### Single player game speed
 
 - It is now possible to change the default (GS4/Fast/30FPS) campaign game speed with `CampaignDefaultGameSpeed`.
-- It is now possible to change the _values_ of single player game speed, by inputing a pair of values. This feature must be enabled with `CustomGS=true`. **Only values between 10 and 60 FPS can be consistently achieved.**
+- It is now possible to change the *values* of single player game speed, by inputing a pair of values. This feature must be enabled with `CustomGS=true`. **Only values between 10 and 60 FPS can be consistently achieved.**
   - Custom game speed is achieved by periodically manipulating the delay between game frames, thus increasing or decreasing FPS.
   - `CustomGSN.ChangeInterval` describes the frame interval between applying the effect. A value of 2 means "every other frame", 3 means "every 3 frames" etc. Increase of speedup/slowdown is approximately logarithmic.
   - `CustomGSN.ChangeDelay` sets the delay (game speed number) to use every `CustomGSN.ChangeInterval` frames.
@@ -109,7 +107,6 @@ InsigniaType.PassengersN=                ; InsigniaType
     - **However, the resulting FPS may vary on different machines.**
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 CustomGS=false              ; boolean
@@ -120,7 +117,6 @@ CustomGSN.DefaultDelay=N    ; integer between 0 and 6
 ```
 
 In `RA2MD.INI`:
-
 ```ini
 [Phobos]
 CampaignDefaultGameSpeed=4  ; integer
@@ -147,17 +143,16 @@ This feature must be enabled via a command line argument `-Include`.
   - Files will be added in the same order they are defined. Index of each file **must be unique among all included files**.
   - Inclusion can be nested recursively (included files can include files further). Recursion is depth-first (before including next file, check if the current one includes anything).
   - When the same entry exists in two files, then the one read later will overwrite the value.
-  - This feature can be used in _any_ INI file, be it `rulesmd.ini`, `artmd.ini`, `soundmd.ini`, map file or anything else.
+  - This feature can be used in *any* INI file, be it `rulesmd.ini`, `artmd.ini`, `soundmd.ini`, map file or anything else.
 
 In any file:
-
 ```ini
 [$Include]
 0=somefile.ini  ; file name
 ```
 
 ```{warning}
-Due to a technical issue, there is a chance that **_the first line of a included file will be skipped!_** To prevent this, included files should start with an empty line or a comment.
+Due to a technical issue, there is a chance that ***the first line of a included file will be skipped!*** To prevent this, included files should start with an empty line or a comment.
 ```
 
 ```{warning}
@@ -174,10 +169,9 @@ This feature must be enabled via a command line argument `-Inheritance`.
   - When a section has no value set for an entry (or an entry is missing), the game will attempt to use parent's value. If no value is found, only then the default will be used.
   - When multiple parents are specified, the order of inheritance is "first come, first served", looking up comma separated parents from left to right.
   - Inheritance can be nested recursively (parent sections can have their own parents). Recursion is depth-first (before inheriting from the next parent, check if the current parent has parents).
-  - This feature can be used in _any_ INI file, be it `rulesmd.ini`, `artmd.ini`, `soundmd.ini`, map file or anything else.
+  - This feature can be used in *any* INI file, be it `rulesmd.ini`, `artmd.ini`, `soundmd.ini`, map file or anything else.
 
 In any file:
-
 ```ini
 [PARENT1SECTION]
 
@@ -217,7 +211,6 @@ The CnCNet 5 spawner uses the main loop exception handler for fixes. If you get 
   - In example, with original rules, index 6 will correspond to color `Orange=25,230,255`.
 
 In `rulesmd.ini`:
-
 ```ini
 [General]
 SkirmishUnlimitedColors=false  ; boolean

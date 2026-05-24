@@ -126,21 +126,18 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   - `[WarheadType/SuperWeaponType] -> Convert(N).AffectedHouses` -> `[WarheadType/SuperWeaponType] -> Convert(N).AffectsHouse`
   - `[SuperWeaponType] -> LimboKill.Affected` -> `[SuperWeaponType] -> LimboKill.AffectsHouse`
 
+```{hint}
+- You can use the [*MigrationUtility*](https://github.com/Phobos-developers/PhobosSupplementaries/tree/develop/MigrationUtility) in the PhobosSupplementaries repository to conveniently complete these migrations.
+```
+
 ```{note}
-
-- You can use the [_MigrationUtility_](https://github.com/Phobos-developers/PhobosSupplementaries/tree/develop/MigrationUtility) in the PhobosSupplementaries repository to conveniently complete these migrations.
-  ```
-
-```{note}
-
 - If it is detected that you are using the old INI flags, a warning log will be output to `debug.log`.
 - The old INI flags will still take effect, but if there are corresponding new version flags at the same time, the new version will take precedence.
-  ```
+```
 
 ### New user settings in RA2MD.INI
 
 - These are new user setting keys added by various features in Phobos. Most of them can be found in either in [user inteface](User-Interface.md) or [miscellaneous](Miscellanous.md) sections. Search functionality can be used to find them quickly if needed.
-
 ```ini
 [Phobos]
 CampaignDefaultGameSpeed=4       ; integer
@@ -165,237 +162,235 @@ HideShakeEffects=false           ; boolean
 
 ### For Map Editor (Final Alert 2)
 
-:::: details Click to show
+````{dropdown} Click to show
 
-In `FAData.ini`:
+  In `FAData.ini`:
+  ```ini
+  [ParamTypes]
+  47=Structures,28
+  54=Use GlobalVar,10
+  55=Operation,0
+  56=Variable index,0
+  57=Lower bound,0
+  58=Upper bound,0
+  59=Operate var is global,10
+  60=Operate var index,0
+  65=Campaign AI Repairable,0
+  68=House,1,2
+  69=Non-inert,10
+  70=AITargetTypes index,0
+  71=AttachEffectType,0
+  101=BannerType,0
+  102=Horizontal position,0
+  103=Vertical position,0
+  104=Banner ID,0
 
-```ini
-[ParamTypes]
-47=Structures,28
-54=Use GlobalVar,10
-55=Operation,0
-56=Variable index,0
-57=Lower bound,0
-58=Upper bound,0
-59=Operate var is global,10
-60=Operate var index,0
-65=Campaign AI Repairable,0
-68=House,1,2
-69=Non-inert,10
-70=AITargetTypes index,0
-71=AttachEffectType,0
-101=BannerType,0
-102=Horizontal position,0
-103=Vertical position,0
-104=Banner ID,0
+  [EventsRA2]
+  500=Local variable is greater than...,48,6,0,0,[LONG DESC],0,1,500,1
+  501=Local variable is less than...,48,6,0,0,[LONG DESC],0,1,501,1
+  502=Local variable equals to...,48,6,0,0,[LONG DESC],0,1,502,1
+  503=Local variable is greater than or equals to...,48,6,0,0,[LONG DESC],0,1,503,1
+  504=Local variable is less than or equals...,48,6,0,0,[LONG DESC],0,1,504,1
+  505=Local variable and X is true...,48,6,0,0,[LONG DESC],0,1,505,1
+  506=Global variable is greater than...,48,6,0,0,[LONG DESC],0,1,506,1
+  507=Global variable is less than...,48,6,0,0,[LONG DESC],0,1,507,1
+  508=Global variable equals to...,48,6,0,0,[LONG DESC],0,1,508,1
+  509=Global variable is greater than or queals to...,48,6,0,0,[LONG DESC],0,1,509,1
+  510=Global variable is less than or equals to...,48,6,0,0,[LONG DESC],0,1,510,1
+  511=Global variable and X is true...,48,6,0,0,[LONG DESC],0,1,511,1
+  512=Local variable is greater than local variable...,48,3,0,0,[LONG DESC],0,1,500,1
+  513=Local variable is less than local variable...,48,3,0,0,[LONG DESC],0,1,501,1
+  514=Local variable equals to local variable...,48,3,0,0,[LONG DESC],0,1,502,1
+  515=Local variable is greater than or equals to local variable...,48,3,0,0,[LONG DESC],0,1,503,1
+  516=Local variable is less than or equals local variable...,48,3,0,0,[LONG DESC],0,1,504,1
+  517=Local variable and local variable is true...,48,3,0,0,[LONG DESC],0,1,505,1
+  518=Global variable is greater than local variable...,48,3,0,0,[LONG DESC],0,1,506,1
+  519=Global variable is less than local variable...,48,3,0,0,[LONG DESC],0,1,507,1
+  520=Global variable equals to local variable...,48,3,0,0,[LONG DESC],0,1,508,1
+  521=Global variable is greater than or queals to local variable...,48,3,0,0,[LONG DESC],0,1,509,1
+  522=Global variable is less than or equals to local variable...,48,3,0,0,[LONG DESC],0,1,510,1
+  523=Global variable and local variable is true...,48,3,0,0,[LONG DESC],0,1,511,1
+  524=Local variable is greater than global variable...,48,35,0,0,[LONG DESC],0,1,500,1
+  525=Local variable is less than global variable...,48,35,0,0,[LONG DESC],0,1,501,1
+  526=Local variable equals to global variable...,48,35,0,0,[LONG DESC],0,1,502,1
+  527=Local variable is greater than or equals to global variable...,48,35,0,0,[LONG DESC],0,1,503,1
+  528=Local variable is less than or equals global variable...,48,35,0,0,[LONG DESC],0,1,504,1
+  529=Local variable and global variable is true...,48,35,0,0,[LONG DESC],0,1,505,1
+  530=Global variable is greater than global variable...,48,35,0,0,[LONG DESC],0,1,506,1
+  531=Global variable is less than global variable...,48,35,0,0,[LONG DESC],0,1,507,1
+  532=Global variable equals to global variable...,48,35,0,0,[LONG DESC],0,1,508,1
+  533=Global variable is greater than or queals to global variable...,48,35,0,0,[LONG DESC],0,1,509,1
+  534=Global variable is less than or equals to global variable...,48,35,0,0,[LONG DESC],0,1,510,1
+  535=Global variable and global variable is true...,48,35,0,0,[LONG DESC],0,1,511,1
+  600=Shield of the attached object is broken,0,0,0,0,[LONG DESC],0,1,600,1
+  601=House owns Techno Type...,68,46,0,0,[LONG DESC],0,1,601,1
+  602=House doesn't own Techno Type...,68,46,0,0,[LONG DESC],0,1,602,1
+  604=Techno Type Entered Cell...,68,46,0,0,[LONG DESC],0,1,604,1
+  605=AI Target Type Entered Cell...,68,70,0,0,[LONG DESC],0,1,605,1
+  606=AttachEffect is attaching to a Techno...,-2,71,0,0,[LONG DESC],0,1,606,1
 
-[EventsRA2]
-500=Local variable is greater than...,48,6,0,0,[LONG DESC],0,1,500,1
-501=Local variable is less than...,48,6,0,0,[LONG DESC],0,1,501,1
-502=Local variable equals to...,48,6,0,0,[LONG DESC],0,1,502,1
-503=Local variable is greater than or equals to...,48,6,0,0,[LONG DESC],0,1,503,1
-504=Local variable is less than or equals...,48,6,0,0,[LONG DESC],0,1,504,1
-505=Local variable and X is true...,48,6,0,0,[LONG DESC],0,1,505,1
-506=Global variable is greater than...,48,6,0,0,[LONG DESC],0,1,506,1
-507=Global variable is less than...,48,6,0,0,[LONG DESC],0,1,507,1
-508=Global variable equals to...,48,6,0,0,[LONG DESC],0,1,508,1
-509=Global variable is greater than or queals to...,48,6,0,0,[LONG DESC],0,1,509,1
-510=Global variable is less than or equals to...,48,6,0,0,[LONG DESC],0,1,510,1
-511=Global variable and X is true...,48,6,0,0,[LONG DESC],0,1,511,1
-512=Local variable is greater than local variable...,48,3,0,0,[LONG DESC],0,1,500,1
-513=Local variable is less than local variable...,48,3,0,0,[LONG DESC],0,1,501,1
-514=Local variable equals to local variable...,48,3,0,0,[LONG DESC],0,1,502,1
-515=Local variable is greater than or equals to local variable...,48,3,0,0,[LONG DESC],0,1,503,1
-516=Local variable is less than or equals local variable...,48,3,0,0,[LONG DESC],0,1,504,1
-517=Local variable and local variable is true...,48,3,0,0,[LONG DESC],0,1,505,1
-518=Global variable is greater than local variable...,48,3,0,0,[LONG DESC],0,1,506,1
-519=Global variable is less than local variable...,48,3,0,0,[LONG DESC],0,1,507,1
-520=Global variable equals to local variable...,48,3,0,0,[LONG DESC],0,1,508,1
-521=Global variable is greater than or queals to local variable...,48,3,0,0,[LONG DESC],0,1,509,1
-522=Global variable is less than or equals to local variable...,48,3,0,0,[LONG DESC],0,1,510,1
-523=Global variable and local variable is true...,48,3,0,0,[LONG DESC],0,1,511,1
-524=Local variable is greater than global variable...,48,35,0,0,[LONG DESC],0,1,500,1
-525=Local variable is less than global variable...,48,35,0,0,[LONG DESC],0,1,501,1
-526=Local variable equals to global variable...,48,35,0,0,[LONG DESC],0,1,502,1
-527=Local variable is greater than or equals to global variable...,48,35,0,0,[LONG DESC],0,1,503,1
-528=Local variable is less than or equals global variable...,48,35,0,0,[LONG DESC],0,1,504,1
-529=Local variable and global variable is true...,48,35,0,0,[LONG DESC],0,1,505,1
-530=Global variable is greater than global variable...,48,35,0,0,[LONG DESC],0,1,506,1
-531=Global variable is less than global variable...,48,35,0,0,[LONG DESC],0,1,507,1
-532=Global variable equals to global variable...,48,35,0,0,[LONG DESC],0,1,508,1
-533=Global variable is greater than or queals to global variable...,48,35,0,0,[LONG DESC],0,1,509,1
-534=Global variable is less than or equals to global variable...,48,35,0,0,[LONG DESC],0,1,510,1
-535=Global variable and global variable is true...,48,35,0,0,[LONG DESC],0,1,511,1
-600=Shield of the attached object is broken,0,0,0,0,[LONG DESC],0,1,600,1
-601=House owns Techno Type...,68,46,0,0,[LONG DESC],0,1,601,1
-602=House doesn't own Techno Type...,68,46,0,0,[LONG DESC],0,1,602,1
-604=Techno Type Entered Cell...,68,46,0,0,[LONG DESC],0,1,604,1
-605=AI Target Type Entered Cell...,68,70,0,0,[LONG DESC],0,1,605,1
-606=AttachEffect is attaching to a Techno...,-2,71,0,0,[LONG DESC],0,1,606,1
+  [ActionsRA2]
+  41=Play animation at a waypoint...,0,25,69,0,0,0,1,0,0,[LONG DESC].,0,1,41
+  125=Build at...,-10,47,0,65,0,0,1,0,0,[LONG DESC],0,1,125
+  500=Save game... (Phobos),-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
+  501=Edit variable... (Phobos),0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1
+  502=Generate random number... (Phobos),0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
+  503=Print variable value... (Phobos),0,56,54,0,0,0,0,0,0,[LONG DESC],0,1,503,0
+  504=Binary operation... (Phobos),0,56,55,60,54,59,0,0,0,[LONG DESC],0,1,504,1
+  505=Fire Super Weapon at specified location... (Phobos),0,0,20,2,21,22,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified location. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,505
+  506=Fire Super Weapon at specified waypoint... (Phobos),0,0,20,2,30,0,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,506
+  510=Toggle MCV Redeployablility... (Phobos),0,0,15,0,0,0,0,0,0, Set MCVRedeploys to the given value,0,1,510
+  511=Building Type undeploy at... (Phobos),-10,47,2,0,0,0,1,0,0,Recycle the building type into a vehicle and move it to the specified waypoint. If the type is `<All>`, recycle all buildings.,0,1,511
+  606=Edit hate-value... (Phobos),0,2,55,6,0,0,0,0,0, Edit the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,606
+  607=Clear hate-value... (Phobos),0,2,0,0,0,0,0,0,0, Clear the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,607
+  608=Set force enemy... (Phobos),0,0,2,0,0,0,0,0,0, Force an enemy, it will not change with the change of hate-value. -1 will remove the forced enemy, -2 will never have any enemies.,0,1,608
+  609=Set radar mode... (Phobos),0,0,15,0,0,0,0,0,0, Trigger's house can modify the current radar mode. 0 for requires full-power and building, 1 for free radar, 2 for forced enable, 3 for forced disable.,0,1,609
+  610=Set team delay... (Phobos),0,0,6,0,0,0,0,0,0, Trigger's house can customize TeamDelay. When the value is less than 0 in `[General]>TeamDelays`.,0,1,610
+  800=Display banner and local variable... (Phobos),-4,101,104,102,103,3,0,0,0,Draw banner on screen and replace banner with same ID,0,1,800
+  801=Display banner and global variable... (Phobos),-4,101,104,102,103,35,0,0,0,Draw banner on screen and replace banner with same ID,0,1,801
+  802=Delete banner... (Phobos),0,104,0,0,0,0,0,0,0,Delete banner with ID,0,1,802
 
-[ActionsRA2]
-41=Play animation at a waypoint...,0,25,69,0,0,0,1,0,0,[LONG DESC].,0,1,41
-125=Build at...,-10,47,0,65,0,0,1,0,0,[LONG DESC],0,1,125
-500=Save game... (Phobos),-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
-501=Edit variable... (Phobos),0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1
-502=Generate random number... (Phobos),0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
-503=Print variable value... (Phobos),0,56,54,0,0,0,0,0,0,[LONG DESC],0,1,503,0
-504=Binary operation... (Phobos),0,56,55,60,54,59,0,0,0,[LONG DESC],0,1,504,1
-505=Fire Super Weapon at specified location... (Phobos),0,0,20,2,21,22,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified location. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,505
-506=Fire Super Weapon at specified waypoint... (Phobos),0,0,20,2,30,0,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,506
-510=Toggle MCV Redeployablility... (Phobos),0,0,15,0,0,0,0,0,0, Set MCVRedeploys to the given value,0,1,510
-511=Building Type undeploy at... (Phobos),-10,47,2,0,0,0,1,0,0,Recycle the building type into a vehicle and move it to the specified waypoint. If the type is `<All>`, recycle all buildings.,0,1,511
-606=Edit hate-value... (Phobos),0,2,55,6,0,0,0,0,0, Edit the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,606
-607=Clear hate-value... (Phobos),0,2,0,0,0,0,0,0,0, Clear the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,607
-608=Set force enemy... (Phobos),0,0,2,0,0,0,0,0,0, Force an enemy, it will not change with the change of hate-value. -1 will remove the forced enemy, -2 will never have any enemies.,0,1,608
-609=Set radar mode... (Phobos),0,0,15,0,0,0,0,0,0, Trigger's house can modify the current radar mode. 0 for requires full-power and building, 1 for free radar, 2 for forced enable, 3 for forced disable.,0,1,609
-610=Set team delay... (Phobos),0,0,6,0,0,0,0,0,0, Trigger's house can customize TeamDelay. When the value is less than 0 in `[General]>TeamDelays`.,0,1,610
-800=Display banner and local variable... (Phobos),-4,101,104,102,103,3,0,0,0,Draw banner on screen and replace banner with same ID,0,1,800
-801=Display banner and global variable... (Phobos),-4,101,104,102,103,35,0,0,0,Draw banner on screen and replace banner with same ID,0,1,801
-802=Delete banner... (Phobos),0,104,0,0,0,0,0,0,0,Delete banner with ID,0,1,802
+  ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
+  [ScriptTypeLists]
+  1=ScriptLocalVariable
+  2=ScriptGlobalVariable
+  3=ScriptLocalVariable_Local
+  4=ScriptLocalVariable_Global
+  5=ScriptGlobalVariable_Local
+  6=ScriptGlobalVariable_Global
 
-; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
-[ScriptTypeLists]
-1=ScriptLocalVariable
-2=ScriptGlobalVariable
-3=ScriptLocalVariable_Local
-4=ScriptLocalVariable_Global
-5=ScriptGlobalVariable_Local
-6=ScriptGlobalVariable_Global
+  [ScriptLocalVariable]
+  HasExtraParam=Yes
+  BuiltInType=14
 
-[ScriptLocalVariable]
-HasExtraParam=Yes
-BuiltInType=14
+  [ScriptGlobalVariable]
+  HasExtraParam=Yes
+  BuiltInType=5
 
-[ScriptGlobalVariable]
-HasExtraParam=Yes
-BuiltInType=5
+  [ScriptLocalVariable_Local]
+  HasExtraParam=Yes
+  ExtraParamType=ScriptExtType_LocalVariables
+  BuiltInType=14
 
-[ScriptLocalVariable_Local]
-HasExtraParam=Yes
-ExtraParamType=ScriptExtType_LocalVariables
-BuiltInType=14
+  [ScriptLocalVariable_Global]
+  HasExtraParam=Yes
+  ExtraParamType=ScriptExtType_GlobalVariables
+  BuiltInType=14
 
-[ScriptLocalVariable_Global]
-HasExtraParam=Yes
-ExtraParamType=ScriptExtType_GlobalVariables
-BuiltInType=14
+  [ScriptGlobalVariable_Local]
+  HasExtraParam=Yes
+  ExtraParamType=ScriptExtType_LocalVariables
+  BuiltInType=5
 
-[ScriptGlobalVariable_Local]
-HasExtraParam=Yes
-ExtraParamType=ScriptExtType_LocalVariables
-BuiltInType=5
+  [ScriptGlobalVariable_Global]
+  HasExtraParam=Yes
+  ExtraParamType=ScriptExtType_GlobalVariables
+  BuiltInType=5
 
-[ScriptGlobalVariable_Global]
-HasExtraParam=Yes
-ExtraParamType=ScriptExtType_GlobalVariables
-BuiltInType=5
+  [ScriptExtType_LocalVariables]
+  BuiltInType=14
 
-[ScriptExtType_LocalVariables]
-BuiltInType=14
+  [ScriptExtType_GlobalVariables]
+  BuiltInType=5
 
-[ScriptExtType_GlobalVariables]
-BuiltInType=5
+  [ScriptsRA2]
+  10100=Timed Area Guard,20,0,1,[LONG DESC]
+  10101=Wait until ammo is full,0,0,1,[LONG DESC]
+  10102=Regroup Temporarily Around the Team Leader,20,0,1,[LONG DESC]
+  10103=Load Onto Transports,0,0,1,[LONG DESC]
+  10104=Chronoshift to Enemy Base,20,0,1,[LONG DESC]
+  14004=Force Global OnlyTargetHouseEnemy value in Teams,20,0,1,[LONG DESC]
+  18000=Local variable set,22,0,1,[LONG DESC]
+  18001=Local variable add,22,0,1,[LONG DESC]
+  18002=Local variable minus,22,0,1,[LONG DESC]
+  18003=Local variable multiply,22,0,1,[LONG DESC]
+  18004=Local variable divide,22,0,1,[LONG DESC]
+  18005=Local variable mod,22,0,1,[LONG DESC]
+  18006=Local variable leftshift,22,0,1,[LONG DESC]
+  18007=Local variable rightshift,22,0,1,[LONG DESC]
+  18008=Local variable reverse,22,0,1,[LONG DESC]
+  18009=Local variable xor,22,0,1,[LONG DESC]
+  18010=Local variable or,22,0,1,[LONG DESC]
+  18011=Local variable and,22,0,1,[LONG DESC]
+  18012=Global variable set,23,0,1,[LONG DESC]
+  18013=Global variable add,23,0,1,[LONG DESC]
+  18014=Global variable minus,23,0,1,[LONG DESC]
+  18015=Global variable multiply,23,0,1,[LONG DESC]
+  18016=Global variable divide,23,0,1,[LONG DESC]
+  18017=Global variable mod,23,0,1,[LONG DESC]
+  18018=Global variable leftshift,23,0,1,[LONG DESC]
+  18019=Global variable rightshift,23,0,1,[LONG DESC]
+  18020=Global variable reverse,23,0,1,[LONG DESC]
+  18021=Global variable xor,23,0,1,[LONG DESC]
+  18022=Global variable or,23,0,1,[LONG DESC]
+  18023=Global variable and,23,0,1,[LONG DESC]
+  18024=Local variable set by local variable,24,0,1,[LONG DESC]
+  18025=Local variable add by local variable,24,0,1,[LONG DESC]
+  18026=Local variable minus by local variable,24,0,1,[LONG DESC]
+  18027=Local variable multiply by local variable,24,0,1,[LONG DESC]
+  18028=Local variable divide by local variable,24,0,1,[LONG DESC]
+  18029=Local variable mod by local variable,24,0,1,[LONG DESC]
+  18030=Local variable leftshift by local variable,24,0,1,[LONG DESC]
+  18031=Local variable rightshift by local variable,24,0,1,[LONG DESC]
+  18032=Local variable reverse by local variable,24,0,1,[LONG DESC]
+  18033=Local variable xor by local variable,24,0,1,[LONG DESC]
+  18034=Local variable or by local variable,24,0,1,[LONG DESC]
+  18035=Local variable and by local variable,24,0,1,[LONG DESC]
+  18036=Global variable set by local variable,25,0,1,[LONG DESC]
+  18037=Global variable add by local variable,25,0,1,[LONG DESC]
+  18038=Global variable minus by local variable,25,0,1,[LONG DESC]
+  18039=Global variable multiply by local variable,25,0,1,[LONG DESC]
+  18040=Global variable divide by local variable,25,0,1,[LONG DESC]
+  18041=Global variable mod by local variable,25,0,1,[LONG DESC]
+  18042=Global variable leftshift by local variable,25,0,1,[LONG DESC]
+  18043=Global variable rightshift by local variable,25,0,1,[LONG DESC]
+  18044=Global variable reverse by local variable,25,0,1,[LONG DESC]
+  18045=Global variable xor by local variable,25,0,1,[LONG DESC]
+  18046=Global variable or by local variable,25,0,1,[LONG DESC]
+  18047=Global variable and by local variable,25,0,1,[LONG DESC]
+  18048=Local variable set by global variable,26,0,1,[LONG DESC]
+  18049=Local variable add by global variable,26,0,1,[LONG DESC]
+  18050=Local variable minus by global variable,26,0,1,[LONG DESC]
+  18051=Local variable multiply by global variable,26,0,1,[LONG DESC]
+  18052=Local variable divide by global variable,26,0,1,[LONG DESC]
+  18053=Local variable mod by global variable,26,0,1,[LONG DESC]
+  18054=Local variable leftshift by global variable,26,0,1,[LONG DESC]
+  18055=Local variable rightshift by global variable,26,0,1,[LONG DESC]
+  18056=Local variable reverse by global variable,26,0,1,[LONG DESC]
+  18057=Local variable xor by global variable,26,0,1,[LONG DESC]
+  18058=Local variable or by global variable,26,0,1,[LONG DESC]
+  18059=Local variable and by global variable,26,0,1,[LONG DESC]
+  18060=Global variable set by global variable,27,0,1,[LONG DESC]
+  18061=Global variable add by global variable,27,0,1,[LONG DESC]
+  18062=Global variable minus by global variable,27,0,1,[LONG DESC]
+  18063=Global variable multiply by global variable,27,0,1,[LONG DESC]
+  18064=Global variable divide by global variable,27,0,1,[LONG DESC]
+  18065=Global variable mod by global variable,27,0,1,[LONG DESC]
+  18066=Global variable leftshift by global variable,27,0,1,[LONG DESC]
+  18067=Global variable rightshift by global variable,27,0,1,[LONG DESC]
+  18068=Global variable reverse by global variable,27,0,1,[LONG DESC]
+  18069=Global variable xor by global variable,27,0,1,[LONG DESC]
+  18070=Global variable or by global variable,27,0,1,[LONG DESC]
+  18071=Global variable and by global variable,27,0,1,[LONG DESC]
 
-[ScriptsRA2]
-10100=Timed Area Guard,20,0,1,[LONG DESC]
-10101=Wait until ammo is full,0,0,1,[LONG DESC]
-10102=Regroup Temporarily Around the Team Leader,20,0,1,[LONG DESC]
-10103=Load Onto Transports,0,0,1,[LONG DESC]
-10104=Chronoshift to Enemy Base,20,0,1,[LONG DESC]
-14004=Force Global OnlyTargetHouseEnemy value in Teams,20,0,1,[LONG DESC]
-18000=Local variable set,22,0,1,[LONG DESC]
-18001=Local variable add,22,0,1,[LONG DESC]
-18002=Local variable minus,22,0,1,[LONG DESC]
-18003=Local variable multiply,22,0,1,[LONG DESC]
-18004=Local variable divide,22,0,1,[LONG DESC]
-18005=Local variable mod,22,0,1,[LONG DESC]
-18006=Local variable leftshift,22,0,1,[LONG DESC]
-18007=Local variable rightshift,22,0,1,[LONG DESC]
-18008=Local variable reverse,22,0,1,[LONG DESC]
-18009=Local variable xor,22,0,1,[LONG DESC]
-18010=Local variable or,22,0,1,[LONG DESC]
-18011=Local variable and,22,0,1,[LONG DESC]
-18012=Global variable set,23,0,1,[LONG DESC]
-18013=Global variable add,23,0,1,[LONG DESC]
-18014=Global variable minus,23,0,1,[LONG DESC]
-18015=Global variable multiply,23,0,1,[LONG DESC]
-18016=Global variable divide,23,0,1,[LONG DESC]
-18017=Global variable mod,23,0,1,[LONG DESC]
-18018=Global variable leftshift,23,0,1,[LONG DESC]
-18019=Global variable rightshift,23,0,1,[LONG DESC]
-18020=Global variable reverse,23,0,1,[LONG DESC]
-18021=Global variable xor,23,0,1,[LONG DESC]
-18022=Global variable or,23,0,1,[LONG DESC]
-18023=Global variable and,23,0,1,[LONG DESC]
-18024=Local variable set by local variable,24,0,1,[LONG DESC]
-18025=Local variable add by local variable,24,0,1,[LONG DESC]
-18026=Local variable minus by local variable,24,0,1,[LONG DESC]
-18027=Local variable multiply by local variable,24,0,1,[LONG DESC]
-18028=Local variable divide by local variable,24,0,1,[LONG DESC]
-18029=Local variable mod by local variable,24,0,1,[LONG DESC]
-18030=Local variable leftshift by local variable,24,0,1,[LONG DESC]
-18031=Local variable rightshift by local variable,24,0,1,[LONG DESC]
-18032=Local variable reverse by local variable,24,0,1,[LONG DESC]
-18033=Local variable xor by local variable,24,0,1,[LONG DESC]
-18034=Local variable or by local variable,24,0,1,[LONG DESC]
-18035=Local variable and by local variable,24,0,1,[LONG DESC]
-18036=Global variable set by local variable,25,0,1,[LONG DESC]
-18037=Global variable add by local variable,25,0,1,[LONG DESC]
-18038=Global variable minus by local variable,25,0,1,[LONG DESC]
-18039=Global variable multiply by local variable,25,0,1,[LONG DESC]
-18040=Global variable divide by local variable,25,0,1,[LONG DESC]
-18041=Global variable mod by local variable,25,0,1,[LONG DESC]
-18042=Global variable leftshift by local variable,25,0,1,[LONG DESC]
-18043=Global variable rightshift by local variable,25,0,1,[LONG DESC]
-18044=Global variable reverse by local variable,25,0,1,[LONG DESC]
-18045=Global variable xor by local variable,25,0,1,[LONG DESC]
-18046=Global variable or by local variable,25,0,1,[LONG DESC]
-18047=Global variable and by local variable,25,0,1,[LONG DESC]
-18048=Local variable set by global variable,26,0,1,[LONG DESC]
-18049=Local variable add by global variable,26,0,1,[LONG DESC]
-18050=Local variable minus by global variable,26,0,1,[LONG DESC]
-18051=Local variable multiply by global variable,26,0,1,[LONG DESC]
-18052=Local variable divide by global variable,26,0,1,[LONG DESC]
-18053=Local variable mod by global variable,26,0,1,[LONG DESC]
-18054=Local variable leftshift by global variable,26,0,1,[LONG DESC]
-18055=Local variable rightshift by global variable,26,0,1,[LONG DESC]
-18056=Local variable reverse by global variable,26,0,1,[LONG DESC]
-18057=Local variable xor by global variable,26,0,1,[LONG DESC]
-18058=Local variable or by global variable,26,0,1,[LONG DESC]
-18059=Local variable and by global variable,26,0,1,[LONG DESC]
-18060=Global variable set by global variable,27,0,1,[LONG DESC]
-18061=Global variable add by global variable,27,0,1,[LONG DESC]
-18062=Global variable minus by global variable,27,0,1,[LONG DESC]
-18063=Global variable multiply by global variable,27,0,1,[LONG DESC]
-18064=Global variable divide by global variable,27,0,1,[LONG DESC]
-18065=Global variable mod by global variable,27,0,1,[LONG DESC]
-18066=Global variable leftshift by global variable,27,0,1,[LONG DESC]
-18067=Global variable rightshift by global variable,27,0,1,[LONG DESC]
-18068=Global variable reverse by global variable,27,0,1,[LONG DESC]
-18069=Global variable xor by global variable,27,0,1,[LONG DESC]
-18070=Global variable or by global variable,27,0,1,[LONG DESC]
-18071=Global variable and by global variable,27,0,1,[LONG DESC]
-
-[ScriptParams]
-22=Local variables,-1
-23=Global variables,-2
-24=Local variables,-3
-25=Local variables,-4
-26=Global variables,-5
-27=Global variables,-6
-```
-
-::::
+  [ScriptParams]
+  22=Local variables,-1
+  23=Global variables,-2
+  24=Local variables,-3
+  25=Local variables,-4
+  26=Global variables,-5
+  27=Global variables,-6
+  ```
+````
 
 ## Changelog
 
 ### Version TBD (develop branch nightly builds)
 
-::: details Click to show
+```{dropdown} Click to show
+:open:
 
 New:
-
 - [Allow using waypoints, area guard and attack move with aircraft](Fixed-or-Improved-Logics.md#extended-aircraft-missions) (by CrimRecya)
 - [Enhanced Straight trajectory](New-or-Enhanced-Logics.md#straight-trajectory) (by CrimRecya)
 - [Enable building production queue](User-Interface.md#building-production-queue) (by CrimRecya)
@@ -476,7 +471,7 @@ New:
 - [Warhead activation target health thresholds](Fixed-or-Improved-Logics.md#customizable-warhead-trigger-conditions) (by FS-21 & Kerbiter)
 - [Customize limit and sound when engineer repair a building](New-or-Enhanced-Logics.md#engineer-repair-customization) (by NetsuNegi)
 - [Customizable debris trailer anim spawn delay](Fixed-or-Improved-Logics.md#customizable-debris-trailer-anim-spawn-delay) (by CrimRecya)
-- [Display banner](AI-Scripting-and-Mapping.md#_800-802-display-banner) (by Morton & ststl)
+- [Display banner](AI-Scripting-and-Mapping.md#display-banner) (by Morton & ststl)
 - [Allows refineries to use multiple ActiveAnim simultaneously](Fixed-or-Improved-Logics.md#allows-refineries-to-use-multiple-activeanim-simultaneously) (by TaranDahl)
 - Electric/RadBeam trail for laser tails (by NetsuNegi)
 - Add `DebrisMinimums` to keep the count of debris within a certain range (by CrimRecya)
@@ -484,7 +479,7 @@ New:
 - Ground line for select box (by NetsuNegi)
 - [Support for more optional weapons](New-or-Enhanced-Logics.md#multi-weapon) (by FlyStar)
 - [Task subtitles display in the middle of the screen](User-Interface.md#task-subtitles-display-in-the-middle-of-the-screen) (by CrimRecya)
-- [Event 606: AttachEffect is attaching to a Techno](AI-Scripting-and-Mapping.md#_606-attacheffect-is-attaching-to-a-techno) (by FS-21)
+- [Event 606: AttachEffect is attaching to a Techno](AI-Scripting-and-Mapping.md#attacheffect-is-attaching-to-a-techno) (by FS-21)
 - [Linked superweapons](New-or-Enhanced-Logics.md#linked-superweapons) (by FS-21)
 - [Delayed fire weapons](New-or-Enhanced-Logics.md#delayed-firing) (by Starkku)
 - [Burst without delay](New-or-Enhanced-Logics.md#burst-without-delay) (by CrimRecya & TaranDahl)
@@ -524,13 +519,13 @@ New:
 - [CellSpread damage check if victim is in air or on floor](New-or-Enhanced-Logics.md#cellspread-enhancement) (by TaranDahl)
 - OpenTopped range bonus and damage multiplier customization for passengers (by Ollerus)
 - AutoDeath upon ownership change (by Ollerus)
-- [Script Action 14004 for forcing all new actions to target only the main owner's enemy](AI-Scripting-and-Mapping.md#_14004-force-global-onlytargethouseenemy-value-in-teams-for-new-attack-move-actions-introduced-by-phobos) (by FS-21)
+- [Script Action 14004 for forcing all new actions to target only the main owner's enemy](AI-Scripting-and-Mapping.md#force-global-onlytargethouseenemy-value-in-teams-for-new-attack-move-actions-introduced-by-phobos) (by FS-21)
 - [Allow merging AOE damage to buildings into one](New-or-Enhanced-Logics.md#allow-merging-aoe-damage-to-buildings-into-one) (by CrimRecya)
 - [Allow customizing whether to synchronously change the owner of the RadioLink-linked units when the owner of a building changes](Fixed-or-Improved-Logics.md#custom-whether-to-synchronously-change-the-owner-of-the-radiolink-linked-units-when-the-owner-of-a-building-changes) (by TaranDahl)
 - [Toggle per-target warhead effects apply timing](New-or-Enhanced-Logics.md#toggle-per-target-warhead-effects-apply-timing) (by TaranDahl)
 - [Extra range for chasing and pre-firing](New-or-Enhanced-Logics.md#extra-range) (by TaranDahl)
 - [Allow techno type considered as other type when recruiting techno for teams](Fixed-or-Improved-Logics.md#allow-techno-type-considered-as-other-type-when-recruiting-techno-for-teams) (by NetsuNegi)
-- Map Action [`511` Undeploy Building to Waypoint](AI-Scripting-and-Mapping.md#_511-undeploy-building-to-waypoint), [`609` Set Radar Mode](AI-Scripting-and-Mapping.md#_609-set-radar-mode), [`610` Set house's `TeamDelays` value](AI-Scripting-and-Mapping.md#_610-set-house-s-teamdelays-value) (by FlyStar)
+- Map Action [`511` Undeploy Building to Waypoint](AI-Scripting-and-Mapping.md#undeploy-building-to-waypoint), [`609` Set Radar Mode](AI-Scripting-and-Mapping.md#set-radar-mode), [`610` Set house's `TeamDelays` value](AI-Scripting-and-Mapping.md#set-house-s-teamdelays-value) (by FlyStar)
 - [Toggle to exclude technos from base center calculations](New-or-Enhanced-Logics.md#exclusion-from-base-center-calculations) (by Starkku)
 - [Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`](Fixed-or-Improved-Logics.md#can-attack-allies) (by FlyStar)
 - [Attack non-threatening structures extensions](New-or-Enhanced-Logics.md#attack-non-threatening-structures-techno) (by FlyStar)
@@ -588,7 +583,6 @@ New:
 - Add the `Bolt.ZAdjust` setting item to the LaserTrailType with `DrawType=ebolt` (by Noble_Fish)
 
 Vanilla fixes:
-
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
 - Buildings with foundation bigger than 1x1 can now recycle spawned correctly (by TaranDahl)
@@ -672,7 +666,6 @@ Vanilla fixes:
 - Fixed the bug that low-air taking off / landing objects will receive twice damage (by NetsuNegi)
 
 Phobos fixes:
-
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
 - Fixed an issue that `FireAngle` was not taken into account when drawing barrel in `TurretShadow` (by CrimRecya)
 - Fixed a bug that sometimes caused weapon/warhead detonations from features such as `ExtraWarheads`, animation damage or `Crit.Warhead` to unintentionally move from its intended position (by Starkku)
@@ -722,7 +715,6 @@ Phobos fixes:
 - Fixed a bug where stationary vehicles would also block movement caused by external factors (by Noble_Fish)
 
 Fixes / interactions with other extensions:
-
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
 - Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle` (by TaranDahl)
 - Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect (by Sovietianqi, based on knowledge of DeathFish)
@@ -743,28 +735,25 @@ Fixes / interactions with other extensions:
 - `DisableWeapons.Duration` now makes `Gattling=yes` rate tick down and stops the sounds from playing, no longer interferes with target acquisition and works together with Phobos' `OpenTopped.CheckTransportDisableWeapons` (by Starkku)
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus & NetsuNegi)
 - [Aux technos and TechLevel requirement of superweapon](New-or-Enhanced-Logics.md#aux-technos-and-techlevel-requirement-of-superweapon) (by NetsuNegi & Ollerus)
-  :::
+```
 
 ### 0.4.0.3
 
-::: details Click to show
+```{dropdown} Click to show
 
 Vanilla fixes:
-
 - Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold (by CnCRAZER, Starkku, Noble_Fish)
 - Fixed a desync due to an inconsistent shroud state caused by `GapGenerator` and `SpySat` interaction (by Starkku)
 
 Phobos fixes:
-
 - Fixed vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't (by Starkku)
-  :::
+```
 
 ### 0.4.0.2
 
-::: details Click to show
+```{dropdown} Click to show
 
 Phobos fixes:
-
 - Fixed `AircraftDockingDirs` being reset if the BuildingType section is redefined in map file (by Starkku)
 - Fixed harvester counter not accounting for type converting harvesters (by Ollerus)
 - Fixed the bug that weapon cannot used to intercept on gound bullet if it's projectile has `AG=no` (by NetsuNegi)
@@ -774,17 +763,15 @@ Phobos fixes:
 - Fixed a bug causing erratic behaviour with units scattering f.ex moving away from buildings being placed (by Starkku)
 - Fixed an oversight that prevented units deploying into buildings from deploying on top of `CanBeBuiltOn` TerrainTypes (by Starkku)
 - Animation-fired weapons now snap on the object they are attached to if present (by TaranDahl)
-  :::
+```
 
 ### 0.4.0.1
 
-::: details Click to show
+```{dropdown} Click to show
 Vanilla fixes:
-
 - Fixed preplaced aircraft outside visible map being incorrectly flagged as crashing under certain conditions (by Starkku)
 
 Phobos fixes:
-
 - AttachEffect `DisableWeapons` no longer interferes with 'can this unit/building fire weapons?' checks for units/buildings with no weapons (by Starkku)
 - Fixed starting infantry being scattered randomly on game start instead of being grouped (by 11EJDE11, Belonit, Ollerus)
 - Fixed an issue with certain Warhead detonation features (f.ex `Crit.Warhead` without `Crit.Warhead.FullDetonation=true` not snapping on the intended target without `CellSpread`) (by Starkku)
@@ -793,13 +780,13 @@ Phobos fixes:
 - Fixed `DisplayIncome`, `Transact.Money` etc. display strings showing through shroud and for objects that are supposed to be hidden such as cloaked, undetected enemies (by Starkku)
 - Fixed an issue that could cause crashes when `FeedbackWeapon` was used to convert the firer to another TechnoType with less or no weapons (by Starkku)
 - Fixed an issue with parsing floating point numbers from INI that may have in some cases contributed to desyncs (by Starkku)
-  :::
+```
 
 ### 0.4
 
-::: details Click to show
-New:
+```{dropdown} Click to show
 
+New:
 - `Crit.AffectsHouses` for critical hit system (by Starkku)
 - Warhead or weapon detonation at superweapon target cell (by Starkku)
 - Super Weapons launching other Super Weapons (by Morton)
@@ -850,7 +837,7 @@ New:
 - TechnoType conversion warhead & superweapon (by Morton)
 - TechnoType conversion on ownership change (by Trsdy)
 - Unlimited skirmish colors (by Morton)
-- Example custom locomotor that circles around the target (_NOTE: For developer use only_) (by Kerbiter, CCHyper, with help from Otamaa; based on earlier experiment by CnCVK)
+- Example custom locomotor that circles around the target (*NOTE: For developer use only*) (by Kerbiter, CCHyper, with help from Otamaa; based on earlier experiment by CnCVK)
 - Vehicle voxel turret shadows & body multi-section shadows (by TwinkleStar & Trsdy)
 - Crushing tilt and slowdown customization (by Starkku)
 - Extra warhead detonations on weapon (by Starkku)
@@ -968,7 +955,6 @@ New:
 - Elite technos no longer scatter by default, behaviour is controlled by `SCATTER` veterancy ability now (by NetsuNegi & Starkku)
 
 Vanilla fixes:
-
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
 - Allow setting whether `AlternateFLH` applies to vehicle passengers in the transport unit (by Trsdy & NetsuNegi)
 - Improved the statistic distribution of the spawned crates over the visible area of the map. (by Trsdy, based on TwinkleStar's work)
@@ -1115,7 +1101,6 @@ Vanilla fixes:
 - Fixed pathfinding crashes (EIP 0x42A525, 0x42C507, 0x42C554) that happened on bigger maps due to too small pathfinding node buffer (by CrimRecya)
 
 Phobos fixes:
-
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
 - Add `ImmuneToCrit` for shields (by Trsdy)
 - Reimplemented the bugfix for jumpjet units' facing when firing, discard the inappropriate `JumpjetTurnToTarget` tag (by Trsdy)
@@ -1171,9 +1156,8 @@ Phobos fixes:
 - Fixed map trigger action `125 Build At...` not always playing buildups correctly (by Starkku)
 
 Fixes / interactions with other extensions:
-
-- Weapons fired by EMPulse superweapons _(Ares feature)_ now fully respect the firing building's FLH (by Starkku)
-- Weapons fired by EMPulse superweapons _(Ares feature)_ now respect `Floater` and Phobos-added `Gravity` setting (by Starkku)
+- Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH (by Starkku)
+- Weapons fired by EMPulse superweapons *(Ares feature)* now respect `Floater` and Phobos-added `Gravity` setting (by Starkku)
 - `IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no longer get stuck after deploying or play their move sound indefinitely (by Starkku)
 - All forms of type conversion (including Ares') now correctly update the warp-in delay if unit with teleport `Locomotor` was converted while the delay was active (by Starkku)
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed (by Starkku)
@@ -1183,7 +1167,7 @@ Fixes / interactions with other extensions:
 - Appended Ares' `SW.Shots` usage to extended tooltips (by Trsdy)
 - Fixed Ares' Abductor weapon leaves permanent placement stats when abducting moving vehicles (by Trsdy)
 - Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (by Trsdy)
-- Fixed Academy _(Ares feature)_ not working on the initial payloads _(Ares feature)_ of vehicles built from a war factory (by Trsdy, supersedes Aephiex impl.)
+- Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares feature)* of vehicles built from a war factory (by Trsdy, supersedes Aephiex impl.)
 - Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions (by Trsdy)
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
 - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully (by FlyStar)
@@ -1192,18 +1176,16 @@ Fixes / interactions with other extensions:
 - Fixed an issue where Ares' `Convert.Deploy` triggers repeatedly when the unit is turning or moving (by CrimRecya)
 - Fixed quicksave command and save game trigger action to work with YRpp spawner's multiplayer saves (by Kerbiter)
 - Ported XNA CnCNet Client multiplayer save handling to get rid of occasional multiplayer save file overwriting when saving too fast (by Kerbiter)
-  :::
+```
 
 ### 0.3.0.1
 
-::: details Click to show
+```{dropdown} Click to show
 
 New:
-
 - Additional sync logging in case of desync errors occuring (by Starkku)
 
 Phobos fixes:
-
 - `AutoDeath` support for objects in limbo (by Trsdy)
 - Buildings sold by `AutoDeath` no longer play a click sound effect (by Trsdy)
 - Fixed shield animation being hidden while underground or in tunnels fix not working correctly (by Starkku)
@@ -1225,14 +1207,13 @@ Phobos fixes:
 - `CanTarget` now considers bridges as land like game's normal weapon selection does (by Starkku)
 - `AreaFire.Target` now takes cells with bridges into consideration depending on firer's elevation (by Starkku)
 
-:::
+```
 
 ### 0.3
 
-::: details Click to show
+```{dropdown} Click to show
 
 New:
-
 - LaserTrails initial implementation (by Kerbiter & ChrisLv_CN)
 - Anim-to-Unit logic and ability to randomize `DestroyAnim` (by Otamaa)
 - Shield modification warheads (by Starkku)
@@ -1333,7 +1314,6 @@ New:
 - For developers: now you can use command line arg to control main exception handler (by Multfinite)
 
 Vanilla fixes:
-
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter & ChrisLv_CN)
 - Fixed `DeathWeapon` not detonating properly (by Uranusian)
 - Fixed lasers & other effects drawing from wrong offset with weapons that use `Burst` (by Starkku)
@@ -1368,7 +1348,6 @@ Vanilla fixes:
 - Allowed observers to see a selected building's radial indicator (by Trsdy)
 
 Phobos fixes:
-
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
 - Improved shield behavior for forced damage (by Uranusian)
 - Fixed `SplashList` animations playing when a unit is hit on a bridge over water (by Uranusian)
@@ -1398,35 +1377,31 @@ Phobos fixes:
 - Fixed GlobalVariables failed working among scenarios (by Trsdy)
 
 Fixes / interactions with other extensions:
-
 - Fixed AI Aircraft docks bug when Ares tag `[GlobalControls] -> AllowParallelAIQueues=no` is set (by FS-21)
-- Weapons fired by EMPulse superweapons _(Ares feature)_ without `EMPulse.TargetSelf=true` can now create radiation (by Starkku)
+- Weapons fired by EMPulse superweapons *(Ares feature)* without `EMPulse.TargetSelf=true` can now create radiation (by Starkku)
 
 Non-DLL:
-
 - Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)
 
-:::
+```
 
 ### 0.2.2.2
 
-::: details Click to show
+```{dropdown} Click to show
 
 Phobos fixes:
-
 - Fixed shield type info not saving properly (by Uranusian)
 - Fixed extended building upgrades logic not properly interacting with Ares' BuildLimit check (by Uranusian)
 - Fixed more random crashes for `CameoPriority` (by Uranusian)
 - Fixed aircraft weapons causing game freeze when burst index was not correctly reset after firing (by Starkku)
 
-:::
+```
 
 ### 0.2.2.1
 
-::: details Click to show
+```{dropdown} Click to show
 
 Phobos fixes:
-
 - Fixed random crashes about `CameoPriority` (by Uranusian)
 - Fixed trigger action 125 not functioning properly (by Uranusian)
 - Fixed area warhead detonation not falling back to firer house (by Otamaa)
@@ -1434,65 +1409,58 @@ Phobos fixes:
 - Fixed `Crit.Affects` not functioning properly (by Uranusian)
 - Fixed improper upgrade owner transfer which resulted in built ally / enemy building upgrades keeping the player who built them alive (by Kerbiter)
 
-:::
+```
 
 ### 0.2.2
 
-::: details Click to show
+```{dropdown} Click to show
 
 New:
-
 - Customizable producing progress "bars" like CnC:Remastered did (by Uranusian)
 - Customizable cameo sorting priority (by Uranusian)
 - Customizable harvester ore gathering animation (by secsome & Uranusian)
 - Allow making technos unable to be issued with movement order (by Uranusian)
 
 Vanilla fixes:
-
 - Fixed non-IME keyboard input to be working correctly for languages / keyboard layouts that use character ranges other than Basic Latin and Latin-1 Supplement (by Belonit)
 
 Phobos fixes:
-
 - Fixed the critical damage logic not functioning properly (by Uranusian)
 - Fixed the bug when executing the stop command game crashes (by Uranusian)
 
-:::
+```
 
 ### 0.2.1.1
 
-::: details Click to show
+```{dropdown} Click to show
 
 Phobos fixes:
-
 - Fixed occasional crashes introduced by `Speed=0` stationary vehicles code (by Starkku)
 
-:::
+```
 
 ### 0.2.1
 
-::: details Click to show
+```{dropdown} Click to show
 
 New:
-
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary (by Starkku)
 
 Vanilla fixes:
-
 - Fixed the bug when after a failed placement the building/defence tab hotkeys won't trigger placement mode again (by Uranusian)
 - Fixed the bug when building with `UndeployInto` plays `EVA_NewRallypointEstablished` while undeploying (by secsome)
 
 Phobos fixes:
-
 - Fixed the bug when trigger action `125 Build At...` wasn't actually producing a building when the target cells were occupied (by secsome)
 
-:::
+```
+
 
 ### 0.2
 
-::: details Click to show
+```{dropdown} Click to show
 
 New:
-
 - Shield logic for TechnoTypes (by Uranusian, secsome, Belonit) with warhead additions (by Starkku)
 - Custom Radiation Types (by AlexB, Otamaa, Belonit, Uranusian)
 - New ScriptType actions `71 Timed Area Guard`, `72 Load Onto Transports`, `73 Wait until ammo is full` (by FS-21)
@@ -1518,7 +1486,6 @@ New:
 - Customizeable Missing Cameo file (by Uranusian)
 
 Vanilla fixes:
-
 - Map previews with zero size won't crash the game anymore (by Kerbiter & Belonit)
 - Tileset 255+ bridge fix (by E1 Elite)
 - Fixed fatal errors when `Blowfish.dll` couldn't be registered in the system properly due to missing admin rights (by Belonit)
@@ -1532,29 +1499,26 @@ Vanilla fixes:
 - Fixes to `DeployFire` logic (`DeployFireWeapon`, `FireOnce`, stop command now work properly) (by Starkku)
 
 Phobos fixes:
-
 - Properly rewritten a fix for mind-controlled vehicles deploying into buildings (by FS-21)
 - Properly rewritten `DeployToFire` fix, tag `Deployed.RememberTarget` is deprecated, now always on (by Kerbiter)
 - New warheads now work with Ares' `GenericWarhead` superweapon (by Belonit)
 
-:::
+```
 
 ### 0.1.1
 
-::: details Click to show
+```{dropdown} Click to show
 
 Phobos fixes:
-
 - Fixed an occasional crash when selecting units with a selection box (by Kerbiter)
 
-:::
+```
 
 ### 0.1
 
-::: details Click to show
+```{dropdown} Click to show
 
 New:
-
 - Full-color PCX graphics support (by Belonit)
 - Support for PCX loading screens of any size (by Belonit)
 - Extended sidebar tooltips with descriptions, recharge time and power consumption/generation (by Kerbiter & Belonit)
@@ -1567,7 +1531,6 @@ New:
 - Ability to switch to GDI sidebar layout for any side (by Belonit)
 
 Vanilla fixes:
-
 - Deploying mind-controlled TechnoTypes won't make them permanently mind-controlled anymore (unfinished fix by DCoder)
 - SHP debris hardcoded shadows now respect `Shadow=no` tag value (by Kerbiter)
 - `DeployToFire` vehicles won't lose target on deploy anymore (unfinished fix by DCoder)
@@ -1575,4 +1538,4 @@ Vanilla fixes:
 - Sidebar tooltips now can go over sidebar bounds (by Belonit)
 - Lifted stupidly small limit for tooltip character amount (by Belonit)
 
-:::
+```

@@ -15,6 +15,7 @@ import { offlineVitePressPlugin } from '../vitepress/build-scripts/vitepress-off
 import { mediaDimensionsPlugin } from '../vitepress/build-scripts/media-dimensions-plugin.ts'
 import { artifactsDistDir, outputDir as offlineOutputDir } from '../vitepress/build-scripts/shared/offline.ts'
 import { getEditLink } from './edit-link.ts'
+import { headingAttributeAnchorLabelPlugin } from './markdown/heading-attribute-anchor-label-plugin.ts'
 import { sphinxDirectiveFencePlugin } from './markdown/sphinx-directive-fence-plugin.ts'
 import { staticPublicDirMarkdownPlugin } from './markdown/static-public-dir-markdown-plugin.ts'
 import { renderSearchContent } from './search/local-search-renderer.ts'
@@ -53,7 +54,11 @@ export default defineConfig({
   ignoreDeadLinks: true,
   transformPageData,
   markdown: {
+    attrs: {
+      allowedAttributes: ['id'],
+    },
     config(md) {
+      md.use(headingAttributeAnchorLabelPlugin)
       md.use(sphinxDirectiveFencePlugin)
     },
   },

@@ -398,6 +398,31 @@ function normalizeLineEndings(content: string): string {
   return content.replace(/\r\n?/g, '\n')
 }
 
+function compactMarkdownMediaCaptions(content: string): string {
+  const media = String.raw`!\[[^\]]*\]\([^)]+\)`
+  const caption = String.raw`\*[^\n]+\*`
+  const mediaCaption = new RegExp(`((?:${media}(?:\\s|\\n)+)+)(${caption})`, 'g')
+
+  // Older PO files often keep image and caption in one logical Markdown line,
+  // while migrated sources may put them on adjacent lines for readability.
+  return content.replace(mediaCaption, match => match.replace(/\s*\n\s*/g, ' '))
+}
+
+function splitMarkdownMediaCaptions(content: string): string {
+  const media = String.raw`!\[[^\]]*\]\([^)]+\)`
+  const caption = String.raw`\*[^\n]+\*`
+  const mediaCaption = new RegExp(`((?:${media}\\s+)+)(${caption})`, 'g')
+  const mediaWithTrailingSpace = new RegExp(`(${media})\\s+`, 'g')
+
+  return content.replace(mediaCaption, match => match.replace(mediaWithTrailingSpace, '$1\n'))
+}
+
+function addNormalizedTranslation(translations: Map<string, string>, msgid: string, msgstr: string): void {
+  if (!translations.has(msgid)) {
+    translations.set(msgid, msgstr)
+  }
+}
+
 function restoreLineEndings(content: string, lineEnding: '\n' | '\r\n'): string {
   return lineEnding === '\n' ? content : content.replace(/\n/g, lineEnding)
 }
@@ -465,9 +490,17 @@ function translateMarkdown(content: string, translations: Map<string, string>): 
     const normalizedMsgid = normalizeLineEndings(msgid)
     const normalizedMsgstr = normalizeLineEndings(msgstr)
 
-    if (!normalizedTranslations.has(normalizedMsgid)) {
-      normalizedTranslations.set(normalizedMsgid, normalizedMsgstr)
-    }
+    addNormalizedTranslation(normalizedTranslations, normalizedMsgid, normalizedMsgstr)
+    addNormalizedTranslation(
+      normalizedTranslations,
+      compactMarkdownMediaCaptions(normalizedMsgid),
+      normalizedMsgstr,
+    )
+    addNormalizedTranslation(
+      normalizedTranslations,
+      splitMarkdownMediaCaptions(normalizedMsgid),
+      normalizedMsgstr,
+    )
   }
 
   output = translateMarkdownHeadings(output, normalizedTranslations)
