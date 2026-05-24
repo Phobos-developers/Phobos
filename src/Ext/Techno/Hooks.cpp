@@ -2014,9 +2014,9 @@ DEFINE_HOOK(0x51E0E5, InfantryClass_Unlimbo_DynamicSight, 0x6)
 DEFINE_HOOK(0x702B14, TechnoClass_ReceiveDamage_DynamicSight, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET_STACK(double, nDeltaDist, STACK_OFFSET(0xC4, -0xB0));
-	R->AX((TechnoExt::ExtMap.Find(pThis)->GetSight() + 0.5) * Unsorted::LeptonsPerCell >= nDeltaDist);
-	return 0x702B2C;
+	const int sight = TechnoExt::ExtMap.Find(pThis)->GetSight();
+	__asm fild sight;
+	return 0x702B1A;
 }
 
 DEFINE_HOOK(0x70AE48, TechnoClass_See_DynamicSight, 0x6)
