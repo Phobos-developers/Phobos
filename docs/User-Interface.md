@@ -55,7 +55,7 @@ ShowTimer.Percentage=              ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMENAME]                           ; TechnoType
+[SOMETECHNO]                         ; TechnoType
 HealthBar.Hide=false                 ; boolean
 HealthBar.HidePips=false             ; boolean
 HealthBar.Permanent=false            ; boolean
@@ -154,7 +154,7 @@ Palette=palette.pal                            ; filename with .pal extension
 Shape.Spacing=                                 ; integers - horizontal, vertical spacing between digits
 Shape.PercentageFrame=false                    ; boolean
 
-[SOMETECHNOTYPE]                               ; TechnoType
+[SOMETECHNO]                                   ; TechnoType
 DigitalDisplay.Disable=false                   ; boolean
 DigitalDisplayTypes=                           ; List of DigitalDisplayTypes
 DigitalDisplay.Health.FakeAtDisguise=true      ; boolean
@@ -182,7 +182,7 @@ You can create a circular health bar for technos, where the different frames of 
 The arrangement of static images on the plane is entirely up to you to draw freely, without being constrained by pre-established frameworks (e.g., the original rule for health bars was to start at a fixed coordinate, fetch a pip from a fixed frame of a fixed file at fixed intervals, and then arrange them horizontally), choosing from inherently limited options.
 ```
 
-Of course, this is just the implementation method. To balance freedom with efficiency—that is, how to efficiently draw the patterns you need—you still need to independently explore a workflow that suits you.
+Of course, this is just the implementation method. To balance freedom with efficiency - that is, how to efficiently draw the patterns you need - you still need to independently explore a workflow that suits you.
 ````
 
 ### Flashing Technos on selecting
@@ -619,7 +619,7 @@ In `rulesmd.ini`:
 [General]
 SortCameoByName=false  ; boolean
 
-[SOMENAME]             ; TechnoType / SuperWeaponType
+[SOMETECHNO/SOMESW]    ; TechnoType / SuperWeaponType
 CameoPriority=0        ; integer
 ```
 
@@ -894,8 +894,8 @@ MaxWidth=0                 ; integer, pixels
 ```
 In `rulesmd.ini`:
 ```ini
-[SOMENAME]            ; TechnoType or SWType
-UIDescription=<none>  ; CSF entry key
+[SOMETECHNO/SOMESW]        ; TechnoType or SWType
+UIDescription=<none>       ; CSF entry key
 ```
 
 - The descriptions are designed to be toggleable by users. For now you can only do that externally via client or manually.
