@@ -10,7 +10,7 @@
 // public static extern int AE_Attach(IntPtr pTarget, IntPtr pInvokerHouse, IntPtr pInvoker, IntPtr pSource, IntPtr effectTypeNames, int typeCount, int durationOverride, int delay, int initialDelay, int recreationDelay);
 //
 // [DllImport("Phobos.dll", CallingConvention = CallingConvention.StdCall, EntryPoint = "AE_Detach")]
-// public static extern int AE_Detach(IntPtr pTarget, IntPtr effectTypeNames, int typeCount);
+// public static extern int AE_Detach(IntPtr pTarget, IntPtr effectTypeNames, int typeCount, out int pRemovedCount);
 // ```
 
 #include "Utilities/Macro.h"

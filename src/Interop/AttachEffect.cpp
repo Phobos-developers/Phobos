@@ -2,6 +2,9 @@
 #include "AttachEffect.h"
 #include "New/Entity/AttachEffectClass.h"
 #include "New/Type/AttachEffectTypeClass.h"
+#include <climits>
+
+constexpr int RecreationDelay_NoOverride = INT_MIN;
 
 DEFINE_EXPORT(HRESULT, AE_Attach,
 	TechnoClass* pTarget,
@@ -49,7 +52,7 @@ DEFINE_EXPORT(HRESULT, AE_Attach,
 	if (initialDelay >= 0)
 		attachInfo.InitialDelays.push_back(initialDelay);
 
-	if (recreationDelay >= -1)
+	if (recreationDelay != RecreationDelay_NoOverride)
 		attachInfo.RecreationDelays.push_back(recreationDelay);
 
 	*pAttachedCount = AttachEffectClass::Attach(pTarget, pInvokerHouse, pInvoker, pSource, attachInfo);

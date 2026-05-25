@@ -7,6 +7,9 @@ std::vector<CalculateSightCallback> TechnoExtInterop::CalculateSightCallbacks = 
 
 DEFINE_EXPORT(HRESULT, ConvertToType_Phobos, FootClass* pThis, TechnoTypeClass* toType)
 {
+	if (!pThis || !toType)
+		return E_POINTER;
+
 	if (!TechnoExt::ConvertToType(pThis, toType))
 		return E_INVALIDARG;
 
