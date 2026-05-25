@@ -92,8 +92,8 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 		const double nPercentage = nTotal == 0 ? 1.0 : (double)nActive / (double)nTotal;
 
 		const ColorStruct clrToolTip = nPercentage > Phobos::UI::HarvesterCounter_ConditionYellow
-			? Drawing::TooltipColor : nPercentage > Phobos::UI::HarvesterCounter_ConditionRed
-			? pSideExt->Sidebar_HarvesterCounter_Yellow : pSideExt->Sidebar_HarvesterCounter_Red;
+			? pSideExt->Sidebar_HarvesterCounter_ColorGreen.Get(Drawing::TooltipColor) : nPercentage > Phobos::UI::HarvesterCounter_ConditionRed
+			? pSideExt->Sidebar_HarvesterCounter_ColorYellow : pSideExt->Sidebar_HarvesterCounter_ColorRed;
 
 		swprintf_s(counter, L"%ls%d/%d", Phobos::UI::HarvesterLabel, nActive, nTotal);
 
@@ -115,7 +115,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 
 		if (pPlayer->PowerBlackoutTimer.InProgress())
 		{
-			clrToolTip = pSideExt->Sidebar_PowerDelta_Grey;
+			clrToolTip = pSideExt->Sidebar_PowerDelta_ColorGrey;
 			swprintf_s(counter, L"%ls", Phobos::UI::PowerBlackoutLabel);
 		}
 		else
@@ -127,8 +127,8 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 				? Phobos::UI::PowerDelta_ConditionRed * 2.f : Phobos::UI::PowerDelta_ConditionYellow;
 
 			clrToolTip = percent < Phobos::UI::PowerDelta_ConditionYellow
-				? pSideExt->Sidebar_PowerDelta_Green : LESS_EQUAL(percent, Phobos::UI::PowerDelta_ConditionRed)
-				? pSideExt->Sidebar_PowerDelta_Yellow : pSideExt->Sidebar_PowerDelta_Red;
+				? pSideExt->Sidebar_PowerDelta_ColorGreen : LESS_EQUAL(percent, Phobos::UI::PowerDelta_ConditionRed)
+				? pSideExt->Sidebar_PowerDelta_ColorYellow : pSideExt->Sidebar_PowerDelta_ColorRed;
 
 			swprintf_s(counter, L"%ls%+d", Phobos::UI::PowerLabel, delta);
 		}
@@ -605,3 +605,40 @@ DEFINE_FUNCTION_JUMP(CALL, 0x6D4D42, TacticalClass_DrawTimer_Print_Wide)// UINam
 DEFINE_FUNCTION_JUMP(CALL, 0x6D4D9A, TacticalClass_DrawTimer_Print_Wide)// Time
 
 #pragma endregion
+
+DEFINE_HOOK(0x6DBEA3, TacticalClass_DrawRadialIndicator_Building_Extras, 0x7)
+{
+	enum { ContinueAfter = 0x6DBEAA };
+
+	GET(BuildingClass*, pCurrentBuilding, EBX);
+
+	if (Phobos::Config::ShowPowerPlantEnhancerRange && RulesExt::Global()->ShowPowerPlantEnhancerRange)
+	{
+		const auto pCurrentExt = HouseExt::ExtMap.Find(HouseClass::CurrentPlayer);
+		const auto center = DisplayClass::Instance.CurrentFoundation_CenterCell;
+
+		for (const auto pEnhancer : pCurrentExt->PowerPlantEnhancers)
+		{
+			if (!TechnoExt::IsActive(pEnhancer) || pEnhancer->InLimbo || !pEnhancer->HasPower)
+				continue;
+
+			const auto pEnhancerTypeExt = BuildingTypeExt::ExtMap.Find(pEnhancer->Type);
+			const int range = pEnhancerTypeExt->PowerPlantEnhancer_Range.Get() / Unsorted::LeptonsPerCell;
+
+			if (range <= 0 || !pEnhancerTypeExt->PowerPlantEnhancer_Buildings.Contains(pCurrentBuilding->Type))
+				continue;
+
+			CoordStruct enhancerCoords = pEnhancer->GetCoords();
+
+			if (center.DistanceFrom(CellClass::Coord2Cell(enhancerCoords)) > range * 1.5)
+				continue;
+
+			enhancerCoords.Z = MapClass::Instance.GetCellFloorHeight(enhancerCoords);
+			const auto& color = pEnhancer->Owner->Color;
+			Game::DrawRadialIndicator(false, true, enhancerCoords, color, (float)range, false, true);
+		}
+	}
+
+	R->EAX(pCurrentBuilding->GetRadialIndicatorRange());
+	return ContinueAfter;
+}

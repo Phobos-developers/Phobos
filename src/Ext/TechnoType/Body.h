@@ -156,6 +156,7 @@ public:
 		Valueable<bool> NotHuman_RandomDeathSequence;
 
 		Valueable<InfantryTypeClass*> DefaultDisguise;
+		NullableVector<TerrainTypeClass*> DefaultMirageDisguises;
 		Valueable<bool> UseDisguiseMovementSpeed;
 
 		Nullable<int> OpenTopped_RangeBonus;
@@ -163,9 +164,11 @@ public:
 		Nullable<int> OpenTopped_WarpDistance;
 		Valueable<bool> OpenTopped_IgnoreRangefinding;
 		Valueable<bool> OpenTopped_AllowFiringIfDeactivated;
+		Nullable<bool> OpenTopped_AllowFiringIfAttackedByLocomotor;
 		Valueable<bool> OpenTopped_ShareTransportTarget;
 		Valueable<bool> OpenTopped_UseTransportRangeModifiers;
 		Valueable<bool> OpenTopped_CheckTransportDisableWeapons;
+		Nullable<bool> OpenTopped_DecloakToFire;
 		Valueable<int> OpenTransport_RangeBonus;
 		Valueable<float> OpenTransport_DamageMultiplier;
 
@@ -229,6 +232,8 @@ public:
 		Nullable<WarheadTypeClass*> ForceShield_KillWarhead;
 		Valueable<bool> Explodes_KillPassengers;
 		Valueable<bool> Explodes_DuringBuildup;
+		Valueable<bool> DriverKilled_KeptPassengers;
+		Nullable<bool> DriverKilled_KillPassengers;
 		Nullable<int> DeployFireWeapon;
 		Valueable<TargetZoneScanType> TargetZoneScanType;
 
@@ -331,6 +336,7 @@ public:
 		Nullable<AnimTypeClass*> Wake;
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
+		Nullable<bool> MakesWake;
 
 		Nullable<int> AINormalTargetingDelay;
 		Nullable<int> PlayerNormalTargetingDelay;
@@ -489,10 +495,20 @@ public:
 		Nullable<bool> JumpjetClimbIgnoreBuilding;
 
 		Valueable<bool> HoverDrownable;
+		bool ExtraThreat_Enabled;
+		Nullable<double> ExtraThreat_IsThreat;
+		Valueable<bool> AlwaysConsideredThreat;
+		Nullable<double> ExtraThreat_InRange;
+		Nullable<double> ExtraThreatCoefficient_InRangeDistance;
+		Nullable<double> ExtraThreatCoefficient_Facing;
+		Nullable<double> ExtraThreatCoefficient_DistanceToLastTarget;
 
 		Nullable<bool> Unsellable; // Ares 3.0
 
 		SHPStruct* TurretShape;
+
+		Nullable<int> HarvesterLoadRate;
+		Nullable<double> HarvesterDumpRate;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -583,10 +599,12 @@ public:
 			, OpenTopped_DamageMultiplier {}
 			, OpenTopped_WarpDistance {}
 			, OpenTopped_IgnoreRangefinding { false }
+			, OpenTopped_AllowFiringIfAttackedByLocomotor {}
 			, OpenTopped_AllowFiringIfDeactivated { true }
 			, OpenTopped_ShareTransportTarget { true }
 			, OpenTopped_UseTransportRangeModifiers { false }
 			, OpenTopped_CheckTransportDisableWeapons { false }
+			, OpenTopped_DecloakToFire {}
 			, OpenTransport_RangeBonus { 0 }
 			, OpenTransport_DamageMultiplier { 1.0f }
 
@@ -694,6 +712,8 @@ public:
 
 			, Explodes_KillPassengers { true }
 			, Explodes_DuringBuildup { true }
+			, DriverKilled_KeptPassengers { false }
+			, DriverKilled_KillPassengers {}
 			, DeployFireWeapon {}
 			, TargetZoneScanType { TargetZoneScanType::Same }
 
@@ -798,6 +818,7 @@ public:
 			, Wake { }
 			, Wake_Grapple { }
 			, Wake_Sinking { }
+			, MakesWake { }
 
 			, AINormalTargetingDelay {}
 			, PlayerNormalTargetingDelay {}
@@ -941,6 +962,16 @@ public:
 			, Unsellable {}
 
 			, TurretShape { nullptr }
+			, ExtraThreat_Enabled { false }
+			, ExtraThreat_IsThreat {}
+			, AlwaysConsideredThreat { false }
+			, ExtraThreat_InRange {}
+			, ExtraThreatCoefficient_InRangeDistance {}
+			, ExtraThreatCoefficient_Facing {}
+			, ExtraThreatCoefficient_DistanceToLastTarget {}
+
+			, HarvesterLoadRate {}
+			, HarvesterDumpRate {}
 		{ }
 
 		virtual ~ExtData() = default;

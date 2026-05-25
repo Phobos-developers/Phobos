@@ -25,12 +25,7 @@ DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
 
 static FireError __fastcall TechnoClass_TargetSomethingNearby_CanFire_Wrapper(TechnoClass* pThis, void* _, AbstractClass* pTarget, int weaponIndex, bool ignoreRange)
 {
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	const bool disableWeapons = pExt->AE.DisableWeapons;
-	pExt->AE.DisableWeapons = false;
-	auto const fireError = pThis->GetFireError(pTarget, weaponIndex, ignoreRange);
-	pExt->AE.DisableWeapons = disableWeapons;
-	return fireError;
+	return TechnoExt::GetFireErrorIgnoreDisableWeapons(pThis, pTarget, weaponIndex, ignoreRange);
 }
 
 DEFINE_FUNCTION_JUMP(CALL6, 0x7098E6, TechnoClass_TargetSomethingNearby_CanFire_Wrapper);
@@ -376,5 +371,138 @@ static Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis,
 	return result;
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB0CC, InfantryClass__WhatAction_Wrapper)
+
+#pragma endregion
+
+#pragma region ThreatEvaluation
+
+// Current target may hurt me.
+static inline bool IsAThreatToMe(TechnoClass* const pTechno, AbstractClass* const pTarget, int weaponIndex = -1)
+{
+	if (const auto pTechnoTarget = abstract_cast<TechnoClass*>(pTarget))
+	{
+		auto pTypeExt = TechnoExt::ExtMap.Find(pTechnoTarget)->TypeExtData;
+
+		if (pTypeExt->AlwaysConsideredThreat)
+			return true;
+
+		if (weaponIndex < 0)
+			weaponIndex = pTechnoTarget->SelectWeapon(pTechno);
+
+		if (!pTechnoTarget->GetWeapon(weaponIndex)->WeaponType)
+			return false;
+
+		const auto error = pTechnoTarget->GetFireError(pTechno, weaponIndex, true);
+		return pTechnoTarget->WhatAmI() == AbstractType::Building ? (error != FireError::ILLEGAL) && (error != FireError::RANGE) : (error != FireError::ILLEGAL);
+	}
+
+	return false;
+}
+
+// Decide the facing to check for firing.
+static inline FacingClass* GetFireFacing(TechnoClass* const pTechno)
+{
+	if (!pTechno)
+		return nullptr;
+
+	switch (pTechno->WhatAmI())
+	{
+		case AbstractType::Building:
+			return &pTechno->PrimaryFacing;
+		case AbstractType::Unit:
+		{
+			if (pTechno->GetTechnoType()->Turret)
+				return &pTechno->SecondaryFacing;
+			else
+				return &pTechno->PrimaryFacing;
+		}
+		case AbstractType::Infantry:
+			return nullptr;
+		case AbstractType::Aircraft:
+			return &pTechno->SecondaryFacing;
+		default:
+			return nullptr;
+	}
+}
+
+DEFINE_HOOK(0x70CF87, TechnoClass_ThreatCoefficient_CanAttackMeThreatBonus, 0x9)
+{
+	GET(TechnoClass* const, pThis, EDI);
+	GET(TechnoClass* const, pTarget, ESI);
+	REF_STACK(double, totalThreat, STACK_OFFSET(0x58, -0x48));
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	auto pTypeExt = pExt->TypeExtData;
+
+	if (!pTypeExt->ExtraThreat_Enabled)
+		return 0;
+
+	auto ApplyIsThreatBonus = [pTypeExt, pThis, pTarget, &totalThreat]()
+		{
+			double bonus = pTypeExt->ExtraThreat_IsThreat.Get(RulesExt::Global()->ExtraThreat_IsThreat);
+
+			if (bonus == 0.0)
+				return;
+
+			if (!IsAThreatToMe(pThis, pTarget))
+				return;
+
+			totalThreat += bonus;
+		};
+	ApplyIsThreatBonus();
+
+	auto ApplyInRangeBonus = [pTypeExt, pThis, pTarget, &totalThreat]()
+		{
+			double bonus1 = pTypeExt->ExtraThreat_InRange.Get(RulesExt::Global()->ExtraThreat_InRange);
+			double dist = pThis->DistanceFrom(pTarget) / 256.0;
+			double bonus2 = dist * pTypeExt->ExtraThreatCoefficient_InRangeDistance.Get(RulesExt::Global()->ExtraThreatCoefficient_InRangeDistance);
+			double bonus = bonus1 + bonus2;
+
+			if (bonus == 0.0)
+				return;
+
+			if (!pThis->IsCloseEnoughToAttack(pTarget))
+				return;
+
+			totalThreat += bonus;
+		};
+	ApplyInRangeBonus();
+
+	auto ApplyFacingBonus = [pTypeExt, pThis, pTarget, &totalThreat]()
+		{
+			auto pFacing = GetFireFacing(pThis);
+
+			if (!pFacing)
+				return;
+
+			double bonus = pTypeExt->ExtraThreatCoefficient_Facing.Get(RulesExt::Global()->ExtraThreatCoefficient_Facing);
+
+			if (bonus == 0.0)
+				return;
+
+			DirStruct dir = DirStruct();
+			int deltaFacing = 32768 - std::abs(std::abs(pThis->GetTargetDirection(&dir, pTarget)->Raw - pFacing->Current().Raw) - 32768);
+			totalThreat += deltaFacing * bonus;
+		};
+	ApplyFacingBonus();
+
+	auto ApplyLastTargetDistanceBonus = [pExt, pTypeExt, pThis, pTarget, &totalThreat]()
+		{
+			double bonus = pTypeExt->ExtraThreatCoefficient_DistanceToLastTarget.Get(RulesExt::Global()->ExtraThreatCoefficient_DistanceToLastTarget);
+
+			if (bonus == 0.0)
+				return;
+
+			if (pExt->LastTargetCrd == CoordStruct::Empty)
+				return;
+
+			double distToLastTarget = pTarget->GetCoords().DistanceFrom(pExt->LastTargetCrd) / 256.0;
+			totalThreat += distToLastTarget * bonus;
+		};
+	ApplyLastTargetDistanceBonus();
+
+	return 0;
+}
+
 
 #pragma endregion

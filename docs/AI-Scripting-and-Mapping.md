@@ -13,6 +13,7 @@ This page describes all AI scripting and mapping related additions and changes i
 - Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally.
 - If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
 - Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General] -> AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively.
+- Fixed AI team recruitment inconsistency causing underfilled teams.
 
 ### Increased Overlay Limit
 
@@ -785,7 +786,7 @@ SHP=                        ; filename - including the .shp extension
 SHP.Palette=palette.pal     ; filename - including the .pal extension
 SHP.RefreshAfterDelay=false ; boolean
 CSF=                        ; CSF entry key
-CSF.Color=                  ; integer - R,G,B, defaults to MessageTextColor of the owner Side
+CSF.Color=                  ; integer - Red,Green,Blue, defaults to MessageTextColor of the owner Side
 CSF.Background=false        ; boolean
 CSF.VariableFormat=none     ; List of Variable Format Enumeration (none|variable|prefix/prefixed|surfix/surfixed)
 Duration=-1                 ; integer

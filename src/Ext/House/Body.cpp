@@ -711,6 +711,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->TeamDelay)
 		.Process(this->FreeRadar)
 		.Process(this->ForceRadar)
+		.Process(this->PlayerAutoRepair)
 		;
 }
 
@@ -740,27 +741,32 @@ bool HouseExt::SaveGlobals(PhobosStreamWriter& Stm)
 
 void HouseExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 {
-	AnnounceInvalidPointer(Factory_BuildingType, ptr);
-	AnnounceInvalidPointer(Factory_InfantryType, ptr);
-	AnnounceInvalidPointer(Factory_VehicleType, ptr);
-	AnnounceInvalidPointer(Factory_NavyType, ptr);
-	AnnounceInvalidPointer(Factory_AircraftType, ptr);
+	AnnounceInvalidPointer(this->Factory_BuildingType, ptr);
+	AnnounceInvalidPointer(this->Factory_InfantryType, ptr);
+	AnnounceInvalidPointer(this->Factory_VehicleType, ptr);
+	AnnounceInvalidPointer(this->Factory_NavyType, ptr);
+	AnnounceInvalidPointer(this->Factory_AircraftType, ptr);
 
 	if (ptr != nullptr)
 	{
-		if (!OwnedLimboDeliveredBuildings.empty())
+		if (!this->PowerPlantEnhancers.empty())
+		{
+			auto& vec = this->PowerPlantEnhancers;
+			vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
+		}
+
+		if (!this->OwnedLimboDeliveredBuildings.empty())
 		{
 			auto& vec = this->OwnedLimboDeliveredBuildings;
 			vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
 		}
 
-		if (!RestrictedFactoryPlants.empty())
+		if (!this->RestrictedFactoryPlants.empty())
 		{
 			auto& vec = this->RestrictedFactoryPlants;
 			vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
 		}
 	}
-
 }
 
 // =============================

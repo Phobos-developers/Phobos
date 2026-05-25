@@ -190,17 +190,17 @@ DEFINE_HOOK(0x469D1A, BulletClass_Logics_Debris, 0x6)
 		{
 			const auto& debrisMinimums = pWHExt->DebrisMinimums;
 			const bool limit = pWHExt->DebrisTypes_Limit.Get(count > 1);
-			const int minIndex = static_cast<int>(debrisMinimums.size()) - 1;
+			const int minimumsMaxIndex = static_cast<int>(debrisMinimums.size()) - 1;
 			int currentIndex = 0;
 
 			while (totalSpawnAmount > 0)
 			{
-				const int currentMaxDebris = Math::min(1, debrisMaximums[currentIndex]);
-				const int currentMinDebris = (minIndex >= 0) ? Math::max(0, debrisMinimums[Math::min(currentIndex, minIndex)]) : 0;
+				const int currentMaxDebris = Math::max(1, debrisMaximums[currentIndex]);
+				const int currentMinDebris = (minimumsMaxIndex >= 0) ? Math::max(0, debrisMinimums[Math::min(currentIndex, minimumsMaxIndex)]) : 0;
 				int amountToSpawn = Math::min(totalSpawnAmount, ScenarioClass::Instance->Random.RandomRanged(currentMinDebris, currentMaxDebris));
 				totalSpawnAmount -= amountToSpawn;
 
-				for ( ; amountToSpawn > 0; --amountToSpawn)
+				for (; amountToSpawn > 0; --amountToSpawn)
 					GameCreate<VoxelAnimClass>(debrisTypes[currentIndex], &coord, pOwner);
 
 				if (totalSpawnAmount <= 0)
@@ -252,6 +252,8 @@ DEFINE_HOOK(0x469B44, BulletClass_Logics_LandTypeCheck, 0x6)
 	return 0;
 }
 
+DEFINE_JUMP(LJMP, 0x469AC1, 0x469AF0) // Skip random scatter in vanilla code
+
 DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 {
 	enum { SkipGameCode = 0x469C98 };
@@ -266,7 +268,7 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 	{
 		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
 		const int cellHeight = MapClass::Instance.GetCellFloorHeight(*coords);
-		auto const newCrds = pWHExt->PlayAnimAboveSurface ? CoordStruct{ coords->X, coords->Y, Math::max(cellHeight, coords->Z) } : *coords;
+		auto const newCrds = pWHExt->PlayAnimAboveSurface ? CoordStruct { coords->X, coords->Y, Math::max(cellHeight, coords->Z) } : *coords;
 
 		if (cellHeight > newCrds.Z && !pWHExt->PlayAnimUnderground)
 		{
@@ -280,7 +282,7 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 		int* remainingInterval = &pWHExt->RemainingAnimCreationInterval;
 		const int scatterMin = splashed ? pWHExt->SplashList_ScatterMin.Get() : pWHExt->AnimList_ScatterMin.Get();
 		const int scatterMax = splashed ? pWHExt->SplashList_ScatterMax.Get() : pWHExt->AnimList_ScatterMax.Get();
-		const bool allowScatter = scatterMax != 0 || scatterMin != 0;
+		const bool allowScatter = scatterMax >= 0 || scatterMin >= 0 || pThis->Type->Inviso;
 
 		if (creationInterval > 0 && pOwner)
 			remainingInterval = &TechnoExt::ExtMap.Find(pOwner)->WHAnimRemainingCreationInterval;
@@ -329,7 +331,11 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 
 				if (allowScatter)
 				{
-					const int distance = random.RandomRanged(scatterMin, scatterMax);
+					int distance = 32;
+
+					if (scatterMax >= 0 || scatterMin >= 0)
+						distance = random(scatterMin, scatterMax);
+
 					animCoords = MapClass::GetRandomCoordsNear(animCoords, distance, false);
 				}
 
@@ -574,6 +580,28 @@ static bool IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, Weap
 	return true;
 }
 
+static bool SplitsProjectileCheck(BulletTypeClass* pProjectile, WeaponTypeClass* pWeapon, TechnoClass* pTarget, bool useWeaponTargeting)
+{
+	if (!useWeaponTargeting)
+		return pProjectile->AA || !pTarget->IsInAir();
+
+	auto const pType = pWeapon->Projectile;
+	bool inAir = pTarget->IsInAir();
+
+	if (!pType->AA && inAir)
+		return false;
+
+	if (pType->AA && !inAir)
+	{
+		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pType);
+
+		if (pTypeExt->AAOnly)
+			return false;
+	}
+
+	return true;
+}
+
 // Disable Ares' Airburst implementation.
 DEFINE_PATCH(0x469EBA, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90);
 
@@ -629,6 +657,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 
 		auto const coordsTarget = pTypeExt->AroundTarget.Get(pTypeExt->Splits) ? pThis->GetTargetCoords() : pThis->GetCoords();
 		auto const cellTarget = CellClass::Coord2Cell(coordsTarget);
+		bool const allowRepeatTargets = pTypeExt->Splits_AllowRepeatTargets;
 		DynamicVectorClass<AbstractClass*> targets;
 
 		if (!pTypeExt->Splits)
@@ -682,17 +711,18 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 		else
 		{
 			const double cellSpread = static_cast<double>(pTypeExt->Splits_TargetingDistance.Get()) / (double)Unsorted::LeptonsPerCell;
-			const bool isAA = pType->AA;
 			const bool retargetSelf = pTypeExt->RetargetSelf;
 			const bool useWeaponTargeting = pTypeExt->Splits_UseWeaponTargeting;
+			const bool cylindrical = pTypeExt->Splits_TargetingDistance_Cylindrical;
+			auto const& technos = Helpers::Alex::getCellSpreadItemsExt(coordsTarget, cellSpread, true, cylindrical);
 
-			for (auto const pTechno : Helpers::Alex::getCellSpreadItems(coordsTarget, cellSpread, true))
+			for (auto const pTechno : technos)
 			{
 				if (pTechno->IsInPlayfield && pTechno->IsOnMap && pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo
 					&& (retargetSelf || pTechno != pSource))
 				{
-					if ((isAA || !pTechno->IsInAir())
-						&& IsAllowedSplitsTarget(pSource, pOwner, pWeapon, pTechno, useWeaponTargeting))
+					if (SplitsProjectileCheck(pType, pWeapon, pTechno, useWeaponTargeting) &&
+						IsAllowedSplitsTarget(pSource, pOwner, pWeapon, pTechno, useWeaponTargeting))
 					{
 						targets.AddItem(pTechno);
 					}
@@ -701,15 +731,18 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 
 			const int range = pTypeExt->Splits_TargetCellRange;
 
-			while (targets.Count < clusterCount)
+			if (range >= 0 && (!allowRepeatTargets || targets.Count < 1))
 			{
-				const int x = random.RandomRanged(-range, range);
-				const int y = random.RandomRanged(-range, range);
+				while (targets.Count < clusterCount)
+				{
+					const int x = random.RandomRanged(-range, range);
+					const int y = random.RandomRanged(-range, range);
 
-				const CellStruct cell = { static_cast<short>(cellTarget.X + x), static_cast<short>(cellTarget.Y + y) };
-				auto const pCell = MapClass::Instance.GetCellAt(cell);
+					const CellStruct cell = { static_cast<short>(cellTarget.X + x), static_cast<short>(cellTarget.Y + y) };
+					auto const pCell = MapClass::Instance.GetCellAt(cell);
 
-				targets.AddItem(pCell);
+					targets.AddItem(pCell);
+				}
 			}
 		}
 
@@ -728,9 +761,15 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 		bool const targetAsSource = pTypeExt->Airburst_TargetAsSource;
 		bool const skipHeight = pTypeExt->Airburst_TargetAsSource_SkipHeight;
 		double const retargetAccuracy = pTypeExt->RetargetAccuracy;
+		double const retargetSelfProbability = pTypeExt->RetargetSelf_Probability;
 		int const speed = pWeapon->Speed;
 		int const scatterMin = pTypeExt->AirburstWeapon_SourceScatterMin.Get();
 		int const scatterMax = pTypeExt->AirburstWeapon_SourceScatterMax.Get();
+		bool const useFiringEffects = pTypeExt->AirburstWeapon_UseFiringEffects;
+		int cycledTargetIndex = 0;
+
+		if (allowRepeatTargets)
+			cycledTargetIndex = random.RandomRanged(0, targets.Count - 1);
 
 		for (int i = 0; i < clusterCount; ++i)
 		{
@@ -742,19 +781,34 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 			}
 			else if (!pTarget || retargetAccuracy < random.RandomDouble())
 			{
-				int index = random.RandomRanged(0, targets.Count - 1);
+				if (targets.Count < 1)
+					continue; // Check remaining retarget dice rolls instead of breaking out of loop.
+
+				int index = allowRepeatTargets ? cycledTargetIndex : random.RandomRanged(0, targets.Count - 1);
 				pTarget = targets.GetItem(index);
 
 				if (pTarget == pSource)
 				{
-					if (random.RandomDouble() > pTypeExt->RetargetSelf_Probability)
+					if (random.RandomDouble() > retargetSelfProbability)
 					{
-						index = random.RandomRanged(0, targets.Count - 1);
+						if (allowRepeatTargets)
+						{
+							++cycledTargetIndex %= targets.Count;
+							index = cycledTargetIndex;
+						}
+						else
+						{
+							index = random.RandomRanged(0, targets.Count - 1);
+						}
+
 						pTarget = targets.GetItem(index);
 					}
 				}
 
-				targets.RemoveItem(index);
+				if (allowRepeatTargets)
+					++cycledTargetIndex %= targets.Count;
+				else
+					targets.RemoveItem(index);
 			}
 
 			if (pTarget)
@@ -780,7 +834,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 					}
 
 					BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, coords, true);
-					BulletExt::SimulatedFiringEffects(pBullet, pOwner, nullptr, false, true);
+					BulletExt::SimulatedFiringEffects(pBullet, pOwner, nullptr, useFiringEffects, true);
 				}
 			}
 		}
@@ -839,7 +893,7 @@ DEFINE_HOOK(0x4899DA, MapClass_DamageArea_DamageUnderGround, 0x7)
 			auto const technoCoords = pTechno->GetCoords();
 
 			if (cylinder)
-				dist = CoordStruct{ technoCoords.X - pCrd->X, technoCoords.Y - pCrd->Y, 0 }.Magnitude();
+				dist = CoordStruct { technoCoords.X - pCrd->X, technoCoords.Y - pCrd->Y, 0 }.Magnitude();
 			else
 				dist = technoCoords.DistanceFrom(*pCrd);
 

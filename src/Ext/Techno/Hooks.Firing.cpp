@@ -1,4 +1,4 @@
-﻿#include "Body.h"
+#include "Body.h"
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>
@@ -199,59 +199,68 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 	auto const pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
 	const int oddWeaponIndex = 2 * pThis->CurrentGattlingStage;
 	const int evenWeaponIndex = oddWeaponIndex + 1;
-	int chosenWeaponIndex = oddWeaponIndex;
 	const int eligibleWeaponIndex = TechnoExt::PickWeaponIndex(pThis, pTargetTechno, pTarget, oddWeaponIndex, evenWeaponIndex, true);
 
 	if (eligibleWeaponIndex != -1)
 	{
-		chosenWeaponIndex = eligibleWeaponIndex;
+		R->EAX(eligibleWeaponIndex);
+		return UseWeaponIndex;
 	}
-	else if (pTargetTechno)
+
+	int chosenWeaponIndex = oddWeaponIndex;
+
+	if (pTargetTechno)
 	{
 		auto const pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
-		auto const pWeaponOdd = pThis->GetWeapon(oddWeaponIndex)->WeaponType;
 		auto const pWeaponEven = pThis->GetWeapon(evenWeaponIndex)->WeaponType;
-		bool skipRemainingChecks = false;
+		auto const pShield = pTargetExt->Shield.get();
+		auto const armor = pTargetTechno->GetTechnoType()->Armor;
+		const bool inAir = pTargetTechno->IsInAir();
+		const bool isUnderground = pTargetTechno->InWhichLayer() == Layer::Underground;
 
-		if (const auto pShield = pTargetExt->Shield.get())
-		{
-			if (pShield->IsActive() && !pShield->CanBeTargeted(pWeaponOdd))
+		auto isWeaponValid = [&](WeaponTypeClass* pWeapon)
 			{
-				chosenWeaponIndex = evenWeaponIndex;
-				skipRemainingChecks = true;
+				if (inAir && !pWeapon->Projectile->AA)
+					return false;
+				if (isUnderground && !BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->AU)
+					return false;
+				if (pShield && pShield->IsActive() && !pShield->CanBeTargeted(pWeapon))
+					return false;
+				if (GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, armor) == 0.0)
+					return false;
+				return true;
+			};
+
+		// check even weapon first
+
+		if (!isWeaponValid(pWeaponEven))
+		{
+			R->EAX(chosenWeaponIndex);
+			return UseWeaponIndex;
+		}
+
+		// handle naval targeting
+
+		if (!pTargetTechno->OnBridge && !inAir)
+		{
+			auto const landType = pTargetTechno->GetCell()->LandType;
+
+			if (landType == LandType::Water || landType == LandType::Beach)
+			{
+				if (pThis->SelectNavalTargeting(pTargetTechno) == 1)
+					chosenWeaponIndex = evenWeaponIndex;
+
+				R->EAX(chosenWeaponIndex);
+				return UseWeaponIndex;
 			}
 		}
 
-		if (!skipRemainingChecks)
-		{
-			if (GeneralUtils::GetWarheadVersusArmor(pWeaponOdd->Warhead, pTargetTechno->GetTechnoType()->Armor) == 0.0)
-			{
-				chosenWeaponIndex = evenWeaponIndex;
-			}
-			else if (pTargetTechno->InWhichLayer() == Layer::Underground)
-			{
-				if (BulletTypeExt::ExtMap.Find(pWeaponEven->Projectile)->AU && !BulletTypeExt::ExtMap.Find(pWeaponOdd->Projectile)->AU)
-					chosenWeaponIndex = evenWeaponIndex;
-			}
-			else
-			{
-				auto const landType = pTargetTechno->GetCell()->LandType;
-				const bool isOnWater = (landType == LandType::Water || landType == LandType::Beach) && !pTargetTechno->IsInAir();
+		// check odd weapon
 
-				if (!pTargetTechno->OnBridge && isOnWater && pThis->SelectNavalTargeting(pTargetTechno) == 2)
-				{
-					chosenWeaponIndex = evenWeaponIndex;
-				}
-				else if (pTargetTechno->IsInAir() && !pWeaponOdd->Projectile->AA && pWeaponEven->Projectile->AA)
-				{
-					chosenWeaponIndex = evenWeaponIndex;
-				}
-				else if (pThis->GetTechnoType()->LandTargeting == LandTargetingType::Land_Secondary)
-				{
-					chosenWeaponIndex = evenWeaponIndex;
-				}
-			}
-		}
+		auto const pWeaponOdd = pThis->GetWeapon(oddWeaponIndex)->WeaponType;
+
+		if (!isWeaponValid(pWeaponOdd) || pThis->GetTechnoType()->LandTargeting == LandTargetingType::Land_Secondary)
+			chosenWeaponIndex = evenWeaponIndex;
 	}
 
 	R->EAX(chosenWeaponIndex);
@@ -386,18 +395,18 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 DEFINE_HOOK(0x6FC0C5, TechnoClass_CanFire_DisableWeapons, 0x6)
 {
-	enum { OutOfRange = 0x6FC0DF, Illegal = 0x6FC86A, Continue = 0x6FC0D3 };
+	enum { FireErrorRearm = 0x6FC0DF, FireErrorIllegal = 0x6FC86A, Continue = 0x6FC0D3 };
 
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(const int, weaponIndex, STACK_OFFSET(0x20, 0x8));
 
 	if (pThis->SlaveOwner)
-		return Illegal;
+		return FireErrorIllegal;
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (pExt->AE.DisableWeapons && pThis->GetWeapon(weaponIndex)->WeaponType)
-		return OutOfRange;
+		return FireErrorRearm;
 
 	return Continue;
 }
@@ -427,10 +436,16 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 	if (pTransport->Deactivated && !pTypeExt->OpenTopped_AllowFiringIfDeactivated)
 		return Illegal;
 
+	if (const auto pTransportFoot = abstract_cast<FootClass*>(pTransport))
+	{
+		if (pTransportFoot->IsAttackedByLocomotor && !pTypeExt->OpenTopped_AllowFiringIfAttackedByLocomotor.Get(RulesExt::Global()->OpenTopped_AllowFiringIfAttackedByLocomotor))
+			return Illegal;
+	}
+
 	if (pTransport->Transporter)
 		return Illegal;
 
-	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons && TechnoExt::ExtMap.Find(pTransport)->AE.DisableWeapons && pThis->GetWeapon(weaponIndex)->WeaponType)
+	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons && TechnoExt::HasWeaponsDisabled(pTransport) && pThis->GetWeapon(weaponIndex)->WeaponType)
 		return OutOfRange;
 
 	return Continue;
@@ -1149,3 +1164,38 @@ DEFINE_HOOK(0x6F755A, TechnoClass_IsCloseEnough_CylinderRangefinding, 0x7)
 	R->EAX(pCoord->X);
 	return (cylinder || pThis->WhatAmI() == AbstractType::Aircraft) ? 0x6F75B2 : 0x6F7568;
 }
+
+#pragma region Gattling+DisableWeapons
+
+DEFINE_HOOK(0x44B214, BuildingClass_Mission_Attack_Gattling, 0x6)
+{
+	enum { SkipGameCode = 0x44B228 };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	if (TechnoExt::HasWeaponsDisabled(pThis))
+	{
+		pThis->GattlingRateDown(pThis->MissionAccumulateTime);
+		pThis->MissionAccumulateTime = 0;
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x737086, UnitClass_FiringAI_Gattling, 0x9)
+{
+	enum { SkipGameCode = 0x7370AE };
+
+	GET(UnitClass*, pThis, ESI);
+	GET(FireError, fireError, EBP);
+
+	if (fireError == FireError::REARM && TechnoExt::HasWeaponsDisabled(pThis))
+		pThis->GattlingRateDown(1);
+	else
+		pThis->GattlingRateUp(1);
+
+	return SkipGameCode;
+}
+
+#pragma endregion

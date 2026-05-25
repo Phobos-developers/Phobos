@@ -61,7 +61,10 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 
 	if (pType->Duration_ApplyArmorMultOnTarget && duration > 0) // count its own ArmorMultiplier as well
-		duration = Math::max(static_cast<int>(duration / pTechno->ArmorMultiplier / pTechnoExt->AE.ArmorMultiplier / pType->ArmorMultiplier), 0);
+	{
+		const double armorMultiplier = TechnoExt::GetCurrentArmorMultiplier(pTechno, pTechnoExt->TypeExtData->OwnerObject()) * pType->ArmorMultiplier;
+		duration = Math::max(static_cast<int>(duration / armorMultiplier), 0);
+	}
 
 	const int laserTrailIdx = pType->LaserTrail_Type;
 
@@ -475,7 +478,11 @@ void AttachEffectClass::RefreshDuration(int durationOverride)
 		duration = Math::max(static_cast<int>(duration * TechnoExt::GetCurrentFirepowerMultiplier(this->Invoker)), 0);
 
 	if (pType->Duration_ApplyArmorMultOnTarget && duration > 0) // no need to count its own effect again
-		duration = Math::max(static_cast<int>(duration / this->Techno->ArmorMultiplier / TechnoExt::ExtMap.Find(this->Techno)->AE.ArmorMultiplier), 0);
+	{
+		const auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
+		const double armorMultiplier = TechnoExt::GetCurrentArmorMultiplier(this->Techno, pTechnoExt->TypeExtData->OwnerObject());
+		duration = Math::max(static_cast<int>(duration / armorMultiplier), 0);
+	}
 
 	if (pType->Animation_ResetOnReapply)
 	{
@@ -494,6 +501,7 @@ bool AttachEffectClass::ResetIfRecreatable()
 	this->KillAnim();
 	this->Duration = 0;
 	this->CurrentDelay = this->RecreationDelay;
+	this->NeedsDurationRefresh = true;
 
 	return true;
 }
@@ -638,11 +646,13 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 	}
 
 	if (attachedCount > 0)
+	{
 		pTargetExt->RecalculateStatMultipliers();
 
-	if (markForRedraw)
-		pTarget->MarkForRedraw();
-
+		if (markForRedraw)
+			pTarget->MarkForRedraw();
+	}
+	          
 	return attachedCount;
 }
 
@@ -827,10 +837,12 @@ int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass c
 	}
 
 	if (detachedCount > 0)
+	{
 		TechnoExt::ExtMap.Find(pTarget)->RecalculateStatMultipliers();
 
-	if (markForRedraw)
-		pTarget->MarkForRedraw();
+		if (markForRedraw)
+			pTarget->MarkForRedraw();
+	}
 
 	return detachedCount;
 }
@@ -930,6 +942,8 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 /// <param name="pTarget">Target techno.</param>
 void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget)
 {
+	bool markForRedraw = false;
+	int transferCount = 0;
 	const auto pSourceExt = TechnoExt::ExtMap.Find(pSource);
 	const auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 	const auto pTargetType = pTarget->GetTechnoType();
@@ -994,7 +1008,19 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 				pAE->Duration = attachEffect->Duration;
 		}
 
+		if (type->HasTint())
+			markForRedraw = true;
+
+		transferCount++;
 		it = pSourceExt->AttachedEffects.erase(it);
+	} 
+
+	if (transferCount > 0)
+	{
+		pTargetExt->RecalculateStatMultipliers();
+
+		if (markForRedraw)
+			pTarget->MarkForRedraw();
 	}
 }
 

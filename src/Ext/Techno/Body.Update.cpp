@@ -39,6 +39,8 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 
 	if (this->AttackMoveFollowerTempCount)
 		this->AttackMoveFollowerTempCount--;
+
+	this->UpdateLastTargetCrd();
 }
 
 void TechnoExt::ExtData::ApplyInterceptor()
@@ -1115,6 +1117,11 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		barrelRecoil.HoldFrames = barrelAnimData.HoldFrames;
 	}
 
+	if (pOldType->BombSight && !pCurrentType->BombSight)
+		BombListClass::Instance.RemoveDetector(pThis);
+	else if (!pOldType->BombSight && pCurrentType->BombSight)
+		BombListClass::Instance.AddDetector(pThis);
+
 	// Only FootClass* can use this.
 	if (const auto pFoot = abstract_cast<FootClass*, true>(pThis))
 	{
@@ -1145,6 +1152,13 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	// handle AutoTargetOwnPosition
 	if (pOldTypeExt->AutoTargetOwnPosition && !pNewTypeExt->AutoTargetOwnPosition)
 		pThis->SetTarget(nullptr);
+
+	// Clear AlphaImage
+	if (const auto pAlphaMap = AresFunctions::AlphaExtMap)
+	{
+		if (const auto pAlpha = pAlphaMap->get_or_default(pThis))
+			GameDelete(pAlpha);
+	}
 }
 
 void TechnoExt::ExtData::UpdateTypeData_Foot()
@@ -1216,6 +1230,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 		{
 			if (toOpenTopped)
 			{
+				pFirstPassenger->SetLocation(pThis->Location);
 				// Add passengers to the logic layer.
 				pThis->EnteredOpenTopped(pFirstPassenger);
 			}
@@ -1907,6 +1922,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			if (shouldDiscard && attachEffect->ResetIfRecreatable())
 			{
 				++it;
+				altered = true;
 				continue;
 			}
 
@@ -2167,5 +2183,31 @@ void TechnoExt::ExtData::UpdateTintValues()
 	{
 		auto const pShieldType = this->Shield->GetType();
 		calculateTint(Drawing::RGB_To_Int(pShieldType->Tint_Color), static_cast<int>(pShieldType->Tint_Intensity * 1000), pShieldType->Tint_VisibleToHouses);
+	}
+}
+
+void TechnoExt::ExtData::UpdateLastTargetCrd()
+{
+	if (!this->TypeExtData->ExtraThreat_Enabled)
+		return;
+
+	auto const pThis = this->OwnerObject();
+	auto pTimer = &this->LastTargetCrdClearTimer;
+
+	if (pThis->Target)
+	{
+		this->LastTargetCrd = pThis->Target->GetCoords();
+		pTimer->Stop();
+	}
+	else
+	{
+		if (!pTimer->IsTicking())
+			pTimer->Start(45);
+
+		if (pTimer->Completed())
+		{
+			this->LastTargetCrd = CoordStruct::Empty;
+			pTimer->Stop();
+		}
 	}
 }

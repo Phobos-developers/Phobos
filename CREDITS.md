@@ -290,6 +290,9 @@ This page lists all the individual contributions to the project by their author.
   - Guard range customizations
   - Wall overlay unit sell exploit fix
   - Fix vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't
+  - GapGen + SpySat desync fix
+  - Frame CRC generation rewrite
+  - Laser drawing Z-adjust customization
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -418,6 +421,8 @@ This page lists all the individual contributions to the project by their author.
   - Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent
   - Custom hover vehicles shutdown drowning death
   - SHP turret vehicles support the use of `*tur.shp` files
+  - Fix a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next`
+  - `EVA.Tag` already supports being set for specific countries, and `EVAIndex` is no longer reset after load game
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -511,6 +516,26 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue that power output of building on tooltip won't consider power enhancer
   - Fix the bug that the upgrade building's power-enhancing effect depends only on its parent building and is not related to the upgrade building itself
   - Customize which parasite can remove by warhead
+  - Fix the bug that unit will play crashing voice & sound when dropped by warhead with `IsLocomotor=yes`
+  - Add toggle of whether shield use ArmorMultiplier or not
+  - Fix an Ares bug that led to erroneous interactions where the parasite would frequently reset to the victim's position under specific circumstances and that was highly prone to crashes
+  - Fix the bug that if paradropping technos with `Crashable=yes` has been destroyed in air, they will falling down on ground but not dead
+  - Fix the bug where paradropped infantry with `NotHuman=yes` will ignore `Crashable=no` and crash on ground when killed in air
+  - Fix an issue where a unit might cause the target to fall from above its own head when using a locomotor warhead with `Locomotor=Jumpjet` to pull a target with `BalloonHover=yes`
+  - Fix the EIP#007120F7 caused when the `Strength` value is lower than `RepairStep`
+  - Allow the use of more precise calculation of repair costs
+  - Fix the initial direction of building placed by Ares's UnitDelivery superweapon
+  - Customize default mirage disguises per vehicletypes
+  - Allow customize jumpjet properties on warhead
+  - Customize effects range of power plant enhancer
+  - Customize whether transport can kept or kill passengers when driver has been killed
+  - Fix a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to fire when the transport unit with `OpenTopped=yes` moved to an area that the passengers' `MovementZone` cannot move into
+  - Fix a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next`
+  - Fix a bug where updating the `OpenTopped` attribute during convert did not update the coordinates of passengers
+  - Fix the bug that low-air taking off / landing objects will receive twice damage
+  - Aux technos and TechLevel requirement of superweapon
+  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
+  - Fix the bug where passengers, when their transport unit is removed, would cause incorrect `LimboTracker` counts due to either having their destructor called directly (bypassing `UnInit`) or nested `UnInit` calls resetting the deletion flag too early, thereby breaking auto-death and superweapon auxiliary techno checks
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -618,7 +643,6 @@ This page lists all the individual contributions to the project by their author.
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
-  <!--  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades  -->
   - Type select for buildings (doc)
   - Enhanced Bombard trajectory
   - Shield armor inheritance customization
@@ -642,8 +666,12 @@ This page lists all the individual contributions to the project by their author.
   - AutoDeath upon ownership change
   - Maximum amount for power plant enhancer
   - Return warhead
+  - `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses
+  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
-- **handama** - AI script action to `16005 Jump Back To Previous Script`
+- **handama**:
+  - AI script action to `16005 Jump Back To Previous Script`
+  - Fix AI team recruitment inconsistency causing underfilled teams
 - **TaranDahl (航味麻酱)**:
   - Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode
   - Skirmish AI "gather when MCV deploy" behavior dehardcode
@@ -718,6 +746,20 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the move mission of the jumpjet does not end correctly
   - Fix the issue that the Jumpjet must end its movement before starting the next mission
   - Taunt warhead
+  - Fix the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated
+  - Miners back to work when ore regenerated
+  - Allow disable an over-optimization in targeting
+  - Extra threat
+  - Fix the incorrect mission switching in infantry EnterIdleMode
+  - Fix the issue that `BombSight` not being updated correctly in techno conversion
+  - Fix BalloonHover incorrectly considering ground factors when pathfinding
+  - Technos with Walk locomotor spawn wake like ship
+  - Updateable firing anim
+  - Fix the issue where the sidebar would not refresh when an unit dies in limbo
+  - Enable playing ingame movie in non-campaign modes (i.e. trigger action `100 Play Sidebar Movie...` and `117 Play Sidebar Movie and pause...`)
+  - Allow replacing vanilla repairing with togglable auto repairing
+  - Fix an issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions
+  - Framework for dynamic sight
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
@@ -727,6 +769,7 @@ This page lists all the individual contributions to the project by their author.
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
+- **FrozenFog** - Hotkey for deselect object from current selection
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Multfinite** - Allow to toggle main exception handler via command line argument `-ExceptionHandler=boolean`
 - **hejiajun107, Xkein** - Fix a jumpjet crash related to voxel shadow drawing
@@ -768,3 +811,5 @@ This page lists all the individual contributions to the project by their author.
 - **RAZER**:
   - Wall overlay unit sell exploit fix
   - Multiplayer gamespeed fix for RealTimeTimers
+  - Revert Ares patch to allow OpenTopped transport customization
+  - Fix for units with Fly, Jumpjet or Rocket locomotors crashing off-map not being cleaned up

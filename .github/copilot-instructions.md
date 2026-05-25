@@ -352,3 +352,24 @@ Trust the information here and proceed directly with implementation. Only search
 If your changes affect anything described in this file (project structure, build process, patterns, macros, etc.), **strongly consider updating this instructions file** to keep it accurate.
 
 When selecting a model for Copilot, prefer **Claude** models for this repository.
+
+## Reusable Helpers in `Helpers::Alex` (src/Utilities/Helpers.Alex.h)
+
+Before writing new utility code (range queries, conditional iteration, duration calculations, sorting, etc.), check whether any of the following helpers in `src/Utilities/Helpers.Alex.h` can be reused. They are located in the `Helpers::Alex` namespace.
+
+| Helper | Signature / Usage | Purpose |
+|---|---|---|
+| `DistinctCollector<T>` | `using DistinctCollector<T> = std::set<T, ...>` | Unique-element set. For pointer types, automatically dereferences and compares by value. |
+| `getCappedDuration` | `int getCappedDuration(int current, int duration, int cap)` | Calculates the new frame count for stackable/absolute effects (buff/debuff duration logic). Supports positive (stack/cap) and negative (reduce) durations. |
+| `getCellSpreadItems` | `DistinctCollector<TechnoClass*> getCellSpreadItems(CoordStruct const& coords, double spread, bool includeInAir = false)` | Returns all `TechnoClass*` objects within a given `spread` (leptons) from a coordinate. Buildings use cell-center distance; other units use exact location. |
+| `getCellSpreadItemsExt` | `DistinctCollector<TechnoClass*> getCellSpreadItemsExt(CoordStruct const& coords, double spread, bool includeInAir, bool ignoreHeight)` | Extended version of `getCellSpreadItems` with an additional `ignoreHeight` flag. |
+| `for_each_in_rect` | `bool for_each_in_rect<T>(CellStruct center, float width, int height, Func&& action)` | Invokes `action` for every cell (or every object on the cells) in a rectangle centered at `center`. |
+| `for_each_in_rect_or_range` | `bool for_each_in_rect_or_range<T>(CellStruct center, float widthOrRange, int height, Func&& action)` | Dispatches to rectangle traversal (`height > 0`) or circular-range traversal (`CellRangeIterator`, `height <= 0`). |
+| `for_each_in_rect_or_spread` | `bool for_each_in_rect_or_spread<T>(CellStruct center, float widthOrRange, int height, Func&& action)` | Dispatches to rectangle traversal (`height > 0`) or CellSpread traversal (`CellSpreadIterator`, `height <= 0`). |
+| `is_any_of` | `bool is_any_of(Value&& value, Options&&... options)` | Variadic comparison: returns `true` if `value` equals any of the provided options. |
+| `remove_non_paradroppables` | `void remove_non_paradroppables(std::vector<TechnoTypeClass*>& types, const char* section, const char* key)` | Removes entries that are neither `InfantryType` nor `UnitType` from the vector. Logs removals via `Debug::INIParseFailed`. |
+| `for_each_if` | `void for_each_if(InIt first, InIt last, Pred pred, Fn func)` | Calls `func` for every element in `[first, last)` that satisfies `pred`. Linear: `std::find_if`-based skip. |
+| `for_each_if_n` | `void for_each_if_n(InIt first, InIt last, size_t count, Pred pred, Fn func)` | Same as `for_each_if` but stops after at most `count` invocations of `func`. |
+| `selectionsort` | `void selectionsort(FwdIt first, [middle,] last[, Pred pred])` (4 overloads) | Stable partial selection sort. Supports custom predicates and partial sorting (`[first, middle)` vs. full range). |
+
+**Always prefer reusing these helpers over reimplementing equivalent logic.**
