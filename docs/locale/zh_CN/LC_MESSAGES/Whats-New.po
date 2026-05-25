@@ -2606,6 +2606,7 @@ msgid ""
 "Fixed AttachEffect with `RecreationDelay` of 0 checking `Delay` as well "
 "instead of immediately refreshing duration when possible (by Starkku)"
 msgstr ""
+"修复了 `RecreationDelay` 为 0 的 AE 也会检查 `Delay` 而不是只要可以就立即刷新持续时间的问题（by Starkku）"
 
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
