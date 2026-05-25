@@ -3574,7 +3574,7 @@ msgid ""
 " not enough objects around to satisfy `ShrapnelCount`."
 msgstr ""
 "`Shrapnel.IgnoreHitBuildings` 用于覆盖多格建筑可能被溅射子武器多次命中的默认行为。注意这并不能在周围没有满足 "
-"`ShrapnelCount` 数量的目标时组织建筑 `Foundation` 内的随机单元格被选为目标。"
+"`ShrapnelCount` 数量的目标时阻止建筑 `Foundation` 内的随机单元格被选为目标。"
 
 msgid "Technos"
 msgstr "科技类型"
