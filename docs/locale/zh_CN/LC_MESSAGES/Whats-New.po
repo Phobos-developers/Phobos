@@ -150,7 +150,7 @@ msgstr ""
 "分别定义这两种情况，它们都默认为 `TiltsWhenCrushes`。"
 
 msgid "Breaking changes"
-msgstr ""
+msgstr "破坏性更改"
 
 msgid ""
 "This serves as a changelog for when you just need to drop the new version"
@@ -158,6 +158,7 @@ msgid ""
 " read up on this log of breaking changes and apply whatever you might "
 "need to apply."
 msgstr ""
+"这是一份用于让你只需替换新版本而无需了解你所跳过的每个版本时使用的更新日志，以便你可以简单查阅这份破坏性变更日志并应用你可能需要的任何更改。"
 
 msgid "Version TBD (develop branch nightly builds)"
 msgstr "待定版本（开发分支自动构建版本）"
@@ -202,20 +203,18 @@ msgstr ""
 "语句 `UseCenterCoordsIfAttached` 现已被替换为 `AttachedAnimPosition`。你需要通过设置 "
 "`AttachedAnimPosition=center` 以达到原先 `UseCenterCoordsIfAttached=true` 的效果。"
 
-#, fuzzy
 msgid ""
 "Units' `LaserTrails` will no longer lag behind by one frame, so it needs "
 "to be repositioned if the position was corrected to account for the bug."
-msgstr "单位的 `LaserTrails` 将不再滞后一帧，因此需要重新定位（先前在一些移速较快的单位上可能会使用较超前的位置）。"
+msgstr "单位的 `LaserTrails` 将不再滞后一帧，因此若先前为应对该 Bug 而修正了位置则需要重新定位。"
 
 msgid ""
 "`DeployingAnim.AllowAnyDirection` has been superceded by `DeployDir`. Use"
 " value of -1 to re-enable the no facing restriction."
 msgstr "`DeployingAnim.AllowAnyDirection` 已被 `DeployDir` 取代。使用 -1 即可重新启用无朝向限制效果。"
 
-#, fuzzy
 msgid "The following tags were renamed for consistency:"
-msgstr "以下标签被重命名："
+msgstr "以下标签为保持一致性而被重命名："
 
 msgid ""
 "`[AttachEffectType] -> AffectTargets` -> `[AttachEffectType] -> "
@@ -321,11 +320,10 @@ msgstr ""
 "`[SuperWeaponType] -> LimboKill.Affected` -> `[SuperWeaponType] -> "
 "LimboKill.AffectsHouse`"
 
-#, fuzzy
 msgid ""
 "If it is detected that you are using the old INI flags, a warning will be"
 " outputted to `debug.log`."
-msgstr "如果检测到你正在使用旧的 INI 语句，那么将会有一条警告日志输出到 `debug.log` 中。"
+msgstr "如果检测到你正在使用旧的 INI 语句，那么将会有一条警告输出到 `debug.log` 中。"
 
 msgid ""
 "The old INI flags will still take effect, but if there are corresponding "
@@ -333,7 +331,7 @@ msgid ""
 msgstr "旧的 INI 语句仍会生效，但如果同时还有新版本的对应语句，那么新版本的会被优先使用。"
 
 msgid "Changes compared to inter-version builds / pre-releases"
-msgstr ""
+msgstr "相较于版本间构建／预发布版本的更改"
 
 msgid "Click to show"
 msgstr "点击展开"
