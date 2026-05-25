@@ -49,7 +49,7 @@ std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuildi
 
 	for (const auto pEnhancer : pHouseExt->PowerPlantEnhancers)
 	{
-		if (!TechnoExt::IsActive(pEnhancer) || pEnhancer->InLimbo || !pEnhancer->HasPower)
+		if (!TechnoExt::IsActive(pEnhancer) || !pEnhancer->HasPower)
 			continue;
 
 		const auto pEnhancerType = pEnhancer->Type;
