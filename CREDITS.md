@@ -760,6 +760,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow replacing vanilla repairing with togglable auto repairing
   - Fix an issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions
   - Framework for dynamic sight
+  - Fixed voxel projectile and animation lighting issues
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
