@@ -98,12 +98,12 @@ public:
 		Nullable<bool> AttackFriendlies;
 		Nullable<bool> AttackCursorOnFriendlies;
 		Nullable<bool> AttackNoThreatBuildings;
-
+		Nullable<bool> CylinderRangefinding;
 		Nullable<bool> Anim_Update;
+		Valueable<int> Range_Maximum;
+		Valueable<int> Range_Minimum;
 
 		bool SkipWeaponPicking;
-
-		Nullable<bool> CylinderRangefinding;
 		
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
@@ -190,6 +190,8 @@ public:
 			, AttackNoThreatBuildings {}
 			, CylinderRangefinding {}
 			, Anim_Update {}
+			, Range_Maximum { INT_MAX }
+			, Range_Minimum { 0 }
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;
