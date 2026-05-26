@@ -74,7 +74,7 @@ AttachEffectClass::~AttachEffectClass()
 
 void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 {
-	if (!removed)
+	if (!removed) // TODO: might be risky, needs further investigation
 		return;
 
 	auto const abs = static_cast<AbstractClass*>(ptr);
