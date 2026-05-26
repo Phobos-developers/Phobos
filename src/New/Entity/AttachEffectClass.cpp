@@ -74,6 +74,9 @@ AttachEffectClass::~AttachEffectClass()
 
 void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 {
+	if (!removed)
+		return;
+
 	auto const abs = static_cast<AbstractClass*>(ptr);
 
 	if (auto const pAnim = abstract_cast<AnimClass*, true>(abs))
