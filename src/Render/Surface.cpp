@@ -4,6 +4,7 @@
 
 #include <Unsorted.h>
 #include <Drawing.h>
+#include <Blitters/BlitTrans.h>
 
 #include <algorithm>
 
@@ -43,8 +44,74 @@ bool DXSurface::CopyFromPart(RectangleStruct* pClipRect, Surface* pSrc, Rectangl
 	return DXSurface::CopyFrom(&destWindow, pClipRect, pSrc, &sourceWindow, pSrcRect, transparent, false);
 }
 
-bool DXSurface::CopyFrom(RectangleStruct* pClipRect, RectangleStruct* pClipRect2, Surface* pSrc, RectangleStruct* pDestRect, RectangleStruct* pSrcRect, bool transparent, bool) {
-	JMP_THIS(0x7BBCF0);
+bool DXSurface::CopyFrom(RectangleStruct* dcliprect, RectangleStruct* destrect, Surface* source, RectangleStruct* scliprect, RectangleStruct* sourcerect, bool trans, bool) {
+	if (!source->IsDSurface())
+	{
+		// If source is not a DXSurface, then use vanilla XSurface handler
+		return reinterpret_cast<bool(__thiscall*)(XSurface*, RectangleStruct*, Surface*, RectangleStruct*, bool, bool)>(0x7BBB90)(this, destrect, source, sourcerect, trans, true);
+	}
+
+	if (trans)
+	{
+		// XSurface original routine
+		RectangleStruct drect = *destrect;
+		RectangleStruct srect = *sourcerect;
+		if (!Drawing::BlitClip(drect, *dcliprect, srect, *scliprect))
+			return false;
+
+		BlitTrans<WORD> blitter;
+		return Drawing::BitBlit(this, &drect, source, &srect, &blitter, 0, ZGradient::Deg135, 1000, 0);
+	}
+
+	// Handle the untransparent case ourselves, supporting scaling
+	RectangleStruct srect = *sourcerect;
+	RectangleStruct drect = *destrect;
+
+	RectangleStruct swindow = Drawing::Intersect(*scliprect, source->GetRect());
+	RectangleStruct dwindow = Drawing::Intersect(*dcliprect, Surface::GetRect());
+
+	if (!Drawing::BlitClip(drect, dwindow, srect, swindow))
+		return false;
+
+	RectangleStruct src { srect.X + swindow.X, srect.Y + swindow.Y, srect.Width, srect.Height };
+	RectangleStruct dst { drect.X + dwindow.X, drect.Y + dwindow.Y, drect.Width, drect.Height };
+	if (src.Width <= 0 || src.Height <= 0 || dst.Width <= 0 || dst.Height <= 0)
+		return false;
+
+	auto src_ptr = reinterpret_cast<DXSurface*>(source)->RawLock(src.X, src.Y);
+	auto dst_ptr = this->RawLock(dst.X, dst.Y);
+	const auto src_pitch = reinterpret_cast<DXSurface*>(source)->GetPitch();
+	const auto dst_pitch = GetPitch();
+
+	// If the source and destination rectangles are the same size, we can do a simple copy.
+	if (src.Width == dst.Width && src.Height == dst.Height)
+	{
+		for (int y = 0; y < dst.Height; ++y)
+		{
+			std::copy_n(reinterpret_cast<WORD*>(src_ptr), dst.Width, reinterpret_cast<WORD*>(dst_ptr));
+			src_ptr = reinterpret_cast<BYTE*>(src_ptr) + src_pitch;
+			dst_ptr = reinterpret_cast<BYTE*>(dst_ptr) + dst_pitch;
+		}
+		return true;
+	}
+
+	// Otherwise we need to scale the source to fit the destination.
+	for (int y = 0; y < dst.Height; ++y)
+	{
+		const auto srcY = static_cast<int>(static_cast<long long>(y) * src.Height / dst.Height);
+		auto srcRow = reinterpret_cast<WORD*>(src_ptr + srcY * src_pitch);
+		auto dstRow = reinterpret_cast<WORD*>(dst_ptr);
+
+		for (int x = 0; x < dst.Width; ++x)
+		{
+			const auto srcX = static_cast<int>(static_cast<long long>(x) * src.Width / dst.Width);
+			dstRow[x] = srcRow[srcX];
+		}
+
+		dst_ptr = reinterpret_cast<BYTE*>(dst_ptr) + dst_pitch;
+	}
+
+	return true;
 }
 
 bool DXSurface::FillRectEx(RectangleStruct* pClipRect, RectangleStruct* pFillRect, COLORREF nColor) {
