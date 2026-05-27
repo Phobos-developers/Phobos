@@ -653,6 +653,8 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
     - Can be set to true on buildings with `ProduceCashAmount` to count them as active 'harvesters' while generating credits.
   - The counter is displayed with the format of `Label(Active Harvesters)/(Total Harvesters)`. The label is `⛏ U+26CF` by default.
   - You can adjust counter position by `Sidebar.HarvesterCounter.Offset`, negative means left/up, positive means right/down.
+  - You can use `Sidebar.HarvesterCounter.HideMaxValue` to allow the counter to display only the number of active harvesters. If this value is `false`, you can use `Sidebar.HarvesterCounter.OnlyMaxValue` to allow the counter to display only the number of total harvesters.
+    - This does not disable the color change of the counter text; to adapt accordingly, you need to configure the counter color yourself for the side that uses this feature.
   - By setting `HarvesterCounter.ConditionYellow` and `HarvesterCounter.ConditionRed`, the game will warn player by changing the color of counter whenever the active percentage of harvesters less than or equals to them, like HP changing with `ConditionYellow` and `ConditionRed`.
   - The feature can be toggled on/off by user if enabled in mod via `ShowHarvesterCounter` setting in `RA2MD.INI`.
 
@@ -672,6 +674,8 @@ Harvester.Counted=                              ; boolean
 
 [SOMESIDE]                                      ; Side
 Sidebar.HarvesterCounter.Offset=0,0             ; X,Y, pixels relative to default
+Sidebar.HarvesterCounter.HideMaxValue=false     ; boolean
+Sidebar.HarvesterCounter.OnlyMaxValue=false     ; boolean
 Sidebar.HarvesterCounter.ColorGreen=            ; integer - Red,Green,Blue, default to [Side] -> ToolTipColor=
 Sidebar.HarvesterCounter.ColorYellow=255,255,0  ; integer - Red,Green,Blue
 Sidebar.HarvesterCounter.ColorRed=255,0,0       ; integer - Red,Green,Blue
