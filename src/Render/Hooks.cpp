@@ -57,20 +57,6 @@ DEFINE_HOOK(0x432FF1, DXRenderUpdateScreenBinkMovieBlitToScreen, 0x7)
 	return 0;
 }
 
-static LRESULT CALLBACK OwnerDrawWindowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
-	auto result = reinterpret_cast<LRESULT(CALLBACK*)(HWND, UINT, WPARAM, LPARAM)>(0x610CA0)(hWnd, message, wParam, lParam);
-	if (message == WM_PAINT)
-		RenderDX::UpdateScreen(DSurface::Primary);
-	return result;
-}
-DEFINE_PATCH_TYPED(void*, 0x60FF06, OwnerDrawWindowProcedure);
-
-DEFINE_HOOK_AGAIN(0x611FB0, DXRenderUpdateScreenOwnerDrawWindow, 0x6);
-DEFINE_HOOK(0x61187D, DXRenderUpdateScreenOwnerDrawWindow, 0xA) {
-	RenderDX::UpdateScreen(DSurface::Primary);
-	return 0;
-}
-
 DEFINE_HOOK(0x7776B5, MainWindowProcWMPaint, 0x6) {
 	RenderDX::MainProcHandlePaint();
 	return 0x7779B5;
