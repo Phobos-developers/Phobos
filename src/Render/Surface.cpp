@@ -15,6 +15,7 @@ void DXSurface::CTOR(int width, int height) {
 	BytesPerPixel = 2; // 16-bit RGB565 color
 	*InternalGetPitch() = (width * 2 + 256 - 1) & ~(256 - 1); // Keep rows aligned for texture uploads.
 	*InternalGetBuffer() = YRMemory::Allocate(*InternalGetPitch() * height);
+	std::memset(*InternalGetBuffer(), 0, *InternalGetPitch() * height);
 }
 
 void DXSurface::DTOR() {
@@ -96,19 +97,24 @@ bool DXSurface::CopyFrom(RectangleStruct* dcliprect, RectangleStruct* destrect, 
 	}
 
 	// Otherwise we need to scale the source to fit the destination.
+	const auto incY = (static_cast<unsigned long long>(src.Height) << 16) / dst.Height;
+	const auto incX = (static_cast<unsigned long long>(src.Width) << 16) / dst.Width;
+	const auto dstGap = dst_pitch - 2 * dst.Width;
+	auto posY = incY / 2;
 	for (int y = 0; y < dst.Height; ++y)
 	{
-		const auto srcY = static_cast<int>(static_cast<long long>(y) * src.Height / dst.Height);
-		auto srcRow = reinterpret_cast<WORD*>(src_ptr + srcY * src_pitch);
-		auto dstRow = reinterpret_cast<WORD*>(dst_ptr);
-
+		const auto srcY = static_cast<int>(posY >> 16);
+		const auto pSrcRow = src_ptr + srcY * src_pitch;
+		posY += incY;
+		auto posX = incX / 2;
 		for (int x = 0; x < dst.Width; ++x)
 		{
-			const auto srcX = static_cast<int>(static_cast<long long>(x) * src.Width / dst.Width);
-			dstRow[x] = srcRow[srcX];
+			const auto srcX = 2 * static_cast<int>(posX >> 16);
+			posX += incX;
+			*reinterpret_cast<WORD*>(dst_ptr) = *reinterpret_cast<const WORD*>(pSrcRow + srcX);
+			dst_ptr += 2;
 		}
-
-		dst_ptr = reinterpret_cast<BYTE*>(dst_ptr) + dst_pitch;
+		dst_ptr += dstGap;
 	}
 
 	return true;
