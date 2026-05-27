@@ -2994,6 +2994,10 @@ UnlimboDetonate.KeepSelected=false     ; boolean
   - `All`: Equivalent to specifying both `Firer` and `Target`.
 
 ```{note}
+In vanilla, an occupied building uses the weapons of its occupants in turn. Thus, if an infantry's occupy weapon uses `Firer` , the laser's starting point will update to the position specified by the most recently used `MuzzleFlashX` after each shot.
+```
+
+```{note}
 For a sub-weapon created by `ShrapnelWeapon` or `AirburstWeapon`, its start point is the position where the parent weapon detonates, not the firer's FLH.
 - If `Firer` is set, it will be treated as `None`.
 - If `All` is set, it will be treated as `Target`.
