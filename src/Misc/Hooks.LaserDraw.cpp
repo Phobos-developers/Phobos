@@ -256,7 +256,9 @@ DEFINE_HOOK(0x550173, LaserDrawClass_Update_Tracking, 0x6)
 		}
 		else
 		{
-			pLaser->Source = TechnoExt::GetFLHAbsoluteCoords(pShooter, data.SavedRelativeFLH, true);
+			CoordStruct flh;
+			pShooter->GetFLH(&flh, data.WeaponIndex, CoordStruct { 0, 0, 0 });
+			pLaser->Source = flh;
 		}
 	}
 
