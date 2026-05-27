@@ -1921,6 +1921,10 @@ msgid ""
 "upgrades."
 msgstr "允许了 Ares 的 `SW.AuxBuildings` 和 `SW.NegBuildings` 计入建筑加载物。"
 
+msgid ""
+"Fixed voxel projectile and animation lighting issues."
+msgstr "修正了 Voxel 抛射体和动画的光照问题。"
+
 msgid "Newly added global settings"
 msgstr "新增的全局设定"
 
