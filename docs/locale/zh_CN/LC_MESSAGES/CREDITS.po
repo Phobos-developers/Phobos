@@ -2549,7 +2549,7 @@ msgstr "动态视野框架"
 
 msgid ""
 "Fixed voxel projectile and animation lighting issues"
-msgstr "修正了 Voxel 抛射体和动画的光照问题"
+msgstr "修复了 Voxel 抛射体和动画的光照问题"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
