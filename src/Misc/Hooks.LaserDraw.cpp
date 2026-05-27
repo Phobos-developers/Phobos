@@ -60,37 +60,31 @@ DEFINE_HOOK(0x6FD3FD, TechnoClass_LaserZap_ZAdjust, 0x5)
 
 namespace LaserRT
 {
-	static CoordStruct GetRelativeFLH(TechnoClass* pShooter, int weaponIndex)
-	{
-		bool flhFound = false;
-		CoordStruct result = TechnoExt::GetBurstFLH(pShooter, weaponIndex, flhFound);
-
-		if (!flhFound)
-		{
-			result = pShooter->GetWeapon(weaponIndex)->FLH;
-
-			if (pShooter->CurrentBurstIndex % 2 != 0)
-				result.Y = -result.Y;
-		}
-
-		return result;
-	}
-
 	struct TrackingData
 	{
 		TechnoClass* Shooter { nullptr };
 		ObjectClass* Target { nullptr };
 		int WeaponIndex { 0 };
 		PositionFollow FollowMode { PositionFollow::None };
-		bool IsDiskLaser = false;
-		CoordStruct SavedRelativeFLH { CoordStruct::Empty };
+		CoordStruct SavedOffset { CoordStruct::Empty };
+		CoordStruct LocalFLH { CoordStruct::Empty };
+		int FrozenBurstIndex { 0 };
 
-		void Initialize(TechnoClass* pShooter, AbstractClass* pTarget, int weaponIdx, PositionFollow mode)
+		void Initialize(TechnoClass* pShooter, AbstractClass* pTarget, int weaponIdx, PositionFollow mode, const CoordStruct& initialSource, const CoordStruct& localFLH, int burstIndex)
 		{
-			if (pShooter && mode & PositionFollow::Firer)
+			if (pShooter && (mode & PositionFollow::Firer))
 			{
 				this->Shooter = pShooter;
-				this->SavedRelativeFLH = LaserRT::GetRelativeFLH(pShooter, weaponIdx);
+				this->LocalFLH = localFLH;
+				this->FrozenBurstIndex = burstIndex;
+
+				const int savedBurstIndex = pShooter->CurrentBurstIndex;
+				pShooter->CurrentBurstIndex = burstIndex;
+				CoordStruct worldFLH;
+				pShooter->GetFLH(&worldFLH, weaponIdx, localFLH);
+				pShooter->CurrentBurstIndex = savedBurstIndex;
+
+				this->SavedOffset = initialSource - worldFLH;
 			}
 
 			if (mode & PositionFollow::Target)
@@ -114,8 +108,19 @@ namespace LaserRT
 
 	void SetLaserTrackingData(LaserDrawClass* pLaser, TechnoClass* pShooter, AbstractClass* pTarget, int weaponIdx, PositionFollow mode, bool ignoreShooter)
 	{
+		CoordStruct localFLH;
+		int burstIndex = 0;
+		if (pShooter)
+		{
+			bool flhFound = false;
+			localFLH = TechnoExt::GetBurstFLH(pShooter, weaponIdx, flhFound);
+			if (!flhFound)
+				localFLH = pShooter->GetWeapon(weaponIdx)->FLH;
+			burstIndex = pShooter->CurrentBurstIndex;
+		}
+
 		TrackingData data;
-		data.Initialize(ignoreShooter ? nullptr : pShooter, pTarget, weaponIdx, mode);
+		data.Initialize(ignoreShooter ? nullptr : pShooter, pTarget, weaponIdx, mode, pLaser->Source, localFLH, burstIndex);
 		TrackingMap[pLaser] = data;
 	}
 
@@ -123,6 +128,8 @@ namespace LaserRT
 	AbstractClass* Target = nullptr;
 	int WeaponIndex = 0;
 	bool IgnoreShooter = false;
+	CoordStruct SavedLocalFLH = CoordStruct::Empty;
+	int SavedBurstIndex = 0;
 }
 
 // container hooks
@@ -162,6 +169,16 @@ DEFINE_HOOK(0x6FD210, TechnoClass_LaserZap_SetTrackingContext, 0x7)
 	LaserRT::Shooter = LaserRT::IgnoreShooter ? nullptr : pShooter;
 	LaserRT::Target = pTarget;
 	LaserRT::WeaponIndex = weaponIdx;
+
+	LaserRT::SavedBurstIndex = pShooter->CurrentBurstIndex;
+	bool flhFound = false;
+	LaserRT::SavedLocalFLH = TechnoExt::GetBurstFLH(pShooter, weaponIdx, flhFound);
+	if (!flhFound)
+	{
+		LaserRT::SavedLocalFLH = pShooter->GetWeapon(weaponIdx)->FLH;
+		if (LaserRT::SavedBurstIndex % 2 != 0)
+			LaserRT::SavedLocalFLH.Y = -LaserRT::SavedLocalFLH.Y;
+	}
 	return 0;
 }
 
@@ -171,6 +188,8 @@ DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_Tracking, 0x7)
 	const auto pShooter = std::exchange(LaserRT::Shooter, nullptr);
 	const auto pTarget = std::exchange(LaserRT::Target, nullptr);
 	const int weaponIdx = std::exchange(LaserRT::WeaponIndex, 0);
+	const CoordStruct localFLH = std::exchange(LaserRT::SavedLocalFLH, CoordStruct::Empty);
+	const int burstIndex = std::exchange(LaserRT::SavedBurstIndex, 0);
 
 	GET(LaserDrawClass*, pLaser, EAX);
 	const auto it = LaserRT::TrackingMap.find(pLaser);
@@ -183,7 +202,7 @@ DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_Tracking, 0x7)
 	if (mode == PositionFollow::None)
 		return 0;
 
-	it->second.Initialize(pShooter, pTarget, weaponIdx, mode);
+	it->second.Initialize(pShooter, pTarget, weaponIdx, mode, pLaser->Source, localFLH, burstIndex);
 	return 0;
 }
 
@@ -222,16 +241,18 @@ DEFINE_HOOK(0x4A7696, DiskLaser_Update_ActivateMainBeam_Tracking, 0x6)
 	if (mode == PositionFollow::None)
 		return 0;
 
-	it->second.Initialize(pDiskLaser->Owner, pDiskLaser->Target, 0, mode);
-
-	if (it->second.Shooter && (mode & PositionFollow::Firer))
+	auto pShooter = pDiskLaser->Owner;
+	const int burstIndex = pShooter->CurrentBurstIndex;
+	bool flhFound = false;
+	CoordStruct localFLH = TechnoExt::GetBurstFLH(pShooter, 0, flhFound);
+	if (!flhFound)
 	{
-		CoordStruct flh;
-		it->second.Shooter->GetFLH(&flh, 0, CoordStruct { 0, 0, 0 });
-		it->second.SavedRelativeFLH = pLaser->Source - flh;
-		it->second.IsDiskLaser = true;
+		localFLH = pShooter->GetWeapon(0)->FLH;
+		if (burstIndex % 2 != 0)
+			localFLH.Y = -localFLH.Y;
 	}
 
+	it->second.Initialize(pShooter, pDiskLaser->Target, 0, mode, pLaser->Source, localFLH, burstIndex);
 	return 0;
 }
 
@@ -248,18 +269,13 @@ DEFINE_HOOK(0x550173, LaserDrawClass_Update_Tracking, 0x6)
 
 	if (const auto pShooter = data.Shooter)
 	{
-		if (data.IsDiskLaser)
-		{
-			CoordStruct flh;
-			pShooter->GetFLH(&flh, data.WeaponIndex, CoordStruct { 0, 0, 0 });
-			pLaser->Source = flh + data.SavedRelativeFLH;
-		}
-		else
-		{
-			CoordStruct flh;
-			pShooter->GetFLH(&flh, data.WeaponIndex, CoordStruct { 0, 0, 0 });
-			pLaser->Source = flh;
-		}
+		const int savedBurstIndex = pShooter->CurrentBurstIndex;
+		pShooter->CurrentBurstIndex = data.FrozenBurstIndex;
+		CoordStruct worldFLH;
+		pShooter->GetFLH(&worldFLH, data.WeaponIndex, data.LocalFLH);
+		pShooter->CurrentBurstIndex = savedBurstIndex;
+
+		pLaser->Source = worldFLH + data.SavedOffset;
 	}
 
 	if (const auto pTarget = data.Target)
