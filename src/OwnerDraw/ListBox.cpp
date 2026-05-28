@@ -1010,8 +1010,8 @@ LRESULT CALLBACK WWUI::ListBoxCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARA
 
 	auto addOrInsertString = [&](bool wideText, bool insert) -> LRESULT
 	{
-		char narrowText[5120] {};
-		wchar_t wideBuffer[5120] {};
+		char narrowText[2048] {};
+		wchar_t wideBuffer[2048] {};
 
 		const LPARAM nativeTextParam = [&]() -> LPARAM
 		{
@@ -1063,7 +1063,7 @@ LRESULT CALLBACK WWUI::ListBoxCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARA
 
 	auto findString = [&](bool wideText, bool exact, bool select) -> LRESULT
 	{
-		wchar_t needle[5120] {};
+		wchar_t needle[2048] {};
 		if (wideText)
 		{
 			const auto pText = reinterpret_cast<const wchar_t*>(lParam);

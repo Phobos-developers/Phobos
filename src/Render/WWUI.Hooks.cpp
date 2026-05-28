@@ -286,7 +286,7 @@ static BOOL __fastcall MoveIngameWindowControls(HWND hWnd)
 
 	RECT rect;
 	RECT parentRect;
-	if (!parent || !RenderDX::GetWindowRectInRender(hWnd, &rect) || !RenderDX::GetWindowRectInRender(parent, &parentRect))
+	if (!::GetWindowRect(hWnd, &rect) || !::GetWindowRect(parent, &parentRect))
 		return FALSE;
 
 	int x = rect.left - parentRect.left + (parentRect.right - parentRect.left - 800) / 2;
@@ -296,6 +296,6 @@ static BOOL __fastcall MoveIngameWindowControls(HWND hWnd)
 	if (y < 0)
 		y = 0;
 
-	return RenderDX::MoveWindowInRender(hWnd, x, y, rect.right - rect.left, rect.bottom - rect.top, FALSE);
+	return ::MoveWindow(hWnd, x, y, rect.right - rect.left, rect.bottom - rect.top, FALSE);
 }
 DEFINE_FUNCTION_JUMP(LJMP, 0x60B7A0, MoveIngameWindowControls);

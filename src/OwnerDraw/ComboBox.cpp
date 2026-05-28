@@ -314,8 +314,8 @@ static LRESULT AddOrInsertComboString(
 	LPARAM lParam,
 	bool wideText)
 {
-	char narrowText[5120] {};
-	wchar_t wideBuffer[5120] {};
+	char narrowText[2048] {};
+	wchar_t wideBuffer[2048] {};
 
 	const LPARAM nativeTextParam = [&]() -> LPARAM
 	{
@@ -370,7 +370,7 @@ static LRESULT FindComboString(OwnerDrawDialogElement& data, WNDPROC pOriginalWn
 	(void)data;
 	(void)message;
 
-	wchar_t needle[5120] {};
+	wchar_t needle[2048] {};
 	if (wideText)
 	{
 		const auto pText = reinterpret_cast<const wchar_t*>(lParam);
@@ -467,7 +467,7 @@ static LRESULT SetComboSelection(OwnerDrawDialogElement& data, WNDPROC pOriginal
 		}
 		else
 		{
-			char buffer[5120] {};
+			char buffer[2048] {};
 			WideToCharString(buffer, std::size(buffer), pEntry->Text ? pEntry->Text : L"");
 			::SendMessageA(hWnd, WW_SETTEXTA, 0, reinterpret_cast<LPARAM>(buffer));
 		}
