@@ -653,7 +653,7 @@ LRESULT CALLBACK WWUI::ComboBoxCtrl(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		if (!pEntry)
 			return CB_ERR;
 
-		if (message == CB_GETITEMDATA || message == WW_GETITEMDATA)
+		if (message == CB_GETITEMDATA || message == LB_GETITEMDATA)
 			return pEntry->ItemData;
 
 		pEntry->ItemData = static_cast<int>(lParam);
@@ -735,8 +735,8 @@ LRESULT CALLBACK WWUI::ComboBoxCtrl(HWND hWnd, UINT message, WPARAM wParam, LPAR
 
 	case CB_GETITEMDATA:
 	case CB_SETITEMDATA:
-	case WW_GETITEMDATA:
-	case WW_SETITEMDATA:
+	case LB_GETITEMDATA:
+	case LB_SETITEMDATA:
 		return handleItemData();
 
 	case WW_INITDIALOG:

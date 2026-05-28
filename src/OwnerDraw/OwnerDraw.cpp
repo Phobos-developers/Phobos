@@ -1782,9 +1782,6 @@ LRESULT __fastcall WWUI::OwnerDrawStandardWndProc(HWND hWnd, UINT message, WPARA
 	case WW_TRANSITION_COMPLETE:
 		::EnumChildWindows(hWnd, OwnerDraw::SendTransitionCompleteToCustomTextChildProc, 0);
 		return 0;
-
-	default:
-		return 0;
 	}
 
 	return 0;
