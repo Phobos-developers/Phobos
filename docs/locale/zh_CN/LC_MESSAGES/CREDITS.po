@@ -2549,6 +2549,10 @@ msgstr "动态视野框架"
 msgid "Export interface for external call"
 msgstr "用于外部调用的导出接口"
 
+msgid ""
+"Fixed voxel projectile and animation lighting issues"
+msgstr "修复了 Voxel 抛射体和动画的光照问题"
+
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
 

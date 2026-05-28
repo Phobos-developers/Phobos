@@ -326,6 +326,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Purely visual animations and particles are no longer included in frame CRC generation and are thus exempt from any sync checks between players in multiplayer games.
 - Fixed the bug that low-air taking off / landing objects will receive twice damage.
 - Allowed `AuxBuilding` to count building upgrades.
+- Fixed voxel projectile and animation lighting issues.
 
 ## Fixes / interactions with other extensions
 
@@ -1363,7 +1364,7 @@ BallisticScatter.Max= ; floating point value, distance in cells
 - `ShrapnelWeapon` can now be triggered against ground & buildings via `Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`.
 - Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](New-or-Enhanced-Logics.md#weapon-targeting-filter) & [AttachEffect filters](New-or-Enhanced-Logics.md#attached-effects) will be checked.
   - Do note that this overrides the normal check of only allowing shrapnels to hit non-allied objects. Use `CanTargetHouses=enemies` to manually enable this behaviour again.
-- `Shrapnel.IgnoreHitBuildings` can be used to override default behaviour where shrapnels can snap onto building targets multiple times if the building occupies more than one cell. Defaults to `[CombatDamage]` -> `Shrapnel.IgnoreHitBuildings` which defaults to false. Note that this wont prevent random cells within the building's `Foundation` from being targeted if there are not enough objects around to satisfy `ShrapnelCount`.
+- `Shrapnel.IgnoreHitBuildings` can be used to override default behaviour where shrapnels can snap onto building targets multiple times if the building occupies more than one cell. Note that this wont prevent random cells within the building's `Foundation` from being targeted if there are not enough objects around to satisfy `ShrapnelCount`.
 
 In `rulesmd.ini`:
 ```ini

@@ -1282,6 +1282,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 			{
 				const int turnrate = pCurrentType->JumpjetTurnRate >= 127 ? 127 : pCurrentType->JumpjetTurnRate;
 				pJJLoco->Speed = pCurrentType->JumpjetSpeed;
+				pJJLoco->Climb = pCurrentType->JumpjetClimb;
 				pJJLoco->Accel = pCurrentType->JumpjetAccel;
 				pJJLoco->Crash = pCurrentType->JumpjetCrash;
 				pJJLoco->Deviation = pCurrentType->JumpjetDeviation;
