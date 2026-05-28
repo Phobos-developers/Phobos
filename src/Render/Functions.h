@@ -8,6 +8,7 @@ class RenderDX {
 public:
 	static bool __fastcall AllocateSurfaces(const RectangleStruct& hiddenRect, const RectangleStruct& compositeRect, const RectangleStruct& tileRect, const RectangleStruct& sidebarRect, bool hiddenFirst);
 	static bool __fastcall SetVideoMode(HWND, int width, int height, int bitsPerPixel);
+	static void __fastcall SetHighDPIAwareness();
 	static void __fastcall ResetVideoMode();
 	static void __fastcall CreateMainWindow(HINSTANCE instance, int cmdShow, int width, int height);
 	static void __fastcall DestroyMainWindow();

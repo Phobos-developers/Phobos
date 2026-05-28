@@ -14,6 +14,7 @@
 #include <MouseClass.h>
 
 #include <windowsx.h>
+#include <ShellScalingApi.h>
 
 #include <algorithm>
 #include <cmath>
@@ -23,6 +24,87 @@
 DEFINE_REFERENCE(RectangleStruct, DisplayVisibleRect, 0x886FB0u)
 
 static bool OwnerDrawRectsAlreadyCaptured = false;
+
+void __fastcall RenderDX::SetHighDPIAwareness()
+{
+	Debug::Log("[RenderDX] Setting high DPI awareness\n");
+
+	using SetProcessDpiAwarenessContextFunc = BOOL(WINAPI*)(DPI_AWARENESS_CONTEXT);
+	using SetProcessDpiAwarenessFunc = HRESULT(WINAPI*)(PROCESS_DPI_AWARENESS);
+	using SetProcessDPIAwareFunc = BOOL(WINAPI*)();
+
+	const HMODULE hUser32 = ::GetModuleHandleA("user32.dll");
+	const HMODULE hShcore = ::GetModuleHandleA("shcore.dll");
+
+	// Try to set the highest level of DPI awareness available, but don't fail if it's not supported (e.g. on Windows 7)
+	if (hUser32)
+	{
+		const auto FnSetProcessDpiAwarenessContext = reinterpret_cast<SetProcessDpiAwarenessContextFunc>(
+			::GetProcAddress(hUser32, "SetProcessDpiAwarenessContext"));
+
+		if (FnSetProcessDpiAwarenessContext)
+		{
+			Debug::Log("[RenderDX] Setting DPI awareness context to PER_MONITOR_AWARE_V2\n");
+			if (!FnSetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2))
+			{
+				DWORD error = ::GetLastError();
+				if (error == ERROR_ACCESS_DENIED)
+					Debug::Log("[RenderDX] SetProcessDpiAwarenessContext failed: Access denied (already set to a different context)\n");
+				else
+					Debug::Log("[RenderDX] SetProcessDpiAwarenessContext failed: %d\n", error);
+			}
+			else
+			{
+
+				Debug::Log("[RenderDX] SetProcessDpiAwarenessContext succeeded\n");
+				return;
+			}
+		}
+	}
+
+	// If SetProcessDpiAwarenessContext is not available or failed, try SetProcessDpiAwareness
+	if (hShcore)
+	{
+		const auto FnSetProcessDpiAwareness = reinterpret_cast<SetProcessDpiAwarenessFunc>(
+			::GetProcAddress(hShcore, "SetProcessDpiAwareness"));
+
+		if (FnSetProcessDpiAwareness)
+		{
+			Debug::Log("[RenderDX] Setting process DPI awareness to PROCESS_PER_MONITOR_DPI_AWARE\n");
+			const HRESULT result = FnSetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
+			if (FAILED(result))
+			{
+				if (result == E_ACCESSDENIED)
+					Debug::Log("[RenderDX] SetProcessDpiAwareness failed: Access denied (already set to a different level of awareness)\n");
+				else
+					Debug::Log("[RenderDX] SetProcessDpiAwareness failed: 0x%08X\n", static_cast<DWORD>(result));
+			}
+			else
+			{
+				Debug::Log("[RenderDX] SetProcessDpiAwareness succeeded\n");
+				return;
+			}
+		}
+	}
+
+	// If neither of the above are available, fall back to SetProcessDPIAware (Windows 7 and earlier)
+	if (hUser32)
+	{
+		const auto FnSetProcessDPIAware = reinterpret_cast<SetProcessDPIAwareFunc>(
+			::GetProcAddress(hUser32, "SetProcessDPIAware"));
+
+		if (FnSetProcessDPIAware)
+		{
+			Debug::Log("[RenderDX] Setting process DPI awareness with SetProcessDPIAware\n");
+			if (!FnSetProcessDPIAware())
+				Debug::Log("[RenderDX] SetProcessDPIAware failed: %d\n", ::GetLastError());
+			else
+				Debug::Log("[RenderDX] SetProcessDPIAware succeeded\n");
+		}
+	}
+
+	Debug::Log("[RenderDX] Failed to set high DPI awareness. The application may not scale correctly on high DPI displays.\n");
+}
 
 static void ReleasePrimarySurface()
 {
@@ -35,70 +117,82 @@ static void ReleasePrimarySurface()
 	GameDelete(pPrimary);
 }
 
-bool __fastcall RenderDX::AllocateSurfaces(const RectangleStruct& hiddenRect, const RectangleStruct& compositeRect, const RectangleStruct& tileRect, const RectangleStruct& sidebarRect, bool hiddenFirst) {
+bool __fastcall RenderDX::AllocateSurfaces(const RectangleStruct& hiddenRect, const RectangleStruct& compositeRect, const RectangleStruct& tileRect, const RectangleStruct& sidebarRect, bool hiddenFirst)
+{
 	Debug::Log("[RenderDX] Allocating new surfaces\n");
 
-	if (DSurface::Alternate) {
+	if (DSurface::Alternate)
+	{
 		Debug::Log("[RenderDX] Deleting AlternateSurface\n");
 		GameDelete(DSurface::Alternate);
 		DSurface::Alternate = nullptr;
 	}
 
-	if (DSurface::Hidden) {
+	if (DSurface::Hidden)
+	{
 		Debug::Log("[RenderDX] Deleting HiddenSurface\n");
 		GameDelete(DSurface::Hidden);
 		DSurface::Hidden = nullptr;
 	}
 
-	if (DSurface::Composite) {
+	if (DSurface::Composite)
+	{
 		Debug::Log("[RenderDX] Deleting CompositeSurface\n");
 		GameDelete(DSurface::Composite);
 		DSurface::Composite = nullptr;
 	}
 
-	if (DSurface::Tile) {
+	if (DSurface::Tile)
+	{
 		Debug::Log("[RenderDX] Deleting TileSurface\n");
 		GameDelete(DSurface::Tile);
 		DSurface::Tile = nullptr;
 	}
 
-	if (DSurface::Sidebar) {
+	if (DSurface::Sidebar)
+	{
 		Debug::Log("[RenderDX] Deleting SidebarSurface\n");
 		GameDelete(DSurface::Sidebar);
 		DSurface::Sidebar = nullptr;
 	}
 
-	if (hiddenFirst && hiddenRect.Width > 0 && hiddenRect.Height > 0) {
+	if (hiddenFirst && hiddenRect.Width > 0 && hiddenRect.Height > 0)
+	{
 		DSurface::Hidden = GameCreate<DXSurface>(hiddenRect.Width, hiddenRect.Height);
 		DSurface::Hidden->Fill(0);
 		Debug::Log("[RenderDX] HiddenSurface (%dx%d)\n", hiddenRect.Width, hiddenRect.Height);
 	}
 
-	if (compositeRect.Width > 0 && compositeRect.Height > 0) {
+	if (compositeRect.Width > 0 && compositeRect.Height > 0)
+	{
 		DSurface::Composite = GameCreate<DXSurface>(compositeRect.Width, compositeRect.Height);
 		DSurface::Composite->Fill(0);
 		Debug::Log("[RenderDX] CompositeSurface (%dx%d)\n", compositeRect.Width, compositeRect.Height);
 	}
 
-	if (tileRect.Width > 0 && tileRect.Height > 0) {
+	if (tileRect.Width > 0 && tileRect.Height > 0)
+	{
 		DSurface::Tile = GameCreate<DXSurface>(tileRect.Width, tileRect.Height);
 		DSurface::Tile->Fill(0);
 		Debug::Log("[RenderDX] TileSurface (%dx%d)\n", tileRect.Width, tileRect.Height);
 	}
 
-	if (sidebarRect.Width > 0 && sidebarRect.Height > 0) {
+	if (sidebarRect.Width > 0 && sidebarRect.Height > 0)
+	{
 		DSurface::Sidebar = GameCreate<DXSurface>(sidebarRect.Width, sidebarRect.Height);
 		DSurface::Sidebar->Fill(0);
 		Debug::Log("[RenderDX] SidebarSurface (%dx%d)\n", sidebarRect.Width, sidebarRect.Height);
 	}
 
-	if (!hiddenFirst && hiddenRect.Width > 0 && hiddenRect.Height > 0) {
+	if (!hiddenFirst && hiddenRect.Width > 0 && hiddenRect.Height > 0)
+	{
 		DSurface::Hidden = GameCreate<DXSurface>(hiddenRect.Width, hiddenRect.Height);
 		DSurface::Hidden->Fill(0);
 		Debug::Log("[RenderDX] HiddenSurface (%dx%d)\n", hiddenRect.Width, hiddenRect.Height);
 	}
 
-	if (hiddenRect.Width > 0 && hiddenRect.Height > 0) {
+	if (hiddenRect.Width > 0 && hiddenRect.Height > 0)
+	{
 		DSurface::Alternate = GameCreate<DXSurface>(hiddenRect.Width, hiddenRect.Height);
 		DSurface::Alternate->Fill(0);
 		Debug::Log("[RenderDX] AlternateSurface (%dx%d)\n", hiddenRect.Width, hiddenRect.Height);
@@ -107,10 +201,12 @@ bool __fastcall RenderDX::AllocateSurfaces(const RectangleStruct& hiddenRect, co
 	return true;
 }
 
-bool __fastcall RenderDX::SetVideoMode(HWND, int width, int height, int bitsPerPixel) {
+bool __fastcall RenderDX::SetVideoMode(HWND, int width, int height, int bitsPerPixel)
+{
 	Debug::Log("[RenderDX] Setting video mode to %dx%d@%d\n", width, height, bitsPerPixel);
 
-	if (!DXRenderer::Instance().IsRendererReady()) {
+	if (!DXRenderer::Instance().IsRendererReady())
+	{
 		Debug::Log("[RenderDX] Renderer is not ready\n");
 		return false;
 	}
@@ -119,7 +215,8 @@ bool __fastcall RenderDX::SetVideoMode(HWND, int width, int height, int bitsPerP
 	OwnerDrawRectsAlreadyCaptured = true;
 
 	ResetVideoMode();
-	if (!DXRenderer::Instance().CreateRenderer(width, height, bitsPerPixel)) {
+	if (!DXRenderer::Instance().CreateRenderer(width, height, bitsPerPixel))
+	{
 		OwnerDrawRectsAlreadyCaptured = false;
 		Debug::Log("[RenderDX] Failed to create renderer\n");
 		return false;
@@ -137,7 +234,8 @@ bool __fastcall RenderDX::SetVideoMode(HWND, int width, int height, int bitsPerP
 	return true;
 }
 
-void __fastcall RenderDX::ResetVideoMode() {
+void __fastcall RenderDX::ResetVideoMode()
+{
 	Debug::Log("[RenderDX] Resetting video mode\n");
 
 	ReleasePrimarySurface();
@@ -155,7 +253,8 @@ static bool DeferredWindowResize = false;
 static int DeferredWindowWidth = 0;
 static int DeferredWindowHeight = 0;
 
-static void RecalcMouseWindowRegion(bool rebuildCursor) {
+static void RecalcMouseWindowRegion(bool rebuildCursor)
+{
 	if (!DXMouse::Instance)
 		return;
 
@@ -164,11 +263,13 @@ static void RecalcMouseWindowRegion(bool rebuildCursor) {
 		DXMouse::Instance->RebuildCursorImage();
 }
 
-bool __fastcall RenderDX::HandleFullscreenToggleMessage(UINT message, WPARAM wParam, LPARAM lParam) {
+bool __fastcall RenderDX::HandleFullscreenToggleMessage(UINT message, WPARAM wParam, LPARAM lParam)
+{
 	if (wParam != VK_RETURN || !(lParam & (1 << 29)))
 		return false;
 
-	if (message == WM_SYSKEYDOWN) {
+	if (message == WM_SYSKEYDOWN)
+	{
 		DXRenderer::Instance().ToggleFullscreen();
 		RecalcMouseWindowRegion(true);
 		return true;
@@ -184,13 +285,16 @@ static void ReinitMenuLayoutRects(int width, int height)
 	reinterpret_cast<ReinitMenuLayoutRectsFunc>(0x72E1B0)(width, height);
 }
 
-static void ApplyWindowResize(int width, int height) {
+static void ApplyWindowResize(int width, int height)
+{
 	DXRenderer::Instance().ResizeWindow(width, height);
 	RecalcMouseWindowRegion(true);
 }
 
-static LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
-	switch (message) {
+static LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
 	case WM_MOUSEMOVE:
 	case WM_LBUTTONDOWN:
 	case WM_LBUTTONUP:
@@ -206,7 +310,8 @@ static LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 	case WM_XBUTTONUP:
 	{
 		// Scale mouse inputs before they are processed by SDL or the game.
-		if (RenderDX::ShouldScale()) {
+		if (RenderDX::ShouldScale())
+		{
 			POINT point { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 
 			if (message == WM_MOUSEWHEEL)
@@ -221,7 +326,8 @@ static LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 
 	case WM_MOVE:
 	{
-		if (DXMouse::Instance) {
+		if (DXMouse::Instance)
+		{
 			DXMouse::Instance->RecalcCaptureRegion();
 		}
 		return 0; // handled
@@ -240,12 +346,14 @@ static LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 	{
 		WindowResizeInProgress = false;
 
-		if (DeferredWindowResize) {
+		if (DeferredWindowResize)
+		{
 			int width = DeferredWindowWidth;
 			int height = DeferredWindowHeight;
 
 			RECT clientRect {};
-			if (::GetClientRect(hWnd, &clientRect)) {
+			if (::GetClientRect(hWnd, &clientRect))
+			{
 				width = clientRect.right - clientRect.left;
 				height = clientRect.bottom - clientRect.top;
 			}
@@ -265,17 +373,20 @@ static LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 	{
 		const int width = LOWORD(lParam);
 		const int height = HIWORD(lParam);
-		if (wParam == SIZE_MINIMIZED || width == 0 || height == 0) {
+		if (wParam == SIZE_MINIMIZED || width == 0 || height == 0)
+		{
 			DeferredWindowResize = false;
 			RecalcMouseWindowRegion(false);
 		}
-		else if (WindowResizeInProgress) {
+		else if (WindowResizeInProgress)
+		{
 			DeferredWindowResize = true;
 			DeferredWindowWidth = width;
 			DeferredWindowHeight = height;
 			RecalcMouseWindowRegion(false);
 		}
-		else {
+		else
+		{
 			ApplyWindowResize(width, height);
 		}
 
@@ -294,7 +405,8 @@ static LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 	case WM_SETCURSOR:
 	{
 		// Prevent the system from setting the cursor when it's over our window, since we handle it ourselves.
-		if (LOWORD(lParam) == HTCLIENT) {
+		if (LOWORD(lParam) == HTCLIENT)
+		{
 			if (DXMouse::Instance)
 				DXMouse::Instance->SetCachedCursor();
 			return TRUE; // handled
@@ -306,14 +418,17 @@ static LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 	{
 		if (RenderOptions::Config().PauseGameWhenLoseFocus)
 			break; // goto the original window procedure to allow the game to pause when losing focus
-		if (hWnd == Game::hWnd) {
+		if (hWnd == Game::hWnd)
+		{
 			Unsorted::GameInFocus = true; // game is always active
-			if (wParam) {
+			if (wParam)
+			{
 				Debug::Log("[RenderDX] Game window activated\n");
 				if (DXMouse::Instance)
 					DXMouse::Instance->CaptureMouse();
 			}
-			else {
+			else
+			{
 				Debug::Log("[RenderDX] Game window deactivated\n");
 				if (DXMouse::Instance)
 					DXMouse::Instance->ReleaseMouse();
@@ -327,22 +442,28 @@ static LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 	return reinterpret_cast<LRESULT(CALLBACK*)(HWND, UINT, WPARAM, LPARAM)>(0x7775C0)(hWnd, message, wParam, lParam);
 }
 
-void __fastcall RenderDX::CreateMainWindow(HINSTANCE instance, int cmdShow, int width, int height) {
+void __fastcall RenderDX::CreateMainWindow(HINSTANCE instance, int cmdShow, int width, int height)
+{
 	Debug::Log("[RenderDX] Creating main window\n");
-	if (!DXRenderer::Instance().CreateMainWindow(instance, cmdShow, width, height, MainWindowProc)) {
+	SetHighDPIAwareness();
+	if (!DXRenderer::Instance().CreateMainWindow(instance, cmdShow, width, height, MainWindowProc))
+	{
 		Debug::Log("[RenderDX] Failed to create main window\n");
 		::MessageBoxA(nullptr, "Failed to create main window", "Error", MB_ICONERROR);
 		::ExitProcess(0xC0DEBEEF);
 	}
 }
 
-void __fastcall RenderDX::DestroyMainWindow() {
+void __fastcall RenderDX::DestroyMainWindow()
+{
 	Debug::Log("[RenderDX] Destroying main window\n");
 	DXRenderer::Instance().DestroyMainWindow();
 }
 
-bool __fastcall RenderDX::UpdateScreen(Surface* pSurface) {
-	if (!pSurface) {
+bool __fastcall RenderDX::UpdateScreen(Surface* pSurface)
+{
+	if (!pSurface)
+	{
 		Debug::Log("[RenderDX] UpdateScreen called with null surface\n");
 		return false;
 	}
@@ -351,8 +472,10 @@ bool __fastcall RenderDX::UpdateScreen(Surface* pSurface) {
 	DXRenderer::Instance().SetRenderScale(shouldScale);
 
 	// Retrieve the game surface data
-	if (void* pPixels = pSurface->Lock(0, 0)) {
-		if (!DXRenderer::Instance().UploadSurfaceToTexture(pPixels, pSurface->GetPitch())) {
+	if (void* pPixels = pSurface->Lock(0, 0))
+	{
+		if (!DXRenderer::Instance().UploadSurfaceToTexture(pPixels, pSurface->GetPitch()))
+		{
 			Debug::Log("[RenderDX] Failed to upload surface to texture\n");
 			pSurface->Unlock();
 			return false;
@@ -363,7 +486,8 @@ bool __fastcall RenderDX::UpdateScreen(Surface* pSurface) {
 	static bool scaled = ShouldScale();
 
 	// Extra process on scaling change
-	if (scaled != shouldScale) {
+	if (scaled != shouldScale)
+	{
 		scaled = shouldScale;
 		if (DXMouse::Instance)
 			DXMouse::Instance->RebuildCursorImage();
@@ -374,11 +498,13 @@ bool __fastcall RenderDX::UpdateScreen(Surface* pSurface) {
 	return true;
 }
 
-bool __fastcall RenderDX::ShouldScale() {
+bool __fastcall RenderDX::ShouldScale()
+{
 	return true;
 }
 
-static RectangleStruct GetSidebarClipBounds(const RectangleStruct& viewRect) {
+static RectangleStruct GetSidebarClipBounds(const RectangleStruct& viewRect)
+{
 	constexpr int sidebarWidth = 168;
 	constexpr int bottomBarHeight = 32;
 
@@ -391,7 +517,8 @@ static RectangleStruct GetSidebarClipBounds(const RectangleStruct& viewRect) {
 	};
 }
 
-static void RebuildDisplayState(const RectangleStruct& viewRect) {
+static void RebuildDisplayState(const RectangleStruct& viewRect)
+{
 	constexpr int sidebarWidth = 168;
 	const auto sidebarRect = GetSidebarClipBounds(viewRect);
 	const RectangleStruct tacticalSurfaceRect { 0, 0, sidebarRect.Width, viewRect.Height };
@@ -413,7 +540,8 @@ static void RebuildDisplayState(const RectangleStruct& viewRect) {
 	);
 	DSurface::Temp = DSurface::Hidden;
 
-	if (DXMouse::Instance) {
+	if (DXMouse::Instance)
+	{
 		DXMouse::Instance->RebuildCursorImage();
 	}
 
@@ -429,13 +557,16 @@ static void RebuildDisplayState(const RectangleStruct& viewRect) {
 	WWUI::RelayoutWindowsAfterDisplayModeChange();
 }
 
-bool __fastcall RenderDX::ChangeDisplayMode(int width, int height) {
+bool __fastcall RenderDX::ChangeDisplayMode(int width, int height)
+{
 	Debug::Log("[RenderDX] Changing display mode to %dx%d\n", width, height);
 
 	// Save current window position
 	RectangleStruct oldRect = DSurface::ViewBounds;
-	if (oldRect.Width <= 0 || oldRect.Height <= 0) {
-		if (Drawing::RenderWidth > 0 && Drawing::RenderHeight > 0) {
+	if (oldRect.Width <= 0 || oldRect.Height <= 0)
+	{
+		if (Drawing::RenderWidth > 0 && Drawing::RenderHeight > 0)
+		{
 			Debug::Log("[RenderDX] Current view bounds are invalid, using RenderWidth/RenderHeight\n");
 			oldRect = RectangleStruct { 0, 0, Drawing::RenderWidth, Drawing::RenderHeight };
 		}
@@ -454,7 +585,8 @@ bool __fastcall RenderDX::ChangeDisplayMode(int width, int height) {
 
 	ReleasePrimarySurface();
 
-	if (DXRenderer::Instance().IsWindowed()) {
+	if (DXRenderer::Instance().IsWindowed())
+	{
 		int windowWidth = width;
 		int windowHeight = height;
 
@@ -477,22 +609,27 @@ bool __fastcall RenderDX::ChangeDisplayMode(int width, int height) {
 	}
 
 	// Recreate all intermediates
-	if (!SetVideoMode(Game::hWnd, width, height, 16)) {
-		if (DXRenderer::Instance().IsWindowed()) {
+	if (!SetVideoMode(Game::hWnd, width, height, 16))
+	{
+		if (DXRenderer::Instance().IsWindowed())
+		{
 			DXRenderer::Instance().MoveWindow(oldWindowX, oldWindowY, oldWindowWidth, oldWindowHeight);
 			Debug::Log("[RenderDX] Restore window to (%d, %d) with size %dx%d\n", oldWindowX, oldWindowY, oldWindowWidth, oldWindowHeight);
 		}
 
-		if (oldRect.Width > 0 && oldRect.Height > 0 && oldRenderWidth > 0 && oldRenderHeight > 0) {
+		if (oldRect.Width > 0 && oldRect.Height > 0 && oldRenderWidth > 0 && oldRenderHeight > 0)
+		{
 			Debug::Log("[RenderDX] Restoring old display mode.\n");
-			if (!SetVideoMode(Game::hWnd, oldRenderWidth, oldRenderHeight, oldRenderBpp)) {
+			if (!SetVideoMode(Game::hWnd, oldRenderWidth, oldRenderHeight, oldRenderBpp))
+			{
 				Debug::Log("[RenderDX] Failed to restore old display mode.\n");
 				DXMouse::Instance->ShowMouse();
 				return false;
 			}
 			RebuildDisplayState(oldRect);
 		}
-		else {
+		else
+		{
 			Debug::Log("[RenderDX] Old view bounds are invalid, cannot restore\n");
 		}
 
@@ -514,35 +651,42 @@ static float ViewportX = 0.0f;
 static float ViewportY = 0.0f;
 static bool OwnerDrawRawWindowCoordinates = false;
 
-float __fastcall RenderDX::GetXScale() {
+float __fastcall RenderDX::GetXScale()
+{
 	return ScaleX;
 }
 
-float __fastcall RenderDX::GetYScale() {
+float __fastcall RenderDX::GetYScale()
+{
 	return ScaleY;
 }
 
-static int ClampRenderX(int x) {
+static int ClampRenderX(int x)
+{
 	if (Drawing::RenderWidth <= 0)
 		return x;
 
 	return std::clamp(x, 0, Drawing::RenderWidth - 1);
 }
 
-static int ClampRenderY(int y) {
+static int ClampRenderY(int y)
+{
 	if (Drawing::RenderHeight <= 0)
 		return y;
 
 	return std::clamp(y, 0, Drawing::RenderHeight - 1);
 }
 
-static RECT ClampRenderRect(const RECT& rect) {
+static RECT ClampRenderRect(const RECT& rect)
+{
 	RECT result = rect;
-	if (Drawing::RenderWidth > 0) {
+	if (Drawing::RenderWidth > 0)
+	{
 		result.left = std::clamp<LONG>(result.left, 0, static_cast<LONG>(Drawing::RenderWidth));
 		result.right = std::clamp<LONG>(result.right, 0, static_cast<LONG>(Drawing::RenderWidth));
 	}
-	if (Drawing::RenderHeight > 0) {
+	if (Drawing::RenderHeight > 0)
+	{
 		result.top = std::clamp<LONG>(result.top, 0, static_cast<LONG>(Drawing::RenderHeight));
 		result.bottom = std::clamp<LONG>(result.bottom, 0, static_cast<LONG>(Drawing::RenderHeight));
 	}
@@ -576,61 +720,70 @@ static RECT ClientToRenderRectRounded(const RECT& rect)
 	};
 }
 
-int __fastcall RenderDX::ClientToRenderX(int x) {
+int __fastcall RenderDX::ClientToRenderX(int x)
+{
 	if (Drawing::RenderWidth <= 0)
 		return x;
 
 	return ClampRenderX(ClientToRenderXUnclamped(x));
 }
 
-int __fastcall RenderDX::ClientToRenderY(int y) {
+int __fastcall RenderDX::ClientToRenderY(int y)
+{
 	if (Drawing::RenderHeight <= 0)
 		return y;
 
 	return ClampRenderY(ClientToRenderYUnclamped(y));
 }
 
-int __fastcall RenderDX::ClientToRenderXUnclamped(int x) {
+int __fastcall RenderDX::ClientToRenderXUnclamped(int x)
+{
 	if (Drawing::RenderWidth <= 0)
 		return x;
 
 	return static_cast<int>((static_cast<float>(x) - ViewportX) * ScaleX);
 }
 
-int __fastcall RenderDX::ClientToRenderYUnclamped(int y) {
+int __fastcall RenderDX::ClientToRenderYUnclamped(int y)
+{
 	if (Drawing::RenderHeight <= 0)
 		return y;
 
 	return static_cast<int>((static_cast<float>(y) - ViewportY) * ScaleY);
 }
 
-int __fastcall RenderDX::RenderToClientX(int x) {
+int __fastcall RenderDX::RenderToClientX(int x)
+{
 	if (Drawing::RenderWidth <= 0 || ScaleX == 0.0f)
 		return x;
 
 	return static_cast<int>(std::lround(ViewportX + static_cast<float>(x) / ScaleX));
 }
 
-int __fastcall RenderDX::RenderToClientY(int y) {
+int __fastcall RenderDX::RenderToClientY(int y)
+{
 	if (Drawing::RenderHeight <= 0 || ScaleY == 0.0f)
 		return y;
 
 	return static_cast<int>(std::lround(ViewportY + static_cast<float>(y) / ScaleY));
 }
 
-POINT __fastcall RenderDX::ClientToRenderPoint(POINT point, bool clamp) {
+POINT __fastcall RenderDX::ClientToRenderPoint(POINT point, bool clamp)
+{
 	point.x = clamp ? ClientToRenderX(point.x) : ClientToRenderXUnclamped(point.x);
 	point.y = clamp ? ClientToRenderY(point.y) : ClientToRenderYUnclamped(point.y);
 	return point;
 }
 
-POINT __fastcall RenderDX::RenderToClientPoint(POINT point) {
+POINT __fastcall RenderDX::RenderToClientPoint(POINT point)
+{
 	point.x = RenderToClientX(point.x);
 	point.y = RenderToClientY(point.y);
 	return point;
 }
 
-RECT __fastcall RenderDX::ClientToRenderRect(const RECT& rect, bool clamp) {
+RECT __fastcall RenderDX::ClientToRenderRect(const RECT& rect, bool clamp)
+{
 	RECT result
 	{
 		ClientToRenderXUnclamped(rect.left),
@@ -642,7 +795,8 @@ RECT __fastcall RenderDX::ClientToRenderRect(const RECT& rect, bool clamp) {
 	return clamp ? ClampRenderRect(result) : result;
 }
 
-RECT __fastcall RenderDX::RenderToClientRect(const RECT& rect) {
+RECT __fastcall RenderDX::RenderToClientRect(const RECT& rect)
+{
 	if (Drawing::RenderWidth <= 0 || Drawing::RenderHeight <= 0 || ScaleX == 0.0f || ScaleY == 0.0f)
 		return rect;
 
@@ -655,7 +809,8 @@ RECT __fastcall RenderDX::RenderToClientRect(const RECT& rect) {
 	};
 }
 
-bool __fastcall RenderDX::ScreenToRenderPoint(LPPOINT pPoint, bool clamp) {
+bool __fastcall RenderDX::ScreenToRenderPoint(LPPOINT pPoint, bool clamp)
+{
 	if (!pPoint)
 		return false;
 
@@ -666,7 +821,8 @@ bool __fastcall RenderDX::ScreenToRenderPoint(LPPOINT pPoint, bool clamp) {
 	return true;
 }
 
-bool __fastcall RenderDX::RenderToScreenPoint(LPPOINT pPoint) {
+bool __fastcall RenderDX::RenderToScreenPoint(LPPOINT pPoint)
+{
 	if (!pPoint)
 		return false;
 
@@ -674,11 +830,13 @@ bool __fastcall RenderDX::RenderToScreenPoint(LPPOINT pPoint) {
 	return ::ClientToScreen(Game::hWnd, pPoint) != FALSE;
 }
 
-bool __fastcall RenderDX::GetWindowRectInRender(HWND hWnd, LPRECT pRect) {
+bool __fastcall RenderDX::GetWindowRectInRender(HWND hWnd, LPRECT pRect)
+{
 	if (!hWnd || !pRect)
 		return false;
 
-	if (hWnd == Game::hWnd) {
+	if (hWnd == Game::hWnd)
+	{
 		pRect->left = 0;
 		pRect->top = 0;
 		pRect->right = Drawing::RenderWidth;
@@ -700,11 +858,13 @@ bool __fastcall RenderDX::GetWindowRectInRender(HWND hWnd, LPRECT pRect) {
 	return true;
 }
 
-bool __fastcall RenderDX::GetClientRectInRender(HWND hWnd, LPRECT pRect) {
+bool __fastcall RenderDX::GetClientRectInRender(HWND hWnd, LPRECT pRect)
+{
 	if (!hWnd || !pRect)
 		return false;
 
-	if (hWnd == Game::hWnd) {
+	if (hWnd == Game::hWnd)
+	{
 		pRect->left = 0;
 		pRect->top = 0;
 		pRect->right = Drawing::RenderWidth;
@@ -732,12 +892,14 @@ bool __fastcall RenderDX::GetClientRectInRender(HWND hWnd, LPRECT pRect) {
 	return true;
 }
 
-POINT __fastcall RenderDX::ScreenToRenderLocalPoint(HWND hWnd, POINT point) {
+POINT __fastcall RenderDX::ScreenToRenderLocalPoint(HWND hWnd, POINT point)
+{
 	if (!ScreenToRenderPoint(&point, false))
 		return point;
 
 	RECT windowRect {};
-	if (GetWindowRectInRender(hWnd, &windowRect)) {
+	if (GetWindowRectInRender(hWnd, &windowRect))
+	{
 		point.x -= windowRect.left;
 		point.y -= windowRect.top;
 	}
@@ -745,7 +907,8 @@ POINT __fastcall RenderDX::ScreenToRenderLocalPoint(HWND hWnd, POINT point) {
 	return point;
 }
 
-RECT __fastcall RenderDX::ClientToRenderLocalRect(HWND hWnd, const RECT& rect) {
+RECT __fastcall RenderDX::ClientToRenderLocalRect(HWND hWnd, const RECT& rect)
+{
 	POINT topLeft { rect.left, rect.top };
 	POINT bottomRight { rect.right, rect.bottom };
 	if (!::ClientToScreen(hWnd, &topLeft) || !::ClientToScreen(hWnd, &bottomRight))
@@ -757,7 +920,8 @@ RECT __fastcall RenderDX::ClientToRenderLocalRect(HWND hWnd, const RECT& rect) {
 	return RECT { topLeft.x, topLeft.y, bottomRight.x, bottomRight.y };
 }
 
-RECT __fastcall RenderDX::RenderLocalToClientRect(HWND hWnd, const RECT& rect) {
+RECT __fastcall RenderDX::RenderLocalToClientRect(HWND hWnd, const RECT& rect)
+{
 	RECT windowRect {};
 	if (!GetWindowRectInRender(hWnd, &windowRect))
 		return rect;
@@ -777,7 +941,8 @@ RECT __fastcall RenderDX::RenderLocalToClientRect(HWND hWnd, const RECT& rect) {
 	return clientRect;
 }
 
-POINT __fastcall RenderDX::MouseLParamToRenderLocalPoint(HWND hWnd, LPARAM lParam) {
+POINT __fastcall RenderDX::MouseLParamToRenderLocalPoint(HWND hWnd, LPARAM lParam)
+{
 	POINT point { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 	if (!::ClientToScreen(hWnd, &point))
 		return point;
@@ -785,12 +950,14 @@ POINT __fastcall RenderDX::MouseLParamToRenderLocalPoint(HWND hWnd, LPARAM lPara
 	return ScreenToRenderLocalPoint(hWnd, point);
 }
 
-LPARAM __fastcall RenderDX::MouseLParamToRenderLocal(HWND hWnd, LPARAM lParam) {
+LPARAM __fastcall RenderDX::MouseLParamToRenderLocal(HWND hWnd, LPARAM lParam)
+{
 	const POINT point = MouseLParamToRenderLocalPoint(hWnd, lParam);
 	return MAKELPARAM(static_cast<WORD>(point.x), static_cast<WORD>(point.y));
 }
 
-bool __fastcall RenderDX::RenderRectToClient(HWND referenceHwnd, const RECT& renderRect, LPRECT pClientRect) {
+bool __fastcall RenderDX::RenderRectToClient(HWND referenceHwnd, const RECT& renderRect, LPRECT pClientRect)
+{
 	if (!pClientRect)
 		return false;
 
@@ -799,7 +966,8 @@ bool __fastcall RenderDX::RenderRectToClient(HWND referenceHwnd, const RECT& ren
 	if (!RenderToScreenPoint(&topLeft) || !RenderToScreenPoint(&bottomRight))
 		return false;
 
-	if (referenceHwnd) {
+	if (referenceHwnd)
+	{
 		if (!::ScreenToClient(referenceHwnd, &topLeft) || !::ScreenToClient(referenceHwnd, &bottomRight))
 			return false;
 	}
@@ -811,7 +979,8 @@ bool __fastcall RenderDX::RenderRectToClient(HWND referenceHwnd, const RECT& ren
 	return true;
 }
 
-static bool GetParentRenderOrigin(HWND hWnd, POINT& origin) {
+static bool GetParentRenderOrigin(HWND hWnd, POINT& origin)
+{
 	origin = { 0, 0 };
 
 	if (!hWnd || hWnd == Game::hWnd)
@@ -826,7 +995,8 @@ static bool GetParentRenderOrigin(HWND hWnd, POINT& origin) {
 	return true;
 }
 
-static bool GetWindowRectInParentRender(HWND hWnd, LPRECT pRect) {
+static bool GetWindowRectInParentRender(HWND hWnd, LPRECT pRect)
+{
 	if (!RenderDX::GetWindowRectInRender(hWnd, pRect))
 		return false;
 
@@ -841,7 +1011,8 @@ static bool GetWindowRectInParentRender(HWND hWnd, LPRECT pRect) {
 	return true;
 }
 
-static bool RenderLocalRectToWindowRect(HWND hWnd, const RECT& localRect, LPRECT pWindowRect) {
+static bool RenderLocalRectToWindowRect(HWND hWnd, const RECT& localRect, LPRECT pWindowRect)
+{
 	const HWND parentHwnd = ::GetParent(hWnd);
 	POINT parentOrigin {};
 	if (!GetParentRenderOrigin(parentHwnd, parentOrigin))
@@ -858,7 +1029,8 @@ static bool RenderLocalRectToWindowRect(HWND hWnd, const RECT& localRect, LPRECT
 	return RenderDX::RenderRectToClient(parentHwnd, renderRect, pWindowRect);
 }
 
-BOOL __fastcall RenderDX::MoveWindowInRender(HWND hWnd, int x, int y, int width, int height, BOOL repaint) {
+BOOL __fastcall RenderDX::MoveWindowInRender(HWND hWnd, int x, int y, int width, int height, BOOL repaint)
+{
 	if (!hWnd)
 		return FALSE;
 
@@ -876,7 +1048,8 @@ BOOL __fastcall RenderDX::MoveWindowInRender(HWND hWnd, int x, int y, int width,
 		repaint);
 }
 
-BOOL __fastcall RenderDX::SetWindowPosInRender(HWND hWnd, HWND hWndInsertAfter, int x, int y, int cx, int cy, UINT flags) {
+BOOL __fastcall RenderDX::SetWindowPosInRender(HWND hWnd, HWND hWndInsertAfter, int x, int y, int cx, int cy, UINT flags)
+{
 	if (!hWnd)
 		return FALSE;
 
@@ -884,7 +1057,8 @@ BOOL __fastcall RenderDX::SetWindowPosInRender(HWND hWnd, HWND hWndInsertAfter, 
 	if (!GetWindowRectInParentRender(hWnd, &renderRect))
 		return FALSE;
 
-	if (!(flags & SWP_NOMOVE)) {
+	if (!(flags & SWP_NOMOVE))
+	{
 		const int width = renderRect.right - renderRect.left;
 		const int height = renderRect.bottom - renderRect.top;
 		renderRect.left = x;
@@ -893,7 +1067,8 @@ BOOL __fastcall RenderDX::SetWindowPosInRender(HWND hWnd, HWND hWndInsertAfter, 
 		renderRect.bottom = y + height;
 	}
 
-	if (!(flags & SWP_NOSIZE)) {
+	if (!(flags & SWP_NOSIZE))
+	{
 		renderRect.right = renderRect.left + cx;
 		renderRect.bottom = renderRect.top + cy;
 	}
@@ -914,15 +1089,18 @@ BOOL __fastcall RenderDX::SetWindowPosInRender(HWND hWnd, HWND hWndInsertAfter, 
 		flags);
 }
 
-bool __fastcall RenderDX::IsOwnerDrawUsingRawWindowCoordinates() {
+bool __fastcall RenderDX::IsOwnerDrawUsingRawWindowCoordinates()
+{
 	return OwnerDrawRawWindowCoordinates;
 }
 
-void __fastcall RenderDX::SetOwnerDrawRawWindowCoordinates(bool enabled) {
+void __fastcall RenderDX::SetOwnerDrawRawWindowCoordinates(bool enabled)
+{
 	OwnerDrawRawWindowCoordinates = enabled;
 }
 
-void __fastcall RenderDX::UpdateScale() {
+void __fastcall RenderDX::UpdateScale()
+{
 	if (!OwnerDrawRectsAlreadyCaptured)
 		WWUI::CaptureOwnerDrawWindowRects();
 
@@ -931,7 +1109,8 @@ void __fastcall RenderDX::UpdateScale() {
 	const float viewportX = DXRenderer::Instance().GetViewportX();
 	const float viewportY = DXRenderer::Instance().GetViewportY();
 
-	if (Drawing::RenderWidth <= 0 || Drawing::RenderHeight <= 0 || viewportWidth <= 0.0f || viewportHeight <= 0.0f) {
+	if (Drawing::RenderWidth <= 0 || Drawing::RenderHeight <= 0 || viewportWidth <= 0.0f || viewportHeight <= 0.0f)
+	{
 		ResetScale();
 		WWUI::ApplyOwnerDrawWindowRects();
 		return;
@@ -944,29 +1123,34 @@ void __fastcall RenderDX::UpdateScale() {
 	WWUI::ApplyOwnerDrawWindowRects();
 }
 
-void __fastcall RenderDX::ResetScale() {
+void __fastcall RenderDX::ResetScale()
+{
 	ScaleX = 1.0f;
 	ScaleY = 1.0f;
 	ViewportX = 0.0f;
 	ViewportY = 0.0f;
 }
 
-int* __fastcall RenderDX::EnumDisplayModes(DWORD minWidth, DWORD minHeight, DWORD maxWidth, DWORD maxHeight, DWORD) {
+int* __fastcall RenderDX::EnumDisplayModes(DWORD minWidth, DWORD minHeight, DWORD maxWidth, DWORD maxHeight, DWORD)
+{
 	std::vector<std::pair<int, int>> modes;
-	DEVMODE devmode{};
+	DEVMODE devmode {};
 	DWORD modeIndex = 0;
 
-	while (::EnumDisplaySettingsA(nullptr, modeIndex++, &devmode)) {
+	while (::EnumDisplaySettingsA(nullptr, modeIndex++, &devmode))
+	{
 		const DWORD w = devmode.dmPelsWidth;
 		const DWORD h = devmode.dmPelsHeight;
 		const DWORD bpp = devmode.dmBitsPerPel;
 
-		if (w >= minWidth && h >= minHeight && w <= maxWidth && h <= maxHeight && bpp == 32) {
+		if (w >= minWidth && h >= minHeight && w <= maxWidth && h <= maxHeight && bpp == 32)
+		{
 			modes.emplace_back(static_cast<int>(w), static_cast<int>(h));
 		}
 	}
 
-	if (modes.empty()) {
+	if (modes.empty())
+	{
 		return nullptr;
 	}
 
@@ -980,7 +1164,8 @@ int* __fastcall RenderDX::EnumDisplayModes(DWORD minWidth, DWORD minHeight, DWOR
 	std::memset(list, 0, bytes);
 
 	int* ptr = list;
-	for (const auto& mode : modes) {
+	for (const auto& mode : modes)
+	{
 		*ptr++ = mode.first;
 		*ptr++ = mode.second;
 	}
@@ -988,10 +1173,14 @@ int* __fastcall RenderDX::EnumDisplayModes(DWORD minWidth, DWORD minHeight, DWOR
 	return list;
 }
 
-void __fastcall RenderDX::MainProcHandlePaint() {
-	if (DXMouse::Instance && DSurface::Primary && DSurface::Hidden && DSurface::Composite) {
-		if (Unsorted::ScenarioStarted) {
-			if (WWUI::HasActiveOwnerDrawDialog()) {
+void __fastcall RenderDX::MainProcHandlePaint()
+{
+	if (DXMouse::Instance && DSurface::Primary && DSurface::Hidden && DSurface::Composite)
+	{
+		if (Unsorted::ScenarioStarted)
+		{
+			if (WWUI::HasActiveOwnerDrawDialog())
+			{
 				RenderDX::UpdateScreen(DSurface::Primary);
 				return;
 			}
@@ -999,10 +1188,12 @@ void __fastcall RenderDX::MainProcHandlePaint() {
 			GScreenClass::UpdatePrimarySurface(DXMouse::Instance->IsCaptured(), DSurface::Composite, nullptr);
 			SidebarClass::Instance.BlitSidebar(true);
 		}
-		else if (Game::IsMoviePlaying()) {
+		else if (Game::IsMoviePlaying())
+		{
 			Game::BlitMovie();
 		}
-		else {
+		else
+		{
 			GScreenClass::UpdatePrimarySurface(DXMouse::Instance->IsCaptured(), DSurface::Hidden, nullptr);
 		}
 	}
