@@ -143,18 +143,11 @@ void DXMouse::ProcessMouse() {
 	if (!::GetCursorPos(&pt))
 		return;
 
-	if (!::ScreenToClient(Game::hWnd, &pt))
+	if (!RenderDX::ScreenToRenderPoint(&pt, true))
 		return;
 
-	if (RenderDX::ShouldScale()) {
-		MouseX = RenderDX::ClientToRenderX(pt.x);
-		MouseY = RenderDX::ClientToRenderY(pt.y);
-	}
-	else {
-		MouseX = pt.x;
-		MouseY = pt.y;
-	}
-
+	MouseX = pt.x;
+	MouseY = pt.y;
 }
 
 void DXMouse::RecalcCaptureRegion() {
@@ -319,8 +312,5 @@ HCURSOR DXMouse::BuildCursor(const CursorData& data, int hotspotX, int hotspotY)
 }
 
 int DXMouse::GetCursorScale() {
-	if (!RenderDX::ShouldScale())
-		return 1;
-
 	return std::max(1, static_cast<int>(std::round(1.0f / RenderDX::GetYScale())));
 }

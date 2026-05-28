@@ -309,7 +309,8 @@ static LRESULT PaintOwnerDrawButton(HWND hWnd, OwnerDrawDialogElement& data, LON
 	RECT ownerRect {};
 	RECT clientRect {};
 	OwnerDraw::GetRectangle(hWnd, &ownerRect);
-	::GetClientRect(hWnd, &clientRect);
+	if (RenderDX::IsOwnerDrawUsingRawWindowCoordinates() || !RenderDX::GetClientRectInRender(hWnd, &clientRect))
+		::GetClientRect(hWnd, &clientRect);
 
 	const int width = ownerRect.right - ownerRect.left;
 	const int height = ownerRect.bottom - ownerRect.top;
@@ -376,7 +377,8 @@ static LRESULT PaintCheckboxCtrl(HWND hWnd, OwnerDrawDialogElement& data, LONG w
 	RECT clientRect {};
 	RECT textRect {};
 	RECT ownerRect {};
-	::GetClientRect(hWnd, &clientRect);
+	if (RenderDX::IsOwnerDrawUsingRawWindowCoordinates() || !RenderDX::GetClientRectInRender(hWnd, &clientRect))
+		::GetClientRect(hWnd, &clientRect);
 	OwnerDraw::GetRectangle(hWnd, &textRect);
 	OwnerDraw::GetRectangle(hWnd, &ownerRect);
 
@@ -421,9 +423,10 @@ static LRESULT PaintCheckboxCtrl(HWND hWnd, OwnerDrawDialogElement& data, LONG w
 	return 0;
 }
 
-static bool IsInsideCheckboxArt(LPARAM lParam)
+static bool IsInsideCheckboxArt(HWND hWnd, LPARAM lParam)
 {
-	return LOWORD(lParam) < CheckboxArtSize && HIWORD(lParam) < CheckboxArtSize;
+	const POINT point = RenderDX::MouseLParamToRenderLocalPoint(hWnd, lParam);
+	return point.x >= 0 && point.y >= 0 && point.x < CheckboxArtSize && point.y < CheckboxArtSize;
 }
 
 static void NotifyCheckboxClicked(HWND hWnd, int checkState)
@@ -600,7 +603,8 @@ static LRESULT PaintRadioCtrl(HWND hWnd, OwnerDrawDialogElement& data, LONG wind
 	RECT ownerRect {};
 	RECT clientRect {};
 	OwnerDraw::GetRectangle(hWnd, &ownerRect);
-	::GetClientRect(hWnd, &clientRect);
+	if (RenderDX::IsOwnerDrawUsingRawWindowCoordinates() || !RenderDX::GetClientRectInRender(hWnd, &clientRect))
+		::GetClientRect(hWnd, &clientRect);
 
 	const int width = ownerRect.right - ownerRect.left;
 	const int height = ownerRect.bottom - ownerRect.top;
@@ -722,7 +726,7 @@ LRESULT CALLBACK WWUI::CheckboxCtrl(HWND hWnd, UINT message, WPARAM wParam, LPAR
 
 	case WM_LBUTTONDOWN:
 	case WM_LBUTTONDBLCLK:
-		if (!IsInsideCheckboxArt(lParam))
+		if (!IsInsideCheckboxArt(hWnd, lParam))
 			return 0;
 
 		data.AsCheckbox().CheckState() = data.AsCheckbox().CheckState() == BST_CHECKED ? BST_UNCHECKED : BST_CHECKED;

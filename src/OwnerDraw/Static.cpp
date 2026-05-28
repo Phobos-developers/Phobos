@@ -20,7 +20,7 @@ static UINT GetStaticAnimationTimerInterval(HWND parentHwnd, HWND controlHwnd)
 		return 100;
 	}
 
-	if (dialogId == 148 && (controlId == 1770 || controlId == 1771 || controlId == 1772))
+	if (dialogId == 148 && (controlId == 1770 || controlId == 1771 || controlId == 1772 || controlId == 1773))
 		return 100;
 
 	if ((dialogId == 259 || dialogId == 3015) && controlId == 1835)
@@ -47,6 +47,47 @@ static void DestroyStaticMovie(OwnerDrawDialogElement& data)
 static void DestroyStaticMovieAux(OwnerDrawDialogElement& data)
 {
 	DeleteUnknownGameObject(data.AsStatic().MovieAuxHandle());
+}
+
+static void SyncStaticMoviePosition(HWND hWnd, OwnerDrawDialogElement& data);
+
+static int GetParentDialogId(HWND hWnd)
+{
+	if (const HWND parentHwnd = ::GetParent(hWnd))
+	{
+		if (auto pParentData = FindOwnerDrawData(parentHwnd))
+			return pParentData->DialogID;
+	}
+
+	return 0;
+}
+
+static bool IsCampaignDescriptionStatic(HWND hWnd)
+{
+	if (GetParentDialogId(hWnd) != 148)
+		return false;
+
+	const int controlId = ::GetDlgCtrlID(hWnd);
+	return controlId >= 1959 && controlId <= 1962;
+}
+
+static void AdjustStaticTextPaintRect(HWND hWnd, OwnerDrawDialogElement& data, RECT& rect)
+{
+	if (!IsCampaignDescriptionStatic(hWnd))
+		return;
+
+	const int minimumHeight = std::max(BitFontHeight(data.AsStatic().Font()) + 6, 30);
+	if (rect.bottom - rect.top < minimumHeight)
+		rect.bottom = rect.top + minimumHeight;
+}
+
+static bool GetStaticPaintRect(HWND hWnd, OwnerDrawDialogElement& data, RECT& rect)
+{
+	if (!OwnerDraw::GetRectangle(hWnd, &rect))
+		return false;
+
+	AdjustStaticTextPaintRect(hWnd, data, rect);
+	return true;
 }
 
 static void DetachStaticMovie(HWND hWnd, OwnerDrawDialogElement& data)
@@ -77,7 +118,24 @@ static LRESULT LoadStaticMovie(HWND hWnd, OwnerDrawDialogElement& data, const ch
 		if (pMovie->VTable && pMovie->VTable->SetPosition)
 			pMovie->VTable->SetPosition(pMovie, ownerRect.left, ownerRect.top);
 
-		::MoveWindow(hWnd, ownerRect.left, ownerRect.top, pMovie->Width, pMovie->Height, FALSE);
+		int x = ownerRect.left;
+		int y = ownerRect.top;
+		if (const HWND parentHwnd = ::GetParent(hWnd))
+		{
+			RECT parentRect {};
+			if (OwnerDraw::GetRectangle(parentHwnd, &parentRect))
+			{
+				x -= parentRect.left;
+				y -= parentRect.top;
+			}
+		}
+
+		if (RenderDX::IsOwnerDrawUsingRawWindowCoordinates())
+			::MoveWindow(hWnd, x, y, pMovie->Width, pMovie->Height, FALSE);
+		else
+			RenderDX::MoveWindowInRender(hWnd, x, y, pMovie->Width, pMovie->Height, FALSE);
+
+		SyncStaticMoviePosition(hWnd, data);
 		::SetTimer(hWnd, 0x65, 0x22, nullptr);
 		return 0;
 	}
@@ -95,18 +153,51 @@ static const char* GetStaticMovieName(int index)
 	return MovieInfo::Array.Items[index].Name;
 }
 
+static void SyncStaticMoviePosition(HWND hWnd, OwnerDrawDialogElement& data)
+{
+	auto pMovie = data.AsStatic().MovieHandle();
+	if (!pMovie || !pMovie->VTable || !pMovie->VTable->SetPosition)
+		return;
+
+	RECT ownerRect {};
+	if (!OwnerDraw::GetRectangle(hWnd, &ownerRect))
+		return;
+
+	pMovie->VTable->SetPosition(pMovie, ownerRect.left, ownerRect.top);
+}
+
+void WWUI::SyncStaticMoviePositions(HWND rootHwnd)
+{
+	if (!rootHwnd)
+	{
+		for (auto it = OwnerDraw::Dialogs.begin(); it != OwnerDraw::Dialogs.end(); ++it)
+		{
+			const HWND hWnd = it->Key;
+			if (::IsWindow(hWnd))
+				SyncStaticMoviePosition(hWnd, it->Value);
+		}
+
+		return;
+	}
+
+	if (auto pData = FindOwnerDrawData(rootHwnd))
+		SyncStaticMoviePosition(rootHwnd, *pData);
+
+	for (HWND child = ::GetWindow(rootHwnd, GW_CHILD); child; child = ::GetWindow(child, GW_HWNDNEXT))
+		SyncStaticMoviePositions(child);
+}
+
 static bool EnsureStaticBackground(HWND hWnd, OwnerDrawDialogElement& data)
 {
 	if (data.AsStatic().CachedBackground() || !DSurface::Alternate)
 		return data.AsStatic().CachedBackground() != nullptr;
 
 	RECT ownerRect {};
-	RECT clientRect {};
-	OwnerDraw::GetRectangle(hWnd, &ownerRect);
-	::GetClientRect(hWnd, &clientRect);
+	if (!GetStaticPaintRect(hWnd, data, ownerRect))
+		return false;
 
-	const int width = clientRect.right + 1;
-	const int height = clientRect.bottom + 1;
+	const int width = ownerRect.right - ownerRect.left + 1;
+	const int height = ownerRect.bottom - ownerRect.top + 1;
 	if (width <= 0 || height <= 0)
 		return false;
 
@@ -128,12 +219,11 @@ static void RestoreStaticBackground(HWND hWnd, OwnerDrawDialogElement& data, boo
 		return;
 
 	RECT ownerRect {};
-	RECT clientRect {};
-	OwnerDraw::GetRectangle(hWnd, &ownerRect);
-	::GetClientRect(hWnd, &clientRect);
+	if (!GetStaticPaintRect(hWnd, data, ownerRect))
+		return;
 
-	const int width = clientRect.right + (inclusiveBounds ? 1 : 0);
-	const int height = clientRect.bottom + (inclusiveBounds ? 1 : 0);
+	const int width = ownerRect.right - ownerRect.left + (inclusiveBounds ? 1 : 0);
+	const int height = ownerRect.bottom - ownerRect.top + (inclusiveBounds ? 1 : 0);
 	if (width <= 0 || height <= 0)
 		return;
 
@@ -144,8 +234,7 @@ static void RestoreStaticBackground(HWND hWnd, OwnerDrawDialogElement& data, boo
 
 static void ResetStaticBackground(HWND hWnd, OwnerDrawDialogElement& data)
 {
-	if (data.AsStatic().CachedBackground())
-		DeleteSurfaceObject(data.AsStatic().CachedBackground());
+	ResetOwnerDrawCachedSurface(data);
 
 	::InvalidateRect(hWnd, nullptr, FALSE);
 }
@@ -290,7 +379,8 @@ static LRESULT PaintStatic(HWND hWnd, OwnerDrawDialogElement& data)
 	EnsureStaticBackground(hWnd, data);
 
 	RECT ownerRect {};
-	OwnerDraw::GetRectangle(hWnd, &ownerRect);
+	if (!GetStaticPaintRect(hWnd, data, ownerRect))
+		return 0;
 
 	if (data.AsStatic().FillBackground())
 	{
@@ -341,8 +431,7 @@ static LRESULT PaintStatic(HWND hWnd, OwnerDrawDialogElement& data)
 
 static void DestroyStaticResources(HWND hWnd, OwnerDrawDialogElement& data)
 {
-	if (data.AsStatic().CachedBackground())
-		DeleteSurfaceObject(data.AsStatic().CachedBackground());
+	ResetOwnerDrawCachedSurface(data);
 
 	if (data.AsStatic().OwnsShape() && data.AsStatic().Shape())
 	{
@@ -455,6 +544,7 @@ LRESULT CALLBACK WWUI::StaticCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 	case WM_SIZE:
 	case WM_WINDOWPOSCHANGED:
 		ResetStaticBackground(hWnd, data);
+		SyncStaticMoviePosition(hWnd, data);
 		return 0;
 
 	case WM_DESTROY:

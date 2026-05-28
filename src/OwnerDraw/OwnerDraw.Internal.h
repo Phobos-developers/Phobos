@@ -5,6 +5,7 @@
 #include "../Render/Functions.h"
 
 #include <CommCtrl.h>
+#include <windowsx.h>
 
 #include <BitFont.h>
 #include <BitText.h>
@@ -52,6 +53,10 @@ bool IsEmpty(const WideWstring& text);
 const wchar_t* GetWideTextBuffer(const WideWstring& text);
 
 void DeleteSurfaceObject(Surface*& pSurface);
+
+void ResetOwnerDrawCachedSurface(OwnerDrawDialogElement& data);
+
+void ResetOwnerDrawCachedSurfaceTree(HWND rootHwnd);
 
 void DeleteUnknownGameObject(void*& pObject);
 

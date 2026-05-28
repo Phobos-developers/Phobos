@@ -40,7 +40,7 @@ void EnsureScrollBarCache(
 	if (data.CacheSurface)
 	{
 		if (data.CacheSurface->GetWidth() != localRect.Width || data.CacheSurface->GetHeight() != localRect.Height)
-			DeleteSurfaceObject(data.CacheSurface);
+			ResetOwnerDrawCachedSurface(data);
 	}
 
 	if (data.CacheSurface || localRect.Width <= 0 || localRect.Height <= 0)
@@ -149,10 +149,63 @@ static void PaintScrollBar(
 	DrawScrollArrow(DSurface::Alternate, downButtonRect, false, downPressed, disabled);
 }
 
+static WNDPROC GetComboDropWindowProc()
+{
+	return reinterpret_cast<WNDPROC>(0x60D540);
+}
+
+static bool IsComboDropNotifyHwnd(HWND hWnd)
+{
+	return hWnd
+		&& (hWnd == OwnerDraw::ComboDropActiveDropHwnd
+			|| FindWindowProc(OwnerDraw::DialogProcs, hWnd) == GetComboDropWindowProc()
+			|| FindWindowProc(OwnerDraw::SubclassProcs, hWnd) == GetComboDropWindowProc());
+}
+
+static bool TryGetComboDropForwardedMousePoint(
+	HWND hWnd,
+	OwnerDrawDialogElement& data,
+	const RECT& clientRect,
+	LPARAM lParam,
+	POINT& point)
+{
+	const HWND notifyHwnd = data.AsScrollBar().NotifyHwnd();
+	if (!IsComboDropNotifyHwnd(notifyHwnd))
+		return false;
+
+	point = POINT { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+	if (point.x >= clientRect.left
+		&& point.x <= clientRect.right
+		&& point.y >= clientRect.top
+		&& point.y <= clientRect.bottom)
+	{
+		return false;
+	}
+
+	RECT notifyRect {};
+	RECT scrollRect {};
+	if (!OwnerDraw::GetRectangle(notifyHwnd, &notifyRect) || !OwnerDraw::GetRectangle(hWnd, &scrollRect))
+		return false;
+
+	point.x += notifyRect.left - scrollRect.left;
+	point.y += notifyRect.top - scrollRect.top;
+	return true;
+}
+
+static POINT GetScrollBarMousePoint(HWND hWnd, OwnerDrawDialogElement& data, const RECT& clientRect, LPARAM lParam)
+{
+	POINT point {};
+	if (TryGetComboDropForwardedMousePoint(hWnd, data, clientRect, lParam, point))
+		return point;
+
+	return RenderDX::MouseLParamToRenderLocalPoint(hWnd, lParam);
+}
+
 LRESULT CALLBACK WWUI::ScrollBarCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	RECT clientRect {};
-	::GetClientRect(hWnd, &clientRect);
+	if (RenderDX::IsOwnerDrawUsingRawWindowCoordinates() || !RenderDX::GetClientRectInRender(hWnd, &clientRect))
+		::GetClientRect(hWnd, &clientRect);
 
 	RECT scrollBarRect {};
 	OwnerDraw::GetRectangle(hWnd, &scrollBarRect);
@@ -210,7 +263,7 @@ LRESULT CALLBACK WWUI::ScrollBarCtrl(HWND hWnd, UINT message, WPARAM wParam, LPA
 	{
 		POINT point {};
 		::GetCursorPos(&point);
-		::ScreenToClient(hWnd, &point);
+		point = RenderDX::ScreenToRenderLocalPoint(hWnd, point);
 
 		thumbTop = point.y - thumbHeight / 2;
 		if (thumbTop < ScrollBarButtonHeight)
@@ -332,7 +385,7 @@ LRESULT CALLBACK WWUI::ScrollBarCtrl(HWND hWnd, UINT message, WPARAM wParam, LPA
 	{
 		POINT point {};
 		::GetCursorPos(&point);
-		::ScreenToClient(hWnd, &point);
+		point = RenderDX::ScreenToRenderLocalPoint(hWnd, point);
 
 		upButtonPressed = false;
 		downButtonPressed = false;
@@ -368,14 +421,7 @@ LRESULT CALLBACK WWUI::ScrollBarCtrl(HWND hWnd, UINT message, WPARAM wParam, LPA
 	case WM_MOUSEMOVE:
 		if (isThumbDragging)
 		{
-			RECT invalidateRect
-			{
-				scrollBarLeft,
-				clientRect.top,
-				clientRect.right,
-				clientRect.bottom
-			};
-			::InvalidateRect(hWnd, &invalidateRect, FALSE);
+			::InvalidateRect(hWnd, nullptr, FALSE);
 		}
 
 		if (wParam & MK_LBUTTON)
@@ -412,8 +458,9 @@ LRESULT CALLBACK WWUI::ScrollBarCtrl(HWND hWnd, UINT message, WPARAM wParam, LPA
 		}
 
 		{
-			const int clickX = LOWORD(lParam);
-			const int clickY = HIWORD(lParam);
+			const POINT point = GetScrollBarMousePoint(hWnd, data, clientRect, lParam);
+			const int clickX = point.x;
+			const int clickY = point.y;
 			const int repeatCount = message == WM_LBUTTONDBLCLK ? 2 : 1;
 
 			upButtonPressed = false;

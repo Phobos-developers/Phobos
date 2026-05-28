@@ -21,4 +21,11 @@ namespace WWUI
 	LRESULT CALLBACK RadioCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	LRESULT CALLBACK InputCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	LRESULT CALLBACK SysListViewCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	HWND __fastcall RegisterOwnerDrawWindow(HWND hWnd, int dialogID);
+	void CaptureOwnerDrawWindowRects();
+	void ApplyOwnerDrawWindowRects();
+	void RelayoutWindowsAfterDisplayModeChange();
+	bool HasActiveOwnerDrawDialog();
+	void SyncStaticMoviePositions(HWND rootHwnd);
+	void SyncListBoxScrollBarPositions(HWND rootHwnd);
 }

@@ -205,7 +205,8 @@ static void PaintSlider(
 LRESULT CALLBACK WWUI::SliderCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	RECT clientRect {};
-	::GetClientRect(hWnd, &clientRect);
+	if (RenderDX::IsOwnerDrawUsingRawWindowCoordinates() || !RenderDX::GetClientRectInRender(hWnd, &clientRect))
+		::GetClientRect(hWnd, &clientRect);
 
 	RECT ownerRect {};
 	OwnerDraw::GetRectangle(hWnd, &ownerRect);
@@ -226,8 +227,30 @@ LRESULT CALLBACK WWUI::SliderCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 	int stepValue = data.AsSlider().StepValue();
 	int showValueLabel = data.AsSlider().ShowValueLabel();
 
-	int valueLabelWidth = showValueLabel ? SliderValueLabelWidth : 0;
-	const int trackTravel = SliderTrackTravel(clientRect, valueLabelWidth);
+	int valueLabelWidth = 0;
+	int trackTravel = 1;
+	auto updateTrackMetrics = [&]()
+	{
+		if (!stepValue)
+		{
+			valueLabelWidth = SliderValueLabelWidth;
+			stepValue = 1;
+			showValueLabel = 1;
+		}
+		else
+		{
+			valueLabelWidth = showValueLabel ? SliderValueLabelWidth : 0;
+		}
+
+		trackTravel = SliderTrackTravel(clientRect, valueLabelWidth);
+	};
+
+	auto updateThumbFromPosition = [&]()
+	{
+		thumbOffsetPixels = SliderThumbOffsetFromPosition(positionOffset, trackTravel, rangeSpan);
+	};
+
+	updateTrackMetrics();
 
 	if (!rangeSpan)
 	{
@@ -239,7 +262,7 @@ LRESULT CALLBACK WWUI::SliderCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			rangeSpan = 100;
 
 		positionOffset = static_cast<int>(CallSelectedHandler(pOriginalWndProc, hWnd, WW_SLIDER_GETPOS, 0, 0)) - rangeMin;
-		thumbOffsetPixels = SliderThumbOffsetFromPosition(positionOffset, trackTravel, rangeSpan);
+		updateThumbFromPosition();
 
 		data.AsSlider().ThumbOffsetPixels() = thumbOffsetPixels;
 		data.AsSlider().RangeSpan() = rangeSpan;
@@ -249,12 +272,8 @@ LRESULT CALLBACK WWUI::SliderCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		data.AsSlider().ShowValueLabel() = showValueLabel;
 	}
 
-	if (!stepValue)
-	{
-		valueLabelWidth = SliderValueLabelWidth;
-		stepValue = 1;
-		showValueLabel = 1;
-	}
+	if (!isThumbDragging)
+		updateThumbFromPosition();
 
 	int thumbHitLeftX = clientRect.left + thumbOffsetPixels + 1;
 	int thumbHitRightX = thumbHitLeftX + SliderGripHitWidth;
@@ -263,7 +282,7 @@ LRESULT CALLBACK WWUI::SliderCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 	{
 		POINT point {};
 		::GetCursorPos(&point);
-		::ScreenToClient(hWnd, &point);
+		point = RenderDX::ScreenToRenderLocalPoint(hWnd, point);
 
 		SliderUpdateFromGripX(
 			SliderClampedGripX(point.x, clientRect, valueLabelWidth),
@@ -285,10 +304,15 @@ LRESULT CALLBACK WWUI::SliderCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 
 	auto writeBack = [&]() -> LRESULT
 	{
-		const bool valueChanged =
+		const bool notifyChanged =
 			positionOffset != data.AsSlider().PositionOffset()
 			|| rangeSpan != data.AsSlider().RangeSpan()
 			|| rangeMin != data.AsSlider().RangeMin();
+		const bool visualChanged =
+			notifyChanged
+			|| thumbOffsetPixels != data.AsSlider().ThumbOffsetPixels()
+			|| stepValue != data.AsSlider().StepValue()
+			|| showValueLabel != data.AsSlider().ShowValueLabel();
 
 		data.AsSlider().IsMouseTracking() = isMouseTracking;
 		data.AsSlider().IsThumbDragging() = isThumbDragging;
@@ -299,9 +323,11 @@ LRESULT CALLBACK WWUI::SliderCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		data.AsSlider().StepValue() = stepValue;
 		data.AsSlider().ShowValueLabel() = showValueLabel;
 
-		if (valueChanged)
-		{
+		if (visualChanged)
 			::InvalidateRect(hWnd, nullptr, FALSE);
+
+		if (notifyChanged)
+		{
 			::SendMessageA(::GetParent(hWnd), WM_HSCROLL, MAKELONG(SB_THUMBTRACK, positionOffset + rangeMin), reinterpret_cast<LPARAM>(hWnd));
 
 			if (playClickSound == 1 && !data.AsSlider().SuppressClickSound() && RulesClass::Instance)
@@ -342,7 +368,7 @@ LRESULT CALLBACK WWUI::SliderCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 
 	case WM_MOUSEMOVE:
 		if (isThumbDragging)
-			::InvalidateRect(hWnd, &clientRect, FALSE);
+			::InvalidateRect(hWnd, nullptr, FALSE);
 
 		if (wParam & MK_LBUTTON)
 			return writeBack();
@@ -368,23 +394,26 @@ LRESULT CALLBACK WWUI::SliderCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			::ReleaseCapture();
 		}
 
-		if (HIWORD(lParam) > clientRect.bottom - SliderMouseHitBottomInset)
 		{
-			const int clickX = LOWORD(lParam);
-			if (clickX < thumbHitLeftX || clickX >= thumbHitRightX)
+			const POINT point = RenderDX::MouseLParamToRenderLocalPoint(hWnd, lParam);
+			if (point.y > clientRect.bottom - SliderMouseHitBottomInset)
 			{
-				SliderUpdateFromGripX(
-					SliderClampedGripX(clickX, clientRect, valueLabelWidth),
-					rangeSpan,
-					rangeMin,
-					stepValue,
-					trackTravel,
-					positionOffset,
-					thumbOffsetPixels);
-			}
-			else if (message == WM_LBUTTONDOWN)
-			{
-				isThumbDragging = 1;
+				const int clickX = point.x;
+				if (clickX < thumbHitLeftX || clickX >= thumbHitRightX)
+				{
+					SliderUpdateFromGripX(
+						SliderClampedGripX(clickX, clientRect, valueLabelWidth),
+						rangeSpan,
+						rangeMin,
+						stepValue,
+						trackTravel,
+						positionOffset,
+						thumbOffsetPixels);
+				}
+				else if (message == WM_LBUTTONDOWN)
+				{
+					isThumbDragging = 1;
+				}
 			}
 		}
 		return writeBack();
@@ -399,7 +428,7 @@ LRESULT CALLBACK WWUI::SliderCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			positionOffset = requestedOffset;
 
 		playClickSound = 0;
-		thumbOffsetPixels = SliderThumbOffsetFromPosition(positionOffset, trackTravel, rangeSpan);
+		updateThumbFromPosition();
 		return writeBack();
 	}
 
@@ -409,19 +438,23 @@ LRESULT CALLBACK WWUI::SliderCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		if (positionOffset > rangeSpan)
 			positionOffset = rangeSpan;
 
-		if (positionOffset < rangeMin)
-			positionOffset = rangeMin;
+		if (positionOffset < 0)
+			positionOffset = 0;
 
 		playClickSound = 0;
-		thumbOffsetPixels = SliderThumbOffsetFromPosition(positionOffset, trackTravel, rangeSpan);
+		updateThumbFromPosition();
 		return writeBack();
 
 	case WW_SLIDER_SETSTEP:
 		stepValue = static_cast<int>(lParam);
+		updateTrackMetrics();
+		updateThumbFromPosition();
 		return writeBack();
 
 	case WW_SLIDER_SHOWVALUE:
 		showValueLabel = static_cast<int>(lParam);
+		updateTrackMetrics();
+		updateThumbFromPosition();
 		return writeBack();
 
 	case WW_SLIDER_SUPPRESSCLICK:

@@ -737,6 +737,76 @@ static void SyncListBoxScrollBar(HWND hWnd, OwnerDrawDialogElement& data, const 
 	}
 }
 
+static bool HasListBoxScrollBar(OwnerDrawDialogElement& data)
+{
+	const HWND scrollBarHwnd = data.AsListBox().ScrollBarHwnd();
+	return scrollBarHwnd && reinterpret_cast<intptr_t>(scrollBarHwnd) > 1 && ::IsWindow(scrollBarHwnd);
+}
+
+static void PositionListBoxScrollBar(HWND hWnd, OwnerDrawDialogElement& data, BOOL repaint)
+{
+	if (!HasListBoxScrollBar(data))
+		return;
+
+	const HWND parentHwnd = ::GetParent(hWnd);
+	if (!parentHwnd)
+		return;
+
+	RECT parentRect {};
+	RECT listRect {};
+	if (!OwnerDraw::GetRectangle(parentHwnd, &parentRect) || !OwnerDraw::GetRectangle(hWnd, &listRect))
+		return;
+
+	const int inset = OwnerDraw::ControlInsetPx;
+	const int scrollBarWidth = 2 * inset + ListBoxScrollBarExtraWidth;
+	const int x = listRect.right - parentRect.left - 2 * inset + 1;
+	const int y = listRect.top - parentRect.top;
+	const int height = listRect.bottom - listRect.top;
+
+	if (height <= 0)
+		return;
+
+	const HWND scrollBarHwnd = data.AsListBox().ScrollBarHwnd();
+	if (RenderDX::IsOwnerDrawUsingRawWindowCoordinates())
+	{
+		::MoveWindow(scrollBarHwnd, x, y, scrollBarWidth, height, repaint);
+	}
+	else
+	{
+		RenderDX::MoveWindowInRender(scrollBarHwnd, x, y, scrollBarWidth, height, repaint);
+	}
+
+	if (auto pScrollData = FindOwnerDrawData(scrollBarHwnd))
+		ResetOwnerDrawCachedSurface(*pScrollData);
+
+	::InvalidateRect(scrollBarHwnd, nullptr, FALSE);
+}
+
+void WWUI::SyncListBoxScrollBarPositions(HWND rootHwnd)
+{
+	if (!rootHwnd)
+	{
+		for (auto it = OwnerDraw::Dialogs.begin(); it != OwnerDraw::Dialogs.end(); ++it)
+		{
+			const HWND hWnd = it->Key;
+			auto& data = it->Value;
+			if (::IsWindow(hWnd) && data.ControlType == WWControlType::ListBox)
+				PositionListBoxScrollBar(hWnd, data, FALSE);
+		}
+
+		return;
+	}
+
+	if (auto pData = FindOwnerDrawData(rootHwnd))
+	{
+		if (pData->ControlType == WWControlType::ListBox)
+			PositionListBoxScrollBar(rootHwnd, *pData, FALSE);
+	}
+
+	for (HWND child = ::GetWindow(rootHwnd, GW_CHILD); child; child = ::GetWindow(child, GW_HWNDNEXT))
+		SyncListBoxScrollBarPositions(child);
+}
+
 static void UpdateListBoxScrollBar(HWND hWnd, OwnerDrawDialogElement& data, const RECT& clientRect)
 {
 	const int itemCount = static_cast<int>(::SendMessageA(hWnd, LB_GETCOUNT, 0, 0));
@@ -758,19 +828,41 @@ static void UpdateListBoxScrollBar(HWND hWnd, OwnerDrawDialogElement& data, cons
 			OwnerDraw::GetRectangle(parentHwnd, &parentRect);
 			OwnerDraw::GetRectangle(hWnd, &listRect);
 
-			const int x = listRect.left - parentRect.left - scrollBarWidth + clientRect.right + 1;
-			const int y = listRect.top - parentRect.top + clientRect.top;
 			const int height = listRect.bottom - listRect.top;
+			RECT scrollClientRect {};
+			if (RenderDX::IsOwnerDrawUsingRawWindowCoordinates())
+			{
+				scrollClientRect.left = listRect.left - parentRect.left - scrollBarWidth + clientRect.right + 1;
+				scrollClientRect.top = listRect.top - parentRect.top + clientRect.top;
+				scrollClientRect.right = scrollClientRect.left + scrollBarWidth;
+				scrollClientRect.bottom = scrollClientRect.top + height;
+			}
+			else
+			{
+				const RECT scrollRenderRect
+				{
+					listRect.left - scrollBarWidth + clientRect.right + 1,
+					listRect.top + clientRect.top,
+					listRect.left + clientRect.right + 1,
+					listRect.top + clientRect.top + height
+				};
+
+				if (!RenderDX::RenderRectToClient(parentHwnd, scrollRenderRect, &scrollClientRect))
+				{
+					data.AsListBox().ScrollBarHwnd() = nullptr;
+					return;
+				}
+			}
 
 			data.AsListBox().ScrollBarHwnd() = ::CreateWindowExA(
 				0,
 				"Scrollbar",
 				nullptr,
 				WS_CHILD | WS_VISIBLE | SBS_VERT | WS_TABSTOP,
-				x,
-				y,
-				scrollBarWidth,
-				height,
+				scrollClientRect.left,
+				scrollClientRect.top,
+				scrollClientRect.right - scrollClientRect.left,
+				scrollClientRect.bottom - scrollClientRect.top,
 				parentHwnd,
 				nullptr,
 				reinterpret_cast<HINSTANCE>(Phobos::hInstance),
@@ -787,17 +879,32 @@ static void UpdateListBoxScrollBar(HWND hWnd, OwnerDrawDialogElement& data, cons
 
 			SyncListBoxScrollBar(hWnd, data, clientRect, itemCount, itemHeight);
 
-			::SetWindowPos(
-				hWnd,
-				nullptr,
-				0,
-				0,
-				listRect.right - listRect.left - scrollBarWidth,
-				listRect.bottom - listRect.top,
-				SWP_NOMOVE | SWP_NOZORDER);
+			if (RenderDX::IsOwnerDrawUsingRawWindowCoordinates())
+			{
+				::SetWindowPos(
+					hWnd,
+					nullptr,
+					0,
+					0,
+					listRect.right - listRect.left - scrollBarWidth,
+					listRect.bottom - listRect.top,
+					SWP_NOMOVE | SWP_NOZORDER);
+			}
+			else
+			{
+				RenderDX::SetWindowPosInRender(
+					hWnd,
+					nullptr,
+					0,
+					0,
+					listRect.right - listRect.left - scrollBarWidth,
+					listRect.bottom - listRect.top,
+					SWP_NOMOVE | SWP_NOZORDER);
+			}
 
 			::ShowWindow(data.AsListBox().ScrollBarHwnd(), SW_SHOW);
 			::BringWindowToTop(data.AsListBox().ScrollBarHwnd());
+			PositionListBoxScrollBar(hWnd, data, FALSE);
 			::InvalidateRect(data.AsListBox().ScrollBarHwnd(), nullptr, FALSE);
 			::UpdateWindow(data.AsListBox().ScrollBarHwnd());
 		}
@@ -814,15 +921,29 @@ static void UpdateListBoxScrollBar(HWND hWnd, OwnerDrawDialogElement& data, cons
 	data.AsListBox().ScrollBarHwnd() = nullptr;
 
 	RECT listRect {};
-	::GetWindowRect(hWnd, &listRect);
-	::SetWindowPos(
-		hWnd,
-		nullptr,
-		0,
-		0,
-		listRect.right - listRect.left + scrollBarWidth,
-		listRect.bottom - listRect.top,
-		SWP_NOMOVE | SWP_NOZORDER);
+	OwnerDraw::GetRectangle(hWnd, &listRect);
+	if (RenderDX::IsOwnerDrawUsingRawWindowCoordinates())
+	{
+		::SetWindowPos(
+			hWnd,
+			nullptr,
+			0,
+			0,
+			listRect.right - listRect.left + scrollBarWidth,
+			listRect.bottom - listRect.top,
+			SWP_NOMOVE | SWP_NOZORDER);
+	}
+	else
+	{
+		RenderDX::SetWindowPosInRender(
+			hWnd,
+			nullptr,
+			0,
+			0,
+			listRect.right - listRect.left + scrollBarWidth,
+			listRect.bottom - listRect.top,
+			SWP_NOMOVE | SWP_NOZORDER);
+	}
 
 	data.AsListBox().ScrollBarWidth() = 0;
 }
@@ -837,7 +958,9 @@ LRESULT CALLBACK WWUI::ListBoxCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARA
 	const auto pOriginalWndProc = FindWindowProc(OwnerDraw::DialogProcs, hWnd);
 
 	RECT clientRect {};
-	::GetClientRect(hWnd, &clientRect);
+	if (RenderDX::IsOwnerDrawUsingRawWindowCoordinates() || !RenderDX::GetClientRectInRender(hWnd, &clientRect))
+		::GetClientRect(hWnd, &clientRect);
+	const RECT fullClientRect = clientRect;
 
 	RECT ownerRect {};
 	OwnerDraw::GetRectangle(hWnd, &ownerRect);
@@ -983,27 +1106,12 @@ LRESULT CALLBACK WWUI::ListBoxCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARA
 	switch (message)
 	{
 	case WM_SIZE:
-			if (data.AsListBox().ScrollBarHwnd() && reinterpret_cast<intptr_t>(data.AsListBox().ScrollBarHwnd()) > 1)
-		{
-			const HWND parentHwnd = ::GetParent(hWnd);
-			RECT parentRect {};
-			RECT listRect {};
-			OwnerDraw::GetRectangle(parentHwnd, &parentRect);
-			OwnerDraw::GetRectangle(hWnd, &listRect);
-			::MoveWindow(
-				data.AsListBox().ScrollBarHwnd(),
-				listRect.right - parentRect.left,
-				listRect.top - parentRect.top,
-				2 * inset + ListBoxScrollBarExtraWidth,
-				listRect.bottom - listRect.top,
-				TRUE);
-		}
+		PositionListBoxScrollBar(hWnd, data, TRUE);
 
 		if (data.CacheSurface
-			&& (LOWORD(lParam) != data.CacheSurface->GetWidth() || HIWORD(lParam) != data.CacheSurface->GetHeight()))
+			&& (fullClientRect.right != data.CacheSurface->GetWidth() || fullClientRect.bottom != data.CacheSurface->GetHeight()))
 		{
-			DeleteSurfaceObject(data.CacheSurface);
-			--OwnerDraw::CachedSurfaceCount;
+			ResetOwnerDrawCachedSurface(data);
 		}
 
 		return finish(forwardOriginal());
@@ -1069,7 +1177,11 @@ LRESULT CALLBACK WWUI::ListBoxCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARA
 	case WM_LBUTTONDOWN:
 	{
 		const int itemHeight = std::max(static_cast<int>(::SendMessageA(hWnd, LB_GETITEMHEIGHT, 0, 0)), 1);
-		const int itemIndex = data.AsListBox().TopIndex() + SignedHighWord(lParam) / itemHeight;
+		const POINT point = RenderDX::MouseLParamToRenderLocalPoint(hWnd, lParam);
+		if (point.y < 0)
+			return 0;
+
+		const int itemIndex = data.AsListBox().TopIndex() + point.y / itemHeight;
 		const int itemCount = static_cast<int>(::SendMessageA(hWnd, LB_GETCOUNT, 0, 0));
 		if (itemIndex < 0 || itemIndex >= itemCount)
 			return 0;
@@ -1354,9 +1466,10 @@ LRESULT CALLBACK WWUI::ListBoxCtrl(HWND hWnd, UINT message, WPARAM wParam, LPARA
 
 	case WW_QUERYTOOLTIPHIT:
 	{
-		const int x = SignedLowWord(lParam);
-		const int y = SignedHighWord(lParam);
-		if (x < clientRect.right && y < clientRect.bottom)
+		const POINT point = RenderDX::MouseLParamToRenderLocalPoint(hWnd, lParam);
+		const int x = point.x;
+		const int y = point.y;
+		if (x >= 0 && y >= 0 && x < clientRect.right && y < clientRect.bottom)
 		{
 			const int itemHeight = std::max(static_cast<int>(::SendMessageA(hWnd, LB_GETITEMHEIGHT, 0, 0)), 1);
 			const int itemIndex = data.AsListBox().TopIndex() + y / itemHeight;

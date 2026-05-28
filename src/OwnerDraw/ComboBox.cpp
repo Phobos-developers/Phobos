@@ -15,6 +15,8 @@ static void SyncComboDropSelectionColor()
 
 constexpr int ComboBoxArrowWidth = 20;
 constexpr int ComboBoxArrowLeftOffset = 19;
+constexpr int ComboBoxVisibleHeight = 24;
+constexpr int ComboBoxDefaultMaxVisibleDropItems = 9;
 constexpr int ComboBoxMaxColorItems = 50;
 constexpr int ComboBoxTextEntryInlineBytes = 0;
 constexpr int ComboBoxEditListNotificationCode = 0x300;
@@ -163,7 +165,50 @@ static void DrawComboDropButton(const RectangleStruct& rect, bool dropped, bool 
 	DrawScrollArrow(DSurface::Alternate, rect, dropped, dropped, alternatePalette);
 }
 
-static void PaintComboBox(HWND hWnd, OwnerDrawDialogElement& data, const RECT& clientRect, const RECT& ownerRect, WNDPROC pOriginalWndProc)
+static bool GetComboBoxRenderLocalRect(HWND hWnd, const RECT& ownerRect, RECT& localRect)
+{
+	localRect = ownerRect;
+
+	const HWND parentHwnd = ::GetParent(hWnd);
+	if (!parentHwnd || parentHwnd == Game::hWnd)
+		return true;
+
+	RECT parentRect {};
+	if (!OwnerDraw::GetRectangle(parentHwnd, &parentRect))
+		return false;
+
+	localRect.left -= parentRect.left;
+	localRect.right -= parentRect.left;
+	localRect.top -= parentRect.top;
+	localRect.bottom -= parentRect.top;
+	return true;
+}
+
+static void EnsureComboBoxWindowHeight(HWND hWnd, OwnerDrawDialogElement& data, RECT& clientRect, RECT& ownerRect)
+{
+	const int width = ownerRect.right - ownerRect.left;
+	if (width <= 0 || ownerRect.bottom - ownerRect.top == ComboBoxVisibleHeight)
+		return;
+
+	RECT localRect {};
+	if (!GetComboBoxRenderLocalRect(hWnd, ownerRect, localRect))
+		return;
+
+	const BOOL moved = RenderDX::IsOwnerDrawUsingRawWindowCoordinates()
+		? ::MoveWindow(hWnd, localRect.left, localRect.top, width, ComboBoxVisibleHeight, FALSE)
+		: RenderDX::MoveWindowInRender(hWnd, localRect.left, localRect.top, width, ComboBoxVisibleHeight, FALSE);
+
+	if (!moved)
+		return;
+
+	ResetOwnerDrawCachedSurface(data);
+	OwnerDraw::GetRectangle(hWnd, &ownerRect);
+
+	if (RenderDX::IsOwnerDrawUsingRawWindowCoordinates() || !RenderDX::GetClientRectInRender(hWnd, &clientRect))
+		::GetClientRect(hWnd, &clientRect);
+}
+
+static void PaintComboBox(HWND hWnd, OwnerDrawDialogElement& data, const RECT& ownerRect, WNDPROC pOriginalWndProc)
 {
 	if (!DSurface::Alternate)
 		return;
@@ -178,7 +223,7 @@ static void PaintComboBox(HWND hWnd, OwnerDrawDialogElement& data, const RECT& c
 		ownerRect.left,
 		ownerRect.top,
 		width,
-		24
+		ComboBoxVisibleHeight
 	};
 
 	RectangleStruct localRect { 0, 0, width, height };
@@ -245,14 +290,15 @@ static void PaintComboBox(HWND hWnd, OwnerDrawDialogElement& data, const RECT& c
 		DSurface::Alternate->FillRect(&fillRect, ConvertRGBToSurfaceColor(textColor));
 	}
 
-	TrimComboTextToWidth(textBuffer, std::size(textBuffer), pFont, clientRect.right - ComboBoxArrowWidth);
+	const int textMaxWidth = std::max(textAreaRect.Width - 4, 0);
+	TrimComboTextToWidth(textBuffer, std::size(textBuffer), pFont, textMaxWidth);
 
 	RECT textRect
 	{
-		ownerRect.left + 2,
-		ownerRect.top,
-		ownerRect.right,
-		ownerRect.bottom
+		textAreaRect.X + 2,
+		textAreaRect.Y,
+		textAreaRect.X + textAreaRect.Width,
+		textAreaRect.Y + textAreaRect.Height
 	};
 
 	OwnerDraw::DrawWideText(DSurface::Alternate, textBuffer, &textRect, pFont, textColor, 4, 12, 0, 0, 0);
@@ -449,6 +495,25 @@ static void CloseComboDropDown(OwnerDrawDialogElement& data, HWND hWnd)
 	data.AsComboBox().DropDownHwnd() = nullptr;
 }
 
+static bool GetDroppedControlRectInRender(HWND hWnd, RECT& rect)
+{
+	::SendMessageA(hWnd, CB_GETDROPPEDCONTROLRECT, 0, reinterpret_cast<LPARAM>(&rect));
+
+	if (RenderDX::IsOwnerDrawUsingRawWindowCoordinates())
+		return true;
+
+	POINT topLeft { rect.left, rect.top };
+	POINT bottomRight { rect.right, rect.bottom };
+	if (!RenderDX::ScreenToRenderPoint(&topLeft, false) || !RenderDX::ScreenToRenderPoint(&bottomRight, false))
+		return false;
+
+	rect.left = topLeft.x;
+	rect.top = topLeft.y;
+	rect.right = bottomRight.x;
+	rect.bottom = bottomRight.y;
+	return true;
+}
+
 static LRESULT OpenComboDropDown(OwnerDrawDialogElement& data, HWND hWnd, const RECT& clientRect, const RECT& ownerRect)
 {
 	if (data.AsComboBox().DropDownHwnd())
@@ -463,51 +528,76 @@ static LRESULT OpenComboDropDown(OwnerDrawDialogElement& data, HWND hWnd, const 
 	RECT parentRect {};
 	OwnerDraw::GetRectangle(parentHwnd, &parentRect);
 
-	RECT dropRect {};
-	::SendMessageA(hWnd, CB_GETDROPPEDCONTROLRECT, 0, reinterpret_cast<LPARAM>(&dropRect));
-	if (dropRect.bottom > parentRect.bottom)
-		dropRect.bottom = parentRect.bottom;
-
 	int itemHeight = static_cast<int>(::SendMessageA(hWnd, CB_GETITEMHEIGHT, 0, 0));
 	if (itemHeight <= 0)
 		itemHeight = 1;
 
-	int dropHeight = dropRect.bottom - dropRect.top;
-	int visibleByHeight = (dropHeight - 1) / itemHeight;
 	int itemCount = static_cast<int>(::SendMessageA(hWnd, CB_GETCOUNT, 0, 0));
 	if (itemCount < 1)
 		itemCount = 1;
 
+	const int visibleComboHeight = ComboBoxVisibleHeight;
 	const int maxVisibleItems = data.AsComboBox().MaxVisibleDropItems();
-	if (maxVisibleItems > 0 && itemCount >= maxVisibleItems)
+	int visibleItems = 0;
+	if (maxVisibleItems > 0)
 	{
-		dropHeight = maxVisibleItems * itemHeight + 1;
+		visibleItems = maxVisibleItems;
 	}
-	else if (visibleByHeight > itemCount)
+	else
 	{
-		dropHeight = itemCount * itemHeight + 1;
+		RECT dropRect {};
+		if (GetDroppedControlRectInRender(hWnd, dropRect))
+		{
+			int nativeListHeight = dropRect.bottom - dropRect.top;
+			if (dropRect.top <= ownerRect.top + visibleComboHeight / 2)
+				nativeListHeight -= visibleComboHeight;
+
+			if (nativeListHeight > 0)
+				visibleItems = nativeListHeight / itemHeight;
+		}
+
+		if (visibleItems <= 1 && itemCount > 1)
+			visibleItems = ComboBoxDefaultMaxVisibleDropItems;
 	}
 
-	if (ownerRect.bottom + dropHeight > parentRect.bottom)
-		dropHeight = parentRect.bottom - ownerRect.bottom;
+	if (visibleItems < 1)
+		visibleItems = 1;
 
-	dropHeight -= dropHeight % itemHeight;
+	visibleItems = std::min(visibleItems, itemCount);
+
+	const int dropTop = ownerRect.top + visibleComboHeight + 1;
+	int maxVisibleByParent = (parentRect.bottom - dropTop) / itemHeight;
+	if (maxVisibleByParent < 1)
+		maxVisibleByParent = 1;
+
+	visibleItems = std::min(visibleItems, maxVisibleByParent);
+
+	int dropHeight = visibleItems * itemHeight;
 	if (dropHeight <= 0)
 		dropHeight = itemHeight;
 
-	const int x = ownerRect.left - parentRect.left;
-	const int y = ownerRect.top - parentRect.top + clientRect.bottom + 1;
 	const int width = clientRect.right - clientRect.left;
+	const RECT dropRenderRect
+	{
+		ownerRect.left,
+		dropTop,
+		ownerRect.left + width,
+		dropTop + dropHeight
+	};
+
+	RECT dropClientRect {};
+	if (!RenderDX::RenderRectToClient(parentHwnd, dropRenderRect, &dropClientRect))
+		return 1;
 
 	const HWND dropHwnd = ::CreateWindowExA(
 		0,
 		"ComboDropWin",
 		nullptr,
 		WS_CHILD,
-		x,
-		y,
-		width,
-		dropHeight,
+		dropClientRect.left,
+		dropClientRect.top,
+		dropClientRect.right - dropClientRect.left,
+		dropClientRect.bottom - dropClientRect.top,
 		parentHwnd,
 		nullptr,
 		Game::hInstance,
@@ -546,7 +636,8 @@ LRESULT CALLBACK WWUI::ComboBoxCtrl(HWND hWnd, UINT message, WPARAM wParam, LPAR
 	auto& data = *pData;
 
 	RECT clientRect {};
-	::GetClientRect(hWnd, &clientRect);
+	if (RenderDX::IsOwnerDrawUsingRawWindowCoordinates() || !RenderDX::GetClientRectInRender(hWnd, &clientRect))
+		::GetClientRect(hWnd, &clientRect);
 
 	RECT ownerRect {};
 	OwnerDraw::GetRectangle(hWnd, &ownerRect);
@@ -576,7 +667,8 @@ LRESULT CALLBACK WWUI::ComboBoxCtrl(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		return forwardOriginal();
 
 	case WM_PAINT:
-		PaintComboBox(hWnd, data, clientRect, ownerRect, pOriginalWndProc);
+		EnsureComboBoxWindowHeight(hWnd, data, clientRect, ownerRect);
+		PaintComboBox(hWnd, data, ownerRect, pOriginalWndProc);
 		return 0;
 
 	case WM_ERASEBKGND:
@@ -587,7 +679,7 @@ LRESULT CALLBACK WWUI::ComboBoxCtrl(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		if (RulesClass::Instance)
 			VocClass::PlayGlobal(RulesClass::Instance->GUIComboOpenSound, 0x2000, 1.0f);
 
-		if (LOWORD(lParam) > static_cast<WORD>(clientRect.right - ComboBoxArrowWidth))
+		if (RenderDX::MouseLParamToRenderLocalPoint(hWnd, lParam).x > clientRect.right - ComboBoxArrowWidth)
 		{
 			const bool dropped = ::SendMessageA(hWnd, CB_GETDROPPEDSTATE, 0, 0) == 1;
 			::PostMessageA(hWnd, CB_SHOWDROPDOWN, dropped ? 0 : 1, 0);
@@ -634,6 +726,7 @@ LRESULT CALLBACK WWUI::ComboBoxCtrl(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		return SetComboSelection(data, pOriginalWndProc, hWnd, wParam);
 
 	case CB_SHOWDROPDOWN:
+		EnsureComboBoxWindowHeight(hWnd, data, clientRect, ownerRect);
 		if (wParam)
 			return OpenComboDropDown(data, hWnd, clientRect, ownerRect);
 
@@ -649,14 +742,17 @@ LRESULT CALLBACK WWUI::ComboBoxCtrl(HWND hWnd, UINT message, WPARAM wParam, LPAR
 	case WW_INITDIALOG:
 	{
 		const int fontHeight = BitFontHeight(data.AsComboBox().Font());
+		const int selectionHeight = static_cast<int>(::SendMessageA(hWnd, CB_GETITEMHEIGHT, static_cast<WPARAM>(-1), 0));
 		if (!data.AsComboBox().HeightInitialized()
+			|| selectionHeight != ComboBoxVisibleHeight
 			|| ::SendMessageA(hWnd, CB_GETITEMHEIGHT, 0, 0) != fontHeight + 6)
 		{
-			::SendMessageA(hWnd, CB_SETITEMHEIGHT, static_cast<WPARAM>(-1), fontHeight + 2);
+			::SendMessageA(hWnd, CB_SETITEMHEIGHT, static_cast<WPARAM>(-1), ComboBoxVisibleHeight);
 			::SendMessageA(hWnd, CB_SETITEMHEIGHT, 0, fontHeight + 6);
 			data.AsComboBox().HeightInitialized() = 1;
 		}
 
+		EnsureComboBoxWindowHeight(hWnd, data, clientRect, ownerRect);
 		data.AsComboBox().CurrentSelection() = -1;
 		std::memset(data.AsComboBox().ItemColorOverrides(), 0xFF, sizeof(int) * ComboBoxMaxColorItems);
 		return 0;
@@ -725,14 +821,22 @@ LRESULT CALLBACK WWUI::ComboBoxCtrl(HWND hWnd, UINT message, WPARAM wParam, LPAR
 	case WW_QUERYTOOLTIPHIT:
 		if (const HWND dropHwnd = data.AsComboBox().DropDownHwnd())
 		{
-			RECT comboWindowRect {};
-			RECT dropWindowRect {};
-			::GetWindowRect(hWnd, &comboWindowRect);
-			::GetWindowRect(dropHwnd, &dropWindowRect);
+			POINT point { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+			::ClientToScreen(hWnd, &point);
+			if (!RenderDX::IsOwnerDrawUsingRawWindowCoordinates())
+			{
+				point = RenderDX::ScreenToRenderLocalPoint(dropHwnd, point);
+			}
+			else
+			{
+				::ScreenToClient(dropHwnd, &point);
+			}
 
-			const int x = LOWORD(lParam) + comboWindowRect.left - dropWindowRect.left;
-			const int y = HIWORD(lParam) + comboWindowRect.top - dropWindowRect.top;
-			return ::SendMessageA(dropHwnd, WW_QUERYTOOLTIPHIT, 0, MAKELPARAM(x, y));
+			return ::SendMessageA(
+				dropHwnd,
+				WW_QUERYTOOLTIPHIT,
+				0,
+				MAKELPARAM(static_cast<WORD>(point.x), static_cast<WORD>(point.y)));
 		}
 		return -1;
 

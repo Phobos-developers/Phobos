@@ -19,6 +19,11 @@ WNDPROC FindWindowProc(OwnerDraw::HwndProcDict& procs, HWND hWnd)
 	return nullptr;
 }
 
+static WNDPROC GetComboDropWindowProc()
+{
+	return reinterpret_cast<WNDPROC>(0x60D540);
+}
+
 bool IsEmpty(const WideWstring& text)
 {
 	return text.GetLength() == 0;
@@ -38,6 +43,24 @@ static WideWstring QueryTooltipText(HWND parentHwnd, HWND controlHwnd, LPARAM hi
 	::SendMessageA(parentHwnd, WW_GETTOOLTIPTEXT, 0, reinterpret_cast<LPARAM>(&request));
 
 	return request.Text;
+}
+
+static bool IsTooltipTextCurrent(HWND tooltipHwnd, const WideWstring& text)
+{
+	const auto pTooltipData = FindOwnerDrawData(tooltipHwnd);
+	if (!pTooltipData)
+		return false;
+
+	const wchar_t* currentText = pTooltipData->TextBuffer ? pTooltipData->TextBuffer : L"";
+	return std::wcscmp(currentText, GetWideTextBuffer(text)) == 0;
+}
+
+static void SetTooltipTextIfChanged(HWND tooltipHwnd, const WideWstring& text)
+{
+	if (IsTooltipTextCurrent(tooltipHwnd, text))
+		return;
+
+	::SendMessageA(tooltipHwnd, WW_SETTEXTW, 0, reinterpret_cast<LPARAM>(GetWideTextBuffer(text)));
 }
 
 static std::vector<OwnerDrawWindowMessageKey>& ActiveWindowMessages()
@@ -111,6 +134,36 @@ static HWND GetActiveWindowStackTop()
 		return nullptr;
 
 	return OwnerDraw::ActiveWindowStack[count - 1];
+}
+
+static bool IsOwnerDrawDialogRoot(HWND hWnd)
+{
+	return hWnd
+		&& ::IsWindow(hWnd)
+		&& ::GetWindowLongA(hWnd, DialogProcWindowLongIndex);
+}
+
+bool WWUI::HasActiveOwnerDrawDialog()
+{
+	if (OwnerDraw::ActiveWindowStackCount > 0 && OwnerDraw::ActiveWindowStack)
+	{
+		for (int i = 0; i < OwnerDraw::ActiveWindowStackCount; ++i)
+		{
+			if (IsOwnerDrawDialogRoot(OwnerDraw::ActiveWindowStack[i]))
+				return true;
+		}
+	}
+
+	if (!OwnerDraw::Dialogs.size())
+		return false;
+
+	for (auto it = OwnerDraw::Dialogs.begin(); it != OwnerDraw::Dialogs.end(); ++it)
+	{
+		if (IsOwnerDrawDialogRoot(it->Key))
+			return true;
+	}
+
+	return false;
 }
 
 static void ResizeActiveWindowStack(int capacity)
@@ -289,6 +342,39 @@ void DeleteSurfaceObject(Surface*& pSurface)
 	const auto pDestructor = (*reinterpret_cast<ScalarDeletingDestructor**>(pSurface))[0];
 	pDestructor(pSurface, 1);
 	pSurface = nullptr;
+}
+
+void ResetOwnerDrawCachedSurface(OwnerDrawDialogElement& data)
+{
+	if (!data.CacheSurface)
+		return;
+
+	DeleteSurfaceObject(data.CacheSurface);
+	if (OwnerDraw::CachedSurfaceCount > 0)
+		--OwnerDraw::CachedSurfaceCount;
+}
+
+void ResetOwnerDrawCachedSurfaceTree(HWND rootHwnd)
+{
+	if (!rootHwnd)
+	{
+		for (auto it = OwnerDraw::Dialogs.begin(); it != OwnerDraw::Dialogs.end(); ++it)
+		{
+			ResetOwnerDrawCachedSurface(it->Value);
+			if (::IsWindow(it->Key))
+				::InvalidateRect(it->Key, nullptr, FALSE);
+		}
+
+		return;
+	}
+
+	if (auto pData = FindOwnerDrawData(rootHwnd))
+		ResetOwnerDrawCachedSurface(*pData);
+
+	::InvalidateRect(rootHwnd, nullptr, FALSE);
+
+	for (HWND child = ::GetWindow(rootHwnd, GW_CHILD); child; child = ::GetWindow(child, GW_HWNDNEXT))
+		ResetOwnerDrawCachedSurfaceTree(child);
 }
 
 void DeleteUnknownGameObject(void*& pObject)
@@ -707,7 +793,7 @@ static void RepaintChildWindows(HWND hWnd, HWND ownerHwnd, const RECT& ownerDraw
 		const HWND childHwnd = children.Items[i];
 		const auto pOriginalWndProc = FindWindowProc(OwnerDraw::DialogProcs, childHwnd);
 
-		if (pOriginalWndProc == OwnerDraw::ComboDropWindowHandler)
+		if (pOriginalWndProc == GetComboDropWindowProc())
 		{
 			comboDropHwnd = childHwnd;
 			continue;
@@ -1139,7 +1225,13 @@ static void UpdateTooltipTextOnMouseMove(HWND hWnd, LPARAM lParam)
 
 	WideWstring tooltipText;
 
-	const LPARAM pointParam = MAKELPARAM(LOWORD(lParam), HIWORD(lParam));
+	LPARAM pointParam = MAKELPARAM(LOWORD(lParam), HIWORD(lParam));
+	if (!RenderDX::IsOwnerDrawUsingRawWindowCoordinates()
+		&& FindWindowProc(OwnerDraw::DialogProcs, hWnd) == GetComboDropWindowProc())
+	{
+		pointParam = RenderDX::MouseLParamToRenderLocal(hWnd, lParam);
+	}
+
 	const auto hitCode = ::SendMessageA(hWnd, WW_QUERYTOOLTIPHIT, 0, pointParam);
 	tooltipText = QueryTooltipText(parentHwnd, hWnd, hitCode);
 
@@ -1164,18 +1256,41 @@ static void UpdateTooltipTextOnMouseMove(HWND hWnd, LPARAM lParam)
 		}
 	}
 
-	::SendMessageA(tooltipHwnd, WW_SETTEXTW, 0, reinterpret_cast<LPARAM>(GetWideTextBuffer(tooltipText)));
+	SetTooltipTextIfChanged(tooltipHwnd, tooltipText);
+}
+
+static bool IsComboDropMousePointMessage(UINT message)
+{
+	return message >= WM_MOUSEFIRST && message <= WM_MBUTTONDBLCLK;
+}
+
+static LPARAM GetSelectedHandlerLParam(HWND hWnd, UINT message, LPARAM lParam, const OwnerDrawDialogElement* pData, WNDPROC pSelectedWndProc)
+{
+	if (pSelectedWndProc == GetComboDropWindowProc()
+		&& IsComboDropMousePointMessage(message)
+		&& !RenderDX::IsOwnerDrawUsingRawWindowCoordinates())
+	{
+		return RenderDX::MouseLParamToRenderLocal(hWnd, lParam);
+	}
+
+	if (!pData || pData->DialogID != 148 || !::GetWindowLongA(hWnd, DialogProcWindowLongIndex))
+		return lParam;
+
+	if (message != WM_LBUTTONDOWN && message != WM_LBUTTONUP)
+		return lParam;
+
+	POINT point { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+	if (!::ClientToScreen(hWnd, &point))
+		return lParam;
+
+	return MAKELPARAM(static_cast<WORD>(point.x), static_cast<WORD>(point.y));
 }
 
 void CleanupDestroyedWindow(HWND hWnd)
 {
 	if (auto pData = FindOwnerDrawData(hWnd))
 	{
-		if (pData->CacheSurface)
-		{
-			DeleteSurfaceObject(pData->CacheSurface);
-			--OwnerDraw::CachedSurfaceCount;
-		}
+		ResetOwnerDrawCachedSurface(*pData);
 	}
 
 	OwnerDraw::DialogProcs.erase(hWnd);
@@ -1188,6 +1303,291 @@ void CleanupDestroyedWindow(HWND hWnd)
 
 	::SetWindowLongA(hWnd, GWL_USERDATA, 0);
 	SessionIpb::UnregisterHwnd(hWnd);
+}
+
+static bool GetRawWindowRectInRenderLayout(HWND hWnd, RECT& rect)
+{
+	RECT windowRect {};
+	if (!::GetWindowRect(hWnd, &windowRect))
+		return false;
+
+	const HWND parentHwnd = ::GetParent(hWnd);
+	const HWND coordinateHwnd = parentHwnd ? parentHwnd : Game::hWnd;
+
+	POINT origin { 0, 0 };
+	if (coordinateHwnd && !::ClientToScreen(coordinateHwnd, &origin))
+		return false;
+
+	rect.left = windowRect.left - origin.x;
+	rect.top = windowRect.top - origin.y;
+	rect.right = windowRect.right - origin.x;
+	rect.bottom = windowRect.bottom - origin.y;
+	return true;
+}
+
+static void ApplyRenderLayoutToWindowTree(HWND hWnd)
+{
+	RECT rect {};
+	if (GetRawWindowRectInRenderLayout(hWnd, rect))
+	{
+		RenderDX::MoveWindowInRender(
+			hWnd,
+			rect.left,
+			rect.top,
+			rect.right - rect.left,
+			rect.bottom - rect.top,
+			FALSE);
+	}
+
+	for (HWND child = ::GetWindow(hWnd, GW_CHILD); child; child = ::GetWindow(child, GW_HWNDNEXT))
+		ApplyRenderLayoutToWindowTree(child);
+}
+
+struct CapturedOwnerDrawWindowRect
+{
+	HWND Hwnd {};
+	RECT Rect {};
+	int Depth {};
+};
+
+static std::vector<CapturedOwnerDrawWindowRect>& CapturedOwnerDrawWindowRects()
+{
+	static std::vector<CapturedOwnerDrawWindowRect> rects;
+	return rects;
+}
+
+static int GetWindowHierarchyDepth(HWND hWnd)
+{
+	int depth = 0;
+	for (HWND walker = ::GetParent(hWnd); walker; walker = ::GetParent(walker))
+		++depth;
+
+	return depth;
+}
+
+using WinDialogGetCurrentHandle = HWND(__fastcall*)();
+using WinDialogFindHandle = HWND(__fastcall*)(HWND);
+
+static HWND GetCurrentWinDialogHandle()
+{
+	return reinterpret_cast<WinDialogGetCurrentHandle>(0x775B10)();
+}
+
+static HWND FindPreviousWinDialogHandle(HWND hWnd)
+{
+	return reinterpret_cast<WinDialogFindHandle>(0x7759B0)(hWnd);
+}
+
+static bool ContainsHwnd(const std::vector<HWND>& windows, HWND hWnd)
+{
+	return std::find(windows.begin(), windows.end(), hWnd) != windows.end();
+}
+
+static void AddOwnerDrawDialogRoots(std::vector<HWND>& windows)
+{
+	for (auto it = OwnerDraw::Dialogs.begin(); it != OwnerDraw::Dialogs.end(); ++it)
+	{
+		const HWND hWnd = it->Key;
+		if (!::IsWindow(hWnd) || ContainsHwnd(windows, hWnd))
+			continue;
+
+		if (::GetWindowLongA(hWnd, DialogProcWindowLongIndex))
+			windows.push_back(hWnd);
+	}
+}
+
+static std::vector<HWND> GetOwnerDrawDialogRoots()
+{
+	std::vector<HWND> windows;
+
+	for (HWND hWnd = GetCurrentWinDialogHandle(); hWnd; hWnd = FindPreviousWinDialogHandle(hWnd))
+	{
+		if (!::IsWindow(hWnd) || ContainsHwnd(windows, hWnd))
+			continue;
+
+		if (FindOwnerDrawData(hWnd))
+			windows.push_back(hWnd);
+	}
+
+	AddOwnerDrawDialogRoots(windows);
+	return windows;
+}
+
+static bool FindCapturedOwnerDrawRect(
+	const std::vector<CapturedOwnerDrawWindowRect>& rects,
+	HWND hWnd,
+	RECT& rect)
+{
+	for (const auto& captured : rects)
+	{
+		if (captured.Hwnd == hWnd)
+		{
+			rect = captured.Rect;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+static std::vector<CapturedOwnerDrawWindowRect> CaptureOwnerDrawRenderRects()
+{
+	std::vector<CapturedOwnerDrawWindowRect> rects;
+	if (RenderDX::IsOwnerDrawUsingRawWindowCoordinates() || !OwnerDraw::Dialogs.size())
+		return rects;
+
+	rects.reserve(OwnerDraw::Dialogs.size());
+	for (auto it = OwnerDraw::Dialogs.begin(); it != OwnerDraw::Dialogs.end(); ++it)
+	{
+		const HWND hWnd = it->Key;
+		if (!::IsWindow(hWnd))
+			continue;
+
+		RECT rect {};
+		if (OwnerDraw::GetRectangle(hWnd, &rect))
+			rects.push_back(CapturedOwnerDrawWindowRect { hWnd, rect, GetWindowHierarchyDepth(hWnd) });
+	}
+
+	return rects;
+}
+
+static void NormalizeOwnerDrawWindowsToRawRenderCoordinates()
+{
+	auto rects = CaptureOwnerDrawRenderRects();
+	if (rects.empty())
+		return;
+
+	std::stable_sort(
+		rects.begin(),
+		rects.end(),
+		[](const CapturedOwnerDrawWindowRect& lhs, const CapturedOwnerDrawWindowRect& rhs)
+		{
+			return lhs.Depth < rhs.Depth;
+		});
+
+	const bool restoreRawWindowCoordinates = RenderDX::IsOwnerDrawUsingRawWindowCoordinates();
+	RenderDX::SetOwnerDrawRawWindowCoordinates(true);
+
+	for (const auto& captured : rects)
+	{
+		if (!::IsWindow(captured.Hwnd))
+			continue;
+
+		POINT parentOrigin {};
+		const HWND parentHwnd = ::GetParent(captured.Hwnd);
+		if (parentHwnd && parentHwnd != Game::hWnd)
+		{
+			RECT parentRect {};
+			if (FindCapturedOwnerDrawRect(rects, parentHwnd, parentRect))
+			{
+				parentOrigin.x = parentRect.left;
+				parentOrigin.y = parentRect.top;
+			}
+		}
+
+		::MoveWindow(
+			captured.Hwnd,
+			captured.Rect.left - parentOrigin.x,
+			captured.Rect.top - parentOrigin.y,
+			captured.Rect.right - captured.Rect.left,
+			captured.Rect.bottom - captured.Rect.top,
+			FALSE);
+	}
+
+	RenderDX::SetOwnerDrawRawWindowCoordinates(restoreRawWindowCoordinates);
+}
+
+void WWUI::CaptureOwnerDrawWindowRects()
+{
+	auto& capturedRects = CapturedOwnerDrawWindowRects();
+	capturedRects.clear();
+
+	capturedRects = CaptureOwnerDrawRenderRects();
+}
+
+void WWUI::ApplyOwnerDrawWindowRects()
+{
+	auto& capturedRects = CapturedOwnerDrawWindowRects();
+	if (capturedRects.empty())
+		return;
+
+	std::stable_sort(
+		capturedRects.begin(),
+		capturedRects.end(),
+		[](const CapturedOwnerDrawWindowRect& lhs, const CapturedOwnerDrawWindowRect& rhs)
+		{
+			return lhs.Depth < rhs.Depth;
+		});
+
+	for (const auto& captured : capturedRects)
+	{
+		if (!::IsWindow(captured.Hwnd))
+			continue;
+
+		RECT clientRect {};
+		if (!RenderDX::RenderRectToClient(::GetParent(captured.Hwnd), captured.Rect, &clientRect))
+			continue;
+
+		::MoveWindow(
+			captured.Hwnd,
+			clientRect.left,
+			clientRect.top,
+			clientRect.right - clientRect.left,
+			clientRect.bottom - clientRect.top,
+			FALSE);
+	}
+
+	WWUI::SyncListBoxScrollBarPositions(nullptr);
+	WWUI::SyncStaticMoviePositions(nullptr);
+	ResetOwnerDrawCachedSurfaceTree(nullptr);
+	capturedRects.clear();
+}
+
+void WWUI::RelayoutWindowsAfterDisplayModeChange()
+{
+	if (!OwnerDraw::Dialogs.size())
+		return;
+
+	const auto windows = GetOwnerDrawDialogRoots();
+	if (windows.empty())
+	{
+		ResetOwnerDrawCachedSurfaceTree(nullptr);
+		WWUI::SyncListBoxScrollBarPositions(nullptr);
+		WWUI::SyncStaticMoviePositions(nullptr);
+		return;
+	}
+
+	const bool restoreRawWindowCoordinates = RenderDX::IsOwnerDrawUsingRawWindowCoordinates();
+	if (!restoreRawWindowCoordinates)
+		NormalizeOwnerDrawWindowsToRawRenderCoordinates();
+
+	RenderDX::SetOwnerDrawRawWindowCoordinates(true);
+
+	auto baseSize = OwnerDraw::BaseLayoutSize;
+	for (const HWND hWnd : windows)
+	{
+		if (!::IsWindow(hWnd))
+			continue;
+
+		ResetOwnerDrawCachedSurfaceTree(hWnd);
+		OwnerDraw::UpdateControlPosition(hWnd, &baseSize);
+		ApplyRenderLayoutToWindowTree(hWnd);
+	}
+
+	RenderDX::SetOwnerDrawRawWindowCoordinates(false);
+
+	for (const HWND hWnd : windows)
+	{
+		if (!::IsWindow(hWnd))
+			continue;
+
+		UI::CenterWindow(hWnd);
+		WWUI::SyncListBoxScrollBarPositions(hWnd);
+		WWUI::SyncStaticMoviePositions(hWnd);
+		ResetOwnerDrawCachedSurfaceTree(hWnd);
+	}
+
+	RenderDX::SetOwnerDrawRawWindowCoordinates(restoreRawWindowCoordinates);
 }
 
 static void FinishDialogInitialization(HWND hWnd)
@@ -1214,7 +1614,12 @@ static void FinishDialogInitialization(HWND hWnd)
 
 	::EnumChildWindows(hWnd, OwnerDraw::ClassifyLayoutBand, 0);
 	::EnumChildWindows(hWnd, OwnerDraw::ResetControlDrawModeAndTimerProc, 0);
+	ApplyRenderLayoutToWindowTree(hWnd);
+	RenderDX::SetOwnerDrawRawWindowCoordinates(false);
 	UI::CenterWindow(hWnd);
+	WWUI::SyncListBoxScrollBarPositions(hWnd);
+	ResetOwnerDrawCachedSurfaceTree(hWnd);
+	WWUI::SyncStaticMoviePositions(hWnd);
 	::SetFocus(hWnd);
 }
 
@@ -1241,6 +1646,7 @@ static void RegisterDialogControls(HWND hWnd, int dialogID)
 static LRESULT HandleInitDialog(HWND hWnd, LPARAM lParam)
 {
 	++Unsorted::WSDialogCount;
+	RenderDX::SetOwnerDrawRawWindowCoordinates(true);
 
 	if (lParam)
 	{
@@ -1258,6 +1664,18 @@ static LRESULT HandleInitDialog(HWND hWnd, LPARAM lParam)
 
 	FinishDialogInitialization(hWnd);
 	return 0;
+}
+
+HWND __fastcall WWUI::RegisterOwnerDrawWindow(HWND hWnd, int dialogID)
+{
+	const bool restoreRawWindowCoordinates = RenderDX::IsOwnerDrawUsingRawWindowCoordinates();
+
+	RenderDX::SetOwnerDrawRawWindowCoordinates(true);
+	RegisterDialogControls(hWnd, dialogID);
+	FinishDialogInitialization(hWnd);
+	RenderDX::SetOwnerDrawRawWindowCoordinates(restoreRawWindowCoordinates);
+
+	return hWnd;
 }
 
 static LRESULT HandlePaint(HWND hWnd)
@@ -1294,23 +1712,17 @@ static LRESULT HandleTooltipRefresh(HWND hWnd, LPARAM lParam)
 	if (!tooltipHwnd)
 		return 0;
 
-	const int screenX = LOWORD(lParam);
-	const int screenY = HIWORD(lParam);
-
-	RECT dialogRect;
-	::GetWindowRect(hWnd, &dialogRect);
-
-	const POINT clientPoint
-	{
-		screenX - dialogRect.left,
-		screenY - dialogRect.top
-	};
+	const POINT screenPoint { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+	POINT clientPoint = screenPoint;
+	::ScreenToClient(hWnd, &clientPoint);
 
 	WideWstring tooltipText;
 
 	if (const auto controlHwnd = ::ChildWindowFromPointEx(hWnd, clientPoint, CWP_SKIPINVISIBLE))
 	{
-		const LPARAM pointParam = MAKELPARAM(LOWORD(lParam), HIWORD(lParam));
+		POINT controlPoint = screenPoint;
+		::ScreenToClient(controlHwnd, &controlPoint);
+		const LPARAM pointParam = MAKELPARAM(static_cast<WORD>(controlPoint.x), static_cast<WORD>(controlPoint.y));
 		const auto hitCode = ::SendMessageA(controlHwnd, WW_QUERYTOOLTIPHIT, 0, pointParam);
 
 		tooltipText = QueryTooltipText(hWnd, controlHwnd, hitCode);
@@ -1337,12 +1749,15 @@ static LRESULT HandleTooltipRefresh(HWND hWnd, LPARAM lParam)
 		}
 	}
 
-	::SendMessageA(tooltipHwnd, WW_SETTEXTW, 0, reinterpret_cast<LPARAM>(GetWideTextBuffer(tooltipText)));
+	SetTooltipTextIfChanged(tooltipHwnd, tooltipText);
 	return 0;
 }
 
-LRESULT __fastcall WWUI::OwnerDrawStandardWndProc(HWND hWnd, UINT message, WPARAM, LPARAM lParam)
+LRESULT __fastcall WWUI::OwnerDrawStandardWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	if (RenderDX::HandleFullscreenToggleMessage(message, wParam, lParam))
+		return 0;
+
 	if (message <= WM_NCHITTEST)
 	{
 		switch (message)
@@ -1393,6 +1808,9 @@ LRESULT CALLBACK WWUI::OwnerDrawWindowProc(HWND hWnd, UINT message, WPARAM wPara
 {
 	if (message == WM_SETCURSOR)
 		return 1;
+
+	if (RenderDX::HandleFullscreenToggleMessage(message, wParam, lParam))
+		return 0;
 
 	const bool isPaintMessage = message == WM_PAINT;
 	const auto updatePrimaryAfterPaint = [isPaintMessage]()
@@ -1551,6 +1969,14 @@ LRESULT CALLBACK WWUI::OwnerDrawWindowProc(HWND hWnd, UINT message, WPARAM wPara
 
 	switch (message)
 	{
+	case WM_MOVE:
+	case WM_SIZE:
+	case WM_WINDOWPOSCHANGED:
+		ResetOwnerDrawCachedSurfaceTree(hWnd);
+		WWUI::SyncListBoxScrollBarPositions(hWnd);
+		WWUI::SyncStaticMoviePositions(hWnd);
+		break;
+
 	case WM_ERASEBKGND:
 		return complete(1);
 
@@ -1633,7 +2059,8 @@ LRESULT CALLBACK WWUI::OwnerDrawWindowProc(HWND hWnd, UINT message, WPARAM wPara
 	}
 	else if (callSelectedHandler && pSelectedWndProc)
 	{
-		result = CallSelectedHandler(pSelectedWndProc, hWnd, message, wParam, lParam);
+		const LPARAM selectedLParam = GetSelectedHandlerLParam(hWnd, message, lParam, pData, pSelectedWndProc);
+		result = CallSelectedHandler(pSelectedWndProc, hWnd, message, wParam, selectedLParam);
 	}
 
 	if (message == WM_NCDESTROY)

@@ -177,19 +177,22 @@ static void DrawTabItem(HWND hWnd, OwnerDrawDialogElement& data, const RECT& con
 	DrawTabItemMiddle(variant, drawLeft, drawTop, drawWidth);
 	DrawTabItemCaps(variant, drawLeft, drawTop, drawWidth);
 	DrawTabItemText(hWnd, data, tabIndex, tabIndex == selectedIndex, drawLeft, drawTop, drawWidth, drawHeight);
-	::ValidateRect(hWnd, &itemRect);
+	::ValidateRect(hWnd, nullptr);
 }
 
 static void InitializeTabCtrl(HWND hWnd)
 {
-	RECT controlRect {};
-	OwnerDraw::GetRectangle(hWnd, &controlRect);
-
 	int tabHeight = 0;
 	if (auto pLeftUp = GetPCXSurface("tab_tlu.pcx"))
 		tabHeight = std::max(pLeftUp->GetHeight() - 1, 0);
 
-	::SendMessageA(hWnd, TCM_SETITEMSIZE, 0, MAKELPARAM(0x59, tabHeight));
+	const RECT renderItemRect { 0, 0, 0x59, tabHeight };
+	const RECT clientItemRect = RenderDX::RenderToClientRect(renderItemRect);
+	::SendMessageA(
+		hWnd,
+		TCM_SETITEMSIZE,
+		0,
+		MAKELPARAM(clientItemRect.right - clientItemRect.left, clientItemRect.bottom - clientItemRect.top));
 }
 
 static LRESULT PaintTabCtrl(HWND hWnd, OwnerDrawDialogElement& data)
@@ -202,6 +205,7 @@ static LRESULT PaintTabCtrl(HWND hWnd, OwnerDrawDialogElement& data)
 	RECT firstItemRect {};
 	::SendMessageA(hWnd, TCM_GETITEMRECT, 0, reinterpret_cast<LPARAM>(&firstItemRect));
 	::SendMessageA(hWnd, TCM_GETITEMRECT, 0, reinterpret_cast<LPARAM>(&firstItemRect));
+	firstItemRect = RenderDX::ClientToRenderLocalRect(hWnd, firstItemRect);
 
 	RECT panelRect = controlRect;
 	panelRect.top += firstItemRect.bottom - firstItemRect.top + 3;
@@ -244,6 +248,7 @@ static LRESULT PaintTabCtrl(HWND hWnd, OwnerDrawDialogElement& data)
 				break;
 		}
 
+		itemRect = RenderDX::ClientToRenderLocalRect(hWnd, itemRect);
 		DrawTabItem(hWnd, data, controlRect, tabIndex, selectedIndex, itemRect);
 
 		if (tabIndex == selectedIndex)

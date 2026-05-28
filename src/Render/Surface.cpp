@@ -327,7 +327,7 @@ DXSurface* __fastcall DXSurface::CreatePrimary() {
 
 	Debug::Log("[RenderDX] D3D11 surface created as primary surface.\n");
 
-	auto surface = new DXSurface(Drawing::RenderWidth, Drawing::RenderHeight);
+	auto surface = GameCreate<DXSurface>(Drawing::RenderWidth, Drawing::RenderHeight);
 
 	Drawing::RedShiftLeft = 11;
 	Drawing::RedShiftRight = 3;
