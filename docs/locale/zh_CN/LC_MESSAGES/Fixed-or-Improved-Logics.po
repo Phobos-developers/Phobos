@@ -5475,6 +5475,14 @@ msgid ""
 "view."
 msgstr "现在你可以指定这个弹头是否只能在可视的当前屏幕可见区域内爆炸时才能抖动（`ShakeX/Ylo/hi`）屏幕"
 
+msgid ""
+"Customize if warhead with `Temporal=yes` will use versus or not"
+msgstr "自定义 `Temporal=yes` 的弹头是否使用弹头修正"
+
+msgid ""
+"You can now specify whether `Temporal=yes` warhead should use versus or not."
+msgstr "现在你可以指定 `Temporal=yes` 的弹头是否应当使用修正比率。"
+
 msgid "Weapons"
 msgstr "武器"
 

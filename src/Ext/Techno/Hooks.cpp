@@ -2041,3 +2041,60 @@ DEFINE_HOOK(0x70AFEF, TechnoClass_UpdateSight_DynamicSight2, 0x6)
 }
 
 #pragma endregion
+
+namespace WrapPerStep
+{
+	class TemporalClassFake final : public TemporalClass
+	{
+		int _GetWarpPerStep(int helperCount);
+	};
+
+	struct DummyExtHere
+	{
+		char _[0xA];
+		BYTE WeaponIndex_Warp;
+	};
+}
+
+int WrapPerStep::TemporalClassFake::_GetWarpPerStep(int helperCount)
+{
+	const auto pThis = static_cast<TemporalClass*>(this);
+	auto pTemporal = pThis;
+	int sum = 0;
+
+	do
+	{
+		if (helperCount > 50)
+			break;
+
+		++helperCount;
+
+		const auto pOwner = pTemporal->Owner;
+		int weaponIdx = 0;
+
+		if (AresHelper::CanUseAres)
+			weaponIdx = reinterpret_cast<WrapPerStep::DummyExtHere*>(*(uintptr_t*)((char*)pOwner + 0x154))->WeaponIndex_Warp;
+		else
+			weaponIdx = pOwner->SelectWeapon(nullptr);
+		
+		const auto pWeapon = pOwner->GetWeapon(weaponIdx)->WeaponType;
+		int warpPerStep = pWeapon->Damage;
+
+		if (const auto pTarget = pTemporal->Target)
+		{
+			const auto pWarhead = pWeapon->Warhead;
+
+			if (pWarhead && WarheadTypeExt::ExtMap.Find(pWarhead)->Temporal_ConsiderVersus.Get(RulesExt::Global()->Temporal_ConsiderVersus))
+				warpPerStep = MapClass::GetTotalDamage(warpPerStep, pWarhead, pTarget->GetType()->Armor, 0);
+		}
+
+		pTemporal->WarpPerStep = warpPerStep;
+		sum += warpPerStep;
+
+		pTemporal = pTemporal->PrevTemporal;
+	}
+	while (pTemporal);
+
+	return sum;
+}
+DEFINE_FUNCTION_JUMP(LJMP, 0x71AB10, WrapPerStep::TemporalClassFake::_GetWarpPerStep)

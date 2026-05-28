@@ -50,6 +50,7 @@ public:
 		Nullable<bool> PenetratesForceShield;
 		Valueable<double> Rocker_AmplitudeMultiplier;
 		Nullable<int> Rocker_AmplitudeOverride;
+		Nullable<bool> Temporal_ConsiderVersus;
 
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
@@ -306,7 +307,8 @@ public:
 			, PenetratesIronCurtain { false }
 			, PenetratesForceShield {}
 			, Rocker_AmplitudeMultiplier { 1.0 }
-			, Rocker_AmplitudeOverride { }
+			, Rocker_AmplitudeOverride {}
+			, Temporal_ConsiderVersus {}
 
 			, Crit_Chance { 0.0 }
 			, Crit_ApplyChancePerTarget { false }

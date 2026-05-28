@@ -2663,6 +2663,19 @@ In `rulesmd.ini`:
 ShakeIsLocal=false  ; boolean
 ```
 
+### Customize if warhead with `Temporal=yes` will use versus or not
+
+- You can now specify whether `Temporal=yes` warhead should use versus or not.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+Temporal.ConsiderVersus=false  ; boolean
+
+[SOMEWARHEAD]       ; WarheadType
+Temporal.ConsiderVersus=       ; boolean
+```
+
 ## Weapons
 
 ### AmbientDamage customizations

@@ -163,6 +163,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PenetratesForceShield.Read(exINI, pSection, "PenetratesForceShield");
 	this->Rocker_AmplitudeMultiplier.Read(exINI, pSection, "Rocker.AmplitudeMultiplier");
 	this->Rocker_AmplitudeOverride.Read(exINI, pSection, "Rocker.AmplitudeOverride");
+	this->Temporal_ConsiderVersus.Read(exINI, pSection, "Temporal.ConsiderVersus");
 
 	// Crits
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
@@ -547,6 +548,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PenetratesForceShield)
 		.Process(this->Rocker_AmplitudeMultiplier)
 		.Process(this->Rocker_AmplitudeOverride)
+		.Process(this->Temporal_ConsiderVersus)
 
 		.Process(this->Crit_Chance)
 		.Process(this->Crit_ApplyChancePerTarget)
