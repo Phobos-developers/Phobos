@@ -160,3 +160,21 @@ DEFINE_HOOK(0x741A96, UnitClass_SetDestination_ResetFiringFrame, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x74159F, UnitClass_ApproachTarget_GoAboveTarget, 0x6)
+{
+	GET(UnitClass* const, pThis, ESI);
+
+	if (auto pTarget = pThis->Target)
+	{
+		int weaponIndex = pThis->SelectWeapon(pTarget);
+		if (auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType)
+		{
+			auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+			if (pWeaponExt->GoAboveTarget)
+				return 0x7415E5;
+		}
+	}
+
+	return 0;
+}

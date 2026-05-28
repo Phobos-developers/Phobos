@@ -2551,6 +2551,9 @@ msgid ""
 "Fixed voxel projectile and animation lighting issues"
 msgstr "修复了 Voxel 抛射体和动画的光照问题"
 
+msgid "Allow other vehicles to attempt to move above the target like ZEP"
+msgstr "使其他单位也能像 ZEP 一样尝试移动到目标上方"
+
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
 

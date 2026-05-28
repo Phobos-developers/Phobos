@@ -761,6 +761,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions
   - Framework for dynamic sight
   - Fixed voxel projectile and animation lighting issues
+  - Allow other vehicles to attempt to move above the target like ZEP
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

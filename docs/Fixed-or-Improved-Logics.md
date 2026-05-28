@@ -2120,6 +2120,17 @@ Harvester.CanGuardArea=false                ; boolean
 Harvester.CanGuardArea.RequireTarget=false  ; boolean
 ```
 
+### Allow other vehicles to attempt to move above the target like ZEP
+
+- In vanilla, vehicles with `BalloonHover=yes` and a weapon with projectile with `Vertical=yes` will attempt to move above the target.
+- Now you can make other vehicles do the same without `BalloonHover=yes` or `Vertical=yes`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                        ; WeaponType
+GoAboveTarget=false               ; boolean
+```
+
 ### Bunker entering check dehardcode
 
 - In vanilla, vehicles entering tank bunkers are subject to a series of hardcoding restrictions, including having to have turrets, having to have weapons, and not having Hover speed types. Now you can skip these restrictions.

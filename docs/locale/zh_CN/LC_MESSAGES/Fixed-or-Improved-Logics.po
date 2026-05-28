@@ -4707,6 +4707,21 @@ msgstr ""
 "若 `Harvester.CanGuardArea.RequireTarget` 设为 "
 "true，当单位警戒范围内不存在有效目标时将会切换回通常所用的 `Havrest` 任务。"
 
+msgid "Allow other vehicles to attempt to move above the target like ZEP"
+msgstr "使其他单位也能像 ZEP 一样尝试移动到目标上方"
+
+msgid ""
+"In vanilla, vehicles with `BalloonHover=yes` and a weapon with projectile "
+"with `Vertical=yes` will attempt to move above the target."
+msgstr ""
+"在原版中，拥有 `BalloonHover=yes` 且武器抛射体 `Vertical=yes` 的载具会尝试移动到目标上方。"
+
+msgid ""
+"Now you can make other vehicles do the same without `BalloonHover=yes` or "
+"`Vertical=yes`."
+msgstr ""
+"现在你可以让其他载具无需 `BalloonHover=yes` 或 `Vertical=yes` 也能做到这点。"
+
 msgid "Bunker entering check dehardcode"
 msgstr "去除坦克碉堡准入检查的硬编码"
 

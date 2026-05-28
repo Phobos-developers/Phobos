@@ -171,6 +171,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackCursorOnFriendlies.Read(exINI, pSection, "AttackCursorOnFriendlies");
 	this->AttackNoThreatBuildings.Read(exINI, pSection, "AttackNoThreatBuildings");
 	this->CylinderRangefinding.Read(exINI, pSection, "CylinderRangefinding");
+	this->GoAboveTarget.Read(exINI, pSection, "GoAboveTarget");
 	this->Anim_Update.Read(exINI, pSection, "Anim.Update");
 
 	// handle SkipWeaponPicking
@@ -271,6 +272,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackCursorOnFriendlies)
 		.Process(this->AttackNoThreatBuildings)
 		.Process(this->CylinderRangefinding)
+		.Process(this->GoAboveTarget)
 		.Process(this->Anim_Update)
 		;
 };

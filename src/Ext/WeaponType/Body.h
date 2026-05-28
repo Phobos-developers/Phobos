@@ -99,6 +99,8 @@ public:
 		Nullable<bool> AttackCursorOnFriendlies;
 		Nullable<bool> AttackNoThreatBuildings;
 
+		Valueable<bool> GoAboveTarget;
+
 		Nullable<bool> Anim_Update;
 
 		bool SkipWeaponPicking;
@@ -188,6 +190,7 @@ public:
 			, AttackFriendlies {}
 			, AttackCursorOnFriendlies {}
 			, AttackNoThreatBuildings {}
+			, GoAboveTarget { false }
 			, CylinderRangefinding {}
 			, Anim_Update {}
 		{ }

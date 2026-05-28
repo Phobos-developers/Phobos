@@ -2625,6 +2625,12 @@ msgid ""
 msgstr ""
 "修复了 *静止的载具* 也会阻碍外部力量引发移动的 Bug（by Noble_Fish）"
 
+msgid ""
+"Allow other vehicles to attempt to move above the target like ZEP (by "
+"TaranDahl)"
+msgstr ""
+"使其他单位也能像 ZEP 一样尝试移动到目标上方（by TaranDahl）"
+
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
 
