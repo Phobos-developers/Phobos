@@ -30,3 +30,5 @@ out
 .venv/
 
 debug.log
+Phobos.log
+gamemd.*

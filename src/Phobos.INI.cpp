@@ -6,6 +6,7 @@
 #include <MessageListClass.h>
 #include <HouseClass.h>
 #include <GameOptionsClass.h>
+#include <BasicStructures.h>
 
 #include <Utilities/Parser.h>
 #include <Utilities/GeneralUtils.h>
@@ -42,6 +43,32 @@ int Phobos::UI::SuperWeaponSidebar_Max = 0;
 int Phobos::UI::SuperWeaponSidebar_MaxColumns = INT32_MAX;
 bool Phobos::UI::WeedsCounter_Show = false;
 bool Phobos::UI::AnchoredToolTips = false;
+COLORREF Phobos::UI::ColorText = 0xFFFF;
+COLORREF Phobos::UI::ColorTextButton = 0xFFFF;
+COLORREF Phobos::UI::ColorTextCheckbox = 0xFFFF;
+COLORREF Phobos::UI::ColorTextRadio = 0xFFFF;
+COLORREF Phobos::UI::ColorTextLabel = 0xFFFF;
+COLORREF Phobos::UI::ColorTextList = 0xFFFF;
+COLORREF Phobos::UI::ColorTextCombobox = 0xFFFF;
+COLORREF Phobos::UI::ColorTextGroupbox = 0xFFFF;
+COLORREF Phobos::UI::ColorTextSlider = 0xFFFF;
+COLORREF Phobos::UI::ColorTextEdit = 0xFFFF;
+COLORREF Phobos::UI::ColorTextObserver = 0xEEEEEE;
+COLORREF Phobos::UI::ColorCaret = 0xFFFF;
+COLORREF Phobos::UI::ColorSelection = 0xFF;
+COLORREF Phobos::UI::ColorSelectionCombobox = 0xFF;
+COLORREF Phobos::UI::ColorSelectionList = 0xFF;
+COLORREF Phobos::UI::ColorSelectionObserver = 0x626262;
+COLORREF Phobos::UI::ColorBorder1 = 0xC5BEA7;
+COLORREF Phobos::UI::ColorBorder2 = 0x807A68;
+COLORREF Phobos::UI::ColorDisabled = 0x9F;
+COLORREF Phobos::UI::ColorDisabledLabel = 0x9F;
+COLORREF Phobos::UI::ColorDisabledButton = 0xA7;
+COLORREF Phobos::UI::ColorDisabledCombobox = 0x9F;
+COLORREF Phobos::UI::ColorDisabledCheckbox = 0x9F;
+COLORREF Phobos::UI::ColorDisabledSlider = 0x9F;
+COLORREF Phobos::UI::ColorDisabledList = 0x9F;
+COLORREF Phobos::UI::ColorDisabledObserver = 0x8F8F8F;
 
 bool Phobos::Config::ToolTipDescriptions = true;
 bool Phobos::Config::ToolTipBlur = false;
@@ -83,6 +110,19 @@ bool Phobos::Misc::CustomGS = false;
 int Phobos::Misc::CustomGS_ChangeInterval[7] = { -1, -1, -1, -1, -1, -1, -1 };
 int Phobos::Misc::CustomGS_ChangeDelay[7] = { 0, 1, 2, 3, 4, 5, 6 };
 int Phobos::Misc::CustomGS_DefaultDelay[7] = { 0, 1, 2, 3, 4, 5, 6 };
+
+namespace
+{
+	COLORREF ReadUIColor(CCINIClass& ini, const char* key, COLORREF defaultColor)
+	{
+		const ColorStruct fallback(
+			static_cast<BYTE>(defaultColor & 0xFF),
+			static_cast<BYTE>((defaultColor >> 8) & 0xFF),
+			static_cast<BYTE>((defaultColor >> 16) & 0xFF));
+		const ColorStruct color = ini.ReadColor(UISETTINGS_SECTION, key, fallback);
+		return color.R | (color.G << 8) | (color.B << 16);
+	}
+}
 
 DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 {
@@ -235,6 +275,33 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 	// UISettings
 	{
+		Phobos::UI::ColorText = ReadUIColor(ini_uimd, "Color.Text", 0xFFFF);
+		Phobos::UI::ColorTextButton = ReadUIColor(ini_uimd, "Color.Button.Text", Phobos::UI::ColorText);
+		Phobos::UI::ColorTextRadio = ReadUIColor(ini_uimd, "Color.Radio.Text", Phobos::UI::ColorText);
+		Phobos::UI::ColorTextCheckbox = ReadUIColor(ini_uimd, "Color.Checkbox.Text", Phobos::UI::ColorText);
+		Phobos::UI::ColorTextLabel = ReadUIColor(ini_uimd, "Color.Label.Text", Phobos::UI::ColorText);
+		Phobos::UI::ColorTextList = ReadUIColor(ini_uimd, "Color.List.Text", Phobos::UI::ColorText);
+		Phobos::UI::ColorTextCombobox = ReadUIColor(ini_uimd, "Color.Combobox.Text", Phobos::UI::ColorText);
+		Phobos::UI::ColorTextGroupbox = ReadUIColor(ini_uimd, "Color.Groupbox.Text", Phobos::UI::ColorText);
+		Phobos::UI::ColorTextSlider = ReadUIColor(ini_uimd, "Color.Slider.Text", Phobos::UI::ColorText);
+		Phobos::UI::ColorTextEdit = ReadUIColor(ini_uimd, "Color.Edit.Text", Phobos::UI::ColorText);
+		Phobos::UI::ColorTextObserver = ReadUIColor(ini_uimd, "Color.Observer.Text", 0xEEEEEE);
+		Phobos::UI::ColorCaret = ReadUIColor(ini_uimd, "Color.Caret", 0xFFFF);
+		Phobos::UI::ColorSelection = ReadUIColor(ini_uimd, "Color.Selection", 0xFF);
+		Phobos::UI::ColorSelectionCombobox = ReadUIColor(ini_uimd, "Color.Combobox.Selection", Phobos::UI::ColorSelection);
+		Phobos::UI::ColorSelectionList = ReadUIColor(ini_uimd, "Color.List.Selection", Phobos::UI::ColorSelection);
+		Phobos::UI::ColorSelectionObserver = ReadUIColor(ini_uimd, "Color.Observer.Selection", 0x626262);
+		Phobos::UI::ColorBorder1 = ReadUIColor(ini_uimd, "Color.Border1", 0xC5BEA7);
+		Phobos::UI::ColorBorder2 = ReadUIColor(ini_uimd, "Color.Border2", 0x807A68);
+		Phobos::UI::ColorDisabled = ReadUIColor(ini_uimd, "Color.Disabled", 0x9F);
+		Phobos::UI::ColorDisabledLabel = ReadUIColor(ini_uimd, "Color.Label.Disabled", Phobos::UI::ColorDisabled);
+		Phobos::UI::ColorDisabledCombobox = ReadUIColor(ini_uimd, "Color.Combobox.Disabled", Phobos::UI::ColorDisabled);
+		Phobos::UI::ColorDisabledSlider = ReadUIColor(ini_uimd, "Color.Slider.Disabled", Phobos::UI::ColorDisabled);
+		Phobos::UI::ColorDisabledButton = ReadUIColor(ini_uimd, "Color.Button.Disabled", 0xA7);
+		Phobos::UI::ColorDisabledCheckbox = ReadUIColor(ini_uimd, "Color.Checkbox.Disabled", Phobos::UI::ColorDisabled);
+		Phobos::UI::ColorDisabledList = ReadUIColor(ini_uimd, "Color.List.Disabled", Phobos::UI::ColorDisabled);
+		Phobos::UI::ColorDisabledObserver = ReadUIColor(ini_uimd, "Color.Observer.Disabled", 0x8F8F8F);
+
 		ini_uimd.ReadString(UISETTINGS_SECTION, "ShowBriefingResumeButtonLabel", "GUI:Resume", Phobos::readBuffer);
 		Phobos::UI::ShowBriefingResumeButtonLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"");
 

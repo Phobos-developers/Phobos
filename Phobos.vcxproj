@@ -264,7 +264,31 @@
     <ClCompile Include="src\New\Type\Affiliated\PassengerDeletionTypeClass.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\TiberiumEaterTypeClass.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\TypeConvertGroup.cpp" />
+    <!-- src\OwnerDraw -->
+    <ClCompile Include="src\OwnerDraw\Button.cpp" />
+    <ClCompile Include="src\OwnerDraw\ComboBox.cpp" />
+    <ClCompile Include="src\OwnerDraw\Edit.cpp" />
+    <ClCompile Include="src\OwnerDraw\GroupBox.cpp" />
+    <ClCompile Include="src\OwnerDraw\Input.cpp" />
+    <ClCompile Include="src\OwnerDraw\ListBox.cpp" />
+    <ClCompile Include="src\OwnerDraw\OwnerDraw.cpp" />
+    <ClCompile Include="src\OwnerDraw\OwnerDraw.Hooks.cpp" />
+    <ClCompile Include="src\OwnerDraw\Progress.cpp" />
+    <ClCompile Include="src\OwnerDraw\ScrollBar.cpp" />
+    <ClCompile Include="src\OwnerDraw\Slider.cpp" />
+    <ClCompile Include="src\OwnerDraw\Static.cpp" />
+    <ClCompile Include="src\OwnerDraw\Tab.cpp" />
+    <!-- src\Render -->
+    <ClCompile Include="src\Render\Functions.cpp" />
+    <ClCompile Include="src\Render\Hooks.cpp" />
+    <ClCompile Include="src\Render\Mouse.cpp" />
+    <ClCompile Include="src\Render\Mouse.Hooks.cpp" />
+    <ClCompile Include="src\Render\Options.Hooks.cpp" />
+    <ClCompile Include="src\Render\Renderer.cpp" />
+    <ClCompile Include="src\Render\Surface.cpp" />
+    <ClCompile Include="src\Render\Surface.Hooks.cpp" />
     <!-- src\Utilities -->
+    <ClCompile Include="src\Render\WWUI.Hooks.cpp" />
     <ClCompile Include="src\Utilities\Anchor.cpp" />
     <ClCompile Include="src\Utilities\AresAddressInit.cpp" />
     <ClCompile Include="src\Utilities\AresHelper.cpp" />
@@ -387,6 +411,18 @@
     <ClInclude Include="src\New\Type\Affiliated\PassengerDeletionTypeClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\TiberiumEaterTypeClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\TypeConvertGroup.h" />
+    <!-- src\OwnerDraw -->
+    <ClInclude Include="src\OwnerDraw\OwnerDraw.h" />
+    <ClInclude Include="src\OwnerDraw\OwnerDraw.Internal.h" />
+    <!-- src\Render -->
+    <ClInclude Include="src\Render\Functions.h" />
+    <ClInclude Include="src\Render\Mouse.h" />
+    <ClInclude Include="src\Render\Options.h" />
+    <ClInclude Include="src\Render\Renderer.h" />
+    <ClInclude Include="src\Render\Renderer.SurfacePS.h" />
+    <ClInclude Include="src\Render\Renderer.SurfaceVS.h" />
+    <ClInclude Include="src\Render\Surface.h" />
+    <ClInclude Include="src\Render\WWUI.h" />
     <!-- src\Utilities -->
     <ClInclude Include="src\Utilities\Anchor.h" />
     <ClInclude Include="src\Utilities\AresFunctions.h" />

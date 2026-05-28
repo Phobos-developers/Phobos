@@ -30,7 +30,7 @@
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\IntDir\</IntDir>
     <CoreLibraryDependencies></CoreLibraryDependencies>
-    <PhobosExtraLibs>dbghelp.lib;onecore.lib</PhobosExtraLibs>
+    <PhobosExtraLibs>dbghelp.lib;onecore.lib;imm32.lib</PhobosExtraLibs>
   </PropertyGroup>
   <!-- Global -->
   <ItemDefinitionGroup>
