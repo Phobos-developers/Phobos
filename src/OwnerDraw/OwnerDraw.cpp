@@ -1742,48 +1742,50 @@ LRESULT __fastcall WWUI::OwnerDrawStandardWndProc(HWND hWnd, UINT message, WPARA
 	if (RenderDX::HandleFullscreenToggleMessage(message, wParam, lParam))
 		return 0;
 
-	if (message <= WM_NCHITTEST)
+	switch (message)
 	{
-		switch (message)
-		{
-		case WM_DESTROY:
-			UI::RemoveModelessDialog(hWnd);
-			--Unsorted::WSDialogCount;
-			::SetFocus(Game::hWnd);
-			return 0;
+	case WM_DESTROY:
+		UI::RemoveModelessDialog(hWnd);
+		--Unsorted::WSDialogCount;
+		::SetFocus(Game::hWnd);
+		return 0;
 
-		case WM_PAINT:
-			return HandlePaint(hWnd);
+	case WM_PAINT:
+		return HandlePaint(hWnd);
 
-		case WM_ERASEBKGND:
-			return 1;
+	case WM_ERASEBKGND:
+		return 1;
 
-		case WM_DRAWITEM:
-			OwnerDraw::DrawItem(reinterpret_cast<DRAWITEMSTRUCT*>(lParam));
-			return 1;
+	case WM_DRAWITEM:
+		OwnerDraw::DrawItem(reinterpret_cast<DRAWITEMSTRUCT*>(lParam));
+		return 1;
 
-		case WM_NCHITTEST:
-			return HandleTooltipRefresh(hWnd, lParam);
+	case WM_NCHITTEST:
+		return HandleTooltipRefresh(hWnd, lParam);
 
-		default:
-			return 0;
-		}
-	}
-
-	if (message == WM_INITDIALOG)
+	case WM_INITDIALOG:
 		return HandleInitDialog(hWnd, lParam);
 
-	if (message >= WM_CTLCOLORMSGBOX && message <= WM_CTLCOLORSTATIC)
+	case WM_CTLCOLORMSGBOX:
+	case WM_CTLCOLOREDIT:
+	case WM_CTLCOLORLISTBOX:
+	case WM_CTLCOLORBTN:
+	case WM_CTLCOLORDLG:
+	case WM_CTLCOLORSCROLLBAR:
+	case WM_CTLCOLORSTATIC:
 		return reinterpret_cast<LRESULT>(::GetStockObject(BLACK_BRUSH));
 
-	if (message == WW_INITDIALOG)
-	{
+	case WW_INITDIALOG:
 		::SendMessageA(hWnd, WW_BRINGTOTOP, reinterpret_cast<WPARAM>(hWnd), 1);
 		return 0;
-	}
 
-	if (message == WW_TRANSITION_COMPLETE)
+	case WW_TRANSITION_COMPLETE:
 		::EnumChildWindows(hWnd, OwnerDraw::SendTransitionCompleteToCustomTextChildProc, 0);
+		return 0;
+
+	default:
+		return 0;
+	}
 
 	return 0;
 }
