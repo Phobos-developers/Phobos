@@ -1242,17 +1242,9 @@ static void UpdateTooltipTextOnMouseMove(HWND hWnd, LPARAM lParam)
 		if (IsEmpty(tooltipText))
 		{
 			if (const auto label = OwnerDraw::GetTooltipStringLabel(parentHwnd, hWnd))
-			{
-				tooltipText = StringTable::LoadString(
-					label,
-					nullptr,
-					"D:\\ra2mdpost\\ownrdraw.cpp",
-					1957);
-			}
+				tooltipText = StringTable::LoadString(label);
 			else
-			{
 				tooltipText = L"";
-			}
 		}
 	}
 
@@ -1734,17 +1726,9 @@ static LRESULT HandleTooltipRefresh(HWND hWnd, LPARAM lParam)
 			if (IsEmpty(tooltipText))
 			{
 				if (const auto label = OwnerDraw::GetTooltipStringLabel(hWnd, controlHwnd))
-				{
-					tooltipText = StringTable::LoadString(
-						label,
-						nullptr,
-						"D:\\ra2mdpost\\ownrdraw.cpp",
-						1957);
-				}
+					tooltipText = StringTable::LoadString(label);
 				else
-				{
 					tooltipText = L"";
-				}
 			}
 		}
 	}
