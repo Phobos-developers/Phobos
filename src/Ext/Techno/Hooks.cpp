@@ -2108,7 +2108,14 @@ int WrapPerStep::TemporalClassFake::_GetWarpPerStep(int helperCount)
 					multiplier /= TechnoExt::GetCurrentArmorMultiplier(pTarget, pTarget->GetTechnoType(), pWarhead);
 
 				if (pWHExt->Temporal_ApplyVersus.Get(RulesExt::Global()->Temporal_ApplyVersus))
+				{
+					const auto pTargetInfantry = abstract_cast<InfantryClass*, true>(pTarget);
+
+					if (pTargetInfantry && pTargetInfantry->Crawling && warpPerStep > 0)
+						warpPerStep = std::max(static_cast<int>(warpPerStep * pWarhead->ProneDamage), 1);
+
 					warpPerStep = MapClass::GetTotalDamage(warpPerStep, pWarhead, pTarget->GetType()->Armor, 0);
+				}
 			}
 
 			warpPerStep = static_cast<int>(warpPerStep * multiplier);
