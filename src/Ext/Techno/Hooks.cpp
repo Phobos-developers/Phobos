@@ -2087,7 +2087,20 @@ int WrapPerStep::TemporalClassFake::_GetWarpPerStep(int helperCount)
 			double multiplier = 1.0;
 
 			if (applyMultiplier)
+			{
 				multiplier = TechnoExt::GetCurrentFirepowerMultiplier(pOwner);
+
+				if (const auto pBunker = abstract_cast<BuildingClass*>(pOwner->BunkerLinkedItem))
+				{
+					const auto pBunkerTypeExt = BuildingTypeExt::ExtMap.Find(pBunker->Type);
+					multiplier *= pBunkerTypeExt->BuildingBunkerDamageMult.Get(RulesClass::Instance->BunkerDamageMultiplier);
+				}
+				else if (pOwner->InOpenToppedTransport && pOwner->Transporter)
+				{
+					const auto pTransporterTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->Transporter->GetTechnoType());
+					multiplier *= pTransporterTypeExt->OpenTopped_DamageMultiplier.Get(RulesClass::Instance->OpenToppedDamageMultiplier);
+				}
+			}
 
 			if (const auto pTarget = pTemporal->Target)
 			{
