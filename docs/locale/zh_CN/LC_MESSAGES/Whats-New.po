@@ -1923,9 +1923,9 @@ msgstr ""
 "为拥有 `DrawType=ebolt` 的激光尾迹类型添加 `Bolt.ZAdjust` 设置项（by Noble_Fish）"
 
 msgid ""
-"Customize if warhead with `Temporal=yes` will use versus or not (by NetsuNegi)"
+"Customize if warhead with `Temporal=yes` will use versus and buff or not (by NetsuNegi)"
 msgstr ""
-"自定义 `Temporal=yes` 的弹头是否使用弹头修正（by NetsuNegi）"
+"自定义 `Temporal=yes` 的弹头是否使用弹头修正与增益（by NetsuNegi）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："

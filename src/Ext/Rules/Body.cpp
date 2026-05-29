@@ -409,7 +409,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->Shrapnel_IgnoreHitBuildings.Read(exINI, GameStrings::CombatDamage, "Shrapnel.IgnoreHitBuildings");
 
-	this->Temporal_ConsiderVersus.Read(exINI, GameStrings::CombatDamage, "Temporal.ConsiderVersus");
+	this->Temporal_ApplyVersus.Read(exINI, GameStrings::CombatDamage, "Temporal.ApplyVersus");
+	this->Temporal_ApplyMultiplier.Read(exINI, GameStrings::CombatDamage, "Temporal.ApplyMultiplier");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -739,7 +740,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->FiringAnim_Update)
 		.Process(this->ExtendedPlayerRepair)
 		.Process(this->Shrapnel_IgnoreHitBuildings)
-		.Process(this->Temporal_ConsiderVersus)
+		.Process(this->Temporal_ApplyVersus)
+		.Process(this->Temporal_ApplyMultiplier)
 		;
 }
 

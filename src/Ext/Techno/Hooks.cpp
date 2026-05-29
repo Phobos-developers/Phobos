@@ -2080,12 +2080,25 @@ int WrapPerStep::TemporalClassFake::_GetWarpPerStep(int helperCount)
 		const auto pWeapon = pOwner->GetWeapon(weaponIdx)->WeaponType;
 		int warpPerStep = pWeapon->Damage;
 
-		if (const auto pTarget = pTemporal->Target)
+		if (const auto pWarhead = pWeapon->Warhead)
 		{
-			const auto pWarhead = pWeapon->Warhead;
+			const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+			const bool applyMultiplier = pWHExt->Temporal_ApplyMultiplier.Get(RulesExt::Global()->Temporal_ApplyMultiplier);
+			double multiplier = 1.0;
 
-			if (pWarhead && WarheadTypeExt::ExtMap.Find(pWarhead)->Temporal_ConsiderVersus.Get(RulesExt::Global()->Temporal_ConsiderVersus))
-				warpPerStep = MapClass::GetTotalDamage(warpPerStep, pWarhead, pTarget->GetType()->Armor, 0);
+			if (applyMultiplier)
+				multiplier = TechnoExt::GetCurrentFirepowerMultiplier(pOwner);
+
+			if (const auto pTarget = pTemporal->Target)
+			{
+				if (applyMultiplier)
+					multiplier /= TechnoExt::GetCurrentArmorMultiplier(pTarget, pTarget->GetTechnoType(), pWarhead);
+
+				if (pWHExt->Temporal_ApplyVersus.Get(RulesExt::Global()->Temporal_ApplyVersus))
+					warpPerStep = MapClass::GetTotalDamage(warpPerStep, pWarhead, pTarget->GetType()->Armor, 0);
+			}
+
+			warpPerStep = static_cast<int>(warpPerStep * multiplier);
 		}
 
 		pTemporal->WarpPerStep = warpPerStep;

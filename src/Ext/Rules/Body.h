@@ -352,7 +352,8 @@ public:
 
 		Valueable<bool> Shrapnel_IgnoreHitBuildings;
 
-		Valueable<bool> Temporal_ConsiderVersus;
+		Valueable<bool> Temporal_ApplyVersus;
+		Valueable<bool> Temporal_ApplyMultiplier;
     
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -645,7 +646,8 @@ public:
 			, FiringAnim_Update { false }
 			, ExtendedPlayerRepair { false }
 			, Shrapnel_IgnoreHitBuildings { false }
-			, Temporal_ConsiderVersus { false }
+			, Temporal_ApplyVersus { false }
+			, Temporal_ApplyMultiplier { false }
 		{ }
 
 		virtual ~ExtData() = default;

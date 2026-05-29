@@ -576,7 +576,7 @@ HideShakeEffects=false           ; boolean
 - Allow disabling the processing of the Z-depth of EBolt drawn by BuildingType being clamped to non-positive numbers (by Noble_Fish)
 - Add the `Bolt.ZAdjust` setting item to the LaserTrailType with `DrawType=ebolt` (by Noble_Fish)
 - Allow *Harvester counter* to display only the total number or the number currently working (by Noble_Fish)
-- Customize if warhead with `Temporal=yes` will use versus or not (by NetsuNegi)
+- Customize if warhead with `Temporal=yes` will use versus and buff or not (by NetsuNegi)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
