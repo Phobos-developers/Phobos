@@ -576,6 +576,7 @@ HideShakeEffects=false           ; boolean
 - Allow disabling the processing of the Z-depth of EBolt drawn by BuildingType being clamped to non-positive numbers (by Noble_Fish)
 - Add the `Bolt.ZAdjust` setting item to the LaserTrailType with `DrawType=ebolt` (by Noble_Fish)
 - Allow *Harvester counter* to display only the total number or the number currently working (by Noble_Fish)
+- [Allow customizing guard mission retry delay for buildings with weapons](Fixed-or-Improved-Logics.md#armed-building-guard-retry-delay) (by Starkku)
 - [Allow `Temporal` warhead to apply ratio and bonus](Fixed-or-Improved-Logics.md#allow-temporal-warhead-to-apply-ratio-and-bonus) (by NetsuNegi)
 
 #### Vanilla fixes:

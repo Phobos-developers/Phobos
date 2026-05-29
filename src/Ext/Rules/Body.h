@@ -352,6 +352,8 @@ public:
 
 		Valueable<bool> Shrapnel_IgnoreHitBuildings;
 
+		Nullable<PartialVector2D<int>> BuildingGuardRetryDelay;
+
 		Valueable<bool> Temporal_ApplyVersus;
 		Valueable<bool> Temporal_ApplyMultiplier;
     
@@ -646,6 +648,7 @@ public:
 			, FiringAnim_Update { false }
 			, ExtendedPlayerRepair { false }
 			, Shrapnel_IgnoreHitBuildings { false }
+			, BuildingGuardRetryDelay {}
 			, Temporal_ApplyVersus { false }
 			, Temporal_ApplyMultiplier { false }
 		{ }

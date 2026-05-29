@@ -293,6 +293,7 @@ This page lists all the individual contributions to the project by their author.
   - GapGen + SpySat desync fix
   - Frame CRC generation rewrite
   - Laser drawing Z-adjust customization
+  - Armed building guard mission retry delay customization
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

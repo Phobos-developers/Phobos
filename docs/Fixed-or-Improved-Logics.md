@@ -1000,6 +1000,19 @@ In `artmd.ini`:
 ZShapePointMove.OnBuildup=false  ; boolean
 ```
 
+### Armed building guard retry delay
+
+- By default buildings with weapons (including garrisoned buildings) have a delay of `[Guard]` -> `AARate` multiplied by 900 plus random value in range 0-2 (inclusive) before rechecking if the building can attack if it has a target. This delay is now customizable globally by `[General]` -> `BuildingGuardRetryDelay` or per-BuildingType with `GuardRetryDelay`.
+
+In `artmd.ini`:
+```ini
+[General]
+BuildingGuardRetryDelay=  ; integer - single or comma-sep. range (game frames)
+
+[SOMEBUILDING]            ; BuildingType
+GuardRetryDelay=          ; integer - single or comma-sep. range (game frames)
+```
+
 ### Buildings considered as vehicles
 
 - By default game considers buildings with both `UndeploysInto` set and `Foundation` equaling `1x1` as vehicles, in a manner of speaking. This behaviour can now be toggled individually of these conditions by setting `ConsideredVehicle`. These buildings are counted as vehicles for unit count tracking, are not considered as base under attack when damaged and can be mass selected by default, for an example.
