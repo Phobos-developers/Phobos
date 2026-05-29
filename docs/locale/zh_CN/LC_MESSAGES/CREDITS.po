@@ -1776,8 +1776,8 @@ msgstr ""
 msgid "Fix the bug where passengers, when their transport unit is removed, would cause incorrect `LimboTracker` counts due to either having their destructor called directly (bypassing `UnInit`) or nested `UnInit` calls resetting the deletion flag too early, thereby breaking auto-death and superweapon auxiliary techno checks"
 msgstr "修复了乘客在其所在的运输工具被移除时，因被直接调用析构函数（绕过 `UnInit` ）或 `UnInit` 嵌套调用导致删除标志过早重置，从而使 `LimboTracker` 计数错误，进而影响自动死亡及超武辅助单位判定的 Bug"
 
-msgid "Customize if warhead with `Temporal=yes` will use versus and buff or not"
-msgstr "自定义 `Temporal=yes` 的弹头是否使用弹头修正与增益"
+msgid "Allow `Temporal` warhead to apply ratio and bonus"
+msgstr "允许 `Temporal` 弹头应用比率和加成"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
