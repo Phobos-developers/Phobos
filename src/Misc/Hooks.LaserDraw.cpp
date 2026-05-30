@@ -235,38 +235,17 @@ DEFINE_FUNCTION_JUMP(CALL, 0x46AD81, Shrapnel_CreateLaser_Wrapper)
 DEFINE_HOOK(0x4A7696, DiskLaser_Update_ActivateMainBeam_Tracking, 0x6)
 {
 	GET(LaserDrawClass*, pLaser, EAX);
-
-	if (!pLaser)
-		return 0;
-
+	if (!pLaser) return 0;
 	const auto it = LaserRT::TrackingMap.find(pLaser);
-
-	if (it == LaserRT::TrackingMap.cend())
-		return 0;
-
+	if (it == LaserRT::TrackingMap.cend()) return 0;
 	GET(DiskLaserClass*, pDiskLaser, ESI);
 	const auto pWeapon = pDiskLaser->Weapon;
-
-	if (!pWeapon)
-		return 0;
-
+	if (!pWeapon) return 0;
 	const auto mode = WeaponTypeExt::ExtMap.Find(pWeapon)->LaserPositionUpdate.Get();
+	if (mode == PositionFollow::None) return 0;
+	if (pLaser->Source == pLaser->Target) return 0;
 
-	if (mode == PositionFollow::None)
-		return 0;
-
-	auto pShooter = pDiskLaser->Owner;
-	const int burstIndex = pShooter->CurrentBurstIndex;
-	bool flhFound = false;
-	CoordStruct localFLH = TechnoExt::GetBurstFLH(pShooter, 0, flhFound);
-	if (!flhFound)
-	{
-		localFLH = pShooter->GetWeapon(0)->FLH;
-		if (burstIndex % 2 != 0)
-			localFLH.Y = -localFLH.Y;
-	}
-
-	it->second.Initialize(pShooter, pDiskLaser->Target, 0, mode, pLaser->Source, localFLH, burstIndex);
+	LaserRT::SetLaserTrackingData(pLaser, pDiskLaser->Owner, pDiskLaser->Target, 0, mode, false);
 	return 0;
 }
 
