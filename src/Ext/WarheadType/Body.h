@@ -36,14 +36,14 @@ public:
 		Valueable<int> AnimList_CreationInterval;
 		Valueable<Leptons> AnimList_ScatterMin;
 		Valueable<Leptons> AnimList_ScatterMax;
-		Valueable<bool> CreateAnimsOnZeroDamage;
-		Valueable<bool> Conventional_IgnoreUnits;
+		Nullable<bool> CreateAnimsOnZeroDamage;
+		Nullable<bool> Conventional_IgnoreUnits;
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
 		Nullable<bool> RemoveParasite;
 		ValueableVector<TechnoTypeClass*> RemoveParasite_Allow;
 		ValueableVector<TechnoTypeClass*> RemoveParasite_Disallow;
-		Valueable<bool> DecloakDamagedTargets;
+		Nullable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 		Valueable<bool> ApplyModifiersOnNegativeDamage;
 		Valueable<bool> PenetratesIronCurtain;
@@ -174,6 +174,7 @@ public:
 		Nullable<bool> MergeBuildingDamage;
 
 		Nullable<int> CombatLightDetailLevel;
+		Nullable<bool> CombatLightDetailLevel_CheckColored;
 		Valueable<double> CombatLightChance;
 		Valueable<bool> CLIsBlack;
 		Nullable<bool> Particle_AlphaImageIsLightFlash;
@@ -292,14 +293,14 @@ public:
 			, AnimList_CreationInterval { 0 }
 			, AnimList_ScatterMin { Leptons(-1) }
 			, AnimList_ScatterMax { Leptons(-1) }
-			, CreateAnimsOnZeroDamage { false }
-			, Conventional_IgnoreUnits { false }
+			, CreateAnimsOnZeroDamage {}
+			, Conventional_IgnoreUnits {}
 			, RemoveDisguise { false }
 			, RemoveMindControl { false }
 			, RemoveParasite {}
 			, RemoveParasite_Allow {}
 			, RemoveParasite_Disallow {}
-			, DecloakDamagedTargets { true }
+			, DecloakDamagedTargets {}
 			, ShakeIsLocal { false }
 			, ApplyModifiersOnNegativeDamage { false }
 			, PenetratesIronCurtain { false }
@@ -430,6 +431,7 @@ public:
 			, MergeBuildingDamage {}
 
 			, CombatLightDetailLevel {}
+			, CombatLightDetailLevel_CheckColored {}
 			, CombatLightChance { 1.0 }
 			, CLIsBlack { false }
 			, Particle_AlphaImageIsLightFlash {}

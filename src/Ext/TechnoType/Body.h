@@ -164,6 +164,7 @@ public:
 		Nullable<int> OpenTopped_WarpDistance;
 		Nullable<bool> OpenTopped_IgnoreRangefinding;
 		Nullable<bool> OpenTopped_AllowFiringIfDeactivated;
+		Nullable<bool> OpenTopped_AllowFiringIfAttackedByLocomotor;
 		Nullable<bool> OpenTopped_ShareTransportTarget;
 		Nullable<bool> OpenTopped_UseTransportRangeModifiers;
 		Nullable<bool> OpenTopped_CheckTransportDisableWeapons;
@@ -231,6 +232,8 @@ public:
 		Nullable<WarheadTypeClass*> ForceShield_KillWarhead;
 		Nullable<bool> Explodes_KillPassengers;
 		Nullable<bool> Explodes_DuringBuildup;
+		Valueable<bool> DriverKilled_KeptPassengers;
+		Nullable<bool> DriverKilled_KillPassengers;
 		Nullable<int> DeployFireWeapon;
 		Valueable<TargetZoneScanType> TargetZoneScanType;
 
@@ -333,6 +336,7 @@ public:
 		Nullable<AnimTypeClass*> Wake;
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
+		Nullable<bool> MakesWake;
 
 		Nullable<int> AINormalTargetingDelay;
 		Nullable<int> PlayerNormalTargetingDelay;
@@ -370,8 +374,8 @@ public:
 		Valueable<bool> Spawner_RecycleOnTurret;
 
 		Nullable<bool> Sinkable;
-		Valueable<bool> Sinkable_SquidGrab;
-		Valueable<int> SinkSpeed;
+		Nullable<bool> Sinkable_SquidGrab;
+		Nullable<int> SinkSpeed;
 
 		Nullable<double> ProneSpeed;
 		Nullable<double> DamagedSpeed;
@@ -491,6 +495,13 @@ public:
 		Nullable<bool> JumpjetClimbIgnoreBuilding;
 
 		Nullable<bool> HoverDrownable;
+		bool ExtraThreat_Enabled;
+		Nullable<double> ExtraThreat_IsThreat;
+		Valueable<bool> AlwaysConsideredThreat;
+		Nullable<double> ExtraThreat_InRange;
+		Nullable<double> ExtraThreatCoefficient_InRangeDistance;
+		Nullable<double> ExtraThreatCoefficient_Facing;
+		Nullable<double> ExtraThreatCoefficient_DistanceToLastTarget;
 
 		Nullable<bool> Unsellable; // Ares 3.0
 
@@ -586,6 +597,7 @@ public:
 			, OpenTopped_WarpDistance {}
 			, OpenTopped_IgnoreRangefinding {}
 			, OpenTopped_AllowFiringIfDeactivated {}
+			, OpenTopped_AllowFiringIfAttackedByLocomotor {}
 			, OpenTopped_ShareTransportTarget {}
 			, OpenTopped_UseTransportRangeModifiers {}
 			, OpenTopped_CheckTransportDisableWeapons {}
@@ -697,6 +709,8 @@ public:
 
 			, Explodes_KillPassengers {}
 			, Explodes_DuringBuildup {}
+			, DriverKilled_KeptPassengers { false }
+			, DriverKilled_KillPassengers {}
 			, DeployFireWeapon {}
 			, TargetZoneScanType { TargetZoneScanType::Same }
 
@@ -801,6 +815,7 @@ public:
 			, Wake { }
 			, Wake_Grapple { }
 			, Wake_Sinking { }
+			, MakesWake { }
 
 			, AINormalTargetingDelay {}
 			, PlayerNormalTargetingDelay {}
@@ -840,8 +855,8 @@ public:
 			, Spawner_RecycleOnTurret { false }
 
 			, Sinkable { }
-			, Sinkable_SquidGrab { true }
-			, SinkSpeed { 5 }
+			, Sinkable_SquidGrab { }
+			, SinkSpeed { }
 
 			, ProneSpeed { }
 			, DamagedSpeed { }
@@ -944,6 +959,13 @@ public:
 			, Unsellable {}
 
 			, TurretShape { nullptr }
+			, ExtraThreat_Enabled { false }
+			, ExtraThreat_IsThreat {}
+			, AlwaysConsideredThreat { false }
+			, ExtraThreat_InRange {}
+			, ExtraThreatCoefficient_InRangeDistance {}
+			, ExtraThreatCoefficient_Facing {}
+			, ExtraThreatCoefficient_DistanceToLastTarget {}
 		{ }
 
 		virtual ~ExtData() = default;

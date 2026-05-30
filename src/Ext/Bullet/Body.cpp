@@ -67,7 +67,7 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, BulletClass* pInt
 				this->InitializeLaserTrails();
 
 			// Lose target if the current bullet is no longer interceptable.
-			if (pSource && (!pTypeExt->Interceptable || (pTypeExt->Armor.isset() && GeneralUtils::GetWarheadVersusArmor(pInterceptor->WH, pTypeExt->Armor.Get()) == 0.0)))
+			if (pSource && (!pTypeExt->Interceptable.Get(RulesExt::Global()->Interceptable) || (pTypeExt->Armor.isset() && GeneralUtils::GetWarheadVersusArmor(pInterceptor->WH, pTypeExt->Armor.Get()) == 0.0)))
 				pSource->SetTarget(nullptr);
 		}
 	}

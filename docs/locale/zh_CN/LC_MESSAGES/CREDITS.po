@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-05 21:55+0800\n"
+"POT-Creation-Date: 2026-04-19 20:27+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1292,6 +1292,14 @@ msgstr "自定义悬浮载具溺死"
 msgid "SHP turret vehicles support the use of `*tur.shp` files"
 msgstr "Shape 有炮塔载具支持使用 `*tur.shp` 文件。"
 
+msgid ""
+"Fix a bug where game will crash after loading if a techno with "
+"`AlphaImage` converts to a type without it, or an anim with `AlphaImage` "
+"changes to a type without it through `Next`"
+msgstr ""
+"修复了有 `AlphaImage` 的单位转换为无 AlphaImage 的类型，或有 `AlphaImage` 的动画通过 `Next` "
+"更改为无 AlphaImage 的类型后读档会导致游戏崩溃的 Bug"
+
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："
 
@@ -1718,6 +1726,20 @@ msgstr "允许在弹头上自定义 Jumpjet 属性"
 
 msgid "Customize effects range of power plant enhancer"
 msgstr "自定义电厂增幅器的效果范围"
+
+msgid ""
+"Customize whether transport can kept or kill passengers when driver has "
+"been killed"
+msgstr "自定义载具被击杀驾驶员时是否保留或杀死乘客"
+
+msgid ""
+"Fix a bug where passengers created by the InitialPayload logic or "
+"TeamType with `Full=true` would fail to fire when the transport unit with"
+" `OpenTopped=yes` moved to an area that the passengers' `MovementZone` "
+"cannot move into"
+msgstr ""
+"修复了 `OpenTopped=yes` 的运输工具移动到乘客 `MovementZone` 所不支持的区域时由初始载员逻辑或勾选了 "
+"`预装载小队` 的作战小队创建的乘客无法开火的 Bug"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
@@ -2434,6 +2456,28 @@ msgstr "修复了非超时空矿车在矿区无矿后即便矿石已重新生成
 msgid "Miners back to work when ore regenerated"
 msgstr "矿车在矿石再生后返回工作"
 
+msgid "Allow disable an over-optimization in targeting"
+msgstr "允许禁用索敌中的过度优化"
+
+msgid "Extra threat"
+msgstr "额外威胁"
+
+msgid "Fix the incorrect mission switching in infantry EnterIdleMode"
+msgstr "修复了步兵进入闲置状态时的错误任务切换"
+
+msgid ""
+"Fix the issue that `BombSight` not being updated correctly in techno "
+"conversion"
+msgstr "修复了单位的 `BombSight` 在类型转换时不会被正确更新的问题"
+
+msgid "Technos with Walk locomotor spawn wake like ship"
+msgstr ""
+"使用 Walk 运动模式的单位像船只一样生成水波"
+
+msgid "Updateable firing anim"
+msgstr ""
+"可更新开火动画"
+
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
 
@@ -2451,6 +2495,9 @@ msgstr "为 AE 系统添加目标过滤选项"
 
 msgid "Add veterancy-based target filtering for weapons and warheads"
 msgstr "为武器和弹头添加基于经验等级的目标过滤"
+
+msgid "Fix BalloonHover incorrectly considering ground factors when pathfinding"
+msgstr "修复了 BalloonHover 寻路时错误考虑了地面因素的问题"
 
 msgid "**tyuah8**:"
 msgstr "**tyuah8**："

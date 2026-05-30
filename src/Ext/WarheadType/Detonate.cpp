@@ -569,7 +569,7 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, BulletClass*
 		{
 			const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 
-			if (!pBulletExt->TypeExtData->Interceptable)
+			if (!pBulletExt->TypeExtData->Interceptable.Get(RulesExt::Global()->Interceptable))
 				return;
 
 			// 1/8th of a cell as a margin of error if not Inviso interceptor.
@@ -586,7 +586,7 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, BulletClass*
 			const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 
 			// Cells don't know about bullets that may or may not be located on them so it has to be this way.
-			if (!pBulletExt->TypeExtData->Interceptable || pBullet->SpawnNextAnim)
+			if (!pBulletExt->TypeExtData->Interceptable.Get(RulesExt::Global()->Interceptable) || pBullet->SpawnNextAnim)
 				continue;
 
 			if (pBullet->Location.DistanceFromSquared(coords) <= cellSpreadSq)

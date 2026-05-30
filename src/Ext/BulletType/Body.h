@@ -21,7 +21,7 @@ public:
 	public:
 		// Valueable<int> Strength; //Use OwnerObject()->ObjectTypeClass::Strength
 		Nullable<ArmorType> Armor;
-		Valueable<bool> Interceptable;
+		Nullable<bool> Interceptable;
 		Valueable<bool> Interceptable_DeleteOnIntercept;
 		Valueable<WeaponTypeClass*> Interceptable_WeaponOverride;
 		ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
@@ -60,11 +60,14 @@ public:
 		Valueable<bool> Airburst_TargetAsSource;
 		Valueable<bool> Airburst_TargetAsSource_SkipHeight;
 		Valueable<Leptons> Splits_TargetingDistance;
+		Valueable<bool> Splits_TargetingDistance_Cylindrical;
+		Valueable<bool> Splits_AllowRepeatTargets;
 		Valueable<int> Splits_TargetCellRange;
 		Valueable<bool> Splits_UseWeaponTargeting;
 		Valueable<bool> AirburstWeapon_ApplyFirepowerMult;
 		Valueable<Leptons> AirburstWeapon_SourceScatterMin;
 		Valueable<Leptons> AirburstWeapon_SourceScatterMax;
+		Valueable<bool> AirburstWeapon_UseFiringEffects;
 
 		Valueable<bool> Parachuted;
 		Valueable<int> Parachuted_FallRate;
@@ -79,7 +82,7 @@ public:
 
 		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject)
 			, Armor {}
-			, Interceptable { false }
+			, Interceptable {}
 			, Interceptable_DeleteOnIntercept { false }
 			, Interceptable_WeaponOverride {}
 			, LaserTrail_Types {}
@@ -114,11 +117,14 @@ public:
 			, Airburst_TargetAsSource { false }
 			, Airburst_TargetAsSource_SkipHeight { false }
 			, Splits_TargetingDistance{ Leptons(1280) }
+			, Splits_TargetingDistance_Cylindrical { false }
+			, Splits_AllowRepeatTargets { false }
 			, Splits_TargetCellRange { 3 }
 			, Splits_UseWeaponTargeting { false }
 			, AirburstWeapon_ApplyFirepowerMult { false }
 			, AirburstWeapon_SourceScatterMin { Leptons(0) }
 			, AirburstWeapon_SourceScatterMax { Leptons(0) }
+			, AirburstWeapon_UseFiringEffects { false }
 			, Parachuted { false }
 			, Parachuted_FallRate { 1 }
 			, Parachuted_MaxFallRate {}

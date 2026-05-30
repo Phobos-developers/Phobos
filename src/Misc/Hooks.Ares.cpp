@@ -21,6 +21,12 @@ static ObjectClass* __fastcall CreateInitialPayload(TechnoTypeClass* type, void*
 	return instance;
 }
 
+static void __fastcall InitialPayload_OpenToppedFix(TechnoClass* pThis)
+{
+	pThis->IsInPlayfield = true;
+	pThis->Limbo();
+}
+
 static void __fastcall LetGo(TemporalClass* pTemporal)
 {
 	pTemporal->LetGo();
@@ -120,6 +126,9 @@ void Apply_Ares3_0_Patches()
 	// SpawnSurvivor fix:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x445E0, GET_OFFSET(TechnoExt::EjectRandomly));
 
+	// KillDriver re-implementation and enhancement
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x456D0, GET_OFFSET(TechnoExt::ApplyKillDriver));
+
 	// Redirect Ares' getCellSpreadItems to our implementation:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x62267, &Helpers::Alex::getCellSpreadItems);
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x528C8, &Helpers::Alex::getCellSpreadItems);
@@ -130,6 +139,7 @@ void Apply_Ares3_0_Patches()
 
 	// InitialPayload creation:
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x43D5D, &CreateInitialPayload);
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x43E4F, GET_OFFSET(InitialPayload_OpenToppedFix));
 
 	// Replace the TemporalClass::Detach call by LetGo in convert function:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x436DA, &LetGo);
@@ -198,6 +208,9 @@ void Apply_Ares3_0p1_Patches()
 	// SpawnSurvivor fix:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x450C0, GET_OFFSET(TechnoExt::EjectRandomly));
 
+	// KillDriver re-implementation and enhancement
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x46240, GET_OFFSET(TechnoExt::ApplyKillDriver));
+
 	// Redirect Ares' getCellSpreadItems to our implementation:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x62FB7, &Helpers::Alex::getCellSpreadItems);
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x53578, &Helpers::Alex::getCellSpreadItems);
@@ -208,6 +221,7 @@ void Apply_Ares3_0p1_Patches()
 
 	// InitialPayload creation:
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x4483D, &CreateInitialPayload);
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x4492F, GET_OFFSET(InitialPayload_OpenToppedFix));
 
 	// Replace the TemporalClass::Detach call by LetGo in convert function:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x441BA, &LetGo);

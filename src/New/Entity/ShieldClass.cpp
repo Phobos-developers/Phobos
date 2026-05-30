@@ -259,7 +259,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		if (!pWHExt->Nonprovocative)
 			this->ResponseAttack();
 
-		if (pWHExt->DecloakDamagedTargets)
+		if (pWHExt->DecloakDamagedTargets.Get(RulesExt::Global()->DecloakDamagedTargets))
 			pTechno->Uncloak(false);
 
 		const int residueDamage = shieldDamage - health;

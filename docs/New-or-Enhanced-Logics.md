@@ -823,6 +823,9 @@ BombParachute=           ; AnimationType, default to [General] -> BombParachute
 
 In `rulesmd.ini`:
 ```ini
+[General]
+Interceptable=false                        ; boolean
+
 [SOMETECHNO]                               ; TechnoType
 Interceptor=false                          ; boolean
 Interceptor.Weapon=0                       ; integer, weapon slot index (0 or 1)
@@ -843,7 +846,7 @@ Interceptor.KeepIntact=false               ; boolean
 
 [SOMEPROJECTILE]                           ; Projectile
 Interceptable=false                        ; boolean
-Interceptable.DeleteOnIntercept=false      ; boolean
+Interceptable.DeleteOnIntercept=           ; boolean, default to [General] -> Interceptable
 Interceptable.WeaponOverride=              ; WeaponType
 Strength=0                                 ; integer
 Armor=                                     ; ArmorType
@@ -1574,27 +1577,29 @@ DrainMoneyDisplay.OnTarget.UseDisplayIncome=        ; boolean
 In `rulesmd.ini`:
 ```ini
 [General]
-OpenTopped.IgnoreRangefinding=false       ; boolean
-OpenTopped.AllowFiringIfDeactivated=true  ; boolean
-OpenTopped.ShareTransportTarget=true      ; boolean
-OpenTopped.DecloakToFire=true             ; boolean
+OpenTopped.IgnoreRangefinding=false               ; boolean
+OpenTopped.AllowFiringIfDeactivated=true          ; boolean
+OpenTopped.ShareTransportTarget=true              ; boolean
+OpenTopped.AllowFiringIfAttackedByLocomotor=true  ; boolean
+OpenTopped.DecloakToFire=true                     ; boolean
 
-[SOMETECHNO]                              ; TechnoType, transport with OpenTopped=yes
-OpenTopped.RangeBonus=                    ; integer, default to [CombatDamage] -> OpenToppedRangeBonus
-OpenTopped.DamageMultiplier=              ; floating point value, default to [CombatDamage] -> OpenToppedDamageMultiplier
-OpenTopped.WarpDistance=                  ; integer, default to [CombatDamage] -> OpenToppedWarpDistance
-OpenTopped.IgnoreRangefinding=            ; boolean, defaults to [General] -> OpenTopped.IgnoreRangefinding
-OpenTopped.AllowFiringIfDeactivated=      ; boolean, defaults to [General] -> OpenTopped.AllowFiringIfDeactivated
-OpenTopped.ShareTransportTarget=          ; boolean, defaults to [General] -> OpenTopped.ShareTransportTarget
-OpenTopped.DecloakToFire=                 ; boolean, defaults to [General] -> OpenTopped.DecloakToFire
+[SOMETECHNO]                                      ; TechnoType, transport with OpenTopped=yes
+OpenTopped.RangeBonus=                            ; integer, default to [CombatDamage] -> OpenToppedRangeBonus
+OpenTopped.DamageMultiplier=                      ; floating point value, default to [CombatDamage] -> OpenToppedDamageMultiplier
+OpenTopped.WarpDistance=                          ; integer, default to [CombatDamage] -> OpenToppedWarpDistance
+OpenTopped.IgnoreRangefinding=                    ; boolean, defaults to [General] -> OpenTopped.IgnoreRangefinding
+OpenTopped.AllowFiringIfDeactivated=              ; boolean, defaults to [General] -> OpenTopped.AllowFiringIfDeactivated
+OpenTopped.AllowFiringIfAttackedByLocomotor=      ; boolean, defaults to [General] -> OpenTopped.AllowFiringIfAttackedByLocomotor
+OpenTopped.ShareTransportTarget=                  ; boolean, defaults to [General] -> OpenTopped.ShareTransportTarget
+OpenTopped.DecloakToFire=                         ; boolean, defaults to [General] -> OpenTopped.DecloakToFire
 
 [CombatDamage]
-OpenTransport.RangeBonus=0                ; integer
-OpenTransport.DamageMultiplier=1.0        ; floating point value
+OpenTransport.RangeBonus=0                        ; integer
+OpenTransport.DamageMultiplier=1.0                ; floating point value
 
-[SOMETECHNO]                              ; TechnoType, passenger
-OpenTransport.RangeBonus=                 ; integer, defaults to [CombatDamage] -> OpenTransport.RangeBonus
-OpenTransport.DamageMultiplier=           ; floating point value, defaults to [CombatDamage] -> OpenTransport.DamageMultiplier
+[SOMETECHNO]                                      ; TechnoType, passenger
+OpenTransport.RangeBonus=                         ; integer, defaults to [CombatDamage] -> OpenTransport.RangeBonus
+OpenTransport.DamageMultiplier=                   ; floating point value, defaults to [CombatDamage] -> OpenTransport.DamageMultiplier
 ```
 
 ```{note}
@@ -1632,6 +1637,30 @@ RadarJamHouses=enemies            ; List of Affected House Enumeration (none|own
 RadarJamDelay=30                  ; integer
 RadarJamAffect=                   ; List of BuildingTypes
 RadarJamIgnore=                   ; List of BuildingTypes
+```
+
+### Customize whether transport can kept or kill passengers when driver has been killed
+
+- It is now possible to customize whether transport can kept or kill passengers when [driver has been killed](http://ares-developers.github.io/Ares-docs/new/killingdrivers.html).
+
+```{note}
+When `DriverKilled.KeptPassengers=true` is set, passengers will always be retained regardless of the `DriverKilled.KillPassengers` setting. If the transport also has `OpenTopped=true` and [`OpenTopped.AllowFiringIfDeactivated=false`](New-or-Enhanced-Logics.md#customizable-opentopped-properties) is not set, then passengers will continue attacking the target they were originally attacking, whether that target is inherited from the transport or acquired by themselves.
+```
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+DriverKilled.KillPassengers=false   ; boolean
+
+[SOMETECHNO]                        ; TechnoType, transport
+DriverKilled.KeptPassengers=false   ; boolean
+DriverKilled.KillPassengers=        ; boolean, defaults to [CombatDamage] -> DriverKilled.KillPassengers
+```
+
+```{warning}
+If `DriverKilled.KeptPassengers=true` is set, even if there are other passengers that can be matched by `Operator` besides the killed driver, the transport unit will still change its owner to `Special House` and change its mission to `Harmless`, but it will not be disabled or have its brightness adjusted.
+- If a new passenger enters the transport unit and can be matched by `Operator`, then the owner will be changed normally.
+- This feature was originally designed for some special `OpenTopped` units, and has not yet been fully adapted to situations outside the design.
 ```
 
 ### Customize EVA voice and `SellSound` when selling units
@@ -1714,6 +1743,40 @@ RateDown.Delay=0              ; integer, game frames
 RateDown.Reset=false          ; boolean
 RateDown.Cover.Value=0        ; integer
 RateDown.Cover.AmmoBelow=-2   ; integer
+```
+
+### Extra threat
+
+- Now you can adjust the techno's evaluation of the threat posed by the target in more ways. This will help the techno in auto - targeting.
+  - When the target poses a threat to the techno, it will receive an additional threat value defined by `ExtraThreat.IsThreat`.
+    - Generally speaking, "Posing a threat" means the target can fire at the techno.
+    - Using `AlwaysConsideredThreat` makes the target always considered to be a threat.
+  - When the target is within the techno's range, it will receive an additional threat value defined by `ExtraThreat.InRange`.
+  - When the target is within the techno's range, it will receive an additional threat value equal to `ExtraThreatCoefficient.InRangeDistance` multiplied by the distance (in cells) from the target to the techno.
+    - Only considering in-range is because the vanilla flag `TargetDistanceCoefficientDefault` only considers outside-range. This flag is complementary to that.
+  - The target will receive an additional threat value equal to `ExtraThreatCoefficient.Facing` multiplied by the difference in facing from the techno's current firing-facing to the target's facing.
+    - "Firing-facing" refers to the facing the techno uses to check if it "is already facing the target and can fire". Infantry doesn't check the facing when firing, so this is also invalid for infantry.
+    - The unit of facing is the in-game internal numerical scale. A full circle corresponds to 65536.
+  - The target will receive an additional threat value equal to `ExtraThreatCoefficient.DistanceToLastTarget` multiplied by the distance (in cells) from the target to the techno's last target.
+    - Each techno will record its current target as the "last target" per frame. This record will be retained for at most 15 frames after the target becomes invalid.
+    - If the techno doesn't have a "last target", then this will not take effect.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ExtraThreat.IsThreat=0.0                            ; double
+ExtraThreat.InRange=0.0                             ; double
+ExtraThreatCoefficient.InRangeDistance=0.0          ; double
+ExtraThreatCoefficient.Facing=0.0                   ; double
+ExtraThreatCoefficient.DistanceToLastTarget=0.0     ; double
+
+[SOMETECHNO]                                        ; TechnoType
+AlwaysConsideredThreat=false                        ; boolean
+ExtraThreat.IsThreat=                               ; double, default to the flag in [General] with same name
+ExtraThreat.InRange=                                ; double, default to the flag in [General] with same name
+ExtraThreatCoefficient.InRangeDistance=             ; double, default to the flag in [General] with same name
+ExtraThreatCoefficient.Facing=                      ; double, default to the flag in [General] with same name
+ExtraThreatCoefficient.DistanceToLastTarget=        ; double, default to the flag in [General] with same name
 ```
 
 ### Firing offsets for specific Burst shots
