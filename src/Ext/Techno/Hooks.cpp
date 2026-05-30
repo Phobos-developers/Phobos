@@ -2084,41 +2084,49 @@ int WrapPerStep::TemporalClassFake::_GetWarpPerStep(int helperCount)
 		{
 			const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 			const bool applyMultiplier = pWHExt->Temporal_ApplyMultiplier.Get(RulesExt::Global()->Temporal_ApplyMultiplier);
-			double multiplier = 1.0;
 
 			if (applyMultiplier)
 			{
-				multiplier = TechnoExt::GetCurrentFirepowerMultiplier(pOwner);
+				double firepowerMultiplier = TechnoExt::GetCurrentFirepowerMultiplier(pOwner);
 
 				if (const auto pBunker = abstract_cast<BuildingClass*>(pOwner->BunkerLinkedItem))
 				{
 					const auto pBunkerTypeExt = BuildingTypeExt::ExtMap.Find(pBunker->Type);
-					multiplier *= pBunkerTypeExt->BuildingBunkerDamageMult.Get(RulesClass::Instance->BunkerDamageMultiplier);
+					firepowerMultiplier *= pBunkerTypeExt->BuildingBunkerDamageMult.Get(RulesClass::Instance->BunkerDamageMultiplier);
 				}
 				else if (pOwner->InOpenToppedTransport && pOwner->Transporter)
 				{
 					const auto pTransporterTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->Transporter->GetTechnoType());
-					multiplier *= pTransporterTypeExt->OpenTopped_DamageMultiplier.Get(RulesClass::Instance->OpenToppedDamageMultiplier);
+					firepowerMultiplier *= pTransporterTypeExt->OpenTopped_DamageMultiplier.Get(RulesClass::Instance->OpenToppedDamageMultiplier);
 				}
+
+				warpPerStep = static_cast<int>(warpPerStep * firepowerMultiplier);
 			}
 
-			if (const auto pTarget = pTemporal->Target)
+			const auto pTarget = pTemporal->Target;
+
+			if (pTarget && warpPerStep > 0)
 			{
+				double multiplier = 1.0;
+
 				if (applyMultiplier)
 					multiplier /= TechnoExt::GetCurrentArmorMultiplier(pTarget, pTarget->GetTechnoType(), pWarhead);
 
 				if (pWHExt->Temporal_ApplyVersus.Get(RulesExt::Global()->Temporal_ApplyVersus))
 				{
-					const auto pTargetInfantry = abstract_cast<InfantryClass*, true>(pTarget);
-
-					if (pTargetInfantry && pTargetInfantry->Crawling && warpPerStep > 0)
-						warpPerStep = std::max(static_cast<int>(warpPerStep * pWarhead->ProneDamage), 1);
+					if (const auto pTargetInfantry = abstract_cast<InfantryClass*, true>(pTarget))
+					{
+						if (pTargetInfantry->IsDeployed())
+							multiplier *= pWHExt->Damage_Deployed;
+						else if (pTargetInfantry->Crawling)
+							multiplier *= pWarhead->ProneDamage;
+					}
 
 					warpPerStep = MapClass::GetTotalDamage(warpPerStep, pWarhead, pTarget->GetType()->Armor, 0);
 				}
-			}
 
-			warpPerStep = static_cast<int>(warpPerStep * multiplier);
+				warpPerStep = static_cast<int>(warpPerStep * multiplier);
+			}
 		}
 
 		pTemporal->WarpPerStep = warpPerStep;
