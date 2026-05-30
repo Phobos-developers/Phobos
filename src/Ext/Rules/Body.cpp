@@ -410,6 +410,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Shrapnel_IgnoreHitBuildings.Read(exINI, GameStrings::CombatDamage, "Shrapnel.IgnoreHitBuildings");
 	this->BuildingGuardRetryDelay.Read(exINI, GameStrings::General, "BuildingGuardRetryDelay");
 
+	this->DiscardOn_ConsiderHoverAsMoving.Read(exINI, GameStrings::General, "DiscardOn.ConsiderHoverAsMoving");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -739,6 +741,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtendedPlayerRepair)
 		.Process(this->Shrapnel_IgnoreHitBuildings)
 		.Process(this->BuildingGuardRetryDelay)
+		.Process(this->DiscardOn_ConsiderHoverAsMoving)
 		;
 }
 
