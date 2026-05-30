@@ -117,7 +117,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - They can also have map lighting apply on them if `AltPalette.ApplyLighting` is set to true.
 - Fixed `DeployToFire` not considering building placement rules for `DeploysInto` buildings and as a result not working properly with `WaterBound` buildings.
 - Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy.
-- `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false`.
+- `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false`, default to `[CombatDamage] -> Arcing.AllowElevationInaccuracy`.
 - Wall overlays are now drawn with the custom palette defined in `Palette` in `artmd.ini` if possible.
 - Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport. Can also be defined at `[General] -> ReloadInTransport` for a global default value.
 - It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead.
@@ -1385,13 +1385,16 @@ BallisticScatter.Max= ; floating point value, distance in cells
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-Shrapnel.IgnoreHitBuildings=false  ; boolean
-
-[SOMEPROJECTILE]                   ; Projectile
 Shrapnel.AffectsGround=false       ; boolean
 Shrapnel.AffectsBuildings=false    ; boolean
 Shrapnel.UseWeaponTargeting=false  ; boolean
-Shrapnel.IgnoreHitBuildings=       ; boolean
+Shrapnel.IgnoreHitBuildings=false  ; boolean
+
+[SOMEPROJECTILE]                   ; Projectile
+Shrapnel.AffectsGround=            ; boolean, default to [CombatDamage] -> Shrapnel.AffectsGround
+Shrapnel.AffectsBuildings=         ; boolean, default to [CombatDamage] -> Shrapnel.AffectsBuildings
+Shrapnel.UseWeaponTargeting=       ; boolean, default to [CombatDamage] -> Shrapnel.UseWeaponTargeting
+Shrapnel.IgnoreHitBuildings=       ; boolean, default to [CombatDamage] -> Shrapnel.IgnoreHitBuildings
 ```
 
 ## Technos
@@ -2108,9 +2111,13 @@ MinimapColor=      ; integer - Red,Green,Blue
 
 In `rulesmd.ini`:
 ```ini
-[SOMETERRAINTYPE]   ; TerrainType
-IsPassable=false    ; boolean
-CanBeBuiltOn=false  ; boolean
+[General]
+Terrain.IsPassable=false    ; boolean
+Terrain.CanBeBuiltOn=false  ; boolean
+
+[SOMETERRAINTYPE]           ; TerrainType
+IsPassable=                 ; boolean, default to [General] -> Terrain.IsPassable
+CanBeBuiltOn=               ; boolean, default to [General] -> Terrain.CanBeBuiltOn
 ```
 
 ## Tiberiums (ores)

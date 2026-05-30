@@ -384,6 +384,9 @@ public:
 		Valueable<bool> HoverLocomotorMakesWake;
 		Valueable<bool> ShipLocomotorMakesWake;
 
+		Valueable<bool> Shrapnel_AffectsGround;
+		Valueable<bool> Shrapnel_AffectsBuildings;
+		Valueable<bool> Shrapnel_UseWeaponTargeting;
 		Valueable<bool> Shrapnel_IgnoreHitBuildings;
 
 		Nullable<PartialVector2D<int>> BuildingGuardRetryDelay;
@@ -712,6 +715,9 @@ public:
 			, ShipLocomotorMakesWake { true }
 			, FiringAnim_Update { false }
 			, ExtendedPlayerRepair { false }
+			, Shrapnel_AffectsGround { false }
+			, Shrapnel_AffectsBuildings { false }
+			, Shrapnel_UseWeaponTargeting { false }
 			, Shrapnel_IgnoreHitBuildings { false }
 			, BuildingGuardRetryDelay {}
 		{ }

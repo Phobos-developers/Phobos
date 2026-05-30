@@ -31,9 +31,9 @@ public:
 
 		TrajectoryTypePointer TrajectoryType;
 
-		Valueable<bool> Shrapnel_AffectsGround;
-		Valueable<bool> Shrapnel_AffectsBuildings;
-		Valueable<bool> Shrapnel_UseWeaponTargeting;
+		Nullable<bool> Shrapnel_AffectsGround;
+		Nullable<bool> Shrapnel_AffectsBuildings;
+		Nullable<bool> Shrapnel_UseWeaponTargeting;
 		Nullable<bool> Shrapnel_IgnoreHitBuildings;
 		Nullable<bool> SubjectToLand;
 		Valueable<bool> SubjectToLand_Detonate;
@@ -91,9 +91,9 @@ public:
 			, Vertical_AircraftFix { true }
 			, VerticalInitialFacing {}
 			, TrajectoryType { }
-			, Shrapnel_AffectsGround { false }
-			, Shrapnel_AffectsBuildings { false }
-			, Shrapnel_UseWeaponTargeting { false }
+			, Shrapnel_AffectsGround {}
+			, Shrapnel_AffectsBuildings {}
+			, Shrapnel_UseWeaponTargeting {}
 			, Shrapnel_IgnoreHitBuildings {}
 			, ClusterScatter_Min { Leptons(256) }
 			, ClusterScatter_Max { Leptons(512) }
