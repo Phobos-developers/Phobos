@@ -58,7 +58,6 @@
       <EnableModules>true</EnableModules>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OpenMPSupport>true</OpenMPSupport>
-      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)vcpkg\installed\x86-windows-static\include;$(MSBuildThisFileDirectory)vcpkg\installed\x86-windows-static\include\harfbuzz;$(MSBuildThisFileDirectory)vcpkg\installed\x86-windows-static\include\freetype;$(MSBuildThisFileDirectory)vcpkg\installed\x86-windows-static\include\fribidi;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/external:env:INCLUDE /external:env:LIB %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -69,8 +68,7 @@
       <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
       <ProfileGuidedDatabase>$(IntDir)$(TargetName).pgd</ProfileGuidedDatabase>
       <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
-      <AdditionalLibraryDirectories>$(MSBuildThisFileDirectory)vcpkg\installed\x86-windows-static\lib;$(MSBuildThisFileDirectory)vcpkg\installed\x86-windows-static\lib\manual-link;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>freetype.lib;harfbuzz.lib;harfbuzz-subset.lib;fribidi.lib;brotlicommon.lib;brotlidec.lib;bz2.lib;libpng16.lib;zs.lib;%(AdditionalDependencies)</AdditionalDependencies>    </Link>
+    </Link>
   </ItemDefinitionGroup>
   <!-- Release -->
   <ItemDefinitionGroup Condition="$(Configuration.Contains('Release'))">
