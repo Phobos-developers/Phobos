@@ -72,6 +72,20 @@ namespace LaserRT
 
 		void Initialize(TechnoClass* pShooter, AbstractClass* pTarget, int weaponIdx, PositionFollow mode, const CoordStruct& initialSource, const CoordStruct& localFLH, int burstIndex)
 		{
+			if (pShooter)
+			{
+				if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pShooter))
+				{
+					if (pBuilding->Type->MaxNumberOccupants > 0)
+					{
+						if (mode == PositionFollow::Firer)
+							mode = PositionFollow::None;
+						else if (mode == PositionFollow::All)
+							mode = PositionFollow::Target;
+					}
+				}
+			}
+
 			if (pShooter && (mode & PositionFollow::Firer))
 			{
 				this->Shooter = pShooter;
