@@ -504,7 +504,7 @@ HideShakeEffects=false           ; boolean
 - Fast access structure (by FlyStar)
 - Toggle off laser trail and shake effects (by Ollerus)
 - [Dehardcode the `ZAdjust` of warhead anim](Fixed-or-Improved-Logics.md#dehardcode-the-zadjust-of-warhead-anim) (by TaranDahl)
-- [Interceptor target scan delay customization](New-or-Enhanced-Logics.md#projectile-interception-logic) (by Starkku)
+- [Interceptor target scan delay customization & cylindrical rangefinding](New-or-Enhanced-Logics.md#projectile-interception-logic) (by Starkku)
 - [Allow deploy controlled MCV](Fixed-or-Improved-Logics.md#allow-deploy-controlled-mcv) (by NetsuNegi)
 - [Customize if cloning need power](Fixed-or-Improved-Logics.md#customize-if-cloning-need-power) (by NetsuNegi)
 - [Added Target Filtering Options to AttachEffect System](New-or-Enhanced-Logics.md#attached-effects) (by Flactine)
@@ -576,6 +576,7 @@ HideShakeEffects=false           ; boolean
 - Allow disabling the processing of the Z-depth of EBolt drawn by BuildingType being clamped to non-positive numbers (by Noble_Fish)
 - Add the `Bolt.ZAdjust` setting item to the LaserTrailType with `DrawType=ebolt` (by Noble_Fish)
 - Allow *Harvester counter* to display only the total number or the number currently working (by Noble_Fish)
+- [Allow customizing guard mission retry delay for buildings with weapons](Fixed-or-Improved-Logics.md#armed-building-guard-retry-delay) (by Starkku)
 - Allow Laser drawing position update (by Noble_Fish)
 
 #### Vanilla fixes:
@@ -660,6 +661,7 @@ HideShakeEffects=false           ; boolean
 - Fixed AI team recruitment inconsistency causing underfilled teams (by handama)
 - Fixed the issue where tint color RGB mode conversion was incorrect (by Shatyuka)
 - Fixed the bug that low-air taking off / landing objects will receive twice damage (by NetsuNegi)
+- Fixed voxel projectile and animation lighting issues (by TaranDahl)
 
 #### Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -710,6 +712,7 @@ HideShakeEffects=false           ; boolean
 - Fixed the bug where passengers, when their transport unit is removed, would cause incorrect `LimboTracker` counts due to either having their destructor called directly (bypassing `UnInit`) or nested `UnInit` calls resetting the deletion flag too early, thereby breaking auto-death and superweapon auxiliary techno checks (by NetsuNegi)
 - Fixed a bug where stationary vehicles would also block movement caused by external factors (by Noble_Fish)
 - Fixed AttachEffect with `RecreationDelay` of 0 checking `Delay` as well instead of immediately refreshing duration when possible (by Starkku)
+- Fixed building interceptors being able to pick targets during construction and selling (by Starkku)
 
 #### Fixes / interactions with other extensions:
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
@@ -732,6 +735,8 @@ HideShakeEffects=false           ; boolean
 - `DisableWeapons.Duration` now makes `Gattling=yes` rate tick down and stops the sounds from playing, no longer interferes with target acquisition and works together with Phobos' `OpenTopped.CheckTransportDisableWeapons` (by Starkku)
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus & NetsuNegi)
 - [Aux technos and TechLevel requirement of superweapon](New-or-Enhanced-Logics.md#aux-technos-and-techlevel-requirement-of-superweapon) (by NetsuNegi & Ollerus)
+- [Export interface for external call](index.md#interoperability) (by TaranDahl)
+
 ```
 
 ### 0.4.0.3

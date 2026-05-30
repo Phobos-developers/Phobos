@@ -105,6 +105,8 @@ public:
 
 		Nullable<bool> BuildingRadioLink_SyncOwner;
 
+		Nullable<PartialVector2D<int>> GuardRetryDelay;
+
 		// Ares 0.2
 		Valueable<bool> CloningFacility;
 
@@ -185,6 +187,7 @@ public:
 			, HasPowerUpAnim {}
 			, UndeploysInto_Sellable { false }
 			, BuildingRadioLink_SyncOwner {}
+			, GuardRetryDelay {}
 
 			// Ares 0.2
 			, CloningFacility { false }

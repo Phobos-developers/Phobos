@@ -1686,6 +1686,10 @@ msgstr "修复了低空起飞／降落的物体会受到两次伤害的 Bug。"
 msgid "Allowed `AuxBuilding` to count building upgrades."
 msgstr "允许了 `AuxBuilding` 计入建筑加载物。"
 
+msgid ""
+"Fixed voxel projectile and animation lighting issues."
+msgstr "修复了 Voxel 抛射体和动画的光照问题。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 
