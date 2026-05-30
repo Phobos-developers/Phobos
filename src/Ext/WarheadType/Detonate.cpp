@@ -153,9 +153,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 		if (const float cellSpread = this->OwnerObject()->CellSpread)
 		{
-			Helpers::Alex::GetCellSpreadItems::SetParams(this);
-			auto const items = Helpers::Alex::getCellSpreadItems(coords, cellSpread, true);
-			Helpers::Alex::GetCellSpreadItems::ResetParams();
+			auto const items = Helpers::Alex::getCellSpreadItemsExt(coords, cellSpread, true, this->CellSpread_Cylinder);
 
 			for (auto const pTarget : items)
 				this->DetonateOnOneUnit(pHouse, pTarget, coords, damage, pOwner, bulletWasIntercepted);

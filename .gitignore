@@ -8,6 +8,7 @@ Debug
 .cproject
 .project
 *.aps
+*.log
 
 Nightly/
 
@@ -27,3 +28,5 @@ out
 
 # Python virtual environment for docs
 .venv/
+
+debug.log

@@ -282,6 +282,9 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 		pThis->TargetingTimer.Start(ScenarioClass::Instance->Random.RandomRanged(0, 15));
 	}
 
+	if (pThis->AbstractFlags & AbstractFlags::Foot)
+		pThis->Owner->RecheckTechTree = true; // for SW.AuxTechons and SW.NegTechnos
+
 	return 0;
 }
 
@@ -1971,3 +1974,70 @@ DEFINE_HOOK(0x4D4B43, FootClass_Mission_Capture, 0x6)
 
 	return LosesDestination;
 }
+
+DEFINE_HOOK(0x4DA230, FootClass_CanBeRecruited, 0x5)
+{
+	enum { SkipGameCode = 0x4DA294 };
+
+	GET(FootClass*, pThis, ECX);
+	GET_STACK(HouseClass*, pHouse, 0x4);
+
+	R->AL(TechnoExt::CanBeRecruitedFix(pThis, pHouse));
+
+	return SkipGameCode;
+}
+
+#pragma region DynamicSight
+
+DEFINE_HOOK(0x41AE00, AircraftClass_See_DynamicSight, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	R->EBX(TechnoExt::ExtMap.Find(pThis)->GetSight());
+	return R->Origin() + 0x6;
+}
+
+DEFINE_HOOK_AGAIN(0x440819, BuildingClass_Unlimbo_DynamicSight, 0x6);
+DEFINE_HOOK(0x440842, BuildingClass_Unlimbo_DynamicSight, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	R->EDX(TechnoExt::ExtMap.Find(pThis)->GetSight());
+	return R->Origin() + 0x6;
+}
+
+DEFINE_HOOK(0x51E0E5, InfantryClass_Unlimbo_DynamicSight, 0x6)
+{
+	GET(TechnoClass*, pThis, EDI);
+	R->EAX(TechnoExt::ExtMap.Find(pThis)->GetSight());
+	return R->Origin() + 0x6;
+}
+
+DEFINE_HOOK(0x702B14, TechnoClass_ReceiveDamage_DynamicSight, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	const int sight = TechnoExt::ExtMap.Find(pThis)->GetSight();
+	__asm fild sight;
+	return 0x702B1A;
+}
+
+DEFINE_HOOK(0x70AE48, TechnoClass_See_DynamicSight, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	R->EAX((int)(TechnoExt::ExtMap.Find(pThis)->GetSight() * (pThis->SightIncrease * 0.01 + 1.0)));
+	return 0x70AE69;
+}
+
+DEFINE_HOOK(0x70AF87, TechnoClass_UpdateSight_DynamicSight1, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	R->ECX(TechnoExt::ExtMap.Find(pThis)->GetSight());
+	return R->Origin() + 0x6;
+}
+
+DEFINE_HOOK(0x70AFEF, TechnoClass_UpdateSight_DynamicSight2, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	R->EAX((int)(TechnoExt::ExtMap.Find(pThis)->GetSight() * (pThis->SightIncrease * 0.01 + 1.0)));
+	return 0x70B010;
+}
+
+#pragma endregion

@@ -49,7 +49,7 @@ std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuildi
 
 	for (const auto pEnhancer : pHouseExt->PowerPlantEnhancers)
 	{
-		if (!TechnoExt::IsActive(pEnhancer) || pEnhancer->InLimbo || !pEnhancer->HasPower)
+		if (!TechnoExt::IsActive(pEnhancer) || !pEnhancer->HasPower)
 			continue;
 
 		const auto pEnhancerType = pEnhancer->Type;
@@ -183,6 +183,12 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Grinding_Weapon_RequiredCredits.Read(exINI, pSection, "Grinding.Weapon.RequiredCredits");
 
 	this->DisplayIncome.Read(exINI, pSection, "DisplayIncome");
+	this->DisplayIncome_Delay.Read(exINI, pSection, "DisplayIncome.Delay");
+	if (this->DisplayIncome_Delay.isset() && this->DisplayIncome_Delay == 0)
+	{
+		Debug::Log("[Developer warning] [%s] DisplayIncome.Delay is set to 0, forcing to 1.\n", pSection);
+		this->DisplayIncome_Delay = 1;
+	}
 	this->DisplayIncome_Houses.Read(exINI, pSection, "DisplayIncome.Houses");
 	this->DisplayIncome_Offset.Read(exINI, pSection, "DisplayIncome.Offset");
 
@@ -222,6 +228,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
 	this->UndeploysInto_Sellable.Read(exINI, pSection, "UndeploysInto.Sellable");
 	this->BuildingRadioLink_SyncOwner.Read(exINI, pSection, "BuildingRadioLink.SyncOwner");
+	this->GuardRetryDelay.Read(exINI, pSection, "GuardRetryDelay");
 
 	if (pThis->NumberOfDocks > 0)
 	{
@@ -333,6 +340,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Grinding_Weapon)
 		.Process(this->Grinding_Weapon_RequiredCredits)
 		.Process(this->DisplayIncome)
+		.Process(this->DisplayIncome_Delay)
 		.Process(this->DisplayIncome_Houses)
 		.Process(this->DisplayIncome_Offset)
 		.Process(this->PlacementPreview)
@@ -378,6 +386,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->HasPowerUpAnim)
 		.Process(this->UndeploysInto_Sellable)
 		.Process(this->BuildingRadioLink_SyncOwner)
+		.Process(this->GuardRetryDelay)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)

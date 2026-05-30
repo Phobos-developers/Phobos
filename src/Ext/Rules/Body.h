@@ -116,6 +116,7 @@ public:
 		Valueable<int> PowerSurplus_ScaleToDrainAmount;
 
 		Valueable<bool> DisplayIncome;
+		Valueable<int> DisplayIncome_Delay;
 		Valueable<bool> DisplayIncome_AllowAI;
 		Valueable<AffectedHouse> DisplayIncome_Houses;
 
@@ -142,6 +143,10 @@ public:
 		Valueable<bool> ColorAddUse8BitRGB;
 		Valueable<ColorStruct> AirstrikeLineColor;
 		Valueable<int> AirstrikeLineZAdjust;
+
+		Valueable<int> LaserZAdjust;
+		Valueable<int> EBoltZAdjust;
+		Valueable<bool> EBoltZAdjust_ClampInitialDepthForBuilding;
 
 		Valueable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<ColorStruct> ToolTip_Background_Color;
@@ -320,12 +325,11 @@ public:
 
 		Valueable<bool> HoverDrownable;
 
-<<<<<<< HEAD
 		Valueable<bool> Arcing_AllowElevationInaccuracy;
 
 		Valueable<bool> Terrain_IsPassable;
 		Valueable<bool> Terrain_CanBeBuiltOn;
-=======
+
 		Nullable<bool> Sinkable;
 		Valueable<bool> Sinkable_SquidGrab;
 		Valueable<int> SinkSpeed;
@@ -335,7 +339,6 @@ public:
 		Valueable<bool> DecloakDamagedTargets;
 
 		Valueable<bool> Interceptable;
->>>>>>> ef901252661acd796a716e82e11b15cbc0501f63
 
 		Valueable<bool> SortCameoByName;
 
@@ -380,6 +383,10 @@ public:
 		Valueable<bool> DriveLocomotorMakesWake;
 		Valueable<bool> HoverLocomotorMakesWake;
 		Valueable<bool> ShipLocomotorMakesWake;
+
+		Valueable<bool> Shrapnel_IgnoreHitBuildings;
+
+		Nullable<PartialVector2D<int>> BuildingGuardRetryDelay;
     
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -483,11 +490,15 @@ public:
 			, ColorAddUse8BitRGB { false }
 			, AirstrikeLineColor { { 255, 0, 0 } }
 			, AirstrikeLineZAdjust { 0 }
+			, LaserZAdjust { 0 }
+			, EBoltZAdjust { 0 }
+			, EBoltZAdjust_ClampInitialDepthForBuilding { true }
 			, ROF_RandomDelay { { 0 ,2 } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
 			, ToolTip_Background_BlurSize { 0.0f }
 			, DisplayIncome { false }
+			, DisplayIncome_Delay { 15 }
 			, DisplayIncome_AllowAI { true }
 			, DisplayIncome_Houses { AffectedHouse::All }
 			, DrainMoneyDisplay { false }
@@ -642,12 +653,11 @@ public:
 
 			, HoverDrownable { true }
 
-<<<<<<< HEAD
 			, Arcing_AllowElevationInaccuracy {}
 
 			, Terrain_IsPassable { false }
 			, Terrain_CanBeBuiltOn { false }
-=======
+
 			, Sinkable {}
 			, Sinkable_SquidGrab { true }
 			, SinkSpeed { 5 }
@@ -657,7 +667,6 @@ public:
 			, DecloakDamagedTargets { true }
 
 			, Interceptable { false }
->>>>>>> ef901252661acd796a716e82e11b15cbc0501f63
 
 			, SortCameoByName { false }
 
@@ -703,6 +712,8 @@ public:
 			, ShipLocomotorMakesWake { true }
 			, FiringAnim_Update { false }
 			, ExtendedPlayerRepair { false }
+			, Shrapnel_IgnoreHitBuildings { false }
+			, BuildingGuardRetryDelay {}
 		{ }
 
 		virtual ~ExtData() = default;

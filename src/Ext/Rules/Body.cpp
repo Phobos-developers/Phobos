@@ -197,6 +197,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AirstrikeLineColor.Read(exINI, GameStrings::AudioVisual, "AirstrikeLineColor");
 	this->AirstrikeLineZAdjust.Read(exINI, GameStrings::AudioVisual, "AirstrikeLineZAdjust");
 
+	this->LaserZAdjust.Read(exINI, GameStrings::AudioVisual, "LaserZAdjust");
+	this->EBoltZAdjust.Read(exINI, GameStrings::AudioVisual, "EBoltZAdjust");
+	this->EBoltZAdjust_ClampInitialDepthForBuilding.Read(exINI, GameStrings::AudioVisual, "EBoltZAdjust.ClampInitialDepthForBuilding");
+
 	this->CrateOnlyOnLand.Read(exINI, GameStrings::CrateRules, "CrateOnlyOnLand");
 	this->UnitCrateVehicleCap.Read(exINI, GameStrings::CrateRules, "UnitCrateVehicleCap");
 	this->FreeMCV_CreditsThreshold.Read(exINI, GameStrings::CrateRules, "FreeMCV.CreditsThreshold");
@@ -204,6 +208,12 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ROF_RandomDelay.Read(exINI, GameStrings::CombatDamage, "ROF.RandomDelay");
 
 	this->DisplayIncome.Read(exINI, GameStrings::AudioVisual, "DisplayIncome");
+	this->DisplayIncome_Delay.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.Delay");
+	if (!this->DisplayIncome_Delay)
+	{
+		Debug::Log("[Developer warning] [AudioVisual] DisplayIncome.Delay is set 0 which would cause a crash, set to 1 instead.\n");
+		this->DisplayIncome_Delay = 1;
+	}
 	this->DisplayIncome_Houses.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.Houses");
 	this->DisplayIncome_AllowAI.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.AllowAI");
 
@@ -371,12 +381,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->HoverDrownable.Read(exINI, GameStrings::General, "HoverDrownable");
 
-<<<<<<< HEAD
 	this->Arcing_AllowElevationInaccuracy.Read(exINI, GameStrings::CombatDamage, "Arcing.AllowElevationInaccuracy");
 
 	this->Terrain_IsPassable.Read(exINI, GameStrings::General, "Terrain.IsPassable");
 	this->Terrain_CanBeBuiltOn.Read(exINI, GameStrings::General, "Terrain.CanBeBuiltOn");
-=======
+
 	this->Sinkable.Read(exINI, GameStrings::General, "Sinkable");
 	this->Sinkable_SquidGrab.Read(exINI, GameStrings::General, "Sinkable.SquidGrab");
 	this->SinkSpeed.Read(exINI, GameStrings::General, "SinkSpeed");
@@ -386,7 +395,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DecloakDamagedTargets.Read(exINI, GameStrings::General, "DecloakDamagedTargets");
 
 	this->Interceptable.Read(exINI, GameStrings::General, "Interceptable");
->>>>>>> ef901252661acd796a716e82e11b15cbc0501f63
 
 	this->SortCameoByName.Read(exINI, GameStrings::General, "SortCameoByName");
 
@@ -432,6 +440,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	
 	this->FiringAnim_Update.Read(exINI, GameStrings::AudioVisual, "FiringAnim.Update");
 	this->ExtendedPlayerRepair.Read(exINI, GameStrings::General, "ExtendedPlayerRepair");
+
+	this->Shrapnel_IgnoreHitBuildings.Read(exINI, GameStrings::CombatDamage, "Shrapnel.IgnoreHitBuildings");
+	this->BuildingGuardRetryDelay.Read(exINI, GameStrings::General, "BuildingGuardRetryDelay");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -598,11 +609,15 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ColorAddUse8BitRGB)
 		.Process(this->AirstrikeLineColor)
 		.Process(this->AirstrikeLineZAdjust)
+		.Process(this->LaserZAdjust)
+		.Process(this->EBoltZAdjust)
+		.Process(this->EBoltZAdjust_ClampInitialDepthForBuilding)
 		.Process(this->ROF_RandomDelay)
 		.Process(this->ToolTip_Background_Color)
 		.Process(this->ToolTip_Background_Opacity)
 		.Process(this->ToolTip_Background_BlurSize)
 		.Process(this->DisplayIncome)
+		.Process(this->DisplayIncome_Delay)
 		.Process(this->DisplayIncome_AllowAI)
 		.Process(this->DisplayIncome_Houses)
 		.Process(this->DrainMoneyDisplay)
@@ -739,11 +754,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Explodes_DuringBuildup)
 		.Process(this->AircraftFiringForceScatter)
 		.Process(this->HoverDrownable)
-<<<<<<< HEAD
 		.Process(this->Arcing_AllowElevationInaccuracy)
 		.Process(this->Terrain_IsPassable)
 		.Process(this->Terrain_CanBeBuiltOn)
-=======
 		.Process(this->Sinkable)
 		.Process(this->Sinkable_SquidGrab)
 		.Process(this->SinkSpeed)
@@ -751,7 +764,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Conventional_IgnoreUnits)
 		.Process(this->DecloakDamagedTargets)
 		.Process(this->Interceptable)
->>>>>>> ef901252661acd796a716e82e11b15cbc0501f63
 		.Process(this->SortCameoByName)
 		.Process(this->MergeBuildingDamage)
 		.Process(this->BuildingRadioLink_SyncOwner)
@@ -783,6 +795,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShipLocomotorMakesWake)
 		.Process(this->FiringAnim_Update)
 		.Process(this->ExtendedPlayerRepair)
+		.Process(this->Shrapnel_IgnoreHitBuildings)
+		.Process(this->BuildingGuardRetryDelay)
 		;
 }
 

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/Container.h>
@@ -218,6 +218,7 @@ public:
 
 		void AmmoAutoConvertActions();
 		void UpdateLastTargetCrd();
+		int GetSight();
 
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
@@ -309,6 +310,7 @@ public:
 	static bool SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue, bool alwaysCheckLandTypes);
 	static void ShowPromoteAnim(TechnoClass* pThis);
 	static void ClickedApproachObject(FootClass* pThis, ObjectClass* pObject);
+	static bool CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse);
 
 	static bool EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, int distance, bool select);
 	static bool EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool select);
@@ -327,5 +329,6 @@ public:
 	static void ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 	static void ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 	static bool MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType);
-
+	static bool HasWeaponsDisabled(TechnoClass* pThis);
+	static FireError GetFireErrorIgnoreDisableWeapons(TechnoClass* pThis, AbstractClass* pTarget, int weaponIndex, bool ignoreRange);
 };
