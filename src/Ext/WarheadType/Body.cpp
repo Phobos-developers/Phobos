@@ -42,6 +42,30 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 	if (!IsVeterancyInThreshold(pTarget))
 		return false;
 
+	if (this->AffectsInvokerOnly)
+	{
+		if (this->DamageAreaInvoker)
+		{
+			const bool targetIsInvoker = (pTarget == this->DamageAreaInvoker);
+
+			if (this->AffectsInvokerOnly_Reverse)
+			{
+				if (targetIsInvoker)
+					return false;
+			}
+			else
+			{
+				if (!targetIsInvoker)
+					return false;
+			}
+		}
+		else
+		{
+			if (this->AffectsInvokerOnly_IgnoreInvokerState)
+				return false;
+		}
+	}
+
 	if (!this->EffectsRequireVerses)
 		return true;
 
@@ -116,8 +140,10 @@ DamageAreaResult WarheadTypeExt::ExtData::DamageAreaWithTarget(const CoordStruct
 {
 	auto const pWarheadTypeExt = WarheadTypeExt::ExtMap.Find(pWH);
 	pWarheadTypeExt->DamageAreaTarget = pTarget;
+	pWarheadTypeExt->DamageAreaInvoker = pSource;
 	auto const result = MapClass::DamageArea(coords, damage, pSource, pWH, affectsTiberium, pSourceHouse);
 	pWarheadTypeExt->DamageAreaTarget = nullptr;
+	pWarheadTypeExt->DamageAreaInvoker = nullptr;
 	return result;
 }
 
@@ -382,6 +408,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CellSpread_Cylinder.Read(exINI, pSection, "CellSpread.Cylinder");
 	this->HealthCheck = this->AffectsAbovePercent > 0.0 || this->AffectsBelowPercent < 1.0;
 	this->VeterancyCheck = this->AffectsVeterancy != AffectedVeterancy::All;
+	this->AffectsInvokerOnly.Read(exINI, pSection, "AffectsInvokerOnly");
+	this->AffectsInvokerOnly_Reverse.Read(exINI, pSection, "AffectsInvokerOnly.Reverse");
+	this->AffectsInvokerOnly_IgnoreInvokerState.Read(exINI, pSection, "AffectsInvokerOnly.IgnoreInvokerState");
 
 	if (this->AffectsAbovePercent > this->AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] AffectsAbovePercent is bigger than AffectsBelowPercent, the warhead will never activate!\n", pSection);
@@ -660,6 +689,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CellSpread_Cylinder)
 		.Process(this->HealthCheck)
 		.Process(this->VeterancyCheck)
+		.Process(this->AffectsInvokerOnly)
+		.Process(this->AffectsInvokerOnly_Reverse)
+		.Process(this->AffectsInvokerOnly_IgnoreInvokerState)
 
 		.Process(this->PenetratesTransport_Level)
 		.Process(this->PenetratesTransport_PassThrough)

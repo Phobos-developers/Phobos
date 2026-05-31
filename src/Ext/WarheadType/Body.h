@@ -220,6 +220,9 @@ public:
 		Valueable<bool> AffectsGround;
 		Valueable<bool> AffectsAir;
 		Valueable<bool> CellSpread_Cylinder;
+		Valueable<bool> AffectsInvokerOnly;
+		Valueable<bool> AffectsInvokerOnly_Reverse;
+		Valueable<bool> AffectsInvokerOnly_IgnoreInvokerState;
 
 		Valueable<bool> ReverseEngineer;
 
@@ -268,6 +271,7 @@ public:
 		bool HealthCheck;
 		bool VeterancyCheck;
 		TechnoClass* DamageAreaTarget;
+		mutable TechnoClass* DamageAreaInvoker;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
@@ -469,6 +473,9 @@ public:
 			, AffectsGround { true }
 			, AffectsAir { true }
 			, CellSpread_Cylinder { false }
+			, AffectsInvokerOnly { false }
+			, AffectsInvokerOnly_Reverse { false }
+			, AffectsInvokerOnly_IgnoreInvokerState { true }
 
 			, PenetratesTransport_Level { 0 }
 			, PenetratesTransport_PassThrough { 1.0 }
@@ -496,6 +503,7 @@ public:
 			, HealthCheck { false }
 			, VeterancyCheck { false }
 			, DamageAreaTarget {}
+			, DamageAreaInvoker {}
 
 			, CanKill { true }
 
