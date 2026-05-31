@@ -1925,6 +1925,7 @@ msgid ""
 "`Interceptor.GuardRange.IsCylindrical`, if set to true, makes it so that "
 "all range checks ignore height/elevation differences."
 msgstr ""
+"`Interceptor.GuardRange.IsCylindrical` 若设为 true 则在距离检查中忽略高度／海拔。"
 
 msgid ""
 "`Interceptor.ApplyFirepowerMult` determines whether or not the "

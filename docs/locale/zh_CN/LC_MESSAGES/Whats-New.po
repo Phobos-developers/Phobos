@@ -1458,12 +1458,11 @@ msgstr ""
 "[弹头动画 `ZAdjust` 去硬编码](Fixed-or-Improved-Logics.md#dehardcode-the-zadjust-"
 "of-warhead-anim)（by TaranDahl）"
 
-#, fuzzy
 msgid ""
 "[Interceptor target scan delay customization & cylindrical rangefinding"
 "](New-or-Enhanced-Logics.md#projectile-interception-logic) (by Starkku)"
 msgstr ""
-"[自定义拦截者目标扫描间隔](New-or-Enhanced-Logics.md#projectile-interception-"
+"[自定义拦截者目标扫描间隔与圆柱形射程支持](New-or-Enhanced-Logics.md#projectile-interception-"
 "logic)（by Starkku）"
 
 msgid ""
@@ -2629,6 +2628,7 @@ msgid ""
 "Fixed building interceptors being able to pick targets during "
 "construction and selling (by Starkku)"
 msgstr ""
+"修复了建筑拦截者可以在拔起和出售期间获取目标的问题（by Starkku）"
 
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
