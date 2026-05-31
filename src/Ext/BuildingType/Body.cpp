@@ -49,7 +49,7 @@ std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuildi
 
 	for (const auto pEnhancer : pHouseExt->PowerPlantEnhancers)
 	{
-		if (!TechnoExt::IsActive(pEnhancer) || pEnhancer->InLimbo || !pEnhancer->HasPower)
+		if (!TechnoExt::IsActive(pEnhancer) || !pEnhancer->HasPower)
 			continue;
 
 		const auto pEnhancerType = pEnhancer->Type;
@@ -228,6 +228,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
 	this->UndeploysInto_Sellable.Read(exINI, pSection, "UndeploysInto.Sellable");
 	this->BuildingRadioLink_SyncOwner.Read(exINI, pSection, "BuildingRadioLink.SyncOwner");
+	this->GuardRetryDelay.Read(exINI, pSection, "GuardRetryDelay");
 
 	if (pThis->NumberOfDocks > 0)
 	{
@@ -385,6 +386,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->HasPowerUpAnim)
 		.Process(this->UndeploysInto_Sellable)
 		.Process(this->BuildingRadioLink_SyncOwner)
+		.Process(this->GuardRetryDelay)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)

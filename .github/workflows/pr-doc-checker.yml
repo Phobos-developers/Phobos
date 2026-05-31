@@ -77,6 +77,7 @@ jobs:
               -e ^docs/Fixed-or-Improved-Logics.md$ \
               -e ^docs/AI-Scripting-and-Mapping.md$ \
               -e ^docs/User-Interface.md$           \
+              -e ^docs/Interoperability.md$         \
               -e ^docs/Miscellanous.md$             \
           )
           then
@@ -85,5 +86,37 @@ jobs:
           else
             echo "It looks like you forgot to add your changes to the docs! 🧐"
             echo "Please, document your changes or use [No Documentation Needed] label for your Pull Request."
+            exit 1
+          fi
+
+  Interop-Version-Check:
+    name: Interop API Version Updated
+    # If the No Documentation Needed label is set, then workflow will not be executed
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'No Documentation Needed') }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+            fetch-depth: 0
+      - name: Check that Interop API version is updated
+        run: |
+          # Check if any files in src/Interop/ were modified (excluding Version.h itself for initial checks)
+          CHANGED_FILES=$(git diff --name-only $(git merge-base origin/$BASE_BRANCH HEAD))
+          INTEROP_MODIFIED=$(echo "$CHANGED_FILES" | grep -E "^src/Interop/.*\.(h|cpp)$" | grep -v "^src/Interop/Version\." || true)
+          
+          if [ -z "$INTEROP_MODIFIED" ]; then
+            echo "No Interop files modified. Skipping version check."
+            exit 0
+          fi
+          
+          # If Interop files were modified, check if Version.h was also modified
+          if echo "$CHANGED_FILES" | grep -q "^src/Interop/Version\.h$"; then
+            echo "Thank you for updating the Interop API version! 😋"
+            exit 0
+          else
+            echo "You modified Interop API but forgot to update the version! 🧐"
+            echo "Please update the version constants in 'src/Interop/Version.h' according to Semantic Versioning."
+            echo "See .github/copilot-instructions.md for version bumping guidelines."
             exit 1
           fi

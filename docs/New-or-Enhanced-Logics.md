@@ -812,6 +812,7 @@ BombParachute=           ; AnimationType, default to [General] -> BombParachute
   - `Interceptor.CanTargetHouses` controls which houses the projectiles (or rather their firers) can belong to be eligible for interception.
   - `Interceptor.GuardRange` (and `Interceptor.(Rookie|Veteran|EliteGuardRange)`) is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
   - `Interceptor.MinimumGuardRange` (and `Interceptor.(Rookie|Veteran|EliteMinimumGuardRange)`) is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
+  - `Interceptor.GuardRange.IsCylindrical`, if set to true, makes it so that all range checks ignore height/elevation differences.
   - `Interceptor.ApplyFirepowerMult` determines whether or not the intercepting weapon's damage should multiply the TechnoType's firepower multipliers.
   - `Interceptable.DeleteOnIntercept` determines whether or not the projectile will simply be deleted on detonation upon interception, or if it will properly detonate. Will be overridden by `Interceptor.DeleteOnIntercept` setting on the interceptor.
   - `Interceptable.WeaponOverride` can be set to a WeaponType that will be used to override characteristics such as `Damage` and `Warhead` of the current projectile for detonation after interception. Will be overridden by `Interceptor.WeaponOverride` setting on the interceptor.
@@ -821,30 +822,31 @@ BombParachute=           ; AnimationType, default to [General] -> BombParachute
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                               ; TechnoType
-Interceptor=false                          ; boolean
-Interceptor.Weapon=0                       ; integer, weapon slot index (0 or 1)
-Interceptor.TargetingDelay=1               ; integer, game frames
-Interceptor.CanTargetHouses=enemies        ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-Interceptor.GuardRange=0.0                 ; floating point value
-Interceptor.VeteranGuardRange=             ; floating point value
-Interceptor.EliteGuardRange=               ; floating point value
-Interceptor.MinimumGuardRange=0.0          ; floating point value
-Interceptor.VeteranMinimumGuardRange=      ; floating point value
-Interceptor.EliteMinimumGuardRange=        ; floating point value
-Interceptor.ApplyFirepowerMult=true        ; boolean
-Interceptor.DeleteOnIntercept=false        ; boolean
-Interceptor.WeaponOverride=                ; WeaponType
-Interceptor.WeaponReplaceProjectile=false  ; boolean
-Interceptor.WeaponCumulativeDamage=false   ; boolean
-Interceptor.KeepIntact=false               ; boolean
-
-[SOMEPROJECTILE]                           ; Projectile
-Interceptable=false                        ; boolean
-Interceptable.DeleteOnIntercept=false      ; boolean
-Interceptable.WeaponOverride=              ; WeaponType
-Strength=0                                 ; integer
-Armor=                                     ; ArmorType
+[SOMETECHNO]                                ; TechnoType
+Interceptor=false                           ; boolean
+Interceptor.Weapon=0                        ; integer, weapon slot index (0 or 1)
+Interceptor.TargetingDelay=1                ; integer, game frames
+Interceptor.CanTargetHouses=enemies         ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Interceptor.GuardRange=0.0                  ; floating point value
+Interceptor.VeteranGuardRange=              ; floating point value
+Interceptor.EliteGuardRange=                ; floating point value
+Interceptor.MinimumGuardRange=0.0           ; floating point value
+Interceptor.GuardRange.IsCylindrical=false  ; boolean
+Interceptor.VeteranMinimumGuardRange=       ; floating point value
+Interceptor.EliteMinimumGuardRange=         ; floating point value
+Interceptor.ApplyFirepowerMult=true         ; boolean
+Interceptor.DeleteOnIntercept=false         ; boolean
+Interceptor.WeaponOverride=                 ; WeaponType
+Interceptor.WeaponReplaceProjectile=false   ; boolean
+Interceptor.WeaponCumulativeDamage=false    ; boolean
+Interceptor.KeepIntact=false                ; boolean
+                                            
+[SOMEPROJECTILE]                            ; Projectile
+Interceptable=false                         ; boolean
+Interceptable.DeleteOnIntercept=false       ; boolean
+Interceptable.WeaponOverride=               ; WeaponType
+Strength=0                                  ; integer
+Armor=                                      ; ArmorType
 ```
 
 ```{note}
