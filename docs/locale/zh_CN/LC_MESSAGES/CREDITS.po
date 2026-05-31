@@ -875,9 +875,8 @@ msgstr "重写帧 CRC 生成"
 msgid "Laser drawing Z-adjust customization"
 msgstr "自定义激光绘制的 Z 深校正值"
 
-#, fuzzy
 msgid "Armed building guard mission retry delay customization"
-msgstr "在建筑上自定义单位维修效果"
+msgstr "武装建筑警戒任务重试间隔的自定义"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："

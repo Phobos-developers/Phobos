@@ -2966,7 +2966,7 @@ msgstr ""
 "来开关此行为。"
 
 msgid "Armed building guard retry delay"
-msgstr ""
+msgstr "武装建筑警戒重试间隔"
 
 msgid ""
 "By default buildings with weapons (including garrisoned buildings) have a"
@@ -2975,6 +2975,8 @@ msgid ""
 "has a target. This delay is now customizable globally by `[General]` -> "
 "`BuildingGuardRetryDelay` or per-BuildingType with `GuardRetryDelay`."
 msgstr ""
+"默认情况下拥有武器的建筑（包括驻军建筑）在拥有目标的情况下有一个 `[Guard]` -> `AARate` 乘 900 再加上 `[0,2]` 范围内随机值的间隔用于重新检查是否可以攻击。"
+"现在，这个间隔可以通过 `[General]` -> `BuildingGuardRetryDelay` 和 `GuardRetryDelay` 进行全局或建筑微观层面的自定义。"
 
 msgid "Buildings considered as vehicles"
 msgstr "被视为载具的建筑"
