@@ -1906,6 +1906,7 @@ msgid ""
 "Allow *Harvester counter* to display only the total number or the number "
 "currently working (by Noble_Fish)"
 msgstr ""
+"允许 *Harvester counter* 只显示总数或正在工作的数量（by Noble_Fish）"
 
 msgid ""
 "[Allow customizing guard mission retry delay for buildings with weapons"
