@@ -418,8 +418,8 @@ This page lists all the individual contributions to the project by their author.
   - Vehicle Deployment Enhancement
   - Fix an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals
   - Fix an issue where mining vehicles could not move after leaving a tank bunker
-  - Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4
-  - Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent
+  - Fix the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4
+  - Fix an issue where parachute units would die upon landing if bridges were destroyed during their descent
   - Custom hover vehicles shutdown drowning death
   - SHP turret vehicles support the use of `*tur.shp` files
   - Fix a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next`
@@ -761,7 +761,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow replacing vanilla repairing with togglable auto repairing
   - Fix an issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions
   - Framework for dynamic sight
-  - Fixed voxel projectile and animation lighting issues
+  - Fix voxel projectile and animation lighting issues
   - Export interface for external call
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
