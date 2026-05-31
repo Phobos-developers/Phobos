@@ -46,6 +46,7 @@ public:
 		Valueable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
 		Valueable<PositionFollow> LaserPositionUpdate;
+		Nullable<bool> LaserPositionUpdate_StopOnFirerConvert;
 		Nullable<int> LaserZAdjust;
 		Nullable<int> EBoltZAdjust;
 		Nullable<bool> EBoltZAdjust_ClampInitialDepthForBuilding;
@@ -136,6 +137,7 @@ public:
 			, FeedbackWeapon {}
 			, Laser_IsSingleColor { false }
 			, LaserPositionUpdate { PositionFollow::None }
+			, LaserPositionUpdate_StopOnFirerConvert {}
 			, LaserZAdjust {}
 			, EBoltZAdjust {}
 			, EBoltZAdjust_ClampInitialDepthForBuilding {}

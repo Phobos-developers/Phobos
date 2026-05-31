@@ -69,8 +69,10 @@ namespace LaserRT
 		CoordStruct SavedOffset { CoordStruct::Empty };
 		CoordStruct LocalFLH { CoordStruct::Empty };
 		int FrozenBurstIndex { 0 };
+		bool StopOnFirerConvert { false };
+		const TechnoTypeClass* OriginalType { nullptr };
 
-		void Initialize(TechnoClass* pShooter, AbstractClass* pTarget, int weaponIdx, PositionFollow mode, const CoordStruct& initialSource, const CoordStruct& localFLH, int burstIndex)
+		void Initialize(TechnoClass* pShooter, AbstractClass* pTarget, int weaponIdx, PositionFollow mode, const CoordStruct& initialSource, const CoordStruct& localFLH, int burstIndex, bool stopOnFirerConvert)
 		{
 			if (pShooter)
 			{
@@ -91,6 +93,9 @@ namespace LaserRT
 				this->Shooter = pShooter;
 				this->LocalFLH = localFLH;
 				this->FrozenBurstIndex = burstIndex;
+				this->StopOnFirerConvert = stopOnFirerConvert;
+				if (stopOnFirerConvert)
+					this->OriginalType = pShooter->GetTechnoType();
 
 				const int savedBurstIndex = pShooter->CurrentBurstIndex;
 				pShooter->CurrentBurstIndex = burstIndex;
@@ -124,6 +129,7 @@ namespace LaserRT
 	{
 		CoordStruct localFLH;
 		int burstIndex = 0;
+		bool stopOnFirerConvert = false;
 		if (pShooter)
 		{
 			bool flhFound = false;
@@ -131,10 +137,17 @@ namespace LaserRT
 			if (!flhFound)
 				localFLH = pShooter->GetWeapon(weaponIdx)->FLH;
 			burstIndex = pShooter->CurrentBurstIndex;
+
+			auto pWeapon = pShooter->GetWeapon(weaponIdx)->WeaponType;
+			if (pWeapon)
+			{
+				auto pExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+				stopOnFirerConvert = pExt->LaserPositionUpdate_StopOnFirerConvert.Get(RulesExt::Global()->LaserPositionUpdate_StopOnFirerConvert);
+			}
 		}
 
 		TrackingData data;
-		data.Initialize(ignoreShooter ? nullptr : pShooter, pTarget, weaponIdx, mode, pLaser->Source, localFLH, burstIndex);
+		data.Initialize(ignoreShooter ? nullptr : pShooter, pTarget, weaponIdx, mode, pLaser->Source, localFLH, burstIndex, stopOnFirerConvert);
 		TrackingMap[pLaser] = data;
 	}
 
@@ -216,7 +229,9 @@ DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_Tracking, 0x7)
 	if (mode == PositionFollow::None)
 		return 0;
 
-	it->second.Initialize(pShooter, pTarget, weaponIdx, mode, pLaser->Source, localFLH, burstIndex);
+	bool stopOnFirerConvert = WeaponTypeExt::ExtMap.Find(pWeapon)->LaserPositionUpdate_StopOnFirerConvert.Get(RulesExt::Global()->LaserPositionUpdate_StopOnFirerConvert);
+
+	it->second.Initialize(pShooter, pTarget, weaponIdx, mode, pLaser->Source, localFLH, burstIndex, stopOnFirerConvert);
 	return 0;
 }
 
@@ -258,17 +273,28 @@ DEFINE_HOOK(0x550173, LaserDrawClass_Update_Tracking, 0x6)
 	if (it == LaserRT::TrackingMap.cend())
 		return 0;
 
-	const auto& data = it->second;
+	auto& data = it->second;
 
 	if (const auto pShooter = data.Shooter)
 	{
-		const int savedBurstIndex = pShooter->CurrentBurstIndex;
-		pShooter->CurrentBurstIndex = data.FrozenBurstIndex;
-		CoordStruct worldFLH;
-		pShooter->GetFLH(&worldFLH, data.WeaponIndex, data.LocalFLH);
-		pShooter->CurrentBurstIndex = savedBurstIndex;
+		if (data.StopOnFirerConvert && data.OriginalType)
+		{
+			if (pShooter->GetTechnoType() != data.OriginalType)
+			{
+				data.Shooter = nullptr;
+			}
+		}
 
-		pLaser->Source = worldFLH + data.SavedOffset;
+		if (data.Shooter)
+		{
+			const int savedBurstIndex = pShooter->CurrentBurstIndex;
+			pShooter->CurrentBurstIndex = data.FrozenBurstIndex;
+			CoordStruct worldFLH;
+			pShooter->GetFLH(&worldFLH, data.WeaponIndex, data.LocalFLH);
+			pShooter->CurrentBurstIndex = savedBurstIndex;
+
+			pLaser->Source = worldFLH + data.SavedOffset;
+		}
 	}
 
 	if (const auto pTarget = data.Target)
