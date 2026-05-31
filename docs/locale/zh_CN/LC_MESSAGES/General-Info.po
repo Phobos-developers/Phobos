@@ -122,8 +122,8 @@ msgid ""
 msgstr "尽管我们也希望支持 HAres，但由于其用户群体及开发者与国际社区分离，所以我们无法保证兼容性。但我们欢迎就此问题提供任何帮助！"
 
 msgid "API versioning"
-msgstr ""
+msgstr "API 版本管理"
 
 msgid "See [Interoperability](Interoperability.md#api-version-tracking)."
-msgstr ""
+msgstr "参见 [互操作性](Interoperability.md#api-version-tracking)。"
 

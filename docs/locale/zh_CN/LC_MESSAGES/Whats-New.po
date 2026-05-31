@@ -2764,7 +2764,7 @@ msgstr ""
 msgid ""
 "[Export interface for external call](index.md#interoperability) (by "
 "TaranDahl)"
-msgstr "用于外部调用的导出接口（by TaranDahl）"
+msgstr "[用于外部调用的导出接口](index.md#interoperability)（by TaranDahl）"
 
 msgid "0.4.0.3"
 msgstr "0.4.0.3"
