@@ -74,19 +74,10 @@ namespace LaserRT
 
 		void Initialize(TechnoClass* pShooter, AbstractClass* pTarget, int weaponIdx, PositionFollow mode, const CoordStruct& initialSource, const CoordStruct& localFLH, int burstIndex, bool stopOnFirerConvert)
 		{
-			if (pShooter)
-			{
-				if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pShooter))
-				{
-					if (pBuilding->Type->MaxNumberOccupants > 0)
-					{
-						if (mode == PositionFollow::Firer)
-							mode = PositionFollow::None;
-						else if (mode == PositionFollow::All)
-							mode = PositionFollow::Target;
-					}
-				}
-			}
+			const auto pShooterBuilding = abstract_cast<BuildingClass*>(pShooter);
+
+			if (pShooterBuilding && pShooterBuilding->Type->MaxNumberOccupants > 0)
+				mode &= ~PositionFollow::Firer;
 
 			if (pShooter && (mode & PositionFollow::Firer))
 			{
@@ -94,13 +85,13 @@ namespace LaserRT
 				this->LocalFLH = localFLH;
 				this->FrozenBurstIndex = burstIndex;
 				this->StopOnFirerConvert = stopOnFirerConvert;
+
 				if (stopOnFirerConvert)
 					this->OriginalType = pShooter->GetTechnoType();
 
 				const int savedBurstIndex = pShooter->CurrentBurstIndex;
 				pShooter->CurrentBurstIndex = burstIndex;
-				CoordStruct worldFLH;
-				pShooter->GetFLH(&worldFLH, weaponIdx, localFLH);
+				const CoordStruct worldFLH = pShooter->GetFLH(weaponIdx, localFLH);
 				pShooter->CurrentBurstIndex = savedBurstIndex;
 
 				this->SavedOffset = initialSource - worldFLH;
@@ -130,19 +121,21 @@ namespace LaserRT
 		CoordStruct localFLH;
 		int burstIndex = 0;
 		bool stopOnFirerConvert = false;
+
 		if (pShooter)
 		{
 			bool flhFound = false;
 			localFLH = TechnoExt::GetBurstFLH(pShooter, weaponIdx, flhFound);
+
 			if (!flhFound)
 				localFLH = pShooter->GetWeapon(weaponIdx)->FLH;
+
 			burstIndex = pShooter->CurrentBurstIndex;
 
-			auto pWeapon = pShooter->GetWeapon(weaponIdx)->WeaponType;
-			if (pWeapon)
+			if (const auto pWeapon = pShooter->GetWeapon(weaponIdx)->WeaponType)
 			{
-				auto pExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-				stopOnFirerConvert = pExt->LaserPositionUpdate_StopOnFirerConvert.Get(RulesExt::Global()->LaserPositionUpdate_StopOnFirerConvert);
+				const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+				stopOnFirerConvert = pWeaponExt->LaserPositionUpdate_StopOnFirerConvert.Get(RulesExt::Global()->LaserPositionUpdate_StopOnFirerConvert);
 			}
 		}
 
@@ -200,9 +193,11 @@ DEFINE_HOOK(0x6FD210, TechnoClass_LaserZap_SetTrackingContext, 0x7)
 	LaserRT::SavedBurstIndex = pShooter->CurrentBurstIndex;
 	bool flhFound = false;
 	LaserRT::SavedLocalFLH = TechnoExt::GetBurstFLH(pShooter, weaponIdx, flhFound);
+
 	if (!flhFound)
 	{
 		LaserRT::SavedLocalFLH = pShooter->GetWeapon(weaponIdx)->FLH;
+
 		if (LaserRT::SavedBurstIndex % 2 != 0)
 			LaserRT::SavedLocalFLH.Y = -LaserRT::SavedLocalFLH.Y;
 	}
@@ -250,15 +245,28 @@ DEFINE_FUNCTION_JUMP(CALL, 0x46AD81, Shrapnel_CreateLaser_Wrapper)
 DEFINE_HOOK(0x4A7696, DiskLaser_Update_ActivateMainBeam_Tracking, 0x6)
 {
 	GET(LaserDrawClass*, pLaser, EAX);
-	if (!pLaser) return 0;
+
+	if (!pLaser)
+		return 0;
+
 	const auto it = LaserRT::TrackingMap.find(pLaser);
-	if (it == LaserRT::TrackingMap.cend()) return 0;
+
+	if (it == LaserRT::TrackingMap.cend())
+		return 0;
+
 	GET(DiskLaserClass*, pDiskLaser, ESI);
 	const auto pWeapon = pDiskLaser->Weapon;
-	if (!pWeapon) return 0;
+
+	if (!pWeapon)
+		return 0;
+
 	const auto mode = WeaponTypeExt::ExtMap.Find(pWeapon)->LaserPositionUpdate.Get();
-	if (mode == PositionFollow::None) return 0;
-	if (pLaser->Source == pLaser->Target) return 0;
+
+	if (mode == PositionFollow::None)
+		return 0;
+
+	if (pLaser->Source == pLaser->Target)
+		return 0;
 
 	LaserRT::SetLaserTrackingData(pLaser, pDiskLaser->Owner, pDiskLaser->Target, 0, mode, false);
 	return 0;
@@ -280,17 +288,14 @@ DEFINE_HOOK(0x550173, LaserDrawClass_Update_Tracking, 0x6)
 		if (data.StopOnFirerConvert && data.OriginalType)
 		{
 			if (pShooter->GetTechnoType() != data.OriginalType)
-			{
 				data.Shooter = nullptr;
-			}
 		}
 
 		if (data.Shooter)
 		{
 			const int savedBurstIndex = pShooter->CurrentBurstIndex;
 			pShooter->CurrentBurstIndex = data.FrozenBurstIndex;
-			CoordStruct worldFLH;
-			pShooter->GetFLH(&worldFLH, data.WeaponIndex, data.LocalFLH);
+			const CoordStruct worldFLH = pShooter->GetFLH(data.WeaponIndex, data.LocalFLH);
 			pShooter->CurrentBurstIndex = savedBurstIndex;
 
 			pLaser->Source = worldFLH + data.SavedOffset;
