@@ -212,6 +212,11 @@
     <ClCompile Include="src\Ext\WeaponType\Body.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.DiskLaserRadius.cpp" />
+    <!-- src\Interop -->
+    <ClCompile Include="src\Interop\AttachEffect.cpp" />
+    <ClCompile Include="src\Interop\BulletExt.cpp" />
+    <ClCompile Include="src\Interop\EventExt.cpp" />
+    <ClCompile Include="src\Interop\TechnoExt.cpp" />
     <!-- src\Locomotion -->
     <ClCompile Include="src\Locomotion\TestLocomotionClass.cpp" />
     <!-- src\Misc -->
@@ -345,6 +350,11 @@
     <ClInclude Include="src\Ext\VoxelAnimType\Body.h" />
     <ClInclude Include="src\Ext\WarheadType\Body.h" />
     <ClInclude Include="src\Ext\WeaponType\Body.h" />
+    <!-- src\Interop -->
+    <ClInclude Include="src\Interop\AttachEffect.h" />
+    <ClInclude Include="src\Interop\BulletExt.h" />
+    <ClInclude Include="src\Interop\EventExt.h" />
+    <ClInclude Include="src\Interop\TechnoExt.h" />
     <!-- src\Locomotion -->
     <ClInclude Include="src\Locomotion\TestLocomotionClass.h" />
     <!-- src\Misc -->

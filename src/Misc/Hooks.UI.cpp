@@ -95,7 +95,12 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 			? pSideExt->Sidebar_HarvesterCounter_ColorGreen.Get(Drawing::TooltipColor) : nPercentage > Phobos::UI::HarvesterCounter_ConditionRed
 			? pSideExt->Sidebar_HarvesterCounter_ColorYellow : pSideExt->Sidebar_HarvesterCounter_ColorRed;
 
-		swprintf_s(counter, L"%ls%d/%d", Phobos::UI::HarvesterLabel, nActive, nTotal);
+		if (pSideExt->Sidebar_HarvesterCounter_HideMaxValue)
+			swprintf_s(counter, L"%ls%d", Phobos::UI::HarvesterLabel, nActive);
+		else if (pSideExt->Sidebar_HarvesterCounter_OnlyMaxValue)
+			swprintf_s(counter, L"%ls%d", Phobos::UI::HarvesterLabel, nTotal);
+		else
+			swprintf_s(counter, L"%ls%d/%d", Phobos::UI::HarvesterLabel, nActive, nTotal);
 
 		Point2D vPos = {
 			DSurface::Sidebar->GetWidth() / 2 + 50 + pSideExt->Sidebar_HarvesterCounter_Offset.Get().X,

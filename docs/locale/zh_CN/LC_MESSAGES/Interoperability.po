@@ -1,0 +1,423 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, The Phobos Contributors
+# This file is distributed under the same license as the Phobos package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Phobos \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-31 23:02+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+msgid "Interoperability"
+msgstr "互操作性"
+
+msgid ""
+"This page documents the exported interfaces in "
+"[Interop](https://github.com/Phobos-"
+"developers/Phobos/tree/develop/src/Interop)."
+msgstr ""
+"本页面记录了 [Interop](https://github.com/Phobos-developers/Phobos/"
+"tree/develop/src/Interop) 目录中导出的接口。"
+
+msgid "API Convention"
+msgstr "API 约定"
+
+msgid ""
+"All exported API functions return `HRESULT` to indicate success or "
+"failure following COM convention:"
+msgstr "所有导出的 API 函数均遵循 COM 约定返回 `HRESULT`，以指示成功或失败："
+
+msgid "HRESULT"
+msgstr "HRESULT"
+
+msgid "Meaning"
+msgstr "含义"
+
+msgid "`S_OK`"
+msgstr "`S_OK`"
+
+msgid "Operation completed successfully."
+msgstr "操作成功完成。"
+
+msgid "`S_FALSE`"
+msgstr "`S_FALSE`"
+
+msgid ""
+"Operation completed but had nothing to do (e.g., no matching effects "
+"found)."
+msgstr "操作已完成但无需执行任何操作（例如未找到匹配的效果）。"
+
+msgid "`E_POINTER`"
+msgstr "`E_POINTER`"
+
+msgid "A required pointer parameter was null."
+msgstr "必需的指针参数为空。"
+
+msgid "`E_INVALIDARG`"
+msgstr "`E_INVALIDARG`"
+
+msgid "One or more arguments are invalid."
+msgstr "一个或多个参数无效。"
+
+msgid "`E_UNEXPECTED`"
+msgstr "`E_UNEXPECTED`"
+
+msgid "An unexpected internal error occurred (e.g., extension data not found)."
+msgstr "发生意外的内部错误（例如未找到扩展数据）。"
+
+msgid "`E_FAIL`"
+msgstr "`E_FAIL`"
+
+msgid "The operation failed."
+msgstr "操作失败。"
+
+msgid ""
+"Functions that produce output data take an additional output pointer "
+"parameter that receives the result. Use `SUCCEEDED(hr)` / `FAILED(hr)` to"
+" check the return value."
+msgstr ""
+"生成输出数据的函数会接受一个额外的输出指针参数来接收结果。请使用 "
+"`SUCCEEDED(hr)` / `FAILED(hr)` 检查返回值。"
+
+msgid "API Version Tracking"
+msgstr "API 版本跟踪"
+
+msgid "Semantic Versioning Rules"
+msgstr "语义化版本规则"
+
+msgid ""
+"**Major (X)**: Increment for breaking changes (backward incompatible API "
+"modifications).\\ Example: Deleting an API, changing function parameters,"
+" modifying data structures that break existing code.\\ When bumped, reset"
+" Minor and Patch to 0 (e.g., 1.2.3 → 2.0.0)."
+msgstr ""
+"**主版本号 (X)**：递增表示发生了破坏性变更（向后不兼容的 API 修改）。<br>"
+"示例：删除 API、更改函数参数、修改数据结构导致现有代码损坏。<br>"
+"当此版本号递增时，次版本号和修订号重置为 0（例如 1.2.3 → 2.0.0）。"
+
+msgid ""
+"**Minor (Y)**: Increment for backward-compatible new features.\\ Example:"
+" Adding a new API function, new parameters that don't break existing "
+"code.\\ When bumped, reset Patch to 0 (e.g., 1.2.3 → 1.3.0)."
+msgstr ""
+"**次版本号 (Y)**：递增表示增加了向后兼容的新功能。<br>"
+"示例：添加新的 API 函数、增加不破坏现有代码的新参数。<br>"
+"当此版本号递增时，修订号重置为 0（例如 1.2.3 → 1.3.0）。"
+
+msgid ""
+"**Patch (Z)**: Increment for backward-compatible miscs (no API "
+"changes).\\ Example: Fixing crashes, correcting calculations, optimizing "
+"internals without changing interface (e.g., 1.2.3 → 1.2.4)."
+msgstr ""
+"**修订号 (Z)**：递增表示向后兼容的杂项改进（无 API 变更）。<br>"
+"示例：修复崩溃、更正计算、优化内部实现而不改变接口（例如 1.2.3 → 1.2.4）。"
+
+msgid "GetInteropAPIVersion"
+msgstr "GetInteropAPIVersion"
+
+msgid "Returns the current Interop API version via `pVersion` output parameter."
+msgstr "通过 `pVersion` 输出参数返回当前的 Interop API 版本。"
+
+msgid "Parameters:"
+msgstr "参数："
+
+msgid "`pVersion`: Receives the version structure `{ major, minor, patch }`."
+msgstr "`pVersion`：接收版本结构体 `{ major, minor, patch }`。"
+
+msgid "Returns `S_OK` on success, `E_POINTER` if `pVersion` is null."
+msgstr "成功时返回 `S_OK`，若 `pVersion` 为空则返回 `E_POINTER`。"
+
+msgid "**Example (C# P/Invoke):**"
+msgstr "**示例（C# P/Invoke）：**"
+
+msgid "Deprecated API Handling"
+msgstr "已弃用 API 的处理"
+
+msgid ""
+"When an API is deprecated, its function stub is retained but with a fatal"
+" error handler. The calling application will receive a descriptive error "
+"message and must stop execution. This ensures:"
+msgstr ""
+"当某个 API 被弃用时，其函数存根会保留，但会附加一个致命错误处理器。调用方"
+"将收到一条描述性错误消息，并且必须停止执行。这可以确保："
+
+msgid "Broken links are immediately detected at runtime (not a silent crash)."
+msgstr "断开的链接在运行时立即被检测到（而非静默崩溃）。"
+
+msgid ""
+"Clear messaging guides developers to the replacement API and version "
+"range."
+msgstr "清晰的消息可引导开发者了解替代 API 和版本范围。"
+
+msgid "Migration timeline is documented in the error message."
+msgstr "迁移时间线会记录在错误消息中。"
+
+msgid "**Example** (not currently in use):"
+msgstr "**示例**（当前未使用）："
+
+msgid "Available APIs"
+msgstr "可用的 API"
+
+msgid "Module"
+msgstr "模块"
+
+msgid "API"
+msgstr "API"
+
+msgid "Availability"
+msgstr "可用范围"
+
+msgid "Status"
+msgstr "状态"
+
+msgid "AttachEffect"
+msgstr "AttachEffect"
+
+msgid "AE_Attach"
+msgstr "AE_Attach"
+
+msgid "`[1.0.0, ∞)`"
+msgstr "`[1.0.0, ∞)`"
+
+msgid "Active"
+msgstr "活跃"
+
+msgid "AE_Detach"
+msgstr "AE_Detach"
+
+msgid "AE_DetachByGroups"
+msgstr "AE_DetachByGroups"
+
+msgid "AE_TransferEffects"
+msgstr "AE_TransferEffects"
+
+msgid "BulletExt"
+msgstr "BulletExt"
+
+msgid "Bullet_SetFirerOwner"
+msgstr "Bullet_SetFirerOwner"
+
+msgid "EventExt"
+msgstr "EventExt"
+
+msgid "EventExt_AddEvent"
+msgstr "EventExt_AddEvent"
+
+msgid "TechnoExt"
+msgstr "TechnoExt"
+
+msgid "ConvertToType_Phobos"
+msgstr "ConvertToType_Phobos"
+
+msgid "RegisterCalculateExtraThreatCallback"
+msgstr "RegisterCalculateExtraThreatCallback"
+
+msgid "**Availability:** `[1.0.0, ∞)`"
+msgstr "**可用范围：** `[1.0.0, ∞)`"
+
+msgid "Attaches one or more AttachEffect types to the target."
+msgstr "将一个或多个 AttachEffect 类型附加到目标上。"
+
+msgid "pTarget: Target unit to receive effects."
+msgstr "pTarget：要接收效果的目标单位。"
+
+msgid "pInvokerHouse: Invoker house context."
+msgstr "pInvokerHouse：调用方阵营上下文。"
+
+msgid "pInvoker: Invoker techno context."
+msgstr "pInvoker：调用方 Techno 上下文。"
+
+msgid "pSource: Optional source object context."
+msgstr "pSource：可选来源对象上下文。"
+
+msgid "effectTypeNames: Array of AttachEffect type names."
+msgstr "effectTypeNames：AttachEffect 类型名称数组。"
+
+msgid "typeCount: Number of entries in effectTypeNames."
+msgstr "typeCount：effectTypeNames 中的条目数量。"
+
+msgid "durationOverride: If non-zero, duration override is applied."
+msgstr "durationOverride：若非零，则应用持续时间覆盖。"
+
+msgid "delay: If >= 0, delay override is applied."
+msgstr "delay：若大于等于 0，则应用延迟覆盖。"
+
+msgid "initialDelay: If >= 0, initial delay override is applied."
+msgstr "initialDelay：若大于等于 0，则应用初始延迟覆盖。"
+
+msgid "recreationDelay: If >= -1, recreation delay override is applied."
+msgstr "recreationDelay：若大于等于 -1，则应用重建延迟覆盖。"
+
+msgid "pAttachedCount: Receives the number of effects attached."
+msgstr "pAttachedCount：接收已附加的效果数量。"
+
+msgid ""
+"Returns `S_OK` on success, `S_FALSE` if no valid effect type names were "
+"found."
+msgstr "成功时返回 `S_OK`，若未找到有效的效果类型名称则返回 `S_FALSE`。"
+
+msgid ""
+"Fails with `E_POINTER` when: pTarget, effectTypeNames, or pAttachedCount "
+"is null."
+msgstr "当 pTarget、effectTypeNames 或 pAttachedCount 为空时，失败并返回 `E_POINTER`。"
+
+msgid "Fails with `E_INVALIDARG` when: typeCount <= 0."
+msgstr "当 typeCount <= 0 时，失败并返回 `E_INVALIDARG`。"
+
+msgid "Detaches effects by explicit effect type names."
+msgstr "根据显式的效果类型名称移除效果。"
+
+msgid "pTarget: Target unit to remove effects from."
+msgstr "pTarget：要从中移除效果的目标单位。"
+
+msgid "effectTypeNames: Array of AttachEffect type names to remove."
+msgstr "effectTypeNames：要移除的 AttachEffect 类型名称数组。"
+
+msgid "pRemovedCount: Receives the number of effects removed."
+msgstr "pRemovedCount：接收已移除的效果数量。"
+
+msgid "Returns `S_OK` on success, `S_FALSE` if no matching effects were found."
+msgstr "成功时返回 `S_OK`，若未找到匹配的效果则返回 `S_FALSE`。"
+
+msgid ""
+"Fails with `E_POINTER` when: pTarget, effectTypeNames, or pRemovedCount "
+"is null."
+msgstr "当 pTarget、effectTypeNames 或 pRemovedCount 为空时，失败并返回 `E_POINTER`。"
+
+msgid "Detaches effects by AttachEffect group name."
+msgstr "根据 AttachEffect 组名移除效果。"
+
+msgid "groupNames: Array of group names."
+msgstr "groupNames：组名数组。"
+
+msgid "groupCount: Number of entries in groupNames."
+msgstr "groupCount：groupNames 中的条目数量。"
+
+msgid "Returns `S_OK` on success, `S_FALSE` if no matching groups were found."
+msgstr "成功时返回 `S_OK`，若未找到匹配的组则返回 `S_FALSE`。"
+
+msgid ""
+"Fails with `E_POINTER` when: pTarget, groupNames, or pRemovedCount is "
+"null."
+msgstr "当 pTarget、groupNames 或 pRemovedCount 为空时，失败并返回 `E_POINTER`。"
+
+msgid "Fails with `E_INVALIDARG` when: groupCount <= 0."
+msgstr "当 groupCount <= 0 时，失败并返回 `E_INVALIDARG`。"
+
+msgid "Transfers all attached effects from source to target."
+msgstr "将所有附加效果从来源转移到目标。"
+
+msgid "pSource: Source unit."
+msgstr "pSource：来源单位。"
+
+msgid "pTarget: Target unit."
+msgstr "pTarget：目标单位。"
+
+msgid "Returns `S_OK` on success."
+msgstr "成功时返回 `S_OK`。"
+
+msgid "Fails with `E_POINTER` when: pSource or pTarget is null."
+msgstr "当 pSource 或 pTarget 为空时，失败并返回 `E_POINTER`。"
+
+msgid "Vanilla class extension"
+msgstr "原版类扩展"
+
+msgid "Converts a FootClass instance to another TechnoType."
+msgstr "将一个 FootClass 实例转换为另一种 TechnoType。"
+
+msgid "pThis: Unit to convert."
+msgstr "pThis：要转换的单位。"
+
+msgid "toType: Destination TechnoType."
+msgstr "toType：目标 TechnoType。"
+
+msgid "Returns `S_OK` if conversion succeeds."
+msgstr "转换成功时返回 `S_OK`。"
+
+msgid "Returns `E_INVALIDARG` if types are incompatible."
+msgstr "若类型不兼容则返回 `E_INVALIDARG`。"
+
+msgid "Notes:"
+msgstr "备注："
+
+msgid "This API forwards directly to TechnoExt::ConvertToType."
+msgstr "此 API 直接转发至 TechnoExt::ConvertToType。"
+
+msgid "Registers a callback function to calculate extra threat for a unit."
+msgstr "注册一个回调函数，用于计算单位的额外威胁值。"
+
+msgid ""
+"callback: Callback function pointer that returns the calculated threat "
+"modifier. Signature: `double callback(TechnoClass* pThis, ObjectClass* "
+"pTarget, double originalThreat)`."
+msgstr ""
+"callback：回调函数指针，返回计算后的威胁修正值。签名：`double callback("
+"TechnoClass* pThis, ObjectClass* pTarget, double originalThreat)`。"
+
+msgid "Fails with `E_POINTER` when: callback is null."
+msgstr "当 callback 为空时，失败并返回 `E_POINTER`。"
+
+msgid "Behavior:"
+msgstr "行为："
+
+msgid "If callback is non-null, it is added to the internal callback list."
+msgstr "如果 callback 非空，则将其添加到内部回调列表中。"
+
+msgid ""
+"When threat calculations occur, all registered callbacks are invoked to "
+"compute additional threat contributions."
+msgstr "当威胁计算发生时，所有已注册的回调都会被调用以计算额外的威胁贡献。"
+
+msgid ""
+"Multiple callbacks can be registered and are executed in registration "
+"order."
+msgstr "可以注册多个回调，它们会按注册顺序执行。"
+
+msgid ""
+"The callback invocation method is `totalThreat = cb(pThis, pTarget, "
+"totalThreat)`."
+msgstr "回调的调用方式为 `totalThreat = cb(pThis, pTarget, totalThreat)`。"
+
+msgid "Updates the recorded firer house for a bullet extension."
+msgstr "更新子弹扩展中记录的发射方阵营。"
+
+msgid "pBullet: Bullet instance."
+msgstr "pBullet：子弹实例。"
+
+msgid ""
+"pHouse: New firer house (can be null if caller intentionally clears "
+"ownership)."
+msgstr "pHouse：新的发射方阵营（若调用方有意清除所有权，可为空）。"
+
+msgid "Returns `S_OK` if the bullet extension is found and updated."
+msgstr "如果找到并更新了子弹扩展，则返回 `S_OK`。"
+
+msgid "Fails with `E_POINTER` when: pBullet is null."
+msgstr "当 pBullet 为空时，失败并返回 `E_POINTER`。"
+
+msgid "Fails with `E_UNEXPECTED` when: no BulletExt entry exists for pBullet."
+msgstr "当 pBullet 没有对应的 BulletExt 条目时，失败并返回 `E_UNEXPECTED`。"
+
+msgid "Invokes AddEvent on an EventExt object."
+msgstr "在一个 EventExt 对象上调用 AddEvent。"
+
+msgid "pEventExt: Event extension instance."
+msgstr "pEventExt：事件扩展实例。"
+
+msgid "Returns `S_OK` if AddEvent succeeds, `S_FALSE` if AddEvent returns false."
+msgstr "若 AddEvent 成功则返回 `S_OK`，若 AddEvent 返回 false 则返回 `S_FALSE`。"
+
+msgid "Fails with `E_POINTER` when: pEventExt is null."
+msgstr "当 pEventExt 为空时，失败并返回 `E_POINTER`。"
+

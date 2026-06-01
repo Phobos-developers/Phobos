@@ -326,6 +326,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Purely visual animations and particles are no longer included in frame CRC generation and are thus exempt from any sync checks between players in multiplayer games.
 - Fixed the bug that low-air taking off / landing objects will receive twice damage.
 - Allowed `AuxBuilding` to count building upgrades.
+- Fixed voxel projectile and animation lighting issues.
 
 ## Fixes / interactions with other extensions
 
@@ -997,6 +998,19 @@ In `artmd.ini`:
 ```ini
 [SOMEBUILDING]                   ; BuildingType
 ZShapePointMove.OnBuildup=false  ; boolean
+```
+
+### Armed building guard retry delay
+
+- By default buildings with weapons (including garrisoned buildings) have a delay of `[Guard]` -> `AARate` multiplied by 900 plus random value in range 0-2 (inclusive) before rechecking if the building can attack if it has a target. This delay is now customizable globally by `[General]` -> `BuildingGuardRetryDelay` or per-BuildingType with `GuardRetryDelay`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+BuildingGuardRetryDelay=  ; integer - single or comma-sep. range (game frames)
+
+[SOMEBUILDING]            ; BuildingType
+GuardRetryDelay=          ; integer - single or comma-sep. range (game frames)
 ```
 
 ### Buildings considered as vehicles
