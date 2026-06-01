@@ -354,7 +354,7 @@ public:
 
 		Nullable<PartialVector2D<int>> BuildingGuardRetryDelay;
 
-		Valueable<bool> DiscardOn_LooseMovementCheck;
+		Valueable<bool> DiscardOn_MoveBasedOnDestination;
     
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -648,7 +648,7 @@ public:
 			, ExtendedPlayerRepair { false }
 			, Shrapnel_IgnoreHitBuildings { false }
 			, BuildingGuardRetryDelay {}
-			, DiscardOn_LooseMovementCheck { false }
+			, DiscardOn_MoveBasedOnDestination { false }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -49,7 +49,7 @@ public:
 	Valueable<bool> Powered;
 	Valueable<DiscardCondition> DiscardOn;
 	Nullable<Leptons> DiscardOn_RangeOverride;
-	Nullable<bool> DiscardOn_LooseMovementCheck;
+	Nullable<bool> DiscardOn_MoveBasedOnDestination;
 	Valueable<bool> PenetratesIronCurtain;
 	Nullable<bool> PenetratesForceShield;
 	ValueableVector<TechnoTypeClass*> AffectTypes;
@@ -113,7 +113,7 @@ public:
 		, Powered { false }
 		, DiscardOn { DiscardCondition::None }
 		, DiscardOn_RangeOverride {}
-		, DiscardOn_LooseMovementCheck {}
+		, DiscardOn_MoveBasedOnDestination {}
 		, PenetratesIronCurtain { false }
 		, PenetratesForceShield {}
 		, AffectTypes {}
