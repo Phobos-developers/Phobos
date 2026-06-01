@@ -20,7 +20,7 @@ This page describes all the engine features that are either new and introduced b
     - `inrange`: Discard if within weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
     - `outofrange`: Discard if outside weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
     - `firing`: Discard when firing a weapon. This counts special weapons that are not actually fired such as ones with `Spawner=true` or `DrainWeapon=true`.
-  - `DiscardOn.ConsiderHoverAsMoving` defines whether hovering in the air is considered as moving. For example, units with `Locomotor=Jumpjet` and `BalloonHover=true` count as hovering.
+  - `DiscardOn.LooseMovementCheck` defines whether to enable loose movement check. It treats some situations such as Jumpjet units hovering in the air and units that have no destination but are turning as movement to satisfy the condition of `DiscardOn=move`.
   - If `PenetratesIronCurtain` is not set to true, the effect is not applied on currently invulnerable objects.
     - `PenetratesForceShield` can be used to set this separately for Force Shielded objects, defaults to value of `PenetratesIronCurtain`.
   - `AffectTypes`, if set to a non-empty list, restricts the effect to only be applicable on the specific unit types listed. If this is not set or empty, no whitelist filtering occurs. This check has the highest priority.
@@ -89,7 +89,7 @@ This page describes all the engine features that are either new and introduced b
 In `rulesmd.ini`:
 ```ini
 [General]
-DiscardOn.ConsiderHoverAsMoving=false              ; boolean
+DiscardOn.LooseMovementCheck=false                 ; boolean
 
 [AttachEffectTypes]
 0=SOMEATTACHEFFECT
@@ -103,7 +103,7 @@ Cumulative.MaxCount=-1                             ; integer
 Powered=false                                      ; boolean
 DiscardOn=none                                     ; List of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange)
 DiscardOn.RangeOverride=                           ; floating point value, distance in cells
-DiscardOn.ConsiderHoverAsMoving=                   ; boolean, default to [General] -> DiscardOn.ConsiderHoverAsMoving
+DiscardOn.LooseMovementCheck=                      ; boolean, default to [General] -> DiscardOn.LooseMovementCheck
 PenetratesIronCurtain=false                        ; boolean
 PenetratesForceShield=                             ; boolean
 AffectTypes=                                       ; List of TechnoTypes

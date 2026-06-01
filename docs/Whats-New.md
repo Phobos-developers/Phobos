@@ -577,7 +577,7 @@ HideShakeEffects=false           ; boolean
 - Add the `Bolt.ZAdjust` setting item to the LaserTrailType with `DrawType=ebolt` (by Noble_Fish)
 - Allow *Harvester counter* to display only the total number or the number currently working (by Noble_Fish)
 - [Allow customizing guard mission retry delay for buildings with weapons](Fixed-or-Improved-Logics.md#armed-building-guard-retry-delay) (by Starkku)
-- Allow customizing whether the `DiscardOn` of an AE considers hovering in the air when checking the moving state of the attached object (by Noble_Fish)
+- Allow enabling a looser movement state check for the `DiscardOn=move` condition of AE to support more usage scenarios (by Noble_Fish)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
