@@ -31,7 +31,6 @@
     <IntDir>$(Configuration)\IntDir\</IntDir>
     <CoreLibraryDependencies></CoreLibraryDependencies>
     <PhobosExtraLibs>dbghelp.lib;onecore.lib</PhobosExtraLibs>
-    <VcpkgTriplet>x86-windows-static</VcpkgTriplet>
   </PropertyGroup>
   <!-- Global -->
   <ItemDefinitionGroup>
@@ -53,12 +52,11 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AssemblerListingLocation>$(IntDir)\%(Directory)</AssemblerListingLocation>
       <ObjectFileName>$(IntDir)\%(Directory)</ObjectFileName>
-      <CallingConvention>Cdecl</CallingConvention>
+      <CallingConvention>StdCall</CallingConvention>
       <DisableSpecificWarnings>4100;4201;4530;4731;4740;4458;4819;5103;5105</DisableSpecificWarnings>
       <EnableModules>true</EnableModules>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OpenMPSupport>true</OpenMPSupport>
-      <AdditionalOptions>/external:env:INCLUDE /external:env:LIB %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
