@@ -100,8 +100,8 @@ public:
 		Nullable<bool> AttackNoThreatBuildings;
 		Nullable<bool> CylinderRangefinding;
 		Nullable<bool> Anim_Update;
-		Valueable<int> Range_Maximum;
-		Valueable<int> Range_Minimum;
+		Valueable<int> WeaponRange_Maximum;
+		Valueable<int> WeaponRange_Minimum;
 
 		bool SkipWeaponPicking;
 		
@@ -190,8 +190,8 @@ public:
 			, AttackNoThreatBuildings {}
 			, CylinderRangefinding {}
 			, Anim_Update {}
-			, Range_Maximum { INT_MAX }
-			, Range_Minimum { 0 }
+			, WeaponRange_Maximum { INT_MAX }
+			, WeaponRange_Minimum { 0 }
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;

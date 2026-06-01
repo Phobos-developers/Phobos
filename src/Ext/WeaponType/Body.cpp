@@ -172,24 +172,24 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackNoThreatBuildings.Read(exINI, pSection, "AttackNoThreatBuildings");
 	this->CylinderRangefinding.Read(exINI, pSection, "CylinderRangefinding");
 	this->Anim_Update.Read(exINI, pSection, "Anim.Update");
-	this->Range_Maximum.Read(exINI, pSection, "Range.Maximum");
-	this->Range_Minimum.Read(exINI, pSection, "Range.Minimum");
+	this->WeaponRange_Maximum.Read(exINI, pSection, "WeaponRange.Maximum");
+	this->WeaponRange_Minimum.Read(exINI, pSection, "WeaponRange.Minimum");
 
-	if (this->Range_Maximum < pThis->Range)
+	if (this->WeaponRange_Maximum < pThis->Range)
 	{
-		Debug::Log("[Developer warning][%s] Range.Maximum is smaller than Range, it'll be reset to the value of Range!\n", pSection);
-		this->Range_Maximum = pThis->Range;
+		Debug::Log("[Developer warning][%s] WeaponRange.Maximum is smaller than Range, it'll be reset to the value of Range!\n", pSection);
+		this->WeaponRange_Maximum = pThis->Range;
 	}
 
-	if (this->Range_Minimum < 0)
+	if (this->WeaponRange_Minimum < 0)
 	{
-		Debug::Log("[Developer warning][%s] Range.Minimum is smaller than 0, it'll be reset to 0!\n", pSection);
-		this->Range_Minimum = 0;
+		Debug::Log("[Developer warning][%s] WeaponRange.Minimum is smaller than 0, it'll be reset to 0!\n", pSection);
+		this->WeaponRange_Minimum = 0;
 	}
-	else if (this->Range_Minimum > pThis->Range)
+	else if (this->WeaponRange_Minimum > pThis->Range)
 	{
-		Debug::Log("[Developer warning][%s] Range.Minimum is bigger than Range, it'll be reset to the value of Range!\n", pSection);
-		this->Range_Minimum = pThis->Range;
+		Debug::Log("[Developer warning][%s] WeaponRange.Minimum is bigger than Range, it'll be reset to the value of Range!\n", pSection);
+		this->WeaponRange_Minimum = pThis->Range;
 	}
 
 	// handle SkipWeaponPicking
@@ -291,8 +291,8 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackNoThreatBuildings)
 		.Process(this->CylinderRangefinding)
 		.Process(this->Anim_Update)
-		.Process(this->Range_Maximum)
-		.Process(this->Range_Minimum)
+		.Process(this->WeaponRange_Maximum)
+		.Process(this->WeaponRange_Minimum)
 		;
 };
 
@@ -378,8 +378,8 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 
 	if (auto const pExt = WeaponTypeExt::ExtMap.Find(pThis))
 	{
-		min = pExt->Range_Minimum;
-		max = pExt->Range_Maximum;
+		min = pExt->WeaponRange_Minimum;
+		max = pExt->WeaponRange_Maximum;
 	}
 
 	auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
