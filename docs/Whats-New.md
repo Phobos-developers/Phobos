@@ -578,7 +578,7 @@ HideShakeEffects=false           ; boolean
 - Allow *Harvester counter* to display only the total number or the number currently working (by Noble_Fish)
 - [Allow customizing guard mission retry delay for buildings with weapons](Fixed-or-Improved-Logics.md#armed-building-guard-retry-delay) (by Starkku)
 - [Allow `Temporal` warhead to apply ratio and bonus](Fixed-or-Improved-Logics.md#allow-temporal-warhead-to-apply-ratio-and-bonus) (by NetsuNegi)
-- Allow enabling a looser movement state check for the `DiscardOn=move` condition of AE to support more usage scenarios (by Noble_Fish)
+- Allow users to customize whether the movement state check depends on the destination for the `DiscardOn=move` condition of AE to support more usage scenarios (by Noble_Fish)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

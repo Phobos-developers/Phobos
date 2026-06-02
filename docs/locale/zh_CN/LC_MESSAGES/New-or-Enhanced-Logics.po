@@ -136,6 +136,8 @@ msgid ""
 "treats Jumpjet units hovering in the air as movement, and units that have"
 " no destination but are turning as stationary."
 msgstr ""
+"`DiscardOn.MoveBasedOnDestination` 决定是否处于运动状态取决于是否拥有目的地。"
+"这会将悬浮在空中的 Jumpjet 单位视为移动，而正在转身但没有目的地的单位视为静止。"
 
 msgid ""
 "If `PenetratesIronCurtain` is not set to true, the effect is not applied "

@@ -1922,9 +1922,11 @@ msgstr ""
 "warhead-to-apply-ratio-and-bonus)（by NetsuNegi）"
 
 msgid ""
-"Allow enabling a looser movement state check for the `DiscardOn=move` "
-"condition of AE to support more usage scenarios (by Noble_Fish)"
+"Allow users to customize whether the movement state check depends on the "
+"destination for the `DiscardOn=move` condition of AE to support more "
+"usage scenarios (by Noble_Fish)"
 msgstr ""
+"允许用户自定义移动状态检查是否取决于有无目的地以允许 AE 的 `DiscardOn=move` 条件支持更多使用场景（by Noble_Fish）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
