@@ -1,6 +1,8 @@
 #include "Body.h"
 #include <MessageListClass.h>
 
+#include <Ext/House/Body.h>
+
 // Universal handler of the rolls-weights system
 std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>* rolls, std::vector<ValueableVector<int>>* weights, size_t size)
 {
@@ -169,46 +171,58 @@ std::pair<double, double> SWTypeExt::ExtData::GetLaunchSiteRange(BuildingClass* 
 
 bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 {
+	if (pHouse->TechLevel < this->SW_TechLevel)
+		return false;
+
 	const auto pThis = this->OwnerObject();
+	const int shots = this->SW_Shots;
+
+	if (shots >= 0 && HouseExt::ExtMap.Find(pHouse)->SuperExts[pThis->ArrayIndex].ShotCount >= shots)
+		return false;
+
+	if (pHouse->IsControlledByHuman() ? (!this->SW_AllowPlayer) : (!this->SW_AllowAI))
+		return false;
+
+	auto IsTechnoPresent = [pHouse](TechnoTypeClass* pType)
+		{
+			const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pType);
+
+			if (pBuildingType && (!BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.empty() || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))
+				return BuildingTypeExt::GetUpgradesAmount(pBuildingType, pHouse) > 0;
+
+			return HouseExt::ExtMap.Find(pHouse)->CountOwnedPresentAndLimboed(pType) > 0;
+		};
 
 	// check whether the optional aux building exists
-	if (pThis->AuxBuilding)
-	{
-		if ((BuildingTypeExt::ExtMap.Find(pThis->AuxBuilding)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pThis->AuxBuilding->PowersUpBuilding))
-			&& BuildingTypeExt::GetUpgradesAmount(pThis->AuxBuilding, pHouse) <= 0)
-			return false;
-		else if (pHouse->CountOwnedAndPresent(pThis->AuxBuilding) <= 0)
-			return false;
-	}
+	if (pThis->AuxBuilding && !IsTechnoPresent(pThis->AuxBuilding))
+		return false;
 
 	// allow only certain houses, disallow forbidden houses
-	const auto OwnerBits = 1u << pHouse->Type->ArrayIndex;
+	const auto ownerBits = 1u << pHouse->Type->ArrayIndex;
 
-	if (!(this->SW_RequiredHouses & OwnerBits) || (this->SW_ForbiddenHouses & OwnerBits))
+	if (!(this->SW_RequiredHouses & ownerBits) || (this->SW_ForbiddenHouses & ownerBits))
 		return false;
 
 	// check that any aux building exist and no neg building
-	auto IsBuildingPresent = [pHouse](BuildingTypeClass* pType)
-		{
-			if (pType)
-			{
-				if (BuildingTypeExt::ExtMap.Find(pType)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pType->PowersUpBuilding))
-					return BuildingTypeExt::GetUpgradesAmount(pType, pHouse) > 0;
-				else
-					return pHouse->CountOwnedAndPresent(pType) > 0;
-			}
 
-			return false;
-		};
+	const auto& auxBuildings = this->SW_AuxBuildings;
 
-	const auto& Aux = this->SW_AuxBuildings;
-
-	if (!Aux.empty() && std::none_of(Aux.begin(), Aux.end(), IsBuildingPresent))
+	if (!auxBuildings.empty() && std::ranges::none_of(auxBuildings, IsTechnoPresent))
 		return false;
 
-	const auto& Neg = this->SW_NegBuildings;
+	const auto& negBuildings = this->SW_NegBuildings;
 
-	if (std::any_of(Neg.begin(), Neg.end(), IsBuildingPresent))
+	if (std::ranges::any_of(negBuildings, IsTechnoPresent))
+		return false;
+
+	const auto& auxTechnos = this->SW_AuxTechnos;
+
+	if (!auxTechnos.empty() && std::ranges::none_of(auxTechnos, IsTechnoPresent))
+		return false;
+
+	const auto& negTechnos = this->SW_NegTechnos;
+
+	if (std::ranges::any_of(negTechnos, IsTechnoPresent))
 		return false;
 
 	return true;
@@ -308,4 +322,17 @@ void SWTypeExt::ExtData::PrintMessage(const CSFText& message, HouseClass* pFirer
 
 	// print the message
 	MessageListClass::Instance.PrintMessage(message, RulesClass::Instance->MessageDelay, color);
+}
+
+SuperClass* __stdcall SWTypeExt::IsSuperAvailable(int swIdx, HouseClass* pHouse)
+{
+	if (const auto pSuper = pHouse->Supers.GetItemOrDefault(swIdx))
+	{
+		const auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+
+		if (pExt->IsAvailable(pHouse))
+			return pSuper;
+	}
+
+	return nullptr;
 }

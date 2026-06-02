@@ -51,10 +51,11 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	if (!pInterceptorType || Unsorted::CurrentFrame % pInterceptorType->TargetingDelay != 0)
 		return;
 
-	if (!BulletClass::Array.Count || this->IsBurrowed)
+	const auto pThis = this->OwnerObject();
+
+	if (!BulletClass::Array.Count || this->IsBurrowed || !pThis->IsArmed())
 		return;
 
-	const auto pThis = this->OwnerObject();
 	const auto pTarget = pThis->Target;
 
 	if (pTarget)
@@ -68,7 +69,13 @@ void TechnoExt::ExtData::ApplyInterceptor()
 			return;
 	}
 
+	const bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
+
+	if (isBuilding && (pThis->CurrentMission == Mission::Selling || pThis->CurrentMission == Mission::Construction))
+		return;
+
 	BulletClass* pOptionalTarget = nullptr;
+	BulletClass* pTargetBullet = nullptr;
 	const double guardRange = pInterceptorType->GuardRange.Get(pThis);
 	const double guardRangeSq = guardRange * guardRange;
 	const double minGuardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
@@ -92,7 +99,12 @@ void TechnoExt::ExtData::ApplyInterceptor()
 		if (pOptionalTarget && isTargetedOrLocked)
 			continue;
 
-		const auto distanceSq = pBullet->Location.DistanceFromSquared(location);
+		auto bulletLoc = pBullet->Location;
+
+		if (pInterceptorType->GuardRange_IsCylindrical)
+			bulletLoc.Z = location.Z;
+
+		const auto distanceSq = bulletLoc.DistanceFromSquared(location);
 
 		if (distanceSq > guardRangeSq || distanceSq < minGuardRangeSq)
 			continue;
@@ -115,12 +127,25 @@ void TechnoExt::ExtData::ApplyInterceptor()
 		}
 
 		// Establish target
-		pThis->SetTarget(pBullet);
-		return;
+		pTargetBullet = pBullet;
+		break;
 	}
 
-	if (pOptionalTarget)
-		pThis->SetTarget(pOptionalTarget);  // There is no more suitable target, establish optional target
+	// There is no more suitable target, establish optional target
+	if (!pTargetBullet && pOptionalTarget)
+		pTargetBullet = pOptionalTarget;
+
+	if (pTargetBullet)
+	{
+		pThis->SetTarget(pTargetBullet);
+
+		// Skip normal transition from idle to attack for building interceptors.
+		if (isBuilding)
+		{
+			pThis->QueueMission(Mission::Attack, false);
+			pThis->NextMission();
+		}
+	}
 }
 
 void TechnoExt::ExtData::DepletedAmmoActions()
@@ -1282,6 +1307,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 			{
 				const int turnrate = pCurrentType->JumpjetTurnRate >= 127 ? 127 : pCurrentType->JumpjetTurnRate;
 				pJJLoco->Speed = pCurrentType->JumpjetSpeed;
+				pJJLoco->Climb = pCurrentType->JumpjetClimb;
 				pJJLoco->Accel = pCurrentType->JumpjetAccel;
 				pJJLoco->Crash = pCurrentType->JumpjetCrash;
 				pJJLoco->Deviation = pCurrentType->JumpjetDeviation;

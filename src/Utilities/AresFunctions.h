@@ -48,6 +48,9 @@ public:
 	// BuildingTypeExt::ExtData
 	static void* (__thiscall* GetTunnel)(void*, HouseClass*);
 	static void(__thiscall* AddPassengerFromTunnel)(void*, BuildingClass*, FootClass*);
+
+	// VoxClass
+	static int(__stdcall* FindEVAIndex)(const char* buffer);
 private:
 	static constexpr bool AresWasWrongAboutSpawnSurvivors = false;
 

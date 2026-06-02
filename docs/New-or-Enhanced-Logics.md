@@ -250,7 +250,7 @@ In `artmd.ini`:
 [LaserTrailTypes]
 0=SOMETRAIL
 
-[SOMETRAIL]                      ; LaserTrailType name
+[SOMETRAIL]                      ; LaserTrailType
 DrawType=laser                   ; laser trail type (laser | ebolt | radbeam)
 FadeDuration=                    ; integer, default to 64 for laser, 17 for ebolt, 15 for radbeam
 SegmentLength=128                ; integer, minimal length of each trail segment
@@ -270,6 +270,8 @@ Bolt.Color2=                     ; integer - Red,Green,Blue
 Bolt.Disable2=false              ; boolean
 Bolt.Color3=                     ; integer - Red,Green,Blue
 Bolt.Disable3=false              ; boolean
+Bolt.Arcs=8                      ; integer
+Bolt.ZAdjust=0                   ; integer
 ; radbeam
 Beam.Color=                      ; integer - Red,Green,Blue
 Beam.Amplitude=40.0              ; floating point value
@@ -318,7 +320,7 @@ Pips.Shield.Building.Empty=0                ; integer, frame of pips.shp (zero-b
 [ShieldTypes]
 0=SOMESHIELDTYPE
 
-[SOMESHIELDTYPE]                            ; ShieldType name
+[SOMESHIELDTYPE]                            ; ShieldType
 Strength=0                                  ; integer
 InitialStrength=0                           ; integer
 ConditionYellow=                            ; floating point value, percents or absolute
@@ -810,6 +812,7 @@ BombParachute=           ; AnimationType, default to [General] -> BombParachute
   - `Interceptor.CanTargetHouses` controls which houses the projectiles (or rather their firers) can belong to be eligible for interception.
   - `Interceptor.GuardRange` (and `Interceptor.(Rookie|Veteran|EliteGuardRange)`) is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
   - `Interceptor.MinimumGuardRange` (and `Interceptor.(Rookie|Veteran|EliteMinimumGuardRange)`) is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
+  - `Interceptor.GuardRange.IsCylindrical`, if set to true, makes it so that all range checks ignore height/elevation differences.
   - `Interceptor.ApplyFirepowerMult` determines whether or not the intercepting weapon's damage should multiply the TechnoType's firepower multipliers.
   - `Interceptable.DeleteOnIntercept` determines whether or not the projectile will simply be deleted on detonation upon interception, or if it will properly detonate. Will be overridden by `Interceptor.DeleteOnIntercept` setting on the interceptor.
   - `Interceptable.WeaponOverride` can be set to a WeaponType that will be used to override characteristics such as `Damage` and `Warhead` of the current projectile for detonation after interception. Will be overridden by `Interceptor.WeaponOverride` setting on the interceptor.
@@ -819,30 +822,31 @@ BombParachute=           ; AnimationType, default to [General] -> BombParachute
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                               ; TechnoType
-Interceptor=false                          ; boolean
-Interceptor.Weapon=0                       ; integer, weapon slot index (0 or 1)
-Interceptor.TargetingDelay=1               ; integer, game frames
-Interceptor.CanTargetHouses=enemies        ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-Interceptor.GuardRange=0.0                 ; floating point value
-Interceptor.VeteranGuardRange=             ; floating point value
-Interceptor.EliteGuardRange=               ; floating point value
-Interceptor.MinimumGuardRange=0.0          ; floating point value
-Interceptor.VeteranMinimumGuardRange=      ; floating point value
-Interceptor.EliteMinimumGuardRange=        ; floating point value
-Interceptor.ApplyFirepowerMult=true        ; boolean
-Interceptor.DeleteOnIntercept=false        ; boolean
-Interceptor.WeaponOverride=                ; WeaponType
-Interceptor.WeaponReplaceProjectile=false  ; boolean
-Interceptor.WeaponCumulativeDamage=false   ; boolean
-Interceptor.KeepIntact=false               ; boolean
+[SOMETECHNO]                                ; TechnoType
+Interceptor=false                           ; boolean
+Interceptor.Weapon=0                        ; integer, weapon slot index (0 or 1)
+Interceptor.TargetingDelay=1                ; integer, game frames
+Interceptor.CanTargetHouses=enemies         ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Interceptor.GuardRange=0.0                  ; floating point value
+Interceptor.VeteranGuardRange=              ; floating point value
+Interceptor.EliteGuardRange=                ; floating point value
+Interceptor.MinimumGuardRange=0.0           ; floating point value
+Interceptor.GuardRange.IsCylindrical=false  ; boolean
+Interceptor.VeteranMinimumGuardRange=       ; floating point value
+Interceptor.EliteMinimumGuardRange=         ; floating point value
+Interceptor.ApplyFirepowerMult=true         ; boolean
+Interceptor.DeleteOnIntercept=false         ; boolean
+Interceptor.WeaponOverride=                 ; WeaponType
+Interceptor.WeaponReplaceProjectile=false   ; boolean
+Interceptor.WeaponCumulativeDamage=false    ; boolean
+Interceptor.KeepIntact=false                ; boolean
 
-[SOMEPROJECTILE]                           ; Projectile
-Interceptable=false                        ; boolean
-Interceptable.DeleteOnIntercept=false      ; boolean
-Interceptable.WeaponOverride=              ; WeaponType
-Strength=0                                 ; integer
-Armor=                                     ; ArmorType
+[SOMEPROJECTILE]                            ; Projectile
+Interceptable=false                         ; boolean
+Interceptable.DeleteOnIntercept=false       ; boolean
+Interceptable.WeaponOverride=               ; WeaponType
+Strength=0                                  ; integer
+Armor=                                      ; ArmorType
 ```
 
 ```{note}
@@ -1084,6 +1088,24 @@ In `rulesmd.ini`:
 ```ini
 [General]
 AISuperWeaponDelay=  ; integer, game frames
+```
+
+### Aux technos and TechLevel requirement of superweapon
+
+- `SW.AuxTechnos` specifies the auxiliary technos without which this super weapon cannot become available. The player has to own at least one techno of any of these types to get access to this super weapon.
+- `SW.NegTechnos` specifies the negative auxiliary technos whose presence will cause the super weapon to become unavailable. This super weapon can become available only if the player does not own any techno of any of these types.
+- `SW.TechLevel` specifies the TechLevel that the owner must not fall below in order to use this super weapon. The super weapon becomes available only if the player's TechLevel reaches that level.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]        ; SuperWeaponType
+SW.AuxTechnos=  ; List of TechnoTypes
+SW.NegTechnos=  ; List of TechnoTypes
+SW.TechLevel=0  ; integer
+```
+
+```{note}
+`SW.TechLevel` does not treat `-1` as a special value. If you want to restrict a super weapon to be available only to AI players, please use `SW.AllowPlayer` and `SW.AllowAI`.
 ```
 
 ### Convert TechnoType

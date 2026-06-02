@@ -46,6 +46,18 @@ struct AresTechnoTypeExt
 	VoxelStruct NoSpawnAltVXL;
 };
 
+static double GetPrimaryRadian(UnitClass* pThis)
+{
+	// Align with the jj Draw_Matrix calc changing.
+	if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+	{
+		if (!pThis->IsAttackedByLocomotor)
+			return pJJLoco->LocomotionFacing.Current().GetRadian<32>();
+	}
+
+	return pThis->PrimaryFacing.Current().GetRadian<32>();
+}
+
 DEFINE_HOOK(0x73BA12, UnitClass_DrawAsVXL_RewriteTurretDrawing, 0x6)
 {
 	enum { SkipGameCode = 0x73BEA4 };
@@ -95,17 +107,7 @@ DEFINE_HOOK(0x73BA12, UnitClass_DrawAsVXL_RewriteTurretDrawing, 0x6)
 	{
 		auto mtxTurret = mtx;
 		pDrawTypeExt->ApplyTurretOffset(&mtxTurret, Pixel_Per_Lepton);
-
-		double primaryRad = pThis->PrimaryFacing.Current().GetRadian<32>();
-
-		// Align with the jj Draw_Matrix calc changing.
-		if (auto pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
-		{
-			if (!pThis->IsAttackedByLocomotor)
-				primaryRad = pJJLoco->LocomotionFacing.Current().GetRadian<32>();
-		}
-
-		mtxTurret.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - primaryRad));
+		mtxTurret.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - GetPrimaryRadian(pThis)));
 
 		if (pThis->TurretRecoil.State != RecoilData::RecoilState::Inactive)
 			mtxTurret.TranslateX(-pThis->TurretRecoil.TravelSoFar);
@@ -749,7 +751,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 
 	const double adjustedFactor = Pixel_Per_Lepton / currentScale;
 	pDrawTypeExt->ApplyTurretOffset(&mtx, adjustedFactor);
-	mtx.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
+	mtx.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - GetPrimaryRadian(pThis)));
 
 	const bool inRecoil = pDrawType->TurretRecoil && pThis->TurretRecoil.State != RecoilData::RecoilState::Inactive;
 	if (inRecoil)

@@ -45,6 +45,11 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 	if (!this->EffectsRequireVerses)
 		return true;
 
+	bool isAir = pTarget->IsInAir();
+
+	if ((isAir && !this->AffectsAir) || (!isAir && !this->AffectsGround))
+		return false;
+
 	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget, pTarget->GetTechnoType()) != 0.0;
 }
 

@@ -20,6 +20,8 @@ public:
 		Valueable<int> IngameScore_WinTheme;
 		Valueable<int> IngameScore_LoseTheme;
 		Valueable<Point2D> Sidebar_HarvesterCounter_Offset;
+		Valueable<bool> Sidebar_HarvesterCounter_HideMaxValue;
+		Valueable<bool> Sidebar_HarvesterCounter_OnlyMaxValue;
 		Nullable<ColorStruct> Sidebar_HarvesterCounter_ColorGreen;
 		Valueable<ColorStruct> Sidebar_HarvesterCounter_ColorYellow;
 		Valueable<ColorStruct> Sidebar_HarvesterCounter_ColorRed;
@@ -49,6 +51,8 @@ public:
 			, IngameScore_WinTheme { -2 }
 			, IngameScore_LoseTheme { -2 }
 			, Sidebar_HarvesterCounter_Offset { { 0, 0 } }
+			, Sidebar_HarvesterCounter_HideMaxValue { false }
+			, Sidebar_HarvesterCounter_OnlyMaxValue { false }
 			, Sidebar_HarvesterCounter_ColorGreen { }
 			, Sidebar_HarvesterCounter_ColorYellow { { 255, 255, 0 } }
 			, Sidebar_HarvesterCounter_ColorRed { { 255, 0, 0 } }
