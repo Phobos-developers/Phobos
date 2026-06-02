@@ -2455,6 +2455,10 @@ AffectsInvokerOnly.Reverse=false            ; boolean
 AffectsInvokerOnly.IgnoreInvokerState=true  ; boolean
 ```
 
+```{hint}
+If you have enabled [`ApplyPerTargetEffectsOnDetonate`](New-or-Enhanced-Logics.md#toggle-per-target-warhead-effects-apply-timing) to make affects handling completely follow damage propagation, then most of the time you can just use [`DamageSelf`](https://modenc.renegadeprojects.com/DamageSelf) and [`AllowDamageOnSelf`](Fixed-or-Improved-Logics.md#allowing-damage-dealt-to-firer) without needing `AffectsInvokerOnly.Reverse`.
+```
+
 ### Break Mind Control on impact
 
 ![image](_static/images/remove-mc.gif)
