@@ -194,15 +194,13 @@ double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 	else
 		houseMultiplier = pThis->Owner->Type->SpeedUnitsMult;
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-
-	return pThis->SpeedMultiplier * houseMultiplier * pExt->AE.SpeedMultiplier *
+	return pThis->SpeedMultiplier * houseMultiplier * TechnoExt::ExtMap.Find(pThis)->AE.SpeedMultiplier *
 		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
 }
 
 double TechnoExt::GetCurrentFirepowerMultiplier(TechnoClass* pThis)
 {
-	return pThis->FirepowerMultiplier * TechnoExt::ExtMap.Find(pThis)->AE.FirepowerMultiplier *
+	return pThis->FirepowerMultiplier * pThis->Owner->FirepowerMultiplier * TechnoExt::ExtMap.Find(pThis)->AE.FirepowerMultiplier *
 		(pThis->HasAbility(Ability::Firepower) ? RulesClass::Instance->VeteranCombat : 1.0);
 }
 
