@@ -26,7 +26,7 @@ public:
 		Valueable<WeaponTypeClass*> Interceptable_WeaponOverride;
 		ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
 		Nullable<double> Gravity;
-		Valueable<bool> Vertical_AircraftFix;
+		Nullable<bool> Vertical_AircraftFix;
 		Nullable<bool> VerticalInitialFacing;
 
 		TrajectoryTypePointer TrajectoryType;
@@ -88,7 +88,7 @@ public:
 			, Interceptable_WeaponOverride {}
 			, LaserTrail_Types {}
 			, Gravity {}
-			, Vertical_AircraftFix { true }
+			, Vertical_AircraftFix {}
 			, VerticalInitialFacing {}
 			, TrajectoryType { }
 			, Shrapnel_AffectsGround {}

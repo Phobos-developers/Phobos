@@ -448,6 +448,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->BuildingGuardRetryDelay.Read(exINI, GameStrings::General, "BuildingGuardRetryDelay");
 
+	this->Vertical_AircraftFix.Read(exINI, GameStrings::General, "Vertical.AircraftFix");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -804,6 +806,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shrapnel_UseWeaponTargeting)
 		.Process(this->Shrapnel_IgnoreHitBuildings)
 		.Process(this->BuildingGuardRetryDelay)
+		.Process(this->Vertical_AircraftFix)
 		;
 }
 

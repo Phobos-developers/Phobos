@@ -390,6 +390,8 @@ public:
 		Valueable<bool> Shrapnel_IgnoreHitBuildings;
 
 		Nullable<PartialVector2D<int>> BuildingGuardRetryDelay;
+
+		Valueable<bool> Vertical_AircraftFix;
     
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -720,6 +722,7 @@ public:
 			, Shrapnel_UseWeaponTargeting { false }
 			, Shrapnel_IgnoreHitBuildings { false }
 			, BuildingGuardRetryDelay {}
+			, Vertical_AircraftFix { true }
 		{ }
 
 		virtual ~ExtData() = default;
