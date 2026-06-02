@@ -79,20 +79,24 @@ DEFINE_HOOK(0x736480, UnitClass_AI, 0x6)
 }
 
 // Ares-hook jmp to this offset
-DEFINE_HOOK(0x71A88D, TemporalClass_AI, 0x0)
+DEFINE_HOOK(0x71A88D, TemporalClass_AI, 0x8)
 {
 	GET(TemporalClass*, pThis, ESI);
 
-	if (auto const pTarget = pThis->Target)
+	if (const auto pTarget = pThis->Target)
 	{
 		pTarget->IsMouseHovering = false;
+		const int initialWarpRemaining = pTarget->GetType()->Strength * 10;
+
+		if (pThis->WarpRemaining > initialWarpRemaining)
+			pThis->WarpRemaining = initialWarpRemaining;
 
 		const auto pExt = TechnoExt::ExtMap.Find(pTarget);
 		pExt->UpdateTemporal();
 	}
 
 	// Recovering vanilla instructions that were broken by a hook call
-	return R->EAX<int>() <= 0 ? 0x71A895 : 0x71AB08;
+	return pThis->WarpRemaining <= 0 ? 0x71A895 : 0x71AB08;
 }
 
 DEFINE_HOOK_AGAIN(0x51B389, FootClass_TunnelAI_Enter, 0x6) // InfantryClass_TunnelAI
