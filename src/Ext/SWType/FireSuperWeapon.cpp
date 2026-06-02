@@ -37,8 +37,14 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 	if (static_cast<int>(pType->Type) == 28 && !pTypeExt->EMPulse_TargetSelf) // Ares' Type=EMPulse SW
 		pTypeExt->HandleEMPulseLaunch(pSW, cell);
 
-	if (!pTypeExt->Message_Activated_Firer.Get().empty())
-		pTypeExt->ApplyActivatedFirerMessage(pSW);
+	if (!pTypeExt->Message_Activated_Owner.Get().empty())
+		pTypeExt->ApplyActivatedOwnerMessage(pSW);
+
+	if (!pTypeExt->Message_Activated_Ally.Get().empty())
+		pTypeExt->ApplyActivatedAllyMessage(pSW);
+
+	if (!pTypeExt->Message_Activated_Enemy.Get().empty())
+		pTypeExt->ApplyActivatedEnemyMessage(pSW);
 
 	if (pTypeExt->EVA_Activated_Firer.isset())
 		pTypeExt->ApplyActivatedFirerEva(pSW);
@@ -490,14 +496,33 @@ void SWTypeExt::ExtData::ApplyLinkedSW(SuperClass* pSW)
 	}
 }
 
-void SWTypeExt::ExtData::ApplyActivatedFirerMessage(SuperClass* pSW) const
+void SWTypeExt::ExtData::ApplyActivatedOwnerMessage(SuperClass* pSW) const
 {
 	const auto pHouse = pSW->Owner;
 	if (!pHouse->IsControlledByCurrentPlayer())
 		return;
 
-	MessageListClass::Instance.PrintMessage(this->Message_Activated_Firer.Get(), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+	MessageListClass::Instance.PrintMessage(this->Message_Activated_Owner.Get(), RulesClass::Instance->MessageDelay, pHouse->ColorSchemeIndex, true);
 }
+
+void SWTypeExt::ExtData::ApplyActivatedAllyMessage(SuperClass* pSW) const
+{
+	const auto pHouse = pSW->Owner;
+	if (pHouse->IsControlledByCurrentPlayer() || !pHouse->IsAlliedWith(HouseClass::CurrentPlayer))
+		return;
+
+	MessageListClass::Instance.PrintMessage(this->Message_Activated_Ally.Get(), RulesClass::Instance->MessageDelay, pHouse->ColorSchemeIndex, true);
+}
+
+void SWTypeExt::ExtData::ApplyActivatedEnemyMessage(SuperClass* pSW) const
+{
+	const auto pHouse = pSW->Owner;
+	if (pHouse->IsControlledByCurrentPlayer() || pHouse->IsAlliedWith(HouseClass::CurrentPlayer))
+		return;
+
+	MessageListClass::Instance.PrintMessage(this->Message_Activated_Enemy.Get(), RulesClass::Instance->MessageDelay, pHouse->ColorSchemeIndex, true);
+}
+
 
 void SWTypeExt::ExtData::ApplyActivatedFirerEva(SuperClass* pSW) const
 {

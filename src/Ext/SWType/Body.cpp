@@ -95,7 +95,9 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_Link_RollChances)
 		.Process(this->Message_LinkedSWAcquired)
 		.Process(this->EVA_LinkedSWAcquired)
-		.Process(this->Message_Activated_Firer)
+		.Process(this->Message_Activated_Owner)
+		.Process(this->Message_Activated_Ally)
+		.Process(this->Message_Activated_Enemy)
 		.Process(this->EVA_Activated_Firer)
 		;
 }
@@ -226,7 +228,9 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_Link_Reset.Read(exINI, pSection, "SW.Link.Reset");
 	this->Message_LinkedSWAcquired.Read(exINI, pSection, "Message.LinkedSWAcquired");
 	this->EVA_LinkedSWAcquired.Read(exINI, pSection, "EVA.LinkedSWAcquired");
-	this->Message_Activated_Firer.Read(exINI, pSection, "Message.Activated.Firer");
+	this->Message_Activated_Owner.Read(exINI, pSection, "Message.Activated.Owner");
+	this->Message_Activated_Ally.Read(exINI, pSection, "Message.Activated.Ally");
+	this->Message_Activated_Enemy.Read(exINI, pSection, "Message.Activated.Enemy");
 	this->EVA_Activated_Firer.Read(exINI, pSection, "EVA.Activated.Firer");
 	this->SW_Link_RollChances.Read(exINI, pSection, "SW.Link.RollChances");
 
