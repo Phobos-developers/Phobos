@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-02 10:26+0800\n"
+"POT-Creation-Date: 2026-05-31 23:53+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -869,6 +869,15 @@ msgstr "修复了伪装成树的载具错误显示出军衔（能打人的精英
 msgid "GapGen + SpySat desync fix"
 msgstr "裂缝产生器和间谍卫星的不同步修复"
 
+msgid "Frame CRC generation rewrite"
+msgstr "重写帧 CRC 生成"
+
+msgid "Laser drawing Z-adjust customization"
+msgstr "自定义激光绘制的 Z 深校正值"
+
+msgid "Armed building guard mission retry delay customization"
+msgstr "武装建筑警戒任务重试间隔的自定义"
+
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
 
@@ -1276,14 +1285,16 @@ msgid ""
 "bunker"
 msgstr "修复了矿车离开坦克碉堡后无法移动的问题"
 
+#, fuzzy
 msgid ""
-"Fixed the bug in AI scripts 56 and 57 that forced the launch of "
+"Fix the bug in AI scripts 56 and 57 that forced the launch of "
 "superweapons with index numbers 3 and 4"
 msgstr "修复了 56 和 57 号 AI 动作脚本强制发射注册索引 3 和 4 的超武的 Bug"
 
+#, fuzzy
 msgid ""
-"Fixed an issue where parachute units would die upon landing if bridges "
-"were destroyed during their descent"
+"Fix an issue where parachute units would die upon landing if bridges were"
+" destroyed during their descent"
 msgstr "修复了空降到桥上的单位会由于降落过程中桥梁被毁而在着陆后死亡的问题"
 
 msgid "Custom hover vehicles shutdown drowning death"
@@ -1299,6 +1310,11 @@ msgid ""
 msgstr ""
 "修复了有 `AlphaImage` 的单位转换为无 AlphaImage 的类型，或有 `AlphaImage` 的动画通过 `Next` "
 "更改为无 AlphaImage 的类型后读档会导致游戏崩溃的 Bug"
+
+msgid ""
+"`EVA.Tag` already supports being set for specific countries, and "
+"`EVAIndex` is no longer reset after load game"
+msgstr "`EVA.Tag` 已经支持在国家层面设置并且 `EVAIndex` 不再在读档后重置"
 
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："
@@ -1744,8 +1760,30 @@ msgstr ""
 msgid ""
 "Fix a bug where updating the `OpenTopped` attribute during convert did "
 "not update the coordinates of passengers"
+msgstr "修复了类型转换会更新 `OpenTopped` 属性却不更新乘客坐标的 Bug"
+
+msgid ""
+"Fix the bug that low-air taking off / landing objects will receive twice "
+"damage"
+msgstr "修复了低空起飞／降落的物体会受到两次伤害的 Bug"
+
+msgid "Aux technos and TechLevel requirement of superweapon"
+msgstr "超级武器的辅助单位和科技等级限制"
+
+msgid ""
+"Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building "
+"upgrades"
+msgstr "允许了 Ares 的 `SW.AuxBuildings` 和 `SW.NegBuildings` 计入建筑加载物"
+
+msgid ""
+"Fix the bug where passengers, when their transport unit is removed, would"
+" cause incorrect `LimboTracker` counts due to either having their "
+"destructor called directly (bypassing `UnInit`) or nested `UnInit` calls "
+"resetting the deletion flag too early, thereby breaking auto-death and "
+"superweapon auxiliary techno checks"
 msgstr ""
-"修复了类型转换会更新 `OpenTopped` 属性却不更新乘客坐标的 Bug"
+"修复了乘客在其所在的运输工具被移除时，因被直接调用析构函数（绕过 `UnInit` ）或 `UnInit` 嵌套调用导致删除标志过早重置，从而使 "
+"`LimboTracker` 计数错误，进而影响自动死亡及超武辅助单位判定的 Bug"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
@@ -2181,8 +2219,14 @@ msgstr "`ElectricAssault` 武器现在可以自动索敌盟友的可过载防御
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
 
-msgid "**handama** - AI script action to `16005 Jump Back To Previous Script`"
-msgstr "**handama** - AI 动作脚本 `16005 跳回上一个脚本`"
+msgid "**handama**:"
+msgstr "**handama**："
+
+msgid "AI script action to `16005 Jump Back To Previous Script`"
+msgstr "AI 动作脚本 `16005 跳回上一个脚本`"
+
+msgid "Fix AI team recruitment inconsistency causing underfilled teams"
+msgstr "修复了 AI 小队招募数量与生产计划不一致导致不足以建立小队的问题"
 
 msgid "**TaranDahl (航味麻酱)**:"
 msgstr "**TaranDahl (航味麻酱)**："
@@ -2481,6 +2525,9 @@ msgid ""
 "conversion"
 msgstr "修复了单位的 `BombSight` 在类型转换时不会被正确更新的问题"
 
+msgid "Fix BalloonHover incorrectly considering ground factors when pathfinding"
+msgstr "修复了 BalloonHover 寻路时错误考虑了地面因素的问题"
+
 msgid "Technos with Walk locomotor spawn wake like ship"
 msgstr "使用 Walk 运动模式的单位像船只一样生成水波"
 
@@ -2507,8 +2554,13 @@ msgid ""
 msgstr "修复了处于 `Area Guard` 任务中的单位消灭目标后重新获取目标所用时间明显长于其他任务的问题"
 
 msgid "Framework for dynamic sight"
-msgstr ""
-"动态视野框架"
+msgstr "动态视野框架"
+
+msgid "Fix voxel projectile and animation lighting issues"
+msgstr "修复了 Voxel 抛射体和动画的光照问题"
+
+msgid "Export interface for external call"
+msgstr "用于外部调用的导出接口"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
@@ -2527,9 +2579,6 @@ msgstr "为 AE 系统添加目标过滤选项"
 
 msgid "Add veterancy-based target filtering for weapons and warheads"
 msgstr "为武器和弹头添加基于经验等级的目标过滤"
-
-msgid "Fix BalloonHover incorrectly considering ground factors when pathfinding"
-msgstr "修复了 BalloonHover 寻路时错误考虑了地面因素的问题"
 
 msgid "**tyuah8**:"
 msgstr "**tyuah8**："

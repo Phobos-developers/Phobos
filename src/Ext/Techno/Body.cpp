@@ -1,6 +1,4 @@
-﻿#include "Body.h"
-
-#include <JumpjetLocomotionClass.h>
+#include "Body.h"
 
 #include <Ext/Anim/Body.h>
 #include <Ext/House/Body.h>
@@ -9,6 +7,8 @@
 #include <Ext/Event/Body.h>
 
 #include <Utilities/AresFunctions.h>
+#include <Utilities/AresHelper.h>
+#include <Interop/TechnoExt.h>
 
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 UnitClass* TechnoExt::Deployer = nullptr;
@@ -750,6 +750,9 @@ bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max
 
 bool TechnoExt::CannotMove(UnitClass* pThis)
 {
+	if (pThis->LocomotorSource)
+		return false;
+
 	const auto pType = pThis->Type;
 
 	if (pType->Speed == 0)
@@ -884,6 +887,41 @@ void TechnoExt::ClickedApproachObject(FootClass* pThis, ObjectClass* pObject)
 	event.AddEvent();
 }
 
+bool TechnoExt::CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse)
+{
+    if (pThis->Team != nullptr ||
+        !pThis->IsAlive ||
+        pThis->Health <= 0 ||
+        pThis->InLimbo ||
+        pThis->Owner != pHouse)
+    {
+        return false;
+    }
+
+    if (!(pThis->RecruitableA && pThis->RecruitableB))
+    {
+        return false;
+    }
+
+    const Mission mission = pThis->GetCurrentMission();
+    if (!MissionClass::IsRecruitableMission(mission))
+    {
+        return false;
+    }
+
+    if (pThis->ShouldEnterAbsorber ||
+        pThis->ShouldEnterOccupiable ||
+        pThis->ShouldGarrisonStructure ||
+        pThis->DrainTarget != nullptr ||
+        pThis->BunkerLinkedItem ||
+        pThis->LocomotorSource != nullptr)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 bool TechnoExt::EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, int distance, bool select)
 {
 	std::vector<CoordStruct> usableCoords;
@@ -995,8 +1033,10 @@ bool TechnoExt::EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool sel
 
 struct DummyExtHere
 {
-	char _[0x9C];
-	bool DriverKilled;
+	char _pad0[0x50];
+	CDTimerClass DisableWeaponsTimer;
+	char _pad1[0x40];
+	bool DriverKilled; 
 };
 
 struct DummyTypeExtHere
@@ -1151,7 +1191,56 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 
 int TechnoExt::ExtData::GetSight()
 {
-	return this->TypeExtData->OwnerObject()->Sight;
+	double sight = this->TypeExtData->OwnerObject()->Sight;
+	
+	for (auto& callback : TechnoExtInterop::CalculateSightCallbacks)
+	{
+		if (callback)
+			sight = callback(this->OwnerObject(), sight);
+	}
+	
+	return static_cast<int>(sight);
+}
+
+bool TechnoExt::HasWeaponsDisabled(TechnoClass* pThis)
+{
+	if (TechnoExt::ExtMap.Find(pThis)->AE.DisableWeapons)
+		return true;
+
+	if (AresHelper::CanUseAres)
+	{
+		const auto pExt_Ares = reinterpret_cast<DummyExtHere*>(pThis->align_154);
+
+		if (pExt_Ares->DisableWeaponsTimer.InProgress())
+			return true;
+	}
+
+	return false;
+}
+
+FireError TechnoExt::GetFireErrorIgnoreDisableWeapons(TechnoClass* pThis, AbstractClass* pTarget, int weaponIndex, bool ignoreRange)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pExt_Ares = reinterpret_cast<DummyExtHere*>(pThis->align_154);
+	bool const canUseAres = AresHelper::CanUseAres;
+	bool const disableWeapons = pExt->AE.DisableWeapons;
+	int timeLeft = 0;
+
+	pExt->AE.DisableWeapons = false;
+
+	if (canUseAres)
+	{
+		timeLeft = pExt_Ares->DisableWeaponsTimer.GetTimeLeft();
+		pExt_Ares->DisableWeaponsTimer.Stop();
+	}
+
+	auto const fireError = pThis->GetFireError(pTarget, weaponIndex, ignoreRange);
+	pExt->AE.DisableWeapons = disableWeapons;
+
+	if (canUseAres && timeLeft > 0)
+		pExt_Ares->DisableWeaponsTimer.Start(timeLeft);
+
+	return fireError;
 }
 
 // =============================
@@ -1285,6 +1374,9 @@ DEFINE_HOOK(0x6F3260, TechnoClass_CTOR, 0x5)
 DEFINE_HOOK(0x6F4500, TechnoClass_DTOR, 0x5)
 {
 	GET(TechnoClass*, pItem, ECX);
+
+	if (pItem->AbstractFlags & AbstractFlags::Foot)
+		pItem->Owner->RecheckTechTree = true; // for SW.AuxTechons and SW.NegTechnos
 
 	TechnoExt::ExtMap.Remove(pItem);
 

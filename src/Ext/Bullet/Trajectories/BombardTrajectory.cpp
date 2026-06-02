@@ -610,3 +610,8 @@ void BombardTrajectory::RefreshBulletLineTrail(BulletClass* pBullet)
 		pLineTrailer->Owner = pBullet;
 	}
 }
+
+bool BombardTrajectory::ShouldSkipBridgeCheck() const
+{
+	return !this->Type->SubjectToGround;
+}
