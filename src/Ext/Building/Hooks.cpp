@@ -573,11 +573,11 @@ DEFINE_HOOK(0x44C836, BuildingClass_Mission_Repair_UnitReload, 0x6)
 			{
 				UnitRepairTemp::SeparateRepair = true;
 
-				for (auto i = 0; i < pThis->RadioLinks.Capacity; ++i)
+				for (int i = 0; i < pThis->RadioLinks.Capacity; ++i)
 				{
 					if (auto const pLink = pThis->GetNthLink(i))
 					{
-						if (!pLink->IsInAir() && pLink->Health < pLink->GetTechnoType()->Strength && pThis->SendCommand(RadioCommand::QueryMoving, pLink) == RadioCommand::AnswerPositive)
+						if (!pLink->IsInAir() && pLink->Health < pLink->GetType()->Strength && pThis->SendCommand(RadioCommand::QueryMoving, pLink) == RadioCommand::AnswerPositive)
 							pThis->SendCommand(RadioCommand::RequestRepair, pLink);
 					}
 				}

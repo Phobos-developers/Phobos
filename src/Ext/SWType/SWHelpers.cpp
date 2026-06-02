@@ -158,7 +158,7 @@ bool SWTypeExt::ExtData::IsLaunchSite(BuildingClass* pBuilding) const
 	if (pBuilding->IsAlive && pBuilding->Health && !pBuilding->InLimbo && pBuilding->IsPowerOnline())
 	{
 		auto const pExt = BuildingExt::ExtMap.Find(pBuilding);
-		return pExt->HasSuperWeapon(this->OwnerObject()->ArrayIndex, true);
+		return pExt->HasSuperWeapon(this->OwnerObject()->ArrayIndex);
 	}
 
 	return false;

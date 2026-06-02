@@ -33,31 +33,33 @@ void BuildingExt::ExtData::DisplayIncomeString()
 	}
 }
 
-bool BuildingExt::ExtData::HasSuperWeapon(const int index, const bool withUpgrades) const
+bool BuildingExt::ExtData::HasSuperWeapon(const int index) const
 {
 	const auto pThis = this->OwnerObject();
 	const auto pExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 	const auto pOwner = pThis->Owner;
 
-	const auto count = pExt->GetSuperWeaponCount();
-	for (auto i = 0; i < count; ++i)
+	const int count = pExt->GetSuperWeaponCount();
+
+	for (int i = 0; i < count; ++i)
 	{
-		const auto idxSW = pExt->GetSuperWeaponIndex(i, pOwner);
+		const int idxSW = pExt->GetSuperWeaponIndex(i, pOwner);
 
 		if (idxSW == index)
 			return true;
 	}
 
-	if (withUpgrades)
+	if (pThis->UpgradeLevel)
 	{
 		for (auto const& pUpgrade : pThis->Upgrades)
 		{
 			if (const auto pUpgradeExt = BuildingTypeExt::ExtMap.TryFind(pUpgrade))
 			{
-				const auto countUpgrade = pUpgradeExt->GetSuperWeaponCount();
-				for (auto i = 0; i < countUpgrade; ++i)
+				const int countUpgrade = pUpgradeExt->GetSuperWeaponCount();
+
+				for (int i = 0; i < countUpgrade; ++i)
 				{
-					const auto idxSW = pUpgradeExt->GetSuperWeaponIndex(i, pOwner);
+					const int idxSW = pUpgradeExt->GetSuperWeaponIndex(i, pOwner);
 
 					if (idxSW == index)
 						return true;
@@ -192,7 +194,7 @@ int BuildingExt::CountOccupiedDocks(BuildingClass* pBuilding)
 
 	if (pBuilding->RadioLinks.IsAllocated)
 	{
-		for (auto i = 0; i < pBuilding->RadioLinks.Capacity; ++i)
+		for (int i = 0; i < pBuilding->RadioLinks.Capacity; ++i)
 		{
 			if (auto const pLink = pBuilding->GetNthLink(i))
 				nOccupiedDocks++;
