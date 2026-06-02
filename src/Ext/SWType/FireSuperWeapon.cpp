@@ -40,14 +40,22 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 	if (!pTypeExt->Message_Activated_Owner.Get().empty())
 		pTypeExt->ApplyActivatedOwnerMessage(pSW);
 
-	if (!pTypeExt->Message_Activated_Ally.Get().empty())
-		pTypeExt->ApplyActivatedAllyMessage(pSW);
+	if (!pTypeExt->Message_Activated_Allies.Get().empty())
+		pTypeExt->ApplyActivatedAlliesMessage(pSW);
 
-	if (!pTypeExt->Message_Activated_Enemy.Get().empty())
-		pTypeExt->ApplyActivatedEnemyMessage(pSW);
+	if (!pTypeExt->Message_Activated_Enemies.Get().empty())
+		pTypeExt->ApplyActivatedEnemiesMessage(pSW);
 
-	if (pTypeExt->EVA_Activated_Firer.isset())
-		pTypeExt->ApplyActivatedFirerEva(pSW);
+	if (pTypeExt->EVA_Activated_Owner.isset())
+		pTypeExt->ApplyActivatedOwnerEva(pSW);
+
+	if (pTypeExt->EVA_Activated_Allies.isset())
+		pTypeExt->ApplyActivatedAlliesEva(pSW);
+
+	if (pTypeExt->EVA_Activated_Enemies.isset())
+		pTypeExt->ApplyActivatedEnemiesEva(pSW);
+
+
 
 	auto& sw_ext = HouseExt::ExtMap.Find(pHouse)->SuperExts[pType->ArrayIndex];
 	sw_ext.ShotCount++;
@@ -505,30 +513,48 @@ void SWTypeExt::ExtData::ApplyActivatedOwnerMessage(SuperClass* pSW) const
 	MessageListClass::Instance.PrintMessage(this->Message_Activated_Owner.Get(), RulesClass::Instance->MessageDelay, pHouse->ColorSchemeIndex, true);
 }
 
-void SWTypeExt::ExtData::ApplyActivatedAllyMessage(SuperClass* pSW) const
+void SWTypeExt::ExtData::ApplyActivatedAlliesMessage(SuperClass* pSW) const
 {
 	const auto pHouse = pSW->Owner;
 	if (pHouse->IsControlledByCurrentPlayer() || !pHouse->IsAlliedWith(HouseClass::CurrentPlayer))
 		return;
 
-	MessageListClass::Instance.PrintMessage(this->Message_Activated_Ally.Get(), RulesClass::Instance->MessageDelay, pHouse->ColorSchemeIndex, true);
+	MessageListClass::Instance.PrintMessage(this->Message_Activated_Allies.Get(), RulesClass::Instance->MessageDelay, pHouse->ColorSchemeIndex, true);
 }
 
-void SWTypeExt::ExtData::ApplyActivatedEnemyMessage(SuperClass* pSW) const
+void SWTypeExt::ExtData::ApplyActivatedEnemiesMessage(SuperClass* pSW) const
 {
 	const auto pHouse = pSW->Owner;
 	if (pHouse->IsControlledByCurrentPlayer() || pHouse->IsAlliedWith(HouseClass::CurrentPlayer))
 		return;
 
-	MessageListClass::Instance.PrintMessage(this->Message_Activated_Enemy.Get(), RulesClass::Instance->MessageDelay, pHouse->ColorSchemeIndex, true);
+	MessageListClass::Instance.PrintMessage(this->Message_Activated_Enemies.Get(), RulesClass::Instance->MessageDelay, pHouse->ColorSchemeIndex, true);
 }
 
 
-void SWTypeExt::ExtData::ApplyActivatedFirerEva(SuperClass* pSW) const
+void SWTypeExt::ExtData::ApplyActivatedOwnerEva(SuperClass* pSW) const
 {
 	const auto pHouse = pSW->Owner;
 	if (!pHouse->IsControlledByCurrentPlayer())
 		return;
 
-	VoxClass::PlayIndex(this->EVA_Activated_Firer.Get(), -1, -1);
+	VoxClass::PlayIndex(this->EVA_Activated_Owner.Get(), -1, -1);
+}
+
+void SWTypeExt::ExtData::ApplyActivatedAlliesEva(SuperClass* pSW) const
+{
+	const auto pHouse = pSW->Owner;
+	if (pHouse->IsControlledByCurrentPlayer() || !pHouse->IsAlliedWith(HouseClass::CurrentPlayer))
+		return;
+
+	VoxClass::PlayIndex(this->EVA_Activated_Allies.Get(), -1, -1);
+}
+
+void SWTypeExt::ExtData::ApplyActivatedEnemiesEva(SuperClass* pSW) const
+{
+	const auto pHouse = pSW->Owner;
+	if (pHouse->IsControlledByCurrentPlayer() || pHouse->IsAlliedWith(HouseClass::CurrentPlayer))
+		return;
+
+	VoxClass::PlayIndex(this->EVA_Activated_Enemies.Get(), -1, -1);
 }

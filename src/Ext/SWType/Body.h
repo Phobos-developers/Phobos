@@ -108,9 +108,11 @@ public:
 		Valueable<CSFText> Message_LinkedSWAcquired;
 		NullableIdx<VoxClass> EVA_LinkedSWAcquired;
 		Valueable<CSFText> Message_Activated_Owner;
-		Valueable<CSFText> Message_Activated_Ally;
-		Valueable<CSFText> Message_Activated_Enemy;
-		NullableIdx<VoxClass> EVA_Activated_Firer;
+		Valueable<CSFText> Message_Activated_Allies;
+		Valueable<CSFText> Message_Activated_Enemies;
+		NullableIdx<VoxClass> EVA_Activated_Owner;
+		NullableIdx<VoxClass> EVA_Activated_Allies;
+		NullableIdx<VoxClass> EVA_Activated_Enemies;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, TypeID { "" }
@@ -190,9 +192,11 @@ public:
 			, Message_LinkedSWAcquired {}
 			, EVA_LinkedSWAcquired {}
 			, Message_Activated_Owner {}
-			, Message_Activated_Ally {}
-			, Message_Activated_Enemy {}
-			, EVA_Activated_Firer {}
+			, Message_Activated_Allies {}
+			, Message_Activated_Enemies {}
+			, EVA_Activated_Owner {}
+			, EVA_Activated_Allies {}
+			, EVA_Activated_Enemies {}
 		{ }
 
 		// Ares 0.A functions
@@ -220,9 +224,11 @@ public:
 		void ApplyLinkedSW(SuperClass* pSW);
 
 		void ApplyActivatedOwnerMessage(SuperClass* pSW) const;
-		void ApplyActivatedAllyMessage(SuperClass* pSW) const;
-		void ApplyActivatedEnemyMessage(SuperClass* pSW) const;
-		void ApplyActivatedFirerEva(SuperClass* pSW) const;
+		void ApplyActivatedAlliesMessage(SuperClass* pSW) const;
+		void ApplyActivatedEnemiesMessage(SuperClass* pSW) const;
+		void ApplyActivatedOwnerEva(SuperClass* pSW) const;
+		void ApplyActivatedAlliesEva(SuperClass* pSW) const;
+		void ApplyActivatedEnemiesEva(SuperClass* pSW) const;
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual void Initialize() override;
