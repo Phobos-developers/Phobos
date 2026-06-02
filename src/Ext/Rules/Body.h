@@ -317,6 +317,7 @@ public:
 		Valueable<bool> ExtraRange_Prefiring_IncludeBurst;
 
 		Valueable<bool> ApplyPerTargetEffectsOnDetonate;
+		Valueable<bool> AffectsInvokerOnly_IgnoreInvokerState;
 
 		Valueable<bool> FiringAnim_Update;
 		Valueable<bool> ExtendedPlayerRepair;
@@ -607,6 +608,7 @@ public:
 			, BuildingRadioLink_SyncOwner { true }
 
 			, ApplyPerTargetEffectsOnDetonate { true }
+			, AffectsInvokerOnly_IgnoreInvokerState { true }
 
 			, ExtraRange_TargetMoving { Leptons(0) }
 			, ExtraRange_TargetMoving_CloseRangeOnly { false }

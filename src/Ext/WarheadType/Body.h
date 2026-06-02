@@ -222,7 +222,7 @@ public:
 		Valueable<bool> CellSpread_Cylinder;
 		Valueable<bool> AffectsInvokerOnly;
 		Valueable<bool> AffectsInvokerOnly_Reverse;
-		Valueable<bool> AffectsInvokerOnly_IgnoreInvokerState;
+		Nullable<bool> AffectsInvokerOnly_IgnoreInvokerState;
 
 		Valueable<bool> ReverseEngineer;
 
@@ -475,7 +475,7 @@ public:
 			, CellSpread_Cylinder { false }
 			, AffectsInvokerOnly { false }
 			, AffectsInvokerOnly_Reverse { false }
-			, AffectsInvokerOnly_IgnoreInvokerState { true }
+			, AffectsInvokerOnly_IgnoreInvokerState {}
 
 			, PenetratesTransport_Level { 0 }
 			, PenetratesTransport_PassThrough { 1.0 }

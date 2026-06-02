@@ -368,6 +368,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->ApplyPerTargetEffectsOnDetonate.Read(exINI, GameStrings::CombatDamage, "ApplyPerTargetEffectsOnDetonate");
 
+	this->AffectsInvokerOnly_IgnoreInvokerState.Read(exINI, GameStrings::CombatDamage, "AffectsInvokerOnly.IgnoreInvokerState");
+
 	this->BuildingRadioLink_SyncOwner.Read(exINI, GameStrings::General, "BuildingRadioLink.SyncOwner");
 
 	this->ExtraRange_TargetMoving.Read(exINI, GameStrings::General, "ExtraRange.TargetMoving");
@@ -710,6 +712,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->MergeBuildingDamage)
 		.Process(this->BuildingRadioLink_SyncOwner)
 		.Process(this->ApplyPerTargetEffectsOnDetonate)
+		.Process(this->AffectsInvokerOnly_IgnoreInvokerState)
 		.Process(this->ExtraRange_TargetMoving)
 		.Process(this->ExtraRange_TargetMoving_CloseRangeOnly)
 		.Process(this->ExtraRange_FirerMoving)

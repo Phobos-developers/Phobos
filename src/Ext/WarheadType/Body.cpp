@@ -55,7 +55,7 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 		}
 		else
 		{
-			allowed = !this->AffectsInvokerOnly_IgnoreInvokerState;
+			allowed = !this->AffectsInvokerOnly_IgnoreInvokerState.Get(RulesExt::Global()->AffectsInvokerOnly_IgnoreInvokerState);
 		}
 
 		if (!allowed)

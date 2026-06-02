@@ -2449,10 +2449,13 @@ MergeBuildingDamage=         ; boolean
   - `AffectsInvokerOnly.IgnoreInvokerState` can be used to determine whether to consistently avoid affecting other objects regardless of the unit's state.
 
 ```ini
+[CombatDamage]
+AffectsInvokerOnly.IgnoreInvokerState=true  ; boolean
+
 [SOMEWARHEAD]                               ; WarheadType
 AffectsInvokerOnly=false                    ; boolean
 AffectsInvokerOnly.Reverse=false            ; boolean
-AffectsInvokerOnly.IgnoreInvokerState=true  ; boolean
+AffectsInvokerOnly.IgnoreInvokerState=      ; boolean, default to [CombatDamage] -> AffectsInvokerOnly.IgnoreInvokerState
 ```
 
 ```{hint}
