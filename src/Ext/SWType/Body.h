@@ -223,12 +223,8 @@ public:
 
 		void ApplyLinkedSW(SuperClass* pSW);
 
-		void ApplyActivatedOwnerMessage(SuperClass* pSW) const;
-		void ApplyActivatedAlliesMessage(SuperClass* pSW) const;
-		void ApplyActivatedEnemiesMessage(SuperClass* pSW) const;
-		void ApplyActivatedOwnerEva(SuperClass* pSW) const;
-		void ApplyActivatedAlliesEva(SuperClass* pSW) const;
-		void ApplyActivatedEnemiesEva(SuperClass* pSW) const;
+		void ApplyActivatedMessage(SuperClass* pSW) const;
+		void ApplyActivatedEva(SuperClass* pSW) const;
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual void Initialize() override;
