@@ -2090,22 +2090,7 @@ int WrapPerStep::TemporalClassFake::_GetWarpPerStep(int helperCount)
 			const bool applyMultiplier = pWHExt->Temporal_ApplyMultiplier.Get(RulesExt::Global()->Temporal_ApplyMultiplier);
 
 			if (applyMultiplier)
-			{
-				double firepowerMultiplier = TechnoExt::GetCurrentFirepowerMultiplier(pOwner);
-
-				if (const auto pBunker = abstract_cast<BuildingClass*>(pOwner->BunkerLinkedItem))
-				{
-					const auto pBunkerTypeExt = BuildingTypeExt::ExtMap.Find(pBunker->Type);
-					firepowerMultiplier *= pBunkerTypeExt->BuildingBunkerDamageMult.Get(RulesClass::Instance->BunkerDamageMultiplier);
-				}
-				else if (pOwner->InOpenToppedTransport && pOwner->Transporter)
-				{
-					const auto pTransporterTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->Transporter->GetTechnoType());
-					firepowerMultiplier *= pTransporterTypeExt->OpenTopped_DamageMultiplier.Get(RulesClass::Instance->OpenToppedDamageMultiplier);
-				}
-
-				warpPerStep = static_cast<int>(warpPerStep * firepowerMultiplier);
-			}
+				warpPerStep = static_cast<int>(warpPerStep * TechnoExt::GetCurrentFirepowerMultiplier(pOwner));
 
 			const auto pTarget = pTemporal->Target;
 
