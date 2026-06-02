@@ -8,6 +8,7 @@
 
 #include <Utilities/AresFunctions.h>
 #include <Utilities/AresHelper.h>
+#include <Interop/TechnoExt.h>
 
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 UnitClass* TechnoExt::Deployer = nullptr;
@@ -749,6 +750,9 @@ bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max
 
 bool TechnoExt::CannotMove(UnitClass* pThis)
 {
+	if (pThis->LocomotorSource)
+		return false;
+
 	const auto pType = pThis->Type;
 
 	if (pType->Speed == 0)
@@ -1187,7 +1191,15 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 
 int TechnoExt::ExtData::GetSight()
 {
-	return this->TypeExtData->OwnerObject()->Sight;
+	double sight = this->TypeExtData->OwnerObject()->Sight;
+	
+	for (auto& callback : TechnoExtInterop::CalculateSightCallbacks)
+	{
+		if (callback)
+			sight = callback(this->OwnerObject(), sight);
+	}
+	
+	return static_cast<int>(sight);
 }
 
 bool TechnoExt::HasWeaponsDisabled(TechnoClass* pThis)
@@ -1362,6 +1374,9 @@ DEFINE_HOOK(0x6F3260, TechnoClass_CTOR, 0x5)
 DEFINE_HOOK(0x6F4500, TechnoClass_DTOR, 0x5)
 {
 	GET(TechnoClass*, pItem, ECX);
+
+	if (pItem->AbstractFlags & AbstractFlags::Foot)
+		pItem->Owner->RecheckTechTree = true; // for SW.AuxTechons and SW.NegTechnos
 
 	TechnoExt::ExtMap.Remove(pItem);
 

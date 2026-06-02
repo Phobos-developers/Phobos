@@ -741,30 +741,33 @@ bool HouseExt::SaveGlobals(PhobosStreamWriter& Stm)
 
 void HouseExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 {
-	AnnounceInvalidPointer(this->Factory_BuildingType, ptr);
-	AnnounceInvalidPointer(this->Factory_InfantryType, ptr);
-	AnnounceInvalidPointer(this->Factory_VehicleType, ptr);
-	AnnounceInvalidPointer(this->Factory_NavyType, ptr);
-	AnnounceInvalidPointer(this->Factory_AircraftType, ptr);
-
-	if (ptr != nullptr)
+	if (bRemoved)
 	{
-		if (!this->PowerPlantEnhancers.empty())
-		{
-			auto& vec = this->PowerPlantEnhancers;
-			vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
-		}
+		AnnounceInvalidPointer(this->Factory_BuildingType, ptr);
+		AnnounceInvalidPointer(this->Factory_InfantryType, ptr);
+		AnnounceInvalidPointer(this->Factory_VehicleType, ptr);
+		AnnounceInvalidPointer(this->Factory_NavyType, ptr);
+		AnnounceInvalidPointer(this->Factory_AircraftType, ptr);
 
-		if (!this->OwnedLimboDeliveredBuildings.empty())
+		if (ptr != nullptr)
 		{
-			auto& vec = this->OwnedLimboDeliveredBuildings;
-			vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
-		}
+			if (!this->PowerPlantEnhancers.empty())
+			{
+				auto& vec = this->PowerPlantEnhancers;
+				vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
+			}
 
-		if (!this->RestrictedFactoryPlants.empty())
-		{
-			auto& vec = this->RestrictedFactoryPlants;
-			vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
+			if (!this->OwnedLimboDeliveredBuildings.empty())
+			{
+				auto& vec = this->OwnedLimboDeliveredBuildings;
+				vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
+			}
+
+			if (!this->RestrictedFactoryPlants.empty())
+			{
+				auto& vec = this->RestrictedFactoryPlants;
+				vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
+			}
 		}
 	}
 }

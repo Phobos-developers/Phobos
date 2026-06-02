@@ -46,6 +46,9 @@ ShieldClass::~ShieldClass()
 
 void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
 {
+	if (!removed) // TODO: might be risky, needs further investigation
+		return;
+
 	auto const abs = static_cast<AbstractClass*>(ptr);
 
 	if (auto const pAnim = abstract_cast<AnimClass*, true>(abs))

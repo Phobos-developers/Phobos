@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-08 21:24+0800\n"
+"POT-Creation-Date: 2026-05-31 23:53+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -873,8 +873,10 @@ msgid "Frame CRC generation rewrite"
 msgstr "重写帧 CRC 生成"
 
 msgid "Laser drawing Z-adjust customization"
-msgstr ""
-"自定义激光绘制的 Z 深校正值"
+msgstr "自定义激光绘制的 Z 深校正值"
+
+msgid "Armed building guard mission retry delay customization"
+msgstr "武装建筑警戒任务重试间隔的自定义"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
@@ -1283,14 +1285,16 @@ msgid ""
 "bunker"
 msgstr "修复了矿车离开坦克碉堡后无法移动的问题"
 
+#, fuzzy
 msgid ""
-"Fixed the bug in AI scripts 56 and 57 that forced the launch of "
+"Fix the bug in AI scripts 56 and 57 that forced the launch of "
 "superweapons with index numbers 3 and 4"
 msgstr "修复了 56 和 57 号 AI 动作脚本强制发射注册索引 3 和 4 的超武的 Bug"
 
+#, fuzzy
 msgid ""
-"Fixed an issue where parachute units would die upon landing if bridges "
-"were destroyed during their descent"
+"Fix an issue where parachute units would die upon landing if bridges were"
+" destroyed during their descent"
 msgstr "修复了空降到桥上的单位会由于降落过程中桥梁被毁而在着陆后死亡的问题"
 
 msgid "Custom hover vehicles shutdown drowning death"
@@ -1759,9 +1763,27 @@ msgid ""
 msgstr "修复了类型转换会更新 `OpenTopped` 属性却不更新乘客坐标的 Bug"
 
 msgid ""
-"Fix the bug that low-air taking off / landing objects will receive "
-"twice damage"
-msgstr "修复了低空起飞/降落的物体会受到两次伤害的 Bug"
+"Fix the bug that low-air taking off / landing objects will receive twice "
+"damage"
+msgstr "修复了低空起飞／降落的物体会受到两次伤害的 Bug"
+
+msgid "Aux technos and TechLevel requirement of superweapon"
+msgstr "超级武器的辅助单位和科技等级限制"
+
+msgid ""
+"Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building "
+"upgrades"
+msgstr "允许了 Ares 的 `SW.AuxBuildings` 和 `SW.NegBuildings` 计入建筑加载物"
+
+msgid ""
+"Fix the bug where passengers, when their transport unit is removed, would"
+" cause incorrect `LimboTracker` counts due to either having their "
+"destructor called directly (bypassing `UnInit`) or nested `UnInit` calls "
+"resetting the deletion flag too early, thereby breaking auto-death and "
+"superweapon auxiliary techno checks"
+msgstr ""
+"修复了乘客在其所在的运输工具被移除时，因被直接调用析构函数（绕过 `UnInit` ）或 `UnInit` 嵌套调用导致删除标志过早重置，从而使 "
+"`LimboTracker` 计数错误，进而影响自动死亡及超武辅助单位判定的 Bug"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
@@ -2533,6 +2555,12 @@ msgstr "修复了处于 `Area Guard` 任务中的单位消灭目标后重新获�
 
 msgid "Framework for dynamic sight"
 msgstr "动态视野框架"
+
+msgid "Fix voxel projectile and animation lighting issues"
+msgstr "修复了 Voxel 抛射体和动画的光照问题"
+
+msgid "Export interface for external call"
+msgstr "用于外部调用的导出接口"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"

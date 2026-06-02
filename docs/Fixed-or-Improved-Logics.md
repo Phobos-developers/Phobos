@@ -181,7 +181,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `AirburstWeapon` now supports `IsLaser`, `IsElectricBolt`, `IsRadBeam`, and `AttachedParticleSystem`.
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc.
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby.
-<!--  - Allowed `AuxBuilding` to count building upgrades.  -->
 - Fixed the bug that parasite will vanish if it missed its target when its previous cell is occupied.
 - Prevent the units with locomotors that cause problems from entering the tank bunker.
 - Fixed an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct.
@@ -326,6 +325,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions.
 - Purely visual animations and particles are no longer included in frame CRC generation and are thus exempt from any sync checks between players in multiplayer games.
 - Fixed the bug that low-air taking off / landing objects will receive twice damage.
+- Allowed `AuxBuilding` to count building upgrades.
+- Fixed voxel projectile and animation lighting issues.
 
 ## Fixes / interactions with other extensions
 
@@ -342,7 +343,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (typically begin with `[Developer fatal]Pointer 00000000 declared change to both`).
 - Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares feature)* of vehicles built from a war factory.
 - Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions.
-<!--  - Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.  -->
 - Taking over Ares' AlphaImage respawn logic to make it not recreate in every frame for buildings, static techno and techno without turret, in order to reduce lags from it.
 - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully.
 - Fixed an issue where some units crashed after the deployment transformation.
@@ -376,6 +376,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue that `BombSight` not being updated correctly in techno conversion.
 - `EVA.Tag` already supports being set for specific countries, and `EVAIndex` is no longer reset after load game.
 - `DisableWeapons.Duration` now makes `Gattling=yes` rate tick down and stops the sounds from playing, no longer interferes with target acquisition and works together with Phobos' `OpenTopped.CheckTransportDisableWeapons`.
+- Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
 
 ## Newly added global settings
 
@@ -999,6 +1000,19 @@ In `artmd.ini`:
 ZShapePointMove.OnBuildup=false  ; boolean
 ```
 
+### Armed building guard retry delay
+
+- By default buildings with weapons (including garrisoned buildings) have a delay of `[Guard]` -> `AARate` multiplied by 900 plus random value in range 0-2 (inclusive) before rechecking if the building can attack if it has a target. This delay is now customizable globally by `[General]` -> `BuildingGuardRetryDelay` or per-BuildingType with `GuardRetryDelay`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+BuildingGuardRetryDelay=  ; integer - single or comma-sep. range (game frames)
+
+[SOMEBUILDING]            ; BuildingType
+GuardRetryDelay=          ; integer - single or comma-sep. range (game frames)
+```
+
 ### Buildings considered as vehicles
 
 - By default game considers buildings with both `UndeploysInto` set and `Foundation` equaling `1x1` as vehicles, in a manner of speaking. This behaviour can now be toggled individually of these conditions by setting `ConsideredVehicle`. These buildings are counted as vehicles for unit count tracking, are not considered as base under attack when damaged and can be mass selected by default, for an example.
@@ -1363,7 +1377,7 @@ BallisticScatter.Max= ; floating point value, distance in cells
 - `ShrapnelWeapon` can now be triggered against ground & buildings via `Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`.
 - Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](New-or-Enhanced-Logics.md#weapon-targeting-filter) & [AttachEffect filters](New-or-Enhanced-Logics.md#attached-effects) will be checked.
   - Do note that this overrides the normal check of only allowing shrapnels to hit non-allied objects. Use `CanTargetHouses=enemies` to manually enable this behaviour again.
-- `Shrapnel.IgnoreHitBuildings` can be used to override default behaviour where shrapnels can snap onto building targets multiple times if the building occupies more than one cell. Defaults to `[CombatDamage]` -> `Shrapnel.IgnoreHitBuildings` which defaults to false. Note that this wont prevent random cells within the building's `Foundation` from being targeted if there are not enough objects around to satisfy `ShrapnelCount`.
+- `Shrapnel.IgnoreHitBuildings` can be used to override default behaviour where shrapnels can snap onto building targets multiple times if the building occupies more than one cell. Note that this wont prevent random cells within the building's `Foundation` from being targeted if there are not enough objects around to satisfy `ShrapnelCount`.
 
 In `rulesmd.ini`:
 ```ini
@@ -2765,6 +2779,23 @@ Bolt.FollowFLH=        ; boolean
 
 ```{note}
 Due to technical constraints, these features do not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html) or those from `AirburstWeapon`.
+```
+
+### Electric bolt Z-adjust
+
+- It is now possible to change the Z-adjust for weapon EBolt drawing via `EBoltZAdjust` per weapon.
+- In vanilla, the EBolt effect fired by BuildingType takes `min(the Z-depth obtained from coordinate transformation, 0)`, this is to ensure that the EBolt effect is not blocked by other images such as tiles in some cases, and now this processing can be turned off to meet some specific needs.
+  - This only determines whether the Z-depth of the EBolt effect created by BuildingType can be positive; `EBoltZAdjust` can always be normally added to it.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+EBoltZAdjust=0                                  ; integer
+EBoltZAdjust.ClampInitialDepthForBuilding=true  ; boolean
+
+[SOMEWEAPON]                                    ; WeaponType
+EBoltZAdjust=                                   ; integer, defaults to [AudioVisual] -> EBoltZAdjust
+EBoltZAdjust.ClampInitialDepthForBuilding=      ; boolean, defaults to [AudioVisual] -> EBoltZAdjust.ClampInitialDepthForBuilding
 ```
 
 ### Laser Z-adjust
