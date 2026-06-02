@@ -847,9 +847,9 @@ Interceptor.WeaponOverride=                 ; WeaponType
 Interceptor.WeaponReplaceProjectile=false   ; boolean
 Interceptor.WeaponCumulativeDamage=false    ; boolean
 Interceptor.KeepIntact=false                ; boolean
-                                            
+
 [SOMEPROJECTILE]                            ; Projectile
-Interceptable=false                         ; boolean
+Interceptable=false                         ; boolean, default to [General] -> Interceptable
 Interceptable.DeleteOnIntercept=false       ; boolean
 Interceptable.WeaponOverride=               ; WeaponType
 Strength=0                                  ; integer
