@@ -178,6 +178,31 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Unkillable.Read(exINI, pSection, "Unkillable");
 	this->LaserTrail_Type.Read(exINI, pSection, "LaserTrail.Type");
 
+	this->PrismRelay.Read(exINI, pSection, "PrismRelay");
+	this->PrismRelay_NetworkID.Read(exINI, pSection, "PrismRelay.NetworkID");
+	this->PrismRelay_Provider.Read(exINI, pSection, "PrismRelay.Provider");
+	this->PrismRelay_Receiver.Read(exINI, pSection, "PrismRelay.Receiver");
+	this->PrismRelay_SupportWeapon.Read<true>(exINI, pSection, "PrismRelay.SupportWeapon");
+	this->PrismRelay_MaxReceiveLinks.Read(exINI, pSection, "PrismRelay.MaxReceiveLinks");
+	this->PrismRelay_MaxNodeLinks.Read(exINI, pSection, "PrismRelay.MaxNodeLinks");
+	this->PrismRelay_SupportFireDelay.Read(exINI, pSection, "PrismRelay.SupportFireDelay");
+	this->PrismRelay_SupportMultiplier.Read(exINI, pSection, "PrismRelay.SupportMultiplier");
+	this->PrismRelay_DamageAdd.Read(exINI, pSection, "PrismRelay.DamageAdd");
+	this->PrismRelay_ToAllies.Read(exINI, pSection, "PrismRelay.ToAllies");
+	this->PrismRelay_AllowWeapons.Read(exINI, pSection, "PrismRelay.AllowWeapons");
+	this->PrismRelay_DisallowWeapons.Read(exINI, pSection, "PrismRelay.DisallowWeapons");
+	this->PrismRelay_MasterWeaponIndex.Read(exINI, pSection, "PrismRelay.MasterWeaponIndex");
+	this->PrismRelay_MasterWeaponUseMultiWeaponSelection.Read(exINI, pSection, "PrismRelay.MasterWeaponUseMultiWeaponSelection");
+	{
+		Valueable<int> passCooldown { -1 };
+		passCooldown.Read(exINI, pSection, "PrismRelay.PassCooldown");
+
+		if (passCooldown >= 0)
+			this->PrismRelay_SupportTimeout = passCooldown;
+		else
+			this->PrismRelay_SupportTimeout.Read(exINI, pSection, "PrismRelay.SupportTimeout");
+	}
+
 	// Groups
 	exINI.ParseStringList(this->Groups, pSection, "Groups");
 	AddToGroupsMap();
@@ -246,6 +271,22 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->DisableWeapons)
 		.Process(this->Unkillable)
 		.Process(this->LaserTrail_Type)
+		.Process(this->PrismRelay)
+		.Process(this->PrismRelay_NetworkID)
+		.Process(this->PrismRelay_Provider)
+		.Process(this->PrismRelay_Receiver)
+		.Process(this->PrismRelay_SupportWeapon)
+		.Process(this->PrismRelay_MaxReceiveLinks)
+		.Process(this->PrismRelay_MaxNodeLinks)
+		.Process(this->PrismRelay_SupportFireDelay)
+		.Process(this->PrismRelay_SupportMultiplier)
+		.Process(this->PrismRelay_DamageAdd)
+		.Process(this->PrismRelay_ToAllies)
+		.Process(this->PrismRelay_AllowWeapons)
+		.Process(this->PrismRelay_DisallowWeapons)
+		.Process(this->PrismRelay_MasterWeaponIndex)
+		.Process(this->PrismRelay_MasterWeaponUseMultiWeaponSelection)
+		.Process(this->PrismRelay_SupportTimeout)
 		.Process(this->Groups)
 		;
 }

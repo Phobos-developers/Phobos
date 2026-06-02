@@ -234,6 +234,7 @@ public:
 		Valueable<int> MindControl_ThreatDelay;
 
 		Valueable<bool> RecountBurst;
+		Valueable<int> PrismRelay_SupportTimeout;
 		Valueable<bool> NoRearm_UnderEMP;
 		Valueable<bool> NoRearm_Temporal;
 		Valueable<bool> NoReload_UnderEMP;
@@ -537,6 +538,7 @@ public:
 			, AttackMove_UpdateTarget { false }
 			, MindControl_ThreatDelay { 0 }
 			, RecountBurst { false }
+			, PrismRelay_SupportTimeout { 0 }
 			, NoRearm_UnderEMP { false }
 			, NoRearm_Temporal { false }
 			, NoReload_UnderEMP { false }

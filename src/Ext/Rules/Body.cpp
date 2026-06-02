@@ -297,6 +297,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->MindControl_ThreatDelay.Read(exINI, GameStrings::General, "MindControl.ThreatDelay");
 
 	this->RecountBurst.Read(exINI, GameStrings::General, "RecountBurst");
+	this->PrismRelay_SupportTimeout.Read(exINI, GameStrings::General, "PrismRelay.SupportTimeout");
 	this->NoRearm_UnderEMP.Read(exINI, GameStrings::General, "NoRearm.UnderEMP");
 	this->NoRearm_Temporal.Read(exINI, GameStrings::General, "NoRearm.Temporal");
 	this->NoReload_UnderEMP.Read(exINI, GameStrings::General, "NoReload.UnderEMP");
@@ -656,6 +657,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackMove_UpdateTarget)
 		.Process(this->MindControl_ThreatDelay)
 		.Process(this->RecountBurst)
+		.Process(this->PrismRelay_SupportTimeout)
 		.Process(this->NoRearm_UnderEMP)
 		.Process(this->NoRearm_Temporal)
 		.Process(this->NoReload_UnderEMP)

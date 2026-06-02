@@ -6,6 +6,7 @@
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Entity/AttachEffectClass.h>
+#include <New/PrismRelay.h>
 
 class BulletClass;
 
@@ -106,6 +107,12 @@ public:
 		CoordStruct LastTargetCrd;
 		CDTimerClass LastTargetCrdClearTimer;
 
+		TechnoPrismRelaySession PrismRelay;
+		CDTimerClass PrismRelayCooldown;
+		bool PrismRelayBurstChainBuilt;
+		int PrismRelayCachedNetworkId;
+		std::vector<TechnoClass*> PrismRelayCachedProviders;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -177,6 +184,11 @@ public:
 			, HoverShutdown { false }
 			, LastTargetCrd { CoordStruct::Empty }
 			, LastTargetCrdClearTimer {}
+			, PrismRelay {}
+			, PrismRelayCooldown {}
+			, PrismRelayBurstChainBuilt { false }
+			, PrismRelayCachedNetworkId { 0 }
+			, PrismRelayCachedProviders {}
 		{ }
 
 		void OnEarlyUpdate();

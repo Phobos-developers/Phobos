@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <New/PrismRelay.h>
+
 #include <Ext/Anim/Body.h>
 #include <Ext/RadSite/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -476,6 +478,8 @@ DEFINE_HOOK(0x4664BA, BulletClass_CTOR, 0x5)
 DEFINE_HOOK(0x4665E9, BulletClass_DTOR, 0xA)
 {
 	GET(BulletClass*, pItem, ESI);
+
+	PrismRelay::NotifyBulletDestroyed(pItem);
 	BulletExt::ExtMap.Remove(pItem);
 	return 0;
 }

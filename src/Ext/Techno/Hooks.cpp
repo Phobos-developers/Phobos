@@ -13,6 +13,7 @@
 #include <Utilities/AresHelper.h>
 #include <Utilities/AresFunctions.h>
 #include <Misc/FlyingStrings.h>
+#include <New/PrismRelay.h>
 
 #pragma region GetTechnoType
 
@@ -519,6 +520,10 @@ DEFINE_HOOK(0x6FE352, TechnoClass_FirepowerMultiplier, 0x8)       // TechnoClass
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	damage = static_cast<int>(damage * pExt->AE.FirepowerMultiplier);
+
+	if (pExt->PrismRelayBurstChainBuilt && !pExt->PrismRelayCachedProviders.empty())
+		damage = PrismRelay::ApplyDamageBonus(damage, pExt->PrismRelayCachedProviders, pExt->PrismRelayCachedNetworkId);
+
 	R->EAX(damage);
 
 	return 0;

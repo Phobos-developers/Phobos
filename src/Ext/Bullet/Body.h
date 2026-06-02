@@ -28,6 +28,10 @@ public:
 		int ParabombFallRate;
 		bool IsInstantDetonation;
 
+		TechnoClass* PrismRelayMaster;
+		bool PrismRelaySupportBullet;
+		bool PrismRelayCounted;
+
 		TrajectoryPointer Trajectory;
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
@@ -43,6 +47,9 @@ public:
 			, DamageNumberOffset { INT32_MIN }
 			, ParabombFallRate { 0 }
 			, IsInstantDetonation { false }
+			, PrismRelayMaster { nullptr }
+			, PrismRelaySupportBullet { false }
+			, PrismRelayCounted { false }
 		{ }
 
 		virtual ~ExtData() = default;

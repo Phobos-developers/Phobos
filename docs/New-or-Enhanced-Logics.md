@@ -85,7 +85,13 @@ This page describes all the engine features that are either new and introduced b
   - `AttachEffect.IgnoreFromSameSource` can be set to true to ignore effects that have been attached by the firer of the weapon and its Warhead.
   - `AttachEffect.CheckOnFirer` is set to true makes it so that the required / disallowed attached effects are checked from the firer of the weapon instead of the target.
 
-In `rulesmd.ini`:
+In `rulesmd.ini` (`[General]`):
+```ini
+[General]
+PrismRelay.SupportTimeout=0                        ; integer - global default relay lockout when AttachEffect PrismRelay.SupportTimeout=0; 0 = PrismSupportDelay
+```
+
+In `rulesmd.ini` (`[AttachEffectTypes]`):
 ```ini
 [AttachEffectTypes]
 0=SOMEATTACHEFFECT

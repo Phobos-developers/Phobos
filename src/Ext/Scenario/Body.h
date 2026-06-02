@@ -50,6 +50,10 @@ public:
 
 		int EVAIndex;
 
+		int PrismRelayClaimFrame;
+		TechnoClass* PrismRelayClaimMaster;
+		int PrismRelayClaimWeaponIndex;
+
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
 			, BriefingTheme { -1 }
@@ -68,6 +72,9 @@ public:
 			, SpecialTracker {}
 			, FallingDownTracker {}
 			, EVAIndex { -2 }
+			, PrismRelayClaimFrame { -1 }
+			, PrismRelayClaimMaster { nullptr }
+			, PrismRelayClaimWeaponIndex { -1 }
 		{ }
 
 		static void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
