@@ -73,7 +73,12 @@ DEFINE_HOOK(0x6F64A0, TechnoClass_DrawHealthBar, 0x5)
 		dimension.Y /= 2;
 
 		const auto drawAdjust = TacticalClass::CoordsToScreen(dimension);
-		position += drawAdjust;
+		pHealthBar = pTypeExt->HealthBar.Get(RulesExt::Global()->Buildings_DefaultHealthBar);
+
+		if (pHealthBar->IsAnimated)
+			position.Y += drawAdjust.Y / 2;
+		else
+			position += drawAdjust;
 
 		dimension.Y = -dimension.Y;
 		const auto drawStart = TacticalClass::CoordsToScreen(dimension);
@@ -82,7 +87,6 @@ DEFINE_HOOK(0x6F64A0, TechnoClass_DrawHealthBar, 0x5)
 		dimension.Y = -dimension.Y;
 		pipsAdjust = TacticalClass::CoordsToScreen(dimension);
 
-		pHealthBar = pTypeExt->HealthBar.Get(RulesExt::Global()->Buildings_DefaultHealthBar);
 		pipsLength = (drawAdjust.Y - drawStart.Y) >> 1;
 	}
 	else
@@ -96,6 +100,7 @@ DEFINE_HOOK(0x6F64A0, TechnoClass_DrawHealthBar, 0x5)
 		pipsLength = pHealthBar->PipsLength.Get(whatAmI == InfantryClass::AbsID ? defaultInfantryPipsLength : defaultUnitPipsLength);
 	}
 
+	__assume(pThis != nullptr);
 	const auto pOwner = pThis->Owner;
 	const bool isAllied = pOwner->IsAlliedWith(HouseClass::CurrentPlayer);
 

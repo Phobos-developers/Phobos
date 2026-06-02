@@ -320,6 +320,7 @@ Point2D TechnoExt::GetBuildingSelectBracketPosition(BuildingTypeClass* pType, Po
 	case BuildingSelectBracketPosition::RightTop:
 		position.X += lengthW * 4;
 		position.Y += lengthW * 2;
+		break;
 	default:
 		break;
 	}
@@ -333,7 +334,7 @@ double TechnoExt::GetHealthBarPercentage(TechnoClass* pThis, HealthBarTypeClass*
 	int value = -1;
 	int maxValue = 0;
 
-	GetValuesForDisplay(pThis, pTechnoType, pType->InfoType, value, maxValue, pType->InfoIndex);
+	TechnoExt::GetValuesForDisplay(pThis, pTechnoType, pType->InfoType, value, maxValue, pType->InfoIndex);
 
 	if (value <= -1 || maxValue <= 0)
 	{
