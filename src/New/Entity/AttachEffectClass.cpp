@@ -535,7 +535,11 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 
 	if (auto const pFoot = abstract_cast<FootClass*, true>(pTechno))
 	{
-		if (pFoot->Locomotor->Is_Really_Moving_Now())
+		const bool isMoving = this->Type->DiscardOn_MoveBasedOnDestination.Get(RulesExt::Global()->DiscardOn_MoveBasedOnDestination)
+			? pFoot->Locomotor->Is_Moving()
+			: pFoot->Locomotor->Is_Really_Moving_Now();
+
+		if (isMoving)
 		{
 			if ((discardOn & DiscardCondition::Move) != DiscardCondition::None)
 			{

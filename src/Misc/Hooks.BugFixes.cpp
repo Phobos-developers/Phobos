@@ -668,10 +668,13 @@ DEFINE_HOOK(0x508F82, HouseClass_AI_CheckSpySat_IncludeUpgrades, 0x6)
 
 	if (!pBuilding->Type->SpySat)
 	{
-		for (const auto& pUpgrade : pBuilding->Upgrades)
+		if (pBuilding->UpgradeLevel)
 		{
-			if (pUpgrade && pUpgrade->SpySat)
-				return Continue;
+			for (const auto& pUpgrade : pBuilding->Upgrades)
+			{
+				if (pUpgrade && pUpgrade->SpySat)
+					return Continue;
+			}
 		}
 
 		return AdvanceLoop;
@@ -3319,7 +3322,7 @@ DEFINE_HOOK(0x706F64, TechnoClass_RenderVoxelObject_SkipInvisibleSections, 0x0)
 	GET(int const, layer, EBX);
 	GET_STACK(unsigned int const, frame, STACK_OFFSET(0x13C, 0x18));
 
-	auto mtx = pMotLib->GetLayerMatrix(layer, frame);
+	const auto mtx = pMotLib->GetLayerMatrix(layer, frame);
 
 	if (mtx.row[0][0] == 0.0f && mtx.row[1][1] == 0.0f && mtx.row[2][2] == 0.0f)
 		return SkipLayer;
