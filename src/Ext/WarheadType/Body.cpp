@@ -44,26 +44,22 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 
 	if (this->AffectsInvokerOnly)
 	{
-		if (this->DamageAreaInvoker)
-		{
-			const bool targetIsInvoker = (pTarget == this->DamageAreaInvoker);
+		const bool invokerExists = (this->DamageAreaInvoker != nullptr);
+		const bool targetIsInvoker = invokerExists && (pTarget == this->DamageAreaInvoker);
 
-			if (this->AffectsInvokerOnly_Reverse)
-			{
-				if (targetIsInvoker)
-					return false;
-			}
-			else
-			{
-				if (!targetIsInvoker)
-					return false;
-			}
+		bool allowed;
+
+		if (invokerExists)
+		{
+			allowed = this->AffectsInvokerOnly_Reverse ? !targetIsInvoker : targetIsInvoker;
 		}
 		else
 		{
-			if (this->AffectsInvokerOnly_IgnoreInvokerState)
-				return false;
+			allowed = !this->AffectsInvokerOnly_IgnoreInvokerState;
 		}
+
+		if (!allowed)
+			return false;
 	}
 
 	if (!this->EffectsRequireVerses)
