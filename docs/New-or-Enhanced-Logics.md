@@ -2991,7 +2991,7 @@ UnlimboDetonate.KeepSelected=false     ; boolean
 
 ## Weapons
 
-## Allow Laser drawing position update
+### Allow Laser drawing position update
 
 - Now you can define via `LaserPositionUpdate` whether the endpoints of a laser drawing are updated during its duration.
   - `None`: No update.
