@@ -1004,7 +1004,7 @@ ZShapePointMove.OnBuildup=false  ; boolean
 
 - By default buildings with weapons (including garrisoned buildings) have a delay of `[Guard]` -> `AARate` multiplied by 900 plus random value in range 0-2 (inclusive) before rechecking if the building can attack if it has a target. This delay is now customizable globally by `[General]` -> `BuildingGuardRetryDelay` or per-BuildingType with `GuardRetryDelay`.
 
-In `artmd.ini`:
+In `rulesmd.ini`:
 ```ini
 [General]
 BuildingGuardRetryDelay=  ; integer - single or comma-sep. range (game frames)
@@ -2446,6 +2446,23 @@ Trailer.SpawnDelay=2  ; integer, game frames
 ```
 
 ## Warheads
+
+### Allow `Temporal` warhead to apply ratio and bonus
+
+- In vanilla, for a warhead with `Temporal=yes` , it fixedly uses `10 * target's maximum hit points / Damage` to obtain the time required for eradication. Now, this can support more detailed calculations.
+  - `Temporal.ApplyVersus` can be used to define whether this logic considers warhead ratios such as `Versus` and `ProneDamage`.
+  - `Temporal.ApplyMultiplier` can be used to define whether this logic considers firepower modifiers and armor modifiers such as `BunkerDamageMultiplier` and `OpenToppedDamageMultiplier`.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+Temporal.ApplyVersus=false      ; boolean
+Temporal.ApplyMultiplier=false  ; boolean
+
+[SOMEWARHEAD]                   ; WarheadType
+Temporal.ApplyVersus=           ; boolean, default to [CombatDamage] -> Temporal.ApplyVersus
+Temporal.ApplyMultiplier=       ; boolean, default to [CombatDamage] -> Temporal.ApplyMultiplier
+```
 
 ### Allowing damage dealt to firer
 
