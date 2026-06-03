@@ -19,7 +19,9 @@ public:
 		, CruiseEnable { false }
 		, CruiseUnableRange { Leptons(1280) }
 		, CruiseAltitude { 800 }
+		, CruiseAltitudeRange { 200 }
 		, CruiseAlongLevel { false }
+		, CollisionDetection { false }
 		, SuicideAboveRange { -3.0 }
 		, SuicideShortOfROT { false }
 	{ }
@@ -35,7 +37,9 @@ public:
 	Valueable<bool> CruiseEnable;
 	Valueable<Leptons> CruiseUnableRange;
 	Valueable<int> CruiseAltitude;
+	int CruiseAltitudeRange;
 	Valueable<bool> CruiseAlongLevel;
+	Valueable<bool> CollisionDetection;
 	Valueable<double> SuicideAboveRange;
 	Valueable<bool> SuicideShortOfROT;
 
@@ -64,6 +68,7 @@ public:
 		, InStraight { false }
 		, Accelerate { true }
 		, OriginalDistance { 0 }
+		, LastCruiseAltitude { 0 }
 		, OffsetCoord { CoordStruct::Empty }
 		, PreAimDistance { 0 }
 		, LastDotProduct { 0 }
@@ -74,6 +79,7 @@ public:
 	bool InStraight;
 	bool Accelerate;
 	int OriginalDistance;
+	int LastCruiseAltitude;
 	CoordStruct OffsetCoord;
 	double PreAimDistance;
 	double LastDotProduct;
@@ -99,7 +105,7 @@ private:
 	bool NotCurveVelocityChange();
 	bool StandardVelocityChange();
 	bool ChangeBulletVelocity(const CoordStruct& targetLocation);
-	int GetCruiseAltitude();
+	int GetCruiseAltitude(bool collisionCheck, int lastCheckHeight);
 
 	template <typename T>
 	void Serialize(T& Stm);

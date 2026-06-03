@@ -2,6 +2,8 @@
 
 #include <Ext/Bullet/Body.h>
 
+#include <Ext/Bullet/Body.h>
+
 std::unique_ptr<PhobosTrajectory> MissileTrajectoryType::CreateInstance(BulletClass* pBullet) const
 {
 	return std::make_unique<MissileTrajectory>(this, pBullet);
@@ -22,7 +24,9 @@ void MissileTrajectoryType::Serialize(T& Stm)
 		.Process(this->CruiseEnable)
 		.Process(this->CruiseUnableRange)
 		.Process(this->CruiseAltitude)
+		.Process(this->CruiseAltitudeRange)
 		.Process(this->CruiseAlongLevel)
+		.Process(this->CollisionDetection)
 		.Process(this->SuicideAboveRange)
 		.Process(this->SuicideShortOfROT)
 		;
@@ -92,7 +96,10 @@ void MissileTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->CruiseUnableRange.Read(exINI, pSection, "Trajectory.Missile.CruiseUnableRange");
 	this->CruiseUnableRange = Leptons(Math::max(128, this->CruiseUnableRange.Get()));
 	this->CruiseAltitude.Read(exINI, pSection, "Trajectory.Missile.CruiseAltitude");
+	this->CruiseAltitude = Math::max(0, this->CruiseAltitude);
+	this->CruiseAltitudeRange = this->CruiseAltitude / 2;
 	this->CruiseAlongLevel.Read(exINI, pSection, "Trajectory.Missile.CruiseAlongLevel");
+	this->CollisionDetection.Read(exINI, pSection, "Trajectory.Missile.CollisionDetection");
 	this->SuicideAboveRange.Read(exINI, pSection, "Trajectory.Missile.SuicideAboveRange");
 	this->SuicideShortOfROT.Read(exINI, pSection, "Trajectory.Missile.SuicideShortOfROT");
 }
@@ -106,6 +113,7 @@ void MissileTrajectory::Serialize(T& Stm)
 		.Process(this->InStraight)
 		.Process(this->Accelerate)
 		.Process(this->OriginalDistance)
+		.Process(this->LastCruiseAltitude)
 		.Process(this->OffsetCoord)
 		.Process(this->PreAimDistance)
 		.Process(this->LastDotProduct)
@@ -135,6 +143,9 @@ void MissileTrajectory::OnUnlimbo()
 
 	// Record the initial distance
 	this->OriginalDistance = static_cast<int>(pBullet->TargetCoords.DistanceFrom(pBullet->SourceCoords));
+
+	// Set initial cruise altitude
+	this->LastCruiseAltitude = -this->Type->CruiseAltitude;
 
 	// Waiting for launch trigger
 	if (!BulletExt::ExtMap.Find(pBullet)->DispersedTrajectory)
@@ -515,28 +526,46 @@ bool MissileTrajectory::StandardVelocityChange()
 			}
 		}
 
-		// If in the cruise phase, the steering target will be set at the fixed height
-		if (this->CruiseEnable)
+		do
 		{
-			const auto horizontal = BulletExt::Coord2Point(targetLocation - pBullet->Location);
-			const double horizontalDistance = horizontal.Magnitude();
-
-			// The distance is still long, continue cruising
-			if (horizontalDistance > pType->CruiseUnableRange.Get())
+			int cruiseGroundHeight = -1;
+			if (pType->CollisionDetection)
 			{
-				const double ratio = this->MovingSpeed / horizontalDistance;
-				targetLocation.X = pBullet->Location.X + static_cast<int>(horizontal.X * ratio);
-				targetLocation.Y = pBullet->Location.Y + static_cast<int>(horizontal.Y * ratio);
-
-				// Smooth curve for low turning speed projectile
-				targetLocation.Z = (this->GetCruiseAltitude() + pBullet->Location.Z) / 2;
+				cruiseGroundHeight = this->GetCruiseAltitude(true, 0);
+				if (pBullet->Location.Z < cruiseGroundHeight)
+				{
+					const auto horizontal = BulletExt::Coord2Point(targetLocation - pBullet->Location);
+					const double ratio = this->MovingSpeed / horizontal.Magnitude();
+					targetLocation.X = pBullet->Location.X + static_cast<int>(horizontal.X * ratio);
+					targetLocation.Y = pBullet->Location.Y + static_cast<int>(horizontal.Y * ratio);
+					targetLocation.Z = cruiseGroundHeight;
+					break;
+				}
 			}
-			else
+
+			if (this->CruiseEnable)
 			{
-				this->CruiseEnable = false;
-				this->LastDotProduct = 0.0;
+				const auto horizontal = BulletExt::Coord2Point(targetLocation - pBullet->Location);
+				const double horizontalDistance = horizontal.Magnitude();
+
+				// The distance is still long, continue cruising
+				if (horizontalDistance > pType->CruiseUnableRange.Get())
+				{
+					const double ratio = this->MovingSpeed / horizontalDistance;
+					targetLocation.X = pBullet->Location.X + static_cast<int>(horizontal.X * ratio);
+					targetLocation.Y = pBullet->Location.Y + static_cast<int>(horizontal.Y * ratio);
+
+					// Smooth curve for low turning speed projectile
+					targetLocation.Z = (this->GetCruiseAltitude(false, cruiseGroundHeight) + pBullet->Location.Z) / 2;
+				}
+				else
+				{
+					this->CruiseEnable = false;
+					this->LastDotProduct = 0.0;
+				}
 			}
 		}
+		while (false);
 	}
 
 	// Calculate new speed
@@ -606,23 +635,36 @@ bool MissileTrajectory::ChangeBulletVelocity(const CoordStruct& targetLocation)
 	return this->CalculateBulletVelocity(this->MovingSpeed);
 }
 
-int MissileTrajectory::GetCruiseAltitude()
+int MissileTrajectory::GetCruiseAltitude(bool collisionCheck, int lastCheckHeight)
 {
 	const auto pBullet = this->Bullet;
 	const auto pType = this->Type;
 
-	if (!pType->CruiseAlongLevel || pType->TurningSpeed <= BulletExt::Epsilon)
-		return pType->CruiseAltitude + pBullet->SourceCoords.Z;
+	if (!collisionCheck)
+	{
+		if (!pType->CruiseAlongLevel || pType->TurningSpeed <= BulletExt::Epsilon)
+			return pType->CruiseAltitude + pBullet->SourceCoords.Z;
+
+		if (lastCheckHeight != -1)
+		{
+			const int currentCruiseAltitude = pType->CruiseAltitude + lastCheckHeight;
+			if (std::abs(this->LastCruiseAltitude - currentCruiseAltitude) < pType->CruiseAltitudeRange)
+				return this->LastCruiseAltitude;
+
+			this->LastCruiseAltitude = currentCruiseAltitude;
+			return currentCruiseAltitude;
+		}
+	}
 
 	constexpr int shift = 8; // >> shift -> / Unsorted::LeptonsPerCell
 	constexpr auto point2Cell = [](const Point2D& point) -> CellStruct
-	{
-		return CellStruct { static_cast<short>(point.X >> shift), static_cast<short>(point.Y >> shift) };
-	};
+		{
+			return CellStruct { static_cast<short>(point.X >> shift), static_cast<short>(point.Y >> shift) };
+		};
 	auto getFloorHeight = [](const CellClass* const pCell, const Point2D& point) -> int
-	{
-		return pCell->GetFloorHeight(Point2D { point.X, point.Y }) + (pCell->ContainsBridge() ? CellClass::BridgeHeight : 0);
-	};
+		{
+			return pCell->GetFloorHeight(Point2D { point.X, point.Y }) + (pCell->ContainsBridge() ? CellClass::BridgeHeight : 0);
+		};
 
 	// Initialize
 	auto curCoord = Point2D { pBullet->Location.X, pBullet->Location.Y };
@@ -640,61 +682,69 @@ int MissileTrajectory::GetCruiseAltitude()
 	const auto stepCoord = Point2D { (checkCoord.X / checkSteps), (checkCoord.Y / checkSteps) };
 
 	auto checkStepHeight = [&]() -> bool
-	{
-		// Check forward
-		lastCoord = curCoord;
-		curCoord += stepCoord;
-		pCurCell = MapClass::Instance.TryGetCellAt(point2Cell(curCoord));
-
-		if (!pCurCell)
-			return false;
-
-		maxHeight = Math::max(maxHeight, getFloorHeight(pCurCell, curCoord));
-
-		auto getSideHeight = [](const CellClass* const pCell) -> int
 		{
-			return (pCell->Level * Unsorted::LevelHeight) + (pCell->ContainsBridge() ? CellClass::BridgeHeight : 0);
+			// Check forward
+			lastCoord = curCoord;
+			curCoord += stepCoord;
+			pCurCell = MapClass::Instance.TryGetCellAt(point2Cell(curCoord));
+
+			if (!pCurCell)
+				return false;
+
+			maxHeight = Math::max(maxHeight, getFloorHeight(pCurCell, curCoord));
+
+			auto getSideHeight = [](const CellClass* const pCell) -> int
+				{
+					return (pCell->Level * Unsorted::LevelHeight) + (pCell->ContainsBridge() ? CellClass::BridgeHeight : 0);
+				};
+			auto getAntiAliasingCell = [&]() -> CellClass*
+				{
+					// Check if it is a diagonal relationship
+					if ((curCoord.X >> shift) == (lastCoord.X >> shift) || (curCoord.Y >> shift) == (lastCoord.Y >> shift))
+						return nullptr;
+
+					constexpr int mask = 0xFF; // & mask -> % Unsorted::LeptonsPerCell
+					bool lastX = false;
+
+					// Calculate the bias of the previous cell
+					if (std::abs(stepCoord.X) > std::abs(stepCoord.Y))
+					{
+						const int offsetX = curCoord.X & mask;
+						const int deltaX = (stepCoord.X > 0) ? offsetX : (offsetX - Unsorted::LeptonsPerCell);
+						const int projectedY = curCoord.Y - deltaX * checkCoord.Y / checkCoord.X;
+						lastX = (projectedY ^ curCoord.Y) >> shift == 0;
+					}
+					else
+					{
+						const int offsetY = curCoord.Y & mask;
+						const int deltaY = (stepCoord.Y > 0) ? offsetY : (offsetY - Unsorted::LeptonsPerCell);
+						const int projectedX = curCoord.X - deltaY * checkCoord.X / checkCoord.Y;
+						lastX = (projectedX ^ curCoord.X) >> shift != 0;
+					}
+
+					// Get cell
+					return MapClass::Instance.TryGetCellAt(lastX
+						? CellStruct { static_cast<short>(lastCoord.X >> shift), static_cast<short>(curCoord.Y >> shift) }
+					: CellStruct { static_cast<short>(curCoord.X >> shift), static_cast<short>(lastCoord.Y >> shift) });
+				};
+
+			// "Anti-Aliasing"
+			if (const auto pCheckCell = getAntiAliasingCell())
+				maxHeight = Math::max(maxHeight, getSideHeight(pCheckCell));
+
+			return true;
 		};
-		auto getAntiAliasingCell = [&]() -> CellClass*
-		{
-			// Check if it is a diagonal relationship
-			if ((curCoord.X >> shift) == (lastCoord.X >> shift) || (curCoord.Y >> shift) == (lastCoord.Y >> shift))
-				return nullptr;
-
-			constexpr int mask = 0xFF; // & mask -> % Unsorted::LeptonsPerCell
-			bool lastX = false;
-
-			// Calculate the bias of the previous cell
-			if (std::abs(stepCoord.X) > std::abs(stepCoord.Y))
-			{
-				const int offsetX = curCoord.X & mask;
-				const int deltaX = (stepCoord.X > 0) ? offsetX : (offsetX - Unsorted::LeptonsPerCell);
-				const int projectedY = curCoord.Y - deltaX * checkCoord.Y / checkCoord.X;
-				lastX = (projectedY ^ curCoord.Y) >> shift == 0;
-			}
-			else
-			{
-				const int offsetY = curCoord.Y & mask;
-				const int deltaY = (stepCoord.Y > 0) ? offsetY : (offsetY - Unsorted::LeptonsPerCell);
-				const int projectedX = curCoord.X - deltaY * checkCoord.X / checkCoord.Y;
-				lastX = (projectedX ^ curCoord.X) >> shift != 0;
-			}
-
-			// Get cell
-			return MapClass::Instance.TryGetCellAt(lastX
-				? CellStruct { static_cast<short>(lastCoord.X >> shift), static_cast<short>(curCoord.Y >> shift) }
-				: CellStruct { static_cast<short>(curCoord.X >> shift), static_cast<short>(lastCoord.Y >> shift) });
-		};
-
-		// "Anti-Aliasing"
-		if (const auto pCheckCell = getAntiAliasingCell())
-			maxHeight = Math::max(maxHeight, getSideHeight(pCheckCell));
-
-		return true;
-	};
 
 	// Predict height
 	for (int i = 0; i < checkSteps && checkStepHeight(); ++i);
 
-	return pType->CruiseAltitude + maxHeight;
+	if (collisionCheck)
+		return maxHeight;
+
+	const int currentCruiseAltitude = pType->CruiseAltitude + maxHeight;
+	if (std::abs(this->LastCruiseAltitude - currentCruiseAltitude) < pType->CruiseAltitudeRange)
+		return this->LastCruiseAltitude;
+
+	this->LastCruiseAltitude = currentCruiseAltitude;
+	return currentCruiseAltitude;
 }
