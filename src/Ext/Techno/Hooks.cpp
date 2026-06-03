@@ -52,6 +52,9 @@ DEFINE_HOOK(0x4DA54E, FootClass_AI, 0x6)
 	return 0;
 }
 
+// Skip vanilla animation counter code in UnitClass::AI.
+DEFINE_JUMP(LJMP, 0x7363C9, 0x7363DE);
+
 // After FootClass_AI
 DEFINE_HOOK(0x736480, UnitClass_AI, 0x6)
 {
