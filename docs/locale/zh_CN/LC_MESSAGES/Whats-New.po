@@ -1914,6 +1914,13 @@ msgstr ""
 "[允许自定义有武器建筑的警戒任务重试间隔](Fixed-or-Improved-Logics.md#armed-building-guard-"
 "retry-delay)（by Starkku）"
 
+msgid ""
+"[Allow `Temporal` warhead to apply ratio and bonus](Fixed-or-Improved-"
+"Logics.md#allow-temporal-warhead-to-apply-ratio-and-bonus) (by NetsuNegi)"
+msgstr ""
+"[允许 `Temporal` 弹头应用比率和加成](Fixed-or-Improved-"
+"Logics.md#allow-temporal-warhead-to-apply-ratio-and-bonus)（by NetsuNegi）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 

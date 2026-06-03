@@ -170,11 +170,11 @@ void AttachEffectClass::AI()
 	if (!this->HasInitialized && this->InitialDelay == 0)
 	{
 		this->HasInitialized = true;
+		auto const pExt = TechnoExt::ExtMap.Find(pTechno);
 
 		if (pType->ROFMultiplier > 0.0 && pType->ROFMultiplier_ApplyOnCurrentTimer)
 		{
 			const double ROFModifier = pType->ROFMultiplier;
-			auto const pExt = TechnoExt::ExtMap.Find(pTechno);
 			pTechno->RearmTimer.Start(static_cast<int>(pTechno->RearmTimer.GetTimeLeft() * ROFModifier));
 
 			if (!pExt->ChargeTurretTimer.HasStarted() && pExt->LastRearmWasFullDelay)
@@ -182,9 +182,12 @@ void AttachEffectClass::AI()
 		}
 
 		if (pType->HasTint())
+		{
 			pTechno->MarkForRedraw();
+			pExt->UpdateTintValues();
+		}
 
-		this->NeedsRecalculateStat = true;
+		pExt->RecalculateStatMultipliers(this);
 		AttachEffectTypeClass::HandleEvent(pTechno);
 	}
 
@@ -206,7 +209,6 @@ void AttachEffectClass::AI()
 		if (!this->ShouldBeDiscardedNow())
 		{
 			this->RefreshDuration();
-			this->NeedsRecalculateStat = true;
 			this->NeedsDurationRefresh = false;
 			AttachEffectTypeClass::HandleEvent(pTechno);
 		}
@@ -322,7 +324,15 @@ void AttachEffectClass::OnlineCheck()
 
 	if (isActive != this->LastActiveStat)
 	{
-		this->NeedsRecalculateStat = true;
+		auto const pExt = TechnoExt::ExtMap.Find(this->Techno);
+
+		if (this->Type->HasTint())
+		{
+			pTechno->MarkForRedraw();
+			pExt->UpdateTintValues();
+		}
+
+		pExt->RecalculateStatMultipliers(this);
 		this->LastActiveStat = isActive;
 	}
 
@@ -535,7 +545,11 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 
 	if (auto const pFoot = abstract_cast<FootClass*, true>(pTechno))
 	{
-		if (pFoot->Locomotor->Is_Really_Moving_Now())
+		const bool isMoving = this->Type->DiscardOn_MoveBasedOnDestination.Get(RulesExt::Global()->DiscardOn_MoveBasedOnDestination)
+			? pFoot->Locomotor->Is_Moving()
+			: pFoot->Locomotor->Is_Really_Moving_Now();
+
+		if (isMoving)
 		{
 			if ((discardOn & DiscardCondition::Move) != DiscardCondition::None)
 			{
@@ -628,6 +642,8 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 
 			if (params.InitialDelay <= 0)
 			{
+				pTargetExt->RecalculateStatMultipliers(pAE);
+
 				if (pType->ROFMultiplier > 0.0 && pType->ROFMultiplier_ApplyOnCurrentTimer)
 					ROFModifier *= pType->ROFMultiplier;
 
@@ -648,12 +664,10 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 			pTarget->ChargeTurretDelay = static_cast<int>(pTarget->ChargeTurretDelay * ROFModifier);
 	}
 
-	if (attachedCount > 0)
+	if (attachedCount > 0 && markForRedraw)
 	{
-		pTargetExt->RecalculateStatMultipliers();
-
-		if (markForRedraw)
-			pTarget->MarkForRedraw();
+		pTarget->MarkForRedraw();
+		pTargetExt->UpdateTintValues();
 	}
 	          
 	return attachedCount;

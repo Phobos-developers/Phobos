@@ -2447,6 +2447,23 @@ Trailer.SpawnDelay=2  ; integer, game frames
 
 ## Warheads
 
+### Allow `Temporal` warhead to apply ratio and bonus
+
+- In vanilla, for a warhead with `Temporal=yes` , it fixedly uses `10 * target's maximum hit points / Damage` to obtain the time required for eradication. Now, this can support more detailed calculations.
+  - `Temporal.ApplyVersus` can be used to define whether this logic considers warhead ratios such as `Versus` and `ProneDamage`.
+  - `Temporal.ApplyMultiplier` can be used to define whether this logic considers firepower modifiers and armor modifiers such as `BunkerDamageMultiplier` and `OpenToppedDamageMultiplier`.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+Temporal.ApplyVersus=false      ; boolean
+Temporal.ApplyMultiplier=false  ; boolean
+
+[SOMEWARHEAD]                   ; WarheadType
+Temporal.ApplyVersus=           ; boolean, default to [CombatDamage] -> Temporal.ApplyVersus
+Temporal.ApplyMultiplier=       ; boolean, default to [CombatDamage] -> Temporal.ApplyMultiplier
+```
+
 ### Allowing damage dealt to firer
 
 - You can now allow warhead to deal damage (and apply damage-adjacent effects such as `KillDriver` and `DisableWeapons/Sonar/Flash.Duration` *(Ares features)*) on the object that is considered as the firer of the Warhead even if it does not have `DamageSelf=true`.
