@@ -219,16 +219,17 @@ void TechnoExt::ExtData::AmmoAutoConvertActions()
 
 void TechnoExt::ExtData::DeployConvertAction()
 {
-	auto const pTypeExt = this->TypeExtData;
+	const auto pTypeExt = this->TypeExtData;
+
 	if (!pTypeExt->Convert_Deploy && !pTypeExt->Convert_Undeploy)
 		return;
 
-	auto const pThis = this->OwnerObject();
-	if (pThis->WhatAmI() != AbstractType::Infantry)
+	const auto pThis = abstract_cast<InfantryClass*, true>(this->OwnerObject());
+
+	if (!pThis)
 		return;
 
-	auto const pInf = static_cast<InfantryClass*>(pThis);
-	const auto curSeq = pInf->SequenceAnim;
+	const auto curSeq = pThis->SequenceAnim;
 
 	if (curSeq != Sequence::Deploy && curSeq != Sequence::Undeploy)
 	{
@@ -242,12 +243,12 @@ void TechnoExt::ExtData::DeployConvertAction()
 	if (curSeq == Sequence::Deploy && pTypeExt->Convert_Deploy)
 	{
 		this->HasDeployConvertedInCurrentSequence = true;
-		TechnoExt::ConvertToType(pInf, pTypeExt->Convert_Deploy);
+		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Deploy);
 	}
 	else if (curSeq == Sequence::Undeploy && pTypeExt->Convert_Undeploy)
 	{
 		this->HasDeployConvertedInCurrentSequence = true;
-		TechnoExt::ConvertToType(pInf, pTypeExt->Convert_Undeploy);
+		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Undeploy);
 	}
 }
 

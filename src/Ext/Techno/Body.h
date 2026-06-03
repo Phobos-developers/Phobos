@@ -106,6 +106,8 @@ public:
 		CoordStruct LastTargetCrd;
 		CDTimerClass LastTargetCrdClearTimer;
 
+		bool HasDeployConvertedInCurrentSequence;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -177,6 +179,8 @@ public:
 			, HoverShutdown { false }
 			, LastTargetCrd { CoordStruct::Empty }
 			, LastTargetCrdClearTimer {}
+
+			, HasDeployConvertedInCurrentSequence { false }
 		{ }
 
 		void OnEarlyUpdate();
@@ -218,7 +222,7 @@ public:
 
 		void AmmoAutoConvertActions();
 		void DeployConvertAction();
-		bool HasDeployConvertedInCurrentSequence = false;
+
 		void UpdateLastTargetCrd();
 		int GetSight();
 
