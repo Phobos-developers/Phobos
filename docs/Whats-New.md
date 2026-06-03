@@ -664,6 +664,7 @@ HideShakeEffects=false           ; boolean
 - Fixed the issue where tint color RGB mode conversion was incorrect (by Shatyuka)
 - Fixed the bug that low-air taking off / landing objects will receive twice damage (by NetsuNegi)
 - Fixed voxel projectile and animation lighting issues (by TaranDahl)
+- Fixed the bug that techno will get stuck if change owner in tunnel (by NetsuNegi)
 
 #### Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

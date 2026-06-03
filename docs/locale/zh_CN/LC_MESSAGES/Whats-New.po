@@ -2376,6 +2376,10 @@ msgstr "修复了低空起飞／降落的物体会受到两次伤害的 Bug（by
 msgid "Fixed voxel projectile and animation lighting issues (by TaranDahl)"
 msgstr "修复了 Voxel 抛射体和动画的光照问题（by TaranDahl）"
 
+msgid ""
+"Fixed the bug that techno will get stuck if change owner in tunnel (by NetsuNegi)"
+msgstr "修复了科技类型在隧道中变更所属方会导致卡住的 Bug（by NetsuNegi）"
+
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
 
