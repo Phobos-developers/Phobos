@@ -217,6 +217,8 @@ public:
 		void UpdateTintValues();
 
 		void AmmoAutoConvertActions();
+		void DeployConvertAction();
+		bool HasDeployConvertedInCurrentSequence = false;
 		void UpdateLastTargetCrd();
 		int GetSight();
 

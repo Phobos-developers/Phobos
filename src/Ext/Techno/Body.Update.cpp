@@ -217,6 +217,40 @@ void TechnoExt::ExtData::AmmoAutoConvertActions()
 	}
 }
 
+void TechnoExt::ExtData::DeployConvertAction()
+{
+	auto const pTypeExt = this->TypeExtData;
+	if (!pTypeExt->Convert_Deploy && !pTypeExt->Convert_Undeploy)
+		return;
+
+	auto const pThis = this->OwnerObject();
+	if (pThis->WhatAmI() != AbstractType::Infantry)
+		return;
+
+	auto const pInf = static_cast<InfantryClass*>(pThis);
+	const auto curSeq = pInf->SequenceAnim;
+
+	if (curSeq != Sequence::Deploy && curSeq != Sequence::Undeploy)
+	{
+		this->HasDeployConvertedInCurrentSequence = false;
+		return;
+	}
+
+	if (this->HasDeployConvertedInCurrentSequence)
+		return;
+
+	if (curSeq == Sequence::Deploy && pTypeExt->Convert_Deploy)
+	{
+		this->HasDeployConvertedInCurrentSequence = true;
+		TechnoExt::ConvertToType(pInf, pTypeExt->Convert_Deploy);
+	}
+	else if (curSeq == Sequence::Undeploy && pTypeExt->Convert_Undeploy)
+	{
+		this->HasDeployConvertedInCurrentSequence = true;
+		TechnoExt::ConvertToType(pInf, pTypeExt->Convert_Undeploy);
+	}
+}
+
 // Subterranean harvester factory exit state machine.
 void TechnoExt::ExtData::UpdateSubterraneanHarvester()
 {
