@@ -47,7 +47,7 @@ This page describes all the engine features that are either new and introduced b
   - `WeaponRange.Multiplier` and `WeaponRange.ExtraRange` can be used to multiply the weapon firing range of the object the effect is attached to, or give it an increase / decrease (measured in cells), respectively. `ExtraRange` is cumulatively applied from all attached effects after all `Multiplier` values have been applied.
     - `WeaponRange.AllowWeapons` can be used to list only weapons that can benefit from this range bonus and `WeaponRange.DisallowWeapons` weapons that are not allowed to, respectively.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.UseTransportRangeModifiers` can be set to true to make passengers firing out use the transport's active range bonuses instead.
-    - The weapon range with all sort of range modifiers can't be greater than `WeaponRange.Maximum` or smaller than `WeaponRange.Minimum` of the affected weapon. Notice that `Range=-512` is a special case and will be ignored.
+    - The weapon range with all sort of range modifiers can't be greater than `WeaponRange.Maximum` or smaller than `WeaponRange.Minimum` of the affected weapon. Notice that `Range=-2` is a special case and will be ignored.
   - `Crit.Multiplier` and `Crit.ExtraChance` can be used to multiply the [critical hit](#chance-based-extra-damage-or-warhead-detonation--critical-hits) chance or grant a fixed bonus to it for the object the effect is attached to, respectively.
     - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
@@ -173,8 +173,8 @@ AttachEffect.DisallowedMinCounts=                  ; integer - minimum disallowe
 AttachEffect.DisallowedMaxCounts=                  ; integer - maximum disallowed instance count (comma-separated) for cumulative types in order from first to last.
 AttachEffect.IgnoreFromSameSource=false            ; boolean
 AttachEffect.CheckOnFirer=false                    ; boolean
-WeaponRange.Maximum=2147483647                     ; integer
-WeaponRange.Minimum=0                              ; integer
+WeaponRange.Maximum=100000                         ; floating point value, distance in cells
+WeaponRange.Minimum=0                              ; floating point value, distance in cells
 
 [SOMEWARHEAD]                                      ; WarheadType
 AttachEffect.AttachTypes=                          ; List of AttachEffectTypes

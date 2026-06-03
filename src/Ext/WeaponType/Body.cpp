@@ -175,21 +175,21 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->WeaponRange_Maximum.Read(exINI, pSection, "WeaponRange.Maximum");
 	this->WeaponRange_Minimum.Read(exINI, pSection, "WeaponRange.Minimum");
 
-	if (this->WeaponRange_Maximum < pThis->Range)
+	if (this->WeaponRange_Maximum.Get() < pThis->Range)
 	{
 		Debug::Log("[Developer warning][%s] WeaponRange.Maximum is smaller than Range, it'll be reset to the value of Range!\n", pSection);
-		this->WeaponRange_Maximum = pThis->Range;
+		this->WeaponRange_Maximum = Leptons(pThis->Range / static_cast<double>(Unsorted::LeptonsPerCell));
 	}
 
-	if (this->WeaponRange_Minimum < 0)
+	if (this->WeaponRange_Minimum.Get() < 0)
 	{
 		Debug::Log("[Developer warning][%s] WeaponRange.Minimum is smaller than 0, it'll be reset to 0!\n", pSection);
-		this->WeaponRange_Minimum = 0;
+		this->WeaponRange_Minimum = Leptons(0);
 	}
-	else if (this->WeaponRange_Minimum > pThis->Range)
+	else if (this->WeaponRange_Minimum.Get() > pThis->Range)
 	{
 		Debug::Log("[Developer warning][%s] WeaponRange.Minimum is bigger than Range, it'll be reset to the value of Range!\n", pSection);
-		this->WeaponRange_Minimum = pThis->Range;
+		this->WeaponRange_Minimum = Leptons(pThis->Range / static_cast<double>(Unsorted::LeptonsPerCell));
 	}
 
 	// handle SkipWeaponPicking
@@ -374,12 +374,12 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 			pTechno = pTransport;
 	}
 
-	int min = 0, max = INT_MAX;
+	int min = 0, max = 25600000; // Unsorted::LeptonsPerCell * 100000
 
 	if (auto const pExt = WeaponTypeExt::ExtMap.Find(pThis))
 	{
-		min = pExt->WeaponRange_Minimum;
-		max = pExt->WeaponRange_Maximum;
+		min = pExt->WeaponRange_Minimum.Get();
+		max = pExt->WeaponRange_Maximum.Get();
 	}
 
 	auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
