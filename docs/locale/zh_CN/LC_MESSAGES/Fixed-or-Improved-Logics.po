@@ -5192,6 +5192,29 @@ msgstr "现在你可以自定义 Voxel 碎片的尾烟动画生成间隔。"
 msgid "Warheads"
 msgstr "弹头"
 
+msgid "Allow `Temporal` warhead to apply ratio and bonus"
+msgstr "允许 `Temporal` 弹头应用比率和加成"
+
+msgid ""
+"In vanilla, for a warhead with `Temporal=yes` , it fixedly uses `10 * "
+"target's maximum hit points / Damage` to obtain the time required for "
+"eradication. Now, this can support more detailed calculations."
+msgstr ""
+"在原版中，`Temporal=yes` 的弹头固定使用 `10 * 目标最大生命值/Damage` 来获得一个抹除所需的时间。现在，这可以支持更细致的计算。"
+
+msgid ""
+"`Temporal.ApplyVersus` can be used to define whether this logic considers"
+" warhead ratios such as `Versus` and `ProneDamage`."
+msgstr ""
+"`Temporal.ApplyVersus` 可用于定义该逻辑是否考虑弹头比率如 `Versus` 和 `ProneDamage`。"
+
+msgid ""
+"`Temporal.ApplyMultiplier` can be used to define whether this logic "
+"considers firepower modifiers and armor modifiers such as "
+"`BunkerDamageMultiplier` and `OpenToppedDamageMultiplier`."
+msgstr ""
+"`Temporal.ApplyMultiplier` 可用于定义该逻辑是否考虑火力倍率和护甲倍率如 `BunkerDamageMultiplier` 和 `OpenToppedDamageMultiplier`。"
+
 msgid "Allowing damage dealt to firer"
 msgstr "允许杀伤开火者"
 
