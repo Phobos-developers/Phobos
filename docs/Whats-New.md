@@ -2057,6 +2057,7 @@ HideShakeEffects=false           ; boolean
 - [Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed](Fixed-or-Improved-Logics.md#customize-which-of-vehicle-thief-pilot-and-passenger-the-tag-can-be-transferred-to-when-the-unit-is-destroyed) (by NetsuNegi)
 - [Building placing and deploying logic enhancement](New-or-Enhanced-Logics.md#building-placing-and-deploying-logic-enhancement) (by CrimRecya)
 - [Improvements to stationary unit logic](Fixed-or-Improved-Logics.md#stationary-units) (by Starkku)
+- [Light flash toggle for ParticleType alpha images](User-Interface.md#visual-effects-toggling) (by Starkku)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
