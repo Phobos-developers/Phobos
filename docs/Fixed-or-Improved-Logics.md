@@ -379,6 +379,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `EVA.Tag` already supports being set for specific countries, and `EVAIndex` is no longer reset after load game.
 - `DisableWeapons.Duration` now makes `Gattling=yes` rate tick down and stops the sounds from playing, no longer interferes with target acquisition and works together with Phobos' `OpenTopped.CheckTransportDisableWeapons`.
 - Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
+- Allowed infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true`.
 
 ## Newly added global settings
 

@@ -289,6 +289,7 @@ public:
 		Nullable<bool> CurleyShuffle;
 
 		Valueable<TechnoTypeClass*> Convert_Deploy; // Ares
+		Valueable<TechnoTypeClass*> Convert_Undeploy;
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
 		Valueable<bool> Convert_ResetMindControl;
@@ -771,6 +772,7 @@ public:
 			, CurleyShuffle {}
 
 			, Convert_Deploy { }
+			, Convert_Undeploy { }
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
 			, Convert_ResetMindControl { false }
