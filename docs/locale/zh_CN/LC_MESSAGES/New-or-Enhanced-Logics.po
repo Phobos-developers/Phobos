@@ -3663,7 +3663,7 @@ msgid ""
 "condition is content by real technos."
 msgstr ""
 "`BuildLimitGroup.NotBuildableIfQueueMatch` 决定了禁用科技类型生产的时刻，如果设为 true "
-"则已存在的科技类型与处于生产序列中的科技类型只和满足条件就会停止生产。如果设为 false 则只有地图上实际存在的科技类型满足条件才会停止生产。"
+"则已存在的科技类型与处于生产序列中的科技类型之和满足条件就会停止生产。如果设为 false 则只有地图上实际存在的科技类型满足条件才会停止生产。"
 
 msgid ""
 "You can also add an extra value into `BuildLimitGroup.Nums`, determined "
