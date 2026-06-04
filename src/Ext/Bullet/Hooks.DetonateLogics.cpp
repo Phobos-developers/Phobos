@@ -369,7 +369,8 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 	GET_BASE(CoordStruct const* const, coords, 0x8);
 
 	auto const pTechno = pThis->Owner;
-	auto const pOwner = pTechno ? pTechno->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+	auto const pBulletExt = BulletExt::ExtMap.Find(pThis);
+	auto const pOwner = pTechno ? pTechno->Owner : pBulletExt->FirerHouse;
 
 	// Extra warheads
 	if (auto const pWeapon = pThis->WeaponType)
@@ -435,11 +436,12 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			int damage = pWeapon->Damage;
 
 			if (pTypeExt->ReturnWeapon_ApplyFirepowerMult)
-				damage = static_cast<int>(damage * TechnoExt::GetCurrentFirepowerMultiplier(pTechno));
+				damage = static_cast<int>(damage * pBulletExt->FirepowerMult);
 
 			if (auto const pBullet = pWeapon->Projectile->CreateBullet(pTechno, pTechno,
 				damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 			{
+				BulletExt::ExtMap.Find(pBullet)->FirepowerMult = pBulletExt->FirepowerMult;
 				BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, pThis->Location, false);
 				BulletExt::SimulatedFiringEffects(pBullet, pOwner, nullptr, false, true);
 			}
@@ -642,7 +644,8 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 	if ((pType->Airburst || pTypeExt->Splits) && pWeapon)
 	{
 		auto const pSource = pThis->Owner;
-		auto pOwner = pSource ? pSource->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+		auto const pBulletExt = BulletExt::ExtMap.Find(pThis);
+		auto pOwner = pSource ? pSource->Owner : pBulletExt->FirerHouse;
 
 		if (!pOwner || pOwner->Defeated)
 		{
@@ -749,8 +752,8 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 		auto const pTypeSplits = pWeapon->Projectile;
 		int damage = pWeapon->Damage;
 
-		if (pTypeExt->AirburstWeapon_ApplyFirepowerMult && pSource)
-			damage = static_cast<int>(damage * TechnoExt::GetCurrentFirepowerMultiplier(pSource));
+		if (pTypeExt->AirburstWeapon_ApplyFirepowerMult)
+			damage = static_cast<int>(damage * pBulletExt->FirepowerMult);
 
 		// Cache all pointer variables before the loop
 		auto const pWH = pWeapon->Warhead;
@@ -833,6 +836,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 						coords = MapClass::GetRandomCoordsNear(coords, distance, false);
 					}
 
+					BulletExt::ExtMap.Find(pBullet)->FirepowerMult = pBulletExt->FirepowerMult;
 					BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, coords, true);
 					BulletExt::SimulatedFiringEffects(pBullet, pOwner, nullptr, useFiringEffects, true);
 				}

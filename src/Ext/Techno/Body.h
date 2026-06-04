@@ -199,7 +199,7 @@ public:
 		void UpdateKeepTargetOnMove();
 		void UpdateWarpInDelay();
 		void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, AttachEffectClass* pRemoved = nullptr);
-		void RecalculateStatMultipliers();
+		bool RecalculateStatMultipliers(AttachEffectClass* pAttachEffect = nullptr);
 		void UpdateTemporal();
 		void UpdateMindControlAnim();
 		void UpdateRecountBurst();

@@ -67,10 +67,13 @@ void AnimExt::ExtData::DeleteAttachedSystem()
 
 void AnimExt::ExtData::UpdateAsFiringAnim()
 {
+	if (!this->FromWeapon)
+		return;
+
 	auto pThis = this->OwnerObject();
 	auto pOwner = abstract_cast<TechnoClass*>(pThis->OwnerObject);
 
-	if (this->FromWeapon && pOwner)
+	if (pOwner)
 	{
 		auto pWeapon = this->FromWeapon;
 		AnimTypeClass* pNewType = GeneralUtils::GetItemForDirection<AnimTypeClass*>(pWeapon->Anim, pOwner->GetRealFacing());

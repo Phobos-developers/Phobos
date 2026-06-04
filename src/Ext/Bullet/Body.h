@@ -27,6 +27,7 @@ public:
 		int DamageNumberOffset;
 		int ParabombFallRate;
 		bool IsInstantDetonation;
+		double FirepowerMult;
 
 		TrajectoryPointer Trajectory;
 
@@ -43,6 +44,7 @@ public:
 			, DamageNumberOffset { INT32_MIN }
 			, ParabombFallRate { 0 }
 			, IsInstantDetonation { false }
+			, FirepowerMult { 1.0 }
 		{ }
 
 		virtual ~ExtData() = default;
