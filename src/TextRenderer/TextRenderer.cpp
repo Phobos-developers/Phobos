@@ -7,24 +7,19 @@
 
 namespace TextRenderer
 {
-    // Global Win32 GDI handles reused across draw calls to optimize rendering performance
     static HFONT g_FontHandle = nullptr;
     static HDC g_DeviceContext = nullptr;
     static bool g_FontLoaded = false;
-
-    // Persistent Device Independent Bitmap (DIB) cache variables to avoid constant reallocations
     static void* g_BitmapData = nullptr;
     static HBITMAP g_BitmapHandle = nullptr;
     static int g_BitmapWidth = 0;
     static int g_BitmapHeight = 0;
 
-    // Verifies that both the logical font and its device context are valid and ready
     bool IsInitialized()
     {
         return g_FontHandle != nullptr && g_DeviceContext != nullptr;
     }
 
-    // Parses configuration from uimd.ini and creates the native TrueType font handle once
     static void LoadFontOnce()
     {
         if (g_FontLoaded) return;
@@ -35,19 +30,21 @@ namespace TextRenderer
         if (!config.ReadBool("EnableTTF", "Enabled", false)) return;
 
         char fileName[MAX_PATH];
-        config.ReadString("Font", "FileName", "arial.ttf", fileName);
-        int fontSize = config.ReadInteger("FontSize", "LatinSize", 14);
+        config.ReadString("EnableTTF", "FontName", "arial.ttf", fileName);
+        int fontSize = config.ReadInteger("EnableTTF", "FontSize", 14);
 
-        // Instantiates the font using Win32 ANSI signature matching
+        // Anti-aliasing: false = no smoothing (default), true = ClearType
+        bool antiAlias = config.ReadBool("EnableTTF", "AntiAlias", false);
+        DWORD quality = antiAlias ? CLEARTYPE_QUALITY : NONANTIALIASED_QUALITY;
+
         g_FontHandle = CreateFontA(fontSize, 0, 0, 0, FW_NORMAL, 0, 0, 0,
             DEFAULT_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS,
-            CLEARTYPE_QUALITY, FF_DONTCARE, fileName);
+            quality, FF_DONTCARE, fileName);
 
         if (g_FontHandle)
             g_DeviceContext = CreateCompatibleDC(nullptr);
     }
 
-    // Blends TrueType fonts onto the game's DirectDraw surfaces using a temporary GDI buffer
     bool DrawText(BitFont* gameFont, Surface* gameSurface, const wchar_t* text,
         int posX, int posY, int boxWidth, int boxHeight, int alignment)
     {
@@ -59,33 +56,34 @@ namespace TextRenderer
         int surfaceWidth = directDrawSurface->GetWidth();
         int surfaceHeight = directDrawSurface->GetHeight();
 
-        // Shorthand offset tweak to vertically realign tiny text layouts inside buttons
         if (boxHeight > 0 && boxHeight < 30)
             posY = std::max(0, posY - 2);
 
-        // Determine drawing bounds. Fall back to remaining screen dimensions if none provided
+        int clampedX = std::max(0, posX);
+        int clampedY = std::max(0, posY);
+        int offsetX = posX - clampedX;
+        int offsetY = posY - clampedY;
+
         int drawingWidth = boxWidth > 0 ? boxWidth : surfaceWidth - posX;
         int drawingHeight = boxHeight > 0 ? boxHeight : surfaceHeight - posY;
-        drawingWidth = (drawingWidth + 1) & ~1; // Force 16-bit word alignment step boundaries
+        drawingWidth -= offsetX;
+        drawingHeight -= offsetY;
+        drawingWidth = (drawingWidth + 1) & ~1;
 
-        if (drawingWidth <= 0 || drawingHeight <= 0 || posX >= surfaceWidth || posY >= surfaceHeight)
+        if (drawingWidth <= 0 || drawingHeight <= 0 || clampedX >= surfaceWidth || clampedY >= surfaceHeight)
             return false;
 
-        // Obtain a direct memory address mapping relative to the target sub-coordinates lock location
-        int lockX = std::max(0, posX);
-        int lockY = std::max(0, posY);
-        void* surfaceBuffer = directDrawSurface->Lock(lockX, lockY);
+        void* surfaceBuffer = directDrawSurface->Lock(clampedX, clampedY);
         if (!surfaceBuffer) return false;
 
-        // Reallocate our temporary GDI backbuffer only when text frame dimension requirements scale
         if (drawingWidth != g_BitmapWidth || drawingHeight != g_BitmapHeight)
         {
             if (g_BitmapHandle) DeleteObject(g_BitmapHandle);
 
             BITMAPINFO bitmapInfo = { { sizeof(BITMAPINFOHEADER), drawingWidth, -drawingHeight, 1, 16, BI_BITFIELDS } };
-            ((DWORD*)&bitmapInfo.bmiColors)[0] = 0xF800; // RGB565 Red Channel Mask
-            ((DWORD*)&bitmapInfo.bmiColors)[1] = 0x07E0; // RGB565 Green Channel Mask
-            ((DWORD*)&bitmapInfo.bmiColors)[2] = 0x001F; // RGB565 Blue Channel Mask
+            ((DWORD*)&bitmapInfo.bmiColors)[0] = 0xF800;
+            ((DWORD*)&bitmapInfo.bmiColors)[1] = 0x07E0;
+            ((DWORD*)&bitmapInfo.bmiColors)[2] = 0x001F;
 
             g_BitmapHandle = CreateDIBSection(g_DeviceContext, &bitmapInfo, DIB_RGB_COLORS, &g_BitmapData, nullptr, 0);
             g_BitmapWidth = drawingWidth;
@@ -96,30 +94,27 @@ namespace TextRenderer
         HBITMAP oldBitmap = (HBITMAP)SelectObject(g_DeviceContext, g_BitmapHandle);
         HFONT oldFont = (HFONT)SelectObject(g_DeviceContext, g_FontHandle);
         int surfacePitch = directDrawSurface->GetPitch();
-        int copyWidth = std::min(drawingWidth, surfaceWidth - lockX);
+        int copyWidth = std::min(drawingWidth, surfaceWidth - clampedX);
 
-        // Wipe the temporary bitmap surface to prevent trailing artifacts and inject background pixels
         memset(g_BitmapData, 0, drawingWidth * drawingHeight * 2);
-        for (int y = 0; y < drawingHeight && (lockY + y) < surfaceHeight; y++)
+        for (int y = 0; y < drawingHeight && (clampedY + y) < surfaceHeight; y++)
         {
             memcpy((uint8_t*)g_BitmapData + y * drawingWidth * 2,
                    (uint8_t*)surfaceBuffer + y * surfacePitch, copyWidth * 2);
         }
 
-        // De-serialize the game engine's BGR565 coloring scheme to raw Win32 COLORREF channels
         uint16_t gameColor = gameFont ? gameFont->Color : 0x7FFF;
         SetTextColor(g_DeviceContext, RGB(((gameColor >> 11) & 0x1F) << 3,
                                          ((gameColor >> 5) & 0x3F) << 2,
                                          (gameColor & 0x1F) << 3));
         SetBkMode(g_DeviceContext, TRANSPARENT);
 
-        // Map internal alignment flags to Windows standard layout formatting options
         UINT drawingFlags = DT_NOPREFIX;
         if (alignment & 1)       drawingFlags |= DT_CENTER;
         else if (alignment & 2)  drawingFlags |= DT_RIGHT;
         else                     drawingFlags |= DT_LEFT;
 
-        RECT textBoundaryBox = { 0, 0, drawingWidth, drawingHeight };
+        RECT textBoundaryBox = { offsetX, offsetY, offsetX + drawingWidth, offsetY + drawingHeight };
         if (wcslen(text) == 1 && boxWidth <= 0 && boxHeight <= 0)
             drawingFlags |= DT_SINGLELINE;
         else if (boxHeight > 0 && boxHeight < 30)
@@ -130,8 +125,7 @@ namespace TextRenderer
         DrawTextW(g_DeviceContext, text, -1, &textBoundaryBox, drawingFlags);
         GdiFlush();
 
-        // Copy the composited image back over onto the live display surface pipelines
-        for (int y = 0; y < drawingHeight && (lockY + y) < surfaceHeight; y++)
+        for (int y = 0; y < drawingHeight && (clampedY + y) < surfaceHeight; y++)
         {
             memcpy((uint8_t*)surfaceBuffer + y * surfacePitch,
                    (uint8_t*)g_BitmapData + y * drawingWidth * 2, copyWidth * 2);
@@ -143,7 +137,6 @@ namespace TextRenderer
         return true;
     }
 
-    // Calculates the required dimensions bounding box for a string without printing it to the screen
     bool GetTextDimension(BitFont*, const wchar_t* text, int* outWidth, int* outHeight, int maxWidth)
     {
         if (!text || !*text) return false;

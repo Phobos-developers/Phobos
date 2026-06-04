@@ -46,9 +46,6 @@ DEFINE_HOOK(0x434B90, BitText_Print, 6)
     GET_STACK(int, W, 0x18);
     GET_STACK(int, H, 0x1C);
 
-    if (!TextRenderer::IsInitialized())
-        return 0;
-
     if (TextRenderer::DrawText(pFont, pSurface, pWideString, X, Y, 2000, H, 0))
         return 0x434BDE;
     return 0;
@@ -62,18 +59,21 @@ DEFINE_HOOK(0x434120, BitFont_Blit, 6)
     GET_STACK(int, Y, 0xC);
     GET_STACK(int, nColor, 0x10);
 
-    if (!TextRenderer::IsInitialized())
-        return 0;
-
     wchar_t pText[2] = { wch, L'\0' };
-    if (nColor != -1) pFont->Color = (WORD)nColor;
+    const auto originalColor = pFont->Color;
+    if (nColor != -1)
+    {
+        pFont->Color = static_cast<WORD>(nColor);
+    }
 
     if (TextRenderer::DrawText(pFont, DSurface::Composite, pText, X, Y, 0, 0, 0))
     {
         int charWidth = 0;
         TextRenderer::GetTextDimension(pFont, pText, &charWidth, nullptr, 0);
+        pFont->Color = originalColor;
         R->EAX(X + charWidth + 1);
         return 0x434155;
     }
+    pFont->Color = originalColor;
     return 0;
 }
