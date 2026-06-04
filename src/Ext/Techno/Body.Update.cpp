@@ -36,11 +36,10 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->ApplyMindControlRangeLimit();
 	this->UpdateRecountBurst();
 	this->UpdateRearmInEMPState();
+	this->UpdateLastTargetCrd();
 
 	if (this->AttackMoveFollowerTempCount)
 		this->AttackMoveFollowerTempCount--;
-
-	this->UpdateLastTargetCrd();
 }
 
 void TechnoExt::ExtData::ApplyInterceptor()

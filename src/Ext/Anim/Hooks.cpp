@@ -11,23 +11,24 @@ namespace AnimLoggingTemp
 	AnimTypeClass* pType = nullptr;
 }
 
-DEFINE_HOOK(0x423B95, AnimClass_AI_HideIfNoOre_Threshold, 0x8)
+DEFINE_HOOK(0x423B95, AnimClass_AI_Early, 0x8)
 {
 	GET(AnimClass* const, pThis, ESI);
 	GET(AnimTypeClass* const, pType, EDX);
 
+	AnimExt::ExtMap.Find(pThis)->UpdateAsFiringAnim();
+
 	AnimLoggingTemp::UniqueID = pThis->UniqueID;
 	AnimLoggingTemp::pType = pThis->Type;
 
+	// Replace vanilla HideIfNoOre check.
 	if (pType->HideIfNoOre)
 	{
 		const int nThreshold = abs(AnimTypeExt::ExtMap.Find(pThis->Type)->HideIfNoOre_Threshold.Get());
 		pThis->Invisible = pThis->GetCell()->GetContainedTiberiumValue() <= nThreshold;
 	}
 
-	AnimExt::ExtMap.Find(pThis)->UpdateAsFiringAnim();
-
-	return 0x423BBF;
+	return 0x423BC8;
 }
 
 // Nuke Ares' animation damage hook at 0x424538.
