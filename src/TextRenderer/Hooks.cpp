@@ -4,6 +4,11 @@
 #include <BitText.h>
 #include <Surface.h>
 
+// BitText::Print is designed for single-line text but the game passes a narrow
+// width that causes GDI to word-wrap. We override with a large fixed width to
+// force single-line rendering for CSF messages and other Print callers.
+static constexpr int PRINT_SINGLELINE_WIDTH = 2000;
+
 DEFINE_HOOK(0x433CF0, BitFont_GetTextDimension, 8)
 {
     GET(BitFont*, pFont, ECX);
@@ -46,7 +51,7 @@ DEFINE_HOOK(0x434B90, BitText_Print, 6)
     GET_STACK(int, W, 0x18);
     GET_STACK(int, H, 0x1C);
 
-    if (TextRenderer::DrawText(pFont, pSurface, pWideString, X, Y, 2000, H, 0))
+    if (TextRenderer::DrawText(pFont, pSurface, pWideString, X, Y, PRINT_SINGLELINE_WIDTH, H, 0))
         return 0x434BDE;
     return 0;
 }
