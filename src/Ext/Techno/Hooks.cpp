@@ -49,7 +49,6 @@ DEFINE_HOOK(0x4DA54E, FootClass_AI, 0x6)
 	pExt->UpdateWarpInDelay();
 	pExt->UpdateTiberiumEater();
 	pExt->AmmoAutoConvertActions();
-	pExt->DeployConvertAction();
 
 	return 0;
 }
