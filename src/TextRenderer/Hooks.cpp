@@ -64,21 +64,11 @@ DEFINE_HOOK(0x434120, BitFont_Blit, 6)
     GET_STACK(int, Y, 0xC);
     GET_STACK(int, nColor, 0x10);
 
+    // Measure-only: return character width for cursor positioning.
+    // Actual drawing is handled by BitText_Print for the full string.
     wchar_t pText[2] = { wch, L'\0' };
-    const auto originalColor = pFont->Color;
-    if (nColor != -1)
-    {
-        pFont->Color = static_cast<WORD>(nColor);
-    }
-
-    if (TextRenderer::DrawText(pFont, DSurface::Composite, pText, X, Y, 0, 0, 0))
-    {
-        int charWidth = 0;
-        TextRenderer::GetTextDimension(pFont, pText, &charWidth, nullptr, 0);
-        pFont->Color = originalColor;
-        R->EAX(X + charWidth + 1);
-        return 0x434155;
-    }
-    pFont->Color = originalColor;
-    return 0;
+    int charWidth = 0;
+    TextRenderer::GetTextDimension(pFont, pText, &charWidth, nullptr, 0);
+    R->EAX(X + charWidth + 1);
+    return 0x434155;
 }
