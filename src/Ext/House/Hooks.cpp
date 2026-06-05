@@ -2,45 +2,11 @@
 
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Scenario/Body.h>
-#include <Ext/Building/Body.h>
+#include "Ext/Techno/Body.h"
+#include "Ext/Building/Body.h"
+#include <Ext/Event/Body.h>
 
-DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
-{
-	GET(HouseClass*, pThis, ECX);
-	auto const pHouseExt = HouseExt::ExtMap.Find(pThis);
-
-	pHouseExt->PowerPlantEnhancers.clear();
-
-	// This pre-iterating ensure our process to be done in O(NM) instead of O(N^2),
-	// as M should be much less than N, this will be a great improvement. - secsome
-	for (auto const pBld : pThis->Buildings)
-	{
-		if (TechnoExt::IsActive(pBld) && pBld->IsOnMap && pBld->HasPower)
-		{
-			const auto pType = pBld->Type;
-			const auto pExt = BuildingTypeExt::ExtMap.Find(pType);
-
-			if (pExt->PowerPlantEnhancer_Buildings.size()
-				&& (pExt->PowerPlantEnhancer_Amount != 0 || pExt->PowerPlantEnhancer_Factor != 1.0f))
-			{
-				++pHouseExt->PowerPlantEnhancers[pType->ArrayIndex];
-			}
-		}
-	}
-
-	return 0;
-}
-
-// Power Plant Enhancer #131
-DEFINE_HOOK(0x508CF2, HouseClass_UpdatePower_PowerOutput, 0x7)
-{
-	GET(HouseClass*, pThis, ESI);
-	GET(BuildingClass*, pBld, EDI);
-
-	pThis->PowerOutput += BuildingTypeExt::GetEnhancedPower(pBld, pThis);
-
-	return 0x508D07;
-}
+#include <unordered_map>
 
 // Trigger power recalculation on gain/loss of any techno, not just buildings.
 DEFINE_HOOK_AGAIN(0x5025F0, HouseClass_RegisterGain, 0x5) // RegisterLoss
@@ -56,32 +22,34 @@ DEFINE_HOOK(0x502A80, HouseClass_RegisterGain, 0x8)
 	return 0;
 }
 
-DEFINE_HOOK(0x508D8D, HouseClass_UpdatePower_Techno, 0x6)
+DEFINE_HOOK(0x508D8D, HouseClass_UpdatePower_AfterBuildings, 0x6)
 {
-	if (!Phobos::Config::UnitPowerDrain)
-		return 0;
-
 	GET(HouseClass*, pThis, ESI);
 
-	auto updateDrainForThisType = [pThis](const TechnoTypeClass* pType)
+	if (Phobos::Config::UnitPowerDrain)
 	{
-			const int count = pThis->CountOwnedAndPresent(pType);
-			if (count == 0)
-				return;
-			const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
-			if (pExt->Power > 0)
-				pThis->PowerOutput += pExt->Power * count;
-			else
-				pThis->PowerDrain -= pExt->Power * count;
-	};
+		auto updateDrainForThisType = [pThis](const TechnoTypeClass* pType)
+			{
+				const int count = pThis->CountOwnedAndPresent(pType);
+				if (count == 0)
+					return;
+				const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
+				if (pExt->Power > 0)
+					pThis->PowerOutput += pExt->Power * count;
+				else
+					pThis->PowerDrain -= pExt->Power * count;
+			};
 
-	for (const auto pType : InfantryTypeClass::Array)
-		updateDrainForThisType(pType);
-	for (const auto pType : UnitTypeClass::Array)
-		updateDrainForThisType(pType);
-	for (const auto pType : AircraftTypeClass::Array)
-		updateDrainForThisType(pType);
-	// Don't do this for buildings, they've already been counted.
+		for (const auto pType : InfantryTypeClass::Array)
+			updateDrainForThisType(pType);
+		for (const auto pType : UnitTypeClass::Array)
+			updateDrainForThisType(pType);
+		for (const auto pType : AircraftTypeClass::Array)
+			updateDrainForThisType(pType);
+		// Don't do this for buildings, they've already been counted.
+	}
+
+	HouseExt::CalculatePowerSurplus(pThis);
 
 	return 0;
 }
@@ -157,7 +125,7 @@ DEFINE_HOOK(0x4AC534, DisplayClass_ComputeStartPosition_IllegalCoords, 0x6)
 namespace LimboTrackingTemp
 {
 	bool Enabled = false;
-	bool IsBeingDeleted = false;
+	int IsBeingDeleted = 0;
 }
 
 DEFINE_HOOK(0x687B18, ScenarioClass_ReadINI_StartTracking, 0x7)
@@ -189,9 +157,9 @@ static void __fastcall TechnoClass_UnInit_Wrapper(TechnoClass* pThis)
 			HouseExt::ExtMap.Find(pThis->Owner)->RemoveFromLimboTracking(pType);
 	}
 
-	LimboTrackingTemp::IsBeingDeleted = true;
+	++LimboTrackingTemp::IsBeingDeleted;
 	pThis->ObjectClass::UnInit();
-	LimboTrackingTemp::IsBeingDeleted = false;
+	--LimboTrackingTemp::IsBeingDeleted;
 }
 
 DEFINE_FUNCTION_JUMP(CALL, 0x4DE60B, TechnoClass_UnInit_Wrapper);   // FootClass
@@ -303,6 +271,9 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 			if (!I_am_human)
 				TechnoExt::ChangeOwnerMissionFix(pMe);
 		}
+
+		pThis->Owner->RecheckTechTree = true;
+		pNewOwner->RecheckTechTree = true;
 	}
 
 	for (const auto& pTrail : pExt->LaserTrails)
@@ -547,3 +518,106 @@ DEFINE_HOOK(0x4FD635, HouseClass_UpdateAI_DistCalcFix, 0x5)
 	R->EAX(*(int*)&baseMapCrd);
 	return SkipGameCode;
 }
+
+// Replace game function.
+DEFINE_HOOK(0x50BF60, HouseClass_CalculateCostMultipliers, 0x5)
+{
+	enum { SkipGameCode = 0x50C04A };
+
+	GET(HouseClass*, pThis, ECX);
+
+	std::unordered_map<int, int> counts;
+	pThis->CostAircraftMult = 1.0f;
+	pThis->CostBuildingsMult = 1.0f;
+	pThis->CostDefensesMult = 1.0f;
+	pThis->CostInfantryMult = 1.0f;
+	pThis->CostUnitsMult = 1.0f;
+
+	for (auto const& pBuilding : pThis->FactoryPlants)
+	{
+		auto const pType = pBuilding->Type;
+		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+		const int max = pTypeExt->FactoryPlant_MaxCount;
+
+		if (max > -1 && counts[pType->ArrayIndex] >= max)
+			continue;
+
+		counts[pType->ArrayIndex]++;
+		pThis->CostAircraftMult *= pType->AircraftCostBonus;
+		pThis->CostBuildingsMult *= pType->BuildingsCostBonus;
+		pThis->CostDefensesMult *= pType->DefensesCostBonus;
+		pThis->CostInfantryMult *= pType->InfantryCostBonus;
+		pThis->CostUnitsMult *= pType->UnitsCostBonus;
+	}
+
+	return SkipGameCode;
+}
+
+#pragma region PlayerAutoRepair
+
+DEFINE_HOOK(0x6A5395, SidebarClass_InitIO_InitRepairButton, 0x6)
+{
+	if (!RulesExt::Global()->ExtendedPlayerRepair)
+		return 0;
+
+	if (HouseExt::ExtMap.Find(HouseClass::CurrentPlayer)->PlayerAutoRepair)
+	{
+		SidebarClass::Instance.SidebarNeedsRedraw = true;
+		SidebarClass::ToggleRepairButton.IsOn = true;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x536FA0, ToggleRepariModeCommandClass_Execute_PlayerAutoRepair, 0x7)
+{
+	if (!RulesExt::Global()->ExtendedPlayerRepair)
+		return 0;
+
+	EventExt::RaiseTogglePlayerAutoRepair();
+	return 0x536FAC;
+}
+
+DEFINE_HOOK(0x6A78F6, SidebarClass_Update_ToggleRepair, 0x9)
+{
+	if (!RulesExt::Global()->ExtendedPlayerRepair)
+		MapClass::Instance.SetRepairMode(-1);
+	else
+		EventExt::RaiseTogglePlayerAutoRepair();
+	return 0x6A78FF;
+}
+
+DEFINE_HOOK(0x6A7AE1, SidebarClass_Update_RepairButton, 0x6)
+{
+	if (!RulesExt::Global()->ExtendedPlayerRepair)
+		return 0;
+
+	R->AL(HouseExt::ExtMap.Find(HouseClass::CurrentPlayer)->PlayerAutoRepair);
+	return 0x6A7AE7;
+}
+
+DEFINE_HOOK(0x45063F, BuildingClass_UpdateRepairSell_PlayerAutoRepair, 0x6)
+{
+	enum { CanAutoRepair = 0x450659, CanNotAutoRepair = 0x450813 };
+
+	if (!RulesExt::Global()->ExtendedPlayerRepair)
+		return 0;
+
+	GET(BuildingClass*, pThis, ESI);
+
+	if (!pThis->Owner->IsControlledByHuman())
+		return 0;
+
+	if (HouseExt::ExtMap.Find(pThis->Owner)->PlayerAutoRepair)
+	{
+		return CanAutoRepair;
+	}
+	else
+	{
+		if (pThis->IsBeingRepaired)
+			pThis->SetRepairState(0);
+		return CanNotAutoRepair;
+	}
+}
+
+#pragma endregion

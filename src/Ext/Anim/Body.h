@@ -27,6 +27,10 @@ public:
 		bool DelayedFireRemoveOnNoDelay;
 		bool IsAttachedEffectAnim;
 		bool IsShieldIdleAnim;
+		WeaponTypeClass* FromWeapon;
+		int FromWeaponIdx;
+		int FromBurstIdx;
+		double FirepowerMult;
 
 		ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
 			, DeathUnitFacing { 0 }
@@ -41,12 +45,18 @@ public:
 			, DelayedFireRemoveOnNoDelay { false }
 			, IsAttachedEffectAnim { false }
 			, IsShieldIdleAnim { false }
+			, FromWeapon {}
+			, FromWeaponIdx {}
+			, FromBurstIdx {}
+			, FirepowerMult { 1.0 }
 		{ }
 
 		void SetInvoker(TechnoClass* pInvoker);
 		void SetInvoker(TechnoClass* pInvoker, HouseClass* pInvokerHouse);
 		void CreateAttachedSystem();
 		void DeleteAttachedSystem();
+
+		void UpdateAsFiringAnim();
 
 		virtual ~ExtData() override;
 
@@ -77,7 +87,7 @@ public:
 	static std::vector<AnimClass*> AnimsWithAttachedParticles;
 	static ExtContainer ExtMap;
 
-	static bool SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner = true, bool defaultToInvokerOwner = false);
+	static bool SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner = false, bool defaultToInvokerOwner = false);
 	static HouseClass* GetOwnerHouse(AnimClass* pAnim, HouseClass* pDefaultOwner = nullptr);
 	static void VeinAttackAI(AnimClass* pAnim);
 	static void ChangeAnimType(AnimClass* pAnim, AnimTypeClass* pNewType, bool resetLoops, bool restart);

@@ -537,13 +537,18 @@ int HouseExt::ExtData::GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNa
 
 float HouseExt::ExtData::GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoType) const
 {
-	float mult = 1.0;
+	float mult = 1.0f;
 	auto const pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+	std::unordered_map<int, int> counts;
 
 	for (auto const pBuilding : this->RestrictedFactoryPlants)
 	{
 		auto const pType = pBuilding->Type;
 		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+		const int max = pTypeExt->FactoryPlant_MaxCount;
+
+		if (max > -1 && counts[pType->ArrayIndex] >= max)
+			continue;
 
 		if (pTypeExt->FactoryPlant_AllowTypes.size() > 0 && !pTypeExt->FactoryPlant_AllowTypes.Contains(pTechnoType))
 			continue;
@@ -551,6 +556,7 @@ float HouseExt::ExtData::GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoT
 		if (pTypeExt->FactoryPlant_DisallowTypes.size() > 0 && pTypeExt->FactoryPlant_DisallowTypes.Contains(pTechnoType))
 			continue;
 
+		counts[pType->ArrayIndex]++;
 		float currentMult = 1.0f;
 
 		switch (pTechnoType->WhatAmI())
@@ -646,6 +652,26 @@ void HouseExt::ExtData::SetForceEnemyIndex(int EnemyIndex)
 		this->ForceEnemyIndex = EnemyIndex;
 }
 
+void HouseExt::CalculatePowerSurplus(HouseClass* pThis)
+{
+	auto const pRulesExt = RulesExt::Global();
+
+	if (!pRulesExt->EnablePowerSurplus)
+		return;
+
+	int scaleToDrainAmount = pRulesExt->PowerSurplus_ScaleToDrainAmount;
+
+	if (scaleToDrainAmount <= 0)
+	{
+		pThis->PowerSurplus = RulesClass::Instance->PowerSurplus;
+	}
+	else
+	{
+		double factor = pThis->PowerDrain / static_cast<double>(scaleToDrainAmount);
+		pThis->PowerSurplus = static_cast<int>(RulesClass::Instance->PowerSurplus * factor);
+	}
+}
+
 // =============================
 // load / save
 
@@ -685,6 +711,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->TeamDelay)
 		.Process(this->FreeRadar)
 		.Process(this->ForceRadar)
+		.Process(this->PlayerAutoRepair)
 		;
 }
 
@@ -714,27 +741,35 @@ bool HouseExt::SaveGlobals(PhobosStreamWriter& Stm)
 
 void HouseExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 {
-	AnnounceInvalidPointer(Factory_BuildingType, ptr);
-	AnnounceInvalidPointer(Factory_InfantryType, ptr);
-	AnnounceInvalidPointer(Factory_VehicleType, ptr);
-	AnnounceInvalidPointer(Factory_NavyType, ptr);
-	AnnounceInvalidPointer(Factory_AircraftType, ptr);
-
-	if (ptr != nullptr)
+	if (bRemoved)
 	{
-		if (!OwnedLimboDeliveredBuildings.empty())
-		{
-			auto& vec = this->OwnedLimboDeliveredBuildings;
-			vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
-		}
+		AnnounceInvalidPointer(this->Factory_BuildingType, ptr);
+		AnnounceInvalidPointer(this->Factory_InfantryType, ptr);
+		AnnounceInvalidPointer(this->Factory_VehicleType, ptr);
+		AnnounceInvalidPointer(this->Factory_NavyType, ptr);
+		AnnounceInvalidPointer(this->Factory_AircraftType, ptr);
 
-		if (!RestrictedFactoryPlants.empty())
+		if (ptr != nullptr)
 		{
-			auto& vec = this->RestrictedFactoryPlants;
-			vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
+			if (!this->PowerPlantEnhancers.empty())
+			{
+				auto& vec = this->PowerPlantEnhancers;
+				vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
+			}
+
+			if (!this->OwnedLimboDeliveredBuildings.empty())
+			{
+				auto& vec = this->OwnedLimboDeliveredBuildings;
+				vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
+			}
+
+			if (!this->RestrictedFactoryPlants.empty())
+			{
+				auto& vec = this->RestrictedFactoryPlants;
+				vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
+			}
 		}
 	}
-
 }
 
 // =============================
@@ -753,9 +788,7 @@ DEFINE_HOOK(0x4F6532, HouseClass_CTOR, 0x5)
 	GET(HouseClass*, pItem, EAX);
 
 	HouseExt::ExtMap.TryAllocate(pItem);
-
-	if (RulesExt::Global()->EnablePowerSurplus)
-		pItem->PowerSurplus = RulesClass::Instance->PowerSurplus;
+	HouseExt::CalculatePowerSurplus(pItem);
 
 	return 0;
 }

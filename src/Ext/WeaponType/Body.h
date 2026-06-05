@@ -37,12 +37,17 @@ public:
 		Valueable<double> CanTarget_MaxHealth;
 		Valueable<double> CanTarget_MinHealth;
 		Valueable<AffectedVeterancy> CanTargetVeterancy;
+		Nullable<bool> CanTarget_IronCurtained;
+		Nullable<bool> AutoTarget_IronCurtained;
 		ValueableVector<int> Burst_Delays;
 		Valueable<bool> Burst_FireWithinSequence;
 		Valueable<bool> Burst_NoDelay;
 		Valueable<AreaFireTarget> AreaFire_Target;
 		Valueable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
+		Nullable<int> LaserZAdjust;
+		Nullable<int> EBoltZAdjust;
+		Nullable<bool> EBoltZAdjust_ClampInitialDepthForBuilding;
 		Valueable<bool> VisualScatter;
 		Nullable<PartialVector2D<int>> ROF_RandomDelay;
 		ValueableVector<int> ChargeTurret_Delays;
@@ -94,8 +99,12 @@ public:
 		Nullable<bool> AttackCursorOnFriendlies;
 		Nullable<bool> AttackNoThreatBuildings;
 
+		Nullable<bool> Anim_Update;
+
 		bool SkipWeaponPicking;
 
+		Nullable<bool> CylinderRangefinding;
+		
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
 			, ProjectileRange { Leptons(100000) }
@@ -117,12 +126,17 @@ public:
 			, CanTarget_MaxHealth { 1.0 }
 			, CanTarget_MinHealth { 0.0 }
 			, CanTargetVeterancy { AffectedVeterancy::All }
+			, CanTarget_IronCurtained {}
+			, AutoTarget_IronCurtained {}
 			, Burst_Delays {}
 			, Burst_FireWithinSequence { false }
 			, Burst_NoDelay { false }
 			, AreaFire_Target { AreaFireTarget::Base }
 			, FeedbackWeapon {}
 			, Laser_IsSingleColor { false }
+			, LaserZAdjust {}
+			, EBoltZAdjust {}
+			, EBoltZAdjust_ClampInitialDepthForBuilding {}
 			, VisualScatter { false }
 			, ROF_RandomDelay {}
 			, ChargeTurret_Delays {}
@@ -174,6 +188,8 @@ public:
 			, AttackFriendlies {}
 			, AttackCursorOnFriendlies {}
 			, AttackNoThreatBuildings {}
+			, CylinderRangefinding {}
+			, Anim_Update {}
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;

@@ -8,52 +8,58 @@ BuildingExt::ExtContainer BuildingExt::ExtMap;
 
 void BuildingExt::ExtData::DisplayIncomeString()
 {
-	if (this->AccumulatedIncome && Unsorted::CurrentFrame % 15 == 0)
+	if (this->AccumulatedIncome)
 	{
-		auto const pThis = this->OwnerObject();
-		auto const pTypeExt = this->TypeExtData;
-
-		if ((RulesExt::Global()->DisplayIncome_AllowAI || pThis->Owner->IsControlledByHuman())
-			&& pTypeExt->DisplayIncome.Get(RulesExt::Global()->DisplayIncome))
+		int const delay = this->TypeExtData->DisplayIncome_Delay.Get(RulesExt::Global()->DisplayIncome_Delay.Get());
+		if (Unsorted::CurrentFrame % delay == 0)
 		{
-			FlyingStrings::AddMoneyString(
-				this->AccumulatedIncome,
-				pThis,
-				pThis->Owner,
-				pTypeExt->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
-				pThis->GetRenderCoords(),
-				pTypeExt->DisplayIncome_Offset
-			);
+			auto const pThis = this->OwnerObject();
+			auto const pTypeExt = this->TypeExtData;
+
+			if ((RulesExt::Global()->DisplayIncome_AllowAI || pThis->Owner->IsControlledByHuman())
+				&& pTypeExt->DisplayIncome.Get(RulesExt::Global()->DisplayIncome))
+			{
+				FlyingStrings::AddMoneyString(
+					this->AccumulatedIncome,
+					pThis,
+					pThis->Owner,
+					pTypeExt->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
+					pThis->GetRenderCoords(),
+					pTypeExt->DisplayIncome_Offset
+				);
+			}
+			this->AccumulatedIncome = 0;
 		}
-		this->AccumulatedIncome = 0;
 	}
 }
 
-bool BuildingExt::ExtData::HasSuperWeapon(const int index, const bool withUpgrades) const
+bool BuildingExt::ExtData::HasSuperWeapon(const int index) const
 {
 	const auto pThis = this->OwnerObject();
 	const auto pExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 	const auto pOwner = pThis->Owner;
 
-	const auto count = pExt->GetSuperWeaponCount();
-	for (auto i = 0; i < count; ++i)
+	const int count = pExt->GetSuperWeaponCount();
+
+	for (int i = 0; i < count; ++i)
 	{
-		const auto idxSW = pExt->GetSuperWeaponIndex(i, pOwner);
+		const int idxSW = pExt->GetSuperWeaponIndex(i, pOwner);
 
 		if (idxSW == index)
 			return true;
 	}
 
-	if (withUpgrades)
+	if (pThis->UpgradeLevel)
 	{
 		for (auto const& pUpgrade : pThis->Upgrades)
 		{
 			if (const auto pUpgradeExt = BuildingTypeExt::ExtMap.TryFind(pUpgrade))
 			{
-				const auto countUpgrade = pUpgradeExt->GetSuperWeaponCount();
-				for (auto i = 0; i < countUpgrade; ++i)
+				const int countUpgrade = pUpgradeExt->GetSuperWeaponCount();
+
+				for (int i = 0; i < countUpgrade; ++i)
 				{
-					const auto idxSW = pUpgradeExt->GetSuperWeaponIndex(i, pOwner);
+					const int idxSW = pUpgradeExt->GetSuperWeaponIndex(i, pOwner);
 
 					if (idxSW == index)
 						return true;
@@ -71,7 +77,7 @@ void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiber
 	float depositableTiberiumAmount = 0.0f; // Number of 'bails' that will be stored.
 	auto const pTiberium = TiberiumClass::Array.GetItem(idxTiberiumType);
 
-	if (amount > 0.0)
+	if (amount > 0.0f)
 	{
 		auto const pExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 
@@ -188,7 +194,7 @@ int BuildingExt::CountOccupiedDocks(BuildingClass* pBuilding)
 
 	if (pBuilding->RadioLinks.IsAllocated)
 	{
-		for (auto i = 0; i < pBuilding->RadioLinks.Capacity; ++i)
+		for (int i = 0; i < pBuilding->RadioLinks.Capacity; ++i)
 		{
 			if (auto const pLink = pBuilding->GetNthLink(i))
 				nOccupiedDocks++;

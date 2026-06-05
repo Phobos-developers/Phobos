@@ -109,12 +109,17 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CanTarget_MaxHealth.Read(exINI, pSection, "CanTarget.MaxHealth");
 	this->CanTarget_MinHealth.Read(exINI, pSection, "CanTarget.MinHealth");
 	this->CanTargetVeterancy.Read(exINI, pSection, "CanTargetVeterancy");
+	this->CanTarget_IronCurtained.Read(exINI, pSection, "CanTarget.IronCurtained");
+	this->AutoTarget_IronCurtained.Read(exINI, pSection, "AutoTarget.IronCurtained");
 	this->Burst_Delays.Read(exINI, pSection, "Burst.Delays");
 	this->Burst_FireWithinSequence.Read(exINI, pSection, "Burst.FireWithinSequence");
 	this->Burst_NoDelay.Read(exINI, pSection, "Burst.NoDelay");
 	this->AreaFire_Target.Read(exINI, pSection, "AreaFire.Target");
 	this->FeedbackWeapon.Read<true>(exINI, pSection, "FeedbackWeapon");
 	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
+	this->LaserZAdjust.Read(exINI, pSection, "LaserZAdjust");
+	this->EBoltZAdjust.Read(exINI, pSection, "EBoltZAdjust");
+	this->EBoltZAdjust_ClampInitialDepthForBuilding.Read(exINI, pSection, "EBoltZAdjust.ClampInitialDepthForBuilding");
 	this->VisualScatter.Read(exINI, pSection, "VisualScatter");
 	this->ROF_RandomDelay.Read(exINI, pSection, "ROF.RandomDelay");
 	this->ChargeTurret_Delays.Read(exINI, pSection, "ChargeTurret.Delays");
@@ -165,6 +170,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackFriendlies.Read(exINI, pSection, "AttackFriendlies");
 	this->AttackCursorOnFriendlies.Read(exINI, pSection, "AttackCursorOnFriendlies");
 	this->AttackNoThreatBuildings.Read(exINI, pSection, "AttackNoThreatBuildings");
+	this->CylinderRangefinding.Read(exINI, pSection, "CylinderRangefinding");
+	this->Anim_Update.Read(exINI, pSection, "Anim.Update");
 
 	// handle SkipWeaponPicking
 	if (this->CanTarget != AffectedTarget::All || this->CanTargetHouses != AffectedHouse::All
@@ -200,6 +207,8 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CanTarget_MaxHealth)
 		.Process(this->CanTarget_MinHealth)
 		.Process(this->CanTargetVeterancy)
+		.Process(this->CanTarget_IronCurtained)
+		.Process(this->AutoTarget_IronCurtained)
 		.Process(this->RadType)
 		.Process(this->Burst_Delays)
 		.Process(this->Burst_FireWithinSequence)
@@ -207,6 +216,9 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AreaFire_Target)
 		.Process(this->FeedbackWeapon)
 		.Process(this->Laser_IsSingleColor)
+		.Process(this->LaserZAdjust)
+		.Process(this->EBoltZAdjust)
+		.Process(this->EBoltZAdjust_ClampInitialDepthForBuilding)
 		.Process(this->VisualScatter)
 		.Process(this->ROF_RandomDelay)
 		.Process(this->ChargeTurret_Delays)
@@ -258,6 +270,8 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackFriendlies)
 		.Process(this->AttackCursorOnFriendlies)
 		.Process(this->AttackNoThreatBuildings)
+		.Process(this->CylinderRangefinding)
+		.Process(this->Anim_Update)
 		;
 };
 

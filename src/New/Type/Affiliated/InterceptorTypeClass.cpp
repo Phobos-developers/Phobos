@@ -6,6 +6,7 @@ InterceptorTypeClass::InterceptorTypeClass(TechnoTypeClass* OwnedBy)
 	, CanTargetHouses { AffectedHouse::Enemies }
 	, GuardRange {}
 	, MinimumGuardRange {}
+	, GuardRange_IsCylindrical { false }
 	, Weapon { 0 }
 	, ApplyFirepowerMult { true }
 	, DeleteOnIntercept {}
@@ -23,6 +24,7 @@ void InterceptorTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	this->CanTargetHouses.Read(exINI, pSection, "Interceptor.CanTargetHouses");
 	this->GuardRange.Read(exINI, pSection, "Interceptor.%sGuardRange");
 	this->MinimumGuardRange.Read(exINI, pSection, "Interceptor.%sMinimumGuardRange");
+	this->GuardRange_IsCylindrical.Read(exINI, pSection, "Interceptor.GuardRange.IsCylindrical");
 	this->Weapon.Read(exINI, pSection, "Interceptor.Weapon");
 	this->ApplyFirepowerMult.Read(exINI, pSection, "Interceptor.ApplyFirepowerMult");
 	this->DeleteOnIntercept.Read(exINI, pSection, "Interceptor.DeleteOnIntercept");
@@ -49,6 +51,7 @@ bool InterceptorTypeClass::Serialize(T& stm)
 		.Process(this->CanTargetHouses)
 		.Process(this->GuardRange)
 		.Process(this->MinimumGuardRange)
+		.Process(this->GuardRange_IsCylindrical)
 		.Process(this->Weapon)
 		.Process(this->ApplyFirepowerMult)
 		.Process(this->DeleteOnIntercept)

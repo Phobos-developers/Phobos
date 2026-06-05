@@ -46,7 +46,7 @@ public:
 
 		void DisplayIncomeString();
 		void ApplyPoweredKillSpawns();
-		bool HasSuperWeapon(int index, bool withUpgrades) const;
+		bool HasSuperWeapon(int index) const;
 		bool HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore);
 		void UpdatePrimaryFactoryAI();
 		virtual ~ExtData() = default;

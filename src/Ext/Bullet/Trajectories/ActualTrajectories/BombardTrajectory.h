@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "../PhobosActualTrajectory.h"
 
@@ -75,6 +75,7 @@ public:
 	virtual bool GetCanHitGround() const override { return this->Type->SubjectToGround || this->IsFalling; }
 	virtual void SetBulletNewTarget(AbstractClass* const pTarget) override;
 	virtual void MultiplyBulletVelocity(const double ratio, const bool shouldDetonate) override;
+	virtual bool ShouldSkipBridgeCheck() { return !this->Type->SubjectToGround; }
 
 private:
 	CoordStruct CalculateMiddleCoords();

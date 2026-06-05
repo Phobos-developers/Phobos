@@ -1,4 +1,4 @@
-﻿#include "ParabolaTrajectory.h"
+#include "ParabolaTrajectory.h"
 
 #include <OverlayTypeClass.h>
 
@@ -691,8 +691,18 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(const CoordStruct& sour
 		// Step 1: Read the appropriate fire angle
 		const double radian = pType->LaunchAngle * Math::Pi / 180.0;
 
-		// Step 2: Using Newton Iteration Method to determine the projectile velocity
-		const double velocity = (radian >= Math::HalfPi || radian <= -Math::HalfPi) ? 100.0 : this->SearchVelocity(horizontalDistance, distanceCoords.Z, radian, gravity);
+		// Step 2: Find projectile velocity
+		const auto velocity = this->SolveFixedAngleVelocity(horizontalDistance, distanceCoords.Z, radian, gravity);
+
+		if (velocity < 0.0)
+		{
+			auto const targetCoords = pBullet->TargetCoords;
+
+			Debug::Log("Failed to solve fixed angle Parabola trajectory velocity: BulletType: [%s] - Source: %d,%d,%d - Target: %d,%d,%d - Angle: %.2f - Gravity: %.2f\n",
+				pBullet->Type->get_ID(), source.X, source.Y, source.Z, targetCoords.X, targetCoords.Y, targetCoords.Z, pType->LaunchAngle, gravity);
+
+			break;
+		}
 
 		// Step 3: Calculate the vertical component of the projectile velocity
 		this->MovingVelocity.Z = velocity * Math::sin(radian);
@@ -779,62 +789,43 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(const CoordStruct& sour
 	this->MovingVelocity.Z += gravity / 2;
 }
 
-double ParabolaTrajectory::SearchVelocity(const double horizontalDistance, int distanceCoordsZ, const double radian, const double gravity)
+// May 17, 2026 - Starkku: Replaced the Newton iterative method root-finding
+// algorithm with more stable and less failure-prone analytical solution.
+// Ingame testing vs. old method suggested Newton method converged towards same solutions anyway
+// but was more prone to failure with certain parameters f.ex extreme elevation difference.
+double ParabolaTrajectory::SolveFixedAngleVelocity(double horizontalDistance, int verticalOffset, double radian, double gravity)
 {
-	// Estimate initial velocity
-	const double mult = Math::sin(2 * radian);
-	double velocity = std::abs(mult) > BulletExt::Epsilon ? sqrt(horizontalDistance * gravity / mult) : 0.0;
-	velocity += distanceCoordsZ / gravity;
-	velocity = velocity > 8.0 ? velocity : 8.0;
-	const double error = velocity / 16;
+	constexpr double epsilon = 1e-6;
 
-	// Newton Iteration Method
-	for (int i = 0; i < ParabolaTrajectory::Attempts; ++i)
-	{
-		// Substitute into the estimate speed
-		const double differential = this->CheckVelocityEquation(horizontalDistance, distanceCoordsZ, velocity, radian, gravity);
-		const double dDifferential = (this->CheckVelocityEquation(horizontalDistance, distanceCoordsZ, (velocity + ParabolaTrajectory::Delta), radian, gravity) - differential) / ParabolaTrajectory::Delta;
+	// Invalid gravity.
+	if (gravity <= epsilon)
+		return -1.0;
 
-		// Check unacceptable divisor
-		if (std::abs(dDifferential) < BulletExt::Epsilon)
-			return velocity;
+	const double cosTheta = std::cos(radian);
 
-		// Calculate the speed of the next iteration
-		const double difference = differential / dDifferential;
-		const double velocityNew = velocity - difference;
+	// Reject near-vertical launch angle.
+	if (std::abs(cosTheta) < epsilon)
+		return -1.0;
 
-		// Check tolerable error
-		if (std::abs(difference) < error)
-			return velocityNew;
+	// Solve ballistic trajectory analytically:
+	// z = x*tan(theta) - (g*x^2)/(2*v^2*cos^2(theta))
+	//
+	// Solving for v:
+	// v = sqrt((g*x^2) / (2*cos^2(theta)*(x*tan(theta)-z)))
+	const double tanTheta = std::tan(radian);
+	const double trajectoryTerm = horizontalDistance * tanTheta - verticalOffset;
 
-		// Update the speed
-		velocity = velocityNew;
-	}
+	// No solution at this launch angle.
+	if (trajectoryTerm <= epsilon)
+		return -1.0;
 
-	// Unsolvable
-	return 10.0;
-}
+	const double velocitySquared = (gravity * horizontalDistance * horizontalDistance) / (2.0 * cosTheta * cosTheta * trajectoryTerm);
 
-double ParabolaTrajectory::CheckVelocityEquation(const double horizontalDistance, int distanceCoordsZ, const double velocity, const double radian, const double gravity)
-{
-	// Calculate each component of the projectile velocity
-	const double horizontalVelocity = velocity * Math::cos(radian);
-	const double verticalVelocity = velocity * Math::sin(radian);
+	// Reject absurd velocity values.
+	if (velocitySquared <= 0.0 || !std::isfinite(velocitySquared))
+		return -1.0;
 
-	// Calculate the time of the rising phase
-	const double upTime = verticalVelocity / gravity;
-
-	// Calculate the maximum height that the projectile can reach
-	const double maxHeight = 0.5 * verticalVelocity * upTime;
-
-	// Calculate the time of the descent phase
-	const double downTime = sqrt(2 * (maxHeight - distanceCoordsZ) / gravity);
-
-	// Calculate the total time required for horizontal movement
-	const double wholeTime = horizontalDistance / horizontalVelocity;
-
-	// Calculate the difference between the total vertical motion time and the total horizontal motion time
-	return wholeTime - (upTime + downTime);
+	return std::sqrt(velocitySquared);
 }
 
 double ParabolaTrajectory::SolveFixedSpeedMeetTime(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, const double horizontalSpeed)

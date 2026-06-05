@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <BulletClass.h>
 
@@ -117,6 +117,7 @@ public:
 	virtual void SetBulletNewTarget(AbstractClass* const pTarget);
 	virtual bool CalculateBulletVelocity(const double speed);
 	virtual void MultiplyBulletVelocity(const double ratio, const bool shouldDetonate);
+	virtual bool ShouldSkipBridgeCheck() const { return false; }
 
 	static void RotateVector(BulletVelocity& vector, const BulletVelocity& aim, const double turningRadian);
 	static void RotateAboutTheAxis(BulletVelocity& vector, BulletVelocity& axis, const double radian);

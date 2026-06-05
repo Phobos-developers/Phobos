@@ -51,6 +51,7 @@ public:
 		Valueable<bool> RadSiteWarhead_Detonate_Full;
 		Valueable<bool> RadHasOwner;
 		Valueable<bool> RadHasInvoker;
+		Valueable<bool> ShieldApplyArmorMult;
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
 
@@ -63,6 +64,7 @@ public:
 		Valueable<bool> PlacementPreview;
 		TranslucencyLevel PlacementPreview_Translucency;
 
+		Valueable<bool> SuperWeaponTimer_Percentage;
 		Valueable<bool> SuperWeaponSidebar_AllowByDefault;
 
 		Nullable<double> ConditionYellow_Terrain;
@@ -111,10 +113,17 @@ public:
 		Valueable<bool> ForbidParallelAIQueues_Vehicle;
 
 		Valueable<bool> EnablePowerSurplus;
+		Valueable<int> PowerSurplus_ScaleToDrainAmount;
 
 		Valueable<bool> DisplayIncome;
+		Valueable<int> DisplayIncome_Delay;
 		Valueable<bool> DisplayIncome_AllowAI;
 		Valueable<AffectedHouse> DisplayIncome_Houses;
+
+		Valueable<bool> DrainMoneyDisplay;
+		Valueable<AffectedHouse> DrainMoneyDisplay_Houses;
+		Valueable<bool> DrainMoneyDisplay_OnTarget;
+		Valueable<bool> DrainMoneyDisplay_OnTarget_UseDisplayIncome;
 
 		Valueable<bool> AllowDeployControlledMCV;
 
@@ -134,6 +143,10 @@ public:
 		Valueable<bool> ColorAddUse8BitRGB;
 		Valueable<ColorStruct> AirstrikeLineColor;
 		Valueable<int> AirstrikeLineZAdjust;
+
+		Valueable<int> LaserZAdjust;
+		Valueable<int> EBoltZAdjust;
+		Valueable<bool> EBoltZAdjust_ClampInitialDepthForBuilding;
 
 		Valueable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<ColorStruct> ToolTip_Background_Color;
@@ -160,6 +173,7 @@ public:
 		Valueable<Leptons> VisualScatter_Max;
 
 		Valueable<bool> ShowDesignatorRange;
+		Valueable<bool> ShowPowerPlantEnhancerRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
 		Valueable<int> SelectionFlashDuration;
 		Nullable<AnimTypeClass*> DropPodTrailer;
@@ -176,6 +190,7 @@ public:
 
 		Valueable<bool> JumpjetClimbPredictHeight;
 		Valueable<bool> JumpjetClimbWithoutCutOut;
+		Valueable<bool> JumpjetClimbIgnoreBuilding;
 
 		Valueable<bool> MergeBuildingDamage;
 
@@ -231,8 +246,11 @@ public:
 		Valueable<bool> AIAllToHunt;
 		Valueable<bool> RepairBaseNodes;
 
+		Valueable<bool> FixRepairStepCost;
+
 		Valueable<bool> WarheadParticleAlphaImageIsLightFlash;
 		Valueable<int> CombatLightDetailLevel;
+		Valueable<bool> CombatLightDetailLevel_CheckColored;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
 		Valueable<bool> UseRetintFix;
@@ -245,6 +263,10 @@ public:
 		Nullable<int> PlayerAttackMoveTargetingDelay;
 		Valueable<bool> DistributeTargetingFrame;
 		Valueable<bool> DistributeTargetingFrame_AIOnly;
+
+		Valueable<bool> CanTargetAI_IronCurtained;
+		Valueable<bool> CanTarget_IronCurtained;
+		Valueable<bool> AutoTarget_IronCurtained;
 
 		Valueable<bool> BuildingWaypoints;
 		Valueable<bool> BuildingTypeSelectable;
@@ -259,6 +281,7 @@ public:
 		Valueable<bool> AnimCraterDestroyTiberium;
 
 		Valueable<AffectedHouse> BerzerkTargeting;
+		Valueable<bool> AllowBerzerkOnAllies;
 
 		Valueable<bool> AttackMove_IgnoreWeaponCheck;
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
@@ -280,6 +303,8 @@ public:
 
 		Valueable<bool> FallingDownTargetingFix;
 		Valueable<bool> AIAirTargetingFix;
+		Valueable<bool> OpenTopped_DecloakToFire;
+		Valueable<bool> OpenTopped_AllowFiringIfAttackedByLocomotor;
 
 		Valueable<bool> SortCameoByName;
 
@@ -290,12 +315,50 @@ public:
 		Valueable<Leptons> ExtraRange_FirerMoving;
 		Valueable<Leptons> ExtraRange_Prefiring;
 		Valueable<bool> ExtraRange_Prefiring_IncludeBurst;
-		
+
 		Valueable<bool> ApplyPerTargetEffectsOnDetonate;
+
+		Valueable<bool> FiringAnim_Update;
+		Valueable<bool> ExtendedPlayerRepair;
 		
 		Valueable<bool> AutoTarget_NoThreatBuildings;
 		Valueable<bool> AutoTargetAI_NoThreatBuildings;
+
+		Valueable<Mission> ParadropMission;
+		Valueable<Mission> AIParadropMission;
+
+		Valueable<bool> DefaultToGuardArea;
+
+		Valueable<bool> DisableOveroptimizationInTargeting;
     
+		Valueable<bool> CylinderRangefinding;
+
+		Valueable<int> PenetratesTransport_Level;
+
+		Valueable<bool> UnitsUnsellable;
+
+		Valueable<bool> DriverKilled_KillPassengers;
+		Valueable<double> ExtraThreat_IsThreat;
+		Valueable<double> ExtraThreat_InRange;
+		Valueable<double> ExtraThreatCoefficient_InRangeDistance;
+		Valueable<double> ExtraThreatCoefficient_Facing;
+		Valueable<double> ExtraThreatCoefficient_DistanceToLastTarget;
+		Valueable<bool> BalloonHoverPathingFix;
+
+		Valueable<bool> WalkLocomotorMakesWake;
+		Valueable<bool> DriveLocomotorMakesWake;
+		Valueable<bool> HoverLocomotorMakesWake;
+		Valueable<bool> ShipLocomotorMakesWake;
+
+		Valueable<bool> Shrapnel_IgnoreHitBuildings;
+
+		Nullable<PartialVector2D<int>> BuildingGuardRetryDelay;
+
+		Valueable<bool> Temporal_ApplyVersus;
+		Valueable<bool> Temporal_ApplyMultiplier;
+
+		Valueable<bool> DiscardOn_MoveBasedOnDestination;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -322,6 +385,7 @@ public:
 			, RadSiteWarhead_Detonate_Full { true }
 			, RadHasOwner { false }
 			, RadHasInvoker { false }
+			, ShieldApplyArmorMult { false }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, VeinholeWarhead {}
@@ -332,6 +396,7 @@ public:
 			, PlacementPreview { false }
 			, PlacementPreview_Translucency { 75 }
 
+			, SuperWeaponTimer_Percentage { false }
 			, SuperWeaponSidebar_AllowByDefault { false }
 
 			, Shield_ConditionYellow { }
@@ -378,6 +443,7 @@ public:
 			, ForbidParallelAIQueues_Vehicle { false }
 
 			, EnablePowerSurplus { false }
+			, PowerSurplus_ScaleToDrainAmount { 0 }
 
 			, AllowDeployControlledMCV { false }
 
@@ -395,13 +461,21 @@ public:
 			, ColorAddUse8BitRGB { false }
 			, AirstrikeLineColor { { 255, 0, 0 } }
 			, AirstrikeLineZAdjust { 0 }
+			, LaserZAdjust { 0 }
+			, EBoltZAdjust { 0 }
+			, EBoltZAdjust_ClampInitialDepthForBuilding { true }
 			, ROF_RandomDelay { { 0 ,2 } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
 			, ToolTip_Background_BlurSize { 0.0f }
 			, DisplayIncome { false }
+			, DisplayIncome_Delay { 15 }
 			, DisplayIncome_AllowAI { true }
 			, DisplayIncome_Houses { AffectedHouse::All }
+			, DrainMoneyDisplay { false }
+			, DrainMoneyDisplay_Houses { AffectedHouse::All }
+			, DrainMoneyDisplay_OnTarget { false }
+			, DrainMoneyDisplay_OnTarget_UseDisplayIncome { true }
 			, CrateOnlyOnLand { false }
 			, UnitCrateVehicleCap { 50 }
 			, FreeMCV_CreditsThreshold { 1500 }
@@ -428,11 +502,14 @@ public:
 			, VisualScatter_Min { Leptons(8) }
 			, VisualScatter_Max { Leptons(32) }
 			, ShowDesignatorRange { true }
+			, ShowPowerPlantEnhancerRange { true }
 			, DropPodTrailer { }
 			, DropPodDefaultTrailer { }
 			, PodImage { }
 			, JumpjetClimbPredictHeight { false }
 			, JumpjetClimbWithoutCutOut { false }
+			, JumpjetClimbIgnoreBuilding { false }
+
 			, DamageOwnerMultiplier { 1.0 }
 			, DamageAlliesMultiplier { 1.0 }
 			, DamageEnemiesMultiplier { 1.0 }
@@ -477,8 +554,10 @@ public:
 			, AIFireSaleDelay { 0 }
 			, AIAllToHunt { true }
 			, RepairBaseNodes { false }
+			, FixRepairStepCost { false }
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
+			, CombatLightDetailLevel_CheckColored { false }
 			, LightFlashAlphaImageDetailLevel { 0 }
 			, UseRetintFix { true }
 			, AINormalTargetingDelay {}
@@ -489,6 +568,9 @@ public:
 			, PlayerAttackMoveTargetingDelay {}
 			, DistributeTargetingFrame { false }
 			, DistributeTargetingFrame_AIOnly { true }
+			, CanTargetAI_IronCurtained { false }
+			, CanTarget_IronCurtained { true }
+			, AutoTarget_IronCurtained { true }
 			, BuildingWaypoints { false }
 			, BuildingTypeSelectable { false }
 			, ProneSpeed_Crawls { 0.67 }
@@ -501,6 +583,7 @@ public:
 			, AnimCraterDestroyTiberium { true }
 
 			, BerzerkTargeting { AffectedHouse::All }
+			, AllowBerzerkOnAllies { false }
 
 			, TintColorIronCurtain { 0 }
 			, TintColorForceShield { 0 }
@@ -519,13 +602,15 @@ public:
 
 			, FallingDownTargetingFix { false }
 			, AIAirTargetingFix { false }
+			, OpenTopped_DecloakToFire { false }
+			, OpenTopped_AllowFiringIfAttackedByLocomotor { true }
 
 			, SortCameoByName { false }
-			
+
 			, MergeBuildingDamage { false }
 
 			, BuildingRadioLink_SyncOwner { true }
-			
+
 			, ApplyPerTargetEffectsOnDetonate { true }
 
 			, ExtraRange_TargetMoving { Leptons(0) }
@@ -536,6 +621,39 @@ public:
 
 			, AutoTarget_NoThreatBuildings { false }
 			, AutoTargetAI_NoThreatBuildings { true }
+
+			, ParadropMission { Mission::Guard }
+			, AIParadropMission { Mission::Hunt }
+
+			, DefaultToGuardArea { false }
+
+			, CylinderRangefinding { false }
+
+			, PenetratesTransport_Level { 10 }
+
+			, UnitsUnsellable { false }
+
+			, DriverKilled_KillPassengers { false }
+			, DisableOveroptimizationInTargeting { false }
+			, ExtraThreat_IsThreat { 0.0 }
+			, ExtraThreat_InRange { 0.0 }
+			, ExtraThreatCoefficient_InRangeDistance { 0.0 }
+			, ExtraThreatCoefficient_Facing { 0.0 }
+			, ExtraThreatCoefficient_DistanceToLastTarget { 0.0 }
+			
+			, BalloonHoverPathingFix { false }
+			
+			, WalkLocomotorMakesWake { false }
+			, DriveLocomotorMakesWake { true }
+			, HoverLocomotorMakesWake { true }
+			, ShipLocomotorMakesWake { true }
+			, FiringAnim_Update { false }
+			, ExtendedPlayerRepair { false }
+			, Shrapnel_IgnoreHitBuildings { false }
+			, BuildingGuardRetryDelay {}
+			, Temporal_ApplyVersus { false }
+			, Temporal_ApplyMultiplier { false }
+			, DiscardOn_MoveBasedOnDestination { false }
 		{ }
 
 		virtual ~ExtData() = default;

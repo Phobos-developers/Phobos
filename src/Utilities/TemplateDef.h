@@ -55,6 +55,7 @@
 #include <Powerups.h>
 #include <VocClass.h>
 #include <VoxClass.h>
+#include <ParticleTypeClass.h>
 #include <CRT.h>
 #include <LocomotionClass.h>
 #include <Locomotion/TestLocomotionClass.h>
@@ -277,10 +278,13 @@ namespace detail
 	template <>
 	inline bool read<PartialVector2D<int>>(PartialVector2D<int>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
-		value.ValueCount = parser.ReadMultipleIntegers(pSection, pKey, (int*)&value, 2);
+		int valueCount = parser.ReadMultipleIntegers(pSection, pKey, (int*)&value, 2);
 
-		if (value.ValueCount > 0)
+		if (valueCount > 0)
+		{
+			value.ValueCount = valueCount;
 			return true;
+		}
 
 		return false;
 	}
@@ -288,10 +292,13 @@ namespace detail
 	template <>
 	inline bool read<PartialVector2D<double>>(PartialVector2D<double>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
-		value.ValueCount = parser.ReadMultipleDoubles(pSection, pKey, (double*)&value, 2);
+		int valueCount = parser.ReadMultipleDoubles(pSection, pKey, (double*)&value, 2);
 
-		if (value.ValueCount > 0)
+		if (valueCount > 0)
+		{
+			value.ValueCount = valueCount;
 			return true;
+		}
 
 		return false;
 	}
@@ -299,10 +306,13 @@ namespace detail
 	template <>
 	inline bool read<PartialVector3D<int>>(PartialVector3D<int>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
-		value.ValueCount = parser.ReadMultipleIntegers(pSection, pKey, (int*)&value, 3);
+		int valueCount = parser.ReadMultipleIntegers(pSection, pKey, (int*)&value, 3);
 
-		if (value.ValueCount > 0)
+		if (valueCount > 0)
+		{
+			value.ValueCount = valueCount;
 			return true;
+		}
 
 		return false;
 	}
@@ -310,10 +320,13 @@ namespace detail
 	template <>
 	inline bool read<PartialVector3D<double>>(PartialVector3D<double>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
-		value.ValueCount = parser.ReadMultipleDoubles(pSection, pKey, (double*)&value, 3);
+		int valueCount = parser.ReadMultipleDoubles(pSection, pKey, (double*)&value, 3);
 
-		if (value.ValueCount > 0)
+		if (valueCount > 0)
+		{
+			value.ValueCount = valueCount;
 			return true;
+		}
 
 		return false;
 	}
@@ -1663,6 +1676,40 @@ void __declspec(noinline) ValueableVector<T>::Read(INI_EX& parser, const char* p
 	{
 		this->clear();
 		detail::parse_values<T>(*this, parser, pSection, pKey);
+	}
+}
+
+// Specialization: use FindOrAllocate for weapon vectors, avoiding dependency on [WeaponTypes] registration
+template <>
+inline void ValueableVector<WeaponTypeClass*>::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	if (parser.ReadString(pSection, pKey))
+	{
+		this->clear();
+		char* str = parser.value();
+		char* context = nullptr;
+		for (char* cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			if (auto pWeapon = WeaponTypeClass::FindOrAllocate(cur))
+				this->push_back(pWeapon);
+		}
+	}
+}
+
+// Specialization: use FindOrAllocate for warhead vectors, avoiding dependency on [Warheads] table
+template <>
+inline void ValueableVector<WarheadTypeClass*>::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	if (parser.ReadString(pSection, pKey))
+	{
+		this->clear();
+		char* str = parser.value();
+		char* context = nullptr;
+		for (char* cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			if (auto pWarhead = WarheadTypeClass::FindOrAllocate(cur))
+				this->push_back(pWarhead);
+		}
 	}
 }
 

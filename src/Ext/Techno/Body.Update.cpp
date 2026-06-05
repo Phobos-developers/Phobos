@@ -36,6 +36,7 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->ApplyMindControlRangeLimit();
 	this->UpdateRecountBurst();
 	this->UpdateRearmInEMPState();
+	this->UpdateLastTargetCrd();
 
 	if (this->AttackMoveFollowerTempCount)
 		this->AttackMoveFollowerTempCount--;
@@ -49,10 +50,11 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	if (!pInterceptorType || Unsorted::CurrentFrame % pInterceptorType->TargetingDelay != 0)
 		return;
 
-	if (!BulletClass::Array.Count || this->IsBurrowed)
+	const auto pThis = this->OwnerObject();
+
+	if (!BulletClass::Array.Count || this->IsBurrowed || !pThis->IsArmed())
 		return;
 
-	const auto pThis = this->OwnerObject();
 	const auto pTarget = pThis->Target;
 
 	if (pTarget)
@@ -66,7 +68,13 @@ void TechnoExt::ExtData::ApplyInterceptor()
 			return;
 	}
 
+	const bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
+
+	if (isBuilding && (pThis->CurrentMission == Mission::Selling || pThis->CurrentMission == Mission::Construction))
+		return;
+
 	BulletClass* pOptionalTarget = nullptr;
+	BulletClass* pTargetBullet = nullptr;
 	const double guardRange = pInterceptorType->GuardRange.Get(pThis);
 	const double guardRangeSq = guardRange * guardRange;
 	const double minGuardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
@@ -90,7 +98,12 @@ void TechnoExt::ExtData::ApplyInterceptor()
 		if (pOptionalTarget && isTargetedOrLocked)
 			continue;
 
-		const auto distanceSq = pBullet->Location.DistanceFromSquared(location);
+		auto bulletLoc = pBullet->Location;
+
+		if (pInterceptorType->GuardRange_IsCylindrical)
+			bulletLoc.Z = location.Z;
+
+		const auto distanceSq = bulletLoc.DistanceFromSquared(location);
 
 		if (distanceSq > guardRangeSq || distanceSq < minGuardRangeSq)
 			continue;
@@ -113,12 +126,25 @@ void TechnoExt::ExtData::ApplyInterceptor()
 		}
 
 		// Establish target
-		pThis->SetTarget(pBullet);
-		return;
+		pTargetBullet = pBullet;
+		break;
 	}
 
-	if (pOptionalTarget)
-		pThis->SetTarget(pOptionalTarget);  // There is no more suitable target, establish optional target
+	// There is no more suitable target, establish optional target
+	if (!pTargetBullet && pOptionalTarget)
+		pTargetBullet = pOptionalTarget;
+
+	if (pTargetBullet)
+	{
+		pThis->SetTarget(pTargetBullet);
+
+		// Skip normal transition from idle to attack for building interceptors.
+		if (isBuilding)
+		{
+			pThis->QueueMission(Mission::Attack, false);
+			pThis->NextMission();
+		}
+	}
 }
 
 void TechnoExt::ExtData::DepletedAmmoActions()
@@ -357,12 +383,13 @@ void TechnoExt::ExtData::EatPassengers()
 		if (pThis->Passengers.NumPassengers > 0)
 		{
 			// Passengers / CargoClass is essentially a stack, last in, first out (LIFO) kind of data structure
-			FootClass* pPassenger = nullptr;          // Passenger to potentially delete
+			FootClass* pPoorGuy = nullptr;          // Passenger to potentially delete
 			FootClass* pPreviousPassenger = nullptr;  // Passenger immediately prior to the deleted one in the stack
 			ObjectClass* pLastPassenger = nullptr;    // Passenger that is last in the stack
 			auto pCurrentPassenger = pThis->Passengers.GetFirstPassenger();
 			const auto allowedHouses = pDelType->AllowedHouses;
 			const auto pOwner = pThis->Owner;
+			const bool displayCash = pDelType->DisplaySoylent && pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer);
 
 			// Find the first entered passenger that is eligible for deletion.
 			while (pCurrentPassenger)
@@ -370,14 +397,14 @@ void TechnoExt::ExtData::EatPassengers()
 				if (EnumFunctions::CanTargetHouse(allowedHouses, pOwner, pCurrentPassenger->Owner))
 				{
 					pPreviousPassenger = abstract_cast<FootClass*>(pLastPassenger);
-					pPassenger = pCurrentPassenger;
+					pPoorGuy = pCurrentPassenger;
 				}
 
 				pLastPassenger = pCurrentPassenger;
 				pCurrentPassenger = abstract_cast<FootClass*>(pCurrentPassenger->NextObject);
 			}
 
-			if (!pPassenger)
+			if (!pPoorGuy)
 			{
 				this->PassengerDeletionTimer.Stop();
 				return;
@@ -390,7 +417,7 @@ void TechnoExt::ExtData::EatPassengers()
 				if (pDelType->UseCostAsRate)
 				{
 					// Use passenger cost as countdown.
-					timerLength = (int)(pPassenger->GetTechnoType()->Cost * pDelType->CostMultiplier);
+					timerLength = (int)(pPoorGuy->GetTechnoType()->Cost * pDelType->CostMultiplier);
 
 					if (pDelType->CostRateCap.isset())
 						timerLength = std::min(timerLength, pDelType->CostRateCap.Get());
@@ -399,7 +426,7 @@ void TechnoExt::ExtData::EatPassengers()
 				{
 					// Use explicit rate optionally multiplied by unit size as countdown.
 					timerLength = pDelType->Rate;
-					const double size = (double)pPassenger->GetTechnoType()->Size;
+					const double size = (double)pPoorGuy->GetTechnoType()->Size;
 
 					if (pDelType->Rate_SizeMultiply && size > 1.0)
 						timerLength *= (int)(size + 0.5);
@@ -415,7 +442,7 @@ void TechnoExt::ExtData::EatPassengers()
 					pLastPassenger->NextObject = nullptr;
 
 				if (pPreviousPassenger)
-					pPreviousPassenger->NextObject = pPassenger->NextObject;
+					pPreviousPassenger->NextObject = pPoorGuy->NextObject;
 
 				if (pThis->Passengers.NumPassengers <= 0)
 					pThis->Passengers.FirstPassenger = nullptr;
@@ -427,19 +454,46 @@ void TechnoExt::ExtData::EatPassengers()
 
 				// Check if there is money refund
 				if (pDelType->Soylent
-					&& EnumFunctions::CanTargetHouse(pDelType->SoylentAllowedHouses, pOwner, pPassenger->Owner))
+					&& EnumFunctions::CanTargetHouse(pDelType->SoylentAllowedHouses, pOwner, pPoorGuy->Owner))
 				{
-					const int nMoneyToGive = (int)(pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true) * pDelType->SoylentMultiplier);
+					const double multiplier = pDelType->SoylentMultiplier;
+					int moneyToGive = static_cast<int>(pPoorGuy->GetTechnoType()->GetRefund(pPoorGuy->Owner, true) * multiplier);
 
-					if (nMoneyToGive > 0)
+					for (auto pPassenger = pPoorGuy->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
+						moneyToGive += static_cast<int>(pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true) * multiplier);
+
+					if (const auto pParasite = pPoorGuy->ParasiteEatingMe)
 					{
-						pOwner->GiveMoney(nMoneyToGive);
+						moneyToGive += static_cast<int>(pParasite->GetTechnoType()->GetRefund(pParasite->Owner, true) * multiplier);
+						pParasite->ParasiteImUsing->SuppressionTimer.Start(50);
+						pParasite->ParasiteImUsing->ExitUnit();
+					}
 
-						if (pDelType->DisplaySoylent)
+					const int hijack = pPoorGuy->HijackerInfantryType;
+
+					if (hijack != -1)
+					{
+						const auto pHijackerType = InfantryTypeClass::Array[hijack];
+						moneyToGive += static_cast<int>(pHijackerType->GetRefund(pPoorGuy->Owner, true) * multiplier);
+					}
+
+					if (moneyToGive > 0)
+					{
+						pOwner->GiveMoney(moneyToGive);
+
+						if (displayCash)
 						{
-							FlyingStrings::AddMoneyString(nMoneyToGive, pThis, pOwner,
+							FlyingStrings::AddMoneyString(moneyToGive, pThis, pOwner,
 								pDelType->DisplaySoylentToHouses, pThis->Location, pDelType->DisplaySoylentOffset);
 						}
+					}
+				}
+				else
+				{
+					if (const auto pParasite = pPoorGuy->ParasiteEatingMe)
+					{
+						pParasite->ParasiteImUsing->SuppressionTimer.Start(50);
+						pParasite->ParasiteImUsing->ExitUnit();
 					}
 				}
 
@@ -450,7 +504,7 @@ void TechnoExt::ExtData::EatPassengers()
 				{
 					if (auto const pFoot = abstract_cast<FootClass*, true>(pThis))
 					{
-						pFoot->RemoveGunner(pPassenger);
+						pFoot->RemoveGunner(pPoorGuy);
 
 						if (auto pGunner = pFoot->Passengers.GetFirstPassenger())
 						{
@@ -463,9 +517,9 @@ void TechnoExt::ExtData::EatPassengers()
 				}
 
 				auto const pSource = pDelType->DontScore ? nullptr : pThis;
-				pPassenger->KillPassengers(pSource);
-				pPassenger->RegisterDestruction(pSource);
-				pPassenger->UnInit();
+				pPoorGuy->KillPassengers(pSource);
+				pPoorGuy->RegisterDestruction(pSource);
+				pPoorGuy->UnInit();
 
 				// Handle extra power
 				if (auto const pBldType = abstract_cast<BuildingTypeClass*, true>(pTransportType))
@@ -721,10 +775,18 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	}
 
 	// Remove from harvesters list if no longer a harvester.
-	if (pOldTypeExt->Harvester_Counted && !pNewTypeExt->Harvester_Counted)
+	if (pOldTypeExt->Harvester_Counted)
 	{
-		auto& vec = HouseExt::ExtMap.Find(pOwner)->OwnedCountedHarvesters;
-		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
+		if (!pNewTypeExt->Harvester_Counted)
+		{
+			auto& vec = HouseExt::ExtMap.Find(pOwner)->OwnedCountedHarvesters;
+			vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
+		}
+	}
+	// Add to harvesters list if it's a harvester.
+	else if (pNewTypeExt->Harvester_Counted)
+	{
+		HouseExt::ExtMap.Find(pOwner)->OwnedCountedHarvesters.push_back(pThis);
 	}
 
 	// Remove from limbo reloaders if no longer applicable
@@ -1079,6 +1141,11 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		barrelRecoil.HoldFrames = barrelAnimData.HoldFrames;
 	}
 
+	if (pOldType->BombSight && !pCurrentType->BombSight)
+		BombListClass::Instance.RemoveDetector(pThis);
+	else if (!pOldType->BombSight && pCurrentType->BombSight)
+		BombListClass::Instance.AddDetector(pThis);
+
 	// Only FootClass* can use this.
 	if (const auto pFoot = abstract_cast<FootClass*, true>(pThis))
 	{
@@ -1109,6 +1176,13 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	// handle AutoTargetOwnPosition
 	if (pOldTypeExt->AutoTargetOwnPosition && !pNewTypeExt->AutoTargetOwnPosition)
 		pThis->SetTarget(nullptr);
+
+	// Clear AlphaImage
+	if (const auto pAlphaMap = AresFunctions::AlphaExtMap)
+	{
+		if (const auto pAlpha = pAlphaMap->get_or_default(pThis))
+			GameDelete(pAlpha);
+	}
 }
 
 void TechnoExt::ExtData::UpdateTypeData_Foot()
@@ -1180,6 +1254,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 		{
 			if (toOpenTopped)
 			{
+				pFirstPassenger->SetLocation(pThis->Location);
 				// Add passengers to the logic layer.
 				pThis->EnteredOpenTopped(pFirstPassenger);
 			}
@@ -1231,6 +1306,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 			{
 				const int turnrate = pCurrentType->JumpjetTurnRate >= 127 ? 127 : pCurrentType->JumpjetTurnRate;
 				pJJLoco->Speed = pCurrentType->JumpjetSpeed;
+				pJJLoco->Climb = pCurrentType->JumpjetClimb;
 				pJJLoco->Accel = pCurrentType->JumpjetAccel;
 				pJJLoco->Crash = pCurrentType->JumpjetCrash;
 				pJJLoco->Deviation = pCurrentType->JumpjetDeviation;
@@ -1243,18 +1319,16 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 
 				if (isinAir)
 				{
-					const bool inMove = pJJLoco->Is_Really_Moving_Now();
-
 					if (pCurrentType->BalloonHover)
 					{
 						// Makes the jumpjet think it is hovering without actually moving.
 						pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
 						pJJLoco->IsMoving = true;
 
-						if (!inMove)
+						if (!pJJLoco->Is_Moving_Now())
 							pJJLoco->DestinationCoords = pThis->Location;
 					}
-					else if (!inMove)
+					else if (!pJJLoco->Is_Moving_Now())
 					{
 						pJJLoco->Move_To(pThis->Location);
 					}
@@ -1263,7 +1337,6 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 			else if (isinAir)
 			{
 				// Let it go into free fall.
-				pThis->FallRate = 0;
 				pThis->IsFallingDown = true;
 
 				const auto pCell = MapClass::Instance.TryGetCellAt(pThis->Location);
@@ -1278,6 +1351,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 				{
 					// If it's gonna land on the bridge, then it needs this.
 					pThis->OnBridge = pCell ? pCell->ContainsBridge() : false;
+					this->OnParachuted = true;
 				}
 
 				if (abs == AbstractType::Infantry)
@@ -1617,6 +1691,12 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, cons
 	{
 		AnimExt::CreateRandomAnim(pVanishAnimation, pThis->GetCoords(), pThis, nullptr, true);
 
+		if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pThis))
+		{
+			if (pThis->BunkerLinkedItem)
+				pBuilding->UnloadBunker();
+		}
+
 		pThis->KillPassengers(pThis);
 		pThis->Stun();
 		pThis->Limbo();
@@ -1867,6 +1947,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			if (shouldDiscard && attachEffect->ResetIfRecreatable())
 			{
 				++it;
+				altered = true;
 				continue;
 			}
 
@@ -1998,12 +2079,36 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 }
 
 // Recalculates AttachEffect stat multipliers and other bonuses.
-void TechnoExt::ExtData::RecalculateStatMultipliers()
+bool TechnoExt::ExtData::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 {
 	auto const pThis = this->OwnerObject();
 	auto& pAE = this->AE;
-	const bool wasTint = pAE.HasTint;
 
+	if (pAttachEffect)
+	{
+		auto const type = pAttachEffect->GetType();
+		pAE.FirepowerMultiplier *= type->FirepowerMultiplier;
+		pAE.SpeedMultiplier *= type->SpeedMultiplier;
+		pAE.ROFMultiplier *= type->ROFMultiplier;
+		pAE.Cloakable |= type->Cloakable;
+		pAE.ForceDecloak |= type->ForceDecloak;
+		pAE.DisableWeapons |= type->DisableWeapons;
+		pAE.Unkillable |= type->Unkillable;
+		pAE.HasRangeModifier |= (type->WeaponRange_ExtraRange != 0.0 || type->WeaponRange_Multiplier != 0.0);
+		pAE.HasTint |= type->HasTint();
+		pAE.ReflectDamage |= type->ReflectDamage;
+		pAE.HasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
+		pAE.HasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
+
+		if (type->ArmorMultiplier != 1.0 && (type->ArmorMultiplier_AllowWarheads.size() > 0 || type->ArmorMultiplier_DisallowWarheads.size() > 0))
+			pAE.HasRestrictedArmorMultipliers = true;
+		else
+			pAE.ArmorMultiplier *= type->ArmorMultiplier;
+
+		return pAE.ForceDecloak;
+	}
+
+	const bool wasTint = pAE.HasTint;
 	double firepower = 1.0;
 	double armor = 1.0;
 	double speed = 1.0;
@@ -2065,6 +2170,8 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 
 	if (wasTint || hasTint)
 		this->UpdateTintValues();
+
+	return false;
 }
 
 // Recalculates tint values.
@@ -2127,5 +2234,31 @@ void TechnoExt::ExtData::UpdateTintValues()
 	{
 		auto const pShieldType = this->Shield->GetType();
 		calculateTint(Drawing::RGB_To_Int(pShieldType->Tint_Color), static_cast<int>(pShieldType->Tint_Intensity * 1000), pShieldType->Tint_VisibleToHouses);
+	}
+}
+
+void TechnoExt::ExtData::UpdateLastTargetCrd()
+{
+	if (!this->TypeExtData->ExtraThreat_Enabled)
+		return;
+
+	auto const pThis = this->OwnerObject();
+	auto pTimer = &this->LastTargetCrdClearTimer;
+
+	if (pThis->Target)
+	{
+		this->LastTargetCrd = pThis->Target->GetCoords();
+		pTimer->Stop();
+	}
+	else
+	{
+		if (!pTimer->IsTicking())
+			pTimer->Start(45);
+
+		if (pTimer->Completed())
+		{
+			this->LastTargetCrd = CoordStruct::Empty;
+			pTimer->Stop();
+		}
 	}
 }

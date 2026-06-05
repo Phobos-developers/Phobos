@@ -5,7 +5,7 @@
 
 AnimTypeExt::ExtContainer AnimTypeExt::ExtMap;
 
-void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
+void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, HouseClass* pKiller)
 {
 	if (!pThis)
 		return;
@@ -41,7 +41,7 @@ void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
 		if (pAnimType)
 		{
 			auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location);
-			auto const pInvoker = pKiller ? pKiller->Owner : nullptr;
+			auto const pInvoker = pKiller;
 
 			//auto VictimOwner = pThis->IsMindControlled() && pThis->GetOriginalOwner()
 			//	? pThis->GetOriginalOwner() : pThis->Owner;

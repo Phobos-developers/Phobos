@@ -2,6 +2,7 @@
 
 #include <Ext/ParticleSystemType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Bullet/Body.h>
 
 // Contains hooks that fix weapon graphical effects like lasers, railguns, electric bolts, beams and waves not interacting
 // correctly with obstacles between firer and target, as well as railgun / railgun particles being cut off by elevation.
@@ -203,10 +204,11 @@ DEFINE_HOOK(0x62B8BC, ParticleClass_CTOR_CoordAdjust, 0x6)
 	enum { SkipCoordAdjust = 0x62B8CB };
 
 	GET(ParticleClass*, pThis, ESI);
+	const auto pParticleSys = pThis->ParticleSystem;
 
-	if (pThis->ParticleSystem)
+	if (pParticleSys && pParticleSys->Type)
 	{
-		const auto behavesLike = pThis->ParticleSystem->Type->BehavesLike;
+		const auto behavesLike = pParticleSys->Type->BehavesLike;
 
 		if (behavesLike == BehavesLike::Railgun || behavesLike == BehavesLike::Fire)
 			return SkipCoordAdjust;
@@ -230,11 +232,11 @@ DEFINE_HOOK(0x6FD38D, TechnoClass_DrawSth_DrawToInvisoFlakScatterLocation, 0x7) 
 		{
 			const auto& pRulesExt = RulesExt::Global();
 			const auto radius = ScenarioClass::Instance->Random.RandomRanged(pRulesExt->VisualScatter_Min.Get(), pRulesExt->VisualScatter_Max.Get());
-			*pTargetCoords = MapClass::GetRandomCoordsNear((pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords), radius, false);
+			*pTargetCoords = MapClass::GetRandomCoordsNear(BulletExt::GetTargetCoordsForFiring(pBullet), radius, false);
 		}
 		else
 		{
-			*pTargetCoords = (pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords);
+			*pTargetCoords = BulletExt::GetTargetCoordsForFiring(pBullet);
 		}
 	}
 	else if (const auto pObstacleCell = FireAtTemp::pObstacleCell)

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "../PhobosActualTrajectory.h"
 
@@ -86,8 +86,7 @@ public:
 private:
 	void CalculateBulletVelocityRightNow(const CoordStruct& pSourceCoords, const double gravity);
 	void CalculateBulletVelocityLeadTime(const CoordStruct& pSourceCoords, const double gravity);
-	double SearchVelocity(const double horizontalDistance, int distanceCoordsZ, const double radian, const double gravity);
-	double CheckVelocityEquation(const double horizontalDistance, int distanceCoordsZ, const double velocity, const double radian, const double gravity);
+	double SolveFixedAngleVelocity(double horizontalDistance, int verticalOffset, double radian, double gravity);
 	double SolveFixedSpeedMeetTime(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, const double horizontalSpeed);
 	double SearchFixedHeightMeetTime(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, const double gravity);
 	double CheckFixedHeightEquation(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, const double meetTime, const double gravity);

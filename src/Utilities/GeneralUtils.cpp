@@ -85,10 +85,10 @@ struct DummyTypeExtHere
 
 const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor armorType)
 {
-	if (!AresHelper::CanUseAres)
-		return pWH->Verses[static_cast<int>(armorType)];
+	if (AresHelper::CanUseAres)
+		return reinterpret_cast<DummyTypeExtHere*>(*(uintptr_t*)((char*)pWH + 0x1CC))->Verses[static_cast<int>(armorType)].Verses;
 
-	return reinterpret_cast<DummyTypeExtHere*>(*(uintptr_t*)((char*)pWH + 0x1CC))->Verses[static_cast<int>(armorType)].Verses;
+	return static_cast<double>(MapClass::GetTotalDamage(100, pWH, armorType, 0)) / 100.0;
 }
 
 const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, TechnoClass* pThis, TechnoTypeClass* pType)
@@ -282,13 +282,18 @@ int GeneralUtils::GetColorFromColorAdd(int colorIndex)
 	const int green = color.G;
 	const int blue = color.B;
 
-	if (Drawing::ColorMode == RGBMode::RGB565)
-		colorValue |= blue | (32 * (green | (red << 6)));
-
-	if (Drawing::ColorMode != RGBMode::RGB655)
-		colorValue |= blue | (((32 * red) | (green >> 1)) << 6);
-
-	colorValue |= blue | (32 * ((32 * red) | (green >> 1)));
+	switch (Drawing::ColorMode)
+	{
+	case RGBMode::RGB565:
+		colorValue |= (red << 6 | green) << 5 | blue;
+		break;
+	case RGBMode::RGB556:
+		colorValue |= (red << 5 | green >> 1) << 6 | blue;
+		break;
+	default:
+		colorValue |= (red << 5 | green >> 1) << 5 | blue;
+		break;
+	}
 
 	return colorValue;
 }

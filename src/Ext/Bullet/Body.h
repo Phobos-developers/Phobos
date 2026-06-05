@@ -59,13 +59,13 @@ public:
 		int DamageNumberOffset;
 		int ParabombFallRate;
 		bool IsInstantDetonation;
+		double FirepowerMult;
 
 		TrajectoryPointer Trajectory;
 		bool DispersedTrajectory;
 		CDTimerClass LifeDurationTimer;
 		CDTimerClass NoTargetLifeTimer;
 		CDTimerClass RetargetTimer;
-		double FirepowerMult;
 		int AttenuationRange;
 		bool TargetIsInAir;
 		bool TargetIsTechno;
@@ -97,13 +97,13 @@ public:
 			, DamageNumberOffset { INT32_MIN }
 			, ParabombFallRate { 0 }
 			, IsInstantDetonation { false }
+			, FirepowerMult { 1.0 }
 
 			, Trajectory { nullptr }
 			, DispersedTrajectory { false }
 			, LifeDurationTimer {}
 			, NoTargetLifeTimer {}
 			, RetargetTimer {}
-			, FirepowerMult { 1.0 }
 			, AttenuationRange { 0 }
 			, TargetIsInAir { false }
 			, TargetIsTechno { false }
@@ -180,6 +180,7 @@ public:
 
 	static void Detonate(const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse, AbstractClass* pTarget, bool isBright, WeaponTypeClass* pWeapon, WarheadTypeClass* pWarhead);
 	static void ApplyArcingFix(BulletClass* pThis, const CoordStruct& sourceCoords, const CoordStruct& targetCoords, BulletVelocity& velocity);
+	static CoordStruct GetTargetCoordsForFiring(BulletClass* pBullet);
 
 	static void SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords, bool randomVelocity);
 	static void SimulatedFiringEffects(BulletClass* pBullet, HouseClass* pHouse, ObjectClass* pAttach, bool firingEffect, bool visualEffect);

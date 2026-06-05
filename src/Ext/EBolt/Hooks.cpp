@@ -185,3 +185,37 @@ DEFINE_HOOK(0x4C2A02, EBolt_DestroyVector, 0x6)
 	return SkipGameCode;
 }
 #pragma endregion
+
+DEFINE_HOOK(0x6FD4E4, TechnoClass_FireEBolt_Building_ClampPositive, 0x9)
+{
+	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x30, 0x8));
+	GET(CoordStruct*, pV13, EAX);
+	GET(int, Y, ESI);
+
+	int zAdjust = Y - pV13->Y;
+
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const bool clamp = pWeaponExt->EBoltZAdjust_ClampInitialDepthForBuilding.Get(RulesExt::Global()->EBoltZAdjust_ClampInitialDepthForBuilding);
+
+	if (clamp && zAdjust > 0)
+		zAdjust = 0;
+
+	R->ESI(zAdjust);
+
+	return 0x6FD4ED;
+}
+
+DEFINE_HOOK(0x6FD4ED, TechnoClass_FireEBolt_ZAdjust, 0x7)
+{
+	GET_STACK(TechnoClass*, pTarget, STACK_OFFSET(0x30, 0x4));
+	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x30, 0x8));
+	GET(int, zAdjust, ESI);
+
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	zAdjust += pWeaponExt->EBoltZAdjust.Get(RulesExt::Global()->EBoltZAdjust);
+
+	R->ESI(zAdjust);
+	R->ECX(pTarget);
+
+	return (pTarget ? 0x6FD4F5 : 0x6FD50A);
+}

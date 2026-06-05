@@ -65,6 +65,30 @@ void AnimExt::ExtData::DeleteAttachedSystem()
 	}
 }
 
+void AnimExt::ExtData::UpdateAsFiringAnim()
+{
+	if (!this->FromWeapon)
+		return;
+
+	auto pThis = this->OwnerObject();
+	auto pOwner = abstract_cast<TechnoClass*>(pThis->OwnerObject);
+
+	if (pOwner)
+	{
+		auto pWeapon = this->FromWeapon;
+		AnimTypeClass* pNewType = GeneralUtils::GetItemForDirection<AnimTypeClass*>(pWeapon->Anim, pOwner->GetRealFacing());
+
+		if (pNewType)
+			pThis->Type = pNewType;
+
+		auto burstIdx = pOwner->CurrentBurstIndex;
+		pOwner->CurrentBurstIndex = this->FromBurstIdx;
+		auto flh = pOwner->GetFLH(this->FromWeaponIdx, CoordStruct::Empty);
+		pOwner->CurrentBurstIndex = burstIdx;
+		pThis->SetLocation(flh - pOwner->GetCoords());
+	}
+}
+
 //Modified from Ares
 bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner, bool defaultToInvokerOwner)
 {
@@ -411,6 +435,10 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->DelayedFireRemoveOnNoDelay)
 		.Process(this->IsAttachedEffectAnim)
 		.Process(this->IsShieldIdleAnim)
+		.Process(this->FromWeapon)
+		.Process(this->FromWeaponIdx)
+		.Process(this->FromBurstIdx)
+		.Process(this->FirepowerMult)
 		;
 }
 

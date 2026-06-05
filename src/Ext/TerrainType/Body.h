@@ -19,6 +19,7 @@ public:
 		Valueable<int> SpawnsTiberium_Range;
 		Valueable<PartialVector2D<int>> SpawnsTiberium_GrowthStage;
 		Valueable<PartialVector2D<int>> SpawnsTiberium_CellsPerAnim;
+		ValueableIdx<ParticleTypeClass> SpawnsTiberium_Particle;
 		ValueableVector<AnimTypeClass*> DestroyAnim;
 		ValueableIdx<VocClass> DestroySound;
 		Nullable<ColorStruct> MinimapColor;
@@ -35,8 +36,9 @@ public:
 		ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
 			, SpawnsTiberium_Type { 0 }
 			, SpawnsTiberium_Range { 1 }
-			, SpawnsTiberium_GrowthStage { { 3, 0 } }
-			, SpawnsTiberium_CellsPerAnim { { 1, 0 } }
+			, SpawnsTiberium_GrowthStage { { 3 } }
+			, SpawnsTiberium_CellsPerAnim { { 1 } }
+			, SpawnsTiberium_Particle { -1 }
 			, DestroyAnim {}
 			, DestroySound {}
 			, MinimapColor {}
