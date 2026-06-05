@@ -818,7 +818,7 @@ msgstr ""
 msgid ""
 "`ApplyArmorMult` can be set to true to allow the shield to benefit from "
 "the armor multiplier."
-msgstr "ApplyArmorMult` 可设为 true 以允许护盾享受护甲倍率。"
+msgstr "`ApplyArmorMult` 可设为 true 以允许护盾享受护甲倍率。"
 
 msgid ""
 "`InitialStrength` can be used to set a different initial strength value "

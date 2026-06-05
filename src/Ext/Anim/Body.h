@@ -30,6 +30,7 @@ public:
 		WeaponTypeClass* FromWeapon;
 		int FromWeaponIdx;
 		int FromBurstIdx;
+		double FirepowerMult;
 
 		ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
 			, DeathUnitFacing { 0 }
@@ -47,6 +48,7 @@ public:
 			, FromWeapon {}
 			, FromWeaponIdx {}
 			, FromBurstIdx {}
+			, FirepowerMult { 1.0 }
 		{ }
 
 		void SetInvoker(TechnoClass* pInvoker);

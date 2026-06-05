@@ -3159,10 +3159,11 @@ DEFINE_HOOK(0x55B5FF, LogicClass_AI_UpdateObjects, 0x5)
 
 	GET(LogicClass*, pLogic, EDI);
 	int& updateIdx = LogicUpdateTemp::UpdateIndex;
+	const auto& items = pLogic->Items;
 
 	for (updateIdx = 0; updateIdx < pLogic->Count; ++updateIdx)
 	{
-		const auto pObject = pLogic->Items[updateIdx];
+		const auto pObject = items[updateIdx];
 		pObject->Update();
 	}
 

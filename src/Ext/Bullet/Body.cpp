@@ -406,7 +406,7 @@ void BulletExt::SimulatedFiringEffects(BulletClass* pBullet, HouseClass* pHouse,
 	}
 }
 
-inline CoordStruct BulletExt::GetTargetCoordsForFiring(BulletClass* pBullet)
+CoordStruct BulletExt::GetTargetCoordsForFiring(BulletClass* pBullet)
 {
 	if (pBullet->Type->Inviso && pBullet->Type->FlakScatter)
 		return pBullet->Location;
@@ -478,6 +478,7 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->DamageNumberOffset)
 		.Process(this->ParabombFallRate)
 		.Process(this->IsInstantDetonation)
+		.Process(this->FirepowerMult)
 
 		.Process(this->Trajectory) // Keep this shit at last
 		;
