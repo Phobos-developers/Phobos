@@ -1186,6 +1186,7 @@ Trajectory.Bombard.TurningPointAnims=        ; List of AnimationTypes
     - `Trajectory.Missile.CruiseUnableRange` controls how far away it is from the target to end the cruise phase, no longer maintaining the cruise altitude, and begins to move directly towards the target. If the distance is already below this value by the time `Trajectory.Missile.PreAimCoord` is reached, the cruise phase will be skipped.
     - `Trajectory.Missile.CruiseAltitude` controls the altitude of the projectile in the cruise phase.
     - `Trajectory.Missile.CruiseAlongLevel` controls whether to calculate `Trajectory.Missile.CruiseAltitude` by the ground height of the current position, otherwise it will be calculated by the height of the launch position.
+  - `Trajectory.Missile.CollisionDetection` controls whether the projectile will attempt to fly up when it's going to collide a terrain.
   - `Trajectory.Missile.SuicideAboveRange` controls the projectile to self destruct directly after reaching the flight distance. Set to 0 to disable suicide. When set to a negative number, its absolute value represents a multiple of the initial distance.
   - `Trajectory.Missile.SuicideShortOfROT` controls whether the projectile will explode when it detected its insufficient turning ability.
 
@@ -1203,6 +1204,7 @@ Trajectory.Missile.CruiseEnable=false       ; boolean
 Trajectory.Missile.CruiseUnableRange=5.0    ; floating point value
 Trajectory.Missile.CruiseAltitude=800       ; integer
 Trajectory.Missile.CruiseAlongLevel=false   ; boolean
+Trajectory.Missile.CollisionDetection=false ; boolean
 Trajectory.Missile.SuicideAboveRange=-3.0   ; floating point value
 Trajectory.Missile.SuicideShortOfROT=false  ; boolean
 ```
