@@ -3138,6 +3138,9 @@ ExtraRange.Prefiring.IncludeBurst=              ; boolean, default to [General] 
   - `ExtraWarheads.DetonationChances` can be used to customize the chance of each extra Warhead detonation occuring. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, every extra Warhead detonation is guaranteed to occur.
   - `ExtraWarheads.FullDetonation` can be used to customize whether or not each individual Warhead is detonated fully (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, defaults to true.
   - Note that the listed Warheads must be listed in `[Warheads]` for them to work.
+- These warheads can be made random with these optional tags. The game will randomly choose only a single warhead from the list for each roll chance provided.
+  - `ExtraWarheads.RollChances` lists chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
+  - `ExtraWarheads.RandomWeightsN` lists the weights for each "dice roll" that increase the probability of picking a specific warhead. Valid values are 0 (don't pick) and above (the higher value, the bigger the likelyhood). `RandomWeights` are a valid alias for `RandomWeights0`. If a roll attempt doesn't have weights specified, the last weights will be used.
 
 In `rulesmd.ini`:
 ```ini
@@ -3146,6 +3149,8 @@ ExtraWarheads=                    ; List of WarheadTypes
 ExtraWarheads.DamageOverrides=    ; List of integers
 ExtraWarheads.DetonationChances=  ; List of floating-point values (percentage or absolute)
 ExtraWarheads.FullDetonation=     ; List of booleans
+ExtraWarheads.RollChances=        ; List of percentages
+ExtraWarheads.RandomWeightsN=     ; List of integers
 ```
 
 ### Feedback weapon
