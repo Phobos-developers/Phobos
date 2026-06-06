@@ -224,7 +224,7 @@ DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_Tracking, 0x7)
 	if (mode == PositionFollow::None)
 		return 0;
 
-	bool stopOnFirerConvert = WeaponTypeExt::ExtMap.Find(pWeapon)->LaserPositionUpdate_StopOnFirerConvert.Get(RulesExt::Global()->LaserPositionUpdate_StopOnFirerConvert);
+	const bool stopOnFirerConvert = WeaponTypeExt::ExtMap.Find(pWeapon)->LaserPositionUpdate_StopOnFirerConvert.Get(RulesExt::Global()->LaserPositionUpdate_StopOnFirerConvert);
 
 	it->second.Initialize(pShooter, pTarget, weaponIdx, mode, pLaser->Source, localFLH, burstIndex, stopOnFirerConvert);
 	return 0;

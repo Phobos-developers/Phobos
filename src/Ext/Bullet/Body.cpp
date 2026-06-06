@@ -202,9 +202,6 @@ inline void BulletExt::SimulatedFiringReport(BulletClass* pBullet)
 inline void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pHouse)
 {
 	// Can not use 0x6FD210 because the firer may die
-	if (!pBullet || !pBullet->WeaponType)
-		return;
-
 	const auto pWeapon = pBullet->WeaponType;
 
 	if (!pWeapon->IsLaser)
@@ -235,11 +232,10 @@ inline void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pH
 	}
 
 	// LaserPositionUpdate
-	if (pLaser && pWeaponExt)
+	if (pLaser)
 	{
 		auto mode = pWeaponExt->LaserPositionUpdate;
-		const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
-		const bool isSplit = (pBulletExt && pBulletExt->IsSplitFromAirburst);
+		const bool isSplit = BulletExt::ExtMap.Find(pBullet)->IsSplitFromAirburst;
 
 		if (isSplit)
 		{
