@@ -374,7 +374,7 @@ void BulletExt::SimulatedFiringEffects(BulletClass* pBullet, HouseClass* pHouse,
 	}
 }
 
-inline CoordStruct BulletExt::GetTargetCoordsForFiring(BulletClass* pBullet)
+CoordStruct BulletExt::GetTargetCoordsForFiring(BulletClass* pBullet)
 {
 	if (pBullet->Type->Inviso && pBullet->Type->FlakScatter)
 		return pBullet->Location;
