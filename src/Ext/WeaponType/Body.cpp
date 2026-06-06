@@ -172,6 +172,25 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackNoThreatBuildings.Read(exINI, pSection, "AttackNoThreatBuildings");
 	this->CylinderRangefinding.Read(exINI, pSection, "CylinderRangefinding");
 	this->Anim_Update.Read(exINI, pSection, "Anim.Update");
+	this->WeaponRange_Maximum.Read(exINI, pSection, "WeaponRange.Maximum");
+	this->WeaponRange_Minimum.Read(exINI, pSection, "WeaponRange.Minimum");
+
+	if (this->WeaponRange_Maximum.Get() < pThis->Range && pThis->Range != -512)
+	{
+		Debug::Log("[Developer warning][%s] WeaponRange.Maximum is smaller than Range, it'll be reset to the value of Range!\n", pSection);
+		this->WeaponRange_Maximum = Leptons(static_cast<int>(pThis->Range / static_cast<double>(Unsorted::LeptonsPerCell)));
+	}
+
+	if (this->WeaponRange_Minimum.Get() < 0)
+	{
+		Debug::Log("[Developer warning][%s] WeaponRange.Minimum is smaller than 0, it'll be reset to 0!\n", pSection);
+		this->WeaponRange_Minimum = Leptons(0);
+	}
+	else if (this->WeaponRange_Minimum.Get() > pThis->Range && pThis->Range != -512)
+	{
+		Debug::Log("[Developer warning][%s] WeaponRange.Minimum is bigger than Range, it'll be reset to the value of Range!\n", pSection);
+		this->WeaponRange_Minimum = Leptons(static_cast<int>(pThis->Range / static_cast<double>(Unsorted::LeptonsPerCell)));
+	}
 
 	// handle SkipWeaponPicking
 	if (this->CanTarget != AffectedTarget::All || this->CanTargetHouses != AffectedHouse::All
@@ -272,6 +291,8 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackNoThreatBuildings)
 		.Process(this->CylinderRangefinding)
 		.Process(this->Anim_Update)
+		.Process(this->WeaponRange_Maximum)
+		.Process(this->WeaponRange_Minimum)
 		;
 };
 
@@ -353,10 +374,19 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 			pTechno = pTransport;
 	}
 
+	int min = 0;
+	int max = 25600000; // Unsorted::LeptonsPerCell * 100000
+
+	if (auto const pExt = WeaponTypeExt::ExtMap.Find(pThis))
+	{
+		min = pExt->WeaponRange_Minimum.Get();
+		max = pExt->WeaponRange_Maximum.Get();
+	}
+
 	auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 
 	if (!pTechnoExt->AE.HasRangeModifier)
-		return range;
+		return Math::clamp(range, min, max);
 
 	double extraRange = 0.0;
 
@@ -382,7 +412,7 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 
 	range += static_cast<int>(extraRange * Unsorted::LeptonsPerCell);
 
-	return Math::max(range, 0);
+	return Math::clamp(range, min, max);
 }
 
 int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFirer, bool isMinimum)

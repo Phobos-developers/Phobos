@@ -737,7 +737,7 @@ HideShakeEffects=false           ; boolean
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus & NetsuNegi)
 - [Aux technos and TechLevel requirement of superweapon](New-or-Enhanced-Logics.md#aux-technos-and-techlevel-requirement-of-superweapon) (by NetsuNegi & Ollerus)
 - [Export interface for external call](index.md#interoperability) (by TaranDahl)
-
+- Weapon maximum/minimum `Range` (by Ollerus)
 ```
 
 ### 0.4.0.3
