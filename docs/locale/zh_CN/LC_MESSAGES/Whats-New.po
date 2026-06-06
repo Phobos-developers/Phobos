@@ -1921,6 +1921,16 @@ msgstr ""
 "[允许 `Temporal` 弹头应用比率和加成](Fixed-or-Improved-"
 "Logics.md#allow-temporal-warhead-to-apply-ratio-and-bonus)（by NetsuNegi）"
 
+msgid ""
+"Customize charge up sound of `DiskLaser` (by NetsuNegi)"
+msgstr ""
+"自定义 `DiskLaser` 的起始音效（by NetsuNegi）"
+
+msgid ""
+"Simulate firing while `DiskLaser` 's main beam activating (by NetsuNegi)"
+msgstr ""
+"在 `DiskLaser` 的主光束激活时模拟开火（by NetsuNegi）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 

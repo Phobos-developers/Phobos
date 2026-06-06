@@ -80,6 +80,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	char tempBuffer[0x40];
 
 	this->DiskLaser_Radius.Read(exINI, pSection, "DiskLaser.Radius");
+	this->DiskLaser_SimulateFire.Read(exINI, pSection, "DiskLaser.SimulateFire");
+	this->DiskLaser_ChargeUp.Read(exINI, pSection, "DiskLaser.ChargeUp");
 	this->ProjectileRange.Read(exINI, pSection, "ProjectileRange");
 
 	for (int idx = 0; idx < 3; ++idx)
@@ -189,6 +191,8 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->DiskLaser_Radius)
+		.Process(this->DiskLaser_SimulateFire)
+		.Process(this->DiskLaser_ChargeUp)
 		.Process(this->ProjectileRange)
 		.Process(this->Bolt_Color)
 		.Process(this->Bolt_Disable)

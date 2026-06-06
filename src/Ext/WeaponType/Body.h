@@ -18,6 +18,8 @@ public:
 	public:
 
 		Valueable<double> DiskLaser_Radius;
+		Valueable<bool> DiskLaser_SimulateFire;
+		ValueableIdx<VocClass> DiskLaser_ChargeUp;
 		Valueable<Leptons> ProjectileRange;
 		Valueable<RadTypeClass*> RadType;
 		Nullable<ColorStruct> Bolt_Color[3];
@@ -107,6 +109,8 @@ public:
 		
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
+			, DiskLaser_SimulateFire { false }
+			, DiskLaser_ChargeUp {}
 			, ProjectileRange { Leptons(100000) }
 			, RadType {}
 			, Bolt_Color {}

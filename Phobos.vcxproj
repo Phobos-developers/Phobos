@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ShowAllFiles>true</ShowAllFiles>
@@ -211,7 +211,7 @@
     <!-- src\Ext\WeaponType -->
     <ClCompile Include="src\Ext\WeaponType\Body.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.cpp" />
-    <ClCompile Include="src\Ext\WeaponType\Hooks.DiskLaserRadius.cpp" />
+    <ClCompile Include="src\Ext\WeaponType\Hooks.DiskLaser.cpp" />
     <!-- src\Interop -->
     <ClCompile Include="src\Interop\AttachEffect.cpp" />
     <ClCompile Include="src\Interop\BulletExt.cpp" />
