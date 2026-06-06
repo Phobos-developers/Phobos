@@ -359,6 +359,16 @@ public:
 
 		Valueable<bool> DiscardOn_MoveBasedOnDestination;
 
+		Valueable<DynamicTeamDelayType> TeamDelays_DynamicType;
+		ValueableVector<int> TeamDelays_OnePlayer;
+		ValueableVector<int> TeamDelays_TwoPlayers;
+		ValueableVector<int> TeamDelays_ThreePlayers;
+		ValueableVector<int> TeamDelays_FourPlayers;
+		ValueableVector<int> TeamDelays_FivePlayers;
+		ValueableVector<int> TeamDelays_SixPlayers;
+		ValueableVector<int> TeamDelays_SevenPlayers;
+		ValueableVector<int> TeamDelays_EightPlayers;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -654,6 +664,16 @@ public:
 			, Temporal_ApplyVersus { false }
 			, Temporal_ApplyMultiplier { false }
 			, DiscardOn_MoveBasedOnDestination { false }
+
+			, TeamDelays_DynamicType { DynamicTeamDelayType::StartingPoint }
+			, TeamDelays_OnePlayer {}
+			, TeamDelays_TwoPlayers {}
+			, TeamDelays_ThreePlayers {}
+			, TeamDelays_FourPlayers {}
+			, TeamDelays_FivePlayers {}
+			, TeamDelays_SixPlayers {}
+			, TeamDelays_SevenPlayers {}
+			, TeamDelays_EightPlayers {}
 		{ }
 
 		virtual ~ExtData() = default;

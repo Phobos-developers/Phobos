@@ -458,12 +458,106 @@ DEFINE_HOOK(0x4F8ACC, HouseClass_Update_ResetTeamDelay, 0x6)
 
 	GET(HouseClass*, pThis, ESI);
 
-	const int teamDelay = HouseExt::ExtMap.Find(pThis)->TeamDelay;
+	const auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	const int teamDelay = pHouseExt->TeamDelay;
 
 	if (teamDelay >= 0)
 	{
 		R->ECX(teamDelay);
 		return ResetTeamDelay;
+	}
+
+	int playerCount = ScenarioClass::Instance->NumberStartingPoints;
+
+	if (playerCount >= 2 && !SessionClass::IsCampaign())
+	{
+		const auto teamDelayType = RulesExt::Global()->TeamDelays_DynamicType;
+
+		if (teamDelayType != DynamicTeamDelayType::StartingPoint)
+		{
+			playerCount = 0;
+			const bool byAlivePlayers = teamDelayType == DynamicTeamDelayType::AliveCount
+				|| teamDelayType == DynamicTeamDelayType::AliveAllies
+				|| teamDelayType == DynamicTeamDelayType::AliveEnemies;
+			const bool checkAllies = teamDelayType == DynamicTeamDelayType::Allies
+				|| teamDelayType == DynamicTeamDelayType::AliveAllies;
+			const bool checkEnemies = teamDelayType == DynamicTeamDelayType::Enemies
+				|| teamDelayType == DynamicTeamDelayType::AliveEnemies;
+
+			for (auto const pHouse : HouseClass::Array)
+			{
+				if ((!byAlivePlayers || !pHouse->Defeated)
+					&& !pHouse->IsObserver()
+					&& !pHouse->Type->MultiplayPassive
+					&& (!checkAllies || (pThis != pHouse && pThis->IsAlliedWith(pHouse)))
+					&& (!checkEnemies || !pThis->IsAlliedWith(pHouse)))
+				{
+					playerCount += 1;
+				}
+			}
+		}
+
+		const int AIDifficulty = pThis->GetAIDifficultyIndex();
+
+		switch (playerCount)
+		{
+		case 1:
+			if ((int)RulesExt::Global()->TeamDelays_OnePlayer.size() > AIDifficulty)
+			{
+				R->ECX(RulesExt::Global()->TeamDelays_OnePlayer[AIDifficulty]);
+				return ResetTeamDelay;
+			}
+			break;
+		case 2:
+			if ((int)RulesExt::Global()->TeamDelays_TwoPlayers.size() > AIDifficulty)
+			{
+				R->ECX(RulesExt::Global()->TeamDelays_TwoPlayers[AIDifficulty]);
+				return ResetTeamDelay;
+			}
+			break;
+		case 3:
+			if ((int)RulesExt::Global()->TeamDelays_ThreePlayers.size() > AIDifficulty)
+			{
+				R->ECX(RulesExt::Global()->TeamDelays_ThreePlayers[AIDifficulty]);
+				return ResetTeamDelay;
+			}
+			break;
+		case 4:
+			if ((int)RulesExt::Global()->TeamDelays_FourPlayers.size() > AIDifficulty)
+			{
+				R->ECX(RulesExt::Global()->TeamDelays_FourPlayers[AIDifficulty]);
+				return ResetTeamDelay;
+			}
+			break;
+		case 5:
+			if ((int)RulesExt::Global()->TeamDelays_FivePlayers.size() > AIDifficulty)
+			{
+				R->ECX(RulesExt::Global()->TeamDelays_FivePlayers[AIDifficulty]);
+				return ResetTeamDelay;
+			}
+			break;
+		case 6:
+			if ((int)RulesExt::Global()->TeamDelays_SixPlayers.size() > AIDifficulty)
+			{
+				R->ECX(RulesExt::Global()->TeamDelays_SixPlayers[AIDifficulty]);
+				return ResetTeamDelay;
+			}
+			break;
+		case 7:
+			if ((int)RulesExt::Global()->TeamDelays_SevenPlayers.size() > AIDifficulty)
+			{
+				R->ECX(RulesExt::Global()->TeamDelays_SevenPlayers[AIDifficulty]);
+				return ResetTeamDelay;
+			}
+			break;
+		case 8:
+			if ((int)RulesExt::Global()->TeamDelays_EightPlayers.size() > AIDifficulty)
+			{
+				R->ECX(RulesExt::Global()->TeamDelays_EightPlayers[AIDifficulty]);
+				return ResetTeamDelay;
+			}
+			break;
+		}
 	}
 
 	return 0;

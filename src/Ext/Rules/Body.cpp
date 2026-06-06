@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/House/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
@@ -415,6 +416,15 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->DiscardOn_MoveBasedOnDestination.Read(exINI, GameStrings::General, "DiscardOn.MoveBasedOnDestination");
 
+	this->TeamDelays_DynamicType.Read(exINI, GameStrings::General, "TeamDelays.DynamicType");
+	this->TeamDelays_TwoPlayers.Read(exINI, GameStrings::General, "TeamDelays.TwoPlayers");
+	this->TeamDelays_ThreePlayers.Read(exINI, GameStrings::General, "TeamDelays.ThreePlayers");
+	this->TeamDelays_FourPlayers.Read(exINI, GameStrings::General, "TeamDelays.FourPlayers");
+	this->TeamDelays_FivePlayers.Read(exINI, GameStrings::General, "TeamDelays.FivePlayers");
+	this->TeamDelays_SixPlayers.Read(exINI, GameStrings::General, "TeamDelays.SixPlayers");
+	this->TeamDelays_SevenPlayers.Read(exINI, GameStrings::General, "TeamDelays.SevenPlayers");
+	this->TeamDelays_EightPlayers.Read(exINI, GameStrings::General, "TeamDelays.EightPlayers");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -747,6 +757,14 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Temporal_ApplyVersus)
 		.Process(this->Temporal_ApplyMultiplier)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
+		.Process(this->TeamDelays_DynamicType)
+		.Process(this->TeamDelays_TwoPlayers)
+		.Process(this->TeamDelays_ThreePlayers)
+		.Process(this->TeamDelays_FourPlayers)
+		.Process(this->TeamDelays_FivePlayers)
+		.Process(this->TeamDelays_SixPlayers)
+		.Process(this->TeamDelays_SevenPlayers)
+		.Process(this->TeamDelays_EightPlayers)
 		;
 }
 
