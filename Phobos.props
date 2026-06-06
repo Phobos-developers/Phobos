@@ -5,10 +5,6 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="DevBuild|Win32">
-      <Configuration>DevBuild</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -71,21 +67,6 @@
   <!-- Release -->
   <ItemDefinitionGroup Condition="$(Configuration.Contains('Release'))">
     <ClCompile>
-      <PreprocessorDefinitions>IS_RELEASE_VER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Optimization>MaxSpeed</Optimization>
-      <OmitFramePointers>true</OmitFramePointers>
-      <!-- <WholeProgramOptimization>true</WholeProgramOptimization> -->
-    </ClCompile>
-    <Link>
-      <!-- <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration> -->
-    </Link>
-    <ResourceCompile>
-      <PreprocessorDefinitions>IS_RELEASE_VER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ResourceCompile>
-  </ItemDefinitionGroup>
-  <!-- DevBuild -->
-  <ItemDefinitionGroup Condition="$(Configuration.Contains('DevBuild'))">
-    <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <OmitFramePointers>true</OmitFramePointers>
       <!-- <WholeProgramOptimization>true</WholeProgramOptimization> -->
@@ -122,6 +103,31 @@
     </ClCompile>
     <ResourceCompile>
       <AdditionalOptions>/DGIT_BRANCH="$(GitBranch)" %(AdditionalOptions)</AdditionalOptions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <!-- BuildType -->
+  <ItemDefinitionGroup Condition="'$(BuildType)' == 'NIGHTLY'">
+    <ClCompile>
+      <PreprocessorDefinitions>NIGHTLY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NIGHTLY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(BuildType)' == 'PRERELEASE'">
+    <ClCompile>
+      <PreprocessorDefinitions>PRERELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>PRERELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(BuildType)' == 'RELEASE'">
+    <ClCompile>
+      <PreprocessorDefinitions>RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
