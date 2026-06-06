@@ -1689,6 +1689,10 @@ msgstr "允许了 `AuxBuilding` 计入建筑加载物。"
 msgid "Fixed voxel projectile and animation lighting issues."
 msgstr "修复了 Voxel 抛射体和动画的光照问题。"
 
+msgid ""
+"Fixed the bug that techno will get stuck if change owner in tunnel."
+msgstr "修复了科技类型在隧道中变更所属方会导致卡住的 Bug。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 
