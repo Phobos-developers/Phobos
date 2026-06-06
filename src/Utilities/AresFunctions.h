@@ -39,6 +39,9 @@ public:
 
 	static void(__thiscall* UnitDeliveryStateMachine_Update)(void*);
 
+	// WarheadTypeExt::ExtData
+	static bool(__thiscall* ApplyPermaMC)(void*, HouseClass* pSourceHouse, AbstractClass* pTarget);
+
 	static bool (*DetailsCurrentlyEnabled)();
 
 	static std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> SWTypeExtMap_Find;
