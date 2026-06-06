@@ -100,6 +100,9 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_Link_RollChances)
 		.Process(this->Message_LinkedSWAcquired)
 		.Process(this->EVA_LinkedSWAcquired)
+		.Process(this->Music_Theme)
+		.Process(this->Music_Duration)
+		.Process(this->Music_AffectsHouse)
 		;
 }
 
@@ -293,6 +296,10 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		pNewSWType->Initialize(const_cast<SWTypeExt::ExtData*>(this), OwnerObject());
 		pNewSWType->LoadFromINI(const_cast<SWTypeExt::ExtData*>(this), OwnerObject(), pINI);
 	}
+
+	this->Music_Theme = pINI->ReadTheme(pSection, "Music.Theme", this->Music_Theme);
+	this->Music_Duration.Read(exINI, pSection, "Music.Duration");
+	this->Music_AffectsHouse.Read(exINI, pSection, "Music.AffectsHouse");
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

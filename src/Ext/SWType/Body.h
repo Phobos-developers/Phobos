@@ -113,6 +113,10 @@ public:
 		Valueable<CSFText> Message_LinkedSWAcquired;
 		NullableIdx<VoxClass> EVA_LinkedSWAcquired;
 
+		Valueable<int> Music_Theme;
+		Valueable<int> Music_Duration;
+		Valueable<AffectedHouse> Music_AffectsHouse;
+
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, TypeID { "" }
 			, Money_Amount { 0 }
@@ -195,6 +199,9 @@ public:
 			, SW_Link_RandomWeightsData {}
 			, Message_LinkedSWAcquired {}
 			, EVA_LinkedSWAcquired {}
+			, Music_Theme { -1 }
+			, Music_Duration { 0 }
+			, Music_AffectsHouse { AffectedHouse::All }
 		{ }
 
 		// Ares 0.A functions

@@ -379,11 +379,10 @@ DEFINE_HOOK(0x4F9038, HouseClass_AI_Superweapons, 0x5)
 		return 0;
 
 	const int delay = RulesExt::Global()->AISuperWeaponDelay.Get();
+	auto const pExt = HouseExt::ExtMap.Find(pThis);
 
 	if (delay > 0)
 	{
-		auto const pExt = HouseExt::ExtMap.Find(pThis);
-
 		if (pExt->AISuperWeaponDelayTimer.HasTimeLeft())
 			return 0;
 
@@ -392,6 +391,9 @@ DEFINE_HOOK(0x4F9038, HouseClass_AI_Superweapons, 0x5)
 
 	if (!SessionClass::IsCampaign() || pThis->IQLevel2 >= RulesClass::Instance->SuperWeapons)
 		pThis->AI_TryFireSW();
+
+	if (pExt->MusicDuration.Completed())
+		pExt->MusicStop();
 
 	return 0;
 }

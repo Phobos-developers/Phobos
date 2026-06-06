@@ -55,6 +55,9 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->SuperWeaponSidebar_TopPCX.Read(pINI, pSection, "SuperWeaponSidebar.TopPCX");
 	this->SuperWeaponSidebar_CenterPCX.Read(pINI, pSection, "SuperWeaponSidebar.CenterPCX");
 	this->SuperWeaponSidebar_BottomPCX.Read(pINI, pSection, "SuperWeaponSidebar.BottomPCX");
+	this->CombatMusic_Theme = pINI->ReadTheme(pSection, "CombatMusic.Theme", this->CombatMusic_Theme);
+	this->CombatMusic_Duration.Read(exINI, pSection, "CombatMusic.Duration");
+	this->CombatMusic_UnderAttack.Read(exINI, pSection, "CombatMusic.UnderAttack");
 }
 
 // =============================
@@ -93,6 +96,9 @@ void SideExt::ExtData::Serialize(T& Stm)
 		.Process(this->SuperWeaponSidebar_TopPCX)
 		.Process(this->SuperWeaponSidebar_CenterPCX)
 		.Process(this->SuperWeaponSidebar_BottomPCX)
+		.Process(this->CombatMusic_Theme)
+		.Process(this->CombatMusic_Duration)
+		.Process(this->CombatMusic_UnderAttack)
 		;
 }
 

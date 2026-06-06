@@ -671,6 +671,7 @@ This page lists all the individual contributions to the project by their author.
   - Return warhead
   - `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses
   - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
+  - Dynamic music framework
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`
@@ -812,6 +813,7 @@ This page lists all the individual contributions to the project by their author.
 - **Damfoos** - extensive and thorough testing
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
+- **ahasasjeb** - Add music to super weapons
 - **11EJDE11** - Prevent mpdebug number from being drawn when visibility toggled off
 - **RAZER**:
   - Wall overlay unit sell exploit fix
