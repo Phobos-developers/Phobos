@@ -1310,6 +1310,26 @@ Detonate.Damage=            ; integer
 Detonate.AtFirer=false      ; boolean
 ```
 
+### Superweapon music control
+
+- Superweapons can now play a theme when fired and optionally stop after a configurable duration. This will replace any theme that's being played now.
+- `Music.Theme` selects the soundtrack theme by its ID defined in `thememd.ini`.
+- `Music.Duration` controls how many frames this theme will last. Set it to below 0 for an infinite duration. Player can still switch music manually no matter if it lasts infinitely.
+  - When the timer is completed and `Music.Theme` is still being played, it'll be stopped and switched to default music list. If another music is already played, it won't be switched.
+- `Music.AffectsHouse` determines which houses will be affected by the music change of this superweapon.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]                ; SuperWeaponType
+Music.Theme=-1          ; Theme ID
+Music.Duration=0        ; integer, game frames
+Music.AffectsHouse=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
+```{note}
+To loop the music correctly during this period, set `Repeat=yes` for the corresponding theme in `thememd.ini`. Otherwise, the track may stop at its end even if `Music.Duration` has not elapsed.
+```
+
 ## Technos
 
 ### Aggressive attack move mission
@@ -1541,6 +1561,26 @@ BuildLimitGroup.ExtraLimit.Types=               ; List of TechnoTypes
 BuildLimitGroup.ExtraLimit.Nums=                ; List of integers
 BuildLimitGroup.ExtraLimit.MaxCount=            ; List of integers
 BuildLimitGroup.ExtraLimit.MaxNum=0             ; integer
+```
+
+### Combat music
+
+- Music can now be changed when under attack by enemies or damaging an enemy objects.
+- `CombatMusic.Theme` selects the soundtrack theme by its ID defined in `thememd.ini`.
+- `CombatMusic.Duration` controls how many frames this theme will last. Set it to below 0 for an infinite duration. Player can still switch music manually no matter if it lasts infinitely.
+  - When the timer is completed and `CombatMusic.Theme` is still being played, it'll be stopped and switched to default music list. If another music is already played, it won't be switched.
+- `CombatMusic.UnderAttack` determines if the combat music is triggered by an attack or under attack.
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]                    ; Side
+CombatMusic.Theme=-1          ; Theme ID
+CombatMusic.Duration=0        ; integer, game frames
+CombatMusic.UnderAttack=true  ; boolean
+```
+
+```{note}
+To loop the music correctly during this period, set `Repeat=yes` for the corresponding theme in `thememd.ini`. Otherwise, the track may stop at its end even if `Music.Duration` has not elapsed.
 ```
 
 ### Convert TechnoType on owner house change

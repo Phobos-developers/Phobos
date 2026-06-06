@@ -1,5 +1,6 @@
 #pragma once
 #include <HouseClass.h>
+#include <ThemeClass.h>
 
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
@@ -69,6 +70,9 @@ public:
 
 		bool PlayerAutoRepair;
 
+		CDTimerClass MusicDuration;
+		int MusicTheme;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
@@ -103,6 +107,8 @@ public:
 			, FreeRadar(false)
 			, ForceRadar(false)
 			, PlayerAutoRepair(true)
+			, MusicDuration {}
+			, MusicTheme { -1 }
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;
@@ -115,6 +121,8 @@ public:
 
 		int GetForceEnemyIndex();
 		void SetForceEnemyIndex(int EnemyIndex);
+		void MusicChange(int music, int duration);
+		void MusicStop();
 
 		virtual ~ExtData() = default;
 

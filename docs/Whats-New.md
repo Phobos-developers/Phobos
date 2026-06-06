@@ -583,6 +583,7 @@ HideShakeEffects=false           ; boolean
 - Allow `RemoveMindControl` warhead to mute `MindClearedSound` (by Noble_Fish)
 - Introduce weight selection rules for ExtraWarheads (by Noble_Fish)
 - [Allow infantry to perform type conversion when deploying and undeploying](New-or-Enhanced-Logics.md#allow-infantry-to-perform-type-conversion-when-deploying-and-undeploying) (by Noble_Fish)
+- Dynamic music system (by Ollerus and ahasasjeb)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

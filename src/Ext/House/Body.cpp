@@ -652,6 +652,34 @@ void HouseExt::ExtData::SetForceEnemyIndex(int EnemyIndex)
 		this->ForceEnemyIndex = EnemyIndex;
 }
 
+void HouseExt::ExtData::MusicChange(int music, int duration)
+{
+	// restrict to current house
+	if (this->OwnerObject() != HouseClass::CurrentPlayer)
+		return;
+
+	if (music >= 0)
+	{
+		ThemeClass::Instance.Play(music);
+		this->MusicTheme = music;
+
+		if (duration > 0)
+			this->MusicDuration.Start(duration);
+	}
+}
+
+void HouseExt::ExtData::MusicStop()
+{
+	// restrict to current house
+	if (this->OwnerObject() != HouseClass::CurrentPlayer)
+		return;
+
+	if (ThemeClass::Instance.CurrentTheme == this->MusicTheme)
+		ThemeClass::Instance.Stop();
+
+	this->MusicTheme = -1;
+}
+
 void HouseExt::CalculatePowerSurplus(HouseClass* pThis)
 {
 	auto const pRulesExt = RulesExt::Global();
@@ -712,6 +740,8 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->FreeRadar)
 		.Process(this->ForceRadar)
 		.Process(this->PlayerAutoRepair)
+		.Process(this->MusicDuration)
+		.Process(this->MusicTheme)
 		;
 }
 

@@ -44,6 +44,9 @@ public:
 		PhobosPCXFile SuperWeaponSidebar_TopPCX;
 		PhobosPCXFile SuperWeaponSidebar_CenterPCX;
 		PhobosPCXFile SuperWeaponSidebar_BottomPCX;
+		Valueable<int> CombatMusic_Theme;
+		Valueable<int> CombatMusic_Duration;
+		Valueable<bool> CombatMusic_UnderAttack;
 
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject)
 			, ArrayIndex { -1 }
@@ -75,6 +78,9 @@ public:
 			, SuperWeaponSidebar_TopPCX {}
 			, SuperWeaponSidebar_CenterPCX {}
 			, SuperWeaponSidebar_BottomPCX {}
+			, CombatMusic_Theme { -1 }
+			, CombatMusic_Duration { 0 }
+			, CombatMusic_UnderAttack { true }
 		{ }
 
 		virtual ~ExtData() = default;

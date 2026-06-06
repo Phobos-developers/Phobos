@@ -40,6 +40,9 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 	auto& sw_ext = HouseExt::ExtMap.Find(pHouse)->SuperExts[pType->ArrayIndex];
 	sw_ext.ShotCount++;
 
+	if (EnumFunctions::CanTargetHouse(pTypeExt->Music_AffectsHouse, pHouse, HouseClass::CurrentPlayer))
+		HouseExt::ExtMap.Find(HouseClass::CurrentPlayer)->MusicChange(pTypeExt->Music_Theme, pTypeExt->Music_Duration);
+
 	const auto pTags = &pHouse->RelatedTags;
 
 	if (pTags->Count > 0)

@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <Ext/House/Body.h>
+#include <Ext/Side/Body.h>
 #include <Ext/TEvent/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -75,14 +76,14 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	}
 
 	// Raise Combat Alert
+	const auto pHouseExt = HouseExt::ExtMap.Find(pTargetHouse);
+
 	if (RulesExt::Global()->CombatAlert && damage > 1)
 	{
 		auto raiseCombatAlert = [&]()
 		{
 			if (!pTargetHouse->IsControlledByCurrentPlayer() || (RulesExt::Global()->CombatAlert_SuppressIfAllyDamage && pTargetHouse->IsAlliedWith(pSourceHouse)))
 				return;
-
-			const auto pHouseExt = HouseExt::ExtMap.Find(pTargetHouse);
 
 			if (pHouseExt->CombatAlertTimer.HasTimeLeft() || pWHExt->CombatAlert_Suppress.Get(!pWHExt->Malicious || pWHExt->Nonprovocative))
 				return;
@@ -127,6 +128,19 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 				VoxClass::PlayIndex(index);
 		};
 		raiseCombatAlert();
+	}
+
+	// Combat Music
+	if (const auto pTargetSideExt = SideExt::ExtMap.TryFind(SideClass::Array.GetItemOrDefault(pTargetHouse->SideIndex)))
+	{
+		if (pTargetSideExt->CombatMusic_UnderAttack && !pTargetHouse->IsAlliedWith(pSourceHouse))
+			pHouseExt->MusicChange(pTargetSideExt->CombatMusic_Theme, pTargetSideExt->CombatMusic_Duration);
+	}
+
+	if (const auto pSourceSideExt = SideExt::ExtMap.TryFind(SideClass::Array.GetItemOrDefault(pSourceHouse->SideIndex)))
+	{
+		if (!pSourceSideExt->CombatMusic_UnderAttack && !pSourceHouse->IsAlliedWith(pTargetHouse) && !pTargetHouse->IsNeutral())
+			HouseExt::ExtMap.Find(pSourceHouse)->MusicChange(pSourceSideExt->CombatMusic_Theme, pSourceSideExt->CombatMusic_Duration);
 	}
 
 	// Shield Receive Damage
