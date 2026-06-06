@@ -413,7 +413,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Temporal_ApplyVersus.Read(exINI, GameStrings::CombatDamage, "Temporal.ApplyVersus");
 	this->Temporal_ApplyMultiplier.Read(exINI, GameStrings::CombatDamage, "Temporal.ApplyMultiplier");
 
-	this->DeploySound.Read(exINI, GameStrings::AudioVisual, "DeploySound");
+	ValueableIdx<VocClass> deploySound { pThis->DeploySound };
+	deploySound.Read(exINI, GameStrings::AudioVisual, "DeploySound");
+	pThis->DeploySound = deploySound;
 
 	this->DiscardOn_MoveBasedOnDestination.Read(exINI, GameStrings::General, "DiscardOn.MoveBasedOnDestination");
 
@@ -748,7 +750,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingGuardRetryDelay)
 		.Process(this->Temporal_ApplyVersus)
 		.Process(this->Temporal_ApplyMultiplier)
-		.Process(this->DeploySound)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
 		;
 }
