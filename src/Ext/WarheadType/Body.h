@@ -50,6 +50,8 @@ public:
 		Nullable<bool> PenetratesForceShield;
 		Valueable<double> Rocker_AmplitudeMultiplier;
 		Nullable<int> Rocker_AmplitudeOverride;
+		Nullable<bool> Temporal_ApplyVersus;
+		Nullable<bool> Temporal_ApplyMultiplier;
 
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
@@ -254,6 +256,7 @@ public:
 		Valueable<bool> EffectsRequireVerses;
 		Valueable<bool> Malicious;
 		Nullable<int> Flash_Duration;
+		Valueable<double> Damage_Deployed { 1.0 };
 
 		double Crit_RandomBuffer;
 		double Crit_CurrentChance;
@@ -306,7 +309,9 @@ public:
 			, PenetratesIronCurtain { false }
 			, PenetratesForceShield {}
 			, Rocker_AmplitudeMultiplier { 1.0 }
-			, Rocker_AmplitudeOverride { }
+			, Rocker_AmplitudeOverride {}
+			, Temporal_ApplyVersus {}
+			, Temporal_ApplyMultiplier {}
 
 			, Crit_Chance { 0.0 }
 			, Crit_ApplyChancePerTarget { false }
@@ -548,13 +553,13 @@ public:
 	public:
 		// Detonate.cpp
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
-		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, const CoordStruct& coords, int damage, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false, int distance = -1);
+		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, const CoordStruct& coords, int damage, TechnoClass* pOwner, BulletExt::ExtData* pBulletExt, bool bulletWasIntercepted = false, int distance = -1);
 		void InterceptBullets(TechnoClass* pOwner, BulletClass* pInterceptor, const CoordStruct& coords);
 		DamageAreaResult DamageAreaWithTarget(const CoordStruct& coords, int damage, TechnoClass* pSource, WarheadTypeClass* pWH, bool affectsTiberium, HouseClass* pSourceHouse, TechnoClass* pTarget);
 	private:
 		void ApplyRemoveDisguise(TechnoClass* pTarget);
 		HouseClass* ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
-		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
+		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner, BulletExt::ExtData* pBulletExt);
 		void ApplyShieldModifiers(TechnoClass* pTarget);
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
 		void ApplyBuildingUndeploy(TechnoClass* pTarget);

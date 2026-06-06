@@ -1,14 +1,15 @@
 #include "Body.h"
 
-#include <JumpjetLocomotionClass.h>
-
 #include <Ext/Anim/Body.h>
+#include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Event/Body.h>
 
 #include <Utilities/AresFunctions.h>
+#include <Utilities/AresHelper.h>
+#include <Interop/TechnoExt.h>
 
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 UnitClass* TechnoExt::Deployer = nullptr;
@@ -194,16 +195,38 @@ double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 	else
 		houseMultiplier = pThis->Owner->Type->SpeedUnitsMult;
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-
-	return pThis->SpeedMultiplier * houseMultiplier * pExt->AE.SpeedMultiplier *
+	return pThis->SpeedMultiplier * houseMultiplier * TechnoExt::ExtMap.Find(pThis)->AE.SpeedMultiplier *
 		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
 }
 
 double TechnoExt::GetCurrentFirepowerMultiplier(TechnoClass* pThis)
 {
-	return pThis->FirepowerMultiplier * TechnoExt::ExtMap.Find(pThis)->AE.FirepowerMultiplier *
+	double mult = pThis->FirepowerMultiplier * pThis->Owner->FirepowerMultiplier * TechnoExt::ExtMap.Find(pThis)->AE.FirepowerMultiplier *
 		(pThis->HasAbility(Ability::Firepower) ? RulesClass::Instance->VeteranCombat : 1.0);
+
+	if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pThis))
+	{
+		const auto pBuildingType = pBuilding->Type;
+
+		if (pBuildingType->CanBeOccupied && pBuildingType->CanOccupyFire && pBuildingType->MaxNumberOccupants)
+		{
+			const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
+			mult *= pBuildingTypeExt->BuildingOccupyDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier);
+		}
+	}
+	else if (const auto pBunker = abstract_cast<BuildingClass*>(pThis->BunkerLinkedItem))
+	{
+		const auto pBunkerTypeExt = BuildingTypeExt::ExtMap.Find(pBunker->Type);
+		mult *= pBunkerTypeExt->BuildingBunkerDamageMult.Get(RulesClass::Instance->BunkerDamageMultiplier);
+	}
+	else if (pThis->InOpenToppedTransport && pThis->Transporter)
+	{
+		const auto pTransporterTypeExt = TechnoExt::ExtMap.Find(pThis->Transporter)->TypeExtData;
+		mult *= pTransporterTypeExt->OpenTopped_DamageMultiplier.Get(RulesClass::Instance->OpenToppedDamageMultiplier);
+		mult *= TechnoExt::ExtMap.Find(pThis)->TypeExtData->OpenTransport_DamageMultiplier;
+	}
+
+	return mult;
 }
 
 double TechnoExt::GetCurrentArmorMultiplier(TechnoClass* pThis, TechnoTypeClass* pType, WarheadTypeClass* pWarhead)
@@ -750,6 +773,9 @@ bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max
 
 bool TechnoExt::CannotMove(UnitClass* pThis)
 {
+	if (pThis->LocomotorSource)
+		return false;
+
 	const auto pType = pThis->Type;
 
 	if (pType->Speed == 0)
@@ -1030,8 +1056,10 @@ bool TechnoExt::EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool sel
 
 struct DummyExtHere
 {
-	char _[0x9C];
-	bool DriverKilled;
+	char _pad0[0x50];
+	CDTimerClass DisableWeaponsTimer;
+	char _pad1[0x40];
+	bool DriverKilled; 
 };
 
 struct DummyTypeExtHere
@@ -1186,7 +1214,56 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 
 int TechnoExt::ExtData::GetSight()
 {
-	return this->TypeExtData->OwnerObject()->Sight;
+	double sight = this->TypeExtData->OwnerObject()->Sight;
+	
+	for (auto& callback : TechnoExtInterop::CalculateSightCallbacks)
+	{
+		if (callback)
+			sight = callback(this->OwnerObject(), sight);
+	}
+	
+	return static_cast<int>(sight);
+}
+
+bool TechnoExt::HasWeaponsDisabled(TechnoClass* pThis)
+{
+	if (TechnoExt::ExtMap.Find(pThis)->AE.DisableWeapons)
+		return true;
+
+	if (AresHelper::CanUseAres)
+	{
+		const auto pExt_Ares = reinterpret_cast<DummyExtHere*>(pThis->align_154);
+
+		if (pExt_Ares->DisableWeaponsTimer.InProgress())
+			return true;
+	}
+
+	return false;
+}
+
+FireError TechnoExt::GetFireErrorIgnoreDisableWeapons(TechnoClass* pThis, AbstractClass* pTarget, int weaponIndex, bool ignoreRange)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pExt_Ares = reinterpret_cast<DummyExtHere*>(pThis->align_154);
+	bool const canUseAres = AresHelper::CanUseAres;
+	bool const disableWeapons = pExt->AE.DisableWeapons;
+	int timeLeft = 0;
+
+	pExt->AE.DisableWeapons = false;
+
+	if (canUseAres)
+	{
+		timeLeft = pExt_Ares->DisableWeaponsTimer.GetTimeLeft();
+		pExt_Ares->DisableWeaponsTimer.Stop();
+	}
+
+	auto const fireError = pThis->GetFireError(pTarget, weaponIndex, ignoreRange);
+	pExt->AE.DisableWeapons = disableWeapons;
+
+	if (canUseAres && timeLeft > 0)
+		pExt_Ares->DisableWeaponsTimer.Start(timeLeft);
+
+	return fireError;
 }
 
 // =============================
@@ -1320,6 +1397,9 @@ DEFINE_HOOK(0x6F3260, TechnoClass_CTOR, 0x5)
 DEFINE_HOOK(0x6F4500, TechnoClass_DTOR, 0x5)
 {
 	GET(TechnoClass*, pItem, ECX);
+
+	if (pItem->AbstractFlags & AbstractFlags::Foot)
+		pItem->Owner->RecheckTechTree = true; // for SW.AuxTechons and SW.NegTechnos
 
 	TechnoExt::ExtMap.Remove(pItem);
 

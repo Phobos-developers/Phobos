@@ -207,7 +207,7 @@ inline void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pH
 	if (pWeapon->IsHouseColor || pWeaponExt->Laser_IsSingleColor)
 	{
 		const auto black = ColorStruct { 0, 0, 0 };
-		const auto pLaser = GameCreate<LaserDrawClass>(pBullet->SourceCoords, (pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords),
+		const auto pLaser = GameCreate<LaserDrawClass>(pBullet->SourceCoords, BulletExt::GetTargetCoordsForFiring(pBullet),
 			((pWeapon->IsHouseColor && pHouse) ? pHouse->LaserColor : pWeapon->LaserInnerColor), black, black, pWeapon->LaserDuration);
 
 		pLaser->IsHouseColor = true;
@@ -216,7 +216,7 @@ inline void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pH
 	}
 	else
 	{
-		const auto pLaser = GameCreate<LaserDrawClass>(pBullet->SourceCoords, (pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords),
+		const auto pLaser = GameCreate<LaserDrawClass>(pBullet->SourceCoords, BulletExt::GetTargetCoordsForFiring(pBullet),
 			pWeapon->LaserInnerColor, pWeapon->LaserOuterColor, pWeapon->LaserOuterSpread, pWeapon->LaserDuration);
 
 		pLaser->IsHouseColor = false;
@@ -237,8 +237,19 @@ inline void BulletExt::SimulatedFiringElectricBolt(BulletClass* pBullet)
 	const auto pBolt = EBoltExt::CreateEBolt(pWeapon);
 	pBolt->AlternateColor = pWeapon->IsAlternateColor;
 
-	const auto targetCoords = pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords;
-	pBolt->Fire(pBullet->SourceCoords, targetCoords, 0);
+	const auto targetCoords = BulletExt::GetTargetCoordsForFiring(pBullet);
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	int zAdjust = pWeaponExt->EBoltZAdjust.Get(RulesExt::Global()->EBoltZAdjust);
+
+	const auto pOwner = pBullet->Owner;
+	if (pOwner && pOwner->WhatAmI() == AbstractType::Building)
+	{
+		const bool clamp = pWeaponExt->EBoltZAdjust_ClampInitialDepthForBuilding.Get(RulesExt::Global()->EBoltZAdjust_ClampInitialDepthForBuilding);
+		if (clamp && zAdjust > 0)
+			zAdjust = 0;
+	}
+
+	pBolt->Fire(pBullet->SourceCoords, targetCoords, zAdjust);
 
 	if (const auto particle = WeaponTypeExt::ExtMap.Find(pWeapon)->Bolt_ParticleSystem.Get(RulesClass::Instance->DefaultSparkSystem))
 		GameCreate<ParticleSystemClass>(particle, targetCoords, nullptr, nullptr, CoordStruct::Empty, nullptr);
@@ -257,7 +268,7 @@ inline void BulletExt::SimulatedFiringRadBeam(BulletClass* pBullet, HouseClass* 
 	const auto pRadBeam = RadBeam::Allocate(isTemporal ? RadBeamType::Temporal : RadBeamType::RadBeam);
 
 	pRadBeam->SetCoordsSource(pBullet->SourceCoords);
-	pRadBeam->SetCoordsTarget((pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords));
+	pRadBeam->SetCoordsTarget(BulletExt::GetTargetCoordsForFiring(pBullet));
 
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
@@ -273,8 +284,7 @@ inline void BulletExt::SimulatedFiringParticleSystem(BulletClass* pBullet, House
 {
 	if (const auto pPSType = pBullet->WeaponType->AttachedParticleSystem)
 	{
-		GameCreate<ParticleSystemClass>(pPSType, pBullet->SourceCoords, pBullet->Target, pBullet->Owner,
-			(pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords), pHouse);
+		GameCreate<ParticleSystemClass>(pPSType, pBullet->SourceCoords, pBullet->Target, pBullet->Owner, BulletExt::GetTargetCoordsForFiring(pBullet), pHouse);
 	}
 }
 
@@ -364,6 +374,16 @@ void BulletExt::SimulatedFiringEffects(BulletClass* pBullet, HouseClass* pHouse,
 	}
 }
 
+CoordStruct BulletExt::GetTargetCoordsForFiring(BulletClass* pBullet)
+{
+	if (pBullet->Type->Inviso && pBullet->Type->FlakScatter)
+		return pBullet->Location;
+	else if (const auto pTarget = abstract_cast<ObjectClass*>(pBullet->Target))
+		return pTarget->GetTargetCoords();
+
+	return pBullet->TargetCoords;
+}
+
 void BulletExt::ApplyArcingFix(BulletClass* pThis, const CoordStruct& sourceCoords, const CoordStruct& targetCoords, BulletVelocity& velocity)
 {
 	const auto distanceCoords = targetCoords - sourceCoords;
@@ -426,6 +446,7 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->DamageNumberOffset)
 		.Process(this->ParabombFallRate)
 		.Process(this->IsInstantDetonation)
+		.Process(this->FirepowerMult)
 
 		.Process(this->Trajectory) // Keep this shit at last
 		;

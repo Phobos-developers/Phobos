@@ -42,6 +42,7 @@ public:
 		Valueable<bool> Grinding_PlayDieSound;
 
 		Nullable<bool> DisplayIncome;
+		Nullable<int> DisplayIncome_Delay;
 		Nullable<AffectedHouse> DisplayIncome_Houses;
 		Valueable<Point2D> DisplayIncome_Offset;
 
@@ -104,7 +105,9 @@ public:
 
 		Nullable<bool> BuildingRadioLink_SyncOwner;
 
-		Valueable<int> TurretAnim_IdleFrames;
+		Nullable<PartialVector2D<int>> GuardRetryDelay;
+
+    Valueable<int> TurretAnim_IdleFrames;
 		Valueable<int> TurretAnim_LowPowerIdleFrames;
 		Valueable<int> TurretAnim_FiringFrames;
 		Valueable<int> TurretAnim_LowPowerFiringFrames;
@@ -145,6 +148,7 @@ public:
 			, Grinding_Weapon {}
 			, Grinding_Weapon_RequiredCredits { 0 }
 			, DisplayIncome { }
+			, DisplayIncome_Delay { }
 			, DisplayIncome_Houses { }
 			, DisplayIncome_Offset { { 0,0 } }
 			, PlacementPreview { true }
@@ -190,9 +194,10 @@ public:
 			, HasPowerUpAnim {}
 			, UndeploysInto_Sellable { false }
 			, BuildingRadioLink_SyncOwner {}
-		    , TurretAnim_IdleFrames { 1 }
-		    , TurretAnim_LowPowerIdleFrames { 0 }
-		    , TurretAnim_FiringFrames { 0 }
+			, GuardRetryDelay {}
+			, TurretAnim_IdleFrames { 1 }
+			, TurretAnim_LowPowerIdleFrames { 0 }
+			, TurretAnim_FiringFrames { 0 }
 			, TurretAnim_LowPowerFiringFrames { 0 }
 			, TurretAnim_IdleRate { 1 }
 			, TurretAnim_FiringRate { 1 }
