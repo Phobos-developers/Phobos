@@ -502,58 +502,58 @@ DEFINE_HOOK(0x4F8ACC, HouseClass_Update_ResetTeamDelay, 0x6)
 		switch (playerCount)
 		{
 		case 1:
-			if ((int)RulesExt::Global()->TeamDelays_OnePlayer.size() > AIDifficulty)
+			if ((int)RulesExt::Global()->TeamDelays_Count1.size() > AIDifficulty)
 			{
-				R->ECX(RulesExt::Global()->TeamDelays_OnePlayer[AIDifficulty]);
+				R->ECX(RulesExt::Global()->TeamDelays_Count1[AIDifficulty]);
 				return ResetTeamDelay;
 			}
 			break;
 		case 2:
-			if ((int)RulesExt::Global()->TeamDelays_TwoPlayers.size() > AIDifficulty)
+			if ((int)RulesExt::Global()->TeamDelays_Count2.size() > AIDifficulty)
 			{
-				R->ECX(RulesExt::Global()->TeamDelays_TwoPlayers[AIDifficulty]);
+				R->ECX(RulesExt::Global()->TeamDelays_Count2[AIDifficulty]);
 				return ResetTeamDelay;
 			}
 			break;
 		case 3:
-			if ((int)RulesExt::Global()->TeamDelays_ThreePlayers.size() > AIDifficulty)
+			if ((int)RulesExt::Global()->TeamDelays_Count3.size() > AIDifficulty)
 			{
-				R->ECX(RulesExt::Global()->TeamDelays_ThreePlayers[AIDifficulty]);
+				R->ECX(RulesExt::Global()->TeamDelays_Count3[AIDifficulty]);
 				return ResetTeamDelay;
 			}
 			break;
 		case 4:
-			if ((int)RulesExt::Global()->TeamDelays_FourPlayers.size() > AIDifficulty)
+			if ((int)RulesExt::Global()->TeamDelays_Count4.size() > AIDifficulty)
 			{
-				R->ECX(RulesExt::Global()->TeamDelays_FourPlayers[AIDifficulty]);
+				R->ECX(RulesExt::Global()->TeamDelays_Count4[AIDifficulty]);
 				return ResetTeamDelay;
 			}
 			break;
 		case 5:
-			if ((int)RulesExt::Global()->TeamDelays_FivePlayers.size() > AIDifficulty)
+			if ((int)RulesExt::Global()->TeamDelays_Count5.size() > AIDifficulty)
 			{
-				R->ECX(RulesExt::Global()->TeamDelays_FivePlayers[AIDifficulty]);
+				R->ECX(RulesExt::Global()->TeamDelays_Count5[AIDifficulty]);
 				return ResetTeamDelay;
 			}
 			break;
 		case 6:
-			if ((int)RulesExt::Global()->TeamDelays_SixPlayers.size() > AIDifficulty)
+			if ((int)RulesExt::Global()->TeamDelays_Count6.size() > AIDifficulty)
 			{
-				R->ECX(RulesExt::Global()->TeamDelays_SixPlayers[AIDifficulty]);
+				R->ECX(RulesExt::Global()->TeamDelays_Count6[AIDifficulty]);
 				return ResetTeamDelay;
 			}
 			break;
 		case 7:
-			if ((int)RulesExt::Global()->TeamDelays_SevenPlayers.size() > AIDifficulty)
+			if ((int)RulesExt::Global()->TeamDelays_Count7.size() > AIDifficulty)
 			{
-				R->ECX(RulesExt::Global()->TeamDelays_SevenPlayers[AIDifficulty]);
+				R->ECX(RulesExt::Global()->TeamDelays_Count7[AIDifficulty]);
 				return ResetTeamDelay;
 			}
 			break;
 		case 8:
-			if ((int)RulesExt::Global()->TeamDelays_EightPlayers.size() > AIDifficulty)
+			if ((int)RulesExt::Global()->TeamDelays_Count8.size() > AIDifficulty)
 			{
-				R->ECX(RulesExt::Global()->TeamDelays_EightPlayers[AIDifficulty]);
+				R->ECX(RulesExt::Global()->TeamDelays_Count8[AIDifficulty]);
 				return ResetTeamDelay;
 			}
 			break;

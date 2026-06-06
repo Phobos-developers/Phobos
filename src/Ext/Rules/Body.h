@@ -360,14 +360,14 @@ public:
 		Valueable<bool> DiscardOn_MoveBasedOnDestination;
 
 		Valueable<DynamicTeamDelayType> TeamDelays_DynamicType;
-		ValueableVector<int> TeamDelays_OnePlayer;
-		ValueableVector<int> TeamDelays_TwoPlayers;
-		ValueableVector<int> TeamDelays_ThreePlayers;
-		ValueableVector<int> TeamDelays_FourPlayers;
-		ValueableVector<int> TeamDelays_FivePlayers;
-		ValueableVector<int> TeamDelays_SixPlayers;
-		ValueableVector<int> TeamDelays_SevenPlayers;
-		ValueableVector<int> TeamDelays_EightPlayers;
+		ValueableVector<int> TeamDelays_Count1;
+		ValueableVector<int> TeamDelays_Count2;
+		ValueableVector<int> TeamDelays_Count3;
+		ValueableVector<int> TeamDelays_Count4;
+		ValueableVector<int> TeamDelays_Count5;
+		ValueableVector<int> TeamDelays_Count6;
+		ValueableVector<int> TeamDelays_Count7;
+		ValueableVector<int> TeamDelays_Count8;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -666,14 +666,14 @@ public:
 			, DiscardOn_MoveBasedOnDestination { false }
 
 			, TeamDelays_DynamicType { DynamicTeamDelayType::StartingPoint }
-			, TeamDelays_OnePlayer {}
-			, TeamDelays_TwoPlayers {}
-			, TeamDelays_ThreePlayers {}
-			, TeamDelays_FourPlayers {}
-			, TeamDelays_FivePlayers {}
-			, TeamDelays_SixPlayers {}
-			, TeamDelays_SevenPlayers {}
-			, TeamDelays_EightPlayers {}
+			, TeamDelays_Count1 {}
+			, TeamDelays_Count2 {}
+			, TeamDelays_Count3 {}
+			, TeamDelays_Count4 {}
+			, TeamDelays_Count5 {}
+			, TeamDelays_Count6 {}
+			, TeamDelays_Count7 {}
+			, TeamDelays_Count8 {}
 		{ }
 
 		virtual ~ExtData() = default;
