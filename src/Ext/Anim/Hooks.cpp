@@ -51,12 +51,13 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 	const bool isTerrain = pOwnerObject && pOwnerObject->WhatAmI() == AbstractType::Terrain;
 	const int damageMultiplier = isTerrain ? 5 : 1;
 	const double baseDamage = pType->Damage;
+	const bool firstDamage = pThis->Animation.Value == std::max(delay - 1, 1);
 
 	int appliedDamage = 0;
 
 	if (pTypeExt->Damage_ApplyOncePerLoop) // If damage is to be applied only once per animation loop
 	{
-		if (pThis->Animation.Value == std::max(delay - 1, 1))
+		if (firstDamage)
 			appliedDamage = static_cast<int>(std::round(baseDamage)) * damageMultiplier;
 		else
 			return SkipDamage;
@@ -117,9 +118,13 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 			if (!pExt->InvokerHouse)
 				pOwner = pInvoker->Owner;
 
-			if (pTypeExt->Damage_ApplyFirepowerMult)
-				appliedDamage = static_cast<int>(appliedDamage * TechnoExt::GetCurrentFirepowerMultiplier(pInvoker));
+			// only calculate firepower multiplier in the first round
+			if (firstDamage && pTypeExt->Damage_ApplyFirepowerMult)
+				pExt->FirepowerMult = TechnoExt::GetCurrentFirepowerMultiplier(pInvoker);
 		}
+
+		if (pTypeExt->Damage_ApplyFirepowerMult)
+			appliedDamage = static_cast<int>(appliedDamage * pExt->FirepowerMult);
 	}
 
 	// Jun 29, 2025 - Starkku: Owner != Invoker. Previously OwnerObject / ParentBuilding fallback only existed for Warheads

@@ -1788,6 +1788,10 @@ msgstr ""
 msgid "Allow `Temporal` warhead to apply ratio and bonus"
 msgstr "允许 `Temporal` 弹头应用比率和加成"
 
+msgid ""
+"Fix the bug that techno will get stuck if change owner in tunnel"
+msgstr "修复了科技类型在隧道中变更所属方会导致卡住的 Bug"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 

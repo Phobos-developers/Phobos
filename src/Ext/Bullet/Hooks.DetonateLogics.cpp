@@ -369,7 +369,8 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 	GET_BASE(CoordStruct const* const, coords, 0x8);
 
 	auto const pTechno = pThis->Owner;
-	auto const pOwner = pTechno ? pTechno->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+	auto const pBulletExt = BulletExt::ExtMap.Find(pThis);
+	auto const pOwner = pTechno ? pTechno->Owner : pBulletExt->FirerHouse;
 
 	// Extra warheads
 	if (auto const pWeapon = pThis->WeaponType)
@@ -378,50 +379,92 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 		auto const& extraWarheads = pWeaponExt->ExtraWarheads;
 		auto const& damageOverrides = pWeaponExt->ExtraWarheads_DamageOverrides;
 		auto const& detonationChances = pWeaponExt->ExtraWarheads_DetonationChances;
+		auto const& rollChances = pWeaponExt->ExtraWarheads_RollChances;
 		auto const& fullDetonation = pWeaponExt->ExtraWarheads_FullDetonation;
 		const int defaultDamage = pWeapon->Damage;
 		auto& random = ScenarioClass::Instance->Random;
 
-		for (size_t i = 0; i < extraWarheads.size(); i++)
+		auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target);
+
+		auto detonateWarhead = [&](int index)
+			{
+				if (index < 0 || index >= static_cast<int>(extraWarheads.size()))
+					return;
+
+				auto const pWH = extraWarheads[index];
+				auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+				if (pTarget && (!pWHExt->IsHealthInThreshold(pTarget) || !pWHExt->IsVeterancyInThreshold(pTarget)))
+					return;
+
+				int damage = defaultDamage;
+				size_t size = damageOverrides.size();
+				if (size > static_cast<size_t>(index))
+					damage = damageOverrides[index];
+				else if (size > 0)
+					damage = damageOverrides[size - 1];
+
+				size = fullDetonation.size();
+				bool isFull = true;
+				if (size > static_cast<size_t>(index))
+					isFull = fullDetonation[index];
+				else if (size > 0)
+					isFull = fullDetonation[size - 1];
+
+				if (isFull)
+					WarheadTypeExt::DetonateAt(pWH, *coords, pTechno, damage, pOwner, pThis->Target);
+				else
+					pWHExt->DamageAreaWithTarget(*coords, damage, pTechno, pWH, true, pOwner, pTarget);
+			};
+
+		if (pWeaponExt->ExtraWarheads_WeightsData.size() > 0)
 		{
-			auto const pWH = extraWarheads[i];
-			auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
-			auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target);
+			size_t rollCount = rollChances.size();
+			if (rollCount == 0)
+				rollCount = 1;
 
-			if (pTarget && !pWHExt->IsHealthInThreshold(pTarget) && !pWHExt->IsVeterancyInThreshold(pTarget))
-				continue;
+			for (size_t i = 0; i < rollCount; i++)
+			{
+				double dice = random.RandomDouble();
+				if (rollChances.size() > 0 && dice > rollChances[i])
+					continue;
 
-			int damage = defaultDamage;
-			size_t size = damageOverrides.size();
+				const size_t weightIndex = std::min(i, pWeaponExt->ExtraWarheads_WeightsData.size() - 1);
+				const auto& weights = pWeaponExt->ExtraWarheads_WeightsData[weightIndex];
 
-			if (size > i)
-				damage = damageOverrides[i];
-			else if (size > 0)
-				damage = damageOverrides[size - 1];
+				int selectedIndex = GeneralUtils::ChooseOneWeighted(dice, &weights);
 
-			size = detonationChances.size();
-			bool detonate = true;
+				bool detonate = true;
+				size_t chanceSize = detonationChances.size();
+				if (chanceSize > 0)
+				{
+					double chanceDice = random.RandomDouble();
+					if (chanceSize > static_cast<size_t>(selectedIndex))
+						detonate = detonationChances[selectedIndex] >= chanceDice;
+					else
+						detonate = detonationChances[chanceSize - 1] >= chanceDice;
+				}
 
-			if (size > i)
-				detonate = detonationChances[i] >= random.RandomDouble();
-			else if (size > 0)
-				detonate = detonationChances[size - 1] >= random.RandomDouble();
+				if (detonate)
+					detonateWarhead(selectedIndex);
+			}
+		}
+		else
+		{
+			for (size_t i = 0; i < extraWarheads.size(); i++)
+			{
+				size_t size = detonationChances.size();
+				bool detonate = true;
+				if (size > i)
+					detonate = detonationChances[i] >= random.RandomDouble();
+				else if (size > 0)
+					detonate = detonationChances[size - 1] >= random.RandomDouble();
 
-			size = fullDetonation.size();
-			bool isFull = true;
+				if (!detonate)
+					continue;
 
-			if (size > i)
-				isFull = fullDetonation[i];
-			else if (size > 0)
-				isFull = fullDetonation[size - 1];
-
-			if (!detonate)
-				continue;
-
-			if (isFull)
-				WarheadTypeExt::DetonateAt(pWH, *coords, pTechno, damage, pOwner, pThis->Target);
-			else
-				pWHExt->DamageAreaWithTarget(*coords, damage, pTechno, pWH, true, pOwner, pTarget);
+				detonateWarhead(static_cast<int>(i));
+			}
 		}
 	}
 
@@ -435,11 +478,12 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			int damage = pWeapon->Damage;
 
 			if (pTypeExt->ReturnWeapon_ApplyFirepowerMult)
-				damage = static_cast<int>(damage * TechnoExt::GetCurrentFirepowerMultiplier(pTechno));
+				damage = static_cast<int>(damage * pBulletExt->FirepowerMult);
 
 			if (auto const pBullet = pWeapon->Projectile->CreateBullet(pTechno, pTechno,
 				damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 			{
+				BulletExt::ExtMap.Find(pBullet)->FirepowerMult = pBulletExt->FirepowerMult;
 				BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, pThis->Location, false);
 				BulletExt::SimulatedFiringEffects(pBullet, pOwner, nullptr, false, true);
 			}
@@ -642,7 +686,8 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 	if ((pType->Airburst || pTypeExt->Splits) && pWeapon)
 	{
 		auto const pSource = pThis->Owner;
-		auto pOwner = pSource ? pSource->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+		auto const pBulletExt = BulletExt::ExtMap.Find(pThis);
+		auto pOwner = pSource ? pSource->Owner : pBulletExt->FirerHouse;
 
 		if (!pOwner || pOwner->Defeated)
 		{
@@ -749,8 +794,8 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 		auto const pTypeSplits = pWeapon->Projectile;
 		int damage = pWeapon->Damage;
 
-		if (pTypeExt->AirburstWeapon_ApplyFirepowerMult && pSource)
-			damage = static_cast<int>(damage * TechnoExt::GetCurrentFirepowerMultiplier(pSource));
+		if (pTypeExt->AirburstWeapon_ApplyFirepowerMult)
+			damage = static_cast<int>(damage * pBulletExt->FirepowerMult);
 
 		// Cache all pointer variables before the loop
 		auto const pWH = pWeapon->Warhead;
@@ -833,6 +878,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 						coords = MapClass::GetRandomCoordsNear(coords, distance, false);
 					}
 
+					BulletExt::ExtMap.Find(pBullet)->FirepowerMult = pBulletExt->FirepowerMult;
 					BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, coords, true);
 					BulletExt::SimulatedFiringEffects(pBullet, pOwner, nullptr, useFiringEffects, true);
 				}

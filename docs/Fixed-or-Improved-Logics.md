@@ -327,6 +327,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that low-air taking off / landing objects will receive twice damage.
 - Allowed `AuxBuilding` to count building upgrades.
 - Fixed voxel projectile and animation lighting issues.
+- Fixed the bug that techno will get stuck if change owner in tunnel.
+- Restored the original Tiberian Sun behavior of playing the `[AudioVisual] -> DeploySound=` sound effect when clicking the sidebar to execute `Deploy`.
 
 ## Fixes / interactions with other extensions
 

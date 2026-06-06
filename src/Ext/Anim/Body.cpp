@@ -438,6 +438,7 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->FromWeapon)
 		.Process(this->FromWeaponIdx)
 		.Process(this->FromBurstIdx)
+		.Process(this->FirepowerMult)
 		;
 }
 

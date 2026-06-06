@@ -183,6 +183,12 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 	if (pHouse->IsControlledByHuman() ? (!this->SW_AllowPlayer) : (!this->SW_AllowAI))
 		return false;
 
+	// allow only certain houses, disallow forbidden houses
+	const auto ownerBits = 1u << pHouse->Type->ArrayIndex;
+
+	if (!(this->SW_RequiredHouses & ownerBits) || (this->SW_ForbiddenHouses & ownerBits))
+		return false;
+
 	auto IsTechnoPresent = [pHouse](TechnoTypeClass* pType)
 		{
 			const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pType);
@@ -195,12 +201,6 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 
 	// check whether the optional aux building exists
 	if (pThis->AuxBuilding && !IsTechnoPresent(pThis->AuxBuilding))
-		return false;
-
-	// allow only certain houses, disallow forbidden houses
-	const auto ownerBits = 1u << pHouse->Type->ArrayIndex;
-
-	if (!(this->SW_RequiredHouses & ownerBits) || (this->SW_ForbiddenHouses & ownerBits))
 		return false;
 
 	// check that any aux building exist and no neg building

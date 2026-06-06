@@ -3159,10 +3159,11 @@ DEFINE_HOOK(0x55B5FF, LogicClass_AI_UpdateObjects, 0x5)
 
 	GET(LogicClass*, pLogic, EDI);
 	int& updateIdx = LogicUpdateTemp::UpdateIndex;
+	const auto& items = pLogic->Items;
 
 	for (updateIdx = 0; updateIdx < pLogic->Count; ++updateIdx)
 	{
-		const auto pObject = pLogic->Items[updateIdx];
+		const auto pObject = items[updateIdx];
 		pObject->Update();
 	}
 
@@ -3581,3 +3582,11 @@ DEFINE_HOOK(0x46B0E1, BulletClass_DrawAVXL_LightingFix, 0x5)
 }
 
 #pragma endregion
+
+DEFINE_HOOK_AGAIN(0x701681, TechnoClass_SetOwningHouse_TunnelFix, 0x6)
+DEFINE_HOOK(0x701664, TechnoClass_SetOwningHouse_TunnelFix, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	R->AL(pThis->InLimbo || (abstract_cast<FootClass*>(pThis) && static_cast<FootClass*>(pThis)->TubeIndex != -1));
+	return R->Origin() + 0x6;
+}
