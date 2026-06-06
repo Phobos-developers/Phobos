@@ -2728,16 +2728,20 @@ In `rulesmd.ini`:
 ChargeTurret.Delays=  ; List of integers - game frames
 ```
 
-### Customizable disk laser radius
+### Customizable disk laser
 
 ![image](_static/images/disklaser-radius-values-01.gif)
-- You can now set disk laser animation radius using a new tag.
+
+- `DiskLaser.SimulateFire` determines whether a `DiskLaser=true` weapon simulates firing, avoiding the limitations of the original hardcoded kill method.
+- `DiskLaser.Radius` sets the radius of the disk laser animation. The default value is `240`, which corresponds to the original saucer disk radius.
+- `DiskLaser.ChargeUp` customizes the charge‑up sound for `DiskLaser=true` weapons.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]          ; WeaponType
-DiskLaser.Radius=240  ; integer
-; 240 is the default saucer disk radius
+[SOMEWEAPON]                  ; WeaponType, with DiskLaser=yes
+DiskLaser.SimulateFire=false  ; boolean
+DiskLaser.Radius=240          ; integer
+DiskLaser.ChargeUp=           ; sound entry, default to [AudioVisual] -> DiskLaserChargeUp
 ```
 
 ### Customizable ROF random delay
