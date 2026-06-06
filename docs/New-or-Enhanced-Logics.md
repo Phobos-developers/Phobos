@@ -2452,7 +2452,7 @@ MergeBuildingDamage=         ; boolean
 *Mind control break warhead being utilized in [RA2: Reboot](https://www.moddb.com/mods/reboot)*
 
 - Warheads can now break mind control (doesn't apply to perma-MC-ed objects).
-- `RemoveMindControl.Silent` can be used to mute the `MindClearedSound` sound effect.
+- Both `RemoveMindControl` and `MindControl.Permanent` will remove the target's original conventional mind control effect and play the `MindClearedSound` sound effect. This can now be configured via `RemoveMindControl.Silent`, which defaults to `[AudioVisual] -> RemoveMindControl.Silent` for removing conventional mind control, and defaults to `[AudioVisual] -> MindControl.Permanent.ReplaceSilent` for cases where permanent mind control replaces conventional mind control.
 
 ```{hint}
 You can simply use this flag to reduce some noise, or play another sound effect at the same time when muting the original sound effect...
@@ -2461,11 +2461,12 @@ You can simply use this flag to reduce some noise, or play another sound effect 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-RemoveMindControl.Silent=false  ; boolean
+RemoveMindControl.Silent=false             ; boolean
+MindControl.Permanent.ReplaceSilent=false  ; boolean
 
-[SOMEWARHEAD]                   ; WarheadType
-RemoveMindControl=false         ; boolean
-RemoveMindControl.Silent=       ; boolean, default to [AudioVisual] -> RemoveMindControl.Silent
+[SOMEWARHEAD]                              ; WarheadType
+RemoveMindControl=false                    ; boolean
+RemoveMindControl.Silent=                  ; boolean, normal removal defaults to [AudioVisual] -> RemoveMindControl.Silent, permanent replacement defaults to [AudioVisual] -> MindControl.Permanent.ReplaceSilent
 ```
 
 ### CellSpread enhancement
