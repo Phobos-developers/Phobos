@@ -357,6 +357,8 @@ public:
 		Valueable<bool> Temporal_ApplyVersus;
 		Valueable<bool> Temporal_ApplyMultiplier;
 
+		ValueableIdx<VocClass> DeploySound;
+
 		Valueable<bool> DiscardOn_MoveBasedOnDestination;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
@@ -652,6 +654,7 @@ public:
 			, Shrapnel_IgnoreHitBuildings { false }
 			, BuildingGuardRetryDelay {}
 			, Temporal_ApplyVersus { false }
+			, DeploySound {}
 			, Temporal_ApplyMultiplier { false }
 			, DiscardOn_MoveBasedOnDestination { false }
 		{ }

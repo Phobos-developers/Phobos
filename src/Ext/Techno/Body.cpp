@@ -1443,3 +1443,9 @@ DEFINE_HOOK(0x710415, TechnoClass_DetachAnim, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x730D4A, DeployCommandClass_Execute_DeploySound, 0x6)
+{
+	R->ECX(RulesExt::Global()->DeploySound);
+	return 0x730D50;
+}
