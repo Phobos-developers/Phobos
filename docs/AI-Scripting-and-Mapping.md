@@ -33,14 +33,14 @@ In `rulesmd.ini`:
 ```ini
 [Gneral]
 TeamDelays.DynamicType=startingpoint    ; Dynamic Team Delay Type Enumeration (startingpoint|playercount|allies/ally|enemies/enemy|alivecount|aliveallies/alliveally|aliveenemies|aliveenemy)
-TeamDelays.OnePlayer=                   ; List of 3 integers indicating AI's TeamDelays in Easy / Normal / Difficult game diffculty.
-TeamDelays.TwoPlayers=                  ; List of 3 integers indicating AI's TeamDelays in Easy / Normal / Difficult game diffculty.
-TeamDelays.ThreePlayers=                ; List of 3 integers indicating AI's TeamDelays in Easy / Normal / Difficult game diffculty.
-TeamDelays.FourPlayers=                 ; List of 3 integers indicating AI's TeamDelays in Easy / Normal / Difficult game diffculty.
-TeamDelays.FivePlayers=                 ; List of 3 integers indicating AI's TeamDelays in Easy / Normal / Difficult game diffculty.
-TeamDelays.SixPlayers=                  ; List of 3 integers indicating AI's TeamDelays in Easy / Normal / Difficult game diffculty.
-TeamDelays.SevenPlayers=                ; List of 3 integers indicating AI's TeamDelays in Easy / Normal / Difficult game diffculty.
-TeamDelays.EightPlayers=                ; List of 3 integers indicating AI's TeamDelays in Easy / Normal / Difficult game diffculty.
+TeamDelays.OnePlayer=                   ; List of 3 integers indicating AI's TeamDelays in Difficult / Normal / Easy game diffculty.
+TeamDelays.TwoPlayers=                  ; List of 3 integers indicating AI's TeamDelays in Difficult / Normal / Easy game diffculty.
+TeamDelays.ThreePlayers=                ; List of 3 integers indicating AI's TeamDelays in Difficult / Normal / Easy game diffculty.
+TeamDelays.FourPlayers=                 ; List of 3 integers indicating AI's TeamDelays in Difficult / Normal / Easy game diffculty.
+TeamDelays.FivePlayers=                 ; List of 3 integers indicating AI's TeamDelays in Difficult / Normal / Easy game diffculty.
+TeamDelays.SixPlayers=                  ; List of 3 integers indicating AI's TeamDelays in Difficult / Normal / Easy game diffculty.
+TeamDelays.SevenPlayers=                ; List of 3 integers indicating AI's TeamDelays in Difficult / Normal / Easy game diffculty.
+TeamDelays.EightPlayers=                ; List of 3 integers indicating AI's TeamDelays in Difficult / Normal / Easy game diffculty.
 ```
 
 ```{note}
