@@ -6498,23 +6498,20 @@ msgid ""
 "work."
 msgstr "注意列出的弹头必须在 `[Warheads]` 中列出才能生效。"
 
-#, fuzzy
 msgid ""
 "These warheads can be made random with these optional tags. The game will"
 " randomly choose only a single warhead from the list for each roll chance"
 " provided."
-msgstr "使用这些标签可以使这些超武变得随机。游戏将根据每个提供的 “掷骰子” 概率随机选择列表中的一个建筑。"
+msgstr "使用这些标签可以使这些弹头变得随机。游戏将根据每个提供的 “掷骰子” 概率随机选择列表中的一个建筑。"
 
-#, fuzzy
 msgid ""
 "`ExtraWarheads.RollChances` lists chances of each \"dice roll\" "
 "happening. Valid values range from 0% (never happens) to 100% (always "
 "happens). Defaults to a single sure roll."
 msgstr ""
-"`SW.Next.RollChances` 是 “掷骰子” 发生的概率列表。有效值的范围为 0%（从不发生）到 "
+"`ExtraWarheads.RollChances` 是 “掷骰子” 发生的概率列表。有效值的范围为 0%（从不发生）到 "
 "100%（总是发生）。默认为单次必出。"
 
-#, fuzzy
 msgid ""
 "`ExtraWarheads.RandomWeightsN` lists the weights for each \"dice roll\" "
 "that increase the probability of picking a specific warhead. Valid values"
@@ -6523,7 +6520,7 @@ msgid ""
 " roll attempt doesn't have weights specified, the last weights will be "
 "used."
 msgstr ""
-"`SW.Next.RandomWeightsN` 是每个 “掷骰子” 发生概率的权重列表。有效值为 0（从不发生）到 "
+"`ExtraWarheads.RandomWeightsN` 是每个 “掷骰子” 发生概率的权重列表。有效值为 0（从不发生）到 "
 "100%（总是发生）。`RandomWeights` 是 `RandomWeights0` "
 "的有效别名。如果掷骰尝试没有指定权重，则使用最后一个权重。"
 

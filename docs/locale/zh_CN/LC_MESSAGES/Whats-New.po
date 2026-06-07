@@ -1944,6 +1944,7 @@ msgstr ""
 
 msgid "Introduce weight selection rules for ExtraWarheads (by Noble_Fish)"
 msgstr ""
+"为额外弹头引入权重选取规则（by Noble_Fish）"
 
 #, fuzzy
 msgid ""
