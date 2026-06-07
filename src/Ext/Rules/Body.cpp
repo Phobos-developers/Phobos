@@ -414,7 +414,14 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Temporal_ApplyVersus.Read(exINI, GameStrings::CombatDamage, "Temporal.ApplyVersus");
 	this->Temporal_ApplyMultiplier.Read(exINI, GameStrings::CombatDamage, "Temporal.ApplyMultiplier");
 
+	ValueableIdx<VocClass> deploySound { pThis->DeploySound };
+	deploySound.Read(exINI, GameStrings::AudioVisual, "DeploySound");
+	pThis->DeploySound = deploySound;
+
 	this->DiscardOn_MoveBasedOnDestination.Read(exINI, GameStrings::General, "DiscardOn.MoveBasedOnDestination");
+
+	this->RemoveMindControl_Silent.Read(exINI, GameStrings::AudioVisual, "RemoveMindControl.Silent");
+	this->MindControl_Permanent_ReplaceSilent.Read(exINI, GameStrings::AudioVisual, "MindControl.Permanent.ReplaceSilent");
 
 	this->TeamDelays_DynamicType.Read(exINI, GameStrings::General, "TeamDelays.DynamicType");
 	this->TeamDelays_Count1.Read(exINI, GameStrings::General, "TeamDelays.Count1");
@@ -758,6 +765,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Temporal_ApplyVersus)
 		.Process(this->Temporal_ApplyMultiplier)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
+		.Process(this->RemoveMindControl_Silent)
+		.Process(this->MindControl_Permanent_ReplaceSilent)
 		.Process(this->TeamDelays_DynamicType)
 		.Process(this->TeamDelays_Count1)
 		.Process(this->TeamDelays_Count2)

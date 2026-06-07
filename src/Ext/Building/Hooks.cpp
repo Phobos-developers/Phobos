@@ -1127,3 +1127,46 @@ DEFINE_HOOK(0x4496FB, BuildingClass_Mission_Guard_Armed, 0x6)
 }
 
 #pragma endregion
+
+#pragma region TurretAnim
+
+DEFINE_HOOK(0x451242, BuildingClass_AnimationAI_TurretAnim, 0xA)
+{
+	enum { SkipGameCode = 0x451296 };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	if (auto const pAnim = pThis->Anims[(int)BuildingAnimSlot::Turret])
+	{
+		pAnim->Animation.Value = BuildingExt::GetTurretFrame(pThis);
+		pAnim->Animation.Step = 0;
+	}
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x44B6C7, BuildingClass_Mission_Attack_TurretAnim, 0x6)
+{
+	enum { SkipFiring = 0x44B6FE };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	if (pThis->HasTurret())
+	{
+		if (auto const pAnim = pThis->Anims[(int)BuildingAnimSlot::Turret])
+		{
+			auto const pExt = BuildingExt::ExtMap.Find(pThis);
+			auto const pTypeExt = pExt->TypeExtData;
+			const bool isLowPower = !pThis->StuffEnabled || !pThis->IsPowerOnline();
+			const int firingFrames = isLowPower ? pTypeExt->TurretAnim_LowPowerFiringFrames : pTypeExt->TurretAnim_FiringFrames;
+
+			if (firingFrames > 0 && pExt->TurretAnimFiringFrame == -1)
+			{
+				pExt->TurretAnimFiringFrame = 0;
+				pExt->TurretAnimRateTick = 0;
+			}
+		}
+	}
+
+	return 0;
+}

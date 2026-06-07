@@ -193,7 +193,9 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 		{
 			const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pType);
 
-			if (pBuildingType && (!BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.empty() || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))
+			// June 7, 2026 - Starkku: PowersUpBuilding is now put in PowersUp_Buildings
+			// so removed  BuildingTypeClass::Find(pBuildingType->PowersUpBuilding check here.
+			if (pBuildingType && !BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.empty())
 				return BuildingTypeExt::GetUpgradesAmount(pBuildingType, pHouse) > 0;
 
 			return HouseExt::ExtMap.Find(pHouse)->CountOwnedPresentAndLimboed(pType) > 0;

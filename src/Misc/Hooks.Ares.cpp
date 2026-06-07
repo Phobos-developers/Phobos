@@ -6,6 +6,7 @@
 #include <Ext/Sidebar/Body.h>
 #include <Ext/EBolt/Body.h>
 #include <Ext/SWType/Body.h>
+#include <Ext/CaptureManager/Body.h>
 
 #include <New/Entity/Ares/RadarJammerClass.h>
 
@@ -76,13 +77,22 @@ static bool __fastcall SW_IsAvailable(SuperWeaponTypeClass** pExt_Ares, void*, H
 
 namespace PermaMCTemp
 {
+	WarheadTypeClass* Warhead = nullptr;
 	bool Selected = false;
+}
+
+static bool __fastcall ApplyPermaMC_Wrapper(WarheadTypeClass** pExt_Ares, void*, HouseClass* pSourceHouse, AbstractClass* pTarget)
+{
+	PermaMCTemp::Warhead = *pExt_Ares;
+	const bool result = AresFunctions::ApplyPermaMC(pExt_Ares, pSourceHouse, pTarget);
+	PermaMCTemp::Warhead = nullptr;
+	return result;
 }
 
 static bool __fastcall PermaMC_FreeUnit_SetContext(CaptureManagerClass* pManager, void*, TechnoClass* pTechno)
 {
 	PermaMCTemp::Selected = pTechno->IsSelected;
-	return pManager->FreeUnit(pTechno);
+	return CaptureManagerExt::FreeUnit(pManager, pTechno, WarheadTypeExt::ExtMap.Find(PermaMCTemp::Warhead)->RemoveMindControl_Silent.Get(RulesExt::Global()->MindControl_Permanent_ReplaceSilent));
 }
 
 static bool __fastcall PermaMC_SetOwningHouse_Select(TechnoClass* pTechno, void*, HouseClass* pHouse, bool announce)
@@ -194,6 +204,10 @@ void Apply_Ares3_0_Patches()
 	// Remove Ares check for houses for Psychedelic=yes Warheads.
 	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4AAAA, { 0x31, 0xC0, 0x90, 0x90, 0x90, 0x90 });
 
+	// Get warhead of MindControl.Permanent
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x5385A, &ApplyPermaMC_Wrapper);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x717C3, &ApplyPermaMC_Wrapper);
+
 	// Handle select of PsyDom
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x36107, &PermaMC_FreeUnit_SetContext);
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x36115, &PermaMC_SetOwningHouse_Select);
@@ -279,6 +293,10 @@ void Apply_Ares3_0p1_Patches()
 
 	// Remove Ares check for houses for Psychedelic=yes Warheads.
 	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4B70A, { 0x31, 0xC0, 0x90, 0x90, 0x90, 0x90 });
+
+	// Get warhead of MindControl.Permanent
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x5450A, &ApplyPermaMC_Wrapper);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x727E3, &ApplyPermaMC_Wrapper);
 
 	// Handle select of PsyDom
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x36BA7, &PermaMC_FreeUnit_SetContext);

@@ -18,6 +18,7 @@ enum class PhobosTriggerAction : unsigned int
 	RunSuperWeaponAtWaypoint = 506,
 	ToggleMCVRedeploy = 510,
 	UndeployToWaypoint = 511,
+	SetFollowsIndexForVehicle = 512,
 
 	EditAngerNode = 606,
 	ClearAngerNode = 607,
@@ -73,6 +74,7 @@ public:
 	ACTION_FUNC(RunSuperWeaponAtWaypoint);
 	ACTION_FUNC(ToggleMCVRedeploy);
 	ACTION_FUNC(UndeployToWaypoint);
+	ACTION_FUNC(SetFollowsIndexForVehicle);
 
 	ACTION_FUNC(EditAngerNode);
 	ACTION_FUNC(ClearAngerNode);

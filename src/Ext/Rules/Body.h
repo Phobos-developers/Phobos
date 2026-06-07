@@ -358,6 +358,8 @@ public:
 		Valueable<bool> Temporal_ApplyMultiplier;
 
 		Valueable<bool> DiscardOn_MoveBasedOnDestination;
+		Valueable<bool> RemoveMindControl_Silent;
+		Valueable<bool> MindControl_Permanent_ReplaceSilent;
 
 		Valueable<DynamicTeamDelayType> TeamDelays_DynamicType;
 		ValueableVector<int> TeamDelays_Count1;
@@ -664,6 +666,8 @@ public:
 			, Temporal_ApplyVersus { false }
 			, Temporal_ApplyMultiplier { false }
 			, DiscardOn_MoveBasedOnDestination { false }
+			, RemoveMindControl_Silent { false }
+			, MindControl_Permanent_ReplaceSilent { false }
 
 			, TeamDelays_DynamicType { DynamicTeamDelayType::StartingPoint }
 			, TeamDelays_Count1 {}
