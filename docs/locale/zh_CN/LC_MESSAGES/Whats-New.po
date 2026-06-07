@@ -935,13 +935,12 @@ msgstr "[快速上车](New-or-Enhanced-Logics.md#fast-access-vehicle)（by CrimR
 msgid "Laser, electric bolt and rad beam scatter (by CrimRecya)"
 msgstr "激光、EBolt 和辐射波的散布（by CrimRecya）"
 
-#, fuzzy
 msgid ""
 "[Airburst weapon firing/source coordinate and firing effect & offset "
 "customizations](Fixed-or-Improved-Logics.md#airburst--splits) (by "
 "Starkku)"
 msgstr ""
-"[自定义空爆武器中心坐标和开火效果](Fixed-or-Improved-Logics.md#airburst--splits)（by "
+"[空爆武器中心坐标以及发射效果和偏移量的自定义](Fixed-or-Improved-Logics.md#airburst--splits)（by "
 "Starkku）"
 
 msgid ""
