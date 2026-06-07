@@ -1945,13 +1945,12 @@ msgid "Introduce weight selection rules for ExtraWarheads (by Noble_Fish)"
 msgstr ""
 "为额外弹头引入权重选取规则（by Noble_Fish）"
 
-#, fuzzy
 msgid ""
 "[Building turret idle/firing/low power animations](Fixed-or-Improved-"
 "Logics.md#building-turret-animations) (by Starkku)"
 msgstr ""
-"[可更新开火动画](Fixed-or-Improved-Logics.md#updateable-firing-anim)（by "
-"TaranDahl）"
+"[建筑炮塔的闲置／开火／断电动画](Fixed-or-Improved-"
+"Logics.md#building-turret-animations)（by Starkku）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
