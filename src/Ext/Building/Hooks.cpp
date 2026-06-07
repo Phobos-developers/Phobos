@@ -1157,8 +1157,8 @@ DEFINE_HOOK(0x44B6C7, BuildingClass_Mission_Attack_TurretAnim, 0x6)
 		{
 			auto const pExt = BuildingExt::ExtMap.Find(pThis);
 			auto const pTypeExt = pExt->TypeExtData;
-			bool isLowPower = !pThis->StuffEnabled || !pThis->IsPowerOnline();
-			int firingFrames = isLowPower ? pTypeExt->TurretAnim_LowPowerFiringFrames : pTypeExt->TurretAnim_FiringFrames;
+			const bool isLowPower = !pThis->StuffEnabled || !pThis->IsPowerOnline();
+			const int firingFrames = isLowPower ? pTypeExt->TurretAnim_LowPowerFiringFrames : pTypeExt->TurretAnim_FiringFrames;
 
 			if (firingFrames > 0 && pExt->TurretAnimFiringFrame == -1)
 			{

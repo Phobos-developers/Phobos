@@ -14,17 +14,17 @@ namespace AnimLoggingTemp
 DEFINE_HOOK(0x423B95, AnimClass_AI_Early, 0x8)
 {
 	GET(AnimClass* const, pThis, ESI);
-	GET(AnimTypeClass* const, pType, EDX);
 
 	AnimExt::ExtMap.Find(pThis)->UpdateAsFiringAnim();
+	auto const pType = pThis->Type;
 
 	AnimLoggingTemp::UniqueID = pThis->UniqueID;
-	AnimLoggingTemp::pType = pThis->Type;
+	AnimLoggingTemp::pType = pType;
 
 	// Replace vanilla HideIfNoOre check.
 	if (pType->HideIfNoOre)
 	{
-		const int nThreshold = abs(AnimTypeExt::ExtMap.Find(pThis->Type)->HideIfNoOre_Threshold.Get());
+		const int nThreshold = abs(AnimTypeExt::ExtMap.Find(pType)->HideIfNoOre_Threshold.Get());
 		pThis->Invisible = pThis->GetCell()->GetContainedTiberiumValue() <= nThreshold;
 	}
 
@@ -574,9 +574,9 @@ DEFINE_HOOK(0x6FF42B, TechnoClass_Fire_Anim, 0x7)
 
 	if (WeaponTypeExt::ExtMap.Find(pWeapon)->Anim_Update.Get(RulesExt::Global()->FiringAnim_Update))
 	{
-		pAnimExt->FromWeapon = pWeapon;
-		pAnimExt->FromWeaponIdx = wpIdx;
-		pAnimExt->FromBurstIdx = pThis->CurrentBurstIndex;
+		pAnimExt->FiringAnim_Weapon = pWeapon;
+		pAnimExt->FiringAnim_WeaponIndex = wpIdx;
+		pAnimExt->FiringAnim_BurstIndex = pThis->CurrentBurstIndex;
 	}
 
 	return SkipBuildingCheck;

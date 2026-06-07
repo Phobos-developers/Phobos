@@ -328,6 +328,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed `AuxBuilding` to count building upgrades.
 - Fixed voxel projectile and animation lighting issues.
 - Fixed the bug that techno will get stuck if change owner in tunnel.
+- Restored the original Tiberian Sun behavior of playing the `[AudioVisual] -> DeploySound=` sound effect when clicking the sidebar to execute `Deploy`.
 
 ## Fixes / interactions with other extensions
 
@@ -1316,6 +1317,8 @@ Gas.MaxDriftSpeed=2    ; integer (TS default is 5)
 - `AirburstWeapon.ApplyFirepowerMult` determines whether or not firepower modifiers from the firer of the original projectile are applied on the projectiles created from `AirburstWeapon`.
 - `AirburstWeapon.SourceScatterMin` and `AirburstWeapon.SourceScatterMax` can be used to scatter the source or 'firing' coordinate around the original coordinate.
 - `AirburstWeapon.UseFiringEffects` if set to true makes `AirburstWeapon` display weapon `Anim` and play `Report` sound if available.
+- `AirburstWeapon.HeadToTarget` if set to true makes the projectiles start facing towards target instead of downwards.
+- `AirburstWeapon.RadialFireSegments` if set to value above 0, causes the projectiles to be fired off in 180 degree radial arc facing the original projectile's target in segments specified by the value, similar to `RadialFireSegments` on TechnoTypes.
 
 In `rulesmd.ini`:
 ```ini
@@ -1339,6 +1342,8 @@ AirburstWeapon.ApplyFirepowerMult=false     ; boolean
 AirburstWeapon.SourceScatterMin=0.0         ; floating point value, distance in cells
 AirburstWeapon.SourceScatterMax=0.0         ; floating point value, distance in cells
 AirburstWeapon.UseFiringEffects=false       ; boolean
+AirburstWeapon.HeadToTarget=false           ; boolean
+AirburstWeapon.RadialFireSegments=0         ; integer
 ```
 
 ```{note}

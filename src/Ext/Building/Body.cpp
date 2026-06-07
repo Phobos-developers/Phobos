@@ -465,22 +465,18 @@ int BuildingExt::GetTurretFrame(BuildingClass* pThis)
 {
 	auto const pExt = BuildingExt::ExtMap.Find(pThis);
 	auto const pTypeExt = pExt->TypeExtData;
-	int facing = pThis->PrimaryFacing.Current().GetValue<5>();
-	int shapeFacing = ObjectClass::BodyShape[facing];
+	const int facing = pThis->PrimaryFacing.Current().GetValue<5>();
+	const int shapeFacing = ObjectClass::BodyShape[facing];
 
-	bool isLowPower = !pThis->StuffEnabled || !pThis->IsPowerOnline();
-	bool isFiring = pExt->TurretAnimFiringFrame != -1;
+	const bool isLowPower = !pThis->StuffEnabled || !pThis->IsPowerOnline();
+	const bool isFiring = pExt->TurretAnimFiringFrame != -1;
 
-	int idleBlockSize = 32 * pTypeExt->TurretAnim_IdleFrames;
-	int lowPowerIdleBlockSize = 32 * pTypeExt->TurretAnim_LowPowerIdleFrames;
-	int firingBlockSize = 32 * pTypeExt->TurretAnim_FiringFrames;
-	int offsetIdle = 0;
-	int offsetLowPowerIdle = offsetIdle + idleBlockSize;
-	int offsetFiring = offsetLowPowerIdle + lowPowerIdleBlockSize;
-	int offsetLowPowerFiring = offsetFiring + firingBlockSize;
+	const int idleBlockSize = 32 * pTypeExt->TurretAnim_IdleFrames;
+	const int lowPowerIdleBlockSize = 32 * pTypeExt->TurretAnim_LowPowerIdleFrames;
+	const int firingBlockSize = 32 * pTypeExt->TurretAnim_FiringFrames;
 
 	int framesPerFacing = pTypeExt->TurretAnim_IdleFrames;
-	int baseOffset = offsetIdle;
+	int baseOffset = 0;
 	bool hasFiringFrames = false;
 
 	if (isLowPower)
@@ -488,13 +484,13 @@ int BuildingExt::GetTurretFrame(BuildingClass* pThis)
 		if (isFiring && pTypeExt->TurretAnim_LowPowerFiringFrames > 0)
 		{
 			framesPerFacing = pTypeExt->TurretAnim_LowPowerFiringFrames;
-			baseOffset = offsetLowPowerFiring;
+			baseOffset = idleBlockSize + lowPowerIdleBlockSize + firingBlockSize;
 			hasFiringFrames = true;
 		}
 		else if (pTypeExt->TurretAnim_LowPowerIdleFrames > 0)
 		{
 			framesPerFacing = pTypeExt->TurretAnim_LowPowerIdleFrames;
-			baseOffset = offsetLowPowerIdle;
+			baseOffset = idleBlockSize;
 		}
 	}
 	else
@@ -502,7 +498,7 @@ int BuildingExt::GetTurretFrame(BuildingClass* pThis)
 		if (isFiring && pTypeExt->TurretAnim_FiringFrames > 0)
 		{
 			framesPerFacing = pTypeExt->TurretAnim_FiringFrames;
-			baseOffset = offsetFiring;
+			baseOffset = idleBlockSize + lowPowerIdleBlockSize;
 			hasFiringFrames = true;
 		}
 	}

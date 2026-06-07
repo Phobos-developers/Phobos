@@ -112,7 +112,6 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 {
 	int result = 0;
 	bool isUpgrade = false;
-	auto const pPowersUp = pBuilding->PowersUpBuilding;
 
 	auto checkUpgrade = [pHouse, pBuilding, &result, &isUpgrade](BuildingTypeClass* pTPowersUp)
 	{
@@ -131,11 +130,15 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 		}
 	};
 
+	// June 7, 2026 - Starkku: PowersUpBuilding is now put in PowersUp_Buildings
+	/*
+	auto const pPowersUp = pBuilding->PowersUpBuilding;
+
 	if (pPowersUp[0])
 	{
 		if (auto const pTPowersUp = BuildingTypeClass::Find(pPowersUp))
 			checkUpgrade(pTPowersUp);
-	}
+	}*/
 
 	for (auto const pTPowersUp : BuildingTypeExt::ExtMap.Find(pBuilding)->PowersUp_Buildings)
 		checkUpgrade(pTPowersUp);
@@ -168,10 +171,6 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PowerPlantEnhancer_Factor.Read(exINI, pSection, "PowerPlantEnhancer.Factor");
 	this->PowerPlantEnhancer_MaxCount.Read(exINI, pSection, "PowerPlantEnhancer.MaxCount");
 	this->Powered_KillSpawns.Read(exINI, pSection, "Powered.KillSpawns");
-
-	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
-		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
-
 	this->CanC4_AllowZeroDamage.Read(exINI, pSection, "CanC4.AllowZeroDamage");
 
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
@@ -235,13 +234,24 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BuildingRadioLink_SyncOwner.Read(exINI, pSection, "BuildingRadioLink.SyncOwner");
 	this->GuardRetryDelay.Read(exINI, pSection, "GuardRetryDelay");
 
-	// Existing TurretAnim characteristics are read from rules so following the pattern here.
 	this->TurretAnim_IdleFrames.Read(exINI, pSection, "TurretAnim.IdleFrames");
 	this->TurretAnim_LowPowerIdleFrames.Read(exINI, pSection, "TurretAnim.LowPowerIdleFrames");
 	this->TurretAnim_FiringFrames.Read(exINI, pSection, "TurretAnim.FiringFrames");
 	this->TurretAnim_LowPowerFiringFrames.Read(exINI, pSection, "TurretAnim.LowPowerFiringFrames");
 	this->TurretAnim_IdleRate.Read(exINI, pSection, "TurretAnim.IdleRate");
 	this->TurretAnim_FiringRate.Read(exINI, pSection, "TurretAnim.FiringRate");
+
+	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
+	{
+		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
+	}
+	else if (pThis->PowersUpBuilding[0])
+	{
+		auto pPowerUpType = BuildingTypeClass::Find(pThis->PowersUpBuilding);
+
+		if (pPowerUpType && !this->PowersUp_Buildings.Contains(pPowerUpType))
+			this->PowersUp_Buildings.emplace_back(pPowerUpType);
+	}
 
 	if (pThis->NumberOfDocks > 0)
 	{

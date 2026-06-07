@@ -289,26 +289,18 @@ inline void BulletExt::SimulatedFiringParticleSystem(BulletClass* pBullet, House
 }
 
 // Make sure pBullet is not empty before call
-void BulletExt::SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords, bool randomVelocity)
+void BulletExt::SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords, bool headToTarget, const RadialFireStruct& radialFire)
 {
-	// Weapon
-	pBullet->WeaponType = pWeapon;
-
-	// Range
+	// Initialize bullet characteristics such as weapon type, range, house etc.
+	const auto pType = pBullet->Type;
 	const int projectileRange = WeaponTypeExt::ExtMap.Find(pWeapon)->ProjectileRange.Get();
+	auto velocity = BulletVelocity::Empty;
+	pBullet->WeaponType = pWeapon;
 	pBullet->Range = projectileRange;
-
-	// House
 	BulletExt::ExtMap.Find(pBullet)->FirerHouse = pHouse;
 
-	const auto pType = pBullet->Type;
-
-	// Palette
 	if (pType->FirersPalette)
 		pBullet->InheritedColor = pHouse->ColorSchemeIndex;
-
-	// Velocity
-	auto velocity = BulletVelocity::Empty;
 
 	// If someone asks me, I would say Arcing is just a piece of shit
 	// But there are still people who like to use it, so anyway, it has been fixed
@@ -340,20 +332,68 @@ void BulletExt::SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse,
 			velocity.Z = static_cast<double>(distanceCoords.Z) * mult + (gravity * horizontalDistance) / (2 * speed);
 		}
 	}
-	else if (randomVelocity)
+	else
 	{
-		DirStruct dir;
-		dir.SetValue<5>(ScenarioClass::Instance->Random.RandomRanged(0, 31));
+		const double speed = pBullet->Speed;
 
-		const auto cos_factor = -2.44921270764e-16; // cos(1.5 * Math::Pi * 1.00001)
-		const auto flatSpeed = cos_factor * pBullet->Speed;
+		if (headToTarget) // Home in on target.
+		{
+			const auto targetCoords = pBullet->Target->GetCenterCoords();
+			const auto distanceCoords = targetCoords - sourceCoords;
 
-		const auto radians = dir.GetRadian<32>();
-		velocity = BulletVelocity { Math::cos(radians) * flatSpeed, Math::sin(radians) * flatSpeed, static_cast<double>(-pBullet->Speed) };
+			Vector3D<double> distanceVector {
+				static_cast<double>(distanceCoords.X),
+				static_cast<double>(distanceCoords.Y),
+				static_cast<double>(distanceCoords.Z) };
+
+			double len = distanceVector.Magnitude();
+
+			if (len > 0.0)
+			{
+				distanceVector /= len;
+				velocity = { distanceVector.X * speed, distanceVector.Y * speed, distanceVector.Z * speed };
+			}
+		}
+		else // Drop down.
+		{
+			DirStruct dir;
+			dir.SetValue<5>(ScenarioClass::Instance->Random.RandomRanged(0, 31));
+			const auto cos_factor = -2.44921270764e-16; // cos(1.5 * Math::Pi * 1.00001)
+			const auto flatSpeed = cos_factor * speed;
+			const auto radians = dir.GetRadian<32>();
+			velocity = { Math::cos(radians) * flatSpeed, Math::sin(radians) * flatSpeed, -speed };
+		}
 	}
+
+	if (radialFire.Segments > 0)
+		velocity = ApplyRadialFireVelocityWarp(velocity, radialFire);
 
 	// Unlimbo
 	pBullet->MoveTo(sourceCoords, velocity);
+}
+
+BulletVelocity BulletExt::ApplyRadialFireVelocityWarp(BulletVelocity velocity, const RadialFireStruct& radialFire)
+{
+	if (radialFire.Segments <= 0)
+		return velocity;
+
+	const double speedXY = std::hypot(velocity.X, velocity.Y);
+
+	if (speedXY <= 0.0)
+		return velocity;
+
+	const double offset =
+		(Math::Pi / radialFire.Segments)
+		* radialFire.Index
+		- Math::HalfPi;
+
+	const double baseAngle = radialFire.Direction.GetRadian<32>();
+	const double angle = baseAngle + offset;
+
+	velocity.X = std::cos(angle) * speedXY;
+	velocity.Y = -std::sin(angle) * speedXY;
+
+	return velocity;
 }
 
 // Make sure pBullet and pBullet->WeaponType is not empty before call

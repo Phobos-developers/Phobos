@@ -40,6 +40,7 @@ public:
 		Valueable<bool> Conventional_IgnoreUnits;
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
+		Nullable<bool> RemoveMindControl_Silent;
 		Nullable<bool> RemoveParasite;
 		ValueableVector<TechnoTypeClass*> RemoveParasite_Allow;
 		ValueableVector<TechnoTypeClass*> RemoveParasite_Disallow;
@@ -300,6 +301,7 @@ public:
 			, Conventional_IgnoreUnits { false }
 			, RemoveDisguise { false }
 			, RemoveMindControl { false }
+			, RemoveMindControl_Silent {}
 			, RemoveParasite {}
 			, RemoveParasite_Allow {}
 			, RemoveParasite_Disallow {}
