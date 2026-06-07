@@ -880,7 +880,7 @@ msgstr "武装建筑警戒任务重试间隔的自定义"
 
 msgid "Building turret idle/firing/low power animations"
 msgstr ""
-"建筑炮塔的闲置／开火／低功率动画"
+"建筑炮塔的闲置／开火／断电动画"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
