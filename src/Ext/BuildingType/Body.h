@@ -107,7 +107,7 @@ public:
 
 		Nullable<PartialVector2D<int>> GuardRetryDelay;
 
-    Valueable<int> TurretAnim_IdleFrames;
+		Valueable<int> TurretAnim_IdleFrames;
 		Valueable<int> TurretAnim_LowPowerIdleFrames;
 		Valueable<int> TurretAnim_FiringFrames;
 		Valueable<int> TurretAnim_LowPowerFiringFrames;
