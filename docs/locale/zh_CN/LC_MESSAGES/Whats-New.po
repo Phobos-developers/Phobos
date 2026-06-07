@@ -1934,6 +1934,7 @@ msgid ""
 " -> DeploySound=` sound effect when clicking the sidebar to execute "
 "`Deploy` (by Noble_Fish)"
 msgstr ""
+"复原了点击底边栏执行 `Deploy` 时播放 `[AudioVisual] -> DeploySound=` 音效的《泰伯利亚之日》原有行为（by Noble_Fish）"
 
 msgid ""
 "Allow `RemoveMindControl` warhead to mute `MindClearedSound` (by "

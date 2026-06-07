@@ -1697,6 +1697,7 @@ msgid ""
 " -> DeploySound=` sound effect when clicking the sidebar to execute "
 "`Deploy`."
 msgstr ""
+"复原了点击底边栏执行 `Deploy` 时播放 `[AudioVisual] -> DeploySound=` 音效的《泰伯利亚之日》原有行为。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
