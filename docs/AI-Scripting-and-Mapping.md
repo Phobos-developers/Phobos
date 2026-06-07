@@ -669,6 +669,9 @@ ID=ActionCount,[Action1],511,-10,[BuildingTypesID],[HouseIndex],0,0,0,[WaypointI
 
 ### `512` Set Follower for Associated Unit
 
+![image](_static/images/follow_index.gif)
+*The locomotive pulls away the parked multiple carriages in [Bellum Æternum](https://ra2be.com/download.html)*
+
 - Sets the follower for the associated object. The parameter is the index of the follower unit.
   - Invalid for non-vehicle objects.
 
