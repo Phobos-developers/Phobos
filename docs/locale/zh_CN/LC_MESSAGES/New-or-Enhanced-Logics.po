@@ -5259,11 +5259,13 @@ msgid ""
 "defaults to `[AudioVisual] -> MindControl.Permanent.ReplaceSilent` for "
 "cases where permanent mind control replaces conventional mind control."
 msgstr ""
+"`RemoveMindControl` 和 `MindControl.Permanent` 都会移除目标原本的常规心灵控制效果并播放 `MindClearedSound` 音效。现在这可以通过 `RemoveMindControl.Silent` 进行定义，对于移除常规心控的情况默认为 `[AudioVisual] -> RemoveMindControl.Silent`，对于使用永久心灵控制取代常规心灵控制的情况则默认为 `[AudioVisual] -> MindControl.Permanent.ReplaceSilent`。"
 
 msgid ""
 "You can simply use this flag to reduce some noise, or play another sound "
 "effect at the same time when muting the original sound effect..."
 msgstr ""
+"你可以单纯用这个语句来减少一些噪音，也可以在屏蔽原音效的同一时机播放另一个音效……"
 
 msgid "CellSpread enhancement"
 msgstr "弹头范围增强"
