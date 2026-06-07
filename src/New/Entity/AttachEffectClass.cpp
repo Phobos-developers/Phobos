@@ -166,6 +166,7 @@ void AttachEffectClass::AI()
 	}
 
 	auto const pType = this->Type;
+	auto const pExt = TechnoExt::ExtMap.Find(pTechno);
 
 	if (!this->HasInitialized && this->InitialDelay == 0)
 	{
@@ -174,7 +175,6 @@ void AttachEffectClass::AI()
 		if (pType->ROFMultiplier > 0.0 && pType->ROFMultiplier_ApplyOnCurrentTimer)
 		{
 			const double ROFModifier = pType->ROFMultiplier;
-			auto const pExt = TechnoExt::ExtMap.Find(pTechno);
 			pTechno->RearmTimer.Start(static_cast<int>(pTechno->RearmTimer.GetTimeLeft() * ROFModifier));
 
 			if (!pExt->ChargeTurretTimer.HasStarted() && pExt->LastRearmWasFullDelay)
@@ -182,9 +182,14 @@ void AttachEffectClass::AI()
 		}
 
 		if (pType->HasTint())
+		{
 			pTechno->MarkForRedraw();
+			pExt->UpdateTintValues();
+		}
 
-		this->NeedsRecalculateStat = true;
+		if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
+			pTechno->Uncloak(true);
+
 		AttachEffectTypeClass::HandleEvent(pTechno);
 	}
 
@@ -206,7 +211,10 @@ void AttachEffectClass::AI()
 		if (!this->ShouldBeDiscardedNow())
 		{
 			this->RefreshDuration();
-			this->NeedsRecalculateStat = true;
+
+			if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
+				pTechno->Uncloak(true);
+
 			this->NeedsDurationRefresh = false;
 			AttachEffectTypeClass::HandleEvent(pTechno);
 		}
@@ -312,9 +320,9 @@ void AttachEffectClass::OnlineCheck()
 	auto const pTechno = this->Techno;
 	bool isActive = !(pTechno->Deactivated || pTechno->IsUnderEMP());
 
-	if (isActive && this->Techno->WhatAmI() == AbstractType::Building)
+	if (isActive && pTechno->WhatAmI() == AbstractType::Building)
 	{
-		auto const pBuilding = static_cast<BuildingClass const*>(this->Techno);
+		auto const pBuilding = static_cast<BuildingClass const*>(pTechno);
 		isActive = pBuilding->IsPowerOnline();
 	}
 
@@ -322,7 +330,17 @@ void AttachEffectClass::OnlineCheck()
 
 	if (isActive != this->LastActiveStat)
 	{
-		this->NeedsRecalculateStat = true;
+		auto const pExt = TechnoExt::ExtMap.Find(pTechno);
+
+		if (this->Type->HasTint())
+		{
+			pTechno->MarkForRedraw();
+			pExt->UpdateTintValues();
+		}
+
+		if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
+			pTechno->Uncloak(true);
+
 		this->LastActiveStat = isActive;
 	}
 
@@ -535,7 +553,11 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 
 	if (auto const pFoot = abstract_cast<FootClass*, true>(pTechno))
 	{
-		if (pFoot->Locomotor->Is_Really_Moving_Now())
+		const bool isMoving = this->Type->DiscardOn_MoveBasedOnDestination.Get(RulesExt::Global()->DiscardOn_MoveBasedOnDestination)
+			? pFoot->Locomotor->Is_Moving()
+			: pFoot->Locomotor->Is_Really_Moving_Now();
+
+		if (isMoving)
 		{
 			if ((discardOn & DiscardCondition::Move) != DiscardCondition::None)
 			{
@@ -614,6 +636,7 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 	auto const pTargetType = pTargetExt->TypeExtData->OwnerObject();
 	int attachedCount = 0;
 	bool markForRedraw = false;
+	bool decloak = false;
 	double ROFModifier = 1.0;
 	const bool selfOwned = pTarget == pSource;
 
@@ -628,6 +651,9 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 
 			if (params.InitialDelay <= 0)
 			{
+				if (pTargetExt->RecalculateStatMultipliers(pAE))
+					decloak = true;
+
 				if (pType->ROFMultiplier > 0.0 && pType->ROFMultiplier_ApplyOnCurrentTimer)
 					ROFModifier *= pType->ROFMultiplier;
 
@@ -650,10 +676,14 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 
 	if (attachedCount > 0)
 	{
-		pTargetExt->RecalculateStatMultipliers();
-
 		if (markForRedraw)
+		{
 			pTarget->MarkForRedraw();
+			pTargetExt->UpdateTintValues();
+		}
+
+		if (decloak && pTarget->CloakState == CloakState::Cloaked)
+			pTarget->Uncloak(true);
 	}
 	          
 	return attachedCount;

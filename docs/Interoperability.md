@@ -1,4 +1,3 @@
-
 # Interoperability
 
 This page documents the exported interfaces in [Interop](https://github.com/Phobos-developers/Phobos/tree/develop/src/Interop).
@@ -7,14 +6,14 @@ This page documents the exported interfaces in [Interop](https://github.com/Phob
 
 All exported API functions return `HRESULT` to indicate success or failure following COM convention:
 
-| HRESULT | Meaning |
-|---------|---------|
-| `S_OK` | Operation completed successfully. |
-| `S_FALSE` | Operation completed but had nothing to do (e.g., no matching effects found). |
-| `E_POINTER` | A required pointer parameter was null. |
-| `E_INVALIDARG` | One or more arguments are invalid. |
-| `E_UNEXPECTED` | An unexpected internal error occurred (e.g., extension data not found). |
-| `E_FAIL` | The operation failed. |
+| HRESULT        | Meaning                                                                      |
+|----------------|------------------------------------------------------------------------------|
+| `S_OK`         | Operation completed successfully.                                            |
+| `S_FALSE`      | Operation completed but had nothing to do (e.g., no matching effects found). |
+| `E_POINTER`    | A required pointer parameter was null.                                       |
+| `E_INVALIDARG` | One or more arguments are invalid.                                           |
+| `E_UNEXPECTED` | An unexpected internal error occurred (e.g., extension data not found).      |
+| `E_FAIL`       | The operation failed.                                                        |
 
 Functions that produce output data take an additional output pointer parameter that receives the result. Use `SUCCEEDED(hr)` / `FAILED(hr)` to check the return value.
 
@@ -22,15 +21,15 @@ Functions that produce output data take an additional output pointer parameter t
 
 ### Semantic Versioning Rules
 
-- **Major (X)**: Increment for breaking changes (backward incompatible API modifications).  
-  Example: Deleting an API, changing function parameters, modifying data structures that break existing code.  
+- **Major (X)**: Increment for breaking changes (backward incompatible API modifications).\
+  Example: Deleting an API, changing function parameters, modifying data structures that break existing code.\
   When bumped, reset Minor and Patch to 0 (e.g., 1.2.3 → 2.0.0).
 
-- **Minor (Y)**: Increment for backward-compatible new features.  
-  Example: Adding a new API function, new parameters that don't break existing code.  
+- **Minor (Y)**: Increment for backward-compatible new features.\
+  Example: Adding a new API function, new parameters that don't break existing code.\
   When bumped, reset Patch to 0 (e.g., 1.2.3 → 1.3.0).
 
-- **Patch (Z)**: Increment for backward-compatible miscs (no API changes).  
+- **Patch (Z)**: Increment for backward-compatible miscs (no API changes).\
   Example: Fixing crashes, correcting calculations, optimizing internals without changing interface (e.g., 1.2.3 → 1.2.4).
 
 ### GetInteropAPIVersion
@@ -84,22 +83,22 @@ When an API is deprecated, its function stub is retained but with a fatal error 
 
 ## Available APIs
 
-| Module | API | Availability | Status |
-|----------|-----|---------------|--------|
-| AttachEffect | AE_Attach | [1.0.0, ∞) | Active |
-| AttachEffect | AE_Detach | [1.0.0, ∞) | Active |
-| AttachEffect | AE_DetachByGroups | [1.0.0, ∞) | Active |
-| AttachEffect | AE_TransferEffects | [1.0.0, ∞) | Active |
-| BulletExt | Bullet_SetFirerOwner | [1.0.0, ∞) | Active |
-| EventExt | EventExt_AddEvent | [1.0.0, ∞) | Active |
-| TechnoExt | ConvertToType_Phobos | [1.0.0, ∞) | Active |
-| TechnoExt | RegisterCalculateExtraThreatCallback | [1.0.0, ∞) | Active |
+| Module       | API                                        | Availability   | Status |
+|--------------|--------------------------------------------|----------------|--------|
+| AttachEffect | AE_Attach                                  | `[1.0.0, ∞)`  | Active |
+| AttachEffect | AE_Detach                                  | `[1.0.0, ∞)`  | Active |
+| AttachEffect | AE_DetachByGroups                          | `[1.0.0, ∞)`  | Active |
+| AttachEffect | AE_TransferEffects                         | `[1.0.0, ∞)`  | Active |
+| BulletExt    | Bullet_SetFirerOwner                       | `[1.0.0, ∞)`  | Active |
+| EventExt     | EventExt_AddEvent                          | `[1.0.0, ∞)`  | Active |
+| TechnoExt    | ConvertToType_Phobos                       | `[1.0.0, ∞)`  | Active |
+| TechnoExt    | RegisterCalculateExtraThreatCallback       | `[1.0.0, ∞)`  | Active |
 
 ### AttachEffect
 
 #### AE_Attach
 
-**Availability:** [1.0.0, ∞)
+**Availability:** `[1.0.0, ∞)`
 
 ```cpp
 HRESULT AE_Attach(
@@ -137,7 +136,7 @@ Attaches one or more AttachEffect types to the target.
 
 #### AE_Detach
 
-**Availability:** [1.0.0, ∞)
+**Availability:** `[1.0.0, ∞)`
 
 ```cpp
 HRESULT AE_Detach(
@@ -161,7 +160,7 @@ Detaches effects by explicit effect type names.
 
 #### AE_DetachByGroups
 
-**Availability:** [1.0.0, ∞)
+**Availability:** `[1.0.0, ∞)`
 
 ```cpp
 HRESULT AE_DetachByGroups(
@@ -185,7 +184,7 @@ Detaches effects by AttachEffect group name.
 
 #### AE_TransferEffects
 
-**Availability:** [1.0.0, ∞)
+**Availability:** `[1.0.0, ∞)`
 
 ```cpp
 HRESULT AE_TransferEffects(
@@ -208,7 +207,7 @@ Transfers all attached effects from source to target.
 
 #### ConvertToType_Phobos
 
-**Availability:** [1.0.0, ∞)
+**Availability:** `[1.0.0, ∞)`
 
 ```cpp
 HRESULT ConvertToType_Phobos(FootClass* pThis, TechnoTypeClass* toType)
@@ -226,7 +225,7 @@ Converts a FootClass instance to another TechnoType.
 
 #### RegisterCalculateExtraThreatCallback
 
-**Availability:** [1.0.0, ∞)
+**Availability:** `[1.0.0, ∞)`
 
 ```cpp
 typedef double (*CalculateExtraThreatCallback)(TechnoClass* pThis, ObjectClass* pTarget, double originalThreat);
@@ -253,7 +252,7 @@ Registers a callback function to calculate extra threat for a unit.
 
 #### Bullet_SetFirerOwner
 
-**Availability:** [1.0.0, ∞)
+**Availability:** `[1.0.0, ∞)`
 
 ```cpp
 HRESULT Bullet_SetFirerOwner(BulletClass* pBullet, HouseClass* pHouse)
@@ -272,7 +271,7 @@ Updates the recorded firer house for a bullet extension.
 
 #### EventExt_AddEvent
 
-**Availability:** [1.0.0, ∞)
+**Availability:** `[1.0.0, ∞)`
 
 ```cpp
 HRESULT EventExt_AddEvent(EventExt* pEventExt)

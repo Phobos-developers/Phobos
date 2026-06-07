@@ -283,7 +283,8 @@ private:
 	using extension_type_ptr = extension_type*;
 	using map_type = ContainerMap<base_type, extension_type>;
 
-	map_type Items;
+	map_type MappedItems;
+	std::vector<extension_type_ptr> Items;
 
 	base_type* SavingObject;
 	extension_type_ptr SavingExtPointer;
@@ -292,6 +293,7 @@ private:
 
 public:
 	explicit Container(const char* pName) :
+		MappedItems(),
 		Items(),
 		SavingObject(nullptr),
 		SavingStream(nullptr),
@@ -319,7 +321,7 @@ protected:
 	void InvalidateExtDataPointer(void* const ptr, bool bRemoved) const
 	{
 		for (const auto& i : this->Items)
-			i.second->InvalidatePointer(ptr, bRemoved);
+			i->InvalidatePointer(ptr, bRemoved);
 	}
 
 private:
@@ -350,8 +352,10 @@ public:
 
 		if constexpr (HasOffset<T>)
 			SetExtensionPointer(key, val);
+		else
+			this->MappedItems.insert(key, val);
 
-		this->Items.insert(key, val);
+		Items.emplace_back(val);
 
 		return val;
 	}
@@ -386,7 +390,7 @@ public:
 		if constexpr (HasOffset<T>)
 			return GetExtensionPointer(key);
 		else
-			return this->Items.find(key);
+			return this->MappedItems.find(key);
 	}
 
 	extension_type_ptr Find(const_base_type_ptr key) const
@@ -394,7 +398,7 @@ public:
 		if constexpr (HasOffset<T>)
 			return GetExtensionPointer(key);
 		else
-			return this->Items.find(key);
+			return this->MappedItems.find(key);
 	}
 
 	// Only used on loading, does not check if key is nullptr.
@@ -405,7 +409,7 @@ public:
 		if constexpr (HasOffset<T>)
 			value = GetExtensionPointer(key);
 		else
-			value = this->Items.find(key);
+			value = this->MappedItems.find(key);
 
 		if (!value)
 			value = Allocate(key);
@@ -417,11 +421,21 @@ public:
 	{
 		if (auto Item = Find(key))
 		{
-			this->Items.remove(key);
-			delete Item;
-
 			if constexpr (HasOffset<T>)
 				ResetExtensionPointer(key);
+			else
+				this->MappedItems.remove(key);
+
+			auto& vec = this->Items;
+			auto it = std::find(vec.begin(), vec.end(), Item);
+
+			if (it != vec.end())
+			{
+				*it = vec.back();
+				vec.pop_back();
+			}
+
+			delete Item;
 		}
 	}
 
@@ -435,8 +449,12 @@ public:
 			{
 				for (const auto& item : this->Items)
 				{
-					ResetExtensionPointer(item.first);
+					ResetExtensionPointer(item->OwnerObject());
 				}
+			}
+			else
+			{
+				this->MappedItems.clear();
 			}
 
 			this->Items.clear();

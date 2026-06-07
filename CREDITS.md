@@ -294,6 +294,7 @@ This page lists all the individual contributions to the project by their author.
   - Frame CRC generation rewrite
   - Laser drawing Z-adjust customization
   - Armed building guard mission retry delay customization
+  - Building turret idle/firing/low power animations
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -418,8 +419,8 @@ This page lists all the individual contributions to the project by their author.
   - Vehicle Deployment Enhancement
   - Fix an issue where miners affected by `Passengers/DeployFire` were unable to unload minerals
   - Fix an issue where mining vehicles could not move after leaving a tank bunker
-  - Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4
-  - Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent
+  - Fix the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4
+  - Fix an issue where parachute units would die upon landing if bridges were destroyed during their descent
   - Custom hover vehicles shutdown drowning death
   - SHP turret vehicles support the use of `*tur.shp` files
   - Fix a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next`
@@ -537,6 +538,8 @@ This page lists all the individual contributions to the project by their author.
   - Aux technos and TechLevel requirement of superweapon
   - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
   - Fix the bug where passengers, when their transport unit is removed, would cause incorrect `LimboTracker` counts due to either having their destructor called directly (bypassing `UnInit`) or nested `UnInit` calls resetting the deletion flag too early, thereby breaking auto-death and superweapon auxiliary techno checks
+  - Allow `Temporal` warhead to apply ratio and bonus
+  - Fix the bug that techno will get stuck if change owner in tunnel
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -761,7 +764,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow replacing vanilla repairing with togglable auto repairing
   - Fix an issue that the time for units in the area guard mission to reacquire targets after eliminating the target is significantly longer than that in other missions
   - Framework for dynamic sight
-  - Fixed voxel projectile and animation lighting issues
+  - Fix voxel projectile and animation lighting issues
   - Export interface for external call
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
