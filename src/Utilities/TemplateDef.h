@@ -249,6 +249,15 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<Vector3D<double>>(Vector3D<double>& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.Read<double, 3>(pSection, pKey, (double*)&value))
+			return true;
+
+		return false;
+	}
+
+	template <>
 	inline bool read<CoordStruct>(CoordStruct& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.Read3Integers(pSection, pKey, (int*)&value))

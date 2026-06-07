@@ -158,7 +158,7 @@ bool SWTypeExt::ExtData::IsLaunchSite(BuildingClass* pBuilding) const
 	if (pBuilding->IsAlive && pBuilding->Health && !pBuilding->InLimbo && pBuilding->IsPowerOnline())
 	{
 		auto const pExt = BuildingExt::ExtMap.Find(pBuilding);
-		return pExt->HasSuperWeapon(this->OwnerObject()->ArrayIndex, true);
+		return pExt->HasSuperWeapon(this->OwnerObject()->ArrayIndex);
 	}
 
 	return false;
@@ -183,11 +183,19 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 	if (pHouse->IsControlledByHuman() ? (!this->SW_AllowPlayer) : (!this->SW_AllowAI))
 		return false;
 
+	// allow only certain houses, disallow forbidden houses
+	const auto ownerBits = 1u << pHouse->Type->ArrayIndex;
+
+	if (!(this->SW_RequiredHouses & ownerBits) || (this->SW_ForbiddenHouses & ownerBits))
+		return false;
+
 	auto IsTechnoPresent = [pHouse](TechnoTypeClass* pType)
 		{
 			const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pType);
 
-			if (pBuildingType && (!BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.empty() || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))
+			// June 7, 2026 - Starkku: PowersUpBuilding is now put in PowersUp_Buildings
+			// so removed  BuildingTypeClass::Find(pBuildingType->PowersUpBuilding check here.
+			if (pBuildingType && !BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.empty())
 				return BuildingTypeExt::GetUpgradesAmount(pBuildingType, pHouse) > 0;
 
 			return HouseExt::ExtMap.Find(pHouse)->CountOwnedPresentAndLimboed(pType) > 0;
@@ -195,12 +203,6 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 
 	// check whether the optional aux building exists
 	if (pThis->AuxBuilding && !IsTechnoPresent(pThis->AuxBuilding))
-		return false;
-
-	// allow only certain houses, disallow forbidden houses
-	const auto ownerBits = 1u << pHouse->Type->ArrayIndex;
-
-	if (!(this->SW_RequiredHouses & ownerBits) || (this->SW_ForbiddenHouses & ownerBits))
 		return false;
 
 	// check that any aux building exist and no neg building

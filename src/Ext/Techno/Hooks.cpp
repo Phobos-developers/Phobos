@@ -26,18 +26,6 @@ DEFINE_JUMP(VTABLE, 0x7F5CF4, 0x741490) // UnitClass_GetTechnoType -> UnitClass_
 
 #pragma region Update
 
-DEFINE_HOOK(0x7363C9, UnitClass_AI_AnimationPaused, 0x6)
-{
-	enum { SkipGameCode = 0x7363DE };
-
-	GET(UnitClass*, pThis, ESI);
-	
-	if (TechnoExt::ExtMap.Find(pThis)->DelayedFireSequencePaused)
-		return SkipGameCode;
-
-	return 0;
-}
-
 // Early, before ObjectClass_AI
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 {
@@ -65,6 +53,9 @@ DEFINE_HOOK(0x4DA54E, FootClass_AI, 0x6)
 	return 0;
 }
 
+// Skip vanilla animation counter code in UnitClass::AI.
+DEFINE_JUMP(LJMP, 0x7363C9, 0x7363DE);
+
 // After FootClass_AI
 DEFINE_HOOK(0x736480, UnitClass_AI, 0x6)
 {
@@ -75,24 +66,39 @@ DEFINE_HOOK(0x736480, UnitClass_AI, 0x6)
 	pExt->DepletedAmmoActions();
 	pExt->UpdateSubterraneanHarvester();
 
+	// Replace vanilla animation counter code in UnitClass::AI.
+	if (pThis->IsAlive && !pExt->DelayedFireSequencePaused && !((pThis->IsWarpingIn() && pThis->TemporalTargetingMe) || pThis->IsBeingWarpedOut()))
+	{
+		int animCounter = pThis->CurrentFiringFrame - 1;
+
+		if (animCounter < -1)
+			animCounter = -1;
+
+		pThis->CurrentFiringFrame = animCounter;
+	}
+
 	return 0;
 }
 
 // Ares-hook jmp to this offset
-DEFINE_HOOK(0x71A88D, TemporalClass_AI, 0x0)
+DEFINE_HOOK(0x71A88D, TemporalClass_AI, 0x8)
 {
 	GET(TemporalClass*, pThis, ESI);
 
-	if (auto const pTarget = pThis->Target)
+	if (const auto pTarget = pThis->Target)
 	{
 		pTarget->IsMouseHovering = false;
+		const int initialWarpRemaining = pTarget->GetType()->Strength * 10;
+
+		if (pThis->WarpRemaining > initialWarpRemaining)
+			pThis->WarpRemaining = initialWarpRemaining;
 
 		const auto pExt = TechnoExt::ExtMap.Find(pTarget);
 		pExt->UpdateTemporal();
 	}
 
 	// Recovering vanilla instructions that were broken by a hook call
-	return R->EAX<int>() <= 0 ? 0x71A895 : 0x71AB08;
+	return pThis->WarpRemaining <= 0 ? 0x71A895 : 0x71AB08;
 }
 
 DEFINE_HOOK_AGAIN(0x51B389, FootClass_TunnelAI_Enter, 0x6) // InfantryClass_TunnelAI
@@ -2041,3 +2047,86 @@ DEFINE_HOOK(0x70AFEF, TechnoClass_UpdateSight_DynamicSight2, 0x6)
 }
 
 #pragma endregion
+
+namespace WarpPerStep
+{
+	class TemporalClassFake final : public TemporalClass
+	{
+		int _GetWarpPerStep(int helperCount);
+	};
+
+	struct DummyExtHere
+	{
+		char _[0xA];
+		BYTE WeaponIndex_Warp;
+	};
+}
+
+int WarpPerStep::TemporalClassFake::_GetWarpPerStep(int helperCount)
+{
+	const auto pThis = static_cast<TemporalClass*>(this);
+	auto pTemporal = pThis;
+	int sum = 0;
+
+	do
+	{
+		if (helperCount > 50)
+			break;
+
+		++helperCount;
+
+		const auto pOwner = pTemporal->Owner;
+		int weaponIdx = 0;
+
+		if (AresHelper::CanUseAres)
+			weaponIdx = reinterpret_cast<WarpPerStep::DummyExtHere*>(*(uintptr_t*)((char*)pOwner + 0x154))->WeaponIndex_Warp;
+		else
+			weaponIdx = pOwner->SelectWeapon(nullptr);
+		
+		const auto pWeapon = pOwner->GetWeapon(weaponIdx)->WeaponType;
+		int warpPerStep = pWeapon->Damage;
+
+		if (const auto pWarhead = pWeapon->Warhead)
+		{
+			const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+			const bool applyMultiplier = pWHExt->Temporal_ApplyMultiplier.Get(RulesExt::Global()->Temporal_ApplyMultiplier);
+
+			if (applyMultiplier)
+				warpPerStep = static_cast<int>(warpPerStep * TechnoExt::GetCurrentFirepowerMultiplier(pOwner));
+
+			const auto pTarget = pTemporal->Target;
+
+			if (pTarget && warpPerStep > 0)
+			{
+				double multiplier = 1.0;
+
+				if (applyMultiplier)
+					multiplier /= TechnoExt::GetCurrentArmorMultiplier(pTarget, pTarget->GetTechnoType(), pWarhead);
+
+				if (pWHExt->Temporal_ApplyVersus.Get(RulesExt::Global()->Temporal_ApplyVersus))
+				{
+					if (const auto pTargetInfantry = abstract_cast<InfantryClass*, true>(pTarget))
+					{
+						if (pTargetInfantry->IsDeployed())
+							multiplier *= pWHExt->Damage_Deployed;
+						else if (pTargetInfantry->Crawling)
+							multiplier *= pWarhead->ProneDamage;
+					}
+
+					warpPerStep = MapClass::GetTotalDamage(warpPerStep, pWarhead, pTarget->GetType()->Armor, 0);
+				}
+
+				warpPerStep = static_cast<int>(warpPerStep * multiplier);
+			}
+		}
+
+		pTemporal->WarpPerStep = warpPerStep;
+		sum += warpPerStep;
+
+		pTemporal = pTemporal->PrevTemporal;
+	}
+	while (pTemporal);
+
+	return sum;
+}
+DEFINE_FUNCTION_JUMP(LJMP, 0x71AB10, WarpPerStep::TemporalClassFake::_GetWarpPerStep)

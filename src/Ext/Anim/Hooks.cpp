@@ -11,23 +11,24 @@ namespace AnimLoggingTemp
 	AnimTypeClass* pType = nullptr;
 }
 
-DEFINE_HOOK(0x423B95, AnimClass_AI_HideIfNoOre_Threshold, 0x8)
+DEFINE_HOOK(0x423B95, AnimClass_AI_Early, 0x8)
 {
 	GET(AnimClass* const, pThis, ESI);
-	GET(AnimTypeClass* const, pType, EDX);
+
+	AnimExt::ExtMap.Find(pThis)->UpdateAsFiringAnim();
+	auto const pType = pThis->Type;
 
 	AnimLoggingTemp::UniqueID = pThis->UniqueID;
-	AnimLoggingTemp::pType = pThis->Type;
+	AnimLoggingTemp::pType = pType;
 
+	// Replace vanilla HideIfNoOre check.
 	if (pType->HideIfNoOre)
 	{
-		const int nThreshold = abs(AnimTypeExt::ExtMap.Find(pThis->Type)->HideIfNoOre_Threshold.Get());
+		const int nThreshold = abs(AnimTypeExt::ExtMap.Find(pType)->HideIfNoOre_Threshold.Get());
 		pThis->Invisible = pThis->GetCell()->GetContainedTiberiumValue() <= nThreshold;
 	}
 
-	AnimExt::ExtMap.Find(pThis)->UpdateAsFiringAnim();
-
-	return 0x423BBF;
+	return 0x423BC8;
 }
 
 // Nuke Ares' animation damage hook at 0x424538.
@@ -50,12 +51,13 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 	const bool isTerrain = pOwnerObject && pOwnerObject->WhatAmI() == AbstractType::Terrain;
 	const int damageMultiplier = isTerrain ? 5 : 1;
 	const double baseDamage = pType->Damage;
+	const bool firstDamage = pThis->Animation.Value == std::max(delay - 1, 1);
 
 	int appliedDamage = 0;
 
 	if (pTypeExt->Damage_ApplyOncePerLoop) // If damage is to be applied only once per animation loop
 	{
-		if (pThis->Animation.Value == std::max(delay - 1, 1))
+		if (firstDamage)
 			appliedDamage = static_cast<int>(std::round(baseDamage)) * damageMultiplier;
 		else
 			return SkipDamage;
@@ -116,9 +118,13 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 			if (!pExt->InvokerHouse)
 				pOwner = pInvoker->Owner;
 
-			if (pTypeExt->Damage_ApplyFirepowerMult)
-				appliedDamage = static_cast<int>(appliedDamage * TechnoExt::GetCurrentFirepowerMultiplier(pInvoker));
+			// only calculate firepower multiplier in the first round
+			if (firstDamage && pTypeExt->Damage_ApplyFirepowerMult)
+				pExt->FirepowerMult = TechnoExt::GetCurrentFirepowerMultiplier(pInvoker);
 		}
+
+		if (pTypeExt->Damage_ApplyFirepowerMult)
+			appliedDamage = static_cast<int>(appliedDamage * pExt->FirepowerMult);
 	}
 
 	// Jun 29, 2025 - Starkku: Owner != Invoker. Previously OwnerObject / ParentBuilding fallback only existed for Warheads
@@ -568,9 +574,9 @@ DEFINE_HOOK(0x6FF42B, TechnoClass_Fire_Anim, 0x7)
 
 	if (WeaponTypeExt::ExtMap.Find(pWeapon)->Anim_Update.Get(RulesExt::Global()->FiringAnim_Update))
 	{
-		pAnimExt->FromWeapon = pWeapon;
-		pAnimExt->FromWeaponIdx = wpIdx;
-		pAnimExt->FromBurstIdx = pThis->CurrentBurstIndex;
+		pAnimExt->FiringAnim_Weapon = pWeapon;
+		pAnimExt->FiringAnim_WeaponIndex = wpIdx;
+		pAnimExt->FiringAnim_BurstIndex = pThis->CurrentBurstIndex;
 	}
 
 	return SkipBuildingCheck;

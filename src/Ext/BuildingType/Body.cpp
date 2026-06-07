@@ -9,7 +9,10 @@ BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
 int BuildingTypeExt::ExtData::GetSuperWeaponCount() const
 {
 	// The user should only use SuperWeapon and SuperWeapon2 if the attached sw count isn't bigger than 2
-	return 2 + this->SuperWeapons.size();
+	const auto pThis = this->OwnerObject();
+	int count = pThis->SuperWeapon >= 0 ? 1 : 0;
+	count += pThis->SuperWeapon2 >= 0 ? 1 : 0;
+	return count + this->SuperWeapons.size();
 }
 
 int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index, HouseClass* pHouse) const
@@ -109,14 +112,14 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 {
 	int result = 0;
 	bool isUpgrade = false;
-	auto const pPowersUp = pBuilding->PowersUpBuilding;
 
 	auto checkUpgrade = [pHouse, pBuilding, &result, &isUpgrade](BuildingTypeClass* pTPowersUp)
 	{
 		isUpgrade = true;
+
 		for (auto const& pBld : pHouse->Buildings)
 		{
-			if (pBld->Type == pTPowersUp)
+			if (pBld->UpgradeLevel && pBld->Type == pTPowersUp)
 			{
 				for (auto const& pUpgrade : pBld->Upgrades)
 				{
@@ -127,11 +130,15 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 		}
 	};
 
+	// June 7, 2026 - Starkku: PowersUpBuilding is now put in PowersUp_Buildings
+	/*
+	auto const pPowersUp = pBuilding->PowersUpBuilding;
+
 	if (pPowersUp[0])
 	{
 		if (auto const pTPowersUp = BuildingTypeClass::Find(pPowersUp))
 			checkUpgrade(pTPowersUp);
-	}
+	}*/
 
 	for (auto const pTPowersUp : BuildingTypeExt::ExtMap.Find(pBuilding)->PowersUp_Buildings)
 		checkUpgrade(pTPowersUp);
@@ -163,10 +170,6 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PowerPlantEnhancer_Factor.Read(exINI, pSection, "PowerPlantEnhancer.Factor");
 	this->PowerPlantEnhancer_MaxCount.Read(exINI, pSection, "PowerPlantEnhancer.MaxCount");
 	this->Powered_KillSpawns.Read(exINI, pSection, "Powered.KillSpawns");
-
-	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
-		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
-
 	this->CanC4_AllowZeroDamage.Read(exINI, pSection, "CanC4.AllowZeroDamage");
 
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
@@ -229,6 +232,18 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->UndeploysInto_Sellable.Read(exINI, pSection, "UndeploysInto.Sellable");
 	this->BuildingRadioLink_SyncOwner.Read(exINI, pSection, "BuildingRadioLink.SyncOwner");
 	this->GuardRetryDelay.Read(exINI, pSection, "GuardRetryDelay");
+
+	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
+	{
+		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
+	}
+	else if (pThis->PowersUpBuilding[0])
+	{
+		auto pPowerUpType = BuildingTypeClass::Find(pThis->PowersUpBuilding);
+
+		if (pPowerUpType && !this->PowersUp_Buildings.Contains(pPowerUpType))
+			this->PowersUp_Buildings.emplace_back(pPowerUpType);
+	}
 
 	if (pThis->NumberOfDocks > 0)
 	{

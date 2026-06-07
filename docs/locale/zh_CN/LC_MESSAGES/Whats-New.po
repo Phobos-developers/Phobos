@@ -1914,6 +1914,13 @@ msgstr ""
 "[允许自定义有武器建筑的警戒任务重试间隔](Fixed-or-Improved-Logics.md#armed-building-guard-"
 "retry-delay)（by Starkku）"
 
+msgid ""
+"[Allow `Temporal` warhead to apply ratio and bonus](Fixed-or-Improved-"
+"Logics.md#allow-temporal-warhead-to-apply-ratio-and-bonus) (by NetsuNegi)"
+msgstr ""
+"[允许 `Temporal` 弹头应用比率和加成](Fixed-or-Improved-"
+"Logics.md#allow-temporal-warhead-to-apply-ratio-and-bonus)（by NetsuNegi）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
@@ -2368,6 +2375,10 @@ msgstr "修复了低空起飞／降落的物体会受到两次伤害的 Bug（by
 
 msgid "Fixed voxel projectile and animation lighting issues (by TaranDahl)"
 msgstr "修复了 Voxel 抛射体和动画的光照问题（by TaranDahl）"
+
+msgid ""
+"Fixed the bug that techno will get stuck if change owner in tunnel (by NetsuNegi)"
+msgstr "修复了科技类型在隧道中变更所属方会导致卡住的 Bug（by NetsuNegi）"
 
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
