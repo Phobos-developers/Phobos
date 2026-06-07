@@ -176,6 +176,10 @@ void AttachEffectClass::AI()
 		if (!this->ShouldBeDiscardedNow())
 		{
 			this->RefreshDuration();
+
+			if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
+				pTechno->Uncloak(true);
+
 			this->NeedsDurationRefresh = false;
 		}
 
