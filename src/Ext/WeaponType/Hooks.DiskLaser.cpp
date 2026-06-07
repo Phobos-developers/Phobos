@@ -112,8 +112,7 @@ DEFINE_HOOK(0x4A7696, DiskLaserClass_AI_SimulateFiring, 0x6)
 	const CoordStruct targetCoords2D { targetCoords.X, targetCoords.Y, 0 };
 	const CoordStruct fireCoords2D { fireCoords.X, fireCoords.Y, 0 };
 
-	auto GetSpeed = reinterpret_cast<int(__thiscall*)(WeaponTypeClass*, int)>(0x773070);
-	int bulletSpeed = GetSpeed(pWeapon, static_cast<int>(fireCoords2D.DistanceFrom(targetCoords2D)));
+	int bulletSpeed = pWeapon->GetSpeed(static_cast<int>(fireCoords2D.DistanceFrom(targetCoords2D)));
 
 	const auto pOwner = pDiskLaser->Owner;
 	const auto pData = DiskLaserTemp::DataMap.get_or_default(pDiskLaser);
