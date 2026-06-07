@@ -112,6 +112,12 @@ namespace LaserRT
 			AnnounceInvalidPointer(this->Shooter, ptr);
 			AnnounceInvalidPointer(this->Target, ptr);
 		}
+
+		static bool InvalidatePointerIgnorable(void* ptr)
+		{
+			const auto pAbstract = static_cast<AbstractClass*>(ptr);
+			return !abstract_cast<ObjectClass*>(pAbstract);
+		}
 	};
 
 	std::unordered_map<LaserDrawClass*, TrackingData> TrackingMap;
@@ -174,6 +180,9 @@ DEFINE_HOOK(0x54FFB0, LaserDrawClass_DTOR_Tracking, 0x7) // LaserDrawClass::DTOR
 
 void WeaponTypeExt::LaserTrackingPointerExpired(void* ptr, bool removed)
 {
+	if (LaserRT::TrackingData::InvalidatePointerIgnorable(ptr))
+		return;
+
 	for (auto& [_, data] : LaserRT::TrackingMap)
 		data.PointerExpired(ptr, removed);
 }
