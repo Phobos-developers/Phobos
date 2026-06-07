@@ -419,7 +419,7 @@ HideShakeEffects=false           ; boolean
 - [Sinkablity and sinking speed customization](Fixed-or-Improved-Logics.md#sinking-behavior-dehardcode) (by TaranDahl)
 - [Fast access vehicle](New-or-Enhanced-Logics.md#fast-access-vehicle) (by CrimRecya)
 - Laser, electric bolt and rad beam scatter (by CrimRecya)
-- [Airburst weapon firing/source coordinate & firing effects customizations](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
+- [Airburst weapon firing/source coordinate and firing effect & offset customizations](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
 - [AlternateFLH on-turret toggle](Fixed-or-Improved-Logics.md#alternate-flh-customizations) (by Starkku)
 - [Fire weapon when Warhead kills something](New-or-Enhanced-Logics.md#fire-weapon-when-warhead-kills-something) (by Ollerus)
 - [Prone speed customization](Fixed-or-Improved-Logics.md#prone-speed-customization) (by TaranDahl)
@@ -579,6 +579,10 @@ HideShakeEffects=false           ; boolean
 - [Allow customizing guard mission retry delay for buildings with weapons](Fixed-or-Improved-Logics.md#armed-building-guard-retry-delay) (by Starkku)
 - [Allow `Temporal` warhead to apply ratio and bonus](Fixed-or-Improved-Logics.md#allow-temporal-warhead-to-apply-ratio-and-bonus) (by NetsuNegi)
 - Allow users to customize whether the movement state check depends on the destination for the `DiscardOn=move` condition of AE to support more usage scenarios (by Noble_Fish)
+- Restored the original Tiberian Sun behavior of playing the `[AudioVisual] -> DeploySound=` sound effect when clicking the sidebar to execute `Deploy` (by Noble_Fish)
+- Allow `RemoveMindControl` warhead to mute `MindClearedSound` (by Noble_Fish)
+- Introduce weight selection rules for ExtraWarheads (by Noble_Fish)
+- [Building turret idle/firing/low power animations](Fixed-or-Improved-Logics.md#building-turret-animations) (by Starkku)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -664,6 +668,7 @@ HideShakeEffects=false           ; boolean
 - Fixed the issue where tint color RGB mode conversion was incorrect (by Shatyuka)
 - Fixed the bug that low-air taking off / landing objects will receive twice damage (by NetsuNegi)
 - Fixed voxel projectile and animation lighting issues (by TaranDahl)
+- Fixed the bug that techno will get stuck if change owner in tunnel (by NetsuNegi)
 
 #### Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -737,6 +742,7 @@ HideShakeEffects=false           ; boolean
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus & NetsuNegi)
 - [Aux technos and TechLevel requirement of superweapon](New-or-Enhanced-Logics.md#aux-technos-and-techlevel-requirement-of-superweapon) (by NetsuNegi & Ollerus)
 - [Export interface for external call](index.md#interoperability) (by TaranDahl)
+- Allowed `MindControl.Permanent` warhead to mute `MindClearedSound` (by NetsuNegi & Noble_Fish)
 
 ```
 

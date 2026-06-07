@@ -107,6 +107,13 @@ public:
 
 		Nullable<PartialVector2D<int>> GuardRetryDelay;
 
+    Valueable<int> TurretAnim_IdleFrames;
+		Valueable<int> TurretAnim_LowPowerIdleFrames;
+		Valueable<int> TurretAnim_FiringFrames;
+		Valueable<int> TurretAnim_LowPowerFiringFrames;
+		Valueable<int> TurretAnim_IdleRate;
+		Valueable<int> TurretAnim_FiringRate;
+
 		// Ares 0.2
 		Valueable<bool> CloningFacility;
 
@@ -188,6 +195,12 @@ public:
 			, UndeploysInto_Sellable { false }
 			, BuildingRadioLink_SyncOwner {}
 			, GuardRetryDelay {}
+			, TurretAnim_IdleFrames { 1 }
+			, TurretAnim_LowPowerIdleFrames { 0 }
+			, TurretAnim_FiringFrames { 0 }
+			, TurretAnim_LowPowerFiringFrames { 0 }
+			, TurretAnim_IdleRate { 1 }
+			, TurretAnim_FiringRate { 1 }
 
 			// Ares 0.2
 			, CloningFacility { false }

@@ -358,6 +358,8 @@ public:
 		Valueable<bool> Temporal_ApplyMultiplier;
 
 		Valueable<bool> DiscardOn_MoveBasedOnDestination;
+		Valueable<bool> RemoveMindControl_Silent;
+		Valueable<bool> MindControl_Permanent_ReplaceSilent;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -654,6 +656,8 @@ public:
 			, Temporal_ApplyVersus { false }
 			, Temporal_ApplyMultiplier { false }
 			, DiscardOn_MoveBasedOnDestination { false }
+			, RemoveMindControl_Silent { false }
+			, MindControl_Permanent_ReplaceSilent { false }
 		{ }
 
 		virtual ~ExtData() = default;

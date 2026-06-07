@@ -5,6 +5,7 @@
 #include <Misc/FlyingStrings.h>
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/AresFunctions.h>
+#include <Ext/CaptureManager/Body.h>
 
 #pragma region CreateGap Calls
 
@@ -459,7 +460,7 @@ HouseClass* WarheadTypeExt::ExtData::ApplyRemoveMindControl(HouseClass* pHouse, 
 {
 	if (const auto pController = pTarget->MindControlledBy)
 	{
-		pController->CaptureManager->FreeUnit(pTarget);
+		CaptureManagerExt::FreeUnit(pController->CaptureManager, pTarget, this->RemoveMindControl_Silent.Get(RulesExt::Global()->RemoveMindControl_Silent));
 		return pTarget->Owner;
 	}
 

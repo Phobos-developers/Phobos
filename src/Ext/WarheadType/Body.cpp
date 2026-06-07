@@ -153,6 +153,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Conventional_IgnoreUnits.Read(exINI, pSection, "Conventional.IgnoreUnits");
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
 	this->RemoveMindControl.Read(exINI, pSection, "RemoveMindControl");
+	this->RemoveMindControl_Silent.Read(exINI, pSection, "RemoveMindControl.Silent");
 	this->RemoveParasite.Read(exINI, pSection, "RemoveParasite");
 	this->RemoveParasite_Allow.Read(exINI, pSection, "RemoveParasite.Allow");
 	this->RemoveParasite_Disallow.Read(exINI, pSection, "RemoveParasite.Disallow");
@@ -540,6 +541,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Conventional_IgnoreUnits)
 		.Process(this->RemoveDisguise)
 		.Process(this->RemoveMindControl)
+		.Process(this->RemoveMindControl_Silent)
 		.Process(this->RemoveParasite)
 		.Process(this->RemoveParasite_Allow)
 		.Process(this->RemoveParasite_Disallow)

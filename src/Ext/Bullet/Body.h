@@ -5,6 +5,13 @@
 #include <Ext/TechnoType/Body.h>
 #include <New/Entity/LaserTrailClass.h>
 
+struct RadialFireStruct
+{
+	int Segments = 0;
+	int Index = 0;
+	DirStruct Direction {};
+};
+
 class BulletExt
 {
 public:
@@ -74,9 +81,9 @@ public:
 
 	static void Detonate(const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse, AbstractClass* pTarget, bool isBright, WeaponTypeClass* pWeapon, WarheadTypeClass* pWarhead);
 	static void ApplyArcingFix(BulletClass* pThis, const CoordStruct& sourceCoords, const CoordStruct& targetCoords, BulletVelocity& velocity);
-	static inline CoordStruct GetTargetCoordsForFiring(BulletClass* pBullet);
+	static CoordStruct GetTargetCoordsForFiring(BulletClass* pBullet);
 
-	static void SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords, bool randomVelocity);
+	static void SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords, bool headToTarget, const RadialFireStruct& radialFire = {});
 	static void SimulatedFiringEffects(BulletClass* pBullet, HouseClass* pHouse, ObjectClass* pAttach, bool firingEffect, bool visualEffect);
 	static inline void SimulatedFiringAnim(BulletClass* pBullet, HouseClass* pHouse, ObjectClass* pAttach);
 	static inline void SimulatedFiringReport(BulletClass* pBullet);
@@ -84,4 +91,5 @@ public:
 	static inline void SimulatedFiringElectricBolt(BulletClass* pBullet);
 	static inline void SimulatedFiringRadBeam(BulletClass* pBullet, HouseClass* pHouse);
 	static inline void SimulatedFiringParticleSystem(BulletClass* pBullet, HouseClass* pHouse);
+	static inline BulletVelocity ApplyRadialFireVelocityWarp(BulletVelocity velocity, const RadialFireStruct& radialFire);
 };
