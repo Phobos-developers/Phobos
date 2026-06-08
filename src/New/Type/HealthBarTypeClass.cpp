@@ -14,20 +14,22 @@ void HealthBarTypeClass::DrawBuildingBar(Point2D* pLocation, RectangleStruct* pB
 	HealthBarTypeClass::DrawBuildingBar(pPipsPalette, pPipsShape, pLocation, pBounds, interval, pipsTotal, pipsLength, frame, emptyFrame);
 }
 
-void HealthBarTypeClass::DrawOtherBar(SHPStruct* pBrdShape, Point2D* pLocation, RectangleStruct* pBounds, const int brdXOffset, const int pipsTotal, const int frame, const int brdFrame) const
+void HealthBarTypeClass::DrawOtherBar(SHPStruct* pBrdShape, Point2D* pLocation, RectangleStruct* pBounds, const int pipsTotal, const int frame, const int brdFrame) const
 {
 	const auto pBrdPalette = this->PipBrdPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 	const auto pPipsPalette = this->PipsPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 	const auto pPipsShape = this->PipsShape.Get();
+	const int brdXOffset = this->PipBrdXOffset.Get();
 	const auto pipsInterval = this->PipsInterval.Get();
 	HealthBarTypeClass::DrawOtherBar(pBrdPalette, pBrdShape, pPipsPalette, pPipsShape, pLocation, pBounds, brdXOffset, pipsInterval, pipsTotal, frame, brdFrame);
 }
 
-void HealthBarTypeClass::DrawAnimatedBar(SHPStruct* pBrdShape, Point2D* pLocation, RectangleStruct* pBounds, const int brdXOffset, const double ratio, const int brdFrame) const
+void HealthBarTypeClass::DrawAnimatedBar(SHPStruct* pBrdShape, Point2D* pLocation, RectangleStruct* pBounds, const double ratio, const int brdFrame) const
 {
 	const auto pBrdPalette = this->PipBrdPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 	const auto pPipsPalette = this->PipsPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 	const auto pPipsShape = this->PipsShape.Get();
+	const int brdXOffset = this->PipBrdXOffset.Get();
 	HealthBarTypeClass::DrawAnimatedBar(pBrdPalette, pBrdShape, pPipsPalette, pPipsShape, pLocation, pBounds, brdXOffset, ratio, brdFrame);
 }
 

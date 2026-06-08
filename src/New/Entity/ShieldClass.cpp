@@ -978,12 +978,10 @@ void ShieldClass::DrawShieldBar_Building(const int length, Point2D* pLocation, R
 
 	if (pShieldBar->IsAnimated)
 	{
-		const auto pBrdPalette = pShieldBar->PipBrdPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 		const auto pBrdShape = pShieldBar->PipBrdShape.Get(nullptr);
-		const int brdXOffset = pShieldBar->PipBrdXOffset;
 		const double ratio = pShieldBar->IsAnimated_Reverse ? 1.0 - percentage : percentage;
 		const int brdFrame = this->Techno->IsSelected ? this->DrawShieldBar_Pip(pShieldBar->GetPipBrd(), true) : -1;
-		pShieldBar->DrawAnimatedBar(pBrdShape, &position, pBound, brdXOffset, ratio, brdFrame);
+		pShieldBar->DrawAnimatedBar(pBrdShape, &position, pBound, ratio, brdFrame);
 	}
 	else
 	{
@@ -1011,21 +1009,20 @@ void ShieldClass::DrawShieldBar_Other(const int length, Point2D* pLocation, Rect
 	if (whatAmI != AbstractType::Infantry)
 		position += { 2, -1 };
 
-	const int brdXOffset = pShieldBar->PipBrdXOffset.Get();
 	const double percentage = this->GetHealthRatio();
 	const int brdFrame = this->Techno->IsSelected ? this->DrawShieldBar_Pip(pShieldBar->GetPipBrd(whatAmI == AbstractType::Infantry ? (pBrdShape->Frames > 1 ? 3 : 1) : (pBrdShape->Frames > 2 ? 2 : 0)), false) : -1;
 
 	if (pShieldBar->IsAnimated)
 	{
 		const double ratio = pShieldBar->IsAnimated_Reverse ? 1.0 - percentage : percentage;
-		pShieldBar->DrawAnimatedBar(pBrdShape, &position, pBound, brdXOffset, ratio, brdFrame);
+		pShieldBar->DrawAnimatedBar(pBrdShape, &position, pBound, ratio, brdFrame);
 	}
 	else
 	{
 		const int pipsTotal = DrawShieldBar_PipAmount(percentage, length);
 		const auto& pips = pShieldBar->Pips.Get(RulesExt::Global()->Pips);
 		const int frame = this->DrawShieldBar_Pip(pips, false);
-		pShieldBar->DrawOtherBar(pBrdShape, &position, pBound, brdXOffset, pipsTotal, frame, brdFrame);
+		pShieldBar->DrawOtherBar(pBrdShape, &position, pBound, pipsTotal, frame, brdFrame);
 	}
 }
 
