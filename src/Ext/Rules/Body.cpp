@@ -767,14 +767,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->RemoveMindControl_Silent)
 		.Process(this->MindControl_Permanent_ReplaceSilent)
 		.Process(this->TeamDelays_DynamicType)
-		.Process(this->TeamDelays_Count1)
-		.Process(this->TeamDelays_Count2)
-		.Process(this->TeamDelays_Count3)
-		.Process(this->TeamDelays_Count4)
-		.Process(this->TeamDelays_Count5)
-		.Process(this->TeamDelays_Count6)
-		.Process(this->TeamDelays_Count7)
-		.Process(this->TeamDelays_Count8)
+		.Process(this->TeamDelays_Count)
 		;
 }
 
