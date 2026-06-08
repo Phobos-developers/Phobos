@@ -27,7 +27,7 @@ This page describes all AI scripting and mapping related additions and changes i
   - `aliveallies`: taking the amount of allied players that's not defeated at the moment into account, excluding itself.
   - `aliveenemies`: taking the amount of hostile players that's not defeated at the moment into account.
 - `TeamDelays.CountN` control the team delay when the amount of players meets the above conditions, where `N` stands for an integer between 1-8. Consisted by 3 integers that represent each difficulty.
-  - If a dynamic team delay is not set for this player amount or difficulty, it'll default to `[General] -> TeamDelays`.
+  - If a dynamic team delay is not set for this player amount, or the set value isn't greater than 0, it'll default to `[General] -> TeamDelays`.
 
 In `rulesmd.ini`:
 ```ini

@@ -424,14 +424,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->MindControl_Permanent_ReplaceSilent.Read(exINI, GameStrings::AudioVisual, "MindControl.Permanent.ReplaceSilent");
 
 	this->TeamDelays_DynamicType.Read(exINI, GameStrings::General, "TeamDelays.DynamicType");
-	this->TeamDelays_Count1.Read(exINI, GameStrings::General, "TeamDelays.Count1");
-	this->TeamDelays_Count2.Read(exINI, GameStrings::General, "TeamDelays.Count2");
-	this->TeamDelays_Count3.Read(exINI, GameStrings::General, "TeamDelays.Count3");
-	this->TeamDelays_Count4.Read(exINI, GameStrings::General, "TeamDelays.Count4");
-	this->TeamDelays_Count5.Read(exINI, GameStrings::General, "TeamDelays.Count5");
-	this->TeamDelays_Count6.Read(exINI, GameStrings::General, "TeamDelays.Count6");
-	this->TeamDelays_Count7.Read(exINI, GameStrings::General, "TeamDelays.Count7");
-	this->TeamDelays_Count8.Read(exINI, GameStrings::General, "TeamDelays.Count8");
+
+	char tempBuffer[40];
+	for (size_t i = 0; i < 8; i++)
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "TeamDelays.Count%d", i + 1);
+		this->TeamDelays_Count[i].Read(exINI, GameStrings::General, tempBuffer);
+	}
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");

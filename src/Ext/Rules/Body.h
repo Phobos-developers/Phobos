@@ -362,14 +362,7 @@ public:
 		Valueable<bool> MindControl_Permanent_ReplaceSilent;
 
 		Valueable<DynamicTeamDelayType> TeamDelays_DynamicType;
-		ValueableVector<int> TeamDelays_Count1;
-		ValueableVector<int> TeamDelays_Count2;
-		ValueableVector<int> TeamDelays_Count3;
-		ValueableVector<int> TeamDelays_Count4;
-		ValueableVector<int> TeamDelays_Count5;
-		ValueableVector<int> TeamDelays_Count6;
-		ValueableVector<int> TeamDelays_Count7;
-		ValueableVector<int> TeamDelays_Count8;
+		Valueable<Vector3D<int>> TeamDelays_Count[8];
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -670,14 +663,7 @@ public:
 			, MindControl_Permanent_ReplaceSilent { false }
 
 			, TeamDelays_DynamicType { DynamicTeamDelayType::StartingPoint }
-			, TeamDelays_Count1 {}
-			, TeamDelays_Count2 {}
-			, TeamDelays_Count3 {}
-			, TeamDelays_Count4 {}
-			, TeamDelays_Count5 {}
-			, TeamDelays_Count6 {}
-			, TeamDelays_Count7 {}
-			, TeamDelays_Count8 {}
+			, TeamDelays_Count {}
 		{ }
 
 		virtual ~ExtData() = default;
