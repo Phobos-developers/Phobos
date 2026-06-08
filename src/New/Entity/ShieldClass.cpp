@@ -971,9 +971,6 @@ void ShieldClass::DrawShieldBar_Building(const int length, Point2D* pLocation, R
 	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 	const auto pShieldBar = pTechnoTypeExt->ShieldBar.Get(this->Type->ShieldBar.Get(RulesExt::Global()->Buildings_DefaultShieldBar));
 
-	const auto pPipsPalette = pShieldBar->PipsPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
-	const auto pPipsShape = pShieldBar->PipsShape.Get();
-
 	auto position = *pLocation;
 	position += { 3, -1 };
 
@@ -986,16 +983,15 @@ void ShieldClass::DrawShieldBar_Building(const int length, Point2D* pLocation, R
 		const int brdXOffset = pShieldBar->PipBrdXOffset;
 		const double ratio = pShieldBar->IsAnimated_Reverse ? 1.0 - percentage : percentage;
 		const int brdFrame = this->Techno->IsSelected ? this->DrawShieldBar_Pip(pShieldBar->GetPipBrd(), true) : -1;
-		HealthBarTypeClass::DrawAnimatedBar(pBrdPalette, pBrdShape, pPipsPalette, pPipsShape, &position, pBound, brdXOffset, ratio, brdFrame);
+		pShieldBar->DrawAnimatedBar(pBrdShape, &position, pBound, brdXOffset, ratio, brdFrame);
 	}
 	else
 	{
-		const auto interval = pShieldBar->PipsInterval_Building.Get();
 		const int pipsTotal = DrawShieldBar_PipAmount(percentage, length);
 		const auto& pips = pShieldBar->Pips_Building.Get(this->Type->Pips_Building.Get(RulesExt::Global()->Pips_Shield_Building));
 		const int frame = this->DrawShieldBar_Pip(pips, true);
 		const int emptyFrame = pShieldBar->PipsEmpty.Get(RulesExt::Global()->Pips_Shield_Building_Empty);
-		HealthBarTypeClass::DrawBuildingBar(pPipsPalette, pPipsShape, &position, pBound, interval, pipsTotal, length, frame, emptyFrame);
+		pShieldBar->DrawBuildingBar(&position, pBound, pipsTotal, length, frame, emptyFrame);
 	}
 }
 
@@ -1005,10 +1001,7 @@ void ShieldClass::DrawShieldBar_Other(const int length, Point2D* pLocation, Rect
 	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 	const auto pShieldBar = pTechnoTypeExt->ShieldBar.Get(this->Type->ShieldBar.Get(RulesExt::Global()->DefaultShieldBar));
 
-	const auto pBrdPalette = pShieldBar->PipBrdPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 	const auto pBrdShape = pShieldBar->PipBrdShape.Get(this->Type->Pips_Background.Get(RulesExt::Global()->Pips_Shield_Background.Get(FileSystem::PIPBRD_SHP)));
-	const auto pPipsPalette = pShieldBar->PipsPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
-	const auto pPipsShape = pShieldBar->PipsShape.Get();
 
 	const auto pipsInterval = pShieldBar->PipsInterval.Get();
 	auto position = *pLocation + Point2D { pShieldBar->XOffset - length * pipsInterval.X / 2, pTechnoType->PixelSelectionBracketDelta + this->Type->BracketDelta - 27 };
@@ -1025,14 +1018,14 @@ void ShieldClass::DrawShieldBar_Other(const int length, Point2D* pLocation, Rect
 	if (pShieldBar->IsAnimated)
 	{
 		const double ratio = pShieldBar->IsAnimated_Reverse ? 1.0 - percentage : percentage;
-		HealthBarTypeClass::DrawAnimatedBar(pBrdPalette, pBrdShape, pPipsPalette, pPipsShape, &position, pBound, brdXOffset, ratio, brdFrame);
+		pShieldBar->DrawAnimatedBar(pBrdShape, &position, pBound, brdXOffset, ratio, brdFrame);
 	}
 	else
 	{
 		const int pipsTotal = DrawShieldBar_PipAmount(percentage, length);
 		const auto& pips = pShieldBar->Pips.Get(RulesExt::Global()->Pips);
 		const int frame = this->DrawShieldBar_Pip(pips, false);
-		HealthBarTypeClass::DrawOtherBar(pBrdPalette, pBrdShape, pPipsPalette, pPipsShape, &position, pBound, brdXOffset, pipsInterval, pipsTotal, frame, brdFrame);
+		pShieldBar->DrawOtherBar(pBrdShape, &position, pBound, brdXOffset, pipsTotal, frame, brdFrame);
 	}
 }
 
