@@ -240,7 +240,7 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 			break;
 		case AbstractType::Building:
 			if (RulesExt::Global()->DrawInsignia_AdjustPos_BuildingsAnchor.isset())
-				offset = GetBuildingSelectBracketPosition(static_cast<BuildingClass*>(pThis)->Type, pLocation, RulesExt::Global()->DrawInsignia_AdjustPos_BuildingsAnchor) + RulesExt::Global()->DrawInsignia_AdjustPos_Buildings;
+				offset = TechnoExt::GetBuildingSelectBracketPosition(static_cast<BuildingClass*>(pThis)->Type, pLocation, RulesExt::Global()->DrawInsignia_AdjustPos_BuildingsAnchor) + RulesExt::Global()->DrawInsignia_AdjustPos_Buildings;
 			else
 				offset += RulesExt::Global()->DrawInsignia_AdjustPos_Buildings;
 			break;
@@ -257,9 +257,6 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 
 	return;
 }
-
-
-
 
 Point2D TechnoExt::GetScreenLocation(TechnoClass* pThis)
 {
@@ -492,7 +489,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 	}
 }
 
-void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis, Point2D* pLocation)
+void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis, const int pipsLength, Point2D* pLocation, RectangleStruct* pBounds)
 {
 	if (!Phobos::Config::DigitalDisplay_Enable)
 		return;
@@ -572,26 +569,57 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis, Point2D* pLocation)
 
 		const bool hasShield = pShield != nullptr && !pShield->IsBrokenAndNonRespawning();
 		Point2D position = isBuilding ?
-			GetBuildingSelectBracketPosition(static_cast<BuildingClass*>(pThis)->Type, pLocation, pDisplayType->AnchorType_Building)
-			: GetFootSelectBracketPosition(length, pLocation, pDisplayType->AnchorType);
+			TechnoExt::GetBuildingSelectBracketPosition(static_cast<BuildingClass*>(pThis)->Type, pLocation, pDisplayType->AnchorType_Building)
+			: TechnoExt::GetFootSelectBracketPosition(length, pLocation, pDisplayType->AnchorType);
 		position.Y += pType->PixelSelectionBracketDelta;
 
 		if (pDisplayType->InfoType == DisplayInfoType::Shield && hasShield)
 			position.Y += pShield->GetType()->BracketDelta;
 
-		pDisplayType->Draw(position, length, value, maxValue, isBuilding, isInfantry, hasShield);
-
 		if (const auto pProgressBar = pDisplayType->ProgressBar.Get())
 		{
+			const double percentage = static_cast<double>(value) / maxValue;
+
 			if (isBuilding)
 			{
-
+				if (pProgressBar->IsAnimated)
+				{
+					const auto pBrdShape = pProgressBar->PipBrdShape.Get(nullptr);
+					const double ratio = pProgressBar->IsAnimated_Reverse ? 1.0 - percentage : percentage;
+					const int brdFrame = pThis->IsSelected ? TechnoExt::HealthBar_GetPip(pProgressBar->GetPipBrd(), percentage, true) : -1;
+					pProgressBar->DrawAnimatedBar(pBrdShape, &position, pBounds, ratio, brdFrame);
+				}
+				else
+				{
+					const int pipsTotal = percentage > 0.0 ? TechnoExt::HealthBar_GetPipAmount(percentage, pipsLength) : 0;
+					const auto& pips = pProgressBar->Pips_Building.Get(RulesExt::Global()->Pips_Building);
+					const int frame = TechnoExt::HealthBar_GetPip(pips, percentage, true);
+					const int emptyFrame = pProgressBar->PipsEmpty.Get(RulesExt::Global()->Pips_Building_Empty);
+					pProgressBar->DrawBuildingBar(&position, pBounds, pipsTotal, pipsLength, frame, emptyFrame);
+				}
 			}
 			else
 			{
+				const auto pBrdShape = pProgressBar->PipBrdShape.Get(FileSystem::PIPBRD_SHP);
 
+				const int brdFrame = pThis->IsSelected ? TechnoExt::HealthBar_GetPip(pProgressBar->GetPipBrd(isInfantry ? 1 : 0), percentage, false) : -1;
+
+				if (pProgressBar->IsAnimated)
+				{
+					const double ratio = pProgressBar->IsAnimated_Reverse ? 1.0 - percentage : percentage;
+					pProgressBar->DrawAnimatedBar(pBrdShape, &position, pBounds, ratio, brdFrame);
+				}
+				else
+				{
+					const int pipsTotal = percentage > 0.0 ? TechnoExt::HealthBar_GetPipAmount(percentage, pipsLength) : 0;
+					const auto& pips = pProgressBar->Pips.Get(RulesExt::Global()->Pips);
+					const int frame = TechnoExt::HealthBar_GetPip(pips, percentage, false);
+					pProgressBar->DrawOtherBar(pBrdShape, &position, pBounds, pipsTotal, frame, brdFrame);
+				}
 			}
 		}
+
+		pDisplayType->Draw(position, length, value, maxValue, isBuilding, isInfantry, hasShield);
 	}
 }
 

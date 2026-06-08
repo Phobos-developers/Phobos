@@ -121,7 +121,7 @@ DEFINE_HOOK(0x6F64A0, TechnoClass_DrawHealthBar, 0x5)
 			TechnoExt::DrawHealthBar_Other(pThis, pHealthBar, pipsLength, &position, pBounds);
 	}
 
-	TechnoExt::ProcessDigitalDisplays(pThis, &position);
+	TechnoExt::ProcessDigitalDisplays(pThis, pipsLength, &position, pBounds);
 
 	if (AresHelper::CanUseAres && reinterpret_cast<DummyTechnoExtHere*>(pThis->align_154)->DriverKilled)
 		return SkipDrawCode;
