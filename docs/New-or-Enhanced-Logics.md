@@ -2991,8 +2991,8 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]                          ; WarheadType
 UnlimboDetonate=false                  ; boolean
 UnlimboDetonate.ForceLocation=false    ; boolean
-UnlimboDetonate.KeepTarget=false       ; boolean
-UnlimboDetonate.KeepSelected=false     ; boolean
+UnlimboDetonate.KeepTarget=true        ; boolean
+UnlimboDetonate.KeepSelected=true      ; boolean
 ```
 
 ```{warning}

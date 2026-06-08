@@ -96,8 +96,7 @@ msgstr ""
 "`Type=ChronoSphere` 和 `Type=ChronoWarp` 的超级武器。"
 
 msgid "Fixed AI team recruitment inconsistency causing underfilled teams."
-msgstr ""
-"修复了 AI 小队招募数量与生产计划不一致导致不足以建立小队的问题。"
+msgstr "修复了 AI 小队招募数量与生产计划不一致导致不足以建立小队的问题。"
 
 msgid "Increased Overlay Limit"
 msgstr "更高的覆盖物数量上限"
@@ -1319,6 +1318,26 @@ msgid ""
 "If `<All>` is entered for the Building Type here, then undeploy all "
 "BuildingTypes."
 msgstr "若将此处建筑类型设为 `<All>` 则反部署所有建筑。"
+
+msgid "`512` Set Follower for Associated Unit"
+msgstr ""
+
+msgid ""
+"![image](_static/images/follow_index.gif) *The locomotive pulls away the "
+"parked multiple carriages in [Bellum "
+"Æternum](https://ra2be.com/download.html)*"
+msgstr ""
+
+msgid "image"
+msgstr ""
+
+msgid ""
+"Sets the follower for the associated object. The parameter is the index "
+"of the follower unit."
+msgstr ""
+
+msgid "Invalid for non-vehicle objects."
+msgstr ""
 
 msgid "`606` Edit Hate-Value"
 msgstr "`606` 编辑仇恨值"
