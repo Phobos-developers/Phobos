@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <Interop/TechnoExt.h>
 
 // Cursor & target acquisition stuff not directly tied to other features can go here.
 
@@ -500,6 +501,11 @@ DEFINE_HOOK(0x70CF87, TechnoClass_ThreatCoefficient_CanAttackMeThreatBonus, 0x9)
 			totalThreat += distToLastTarget * bonus;
 		};
 	ApplyLastTargetDistanceBonus();
+
+	for (auto const& cb : TechnoExtInterop::CalculateExtraThreatCallbacks)
+	{
+		totalThreat = cb(pThis, pTarget, totalThreat);
+	}
 
 	return 0;
 }

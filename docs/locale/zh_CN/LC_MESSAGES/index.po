@@ -384,6 +384,12 @@ msgstr ""
 "[@Metadorius](https://github.com/Metadorius)（Kerbiter）于 2020 年创立，2021 "
 "年首次发布稳定版。此后它已发展成为一个由众多贡献者和维护者组成的大型社区项目。"
 
+msgid "Interoperability"
+msgstr "互操作性"
+
+msgid "Phobos has opened the external interfaces of some key components. If you are also developing your own engine extension and wish to use Phobos at the same time, please check out [Interoperability](Interoperability.md)."
+msgstr "Phobos为一些关键组件打开了外部接口。如果你也在开发自己的引擎扩展并且希望同时使用Phobos，请查阅 [互操作性](Interoperability.md)。"
+
 msgid "Maintenance crew"
 msgstr "维护团队"
 

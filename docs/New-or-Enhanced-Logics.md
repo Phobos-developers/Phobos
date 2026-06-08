@@ -20,6 +20,7 @@ This page describes all the engine features that are either new and introduced b
     - `inrange`: Discard if within weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
     - `outofrange`: Discard if outside weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
     - `firing`: Discard when firing a weapon. This counts special weapons that are not actually fired such as ones with `Spawner=true` or `DrainWeapon=true`.
+  - `DiscardOn.MoveBasedOnDestination` defines whether to determine the movement state according to the presence or absence of a destination. It treats Jumpjet units hovering in the air as movement, and units that have no destination but are turning as stationary.
   - If `PenetratesIronCurtain` is not set to true, the effect is not applied on currently invulnerable objects.
     - `PenetratesForceShield` can be used to set this separately for Force Shielded objects, defaults to value of `PenetratesIronCurtain`.
   - `AffectTypes`, if set to a non-empty list, restricts the effect to only be applicable on the specific unit types listed. If this is not set or empty, no whitelist filtering occurs. This check has the highest priority.
@@ -87,6 +88,9 @@ This page describes all the engine features that are either new and introduced b
 
 In `rulesmd.ini`:
 ```ini
+[General]
+DiscardOn.MoveBasedOnDestination=false             ; boolean
+
 [AttachEffectTypes]
 0=SOMEATTACHEFFECT
 
@@ -99,6 +103,7 @@ Cumulative.MaxCount=-1                             ; integer
 Powered=false                                      ; boolean
 DiscardOn=none                                     ; List of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange)
 DiscardOn.RangeOverride=                           ; floating point value, distance in cells
+DiscardOn.MoveBasedOnDestination=                  ; boolean, default to [General] -> DiscardOn.MoveBasedOnDestination
 PenetratesIronCurtain=false                        ; boolean
 PenetratesForceShield=                             ; boolean
 AffectTypes=                                       ; List of TechnoTypes
@@ -812,6 +817,7 @@ BombParachute=           ; AnimationType, default to [General] -> BombParachute
   - `Interceptor.CanTargetHouses` controls which houses the projectiles (or rather their firers) can belong to be eligible for interception.
   - `Interceptor.GuardRange` (and `Interceptor.(Rookie|Veteran|EliteGuardRange)`) is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
   - `Interceptor.MinimumGuardRange` (and `Interceptor.(Rookie|Veteran|EliteMinimumGuardRange)`) is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
+  - `Interceptor.GuardRange.IsCylindrical`, if set to true, makes it so that all range checks ignore height/elevation differences.
   - `Interceptor.ApplyFirepowerMult` determines whether or not the intercepting weapon's damage should multiply the TechnoType's firepower multipliers.
   - `Interceptable.DeleteOnIntercept` determines whether or not the projectile will simply be deleted on detonation upon interception, or if it will properly detonate. Will be overridden by `Interceptor.DeleteOnIntercept` setting on the interceptor.
   - `Interceptable.WeaponOverride` can be set to a WeaponType that will be used to override characteristics such as `Damage` and `Warhead` of the current projectile for detonation after interception. Will be overridden by `Interceptor.WeaponOverride` setting on the interceptor.
@@ -821,30 +827,31 @@ BombParachute=           ; AnimationType, default to [General] -> BombParachute
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                               ; TechnoType
-Interceptor=false                          ; boolean
-Interceptor.Weapon=0                       ; integer, weapon slot index (0 or 1)
-Interceptor.TargetingDelay=1               ; integer, game frames
-Interceptor.CanTargetHouses=enemies        ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-Interceptor.GuardRange=0.0                 ; floating point value
-Interceptor.VeteranGuardRange=             ; floating point value
-Interceptor.EliteGuardRange=               ; floating point value
-Interceptor.MinimumGuardRange=0.0          ; floating point value
-Interceptor.VeteranMinimumGuardRange=      ; floating point value
-Interceptor.EliteMinimumGuardRange=        ; floating point value
-Interceptor.ApplyFirepowerMult=true        ; boolean
-Interceptor.DeleteOnIntercept=false        ; boolean
-Interceptor.WeaponOverride=                ; WeaponType
-Interceptor.WeaponReplaceProjectile=false  ; boolean
-Interceptor.WeaponCumulativeDamage=false   ; boolean
-Interceptor.KeepIntact=false               ; boolean
+[SOMETECHNO]                                ; TechnoType
+Interceptor=false                           ; boolean
+Interceptor.Weapon=0                        ; integer, weapon slot index (0 or 1)
+Interceptor.TargetingDelay=1                ; integer, game frames
+Interceptor.CanTargetHouses=enemies         ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Interceptor.GuardRange=0.0                  ; floating point value
+Interceptor.VeteranGuardRange=              ; floating point value
+Interceptor.EliteGuardRange=                ; floating point value
+Interceptor.MinimumGuardRange=0.0           ; floating point value
+Interceptor.GuardRange.IsCylindrical=false  ; boolean
+Interceptor.VeteranMinimumGuardRange=       ; floating point value
+Interceptor.EliteMinimumGuardRange=         ; floating point value
+Interceptor.ApplyFirepowerMult=true         ; boolean
+Interceptor.DeleteOnIntercept=false         ; boolean
+Interceptor.WeaponOverride=                 ; WeaponType
+Interceptor.WeaponReplaceProjectile=false   ; boolean
+Interceptor.WeaponCumulativeDamage=false    ; boolean
+Interceptor.KeepIntact=false                ; boolean
 
-[SOMEPROJECTILE]                           ; Projectile
-Interceptable=false                        ; boolean
-Interceptable.DeleteOnIntercept=false      ; boolean
-Interceptable.WeaponOverride=              ; WeaponType
-Strength=0                                 ; integer
-Armor=                                     ; ArmorType
+[SOMEPROJECTILE]                            ; Projectile
+Interceptable=false                         ; boolean
+Interceptable.DeleteOnIntercept=false       ; boolean
+Interceptable.WeaponOverride=               ; WeaponType
+Strength=0                                  ; integer
+Armor=                                      ; ArmorType
 ```
 
 ```{note}
@@ -2445,11 +2452,21 @@ MergeBuildingDamage=         ; boolean
 *Mind control break warhead being utilized in [RA2: Reboot](https://www.moddb.com/mods/reboot)*
 
 - Warheads can now break mind control (doesn't apply to perma-MC-ed objects).
+- Both `RemoveMindControl` and `MindControl.Permanent` will remove the target's original conventional mind control effect and play the `MindClearedSound` sound effect. This can now be configured via `RemoveMindControl.Silent`, which defaults to `[AudioVisual] -> RemoveMindControl.Silent` for removing conventional mind control, and defaults to `[AudioVisual] -> MindControl.Permanent.ReplaceSilent` for cases where permanent mind control replaces conventional mind control.
+
+```{hint}
+You can simply use this flag to reduce some noise, or play another sound effect at the same time when muting the original sound effect...
+```
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]            ; WarheadType
-RemoveMindControl=false  ; boolean
+[AudioVisual]
+RemoveMindControl.Silent=false             ; boolean
+MindControl.Permanent.ReplaceSilent=false  ; boolean
+
+[SOMEWARHEAD]                              ; WarheadType
+RemoveMindControl=false                    ; boolean
+RemoveMindControl.Silent=                  ; boolean, normal removal defaults to [AudioVisual] -> RemoveMindControl.Silent, permanent replacement defaults to [AudioVisual] -> MindControl.Permanent.ReplaceSilent
 ```
 
 ### CellSpread enhancement
@@ -2974,8 +2991,8 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]                          ; WarheadType
 UnlimboDetonate=false                  ; boolean
 UnlimboDetonate.ForceLocation=false    ; boolean
-UnlimboDetonate.KeepTarget=false       ; boolean
-UnlimboDetonate.KeepSelected=false     ; boolean
+UnlimboDetonate.KeepTarget=true        ; boolean
+UnlimboDetonate.KeepSelected=true      ; boolean
 ```
 
 ```{warning}
@@ -3131,6 +3148,9 @@ ExtraRange.Prefiring.IncludeBurst=              ; boolean, default to [General] 
   - `ExtraWarheads.DetonationChances` can be used to customize the chance of each extra Warhead detonation occuring. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, every extra Warhead detonation is guaranteed to occur.
   - `ExtraWarheads.FullDetonation` can be used to customize whether or not each individual Warhead is detonated fully (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, defaults to true.
   - Note that the listed Warheads must be listed in `[Warheads]` for them to work.
+- These warheads can be made random with these optional tags. The game will randomly choose only a single warhead from the list for each roll chance provided.
+  - `ExtraWarheads.RollChances` lists chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
+  - `ExtraWarheads.RandomWeightsN` lists the weights for each "dice roll" that increase the probability of picking a specific warhead. Valid values are 0 (don't pick) and above (the higher value, the bigger the likelyhood). `RandomWeights` are a valid alias for `RandomWeights0`. If a roll attempt doesn't have weights specified, the last weights will be used.
 
 In `rulesmd.ini`:
 ```ini
@@ -3139,6 +3159,8 @@ ExtraWarheads=                    ; List of WarheadTypes
 ExtraWarheads.DamageOverrides=    ; List of integers
 ExtraWarheads.DetonationChances=  ; List of floating-point values (percentage or absolute)
 ExtraWarheads.FullDetonation=     ; List of booleans
+ExtraWarheads.RollChances=        ; List of percentages
+ExtraWarheads.RandomWeightsN=     ; List of integers
 ```
 
 ### Feedback weapon

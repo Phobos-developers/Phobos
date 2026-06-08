@@ -668,10 +668,13 @@ DEFINE_HOOK(0x508F82, HouseClass_AI_CheckSpySat_IncludeUpgrades, 0x6)
 
 	if (!pBuilding->Type->SpySat)
 	{
-		for (const auto& pUpgrade : pBuilding->Upgrades)
+		if (pBuilding->UpgradeLevel)
 		{
-			if (pUpgrade && pUpgrade->SpySat)
-				return Continue;
+			for (const auto& pUpgrade : pBuilding->Upgrades)
+			{
+				if (pUpgrade && pUpgrade->SpySat)
+					return Continue;
+			}
 		}
 
 		return AdvanceLoop;
@@ -3156,10 +3159,11 @@ DEFINE_HOOK(0x55B5FF, LogicClass_AI_UpdateObjects, 0x5)
 
 	GET(LogicClass*, pLogic, EDI);
 	int& updateIdx = LogicUpdateTemp::UpdateIndex;
+	const auto& items = pLogic->Items;
 
 	for (updateIdx = 0; updateIdx < pLogic->Count; ++updateIdx)
 	{
-		const auto pObject = pLogic->Items[updateIdx];
+		const auto pObject = items[updateIdx];
 		pObject->Update();
 	}
 
@@ -3319,7 +3323,7 @@ DEFINE_HOOK(0x706F64, TechnoClass_RenderVoxelObject_SkipInvisibleSections, 0x0)
 	GET(int const, layer, EBX);
 	GET_STACK(unsigned int const, frame, STACK_OFFSET(0x13C, 0x18));
 
-	auto mtx = pMotLib->GetLayerMatrix(layer, frame);
+	const auto mtx = pMotLib->GetLayerMatrix(layer, frame);
 
 	if (mtx.row[0][0] == 0.0f && mtx.row[1][1] == 0.0f && mtx.row[2][2] == 0.0f)
 		return SkipLayer;
@@ -3551,4 +3555,38 @@ DEFINE_HOOK(0x71A9CD, Remove_UnInitFix, 0x6) // TemporalClass::Update
 
 	pPassenger->UnInit();
 	return R->Origin() + 0x9;
+}
+
+#pragma region VoxelLightingFix
+
+// Fixes VoxelAnimClass::DrawIt and BulletClass::DrawAVXL VXL rendering
+// lacking proper double-light source (ambient + directional + specular)
+// that TechnoClass uses via sub_753D00, making them appear darker.
+
+DEFINE_HOOK(0x749D97, VoxelAnimClass_DrawIt_LightingFix, 0x5)
+{
+	GET(VoxLib*, pVXL, EBP);
+	GET(Matrix3D*, pMatrix, EAX);
+	Drawing::SetupVoxelDoubleLighting(pVXL, 0, 0, pMatrix, &Drawing::VoxelTransformMatrix, &Game::VoxelLightSource, 3.0);
+	return 0x749DA8;
+}
+
+DEFINE_HOOK(0x46B0E1, BulletClass_DrawAVXL_LightingFix, 0x5)
+{
+	GET(VoxLib*, pVXL, ESI);
+	GET(Matrix3D*, pMatrix, EAX);
+
+	Drawing::SetupVoxelDoubleLighting(pVXL, 0, 0, pMatrix, &Drawing::VoxelTransformMatrix, &Game::VoxelLightSource, 3.0);
+	R->Stack(STACK_OFFSET(0xF4, -0xDC), pVXL);
+	return 0x46B0F6;
+}
+
+#pragma endregion
+
+DEFINE_HOOK_AGAIN(0x701681, TechnoClass_SetOwningHouse_TunnelFix, 0x6)
+DEFINE_HOOK(0x701664, TechnoClass_SetOwningHouse_TunnelFix, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	R->AL(pThis->InLimbo || (abstract_cast<FootClass*>(pThis) && static_cast<FootClass*>(pThis)->TubeIndex != -1));
+	return R->Origin() + 0x6;
 }

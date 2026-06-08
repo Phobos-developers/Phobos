@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <Ext/Anim/Body.h>
+#include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -8,6 +9,7 @@
 
 #include <Utilities/AresFunctions.h>
 #include <Utilities/AresHelper.h>
+#include <Interop/TechnoExt.h>
 
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 UnitClass* TechnoExt::Deployer = nullptr;
@@ -193,16 +195,38 @@ double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 	else
 		houseMultiplier = pThis->Owner->Type->SpeedUnitsMult;
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-
-	return pThis->SpeedMultiplier * houseMultiplier * pExt->AE.SpeedMultiplier *
+	return pThis->SpeedMultiplier * houseMultiplier * TechnoExt::ExtMap.Find(pThis)->AE.SpeedMultiplier *
 		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
 }
 
 double TechnoExt::GetCurrentFirepowerMultiplier(TechnoClass* pThis)
 {
-	return pThis->FirepowerMultiplier * TechnoExt::ExtMap.Find(pThis)->AE.FirepowerMultiplier *
+	double mult = pThis->FirepowerMultiplier * pThis->Owner->FirepowerMultiplier * TechnoExt::ExtMap.Find(pThis)->AE.FirepowerMultiplier *
 		(pThis->HasAbility(Ability::Firepower) ? RulesClass::Instance->VeteranCombat : 1.0);
+
+	if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pThis))
+	{
+		const auto pBuildingType = pBuilding->Type;
+
+		if (pBuildingType->CanBeOccupied && pBuildingType->CanOccupyFire && pBuildingType->MaxNumberOccupants)
+		{
+			const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
+			mult *= pBuildingTypeExt->BuildingOccupyDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier);
+		}
+	}
+	else if (const auto pBunker = abstract_cast<BuildingClass*>(pThis->BunkerLinkedItem))
+	{
+		const auto pBunkerTypeExt = BuildingTypeExt::ExtMap.Find(pBunker->Type);
+		mult *= pBunkerTypeExt->BuildingBunkerDamageMult.Get(RulesClass::Instance->BunkerDamageMultiplier);
+	}
+	else if (pThis->InOpenToppedTransport && pThis->Transporter)
+	{
+		const auto pTransporterTypeExt = TechnoExt::ExtMap.Find(pThis->Transporter)->TypeExtData;
+		mult *= pTransporterTypeExt->OpenTopped_DamageMultiplier.Get(RulesClass::Instance->OpenToppedDamageMultiplier);
+		mult *= TechnoExt::ExtMap.Find(pThis)->TypeExtData->OpenTransport_DamageMultiplier;
+	}
+
+	return mult;
 }
 
 double TechnoExt::GetCurrentArmorMultiplier(TechnoClass* pThis, TechnoTypeClass* pType, WarheadTypeClass* pWarhead)
@@ -1190,7 +1214,15 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 
 int TechnoExt::ExtData::GetSight()
 {
-	return this->TypeExtData->OwnerObject()->Sight;
+	double sight = this->TypeExtData->OwnerObject()->Sight;
+	
+	for (auto& callback : TechnoExtInterop::CalculateSightCallbacks)
+	{
+		if (callback)
+			sight = callback(this->OwnerObject(), sight);
+	}
+	
+	return static_cast<int>(sight);
 }
 
 bool TechnoExt::HasWeaponsDisabled(TechnoClass* pThis)
