@@ -295,13 +295,10 @@ public:
 	static Point2D GetScreenLocation(TechnoClass* pThis);
 	static Point2D GetFootSelectBracketPosition(int length, Point2D* pLocation, Anchor anchor);
 	static Point2D GetBuildingSelectBracketPosition(BuildingTypeClass* pType, Point2D* pLocation, BuildingSelectBracketPosition bracketPosition);
+	static double GetHealthBarPercentage(TechnoClass* pThis, HealthBarTypeClass* pType);
 	static int HealthBar_GetPip(Vector3D<int> const& pips, double percentage, const bool isBuilding);
 	static int HealthBar_GetPipAmount(double percentage, int pipsLength);
-	static void DrawBuildingBar(ConvertClass* pPalette, SHPStruct* pShape, Point2D* pLocation, RectangleStruct* pBounds, Point2D interval, const int pipsTotal, const int pipsLength, const int frame, const int emptyFrame);
-	static void DrawOtherBar(ConvertClass* pBrdPalette, SHPStruct* pBrdShape, ConvertClass* pPipsPalette, SHPStruct* pPipsShape, Point2D* pLocation, RectangleStruct* pBounds, const int brdXOffset, Point2D interval, const int pipsTotal, const int frame, const int brdFrame);
-	static void DrawAnimatedBar(ConvertClass* pBrdPalette, SHPStruct* pBrdShape, ConvertClass* pPipsPalette, SHPStruct* pPipsShape, Point2D* pLocation, RectangleStruct* pBounds, const int brdXOffset, const double ratio, const int brdFrame);
 	static void DrawHealthBar_Building(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const int pipsLength, Point2D* pLocation, RectangleStruct* pBounds);
-	static double GetHealthBarPercentage(TechnoClass* pThis, HealthBarTypeClass* pType);
 	static void DrawHealthBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const int pipsLength, Point2D* pLocation, RectangleStruct* pBounds);
 	static void DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds, bool drawBefore = false);
 	static void ProcessDigitalDisplays(TechnoClass* pThis, Point2D* pLocation);

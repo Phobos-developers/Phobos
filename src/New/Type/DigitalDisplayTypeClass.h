@@ -3,6 +3,8 @@
 #include <Utilities/TemplateDef.h>
 #include <Utilities/Anchor.h>
 
+class HealthBarTypeClass;
+
 class DigitalDisplayTypeClass final : public Enumerable<DigitalDisplayTypeClass>
 {
 public:
@@ -27,6 +29,7 @@ public:
 	Nullable<int> ValueScaleDivisor;
 	Valueable<bool> ValueAsTimer;
 	Valueable<DisplayShowType> ShowType;
+	Valueable<HealthBarTypeClass*> ProgressBar;
 
 	DigitalDisplayTypeClass(const char* pTitle = NONE_STR) : Enumerable<DigitalDisplayTypeClass>(pTitle)
 		, Text_Color { { 0, 255, 0 }, { 255, 255, 0 }, { 255, 0, 0 } }
@@ -50,6 +53,7 @@ public:
 		, ValueScaleDivisor {}
 		, ValueAsTimer { false }
 		, ShowType { DisplayShowType::Select }
+		, ProgressBar { nullptr }
 	{ }
 
 	void LoadFromINI(CCINIClass* pINI);

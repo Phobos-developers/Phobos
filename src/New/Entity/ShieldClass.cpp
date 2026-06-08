@@ -986,7 +986,7 @@ void ShieldClass::DrawShieldBar_Building(const int length, Point2D* pLocation, R
 		const int brdXOffset = pShieldBar->PipBrdXOffset;
 		const double ratio = pShieldBar->IsAnimated_Reverse ? 1.0 - percentage : percentage;
 		const int brdFrame = this->Techno->IsSelected ? this->DrawShieldBar_Pip(pShieldBar->GetPipBrd(), true) : -1;
-		TechnoExt::DrawAnimatedBar(pBrdPalette, pBrdShape, pPipsPalette, pPipsShape, &position, pBound, brdXOffset, ratio, brdFrame);
+		HealthBarTypeClass::DrawAnimatedBar(pBrdPalette, pBrdShape, pPipsPalette, pPipsShape, &position, pBound, brdXOffset, ratio, brdFrame);
 	}
 	else
 	{
@@ -995,7 +995,7 @@ void ShieldClass::DrawShieldBar_Building(const int length, Point2D* pLocation, R
 		const auto& pips = pShieldBar->Pips_Building.Get(this->Type->Pips_Building.Get(RulesExt::Global()->Pips_Shield_Building));
 		const int frame = this->DrawShieldBar_Pip(pips, true);
 		const int emptyFrame = pShieldBar->PipsEmpty.Get(RulesExt::Global()->Pips_Shield_Building_Empty);
-		TechnoExt::DrawBuildingBar(pPipsPalette, pPipsShape, &position, pBound, interval, pipsTotal, length, frame, emptyFrame);
+		HealthBarTypeClass::DrawBuildingBar(pPipsPalette, pPipsShape, &position, pBound, interval, pipsTotal, length, frame, emptyFrame);
 	}
 }
 
@@ -1025,14 +1025,14 @@ void ShieldClass::DrawShieldBar_Other(const int length, Point2D* pLocation, Rect
 	if (pShieldBar->IsAnimated)
 	{
 		const double ratio = pShieldBar->IsAnimated_Reverse ? 1.0 - percentage : percentage;
-		TechnoExt::DrawAnimatedBar(pBrdPalette, pBrdShape, pPipsPalette, pPipsShape, &position, pBound, brdXOffset, ratio, brdFrame);
+		HealthBarTypeClass::DrawAnimatedBar(pBrdPalette, pBrdShape, pPipsPalette, pPipsShape, &position, pBound, brdXOffset, ratio, brdFrame);
 	}
 	else
 	{
 		const int pipsTotal = DrawShieldBar_PipAmount(percentage, length);
 		const auto& pips = pShieldBar->Pips.Get(RulesExt::Global()->Pips);
 		const int frame = this->DrawShieldBar_Pip(pips, false);
-		TechnoExt::DrawOtherBar(pBrdPalette, pBrdShape, pPipsPalette, pPipsShape, &position, pBound, brdXOffset, pipsInterval, pipsTotal, frame, brdFrame);
+		HealthBarTypeClass::DrawOtherBar(pBrdPalette, pBrdShape, pPipsPalette, pPipsShape, &position, pBound, brdXOffset, pipsInterval, pipsTotal, frame, brdFrame);
 	}
 }
 
