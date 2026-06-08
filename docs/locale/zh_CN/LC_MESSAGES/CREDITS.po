@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-31 23:53+0800\n"
+"POT-Creation-Date: 2026-06-07 15:04+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -877,6 +877,10 @@ msgstr "自定义激光绘制的 Z 深校正值"
 
 msgid "Armed building guard mission retry delay customization"
 msgstr "武装建筑警戒任务重试间隔的自定义"
+
+msgid "Building turret idle/firing/low power animations"
+msgstr ""
+"建筑炮塔的闲置／开火／低功率动画"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
@@ -1784,6 +1788,12 @@ msgid ""
 msgstr ""
 "修复了乘客在其所在的运输工具被移除时，因被直接调用析构函数（绕过 `UnInit` ）或 `UnInit` 嵌套调用导致删除标志过早重置，从而使 "
 "`LimboTracker` 计数错误，进而影响自动死亡及超武辅助单位判定的 Bug"
+
+msgid "Allow `Temporal` warhead to apply ratio and bonus"
+msgstr "允许 `Temporal` 弹头应用比率和加成"
+
+msgid "Fix the bug that techno will get stuck if change owner in tunnel"
+msgstr "修复了科技类型在隧道中变更所属方会导致卡住的 Bug"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
