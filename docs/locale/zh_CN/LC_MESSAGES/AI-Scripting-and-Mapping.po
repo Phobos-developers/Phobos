@@ -1321,23 +1321,28 @@ msgstr "若将此处建筑类型设为 `<All>` 则反部署所有建筑。"
 
 msgid "`512` Set Follower for Associated Unit"
 msgstr ""
+"`512` 设置关联单位的跟随目标..."
 
 msgid ""
 "![image](_static/images/follow_index.gif) *The locomotive pulls away the "
 "parked multiple carriages in [Bellum "
 "Æternum](https://ra2be.com/download.html)*"
 msgstr ""
+"![image](_static/images/follow_index.gif) *[世纪之战](https://ra2be.com/download.html) 中用火车头拉走停着的多节车厢*"
 
 msgid "image"
 msgstr ""
+"图像"
 
 msgid ""
 "Sets the follower for the associated object. The parameter is the index "
 "of the follower unit."
 msgstr ""
+"设置关联对象的跟随者，参数为要跟随者单位的索引。"
 
 msgid "Invalid for non-vehicle objects."
 msgstr ""
+"非载具类对象无效。"
 
 msgid "`606` Edit Hate-Value"
 msgstr "`606` 编辑仇恨值"

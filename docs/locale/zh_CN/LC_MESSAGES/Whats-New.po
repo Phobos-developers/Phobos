@@ -1955,6 +1955,8 @@ msgid ""
 "[Add action `512 Set Follower for Associated Unit...`](AI-Scripting-and-"
 "Mapping.md#set-follower-for-associated-unit) (by Noble_Fish)"
 msgstr ""
+"[添加触发结果 `512 设置关联单位的跟随目标...`](AI-Scripting-and-"
+"Mapping.md#set-follower-for-associated-unit)（by Noble_Fish）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
