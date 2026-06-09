@@ -1518,6 +1518,50 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 		return false;
 	}
 
+	template <>
+	inline bool read<DynamicTeamDelayType>(DynamicTeamDelayType& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "startingpoint") == 0)
+			{
+				value = DynamicTeamDelayType::StartingPoint;
+			}
+			else if (_strcmpi(str, "playercount") == 0)
+			{
+				value = DynamicTeamDelayType::PlayerCount;
+			}
+			else if (_strcmpi(str, "ally") == 0 || _strcmpi(str, "allies") == 0)
+			{
+				value = DynamicTeamDelayType::Allies;
+			}
+			else if (_strcmpi(str, "enemy") == 0 || _strcmpi(str, "enemies") == 0)
+			{
+				value = DynamicTeamDelayType::Enemies;
+			}
+			else if (_strcmpi(str, "alivecount") == 0)
+			{
+				value = DynamicTeamDelayType::AliveCount;
+			}
+			else if (_strcmpi(str, "aliveally") == 0 || _strcmpi(str, "aliveallies") == 0)
+			{
+				value = DynamicTeamDelayType::AliveAllies;
+			}
+			else if (_strcmpi(str, "aliveenemy") == 0 || _strcmpi(str, "aliveenemies") == 0)
+			{
+				value = DynamicTeamDelayType::AliveEnemies;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Display info type is invalid");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
 	template <typename T>
 	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{

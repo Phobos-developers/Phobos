@@ -700,7 +700,7 @@ bool TActionExt::SetFreeRadar(TActionClass* const pThis, HouseClass* const pHous
 bool TActionExt::SetTeamDelay(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
 {
 	const int value = pThis->Param3;
-	const int timer = value < 0 ? RulesClass::Instance->TeamDelays.Items[static_cast<int>(pHouse->AIDifficulty)] : value;
+	const int timer = value < 0 ? RulesClass::Instance->TeamDelays.Items[pHouse->GetAIDifficultyIndex()] : value;
 	HouseExt::ExtMap.Find(pHouse)->TeamDelay = value;
 
 	auto& Timer = pHouse->TeamDelayTimer;

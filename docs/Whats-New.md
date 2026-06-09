@@ -584,6 +584,7 @@ HideShakeEffects=false           ; boolean
 - Introduce weight selection rules for ExtraWarheads (by Noble_Fish)
 - [Building turret idle/firing/low power animations](Fixed-or-Improved-Logics.md#building-turret-animations) (by Starkku)
 - [Add action `512 Set Follower for Associated Unit...`](AI-Scripting-and-Mapping.md#set-follower-for-associated-unit) (by Noble_Fish)
+- [Dynamic team delays](AI-Scripting-and-Mapping.md#dynamic-team-delays) (by Ollerus)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

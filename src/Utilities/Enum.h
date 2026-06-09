@@ -333,6 +333,17 @@ enum class BannerNumberType : int
 	Suffixed = 3
 };
 
+enum class DynamicTeamDelayType : int
+{
+	StartingPoint = 0,
+	PlayerCount = 1,
+	Allies = 2,
+	Enemies = 3,
+	AliveCount = 4,
+	AliveAllies = 5,
+	AliveEnemies = 6
+};
+
 class MouseCursorHotSpotX
 {
 public:

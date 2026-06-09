@@ -422,6 +422,15 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->RemoveMindControl_Silent.Read(exINI, GameStrings::AudioVisual, "RemoveMindControl.Silent");
 	this->MindControl_Permanent_ReplaceSilent.Read(exINI, GameStrings::AudioVisual, "MindControl.Permanent.ReplaceSilent");
 
+	this->TeamDelays_DynamicType.Read(exINI, GameStrings::General, "TeamDelays.DynamicType");
+
+	char tempBuffer[40];
+	for (size_t i = 0; i < 8; i++)
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "TeamDelays.Count%d", i + 1);
+		this->TeamDelays_Count[i].Read(exINI, GameStrings::General, tempBuffer);
+	}
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -756,6 +765,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
 		.Process(this->RemoveMindControl_Silent)
 		.Process(this->MindControl_Permanent_ReplaceSilent)
+		.Process(this->TeamDelays_DynamicType)
+		.Process(this->TeamDelays_Count)
 		;
 }
 

@@ -15,6 +15,31 @@ This page describes all AI scripting and mapping related additions and changes i
 - Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General] -> AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively.
 - Fixed AI team recruitment inconsistency causing underfilled teams.
 
+### Dynamic Team Delays
+
+- It is now possible to make `TeamDelays` in skirmish changed dynamically based on player's amount.
+- `TeamDelays.DynamicType` controls how team delay will be changed. Neutral houses and observers won't be accounted in all the following patterns.
+  - `startingpoint`: taking the map's `NumberStartingPoints` into account.
+  - `playercount`: taking the total amount of players into account, including itself.
+  - `allies`: taking the amount of allied players into account, excluding itself.
+  - `enemies`: taking the amount of hostile players into account.
+  - `alivecount`: taking the amount of players that's not defeated at the moment into account, including itself.
+  - `aliveallies`: taking the amount of allied players that's not defeated at the moment into account, excluding itself.
+  - `aliveenemies`: taking the amount of hostile players that's not defeated at the moment into account.
+- `TeamDelays.CountN` control the team delay when the amount of players meets the above conditions, where `N` stands for an integer between 1-8. Consisted by 3 integers that represent each difficulty.
+  - If a dynamic team delay is not set for this player amount, or the set value isn't greater than 0, it'll default to `[General] -> TeamDelays`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+TeamDelays.DynamicType=startingpoint    ; Dynamic Team Delay Type Enumeration (startingpoint|playercount|allies/ally|enemies/enemy|alivecount|aliveallies/alliveally|aliveenemies|aliveenemy)
+TeamDelays.CountN=                      ; List of 3 integers indicating AI's TeamDelays in Difficult / Normal / Easy game diffculty.
+```
+
+```{note}
+Team delay change will take effect for a house after its next AI team is created.
+```
+
 ### Increased Overlay Limit
 
 - Maps can now contain OverlayTypes with indices up to 65535.
@@ -762,7 +787,7 @@ ID=ActionCount,[Action1],609,0,0,[RadarMode],0,0,0,A,[ActionX]
 ### `610` Set house's `TeamDelays` value
 
 - Set the `TeamDelays` value of the trigger's house.
-  - If this value is less than 0, then use the value of `[General] -> TeamDelays`.
+  - If this value is less than 0, then use the value of `[General] -> TeamDelays`, or dynamic team delay if set and in skirmish.
 
 In `mycampaign.map`:
 ```ini
@@ -770,6 +795,10 @@ In `mycampaign.map`:
 ...
 ID=ActionCount,[Action1],610,0,0,[Number],0,0,0,A,[ActionX]
 ...
+```
+
+```{note}
+Team delay change will take effect for a house after its next AI team is created.
 ```
 
 ### `800-802` Display Banner

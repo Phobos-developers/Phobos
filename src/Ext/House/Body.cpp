@@ -25,7 +25,7 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 	if (!skipGround && this->UpdateHarvesterProduction())
 		return;
 
-	auto const AIDifficulty = static_cast<int>(pThis->GetAIDifficultyIndex());
+	const int AIDifficulty = pThis->GetAIDifficultyIndex();
 	auto& creationFrames = HouseExt::AIProduction_CreationFrames;
 	auto& values = HouseExt::AIProduction_Values;
 	auto& bestChoices = HouseExt::AIProduction_BestChoices;
@@ -155,8 +155,8 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 bool HouseExt::ExtData::UpdateHarvesterProduction()
 {
 	auto const pThis = this->OwnerObject();
-	auto const AIDifficulty = static_cast<int>(pThis->GetAIDifficultyIndex());
-	auto const idxParentCountry = pThis->Type->FindParentCountryIndex();
+	const int AIDifficulty = pThis->GetAIDifficultyIndex();
+	const int idxParentCountry = pThis->Type->FindParentCountryIndex();
 	auto const pHarvesterUnit = HouseExt::FindOwned(pThis, idxParentCountry, make_iterator(RulesClass::Instance->HarvesterUnit));
 
 	if (pHarvesterUnit)

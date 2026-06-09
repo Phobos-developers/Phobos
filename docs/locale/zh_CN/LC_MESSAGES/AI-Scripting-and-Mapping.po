@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-08 19:23+0800\n"
+"POT-Creation-Date: 2026-06-09 22:42+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -97,6 +97,69 @@ msgstr ""
 
 msgid "Fixed AI team recruitment inconsistency causing underfilled teams."
 msgstr "修复了 AI 小队招募数量与生产计划不一致导致不足以建立小队的问题。"
+
+msgid "Dynamic Team Delays"
+msgstr ""
+
+msgid ""
+"It is now possible to make `TeamDelays` in skirmish changed dynamically "
+"based on player's amount."
+msgstr ""
+
+msgid ""
+"`TeamDelays.DynamicType` controls how team delay will be changed. Neutral"
+" houses and observers won't be accounted in all the following patterns."
+msgstr ""
+
+msgid "`startingpoint`: taking the map's `NumberStartingPoints` into account."
+msgstr ""
+
+msgid ""
+"`playercount`: taking the total amount of players into account, including"
+" itself."
+msgstr ""
+
+msgid ""
+"`allies`: taking the amount of allied players into account, excluding "
+"itself."
+msgstr ""
+
+msgid "`enemies`: taking the amount of hostile players into account."
+msgstr ""
+
+msgid ""
+"`alivecount`: taking the amount of players that's not defeated at the "
+"moment into account, including itself."
+msgstr ""
+
+msgid ""
+"`aliveallies`: taking the amount of allied players that's not defeated at"
+" the moment into account, excluding itself."
+msgstr ""
+
+msgid ""
+"`aliveenemies`: taking the amount of hostile players that's not defeated "
+"at the moment into account."
+msgstr ""
+
+msgid ""
+"`TeamDelays.CountN` control the team delay when the amount of players "
+"meets the above conditions, where `N` stands for an integer between 1-8. "
+"Consisted by 3 integers that represent each difficulty."
+msgstr ""
+
+msgid ""
+"If a dynamic team delay is not set for this player amount, or the set "
+"value isn't greater than 0, it'll default to `[General] -> TeamDelays`."
+msgstr ""
+
+msgid "In `rulesmd.ini`:"
+msgstr "在 `rulesmd.ini`："
+
+msgid ""
+"Team delay change will take effect for a house after its next AI team is "
+"created."
+msgstr ""
 
 msgid "Increased Overlay Limit"
 msgstr "更高的覆盖物数量上限"
@@ -1320,29 +1383,26 @@ msgid ""
 msgstr "若将此处建筑类型设为 `<All>` 则反部署所有建筑。"
 
 msgid "`512` Set Follower for Associated Unit"
-msgstr ""
-"`512` 设置关联单位的跟随目标..."
+msgstr "`512` 设置关联单位的跟随目标..."
 
 msgid ""
 "![image](_static/images/follow_index.gif) *The locomotive pulls away the "
 "parked multiple carriages in [Bellum "
 "Æternum](https://ra2be.com/download.html)*"
 msgstr ""
-"![image](_static/images/follow_index.gif) *[世纪之战](https://ra2be.com/download.html) 中用火车头拉走停着的多节车厢*"
+"![image](_static/images/follow_index.gif) "
+"*[世纪之战](https://ra2be.com/download.html) 中用火车头拉走停着的多节车厢*"
 
 msgid "image"
-msgstr ""
-"图像"
+msgstr "图像"
 
 msgid ""
 "Sets the follower for the associated object. The parameter is the index "
 "of the follower unit."
-msgstr ""
-"设置关联对象的跟随者，参数为要跟随者单位的索引。"
+msgstr "设置关联对象的跟随者，参数为要跟随者单位的索引。"
 
 msgid "Invalid for non-vehicle objects."
-msgstr ""
-"非载具类对象无效。"
+msgstr "非载具类对象无效。"
 
 msgid "`606` Edit Hate-Value"
 msgstr "`606` 编辑仇恨值"
@@ -1395,9 +1455,10 @@ msgstr "`610` 设置所属方的 `TeamDelays` 值"
 msgid "Set the `TeamDelays` value of the trigger's house."
 msgstr "设置触发所属方的 `TeamDelays` 值。"
 
+#, fuzzy
 msgid ""
 "If this value is less than 0, then use the value of `[General] -> "
-"TeamDelays`."
+"TeamDelays`, or dynamic team delay if set and in skirmish."
 msgstr "若该值小于 0 则使用 `[General] -> TeamDelays` 的值。"
 
 msgid "`800-802` Display Banner"
