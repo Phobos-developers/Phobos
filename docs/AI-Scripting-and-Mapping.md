@@ -787,7 +787,7 @@ ID=ActionCount,[Action1],609,0,0,[RadarMode],0,0,0,A,[ActionX]
 ### `610` Set house's `TeamDelays` value
 
 - Set the `TeamDelays` value of the trigger's house.
-  - If this value is less than 0, then use the value of `[General] -> TeamDelays`, or dynamic team delay if set and in skirmish.
+  - If this value is less than 0, then use the value of `[General] -> TeamDelays`, or [dynamic team delay](AI-Scripting-and-Mapping.md#dynamic-team-delays) if set and in skirmish.
 
 In `mycampaign.map`:
 ```ini

@@ -1958,11 +1958,12 @@ msgstr ""
 "[添加触发结果 `512 设置关联单位的跟随目标...`](AI-Scripting-and-Mapping.md#set-follower-"
 "for-associated-unit)（by Noble_Fish）"
 
-#, fuzzy
 msgid ""
 "[Dynamic team delays](AI-Scripting-and-Mapping.md#dynamic-team-delays) "
 "(by Ollerus)"
-msgstr "[横幅](AI-Scripting-and-Mapping.md#display-banner)（by Morton 与 ststl）"
+msgstr ""
+"[动态 `TeamDelays`](AI-Scripting-and-Mapping.md#dynamic-team-delays)（by "
+"Ollerus）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："

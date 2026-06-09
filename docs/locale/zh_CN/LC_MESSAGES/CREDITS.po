@@ -2227,6 +2227,7 @@ msgstr "`ElectricAssault` 武器现在可以自动索敌盟友的可过载防御
 
 msgid "Dynamic team delays"
 msgstr ""
+"动态 `TeamDelays`"
 
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
