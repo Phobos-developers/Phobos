@@ -359,18 +359,14 @@ int TechnoExt::HealthBar_GetPipAmount(double percentage, int pipsLength)
 	return std::clamp(static_cast<int>(percentage * pipsLength), 1, pipsLength);
 }
 
-void TechnoExt::DrawHealthBar_Building(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, int pipsLength, Point2D* pLocation, RectangleStruct* pBounds)
+void TechnoExt::DrawBar_Building(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, int pipsLength, Point2D* pLocation, RectangleStruct* pBounds, double percentage)
 {
-	auto position = *pLocation;
-
-	const double percentage = TechnoExt::GetHealthBarPercentage(pThis, pHealthBar);
-
 	if (pHealthBar->IsAnimated)
 	{
 		const auto pBrdShape = pHealthBar->PipBrdShape.Get(nullptr);
 		const double ratio = pHealthBar->IsAnimated_Reverse ? 1.0 - percentage : percentage;
 		const int brdFrame = pThis->IsSelected ? TechnoExt::HealthBar_GetPip(pHealthBar->GetPipBrd(), percentage, true) : -1;
-		pHealthBar->DrawAnimatedBar(pBrdShape , &position, pBounds, ratio, brdFrame);
+		pHealthBar->DrawAnimatedBar(pBrdShape, pLocation, pBounds, ratio, brdFrame);
 	}
 	else
 	{
@@ -378,14 +374,39 @@ void TechnoExt::DrawHealthBar_Building(TechnoClass* pThis, HealthBarTypeClass* p
 		const auto& pips = pHealthBar->Pips_Building.Get(RulesExt::Global()->Pips_Building);
 		const int frame = TechnoExt::HealthBar_GetPip(pips, percentage, true);
 		const int emptyFrame = pHealthBar->PipsEmpty.Get(RulesExt::Global()->Pips_Building_Empty);
-		pHealthBar->DrawBuildingBar(&position, pBounds, pipsTotal, pipsLength, frame, emptyFrame);
+		pHealthBar->DrawBuildingBar(pLocation, pBounds, pipsTotal, pipsLength, frame, emptyFrame);
 	}
+}
+
+void TechnoExt::DrawBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, int pipsLength, Point2D* pLocation, RectangleStruct* pBounds, double percentage)
+{
+	const auto pBrdShape = pHealthBar->PipBrdShape.Get(FileSystem::PIPBRD_SHP);
+	const int brdFrame = pThis->IsSelected ? TechnoExt::HealthBar_GetPip(pHealthBar->GetPipBrd(pThis->WhatAmI() == InfantryClass::AbsID ? 1 : 0), percentage, false) : -1;
+
+	if (pHealthBar->IsAnimated)
+	{
+		const double ratio = pHealthBar->IsAnimated_Reverse ? 1.0 - percentage : percentage;
+		pHealthBar->DrawAnimatedBar(pBrdShape, pLocation, pBounds, ratio, brdFrame);
+	}
+	else
+	{
+		const int pipsTotal = percentage > 0.0 ? TechnoExt::HealthBar_GetPipAmount(percentage, pipsLength) : 0;
+		const auto& pips = pHealthBar->Pips.Get(RulesExt::Global()->Pips);
+		const int frame = TechnoExt::HealthBar_GetPip(pips, percentage, false);
+		pHealthBar->DrawOtherBar(pBrdShape, pLocation, pBounds, pipsTotal, frame, brdFrame);
+	}
+}
+
+void TechnoExt::DrawHealthBar_Building(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, int pipsLength, Point2D* pLocation, RectangleStruct* pBounds)
+{
+	auto position = *pLocation;
+
+	const double percentage = TechnoExt::GetHealthBarPercentage(pThis, pHealthBar);
+	TechnoExt::DrawBar_Building(pThis, pHealthBar, pipsLength, &position, pBounds, TechnoExt::GetHealthBarPercentage(pThis, pHealthBar));
 }
 
 void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, int pipsLength, Point2D* pLocation, RectangleStruct* pBounds)
 {
-	const auto pBrdShape = pHealthBar->PipBrdShape.Get(FileSystem::PIPBRD_SHP);
-
 	const auto pipsInterval = pHealthBar->PipsInterval.Get();
 	auto position = *pLocation + Point2D { pHealthBar->XOffset - pipsLength * pipsInterval.X / 2, pThis->GetTechnoType()->PixelSelectionBracketDelta - 24 };
 
@@ -394,21 +415,7 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHea
 	if (whatAmI != InfantryClass::AbsID)
 		position += { 2, -1 };
 
-	const double percentage = TechnoExt::GetHealthBarPercentage(pThis, pHealthBar);
-	const int brdFrame = pThis->IsSelected ? TechnoExt::HealthBar_GetPip(pHealthBar->GetPipBrd(whatAmI == InfantryClass::AbsID ? 1 : 0), percentage, false) : -1;
-
-	if (pHealthBar->IsAnimated)
-	{
-		const double ratio = pHealthBar->IsAnimated_Reverse ? 1.0 - percentage : percentage;
-		pHealthBar->DrawAnimatedBar(pBrdShape, &position, pBounds, ratio, brdFrame);
-	}
-	else
-	{
-		const int pipsTotal = percentage > 0.0 ? TechnoExt::HealthBar_GetPipAmount(percentage, pipsLength) : 0;
-		const auto& pips = pHealthBar->Pips.Get(RulesExt::Global()->Pips);
-		const int frame = TechnoExt::HealthBar_GetPip(pips, percentage, false);
-		pHealthBar->DrawOtherBar(pBrdShape, &position, pBounds, pipsTotal, frame, brdFrame);
-	}
+	TechnoExt::DrawBar_Other(pThis, pHealthBar, pipsLength, pLocation, pBounds, TechnoExt::GetHealthBarPercentage(pThis, pHealthBar));
 }
 
 void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds, bool drawBefore)
@@ -581,42 +588,9 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis, const int pipsLength,
 			const double percentage = static_cast<double>(value) / maxValue;
 
 			if (isBuilding)
-			{
-				if (pProgressBar->IsAnimated)
-				{
-					const auto pBrdShape = pProgressBar->PipBrdShape.Get(nullptr);
-					const double ratio = pProgressBar->IsAnimated_Reverse ? 1.0 - percentage : percentage;
-					const int brdFrame = pThis->IsSelected ? TechnoExt::HealthBar_GetPip(pProgressBar->GetPipBrd(), percentage, true) : -1;
-					pProgressBar->DrawAnimatedBar(pBrdShape, &position, pBounds, ratio, brdFrame);
-				}
-				else
-				{
-					const int pipsTotal = percentage > 0.0 ? TechnoExt::HealthBar_GetPipAmount(percentage, pipsLength) : 0;
-					const auto& pips = pProgressBar->Pips_Building.Get(RulesExt::Global()->Pips_Building);
-					const int frame = TechnoExt::HealthBar_GetPip(pips, percentage, true);
-					const int emptyFrame = pProgressBar->PipsEmpty.Get(RulesExt::Global()->Pips_Building_Empty);
-					pProgressBar->DrawBuildingBar(&position, pBounds, pipsTotal, pipsLength, frame, emptyFrame);
-				}
-			}
+				TechnoExt::DrawBar_Building(pThis, pProgressBar, pipsLength, &position, pBounds, percentage);
 			else
-			{
-				const auto pBrdShape = pProgressBar->PipBrdShape.Get(FileSystem::PIPBRD_SHP);
-
-				const int brdFrame = pThis->IsSelected ? TechnoExt::HealthBar_GetPip(pProgressBar->GetPipBrd(isInfantry ? 1 : 0), percentage, false) : -1;
-
-				if (pProgressBar->IsAnimated)
-				{
-					const double ratio = pProgressBar->IsAnimated_Reverse ? 1.0 - percentage : percentage;
-					pProgressBar->DrawAnimatedBar(pBrdShape, &position, pBounds, ratio, brdFrame);
-				}
-				else
-				{
-					const int pipsTotal = percentage > 0.0 ? TechnoExt::HealthBar_GetPipAmount(percentage, pipsLength) : 0;
-					const auto& pips = pProgressBar->Pips.Get(RulesExt::Global()->Pips);
-					const int frame = TechnoExt::HealthBar_GetPip(pips, percentage, false);
-					pProgressBar->DrawOtherBar(pBrdShape, &position, pBounds, pipsTotal, frame, brdFrame);
-				}
-			}
+				TechnoExt::DrawBar_Other(pThis, pProgressBar, pipsLength, &position, pBounds, percentage);
 		}
 
 		pDisplayType->Draw(position, length, value, maxValue, isBuilding, isInfantry, hasShield);

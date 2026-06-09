@@ -298,6 +298,8 @@ public:
 	static double GetHealthBarPercentage(TechnoClass* pThis, HealthBarTypeClass* pType);
 	static int HealthBar_GetPip(Vector3D<int> const& pips, double percentage, const bool isBuilding);
 	static int HealthBar_GetPipAmount(double percentage, int pipsLength);
+	static void DrawBar_Building(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const int pipsLength, Point2D* pLocation, RectangleStruct* pBounds, double percentage);
+	static void DrawBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const int pipsLength, Point2D* pLocation, RectangleStruct* pBounds, double percentage);
 	static void DrawHealthBar_Building(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const int pipsLength, Point2D* pLocation, RectangleStruct* pBounds);
 	static void DrawHealthBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const int pipsLength, Point2D* pLocation, RectangleStruct* pBounds);
 	static void DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds, bool drawBefore = false);
