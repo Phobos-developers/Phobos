@@ -1,6 +1,5 @@
 #include "Body.h"
 
-#include <Ext/House/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
