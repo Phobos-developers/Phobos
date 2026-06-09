@@ -842,6 +842,21 @@ DEFINE_HOOK(0x6298CC, ParasiteClass_AI_GrippleAnim, 0x5)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x62AB71, ParasiteClass_CanExistOnVictimCell_WaterExit, 0x6)
+{
+	GET(ParasiteClass*, pParasite, ESI);
+	auto const pOwner = pParasite->Owner;
+	if (pOwner)
+	{
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
+		if (!pTypeExt->Parasite_WaterExit_RequireNaval.Get(RulesExt::Global()->Parasite_WaterExit_RequireNaval))
+		{
+			return 0x62AC0F;
+		}
+	}
+	return 0;
+}
+
 #pragma region RadarDrawing
 
 DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
