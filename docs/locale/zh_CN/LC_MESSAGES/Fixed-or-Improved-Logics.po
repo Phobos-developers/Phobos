@@ -1465,12 +1465,6 @@ msgid ""
 msgstr "修复了被选中单位的常规心控被永久心控和心灵支配超武替换时丢失选中状态的 Bug。"
 
 msgid ""
-"Fixed the issue where units recruited by a team with "
-"`AreTeamMembersRecruitable=false` cannot be recruited even if they have "
-"been liberated by that team."
-msgstr "修复了单位被 `AreTeamMembersRecruitable=false` 的小队招募过则即便原小队解散也无法再被其他小队招募的 Bug。"
-
-msgid ""
 "Allow the default value of `DefaultToGuardArea` to be defined by "
 "`[General] -> DefaultToGuardArea`."
 msgstr "已允许通过 `[General] -> DefaultToGuardArea` 设置 `DefaultToGuardArea` 的全局默认值。"
