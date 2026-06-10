@@ -1750,10 +1750,10 @@ In vanilla, parasites with `Naval=no` perform a series of additional checks on
 In `rulesmd.ini`:
 ```ini
 [General]
-Parasite.WaterExit.RequireNaval=true  ; boolean
+Parasite.SkipNavalCheck=true  ; boolean
 
-[SOMETECHNO]                          ; TechnoType
-Parasite.WaterExit.RequireNaval=      ; boolean, defaults to [General] -> Parasite.WaterExit.RequireNaval
+[SOMETECHNO]                  ; TechnoType
+Parasite.SkipNavalCheck=      ; boolean, defaults to [General] -> Parasite.SkipNavalCheck
 ```
 
 ```{note}
