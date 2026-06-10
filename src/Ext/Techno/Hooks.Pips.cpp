@@ -33,6 +33,22 @@ DEFINE_HOOK(0x6D9076, TacticalClass_RenderLayers_DrawBefore, 0x5)// FootClass
 	return 0;
 }
 
+DEFINE_HOOK(0x6F5E37, TechnoClass_DrawExtras_DrawHealthBar, 0x6)
+{
+	enum { Permanent = 0x6F5E41 };
+
+	GET(TechnoClass*, pThis, EBP);
+
+	if (pThis
+		&& (pThis->IsMouseHovering || TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_Permanent)
+		&& !MapClass::Instance.IsLocationShrouded(pThis->GetCoords()))
+	{
+		return Permanent;
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x6F64A0, TechnoClass_DrawHealthBar, 0x5)
 {
 	enum { SkipDrawCode = 0x6F6ABD };
@@ -126,12 +142,17 @@ DEFINE_HOOK(0x6F64A0, TechnoClass_DrawHealthBar, 0x5)
 	if (AresHelper::CanUseAres && reinterpret_cast<DummyTechnoExtHere*>(pThis->align_154)->DriverKilled)
 		return SkipDrawCode;
 
-	const bool canShowPips = isAllied || pThis->DisplayProductionTo.Contains(HouseClass::CurrentPlayer) || HouseClass::IsCurrentPlayerObserver();
+	const bool showPipScale = TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_Permanent_PipScale;
 
-	if (canShowPips || (pBuilding && pBuilding->Type->CanBeOccupied) || pThis->GetTechnoType()->PipsDrawForAll)
+	if (showPipScale || pThis->IsMouseHovering || pThis->IsSelected)
 	{
-		Point2D pipsLocation = *pLocation + pipsAdjust;
-		pThis->DrawPipScalePips(&pipsLocation, pLocation, pBounds);
+		const bool canShowPips = isAllied || pThis->DisplayProductionTo.Contains(HouseClass::CurrentPlayer) || HouseClass::IsCurrentPlayerObserver();
+
+		if (canShowPips || (pBuilding && pBuilding->Type->CanBeOccupied) || pThis->GetTechnoType()->PipsDrawForAll)
+		{
+			Point2D pipsLocation = *pLocation + pipsAdjust;
+			pThis->DrawPipScalePips(&pipsLocation, pLocation, pBounds);
+		}
 	}
 
 	return SkipDrawCode;
