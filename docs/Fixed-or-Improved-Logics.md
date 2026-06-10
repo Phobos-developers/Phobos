@@ -1759,6 +1759,10 @@ Parasite.AllowWaterExit=  ; boolean
 Parasite.AllowWaterExit=  ; boolean, defaults to [General] -> Parasite.AllowWaterExit
 ```
 
+```{note}
+Setting `Parasite.AllowWaterExit` to `true` does not skip the original check of whether a BuildingType exists on the cell.
+```
+
 ### DropPod
 
 - DropPod properties can now be customized on a per-TechnoType (non-building) basis.
