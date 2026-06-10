@@ -584,6 +584,7 @@ HideShakeEffects=false           ; boolean
 - Introduce weight selection rules for ExtraWarheads (by Noble_Fish)
 - [Building turret idle/firing/low power animations](Fixed-or-Improved-Logics.md#building-turret-animations) (by Starkku)
 - [Add action `512 Set Follower for Associated Unit...`](AI-Scripting-and-Mapping.md#set-follower-for-associated-unit) (by Noble_Fish)
+- [Dynamic team delays](AI-Scripting-and-Mapping.md#dynamic-team-delays) (by Ollerus)
 - Universal customize health bar (by NetsuNegi)
 
 #### Vanilla fixes:
