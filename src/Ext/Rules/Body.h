@@ -287,7 +287,7 @@ public:
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
 
 		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
-		Valueable<bool> Parasite_ExitAnywhere;
+		Valueable<bool> Parasite_SkipNavalCheck;
 
 		// cache tint color
 		int TintColorIronCurtain;
@@ -600,7 +600,7 @@ public:
 			, AttackMove_StopWhenTargetAcquired { }
 
 			, Parasite_GrappleAnim {}
-			, Parasite_ExitAnywhere { true }
+			, Parasite_SkipNavalCheck { true }
 			, InfantryAutoDeploy { false }
 			, AdjacentWallDamage { 200 }
 

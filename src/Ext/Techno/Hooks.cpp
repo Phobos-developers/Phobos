@@ -849,7 +849,7 @@ DEFINE_HOOK(0x62AB71, ParasiteClass_CanExistOnVictimCell_WaterExit, 0x6)
 	if (pOwner)
 	{
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
-		if (!pTypeExt->Parasite_ExitAnywhere.Get(RulesExt::Global()->Parasite_ExitAnywhere))
+		if (!pTypeExt->Parasite_SkipNavalCheck.Get(RulesExt::Global()->Parasite_SkipNavalCheck))
 		{
 			return 0x62AC0F;
 		}

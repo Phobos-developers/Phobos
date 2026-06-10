@@ -510,7 +510,7 @@ public:
 		Nullable<int> HarvesterLoadRate;
 		Nullable<double> HarvesterDumpRate;
 
-		Nullable<bool> Parasite_ExitAnywhere;
+		Nullable<bool> Parasite_SkipNavalCheck;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -975,7 +975,7 @@ public:
 			, HarvesterLoadRate {}
 			, HarvesterDumpRate {}
 				
-			, Parasite_ExitAnywhere {}
+			, Parasite_SkipNavalCheck {}
 		{ }
 
 		virtual ~ExtData() = default;

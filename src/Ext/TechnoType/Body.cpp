@@ -1197,7 +1197,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->HarvesterLoadRate.Read(exINI, pSection, "HarvesterLoadRate");
 	this->HarvesterDumpRate.Read(exINI, pSection, "HarvesterDumpRate");
 
-	this->Parasite_ExitAnywhere.Read(exINI, pSection, "Parasite.ExitAnywhere");
+	this->Parasite_SkipNavalCheck.Read(exINI, pSection, "Parasite.SkipNavalCheck");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -1940,7 +1940,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->HarvesterLoadRate)
 		.Process(this->HarvesterDumpRate)
 
-		.Process(this->Parasite_ExitAnywhere)
+		.Process(this->Parasite_SkipNavalCheck)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
