@@ -1745,19 +1745,18 @@ How to generate `DebrisTypes` in the game:
 
 ### Dehardcode of parasites unlimboing after killing naval targets
 
-In vanilla, parasites with `Naval=no` perform a series of additional checks on the current cell after killing a target, including various determinations such as whether there is a bridge when the cell's LandType is `Water`, `Beach`, or `Rock`, which prevents them from normally unlimbo directly on open water. Now, you can customize whether to perform these additional checks.
+- In vanilla, parasites with `Naval=false` perform a series of additional checks on the current cell after killing a target, including a series of determinations such as whether there is a bridge when the cell's LandType is `Water`, `Beach`, or `Rock`, which prevents them from normally unlimbo in open water; while parasites with `Naval=true` skip these checks. Now, you can customize the behavior of parasites after killing a target in water:
+  - If not set, the original behavior is performed by default.
+  - If set to `true`, they can unlimbo normally even if `Naval=false`.
+  - If set to `false`, they cannot unlimbo normally even if `Naval=true`.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-Parasite.SkipNavalCheck=true  ; boolean
+Parasite.AllowWaterExit=  ; boolean
 
-[SOMETECHNO]                  ; TechnoType
-Parasite.SkipNavalCheck=      ; boolean, defaults to [General] -> Parasite.SkipNavalCheck
-```
-
-```{note}
-This does not change the check for whether a BuildingType exists on the cell, which is also required even if it has `Naval=true`.
+[SOMETECHNO]              ; TechnoType
+Parasite.AllowWaterExit=  ; boolean, defaults to [General] -> Parasite.AllowWaterExit
 ```
 
 ### DropPod

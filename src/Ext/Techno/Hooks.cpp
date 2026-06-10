@@ -842,16 +842,30 @@ DEFINE_HOOK(0x6298CC, ParasiteClass_AI_GrippleAnim, 0x5)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x62AB71, ParasiteClass_CanExistOnVictimCell_WaterExit, 0x6)
+DEFINE_HOOK(0x62AB6F, ParasiteClass_CanExistOnVictimCell_AllowWaterExit, 0x8)
 {
 	GET(ParasiteClass*, pParasite, ESI);
 	auto const pOwner = pParasite->Owner;
 	if (pOwner)
 	{
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
-		if (!pTypeExt->Parasite_SkipNavalCheck.Get(RulesExt::Global()->Parasite_SkipNavalCheck))
+		const auto& globalVal = RulesExt::Global()->Parasite_AllowWaterExit;
+
+		if (pTypeExt->Parasite_AllowWaterExit.isset())
 		{
-			return 0x62AC0F;
+			return pTypeExt->Parasite_AllowWaterExit.Get() ? 0x62AC0F : 0x62AB4B;
+		}
+		else if (globalVal.isset())
+		{
+			return globalVal.Get() ? 0x62AC0F : 0x62AB4B;
+		}
+		else
+		{
+			auto const pType = pOwner->GetTechnoType();
+			if (pType->Naval)
+				return 0x62AC0F;
+			else
+				return 0;
 		}
 	}
 	return 0;
