@@ -38,7 +38,6 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ValueScaleDivisor.Read(exINI, section, "ValueScaleDivisor");
 	this->ValueAsTimer.Read(exINI, section, "ValueAsTimer");
 	this->ShowType.Read(exINI, section, "ShowType");
-	this->ProgressBar.Read(exINI, section, "ProgressBar");
 }
 
 bool DigitalDisplayTypeClass::CanShow(TechnoClass* pThis)
@@ -311,7 +310,6 @@ void DigitalDisplayTypeClass::Serialize(T& Stm)
 		.Process(this->ValueScaleDivisor)
 		.Process(this->ValueAsTimer)
 		.Process(this->ShowType)
-		.Process(this->ProgressBar)
 		;
 }
 

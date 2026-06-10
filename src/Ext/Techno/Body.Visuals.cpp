@@ -496,7 +496,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 	}
 }
 
-void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis, const int pipsLength, Point2D* pLocation, RectangleStruct* pBounds)
+void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis, const int pipsLength, Point2D* pLocation)
 {
 	if (!Phobos::Config::DigitalDisplay_Enable)
 		return;
@@ -582,16 +582,6 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis, const int pipsLength,
 
 		if (pDisplayType->InfoType == DisplayInfoType::Shield && hasShield)
 			position.Y += pShield->GetType()->BracketDelta;
-
-		if (const auto pProgressBar = pDisplayType->ProgressBar.Get())
-		{
-			const double percentage = static_cast<double>(value) / maxValue;
-
-			if (isBuilding)
-				TechnoExt::DrawBar_Building(pThis, pProgressBar, pipsLength, &position, pBounds, percentage);
-			else
-				TechnoExt::DrawBar_Other(pThis, pProgressBar, pipsLength, &position, pBounds, percentage);
-		}
 
 		pDisplayType->Draw(position, length, value, maxValue, isBuilding, isInfantry, hasShield);
 	}
