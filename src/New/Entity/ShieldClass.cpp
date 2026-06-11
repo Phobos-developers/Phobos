@@ -988,7 +988,7 @@ void ShieldClass::DrawShieldBar_Building(const int length, Point2D* pLocation, R
 		const int pipsTotal = DrawShieldBar_PipAmount(percentage, length);
 		const auto& pips = pShieldBar->Pips_Building.Get(this->Type->Pips_Building.Get(RulesExt::Global()->Pips_Shield_Building));
 		const int frame = this->DrawShieldBar_Pip(pips, true);
-		const int emptyFrame = pShieldBar->PipsEmpty.Get(RulesExt::Global()->Pips_Shield_Building_Empty);
+		const int emptyFrame = pShieldBar->PipsEmpty.Get(this->Type->Pips_Building_Empty.Get(RulesExt::Global()->Pips_Shield_Building_Empty));
 		pShieldBar->DrawBuildingBar(&position, pBound, pipsTotal, length, frame, emptyFrame);
 	}
 }
@@ -1020,7 +1020,7 @@ void ShieldClass::DrawShieldBar_Other(const int length, Point2D* pLocation, Rect
 	else
 	{
 		const int pipsTotal = DrawShieldBar_PipAmount(percentage, length);
-		const auto& pips = pShieldBar->Pips.Get(RulesExt::Global()->Pips);
+		const auto& pips = pShieldBar->Pips.Get(this->Type->Pips.Get(RulesExt::Global()->Pips_Shield));
 		const int frame = this->DrawShieldBar_Pip(pips, false);
 		pShieldBar->DrawOtherBar(pBrdShape, &position, pBound, pipsTotal, frame, brdFrame);
 	}
