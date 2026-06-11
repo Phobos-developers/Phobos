@@ -13,6 +13,32 @@ This page describes all AI scripting and mapping related additions and changes i
 - Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally.
 - If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
 - Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General] -> AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively.
+- Fixed AI team recruitment inconsistency causing underfilled teams.
+
+### Dynamic Team Delays
+
+- It is now possible to make `TeamDelays` in skirmish changed dynamically based on player's amount.
+- `TeamDelays.DynamicType` controls how team delay will be changed. Neutral houses and observers won't be accounted in all the following patterns.
+  - `startingpoint`: taking the map's `NumberStartingPoints` into account.
+  - `playercount`: taking the total amount of players into account, including itself.
+  - `allies`: taking the amount of allied players into account, excluding itself.
+  - `enemies`: taking the amount of hostile players into account.
+  - `alivecount`: taking the amount of players that's not defeated at the moment into account, including itself.
+  - `aliveallies`: taking the amount of allied players that's not defeated at the moment into account, excluding itself.
+  - `aliveenemies`: taking the amount of hostile players that's not defeated at the moment into account.
+- `TeamDelays.CountN` control the team delay when the amount of players meets the above conditions, where `N` stands for an integer between 1-8. Consisted by 3 integers that represent each difficulty.
+  - If a dynamic team delay is not set for this player amount, or the set value isn't greater than 0, it'll default to `[General] -> TeamDelays`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+TeamDelays.DynamicType=startingpoint    ; Dynamic Team Delay Type Enumeration (startingpoint|playercount|allies/ally|enemies/enemy|alivecount|aliveallies/alliveally|aliveenemies|aliveenemy)
+TeamDelays.CountN=                      ; List of 3 integers indicating AI's TeamDelays in Difficult / Normal / Easy game diffculty.
+```
+
+```{note}
+Team delay change will take effect for a house after its next AI team is created.
+```
 
 ### Increased Overlay Limit
 
@@ -666,6 +692,22 @@ ID=ActionCount,[Action1],511,-10,[BuildingTypesID],[HouseIndex],0,0,0,[WaypointI
 ...
 ```
 
+### `512` Set Follower for Associated Unit
+
+![image](_static/images/follow_index.gif)
+*The locomotive pulls away the parked multiple carriages in [Bellum Æternum](https://ra2be.com/download.html)*
+
+- Sets the follower for the associated object. The parameter is the index of the follower unit.
+  - Invalid for non-vehicle objects.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],512,0,0,[FollowerIndex],0,0,0,A,[ActionX]
+...
+```
+
 ### `606` Edit Hate-Value
 
 - Edit the hate-value that trigger houses to other houses.
@@ -745,7 +787,7 @@ ID=ActionCount,[Action1],609,0,0,[RadarMode],0,0,0,A,[ActionX]
 ### `610` Set house's `TeamDelays` value
 
 - Set the `TeamDelays` value of the trigger's house.
-  - If this value is less than 0, then use the value of `[General] -> TeamDelays`.
+  - If this value is less than 0, then use the value of `[General] -> TeamDelays`, or dynamic team delay if set and in skirmish.
 
 In `mycampaign.map`:
 ```ini
@@ -753,6 +795,10 @@ In `mycampaign.map`:
 ...
 ID=ActionCount,[Action1],610,0,0,[Number],0,0,0,A,[ActionX]
 ...
+```
+
+```{note}
+Team delay change will take effect for a house after its next AI team is created.
 ```
 
 ### `800-802` Display Banner
@@ -785,7 +831,7 @@ SHP=                        ; filename - including the .shp extension
 SHP.Palette=palette.pal     ; filename - including the .pal extension
 SHP.RefreshAfterDelay=false ; boolean
 CSF=                        ; CSF entry key
-CSF.Color=                  ; integer - R,G,B, defaults to MessageTextColor of the owner Side
+CSF.Color=                  ; integer - Red,Green,Blue, defaults to MessageTextColor of the owner Side
 CSF.Background=false        ; boolean
 CSF.VariableFormat=none     ; List of Variable Format Enumeration (none|variable|prefix/prefixed|surfix/surfixed)
 Duration=-1                 ; integer

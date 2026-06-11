@@ -249,6 +249,15 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<Vector3D<double>>(Vector3D<double>& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.Read<double, 3>(pSection, pKey, (double*)&value))
+			return true;
+
+		return false;
+	}
+
+	template <>
 	inline bool read<CoordStruct>(CoordStruct& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.Read3Integers(pSection, pKey, (int*)&value))
@@ -525,6 +534,39 @@ namespace detail
 			{
 				Debug::INIParseFailed(pSection, pKey, parser.value(), "Invalid Mission name");
 			}
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<Action>(Action& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			static const auto Actions = {
+				"move", "nomove", "enter", "enter", "self_deploy", "attack", "harvest", "select", "toggleselect", "capture",
+				"eaten", "repair", "sell", "sellunit", "nosell", "norepair", "sabotage", "tote", "dontuse2", "dontuse3",
+				"nuke", "dontuse4", "dontuse5", "dontuse6", "dontuse7", "dontuse8", "guardarea", "heal", "damage", "grepair",
+				"nodeploy", "noenter", "nogrepair", "togglepower", "notogglepower", "entertunnel", "noentertunnel", "ironcurtain",
+				"lightningstorm", "chronosphere", "chronowarp", "paradrop", "placewaypoint", "tibsunbug", "enterwaypointmode",
+				"followwaypoint", "selectwaypoint", "loopwaypointpath", "dragwaypoint", "attackwaypoint", "enterwaypoint",
+				"patrolwaypoint", "areaattack", "ivanbomb", "noivanbomb", "detonate", "detonateall", "disarmbomb", "selectnode",
+				"attacksupport", "placebeacon", "selectbeacon", "attackmovenav", "attackmovetar", "demolish", "amerparadrop",
+				"psychicdominator", "spyplane", "geneticconverter", "forceshield", "noforceshield", "airstrike", "psychicreveal" };
+
+			auto it = Actions.begin();
+
+			for (auto i = 0u; i < Actions.size(); ++i)
+			{
+				if (_strcmpi(parser.value(), *it++) == 0)
+				{
+					value = static_cast<Action>(i);
+					return true;
+				}
+			}
+
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an action");
 		}
 
 		return false;
@@ -1476,6 +1518,50 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 		return false;
 	}
 
+	template <>
+	inline bool read<DynamicTeamDelayType>(DynamicTeamDelayType& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "startingpoint") == 0)
+			{
+				value = DynamicTeamDelayType::StartingPoint;
+			}
+			else if (_strcmpi(str, "playercount") == 0)
+			{
+				value = DynamicTeamDelayType::PlayerCount;
+			}
+			else if (_strcmpi(str, "ally") == 0 || _strcmpi(str, "allies") == 0)
+			{
+				value = DynamicTeamDelayType::Allies;
+			}
+			else if (_strcmpi(str, "enemy") == 0 || _strcmpi(str, "enemies") == 0)
+			{
+				value = DynamicTeamDelayType::Enemies;
+			}
+			else if (_strcmpi(str, "alivecount") == 0)
+			{
+				value = DynamicTeamDelayType::AliveCount;
+			}
+			else if (_strcmpi(str, "aliveally") == 0 || _strcmpi(str, "aliveallies") == 0)
+			{
+				value = DynamicTeamDelayType::AliveAllies;
+			}
+			else if (_strcmpi(str, "aliveenemy") == 0 || _strcmpi(str, "aliveenemies") == 0)
+			{
+				value = DynamicTeamDelayType::AliveEnemies;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Display info type is invalid");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
 	template <typename T>
 	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{
@@ -1676,6 +1762,40 @@ void __declspec(noinline) ValueableVector<T>::Read(INI_EX& parser, const char* p
 	{
 		this->clear();
 		detail::parse_values<T>(*this, parser, pSection, pKey);
+	}
+}
+
+// Specialization: use FindOrAllocate for weapon vectors, avoiding dependency on [WeaponTypes] registration
+template <>
+inline void ValueableVector<WeaponTypeClass*>::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	if (parser.ReadString(pSection, pKey))
+	{
+		this->clear();
+		char* str = parser.value();
+		char* context = nullptr;
+		for (char* cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			if (auto pWeapon = WeaponTypeClass::FindOrAllocate(cur))
+				this->push_back(pWeapon);
+		}
+	}
+}
+
+// Specialization: use FindOrAllocate for warhead vectors, avoiding dependency on [Warheads] table
+template <>
+inline void ValueableVector<WarheadTypeClass*>::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	if (parser.ReadString(pSection, pKey))
+	{
+		this->clear();
+		char* str = parser.value();
+		char* context = nullptr;
+		for (char* cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			if (auto pWarhead = WarheadTypeClass::FindOrAllocate(cur))
+				this->push_back(pWarhead);
+		}
 	}
 }
 

@@ -65,6 +65,43 @@ void AnimExt::ExtData::DeleteAttachedSystem()
 	}
 }
 
+void AnimExt::ExtData::UpdateAsFiringAnim()
+{
+	if (!this->FiringAnim_Weapon)
+		return;
+
+	auto pThis = this->OwnerObject();
+
+	if (pThis->OwnerObject && (pThis->OwnerObject->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
+	{
+		auto pOwner = reinterpret_cast<TechnoClass*>(pThis->OwnerObject);
+		auto const currentFacing = pOwner->GetRealFacing();
+		bool facingChanged = currentFacing != this->FiringAnim_LastFacing;
+
+		if (facingChanged)
+		{
+			this->FiringAnim_LastFacing = currentFacing;
+			auto pWeapon = this->FiringAnim_Weapon;
+			AnimTypeClass* pNewType = GeneralUtils::GetItemForDirection<AnimTypeClass*>(pWeapon->Anim, currentFacing);
+
+			if (pNewType)
+				pThis->Type = pNewType;
+		}
+
+		auto const currentCoords = pOwner->GetRenderCoords();
+
+		if (currentCoords != this->FiringAnim_LastCoords || facingChanged)
+		{
+			this->FiringAnim_LastCoords = currentCoords;
+			auto burstIdx = pOwner->CurrentBurstIndex;
+			pOwner->CurrentBurstIndex = this->FiringAnim_BurstIndex;
+			auto flh = pOwner->GetFLH(this->FiringAnim_WeaponIndex, CoordStruct::Empty);
+			pOwner->CurrentBurstIndex = burstIdx;
+			pThis->SetLocation(flh - currentCoords);
+		}
+	}
+}
+
 //Modified from Ares
 bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner, bool defaultToInvokerOwner)
 {
@@ -411,6 +448,12 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->DelayedFireRemoveOnNoDelay)
 		.Process(this->IsAttachedEffectAnim)
 		.Process(this->IsShieldIdleAnim)
+		.Process(this->FiringAnim_Weapon)
+		.Process(this->FiringAnim_WeaponIndex)
+		.Process(this->FiringAnim_BurstIndex)
+		.Process(this->FiringAnim_LastFacing)
+		.Process(this->FiringAnim_LastCoords)
+		.Process(this->FirepowerMult)
 		;
 }
 

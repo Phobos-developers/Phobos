@@ -149,11 +149,11 @@ DEFINE_HOOK(0x520AD9, InfantryClass_FiringAI_IsGattling, 0x5)
 			switch (fireError)
 			{
 			case FireError::OK:
-			case FireError::REARM:
 			case FireError::FACING:
+			case FireError::REARM:
 			case FireError::ROTATING:
 			{
-				if (pThis->IsDeployed())
+				if (pThis->IsDeployed() || (fireError == FireError::REARM && TechnoExt::HasWeaponsDisabled(pThis)))
 					pThis->GattlingRateDown(1);
 				else
 					pThis->GattlingRateUp(1);

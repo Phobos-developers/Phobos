@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-13 00:03+0800\n"
+"POT-Creation-Date: 2026-05-31 23:53+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -375,8 +375,8 @@ msgstr ""
 
 msgid ""
 "Of course, this is just the implementation method. To balance freedom "
-"with efficiency—that is, how to efficiently draw the patterns you "
-"need—you still need to independently explore a workflow that suits you."
+"with efficiency - that is, how to efficiently draw the patterns you need "
+"- you still need to independently explore a workflow that suits you."
 msgstr "当然，这只是实现方式，对于在可行的同时兼顾效率，即如何高效绘制您所需要的图样，您仍需自主探索属于您的工作流。"
 
 msgid "Flashing Technos on selecting"
@@ -780,9 +780,19 @@ msgid ""
 msgstr "`DisplayIncome` 可以设置为显示建筑在回收单位或从矿车或奴隶接受矿石时获得的资金点数。"
 
 msgid ""
-"Multiple income within less than one in-game second have their amounts "
-"coalesced into single display."
-msgstr "在游戏内不到一秒的时间内多次收入的金额将会合并成一个来显示。"
+"`DisplayIncome.Delay` is the interval in frames between two consecutive "
+"income displays, defaults to 15 (one in-game second on middle speed)."
+msgstr "`DisplayIncome.Delay` 设置了每两次连续收入提示之间间隔的帧数，默认 15（中速下的 1 秒）。"
+
+msgid ""
+"Multiple income within less than the time defined by "
+"`DisplayIncome.Delay` have their amounts coalesced into single display."
+msgstr "在游戏内不到 `DisplayIncome.Delay` 定义的时间内多次收入的金额将会合并成一个来显示。"
+
+msgid ""
+"Delay cannot be set to 0, this will change the delay to 1 and outputs a "
+"developer warning to log."
+msgstr "该间隔不得设为 0，否则将会自动调整为 1 并在日志中输出开发者警告。"
 
 msgid ""
 "`DisplayIncome.Houses` determines which houses can see the credits "
@@ -806,6 +816,14 @@ msgid ""
 "`[AudioVisual] -> DisplayIncome` also allows to display the amount of "
 "credits when selling a unit on a repair bay."
 msgstr "`[AudioVisual] -> DisplayIncome` 还允许在维修厂出售单位时显示资金点数。"
+
+msgid "Show power plant enhancer range"
+msgstr "显示电厂增幅器的范围"
+
+msgid ""
+"It is possible to show range of power plant enhancer when placing a "
+"building."
+msgstr "现在可以在摆放建筑物时显示电厂增幅器的作用范围了。"
 
 msgid "Hotkey Commands"
 msgstr "快捷键命令"
@@ -958,6 +976,19 @@ msgid ""
 "into your `.csf` file."
 msgstr "为了本地化请将 `TXT_TOGGLE_MESSAGE` 和 `TXT_TOGGLE_MESSAGE_DESC` 添加到你的 `.csf` 文件。"
 
+msgid "`[ ]` Deselect Object(s)"
+msgstr "`[ ]` 取消选中对象"
+
+msgid "Deselect 1 or 5 object(s) from current selected objects."
+msgstr "从当前已选中对象中取消选中 1 或 5 个对象"
+
+msgid ""
+"For localization add `TXT_DESELECT`, `TXT_DESELECT_DESC`, `TXT_DESELECT5`"
+" and `TXT_DESELECT5_DESC` into your `.csf` file."
+msgstr ""
+"为了本地化请将 `TXT_DESELECT`、`TXT_DESELECT_DESC`、`TXT_DESELECT5` 和 "
+"`TXT_DESELECT5_DESC` 添加到你的 `.csf` 文件。"
+
 msgid "Loading screen"
 msgstr "载入图"
 
@@ -1018,6 +1049,22 @@ msgstr "在开始新战役时游戏会自动保存游戏。现在你可以自行
 
 msgid "Sidebar / Battle UI"
 msgstr "侧边栏／战斗界面 UI"
+
+msgid "Allow replacing vanilla repairing with togglable auto repairing"
+msgstr "允许使用可切换的自动维修替换原版维修"
+
+msgid ""
+"Now you can replace the vanilla repair method with a togglable auto-"
+"repair."
+msgstr "现在你可以使用可切换的自动维修来替换掉原版维修方式。"
+
+msgid ""
+"Pressing repair button or hotkey will no longer change your mouse, but "
+"will toggle your auto-repair state on/off."
+msgstr "按下维修按钮或快捷键将不再更改你的鼠标，而是切换自动维修的开／关状态。"
+
+msgid "When auto-repair state is toggled off, buildings will stop repairing."
+msgstr "当自动维修被切换为关闭时建筑将停止维修。"
 
 msgid "Building Production Queue"
 msgstr "建筑生产队列"
@@ -1118,6 +1165,21 @@ msgid ""
 "You can adjust counter position by `Sidebar.HarvesterCounter.Offset`, "
 "negative means left/up, positive means right/down."
 msgstr "你可以通过 `Sidebar.HarvesterCounter.Offset` 调整计数器位置，负数表示左／上，正数表示右／下。"
+
+msgid ""
+"You can use `Sidebar.HarvesterCounter.HideMaxValue` to allow the counter "
+"to display only the number of active harvesters. If this value is "
+"`false`, you can use `Sidebar.HarvesterCounter.OnlyMaxValue` to allow the"
+" counter to display only the number of total harvesters."
+msgstr ""
+"你可以通过 `Sidebar.HarvesterCounter.HideMaxValue` 允许计数器只显示活动（工作中）矿车的数量。若该值为 "
+"`false` ，你可以通过 `Sidebar.HarvesterCounter.OnlyMaxValue` 允许计数器只显示总矿车数量。"
+
+msgid ""
+"This does not disable the color change of the counter text; to adapt "
+"accordingly, you need to configure the counter color yourself for the "
+"side that uses this feature."
+msgstr "这不会禁用计数器文本颜色的变化，你需要自行为使用该功能的阵营配置计数器颜色以适应。"
 
 msgid ""
 "By setting `HarvesterCounter.ConditionYellow` and "

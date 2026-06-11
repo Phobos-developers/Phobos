@@ -40,6 +40,7 @@ public:
 		Valueable<bool> Conventional_IgnoreUnits;
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
+		Nullable<bool> RemoveMindControl_Silent;
 		Nullable<bool> RemoveParasite;
 		ValueableVector<TechnoTypeClass*> RemoveParasite_Allow;
 		ValueableVector<TechnoTypeClass*> RemoveParasite_Disallow;
@@ -50,6 +51,8 @@ public:
 		Nullable<bool> PenetratesForceShield;
 		Valueable<double> Rocker_AmplitudeMultiplier;
 		Nullable<int> Rocker_AmplitudeOverride;
+		Nullable<bool> Temporal_ApplyVersus;
+		Nullable<bool> Temporal_ApplyMultiplier;
 
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
@@ -159,11 +162,22 @@ public:
 		Valueable<AffectedTarget> Parasite_CullingTarget;
 		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
 
+		Nullable<int> JumpjetTurnRate;
+		Nullable<int> JumpjetSpeed;
+		Nullable<float> JumpjetClimb;
+		Nullable<float> JumpjetCrash;
+		Nullable<int> JumpjetHeight;
+		Nullable<float> JumpjetAccel;
+		Nullable<float> JumpjetWobbles;
+		Nullable<bool> JumpjetNoWobbles;
+		Nullable<int> JumpjetDeviation;
+
 		Valueable<bool> Nonprovocative;
 
 		Nullable<bool> MergeBuildingDamage;
 
 		Nullable<int> CombatLightDetailLevel;
+		Nullable<bool> CombatLightDetailLevel_CheckColored;
 		Valueable<double> CombatLightChance;
 		Valueable<bool> CLIsBlack;
 		Nullable<bool> Particle_AlphaImageIsLightFlash;
@@ -243,6 +257,7 @@ public:
 		Valueable<bool> EffectsRequireVerses;
 		Valueable<bool> Malicious;
 		Nullable<int> Flash_Duration;
+		Valueable<double> Damage_Deployed { 1.0 };
 
 		double Crit_RandomBuffer;
 		double Crit_CurrentChance;
@@ -275,17 +290,18 @@ public:
 			, SplashList_PickRandom { false }
 			, SplashList_CreateAll { false }
 			, SplashList_CreationInterval { 0 }
-			, SplashList_ScatterMin { Leptons(0) }
-			, SplashList_ScatterMax { Leptons(0) }
+			, SplashList_ScatterMin { Leptons(-1) }
+			, SplashList_ScatterMax { Leptons(-1) }
 			, AnimList_PickRandom { false }
 			, AnimList_CreateAll { false }
 			, AnimList_CreationInterval { 0 }
-			, AnimList_ScatterMin { Leptons(0) }
-			, AnimList_ScatterMax { Leptons(0) }
+			, AnimList_ScatterMin { Leptons(-1) }
+			, AnimList_ScatterMax { Leptons(-1) }
 			, CreateAnimsOnZeroDamage { false }
 			, Conventional_IgnoreUnits { false }
 			, RemoveDisguise { false }
 			, RemoveMindControl { false }
+			, RemoveMindControl_Silent {}
 			, RemoveParasite {}
 			, RemoveParasite_Allow {}
 			, RemoveParasite_Disallow {}
@@ -295,7 +311,9 @@ public:
 			, PenetratesIronCurtain { false }
 			, PenetratesForceShield {}
 			, Rocker_AmplitudeMultiplier { 1.0 }
-			, Rocker_AmplitudeOverride { }
+			, Rocker_AmplitudeOverride {}
+			, Temporal_ApplyVersus {}
+			, Temporal_ApplyMultiplier {}
 
 			, Crit_Chance { 0.0 }
 			, Crit_ApplyChancePerTarget { false }
@@ -405,11 +423,22 @@ public:
 			, Parasite_CullingTarget { AffectedTarget::Infantry }
 			, Parasite_GrappleAnim {}
 
+			, JumpjetTurnRate {}
+			, JumpjetSpeed {}
+			, JumpjetClimb {}
+			, JumpjetCrash {}
+			, JumpjetHeight {}
+			, JumpjetAccel {}
+			, JumpjetWobbles {}
+			, JumpjetNoWobbles {}
+			, JumpjetDeviation {}
+
 			, Nonprovocative { false }
 
 			, MergeBuildingDamage {}
 
 			, CombatLightDetailLevel {}
+			, CombatLightDetailLevel_CheckColored {}
 			, CombatLightChance { 1.0 }
 			, CLIsBlack { false }
 			, Particle_AlphaImageIsLightFlash {}
@@ -526,13 +555,13 @@ public:
 	public:
 		// Detonate.cpp
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
-		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, const CoordStruct& coords, int damage, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false, int distance = -1);
+		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, const CoordStruct& coords, int damage, TechnoClass* pOwner, BulletExt::ExtData* pBulletExt, bool bulletWasIntercepted = false, int distance = -1);
 		void InterceptBullets(TechnoClass* pOwner, BulletClass* pInterceptor, const CoordStruct& coords);
 		DamageAreaResult DamageAreaWithTarget(const CoordStruct& coords, int damage, TechnoClass* pSource, WarheadTypeClass* pWH, bool affectsTiberium, HouseClass* pSourceHouse, TechnoClass* pTarget);
 	private:
 		void ApplyRemoveDisguise(TechnoClass* pTarget);
 		HouseClass* ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
-		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
+		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner, BulletExt::ExtData* pBulletExt);
 		void ApplyShieldModifiers(TechnoClass* pTarget);
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
 		void ApplyBuildingUndeploy(TechnoClass* pTarget);
@@ -552,6 +581,8 @@ public:
 	static ExtContainer ExtMap;
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static WarheadTypeClass* LocomotorWarhead;
 
 	static void DetonateAt(WarheadTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
 	static void DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr, AbstractClass* pTarget = nullptr);
