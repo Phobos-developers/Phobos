@@ -821,6 +821,26 @@ LandingDir=     ; Direction type (integers from 0-255). Accepts negative values 
 
 ## Animations
 
+### Animation palette customizations & improvements
+
+- Animations using `AltPalette` are now remapped to their owner's color scheme instead of first listed color scheme and no longer draw over shroud.
+  - Color scheme from `[AudioVisual] -> AnimRemapDefaultColorScheme` is used if anim has no owner, which defaults to first listed color scheme from `[Colors]` still.
+  - They can also have map lighting apply on them if `AltPalette.ApplyLighting` is set to true.
+- `TheaterPalette` can be used to customize whether or not animation is drawn in theater / tile palette. Takes priority all over palette-influencing settings except `IsVeins=true`. Defaults to true for tile animations, otherwise false.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+AnimRemapDefaultColorScheme=    ; integer, [Colors] list index
+```
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]                      ; AnimationType
+AltPalette.ApplyLighting=false  ; boolean
+TheaterPalette=                 ; boolean
+```
+
 ### Animation weapon and damage settings
 
 - `Weapon` can be set to a WeaponType, to create a projectile and immediately detonate it instead of simply dealing `Damage` by `Warhead`. This allows weapon effects to be applied.
@@ -945,26 +965,6 @@ In `artmd.ini`:
 ```ini
 [SOMEANIM]               ; AnimationType
 HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
-```
-
-### Animation palette customizations & improvements
-
-- Animations using `AltPalette` are now remapped to their owner's color scheme instead of first listed color scheme and no longer draw over shroud.
-  - Color scheme from `[AudioVisual] -> AnimRemapDefaultColorScheme` is used if anim has no owner, which defaults to first listed color scheme from `[Colors]` still.
-  - They can also have map lighting apply on them if `AltPalette.ApplyLighting` is set to true.
-- `TheaterPalette` can be used to customize whether or not animation is drawn in theater / tile palette. Takes priority all over palette-influencing settings except `IsVeins=true`. Defaults to true for tile animations, otherwise false.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-AnimRemapDefaultColorScheme=    ; integer, [Colors] list index
-```
-
-In `artmd.ini`:
-```ini
-[SOMEANIM]                      ; AnimationType
-AltPalette.ApplyLighting=false  ; boolean
-TheaterPalette=                 ; boolean
 ```
 
 ## Buildings

@@ -2609,29 +2609,24 @@ msgstr "对于 `AirportBound=false` 的战机允许使用负值以使其降落�
 msgid "Animations"
 msgstr "动画类型"
 
-#, fuzzy
 msgid "Animation palette customizations & improvements"
-msgstr "超时空闪光动画的自定义与改进"
+msgstr "动画色盘的自定义与改进"
 
-#, fuzzy
 msgid ""
 "Animations using `AltPalette` are now remapped to their owner's color "
 "scheme instead of first listed color scheme and no longer draw over "
 "shroud."
 msgstr ""
 "现在使用 `AltPalette` "
-"的动画会被重映射到其所属方的配色方案而不再是被列出的第一个配色方案并且不再绘制于黑幕之上。如果动画没有所属方那么将会使用 "
-"`[AudioVisual] -> AnimRemapDefaultColorScheme` 指定的配色方案，它同样默认为 `[Colors]` "
-"中被列出的第一个配色方案。"
+"的动画会被重映射到其所属方的配色方案而不再是被列出的第一个配色方案并且不再绘制于黑幕之上。"
 
-#, fuzzy
 msgid ""
 "Color scheme from `[AudioVisual] -> AnimRemapDefaultColorScheme` is used "
 "if anim has no owner, which defaults to first listed color scheme from "
 "`[Colors]` still."
 msgstr ""
 "现在使用 `AltPalette` "
-"的动画会被重映射到其所属方的配色方案而不再是被列出的第一个配色方案并且不再绘制于黑幕之上。如果动画没有所属方那么将会使用 "
+"如果动画没有所属方那么将会使用 "
 "`[AudioVisual] -> AnimRemapDefaultColorScheme` 指定的配色方案，它同样默认为 `[Colors]` "
 "中被列出的第一个配色方案。"
 
@@ -2646,6 +2641,7 @@ msgid ""
 "influencing settings except `IsVeins=true`. Defaults to true for tile "
 "animations, otherwise false."
 msgstr ""
+"`TheaterPalette` 可用于自定义动画是否使用气候／地块色盘。该设置优先于所有除 `IsVeins=true` 外影响色盘的设置。对于地块动画默认为 true，否则为 false。"
 
 msgid "Animation weapon and damage settings"
 msgstr "动画武器和伤害设置"

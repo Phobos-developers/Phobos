@@ -294,8 +294,8 @@ This page lists all the individual contributions to the project by their author.
   - Frame CRC generation rewrite
   - Laser drawing Z-adjust customization
   - Armed building guard mission retry delay customization
-  - Animation theater/tile palette toggle
   - Building turret idle/firing/low power animations
+  - Animation theater/tile palette toggle
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
