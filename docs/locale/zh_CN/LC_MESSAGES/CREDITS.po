@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-09 22:42+0800\n"
+"POT-Creation-Date: 2026-06-12 01:24+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -877,6 +877,9 @@ msgstr "自定义激光绘制的 Z 深校正值"
 
 msgid "Armed building guard mission retry delay customization"
 msgstr "武装建筑警戒任务重试间隔的自定义"
+
+msgid "Animation theater/tile palette toggle"
+msgstr ""
 
 msgid "Building turret idle/firing/low power animations"
 msgstr "建筑炮塔的闲置／开火／断电动画"
@@ -2226,8 +2229,7 @@ msgid ""
 msgstr "`ElectricAssault` 武器现在可以自动索敌盟友的可过载防御建筑"
 
 msgid "Dynamic team delays"
-msgstr ""
-"动态 `TeamDelays`"
+msgstr "动态 `TeamDelays`"
 
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
