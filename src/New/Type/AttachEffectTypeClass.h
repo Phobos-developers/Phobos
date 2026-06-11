@@ -100,6 +100,7 @@ public:
 	Valueable<bool> ReflectDamage_UseInvokerAsOwner;
 	Valueable<bool> DisableWeapons;
 	Valueable<bool> Unkillable;
+	Nullable<bool> Bounty;
 	ValueableIdx<LaserTrailTypeClass> LaserTrail_Type;
 
 	std::vector<std::string> Groups;
@@ -164,6 +165,7 @@ public:
 		, ReflectDamage_UseInvokerAsOwner { false }
 		, DisableWeapons { false }
 		, Unkillable { false }
+		, Bounty {}
 		, LaserTrail_Type { -1 }
 		, Groups {}
 	{};

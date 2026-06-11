@@ -59,6 +59,8 @@ This page describes all the engine features that are either new and introduced b
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
   - `Unkillable` can be used to prevent the techno from being killed by taken damage (minimum health will be 1).
+  - `Bounty` can be used to override the option with the same name in TechnoTypes, enabling it for TechnoTypes that originally did not have the Bounty Hunter ability, or conversely, disabling it.
+    - If multiple AEs with this setting exist simultaneously, the last AE applied and in effect shall prevail.
   - It is possible to set groups for attach effect types by defining strings in `Groups`.
     - Groups can be used instead of types for removing effects and weapon filters.
 
@@ -154,6 +156,7 @@ ReflectDamage.Override=                            ; integer
 ReflectDamage.UseInvokerAsOwner=false              ; boolean
 DisableWeapons=false                               ; boolean
 Unkillable=false                                   ; boolean
+Bounty=                                            ; boolean
 LaserTrail.Type=                                   ; LaserTrailType
 Groups=                                            ; comma-separated list of strings (group IDs)
 
@@ -2263,6 +2266,51 @@ TiberiumEater.Anims.Tiberium1=    ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium2=    ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium3=    ; List of AnimationTypes
 TiberiumEater.AnimMove=true       ; boolean
+```
+
+### New bounty logic
+
+- Similar to [Ares' bounty logic](https://ares-developers.github.io/Ares-docs/new/bounty.html), but with more configurable options and easier to use.
+- `Bounty.Enable` is the master switch for the new bounty logic; it must be turned on first to utilize the new bounty system.
+- `Bounty.Enablers` specifies the TechnoTypes that grant the bounty capability, not limited to buildings.
+  - If this list is empty, the bounty logic is enabled without requiring any prerequisite TechnoTypes.
+- `Bounty.Multiplier` is the multiplier applied to the bounty a hunter receives when a victim is killed. This is defined on the victim.
+- `Bounty.Value` is the fixed amount of funds a hunter receives when a victim is killed. This is also defined on the victim.
+  - If `Bounty.Value` is not 0, the base value is the amount set by `Bounty.Value`; otherwise, the base bounty value is the victim's actual cost multiplied by `Bounty.Multiplier`.
+- `Bounty.KillerMultiplier` is the multiplier applied to the bounty received when killing a target. This is defined on the hunter.
+- `Bounty.Display` controls whether the bounty amount is shown, displayed on the hunter.
+
+In `rulesmd.ini`:
+```ini
+[General]
+Bounty.Enable=false                 ; boolean
+Bounty.Enablers=                    ; list of TechnoTypes
+Bounty.Default=false                ; boolean
+Bounty.Multiplier=1.0               ; double
+Bounty.KillerMultiplier=1.0         ; double
+
+[AudioVisual]
+Bounty.Display=false                ; boolean
+Bounty.Display.Houses=all           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+
+[SOMETECHNO]                        ; TechnoType
+Bounty=                             ; boolean, default to [General] -> Bounty.Default
+Bounty.Multiplier=                  ; double, default to [General] -> Bounty.Multiplier
+Bounty.Multiplier.Veteran=          ; double, default to [TechnoType] -> Bounty.Multiplier
+Bounty.Multiplier.Elite=            ; double, default to [TechnoType] -> Bounty.Multiplier
+Bounty.Value=0                      ; integer
+Bounty.Value.Veteran=               ; integer, default to [TechnoType] -> Bounty.Value
+Bounty.Value.Elite=                 ; integer, default to [TechnoType] -> Bounty.Value
+Bounty.KillerMultiplier=            ; double, default to [General] -> Bounty.KillerMultiplier
+Bounty.KillerMultiplier.Veteran=    ; double, default to [TechnoType] -> Bounty.KillerMultiplier
+Bounty.KillerMultiplier.Elite=      ; double, default to [TechnoType] -> Bounty.KillerMultiplier
+Bounty.Display=                     ; boolean, default to [AudioVisual] -> Bounty.Display
+Bounty.Display.Houses=              ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to [AudioVisual] -> Bounty.Display.Houses
+Bounty.Display.Offset=0,0           ; X,Y, pixels relative to default
+```
+
+```{note}
+When this new bounty logic is enabled, Ares' bounty logic will be disabled.
 ```
 
 ### Weapons fired on warping in / out

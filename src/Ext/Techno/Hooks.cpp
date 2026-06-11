@@ -1932,6 +1932,19 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7E417C, Building_GetThreatValue_Wrapper);   // Bu
 
 #pragma endregion
 
+DEFINE_HOOK(0x702E6A, TechnoClass_RegisterDestruction_Bounty, 0x7)
+{
+	GET(TechnoClass*, pKiller, EDI);
+	GET(TechnoClass*, pThis, ESI);
+	GET(int, cost, EBP);
+
+	TechnoExt::GiveBounty(pThis, pKiller, cost);
+
+	// Restore overriden instruction
+	R->AL(pKiller->Owner->IsAlliedWith(pThis->Owner));
+	return 0x702E71;
+}
+
 DEFINE_HOOK(0x4D4B43, FootClass_Mission_Capture, 0x6)
 {
 	enum { LosesDestination = 0x4D4BD1 };

@@ -386,6 +386,14 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->PenetratesTransport_Level.Read(exINI, GameStrings::CombatDamage, "PenetratesTransport.Level");
 
+	this->Bounty_Enable.Read(exINI, GameStrings::General, "Bounty.Enable");
+	this->Bounty_Enablers.Read(exINI, GameStrings::General, "Bounty.Enablers");
+	this->Bounty_Default.Read(exINI, GameStrings::General, "Bounty.Default");
+	this->Bounty_Multiplier.Read(exINI, GameStrings::General, "Bounty.Multiplier");
+	this->Bounty_KillerMultiplier.Read(exINI, GameStrings::General, "Bounty.KillerMultiplier");
+	this->Bounty_Display.Read(exINI, GameStrings::AudioVisual, "Bounty.Display");
+	this->Bounty_Display_Houses.Read(exINI, GameStrings::AudioVisual, "Bounty.Display.Houses");
+
 	this->UnitsUnsellable.Read(exINI, GameStrings::General, "UnitsUnsellable");
 	
 	this->DisableOveroptimizationInTargeting.Read(exINI, GameStrings::General, "DisableOveroptimizationInTargeting");
@@ -743,6 +751,13 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DefaultToGuardArea)
 		.Process(this->CylinderRangefinding)
 		.Process(this->PenetratesTransport_Level)
+		.Process(this->Bounty_Enable)
+		.Process(this->Bounty_Enablers)
+		.Process(this->Bounty_Default)
+		.Process(this->Bounty_Multiplier)
+		.Process(this->Bounty_KillerMultiplier)
+		.Process(this->Bounty_Display)
+		.Process(this->Bounty_Display_Houses)
 		.Process(this->UnitsUnsellable)
 		.Process(this->DriverKilled_KillPassengers)
 		.Process(this->DisableOveroptimizationInTargeting)

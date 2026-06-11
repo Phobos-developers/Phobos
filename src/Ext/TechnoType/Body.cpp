@@ -1179,8 +1179,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PenetratesTransport_FatalRateMultiplier.Read(exINI, pSection, "PenetratesTransport.FatalRateMultiplier");
 	this->PenetratesTransport_DamageMultiplier.Read(exINI, pSection, "PenetratesTransport.DamageMultiplier");
 
-	this->JumpjetClimbIgnoreBuilding.Read(exINI, pSection, "JumpjetClimbIgnoreBuilding");
-	
+	this->JumpjetClimbIgnoreBuilding.Read(exINI, pSection, "JumpjetClimbIgnoreBuilding");	
 
 	this->ExtraThreat_IsThreat.Read(exINI, pSection, "ExtraThreat.IsThreat");
 	this->AlwaysConsideredThreat.Read(exINI, pSection, "AlwaysConsideredThreat");
@@ -1196,6 +1195,18 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->HarvesterLoadRate.Read(exINI, pSection, "HarvesterLoadRate");
 	this->HarvesterDumpRate.Read(exINI, pSection, "HarvesterDumpRate");
+  
+  this->Bounty.Read(exINI, pSection, "Bounty");
+	this->Bounty_Multiplier.Read(exINI, pSection, "Bounty.Multiplier");
+	this->Bounty_Multiplier_Vet.Read(exINI, pSection, "Bounty.Multiplier.Veteran");
+	this->Bounty_Multiplier_Elite.Read(exINI, pSection, "Bounty.Multiplier.Elite");
+	this->Bounty_Value.Read(exINI, pSection, "Bounty.Value.%s");
+	this->Bounty_KillerMultiplier.Read(exINI, pSection, "Bounty.KillerMultiplier");
+	this->Bounty_KillerMultiplier_Vet.Read(exINI, pSection, "Bounty.KillerMultiplier.Veteran");
+	this->Bounty_KillerMultiplier_Elite.Read(exINI, pSection, "Bounty.KillerMultiplier.Elite");
+	this->Bounty_Display.Read(exINI, pSection, "Bounty.Display");
+	this->Bounty_Display_Houses.Read(exINI, pSection, "Bounty.Display.Houses");
+	this->Bounty_Display_Offset.Read(exINI, pSection, "Bounty.Display.Offset");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -1923,6 +1934,18 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->JumpjetClimbIgnoreBuilding)
 			
 		.Process(this->HoverDrownable)
+			
+		.Process(this->Bounty)
+		.Process(this->Bounty_Multiplier)
+		.Process(this->Bounty_Multiplier_Vet)
+		.Process(this->Bounty_Multiplier_Elite)
+		.Process(this->Bounty_Value)
+		.Process(this->Bounty_KillerMultiplier)
+		.Process(this->Bounty_KillerMultiplier_Vet)
+		.Process(this->Bounty_KillerMultiplier_Elite)
+		.Process(this->Bounty_Display)
+		.Process(this->Bounty_Display_Houses)
+		.Process(this->Bounty_Display_Offset)
 
 		.Process(this->Unsellable)
 

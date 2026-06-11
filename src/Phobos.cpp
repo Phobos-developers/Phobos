@@ -10,6 +10,8 @@
 #include "Utilities/AresHelper.h"
 #include "Utilities/Parser.h"
 
+#include <Ext/Rules/Body.h>
+
 #ifndef IS_RELEASE_VER
 bool HideWarning = false;
 #endif
@@ -280,6 +282,10 @@ void Phobos::ApplyOptimizations()
 		Patch::Apply_RAW(0x73F0A7, { 0x8B, 0xD9, 0x8B, 0x8C, 0x24, 0x88, 0x00, 0x00, 0x00 });
 		Patch::Apply_RAW(0x4D62C0, { 0x8A, 0x88, 0x95, 0x06, 0x00, 0x00 });
 	}
+  
+  // Disable Ares's bounty logic
+  if (RulesExt::Global()->Bounty_Enable)
+		Patch::Apply_RAW(0x702E64, { 0x8B, 0x8F, 0x1C, 0x2, 0x0, 0x0 });
 
 	if (!SessionClass::IsMultiplayer())
 	{

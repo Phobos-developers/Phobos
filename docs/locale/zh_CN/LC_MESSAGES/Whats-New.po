@@ -1952,6 +1952,11 @@ msgstr ""
 "[建筑炮塔的闲置／开火／断电动画](Fixed-or-Improved-"
 "Logics.md#building-turret-animations)（by Starkku）"
 
+msgid ""
+"[New bounty logic](New-or-Enhanced-Logics.md#new-bounty-logic) (by "
+"NetsuNegi)"
+msgstr "[新版赏金逻辑](New-or-Enhanced-Logics.md#new-bounty-logic)（by NetsuNegi）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 

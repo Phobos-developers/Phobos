@@ -10,6 +10,8 @@
 #include <Utilities/AresFunctions.h>
 #include <Utilities/AresHelper.h>
 #include <Interop/TechnoExt.h>
+#include <Ext/BuildingType/Body.h>
+#include <Misc/FlyingStrings.h>
 
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 UnitClass* TechnoExt::Deployer = nullptr;
@@ -943,6 +945,133 @@ bool TechnoExt::CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse)
     }
 
     return true;
+}
+
+void TechnoExt::GiveBounty(TechnoClass* pVictim, TechnoClass* pKiller, int victimCost)
+{
+	if (!RulesExt::Global()->Bounty_Enable)
+		return;
+
+	const auto pKillerExt = TechnoExt::ExtMap.Find(pKiller);
+	const auto pKillerTypeExt = pKillerExt->TypeExtData;
+	const auto it = std::ranges::find_if(pKillerExt->AttachedEffects, [](std::unique_ptr<AttachEffectClass> const& pAE) { return pAE->IsActive() && pAE->GetType()->Bounty.isset(); });
+
+	if (it != pKillerExt->AttachedEffects.cend())
+	{
+		if (!(*it)->GetType()->Bounty.Get())
+			return;
+	}
+	else
+	{
+		if (!pKillerTypeExt->Bounty.Get(RulesExt::Global()->Bounty_Default))
+			return;
+	}
+
+	const auto pKillerHouse = pKiller->Owner;
+
+	if (pKillerHouse->IsAlliedWith(pVictim->Owner))
+		return;
+
+	const auto pKillerHouseExt = HouseExt::ExtMap.Find(pKillerHouse);
+
+	// check that any aux techno exist and no neg techno
+	auto IsTechnoPresent = [pKillerHouse, pKillerHouseExt](TechnoTypeClass* pType)
+		{
+			const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
+
+			if (pBuildingType && (!BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.empty() || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))
+				return BuildingTypeExt::GetUpgradesAmount(pBuildingType, pKillerHouse) > 0;
+
+			return pKillerHouseExt->CountOwnedPresentAndLimboed(pType) > 0;
+		};
+
+	if (!RulesExt::Global()->Bounty_Enablers.empty() && std::ranges::none_of(RulesExt::Global()->Bounty_Enablers, IsTechnoPresent))
+		return;
+
+	const auto pVictimTypeExt = TechnoTypeExt::ExtMap.Find(pVictim->GetTechnoType());
+	int value = pVictimTypeExt->Bounty_Value.Get(pVictim);
+
+	if (!value)
+	{
+		double victimMultiplier = 1.0;
+
+		switch (pVictim->Veterancy.GetRemainingLevel())
+		{
+		case Rank::Elite:
+			if (pVictimTypeExt->Bounty_Multiplier_Elite.isset())
+			{
+				victimMultiplier = pVictimTypeExt->Bounty_Multiplier_Elite.Get();
+				break;
+			}
+
+		case Rank::Veteran:
+			if (pVictimTypeExt->Bounty_Multiplier_Vet.isset())
+			{
+				victimMultiplier = pVictimTypeExt->Bounty_Multiplier_Vet.Get();
+				break;
+			}
+
+		default:
+			if (pVictimTypeExt->Bounty_Multiplier.isset())
+			{
+				victimMultiplier = pVictimTypeExt->Bounty_Multiplier.Get();
+				break;
+			}
+
+			victimMultiplier = RulesExt::Global()->Bounty_Multiplier;
+		}
+
+		value = static_cast<int>(std::round(victimCost * victimMultiplier));
+
+		if (!value)
+			return;
+	}
+
+	double killerMultiplier = 1.0;
+
+	switch (pKiller->Veterancy.GetRemainingLevel())
+	{
+	case Rank::Elite:
+		if (pKillerTypeExt->Bounty_KillerMultiplier_Elite.isset())
+		{
+			killerMultiplier = pKillerTypeExt->Bounty_KillerMultiplier_Elite.Get();
+			break;
+		}
+
+	case Rank::Veteran:
+		if (pKillerTypeExt->Bounty_KillerMultiplier_Vet.isset())
+		{
+			killerMultiplier = pKillerTypeExt->Bounty_KillerMultiplier_Vet.Get();
+			break;
+		}
+
+	default:
+		if (pKillerTypeExt->Bounty_KillerMultiplier.isset())
+		{
+			killerMultiplier = pKillerTypeExt->Bounty_KillerMultiplier.Get();
+			break;
+		}
+
+		killerMultiplier = RulesExt::Global()->Bounty_KillerMultiplier;
+	}
+
+	value = static_cast<int>(std::round(value * killerMultiplier));
+
+	if (!value || !pKillerHouse->CanTransactMoney(value))
+		return;
+
+	pKillerHouse->TransactMoney(value);
+
+	if (pKillerTypeExt->Bounty_Display.Get(RulesExt::Global()->Bounty_Display))
+	{
+		const auto displayTo = pKillerTypeExt->Bounty_Display_Houses.Get(RulesExt::Global()->Bounty_Display_Houses);
+		auto pDisplayOn = pKiller;
+
+		if (const auto pTransporter = pKiller->Transporter)
+			pDisplayOn = pTransporter;
+
+		FlyingStrings::AddMoneyString(value, pKiller, pKiller->Owner, displayTo, pDisplayOn->Location, pKillerTypeExt->Bounty_Display_Offset);
+	}
 }
 
 bool TechnoExt::EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, int distance, bool select)

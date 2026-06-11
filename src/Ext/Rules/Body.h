@@ -335,6 +335,14 @@ public:
 
 		Valueable<int> PenetratesTransport_Level;
 
+		Valueable<bool> Bounty_Enable;
+		ValueableVector<TechnoTypeClass*> Bounty_Enablers;
+		Valueable<bool> Bounty_Default;
+		Valueable<double> Bounty_Multiplier;
+		Valueable<double> Bounty_KillerMultiplier;
+		Valueable<bool> Bounty_Display;
+		Valueable<AffectedHouse> Bounty_Display_Houses;
+
 		Valueable<bool> UnitsUnsellable;
 
 		Valueable<bool> DriverKilled_KillPassengers;
@@ -636,6 +644,14 @@ public:
 			, CylinderRangefinding { false }
 
 			, PenetratesTransport_Level { 10 }
+
+			, Bounty_Enable { false }
+			, Bounty_Enablers {}
+			, Bounty_Default { false }
+			, Bounty_Multiplier { 1.0 }
+			, Bounty_KillerMultiplier { 1.0 }
+			, Bounty_Display { false }
+			, Bounty_Display_Houses { AffectedHouse::All }
 
 			, UnitsUnsellable { false }
 

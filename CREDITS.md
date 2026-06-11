@@ -540,6 +540,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug where passengers, when their transport unit is removed, would cause incorrect `LimboTracker` counts due to either having their destructor called directly (bypassing `UnInit`) or nested `UnInit` calls resetting the deletion flag too early, thereby breaking auto-death and superweapon auxiliary techno checks
   - Allow `Temporal` warhead to apply ratio and bonus
   - Fix the bug that techno will get stuck if change owner in tunnel
+  - New bounty logic
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
