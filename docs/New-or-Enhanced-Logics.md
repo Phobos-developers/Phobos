@@ -712,10 +712,6 @@ Convert.Deploy=            ; InfantryType
 Convert.Undeploy=          ; InfantryType
 ```
 
-```{note}
-For the sake of logical clarity, this feature does not allow the converted unit to trigger another conversion before the current sequence ends. If continuous conversion is needed, please use `Convert.Land/Water`.
-```
-
 ### Customizable FLH when infantry is prone or deployed
 
 - Now infantry can override `PrimaryFireFLH` and `SecondaryFireFLH` if is prone (crawling) or deployed. Also works in conjunction with [burst-index specific firing offsets](#firing-offsets-for-specific-burst-shots).
