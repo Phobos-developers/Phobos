@@ -844,17 +844,19 @@ DEFINE_HOOK(0x6298CC, ParasiteClass_AI_GrippleAnim, 0x5)
 
 DEFINE_HOOK(0x62AB69, ParasiteClass_CanExistOnVictimCell_AllowWaterExit, 0x6)
 {
+	enum { SkipChecks = 0x62AC0F, ForceFail = 0x62AB4B, ContinueVanilla = 0x62AB77 };
+
 	GET(TechnoTypeClass*, pType, EAX);
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	const auto& globalVal = RulesExt::Global()->Parasite_AllowWaterExit;
 
 	if (pTypeExt->Parasite_AllowWaterExit.isset())
-		return pTypeExt->Parasite_AllowWaterExit.Get() ? 0x62AC0F : 0x62AB4B;
+		return pTypeExt->Parasite_AllowWaterExit.Get() ? SkipChecks : ForceFail;
 	else if (globalVal.isset())
-		return globalVal.Get() ? 0x62AC0F : 0x62AB4B;
+		return globalVal.Get() ? SkipChecks : ForceFail;
 	else
-		return pType->Naval ? 0x62AC0F : 0x62AB77;
+		return pType->Naval ? SkipChecks : ContinueVanilla;
 }
 
 #pragma region RadarDrawing
