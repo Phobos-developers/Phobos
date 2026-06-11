@@ -842,33 +842,19 @@ DEFINE_HOOK(0x6298CC, ParasiteClass_AI_GrippleAnim, 0x5)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x62AB6F, ParasiteClass_CanExistOnVictimCell_AllowWaterExit, 0x8)
+DEFINE_HOOK(0x62AB69, ParasiteClass_CanExistOnVictimCell_AllowWaterExit, 0x6)
 {
-	GET(ParasiteClass*, pParasite, ESI);
-	auto const pOwner = pParasite->Owner;
-	if (pOwner)
-	{
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
-		const auto& globalVal = RulesExt::Global()->Parasite_AllowWaterExit;
+	GET(TechnoTypeClass*, pType, EAX);
 
-		if (pTypeExt->Parasite_AllowWaterExit.isset())
-		{
-			return pTypeExt->Parasite_AllowWaterExit.Get() ? 0x62AC0F : 0x62AB4B;
-		}
-		else if (globalVal.isset())
-		{
-			return globalVal.Get() ? 0x62AC0F : 0x62AB4B;
-		}
-		else
-		{
-			auto const pType = pOwner->GetTechnoType();
-			if (pType->Naval)
-				return 0x62AC0F;
-			else
-				return 0;
-		}
-	}
-	return 0;
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto& globalVal = RulesExt::Global()->Parasite_AllowWaterExit;
+
+	if (pTypeExt->Parasite_AllowWaterExit.isset())
+		return pTypeExt->Parasite_AllowWaterExit.Get() ? 0x62AC0F : 0x62AB4B;
+	else if (globalVal.isset())
+		return globalVal.Get() ? 0x62AC0F : 0x62AB4B;
+	else
+		return pType->Naval ? 0x62AC0F : 0x62AB77;
 }
 
 #pragma region RadarDrawing
