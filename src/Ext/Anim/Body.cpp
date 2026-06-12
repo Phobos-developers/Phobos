@@ -565,6 +565,7 @@ DEFINE_HOOK(0x4226F6, AnimClass_CTOR, 0x6)
 		SyncLogger::AddAnimCreationSyncLogEvent(CTORTemp::coords, CTORTemp::callerAddress);
 
 	AnimExt::ExtMap.Allocate(pItem);
+	pItem->UseCellLightConvert = AnimTypeExt::ExtMap.Find(pItem->Type)->TheaterPalette.Get(false);
 
 	return 0;
 }
