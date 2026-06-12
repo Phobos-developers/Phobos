@@ -1198,6 +1198,21 @@ FactoryPlant.DisallowTypes=  ; List of TechnoTypes
 FactoryPlant.MaxCount=-1     ; integer
 ```
 
+### Gates connecting with Walls
+
+- It is possible to add new gates which can be connected with any Walls by specifing them as `NSGates` and `EWGates`.
+  - In the in-game orientation, north points to the upper right, so `NSGates` correspond to buildings with `Foundation=1x3`, and `EWGates` correspond to buildings with `Foundation=3x1`.
+
+![image](_static/images/ewgates.gif)  
+*A Gate EW is built onto the Concrete Walls in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+
+In `rulesmd.ini`:
+```ini
+[AI]
+NSGates=      ; List of BuildingTypes, vanilla tag
+ESGates=      ; List of BuildingTypes, vanilla tag
+```
+
 ### Power plant damage factor
 
 - It is possible to customize the power decrement of a power plant when it's damaged. The actual power output for this plant will be: `Power` minuses the product of original power decrement and `Powerplant.DamageFactor`. Can't reduce power output lower than 0.
