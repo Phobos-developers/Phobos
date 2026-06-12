@@ -876,6 +876,17 @@ SplashAnims.PickRandom=false  ; boolean
 ExtraShadow=true              ; boolean
 ```
 
+### Customize the drawing interval for `Tiled`
+
+- In vanilla, the drawing interval of an animation with `Tiled=yes` is determined by the height of the rectangle formed by the non-transparent pixels of the first frame in the Shape resource file. Now you can customize it.
+  - If the value is greater than `0`, the specified value is used; otherwise, the default rule applies.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]              ; AnimationType, with Tiled=yes
+Tiled.Interval=0        ; integer, pixels
+```
+
 ### Customize whether `Crater=yes` animation would destroy tiberium
 
 - In vanilla, the anim with `Crater=yes` is hardcoded to destroy the tiberium in its cell. Now you can disable this behavior by setting the following tags to `false`.
