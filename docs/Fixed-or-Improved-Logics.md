@@ -55,7 +55,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Animations can now be offset on the X axis with `XDrawOffset`.
 - `IsSimpleDeployer` units now only play `DeploySound` and `UndeploySound` once, when done with (un)deploying instead of repeating it over duration of turning and/or `DeployingAnim`.
 - AITrigger can now recognize Building Upgrades as legal condition.
-- `EWGates` and `NSGates` now will link walls like `xxGateOne` and `xxGateTwo` do.
 - Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
 - Fixed missing `No Enter` cursor for VehicleTypes being unable to enter a `Grinding` building.
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
@@ -1196,6 +1195,21 @@ In `rulesmd.ini`:
 FactoryPlant.AllowTypes=     ; List of TechnoTypes
 FactoryPlant.DisallowTypes=  ; List of TechnoTypes
 FactoryPlant.MaxCount=-1     ; integer
+```
+
+### Gates connecting with Walls
+
+- It is possible to add new gates which can be connected with any Walls by specifing them as `EWGates` and `NSGates` like `xxGateOne` and `xxGateTwo` do.
+  - In the in-game orientation, north points to the upper right, so `NSGates` correspond to buildings with `Foundation=1x3`, and `EWGates` correspond to buildings with `Foundation=3x1`.
+
+![image](_static/images/ewgates.gif)  
+*A Gate EW is built onto the Concrete Walls in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+
+In `rulesmd.ini`:
+```ini
+[AI]
+NSGates=      ; List of BuildingTypes, vanilla tag
+ESGates=      ; List of BuildingTypes, vanilla tag
 ```
 
 ### Power plant damage factor

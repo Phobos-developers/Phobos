@@ -578,9 +578,10 @@ DEFINE_HOOK(0x6FF42B, TechnoClass_Fire_Anim, 0x7)
 		pAnimExt->FiringAnim_Weapon = pWeapon;
 		pAnimExt->FiringAnim_WeaponIndex = wpIdx;
 		pAnimExt->FiringAnim_BurstIndex = pThis->CurrentBurstIndex;
+		return SkipBuildingCheck;
 	}
 
-	return SkipBuildingCheck;
+	return 0;
 }
 
 #pragma endregion
