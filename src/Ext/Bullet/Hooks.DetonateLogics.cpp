@@ -21,7 +21,10 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 		// Check if the WH should affect the techno target or skip it
 		if (BulletTypeExt::ExtMap.Find(pBullet->Type)->Shrapnel_UseNewWarheadChecks.Get(RulesExt::Global()->Shrapnel_UseNewWarheadChecks))
 		{
-			if (!pExt->IsHealthInThreshold(pTarget) || !pExt->IsVeterancyInThreshold(pTarget) || (!pExt->AffectsNeutral && pTarget->Owner->IsNeutral()))
+			if (!pExt->IsHealthInThreshold(pTarget)
+			|| !pExt->IsVeterancyInThreshold(pTarget)
+			|| (!pExt->AffectsNeutral && pTarget->Owner->IsNeutral())
+			/*|| !pExt->IsInvokerAllowed(pTarget, pBullet->Owner)*/)
 				return GoToExtras;
 		}
 	}
