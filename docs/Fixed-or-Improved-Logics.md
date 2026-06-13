@@ -1768,6 +1768,26 @@ How to generate `DebrisTypes` in the game:
 4. When the number of debris generated after a single traversal is not enough to exceed the total number, it will end if `DebrisTypes.Limit` is enabled, otherwise the traversal will restart like vanilla game do.
 ```
 
+### Dehardcode of parasites unlimboing after killing naval targets
+
+- In vanilla, parasites with `Naval=false` perform a series of additional checks on the current cell after killing a target, including a series of determinations such as whether there is a bridge when the cell's LandType is `Water`, `Beach`, or `Rock`, which prevents them from normally unlimbo in open water; while parasites with `Naval=true` skip these checks. Now, you can customize the behavior of parasites after killing a target in water:
+  - If not set, the original behavior is performed by default.
+  - If set to `true`, they can unlimbo normally even if `Naval=false`.
+  - If set to `false`, they cannot unlimbo normally even if `Naval=true`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+Parasite.AllowWaterExit=  ; boolean
+
+[SOMETECHNO]              ; TechnoType
+Parasite.AllowWaterExit=  ; boolean, defaults to [General] -> Parasite.AllowWaterExit
+```
+
+```{note}
+Setting `Parasite.AllowWaterExit` to `true` does not skip the original check of whether a BuildingType exists on the cell.
+```
+
 ### DropPod
 
 - DropPod properties can now be customized on a per-TechnoType (non-building) basis.
