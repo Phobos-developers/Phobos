@@ -86,8 +86,7 @@ bool WarheadTypeExt::ExtData::IsInvokerAllowed(TechnoClass* pTarget, TechnoClass
 	}
 	else
 	{
-		return !this->AffectsInvokerOnly_IgnoreInvokerState.Get(
-			RulesExt::Global()->AffectsInvokerOnly_IgnoreInvokerState);
+		return !this->AffectsInvokerOnly_IgnoreInvokerState.Get(RulesExt::Global()->AffectsInvokerOnly_IgnoreInvokerState);
 	}
 }
 
