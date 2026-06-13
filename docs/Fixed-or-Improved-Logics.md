@@ -1439,12 +1439,14 @@ In `rulesmd.ini`:
 ```ini
 [CombatDamage]
 Shrapnel.IgnoreHitBuildings=false  ; boolean
+Shrapnel.UseNewWarheadChecks=true  ; boolean
 
 [SOMEPROJECTILE]                   ; Projectile
 Shrapnel.AffectsGround=false       ; boolean
 Shrapnel.AffectsBuildings=false    ; boolean
 Shrapnel.UseWeaponTargeting=false  ; boolean
 Shrapnel.IgnoreHitBuildings=       ; boolean
+Shrapnel.UseNewWarheadChecks=      ; boolean, defaults to [CombatDamage] -> Shrapnel.UseNewWarheadChecks
 ```
 
 ## Technos

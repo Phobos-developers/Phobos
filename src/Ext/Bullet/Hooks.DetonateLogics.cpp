@@ -19,8 +19,11 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 	if (auto const pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
 	{
 		// Check if the WH should affect the techno target or skip it
-		if (!pExt->IsHealthInThreshold(pTarget) || !pExt->IsVeterancyInThreshold(pTarget) || (!pExt->AffectsNeutral && pTarget->Owner->IsNeutral()))
-			return GoToExtras;
+		if (BulletTypeExt::ExtMap.Find(pBullet->Type)->Shrapnel_UseNewWarheadChecks.Get(RulesExt::Global()->Shrapnel_UseNewWarheadChecks))
+		{
+			if (!pExt->IsHealthInThreshold(pTarget) || !pExt->IsVeterancyInThreshold(pTarget) || (!pExt->AffectsNeutral && pTarget->Owner->IsNeutral()))
+				return GoToExtras;
+		}
 	}
 
 	// Check for ScreenShake
