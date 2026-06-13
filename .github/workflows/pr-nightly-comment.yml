@@ -5,7 +5,10 @@ on:
     types: [completed]
 jobs:
   pr_comment:
-    if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success'
+    if: |
+      github.event.workflow_run.event == 'pull_request' && 
+      github.event.workflow_run.conclusion == 'success' &&
+      !contains(fromJson(github.event.workflow_run.pull_requests).*.labels.*.name, 'no test needed')
     runs-on: ubuntu-latest
     steps:
       - name: Get the PR number
