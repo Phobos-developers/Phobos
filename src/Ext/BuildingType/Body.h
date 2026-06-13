@@ -94,6 +94,7 @@ public:
 		Nullable<float> BuildingBunkerROFMult;
 		NullableIdx<VocClass> BunkerWallsUpSound;
 		NullableIdx<VocClass> BunkerWallsDownSound;
+		Nullable<int> BunkerStateUpdateDelay;
 
 		NullableIdx<VocClass> BuildingRepairedSound;
 
@@ -189,6 +190,7 @@ public:
 			, BuildingBunkerROFMult {}
 			, BunkerWallsUpSound {}
 			, BunkerWallsDownSound {}
+			, BunkerStateUpdateDelay {}
 			, BuildingRepairedSound {}
 			, Refinery_UseNormalActiveAnim { false }
 			, HasPowerUpAnim {}

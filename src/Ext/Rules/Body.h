@@ -372,6 +372,8 @@ public:
 		Valueable<DynamicTeamDelayType> TeamDelays_DynamicType;
 		Valueable<Vector3D<int>> TeamDelays_Count[8];
 
+		Valueable<int> BunkerStateUpdateDelay;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -682,6 +684,8 @@ public:
 
 			, TeamDelays_DynamicType { DynamicTeamDelayType::StartingPoint }
 			, TeamDelays_Count {}
+
+			, BunkerStateUpdateDelay { 15 }
 		{ }
 
 		virtual ~ExtData() = default;

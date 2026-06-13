@@ -299,6 +299,7 @@ This page lists all the individual contributions to the project by their author.
   - Building turret idle/firing/low power animations
   - Animation theater/tile palette toggle
   - Animatable template
+  - Tank Bunker improvements
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
