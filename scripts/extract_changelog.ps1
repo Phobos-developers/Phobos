@@ -18,68 +18,93 @@ if (-not (Test-Path $WhatsNewPath)) {
 
 $content = (Get-Content -Path $WhatsNewPath -Raw -Encoding utf8) -replace "`r`n", "`n"
 
-$changelogIdx = $content.IndexOf("## Changelog")
-if ($changelogIdx -lt 0) {
+# ---- Parse the document into a heading tree ----
+$lines = $content -split "`n"
+$headings = @()
+for ($i = 0; $i -lt $lines.Count; $i++) {
+    if ($lines[$i] -match '^(#{1,6})\s+(.+)$') {
+        $headings += @{
+            Level = $matches[1].Length
+            Text  = $matches[2]
+            Line  = $i
+        }
+    }
+}
+
+# ---- Find ## Changelog and its ### children ----
+$changelogNode = $headings | Where-Object { $_.Level -eq 2 -and $_.Text -eq 'Changelog' } | Select-Object -First 1
+if (-not $changelogNode) {
     Write-Error "Could not find '## Changelog' section in $WhatsNewPath"
     exit 1
 }
 
-$afterChangelog = $content.Substring($changelogIdx + "## Changelog".Length + 1)
+# Next heading at level <= 2 marks the end of ## Changelog
+$changelogEndNode = $headings | Where-Object { $_.Level -le 2 -and $_.Line -gt $changelogNode.Line } | Select-Object -First 1
+$changelogEnd = if ($changelogEndNode) { $changelogEndNode.Line } else { $lines.Count }
 
-$nextSectionIdx = $afterChangelog.IndexOf("`n## ")
-$changelogBody = if ($nextSectionIdx -ge 0) { $afterChangelog.Substring(0, $nextSectionIdx) } else { $afterChangelog }
+# All ### headings within ## Changelog
+$versionNodes = $headings | Where-Object {
+    $_.Level -eq 3 -and $_.Line -gt $changelogNode.Line -and $_.Line -lt $changelogEnd
+}
 
-# Try to find the section: exact version -> parent versions -> Version TBD
-$sectionStart = -1
+if ($versionNodes.Count -eq 0) {
+    Write-Error "No version sections found within '## Changelog'"
+    exit 1
+}
+
+# ---- Extract the version string from a ### heading ----
+function Get-VersionText($headingText) {
+    if ($headingText -match '^Version\s') {
+        return $headingText  # "Version TBD (develop branch nightly builds)"
+    }
+    # Take the first space-delimited token, e.g. "0.4.0.3"
+    return ($headingText -split '\s')[0]
+}
+
+# ---- Match version ----
+$matchedNode = $null
 
 # 1) Exact version match
-$sectionStart = $changelogBody.IndexOf("### $version`n")
+$matchedNode = $versionNodes | Where-Object { (Get-VersionText $_.Text) -eq $version } | Select-Object -First 1
 
 # 2) Strip trailing numeric components until found
-if ($sectionStart -lt 0) {
-    $tryVersion = $version -replace '\.[0-9]+$', ''
-    while ($tryVersion -ne $version) {
-        $sectionStart = $changelogBody.IndexOf("### $tryVersion`n")
-        if ($sectionStart -ge 0) { break }
-        $version = $tryVersion
-        $tryVersion = $version -replace '\.[0-9]+$', ''
+if (-not $matchedNode) {
+    $tryVersion = $version
+    $stripped = $tryVersion -replace '\.[0-9]+$', ''
+    while ($stripped -ne $tryVersion) {
+        $tryVersion = $stripped
+        $matchedNode = $versionNodes | Where-Object { (Get-VersionText $_.Text) -eq $tryVersion } | Select-Object -First 1
+        if ($matchedNode) { break }
+        $stripped = $tryVersion -replace '\.[0-9]+$', ''
     }
-    $version = $Tag.TrimStart('v')  # restore original
 }
 
 # 3) Fall back to Version TBD
-if ($sectionStart -lt 0) {
-    $sectionStart = $changelogBody.IndexOf("### Version TBD")
+if (-not $matchedNode) {
+    $matchedNode = $versionNodes | Where-Object { (Get-VersionText $_.Text) -match '^Version TBD' } | Select-Object -First 1
 }
 
-if ($sectionStart -lt 0) {
+if (-not $matchedNode) {
     Write-Error "Could not find changelog section for version '$version' or 'Version TBD'"
     exit 1
 }
 
-$sectionEnd = $changelogBody.IndexOf("`n### ", $sectionStart + 5)
-if ($sectionEnd -ge 0) {
-    $sectionContent = $changelogBody.Substring($sectionStart, $sectionEnd - $sectionStart)
-} else {
-    $sectionContent = $changelogBody.Substring($sectionStart)
-}
+# ---- Extract content between this ### and the next ### (or end of ## Changelog) ----
+$sectionStart = $matchedNode.Line + 1  # skip the heading line itself
+$nextNode = $versionNodes | Where-Object { $_.Line -gt $matchedNode.Line } | Select-Object -First 1
+$sectionEnd = if ($nextNode) { $nextNode.Line } else { $changelogEnd }
 
-$firstNewline = $sectionContent.IndexOf("`n")
-if ($firstNewline -ge 0) {
-    $sectionContent = $sectionContent.Substring($firstNewline + 1)
-} else {
-    $sectionContent = ""
-}
+$sectionLines = $lines[$sectionStart..($sectionEnd - 1)]
+$sectionContent = ($sectionLines -join "`n").Trim()
 
-$sectionContent = $sectionContent.Trim()
-
-$dropdownPattern = '(?ms)^```\{dropdown\}[^\n]*\n(.+?)^```'
+# ---- Handle outer ```{dropdown} ... ``` wrapper ----
+$dropdownPattern = '(?ms)^```\{dropdown\}[^\n]*\n(.+?)^```$'
 $dropdownMatch = [regex]::Match($sectionContent, $dropdownPattern)
-
 if ($dropdownMatch.Success) {
     $sectionContent = $dropdownMatch.Groups[1].Value.Trim()
 }
 
+# Remove :open: Sphinx directive
 $sectionContent = $sectionContent -replace '(?m)^:open:\s*\n', ''
 $sectionContent = $sectionContent.Trim()
 
