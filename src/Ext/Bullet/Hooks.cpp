@@ -11,8 +11,13 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 
 	if (auto const pExt = BulletExt::ExtMap.TryFind(pThis))
 	{
+		if (pThis->Owner)
+		{
+			pExt->FirerHouse = pThis->Owner->Owner;
+			pExt->FirepowerMult = TechnoExt::GetCurrentFirepowerMultiplier(pThis->Owner);
+		}
+
 		auto const pType = pThis->Type;
-		pExt->FirerHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
 		pExt->CurrentStrength = pType->Strength;
 		pExt->TypeExtData = BulletTypeExt::ExtMap.Find(pType);
 

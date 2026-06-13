@@ -26,18 +26,6 @@ DEFINE_JUMP(VTABLE, 0x7F5CF4, 0x741490) // UnitClass_GetTechnoType -> UnitClass_
 
 #pragma region Update
 
-DEFINE_HOOK(0x7363C9, UnitClass_AI_AnimationPaused, 0x6)
-{
-	enum { SkipGameCode = 0x7363DE };
-
-	GET(UnitClass*, pThis, ESI);
-	
-	if (TechnoExt::ExtMap.Find(pThis)->DelayedFireSequencePaused)
-		return SkipGameCode;
-
-	return 0;
-}
-
 // Early, before ObjectClass_AI
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 {
@@ -65,6 +53,9 @@ DEFINE_HOOK(0x4DA54E, FootClass_AI, 0x6)
 	return 0;
 }
 
+// Skip vanilla animation counter code in UnitClass::AI.
+DEFINE_JUMP(LJMP, 0x7363C9, 0x7363DE);
+
 // After FootClass_AI
 DEFINE_HOOK(0x736480, UnitClass_AI, 0x6)
 {
@@ -74,6 +65,17 @@ DEFINE_HOOK(0x736480, UnitClass_AI, 0x6)
 	pExt->UpdateKeepTargetOnMove();
 	pExt->DepletedAmmoActions();
 	pExt->UpdateSubterraneanHarvester();
+
+	// Replace vanilla animation counter code in UnitClass::AI.
+	if (pThis->IsAlive && !pExt->DelayedFireSequencePaused && !((pThis->IsWarpingIn() && pThis->TemporalTargetingMe) || pThis->IsBeingWarpedOut()))
+	{
+		int animCounter = pThis->CurrentFiringFrame - 1;
+
+		if (animCounter < -1)
+			animCounter = -1;
+
+		pThis->CurrentFiringFrame = animCounter;
+	}
 
 	return 0;
 }
@@ -838,6 +840,23 @@ DEFINE_HOOK(0x6298CC, ParasiteClass_AI_GrippleAnim, 0x5)
 
 	R->EAX(pWHExt->Parasite_GrappleAnim.Get(RulesExt::Global()->Parasite_GrappleAnim.isset() ? RulesExt::Global()->Parasite_GrappleAnim.Get() : AnimTypeClass::FindIndex("SQDG")));
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x62AB69, ParasiteClass_CanExistOnVictimCell_AllowWaterExit, 0x6)
+{
+	enum { SkipChecks = 0x62AC0F, ForceFail = 0x62AB4B, ContinueVanilla = 0x62AB77 };
+
+	GET(TechnoTypeClass*, pType, EAX);
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto& globalVal = RulesExt::Global()->Parasite_AllowWaterExit;
+
+	if (pTypeExt->Parasite_AllowWaterExit.isset())
+		return pTypeExt->Parasite_AllowWaterExit.Get() ? SkipChecks : ForceFail;
+	else if (globalVal.isset())
+		return globalVal.Get() ? SkipChecks : ForceFail;
+	else
+		return pType->Naval ? SkipChecks : ContinueVanilla;
 }
 
 #pragma region RadarDrawing
@@ -2046,7 +2065,7 @@ DEFINE_HOOK(0x70AFEF, TechnoClass_UpdateSight_DynamicSight2, 0x6)
 
 #pragma endregion
 
-namespace WrapPerStep
+namespace WarpPerStep
 {
 	class TemporalClassFake final : public TemporalClass
 	{
@@ -2060,7 +2079,7 @@ namespace WrapPerStep
 	};
 }
 
-int WrapPerStep::TemporalClassFake::_GetWarpPerStep(int helperCount)
+int WarpPerStep::TemporalClassFake::_GetWarpPerStep(int helperCount)
 {
 	const auto pThis = static_cast<TemporalClass*>(this);
 	auto pTemporal = pThis;
@@ -2077,7 +2096,7 @@ int WrapPerStep::TemporalClassFake::_GetWarpPerStep(int helperCount)
 		int weaponIdx = 0;
 
 		if (AresHelper::CanUseAres)
-			weaponIdx = reinterpret_cast<WrapPerStep::DummyExtHere*>(*(uintptr_t*)((char*)pOwner + 0x154))->WeaponIndex_Warp;
+			weaponIdx = reinterpret_cast<WarpPerStep::DummyExtHere*>(*(uintptr_t*)((char*)pOwner + 0x154))->WeaponIndex_Warp;
 		else
 			weaponIdx = pOwner->SelectWeapon(nullptr);
 		
@@ -2127,4 +2146,4 @@ int WrapPerStep::TemporalClassFake::_GetWarpPerStep(int helperCount)
 
 	return sum;
 }
-DEFINE_FUNCTION_JUMP(LJMP, 0x71AB10, WrapPerStep::TemporalClassFake::_GetWarpPerStep)
+DEFINE_FUNCTION_JUMP(LJMP, 0x71AB10, WarpPerStep::TemporalClassFake::_GetWarpPerStep)

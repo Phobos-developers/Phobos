@@ -294,6 +294,8 @@ This page lists all the individual contributions to the project by their author.
   - Frame CRC generation rewrite
   - Laser drawing Z-adjust customization
   - Armed building guard mission retry delay customization
+  - Animation theater/tile palette toggle
+  - Building turret idle/firing/low power animations
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -538,6 +540,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
   - Fix the bug where passengers, when their transport unit is removed, would cause incorrect `LimboTracker` counts due to either having their destructor called directly (bypassing `UnInit`) or nested `UnInit` calls resetting the deletion flag too early, thereby breaking auto-death and superweapon auxiliary techno checks
   - Allow `Temporal` warhead to apply ratio and bonus
+  - Fix the bug that techno will get stuck if change owner in tunnel
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -670,6 +673,7 @@ This page lists all the individual contributions to the project by their author.
   - Return warhead
   - `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses
   - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
+  - Dynamic team delays
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`
@@ -791,7 +795,7 @@ This page lists all the individual contributions to the project by their author.
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
 - **Chasheen (Chasheenburg)** - CN docs help for Build#24
-- **Noble Fish** - some minor improvements and fixes, established Community Chinese docs, took over and completely rewrite the Official Chinese docs during Build#46
+- **Noble Fish** - some minor improvements and fixes, established Community Chinese docs, took over and completely rewrite the Official Chinese docs during Build#46, Dehardcode of parasites unlimboing after killing naval targets, Allow warhead to only affect invoker
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings, custom locomotors example implementation
 - **AlexB** - Original FlyingStrings implementation

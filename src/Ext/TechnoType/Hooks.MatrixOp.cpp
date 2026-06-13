@@ -422,6 +422,8 @@ static Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7ECD8C, JumpjetLocomotionClass_Draw_Matrix);
 
+DEFINE_PATCH(0x40F271, 0x00, 0x00, 0x00, 0x08); // 128M voxel cache
+
 DEFINE_HOOK(0x73B748, UnitClass_DrawVXL_ResetKeyForTurretUse, 0x7)
 {
 	REF_STACK(PhobosVoxelIndexKey, key, STACK_OFFSET(0x1C4, -0x1B0));
@@ -547,8 +549,12 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 {
 	GET(UnitClass*, pThis, EBP);
 	enum { SkipDrawing = 0x73C5C9 };
+
+	if (pThis->CloakState != CloakState::Uncloaked || pThis->Type->NoShadow)
+		return SkipDrawing;
+
 	auto const loco = pThis->Locomotor.GetInterfacePtr();
-	if (pThis->CloakState != CloakState::Uncloaked || pThis->Type->NoShadow || !loco->Is_To_Have_Shadow())
+	if (!loco->Is_To_Have_Shadow())
 		return SkipDrawing;
 
 	REF_STACK(Matrix3D, shadowMatrix, STACK_OFFSET(0x1C4, -0x130));
@@ -732,22 +738,9 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		return nullptr;
 	};
 
-	auto GetBarrelVoxel = [pDrawType](int idx)->VoxelStruct*
-	{
-		if (pDrawType->TurretCount == 0 || pDrawType->IsGattling || idx < 0)
-			return &pDrawType->BarrelVoxel;
-
-		if (idx < 18)
-			return &pDrawType->ChargerBarrels[idx];
-
-		if (AresHelper::CanUseAres)
-		{
-			auto* aresTypeExt = reinterpret_cast<AresTechnoTypeExt*>(pDrawType->align_2FC);
-			return &aresTypeExt->ChargerBarrels[idx - 18];
-		}
-
-		return nullptr;
-	};
+	const auto tur = GetTurretVoxel(pThis->CurrentTurretNumber);
+	if (!(tur && tur->VXL && tur->HVA))
+		return SkipDrawing;
 
 	const double adjustedFactor = Pixel_Per_Lepton / currentScale;
 	pDrawTypeExt->ApplyTurretOffset(&mtx, adjustedFactor);
@@ -757,9 +750,22 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	if (inRecoil)
 		mtx.TranslateX(-pThis->TurretRecoil.TravelSoFar);
 
-	const auto tur = GetTurretVoxel(pThis->CurrentTurretNumber);
-	if (!(tur && tur->VXL && tur->HVA))
-		return SkipDrawing;
+	auto GetBarrelVoxel = [pDrawType](int idx)->VoxelStruct*
+		{
+			if (pDrawType->TurretCount == 0 || pDrawType->IsGattling || idx < 0)
+				return &pDrawType->BarrelVoxel;
+
+			if (idx < 18)
+				return &pDrawType->ChargerBarrels[idx];
+
+			if (AresHelper::CanUseAres)
+			{
+				auto* aresTypeExt = reinterpret_cast<AresTechnoTypeExt*>(pDrawType->align_2FC);
+				return &aresTypeExt->ChargerBarrels[idx - 18];
+			}
+
+			return nullptr;
+		};
 
 	const auto bar = GetBarrelVoxel(pThis->CurrentTurretNumber);
 	const auto haveBar = bar && bar->VXL && bar->HVA && !bar->VXL->Initialized;
@@ -827,10 +833,17 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 	GET_STACK(RectangleStruct*, bound, STACK_OFFSET(0xCC, 0x10));
 	enum { FinishDrawing = 0x4148A5 };
 
+	if (pThis->CloakState != CloakState::Uncloaked || pThis->IsSinking)
+		return FinishDrawing;
+
 	AircraftTypeClass* pAircraftType = pThis->Type;
+
+	if (pAircraftType->NoShadow)
+		return FinishDrawing;
+
 	const auto loco = pThis->Locomotor.GetInterfacePtr();
 
-	if (pAircraftType->NoShadow || pThis->CloakState != CloakState::Uncloaked || pThis->IsSinking || !loco->Is_To_Have_Shadow())
+	if (!loco->Is_To_Have_Shadow())
 		return FinishDrawing;
 
 	pAircraftType = TechnoExt::GetAircraftTypeExtra(pThis);

@@ -5,6 +5,7 @@
 #include <Misc/FlyingStrings.h>
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/AresFunctions.h>
+#include <Ext/CaptureManager/Body.h>
 
 #pragma region CreateGap Calls
 
@@ -177,7 +178,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			auto const items = Helpers::Alex::getCellSpreadItemsExt(coords, cellSpread, true, this->CellSpread_Cylinder);
 
 			for (auto const pTarget : items)
-				this->DetonateOnOneUnit(pHouse, pTarget, coords, damage, pOwner, bulletWasIntercepted);
+				this->DetonateOnOneUnit(pHouse, pTarget, coords, damage, pOwner, pBulletExt, bulletWasIntercepted);
 		}
 		else if (pBullet)
 		{
@@ -186,18 +187,18 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				// Jun 2, 2024 - Starkku: We should only detonate on the target if the bullet, at the moment of detonation is within acceptable distance of the target.
 				// Ares uses 64 leptons / quarter of a cell as a tolerance, so for sake of consistency we're gonna do the same here.
 				if (pBullet->DistanceFrom(pTarget) <= 64.0) // Unsorted::LeptonsPerCell / 4.0
-					this->DetonateOnOneUnit(pHouse, pTarget, coords, damage, pOwner, bulletWasIntercepted);
+					this->DetonateOnOneUnit(pHouse, pTarget, coords, damage, pOwner, pBulletExt, bulletWasIntercepted);
 			}
 		}
 		else if (auto const pTarget = this->DamageAreaTarget)
 		{
 			if (coords.DistanceFromSquared(pTarget->GetCoords()) <= 4096.0) // (Unsorted::LeptonsPerCell / 4.0) * (Unsorted::LeptonsPerCell / 4.0)
-				this->DetonateOnOneUnit(pHouse, pTarget, coords, damage, pOwner, bulletWasIntercepted);
+				this->DetonateOnOneUnit(pHouse, pTarget, coords, damage, pOwner, pBulletExt, bulletWasIntercepted);
 		}
 	}
 }
 
-void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, const CoordStruct& coords, int damage, TechnoClass* pOwner, bool bulletWasIntercepted, int distance)
+void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, const CoordStruct& coords, int damage, TechnoClass* pOwner, BulletExt::ExtData* pBulletExt, bool bulletWasIntercepted, int distance)
 {
 	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking || pTarget->BeingWarpedOut)
 		return;
@@ -241,7 +242,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	// Put Crit at last since it might kill the target
 	if (this->Crit_CurrentChance > 0.0 && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
-		this->ApplyCrit(pHouse, pTarget, pOwner);
+		this->ApplyCrit(pHouse, pTarget, pOwner, pBulletExt);
 
 #ifdef LOCO_TEST_WARHEADS
 	if (this->InflictLocomotor)
@@ -480,14 +481,14 @@ HouseClass* WarheadTypeExt::ExtData::ApplyRemoveMindControl(HouseClass* pHouse, 
 {
 	if (const auto pController = pTarget->MindControlledBy)
 	{
-		pController->CaptureManager->FreeUnit(pTarget);
+		CaptureManagerExt::FreeUnit(pController->CaptureManager, pTarget, this->RemoveMindControl_Silent.Get(RulesExt::Global()->RemoveMindControl_Silent));
 		return pTarget->Owner;
 	}
 
 	return pHouse;
 }
 
-void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
+void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, BulletExt::ExtData* pBulletExt)
 {
 	const double dice = this->Crit_ApplyChancePerTarget || !this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate) ? ScenarioClass::Instance->Random.RandomDouble() : this->Crit_RandomBuffer;
 
@@ -542,8 +543,13 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 
 	int damage = this->Crit_ExtraDamage.Get();
 
-	if (this->Crit_ExtraDamage_ApplyFirepowerMult && pOwner)
-		damage = static_cast<int>(damage * TechnoExt::GetCurrentFirepowerMultiplier(pOwner));
+	if (this->Crit_ExtraDamage_ApplyFirepowerMult)
+	{
+		if (pBulletExt)
+			damage = static_cast<int>(damage * pBulletExt->FirepowerMult);
+		else if (pOwner)
+			damage = static_cast<int>(damage * TechnoExt::GetCurrentFirepowerMultiplier(pOwner));
+	}
 
 	if (this->Crit_Warhead)
 	{

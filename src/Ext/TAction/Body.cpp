@@ -67,6 +67,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::ToggleMCVRedeploy(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::UndeployToWaypoint:
 		return TActionExt::UndeployToWaypoint(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetFollowsIndexForVehicle:
+		return TActionExt::SetFollowsIndexForVehicle(pThis, pHouse, pObject, pTrigger, location);
 
 	case PhobosTriggerAction::EditAngerNode:
 		return TActionExt::EditAngerNode(pThis, pHouse, pObject, pTrigger, location);
@@ -477,6 +479,57 @@ bool TActionExt::UndeployToWaypoint(TActionClass* const pThis, HouseClass* const
 	return true;
 }
 
+bool TActionExt::SetFollowsIndexForVehicle(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	int followerIndex = pThis->Param3;
+
+	if (followerIndex < 0 || followerIndex >= UnitClass::Array.Count)
+		return false;
+
+	UnitClass* pNewFollower = UnitClass::Array[followerIndex];
+	if (!pNewFollower)
+		return false;
+
+	for (auto const pTechno : TechnoClass::Array)
+	{
+		if (pTechno->WhatAmI() == AbstractType::BuildingType)
+			continue;
+
+		FootClass* pFoot = abstract_cast<FootClass*>(pTechno);
+		if (!pFoot)
+			continue;
+
+		if (pFoot->WhatAmI() != AbstractType::Unit)
+			continue;
+
+		if (!pFoot->AttachedTag || !pFoot->AttachedTag->ContainsTrigger(pTrigger))
+			continue;
+
+		UnitClass* pLeader = static_cast<UnitClass*>(pFoot);
+
+		if (UnitClass* pOldFollower = pLeader->FollowerCar)
+		{
+			pOldFollower->IsFollowerCar = false;
+			pLeader->FollowerCar = nullptr;
+		}
+
+		for (auto pOther : UnitClass::Array)
+		{
+			if (pOther && pOther->FollowerCar == pNewFollower)
+			{
+				pOther->FollowerCar = nullptr;
+				break;
+			}
+		}
+
+		pLeader->FollowerCar = pNewFollower;
+		pNewFollower->IsFollowerCar = true;
+
+	}
+
+	return true;
+}
+
 bool TActionExt::EditAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	if (pHouse->AngerNodes.Count <= 0)
@@ -647,7 +700,7 @@ bool TActionExt::SetFreeRadar(TActionClass* const pThis, HouseClass* const pHous
 bool TActionExt::SetTeamDelay(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
 {
 	const int value = pThis->Param3;
-	const int timer = value < 0 ? RulesClass::Instance->TeamDelays.Items[static_cast<int>(pHouse->AIDifficulty)] : value;
+	const int timer = value < 0 ? RulesClass::Instance->TeamDelays.Items[pHouse->GetAIDifficultyIndex()] : value;
 	HouseExt::ExtMap.Find(pHouse)->TeamDelay = value;
 
 	auto& Timer = pHouse->TeamDelayTimer;
