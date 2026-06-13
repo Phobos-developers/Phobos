@@ -2676,7 +2676,6 @@ msgstr "**AutoGavy** - 抛射体拦截逻辑、弹头暴击逻辑"
 msgid "**Chasheen (Chasheenburg)** - CN docs help for Build#24"
 msgstr "**Chasheen (Chasheenburg)** - Build#24 的中文文档协助"
 
-#, fuzzy
 msgid ""
 "**Noble Fish** - some minor improvements and fixes, established Community"
 " Chinese docs, took over and completely rewrite the Official Chinese docs"
@@ -2684,7 +2683,7 @@ msgid ""
 "targets"
 msgstr ""
 "**Noble Fish** - 一些小改进与修复、文档维护者（官方英文文档维护、创建了社区中文文档、在 Build#46 "
-"接管并完全重写了官方中文文档）"
+"接管并完全重写了官方中文文档）、寄生击杀水上目标后刷出的自定义"
 
 msgid ""
 "**tomsons26** - all-around help, assistance and guidance in reverse-"
