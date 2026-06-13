@@ -22,7 +22,10 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	// AffectsAbove/BelowPercent & AffectsNeutral can ignore IgnoreDefenses like AffectsAllies/Enmies/Owner
 	// They should be checked here to cover all cases that directly use ReceiveDamage to deal damage
-	if (!pWHExt->IsHealthInThreshold(pThis) || !pWHExt->IsVeterancyInThreshold(pThis) || (!pWHExt->AffectsNeutral && pThis->Owner->IsNeutral()))
+	if (!pWHExt->IsHealthInThreshold(pThis)
+	|| !pWHExt->IsVeterancyInThreshold(pThis)
+	|| (!pWHExt->AffectsNeutral && pThis->Owner->IsNeutral())
+	|| !pWHExt->IsInvokerAllowed(pThis, pWHExt->DamageAreaInvoker))
 	{
 		damage = 0;
 		return 0;

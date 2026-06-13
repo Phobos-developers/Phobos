@@ -42,25 +42,8 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 	if (!IsVeterancyInThreshold(pTarget))
 		return false;
 
-	if (this->AffectsInvokerOnly)
-	{
-		const bool invokerExists = (this->DamageAreaInvoker != nullptr);
-		const bool targetIsInvoker = invokerExists && (pTarget == this->DamageAreaInvoker);
-
-		bool allowed;
-
-		if (invokerExists)
-		{
-			allowed = this->AffectsInvokerOnly_Reverse ? !targetIsInvoker : targetIsInvoker;
-		}
-		else
-		{
-			allowed = !this->AffectsInvokerOnly_IgnoreInvokerState.Get(RulesExt::Global()->AffectsInvokerOnly_IgnoreInvokerState);
-		}
-
-		if (!allowed)
-			return false;
-	}
+	if (!IsInvokerAllowed(pTarget, this->DamageAreaInvoker))
+		return false;
 
 	if (!this->EffectsRequireVerses)
 		return true;
@@ -87,6 +70,25 @@ bool WarheadTypeExt::ExtData::IsVeterancyInThreshold(TechnoClass* pTarget) const
 		return true;
 
 	return EnumFunctions::CanTargetVeterancy(this->AffectsVeterancy, pTarget);
+}
+
+bool WarheadTypeExt::ExtData::IsInvokerAllowed(TechnoClass* pTarget, TechnoClass* pInvoker) const
+{
+	if (!this->AffectsInvokerOnly)
+		return true;
+
+	const bool invokerExists = (pInvoker != nullptr);
+	const bool targetIsInvoker = invokerExists && (pTarget == pInvoker);
+
+	if (invokerExists)
+	{
+		return this->AffectsInvokerOnly_Reverse ? !targetIsInvoker : targetIsInvoker;
+	}
+	else
+	{
+		return !this->AffectsInvokerOnly_IgnoreInvokerState.Get(
+			RulesExt::Global()->AffectsInvokerOnly_IgnoreInvokerState);
+	}
 }
 
 // Checks if Warhead can affect target that might or might be currently invulnerable.
