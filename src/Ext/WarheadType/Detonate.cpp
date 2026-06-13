@@ -34,10 +34,7 @@ struct InvokerGuard
 
 	~InvokerGuard()
 	{
-		if (pOldInvoker && !TechnoExt::ExtMap.Find(pOldInvoker))
-			pExt->DamageAreaInvoker = nullptr;
-		else
-			pExt->DamageAreaInvoker = pOldInvoker;
+		pExt->DamageAreaInvoker = pOldInvoker;
 	}
 };
 
