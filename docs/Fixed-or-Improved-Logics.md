@@ -1434,7 +1434,7 @@ BallisticScatter.Max= ; floating point value, distance in cells
 - Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](New-or-Enhanced-Logics.md#weapon-targeting-filter) & [AttachEffect filters](New-or-Enhanced-Logics.md#attached-effects) will be checked.
   - Do note that this overrides the normal check of only allowing shrapnels to hit non-allied objects. Use `CanTargetHouses=enemies` to manually enable this behaviour again.
 - `Shrapnel.IgnoreHitBuildings` can be used to override default behaviour where shrapnels can snap onto building targets multiple times if the building occupies more than one cell. Note that this wont prevent random cells within the building's `Foundation` from being targeted if there are not enough objects around to satisfy `ShrapnelCount`.
-- `Shrapnel.UseNewWarheadChecks` can be used to determine whether to use [Customizable Warhead trigger conditions](Fixed-or-Improved-Logics.md#customizable-warhead-trigger-conditions) when hitting units to decide if it triggers.
+- `Shrapnel.UseNewWarheadChecks` can be used to determine whether to use [Customizable Warhead trigger conditions](Fixed-or-Improved-Logics.md#customizable-warhead-trigger-conditions) and [Only affects invoker checks](New-or-Enhanced-Logics.md#allow-warhead-to-only-affect-invoker) when hitting units to decide if it triggers.
 
 In `rulesmd.ini`:
 ```ini
