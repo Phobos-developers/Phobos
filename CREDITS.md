@@ -651,7 +651,7 @@ This page lists all the individual contributions to the project by their author.
   - Established Community Chinese docs
   - Took over and completely rewrite the Official Chinese docs during Build#46
   - Dehardcode of parasites unlimboing after killing naval targets
-  - Customize the drawing interval for `Tiled`
+  - Customize `Tiled` drawing interval and centering
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
