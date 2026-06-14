@@ -645,6 +645,13 @@ This page lists all the individual contributions to the project by their author.
   - Allow the aircraft to enter area guard mission and not crash immediately without any airport
   - Allow merging AOE damage to buildings into one
   - Fix the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health
+- **Noble Fish**:
+  - Documentation maintenance
+  - Chinese documentation maintenance and translation
+  - Established Community Chinese docs
+  - Took over and completely rewrite the Official Chinese docs during Build#46
+  - Dehardcode of parasites unlimboing after killing naval targets
+  - Customize the drawing interval for `Tiled`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -795,7 +802,6 @@ This page lists all the individual contributions to the project by their author.
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
 - **Chasheen (Chasheenburg)** - CN docs help for Build#24
-- **Noble Fish** - some minor improvements and fixes, established Community Chinese docs, took over and completely rewrite the Official Chinese docs during Build#46, Dehardcode of parasites unlimboing after killing naval targets, Customize the drawing interval for `Tiled`
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings, custom locomotors example implementation
 - **AlexB** - Original FlyingStrings implementation
