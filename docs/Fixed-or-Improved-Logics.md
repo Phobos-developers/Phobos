@@ -1202,7 +1202,7 @@ FactoryPlant.MaxCount=-1     ; integer
 - It is possible to add new gates which can be connected with any Walls by specifing them as `EWGates` and `NSGates` like `xxGateOne` and `xxGateTwo` do.
   - In the in-game orientation, north points to the upper right, so `NSGates` correspond to buildings with `Foundation=1x3`, and `EWGates` correspond to buildings with `Foundation=3x1`.
 
-![image](_static/images/ewgates.gif)  
+![image](_static/images/ewgates.gif)
 *A Gate EW is built onto the Concrete Walls in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 In `rulesmd.ini`:
@@ -1434,20 +1434,20 @@ BallisticScatter.Max= ; floating point value, distance in cells
 - Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](New-or-Enhanced-Logics.md#weapon-targeting-filter) & [AttachEffect filters](New-or-Enhanced-Logics.md#attached-effects) will be checked.
   - Do note that this overrides the normal check of only allowing shrapnels to hit non-allied objects. Use `CanTargetHouses=enemies` to manually enable this behaviour again.
 - `Shrapnel.IgnoreHitBuildings` can be used to override default behaviour where shrapnels can snap onto building targets multiple times if the building occupies more than one cell. Note that this wont prevent random cells within the building's `Foundation` from being targeted if there are not enough objects around to satisfy `ShrapnelCount`.
-- `Shrapnel.UseNewWarheadChecks` can be used to determine whether to use [Customizable Warhead trigger conditions](Fixed-or-Improved-Logics.md#customizable-warhead-trigger-conditions) and [Only affects invoker checks](New-or-Enhanced-Logics.md#allow-warhead-to-only-affect-invoker) when hitting units to decide if it triggers.
+- `Shrapnel.ObeyWarheadTriggerConditions` can be used to determine whether to use [Customizable Warhead trigger conditions](Fixed-or-Improved-Logics.md#customizable-warhead-trigger-conditions) and [Only affects invoker checks](New-or-Enhanced-Logics.md#allow-warhead-to-only-affect-invoker) when hitting units to decide if it triggers.
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-Shrapnel.IgnoreHitBuildings=false  ; boolean
-Shrapnel.UseNewWarheadChecks=true  ; boolean
+Shrapnel.IgnoreHitBuildings=false           ; boolean
+Shrapnel.ObeyWarheadTriggerConditions=true  ; boolean
 
-[SOMEPROJECTILE]                   ; Projectile
-Shrapnel.AffectsGround=false       ; boolean
-Shrapnel.AffectsBuildings=false    ; boolean
-Shrapnel.UseWeaponTargeting=false  ; boolean
-Shrapnel.IgnoreHitBuildings=       ; boolean
-Shrapnel.UseNewWarheadChecks=      ; boolean, defaults to [CombatDamage] -> Shrapnel.UseNewWarheadChecks
+[SOMEPROJECTILE]                            ; Projectile
+Shrapnel.AffectsGround=false                ; boolean
+Shrapnel.AffectsBuildings=false             ; boolean
+Shrapnel.UseWeaponTargeting=false           ; boolean
+Shrapnel.IgnoreHitBuildings=                ; boolean
+Shrapnel.ObeyWarheadTriggerConditions=      ; boolean, defaults to [CombatDamage] -> Shrapnel.ObeyWarheadTriggerConditions
 ```
 
 ## Technos

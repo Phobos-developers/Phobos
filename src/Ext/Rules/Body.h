@@ -352,7 +352,7 @@ public:
 		Valueable<bool> ShipLocomotorMakesWake;
 
 		Valueable<bool> Shrapnel_IgnoreHitBuildings;
-		Valueable<bool> Shrapnel_UseNewWarheadChecks;
+		Valueable<bool> Shrapnel_ObeyWarheadTriggerConditions;
 
 		Nullable<PartialVector2D<int>> BuildingGuardRetryDelay;
 
@@ -659,7 +659,7 @@ public:
 			, FiringAnim_Update { false }
 			, ExtendedPlayerRepair { false }
 			, Shrapnel_IgnoreHitBuildings { false }
-			, Shrapnel_UseNewWarheadChecks { true }
+			, Shrapnel_ObeyWarheadTriggerConditions { true }
 			, BuildingGuardRetryDelay {}
 			, Temporal_ApplyVersus { false }
 			, Temporal_ApplyMultiplier { false }
