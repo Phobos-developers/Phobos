@@ -15,10 +15,12 @@ public:
 	Nullable<int> PipsLength {};
 	Valueable<SHPStruct*> PipsShape { FileSystem::PIPS_SHP };
 	CustomPalette PipsPalette {};
+	TranslucencyLevel PipsTranslucency {};
 
 	Valueable<PartialVector3D<int>> PipBrd {};
 	Nullable<SHPStruct*> PipBrdShape {};
 	CustomPalette PipBrdPalette {};
+	TranslucencyLevel PipBrdTranslucency {};
 	Valueable<int> PipBrdXOffset { 0 };
 
 	Valueable<bool> IsAnimated { false };
@@ -50,9 +52,9 @@ public:
 		return Vector3D<int>(defaultValue, defaultValue, defaultValue);
 	}
 
-	void DrawBuildingBar(Point2D* pLocation, RectangleStruct* pBounds, const int pipsTotal, const int pipsLength, const int frame, const int emptyFrame) const;
-	void DrawOtherBar(SHPStruct* pBrdShape, Point2D* pLocation, RectangleStruct* pBounds, const int pipsTotal, const int frame, const int brdFrame) const;
-	void DrawAnimatedBar(SHPStruct* pBrdShape, Point2D* pLocation, RectangleStruct* pBounds, const double ratio, const int brdFrame) const;
+	void DrawBuildingBar(Point2D* pLocation, RectangleStruct* pBounds, const int pipsTotal, const int pipsLength, const int frame, const int emptyFrame);
+	void DrawOtherBar(SHPStruct* pBrdShape, Point2D* pLocation, RectangleStruct* pBounds, const int pipsTotal, const int frame, const int brdFrame);
+	void DrawAnimatedBar(SHPStruct* pBrdShape, Point2D* pLocation, RectangleStruct* pBounds, const double ratio, const int brdFrame);
 
 	void LoadFromINI(CCINIClass* pINI);
 	void LoadFromStream(PhobosStreamReader& Stm);
@@ -63,7 +65,7 @@ private:
 	void Serialize(T& Stm);
 
 public:
-	static void DrawBuildingBar(ConvertClass* pPalette, SHPStruct* pShape, Point2D* pLocation, RectangleStruct* pBounds, Point2D interval, const int pipsTotal, const int pipsLength, const int frame, const int emptyFrame);
-	static void DrawOtherBar(ConvertClass* pBrdPalette, SHPStruct* pBrdShape, ConvertClass* pPipsPalette, SHPStruct* pPipsShape, Point2D* pLocation, RectangleStruct* pBounds, const int brdXOffset, Point2D interval, const int pipsTotal, const int frame, const int brdFrame);
-	static void DrawAnimatedBar(ConvertClass* pBrdPalette, SHPStruct* pBrdShape, ConvertClass* pPipsPalette, SHPStruct* pPipsShape, Point2D* pLocation, RectangleStruct* pBounds, const int brdXOffset, const double ratio, const int brdFrame);
+	static void DrawBuildingBar(ConvertClass* pPalette, SHPStruct* pShape, Point2D* pLocation, RectangleStruct* pBounds, Point2D interval, const int pipsTotal, const int pipsLength, const int frame, const int emptyFrame, BlitterFlags pipsFlags, BlitterFlags pipsEmptyFlags);
+	static void DrawOtherBar(ConvertClass* pBrdPalette, SHPStruct* pBrdShape, ConvertClass* pPipsPalette, SHPStruct* pPipsShape, Point2D* pLocation, RectangleStruct* pBounds, const int brdXOffset, Point2D interval, const int pipsTotal, const int frame, const int brdFrame, BlitterFlags pipsFlags, BlitterFlags pipBrdFlags);
+	static void DrawAnimatedBar(ConvertClass* pBrdPalette, SHPStruct* pBrdShape, ConvertClass* pPipsPalette, SHPStruct* pPipsShape, Point2D* pLocation, RectangleStruct* pBounds, const int brdXOffset, const double ratio, const int brdFrame, BlitterFlags pipsFlags, BlitterFlags pipBrdFlags);
 };

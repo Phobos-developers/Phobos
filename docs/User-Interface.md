@@ -486,10 +486,12 @@ PipsInterval.Building=-4,2         ; integer, interval per two pips
 PipsLength=                        ; integer, default to 8 for infantry, 17 for others
 PipsShape=pips.shp                 ; filename - including the .shp/.pcx extension
 PipsPalette=palette.pal            ; filename - including the .pal extension
+PipsTranslucency=0                 ; translucency level (0/25/50/75)
 
 PipBrd=                            ; integer
 PipBrdShape=                       ; filename - including the .shp extension
 PipBrdPalette=palette.pal          ; filename - including the .pal extension
+PipBrdTranslucency=0               ; translucency level (0/25/50/75)
 PipBrdXOffset=0                    ; integer
 
 IsAnimated=false                   ; boolean
