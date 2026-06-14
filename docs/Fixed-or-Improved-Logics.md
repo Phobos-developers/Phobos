@@ -883,9 +883,9 @@ ExtraShadow=true              ; boolean
 
 In `artmd.ini`:
 ```ini
-[SOMEANIM]                ; AnimationType, with Tiled=yes
-Tiled.Interval=0          ; integer, pixels
-Tiled.AlignToCenter=false ; boolean
+[SOMEANIM]                 ; AnimationType, with Tiled=yes
+Tiled.Interval=0           ; integer, pixels
+Tiled.AlignToCenter=false  ; boolean
 ```
 
 ### Customize whether `Crater=yes` animation would destroy tiberium
