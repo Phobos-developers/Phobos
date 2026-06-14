@@ -1905,7 +1905,7 @@ msgstr "为拥有 `DrawType=ebolt` 的激光尾迹类型添加 `Bolt.ZAdjust` �
 msgid ""
 "Allow *Harvester counter* to display only the total number or the number "
 "currently working (by Noble_Fish)"
-msgstr "允许 *Harvester counter* 只显示总数或正在工作的数量（by Noble_Fish）"
+msgstr "允许 *矿车计数器* 只显示总数或正在工作的数量（by Noble_Fish）"
 
 msgid ""
 "[Allow customizing guard mission retry delay for buildings with weapons"
@@ -1978,9 +1978,8 @@ msgid ""
 "or-Improved-Logics.md#dehardcode-of-parasites-unlimboing-after-killing-"
 "naval-targets) (by Noble_Fish)"
 msgstr ""
-"[寄生击杀水上目标后刷出的自定义](Fixed-"
-"or-Improved-Logics.md#dehardcode-of-parasites-unlimboing-after-killing-"
-"naval-targets)（by Noble_Fish）"
+"[寄生击杀水上目标后刷出的自定义](Fixed-or-Improved-Logics.md#dehardcode-of-parasites-"
+"unlimboing-after-killing-naval-targets)（by Noble_Fish）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
@@ -2715,10 +2714,10 @@ msgstr "修复了 Ares 的单位转换不会通过 `FireAngle` 重设炮管方�
 
 msgid ""
 "Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's"
-" repair flash effect (by Sovietianqi, based on knowledge of DeathFish)"
+" repair flash effect (by Sovietianqi, based on knowledge of Noble_Fish)"
 msgstr ""
 "修复了 Ares 的 `[WarheadType] -> Flash.Duration=` 无法覆盖维修武器闪光效果的问题（by "
-"Sovietianqi，基于 DeathFish 的知识）"
+"Sovietianqi，基于 Noble_Fish 的知识）"
 
 msgid ""
 "Fixed the bug that building with `CloningFacility=true` and "
