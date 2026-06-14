@@ -820,6 +820,26 @@ LandingDir=     ; Direction type (integers from 0-255). Accepts negative values 
 
 ## Animations
 
+### Animation palette customizations & improvements
+
+- Animations using `AltPalette` are now remapped to their owner's color scheme instead of first listed color scheme and no longer draw over shroud.
+  - Color scheme from `[AudioVisual] -> AnimRemapDefaultColorScheme` is used if anim has no owner, which defaults to first listed color scheme from `[Colors]` still.
+  - They can also have map lighting apply on them if `AltPalette.ApplyLighting` is set to true.
+- `TheaterPalette` can be used to customize whether or not animation is drawn in theater / tile palette. Takes priority all over palette-influencing settings except `IsVeins=true`. Defaults to true for tile animations, otherwise false.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+AnimRemapDefaultColorScheme=    ; integer, [Colors] list index
+```
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]                      ; AnimationType
+AltPalette.ApplyLighting=false  ; boolean
+TheaterPalette=                 ; boolean
+```
+
 ### Animation weapon and damage settings
 
 - `Weapon` can be set to a WeaponType, to create a projectile and immediately detonate it instead of simply dealing `Damage` by `Warhead`. This allows weapon effects to be applied.
@@ -944,26 +964,6 @@ In `artmd.ini`:
 ```ini
 [SOMEANIM]               ; AnimationType
 HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
-```
-
-### Animation palette customizations & improvements
-
-- Animations using `AltPalette` are now remapped to their owner's color scheme instead of first listed color scheme and no longer draw over shroud.
-  - Color scheme from `[AudioVisual] -> AnimRemapDefaultColorScheme` is used if anim has no owner, which defaults to first listed color scheme from `[Colors]` still.
-  - They can also have map lighting apply on them if `AltPalette.ApplyLighting` is set to true.
-- `TheaterPalette` can be used to customize whether or not animation is drawn in theater / tile palette. Takes priority all over palette-influencing settings except `IsVeins=true`. Defaults to true for tile animations, otherwise false.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-AnimRemapDefaultColorScheme=    ; integer, [Colors] list index
-```
-
-In `artmd.ini`:
-```ini
-[SOMEANIM]                      ; AnimationType
-AltPalette.ApplyLighting=false  ; boolean
-TheaterPalette=                 ; boolean
 ```
 
 ## Buildings
@@ -1199,18 +1199,11 @@ FactoryPlant.MaxCount=-1     ; integer
 
 ### Gates connecting with Walls
 
-- It is possible to add new gates which can be connected with any Walls by specifing them as `EWGates` and `NSGates` like `xxGateOne` and `xxGateTwo` do.
-  - In the in-game orientation, north points to the upper right, so `NSGates` correspond to buildings with `Foundation=1x3`, and `EWGates` correspond to buildings with `Foundation=3x1`.
-
-![image](_static/images/ewgates.gif)  
+![image](_static/images/ewgates.gif)
 *A Gate EW is built onto the Concrete Walls in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
-In `rulesmd.ini`:
-```ini
-[AI]
-NSGates=      ; List of BuildingTypes, vanilla tag
-ESGates=      ; List of BuildingTypes, vanilla tag
-```
+- It is possible to add new gates which can be connected with any Walls by specifing them as `[AI] -> EWGates` and `[AI] -> NSGates` like `xxGateOne` and `xxGateTwo` do.
+  - In the in-game orientation, north points to the upper right, so `NSGates` correspond to buildings with `Foundation=1x3`, and `EWGates` correspond to buildings with `Foundation=3x1`.
 
 ### Power plant damage factor
 
@@ -1777,7 +1770,7 @@ How to generate `DebrisTypes` in the game:
 
 ### Dehardcode of parasites unlimboing after killing naval targets
 
-- In vanilla, parasites with `Naval=false` perform a series of additional checks on the current cell after killing a target, including a series of determinations such as whether there is a bridge when the cell's LandType is `Water`, `Beach`, or `Rock`, which prevents them from normally unlimbo in open water; while parasites with `Naval=true` skip these checks. Now, you can customize the behavior of parasites after killing a target in water:
+- In vanilla, parasites with `Naval=false` perform a series of additional checks on the current cell after killing a target, including a series of determinations such as whether there is a bridge when the cell's LandType is `Water`, `Beach`, or `Rock`, which prevents them from normally unlimbo in open water; while parasites with `Naval=true` skip these checks. Now, you can customize the behavior of parasites after killing a target in water:
   - If not set, the original behavior is performed by default.
   - If set to `true`, they can unlimbo normally even if `Naval=false`.
   - If set to `false`, they cannot unlimbo normally even if `Naval=true`.
@@ -1792,7 +1785,7 @@ Parasite.AllowWaterExit=  ; boolean, defaults to [General] -> Parasite.AllowWate
 ```
 
 ```{note}
-Setting `Parasite.AllowWaterExit` to `true` does not skip the original check of whether a BuildingType exists on the cell.
+Setting `Parasite.AllowWaterExit` to `true` does not skip the original check of whether a BuildingType exists on the cell.
 ```
 
 ### DropPod

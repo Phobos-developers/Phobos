@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-07 15:04+0800\n"
+"POT-Creation-Date: 2026-06-13 13:34+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -879,8 +879,10 @@ msgid "Armed building guard mission retry delay customization"
 msgstr "武装建筑警戒任务重试间隔的自定义"
 
 msgid "Building turret idle/firing/low power animations"
-msgstr ""
-"建筑炮塔的闲置／开火／低功率动画"
+msgstr "建筑炮塔的闲置／开火／断电动画"
+
+msgid "Animation theater/tile palette toggle"
+msgstr "动画使用气候／地块色盘的开关"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
@@ -2153,6 +2155,148 @@ msgid ""
 "techno lose 1 health"
 msgstr "修复了 `DeploysInto` 和 `UndeploysInto` 会让受损单位失去 1 点生命的 Bug"
 
+msgid "**Noble Fish**:"
+msgstr "**Noble_Fish**："
+
+msgid "Documentation maintenance"
+msgstr "文档维护工作"
+
+msgid "Chinese documentation maintenance and translation"
+msgstr "中文文档维护和翻译"
+
+msgid "Established Community Chinese docs"
+msgstr "创建了社区中文文档"
+
+msgid "Took over and completely rewrite the Official Chinese docs during Build#46"
+msgstr "在 Build#46 接管并完全重写了官方中文文档"
+
+msgid ""
+"Fix frame by frame hotkey description to read `TXT_FRAME_BY_FRAME_DESC` "
+"instead of `TXT_DISPLAY_DAMAGE_DESC`"
+msgstr ""
+"修复了逐帧模式快捷键的消息提示文本读取了 `TXT_DISPLAY_DAMAGE_DESC` 而不是 "
+"`TXT_FRAME_BY_FRAME_DESC` 的问题"
+
+msgid ""
+"Remove the hardcoded wall interaction of NoSecondaryWeaponFallback that "
+"was erroneously introduced by Phobos"
+msgstr "移除 Phobos 错误引入的 `NoSecondaryWeaponFallback` 与墙交互硬编码"
+
+msgid "Fix a read bug when setting the SHP file name in INI"
+msgstr "修复了一个在 INI 中设置 SHP 文件名的读取 Bug"
+
+msgid ""
+"Unify the messy tag names such as "
+"`xxx.(AffectHouse/AffectsHouses/AffectedHouse)` and improve tag names "
+"like `AutoFire`"
+msgstr ""
+"统一 `xxx.(AffectHouse/AffectsHouses/AffectedHouse)` 等混乱的标签名并改进例如 `AutoFire` 等标签名"
+
+msgid ""
+"Add compatibility for deprecated tag names and output warnings to avoid "
+"breaking the normal operation of existing Mods"
+msgstr ""
+"为被弃用的标签名添加兼容并输出警告以避免破坏现有 Mod 的正常运行"
+
+msgid "Fix the bug where warhead flags are read twice"
+msgstr "修复了弹头标签被读取两次的 Bug"
+
+msgid ""
+"Fix an issue where shadow matrix scaling was incorrectly applied to "
+"`TurretOffset` causing turret shadow misplacement"
+msgstr "修复了一个影子矩阵缩放错误地应用于 `TurretOffset` 而导致炮塔影子错位的问题"
+
+msgid ""
+"Extend the Harvester counter color definition and standardize the "
+"variable names"
+msgstr "拓展矿车计数器颜色定义并标准化相关变量名"
+
+msgid ""
+"Fix a bug where a unit's turrets would also get locked when the unit "
+"became deactivated for reasons other than being under EMP"
+msgstr "修复了由于非 EMP 原因而进入瘫痪状态的单位其炮塔也同样会被锁死的 Bug"
+
+msgid ""
+"Allows defining whether passengers of an OpenTopped transport unit can "
+"fire when it is affected by a locomotor warhead"
+msgstr "允许定义 OpenTopped 运输工具被运动模式弹头牵引时其乘客能否开火"
+
+msgid "Customize `HarvesterLoadRate`"
+msgstr "自定义 `HarvesterLoadRate`"
+
+msgid ""
+"Fix the bug where the `.SubjectToGround` of the Trajectory type did not "
+"consider bridges"
+msgstr "修复了新类型弹道的 `.SubjectToGround` 未考虑桥梁的 Bug"
+
+msgid "Customize `HarvesterDumpRate`"
+msgstr "自定义 `HarvesterDumpRate`"
+
+msgid "Allow users to define the time interval of `DisplayIncome`"
+msgstr "允许用户定义 `DisplayIncome` 的时间间隔"
+
+msgid "Electric bolt Z-adjust"
+msgstr "自定义 EBolt 的 Z 深校正值"
+
+msgid ""
+"Allow disabling the processing of the Z-depth of EBolt drawn by "
+"BuildingType being clamped to non-positive numbers"
+msgstr "允许禁用由建筑绘制的 EBolt 其 Z 深被钳位到非正数的处理"
+
+msgid ""
+"Add the `Bolt.ZAdjust` setting item to the LaserTrailType with "
+"`DrawType=ebolt`"
+msgstr "为拥有 `DrawType=ebolt` 的激光尾迹类型添加 `Bolt.ZAdjust` 设置项"
+
+msgid ""
+"Fix the bug where `WeaponRange.AllowWeapons` and "
+"`WeaponRange.DisallowWeapons` only support weapons listed in the "
+"`[WeaponTypes]` list"
+msgstr ""
+"修复了 `WeaponRange.AllowWeapons` 和 `WeaponRange.DisallowWeapons` 仅支持通过 "
+"`[WeaponTypes]` 注册的武器这一 Bug"
+
+msgid ""
+"Fix a bug where stationary vehicles would also block movement caused by "
+"external factors"
+msgstr "修复了 *静止的载具* 也会阻碍外部力量引发移动的 Bug"
+
+msgid ""
+"Fix the Phobos bug where visual effect drawing does not respect "
+"`[BuildingType] -> TargetCoordOffset`"
+msgstr "修复了视觉效果绘制不尊重 `[BuildingType] -> TargetCoordOffset` 的 Phobos bug"
+
+msgid ""
+"Allow *Harvester counter* to display only the total number or the number "
+"currently working"
+msgstr "允许 *矿车计数器* 只显示总数或正在工作的数量"
+
+msgid ""
+"Allow users to customize whether the movement state check depends on the "
+"destination for the `DiscardOn=move` condition of AE to support more "
+"usage scenarios"
+msgstr "允许用户自定义移动状态检查是否取决于有无目的地以允许 AE 的 `DiscardOn=move` 条件支持更多使用场景"
+
+msgid ""
+"Restore the original Tiberian Sun behavior of playing the `[AudioVisual] "
+"-> DeploySound=` sound effect when clicking the sidebar to execute "
+"`Deploy`"
+msgstr "复原了点击底边栏执行 `Deploy` 时播放 `[AudioVisual] -> DeploySound=` 音效的《泰伯利亚之日》原有行为"
+
+msgid ""
+"Allow `RemoveMindControl` and `MindControl.Permanent` warheads to mute "
+"`MindClearedSound`"
+msgstr "允许 `RemoveMindControl` 和 `MindControl.Permanent` 弹头屏蔽 `MindClearedSound`"
+
+msgid "Introduce weight selection rules for ExtraWarheads"
+msgstr "为额外弹头引入权重选取规则"
+
+msgid "Add action `512 Set Follower for Associated Unit...`"
+msgstr "添加触发结果 `512 设置关联单位的跟随目标...`"
+
+msgid "Dehardcode of parasites unlimboing after killing naval targets"
+msgstr "寄生击杀水上目标后刷出的自定义"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
@@ -2225,6 +2369,9 @@ msgid ""
 "`ElectricAssault` weapons can now auto acquire allies' overpowerable "
 "defenses"
 msgstr "`ElectricAssault` 武器现在可以自动索敌盟友的可过载防御建筑"
+
+msgid "Dynamic team delays"
+msgstr "动态 `TeamDelays`"
 
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
@@ -2674,10 +2821,11 @@ msgstr "**Chasheen (Chasheenburg)** - Build#24 的中文文档协助"
 msgid ""
 "**Noble Fish** - some minor improvements and fixes, established Community"
 " Chinese docs, took over and completely rewrite the Official Chinese docs"
-" during Build#46"
+" during Build#46, Dehardcode of parasites unlimboing after killing naval "
+"targets"
 msgstr ""
 "**Noble Fish** - 一些小改进与修复、文档维护者（官方英文文档维护、创建了社区中文文档、在 Build#46 "
-"接管并完全重写了官方中文文档）"
+"接管并完全重写了官方中文文档）、寄生击杀水上目标后刷出的自定义"
 
 msgid ""
 "**tomsons26** - all-around help, assistance and guidance in reverse-"
