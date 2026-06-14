@@ -1202,7 +1202,7 @@ FactoryPlant.MaxCount=-1     ; integer
 - It is possible to add new gates which can be connected with any Walls by specifing them as `EWGates` and `NSGates` like `xxGateOne` and `xxGateTwo` do.
   - In the in-game orientation, north points to the upper right, so `NSGates` correspond to buildings with `Foundation=1x3`, and `EWGates` correspond to buildings with `Foundation=3x1`.
 
-![image](_static/images/ewgates.gif)
+![image](_static/images/ewgates.gif)  
 *A Gate EW is built onto the Concrete Walls in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 In `rulesmd.ini`:
