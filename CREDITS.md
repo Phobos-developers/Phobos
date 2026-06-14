@@ -678,6 +678,7 @@ This page lists all the individual contributions to the project by their author.
   - Introduce weight selection rules for ExtraWarheads
   - Add action `512 Set Follower for Associated Unit...`
   - Dehardcode of parasites unlimboing after killing naval targets
+  - Allow customizing whether the creation of shrapnel weapon is controlled by the new target check on the warhead of the parent weapon
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
