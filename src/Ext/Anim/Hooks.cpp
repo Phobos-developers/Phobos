@@ -247,6 +247,7 @@ DEFINE_HOOK(0x424807, AnimClass_AI_Next, 0x6)
 
 	const auto pExt = AnimExt::ExtMap.Find(pThis);
 	const auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+	pThis->UseCellLightConvert = pTypeExt->TheaterPalette.Get(pThis->UseCellLightConvert);
 
 	if (pExt->AttachedSystem && pExt->AttachedSystem->Type != pTypeExt->AttachedSystem.Get())
 		pExt->DeleteAttachedSystem();
@@ -577,9 +578,21 @@ DEFINE_HOOK(0x6FF42B, TechnoClass_Fire_Anim, 0x7)
 		pAnimExt->FiringAnim_Weapon = pWeapon;
 		pAnimExt->FiringAnim_WeaponIndex = wpIdx;
 		pAnimExt->FiringAnim_BurstIndex = pThis->CurrentBurstIndex;
+		return SkipBuildingCheck;
 	}
 
-	return SkipBuildingCheck;
+	return 0;
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x47DA74, CellClass_RecalcAttributes_TileAnimDrawer, 0x7)
+{
+	enum { SkipGameCode = 0x47DA7B };
+
+	GET(AnimClass*, pAnim, EAX);
+
+	pAnim->UseCellLightConvert = AnimTypeExt::ExtMap.Find(pAnim->Type)->TheaterPalette.Get(true);
+
+	return SkipGameCode;
+}
