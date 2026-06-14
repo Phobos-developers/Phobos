@@ -458,12 +458,69 @@ DEFINE_HOOK(0x4F8ACC, HouseClass_Update_ResetTeamDelay, 0x6)
 
 	GET(HouseClass*, pThis, ESI);
 
-	const int teamDelay = HouseExt::ExtMap.Find(pThis)->TeamDelay;
+	const auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	const int teamDelay = pHouseExt->TeamDelay;
 
 	if (teamDelay >= 0)
 	{
 		R->ECX(teamDelay);
 		return ResetTeamDelay;
+	}
+
+	int playerCount = ScenarioClass::Instance->NumberStartingPoints;
+
+	if (playerCount >= 2 && !SessionClass::IsCampaign())
+	{
+		const auto teamDelayType = RulesExt::Global()->TeamDelays_DynamicType;
+
+		if (teamDelayType != DynamicTeamDelayType::StartingPoint)
+		{
+			playerCount = 0;
+			const bool checkAlive = teamDelayType == DynamicTeamDelayType::AliveCount
+				|| teamDelayType == DynamicTeamDelayType::AliveAllies
+				|| teamDelayType == DynamicTeamDelayType::AliveEnemies;
+			const bool checkAllies = teamDelayType == DynamicTeamDelayType::Allies
+				|| teamDelayType == DynamicTeamDelayType::AliveAllies;
+			const bool checkEnemies = teamDelayType == DynamicTeamDelayType::Enemies
+				|| teamDelayType == DynamicTeamDelayType::AliveEnemies;
+
+			for (auto const pHouse : HouseClass::Array)
+			{
+				if ((!checkAlive || !pHouse->Defeated)
+					&& !pHouse->IsObserver()
+					&& !pHouse->Type->MultiplayPassive
+					&& (!checkAllies || (pThis != pHouse && pThis->IsAlliedWith(pHouse)))
+					&& (!checkEnemies || !pThis->IsAlliedWith(pHouse)))
+				{
+					playerCount += 1;
+				}
+			}
+		}
+
+		if (playerCount < 1 || playerCount > 8)
+			return 0;
+
+		const int AIDifficulty = pThis->GetAIDifficultyIndex();
+		int delay = 0;
+
+		switch (AIDifficulty)
+		{
+		case 0:
+			delay = RulesExt::Global()->TeamDelays_Count[playerCount - 1].Get().X;
+			break;
+		case 1:
+			delay = RulesExt::Global()->TeamDelays_Count[playerCount - 1].Get().Y;
+			break;
+		case 2:
+			delay = RulesExt::Global()->TeamDelays_Count[playerCount - 1].Get().Z;
+			break;
+		}
+
+		if (delay > 0)
+		{
+			R->ECX(delay);
+			return ResetTeamDelay;
+		}
 	}
 
 	return 0;

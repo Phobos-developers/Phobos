@@ -1,6 +1,5 @@
 #include <Ext/BuildingType/Body.h>
 #include <Ext/TechnoType/Body.h>
-#include <Ext/Techno/Body.h>
 
 #include <InputManagerClass.h>
 
@@ -10,15 +9,6 @@ DEFINE_HOOK(0x51B2BD, InfantryClass_UpdateTarget_IsControlledByHuman, 0x6)
 	GET(AbstractClass*, pTarget, EDI);
 
 	return (!pTarget || pThis->Owner->IsControlledByHuman()) ? 0x51B33F : 0;
-}
-
-
-DEFINE_HOOK(0x520AE9, InfantryClass_DoingAI_DeployConvert, 0x6)
-{
-	GET(InfantryClass*, pThis, ESI);
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	pExt->DeployConvertAction();
-	return 0;
 }
 
 #pragma region WhatActionObjectFix

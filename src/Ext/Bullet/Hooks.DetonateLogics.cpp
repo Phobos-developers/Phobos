@@ -484,7 +484,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 				damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 			{
 				BulletExt::ExtMap.Find(pBullet)->FirepowerMult = pBulletExt->FirepowerMult;
-				BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, pThis->Location, false);
+				BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, pThis->Location, true);
 				BulletExt::SimulatedFiringEffects(pBullet, pOwner, nullptr, false, true);
 			}
 		}
@@ -798,6 +798,8 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 			damage = static_cast<int>(damage * pBulletExt->FirepowerMult);
 
 		// Cache all pointer variables before the loop
+		AbstractClass* const targetForDir = MapClass::Instance.TryGetCellAt(coordsTarget);
+		auto const targetDir = pThis->GetTargetDirection(targetForDir ? targetForDir: pThis);
 		auto const pWH = pWeapon->Warhead;
 		auto const location = pThis->Location;
 		bool const bright = pWeapon->Bright;
@@ -811,7 +813,11 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 		int const scatterMin = pTypeExt->AirburstWeapon_SourceScatterMin.Get();
 		int const scatterMax = pTypeExt->AirburstWeapon_SourceScatterMax.Get();
 		bool const useFiringEffects = pTypeExt->AirburstWeapon_UseFiringEffects;
+		bool const headToTarget = pTypeExt->AirburstWeapon_HeadToTarget;
+		int const radialFireSegments = pTypeExt->AirburstWeapon_RadialFireSegments;
 		int cycledTargetIndex = 0;
+		int radialFireCounter = 0;
+		auto radialFire = RadialFireStruct {};
 
 		if (allowRepeatTargets)
 			cycledTargetIndex = random.RandomRanged(0, targets.Count - 1);
@@ -878,9 +884,17 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 						coords = MapClass::GetRandomCoordsNear(coords, distance, false);
 					}
 
+					if (radialFireSegments > 0)
+					{
+						radialFire.Segments = radialFireSegments;
+						radialFire.Index = radialFireCounter;
+						radialFire.Direction = targetDir;
+						radialFireCounter = (radialFireCounter + 1) % radialFireSegments;
+					}
+
 					BulletExt::ExtMap.Find(pBullet)->FirepowerMult = pBulletExt->FirepowerMult;
 					BulletExt::ExtMap.Find(pBullet)->IsSplitFromAirburst = true;
-					BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, coords, true);
+					BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, coords, headToTarget, radialFire);
 					BulletExt::SimulatedFiringEffects(pBullet, pOwner, nullptr, useFiringEffects, true);
 				}
 			}

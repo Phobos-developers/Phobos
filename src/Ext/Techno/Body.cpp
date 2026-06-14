@@ -1342,7 +1342,6 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->HoverShutdown)
 		.Process(this->LastTargetCrd)
 		.Process(this->LastTargetCrdClearTimer)
-		.Process(this->HasDeployConvertedInCurrentSequence)
 		;
 }
 

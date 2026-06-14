@@ -461,6 +461,89 @@ void BuildingExt::KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, v
 		pClone->UnInit();
 }
 
+int BuildingExt::GetTurretFrame(BuildingClass* pThis)
+{
+	auto const pExt = BuildingExt::ExtMap.Find(pThis);
+	auto const pTypeExt = pExt->TypeExtData;
+	const int facing = pThis->PrimaryFacing.Current().GetValue<5>();
+	const int shapeFacing = ObjectClass::BodyShape[facing];
+
+	const bool isLowPower = !pThis->StuffEnabled || !pThis->IsPowerOnline();
+	const bool isFiring = pExt->TurretAnimFiringFrame != -1;
+
+	const int idleBlockSize = 32 * pTypeExt->TurretAnim_IdleFrames;
+	const int lowPowerIdleBlockSize = 32 * pTypeExt->TurretAnim_LowPowerIdleFrames;
+	const int firingBlockSize = 32 * pTypeExt->TurretAnim_FiringFrames;
+
+	int framesPerFacing = pTypeExt->TurretAnim_IdleFrames;
+	int baseOffset = 0;
+	bool hasFiringFrames = false;
+
+	if (isLowPower)
+	{
+		if (isFiring && pTypeExt->TurretAnim_LowPowerFiringFrames > 0)
+		{
+			framesPerFacing = pTypeExt->TurretAnim_LowPowerFiringFrames;
+			baseOffset = idleBlockSize + lowPowerIdleBlockSize + firingBlockSize;
+			hasFiringFrames = true;
+		}
+		else if (pTypeExt->TurretAnim_LowPowerIdleFrames > 0)
+		{
+			framesPerFacing = pTypeExt->TurretAnim_LowPowerIdleFrames;
+			baseOffset = idleBlockSize;
+		}
+	}
+	else
+	{
+		if (isFiring && pTypeExt->TurretAnim_FiringFrames > 0)
+		{
+			framesPerFacing = pTypeExt->TurretAnim_FiringFrames;
+			baseOffset = idleBlockSize + lowPowerIdleBlockSize;
+			hasFiringFrames = true;
+		}
+	}
+
+	int animFrame = 0;
+
+	if (isFiring && hasFiringFrames)
+	{
+		animFrame = pExt->TurretAnimFiringFrame;
+		pExt->TurretAnimRateTick++;
+
+		if (pExt->TurretAnimRateTick >= pTypeExt->TurretAnim_FiringRate)
+		{
+			pExt->TurretAnimRateTick = 0;
+			pExt->TurretAnimFiringFrame++;
+		}
+
+		if (pExt->TurretAnimFiringFrame >= framesPerFacing)
+		{
+			pExt->TurretAnimFiringFrame = -1;
+			pExt->TurretAnimIdleFrame = 0; // Reset idle anim frame.
+			pExt->TurretAnimRateTick = 0;
+		}
+	}
+	else if (framesPerFacing > 1)
+	{
+		animFrame = pExt->TurretAnimIdleFrame;
+		pExt->TurretAnimRateTick++;
+
+		if (pExt->TurretAnimRateTick >= pTypeExt->TurretAnim_IdleRate)
+		{
+			pExt->TurretAnimRateTick = 0;
+			pExt->TurretAnimIdleFrame++;
+		}
+
+		if (pExt->TurretAnimIdleFrame >= framesPerFacing)
+		{
+			pExt->TurretAnimIdleFrame = 0;
+			pExt->TurretAnimRateTick = 0;
+		}
+	}
+
+	return baseOffset + (shapeFacing * framesPerFacing) + animFrame;
+}
+
 // =============================
 // load / save
 
@@ -480,6 +563,9 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentLaserWeaponIndex)
 		.Process(this->PoweredUpToLevel)
 		.Process(this->CurrentEMPulseSW)
+		.Process(this->TurretAnimIdleFrame)
+		.Process(this->TurretAnimFiringFrame)
+		.Process(this->TurretAnimRateTick)
 		//.Process(this->IsFiringNow) It is set and reset within a same function.
 		;
 }
@@ -511,7 +597,7 @@ bool BuildingExt::SaveGlobals(PhobosStreamWriter& Stm)
 // =============================
 // container
 
-BuildingExt::ExtContainer::ExtContainer() : Container("BuildingClass") { }
+BuildingExt::ExtContainer::ExtContainer() : Container("BuildingClass") {}
 
 BuildingExt::ExtContainer::~ExtContainer() = default;
 
