@@ -32,7 +32,7 @@ This page describes all AI scripting and mapping related additions and changes i
 In `rulesmd.ini`:
 ```ini
 [General]
-TeamDelays.DynamicType=startingpoint    ; Dynamic Team Delay Type Enumeration (startingpoint|playercount|allies/ally|enemies/enemy|alivecount|aliveallies/alliveally|aliveenemies|aliveenemy)
+TeamDelays.DynamicType=startingpoint    ; Dynamic Team Delay Type Enumeration (startingpoint|playercount|allies/ally|enemies/enemy|alivecount|aliveallies/alliveally|aliveenemies/aliveenemy)
 TeamDelays.CountN=                      ; List of 3 integers indicating AI's TeamDelays in Difficult / Normal / Easy game diffculty.
 ```
 
@@ -787,7 +787,7 @@ ID=ActionCount,[Action1],609,0,0,[RadarMode],0,0,0,A,[ActionX]
 ### `610` Set house's `TeamDelays` value
 
 - Set the `TeamDelays` value of the trigger's house.
-  - If this value is less than 0, then use the value of `[General] -> TeamDelays`, or dynamic team delay if set and in skirmish.
+  - If this value is less than 0, then use the value of `[General] -> TeamDelays`, or [dynamic team delay](AI-Scripting-and-Mapping.md#dynamic-team-delays) if set and in skirmish.
 
 In `mycampaign.map`:
 ```ini
