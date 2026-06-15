@@ -618,6 +618,7 @@ HideShakeEffects=false           ; boolean
 - Fixed an issue that the techno with weapon with `AA=yes` and `AG=no` would not auto targeting units that are falling, such as paratroopers (by TaranDahl)
 - Iron Curtain/Custom Tint Support for SHP Turreted Vehicles (by NetsuNegi & FlyStar)
 - Reactivate unused trigger events 2, 53, and 54 (by FlyStar)
+- Fixed `src/Interop/Version.cpp` not being compiled into the project (by Chang_zhi)
 - Fixed the bug that vehicle fall on infantry will make all cell content has been removed (by NetsuNegi)
 - Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state (by Starkku)
 - Fixed `MovementZone=Subterannean` harvesters being unable to find docks if in area enclosed by water, cliffs etc. (by Starkku)
@@ -747,6 +748,7 @@ HideShakeEffects=false           ; boolean
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus & NetsuNegi)
 - [Aux technos and TechLevel requirement of superweapon](New-or-Enhanced-Logics.md#aux-technos-and-techlevel-requirement-of-superweapon) (by NetsuNegi & Ollerus)
 - [Export interface for external call](index.md#interoperability) (by TaranDahl)
+- [Export interface for accessing scenario local/global variables](Interoperability.md#scenarioext) (by Chang_zhi)
 - Allowed `MindControl.Permanent` warhead to mute `MindClearedSound` (by NetsuNegi & Noble_Fish)
 
 ```

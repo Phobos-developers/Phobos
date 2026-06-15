@@ -217,6 +217,8 @@
     <ClCompile Include="src\Interop\BulletExt.cpp" />
     <ClCompile Include="src\Interop\EventExt.cpp" />
     <ClCompile Include="src\Interop\TechnoExt.cpp" />
+    <ClCompile Include="src\Interop\ScenarioExt.cpp" />
+    <ClCompile Include="src\Interop\Version.cpp" />
     <!-- src\Locomotion -->
     <ClCompile Include="src\Locomotion\TestLocomotionClass.cpp" />
     <!-- src\Misc -->
@@ -353,9 +355,10 @@
     <!-- src\Interop -->
     <ClInclude Include="src\Interop\AttachEffect.h" />
     <ClInclude Include="src\Interop\BulletExt.h" />
+    <ClInclude Include="src\Interop\ScenarioExt.h" />
+
     <ClInclude Include="src\Interop\EventExt.h" />
-    <ClInclude Include="src\Interop\TechnoExt.h" />
-    <!-- src\Locomotion -->
+    <ClInclude Include="src\Interop\TechnoExt.h" />    <ClInclude Include="src\Interop\Variables.h" />    <!-- src\Locomotion -->
     <ClInclude Include="src\Locomotion\TestLocomotionClass.h" />
     <!-- src\Misc -->
     <ClInclude Include="src\Misc\BlittersFix.h" />

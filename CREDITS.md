@@ -317,6 +317,8 @@ This page lists all the individual contributions to the project by their author.
   - Extending `Power` to all TechnoTypes
   - Display banner by triggers
   - Help with docs
+- **Chang_zhi**:
+  - Interop export interface for accessing scenario local/global variables
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
   - General assistance
   - Interceptor logic prototype
