@@ -115,7 +115,7 @@ void HealthBarTypeClass::DrawBuildingBar(ConvertClass* pPalette, SHPStruct* pSha
 		Point2D drawPoint = *pLocation + Point2D { 3 + 4 * pipsLength, 4 - 2 * pipsLength };
 
 		for (int idx = pipsTotal; idx; --idx, drawPoint += interval)
-			DSurface::Composite->DrawSHP(pPalette, pShape, frame, &drawPoint, pBounds, pipsFlags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			DSurface::Temp->DrawSHP(pPalette, pShape, frame, &drawPoint, pBounds, pipsFlags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 
 	if (pipsTotal < pipsLength)
@@ -124,7 +124,7 @@ void HealthBarTypeClass::DrawBuildingBar(ConvertClass* pPalette, SHPStruct* pSha
 		Point2D drawPoint = *pLocation + Point2D { 3 + 4 * pipsLength - deltaX, 4 - 2 * pipsLength - deltaY };
 
 		for (; idx; --idx, drawPoint += interval)
-			DSurface::Composite->DrawSHP(pPalette, pShape, emptyFrame, &drawPoint, pBounds, pipsEmptyFlags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			DSurface::Temp->DrawSHP(pPalette, pShape, emptyFrame, &drawPoint, pBounds, pipsEmptyFlags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 }
 
@@ -133,13 +133,13 @@ void HealthBarTypeClass::DrawOtherBar(ConvertClass* pBrdPalette, SHPStruct* pBrd
 	if (brdFrame >= 0)
 	{
 		Point2D drawPoint = *pLocation + Point2D { brdXOffset + 16, -1 };
-		DSurface::Composite->DrawSHP(pBrdPalette, pBrdShape, brdFrame, &drawPoint, pBounds, pipBrdFlags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		DSurface::Temp->DrawSHP(pBrdPalette, pBrdShape, brdFrame, &drawPoint, pBounds, pipBrdFlags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 
 	Point2D drawPoint = *pLocation;
 
 	for (int idx = 0; idx < pipsTotal; ++idx, drawPoint += interval)
-		DSurface::Composite->DrawSHP(pPipsPalette, pPipsShape, frame, &drawPoint, pBounds, pipsFlags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		DSurface::Temp->DrawSHP(pPipsPalette, pPipsShape, frame, &drawPoint, pBounds, pipsFlags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 }
 
 void HealthBarTypeClass::DrawAnimatedBar(ConvertClass* pBrdPalette, SHPStruct* pBrdShape, ConvertClass* pPipsPalette, SHPStruct* pPipsShape, Point2D* pLocation, RectangleStruct* pBounds, const int brdXOffset, const double ratio, const int brdFrame, BlitterFlags pipsFlags, BlitterFlags pipBrdFlags)
