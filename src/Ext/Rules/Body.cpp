@@ -426,6 +426,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->RemoveMindControl_Silent.Read(exINI, GameStrings::AudioVisual, "RemoveMindControl.Silent");
 	this->MindControl_Permanent_ReplaceSilent.Read(exINI, GameStrings::AudioVisual, "MindControl.Permanent.ReplaceSilent");
 
+	this->FlyNoWobbles.Read(exINI, GameStrings::AudioVisual, "FlyNoWobbles");
+
 	this->TeamDelays_DynamicType.Read(exINI, GameStrings::General, "TeamDelays.DynamicType");
 
 	char tempBuffer[40];
@@ -772,6 +774,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
 		.Process(this->RemoveMindControl_Silent)
 		.Process(this->MindControl_Permanent_ReplaceSilent)
+		.Process(this->FlyNoWobbles)
 		.Process(this->TeamDelays_DynamicType)
 		.Process(this->TeamDelays_Count)
 		;

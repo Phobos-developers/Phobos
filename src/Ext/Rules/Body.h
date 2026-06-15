@@ -363,6 +363,7 @@ public:
 		Valueable<bool> DiscardOn_MoveBasedOnDestination;
 		Valueable<bool> RemoveMindControl_Silent;
 		Valueable<bool> MindControl_Permanent_ReplaceSilent;
+		Nullable<bool> FlyNoWobbles;
 
 		Valueable<DynamicTeamDelayType> TeamDelays_DynamicType;
 		Valueable<Vector3D<int>> TeamDelays_Count[8];
@@ -668,6 +669,8 @@ public:
 			, DiscardOn_MoveBasedOnDestination { false }
 			, RemoveMindControl_Silent { false }
 			, MindControl_Permanent_ReplaceSilent { false }
+
+			, FlyNoWobbles {}
 
 			, TeamDelays_DynamicType { DynamicTeamDelayType::StartingPoint }
 			, TeamDelays_Count {}

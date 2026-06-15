@@ -1736,6 +1736,20 @@ FallingDownDamage.Water=            ; integer / percentage
 FallingDownDamage.AllowEMP=true     ; boolean
 ```
 
+### Customize whether technos with `Locomotor=Fly` wobble
+
+- In vanilla, if technos use `Locomotor=Fly` and do not have `IsDropship=true`, they will have a hardcoded wobble effect. However, using `IsDropship=true` also introduces a series of hardcoded behaviors associated with it. Now, you can customize whether to disable this behavior, and it can also be used to enable this behavior for technos with `IsDropship=true`.
+  - If not defined, the original behavior is used by default.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+FlyNoWobbles=  ; boolean
+
+[SOMETECHNO]   ; TechnoType with Locomotor=Fly
+FlyNoWobbles=  ; boolean, defaults to [AudioVisual] -> FlyNoWobbles
+```
+
 ### Damaged speed customization
 
 - In vanilla, units using drive/ship loco will has hardcoded speed multiplier when damaged. Now you can customize it.
