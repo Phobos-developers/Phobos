@@ -223,6 +223,9 @@ public:
 		Valueable<bool> AffectsGround;
 		Valueable<bool> AffectsAir;
 		Valueable<bool> CellSpread_Cylinder;
+		Valueable<bool> AffectsInvokerOnly;
+		Valueable<bool> AffectsInvokerOnly_Reverse;
+		Nullable<bool> AffectsInvokerOnly_IgnoreInvokerState;
 
 		Valueable<bool> ReverseEngineer;
 
@@ -272,6 +275,7 @@ public:
 		bool HealthCheck;
 		bool VeterancyCheck;
 		TechnoClass* DamageAreaTarget;
+		mutable TechnoClass* DamageAreaInvoker;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
@@ -476,6 +480,9 @@ public:
 			, AffectsGround { true }
 			, AffectsAir { true }
 			, CellSpread_Cylinder { false }
+			, AffectsInvokerOnly { false }
+			, AffectsInvokerOnly_Reverse { false }
+			, AffectsInvokerOnly_IgnoreInvokerState {}
 
 			, PenetratesTransport_Level { 0 }
 			, PenetratesTransport_PassThrough { 1.0 }
@@ -503,6 +510,7 @@ public:
 			, HealthCheck { false }
 			, VeterancyCheck { false }
 			, DamageAreaTarget {}
+			, DamageAreaInvoker {}
 
 			, CanKill { true }
 
@@ -541,6 +549,7 @@ public:
 		bool EligibleForFullMapDetonation(TechnoClass* pTechno, TechnoTypeClass* pType, HouseClass* pOwner) const;
 		bool IsHealthInThreshold(TechnoClass* pTarget) const;
 		bool IsVeterancyInThreshold(TechnoClass* pTarget) const;
+		bool IsInvokerAllowed(TechnoClass* pTarget, TechnoClass* pInvoker) const;
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;

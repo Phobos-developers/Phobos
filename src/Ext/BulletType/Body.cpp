@@ -42,6 +42,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shrapnel_AffectsBuildings.Read(exINI, pSection, "Shrapnel.AffectsBuildings");
 	this->Shrapnel_UseWeaponTargeting.Read(exINI, pSection, "Shrapnel.UseWeaponTargeting");
 	this->Shrapnel_IgnoreHitBuildings.Read(exINI, pSection, "Shrapnel.IgnoreHitBuildings");
+	this->Shrapnel_ObeyWarheadTriggerConditions.Read(exINI, pSection, "Shrapnel.ObeyWarheadTriggerConditions");
 	this->ClusterScatter_Min.Read(exINI, pSection, "ClusterScatter.Min");
 	this->ClusterScatter_Max.Read(exINI, pSection, "ClusterScatter.Max");
 	this->SubjectToLand.Read(exINI, pSection, "SubjectToLand");
@@ -145,6 +146,7 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shrapnel_AffectsBuildings)
 		.Process(this->Shrapnel_UseWeaponTargeting)
 		.Process(this->Shrapnel_IgnoreHitBuildings)
+		.Process(this->Shrapnel_ObeyWarheadTriggerConditions)
 		.Process(this->ClusterScatter_Min)
 		.Process(this->ClusterScatter_Max)
 		.Process(this->BallisticScatter_Min)
