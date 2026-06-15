@@ -387,12 +387,11 @@ DEFINE_HOOK(0x423654, AnimClass_DrawIt_Tiled_Interval, 0x5)
 	return 0x423659;
 }
 
-DEFINE_HOOK(0x423660, AnimClass_DrawIt_Tiled_Center, 0x7)
+DEFINE_HOOK(0x423660, AnimClass_DrawIt_Tiled_Center, 0x5)
 {
 	GET(AnimClass*, pThis, ESI);
 	GET(int, height, EAX); 
-	GET(int*, pVtable, ESI);
-	R->EDX(*pVtable);
+	R->EDX(VTable::Get(pThis)); // Restore overriden instruction
 
 	const auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 	if (pTypeExt->Tiled_AlignToCenter)
