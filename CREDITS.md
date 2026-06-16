@@ -294,8 +294,8 @@ This page lists all the individual contributions to the project by their author.
   - Frame CRC generation rewrite
   - Laser drawing Z-adjust customization
   - Armed building guard mission retry delay customization
-  - Animation theater/tile palette toggle
   - Building turret idle/firing/low power animations
+  - Animation theater/tile palette toggle
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -646,6 +646,41 @@ This page lists all the individual contributions to the project by their author.
   - Allow the aircraft to enter area guard mission and not crash immediately without any airport
   - Allow merging AOE damage to buildings into one
   - Fix the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health
+- **Noble Fish**:
+  - Documentation maintenance
+  - Chinese documentation maintenance and translation
+  - Established Community Chinese docs
+  - Took over and completely rewrite the Official Chinese docs during Build#46
+  - Fix frame by frame hotkey description to read `TXT_FRAME_BY_FRAME_DESC` instead of `TXT_DISPLAY_DAMAGE_DESC`
+  - Remove the hardcoded wall interaction of NoSecondaryWeaponFallback that was erroneously introduced by Phobos
+  - Fix a read bug when setting the SHP file name in INI
+  - Unify the messy tag names such as `xxx.(AffectHouse/AffectsHouses/AffectedHouse)` and improve tag names like `AutoFire`
+  - Add compatibility for deprecated tag names and output warnings to avoid breaking the normal operation of existing Mods
+  - Fix the bug where warhead flags are read twice
+  - Fix an issue where shadow matrix scaling was incorrectly applied to `TurretOffset` causing turret shadow misplacement
+  - Extend the Harvester counter color definition and standardize the variable names
+  - Fix a bug where a unit's turrets would also get locked when the unit became deactivated for reasons other than being under EMP
+  - Wall overlay unit sell exploit fix
+  - Allows defining whether passengers of an OpenTopped transport unit can fire when it is affected by a locomotor warhead
+  - Customize `HarvesterLoadRate`
+  - Fix the bug where the `.SubjectToGround` of the Trajectory type did not consider bridges
+  - Customize `HarvesterDumpRate`
+  - Allow users to define the time interval of `DisplayIncome`
+  - Electric bolt Z-adjust
+  - Allow disabling the processing of the Z-depth of EBolt drawn by BuildingType being clamped to non-positive numbers
+  - Add the `Bolt.ZAdjust` setting item to the LaserTrailType with `DrawType=ebolt`
+  - Fix the bug where `WeaponRange.AllowWeapons` and `WeaponRange.DisallowWeapons` only support weapons listed in the `[WeaponTypes]` list
+  - Fix a bug where stationary vehicles would also block movement caused by external factors
+  - Fix the Phobos bug where visual effect drawing does not respect `[BuildingType] -> TargetCoordOffset`
+  - Allow *Harvester counter* to display only the total number or the number currently working
+  - Allow users to customize whether the movement state check depends on the destination for the `DiscardOn=move` condition of AE to support more usage scenarios
+  - Restore the original Tiberian Sun behavior of playing the `[AudioVisual] -> DeploySound=` sound effect when clicking the sidebar to execute `Deploy`
+  - Allow `RemoveMindControl` and `MindControl.Permanent` warheads to mute `MindClearedSound`
+  - Introduce weight selection rules for ExtraWarheads
+  - Add action `512 Set Follower for Associated Unit...`
+  - Dehardcode of parasites unlimboing after killing naval targets
+  - Allow warhead to only affect invoker
+  - Allow customizing whether the creation of shrapnel weapon is controlled by the new target check on the warhead of the parent weapon
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -796,7 +831,6 @@ This page lists all the individual contributions to the project by their author.
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
 - **Chasheen (Chasheenburg)** - CN docs help for Build#24
-- **Noble Fish** - some minor improvements and fixes, established Community Chinese docs, took over and completely rewrite the Official Chinese docs during Build#46, Dehardcode of parasites unlimboing after killing naval targets
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings, custom locomotors example implementation
 - **AlexB** - Original FlyingStrings implementation

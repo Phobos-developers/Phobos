@@ -35,6 +35,7 @@ public:
 		Valueable<bool> Shrapnel_AffectsBuildings;
 		Valueable<bool> Shrapnel_UseWeaponTargeting;
 		Nullable<bool> Shrapnel_IgnoreHitBuildings;
+		Nullable<bool> Shrapnel_ObeyWarheadTriggerConditions;
 		Nullable<bool> SubjectToLand;
 		Valueable<bool> SubjectToLand_Detonate;
 		Nullable<bool> SubjectToWater;
@@ -97,6 +98,7 @@ public:
 			, Shrapnel_AffectsBuildings { false }
 			, Shrapnel_UseWeaponTargeting { false }
 			, Shrapnel_IgnoreHitBuildings {}
+			, Shrapnel_ObeyWarheadTriggerConditions {}
 			, ClusterScatter_Min { Leptons(256) }
 			, ClusterScatter_Max { Leptons(512) }
 			, BallisticScatter_Min {}
