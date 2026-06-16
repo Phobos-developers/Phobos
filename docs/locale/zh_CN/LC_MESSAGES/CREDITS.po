@@ -2305,6 +2305,7 @@ msgid ""
 "Allow customizing whether the creation of shrapnel weapon is controlled "
 "by the new target check on the warhead of the parent weapon"
 msgstr ""
+"允许自定义溅射子武器的创建是否受上级武器弹头上的新增目标检查控制"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
