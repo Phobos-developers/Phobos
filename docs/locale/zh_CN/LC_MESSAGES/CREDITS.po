@@ -2299,6 +2299,7 @@ msgstr "寄生击杀水上目标后刷出的自定义"
 
 msgid "Allow warhead to only affect invoker"
 msgstr ""
+"允许弹头仅影响调用者"
 
 msgid ""
 "Allow customizing whether the creation of shrapnel weapon is controlled "

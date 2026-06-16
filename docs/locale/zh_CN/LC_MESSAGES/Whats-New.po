@@ -1985,6 +1985,8 @@ msgid ""
 "[Allow warhead to only affect invoker](New-or-Enhanced-Logics.md#allow-"
 "warhead-to-only-affect-invoker) (by Noble_Fish)"
 msgstr ""
+"[允许弹头仅影响调用者](New-or-Enhanced-Logics.md#allow-"
+"warhead-to-only-affect-invoker)（by Noble_Fish）"
 
 msgid ""
 "Allow customizing whether the creation of shrapnel weapon is controlled "
