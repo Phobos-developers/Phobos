@@ -1736,6 +1736,21 @@ FallingDownDamage.Water=            ; integer / percentage
 FallingDownDamage.AllowEMP=true     ; boolean
 ```
 
+### Customize the landing animation of technos that have `Locomotor=Fly`
+
+- In vanilla, if a techno has `Locomotor=Fly` and `IsDropship=true`, it plays the `[DROPLAND]` animation when landing; if `IsDropship=false` but it is an aircraft with `Carryall=true`, it will play the `[CARYLAND]` animation when landing. Now you can customize this logic.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+DefaultLandingAnim=                   ; AnimationType
+DefaultLandingAnim.Dropship=DROPLAND  ; AnimationType
+DefaultLandingAnim.Carryall=CARYLAND  ; AnimationType
+
+[SOMETECHNO]                          ; TechnoType
+LandingAnim=                          ; AnimationType, defaults to the global default (none, DROPLAND, or CARYLAND) based on unit's IsDropship/Carryall flags
+```
+
 ### Damaged speed customization
 
 - In vanilla, units using drive/ship loco will has hardcoded speed multiplier when damaged. Now you can customize it.

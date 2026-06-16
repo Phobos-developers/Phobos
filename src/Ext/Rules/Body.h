@@ -364,6 +364,10 @@ public:
 		Valueable<bool> RemoveMindControl_Silent;
 		Valueable<bool> MindControl_Permanent_ReplaceSilent;
 
+		Valueable<AnimTypeClass*> DefaultLandingAnim;
+		Nullable<AnimTypeClass*> DefaultLandingAnim_Dropship;
+		Nullable<AnimTypeClass*> DefaultLandingAnim_Carryall;
+
 		Valueable<DynamicTeamDelayType> TeamDelays_DynamicType;
 		Valueable<Vector3D<int>> TeamDelays_Count[8];
 
@@ -668,6 +672,10 @@ public:
 			, DiscardOn_MoveBasedOnDestination { false }
 			, RemoveMindControl_Silent { false }
 			, MindControl_Permanent_ReplaceSilent { false }
+
+			, DefaultLandingAnim { nullptr }
+			, DefaultLandingAnim_Dropship {}
+			, DefaultLandingAnim_Carryall {}
 
 			, TeamDelays_DynamicType { DynamicTeamDelayType::StartingPoint }
 			, TeamDelays_Count {}
