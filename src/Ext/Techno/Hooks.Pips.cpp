@@ -1,5 +1,19 @@
 #include "Body.h"
 
+#include <Utilities/AresHelper.h>
+
+struct DummyBuildingTypeExtHere
+{
+	char _[0x5D];
+	bool Firestorm_Wall;
+};
+
+struct DummyTechnoExtHere
+{
+	char _[0x9C];
+	bool DriverKilled;
+};
+
 DEFINE_HOOK_AGAIN(0x6D9134, TacticalClass_RenderLayers_DrawBefore, 0x5)// BuildingClass
 DEFINE_HOOK(0x6D9076, TacticalClass_RenderLayers_DrawBefore, 0x5)// FootClass
 {
@@ -25,7 +39,8 @@ DEFINE_HOOK(0x6F5E37, TechnoClass_DrawExtras_DrawHealthBar, 0x6)
 
 	GET(TechnoClass*, pThis, EBP);
 
-	if (pThis && (pThis->IsMouseHovering || TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_Permanent)
+	if (pThis
+		&& (pThis->IsMouseHovering || TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_Permanent)
 		&& !MapClass::Instance.IsLocationShrouded(pThis->GetCoords()))
 	{
 		return Permanent;
@@ -34,103 +49,117 @@ DEFINE_HOOK(0x6F5E37, TechnoClass_DrawExtras_DrawHealthBar, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
+DEFINE_HOOK(0x6F64A0, TechnoClass_DrawHealthBar, 0x5)
 {
-	enum { SkipDraw = 0x6F6AB6 };
+	enum { SkipDrawCode = 0x6F6ABD };
 
 	GET(TechnoClass*, pThis, ECX);
+	GET_STACK(Point2D*, pLocation, 0x4);
+	GET_STACK(RectangleStruct*, pBounds, 0x8);
+	//GET_STACK(bool, drawFullyHealthBar, 0xC);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pTypeExt = pExt->TypeExtData;
 
-	const auto pTypeData = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	if (pTypeExt->HealthBar_Hide)
+		return SkipDrawCode;
 
-	if (pTypeData->HealthBar_Hide)
-		return SkipDraw;
+	const auto whatAmI = pThis->WhatAmI();
+	const auto pBuilding = whatAmI == BuildingClass::AbsID ? static_cast<BuildingClass*>(pThis) : nullptr;
+	Point2D position = *pLocation;
+	Point2D pipsAdjust = Point2D::Empty;
+	int pipsLength = 0;
+	constexpr int defaultInfantryPipsLength = 8;
+	constexpr int defaultUnitPipsLength = 17;
 
-	return 0;
-}
+	HealthBarTypeClass* pHealthBar = nullptr;
+	bool drawBuildingHealthBar = false;
 
-DEFINE_HOOK(0x6F6637, TechnoClass_DrawHealthBar_HideBuildingsPips, 0x5)
-{
-	enum { SkipDrawPips = 0x6F677D };
+	if (pBuilding)
+	{
+		if (AresHelper::CanUseAres && reinterpret_cast<DummyBuildingTypeExtHere*>(pBuilding->Type->align_E24)->Firestorm_Wall)
+			return SkipDrawCode;
 
-	GET(TechnoClass*, pThis, ESI);
+		if (pThis->IsSelected && Phobos::Config::EnableSelectBox && !pExt->TypeExtData->HideSelectBox)
+			TechnoExt::DrawSelectBox(pThis, pLocation, pBounds);
 
-	const bool hidePips = TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_HidePips;
+		CoordStruct dimension {};
+		pBuilding->Type->Dimension2(&dimension);
+		dimension.X /= -2;
+		dimension.Y /= 2;
 
-	return hidePips ? SkipDrawPips : 0;
-}
+		const auto drawAdjust = TacticalClass::CoordsToScreen(dimension);
+		pHealthBar = pTypeExt->HealthBar.Get(RulesExt::Global()->Buildings_DefaultHealthBar);
+		drawBuildingHealthBar = !pHealthBar->PipBrdShape.isset() && !pHealthBar->IsAnimated;
 
-DEFINE_HOOK_AGAIN(0x6F6A58, TechnoClass_DrawHealthBar_PermanentPipScale, 0x6)	// DrawOther
-DEFINE_HOOK(0x6F67E8, TechnoClass_DrawHealthBar_PermanentPipScale, 0xA)			// DrawBuilding
-{
-	enum { Permanent = 0x6F6AB6 };
+		if (drawBuildingHealthBar)
+			position += drawAdjust;
+		else
+			position.Y += drawAdjust.Y / 2;
 
-	GET(TechnoClass*, pThis, ESI);
+		dimension.Y = -dimension.Y;
+		const auto drawStart = TacticalClass::CoordsToScreen(dimension);
+
+		dimension.Z = 0;
+		dimension.Y = -dimension.Y;
+		pipsAdjust = TacticalClass::CoordsToScreen(dimension);
+
+		if (drawBuildingHealthBar)
+			pipsLength = (drawAdjust.Y - drawStart.Y) >> 1;
+		else
+			pipsLength = pHealthBar->PipsLength.Get(defaultUnitPipsLength);
+	}
+	else
+	{
+		pHealthBar = pTypeExt->HealthBar.Get(RulesExt::Global()->DefaultHealthBar);
+
+		pipsAdjust = Point2D { -10, 10 };
+		pipsLength = pHealthBar->PipsLength.Get(whatAmI == InfantryClass::AbsID ? defaultInfantryPipsLength : defaultUnitPipsLength);
+	}
+
+	__assume(pThis != nullptr);
+	const auto pOwner = pThis->Owner;
+	const bool isAllied = pOwner->IsAlliedWith(HouseClass::CurrentPlayer);
+
+	if (!RulesClass::Instance->EnemyHealth && !HouseClass::IsCurrentPlayerObserver() && !isAllied)
+		return SkipDrawCode;
+
+	if (!pTypeExt->HealthBar_HidePips)
+	{
+		const auto pShield = pExt->Shield.get();
+
+		if (pShield && pShield->IsAvailable() && !pShield->IsBrokenAndNonRespawning())
+		{
+			if (pBuilding)
+				pShield->DrawShieldBar_Building(pipsLength, &position, pBounds);
+			else
+				pShield->DrawShieldBar_Other(pipsLength, &position, pBounds);
+		}
+
+		if (pBuilding)
+			TechnoExt::DrawHealthBar_Building(pThis, pHealthBar, pipsLength, &position, pBounds);
+		else
+			TechnoExt::DrawHealthBar_Other(pThis, pHealthBar, pipsLength, &position, pBounds);
+	}
+
+	TechnoExt::ProcessDigitalDisplays(pThis, pipsLength, pLocation);
+
+	if (AresHelper::CanUseAres && reinterpret_cast<DummyTechnoExtHere*>(pThis->align_154)->DriverKilled)
+		return SkipDrawCode;
 
 	const bool showPipScale = TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_Permanent_PipScale;
 
-	return !showPipScale && !pThis->IsMouseHovering && !pThis->IsSelected ? Permanent : 0;
-}
-
-DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
-{
-	GET(BuildingClass*, pThis, ESI);
-	GET(const int, length, EBX);
-	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
-
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pThis->IsSelected && Phobos::Config::EnableSelectBox && !pExt->TypeExtData->HideSelectBox)
+	if (showPipScale || pThis->IsMouseHovering || pThis->IsSelected)
 	{
-		GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
-		UNREFERENCED_PARAMETER(pLocation); // choom thought he was clever and recomputed the same shit again and again
-		TechnoExt::DrawSelectBox(pThis, pLocation, pBound);
-	}
+		const bool canShowPips = isAllied || pThis->DisplayProductionTo.Contains(HouseClass::CurrentPlayer) || HouseClass::IsCurrentPlayerObserver();
 
-	if (const auto pShieldData = pExt->Shield.get())
-	{
-		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
-			pShieldData->DrawShieldBar_Building(length, pBound);
-	}
-
-	TechnoExt::ProcessDigitalDisplays(pThis);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_Units, 0x7)
-{
-	enum { SkipDrawPips = 0x6F6A58 };
-
-	GET(FootClass*, pThis, ESI);
-	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
-	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
-
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pThis->IsSelected && Phobos::Config::EnableSelectBox && !pExt->TypeExtData->HideSelectBox)
-	{
-		UNREFERENCED_PARAMETER(pLocation);
-		TechnoExt::DrawSelectBox(pThis, pLocation, pBound);
-	}
-
-	if (const auto pShieldData = pExt->Shield.get())
-	{
-		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
+		if (canShowPips || (pBuilding && pBuilding->Type->CanBeOccupied) || pThis->GetTechnoType()->PipsDrawForAll)
 		{
-			const int length = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
-			pShieldData->DrawShieldBar_Other(length, pBound);
+			Point2D pipsLocation = *pLocation + pipsAdjust;
+			pThis->DrawPipScalePips(&pipsLocation, pLocation, pBounds);
 		}
 	}
 
-	TechnoExt::ProcessDigitalDisplays(pThis);
-
-	if (pExt->TypeExtData->HealthBar_HidePips)
-	{
-		R->EDI(pLocation);
-		return SkipDrawPips;
-	}
-
-	return 0;
+	return SkipDrawCode;
 }
 
 DEFINE_HOOK(0x6F534E, TechnoClass_DrawExtras_Insignia, 0x5)

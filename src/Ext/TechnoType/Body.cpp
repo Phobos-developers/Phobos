@@ -985,6 +985,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CrushSlowdownMultiplier.Read(exINI, pSection, "CrushSlowdownMultiplier");
 	this->SkipCrushSlowdown.Read(exINI, pSection, "SkipCrushSlowdown");
 
+	this->HealthBar.Read(exINI, pSection, "HealthBar");
+	this->ShieldBar.Read(exINI, pSection, "ShieldBar");
+
 	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
 	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
 
@@ -1709,6 +1712,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CrushOverlayExtraForwardTilt)
 		.Process(this->CrushSlowdownMultiplier)
 		.Process(this->SkipCrushSlowdown)
+
+		.Process(this->HealthBar)
+		.Process(this->ShieldBar)
 
 		.Process(this->DigitalDisplay_Disable)
 		.Process(this->DigitalDisplayTypes)

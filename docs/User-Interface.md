@@ -445,6 +445,60 @@ HideLaserTrailEffects=false  ; boolean
 HideShakeEffects=false       ; boolean
 ```
 
+### Universal customize health bar
+
+![image](_static/images/healthbar.png)
+*Customize healthbar in [CnC: Solar Flare](https://www.moddb.com/mods/solar-flare)*
+
+- Now you can specify the type of Health Bar to customize its style.
+- The same applies to Shield.
+- If `PipBrdShape` is manually specified, then even when used for buildings, it will be drawn in the form of unit health bars.
+- It should also be easy to expand to other types of progress bars.
+
+In `rulesmd.ini`
+```ini
+[AudioVisual]
+DefaultHealthBar=                  ; healthbar, as default type for non-building technos
+Buildings.DefaultHealthBar=        ; healthbar, as default type for buildings
+DefaultShieldBar=                  ; healthbar, as default type for non-building technos
+Buildings.DefaultShieldBar=        ; healthbar, as default type for buildings
+
+Pips=16,17,18                      ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Building=1,2,4                ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Building.Empty=0              ; integer
+
+[HealthBarTypes]
++=SOMEHEALTHBAR
+
+[SOMETECHNO]
+HealthBar=                         ; healthbar
+ShieldBar=                         ; healthbar, priority over settings on the shield
+
+[SOMESHIELD]
+ShieldBar=                         ; healthbar
+
+[SOMEHEALTHBAR]
+Pips=                              ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Building=                     ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
+PipsEmpty=                         ; integer
+PipsInterval=2,0                   ; integer, interval per two pips
+PipsInterval.Building=-4,2         ; integer, interval per two pips
+PipsLength=                        ; integer, default to 8 for infantry, 17 for others
+PipsShape=pips.shp                 ; filename - including the .shp/.pcx extension
+PipsPalette=palette.pal            ; filename - including the .pal extension
+PipsTranslucency=0                 ; translucency level (0/25/50/75)
+
+PipBrd=                            ; integer
+PipBrdShape=                       ; filename - including the .shp extension
+PipBrdPalette=palette.pal          ; filename - including the .pal extension
+PipBrdTranslucency=0               ; translucency level (0/25/50/75)
+PipBrdOffset=0,0                   ; X,Y, pixels relative to default
+
+IsAnimated=false                   ; boolean
+IsAnimated.Reverse=false           ; boolean
+XOffset=0                          ; integer
+```
+
 ### Visual indication of income from grinders and refineries
 
 - `DisplayIncome` can be set to display the amount of credits acquired when a building is grinding units / receiving ore dump from harvesters or slaves.

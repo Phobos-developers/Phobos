@@ -6,6 +6,7 @@
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Entity/AttachEffectClass.h>
+#include <New/Type/HealthBarTypeClass.h>
 
 class BulletClass;
 
@@ -292,10 +293,17 @@ public:
 	static int GetCustomTintIntensity(TechnoClass* pThis);
 	static void ApplyCustomTintValues(TechnoClass* pThis, int& color, int& intensity);
 	static Point2D GetScreenLocation(TechnoClass* pThis);
-	static Point2D GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor);
-	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
+	static Point2D GetFootSelectBracketPosition(int length, Point2D* pLocation, Anchor anchor);
+	static Point2D GetBuildingSelectBracketPosition(BuildingTypeClass* pType, Point2D* pLocation, BuildingSelectBracketPosition bracketPosition);
+	static double GetHealthBarPercentage(TechnoClass* pThis, HealthBarTypeClass* pType);
+	static int HealthBar_GetPip(Vector3D<int> const& pips, double percentage, const bool isBuilding);
+	static int HealthBar_GetPipAmount(double percentage, int pipsLength);
+	static void DrawBar_Building(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const int pipsLength, Point2D* pLocation, RectangleStruct* pBounds, double percentage);
+	static void DrawBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const int pipsLength, Point2D* pLocation, RectangleStruct* pBounds, double percentage);
+	static void DrawHealthBar_Building(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const int pipsLength, Point2D* pLocation, RectangleStruct* pBounds);
+	static void DrawHealthBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const int pipsLength, Point2D* pLocation, RectangleStruct* pBounds);
 	static void DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds, bool drawBefore = false);
-	static void ProcessDigitalDisplays(TechnoClass* pThis);
+	static void ProcessDigitalDisplays(TechnoClass* pThis, const int pipsLength, Point2D* pLocation);
 	static void GetValuesForDisplay(TechnoClass* pThis, TechnoTypeClass* pType, DisplayInfoType infoType, int& value, int& maxValue, int infoIndex);
 	static void GetDigitalDisplayFakeHealth(TechnoClass* pThis, int& value, int& maxValue);
 	static void CreateDelayedFireAnim(TechnoClass* pThis, AnimTypeClass* pAnimType, int weaponIndex, bool attach, bool center, bool removeOnNoDelay, bool onTurret, CoordStruct firingCoords);

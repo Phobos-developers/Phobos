@@ -965,116 +965,84 @@ AnimTypeClass* ShieldClass::GetIdleAnimType()
 	return pType->GetIdleAnimType(isDamaged, this->GetHealthRatio());
 }
 
-void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBound)
+void ShieldClass::DrawShieldBar_Building(const int length, Point2D* pLocation, RectangleStruct* pBound)
 {
-	if (this->HP <= 0 && this->Type->Pips_HideIfNoStrength)
-		return;
+	const auto pTechnoType = this->Techno->GetTechnoType();
+	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+	const auto pShieldBar = pTechnoTypeExt->ShieldBar.Get(this->Type->ShieldBar.Get(RulesExt::Global()->Buildings_DefaultShieldBar));
 
-	Point2D selectBracketPosition = TechnoExt::GetBuildingSelectBracketPosition(this->Techno, BuildingSelectBracketPosition::Top);
-	selectBracketPosition.X -= 6;
-	selectBracketPosition.Y -= 3;
-	const int totalLength = DrawShieldBar_PipAmount(length);
-	const int frame = this->DrawShieldBar_Pip(true);
+	auto position = *pLocation;
+	position += { 3, -1 };
 
-	if (totalLength > 0)
+	const double percentage = this->GetHealthRatio();
+
+	if (pShieldBar->IsAnimated)
 	{
-		for (int frameIdx = totalLength, deltaX = 0, deltaY = 0;
-			frameIdx;
-			frameIdx--, deltaX += 4, deltaY -= 2)
-		{
-			Point2D position = selectBracketPosition;
-			position.X -= deltaX;
-			position.Y -= deltaY;
-
-			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-				frame, &position, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
-		}
+		const auto pBrdShape = pShieldBar->PipBrdShape.Get(nullptr);
+		const double ratio = pShieldBar->IsAnimated_Reverse ? 1.0 - percentage : percentage;
+		const int brdFrame = this->Techno->IsSelected ? this->DrawShieldBar_Pip(pShieldBar->GetPipBrd(), true) : -1;
+		pShieldBar->DrawAnimatedBar(pBrdShape, &position, pBound, ratio, brdFrame);
 	}
-
-	if (totalLength < length)
+	else
 	{
-		const int emptyFrame = this->Type->Pips_Building_Empty.Get(RulesExt::Global()->Pips_Shield_Building_Empty.Get(0));
-
-		for (int frameIdx = length - totalLength, deltaX = 4 * totalLength, deltaY = -2 * totalLength;
-			frameIdx;
-			frameIdx--, deltaX += 4, deltaY -= 2)
-		{
-			Point2D position = selectBracketPosition;
-			position.X -= deltaX;
-			position.Y -= deltaY;
-
-			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-				emptyFrame, &position, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
-		}
+		const int pipsTotal = DrawShieldBar_PipAmount(percentage, length);
+		const auto& pips = pShieldBar->Pips_Building.Get(this->Type->Pips_Building.Get(RulesExt::Global()->Pips_Shield_Building));
+		const int frame = this->DrawShieldBar_Pip(pips, true);
+		const int emptyFrame = pShieldBar->PipsEmpty.Get(this->Type->Pips_Building_Empty.Get(RulesExt::Global()->Pips_Shield_Building_Empty));
+		pShieldBar->DrawBuildingBar(&position, pBound, pipsTotal, length, frame, emptyFrame);
 	}
 }
 
-void ShieldClass::DrawShieldBar_Other(const int length, RectangleStruct* pBound)
+void ShieldClass::DrawShieldBar_Other(const int length, Point2D* pLocation, RectangleStruct* pBound)
 {
-	if (this->HP <= 0 && this->Type->Pips_HideIfNoStrength)
-		return;
+	const auto pTechnoType = this->Techno->GetTechnoType();
+	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+	const auto pShieldBar = pTechnoTypeExt->ShieldBar.Get(this->Type->ShieldBar.Get(RulesExt::Global()->DefaultShieldBar));
 
-	auto position = TechnoExt::GetFootSelectBracketPosition(this->Techno, Anchor(HorizontalPosition::Left, VerticalPosition::Top));
-	const auto pipBoard = this->Type->Pips_Background.Get(RulesExt::Global()->Pips_Shield_Background.Get(FileSystem::PIPBRD_SHP));
-	int frame = pipBoard->Frames > 2 ? 2 : 0;
+	const auto pBrdShape = pShieldBar->PipBrdShape.Get(this->Type->Pips_Background.Get(RulesExt::Global()->Pips_Shield_Background.Get(FileSystem::PIPBRD_SHP)));
 
-	position.X -= 1;
-	position.Y += this->Techno->GetTechnoType()->PixelSelectionBracketDelta + this->Type->BracketDelta - 3;
+	const auto pipsInterval = pShieldBar->PipsInterval.Get();
+	auto position = *pLocation + Point2D { pShieldBar->XOffset - length * pipsInterval.X / 2, pTechnoType->PixelSelectionBracketDelta + this->Type->BracketDelta - 27 };
 
-	if (this->Techno->IsSelected)
+	const auto whatAmI = this->Techno->WhatAmI();
+
+	if (whatAmI != AbstractType::Infantry)
+		position += { 2, -1 };
+
+	const double percentage = this->GetHealthRatio();
+	const int brdFrame = this->Techno->IsSelected ? this->DrawShieldBar_Pip(pShieldBar->GetPipBrd(whatAmI == AbstractType::Infantry ? (pBrdShape->Frames > 1 ? 3 : 1) : (pBrdShape->Frames > 2 ? 2 : 0)), false) : -1;
+
+	if (pShieldBar->IsAnimated)
 	{
-		int offset = length + 1;
-
-		if (length == 8)
-		{
-			frame += 1;
-			offset += length + 1;
-		}
-
-		position.X += offset;
-		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, pipBoard,
-			frame, &position, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
-		position.X -= offset;
+		const double ratio = pShieldBar->IsAnimated_Reverse ? 1.0 - percentage : percentage;
+		pShieldBar->DrawAnimatedBar(pBrdShape, &position, pBound, ratio, brdFrame);
 	}
-
-	frame = this->DrawShieldBar_Pip(false);
-	position.Y += 1;
-
-	const int totalLength = DrawShieldBar_PipAmount(length);
-	for (int i = 0; i < totalLength; ++i)
+	else
 	{
-		position.X += 2;
-		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-			frame, &position, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		const int pipsTotal = DrawShieldBar_PipAmount(percentage, length);
+		const auto& pips = pShieldBar->Pips.Get(this->Type->Pips.Get(RulesExt::Global()->Pips_Shield));
+		const int frame = this->DrawShieldBar_Pip(pips, false);
+		pShieldBar->DrawOtherBar(pBrdShape, &position, pBound, pipsTotal, frame, brdFrame);
 	}
 }
 
-int ShieldClass::DrawShieldBar_Pip(const bool isBuilding) const
+int ShieldClass::DrawShieldBar_Pip(Vector3D<int> const& pips, const bool isBuilding) const
 {
 	const int strength = this->Type->Strength.Get();
-	const auto pipsShield = isBuilding ? this->Type->Pips_Building.Get() : this->Type->Pips.Get();
 
-	const auto shieldPip = pipsShield.X != -1
-		? pipsShield
-		: (isBuilding
-			? RulesExt::Global()->Pips_Shield_Building.Get()
-			: RulesExt::Global()->Pips_Shield.Get());
-
-	if (this->HP > this->Type->GetConditionYellow() * strength && shieldPip.X != -1)
-		return shieldPip.X;
-	else if (this->HP > this->Type->GetConditionRed() * strength && (shieldPip.Y != -1 || shieldPip.X != -1))
-		return shieldPip.Y == -1 ? shieldPip.X : shieldPip.Y;
-	else if (shieldPip.Z != -1 || shieldPip.X != -1)
-		return shieldPip.Z == -1 ? shieldPip.X : shieldPip.Z;
+	if (this->HP > this->Type->GetConditionYellow() * strength && pips.X != -1)
+		return pips.X;
+	else if (this->HP > this->Type->GetConditionRed() * strength && (pips.Y != -1 || pips.X != -1))
+		return pips.Y == -1 ? pips.X : pips.Y;
+	else if (pips.Z != -1 || pips.X != -1)
+		return pips.Z == -1 ? pips.X : pips.Z;
 
 	return isBuilding ? 5 : 16;
 }
 
-int ShieldClass::DrawShieldBar_PipAmount(int length) const
+int ShieldClass::DrawShieldBar_PipAmount(const double ratio, int length) const
 {
-	return this->IsActive()
-		? Math::clamp((int)round(this->GetHealthRatio() * length), 1, length)
-		: 0;
+	return this->IsActive() ? Math::clamp(static_cast<int>(std::round(ratio * length)), 1, length) : 0;
 }
 
 ArmorType ShieldClass::GetArmorType(TechnoTypeClass* pTechnoType) const

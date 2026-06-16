@@ -9,6 +9,7 @@
 #include <New/Type/SelectBoxTypeClass.h>
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
+#include <New/Type/HealthBarTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
 #include <New/Type/Affiliated/TiberiumEaterTypeClass.h>
 #include <New/Type/Affiliated/CreateUnitTypeClass.h>
@@ -263,6 +264,9 @@ public:
 		Valueable<double> CrushOverlayExtraForwardTilt;
 		Valueable<double> CrushSlowdownMultiplier;
 		Valueable<bool> SkipCrushSlowdown;
+
+		Nullable<HealthBarTypeClass*> HealthBar;
+		Nullable<HealthBarTypeClass*> ShieldBar;
 
 		Valueable<bool> DigitalDisplay_Disable;
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
@@ -745,6 +749,9 @@ public:
 			, CrushForwardTiltPerFrame {}
 			, CrushOverlayExtraForwardTilt { 0.02 }
 			, SkipCrushSlowdown { false }
+
+			, HealthBar {}
+			, ShieldBar {}
 
 			, DigitalDisplay_Disable { false }
 			, DigitalDisplayTypes {}

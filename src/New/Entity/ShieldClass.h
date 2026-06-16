@@ -29,8 +29,8 @@ public:
 	void AI_Temporal();
 	void AI();
 
-	void DrawShieldBar_Building(const int length, RectangleStruct* pBound);
-	void DrawShieldBar_Other(const int length, RectangleStruct* pBound);
+	void DrawShieldBar_Building(const int length, Point2D* pLocation, RectangleStruct* pBound);
+	void DrawShieldBar_Other(const int length, Point2D* pLocation, RectangleStruct* pBound);
 
 	double GetHealthRatio() const
 	{
@@ -124,8 +124,8 @@ private:
 	void TemporalCheck();
 	void EnabledByCheck();
 
-	int DrawShieldBar_Pip(const bool isBuilding) const;
-	int DrawShieldBar_PipAmount(const int length) const;
+	int DrawShieldBar_Pip(Vector3D<int> const& pips, const bool isBuilding) const;
+	int DrawShieldBar_PipAmount(const double ratio, const int length) const;
 
 	/// Properties ///
 	TechnoClass* Techno;
