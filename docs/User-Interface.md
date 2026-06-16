@@ -452,8 +452,8 @@ HideShakeEffects=false       ; boolean
 
 - Now you can specify the type of Health Bar to customize its style.
 - The same applies to Shield.
+- If `PipBrdShape` is manually specified, then even when used for buildings, it will be drawn in the form of unit health bars.
 - It should also be easy to expand to other types of progress bars.
-- 
 
 In `rulesmd.ini`
 ```ini
