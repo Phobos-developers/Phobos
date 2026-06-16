@@ -317,8 +317,6 @@ This page lists all the individual contributions to the project by their author.
   - Extending `Power` to all TechnoTypes
   - Display banner by triggers
   - Help with docs
-- **Chang_zhi**:
-  - Interop export interface for accessing scenario local/global variables
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
   - General assistance
   - Interceptor logic prototype
@@ -681,6 +679,7 @@ This page lists all the individual contributions to the project by their author.
   - Add action `512 Set Follower for Associated Unit...`
   - Dehardcode of parasites unlimboing after killing naval targets
   - Allow warhead to only affect invoker
+  - Allow customizing whether the creation of shrapnel weapon is controlled by the new target check on the warhead of the parent weapon
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -856,3 +855,4 @@ This page lists all the individual contributions to the project by their author.
   - Multiplayer gamespeed fix for RealTimeTimers
   - Revert Ares patch to allow OpenTopped transport customization
   - Fix for units with Fly, Jumpjet or Rocket locomotors crashing off-map not being cleaned up
+- **Chang_zhi** - Interop export interface for accessing scenario local/global variables
