@@ -492,7 +492,7 @@ PipBrd=                            ; integer
 PipBrdShape=                       ; filename - including the .shp extension
 PipBrdPalette=palette.pal          ; filename - including the .pal extension
 PipBrdTranslucency=0               ; translucency level (0/25/50/75)
-PipBrdXOffset=0                    ; integer
+PipBrdOffset=0,0                   ; X,Y, pixels relative to default
 
 IsAnimated=false                   ; boolean
 IsAnimated.Reverse=false           ; boolean

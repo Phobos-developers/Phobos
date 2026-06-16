@@ -21,7 +21,7 @@ public:
 	Nullable<SHPStruct*> PipBrdShape {};
 	CustomPalette PipBrdPalette {};
 	TranslucencyLevel PipBrdTranslucency {};
-	Valueable<int> PipBrdXOffset { 0 };
+	Valueable<Point2D> PipBrdOffset { Point2D::Empty };
 
 	Valueable<bool> IsAnimated { false };
 	Valueable<bool> IsAnimated_Reverse { false };
@@ -66,6 +66,6 @@ private:
 
 public:
 	static void DrawBuildingBar(ConvertClass* pPalette, SHPStruct* pShape, Point2D* pLocation, RectangleStruct* pBounds, Point2D interval, const int pipsTotal, const int pipsLength, const int frame, const int emptyFrame, BlitterFlags pipsFlags, BlitterFlags pipsEmptyFlags);
-	static void DrawOtherBar(ConvertClass* pBrdPalette, SHPStruct* pBrdShape, ConvertClass* pPipsPalette, SHPStruct* pPipsShape, Point2D* pLocation, RectangleStruct* pBounds, const int brdXOffset, Point2D interval, const int pipsTotal, const int frame, const int brdFrame, BlitterFlags pipsFlags, BlitterFlags pipBrdFlags);
-	static void DrawAnimatedBar(ConvertClass* pBrdPalette, SHPStruct* pBrdShape, ConvertClass* pPipsPalette, SHPStruct* pPipsShape, Point2D* pLocation, RectangleStruct* pBounds, const int brdXOffset, const double ratio, const int brdFrame, BlitterFlags pipsFlags, BlitterFlags pipBrdFlags);
+	static void DrawOtherBar(ConvertClass* pBrdPalette, SHPStruct* pBrdShape, ConvertClass* pPipsPalette, SHPStruct* pPipsShape, Point2D* pLocation, RectangleStruct* pBounds, const Point2D& brdOffset, Point2D interval, const int pipsTotal, const int frame, const int brdFrame, BlitterFlags pipsFlags, BlitterFlags pipBrdFlags);
+	static void DrawAnimatedBar(ConvertClass* pBrdPalette, SHPStruct* pBrdShape, ConvertClass* pPipsPalette, SHPStruct* pPipsShape, Point2D* pLocation, RectangleStruct* pBounds, const Point2D& brdOffset, const double ratio, const int brdFrame, BlitterFlags pipsFlags, BlitterFlags pipBrdFlags);
 };

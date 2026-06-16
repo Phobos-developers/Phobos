@@ -10,7 +10,7 @@ void HealthBarTypeClass::DrawBuildingBar(Point2D* pLocation, RectangleStruct* pB
 {
 	const auto pPipsPalette = this->PipsPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 	const auto pPipsShape = this->PipsShape.Get();
-	const Point2D interval = this->PipsInterval_Building.Get();
+	const Point2D& interval = this->PipsInterval_Building.Get();
 	const BlitterFlags pipsFlags = BlitterFlags::Centered | BlitterFlags::bf_400 | this->PipsTranslucency;
 	const BlitterFlags pipsEmptyFlags = BlitterFlags::Centered | BlitterFlags::bf_400 | this->PipBrdTranslucency;
 	HealthBarTypeClass::DrawBuildingBar(pPipsPalette, pPipsShape, pLocation, pBounds, interval, pipsTotal, pipsLength, frame, emptyFrame, pipsFlags, pipsEmptyFlags);
@@ -21,8 +21,8 @@ void HealthBarTypeClass::DrawOtherBar(SHPStruct* pBrdShape, Point2D* pLocation, 
 	const auto pBrdPalette = this->PipBrdPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 	const auto pPipsPalette = this->PipsPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 	const auto pPipsShape = this->PipsShape.Get();
-	const int brdXOffset = this->PipBrdXOffset.Get();
-	const Point2D pipsInterval = this->PipsInterval.Get();
+	const Point2D& brdXOffset = this->PipBrdOffset.Get();
+	const Point2D& pipsInterval = this->PipsInterval.Get();
 	const BlitterFlags pipsFlags = BlitterFlags::Centered | BlitterFlags::bf_400 | this->PipsTranslucency;
 	const BlitterFlags pipBrdFlags = BlitterFlags::Centered | BlitterFlags::bf_400 | BlitterFlags::Alpha | this->PipBrdTranslucency;
 	HealthBarTypeClass::DrawOtherBar(pBrdPalette, pBrdShape, pPipsPalette, pPipsShape, pLocation, pBounds, brdXOffset, pipsInterval, pipsTotal, frame, brdFrame, pipsFlags, pipBrdFlags);
@@ -33,7 +33,7 @@ void HealthBarTypeClass::DrawAnimatedBar(SHPStruct* pBrdShape, Point2D* pLocatio
 	const auto pBrdPalette = this->PipBrdPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 	const auto pPipsPalette = this->PipsPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 	const auto pPipsShape = this->PipsShape.Get();
-	const int brdXOffset = this->PipBrdXOffset.Get();
+	const Point2D& brdXOffset = this->PipBrdOffset.Get();
 	const BlitterFlags pipsFlags = BlitterFlags::Centered | BlitterFlags::bf_400 | this->PipsTranslucency;
 	const BlitterFlags pipBrdFlags = BlitterFlags::Centered | BlitterFlags::bf_400 | BlitterFlags::Alpha | this->PipBrdTranslucency;
 	HealthBarTypeClass::DrawAnimatedBar(pBrdPalette, pBrdShape, pPipsPalette, pPipsShape, pLocation, pBounds, brdXOffset, ratio, brdFrame, pipsFlags, pipBrdFlags);
@@ -62,7 +62,7 @@ void HealthBarTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->PipBrdShape.Read(exINI, pSection, "PipBrdShape");
 	this->PipBrdPalette.LoadFromINI(pINI, pSection, "PipBrdPalette");
 	this->PipBrdTranslucency.Read(exINI, pSection, "PipBrdTranslucency");
-	this->PipBrdXOffset.Read(exINI, pSection, "PipBrdXOffset");
+	this->PipBrdOffset.Read(exINI, pSection, "PipBrdOffset");
 
 	this->IsAnimated.Read(exINI, pSection, "IsAnimated");
 	this->IsAnimated_Reverse.Read(exINI, pSection, "IsAnimated.Reverse");
@@ -89,7 +89,7 @@ void HealthBarTypeClass::Serialize(T& Stm)
 		.Process(this->PipBrdShape)
 		.Process(this->PipBrdPalette)
 		.Process(this->PipBrdTranslucency)
-		.Process(this->PipBrdXOffset)
+		.Process(this->PipBrdOffset)
 		.Process(this->IsAnimated)
 		.Process(this->IsAnimated_Reverse)
 		.Process(this->XOffset)
@@ -128,11 +128,11 @@ void HealthBarTypeClass::DrawBuildingBar(ConvertClass* pPalette, SHPStruct* pSha
 	}
 }
 
-void HealthBarTypeClass::DrawOtherBar(ConvertClass* pBrdPalette, SHPStruct* pBrdShape, ConvertClass* pPipsPalette, SHPStruct* pPipsShape, Point2D* pLocation, RectangleStruct* pBounds, const int brdXOffset, Point2D interval, const int pipsTotal, const int brdFrame, const int frame, BlitterFlags pipsFlags, BlitterFlags pipBrdFlags)
+void HealthBarTypeClass::DrawOtherBar(ConvertClass* pBrdPalette, SHPStruct* pBrdShape, ConvertClass* pPipsPalette, SHPStruct* pPipsShape, Point2D* pLocation, RectangleStruct* pBounds, const Point2D& brdOffset, Point2D interval, const int pipsTotal, const int brdFrame, const int frame, BlitterFlags pipsFlags, BlitterFlags pipBrdFlags)
 {
 	if (brdFrame >= 0)
 	{
-		Point2D drawPoint = *pLocation + Point2D { brdXOffset + 16, -1 };
+		Point2D drawPoint = *pLocation + brdOffset + Point2D { 16, -1 };
 		DSurface::Temp->DrawSHP(pBrdPalette, pBrdShape, brdFrame, &drawPoint, pBounds, pipBrdFlags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 
@@ -142,11 +142,11 @@ void HealthBarTypeClass::DrawOtherBar(ConvertClass* pBrdPalette, SHPStruct* pBrd
 		DSurface::Temp->DrawSHP(pPipsPalette, pPipsShape, frame, &drawPoint, pBounds, pipsFlags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 }
 
-void HealthBarTypeClass::DrawAnimatedBar(ConvertClass* pBrdPalette, SHPStruct* pBrdShape, ConvertClass* pPipsPalette, SHPStruct* pPipsShape, Point2D* pLocation, RectangleStruct* pBounds, const int brdXOffset, const double ratio, const int brdFrame, BlitterFlags pipsFlags, BlitterFlags pipBrdFlags)
+void HealthBarTypeClass::DrawAnimatedBar(ConvertClass* pBrdPalette, SHPStruct* pBrdShape, ConvertClass* pPipsPalette, SHPStruct* pPipsShape, Point2D* pLocation, RectangleStruct* pBounds, const Point2D& brdOffset, const double ratio, const int brdFrame, BlitterFlags pipsFlags, BlitterFlags pipBrdFlags)
 {
 	if (pBrdShape && brdFrame != -1)
 	{
-		Point2D drawPoint = *pLocation + Point2D { brdXOffset + 16, -1 };
+		Point2D drawPoint = *pLocation + brdOffset + Point2D { 16, -1 };
 		DSurface::Temp->DrawSHP(pBrdPalette, pBrdShape, brdFrame, &drawPoint, pBounds, pipBrdFlags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 
