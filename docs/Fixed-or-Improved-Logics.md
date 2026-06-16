@@ -1739,7 +1739,7 @@ FallingDownDamage.AllowEMP=true     ; boolean
 ### Customize whether technos with `Locomotor=Fly` wobble
 
 - In vanilla, if technos use `Locomotor=Fly` and do not have `IsDropship=true`, they will have a hardcoded wobble effect. However, using `IsDropship=true` also introduces a series of hardcoded behaviors associated with it. Now, you can customize whether to disable this behavior, and it can also be used to enable this behavior for technos with `IsDropship=true`.
-  - If not defined, the original behavior is used by default.
+  - If the flag on technos is not defined, default to using the global value; if the global flag is not defined, use the original rule, which determines whether to disable wobble behavior based on whether the technos have `IsDropship=true`.
 
 In `rulesmd.ini`:
 ```ini
