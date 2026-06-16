@@ -217,6 +217,24 @@ msgstr "ConvertToType_Phobos"
 msgid "RegisterCalculateExtraThreatCallback"
 msgstr "RegisterCalculateExtraThreatCallback"
 
+msgid "ScenarioExt"
+msgstr ""
+
+msgid "Variables_GetLocal_Phobos"
+msgstr ""
+
+msgid "`[1.1.0, ∞)`"
+msgstr "`[1.0.0, ∞)`"
+
+msgid "Variables_SetLocal_Phobos"
+msgstr ""
+
+msgid "Variables_GetGlobal_Phobos"
+msgstr ""
+
+msgid "Variables_SetGlobal_Phobos"
+msgstr ""
+
 msgid "**Availability:** `[1.0.0, ∞)`"
 msgstr "**可用范围：** `[1.0.0, ∞)`"
 
@@ -402,6 +420,47 @@ msgstr "当 pBullet 为空时，失败并返回 `E_POINTER`。"
 
 msgid "Fails with `E_UNEXPECTED` when: no BulletExt entry exists for pBullet."
 msgstr "当 pBullet 没有对应的 BulletExt 条目时，失败并返回 `E_UNEXPECTED`。"
+
+msgid "**Availability:** `[1.1.0, ∞)`"
+msgstr ""
+
+msgid ""
+"Gets the value of a local variable by index. Does not create the variable"
+" if missing — pValue is set to 0 when the index is not found."
+msgstr ""
+
+msgid "index: Variable index."
+msgstr ""
+
+msgid "pValue: Receives the variable value."
+msgstr ""
+
+msgid "Returns `S_OK` if the variable exists, `S_FALSE` if it does not."
+msgstr ""
+
+msgid "Fails with `E_POINTER` when: pValue is null."
+msgstr ""
+
+msgid "Fails with `E_FAIL` when: ScenarioExt is not initialized."
+msgstr ""
+
+msgid ""
+"Sets the value of a local variable by index. Creates the variable if the "
+"index does not exist."
+msgstr ""
+
+msgid "value: New value for the variable."
+msgstr ""
+
+msgid ""
+"Gets the value of a global variable by index. Does not create the "
+"variable if missing — pValue is set to 0 when the index is not found."
+msgstr ""
+
+msgid ""
+"Sets the value of a global variable by index. Creates the variable if the"
+" index does not exist."
+msgstr ""
 
 msgid "Invokes AddEvent on an EventExt object."
 msgstr "在一个 EventExt 对象上调用 AddEvent。"
