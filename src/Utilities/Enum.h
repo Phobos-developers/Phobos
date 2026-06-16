@@ -341,7 +341,8 @@ enum class DynamicTeamDelayType : int
 	Enemies = 3,
 	AliveCount = 4,
 	AliveAllies = 5,
-	AliveEnemies = 6
+	AliveEnemies = 6,
+	None = 7
 };
 
 class MouseCursorHotSpotX
