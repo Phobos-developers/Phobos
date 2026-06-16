@@ -68,8 +68,11 @@ DEFINE_HOOK(0x6F64A0, TechnoClass_DrawHealthBar, 0x5)
 	Point2D position = *pLocation;
 	Point2D pipsAdjust = Point2D::Empty;
 	int pipsLength = 0;
+	constexpr int defaultInfantryPipsLength = 8;
+	constexpr int defaultUnitPipsLength = 17;
 
 	HealthBarTypeClass* pHealthBar = nullptr;
+	bool drawBuildingHealthBar = false;
 
 	if (pBuilding)
 	{
@@ -86,11 +89,12 @@ DEFINE_HOOK(0x6F64A0, TechnoClass_DrawHealthBar, 0x5)
 
 		const auto drawAdjust = TacticalClass::CoordsToScreen(dimension);
 		pHealthBar = pTypeExt->HealthBar.Get(RulesExt::Global()->Buildings_DefaultHealthBar);
+		drawBuildingHealthBar = !pHealthBar->PipBrdShape.isset() && !pHealthBar->IsAnimated;
 
-		if (pHealthBar->IsAnimated)
-			position.Y += drawAdjust.Y / 2;
-		else
+		if (drawBuildingHealthBar)
 			position += drawAdjust;
+		else
+			position.Y += drawAdjust.Y / 2;
 
 		dimension.Y = -dimension.Y;
 		const auto drawStart = TacticalClass::CoordsToScreen(dimension);
@@ -99,16 +103,16 @@ DEFINE_HOOK(0x6F64A0, TechnoClass_DrawHealthBar, 0x5)
 		dimension.Y = -dimension.Y;
 		pipsAdjust = TacticalClass::CoordsToScreen(dimension);
 
-		pipsLength = (drawAdjust.Y - drawStart.Y) >> 1;
+		if (drawBuildingHealthBar)
+			pipsLength = (drawAdjust.Y - drawStart.Y) >> 1;
+		else
+			pipsLength = pHealthBar->PipsLength.Get(defaultUnitPipsLength);
 	}
 	else
 	{
-		pipsAdjust = Point2D { -10, 10 };
-
 		pHealthBar = pTypeExt->HealthBar.Get(RulesExt::Global()->DefaultHealthBar);
 
-		constexpr int defaultInfantryPipsLength = 8;
-		constexpr int defaultUnitPipsLength = 17;
+		pipsAdjust = Point2D { -10, 10 };
 		pipsLength = pHealthBar->PipsLength.Get(whatAmI == InfantryClass::AbsID ? defaultInfantryPipsLength : defaultUnitPipsLength);
 	}
 
