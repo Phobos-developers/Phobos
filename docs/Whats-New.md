@@ -588,6 +588,7 @@ HideShakeEffects=false           ; boolean
 - [Allow customizing whether animation uses theater / tile palette](Fixed-or-Improved-Logics.md#animation-palette-customizations-improvements) (by Starkku)
 - [Dehardcode of parasites unlimboing after killing naval targets](Fixed-or-Improved-Logics.md#dehardcode-of-parasites-unlimboing-after-killing-naval-targets) (by Noble_Fish)
 - [Allow warhead to only affect invoker](New-or-Enhanced-Logics.md#allow-warhead-to-only-affect-invoker) (by Noble_Fish)
+- Allow customizing whether the creation of shrapnel weapon is controlled by the new target check on the warhead of the parent weapon (by Noble_Fish)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

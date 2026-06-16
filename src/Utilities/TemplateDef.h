@@ -1552,9 +1552,13 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 			{
 				value = DynamicTeamDelayType::AliveEnemies;
 			}
+			else if (_strcmpi(str, "none") == 0)
+			{
+				value = DynamicTeamDelayType::None;
+			}
 			else
 			{
-				Debug::INIParseFailed(pSection, pKey, str, "Display info type is invalid");
+				Debug::INIParseFailed(pSection, pKey, str, "Dynamic team delay type is invalid");
 				return false;
 			}
 			return true;
