@@ -53,6 +53,7 @@ This page lists all the individual contributions to the project by their author.
   - Ported XNA CnCNet Client MP save handling
   - Retint fix toggle
   - Voxel drawing invisible sections skip
+  - Animatable template
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -266,6 +267,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizing effect of level lighting on air units
   - Reimplemented `Airburst` & `Splits` logic with more customization options
   - Buildings considered as destroyable pathfinding obstacles
+  - Animation transparency customization settings
   - Animation visibility customization settings
   - Light effect customizations
   - Building unit repair customizations
@@ -296,6 +298,7 @@ This page lists all the individual contributions to the project by their author.
   - Armed building guard mission retry delay customization
   - Building turret idle/firing/low power animations
   - Animation theater/tile palette toggle
+  - Animatable template
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
