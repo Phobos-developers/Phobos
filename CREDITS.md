@@ -859,4 +859,4 @@ This page lists all the individual contributions to the project by their author.
   - Revert Ares patch to allow OpenTopped transport customization
   - Fix for units with Fly, Jumpjet or Rocket locomotors crashing off-map not being cleaned up
 - **Chang_zhi**:
-  - Fixed banner render position not being clamped to screen bounds, preventing off-screen drawing and a potential crash when a PCX banner exceeds the top screen edge
+  - Fix banner render position not being clamped to screen bounds, preventing off-screen drawing and a potential crash when a PCX banner exceeds the top screen edge
