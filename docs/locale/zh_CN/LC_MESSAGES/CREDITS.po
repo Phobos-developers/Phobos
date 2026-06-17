@@ -170,6 +170,7 @@ msgstr "跳过 Voxel 不可见组件的绘制"
 
 msgid "Animatable template"
 msgstr ""
+"动画化模版"
 
 msgid "**Uranusian (Thrifinesma)**:"
 msgstr "**Uranusian (Thrifinesma)**："
@@ -795,6 +796,7 @@ msgstr "建筑物视为可破坏的寻路障碍物"
 
 msgid "Animation transparency customization settings"
 msgstr ""
+"自定义动画透明度设置"
 
 msgid "Animation visibility customization settings"
 msgstr "自定义动画可见性设置"

@@ -1995,9 +1995,11 @@ msgid ""
 msgstr "允许自定义溅射子武器的创建是否受上级武器弹头上的新增目标检查控制（by Noble_Fish）"
 
 msgid ""
-"[Animation transparency customization settings](New-or-Enhanced-Logics.md"
-"#customizable-animation-transparency-settings) (by Starkku)"
+"[Animation transparency customization settings](Fixed-or-Improved-"
+"Logics.md#customizable-animation-transparency-settings) (by Starkku)"
 msgstr ""
+"[自定义动画透明度设置](Fixed-or-Improved-Logics#customizable-animation-"
+"transparency-settings)（by Starkku）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："

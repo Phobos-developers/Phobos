@@ -1493,26 +1493,6 @@ msgid ""
 "`Next` animation defines a different particle system."
 msgstr "对于有 `Next` 的动画下一个动画开始播放时粒子系统将被删除且如果 `Next` 的动画定义了另一个粒子系统那么新的粒子系统将被创建。"
 
-msgid "Customizable animation transparency settings"
-msgstr ""
-
-msgid ""
-"`Translucency.Cloaked` can be used to override `Translucency` on "
-"animations attached to currently cloaked TechnoTypes."
-msgstr ""
-
-msgid ""
-"Both `Translucency` and `Translucency.Cloaked` can use the new keyframe "
-"system to animate along with the animation. Read more about the keyframe "
-"system [here](Miscellanous.md#keyframe-animations)."
-msgstr ""
-
-msgid ""
-"If interpolation is enabled, the keyframe values are clamped to valid "
-"transparency values (0,25,50 and 75), e.g a value of 1.5 would become 0 "
-"and 56.525 would become 50 and so on."
-msgstr ""
-
 msgid "Customizable animation visibility settings"
 msgstr "自定义动画可见性"
 
