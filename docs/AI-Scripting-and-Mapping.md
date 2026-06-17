@@ -805,6 +805,7 @@ Team delay change will take effect for a house after its next AI team is created
 ### `800-802` Display Banner
 
 - Display a 'banner' at a fixed location that is relative to the screen.
+  - The banner position is automatically clamped to stay within the visible area. If the banner would extend beyond the screen edge (e.g. when positioned too close to the edge or at lower resolutions), it is snapped inward to remain fully visible.
   - Action `800` will create a new banner or replace the banner with the same Banner ID if it exists. Using a local variable's value when displaying a text banner.
   - Action `801` will create a new banner or replace the banner with the same Banner ID if it exists. Using a global variable's value when displaying a text banner.
   - Action `802` will delete the banner corresponding to the set Banner ID.

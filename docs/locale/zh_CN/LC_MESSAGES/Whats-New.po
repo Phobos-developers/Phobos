@@ -2699,6 +2699,15 @@ msgid ""
 "construction and selling (by Starkku)"
 msgstr "修复了建筑拦截者可以在拔起和出售期间获取目标的问题（by Starkku）"
 
+msgid ""
+"Fixed banners being drawn partially off-screen at various screen "
+"resolutions and a potential crash when a PCX banner exceeds the top "
+"screen edge. Banner render position is now clamped to the visible area. "
+"(by Chang_zhi)"
+msgstr ""
+"修复了横幅在不同分辨率下被部分绘制到屏幕外以及 PCX "
+"横幅超出屏幕上边缘时可能引发的崩溃。横幅绘制位置现在会被限制在可视区域内。（by Chang_zhi）"
+
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
 

@@ -2928,3 +2928,15 @@ msgid ""
 " being cleaned up"
 msgstr "修复了 `Locomotor` 为 `Fly`、`Jumpjet` 或 `Rocket` 的单位在地图外坠毁时未能清除的问题"
 
+msgid "**Chang_zhi**:"
+msgstr "**Chang_zhi**:"
+
+msgid ""
+"Fixed banner render position not being clamped to screen bounds, "
+"preventing off-screen drawing and a potential crash when a PCX banner "
+"exceeds the top screen edge"
+msgstr ""
+"修复了横幅绘制位置未被限制在屏幕边界内的问题，防止了横幅绘制到屏幕外以及 PCX "
+"横幅超出屏幕上边缘时可能引发的崩溃"
+
+
