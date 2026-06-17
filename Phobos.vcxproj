@@ -391,6 +391,7 @@
     <ClInclude Include="src\Utilities\Anchor.h" />
     <ClInclude Include="src\Utilities\AresFunctions.h" />
     <ClInclude Include="src\Utilities\AresHelper.h" />
+    <ClInclude Include="src\Utilities\Interpolation.h" />
     <ClInclude Include="src\Utilities\Constructs.h" />
     <ClInclude Include="src\Utilities\Container.h" />
     <ClInclude Include="src\Utilities\Debug.h" />

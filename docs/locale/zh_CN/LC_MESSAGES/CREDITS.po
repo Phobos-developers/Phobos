@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-16 14:12+0800\n"
+"POT-Creation-Date: 2026-06-17 14:59+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -167,6 +167,9 @@ msgstr "为地图光照重绘时的建筑光源问题修复添加开关"
 
 msgid "Voxel drawing invisible sections skip"
 msgstr "跳过 Voxel 不可见组件的绘制"
+
+msgid "Animatable template"
+msgstr ""
 
 msgid "**Uranusian (Thrifinesma)**:"
 msgstr "**Uranusian (Thrifinesma)**："
@@ -789,6 +792,9 @@ msgstr "重新实现 `Airburst` 与 `Splits` 逻辑以提供更多自定义选�
 
 msgid "Buildings considered as destroyable pathfinding obstacles"
 msgstr "建筑物视为可破坏的寻路障碍物"
+
+msgid "Animation transparency customization settings"
+msgstr ""
 
 msgid "Animation visibility customization settings"
 msgstr "自定义动画可见性设置"
@@ -2298,14 +2304,12 @@ msgid "Dehardcode of parasites unlimboing after killing naval targets"
 msgstr "寄生击杀水上目标后刷出的自定义"
 
 msgid "Allow warhead to only affect invoker"
-msgstr ""
-"允许弹头仅影响调用者"
+msgstr "允许弹头仅影响调用者"
 
 msgid ""
 "Allow customizing whether the creation of shrapnel weapon is controlled "
 "by the new target check on the warhead of the parent weapon"
-msgstr ""
-"允许自定义溅射子武器的创建是否受上级武器弹头上的新增目标检查控制"
+msgstr "允许自定义溅射子武器的创建是否受上级武器弹头上的新增目标检查控制"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
