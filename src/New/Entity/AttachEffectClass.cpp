@@ -570,6 +570,17 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 			this->LastDiscardCheckValue = true;
 			return true;
 		}
+
+		const auto mission = pFoot->CurrentMission;
+
+		if ((discardOn & DiscardCondition::Harvesting) != DiscardCondition::None
+			&& mission == Mission::Harvest
+			&& !pFoot->Locomotor->Is_Really_Moving_Now()
+			&& pFoot->GetCell()->LandType == LandType::Tiberium)
+		{
+			this->LastDiscardCheckValue = true;
+			return true;
+		}
 	}
 
 	if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pTechno))

@@ -317,6 +317,10 @@ namespace detail
 				{
 					parsed |= DiscardCondition::Undeploy;
 				}
+				else if (!_strcmpi(cur, "harvesting"))
+				{
+					parsed |= DiscardCondition::Harvesting;
+				}
 				else
 				{
 					Debug::INIParseFailed(pSection, pKey, cur, "Expected a discard condition type");
