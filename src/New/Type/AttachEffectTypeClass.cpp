@@ -313,9 +313,9 @@ namespace detail
 				{
 					parsed |= DiscardCondition::Selling;
 				}
-				else if (!_strcmpi(cur, "undeploy"))
+				else if (!_strcmpi(cur, "undeploying"))
 				{
-					parsed |= DiscardCondition::Undeploy;
+					parsed |= DiscardCondition::Undeploying;
 				}
 				else if (!_strcmpi(cur, "harvesting"))
 				{

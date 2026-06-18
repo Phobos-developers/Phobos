@@ -589,7 +589,7 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 		{
 			if (pBuilding->ArchiveTarget)
 			{
-				if ((discardOn & DiscardCondition::Undeploy) != DiscardCondition::None)
+				if ((discardOn & DiscardCondition::Undeploying) != DiscardCondition::None)
 				{
 					this->LastDiscardCheckValue = true;
 					return true;

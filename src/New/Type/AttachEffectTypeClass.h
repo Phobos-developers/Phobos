@@ -19,7 +19,7 @@ enum class DiscardCondition : unsigned short
 	OutOfRange = 0x20,
 	Firing = 0x40,
 	Selling = 0x80,
-	Undeploy = 0x100,
+	Undeploying = 0x100,
 	Harvesting = 0x200
 };
 

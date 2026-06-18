@@ -590,7 +590,7 @@ HideShakeEffects=false           ; boolean
 - [Allow warhead to only affect invoker](New-or-Enhanced-Logics.md#allow-warhead-to-only-affect-invoker) (by Noble_Fish)
 - Allow customizing whether the creation of shrapnel weapon is controlled by the new target check on the warhead of the parent weapon (by Noble_Fish)
 - [Animation transparency customization settings](New-or-Enhanced-Logics.md#customizable-animation-transparency-settings) (by Starkku)
-- Add `selling`, `undeploy` and `harvesting` conditions to `DiscardOn` (by Noble_Fish)
+- Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn` (by Noble_Fish)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
