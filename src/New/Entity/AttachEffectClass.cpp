@@ -572,6 +572,26 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 		}
 	}
 
+	if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pTechno))
+	{
+		if (pBuilding->CurrentMission == Mission::Selling)
+		{
+			if (pBuilding->ArchiveTarget)
+			{
+				if ((discardOn & DiscardCondition::Undeploy) != DiscardCondition::None)
+				{
+					this->LastDiscardCheckValue = true;
+					return true;
+				}
+			}
+			else if ((discardOn & DiscardCondition::Selling) != DiscardCondition::None)
+			{
+				this->LastDiscardCheckValue = true;
+				return true;
+			}
+		}
+	}
+
 	if (pTechno->DrainingMe && (discardOn & DiscardCondition::Drain) != DiscardCondition::None)
 	{
 		this->LastDiscardCheckValue = true;

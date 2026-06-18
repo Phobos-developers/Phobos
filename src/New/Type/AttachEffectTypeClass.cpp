@@ -309,6 +309,14 @@ namespace detail
 				{
 					parsed |= DiscardCondition::Firing;
 				}
+				else if (!_strcmpi(cur, "selling"))
+				{
+					parsed |= DiscardCondition::Selling;
+				}
+				else if (!_strcmpi(cur, "undeploy"))
+				{
+					parsed |= DiscardCondition::Undeploy;
+				}
 				else
 				{
 					Debug::INIParseFailed(pSection, pKey, cur, "Expected a discard condition type");

@@ -8,7 +8,7 @@
 #include "LaserTrailTypeClass.h"
 
 // AE discard condition
-enum class DiscardCondition : unsigned char
+enum class DiscardCondition : unsigned short
 {
 	None = 0x0,
 	Entry = 0x1,
@@ -17,7 +17,9 @@ enum class DiscardCondition : unsigned char
 	Drain = 0x8,
 	InRange = 0x10,
 	OutOfRange = 0x20,
-	Firing = 0x40
+	Firing = 0x40,
+	Selling = 0x80,
+	Undeploy = 0x100
 };
 
 MAKE_ENUM_FLAGS(DiscardCondition);
