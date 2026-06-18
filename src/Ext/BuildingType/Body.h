@@ -115,6 +115,15 @@ public:
 		Valueable<int> TurretAnim_IdleRate;
 		Valueable<int> TurretAnim_FiringRate;
 
+		Valueable<SHPStruct*> Sell;
+		Valueable<bool> Sell_Reverse;
+		Valueable<SHPStruct*> Undeploy;
+		Valueable<bool> Undeploy_Reverse;
+		Nullable<double> BuildupTime;
+		Nullable<double> SellTime;
+		char SellFileName[0x20];
+		char UndeployFileName[0x20];
+
 		// Ares 0.2
 		Valueable<bool> CloningFacility;
 
@@ -203,6 +212,12 @@ public:
 			, TurretAnim_LowPowerFiringFrames { 0 }
 			, TurretAnim_IdleRate { 1 }
 			, TurretAnim_FiringRate { 1 }
+			, Sell { nullptr }
+			, Sell_Reverse { true }
+			, Undeploy { nullptr }
+			, Undeploy_Reverse { true }
+			, BuildupTime {}
+			, SellTime {}
 
 			// Ares 0.2
 			, CloningFacility { false }
@@ -213,7 +228,10 @@ public:
 
 			// Ares 3.0
 			, UnitSell {}
-		{ }
+		{
+			SellFileName[0] = '\0';
+			UndeployFileName[0] = '\0';
+		}
 
 		// Ares 0.A functions
 		int GetSuperWeaponCount() const;

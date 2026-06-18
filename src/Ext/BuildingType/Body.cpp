@@ -241,6 +241,29 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TurretAnim_LowPowerFiringFrames.Read(exINI, pSection, "TurretAnim.LowPowerFiringFrames");
 	this->TurretAnim_IdleRate.Read(exINI, pSection, "TurretAnim.IdleRate");
 	this->TurretAnim_FiringRate.Read(exINI, pSection, "TurretAnim.FiringRate");
+	this->BuildupTime.Read(exINI, pSection, "BuildupTime");
+	this->SellTime.Read(exINI, pSection, "SellTime");
+
+	if (exArtINI.ReadString(pArtSection, "Sell") > 0)
+	{
+		strcpy_s(this->SellFileName, exArtINI.value());
+		this->Sell = nullptr;
+	}
+	else
+	{
+		this->SellFileName[0] = '\0';
+	}
+	this->Sell_Reverse.Read(exArtINI, pArtSection, "Sell.Reverse");
+	if (exArtINI.ReadString(pArtSection, "Undeploy") > 0)
+	{
+		strcpy_s(this->UndeployFileName, exArtINI.value());
+		this->Undeploy = nullptr;
+	}
+	else
+	{
+		this->UndeployFileName[0] = '\0';
+	}
+	this->Undeploy_Reverse.Read(exArtINI, pArtSection, "Undeploy.Reverse");
 
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
 	{
@@ -418,6 +441,12 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TurretAnim_LowPowerFiringFrames)
 		.Process(this->TurretAnim_IdleRate)
 		.Process(this->TurretAnim_FiringFrames)
+		.Process(this->Sell)
+		.Process(this->Sell_Reverse)
+		.Process(this->Undeploy)
+		.Process(this->Undeploy_Reverse)
+		.Process(this->BuildupTime)
+		.Process(this->SellTime)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)

@@ -566,6 +566,8 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->TurretAnimIdleFrame)
 		.Process(this->TurretAnimFiringFrame)
 		.Process(this->TurretAnimRateTick)
+		.Process(this->UseCustomSellFrames)
+		.Process(this->CustomSellFrameCount)
 		//.Process(this->IsFiringNow) It is set and reset within a same function.
 		;
 }

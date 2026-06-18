@@ -1300,3 +1300,154 @@ DEFINE_HOOK(0x44C976, BuildingClass_Mission_Repair_TankBunker, 0x5)
 }
 
 #pragma endregion
+
+static SHPStruct* LoadTheaterSHP(const char* baseName)
+{
+	char filename[MAX_PATH];
+	_snprintf_s(filename, _TRUNCATE, "%s", baseName);
+
+	if (isalpha(static_cast<unsigned char>(filename[0])))
+	{
+		auto const c1 = static_cast<unsigned char>(filename[1]) & ~0x20;
+		if (c1 == 'A' || c1 == 'T')
+		{
+			auto const theater = ScenarioClass::Instance->Theater;
+			filename[1] = Theater::GetTheater(theater).Letter[0];
+		}
+	}
+
+	char fullPath[MAX_PATH];
+	_snprintf_s(fullPath, _TRUNCATE, "%s.SHP", filename);
+	SHPStruct* pSHP = static_cast<SHPStruct*>(FileSystem::LoadFile(fullPath, false));
+
+	if (!pSHP)
+	{
+		filename[1] = 'G';
+		_snprintf_s(fullPath, _TRUNCATE, "%s.SHP", filename);
+		pSHP = static_cast<SHPStruct*>(FileSystem::LoadFile(fullPath, false));
+	}
+
+	if (!pSHP)
+	{
+		_snprintf_s(fullPath, _TRUNCATE, "%s.SHP", baseName);
+		pSHP = static_cast<SHPStruct*>(FileSystem::LoadFile(fullPath, false));
+	}
+
+	return pSHP;
+}
+
+DEFINE_HOOK(0x43D2B5, BuildingClass_Draw_Sell, 0x6)
+{
+	enum { Continue = 0x43D2C5 };
+
+	GET(BuildingClass*, pThis, ESI);
+	auto const pBldExt = BuildingExt::ExtMap.Find(pThis);
+
+	if (pThis->CurrentMission != Mission::Selling || pThis->BState != 0)
+	{
+		pBldExt->UseCustomSellFrames = false;
+		return 0;
+	}
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	SHPStruct* pSHP = nullptr;
+
+	if (pThis->ArchiveTarget)
+	{
+		if (pTypeExt->UndeployFileName[0])
+		{
+			if (!pTypeExt->Undeploy)
+				pTypeExt->Undeploy = LoadTheaterSHP(pTypeExt->UndeployFileName);
+			pSHP = pTypeExt->Undeploy;
+		}
+	}
+	else
+	{
+		if (pTypeExt->SellFileName[0])
+		{
+			if (!pTypeExt->Sell)
+				pTypeExt->Sell = LoadTheaterSHP(pTypeExt->SellFileName);
+			pSHP = pTypeExt->Sell;
+		}
+	}
+
+	if (pSHP)
+	{
+		if (!pBldExt->UseCustomSellFrames)
+		{
+			pBldExt->UseCustomSellFrames = true;
+			int effectiveFrames = pSHP->Frames / 2;
+			pBldExt->CustomSellFrameCount = effectiveFrames;
+
+			double sellTimeMinutes = pTypeExt->SellTime.isset()
+				? pTypeExt->SellTime.Get()
+				: (pTypeExt->BuildupTime.isset()
+					? pTypeExt->BuildupTime.Get()
+					: RulesClass::Instance->BuildupTime);
+			int totalDuration = static_cast<int>(sellTimeMinutes * 900);
+			int newRate = Math::max(1, totalDuration / effectiveFrames);
+
+			pThis->Animation.Start(newRate);
+			pThis->Animation.Value = 1;
+			pThis->Animation.Timer.StartTime = Unsorted::CurrentFrame - newRate;
+		}
+
+		R->EAX(pSHP);
+		R->Stack(0x14, pSHP);
+		return Continue;
+	}
+
+	pBldExt->UseCustomSellFrames = false;
+	return 0;
+}
+
+DEFINE_HOOK(0x43F000, BuildingClass_GetCurrentFrame_Sell, 0x6)
+{
+	enum { Continue = 0x43F029 };
+
+	GET(BuildingClass*, pThis, ESI);
+	auto const pBldExt = BuildingExt::ExtMap.Find(pThis);
+
+	if (!pBldExt->UseCustomSellFrames)
+		return 0;
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	bool reverse = pThis->ArchiveTarget ? pTypeExt->Undeploy_Reverse : pTypeExt->Sell_Reverse;
+
+	int effectiveFrames = pBldExt->CustomSellFrameCount;
+	int value = pThis->Animation.Value;
+	int frameIndex = reverse ? (effectiveFrames - value - 1) : value;
+	if (frameIndex < 0) frameIndex = 0;
+	if (frameIndex >= effectiveFrames) frameIndex = effectiveFrames - 1;
+
+	R->EAX(frameIndex);
+	return Continue;
+}
+
+DEFINE_HOOK(0x4511F1, BuildingClass_UpdateAnimations_CustomFrameCount_End, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+	auto const pBldExt = BuildingExt::ExtMap.Find(pThis);
+
+	int total = pThis->Type->BuildingAnimFrame[pThis->BState].dwUnknown
+		+ pThis->Type->BuildingAnimFrame[pThis->BState].FrameCount;
+
+	if (pBldExt->UseCustomSellFrames)
+		total = pBldExt->CustomSellFrameCount;
+
+	return (pThis->Animation.Value < total) ? 0x4511FC : 0x4511F7;
+}
+
+DEFINE_HOOK(0x4511A5, BuildingClass_UpdateAnimations_CustomFrameCount_Ready, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+	auto const pBldExt = BuildingExt::ExtMap.Find(pThis);
+
+	int totalMinusOne = pThis->Type->BuildingAnimFrame[pThis->BState].dwUnknown
+		+ pThis->Type->BuildingAnimFrame[pThis->BState].FrameCount - 1;
+
+	if (pBldExt->UseCustomSellFrames)
+		totalMinusOne = pBldExt->CustomSellFrameCount - 1;
+
+	return (pThis->Animation.Value == totalMinusOne) ? 0x4511DF : 0x4511B3;
+}

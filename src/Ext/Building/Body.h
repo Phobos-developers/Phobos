@@ -30,6 +30,8 @@ public:
 		int TurretAnimIdleFrame;
 		int TurretAnimFiringFrame;
 		int TurretAnimRateTick;
+		bool UseCustomSellFrames;
+		int CustomSellFrameCount;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -48,6 +50,8 @@ public:
 			, TurretAnimIdleFrame { 0 }
 			, TurretAnimFiringFrame { -1 }
 			, TurretAnimRateTick { 0 }
+			, UseCustomSellFrames { false }
+			, CustomSellFrameCount { 0 }
 		{ }
 
 		void DisplayIncomeString();

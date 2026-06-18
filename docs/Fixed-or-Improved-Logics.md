@@ -1189,6 +1189,23 @@ Overpower.ChargeWeapon=1  ; integer, negative values mean that weapons can never
 Ares' [Battery Super Weapon](https://ares-developers.github.io/Ares-docs/new/superweapons/types/battery.html) won't be affected by this.
 ```
 
+### Customize the images for building sell and undeploy
+
+- In vanilla, when a building is sold or undeployed, it plays the reversed `Buildup` image. Now you can customize the images for these two cases and set whether to reverse them separately.
+
+In `artmd.ini`:
+```ini
+[SOMEBUILDING]         ; BuildingType
+Sell=                  ; filename - excluding the .shp extension
+Sell.Reverse=true      ; boolean
+Undeploy=              ; filename - excluding the .shp extension
+Undeploy.Reverse=true  ; boolean
+```
+
+```{note}
+When the replacement image is not explicitly set, the `Buildup` image will be used, and reversal can still work independently.
+```
+
 ### Disable `DamageSound`
 
 - Now you can disable `DamageSound` of a building.
