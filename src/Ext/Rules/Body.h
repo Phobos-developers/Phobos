@@ -363,6 +363,7 @@ public:
 		Valueable<bool> DiscardOn_MoveBasedOnDestination;
 		Valueable<bool> RemoveMindControl_Silent;
 		Valueable<bool> MindControl_Permanent_ReplaceSilent;
+		Nullable<bool> FlyNoWobbles;
 
 		Valueable<AnimTypeClass*> DefaultLandingAnim;
 		Nullable<AnimTypeClass*> DefaultLandingAnim_Dropship;
@@ -672,6 +673,8 @@ public:
 			, DiscardOn_MoveBasedOnDestination { false }
 			, RemoveMindControl_Silent { false }
 			, MindControl_Permanent_ReplaceSilent { false }
+
+			, FlyNoWobbles {}
 
 			, DefaultLandingAnim { nullptr }
 			, DefaultLandingAnim_Dropship {}

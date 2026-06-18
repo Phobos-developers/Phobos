@@ -512,6 +512,8 @@ public:
 
 		Nullable<bool> Parasite_AllowWaterExit;
 
+		Nullable<bool> FlyNoWobbles;
+
 		Nullable<AnimTypeClass*> LandingAnim;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
@@ -978,6 +980,8 @@ public:
 			, HarvesterDumpRate {}
 				
 			, Parasite_AllowWaterExit {}
+
+			, FlyNoWobbles {}
 
 			, LandingAnim {}
 		{ }
