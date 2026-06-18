@@ -65,6 +65,8 @@ public:
 		ValueableVector<double> LargeFireDistances;
 		Nullable<bool> Crater_DestroyTiberium;
 		Nullable<bool> TheaterPalette;
+		Valueable<int> Tiled_Interval;
+		Valueable<bool> Tiled_AlignToCenter;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
@@ -107,6 +109,8 @@ public:
 			, LargeFireDistances {}
 			, Crater_DestroyTiberium {}
 			, TheaterPalette {}
+			, Tiled_Interval { 0 }
+			, Tiled_AlignToCenter { false }
 		{ }
 
 		virtual ~ExtData() = default;
