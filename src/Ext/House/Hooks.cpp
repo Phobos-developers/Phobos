@@ -467,12 +467,15 @@ DEFINE_HOOK(0x4F8ACC, HouseClass_Update_ResetTeamDelay, 0x6)
 		return ResetTeamDelay;
 	}
 
+	const auto teamDelayType = RulesExt::Global()->TeamDelays_DynamicType;
+
+	if (teamDelayType == DynamicTeamDelayType::None)
+		return 0;
+
 	int playerCount = ScenarioClass::Instance->NumberStartingPoints;
 
 	if (playerCount >= 2 && !SessionClass::IsCampaign())
 	{
-		const auto teamDelayType = RulesExt::Global()->TeamDelays_DynamicType;
-
 		if (teamDelayType != DynamicTeamDelayType::StartingPoint)
 		{
 			playerCount = 0;
