@@ -590,6 +590,7 @@ HideShakeEffects=false           ; boolean
 - [Allow warhead to only affect invoker](New-or-Enhanced-Logics.md#allow-warhead-to-only-affect-invoker) (by Noble_Fish)
 - Allow customizing whether the creation of shrapnel weapon is controlled by the new target check on the warhead of the parent weapon (by Noble_Fish)
 - [Animation transparency customization settings](New-or-Enhanced-Logics.md#customizable-animation-transparency-settings) (by Starkku)
+- Add `ClampToScreen` tag for `BannerType` (defaults to `true`) to control whether banner position is clamped to the visible area (by Chang_zhi)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -726,7 +727,6 @@ HideShakeEffects=false           ; boolean
 - Fixed a bug where stationary vehicles would also block movement caused by external factors (by Noble_Fish)
 - Fixed AttachEffect with `RecreationDelay` of 0 checking `Delay` as well instead of immediately refreshing duration when possible (by Starkku)
 - Fixed building interceptors being able to pick targets during construction and selling (by Starkku)
-- Fixed banners being drawn partially off-screen at various screen resolutions and a potential crash when a PCX banner exceeds the top screen edge. Banner render position is now clamped to the visible area (by Chang_zhi)
 
 #### Fixes / interactions with other extensions:
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)

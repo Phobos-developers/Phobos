@@ -805,7 +805,6 @@ Team delay change will take effect for a house after its next AI team is created
 ### `800-802` Display Banner
 
 - Display a 'banner' at a fixed location that is relative to the screen.
-  - The banner position is automatically clamped to stay within the visible area. If the banner would extend beyond the screen edge (e.g. when positioned too close to the edge or at lower resolutions), it is snapped inward to remain fully visible.
   - Action `800` will create a new banner or replace the banner with the same Banner ID if it exists. Using a local variable's value when displaying a text banner.
   - Action `801` will create a new banner or replace the banner with the same Banner ID if it exists. Using a global variable's value when displaying a text banner.
   - Action `802` will delete the banner corresponding to the set Banner ID.
@@ -821,6 +820,7 @@ Team delay change will take effect for a house after its next AI team is created
   - `Duration` determines how long the banner will be displayed. Negative values mean the banner can always be displayed until being deleted. The banner itself won't be deleted when it's not displaying.
   - `Delay` determines when the banner will be displayed again after it stops displaying by a positive `Duration`. Neagtive values mean it can't be displayed again.
     - If an `SHP` banner displays again after the delay, it'll start from the frame when it's stopped last time. This can also be changed to its first frame if `SHP.RefreshAfterDelay` set to true.
+  - `ClampToScreen` controls whether the banner is clamped to stay within the visible area. When disabled, a PCX banner exceeding the top screen edge may crash the game.
 
 In `rulesmd.ini`:
 ```ini
@@ -838,6 +838,7 @@ CSF.Background=false        ; boolean
 CSF.VariableFormat=none     ; List of Variable Format Enumeration (none|variable|prefix/prefixed|surfix/surfixed)
 Duration=-1                 ; integer
 Delay=-1                    ; integer
+ClampToScreen=true          ; boolean
 ```
 
 In `mycampaign.map`:

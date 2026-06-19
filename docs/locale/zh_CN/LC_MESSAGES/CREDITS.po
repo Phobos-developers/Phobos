@@ -2932,11 +2932,7 @@ msgid "**Chang_zhi**:"
 msgstr "**Chang_zhi**："
 
 msgid ""
-"Fix banner render position not being clamped to screen bounds, "
-"preventing off-screen drawing and a potential crash when a PCX banner "
-"exceeds the top screen edge"
+"Add `ClampToScreen` tag for `BannerType` to control whether banner "
+"position is clamped to the visible area"
 msgstr ""
-"修复了横幅绘制位置未被限制在屏幕边界内的问题，防止了横幅绘制到屏幕外以及 PCX "
-"横幅超出屏幕上边缘时可能引发的崩溃"
-
-
+"为 `BannerType` 添加了 `ClampToScreen` 标签以控制横幅位置是否被限制在可视化区域内"
