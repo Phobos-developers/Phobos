@@ -590,6 +590,8 @@ HideShakeEffects=false           ; boolean
 - [Allow warhead to only affect invoker](New-or-Enhanced-Logics.md#allow-warhead-to-only-affect-invoker) (by Noble_Fish)
 - Allow customizing whether the creation of shrapnel weapon is controlled by the new target check on the warhead of the parent weapon (by Noble_Fish)
 - [Animation transparency customization settings](New-or-Enhanced-Logics.md#customizable-animation-transparency-settings) (by Starkku)
+- [Customize `Tiled` drawing interval and centering](Fixed-or-Improved-Logics.md#customize-the-drawing-interval-for-tiled) (by Noble_Fish)
+- [Customize whether technos with `Locomotor=Fly` wobble](Fixed-or-Improved-Logics.md#customize-whether-technos-with-locomotor-fly-wobble) (by Noble_Fish)
 - Add `ClampToScreen` tag for `BannerType` (defaults to `true`) to control whether banner position is clamped to the visible area (by Chang_zhi)
 
 #### Vanilla fixes:

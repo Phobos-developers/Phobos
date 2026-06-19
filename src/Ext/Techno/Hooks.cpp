@@ -2065,6 +2065,17 @@ DEFINE_HOOK(0x70AFEF, TechnoClass_UpdateSight_DynamicSight2, 0x6)
 
 #pragma endregion
 
+DEFINE_HOOK(0x4CF8B1, FlyLocomotionClass_Draw_Point_NoWobbles, 0x6)
+{
+    enum { Continue = 0x4CF8B7 };
+    GET(TechnoTypeClass*, pType, EAX);
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+    R->CL(pTypeExt->FlyNoWobbles.Get(RulesExt::Global()->FlyNoWobbles.Get(pType->IsDropship)));
+
+	return Continue;
+}
+
 namespace WarpPerStep
 {
 	class TemporalClassFake final : public TemporalClass
