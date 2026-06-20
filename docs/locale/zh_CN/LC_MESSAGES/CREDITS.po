@@ -2314,6 +2314,9 @@ msgstr "允许自定义溅射子武器的创建是否受上级武器弹头上的
 msgid "Customize `Tiled` drawing interval and centering"
 msgstr "自定义 `Tiled` 绘制间隔和中心对齐"
 
+msgid "Customize whether technos with `Locomotor=Fly` wobble"
+msgstr "自定义 `Locomotor=Fly` 的单位是否上下浮动"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
