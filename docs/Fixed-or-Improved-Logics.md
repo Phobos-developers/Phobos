@@ -1749,6 +1749,21 @@ FallingDownDamage.Water=            ; integer / percentage
 FallingDownDamage.AllowEMP=true     ; boolean
 ```
 
+### Customize the landing animation of technos that have `Locomotor=Fly`
+
+- In vanilla, if a techno has `Locomotor=Fly` and `IsDropship=true`, it plays the `[DROPLAND]` animation when landing; if `IsDropship=false` but it is an aircraft with `Carryall=true`, it will play the `[CARYLAND]` animation when landing. Now you can customize this logic.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+DefaultLandingAnim=                   ; AnimationType
+DefaultLandingAnim.Dropship=DROPLAND  ; AnimationType
+DefaultLandingAnim.Carryall=CARYLAND  ; AnimationType
+
+[SOMETECHNO]                          ; TechnoType
+LandingAnim=                          ; AnimationType, defaults to the global default (none, DROPLAND, or CARYLAND) based on unit's IsDropship/Carryall flags
+```
+
 ### Customize whether technos with `Locomotor=Fly` wobble
 
 - In vanilla, if technos use `Locomotor=Fly` and do not have `IsDropship=true`, they will have a hardcoded wobble effect. However, using `IsDropship=true` also introduces a series of hardcoded behaviors associated with it. Now, you can customize whether to disable this behavior, and it can also be used to enable this behavior for technos with `IsDropship=true`.

@@ -217,6 +217,24 @@ msgstr "ConvertToType_Phobos"
 msgid "RegisterCalculateExtraThreatCallback"
 msgstr "RegisterCalculateExtraThreatCallback"
 
+msgid "ScenarioExt"
+msgstr "ScenarioExt"
+
+msgid "Variables_GetLocal_Phobos"
+msgstr "Variables_GetLocal_Phobos"
+
+msgid "`[1.1.0, ∞)`"
+msgstr "`[1.1.0, ∞)`"
+
+msgid "Variables_SetLocal_Phobos"
+msgstr "Variables_SetLocal_Phobos"
+
+msgid "Variables_GetGlobal_Phobos"
+msgstr "Variables_GetGlobal_Phobos"
+
+msgid "Variables_SetGlobal_Phobos"
+msgstr "Variables_SetGlobal_Phobos"
+
 msgid "**Availability:** `[1.0.0, ∞)`"
 msgstr "**可用范围：** `[1.0.0, ∞)`"
 
@@ -402,6 +420,47 @@ msgstr "当 pBullet 为空时，失败并返回 `E_POINTER`。"
 
 msgid "Fails with `E_UNEXPECTED` when: no BulletExt entry exists for pBullet."
 msgstr "当 pBullet 没有对应的 BulletExt 条目时，失败并返回 `E_UNEXPECTED`。"
+
+msgid "**Availability:** `[1.1.0, ∞)`"
+msgstr "**可用范围：** `[1.1.0, ∞)`"
+
+msgid ""
+"Gets the value of a local variable by index. Does not create the variable"
+" if missing — pValue is set to 0 when the index is not found."
+msgstr "按索引获取局部变量的值。若变量不存在则不会创建，未找到索引时 pValue 将被设为 0。"
+
+msgid "index: Variable index."
+msgstr "index：变量索引。"
+
+msgid "pValue: Receives the variable value."
+msgstr "pValue：接收变量的值。"
+
+msgid "Returns `S_OK` if the variable exists, `S_FALSE` if it does not."
+msgstr "若变量存在则返回 `S_OK`，若不存在则返回 `S_FALSE`。"
+
+msgid "Fails with `E_POINTER` when: pValue is null."
+msgstr "当 pValue 为空指针时，失败并返回 `E_POINTER`。"
+
+msgid "Fails with `E_FAIL` when: ScenarioExt is not initialized."
+msgstr "当 ScenarioExt 未初始化时，失败并返回 `E_FAIL`。"
+
+msgid ""
+"Sets the value of a local variable by index. Creates the variable if the "
+"index does not exist."
+msgstr "按索引设置局部变量的值。若索引不存在则会创建该变量。"
+
+msgid "value: New value for the variable."
+msgstr "value：变量的新值。"
+
+msgid ""
+"Gets the value of a global variable by index. Does not create the "
+"variable if missing — pValue is set to 0 when the index is not found."
+msgstr "按索引获取全局变量的值。若变量不存在则不会创建，未找到索引时 pValue 将被设为 0。"
+
+msgid ""
+"Sets the value of a global variable by index. Creates the variable if the"
+" index does not exist."
+msgstr "按索引设置全局变量的值。若索引不存在则会创建该变量。"
 
 msgid "Invokes AddEvent on an EventExt object."
 msgstr "在一个 EventExt 对象上调用 AddEvent。"

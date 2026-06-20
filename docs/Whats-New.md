@@ -592,6 +592,7 @@ HideShakeEffects=false           ; boolean
 - [Animation transparency customization settings](New-or-Enhanced-Logics.md#customizable-animation-transparency-settings) (by Starkku)
 - [Customize `Tiled` drawing interval and centering](Fixed-or-Improved-Logics.md#customize-the-drawing-interval-for-tiled) (by Noble_Fish)
 - [Customize whether technos with `Locomotor=Fly` wobble](Fixed-or-Improved-Logics.md#customize-whether-technos-with-locomotor-fly-wobble) (by Noble_Fish)
+- [Customize the landing animation of technos that have `Locomotor=Fly`](Fixed-or-Improved-Logics.md#customize-the-landing-animation-of-technos-that-have-locomotor-fly) (by Noble_Fish)
 - Add `ClampToScreen` tag for `BannerType` (defaults to `true`) to control whether banner position is clamped to the visible area (by Chang_zhi)
 
 #### Vanilla fixes:
@@ -729,7 +730,7 @@ HideShakeEffects=false           ; boolean
 - Fixed a bug where stationary vehicles would also block movement caused by external factors (by Noble_Fish)
 - Fixed AttachEffect with `RecreationDelay` of 0 checking `Delay` as well instead of immediately refreshing duration when possible (by Starkku)
 - Fixed building interceptors being able to pick targets during construction and selling (by Starkku)
-- Fixed mirage tanks (and other vehicles disguised as terrain) incorrectly displaying veterancy insignia to enemy players when not clearly visible (by RAZER)
+- Fixed `src/Interop/Version.cpp` not being compiled into the project (by Chang_zhi)
 
 #### Fixes / interactions with other extensions:
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
@@ -754,6 +755,7 @@ HideShakeEffects=false           ; boolean
 - [Aux technos and TechLevel requirement of superweapon](New-or-Enhanced-Logics.md#aux-technos-and-techlevel-requirement-of-superweapon) (by NetsuNegi & Ollerus)
 - [Export interface for external call](index.md#interoperability) (by TaranDahl)
 - Allowed `MindControl.Permanent` warhead to mute `MindClearedSound` (by NetsuNegi & Noble_Fish)
+- [Export interface for accessing scenario local/global variables](Interoperability.md#scenarioext) (by Chang_zhi)
 
 ```
 

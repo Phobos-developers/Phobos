@@ -2065,6 +2065,58 @@ DEFINE_HOOK(0x70AFEF, TechnoClass_UpdateSight_DynamicSight2, 0x6)
 
 #pragma endregion
 
+static AnimTypeClass* GetLandingAnim(TechnoClass* pTechno)
+{
+	auto const pType = pTechno->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+	if (pTypeExt->LandingAnim.isset())
+		return pTypeExt->LandingAnim.Get();
+
+	if (pType->IsDropship)
+	{
+		if (RulesExt::Global()->DefaultLandingAnim_Dropship.isset())
+			return RulesExt::Global()->DefaultLandingAnim_Dropship.Get();
+		return AnimTypeClass::Find("DROPLAND");
+	}
+
+	auto const pAircraft = abstract_cast<AircraftClass*, true>(pTechno);
+	if (pAircraft && pAircraft->Type->Carryall)
+	{
+		if (RulesExt::Global()->DefaultLandingAnim_Carryall.isset())
+			return RulesExt::Global()->DefaultLandingAnim_Carryall.Get();
+		return AnimTypeClass::Find("CARYLAND");
+	}
+
+	return RulesExt::Global()->DefaultLandingAnim;
+}
+
+DEFINE_HOOK(0x4CEB59, FlyLocomotionClass_ProcessLanding_ForceDropship, 0x6)
+{
+	GET(FlyLocomotionClass*, pLoco, ESI);
+	auto const pType = pLoco->LinkedTo->GetTechnoType();
+	bool force = TechnoTypeExt::ExtMap.Find(pType)->LandingAnim.isset() || RulesExt::Global()->DefaultLandingAnim != nullptr;
+
+	R->CL(force || pType->IsDropship);
+	return 0x4CEB5F;
+}
+
+DEFINE_HOOK(0x4CEB7E, FlyLocomotionClass_ProcessLanding_DropshipAnim, 0x5)
+{
+	GET(FlyLocomotionClass*, pLoco, ESI);
+	auto const pAnim = GetLandingAnim(pLoco->LinkedTo);
+	R->EAX(pAnim ? pAnim->ArrayIndex : -1);
+	return 0x4CEB88;
+}
+
+DEFINE_HOOK(0x4CEC31, FlyLocomotionClass_ProcessLanding_CarryallAnim, 0x5)
+{
+	GET(FlyLocomotionClass*, pLoco, ESI);
+	auto const pAnim = GetLandingAnim(pLoco->LinkedTo);
+	R->EAX(pAnim ? pAnim->ArrayIndex : -1);
+	return 0x4CEC3B;
+}
+
 DEFINE_HOOK(0x4CF8B1, FlyLocomotionClass_Draw_Point_NoWobbles, 0x6)
 {
     enum { Continue = 0x4CF8B7 };

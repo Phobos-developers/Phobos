@@ -132,21 +132,17 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 	auto pOwner = pThis->Owner;
 	const bool isObserver = HouseClass::IsCurrentPlayerObserver();
 
-	if (pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !isObserver)
+	if (pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !(isObserver
+		|| EnumFunctions::CanTargetHouse(RulesExt::Global()->DisguiseBlinkingVisibility, HouseClass::CurrentPlayer, pOwner)))
 	{
 		if (auto const pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
 		{
-			// Disguised as a techno: borrow its insignia, unless blinking visibility reveals the real unit.
-			if (!EnumFunctions::CanTargetHouse(RulesExt::Global()->DisguiseBlinkingVisibility, HouseClass::CurrentPlayer, pOwner))
-			{
-				pTechnoType = pType;
-				pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-				pOwner = pThis->DisguisedAsHouse;
-			}
+			pTechnoType = pType;
+			pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+			pOwner = pThis->DisguisedAsHouse;
 		}
-		else if (pThis->Disguise->WhatAmI() == AbstractType::TerrainType && !pOwner->IsAlliedWith(HouseClass::CurrentPlayer))
+		else if (pThis->Disguise->WhatAmI() == AbstractType::TerrainType && (!isObserver && !pOwner->IsAlliedWith(HouseClass::CurrentPlayer)))
 		{
-			// Disguised as terrain (e.g. mirage tank as a tree): terrain has no insignia.
 			return;
 		}
 	}
@@ -877,4 +873,3 @@ void TechnoExt::ShowPromoteAnim(TechnoClass* pThis)
 	else if (!eliteAnims.empty())
 		AnimExt::CreateRandomAnim(eliteAnims, pThis->GetCenterCoords(), pThis, pThis->Owner, true, true);
 }
-

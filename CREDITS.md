@@ -685,6 +685,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow customizing whether the creation of shrapnel weapon is controlled by the new target check on the warhead of the parent weapon
   - Customize `Tiled` drawing interval and centering
   - Customize whether technos with `Locomotor=Fly` wobble
+  - Customize the landing animation of technos that have `Locomotor=Fly`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -860,8 +861,7 @@ This page lists all the individual contributions to the project by their author.
   - Multiplayer gamespeed fix for RealTimeTimers
   - Revert Ares patch to allow OpenTopped transport customization
   - Fix for units with Fly, Jumpjet or Rocket locomotors crashing off-map not being cleaned up
-  - Fix for mirage tanks (and other vehicles disguised as terrain) incorrectly displaying veterancy insignia to enemy players when not clearly visible
-- **Chang_zhi**:
+- **Chang_zhi** - Interop export interface for accessing scenario local/global variables
   - Add `ClampToScreen` tag for `BannerType` to control whether banner position is clamped to the visible area
 
 
