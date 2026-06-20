@@ -53,6 +53,7 @@ This page lists all the individual contributions to the project by their author.
   - Ported XNA CnCNet Client MP save handling
   - Retint fix toggle
   - Voxel drawing invisible sections skip
+  - Animatable template
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -266,6 +267,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizing effect of level lighting on air units
   - Reimplemented `Airburst` & `Splits` logic with more customization options
   - Buildings considered as destroyable pathfinding obstacles
+  - Animation transparency customization settings
   - Animation visibility customization settings
   - Light effect customizations
   - Building unit repair customizations
@@ -296,6 +298,7 @@ This page lists all the individual contributions to the project by their author.
   - Armed building guard mission retry delay customization
   - Building turret idle/firing/low power animations
   - Animation theater/tile palette toggle
+  - Animatable template
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -678,6 +681,11 @@ This page lists all the individual contributions to the project by their author.
   - Introduce weight selection rules for ExtraWarheads
   - Add action `512 Set Follower for Associated Unit...`
   - Dehardcode of parasites unlimboing after killing naval targets
+  - Allow warhead to only affect invoker
+  - Allow customizing whether the creation of shrapnel weapon is controlled by the new target check on the warhead of the parent weapon
+  - Customize `Tiled` drawing interval and centering
+  - Customize whether technos with `Locomotor=Fly` wobble
+  - Customize the landing animation of technos that have `Locomotor=Fly`
   - Allow infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true`
 - **Ollerus**:
   - Build limit group enhancement
@@ -854,3 +862,4 @@ This page lists all the individual contributions to the project by their author.
   - Multiplayer gamespeed fix for RealTimeTimers
   - Revert Ares patch to allow OpenTopped transport customization
   - Fix for units with Fly, Jumpjet or Rocket locomotors crashing off-map not being cleaned up
+- **Chang_zhi** - Interop export interface for accessing scenario local/global variables

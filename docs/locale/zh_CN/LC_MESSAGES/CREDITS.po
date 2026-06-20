@@ -2928,3 +2928,8 @@ msgid ""
 " being cleaned up"
 msgstr "修复了 `Locomotor` 为 `Fly`、`Jumpjet` 或 `Rocket` 的单位在地图外坠毁时未能清除的问题"
 
+msgid ""
+"**Chang_zhi** - Interop export interface for accessing scenario "
+"local/global variables"
+msgstr "**Chang_zhi** - 用于访问扩展局部变量和全局变量的外部调用接口"
+
