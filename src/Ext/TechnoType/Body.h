@@ -512,6 +512,10 @@ public:
 
 		Nullable<bool> Parasite_AllowWaterExit;
 
+		Nullable<bool> FlyNoWobbles;
+
+		Nullable<AnimTypeClass*> LandingAnim;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, HealthBar_HidePips { false }
@@ -976,6 +980,10 @@ public:
 			, HarvesterDumpRate {}
 				
 			, Parasite_AllowWaterExit {}
+
+			, FlyNoWobbles {}
+
+			, LandingAnim {}
 		{ }
 
 		virtual ~ExtData() = default;
