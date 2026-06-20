@@ -2317,6 +2317,9 @@ msgstr "自定义 `Tiled` 绘制间隔和中心对齐"
 msgid "Customize whether technos with `Locomotor=Fly` wobble"
 msgstr "自定义 `Locomotor=Fly` 的单位是否上下浮动"
 
+msgid "Customize the landing animation of technos that have `Locomotor=Fly`"
+msgstr "自定义 `Locomotor=Fly` 单位的降落动画"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
