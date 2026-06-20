@@ -575,7 +575,7 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 
 		if ((discardOn & DiscardCondition::Harvesting) != DiscardCondition::None
 			&& mission == Mission::Harvest
-			&& !pFoot->Locomotor->Is_Really_Moving_Now()
+			&& !pFoot->Locomotor->Is_Moving()
 			&& pFoot->GetCell()->LandType == LandType::Tiberium)
 		{
 			this->LastDiscardCheckValue = true;
