@@ -2790,6 +2790,30 @@ msgid ""
 "the ground."
 msgstr "`ExtraShadow` 可以设为 false 以禁用地面上的影子显示。"
 
+msgid "Customize `Tiled` drawing interval and centering"
+msgstr "自定义 `Tiled` 绘制间隔和中心对齐"
+
+msgid ""
+"In vanilla, the drawing interval of an animation with `Tiled=yes` is "
+"determined by the height of the rectangle formed by the non-transparent "
+"pixels of the first frame in the Shape resource file. Now you can "
+"customize it."
+msgstr ""
+"在原版中，带有 `Tiled=true` 的动画其绘制间隔由 Shape 资源文件首帧中有效像素所围矩形的高度决定。现在你可以自定义。"
+
+msgid ""
+"If `Tiled.Interval` is greater than `0`, the specified value is used; "
+"otherwise, the default rule applies."
+msgstr ""
+"如果 `Tiled.Interval` 大于 0 则使用设定值；否则使用默认行为。"
+
+msgid ""
+"`Tiled.AlignToCenter` can be used to change the alignment of the Shape "
+"resource file coordinates from the bottom center to the canvas center for"
+" the Animation entity's center."
+msgstr ""
+"`Tiled.AlignToCenter` 可用于让对齐到动画实体中心的 Shape 资源文件坐标从底边中心换成画布中心。"
+
 msgid "Customize whether `Crater=yes` animation would destroy tiberium"
 msgstr "自定义 `Crater=yes` 的动画能否摧毁矿石"
 

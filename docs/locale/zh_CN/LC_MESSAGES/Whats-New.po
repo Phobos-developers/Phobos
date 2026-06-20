@@ -2001,6 +2001,14 @@ msgstr ""
 "[自定义动画透明度设置](Fixed-or-Improved-Logics#customizable-animation-"
 "transparency-settings)（by Starkku）"
 
+msgid ""
+"[Customize `Tiled` drawing interval and centering](Fixed-or-Improved-"
+"Logics.md#customize-tiled-drawing-interval-and-centering) (by Noble_Fish)"
+msgstr ""
+"[自定义 `Tiled` 绘制间隔和中心对齐](Fixed-or-Improved-"
+"Logics.md#customize-tiled-drawing-interval-and-centering)（by Noble_Fish）"
+msgstr ""
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 

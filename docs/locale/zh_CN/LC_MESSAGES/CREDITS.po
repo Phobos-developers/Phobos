@@ -2311,6 +2311,9 @@ msgid ""
 "by the new target check on the warhead of the parent weapon"
 msgstr "允许自定义溅射子武器的创建是否受上级武器弹头上的新增目标检查控制"
 
+msgid "Customize `Tiled` drawing interval and centering"
+msgstr "自定义 `Tiled` 绘制间隔和中心对齐"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
