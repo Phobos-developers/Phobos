@@ -2719,6 +2719,11 @@ msgid ""
 "construction and selling (by Starkku)"
 msgstr "修复了建筑拦截者可以在拔起和出售期间获取目标的问题（by Starkku）"
 
+msgid ""
+"Fixed `src/Interop/Version.cpp` not being compiled into the project (by "
+"Chang_zhi)"
+msgstr "修复了 `src/Interop/Version.cpp` 未参与编译的问题（by Chang_zhi）"
+
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
 
@@ -2864,6 +2869,11 @@ msgid ""
 msgstr ""
 "允许 `MindControl.Permanent` 弹头屏蔽 `MindClearedSound`（by NetsuNegi 与 "
 "Noble_Fish）"
+
+msgid ""
+"[Export interface for accessing scenario local/global "
+"variables](Interoperability.md#scenarioext) (by Chang_zhi)"
+msgstr "[用于访问局部变量和全局变量的导出接口](Interoperability.md#scenarioext)（by Chang_zhi）"
 
 msgid "0.4.0.3"
 msgstr "0.4.0.3"

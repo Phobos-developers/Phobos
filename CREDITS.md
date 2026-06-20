@@ -683,6 +683,9 @@ This page lists all the individual contributions to the project by their author.
   - Dehardcode of parasites unlimboing after killing naval targets
   - Allow warhead to only affect invoker
   - Allow customizing whether the creation of shrapnel weapon is controlled by the new target check on the warhead of the parent weapon
+  - Customize `Tiled` drawing interval and centering
+  - Customize whether technos with `Locomotor=Fly` wobble
+  - Customize the landing animation of technos that have `Locomotor=Fly`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -858,3 +861,4 @@ This page lists all the individual contributions to the project by their author.
   - Multiplayer gamespeed fix for RealTimeTimers
   - Revert Ares patch to allow OpenTopped transport customization
   - Fix for units with Fly, Jumpjet or Rocket locomotors crashing off-map not being cleaned up
+- **Chang_zhi** - Interop export interface for accessing scenario local/global variables
