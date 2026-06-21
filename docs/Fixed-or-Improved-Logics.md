@@ -875,6 +875,18 @@ In `artmd.ini`:
 AttachedAnimPosition=default ; Attached animation position enumeration (default|center|ground)
 ```
 
+### Customizable animation transparency settings
+
+- `Translucency.Cloaked` can be used to override `Translucency` on animations attached to currently cloaked TechnoTypes.
+- Both `Translucency` and `Translucency.Cloaked` can use the new keyframe system to animate along with the animation. Read more about the keyframe system [here](Miscellanous.md#keyframe-animations).
+- If interpolation is enabled, the keyframe values are clamped to valid transparency values (0,25,50 and 75), e.g a value of 1.5 would become 0 and 56.525 would become 50 and so on.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]             ; AnimationType
+Translucency.Cloaked=  ; integer - only accepted values are 75, 50, 25 and 0.
+```
+
 ### Customizable debris & meteor impact and warhead detonation behaviour
 
 - `ExplodeOnWater` can be set to true to make the animation explode on impact with water. `ExpireAnim` will be played and `Warhead` is detonated or used to deal damage / generate light flash.
@@ -895,7 +907,7 @@ SplashAnims.PickRandom=false  ; boolean
 ExtraShadow=true              ; boolean
 ```
 
-### Customize the drawing interval for `Tiled`
+### Customize `Tiled` drawing interval and centering
 
 - In vanilla, the drawing interval of an animation with `Tiled=yes` is determined by the height of the rectangle formed by the non-transparent pixels of the first frame in the Shape resource file. Now you can customize it.
   - If `Tiled.Interval` is greater than `0`, the specified value is used; otherwise, the default rule applies.
@@ -1440,7 +1452,7 @@ BallisticScatter.Max= ; floating point value, distance in cells
 - Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](New-or-Enhanced-Logics.md#weapon-targeting-filter) & [AttachEffect filters](New-or-Enhanced-Logics.md#attached-effects) will be checked.
   - Do note that this overrides the normal check of only allowing shrapnels to hit non-allied objects. Use `CanTargetHouses=enemies` to manually enable this behaviour again.
 - `Shrapnel.IgnoreHitBuildings` can be used to override default behaviour where shrapnels can snap onto building targets multiple times if the building occupies more than one cell. Note that this wont prevent random cells within the building's `Foundation` from being targeted if there are not enough objects around to satisfy `ShrapnelCount`.
-- `Shrapnel.ObeyWarheadTriggerConditions` can be used to determine whether to use [Customizable Warhead trigger conditions](Fixed-or-Improved-Logics.md#customizable-warhead-trigger-conditions) and [Only affects invoker checks](New-or-Enhanced-Logics.md#allow-warhead-to-only-affect-invoker) when hitting units to decide if it triggers.
+- `Shrapnel.ObeyWarheadTriggerConditions` can be used to determine whether to use [Customizable Warhead trigger conditions](Fixed-or-Improved-Logics.md#customizable-warhead-trigger-conditions) and [Only affects invoker checks](New-or-Enhanced-Logics.md#allow-warhead-to-only-affect-invoker) when hitting units to decide if it triggers.
 
 In `rulesmd.ini`:
 ```ini
