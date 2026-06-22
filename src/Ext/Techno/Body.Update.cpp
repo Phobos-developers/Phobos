@@ -1944,6 +1944,20 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 				}
 			}
 
+			// Next AE chain
+			if (hasExpired && !pType->Next.empty())
+			{
+				auto const pInvoker = attachEffect->GetInvoker();
+				auto const pInvokerHouse = attachEffect->InvokerHouse;
+				for (auto pNextType : pType->Next)
+				{
+					if (pNextType)
+						AttachEffectClass::CreateAndAttach(pNextType, pThis, pThis->GetTechnoType(), this->AttachedEffects,
+							pInvokerHouse ? pInvokerHouse : pThis->Owner, pInvoker ? pInvoker : pThis, attachEffect->Source, AEAttachParams{});
+				}
+				altered = true;
+			}
+
 			if (shouldDiscard && attachEffect->ResetIfRecreatable())
 			{
 				++it;

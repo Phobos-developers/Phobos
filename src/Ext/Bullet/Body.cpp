@@ -5,7 +5,9 @@
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Cell/Body.h>
 #include <Ext/EBolt/Body.h>
+#include <Ext/Techno/Body.h>
 #include <New/Entity/LaserTrailClass.h>
+#include <New/Entity/VectorState.h>
 
 BulletExt::ExtContainer BulletExt::ExtMap;
 
@@ -487,8 +489,48 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->ParabombFallRate)
 		.Process(this->IsInstantDetonation)
 		.Process(this->FirepowerMult)
-
-		.Process(this->Trajectory) // Keep this shit at last
+		.Process(this->VectorType)
+		.Process(this->Vector.Initialized)
+		.Process(this->Vector.CurrentFrame)
+		.Process(this->Vector.DisabledTimer)
+		.Process(this->Vector.CurrentSpeed)
+		.Process(this->Vector.CurrentAngle)
+		.Process(this->Vector.CurrentCircleRadius)
+		.Process(this->Vector.CurrentCircleSpeed)
+		.Process(this->Vector.CurrentCircleAngle)
+		.Process(this->Vector.InitialOriginPos)
+		.Process(this->Vector.InitialLocation)
+		.Process(this->Vector.PrevCirclePos)
+		.Process(this->Vector.ArcHeight)
+		.Process(this->Vector.ArcRotation)
+		.Process(this->Vector.TargetOffset)
+		.Process(this->Vector.NormalRotF)
+		.Process(this->Vector.NormalRotL)
+		.Process(this->Vector.NormalRotH)
+		.Process(this->Vector.NormalStepF)
+		.Process(this->Vector.NormalStepL)
+		.Process(this->Vector.NormalStepH)
+		.Process(this->Vector.MovementFrames)
+		.Process(this->Vector.FacingRad)
+		.Process(this->Vector.TiltRad)
+		.Process(this->Vector.OriginOffset)
+		.Process(this->Vector.PrevCircleCenter)
+		.Process(this->Vector.OriginElapsed)
+		.Process(this->Vector.OriginSpeed)
+		.Process(this->Vector.OriginAngle)
+		.Process(this->Vector.OriginTargetOffset)
+		.Process(this->Vector.OriginCircleRadiusRuntime)
+		.Process(this->Vector.OriginCircleSpeedRuntime)
+		.Process(this->Vector.OriginCircleAngleRuntime)
+		.Process(this->Vector.OriginNormalRotFRuntime)
+		.Process(this->Vector.OriginNormalRotLRuntime)
+		.Process(this->Vector.OriginNormalRotHRuntime)
+		.Process(this->Vector.OriginNormalStepF)
+		.Process(this->Vector.OriginNormalStepL)
+		.Process(this->Vector.OriginNormalStepH)
+		.Process(this->Vector.OriginFacing)
+		.Process(this->Vector.OriginTilt)
+		.Process(this->Trajectory)
 		;
 }
 
@@ -510,6 +552,11 @@ void BulletExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 BulletExt::ExtContainer::ExtContainer() : Container("BulletClass") { }
 
 BulletExt::ExtContainer::~ExtContainer() = default;
+
+void BulletExt::ExtData::VectorAI()
+{
+	VectorAI_Run(this->OwnerObject(), this->VectorType, this->Vector, this->OwnerObject() ? static_cast<BulletClass*>(this->OwnerObject())->Owner : nullptr, true);
+}
 
 // =============================
 // container hooks

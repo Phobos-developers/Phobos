@@ -4,6 +4,8 @@
 #include <Ext/BulletType/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <New/Entity/LaserTrailClass.h>
+#include <New/Type/AttachEffectTypeClass.h>
+#include <New/Entity/VectorState.h>
 
 struct RadialFireStruct
 {
@@ -38,6 +40,11 @@ public:
 
 		TrajectoryPointer Trajectory;
 
+		AttachEffectTypeClass* VectorType;
+		VectorState Vector;
+
+		void VectorAI();
+
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, FirerHouse { nullptr }
@@ -47,6 +54,8 @@ public:
 			, DetonateOnInterception { true }
 			, LaserTrails {}
 			, Trajectory { nullptr }
+			, VectorType { nullptr }
+			, Vector {}
 			, SnappedToTarget { false }
 			, DamageNumberOffset { INT32_MIN }
 			, ParabombFallRate { 0 }

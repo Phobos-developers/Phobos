@@ -17,6 +17,7 @@ AttachEffectClass::AttachEffectClass()
 	, NeedsRecalculateStat { false }
 	, LastDiscardCheckFrame { -1 }
 	, LastDiscardCheckValue { false }
+	, Vector { }
 {
 	this->HasInitialized = false;
 	AttachEffectClass::Array.emplace_back(this);
@@ -257,6 +258,7 @@ void AttachEffectClass::AI()
 	this->CloakCheck();
 	this->OnlineCheck();
 	this->AnimCheck();
+	this->VectorAI();
 }
 
 void AttachEffectClass::AI_Temporal()
@@ -1059,6 +1061,23 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 
 #pragma endregion
 
+CoordStruct AttachEffectClass::GetFLHAbsoluteCoords(CoordStruct origin, CoordStruct flh, DirStruct facing)
+{
+	double rad = facing.GetRadian<32>();
+	double cosR = std::cos(rad);
+	double sinR = std::sin(rad);
+	return { origin.X + static_cast<int>(flh.X * cosR + flh.Y * sinR),
+		origin.Y + static_cast<int>(flh.X * sinR - flh.Y * cosR),
+		origin.Z + flh.Z };
+}
+
+void AttachEffectClass::VectorAI()
+{
+	if (!this->Type->Vector_AffectTechno)
+		return;
+	VectorAI_Run(this->Techno, this->Type, this->Vector, this->Invoker, false);
+}
+
 // =============================
 // load / save
 
@@ -1092,6 +1111,46 @@ bool AttachEffectClass::Serialize(T& Stm)
 		.Process(this->LastActiveStat)
 		.Process(this->LaserTrail)
 		.Process(this->NeedsRecalculateStat)
+		.Process(this->Vector.Initialized)
+		.Process(this->Vector.CurrentFrame)
+		.Process(this->Vector.DisabledTimer)
+		.Process(this->Vector.CurrentSpeed)
+		.Process(this->Vector.CurrentAngle)
+		.Process(this->Vector.CurrentCircleRadius)
+		.Process(this->Vector.CurrentCircleSpeed)
+		.Process(this->Vector.CurrentCircleAngle)
+		.Process(this->Vector.InitialOriginPos)
+		.Process(this->Vector.InitialLocation)
+		.Process(this->Vector.PrevCirclePos)
+		.Process(this->Vector.ArcHeight)
+		.Process(this->Vector.ArcRotation)
+		.Process(this->Vector.TargetOffset)
+		.Process(this->Vector.NormalRotF)
+		.Process(this->Vector.NormalRotL)
+		.Process(this->Vector.NormalRotH)
+		.Process(this->Vector.NormalStepF)
+		.Process(this->Vector.NormalStepL)
+		.Process(this->Vector.NormalStepH)
+		.Process(this->Vector.MovementFrames)
+		.Process(this->Vector.FacingRad)
+		.Process(this->Vector.TiltRad)
+		.Process(this->Vector.OriginOffset)
+		.Process(this->Vector.PrevCircleCenter)
+		.Process(this->Vector.OriginElapsed)
+		.Process(this->Vector.OriginSpeed)
+		.Process(this->Vector.OriginAngle)
+		.Process(this->Vector.OriginTargetOffset)
+		.Process(this->Vector.OriginCircleRadiusRuntime)
+		.Process(this->Vector.OriginCircleSpeedRuntime)
+		.Process(this->Vector.OriginCircleAngleRuntime)
+		.Process(this->Vector.OriginNormalRotFRuntime)
+		.Process(this->Vector.OriginNormalRotLRuntime)
+		.Process(this->Vector.OriginNormalRotHRuntime)
+		.Process(this->Vector.OriginNormalStepF)
+		.Process(this->Vector.OriginNormalStepL)
+		.Process(this->Vector.OriginNormalStepH)
+		.Process(this->Vector.OriginFacing)
+		.Process(this->Vector.OriginTilt)
 		.Success();
 }
 

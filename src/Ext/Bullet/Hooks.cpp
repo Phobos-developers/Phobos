@@ -15,6 +15,19 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 		{
 			pExt->FirerHouse = pThis->Owner->Owner;
 			pExt->FirepowerMult = TechnoExt::GetCurrentFirepowerMultiplier(pThis->Owner);
+
+			// Init Vector from firing techno's AE types
+			auto const pTechnoExt = TechnoExt::ExtMap.Find(pThis->Owner);
+			for (auto const& ae : pTechnoExt->AttachedEffects)
+			{
+				auto const pAEType = ae->GetType();
+				if (!pAEType) continue;
+				if (pAEType->HasVector() && pAEType->Vector_AffectBullets)
+				{
+					pExt->VectorType = pAEType;
+					break;
+				}
+			}
 		}
 
 		auto const pType = pThis->Type;
@@ -43,6 +56,14 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	const auto pBulletTypeExt = pBulletExt->TypeExtData;
 	BulletAITemp::ExtData = pBulletExt;
 	BulletAITemp::TypeExtData = pBulletTypeExt;
+
+	if (pBulletExt->VectorType)
+	{
+		if (pBulletExt->Vector.CurrentFrame >= pBulletExt->VectorType->Duration)
+			pBulletExt->VectorType = nullptr;
+		else
+			pBulletExt->VectorAI();
+	}
 
 	if (pBulletExt->InterceptedStatus & InterceptedStatus::Targeted)
 	{
@@ -81,9 +102,8 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 		}
 	}
 
-	//Because the laser trails will be drawn before the calculation of changing the velocity direction in each frame.
-	//This will cause the laser trails to be drawn in the wrong position too early, resulting in a visual appearance resembling a "bouncing".
-	//Let trajectories draw their own laser trails after the Trajectory's OnAI() to avoid predicting incorrect positions or pass through targets.
+	// VectorAI moved to BulletClass_AI_Trailer for correct engine-movement-final override
+
 	if (!pBulletExt->Trajectory && pBulletExt->LaserTrails.size())
 	{
 		const CoordStruct location = pThis->GetCoords();

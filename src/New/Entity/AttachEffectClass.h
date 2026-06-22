@@ -1,6 +1,7 @@
 #pragma once
 
 #include <New/Type/AttachEffectTypeClass.h>
+#include <New/Entity/VectorState.h>
 
 class LaserTrailClass;
 
@@ -22,6 +23,7 @@ public:
 	void CreateAnim();
 	void UpdateCumulativeAnim();
 	void TransferCumulativeAnim(AttachEffectClass* pSource);
+	void VectorAI();
 
 	bool CanShowAnim() const
 	{
@@ -58,14 +60,15 @@ public:
 	static int Detach(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo);
 	static int DetachByGroups(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo);
 	static void TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget);
+	static CoordStruct GetFLHAbsoluteCoords(CoordStruct origin, CoordStruct flh, DirStruct facing);
+
+	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, TechnoTypeClass* pTargetType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
+		AbstractClass* pSource, AEAttachParams const& attachInfo, bool checkCumulative = true);
 
 private:
 	void OnlineCheck();
 	void CloakCheck();
 	void AnimCheck();
-
-	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, TechnoTypeClass* pTargetType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
-		AbstractClass* pSource, AEAttachParams const& attachInfo, bool checkCumulative = true);
 
 	static int DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo, std::vector<AttachEffectTypeClass*> const& types);
 	static int RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass* pTarget, int minCount, int maxCount);
@@ -81,9 +84,13 @@ private:
 	int RecreationDelay;
 	AttachEffectTypeClass* Type;
 	TechnoClass* Techno;
+
+public:
 	HouseClass* InvokerHouse;
 	TechnoClass* Invoker;
 	AbstractClass* Source;
+
+private:
 	AnimClass* Animation;
 	bool IsAnimHidden;
 	bool IsInTunnel;
@@ -101,6 +108,8 @@ public:
 	bool HasCumulativeAnim;
 	bool ShouldBeDiscarded;
 	bool NeedsRecalculateStat;
+
+	VectorState Vector;
 };
 
 // Container for TechnoClass-specific AttachEffect fields.

@@ -36,6 +36,14 @@ enum class ExpireWeaponCondition : unsigned char
 
 MAKE_ENUM_FLAGS(ExpireWeaponCondition);
 
+enum class VectorOrigin : int
+{
+	Self = 0,
+	Launcher = 1,
+	Target = 2,
+	Source = 3
+};
+
 class AttachEffectTypeClass final : public Enumerable<AttachEffectTypeClass>
 {
 	static std::unordered_map<std::string, std::set<AttachEffectTypeClass*>> GroupsMap;
@@ -67,6 +75,7 @@ public:
 	Valueable<ExpireWeaponCondition> ExpireWeapon_TriggerOn;
 	Valueable<bool> ExpireWeapon_CumulativeOnlyOnce;
 	Valueable<bool> ExpireWeapon_UseInvokerAsOwner;
+	ValueableVector<AttachEffectTypeClass*> Next;
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
@@ -102,6 +111,121 @@ public:
 	Valueable<bool> Unkillable;
 	ValueableIdx<LaserTrailTypeClass> LaserTrail_Type;
 
+	Valueable<int> Vector_TimeStep;
+	Valueable<int> Vector_DisabledFrames;
+	Valueable<bool> Vector_SyncFacing;
+	Valueable<bool> Vector_OriginIsOnWorld;
+	Valueable<bool> Vector_OriginIsOnBody;
+	Valueable<VectorOrigin> Vector_Origin;
+	Nullable<CoordStruct> Vector_OriginFLH;
+	Valueable<bool> Vector_OriginNoUpdate;
+	Valueable<bool> Vector_Force;
+	Valueable<bool> Vector_Freeze;
+	Valueable<bool> Vector_AllowedTilt;
+	Nullable<CoordStruct> Vector_NormalVector;
+	Valueable<double> Vector_NormalRandomF;
+	Valueable<double> Vector_NormalRandomL;
+	Valueable<double> Vector_NormalRandomH;
+	Valueable<double> Vector_NormalFAnglePerStep;
+	Valueable<double> Vector_NormalLAnglePerStep;
+	Valueable<double> Vector_NormalHAnglePerStep;
+	Valueable<CoordStruct> Vector_MoveTo;
+	Nullable<CoordStruct> Vector_GrowRate;
+	Valueable<double> Vector_AnglePerStep;
+	Valueable<int> Vector_CircleRadius;
+	Valueable<int> Vector_CircleSpeed;
+	Valueable<int> Vector_CircleSpeedAcceleration;
+	Valueable<int> Vector_CircleMaxSpeed;
+	Valueable<int> Vector_CircleMinSpeed;
+	Valueable<double> Vector_CircleAnglePerStep;
+	Valueable<double> Vector_CircleAngleAcceleration;
+	Nullable<CoordStruct> Vector_CircleOrigin;
+	Valueable<bool> Vector_AllowOriginTilt;
+	Valueable<int> Vector_CircleRadiusGrow;
+	Valueable<int> Vector_CircleMaxRadius;
+	Valueable<int> Vector_CircleMinRadius;
+	Valueable<bool> Vector_CircleEndOnMaxRadius;
+	Valueable<bool> Vector_CircleEndOnMinRadius;
+	Nullable<CoordStruct> Vector_TargetFLH;
+	Valueable<bool> Vector_ReachTarget;
+	Valueable<int> Vector_ReachTargetEarlyEnd;
+	Valueable<int> Vector_ArcHeight;
+	Valueable<double> Vector_ArcPeakPercent;
+	Valueable<double> Vector_ArcPeakRandomPercent;
+	Valueable<double> Vector_ArcRotation;
+	Valueable<int> Vector_InitialSpeed;
+	Valueable<int> Vector_MaxSpeed;
+	Valueable<int> Vector_MinSpeed;
+	Valueable<int> Vector_Acceleration;
+	Valueable<bool> Vector_AllowFallingDestroy;
+	Valueable<int> Vector_FallingDestroyHeight;
+	Valueable<bool> Vector_AffectTechno;
+	Valueable<bool> Vector_AffectBullets;
+	Valueable<int> Vector_CircleRandomRadiusMin;
+	Valueable<int> Vector_CircleRandomRadiusMax;
+	Valueable<double> Vector_CircleRandomAngleMin;
+	Valueable<double> Vector_CircleRandomAngleMax;
+	Valueable<double> Vector_CircleMaxAngle;
+	Valueable<double> Vector_CircleMinAngle;
+	Valueable<int> Vector_TargetOffsetFMin;
+	Valueable<int> Vector_TargetOffsetFMax;
+	Valueable<int> Vector_TargetOffsetLMin;
+	Valueable<int> Vector_TargetOffsetLMax;
+	Valueable<int> Vector_TargetOffsetHMin;
+	Valueable<int> Vector_TargetOffsetHMax;
+	Valueable<int> Vector_ArcRandomHeightMin;
+	Valueable<int> Vector_ArcRandomHeightMax;
+	Valueable<double> Vector_ArcRandomRotationMin;
+	Valueable<double> Vector_ArcRandomRotationMax;
+	Valueable<int> Vector_RandomSpeedMin;
+	Valueable<int> Vector_RandomSpeedMax;
+	Nullable<CoordStruct> Vector_OriginMoveTo;
+	Nullable<CoordStruct> Vector_OriginGrowRate;
+	Nullable<CoordStruct> Vector_OriginTargetFLH;
+	Valueable<int> Vector_OriginInitialSpeed;
+	Valueable<bool> Vector_OriginReachTarget;
+	Valueable<int> Vector_OriginArcHeight;
+	Valueable<int> Vector_OriginCircleRadius;
+	Valueable<int> Vector_OriginCircleSpeed;
+	Valueable<double> Vector_OriginCircleAnglePerStep;
+	Valueable<int> Vector_OriginCircleRadiusGrow;
+	Valueable<int> Vector_OriginCircleMaxRadius;
+	Valueable<int> Vector_OriginCircleMinRadius;
+	Valueable<bool> Vector_OriginCircleEndOnMaxRadius;
+	Valueable<bool> Vector_OriginCircleEndOnMinRadius;
+	Nullable<CoordStruct> Vector_OriginNormalVector;
+	Valueable<double> Vector_OriginNormalFAnglePerStep;
+	Valueable<double> Vector_OriginNormalLAnglePerStep;
+	Valueable<double> Vector_OriginNormalHAnglePerStep;
+	Valueable<bool> Vector_OriginAllowedTilt;
+	Nullable<CoordStruct> Vector_OriginCircleOffset;
+	Valueable<VectorOrigin> Vector_OriginOrigin;
+	Nullable<CoordStruct> Vector_OriginOriginFLH;
+	Valueable<double> Vector_NormalFAngleRMin;
+	Valueable<double> Vector_NormalFAngleRMax;
+	Valueable<double> Vector_NormalFAngleRMin2;
+	Valueable<double> Vector_NormalFAngleRMax2;
+	Valueable<double> Vector_NormalLAngleRMin;
+	Valueable<double> Vector_NormalLAngleRMax;
+	Valueable<double> Vector_NormalLAngleRMin2;
+	Valueable<double> Vector_NormalLAngleRMax2;
+	Valueable<double> Vector_NormalHAngleRMin;
+	Valueable<double> Vector_NormalHAngleRMax;
+	Valueable<double> Vector_NormalHAngleRMin2;
+	Valueable<double> Vector_NormalHAngleRMax2;
+	Valueable<double> Vector_OriginNormalFAngleRMin;
+	Valueable<double> Vector_OriginNormalFAngleRMax;
+	Valueable<double> Vector_OriginNormalFAngleRMin2;
+	Valueable<double> Vector_OriginNormalFAngleRMax2;
+	Valueable<double> Vector_OriginNormalLAngleRMin;
+	Valueable<double> Vector_OriginNormalLAngleRMax;
+	Valueable<double> Vector_OriginNormalLAngleRMin2;
+	Valueable<double> Vector_OriginNormalLAngleRMax2;
+	Valueable<double> Vector_OriginNormalHAngleRMin;
+	Valueable<double> Vector_OriginNormalHAngleRMax;
+	Valueable<double> Vector_OriginNormalHAngleRMin2;
+	Valueable<double> Vector_OriginNormalHAngleRMax2;
+
 	std::vector<std::string> Groups;
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
@@ -131,6 +255,7 @@ public:
 		, ExpireWeapon_TriggerOn { ExpireWeaponCondition::Expire }
 		, ExpireWeapon_CumulativeOnlyOnce { false }
 		, ExpireWeapon_UseInvokerAsOwner { false }
+		, Next {}
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
 		, Tint_VisibleToHouses { AffectedHouse::All }
@@ -165,12 +290,140 @@ public:
 		, DisableWeapons { false }
 		, Unkillable { false }
 		, LaserTrail_Type { -1 }
+		, Vector_TimeStep { 1 }
+		, Vector_DisabledFrames { 0 }
+		, Vector_SyncFacing { true }
+		, Vector_OriginIsOnWorld { false }
+		, Vector_OriginIsOnBody { false }
+		, Vector_Origin { VectorOrigin::Self }
+		, Vector_OriginFLH {}
+		, Vector_OriginNoUpdate { false }
+		, Vector_Force { true }
+		, Vector_Freeze { false }
+		, Vector_AllowedTilt { false }
+		, Vector_NormalVector {}
+		, Vector_NormalRandomF { 0.0 }
+		, Vector_NormalRandomL { 0.0 }
+		, Vector_NormalRandomH { 0.0 }
+		, Vector_NormalFAnglePerStep { 0.0 }
+		, Vector_NormalLAnglePerStep { 0.0 }
+		, Vector_NormalHAnglePerStep { 0.0 }
+		, Vector_MoveTo { CoordStruct::Empty }
+		, Vector_GrowRate {}
+		, Vector_AnglePerStep { 0.0 }
+		, Vector_CircleRadius { -1 }
+		, Vector_CircleSpeed { 0 }
+		, Vector_CircleSpeedAcceleration { 0 }
+		, Vector_CircleMaxSpeed { 0 }
+		, Vector_CircleMinSpeed { 0 }
+		, Vector_CircleAnglePerStep { 0.0 }
+		, Vector_CircleAngleAcceleration { 0.0 }
+		, Vector_CircleOrigin {}
+		, Vector_AllowOriginTilt { false }
+		, Vector_CircleRadiusGrow { 0 }
+		, Vector_CircleMaxRadius { 0 }
+		, Vector_CircleMinRadius { 0 }
+		, Vector_CircleEndOnMaxRadius { false }
+		, Vector_CircleEndOnMinRadius { false }
+		, Vector_TargetFLH {}
+		, Vector_ReachTarget { false }
+		, Vector_ReachTargetEarlyEnd { 0 }
+		, Vector_ArcHeight { 0 }
+		, Vector_ArcPeakPercent { 0.0 }
+		, Vector_ArcPeakRandomPercent { 0.0 }
+		, Vector_ArcRotation { 0.0 }
+		, Vector_InitialSpeed { -1 }
+		, Vector_MaxSpeed { -1 }
+		, Vector_MinSpeed { -1 }
+		, Vector_Acceleration { 0 }
+		, Vector_AllowFallingDestroy { false }
+		, Vector_FallingDestroyHeight { 0 }
+		, Vector_AffectTechno { true }
+		, Vector_AffectBullets { false }
+		, Vector_CircleRandomRadiusMin { -1 }
+		, Vector_CircleRandomRadiusMax { -1 }
+		, Vector_CircleRandomAngleMin { -1 }
+		, Vector_CircleRandomAngleMax { -1 }
+		, Vector_CircleMaxAngle { 0.0 }
+		, Vector_CircleMinAngle { 0.0 }
+		, Vector_TargetOffsetFMin { 0 }
+		, Vector_TargetOffsetFMax { 0 }
+		, Vector_TargetOffsetLMin { 0 }
+		, Vector_TargetOffsetLMax { 0 }
+		, Vector_TargetOffsetHMin { 0 }
+		, Vector_TargetOffsetHMax { 0 }
+		, Vector_ArcRandomHeightMin { 0 }
+		, Vector_ArcRandomHeightMax { 0 }
+		, Vector_ArcRandomRotationMin { 0.0 }
+		, Vector_ArcRandomRotationMax { 0.0 }
+		, Vector_RandomSpeedMin { -1 }
+		, Vector_RandomSpeedMax { -1 }
+		, Vector_OriginMoveTo {}
+		, Vector_OriginGrowRate {}
+		, Vector_OriginTargetFLH {}
+		, Vector_OriginInitialSpeed { -1 }
+		, Vector_OriginReachTarget { false }
+		, Vector_OriginArcHeight { 0 }
+		, Vector_OriginCircleRadius { -1 }
+		, Vector_OriginCircleSpeed { 0 }
+		, Vector_OriginCircleAnglePerStep { 0.0 }
+		, Vector_OriginCircleRadiusGrow { 0 }
+		, Vector_OriginCircleMaxRadius { 0 }
+		, Vector_OriginCircleMinRadius { 0 }
+		, Vector_OriginCircleEndOnMaxRadius { false }
+		, Vector_OriginCircleEndOnMinRadius { false }
+		, Vector_OriginNormalVector {}
+		, Vector_OriginNormalFAnglePerStep { 0.0 }
+		, Vector_OriginNormalLAnglePerStep { 0.0 }
+		, Vector_OriginNormalHAnglePerStep { 0.0 }
+		, Vector_OriginAllowedTilt { false }
+		, Vector_OriginCircleOffset {}
+		, Vector_OriginOrigin { VectorOrigin::Self }
+		, Vector_OriginOriginFLH {}
+		, Vector_NormalFAngleRMin { 0.0 }
+		, Vector_NormalFAngleRMax { 0.0 }
+		, Vector_NormalFAngleRMin2 { 0.0 }
+		, Vector_NormalFAngleRMax2 { 0.0 }
+		, Vector_NormalLAngleRMin { 0.0 }
+		, Vector_NormalLAngleRMax { 0.0 }
+		, Vector_NormalLAngleRMin2 { 0.0 }
+		, Vector_NormalLAngleRMax2 { 0.0 }
+		, Vector_NormalHAngleRMin { 0.0 }
+		, Vector_NormalHAngleRMax { 0.0 }
+		, Vector_NormalHAngleRMin2 { 0.0 }
+		, Vector_NormalHAngleRMax2 { 0.0 }
+		, Vector_OriginNormalFAngleRMin { 0.0 }
+		, Vector_OriginNormalFAngleRMax { 0.0 }
+		, Vector_OriginNormalFAngleRMin2 { 0.0 }
+		, Vector_OriginNormalFAngleRMax2 { 0.0 }
+		, Vector_OriginNormalLAngleRMin { 0.0 }
+		, Vector_OriginNormalLAngleRMax { 0.0 }
+		, Vector_OriginNormalLAngleRMin2 { 0.0 }
+		, Vector_OriginNormalLAngleRMax2 { 0.0 }
+		, Vector_OriginNormalHAngleRMin { 0.0 }
+		, Vector_OriginNormalHAngleRMax { 0.0 }
+		, Vector_OriginNormalHAngleRMin2 { 0.0 }
+		, Vector_OriginNormalHAngleRMax2 { 0.0 }
 		, Groups {}
 	{};
 
 	bool HasTint() const
 	{
 		return this->Tint_Color.isset() || this->Tint_Intensity != 0.0;
+	}
+
+	bool HasVector() const
+	{
+		return static_cast<const CoordStruct&>(this->Vector_MoveTo) != CoordStruct::Empty
+			|| this->Vector_TargetFLH.isset()
+			|| this->Vector_Freeze
+			|| this->Vector_ReachTarget
+			|| this->Vector_CircleRadius > 0
+			|| this->Vector_CircleSpeed != 0
+			|| this->Vector_CircleAnglePerStep > 0.0
+			|| (this->Vector_CircleRandomRadiusMax > this->Vector_CircleRandomRadiusMin)
+			|| (this->Vector_CircleRandomAngleMax > this->Vector_CircleRandomAngleMin)
+			|| this->Vector_OriginMoveTo.isset();
 	}
 
 	bool HasGroup(const std::string& groupID) const;

@@ -126,6 +126,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ExpireWeapon_TriggerOn.Read(exINI, pSection, "ExpireWeapon.TriggerOn");
 	this->ExpireWeapon_CumulativeOnlyOnce.Read(exINI, pSection, "ExpireWeapon.CumulativeOnlyOnce");
 	this->ExpireWeapon_UseInvokerAsOwner.Read(exINI, pSection, "ExpireWeapon.UseInvokerAsOwner");
+	this->Next.Read(exINI, pSection, "Next");
 
 	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
 	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
@@ -179,6 +180,124 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Unkillable.Read(exINI, pSection, "Unkillable");
 	this->LaserTrail_Type.Read(exINI, pSection, "LaserTrail.Type");
 
+	// Vector
+	this->Vector_TimeStep.Read(exINI, pSection, "Vector.TimeStep");
+	if (this->Vector_TimeStep < 1)
+		this->Vector_TimeStep = 1;
+	this->Vector_DisabledFrames.Read(exINI, pSection, "Vector.DisabledFrames");
+	this->Vector_SyncFacing.Read(exINI, pSection, "Vector.SyncFacing");
+	this->Vector_OriginIsOnWorld.Read(exINI, pSection, "Vector.OriginIsOnWorld");
+	this->Vector_OriginIsOnBody.Read(exINI, pSection, "Vector.OriginIsOnBody");
+	this->Vector_Origin.Read(exINI, pSection, "Vector.Origin");
+	this->Vector_OriginFLH.Read(exINI, pSection, "Vector.OriginFLH");
+	this->Vector_OriginNoUpdate.Read(exINI, pSection, "Vector.OriginNoUpdate");
+	this->Vector_Force.Read(exINI, pSection, "Vector.Force");
+	this->Vector_Freeze.Read(exINI, pSection, "Vector.Freeze");
+	this->Vector_AllowedTilt.Read(exINI, pSection, "Vector.AllowedTilt");
+	this->Vector_NormalVector.Read(exINI, pSection, "Vector.NormalVector");
+	this->Vector_NormalRandomF.Read(exINI, pSection, "Vector.NormalRandomF");
+	this->Vector_NormalRandomL.Read(exINI, pSection, "Vector.NormalRandomL");
+	this->Vector_NormalRandomH.Read(exINI, pSection, "Vector.NormalRandomH");
+	this->Vector_NormalFAnglePerStep.Read(exINI, pSection, "Vector.NormalFAnglePerStep");
+	this->Vector_NormalLAnglePerStep.Read(exINI, pSection, "Vector.NormalLAnglePerStep");
+	this->Vector_NormalHAnglePerStep.Read(exINI, pSection, "Vector.NormalHAnglePerStep");
+	this->Vector_MoveTo.Read(exINI, pSection, "Vector.MoveTo");
+	this->Vector_GrowRate.Read(exINI, pSection, "Vector.GrowRate");
+	this->Vector_AnglePerStep.Read(exINI, pSection, "Vector.AnglePerStep");
+	this->Vector_CircleRadius.Read(exINI, pSection, "Vector.CircleRadius");
+	this->Vector_CircleSpeed.Read(exINI, pSection, "Vector.CircleSpeed");
+	this->Vector_CircleSpeedAcceleration.Read(exINI, pSection, "Vector.CircleSpeedAcceleration");
+	this->Vector_CircleMaxSpeed.Read(exINI, pSection, "Vector.CircleMaxSpeed");
+	this->Vector_CircleMinSpeed.Read(exINI, pSection, "Vector.CircleMinSpeed");
+	this->Vector_CircleAnglePerStep.Read(exINI, pSection, "Vector.CircleAnglePerStep");
+	this->Vector_CircleAngleAcceleration.Read(exINI, pSection, "Vector.CircleAngleAcceleration");
+	this->Vector_CircleOrigin.Read(exINI, pSection, "Vector.CircleOrigin");
+	this->Vector_AllowOriginTilt.Read(exINI, pSection, "Vector.AllowOriginTilt");
+	this->Vector_CircleRadiusGrow.Read(exINI, pSection, "Vector.CircleRadiusGrow");
+	this->Vector_CircleMaxRadius.Read(exINI, pSection, "Vector.CircleMaxRadius");
+	this->Vector_CircleMinRadius.Read(exINI, pSection, "Vector.CircleMinRadius");
+	this->Vector_CircleEndOnMaxRadius.Read(exINI, pSection, "Vector.CircleEndOnMaxRadius");
+	this->Vector_CircleEndOnMinRadius.Read(exINI, pSection, "Vector.CircleEndOnMinRadius");
+	this->Vector_TargetFLH.Read(exINI, pSection, "Vector.TargetFLH");
+	this->Vector_ReachTarget.Read(exINI, pSection, "Vector.ReachTarget");
+	this->Vector_ReachTargetEarlyEnd.Read(exINI, pSection, "Vector.ReachTargetEarlyEnd");
+	this->Vector_ArcHeight.Read(exINI, pSection, "Vector.ArcHeight");
+	this->Vector_ArcPeakPercent.Read(exINI, pSection, "Vector.ArcPeakPercent");
+	this->Vector_ArcPeakRandomPercent.Read(exINI, pSection, "Vector.ArcPeakRandomPercent");
+	this->Vector_ArcRotation.Read(exINI, pSection, "Vector.ArcRotation");
+	this->Vector_InitialSpeed.Read(exINI, pSection, "Vector.InitialSpeed");
+	this->Vector_MaxSpeed.Read(exINI, pSection, "Vector.MaxSpeed");
+	this->Vector_MinSpeed.Read(exINI, pSection, "Vector.MinSpeed");
+	this->Vector_Acceleration.Read(exINI, pSection, "Vector.Acceleration");
+	this->Vector_AllowFallingDestroy.Read(exINI, pSection, "Vector.AllowFallingDestroy");
+	this->Vector_FallingDestroyHeight.Read(exINI, pSection, "Vector.FallingDestroyHeight");
+	this->Vector_AffectTechno.Read(exINI, pSection, "Vector.AffectTechno");
+	this->Vector_AffectBullets.Read(exINI, pSection, "Vector.AffectBullets");
+	this->Vector_CircleRandomRadiusMin.Read(exINI, pSection, "Vector.CircleRandomRadius.Min");
+	this->Vector_CircleRandomRadiusMax.Read(exINI, pSection, "Vector.CircleRandomRadius.Max");
+	this->Vector_CircleRandomAngleMin.Read(exINI, pSection, "Vector.CircleRandomAngle.Min");
+	this->Vector_CircleRandomAngleMax.Read(exINI, pSection, "Vector.CircleRandomAngle.Max");
+	this->Vector_CircleMaxAngle.Read(exINI, pSection, "Vector.CircleMaxAngle");
+	this->Vector_CircleMinAngle.Read(exINI, pSection, "Vector.CircleMinAngle");
+	this->Vector_TargetOffsetFMin.Read(exINI, pSection, "Vector.TargetOffsetF.Min");
+	this->Vector_TargetOffsetFMax.Read(exINI, pSection, "Vector.TargetOffsetF.Max");
+	this->Vector_TargetOffsetLMin.Read(exINI, pSection, "Vector.TargetOffsetL.Min");
+	this->Vector_TargetOffsetLMax.Read(exINI, pSection, "Vector.TargetOffsetL.Max");
+	this->Vector_TargetOffsetHMin.Read(exINI, pSection, "Vector.TargetOffsetH.Min");
+	this->Vector_TargetOffsetHMax.Read(exINI, pSection, "Vector.TargetOffsetH.Max");
+	this->Vector_ArcRandomHeightMin.Read(exINI, pSection, "Vector.ArcRandomHeight.Min");
+	this->Vector_ArcRandomHeightMax.Read(exINI, pSection, "Vector.ArcRandomHeight.Max");
+	this->Vector_ArcRandomRotationMin.Read(exINI, pSection, "Vector.ArcRandomRotation.Min");
+	this->Vector_ArcRandomRotationMax.Read(exINI, pSection, "Vector.ArcRandomRotation.Max");
+	this->Vector_RandomSpeedMin.Read(exINI, pSection, "Vector.RandomSpeed.Min");
+	this->Vector_RandomSpeedMax.Read(exINI, pSection, "Vector.RandomSpeed.Max");
+	this->Vector_OriginMoveTo.Read(exINI, pSection, "Vector.Origin.MoveTo");
+	this->Vector_OriginGrowRate.Read(exINI, pSection, "Vector.Origin.GrowRate");
+	this->Vector_OriginTargetFLH.Read(exINI, pSection, "Vector.Origin.TargetFLH");
+	this->Vector_OriginInitialSpeed.Read(exINI, pSection, "Vector.Origin.InitialSpeed");
+	this->Vector_OriginReachTarget.Read(exINI, pSection, "Vector.Origin.ReachTarget");
+	this->Vector_OriginArcHeight.Read(exINI, pSection, "Vector.Origin.ArcHeight");
+	this->Vector_OriginCircleRadius.Read(exINI, pSection, "Vector.Origin.CircleRadius");
+	this->Vector_OriginCircleSpeed.Read(exINI, pSection, "Vector.Origin.CircleSpeed");
+	this->Vector_OriginCircleAnglePerStep.Read(exINI, pSection, "Vector.Origin.CircleAnglePerStep");
+	this->Vector_OriginCircleRadiusGrow.Read(exINI, pSection, "Vector.Origin.CircleRadiusGrow");
+	this->Vector_OriginCircleMaxRadius.Read(exINI, pSection, "Vector.Origin.CircleMaxRadius");
+	this->Vector_OriginCircleMinRadius.Read(exINI, pSection, "Vector.Origin.CircleMinRadius");
+	this->Vector_OriginCircleEndOnMaxRadius.Read(exINI, pSection, "Vector.Origin.CircleEndOnMaxRadius");
+	this->Vector_OriginCircleEndOnMinRadius.Read(exINI, pSection, "Vector.Origin.CircleEndOnMinRadius");
+	this->Vector_OriginNormalVector.Read(exINI, pSection, "Vector.Origin.NormalVector");
+	this->Vector_OriginNormalFAnglePerStep.Read(exINI, pSection, "Vector.Origin.NormalFAnglePerStep");
+	this->Vector_OriginNormalLAnglePerStep.Read(exINI, pSection, "Vector.Origin.NormalLAnglePerStep");
+	this->Vector_OriginNormalHAnglePerStep.Read(exINI, pSection, "Vector.Origin.NormalHAnglePerStep");
+	this->Vector_OriginAllowedTilt.Read(exINI, pSection, "Vector.Origin.AllowedTilt");
+	this->Vector_OriginCircleOffset.Read(exINI, pSection, "Vector.Origin.CircleOffset");
+	this->Vector_OriginOrigin.Read(exINI, pSection, "Vector.Origin.Origin");
+	this->Vector_OriginOriginFLH.Read(exINI, pSection, "Vector.Origin.OriginFLH");
+	this->Vector_NormalFAngleRMin.Read(exINI, pSection, "Vector.NormalFAngleRanges.Min");
+	this->Vector_NormalFAngleRMax.Read(exINI, pSection, "Vector.NormalFAngleRanges.Max");
+	this->Vector_NormalFAngleRMin2.Read(exINI, pSection, "Vector.NormalFAngleRanges.Min2");
+	this->Vector_NormalFAngleRMax2.Read(exINI, pSection, "Vector.NormalFAngleRanges.Max2");
+	this->Vector_NormalLAngleRMin.Read(exINI, pSection, "Vector.NormalLAngleRanges.Min");
+	this->Vector_NormalLAngleRMax.Read(exINI, pSection, "Vector.NormalLAngleRanges.Max");
+	this->Vector_NormalLAngleRMin2.Read(exINI, pSection, "Vector.NormalLAngleRanges.Min2");
+	this->Vector_NormalLAngleRMax2.Read(exINI, pSection, "Vector.NormalLAngleRanges.Max2");
+	this->Vector_NormalHAngleRMin.Read(exINI, pSection, "Vector.NormalHAngleRanges.Min");
+	this->Vector_NormalHAngleRMax.Read(exINI, pSection, "Vector.NormalHAngleRanges.Max");
+	this->Vector_NormalHAngleRMin2.Read(exINI, pSection, "Vector.NormalHAngleRanges.Min2");
+	this->Vector_NormalHAngleRMax2.Read(exINI, pSection, "Vector.NormalHAngleRanges.Max2");
+	this->Vector_OriginNormalFAngleRMin.Read(exINI, pSection, "Vector.Origin.NormalFAngleRanges.Min");
+	this->Vector_OriginNormalFAngleRMax.Read(exINI, pSection, "Vector.Origin.NormalFAngleRanges.Max");
+	this->Vector_OriginNormalFAngleRMin2.Read(exINI, pSection, "Vector.Origin.NormalFAngleRanges.Min2");
+	this->Vector_OriginNormalFAngleRMax2.Read(exINI, pSection, "Vector.Origin.NormalFAngleRanges.Max2");
+	this->Vector_OriginNormalLAngleRMin.Read(exINI, pSection, "Vector.Origin.NormalLAngleRanges.Min");
+	this->Vector_OriginNormalLAngleRMax.Read(exINI, pSection, "Vector.Origin.NormalLAngleRanges.Max");
+	this->Vector_OriginNormalLAngleRMin2.Read(exINI, pSection, "Vector.Origin.NormalLAngleRanges.Min2");
+	this->Vector_OriginNormalLAngleRMax2.Read(exINI, pSection, "Vector.Origin.NormalLAngleRanges.Max2");
+	this->Vector_OriginNormalHAngleRMin.Read(exINI, pSection, "Vector.Origin.NormalHAngleRanges.Min");
+	this->Vector_OriginNormalHAngleRMax.Read(exINI, pSection, "Vector.Origin.NormalHAngleRanges.Max");
+	this->Vector_OriginNormalHAngleRMin2.Read(exINI, pSection, "Vector.Origin.NormalHAngleRanges.Min2");
+	this->Vector_OriginNormalHAngleRMax2.Read(exINI, pSection, "Vector.Origin.NormalHAngleRanges.Max2");
+
 	// Groups
 	exINI.ParseStringList(this->Groups, pSection, "Groups");
 	AddToGroupsMap();
@@ -214,6 +333,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ExpireWeapon_TriggerOn)
 		.Process(this->ExpireWeapon_CumulativeOnlyOnce)
 		.Process(this->ExpireWeapon_UseInvokerAsOwner)
+		.Process(this->Next)
 		.Process(this->Tint_Color)
 		.Process(this->Tint_Intensity)
 		.Process(this->Tint_VisibleToHouses)
@@ -248,6 +368,120 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->DisableWeapons)
 		.Process(this->Unkillable)
 		.Process(this->LaserTrail_Type)
+		.Process(this->Vector_TimeStep)
+		.Process(this->Vector_DisabledFrames)
+		.Process(this->Vector_SyncFacing)
+		.Process(this->Vector_OriginIsOnWorld)
+		.Process(this->Vector_OriginIsOnBody)
+		.Process(this->Vector_Origin)
+		.Process(this->Vector_OriginFLH)
+		.Process(this->Vector_OriginNoUpdate)
+		.Process(this->Vector_Force)
+		.Process(this->Vector_Freeze)
+		.Process(this->Vector_AllowedTilt)
+		.Process(this->Vector_NormalVector)
+		.Process(this->Vector_NormalRandomF)
+		.Process(this->Vector_NormalRandomL)
+		.Process(this->Vector_NormalRandomH)
+		.Process(this->Vector_NormalFAnglePerStep)
+		.Process(this->Vector_NormalLAnglePerStep)
+		.Process(this->Vector_NormalHAnglePerStep)
+		.Process(this->Vector_MoveTo)
+		.Process(this->Vector_GrowRate)
+		.Process(this->Vector_AnglePerStep)
+		.Process(this->Vector_CircleRadius)
+		.Process(this->Vector_CircleSpeed)
+		.Process(this->Vector_CircleSpeedAcceleration)
+		.Process(this->Vector_CircleMaxSpeed)
+		.Process(this->Vector_CircleMinSpeed)
+		.Process(this->Vector_CircleAnglePerStep)
+		.Process(this->Vector_CircleAngleAcceleration)
+		.Process(this->Vector_CircleOrigin)
+		.Process(this->Vector_AllowOriginTilt)
+		.Process(this->Vector_CircleRadiusGrow)
+		.Process(this->Vector_CircleMaxRadius)
+		.Process(this->Vector_CircleMinRadius)
+		.Process(this->Vector_CircleEndOnMaxRadius)
+		.Process(this->Vector_CircleEndOnMinRadius)
+		.Process(this->Vector_TargetFLH)
+		.Process(this->Vector_ReachTarget)
+		.Process(this->Vector_ReachTargetEarlyEnd)
+		.Process(this->Vector_ArcHeight)
+		.Process(this->Vector_ArcPeakPercent)
+		.Process(this->Vector_ArcPeakRandomPercent)
+		.Process(this->Vector_ArcRotation)
+		.Process(this->Vector_InitialSpeed)
+		.Process(this->Vector_MaxSpeed)
+		.Process(this->Vector_MinSpeed)
+		.Process(this->Vector_Acceleration)
+		.Process(this->Vector_AllowFallingDestroy)
+		.Process(this->Vector_FallingDestroyHeight)
+		.Process(this->Vector_AffectTechno)
+		.Process(this->Vector_AffectBullets)
+		.Process(this->Vector_CircleRandomRadiusMin)
+		.Process(this->Vector_CircleRandomRadiusMax)
+		.Process(this->Vector_CircleRandomAngleMin)
+		.Process(this->Vector_CircleRandomAngleMax)
+		.Process(this->Vector_CircleMaxAngle)
+		.Process(this->Vector_CircleMinAngle)
+		.Process(this->Vector_TargetOffsetFMin)
+		.Process(this->Vector_TargetOffsetFMax)
+		.Process(this->Vector_TargetOffsetLMin)
+		.Process(this->Vector_TargetOffsetLMax)
+		.Process(this->Vector_TargetOffsetHMin)
+		.Process(this->Vector_TargetOffsetHMax)
+		.Process(this->Vector_ArcRandomHeightMin)
+		.Process(this->Vector_ArcRandomHeightMax)
+		.Process(this->Vector_ArcRandomRotationMin)
+		.Process(this->Vector_ArcRandomRotationMax)
+		.Process(this->Vector_RandomSpeedMin)
+		.Process(this->Vector_RandomSpeedMax)
+		.Process(this->Vector_OriginMoveTo)
+		.Process(this->Vector_OriginGrowRate)
+		.Process(this->Vector_OriginTargetFLH)
+		.Process(this->Vector_OriginInitialSpeed)
+		.Process(this->Vector_OriginReachTarget)
+		.Process(this->Vector_OriginArcHeight)
+		.Process(this->Vector_OriginCircleRadius)
+		.Process(this->Vector_OriginCircleSpeed)
+		.Process(this->Vector_OriginCircleAnglePerStep)
+		.Process(this->Vector_OriginCircleRadiusGrow)
+		.Process(this->Vector_OriginCircleMaxRadius)
+		.Process(this->Vector_OriginCircleMinRadius)
+		.Process(this->Vector_OriginCircleEndOnMaxRadius)
+		.Process(this->Vector_OriginCircleEndOnMinRadius)
+		.Process(this->Vector_OriginNormalVector)
+		.Process(this->Vector_OriginNormalFAnglePerStep)
+		.Process(this->Vector_OriginNormalLAnglePerStep)
+		.Process(this->Vector_OriginNormalHAnglePerStep)
+		.Process(this->Vector_OriginAllowedTilt)
+		.Process(this->Vector_OriginCircleOffset)
+		.Process(this->Vector_OriginOrigin)
+		.Process(this->Vector_OriginOriginFLH)
+		.Process(this->Vector_NormalFAngleRMin)
+		.Process(this->Vector_NormalFAngleRMax)
+		.Process(this->Vector_NormalFAngleRMin2)
+		.Process(this->Vector_NormalFAngleRMax2)
+		.Process(this->Vector_NormalLAngleRMin)
+		.Process(this->Vector_NormalLAngleRMax)
+		.Process(this->Vector_NormalLAngleRMin2)
+		.Process(this->Vector_NormalLAngleRMax2)
+		.Process(this->Vector_NormalHAngleRMin)
+		.Process(this->Vector_NormalHAngleRMax)
+		.Process(this->Vector_NormalHAngleRMin2)
+		.Process(this->Vector_NormalHAngleRMax2)
+		.Process(this->Vector_OriginNormalFAngleRMin)
+		.Process(this->Vector_OriginNormalFAngleRMax)
+		.Process(this->Vector_OriginNormalFAngleRMin2)
+		.Process(this->Vector_OriginNormalFAngleRMax2)
+		.Process(this->Vector_OriginNormalLAngleRMin)
+		.Process(this->Vector_OriginNormalLAngleRMax)
+		.Process(this->Vector_OriginNormalLAngleRMin2)
+		.Process(this->Vector_OriginNormalLAngleRMax2)
+		.Process(this->Vector_OriginNormalHAngleRMin)
+		.Process(this->Vector_OriginNormalHAngleRMax)
+		.Process(this->Vector_OriginNormalHAngleRMin2)
+		.Process(this->Vector_OriginNormalHAngleRMax2)
 		.Process(this->Groups)
 		;
 }
@@ -366,6 +600,30 @@ namespace detail
 			}
 
 			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<VectorOrigin>(VectorOrigin& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+
+			if (!_strcmpi(str, "Self"))
+				value = VectorOrigin::Self;
+			else if (!_strcmpi(str, "Launcher"))
+				value = VectorOrigin::Launcher;
+			else if (!_strcmpi(str, "Target"))
+				value = VectorOrigin::Target;
+			else if (!_strcmpi(str, "Source"))
+				value = VectorOrigin::Source;
+			else
+				value = VectorOrigin::Self;
+
 			return true;
 		}
 
