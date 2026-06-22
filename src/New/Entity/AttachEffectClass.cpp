@@ -567,18 +567,36 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 				return true;
 			}
 		}
-		else if (pFoot->CurrentMission == Mission::Harvest && pFoot->GetCell()->LandType == LandType::Tiberium)
+		else
 		{
-			if ((discardOn & DiscardCondition::Harvesting) != DiscardCondition::None)
+			bool isHarvestingNow = false;
+			if (auto const pUnit = abstract_cast<UnitClass*, true>(pFoot))
+				isHarvestingNow = pUnit->IsHarvesting;
+			else if (auto const pInf = abstract_cast<InfantryClass*, true>(pFoot))
+				isHarvestingNow = (pInf->SequenceAnim == Sequence::Shovel);
+
+			if (isHarvestingNow)
 			{
-				this->LastDiscardCheckValue = true;
-				return true;
+				if ((discardOn & DiscardCondition::Harvesting) != DiscardCondition::None)
+				{
+					this->LastDiscardCheckValue = true;
+					return true;
+				}
 			}
-		}
-		else if ((discardOn & DiscardCondition::Stationary) != DiscardCondition::None)
-		{
-			this->LastDiscardCheckValue = true;
-			return true;
+			else if (pFoot->CurrentMission == Mission::Harvest && pFoot->GetCell()->LandType == LandType::Tiberium)
+			{
+				// Handle the intermediate state that is about to start harvesting but does not satisfy the above judgment.
+				this->LastDiscardCheckValue = false;
+				return false;
+			}
+			else
+			{
+				if ((discardOn & DiscardCondition::Stationary) != DiscardCondition::None)
+				{
+					this->LastDiscardCheckValue = true;
+					return true;
+				}
+			}
 		}
 	}
 
