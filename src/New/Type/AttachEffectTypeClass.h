@@ -53,6 +53,7 @@ public:
 	Valueable<DiscardCondition> DiscardOn;
 	Nullable<Leptons> DiscardOn_RangeOverride;
 	Nullable<bool> DiscardOn_MoveBasedOnDestination;
+	Nullable<bool> DiscardOn_ConsiderHarvestingAsStationary;
 	Valueable<bool> PenetratesIronCurtain;
 	Nullable<bool> PenetratesForceShield;
 	ValueableVector<TechnoTypeClass*> AffectTypes;
@@ -117,6 +118,7 @@ public:
 		, DiscardOn { DiscardCondition::None }
 		, DiscardOn_RangeOverride {}
 		, DiscardOn_MoveBasedOnDestination {}
+		, DiscardOn_ConsiderHarvestingAsStationary {}
 		, PenetratesIronCurtain { false }
 		, PenetratesForceShield {}
 		, AffectTypes {}

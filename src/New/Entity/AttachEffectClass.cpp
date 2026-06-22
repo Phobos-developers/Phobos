@@ -565,6 +565,14 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 				return true;
 			}
 		}
+		else if (this->Type->DiscardOn_ConsiderHarvestingAsStationary .Get(RulesExt::Global()->DiscardOn_ConsiderHarvestingAsStationary))
+		{
+			if ((discardOn & DiscardCondition::Stationary) != DiscardCondition::None)
+			{
+				this->LastDiscardCheckValue = true;
+				return true;
+			}
+		}
 		else
 		{
 			bool isHarvestingNow = false;
@@ -587,13 +595,10 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 				this->LastDiscardCheckValue = false;
 				return false;
 			}
-			else
+			else if ((discardOn & DiscardCondition::Stationary) != DiscardCondition::None)
 			{
-				if ((discardOn & DiscardCondition::Stationary) != DiscardCondition::None)
-				{
-					this->LastDiscardCheckValue = true;
-					return true;
-				}
+				this->LastDiscardCheckValue = true;
+				return true;
 			}
 		}
 	}

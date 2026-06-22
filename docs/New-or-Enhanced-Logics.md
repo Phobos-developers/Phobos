@@ -22,9 +22,10 @@ This page describes all the engine features that are either new and introduced b
     - `firing`: Discard when firing a weapon. This counts special weapons that are not actually fired such as ones with `Spawner=true` or `DrainWeapon=true`.
     - `selling`: Discard when the building to which the effect is attached is sold.
     - `undeploying`: Discard when the building to which the effect is attached performs undeploy.
-    - `harvesting`: Discard when the object the effect is attached is harvesting ore.
+    - `harvesting`: Discard when the object the effect is attached is harvesting ore. This can only be used when `DiscardOn.ConsiderHarvestingAsStationary=false`.
   - `DiscardOn.MoveBasedOnDestination` defines whether to determine the movement state according to the presence or absence of a destination. It treats Jumpjet units hovering in the air as movement, and units that have no destination but are turning as stationary.
     - In order to prevent `DiscardOn=harvesting` from being erroneously triggered when the unit completes turning after manually changing the harvesting location, this should be set to `true`.
+  - `DiscardOn.ConsiderHarvestingAsStationary` defines whether to treat `harvesting` as `stationary`. When this flag is set to false, `DiscardOn=harvesting` can be used and it will not be considered `stationary` while `harvesting`.
   - If `PenetratesIronCurtain` is not set to true, the effect is not applied on currently invulnerable objects.
     - `PenetratesForceShield` can be used to set this separately for Force Shielded objects, defaults to value of `PenetratesIronCurtain`.
   - `AffectTypes`, if set to a non-empty list, restricts the effect to only be applicable on the specific unit types listed. If this is not set or empty, no whitelist filtering occurs. This check has the highest priority.
@@ -94,6 +95,7 @@ In `rulesmd.ini`:
 ```ini
 [General]
 DiscardOn.MoveBasedOnDestination=false             ; boolean
+DiscardOn.ConsiderHarvestingAsStationary=true      ; boolean
 
 [AttachEffectTypes]
 0=SOMEATTACHEFFECT
@@ -108,6 +110,7 @@ Powered=false                                      ; boolean
 DiscardOn=none                                     ; List of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange)
 DiscardOn.RangeOverride=                           ; floating point value, distance in cells
 DiscardOn.MoveBasedOnDestination=                  ; boolean, default to [General] -> DiscardOn.MoveBasedOnDestination
+DiscardOn.ConsiderHarvestingAsStationary=          ; boolean, default to [General] -> DiscardOn.ConsiderHarvestingAsStationary
 PenetratesIronCurtain=false                        ; boolean
 PenetratesForceShield=                             ; boolean
 AffectTypes=                                       ; List of TechnoTypes
