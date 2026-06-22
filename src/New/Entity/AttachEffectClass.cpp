@@ -565,7 +565,7 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 				return true;
 			}
 		}
-		else if (this->Type->DiscardOn_ConsiderHarvestingAsStationary .Get(RulesExt::Global()->DiscardOn_ConsiderHarvestingAsStationary))
+		else if (this->Type->DiscardOn_ConsiderHarvestingAsStationary.Get(RulesExt::Global()->DiscardOn_ConsiderHarvestingAsStationary))
 		{
 			if ((discardOn & DiscardCondition::Stationary) != DiscardCondition::None)
 			{
