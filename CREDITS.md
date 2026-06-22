@@ -686,6 +686,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize `Tiled` drawing interval and centering
   - Customize whether technos with `Locomotor=Fly` wobble
   - Customize the landing animation of technos that have `Locomotor=Fly`
+  - Allow infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true`
   - Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn`
 - **Ollerus**:
   - Build limit group enhancement

@@ -577,19 +577,6 @@ In `artmd.ini`:
 AttachedSystem=  ; ParticleSystemType
 ```
 
-### Customizable animation transparency settings
-
-- `Translucency.Cloaked` can be used to override `Translucency` on animations attached to currently cloaked TechnoTypes.
-- Both `Translucency` and `Translucency.Cloaked` can use the new keyframe system to animate along with the animation. Read more about the keyframe system [here](Miscellanous.md#keyframe-animations).
-- If interpolation is enabled, the keyframe values are clamped to valid transparency values (0,25,50 and 75), e.g a value of 1.5 would become 0 and 56.525 would become 50 and so on.
-
-In `artmd.ini`:
-```ini
-[SOMEANIM]             ; AnimationType
-Translucency=0         ; integer - only accepted values are 75, 50, 25 and 0.
-Translucency.Cloaked=  ; integer - only accepted values are 75, 50, 25 and 0.
-```
-
 ### Customizable animation visibility settings
 
 - It is now possible to customize which players can see an animation using `VisibleTo`.
@@ -716,6 +703,17 @@ SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 ```
 
 ## Infantry
+
+### Allow infantry to perform type conversion when deploying and undeploying
+
+- Now infantry can perform type conversion immediately after the `Deploy` or `Undeploy` sequence action has been executed.
+
+In `rulesmd.ini`:
+```ini
+[SOMEINFANTRY]             ; InfantryType
+Convert.Deploy=            ; InfantryType
+Convert.Undeploy=          ; InfantryType
+```
 
 ### Customizable FLH when infantry is prone or deployed
 
@@ -2480,7 +2478,7 @@ AffectsInvokerOnly.IgnoreInvokerState=      ; boolean, default to [CombatDamage]
 ```
 
 ```{hint}
-If you have enabled [`ApplyPerTargetEffectsOnDetonate`](New-or-Enhanced-Logics.md#toggle-per-target-warhead-effects-apply-timing) to make affects handling completely follow damage propagation, then most of the time you can just use [`DamageSelf`](https://modenc.renegadeprojects.com/DamageSelf) and [`AllowDamageOnSelf`](Fixed-or-Improved-Logics.md#allowing-damage-dealt-to-firer) without needing `AffectsInvokerOnly.Reverse`.
+When pure damage effects use `AffectsInvokerOnly`, it still checks settings such as `DamageSelf` and [`AllowDamageOnSelf`](Fixed-or-Improved-Logics.md#allowing-damage-dealt-to-firer)—they default to false; if left unchanged, this will produce a scenario where `AffectsInvokerOnly` builds a set containing only the invoker, while `DamageSelf` and `AllowDamageOnSelf` build a set excluding the invoker object, and the intersection of these two sets is empty—so ultimately it still will not deal damage to the invoker. Warhead effects will follow the damage transfer when [`ApplyPerTargetEffectsOnDetonate=false`](New-or-Enhanced-Logics.md#toggle-per-target-warhead-effects-apply-timing), and at that time they also follow this same rule.
 ```
 
 ### Break Mind Control on impact
