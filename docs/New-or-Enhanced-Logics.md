@@ -24,7 +24,7 @@ This page describes all the engine features that are either new and introduced b
     - `undeploying`: Discard when the building to which the effect is attached performs undeploy.
     - `harvesting`: Discard when the object the effect is attached is harvesting ore. This can only be used when `DiscardOn.ConsiderHarvestingAsStationary=false`.
   - `DiscardOn.MoveBasedOnDestination` defines whether to determine the movement state according to the presence or absence of a destination. It treats Jumpjet units hovering in the air as movement, and units that have no destination but are turning as stationary.
-    - In order to prevent `DiscardOn=harvesting` from being erroneously triggered when the unit completes turning after manually changing the harvesting location, this should be set to `true`.
+    - If used for an AE that has `DiscardOn=harvesting`, in order for it to judge correctly, this should be set to `true`.
   - `DiscardOn.ConsiderHarvestingAsStationary` defines whether to treat `harvesting` as `stationary`. When this flag is set to false, `DiscardOn=harvesting` can be used and it will not be considered `stationary` while `harvesting`.
   - If `PenetratesIronCurtain` is not set to true, the effect is not applied on currently invulnerable objects.
     - `PenetratesForceShield` can be used to set this separately for Force Shielded objects, defaults to value of `PenetratesIronCurtain`.
