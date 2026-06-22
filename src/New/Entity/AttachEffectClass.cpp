@@ -553,7 +553,9 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 
 	if (auto const pFoot = abstract_cast<FootClass*, true>(pTechno))
 	{
-		const bool isMoving = this->Type->DiscardOn_MoveBasedOnDestination.Get(RulesExt::Global()->DiscardOn_MoveBasedOnDestination)
+		const bool useDestinationBased = this->Type->DiscardOn_MoveBasedOnDestination
+			.Get(RulesExt::Global()->DiscardOn_MoveBasedOnDestination);
+		const bool isMoving = useDestinationBased
 			? pFoot->Locomotor->Is_Moving()
 			: pFoot->Locomotor->Is_Really_Moving_Now();
 
@@ -565,18 +567,15 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 				return true;
 			}
 		}
-		else if ((discardOn & DiscardCondition::Stationary) != DiscardCondition::None)
+		else if (pFoot->CurrentMission == Mission::Harvest && pFoot->GetCell()->LandType == LandType::Tiberium)
 		{
-			this->LastDiscardCheckValue = true;
-			return true;
+			if ((discardOn & DiscardCondition::Harvesting) != DiscardCondition::None)
+			{
+				this->LastDiscardCheckValue = true;
+				return true;
+			}
 		}
-
-		const auto mission = pFoot->CurrentMission;
-
-		if ((discardOn & DiscardCondition::Harvesting) != DiscardCondition::None
-			&& mission == Mission::Harvest
-			&& !pFoot->Locomotor->Is_Moving()
-			&& pFoot->GetCell()->LandType == LandType::Tiberium)
+		else if ((discardOn & DiscardCondition::Stationary) != DiscardCondition::None)
 		{
 			this->LastDiscardCheckValue = true;
 			return true;
