@@ -817,6 +817,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix voxel projectile and animation lighting issues
   - Export interface for external call
   - Allow chat box in singleplayer
+  - Auto-remove earliest beacon
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
