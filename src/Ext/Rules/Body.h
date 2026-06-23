@@ -379,8 +379,8 @@ public:
 		Valueable<bool> AllowChatBoxInSinglePlayer;
 
 		Valueable<bool> SecondaryFireSequenceLandOnly;
-		
 		Valueable<bool> AutoRemoveEarliestBeacon;
+		Valueable<bool> AllowBeaconHotKeyInSinglePlayer;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -702,6 +702,8 @@ public:
 			, SecondaryFireSequenceLandOnly { true }
 
 			, AutoRemoveEarliestBeacon { false }
+
+			, AllowBeaconHotKeyInSinglePlayer { false }
 		{ }
 
 		virtual ~ExtData() = default;

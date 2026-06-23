@@ -1924,6 +1924,17 @@ msgid ""
 "needing to be defined on any specific object."
 msgstr "这个类别下列出了所有全局生效而无需在任何特定对象上定义的功能。"
 
+msgid "Allow beacon placement hotkey in single player"
+msgstr "允许在单人模式下使用信标放置快捷键"
+
+msgid ""
+"In vanilla, the beacon placement hotkey is restricted to multiplayer games "
+"only. Now you can allow using the beacon placement hotkey in single player "
+"and skirmish modes by setting `AllowBeaconHotKeyInSinglePlayer` to true."
+msgstr ""
+"在原版中，信标放置快捷键仅限于多人游戏使用。现在你可以通过将 "
+"`AllowBeaconHotKeyInSinglePlayer` 设置为 true 来允许在单人模式和遭遇战中使用信标放置快捷键。"
+
 msgid "Allow deploy controlled MCV"
 msgstr "允许部署被心控的 MCV"
 

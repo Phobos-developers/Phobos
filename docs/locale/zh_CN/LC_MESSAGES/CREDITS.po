@@ -2764,6 +2764,9 @@ msgstr "允许在单人模式使用聊天框"
 msgid "Auto-remove earliest beacon"
 msgstr "自动移除最早的信标"
 
+msgid "Allow beacon placement hotkey in single player"
+msgstr "允许在单人模式下使用信标放置快捷键"
+
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
 
