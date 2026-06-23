@@ -1171,6 +1171,8 @@ DEFINE_HOOK(0x44B6C7, BuildingClass_Mission_Attack_TurretAnim, 0x6)
 	return 0;
 }
 
+#pragma endregion
+
 #pragma region TankBunker
 
 // Jun 23, 2026 - Starkku: Vanilla tank bunker code assumes
@@ -1284,7 +1286,7 @@ DEFINE_HOOK(0x4596EC, BuildingClass_UnloadTankBunker, 0x6)
 	return 0;
 }
 
-// Update bunker logic every frame if in transition/interacting with unit.
+// Add customization for tank bunker logic update delay.
 DEFINE_HOOK(0x44C976, BuildingClass_Mission_Repair_TankBunker, 0x5)
 {
 	GET(BuildingClass*, pThis, EBP);
