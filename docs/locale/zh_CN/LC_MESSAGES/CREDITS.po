@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-13 13:34+0800\n"
+"POT-Creation-Date: 2026-06-20 10:13+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -167,6 +167,9 @@ msgstr "为地图光照重绘时的建筑光源问题修复添加开关"
 
 msgid "Voxel drawing invisible sections skip"
 msgstr "跳过 Voxel 不可见组件的绘制"
+
+msgid "Animatable template"
+msgstr "动画化模版"
 
 msgid "**Uranusian (Thrifinesma)**:"
 msgstr "**Uranusian (Thrifinesma)**："
@@ -789,6 +792,9 @@ msgstr "重新实现 `Airburst` 与 `Splits` 逻辑以提供更多自定义选�
 
 msgid "Buildings considered as destroyable pathfinding obstacles"
 msgstr "建筑物视为可破坏的寻路障碍物"
+
+msgid "Animation transparency customization settings"
+msgstr "自定义动画透明度设置"
 
 msgid "Animation visibility customization settings"
 msgstr "自定义动画可见性设置"
@@ -2190,13 +2196,13 @@ msgid ""
 "`xxx.(AffectHouse/AffectsHouses/AffectedHouse)` and improve tag names "
 "like `AutoFire`"
 msgstr ""
-"统一 `xxx.(AffectHouse/AffectsHouses/AffectedHouse)` 等混乱的标签名并改进例如 `AutoFire` 等标签名"
+"统一 `xxx.(AffectHouse/AffectsHouses/AffectedHouse)` 等混乱的标签名并改进例如 "
+"`AutoFire` 等标签名"
 
 msgid ""
 "Add compatibility for deprecated tag names and output warnings to avoid "
 "breaking the normal operation of existing Mods"
-msgstr ""
-"为被弃用的标签名添加兼容并输出警告以避免破坏现有 Mod 的正常运行"
+msgstr "为被弃用的标签名添加兼容并输出警告以避免破坏现有 Mod 的正常运行"
 
 msgid "Fix the bug where warhead flags are read twice"
 msgstr "修复了弹头标签被读取两次的 Bug"
@@ -2296,6 +2302,23 @@ msgstr "添加触发结果 `512 设置关联单位的跟随目标...`"
 
 msgid "Dehardcode of parasites unlimboing after killing naval targets"
 msgstr "寄生击杀水上目标后刷出的自定义"
+
+msgid "Allow warhead to only affect invoker"
+msgstr "允许弹头仅影响调用者"
+
+msgid ""
+"Allow customizing whether the creation of shrapnel weapon is controlled "
+"by the new target check on the warhead of the parent weapon"
+msgstr "允许自定义溅射子武器的创建是否受上级武器弹头上的新增目标检查控制"
+
+msgid "Customize `Tiled` drawing interval and centering"
+msgstr "自定义 `Tiled` 绘制间隔和中心对齐"
+
+msgid "Customize whether technos with `Locomotor=Fly` wobble"
+msgstr "自定义 `Locomotor=Fly` 的单位是否上下浮动"
+
+msgid "Customize the landing animation of technos that have `Locomotor=Fly`"
+msgstr "自定义 `Locomotor=Fly` 单位的降落动画"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
@@ -2817,15 +2840,6 @@ msgstr "**AutoGavy** - 抛射体拦截逻辑、弹头暴击逻辑"
 
 msgid "**Chasheen (Chasheenburg)** - CN docs help for Build#24"
 msgstr "**Chasheen (Chasheenburg)** - Build#24 的中文文档协助"
-
-msgid ""
-"**Noble Fish** - some minor improvements and fixes, established Community"
-" Chinese docs, took over and completely rewrite the Official Chinese docs"
-" during Build#46, Dehardcode of parasites unlimboing after killing naval "
-"targets"
-msgstr ""
-"**Noble Fish** - 一些小改进与修复、文档维护者（官方英文文档维护、创建了社区中文文档、在 Build#46 "
-"接管并完全重写了官方中文文档）、寄生击杀水上目标后刷出的自定义"
 
 msgid ""
 "**tomsons26** - all-around help, assistance and guidance in reverse-"
