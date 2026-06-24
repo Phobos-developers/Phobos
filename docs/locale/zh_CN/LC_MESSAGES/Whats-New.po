@@ -2031,6 +2031,12 @@ msgid ""
 msgstr ""
 "[允许步兵在部署与反部署时执行类型转换](New-or-Enhanced-Logics.md#allow-infantry-to-perform-type-conversion-when-deploying-and-undeploying)（by Noble_Fish）"
 
+msgid ""
+"Add `ClampToScreen` tag for `BannerType` (defaults to `true`) to control "
+"whether banner position is clamped to the visible area (by Chang_zhi)"
+msgstr ""
+"为 `BannerType` 添加了 `ClampToScreen` 标签（默认为 `true`），用于控制横幅位置是否被限制在可视区域内（by Chang_zhi）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
