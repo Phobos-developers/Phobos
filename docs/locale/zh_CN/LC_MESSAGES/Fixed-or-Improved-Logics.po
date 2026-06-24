@@ -2128,6 +2128,30 @@ msgstr ""
 "在原版中，一个无法正确重映射颜色的 `AltPalette=yes` 动画或 `Voxel=yes` 的抛射体图像会使用 `[Colors]` "
 "列表中的第一个配色方案作为默认配色方案来映射所属色，现在它可以被手动指定了。"
 
+msgid "Enhanced berzerk behavior"
+msgstr "增强的混乱行为"
+
+msgid ""
+"In vanilla, when a unit enters Berzerk state, the game assigns it a "
+"`Hunt` mission, which may cause the unit to choose a very distant target "
+"and simply move toward it without firing during the Berzerk duration."
+msgstr ""
+"在原版中，当单位进入混乱状态时，游戏会为其分配一个 `Hunt` "
+"任务，这可能导致单位选择一个非常遥远的目标，然后在混乱期间只是向目标移动而不会开火。"
+
+msgid ""
+"Now you can customize which mission the unit uses when entering Berzerk "
+"state."
+msgstr ""
+"现在你可以自定义混乱状态下使用的任务类型。"
+
+msgid ""
+"Additionally, this enhancement adds the necessary stop handling (clearing"
+" destination), fixing jumpjet vehicles behaving incorrectly when getting "
+"Berzerk'd while moving."
+msgstr ""
+"此外，此增强还补充了必要的停止处理（清除目的地），修复了 Jumpjet 载具在移动中被混乱时工作异常的问题。"
+
 msgid "Iron Curtain & Force Shield extra tint intensity"
 msgstr "铁幕和力场护盾的额外染色强度"
 

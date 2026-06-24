@@ -507,6 +507,18 @@ In `rulesmd.ini`:
 AnimRemapDefaultColorScheme=      ; ColorScheme name
 ```
 
+### Enhanced berzerk behavior
+
+- In vanilla, when a unit enters Berzerk state, the game assigns it a `Hunt` mission, which may cause the unit to choose a very distant target and simply move toward it without firing during the Berzerk duration.
+- Now you can customize which mission the unit uses when entering Berzerk state.
+  - Additionally, this enhancement adds the necessary stop handling (clearing destination), fixing jumpjet vehicles behaving incorrectly when getting Berzerk'd while moving.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+BerzerkMission=Hunt               ; MissionType
+```
+
 ### Iron Curtain & Force Shield extra tint intensity
 
 - It is now possible to specify additional tint intensity applied to Iron Curtained and Force Shielded units.
