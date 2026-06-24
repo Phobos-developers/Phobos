@@ -820,6 +820,7 @@ Team delay change will take effect for a house after its next AI team is created
   - `Duration` determines how long the banner will be displayed. Negative values mean the banner can always be displayed until being deleted. The banner itself won't be deleted when it's not displaying.
   - `Delay` determines when the banner will be displayed again after it stops displaying by a positive `Duration`. Neagtive values mean it can't be displayed again.
     - If an `SHP` banner displays again after the delay, it'll start from the frame when it's stopped last time. This can also be changed to its first frame if `SHP.RefreshAfterDelay` set to true.
+  - `ClampToScreen` controls whether the banner is clamped to stay within the visible area. When disabled, a PCX banner exceeding the top screen edge may crash the game.
 
 In `rulesmd.ini`:
 ```ini
@@ -837,6 +838,7 @@ CSF.Background=false        ; boolean
 CSF.VariableFormat=none     ; List of Variable Format Enumeration (none|variable|prefix/prefixed|surfix/surfixed)
 Duration=-1                 ; integer
 Delay=-1                    ; integer
+ClampToScreen=true          ; boolean
 ```
 
 In `mycampaign.map`:

@@ -2024,6 +2024,12 @@ msgstr ""
 "[自定义 `Locomotor=Fly` 单位的降落动画](Fixed-or-Improved-Logics.md#customize-the-landing-"
 "animation-of-technos-that-have-locomotor-fly)（by Noble_Fish）"
 
+msgid ""
+"Add `ClampToScreen` tag for `BannerType` (defaults to `true`) to control "
+"whether banner position is clamped to the visible area (by Chang_zhi)"
+msgstr ""
+"为 `BannerType` 添加了 `ClampToScreen` 标签（默认为 `true`），用于控制横幅位置是否被限制在可视区域内（by Chang_zhi）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
