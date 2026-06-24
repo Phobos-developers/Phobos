@@ -434,6 +434,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->TeamDelays_DynamicType.Read(exINI, GameStrings::General, "TeamDelays.DynamicType");
 
+	this->BunkerStateUpdateDelay.Read(exINI, GameStrings::General, "BunkerStateUpdateDelay");
+
 	char tempBuffer[40];
 	for (size_t i = 0; i < 8; i++)
 	{
@@ -787,6 +789,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->TeamDelays_DynamicType)
 		.Process(this->TeamDelays_Count)
 		.Process(this->BerzerkMission)
+		.Process(this->BunkerStateUpdateDelay)
 		;
 }
 
