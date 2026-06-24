@@ -593,6 +593,7 @@ HideShakeEffects=false           ; boolean
 - [Customize `Tiled` drawing interval and centering](Fixed-or-Improved-Logics.md#customize-tiled-drawing-interval-and-centering) (by Noble_Fish)
 - [Customize whether technos with `Locomotor=Fly` wobble](Fixed-or-Improved-Logics.md#customize-whether-technos-with-locomotor-fly-wobble) (by Noble_Fish)
 - [Customize the landing animation of technos that have `Locomotor=Fly`](Fixed-or-Improved-Logics.md#customize-the-landing-animation-of-technos-that-have-locomotor-fly) (by Noble_Fish)
+- [Allow infantry to perform type conversion when deploying and undeploying](New-or-Enhanced-Logics.md#allow-infantry-to-perform-type-conversion-when-deploying-and-undeploying) (by Noble_Fish)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -755,6 +756,7 @@ HideShakeEffects=false           ; boolean
 - [Export interface for external call](index.md#interoperability) (by TaranDahl)
 - Allowed `MindControl.Permanent` warhead to mute `MindClearedSound` (by NetsuNegi & Noble_Fish)
 - [Export interface for accessing scenario local/global variables](Interoperability.md#scenarioext) (by Chang_zhi)
+- Allowed infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true` (by Noble_Fish)
 
 ```
 

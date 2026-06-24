@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-17 14:59+0800\n"
+"POT-Creation-Date: 2026-06-24 19:08+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1719,6 +1719,14 @@ msgstr "`SpyEffect.InfiltratorSuperWeapon` 同上但超级武器的所属方来�
 
 msgid "Infantry"
 msgstr "步兵"
+
+msgid "Allow infantry to perform type conversion when deploying and undeploying"
+msgstr ""
+
+msgid ""
+"Now infantry can perform type conversion immediately after the `Deploy` "
+"or `Undeploy` sequence action has been executed."
+msgstr ""
 
 msgid "Customizable FLH when infantry is prone or deployed"
 msgstr "自定义步兵匍匐或部署状态的 FLH"
