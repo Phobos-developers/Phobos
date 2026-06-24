@@ -1722,11 +1722,13 @@ msgstr "步兵"
 
 msgid "Allow infantry to perform type conversion when deploying and undeploying"
 msgstr ""
+"允许步兵在部署与反部署时执行类型转换"
 
 msgid ""
 "Now infantry can perform type conversion immediately after the `Deploy` "
 "or `Undeploy` sequence action has been executed."
 msgstr ""
+"现在步兵可以在执行 `Deploy` 或 `Undeploy` 序列后触发类型转换。"
 
 msgid "Customizable FLH when infantry is prone or deployed"
 msgstr "自定义步兵匍匐或部署状态的 FLH"

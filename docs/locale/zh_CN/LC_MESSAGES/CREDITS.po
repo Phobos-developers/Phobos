@@ -2324,6 +2324,12 @@ msgid ""
 "Allow infantry to use `Convert.Deploy` without requiring "
 "`IsSimpleDeployer=true`"
 msgstr ""
+"允许了步兵使用 `Convert.Deploy` 而无需 `IsSimpleDeployer=true`"
+
+msgid ""
+"Allow infantry to perform type conversion when deploying and undeploying"
+msgstr ""
+"允许步兵在部署与反部署时执行类型转换"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："

@@ -1915,6 +1915,7 @@ msgid ""
 "Allowed infantry to use `Convert.Deploy` without requiring "
 "`IsSimpleDeployer=true`."
 msgstr ""
+"允许了步兵使用 `Convert.Deploy` 而无需 `IsSimpleDeployer=true`"
 
 msgid "Newly added global settings"
 msgstr "新增的全局设定"
