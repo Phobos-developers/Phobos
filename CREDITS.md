@@ -799,6 +799,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow disable an over-optimization in targeting
   - Extra threat
   - Fix the incorrect mission switching in infantry EnterIdleMode
+  - Customizable Berzerk mission
   - Fix the issue that `BombSight` not being updated correctly in techno conversion
   - Fix BalloonHover incorrectly considering ground factors when pathfinding
   - Technos with Walk locomotor spawn wake like ship
