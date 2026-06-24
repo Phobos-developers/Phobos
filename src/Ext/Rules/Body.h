@@ -282,6 +282,7 @@ public:
 
 		Valueable<AffectedHouse> BerzerkTargeting;
 		Valueable<bool> AllowBerzerkOnAllies;
+		Valueable<bool> AllowChatBoxInSinglePlayer;
 
 		Valueable<bool> AttackMove_IgnoreWeaponCheck;
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
@@ -598,6 +599,7 @@ public:
 
 			, BerzerkTargeting { AffectedHouse::All }
 			, AllowBerzerkOnAllies { false }
+			, AllowChatBoxInSinglePlayer { false }
 
 			, TintColorIronCurtain { 0 }
 			, TintColorForceShield { 0 }

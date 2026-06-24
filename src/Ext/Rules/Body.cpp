@@ -180,6 +180,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PowerSurplus_ScaleToDrainAmount.Read(exINI, GameStrings::AI, "PowerSurplus.ScaleToDrainAmount");
 
 	this->AllowDeployControlledMCV.Read(exINI, GameStrings::General, "AllowDeployControlledMCV");
+	this->AllowChatBoxInSinglePlayer.Read(exINI, GameStrings::General, "AllowChatBoxInSinglePlayer");
 
 	this->TypeSelectUseIFVMode.Read(exINI, GameStrings::General, "TypeSelectUseIFVMode");
 
@@ -723,6 +724,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AnimCraterDestroyTiberium)
 		.Process(this->BerzerkTargeting)
 		.Process(this->AllowBerzerkOnAllies)
+		.Process(this->AllowChatBoxInSinglePlayer)
 		.Process(this->TintColorIronCurtain)
 		.Process(this->TintColorForceShield)
 		.Process(this->TintColorBerserk)

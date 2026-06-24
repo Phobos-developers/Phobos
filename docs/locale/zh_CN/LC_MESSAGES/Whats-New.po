@@ -2024,6 +2024,11 @@ msgstr ""
 "[自定义 `Locomotor=Fly` 单位的降落动画](Fixed-or-Improved-Logics.md#customize-the-landing-"
 "animation-of-technos-that-have-locomotor-fly)（by Noble_Fish）"
 
+msgid ""
+"[Allow chat box in singleplayer](User-Interface.md#allow-chat-box-in-"
+"singleplayer) (by TaranDahl)"
+msgstr "[允许在单人模式使用聊天框](User-Interface.md#allow-chat-box-in-singleplayer)（by TaranDahl）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
