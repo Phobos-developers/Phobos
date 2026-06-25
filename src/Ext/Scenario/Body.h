@@ -53,8 +53,11 @@ public:
 		int DropshipLoadout_Theme;
 		long DropshipLoadout_Money;
 		NullableIdx<VoxClass> DropshipLoadout_StartEVA;
+		int DropshipLoadout_StartingDropships;
 		std::vector<TechnoTypeClass*> DropshipLoadout_Carriers;
+		std::vector<int> DropshipLoadout_Carriers_SizeLimit;
 		bool DropshipLoadout_AddUnusedMoneyToPlayer;
+		bool DropshipLoadout_RememberPurchasedCargo;
 		ConvertClass* DropshipLoadout_Palette;
 		SHPStruct* DropshipLoadout_Background;
 		SHPStruct* DropshipLoadout_UpArrow;
@@ -78,10 +81,17 @@ public:
 		std::vector<Point2D> DropshipLoadout_SidebarCameoLocations;
 		int DropshipLoadout_DropshipCameosCount;
 		std::vector<std::vector<Point2D>> DropshipLoadout_DropshipCameoLocations;
+		std::vector<std::vector<TechnoTypeClass*>> DropshipLoadout_FixedUnits;
+		std::vector<std::vector<TechnoTypeClass*>> DropshipLoadout_InitialUnits;
+		std::map<int, std::vector<TechnoTypeClass*>> DropshipLoadout_AllowableUnitsLists;
+		std::map<int, std::vector<int>> DropshipLoadout_AllowableUnitMaximumsLists;
 		//VocClass DropshipLoadout_SellClickSound;
 		NullableIdx<VocClass> DropshipLoadout_BuyClickSound;
 		NullableIdx<VocClass> DropshipLoadout_SellClickSound;
 		NullableIdx<VocClass> DropshipLoadout_ArrowsClickSound;
+		NullableIdx<VocClass> DropshipLoadout_StartingDragDropSound;
+		NullableIdx<VocClass> DropshipLoadout_EndingDragDropSound;
+		std::vector<int> DropshipLoadout_ActiveTeamSuffixes;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
@@ -104,8 +114,11 @@ public:
 			, DropshipLoadout_Theme { -1 }
 			, DropshipLoadout_Money { -1 }
 			, DropshipLoadout_StartEVA {}
+			, DropshipLoadout_StartingDropships { 0 }
 			, DropshipLoadout_Carriers {}
+			, DropshipLoadout_Carriers_SizeLimit {}
 			, DropshipLoadout_AddUnusedMoneyToPlayer { false }
+			, DropshipLoadout_RememberPurchasedCargo { true }
 			, DropshipLoadout_Palette { nullptr }
 			, DropshipLoadout_Background { nullptr }
 			, DropshipLoadout_UpArrow { nullptr }
@@ -129,9 +142,16 @@ public:
 			, DropshipLoadout_SidebarCameoLocations {}
 			, DropshipLoadout_DropshipCameosCount { 0 }
 			, DropshipLoadout_DropshipCameoLocations {}
+			, DropshipLoadout_FixedUnits {}
+			, DropshipLoadout_InitialUnits {}
+			, DropshipLoadout_AllowableUnitsLists {}
+			, DropshipLoadout_AllowableUnitMaximumsLists {}
 			, DropshipLoadout_BuyClickSound {}
 			, DropshipLoadout_SellClickSound {}
 			, DropshipLoadout_ArrowsClickSound {}
+			, DropshipLoadout_StartingDragDropSound {}
+			, DropshipLoadout_EndingDragDropSound {}
+			, DropshipLoadout_ActiveTeamSuffixes {}
 		{ }
 
 		static void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);

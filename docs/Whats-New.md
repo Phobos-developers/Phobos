@@ -52,6 +52,7 @@ This serves as a changelog for when you just need to drop the new version in wit
   - `[WarheadType] -> KillWeapon.OnFirer.AffectsHouses` -> `[WarheadType] -> KillWeapon.OnFirer.AffectsHouse`
   - `[WarheadType/SuperWeaponType] -> Convert(N).AffectedHouses` -> `[WarheadType/SuperWeaponType] -> Convert(N).AffectsHouse`
   - `[SuperWeaponType] -> LimboKill.Affected` -> `[SuperWeaponType] -> LimboKill.AffectsHouse`
+- Dropship Loadout logic.
 
 ```{note}
 - If it is detected that you are using the old INI flags, a warning will be outputted to `debug.log`.

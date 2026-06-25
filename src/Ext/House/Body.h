@@ -71,6 +71,11 @@ public:
 
 		std::vector<TechnoTypeClass*> DropshipLoadout_Carriers;
 		std::vector<std::vector<TechnoTypeClass*>> DropshipLoadout_Cargo;
+		std::vector<std::vector<TechnoTypeClass*>> DropshipLoadout_InitialUnits;
+		// SW-exclusive state (separated to avoid conflicts with map actions at slot 0)
+		std::vector<TechnoTypeClass*> DropshipLoadout_SWInitialUnits;
+		std::vector<TechnoTypeClass*> DropshipLoadout_SWCargo;
+		TechnoTypeClass* DropshipLoadout_SWCarrier;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
@@ -108,6 +113,10 @@ public:
 			, PlayerAutoRepair(true)
 			, DropshipLoadout_Carriers {}
 			, DropshipLoadout_Cargo {}
+			, DropshipLoadout_InitialUnits {}
+			, DropshipLoadout_SWInitialUnits {}
+			, DropshipLoadout_SWCargo {}
+			, DropshipLoadout_SWCarrier { nullptr }
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;

@@ -2,6 +2,7 @@
 
 #include <Ext/Side/Body.h>
 #include <Utilities/GeneralUtils.h>
+#include <Ext/Scenario/Body.h>
 
 HouseTypeExt::ExtContainer HouseTypeExt::ExtMap;
 
@@ -19,22 +20,168 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 
 	this->EVATag.Read(pINI, pSection, "EVA.Tag");
 
-	// Custom Dropship loadout images, in PCX format
 	this->DropshipLoadout_StartingDropships.Read(exINI, pSection, "DropshipLoadout.StartingDropships");
 	this->DropshipLoadout_AllowableUnits.Read(exINI, pSection, "DropshipLoadout.AllowableUnits");
 	this->DropshipLoadout_AllowableUnitMaximums.Read(exINI, pSection, "DropshipLoadout.AllowableUnitMaximums");
-	//this->DropshipLoadout_Theme.Read(exINI, pSection, "DropshipLoadout.Theme");
-	if (pINI->ReadTheme(pSection, "DropshipLoadout.Theme", this->DropshipLoadout_Theme))
-		this->DropshipLoadout_Theme = pINI->ReadTheme(pSection, "DropshipLoadout.Theme", this->DropshipLoadout_Theme);
+
+	this->DropshipLoadout_AllowableUnitsLists.clear();
+	this->DropshipLoadout_AllowableUnitMaximumsLists.clear();
+
+	std::vector<int> parsedIndices;
+	parsedIndices.push_back(0);
+
+	const int keyCount = pINI->GetKeyCount(pSection);
+
+	for (int k = 0; k < keyCount; ++k)
+	{
+		const char* pKeyName = pINI->GetKeyName(pSection, k);
+		int idx = -1;
+
+		if (sscanf_s(pKeyName, "DropshipLoadout.AllowableUnits%d", &idx) == 1)
+		{
+			char expectedKey[256];
+			_snprintf_s(expectedKey, sizeof(expectedKey), "DropshipLoadout.AllowableUnits%d", idx);
+			if (strcmp(pKeyName, expectedKey) == 0)
+			{
+				if (std::find(parsedIndices.begin(), parsedIndices.end(), idx) == parsedIndices.end())
+					parsedIndices.push_back(idx);
+			}
+		}
+		else if (sscanf_s(pKeyName, "DropshipLoadout.AllowableUnitMaximums%d", &idx) == 1)
+		{
+			char expectedKey[256];
+			_snprintf_s(expectedKey, sizeof(expectedKey), "DropshipLoadout.AllowableUnitMaximums%d", idx);
+			if (strcmp(pKeyName, expectedKey) == 0)
+			{
+				if (std::find(parsedIndices.begin(), parsedIndices.end(), idx) == parsedIndices.end())
+					parsedIndices.push_back(idx);
+			}
+		}
+	}
+
+	for (int i : parsedIndices)
+	{
+		char tempBuffer[256];
+		bool unitsSet = false;
+		bool maxSet = false;
+		std::vector<TechnoTypeClass*> unitsList;
+		std::vector<int> maxList;
+
+		if (i == 0)
+		{
+			// Start with default/legacy parsed values
+			if (this->DropshipLoadout_AllowableUnits.size() > 0)
+			{
+				for (auto pUnit : this->DropshipLoadout_AllowableUnits)
+				{
+					unitsList.push_back(pUnit);
+				}
+
+				unitsSet = true;
+			}
+
+			if (this->DropshipLoadout_AllowableUnitMaximums.size() > 0)
+			{
+				for (int pUnitCount : this->DropshipLoadout_AllowableUnitMaximums)
+				{
+					maxList.push_back(pUnitCount);
+				}
+
+				maxSet = true;
+			}
+
+			// Override with AllowableUnits0
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.AllowableUnits0");
+
+			if (pINI->ReadString(pSection, tempBuffer, "", Phobos::readBuffer) > 0)
+			{
+				ValueableVector<TechnoTypeClass*> tempUnits;
+				tempUnits.Read(exINI, pSection, tempBuffer);
+				unitsList.clear();
+
+				for (auto pUnit : tempUnits)
+				{
+					unitsList.push_back(pUnit);
+				}
+
+				unitsSet = true;
+			}
+
+			// Override with AllowableUnitMaximums0
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.AllowableUnitMaximums0");
+
+			if (pINI->ReadString(pSection, tempBuffer, "", Phobos::readBuffer) > 0)
+			{
+				ValueableVector<int> tempMaximums;
+				tempMaximums.Read(exINI, pSection, tempBuffer);
+				maxList.clear();
+
+				for (auto pUnitCount : tempMaximums)
+				{
+					maxList.push_back(pUnitCount);
+				}
+
+				maxSet = true;
+			}
+		}
+		else
+		{
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.AllowableUnits%d", i);
+
+			if (pINI->ReadString(pSection, tempBuffer, "", Phobos::readBuffer) > 0)
+			{
+				ValueableVector<TechnoTypeClass*> tempUnits;
+				tempUnits.Read(exINI, pSection, tempBuffer);
+
+				for (auto pUnit : tempUnits)
+				{
+					unitsList.push_back(pUnit);
+				}
+
+				unitsSet = true;
+			}
+
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.AllowableUnitMaximums%d", i);
+
+			if (pINI->ReadString(pSection, tempBuffer, "", Phobos::readBuffer) > 0)
+			{
+				ValueableVector<int> tempMaximums;
+				tempMaximums.Read(exINI, pSection, tempBuffer);
+
+				for (auto pUnitCount : tempMaximums)
+				{
+					maxList.push_back(pUnitCount);
+				}
+
+				maxSet = true;
+			}
+		}
+
+		if (unitsSet)
+			this->DropshipLoadout_AllowableUnitsLists[i] = std::move(unitsList);
+
+		if (maxSet)
+			this->DropshipLoadout_AllowableUnitMaximumsLists[i] = std::move(maxList);
+	}
+
+	if (pINI->ReadString(pSection, "DropshipLoadout.Theme", "", Phobos::readBuffer) > 0)
+		this->DropshipLoadout_Theme = pINI->ReadTheme(pSection, "DropshipLoadout.Theme", -1);
 
 	this->DropshipLoadout_Money.Read(exINI, pSection, "DropshipLoadout.Money");
 	this->DropshipLoadout_StartEVA.Read(exINI, pSection, "DropshipLoadout.StartEVA");
 	this->DropshipLoadout_Carriers.Read(exINI, pSection, "DropshipLoadout.Carriers");
+	this->DropshipLoadout_Carriers_SizeLimit.Read(exINI, pSection, "DropshipLoadout.Carriers.SizeLimit");
+	this->DropshipLoadout_AddUnusedMoneyToPlayer.Read(exINI, pSection, "DropshipLoadout.AddUnusedMoneyToPlayer");
+	this->DropshipLoadout_RememberPurchasedCargo.Read(exINI, pSection, "DropshipLoadout.RememberPurchasedCargo");
 
-	int nStartingDropships = this->DropshipLoadout_StartingDropships.isset() ? this->DropshipLoadout_StartingDropships : ScenarioClass::Instance->StartingDropships;
+	if (pINI->ReadString(pSection, "DropshipLoadout.Palette", "", Phobos::readBuffer) != 0)
+		this->DropshipLoadout_Palette = FileSystem::LoadPALFile(Phobos::readBuffer, DSurface::Hidden);
+
+	int nStartingDropships = this->DropshipLoadout_StartingDropships.isset() ? this->DropshipLoadout_StartingDropships.Get() : ScenarioExt::Global()->DropshipLoadout_StartingDropships;
 
 	if (pINI->ReadString(pSection, "DropshipLoadout.BackgroundPCX", "", Phobos::readBuffer) != 0)
 	{
+		this->DropshipLoadout_BackgroundPCXPattern = Phobos::readBuffer; // keep raw pattern for runtime formatting
 		char filename[260];
 		_snprintf_s(filename, sizeof(filename), Phobos::readBuffer, nStartingDropships);
 		this->DropshipLoadout_BackgroundPCX = PhobosPCXFile(_strdup(filename));
@@ -70,23 +217,34 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 
 	// Sidebar click animations list (the animation that appears in the sidebar when a cameo is clicked)
 	char* context = nullptr;
-	pINI->ReadString(pSection, "DropshipLoadout.DGreenListPCX", "", Phobos::readBuffer);
-
-	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+	if (pINI->ReadString(pSection, "DropshipLoadout.DGreenListPCX", "", Phobos::readBuffer) > 0)
 	{
-		this->DropshipLoadout_DGreenListPCX.emplace_back(GeneralUtils::GetAnimationPCX(cur));
+		this->DropshipLoadout_DGreenListPCX.clear();
+
+		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			this->DropshipLoadout_DGreenListPCX.emplace_back(GeneralUtils::GetAnimationPCX(cur));
+		}
 	}
 
-	this->DropshipLoadout_DGreenAnimationsCount.Read(exINI, pSection, "DropshipLoadout.DGreenAnimationsCount");
-
-	for (int i = 0; i < this->DropshipLoadout_DGreenAnimationsCount.Get(0); i++)
+	if (pINI->ReadString(pSection, "DropshipLoadout.DGreenAnimationsCount", "", Phobos::readBuffer) > 0)
 	{
-		char tempBuffer[256];
-		Point2D location = Point2D::Empty;
+		this->DropshipLoadout_DGreenAnimationsCount.Read(exINI, pSection, "DropshipLoadout.DGreenAnimationsCount");
+		this->DropshipLoadout_DGreenLocations.clear();
 
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.DGreenLocation%d", i);
-		pINI->ReadPoint2D(location, pSection, tempBuffer, location);
-		this->DropshipLoadout_DGreenLocations.push_back(location);
+		for (int i = 0; i < this->DropshipLoadout_DGreenAnimationsCount.Get(0); i++)
+		{
+			char tempBuffer[256];
+			Point2D location = Point2D::Empty;
+
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.DGreenLocation%d", i);
+			pINI->ReadPoint2D(location, pSection, tempBuffer, location);
+			this->DropshipLoadout_DGreenLocations.push_back(location);
+		}
+	}
+	else
+	{
+		this->DropshipLoadout_DGreenAnimationsCount.Read(exINI, pSection, "DropshipLoadout.DGreenAnimationsCount");
 	}
 
 	// Custom Dropship Loadout coordinates
@@ -95,40 +253,178 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->DropshipLoadout_UpArrowLocation.Read(exINI, pSection, "DropshipLoadout.UpArrowLocation");
 	this->DropshipLoadout_DownArrowLocation.Read(exINI, pSection, "DropshipLoadout.DownArrowLocation");
 
-	this->DropshipLoadout_SidebarCameosCount.Read(exINI, pSection, "DropshipLoadout.SidebarCameosCount");
-
-	for (int i = 0; i < this->DropshipLoadout_SidebarCameosCount; i++)
+	if (pINI->ReadString(pSection, "DropshipLoadout.SidebarCameosCount", "", Phobos::readBuffer) > 0)
 	{
-		char tempBuffer[256];
-		Point2D location = Point2D::Empty;
+		this->DropshipLoadout_SidebarCameosCount.Read(exINI, pSection, "DropshipLoadout.SidebarCameosCount");
+		this->DropshipLoadout_SidebarCameoLocations.clear();
 
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.SidebarCameoLocation%d", i);
-		pINI->ReadPoint2D(location, pSection, tempBuffer, location);
-		this->DropshipLoadout_SidebarCameoLocations.push_back(location);
-	}
-
-	this->DropshipLoadout_DropshipCameosCount.Read(exINI, pSection, "DropshipLoadout.DropshipCameosCount");
-
-	for (int i = 0; i < nStartingDropships; i++)
-	{
-		std::vector<Point2D> locations;
-
-		for (int j = 0; j < this->DropshipLoadout_DropshipCameosCount; j++)
+		for (int i = 0; i < this->DropshipLoadout_SidebarCameosCount; i++)
 		{
 			char tempBuffer[256];
 			Point2D location = Point2D::Empty;
 
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.Dropship%d.CameoLocation%d", i, j);
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.SidebarCameoLocation%d", i);
 			pINI->ReadPoint2D(location, pSection, tempBuffer, location);
-			locations.push_back(location);
+			this->DropshipLoadout_SidebarCameoLocations.push_back(location);
+		}
+	}
+	else
+	{
+		this->DropshipLoadout_SidebarCameosCount.Read(exINI, pSection, "DropshipLoadout.SidebarCameosCount");
+	}
+
+	this->DropshipLoadout_DropshipCameosCount.Read(exINI, pSection, "DropshipLoadout.DropshipCameosCount");
+
+	if (pINI->ReadString(pSection, "DropshipLoadout.DropshipCameosCount", "", Phobos::readBuffer) > 0)
+	{
+		this->DropshipLoadout_DropshipCameosCount.Read(exINI, pSection, "DropshipLoadout.DropshipCameosCount");
+		this->DropshipLoadout_DropshipCameoLocations.clear();
+
+		int maxDropshipIdx = -1;
+
+		for (int k = 0; k < keyCount; ++k)
+		{
+			const char* pKeyName = pINI->GetKeyName(pSection, k);
+			int dropshipIdx = -1;
+			int cameoIdx = -1;
+
+			if (sscanf_s(pKeyName, "DropshipLoadout.Dropship%d.CameoLocation%d", &dropshipIdx, &cameoIdx) == 2)
+			{
+				char expectedKey[256];
+				_snprintf_s(expectedKey, sizeof(expectedKey), "DropshipLoadout.Dropship%d.CameoLocation%d", dropshipIdx, cameoIdx);
+
+				if (strcmp(pKeyName, expectedKey) == 0)
+				{
+					if (dropshipIdx > maxDropshipIdx)
+						maxDropshipIdx = dropshipIdx;
+				}
+			}
 		}
 
-		this->DropshipLoadout_DropshipCameoLocations.push_back(locations);
+		if (maxDropshipIdx != -1)
+		{
+			int limit = maxDropshipIdx + 1;
+
+			for (int i = 0; i < limit; i++)
+			{
+				std::vector<Point2D> locations;
+
+				for (int j = 0; j < this->DropshipLoadout_DropshipCameosCount; j++)
+				{
+					char tempBuffer[256];
+					Point2D location = Point2D::Empty;
+
+					_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.Dropship%d.CameoLocation%d", i, j);
+					pINI->ReadPoint2D(location, pSection, tempBuffer, location);
+					locations.push_back(location);
+				}
+
+				this->DropshipLoadout_DropshipCameoLocations.push_back(locations);
+			}
+		}
+	}
+	else
+	{
+		this->DropshipLoadout_DropshipCameosCount.Read(exINI, pSection, "DropshipLoadout.DropshipCameosCount");
+	}
+
+	this->DropshipLoadout_FixedUnits.clear();
+	std::map<int, std::vector<TechnoTypeClass*>> parsedFixedUnits;
+	int maxIdx = -1;
+
+	for (int k = 0; k < keyCount; ++k)
+	{
+		const char* pKeyName = pINI->GetKeyName(pSection, k);
+		int dropshipIdx = -1;
+
+		if (sscanf_s(pKeyName, "DropshipLoadout.Dropship%d.FixedUnits", &dropshipIdx) == 1)
+		{
+			char expectedKey[256];
+			_snprintf_s(expectedKey, sizeof(expectedKey), "DropshipLoadout.Dropship%d.FixedUnits", dropshipIdx);
+
+			if (strcmp(pKeyName, expectedKey) == 0)
+			{
+				if (pINI->ReadString(pSection, pKeyName, "", Phobos::readBuffer) > 0)
+				{
+					char* ctx = nullptr;
+					std::vector<TechnoTypeClass*> list;
+
+					for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &ctx); cur; cur = strtok_s(nullptr, Phobos::readDelims, &ctx))
+					{
+						if (auto pType = TechnoTypeClass::Find(cur))
+							list.push_back(pType);
+					}
+
+					parsedFixedUnits[dropshipIdx] = std::move(list);
+
+					if (dropshipIdx > maxIdx)
+						maxIdx = dropshipIdx;
+				}
+			}
+		}
+	}
+
+	if (maxIdx != -1)
+	{
+		this->DropshipLoadout_FixedUnits.resize(maxIdx + 1);
+
+		for (auto& [idx, list] : parsedFixedUnits)
+		{
+			this->DropshipLoadout_FixedUnits[idx] = std::move(list);
+		}
+	}
+
+	this->DropshipLoadout_InitialUnits.clear();
+	std::map<int, std::vector<TechnoTypeClass*>> parsedInitialUnits;
+	maxIdx = -1;
+
+	for (int k = 0; k < keyCount; ++k)
+	{
+		const char* pKeyName = pINI->GetKeyName(pSection, k);
+		int dropshipIdx = -1;
+
+		if (sscanf_s(pKeyName, "DropshipLoadout.Dropship%d.InitialUnits", &dropshipIdx) == 1)
+		{
+			char expectedKey[256];
+			_snprintf_s(expectedKey, sizeof(expectedKey), "DropshipLoadout.Dropship%d.InitialUnits", dropshipIdx);
+
+			if (strcmp(pKeyName, expectedKey) == 0)
+			{
+				if (pINI->ReadString(pSection, pKeyName, "", Phobos::readBuffer) > 0)
+				{
+					char* ctx = nullptr;
+					std::vector<TechnoTypeClass*> list;
+
+					for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &ctx); cur; cur = strtok_s(nullptr, Phobos::readDelims, &ctx))
+					{
+						if (auto pType = TechnoTypeClass::Find(cur))
+							list.push_back(pType);
+					}
+
+					parsedInitialUnits[dropshipIdx] = std::move(list);
+
+					if (dropshipIdx > maxIdx)
+						maxIdx = dropshipIdx;
+				}
+			}
+		}
+	}
+
+	if (maxIdx != -1)
+	{
+		this->DropshipLoadout_InitialUnits.resize(maxIdx + 1);
+
+		for (auto& [idx, list] : parsedInitialUnits)
+		{
+			this->DropshipLoadout_InitialUnits[idx] = std::move(list);
+		}
 	}
 
 	this->DropshipLoadout_BuyClickSound.Read(exINI, pSection, "DropshipLoadout.BuyClickSound");
 	this->DropshipLoadout_SellClickSound.Read(exINI, pSection, "DropshipLoadout.SellClickSound");
 	this->DropshipLoadout_ArrowsClickSound.Read(exINI, pSection, "DropshipLoadout.ArrowsClickSound");
+	this->DropshipLoadout_StartingDragDropSound.Read(exINI, pSection, "DropshipLoadout.StartingDragDropSound");
+	this->DropshipLoadout_EndingDragDropSound.Read(exINI, pSection, "DropshipLoadout.EndingDragDropSound");
 }
 
 template <typename T>
@@ -143,7 +439,10 @@ void HouseTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DropshipLoadout_Money)
 		.Process(this->DropshipLoadout_StartEVA)
 		.Process(this->DropshipLoadout_Carriers)
+		.Process(this->DropshipLoadout_Carriers_SizeLimit)
 		.Process(this->DropshipLoadout_AddUnusedMoneyToPlayer)
+		.Process(this->DropshipLoadout_RememberPurchasedCargo)
+		.Process(this->DropshipLoadout_Palette)
 		.Process(this->DropshipLoadout_BackgroundPCX)
 		.Process(this->DropshipLoadout_UpArrowPCX)
 		.Process(this->DropshipLoadout_DownArrowPCX)
@@ -163,7 +462,33 @@ void HouseTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DropshipLoadout_BuyClickSound)
 		.Process(this->DropshipLoadout_SellClickSound)
 		.Process(this->DropshipLoadout_ArrowsClickSound)
+		.Process(this->DropshipLoadout_StartingDragDropSound)
+		.Process(this->DropshipLoadout_EndingDragDropSound)
+		.Process(this->DropshipLoadout_AllowableUnitsLists)
+		.Process(this->DropshipLoadout_AllowableUnitMaximumsLists)
 		;
+
+	int numDropships = (int)this->DropshipLoadout_FixedUnits.size();
+	Stm.Process(numDropships);
+
+	if constexpr (std::is_same_v<T, PhobosStreamReader>)
+		this->DropshipLoadout_FixedUnits.resize(numDropships);
+
+	for (int i = 0; i < numDropships; ++i)
+	{
+		Stm.Process(this->DropshipLoadout_FixedUnits[i]);
+	}
+
+	int numInitialDropships = (int)this->DropshipLoadout_InitialUnits.size();
+	Stm.Process(numInitialDropships);
+
+	if constexpr (std::is_same_v<T, PhobosStreamReader>)
+		this->DropshipLoadout_InitialUnits.resize(numInitialDropships);
+
+	for (int i = 0; i < numInitialDropships; ++i)
+	{
+		Stm.Process(this->DropshipLoadout_InitialUnits[i]);
+	}
 }
 
 void HouseTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

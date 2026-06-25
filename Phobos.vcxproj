@@ -365,6 +365,7 @@
     <!-- src\Misc -->
     <ClInclude Include="src\Misc\BlittersFix.h" />
     <ClInclude Include="src\Misc\FlyingStrings.h" />
+	<ClInclude Include="src\Misc\Hooks.DropshipLoadout.h" />
     <ClInclude Include="src\Misc\MessageColumn.h" />
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
     <ClInclude Include="src\Misc\SyncLogging.h" />

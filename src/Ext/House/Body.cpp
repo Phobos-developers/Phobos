@@ -714,6 +714,10 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlayerAutoRepair)
 		.Process(this->DropshipLoadout_Carriers)
 		.Process(this->DropshipLoadout_Cargo)
+		.Process(this->DropshipLoadout_InitialUnits)
+		.Process(this->DropshipLoadout_SWInitialUnits)
+		.Process(this->DropshipLoadout_SWCargo)
+		.Process(this->DropshipLoadout_SWCarrier)
 		;
 }
 
