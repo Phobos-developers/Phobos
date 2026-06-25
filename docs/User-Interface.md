@@ -571,7 +571,7 @@ DisableEmptySpawnPositions=false  ; boolean
 - This feature allows modders to implement a customizable Dropship Loadout interface. Players can use this screen to purchase, sell, and arrange units into dropships using allocated funds before deploying them.
 - The configuration can be defined globally in the scenario file (`.map`) under the `[Basic]` section, or customized per country in `rulesmd.ini` under their respective country section (e.g. `[Americans]` or `[Russians]`). Note that for global map configuration under `[Basic]`, the native `StartingDropships` tag is used instead of the custom `DropshipLoadout.StartingDropships` tag.
 - `DropshipLoadout.StartingDropships` - The default number of starting dropships available for the player. Note that in the map file `[Basic]` section, the native `StartingDropships` key is used instead.
-- `DropshipLoadout.Money` - The default amount of starting loadout money allocated to buy units.
+- `DropshipLoadout.Money` - The default amount of starting loadout money allocated to buy units. Defaults to `-1` (uses player's current treasury money).
 - `DropshipLoadout.Theme` - The audio theme/soundtrack to play while the Dropship Loadout screen is open.
 - `DropshipLoadout.StartEVA` - The EVA announcement vox index to play when the screen opens.
 - `DropshipLoadout.Palette` - Custom PAL file to override the default palette (`DROPSHIP.PAL`) used for rendering the dialog and SHP assets.
