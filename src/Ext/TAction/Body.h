@@ -1,9 +1,7 @@
 #pragma once
 
 #include <Utilities/Container.h>
-#include <Utilities/Template.h>
-
-#include <Helpers/Template.h>
+#include <Utilities/TemplateDef.h>
 
 #include <TActionClass.h>
 
@@ -19,10 +17,14 @@ enum class PhobosTriggerAction : unsigned int
 	RunSuperWeaponAtLocation = 505,
 	RunSuperWeaponAtWaypoint = 506,
 	ToggleMCVRedeploy = 510,
+	UndeployToWaypoint = 511,
+	SetFollowsIndexForVehicle = 512,
 
 	EditAngerNode = 606,
 	ClearAngerNode = 607,
 	SetForceEnemy = 608,
+	SetFreeRadar = 609,
+	SetTeamDelay = 610,
 
 	CreateBannerLocal = 800, // any banner w/ local variable
 	CreateBannerGlobal = 801, // any banner w/ global variable
@@ -73,10 +75,14 @@ public:
 	ACTION_FUNC(RunSuperWeaponAtLocation);
 	ACTION_FUNC(RunSuperWeaponAtWaypoint);
 	ACTION_FUNC(ToggleMCVRedeploy);
+	ACTION_FUNC(UndeployToWaypoint);
+	ACTION_FUNC(SetFollowsIndexForVehicle);
 
 	ACTION_FUNC(EditAngerNode);
 	ACTION_FUNC(ClearAngerNode);
 	ACTION_FUNC(SetForceEnemy);
+	ACTION_FUNC(SetFreeRadar);
+	ACTION_FUNC(SetTeamDelay);
 
 	ACTION_FUNC(CreateBannerLocal);
 	ACTION_FUNC(CreateBannerGlobal);

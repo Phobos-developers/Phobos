@@ -1,10 +1,4 @@
 #pragma once
-#include <BulletClass.h>
-#include <WeaponTypeClass.h>
-#include <DiskLaserClass.h>
-#include <EBolt.h>
-#include <ParticleSystemTypeClass.h>
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -42,12 +36,18 @@ public:
 		Valueable<AffectedHouse> CanTargetHouses;
 		Valueable<double> CanTarget_MaxHealth;
 		Valueable<double> CanTarget_MinHealth;
+		Valueable<AffectedVeterancy> CanTargetVeterancy;
+		Nullable<bool> CanTarget_IronCurtained;
+		Nullable<bool> AutoTarget_IronCurtained;
 		ValueableVector<int> Burst_Delays;
 		Valueable<bool> Burst_FireWithinSequence;
 		Valueable<bool> Burst_NoDelay;
 		Valueable<AreaFireTarget> AreaFire_Target;
 		Valueable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
+		Nullable<int> LaserZAdjust;
+		Nullable<int> EBoltZAdjust;
+		Nullable<bool> EBoltZAdjust_ClampInitialDepthForBuilding;
 		Valueable<bool> VisualScatter;
 		Nullable<PartialVector2D<int>> ROF_RandomDelay;
 		ValueableVector<int> ChargeTurret_Delays;
@@ -57,6 +57,8 @@ public:
 		ValueableVector<WarheadTypeClass*> ExtraWarheads;
 		ValueableVector<int> ExtraWarheads_DamageOverrides;
 		ValueableVector<double> ExtraWarheads_DetonationChances;
+		ValueableVector<float> ExtraWarheads_RollChances;
+		std::vector<ValueableVector<int>> ExtraWarheads_WeightsData;
 		ValueableVector<bool> ExtraWarheads_FullDetonation;
 		Nullable<WarheadTypeClass*> AmbientDamage_Warhead;
 		Valueable<bool> AmbientDamage_IgnoreTarget;
@@ -91,9 +93,20 @@ public:
 		Valueable<bool> DelayedFire_OnlyOnInitialBurst;
 		Nullable<CoordStruct> DelayedFire_AnimOffset;
 		Valueable<bool> DelayedFire_AnimOnTurret;
+		Nullable<Leptons> ExtraRange_TargetMoving;
+		Nullable<Leptons> ExtraRange_FirerMoving;
+		Nullable<Leptons> ExtraRange_Prefiring;
+		Nullable<bool> ExtraRange_Prefiring_IncludeBurst;
+		Nullable<bool> AttackFriendlies;
+		Nullable<bool> AttackCursorOnFriendlies;
+		Nullable<bool> AttackNoThreatBuildings;
+
+		Nullable<bool> Anim_Update;
 
 		bool SkipWeaponPicking;
 
+		Nullable<bool> CylinderRangefinding;
+		
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
 			, ProjectileRange { Leptons(100000) }
@@ -114,12 +127,18 @@ public:
 			, CanTargetHouses { AffectedHouse::All }
 			, CanTarget_MaxHealth { 1.0 }
 			, CanTarget_MinHealth { 0.0 }
+			, CanTargetVeterancy { AffectedVeterancy::All }
+			, CanTarget_IronCurtained {}
+			, AutoTarget_IronCurtained {}
 			, Burst_Delays {}
 			, Burst_FireWithinSequence { false }
 			, Burst_NoDelay { false }
 			, AreaFire_Target { AreaFireTarget::Base }
 			, FeedbackWeapon {}
 			, Laser_IsSingleColor { false }
+			, LaserZAdjust {}
+			, EBoltZAdjust {}
+			, EBoltZAdjust_ClampInitialDepthForBuilding {}
 			, VisualScatter { false }
 			, ROF_RandomDelay {}
 			, ChargeTurret_Delays {}
@@ -129,6 +148,8 @@ public:
 			, ExtraWarheads {}
 			, ExtraWarheads_DamageOverrides {}
 			, ExtraWarheads_DetonationChances {}
+			, ExtraWarheads_RollChances {}
+			, ExtraWarheads_WeightsData {}
 			, ExtraWarheads_FullDetonation {}
 			, AmbientDamage_Warhead {}
 			, AmbientDamage_IgnoreTarget { false }
@@ -164,11 +185,21 @@ public:
 			, DelayedFire_OnlyOnInitialBurst { false }
 			, DelayedFire_AnimOffset {}
 			, DelayedFire_AnimOnTurret { true }
+			, ExtraRange_TargetMoving {}
+			, ExtraRange_FirerMoving {}
+			, ExtraRange_Prefiring {}
+			, ExtraRange_Prefiring_IncludeBurst {}
+			, AttackFriendlies {}
+			, AttackCursorOnFriendlies {}
+			, AttackNoThreatBuildings {}
+			, CylinderRangefinding {}
+			, Anim_Update {}
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;
 		bool HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer) const;
 		bool IsHealthInThreshold(TechnoClass* pTarget) const;
+		bool IsVeterancyInThreshold(TechnoClass* pTarget) const;
 
 		virtual ~ExtData() = default;
 

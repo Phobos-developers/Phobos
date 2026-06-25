@@ -41,6 +41,8 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shrapnel_AffectsGround.Read(exINI, pSection, "Shrapnel.AffectsGround");
 	this->Shrapnel_AffectsBuildings.Read(exINI, pSection, "Shrapnel.AffectsBuildings");
 	this->Shrapnel_UseWeaponTargeting.Read(exINI, pSection, "Shrapnel.UseWeaponTargeting");
+	this->Shrapnel_IgnoreHitBuildings.Read(exINI, pSection, "Shrapnel.IgnoreHitBuildings");
+	this->Shrapnel_ObeyWarheadTriggerConditions.Read(exINI, pSection, "Shrapnel.ObeyWarheadTriggerConditions");
 	this->ClusterScatter_Min.Read(exINI, pSection, "ClusterScatter.Min");
 	this->ClusterScatter_Max.Read(exINI, pSection, "ClusterScatter.Max");
 	this->SubjectToLand.Read(exINI, pSection, "SubjectToLand");
@@ -64,15 +66,21 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Airburst_TargetAsSource.Read(exINI, pSection, "Airburst.TargetAsSource");
 	this->Airburst_TargetAsSource_SkipHeight.Read(exINI, pSection, "Airburst.TargetAsSource.SkipHeight");
 	this->Splits_TargetingDistance.Read(exINI, pSection, "Splits.TargetingDistance");
+	this->Splits_TargetingDistance_Cylindrical.Read(exINI, pSection, "Splits.TargetingDistance.Cylindrical");
+	this->Splits_AllowRepeatTargets.Read(exINI, pSection, "Splits.AllowRepeatTargets");
 	this->Splits_TargetCellRange.Read(exINI, pSection, "Splits.TargetCellRange");
 	this->Splits_UseWeaponTargeting.Read(exINI, pSection, "Splits.UseWeaponTargeting");
 	this->AirburstWeapon_ApplyFirepowerMult.Read(exINI, pSection, "AirburstWeapon.ApplyFirepowerMult");
 	this->AirburstWeapon_SourceScatterMin.Read(exINI, pSection, "AirburstWeapon.SourceScatterMin");
 	this->AirburstWeapon_SourceScatterMax.Read(exINI, pSection, "AirburstWeapon.SourceScatterMax");
+	this->AirburstWeapon_UseFiringEffects.Read(exINI, pSection, "AirburstWeapon.UseFiringEffects");
+	this->AirburstWeapon_HeadToTarget.Read(exINI, pSection, "AirburstWeapon.HeadToTarget");
+	this->AirburstWeapon_RadialFireSegments.Read(exINI, pSection, "AirburstWeapon.RadialFireSegments");
 	this->Parachuted.Read(exINI, pSection, "Parachuted");
 	this->Parachuted_FallRate.Read(exINI, pSection, "Parachuted.FallRate");
 	this->Parachuted_MaxFallRate.Read(exINI, pSection, "Parachuted.MaxFallRate");
 	this->BombParachute.Read(exINI, pSection, "BombParachute");
+	this->AU.Read(exINI, pSection, "AU");
 
 	// Ares 0.7
 	this->BallisticScatter_Min.Read(exINI, pSection, "BallisticScatter.Min");
@@ -137,6 +145,8 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shrapnel_AffectsGround)
 		.Process(this->Shrapnel_AffectsBuildings)
 		.Process(this->Shrapnel_UseWeaponTargeting)
+		.Process(this->Shrapnel_IgnoreHitBuildings)
+		.Process(this->Shrapnel_ObeyWarheadTriggerConditions)
 		.Process(this->ClusterScatter_Min)
 		.Process(this->ClusterScatter_Max)
 		.Process(this->BallisticScatter_Min)
@@ -161,15 +171,21 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Airburst_TargetAsSource)
 		.Process(this->Airburst_TargetAsSource_SkipHeight)
 		.Process(this->Splits_TargetingDistance)
+		.Process(this->Splits_TargetingDistance_Cylindrical)
+		.Process(this->Splits_AllowRepeatTargets)
 		.Process(this->Splits_TargetCellRange)
 		.Process(this->Splits_UseWeaponTargeting)
 		.Process(this->AirburstWeapon_ApplyFirepowerMult)
 		.Process(this->AirburstWeapon_SourceScatterMin)
 		.Process(this->AirburstWeapon_SourceScatterMax)
+		.Process(this->AirburstWeapon_UseFiringEffects)
+		.Process(this->AirburstWeapon_HeadToTarget)
+		.Process(this->AirburstWeapon_RadialFireSegments)
 		.Process(this->Parachuted)
 		.Process(this->Parachuted_FallRate)
 		.Process(this->Parachuted_MaxFallRate)
 		.Process(this->BombParachute)
+		.Process(this->AU)
 
 		.Process(this->TrajectoryType) // just keep this shit at last
 		;

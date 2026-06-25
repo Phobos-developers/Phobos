@@ -1,19 +1,13 @@
 #include "Body.h"
 
+#include <Ext/Side/Body.h>
 #include <Utilities/GeneralUtils.h>
-#include <Ext/Scenario/Body.h>
 
-static constexpr DWORD Canary = 0x1111111A;
 HouseTypeExt::ExtContainer HouseTypeExt::ExtMap;
 
-void HouseTypeExt::ExtData::Initialize()
-{
-}
+void HouseTypeExt::ExtData::Initialize() { }
 
-// =============================
-// load / save
-
-void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -22,6 +16,8 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		return;
 
 	INI_EX exINI(pINI);
+
+	this->EVATag.Read(pINI, pSection, "EVA.Tag");
 
 	// Custom Dropship loadout images, in PCX format
 	this->DropshipLoadout_StartingDropships.Read(exINI, pSection, "DropshipLoadout.StartingDropships");
@@ -135,16 +131,11 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DropshipLoadout_ArrowsClickSound.Read(exINI, pSection, "DropshipLoadout.ArrowsClickSound");
 }
 
-void HouseTypeExt::ExtData::CompleteInitialization()
-{
-	auto const pThis = this->OwnerObject();
-	UNREFERENCED_PARAMETER(pThis);
-}
-
 template <typename T>
 void HouseTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->EVATag)
 		.Process(this->DropshipLoadout_StartingDropships)
 		.Process(this->DropshipLoadout_AllowableUnits)
 		.Process(this->DropshipLoadout_AllowableUnitMaximums)
@@ -187,27 +178,22 @@ void HouseTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
-bool HouseTypeExt::ExtContainer::Load(HouseTypeClass* pThis, IStream* pStm)
-{
-	HouseTypeExt::ExtData* pData = this->LoadKey(pThis, pStm);
-	return pData != nullptr;
-};
-
 bool HouseTypeExt::LoadGlobals(PhobosStreamReader& Stm)
 {
-	return Stm.Success();
+	return Stm
+		.Success();
 }
 
 bool HouseTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 {
-	return Stm.Success();
+	return Stm
+		.Success();
 }
 
 // =============================
 // container
 
 HouseTypeExt::ExtContainer::ExtContainer() : Container("HouseTypeClass") { }
-
 HouseTypeExt::ExtContainer::~ExtContainer() = default;
 
 // =============================
@@ -217,8 +203,7 @@ DEFINE_HOOK(0x511635, HouseTypeClass_CTOR_1, 0x5)
 {
 	GET(HouseTypeClass*, pItem, EAX);
 
-	HouseTypeExt::ExtMap.Allocate(pItem);
-
+	HouseTypeExt::ExtMap.TryAllocate(pItem);
 	return 0;
 }
 
@@ -226,8 +211,7 @@ DEFINE_HOOK(0x511643, HouseTypeClass_CTOR_2, 0x5)
 {
 	GET(HouseTypeClass*, pItem, EAX);
 
-	HouseTypeExt::ExtMap.Allocate(pItem);
-
+	HouseTypeExt::ExtMap.TryAllocate(pItem);
 	return 0;
 }
 
@@ -236,7 +220,6 @@ DEFINE_HOOK(0x5127CF, HouseTypeClass_DTOR, 0x6)
 	GET(HouseTypeClass*, pItem, ESI);
 
 	HouseTypeExt::ExtMap.Remove(pItem);
-
 	return 0;
 }
 
@@ -253,6 +236,7 @@ DEFINE_HOOK(0x512290, HouseTypeClass_SaveLoad_Prefix, 0x5)
 
 DEFINE_HOOK(0x51246D, HouseTypeClass_Load_Suffix, 0x5)
 {
+
 	HouseTypeExt::ExtMap.LoadStatic();
 	return 0;
 }
@@ -270,6 +254,5 @@ DEFINE_HOOK(0x51214F, HouseTypeClass_LoadFromINI, 0x5)
 	GET_BASE(CCINIClass*, pINI, 0x8);
 
 	HouseTypeExt::ExtMap.LoadFromINI(pItem, pINI);
-
 	return 0;
 }

@@ -1,13 +1,7 @@
 #pragma once
-#include <WarheadTypeClass.h>
-#include <WeaponTypeClass.h>
-#include <SuperWeaponTypeClass.h>
-
-#include <Helpers/Macro.h>
+#include <Ext/Building/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
-
-#include <Ext/Building/Body.h>
 #include <New/Type/Affiliated/TypeConvertGroup.h>
 
 class SWTypeExt
@@ -34,6 +28,8 @@ public:
 		Valueable<bool> SW_ManualFire;
 		Valueable<bool> SW_ShowCameo;
 		Valueable<bool> SW_Unstoppable;
+		Valueable<bool> SW_AllowPlayer;
+		Valueable<bool> SW_AllowAI;
 		ValueableVector<TechnoTypeClass*> SW_Inhibitors;
 		Valueable<bool> SW_AnyInhibitor;
 		ValueableVector<TechnoTypeClass*> SW_Designators;
@@ -46,6 +42,9 @@ public:
 		DWORD SW_ForbiddenHouses;
 		ValueableVector<BuildingTypeClass*> SW_AuxBuildings;
 		ValueableVector<BuildingTypeClass*> SW_NegBuildings;
+		ValueableVector<TechnoTypeClass*> SW_AuxTechnos;
+		ValueableVector<TechnoTypeClass*> SW_NegTechnos;
+		Valueable<int> SW_TechLevel;
 		Valueable<bool> SW_InitialReady;
 		ValueableIdx<SuperWeaponTypeClass> SW_PostDependent;
 		Valueable<int> SW_MaxCount;
@@ -60,8 +59,9 @@ public:
 		ValueableVector<BuildingTypeClass*> LimboDelivery_Types;
 		ValueableVector<int> LimboDelivery_IDs;
 		ValueableVector<float> LimboDelivery_RollChances;
-		Valueable<AffectedHouse> LimboKill_Affected;
+		Valueable<AffectedHouse> LimboKill_AffectsHouse;
 		ValueableVector<int> LimboKill_IDs;
+		ValueableVector<int> LimboKill_Counts;
 		Valueable<double> RandomBuffer;
 		ValueableIdxVector<SuperWeaponTypeClass> SW_Next;
 		Valueable<bool> SW_Next_RealLaunch;
@@ -70,6 +70,7 @@ public:
 		ValueableVector<float> SW_Next_RollChances;
 
 		Valueable<int> ShowTimer_Priority;
+		Nullable<bool> ShowTimer_Percentage;
 
 		Valueable<WarheadTypeClass*> Detonate_Warhead;
 		Valueable<WeaponTypeClass*> Detonate_Weapon;
@@ -123,6 +124,8 @@ public:
 			, SW_ManualFire { true }
 			, SW_ShowCameo { true }
 			, SW_Unstoppable { false }
+			, SW_AllowPlayer { true }
+			, SW_AllowAI { true }
 			, SW_Inhibitors {}
 			, SW_AnyInhibitor { false }
 			, SW_Designators { }
@@ -133,6 +136,9 @@ public:
 			, SW_ForbiddenHouses { 0u }
 			, SW_AuxBuildings {}
 			, SW_NegBuildings {}
+			, SW_AuxTechnos {}
+			, SW_NegTechnos {}
+			, SW_TechLevel { 0 }
 			, SW_InitialReady { false }
 			, SW_PostDependent {}
 			, SW_MaxCount { -1 }
@@ -147,8 +153,9 @@ public:
 			, LimboDelivery_IDs {}
 			, LimboDelivery_RollChances {}
 			, LimboDelivery_RandomWeightsData {}
-			, LimboKill_Affected { AffectedHouse::Owner }
+			, LimboKill_AffectsHouse { AffectedHouse::Owner }
 			, LimboKill_IDs {}
+			, LimboKill_Counts {}
 			, RandomBuffer { 0.0 }
 			, Detonate_Warhead {}
 			, Detonate_Weapon {}
@@ -162,6 +169,7 @@ public:
 			, SW_Next_RollChances {}
 			, SW_Next_RandomWeightsData {}
 			, ShowTimer_Priority { 0 }
+			, ShowTimer_Percentage { false }
 			, Convert_Pairs {}
 			, ShowDesignatorRange { true }
 			, TabIndex { 1 }
@@ -244,5 +252,6 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static bool Activate(SuperClass* pSuper, CellStruct cell, bool isPlayer);
+	static SuperClass* __stdcall IsSuperAvailable(int swIdx, HouseClass* pHouse);
 
 };

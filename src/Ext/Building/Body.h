@@ -1,17 +1,5 @@
 #pragma once
-#include <BuildingClass.h>
-#include <HouseClass.h>
-#include <TiberiumClass.h>
-#include <FactoryClass.h>
-
-#include <Helpers/Macro.h>
-#include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
-
-#include <Misc/FlyingStrings.h>
 #include <Ext/Techno/Body.h>
-#include <Ext/TechnoType/Body.h>
-#include <Ext/Building/Body.h>
 #include <Ext/BuildingType/Body.h>
 
 class BuildingExt
@@ -37,7 +25,11 @@ public:
 		int AccumulatedIncome;
 		std::optional<int> CurrentLaserWeaponIndex;
 		int PoweredUpToLevel; // Distinct from UpgradeLevel, and set to highest PowersUpToLevel out of applied upgrades regardless of how many are currently applied to this building.
-		SuperClass* EMPulseSW;
+		SuperClass* CurrentEMPulseSW;
+		bool IsFiringNow;
+		int TurretAnimIdleFrame;
+		int TurretAnimFiringFrame;
+		int TurretAnimRateTick;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -51,12 +43,16 @@ public:
 			, AccumulatedIncome { 0 }
 			, CurrentLaserWeaponIndex {}
 			, PoweredUpToLevel { 0 }
-			, EMPulseSW {}
+			, CurrentEMPulseSW {}
+			, IsFiringNow { false }
+			, TurretAnimIdleFrame { 0 }
+			, TurretAnimFiringFrame { -1 }
+			, TurretAnimRateTick { 0 }
 		{ }
 
 		void DisplayIncomeString();
 		void ApplyPoweredKillSpawns();
-		bool HasSuperWeapon(int index, bool withUpgrades) const;
+		bool HasSuperWeapon(int index) const;
 		bool HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore);
 		void UpdatePrimaryFactoryAI();
 		virtual ~ExtData() = default;
@@ -110,4 +106,7 @@ public:
 	static bool CanUndeployOnSell(BuildingClass* pThis);
 	static void KickOutStuckUnits(BuildingClass* pThis);
 	static const std::vector<CellStruct> GetFoundationCells(BuildingClass* pThis, CellStruct baseCoords, bool includeOccupyHeight = false);
+	static WeaponStruct* GetLaserWeapon(BuildingClass* pThis);
+	static void __fastcall KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, void*, BuildingClass* pFactory);
+	static int GetTurretFrame(BuildingClass* pThis);
 };

@@ -1,11 +1,6 @@
-#include <Utilities/Macro.h>
-#include <BuildingClass.h>
-#include <BuildingTypeClass.h>
-#include <HouseClass.h>
-#include <Utilities/EnumFunctions.h>
 #include "Body.h"
-#include <Ext/TechnoType/Body.h>
-#include <FactoryClass.h>
+
+#include <Ext/Building/Body.h>
 #include <Ext/House/Body.h>
 
 bool BuildingTypeExt::CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner)
@@ -13,16 +8,21 @@ bool BuildingTypeExt::CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pU
 	auto const pUpgradeExt = BuildingTypeExt::ExtMap.TryFind(pUpgradeType);
 	if (pUpgradeExt && EnumFunctions::CanTargetHouse(pUpgradeExt->PowersUp_Owner, pUpgradeOwner, pBuilding->Owner))
 	{
-		auto const idx = pBuilding->Type->ID;
+		auto const pType = pBuilding->Type;
+
+		// June 7, 2026 - Starkku: PowersUpBuilding is now put in PowersUp_Buildings
+		/*
+		auto const idx = pType->ID;
 
 		// PowersUpBuilding
 		if (_stricmp(idx, pUpgradeType->PowersUpBuilding) == 0)
 			return true;
+		*/
 
 		// PowersUp.Buildings
 		for (auto const pPowerUpBuilding : pUpgradeExt->PowersUp_Buildings)
 		{
-			if (_stricmp(idx, pPowerUpBuilding->ID) == 0)
+			if (pPowerUpBuilding == pType)
 				return true;
 		}
 	}
@@ -68,7 +68,7 @@ DEFINE_HOOK(0x4408EB, BuildingClass_Unlimbo_UpgradeBuildings, 0xA)
 
 #pragma region UpgradesInteraction
 
-int BuildLimitRemaining(HouseClass const* const pHouse, BuildingTypeClass const* const pItem)
+static int BuildLimitRemaining(HouseClass const* const pHouse, BuildingTypeClass const* const pItem)
 {
 	const int BuildLimit = pItem->BuildLimit;
 
@@ -78,7 +78,7 @@ int BuildLimitRemaining(HouseClass const* const pHouse, BuildingTypeClass const*
 		return -BuildLimit - pHouse->CountOwnedEver(pItem);
 }
 
-int CheckBuildLimit(HouseClass const* const pHouse, BuildingTypeClass const* const pItem, bool const includeQueued)
+static int CheckBuildLimit(HouseClass const* const pHouse, BuildingTypeClass const* const pItem, bool const includeQueued)
 {
 	enum { NotReached = 1, ReachedPermanently = -1, ReachedTemporarily = 0 };
 

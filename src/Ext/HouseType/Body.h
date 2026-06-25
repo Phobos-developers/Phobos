@@ -1,19 +1,24 @@
 #pragma once
+
 #include <HouseTypeClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
+
+#include <New/Type/EVATypeClass.h>
 
 class HouseTypeExt
 {
 public:
 	using base_type = HouseTypeClass;
-	static constexpr DWORD Canary = 0x11112222;
+
+	static constexpr DWORD Canary = 0xAFFEAFFE;
+	static constexpr size_t ExtPointerOffset = 0x1AC;
 
 	class ExtData final : public Extension<HouseTypeClass>
 	{
 	public:
+		EVAType EVATag;
 		Nullable<int> DropshipLoadout_StartingDropships;
 		ValueableVector<TechnoTypeClass*> DropshipLoadout_AllowableUnits;
 		ValueableVector<int> DropshipLoadout_AllowableUnitMaximums;
@@ -22,7 +27,6 @@ public:
 		NullableIdx<VoxClass> DropshipLoadout_StartEVA;
 		ValueableVector<TechnoTypeClass*> DropshipLoadout_Carriers;
 		Nullable<bool> DropshipLoadout_AddUnusedMoneyToPlayer;
-
 		Nullable<PhobosPCXFile> DropshipLoadout_BackgroundPCX;
 		Nullable<PhobosPCXFile> DropshipLoadout_UpArrowPCX;
 		Nullable<PhobosPCXFile> DropshipLoadout_DownArrowPCX;
@@ -44,6 +48,7 @@ public:
 		NullableIdx<VocClass> DropshipLoadout_ArrowsClickSound;
 
 		ExtData(HouseTypeClass* OwnerObject) : Extension<HouseTypeClass>(OwnerObject)
+			, EVATag { -2 }
 			, DropshipLoadout_StartingDropships {}
 			, DropshipLoadout_AllowableUnits {}
 			, DropshipLoadout_AllowableUnitMaximums {}
@@ -77,11 +82,7 @@ public:
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual void Initialize() override;
-		virtual void CompleteInitialization();
-
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
-		{
-		}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -96,11 +97,10 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
-
-		virtual bool Load(HouseTypeClass* pThis, IStream* pStm) override;
 	};
 
-	static ExtContainer ExtMap;
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static ExtContainer ExtMap;
 };

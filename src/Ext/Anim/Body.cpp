@@ -2,8 +2,8 @@
 
 #include <GameOptionsClass.h>
 
-#include <Ext/AnimType/Body.h>
 #include <Ext/House/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Misc/SyncLogging.h>
 
@@ -62,6 +62,43 @@ void AnimExt::ExtData::DeleteAttachedSystem()
 
 		auto& vec = AnimExt::AnimsWithAttachedParticles;
 		vec.erase(std::remove(vec.begin(), vec.end(), this->OwnerObject()), vec.end());
+	}
+}
+
+void AnimExt::ExtData::UpdateAsFiringAnim()
+{
+	if (!this->FiringAnim_Weapon)
+		return;
+
+	auto pThis = this->OwnerObject();
+
+	if (pThis->OwnerObject && (pThis->OwnerObject->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
+	{
+		auto pOwner = reinterpret_cast<TechnoClass*>(pThis->OwnerObject);
+		auto const currentFacing = pOwner->GetRealFacing();
+		bool facingChanged = currentFacing != this->FiringAnim_LastFacing;
+
+		if (facingChanged)
+		{
+			this->FiringAnim_LastFacing = currentFacing;
+			auto pWeapon = this->FiringAnim_Weapon;
+			AnimTypeClass* pNewType = GeneralUtils::GetItemForDirection<AnimTypeClass*>(pWeapon->Anim, currentFacing);
+
+			if (pNewType)
+				pThis->Type = pNewType;
+		}
+
+		auto const currentCoords = pOwner->GetRenderCoords();
+
+		if (currentCoords != this->FiringAnim_LastCoords || facingChanged)
+		{
+			this->FiringAnim_LastCoords = currentCoords;
+			auto burstIdx = pOwner->CurrentBurstIndex;
+			pOwner->CurrentBurstIndex = this->FiringAnim_BurstIndex;
+			auto flh = pOwner->GetFLH(this->FiringAnim_WeaponIndex, CoordStruct::Empty);
+			pOwner->CurrentBurstIndex = burstIdx;
+			pThis->SetLocation(flh - currentCoords);
+		}
 	}
 }
 
@@ -203,9 +240,10 @@ void AnimExt::ChangeAnimType(AnimClass* pAnim, AnimTypeClass* pNewType, bool res
 	}
 }
 
-void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWakeAnim, Iterator<AnimTypeClass*> splashAnims, HouseClass* pOwner, WarheadTypeClass* pWarhead, int nDamage,
+void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, const std::vector<AnimTypeClass*>& pWakeAnim, Iterator<AnimTypeClass*> splashAnims, HouseClass* pOwner, WarheadTypeClass* pWarhead, int nDamage,
 	CellClass* pCell, CoordStruct nLocation, bool heightFlag, bool isMeteor, bool warheadDetonate, bool explodeOnWater, bool splashAnimsPickRandom)
 {
+	bool customWakeAnim = false;
 	AnimTypeClass* pWakeAnimToUse = nullptr;
 	AnimTypeClass* pSplashAnimToUse = nullptr;
 
@@ -235,8 +273,8 @@ void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWak
 		if (!isMeteor)
 			pWakeAnimToUse = RulesClass::Instance->Wake;
 
-		if (pWakeAnim)
-			pWakeAnimToUse = pWakeAnim;
+		if (pWakeAnim.size() > 0)
+			customWakeAnim = true;
 
 		if (!splashAnims.empty())
 		{
@@ -249,7 +287,11 @@ void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWak
 		}
 	}
 
-	if (pWakeAnimToUse)
+	if (customWakeAnim)
+	{
+		AnimExt::CreateRandomAnim(pWakeAnim, nLocation, nullptr, pOwner);
+	}
+	else if (pWakeAnimToUse)
 	{
 		auto const pWakeAnimCreated = GameCreate<AnimClass>(pWakeAnimToUse, nLocation, 0, 1, 0x600u, false);
 		AnimExt::SetAnimOwnerHouseKind(pWakeAnimCreated, pOwner, nullptr, false, true);
@@ -371,11 +413,7 @@ void AnimExt::CreateRandomAnim(const std::vector<AnimTypeClass*>& AnimList, Coor
 		return;
 
 	auto const pAnim = GameCreate<AnimClass>(pAnimType, coords);
-
-	if (!pTechno)
-		return;
-
-	AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse ? pHouse : pTechno->Owner, nullptr, false, true);
+	AnimExt::SetAnimOwnerHouseKind(pAnim, (pHouse ? pHouse : (pTechno ? pTechno->Owner : nullptr)), nullptr, false, true);
 
 	if (ownedObject)
 		pAnim->SetOwnerObject(pTechno);
@@ -410,6 +448,12 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->DelayedFireRemoveOnNoDelay)
 		.Process(this->IsAttachedEffectAnim)
 		.Process(this->IsShieldIdleAnim)
+		.Process(this->FiringAnim_Weapon)
+		.Process(this->FiringAnim_WeaponIndex)
+		.Process(this->FiringAnim_BurstIndex)
+		.Process(this->FiringAnim_LastFacing)
+		.Process(this->FiringAnim_LastCoords)
+		.Process(this->FirepowerMult)
 		;
 }
 
@@ -521,6 +565,7 @@ DEFINE_HOOK(0x4226F6, AnimClass_CTOR, 0x6)
 		SyncLogger::AddAnimCreationSyncLogEvent(CTORTemp::coords, CTORTemp::callerAddress);
 
 	AnimExt::ExtMap.Allocate(pItem);
+	pItem->UseCellLightConvert = AnimTypeExt::ExtMap.Find(pItem->Type)->TheaterPalette.Get(false);
 
 	return 0;
 }

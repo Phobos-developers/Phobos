@@ -1,9 +1,4 @@
 #pragma once
-#include <BuildingTypeClass.h>
-#include <SuperClass.h>
-#include <SuperWeaponTypeClass.h>
-
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -24,14 +19,17 @@ public:
 
 		Valueable<double> PowerPlant_DamageFactor;
 		ValueableVector<BuildingTypeClass*> PowerPlantEnhancer_Buildings;
+		Valueable<Leptons> PowerPlantEnhancer_Range;
 		Valueable<int> PowerPlantEnhancer_Amount;
 		Nullable<float> PowerPlantEnhancer_Factor;
+		Valueable<int> PowerPlantEnhancer_MaxCount;
 
 		std::vector<Point2D> OccupierMuzzleFlashes;
 		Valueable<bool> Powered_KillSpawns;
 		Valueable<bool> CanC4_AllowZeroDamage;
 		Valueable<bool> Refinery_UseStorage;
 		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
+		Valueable<bool> Cloning_Powered { true };
 		Valueable<bool> ExcludeFromMultipleFactoryBonus;
 
 		ValueableIdx<VocClass> Grinding_Sound;
@@ -44,6 +42,7 @@ public:
 		Valueable<bool> Grinding_PlayDieSound;
 
 		Nullable<bool> DisplayIncome;
+		Nullable<int> DisplayIncome_Delay;
 		Nullable<AffectedHouse> DisplayIncome_Houses;
 		Valueable<Point2D> DisplayIncome_Offset;
 
@@ -70,6 +69,7 @@ public:
 
 		ValueableVector<TechnoTypeClass*> FactoryPlant_AllowTypes;
 		ValueableVector<TechnoTypeClass*> FactoryPlant_DisallowTypes;
+		Valueable<int> FactoryPlant_MaxCount;
 
 		Nullable<double> Units_RepairRate;
 		Nullable<int> Units_RepairStep;
@@ -79,6 +79,8 @@ public:
 		Valueable<bool> NoBuildAreaOnBuildup;
 		ValueableVector<BuildingTypeClass*> Adjacent_Allowed;
 		ValueableVector<BuildingTypeClass*> Adjacent_Disallowed;
+		Valueable<bool> Adjacent_Disallowed_Prohibit;
+		Valueable<int> Adjacent_Disallowed_ProhibitDistance;
 
 		Nullable<Point2D> BarracksExitCell;
 
@@ -92,6 +94,7 @@ public:
 		Nullable<float> BuildingBunkerROFMult;
 		NullableIdx<VocClass> BunkerWallsUpSound;
 		NullableIdx<VocClass> BunkerWallsDownSound;
+		Nullable<int> BunkerStateUpdateDelay;
 
 		NullableIdx<VocClass> BuildingRepairedSound;
 
@@ -99,17 +102,42 @@ public:
 
 		ValueableVector<bool> HasPowerUpAnim;
 
+		Valueable<bool> UndeploysInto_Sellable;
+
+		Nullable<bool> BuildingRadioLink_SyncOwner;
+
+		Nullable<PartialVector2D<int>> GuardRetryDelay;
+
+		Valueable<int> TurretAnim_IdleFrames;
+		Valueable<int> TurretAnim_LowPowerIdleFrames;
+		Valueable<int> TurretAnim_FiringFrames;
+		Valueable<int> TurretAnim_LowPowerFiringFrames;
+		Valueable<int> TurretAnim_IdleRate;
+		Valueable<int> TurretAnim_FiringRate;
+
+		// Ares 0.2
+		Valueable<bool> CloningFacility;
+
+		// Ares 0.A
+		Valueable<BuildingTypeClass*> RubbleIntact;
+		Valueable<bool> RubbleIntactRemove;
+
+		// Ares 3.0
+		Nullable<bool> UnitSell;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
 			, PowerPlant_DamageFactor { 1.0 }
 			, PowerPlantEnhancer_Buildings {}
+			, PowerPlantEnhancer_Range { Leptons(0) }
 			, PowerPlantEnhancer_Amount { 0 }
-			, PowerPlantEnhancer_Factor { 1.0 }
+			, PowerPlantEnhancer_Factor { 1.0f }
+			, PowerPlantEnhancer_MaxCount { -1 }
 			, OccupierMuzzleFlashes()
 			, Powered_KillSpawns { false }
 			, CanC4_AllowZeroDamage { false }
-			, InitialStrength_Cloning { { 1.0, 0.0 } }
+			, InitialStrength_Cloning { { 1.0 } }
 			, ExcludeFromMultipleFactoryBonus { false }
 			, Refinery_UseStorage { false }
 			, Grinding_AllowAllies { false }
@@ -121,6 +149,7 @@ public:
 			, Grinding_Weapon {}
 			, Grinding_Weapon_RequiredCredits { 0 }
 			, DisplayIncome { }
+			, DisplayIncome_Delay { }
 			, DisplayIncome_Houses { }
 			, DisplayIncome_Offset { { 0,0 } }
 			, PlacementPreview { true }
@@ -139,6 +168,7 @@ public:
 			, AircraftDockingDirs {}
 			, FactoryPlant_AllowTypes {}
 			, FactoryPlant_DisallowTypes {}
+			, FactoryPlant_MaxCount { -1 }
 			, IsAnimDelayedBurst { true }
 			, IsDestroyableObstacle { false }
 			, Units_RepairRate {}
@@ -148,6 +178,8 @@ public:
 			, NoBuildAreaOnBuildup { false }
 			, Adjacent_Allowed {}
 			, Adjacent_Disallowed {}
+			, Adjacent_Disallowed_Prohibit { false }
+			, Adjacent_Disallowed_ProhibitDistance { 0 }
 			, BarracksExitCell {}
 			, Overpower_KeepOnline { 2 }
 			, Overpower_ChargeWeapon { 1 }
@@ -158,9 +190,29 @@ public:
 			, BuildingBunkerROFMult {}
 			, BunkerWallsUpSound {}
 			, BunkerWallsDownSound {}
+			, BunkerStateUpdateDelay {}
 			, BuildingRepairedSound {}
 			, Refinery_UseNormalActiveAnim { false }
 			, HasPowerUpAnim {}
+			, UndeploysInto_Sellable { false }
+			, BuildingRadioLink_SyncOwner {}
+			, GuardRetryDelay {}
+			, TurretAnim_IdleFrames { 1 }
+			, TurretAnim_LowPowerIdleFrames { 0 }
+			, TurretAnim_FiringFrames { 0 }
+			, TurretAnim_LowPowerFiringFrames { 0 }
+			, TurretAnim_IdleRate { 1 }
+			, TurretAnim_FiringRate { 1 }
+
+			// Ares 0.2
+			, CloningFacility { false }
+
+			// Ares 0.A
+			, RubbleIntact { nullptr }
+			, RubbleIntactRemove { false }
+
+			// Ares 3.0
+			, UnitSell {}
 		{ }
 
 		// Ares 0.A functions
@@ -199,7 +251,7 @@ public:
 
 	static void PlayBunkerSound(BuildingClass const* pThis, bool buildUp = false);
 
-	static int GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse);
+	static std::pair<int, int> GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse, BuildingClass* pPowerPlant = nullptr);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
 	static int CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pBuilding, HouseClass* pHouse);
 	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);

@@ -1,7 +1,5 @@
 #include "StraightTrajectory.h"
 
-#include <OverlayTypeClass.h>
-#include <ScenarioClass.h>
 #include <AircraftTrackerClass.h>
 
 #include <Ext/Bullet/Body.h>
@@ -1055,4 +1053,9 @@ bool StraightTrajectory::PassAndConfineAtHeight(BulletClass* pBullet)
 	}
 
 	return false;
+}
+
+bool StraightTrajectory::ShouldSkipBridgeCheck() const
+{
+	return !this->Type->SubjectToGround;
 }

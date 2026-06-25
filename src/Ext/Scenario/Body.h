@@ -1,15 +1,11 @@
 #pragma once
 
 #include <ScenarioClass.h>
-#include <MessageListClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
 #include <Ext/Techno/Body.h>
-
-#include <map>
 
 struct ExtendedVariable
 {
@@ -40,13 +36,19 @@ public:
 		bool SWSidebar_Enable;
 		std::vector<int> SWSidebar_Indices;
 
-		std::unique_ptr<MessageListClass> NewMessageList;
+		std::vector<std::wstring> RecordMessages;
 
 		PhobosFixedString<64u> DefaultLS640BkgdName;
 		PhobosFixedString<64u> DefaultLS800BkgdName;
 		PhobosFixedString<64u> DefaultLS800BkgdPal;
 
-		BulletClass* MasterDetonationBullet; // Used to do warhead/weapon detonations on spot without having to create new BulletClass instance every time.
+		std::vector<TechnoExt::ExtData*> LimboLaunchers;
+
+		DynamicVectorClass<TechnoClass*> UndergroundTracker; // Technos that are underground.
+		DynamicVectorClass<TechnoClass*> SpecialTracker; // For special purposes, like tracking technos that are forced moving. Currently unused.
+		DynamicVectorClass<TechnoClass*> FallingDownTracker; // Technos that are falling down, parachutes and land technos falling from bridge.
+
+		int EVAIndex;
 
 		int DropshipLoadout_Theme;
 		long DropshipLoadout_Money;
@@ -90,11 +92,15 @@ public:
 			, TransportReloaders {}
 			, SWSidebar_Enable { true }
 			, SWSidebar_Indices {}
-			, NewMessageList {}
+			, RecordMessages {}
 			, DefaultLS640BkgdName {}
 			, DefaultLS800BkgdName {}
 			, DefaultLS800BkgdPal {}
-			, MasterDetonationBullet {}
+			, LimboLaunchers {}
+			, UndergroundTracker {}
+			, SpecialTracker {}
+			, FallingDownTracker {}
+			, EVAIndex { -2 }
 			, DropshipLoadout_Theme { -1 }
 			, DropshipLoadout_Money { -1 }
 			, DropshipLoadout_StartEVA {}
@@ -127,10 +133,10 @@ public:
 			, DropshipLoadout_SellClickSound {}
 			, DropshipLoadout_ArrowsClickSound {}
 		{ }
-		
-		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
-		void GetVariableStateByID(bool bIsGlobal, int nIndex, char* pOut);
-		void ReadVariables(bool bIsGlobal, CCINIClass* pINI);
+
+		static void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
+		static void GetVariableStateByID(bool bIsGlobal, int nIndex, char* pOut);
+		static void ReadVariables(bool bIsGlobal, CCINIClass* pINI);
 		static void SaveVariablesToFile(bool isGlobal);
 
 		virtual ~ExtData() = default;

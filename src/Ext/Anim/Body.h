@@ -1,11 +1,7 @@
 #pragma once
 #include <AnimClass.h>
 #include <ParticleSystemClass.h>
-
 #include <Ext/AnimType/Body.h>
-#include <Helpers/Macro.h>
-#include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
 
 class AnimExt
 {
@@ -31,6 +27,12 @@ public:
 		bool DelayedFireRemoveOnNoDelay;
 		bool IsAttachedEffectAnim;
 		bool IsShieldIdleAnim;
+		WeaponTypeClass* FiringAnim_Weapon;
+		int FiringAnim_WeaponIndex;
+		int FiringAnim_BurstIndex;
+		DirStruct FiringAnim_LastFacing;
+		CoordStruct FiringAnim_LastCoords;
+		double FirepowerMult;
 
 		ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
 			, DeathUnitFacing { 0 }
@@ -45,12 +47,20 @@ public:
 			, DelayedFireRemoveOnNoDelay { false }
 			, IsAttachedEffectAnim { false }
 			, IsShieldIdleAnim { false }
+			, FiringAnim_Weapon {}
+			, FiringAnim_WeaponIndex {}
+			, FiringAnim_BurstIndex {}
+			, FiringAnim_LastFacing {}
+			, FiringAnim_LastCoords {}
+			, FirepowerMult { 1.0 }
 		{ }
 
 		void SetInvoker(TechnoClass* pInvoker);
 		void SetInvoker(TechnoClass* pInvoker, HouseClass* pInvokerHouse);
 		void CreateAttachedSystem();
 		void DeleteAttachedSystem();
+
+		void UpdateAsFiringAnim();
 
 		virtual ~ExtData() override;
 
@@ -81,11 +91,11 @@ public:
 	static std::vector<AnimClass*> AnimsWithAttachedParticles;
 	static ExtContainer ExtMap;
 
-	static bool SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner = true, bool defaultToInvokerOwner = false);
+	static bool SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner = false, bool defaultToInvokerOwner = false);
 	static HouseClass* GetOwnerHouse(AnimClass* pAnim, HouseClass* pDefaultOwner = nullptr);
 	static void VeinAttackAI(AnimClass* pAnim);
 	static void ChangeAnimType(AnimClass* pAnim, AnimTypeClass* pNewType, bool resetLoops, bool restart);
-	static void HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWakeAnim, Iterator<AnimTypeClass*> splashAnims, HouseClass* pOwner, WarheadTypeClass* pWarhead, int nDamage,
+	static void HandleDebrisImpact(AnimTypeClass* pExpireAnim, const std::vector<AnimTypeClass*>& pWakeAnim, Iterator<AnimTypeClass*> splashAnims, HouseClass* pOwner, WarheadTypeClass* pWarhead, int nDamage,
 	CellClass* pCell, CoordStruct nLocation, bool heightFlag, bool isMeteor, bool warheadDetonate, bool explodeOnWater, bool splashAnimsPickRandom);
 
 	static void SpawnFireAnims(AnimClass* pThis);

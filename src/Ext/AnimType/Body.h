@@ -2,11 +2,10 @@
 
 #include <AnimTypeClass.h>
 
-#include <New/Type/Affiliated/CreateUnitTypeClass.h>
 #include <Utilities/Container.h>
-#include <Utilities/Enum.h>
-#include <Utilities/Constructs.h>
-#include <Utilities/Template.h>
+#include <Utilities/TemplateDef.h>
+
+#include <New/Type/Affiliated/CreateUnitTypeClass.h>
 
 enum class AttachedAnimPosition : BYTE
 {
@@ -39,7 +38,7 @@ public:
 		Valueable<bool> Damage_ApplyFirepowerMult;
 		Valueable<bool> ExplodeOnWater;
 		Valueable<bool> Warhead_Detonate;
-		Valueable<AnimTypeClass*> WakeAnim;
+		ValueableVector<AnimTypeClass*> WakeAnim;
 		NullableVector<AnimTypeClass*> SplashAnims;
 		Valueable<bool> SplashAnims_PickRandom;
 		Valueable<ParticleSystemTypeClass*> AttachedSystem;
@@ -51,6 +50,8 @@ public:
 		Valueable<bool> VisibleTo_ConsiderInvokerAsOwner;
 		Valueable<bool> RestrictVisibilityIfCloaked;
 		Valueable<bool> DetachOnCloak;
+		Animatable<TranslucencyLevel> Translucency;
+		Animatable<TranslucencyLevel> Translucency_Cloaked;
 		Valueable<bool> ConstrainFireAnimsToCellSpots;
 		Nullable<LandTypeFlags> FireAnimDisallowedLandTypes;
 		Nullable<bool> AttachFireAnimsToParent;
@@ -63,6 +64,9 @@ public:
 		ValueableVector<double> LargeFireChances;
 		ValueableVector<double> LargeFireDistances;
 		Nullable<bool> Crater_DestroyTiberium;
+		Nullable<bool> TheaterPalette;
+		Valueable<int> Tiled_Interval;
+		Valueable<bool> Tiled_AlignToCenter;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
@@ -90,9 +94,11 @@ public:
 			, VisibleTo_ConsiderInvokerAsOwner { false }
 			, RestrictVisibilityIfCloaked { false }
 			, DetachOnCloak { true }
+			, Translucency { TranslucencyLevel {} }
+			, Translucency_Cloaked { TranslucencyLevel {} }
 			, ConstrainFireAnimsToCellSpots { true }
 			, FireAnimDisallowedLandTypes {}
-			, AttachFireAnimsToParent { false }
+			, AttachFireAnimsToParent {}
 			, SmallFireCount {}
 			, SmallFireAnims {}
 			, SmallFireChances {}
@@ -102,6 +108,9 @@ public:
 			, LargeFireChances {}
 			, LargeFireDistances {}
 			, Crater_DestroyTiberium {}
+			, TheaterPalette {}
+			, Tiled_Interval { 0 }
+			, Tiled_AlignToCenter { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -127,5 +136,5 @@ public:
 
 	static ExtContainer ExtMap;
 
-	static void ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller = nullptr);
+	static void ProcessDestroyAnims(UnitClass* pThis, HouseClass* pKiller = nullptr);
 };

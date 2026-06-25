@@ -2,8 +2,6 @@
 
 #include "NewSWType/NewSWType.h"
 
-#include <StringTable.h>
-
 SWTypeExt::ExtContainer SWTypeExt::ExtMap;
 
 void SWTypeExt::ExtData::Initialize()
@@ -31,6 +29,8 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_ManualFire)
 		.Process(this->SW_ShowCameo)
 		.Process(this->SW_Unstoppable)
+		.Process(this->SW_AllowPlayer)
+		.Process(this->SW_AllowAI)
 		.Process(this->SW_Inhibitors)
 		.Process(this->SW_AnyInhibitor)
 		.Process(this->SW_Designators)
@@ -41,6 +41,9 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_ForbiddenHouses)
 		.Process(this->SW_AuxBuildings)
 		.Process(this->SW_NegBuildings)
+		.Process(this->SW_AuxTechnos)
+		.Process(this->SW_NegTechnos)
+		.Process(this->SW_TechLevel)
 		.Process(this->SW_InitialReady)
 		.Process(this->SW_PostDependent)
 		.Process(this->SW_MaxCount)
@@ -55,8 +58,9 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LimboDelivery_IDs)
 		.Process(this->LimboDelivery_RandomWeightsData)
 		.Process(this->LimboDelivery_RollChances)
-		.Process(this->LimboKill_Affected)
+		.Process(this->LimboKill_AffectsHouse)
 		.Process(this->LimboKill_IDs)
+		.Process(this->LimboKill_Counts)
 		.Process(this->RandomBuffer)
 		.Process(this->Detonate_Warhead)
 		.Process(this->Detonate_Weapon)
@@ -70,6 +74,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_Next_RandomWeightsData)
 		.Process(this->SW_Next_RollChances)
 		.Process(this->ShowTimer_Priority)
+		.Process(this->ShowTimer_Percentage)
 		.Process(this->Convert_Pairs)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->TabIndex)
@@ -116,6 +121,8 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_ManualFire.Read(exINI, pSection, "SW.ManualFire");
 	this->SW_ShowCameo.Read(exINI, pSection, "SW.ShowCameo");
 	this->SW_Unstoppable.Read(exINI, pSection, "SW.Unstoppable");
+	this->SW_AllowPlayer.Read(exINI, pSection, "SW.AllowPlayer");
+	this->SW_AllowAI.Read(exINI, pSection, "SW.AllowAI");
 	this->SW_Inhibitors.Read(exINI, pSection, "SW.Inhibitors");
 	this->SW_AnyInhibitor.Read(exINI, pSection, "SW.AnyInhibitor");
 	this->SW_Designators.Read(exINI, pSection, "SW.Designators");
@@ -126,6 +133,9 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_ForbiddenHouses = pINI->ReadHouseTypesList(pSection, "SW.ForbiddenHouses", this->SW_ForbiddenHouses);
 	this->SW_AuxBuildings.Read(exINI, pSection, "SW.AuxBuildings");
 	this->SW_NegBuildings.Read(exINI, pSection, "SW.NegBuildings");
+	this->SW_AuxTechnos.Read(exINI, pSection, "SW.AuxTechnos");
+	this->SW_NegTechnos.Read(exINI, pSection, "SW.NegTechnos");
+	this->SW_TechLevel.Read(exINI, pSection, "SW.TechLevel");
 	this->SW_InitialReady.Read(exINI, pSection, "SW.InitialReady");
 	this->SW_PostDependent.Read(exINI, pSection, "SW.PostDependent");
 	this->SW_MaxCount.Read(exINI, pSection, "SW.MaxCount");
@@ -143,8 +153,14 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->LimboDelivery_Types.Read(exINI, pSection, "LimboDelivery.Types");
 	this->LimboDelivery_IDs.Read(exINI, pSection, "LimboDelivery.IDs");
 	this->LimboDelivery_RollChances.Read(exINI, pSection, "LimboDelivery.RollChances");
-	this->LimboKill_Affected.Read(exINI, pSection, "LimboKill.Affected");
+	if (exINI.ReadString(pSection, "LimboKill.Affected") > 0)
+	{
+		Debug::Log("[Developer warning][%s] LimboKill.Affected is deprecated and has been replaced by LimboKill.AffectsHouse! If both are set, the latter will be used.\n", pSection);
+	}
+	this->LimboKill_AffectsHouse.Read(exINI, pSection, "LimboKill.Affected"); // Temporary solution for the INI tags renaming issue, see #2093
+	this->LimboKill_AffectsHouse.Read(exINI, pSection, "LimboKill.AffectsHouse");
 	this->LimboKill_IDs.Read(exINI, pSection, "LimboKill.IDs");
+	this->LimboKill_Counts.Read(exINI, pSection, "LimboKill.Counts");
 	this->SW_Next.Read(exINI, pSection, "SW.Next");
 	this->SW_Next_RealLaunch.Read(exINI, pSection, "SW.Next.RealLaunch");
 	this->SW_Next_IgnoreInhibitors.Read(exINI, pSection, "SW.Next.IgnoreInhibitors");
@@ -152,6 +168,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_Next_RollChances.Read(exINI, pSection, "SW.Next.RollChances");
 
 	this->ShowTimer_Priority.Read(exINI, pSection, "ShowTimer.Priority");
+	this->ShowTimer_Percentage.Read(exINI, pSection, "ShowTimer.Percentage");
 
 	this->EMPulse_WeaponIndex.Read(exINI, pSection, "EMPulse.WeaponIndex");
 	this->EMPulse_SuspendOthers.Read(exINI, pSection, "EMPulse.SuspendOthers");

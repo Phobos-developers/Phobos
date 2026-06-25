@@ -1,9 +1,6 @@
 #include "SWSidebarClass.h"
-#include <CommandClass.h>
 
 #include <Ext/House/Body.h>
-#include <Ext/Side/Body.h>
-#include <Ext/SWType/Body.h>
 
 SWSidebarClass SWSidebarClass::Instance;
 CommandClass* SWSidebarClass::Commands[10];

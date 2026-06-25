@@ -1,7 +1,8 @@
 #include "Body.h"
 
-#include <SpawnManagerClass.h>
+#include <EventClass.h>
 #include <TunnelLocomotionClass.h>
+#include <JumpjetLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
 
@@ -77,6 +78,21 @@ DEFINE_HOOK(0x6B7265, SpawnManagerClass_AI_UpdateTimer, 0x6)
 	}
 
 	return 0;
+}
+
+// Fix Jumpjets can not spawn missiles in air.
+DEFINE_HOOK(0x6B72FE, SpawnerManagerClass_AI_MissileCheck, 0x9)
+{
+	enum { SpawnMissile = 0x6B735C, NoSpawn = 0x6B795A };
+
+	GET(SpawnManagerClass*, pThis, ESI);
+
+	const auto pLoco = ((FootClass*)pThis->Owner)->Locomotor; // Ares has already handled the building case.
+	const auto pLocoInterface = pLoco.GetInterfacePtr();
+
+	return (pLocoInterface->Is_Moving_Now()
+		|| (!locomotion_cast<JumpjetLocomotionClass*>(pLoco) && pLocoInterface->Is_Moving())) // Jumpjet should only check Is_Moving_Now.
+		? NoSpawn : SpawnMissile;
 }
 
 DEFINE_HOOK_AGAIN(0x6B73BE, SpawnManagerClass_AI_SpawnTimer, 0x6)
@@ -236,15 +252,7 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 
 	if (shouldRecycleSpawned())
 	{
-		if (pCarrierTypeExt->Spawner_RecycleAnim)
-		{
-			auto const pRecycleAnim = GameCreate<AnimClass>(pCarrierTypeExt->Spawner_RecycleAnim, spawnerCrd);
-			auto const pAnimExt = AnimExt::ExtMap.Find(pRecycleAnim);
-			auto const pSpawnOwner = pSpawner->Owner;
-			pAnimExt->SetInvoker(pSpawner);
-			AnimExt::SetAnimOwnerHouseKind(pRecycleAnim, pSpawnOwner, pSpawnOwner, false, true);
-		}
-
+		AnimExt::CreateRandomAnim(pCarrierTypeExt->Spawner_RecycleAnim, spawnerCrd, pSpawner, pSpawner->Owner, true);
 		pSpawner->SetLocation(pCarrier->GetCoords());
 		return Recycle;
 	}
@@ -258,8 +266,9 @@ DEFINE_HOOK(0x4D962B, FootClass_SetDestination_RecycleFLH, 0x5)
 	GET(FootClass* const, pThis, EBP);
 
 	auto const pCarrier = pThis->SpawnOwner;
+	auto const pDest = pThis->Destination;
 
-	if (pCarrier && pCarrier == pThis->Destination) // This is a spawner returning to its carrier.
+	if (pCarrier && pCarrier == pDest) // This is a spawner returning to its carrier.
 	{
 		auto const pCarrierTypeExt = TechnoExt::ExtMap.Find(pCarrier)->TypeExtData;
 		auto const& FLH = pCarrierTypeExt->Spawner_RecycleCoord;
@@ -269,6 +278,15 @@ DEFINE_HOOK(0x4D962B, FootClass_SetDestination_RecycleFLH, 0x5)
 			GET(CoordStruct*, pDestCrd, EAX);
 			*pDestCrd += TechnoExt::GetFLHAbsoluteCoords(pCarrier, FLH, pCarrierTypeExt->Spawner_RecycleOnTurret) - pCarrier->GetCoords();
 		}
+	}
+	else if (!pThis->GetTechnoType()->MissileSpawn && pDest->WhatAmI() == AbstractType::Building
+		&& pThis->SendCommand(RadioCommand::QueryCanEnter, static_cast<BuildingClass*>(pDest)) != RadioCommand::AnswerPositive)
+	{
+		GET(CoordStruct*, pDestCrd, EAX);
+		auto crd = pDest->GetCoords();
+		crd.X = ((crd.X >> 8) << 8) + 128;
+		crd.Y = ((crd.Y >> 8) << 8) + 128;
+		*pDestCrd = crd;
 	}
 
 	return 0;
@@ -319,6 +337,30 @@ DEFINE_HOOK(0x514AB4, Locomotion_Process_Wake, 0x6)  // Hover
 	return R->Origin() + 0xC;
 }
 
+DEFINE_HOOK(0x4B079D, DriveLocomotionClass_Process_MakesWake, 0x5)
+{
+	enum { NoWake = 0x4B0828 };
+	GET(ILocomotion* const, pThis, ESI);
+	const auto pLinkedTo = static_cast<LocomotionClass*>(pThis)->LinkedTo;
+	return TechnoExt::ExtMap.Find(pLinkedTo)->TypeExtData->MakesWake.Get(RulesExt::Global()->DriveLocomotorMakesWake) ? 0 : NoWake;
+}
+
+DEFINE_HOOK(0x514A32, HoverLocomotionClass_Process_MakesWake, 0x5)
+{
+	enum { NoWake = 0x514AC8 };
+	GET(ILocomotion* const, pThis, ESI);
+	const auto pLinkedTo = static_cast<LocomotionClass*>(pThis)->LinkedTo;
+	return TechnoExt::ExtMap.Find(pLinkedTo)->TypeExtData->MakesWake.Get(RulesExt::Global()->HoverLocomotorMakesWake) ? 0 : NoWake;
+}
+
+DEFINE_HOOK(0x69FE4A, ShipLocomotionClass_Process_MakesWake, 0x6)
+{
+	enum { NoWake = 0x69FEF0 };
+	GET(ILocomotion* const, pThis, ESI);
+	const auto pLinkedTo = static_cast<LocomotionClass*>(pThis)->LinkedTo;
+	return TechnoExt::ExtMap.Find(pLinkedTo)->TypeExtData->MakesWake.Get(RulesExt::Global()->ShipLocomotorMakesWake) ? 0 : NoWake;
+}
+
 namespace GrappleUpdateTemp
 {
 	TechnoClass* pThis;
@@ -358,6 +400,24 @@ DEFINE_HOOK(0x737F05, UnitClass_ReceiveDamage_SinkingWake, 0x6)
 	R->ECX(pTypeExt->Wake_Sinking.Get(pTypeExt->Wake.Get(RulesClass::Instance->Wake)));
 
 	return 0x737F0B;
+}
+
+DEFINE_HOOK(0x75AC93, WalkLocomotionClass_Process_Wake, 0x6)
+{
+	GET(ILocomotion* const, pThis, ESI);
+	const auto pLinkedTo = static_cast<LocomotionClass*>(pThis)->LinkedTo;
+
+	if (!TechnoExt::ExtMap.Find(pLinkedTo)->TypeExtData->MakesWake.Get(RulesExt::Global()->WalkLocomotorMakesWake))
+		return 0;
+
+	if (pThis->Is_Really_Moving_Now() && !(Unsorted::CurrentFrame % 10) && !pLinkedTo->OnBridge && pLinkedTo->GetCell()->LandType == LandType::Water)
+	{
+		const auto pAnimType = TechnoExt::ExtMap.Find(pLinkedTo)->TypeExtData->Wake.Get(RulesClass::Instance->Wake);
+		auto location = pLinkedTo->GetCoords();
+		GameCreate<AnimClass>(pAnimType, location, 0, 1, 0x600u, false);
+	}
+	
+	return 0;
 }
 
 #pragma endregion
@@ -489,12 +549,27 @@ DEFINE_HOOK(0x522790, InfantryClass_ClearDisguise_DefaultDisguise, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x746A30, UnitClass_UpdateDisguise_DefaultMirageDisguises, 0x5)
+{
+	enum { Apply = 0x746A6C };
+
+	GET(UnitClass*, pThis, ESI);
+	const auto& disguises = TechnoTypeExt::ExtMap.Find(pThis->Type)->DefaultMirageDisguises.GetElements(RulesClass::Instance->DefaultMirageDisguises);
+	TerrainTypeClass* pDisguiseAs = nullptr;
+
+	if (const int size = static_cast<int>(disguises.size()))
+		pDisguiseAs = disguises[ScenarioClass::Instance->Random.RandomRanged(0, size - 1)];
+
+	R->EAX(pDisguiseAs);
+	return Apply;
+}
+
 DEFINE_HOOK(0x74691D, UnitClass_UpdateDisguise_EMP, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 	// Remove mirage disguise if under emp or being flipped, approximately 15 deg
 	// Deactivated mirage should still be able to keep disguise
-	if (pThis->IsUnderEMP() || std::abs(pThis->AngleRotatedForwards) > 0.25 || std::abs(pThis->AngleRotatedSideways) > 0.25)
+	if (pThis->IsUnderEMP() || std::abs(pThis->AngleRotatedForwards) > 0.25f || std::abs(pThis->AngleRotatedSideways) > 0.25f)
 	{
 		pThis->ClearDisguise();
 		R->EAX(pThis->MindControlRingAnim);
@@ -508,7 +583,7 @@ DEFINE_HOOK(0x74691D, UnitClass_UpdateDisguise_EMP, 0x6)
 
 #pragma region AttackMindControlledDelay
 
-bool __fastcall CanAttackMindControlled(TechnoClass* pControlled, TechnoClass* pRetaliator)
+static bool __fastcall CanAttackMindControlled(TechnoClass* pControlled, TechnoClass* pRetaliator)
 {
 	const auto pMind = pControlled->MindControlledBy;
 
@@ -739,7 +814,7 @@ DEFINE_HOOK(0x51B20E, InfantryClass_AssignTarget_FireOnce, 0x6)
 }
 
 // Update attached anim layers after parent unit changes layer.
-void __fastcall DisplayClass_Submit_Wrapper(DisplayClass* pThis, void* _, ObjectClass* pObject)
+static void __fastcall DisplayClass_Submit_Wrapper(DisplayClass* pThis, void* _, ObjectClass* pObject)
 {
 	pThis->Submit(pObject);
 
@@ -758,7 +833,7 @@ DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
 	enum { Continue= 0x51D7EC, SkipWaterSequences = 0x51D842, UseSwim = 0x51D83D, UseWetAttack = 0x51D82F };
 
 	GET(InfantryClass*, pThis, ESI);
-	GET(Sequence, sequence, EDI);
+	GET(const Sequence, sequence, EDI);
 
 	R->EBP(0); // Restore overridden instructions.
 
@@ -773,7 +848,7 @@ DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
 	return Continue;
 }
 
-bool __fastcall LocomotorCheckForBunkerable(TechnoTypeClass* pType)
+static bool __fastcall LocomotorCheckForBunkerable(TechnoTypeClass* pType)
 {
 	auto const loco = pType->Locomotor;
 
@@ -804,16 +879,111 @@ DEFINE_HOOK(0x70FB73, FootClass_IsBunkerableNow_Dehardcode, 0x6)
 	return pTypeExt->BunkerableAnyway ? CanEnter : 0;
 }
 
-DEFINE_HOOK(0x730D1F, DeployCommandClass_Execute_VoiceDeploy, 0x5)
+DEFINE_HOOK(0x730D0F, ProcessDeployCommand_LowDeployPriority, 0x6)
 {
-	GET_STACK(const int, unitsToDeploy, STACK_OFFSET(0x18, -0x4));
+	enum { SkipDeploy = 0x730D24 };
 
-	if (unitsToDeploy != 1)
+	GET_STACK(const int, selectedObjectCount, STACK_OFFSET(0x18, -0x4));
+
+	if (Phobos::Config::PriorityDeployFiltering && selectedObjectCount > 1)
+	{
+		GET(TechnoClass* const, pTechno, ESI);
+
+		auto const pExt = TechnoExt::ExtMap.Find(pTechno);
+
+		if (pExt->TypeExtData->LowDeployPriority)
+		{
+			for (const auto pObject : ObjectClass::CurrentObjects)
+			{
+				if ((pObject->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
+				{
+					if (!TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pObject))->TypeExtData->LowDeployPriority)
+						return SkipDeploy;
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x730D1F, ProcessDeployCommand_VoiceDeploy, 0x5)
+{
+	GET_STACK(const int, selectedObjectCount, STACK_OFFSET(0x18, -0x4));
+
+	if (selectedObjectCount != 1)
 		return 0;
 
+	GET(TechnoClass* const, pTechno, ESI);
+
+	pTechno->VoiceDeploy();
+
+	return 0;
+}
+
+#pragma endregion
+
+#pragma region Events
+
+DEFINE_HOOK(0x4C7512, EventClass_Execute_StopCommand, 0x6)
+{
 	GET(TechnoClass* const, pThis, ESI);
 
-	pThis->VoiceDeploy();
+	if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+	{
+		// issue #112 Make FireOnce=yes work on other TechnoType
+		// Author: Starkku
+		if (pUnit->CurrentMission == Mission::Unload && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer)
+		{
+			pUnit->SetTarget(nullptr);
+			pThis->QueueMission(Mission::Guard, true);
+		}
+
+		// Explicit stop command should reset subterranean harvester state machine.
+		auto const pExt = TechnoExt::ExtMap.Find(pUnit);
+		pExt->SubterraneanHarvStatus = 0;
+		pExt->SubterraneanHarvRallyPoint = nullptr;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4C7462, EventClass_Execute_MegaMission_MoveCommand, 0x5)
+{
+	enum { SkipGameCode = 0x4C74C0 };
+
+	GET(TechnoClass*, pTechno, EDI);
+
+	if (pTechno->WhatAmI() != AbstractType::Unit)
+		return 0;
+
+	GET(EventClass*, pThis, ESI);
+	auto const mission = static_cast<Mission>(pThis->MegaMission.Mission);
+	auto const pExt = TechnoExt::ExtMap.Find(pTechno);
+
+	if (mission == Mission::Move)
+	{
+		// Explicitly reset subterranean harvester state machine.
+		pExt->SubterraneanHarvStatus = 0;
+		pExt->SubterraneanHarvRallyPoint = nullptr;
+
+		// Do not explicitly reset target for KeepTargetOnMove vehicles when issued move command.
+		if (pExt->TypeExtData->KeepTargetOnMove && pTechno->Target)
+		{
+			GET(AbstractClass*, pTarget, EBX);
+
+			if (!pTarget && pTechno->IsCloseEnoughToAttack(pTechno->Target))
+			{
+				auto const pDestination = pThis->MegaMission.Destination.As_Abstract();
+				pTechno->SetDestination(pDestination, true);
+				pExt->KeepTargetOnMove = true;
+
+				return SkipGameCode;
+			}
+		}
+	}
+
+	pExt->KeepTargetOnMove = false;
 
 	return 0;
 }

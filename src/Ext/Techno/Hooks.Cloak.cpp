@@ -1,11 +1,12 @@
 #include "Body.h"
+#include <Ext/Rules/Body.h>
 
 namespace CloakTemp
 {
 	bool IsInReadyToCloak = false;
 }
 
-bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
+static bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	const bool cloakable = pThis->Cloakable;
@@ -33,7 +34,7 @@ bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
 	return retVal;
 }
 
-bool __fastcall TechnoClass_ShouldNotCloak_Wrapper(TechnoClass* pThis)
+static bool __fastcall TechnoClass_ShouldNotCloak_Wrapper(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	const bool cloakable = pThis->Cloakable;
@@ -173,4 +174,42 @@ DEFINE_HOOK(0x4579A5, BuildingClass_ShouldNotCloak_Sensors, 0x6)
 		return Skip;
 
 	return Continue;
+}
+
+// NOTE: Overrides incorrect Ares hook at the same address.
+DEFINE_HOOK(0x6FCA26, TechnoClass_CanFire_RevertAresOpenTopCloakFix, 0x6)
+{
+	enum { Skip = 0x6FCA4F, Continue = 0x6FCA36, NotApplicable = 0x6FCA5E };
+
+	GET(WeaponTypeClass*, pWeapon, EBX);
+
+	if (!pWeapon->DecloakToFire)
+		return NotApplicable;
+
+	GET(TechnoClass*, pThis, ESI);
+
+	if (pThis->InOpenToppedTransport && pThis->Transporter)
+	{
+		auto const pTransporterTypeExt = TechnoExt::ExtMap.Find(pThis->Transporter)->TypeExtData;
+		if (pTransporterTypeExt->OpenTopped_DecloakToFire.Get(RulesExt::Global()->OpenTopped_DecloakToFire))
+			return NotApplicable;
+	}
+
+	R->EAX(pThis->CloakState);
+	return Continue;
+}
+
+DEFINE_HOOK(0x6FCD1D, TechnoClass_CanFire_OpenTopCloakFix, 0x5)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET_STACK(const bool, checkIfTargetInRange, STACK_OFFSET(0x20, 0xC));
+
+	if (checkIfTargetInRange && pThis->InOpenToppedTransport && pThis->Transporter)
+	{
+		auto const pTransporterTypeExt = TechnoExt::ExtMap.Find(pThis->Transporter)->TypeExtData;
+		if (pTransporterTypeExt->OpenTopped_DecloakToFire.Get(RulesExt::Global()->OpenTopped_DecloakToFire))
+			pThis->Transporter->Uncloak(true);
+	}
+
+	return 0;
 }

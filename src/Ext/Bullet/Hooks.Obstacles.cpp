@@ -1,8 +1,6 @@
 #include "Body.h"
 
 #include <Ext/WeaponType/Body.h>
-#include <Ext/TechnoType/Body.h>
-#include <Utilities/Macro.h>
 
 // Ares reimplements the bullet obstacle logic so need to get creative to add any new functionality for that in Phobos.
 // Not named PhobosTrajectoryHelper to avoid confusion with actual custom trajectory logic.
@@ -211,7 +209,7 @@ DEFINE_HOOK(0x6F737F, TechnoClass_InRange_WeaponMinimumRange, 0x6)
 
 	GET(WeaponTypeClass*, pWeapon, EDX);
 
-	auto pTechno = InRangeTemp::Techno;
+	const auto pTechno = InRangeTemp::Techno;
 
 	if (const auto keepRange = WeaponTypeExt::GetTechnoKeepRange(pWeapon, pTechno, true))
 		R->ECX(keepRange);

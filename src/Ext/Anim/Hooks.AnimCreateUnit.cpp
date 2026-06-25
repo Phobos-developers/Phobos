@@ -3,23 +3,17 @@
 
 #include "Body.h"
 
-#include <BulletClass.h>
-#include <HouseClass.h>
-#include <ScenarioClass.h>
-
-#include <Ext/Bullet/Body.h>
-#include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
-#include <Ext/AnimType/Body.h>
 
 DEFINE_HOOK(0x737F6D, UnitClass_TakeDamage_Destroy, 0x7)
 {
 	GET(UnitClass* const, pThis, ESI);
-	REF_STACK(args_ReceiveDamage const, Receivedamageargs, STACK_OFFSET(0x44, 0x4));
+	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFSET(0x44, 0x4));
 
 	R->ECX(R->ESI());
 	TechnoExt::ExtMap.Find(pThis)->ReceiveDamage = true;
-	AnimTypeExt::ProcessDestroyAnims(pThis, Receivedamageargs.Attacker);
+	auto pAttacker = receiveDamageArgs.Attacker;
+	AnimTypeExt::ProcessDestroyAnims(pThis, pAttacker ? pAttacker->Owner : receiveDamageArgs.SourceHouse);
 	pThis->Destroy();
 
 	return 0x737F74;

@@ -1,8 +1,4 @@
-#include <UnitClass.h>
-#include <HouseClass.h>
-
 #include <Ext/Techno/Body.h>
-#include <Ext/TechnoType/Body.h>
 
 #pragma region EnterRefineryFix
 
@@ -72,6 +68,46 @@ DEFINE_HOOK(0x74613C, UnitClass_INoticeSink_CheckJumpjetHarvester, 0x6)
 
 #pragma endregion
 
+DEFINE_HOOK(0x4D6D34, FootClass_MissionAreaGuard_Miner, 0x5)
+{
+	enum { GoGuardArea = 0x4D6D69 };
+
+	GET(FootClass*, pThis, ESI);
+
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+
+	if (pTypeExt->Harvester_CanGuardArea && pThis->Owner->IsControlledByHuman())
+	{
+		if (!pTypeExt->Harvester_CanGuardArea_RequireTarget || pThis->TargetAndEstimateDamage(pThis->Location, ThreatType::Area))
+			return GoGuardArea;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x73D508, UnitClass_Harvesting_HarvesterLoadRate, 6)
+DEFINE_HOOK(0x73D5D5, UnitClass_Harvesting_HarvesterLoadRate, 6)
+{
+	GET(UnitClass* const, pThis, ESI);
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+
+	R->EAX(pTypeExt->HarvesterLoadRate.Get(RulesClass::Instance->HarvesterLoadRate));
+
+	return R->Origin() == 0x73D508 ? 0x73D50E : 0x73D5DB;
+}
+
+DEFINE_HOOK(0x73E361, UnitClass_Harvesting_HarvesterDumpRate, 6)
+{
+	GET(UnitClass* const, pThis, ESI);
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+
+	double dumpRate = pTypeExt->HarvesterDumpRate.Get(RulesClass::Instance->HarvesterDumpRate);
+
+	__asm { fld dumpRate }
+
+	return 0x73E367;
+}
+
 DEFINE_HOOK(0x73E411, UnitClass_Mission_Unload_DumpAmount, 0x7)
 {
 	enum { SkipGameCode = 0x73E41D };
@@ -90,15 +126,14 @@ DEFINE_HOOK(0x73E411, UnitClass_Mission_Unload_DumpAmount, 0x7)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x4D6D34, FootClass_MissionAreaGuard_Miner, 0x5)
+DEFINE_HOOK(0x73E951, UnitClass_Harvest_HarvesterLoadRate, 6)
 {
-	enum { GoGuardArea = 0x4D6D69 };
-
-	GET(FootClass*, pThis, ESI);
-
+	GET(UnitClass* const, pThis, EBP);
 	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
-	return pTypeExt->Harvester_CanGuardArea && pThis->Owner->IsControlledByHuman() ? GoGuardArea : 0;
+	R->EAX(pTypeExt->HarvesterLoadRate.Get(RulesClass::Instance->HarvesterLoadRate));
+
+	return 0x73E957;
 }
 
 #pragma region HarvesterScanAfterUnload
@@ -131,3 +166,135 @@ DEFINE_HOOK(0x73E730, UnitClass_MissionHarvest_HarvesterScanAfterUnload, 0x5)
 }
 
 #pragma endregion
+
+// Hooks that allow harvesters / weeders to work correctly with MovementZone=Subterannean (sic) - Starkku
+#pragma region SubterraneanHarvesters
+
+// Allow scanning for docks in all map zones.
+DEFINE_HOOK(0x4DEFC6, FootClass_FindDock_SubterraneanHarvester, 0x5)
+{
+	GET(TechnoTypeClass*, pTechnoType, EAX);
+
+	if (auto const pUnitType = abstract_cast<UnitTypeClass*>(pTechnoType))
+	{
+		if ((pUnitType->Harvester || pUnitType->Weeder) && pUnitType->MovementZone == MovementZone::Subterrannean)
+			R->ECX(MovementZone::Fly);
+	}
+
+	return 0;
+}
+
+// Allow scanning for ore in all map zones.
+DEFINE_HOOK(0x4DCF86, FootClass_FindTiberium_SubterraneanHarvester, 0x5)
+{
+	enum { SkipGameCode = 0x4DCF9B };
+
+	GET(MovementZone, mZone, ECX);
+
+	if (mZone == MovementZone::Subterrannean)
+		R->ECX(MovementZone::Fly);
+
+	return 0;
+}
+
+// Allow scanning for weeds in all map zones.
+DEFINE_HOOK(0x4DDB23, FootClass_FindWeeds_SubterraneanHarvester, 0x5)
+{
+	enum { SkipGameCode = 0x4DCF9B };
+
+	GET(MovementZone, mZone, EAX);
+
+	if (mZone == MovementZone::Subterrannean)
+		R->EAX(MovementZone::Fly);
+
+	return 0;
+}
+
+// Set flag on factory exit to mark the harvester as having just exited factory.
+DEFINE_HOOK(0x44459A, BuildingClass_ExitObject_SubterraneanHarvester, 0x5)
+{
+	GET(TechnoClass*, pThis, EDI);
+
+	if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+	{
+		auto const pType = pUnit->Type;
+
+		if ((pType->Harvester || pType->Weeder) && pType->MovementZone == MovementZone::Subterrannean)
+		{
+			auto const pExt = TechnoExt::ExtMap.Find(pUnit);
+			pExt->SubterraneanHarvStatus = 1;
+			pExt->SubterraneanHarvRallyPoint = pThis->ArchiveTarget;
+			pThis->ArchiveTarget = nullptr;
+		}
+	}
+
+	return 0;
+}
+
+// Apply same special rules on idle to player-owned subterranean harvesters as to Teleporter=yes ones.
+DEFINE_HOOK(0x740949, UnitClass_Mission_Guard_SubterraneanHarvester, 0x6)
+{
+	enum { Continue = 0x740957 };
+
+	GET(UnitTypeClass*, pType, ECX);
+
+	if (pType->MovementZone == MovementZone::Subterrannean)
+		return Continue;
+
+	return 0;
+}
+
+// Fix an edge case issue stemming from subterranean unit nav queue handling leading
+// to harvesters becoming idle randomly while harvesting.
+DEFINE_HOOK(0x738A3E, UnitClass_EnterIdleMode_SubterraneanHarvester, 0x5)
+{
+	enum { ReturnFromFunction = 0x738D21 };
+
+	GET(UnitClass*, pUnit, ESI);
+
+	if (pUnit)
+	{
+		auto const pType = pUnit->Type;
+
+		if ((pType->Harvester || pType->Weeder) && pType->MovementZone == MovementZone::Subterrannean)
+		{
+			auto const mission = pUnit->CurrentMission;
+
+			if (mission == Mission::Unload || mission == Mission::Harvest)
+				return ReturnFromFunction;
+		}
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
+// Skip the check for Teleporter here; this is an unreasonable check.
+// This check determines whether miners on a Guard mission near the refinery should return to the Harvest mission.
+DEFINE_JUMP(LJMP, 0x740943, 0x740957);
+
+// Now, miners will no longer actively withdraw from the Harvest mission due to mineral depletion.
+DEFINE_HOOK(0x73EEA6, UnitClass_MissionHarvest_AllOreGathered, 0x6)
+{
+	enum { SkipGameCode = 0x73EFA4 };
+
+	GET(UnitClass*, pThis, EBP);
+
+	auto pBuilding = MapClass::Instance.GetCellAt(pThis->GetCoords())->GetBuilding();
+	if (pBuilding && (pBuilding->Type->Refinery || pBuilding->Type->Weeder))
+	{
+		CellStruct buffer = CellStruct::Empty;
+		pThis->NearbyLocation(&buffer, pBuilding);
+		auto pDest = MapClass::Instance.GetCellAt(buffer);
+		pThis->SetDestination(pDest, false);
+		R->EAX(15);
+	}
+	else
+	{
+		pThis->MissionStatus = 0;
+		R->EAX(100);
+	}
+
+	return SkipGameCode;
+}

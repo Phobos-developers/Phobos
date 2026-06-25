@@ -1,11 +1,6 @@
 #include "Body.h"
 
-#include <AnimClass.h>
-#include <TacticalClass.h>
-#include <TerrainClass.h>
-#include <TerrainTypeClass.h>
-
-#include <Utilities/GeneralUtils.h>
+#include <Ext/Anim/Body.h>
 
 TerrainTypeExt::ExtContainer TerrainTypeExt::ExtMap;
 
@@ -22,9 +17,7 @@ int TerrainTypeExt::ExtData::GetCellsPerAnim()
 void TerrainTypeExt::ExtData::PlayDestroyEffects(const CoordStruct& coords)
 {
 	VocClass::PlayIndexAtPos(this->DestroySound, coords);
-
-	if (auto const pAnimType = this->DestroyAnim)
-		GameCreate<AnimClass>(pAnimType, coords);
+	AnimExt::CreateRandomAnim(this->DestroyAnim, coords);
 }
 
 void TerrainTypeExt::Remove(TerrainClass* pTerrain)
@@ -50,6 +43,7 @@ void TerrainTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpawnsTiberium_Range)
 		.Process(this->SpawnsTiberium_GrowthStage)
 		.Process(this->SpawnsTiberium_CellsPerAnim)
+		.Process(this->SpawnsTiberium_Particle)
 		.Process(this->DestroyAnim)
 		.Process(this->DestroySound)
 		.Process(this->MinimapColor)
@@ -73,6 +67,7 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnsTiberium_Range.Read(exINI, pSection, "SpawnsTiberium.Range");
 	this->SpawnsTiberium_GrowthStage.Read(exINI, pSection, "SpawnsTiberium.GrowthStage");
 	this->SpawnsTiberium_CellsPerAnim.Read(exINI, pSection, "SpawnsTiberium.CellsPerAnim");
+	this->SpawnsTiberium_Particle.Read(exINI, pSection, "SpawnsTiberium.Particle");
 
 	this->DestroyAnim.Read(exINI, pSection, "DestroyAnim");
 	this->DestroySound.Read(exINI, pSection, "DestroySound");
