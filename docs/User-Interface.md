@@ -700,6 +700,12 @@ DropshipLoadout.StartingDragDropSound=     ; sound ID
 DropshipLoadout.EndingDragDropSound=       ; sound ID
 ```
 
+- For customizing or localizing the interface strings, you can add the following entries to your `.csf` file:
+  - `TXT_DROPSHIP_CREDITS` - The text for the credits/money label. Default value: `Credits: %d`
+  - `TXT_DROPSHIP_START_MISSION` - The text prompting the player to start the mission. Default value: `Press SPACE to start the mission`
+  - `TXT_DROPSHIP_AVAILABLE` - The label text for availability in the tooltip. Default value: `Available: `
+  - `TXT_DROPSHIP_COST` - The label text for unit cost in the tooltip. Default value: `Cost: `
+
 ## Miscellanous
 
 ### Skip saving game on starting a new campaign

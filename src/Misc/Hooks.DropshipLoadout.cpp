@@ -3547,7 +3547,8 @@ void DropshipLoadoutClass::Render(DSurface* pSurface)
 	}
 
 	wchar_t buffer[64];
-	swprintf_s(buffer, L"Credits: %d", currentMoney);
+	const wchar_t* csfCredits = StringTable::TryFetchString("TXT_DROPSHIP_CREDITS", L"Credits: %d");
+	swprintf_s(buffer, csfCredits, currentMoney);
 	COLORREF foreColor = Drawing::RGB_To_Int(255, 239, 99);
 	TextPrintType style = (TextPrintType::FullShadow | TextPrintType::Point6Grad);
 	Point2D creditsLabel = {
@@ -3557,7 +3558,8 @@ void DropshipLoadoutClass::Render(DSurface* pSurface)
 
 	pSurface->DrawTextA(buffer, &windowRectangle, &creditsLabel, foreColor, 0, style);
 
-	swprintf_s(buffer, L"Press SPACE to start the mission");
+	const wchar_t* csfStartMission = StringTable::TryFetchString("TXT_DROPSHIP_START_MISSION", L"Press SPACE to start the mission");
+	swprintf_s(buffer, csfStartMission);
 	foreColor = Drawing::RGB_To_Int(255, 255, 255);
 	style = (TextPrintType::Center | TextPrintType::FullShadow | TextPrintType::Point6Grad);
 	Point2D pressSpaceLabel = {
@@ -3663,7 +3665,7 @@ void DropshipLoadoutClass::DrawTooltip(DSurface* pSurface)
 
 	// Availability line (if limit exists)
 	int availWidth = 0, availHeight = 0;
-	std::wstring availLabel = L"Available: ";
+	std::wstring availLabel = StringTable::TryFetchString("TXT_DROPSHIP_AVAILABLE", L"Available: ");
 	std::wstring availValueStr;
 	int availLabelWidth = 0, availLabelHeight = 0;
 	int availValueWidth = 0, availValueHeight = 0;
@@ -3684,7 +3686,7 @@ void DropshipLoadoutClass::DrawTooltip(DSurface* pSurface)
 	}
 
 	// Cost line
-	std::wstring costLabelStr = L"Cost: ";
+	std::wstring costLabelStr = StringTable::TryFetchString("TXT_DROPSHIP_COST", L"Cost: ");
 	int costLabelWidth = 0, costLabelHeight = 0;
 	int fullCostWidth = 0;
 	int fullCostHeight = 0;
