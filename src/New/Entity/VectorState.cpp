@@ -746,9 +746,6 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 	if (isBullet)
 	{
 		auto const pB = static_cast<BulletClass*>(pObject);
-		pB->Velocity.X = resultDisp.X;
-		pB->Velocity.Y = resultDisp.Y;
-		pB->Velocity.Z = resultDisp.Z;
 		s.StoredDisp = { currentPos.X + resultDisp.X, currentPos.Y + resultDisp.Y, currentPos.Z + resultDisp.Z };
 	}
 	else

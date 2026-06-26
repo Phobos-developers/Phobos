@@ -83,6 +83,11 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 
 	GET(BulletClass*, pThis, ESI);
 
+	// Debug::Log("[VEC] F=%d EXPLODE POS=(%d,%d,%d) TGT=(%d,%d,%d)\n",
+	// 	Unsorted::CurrentFrame,
+	// 	pThis->Location.X, pThis->Location.Y, pThis->Location.Z,
+	// 	pThis->TargetCoords.X, pThis->TargetCoords.Y, pThis->TargetCoords.Z);
+
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
 
 	if (pWHExt->DetonateOnAllMapObjects && !pWHExt->WasDetonatedOnAllMapObjects

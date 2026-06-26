@@ -59,10 +59,18 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 
 	if (pBulletExt->VectorType)
 	{
-		if (pBulletExt->Vector.CurrentFrame >= pBulletExt->VectorType->Duration)
+		if (pBulletExt->Vector.CurrentFrame > pBulletExt->VectorType->Duration)
 			pBulletExt->VectorType = nullptr;
-		else
+		else {
+			// Debug::Log("[VEC] F=%d AI POS=(%d,%d,%d) VEL=(%.0f,%.0f,%.0f) SRC=(%d,%d,%d) TGT=(%d,%d,%d) CF=%d\n",
+			// 	Unsorted::CurrentFrame,
+			// 	pThis->Location.X, pThis->Location.Y, pThis->Location.Z,
+			// 	pThis->Velocity.X, pThis->Velocity.Y, pThis->Velocity.Z,
+			// 	pThis->SourceCoords.X, pThis->SourceCoords.Y, pThis->SourceCoords.Z,
+			// 	pThis->TargetCoords.X, pThis->TargetCoords.Y, pThis->TargetCoords.Z,
+			// 	pBulletExt->Vector.CurrentFrame);
 			pBulletExt->VectorAI();
+		}
 	}
 
 	if (pBulletExt->InterceptedStatus & InterceptedStatus::Targeted)
@@ -159,6 +167,48 @@ DEFINE_HOOK(0x466897, BulletClass_AI_Trailer, 0x6)
 	pTrailerAnimExt->SetInvoker(pThis->Owner);
 
 	return SkipGameCode;
+}
+
+DEFINE_HOOK_AGAIN(0x467FEE, BulletClass_AI_UpdateEnd, 0x6)
+DEFINE_HOOK(0x466781, BulletClass_AI_UpdateEnd, 0x6)
+{
+	GET(BulletClass*, pThis, EBP);
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	// Debug::Log("[VEC] F=%d UE STORED=(%d,%d,%d) POS=(%d,%d,%d) VEL=(%.0f,%.0f,%.0f) SRC=(%d,%d,%d) TGT=(%d,%d,%d)\n",
+	// 	Unsorted::CurrentFrame,
+	// 	pExt ? pExt->Vector.StoredDisp.X : -1,
+	// 	pExt ? pExt->Vector.StoredDisp.Y : -1,
+	// 	pExt ? pExt->Vector.StoredDisp.Z : -1,
+	// 	pThis->Location.X, pThis->Location.Y, pThis->Location.Z,
+	// 	pThis->Velocity.X, pThis->Velocity.Y, pThis->Velocity.Z,
+	// 	pThis->SourceCoords.X, pThis->SourceCoords.Y, pThis->SourceCoords.Z,
+	// 	pThis->TargetCoords.X, pThis->TargetCoords.Y, pThis->TargetCoords.Z);
+
+	if (pExt && pExt->VectorType)
+	{
+		auto& pos = pExt->Vector.StoredDisp;
+		if (pos.X != 0 || pos.Y != 0 || pos.Z != 0)
+		{
+			CoordStruct prev = pThis->GetCoords();
+			pThis->SetLocation(pos);
+			pThis->SourceCoords = pos;
+			if (pExt->VectorType->Vector_SyncFacing)
+			{
+				double dx = (double)(pos.X - prev.X);
+				double dy = (double)(pos.Y - prev.Y);
+				double dz = (double)(pos.Z - prev.Z);
+				double mag = std::sqrt(dx * dx + dy * dy + dz * dz);
+				if (mag > 1e-6) { dx /= mag; dy /= mag; dz /= mag; }
+				pThis->Velocity.X = dx;
+				pThis->Velocity.Y = dy;
+				pThis->Velocity.Z = dz;
+			}
+			pos = CoordStruct::Empty;
+		}
+	}
+
+	return 0;
 }
 
 // Inviso bullets behave differently in BulletClass::AI when their target is bullet and
@@ -489,6 +539,9 @@ DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
 	GET(BulletClass*, pThis, ESI);
 
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (pExt->VectorType)
+		return SkipCheck;
 
 	if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()))
 		return SkipCheck;
