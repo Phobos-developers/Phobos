@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <RulesClass.h>
 #include <Utilities/Container.h>
@@ -294,7 +294,7 @@ public:
 		int TintColorForceShield;
 		int TintColorBerserk;
 
-    Valueable<int> CrusherLevel;
+		Valueable<int> CrusherLevel;
 		Valueable<int> CrushableLevel;
 		Valueable<int> OmniCrusherLevel;
 		Valueable<int> OmniCrushResistantLevel;
@@ -620,7 +620,7 @@ public:
 			, Parasite_GrappleAnim {}
 			, Parasite_AllowWaterExit {}
     
-      , CrusherLevel { 5 }
+			, CrusherLevel { 5 }
 			, CrushableLevel { 5 }
 			, OmniCrusherLevel { 10 }
 			, OmniCrushResistantLevel { 10 }
