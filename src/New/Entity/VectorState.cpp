@@ -544,10 +544,6 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 
 	if (isBullet)
 	{
-		auto const pB = static_cast<BulletClass*>(pObject);
-		pB->Velocity.X = moveDisp.X;
-		pB->Velocity.Y = moveDisp.Y;
-		pB->Velocity.Z = moveDisp.Z;
 		s.StoredDisp = { currentPos.X + moveDisp.X, currentPos.Y + moveDisp.Y, currentPos.Z + moveDisp.Z };
 	}
 	else
@@ -592,8 +588,6 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 
 		if (isBullet)
 		{
-			auto const pB = static_cast<BulletClass*>(pObject);
-			pB->Velocity.X = moveDisp.X; pB->Velocity.Y = moveDisp.Y; pB->Velocity.Z = moveDisp.Z;
 			s.StoredDisp = { currentPos.X + moveDisp.X, currentPos.Y + moveDisp.Y, currentPos.Z + moveDisp.Z };
 		}
 		else

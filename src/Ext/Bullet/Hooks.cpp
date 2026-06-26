@@ -59,7 +59,10 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 
 	if (pBulletExt->VectorType)
 	{
-		if (pBulletExt->Vector.CurrentFrame > pBulletExt->VectorType->Duration)
+		int earlyEnd = pBulletExt->VectorType->Vector_ReachTargetEarlyEnd;
+		int endFrame = pBulletExt->VectorType->Duration - earlyEnd;
+		if (endFrame < 1) endFrame = pBulletExt->VectorType->Duration;
+		if (pBulletExt->Vector.CurrentFrame >= endFrame || pBulletExt->Vector.CurrentFrame > pBulletExt->VectorType->Duration)
 		{
 			bool foundNext = false;
 			for (auto pNextType : pBulletExt->VectorType->Next)
@@ -76,13 +79,6 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 				pBulletExt->VectorType = nullptr;
 		}
 		else {
-			// Debug::Log("[VEC] F=%d AI POS=(%d,%d,%d) VEL=(%.0f,%.0f,%.0f) SRC=(%d,%d,%d) TGT=(%d,%d,%d) CF=%d\n",
-			// 	Unsorted::CurrentFrame,
-			// 	pThis->Location.X, pThis->Location.Y, pThis->Location.Z,
-			// 	pThis->Velocity.X, pThis->Velocity.Y, pThis->Velocity.Z,
-			// 	pThis->SourceCoords.X, pThis->SourceCoords.Y, pThis->SourceCoords.Z,
-			// 	pThis->TargetCoords.X, pThis->TargetCoords.Y, pThis->TargetCoords.Z,
-			// 	pBulletExt->Vector.CurrentFrame);
 			pBulletExt->VectorAI();
 		}
 	}
