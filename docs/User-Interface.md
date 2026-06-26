@@ -595,7 +595,8 @@ DisableEmptySpawnPositions=false  ; boolean
 - `DropshipLoadout.SidebarCameosCount` - The number of cameos to display in the side selection panel.
 - `DropshipLoadout.SidebarCameoLocationN` (where `N` is `0` to `SidebarCameosCount - 1`) - Screen coordinates for placing each sidebar unit selection cameo.
 - `DropshipLoadout.DropshipCameosCount` - The number of cameos representing the cargo slots inside the dropship.
-- `DropshipLoadout.DropshipN.CameoLocationM` (where `N` is the dropship index and `M` is `0` to `DropshipCameosCount - 1`) - Screen coordinates for the cargo cameo slots inside the cargo view of dropship `N`.
+- `DropshipLoadout.DropshipN.CameosCount` (where `N` is the 0-based dropship index) - The number of cameos representing the cargo slots inside the cargo view of dropship `N`. Defaults to `DropshipLoadout.DropshipCameosCount`.
+- `DropshipLoadout.DropshipN.CameoLocationM` (where `N` is the dropship index and `M` is `0` to the dropship's cameo count - 1) - Screen coordinates for the cargo cameo slots inside the cargo view of dropship `N`.
 - `DropshipLoadout.DGreenAnimationsCount` - The number of green status lights or animations.
 - `DropshipLoadout.DGreenLocationN` (where `N` is `0` to `DGreenAnimationsCount - 1`) - Screen coordinates for green status animations.
 - `DropshipLoadout.AllowableUnits` / `DropshipLoadout.AllowableUnitsN` (where `N` is the list index) - A list of TechnoTypes that are allowed to be purchased and loaded. If `N` is omitted, it defines the default allowed units.
@@ -636,15 +637,16 @@ DropshipLoadout.DownArrowLocation=         ; coordinate pair (X,Y)
 DropshipLoadout.PilotLitLocation=          ; coordinate pair (X,Y)
 DropshipLoadout.LoadoutLocation=           ; coordinate pair (X,Y)
 DropshipLoadout.SidebarCameosCount=8       ; integer
-DropshipLoadout.SidebarCameoLocation0=     ; coordinate pair (X,Y)
+DropshipLoadout.SidebarCameoLocationN=     ; coordinate pair (X,Y)
 DropshipLoadout.DGreenAnimationsCount=4    ; integer
-DropshipLoadout.DGreenLocation0=           ; coordinate pair (X,Y)
+DropshipLoadout.DGreenLocationN=           ; coordinate pair (X,Y)
 DropshipLoadout.DropshipCameosCount=5      ; integer
-DropshipLoadout.Dropship0.CameoLocation0=  ; coordinate pair (X,Y)
+DropshipLoadout.DropshipN.CameosCount=     ; integer
+DropshipLoadout.DropshipN.CameoLocationM=  ; coordinate pair (X,Y)
 DropshipLoadout.AllowableUnits=            ; list of TechnoTypes
 DropshipLoadout.AllowableUnitMaximums=     ; list of integers
-DropshipLoadout.Dropship0.FixedUnits=      ; list of TechnoTypes
-DropshipLoadout.Dropship0.InitialUnits=    ; list of TechnoTypes
+DropshipLoadout.DropshipN.FixedUnits=      ; list of TechnoTypes
+DropshipLoadout.DropshipN.InitialUnits=    ; list of TechnoTypes
 DropshipLoadout.BuyClickSound=             ; sound ID
 DropshipLoadout.SellClickSound=            ; sound ID
 DropshipLoadout.ArrowsClickSound=          ; sound ID
@@ -681,15 +683,16 @@ DropshipLoadout.DownArrowLocation=         ; coordinate pair (X,Y)
 DropshipLoadout.PilotLitLocation=          ; coordinate pair (X,Y)
 DropshipLoadout.LoadoutLocation=           ; coordinate pair (X,Y)
 DropshipLoadout.SidebarCameosCount=8       ; integer
-DropshipLoadout.SidebarCameoLocation0=     ; coordinate pair (X,Y)
+DropshipLoadout.SidebarCameoLocationN=     ; coordinate pair (X,Y)
 DropshipLoadout.DGreenAnimationsCount=4    ; integer
-DropshipLoadout.DGreenLocation0=           ; coordinate pair (X,Y)
+DropshipLoadout.DGreenLocationN=           ; coordinate pair (X,Y)
 DropshipLoadout.DropshipCameosCount=5      ; integer
-DropshipLoadout.Dropship0.CameoLocation0=  ; coordinate pair (X,Y)
+DropshipLoadout.DropshipN.CameosCount=     ; integer
+DropshipLoadout.DropshipN.CameoLocationM=  ; coordinate pair (X,Y)
 DropshipLoadout.AllowableUnits=            ; list of TechnoTypes
 DropshipLoadout.AllowableUnitMaximums=     ; list of integers
-DropshipLoadout.Dropship0.FixedUnits=      ; list of TechnoTypes
-DropshipLoadout.Dropship0.InitialUnits=    ; list of TechnoTypes
+DropshipLoadout.DropshipN.FixedUnits=      ; list of TechnoTypes
+DropshipLoadout.DropshipN.InitialUnits=    ; list of TechnoTypes
 DropshipLoadout.BuyClickSound=             ; sound ID
 DropshipLoadout.SellClickSound=            ; sound ID
 DropshipLoadout.ArrowsClickSound=          ; sound ID

@@ -177,7 +177,7 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	if (pINI->ReadString(pSection, "DropshipLoadout.Palette", "", Phobos::readBuffer) != 0)
 		this->DropshipLoadout_Palette = FileSystem::LoadPALFile(Phobos::readBuffer, DSurface::Hidden);
 
-	int nStartingDropships = this->DropshipLoadout_StartingDropships.isset() ? this->DropshipLoadout_StartingDropships.Get() : ScenarioExt::Global()->DropshipLoadout_StartingDropships;
+	int nStartingDropships = this->DropshipLoadout_StartingDropships.isset() ? this->DropshipLoadout_StartingDropships.Get() : (ScenarioExt::Global() ? ScenarioExt::Global()->DropshipLoadout_StartingDropships : 1);
 
 	if (pINI->ReadString(pSection, "DropshipLoadout.BackgroundPCX", "", Phobos::readBuffer) != 0)
 	{
@@ -275,41 +275,68 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 
 	this->DropshipLoadout_DropshipCameosCount.Read(exINI, pSection, "DropshipLoadout.DropshipCameosCount");
 
+	bool hasDropshipCameosConfig = false;
+
 	if (pINI->ReadString(pSection, "DropshipLoadout.DropshipCameosCount", "", Phobos::readBuffer) > 0)
+		hasDropshipCameosConfig = true;
+
+	int maxDropshipIdx = -1;
+
+	for (int k = 0; k < keyCount; ++k)
 	{
-		this->DropshipLoadout_DropshipCameosCount.Read(exINI, pSection, "DropshipLoadout.DropshipCameosCount");
-		this->DropshipLoadout_DropshipCameoLocations.clear();
+		const char* pKeyName = pINI->GetKeyName(pSection, k);
+		int dropshipIdx = -1;
+		int cameoIdx = -1;
 
-		int maxDropshipIdx = -1;
-
-		for (int k = 0; k < keyCount; ++k)
+		if (sscanf_s(pKeyName, "DropshipLoadout.Dropship%d.CameoLocation%d", &dropshipIdx, &cameoIdx) == 2)
 		{
-			const char* pKeyName = pINI->GetKeyName(pSection, k);
-			int dropshipIdx = -1;
-			int cameoIdx = -1;
+			hasDropshipCameosConfig = true;
+			char expectedKey[256];
+			_snprintf_s(expectedKey, sizeof(expectedKey), "DropshipLoadout.Dropship%d.CameoLocation%d", dropshipIdx, cameoIdx);
 
-			if (sscanf_s(pKeyName, "DropshipLoadout.Dropship%d.CameoLocation%d", &dropshipIdx, &cameoIdx) == 2)
+			if (strcmp(pKeyName, expectedKey) == 0)
 			{
-				char expectedKey[256];
-				_snprintf_s(expectedKey, sizeof(expectedKey), "DropshipLoadout.Dropship%d.CameoLocation%d", dropshipIdx, cameoIdx);
-
-				if (strcmp(pKeyName, expectedKey) == 0)
-				{
-					if (dropshipIdx > maxDropshipIdx)
-						maxDropshipIdx = dropshipIdx;
-				}
+				if (dropshipIdx > maxDropshipIdx)
+					maxDropshipIdx = dropshipIdx;
 			}
 		}
-
-		if (maxDropshipIdx != -1)
+		else if (sscanf_s(pKeyName, "DropshipLoadout.Dropship%d.CameosCount", &dropshipIdx) == 1)
 		{
-			int limit = maxDropshipIdx + 1;
+			hasDropshipCameosConfig = true;
+			char expectedKey[256];
+			_snprintf_s(expectedKey, sizeof(expectedKey), "DropshipLoadout.Dropship%d.CameosCount", dropshipIdx);
 
+			if (strcmp(pKeyName, expectedKey) == 0)
+			{
+				if (dropshipIdx > maxDropshipIdx)
+					maxDropshipIdx = dropshipIdx;
+			}
+		}
+	}
+	if (hasDropshipCameosConfig)
+	{
+		this->DropshipLoadout_DropshipCameoLocations.clear();
+
+		int limit = nStartingDropships;
+
+		if (maxDropshipIdx + 1 > limit)
+			limit = maxDropshipIdx + 1;
+
+		if (limit > 0)
+		{
 			for (int i = 0; i < limit; i++)
 			{
 				std::vector<Point2D> locations;
 
-				for (int j = 0; j < this->DropshipLoadout_DropshipCameosCount; j++)
+				char countKey[256];
+				_snprintf_s(countKey, sizeof(countKey), "DropshipLoadout.Dropship%d.CameosCount", i);
+				int defaultCount = this->DropshipLoadout_DropshipCameosCount.Get(0) > 0 ? this->DropshipLoadout_DropshipCameosCount.Get(0) : 5;
+				int cameosCount = pINI->ReadInteger(pSection, countKey, defaultCount);
+
+				if (cameosCount < 0)
+					cameosCount = 0;
+
+				for (int j = 0; j < cameosCount; j++)
 				{
 					char tempBuffer[256];
 					Point2D location = Point2D::Empty;
@@ -322,10 +349,6 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 				this->DropshipLoadout_DropshipCameoLocations.push_back(locations);
 			}
 		}
-	}
-	else
-	{
-		this->DropshipLoadout_DropshipCameosCount.Read(exINI, pSection, "DropshipLoadout.DropshipCameosCount");
 	}
 
 	this->DropshipLoadout_FixedUnits.clear();

@@ -326,17 +326,39 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 						maxDropshipIdx = dropshipIdx;
 				}
 			}
+			else if (sscanf_s(pKeyName, "DropshipLoadout.Dropship%d.CameosCount", &dropshipIdx) == 1)
+			{
+				char expectedKey[256];
+				_snprintf_s(expectedKey, sizeof(expectedKey), "DropshipLoadout.Dropship%d.CameosCount", dropshipIdx);
+
+				if (strcmp(pKeyName, expectedKey) == 0)
+				{
+					if (dropshipIdx > maxDropshipIdx)
+						maxDropshipIdx = dropshipIdx;
+				}
+			}
 		}
 
-		if (maxDropshipIdx != -1)
-		{
-			int limit = maxDropshipIdx + 1;
+		int limit = this->DropshipLoadout_StartingDropships;
 
+		if (maxDropshipIdx + 1 > limit)
+			limit = maxDropshipIdx + 1;
+
+		if (limit > 0)
+		{
 			for (int i = 0; i < limit; i++)
 			{
 				std::vector<Point2D> locations;
 
-				for (int j = 0; j < this->DropshipLoadout_DropshipCameosCount; j++)
+				char countKey[256];
+				_snprintf_s(countKey, sizeof(countKey), "DropshipLoadout.Dropship%d.CameosCount", i);
+				int defaultCount = this->DropshipLoadout_DropshipCameosCount > 0 ? this->DropshipLoadout_DropshipCameosCount : 5;
+				int cameosCount = pINI->ReadInteger(GameStrings::Basic, countKey, defaultCount);
+
+				if (cameosCount < 0)
+					cameosCount = 0;
+
+				for (int j = 0; j < cameosCount; j++)
 				{
 					char tempBuffer[256];
 					Point2D location = Point2D::Empty;

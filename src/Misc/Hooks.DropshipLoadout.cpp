@@ -174,6 +174,27 @@ bool DropshipLoadoutClass::Initialize(bool bIgnoreFixedUnits, bool bPreloadCargo
 	else
 	{
 		nStartingDropships = pHouseTypeExt->DropshipLoadout_StartingDropships.isset() ? pHouseTypeExt->DropshipLoadout_StartingDropships.Get() : ScenarioExt::Global()->DropshipLoadout_StartingDropships;
+
+		// Limit starting dropships to the number of configured carriers to prevent buying units in non-existent transport bays
+		std::vector<TechnoTypeClass*> carriers;
+
+		if (pHouseTypeExt->DropshipLoadout_Carriers.size() > 0)
+		{
+			for (auto carrier : pHouseTypeExt->DropshipLoadout_Carriers)
+			{
+				carriers.push_back(carrier);
+			}
+		}
+		else if (ScenarioExt::Global())
+		{
+			for (auto carrier : ScenarioExt::Global()->DropshipLoadout_Carriers)
+			{
+				carriers.push_back(carrier);
+			}
+		}
+
+		if (nStartingDropships > (int)carriers.size())
+			nStartingDropships = (int)carriers.size();
 	}
 
 	if (nStartingDropships <= 0)
@@ -1376,7 +1397,12 @@ void DropshipLoadoutClass::CalculateLayout(DSurface* pSurface)
 			for (int i = 0; i < nStartingDropships; i++)
 			{
 				std::vector<RectangleStruct> list;
-				for (int j = 0; j < nDropshipBayCameos; j++)
+				int currentCameosCount = nDropshipBayCameos;
+
+				if (i < (int)pHouseTypeExt->DropshipLoadout_DropshipCameoLocations.size())
+					currentCameosCount = (int)pHouseTypeExt->DropshipLoadout_DropshipCameoLocations[i].size();
+
+				for (int j = 0; j < currentCameosCount; j++)
 				{
 					int offsetX = 0;
 					int offsetY = 0;
@@ -1404,7 +1430,12 @@ void DropshipLoadoutClass::CalculateLayout(DSurface* pSurface)
 			for (int i = 0; i < nStartingDropships; i++)
 			{
 				std::vector<RectangleStruct> list;
-				for (int j = 0; j < nDropshipBayCameos; j++)
+				int currentCameosCount = nDropshipBayCameos;
+
+				if (i < (int)pGlobal->DropshipLoadout_DropshipCameoLocations.size())
+					currentCameosCount = (int)pGlobal->DropshipLoadout_DropshipCameoLocations[i].size();
+
+				for (int j = 0; j < currentCameosCount; j++)
 				{
 					int offsetX = 0;
 					int offsetY = 0;
@@ -1500,6 +1531,15 @@ void DropshipLoadoutClass::CalculateLayout(DSurface* pSurface)
 			}
 		}
 	}
+
+	// Update nDropshipBayCameos to the maximum slot count among all dropships
+	int maxCameos = 0;
+	for (auto const& list : dropshipBayCameLocations)
+	{
+		if ((int)list.size() > maxCameos)
+			maxCameos = (int)list.size();
+	}
+	nDropshipBayCameos = maxCameos;
 
 	nDropshipBayTotalSlots = nStartingDropships * nDropshipBayCameos;
 }
@@ -1751,8 +1791,9 @@ void DropshipLoadoutClass::CreateControls()
 				if (j >= (int)dropshipBayCameLocations[i].size())
 					continue;
 
+				int buttonID = btn_BasicDropshipCameo_ID + i * nDropshipBayCameos + j;
 				ShapeButtonClass* newButton = CreateShapeButton(
-					newID,
+					buttonID,
 					0, 0,
 					cameoWidth, cameoHeight,
 					true
@@ -1825,7 +1866,6 @@ void DropshipLoadoutClass::CreateControls()
 
 				dropshipBayChosenUnitsLists[i].push_back(pUnit);
 				dropshipBayFixedUnitsLists[i].push_back(isFixed);
-				newID++;
 			}
 		}
 	}

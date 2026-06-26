@@ -1224,7 +1224,7 @@ These parameters configure the interactive Dropship Loadout purchase window that
 * `DropshipLoadout.LoadoutPCX` / `DropshipLoadout.Loadout` / `DropshipLoadout.LoadoutLocation`: Current loadout selection box graphics and position.
 * `DropshipLoadout.PilotLitPCX` / `DropshipLoadout.PilotLit` / `DropshipLoadout.PilotLitLocation`: Status lights graphics and position.
 * `DropshipLoadout.SidebarCameosCount` / `DropshipLoadout.SidebarCameoLocationN`: Layout and coordinates for each sidebar cameo slot.
-* `DropshipLoadout.DropshipCameosCount` / `DropshipLoadout.CameoLocationN`: Layout and coordinates for each cargo slot cameo.
+* `DropshipLoadout.DropshipCameosCount` / `DropshipLoadout.Dropship0.CameosCount` / `DropshipLoadout.CameoLocationN`: Layout and coordinates for each cargo slot cameo.
 * `DropshipLoadout.DGreenListPCX` / `DropshipLoadout.DGreenList` / `DropshipLoadout.DGreenAnimationsCount` / `DropshipLoadout.DGreenLocationN`: Custom green status indicators and animations.
 * `DropshipLoadout.BuyClickSound` / `DropshipLoadout.SellClickSound` / `DropshipLoadout.ArrowsClickSound` / `DropshipLoadout.StartingDragDropSound` / `DropshipLoadout.EndingDragDropSound`: Audio click/drag sound effects.
 
@@ -1265,6 +1265,7 @@ DropshipLoadout.PilotLitLocation=                    ; coordinate pair (X,Y)
 DropshipLoadout.SidebarCameosCount=                  ; integer
 DropshipLoadout.SidebarCameoLocationN=               ; coordinate pair (X,Y)
 DropshipLoadout.DropshipCameosCount=                 ; integer
+DropshipLoadout.Dropship0.CameosCount=               ; integer
 DropshipLoadout.CameoLocationN=                      ; coordinate pair (X,Y)
 DropshipLoadout.DGreenListPCX=                       ; List of filenames (.pcx)
 DropshipLoadout.DGreenList=                          ; List of filenames (.shp)

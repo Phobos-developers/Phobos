@@ -465,12 +465,18 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->DropshipLoadout_SidebarCameosCount.Read(exINI, pSection, "DropshipLoadout.SidebarCameosCount");
 	}
 
-	if (pINI->ReadString(pSection, "DropshipLoadout.DropshipCameosCount", "", Phobos::readBuffer) > 0)
+	this->DropshipLoadout_DropshipCameosCount.Read(exINI, pSection, "DropshipLoadout.DropshipCameosCount");
+	int cameosCount = this->DropshipLoadout_DropshipCameosCount.Get(0);
+	char countKey[256];
+	_snprintf_s(countKey, sizeof(countKey), "DropshipLoadout.Dropship0.CameosCount");
+	cameosCount = pINI->ReadInteger(pSection, countKey, cameosCount);
+
+	if (cameosCount > 0)
 	{
-		this->DropshipLoadout_DropshipCameosCount.Read(exINI, pSection, "DropshipLoadout.DropshipCameosCount");
+		this->DropshipLoadout_DropshipCameosCount = cameosCount;
 		this->DropshipLoadout_DropshipCameosLocations.clear();
 
-		for (int j = 0; j < this->DropshipLoadout_DropshipCameosCount; j++)
+		for (int j = 0; j < cameosCount; j++)
 		{
 			char tempBuffer[256];
 			Point2D location = Point2D::Empty;
@@ -500,10 +506,6 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			pINI->ReadPoint2D(location, pSection, tempBuffer, location);
 			this->DropshipLoadout_DropshipCameosLocations.push_back(location);
 		}
-	}
-	else
-	{
-		this->DropshipLoadout_DropshipCameosCount.Read(exINI, pSection, "DropshipLoadout.DropshipCameosCount");
 	}
 
 	this->DropshipLoadout_FixedUnits.clear();
