@@ -56,6 +56,19 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 	{
 		s.Initialized = true;
 		s.InitialOriginPos = GetPos();
+		switch (pType->Vector_Origin)
+		{
+		case VectorOrigin::Launcher:
+			if (pInvoker) s.InitialOriginPos = pInvoker->GetCoords();
+			break;
+		case VectorOrigin::Target:
+			if (isBullet)
+			{
+				auto const pB = static_cast<BulletClass*>(pObject);
+				s.InitialOriginPos = pB->TargetCoords;
+			}
+			break;
+		}
 		s.InitialLocation = GetPos();
 
 		if (isBullet)
