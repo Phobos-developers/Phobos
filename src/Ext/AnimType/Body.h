@@ -50,6 +50,8 @@ public:
 		Valueable<bool> VisibleTo_ConsiderInvokerAsOwner;
 		Valueable<bool> RestrictVisibilityIfCloaked;
 		Valueable<bool> DetachOnCloak;
+		Animatable<TranslucencyLevel> Translucency;
+		Animatable<TranslucencyLevel> Translucency_Cloaked;
 		Valueable<bool> ConstrainFireAnimsToCellSpots;
 		Nullable<LandTypeFlags> FireAnimDisallowedLandTypes;
 		Nullable<bool> AttachFireAnimsToParent;
@@ -62,6 +64,9 @@ public:
 		ValueableVector<double> LargeFireChances;
 		ValueableVector<double> LargeFireDistances;
 		Nullable<bool> Crater_DestroyTiberium;
+		Nullable<bool> TheaterPalette;
+		Valueable<int> Tiled_Interval;
+		Valueable<bool> Tiled_AlignToCenter;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
@@ -89,6 +94,8 @@ public:
 			, VisibleTo_ConsiderInvokerAsOwner { false }
 			, RestrictVisibilityIfCloaked { false }
 			, DetachOnCloak { true }
+			, Translucency { TranslucencyLevel {} }
+			, Translucency_Cloaked { TranslucencyLevel {} }
 			, ConstrainFireAnimsToCellSpots { true }
 			, FireAnimDisallowedLandTypes {}
 			, AttachFireAnimsToParent {}
@@ -101,6 +108,9 @@ public:
 			, LargeFireChances {}
 			, LargeFireDistances {}
 			, Crater_DestroyTiberium {}
+			, TheaterPalette {}
+			, Tiled_Interval { 0 }
+			, Tiled_AlignToCenter { false }
 		{ }
 
 		virtual ~ExtData() = default;

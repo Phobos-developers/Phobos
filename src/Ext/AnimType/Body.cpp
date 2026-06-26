@@ -102,6 +102,8 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->VisibleTo_ConsiderInvokerAsOwner.Read(exINI, pID, "VisibleTo.ConsiderInvokerAsOwner");
 	this->RestrictVisibilityIfCloaked.Read(exINI, pID, "RestrictVisibilityIfCloaked");
 	this->DetachOnCloak.Read(exINI, pID, "DetachOnCloak");
+	this->Translucency.Read(exINI, pID, "Translucency", this->OwnerObject()->End);
+	this->Translucency_Cloaked.Read(exINI, pID, "Translucency.Cloaked", this->OwnerObject()->End, true);
 	this->ConstrainFireAnimsToCellSpots.Read(exINI, pID, "ConstrainFireAnimsToCellSpots");
 	this->FireAnimDisallowedLandTypes.Read<false, true>(exINI, pID, "FireAnimDisallowedLandTypes");
 	this->AttachFireAnimsToParent.Read(exINI, pID, "AttachFireAnimsToParent");
@@ -114,6 +116,9 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->LargeFireChances.Read(exINI, pID, "LargeFireChances");
 	this->LargeFireDistances.Read(exINI, pID, "LargeFireDistances");
 	this->Crater_DestroyTiberium.Read(exINI, pID, "Crater.DestroyTiberium");
+	this->TheaterPalette.Read(exINI, pID, "TheaterPalette");
+	this->Tiled_Interval.Read(exINI, pID, "Tiled.Interval");
+	this->Tiled_AlignToCenter.Read(exINI, pID, "Tiled.AlignToCenter");
 
 	// Parasitic types
 	Nullable<TechnoTypeClass*> createUnit;
@@ -161,6 +166,8 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->VisibleTo_ConsiderInvokerAsOwner)
 		.Process(this->RestrictVisibilityIfCloaked)
 		.Process(this->DetachOnCloak)
+		.Process(this->Translucency)
+		.Process(this->Translucency_Cloaked)
 		.Process(this->ConstrainFireAnimsToCellSpots)
 		.Process(this->FireAnimDisallowedLandTypes)
 		.Process(this->AttachFireAnimsToParent)
@@ -173,6 +180,9 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LargeFireChances)
 		.Process(this->LargeFireDistances)
 		.Process(this->Crater_DestroyTiberium)
+		.Process(this->TheaterPalette)
+		.Process(this->Tiled_Interval)
+		.Process(this->Tiled_AlignToCenter)
 		;
 }
 

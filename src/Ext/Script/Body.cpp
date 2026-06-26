@@ -497,7 +497,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown)
 					const auto mission = pUnit->GetCurrentMission();
 
 					// Is near of the leader, then protect the area
-					if (mission != Mission::Area_Guard || mission != Mission::Attack)
+					if (mission != Mission::Area_Guard && mission != Mission::Attack)
 						pUnit->QueueMission(Mission::Area_Guard, true);
 
 					nTogether++;

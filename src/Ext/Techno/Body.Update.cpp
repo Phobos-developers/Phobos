@@ -36,6 +36,7 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->ApplyMindControlRangeLimit();
 	this->UpdateRecountBurst();
 	this->UpdateRearmInEMPState();
+	this->UpdateLastTargetCrd();
 
 	if (this->AttackMoveFollowerTempCount)
 		this->AttackMoveFollowerTempCount--;
@@ -49,10 +50,11 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	if (!pInterceptorType || Unsorted::CurrentFrame % pInterceptorType->TargetingDelay != 0)
 		return;
 
-	if (!BulletClass::Array.Count || this->IsBurrowed)
+	const auto pThis = this->OwnerObject();
+
+	if (!BulletClass::Array.Count || this->IsBurrowed || !pThis->IsArmed())
 		return;
 
-	const auto pThis = this->OwnerObject();
 	const auto pTarget = pThis->Target;
 
 	if (pTarget)
@@ -66,7 +68,13 @@ void TechnoExt::ExtData::ApplyInterceptor()
 			return;
 	}
 
+	const bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
+
+	if (isBuilding && (pThis->CurrentMission == Mission::Selling || pThis->CurrentMission == Mission::Construction))
+		return;
+
 	BulletClass* pOptionalTarget = nullptr;
+	BulletClass* pTargetBullet = nullptr;
 	const double guardRange = pInterceptorType->GuardRange.Get(pThis);
 	const double guardRangeSq = guardRange * guardRange;
 	const double minGuardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
@@ -90,7 +98,12 @@ void TechnoExt::ExtData::ApplyInterceptor()
 		if (pOptionalTarget && isTargetedOrLocked)
 			continue;
 
-		const auto distanceSq = pBullet->Location.DistanceFromSquared(location);
+		auto bulletLoc = pBullet->Location;
+
+		if (pInterceptorType->GuardRange_IsCylindrical)
+			bulletLoc.Z = location.Z;
+
+		const auto distanceSq = bulletLoc.DistanceFromSquared(location);
 
 		if (distanceSq > guardRangeSq || distanceSq < minGuardRangeSq)
 			continue;
@@ -113,12 +126,25 @@ void TechnoExt::ExtData::ApplyInterceptor()
 		}
 
 		// Establish target
-		pThis->SetTarget(pBullet);
-		return;
+		pTargetBullet = pBullet;
+		break;
 	}
 
-	if (pOptionalTarget)
-		pThis->SetTarget(pOptionalTarget);  // There is no more suitable target, establish optional target
+	// There is no more suitable target, establish optional target
+	if (!pTargetBullet && pOptionalTarget)
+		pTargetBullet = pOptionalTarget;
+
+	if (pTargetBullet)
+	{
+		pThis->SetTarget(pTargetBullet);
+
+		// Skip normal transition from idle to attack for building interceptors.
+		if (isBuilding)
+		{
+			pThis->QueueMission(Mission::Attack, false);
+			pThis->NextMission();
+		}
+	}
 }
 
 void TechnoExt::ExtData::DepletedAmmoActions()
@@ -1115,6 +1141,11 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		barrelRecoil.HoldFrames = barrelAnimData.HoldFrames;
 	}
 
+	if (pOldType->BombSight && !pCurrentType->BombSight)
+		BombListClass::Instance.RemoveDetector(pThis);
+	else if (!pOldType->BombSight && pCurrentType->BombSight)
+		BombListClass::Instance.AddDetector(pThis);
+
 	// Only FootClass* can use this.
 	if (const auto pFoot = abstract_cast<FootClass*, true>(pThis))
 	{
@@ -1145,6 +1176,13 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	// handle AutoTargetOwnPosition
 	if (pOldTypeExt->AutoTargetOwnPosition && !pNewTypeExt->AutoTargetOwnPosition)
 		pThis->SetTarget(nullptr);
+
+	// Clear AlphaImage
+	if (const auto pAlphaMap = AresFunctions::AlphaExtMap)
+	{
+		if (const auto pAlpha = pAlphaMap->get_or_default(pThis))
+			GameDelete(pAlpha);
+	}
 }
 
 void TechnoExt::ExtData::UpdateTypeData_Foot()
@@ -1216,6 +1254,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 		{
 			if (toOpenTopped)
 			{
+				pFirstPassenger->SetLocation(pThis->Location);
 				// Add passengers to the logic layer.
 				pThis->EnteredOpenTopped(pFirstPassenger);
 			}
@@ -1267,6 +1306,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 			{
 				const int turnrate = pCurrentType->JumpjetTurnRate >= 127 ? 127 : pCurrentType->JumpjetTurnRate;
 				pJJLoco->Speed = pCurrentType->JumpjetSpeed;
+				pJJLoco->Climb = pCurrentType->JumpjetClimb;
 				pJJLoco->Accel = pCurrentType->JumpjetAccel;
 				pJJLoco->Crash = pCurrentType->JumpjetCrash;
 				pJJLoco->Deviation = pCurrentType->JumpjetDeviation;
@@ -1907,6 +1947,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			if (shouldDiscard && attachEffect->ResetIfRecreatable())
 			{
 				++it;
+				altered = true;
 				continue;
 			}
 
@@ -2038,12 +2079,36 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 }
 
 // Recalculates AttachEffect stat multipliers and other bonuses.
-void TechnoExt::ExtData::RecalculateStatMultipliers()
+bool TechnoExt::ExtData::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 {
 	auto const pThis = this->OwnerObject();
 	auto& pAE = this->AE;
-	const bool wasTint = pAE.HasTint;
 
+	if (pAttachEffect)
+	{
+		auto const type = pAttachEffect->GetType();
+		pAE.FirepowerMultiplier *= type->FirepowerMultiplier;
+		pAE.SpeedMultiplier *= type->SpeedMultiplier;
+		pAE.ROFMultiplier *= type->ROFMultiplier;
+		pAE.Cloakable |= type->Cloakable;
+		pAE.ForceDecloak |= type->ForceDecloak;
+		pAE.DisableWeapons |= type->DisableWeapons;
+		pAE.Unkillable |= type->Unkillable;
+		pAE.HasRangeModifier |= (type->WeaponRange_ExtraRange != 0.0 || type->WeaponRange_Multiplier != 0.0);
+		pAE.HasTint |= type->HasTint();
+		pAE.ReflectDamage |= type->ReflectDamage;
+		pAE.HasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
+		pAE.HasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
+
+		if (type->ArmorMultiplier != 1.0 && (type->ArmorMultiplier_AllowWarheads.size() > 0 || type->ArmorMultiplier_DisallowWarheads.size() > 0))
+			pAE.HasRestrictedArmorMultipliers = true;
+		else
+			pAE.ArmorMultiplier *= type->ArmorMultiplier;
+
+		return pAE.ForceDecloak;
+	}
+
+	const bool wasTint = pAE.HasTint;
 	double firepower = 1.0;
 	double armor = 1.0;
 	double speed = 1.0;
@@ -2105,6 +2170,8 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 
 	if (wasTint || hasTint)
 		this->UpdateTintValues();
+
+	return false;
 }
 
 // Recalculates tint values.
@@ -2167,5 +2234,31 @@ void TechnoExt::ExtData::UpdateTintValues()
 	{
 		auto const pShieldType = this->Shield->GetType();
 		calculateTint(Drawing::RGB_To_Int(pShieldType->Tint_Color), static_cast<int>(pShieldType->Tint_Intensity * 1000), pShieldType->Tint_VisibleToHouses);
+	}
+}
+
+void TechnoExt::ExtData::UpdateLastTargetCrd()
+{
+	if (!this->TypeExtData->ExtraThreat_Enabled)
+		return;
+
+	auto const pThis = this->OwnerObject();
+	auto pTimer = &this->LastTargetCrdClearTimer;
+
+	if (pThis->Target)
+	{
+		this->LastTargetCrd = pThis->Target->GetCoords();
+		pTimer->Stop();
+	}
+	else
+	{
+		if (!pTimer->IsTicking())
+			pTimer->Start(45);
+
+		if (pTimer->Completed())
+		{
+			this->LastTargetCrd = CoordStruct::Empty;
+			pTimer->Stop();
+		}
 	}
 }

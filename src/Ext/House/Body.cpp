@@ -25,7 +25,7 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 	if (!skipGround && this->UpdateHarvesterProduction())
 		return;
 
-	auto const AIDifficulty = static_cast<int>(pThis->GetAIDifficultyIndex());
+	const int AIDifficulty = pThis->GetAIDifficultyIndex();
 	auto& creationFrames = HouseExt::AIProduction_CreationFrames;
 	auto& values = HouseExt::AIProduction_Values;
 	auto& bestChoices = HouseExt::AIProduction_BestChoices;
@@ -155,8 +155,8 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 bool HouseExt::ExtData::UpdateHarvesterProduction()
 {
 	auto const pThis = this->OwnerObject();
-	auto const AIDifficulty = static_cast<int>(pThis->GetAIDifficultyIndex());
-	auto const idxParentCountry = pThis->Type->FindParentCountryIndex();
+	const int AIDifficulty = pThis->GetAIDifficultyIndex();
+	const int idxParentCountry = pThis->Type->FindParentCountryIndex();
 	auto const pHarvesterUnit = HouseExt::FindOwned(pThis, idxParentCountry, make_iterator(RulesClass::Instance->HarvesterUnit));
 
 	if (pHarvesterUnit)
@@ -711,6 +711,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->TeamDelay)
 		.Process(this->FreeRadar)
 		.Process(this->ForceRadar)
+		.Process(this->PlayerAutoRepair)
 		;
 }
 
@@ -740,27 +741,35 @@ bool HouseExt::SaveGlobals(PhobosStreamWriter& Stm)
 
 void HouseExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 {
-	AnnounceInvalidPointer(Factory_BuildingType, ptr);
-	AnnounceInvalidPointer(Factory_InfantryType, ptr);
-	AnnounceInvalidPointer(Factory_VehicleType, ptr);
-	AnnounceInvalidPointer(Factory_NavyType, ptr);
-	AnnounceInvalidPointer(Factory_AircraftType, ptr);
-
-	if (ptr != nullptr)
+	if (bRemoved)
 	{
-		if (!OwnedLimboDeliveredBuildings.empty())
-		{
-			auto& vec = this->OwnedLimboDeliveredBuildings;
-			vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
-		}
+		AnnounceInvalidPointer(this->Factory_BuildingType, ptr);
+		AnnounceInvalidPointer(this->Factory_InfantryType, ptr);
+		AnnounceInvalidPointer(this->Factory_VehicleType, ptr);
+		AnnounceInvalidPointer(this->Factory_NavyType, ptr);
+		AnnounceInvalidPointer(this->Factory_AircraftType, ptr);
 
-		if (!RestrictedFactoryPlants.empty())
+		if (ptr != nullptr)
 		{
-			auto& vec = this->RestrictedFactoryPlants;
-			vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
+			if (!this->PowerPlantEnhancers.empty())
+			{
+				auto& vec = this->PowerPlantEnhancers;
+				vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
+			}
+
+			if (!this->OwnedLimboDeliveredBuildings.empty())
+			{
+				auto& vec = this->OwnedLimboDeliveredBuildings;
+				vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
+			}
+
+			if (!this->RestrictedFactoryPlants.empty())
+			{
+				auto& vec = this->RestrictedFactoryPlants;
+				vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
+			}
 		}
 	}
-
 }
 
 // =============================

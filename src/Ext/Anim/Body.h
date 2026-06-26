@@ -27,6 +27,12 @@ public:
 		bool DelayedFireRemoveOnNoDelay;
 		bool IsAttachedEffectAnim;
 		bool IsShieldIdleAnim;
+		WeaponTypeClass* FiringAnim_Weapon;
+		int FiringAnim_WeaponIndex;
+		int FiringAnim_BurstIndex;
+		DirStruct FiringAnim_LastFacing;
+		CoordStruct FiringAnim_LastCoords;
+		double FirepowerMult;
 
 		ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
 			, DeathUnitFacing { 0 }
@@ -41,12 +47,20 @@ public:
 			, DelayedFireRemoveOnNoDelay { false }
 			, IsAttachedEffectAnim { false }
 			, IsShieldIdleAnim { false }
+			, FiringAnim_Weapon {}
+			, FiringAnim_WeaponIndex {}
+			, FiringAnim_BurstIndex {}
+			, FiringAnim_LastFacing {}
+			, FiringAnim_LastCoords {}
+			, FirepowerMult { 1.0 }
 		{ }
 
 		void SetInvoker(TechnoClass* pInvoker);
 		void SetInvoker(TechnoClass* pInvoker, HouseClass* pInvokerHouse);
 		void CreateAttachedSystem();
 		void DeleteAttachedSystem();
+
+		void UpdateAsFiringAnim();
 
 		virtual ~ExtData() override;
 

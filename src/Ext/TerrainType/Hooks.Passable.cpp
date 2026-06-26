@@ -1,9 +1,5 @@
 #include "Body.h"
 
-constexpr bool IS_CELL_OCCUPIED(CellClass* pCell)
-{
-	return pCell->OccupationFlags & 0x20 || pCell->OccupationFlags & 0x40 || pCell->OccupationFlags & 0x80 || pCell->GetInfantry(false);
-}
 
 // Passable TerrainTypes Hook #1 - Do not set occupy bits.
 DEFINE_HOOK(0x71C110, TerrainClass_SetOccupyBit_PassableTerrain, 0x6)
@@ -156,3 +152,73 @@ DEFINE_HOOK(0x45EF3A, BuildingTypeClass_FlushForPlacement_BuildableTerrain, 0x7)
 	return Continue;
 }
 
+#pragma region FindBuildLocation
+
+namespace FindBuildLocationTemp
+{
+	bool EvaluatingBuildLocation = false;
+}
+
+// Set the global flag when calling this from evaluating building locations for AI.
+static bool __fastcall MapClass_IsAreaFree_Wrapper(MapClass* pThis, void* _, RectangleStruct* pRect, int houseID)
+{
+	FindBuildLocationTemp::EvaluatingBuildLocation = true;
+	bool result = pThis->IsAreaFree(pRect, houseID);
+	FindBuildLocationTemp::EvaluatingBuildLocation = false;
+	return result;
+}
+
+DEFINE_FUNCTION_JUMP(CALL, 0x5069DB, MapClass_IsAreaFree_Wrapper);
+
+// Ignore buildable terrain when evaluating building locations for AI. Replaces the vanilla function.
+DEFINE_HOOK(0x586780, MapClass_IsAreaFree, 0x7)
+{
+	enum { ReturnFromFunction = 0x586887 };
+
+	GET(MapClass*, pThis, ECX);
+	GET_STACK(RectangleStruct*, pRect, 0x4);
+	GET_STACK(int, houseID, 0x8);
+
+	int mask = houseID >= 0 ? 1 << houseID : 0;
+
+	for (int x = pRect->X; x < pRect->X + pRect->Width; x++)
+	{
+		for (int y = pRect->Y; y < pRect->Y + pRect->Height; y++)
+		{
+			CellClass* pCell = pThis->GetCellAt(CellStruct { static_cast<short>(x), static_cast<short>(y) });
+			auto const pTerrain = pCell->GetTerrain(false);
+			bool altPassability = false;
+
+			if (pTerrain)
+			{
+				if (!FindBuildLocationTemp::EvaluatingBuildLocation || !TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+				{
+					R->EAX(false);
+					return ReturnFromFunction;
+				}
+
+				altPassability = true;
+			}
+
+			// If we're evaluating a cell with buildable TerrainType on it, passability check needs some alterations.
+			const bool invalidPassability = altPassability
+				? (pCell->Passability != PassabilityType::Passable && pCell->Passability != PassabilityType::HasFreeSpots)
+				: (pCell->Passability != PassabilityType::Passable);
+
+			if ((pCell->BaseSpacerOfHouses & mask) != 0
+				|| pCell->OverlayTypeIndex != -1
+				|| invalidPassability
+				|| pCell->SlopeIndex
+				|| pCell->GetBuilding())
+			{
+				R->EAX(false);
+				return ReturnFromFunction;
+			}
+		}
+	}
+
+	R->EAX(pThis->InLocalRadar(pRect, true));
+	return ReturnFromFunction;
+}
+
+#pragma endregion

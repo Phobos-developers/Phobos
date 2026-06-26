@@ -271,6 +271,69 @@ When the type or function you need is missing or incorrect in YRpp, add or fix i
 
 **Important:** Always push your YRpp branch *before* pushing the Phobos commit that references it, otherwise CI cannot resolve the submodule.
 
+### Interop API design
+
+#### Key macros
+
+Interop exports are declared in `src/Interop/*.h` using macros from `src/Utilities/Macro.h`:
+
+| Macro | Purpose | Notes |
+|---|---|---|
+| `DEFINE_CALLBACK(returnType, FuncName, params...)` | Declares a callback type. Callbacks are chain-able (each receives previous result) and stored in a static `std::vector`. Use null-checks when invoking. | Declare in header, initialize in `.cpp` |
+| `DEFINE_EXPORT(returnType, FuncName, params...)` | Exports a C function for P/Invoke. Signature: `extern "C" __declspec(dllexport)`. Use `_Phobos` suffix to avoid naming collisions with Ares. | See `src/Interop/TechnoExt.h/cpp` for examples |
+
+#### Interop API version management
+
+Interop API versions are defined in `src/Interop/Version.h` and follow **Semantic Versioning 2.0.0** (see https://semver.org/):
+
+| Version Component | Increment When | Example |
+|---|---|---|
+| **Major** | Breaking change (backward incompatible). Existing external code **will not work** without modification. | Changing callback signature: `double f(int a)` → `double f(int a, int b)` |
+| **Minor** | New backward-compatible feature added. External code continues to work without change. | Adding a new `DEFINE_EXPORT` function or new callback type. |
+| **Patch** | Backward-compatible bug fix only. No API changes. | Fixing a logic error in an exported function implementation. |
+
+**Version constants in `Version.h`:**
+```cpp
+#define INTEROP_API_VERSION_MAJOR 1
+#define INTEROP_API_VERSION_MINOR 2
+#define INTEROP_API_VERSION_PATCH 0
+```
+
+**When to increment:**
+
+- **MAJOR bump** (1.0.0 → 2.0.0):
+  - Change callback/function signature (parameter type, return type, count).
+  - Remove or rename a callback/export.
+  - Change callback return value semantics (e.g., return value now used differently).
+
+- **MINOR bump** (1.0.0 → 1.1.0):
+  - Add a new callback type and its registration function.
+  - Add a new `DEFINE_EXPORT` function.
+  - Extend callback behavior with new optional parameters (if backward compatible).
+
+- **PATCH bump** (1.0.0 → 1.0.1):
+  - Fix a bug in an exported function's implementation.
+  - Clarify documentation/comments.
+  - No API signature changes.
+
+**Example workflow:**
+
+1. You add `DEFINE_EXPORT(void, NewFeature_Phobos, ...)` - this is a new feature → **MINOR** bump (1.0.0 → 1.1.0).
+2. You change the signature of an existing callback from `int f(ptr)` to `int f(ptr, int extra)` → **MAJOR** bump (1.1.0 → 2.0.0).
+3. You fix a logic bug in `ConvertToType_Phobos` without changing its signature → **PATCH** bump (2.0.0 → 2.0.1).
+
+**Deprecated APIs:**
+
+When an exported function or callback becomes obsolete but must remain for compatibility, keep its stub but document it with a version range and deprecation note:
+
+```cpp
+/// <summary>
+/// DEPRECATED: Use RegisterCalculateSightCallback_Phobos (available since 1.1.0).
+/// This function will be removed in version 3.0.0.
+/// </summary>
+DEFINE_EXPORT(void, RegisterSightModifier_Phobos, OldCallbackType callback);  // Removed in 3.0.0
+```
+
 ## Code Style (enforced by .editorconfig)
 
 - **Tabs** for indentation (size 4).
@@ -352,3 +415,24 @@ Trust the information here and proceed directly with implementation. Only search
 If your changes affect anything described in this file (project structure, build process, patterns, macros, etc.), **strongly consider updating this instructions file** to keep it accurate.
 
 When selecting a model for Copilot, prefer **Claude** models for this repository.
+
+## Reusable Helpers in `Helpers::Alex` (src/Utilities/Helpers.Alex.h)
+
+Before writing new utility code (range queries, conditional iteration, duration calculations, sorting, etc.), check whether any of the following helpers in `src/Utilities/Helpers.Alex.h` can be reused. They are located in the `Helpers::Alex` namespace.
+
+| Helper | Signature / Usage | Purpose |
+|---|---|---|
+| `DistinctCollector<T>` | `using DistinctCollector<T> = std::set<T, ...>` | Unique-element set. For pointer types, automatically dereferences and compares by value. |
+| `getCappedDuration` | `int getCappedDuration(int current, int duration, int cap)` | Calculates the new frame count for stackable/absolute effects (buff/debuff duration logic). Supports positive (stack/cap) and negative (reduce) durations. |
+| `getCellSpreadItems` | `DistinctCollector<TechnoClass*> getCellSpreadItems(CoordStruct const& coords, double spread, bool includeInAir = false)` | Returns all `TechnoClass*` objects within a given `spread` (leptons) from a coordinate. Buildings use cell-center distance; other units use exact location. |
+| `getCellSpreadItemsExt` | `DistinctCollector<TechnoClass*> getCellSpreadItemsExt(CoordStruct const& coords, double spread, bool includeInAir, bool ignoreHeight)` | Extended version of `getCellSpreadItems` with an additional `ignoreHeight` flag. |
+| `for_each_in_rect` | `bool for_each_in_rect<T>(CellStruct center, float width, int height, Func&& action)` | Invokes `action` for every cell (or every object on the cells) in a rectangle centered at `center`. |
+| `for_each_in_rect_or_range` | `bool for_each_in_rect_or_range<T>(CellStruct center, float widthOrRange, int height, Func&& action)` | Dispatches to rectangle traversal (`height > 0`) or circular-range traversal (`CellRangeIterator`, `height <= 0`). |
+| `for_each_in_rect_or_spread` | `bool for_each_in_rect_or_spread<T>(CellStruct center, float widthOrRange, int height, Func&& action)` | Dispatches to rectangle traversal (`height > 0`) or CellSpread traversal (`CellSpreadIterator`, `height <= 0`). |
+| `is_any_of` | `bool is_any_of(Value&& value, Options&&... options)` | Variadic comparison: returns `true` if `value` equals any of the provided options. |
+| `remove_non_paradroppables` | `void remove_non_paradroppables(std::vector<TechnoTypeClass*>& types, const char* section, const char* key)` | Removes entries that are neither `InfantryType` nor `UnitType` from the vector. Logs removals via `Debug::INIParseFailed`. |
+| `for_each_if` | `void for_each_if(InIt first, InIt last, Pred pred, Fn func)` | Calls `func` for every element in `[first, last)` that satisfies `pred`. Linear: `std::find_if`-based skip. |
+| `for_each_if_n` | `void for_each_if_n(InIt first, InIt last, size_t count, Pred pred, Fn func)` | Same as `for_each_if` but stops after at most `count` invocations of `func`. |
+| `selectionsort` | `void selectionsort(FwdIt first, [middle,] last[, Pred pred])` (4 overloads) | Stable partial selection sort. Supports custom predicates and partial sorting (`[first, middle)` vs. full range). |
+
+**Always prefer reusing these helpers over reimplementing equivalent logic.**

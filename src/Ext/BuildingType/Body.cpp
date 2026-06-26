@@ -9,7 +9,10 @@ BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
 int BuildingTypeExt::ExtData::GetSuperWeaponCount() const
 {
 	// The user should only use SuperWeapon and SuperWeapon2 if the attached sw count isn't bigger than 2
-	return 2 + this->SuperWeapons.size();
+	const auto pThis = this->OwnerObject();
+	int count = pThis->SuperWeapon >= 0 ? 1 : 0;
+	count += pThis->SuperWeapon2 >= 0 ? 1 : 0;
+	return count + this->SuperWeapons.size();
 }
 
 int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index, HouseClass* pHouse) const
@@ -40,22 +43,42 @@ int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
 	return -1;
 }
 
-std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse)
+std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse, BuildingClass* pPowerPlant)
 {
+	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
 	int amount = 0;
 	float factor = 1.0f;
+	std::map<int, int> applied; // index, count
 
-	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
-
-	for (const auto& [typeIdx, count] : pHouseExt->PowerPlantEnhancers)
+	for (const auto pEnhancer : pHouseExt->PowerPlantEnhancers)
 	{
-		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(BuildingTypeClass::Array[typeIdx]);
+		if (!TechnoExt::IsActive(pEnhancer) || !pEnhancer->HasPower)
+			continue;
 
-		if (pTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding))
+		const auto pEnhancerType = pEnhancer->Type;
+		const auto pEnhancerTypeExt = BuildingTypeExt::ExtMap.Find(pEnhancerType);
+
+		if (!pEnhancerTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding))
+			continue;
+
+		const int range = pEnhancerTypeExt->PowerPlantEnhancer_Range.Get();
+
+		if (range > 0 && (!pPowerPlant || pEnhancer->DistanceFrom(pPowerPlant) > range))
+			continue;
+
+		const int max = pEnhancerTypeExt->PowerPlantEnhancer_MaxCount;
+
+		if (max > 0)
 		{
-			factor *= std::powf(pTypeExt->PowerPlantEnhancer_Factor, static_cast<float>(count));
-			amount += pTypeExt->PowerPlantEnhancer_Amount * count;
+			const auto it = applied.find(pEnhancerType->ArrayIndex);
+
+			if (it != applied.cend() && it->second >= max)
+				continue;
 		}
+
+		factor *= pEnhancerTypeExt->PowerPlantEnhancer_Factor;
+		amount += pEnhancerTypeExt->PowerPlantEnhancer_Amount;
+		++applied[pEnhancerType->ArrayIndex];
 	}
 
 	return std::make_pair(static_cast<int>(std::round(output * factor)), amount);
@@ -89,14 +112,14 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 {
 	int result = 0;
 	bool isUpgrade = false;
-	auto const pPowersUp = pBuilding->PowersUpBuilding;
 
 	auto checkUpgrade = [pHouse, pBuilding, &result, &isUpgrade](BuildingTypeClass* pTPowersUp)
 	{
 		isUpgrade = true;
+
 		for (auto const& pBld : pHouse->Buildings)
 		{
-			if (pBld->Type == pTPowersUp)
+			if (pBld->UpgradeLevel && pBld->Type == pTPowersUp)
 			{
 				for (auto const& pUpgrade : pBld->Upgrades)
 				{
@@ -107,17 +130,22 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 		}
 	};
 
+	// June 7, 2026 - Starkku: PowersUpBuilding is now put in PowersUp_Buildings
+	/*
+	auto const pPowersUp = pBuilding->PowersUpBuilding;
+
 	if (pPowersUp[0])
 	{
 		if (auto const pTPowersUp = BuildingTypeClass::Find(pPowersUp))
 			checkUpgrade(pTPowersUp);
-	}
+	}*/
 
 	for (auto const pTPowersUp : BuildingTypeExt::ExtMap.Find(pBuilding)->PowersUp_Buildings)
 		checkUpgrade(pTPowersUp);
 
 	return isUpgrade ? result : -1;
 }
+
 
 void BuildingTypeExt::ExtData::Initialize()
 { }
@@ -138,14 +166,11 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PowersUp_Buildings.Read(exINI, pSection, "PowersUp.Buildings");
 	this->PowerPlant_DamageFactor.Read(exINI, pSection, "PowerPlant.DamageFactor");
 	this->PowerPlantEnhancer_Buildings.Read(exINI, pSection, "PowerPlantEnhancer.PowerPlants");
+	this->PowerPlantEnhancer_Range.Read(exINI, pSection, "PowerPlantEnhancer.Range");
 	this->PowerPlantEnhancer_Amount.Read(exINI, pSection, "PowerPlantEnhancer.Amount");
 	this->PowerPlantEnhancer_Factor.Read(exINI, pSection, "PowerPlantEnhancer.Factor");
 	this->PowerPlantEnhancer_MaxCount.Read(exINI, pSection, "PowerPlantEnhancer.MaxCount");
 	this->Powered_KillSpawns.Read(exINI, pSection, "Powered.KillSpawns");
-
-	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
-		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
-
 	this->CanC4_AllowZeroDamage.Read(exINI, pSection, "CanC4.AllowZeroDamage");
 
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
@@ -162,6 +187,12 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Grinding_Weapon_RequiredCredits.Read(exINI, pSection, "Grinding.Weapon.RequiredCredits");
 
 	this->DisplayIncome.Read(exINI, pSection, "DisplayIncome");
+	this->DisplayIncome_Delay.Read(exINI, pSection, "DisplayIncome.Delay");
+	if (this->DisplayIncome_Delay.isset() && this->DisplayIncome_Delay == 0)
+	{
+		Debug::Log("[Developer warning] [%s] DisplayIncome.Delay is set to 0, forcing to 1.\n", pSection);
+		this->DisplayIncome_Delay = 1;
+	}
 	this->DisplayIncome_Houses.Read(exINI, pSection, "DisplayIncome.Houses");
 	this->DisplayIncome_Offset.Read(exINI, pSection, "DisplayIncome.Offset");
 
@@ -197,10 +228,31 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BuildingBunkerROFMult.Read(exINI, pSection, "BunkerROFMultMultiplier");
 	this->BunkerWallsUpSound.Read(exINI, pSection, "BunkerWallsUpSound");
 	this->BunkerWallsDownSound.Read(exINI, pSection, "BunkerWallsDownSound");
+	this->BunkerStateUpdateDelay.Read(exINI, pSection, "BunkerStateUpdateDelay");
 	this->BuildingRepairedSound.Read(exINI, pSection, "BuildingRepairedSound");
 	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
 	this->UndeploysInto_Sellable.Read(exINI, pSection, "UndeploysInto.Sellable");
 	this->BuildingRadioLink_SyncOwner.Read(exINI, pSection, "BuildingRadioLink.SyncOwner");
+	this->GuardRetryDelay.Read(exINI, pSection, "GuardRetryDelay");
+
+	this->TurretAnim_IdleFrames.Read(exINI, pSection, "TurretAnim.IdleFrames");
+	this->TurretAnim_LowPowerIdleFrames.Read(exINI, pSection, "TurretAnim.LowPowerIdleFrames");
+	this->TurretAnim_FiringFrames.Read(exINI, pSection, "TurretAnim.FiringFrames");
+	this->TurretAnim_LowPowerFiringFrames.Read(exINI, pSection, "TurretAnim.LowPowerFiringFrames");
+	this->TurretAnim_IdleRate.Read(exINI, pSection, "TurretAnim.IdleRate");
+	this->TurretAnim_FiringRate.Read(exINI, pSection, "TurretAnim.FiringRate");
+
+	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
+	{
+		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
+	}
+	else if (pThis->PowersUpBuilding[0])
+	{
+		auto pPowerUpType = BuildingTypeClass::Find(pThis->PowersUpBuilding);
+
+		if (pPowerUpType && !this->PowersUp_Buildings.Contains(pPowerUpType))
+			this->PowersUp_Buildings.emplace_back(pPowerUpType);
+	}
 
 	if (pThis->NumberOfDocks > 0)
 	{
@@ -291,6 +343,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PowersUp_Buildings)
 		.Process(this->PowerPlant_DamageFactor)
 		.Process(this->PowerPlantEnhancer_Buildings)
+		.Process(this->PowerPlantEnhancer_Range)
 		.Process(this->PowerPlantEnhancer_Amount)
 		.Process(this->PowerPlantEnhancer_Factor)
 		.Process(this->PowerPlantEnhancer_MaxCount)
@@ -311,6 +364,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Grinding_Weapon)
 		.Process(this->Grinding_Weapon_RequiredCredits)
 		.Process(this->DisplayIncome)
+		.Process(this->DisplayIncome_Delay)
 		.Process(this->DisplayIncome_Houses)
 		.Process(this->DisplayIncome_Offset)
 		.Process(this->PlacementPreview)
@@ -351,11 +405,19 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingBunkerROFMult)
 		.Process(this->BunkerWallsUpSound)
 		.Process(this->BunkerWallsDownSound)
+		.Process(this->BunkerStateUpdateDelay)
 		.Process(this->BuildingRepairedSound)
 		.Process(this->Refinery_UseNormalActiveAnim)
 		.Process(this->HasPowerUpAnim)
 		.Process(this->UndeploysInto_Sellable)
 		.Process(this->BuildingRadioLink_SyncOwner)
+		.Process(this->GuardRetryDelay)
+		.Process(this->TurretAnim_IdleFrames)
+		.Process(this->TurretAnim_LowPowerIdleFrames)
+		.Process(this->TurretAnim_FiringFrames)
+		.Process(this->TurretAnim_LowPowerFiringFrames)
+		.Process(this->TurretAnim_IdleRate)
+		.Process(this->TurretAnim_FiringFrames)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)
@@ -390,16 +452,14 @@ bool BuildingTypeExt::ExtContainer::Load(BuildingTypeClass* pThis, IStream* pStm
 
 bool BuildingTypeExt::LoadGlobals(PhobosStreamReader& Stm)
 {
-
 	return Stm.Success();
 }
 
 bool BuildingTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 {
-
-
 	return Stm.Success();
 }
+
 // =============================
 // container
 

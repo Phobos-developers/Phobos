@@ -119,3 +119,7 @@ DEFINE_HOOK(0x6E2368, TActionClass_PlayAnimAt, 0x7)
 
 	return SkipGameCode;
 }
+
+// Enable InGameMovie TAction in non-campaign mode.
+DEFINE_JUMP(LJMP, 0x5BF3B0, 0x5BF3BD);
+DEFINE_JUMP(LJMP, 0x5BF2BB, 0x5BF2C1); // Func unused in vanilla, but maybe someone will use it.
