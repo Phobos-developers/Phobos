@@ -348,8 +348,6 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		{
 			for (int i = 0; i < limit; i++)
 			{
-				std::vector<Point2D> locations;
-
 				char countKey[256];
 				_snprintf_s(countKey, sizeof(countKey), "DropshipLoadout.Dropship%d.CameosCount", i);
 				int defaultCount = this->DropshipLoadout_DropshipCameosCount > 0 ? this->DropshipLoadout_DropshipCameosCount : 5;
@@ -357,6 +355,8 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 				if (cameosCount < 0)
 					cameosCount = 0;
+
+				auto& locations = this->DropshipLoadout_DropshipCameoLocations.emplace_back();
 
 				for (int j = 0; j < cameosCount; j++)
 				{
@@ -367,8 +367,6 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 					pINI->ReadPoint2D(location, GameStrings::Basic, tempBuffer, location);
 					locations.push_back(location);
 				}
-
-				this->DropshipLoadout_DropshipCameoLocations.push_back(locations);
 			}
 		}
 	}

@@ -285,7 +285,7 @@ void DropshipLoadoutClass::LoadAssets()
 			}
 
 			if (!rowAnimFrames.empty())
-				dropshipLoadout_DGreenListPCX.push_back(rowAnimFrames);
+				dropshipLoadout_DGreenListPCX.push_back(std::move(rowAnimFrames));
 		}
 
 		if (pSWTypeExt->DropshipLoadout_DGreenList.size() > 0)
@@ -574,7 +574,7 @@ void DropshipLoadoutClass::LoadAssets()
 		{
 			for (const auto& pAnimationVector : pHouseTypeExt->DropshipLoadout_DGreenListPCX)
 			{
-				std::vector<BSurface*> rowAnimFrames;
+				auto& rowAnimFrames = dropshipLoadout_DGreenListPCX.emplace_back();
 
 				if (pAnimationVector)
 				{
@@ -583,15 +583,13 @@ void DropshipLoadoutClass::LoadAssets()
 						rowAnimFrames.push_back(frame.GetSurface());
 					}
 				}
-
-				dropshipLoadout_DGreenListPCX.push_back(rowAnimFrames);
 			}
 		}
 		else if (pGlobal && pGlobal->DropshipLoadout_DGreenListPCX.size() > 0)
 		{
 			for (auto& pFileGroupPCX : pGlobal->DropshipLoadout_DGreenListPCX)
 			{
-				std::vector<BSurface*> rowAnimFrames;
+				auto& rowAnimFrames = dropshipLoadout_DGreenListPCX.emplace_back();
 
 				if (pFileGroupPCX)
 				{
@@ -600,14 +598,11 @@ void DropshipLoadoutClass::LoadAssets()
 						rowAnimFrames.push_back(pFilePCX.GetSurface());
 					}
 				}
-
-				dropshipLoadout_DGreenListPCX.push_back(rowAnimFrames);
 			}
 
 			for (int i = 0; i < 4 && dropshipLoadout_DGreenListPCX.size() < 4; i++)
 			{
-				std::vector<BSurface*> emptyAnimFrames;
-				dropshipLoadout_DGreenListPCX.push_back(emptyAnimFrames);
+				dropshipLoadout_DGreenListPCX.emplace_back();
 			}
 		}
 
@@ -979,7 +974,7 @@ void DropshipLoadoutClass::CalculateLayout(DSurface* pSurface)
 			{
 				int cameoX = backgroundX + pSWTypeExt->DropshipLoadout_SidebarCameosLocations[i].X;
 				int cameoY = backgroundY + pSWTypeExt->DropshipLoadout_SidebarCameosLocations[i].Y;
-				sidebarCameLocations.push_back({ cameoX, cameoY, cameoWidth, cameoHeight });
+				sidebarCameLocations.emplace_back(cameoX, cameoY, cameoWidth, cameoHeight);
 			}
 		}
 		else
@@ -988,7 +983,7 @@ void DropshipLoadoutClass::CalculateLayout(DSurface* pSurface)
 			{
 				int cameoX = backgroundX + 493 + 68 * (i % 2);
 				int cameoY = backgroundY + 25 + 50 * (i / 2);
-				sidebarCameLocations.push_back({ cameoX, cameoY, cameoWidth, cameoHeight });
+				sidebarCameLocations.emplace_back(cameoX, cameoY, cameoWidth, cameoHeight);
 			}
 		}
 
@@ -1140,33 +1135,34 @@ void DropshipLoadoutClass::CalculateLayout(DSurface* pSurface)
 		{
 			nDropshipBayCameos = pSWTypeExt->DropshipLoadout_DropshipCameosCount;
 
-			std::vector<RectangleStruct> list;
+			auto& list = dropshipBayCameLocations.emplace_back();
+
 			for (int j = 0; j < nDropshipBayCameos; j++)
 			{
 				int offsetX = 0;
 				int offsetY = 0;
+
 				if (j < (int)pSWTypeExt->DropshipLoadout_DropshipCameosLocations.size())
 				{
 					offsetX = pSWTypeExt->DropshipLoadout_DropshipCameosLocations[j].X;
 					offsetY = pSWTypeExt->DropshipLoadout_DropshipCameosLocations[j].Y;
 				}
+
 				int cameoX = backgroundX + offsetX;
 				int cameoY = backgroundY + offsetY;
-				list.push_back({ cameoX, cameoY, cameoWidth, cameoHeight });
+				list.emplace_back(cameoX, cameoY, cameoWidth, cameoHeight);
 			}
-			dropshipBayCameLocations.push_back(list);
 		}
 		else
 		{
 			int cameoX = backgroundX + 55;
 			int cameoY = backgroundY + 69;
-			std::vector<RectangleStruct> list;
-			list.push_back({ cameoX, cameoY, cameoWidth, cameoHeight });
-			list.push_back({ cameoX + 66, cameoY, cameoWidth, cameoHeight });
-			list.push_back({ cameoX, cameoY + 50, cameoWidth, cameoHeight });
-			list.push_back({ cameoX + 66, cameoY + 50, cameoWidth, cameoHeight });
-			list.push_back({ cameoX + 132, cameoY + 50, cameoWidth, cameoHeight });
-			dropshipBayCameLocations.push_back(list);
+			auto& list = dropshipBayCameLocations.emplace_back();
+			list.emplace_back(cameoX, cameoY, cameoWidth, cameoHeight);
+			list.emplace_back(cameoX + 66, cameoY, cameoWidth, cameoHeight);
+			list.emplace_back(cameoX, cameoY + 50, cameoWidth, cameoHeight);
+			list.emplace_back(cameoX + 66, cameoY + 50, cameoWidth, cameoHeight);
+			list.emplace_back(cameoX + 132, cameoY + 50, cameoWidth, cameoHeight);
 		}
 	}
 	else
@@ -1193,7 +1189,7 @@ void DropshipLoadoutClass::CalculateLayout(DSurface* pSurface)
 			{
 				int cameoX = backgroundX + pHouseTypeExt->DropshipLoadout_SidebarCameoLocations[i].X;
 				int cameoY = backgroundY + pHouseTypeExt->DropshipLoadout_SidebarCameoLocations[i].Y;
-				sidebarCameLocations.push_back({ cameoX, cameoY, cameoWidth, cameoHeight });
+				sidebarCameLocations.emplace_back(cameoX, cameoY, cameoWidth, cameoHeight);
 			}
 		}
 		else if (pGlobal && pGlobal->DropshipLoadout_SidebarCameosCount > 0)
@@ -1203,7 +1199,7 @@ void DropshipLoadoutClass::CalculateLayout(DSurface* pSurface)
 			{
 				int cameoX = backgroundX + pGlobal->DropshipLoadout_SidebarCameoLocations[i].X;
 				int cameoY = backgroundY + pGlobal->DropshipLoadout_SidebarCameoLocations[i].Y;
-				sidebarCameLocations.push_back({ cameoX, cameoY, cameoWidth, cameoHeight });
+				sidebarCameLocations.emplace_back(cameoX, cameoY, cameoWidth, cameoHeight);
 			}
 		}
 		else
@@ -1212,7 +1208,7 @@ void DropshipLoadoutClass::CalculateLayout(DSurface* pSurface)
 			{
 				int cameoX = backgroundX + 493 + 68 * (i % 2);
 				int cameoY = backgroundY + 25 + 50 * (i / 2);
-				sidebarCameLocations.push_back({ cameoX, cameoY, cameoWidth, cameoHeight });
+				sidebarCameLocations.emplace_back(cameoX, cameoY, cameoWidth, cameoHeight);
 			}
 		}
 
@@ -1390,14 +1386,12 @@ void DropshipLoadoutClass::CalculateLayout(DSurface* pSurface)
 		nDropshipBayCameos = 5;
 		dropshipBayCameLocations.clear();
 
-		if (pHouseTypeExt->DropshipLoadout_DropshipCameosCount.Get(0) > 0)
+		if (!pHouseTypeExt->DropshipLoadout_DropshipCameoLocations.empty())
 		{
-			nDropshipBayCameos = pHouseTypeExt->DropshipLoadout_DropshipCameosCount;
-
 			for (int i = 0; i < nStartingDropships; i++)
 			{
-				std::vector<RectangleStruct> list;
-				int currentCameosCount = nDropshipBayCameos;
+				auto& list = dropshipBayCameLocations.emplace_back();
+				int currentCameosCount = pHouseTypeExt->DropshipLoadout_DropshipCameosCount.Get(0) > 0 ? pHouseTypeExt->DropshipLoadout_DropshipCameosCount.Get(0) : 5;
 
 				if (i < (int)pHouseTypeExt->DropshipLoadout_DropshipCameoLocations.size())
 					currentCameosCount = (int)pHouseTypeExt->DropshipLoadout_DropshipCameoLocations[i].size();
@@ -1417,20 +1411,16 @@ void DropshipLoadoutClass::CalculateLayout(DSurface* pSurface)
 					}
 					int cameoX = backgroundX + offsetX;
 					int cameoY = backgroundY + offsetY;
-					list.push_back({ cameoX, cameoY, cameoWidth, cameoHeight });
+					list.emplace_back(cameoX, cameoY, cameoWidth, cameoHeight);
 				}
-
-				dropshipBayCameLocations.push_back(list);
 			}
 		}
-		else if (pGlobal && pGlobal->DropshipLoadout_DropshipCameosCount > 0)
+		else if (pGlobal && !pGlobal->DropshipLoadout_DropshipCameoLocations.empty())
 		{
-			nDropshipBayCameos = pGlobal->DropshipLoadout_DropshipCameosCount;
-
 			for (int i = 0; i < nStartingDropships; i++)
 			{
-				std::vector<RectangleStruct> list;
-				int currentCameosCount = nDropshipBayCameos;
+				auto& list = dropshipBayCameLocations.emplace_back();
+				int currentCameosCount = pGlobal->DropshipLoadout_DropshipCameosCount > 0 ? pGlobal->DropshipLoadout_DropshipCameosCount : 5;
 
 				if (i < (int)pGlobal->DropshipLoadout_DropshipCameoLocations.size())
 					currentCameosCount = (int)pGlobal->DropshipLoadout_DropshipCameoLocations[i].size();
@@ -1450,10 +1440,8 @@ void DropshipLoadoutClass::CalculateLayout(DSurface* pSurface)
 					}
 					int cameoX = backgroundX + offsetX;
 					int cameoY = backgroundY + offsetY;
-					list.push_back({ cameoX, cameoY, cameoWidth, cameoHeight });
+					list.emplace_back(cameoX, cameoY, cameoWidth, cameoHeight);
 				}
-
-				dropshipBayCameLocations.push_back(list);
 			}
 		}
 		else
@@ -1462,55 +1450,50 @@ void DropshipLoadoutClass::CalculateLayout(DSurface* pSurface)
 			{
 				int cameoX = backgroundX + 55;
 				int cameoY = backgroundY + 69;
-				std::vector<RectangleStruct> list;
-				list.push_back({ cameoX, cameoY, cameoWidth, cameoHeight });
-				list.push_back({ cameoX + 66, cameoY, cameoWidth, cameoHeight });
-				list.push_back({ cameoX, cameoY + 50, cameoWidth, cameoHeight });
-				list.push_back({ cameoX + 66, cameoY + 50, cameoWidth, cameoHeight });
-				list.push_back({ cameoX + 132, cameoY + 50, cameoWidth, cameoHeight });
-				dropshipBayCameLocations.push_back(list);
+				auto& list = dropshipBayCameLocations.emplace_back();
+				list.emplace_back(cameoX, cameoY, cameoWidth, cameoHeight);
+				list.emplace_back(cameoX + 66, cameoY, cameoWidth, cameoHeight);
+				list.emplace_back(cameoX, cameoY + 50, cameoWidth, cameoHeight);
+				list.emplace_back(cameoX + 66, cameoY + 50, cameoWidth, cameoHeight);
+				list.emplace_back(cameoX + 132, cameoY + 50, cameoWidth, cameoHeight);
 			}
 			if (nStartingDropships == 2)
 			{
 				int cameoX = backgroundX + 55;
 				int cameoY = backgroundY + 209;
-				std::vector<RectangleStruct> list;
-				list.push_back({ cameoX, cameoY, cameoWidth, cameoHeight });
-				list.push_back({ cameoX + 66, cameoY, cameoWidth, cameoHeight });
-				list.push_back({ cameoX, cameoY + 50, cameoWidth, cameoHeight });
-				list.push_back({ cameoX + 66, cameoY + 50, cameoWidth, cameoHeight });
-				list.push_back({ cameoX + 132, cameoY + 50, cameoWidth, cameoHeight });
-				dropshipBayCameLocations.push_back(list);
+				auto& list = dropshipBayCameLocations.emplace_back();
+				list.emplace_back(cameoX, cameoY, cameoWidth, cameoHeight);
+				list.emplace_back(cameoX + 66, cameoY, cameoWidth, cameoHeight);
+				list.emplace_back(cameoX, cameoY + 50, cameoWidth, cameoHeight);
+				list.emplace_back(cameoX + 66, cameoY + 50, cameoWidth, cameoHeight);
+				list.emplace_back(cameoX + 132, cameoY + 50, cameoWidth, cameoHeight);
 			}
 			if (nStartingDropships == 3)
 			{
 				int cameoX = backgroundX + 55;
 				int cameoY = backgroundY + 39;
-				std::vector<RectangleStruct> list1;
-				list1.push_back({ cameoX, cameoY, cameoWidth, cameoHeight });
-				list1.push_back({ cameoX + 66, cameoY, cameoWidth, cameoHeight });
-				list1.push_back({ cameoX, cameoY + 50, cameoWidth, cameoHeight });
-				list1.push_back({ cameoX + 66, cameoY + 50, cameoWidth, cameoHeight });
-				list1.push_back({ cameoX + 132, cameoY + 50, cameoWidth, cameoHeight });
-				dropshipBayCameLocations.push_back(list1);
+				auto& list1 = dropshipBayCameLocations.emplace_back();
+				list1.emplace_back(cameoX, cameoY, cameoWidth, cameoHeight);
+				list1.emplace_back(cameoX + 66, cameoY, cameoWidth, cameoHeight);
+				list1.emplace_back(cameoX, cameoY + 50, cameoWidth, cameoHeight);
+				list1.emplace_back(cameoX + 66, cameoY + 50, cameoWidth, cameoHeight);
+				list1.emplace_back(cameoX + 132, cameoY + 50, cameoWidth, cameoHeight);
 
 				cameoY += 120;
-				std::vector<RectangleStruct> list2;
-				list2.push_back({ cameoX, cameoY, cameoWidth, cameoHeight });
-				list2.push_back({ cameoX + 66, cameoY, cameoWidth, cameoHeight });
-				list2.push_back({ cameoX, cameoY + 50, cameoWidth, cameoHeight });
-				list2.push_back({ cameoX + 66, cameoY + 50, cameoWidth, cameoHeight });
-				list2.push_back({ cameoX + 132, cameoY + 50, cameoWidth, cameoHeight });
-				dropshipBayCameLocations.push_back(list2);
+				auto& list2 = dropshipBayCameLocations.emplace_back();
+				list2.emplace_back(cameoX, cameoY, cameoWidth, cameoHeight);
+				list2.emplace_back(cameoX + 66, cameoY, cameoWidth, cameoHeight);
+				list2.emplace_back(cameoX, cameoY + 50, cameoWidth, cameoHeight);
+				list2.emplace_back(cameoX + 66, cameoY + 50, cameoWidth, cameoHeight);
+				list2.emplace_back(cameoX + 132, cameoY + 50, cameoWidth, cameoHeight);
 
 				cameoY += 120;
-				std::vector<RectangleStruct> list3;
-				list3.push_back({ cameoX, cameoY, cameoWidth, cameoHeight });
-				list3.push_back({ cameoX + 66, cameoY, cameoWidth, cameoHeight });
-				list3.push_back({ cameoX, cameoY + 50, cameoWidth, cameoHeight });
-				list3.push_back({ cameoX + 66, cameoY + 50, cameoWidth, cameoHeight });
-				list3.push_back({ cameoX + 132, cameoY + 50, cameoWidth, cameoHeight });
-				dropshipBayCameLocations.push_back(list3);
+				auto& list3 = dropshipBayCameLocations.emplace_back();
+				list3.emplace_back(cameoX, cameoY, cameoWidth, cameoHeight);
+				list3.emplace_back(cameoX + 66, cameoY, cameoWidth, cameoHeight);
+				list3.emplace_back(cameoX, cameoY + 50, cameoWidth, cameoHeight);
+				list3.emplace_back(cameoX + 66, cameoY + 50, cameoWidth, cameoHeight);
+				list3.emplace_back(cameoX + 132, cameoY + 50, cameoWidth, cameoHeight);
 			}
 			// What if starting dropships is greater than 3? Or 0?
 			if (dropshipBayCameLocations.size() < (size_t)nStartingDropships)
@@ -1520,13 +1503,12 @@ void DropshipLoadoutClass::CalculateLayout(DSurface* pSurface)
 				{
 					int cameoX = backgroundX + 55;
 					int cameoY = backgroundY + 39 + i * 120;
-					std::vector<RectangleStruct> genericList;
-					genericList.push_back({ cameoX, cameoY, cameoWidth, cameoHeight });
-					genericList.push_back({ cameoX + 66, cameoY, cameoWidth, cameoHeight });
-					genericList.push_back({ cameoX, cameoY + 50, cameoWidth, cameoHeight });
-					genericList.push_back({ cameoX + 66, cameoY + 50, cameoWidth, cameoHeight });
-					genericList.push_back({ cameoX + 132, cameoY + 50, cameoWidth, cameoHeight });
-					dropshipBayCameLocations.push_back(genericList);
+					auto& genericList = dropshipBayCameLocations.emplace_back();
+					genericList.emplace_back(cameoX, cameoY, cameoWidth, cameoHeight);
+					genericList.emplace_back(cameoX + 66, cameoY, cameoWidth, cameoHeight);
+					genericList.emplace_back(cameoX, cameoY + 50, cameoWidth, cameoHeight);
+					genericList.emplace_back(cameoX + 66, cameoY + 50, cameoWidth, cameoHeight);
+					genericList.emplace_back(cameoX + 132, cameoY + 50, cameoWidth, cameoHeight);
 				}
 			}
 		}
@@ -1613,8 +1595,8 @@ void DropshipLoadoutClass::CreateControls()
 		bool hasSavedCargo = !pHouseExt->DropshipLoadout_SWCargo.empty();
 		bool usePreload = bPreloadCargo && hasSavedCargo;
 
-		dropshipBayChosenUnitsLists.push_back(std::vector<TechnoTypeClass*>());
-		dropshipBayFixedUnitsLists.push_back(std::vector<bool>());
+		dropshipBayChosenUnitsLists.emplace_back();
+		dropshipBayFixedUnitsLists.emplace_back();
 
 		std::vector<TechnoTypeClass*> fixedRemaining;
 
@@ -1758,8 +1740,8 @@ void DropshipLoadoutClass::CreateControls()
 
 		for (int i = 0; i < nStartingDropships; i++)
 		{
-			dropshipBayChosenUnitsLists.push_back(std::vector<TechnoTypeClass*>());
-			dropshipBayFixedUnitsLists.push_back(std::vector<bool>());
+			dropshipBayChosenUnitsLists.emplace_back();
+			dropshipBayFixedUnitsLists.emplace_back();
 
 			if (i >= (int)dropshipBayCameLocations.size())
 				continue;
@@ -4113,19 +4095,17 @@ void DropshipLoadoutClass::SaveCargo()
 		for (int i = 0; i < nStartingDropships && i < nCarriers; i++)
 		{
 			pHouseExt->DropshipLoadout_Carriers.push_back(carriers[i]);
-			std::vector<TechnoTypeClass*> unitsList;
 
 			if (i >= (int)dropshipBayChosenUnitsLists.size())
 				continue;
+
+			auto& unitsList = pHouseExt->DropshipLoadout_Cargo.emplace_back();
 
 			for (auto const pTechno : dropshipBayChosenUnitsLists[i])
 			{
 				if (pTechno)
 					unitsList.push_back(pTechno);
 			}
-
-			pHouseExt->DropshipLoadout_Cargo.push_back(unitsList);
-			unitsList.clear();
 		}
 
 		// Consume/remove initial units that were not kept in cargo
