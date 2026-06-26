@@ -16,8 +16,8 @@ DEFINE_HOOK(0x51B2BD, InfantryClass_UpdateTarget_IsControlledByHuman, 0x6)
 DEFINE_HOOK(0x520B3E, InfantryClass_DoingAI_DeployConvert_Deploy, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pTypeExt = pExt->TypeExtData;
 
 	if (pTypeExt->Convert_Deploy && !pExt->HasDeployConverted)
 	{
@@ -26,15 +26,15 @@ DEFINE_HOOK(0x520B3E, InfantryClass_DoingAI_DeployConvert_Deploy, 0x6)
 		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Deploy);
 	}
 
-	return 0x520B44;
+	return 0;
 }
 
 // Undeploy case: DoAction(Ready)
 DEFINE_HOOK(0x520B99, InfantryClass_DoingAI_DeployConvert_Undeploy, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pTypeExt = pExt->TypeExtData;
 
 	if (pTypeExt->Convert_Undeploy && !pExt->HasUndeployConverted)
 	{
@@ -43,7 +43,7 @@ DEFINE_HOOK(0x520B99, InfantryClass_DoingAI_DeployConvert_Undeploy, 0x6)
 		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Undeploy);
 	}
 
-	return 0x520B9F;
+	return 0;
 }
 
 // Reset mark when Deploy/Undeploy
