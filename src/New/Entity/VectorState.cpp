@@ -540,6 +540,7 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 		pB->Velocity.X = moveDisp.X;
 		pB->Velocity.Y = moveDisp.Y;
 		pB->Velocity.Z = moveDisp.Z;
+		s.StoredDisp = { currentPos.X + moveDisp.X, currentPos.Y + moveDisp.Y, currentPos.Z + moveDisp.Z };
 	}
 	else
 	{
@@ -585,6 +586,7 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 		{
 			auto const pB = static_cast<BulletClass*>(pObject);
 			pB->Velocity.X = moveDisp.X; pB->Velocity.Y = moveDisp.Y; pB->Velocity.Z = moveDisp.Z;
+			s.StoredDisp = { currentPos.X + moveDisp.X, currentPos.Y + moveDisp.Y, currentPos.Z + moveDisp.Z };
 		}
 		else
 		{
@@ -643,12 +645,14 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 
 	if (pType->Vector_ReachTarget)
 	{
-		int totalDuration = isBullet ? 60 : 60;
+		int totalDuration = pType->Duration / pType->Vector_TimeStep;
+		if (totalDuration < 1) totalDuration = 1;
 		int effectiveDuration = totalDuration - pType->Vector_DisabledFrames;
 		if (effectiveDuration < 1) effectiveDuration = 1;
-		int remainingFrames = effectiveDuration - s.MovementFrames + 1;
+		int remainingFrames = effectiveDuration - s.MovementFrames;
 
-		if (pType->Vector_ReachTargetEarlyEnd > 0 && remainingFrames <= pType->Vector_ReachTargetEarlyEnd)
+		if (pType->Vector_ReachTargetEarlyEnd > 0 && pType->Vector_ReachTargetEarlyEnd < effectiveDuration
+			&& remainingFrames <= pType->Vector_ReachTargetEarlyEnd)
 		{
 			s.DisabledTimer = pType->Vector_ReachTargetEarlyEnd;
 			return;
@@ -656,9 +660,12 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 
 		if (remainingFrames <= 0)
 		{
-			resultDisp.X = frameTarget.X - currentPos.X;
-			resultDisp.Y = frameTarget.Y - currentPos.Y;
-			resultDisp.Z = frameTarget.Z - currentPos.Z;
+			if (pType->Vector_Force)
+			{
+				resultDisp.X = frameTarget.X - currentPos.X;
+				resultDisp.Y = frameTarget.Y - currentPos.Y;
+				resultDisp.Z = frameTarget.Z - currentPos.Z;
+			}
 		}
 		else if (dirLen > 1e-6)
 		{
@@ -669,14 +676,28 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 
 			if (s.ArcHeight != 0)
 			{
-				double t = static_cast<double>(s.MovementFrames - 1) / effectiveDuration;
-				double tNext = static_cast<double>(s.MovementFrames) / effectiveDuration;
-				double peakScale = pType->Vector_ArcPeakPercent > 0 ? 1.0 / (pType->Vector_ArcPeakPercent * (1.0 - pType->Vector_ArcPeakPercent)) : 4.0;
-				double delta = peakScale * s.ArcHeight * (tNext * (1.0 - tNext) - t * (1.0 - t));
+				double t = static_cast<double>(s.MovementFrames) / effectiveDuration;
+				double peakPct = pType->Vector_ArcPeakPercent > 0 ? pType->Vector_ArcPeakPercent : 0.5;
+				double arcOffset;
+				if (t <= peakPct)
+				{
+					double u = t / peakPct;
+					arcOffset = s.ArcHeight * u * (2.0 - u);
+				}
+				else
+				{
+					double u = (t - peakPct) / (1.0 - peakPct);
+					arcOffset = s.ArcHeight * (1.0 - u * u);
+				}
+				double baseX = s.InitialLocation.X + (frameTarget.X - s.InitialLocation.X) * t;
+				double baseY = s.InitialLocation.Y + (frameTarget.Y - s.InitialLocation.Y) * t;
+				double baseZ = s.InitialLocation.Z + (frameTarget.Z - s.InitialLocation.Z) * t;
 
 				if (s.ArcRotation == 0.0)
 				{
-					resultDisp.Z += static_cast<int>(delta);
+					resultDisp.X = static_cast<int>(baseX - currentPos.X);
+					resultDisp.Y = static_cast<int>(baseY - currentPos.Y);
+					resultDisp.Z = static_cast<int>(baseZ + arcOffset - currentPos.Z);
 				}
 				else
 				{
@@ -697,13 +718,15 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 						double rx = pnx * c + (dny * pnz - dnz * pny) * s_arc;
 						double ry = pny * c + (dnz * pnx - dnx * pnz) * s_arc;
 						double rz = pnz * c + (dnx * pny - dny * pnx) * s_arc;
-						resultDisp.X += static_cast<int>(rx * delta);
-						resultDisp.Y += static_cast<int>(ry * delta);
-						resultDisp.Z += static_cast<int>(rz * delta);
+						resultDisp.X = static_cast<int>(baseX + rx * arcOffset - currentPos.X);
+						resultDisp.Y = static_cast<int>(baseY + ry * arcOffset - currentPos.Y);
+						resultDisp.Z = static_cast<int>(baseZ + rz * arcOffset - currentPos.Z);
 					}
 					else
 					{
-						resultDisp.Z += static_cast<int>(delta);
+						resultDisp.X = static_cast<int>(baseX - currentPos.X);
+						resultDisp.Y = static_cast<int>(baseY - currentPos.Y);
+						resultDisp.Z = static_cast<int>(baseZ + arcOffset - currentPos.Z);
 					}
 				}
 			}
@@ -726,6 +749,7 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 		pB->Velocity.X = resultDisp.X;
 		pB->Velocity.Y = resultDisp.Y;
 		pB->Velocity.Z = resultDisp.Z;
+		s.StoredDisp = { currentPos.X + resultDisp.X, currentPos.Y + resultDisp.Y, currentPos.Z + resultDisp.Z };
 	}
 	else
 	{
