@@ -76,6 +76,8 @@ public:
 		std::vector<TechnoTypeClass*> DropshipLoadout_SWInitialUnits;
 		std::vector<TechnoTypeClass*> DropshipLoadout_SWCargo;
 		TechnoTypeClass* DropshipLoadout_SWCarrier;
+		bool DropshipLoadout_InitialUnitsSet;
+		bool DropshipLoadout_SWInitialUnitsSet;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
@@ -117,6 +119,8 @@ public:
 			, DropshipLoadout_SWInitialUnits {}
 			, DropshipLoadout_SWCargo {}
 			, DropshipLoadout_SWCarrier { nullptr }
+			, DropshipLoadout_InitialUnitsSet { false }
+			, DropshipLoadout_SWInitialUnitsSet { false }
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;

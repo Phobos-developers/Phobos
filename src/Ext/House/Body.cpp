@@ -718,6 +718,8 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->DropshipLoadout_SWInitialUnits)
 		.Process(this->DropshipLoadout_SWCargo)
 		.Process(this->DropshipLoadout_SWCarrier)
+		.Process(this->DropshipLoadout_InitialUnitsSet)
+		.Process(this->DropshipLoadout_SWInitialUnitsSet)
 		;
 }
 

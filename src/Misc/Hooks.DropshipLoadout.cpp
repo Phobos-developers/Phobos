@@ -339,8 +339,11 @@ void DropshipLoadoutClass::LoadAssets()
 
 		bool rememberPurchasedCargo = pSWTypeExt->DropshipLoadout_RememberPurchasedCargo.Get();
 
-		if (pHouseExt->DropshipLoadout_SWInitialUnits.empty())
+		if (!pHouseExt->DropshipLoadout_SWInitialUnitsSet)
+		{
 			pHouseExt->DropshipLoadout_SWInitialUnits = pSWTypeExt->DropshipLoadout_InitialUnits;
+			pHouseExt->DropshipLoadout_SWInitialUnitsSet = true;
+		}
 
 		// Initial units pool for SW (separate from map actions pool)
 		std::vector<TechnoTypeClass*> initialUnitsRemaining;
@@ -701,7 +704,7 @@ void DropshipLoadoutClass::LoadAssets()
 			rememberPurchasedCargo = pGlobal->DropshipLoadout_RememberPurchasedCargo;
 
 		// Initial units pool for scenario/country
-		if (pHouseExt->DropshipLoadout_InitialUnits.empty())
+		if (!pHouseExt->DropshipLoadout_InitialUnitsSet)
 		{
 			const std::vector<std::vector<TechnoTypeClass*>>* pInitialUnitsSrc = nullptr;
 			if (!pHouseTypeExt->DropshipLoadout_InitialUnits.empty())
@@ -710,9 +713,9 @@ void DropshipLoadoutClass::LoadAssets()
 				pInitialUnitsSrc = &pGlobal->DropshipLoadout_InitialUnits;
 
 			if (pInitialUnitsSrc)
-			{
 				pHouseExt->DropshipLoadout_InitialUnits = *pInitialUnitsSrc;
-			}
+
+			pHouseExt->DropshipLoadout_InitialUnitsSet = true;
 		}
 
 		std::vector<TechnoTypeClass*> initialUnitsRemaining;
@@ -1584,8 +1587,11 @@ void DropshipLoadoutClass::CreateControls()
 		if (!bIgnoreFixedUnits && !pSWTypeExt->DropshipLoadout_FixedUnits.empty())
 			pFixedList = &pSWTypeExt->DropshipLoadout_FixedUnits;
 
-		if (pHouseExt->DropshipLoadout_SWInitialUnits.empty())
+		if (!pHouseExt->DropshipLoadout_SWInitialUnitsSet)
+		{
 			pHouseExt->DropshipLoadout_SWInitialUnits = pSWTypeExt->DropshipLoadout_InitialUnits;
+			pHouseExt->DropshipLoadout_SWInitialUnitsSet = true;
+		}
 
 		const std::vector<TechnoTypeClass*>* pInitialList = nullptr;
 
@@ -1709,12 +1715,14 @@ void DropshipLoadoutClass::CreateControls()
 				pFixedUnitsSrc = &ScenarioExt::Global()->DropshipLoadout_FixedUnits;
 		}
 
-		if (pHouseExt->DropshipLoadout_InitialUnits.empty() && !bIgnoreFixedUnits)
+		if (!pHouseExt->DropshipLoadout_InitialUnitsSet && !bIgnoreFixedUnits)
 		{
 			if (!pHouseTypeExt->DropshipLoadout_InitialUnits.empty())
 				pHouseExt->DropshipLoadout_InitialUnits = pHouseTypeExt->DropshipLoadout_InitialUnits;
 			else if (ScenarioExt::Global() && !ScenarioExt::Global()->DropshipLoadout_InitialUnits.empty())
 				pHouseExt->DropshipLoadout_InitialUnits = ScenarioExt::Global()->DropshipLoadout_InitialUnits;
+
+			pHouseExt->DropshipLoadout_InitialUnitsSet = true;
 		}
 
 		const std::vector<std::vector<TechnoTypeClass*>>* pInitialUnitsSrc = nullptr;
