@@ -152,6 +152,8 @@ public:
 	Valueable<int> Vector_ArcHeight;
 	Valueable<double> Vector_ArcPeakPercent;
 	Valueable<double> Vector_ArcPeakRandomPercent;
+	Valueable<double> Vector_ArcPeakRandomPercentMin;
+	Valueable<double> Vector_ArcPeakRandomPercentMax;
 	Valueable<double> Vector_ArcRotation;
 	Valueable<int> Vector_InitialSpeed;
 	Valueable<int> Vector_MaxSpeed;
@@ -331,6 +333,8 @@ public:
 		, Vector_ArcHeight { 0 }
 		, Vector_ArcPeakPercent { 0.0 }
 		, Vector_ArcPeakRandomPercent { 0.0 }
+		, Vector_ArcPeakRandomPercentMin { 0.0 }
+		, Vector_ArcPeakRandomPercentMax { 0.0 }
 		, Vector_ArcRotation { 0.0 }
 		, Vector_InitialSpeed { -1 }
 		, Vector_MaxSpeed { -1 }

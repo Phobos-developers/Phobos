@@ -224,6 +224,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Vector_ArcHeight.Read(exINI, pSection, "Vector.ArcHeight");
 	this->Vector_ArcPeakPercent.Read(exINI, pSection, "Vector.ArcPeakPercent");
 	this->Vector_ArcPeakRandomPercent.Read(exINI, pSection, "Vector.ArcPeakRandomPercent");
+	this->Vector_ArcPeakRandomPercentMin.Read(exINI, pSection, "Vector.ArcPeakRandomPercent.Min");
+	this->Vector_ArcPeakRandomPercentMax.Read(exINI, pSection, "Vector.ArcPeakRandomPercent.Max");
 	this->Vector_ArcRotation.Read(exINI, pSection, "Vector.ArcRotation");
 	this->Vector_InitialSpeed.Read(exINI, pSection, "Vector.InitialSpeed");
 	this->Vector_MaxSpeed.Read(exINI, pSection, "Vector.MaxSpeed");
@@ -409,6 +411,8 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Vector_ArcHeight)
 		.Process(this->Vector_ArcPeakPercent)
 		.Process(this->Vector_ArcPeakRandomPercent)
+		.Process(this->Vector_ArcPeakRandomPercentMin)
+		.Process(this->Vector_ArcPeakRandomPercentMax)
 		.Process(this->Vector_ArcRotation)
 		.Process(this->Vector_InitialSpeed)
 		.Process(this->Vector_MaxSpeed)
