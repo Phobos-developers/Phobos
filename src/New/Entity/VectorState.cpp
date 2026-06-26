@@ -84,6 +84,9 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 		s.ArcRotation = pType->Vector_ArcRotation;
 		if (pType->Vector_ArcRandomRotationMin != pType->Vector_ArcRandomRotationMax)
 			s.ArcRotation = V_Random(pType->Vector_ArcRandomRotationMin, pType->Vector_ArcRandomRotationMax);
+		s.ArcPeakPercent = (pType->Vector_ArcPeakRandomPercent > 0 ? pType->Vector_ArcPeakRandomPercent : pType->Vector_ArcPeakPercent) / 100.0;
+		if (s.ArcPeakPercent <= 0.0) s.ArcPeakPercent = 0.5;
+		if (s.ArcPeakPercent >= 1.0) s.ArcPeakPercent = 0.5;
 
 		if (pType->Vector_TargetFLH.isset())
 		{
@@ -677,7 +680,7 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 			if (s.ArcHeight != 0)
 			{
 				double t = static_cast<double>(s.MovementFrames) / effectiveDuration;
-				double peakPct = pType->Vector_ArcPeakPercent > 0 ? pType->Vector_ArcPeakPercent : 0.5;
+				double peakPct = s.ArcPeakPercent > 0 ? s.ArcPeakPercent : 0.5;
 				double arcOffset;
 				if (t <= peakPct)
 				{

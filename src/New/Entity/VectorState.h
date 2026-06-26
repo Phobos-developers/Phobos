@@ -19,6 +19,7 @@ struct VectorState
 	CoordStruct PrevCirclePos;
 	double ArcHeight;
 	double ArcRotation;
+	double ArcPeakPercent;
 	CoordStruct TargetOffset;
 	double NormalRotF;
 	double NormalRotL;
@@ -46,6 +47,7 @@ struct VectorState
 	double OriginNormalStepH;
 	double OriginFacing;
 	double OriginTilt;
+	CoordStruct StoredDisp;
 
 	VectorState()
 		: Initialized { false }
@@ -61,6 +63,7 @@ struct VectorState
 		, PrevCirclePos { CoordStruct::Empty }
 		, ArcHeight { 0.0 }
 		, ArcRotation { 0.0 }
+		, ArcPeakPercent { 0.5 }
 		, TargetOffset { CoordStruct::Empty }
 		, NormalRotF { 0.0 }
 		, NormalRotL { 0.0 }
@@ -88,6 +91,7 @@ struct VectorState
 		, OriginNormalStepH { 0.0 }
 		, OriginFacing { 0.0 }
 		, OriginTilt { 0.0 }
+		, StoredDisp { CoordStruct::Empty }
 	{ }
 };
 
