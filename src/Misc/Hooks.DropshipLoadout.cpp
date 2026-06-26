@@ -3566,7 +3566,7 @@ void DropshipLoadoutClass::Render(DSurface* pSurface)
 
 	pSurface->DrawTextA(buffer, &windowRectangle, &creditsLabel, foreColor, 0, style);
 
-	const wchar_t* csfStartMission = StringTable::TryFetchString("TXT_DROPSHIP_START_MISSION", L"Press SPACE to start the mission");
+	const wchar_t* csfStartMission = StringTable::TryFetchString("TXT_DROPSHIP_START_MISSION", L"Press SPACE to continue");
 	swprintf_s(buffer, csfStartMission);
 	foreColor = Drawing::RGB_To_Int(255, 255, 255);
 	style = (TextPrintType::Center | TextPrintType::FullShadow | TextPrintType::Point6Grad);
