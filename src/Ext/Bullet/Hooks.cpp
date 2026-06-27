@@ -2,7 +2,20 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <cstdio>
 #include <unordered_set>
+
+//static void VecLog(const char* fmt, ...)
+//{
+//	va_list args;
+//	va_start(args, fmt);
+//	FILE* f = fopen("vec_debug.log", "a");
+//	if (f) {
+//		vfprintf(f, fmt, args);
+//		fclose(f);
+//	}
+//	va_end(args);
+//}
 
 // has everything inited except SpawnNextAnim at this point
 DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
@@ -201,6 +214,11 @@ DEFINE_HOOK(0x466781, BulletClass_AI_UpdateEnd, 0x6)
 		if (pos.X != 0 || pos.Y != 0 || pos.Z != 0)
 		{
 			CoordStruct prev = pThis->GetCoords();
+			//VecLog("[VEC] FRAME=%d APPLY_PREV=(%d,%d,%d) STORED=(%d,%d,%d) DELTA=(%d,%d,%d)\n",
+			//	Unsorted::CurrentFrame,
+			//	prev.X, prev.Y, prev.Z,
+			//	pos.X, pos.Y, pos.Z,
+			//	pos.X - prev.X, pos.Y - prev.Y, pos.Z - prev.Z);
 			pThis->SetLocation(pos);
 			pThis->SourceCoords = pos;
 			if (pExt->VectorType->Vector_SyncFacing)

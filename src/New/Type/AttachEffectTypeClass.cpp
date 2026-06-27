@@ -198,6 +198,12 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Vector_NormalRandomF.Read(exINI, pSection, "Vector.NormalRandomF");
 	this->Vector_NormalRandomL.Read(exINI, pSection, "Vector.NormalRandomL");
 	this->Vector_NormalRandomH.Read(exINI, pSection, "Vector.NormalRandomH");
+	this->Vector_NormalRandomFMin.Read(exINI, pSection, "Vector.NormalRandomF.Min");
+	this->Vector_NormalRandomFMax.Read(exINI, pSection, "Vector.NormalRandomF.Max");
+	this->Vector_NormalRandomLMin.Read(exINI, pSection, "Vector.NormalRandomL.Min");
+	this->Vector_NormalRandomLMax.Read(exINI, pSection, "Vector.NormalRandomL.Max");
+	this->Vector_NormalRandomHMin.Read(exINI, pSection, "Vector.NormalRandomH.Min");
+	this->Vector_NormalRandomHMax.Read(exINI, pSection, "Vector.NormalRandomH.Max");
 	this->Vector_NormalFAnglePerStep.Read(exINI, pSection, "Vector.NormalFAnglePerStep");
 	this->Vector_NormalLAnglePerStep.Read(exINI, pSection, "Vector.NormalLAnglePerStep");
 	this->Vector_NormalHAnglePerStep.Read(exINI, pSection, "Vector.NormalHAnglePerStep");
@@ -239,6 +245,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Vector_CircleRandomRadiusMax.Read(exINI, pSection, "Vector.CircleRandomRadius.Max");
 	this->Vector_CircleRandomAngleMin.Read(exINI, pSection, "Vector.CircleRandomAngle.Min");
 	this->Vector_CircleRandomAngleMax.Read(exINI, pSection, "Vector.CircleRandomAngle.Max");
+	this->Vector_CircleRandomAngleMin2.Read(exINI, pSection, "Vector.CircleRandomAngle.Min2");
+	this->Vector_CircleRandomAngleMax2.Read(exINI, pSection, "Vector.CircleRandomAngle.Max2");
 	this->Vector_CircleMaxAngle.Read(exINI, pSection, "Vector.CircleMaxAngle");
 	this->Vector_CircleMinAngle.Read(exINI, pSection, "Vector.CircleMinAngle");
 	this->Vector_TargetOffsetFMin.Read(exINI, pSection, "Vector.TargetOffsetF.Min");
@@ -257,11 +265,21 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Vector_OriginGrowRate.Read(exINI, pSection, "Vector.Origin.GrowRate");
 	this->Vector_OriginTargetFLH.Read(exINI, pSection, "Vector.Origin.TargetFLH");
 	this->Vector_OriginInitialSpeed.Read(exINI, pSection, "Vector.Origin.InitialSpeed");
+	this->Vector_OriginAcceleration.Read(exINI, pSection, "Vector.Origin.Acceleration");
+	this->Vector_OriginMaxSpeed.Read(exINI, pSection, "Vector.Origin.MaxSpeed");
+	this->Vector_OriginMinSpeed.Read(exINI, pSection, "Vector.Origin.MinSpeed");
+	this->Vector_OriginTargetOffsetFMin.Read(exINI, pSection, "Vector.Origin.TargetOffsetF.Min");
+	this->Vector_OriginTargetOffsetFMax.Read(exINI, pSection, "Vector.Origin.TargetOffsetF.Max");
+	this->Vector_OriginTargetOffsetLMin.Read(exINI, pSection, "Vector.Origin.TargetOffsetL.Min");
+	this->Vector_OriginTargetOffsetLMax.Read(exINI, pSection, "Vector.Origin.TargetOffsetL.Max");
+	this->Vector_OriginTargetOffsetHMin.Read(exINI, pSection, "Vector.Origin.TargetOffsetH.Min");
+	this->Vector_OriginTargetOffsetHMax.Read(exINI, pSection, "Vector.Origin.TargetOffsetH.Max");
 	this->Vector_OriginReachTarget.Read(exINI, pSection, "Vector.Origin.ReachTarget");
 	this->Vector_OriginArcHeight.Read(exINI, pSection, "Vector.Origin.ArcHeight");
 	this->Vector_OriginCircleRadius.Read(exINI, pSection, "Vector.Origin.CircleRadius");
 	this->Vector_OriginCircleSpeed.Read(exINI, pSection, "Vector.Origin.CircleSpeed");
 	this->Vector_OriginCircleAnglePerStep.Read(exINI, pSection, "Vector.Origin.CircleAnglePerStep");
+	this->Vector_OriginLissajous.Read(exINI, pSection, "Vector.Origin.Lissajous");
 	this->Vector_OriginCircleRadiusGrow.Read(exINI, pSection, "Vector.Origin.CircleRadiusGrow");
 	this->Vector_OriginCircleMaxRadius.Read(exINI, pSection, "Vector.Origin.CircleMaxRadius");
 	this->Vector_OriginCircleMinRadius.Read(exINI, pSection, "Vector.Origin.CircleMinRadius");
@@ -385,6 +403,12 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Vector_NormalRandomF)
 		.Process(this->Vector_NormalRandomL)
 		.Process(this->Vector_NormalRandomH)
+		.Process(this->Vector_NormalRandomFMin)
+		.Process(this->Vector_NormalRandomFMax)
+		.Process(this->Vector_NormalRandomLMin)
+		.Process(this->Vector_NormalRandomLMax)
+		.Process(this->Vector_NormalRandomHMin)
+		.Process(this->Vector_NormalRandomHMax)
 		.Process(this->Vector_NormalFAnglePerStep)
 		.Process(this->Vector_NormalLAnglePerStep)
 		.Process(this->Vector_NormalHAnglePerStep)
@@ -426,6 +450,8 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Vector_CircleRandomRadiusMax)
 		.Process(this->Vector_CircleRandomAngleMin)
 		.Process(this->Vector_CircleRandomAngleMax)
+		.Process(this->Vector_CircleRandomAngleMin2)
+		.Process(this->Vector_CircleRandomAngleMax2)
 		.Process(this->Vector_CircleMaxAngle)
 		.Process(this->Vector_CircleMinAngle)
 		.Process(this->Vector_TargetOffsetFMin)
@@ -444,11 +470,21 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Vector_OriginGrowRate)
 		.Process(this->Vector_OriginTargetFLH)
 		.Process(this->Vector_OriginInitialSpeed)
+		.Process(this->Vector_OriginAcceleration)
+		.Process(this->Vector_OriginMaxSpeed)
+		.Process(this->Vector_OriginMinSpeed)
+		.Process(this->Vector_OriginTargetOffsetFMin)
+		.Process(this->Vector_OriginTargetOffsetFMax)
+		.Process(this->Vector_OriginTargetOffsetLMin)
+		.Process(this->Vector_OriginTargetOffsetLMax)
+		.Process(this->Vector_OriginTargetOffsetHMin)
+		.Process(this->Vector_OriginTargetOffsetHMax)
 		.Process(this->Vector_OriginReachTarget)
 		.Process(this->Vector_OriginArcHeight)
 		.Process(this->Vector_OriginCircleRadius)
 		.Process(this->Vector_OriginCircleSpeed)
 		.Process(this->Vector_OriginCircleAnglePerStep)
+		.Process(this->Vector_OriginLissajous)
 		.Process(this->Vector_OriginCircleRadiusGrow)
 		.Process(this->Vector_OriginCircleMaxRadius)
 		.Process(this->Vector_OriginCircleMinRadius)

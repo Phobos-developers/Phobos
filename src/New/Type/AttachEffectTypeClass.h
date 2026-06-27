@@ -118,7 +118,7 @@ public:
 	Valueable<bool> Vector_OriginIsOnBody;
 	Valueable<VectorOrigin> Vector_Origin;
 	Nullable<CoordStruct> Vector_OriginFLH;
-	Valueable<bool> Vector_OriginNoUpdate;
+	Nullable<bool> Vector_OriginNoUpdate;
 	Valueable<bool> Vector_Force;
 	Valueable<bool> Vector_Freeze;
 	Valueable<bool> Vector_AllowedTilt;
@@ -126,6 +126,12 @@ public:
 	Valueable<double> Vector_NormalRandomF;
 	Valueable<double> Vector_NormalRandomL;
 	Valueable<double> Vector_NormalRandomH;
+	Valueable<double> Vector_NormalRandomFMin;
+	Valueable<double> Vector_NormalRandomFMax;
+	Valueable<double> Vector_NormalRandomLMin;
+	Valueable<double> Vector_NormalRandomLMax;
+	Valueable<double> Vector_NormalRandomHMin;
+	Valueable<double> Vector_NormalRandomHMax;
 	Valueable<double> Vector_NormalFAnglePerStep;
 	Valueable<double> Vector_NormalLAnglePerStep;
 	Valueable<double> Vector_NormalHAnglePerStep;
@@ -167,6 +173,8 @@ public:
 	Valueable<int> Vector_CircleRandomRadiusMax;
 	Valueable<double> Vector_CircleRandomAngleMin;
 	Valueable<double> Vector_CircleRandomAngleMax;
+	Valueable<double> Vector_CircleRandomAngleMin2;
+	Valueable<double> Vector_CircleRandomAngleMax2;
 	Valueable<double> Vector_CircleMaxAngle;
 	Valueable<double> Vector_CircleMinAngle;
 	Valueable<int> Vector_TargetOffsetFMin;
@@ -185,11 +193,21 @@ public:
 	Nullable<CoordStruct> Vector_OriginGrowRate;
 	Nullable<CoordStruct> Vector_OriginTargetFLH;
 	Valueable<int> Vector_OriginInitialSpeed;
+	Valueable<int> Vector_OriginAcceleration;
+	Valueable<int> Vector_OriginMaxSpeed;
+	Valueable<int> Vector_OriginMinSpeed;
+	Valueable<int> Vector_OriginTargetOffsetFMin;
+	Valueable<int> Vector_OriginTargetOffsetFMax;
+	Valueable<int> Vector_OriginTargetOffsetLMin;
+	Valueable<int> Vector_OriginTargetOffsetLMax;
+	Valueable<int> Vector_OriginTargetOffsetHMin;
+	Valueable<int> Vector_OriginTargetOffsetHMax;
 	Valueable<bool> Vector_OriginReachTarget;
 	Valueable<int> Vector_OriginArcHeight;
 	Valueable<int> Vector_OriginCircleRadius;
 	Valueable<int> Vector_OriginCircleSpeed;
 	Valueable<double> Vector_OriginCircleAnglePerStep;
+	Valueable<bool> Vector_OriginLissajous;
 	Valueable<int> Vector_OriginCircleRadiusGrow;
 	Valueable<int> Vector_OriginCircleMaxRadius;
 	Valueable<int> Vector_OriginCircleMinRadius;
@@ -299,7 +317,7 @@ public:
 		, Vector_OriginIsOnBody { false }
 		, Vector_Origin { VectorOrigin::Self }
 		, Vector_OriginFLH {}
-		, Vector_OriginNoUpdate { false }
+		, Vector_OriginNoUpdate {}
 		, Vector_Force { true }
 		, Vector_Freeze { false }
 		, Vector_AllowedTilt { false }
@@ -307,6 +325,12 @@ public:
 		, Vector_NormalRandomF { 0.0 }
 		, Vector_NormalRandomL { 0.0 }
 		, Vector_NormalRandomH { 0.0 }
+		, Vector_NormalRandomFMin { 0.0 }
+		, Vector_NormalRandomFMax { 0.0 }
+		, Vector_NormalRandomLMin { 0.0 }
+		, Vector_NormalRandomLMax { 0.0 }
+		, Vector_NormalRandomHMin { 0.0 }
+		, Vector_NormalRandomHMax { 0.0 }
 		, Vector_NormalFAnglePerStep { 0.0 }
 		, Vector_NormalLAnglePerStep { 0.0 }
 		, Vector_NormalHAnglePerStep { 0.0 }
@@ -348,6 +372,8 @@ public:
 		, Vector_CircleRandomRadiusMax { -1 }
 		, Vector_CircleRandomAngleMin { -1 }
 		, Vector_CircleRandomAngleMax { -1 }
+		, Vector_CircleRandomAngleMin2 { -1 }
+		, Vector_CircleRandomAngleMax2 { -1 }
 		, Vector_CircleMaxAngle { 0.0 }
 		, Vector_CircleMinAngle { 0.0 }
 		, Vector_TargetOffsetFMin { 0 }
@@ -366,11 +392,21 @@ public:
 		, Vector_OriginGrowRate {}
 		, Vector_OriginTargetFLH {}
 		, Vector_OriginInitialSpeed { -1 }
+		, Vector_OriginAcceleration { 0 }
+		, Vector_OriginMaxSpeed { -1 }
+		, Vector_OriginMinSpeed { -1 }
+		, Vector_OriginTargetOffsetFMin { 0 }
+		, Vector_OriginTargetOffsetFMax { 0 }
+		, Vector_OriginTargetOffsetLMin { 0 }
+		, Vector_OriginTargetOffsetLMax { 0 }
+		, Vector_OriginTargetOffsetHMin { 0 }
+		, Vector_OriginTargetOffsetHMax { 0 }
 		, Vector_OriginReachTarget { false }
 		, Vector_OriginArcHeight { 0 }
 		, Vector_OriginCircleRadius { -1 }
 		, Vector_OriginCircleSpeed { 0 }
 		, Vector_OriginCircleAnglePerStep { 0.0 }
+		, Vector_OriginLissajous { false }
 		, Vector_OriginCircleRadiusGrow { 0 }
 		, Vector_OriginCircleMaxRadius { 0 }
 		, Vector_OriginCircleMinRadius { 0 }

@@ -2,6 +2,19 @@
 #include "AttachEffectClass.h"
 #include <Ext/Techno/Body.h>
 #include <cmath>
+#include <cstdio>
+
+static void VecLog(const char* fmt, ...)
+{
+	va_list args;
+	va_start(args, fmt);
+	FILE* f = fopen("vec_debug.log", "a");
+	if (f) {
+		vfprintf(f, fmt, args);
+		fclose(f);
+	}
+	va_end(args);
+}
 
 static double V_Random(double min, double max)
 {
@@ -33,6 +46,9 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 	if (!pObject)
 		return;
 
+	if (pObject->WhatAmI() == AbstractType::Building)
+		return;
+
 	if (s.DisabledTimer > 0)
 	{
 		s.DisabledTimer--;
@@ -44,6 +60,17 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 
 	if (skipFrame)
 		return;
+
+	auto EffectiveOriginNoUpdate = [&]() -> bool {
+		if (pType->Vector_OriginNoUpdate.isset())
+			return pType->Vector_OriginNoUpdate.Get();
+		bool hasCircle = pType->Vector_CircleRadius > 0 || pType->Vector_CircleSpeed != 0 || pType->Vector_CircleAnglePerStep > 0.0
+			|| (pType->Vector_CircleRandomRadiusMax > pType->Vector_CircleRandomRadiusMin)
+			|| (pType->Vector_CircleRandomAngleMax > pType->Vector_CircleRandomAngleMin);
+		bool hasTargetMode = pType->Vector_TargetFLH.isset() || pType->Vector_ReachTarget;
+		bool hasMoveTo = pType->Vector_MoveTo != CoordStruct::Empty;
+		return (hasTargetMode || hasMoveTo) && !hasCircle;
+	};
 
 	s.MovementFrames++;
 	s.NormalRotF += s.NormalStepF;
@@ -71,22 +98,89 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 		}
 		s.InitialLocation = GetPos();
 
-		if (isBullet)
+		if (pType->Vector_NormalVector.isset()
+			|| (pType->Vector_NormalRandomFMax > pType->Vector_NormalRandomFMin)
+			|| (pType->Vector_NormalRandomLMax > pType->Vector_NormalRandomLMin)
+			|| (pType->Vector_NormalRandomHMax > pType->Vector_NormalRandomHMin))
 		{
-			auto const pB = static_cast<BulletClass*>(pObject);
-			double vx = pB->Velocity.X, vy = pB->Velocity.Y;
-			s.FacingRad = (vx != 0 || vy != 0) ? std::atan2(vy, vx) : 0.0;
+			CoordStruct nv = pType->Vector_NormalVector.isset() ? pType->Vector_NormalVector.Get() : CoordStruct{};
+			if (pType->Vector_NormalRandomFMax > pType->Vector_NormalRandomFMin)
+				nv.X = V_Random(pType->Vector_NormalRandomFMin, pType->Vector_NormalRandomFMax);
+			if (pType->Vector_NormalRandomLMax > pType->Vector_NormalRandomLMin)
+				nv.Y = V_Random(pType->Vector_NormalRandomLMin, pType->Vector_NormalRandomLMax);
+			if (pType->Vector_NormalRandomHMax > pType->Vector_NormalRandomHMin)
+				nv.Z = V_Random(pType->Vector_NormalRandomHMin, pType->Vector_NormalRandomHMax);
+			double lenXY = std::sqrt((double)nv.X * nv.X + nv.Y * nv.Y);
+			s.FacingRad = lenXY > 1e-6 ? std::atan2(nv.X, nv.Y) : 0.0;
+			s.TiltRad = lenXY > 1e-6 ? std::atan2(nv.Z, lenXY) : (nv.Z > 0 ? 3.1415926535 / 2.0 : -3.1415926535 / 2.0);
 		}
 		else
 		{
-			auto const pT = static_cast<TechnoClass*>(pObject);
-			s.FacingRad = pT->PrimaryFacing.Current().GetRadian<32>();
+			switch (pType->Vector_Origin)
+			{
+			case VectorOrigin::Launcher:
+				if (pInvoker)
+				{
+					auto const pLT = static_cast<TechnoClass*>(pInvoker);
+					s.FacingRad = pLT->TurretFacing().GetRadian<32>();
+				}
+				break;
+			case VectorOrigin::Target:
+			{
+				CoordStruct selfPos = GetPos();
+				CoordStruct targetPos = selfPos;
+				if (isBullet)
+				{
+					auto const pB = static_cast<BulletClass*>(pObject);
+					if (pB->Target)
+						targetPos = pB->Target->GetCoords();
+					else
+						targetPos = pB->TargetCoords;
+				}
+				else
+				{
+					auto const pT = static_cast<TechnoClass*>(pObject);
+					if (pT->Target)
+						targetPos = pT->Target->GetCoords();
+				}
+				double dx = selfPos.X - targetPos.X;
+				double dy = selfPos.Y - targetPos.Y;
+				double dz = selfPos.Z - targetPos.Z;
+				s.FacingRad = std::atan2(dy, dx);
+				double lenXY = std::sqrt(dx * dx + dy * dy);
+				s.TiltRad = (lenXY > 1e-6 && pType->Vector_AllowedTilt) ? std::atan2(dz, lenXY) : 0.0;
+				break;
+			}
+			default:
+				if (isBullet)
+				{
+					auto const pB = static_cast<BulletClass*>(pObject);
+					double vx = pB->Velocity.X, vy = pB->Velocity.Y;
+					s.FacingRad = (vx != 0 || vy != 0) ? std::atan2(vy, vx) : 0.0;
+				}
+				else
+				{
+					auto const pT = static_cast<TechnoClass*>(pObject);
+					s.FacingRad = pT->TurretFacing().GetRadian<32>();
+				}
+				s.TiltRad = 0.0;
+				break;
+			}
 		}
-		s.TiltRad = 0.0;
 		s.OriginFacing = s.FacingRad;
-		s.OriginTilt = 0.0;
+		s.OriginTilt = s.TiltRad;
 
-		double speed = static_cast<double>(pType->Vector_InitialSpeed >= 0 ? pType->Vector_InitialSpeed : 0);
+		double speed;
+		if (pType->Vector_InitialSpeed >= 0)
+			speed = static_cast<double>(pType->Vector_InitialSpeed);
+		else if (isBullet)
+			speed = static_cast<double>(static_cast<BulletClass*>(pObject)->Speed);
+		else
+		{
+			auto const pT = static_cast<TechnoClass*>(pObject);
+			TechnoTypeClass* pTT = pT->GetTechnoType();
+			speed = pTT->JumpjetSpeed > 0 ? static_cast<double>(pTT->JumpjetSpeed) : static_cast<double>(pTT->Speed);
+		}
 		if (pType->Vector_RandomSpeedMin != pType->Vector_RandomSpeedMax)
 			speed = V_Random(pType->Vector_RandomSpeedMin, pType->Vector_RandomSpeedMax);
 		s.CurrentSpeed = speed;
@@ -108,7 +202,7 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 
 		if (pType->Vector_TargetFLH.isset())
 		{
-			CoordStruct offset = pType->Vector_TargetFLH.Get();
+			CoordStruct offset = CoordStruct::Empty;
 			if (pType->Vector_TargetOffsetFMin != pType->Vector_TargetOffsetFMax)
 				offset.X = pType->Vector_TargetOffsetFMin + rand() % (pType->Vector_TargetOffsetFMax - pType->Vector_TargetOffsetFMin + 1);
 			if (pType->Vector_TargetOffsetLMin != pType->Vector_TargetOffsetLMax)
@@ -162,8 +256,11 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 		effectiveTilt = 0.0;
 	}
 
-	bool hasNormal = pType->Vector_NormalVector.isset();
-	if (!pType->Vector_OriginNoUpdate && !hasNormal && !pType->Vector_OriginIsOnWorld)
+	bool hasNormal = pType->Vector_NormalVector.isset()
+		|| (pType->Vector_NormalRandomFMax > pType->Vector_NormalRandomFMin)
+		|| (pType->Vector_NormalRandomLMax > pType->Vector_NormalRandomLMin)
+		|| (pType->Vector_NormalRandomHMax > pType->Vector_NormalRandomHMin);
+	if (!	EffectiveOriginNoUpdate() && !hasNormal && !pType->Vector_OriginIsOnWorld)
 	{
 		switch (pType->Vector_Origin)
 		{
@@ -191,7 +288,7 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 				if (pB->Target)
 					targetPos = pB->Target->GetCoords();
 				else
-					break;
+					targetPos = pB->TargetCoords;
 			}
 			else
 			{
@@ -231,7 +328,7 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 			}
 			break;
 		case VectorOrigin::Launcher:
-			if (pInvoker)
+			if (pInvoker && pInvoker->IsAlive)
 			{
 				auto const pLT = static_cast<TechnoClass*>(pInvoker);
 				mainFacingDir = pType->Vector_OriginIsOnBody
@@ -249,7 +346,7 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 	switch (pType->Vector_Origin)
 	{
 	case VectorOrigin::Target:
-		if (pType->Vector_OriginNoUpdate)
+		if (	EffectiveOriginNoUpdate())
 			originPos = s.InitialOriginPos;
 		else if (isBullet)
 		{
@@ -263,15 +360,15 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 		}
 		break;
 	case VectorOrigin::Launcher:
-		originPos = pType->Vector_OriginNoUpdate ? s.InitialOriginPos :
+		originPos = 	EffectiveOriginNoUpdate() ? s.InitialOriginPos :
 			(pInvoker ? pInvoker->GetCoords() : GetPos());
 		break;
 	case VectorOrigin::Source:
-		originPos = pType->Vector_OriginNoUpdate ? s.InitialOriginPos :
+		originPos = 	EffectiveOriginNoUpdate() ? s.InitialOriginPos :
 			(pInvoker ? pInvoker->GetCoords() : GetPos());
 		break;
 	case VectorOrigin::Self:
-		originPos = pType->Vector_OriginNoUpdate ? s.InitialOriginPos : GetPos();
+		originPos = 	EffectiveOriginNoUpdate() ? s.InitialOriginPos : GetPos();
 		break;
 	}
 
@@ -285,7 +382,8 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 	// ================================================================
 	bool hasCircle = pType->Vector_CircleRadius > 0 || pType->Vector_CircleSpeed != 0 || pType->Vector_CircleAnglePerStep > 0.0
 		|| (pType->Vector_CircleRandomRadiusMax > pType->Vector_CircleRandomRadiusMin)
-		|| (pType->Vector_CircleRandomAngleMax > pType->Vector_CircleRandomAngleMin);
+		|| (pType->Vector_CircleRandomAngleMax > pType->Vector_CircleRandomAngleMin)
+		|| (pType->Vector_CircleRandomAngleMax2 > pType->Vector_CircleRandomAngleMin2);
 
 	if (hasCircle)
 	{
@@ -302,7 +400,7 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 			s.CurrentCircleSpeed = static_cast<double>(pType->Vector_CircleSpeed);
 			s.CurrentCircleRadius = calcRadius;
 			if (pType->Vector_CircleRandomRadiusMax > pType->Vector_CircleRandomRadiusMin)
-				s.CurrentCircleRadius = static_cast<double>(rand() % (pType->Vector_CircleRandomRadiusMax - pType->Vector_CircleRandomRadiusMin + 1) + pType->Vector_CircleRandomRadiusMin);
+				s.CurrentCircleRadius = V_Random(static_cast<double>(pType->Vector_CircleRandomRadiusMin), static_cast<double>(pType->Vector_CircleRandomRadiusMax));
 		}
 		s.CurrentCircleSpeed += pType->Vector_CircleSpeedAcceleration;
 		if (pType->Vector_CircleMaxSpeed != 0 && s.CurrentCircleSpeed > pType->Vector_CircleMaxSpeed)
@@ -314,7 +412,14 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 		{
 			s.CurrentCircleAngle = pType->Vector_CircleAnglePerStep;
 			if (pType->Vector_CircleRandomAngleMax > pType->Vector_CircleRandomAngleMin)
-				s.CurrentCircleAngle = V_Random(pType->Vector_CircleRandomAngleMin, pType->Vector_CircleRandomAngleMax);
+			{
+				bool useSecond = pType->Vector_CircleRandomAngleMax2 > pType->Vector_CircleRandomAngleMin2
+					&& (std::rand() % 2);
+				if (useSecond)
+					s.CurrentCircleAngle = V_Random(pType->Vector_CircleRandomAngleMin2, pType->Vector_CircleRandomAngleMax2);
+				else
+					s.CurrentCircleAngle = V_Random(pType->Vector_CircleRandomAngleMin, pType->Vector_CircleRandomAngleMax);
+			}
 		}
 		s.CurrentCircleAngle += pType->Vector_CircleAngleAcceleration;
 		if (pType->Vector_CircleMaxAngle != 0 && s.CurrentCircleAngle > pType->Vector_CircleMaxAngle)
@@ -344,6 +449,10 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 
 		if (hasOriginSub)
 		{
+			VecLog("[ORIGIN] Frame=%d MOVFRM=%d CR=%d CSP=%d CAng=%.1f\n",
+				Unsorted::CurrentFrame, s.MovementFrames,
+				(int)pType->Vector_OriginCircleRadius, (int)pType->Vector_OriginCircleSpeed,
+				pType->Vector_OriginCircleAnglePerStep);
 			CoordStruct baseCenter = originPos;
 
 			if (pType->Vector_OriginOrigin != VectorOrigin::Self)
@@ -384,20 +493,44 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 				baseCenter.Z += pType->Vector_OriginOriginFLH.Get().Z;
 			}
 
+			if (pType->Vector_OriginCircleOffset.isset())
+			{
+				baseCenter.X += pType->Vector_OriginCircleOffset.Get().X;
+				baseCenter.Y += pType->Vector_OriginCircleOffset.Get().Y;
+				baseCenter.Z += pType->Vector_OriginCircleOffset.Get().Z;
+			}
+
 			if (s.MovementFrames == 1)
 			{
 				s.OriginOffset = { circleCenter.X - baseCenter.X, circleCenter.Y - baseCenter.Y, circleCenter.Z - baseCenter.Z };
 				s.OriginCircleRadiusRuntime = static_cast<double>(pType->Vector_OriginCircleRadius);
 				s.OriginCircleSpeedRuntime = static_cast<double>(pType->Vector_OriginCircleSpeed);
 				s.OriginCircleAngleRuntime = 0.0;
-				s.OriginTargetOffset = CoordStruct::Empty;
+				{
+					int ofx = pType->Vector_OriginTargetOffsetFMax > pType->Vector_OriginTargetOffsetFMin
+						? static_cast<int>(V_Random(static_cast<double>(pType->Vector_OriginTargetOffsetFMin), static_cast<double>(pType->Vector_OriginTargetOffsetFMax))) : 0;
+					int ofy = pType->Vector_OriginTargetOffsetLMax > pType->Vector_OriginTargetOffsetLMin
+						? static_cast<int>(V_Random(static_cast<double>(pType->Vector_OriginTargetOffsetLMin), static_cast<double>(pType->Vector_OriginTargetOffsetLMax))) : 0;
+					int ofz = pType->Vector_OriginTargetOffsetHMax > pType->Vector_OriginTargetOffsetHMin
+						? static_cast<int>(V_Random(static_cast<double>(pType->Vector_OriginTargetOffsetHMin), static_cast<double>(pType->Vector_OriginTargetOffsetHMax))) : 0;
+					s.OriginTargetOffset = { ofx, ofy, ofz };
+				}
 
 				if (pType->Vector_OriginNormalVector.isset())
 				{
 					CoordStruct nv = pType->Vector_OriginNormalVector.Get();
 					double len = std::sqrt(static_cast<double>(nv.X * nv.X + nv.Y * nv.Y));
-					s.OriginFacing = len > 1e-6 ? std::atan2(static_cast<double>(nv.Y), static_cast<double>(nv.X)) : 0;
+					s.OriginFacing = len > 1e-6 ? std::atan2(static_cast<double>(nv.X), static_cast<double>(nv.Y)) : 0;
 					s.OriginTilt = len > 1e-6 ? std::atan2(static_cast<double>(nv.Z), len) : (nv.Z > 0 ? 3.14159265358979323846 / 2.0 : -3.14159265358979323846 / 2.0);
+					// 哨兵：NormalVector 存在但未显式设 CircleRadius 时标记为 0
+					if (pType->Vector_OriginCircleRadius < 0)
+						s.OriginCircleRadiusRuntime = 0.0;
+				}
+				else
+				{
+					// 默认水平圆面（法向量朝上）
+					s.OriginFacing = 0;
+					s.OriginTilt = 3.14159265358979323846 / 2.0;
 				}
 			}
 
@@ -429,12 +562,54 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 					s.OriginSpeed = pType->Vector_OriginInitialSpeed >= 0 ? pType->Vector_OriginInitialSpeed : 40.0;
 
 				CoordStruct targetWorld = AttachEffectClass::GetFLHAbsoluteCoords(baseCenter, pType->Vector_OriginTargetFLH.Get() + s.OriginTargetOffset, V_Radians2Dir(oFacing));
-				int dx = targetWorld.X - originCenter.X, dy = targetWorld.Y - originCenter.Y, dz = targetWorld.Z - originCenter.Z;
-				double dist = std::sqrt(static_cast<double>(dx * dx + dy * dy + dz * dz));
-				if (dist >= 1.0)
+
+				if (pType->Vector_OriginReachTarget)
 				{
-					double sv = s.OriginSpeed / dist;
-					disp = { static_cast<int>(dx * sv), static_cast<int>(dy * sv), static_cast<int>(dz * sv) };
+					int totalDuration = pType->Duration / pType->Vector_TimeStep;
+					if (totalDuration < 1) totalDuration = 1;
+					int effectiveDuration = totalDuration - pType->Vector_DisabledFrames;
+					if (effectiveDuration < 1) effectiveDuration = 1;
+					int effectiveSteps = effectiveDuration;
+					int rem = effectiveSteps - s.MovementFrames;
+					if (rem <= 0)
+					{
+						disp.X = targetWorld.X - originCenter.X;
+						disp.Y = targetWorld.Y - originCenter.Y;
+						disp.Z = targetWorld.Z - originCenter.Z;
+						s.OriginOffset.X += disp.X; s.OriginOffset.Y += disp.Y; s.OriginOffset.Z += disp.Z;
+						circleCenter = { baseCenter.X + s.OriginOffset.X, baseCenter.Y + s.OriginOffset.Y, baseCenter.Z + s.OriginOffset.Z };
+						s.PrevCircleCenter = circleCenter;
+						s.DisabledTimer = -1; // Deactivate-equivalent
+						s.OriginElapsed = 0; // no further OriginUpdate
+					}
+					else
+					{
+						disp.X = (targetWorld.X - originCenter.X) / rem;
+						disp.Y = (targetWorld.Y - originCenter.Y) / rem;
+						disp.Z = (targetWorld.Z - originCenter.Z) / rem;
+						if (pType->Vector_OriginArcHeight)
+						{
+							double t = effectiveSteps > 0 ? static_cast<double>(s.OriginElapsed) / effectiveSteps : 0;
+							double t0 = effectiveSteps > 0 ? static_cast<double>(s.OriginElapsed - 1) / effectiveSteps : 0;
+							disp.Z += static_cast<int>(4.0 * pType->Vector_OriginArcHeight * (t * (1 - t) - t0 * (1 - t0)));
+						}
+					}
+				}
+				else
+				{
+					s.OriginSpeed += static_cast<double>(pType->Vector_OriginAcceleration);
+					if (pType->Vector_OriginMaxSpeed >= 0 && s.OriginSpeed > pType->Vector_OriginMaxSpeed)
+						s.OriginSpeed = static_cast<double>(pType->Vector_OriginMaxSpeed);
+					if (pType->Vector_OriginMinSpeed >= 0 && s.OriginSpeed < pType->Vector_OriginMinSpeed)
+						s.OriginSpeed = static_cast<double>(pType->Vector_OriginMinSpeed);
+
+					int dx = targetWorld.X - originCenter.X, dy = targetWorld.Y - originCenter.Y, dz = targetWorld.Z - originCenter.Z;
+					double dist = std::sqrt(static_cast<double>(dx * dx + dy * dy + dz * dz));
+					if (dist >= 1.0)
+					{
+						double sv = s.OriginSpeed / dist;
+						disp = { static_cast<int>(dx * sv), static_cast<int>(dy * sv), static_cast<int>(dz * sv) };
+					}
 				}
 			}
 			else
@@ -447,7 +622,7 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 				if (pType->Vector_OriginCircleSpeed != 0 && tr > 0)
 					stepO = V_Rad2Deg(pType->Vector_OriginCircleSpeed / tr);
 				s.OriginCircleAngleRuntime += stepO;
-				double r = V_Deg2Rad(stepO);
+				double r = pType->Vector_OriginLissajous ? V_Deg2Rad(s.OriginCircleAngleRuntime) : V_Deg2Rad(stepO);
 				double ca = std::cos(r), sa = std::sin(r);
 				double dxO = static_cast<double>(s.OriginOffset.X);
 				double dyO = static_cast<double>(s.OriginOffset.Y);
@@ -471,6 +646,11 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 
 			s.OriginOffset.X += disp.X; s.OriginOffset.Y += disp.Y; s.OriginOffset.Z += disp.Z;
 			circleCenter = { baseCenter.X + s.OriginOffset.X, baseCenter.Y + s.OriginOffset.Y, baseCenter.Z + s.OriginOffset.Z };
+			VecLog("[ORIGIN] of=%.3f ot=%.3f rad=%.1f ang=%.1f disp=(%d,%d,%d) offset=(%d,%d,%d) center=(%d,%d,%d)\n",
+				oFacing, oTilt, s.OriginCircleRadiusRuntime, s.OriginCircleAngleRuntime,
+				disp.X, disp.Y, disp.Z,
+				s.OriginOffset.X, s.OriginOffset.Y, s.OriginOffset.Z,
+				circleCenter.X, circleCenter.Y, circleCenter.Z);
 			s.OriginElapsed++;
 		}
 
@@ -631,6 +811,14 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 	CoordStruct frameTargetFlh = { pType->Vector_TargetFLH.Get().X + s.TargetOffset.X,
 		pType->Vector_TargetFLH.Get().Y + s.TargetOffset.Y,
 		pType->Vector_TargetFLH.Get().Z + s.TargetOffset.Z };
+	//VecLog("[VEC] Frame=%d FLH=(%d,%d,%d) TGTFLH=(%d,%d,%d) OFFSET=(%d,%d,%d) ORIGIN=%d ONWORLD=%d ONBODY=%d\n",
+	//	Unsorted::CurrentFrame,
+	//	pType->Vector_TargetFLH.Get().X, pType->Vector_TargetFLH.Get().Y, pType->Vector_TargetFLH.Get().Z,
+	//	frameTargetFlh.X, frameTargetFlh.Y, frameTargetFlh.Z,
+	//	s.TargetOffset.X, s.TargetOffset.Y, s.TargetOffset.Z,
+	//	static_cast<int>(pType->Vector_Origin.Get()),
+	//	static_cast<int>(pType->Vector_OriginIsOnWorld.Get()),
+	//	static_cast<int>(pType->Vector_OriginIsOnBody.Get()));
 	CoordStruct frameTarget;
 
 	switch (pType->Vector_Origin)
@@ -658,19 +846,28 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 	double dirLen = std::sqrt(static_cast<double>(dirVec.X * dirVec.X + dirVec.Y * dirVec.Y + dirVec.Z * dirVec.Z));
 	CoordStruct resultDisp{ 0, 0, 0 };
 
+	//VecLog("[VEC] CURR=(%d,%d,%d) FDIR=%.4f FACING=(%.4f,%.4f) FRMTGT=(%d,%d,%d) DIRVEC=(%d,%d,%d) DIRLEN=%.1f MOVFRM=%d\n",
+	//	currentPos.X, currentPos.Y, currentPos.Z,
+	//	mainFacingDir.GetRadian<32>(),
+	//	effectiveFacing, effectiveTilt,
+	//	frameTarget.X, frameTarget.Y, frameTarget.Z,
+	//	dirVec.X, dirVec.Y, dirVec.Z,
+	//	dirLen,
+	//	s.MovementFrames);
+
 	if (pType->Vector_ReachTarget)
 	{
 		int totalDuration = pType->Duration / pType->Vector_TimeStep;
 		if (totalDuration < 1) totalDuration = 1;
 		int effectiveDuration = totalDuration - pType->Vector_DisabledFrames;
 		if (effectiveDuration < 1) effectiveDuration = 1;
-		int remainingFrames = effectiveDuration - s.MovementFrames;
+		int remainingFrames = effectiveDuration - s.MovementFrames + 1;
 
 		if (pType->Vector_ReachTargetEarlyEnd > 0 && pType->Vector_ReachTargetEarlyEnd < effectiveDuration
 			&& remainingFrames <= pType->Vector_ReachTargetEarlyEnd)
 		{
-			s.DisabledTimer = pType->Vector_ReachTargetEarlyEnd;
-			return;
+			s.DisabledTimer = -1;
+			s.MovementFrames = effectiveDuration + 1; // 退出 EarlyEnd 区间，下一步 remainingFrames <= 0
 		}
 
 		if (remainingFrames <= 0)
@@ -762,6 +959,10 @@ void VectorAI_Run(ObjectClass* pObject, AttachEffectTypeClass* pType, VectorStat
 	{
 		auto const pB = static_cast<BulletClass*>(pObject);
 		s.StoredDisp = { currentPos.X + resultDisp.X, currentPos.Y + resultDisp.Y, currentPos.Z + resultDisp.Z };
+		//VecLog("[VEC] RESULT DISP=(%d,%d,%d) STORED=(%d,%d,%d) VEL=(%.1f,%.1f,%.1f)\n",
+		//	resultDisp.X, resultDisp.Y, resultDisp.Z,
+		//	s.StoredDisp.X, s.StoredDisp.Y, s.StoredDisp.Z,
+		//	pB->Velocity.X, pB->Velocity.Y, pB->Velocity.Z);
 	}
 	else
 	{
