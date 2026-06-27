@@ -366,6 +366,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->SortCameoByName.Read(exINI, GameStrings::General, "SortCameoByName");
 
 	this->MergeBuildingDamage.Read(exINI, GameStrings::CombatDamage, "MergeBuildingDamage");
+	this->ShowUnitPassengers.Read(exINI, GameStrings::AudioVisual, "ShowUnitPassengers");
+	this->ShowUnitPassengers_Toggleable.Read(exINI, GameStrings::AudioVisual, "ShowUnitPassengers.Toggleable");
+	this->ShowUnitPassengers_EnabledMessage.Read(exINI, GameStrings::AudioVisual, "ShowUnitPassengers.EnabledMessage");
+	this->ShowUnitPassengers_DisabledMessage.Read(exINI, GameStrings::AudioVisual, "ShowUnitPassengers.DisabledMessage");
 
 	this->ApplyPerTargetEffectsOnDetonate.Read(exINI, GameStrings::CombatDamage, "ApplyPerTargetEffectsOnDetonate");
 
@@ -769,6 +773,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->MindControl_Permanent_ReplaceSilent)
 		.Process(this->TeamDelays_DynamicType)
 		.Process(this->TeamDelays_Count)
+		.Process(this->ShowUnitPassengers)
+		.Process(this->ShowUnitPassengers_Toggleable)
+		.Process(this->ShowUnitPassengers_EnabledMessage)
+		.Process(this->ShowUnitPassengers_DisabledMessage)
 		;
 }
 

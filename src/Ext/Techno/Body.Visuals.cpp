@@ -3,6 +3,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/House/Body.h>
+#include <ObjectClass.h>
 
 void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
 {
@@ -872,4 +873,123 @@ void TechnoExt::ShowPromoteAnim(TechnoClass* pThis)
 		AnimExt::CreateRandomAnim(veteranAnims, pThis->GetCenterCoords(), pThis, pThis->Owner, true, true);
 	else if (!eliteAnims.empty())
 		AnimExt::CreateRandomAnim(eliteAnims, pThis->GetCenterCoords(), pThis, pThis->Owner, true, true);
+}
+
+void TechnoExt::DrawUnitPassengers(TechnoClass* pThis)
+{
+	if (ObjectClass::CurrentObjects.Count != 1)
+		return;
+
+	if (ObjectClass::CurrentObjects.GetItem(0) != pThis)
+		return;
+
+	const auto whatAmI = pThis->WhatAmI();
+	if (whatAmI != AbstractType::Unit && whatAmI != AbstractType::Aircraft)
+		return;
+
+	const auto pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto pRulesExt = RulesExt::Global();
+
+	bool shouldShow = false;
+
+	if (pTypeExt->ShowPassengers.isset())
+	{
+		shouldShow = pTypeExt->ShowPassengers.Get();
+	}
+	else if (pRulesExt->ShowUnitPassengers)
+	{
+		shouldShow = true;
+	}
+	else
+	{
+		const bool toggleable = pTypeExt->ShowPassengers_Toggleable.Get(pRulesExt->ShowUnitPassengers_Toggleable);
+		if (toggleable && Phobos::Config::UnitPassengers_Enable)
+			shouldShow = true;
+	}
+
+	if (!shouldShow)
+		return;
+
+	if (pThis->Passengers.NumPassengers <= 0)
+		return;
+
+	std::map<TechnoTypeClass*, int> passengerCounts;
+	for (auto pPassenger = pThis->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
+	{
+		passengerCounts[pPassenger->GetTechnoType()]++;
+	}
+
+	if (passengerCounts.empty())
+		return;
+
+	const auto bracketPos = GetFootSelectBracketPosition(pThis, Anchor(HorizontalPosition::Center, VerticalPosition::Top));
+	const auto& bottomOffset = pTypeExt->Passengers_BottomOffset;
+	Point2D basePos = bracketPos;
+	basePos.X += bottomOffset.Get().X;
+	basePos.Y += bottomOffset.Get().Y + pType->PixelSelectionBracketDelta;
+
+	const double scale = 1.0;
+
+	const int perRow = pTypeExt->Passengers_PerRow;
+	const int iconWidth = static_cast<int>(60 * scale);
+	const int iconHeight = static_cast<int>(48 * scale);
+	const int hGap = 2;
+	const int vGap = 2;
+
+	const int count = static_cast<int>(passengerCounts.size());
+	const int rows = (count + perRow - 1) / perRow;
+
+	const auto pSurface = DSurface::Composite;
+	RectangleStruct bounds = DSurface::Composite->GetRect();
+
+	int idx = 0;
+	for (const auto& item : passengerCounts)
+	{
+		const auto pPassengerType = item.first;
+		const int passengerCount = item.second;
+
+		const int row = idx / perRow;
+		const int col = idx % perRow;
+
+		const int itemsInThisRow = (row == rows - 1 && count % perRow != 0) ? (count % perRow) : perRow;
+		const int rowWidth = itemsInThisRow * (iconWidth + hGap) - hGap;
+		const int startX = basePos.X - rowWidth / 2;
+
+		const int y = basePos.Y - iconHeight - (rows - 1 - row) * (iconHeight + vGap);
+
+		Point2D iconPos = { startX + col * (iconWidth + hGap), y };
+
+		SHPStruct* pCameo = pPassengerType->GetCameo();
+		if (pCameo)
+		{
+			pSurface->DrawSHP(
+				FileSystem::CAMEO_PAL,
+				pCameo,
+				0,
+				&iconPos,
+				&bounds,
+				BlitterFlags::bf_400 | BlitterFlags::Alpha,
+				0, 0,
+				ZGradient::Ground,
+				1000, 0, nullptr, 0, 0, 0
+			);
+
+			wchar_t countText[16];
+			_snwprintf_s(countText, _countof(countText), _TRUNCATE, L"%d", passengerCount);
+
+			Point2D textPos = { iconPos.X + iconWidth - 4, iconPos.Y + 2 };
+
+			pSurface->DrawTextA(
+				countText,
+				&bounds,
+				&textPos,
+				Drawing::RGB_To_Int({ 0, 255, 0 }),
+				0,
+				TextPrintType::Center | TextPrintType::FullShadow
+			);
+		}
+
+		idx++;
+	}
 }

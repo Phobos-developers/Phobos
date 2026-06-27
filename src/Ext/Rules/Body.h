@@ -194,6 +194,11 @@ public:
 
 		Valueable<bool> MergeBuildingDamage;
 
+		Valueable<bool> ShowUnitPassengers;
+		Valueable<bool> ShowUnitPassengers_Toggleable;
+		Nullable<CSFText> ShowUnitPassengers_EnabledMessage;
+		Nullable<CSFText> ShowUnitPassengers_DisabledMessage;
+
 		Valueable<double> DamageOwnerMultiplier;
 		Valueable<double> DamageAlliesMultiplier;
 		Valueable<double> DamageEnemiesMultiplier;
@@ -664,9 +669,12 @@ public:
 			, DiscardOn_MoveBasedOnDestination { false }
 			, RemoveMindControl_Silent { false }
 			, MindControl_Permanent_ReplaceSilent { false }
-
 			, TeamDelays_DynamicType { DynamicTeamDelayType::StartingPoint }
 			, TeamDelays_Count {}
+			, ShowUnitPassengers { false }
+			, ShowUnitPassengers_Toggleable { false }
+			, ShowUnitPassengers_EnabledMessage {}
+			, ShowUnitPassengers_DisabledMessage {}
 		{ }
 
 		virtual ~ExtData() = default;

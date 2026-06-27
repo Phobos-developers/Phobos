@@ -487,6 +487,41 @@ In `RA2MD.INI`:
 ShowPowerPlantEnhancerRange=false  ; boolean
 ```
 
+### Unit Passengers Display
+
+- You can now configure the game to display the passengers contained within a vehicle above it when selected. Each passenger type is shown as its Cameo icon with a count number in the upper-right corner.
+- Two activation modes:
+  - **Permanent mode**: Set `ShowUnitPassengers=true` (global) or `ShowPassengers=true` (per-vehicle) to always show the display, regardless of the hotkey state.
+  - **Toggleable mode**: Set `ShowUnitPassengers.Toggleable=true` (global) and use the [Toggle Unit Passengers](#toggle-unit-passengers) hotkey to switch the display on/off. Per-vehicle `ShowPassengers.Toggleable` can override the global setting.
+- When the feature is toggled via the hotkey, a message is shown in the top-left corner of the screen. The message text can be customized via CSF labels.
+- Icons are arranged in horizontal rows from left to right, with the bottom row fixed at the bottom boundary. If the number of passenger types exceeds `Passengers.PerRow`, additional rows are drawn above the bottom row.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+ShowUnitPassengers=false              ; boolean, permanently shows passengers for all vehicles (ignores hotkey). Defaults to false
+ShowUnitPassengers.Toggleable=false   ; boolean, allows hotkey to toggle the display. Defaults to false
+ShowUnitPassengers.EnabledMessage=    ; CSF entry key, message shown when the feature is enabled via hotkey
+ShowUnitPassengers.DisabledMessage=   ; CSF entry key, message shown when the feature is disabled via hotkey
+
+[SOMETECHNO]                          ; TechnoType
+ShowPassengers=                       ; boolean, permanently show/hide for this vehicle (overrides global). Not set = follow global
+ShowPassengers.Toggleable=            ; boolean, override global toggleable setting for this vehicle. Not set = follow global
+Passengers.PerRow=5                   ; integer, max icons per row before wrapping, defaults to 5
+Passengers.BottomOffset=0,0           ; X,Y, bottom boundary offset from selection bracket, defaults to 0,0
+```
+
+In `RA2MD.CSF`:
+
+; Hotkey UI labels
+TXT_UNIT_PASSENGERS       Toggle Unit Passengers
+TXT_UNIT_PASSENGERS_DESC  Show/hide unit passengers display.
+
+; Optional: customize the enabled/disabled messages
+; (must match the labels set in ShowUnitPassengers.EnabledMessage / DisabledMessage)
+MSG:UnitPassengersEnabled   Unit Passengers display: Enabled
+MSG:UnitPassengersDisabled  Unit Passengers display: Disabled
+
 ## Hotkey Commands
 
 ### `[ ]` Display Damage Numbers
@@ -518,6 +553,11 @@ ShowPowerPlantEnhancerRange=false  ; boolean
 
 - Switches on/off [digital display types](#digital-display).
 - For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC` into your `.csf` file.
+
+### `[ ]` Toggle Unit Passengers
+
+- Switches on/off [unit passengers display](#unit-passengers-display).
+- For localization add `TXT_UNIT_PASSENGERS` and `TXT_UNIT_PASSENGERS_DESC` into your `.csf` file.
 
 ### `[ ]` Next Idle Harvester
 

@@ -267,6 +267,11 @@ public:
 		Valueable<bool> DigitalDisplay_Disable;
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
 
+		Nullable<bool> ShowPassengers;
+		Nullable<bool> ShowPassengers_Toggleable;
+		Valueable<int> Passengers_PerRow;
+		Valueable<Point2D> Passengers_BottomOffset;
+
 		Nullable<SelectBoxTypeClass*> SelectBox;
 		Valueable<bool> HideSelectBox;
 
@@ -748,6 +753,11 @@ public:
 
 			, DigitalDisplay_Disable { false }
 			, DigitalDisplayTypes {}
+
+			, ShowPassengers {}
+			, ShowPassengers_Toggleable {}
+			, Passengers_PerRow { 5 }
+			, Passengers_BottomOffset { { 0, 0 } }
 
 			, SelectBox {}
 			, HideSelectBox { false }

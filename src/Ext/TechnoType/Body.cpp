@@ -988,6 +988,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
 	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
 
+	this->ShowPassengers.Read(exINI, pSection, "ShowPassengers");
+	this->ShowPassengers_Toggleable.Read(exINI, pSection, "ShowPassengers.Toggleable");
+	this->Passengers_PerRow.Read(exINI, pSection, "Passengers.PerRow");
+	this->Passengers_BottomOffset.Read(exINI, pSection, "Passengers.BottomOffset");
+
 	this->SelectBox.Read(exINI, pSection, "SelectBox");
 	this->HideSelectBox.Read(exINI, pSection, "HideSelectBox");
 
@@ -1712,6 +1717,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->DigitalDisplay_Disable)
 		.Process(this->DigitalDisplayTypes)
+
+		.Process(this->ShowPassengers)
+		.Process(this->ShowPassengers_Toggleable)
+		.Process(this->Passengers_PerRow)
+		.Process(this->Passengers_BottomOffset)
 
 		.Process(this->SelectBox)
 		.Process(this->HideSelectBox)

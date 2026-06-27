@@ -55,6 +55,7 @@ bool Phobos::Config::ArtImageSwap = false;
 bool Phobos::Config::ShowPlacementPreview = false;
 bool Phobos::Config::EnableSelectBox = false;
 bool Phobos::Config::DigitalDisplay_Enable = false;
+bool Phobos::Config::UnitPassengers_Enable = false;
 bool Phobos::Config::MessageApplyHoverState = false;
 bool Phobos::Config::MessageDisplayInCenter = false;
 int Phobos::Config::MessageDisplayInCenter_BoardOpacity = 40;
