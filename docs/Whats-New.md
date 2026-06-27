@@ -734,6 +734,7 @@ HideShakeEffects=false           ; boolean
 - Fixed AttachEffect with `RecreationDelay` of 0 checking `Delay` as well instead of immediately refreshing duration when possible (by Starkku)
 - Fixed building interceptors being able to pick targets during construction and selling (by Starkku)
 - Fixed `src/Interop/Version.cpp` not being compiled into the project (by Chang_zhi)
+- Fixed the bug that the vanilla `SecondSpawnOffset` no longer takes effect (by NetsuNegi)
 
 #### Fixes / interactions with other extensions:
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
