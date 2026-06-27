@@ -435,12 +435,16 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->TeamDelays_DynamicType.Read(exINI, GameStrings::General, "TeamDelays.DynamicType");
 
+	this->BunkerStateUpdateDelay.Read(exINI, GameStrings::General, "BunkerStateUpdateDelay");
+
 	char tempBuffer[40];
 	for (size_t i = 0; i < 8; i++)
 	{
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "TeamDelays.Count%d", i + 1);
 		this->TeamDelays_Count[i].Read(exINI, GameStrings::General, tempBuffer);
 	}
+
+	this->BerzerkMission.Read(exINI, GameStrings::CombatDamage, "BerzerkMission");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -786,6 +790,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DefaultLandingAnim_Carryall)
 		.Process(this->TeamDelays_DynamicType)
 		.Process(this->TeamDelays_Count)
+		.Process(this->BerzerkMission)
+		.Process(this->BunkerStateUpdateDelay)
 		;
 }
 

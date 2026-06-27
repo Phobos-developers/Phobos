@@ -397,7 +397,7 @@ HideShakeEffects=false           ; boolean
 - [Raise alert when technos are taking damage](New-or-Enhanced-Logics.md#raise-alert-when-technos-are-taking-damage) (by TaranDahl)
 - [Enhanced Bombard trajectory](New-or-Enhanced-Logics.md#bombard-trajectory) (by CrimRecya & Ollerus, based on knowledge of NaotoYuuki)
 - [Toggle waypoint for building](Fixed-or-Improved-Logics.md#waypoints-for-buildings) (by TaranDahl)
-- [Bunkerable checks dehardcode](Fixed-or-Improved-Logics.md#bunker-entering-check-dehardcode) (by TaranDahl)
+- [Bunkerable checks dehardcode](Fixed-or-Improved-Logics.md#tank-bunker-improvements) (by TaranDahl)
 - [No turret unit turn to the target](Fixed-or-Improved-Logics.md#unit-without-turret-always-turn-to-target) (by CrimRecya & TaranDahl)
 - [Damage multipliers](New-or-Enhanced-Logics.md#damage-multipliers) (by CrimRecya & Ollerus)
 - Customizable duration for electric bolts (by Starkku)
@@ -594,6 +594,9 @@ HideShakeEffects=false           ; boolean
 - [Customize whether technos with `Locomotor=Fly` wobble](Fixed-or-Improved-Logics.md#customize-whether-technos-with-locomotor-fly-wobble) (by Noble_Fish)
 - [Customize the landing animation of technos that have `Locomotor=Fly`](Fixed-or-Improved-Logics.md#customize-the-landing-animation-of-technos-that-have-locomotor-fly) (by Noble_Fish)
 - [Allow infantry to perform type conversion when deploying and undeploying](New-or-Enhanced-Logics.md#allow-infantry-to-perform-type-conversion-when-deploying-and-undeploying) (by Noble_Fish)
+- Add `ClampToScreen` tag for `BannerType` (defaults to `true`) to control whether banner position is clamped to the visible area (by Chang_zhi)
+- [Customizable Berzerk mission](New-or-Enhanced-Logics.md#enhanced-berzerk-behavior) (by TaranDahl)
+- [Tank Bunker foundation and state update delay improvements](Fixed-or-Improved-Logics.md#tank-bunker-improvements) (by Starkku)
 - Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn` (by Noble_Fish)
 
 #### Vanilla fixes:

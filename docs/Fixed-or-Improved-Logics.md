@@ -1257,6 +1257,28 @@ IsAnimDelayedBurst=true            ; boolean
 The prism towers' fire is hardcoded to be delayed. Their fire will ignore this flag, just as they ignore `IsAnimDelayedFire`.
 ```
 
+### Tank Bunker improvements
+
+- `Bunker=true` and associated logic should now work more reliably on odd-sized foundations. It still expects size on both X and Y axis to be equal e.g `2x2` or `3x3` and will not behave correctly otherwise.
+- It is now possible to change the tank bunker logic update delay by setting `BunkerStateUpdateDelay`. Defaults to `[General]` -> `BunkerStateUpdateDelay`. Lowering the value from the default value of 15 will make units trying to bunker up spend less time waiting.
+- Setting `BunkerableAnyway=true` on a vehicle will bypass several otherwise hardcoded checks that would otherwise prevent it from being bunkerable - namely that it needs to have a turret, weapon and `SpeedType` other than `Hover`. It will still require `Bunkerable=true` and the vehicle to not be parasitized to allow bunkering.
+
+In `rulesmd.ini`:
+```ini
+[General]
+BunkerStateUpdateDelay=15  ; integer, game frames
+
+[SOMEBUILDING]             ; BuildingType
+BunkerStateUpdateDelay=    ; integer, game frames
+
+[SOMEVEHICLE]              ; VehicleType
+BunkerableAnyway=false     ; boolean
+```
+
+```{warning}
+Skipping the bunkerable checks doesn't mean that vehicles and tank bunkers will interact correctly - actual bunkerability is mainly determined by `Locomotor`. Details about locomotors' bunkerability can be found on [ModEnc](https://modenc.renegadeprojects.com/Bunkerable).
+```
+
 ### Unit repair customization
 
 - It is now possible to customize the repairing of units by `UnitRepair=true`, `UnitReload=true` and `Hospital=true` buildings.
@@ -2258,22 +2280,6 @@ In `rulesmd.ini`:
 [SOMEVEHICLE]                               ; VehicleType
 Harvester.CanGuardArea=false                ; boolean
 Harvester.CanGuardArea.RequireTarget=false  ; boolean
-```
-
-### Bunker entering check dehardcode
-
-- In vanilla, vehicles entering tank bunkers are subject to a series of hardcoding restrictions, including having to have turrets, having to have weapons, and not having Hover speed types. Now you can skip these restrictions.
-- This needs to be used with `Bunkerable=yes`.
-- This flag only skips the static check, that is, the check on the unit type. The dynamic check (cannot be parasitized) remains unchanged.
-
-In `rulesmd.ini`:
-```ini
-[SOMEVEHICLE]              ; VehicleType
-BunkerableAnyway=false     ; boolean
-```
-
-```{warning}
-Skipping checks with this feature doesn't mean that vehicles and tank bunkers will interact correctly. Following the simple checks performed by the provider of this feature, bunkerability is mainly determined by Locomotor. The details about locomotors' bunkerability can be found on [ModEnc](https://modenc.renegadeprojects.com/Bunkerable).
 ```
 
 ### Custom Unit Crate Reroll Chance
