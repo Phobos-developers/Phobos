@@ -2128,6 +2128,66 @@ DEFINE_HOOK(0x4CF8B1, FlyLocomotionClass_Draw_Point_NoWobbles, 0x6)
 	return Continue;
 }
 
+#pragma region IsCruiseMissile
+
+DEFINE_HOOK(0x662363, RocketLocomotionClass_ILocomotion_Process_CruiseMissileCheck, 6)
+{
+	GET(ILocomotion*, pThis, ESI);
+	auto pLocomotor = static_cast<RocketLocomotionClass*>(pThis);
+	auto pLinkedTo = abstract_cast<AircraftClass*>(pLocomotor->LinkedTo);
+
+	if (!pLinkedTo)
+		return 0;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->Type);
+	if (pTypeExt->IsCruiseMissile)
+		return 0x662369;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6624FB, RocketLocomotionClass_ILocomotion_Process_CustomMissileTakeoff, 5)
+{
+	GET(ILocomotion*, pThis, ESI);
+	auto pLocomotor = static_cast<RocketLocomotionClass*>(pThis);
+	auto pLinkedTo = abstract_cast<AircraftClass*>(pLocomotor->LinkedTo);
+
+	if (!pLinkedTo)
+		return 0x662599;
+
+	if (pLocomotor->TrailerTimer.HasTimeLeft())
+		return 0x662599;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->Type);
+
+	if (pTypeExt && pTypeExt->CustomMissileTakeoffAnim)
+	{
+		GameCreate<AnimClass>(pTypeExt->CustomMissileTakeoffAnim, pLinkedTo->Location, 2, 1, 0x600, -10, false);
+		pLocomotor->TrailerTimer.Start(pTypeExt->CustomMissileTakeoffSeparation);
+		return 0x662599;
+	}
+
+	return 0x662512;
+}
+
+DEFINE_HOOK(0x662720, RocketLocomotionClass_ILocomotion_Process_CruiseMissileRaise, 6)
+{
+	GET(ILocomotion*, pThis, ESI);
+	auto pLocomotor = static_cast<RocketLocomotionClass*>(pThis);
+	auto pLinkedTo = abstract_cast<AircraftClass*>(pLocomotor->LinkedTo);
+
+	if (!pLinkedTo)
+		return 0;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->Type);
+	if (pTypeExt->IsCruiseMissile)
+		return 0x6624C8;
+
+	return 0;
+}
+
+#pragma endregion
+
 namespace WarpPerStep
 {
 	class TemporalClassFake final : public TemporalClass

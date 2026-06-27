@@ -517,6 +517,10 @@ public:
 
 		Nullable<AnimTypeClass*> LandingAnim;
 
+		Valueable<bool> IsCruiseMissile;
+		Valueable<AnimTypeClass*> CustomMissileTakeoffAnim;
+		Valueable<int> CustomMissileTakeoffSeparation;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, HealthBar_HidePips { false }
@@ -986,11 +990,15 @@ public:
 			, FlyNoWobbles {}
 
 			, LandingAnim {}
+
+			, IsCruiseMissile { false }
+			, CustomMissileTakeoffAnim { nullptr }
+			, CustomMissileTakeoffSeparation { 24 }
 		{ }
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
-		virtual void Initialize() override { }
+		virtual void Initialize() override;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
