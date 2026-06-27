@@ -366,8 +366,8 @@ public:
 		, Vector_Acceleration { 0 }
 		, Vector_AllowFallingDestroy { false }
 		, Vector_FallingDestroyHeight { 0 }
-		, Vector_AffectTechno { true }
-		, Vector_AffectBullets { false }
+		, Vector_AffectTechno { false }
+		, Vector_AffectBullets { true }
 		, Vector_CircleRandomRadiusMin { -1 }
 		, Vector_CircleRandomRadiusMax { -1 }
 		, Vector_CircleRandomAngleMin { -1 }
