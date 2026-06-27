@@ -1719,7 +1719,6 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, cons
 					pBld->QueueMission(Mission::Selling, false);
 					pBld->NextMission();
 				}
-				TechnoExt::ExtMap.Find(pBld)->UpdateAttachEffects();
 				return;
 			}
 		}
