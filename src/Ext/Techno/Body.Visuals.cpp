@@ -883,10 +883,6 @@ void TechnoExt::DrawUnitPassengers(TechnoClass* pThis)
 	if (ObjectClass::CurrentObjects.GetItem(0) != pThis)
 		return;
 
-	const auto whatAmI = pThis->WhatAmI();
-	if (whatAmI != AbstractType::Unit && whatAmI != AbstractType::Aircraft)
-		return;
-
 	const auto pType = pThis->GetTechnoType();
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	const auto pRulesExt = RulesExt::Global();
@@ -901,11 +897,9 @@ void TechnoExt::DrawUnitPassengers(TechnoClass* pThis)
 	{
 		shouldShow = true;
 	}
-	else
+	else if (pRulesExt->ShowUnitPassengers_Toggleable && Phobos::Config::UnitPassengers_Enable)
 	{
-		const bool toggleable = pTypeExt->ShowPassengers_Toggleable.Get(pRulesExt->ShowUnitPassengers_Toggleable);
-		if (toggleable && Phobos::Config::UnitPassengers_Enable)
-			shouldShow = true;
+		shouldShow = true;
 	}
 
 	if (!shouldShow)
@@ -924,16 +918,14 @@ void TechnoExt::DrawUnitPassengers(TechnoClass* pThis)
 		return;
 
 	const auto bracketPos = GetFootSelectBracketPosition(pThis, Anchor(HorizontalPosition::Center, VerticalPosition::Top));
-	const auto& bottomOffset = pTypeExt->Passengers_BottomOffset;
+	const auto& bottomOffset = pTypeExt->ShowPassengers_BottomOffset;
 	Point2D basePos = bracketPos;
 	basePos.X += bottomOffset.Get().X;
 	basePos.Y += bottomOffset.Get().Y + pType->PixelSelectionBracketDelta;
 
-	const double scale = 1.0;
-
-	const int perRow = pTypeExt->Passengers_PerRow;
-	const int iconWidth = static_cast<int>(60 * scale);
-	const int iconHeight = static_cast<int>(48 * scale);
+	const int perRow = pTypeExt->ShowPassengers_PerRow;
+	const int iconWidth = 60;
+	const int iconHeight = 48;
 	const int hGap = 2;
 	const int vGap = 2;
 
@@ -960,21 +952,38 @@ void TechnoExt::DrawUnitPassengers(TechnoClass* pThis)
 
 		Point2D iconPos = { startX + col * (iconWidth + hGap), y };
 
-		SHPStruct* pCameo = pPassengerType->GetCameo();
-		if (pCameo)
-		{
-			pSurface->DrawSHP(
-				FileSystem::CAMEO_PAL,
-				pCameo,
-				0,
-				&iconPos,
-				&bounds,
-				BlitterFlags::bf_400 | BlitterFlags::Alpha,
-				0, 0,
-				ZGradient::Ground,
-				1000, 0, nullptr, 0, 0, 0
-			);
+		bool drawn = false;
 
+		const auto pPassengerTypeExt = TechnoTypeExt::ExtMap.Find(pPassengerType);
+		if (const auto pCameoPCX = pPassengerTypeExt->CameoPCX.GetSurface())
+		{
+			RectangleStruct pcxBounds = { iconPos.X, iconPos.Y, iconWidth, iconHeight };
+			PCX::Instance.BlitToSurface(&pcxBounds, pSurface, pCameoPCX);
+			drawn = true;
+		}
+
+		if (!drawn)
+		{
+			SHPStruct* pCameo = pPassengerType->GetCameo();
+			if (pCameo)
+			{
+				pSurface->DrawSHP(
+					FileSystem::CAMEO_PAL,
+					pCameo,
+					0,
+					&iconPos,
+					&bounds,
+					BlitterFlags::bf_400 | BlitterFlags::Alpha,
+					0, 0,
+					ZGradient::Ground,
+					1000, 0, nullptr, 0, 0, 0
+				);
+				drawn = true;
+			}
+		}
+
+		if (drawn)
+		{
 			wchar_t countText[16];
 			_snwprintf_s(countText, _countof(countText), _TRUNCATE, L"%d", passengerCount);
 

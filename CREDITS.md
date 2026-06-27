@@ -53,6 +53,7 @@ This page lists all the individual contributions to the project by their author.
   - Ported XNA CnCNet Client MP save handling
   - Retint fix toggle
   - Voxel drawing invisible sections skip
+  - Animatable template
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -266,6 +267,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizing effect of level lighting on air units
   - Reimplemented `Airburst` & `Splits` logic with more customization options
   - Buildings considered as destroyable pathfinding obstacles
+  - Animation transparency customization settings
   - Animation visibility customization settings
   - Light effect customizations
   - Building unit repair customizations
@@ -294,8 +296,10 @@ This page lists all the individual contributions to the project by their author.
   - Frame CRC generation rewrite
   - Laser drawing Z-adjust customization
   - Armed building guard mission retry delay customization
-  - Animation theater/tile palette toggle
   - Building turret idle/firing/low power animations
+  - Animation theater/tile palette toggle
+  - Animatable template
+  - Tank Bunker improvements
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -541,6 +545,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug where passengers, when their transport unit is removed, would cause incorrect `LimboTracker` counts due to either having their destructor called directly (bypassing `UnInit`) or nested `UnInit` calls resetting the deletion flag too early, thereby breaking auto-death and superweapon auxiliary techno checks
   - Allow `Temporal` warhead to apply ratio and bonus
   - Fix the bug that techno will get stuck if change owner in tunnel
+  - Fix the bug that the vanilla `SecondSpawnOffset` no longer takes effect
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -645,6 +650,45 @@ This page lists all the individual contributions to the project by their author.
   - Allow the aircraft to enter area guard mission and not crash immediately without any airport
   - Allow merging AOE damage to buildings into one
   - Fix the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health
+- **Noble Fish**:
+  - Documentation maintenance
+  - Chinese documentation maintenance and translation
+  - Established Community Chinese docs
+  - Took over and completely rewrite the Official Chinese docs during Build#46
+  - Fix frame by frame hotkey description to read `TXT_FRAME_BY_FRAME_DESC` instead of `TXT_DISPLAY_DAMAGE_DESC`
+  - Remove the hardcoded wall interaction of NoSecondaryWeaponFallback that was erroneously introduced by Phobos
+  - Fix a read bug when setting the SHP file name in INI
+  - Unify the messy tag names such as `xxx.(AffectHouse/AffectsHouses/AffectedHouse)` and improve tag names like `AutoFire`
+  - Add compatibility for deprecated tag names and output warnings to avoid breaking the normal operation of existing Mods
+  - Fix the bug where warhead flags are read twice
+  - Fix an issue where shadow matrix scaling was incorrectly applied to `TurretOffset` causing turret shadow misplacement
+  - Extend the Harvester counter color definition and standardize the variable names
+  - Fix a bug where a unit's turrets would also get locked when the unit became deactivated for reasons other than being under EMP
+  - Wall overlay unit sell exploit fix
+  - Allows defining whether passengers of an OpenTopped transport unit can fire when it is affected by a locomotor warhead
+  - Customize `HarvesterLoadRate`
+  - Fix the bug where the `.SubjectToGround` of the Trajectory type did not consider bridges
+  - Customize `HarvesterDumpRate`
+  - Allow users to define the time interval of `DisplayIncome`
+  - Electric bolt Z-adjust
+  - Allow disabling the processing of the Z-depth of EBolt drawn by BuildingType being clamped to non-positive numbers
+  - Add the `Bolt.ZAdjust` setting item to the LaserTrailType with `DrawType=ebolt`
+  - Fix the bug where `WeaponRange.AllowWeapons` and `WeaponRange.DisallowWeapons` only support weapons listed in the `[WeaponTypes]` list
+  - Fix a bug where stationary vehicles would also block movement caused by external factors
+  - Fix the Phobos bug where visual effect drawing does not respect `[BuildingType] -> TargetCoordOffset`
+  - Allow *Harvester counter* to display only the total number or the number currently working
+  - Allow users to customize whether the movement state check depends on the destination for the `DiscardOn=move` condition of AE to support more usage scenarios
+  - Restore the original Tiberian Sun behavior of playing the `[AudioVisual] -> DeploySound=` sound effect when clicking the sidebar to execute `Deploy`
+  - Allow `RemoveMindControl` and `MindControl.Permanent` warheads to mute `MindClearedSound`
+  - Introduce weight selection rules for ExtraWarheads
+  - Add action `512 Set Follower for Associated Unit...`
+  - Dehardcode of parasites unlimboing after killing naval targets
+  - Allow warhead to only affect invoker
+  - Allow customizing whether the creation of shrapnel weapon is controlled by the new target check on the warhead of the parent weapon
+  - Customize `Tiled` drawing interval and centering
+  - Customize whether technos with `Locomotor=Fly` wobble
+  - Customize the landing animation of technos that have `Locomotor=Fly`
+  - Allow infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -757,6 +801,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow disable an over-optimization in targeting
   - Extra threat
   - Fix the incorrect mission switching in infantry EnterIdleMode
+  - Customizable Berzerk mission
   - Fix the issue that `BombSight` not being updated correctly in techno conversion
   - Fix BalloonHover incorrectly considering ground factors when pathfinding
   - Technos with Walk locomotor spawn wake like ship
@@ -795,7 +840,6 @@ This page lists all the individual contributions to the project by their author.
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
 - **Chasheen (Chasheenburg)** - CN docs help for Build#24
-- **Noble Fish** - some minor improvements and fixes, established Community Chinese docs, took over and completely rewrite the Official Chinese docs during Build#46, Dehardcode of parasites unlimboing after killing naval targets
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings, custom locomotors example implementation
 - **AlexB** - Original FlyingStrings implementation
@@ -821,4 +865,7 @@ This page lists all the individual contributions to the project by their author.
   - Multiplayer gamespeed fix for RealTimeTimers
   - Revert Ares patch to allow OpenTopped transport customization
   - Fix for units with Fly, Jumpjet or Rocket locomotors crashing off-map not being cleaned up
+- **Chang_zhi**:
+  - Interop export interface for accessing scenario local/global variables
+  - Add `ClampToScreen` tag for `BannerType` to control whether banner position is clamped to the visible area
 - **ABCZ (CZHczhABCZ)** - Unit passengers display

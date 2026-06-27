@@ -33,7 +33,7 @@ This serves as a changelog for when you just need to drop the new version in wit
 
 - New unit passengers display feature - show passenger cameo icons and counts above vehicles when selected (see [User Interface](User-Interface.md#unit-passengers-display))
 - New hotkey `Toggle Unit Passengers` to enable/disable the passengers display, with customizable CSF messages
-- New INI tags: `[AudioVisual] -> ShowUnitPassengers`, `ShowUnitPassengers.Toggleable`, `ShowUnitPassengers.EnabledMessage`, `ShowUnitPassengers.DisabledMessage`, `[TechnoType] -> ShowPassengers`, `ShowPassengers.Toggleable`, `Passengers.PerRow`, `Passengers.BottomOffset`
+- New INI tags: `[AudioVisual] -> ShowUnitPassengers`, `ShowUnitPassengers.Toggleable`, `[TechnoType] -> ShowPassengers`, `ShowPassengers.PerRow`, `ShowPassengers.BottomOffset`
 - `Splits.TargetCellRange` < 0 now applies special behaviour where the projectile does not consider nearby cells as additional targets if there are not enough techno targets to match `Cluster` count at all.
 - Combat light customizations introduced a bug that removed vanilla behaviour of ignoring detail level / framerate checks for colored combat light. This bug has been fixed but the previous behaviour can be restored by setting `CombatLightDetailLevel.CheckColored` on Warhead or globally under `[AudioVisual]`.
 - `[TechnoType] -> WarpAway=` has now been changed to set the animation when units are erased to maintain semantic consistency with `[General] -> WarpAway=`. The animation that was originally controlled by `[TechnoType] -> WarpAway=`, which played instead of `[General] -> WarpOut=` when a Techno is chronowarped by chronosphere, now needs to be specified using `[TechnoType] -> Chronoshift.WarpOut=`, which defaults to the value of `[TechnoType] -> WarpOut=`.
@@ -402,7 +402,7 @@ HideShakeEffects=false           ; boolean
 - [Raise alert when technos are taking damage](New-or-Enhanced-Logics.md#raise-alert-when-technos-are-taking-damage) (by TaranDahl)
 - [Enhanced Bombard trajectory](New-or-Enhanced-Logics.md#bombard-trajectory) (by CrimRecya & Ollerus, based on knowledge of NaotoYuuki)
 - [Toggle waypoint for building](Fixed-or-Improved-Logics.md#waypoints-for-buildings) (by TaranDahl)
-- [Bunkerable checks dehardcode](Fixed-or-Improved-Logics.md#bunker-entering-check-dehardcode) (by TaranDahl)
+- [Bunkerable checks dehardcode](Fixed-or-Improved-Logics.md#tank-bunker-improvements) (by TaranDahl)
 - [No turret unit turn to the target](Fixed-or-Improved-Logics.md#unit-without-turret-always-turn-to-target) (by CrimRecya & TaranDahl)
 - [Damage multipliers](New-or-Enhanced-Logics.md#damage-multipliers) (by CrimRecya & Ollerus)
 - Customizable duration for electric bolts (by Starkku)
@@ -592,6 +592,16 @@ HideShakeEffects=false           ; boolean
 - [Dynamic team delays](AI-Scripting-and-Mapping.md#dynamic-team-delays) (by Ollerus)
 - [Allow customizing whether animation uses theater / tile palette](Fixed-or-Improved-Logics.md#animation-palette-customizations-improvements) (by Starkku)
 - [Dehardcode of parasites unlimboing after killing naval targets](Fixed-or-Improved-Logics.md#dehardcode-of-parasites-unlimboing-after-killing-naval-targets) (by Noble_Fish)
+- [Allow warhead to only affect invoker](New-or-Enhanced-Logics.md#allow-warhead-to-only-affect-invoker) (by Noble_Fish)
+- Allow customizing whether the creation of shrapnel weapon is controlled by the new target check on the warhead of the parent weapon (by Noble_Fish)
+- [Animation transparency customization settings](Fixed-or-Improved-Logics.md#customizable-animation-transparency-settings) (by Starkku)
+- [Customize `Tiled` drawing interval and centering](Fixed-or-Improved-Logics.md#customize-tiled-drawing-interval-and-centering) (by Noble_Fish)
+- [Customize whether technos with `Locomotor=Fly` wobble](Fixed-or-Improved-Logics.md#customize-whether-technos-with-locomotor-fly-wobble) (by Noble_Fish)
+- [Customize the landing animation of technos that have `Locomotor=Fly`](Fixed-or-Improved-Logics.md#customize-the-landing-animation-of-technos-that-have-locomotor-fly) (by Noble_Fish)
+- [Allow infantry to perform type conversion when deploying and undeploying](New-or-Enhanced-Logics.md#allow-infantry-to-perform-type-conversion-when-deploying-and-undeploying) (by Noble_Fish)
+- Add `ClampToScreen` tag for `BannerType` (defaults to `true`) to control whether banner position is clamped to the visible area (by Chang_zhi)
+- [Customizable Berzerk mission](New-or-Enhanced-Logics.md#enhanced-berzerk-behavior) (by TaranDahl)
+- [Tank Bunker foundation and state update delay improvements](Fixed-or-Improved-Logics.md#tank-bunker-improvements) (by Starkku)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -728,11 +738,13 @@ HideShakeEffects=false           ; boolean
 - Fixed a bug where stationary vehicles would also block movement caused by external factors (by Noble_Fish)
 - Fixed AttachEffect with `RecreationDelay` of 0 checking `Delay` as well instead of immediately refreshing duration when possible (by Starkku)
 - Fixed building interceptors being able to pick targets during construction and selling (by Starkku)
+- Fixed `src/Interop/Version.cpp` not being compiled into the project (by Chang_zhi)
+- Fixed the bug that the vanilla `SecondSpawnOffset` no longer takes effect (by NetsuNegi)
 
 #### Fixes / interactions with other extensions:
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
 - Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle` (by TaranDahl)
-- Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect (by Sovietianqi, based on knowledge of DeathFish)
+- Fixed the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect (by Sovietianqi, based on knowledge of Noble_Fish)
 - Fixed the bug that building with `CloningFacility=true` and `WeaponsFactory=true` may cloning multiple vehicles and then they get stuck (by NetsuNegi)
 - [Customize Ares's radar jam logic](New-or-Enhanced-Logics.md#customize-ares-s-radar-jam-logic) (by NetsuNegi)
 - Fixed a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType` (by NetsuNegi)
@@ -752,6 +764,8 @@ HideShakeEffects=false           ; boolean
 - [Aux technos and TechLevel requirement of superweapon](New-or-Enhanced-Logics.md#aux-technos-and-techlevel-requirement-of-superweapon) (by NetsuNegi & Ollerus)
 - [Export interface for external call](index.md#interoperability) (by TaranDahl)
 - Allowed `MindControl.Permanent` warhead to mute `MindClearedSound` (by NetsuNegi & Noble_Fish)
+- [Export interface for accessing scenario local/global variables](Interoperability.md#scenarioext) (by Chang_zhi)
+- Allowed infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true` (by Noble_Fish)
 
 ```
 
@@ -863,7 +877,7 @@ HideShakeEffects=false           ; boolean
 - Chrono sparkle animation display customization and improvements (by Starkku)
 - Script action to Chronoshift teams to enemy base (by Starkku)
 - Customizable ElectricBolt Arcs (by Fryone & Kerbiter)
-- Digital display of HP and SP (by ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, based on knowledge of DeathFish)
+- Digital display of HP and SP (by ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, based on knowledge of Noble_Fish)
 - PipScale pip customizations (size, ammo / spawn / tiberium frames or offsets) (by Starkku)
 - Auto-deploy/Deploy block on ammo change (by Fryone)
 - `AltPalette` lighting toggle (by Starkku)
@@ -1156,7 +1170,7 @@ HideShakeEffects=false           ; boolean
 - Fixed radiation site damage not taking the radiation level reduction into accord (by Starkku)
 - Correctly update laser trail position while techno is cloaked even if trail is not drawn (by Starkku)
 - Fixed `Shield.Respawn.Amount` not defaulting to shield type default if not set (by Starkku)
-- Fixed an issue where the hotkey message text in frame-by-frame mode incorrectly referenced `TXT_DISPLAY_DAMAGE_DESC` instead of `TXT_FRAME_BY_FRAME_DESC`. (by DeathFishAtEase)
+- Fixed an issue where the hotkey message text in frame-by-frame mode incorrectly referenced `TXT_DISPLAY_DAMAGE_DESC` instead of `TXT_FRAME_BY_FRAME_DESC`. (by Noble_Fish)
 - Buildings considered vehicles (`ConsideredVehicle=true` or not set in conjunction with `UndeploysInto` & 1x1 foundation) are now considered units by affected target enum checks (by Starkku)
 - Fixed Phobos Warhead effects not reliably being applied on damage area as opposed to full weapon-based Warhead detonation (by Starkku)
 - Fixed `LimboKill` not working reliably (by CrimRecya)

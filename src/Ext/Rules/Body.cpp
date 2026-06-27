@@ -368,10 +368,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->MergeBuildingDamage.Read(exINI, GameStrings::CombatDamage, "MergeBuildingDamage");
 	this->ShowUnitPassengers.Read(exINI, GameStrings::AudioVisual, "ShowUnitPassengers");
 	this->ShowUnitPassengers_Toggleable.Read(exINI, GameStrings::AudioVisual, "ShowUnitPassengers.Toggleable");
-	this->ShowUnitPassengers_EnabledMessage.Read(exINI, GameStrings::AudioVisual, "ShowUnitPassengers.EnabledMessage");
-	this->ShowUnitPassengers_DisabledMessage.Read(exINI, GameStrings::AudioVisual, "ShowUnitPassengers.DisabledMessage");
 
 	this->ApplyPerTargetEffectsOnDetonate.Read(exINI, GameStrings::CombatDamage, "ApplyPerTargetEffectsOnDetonate");
+
+	this->AffectsInvokerOnly_IgnoreInvokerState.Read(exINI, GameStrings::CombatDamage, "AffectsInvokerOnly.IgnoreInvokerState");
 
 	this->BuildingRadioLink_SyncOwner.Read(exINI, GameStrings::General, "BuildingRadioLink.SyncOwner");
 
@@ -413,6 +413,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ExtendedPlayerRepair.Read(exINI, GameStrings::General, "ExtendedPlayerRepair");
 
 	this->Shrapnel_IgnoreHitBuildings.Read(exINI, GameStrings::CombatDamage, "Shrapnel.IgnoreHitBuildings");
+	this->Shrapnel_ObeyWarheadTriggerConditions.Read(exINI, GameStrings::CombatDamage, "Shrapnel.ObeyWarheadTriggerConditions");
 	this->BuildingGuardRetryDelay.Read(exINI, GameStrings::General, "BuildingGuardRetryDelay");
 
 	this->Temporal_ApplyVersus.Read(exINI, GameStrings::CombatDamage, "Temporal.ApplyVersus");
@@ -427,7 +428,15 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->RemoveMindControl_Silent.Read(exINI, GameStrings::AudioVisual, "RemoveMindControl.Silent");
 	this->MindControl_Permanent_ReplaceSilent.Read(exINI, GameStrings::AudioVisual, "MindControl.Permanent.ReplaceSilent");
 
+	this->FlyNoWobbles.Read(exINI, GameStrings::AudioVisual, "FlyNoWobbles");
+
+	this->DefaultLandingAnim.Read(exINI, GameStrings::AudioVisual, "DefaultLandingAnim");
+	this->DefaultLandingAnim_Dropship.Read(exINI, GameStrings::AudioVisual, "DefaultLandingAnim.Dropship");
+	this->DefaultLandingAnim_Carryall.Read(exINI, GameStrings::AudioVisual, "DefaultLandingAnim.Carryall");
+
 	this->TeamDelays_DynamicType.Read(exINI, GameStrings::General, "TeamDelays.DynamicType");
+
+	this->BunkerStateUpdateDelay.Read(exINI, GameStrings::General, "BunkerStateUpdateDelay");
 
 	char tempBuffer[40];
 	for (size_t i = 0; i < 8; i++)
@@ -435,6 +444,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "TeamDelays.Count%d", i + 1);
 		this->TeamDelays_Count[i].Read(exINI, GameStrings::General, tempBuffer);
 	}
+
+	this->BerzerkMission.Read(exINI, GameStrings::CombatDamage, "BerzerkMission");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -737,6 +748,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->MergeBuildingDamage)
 		.Process(this->BuildingRadioLink_SyncOwner)
 		.Process(this->ApplyPerTargetEffectsOnDetonate)
+		.Process(this->AffectsInvokerOnly_IgnoreInvokerState)
 		.Process(this->ExtraRange_TargetMoving)
 		.Process(this->ExtraRange_TargetMoving_CloseRangeOnly)
 		.Process(this->ExtraRange_FirerMoving)
@@ -765,18 +777,23 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->FiringAnim_Update)
 		.Process(this->ExtendedPlayerRepair)
 		.Process(this->Shrapnel_IgnoreHitBuildings)
+		.Process(this->Shrapnel_ObeyWarheadTriggerConditions)
 		.Process(this->BuildingGuardRetryDelay)
 		.Process(this->Temporal_ApplyVersus)
 		.Process(this->Temporal_ApplyMultiplier)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
 		.Process(this->RemoveMindControl_Silent)
 		.Process(this->MindControl_Permanent_ReplaceSilent)
+		.Process(this->FlyNoWobbles)
+		.Process(this->DefaultLandingAnim)
+		.Process(this->DefaultLandingAnim_Dropship)
+		.Process(this->DefaultLandingAnim_Carryall)
 		.Process(this->TeamDelays_DynamicType)
 		.Process(this->TeamDelays_Count)
+		.Process(this->BerzerkMission)
+		.Process(this->BunkerStateUpdateDelay)
 		.Process(this->ShowUnitPassengers)
 		.Process(this->ShowUnitPassengers_Toggleable)
-		.Process(this->ShowUnitPassengers_EnabledMessage)
-		.Process(this->ShowUnitPassengers_DisabledMessage)
 		;
 }
 

@@ -106,6 +106,9 @@ public:
 		CoordStruct LastTargetCrd;
 		CDTimerClass LastTargetCrdClearTimer;
 
+		bool HasDeployConverted;
+		bool HasUndeployConverted;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -177,6 +180,8 @@ public:
 			, HoverShutdown { false }
 			, LastTargetCrd { CoordStruct::Empty }
 			, LastTargetCrdClearTimer {}
+			, HasDeployConverted { false }
+			, HasUndeployConverted { false }
 		{ }
 
 		void OnEarlyUpdate();

@@ -989,9 +989,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
 
 	this->ShowPassengers.Read(exINI, pSection, "ShowPassengers");
-	this->ShowPassengers_Toggleable.Read(exINI, pSection, "ShowPassengers.Toggleable");
-	this->Passengers_PerRow.Read(exINI, pSection, "Passengers.PerRow");
-	this->Passengers_BottomOffset.Read(exINI, pSection, "Passengers.BottomOffset");
+	this->ShowPassengers_PerRow.Read(exINI, pSection, "ShowPassengers.PerRow");
+	this->ShowPassengers_BottomOffset.Read(exINI, pSection, "ShowPassengers.BottomOffset");
 
 	this->SelectBox.Read(exINI, pSection, "SelectBox");
 	this->HideSelectBox.Read(exINI, pSection, "HideSelectBox");
@@ -1015,6 +1014,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CurleyShuffle.Read(exINI, pSection, "CurleyShuffle");
 
 	this->Convert_Deploy.Read(exINI, pSection, "Convert.Deploy");
+	this->Convert_Undeploy.Read(exINI, pSection, "Convert.Undeploy");
 	this->Convert_HumanToComputer.Read(exINI, pSection, "Convert.HumanToComputer");
 	this->Convert_ComputerToHuman.Read(exINI, pSection, "Convert.ComputerToHuman");
 	this->Convert_ResetMindControl.Read(exINI, pSection, "Convert.ResetMindControl");
@@ -1204,6 +1204,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Parasite_AllowWaterExit.Read(exINI, pSection, "Parasite.AllowWaterExit");
 
+	this->FlyNoWobbles.Read(exINI, pSection, "FlyNoWobbles");
+
+	this->LandingAnim.Read(exINI, pSection, "LandingAnim");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1329,6 +1333,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ShadowIndex_Frame.Read(exArtINI, pArtSection, "ShadowIndex.Frame");
 
 	this->AltCameoPCX.Read(pArtINI, pArtSection, "AltCameoPCX");
+	this->CameoPCX.Read(pArtINI, pArtSection, "CameoPCX");
 
 	this->LaserTrailData.clear();
 	for (size_t i = 0; ; ++i)
@@ -1719,9 +1724,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DigitalDisplayTypes)
 
 		.Process(this->ShowPassengers)
-		.Process(this->ShowPassengers_Toggleable)
-		.Process(this->Passengers_PerRow)
-		.Process(this->Passengers_BottomOffset)
+		.Process(this->ShowPassengers_PerRow)
+		.Process(this->ShowPassengers_BottomOffset)
+		.Process(this->CameoPCX)
 
 		.Process(this->SelectBox)
 		.Process(this->HideSelectBox)
@@ -1748,6 +1753,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TiberiumEaterType)
 
 		.Process(this->Convert_Deploy)
+		.Process(this->Convert_Undeploy)
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
 		.Process(this->Convert_ResetMindControl)
@@ -1951,6 +1957,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->HarvesterDumpRate)
 
 		.Process(this->Parasite_AllowWaterExit)
+
+		.Process(this->FlyNoWobbles)
+
+		.Process(this->LandingAnim)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

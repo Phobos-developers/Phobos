@@ -26,13 +26,14 @@ This page describes all AI scripting and mapping related additions and changes i
   - `alivecount`: taking the amount of players that's not defeated at the moment into account, including itself.
   - `aliveallies`: taking the amount of allied players that's not defeated at the moment into account, excluding itself.
   - `aliveenemies`: taking the amount of hostile players that's not defeated at the moment into account.
+  - `none`: dynamic team delay will be disabled regardless of the settings of `TeamDelays.CountN`.
 - `TeamDelays.CountN` control the team delay when the amount of players meets the above conditions, where `N` stands for an integer between 1-8. Consisted by 3 integers that represent each difficulty.
   - If a dynamic team delay is not set for this player amount, or the set value isn't greater than 0, it'll default to `[General] -> TeamDelays`.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-TeamDelays.DynamicType=startingpoint    ; Dynamic Team Delay Type Enumeration (startingpoint|playercount|allies/ally|enemies/enemy|alivecount|aliveallies/alliveally|aliveenemies|aliveenemy)
+TeamDelays.DynamicType=startingpoint    ; Dynamic Team Delay Type Enumeration (startingpoint|playercount|allies/ally|enemies/enemy|alivecount|aliveallies/alliveally|aliveenemies/aliveenemy|none)
 TeamDelays.CountN=                      ; List of 3 integers indicating AI's TeamDelays in Difficult / Normal / Easy game diffculty.
 ```
 
@@ -787,7 +788,7 @@ ID=ActionCount,[Action1],609,0,0,[RadarMode],0,0,0,A,[ActionX]
 ### `610` Set house's `TeamDelays` value
 
 - Set the `TeamDelays` value of the trigger's house.
-  - If this value is less than 0, then use the value of `[General] -> TeamDelays`, or dynamic team delay if set and in skirmish.
+  - If this value is less than 0, then use the value of `[General] -> TeamDelays`, or [dynamic team delay](AI-Scripting-and-Mapping.md#dynamic-team-delays) if set and in skirmish.
 
 In `mycampaign.map`:
 ```ini
@@ -819,6 +820,7 @@ Team delay change will take effect for a house after its next AI team is created
   - `Duration` determines how long the banner will be displayed. Negative values mean the banner can always be displayed until being deleted. The banner itself won't be deleted when it's not displaying.
   - `Delay` determines when the banner will be displayed again after it stops displaying by a positive `Duration`. Neagtive values mean it can't be displayed again.
     - If an `SHP` banner displays again after the delay, it'll start from the frame when it's stopped last time. This can also be changed to its first frame if `SHP.RefreshAfterDelay` set to true.
+  - `ClampToScreen` controls whether the banner is clamped to stay within the visible area. When disabled, a PCX banner exceeding the top screen edge may crash the game.
 
 In `rulesmd.ini`:
 ```ini
@@ -836,6 +838,7 @@ CSF.Background=false        ; boolean
 CSF.VariableFormat=none     ; List of Variable Format Enumeration (none|variable|prefix/prefixed|surfix/surfixed)
 Duration=-1                 ; integer
 Delay=-1                    ; integer
+ClampToScreen=true          ; boolean
 ```
 
 In `mycampaign.map`:

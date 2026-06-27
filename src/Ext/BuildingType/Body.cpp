@@ -228,6 +228,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BuildingBunkerROFMult.Read(exINI, pSection, "BunkerROFMultMultiplier");
 	this->BunkerWallsUpSound.Read(exINI, pSection, "BunkerWallsUpSound");
 	this->BunkerWallsDownSound.Read(exINI, pSection, "BunkerWallsDownSound");
+	this->BunkerStateUpdateDelay.Read(exINI, pSection, "BunkerStateUpdateDelay");
 	this->BuildingRepairedSound.Read(exINI, pSection, "BuildingRepairedSound");
 	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
 	this->UndeploysInto_Sellable.Read(exINI, pSection, "UndeploysInto.Sellable");
@@ -404,6 +405,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingBunkerROFMult)
 		.Process(this->BunkerWallsUpSound)
 		.Process(this->BunkerWallsDownSound)
+		.Process(this->BunkerStateUpdateDelay)
 		.Process(this->BuildingRepairedSound)
 		.Process(this->Refinery_UseNormalActiveAnim)
 		.Process(this->HasPowerUpAnim)

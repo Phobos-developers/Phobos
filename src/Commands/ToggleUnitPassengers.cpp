@@ -1,7 +1,6 @@
 #include "ToggleUnitPassengers.h"
 
 #include <Utilities/GeneralUtils.h>
-#include <Ext/Rules/Body.h>
 #include <MessageListClass.h>
 #include <HouseClass.h>
 
@@ -39,18 +38,8 @@ void ToggleUnitPassengersCommandClass::Execute(WWKey eInput) const
 		);
 	};
 
-	const auto pRulesExt = RulesExt::Global();
-
 	if (Phobos::Config::UnitPassengers_Enable)
-	{
-		const auto& msg = pRulesExt->ShowUnitPassengers_EnabledMessage;
-		if (msg.isset())
-			PrintMessage(GeneralUtils::LoadStringUnlessMissing(msg.Get().Label, L"Unit Passengers display: Enabled"));
-	}
+		PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:UnitPassengersEnabled", L"Unit Passengers display: Enabled"));
 	else
-	{
-		const auto& msg = pRulesExt->ShowUnitPassengers_DisabledMessage;
-		if (msg.isset())
-			PrintMessage(GeneralUtils::LoadStringUnlessMissing(msg.Get().Label, L"Unit Passengers display: Disabled"));
-	}
+		PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:UnitPassengersDisabled", L"Unit Passengers display: Disabled"));
 }

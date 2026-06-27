@@ -268,9 +268,9 @@ public:
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
 
 		Nullable<bool> ShowPassengers;
-		Nullable<bool> ShowPassengers_Toggleable;
-		Valueable<int> Passengers_PerRow;
-		Valueable<Point2D> Passengers_BottomOffset;
+		Valueable<int> ShowPassengers_PerRow;
+		Valueable<Point2D> ShowPassengers_BottomOffset;
+		PhobosPCXFile CameoPCX;
 
 		Nullable<SelectBoxTypeClass*> SelectBox;
 		Valueable<bool> HideSelectBox;
@@ -294,6 +294,7 @@ public:
 		Nullable<bool> CurleyShuffle;
 
 		Valueable<TechnoTypeClass*> Convert_Deploy; // Ares
+		Valueable<TechnoTypeClass*> Convert_Undeploy;
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
 		Valueable<bool> Convert_ResetMindControl;
@@ -516,6 +517,10 @@ public:
 		Nullable<double> HarvesterDumpRate;
 
 		Nullable<bool> Parasite_AllowWaterExit;
+
+		Nullable<bool> FlyNoWobbles;
+
+		Nullable<AnimTypeClass*> LandingAnim;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -755,9 +760,9 @@ public:
 			, DigitalDisplayTypes {}
 
 			, ShowPassengers {}
-			, ShowPassengers_Toggleable {}
-			, Passengers_PerRow { 5 }
-			, Passengers_BottomOffset { { 0, 0 } }
+			, ShowPassengers_PerRow { 5 }
+			, ShowPassengers_BottomOffset { { 0, 0 } }
+			, CameoPCX {}
 
 			, SelectBox {}
 			, HideSelectBox { false }
@@ -783,6 +788,7 @@ public:
 			, CurleyShuffle {}
 
 			, Convert_Deploy { }
+			, Convert_Undeploy { }
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
 			, Convert_ResetMindControl { false }
@@ -986,6 +992,10 @@ public:
 			, HarvesterDumpRate {}
 				
 			, Parasite_AllowWaterExit {}
+
+			, FlyNoWobbles {}
+
+			, LandingAnim {}
 		{ }
 
 		virtual ~ExtData() = default;

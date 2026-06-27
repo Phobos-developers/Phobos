@@ -701,6 +701,17 @@ SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 
 ## Infantry
 
+### Allow infantry to perform type conversion when deploying and undeploying
+
+- Now infantry can perform type conversion immediately after the `Deploy` or `Undeploy` sequence action has been executed.
+
+In `rulesmd.ini`:
+```ini
+[SOMEINFANTRY]             ; InfantryType
+Convert.Deploy=            ; InfantryType
+Convert.Undeploy=          ; InfantryType
+```
+
 ### Customizable FLH when infantry is prone or deployed
 
 - Now infantry can override `PrimaryFireFLH` and `SecondaryFireFLH` if is prone (crawling) or deployed. Also works in conjunction with [burst-index specific firing offsets](#firing-offsets-for-specific-burst-shots).
@@ -1728,6 +1739,18 @@ DisguiseBlinkingVisibility=owner  ; List of Affected House Enumeration (none|own
 UseDisguiseMovementSpeed=false    ; boolean
 ```
 
+### Enhanced Berzerk behavior
+
+- In vanilla, when a unit enters Berzerk state, the game assigns it a `Hunt` mission, which may cause the unit to choose a very distant target and simply move toward it without firing during the Berzerk duration.
+- Now you can customize which mission the unit uses when entering Berzerk state.
+  - Additionally, this enhancement adds the necessary stop handling (clearing destination), fixing jumpjet vehicles behaving incorrectly when getting Berzerk'd while moving.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+BerzerkMission=Hunt               ; MissionType
+```
+
 ### Exclusion from base center calculations
 
 - It is possible to exclude TechnoType from base center calculations (used for number of things such as certain AI scripts and AI superweapon targeting modes etc). Normally only buildings are factored in, but the initial base center does count house's starting technos which this does affect.
@@ -2444,6 +2467,27 @@ MergeBuildingDamage=         ; boolean
 ```{note}
 - This is different from `CellSpread.MaxAffect`.
 - Due to the rounding of damage, there may be a slight increase in damage.
+```
+
+### Allow warhead to only affect invoker
+
+- In the past, modders used many methods such as `Dropping` and extremely small `CellSpread` to prevent a weapon fired by a unit from affecting others, thereby achieving complex combination logic. However, existing methods merely reduced the range of affected objects through various means. Now, you can directly use the following flag to check whether the victim is the unit itself:
+  - `AffectsInvokerOnly` can be used to make the affected object only the unit itself.
+  - `AffectsInvokerOnly.Reverse` can be used to exclude the unit from the affected objects.
+  - `AffectsInvokerOnly.IgnoreInvokerState` can be used to determine whether to consistently avoid affecting other objects regardless of the unit's state.
+
+```ini
+[CombatDamage]
+AffectsInvokerOnly.IgnoreInvokerState=true  ; boolean
+
+[SOMEWARHEAD]                               ; WarheadType
+AffectsInvokerOnly=false                    ; boolean
+AffectsInvokerOnly.Reverse=false            ; boolean
+AffectsInvokerOnly.IgnoreInvokerState=      ; boolean, default to [CombatDamage] -> AffectsInvokerOnly.IgnoreInvokerState
+```
+
+```{hint}
+When pure damage effects use `AffectsInvokerOnly`, it still checks settings such as `DamageSelf` and [`AllowDamageOnSelf`](Fixed-or-Improved-Logics.md#allowing-damage-dealt-to-firer)—they default to false; if left unchanged, this will produce a scenario where `AffectsInvokerOnly` builds a set containing only the invoker, while `DamageSelf` and `AllowDamageOnSelf` build a set excluding the invoker object, and the intersection of these two sets is empty—so ultimately it still will not deal damage to the invoker. Warhead effects will follow the damage transfer when [`ApplyPerTargetEffectsOnDetonate=false`](New-or-Enhanced-Logics.md#toggle-per-target-warhead-effects-apply-timing), and at that time they also follow this same rule.
 ```
 
 ### Break Mind Control on impact

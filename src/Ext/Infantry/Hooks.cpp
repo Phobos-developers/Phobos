@@ -1,5 +1,6 @@
 #include <Ext/BuildingType/Body.h>
 #include <Ext/TechnoType/Body.h>
+#include <Ext/Techno/Body.h>
 
 #include <InputManagerClass.h>
 
@@ -9,6 +10,56 @@ DEFINE_HOOK(0x51B2BD, InfantryClass_UpdateTarget_IsControlledByHuman, 0x6)
 	GET(AbstractClass*, pTarget, EDI);
 
 	return (!pTarget || pThis->Owner->IsControlledByHuman()) ? 0x51B33F : 0;
+}
+
+// Deploy case: DoAction(Deployed)
+DEFINE_HOOK(0x520B3E, InfantryClass_DoingAI_DeployConvert_Deploy, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pTypeExt = pExt->TypeExtData;
+
+	if (pTypeExt->Convert_Deploy && !pExt->HasDeployConverted)
+	{
+		pExt->HasDeployConverted = true;
+		pExt->HasUndeployConverted = false;
+		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Deploy);
+	}
+
+	return 0;
+}
+
+// Undeploy case: DoAction(Ready)
+DEFINE_HOOK(0x520B99, InfantryClass_DoingAI_DeployConvert_Undeploy, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pTypeExt = pExt->TypeExtData;
+
+	if (pTypeExt->Convert_Undeploy && !pExt->HasUndeployConverted)
+	{
+		pExt->HasUndeployConverted = true;
+		pExt->HasDeployConverted = false;
+		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Undeploy);
+	}
+
+	return 0;
+}
+
+// Reset mark when Deploy/Undeploy
+DEFINE_HOOK(0x520E75, InfantryClass_DoingAI_DeployConvert_ResetFlags, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+	const auto curSeq = pThis->SequenceAnim;
+
+	if (curSeq != Sequence::Deploy && curSeq != Sequence::Undeploy)
+	{
+		auto const pExt = TechnoExt::ExtMap.Find(pThis);
+		pExt->HasDeployConverted = false;
+		pExt->HasUndeployConverted = false;
+	}
+
+	return 0;
 }
 
 #pragma region WhatActionObjectFix
