@@ -263,11 +263,6 @@ msgid "AITrigger can now recognize Building Upgrades as legal condition."
 msgstr "现在 AI 触发可以识别建筑的加载物为合法的条件。"
 
 msgid ""
-"`EWGates` and `NSGates` now will link walls like `xxGateOne` and "
-"`xxGateTwo` do."
-msgstr "现在 `EWGates` 和 `NSGates` 可以像 `xxGateOne` 和 `xxGateTwo` 那样正常与墙体连接。"
-
-msgid ""
 "Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` "
 "buildings. The keys will now make the building only accept appropriate "
 "types of objects."
