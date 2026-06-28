@@ -31,9 +31,9 @@ This serves as a changelog for when you just need to drop the new version in wit
 
 #### New:
 
-- New unit passengers display feature - show passenger cameo icons and counts above vehicles when selected (see [User Interface](User-Interface.md#unit-passengers-display))
-- New hotkey `Toggle Unit Passengers` to enable/disable the passengers display, with customizable CSF messages
-- New INI tags: `[AudioVisual] -> ShowUnitPassengers`, `ShowUnitPassengers.Toggleable`, `[TechnoType] -> ShowPassengers`, `ShowPassengers.PerRow`, `ShowPassengers.BottomOffset`
+- New unit passengers display feature (see [User Interface](User-Interface.md#unit-passengers-display))
+- Hotkey `Toggle Unit Passengers` to toggle the passengers display
+- New INI tags: `[AudioVisual] -> ShowUnitPassengers`, `ShowUnitPassengers.Toggleable`; `[TechnoType] -> ShowPassengers`, `ShowPassengers.PerRow`, `ShowPassengers.BottomOffset`
 - `Splits.TargetCellRange` < 0 now applies special behaviour where the projectile does not consider nearby cells as additional targets if there are not enough techno targets to match `Cluster` count at all.
 - Combat light customizations introduced a bug that removed vanilla behaviour of ignoring detail level / framerate checks for colored combat light. This bug has been fixed but the previous behaviour can be restored by setting `CombatLightDetailLevel.CheckColored` on Warhead or globally under `[AudioVisual]`.
 - `[TechnoType] -> WarpAway=` has now been changed to set the animation when units are erased to maintain semantic consistency with `[General] -> WarpAway=`. The animation that was originally controlled by `[TechnoType] -> WarpAway=`, which played instead of `[General] -> WarpOut=` when a Techno is chronowarped by chronosphere, now needs to be specified using `[TechnoType] -> Chronoshift.WarpOut=`, which defaults to the value of `[TechnoType] -> WarpOut=`.

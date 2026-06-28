@@ -4,10 +4,10 @@
 #include "NextIdleHarvester.h"
 #include "QuickSave.h"
 #include "DamageDisplay.h"
+#include "ToggleUnitPassengers.h"
 #include "FrameByFrame.h"
 #include "FrameStep.h"
 #include "ToggleDigitalDisplay.h"
-#include "ToggleUnitPassengers.h"
 #include "ToggleDesignatorRange.h"
 #include "SaveVariablesToFile.h"
 #include "ToggleSWSidebar.h"
@@ -27,8 +27,8 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 
 	MakeCommand<NextIdleHarvesterCommandClass>();
 	MakeCommand<QuickSaveCommandClass>();
-	MakeCommand<ToggleDigitalDisplayCommandClass>();
 	MakeCommand<ToggleUnitPassengersCommandClass>();
+	MakeCommand<ToggleDigitalDisplayCommandClass>();
 	MakeCommand<ToggleDesignatorRangeCommandClass>();
 	MakeCommand<ToggleMessageListCommandClass>();
 	MakeCommand<ToggleSWSidebar>();

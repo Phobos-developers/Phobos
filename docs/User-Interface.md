@@ -493,19 +493,18 @@ ShowPowerPlantEnhancerRange=false  ; boolean
 - Two activation modes:
   - **Permanent mode**: Set `ShowUnitPassengers=true` (global) or `ShowPassengers=true` (per-vehicle) to always show the display, regardless of the hotkey state.
   - **Toggleable mode**: Set `ShowUnitPassengers.Toggleable=true` (global) and use the [Toggle Unit Passengers](#toggle-unit-passengers) hotkey to switch the display on/off.
-- When the feature is toggled via the hotkey, the messages are read from CSF labels `MSG:UnitPassengersEnabled` and `MSG:UnitPassengersDisabled`.
 - Icons are arranged in horizontal rows from left to right, with the bottom row fixed at the bottom boundary. If the number of passenger types exceeds `ShowPassengers.PerRow`, additional rows are drawn above the bottom row.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-ShowUnitPassengers=false              ; boolean, permanently shows passengers for all vehicles (ignores hotkey). Defaults to false
-ShowUnitPassengers.Toggleable=false   ; boolean, allows hotkey to toggle the display. Defaults to false
+ShowUnitPassengers=false              ; boolean
+ShowUnitPassengers.Toggleable=false   ; boolean
 
 [SOMETECHNO]                          ; TechnoType
-ShowPassengers=                       ; boolean, permanently show/hide for this vehicle (overrides global). Not set = follow global
-ShowPassengers.PerRow=5               ; integer, max icons per row before wrapping, defaults to 5
-ShowPassengers.BottomOffset=0,0       ; X,Y, bottom boundary offset from selection bracket, defaults to 0,0
+ShowPassengers=                       ; boolean, defaults to [AudioVisual] -> ShowUnitPassengers
+ShowPassengers.PerRow=5               ; integer
+ShowPassengers.BottomOffset=0,0       ; X,Y
 ```
 
 ## Hotkey Commands
