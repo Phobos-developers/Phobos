@@ -914,14 +914,12 @@ void TechnoExt::DrawUnitPassengers(TechnoClass* pThis)
 		passengerCounts[pPassenger->GetTechnoType()]++;
 	}
 
-	if (passengerCounts.empty())
-		return;
-
 	const auto bracketPos = GetFootSelectBracketPosition(pThis, Anchor(HorizontalPosition::Center, VerticalPosition::Top));
 	const auto& bottomOffset = pTypeExt->ShowPassengers_BottomOffset;
+	auto& offset = bottomOffset.Get();
 	Point2D basePos = bracketPos;
-	basePos.X += bottomOffset.Get().X;
-	basePos.Y += bottomOffset.Get().Y + pType->PixelSelectionBracketDelta;
+	basePos.X += offset.X;
+	basePos.Y += offset.Y + pType->PixelSelectionBracketDelta;
 
 	const int perRow = pTypeExt->ShowPassengers_PerRow;
 	const int iconWidth = 60;

@@ -1332,8 +1332,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ShadowIndex_Frame.Read(exArtINI, pArtSection, "ShadowIndex.Frame");
 
-	this->AltCameoPCX.Read(pArtINI, pArtSection, "AltCameoPCX");
 	this->CameoPCX.Read(pArtINI, pArtSection, "CameoPCX");
+	this->AltCameoPCX.Read(pArtINI, pArtSection, "AltCameoPCX");
 
 	this->LaserTrailData.clear();
 	for (size_t i = 0; ; ++i)

@@ -4,7 +4,6 @@
 #include "NextIdleHarvester.h"
 #include "QuickSave.h"
 #include "DamageDisplay.h"
-#include "ToggleUnitPassengers.h"
 #include "FrameByFrame.h"
 #include "FrameStep.h"
 #include "ToggleDigitalDisplay.h"
@@ -15,6 +14,7 @@
 #include "ToggleMessageList.h"
 #include "DeselectObject.h"
 #include "DeselectObject5.h"
+#include "ToggleUnitPassengers.h"
 
 #include <CCINIClass.h>
 
@@ -27,13 +27,13 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 
 	MakeCommand<NextIdleHarvesterCommandClass>();
 	MakeCommand<QuickSaveCommandClass>();
-	MakeCommand<ToggleUnitPassengersCommandClass>();
 	MakeCommand<ToggleDigitalDisplayCommandClass>();
 	MakeCommand<ToggleDesignatorRangeCommandClass>();
 	MakeCommand<ToggleMessageListCommandClass>();
 	MakeCommand<ToggleSWSidebar>();
 	MakeCommand<DeselectObjectCommandClass>();
 	MakeCommand<DeselectObject5CommandClass>();
+	MakeCommand<ToggleUnitPassengersCommandClass>();
 
 	if (Phobos::Config::SuperWeaponSidebarCommands)
 	{
