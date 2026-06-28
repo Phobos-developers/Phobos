@@ -892,6 +892,7 @@ msgstr "动画使用气候／地块色盘的开关"
 
 msgid "Tank Bunker improvements"
 msgstr ""
+"坦克碉堡改进"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："

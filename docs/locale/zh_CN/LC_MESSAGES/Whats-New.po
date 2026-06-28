@@ -2050,6 +2050,7 @@ msgid ""
 "[Tank Bunker foundation and state update delay improvements](Fixed-or-"
 "Improved-Logics.md#tank-bunker-improvements) (by Starkku)"
 msgstr ""
+"[坦克碉堡面积和状态更新间隔改进](Fixed-or-Improved-Logics.md#tank-bunker-improvements) (by Starkku)"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："

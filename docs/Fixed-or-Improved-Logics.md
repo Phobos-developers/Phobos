@@ -1269,10 +1269,10 @@ IsAnimDelayedBurst=true            ; boolean
 The prism towers' fire is hardcoded to be delayed. Their fire will ignore this flag, just as they ignore `IsAnimDelayedFire`.
 ```
 
-### Tank Bunker improvements
+### Tank bunker improvements
 
 - `Bunker=true` and associated logic should now work more reliably on odd-sized foundations. It still expects size on both X and Y axis to be equal e.g `2x2` or `3x3` and will not behave correctly otherwise.
-- It is now possible to change the tank bunker logic update delay by setting `BunkerStateUpdateDelay`. Defaults to `[General]` -> `BunkerStateUpdateDelay`. Lowering the value from the default value of 15 will make units trying to bunker up spend less time waiting.
+- It is now possible to change the tank bunker logic update delay by setting `BunkerStateUpdateDelay`. Lowering the value from the default value of 15 will make units trying to bunker up spend less time waiting.
 - Setting `BunkerableAnyway=true` on a vehicle will bypass several otherwise hardcoded checks that would otherwise prevent it from being bunkerable - namely that it needs to have a turret, weapon and `SpeedType` other than `Hover`. It will still require `Bunkerable=true` and the vehicle to not be parasitized to allow bunkering.
 
 In `rulesmd.ini`:
@@ -1281,7 +1281,7 @@ In `rulesmd.ini`:
 BunkerStateUpdateDelay=15  ; integer, game frames
 
 [SOMEBUILDING]             ; BuildingType
-BunkerStateUpdateDelay=    ; integer, game frames
+BunkerStateUpdateDelay=    ; integer, game frames, defaults to [General] -> BunkerStateUpdateDelay
 
 [SOMEVEHICLE]              ; VehicleType
 BunkerableAnyway=false     ; boolean

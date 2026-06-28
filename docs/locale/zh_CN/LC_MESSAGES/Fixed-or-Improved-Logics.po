@@ -3386,18 +3386,21 @@ msgstr "光棱塔开火硬编码延迟。就像无视 `IsAnimDelayedFire` 那样
 
 msgid "Tank bunker improvements"
 msgstr ""
+"坦克碉堡改进"
 
 msgid ""
 "`Bunker=true` and associated logic should now work more reliably on odd-"
 "sized foundations. It still expects size on both X and Y axis to be equal"
 " e.g `2x2` or `3x3` and will not behave correctly otherwise."
 msgstr ""
+"现在，`Bunker=true` 及其相关逻辑在奇数尺寸的占地面积上应该可以更可靠地工作。它仍然期望一个正方形地面积值如 `2x2` 或 `3x3`，否则无法正常工作。"
 
 msgid ""
 "It is now possible to change the tank bunker logic update delay by "
 "setting `BunkerStateUpdateDelay`. Lowering the value from the default value of 15"
 " will make units trying to bunker up spend less time waiting."
 msgstr ""
+"现在可以通过设置 `BunkerStateUpdateDelay` 来更改坦克碉堡逻辑地更新间隔。将该值降到默认值 15 以下将使尝试进入坦克碉堡的单位花费更少的等待时间。"
 
 msgid ""
 "Setting `BunkerableAnyway=true` on a vehicle will bypass several "
@@ -3406,6 +3409,7 @@ msgid ""
 "`SpeedType` other than `Hover`. It will still require `Bunkerable=true` "
 "and the vehicle to not be parasitized to allow bunkering."
 msgstr ""
+"在载具上设置 `BunkerableAnyway=true` 将绕过几个阻止它们进入坦克碉堡的原有硬编码检查——需要有炮塔、武器且 `SpeedType` 非 `Hover`。这不会绕过 `Bunkerable=true` 设置和载具不能被寄生的动态检查。"
 
 msgid ""
 "Skipping the bunkerable checks doesn't mean that vehicles and tank "
@@ -3413,6 +3417,7 @@ msgid ""
 "determined by `Locomotor`. Details about locomotors' bunkerability can be"
 " found on [ModEnc](https://modenc.renegadeprojects.com/Bunkerable)."
 msgstr ""
+"跳过准入检查并不意味着载具和坦克碉堡可以正确的交互——事实上坦克碉堡的效果主要受到 `Locomotor` 影响。不同 `Locomotor` 进入坦克碉堡的详细信息可以在 [MODENC](https://modenc.renegadeprojects.com/Bunkerable) 上找到。"
 
 msgid "Unit repair customization"
 msgstr "在建筑上自定义单位维修参数"
