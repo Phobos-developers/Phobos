@@ -240,6 +240,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed buildings that have their owner changed during buildup skipping buildup and sometimes not correctly clearing the state.
 - Fixed preplaced aircraft outside visible map being incorrectly flagged as crashing under certain conditions.
 - Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold.
+- Fixed vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't.
 
 ## Fixes / interactions with other extensions
 
