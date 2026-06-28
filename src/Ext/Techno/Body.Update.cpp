@@ -331,6 +331,18 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 				: std::all_of(vTypes.begin(), vTypes.end(), existSingleType);
 		};
 
+	// death if player power status is not as specified
+	if (pTypeExt->AutoDeath_PlayerPowerStatus != PlayerPowerStatus::None)
+	{
+		const bool isLowPower = pOwner->PowerDrain > pOwner->PowerOutput;
+
+		if ((pTypeExt->AutoDeath_PlayerPowerStatus == PlayerPowerStatus::Normal && !isLowPower) || (pTypeExt->AutoDeath_PlayerPowerStatus == PlayerPowerStatus::Consumer && isLowPower))
+		{
+			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
+			return true;
+		}
+	}
+
 	// death if listed technos don't exist
 	if (!pTypeExt->AutoDeath_TechnosDontExist.empty())
 	{

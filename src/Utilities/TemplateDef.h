@@ -1625,6 +1625,33 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 				Debug::INIParseFailed(pSection, pKey, pCur);
 		}
 	}
+
+	template <>
+	inline bool read<PlayerPowerStatus>(PlayerPowerStatus& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			static const std::pair<const char*, PlayerPowerStatus> Names[] =
+			{
+				{"none", PlayerPowerStatus::None},
+				{"consumer", PlayerPowerStatus::Consumer},
+				{"low", PlayerPowerStatus::Consumer},
+				{"normal", PlayerPowerStatus::Normal},
+			};
+
+			for (auto const& [name, val] : Names)
+			{
+				if (_strcmpi(parser.value(), name) == 0)
+				{
+					value = val;
+					return true;
+				}
+			}
+
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid PlayerPowerStatus (none, normal, low|consumer");
+		}
+		return false;
+	}
 }
 
 // Valueable

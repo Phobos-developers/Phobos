@@ -188,6 +188,13 @@ enum class AutoDeathBehavior
 	Sell = 2,     // buildings only
 };
 
+enum class PlayerPowerStatus
+{
+	None = 0,
+	Normal = 1,   // not low power
+	Consumer = 2, // low power
+};
+
 enum class SelfHealGainType
 {
 	NoHeal = 0,
