@@ -1955,7 +1955,7 @@ AutoDeath.TechnosExist=                        ; List of TechnoTypes
 AutoDeath.TechnosExist.Any=true                ; boolean
 AutoDeath.TechnosExist.AllowLimboed=false      ; boolean
 AutoDeath.TechnosExist.Houses=owner            ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-AutoDeath.PlayerPower=none                     ; Player Power Enumeration (none|low/consumer|normal)
+AutoDeath.PlayerPowerStatus=none               ; Player Power Enumeration (none|low/consumer|normal)
 ```
 
 ```{note}
