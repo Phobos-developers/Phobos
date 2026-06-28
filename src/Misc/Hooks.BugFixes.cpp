@@ -2619,3 +2619,12 @@ DEFINE_HOOK(0x577BF1, MapClass_ResetShroudForTMission_CellCheck, 0x6)
 }
 
 #pragma endregion
+
+DEFINE_HOOK_AGAIN(0x73583C, Remove_UnInitFix, 0x6) // UnitClass::DTOR
+DEFINE_HOOK(0x71A9CD, Remove_UnInitFix, 0x6) // TemporalClass::Update
+{
+	GET(FootClass*, pPassenger, EAX);
+
+	pPassenger->UnInit();
+	return R->Origin() + 0x9;
+}

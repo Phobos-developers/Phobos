@@ -332,6 +332,7 @@ Phobos fixes:
 - Fixed a bug where updating the `OpenTopped` attribute during convert did not update the coordinates of passengers (by NetsuNegi)
 - Fixed `Shrapnel.AffectsBuildings=true` shrapnel weapons being able to hit the building itself, potentially multiple times, if it had foundation larger than 1x1 (by Starkku)
 - Fixed the bug where `WeaponRange.AllowWeapons` and `WeaponRange.DisallowWeapons` only support weapons listed in the `[WeaponTypes]` list (by Noble_Fish)
+- Fixed the bug where passengers, when their transport unit is removed, would cause incorrect `LimboTracker` counts due to either having their destructor called directly (bypassing `UnInit`) or nested `UnInit` calls resetting the deletion flag too early, thereby breaking auto-death and superweapon auxiliary techno checks (by NetsuNegi)
 ```
 
 ### 0.4.0.2
