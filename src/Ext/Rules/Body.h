@@ -692,6 +692,7 @@ public:
 			, BerzerkMission { Mission::Hunt }
 
 			, BunkerStateUpdateDelay { 15 }
+
 			, ShowUnitPassengers { false }
 			, ShowUnitPassengers_Toggleable { false }
 		{ }

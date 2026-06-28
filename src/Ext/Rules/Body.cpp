@@ -366,9 +366,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->SortCameoByName.Read(exINI, GameStrings::General, "SortCameoByName");
 
 	this->MergeBuildingDamage.Read(exINI, GameStrings::CombatDamage, "MergeBuildingDamage");
-	this->ShowUnitPassengers.Read(exINI, GameStrings::AudioVisual, "ShowUnitPassengers");
-	this->ShowUnitPassengers_Toggleable.Read(exINI, GameStrings::AudioVisual, "ShowUnitPassengers.Toggleable");
-
 	this->ApplyPerTargetEffectsOnDetonate.Read(exINI, GameStrings::CombatDamage, "ApplyPerTargetEffectsOnDetonate");
 
 	this->AffectsInvokerOnly_IgnoreInvokerState.Read(exINI, GameStrings::CombatDamage, "AffectsInvokerOnly.IgnoreInvokerState");
@@ -446,6 +443,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	}
 
 	this->BerzerkMission.Read(exINI, GameStrings::CombatDamage, "BerzerkMission");
+	this->ShowUnitPassengers.Read(exINI, GameStrings::AudioVisual, "ShowUnitPassengers");
+	this->ShowUnitPassengers_Toggleable.Read(exINI, GameStrings::AudioVisual, "ShowUnitPassengers.Toggleable");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
