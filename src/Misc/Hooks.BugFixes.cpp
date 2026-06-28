@@ -634,7 +634,7 @@ DEFINE_HOOK(0x51A996, InfantryClass_PerCellProcess_KillOnImpassable, 0x5)
 	{
 		float multiplier = GroundType::Array[static_cast<int>(landType)].Cost[static_cast<int>(pThis->Type->SpeedType)];
 
-		if (multiplier == 0.0)
+		if (multiplier == 0.0f)
 			return ContinueChecks;
 	}
 

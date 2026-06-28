@@ -543,7 +543,7 @@ int HouseExt::ExtData::GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNa
 
 float HouseExt::ExtData::GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoType) const
 {
-	float mult = 1.0;
+	float mult = 1.0f;
 	auto const pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
 	for (auto const pBuilding : this->RestrictedFactoryPlants)

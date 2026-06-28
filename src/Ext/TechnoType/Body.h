@@ -264,7 +264,7 @@ public:
 			, RadarJamRadius { 0 }
 			, InhibitorRange {}
 			, DesignatorRange { }
-			, FactoryPlant_Multiplier { 1.0 }
+			, FactoryPlant_Multiplier { 1.0f }
 			, MindControlRangeLimit {}
 
 			, InterceptorType { nullptr }

@@ -90,7 +90,7 @@ public:
 			, PowersUp_Buildings {}
 			, PowerPlantEnhancer_Buildings {}
 			, PowerPlantEnhancer_Amount { 0 }
-			, PowerPlantEnhancer_Factor { 1.0 }
+			, PowerPlantEnhancer_Factor { 1.0f }
 			, OccupierMuzzleFlashes()
 			, Powered_KillSpawns { false }
 			, AllowAirstrike {}
