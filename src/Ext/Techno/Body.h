@@ -320,6 +320,7 @@ public:
 	static bool EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, int distance, bool select);
 	static bool EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool select);
 	static bool __fastcall ApplyKillDriver(TechnoClass** pData, void*, HouseClass* pToHouse, TechnoClass* pKiller, bool resetVeterancy);
+
 	static void DrawUnitPassengers(TechnoClass* pThis);
 
 	// WeaponHelpers.cpp
