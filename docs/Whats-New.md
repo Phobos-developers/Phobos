@@ -325,6 +325,7 @@ Phobos fixes:
 - Fixed the bug that the upgrade building's power-enhancing effect depends only on its parent building and is not related to the upgrade building itself (by NetsuNegi)
 - Fixed an issue where shadow matrix scaling was incorrectly applied to `TurretOffset` causing turret shadow misplacement (by Noble_Fish)
 - Fixed an issue that customizable warhead animation scatter cannot override 32 leptons scatter of `Inviso=yes` projectile (by NetsuNegi)
+- Fixed a bug where a unit's turrets would also get locked when the unit became deactivated for reasons other than being under EMP (by Noble_Fish)
 ```
 
 ### 0.4.0.2
