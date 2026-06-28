@@ -458,6 +458,7 @@ bool AttachEffectClass::ResetIfRecreatable()
 	this->Duration = 0;
 	this->CurrentDelay = this->RecreationDelay;
 	this->NeedsRecalculateStat = true;
+	this->NeedsDurationRefresh = true;
 
 	return true;
 }
