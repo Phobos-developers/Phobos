@@ -29,6 +29,8 @@ This serves as a changelog for when you just need to drop the new version in wit
 
 ### Version TBD (develop branch nightly builds)
 
+#### New:
+
 - `Splits.TargetCellRange` < 0 now applies special behaviour where the projectile does not consider nearby cells as additional targets if there are not enough techno targets to match `Cluster` count at all.
 - Combat light customizations introduced a bug that removed vanilla behaviour of ignoring detail level / framerate checks for colored combat light. This bug has been fixed but the previous behaviour can be restored by setting `CombatLightDetailLevel.CheckColored` on Warhead or globally under `[AudioVisual]`.
 - `[TechnoType] -> WarpAway=` has now been changed to set the animation when units are erased to maintain semantic consistency with `[General] -> WarpAway=`. The animation that was originally controlled by `[TechnoType] -> WarpAway=`, which played instead of `[General] -> WarpOut=` when a Techno is chronowarped by chronosphere, now needs to be specified using `[TechnoType] -> Chronoshift.WarpOut=`, which defaults to the value of `[TechnoType] -> WarpOut=`.
@@ -409,6 +411,7 @@ HideShakeEffects=false           ; boolean
 - Shield armor inheritance customization (by Ollerus)
 - [Damaged unit image changes](New-or-Enhanced-Logics.md#damaged-unit-image-changes) (by Fryone)
 - [Customizable spawns queue](New-or-Enhanced-Logics.md#customizable-spawns-queue) (by TwinkleStar)
+- [Unit passengers display](User-Interface.md#unit-passengers-display) (by ABCZ)
 - [Initial spawns number](New-or-Enhanced-Logics.md#initial-spawns-number) (by TwinkleStar)
 - [Override target under EMP attack behavior](New-or-Enhanced-Logics.md#forcing-specific-weapon-against-certain-targets) (By FS-21)
 - [Aircraft spawner recycling improvements (custom offset, animation etc.)](New-or-Enhanced-Logics.md#aircraft-spawner-customizations) (by TaranDahl)
@@ -597,7 +600,6 @@ HideShakeEffects=false           ; boolean
 - Add `ClampToScreen` tag for `BannerType` (defaults to `true`) to control whether banner position is clamped to the visible area (by Chang_zhi)
 - [Customizable Berzerk mission](New-or-Enhanced-Logics.md#enhanced-berzerk-behavior) (by TaranDahl)
 - [Tank Bunker foundation and state update delay improvements](Fixed-or-Improved-Logics.md#tank-bunker-improvements) (by Starkku)
-- [New unit passengers display feature](User-Interface.md#unit-passengers-display) (by ABCZ)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
