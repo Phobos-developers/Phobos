@@ -1011,6 +1011,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CurleyShuffle.Read(exINI, pSection, "CurleyShuffle");
 
 	this->Convert_Deploy.Read(exINI, pSection, "Convert.Deploy");
+	this->Convert_Undeploy.Read(exINI, pSection, "Convert.Undeploy");
 	this->Convert_HumanToComputer.Read(exINI, pSection, "Convert.HumanToComputer");
 	this->Convert_ComputerToHuman.Read(exINI, pSection, "Convert.ComputerToHuman");
 	this->Convert_ResetMindControl.Read(exINI, pSection, "Convert.ResetMindControl");
@@ -1201,6 +1202,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Parasite_AllowWaterExit.Read(exINI, pSection, "Parasite.AllowWaterExit");
 
 	this->FlyNoWobbles.Read(exINI, pSection, "FlyNoWobbles");
+
+	this->LandingAnim.Read(exINI, pSection, "LandingAnim");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -1742,6 +1745,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TiberiumEaterType)
 
 		.Process(this->Convert_Deploy)
+		.Process(this->Convert_Undeploy)
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
 		.Process(this->Convert_ResetMindControl)
@@ -1947,6 +1951,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Parasite_AllowWaterExit)
 
 		.Process(this->FlyNoWobbles)
+
+		.Process(this->LandingAnim)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

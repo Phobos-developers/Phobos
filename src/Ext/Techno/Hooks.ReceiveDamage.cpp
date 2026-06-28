@@ -471,6 +471,22 @@ DEFINE_HOOK(0x701D2E, TechnoClass_ReceiveDamage_AllowBerzerkOnAllies, 0x6)
 	return 0;
 }
 
+#pragma region BerzerkBehavior
+
+DEFINE_HOOK(0x701DAE, TechnoClass_ReceiveDamage_Berzerk, 0x6)
+{
+	enum { SkipQueueMission = 0x701DBA };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	pThis->SetDestination(0, false);
+	pThis->QueueMission(RulesExt::Global()->BerzerkMission, false);
+
+	return SkipQueueMission;
+}
+
+#pragma endregion
+
 DEFINE_HOOK(0x702823, TechnoClass_ReceiveDamage_SkipDamagedParticle, 0x7)
 {
 	enum { SkipParticle = 0x702A25, RemoveParticle = 0x70283C, SpawnParticle = 0x702857 };

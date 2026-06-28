@@ -376,6 +376,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `EVA.Tag` already supports being set for specific countries, and `EVAIndex` is no longer reset after load game.
 - `DisableWeapons.Duration` now makes `Gattling=yes` rate tick down and stops the sounds from playing, no longer interferes with target acquisition and works together with Phobos' `OpenTopped.CheckTransportDisableWeapons`.
 - Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
+- Allowed infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true`.
 
 ## Newly added global settings
 
@@ -504,6 +505,18 @@ In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 AnimRemapDefaultColorScheme=      ; ColorScheme name
+```
+
+### Enhanced berzerk behavior
+
+- In vanilla, when a unit enters Berzerk state, the game assigns it a `Hunt` mission, which may cause the unit to choose a very distant target and simply move toward it without firing during the Berzerk duration.
+- Now you can customize which mission the unit uses when entering Berzerk state.
+  - Additionally, this enhancement adds the necessary stop handling (clearing destination), fixing jumpjet vehicles behaving incorrectly when getting Berzerk'd while moving.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+BerzerkMission=Hunt               ; MissionType
 ```
 
 ### Iron Curtain & Force Shield extra tint intensity
@@ -875,6 +888,18 @@ In `artmd.ini`:
 AttachedAnimPosition=default ; Attached animation position enumeration (default|center|ground)
 ```
 
+### Customizable animation transparency settings
+
+- `Translucency.Cloaked` can be used to override `Translucency` on animations attached to currently cloaked TechnoTypes.
+- Both `Translucency` and `Translucency.Cloaked` can use the new keyframe system to animate along with the animation. Read more about the keyframe system [here](Miscellanous.md#keyframe-animations).
+- If interpolation is enabled, the keyframe values are clamped to valid transparency values (0,25,50 and 75), e.g a value of 1.5 would become 0 and 56.525 would become 50 and so on.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]             ; AnimationType
+Translucency.Cloaked=  ; integer - only accepted values are 75, 50, 25 and 0.
+```
+
 ### Customizable debris & meteor impact and warhead detonation behaviour
 
 - `ExplodeOnWater` can be set to true to make the animation explode on impact with water. `ExpireAnim` will be played and `Warhead` is detonated or used to deal damage / generate light flash.
@@ -895,7 +920,7 @@ SplashAnims.PickRandom=false  ; boolean
 ExtraShadow=true              ; boolean
 ```
 
-### Customize the drawing interval for `Tiled`
+### Customize `Tiled` drawing interval and centering
 
 - In vanilla, the drawing interval of an animation with `Tiled=yes` is determined by the height of the rectangle formed by the non-transparent pixels of the first frame in the Shape resource file. Now you can customize it.
   - If `Tiled.Interval` is greater than `0`, the specified value is used; otherwise, the default rule applies.
@@ -1244,6 +1269,28 @@ IsAnimDelayedBurst=true            ; boolean
 The prism towers' fire is hardcoded to be delayed. Their fire will ignore this flag, just as they ignore `IsAnimDelayedFire`.
 ```
 
+### Tank bunker improvements
+
+- `Bunker=true` and associated logic should now work more reliably on odd-sized foundations. It still expects size on both X and Y axis to be equal e.g `2x2` or `3x3` and will not behave correctly otherwise.
+- It is now possible to change the tank bunker logic update delay by setting `BunkerStateUpdateDelay`. Lowering the value from the default value of 15 will make units trying to bunker up spend less time waiting.
+- Setting `BunkerableAnyway=true` on a vehicle will bypass several otherwise hardcoded checks that would otherwise prevent it from being bunkerable - namely that it needs to have a turret, weapon and `SpeedType` other than `Hover`. It will still require `Bunkerable=true` and the vehicle to not be parasitized to allow bunkering.
+
+In `rulesmd.ini`:
+```ini
+[General]
+BunkerStateUpdateDelay=15  ; integer, game frames
+
+[SOMEBUILDING]             ; BuildingType
+BunkerStateUpdateDelay=    ; integer, game frames, defaults to [General] -> BunkerStateUpdateDelay
+
+[SOMEVEHICLE]              ; VehicleType
+BunkerableAnyway=false     ; boolean
+```
+
+```{warning}
+Skipping the bunkerable checks doesn't mean that vehicles and tank bunkers will interact correctly - actual bunkerability is mainly determined by `Locomotor`. Details about locomotors' bunkerability can be found on [ModEnc](https://modenc.renegadeprojects.com/Bunkerable).
+```
+
 ### Unit repair customization
 
 - It is now possible to customize the repairing of units by `UnitRepair=true`, `UnitReload=true` and `Hospital=true` buildings.
@@ -1440,7 +1487,7 @@ BallisticScatter.Max= ; floating point value, distance in cells
 - Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](New-or-Enhanced-Logics.md#weapon-targeting-filter) & [AttachEffect filters](New-or-Enhanced-Logics.md#attached-effects) will be checked.
   - Do note that this overrides the normal check of only allowing shrapnels to hit non-allied objects. Use `CanTargetHouses=enemies` to manually enable this behaviour again.
 - `Shrapnel.IgnoreHitBuildings` can be used to override default behaviour where shrapnels can snap onto building targets multiple times if the building occupies more than one cell. Note that this wont prevent random cells within the building's `Foundation` from being targeted if there are not enough objects around to satisfy `ShrapnelCount`.
-- `Shrapnel.ObeyWarheadTriggerConditions` can be used to determine whether to use [Customizable Warhead trigger conditions](Fixed-or-Improved-Logics.md#customizable-warhead-trigger-conditions) and [Only affects invoker checks](New-or-Enhanced-Logics.md#allow-warhead-to-only-affect-invoker) when hitting units to decide if it triggers.
+- `Shrapnel.ObeyWarheadTriggerConditions` can be used to determine whether to use [Customizable Warhead trigger conditions](Fixed-or-Improved-Logics.md#customizable-warhead-trigger-conditions) and [Only affects invoker checks](New-or-Enhanced-Logics.md#allow-warhead-to-only-affect-invoker) when hitting units to decide if it triggers.
 
 In `rulesmd.ini`:
 ```ini
@@ -1747,6 +1794,21 @@ In `rulesmd.ini`:
 FallingDownDamage=                  ; integer / percentage
 FallingDownDamage.Water=            ; integer / percentage
 FallingDownDamage.AllowEMP=true     ; boolean
+```
+
+### Customize the landing animation of technos that have `Locomotor=Fly`
+
+- In vanilla, if a techno has `Locomotor=Fly` and `IsDropship=true`, it plays the `[DROPLAND]` animation when landing; if `IsDropship=false` but it is an aircraft with `Carryall=true`, it will play the `[CARYLAND]` animation when landing. Now you can customize this logic.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+DefaultLandingAnim=                   ; AnimationType
+DefaultLandingAnim.Dropship=DROPLAND  ; AnimationType
+DefaultLandingAnim.Carryall=CARYLAND  ; AnimationType
+
+[SOMETECHNO]                          ; TechnoType
+LandingAnim=                          ; AnimationType, defaults to the global default (none, DROPLAND, or CARYLAND) based on unit's IsDropship/Carryall flags
 ```
 
 ### Customize whether technos with `Locomotor=Fly` wobble
@@ -2230,22 +2292,6 @@ In `rulesmd.ini`:
 [SOMEVEHICLE]                               ; VehicleType
 Harvester.CanGuardArea=false                ; boolean
 Harvester.CanGuardArea.RequireTarget=false  ; boolean
-```
-
-### Bunker entering check dehardcode
-
-- In vanilla, vehicles entering tank bunkers are subject to a series of hardcoding restrictions, including having to have turrets, having to have weapons, and not having Hover speed types. Now you can skip these restrictions.
-- This needs to be used with `Bunkerable=yes`.
-- This flag only skips the static check, that is, the check on the unit type. The dynamic check (cannot be parasitized) remains unchanged.
-
-In `rulesmd.ini`:
-```ini
-[SOMEVEHICLE]              ; VehicleType
-BunkerableAnyway=false     ; boolean
-```
-
-```{warning}
-Skipping checks with this feature doesn't mean that vehicles and tank bunkers will interact correctly. Following the simple checks performed by the provider of this feature, bunkerability is mainly determined by Locomotor. The details about locomotors' bunkerability can be found on [ModEnc](https://modenc.renegadeprojects.com/Bunkerable).
 ```
 
 ### Custom Unit Crate Reroll Chance

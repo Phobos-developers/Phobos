@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <RulesClass.h>
 #include <Utilities/Container.h>
@@ -365,8 +365,16 @@ public:
 		Valueable<bool> MindControl_Permanent_ReplaceSilent;
 		Nullable<bool> FlyNoWobbles;
 
+		Valueable<AnimTypeClass*> DefaultLandingAnim;
+		Nullable<AnimTypeClass*> DefaultLandingAnim_Dropship;
+		Nullable<AnimTypeClass*> DefaultLandingAnim_Carryall;
+
 		Valueable<DynamicTeamDelayType> TeamDelays_DynamicType;
 		Valueable<Vector3D<int>> TeamDelays_Count[8];
+    
+		Valueable<Mission> BerzerkMission;
+
+		Valueable<int> BunkerStateUpdateDelay;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -672,8 +680,15 @@ public:
 
 			, FlyNoWobbles {}
 
+			, DefaultLandingAnim { nullptr }
+			, DefaultLandingAnim_Dropship {}
+			, DefaultLandingAnim_Carryall {}
+
 			, TeamDelays_DynamicType { DynamicTeamDelayType::StartingPoint }
 			, TeamDelays_Count {}
+			, BerzerkMission { Mission::Hunt }
+
+			, BunkerStateUpdateDelay { 15 }
 		{ }
 
 		virtual ~ExtData() = default;

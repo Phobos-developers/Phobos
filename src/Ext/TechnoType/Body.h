@@ -290,6 +290,7 @@ public:
 		Nullable<bool> CurleyShuffle;
 
 		Valueable<TechnoTypeClass*> Convert_Deploy; // Ares
+		Valueable<TechnoTypeClass*> Convert_Undeploy;
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
 		Valueable<bool> Convert_ResetMindControl;
@@ -514,6 +515,8 @@ public:
 		Nullable<bool> Parasite_AllowWaterExit;
 
 		Nullable<bool> FlyNoWobbles;
+
+		Nullable<AnimTypeClass*> LandingAnim;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -777,6 +780,7 @@ public:
 			, CurleyShuffle {}
 
 			, Convert_Deploy { }
+			, Convert_Undeploy { }
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
 			, Convert_ResetMindControl { false }
@@ -982,6 +986,8 @@ public:
 			, Parasite_AllowWaterExit {}
 
 			, FlyNoWobbles {}
+
+			, LandingAnim {}
 		{ }
 
 		virtual ~ExtData() = default;

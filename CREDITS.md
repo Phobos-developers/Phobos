@@ -299,6 +299,7 @@ This page lists all the individual contributions to the project by their author.
   - Building turret idle/firing/low power animations
   - Animation theater/tile palette toggle
   - Animatable template
+  - Tank Bunker improvements
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -544,6 +545,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug where passengers, when their transport unit is removed, would cause incorrect `LimboTracker` counts due to either having their destructor called directly (bypassing `UnInit`) or nested `UnInit` calls resetting the deletion flag too early, thereby breaking auto-death and superweapon auxiliary techno checks
   - Allow `Temporal` warhead to apply ratio and bonus
   - Fix the bug that techno will get stuck if change owner in tunnel
+  - Fix the bug that the vanilla `SecondSpawnOffset` no longer takes effect
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -685,6 +687,9 @@ This page lists all the individual contributions to the project by their author.
   - Allow customizing whether the creation of shrapnel weapon is controlled by the new target check on the warhead of the parent weapon
   - Customize `Tiled` drawing interval and centering
   - Customize whether technos with `Locomotor=Fly` wobble
+  - Customize the landing animation of technos that have `Locomotor=Fly`
+  - Allow infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true`
+  - Allow infantry to perform type conversion when deploying and undeploying
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -797,6 +802,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow disable an over-optimization in targeting
   - Extra threat
   - Fix the incorrect mission switching in infantry EnterIdleMode
+  - Customizable Berzerk mission
   - Fix the issue that `BombSight` not being updated correctly in techno conversion
   - Fix BalloonHover incorrectly considering ground factors when pathfinding
   - Technos with Walk locomotor spawn wake like ship
@@ -860,3 +866,6 @@ This page lists all the individual contributions to the project by their author.
   - Multiplayer gamespeed fix for RealTimeTimers
   - Revert Ares patch to allow OpenTopped transport customization
   - Fix for units with Fly, Jumpjet or Rocket locomotors crashing off-map not being cleaned up
+- **Chang_zhi**:
+  - Interop export interface for accessing scenario local/global variables
+  - Add `ClampToScreen` tag for `BannerType` to control whether banner position is clamped to the visible area
