@@ -517,7 +517,7 @@ public:
 
 		Nullable<AnimTypeClass*> LandingAnim;
 
-		Valueable<bool> IsCruiseMissile;
+		Valueable<bool> Missile_Cruise;
 		Valueable<AnimTypeClass*> Missile_TakeOffAnim;
 		Valueable<int> Missile_TakeOffSeparation;
 
@@ -991,7 +991,7 @@ public:
 
 			, LandingAnim {}
 
-			, IsCruiseMissile { false }
+			, Missile_Cruise { false }
 			, Missile_TakeOffAnim { nullptr }
 			, Missile_TakeOffSeparation { 24 }
 		{ }

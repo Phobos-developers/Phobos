@@ -1212,7 +1212,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->LandingAnim.Read(exINI, pSection, "LandingAnim");
 
-	this->IsCruiseMissile.Read(exINI, pSection, "Missile.Cruise");
+	this->Missile_Cruise.Read(exINI, pSection, "Missile.Cruise");
 	this->Missile_TakeOffSeparation.Read(exINI, pSection, "Missile.TakeOffSeparation");
 
 	// Ares 0.2
@@ -1966,7 +1966,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->LandingAnim)
 
-		.Process(this->IsCruiseMissile)
+		.Process(this->Missile_Cruise)
 		.Process(this->Missile_TakeOffAnim)
 		.Process(this->Missile_TakeOffSeparation)
 		;

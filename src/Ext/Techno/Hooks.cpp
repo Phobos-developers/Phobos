@@ -2140,7 +2140,7 @@ DEFINE_HOOK(0x662354, RocketLocomotionClass_Process_CruiseMissileCheck, 0x6)
 		return 0;
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->Type);
-	if (pTypeExt->IsCruiseMissile)
+	if (pTypeExt->Missile_Cruise)
 		return 0x662369;
 
 	return 0;
@@ -2197,7 +2197,7 @@ DEFINE_HOOK(0x662720, RocketLocomotionClass_Process_CruiseMissileRaise, 0x6)
 		return 0;
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->Type);
-	if (pTypeExt->IsCruiseMissile)
+	if (pTypeExt->Missile_Cruise)
 		return 0x6624C8;
 
 	return 0;
