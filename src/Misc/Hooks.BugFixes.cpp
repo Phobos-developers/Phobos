@@ -650,10 +650,13 @@ DEFINE_HOOK(0x508F82, HouseClass_AI_CheckSpySat_IncludeUpgrades, 0x6)
 
 	if (!pBuilding->Type->SpySat)
 	{
-		for (const auto& pUpgrade : pBuilding->Upgrades)
+		if (pBuilding->UpgradeLevel)
 		{
-			if (pUpgrade && pUpgrade->SpySat)
-				return Continue;
+			for (const auto& pUpgrade : pBuilding->Upgrades)
+			{
+				if (pUpgrade && pUpgrade->SpySat)
+					return Continue;
+			}
 		}
 
 		return AdvanceLoop;
