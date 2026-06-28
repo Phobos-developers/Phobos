@@ -135,7 +135,7 @@ public:
 		void UpdateAttachEffects();
 		void UpdateWarpInDelay();
 		void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, AttachEffectClass* pRemoved = nullptr);
-		void RecalculateStatMultipliers();
+		bool RecalculateStatMultipliers(AttachEffectClass* pAttachEffect = nullptr);
 		void UpdateTemporal();
 		void UpdateMindControlAnim();
 		void InitializeLaserTrails();
