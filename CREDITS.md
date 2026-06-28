@@ -402,6 +402,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that weapon cannot used to intercept on gound bullet if it's projectile has `AG=no`
   - Fix the bug that if there's a tank in tank bunker, tank bunker use auto death by vanish will cause tank get stuck and game will crash quickly
   - Fix the issue that power output of building on tooltip won't consider power enhancer
+  - Fix the bug that the upgrade building's power-enhancing effect depends only on its parent building and is not related to the upgrade building itself
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

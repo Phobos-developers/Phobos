@@ -41,7 +41,7 @@ int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
 	return -1;
 }
 
-int BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse)
+std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse)
 {
 	int amount = 0;
 	float factor = 1.0f;
@@ -59,7 +59,7 @@ int BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuilding, int output, 
 		}
 	}
 
-	return static_cast<int>(std::round(output * factor)) + amount;
+	return std::make_pair(static_cast<int>(std::round(output * factor)), amount);
 }
 
 int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse) // not including producing upgrades

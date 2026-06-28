@@ -32,17 +32,6 @@ DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 	return 0;
 }
 
-// Power Plant Enhancer #131
-DEFINE_HOOK(0x508CF2, HouseClass_UpdatePower_PowerOutput, 0x7)
-{
-	GET(HouseClass*, pThis, ESI);
-	GET(BuildingClass*, pBld, EDI);
-
-	pThis->PowerOutput += BuildingTypeExt::GetEnhancedPower(pBld->Type, pBld->GetPowerOutput(), pThis);
-
-	return 0x508D07;
-}
-
 DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 {
 	GET(BuildingClass* const, pBuilding, EDI);
