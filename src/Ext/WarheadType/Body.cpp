@@ -38,7 +38,7 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 	if (!this->EffectsRequireVerses)
 		return true;
 
-	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget) != 0.0;
+	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget, pTarget->GetTechnoType()) != 0.0;
 }
 
 // Checks if Warhead can affect target that might or might be currently invulnerable.
