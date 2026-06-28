@@ -874,7 +874,7 @@ bool ShieldClass::IsYellowSP()
 
 bool ShieldClass::IsRedSP()
 {
-	return this->HP <= this->Type->GetConditionYellow() * this->Type->Strength.Get();
+	return this->HP <= this->Type->GetConditionRed() * this->Type->Strength.Get();
 }
 
 void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBound)
