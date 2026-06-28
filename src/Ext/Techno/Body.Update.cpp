@@ -30,16 +30,17 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	if (!this->TypeExtData || this->TypeExtData->OwnerObject() != pType)
 		this->UpdateTypeData(pType);
 
-	if (this->CheckDeathConditions())
-		return;
-
 	this->UpdateShield();
 	this->UpdateAttachEffects();
 	this->UpdateLaserTrails();
-	this->ApplyInterceptor();
 	this->EatPassengers();
 	this->ApplySpawnLimitRange();
 	this->ApplyMindControlRangeLimit();
+
+	if (this->CheckDeathConditions())
+		return;
+
+	this->ApplyInterceptor();
 }
 
 void TechnoExt::ExtData::ApplyInterceptor()
