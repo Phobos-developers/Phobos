@@ -241,6 +241,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed preplaced aircraft outside visible map being incorrectly flagged as crashing under certain conditions.
 - Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold.
 - Fixed vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't.
+- Fixed a desync due to an inconsistent shroud state caused by `GapGenerator` and `SpySat` interaction.
 
 ## Fixes / interactions with other extensions
 
