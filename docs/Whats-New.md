@@ -592,12 +592,12 @@ HideShakeEffects=false           ; boolean
 - [Animation transparency customization settings](Fixed-or-Improved-Logics.md#customizable-animation-transparency-settings) (by Starkku)
 - [Customize `Tiled` drawing interval and centering](Fixed-or-Improved-Logics.md#customize-tiled-drawing-interval-and-centering) (by Noble_Fish)
 - [Customize whether technos with `Locomotor=Fly` wobble](Fixed-or-Improved-Logics.md#customize-whether-technos-with-locomotor-fly-wobble) (by Noble_Fish)
-- [AutoDeath based on player power status](New-or-Enhanced-Logics.md#kill-object-automatically) (by Flactine)
 - [Customize the landing animation of technos that have `Locomotor=Fly`](Fixed-or-Improved-Logics.md#customize-the-landing-animation-of-technos-that-have-locomotor-fly) (by Noble_Fish)
 - [Allow infantry to perform type conversion when deploying and undeploying](New-or-Enhanced-Logics.md#allow-infantry-to-perform-type-conversion-when-deploying-and-undeploying) (by Noble_Fish)
 - Add `ClampToScreen` tag for `BannerType` (defaults to `true`) to control whether banner position is clamped to the visible area (by Chang_zhi)
 - [Customizable Berzerk mission](Fixed-or-Improved-Logics.md#enhanced-berzerk-behavior) (by TaranDahl)
 - [Tank Bunker foundation and state update delay improvements](Fixed-or-Improved-Logics.md#tank-bunker-improvements) (by Starkku)
+- [AutoDeath based on player power status](New-or-Enhanced-Logics.md#kill-object-automatically) (by Flactine)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
