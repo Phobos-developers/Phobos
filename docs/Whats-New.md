@@ -577,7 +577,6 @@ HideShakeEffects=false           ; boolean
 - Add the `Bolt.ZAdjust` setting item to the LaserTrailType with `DrawType=ebolt` (by Noble_Fish)
 - Allow *Harvester counter* to display only the total number or the number currently working (by Noble_Fish)
 - [Allow customizing guard mission retry delay for buildings with weapons](Fixed-or-Improved-Logics.md#armed-building-guard-retry-delay) (by Starkku)
-- [Firer-only message and EVA on superweapon activated](New-or-Enhanced-Logics.md#firer-only-eva-on-superweapon-activated) (by Flactine)
 - [Allow `Temporal` warhead to apply ratio and bonus](Fixed-or-Improved-Logics.md#allow-temporal-warhead-to-apply-ratio-and-bonus) (by NetsuNegi)
 - Allow users to customize whether the movement state check depends on the destination for the `DiscardOn=move` condition of AE to support more usage scenarios (by Noble_Fish)
 - Restored the original Tiberian Sun behavior of playing the `[AudioVisual] -> DeploySound=` sound effect when clicking the sidebar to execute `Deploy` (by Noble_Fish)
@@ -598,6 +597,7 @@ HideShakeEffects=false           ; boolean
 - Add `ClampToScreen` tag for `BannerType` (defaults to `true`) to control whether banner position is clamped to the visible area (by Chang_zhi)
 - [Customizable Berzerk mission](New-or-Enhanced-Logics.md#enhanced-berzerk-behavior) (by TaranDahl)
 - [Tank Bunker foundation and state update delay improvements](Fixed-or-Improved-Logics.md#tank-bunker-improvements) (by Starkku)
+- [Firer-only message and EVA on superweapon activated](New-or-Enhanced-Logics.md#recipient-specific-message-and-eva-on-superweapon-activation) (by Flactine)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

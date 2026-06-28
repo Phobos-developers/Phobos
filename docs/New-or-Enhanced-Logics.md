@@ -1209,6 +1209,7 @@ Message.Activated.Enemies=      ; CSF entry key
 EVA.Activated.Owner=            ; EVA entry
 EVA.Activated.Allies=           ; EVA entry
 EVA.Activated.Enemies=          ; EVA entry
+```
 
 ### LimboDelivery
 
