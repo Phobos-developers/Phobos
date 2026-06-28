@@ -41,24 +41,25 @@ int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
 	return -1;
 }
 
-int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse)
+int BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse)
 {
-	int nAmount = 0;
-	float fFactor = 1.0f;
+	int amount = 0;
+	float factor = 1.0f;
 
-	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
-	for (const auto& [bTypeIdx, nCount] : pHouseExt->PowerPlantEnhancers)
+	for (const auto& [typeIdx, count] : pHouseExt->PowerPlantEnhancers)
 	{
-		auto bTypeExt = BuildingTypeExt::ExtMap.Find(BuildingTypeClass::Array[bTypeIdx]);
-		if (bTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
+		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(BuildingTypeClass::Array[typeIdx]);
+
+		if (pTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding))
 		{
-			fFactor *= std::powf(bTypeExt->PowerPlantEnhancer_Factor, static_cast<float>(nCount));
-			nAmount += bTypeExt->PowerPlantEnhancer_Amount * nCount;
+			factor *= std::powf(pTypeExt->PowerPlantEnhancer_Factor, static_cast<float>(count));
+			amount += pTypeExt->PowerPlantEnhancer_Amount * count;
 		}
 	}
 
-	return static_cast<int>(std::round(pBuilding->GetPowerOutput() * fFactor)) + nAmount;
+	return static_cast<int>(std::round(output * factor)) + amount;
 }
 
 int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse) // not including producing upgrades
