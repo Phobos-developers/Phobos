@@ -374,6 +374,8 @@ public:
     
 		Valueable<Mission> BerzerkMission;
 
+		Valueable<int> BunkerStateUpdateDelay;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -685,6 +687,8 @@ public:
 			, TeamDelays_DynamicType { DynamicTeamDelayType::StartingPoint }
 			, TeamDelays_Count {}
 			, BerzerkMission { Mission::Hunt }
+
+			, BunkerStateUpdateDelay { 15 }
 		{ }
 
 		virtual ~ExtData() = default;

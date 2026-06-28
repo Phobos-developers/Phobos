@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-24 20:00+0800\n"
+"POT-Creation-Date: 2026-06-28 19:11+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -890,6 +890,9 @@ msgstr "建筑炮塔的闲置／开火／断电动画"
 msgid "Animation theater/tile palette toggle"
 msgstr "动画使用气候／地块色盘的开关"
 
+msgid "Tank Bunker improvements"
+msgstr ""
+
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
 
@@ -1297,13 +1300,11 @@ msgid ""
 "bunker"
 msgstr "修复了矿车离开坦克碉堡后无法移动的问题"
 
-#, fuzzy
 msgid ""
 "Fix the bug in AI scripts 56 and 57 that forced the launch of "
 "superweapons with index numbers 3 and 4"
 msgstr "修复了 56 和 57 号 AI 动作脚本强制发射注册索引 3 和 4 的超武的 Bug"
 
-#, fuzzy
 msgid ""
 "Fix an issue where parachute units would die upon landing if bridges were"
 " destroyed during their descent"
@@ -1802,6 +1803,9 @@ msgstr "允许 `Temporal` 弹头应用比率和加成"
 
 msgid "Fix the bug that techno will get stuck if change owner in tunnel"
 msgstr "修复了科技类型在隧道中变更所属方会导致卡住的 Bug"
+
+msgid "Fix the bug that the vanilla `SecondSpawnOffset` no longer takes effect"
+msgstr ""
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
