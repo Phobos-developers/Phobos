@@ -25,6 +25,9 @@ public:
 	Valueable<int> Delay;
 	Valueable<bool> Shape_RefreshAfterDelay;
 
+	//Clamp to screen
+	Valueable<bool> ClampToScreen;
+
 	BannerTypeClass(const char* const pTitle) : Enumerable<BannerTypeClass>(pTitle)
 		, PCX { }
 		, Shape { }
@@ -36,6 +39,7 @@ public:
 		, Duration { -1 }
 		, Delay { -1 }
 		, Shape_RefreshAfterDelay { false }
+		, ClampToScreen { true }
 	{ }
 
 	virtual void LoadFromINI(CCINIClass* pINI);

@@ -842,6 +842,23 @@ DEFINE_HOOK(0x6298CC, ParasiteClass_AI_GrippleAnim, 0x5)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x62AB69, ParasiteClass_CanExistOnVictimCell_AllowWaterExit, 0x6)
+{
+	enum { SkipChecks = 0x62AC0F, ForceFail = 0x62AB4B, ContinueVanilla = 0x62AB77 };
+
+	GET(TechnoTypeClass*, pType, EAX);
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto& globalVal = RulesExt::Global()->Parasite_AllowWaterExit;
+
+	if (pTypeExt->Parasite_AllowWaterExit.isset())
+		return pTypeExt->Parasite_AllowWaterExit.Get() ? SkipChecks : ForceFail;
+	else if (globalVal.isset())
+		return globalVal.Get() ? SkipChecks : ForceFail;
+	else
+		return pType->Naval ? SkipChecks : ContinueVanilla;
+}
+
 #pragma region RadarDrawing
 
 DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
@@ -2048,6 +2065,69 @@ DEFINE_HOOK(0x70AFEF, TechnoClass_UpdateSight_DynamicSight2, 0x6)
 
 #pragma endregion
 
+static AnimTypeClass* GetLandingAnim(TechnoClass* pTechno)
+{
+	auto const pType = pTechno->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+	if (pTypeExt->LandingAnim.isset())
+		return pTypeExt->LandingAnim.Get();
+
+	if (pType->IsDropship)
+	{
+		if (RulesExt::Global()->DefaultLandingAnim_Dropship.isset())
+			return RulesExt::Global()->DefaultLandingAnim_Dropship.Get();
+		return AnimTypeClass::Find("DROPLAND");
+	}
+
+	auto const pAircraft = abstract_cast<AircraftClass*, true>(pTechno);
+	if (pAircraft && pAircraft->Type->Carryall)
+	{
+		if (RulesExt::Global()->DefaultLandingAnim_Carryall.isset())
+			return RulesExt::Global()->DefaultLandingAnim_Carryall.Get();
+		return AnimTypeClass::Find("CARYLAND");
+	}
+
+	return RulesExt::Global()->DefaultLandingAnim;
+}
+
+DEFINE_HOOK(0x4CEB59, FlyLocomotionClass_ProcessLanding_ForceDropship, 0x6)
+{
+	GET(FlyLocomotionClass*, pLoco, ESI);
+	auto const pType = pLoco->LinkedTo->GetTechnoType();
+	bool force = TechnoTypeExt::ExtMap.Find(pType)->LandingAnim.isset() || RulesExt::Global()->DefaultLandingAnim != nullptr;
+
+	R->CL(force || pType->IsDropship);
+	return 0x4CEB5F;
+}
+
+DEFINE_HOOK(0x4CEB7E, FlyLocomotionClass_ProcessLanding_DropshipAnim, 0x5)
+{
+	GET(FlyLocomotionClass*, pLoco, ESI);
+	auto const pAnim = GetLandingAnim(pLoco->LinkedTo);
+	R->EAX(pAnim ? pAnim->ArrayIndex : -1);
+	return 0x4CEB88;
+}
+
+DEFINE_HOOK(0x4CEC31, FlyLocomotionClass_ProcessLanding_CarryallAnim, 0x5)
+{
+	GET(FlyLocomotionClass*, pLoco, ESI);
+	auto const pAnim = GetLandingAnim(pLoco->LinkedTo);
+	R->EAX(pAnim ? pAnim->ArrayIndex : -1);
+	return 0x4CEC3B;
+}
+
+DEFINE_HOOK(0x4CF8B1, FlyLocomotionClass_Draw_Point_NoWobbles, 0x6)
+{
+    enum { Continue = 0x4CF8B7 };
+    GET(TechnoTypeClass*, pType, EAX);
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+    R->CL(pTypeExt->FlyNoWobbles.Get(RulesExt::Global()->FlyNoWobbles.Get(pType->IsDropship)));
+
+	return Continue;
+}
+
 namespace WarpPerStep
 {
 	class TemporalClassFake final : public TemporalClass
@@ -2130,3 +2210,4 @@ int WarpPerStep::TemporalClassFake::_GetWarpPerStep(int helperCount)
 	return sum;
 }
 DEFINE_FUNCTION_JUMP(LJMP, 0x71AB10, WarpPerStep::TemporalClassFake::_GetWarpPerStep)
+

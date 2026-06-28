@@ -166,11 +166,11 @@ void AttachEffectClass::AI()
 	}
 
 	auto const pType = this->Type;
+	auto const pExt = TechnoExt::ExtMap.Find(pTechno);
 
 	if (!this->HasInitialized && this->InitialDelay == 0)
 	{
 		this->HasInitialized = true;
-		auto const pExt = TechnoExt::ExtMap.Find(pTechno);
 
 		if (pType->ROFMultiplier > 0.0 && pType->ROFMultiplier_ApplyOnCurrentTimer)
 		{
@@ -211,6 +211,10 @@ void AttachEffectClass::AI()
 		if (!this->ShouldBeDiscardedNow())
 		{
 			this->RefreshDuration();
+
+			if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
+				pTechno->Uncloak(true);
+
 			this->NeedsDurationRefresh = false;
 			AttachEffectTypeClass::HandleEvent(pTechno);
 		}

@@ -275,7 +275,6 @@ enum class VerticalPosition : BYTE
 	Center = 1,
 	Bottom = 2
 };
-
 //hexagon
 enum class BuildingSelectBracketPosition :BYTE
 {
@@ -331,6 +330,18 @@ enum class BannerNumberType : int
 	Variable = 1,
 	Prefixed = 2,
 	Suffixed = 3
+};
+
+enum class DynamicTeamDelayType : int
+{
+	StartingPoint = 0,
+	PlayerCount = 1,
+	Allies = 2,
+	Enemies = 3,
+	AliveCount = 4,
+	AliveAllies = 5,
+	AliveEnemies = 6,
+	None = 7
 };
 
 class MouseCursorHotSpotX
@@ -393,4 +404,10 @@ public:
 		}
 		return false;
 	}
+};
+
+enum class InterpolationMode : BYTE
+{
+	None = 0,
+	Linear = 1
 };

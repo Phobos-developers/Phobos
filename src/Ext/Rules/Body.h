@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <RulesClass.h>
 #include <Utilities/Container.h>
@@ -287,6 +287,7 @@ public:
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
 
 		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
+		Nullable<bool> Parasite_AllowWaterExit;
 
 		// cache tint color
 		int TintColorIronCurtain;
@@ -317,6 +318,7 @@ public:
 		Valueable<bool> ExtraRange_Prefiring_IncludeBurst;
 
 		Valueable<bool> ApplyPerTargetEffectsOnDetonate;
+		Valueable<bool> AffectsInvokerOnly_IgnoreInvokerState;
 
 		Valueable<bool> FiringAnim_Update;
 		Valueable<bool> ExtendedPlayerRepair;
@@ -351,6 +353,7 @@ public:
 		Valueable<bool> ShipLocomotorMakesWake;
 
 		Valueable<bool> Shrapnel_IgnoreHitBuildings;
+		Valueable<bool> Shrapnel_ObeyWarheadTriggerConditions;
 
 		Nullable<PartialVector2D<int>> BuildingGuardRetryDelay;
 
@@ -360,6 +363,18 @@ public:
 		Valueable<bool> DiscardOn_MoveBasedOnDestination;
 		Valueable<bool> RemoveMindControl_Silent;
 		Valueable<bool> MindControl_Permanent_ReplaceSilent;
+		Nullable<bool> FlyNoWobbles;
+
+		Valueable<AnimTypeClass*> DefaultLandingAnim;
+		Nullable<AnimTypeClass*> DefaultLandingAnim_Dropship;
+		Nullable<AnimTypeClass*> DefaultLandingAnim_Carryall;
+
+		Valueable<DynamicTeamDelayType> TeamDelays_DynamicType;
+		Valueable<Vector3D<int>> TeamDelays_Count[8];
+    
+		Valueable<Mission> BerzerkMission;
+
+		Valueable<int> BunkerStateUpdateDelay;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -403,6 +418,7 @@ public:
 
 			, Shield_ConditionYellow { }
 			, Shield_ConditionRed { }
+			, Pips_Shield { { -1,-1,-1 } }
 			, Pips_Shield_Background { }
 			, Pips_Shield_Building { { -1,-1,-1 } }
 			, Pips_Shield_Building_Empty { }
@@ -595,6 +611,7 @@ public:
 			, AttackMove_StopWhenTargetAcquired { }
 
 			, Parasite_GrappleAnim {}
+			, Parasite_AllowWaterExit {}
 			, InfantryAutoDeploy { false }
 			, AdjacentWallDamage { 200 }
 
@@ -614,6 +631,7 @@ public:
 			, BuildingRadioLink_SyncOwner { true }
 
 			, ApplyPerTargetEffectsOnDetonate { true }
+			, AffectsInvokerOnly_IgnoreInvokerState { true }
 
 			, ExtraRange_TargetMoving { Leptons(0) }
 			, ExtraRange_TargetMoving_CloseRangeOnly { false }
@@ -652,12 +670,25 @@ public:
 			, FiringAnim_Update { false }
 			, ExtendedPlayerRepair { false }
 			, Shrapnel_IgnoreHitBuildings { false }
+			, Shrapnel_ObeyWarheadTriggerConditions { true }
 			, BuildingGuardRetryDelay {}
 			, Temporal_ApplyVersus { false }
 			, Temporal_ApplyMultiplier { false }
 			, DiscardOn_MoveBasedOnDestination { false }
 			, RemoveMindControl_Silent { false }
 			, MindControl_Permanent_ReplaceSilent { false }
+
+			, FlyNoWobbles {}
+
+			, DefaultLandingAnim { nullptr }
+			, DefaultLandingAnim_Dropship {}
+			, DefaultLandingAnim_Carryall {}
+
+			, TeamDelays_DynamicType { DynamicTeamDelayType::StartingPoint }
+			, TeamDelays_Count {}
+			, BerzerkMission { Mission::Hunt }
+
+			, BunkerStateUpdateDelay { 15 }
 		{ }
 
 		virtual ~ExtData() = default;

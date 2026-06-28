@@ -217,6 +217,8 @@
     <ClCompile Include="src\Interop\BulletExt.cpp" />
     <ClCompile Include="src\Interop\EventExt.cpp" />
     <ClCompile Include="src\Interop\TechnoExt.cpp" />
+    <ClCompile Include="src\Interop\ScenarioExt.cpp" />
+    <ClCompile Include="src\Interop\Version.cpp" />
     <!-- src\Locomotion -->
     <ClCompile Include="src\Locomotion\TestLocomotionClass.cpp" />
     <!-- src\Misc -->
@@ -355,6 +357,8 @@
     <ClInclude Include="src\Interop\BulletExt.h" />
     <ClInclude Include="src\Interop\EventExt.h" />
     <ClInclude Include="src\Interop\TechnoExt.h" />
+    <ClInclude Include="src\Interop\ScenarioExt.h" />
+    <ClInclude Include="src\Interop\Version.h" />
     <!-- src\Locomotion -->
     <ClInclude Include="src\Locomotion\TestLocomotionClass.h" />
     <!-- src\Misc -->
@@ -391,6 +395,7 @@
     <ClInclude Include="src\Utilities\Anchor.h" />
     <ClInclude Include="src\Utilities\AresFunctions.h" />
     <ClInclude Include="src\Utilities\AresHelper.h" />
+    <ClInclude Include="src\Utilities\Interpolation.h" />
     <ClInclude Include="src\Utilities\Constructs.h" />
     <ClInclude Include="src\Utilities\Container.h" />
     <ClInclude Include="src\Utilities\Debug.h" />

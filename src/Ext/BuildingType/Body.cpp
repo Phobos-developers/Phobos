@@ -146,6 +146,7 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 	return isUpgrade ? result : -1;
 }
 
+
 void BuildingTypeExt::ExtData::Initialize()
 { }
 
@@ -227,11 +228,19 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BuildingBunkerROFMult.Read(exINI, pSection, "BunkerROFMultMultiplier");
 	this->BunkerWallsUpSound.Read(exINI, pSection, "BunkerWallsUpSound");
 	this->BunkerWallsDownSound.Read(exINI, pSection, "BunkerWallsDownSound");
+	this->BunkerStateUpdateDelay.Read(exINI, pSection, "BunkerStateUpdateDelay");
 	this->BuildingRepairedSound.Read(exINI, pSection, "BuildingRepairedSound");
 	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
 	this->UndeploysInto_Sellable.Read(exINI, pSection, "UndeploysInto.Sellable");
 	this->BuildingRadioLink_SyncOwner.Read(exINI, pSection, "BuildingRadioLink.SyncOwner");
 	this->GuardRetryDelay.Read(exINI, pSection, "GuardRetryDelay");
+
+	this->TurretAnim_IdleFrames.Read(exINI, pSection, "TurretAnim.IdleFrames");
+	this->TurretAnim_LowPowerIdleFrames.Read(exINI, pSection, "TurretAnim.LowPowerIdleFrames");
+	this->TurretAnim_FiringFrames.Read(exINI, pSection, "TurretAnim.FiringFrames");
+	this->TurretAnim_LowPowerFiringFrames.Read(exINI, pSection, "TurretAnim.LowPowerFiringFrames");
+	this->TurretAnim_IdleRate.Read(exINI, pSection, "TurretAnim.IdleRate");
+	this->TurretAnim_FiringRate.Read(exINI, pSection, "TurretAnim.FiringRate");
 
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
 	{
@@ -396,12 +405,19 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingBunkerROFMult)
 		.Process(this->BunkerWallsUpSound)
 		.Process(this->BunkerWallsDownSound)
+		.Process(this->BunkerStateUpdateDelay)
 		.Process(this->BuildingRepairedSound)
 		.Process(this->Refinery_UseNormalActiveAnim)
 		.Process(this->HasPowerUpAnim)
 		.Process(this->UndeploysInto_Sellable)
 		.Process(this->BuildingRadioLink_SyncOwner)
 		.Process(this->GuardRetryDelay)
+		.Process(this->TurretAnim_IdleFrames)
+		.Process(this->TurretAnim_LowPowerIdleFrames)
+		.Process(this->TurretAnim_FiringFrames)
+		.Process(this->TurretAnim_LowPowerFiringFrames)
+		.Process(this->TurretAnim_IdleRate)
+		.Process(this->TurretAnim_FiringFrames)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)
@@ -436,16 +452,14 @@ bool BuildingTypeExt::ExtContainer::Load(BuildingTypeClass* pThis, IStream* pStm
 
 bool BuildingTypeExt::LoadGlobals(PhobosStreamReader& Stm)
 {
-
 	return Stm.Success();
 }
 
 bool BuildingTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 {
-
-
 	return Stm.Success();
 }
+
 // =============================
 // container
 
