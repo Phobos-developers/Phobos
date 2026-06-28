@@ -518,8 +518,8 @@ public:
 		Nullable<AnimTypeClass*> LandingAnim;
 
 		Valueable<bool> IsCruiseMissile;
-		Valueable<AnimTypeClass*> CustomMissileTakeoffAnim;
-		Valueable<int> CustomMissileTakeoffSeparation;
+		Valueable<AnimTypeClass*> Missile_TakeOffAnim;
+		Valueable<int> Missile_TakeOffSeparation;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -992,8 +992,8 @@ public:
 			, LandingAnim {}
 
 			, IsCruiseMissile { false }
-			, CustomMissileTakeoffAnim { nullptr }
-			, CustomMissileTakeoffSeparation { 24 }
+			, Missile_TakeOffAnim { nullptr }
+			, Missile_TakeOffSeparation { 24 }
 		{ }
 
 		virtual ~ExtData() = default;

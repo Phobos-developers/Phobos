@@ -19,7 +19,7 @@ void TechnoTypeExt::ExtData::Initialize()
 	auto pThis = this->OwnerObject();
 
 	if (pThis->WhatAmI() == AircraftTypeClass::AbsID)
-		this->CustomMissileTakeoffAnim = AnimTypeClass::Find("V3TAKOFF");
+		this->Missile_TakeOffAnim = AnimTypeClass::Find("V3TAKOFF");
 }
 
 void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
@@ -1213,11 +1213,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->LandingAnim.Read(exINI, pSection, "LandingAnim");
 
 	this->IsCruiseMissile.Read(exINI, pSection, "Missile.Cruise");
-	this->CustomMissileTakeoffAnim.Read(exINI, pSection, "Missile.TakeOffAnim");
-	this->CustomMissileTakeoffSeparation.Read(exINI, pSection, "Missile.TakeOffSeparation");
+	this->Missile_TakeOffSeparation.Read(exINI, pSection, "Missile.TakeOffSeparation");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
+
+	// Ares 0.3
+	this->Missile_TakeOffAnim.Read(exINI, pSection, "Missile.TakeOffAnim");
 
 	// Ares 0.9
 	this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
@@ -1965,8 +1967,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LandingAnim)
 
 		.Process(this->IsCruiseMissile)
-		.Process(this->CustomMissileTakeoffAnim)
-		.Process(this->CustomMissileTakeoffSeparation)
+		.Process(this->Missile_TakeOffAnim)
+		.Process(this->Missile_TakeOffSeparation)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
