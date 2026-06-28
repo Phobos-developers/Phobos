@@ -503,6 +503,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	char tempBuffer[40];
 
+	// Ares 3.0
+	this->Unsellable.Read(exINI, pSection, "Unsellable");
+
 	if (this->OwnerObject()->Gunner)
 	{
 		size_t weaponCount = this->OwnerObject()->WeaponCount;
@@ -862,6 +865,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)
 		.Process(this->Wake_Sinking)
+
+		.Process(this->Unsellable)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

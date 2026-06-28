@@ -179,17 +179,8 @@ msgid ""
 msgstr ""
 "**[🌐国际性的 Discord 频道：C&C Mod Haven](https://discord.gg/sZeMzz6qVg)**"
 
-#: ../../../README.md:27
-#, python-format
-msgid ""
-"[🇨🇳 Chinese QQ Phobos group](http://qm.qq.com/cgi-"
-"bin/qm/qr?_wv=1027&k=f_h7TZoVX_8--"
-"ZedVFBMmjRrLBIzjMKJ&authKey=QfNyW4DZUFqL3ZKzGL5PgLUWTnISj0myWn4WGtPPQmi3F%2FP3vfnuBd3YjLFk%2BU94&noverify=0&group_code=630590659)"
-" (630590659)"
-msgstr ""
-"[🇨🇳 中文 QQ 群组：Phobos CN](http://qm.qq.com/cgi-"
-"bin/qm/qr?_wv=1027&k=f_h7TZoVX_8--"
-"ZedVFBMmjRrLBIzjMKJ&authKey=QfNyW4DZUFqL3ZKzGL5PgLUWTnISj0myWn4WGtPPQmi3F%2FP3vfnuBd3YjLFk%2BU94&noverify=0&group_code=630590659)（630590659）"
+msgid "**[🇨🇳 Chinese Phobos Communication Forum - Phobos CN](https://phoboscn.top)**"
+msgstr "**[🇨🇳 中文社区公共交流论坛：Phobos CN](https://phoboscn.top)**"
 
 #: ../../../README.md:29
 msgid "Downloads"
@@ -472,9 +463,8 @@ msgstr "[Patreon](https://www.patreon.com/Starkku)"
 msgid "**[@CrimRecya](https://github.com/CrimRecya) (绯红热茶)** - T2 maintainer"
 msgstr "**[@CrimRecya](https://github.com/CrimRecya)（绯红热茶）**- T2 维护者"
 
-#: ../../../README.md:108
-msgid "[Alipay](https://i2.hdslb.com/bfs/new_dyn/8de77b17b8fc2e005613821b62008e37362533219.jpg)"
-msgstr "[支付宝](https://i2.hdslb.com/bfs/new_dyn/8de77b17b8fc2e005613821b62008e37362533219.jpg)"
+msgid "[Alipay](https://www.phoboscn.top/t/topic/45#crimrecya)"
+msgstr "[支付宝](https://www.phoboscn.top/t/topic/45#crimrecya)"
 
 #: ../../../README.md:109
 msgid "**[@ZivDero](https://github.com/ZivDero)** - T2 maintainer"
@@ -488,25 +478,22 @@ msgstr "[Patreon](https://www.patreon.com/c/ZivDero)"
 msgid "**Ollerus ([@Coronia](https://github.com/Coronia))** - T1 maintainer"
 msgstr "**Ollerus（[@Coronia](https://github.com/Coronia)）**- T1 维护者"
 
-#: ../../../README.md:112
-msgid "[Alipay](https://i2.hdslb.com/bfs/new_dyn/7c5f82c5530c88dc076a6f1ca2c02b46362533219.jpg)"
-msgstr "[支付宝](https://i2.hdslb.com/bfs/new_dyn/7c5f82c5530c88dc076a6f1ca2c02b46362533219.jpg)"
+msgid "[Alipay](https://www.phoboscn.top/t/topic/45#ollerus)"
+msgstr "[支付宝](https://www.phoboscn.top/t/topic/45#ollerus)"
 
 #: ../../../README.md:113
 msgid "**[@NetsuNegi](https://github.com/NetsuNegi)** - T1 maintainer"
 msgstr "**[@NetsuNegi](https://github.com/NetsuNegi)** - T1 维护者"
 
-#: ../../../README.md:114
-msgid "[Alipay](https://i2.hdslb.com/bfs/new_dyn/cb69d2b5eb08c13d03bc79664e68b6c2362533219.png)"
-msgstr "[支付宝](https://i2.hdslb.com/bfs/new_dyn/cb69d2b5eb08c13d03bc79664e68b6c2362533219.png)"
+msgid "[Alipay](https://www.phoboscn.top/t/topic/45#netsunegi)"
+msgstr "[支付宝](https://www.phoboscn.top/t/topic/45#netsunegi)"
 
 #: ../../../README.md:115
 msgid "**[@TaranDahl](https://github.com/TaranDahl) (航味麻酱)** - T1 maintainer"
 msgstr "**[@TaranDahl](https://github.com/TaranDahl)（航味麻酱）**- T1 维护者"
 
-#: ../../../README.md:116
-msgid "[WeChatPay](https://i2.hdslb.com/bfs/new_dyn/ffd5d36cc5efcdd83d93138062ec116e362533219.jpg)"
-msgstr "[微信](https://i2.hdslb.com/bfs/new_dyn/ffd5d36cc5efcdd83d93138062ec116e362533219.jpg)"
+msgid "[WeChatPay](https://www.phoboscn.top/t/topic/45#tarandahl)"
+msgstr "[微信](https://www.phoboscn.top/t/topic/45#tarandahl)"
 
 #: ../../../README.md:117
 msgid ""
@@ -516,9 +503,8 @@ msgstr ""
 "**Noble_Fish（[@DeathFishAtEase](https://github.com/DeathFishAtEase)）**- "
 "分派、文档维护者"
 
-#: ../../../README.md:118
-msgid "[Alipay](https://i2.hdslb.com/bfs/new_dyn/b080641faea49ae3e10b4728679ef2e5362533219.jpg)"
-msgstr "[支付宝](https://i2.hdslb.com/bfs/new_dyn/b080641faea49ae3e10b4728679ef2e5362533219.jpg)"
+msgid "[Alipay](https://www.phoboscn.top/t/topic/45#noble_fish)"
+msgstr "[支付宝](https://www.phoboscn.top/t/topic/45#noble_fish)"
 
 #: ../../../README.md:119
 msgid "**FlyStar ([@Fly-Star-him](https://github.com/Fly-Star-him))** - triage"
@@ -643,11 +629,10 @@ msgstr "Phobos 是一个非官方的开源社区合作项目，旨在扩展《�
 #: ../../../README.md:150
 msgid ""
 "As a modification, the project complies with [EA C&C modding "
-"guidelines](https://www.ea.com/games/command-and-conquer/command-and-"
-"conquer-remastered/modding-faq); should there be conflict between the "
-"project's license and modding guidelines - the rules imposed by "
-"guidelines shall take precedence (for example, the project should not be "
-"commercial or used to make money)."
+"guidelines](https://www.ea.com/games/command-and-conquer/command-and-conquer-remastered/news/modding-faq); "
+"should there be conflict between the project's license and modding "
+"guidelines - the rules imposed by guidelines shall take precedence (for "
+"example, the project should not be commercial or used to make money)."
 msgstr ""
 "作为一项修改，该项目符合 [EA C&C 修改指南](https://www.ea.com/games/command-and-conquer"
 "/command-and-conquer-remastered/modding-"

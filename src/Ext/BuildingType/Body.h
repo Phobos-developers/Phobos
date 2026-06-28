@@ -82,6 +82,9 @@ public:
 
 		Valueable<bool> UndeploysInto_Sellable;
 
+		// Ares 3.0
+		Nullable<bool> UnitSell;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -132,6 +135,9 @@ public:
 			, Adjacent_Disallowed {}
 			, HasPowerUpAnim {}
 			, UndeploysInto_Sellable { false }
+
+			// Ares 3.0
+			, UnitSell {}
 		{ }
 
 		// Ares 0.A functions
@@ -168,7 +174,7 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
-	static int GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse);
+	static int GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
 	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);
 };

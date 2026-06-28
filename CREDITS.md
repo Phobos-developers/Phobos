@@ -401,6 +401,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow setting whether `AlternateFLH` applies to vehicle passengers in the transport unit
   - Fix the bug that weapon cannot used to intercept on gound bullet if it's projectile has `AG=no`
   - Fix the bug that if there's a tank in tank bunker, tank bunker use auto death by vanish will cause tank get stuck and game will crash quickly
+  - Fix the issue that power output of building on tooltip won't consider power enhancer
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
