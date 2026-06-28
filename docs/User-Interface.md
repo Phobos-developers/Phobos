@@ -542,8 +542,8 @@ ShowPassengers.BottomOffset=0,0       ; X,Y
 ### `[ ]` Toggle Unit Passengers
 
 - Switches on/off [unit passengers display](#unit-passengers-display).
-- When toggled, messages are shown from CSF labels `MSG:UnitPassengersEnabled` and `MSG:UnitPassengersDisabled` (fallback: "Unit Passengers display: Enabled" / "Unit Passengers display: Disabled").
-- For localization add `TXT_UNIT_PASSENGERS` (fallback: "Toggle Unit Passengers") and `TXT_UNIT_PASSENGERS_DESC` (fallback: "Show/hide unit passengers display.") into your `.csf` file.
+- When toggled, messages are shown from CSF labels `MSG:UnitPassengersEnabled` and `MSG:UnitPassengersDisabled` (fallback: "Unit Passenger Icons Display: Enabled" / "Unit Passenger Icons Display: Disabled").
+- For localization add `TXT_UNIT_PASSENGERS` (fallback: "Toggle Unit Passenger Icons") and `TXT_UNIT_PASSENGERS_DESC` (fallback: "Show/hide unit passenger icons display.") into your `.csf` file.
 
 ### `[ ]` Next Idle Harvester
 

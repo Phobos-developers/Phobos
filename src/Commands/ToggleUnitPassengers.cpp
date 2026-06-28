@@ -11,7 +11,7 @@ const char* ToggleUnitPassengersCommandClass::GetName() const
 
 const wchar_t* ToggleUnitPassengersCommandClass::GetUIName() const
 {
-	return GeneralUtils::LoadStringUnlessMissing("TXT_UNIT_PASSENGERS", L"Toggle Unit Passengers");
+	return GeneralUtils::LoadStringUnlessMissing("TXT_UNIT_PASSENGERS", L"Toggle Unit Passenger Icons");
 }
 
 const wchar_t* ToggleUnitPassengersCommandClass::GetUICategory() const
@@ -21,7 +21,7 @@ const wchar_t* ToggleUnitPassengersCommandClass::GetUICategory() const
 
 const wchar_t* ToggleUnitPassengersCommandClass::GetUIDescription() const
 {
-	return GeneralUtils::LoadStringUnlessMissing("TXT_UNIT_PASSENGERS_DESC", L"Show/hide unit passengers display.");
+	return GeneralUtils::LoadStringUnlessMissing("TXT_UNIT_PASSENGERS_DESC", L"Show/hide unit passenger icons display.");
 }
 
 void ToggleUnitPassengersCommandClass::Execute(WWKey eInput) const
@@ -39,7 +39,7 @@ void ToggleUnitPassengersCommandClass::Execute(WWKey eInput) const
 	};
 
 	if (Phobos::Config::UnitPassengers_Enable)
-		PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:UnitPassengersEnabled", L"Unit Passengers display: Enabled"));
+		PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:UnitPassengersEnabled", L"Unit Passenger Icons Display: Enabled"));
 	else
-		PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:UnitPassengersDisabled", L"Unit Passengers display: Disabled"));
+		PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:UnitPassengersDisabled", L"Unit Passenger Icons Display: Disabled"));
 }
