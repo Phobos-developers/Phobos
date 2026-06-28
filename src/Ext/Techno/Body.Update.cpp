@@ -51,6 +51,11 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	if (!pInterceptorType)
 		return;
 
+	const bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
+
+	if (isBuilding && (pThis->CurrentMission == Mission::Selling || pThis->CurrentMission == Mission::Construction))
+		return;
+
 	const auto pTarget = pThis->Target;
 
 	if (pTarget)
