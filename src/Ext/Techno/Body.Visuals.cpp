@@ -883,6 +883,10 @@ void TechnoExt::DrawUnitPassengers(TechnoClass* pThis)
 	if (ObjectClass::CurrentObjects.GetItem(0) != pThis)
 		return;
 
+	const auto pFoot = abstract_cast<FootClass*>(pThis);
+	if (!pFoot)
+		return;
+
 	const auto pType = pThis->GetTechnoType();
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	const auto pRulesExt = RulesExt::Global();
@@ -914,7 +918,7 @@ void TechnoExt::DrawUnitPassengers(TechnoClass* pThis)
 		passengerCounts[pPassenger->GetTechnoType()]++;
 	}
 
-	const auto bracketPos = GetFootSelectBracketPosition(pThis, Anchor(HorizontalPosition::Center, VerticalPosition::Top));
+	const auto bracketPos = GetFootSelectBracketPosition(pFoot, Anchor(HorizontalPosition::Center, VerticalPosition::Top));
 	const auto& bottomOffset = pTypeExt->ShowPassengers_BottomOffset;
 	auto& offset = bottomOffset.Get();
 	Point2D basePos = bracketPos;

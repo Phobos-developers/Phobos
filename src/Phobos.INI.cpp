@@ -104,6 +104,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::RealTimeTimers_Adaptive = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "RealTimeTimers.Adaptive", false);
 	Phobos::Config::EnableSelectBox = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "EnableSelectBox", false);
 	Phobos::Config::DigitalDisplay_Enable = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "DigitalDisplay.Enable", false);
+	Phobos::Config::UnitPassengers_Enable = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "UnitPassengers.Enable", false);
 	Phobos::Config::SaveGameOnScenarioStart = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "SaveGameOnScenarioStart", true);
 	Phobos::Config::ShowBriefing = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowBriefing", true);
 	Phobos::Config::ShowPowerDelta = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowPowerDelta", true);
