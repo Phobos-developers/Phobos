@@ -366,6 +366,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->SortCameoByName.Read(exINI, GameStrings::General, "SortCameoByName");
 
 	this->MergeBuildingDamage.Read(exINI, GameStrings::CombatDamage, "MergeBuildingDamage");
+
 	this->ApplyPerTargetEffectsOnDetonate.Read(exINI, GameStrings::CombatDamage, "ApplyPerTargetEffectsOnDetonate");
 
 	this->AffectsInvokerOnly_IgnoreInvokerState.Read(exINI, GameStrings::CombatDamage, "AffectsInvokerOnly.IgnoreInvokerState");
@@ -389,7 +390,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PenetratesTransport_Level.Read(exINI, GameStrings::CombatDamage, "PenetratesTransport.Level");
 
 	this->UnitsUnsellable.Read(exINI, GameStrings::General, "UnitsUnsellable");
-	
+
 	this->DisableOveroptimizationInTargeting.Read(exINI, GameStrings::General, "DisableOveroptimizationInTargeting");
 
 	this->DriverKilled_KillPassengers.Read(exINI, GameStrings::CombatDamage, "DriverKilled.KillPassengers");
@@ -405,7 +406,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DriveLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "DriveLocomotorMakesWake");
 	this->HoverLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "HoverLocomotionClassMakesWake");
 	this->ShipLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "ShipLocomotionClassMakesWake");
-	
+
 	this->FiringAnim_Update.Read(exINI, GameStrings::AudioVisual, "FiringAnim.Update");
 	this->ExtendedPlayerRepair.Read(exINI, GameStrings::General, "ExtendedPlayerRepair");
 
@@ -443,6 +444,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	}
 
 	this->BerzerkMission.Read(exINI, GameStrings::CombatDamage, "BerzerkMission");
+
 	this->ShowUnitPassengers.Read(exINI, GameStrings::AudioVisual, "ShowUnitPassengers");
 	this->ShowUnitPassengers_Toggleable.Read(exINI, GameStrings::AudioVisual, "ShowUnitPassengers.Toggleable");
 
