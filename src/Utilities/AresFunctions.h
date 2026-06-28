@@ -31,6 +31,9 @@ public:
 	static EBolt* (__stdcall* CreateAresEBolt)(WeaponTypeClass* pWeapon);
 
 	static void(__stdcall* SpawnSurvivors)(FootClass* pThis, TechnoClass* pKiller, bool Select, bool IgnoreDefenses);
+
+	static bool (*DetailsCurrentlyEnabled)();
+
 	static std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> SWTypeExtMap_Find;
 
 	static PhobosMap<ObjectClass*, AlphaShapeClass*>* AlphaExtMap;
