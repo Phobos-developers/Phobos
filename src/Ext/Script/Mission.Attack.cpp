@@ -841,26 +841,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 
 		if (const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pTechnoType))
 		{
-			const auto& neutralTechBuildings = RulesClass::Instance->NeutralTechBuildings;
-
-			if (const int count = neutralTechBuildings.Count)
-			{
-				for (int i = 0; i < count; ++i)
-				{
-					if (neutralTechBuildings.GetItem(i) == pTechnoType)
-						return true;
-				}
-			}
-
-			// Other cases of civilian Tech Structures
-			if (pBuildingType->Unsellable
-				&& pBuildingType->Capturable
-				&& pBuildingType->TechLevel < 0
-				&& pBuildingType->NeedsEngineer
-				&& !pBuildingType->BridgeRepairHut)
-			{
+			if (pBuildingType->Capturable && pBuildingType->NeedsEngineer)
 				return true;
-			}
 		}
 
 		break;
@@ -1270,7 +1252,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 		{
 			if (pBuildingType->Capturable
 				|| (pBuildingType->BridgeRepairHut
-					&& pBuildingType->Repairable))
+					&& MapClass::Instance.IsLinkedBridgeDestroyed(pTechno->GetMapCoords())))
 			{
 				return true;
 			}
@@ -1283,14 +1265,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 
 		if (pTeamLeader && !pTechno->Owner->IsNeutral())
 		{
-			const int distanceToTarget = pTeamLeader->DistanceFrom(pTechno);
-			const int guardRange = pTeamLeader->GetTechnoType()->GuardRange;
-
-			if (guardRange > 0
-				&& distanceToTarget <= (guardRange * 2))
-			{
+			if (pTeamLeader->DistanceFrom(pTechno) <= pTeamLeader->GetGuardRange(1))
 				return true;
-			}
 		}
 
 		break;
@@ -1321,6 +1297,20 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 				{
 					return true;
 				}
+			}
+		}
+
+		break;
+
+	case 37:
+		// Bridge Repair Hut
+
+		if (const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pTechnoType))
+		{
+			if (pBuildingType->BridgeRepairHut
+				&& MapClass::Instance.IsLinkedBridgeDestroyed(pTechno->GetMapCoords()))
+			{
+				return true;
 			}
 		}
 
