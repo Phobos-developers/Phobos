@@ -329,6 +329,7 @@ Phobos fixes:
 - Fixed a bug that prevented recalculation of stats etc. on discarding self-owned AE (by Starkku)
 - Fixed combat light ignoring / behaving differently from vanilla game regarding detail level and framerate checks (by Starkku)
 - Fixed a bug causing transfering AttachEffects (e.g on `DeploysInto`/`UndeploysInto`) not to immediately recalculate stats or tint (by Starkku)
+- Fixed a bug where updating the `OpenTopped` attribute during convert did not update the coordinates of passengers (by NetsuNegi)
 ```
 
 ### 0.4.0.2

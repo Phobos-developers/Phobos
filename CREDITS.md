@@ -404,6 +404,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that if there's a tank in tank bunker, tank bunker use auto death by vanish will cause tank get stuck and game will crash quickly
   - Fix the issue that power output of building on tooltip won't consider power enhancer
   - Fix the bug that the upgrade building's power-enhancing effect depends only on its parent building and is not related to the upgrade building itself
+  - Fix a bug where updating the `OpenTopped` attribute during convert did not update the coordinates of passengers
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
