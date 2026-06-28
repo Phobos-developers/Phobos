@@ -1333,6 +1333,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ShadowIndex_Frame.Read(exArtINI, pArtSection, "ShadowIndex.Frame");
 
 	this->CameoPCX.Read(pArtINI, pArtSection, "CameoPCX");
+	this->CameoPalette.LoadFromINI(pArtINI, pArtSection, "CameoPalette");
 	this->AltCameoPCX.Read(pArtINI, pArtSection, "AltCameoPCX");
 
 	this->LaserTrailData.clear();
@@ -1727,6 +1728,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowPassengers_PerRow)
 		.Process(this->ShowPassengers_BottomOffset)
 		.Process(this->CameoPCX)
+		.Process(this->CameoPalette)
 
 		.Process(this->SelectBox)
 		.Process(this->HideSelectBox)

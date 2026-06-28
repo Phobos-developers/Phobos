@@ -969,8 +969,9 @@ void TechnoExt::DrawUnitPassengers(TechnoClass* pThis)
 			SHPStruct* pCameo = pPassengerType->GetCameo();
 			if (pCameo)
 			{
+				const auto pConvert = pPassengerTypeExt->CameoPalette.GetOrDefaultConvert(FileSystem::CAMEO_PAL);
 				pSurface->DrawSHP(
-					FileSystem::CAMEO_PAL,
+					pConvert,
 					pCameo,
 					0,
 					&iconPos,

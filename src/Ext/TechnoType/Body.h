@@ -271,6 +271,7 @@ public:
 		Valueable<int> ShowPassengers_PerRow;
 		Valueable<Point2D> ShowPassengers_BottomOffset;
 		PhobosPCXFile CameoPCX;
+		CustomPalette CameoPalette;
 
 		Nullable<SelectBoxTypeClass*> SelectBox;
 		Valueable<bool> HideSelectBox;
@@ -763,6 +764,7 @@ public:
 			, ShowPassengers_PerRow { 5 }
 			, ShowPassengers_BottomOffset { { 0, 0 } }
 			, CameoPCX {}
+			, CameoPalette {}
 
 			, SelectBox {}
 			, HideSelectBox { false }
