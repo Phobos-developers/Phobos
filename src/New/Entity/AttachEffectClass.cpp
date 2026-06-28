@@ -621,11 +621,13 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 	}
 
 	if (attachedCount > 0)
+	{
 		pTargetExt->RecalculateStatMultipliers();
 
-	if (markForRedraw)
-		pTarget->MarkForRedraw();
-
+		if (markForRedraw)
+			pTarget->MarkForRedraw();
+	}
+	          
 	return attachedCount;
 }
 
@@ -801,10 +803,12 @@ int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass c
 	}
 
 	if (detachedCount > 0)
-		pTargetExt->RecalculateStatMultipliers();
+	{
+		TechnoExt::ExtMap.Find(pTarget)->RecalculateStatMultipliers();
 
-	if (markForRedraw)
-		pTarget->MarkForRedraw();
+		if (markForRedraw)
+			pTarget->MarkForRedraw();
+	}
 
 	return detachedCount;
 }
@@ -895,6 +899,8 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 /// <param name="pTarget">Target techno.</param>
 void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget)
 {
+	bool markForRedraw = false;
+	int transferCount = 0;
 	const auto pSourceExt = TechnoExt::ExtMap.Find(pSource);
 	const auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
@@ -945,7 +951,19 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 				pAE->Duration = attachEffect->Duration;
 		}
 
+		if (type->HasTint())
+			markForRedraw = true;
+
+		transferCount++;
 		it = pSourceExt->AttachedEffects.erase(it);
+	} 
+
+	if (transferCount > 0)
+	{
+		pTargetExt->RecalculateStatMultipliers();
+
+		if (markForRedraw)
+			pTarget->MarkForRedraw();
 	}
 }
 
