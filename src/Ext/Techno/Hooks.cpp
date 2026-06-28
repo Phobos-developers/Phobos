@@ -2130,7 +2130,7 @@ DEFINE_HOOK(0x4CF8B1, FlyLocomotionClass_Draw_Point_NoWobbles, 0x6)
 
 #pragma region IsCruiseMissile
 
-DEFINE_HOOK(0x662354, RocketLocomotionClass_Process_CruiseMissileCheck, 6)
+DEFINE_HOOK(0x662354, RocketLocomotionClass_Process_CruiseMissileCheck, 0x6)
 {
 	GET(ILocomotion*, pThis, ESI);
 	const auto pLoco = static_cast<RocketLocomotionClass*>(pThis);
@@ -2146,7 +2146,7 @@ DEFINE_HOOK(0x662354, RocketLocomotionClass_Process_CruiseMissileCheck, 6)
 	return 0;
 }
 
-DEFINE_HOOK(0x6623FC, RocketLocomotionClass_Process_CustomSmokeInterval, 5)
+DEFINE_HOOK(0x6623FC, RocketLocomotionClass_Process_CustomSmokeInterval, 0x5)
 {
 	GET(ILocomotion*, pThis, ESI);
 	const auto pLoco = static_cast<RocketLocomotionClass*>(pThis);
@@ -2156,16 +2156,12 @@ DEFINE_HOOK(0x6623FC, RocketLocomotionClass_Process_CustomSmokeInterval, 5)
 		return 0;
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->Type);
-	if (pTypeExt->IsCruiseMissile)
-	{
-		R->ECX(pTypeExt->Missile_TakeOffSeparation);
-		return 0x662401;
-	}
 
-	return 0;
+	R->ECX(pTypeExt->Missile_TakeOffSeparation);
+	return 0x662401;
 }
 
-DEFINE_HOOK(0x6624FB, RocketLocomotionClass_Process_CustomMissileTakeoff, 5)
+DEFINE_HOOK(0x6624FB, RocketLocomotionClass_Process_CustomMissileTakeoff, 0x5)
 {
 	enum { SkipAnimation = 0x662599 };
 	GET(ILocomotion*, pThis, ESI);
@@ -2191,7 +2187,7 @@ DEFINE_HOOK(0x6624FB, RocketLocomotionClass_Process_CustomMissileTakeoff, 5)
 	return SkipAnimation;
 }
 
-DEFINE_HOOK(0x662720, RocketLocomotionClass_Process_CruiseMissileRaise, 6)
+DEFINE_HOOK(0x662720, RocketLocomotionClass_Process_CruiseMissileRaise, 0x6)
 {
 	GET(ILocomotion*, pThis, ESI);
 	const auto pLoco = static_cast<RocketLocomotionClass*>(pThis);
