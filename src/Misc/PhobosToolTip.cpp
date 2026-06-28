@@ -81,6 +81,7 @@ inline int PhobosToolTip::GetPower(TechnoTypeClass* pType) const
 		const auto [enhancedPower, extraPower] = BuildingTypeExt::GetEnhancedPower(pBldType, pBldType->PowerBonus, HouseClass::CurrentPlayer);
 		return enhancedPower + extraPower - pBldType->PowerDrain;
 	}
+	return 0;
 }
 
 inline const wchar_t* PhobosToolTip::GetBuffer() const
