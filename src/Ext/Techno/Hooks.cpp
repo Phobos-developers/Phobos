@@ -2130,7 +2130,7 @@ DEFINE_HOOK(0x4CF8B1, FlyLocomotionClass_Draw_Point_NoWobbles, 0x6)
 
 #pragma region IsCruiseMissile
 
-DEFINE_HOOK(0x662363, RocketLocomotionClass_ILocomotion_Process_CruiseMissileCheck, 6)
+DEFINE_HOOK(0x662354, RocketLocomotionClass_Process_CruiseMissileCheck, 6)
 {
 	GET(ILocomotion*, pThis, ESI);
 	const auto pLoco = static_cast<RocketLocomotionClass*>(pThis);
@@ -2146,9 +2146,28 @@ DEFINE_HOOK(0x662363, RocketLocomotionClass_ILocomotion_Process_CruiseMissileChe
 	return 0;
 }
 
-DEFINE_HOOK(0x6624FB, RocketLocomotionClass_ILocomotion_Process_CustomMissileTakeoff, 5)
+DEFINE_HOOK(0x6623FC, RocketLocomotionClass_Process_CustomSmokeInterval, 5)
 {
-	enum { SkipAnimation = 0x662599, DefaultAnimation = 0x662512 };
+	GET(ILocomotion*, pThis, ESI);
+	const auto pLoco = static_cast<RocketLocomotionClass*>(pThis);
+	const auto pLinkedTo = abstract_cast<AircraftClass*>(pLoco->LinkedTo);
+
+	if (!pLinkedTo)
+		return 0;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->Type);
+	if (pTypeExt->IsCruiseMissile)
+	{
+		R->ECX(pTypeExt->Missile_TakeOffSeparation);
+		return 0x662401;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6624FB, RocketLocomotionClass_Process_CustomMissileTakeoff, 5)
+{
+	enum { SkipAnimation = 0x662599 };
 	GET(ILocomotion*, pThis, ESI);
 
 	const auto pLoco = static_cast<RocketLocomotionClass*>(pThis);
@@ -2162,14 +2181,14 @@ DEFINE_HOOK(0x6624FB, RocketLocomotionClass_ILocomotion_Process_CustomMissileTak
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->Type);
 
-	if (pTypeExt && pTypeExt->Missile_TakeOffAnim)
+	if (pTypeExt->Missile_TakeOffAnim)
 	{
 		GameCreate<AnimClass>(pTypeExt->Missile_TakeOffAnim, pLinkedTo->Location, 2, 1, 0x600, -10, false);
 		pLoco->TrailerTimer.Start(pTypeExt->Missile_TakeOffSeparation);
-		return SkipAnimation;
 	}
 
-	return DefaultAnimation;
+	// Do not return 0x662512, otherwise it will enter Ares' CustomMissileTakeoff2 for duplicate processing.
+	return SkipAnimation;
 }
 
 DEFINE_HOOK(0x662720, RocketLocomotionClass_Process_CruiseMissileRaise, 6)
