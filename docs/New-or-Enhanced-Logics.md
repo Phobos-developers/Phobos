@@ -1739,18 +1739,6 @@ DisguiseBlinkingVisibility=owner  ; List of Affected House Enumeration (none|own
 UseDisguiseMovementSpeed=false    ; boolean
 ```
 
-### Enhanced Berzerk behavior
-
-- In vanilla, when a unit enters Berzerk state, the game assigns it a `Hunt` mission, which may cause the unit to choose a very distant target and simply move toward it without firing during the Berzerk duration.
-- Now you can customize which mission the unit uses when entering Berzerk state.
-  - Additionally, this enhancement adds the necessary stop handling (clearing destination), fixing jumpjet vehicles behaving incorrectly when getting Berzerk'd while moving.
-
-In `rulesmd.ini`:
-```ini
-[CombatDamage]
-BerzerkMission=Hunt               ; MissionType
-```
-
 ### Exclusion from base center calculations
 
 - It is possible to exclude TechnoType from base center calculations (used for number of things such as certain AI scripts and AI superweapon targeting modes etc). Normally only buildings are factored in, but the initial base center does count house's starting technos which this does affect.
