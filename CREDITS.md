@@ -406,6 +406,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that the upgrade building's power-enhancing effect depends only on its parent building and is not related to the upgrade building itself
   - Fix a bug where updating the `OpenTopped` attribute during convert did not update the coordinates of passengers
   - Fix the bug where passengers, when their transport unit is removed, would cause incorrect `LimboTracker` counts due to either having their destructor called directly (bypassing `UnInit`) or nested `UnInit` calls resetting the deletion flag too early, thereby breaking auto-death and superweapon auxiliary techno checks
+  - Fix the bug that the vanilla `SecondSpawnOffset` no longer takes effect
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

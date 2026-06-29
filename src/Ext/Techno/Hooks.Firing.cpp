@@ -717,7 +717,7 @@ CoordStruct* GetFLHTemp::UnitClassFake::_GetFLH(CoordStruct* outBuffer, int weap
 	{
 		const auto pTransporter = pThis->Transporter;
 
-		if (pThis->InOpenToppedTransport && pTransporter && TechnoTypeExt::ExtMap.Find(pTransporter->GetTechnoType())->AlternateFLH_ApplyVehicle)
+		if (pThis->InOpenToppedTransport && pTransporter && TechnoExt::ExtMap.Find(pTransporter)->TypeExtData->AlternateFLH_ApplyVehicle)
 		{
 			if (const int idx = pTransporter->Passengers.IndexOf(pThis))
 			{
@@ -727,7 +727,7 @@ CoordStruct* GetFLHTemp::UnitClassFake::_GetFLH(CoordStruct* outBuffer, int weap
 		}
 
 		auto TechnoClass_GetFLH = reinterpret_cast<CoordStruct*(__thiscall*)(TechnoClass*, CoordStruct*, int, CoordStruct)>(0x6F3AD0);
-		TechnoClass_GetFLH(pThis, outBuffer, weaponIdx, CoordStruct::Empty);
+		TechnoClass_GetFLH(pThis, outBuffer, weaponIdx, offset);
 	}
 	while (false);
 
@@ -735,72 +735,52 @@ CoordStruct* GetFLHTemp::UnitClassFake::_GetFLH(CoordStruct* outBuffer, int weap
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5D20, GetFLHTemp::UnitClassFake::_GetFLH)
 
-DEFINE_HOOK(0x6F3AF9, TechnoClass_GetFLH_AlternateFLH, 0x6)
+// Apr 4, 2025 - Starkku: Consolidated all the FLH hooks into single one & using TechnoExt::GetFLHAbsoluteCoord() to get the actual coordinate.
+DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 {
+	enum { SkipGameCode = 0x6F3D50 };
+
 	GET(TechnoClass*, pThis, EBX);
-	GET(int, weaponIdx, ESI);
+	GET(TechnoTypeClass*, pType, EAX);
+	GET(const int, weaponIndex, ESI);
+	GET_STACK(CoordStruct*, pCoords, STACK_OFFSET(0xD8, 0x4));
+	REF_STACK(CoordStruct, offset, STACK_OFFSET(0xD8, 0xC));
 
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	weaponIdx = -weaponIdx - 1;
+	CoordStruct flh = CoordStruct::Empty;
 
-	const CoordStruct& flh =
-		weaponIdx < static_cast<int>(pTypeExt->AlternateFLHs.size())
-		? pTypeExt->AlternateFLHs[weaponIdx]
-		: CoordStruct::Empty;
-
-	R->ECX(flh.X);
-	R->EBP(flh.Y);
-	R->EAX(flh.Z);
-
-	return 0x6F3B37;
-}
-
-namespace BurstFLHTemp
-{
-	bool FLHFound;
-}
-
-DEFINE_HOOK(0x6F3B37, TechnoClass_GetFLH_BurstFLH_1, 0x7)
-{
-	GET(TechnoClass*, pThis, EBX);
-	GET_STACK(int, weaponIndex, STACK_OFFSET(0xD8, 0x8));
-
-	if (weaponIndex < 0)
-		return 0;
-
-	bool FLHFound = false;
-	CoordStruct FLH = CoordStruct::Empty;
-
-	FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
-	BurstFLHTemp::FLHFound = FLHFound;
-
-	if (!FLHFound)
+	if (weaponIndex >= 0)
 	{
-		if (auto pInf = abstract_cast<InfantryClass*>(pThis))
-			FLH = TechnoExt::GetSimpleFLH(pInf, weaponIndex, FLHFound);
+		bool found = false;
+		flh = TechnoExt::GetBurstFLH(pThis, weaponIndex, found);
+
+		if (!found)
+		{
+			if (auto const pInf = abstract_cast<InfantryClass*, true>(pThis))
+				flh = TechnoExt::GetSimpleFLH(pInf, weaponIndex, found);
+
+			if (!found)
+				flh = pThis->GetWeapon(weaponIndex)->FLH;
+
+			if (pThis->CurrentBurstIndex % 2 != 0)
+				flh.Y = -flh.Y;
+		}
+	}
+	else
+	{
+		const int index = -weaponIndex - 1;
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (index < static_cast<int>(pTypeExt->AlternateFLHs.size()))
+			flh = pTypeExt->AlternateFLHs[index];
 	}
 
-	if (FLHFound)
-	{
-		R->ECX(FLH.X);
-		R->EBP(FLH.Y);
-		R->EAX(FLH.Z);
-	}
+	flh += offset;
+	*pCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, true);
+	R->EAX(pCoords);
 
-	return 0;
+	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x6F3C88, TechnoClass_GetFLH_BurstFLH_2, 0x6)
-{
-	GET_STACK(int, weaponIndex, STACK_OFFSET(0xD8, 0x8));
-
-	if (BurstFLHTemp::FLHFound || weaponIndex < 0)
-		R->EAX(0);
-
-	BurstFLHTemp::FLHFound = false;
-
-	return 0;
-}
 #pragma endregion
 
 // Basically a hack to make game and Ares pick laser properties from non-Primary weapons.
