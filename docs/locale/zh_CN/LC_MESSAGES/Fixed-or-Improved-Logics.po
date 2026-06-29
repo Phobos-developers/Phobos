@@ -1916,6 +1916,12 @@ msgid ""
 "`IsSimpleDeployer=true`."
 msgstr "允许了步兵使用 `Convert.Deploy` 而无需 `IsSimpleDeployer=true`"
 
+msgid ""
+"Allowed adding custom cruise missiles, so that Ares' `Missile.RaiseRate` "
+"is no longer meaningless."
+msgstr "允许了添加自定义巡航导弹，因此 Ares 的 `Missile.RaiseRate` "
+"不再没有意义。"
+
 msgid "Newly added global settings"
 msgstr "新增的全局设定"
 

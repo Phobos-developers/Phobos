@@ -377,6 +377,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `DisableWeapons.Duration` now makes `Gattling=yes` rate tick down and stops the sounds from playing, no longer interferes with target acquisition and works together with Phobos' `OpenTopped.CheckTransportDisableWeapons`.
 - Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
 - Allowed infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true`.
+- Allowed adding custom cruise missiles, so that Ares' `Missile.RaiseRate` is no longer meaningless.
 
 ## Newly added global settings
 

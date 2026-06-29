@@ -510,7 +510,7 @@ Shield.InheritStateOnReplace=false          ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEAIRCRAFT]                ; AircraftType with Missile.Custom=yes
+[SOMEAIRCRAFT]                ; AircraftType, with Locomotor=Rocket
 Missile.Cruise=false          ; boolean
 Missile.TakeOffSeparation=24  ; integer
 ```
