@@ -2333,8 +2333,7 @@ msgid "Allow infantry to perform type conversion when deploying and undeploying"
 msgstr "允许步兵在部署与反部署时执行类型转换"
 
 msgid "Custom cruise missiles"
-msgstr ""
-"自定义巡航导弹"
+msgstr "自定义巡航导弹"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
