@@ -141,7 +141,6 @@ public:
 		Valueable<bool> Nonprovocative;
 
 		Nullable<int> CombatLightDetailLevel;
-		Nullable<bool> CombatLightDetailLevel_CheckColored;
 		Valueable<double> CombatLightChance;
 		Valueable<bool> CLIsBlack;
 		Nullable<bool> Particle_AlphaImageIsLightFlash;
@@ -294,7 +293,6 @@ public:
 			, Nonprovocative { false }
 
 			, CombatLightDetailLevel {}
-			, CombatLightDetailLevel_CheckColored {}
 			, CombatLightChance { 1.0 }
 		    , CLIsBlack { false }
 			, Particle_AlphaImageIsLightFlash {}
