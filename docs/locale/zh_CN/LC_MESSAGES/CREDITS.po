@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-28 19:11+0800\n"
+"POT-Creation-Date: 2026-06-29 21:22+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -891,8 +891,7 @@ msgid "Animation theater/tile palette toggle"
 msgstr "动画使用气候／地块色盘的开关"
 
 msgid "Tank Bunker improvements"
-msgstr ""
-"坦克碉堡改进"
+msgstr "坦克碉堡改进"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
@@ -2332,6 +2331,9 @@ msgstr "允许了步兵使用 `Convert.Deploy` 而无需 `IsSimpleDeployer=true`
 
 msgid "Allow infantry to perform type conversion when deploying and undeploying"
 msgstr "允许步兵在部署与反部署时执行类型转换"
+
+msgid "Custom cruise missiles"
+msgstr ""
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
