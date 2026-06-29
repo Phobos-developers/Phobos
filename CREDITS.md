@@ -689,6 +689,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize whether technos with `Locomotor=Fly` wobble
   - Customize the landing animation of technos that have `Locomotor=Fly`
   - Allow infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true`
+  - Allow infantry to perform type conversion when deploying and undeploying
   - Custom cruise missiles
 - **Ollerus**:
   - Build limit group enhancement
