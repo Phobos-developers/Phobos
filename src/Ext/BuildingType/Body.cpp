@@ -226,9 +226,6 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Art
 	this->ZShapePointMove_OnBuildup.Read(exArtINI, pArtSection, "ZShapePointMove.OnBuildup");
-
-	// Ares 3.0
-	this->UnitSell.Read(exINI, pSection, "UnitSell");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -291,9 +288,6 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Adjacent_Disallowed)
 		.Process(this->HasPowerUpAnim)
 		.Process(this->UndeploysInto_Sellable)
-
-		// Ares 3.0
-		.Process(this->UnitSell)
 		;
 }
 
