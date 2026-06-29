@@ -2821,7 +2821,7 @@ msgid "Customize `Tiled` drawing interval and centering"
 msgstr "自定义 `Tiled` 绘制间隔和中心对齐"
 
 msgid ""
-"In vanilla, the drawing interval of an animation with `Tiled=yes` is "
+"In vanilla, the drawing interval of an animation with `Tiled=yes` is "
 "determined by the height of the rectangle formed by the non-transparent "
 "pixels of the first frame in the Shape resource file. Now you can "
 "customize it."

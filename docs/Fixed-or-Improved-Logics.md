@@ -922,7 +922,7 @@ ExtraShadow=true              ; boolean
 
 ### Customize `Tiled` drawing interval and centering
 
-- In vanilla, the drawing interval of an animation with `Tiled=yes` is determined by the height of the rectangle formed by the non-transparent pixels of the first frame in the Shape resource file. Now you can customize it.
+- In vanilla, the drawing interval of an animation with `Tiled=yes` is determined by the height of the rectangle formed by the non-transparent pixels of the first frame in the Shape resource file. Now you can customize it.
   - If `Tiled.Interval` is greater than `0`, the specified value is used; otherwise, the default rule applies.
   - `Tiled.AlignToCenter` can be used to change the alignment of the Shape resource file coordinates from the bottom center to the canvas center for the Animation entity's center.
 

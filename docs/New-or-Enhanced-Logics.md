@@ -505,8 +505,8 @@ Shield.InheritStateOnReplace=false          ; boolean
 
 ### Custom cruise missiles
 
-- From RockPatch to Ares, custom missiles have never had a way to enter cruise missile mode, so neither RP's `MissileRaiseRate` nor Ares' `Missile.RaiseRate` have ever been effective, and modders cannot create another type of cruise missile beyond the type set in `[General] -> CMislType=`. Now, you can customize whether a custom missile is a cruise missile.
-  - The take-off animation of a cruise missile is actually the continuously created trail smoke during the ascent phase, rather than the animation created only once at launch like a conventional missile. Now, the creation interval of this animation can be customized via `Missile.TakeOffSeparation`.
+- From RockPatch to Ares, custom missiles have never had a way to enter cruise missile mode, so neither RP's `MissileRaiseRate` nor Ares' `Missile.RaiseRate` have ever been effective, and modders cannot create another type of cruise missile beyond the type set in `[General] -> CMislType=`. Now, you can customize whether a custom missile is a cruise missile.
+  - The take-off animation of a cruise missile is actually the continuously created trail smoke during the ascent phase, rather than the animation created only once at launch like a conventional missile. Now, the creation interval of this animation can be customized via `Missile.TakeOffSeparation`.
 
 In `rulesmd.ini`:
 ```ini
@@ -724,7 +724,7 @@ SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 
 ### Allow infantry to perform type conversion when deploying and undeploying
 
-- Now infantry can perform type conversion immediately after the `Deploy` or `Undeploy` sequence action has been executed.
+- Now infantry can perform type conversion immediately after the `Deploy` or `Undeploy` sequence action has been executed.
 
 In `rulesmd.ini`:
 ```ini
