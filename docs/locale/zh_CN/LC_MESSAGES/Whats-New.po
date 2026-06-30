@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-29 21:22+0800\n"
+"POT-Creation-Date: 2026-06-30 21:30+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2860,7 +2860,7 @@ msgstr "0.4.0.3"
 
 msgid ""
 "Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:771: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
+"New.md:758: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
 msgstr ""
 
 msgid ""
@@ -2875,7 +2875,7 @@ msgstr "修复了一个由于 `GapGenerator` 和 `SpySat` 交互导致黑幕状�
 
 msgid ""
 "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:775: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
+"New.md:762: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
 msgstr ""
 
 msgid ""
@@ -2980,6 +2980,7 @@ msgid ""
 " percentage form were incorrectly multiplied by an additional 0.01 (by "
 "Starkku)"
 msgstr ""
+"修复了 v0.4.0.1 引入的一个导致某些浮点值使用百分比形式时被错误额外乘 0.01 的 Bug（by Starkku）"
 
 msgid "0.4.0.2"
 msgstr "0.4.0.2"
@@ -3042,7 +3043,7 @@ msgstr "0.4.0.1"
 
 msgid ""
 "Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:799: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
+"New.md:802: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
 msgstr ""
 
 msgid ""
@@ -3052,7 +3053,7 @@ msgstr "修复了处于可视地图范围外的预置战机某些情况下被错
 
 msgid ""
 "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:802: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
+"New.md:805: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
 msgstr ""
 
 msgid ""
@@ -3102,7 +3103,7 @@ msgid ""
 msgstr "修复了一个某些情况下从 INI 解析浮点值时可能导致不同步的问题（by Starkku）"
 
 msgid ""
-"New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-New.md:817: "
+"New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-New.md:820: "
 "(INFO/1) Duplicate implicit target name: \"new:\"."
 msgstr ""
 
@@ -3765,7 +3766,7 @@ msgstr "精英单位不再默认获得分散而是受 `SCATTER` 升级能力控�
 
 msgid ""
 "Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:985: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
+"New.md:988: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
 msgstr ""
 
 msgid ""
@@ -4533,7 +4534,7 @@ msgstr ""
 
 msgid ""
 "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1131: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
+"New.md:1134: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
 msgstr ""
 
 msgid ""
@@ -4818,7 +4819,7 @@ msgstr "修复了触发结果 `125 将建筑建于...` 有时不能正确播放�
 msgid ""
 "Fixes / interactions with other "
 "extensions:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1186: (INFO/1) Duplicate implicit target name: \"fixes / "
+"New.md:1189: (INFO/1) Duplicate implicit target name: \"fixes / "
 "interactions with other extensions:\"."
 msgstr ""
 
@@ -4935,7 +4936,7 @@ msgid "0.3.0.1"
 msgstr "0.3.0.1"
 
 msgid ""
-"New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-New.md:1213: "
+"New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-New.md:1216: "
 "(INFO/1) Duplicate implicit target name: \"new:\"."
 msgstr ""
 
@@ -4944,7 +4945,7 @@ msgstr "现在发生 Reconnection Error 时所生成的 `SYNC#.txt` 将记录更
 
 msgid ""
 "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1216: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
+"New.md:1219: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
 msgstr ""
 
 msgid "`AutoDeath` support for objects in limbo (by Trsdy)"
@@ -5049,7 +5050,7 @@ msgid ""
 msgstr "现在 `AreaFire.Target` 会根据开火者所在高度处理桥梁所在的单元格（by Starkku）"
 
 msgid ""
-"New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-New.md:1244: "
+"New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-New.md:1247: "
 "(INFO/1) Duplicate implicit target name: \"new:\"."
 msgstr ""
 
@@ -5391,7 +5392,7 @@ msgstr "开发者功能：现在可以通过命令行参数控制主循环的异
 
 msgid ""
 "Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1344: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
+"New.md:1347: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
 msgstr ""
 
 msgid ""
@@ -5560,7 +5561,7 @@ msgstr "允许了观察者查看选中建筑的范围指示器（by Trsdy）"
 
 msgid ""
 "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1378: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
+"New.md:1381: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
 msgstr ""
 
 msgid ""
@@ -5698,7 +5699,7 @@ msgstr "修复了全局变量在多个场景失效的问题（by Trsdy）"
 msgid ""
 "Fixes / interactions with other "
 "extensions:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1407: (INFO/1) Duplicate implicit target name: \"fixes / "
+"New.md:1410: (INFO/1) Duplicate implicit target name: \"fixes / "
 "interactions with other extensions:\"."
 msgstr ""
 
@@ -5729,7 +5730,7 @@ msgstr "0.2.2.2"
 
 msgid ""
 "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1420: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
+"New.md:1423: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
 msgstr ""
 
 msgid "Fixed shield type info not saving properly (by Uranusian)"
@@ -5753,7 +5754,7 @@ msgstr "0.2.2.1"
 
 msgid ""
 "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1432: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
+"New.md:1435: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
 msgstr ""
 
 msgid "Fixed random crashes about `CameoPriority` (by Uranusian)"
@@ -5785,7 +5786,7 @@ msgid "0.2.2"
 msgstr "0.2.2"
 
 msgid ""
-"New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-New.md:1446: "
+"New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-New.md:1449: "
 "(INFO/1) Duplicate implicit target name: \"new:\"."
 msgstr ""
 
@@ -5807,7 +5808,7 @@ msgstr "允许设置单位无法被下达移动指令（by Uranusian）"
 
 msgid ""
 "Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1452: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
+"New.md:1455: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
 msgstr ""
 
 msgid ""
@@ -5818,7 +5819,7 @@ msgstr "修复了非输入法键盘输入在基础拉丁或拉丁 -1 以外的�
 
 msgid ""
 "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1455: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
+"New.md:1458: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
 msgstr ""
 
 msgid "Fixed the critical damage logic not functioning properly (by Uranusian)"
@@ -5832,7 +5833,7 @@ msgstr "0.2.1.1"
 
 msgid ""
 "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1465: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
+"New.md:1468: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
 msgstr ""
 
 msgid ""
@@ -5844,7 +5845,7 @@ msgid "0.2.1"
 msgstr "0.2.1"
 
 msgid ""
-"New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-New.md:1474: "
+"New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-New.md:1477: "
 "(INFO/1) Duplicate implicit target name: \"new:\"."
 msgstr ""
 
@@ -5855,7 +5856,7 @@ msgstr "现在载具将在 `Speed` 设置为 0 时使游戏将它们视为静止
 
 msgid ""
 "Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1477: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
+"New.md:1480: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
 msgstr ""
 
 msgid ""
@@ -5872,7 +5873,7 @@ msgstr ""
 
 msgid ""
 "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1481: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
+"New.md:1484: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
 msgstr ""
 
 msgid ""
@@ -5881,7 +5882,7 @@ msgid ""
 msgstr "修复了触发结果 `125 将建筑建于...` 在目标单元格被占用时无法生产建筑的问题（by secsome）"
 
 msgid ""
-"New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-New.md:1491: "
+"New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-New.md:1494: "
 "(INFO/1) Duplicate implicit target name: \"new:\"."
 msgstr ""
 
@@ -5978,7 +5979,7 @@ msgstr "自定义缺省图标（by Uranusian）"
 
 msgid ""
 "Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1516: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
+"New.md:1519: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
 msgstr ""
 
 msgid ""
@@ -6038,7 +6039,7 @@ msgstr ""
 
 msgid ""
 "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1529: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
+"New.md:1532: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
 msgstr ""
 
 msgid ""
@@ -6061,7 +6062,7 @@ msgstr "0.1.1"
 
 msgid ""
 "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1540: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
+"New.md:1543: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
 msgstr ""
 
 msgid ""
@@ -6073,7 +6074,7 @@ msgid "0.1"
 msgstr "0.1"
 
 msgid ""
-"New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-New.md:1549: "
+"New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-New.md:1552: "
 "(INFO/1) Duplicate implicit target name: \"new:\"."
 msgstr ""
 
@@ -6113,7 +6114,7 @@ msgstr "允许为任意阵营 UI 切换 GDI 式侧边栏布局（by Belonit）"
 
 msgid ""
 "Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1561: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
+"New.md:1564: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
 msgstr ""
 
 msgid ""
@@ -6507,6 +6508,184 @@ msgstr "解除了拓展工具条字符数量小得愚蠢的上限（by Belonit�
 #~ msgid ""
 #~ "Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
 #~ "\\Whats-New.md:1559: (INFO/1) Duplicate implicit"
+#~ " target name: \"vanilla fixes:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
+#~ "\\Whats-New.md:771: (INFO/1) Duplicate implicit"
+#~ " target name: \"vanilla fixes:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
+#~ "\\Whats-New.md:775: (INFO/1) Duplicate implicit"
+#~ " target name: \"phobos fixes:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
+#~ "\\Whats-New.md:783: (INFO/1) Duplicate implicit"
+#~ " target name: \"phobos fixes:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
+#~ "\\Whats-New.md:799: (INFO/1) Duplicate implicit"
+#~ " target name: \"vanilla fixes:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
+#~ "\\Whats-New.md:802: (INFO/1) Duplicate implicit"
+#~ " target name: \"phobos fixes:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
+#~ "New.md:817: (INFO/1) Duplicate implicit target"
+#~ " name: \"new:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
+#~ "\\Whats-New.md:985: (INFO/1) Duplicate implicit"
+#~ " target name: \"vanilla fixes:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
+#~ "\\Whats-New.md:1131: (INFO/1) Duplicate implicit"
+#~ " target name: \"phobos fixes:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Fixes / interactions with other "
+#~ "extensions:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
+#~ "New.md:1186: (INFO/1) Duplicate implicit "
+#~ "target name: \"fixes / interactions with"
+#~ " other extensions:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
+#~ "New.md:1213: (INFO/1) Duplicate implicit "
+#~ "target name: \"new:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
+#~ "\\Whats-New.md:1216: (INFO/1) Duplicate implicit"
+#~ " target name: \"phobos fixes:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
+#~ "New.md:1244: (INFO/1) Duplicate implicit "
+#~ "target name: \"new:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
+#~ "\\Whats-New.md:1344: (INFO/1) Duplicate implicit"
+#~ " target name: \"vanilla fixes:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
+#~ "\\Whats-New.md:1378: (INFO/1) Duplicate implicit"
+#~ " target name: \"phobos fixes:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Fixes / interactions with other "
+#~ "extensions:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
+#~ "New.md:1407: (INFO/1) Duplicate implicit "
+#~ "target name: \"fixes / interactions with"
+#~ " other extensions:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
+#~ "\\Whats-New.md:1420: (INFO/1) Duplicate implicit"
+#~ " target name: \"phobos fixes:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
+#~ "\\Whats-New.md:1432: (INFO/1) Duplicate implicit"
+#~ " target name: \"phobos fixes:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
+#~ "New.md:1446: (INFO/1) Duplicate implicit "
+#~ "target name: \"new:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
+#~ "\\Whats-New.md:1452: (INFO/1) Duplicate implicit"
+#~ " target name: \"vanilla fixes:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
+#~ "\\Whats-New.md:1465: (INFO/1) Duplicate implicit"
+#~ " target name: \"phobos fixes:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
+#~ "New.md:1474: (INFO/1) Duplicate implicit "
+#~ "target name: \"new:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
+#~ "\\Whats-New.md:1477: (INFO/1) Duplicate implicit"
+#~ " target name: \"vanilla fixes:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
+#~ "\\Whats-New.md:1481: (INFO/1) Duplicate implicit"
+#~ " target name: \"phobos fixes:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
+#~ "New.md:1491: (INFO/1) Duplicate implicit "
+#~ "target name: \"new:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
+#~ "\\Whats-New.md:1516: (INFO/1) Duplicate implicit"
+#~ " target name: \"vanilla fixes:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
+#~ "\\Whats-New.md:1529: (INFO/1) Duplicate implicit"
+#~ " target name: \"phobos fixes:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
+#~ "\\Whats-New.md:1540: (INFO/1) Duplicate implicit"
+#~ " target name: \"phobos fixes:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
+#~ "New.md:1549: (INFO/1) Duplicate implicit "
+#~ "target name: \"new:\"."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
+#~ "\\Whats-New.md:1561: (INFO/1) Duplicate implicit"
 #~ " target name: \"vanilla fixes:\"."
 #~ msgstr ""
 
