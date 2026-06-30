@@ -503,6 +503,27 @@ Shield.InheritStateOnReplace=false          ; boolean
 
 ## Aircraft
 
+### Custom cruise missiles
+
+- From RockPatch to Ares, custom missiles have never had a way to enter cruise missile mode, so neither RP's `MissileRaiseRate` nor Ares' `Missile.RaiseRate` have ever been effective, and modders cannot create another type of cruise missile beyond the type set in `[General] -> CMislType=`. Now, you can customize whether a custom missile is a cruise missile.
+  - The take-off animation of a cruise missile is actually the continuously created trail smoke during the ascent phase, rather than the animation created only once at launch like a conventional missile. Now, the creation interval of this animation can be customized via `Missile.TakeOffSeparation`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEAIRCRAFT]                ; AircraftType with Missile.Custom=yes
+Missile.Cruise=false          ; boolean
+Missile.TakeOffSeparation=24  ; integer
+```
+
+```{note}
+Like Ares' `Missile.TrailerSeparation`, `Missile.TakeOffSeparation` also works without requiring `Missile.Custom=true`, which means it can be directly applied to the unit specified by `[General] -> CMislType=` without completely rewriting it as a custom missile.
+```
+
+```{seealso}
+- [MissileSpawn Control on ModEnc](https://modenc.renegadeprojects.com/MissileSpawn_Control)
+- [Custom Missiles - Ares documentation](http://ares-developers.github.io/Ares-docs/new/custommissiles.html)
+```
+
 ### Damaged aircraft image changes
 
 - When an aircraft is damaged (health points percentage is lower than `[AudioVisual] -> ConditionYellow` percentage), it now may use different image set by `Image.ConditionYellow` AircraftType.

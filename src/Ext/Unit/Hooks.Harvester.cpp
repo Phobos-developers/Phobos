@@ -85,7 +85,7 @@ DEFINE_HOOK(0x4D6D34, FootClass_MissionAreaGuard_Miner, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x73D508, UnitClass_Harvesting_HarvesterLoadRate, 6)
+DEFINE_HOOK_AGAIN(0x73D515, UnitClass_Harvesting_HarvesterLoadRate, 6)
 DEFINE_HOOK(0x73D5D5, UnitClass_Harvesting_HarvesterLoadRate, 6)
 {
 	GET(UnitClass* const, pThis, ESI);
@@ -93,7 +93,7 @@ DEFINE_HOOK(0x73D5D5, UnitClass_Harvesting_HarvesterLoadRate, 6)
 
 	R->EAX(pTypeExt->HarvesterLoadRate.Get(RulesClass::Instance->HarvesterLoadRate));
 
-	return R->Origin() == 0x73D508 ? 0x73D50E : 0x73D5DB;
+	return R->Origin() + 0x6;
 }
 
 DEFINE_HOOK(0x73E361, UnitClass_Harvesting_HarvesterDumpRate, 6)

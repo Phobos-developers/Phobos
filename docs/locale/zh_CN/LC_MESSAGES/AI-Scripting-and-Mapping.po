@@ -1553,6 +1553,14 @@ msgid ""
 "frame if `SHP.RefreshAfterDelay` set to true."
 msgstr "一个 `SHP` 横幅会在再次显示时从上次结束时的帧开始。这可以通过 `SHP.RefreshAfterDelay=true` 更改为从头开始。"
 
+msgid ""
+"`ClampToScreen` controls whether the banner is clamped to stay within the"
+" visible area. When disabled, a PCX banner exceeding the top screen edge "
+"may crash the game."
+msgstr ""
+"`ClampToScreen` 控制横幅是否被限制在可视区域内。禁用后，PCX "
+"横幅超出屏幕上边缘时可能导致游戏崩溃。"
+
 msgid "Trigger events"
 msgstr "触发条件"
 

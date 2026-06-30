@@ -2128,6 +2128,83 @@ DEFINE_HOOK(0x4CF8B1, FlyLocomotionClass_Draw_Point_NoWobbles, 0x6)
 	return Continue;
 }
 
+#pragma region IsCruiseMissile
+
+DEFINE_HOOK(0x662354, RocketLocomotionClass_Process_CruiseMissileCheck, 0x6)
+{
+	GET(ILocomotion*, pThis, ESI);
+	const auto pLoco = static_cast<RocketLocomotionClass*>(pThis);
+	const auto pLinkedTo = abstract_cast<AircraftClass*>(pLoco->LinkedTo);
+
+	if (!pLinkedTo)
+		return 0;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->Type);
+	if (pTypeExt->Missile_Cruise)
+		return 0x662369;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6623FC, RocketLocomotionClass_Process_CustomSmokeInterval, 0x5)
+{
+	GET(ILocomotion*, pThis, ESI);
+	const auto pLoco = static_cast<RocketLocomotionClass*>(pThis);
+	const auto pLinkedTo = abstract_cast<AircraftClass*>(pLoco->LinkedTo);
+
+	if (!pLinkedTo)
+		return 0;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->Type);
+
+	R->ECX(pTypeExt->Missile_TakeOffSeparation);
+	return 0x662401;
+}
+
+DEFINE_HOOK(0x6624FB, RocketLocomotionClass_Process_CustomMissileTakeoff, 0x5)
+{
+	enum { SkipAnimation = 0x662599 };
+	GET(ILocomotion*, pThis, ESI);
+
+	const auto pLoco = static_cast<RocketLocomotionClass*>(pThis);
+	const auto pLinkedTo = abstract_cast<AircraftClass*>(pLoco->LinkedTo);
+
+	if (!pLinkedTo)
+		return SkipAnimation;
+
+	if (pLoco->TrailerTimer.HasTimeLeft())
+		return SkipAnimation;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->Type);
+
+	if (pTypeExt->Missile_TakeOffAnim)
+	{
+		GameCreate<AnimClass>(pTypeExt->Missile_TakeOffAnim, pLinkedTo->Location, 2, 1, 0x600, -10, false);
+		pLoco->TrailerTimer.Start(pTypeExt->Missile_TakeOffSeparation);
+	}
+
+	// Do not return 0x662512, otherwise it will enter Ares' CustomMissileTakeoff2 for duplicate processing.
+	return SkipAnimation;
+}
+
+DEFINE_HOOK(0x662720, RocketLocomotionClass_Process_CruiseMissileRaise, 0x6)
+{
+	GET(ILocomotion*, pThis, ESI);
+	const auto pLoco = static_cast<RocketLocomotionClass*>(pThis);
+	const auto pLinkedTo = abstract_cast<AircraftClass*>(pLoco->LinkedTo);
+
+	if (!pLinkedTo)
+		return 0;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->Type);
+	if (pTypeExt->Missile_Cruise)
+		return 0x6624C8;
+
+	return 0;
+}
+
+#pragma endregion
+
 namespace WarpPerStep
 {
 	class TemporalClassFake final : public TemporalClass
@@ -2210,3 +2287,4 @@ int WarpPerStep::TemporalClassFake::_GetWarpPerStep(int helperCount)
 	return sum;
 }
 DEFINE_FUNCTION_JUMP(LJMP, 0x71AB10, WarpPerStep::TemporalClassFake::_GetWarpPerStep)
+
