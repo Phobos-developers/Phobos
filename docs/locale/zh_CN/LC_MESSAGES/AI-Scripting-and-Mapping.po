@@ -146,6 +146,7 @@ msgid ""
 "`none`: dynamic team delay will be disabled regardless of the settings of"
 " `TeamDelays.CountN`."
 msgstr ""
+"`none`：始终禁用动态 `TeamDelays` 而无论 `TeamDelays.CountN` 设置如何。"
 
 msgid ""
 "`TeamDelays.CountN` control the team delay when the amount of players "
