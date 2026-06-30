@@ -33,7 +33,6 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 ### Allow chat box in singleplayer
 
 - In vanilla, the in-game chat box is disabled in singleplayer scenarios. You can now enable it by setting `[General] -> AllowChatBoxInSinglePlayer` to true.
-  - `AllowChatBoxInSinglePlayer` controls whether the chat box is available in singleplayer mode. Defaults to `false`.
 
 In `rulesmd.ini`:
 ```ini

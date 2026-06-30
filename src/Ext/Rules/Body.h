@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <RulesClass.h>
 #include <Utilities/Container.h>
@@ -282,7 +282,6 @@ public:
 
 		Valueable<AffectedHouse> BerzerkTargeting;
 		Valueable<bool> AllowBerzerkOnAllies;
-		Valueable<bool> AllowChatBoxInSinglePlayer;
 
 		Valueable<bool> AttackMove_IgnoreWeaponCheck;
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
@@ -376,6 +375,8 @@ public:
 		Valueable<Mission> BerzerkMission;
 
 		Valueable<int> BunkerStateUpdateDelay;
+
+		Valueable<bool> AllowChatBoxInSinglePlayer;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -603,7 +604,6 @@ public:
 
 			, BerzerkTargeting { AffectedHouse::All }
 			, AllowBerzerkOnAllies { false }
-			, AllowChatBoxInSinglePlayer { false }
 
 			, TintColorIronCurtain { 0 }
 			, TintColorForceShield { 0 }
@@ -691,6 +691,8 @@ public:
 			, BerzerkMission { Mission::Hunt }
 
 			, BunkerStateUpdateDelay { 15 }
+				
+			, AllowChatBoxInSinglePlayer { false }
 		{ }
 
 		virtual ~ExtData() = default;
