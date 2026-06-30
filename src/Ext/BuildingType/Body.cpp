@@ -10,7 +10,10 @@ BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
 int BuildingTypeExt::ExtData::GetSuperWeaponCount() const
 {
 	// The user should only use SuperWeapon and SuperWeapon2 if the attached sw count isn't bigger than 2
-	return 2 + this->SuperWeapons.size();
+	const auto pThis = this->OwnerObject();
+	int count = pThis->SuperWeapon >= 0 ? 1 : 0;
+	count += pThis->SuperWeapon2 >= 0 ? 1 : 0;
+	return count + this->SuperWeapons.size();
 }
 
 int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index, HouseClass* pHouse) const
@@ -41,7 +44,7 @@ int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
 	return -1;
 }
 
-int BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse)
+std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse)
 {
 	int amount = 0;
 	float factor = 1.0f;
@@ -59,7 +62,7 @@ int BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuilding, int output, 
 		}
 	}
 
-	return static_cast<int>(std::round(output * factor)) + amount;
+	return std::make_pair(static_cast<int>(std::round(output * factor)), amount);
 }
 
 int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse) // not including producing upgrades
@@ -71,9 +74,10 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 	auto checkUpgrade = [pHouse, pBuilding, &result, &isUpgrade](BuildingTypeClass* pTPowersUp)
 	{
 		isUpgrade = true;
+
 		for (auto const& pBld : pHouse->Buildings)
 		{
-			if (pBld->Type == pTPowersUp)
+			if (pBld->UpgradeLevel && pBld->Type == pTPowersUp)
 			{
 				for (auto const& pUpgrade : pBld->Upgrades)
 				{
@@ -222,9 +226,6 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Art
 	this->ZShapePointMove_OnBuildup.Read(exArtINI, pArtSection, "ZShapePointMove.OnBuildup");
-
-	// Ares 3.0
-	this->UnitSell.Read(exINI, pSection, "UnitSell");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -287,9 +288,6 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Adjacent_Disallowed)
 		.Process(this->HasPowerUpAnim)
 		.Process(this->UndeploysInto_Sellable)
-
-		// Ares 3.0
-		.Process(this->UnitSell)
 		;
 }
 

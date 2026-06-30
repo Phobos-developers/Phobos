@@ -126,7 +126,7 @@ DEFINE_HOOK(0x4CF68D, FlyLocomotionClass_DrawMatrix_OnAirport, 0x5)
 		mat = Matrix3D::VoxelRampMatrix[slope_idx] * mat;
 		float ars = pThis->AngleRotatedSideways;
 		float arf = pThis->AngleRotatedForwards;
-		if (std::abs(ars) > 0.005 || std::abs(arf) > 0.005)
+		if (std::abs(ars) > 0.005f || std::abs(arf) > 0.005f)
 		{
 			mat.TranslateZ(float(std::abs(Math::sin(ars)) * pThis->Type->VoxelScaleX
 				+ std::abs(Math::sin(arf)) * pThis->Type->VoxelScaleY));
@@ -155,7 +155,7 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 	float arf = linked->AngleRotatedForwards;
 	float ars = linked->AngleRotatedSideways;
 
-	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
+	if (std::abs(ars) >= 0.005f || std::abs(arf) >= 0.005f)
 	{
 		if (pIndex) *pIndex = -1;
 
@@ -208,7 +208,7 @@ Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matr
 	float arf = linked->AngleRotatedForwards;
 	float ars = linked->AngleRotatedSideways;
 
-	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
+	if (std::abs(ars) >= 0.005f || std::abs(arf) >= 0.005f)
 	{
 		if (pIndex)
 			pIndex->Invalidate();
@@ -335,6 +335,8 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	const auto height = pThis->GetHeight();
 	const double baseScale_log = RulesExt::Global()->AirShadowBaseScale_log;
 
+	double currentScale = 1.0;
+
 	if (RulesExt::Global()->HeightShadowScaling && height > 0)
 	{
 		const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
@@ -344,7 +346,8 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 
 			if (cHeight > 0)
 			{
-				shadow_matrix.Scale((float)std::max(Pade2_2(baseScale_log * height / cHeight), minScale));
+				currentScale = std::max(Pade2_2(baseScale_log * height / cHeight), minScale);
+				shadow_matrix.Scale((float)currentScale);
 
 				if (jjloco->State != JumpjetLocomotionClass::State::Hovering)
 					vxl_index_key.Invalidate();
@@ -356,14 +359,16 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 
 			if (cHeight > 0 && height > 208)
 			{
-				shadow_matrix.Scale((float)std::max(Pade2_2(baseScale_log * (height - 208) / cHeight), minScale));
+				currentScale = std::max(Pade2_2(baseScale_log * (height - 208) / cHeight), minScale);
+				shadow_matrix.Scale((float)currentScale);
 				vxl_index_key.Invalidate();
 			}
 		}
 	}
 	else if (!RulesExt::Global()->HeightShadowScaling && pThis->Type->ConsideredAircraft)
 	{
-		shadow_matrix.Scale((float)Pade2_2(baseScale_log));
+		currentScale = Pade2_2(baseScale_log);
+		shadow_matrix.Scale((float)currentScale);
 	}
 
 	auto GetMainVoxel = [&]()
@@ -389,7 +394,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	float arf = pThis->AngleRotatedForwards;
 	float ars = pThis->AngleRotatedSideways;
 	// lazy, don't want to hook inside Shadow_Matrix
-	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
+	if (std::abs(ars) >= 0.005f || std::abs(arf) >= 0.005f)
 	{
 		// index key should have been already invalid, so it won't hurt to invalidate again
 		vxl_index_key.Invalidate();
@@ -475,7 +480,8 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 			return nullptr;
 		};
 
-	uTypeExt->ApplyTurretOffset(&mtx, Pixel_Per_Lepton);
+	const double adjustedFactor = Pixel_Per_Lepton / currentScale;
+	uTypeExt->ApplyTurretOffset(&mtx, adjustedFactor);
 	mtx.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
 
 	auto tur = GetTurretVoxel(pThis->CurrentTurretNumber);
@@ -569,12 +575,13 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 		double arf = pThis->AngleRotatedForwards;
 		if (flyLoco->CurrentSpeed > pThis->Type->PitchSpeed)
 			arf += pThis->Type->PitchAngle;
-		float ars = pThis->AngleRotatedSideways;
-		if (key.Is_Valid_Key() && (std::abs(arf) > 0.005 || std::abs(ars) > 0.005))
+		const float newArf = (float)arf;
+		const float ars = pThis->AngleRotatedSideways;
+		if (key.Is_Valid_Key() && (std::abs(newArf) > 0.005f || std::abs(ars) > 0.005f))
 			key.Invalidate();
 
-		shadow_mtx.RotateX((float)ars);
-		shadow_mtx.RotateY((float)arf);
+		shadow_mtx.RotateX(ars);
+		shadow_mtx.RotateY(newArf);
 	}
 	else if (height > 0)
 	{

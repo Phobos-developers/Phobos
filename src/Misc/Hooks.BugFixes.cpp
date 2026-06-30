@@ -634,7 +634,7 @@ DEFINE_HOOK(0x51A996, InfantryClass_PerCellProcess_KillOnImpassable, 0x5)
 	{
 		float multiplier = GroundType::Array[static_cast<int>(landType)].Cost[static_cast<int>(pThis->Type->SpeedType)];
 
-		if (multiplier == 0.0)
+		if (multiplier == 0.0f)
 			return ContinueChecks;
 	}
 
@@ -650,10 +650,13 @@ DEFINE_HOOK(0x508F82, HouseClass_AI_CheckSpySat_IncludeUpgrades, 0x6)
 
 	if (!pBuilding->Type->SpySat)
 	{
-		for (const auto& pUpgrade : pBuilding->Upgrades)
+		if (pBuilding->UpgradeLevel)
 		{
-			if (pUpgrade && pUpgrade->SpySat)
-				return Continue;
+			for (const auto& pUpgrade : pBuilding->Upgrades)
+			{
+				if (pUpgrade && pUpgrade->SpySat)
+					return Continue;
+			}
 		}
 
 		return AdvanceLoop;
@@ -2477,8 +2480,6 @@ DEFINE_PATCH(0x429E9B, 0xB7);
 
 #pragma endregion
 
-#pragma region SellUnitFix
-
 // Disallow sell action on wall overlays if mouse cursor is hovering on another object.
 DEFINE_HOOK(0x692AD6, ScrollClass_ChooseAction_SellWall, 0x6)
 {
@@ -2486,47 +2487,5 @@ DEFINE_HOOK(0x692AD6, ScrollClass_ChooseAction_SellWall, 0x6)
 
 	GET(ObjectClass*, pObject, ESI);
 
-	return pObject ? NoSell : 0;
+	return pObject ? NoSell :0;
 }
-
-static bool inline CanBeSold(TechnoClass* pTechno, AbstractType rtti)
-{
-	if (rtti == AbstractType::Building)
-		return true;
-
-	if (rtti == AbstractType::Unit || rtti == AbstractType::Aircraft)
-	{
-		auto const pTypeExt = TechnoExt::ExtMap.Find(pTechno)->TypeExtData;
-
-		if (!pTypeExt->Unsellable.Get(RulesExt::Global()->UnitsUnsellable))
-			return false;
-
-		auto const pCell = MapClass::Instance.GetCellAt(pTechno->GetCenterCoords());
-
-		if (auto const pBuilding = pCell->GetBuilding())
-		{
-			auto const pType = pBuilding->Type;
-
-			if (BuildingTypeExt::ExtMap.Find(pType)->UnitSell.Get(pType->UnitRepair))
-				return true;
-		}
-	}
-
-	return false;
-}
-
-// Verify if object can be sold at event level.
-DEFINE_HOOK(0x4C6F55, EventClass_Execute_Sell, 0x5)
-{
-	enum { SkipGameCode = 0x4C6FA8 };
-
-	GET(TechnoClass*, pTechno, EDI);
-	GET(AbstractType, rtti, EAX);
-
-	if (CanBeSold(pTechno, rtti))
-		pTechno->Sell(-1);
-
-	return SkipGameCode;
-}
-
-#pragma endregion

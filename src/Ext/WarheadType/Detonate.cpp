@@ -119,7 +119,9 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 		if (cellSpread)
 		{
-			for (auto pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, true))
+			auto const items = Helpers::Alex::getCellSpreadItemsExt(coords, cellSpread, true, false);
+
+			for (auto const pTarget : items)
 				this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
 		}
 		else if (pBullet)
@@ -128,7 +130,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			{
 				// Jun 2, 2024 - Starkku: We should only detonate on the target if the bullet, at the moment of detonation is within acceptable distance of the target.
 				// Ares uses 64 leptons / quarter of a cell as a tolerance, so for sake of consistency we're gonna do the same here.
-				if (pBullet->DistanceFrom(pTarget) < Unsorted::LeptonsPerCell / 4.0)
+				if (pBullet->DistanceFrom(pTarget) <= 64.0) // Unsorted::LeptonsPerCell / 4.0
 					this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
 			}
 		}

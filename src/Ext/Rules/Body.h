@@ -177,8 +177,6 @@ public:
 
 		Valueable<bool> IvanBombAttachToCenter;
 
-		Valueable<bool> UnitsUnsellable;
-
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -214,6 +212,7 @@ public:
 
 			, Shield_ConditionYellow { }
 			, Shield_ConditionRed { }
+			, Pips_Shield { { -1,-1,-1 } }
 			, Pips_Shield_Background { }
 			, Pips_Shield_Building { { -1,-1,-1 } }
 			, Pips_Shield_Building_Empty { }
@@ -308,8 +307,6 @@ public:
 			, TintColorAirstrike { 0 }
 
 			, IvanBombAttachToCenter { false }
-
-			, UnitsUnsellable { false }
 		{ }
 
 		virtual ~ExtData() = default;

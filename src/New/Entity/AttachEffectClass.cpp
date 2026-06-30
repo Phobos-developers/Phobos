@@ -74,6 +74,9 @@ AttachEffectClass::~AttachEffectClass()
 
 void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 {
+	if (!removed) // TODO: might be risky, needs further investigation
+		return;
+
 	auto const abs = static_cast<AbstractClass*>(ptr);
 
 	if (auto const pAnim = abstract_cast<AnimClass*, true>(abs))
@@ -119,7 +122,8 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 
 void AttachEffectClass::AI()
 {
-	if (!this->Techno || this->Techno->InLimbo || this->Techno->IsImmobilized || this->Techno->Transporter)
+	auto const pTechno = this->Techno;
+	if (!pTechno || pTechno->InLimbo || pTechno->IsImmobilized || pTechno->Transporter)
 		return;
 
 	if (this->InitialDelay > 0)
@@ -128,25 +132,30 @@ void AttachEffectClass::AI()
 		return;
 	}
 
+	auto const pType = this->Type;
+	auto const pExt = TechnoExt::ExtMap.Find(pTechno);
+
 	if (!this->HasInitialized && this->InitialDelay == 0)
 	{
 		this->HasInitialized = true;
 
 		if (this->Type->ROFMultiplier > 0.0 && this->Type->ROFMultiplier_ApplyOnCurrentTimer)
 		{
-			double ROFModifier = this->Type->ROFMultiplier;
-			auto const pTechno = this->Techno;
-			auto const pExt = TechnoExt::ExtMap.Find(this->Techno);
+			const double ROFModifier = pType->ROFMultiplier;
 			pTechno->RearmTimer.Start(static_cast<int>(pTechno->RearmTimer.GetTimeLeft() * ROFModifier));
 
 			if (!pExt->ChargeTurretTimer.HasStarted() && pExt->LastRearmWasFullDelay)
 				pTechno->ChargeTurretDelay = static_cast<int>(pTechno->ChargeTurretDelay * ROFModifier);
 		}
 
-		if (this->Type->HasTint())
-			this->Techno->MarkForRedraw();
+		if (pType->HasTint())
+		{
+			pTechno->MarkForRedraw();
+			pExt->UpdateTintValues();
+		}
 
-		this->NeedsRecalculateStat = true;
+		if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
+			pTechno->Uncloak(true);
 	}
 
 	if (this->CurrentDelay > 0)
@@ -167,7 +176,10 @@ void AttachEffectClass::AI()
 		if (!this->ShouldBeDiscardedNow())
 		{
 			this->RefreshDuration();
-			this->NeedsRecalculateStat = true;
+
+			if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
+				pTechno->Uncloak(true);
+
 			this->NeedsDurationRefresh = false;
 		}
 
@@ -279,9 +291,9 @@ void AttachEffectClass::OnlineCheck()
 	auto pTechno = this->Techno;
 	bool isActive = !(pTechno->Deactivated || pTechno->IsUnderEMP());
 
-	if (isActive && this->Techno->WhatAmI() == AbstractType::Building)
+	if (isActive && pTechno->WhatAmI() == AbstractType::Building)
 	{
-		auto const pBuilding = static_cast<BuildingClass const*>(this->Techno);
+		auto const pBuilding = static_cast<BuildingClass const*>(pTechno);
 		isActive = pBuilding->IsPowerOnline();
 	}
 
@@ -289,7 +301,17 @@ void AttachEffectClass::OnlineCheck()
 
 	if (isActive != this->LastActiveStat)
 	{
-		this->NeedsRecalculateStat = true;
+		auto const pExt = TechnoExt::ExtMap.Find(pTechno);
+
+		if (this->Type->HasTint())
+		{
+			pTechno->MarkForRedraw();
+			pExt->UpdateTintValues();
+		}
+
+		if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
+			pTechno->Uncloak(true);
+
 		this->LastActiveStat = isActive;
 	}
 
@@ -458,6 +480,7 @@ bool AttachEffectClass::ResetIfRecreatable()
 	this->Duration = 0;
 	this->CurrentDelay = this->RecreationDelay;
 	this->NeedsRecalculateStat = true;
+	this->NeedsDurationRefresh = true;
 
 	return true;
 }
@@ -586,6 +609,7 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 	int attachedCount = 0;
 	bool markForRedraw = false;
+	bool decloak = false;
 	double ROFModifier = 1.0;
 	bool selfOwned = pTarget == pSource;
 
@@ -600,6 +624,9 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 
 			if (params.InitialDelay <= 0)
 			{
+				if (pTargetExt->RecalculateStatMultipliers(pAE))
+					decloak = true;
+
 				if (pType->ROFMultiplier > 0.0 && pType->ROFMultiplier_ApplyOnCurrentTimer)
 					ROFModifier *= pType->ROFMultiplier;
 
@@ -621,11 +648,17 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 	}
 
 	if (attachedCount > 0)
-		pTargetExt->RecalculateStatMultipliers();
+	{
+		if (markForRedraw)
+		{
+			pTarget->MarkForRedraw();
+			pTargetExt->UpdateTintValues();
+		}
 
-	if (markForRedraw)
-		pTarget->MarkForRedraw();
-
+		if (decloak && pTarget->CloakState == CloakState::Cloaked)
+			pTarget->Uncloak(true);
+	}
+	          
 	return attachedCount;
 }
 
@@ -779,7 +812,6 @@ int AttachEffectClass::DetachByGroups(TechnoClass* pTarget, AEAttachInfoTypeClas
 /// <returns>Number of AttachEffect instances removed.</returns>
 int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo, std::vector<AttachEffectTypeClass*> const& types)
 {
-	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 	int detachedCount = 0;
 	bool markForRedraw = false;
 	auto const& minCounts = attachEffectInfo.CumulativeRemoveMinCounts;
@@ -801,10 +833,12 @@ int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass c
 	}
 
 	if (detachedCount > 0)
-		pTargetExt->RecalculateStatMultipliers();
+	{
+		TechnoExt::ExtMap.Find(pTarget)->RecalculateStatMultipliers();
 
-	if (markForRedraw)
-		pTarget->MarkForRedraw();
+		if (markForRedraw)
+			pTarget->MarkForRedraw();
+	}
 
 	return detachedCount;
 }
@@ -895,6 +929,8 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 /// <param name="pTarget">Target techno.</param>
 void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget)
 {
+	bool markForRedraw = false;
+	int transferCount = 0;
 	const auto pSourceExt = TechnoExt::ExtMap.Find(pSource);
 	const auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
@@ -945,7 +981,19 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 				pAE->Duration = attachEffect->Duration;
 		}
 
+		if (type->HasTint())
+			markForRedraw = true;
+
+		transferCount++;
 		it = pSourceExt->AttachedEffects.erase(it);
+	} 
+
+	if (transferCount > 0)
+	{
+		pTargetExt->RecalculateStatMultipliers();
+
+		if (markForRedraw)
+			pTarget->MarkForRedraw();
 	}
 }
 

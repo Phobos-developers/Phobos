@@ -254,8 +254,6 @@ public:
 		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
 
-		Nullable<bool> Unsellable; // Ares 3.0
-
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -264,7 +262,7 @@ public:
 			, RadarJamRadius { 0 }
 			, InhibitorRange {}
 			, DesignatorRange { }
-			, FactoryPlant_Multiplier { 1.0 }
+			, FactoryPlant_Multiplier { 1.0f }
 			, MindControlRangeLimit {}
 
 			, InterceptorType { nullptr }
@@ -462,8 +460,6 @@ public:
 			, Wake { }
 			, Wake_Grapple { }
 			, Wake_Sinking { }
-
-			, Unsellable {}
 		{ }
 
 		virtual ~ExtData() = default;

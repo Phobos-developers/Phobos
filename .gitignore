@@ -8,6 +8,7 @@ Debug
 .cproject
 .project
 *.aps
+*.log
 
 Nightly/
 

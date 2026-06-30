@@ -56,7 +56,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Animations can now be offset on the X axis with `XDrawOffset`.
 - `IsSimpleDeployer` units now only play `DeploySound` and `UndeploySound` once, when done with (un)deploying instead of repeating it over duration of turning and/or `DeployingAnim`.
 - AITrigger can now recognize Building Upgrades as legal condition.
-- `EWGates` and `NSGates` now will link walls like `xxGateOne` and `xxGateTwo` do.
 - Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
 - Fixed missing `No Enter` cursor for VehicleTypes being unable to enter a `Grinding` building.
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
@@ -241,6 +240,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed preplaced aircraft outside visible map being incorrectly flagged as crashing under certain conditions.
 - Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold.
 - Fixed vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't.
+- Fixed a desync due to an inconsistent shroud state caused by `GapGenerator` and `SpySat` interaction.
 
 ## Fixes / interactions with other extensions
 
@@ -799,6 +799,21 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]                         ; BuildingType
 ExcludeFromMultipleFactoryBonus=false  ; boolean
+```
+
+### Gates connecting with Walls
+
+- It is possible to add new gates which can be connected with any Walls by specifing them as `EWGates` and `NSGates` like `xxGateOne` and `xxGateTwo` do.
+  - In the in-game orientation, north points to the upper right, so `NSGates` correspond to buildings with `Foundation=1x3`, and `EWGates` correspond to buildings with `Foundation=3x1`.
+
+![image](_static/images/ewgates.gif)  
+*A Gate EW is built onto the Concrete Walls in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+
+In `rulesmd.ini`:
+```ini
+[AI]
+NSGates=      ; List of BuildingTypes, vanilla tag
+ESGates=      ; List of BuildingTypes, vanilla tag
 ```
 
 ### Unit repair customization
@@ -1653,8 +1668,8 @@ In `rulesmd.ini`:
 AnimList.PickRandom=false       ; boolean
 AnimList.CreateAll=false        ; boolean
 AnimList.CreationInterval=0     ; integer
-AnimList.ScatterMin=0.0         ; floating point value, distance in cells
-AnimList.ScatterMax=0.0         ; floating point value, distance in cells
+AnimList.ScatterMin=0.0         ; floating point value, distance in cells, default to 0.125 if [Projectile] -> Inviso=true, and 0 if false
+AnimList.ScatterMax=            ; floating point value, distance in cells, default to 0.125 if [Projectile] -> Inviso=true, and 0 if false
 SplashList=                     ; List of AnimationTypes
 SplashList.PickRandom=false     ; boolean
 SplashList.CreateAll=false      ; boolean

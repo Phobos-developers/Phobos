@@ -30,16 +30,17 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	if (!this->TypeExtData || this->TypeExtData->OwnerObject() != pType)
 		this->UpdateTypeData(pType);
 
-	if (this->CheckDeathConditions())
-		return;
-
 	this->UpdateShield();
 	this->UpdateAttachEffects();
 	this->UpdateLaserTrails();
-	this->ApplyInterceptor();
 	this->EatPassengers();
 	this->ApplySpawnLimitRange();
 	this->ApplyMindControlRangeLimit();
+
+	if (this->CheckDeathConditions())
+		return;
+
+	this->ApplyInterceptor();
 }
 
 void TechnoExt::ExtData::ApplyInterceptor()
@@ -49,6 +50,11 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	const auto pInterceptorType = pTypeExt->InterceptorType.get();
 
 	if (!pInterceptorType)
+		return;
+
+	const bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
+
+	if (isBuilding && (pThis->CurrentMission == Mission::Selling || pThis->CurrentMission == Mission::Construction))
 		return;
 
 	const auto pTarget = pThis->Target;
@@ -980,6 +986,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 		{
 			if (toOpenTopped)
 			{
+				pFirstPassenger->SetLocation(pThis->Location);
 				// Add passengers to the logic layer.
 				pThis->EnteredOpenTopped(pFirstPassenger);
 			}
@@ -1031,6 +1038,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 			{
 				const int turnrate = pCurrentType->JumpjetTurnRate >= 127 ? 127 : pCurrentType->JumpjetTurnRate;
 				pJJLoco->Speed = pCurrentType->JumpjetSpeed;
+				pJJLoco->Climb = pCurrentType->JumpjetClimb;
 				pJJLoco->Accel = pCurrentType->JumpjetAccel;
 				pJJLoco->Crash = pCurrentType->JumpjetCrash;
 				pJJLoco->Deviation = pCurrentType->JumpjetDeviation;
@@ -1490,6 +1498,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			if (shouldDiscard && attachEffect->ResetIfRecreatable())
 			{
 				++it;
+				altered = true;
 				continue;
 			}
 
@@ -1614,12 +1623,34 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 }
 
 // Recalculates AttachEffect stat multipliers and other bonuses.
-void TechnoExt::ExtData::RecalculateStatMultipliers()
+bool TechnoExt::ExtData::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 {
 	auto const pThis = this->OwnerObject();
 	auto& pAE = this->AE;
-	const bool wasTint = pAE.HasTint;
 
+	if (pAttachEffect)
+	{
+		auto const type = pAttachEffect->GetType();
+		pAE.FirepowerMultiplier *= type->FirepowerMultiplier;
+		pAE.SpeedMultiplier *= type->SpeedMultiplier;
+		pAE.ROFMultiplier *= type->ROFMultiplier;
+		pAE.Cloakable |= type->Cloakable;
+		pAE.ForceDecloak |= type->ForceDecloak;
+		pAE.DisableWeapons |= type->DisableWeapons;
+		pAE.HasRangeModifier |= (type->WeaponRange_ExtraRange != 0.0 || type->WeaponRange_Multiplier != 0.0);
+		pAE.HasTint |= type->HasTint();
+		pAE.ReflectDamage |= type->ReflectDamage;
+		pAE.HasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
+
+		if (type->ArmorMultiplier != 1.0 && (type->ArmorMultiplier_AllowWarheads.size() > 0 || type->ArmorMultiplier_DisallowWarheads.size() > 0))
+			pAE.HasRestrictedArmorMultipliers = true;
+		else
+			pAE.ArmorMultiplier *= type->ArmorMultiplier;
+
+		return pAE.ForceDecloak;
+	}
+
+	const bool wasTint = pAE.HasTint;
 	double firepower = 1.0;
 	double armor = 1.0;
 	double speed = 1.0;
@@ -1675,6 +1706,8 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 
 	if (wasTint || hasTint)
 		this->UpdateTintValues();
+
+	return false;
 }
 
 // Recalculates tint values.

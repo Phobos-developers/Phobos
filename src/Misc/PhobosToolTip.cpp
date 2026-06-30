@@ -77,8 +77,10 @@ inline int PhobosToolTip::GetBuildTime(TechnoTypeClass* pType) const
 inline int PhobosToolTip::GetPower(TechnoTypeClass* pType) const
 {
 	if (auto const pBldType = abstract_cast<BuildingTypeClass*>(pType))
-		return BuildingTypeExt::GetEnhancedPower(pBldType, pBldType->PowerBonus, HouseClass::CurrentPlayer) - pBldType->PowerDrain;
-
+	{
+		const auto [enhancedPower, extraPower] = BuildingTypeExt::GetEnhancedPower(pBldType, pBldType->PowerBonus, HouseClass::CurrentPlayer);
+		return enhancedPower + extraPower - pBldType->PowerDrain;
+	}
 	return 0;
 }
 

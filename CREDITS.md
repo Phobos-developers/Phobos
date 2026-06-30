@@ -263,6 +263,7 @@ This page lists all the individual contributions to the project by their author.
   - Owner change during buildup bugfix
   - Wall overlay unit sell exploit fix
   - Fix vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't
+  - GapGen + SpySat desync fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -402,6 +403,10 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that weapon cannot used to intercept on gound bullet if it's projectile has `AG=no`
   - Fix the bug that if there's a tank in tank bunker, tank bunker use auto death by vanish will cause tank get stuck and game will crash quickly
   - Fix the issue that power output of building on tooltip won't consider power enhancer
+  - Fix the bug that the upgrade building's power-enhancing effect depends only on its parent building and is not related to the upgrade building itself
+  - Fix a bug where updating the `OpenTopped` attribute during convert did not update the coordinates of passengers
+  - Fix the bug where passengers, when their transport unit is removed, would cause incorrect `LimboTracker` counts due to either having their destructor called directly (bypassing `UnInit`) or nested `UnInit` calls resetting the deletion flag too early, thereby breaking auto-death and superweapon auxiliary techno checks
+  - Fix the bug that the vanilla `SecondSpawnOffset` no longer takes effect
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -513,4 +518,6 @@ This page lists all the individual contributions to the project by their author.
 - **Damfoos** - extensive and thorough testing
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
-- **CnCRazer** - Wall overlay unit sell exploit fix
+- **RAZER**:
+  - Wall overlay unit sell exploit fix
+  - Multiplayer gamespeed fix for RealTimeTimers

@@ -32,17 +32,6 @@ DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 	return 0;
 }
 
-// Power Plant Enhancer #131
-DEFINE_HOOK(0x508CF2, HouseClass_UpdatePower_PowerOutput, 0x7)
-{
-	GET(HouseClass*, pThis, ESI);
-	GET(BuildingClass*, pBld, EDI);
-
-	pThis->PowerOutput += BuildingTypeExt::GetEnhancedPower(pBld->Type, pBld->GetPowerOutput(), pThis);
-
-	return 0x508D07;
-}
-
 DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 {
 	GET(BuildingClass* const, pBuilding, EDI);
@@ -115,7 +104,7 @@ DEFINE_HOOK(0x4AC534, DisplayClass_ComputeStartPosition_IllegalCoords, 0x6)
 namespace LimboTrackingTemp
 {
 	bool Enabled = false;
-	bool IsBeingDeleted = false;
+	int IsBeingDeleted = 0;
 }
 
 DEFINE_HOOK(0x687B18, ScenarioClass_ReadINI_StartTracking, 0x7)
@@ -147,9 +136,9 @@ void __fastcall TechnoClass_UnInit_Wrapper(TechnoClass* pThis)
 			HouseExt::ExtMap.Find(pThis->Owner)->RemoveFromLimboTracking(pType);
 	}
 
-	LimboTrackingTemp::IsBeingDeleted = true;
+	++LimboTrackingTemp::IsBeingDeleted;
 	pThis->ObjectClass::UnInit();
-	LimboTrackingTemp::IsBeingDeleted = false;
+	--LimboTrackingTemp::IsBeingDeleted;
 }
 
 DEFINE_FUNCTION_JUMP(CALL, 0x4DE60B, TechnoClass_UnInit_Wrapper);   // FootClass

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-23 22:17+0800\n"
+"POT-Creation-Date: 2026-06-30 21:43+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -779,8 +779,10 @@ msgstr "围墙卖坦克 Bug 的修复"
 msgid ""
 "Fix vehicles disguised as trees incorrectly displaying veterancy insignia"
 " when they shouldn't"
+msgstr "修复了伪装成树的载具错误显示出军衔（能打人的精英树）的问题"
+
+msgid "GapGen + SpySat desync fix"
 msgstr ""
-"修复了伪装成树的载具错误显示出军衔（能打人的精英树）的问题"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
@@ -1261,6 +1263,33 @@ msgid ""
 "death by vanish will cause tank get stuck and game will crash quickly"
 msgstr "修复了坦克碉堡中的载具使用 `AutoDeath.Behavior=vanish` 会导致坦克卡住并且游戏立即崩溃的 Bug"
 
+msgid ""
+"Fix the issue that power output of building on tooltip won't consider "
+"power enhancer"
+msgstr ""
+
+msgid ""
+"Fix the bug that the upgrade building's power-enhancing effect depends "
+"only on its parent building and is not related to the upgrade building "
+"itself"
+msgstr ""
+
+msgid ""
+"Fix a bug where updating the `OpenTopped` attribute during convert did "
+"not update the coordinates of passengers"
+msgstr ""
+
+msgid ""
+"Fix the bug where passengers, when their transport unit is removed, would"
+" cause incorrect `LimboTracker` counts due to either having their "
+"destructor called directly (bypassing `UnInit`) or nested `UnInit` calls "
+"resetting the deletion flag too early, thereby breaking auto-death and "
+"superweapon auxiliary techno checks"
+msgstr ""
+
+msgid "Fix the bug that the vanilla `SecondSpawnOffset` no longer takes effect"
+msgstr ""
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
@@ -1665,6 +1694,13 @@ msgstr "**Dmitry Volkov** - 广泛且深入的测试"
 msgid "**Rise of the East community** - extensive playtesting of in-dev features"
 msgstr "**东方崛起社区** - 对开发功能的广泛测试"
 
-msgid "**CnCRazer** - Wall overlay unit sell exploit fix"
-msgstr "**CnCRazer** - 围墙卖坦克 Bug 的修复"
+#, fuzzy
+msgid "**RAZER**:"
+msgstr "**ZivDero**："
+
+msgid "Multiplayer gamespeed fix for RealTimeTimers"
+msgstr ""
+
+#~ msgid "**CnCRazer** - Wall overlay unit sell exploit fix"
+#~ msgstr "**CnCRazer** - 围墙卖坦克 Bug 的修复"
 

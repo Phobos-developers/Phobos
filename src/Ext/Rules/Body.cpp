@@ -218,8 +218,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->IvanBombAttachToCenter.Read(exINI, GameStrings::CombatDamage, "IvanBombAttachToCenter");
 
-	this->UnitsUnsellable.Read(exINI, GameStrings::General, "UnitsUnsellable");
-
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -416,7 +414,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->TintColorBerserk)
 		.Process(this->TintColorAirstrike)
 		.Process(this->IvanBombAttachToCenter)
-		.Process(this->UnitsUnsellable)
 		;
 }
 

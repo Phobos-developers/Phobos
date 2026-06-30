@@ -1,0 +1,466 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, The Phobos Contributors
+# This file is distributed under the same license as the Phobos package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Phobos \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-20 10:13+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+msgid "Interoperability"
+msgstr ""
+
+msgid ""
+"This page documents the exported interfaces in "
+"[Interop](https://github.com/Phobos-"
+"developers/Phobos/tree/develop/src/Interop)."
+msgstr ""
+
+msgid "API Convention"
+msgstr ""
+
+msgid ""
+"All exported API functions return `HRESULT` to indicate success or "
+"failure following COM convention:"
+msgstr ""
+
+msgid "HRESULT"
+msgstr ""
+
+msgid "Meaning"
+msgstr ""
+
+msgid "`S_OK`"
+msgstr ""
+
+msgid "Operation completed successfully."
+msgstr ""
+
+msgid "`S_FALSE`"
+msgstr ""
+
+msgid ""
+"Operation completed but had nothing to do (e.g., no matching effects "
+"found)."
+msgstr ""
+
+msgid "`E_POINTER`"
+msgstr ""
+
+msgid "A required pointer parameter was null."
+msgstr ""
+
+msgid "`E_INVALIDARG`"
+msgstr ""
+
+msgid "One or more arguments are invalid."
+msgstr ""
+
+msgid "`E_UNEXPECTED`"
+msgstr ""
+
+msgid "An unexpected internal error occurred (e.g., extension data not found)."
+msgstr ""
+
+msgid "`E_FAIL`"
+msgstr ""
+
+msgid "The operation failed."
+msgstr ""
+
+msgid ""
+"Functions that produce output data take an additional output pointer "
+"parameter that receives the result. Use `SUCCEEDED(hr)` / `FAILED(hr)` to"
+" check the return value."
+msgstr ""
+
+msgid "API Version Tracking"
+msgstr ""
+
+msgid "Semantic Versioning Rules"
+msgstr ""
+
+msgid ""
+"**Major (X)**: Increment for breaking changes (backward incompatible API "
+"modifications). Example: Deleting an API, changing function parameters, "
+"modifying data structures that break existing code. When bumped, reset "
+"Minor and Patch to 0 (e.g., 1.2.3 → 2.0.0)."
+msgstr ""
+
+msgid ""
+"**Minor (Y)**: Increment for backward-compatible new features. Example: "
+"Adding a new API function, new parameters that don't break existing code."
+" When bumped, reset Patch to 0 (e.g., 1.2.3 → 1.3.0)."
+msgstr ""
+
+msgid ""
+"**Patch (Z)**: Increment for backward-compatible miscs (no API changes). "
+"Example: Fixing crashes, correcting calculations, optimizing internals "
+"without changing interface (e.g., 1.2.3 → 1.2.4)."
+msgstr ""
+
+msgid "GetInteropAPIVersion"
+msgstr ""
+
+msgid "Returns the current Interop API version via `pVersion` output parameter."
+msgstr ""
+
+msgid "Parameters:"
+msgstr ""
+
+msgid "`pVersion`: Receives the version structure `{ major, minor, patch }`."
+msgstr ""
+
+msgid "Returns `S_OK` on success, `E_POINTER` if `pVersion` is null."
+msgstr ""
+
+msgid "**Example (C# P/Invoke):**"
+msgstr ""
+
+msgid "Deprecated API Handling"
+msgstr ""
+
+msgid ""
+"When an API is deprecated, its function stub is retained but with a fatal"
+" error handler. The calling application will receive a descriptive error "
+"message and must stop execution. This ensures:"
+msgstr ""
+
+msgid "Broken links are immediately detected at runtime (not a silent crash)."
+msgstr ""
+
+msgid ""
+"Clear messaging guides developers to the replacement API and version "
+"range."
+msgstr ""
+
+msgid "Migration timeline is documented in the error message."
+msgstr ""
+
+msgid "**Example** (not currently in use):"
+msgstr ""
+
+msgid "Available APIs"
+msgstr ""
+
+msgid "Module"
+msgstr ""
+
+msgid "API"
+msgstr ""
+
+msgid "Availability"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "AttachEffect"
+msgstr ""
+
+msgid "AE_Attach"
+msgstr ""
+
+msgid "`[1.0.0, ∞)`"
+msgstr ""
+
+msgid "Active"
+msgstr ""
+
+msgid "AE_Detach"
+msgstr ""
+
+msgid "AE_DetachByGroups"
+msgstr ""
+
+msgid "AE_TransferEffects"
+msgstr ""
+
+msgid "BulletExt"
+msgstr ""
+
+msgid "Bullet_SetFirerOwner"
+msgstr ""
+
+msgid "EventExt"
+msgstr ""
+
+msgid "EventExt_AddEvent"
+msgstr ""
+
+msgid "TechnoExt"
+msgstr ""
+
+msgid "ConvertToType_Phobos"
+msgstr ""
+
+msgid "RegisterCalculateExtraThreatCallback"
+msgstr ""
+
+msgid "ScenarioExt"
+msgstr ""
+
+msgid "Variables_GetLocal_Phobos"
+msgstr ""
+
+msgid "`[1.1.0, ∞)`"
+msgstr ""
+
+msgid "Variables_SetLocal_Phobos"
+msgstr ""
+
+msgid "Variables_GetGlobal_Phobos"
+msgstr ""
+
+msgid "Variables_SetGlobal_Phobos"
+msgstr ""
+
+msgid "**Availability:** `[1.0.0, ∞)`"
+msgstr ""
+
+msgid "Attaches one or more AttachEffect types to the target."
+msgstr ""
+
+msgid "pTarget: Target unit to receive effects."
+msgstr ""
+
+msgid "pInvokerHouse: Invoker house context."
+msgstr ""
+
+msgid "pInvoker: Invoker techno context."
+msgstr ""
+
+msgid "pSource: Optional source object context."
+msgstr ""
+
+msgid "effectTypeNames: Array of AttachEffect type names."
+msgstr ""
+
+msgid "typeCount: Number of entries in effectTypeNames."
+msgstr ""
+
+msgid "durationOverride: If non-zero, duration override is applied."
+msgstr ""
+
+msgid "delay: If >= 0, delay override is applied."
+msgstr ""
+
+msgid "initialDelay: If >= 0, initial delay override is applied."
+msgstr ""
+
+msgid "recreationDelay: If >= -1, recreation delay override is applied."
+msgstr ""
+
+msgid "pAttachedCount: Receives the number of effects attached."
+msgstr ""
+
+msgid ""
+"Returns `S_OK` on success, `S_FALSE` if no valid effect type names were "
+"found."
+msgstr ""
+
+msgid ""
+"Fails with `E_POINTER` when: pTarget, effectTypeNames, or pAttachedCount "
+"is null."
+msgstr ""
+
+msgid "Fails with `E_INVALIDARG` when: typeCount <= 0."
+msgstr ""
+
+msgid "Detaches effects by explicit effect type names."
+msgstr ""
+
+msgid "pTarget: Target unit to remove effects from."
+msgstr ""
+
+msgid "effectTypeNames: Array of AttachEffect type names to remove."
+msgstr ""
+
+msgid "pRemovedCount: Receives the number of effects removed."
+msgstr ""
+
+msgid "Returns `S_OK` on success, `S_FALSE` if no matching effects were found."
+msgstr ""
+
+msgid ""
+"Fails with `E_POINTER` when: pTarget, effectTypeNames, or pRemovedCount "
+"is null."
+msgstr ""
+
+msgid "Detaches effects by AttachEffect group name."
+msgstr ""
+
+msgid "groupNames: Array of group names."
+msgstr ""
+
+msgid "groupCount: Number of entries in groupNames."
+msgstr ""
+
+msgid "Returns `S_OK` on success, `S_FALSE` if no matching groups were found."
+msgstr ""
+
+msgid ""
+"Fails with `E_POINTER` when: pTarget, groupNames, or pRemovedCount is "
+"null."
+msgstr ""
+
+msgid "Fails with `E_INVALIDARG` when: groupCount <= 0."
+msgstr ""
+
+msgid "Transfers all attached effects from source to target."
+msgstr ""
+
+msgid "pSource: Source unit."
+msgstr ""
+
+msgid "pTarget: Target unit."
+msgstr ""
+
+msgid "Returns `S_OK` on success."
+msgstr ""
+
+msgid "Fails with `E_POINTER` when: pSource or pTarget is null."
+msgstr ""
+
+msgid "Vanilla class extension"
+msgstr ""
+
+msgid "Converts a FootClass instance to another TechnoType."
+msgstr ""
+
+msgid "pThis: Unit to convert."
+msgstr ""
+
+msgid "toType: Destination TechnoType."
+msgstr ""
+
+msgid "Returns `S_OK` if conversion succeeds."
+msgstr ""
+
+msgid "Returns `E_INVALIDARG` if types are incompatible."
+msgstr ""
+
+msgid "Notes:"
+msgstr ""
+
+msgid "This API forwards directly to TechnoExt::ConvertToType."
+msgstr ""
+
+msgid "Registers a callback function to calculate extra threat for a unit."
+msgstr ""
+
+msgid ""
+"callback: Callback function pointer that returns the calculated threat "
+"modifier. Signature: `double callback(TechnoClass* pThis, ObjectClass* "
+"pTarget, double originalThreat)`."
+msgstr ""
+
+msgid "Fails with `E_POINTER` when: callback is null."
+msgstr ""
+
+msgid "Behavior:"
+msgstr ""
+
+msgid "If callback is non-null, it is added to the internal callback list."
+msgstr ""
+
+msgid ""
+"When threat calculations occur, all registered callbacks are invoked to "
+"compute additional threat contributions."
+msgstr ""
+
+msgid ""
+"Multiple callbacks can be registered and are executed in registration "
+"order."
+msgstr ""
+
+msgid ""
+"The callback invocation method is `totalThreat = cb(pThis, pTarget, "
+"totalThreat)`."
+msgstr ""
+
+msgid "Updates the recorded firer house for a bullet extension."
+msgstr ""
+
+msgid "pBullet: Bullet instance."
+msgstr ""
+
+msgid ""
+"pHouse: New firer house (can be null if caller intentionally clears "
+"ownership)."
+msgstr ""
+
+msgid "Returns `S_OK` if the bullet extension is found and updated."
+msgstr ""
+
+msgid "Fails with `E_POINTER` when: pBullet is null."
+msgstr ""
+
+msgid "Fails with `E_UNEXPECTED` when: no BulletExt entry exists for pBullet."
+msgstr ""
+
+msgid "**Availability:** `[1.1.0, ∞)`"
+msgstr ""
+
+msgid ""
+"Gets the value of a local variable by index. Does not create the variable"
+" if missing — pValue is set to 0 when the index is not found."
+msgstr ""
+
+msgid "index: Variable index."
+msgstr ""
+
+msgid "pValue: Receives the variable value."
+msgstr ""
+
+msgid "Returns `S_OK` if the variable exists, `S_FALSE` if it does not."
+msgstr ""
+
+msgid "Fails with `E_POINTER` when: pValue is null."
+msgstr ""
+
+msgid "Fails with `E_FAIL` when: ScenarioExt is not initialized."
+msgstr ""
+
+msgid ""
+"Sets the value of a local variable by index. Creates the variable if the "
+"index does not exist."
+msgstr ""
+
+msgid "value: New value for the variable."
+msgstr ""
+
+msgid ""
+"Gets the value of a global variable by index. Does not create the "
+"variable if missing — pValue is set to 0 when the index is not found."
+msgstr ""
+
+msgid ""
+"Sets the value of a global variable by index. Creates the variable if the"
+" index does not exist."
+msgstr ""
+
+msgid "Invokes AddEvent on an EventExt object."
+msgstr ""
+
+msgid "pEventExt: Event extension instance."
+msgstr ""
+
+msgid "Returns `S_OK` if AddEvent succeeds, `S_FALSE` if AddEvent returns false."
+msgstr ""
+
+msgid "Fails with `E_POINTER` when: pEventExt is null."
+msgstr ""
+

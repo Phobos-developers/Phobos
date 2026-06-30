@@ -484,7 +484,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown)
 					auto mission = pUnit->GetCurrentMission();
 
 					// Is near of the leader, then protect the area
-					if (mission != Mission::Area_Guard || mission != Mission::Attack)
+					if (mission != Mission::Area_Guard && mission != Mission::Attack)
 						pUnit->QueueMission(Mission::Area_Guard, true);
 
 					nTogether++;
@@ -1185,7 +1185,7 @@ void ScriptExt::ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLead
 
 	if (!pSuperCSphere->IsReady || (pSuperCSphere->IsPowered() && !pOwner->Is_Powered()))
 	{
-		if (pSuperCSphere->IsPresent && 1.0 - RulesClass::Instance->AIMinorSuperReadyPercent < pSuperCSphere->RechargeTimer.GetTimeLeft() / pSuperCSphere->GetRechargeTime())
+		if (pSuperCSphere->IsPresent && 1.0f - RulesClass::Instance->AIMinorSuperReadyPercent < pSuperCSphere->RechargeTimer.GetTimeLeft() / pSuperCSphere->GetRechargeTime())
 		{
 			ScriptExt::Log(logTextBase, "ChronoSphere superweapon [%s] charge not at AIMinorSuperReadyPercent yet, not jumping to next line yet", pSuperCSphere->Type->get_ID());
 			return;
