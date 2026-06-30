@@ -803,18 +803,11 @@ ExcludeFromMultipleFactoryBonus=false  ; boolean
 
 ### Gates connecting with Walls
 
-- It is possible to add new gates which can be connected with any Walls by specifing them as `EWGates` and `NSGates` like `xxGateOne` and `xxGateTwo` do.
-  - In the in-game orientation, north points to the upper right, so `NSGates` correspond to buildings with `Foundation=1x3`, and `EWGates` correspond to buildings with `Foundation=3x1`.
-
-![image](_static/images/ewgates.gif)  
+![image](_static/images/ewgates.gif)
 *A Gate EW is built onto the Concrete Walls in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
-In `rulesmd.ini`:
-```ini
-[AI]
-NSGates=      ; List of BuildingTypes, vanilla tag
-ESGates=      ; List of BuildingTypes, vanilla tag
-```
+- It is possible to add new gates which can be connected with any Walls by specifing them as `[AI] -> EWGates` and `[AI] -> NSGates` like `xxGateOne` and `xxGateTwo` do.
+  - In the in-game orientation, north points to the upper right, so `NSGates` correspond to buildings with `Foundation=1x3`, and `EWGates` correspond to buildings with `Foundation=3x1`.
 
 ### Unit repair customization
 

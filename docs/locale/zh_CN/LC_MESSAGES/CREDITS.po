@@ -782,7 +782,7 @@ msgid ""
 msgstr "修复了伪装成树的载具错误显示出军衔（能打人的精英树）的问题"
 
 msgid "GapGen + SpySat desync fix"
-msgstr ""
+msgstr "裂缝产生器和间谍卫星的不同步修复"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
@@ -1266,18 +1266,18 @@ msgstr "修复了坦克碉堡中的载具使用 `AutoDeath.Behavior=vanish` 会�
 msgid ""
 "Fix the issue that power output of building on tooltip won't consider "
 "power enhancer"
-msgstr ""
+msgstr "修复了建筑拓展工具提示信息中的发电量数值未考虑电厂增幅器的问题"
 
 msgid ""
 "Fix the bug that the upgrade building's power-enhancing effect depends "
 "only on its parent building and is not related to the upgrade building "
 "itself"
-msgstr ""
+msgstr "修复了加载物建筑的电厂增幅效果仅取决于其基底建筑而非加载物建筑自身的 Bug"
 
 msgid ""
 "Fix a bug where updating the `OpenTopped` attribute during convert did "
 "not update the coordinates of passengers"
-msgstr ""
+msgstr "修复了类型转换会更新 `OpenTopped` 属性却不更新乘客坐标的 Bug"
 
 msgid ""
 "Fix the bug where passengers, when their transport unit is removed, would"
@@ -1286,9 +1286,11 @@ msgid ""
 "resetting the deletion flag too early, thereby breaking auto-death and "
 "superweapon auxiliary techno checks"
 msgstr ""
+"修复了乘客在其所在的运输工具被移除时，因被直接调用析构函数（绕过 `UnInit` ）或 `UnInit` 嵌套调用导致删除标志过早重置，从而使 "
+"`LimboTracker` 计数错误，进而影响自动死亡及超武辅助单位判定的 Bug"
 
 msgid "Fix the bug that the vanilla `SecondSpawnOffset` no longer takes effect"
-msgstr ""
+msgstr "修复了原版 `SecondSpawnOffset` 不再生效的 Bug"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
@@ -1694,13 +1696,9 @@ msgstr "**Dmitry Volkov** - 广泛且深入的测试"
 msgid "**Rise of the East community** - extensive playtesting of in-dev features"
 msgstr "**东方崛起社区** - 对开发功能的广泛测试"
 
-#, fuzzy
 msgid "**RAZER**:"
-msgstr "**ZivDero**："
+msgstr "**RAZER**："
 
 msgid "Multiplayer gamespeed fix for RealTimeTimers"
-msgstr ""
-
-#~ msgid "**CnCRazer** - Wall overlay unit sell exploit fix"
-#~ msgstr "**CnCRazer** - 围墙卖坦克 Bug 的修复"
+msgstr "多人联机所用游戏速度下的实时计时器修复"
 

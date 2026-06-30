@@ -24,7 +24,7 @@ msgid "Contributing"
 msgstr "贡献"
 
 msgid "Project guidelines and policies"
-msgstr ""
+msgstr "项目准则与政策"
 
 msgid "Credits"
 msgstr "鸣谢"
