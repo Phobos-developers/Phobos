@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <RulesClass.h>
 #include <Utilities/Container.h>
@@ -686,6 +686,7 @@ public:
 
 			, TeamDelays_DynamicType { DynamicTeamDelayType::StartingPoint }
 			, TeamDelays_Count {}
+
 			, BerzerkMission { Mission::Hunt }
 
 			, BunkerStateUpdateDelay { 15 }

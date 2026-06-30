@@ -2975,12 +2975,18 @@ msgid ""
 " (by NetsuNegi)"
 msgstr "修复了原版 `SecondSpawnOffset` 不再生效的 Bug（by NetsuNegi）"
 
+msgid ""
+"Fixed a bug introduced in v0.4.0.1 where some floating-point values using"
+" percentage form were incorrectly multiplied by an additional 0.01 (by "
+"Starkku)"
+msgstr ""
+
 msgid "0.4.0.2"
 msgstr "0.4.0.2"
 
 msgid ""
 "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:783: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
+"New.md:786: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
 msgstr ""
 
 msgid ""
