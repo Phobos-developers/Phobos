@@ -1500,12 +1500,3 @@ msgstr "该值将被忽略（任何所属方均有效）"
 msgid "Pick the owner of the map trigger"
 msgstr "选择地图触发的所有者"
 
-#~ msgid ""
-#~ "Any `BuildingTypes` with `Unsellable=yes`, "
-#~ "`Capturable=yes`, negative `TechLevel=` values "
-#~ "or appears in `[AI] -> "
-#~ "NeutralTechBuildings=` list"
-#~ msgstr ""
-#~ "任何拥有 `Unsellable=yes`、`Capturable=yes`、负值 `TechLevel=` "
-#~ "或位于 `[AI] -> NeutralTechBuildings=` 列表中的`建筑类型`"
-
