@@ -341,6 +341,7 @@ HideLightFlashEffects=false      ; boolean
 - Fixed AttachEffect with `RecreationDelay` of 0 checking `Delay` as well instead of immediately refreshing duration when possible (by Starkku)
 - Fixed building interceptors being able to pick targets during construction and selling (by Starkku)
 - Fixed the bug that the vanilla `SecondSpawnOffset` no longer takes effect (by NetsuNegi)
+- Fixed an issue where some percentage format floating point numbers were not being parsed correctly (by Starkku)
 ```
 
 ### 0.4.0.2
