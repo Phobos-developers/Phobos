@@ -2891,7 +2891,7 @@ msgstr "修复了建筑拓展工具提示信息中的发电量数值未考虑电
 msgid ""
 "`RealTimeTimers` now support independent gamespeed index values for "
 "Multiplayer and Skirmish (by RAZER)"
-msgstr "现在 `RealTimeTimers` 支持多人联机和遭遇战拥有彼此独立的游戏速度档位数值。"
+msgstr "现在 `RealTimeTimers` 支持多人联机和遭遇战拥有彼此独立的游戏速度档位数值（by RAZER）"
 
 msgid ""
 "Fixed the bug that the upgrade building's power-enhancing effect depends "
