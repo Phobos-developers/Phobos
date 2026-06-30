@@ -606,15 +606,13 @@ msgstr "修复了建筑拦截者可以在拔起和出售期间获取目标的问
 msgid ""
 "Fixed the bug that the vanilla `SecondSpawnOffset` no longer takes effect"
 " (by NetsuNegi)"
-msgstr ""
-"修复了原版 `SecondSpawnOffset` 不再生效的 Bug（by NetsuNegi）"
+msgstr "修复了原版 `SecondSpawnOffset` 不再生效的 Bug（by NetsuNegi）"
 
 msgid ""
 "Fixed a bug introduced in v0.4.0.1 where some floating-point values using"
 " percentage form were incorrectly multiplied by an additional 0.01 (by "
 "Starkku)"
-msgstr ""
-"修复了 v0.4.0.1 引入的一个导致某些浮点值使用百分比形式时被错误额外乘 0.01 的 Bug（by Starkku）"
+msgstr "修复了 v0.4.0.1 引入的一个导致某些浮点值使用百分比形式时被错误额外乘 0.01 的 Bug（by Starkku）"
 
 msgid "0.4.0.2"
 msgstr "0.4.0.2"
