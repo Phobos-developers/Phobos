@@ -41,6 +41,7 @@ int Phobos::UI::SuperWeaponSidebar_CameoHeight = 48;
 int Phobos::UI::SuperWeaponSidebar_Max = 0;
 int Phobos::UI::SuperWeaponSidebar_MaxColumns = INT32_MAX;
 int Phobos::UI::CreditsIndicator_MaxStep = 143;
+bool Phobos::UI::CreditsIndicator_Smooth = true;
 bool Phobos::UI::WeedsCounter_Show = false;
 bool Phobos::UI::AnchoredToolTips = false;
 
@@ -235,6 +236,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 		Phobos::UI::CreditsIndicator_MaxStep =
 			ini_uimd.ReadInteger(SIDEBAR_SECTION, "CreditsIndicator.MaxStep", Phobos::UI::CreditsIndicator_MaxStep);
+
+		Phobos::UI::CreditsIndicator_Smooth =
+			ini_uimd.ReadBool(SIDEBAR_SECTION, "CreditsIndicator.Smooth", Phobos::UI::CreditsIndicator_Smooth);
 	}
 
 	// UISettings

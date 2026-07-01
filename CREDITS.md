@@ -692,6 +692,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow infantry to perform type conversion when deploying and undeploying
   - Custom cruise missiles
   - Customize the step limit of the credits indicator
+  - Disable the credits indicator smooth transition
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

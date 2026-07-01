@@ -75,18 +75,25 @@ DEFINE_HOOK(0x641EE0, PreviewClass_ReadPreview, 0x6)
 	return 0x64203D;
 }
 
+DEFINE_HOOK(0x4A26E8, CreditClass_AI_SmoothDisable, 0x6)
+{
+	if (!Phobos::UI::CreditsIndicator_Smooth)
+		return 0x4A26F0;
+	else
+		return 0;
+}
+
 DEFINE_HOOK(0x4A2729, CreditClass_AI_CreditsStepClamp, 0x5)
 {
 	enum { Continue = 0x4A2735 };
 
     int maxStep = Phobos::UI::CreditsIndicator_MaxStep;
-    if (maxStep < 1)
+    if (maxStep <= 0)
         return Continue;
 
-    int current = R->EAX();
-    if (current > maxStep)
-        current = maxStep;
-    R->EAX(current);
+    GET(int, current, EAX);
+
+    R->EAX(Math::min(current, maxStep));
 
     return Continue;
 }
