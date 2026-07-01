@@ -77,16 +77,18 @@ DEFINE_HOOK(0x641EE0, PreviewClass_ReadPreview, 0x6)
 
 DEFINE_HOOK(0x4A2729, CreditClass_AI_CreditsStepClamp, 0x5)
 {
+	enum { Continue = 0x4A2735 };
+
     int maxStep = Phobos::UI::CreditsIndicator_MaxStep;
     if (maxStep < 1)
-        return 0;
+        return Continue;
 
     int current = R->EAX();
     if (current > maxStep)
         current = maxStep;
     R->EAX(current);
 
-    return 0x4A2735;
+    return Continue;
 }
 
 DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
