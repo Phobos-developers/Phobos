@@ -1634,8 +1634,8 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 			static const std::pair<const char*, PlayerPowerStatus> Names[] =
 			{
 				{"none", PlayerPowerStatus::None},
-				{"consumer", PlayerPowerStatus::Consumer},
-				{"low", PlayerPowerStatus::Consumer},
+				{"consumer", PlayerPowerStatus::Low},
+				{"low", PlayerPowerStatus::Low},
 				{"normal", PlayerPowerStatus::Normal},
 			};
 

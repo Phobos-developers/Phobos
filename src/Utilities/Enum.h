@@ -192,7 +192,7 @@ enum class PlayerPowerStatus
 {
 	None = 0,
 	Normal = 1,   // not low power
-	Consumer = 2, // low power
+	Low = 2, // low power
 };
 
 enum class SelfHealGainType

@@ -332,12 +332,42 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 				: std::all_of(vTypes.begin(), vTypes.end(), existSingleType);
 		};
 
-	// death if player power status is not as specified
 	if (pTypeExt->AutoDeath_PlayerPowerStatus != PlayerPowerStatus::None)
 	{
-		const bool isLowPower = pOwner->PowerDrain > pOwner->PowerOutput;
+		const bool isLowPower = pOwner->HasLowPower();
+		const auto status = pTypeExt->AutoDeath_PlayerPowerStatus;
 
-		if ((pTypeExt->AutoDeath_PlayerPowerStatus == PlayerPowerStatus::Normal && !isLowPower) || (pTypeExt->AutoDeath_PlayerPowerStatus == PlayerPowerStatus::Consumer && isLowPower))
+		if ((status == PlayerPowerStatus::Normal && !isLowPower) || (status == PlayerPowerStatus::Low && isLowPower))
+		{
+			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
+			return true;
+		}
+	}
+
+	if (pTypeExt->AutoDeath_PlayerMoneyLessThan != -1 || pTypeExt->AutoDeath_PlayerMoneyMoreThan != -1)
+	{
+		const int lessThan = pTypeExt->AutoDeath_PlayerMoneyLessThan;
+		const int moreThan = pTypeExt->AutoDeath_PlayerMoneyMoreThan;
+		const int money = pOwner->Available_Money();
+		bool shouldDie = false;
+
+		if (lessThan != -1 && moreThan != -1)
+		{
+			if (lessThan < moreThan)
+				shouldDie = (money < lessThan && money > moreThan);
+			else
+				shouldDie = (money < lessThan || money > moreThan);
+		}
+		else if (lessThan != -1)
+		{
+			shouldDie = (money < lessThan);
+		}
+		else
+		{
+			shouldDie = (money > moreThan);
+		}
+
+		if (shouldDie)
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 			return true;

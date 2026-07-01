@@ -1927,6 +1927,12 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
   - `PlayerPower`: The object will die if its owner's power status matches the configured state.
     - `low` / `consumer`: Trigger when the owner is in low power.
     - `normal`: Trigger when the owner is not in low power.
+  - `PlayerMoneyLessThan` / `PlayerMoneyMoreThan`: The object will die based on the owner's available credits.
+    - If only `PlayerMoneyLessThan` is set, triggers when money is below this value.
+    - If only `PlayerMoneyMoreThan` is set, triggers when money is above this value.
+    - If both are set, they define a range condition:
+      - If `PlayerMoneyLessThan < PlayerMoneyMoreThan`: triggers when money is **inside the range**.
+      - If `PlayerMoneyLessThan >= PlayerMoneyMoreThan`: triggers when money is **outside the range**.
 
 - The auto-death behavior can be chosen from the following:
   - `kill`: The object will be destroyed normally.
@@ -1954,6 +1960,8 @@ AutoDeath.TechnosExist.Any=true                ; boolean
 AutoDeath.TechnosExist.AllowLimboed=false      ; boolean
 AutoDeath.TechnosExist.Houses=owner            ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 AutoDeath.PlayerPowerStatus=none               ; Player Power Enumeration (none|low/consumer|normal)
+AutoDeath.PlayerMoneyLessThan=-1               ; integer
+AutoDeath.PlayerMoneyMoreThan=-1               ; integer
 ```
 
 ```{note}

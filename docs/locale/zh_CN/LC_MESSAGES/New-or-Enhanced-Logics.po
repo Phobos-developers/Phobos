@@ -4425,6 +4425,33 @@ msgstr "`Technos(Dont)Exist.AllowLimboed` 控制是否计入虚拟的科技类�
 msgid "`Technos(Dont)Exist.Houses` controls which houses are checked."
 msgstr "`Technos(Dont)Exist.Houses` 控制检查哪些所属方。"
 
+msgid "`PlayerPower`: The object will die if its owner's power status matches the configured state."
+msgstr "`PlayerPower`：当对象所属方的电力状态符合设定条件时，则对象死亡。"
+
+msgid "`low` / `consumer`: Trigger when the owner is in low power."
+msgstr "`low` / `consumer`：当对象所属方处于电力不足状态时触发。"
+
+msgid "`normal`: Trigger when the owner is not in low power."
+msgstr "`normal`：当对象所属方未处于电力不足状态时触发。"
+
+msgid "`PlayerMoneyLessThan` / `PlayerMoneyMoreThan`: The object will die based on the owner's available credits."
+msgstr "`PlayerMoneyLessThan` ／ `PlayerMoneyMoreThan`：根据对象所属方的资金决定对象是否死亡。"
+
+msgid "If only `PlayerMoneyLessThan` is set, triggers when money is below this value."
+msgstr "仅设置 `PlayerMoneyLessThan` 时，当资金低于该值时触发。"
+
+msgid "If only `PlayerMoneyMoreThan` is set, triggers when money is above this value."
+msgstr "仅设置 `PlayerMoneyMoreThan` 时，当资金高于该值时触发。"
+
+msgid "If both are set, they define a range condition:"
+msgstr "同时设置时为区间条件："
+
+msgid "If `PlayerMoneyLessThan < PlayerMoneyMoreThan`: triggers when money is **outside the range**."
+msgstr "当 `PlayerMoneyLessThan < PlayerMoneyMoreThan` 时：资金处于**区间内**时触发。"
+
+msgid "If `PlayerMoneyLessThan >= PlayerMoneyMoreThan`: triggers when money is **inside the range**."
+msgstr "当 `PlayerMoneyLessThan >= PlayerMoneyMoreThan` 时：资金处于**区间外**时触发。"
+
 msgid "The auto-death behavior can be chosen from the following:"
 msgstr "自毁行为有以下选择："
 
