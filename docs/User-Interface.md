@@ -72,6 +72,17 @@ HealthBar.Permanent=false            ; boolean
 HealthBar.Permanent.PipScale=false   ; boolean
 ```
 
+### Customize the step limit of the credits indicator
+
+- In vanilla, the Credits Indicator in the sidebar increases by at most 143 points per frame, and now you can customize this limit.
+  - If set to a value less than or equal to 0, it will continue to execute the vanilla behavior (limited to 143).
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+CreditsIndicator.MaxStep=143  ; integer
+```
+
 ### Digital display
 
 ![image](_static/images/digital_display_shapes.png)

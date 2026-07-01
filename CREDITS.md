@@ -691,6 +691,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true`
   - Allow infantry to perform type conversion when deploying and undeploying
   - Custom cruise missiles
+  - Customize the step limit of the credits indicator
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

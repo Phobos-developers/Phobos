@@ -62,6 +62,7 @@ public:
 		static int SuperWeaponSidebar_CameoHeight;
 		static int SuperWeaponSidebar_Max;
 		static int SuperWeaponSidebar_MaxColumns;
+		static int CreditsIndicator_MaxStep;
 		static bool WeedsCounter_Show;
 		static bool AnchoredToolTips;
 

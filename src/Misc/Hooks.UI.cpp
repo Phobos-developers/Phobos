@@ -75,6 +75,20 @@ DEFINE_HOOK(0x641EE0, PreviewClass_ReadPreview, 0x6)
 	return 0x64203D;
 }
 
+DEFINE_HOOK(0x4A2729, CreditClass_AI_CreditsStepClamp, 0x5)
+{
+    int maxStep = Phobos::UI::CreditsIndicator_MaxStep;
+    if (maxStep < 1)
+        return 0;
+
+    int current = R->EAX();
+    if (current > maxStep)
+        current = maxStep;
+    R->EAX(current);
+
+    return 0x4A2735;
+}
+
 DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 {
 	auto const pPlayer = HouseClass::CurrentPlayer;
