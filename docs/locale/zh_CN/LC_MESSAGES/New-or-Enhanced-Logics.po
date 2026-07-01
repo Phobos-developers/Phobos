@@ -4425,8 +4425,8 @@ msgstr "`Technos(Dont)Exist.AllowLimboed` 控制是否计入虚拟的科技类�
 msgid "`Technos(Dont)Exist.Houses` controls which houses are checked."
 msgstr "`Technos(Dont)Exist.Houses` 控制检查哪些所属方。"
 
-msgid "`PlayerPower`: The object will die if its owner's power status matches the configured state."
-msgstr "`PlayerPower`：当对象所属方的电力状态符合设定条件时，则对象死亡。"
+msgid "`PlayerPowerStatus`: The object will die if its owner's power status matches the configured state."
+msgstr "`PlayerPowerStatus`：当对象所属方的电力状态符合设定条件时，则对象死亡。"
 
 msgid "`low` / `consumer`: Trigger when the owner is in low power."
 msgstr "`low` / `consumer`：当对象所属方处于电力不足状态时触发。"
