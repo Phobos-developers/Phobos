@@ -1924,7 +1924,7 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
     - `Technos(Dont)Exist.Any` controls whether or not a single listed TechnoType is enough to satisfy the requirement or if all are required.
     - `Technos(Dont)Exist.AllowLimboed` controls whether or not limboed TechnoTypes (f.ex those in transports) are counted.
     - `Technos(Dont)Exist.Houses` controls which houses are checked.
-  - `PlayerPower`: The object will die if its owner's power status matches the configured state.
+  - `PlayerPowerStatus`: The object will die if its owner's power status matches the configured state.
     - `low` / `consumer`: Trigger when the owner is in low power.
     - `normal`: Trigger when the owner is not in low power.
   - `PlayerMoneyLessThan` / `PlayerMoneyMoreThan`: The object will die based on the owner's available credits.
