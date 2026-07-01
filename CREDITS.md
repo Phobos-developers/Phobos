@@ -815,6 +815,7 @@ This page lists all the individual contributions to the project by their author.
   - Framework for dynamic sight
   - Fix voxel projectile and animation lighting issues
   - Export interface for external call
+  - Allow chat box in singleplayer
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
