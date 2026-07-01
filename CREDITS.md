@@ -691,6 +691,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true`
   - Allow infantry to perform type conversion when deploying and undeploying
   - Custom cruise missiles
+  - Add a toggle for disabling `SecondaryFire` / `SecondaryProne` on water
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
