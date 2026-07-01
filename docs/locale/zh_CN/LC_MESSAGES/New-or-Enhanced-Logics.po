@@ -4446,11 +4446,11 @@ msgstr "仅设置 `PlayerMoneyMoreThan` 时，当资金高于该值时触发。"
 msgid "If both are set, they define a range condition:"
 msgstr "同时设置时为区间条件："
 
-msgid "If `PlayerMoneyLessThan < PlayerMoneyMoreThan`: triggers when money is **outside the range**."
-msgstr "当 `PlayerMoneyLessThan < PlayerMoneyMoreThan` 时：资金处于**区间内**时触发。"
+msgid "If `PlayerMoneyLessThan > PlayerMoneyMoreThan`: triggers when money is **outside the range**."
+msgstr "当 `PlayerMoneyLessThan > PlayerMoneyMoreThan` 时：资金处于**区间内**时触发。"
 
-msgid "If `PlayerMoneyLessThan >= PlayerMoneyMoreThan`: triggers when money is **inside the range**."
-msgstr "当 `PlayerMoneyLessThan >= PlayerMoneyMoreThan` 时：资金处于**区间外**时触发。"
+msgid "If `PlayerMoneyLessThan <= PlayerMoneyMoreThan`: triggers when money is **inside the range**."
+msgstr "当 `PlayerMoneyLessThan <= PlayerMoneyMoreThan` 时：资金处于**区间外**时触发。"
 
 msgid "The auto-death behavior can be chosen from the following:"
 msgstr "自毁行为有以下选择："

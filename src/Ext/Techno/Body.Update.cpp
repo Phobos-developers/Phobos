@@ -353,19 +353,15 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 
 		if (lessThan != -1 && moreThan != -1)
 		{
-			if (lessThan < moreThan)
+			if (lessThan > moreThan)
 				shouldDie = (money < lessThan && money > moreThan);
 			else
 				shouldDie = (money < lessThan || money > moreThan);
 		}
 		else if (lessThan != -1)
-		{
 			shouldDie = (money < lessThan);
-		}
 		else
-		{
 			shouldDie = (money > moreThan);
-		}
 
 		if (shouldDie)
 		{

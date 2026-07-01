@@ -1931,8 +1931,8 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
     - If only `PlayerMoneyLessThan` is set, triggers when money is below this value.
     - If only `PlayerMoneyMoreThan` is set, triggers when money is above this value.
     - If both are set, they define a range condition:
-      - If `PlayerMoneyLessThan < PlayerMoneyMoreThan`: triggers when money is **inside the range**.
-      - If `PlayerMoneyLessThan >= PlayerMoneyMoreThan`: triggers when money is **outside the range**.
+      - If `PlayerMoneyLessThan > PlayerMoneyMoreThan`: triggers when money is **inside the range**.
+      - If `PlayerMoneyLessThan <= PlayerMoneyMoreThan`: triggers when money is **outside the range**.
 
 - The auto-death behavior can be chosen from the following:
   - `kill`: The object will be destroyed normally.
