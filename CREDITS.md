@@ -689,6 +689,8 @@ This page lists all the individual contributions to the project by their author.
   - Customize whether technos with `Locomotor=Fly` wobble
   - Customize the landing animation of technos that have `Locomotor=Fly`
   - Allow infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true`
+  - Allow infantry to perform type conversion when deploying and undeploying
+  - Custom cruise missiles
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -813,6 +815,7 @@ This page lists all the individual contributions to the project by their author.
   - Framework for dynamic sight
   - Fix voxel projectile and animation lighting issues
   - Export interface for external call
+  - Allow chat box in singleplayer
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
