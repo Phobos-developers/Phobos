@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-29 21:22+0800\n"
+"POT-Creation-Date: 2026-07-02 17:54+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2760,6 +2760,9 @@ msgstr "修复了 Voxel 抛射体和动画的光照问题"
 msgid "Export interface for external call"
 msgstr "用于外部调用的导出接口"
 
+msgid "Allow chat box in singleplayer"
+msgstr "允许在单人模式使用聊天框"
+
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
 
@@ -2777,6 +2780,9 @@ msgstr "为 AE 系统添加目标过滤选项"
 
 msgid "Add veterancy-based target filtering for weapons and warheads"
 msgstr "为武器和弹头添加基于经验等级的目标过滤"
+
+msgid "Recipient-specific message and EVA on superweapon activation"
+msgstr ""
 
 msgid "**tyuah8**:"
 msgstr "**tyuah8**："

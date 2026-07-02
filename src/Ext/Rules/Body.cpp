@@ -445,6 +445,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->BunkerStateUpdateDelay.Read(exINI, GameStrings::General, "BunkerStateUpdateDelay");
 
+	this->AllowChatBoxInSinglePlayer.Read(exINI, GameStrings::General, "AllowChatBoxInSinglePlayer");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -790,6 +792,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->TeamDelays_Count)
 		.Process(this->BerzerkMission)
 		.Process(this->BunkerStateUpdateDelay)
+		.Process(this->AllowChatBoxInSinglePlayer)
 		;
 }
 

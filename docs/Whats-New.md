@@ -598,6 +598,8 @@ HideShakeEffects=false           ; boolean
 - [Customizable Berzerk mission](Fixed-or-Improved-Logics.md#enhanced-berzerk-behavior) (by TaranDahl)
 - [Tank Bunker foundation and state update delay improvements](Fixed-or-Improved-Logics.md#tank-bunker-improvements) (by Starkku)
 - [Custom cruise missiles](New-or-Enhanced-Logics.md#custom-cruise-missiles) (by Noble_Fish)
+- [Allow chat box in singleplayer](User-Interface.md#allow-chat-box-in-singleplayer) (by TaranDahl)
+- [Firer-only message and EVA on superweapon activated](New-or-Enhanced-Logics.md#recipient-specific-message-and-eva-on-superweapon-activation) (by Flactine)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

@@ -37,6 +37,10 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 	if (static_cast<int>(pType->Type) == 28 && !pTypeExt->EMPulse_TargetSelf) // Ares' Type=EMPulse SW
 		pTypeExt->HandleEMPulseLaunch(pSW, cell);
 
+	pTypeExt->ApplyActivatedMessage(pSW);
+
+	pTypeExt->ApplyActivatedEva(pSW);
+
 	auto& sw_ext = HouseExt::ExtMap.Find(pHouse)->SuperExts[pType->ArrayIndex];
 	sw_ext.ShotCount++;
 
@@ -482,4 +486,41 @@ void SWTypeExt::ExtData::ApplyLinkedSW(SuperClass* pSW)
 
 		MessageListClass::Instance.PrintMessage(this->Message_LinkedSWAcquired.Get(), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
 	}
+}
+
+void SWTypeExt::ExtData::ApplyActivatedMessage(SuperClass* pSW) const
+{
+	const auto pHouse = pSW->Owner;
+
+	const auto pMessage = pHouse->IsControlledByCurrentPlayer()
+		? &this->Message_Activated_Owner
+		: (pHouse->IsAlliedWith(HouseClass::CurrentPlayer)
+			? &this->Message_Activated_Allies
+			: &this->Message_Activated_Enemies);
+
+	if (pMessage->Get().empty())
+		return;
+		
+	MessageListClass::Instance.PrintMessage(
+		pMessage->Get(),
+		RulesClass::Instance->MessageDelay,
+		pHouse->ColorSchemeIndex,
+		true
+	);
+}
+
+void SWTypeExt::ExtData::ApplyActivatedEva(SuperClass* pSW) const
+{
+	const auto pHouse = pSW->Owner;
+
+	const auto pEva = pHouse->IsControlledByCurrentPlayer()
+		? &this->EVA_Activated_Owner
+		: (pHouse->IsAlliedWith(HouseClass::CurrentPlayer)
+			? &this->EVA_Activated_Allies
+			: &this->EVA_Activated_Enemies);
+
+	if (pEva->Get() == -1)
+		return;
+
+	VoxClass::PlayIndex(pEva->Get(), -1, -1);
 }
