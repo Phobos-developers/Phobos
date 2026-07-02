@@ -447,6 +447,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->AllowChatBoxInSinglePlayer.Read(exINI, GameStrings::General, "AllowChatBoxInSinglePlayer");
 
+	this->SecondaryFireSequenceLandOnly.Read(exINI, GameStrings::General, "SecondaryFireSequenceLandOnly");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -793,6 +795,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->BerzerkMission)
 		.Process(this->BunkerStateUpdateDelay)
 		.Process(this->AllowChatBoxInSinglePlayer)
+		.Process(this->SecondaryFireSequenceLandOnly)
 		;
 }
 

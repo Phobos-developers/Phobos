@@ -378,6 +378,8 @@ public:
 
 		Valueable<bool> AllowChatBoxInSinglePlayer;
 
+		Valueable<bool> SecondaryFireSequenceLandOnly;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -694,6 +696,8 @@ public:
 			, BunkerStateUpdateDelay { 15 }
 				
 			, AllowChatBoxInSinglePlayer { false }
+
+			, SecondaryFireSequenceLandOnly { true }
 		{ }
 
 		virtual ~ExtData() = default;
