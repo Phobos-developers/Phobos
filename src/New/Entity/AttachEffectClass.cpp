@@ -1,6 +1,15 @@
 #include "AttachEffectClass.h"
 
+#include <algorithm>
+
+#include <New/PeriodicWeaponTargeting.h>
+
+#include <Utilities/Debug.h>
+#include <Utilities/Helpers.Alex.h>
+
 #include <Ext/Anim/Body.h>
+#include <Ext/Bullet/Body.h>
+#include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
@@ -11,6 +20,7 @@ AttachEffectClass::AttachEffectClass()
 	Source { nullptr }, DurationOverride { 0 }, Delay { 0 }, InitialDelay { 0 }, RecreationDelay { -1 }
 	, Duration { 0 }
 	, CurrentDelay { 0 }
+	, PeriodicWeaponTimer { 0 }
 	, NeedsDurationRefresh { false }
 	, HasCumulativeAnim { false }
 	, ShouldBeDiscarded { false }
@@ -42,6 +52,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, NeedsRecalculateStat { false }
 	, LastDiscardCheckFrame { -1 }
 	, LastDiscardCheckValue { false }
+	, PeriodicWeaponTimer { pType->PeriodicWeapon_InitialDelay > 0 ? pType->PeriodicWeapon_InitialDelay : pType->PeriodicWeapon_Delay }
 {
 	this->HasInitialized = false;
 
@@ -257,6 +268,20 @@ void AttachEffectClass::AI()
 	this->CloakCheck();
 	this->OnlineCheck();
 	this->AnimCheck();
+
+	// --- Periodic Weapon Logic ---
+	if (pType->PeriodicWeapon && pType->PeriodicWeapon_Delay > 0)
+	{
+		this->PeriodicWeaponTimer--;
+
+		if (this->PeriodicWeaponTimer <= 0)
+		{
+			this->PeriodicWeaponTimer = pType->PeriodicWeapon_Delay;
+			this->FirePeriodicWeapon();
+		}
+	}
+
+
 }
 
 void AttachEffectClass::AI_Temporal()
@@ -612,6 +637,148 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 
 	this->LastDiscardCheckValue = false;
 	return false;
+}
+void AttachEffectClass::FirePeriodicWeapon()
+{
+	auto const pType = this->Type;
+	auto const pWeapon = pType->PeriodicWeapon;
+
+	if (!pWeapon)
+		return;
+
+	auto const pBulletType = pWeapon->Projectile;
+
+	if (!pBulletType)
+		return;
+
+	auto const pTechno = this->Techno;
+
+	if (!pTechno || pTechno->InLimbo || pTechno->IsImmobilized)
+		return;
+
+	const bool useInvoker = pType->PeriodicWeapon_UseInvokerAsOwner;
+
+	TechnoClass* pFirer = useInvoker && this->Invoker
+		? this->Invoker
+		: pTechno;
+
+	HouseClass* pFirerHouse = useInvoker && this->InvokerHouse
+		? this->InvokerHouse
+		: pTechno->Owner;
+
+	const int searchRange = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer);
+
+	if (!searchRange)
+		return;
+
+	const bool targetSelf = pType->PeriodicWeapon_TargetSelf;
+	const bool useWeaponTargeting = true;
+	const auto firePos = pTechno->Location;
+
+	std::vector<std::pair<TechnoClass*, int>> validTargets;
+
+	auto tryAddTarget = [&](TechnoClass* pTarget)
+	{
+		if (!pTarget || pTarget->InLimbo)
+			return;
+
+		if (!targetSelf && pTarget == pTechno)
+			return;
+
+		if (!pTarget->IsInPlayfield || !pTarget->IsOnMap || !pTarget->IsAlive || pTarget->Health <= 0)
+			return;
+
+		if (searchRange != -512)
+		{
+			const int dist = pTarget->DistanceFrom(pTechno);
+
+			if (dist > searchRange)
+				return;
+		}
+
+		if (!WeaponTypeExt::IsTargetInWeaponRange(pTechno, pTarget, pWeapon))
+			return;
+
+		if (!BulletTypeExt::IsAllowedTarget(pBulletType, pTarget, useWeaponTargeting, pFirer))
+			return;
+
+		if (!WeaponTypeExt::IsAllowedTarget(pWeapon, pTarget, useWeaponTargeting, pFirer, pFirerHouse))
+			return;
+
+		validTargets.emplace_back(pTarget, pTarget->DistanceFrom(pTechno));
+	};
+
+	if (searchRange == -512)
+	{
+		for (auto const pTarget : TechnoClass::Array)
+			tryAddTarget(pTarget);
+	}
+	else
+	{
+		const double cellSpread = static_cast<double>(searchRange) / Unsorted::LeptonsPerCell;
+		auto const& technos = Helpers::Alex::getCellSpreadItems(firePos, cellSpread, true);
+
+		for (auto const pTarget : technos)
+			tryAddTarget(pTarget);
+	}
+
+	if (validTargets.empty())
+		return;
+
+	std::sort(validTargets.begin(), validTargets.end(),
+		[](const auto& a, const auto& b) { return a.second < b.second; });
+
+	const int damage = static_cast<int>(pWeapon->Damage * TechnoExt::GetCurrentFirepowerMultiplier(pFirer));
+
+	auto const fireAt = [&](TechnoClass* pTarget)
+	{
+		BulletClass* pBullet = pBulletType->CreateBullet(
+			pTarget, pFirer, damage, pWeapon->Warhead,
+			static_cast<int>(pWeapon->Speed), pWeapon->Bright);
+
+		if (!pBullet)
+			return;
+
+		pBullet->Owner = pFirer;
+		auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+		pBulletExt->FirerHouse = pFirerHouse;
+		BulletExt::SimulatedFiringUnlimbo(pBullet, pFirerHouse, pWeapon, firePos, false);
+		BulletExt::SimulatedFiringEffects(pBullet, pFirerHouse, pFirer, true, true);
+	};
+
+	switch (pType->PeriodicWeapon_TargetingMode)
+	{
+	case PeriodicWeaponTargetingMode::All:
+		for (auto const& [pTarget, _] : validTargets)
+			fireAt(pTarget);
+		break;
+
+	case PeriodicWeaponTargetingMode::Closest:
+		fireAt(validTargets.front().first);
+		break;
+
+	case PeriodicWeaponTargetingMode::Custom:
+		if (auto const pCallback = PeriodicWeaponTargeting::Find(pType->PeriodicWeapon_TargetingModeCustom.c_str()))
+		{
+			const PeriodicWeaponTargetingParams params {
+				this, pTechno, pWeapon, pFirer, pFirerHouse, &validTargets
+			};
+			const auto selected = pCallback(params);
+
+			for (auto const pTarget : selected)
+			{
+				if (pTarget)
+					fireAt(pTarget);
+			}
+		}
+		else
+		{
+			Debug::Log("[AttachEffect] Unregistered PeriodicWeapon.TargetingMode '%s' on [%s].\n",
+				pType->PeriodicWeapon_TargetingModeCustom.c_str(), pType->Name.data());
+		}
+
+		break;
+	}
 }
 
 #pragma region StaticFunctions_AttachDetachTransfer
@@ -1090,6 +1257,7 @@ bool AttachEffectClass::Serialize(T& Stm)
 		.Process(this->HasCumulativeAnim)
 		.Process(this->ShouldBeDiscarded)
 		.Process(this->LastActiveStat)
+		.Process(this->PeriodicWeaponTimer)
 		.Process(this->LaserTrail)
 		.Process(this->NeedsRecalculateStat)
 		.Success();

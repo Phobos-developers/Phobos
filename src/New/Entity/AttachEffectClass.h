@@ -63,6 +63,9 @@ private:
 	void OnlineCheck();
 	void CloakCheck();
 	void AnimCheck();
+	void FirePeriodicWeapon();
+	void LaunchPeriodicBullet(TechnoClass* pFirer, HouseClass* pFirerHouse,
+		WeaponTypeClass* pWeapon, TechnoClass* pTarget, CoordStruct firePos);
 
 	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, TechnoTypeClass* pTargetType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
 		AbstractClass* pSource, AEAttachParams const& attachInfo, bool checkCumulative = true);
@@ -95,6 +98,7 @@ private:
 	int LastDiscardCheckFrame;
 	bool LastDiscardCheckValue;
 	bool LastActiveStat;
+	int PeriodicWeaponTimer;  // periodic weapon fire timer
 	LaserTrailClass* LaserTrail;
 
 public:

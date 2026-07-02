@@ -248,6 +248,7 @@
     <!-- src\New\Entity -->
     <ClCompile Include="src\New\Entity\Ares\RadarJammerClass.cpp" />
     <ClCompile Include="src\New\Entity\AttachEffectClass.cpp" />
+    <ClCompile Include="src\New\PeriodicWeaponTargeting.cpp" />
     <ClCompile Include="src\New\Entity\BannerClass.cpp" />
     <ClCompile Include="src\New\Entity\LaserTrailClass.cpp" />
     <ClCompile Include="src\New\Entity\ShieldClass.cpp" />
@@ -372,6 +373,7 @@
     <!-- src\New\Entity -->
     <ClInclude Include="src\New\Entity\Ares\RadarJammerClass.h" />
     <ClInclude Include="src\New\Entity\AttachEffectClass.h" />
+    <ClInclude Include="src\New\PeriodicWeaponTargeting.h" />
     <ClInclude Include="src\New\Entity\BannerClass.h" />
     <ClInclude Include="src\New\Entity\LaserTrailClass.h" />
     <ClInclude Include="src\New\Entity\ShieldClass.h" />

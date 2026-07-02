@@ -19,6 +19,41 @@ BulletTypeClass* BulletTypeExt::GetDefaultBulletType()
 	return GameCreate<BulletTypeClass>(NONE_STR);
 }
 
+bool BulletTypeExt::IsAllowedTarget(BulletTypeClass* pProjectile, TechnoClass* pTarget, bool useWeaponTargeting, TechnoClass* pFirer)
+{
+	if (!pProjectile || !pTarget)
+		return false;
+
+	if (!useWeaponTargeting)
+		return pProjectile->AA || !pTarget->IsInAir();
+
+	const bool inAir = pTarget->IsInAir();
+
+	if (inAir)
+	{
+		if (!pProjectile->AA)
+			return false;
+	}
+	else
+	{
+		auto const pProjectileExt = BulletTypeExt::ExtMap.Find(pProjectile);
+
+		if (pFirer && pFirer->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK
+			&& pProjectile->AA && pProjectileExt->AAOnly)
+		{
+			return false;
+		}
+
+		if (!pProjectile->AG)
+			return false;
+	}
+
+	if (pTarget->InWhichLayer() == Layer::Underground && !BulletTypeExt::ExtMap.Find(pProjectile)->AU)
+		return false;
+
+	return true;
+}
+
 // =============================
 // load / save
 

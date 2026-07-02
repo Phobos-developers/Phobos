@@ -921,6 +921,12 @@ msgid "[Parabombs](New-or-Enhanced-Logics.md#parabombs) (by Starkku & TaranDahl)
 msgstr "[伞降炸弹](New-or-Enhanced-Logics.md#parabombs)（by Starkku 与 TaranDahl）"
 
 msgid ""
+"[Periodic weapon on attached effects](New-or-Enhanced-Logics.md#attached-"
+"effects)"
+msgstr ""
+"[附加效果周期性武器](New-or-Enhanced-Logics.md#attached-effects)"
+
+msgid ""
 "[Sinkablity and sinking speed customization](Fixed-or-Improved-Logics.md"
 "#sinking-behavior-dehardcode) (by TaranDahl)"
 msgstr ""
@@ -1484,6 +1490,11 @@ msgid ""
 "[Added Target Filtering Options to AttachEffect System](New-or-Enhanced-"
 "Logics.md#attached-effects) (by Flactine)"
 msgstr "[为 AE 系统添加目标过滤选项](New-or-Enhanced-Logics.md#attached-effects)（by Flactine）"
+
+msgid ""
+"[Periodic weapon for attached effects](New-or-Enhanced-Logics.md#attached-"
+"effects) (by AGAGUGUG)"
+msgstr "[AE 周期性武器](New-or-Enhanced-Logics.md#attached-effects)（by AGAGUGUG）"
 
 msgid ""
 "[Customize type selection for IFV](Fixed-or-Improved-Logics.md#customize-"

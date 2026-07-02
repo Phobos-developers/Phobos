@@ -168,4 +168,5 @@ public:
 
 	static double GetAdjustedGravity(BulletTypeClass* pType);
 	static BulletTypeClass* GetDefaultBulletType();
+	static bool IsAllowedTarget(BulletTypeClass* pProjectile, TechnoClass* pTarget, bool useWeaponTargeting, TechnoClass* pFirer = nullptr);
 };

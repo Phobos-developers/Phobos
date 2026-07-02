@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/TechnoType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 // Ares reimplements the bullet obstacle logic so need to get creative to add any new functionality for that in Phobos.
@@ -122,6 +123,38 @@ public:
 	}
 };
 
+bool WeaponTypeExt::CheckInRangeObstacle(TechnoClass* pTechno, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
+{
+	if (!pTechno || !pTarget || !pWeapon || !pWeapon->Projectile)
+		return false;
+
+	const auto sourceCoords = pTechno->Location;
+	const auto targetCoords = pTarget->GetCoords();
+	bool subjectToGround = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->SubjectToGround.Get();
+	const auto newSourceCoords = subjectToGround
+		? BulletObstacleHelper::AddFLHToSourceCoords(sourceCoords, targetCoords, pTechno, pTarget, pWeapon, subjectToGround)
+		: sourceCoords;
+
+	if (BulletObstacleHelper::FindFirstImpenetrableObstacle(newSourceCoords, targetCoords, pTechno, pTarget, pTechno->Owner, pWeapon, true, subjectToGround))
+		return true;
+
+	if (pTechno->SpawnManager && (pTechno->AbstractFlags & AbstractFlags::Foot) && !pTechno->IsInAir())
+	{
+		const auto coords = pTechno->Location;
+		pTechno->Location = newSourceCoords;
+
+		const bool blocked = reinterpret_cast<bool(__thiscall*)(const TechnoClass*)>(0x703B10)(pTechno)
+			&& MapClass::Instance.GetCellAt(newSourceCoords);
+
+		pTechno->Location = coords;
+
+		if (blocked)
+			return true;
+	}
+
+	return false;
+}
+
 // Hooks
 
 DEFINE_HOOK(0x4688A9, BulletClass_Unlimbo_Obstacles, 0x6)
@@ -211,10 +244,7 @@ DEFINE_HOOK(0x6F737F, TechnoClass_InRange_WeaponMinimumRange, 0x6)
 
 	const auto pTechno = InRangeTemp::Techno;
 
-	if (const auto keepRange = WeaponTypeExt::GetTechnoKeepRange(pWeapon, pTechno, true))
-		R->ECX(keepRange);
-	else
-		return 0;
+	R->ECX(WeaponTypeExt::EvaluateInRangeMinimumRange(pWeapon, pTechno));
 
 	return SkipGameCode;
 }

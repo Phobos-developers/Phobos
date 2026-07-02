@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
 

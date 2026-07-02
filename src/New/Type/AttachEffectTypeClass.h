@@ -3,9 +3,14 @@
 #include <set>
 #include <unordered_map>
 
+#include <string>
+
+#include <New/PeriodicWeaponTargeting.h>
 #include <Utilities/Enumerable.h>
 #include <Utilities/TemplateDef.h>
 #include "LaserTrailTypeClass.h"
+
+class INI_EX;
 
 // AE discard condition
 enum class DiscardCondition : unsigned char
@@ -67,6 +72,13 @@ public:
 	Valueable<ExpireWeaponCondition> ExpireWeapon_TriggerOn;
 	Valueable<bool> ExpireWeapon_CumulativeOnlyOnce;
 	Valueable<bool> ExpireWeapon_UseInvokerAsOwner;
+	Valueable<WeaponTypeClass*> PeriodicWeapon;
+	Valueable<bool> PeriodicWeapon_UseInvokerAsOwner;
+	Valueable<int> PeriodicWeapon_Delay;
+	Valueable<int> PeriodicWeapon_InitialDelay;
+	PeriodicWeaponTargetingMode PeriodicWeapon_TargetingMode;
+	std::string PeriodicWeapon_TargetingModeCustom;
+	Valueable<bool> PeriodicWeapon_TargetSelf;
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
@@ -131,6 +143,13 @@ public:
 		, ExpireWeapon_TriggerOn { ExpireWeaponCondition::Expire }
 		, ExpireWeapon_CumulativeOnlyOnce { false }
 		, ExpireWeapon_UseInvokerAsOwner { false }
+		, PeriodicWeapon {}
+		, PeriodicWeapon_UseInvokerAsOwner { false }
+		, PeriodicWeapon_Delay { 0 }
+		, PeriodicWeapon_InitialDelay { 0 }
+		, PeriodicWeapon_TargetingMode { PeriodicWeaponTargetingMode::Closest }
+		, PeriodicWeapon_TargetingModeCustom {}
+		, PeriodicWeapon_TargetSelf { false }
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
 		, Tint_VisibleToHouses { AffectedHouse::All }
@@ -202,6 +221,7 @@ private:
 	template <typename T>
 	void Serialize(T& Stm);
 	void AddToGroupsMap();
+	static void ReadPeriodicWeaponTargetingMode(INI_EX& parser, const char* pSection, PeriodicWeaponTargetingMode& mode, std::string& customName);
 };
 
 // Container for AttachEffect attachment for an individual effect passed to AE attach function.

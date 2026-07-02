@@ -2,6 +2,7 @@
 
 #include <Ext/Anim/Body.h>
 #include <Ext/CaptureManager/Body.h>
+#include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Utilities/Helpers.Alex.h>
@@ -595,65 +596,6 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 
 #pragma region Airburst
 
-static bool IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, WeaponTypeClass* pWeapon, TechnoClass* pTarget, bool useWeaponTargeting)
-{
-	auto const pWH = pWeapon->Warhead;
-
-	if (useWeaponTargeting)
-	{
-		auto const pType = pTarget->GetTechnoType();
-
-		if (!pType->LegalTarget || GeneralUtils::GetWarheadVersusArmor(pWH, pTarget, pType) == 0.0)
-			return false;
-
-		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-
-		if (pWeaponExt->SkipWeaponPicking)
-			return true;
-
-		if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTarget->Owner)
-			|| !EnumFunctions::IsCellEligible(pTarget->GetCell(), pWeaponExt->CanTarget, true, true)
-			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget)
-			|| !pWeaponExt->IsHealthInThreshold(pTarget)
-			|| !pWeaponExt->IsVeterancyInThreshold(pTarget))
-		{
-			return false;
-		}
-
-		if (!pWeaponExt->HasRequiredAttachedEffects(pTarget, pSource))
-			return false;
-	}
-	else
-	{
-		if (!WarheadTypeExt::ExtMap.Find(pWH)->CanTargetHouse(pOwner, pTarget))
-			return false;
-	}
-
-	return true;
-}
-
-static bool SplitsProjectileCheck(BulletTypeClass* pProjectile, WeaponTypeClass* pWeapon, TechnoClass* pTarget, bool useWeaponTargeting)
-{
-	if (!useWeaponTargeting)
-		return pProjectile->AA || !pTarget->IsInAir();
-
-	auto const pType = pWeapon->Projectile;
-	bool inAir = pTarget->IsInAir();
-
-	if (!pType->AA && inAir)
-		return false;
-
-	if (pType->AA && !inAir)
-	{
-		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pType);
-
-		if (pTypeExt->AAOnly)
-			return false;
-	}
-
-	return true;
-}
-
 // Disable Ares' Airburst implementation.
 DEFINE_PATCH(0x469EBA, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90);
 
@@ -774,8 +716,10 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 				if (pTechno->IsInPlayfield && pTechno->IsOnMap && pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo
 					&& (retargetSelf || pTechno != pSource))
 				{
-					if (SplitsProjectileCheck(pType, pWeapon, pTechno, useWeaponTargeting) &&
-						IsAllowedSplitsTarget(pSource, pOwner, pWeapon, pTechno, useWeaponTargeting))
+					auto const pProjectile = useWeaponTargeting ? pWeapon->Projectile : pType;
+
+					if (BulletTypeExt::IsAllowedTarget(pProjectile, pTechno, useWeaponTargeting, pSource) &&
+						WeaponTypeExt::IsAllowedTarget(pWeapon, pTechno, useWeaponTargeting, pSource, pOwner))
 					{
 						targets.AddItem(pTechno);
 					}
