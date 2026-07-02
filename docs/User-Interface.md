@@ -30,6 +30,16 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 
 ## Battle screen UI/UX
 
+### Allow chat box in singleplayer
+
+- In vanilla, the in-game chat box is disabled in singleplayer scenarios. You can now enable it by setting `[General] -> AllowChatBoxInSinglePlayer` to true.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AllowChatBoxInSinglePlayer=false  ; boolean
+```
+
 ### Allow draw SuperWeapon timer as percentage
 
 - Superweapon cd timer can now draw as percentage.

@@ -294,10 +294,6 @@ inline bool Parser<float>::TryParse(const char* pValue, OutType* outValue)
 	{
 		float floatValue = static_cast<float>(buffer);
 
-		if (strchr(pValue, '%'))
-		{
-			floatValue *= 0.01f;
-		}
 		if (outValue)
 		{
 			*outValue = floatValue;
