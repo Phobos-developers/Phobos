@@ -3017,32 +3017,32 @@ msgstr ""
 
 msgid "Recipient-specific message and EVA on superweapon activation"
 msgstr ""
+"针对特定接收者的超武激活消息与 EVA 语音"
 
 msgid ""
 "Superweapons can now display messages and play EVA voices for specific "
 "recipient groups when activated."
 msgstr ""
+"超级武器现在可以在激活时仅向特定接收者显示消息并播放 EVA 事件。"
 
 msgid ""
 "`Message.Activated.Owner` and `EVA.Activated.Owner` are shown / played "
 "only for the player who activates the superweapon."
 msgstr ""
+"`Message.Activated.Owner` 和 `EVA.Activated.Owner` 用于显示／播放给激活超武的玩家自己。"
 
 msgid ""
 "`Message.Activated.Allies` and `EVA.Activated.Allies` are shown / played "
 "only for allies of the player who activates the superweapon, excluding "
 "the activating player."
 msgstr ""
+"`Message.Activated.Allies` 和 `EVA.Activated.Allies` 用于显示／播放给激活超武玩家的盟友，不包括该玩家。"
 
 msgid ""
 "`Message.Activated.Enemies` and `EVA.Activated.Enemies` are shown / "
 "played only for enemies of the player who activates the superweapon."
 msgstr ""
-
-msgid ""
-"Unlike `Message.Activated` and `EVA.Activated`, these are not broadcast "
-"to all players."
-msgstr ""
+"`Message.Activated.Enemies` 和 `EVA.Activated.Enemies` 用于显示／播放给激活超武玩家的敌人。"
 
 msgid "LimboDelivery"
 msgstr "虚拟投放"

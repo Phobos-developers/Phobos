@@ -1212,26 +1212,6 @@ EMPulse.SuspendOthers=false  ; boolean
 `Type=EMPulse` superweapon and any associated keys are [Ares features](https://ares-developers.github.io/Ares-docs/new/superweapons/types/empulse.html).
 ```
 
-### Recipient-specific message and EVA on superweapon activation
-
-- Superweapons can now display messages and play EVA voices for specific recipient groups when activated.
-  - `Message.Activated.Owner` and `EVA.Activated.Owner` are shown / played only for the player who activates the superweapon.
-  - `Message.Activated.Allies` and `EVA.Activated.Allies` are shown / played only for allies of the player who activates the superweapon, excluding the activating player.
-  - `Message.Activated.Enemies` and `EVA.Activated.Enemies` are shown / played only for enemies of the player who activates the superweapon.
-  - Unlike `Message.Activated` and `EVA.Activated`, these are not broadcast to all players.
-
-In `rulesmd.ini`:
-```ini
-[SOMESW]                        ; SuperWeaponType
-Message.Activated.Owner=        ; CSF entry key
-Message.Activated.Allies=       ; CSF entry key
-Message.Activated.Enemies=      ; CSF entry key
-
-EVA.Activated.Owner=            ; EVA entry
-EVA.Activated.Allies=           ; EVA entry
-EVA.Activated.Enemies=          ; EVA entry
-```
-
 ### LimboDelivery
 
 - Superweapons can now deliver off-map buildings that act as if they were on the field.
@@ -1326,6 +1306,25 @@ SW.Next.IgnoreInhibitors=false  ; boolean
 SW.Next.IgnoreDesignators=true  ; boolean
 SW.Next.RollChances=            ; List of percentages.
 SW.Next.RandomWeightsN=         ; List of integers.
+```
+
+### Recipient-specific message and EVA on superweapon activation
+
+- Superweapons can now display messages and play EVA voices for specific recipient groups when activated.
+  - `Message.Activated.Owner` and `EVA.Activated.Owner` are shown / played only for the player who activates the superweapon.
+  - `Message.Activated.Allies` and `EVA.Activated.Allies` are shown / played only for allies of the player who activates the superweapon, excluding the activating player.
+  - `Message.Activated.Enemies` and `EVA.Activated.Enemies` are shown / played only for enemies of the player who activates the superweapon.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]                        ; SuperWeaponType
+Message.Activated.Owner=        ; CSF entry key
+Message.Activated.Allies=       ; CSF entry key
+Message.Activated.Enemies=      ; CSF entry key
+
+EVA.Activated.Owner=            ; EVA entry
+EVA.Activated.Allies=           ; EVA entry
+EVA.Activated.Enemies=          ; EVA entry
 ```
 
 ### Warhead or Weapon detonation at target cell
