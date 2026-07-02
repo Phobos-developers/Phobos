@@ -3488,6 +3488,24 @@ msgstr ""
 "在《红色警戒2》中，由 AI "
 "控制的美国大兵在与敌人交战时会自动部署以使用火力更强的副武器。此特性在《尤里的复仇》中遭到破坏。现在你可以通过下面的开关语句重启这一特性。"
 
+msgid "Ensure infantry use correct firing sequences on water"
+msgstr "确保步兵在水上使用正确的开火序列"
+
+msgid ""
+"In Yuri's Revenge, the two new sequences `SecondaryFire` / "
+"`SecondaryProne` are used to control the sequences used when firing "
+"secondary weapons, but they not only affect land infantry, even water "
+"infantry are also affected by them."
+msgstr ""
+"在《尤里的复仇》中，两个新增的序列 `SecondaryFire` / `SecondaryProne` 用于控制副武器开火时所用的序列，但它们不仅生效于陆地步兵，哪怕是水中的步兵也会受其影响。"
+
+msgid ""
+"Now, the default behavior has been changed so that water infantry use the"
+" water attack sequence `WetAttack` for their secondary weapons. You can "
+"restore the vanilla behavior with the following flag."
+msgstr ""
+"现在，默认行为已改为水中步兵的副武使用水上通用攻击序列 `WetAttack`，你可以通过下面的语句还原原版行为。"
+
 msgid "Prone speed customization"
 msgstr "自定义匍匐速度"
 

@@ -2335,6 +2335,9 @@ msgstr "允许步兵在部署与反部署时执行类型转换"
 msgid "Custom cruise missiles"
 msgstr "自定义巡航导弹"
 
+msgid "Add a toggle for disabling `SecondaryFire` / `SecondaryProne` on water"
+msgstr "为水上禁用  `SecondaryFire` / `SecondaryProne` 添加开关"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 

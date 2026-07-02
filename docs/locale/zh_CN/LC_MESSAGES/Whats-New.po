@@ -2073,6 +2073,13 @@ msgstr ""
 "[针对特定接收者的超武激活消息和 EVA](New-or-Enhanced-Logics.md#recipient-specific-"
 "message-and-eva-on-superweapon-activation)（by Flactine）"
 
+msgid ""
+"[Add a toggle for disabling `SecondaryFire` / `SecondaryProne` on water"
+"](Fixed-or-Improved-Logics.md#ensure-infantry-use-correct-firing-"
+"sequences-on-water) (by Noble_Fish)"
+msgstr ""
+"[为水上禁用  `SecondaryFire` / `SecondaryProne` 添加开关](Fixed-or-Improved-Logics.md#ensure-infantry-use-correct-firing-sequences-on-water)（by Noble_Fish）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
