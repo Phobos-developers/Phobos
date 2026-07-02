@@ -448,6 +448,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AllowChatBoxInSinglePlayer.Read(exINI, GameStrings::General, "AllowChatBoxInSinglePlayer");
 
 	this->SecondaryFireSequenceLandOnly.Read(exINI, GameStrings::General, "SecondaryFireSequenceLandOnly");
+	this->AutoRemoveEarliestBeacon.Read(exINI, GameStrings::General, "AutoRemoveEarliestBeacon");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -796,6 +797,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->BunkerStateUpdateDelay)
 		.Process(this->AllowChatBoxInSinglePlayer)
 		.Process(this->SecondaryFireSequenceLandOnly)
+		.Process(this->AutoRemoveEarliestBeacon)
 		;
 }
 

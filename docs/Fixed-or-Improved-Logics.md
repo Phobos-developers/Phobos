@@ -399,6 +399,17 @@ In `rulesmd.ini`:
 AllowDeployControlledMCV=false   ; boolean
 ```
 
+### Auto-remove earliest beacon
+
+- In vanilla, each player can place up to 3 beacons. When all 3 beacon slots are occupied, attempting to place a new beacon does nothing. Now you can make the game automatically remove the earliest-placed beacon to free up a slot for the new one.
+  - `[General] -> AutoRemoveEarliestBeacon` controls this behavior.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AutoRemoveEarliestBeacon=no   ; boolean
+```
+
 ### Chrono sparkle animation customization & improvements
 
 - It is now possible to customize the frame delay between instances of `[General] -> ChronoSparkle1` animations created on objects being warped by setting `[General] -> ChronoSparkleDisplayDelay`.
