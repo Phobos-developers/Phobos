@@ -601,6 +601,7 @@ HideShakeEffects=false           ; boolean
 - [Allow chat box in singleplayer](User-Interface.md#allow-chat-box-in-singleplayer) (by TaranDahl)
 - [Firer-only message and EVA on superweapon activated](New-or-Enhanced-Logics.md#recipient-specific-message-and-eva-on-superweapon-activation) (by Flactine)
 - [Add a toggle for disabling `SecondaryFire` / `SecondaryProne` on water](Fixed-or-Improved-Logics.md#ensure-infantry-use-correct-firing-sequences-on-water) (by Noble_Fish)
+- [Allow beacon placement hotkey in single player](Fixed-or-Improved-Logics.md#allow-beacon-placement-hotkey-in-single-player) (by TaranDahl)
 - [Auto-remove earliest beacon](Fixed-or-Improved-Logics.md#auto-remove-earliest-beacon) (by TaranDahl)
 
 #### Vanilla fixes:

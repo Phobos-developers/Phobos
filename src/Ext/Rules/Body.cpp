@@ -449,6 +449,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->SecondaryFireSequenceLandOnly.Read(exINI, GameStrings::General, "SecondaryFireSequenceLandOnly");
 	this->AutoRemoveEarliestBeacon.Read(exINI, GameStrings::General, "AutoRemoveEarliestBeacon");
+	this->AllowBeaconHotKeyInSinglePlayer.Read(exINI, GameStrings::General, "AllowBeaconHotKeyInSinglePlayer");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -798,6 +799,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AllowChatBoxInSinglePlayer)
 		.Process(this->SecondaryFireSequenceLandOnly)
 		.Process(this->AutoRemoveEarliestBeacon)
+		.Process(this->AllowBeaconHotKeyInSinglePlayer)
 		;
 }
 

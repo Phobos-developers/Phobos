@@ -57,6 +57,8 @@
     <ClCompile Include="src\Ext\Anim\Hooks.cpp" />
     <!-- src\Ext\AnimType -->
     <ClCompile Include="src\Ext\AnimType\Body.cpp" />
+    <!-- src\Ext\Beacon -->
+    <ClCompile Include="src\Ext\Beacon\Hooks.cpp" />
     <!-- src\Ext\Building -->
     <ClCompile Include="src\Ext\Building\Body.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.cpp" />

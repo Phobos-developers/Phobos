@@ -818,6 +818,7 @@ This page lists all the individual contributions to the project by their author.
   - Export interface for external call
   - Allow chat box in singleplayer
   - Auto-remove earliest beacon
+  - Allow beacon placement hotkey in single player
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
