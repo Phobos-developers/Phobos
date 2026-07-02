@@ -344,26 +344,13 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 		}
 	}
 
-	if (pTypeExt->AutoDeath_PlayerMoneyLessThan != -1 || pTypeExt->AutoDeath_PlayerMoneyMoreThan != -1)
+	if (pTypeExt->AutoDeath_PlayerMoney_Max != -1 || pTypeExt->AutoDeath_PlayerMoney_Min != -1)
 	{
-		const int lessThan = pTypeExt->AutoDeath_PlayerMoneyLessThan;
-		const int moreThan = pTypeExt->AutoDeath_PlayerMoneyMoreThan;
-		const int money = pOwner->Available_Money();
-		bool shouldDie = false;
+		const int maxMoney = pTypeExt->AutoDeath_PlayerMoney_Max;
+		const int minMoney = pTypeExt->AutoDeath_PlayerMoney_Min;
+		const int currentMoney = pOwner->Available_Money();
 
-		if (lessThan != -1 && moreThan != -1)
-		{
-			if (lessThan > moreThan)
-				shouldDie = (money < lessThan && money > moreThan);
-			else
-				shouldDie = (money < lessThan || money > moreThan);
-		}
-		else if (lessThan != -1)
-			shouldDie = (money < lessThan);
-		else
-			shouldDie = (money > moreThan);
-
-		if (shouldDie)
+		if ((maxMoney == -1 || currentMoney <= maxMoney) && (minMoney == -1 || currentMoney >= minMoney))
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 			return true;
