@@ -509,7 +509,6 @@ void SWTypeExt::ExtData::ApplyActivatedMessage(SuperClass* pSW) const
 	);
 }
 
-
 void SWTypeExt::ExtData::ApplyActivatedEva(SuperClass* pSW) const
 {
 	const auto pHouse = pSW->Owner;
@@ -520,7 +519,7 @@ void SWTypeExt::ExtData::ApplyActivatedEva(SuperClass* pSW) const
 			? &this->EVA_Activated_Allies
 			: &this->EVA_Activated_Enemies);
 
-	if (!pEva->isset())
+	if (pEva->Get() == -1)
 		return;
 
 	VoxClass::PlayIndex(pEva->Get(), -1, -1);

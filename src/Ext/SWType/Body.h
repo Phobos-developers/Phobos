@@ -115,9 +115,9 @@ public:
 		Valueable<CSFText> Message_Activated_Owner;
 		Valueable<CSFText> Message_Activated_Allies;
 		Valueable<CSFText> Message_Activated_Enemies;
-		NullableIdx<VoxClass> EVA_Activated_Owner;
-		NullableIdx<VoxClass> EVA_Activated_Allies;
-		NullableIdx<VoxClass> EVA_Activated_Enemies;
+		ValueableIdx<VoxClass> EVA_Activated_Owner;
+		ValueableIdx<VoxClass> EVA_Activated_Allies;
+		ValueableIdx<VoxClass> EVA_Activated_Enemies;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, TypeID { "" }
@@ -204,9 +204,9 @@ public:
 			, Message_Activated_Owner {}
 			, Message_Activated_Allies {}
 			, Message_Activated_Enemies {}
-			, EVA_Activated_Owner {}
-			, EVA_Activated_Allies {}
-			, EVA_Activated_Enemies {}
+			, EVA_Activated_Owner { -1 }
+			, EVA_Activated_Allies { -1 }
+			, EVA_Activated_Enemies { -1 }
 		{ }
 
 		// Ares 0.A functions
