@@ -805,7 +805,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if ((this->AutoDeath_PlayerMoney_Max != -1)
 		&& (this->AutoDeath_PlayerMoney_Min != -1)
 		&& (this->AutoDeath_PlayerMoney_Max < this->AutoDeath_PlayerMoney_Min))
-		Debug::Log("[Developer warning][%s] AutoDeath.PlayerMoney.Max is not bigger than AutoDeath.PlayerMoney.Min, AutoDeath will never activate!\n", pSection);
+		Debug::Log("[Developer warning][%s] AutoDeath.PlayerMoney.Min is bigger than AutoDeath.PlayerMoney.Max, AutoDeath will never activate!\n", pSection);
 
 	this->Slaved_OwnerWhenMasterKilled.Read(exINI, pSection, "Slaved.OwnerWhenMasterKilled");
 	this->SlavesFreeSound.Read(exINI, pSection, "SlavesFreeSound");
