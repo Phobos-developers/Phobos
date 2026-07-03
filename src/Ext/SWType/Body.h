@@ -112,6 +112,12 @@ public:
 		ValueableVector<float> SW_Link_RollChances;
 		Valueable<CSFText> Message_LinkedSWAcquired;
 		NullableIdx<VoxClass> EVA_LinkedSWAcquired;
+		Valueable<CSFText> Message_Activated_Owner;
+		Valueable<CSFText> Message_Activated_Allies;
+		Valueable<CSFText> Message_Activated_Enemies;
+		ValueableIdx<VoxClass> EVA_Activated_Owner;
+		ValueableIdx<VoxClass> EVA_Activated_Allies;
+		ValueableIdx<VoxClass> EVA_Activated_Enemies;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, TypeID { "" }
@@ -195,6 +201,12 @@ public:
 			, SW_Link_RandomWeightsData {}
 			, Message_LinkedSWAcquired {}
 			, EVA_LinkedSWAcquired {}
+			, Message_Activated_Owner {}
+			, Message_Activated_Allies {}
+			, Message_Activated_Enemies {}
+			, EVA_Activated_Owner { -1 }
+			, EVA_Activated_Allies { -1 }
+			, EVA_Activated_Enemies { -1 }
 		{ }
 
 		// Ares 0.A functions
@@ -220,6 +232,9 @@ public:
 		std::pair<double, double> GetEMPulseCannonRange(BuildingClass* pBuilding) const;
 
 		void ApplyLinkedSW(SuperClass* pSW);
+
+		void ApplyActivatedMessage(SuperClass* pSW) const;
+		void ApplyActivatedEva(SuperClass* pSW) const;
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual void Initialize() override;

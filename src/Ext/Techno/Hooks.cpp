@@ -285,7 +285,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	if (!(pThis->Owner->IsControlledByHuman() && RulesExt::Global()->DistributeTargetingFrame_AIOnly)
 		&& pTypeExt->DistributeTargetingFrame.Get(RulesExt::Global()->DistributeTargetingFrame))
 	{
-		pThis->TargetingTimer.Start(ScenarioClass::Instance->Random.RandomRanged(0, 15));
+		pThis->TargetingTimer.Start(ScenarioClass::Instance->Random.RandomRanged(45, 60));
 	}
 
 	if (pThis->AbstractFlags & AbstractFlags::Foot)
