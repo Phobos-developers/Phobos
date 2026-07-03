@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-02 19:38+0800\n"
+"POT-Creation-Date: 2026-07-03 22:16+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2337,6 +2337,12 @@ msgstr "自定义巡航导弹"
 
 msgid "Add a toggle for disabling `SecondaryFire` / `SecondaryProne` on water"
 msgstr "为水上禁用  `SecondaryFire` / `SecondaryProne` 添加开关"
+
+msgid "Customize the step limit of the credits indicator"
+msgstr ""
+
+msgid "Disable the credits indicator smooth transition"
+msgstr ""
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
