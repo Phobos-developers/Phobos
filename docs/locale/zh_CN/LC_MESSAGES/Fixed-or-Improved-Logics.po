@@ -1924,6 +1924,17 @@ msgid ""
 "needing to be defined on any specific object."
 msgstr "这个类别下列出了所有全局生效而无需在任何特定对象上定义的功能。"
 
+msgid "Allow beacon placement hotkey in single player"
+msgstr "允许在单人模式下使用信标放置快捷键"
+
+msgid ""
+"In vanilla, the beacon placement hotkey is restricted to multiplayer games "
+"only. Now you can allow using the beacon placement hotkey in single player "
+"and skirmish modes by setting `AllowBeaconHotKeyInSinglePlayer` to true."
+msgstr ""
+"在原版中，信标放置快捷键仅限于多人游戏使用。现在你可以通过将 "
+"`AllowBeaconHotKeyInSinglePlayer` 设置为 true 来允许在单人模式和遭遇战中使用信标放置快捷键。"
+
 msgid "Allow deploy controlled MCV"
 msgstr "允许部署被心控的 MCV"
 
@@ -1934,6 +1945,19 @@ msgstr "在原版中你不能将一个被心灵控制的载具部署为 `Constru
 
 msgid "In `rulesmd.ini`:"
 msgstr "在 `rulesmd.ini`："
+
+msgid "Auto-remove earliest beacon"
+msgstr "自动移除最早的信标"
+
+msgid ""
+"In vanilla, each player can place up to 3 beacons. When all 3 beacon slots "
+"are occupied, attempting to place a new beacon does nothing. Now you can "
+"make the game automatically remove the earliest-placed beacon to free up a "
+"slot for the new one."
+msgstr "在原版中，每个玩家最多可以放置 3 个信标。当 3 个信标槽位都被占用时，尝试放置新信标将不起作用。现在你可以让游戏自动移除最早放置的信标，为新信标腾出槽位。"
+
+msgid "`[General] -> AutoRemoveEarliestBeacon` controls this behavior."
+msgstr "`[General] -> AutoRemoveEarliestBeacon` 控制此行为。"
 
 msgid "Chrono sparkle animation customization & improvements"
 msgstr "超时空闪光动画的自定义与改进"

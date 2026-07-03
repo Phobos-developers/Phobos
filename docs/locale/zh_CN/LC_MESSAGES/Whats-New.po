@@ -2080,6 +2080,19 @@ msgid ""
 msgstr ""
 "[为水上禁用  `SecondaryFire` / `SecondaryProne` 添加开关](Fixed-or-Improved-Logics.md#ensure-infantry-use-correct-firing-sequences-on-water)（by Noble_Fish）"
 
+"[Auto-remove earliest beacon](Fixed-or-Improved-Logics.md#auto-remove-"
+"earliest-beacon) (by TaranDahl)"
+msgstr ""
+"[自动移除最早的信标](Fixed-or-Improved-Logics.md#auto-remove-earliest-"
+"beacon)（by TaranDahl）"
+
+msgid ""
+"[Allow beacon placement hotkey in single player](Fixed-or-Improved-"
+"Logics.md#allow-beacon-placement-hotkey-in-single-player) (by TaranDahl)"
+msgstr ""
+"[允许在单人模式下使用信标放置快捷键](Fixed-or-Improved-Logics.md#allow-beacon-placement-"
+"hotkey-in-single-player)（by TaranDahl）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
