@@ -154,16 +154,19 @@ msgstr "`HealthBar.Permanent.PipScale` 将始终显示其他 Pip 及编队序号
 
 msgid "Customize the step limit of the credits indicator"
 msgstr ""
+"自定义资金示数器步长上限"
 
 msgid ""
 "In vanilla, the Credits Indicator in the sidebar increases by at most 143"
 " points per frame, and now you can customize this limit."
 msgstr ""
+"在原版中，侧边栏的资金示数器每帧最多增加 143 点，现在你可以自定义这一上限。"
 
 msgid ""
 "If set to a value less than or equal to 0, the upper limit will be "
 "removed."
 msgstr ""
+"如果设为小于等于 0 的值将移除上限。"
 
 msgid "In `uimd.ini`:"
 msgstr "在 `uimd.ini`："
@@ -175,6 +178,7 @@ msgid ""
 "smoothing effect, set [`CreditsIndicator.Smooth=false`](User-Interface.md"
 "#disable-the-credits-indicator-smooth-transition)."
 msgstr ""
+"游戏会先取实际资金与当前值之差的绝对值然后除以 8，再将此值钳位到 `[1, 此处设置的限制值]`。如果你希望禁用这一平滑渐变效果请设置 [`CreditsIndicator.Smooth=false`](User-Interface.md#disable-the-credits-indicator-smooth-transition)。"
 
 msgid "Digital display"
 msgstr "数字化显示"
@@ -416,6 +420,7 @@ msgstr "当然，这只是实现方式，对于在可行的同时兼顾效率，
 
 msgid "Disable the credits indicator smooth transition"
 msgstr ""
+"禁用资金示数器平滑渐变"
 
 msgid ""
 "In vanilla, the Credits Indicator has a smooth transition effect when the"
@@ -424,6 +429,7 @@ msgid ""
 "of [`CreditsIndicator.MaxStep`](User-Interface.md#customize-the-step-"
 "limit-of-the-credits-indicator)."
 msgstr ""
+"在原版中，资金示数器有一个在显示资金值接近实际资金值时平滑渐变的效果，现在你可以禁用这一效果，允许变动步幅总是遵照 [`CreditsIndicator.MaxStep`](User-Interface.md#customize-the-step-limit-of-the-credits-indicator) 的值。"
 
 msgid ""
 "For example, if you want to make the credits update immediately without a"
@@ -432,6 +438,7 @@ msgid ""
 " credit value will still change in the form of an exponential "
 "approximation function."
 msgstr ""
+"例如，你希望通过 `CreditsIndicator.MaxStep=0` 来让资金立即更新而没有变化过程，那么你应当同时设置 `CreditsIndicator.Smooth=false`；否则资金显示值仍会以一个指数逼近函数的形式变化。"
 
 msgid "Flashing Technos on selecting"
 msgstr "闪烁选中的科技类型"

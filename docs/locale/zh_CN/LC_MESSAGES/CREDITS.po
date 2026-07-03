@@ -2340,9 +2340,11 @@ msgstr "为水上禁用  `SecondaryFire` / `SecondaryProne` 添加开关"
 
 msgid "Customize the step limit of the credits indicator"
 msgstr ""
+"自定义资金示数器步长上限"
 
 msgid "Disable the credits indicator smooth transition"
 msgstr ""
+"禁用资金示数器平滑渐变"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："

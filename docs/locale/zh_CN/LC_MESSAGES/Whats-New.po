@@ -2100,11 +2100,13 @@ msgid ""
 "[Customize the step limit of the credits indicator](User-Interface.md"
 "#customize-the-step-limit-of-the-credits-indicator) (by Noble_Fish)"
 msgstr ""
+"[自定义资金示数器步长上限](User-Interface.md#customize-the-step-limit-of-the-credits-indicator)（by Noble_Fish）"
 
 msgid ""
 "[Disable the credits indicator smooth transition](User-Interface.md"
 "#disable-the-credits-indicator-smooth-transition) (by Noble_Fish)"
 msgstr ""
+"[禁用资金示数器平滑渐变](User-Interface.md#disable-the-credits-indicator-smooth-transition)（by Noble_Fish）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
