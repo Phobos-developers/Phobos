@@ -2080,6 +2080,7 @@ msgid ""
 msgstr ""
 "[为水上禁用  `SecondaryFire` / `SecondaryProne` 添加开关](Fixed-or-Improved-Logics.md#ensure-infantry-use-correct-firing-sequences-on-water)（by Noble_Fish）"
 
+msgid ""
 "[Auto-remove earliest beacon](Fixed-or-Improved-Logics.md#auto-remove-"
 "earliest-beacon) (by TaranDahl)"
 msgstr ""
