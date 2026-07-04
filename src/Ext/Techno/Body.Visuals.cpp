@@ -966,7 +966,7 @@ void TechnoExt::DrawPassengers(TechnoClass* pThis)
 
 		const int y = basePos.Y - iconHeight - (rows - 1 - row) * (iconHeight + vGap);
 
-		Point2D iconPos = { startX + (itemsInThisRow - 1 - col) * (iconWidth + hGap), y };
+		Point2D iconPos = { startX + col * (iconWidth + hGap), y };
 
 		// Skip icons that are outside the screen bounds to prevent crash
 		RectangleStruct iconRect = { iconPos.X, iconPos.Y, iconWidth, iconHeight };
