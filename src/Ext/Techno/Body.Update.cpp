@@ -728,8 +728,8 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		pShield->ConvertCheck(pCurrentType);
 
 	// Recalculate and redraw
-	this->UpdateTintValues();
 	pThis->MarkForRedraw();
+	this->UpdateTintValues();
 
 	// Recreate Laser Trails
 	if (const size_t trailCount = this->LaserTrails.size())
@@ -1922,6 +1922,9 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			auto const pType = attachEffect->GetType();
 			attachEffect->ShouldBeDiscarded = false;
 
+			if (pType->NeedCalculate)
+				altered = true;
+
 			if (pType->HasTint())
 				markForRedraw = true;
 
@@ -1948,12 +1951,10 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			if (shouldDiscard && attachEffect->ResetIfRecreatable())
 			{
 				++it;
-				altered = true;
 				continue;
 			}
 
 			it = this->AttachedEffects.erase(it);
-			altered = true;
 		}
 		else
 		{
@@ -1965,7 +1966,10 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 		this->RecalculateStatMultipliers();
 
 	if (markForRedraw)
+	{
 		pThis->MarkForRedraw();
+		this->UpdateTintValues();
+	}
 
 	auto const coords = pThis->GetCoords();
 
@@ -1997,6 +2001,9 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 
 		if (remove)
 		{
+			if (pType->NeedCalculate)
+				altered = true;
+
 			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
 			{
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
@@ -2014,7 +2021,6 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 			}
 
 			it = this->AttachedEffects.erase(it);
-			altered = true;
 		}
 		else
 		{
@@ -2109,7 +2115,6 @@ bool TechnoExt::ExtData::RecalculateStatMultipliers(AttachEffectClass* pAttachEf
 		return pAE.ForceDecloak;
 	}
 
-	const bool wasTint = pAE.HasTint;
 	double firepower = 1.0;
 	double armor = 1.0;
 	double speed = 1.0;
@@ -2168,9 +2173,6 @@ bool TechnoExt::ExtData::RecalculateStatMultipliers(AttachEffectClass* pAttachEf
 
 	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
 		pThis->Uncloak(true);
-
-	if (wasTint || hasTint)
-		this->UpdateTintValues();
 
 	return false;
 }

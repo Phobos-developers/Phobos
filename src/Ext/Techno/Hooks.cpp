@@ -373,12 +373,14 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 	for (it = pExt->AttachedEffects.begin(); it != pExt->AttachedEffects.end(); )
 	{
 		auto const attachEffect = it->get();
+		auto const pType = attachEffect->GetType();
 
-		if ((attachEffect->GetType()->DiscardOn & DiscardCondition::Entry) != DiscardCondition::None)
+		if ((pType->DiscardOn & DiscardCondition::Entry) != DiscardCondition::None)
 		{
-			altered = true;
+			if (pType->NeedCalculate)
+				altered = true;
 
-			if (attachEffect->GetType()->HasTint())
+			if (pType->HasTint())
 				markForRedraw = true;
 
 			if (attachEffect->ResetIfRecreatable())
@@ -399,7 +401,10 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 		pExt->RecalculateStatMultipliers();
 
 	if (markForRedraw)
+	{
 		pExt->OwnerObject()->MarkForRedraw();
+		pExt->UpdateTintValues();
+	}
 
 	return pThis->TechnoClass::Limbo();
 }
