@@ -528,11 +528,11 @@ ShowPowerPlantEnhancerRange=false  ; boolean
 
 ### Passengers Display
 
-- You can now configure the game to display the passengers contained within a vehicle or building above it when selected. Each passenger type is shown as its Cameo icon with a count number in the upper-right corner.
+- You can now configure the game to display the passengers contained within a vehicle or building above it when selected. Each passenger type is shown as its cameo with a count number in the upper-right corner.
 - Two activation modes:
   - **Permanent mode**: Set `ShowPassengers=true` (global) or `ShowPassengers=true` (per-unit) to always show the display, regardless of the hotkey state.
   - **Toggleable mode**: Set `ShowPassengers.Toggleable=true` (global) and use the [Toggle Passengers](#toggle-passengers) hotkey to switch the display on/off.
-- Icons are arranged in horizontal rows from left to right, with the bottom row fixed at the bottom boundary. If the number of passenger types exceeds `ShowPassengers.PerRow`, additional rows are drawn above the bottom row.
+- Cameos are arranged in horizontal rows, centered from left to right below the selection bracket, with the bottom row fixed at the bottom boundary. When the number of passenger types exceeds `ShowPassengers.PerRow`, additional rows are stacked above the bottom row.
 
 In `rulesmd.ini`:
 ```ini
@@ -582,9 +582,7 @@ ShowPassengers.BottomOffset=0,0       ; X,Y, defaults to [AudioVisual] -> ShowPa
 
 ### `[ ]` Toggle Passengers
 
-- Switches on/off [passengers display](#passengers-display).
-- When toggled, messages are shown from CSF labels `MSG:PassengersEnabled` and `MSG:PassengersDisabled` (fallback: "Passenger Icons Display: Enabled" / "Passenger Icons Display: Disabled").
-- For localization add `TXT_PASSENGERS` (fallback: "Toggle Passenger Icons") and `TXT_PASSENGERS_DESC` (fallback: "Show/hide passenger icons display.") into your `.csf` file.
+- Switches on/off [passengers display](#passengers-display). When toggled, messages are shown from CSF labels `MSG:PassengersEnabled` and `MSG:PassengersDisabled` (fallback: "Passenger Cameos Display: Enabled" / "Passenger Cameos Display: Disabled"). For localization add `TXT_PASSENGERS` (fallback: "Toggle Passenger Cameos") and `TXT_PASSENGERS_DESC` (fallback: "Show/hide passenger cameos display.") into your `.csf` file.
 
 ### `[ ]` Next Idle Harvester
 

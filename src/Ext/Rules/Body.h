@@ -701,7 +701,7 @@ public:
 			, BerzerkMission { Mission::Hunt }
 
 			, BunkerStateUpdateDelay { 15 }
-			
+				
 			, AllowChatBoxInSinglePlayer { false }
 
 			, SecondaryFireSequenceLandOnly { true }
