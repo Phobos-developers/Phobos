@@ -270,13 +270,17 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	pExt->TypeExtData = pTypeExt;
 
-	auto const pShieldType = pTypeExt->ShieldType;
+	auto const pShieldType = pTypeExt->ShieldType && pTypeExt->ShieldType->Strength > 0 ? pTypeExt->ShieldType : nullptr;
 	pExt->CurrentShieldType = pShieldType;
+
+	if (pShieldType)
+		pExt->Shield = std::make_unique<ShieldClass>(pThis);
+
 	pExt->InitializeAttachEffects();
 	pExt->InitializeDisplayInfo();
 	pExt->InitializeLaserTrails();
 
-	if (!pExt->AE.HasTint && (!pShieldType || !pShieldType->HasTint() || pShieldType->Strength <= 0))
+	if (!pExt->AE.HasTint) // already updated when initializing attach effect
 		pExt->UpdateTintValues();
 
 	if (pTypeExt->Harvester_Counted)
@@ -373,12 +377,14 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 	for (it = pExt->AttachedEffects.begin(); it != pExt->AttachedEffects.end(); )
 	{
 		auto const attachEffect = it->get();
+		auto const pType = attachEffect->GetType();
 
-		if ((attachEffect->GetType()->DiscardOn & DiscardCondition::Entry) != DiscardCondition::None)
+		if ((pType->DiscardOn & DiscardCondition::Entry) != DiscardCondition::None)
 		{
-			altered = true;
+			if (pType->NeedCalculate)
+				altered = true;
 
-			if (attachEffect->GetType()->HasTint())
+			if (pType->HasTint())
 				markForRedraw = true;
 
 			if (attachEffect->ResetIfRecreatable())
@@ -399,7 +405,10 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 		pExt->RecalculateStatMultipliers();
 
 	if (markForRedraw)
+	{
 		pExt->OwnerObject()->MarkForRedraw();
+		pExt->UpdateTintValues();
+	}
 
 	return pThis->TechnoClass::Limbo();
 }
