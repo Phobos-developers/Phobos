@@ -194,8 +194,10 @@ public:
 
 		Valueable<bool> MergeBuildingDamage;
 
-		Valueable<bool> ShowUnitPassengers;
-		Valueable<bool> ShowUnitPassengers_Toggleable;
+		Valueable<bool> ShowPassengers;
+		Valueable<bool> ShowPassengers_Toggleable;
+		Valueable<int> ShowPassengers_PerRow;
+		Valueable<Point2D> ShowPassengers_BottomOffset;
 
 		Valueable<double> DamageOwnerMultiplier;
 		Valueable<double> DamageAlliesMultiplier;
@@ -699,7 +701,7 @@ public:
 			, BerzerkMission { Mission::Hunt }
 
 			, BunkerStateUpdateDelay { 15 }
-
+			
 			, AllowChatBoxInSinglePlayer { false }
 
 			, SecondaryFireSequenceLandOnly { true }
@@ -708,8 +710,10 @@ public:
 
 			, AllowBeaconHotKeyInSinglePlayer { false }
 
-			, ShowUnitPassengers { false }
-			, ShowUnitPassengers_Toggleable { false }
+			, ShowPassengers { false }
+			, ShowPassengers_Toggleable { false }
+			, ShowPassengers_PerRow { 5 }
+			, ShowPassengers_BottomOffset { { 0, 0 } }
 		{ }
 
 		virtual ~ExtData() = default;

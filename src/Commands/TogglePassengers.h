@@ -2,7 +2,7 @@
 
 #include "Commands.h"
 
-class ToggleUnitPassengersCommandClass : public CommandClass
+class TogglePassengersCommandClass : public CommandClass
 {
 public:
 	virtual const char* GetName() const override;

@@ -875,7 +875,7 @@ void TechnoExt::ShowPromoteAnim(TechnoClass* pThis)
 		AnimExt::CreateRandomAnim(eliteAnims, pThis->GetCenterCoords(), pThis, pThis->Owner, true, true);
 }
 
-void TechnoExt::DrawUnitPassengers(TechnoClass* pThis)
+void TechnoExt::DrawPassengers(TechnoClass* pThis)
 {
 	if (ObjectClass::CurrentObjects.Count != 1)
 		return;
@@ -883,9 +883,7 @@ void TechnoExt::DrawUnitPassengers(TechnoClass* pThis)
 	if (ObjectClass::CurrentObjects.GetItem(0) != pThis)
 		return;
 
-	const auto pFoot = abstract_cast<FootClass*>(pThis);
-	if (!pFoot)
-		return;
+	const auto whatAmI = pThis->WhatAmI();
 
 	const auto pType = pThis->GetTechnoType();
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
@@ -893,17 +891,18 @@ void TechnoExt::DrawUnitPassengers(TechnoClass* pThis)
 
 	bool shouldShow = false;
 
+	if (pRulesExt->ShowPassengers)
+	{
+		shouldShow = true;
+	}
+	else if (pRulesExt->ShowPassengers_Toggleable && Phobos::Config::Passengers_Enable)
+	{
+		shouldShow = true;
+	}
+
 	if (pTypeExt->ShowPassengers.isset())
 	{
 		shouldShow = pTypeExt->ShowPassengers.Get();
-	}
-	else if (pRulesExt->ShowUnitPassengers)
-	{
-		shouldShow = true;
-	}
-	else if (pRulesExt->ShowUnitPassengers_Toggleable && Phobos::Config::UnitPassengers_Enable)
-	{
-		shouldShow = true;
 	}
 
 	if (!shouldShow)
@@ -912,20 +911,31 @@ void TechnoExt::DrawUnitPassengers(TechnoClass* pThis)
 	if (pThis->Passengers.NumPassengers <= 0)
 		return;
 
-	std::map<TechnoTypeClass*, int> passengerCounts;
+	std::vector<std::pair<TechnoTypeClass*, int>> passengerCounts;
 	for (auto pPassenger = pThis->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
 	{
-		passengerCounts[pPassenger->GetTechnoType()]++;
+		const auto pPassengerType = pPassenger->GetTechnoType();
+		auto it = std::find_if(passengerCounts.begin(), passengerCounts.end(),
+			[pPassengerType](const auto& pair) { return pair.first == pPassengerType; });
+		if (it != passengerCounts.end())
+			it->second++;
+		else
+			passengerCounts.emplace_back(pPassengerType, 1);
 	}
 
-	const auto bracketPos = GetFootSelectBracketPosition(pFoot, Anchor(HorizontalPosition::Center, VerticalPosition::Top));
-	const auto& bottomOffset = pTypeExt->ShowPassengers_BottomOffset;
-	auto& offset = bottomOffset.Get();
+	const auto bracketPos = whatAmI == AbstractType::Building
+		? GetBuildingSelectBracketPosition(pThis, BuildingSelectBracketPosition::Top)
+		: GetFootSelectBracketPosition(pThis, Anchor(HorizontalPosition::Center, VerticalPosition::Top));
+	Point2D offset = pTypeExt->ShowPassengers_BottomOffset.isset()
+		? pTypeExt->ShowPassengers_BottomOffset.Get()
+		: pRulesExt->ShowPassengers_BottomOffset.Get();
 	Point2D basePos = bracketPos;
 	basePos.X += offset.X;
 	basePos.Y += offset.Y + pType->PixelSelectionBracketDelta;
 
-	const int perRow = pTypeExt->ShowPassengers_PerRow;
+	const int perRow = pTypeExt->ShowPassengers_PerRow.isset()
+		? pTypeExt->ShowPassengers_PerRow.Get()
+		: pRulesExt->ShowPassengers_PerRow.Get();
 	const int iconWidth = 60;
 	const int iconHeight = 48;
 	const int hGap = 2;
@@ -936,6 +946,7 @@ void TechnoExt::DrawUnitPassengers(TechnoClass* pThis)
 
 	const auto pSurface = DSurface::Composite;
 	RectangleStruct bounds = DSurface::Composite->GetRect();
+	RectangleStruct viewBounds = DSurface::ViewBounds;
 
 	int idx = 0;
 	for (const auto& item : passengerCounts)
@@ -953,6 +964,14 @@ void TechnoExt::DrawUnitPassengers(TechnoClass* pThis)
 		const int y = basePos.Y - iconHeight - (rows - 1 - row) * (iconHeight + vGap);
 
 		Point2D iconPos = { startX + col * (iconWidth + hGap), y };
+
+		// Skip icons that are outside the screen bounds to prevent crash
+		RectangleStruct iconRect = { iconPos.X, iconPos.Y, iconWidth, iconHeight };
+		if (iconRect.X < 0 || iconRect.Y < 0 || iconRect.X + iconRect.Width > viewBounds.Width || iconRect.Y + iconRect.Height > viewBounds.Height)
+		{
+			idx++;
+			continue;
+		}
 
 		bool drawn = false;
 

@@ -66,6 +66,7 @@ public:
 		Valueable<bool> ImmuneToCrit;
 		Valueable<bool> MultiMindControl_ReleaseVictim;
 		Valueable<int> CameoPriority;
+		PhobosPCXFile CameoPCX;
 		PhobosPCXFile AltCameoPCX;
 		Valueable<bool> NoManualMove;
 		Nullable<int> InitialStrength;
@@ -268,9 +269,8 @@ public:
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
 
 		Nullable<bool> ShowPassengers;
-		Valueable<int> ShowPassengers_PerRow;
-		Valueable<Point2D> ShowPassengers_BottomOffset;
-		PhobosPCXFile CameoPCX;
+		Nullable<int> ShowPassengers_PerRow;
+		Nullable<Point2D> ShowPassengers_BottomOffset;
 		CustomPalette CameoPalette;
 
 		Nullable<SelectBoxTypeClass*> SelectBox;
@@ -569,6 +569,7 @@ public:
 			, ImmuneToCrit { false }
 			, MultiMindControl_ReleaseVictim { false }
 			, CameoPriority { 0 }
+			, CameoPCX {}
 			, AltCameoPCX {}
 			, NoManualMove { false }
 			, InitialStrength {}
@@ -767,9 +768,8 @@ public:
 			, DigitalDisplayTypes {}
 
 			, ShowPassengers {}
-			, ShowPassengers_PerRow { 5 }
-			, ShowPassengers_BottomOffset { { 0, 0 } }
-			, CameoPCX {}
+			, ShowPassengers_PerRow {}
+			, ShowPassengers_BottomOffset {}
 			, CameoPalette {}
 
 			, SelectBox {}

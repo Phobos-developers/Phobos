@@ -94,7 +94,7 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
 
 	TechnoExt::ProcessDigitalDisplays(pThis);
 
-	TechnoExt::DrawUnitPassengers(pThis);
+	TechnoExt::DrawPassengers(pThis);
 
 	return 0;
 }
@@ -126,7 +126,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_Units, 0x7)
 
 	TechnoExt::ProcessDigitalDisplays(pThis);
 
-	TechnoExt::DrawUnitPassengers(pThis);
+	TechnoExt::DrawPassengers(pThis);
 
 	if (pExt->TypeExtData->HealthBar_HidePips)
 	{

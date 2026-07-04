@@ -390,7 +390,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PenetratesTransport_Level.Read(exINI, GameStrings::CombatDamage, "PenetratesTransport.Level");
 
 	this->UnitsUnsellable.Read(exINI, GameStrings::General, "UnitsUnsellable");
-
+	
 	this->DisableOveroptimizationInTargeting.Read(exINI, GameStrings::General, "DisableOveroptimizationInTargeting");
 
 	this->DriverKilled_KillPassengers.Read(exINI, GameStrings::CombatDamage, "DriverKilled.KillPassengers");
@@ -406,7 +406,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DriveLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "DriveLocomotorMakesWake");
 	this->HoverLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "HoverLocomotionClassMakesWake");
 	this->ShipLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "ShipLocomotionClassMakesWake");
-
+	
 	this->FiringAnim_Update.Read(exINI, GameStrings::AudioVisual, "FiringAnim.Update");
 	this->ExtendedPlayerRepair.Read(exINI, GameStrings::General, "ExtendedPlayerRepair");
 
@@ -451,8 +451,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AutoRemoveEarliestBeacon.Read(exINI, GameStrings::General, "AutoRemoveEarliestBeacon");
 	this->AllowBeaconHotKeyInSinglePlayer.Read(exINI, GameStrings::General, "AllowBeaconHotKeyInSinglePlayer");
 
-	this->ShowUnitPassengers.Read(exINI, GameStrings::AudioVisual, "ShowUnitPassengers");
-	this->ShowUnitPassengers_Toggleable.Read(exINI, GameStrings::AudioVisual, "ShowUnitPassengers.Toggleable");
+	this->ShowPassengers.Read(exINI, GameStrings::AudioVisual, "ShowPassengers");
+	this->ShowPassengers_Toggleable.Read(exINI, GameStrings::AudioVisual, "ShowPassengers.Toggleable");
+	this->ShowPassengers_PerRow.Read(exINI, GameStrings::AudioVisual, "ShowPassengers.PerRow");
+	this->ShowPassengers_BottomOffset.Read(exINI, GameStrings::AudioVisual, "ShowPassengers.BottomOffset");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -803,8 +805,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->SecondaryFireSequenceLandOnly)
 		.Process(this->AutoRemoveEarliestBeacon)
 		.Process(this->AllowBeaconHotKeyInSinglePlayer)
-		.Process(this->ShowUnitPassengers)
-		.Process(this->ShowUnitPassengers_Toggleable)
+		.Process(this->ShowPassengers)
+		.Process(this->ShowPassengers_Toggleable)
+		.Process(this->ShowPassengers_PerRow)
+		.Process(this->ShowPassengers_BottomOffset)
 		;
 }
 

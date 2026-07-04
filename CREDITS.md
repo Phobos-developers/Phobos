@@ -877,4 +877,4 @@ This page lists all the individual contributions to the project by their author.
 - **Chang_zhi**:
   - Interop export interface for accessing scenario local/global variables
   - Add `ClampToScreen` tag for `BannerType` to control whether banner position is clamped to the visible area
-- **ABCZ (CZHczhABCZ)** - Unit passengers display
+- **ABCZ (CZHczhABCZ)** - Passengers display

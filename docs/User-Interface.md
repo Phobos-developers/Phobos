@@ -526,24 +526,26 @@ In `RA2MD.INI`:
 ShowPowerPlantEnhancerRange=false  ; boolean
 ```
 
-### Unit Passengers Display
+### Passengers Display
 
-- You can now configure the game to display the passengers contained within a vehicle above it when selected. Each passenger type is shown as its Cameo icon with a count number in the upper-right corner.
+- You can now configure the game to display the passengers contained within a vehicle or building above it when selected. Each passenger type is shown as its Cameo icon with a count number in the upper-right corner.
 - Two activation modes:
-  - **Permanent mode**: Set `ShowUnitPassengers=true` (global) or `ShowPassengers=true` (per-vehicle) to always show the display, regardless of the hotkey state.
-  - **Toggleable mode**: Set `ShowUnitPassengers.Toggleable=true` (global) and use the [Toggle Unit Passengers](#toggle-unit-passengers) hotkey to switch the display on/off.
+  - **Permanent mode**: Set `ShowPassengers=true` (global) or `ShowPassengers=true` (per-unit) to always show the display, regardless of the hotkey state.
+  - **Toggleable mode**: Set `ShowPassengers.Toggleable=true` (global) and use the [Toggle Passengers](#toggle-passengers) hotkey to switch the display on/off.
 - Icons are arranged in horizontal rows from left to right, with the bottom row fixed at the bottom boundary. If the number of passenger types exceeds `ShowPassengers.PerRow`, additional rows are drawn above the bottom row.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-ShowUnitPassengers=false              ; boolean
-ShowUnitPassengers.Toggleable=false   ; boolean
+ShowPassengers=false              ; boolean
+ShowPassengers.Toggleable=false   ; boolean
+ShowPassengers.PerRow=5               ; integer, defaults to 5
+ShowPassengers.BottomOffset=0,0       ; X,Y, defaults to 0,0
 
-[SOMETECHNO]                          ; TechnoType
-ShowPassengers=                       ; boolean, defaults to [AudioVisual] -> ShowUnitPassengers
-ShowPassengers.PerRow=5               ; integer
-ShowPassengers.BottomOffset=0,0       ; X,Y
+[SOMETECHNO]                      ; TechnoType
+ShowPassengers=                   ; boolean, defaults to [AudioVisual] -> ShowPassengers
+ShowPassengers.PerRow=5               ; integer, defaults to [AudioVisual] -> ShowPassengers.PerRow
+ShowPassengers.BottomOffset=0,0       ; X,Y, defaults to [AudioVisual] -> ShowPassengers.BottomOffset
 ```
 
 ## Hotkey Commands
@@ -578,11 +580,11 @@ ShowPassengers.BottomOffset=0,0       ; X,Y
 - Switches on/off [digital display types](#digital-display).
 - For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC` into your `.csf` file.
 
-### `[ ]` Toggle Unit Passengers
+### `[ ]` Toggle Passengers
 
-- Switches on/off [unit passengers display](#unit-passengers-display).
-- When toggled, messages are shown from CSF labels `MSG:UnitPassengersEnabled` and `MSG:UnitPassengersDisabled` (fallback: "Unit Passenger Icons Display: Enabled" / "Unit Passenger Icons Display: Disabled").
-- For localization add `TXT_UNIT_PASSENGERS` (fallback: "Toggle Unit Passenger Icons") and `TXT_UNIT_PASSENGERS_DESC` (fallback: "Show/hide unit passenger icons display.") into your `.csf` file.
+- Switches on/off [passengers display](#passengers-display).
+- When toggled, messages are shown from CSF labels `MSG:PassengersEnabled` and `MSG:PassengersDisabled` (fallback: "Passenger Icons Display: Enabled" / "Passenger Icons Display: Disabled").
+- For localization add `TXT_PASSENGERS` (fallback: "Toggle Passenger Icons") and `TXT_PASSENGERS_DESC` (fallback: "Show/hide passenger icons display.") into your `.csf` file.
 
 ### `[ ]` Next Idle Harvester
 

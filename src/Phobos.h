@@ -92,7 +92,7 @@ public:
 		static bool EnableBuildingPlacementPreview;
 		static bool EnableSelectBox;
 		static bool DigitalDisplay_Enable;
-		static bool UnitPassengers_Enable;
+		static bool Passengers_Enable;
 		static bool MessageApplyHoverState;
 		static bool MessageDisplayInCenter;
 		static int MessageDisplayInCenter_BoardOpacity;
