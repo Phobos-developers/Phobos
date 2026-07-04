@@ -181,14 +181,14 @@ void AttachEffectClass::AI()
 				pTechno->ChargeTurretDelay = static_cast<int>(pTechno->ChargeTurretDelay * ROFModifier);
 		}
 
+		if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
+			pTechno->Uncloak(true);
+
 		if (pType->HasTint())
 		{
 			pTechno->MarkForRedraw();
 			pExt->UpdateTintValues();
 		}
-
-		if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
-			pTechno->Uncloak(true);
 
 		AttachEffectTypeClass::HandleEvent(pTechno);
 	}
@@ -214,6 +214,12 @@ void AttachEffectClass::AI()
 
 			if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
 				pTechno->Uncloak(true);
+
+			if (pType->HasTint())
+			{
+				pTechno->MarkForRedraw();
+				pExt->UpdateTintValues();
+			}
 
 			this->NeedsDurationRefresh = false;
 			AttachEffectTypeClass::HandleEvent(pTechno);
@@ -332,14 +338,14 @@ void AttachEffectClass::OnlineCheck()
 	{
 		auto const pExt = TechnoExt::ExtMap.Find(pTechno);
 
+		if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
+			pTechno->Uncloak(true);
+
 		if (this->Type->HasTint())
 		{
 			pTechno->MarkForRedraw();
 			pExt->UpdateTintValues();
 		}
-
-		if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
-			pTechno->Uncloak(true);
 
 		this->LastActiveStat = isActive;
 	}
@@ -849,6 +855,7 @@ int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass c
 {
 	int detachedCount = 0;
 	bool markForRedraw = false;
+	bool altered = false;
 	auto const& minCounts = attachEffectInfo.CumulativeRemoveMinCounts;
 	auto const& maxCounts = attachEffectInfo.CumulativeRemoveMaxCounts;
 	size_t index = 0;
@@ -862,8 +869,14 @@ int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass c
 
 		const int count = AttachEffectClass::RemoveAllOfType(pType, pTarget, minCount, maxCount);
 
-		if (count && pType->HasTint())
-			markForRedraw = true;
+		if (count)
+		{
+			if (pType->NeedCalculate)
+				altered = true;
+
+			if (pType->HasTint())
+				markForRedraw = true;
+		}
 
 		detachedCount += count;
 		index++;
@@ -871,10 +884,16 @@ int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass c
 
 	if (detachedCount > 0)
 	{
-		TechnoExt::ExtMap.Find(pTarget)->RecalculateStatMultipliers();
+		const auto pExt = TechnoExt::ExtMap.Find(pTarget);
+
+		if (altered)
+			pExt->RecalculateStatMultipliers();
 
 		if (markForRedraw)
+		{
 			pTarget->MarkForRedraw();
+			pExt->UpdateTintValues();
+		}
 	}
 
 	return detachedCount;
@@ -976,6 +995,7 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget)
 {
 	bool markForRedraw = false;
+	bool altered = false;
 	int transferCount = 0;
 	const auto pSourceExt = TechnoExt::ExtMap.Find(pSource);
 	const auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
@@ -1041,6 +1061,9 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 				pAE->Duration = attachEffect->Duration;
 		}
 
+		if (type->NeedCalculate)
+			altered = true;
+
 		if (type->HasTint())
 			markForRedraw = true;
 
@@ -1050,10 +1073,16 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 
 	if (transferCount > 0)
 	{
-		pTargetExt->RecalculateStatMultipliers();
+		const auto pExt = TechnoExt::ExtMap.Find(pTarget);
+
+		if (altered)
+			pExt->RecalculateStatMultipliers();
 
 		if (markForRedraw)
+		{
 			pTarget->MarkForRedraw();
+			pExt->UpdateTintValues();
+		}
 	}
 }
 

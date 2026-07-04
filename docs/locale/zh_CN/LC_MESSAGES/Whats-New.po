@@ -2052,6 +2052,24 @@ msgid ""
 msgstr ""
 "[坦克碉堡面积和状态更新间隔改进](Fixed-or-Improved-Logics.md#tank-bunker-improvements) (by Starkku)"
 
+msgid ""
+"[Allow chat box in singleplayer](User-Interface.md#allow-chat-box-in-"
+"singleplayer) (by TaranDahl)"
+msgstr "[允许在单人模式使用聊天框](User-Interface.md#allow-chat-box-in-singleplayer)（by TaranDahl）"
+
+"[Auto-remove earliest beacon](Fixed-or-Improved-Logics.md#auto-remove-"
+"earliest-beacon) (by TaranDahl)"
+msgstr ""
+"[自动移除最早的信标](Fixed-or-Improved-Logics.md#auto-remove-earliest-"
+"beacon)（by TaranDahl）"
+
+msgid ""
+"[Allow beacon placement hotkey in single player](Fixed-or-Improved-"
+"Logics.md#allow-beacon-placement-hotkey-in-single-player) (by TaranDahl)"
+msgstr ""
+"[允许在单人模式下使用信标放置快捷键](Fixed-or-Improved-Logics.md#allow-beacon-placement-"
+"hotkey-in-single-player)（by TaranDahl）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 

@@ -285,7 +285,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	if (!(pThis->Owner->IsControlledByHuman() && RulesExt::Global()->DistributeTargetingFrame_AIOnly)
 		&& pTypeExt->DistributeTargetingFrame.Get(RulesExt::Global()->DistributeTargetingFrame))
 	{
-		pThis->TargetingTimer.Start(ScenarioClass::Instance->Random.RandomRanged(0, 15));
+		pThis->TargetingTimer.Start(ScenarioClass::Instance->Random.RandomRanged(45, 60));
 	}
 
 	if (pThis->AbstractFlags & AbstractFlags::Foot)
@@ -373,12 +373,14 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 	for (it = pExt->AttachedEffects.begin(); it != pExt->AttachedEffects.end(); )
 	{
 		auto const attachEffect = it->get();
+		auto const pType = attachEffect->GetType();
 
-		if ((attachEffect->GetType()->DiscardOn & DiscardCondition::Entry) != DiscardCondition::None)
+		if ((pType->DiscardOn & DiscardCondition::Entry) != DiscardCondition::None)
 		{
-			altered = true;
+			if (pType->NeedCalculate)
+				altered = true;
 
-			if (attachEffect->GetType()->HasTint())
+			if (pType->HasTint())
 				markForRedraw = true;
 
 			if (attachEffect->ResetIfRecreatable())
@@ -399,7 +401,10 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 		pExt->RecalculateStatMultipliers();
 
 	if (markForRedraw)
+	{
 		pExt->OwnerObject()->MarkForRedraw();
+		pExt->UpdateTintValues();
+	}
 
 	return pThis->TechnoClass::Limbo();
 }
@@ -2127,6 +2132,83 @@ DEFINE_HOOK(0x4CF8B1, FlyLocomotionClass_Draw_Point_NoWobbles, 0x6)
 
 	return Continue;
 }
+
+#pragma region IsCruiseMissile
+
+DEFINE_HOOK(0x662354, RocketLocomotionClass_Process_CruiseMissileCheck, 0x6)
+{
+	GET(ILocomotion*, pThis, ESI);
+	const auto pLoco = static_cast<RocketLocomotionClass*>(pThis);
+	const auto pLinkedTo = abstract_cast<AircraftClass*>(pLoco->LinkedTo);
+
+	if (!pLinkedTo)
+		return 0;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->Type);
+	if (pTypeExt->Missile_Cruise)
+		return 0x662369;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6623FC, RocketLocomotionClass_Process_CustomSmokeInterval, 0x5)
+{
+	GET(ILocomotion*, pThis, ESI);
+	const auto pLoco = static_cast<RocketLocomotionClass*>(pThis);
+	const auto pLinkedTo = abstract_cast<AircraftClass*>(pLoco->LinkedTo);
+
+	if (!pLinkedTo)
+		return 0;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->Type);
+
+	R->ECX(pTypeExt->Missile_TakeOffSeparation);
+	return 0x662401;
+}
+
+DEFINE_HOOK(0x6624FB, RocketLocomotionClass_Process_CustomMissileTakeoff, 0x5)
+{
+	enum { SkipAnimation = 0x662599 };
+	GET(ILocomotion*, pThis, ESI);
+
+	const auto pLoco = static_cast<RocketLocomotionClass*>(pThis);
+	const auto pLinkedTo = abstract_cast<AircraftClass*>(pLoco->LinkedTo);
+
+	if (!pLinkedTo)
+		return SkipAnimation;
+
+	if (pLoco->TrailerTimer.HasTimeLeft())
+		return SkipAnimation;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->Type);
+
+	if (pTypeExt->Missile_TakeOffAnim)
+	{
+		GameCreate<AnimClass>(pTypeExt->Missile_TakeOffAnim, pLinkedTo->Location, 2, 1, 0x600, -10, false);
+		pLoco->TrailerTimer.Start(pTypeExt->Missile_TakeOffSeparation);
+	}
+
+	// Do not return 0x662512, otherwise it will enter Ares' CustomMissileTakeoff2 for duplicate processing.
+	return SkipAnimation;
+}
+
+DEFINE_HOOK(0x662720, RocketLocomotionClass_Process_CruiseMissileRaise, 0x6)
+{
+	GET(ILocomotion*, pThis, ESI);
+	const auto pLoco = static_cast<RocketLocomotionClass*>(pThis);
+	const auto pLinkedTo = abstract_cast<AircraftClass*>(pLoco->LinkedTo);
+
+	if (!pLinkedTo)
+		return 0;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->Type);
+	if (pTypeExt->Missile_Cruise)
+		return 0x6624C8;
+
+	return 0;
+}
+
+#pragma endregion
 
 namespace WarpPerStep
 {

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <RulesClass.h>
 #include <Utilities/Container.h>
@@ -376,6 +376,12 @@ public:
 
 		Valueable<int> BunkerStateUpdateDelay;
 
+		Valueable<bool> AllowChatBoxInSinglePlayer;
+
+		Valueable<bool> SecondaryFireSequenceLandOnly;
+		Valueable<bool> AutoRemoveEarliestBeacon;
+		Valueable<bool> AllowBeaconHotKeyInSinglePlayer;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -686,9 +692,18 @@ public:
 
 			, TeamDelays_DynamicType { DynamicTeamDelayType::StartingPoint }
 			, TeamDelays_Count {}
+
 			, BerzerkMission { Mission::Hunt }
 
 			, BunkerStateUpdateDelay { 15 }
+				
+			, AllowChatBoxInSinglePlayer { false }
+
+			, SecondaryFireSequenceLandOnly { true }
+
+			, AutoRemoveEarliestBeacon { false }
+
+			, AllowBeaconHotKeyInSinglePlayer { false }
 		{ }
 
 		virtual ~ExtData() = default;

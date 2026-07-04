@@ -690,6 +690,10 @@ This page lists all the individual contributions to the project by their author.
   - Customize the landing animation of technos that have `Locomotor=Fly`
   - Allow infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true`
   - Allow infantry to perform type conversion when deploying and undeploying
+  - Custom cruise missiles
+  - Add a toggle for disabling `SecondaryFire` / `SecondaryProne` on water
+  - Customize the step limit of the credits indicator
+  - Disable the credits indicator smooth transition
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -814,12 +818,16 @@ This page lists all the individual contributions to the project by their author.
   - Framework for dynamic sight
   - Fix voxel projectile and animation lighting issues
   - Export interface for external call
+  - Allow chat box in singleplayer
+  - Auto-remove earliest beacon
+  - Allow beacon placement hotkey in single player
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
 - **Flactine**
   - Add target filtering options to attacheffect system
   - Add veterancy-based target filtering for weapons and warheads
+  - Recipient-specific message and EVA on superweapon activation
   - Add a new AutoDeath condition based on the owner's power status
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
