@@ -895,7 +895,7 @@ void TechnoExt::DrawPassengers(TechnoClass* pThis)
 	{
 		shouldShow = true;
 	}
-	else if (pRulesExt->ShowPassengers_Toggleable && Phobos::Config::Passengers_Enable)
+	else if (pRulesExt->ShowPassengers_Toggleable && Phobos::Config::ShowPassengers_Enable)
 	{
 		shouldShow = true;
 	}

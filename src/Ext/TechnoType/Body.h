@@ -268,11 +268,6 @@ public:
 		Valueable<bool> DigitalDisplay_Disable;
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
 
-		Nullable<bool> ShowPassengers;
-		Nullable<int> ShowPassengers_PerRow;
-		Nullable<Point2D> ShowPassengers_BottomOffset;
-		CustomPalette CameoPalette;
-
 		Nullable<SelectBoxTypeClass*> SelectBox;
 		Valueable<bool> HideSelectBox;
 
@@ -528,6 +523,11 @@ public:
 		Valueable<AnimTypeClass*> Missile_TakeOffAnim;
 		Valueable<int> Missile_TakeOffSeparation;
 
+		Nullable<bool> ShowPassengers;
+		Nullable<int> ShowPassengers_PerRow;
+		Nullable<Point2D> ShowPassengers_BottomOffset;
+		CustomPalette CameoPalette;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, HealthBar_HidePips { false }
@@ -767,11 +767,6 @@ public:
 			, DigitalDisplay_Disable { false }
 			, DigitalDisplayTypes {}
 
-			, ShowPassengers {}
-			, ShowPassengers_PerRow {}
-			, ShowPassengers_BottomOffset {}
-			, CameoPalette {}
-
 			, SelectBox {}
 			, HideSelectBox { false }
 
@@ -1008,6 +1003,11 @@ public:
 			, Missile_Cruise { false }
 			, Missile_TakeOffAnim { nullptr }
 			, Missile_TakeOffSeparation { 24 }
+
+			, ShowPassengers {}
+			, ShowPassengers_PerRow {}
+			, ShowPassengers_BottomOffset {}
+			, CameoPalette {}
 		{ }
 
 		virtual ~ExtData() = default;

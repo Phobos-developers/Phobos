@@ -57,7 +57,7 @@ bool Phobos::Config::ArtImageSwap = false;
 bool Phobos::Config::ShowPlacementPreview = false;
 bool Phobos::Config::EnableSelectBox = false;
 bool Phobos::Config::DigitalDisplay_Enable = false;
-bool Phobos::Config::Passengers_Enable = false;
+bool Phobos::Config::ShowPassengers_Enable = false;
 bool Phobos::Config::MessageApplyHoverState = false;
 bool Phobos::Config::MessageDisplayInCenter = false;
 int Phobos::Config::MessageDisplayInCenter_BoardOpacity = 40;
@@ -106,7 +106,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::RealTimeTimers_Adaptive = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "RealTimeTimers.Adaptive", false);
 	Phobos::Config::EnableSelectBox = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "EnableSelectBox", false);
 	Phobos::Config::DigitalDisplay_Enable = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "DigitalDisplay.Enable", false);
-	Phobos::Config::Passengers_Enable = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "Passengers.Enable", false);
+	Phobos::Config::ShowPassengers_Enable = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowPassengers.Enable", false);
 	Phobos::Config::SaveGameOnScenarioStart = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "SaveGameOnScenarioStart", true);
 	Phobos::Config::ShowBriefing = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowBriefing", true);
 	Phobos::Config::ShowPowerDelta = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowPowerDelta", true);

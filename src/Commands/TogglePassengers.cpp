@@ -26,7 +26,7 @@ const wchar_t* TogglePassengersCommandClass::GetUIDescription() const
 
 void TogglePassengersCommandClass::Execute(WWKey eInput) const
 {
-	Phobos::Config::Passengers_Enable = !Phobos::Config::Passengers_Enable;
+	Phobos::Config::ShowPassengers_Enable = !Phobos::Config::ShowPassengers_Enable;
 
 	auto PrintMessage = [](const wchar_t* pMessage)
 	{
@@ -38,7 +38,7 @@ void TogglePassengersCommandClass::Execute(WWKey eInput) const
 		);
 	};
 
-	if (Phobos::Config::Passengers_Enable)
+	if (Phobos::Config::ShowPassengers_Enable)
 		PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:PassengersEnabled", L"Passenger Cameos Display: Enabled"));
 	else
 		PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:PassengersDisabled", L"Passenger Cameos Display: Disabled"));
