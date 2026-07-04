@@ -336,8 +336,9 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	{
 		const bool isLowPower = pOwner->HasLowPower();
 		const auto status = pTypeExt->AutoDeath_PlayerPowerStatus;
+		const auto isFirstFrame = (Unsorted::CurrentFrame == 0);
 
-		if ((status == PlayerPowerStatus::Normal && !isLowPower) || (status == PlayerPowerStatus::Low && isLowPower))
+		if ((status == PlayerPowerStatus::Normal && !isLowPower) || (status == PlayerPowerStatus::Low && isLowPower) && !isFirstFrame)
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 			return true;
