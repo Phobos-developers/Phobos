@@ -191,6 +191,10 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	{
 		this->NeedCalculate = true;
 	}
+	else
+	{
+		this->NeedCalculate = false;
+	}
 }
 
 template <typename T>
