@@ -456,7 +456,6 @@ void ShieldClass::AI()
 		return;
 	}
 
-	this->Type = pTechnoExt->CurrentShieldType;
 	this->CloakCheck();
 
 	if (!this->Available)
@@ -623,28 +622,30 @@ void ShieldClass::ConvertCheck(TechnoTypeClass* pTechnoType)
 	const auto pOldType = this->Type;
 	const bool allowTransfer = pOldType->AllowTransfer.Get(Attached);
 
-	if (!allowTransfer && (!pTechnoTypeExt->ShieldType || pTechnoTypeExt->ShieldType->Strength <= 0))
+	if (!allowTransfer)
 	{
-		// Case 1: Old shield is not allowed to transfer or there's no eligible new shield type -> delete shield.
-		this->KillAnim();
-		pTechnoExt->CurrentShieldType = nullptr;
-		pTechnoExt->Shield = nullptr;
-		return;
-	}
-	else if (!allowTransfer && pTechnoTypeExt->ShieldType && pTechnoTypeExt->ShieldType->Strength > 0)
-	{
-		// Case 2: Old shield is not allowed to transfer and the new type is eligible for activation -> use the new shield type.
-		pTechnoExt->CurrentShieldType = pTechnoTypeExt->ShieldType;
-		this->Type = pTechnoTypeExt->ShieldType;
+		pTechnoExt->CurrentShieldType = pTechnoTypeExt->ShieldType && pTechnoTypeExt->ShieldType->Strength > 0 ? pTechnoTypeExt->ShieldType : nullptr;
+
+		if (!pTechnoExt->CurrentShieldType)
+		{
+			// Case 1: Old shield is not allowed to transfer or there's no eligible new shield type -> delete shield.
+			this->KillAnim();
+			pTechnoExt->Shield = nullptr;
+			return;
+		}
+		else
+		{
+			// Case 2: Old shield is not allowed to transfer and the new type is eligible for activation -> use the new shield type.
+			this->Type = pTechnoTypeExt->ShieldType;
+		}
 	}
 
 	// Our new type is either the old shield or the changed type from the above two scenarios.
 	const auto pNewType = pTechnoExt->CurrentShieldType;
-	const bool hasNewType = pNewType && pNewType->Strength > 0;
 	bool& available = this->Available;
 
 	// Update shield properties if we still have a shield.
-	if (hasNewType && available)
+	if (pNewType && available)
 	{
 		const bool isDamaged = this->Techno->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
 		const double healthRatio = this->GetHealthRatio();
@@ -662,7 +663,7 @@ void ShieldClass::ConvertCheck(TechnoTypeClass* pTechnoType)
 	{
 		const auto timer = (this->HP <= 0) ? &this->Timers.Respawn : &this->Timers.SelfHealing;
 
-		if (hasNewType && !available)
+		if (pNewType && !available)
 		{ // Resume this shield when became Available
 			timer->Resume();
 			available = true;

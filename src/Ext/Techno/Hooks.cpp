@@ -270,13 +270,17 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	pExt->TypeExtData = pTypeExt;
 
-	auto const pShieldType = pTypeExt->ShieldType;
+	auto const pShieldType = pTypeExt->ShieldType && pTypeExt->ShieldType->Strength > 0 ? pTypeExt->ShieldType : nullptr;
 	pExt->CurrentShieldType = pShieldType;
+
+	if (pShieldType)
+		pExt->Shield = std::make_unique<ShieldClass>(pThis);
+
 	pExt->InitializeAttachEffects();
 	pExt->InitializeDisplayInfo();
 	pExt->InitializeLaserTrails();
 
-	if (!pExt->AE.HasTint && (!pShieldType || !pShieldType->HasTint() || pShieldType->Strength <= 0))
+	if (!pExt->AE.HasTint) // already updated when initializing attach effect
 		pExt->UpdateTintValues();
 
 	if (pTypeExt->Harvester_Counted)
