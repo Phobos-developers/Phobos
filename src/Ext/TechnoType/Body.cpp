@@ -1342,7 +1342,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ShadowIndex_Frame.Read(exArtINI, pArtSection, "ShadowIndex.Frame");
 
-	this->CameoPalette.LoadFromINI(pArtINI, pArtSection, "CameoPalette");
 	this->CameoPCX.Read(pArtINI, pArtSection, "CameoPCX");
 	this->AltCameoPCX.Read(pArtINI, pArtSection, "AltCameoPCX");
 
@@ -1468,6 +1467,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ShowPassengers.Read(exINI, pSection, "ShowPassengers");
 	this->ShowPassengers_PerRow.Read(exINI, pSection, "ShowPassengers.PerRow");
 	this->ShowPassengers_BottomOffset.Read(exINI, pSection, "ShowPassengers.BottomOffset");
+
+	this->CameoPalette.LoadFromINI(pArtINI, pArtSection, "CameoPalette");
 }
 
 void TechnoTypeExt::ExtData::LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSection, INI_EX& exArtINI, const char* pArtSection)

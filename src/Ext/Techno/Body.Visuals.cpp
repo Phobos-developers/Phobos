@@ -889,13 +889,13 @@ void TechnoExt::DrawPassengers(TechnoClass* pThis)
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	const auto pRulesExt = RulesExt::Global();
 
+	// Master switch, highest priority
+	if (!Phobos::Config::ShowPassengers_Enable)
+		return;
+
 	bool shouldShow = false;
 
-	if (pRulesExt->ShowPassengers)
-	{
-		shouldShow = true;
-	}
-	else if (pRulesExt->ShowPassengers_Toggleable && Phobos::Config::ShowPassengers_Enable)
+	if (pRulesExt->ShowPassengers || pRulesExt->ShowPassengers_Toggleable)
 	{
 		shouldShow = true;
 	}
