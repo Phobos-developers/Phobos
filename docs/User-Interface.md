@@ -526,13 +526,13 @@ In `RA2MD.INI`:
 ShowPowerPlantEnhancerRange=false  ; boolean
 ```
 
-### Passengers Display
+### Passenger Cameo Display
 
-- You can now configure the game to display the passengers contained within a vehicle or building above it when selected. Each passenger type is shown as its cameo with a count number in the upper-right corner.
+- You can now configure the game to show passenger cameo icons and counts above a vehicle or building when it is selected. Each passenger type is shown as its cameo with a count number in the upper-right corner.
 - Two activation modes:
-  - **Permanent mode**: Set `ShowPassengers=true` (global) or `ShowPassengers=true` (per-unit) to always show the display, regardless of the hotkey state.
+  - **Permanent mode**: Set `ShowPassengers=true` (global) or `ShowPassengers=true` (per-unit) to always show the cameos, regardless of the hotkey state.
   - **Toggleable mode**: Set `ShowPassengers.Toggleable=true` (global) and use the [Toggle Passengers](#toggle-passengers) hotkey to switch the display on/off.
-- Cameos are arranged in horizontal rows, centered from left to right below the selection bracket, with the bottom row fixed at the bottom boundary. When the number of passenger types exceeds `ShowPassengers.PerRow`, additional rows are stacked above the bottom row.
+- Cameos are arranged in horizontal rows, centered from left to right above the selection bracket, with the bottom row fixed at the bottom boundary. When the number of passenger types exceeds `ShowPassengers.PerRow`, additional rows are stacked above the bottom row.
 
 In `rulesmd.ini`:
 ```ini
@@ -544,11 +544,11 @@ ShowPassengers.BottomOffset=0,0       ; X,Y, defaults to 0,0
 
 [SOMETECHNO]                      ; TechnoType
 ShowPassengers=                   ; boolean, defaults to [AudioVisual] -> ShowPassengers
-ShowPassengers.PerRow=5               ; integer, defaults to [AudioVisual] -> ShowPassengers.PerRow
-ShowPassengers.BottomOffset=0,0       ; X,Y, defaults to [AudioVisual] -> ShowPassengers.BottomOffset
+ShowPassengers.PerRow=                ; integer, defaults to [AudioVisual] -> ShowPassengers.PerRow
+ShowPassengers.BottomOffset=          ; X,Y, defaults to [AudioVisual] -> ShowPassengers.BottomOffset
 ```
 
-- When toggled via the hotkey, messages are shown from CSF labels `MSG:PassengersEnabled` (fallback: "Passenger Cameos Display: Enabled") and `MSG:PassengersDisabled` (fallback: "Passenger Cameos Display: Disabled").
+- When toggled via the hotkey, messages are shown from CSF labels `MSG:PassengerCameoDisplayEnabled` (fallback: "Passenger Cameos Display: Enabled") and `MSG:PassengerCameoDisplayDisabled` (fallback: "Passenger Cameos Display: Disabled").
 
 ## Hotkey Commands
 
@@ -584,8 +584,8 @@ ShowPassengers.BottomOffset=0,0       ; X,Y, defaults to [AudioVisual] -> ShowPa
 
 ### `[ ]` Toggle Passengers
 
-- Switches on/off [passengers display](#passengers-display).
-- For localization add `TXT_PASSENGERS` and `TXT_PASSENGERS_DESC` into your `.csf` file.
+- Switches on/off [passenger cameo display](#passenger-cameo-display).
+- For localization add `TXT_PASSENGERCAMEO` and `TXT_PASSENGERCAMEO_DESC` into your `.csf` file.
 
 ### `[ ]` Next Idle Harvester
 

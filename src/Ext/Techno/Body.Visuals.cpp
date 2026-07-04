@@ -4,6 +4,7 @@
 #include <Ext/SWType/Body.h>
 #include <Ext/House/Body.h>
 #include <ObjectClass.h>
+#include <algorithm>
 
 void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
 {
@@ -923,6 +924,8 @@ void TechnoExt::DrawPassengers(TechnoClass* pThis)
 			passengerCounts.emplace_back(pPassengerType, 1);
 	}
 
+	std::reverse(passengerCounts.begin(), passengerCounts.end());
+
 	const auto bracketPos = whatAmI == AbstractType::Building
 		? GetBuildingSelectBracketPosition(pThis, BuildingSelectBracketPosition::Top)
 		: GetFootSelectBracketPosition(pThis, Anchor(HorizontalPosition::Center, VerticalPosition::Top));
@@ -963,7 +966,7 @@ void TechnoExt::DrawPassengers(TechnoClass* pThis)
 
 		const int y = basePos.Y - iconHeight - (rows - 1 - row) * (iconHeight + vGap);
 
-		Point2D iconPos = { startX + col * (iconWidth + hGap), y };
+		Point2D iconPos = { startX + (itemsInThisRow - 1 - col) * (iconWidth + hGap), y };
 
 		// Skip icons that are outside the screen bounds to prevent crash
 		RectangleStruct iconRect = { iconPos.X, iconPos.Y, iconWidth, iconHeight };
