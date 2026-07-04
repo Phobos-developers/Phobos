@@ -58,6 +58,8 @@
     <ClCompile Include="src\Ext\Anim\Hooks.cpp" />
     <!-- src\Ext\AnimType -->
     <ClCompile Include="src\Ext\AnimType\Body.cpp" />
+    <!-- src\Ext\Beacon -->
+    <ClCompile Include="src\Ext\Beacon\Hooks.cpp" />
     <!-- src\Ext\Building -->
     <ClCompile Include="src\Ext\Building\Body.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.cpp" />
@@ -233,6 +235,7 @@
     <ClCompile Include="src\Misc\Hooks.INIInheritance.cpp" />
     <ClCompile Include="src\Misc\Hooks.LaserDraw.cpp" />
     <ClCompile Include="src\Misc\Hooks.LightEffects.cpp" />
+    <ClCompile Include="src\Misc\Hooks.MessageList.cpp" />
     <ClCompile Include="src\Misc\Hooks.Overlay.cpp" />
     <ClCompile Include="src\Misc\Hooks.PCX.cpp" />
     <ClCompile Include="src\Misc\Hooks.Timers.cpp" />

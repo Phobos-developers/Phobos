@@ -104,6 +104,17 @@ msgstr "在 `rulesmd.ini`："
 msgid "Battle screen UI/UX"
 msgstr "战斗界面 UI／UX"
 
+msgid "Allow chat box in singleplayer"
+msgstr "允许在单人模式使用聊天框"
+
+msgid ""
+"In vanilla, the in-game chat box is disabled in singleplayer scenarios. "
+"You can now enable it by setting `[General] -> "
+"AllowChatBoxInSinglePlayer` to true."
+msgstr ""
+"原版中，游戏内聊天框在单人模式下被禁用。现在可以将 `[General] -> "
+"AllowChatBoxInSinglePlayer` 设为 `true` 来启用。"
+
 msgid "Allow draw SuperWeapon timer as percentage"
 msgstr "允许以百分比形式绘制超武计时器"
 
