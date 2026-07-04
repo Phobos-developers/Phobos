@@ -548,6 +548,8 @@ ShowPassengers.PerRow=5               ; integer, defaults to [AudioVisual] -> Sh
 ShowPassengers.BottomOffset=0,0       ; X,Y, defaults to [AudioVisual] -> ShowPassengers.BottomOffset
 ```
 
+- When toggled via the hotkey, messages are shown from CSF labels `MSG:PassengersEnabled` (fallback: "Passenger Cameos Display: Enabled") and `MSG:PassengersDisabled` (fallback: "Passenger Cameos Display: Disabled").
+
 ## Hotkey Commands
 
 ### `[ ]` Display Damage Numbers
@@ -582,7 +584,8 @@ ShowPassengers.BottomOffset=0,0       ; X,Y, defaults to [AudioVisual] -> ShowPa
 
 ### `[ ]` Toggle Passengers
 
-- Switches on/off [passengers display](#passengers-display). When toggled, messages are shown from CSF labels `MSG:PassengersEnabled` and `MSG:PassengersDisabled` (fallback: "Passenger Cameos Display: Enabled" / "Passenger Cameos Display: Disabled"). For localization add `TXT_PASSENGERS` (fallback: "Toggle Passenger Cameos") and `TXT_PASSENGERS_DESC` (fallback: "Show/hide passenger cameos display.") into your `.csf` file.
+- Switches on/off [passengers display](#passengers-display).
+- For localization add `TXT_PASSENGERS` and `TXT_PASSENGERS_DESC` into your `.csf` file.
 
 ### `[ ]` Next Idle Harvester
 
