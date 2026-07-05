@@ -243,7 +243,9 @@ void AttachEffectClass::AI()
 		if (delay > 0)
 		{
 			this->KillAnim();
-			this->NeedsRecalculateStat = true;
+
+			if (pType->NeedCalculate)
+				this->NeedsRecalculateStat = true;
 		}
 		else if (!this->ShouldBeDiscardedNow())
 		{
