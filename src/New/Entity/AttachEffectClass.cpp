@@ -396,12 +396,8 @@ void AttachEffectClass::CloakCheck()
 void AttachEffectClass::CreateAnim()
 {
 	auto const pType = this->Type;
-
-	if (!pType)
-		return;
-
-	AnimTypeClass* pAnimType = nullptr;
 	auto const pTechno = this->Techno;
+	AnimTypeClass* pAnimType = nullptr;
 
 	if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
 	{
@@ -416,11 +412,11 @@ void AttachEffectClass::CreateAnim()
 		pAnimType = pType->Animation;
 	}
 
-	if (this->IsCloaked && (!pAnimType || AnimTypeExt::ExtMap.Find(pAnimType)->DetachOnCloak))
-		return;
-
-	if (!this->Animation && pAnimType)
+	if (pAnimType)
 	{
+		if (this->IsCloaked && AnimTypeExt::ExtMap.Find(pAnimType)->DetachOnCloak)
+			return;
+
 		auto const pAnim = GameCreate<AnimClass>(pAnimType, pTechno->Location);
 
 		pAnim->SetOwnerObject(pTechno);

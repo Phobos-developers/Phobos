@@ -462,6 +462,16 @@ public:
 		return this->BaseValue;
 	}
 
+	constexpr bool isset() const noexcept
+	{
+		return this->BaseValue || this->ConditionYellow.isset() || this->ConditionRed.isset();
+	}
+
+	constexpr bool isDamagedValueSet() const noexcept
+	{
+		return this->ConditionYellow.isset() || this->ConditionRed.isset();
+	}
+
 	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
 	inline bool Save(PhobosStreamWriter& Stm) const;
