@@ -876,7 +876,7 @@ void TechnoExt::ShowPromoteAnim(TechnoClass* pThis)
 		AnimExt::CreateRandomAnim(eliteAnims, pThis->GetCenterCoords(), pThis, pThis->Owner, true, true);
 }
 
-void TechnoExt::DrawPassengers(TechnoClass* pThis)
+void TechnoExt::DrawCameos(TechnoClass* pThis)
 {
 	if (ObjectClass::CurrentObjects.Count != 1)
 		return;
@@ -890,87 +890,236 @@ void TechnoExt::DrawPassengers(TechnoClass* pThis)
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	const auto pRulesExt = RulesExt::Global();
 
-	// Master switch, highest priority
-	if (!Phobos::Config::ShowPassengers_Enable)
+	// Per-unit explicitly disabled - skip entirely
+	if (pTypeExt->ShowCameo.isset() && !pTypeExt->ShowCameo.Get())
 		return;
 
-	bool shouldShow = false;
+	// Determine if permanent mode is on (permanent mode bypasses master switch and toggleable)
+	const bool permanentMode = pTypeExt->ShowCameo.isset()
+		? pTypeExt->ShowCameo.Get()
+		: pRulesExt->ShowCameo;
 
-	if (pRulesExt->ShowPassengers || pRulesExt->ShowPassengers_Toggleable)
-	{
-		shouldShow = true;
-	}
-
-	if (pTypeExt->ShowPassengers.isset())
-	{
-		shouldShow = pTypeExt->ShowPassengers.Get();
-	}
-
-	if (!shouldShow)
+	// Master switch check (skipped for permanent mode)
+	if (!permanentMode && !Phobos::Config::ShowCameo_Enable)
 		return;
 
-	if (pThis->Passengers.NumPassengers <= 0)
+	// Toggleable check (skipped for permanent mode)
+	if (!permanentMode && !pRulesExt->ShowCameo_Toggleable)
 		return;
 
+	// Collect cameos: passengers + occupants
+	// Passengers are stored in LIFO linked list; for buildings we reverse to FIFO
+	// so that Y flip produces correct top-to-bottom layout.
+	// Occupants are stored in FIFO DynamicVectorClass and do NOT need reversing.
+	std::vector<std::pair<TechnoTypeClass*, int>> cameoCounts;
+
+	// Step 1: Collect passengers into a temp vector (LIFO order)
 	std::vector<std::pair<TechnoTypeClass*, int>> passengerCounts;
-	for (auto pPassenger = pThis->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
+	for (auto pUnit = pThis->Passengers.GetFirstPassenger(); pUnit; pUnit = abstract_cast<FootClass*>(pUnit->NextObject))
 	{
-		const auto pPassengerType = pPassenger->GetTechnoType();
+		const auto pUnitType = pUnit->GetTechnoType();
 		auto it = std::find_if(passengerCounts.begin(), passengerCounts.end(),
-			[pPassengerType](const auto& pair) { return pair.first == pPassengerType; });
+			[pUnitType](const auto& pair) { return pair.first == pUnitType; });
 		if (it != passengerCounts.end())
 			it->second++;
 		else
-			passengerCounts.emplace_back(pPassengerType, 1);
+			passengerCounts.emplace_back(pUnitType, 1);
 	}
 
-	std::reverse(passengerCounts.begin(), passengerCounts.end());
+	// For buildings, reverse passenger order: LIFO -> FIFO
+	if (whatAmI == AbstractType::Building)
+		std::reverse(passengerCounts.begin(), passengerCounts.end());
+
+	// Merge passengers into cameoCounts
+	for (const auto& item : passengerCounts)
+		cameoCounts.emplace_back(item.first, item.second);
+
+	// Step 2: Collect occupants (FIFO order, no reverse needed)
+	if (whatAmI == AbstractType::Building)
+	{
+		const auto pBuilding = static_cast<BuildingClass*>(pThis);
+		for (int i = 0; i < pBuilding->Occupants.Count; i++)
+		{
+			const auto pOccupant = pBuilding->Occupants.GetItem(i);
+			const auto pOccupantType = pOccupant->GetTechnoType();
+			auto it = std::find_if(cameoCounts.begin(), cameoCounts.end(),
+				[pOccupantType](const auto& pair) { return pair.first == pOccupantType; });
+			if (it != cameoCounts.end())
+				it->second++;
+			else
+				cameoCounts.emplace_back(pOccupantType, 1);
+		}
+	}
+
+	if (cameoCounts.empty())
+		return;
 
 	const auto bracketPos = whatAmI == AbstractType::Building
 		? GetBuildingSelectBracketPosition(pThis, BuildingSelectBracketPosition::Top)
 		: GetFootSelectBracketPosition(pThis, Anchor(HorizontalPosition::Center, VerticalPosition::Top));
-	Point2D offset = pTypeExt->ShowPassengers_BottomOffset.isset()
-		? pTypeExt->ShowPassengers_BottomOffset.Get()
-		: pRulesExt->ShowPassengers_BottomOffset.Get();
+	Point2D offset = pTypeExt->ShowCameo_BottomOffset.isset()
+		? pTypeExt->ShowCameo_BottomOffset.Get()
+		: pRulesExt->ShowCameo_BottomOffset.Get();
 	Point2D basePos = bracketPos;
 	basePos.X += offset.X;
 	basePos.Y += offset.Y + pType->PixelSelectionBracketDelta;
 
-	const int perRow = pTypeExt->ShowPassengers_PerRow.isset()
-		? pTypeExt->ShowPassengers_PerRow.Get()
-		: pRulesExt->ShowPassengers_PerRow.Get();
-	const int iconWidth = 60;
-	const int iconHeight = 48;
+	const int perRow = pTypeExt->ShowCameo_PerRow.isset()
+		? pTypeExt->ShowCameo_PerRow.Get()
+		: pRulesExt->ShowCameo_PerRow.Get();
+	const int count = static_cast<int>(cameoCounts.size());
+	const int rows = (count + perRow - 1) / perRow;
+
+	// Get overlap/offset/overlapPrimary settings
+	const Point2D overlapXY = pTypeExt->ShowCameo_OverlapXY.isset()
+		? pTypeExt->ShowCameo_OverlapXY.Get()
+		: pRulesExt->ShowCameo_OverlapXY.Get();
+	const Point2D cameoOffsetXY = pTypeExt->ShowCameo_OffsetXY.isset()
+		? pTypeExt->ShowCameo_OffsetXY.Get()
+		: pRulesExt->ShowCameo_OffsetXY.Get();
+	const bool overlapPrimary = pTypeExt->ShowCameo_OverlapPrimary.isset()
+		? pTypeExt->ShowCameo_OverlapPrimary.Get()
+		: pRulesExt->ShowCameo_OverlapPrimary.Get();
+	// overlapPrimary=true: primary (earlier) covers secondary (later) (前面覆盖后面)
+	// overlapPrimary=false: secondary (later) covers primary (earlier) (后面覆盖前面)
+
+	// Pre-compute canvas sizes for each cameo (standard 60x48, or custom SHP dimensions)
+	struct CameoCanvas { int width; int height; };
+	std::vector<CameoCanvas> canvases;
+	canvases.reserve(count);
+	for (const auto& item : cameoCounts)
+	{
+		const auto pCameoType = item.first;
+		const auto pCameoTypeExt = TechnoTypeExt::ExtMap.Find(pCameoType);
+		int w = 60, h = 48;
+		if (SHPStruct* pCustomCameo = pCameoTypeExt->ShowCameo_CustomShape)
+		{
+			w = pCustomCameo->Width;
+			h = pCustomCameo->Height;
+		}
+		canvases.push_back({ w, h });
+	}
+
+	// Step 1-2-3: Calculate positions sequentially (row layout + OverlapXY + OffsetXY)
+	// Overlap formula: overlap = coveredCanvasSize * (OverlapXY% / 100) + OffsetXY
+	// OverlapPrimary=true: overlap based on secondary cameo's size (secondary is covered)
+	// OverlapPrimary=false: overlap based on primary cameo's size (primary is covered)
+	// Base gap between adjacent icons: 2 pixels (hGap / vGap)
 	const int hGap = 2;
 	const int vGap = 2;
+	// Iterate from bottom row to top row, so that each row can reference the row below it
+	std::vector<Point2D> cameoPositions(count);
+	for (int row = 0; row < rows; row++)
+	{
+		const int firstIdx = row * perRow;
+		const int lastIdx = Math::min(firstIdx + perRow - 1, count - 1);
+		for (int idx = firstIdx; idx <= lastIdx; idx++)
+		{
+			const int col = idx - firstIdx;
+			const int curW = canvases[idx].width;
+			const int curH = canvases[idx].height;
 
-	const int count = static_cast<int>(passengerCounts.size());
-	const int rows = (count + perRow - 1) / perRow;
+			if (row == 0)
+			{
+				// Bottom row: anchor at base position (bottom edge fixed at basePos.Y)
+				if (col == 0)
+				{
+					cameoPositions[idx].X = basePos.X;
+					cameoPositions[idx].Y = basePos.Y - curH;
+				}
+				else
+				{
+					// Same row: position to the right of the cameo directly to the left
+					const int prevIdx = idx - 1;
+					const int prevX = cameoPositions[prevIdx].X;
+					const int prevW = canvases[prevIdx].width;
+
+					const int overlapX = overlapPrimary
+						? (curW * overlapXY.X / 100 + cameoOffsetXY.X)
+						: (prevW * overlapXY.X / 100 + cameoOffsetXY.X);
+
+					cameoPositions[idx].X = prevX + prevW + hGap - overlapX;
+					cameoPositions[idx].Y = cameoPositions[prevIdx].Y;
+				}
+			}
+			else
+			{
+				if (col == 0)
+				{
+					// First in row: position above the cameo directly below
+					const int belowIdx = (row - 1) * perRow;
+					const int belowY = cameoPositions[belowIdx].Y;
+					const int belowH = canvases[belowIdx].height;
+
+					const int overlapY = overlapPrimary
+						? (curH * overlapXY.Y / 100 + cameoOffsetXY.Y)
+						: (belowH * overlapXY.Y / 100 + cameoOffsetXY.Y);
+
+					cameoPositions[idx].X = basePos.X;
+					cameoPositions[idx].Y = belowY - curH - vGap + overlapY;
+				}
+				else
+				{
+					// Same row: position to the right of the cameo directly to the left
+					const int prevIdx = idx - 1;
+					const int prevX = cameoPositions[prevIdx].X;
+					const int prevW = canvases[prevIdx].width;
+
+					const int overlapX = overlapPrimary
+						? (curW * overlapXY.X / 100 + cameoOffsetXY.X)
+						: (prevW * overlapXY.X / 100 + cameoOffsetXY.X);
+
+					cameoPositions[idx].X = prevX + prevW + hGap - overlapX;
+					cameoPositions[idx].Y = cameoPositions[prevIdx].Y;
+				}
+			}
+		}
+	}
+
+	// Step 4: Center each row horizontally
+	for (int row = 0; row < rows; row++)
+	{
+		const int firstIdx = row * perRow;
+		const int lastIdx = Math::min(firstIdx + perRow - 1, count - 1);
+		const int rowWidth = cameoPositions[lastIdx].X + canvases[lastIdx].width - cameoPositions[firstIdx].X;
+		const int centerOffset = basePos.X - rowWidth / 2 - cameoPositions[firstIdx].X;
+		for (int i = firstIdx; i <= lastIdx; i++)
+			cameoPositions[i].X += centerOffset;
+	}
+
+	// For buildings, flip Y axis: first-entered goes to top, last-entered to bottom
+	if (whatAmI == AbstractType::Building)
+	{
+		int topY = INT_MAX;
+		for (int i = 0; i < count; i++)
+			topY = Math::min(topY, cameoPositions[i].Y);
+
+		for (int i = 0; i < count; i++)
+			cameoPositions[i].Y = basePos.Y - canvases[i].height - (cameoPositions[i].Y - topY);
+	}
 
 	const auto pSurface = DSurface::Composite;
 	RectangleStruct bounds = DSurface::Composite->GetRect();
-	RectangleStruct viewBounds = DSurface::ViewBounds;
+
+	// Determine BlitterFlags for translucency
+	const TranslucencyLevel translucency = pTypeExt->ShowCameo_Translucency.isset()
+		? pTypeExt->ShowCameo_Translucency.Get()
+		: pRulesExt->ShowCameo_Translucency;
+	const BlitterFlags translucencyFlag = translucency.GetBlitterFlags();
 
 	int idx = 0;
-	for (const auto& item : passengerCounts)
+	for (const auto& item : cameoCounts)
 	{
-		const auto pPassengerType = item.first;
-		const int passengerCount = item.second;
+		const auto pCameoType = item.first;
+		const int cameoCount = item.second;
+		const int curW = canvases[idx].width;
+		const int curH = canvases[idx].height;
 
-		const int row = idx / perRow;
-		const int col = idx % perRow;
+		Point2D iconPos = cameoPositions[idx];
 
-		const int itemsInThisRow = (row == rows - 1 && count % perRow != 0) ? (count % perRow) : perRow;
-		const int rowWidth = itemsInThisRow * (iconWidth + hGap) - hGap;
-		const int startX = basePos.X - rowWidth / 2;
-
-		const int y = basePos.Y - iconHeight - (rows - 1 - row) * (iconHeight + vGap);
-
-		Point2D iconPos = { startX + col * (iconWidth + hGap), y };
-
-		// Skip icons that are outside the screen bounds to prevent crash
-		RectangleStruct iconRect = { iconPos.X, iconPos.Y, iconWidth, iconHeight };
-		if (iconRect.X < 0 || iconRect.Y < 0 || iconRect.X + iconRect.Width > viewBounds.Width || iconRect.Y + iconRect.Height > viewBounds.Height)
+		// Skip icons whose any part exceeds the screen top boundary (Y < 0) to prevent crash
+		// Only the top boundary matters because cameos are always above the selection bracket
+		if (iconPos.Y < 0)
 		{
 			idx++;
 			continue;
@@ -978,27 +1127,52 @@ void TechnoExt::DrawPassengers(TechnoClass* pThis)
 
 		bool drawn = false;
 
-		const auto pPassengerTypeExt = TechnoTypeExt::ExtMap.Find(pPassengerType);
-		if (const auto pCameoPCX = pPassengerTypeExt->CameoPCX.GetSurface())
+		const auto pCameoTypeExt = TechnoTypeExt::ExtMap.Find(pCameoType);
+
+		// Use custom ShowCameo SHP if specified
+		if (SHPStruct* pCustomCameo = pCameoTypeExt->ShowCameo_CustomShape)
 		{
-			RectangleStruct pcxBounds = { iconPos.X, iconPos.Y, iconWidth, iconHeight };
-			PCX::Instance.BlitToSurface(&pcxBounds, pSurface, pCameoPCX);
+			const auto pCameoConvert = pCameoTypeExt->CameoPalette.GetOrDefaultConvert(FileSystem::CAMEO_PAL);
+			const auto pConvert = pCameoTypeExt->ShowCameo_CustomPalette.GetOrDefaultConvert(pCameoConvert);
+			const int frameCount = pCustomCameo->Frames > 0 ? pCustomCameo->Frames : 1;
+			const int frame = (Unsorted::CurrentFrame % frameCount);
+			pSurface->DrawSHP(
+				pConvert,
+				pCustomCameo,
+				frame,
+				&iconPos,
+				&bounds,
+				BlitterFlags::bf_400 | BlitterFlags::Alpha | translucencyFlag,
+				0, 0,
+				ZGradient::Ground,
+				1000, 0, nullptr, 0, 0, 0
+			);
 			drawn = true;
 		}
 
 		if (!drawn)
 		{
-			SHPStruct* pCameo = pPassengerType->GetCameo();
+			if (const auto pCameoPCX = pCameoTypeExt->CameoPCX.GetSurface())
+			{
+				RectangleStruct pcxBounds = { iconPos.X, iconPos.Y, curW, curH };
+				PCX::Instance.BlitToSurface(&pcxBounds, pSurface, pCameoPCX);
+				drawn = true;
+			}
+		}
+
+		if (!drawn)
+		{
+			SHPStruct* pCameo = pCameoType->GetCameo();
 			if (pCameo)
 			{
-				const auto pConvert = pPassengerTypeExt->CameoPalette.GetOrDefaultConvert(FileSystem::CAMEO_PAL);
+				const auto pConvert = pCameoTypeExt->CameoPalette.GetOrDefaultConvert(FileSystem::CAMEO_PAL);
 				pSurface->DrawSHP(
 					pConvert,
 					pCameo,
 					0,
 					&iconPos,
 					&bounds,
-					BlitterFlags::bf_400 | BlitterFlags::Alpha,
+					BlitterFlags::bf_400 | BlitterFlags::Alpha | translucencyFlag,
 					0, 0,
 					ZGradient::Ground,
 					1000, 0, nullptr, 0, 0, 0
@@ -1010,9 +1184,9 @@ void TechnoExt::DrawPassengers(TechnoClass* pThis)
 		if (drawn)
 		{
 			wchar_t countText[16];
-			_snwprintf_s(countText, _countof(countText), _TRUNCATE, L"%d", passengerCount);
+			_snwprintf_s(countText, _countof(countText), _TRUNCATE, L"%d", cameoCount);
 
-			Point2D textPos = { iconPos.X + iconWidth - 4, iconPos.Y + 2 };
+			Point2D textPos = { iconPos.X + curW - 4, iconPos.Y + 2 };
 
 			pSurface->DrawTextA(
 				countText,

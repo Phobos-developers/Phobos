@@ -189,6 +189,7 @@ In `RA2MD.INI`:
 ```ini
 [Phobos]
 DigitalDisplay.Enable=false                    ; boolean
+ShowCameo.Enable=true                          ; boolean
 ```
 
 ```{note}
@@ -526,29 +527,111 @@ In `RA2MD.INI`:
 ShowPowerPlantEnhancerRange=false  ; boolean
 ```
 
-### Passenger Cameo Display
+### Show Cameo / 显示载员图标
 
-- You can now configure the game to show passenger cameo icons and counts above a vehicle or building when it is selected. Each passenger type is shown as its cameo with a count number in the upper-right corner.
+- You can now configure the game to show cameo icons and counts above a vehicle or building when it is selected. Both vehicle passengers (`Passengers=`) and garrisoned infantry / occupants (`Occupy=`) are displayed. Each passenger/occupant type is shown as its cameo with a count number in the upper-right corner. Only shown when a single unit is selected (not box-selection).
+- 选中载具或建筑时，在其上方显示载员（`Passengers=`）和驻军（`Occupy=`）的图标与数量。图标为对应单位的Cameo，右上角显示该类型数量。仅单选时显示，框选不显示。
+
+#### Activation modes / 激活模式
+
 - Two activation modes:
-  - **Permanent mode**: Set `ShowPassengers=true` (global) or `ShowPassengers=true` (per-unit) to always show the cameos, regardless of the hotkey state.
-  - **Toggleable mode**: Set `ShowPassengers.Toggleable=true` (global) and use the [Toggle Passengers](#toggle-passengers) hotkey to switch the display on/off.
-- Cameos are arranged in horizontal rows, centered from left to right above the selection bracket, with the bottom row fixed at the bottom boundary. When the number of passenger types exceeds `ShowPassengers.PerRow`, additional rows are stacked above the bottom row.
+  - **Permanent mode / 永久模式**: Set `ShowCameo=true` (global) or `ShowCameo=true` (per-unit) to always show the cameos, regardless of the hotkey state. Per-unit setting overrides the global setting. If a per-unit `ShowCameo` is explicitly set to `false`, cameos are never shown for that unit.
+  - **Toggleable mode / 切换模式**: Set `ShowCameo=false` (global) and `ShowCameo.Toggleable=true` (global), then use the [Toggle Cameos](#toggle-cameos) hotkey to switch the display on/off. The master switch `ShowCameo.Enable` in `RA2MD.INI` controls the toggle state.
+- 两种模式：
+  - **永久模式**：设置全局 `ShowCameo=true` 或单位 `ShowCameo=true` 后始终显示图标，不受快捷键影响。单位级设置覆盖全局设置。若单位级 `ShowCameo` 显式设为 `false`，则该单位永不显示图标。
+  - **切换模式**：全局 `ShowCameo=false` 且 `ShowCameo.Toggleable=true`，使用快捷键切换显示/隐藏。总开关 `ShowCameo.Enable` 在 `RA2MD.INI` 中控制。
+
+#### Display order / 显示顺序
+
+- Cameos are displayed with the **first-entered unit at the top** and the **last-entered unit at the bottom**. For vehicles, the passenger linked list is LIFO (last-in-first-out), so the natural iteration order (last-entered first) already produces the correct layout. For buildings, the passenger list is also LIFO but the Y-axis is flipped to match the same top-to-bottom convention. Occupants (garrisoned infantry) are stored in FIFO order and are displayed directly without reversing.
+- 图标按**先进先上、后进先下**的顺序排列。载具的乘客链表为LIFO（后进先出），自然迭代即产生正确布局。建筑的乘客链表同样为LIFO，但通过Y轴翻转后与载具保持一致的显示顺序。驻军（进驻步兵）按FIFO存储，直接显示，无需反转。
+
+#### Row layout / 行布局
+
+- Cameos are arranged in horizontal rows, centered from left to right above the selection bracket, with the bottom row fixed at the bottom boundary. When the number of cameo types exceeds `ShowCameo.PerRow`, additional rows are stacked above the bottom row.
+- 图标按水平行排列，自左向右居中于选择框上方，底行固定在下边界。当图标类型数量超过 `ShowCameo.PerRow` 时，在底行上方堆叠更多行。
+
+#### Custom cameo shape / 自定义图标
+
+- A custom cameo shape (SHP) can be specified per passenger/occupant type via `ShowCameo.CustomShape` in `artmd.ini`. The value is a SHP filename (e.g., `mycameo.shp`). Animated SHPs are supported (frames cycle automatically). The SHP's actual dimensions define its canvas size for overlap calculations.
+- 可在 `artmd.ini` 中通过 `ShowCameo.CustomShape` 为每种载员/驻军类型指定自定义SHP图标（如 `mycameo.shp`）。支持动画SHP（帧自动循环）。SHP的实际尺寸决定其画布大小。
+- A custom palette can be specified via `ShowCameo.CustomPalette` in `artmd.ini`. If not set, the palette falls back to `CameoPalette` (from Ares) or the default `CAMEO_PAL`.
+- 可通过 `artmd.ini` 中的 `ShowCameo.CustomPalette` 指定自定义色盘。未设置时回退到 `CameoPalette`（Ares标签）或默认的 `CAMEO_PAL`。
+
+#### Translucency / 透明度
+
+- Transparency can be controlled via `ShowCameo.Translucency` (values 0/25/50/75, default 0 = fully opaque). The translucency applies to SHP cameos; PCX cameos are drawn without transparency.
+- 透明度通过 `ShowCameo.Translucency` 控制（取值 0/25/50/75，默认 0 = 完全不透明）。透明度仅作用于SHP图标，PCX图标无透明效果。
+
+#### Icon overlap and positioning / 图标重叠与定位
+
+Each cameo icon occupies a **canvas** (rectangle area). For standard cameos, the canvas is 60x48 pixels. For custom SHPs, the canvas is the SHP's actual dimensions (`Width` x `Height`).
+每个图标占据一个**画布**（矩形区域）。标准图标的画布为60x48像素，自定义SHP的画布为其实际尺寸。
+
+The positioning logic follows this order / 定位顺序：
+1. **Row layout / 行布局**: Cameos are placed in rows according to `ShowCameo.PerRow`.
+2. **OverlapXY / 重叠百分比**: Percentage-based overlap is applied.
+3. **OffsetXY / 像素偏移**: Pixel-based offset is added.
+4. **Centering / 居中**: Each row is horizontally centered.
+
+The overlap formula / 重叠公式：
+```
+overlap = coveredCanvasSize * (OverlapXY% / 100) + OffsetXY
+```
+- `ShowCameo.OverlapPrimary=true` (default): the primary (earlier) cameo covers the secondary (later) cameo. Overlap is based on the secondary cameo's canvas size.
+- `ShowCameo.OverlapPrimary=false`: the secondary (later) cameo covers the primary (earlier) cameo. Overlap is based on the primary cameo's canvas size.
+- `ShowCameo.OverlapPrimary=true`（默认）：前面的图标覆盖后面的图标，重叠量基于后面图标的画布尺寸计算。
+- `ShowCameo.OverlapPrimary=false`：后面的图标覆盖前面的图标，重叠量基于前面图标的画布尺寸计算。
+- On the same row, only X overlap matters (Y has no effect). When wrapping to a new row, only Y overlap matters (X has no effect).
+- 同行只有X重叠生效（Y无效果），换行只有Y重叠生效（X无效果）。
+
+```{hint}
+For example, with `ShowCameo.PerRow=1` (vertical stacking), `ShowCameo.OverlapPrimary=true` means the bottom cameo covers the one above it, preserving the bottom cameo's text label from being hidden.
+例如，`ShowCameo.PerRow=1`（垂直排列）时，`ShowCameo.OverlapPrimary=true` 表示底部的图标覆盖上方图标，保证底部图标的数量文字不被遮挡。
+```
+
+- `ShowCameo.OverlapXY` has no range restriction — values can be freely set (including negative values to increase spacing).
+- `ShowCameo.OffsetXY` accepts any integer value (positive or negative) for fine-tuning.
+- `ShowCameo.OverlapXY` 无范围限制，可自由设置（包括负值以增加间距）。
+- `ShowCameo.OffsetXY` 接受任意整数值（正负均可）用于微调。
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ShowCameo.Enable=true               ; boolean, master switch / 总开关
+```
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-ShowPassengers=false              ; boolean
-ShowPassengers.Toggleable=false   ; boolean
-ShowPassengers.PerRow=5               ; integer, defaults to 5
-ShowPassengers.BottomOffset=0,0       ; X,Y, defaults to 0,0
+ShowCameo=false                     ; boolean, permanent mode / 永久模式, default false
+ShowCameo.Toggleable=false          ; boolean, allow hotkey toggle / 允许快捷键切换, default false
+ShowCameo.PerRow=5                  ; integer, max cameos per row / 每行最大图标数, default 5
+ShowCameo.BottomOffset=0,0          ; X,Y, bottom boundary offset / 下边界偏移, default 0,0
+ShowCameo.Translucency=0            ; translucency level (0/25/50/75) / 透明度, default 0
+ShowCameo.OverlapXY=0,0             ; X,Y overlap percentage / 重叠百分比, no limit, default 0,0
+ShowCameo.OffsetXY=0,0              ; X,Y pixel offset / 像素偏移, default 0,0
+ShowCameo.OverlapPrimary=true       ; boolean, primary covers secondary / 前面覆盖后面, default true
 
-[SOMETECHNO]                      ; TechnoType
-ShowPassengers=                   ; boolean, defaults to [AudioVisual] -> ShowPassengers
-ShowPassengers.PerRow=                ; integer, defaults to [AudioVisual] -> ShowPassengers.PerRow
-ShowPassengers.BottomOffset=          ; X,Y, defaults to [AudioVisual] -> ShowPassengers.BottomOffset
+[SOMETECHNO]                        ; TechnoType (transport building/vehicle / 载具/建筑类型)
+ShowCameo=                          ; boolean, default true (does not follow [AudioVisual] / 不跟随全局默认)
+ShowCameo.PerRow=                   ; integer, defaults to [AudioVisual] -> ShowCameo.PerRow
+ShowCameo.BottomOffset=             ; X,Y, defaults to [AudioVisual] -> ShowCameo.BottomOffset
+ShowCameo.Translucency=             ; translucency level (0/25/50/75), defaults to [AudioVisual]
+ShowCameo.OverlapXY=                ; X,Y, defaults to [AudioVisual] -> ShowCameo.OverlapXY
+ShowCameo.OffsetXY=                 ; X,Y, defaults to [AudioVisual] -> ShowCameo.OffsetXY
+ShowCameo.OverlapPrimary=           ; boolean, defaults to [AudioVisual] -> ShowCameo.OverlapPrimary
 ```
 
-- When toggled via the hotkey, messages are shown from CSF labels `MSG:PassengerCameoDisplayEnabled` (fallback: "Passenger Cameos Display: Enabled") and `MSG:PassengerCameoDisplayDisabled` (fallback: "Passenger Cameos Display: Disabled").
+In `artmd.ini`:
+```ini
+[SOMETECHNO]                        ; TechnoType (passenger/occupant type / 载员/驻军类型)
+ShowCameo.CustomShape=              ; SHP filename, custom cameo icon / 自定义图标SHP文件名
+ShowCameo.CustomPalette=            ; PAL filename, custom palette / 自定义色盘文件名
+```
+
+- When toggled via the hotkey in toggleable mode, messages are shown from CSF labels `MSG:ShowCameoEnabled` (fallback: "Cameos Display: Enabled") and `MSG:ShowCameoDisabled` (fallback: "Cameos Display: Disabled").
+- 切换模式下，通过快捷键切换时显示CSF消息 `MSG:ShowCameoEnabled`（兜底："Cameos Display: Enabled"）和 `MSG:ShowCameoDisabled`（兜底："Cameos Display: Disabled"）。
 
 ## Hotkey Commands
 
@@ -582,10 +665,10 @@ ShowPassengers.BottomOffset=          ; X,Y, defaults to [AudioVisual] -> ShowPa
 - Switches on/off [digital display types](#digital-display).
 - For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC` into your `.csf` file.
 
-### `[ ]` Toggle Passengers
+### `[ ]` Toggle Cameos
 
-- Switches on/off [passenger cameo display](#passenger-cameo-display).
-- For localization add `TXT_PASSENGERCAMEO` and `TXT_PASSENGERCAMEO_DESC` into your `.csf` file.
+- Switches on/off [cameo display](#show-cameo) in toggleable mode. Has no effect in permanent mode.
+- For localization add `TXT_SHOWCAMEO` and `TXT_SHOWCAMEO_DESC` into your `.csf` file.
 
 ### `[ ]` Next Idle Harvester
 

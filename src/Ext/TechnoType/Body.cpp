@@ -1344,6 +1344,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->CameoPCX.Read(pArtINI, pArtSection, "CameoPCX");
 	this->AltCameoPCX.Read(pArtINI, pArtSection, "AltCameoPCX");
+	this->ShowCameo_CustomPalette.LoadFromINI(pArtINI, pArtSection, "ShowCameo.CustomPalette");
+	this->ShowCameo_CustomShape.Read(exArtINI, pArtSection, "ShowCameo.CustomShape");
 
 	this->LaserTrailData.clear();
 	for (size_t i = 0; ; ++i)
@@ -1464,9 +1466,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->VoiceIFVRepair.Read(exINI, pSection, "VoiceIFVRepair");
 	this->ParseVoiceWeaponAttacks(exINI, pSection, this->VoiceWeaponAttacks, this->VoiceEliteWeaponAttacks);
 
-	this->ShowPassengers.Read(exINI, pSection, "ShowPassengers");
-	this->ShowPassengers_PerRow.Read(exINI, pSection, "ShowPassengers.PerRow");
-	this->ShowPassengers_BottomOffset.Read(exINI, pSection, "ShowPassengers.BottomOffset");
+	this->ShowCameo.Read(exINI, pSection, "ShowCameo");
+	this->ShowCameo_PerRow.Read(exINI, pSection, "ShowCameo.PerRow");
+	this->ShowCameo_BottomOffset.Read(exINI, pSection, "ShowCameo.BottomOffset");
+	this->ShowCameo_Translucency.Read(exINI, pSection, "ShowCameo.Translucency");
+	this->ShowCameo_OverlapXY.Read(exINI, pSection, "ShowCameo.OverlapXY");
+	this->ShowCameo_OffsetXY.Read(exINI, pSection, "ShowCameo.OffsetXY");
+	this->ShowCameo_OverlapPrimary.Read(exINI, pSection, "ShowCameo.OverlapPrimary");
 
 	this->CameoPalette.LoadFromINI(pArtINI, pArtSection, "CameoPalette");
 }
@@ -1540,6 +1546,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CameoPriority)
 		.Process(this->CameoPCX)
 		.Process(this->AltCameoPCX)
+		.Process(this->ShowCameo_CustomPalette)
+		.Process(this->ShowCameo_CustomShape)
 		.Process(this->NoManualMove)
 		.Process(this->InitialStrength)
 		.Process(this->ReloadInTransport)
@@ -1980,11 +1988,16 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Missile_TakeOffAnim)
 		.Process(this->Missile_TakeOffSeparation)
 
-		.Process(this->ShowPassengers)
-		.Process(this->ShowPassengers_PerRow)
-		.Process(this->ShowPassengers_BottomOffset)
+		.Process(this->ShowCameo)
+		.Process(this->ShowCameo_PerRow)
+		.Process(this->ShowCameo_BottomOffset)
+		.Process(this->ShowCameo_Translucency)
+		.Process(this->ShowCameo_OverlapXY)
+		.Process(this->ShowCameo_OffsetXY)
+		.Process(this->ShowCameo_OverlapPrimary)
 		.Process(this->CameoPalette)
-		;
+		.Process(this->ShowCameo_CustomPalette)
+		.Process(this->ShowCameo_CustomShape)	;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {

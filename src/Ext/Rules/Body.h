@@ -194,10 +194,14 @@ public:
 
 		Valueable<bool> MergeBuildingDamage;
 
-		Valueable<bool> ShowPassengers;
-		Valueable<bool> ShowPassengers_Toggleable;
-		Valueable<int> ShowPassengers_PerRow;
-		Valueable<Point2D> ShowPassengers_BottomOffset;
+		Valueable<bool> ShowCameo;
+		Valueable<bool> ShowCameo_Toggleable;
+		Valueable<int> ShowCameo_PerRow;
+		Valueable<Point2D> ShowCameo_BottomOffset;
+		TranslucencyLevel ShowCameo_Translucency;
+		Valueable<Point2D> ShowCameo_OverlapXY;
+		Valueable<Point2D> ShowCameo_OffsetXY;
+		Valueable<bool> ShowCameo_OverlapPrimary;
 
 		Valueable<double> DamageOwnerMultiplier;
 		Valueable<double> DamageAlliesMultiplier;
@@ -710,10 +714,14 @@ public:
 
 			, AllowBeaconHotKeyInSinglePlayer { false }
 
-			, ShowPassengers { false }
-			, ShowPassengers_Toggleable { false }
-			, ShowPassengers_PerRow { 5 }
-			, ShowPassengers_BottomOffset { { 0, 0 } }
+			, ShowCameo { false }
+			, ShowCameo_Toggleable { false }
+			, ShowCameo_PerRow { 5 }
+			, ShowCameo_BottomOffset { { 0, 0 } }
+			, ShowCameo_Translucency { 0 }
+			, ShowCameo_OverlapXY { { 0, 0 } }
+			, ShowCameo_OffsetXY { { 0, 0 } }
+			, ShowCameo_OverlapPrimary { true }
 		{ }
 
 		virtual ~ExtData() = default;

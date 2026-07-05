@@ -523,10 +523,16 @@ public:
 		Valueable<AnimTypeClass*> Missile_TakeOffAnim;
 		Valueable<int> Missile_TakeOffSeparation;
 
-		Nullable<bool> ShowPassengers;
-		Nullable<int> ShowPassengers_PerRow;
-		Nullable<Point2D> ShowPassengers_BottomOffset;
+		Nullable<bool> ShowCameo;
+		Nullable<int> ShowCameo_PerRow;
+		Nullable<Point2D> ShowCameo_BottomOffset;
+		Nullable<TranslucencyLevel> ShowCameo_Translucency;
+		Nullable<Point2D> ShowCameo_OverlapXY;
+		Nullable<Point2D> ShowCameo_OffsetXY;
+		Nullable<bool> ShowCameo_OverlapPrimary;
 		CustomPalette CameoPalette;
+		CustomPalette ShowCameo_CustomPalette;
+		TheaterSpecificSHP ShowCameo_CustomShape;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -1004,10 +1010,16 @@ public:
 			, Missile_TakeOffAnim { nullptr }
 			, Missile_TakeOffSeparation { 24 }
 
-			, ShowPassengers {}
-			, ShowPassengers_PerRow {}
-			, ShowPassengers_BottomOffset {}
+			, ShowCameo {}
+			, ShowCameo_PerRow {}
+			, ShowCameo_BottomOffset {}
+			, ShowCameo_Translucency {}
+			, ShowCameo_OverlapXY {}
+			, ShowCameo_OffsetXY {}
+			, ShowCameo_OverlapPrimary {}
 			, CameoPalette {}
+			, ShowCameo_CustomPalette {}
+			, ShowCameo_CustomShape {}
 		{ }
 
 		virtual ~ExtData() = default;

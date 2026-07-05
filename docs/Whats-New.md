@@ -35,6 +35,7 @@ This serves as a changelog for when you just need to drop the new version in wit
 - `UseCenterCoordsIfAttached` has been replaced by enumeration key `AttachedAnimPosition`. Set `AttachedAnimPosition=center` to replicate effects of `UseCenterCoordsIfAttached=true`.
 - Units' `LaserTrails` will no longer lag behind by one frame, so it needs to be repositioned if the position was corrected to account for the bug.
 - `DeployingAnim.AllowAnyDirection` has been superceded by `DeployDir`. Use value of -1 to re-enable the no facing restriction.
+- Show Cameo feature: All `ShowPassengers` tags have been renamed to `ShowCameo` for consistency and to avoid ambiguity with building occupants. The master switch `ShowPassengers.Enable` in `[Phobos]` is now `ShowCameo.Enable` and defaults to `true`. See [Show Cameo](User-Interface.md#show-cameo) for details.
 - The following tags were renamed for consistency:
   - `[AttachEffectType] -> AffectTargets` -> `[AttachEffectType] -> AffectsTarget`
   - `[AttachEffectType] -> ReflectDamage.AffectsHouses` -> `[AttachEffectType] -> ReflectDamage.AffectsHouse`
@@ -137,6 +138,7 @@ This serves as a changelog for when you just need to drop the new version in wit
 CampaignDefaultGameSpeed=4       ; integer
 ShowBriefing=true                ; boolean
 DigitalDisplay.Enable=false      ; boolean
+ShowCameo.Enable=true            ; boolean
 ShowDesignatorRange=false        ; boolean
 PrioritySelectionFiltering=true  ; boolean
 PriorityDeployFiltering=true     ; boolean
