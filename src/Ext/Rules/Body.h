@@ -194,15 +194,6 @@ public:
 
 		Valueable<bool> MergeBuildingDamage;
 
-		Valueable<bool> ShowCameo;
-		Valueable<bool> ShowCameo_Toggleable;
-		Valueable<int> ShowCameo_PerRow;
-		Valueable<Point2D> ShowCameo_BottomOffset;
-		TranslucencyLevel ShowCameo_Translucency;
-		Valueable<Point2D> ShowCameo_OverlapXY;
-		Valueable<Point2D> ShowCameo_OffsetXY;
-		Valueable<bool> ShowCameo_OverlapPrimary;
-
 		Valueable<double> DamageOwnerMultiplier;
 		Valueable<double> DamageAlliesMultiplier;
 		Valueable<double> DamageEnemiesMultiplier;
@@ -390,6 +381,15 @@ public:
 		Valueable<bool> SecondaryFireSequenceLandOnly;
 		Valueable<bool> AutoRemoveEarliestBeacon;
 		Valueable<bool> AllowBeaconHotKeyInSinglePlayer;
+
+		Valueable<bool> ShowCameo;
+		Valueable<bool> ShowCameo_Toggleable;
+		Valueable<int> ShowCameo_PerRow;
+		Valueable<Point2D> ShowCameo_BottomOffset;
+		TranslucencyLevel ShowCameo_Translucency;
+		Valueable<Point2D> ShowCameo_OverlapXY;
+		Valueable<Point2D> ShowCameo_OffsetXY;
+		Valueable<bool> ShowCameo_OverlapPrimary;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }

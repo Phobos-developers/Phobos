@@ -610,11 +610,6 @@ ShowCameo.CustomPalette=            ; PAL filename
 - Switches on/off [digital display types](#digital-display).
 - For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC` into your `.csf` file.
 
-### `[ ]` Toggle Cameos
-
-- Switches on/off [cameo display](#show-cameo) in toggleable mode. Has no effect in permanent mode.
-- For localization add `TXT_SHOWCAMEO` and `TXT_SHOWCAMEO_DESC` into your `.csf` file.
-
 ### `[ ]` Next Idle Harvester
 
 - Selects and centers the camera on the next TechnoType that is counted via the [harvester counter](#harvester-counter) and is currently idle.
@@ -636,6 +631,11 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
 
 - Switches on/off [Task subtitles' label in the middle of the screen](#task-subtitles-display-in-the-middle-of-the-screen).
 - For localization add `TXT_TOGGLE_MESSAGE` and `TXT_TOGGLE_MESSAGE_DESC` into your `.csf` file.
+
+### `[ ]` Toggle Cameos
+
+- Switches on/off [cameo display](#show-cameo) in toggleable mode. Has no effect in permanent mode.
+- For localization add `TXT_SHOWCAMEO` and `TXT_SHOWCAMEO_DESC` into your `.csf` file.
 
 ### `[ ]` Deselect Object(s)
 

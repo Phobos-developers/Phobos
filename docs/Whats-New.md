@@ -35,7 +35,6 @@ This serves as a changelog for when you just need to drop the new version in wit
 - `UseCenterCoordsIfAttached` has been replaced by enumeration key `AttachedAnimPosition`. Set `AttachedAnimPosition=center` to replicate effects of `UseCenterCoordsIfAttached=true`.
 - Units' `LaserTrails` will no longer lag behind by one frame, so it needs to be repositioned if the position was corrected to account for the bug.
 - `DeployingAnim.AllowAnyDirection` has been superceded by `DeployDir`. Use value of -1 to re-enable the no facing restriction.
-- Show Cameo feature: All `ShowPassengers` tags have been renamed to `ShowCameo` for consistency and to avoid ambiguity with building occupants. The master switch `ShowPassengers.Enable` in `[Phobos]` is now `ShowCameo.Enable` and defaults to `true`. See [Show Cameo](User-Interface.md#show-cameo) for details.
 - The following tags were renamed for consistency:
   - `[AttachEffectType] -> AffectTargets` -> `[AttachEffectType] -> AffectsTarget`
   - `[AttachEffectType] -> ReflectDamage.AffectsHouses` -> `[AttachEffectType] -> ReflectDamage.AffectsHouse`
@@ -694,6 +693,7 @@ HideShakeEffects=false           ; boolean
 - Fixed the bug that low-air taking off / landing objects will receive twice damage (by NetsuNegi)
 - Fixed voxel projectile and animation lighting issues (by TaranDahl)
 - Fixed the bug that techno will get stuck if change owner in tunnel (by NetsuNegi)
+- Show Cameo feature to display passenger/occupant cameos above selected vehicles/buildings (see [User Interface](User-Interface.md#show-cameo))
 
 #### Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

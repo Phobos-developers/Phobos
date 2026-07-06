@@ -92,7 +92,6 @@ public:
 		static bool EnableBuildingPlacementPreview;
 		static bool EnableSelectBox;
 		static bool DigitalDisplay_Enable;
-		static bool ShowCameo_Enable;
 		static bool MessageApplyHoverState;
 		static bool MessageDisplayInCenter;
 		static int MessageDisplayInCenter_BoardOpacity;
@@ -117,6 +116,7 @@ public:
 		static bool ShowFlashOnSelecting;
 		static bool UnitPowerDrain;
 		static int SuperWeaponSidebar_RequiredSignificance;
+		static bool ShowCameo_Enable;
 	};
 
 	class Misc
