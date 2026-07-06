@@ -214,31 +214,28 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pTypeExt = pExt->TypeExtData;
+	const bool isInLimbo = !pThis->IsInLogic && pThis->IsAlive;
 
-	if (pTypeExt->AutoDeath_Behavior.isset())
+	if (pTypeExt->AutoDeath_Behavior.isset() && !(isInLimbo && !pTypeExt->AutoDeath_AllowLimboed))
 	{
-		const bool isInLimbo = !pThis->IsInLogic && pThis->IsAlive;
-		if (!(isInLimbo && !pTypeExt->AutoDeath_AllowLimboed))
+		const bool humanToComputer = pTypeExt->AutoDeath_OnOwnerChange_HumanToComputer.Get(pTypeExt->AutoDeath_OnOwnerChange);
+		const bool computerToHuman = pTypeExt->AutoDeath_OnOwnerChange_ComputerToHuman.Get(pTypeExt->AutoDeath_OnOwnerChange);
+
+		if (humanToComputer && computerToHuman)
 		{
-			const bool humanToComputer = pTypeExt->AutoDeath_OnOwnerChange_HumanToComputer.Get(pTypeExt->AutoDeath_OnOwnerChange);
-			const bool computerToHuman = pTypeExt->AutoDeath_OnOwnerChange_ComputerToHuman.Get(pTypeExt->AutoDeath_OnOwnerChange);
+			TechnoExt::KillSelf(pThis, pTypeExt->AutoDeath_Behavior, pTypeExt->AutoDeath_VanishAnimation, !pThis->IsInLogic && pThis->IsAlive);
+			return 0;
+		}
+		else if (humanToComputer || computerToHuman)
+		{
+			const bool I_am_human = pThis->Owner->IsControlledByHuman();
 
-			if (humanToComputer && computerToHuman)
+			if (I_am_human != pNewOwner->IsControlledByHuman())
 			{
-				TechnoExt::KillSelf(pThis, pTypeExt->AutoDeath_Behavior, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
-				return 0;
-			}
-			else if (humanToComputer || computerToHuman)
-			{
-				const bool I_am_human = pThis->Owner->IsControlledByHuman();
-
-				if (I_am_human != pNewOwner->IsControlledByHuman())
+				if ((I_am_human && humanToComputer) || (!I_am_human && computerToHuman))
 				{
-					if ((I_am_human && humanToComputer) || (!I_am_human && computerToHuman))
-					{
-						TechnoExt::KillSelf(pThis, pTypeExt->AutoDeath_Behavior, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
-						return 0;
-					}
+					TechnoExt::KillSelf(pThis, pTypeExt->AutoDeath_Behavior, pTypeExt->AutoDeath_VanishAnimation, !pThis->IsInLogic && pThis->IsAlive);
+					return 0;
 				}
 			}
 		}
