@@ -287,6 +287,9 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 
 	auto const pThis = this->OwnerObject();
 
+	if (pThis->Transporter && !pTypeExt->AutoDeath_AllowPassenger)
+		return false;
+
 	// Self-destruction must be enabled
 	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
 

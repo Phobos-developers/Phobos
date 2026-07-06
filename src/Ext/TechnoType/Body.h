@@ -92,6 +92,7 @@ public:
 
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
 		Valueable<bool> AutoDeath_AllowLimboed;
+		Valueable<bool> AutoDeath_AllowPassenger;
 		ValueableVector<AnimTypeClass*> AutoDeath_VanishAnimation;
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
 		Valueable<bool> AutoDeath_OnOwnerChange;
@@ -649,6 +650,7 @@ public:
 
 			, AutoDeath_Behavior { }
 			, AutoDeath_AllowLimboed { true }
+			, AutoDeath_AllowPassenger { true }
 			, AutoDeath_VanishAnimation {}
 			, AutoDeath_OnAmmoDepletion { false }
 			, AutoDeath_OnOwnerChange { false }
