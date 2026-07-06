@@ -21,8 +21,26 @@ static void __stdcall Sub_4ADCD0(char a1, DWORD a2)
 
 #pragma endregion
 
+struct InvokerGuard
+{
+	WarheadTypeExt::ExtData* pExt;
+	TechnoClass* pOldInvoker;
+
+	InvokerGuard(WarheadTypeExt::ExtData* pExt, TechnoClass* pInvoker)
+		: pExt(pExt), pOldInvoker(pExt->DamageAreaInvoker)
+	{
+		pExt->DamageAreaInvoker = pInvoker;
+	}
+
+	~InvokerGuard()
+	{
+		pExt->DamageAreaInvoker = pOldInvoker;
+	}
+};
+
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBulletExt, CoordStruct coords)
 {
+	InvokerGuard guard(this, pOwner);
 	auto const pBullet = pBulletExt ? pBulletExt->OwnerObject() : nullptr;
 
 	if (pBulletExt && pBulletExt->InterceptorTechnoType)
@@ -382,7 +400,7 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 
 		if (shieldType)
 		{
-			if (shieldType->Strength
+			if (shieldType->Strength > 0
 				&& (!pShield
 					|| (this->Shield_ReplaceNonRespawning
 						&& pShield->IsBrokenAndNonRespawning()

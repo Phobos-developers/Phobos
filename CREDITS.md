@@ -53,6 +53,7 @@ This page lists all the individual contributions to the project by their author.
   - Ported XNA CnCNet Client MP save handling
   - Retint fix toggle
   - Voxel drawing invisible sections skip
+  - Animatable template
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -266,6 +267,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizing effect of level lighting on air units
   - Reimplemented `Airburst` & `Splits` logic with more customization options
   - Buildings considered as destroyable pathfinding obstacles
+  - Animation transparency customization settings
   - Animation visibility customization settings
   - Light effect customizations
   - Building unit repair customizations
@@ -296,6 +298,8 @@ This page lists all the individual contributions to the project by their author.
   - Armed building guard mission retry delay customization
   - Building turret idle/firing/low power animations
   - Animation theater/tile palette toggle
+  - Animatable template
+  - Tank Bunker improvements
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -541,6 +545,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug where passengers, when their transport unit is removed, would cause incorrect `LimboTracker` counts due to either having their destructor called directly (bypassing `UnInit`) or nested `UnInit` calls resetting the deletion flag too early, thereby breaking auto-death and superweapon auxiliary techno checks
   - Allow `Temporal` warhead to apply ratio and bonus
   - Fix the bug that techno will get stuck if change owner in tunnel
+  - Fix the bug that the vanilla `SecondSpawnOffset` no longer takes effect
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -678,6 +683,18 @@ This page lists all the individual contributions to the project by their author.
   - Introduce weight selection rules for ExtraWarheads
   - Add action `512 Set Follower for Associated Unit...`
   - Dehardcode of parasites unlimboing after killing naval targets
+  - Allow warhead to only affect invoker
+  - Allow customizing whether the creation of shrapnel weapon is controlled by the new target check on the warhead of the parent weapon
+  - Customize `Tiled` drawing interval and centering
+  - Customize whether technos with `Locomotor=Fly` wobble
+  - Customize the landing animation of technos that have `Locomotor=Fly`
+  - Allow infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true`
+  - Allow infantry to perform type conversion when deploying and undeploying
+  - Custom cruise missiles
+  - Add a toggle for disabling `SecondaryFire` / `SecondaryProne` on water
+  - Customize the step limit of the credits indicator
+  - Disable the credits indicator smooth transition
+  - Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn`
   - Allow Laser drawing position update
 - **Ollerus**:
   - Build limit group enhancement
@@ -791,6 +808,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow disable an over-optimization in targeting
   - Extra threat
   - Fix the incorrect mission switching in infantry EnterIdleMode
+  - Customizable Berzerk mission
   - Fix the issue that `BombSight` not being updated correctly in techno conversion
   - Fix BalloonHover incorrectly considering ground factors when pathfinding
   - Technos with Walk locomotor spawn wake like ship
@@ -802,12 +820,16 @@ This page lists all the individual contributions to the project by their author.
   - Framework for dynamic sight
   - Fix voxel projectile and animation lighting issues
   - Export interface for external call
+  - Allow chat box in singleplayer
+  - Auto-remove earliest beacon
+  - Allow beacon placement hotkey in single player
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
 - **Flactine**
   - Add target filtering options to attacheffect system
   - Add veterancy-based target filtering for weapons and warheads
+  - Recipient-specific message and EVA on superweapon activation
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
@@ -854,3 +876,6 @@ This page lists all the individual contributions to the project by their author.
   - Multiplayer gamespeed fix for RealTimeTimers
   - Revert Ares patch to allow OpenTopped transport customization
   - Fix for units with Fly, Jumpjet or Rocket locomotors crashing off-map not being cleaned up
+- **Chang_zhi**:
+  - Interop export interface for accessing scenario local/global variables
+  - Add `ClampToScreen` tag for `BannerType` to control whether banner position is clamped to the visible area

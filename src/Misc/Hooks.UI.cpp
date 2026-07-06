@@ -75,6 +75,29 @@ DEFINE_HOOK(0x641EE0, PreviewClass_ReadPreview, 0x6)
 	return 0x64203D;
 }
 
+DEFINE_HOOK(0x4A26E8, CreditClass_AI_SmoothDisable, 0x6)
+{
+	if (!Phobos::UI::CreditsIndicator_Smooth)
+		return 0x4A26F0;
+	else
+		return 0;
+}
+
+DEFINE_HOOK(0x4A2729, CreditClass_AI_CreditsStepClamp, 0x5)
+{
+	enum { Continue = 0x4A2735 };
+
+    int maxStep = Phobos::UI::CreditsIndicator_MaxStep;
+    if (maxStep <= 0)
+        return Continue;
+
+    GET(int, current, EAX);
+
+    R->EAX(Math::min(current, maxStep));
+
+    return Continue;
+}
+
 DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 {
 	auto const pPlayer = HouseClass::CurrentPlayer;

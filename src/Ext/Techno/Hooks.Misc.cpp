@@ -837,12 +837,13 @@ DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
 
 	R->EBP(0); // Restore overridden instructions.
 
-	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->OnlyUseLandSequences)
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	if (pTypeExt->OnlyUseLandSequences)
 		return SkipWaterSequences;
 
 	if (sequence == Sequence::Walk || sequence == Sequence::Crawl) // Restore overridden instructions.
 		return UseSwim;
-	else if (sequence == Sequence::SecondaryFire || sequence == Sequence::SecondaryProne)
+	else if ((sequence == Sequence::SecondaryFire || sequence == Sequence::SecondaryProne) && pTypeExt->SecondaryFireSequenceLandOnly.Get(RulesExt::Global()->SecondaryFireSequenceLandOnly))
 		return UseWetAttack;
 
 	return Continue;

@@ -319,6 +319,7 @@ public:
 		Valueable<bool> ExtraRange_Prefiring_IncludeBurst;
 
 		Valueable<bool> ApplyPerTargetEffectsOnDetonate;
+		Valueable<bool> AffectsInvokerOnly_IgnoreInvokerState;
 
 		Valueable<bool> FiringAnim_Update;
 		Valueable<bool> ExtendedPlayerRepair;
@@ -353,6 +354,7 @@ public:
 		Valueable<bool> ShipLocomotorMakesWake;
 
 		Valueable<bool> Shrapnel_IgnoreHitBuildings;
+		Valueable<bool> Shrapnel_ObeyWarheadTriggerConditions;
 
 		Nullable<PartialVector2D<int>> BuildingGuardRetryDelay;
 
@@ -360,11 +362,27 @@ public:
 		Valueable<bool> Temporal_ApplyMultiplier;
 
 		Valueable<bool> DiscardOn_MoveBasedOnDestination;
+		Valueable<bool> DiscardOn_ConsiderHarvestingAsStationary;
 		Valueable<bool> RemoveMindControl_Silent;
 		Valueable<bool> MindControl_Permanent_ReplaceSilent;
+		Nullable<bool> FlyNoWobbles;
+
+		Valueable<AnimTypeClass*> DefaultLandingAnim;
+		Nullable<AnimTypeClass*> DefaultLandingAnim_Dropship;
+		Nullable<AnimTypeClass*> DefaultLandingAnim_Carryall;
 
 		Valueable<DynamicTeamDelayType> TeamDelays_DynamicType;
 		Valueable<Vector3D<int>> TeamDelays_Count[8];
+    
+		Valueable<Mission> BerzerkMission;
+
+		Valueable<int> BunkerStateUpdateDelay;
+
+		Valueable<bool> AllowChatBoxInSinglePlayer;
+
+		Valueable<bool> SecondaryFireSequenceLandOnly;
+		Valueable<bool> AutoRemoveEarliestBeacon;
+		Valueable<bool> AllowBeaconHotKeyInSinglePlayer;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -622,6 +640,7 @@ public:
 			, BuildingRadioLink_SyncOwner { true }
 
 			, ApplyPerTargetEffectsOnDetonate { true }
+			, AffectsInvokerOnly_IgnoreInvokerState { true }
 
 			, ExtraRange_TargetMoving { Leptons(0) }
 			, ExtraRange_TargetMoving_CloseRangeOnly { false }
@@ -660,15 +679,35 @@ public:
 			, FiringAnim_Update { false }
 			, ExtendedPlayerRepair { false }
 			, Shrapnel_IgnoreHitBuildings { false }
+			, Shrapnel_ObeyWarheadTriggerConditions { true }
 			, BuildingGuardRetryDelay {}
 			, Temporal_ApplyVersus { false }
 			, Temporal_ApplyMultiplier { false }
 			, DiscardOn_MoveBasedOnDestination { false }
+			, DiscardOn_ConsiderHarvestingAsStationary { true }
 			, RemoveMindControl_Silent { false }
 			, MindControl_Permanent_ReplaceSilent { false }
 
+			, FlyNoWobbles {}
+
+			, DefaultLandingAnim { nullptr }
+			, DefaultLandingAnim_Dropship {}
+			, DefaultLandingAnim_Carryall {}
+
 			, TeamDelays_DynamicType { DynamicTeamDelayType::StartingPoint }
 			, TeamDelays_Count {}
+
+			, BerzerkMission { Mission::Hunt }
+
+			, BunkerStateUpdateDelay { 15 }
+				
+			, AllowChatBoxInSinglePlayer { false }
+
+			, SecondaryFireSequenceLandOnly { true }
+
+			, AutoRemoveEarliestBeacon { false }
+
+			, AllowBeaconHotKeyInSinglePlayer { false }
 		{ }
 
 		virtual ~ExtData() = default;

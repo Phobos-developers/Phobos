@@ -6,7 +6,11 @@
 #include "Ext/Building/Body.h"
 #include <Ext/Event/Body.h>
 
+#include <BeaconManagerClass.h>
+
 #include <unordered_map>
+#include <algorithm>
+#include <utility>
 
 // Trigger power recalculation on gain/loss of any techno, not just buildings.
 DEFINE_HOOK_AGAIN(0x5025F0, HouseClass_RegisterGain, 0x5) // RegisterLoss
@@ -467,12 +471,15 @@ DEFINE_HOOK(0x4F8ACC, HouseClass_Update_ResetTeamDelay, 0x6)
 		return ResetTeamDelay;
 	}
 
+	const auto teamDelayType = RulesExt::Global()->TeamDelays_DynamicType;
+
+	if (teamDelayType == DynamicTeamDelayType::None)
+		return 0;
+
 	int playerCount = ScenarioClass::Instance->NumberStartingPoints;
 
 	if (playerCount >= 2 && !SessionClass::IsCampaign())
 	{
-		const auto teamDelayType = RulesExt::Global()->TeamDelays_DynamicType;
-
 		if (teamDelayType != DynamicTeamDelayType::StartingPoint)
 		{
 			playerCount = 0;
@@ -675,6 +682,89 @@ DEFINE_HOOK(0x45063F, BuildingClass_UpdateRepairSell_PlayerAutoRepair, 0x6)
 			pThis->SetRepairState(0);
 		return CanNotAutoRepair;
 	}
+}
+
+#pragma endregion
+
+#pragma region BeaconOrder
+
+DEFINE_HOOK(0x43131B, BeaconManagerClass_DeleteBeacon_RecordOrder, 0x5)
+{
+	if (!RulesExt::Global()->AutoRemoveEarliestBeacon)
+		return 0;
+
+	GET(int, beaconIdx, EBX);
+	GET(int, houseIdx, ECX);
+
+	const auto pHouse = HouseClass::Array.GetItem(houseIdx);
+	const auto pExt = HouseExt::ExtMap.Find(pHouse);
+
+	const int oldValue = std::exchange(pExt->BeaconsPlacedOrder[beaconIdx], 0);
+
+	if (oldValue != 0)
+	{
+		for (int i = 0; i < 3; ++i)
+		{
+			if (i != beaconIdx && pExt->BeaconsPlacedOrder[i] > oldValue)
+				--pExt->BeaconsPlacedOrder[i];
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x430E5D, BeaconManagerClass_PlaceBeacon_RecordOrder, 0x5)
+DEFINE_HOOK(0x430C64, BeaconManagerClass_PlaceBeacon_RecordOrder, 0x5)
+{
+	if (!RulesExt::Global()->AutoRemoveEarliestBeacon)
+		return 0;
+
+	GET(int, beaconIdx, EAX);
+	GET(int, houseIdx, EBX);
+
+	const auto pHouse = HouseClass::Array.GetItem(houseIdx);
+	const auto pExt = HouseExt::ExtMap.Find(pHouse);
+
+	const int maxVal = std::max({ pExt->BeaconsPlacedOrder[0], pExt->BeaconsPlacedOrder[1], pExt->BeaconsPlacedOrder[2] });
+	pExt->BeaconsPlacedOrder[beaconIdx] = maxVal + 1;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4AC9B2, MouseClass_ToggleBeaconMode_AllUsed, 0x6)
+{
+	enum { RET = 0x4AC9B8 };
+
+	GET(bool, canPlace, EAX);
+
+	if (canPlace)
+		return RET;
+
+	if (!RulesExt::Global()->AutoRemoveEarliestBeacon)
+	{
+		R->BL(0);
+		return RET;
+	}
+
+	const auto pHouse = HouseClass::CurrentPlayer;
+	const auto pExt = HouseExt::ExtMap.Find(pHouse);
+
+	for (int i = 0; i < 3; ++i)
+	{
+		if (pExt->BeaconsPlacedOrder[i] == 1)
+		{
+			auto pManager = &BeaconManagerClass::Instance;
+			auto pBeacon = pManager->Beacons[pHouse->ArrayIndex][i];
+			// Select and delete beacon.
+			// If you don't select the beacon, the game will not send the IPX packet.
+			MapClass::UnselectAll();
+			pBeacon->Bitfield |= 2;
+			pManager->DeleteBeacon(-1, -1);
+			break;
+		}
+	}
+
+	return RET;
 }
 
 #pragma endregion

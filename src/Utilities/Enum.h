@@ -285,7 +285,6 @@ enum class VerticalPosition : BYTE
 	Center = 1,
 	Bottom = 2
 };
-
 //hexagon
 enum class BuildingSelectBracketPosition :BYTE
 {
@@ -351,7 +350,8 @@ enum class DynamicTeamDelayType : int
 	Enemies = 3,
 	AliveCount = 4,
 	AliveAllies = 5,
-	AliveEnemies = 6
+	AliveEnemies = 6,
+	None = 7
 };
 
 class MouseCursorHotSpotX
@@ -414,4 +414,10 @@ public:
 		}
 		return false;
 	}
+};
+
+enum class InterpolationMode : BYTE
+{
+	None = 0,
+	Linear = 1
 };

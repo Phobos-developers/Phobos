@@ -57,6 +57,8 @@
     <ClCompile Include="src\Ext\Anim\Hooks.cpp" />
     <!-- src\Ext\AnimType -->
     <ClCompile Include="src\Ext\AnimType\Body.cpp" />
+    <!-- src\Ext\Beacon -->
+    <ClCompile Include="src\Ext\Beacon\Hooks.cpp" />
     <!-- src\Ext\Building -->
     <ClCompile Include="src\Ext\Building\Body.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.cpp" />
@@ -217,6 +219,8 @@
     <ClCompile Include="src\Interop\BulletExt.cpp" />
     <ClCompile Include="src\Interop\EventExt.cpp" />
     <ClCompile Include="src\Interop\TechnoExt.cpp" />
+    <ClCompile Include="src\Interop\ScenarioExt.cpp" />
+    <ClCompile Include="src\Interop\Version.cpp" />
     <!-- src\Locomotion -->
     <ClCompile Include="src\Locomotion\TestLocomotionClass.cpp" />
     <!-- src\Misc -->
@@ -230,6 +234,7 @@
     <ClCompile Include="src\Misc\Hooks.INIInheritance.cpp" />
     <ClCompile Include="src\Misc\Hooks.LaserDraw.cpp" />
     <ClCompile Include="src\Misc\Hooks.LightEffects.cpp" />
+    <ClCompile Include="src\Misc\Hooks.MessageList.cpp" />
     <ClCompile Include="src\Misc\Hooks.Overlay.cpp" />
     <ClCompile Include="src\Misc\Hooks.PCX.cpp" />
     <ClCompile Include="src\Misc\Hooks.Timers.cpp" />
@@ -355,6 +360,8 @@
     <ClInclude Include="src\Interop\BulletExt.h" />
     <ClInclude Include="src\Interop\EventExt.h" />
     <ClInclude Include="src\Interop\TechnoExt.h" />
+    <ClInclude Include="src\Interop\ScenarioExt.h" />
+    <ClInclude Include="src\Interop\Version.h" />
     <!-- src\Locomotion -->
     <ClInclude Include="src\Locomotion\TestLocomotionClass.h" />
     <!-- src\Misc -->
@@ -391,6 +398,7 @@
     <ClInclude Include="src\Utilities\Anchor.h" />
     <ClInclude Include="src\Utilities\AresFunctions.h" />
     <ClInclude Include="src\Utilities\AresHelper.h" />
+    <ClInclude Include="src\Utilities\Interpolation.h" />
     <ClInclude Include="src\Utilities\Constructs.h" />
     <ClInclude Include="src\Utilities\Container.h" />
     <ClInclude Include="src\Utilities\Debug.h" />
