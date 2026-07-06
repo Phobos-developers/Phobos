@@ -5,6 +5,7 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <JumpjetLocomotionClass.h>
 
 #pragma region TechnoClass_SelectWeapon
 
@@ -436,17 +437,28 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 	if (pTransport->Deactivated && !pTypeExt->OpenTopped_AllowFiringIfDeactivated)
 		return Illegal;
 
+	if (pTransport->Transporter)
+		return Illegal;
+
+	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+
+	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons && TechnoExt::HasWeaponsDisabled(pTransport) && pWeapon)
+		return OutOfRange;
+
 	if (const auto pTransportFoot = abstract_cast<FootClass*>(pTransport))
 	{
 		if (pTransportFoot->IsAttackedByLocomotor && !pTypeExt->OpenTopped_AllowFiringIfAttackedByLocomotor.Get(RulesExt::Global()->OpenTopped_AllowFiringIfAttackedByLocomotor))
 			return Illegal;
+
+		if (!pTypeExt->OpenTopped_OpportunityFire.Get(RulesExt::Global()->OpenTopped_OpportunityFire)
+			|| !TechnoExt::ExtMap.Find(pThis)->TypeExtData->OpenTransport_OpportunityFire.Get(RulesExt::Global()->OpenTransport_OpportunityFire)
+			|| (pWeapon && !pWeapon->FireWhileMoving))
+		{
+			const auto pLoco = pTransportFoot->Locomotor;
+			if (locomotion_cast<JumpjetLocomotionClass*>(pLoco) ? pLoco->Is_Moving_Now() : pLoco->Is_Really_Moving_Now())
+				return Illegal;
+		}
 	}
-
-	if (pTransport->Transporter)
-		return Illegal;
-
-	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons && TechnoExt::HasWeaponsDisabled(pTransport) && pThis->GetWeapon(weaponIndex)->WeaponType)
-		return OutOfRange;
 
 	return Continue;
 }
