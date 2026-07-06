@@ -1107,9 +1107,15 @@ void TechnoExt::DrawCameos(TechnoClass* pThis)
 		: pRulesExt->ShowCameo_Translucency;
 	const BlitterFlags translucencyFlag = translucency.GetBlitterFlags();
 
-	int idx = 0;
-	for (const auto& item : cameoCounts)
+	// For buildings, draw in reverse so that visual top (earlier-entered) covers visual bottom.
+	// This is needed because Y flip reverses the visual order but overlap calculation
+	// still follows the original cameoCounts (bottom-to-top) order.
+	int idx = (whatAmI == AbstractType::Building) ? count - 1 : 0;
+	const int idxEnd = (whatAmI == AbstractType::Building) ? -1 : count;
+	const int idxStep = (whatAmI == AbstractType::Building) ? -1 : 1;
+	for (; idx != idxEnd; idx += idxStep)
 	{
+		const auto& item = cameoCounts[idx];
 		const auto pCameoType = item.first;
 		const int cameoCount = item.second;
 		const int curW = canvases[idx].width;
@@ -1120,10 +1126,7 @@ void TechnoExt::DrawCameos(TechnoClass* pThis)
 		// Skip icons whose any part exceeds the screen top boundary (Y < 0) to prevent crash
 		// Only the top boundary matters because cameos are always above the selection bracket
 		if (iconPos.Y < 0)
-		{
-			idx++;
 			continue;
-		}
 
 		bool drawn = false;
 
@@ -1197,7 +1200,5 @@ void TechnoExt::DrawCameos(TechnoClass* pThis)
 				TextPrintType::Center | TextPrintType::FullShadow
 			);
 		}
-
-		idx++;
 	}
 }
