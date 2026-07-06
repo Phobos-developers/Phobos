@@ -505,11 +505,32 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `Shield.AttachTypes` & `Shield.RemoveTypes` allows listing ShieldTypes that are attached or removed, respectively from any targets affected by the warhead (positive `Verses` values). Normally only first listed ShieldType in `Shield.AttachTypes` is applied.
     - If `Shield.ReplaceOnly` is set, shields from `Shield.AttachTypes` are only applied to affected targets from which shields were simultaneously removed, matching the order listed in `Shield.RemoveTypes`. If `Shield.AttachTypes` contains less items than `Shield.RemoveTypes`, last item from the former is used for any remaining removed shields.
     - If `Shield.ReplaceNonRespawning` is set, shield from `Shield.AttachTypes` replaces existing shields that have been broken and cannot respawn on their own.
-    - If `Shield.RemoveAll` is set, all shield types are removed from the affected targets, even those that are not listed in `Shield.RemoveTypes`. If `Shield.ReplaceOnly` is set, first type listed in `Shield.AttachTypes` is used to replace any removed types not listed in `Shield.RemoveTypes`.
+    - If `Shield.RemoveAll` is set, all shield types are removed from the affected targets, even those that are not listed in `Shield.RemoveTypes`. If `Shield.ReplaceOnly` is set, first type listed in `Shield.AttachTypes` is used to replace any removed types not listed in `Shield.RemoveTypes`. Notice that the techno's own `ShieldType` will be permanantly removed by this.
     - `Shield.MinimumReplaceDelay` can be used to control how long after the shield has been broken (in game frames) can it be replaced. If not enough frames have passed, it won't be replaced.
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
 
 ## Aircraft
+
+### Custom cruise missiles
+
+- From RockPatch to Ares, custom missiles have never had a way to enter cruise missile mode, so neither RP's `MissileRaiseRate` nor Ares' `Missile.RaiseRate` have ever been effective, and modders cannot create another type of cruise missile beyond the type set in `[General] -> CMislType=`. Now, you can customize whether a custom missile is a cruise missile.
+  - The take-off animation of a cruise missile is actually the continuously created trail smoke during the ascent phase, rather than the animation created only once at launch like a conventional missile. Now, the creation interval of this animation can be customized via `Missile.TakeOffSeparation`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEAIRCRAFT]                ; AircraftType, with Locomotor=Rocket
+Missile.Cruise=false          ; boolean
+Missile.TakeOffSeparation=24  ; integer
+```
+
+```{note}
+Like Ares' `Missile.TrailerSeparation`, `Missile.TakeOffSeparation` also works without requiring `Missile.Custom=true`, which means it can be directly applied to the unit specified by `[General] -> CMislType=` without completely rewriting it as a custom missile.
+```
+
+```{seealso}
+- [MissileSpawn Control on ModEnc](https://modenc.renegadeprojects.com/MissileSpawn_Control)
+- [Custom Missiles - Ares documentation](http://ares-developers.github.io/Ares-docs/new/custommissiles.html)
+```
 
 ### Damaged aircraft image changes
 
@@ -711,7 +732,7 @@ SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 
 ### Allow infantry to perform type conversion when deploying and undeploying
 
-- Now infantry can perform type conversion immediately after the `Deploy` or `Undeploy` sequence action has been executed.
+- Now infantry can perform type conversion immediately after the `Deploy` or `Undeploy` sequence action has been executed.
 
 In `rulesmd.ini`:
 ```ini
@@ -1295,6 +1316,25 @@ SW.Next.RollChances=            ; List of percentages.
 SW.Next.RandomWeightsN=         ; List of integers.
 ```
 
+### Recipient-specific message and EVA on superweapon activation
+
+- Superweapons can now display messages and play EVA voices for specific recipient groups when activated.
+  - `Message.Activated.Owner` and `EVA.Activated.Owner` are shown / played only for the player who activates the superweapon.
+  - `Message.Activated.Allies` and `EVA.Activated.Allies` are shown / played only for allies of the player who activates the superweapon, excluding the activating player.
+  - `Message.Activated.Enemies` and `EVA.Activated.Enemies` are shown / played only for enemies of the player who activates the superweapon.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]                        ; SuperWeaponType
+Message.Activated.Owner=        ; CSF entry key
+Message.Activated.Allies=       ; CSF entry key
+Message.Activated.Enemies=      ; CSF entry key
+
+EVA.Activated.Owner=            ; EVA entry
+EVA.Activated.Allies=           ; EVA entry
+EVA.Activated.Enemies=          ; EVA entry
+```
+
 ### Warhead or Weapon detonation at target cell
 
 - Any superweapon can now detonate a Warhead or a weapon at superweapon's target cell.
@@ -1745,18 +1785,6 @@ DisguiseBlinkingVisibility=owner  ; List of Affected House Enumeration (none|own
 
 [SOMETECHNO]                      ; TechnoType
 UseDisguiseMovementSpeed=false    ; boolean
-```
-
-### Enhanced Berzerk behavior
-
-- In vanilla, when a unit enters Berzerk state, the game assigns it a `Hunt` mission, which may cause the unit to choose a very distant target and simply move toward it without firing during the Berzerk duration.
-- Now you can customize which mission the unit uses when entering Berzerk state.
-  - Additionally, this enhancement adds the necessary stop handling (clearing destination), fixing jumpjet vehicles behaving incorrectly when getting Berzerk'd while moving.
-
-In `rulesmd.ini`:
-```ini
-[CombatDamage]
-BerzerkMission=Hunt               ; MissionType
 ```
 
 ### Exclusion from base center calculations

@@ -107,6 +107,7 @@ public:
 	ValueableIdx<LaserTrailTypeClass> LaserTrail_Type;
 
 	std::vector<std::string> Groups;
+	bool NeedCalculate;
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, Duration { 0 }
@@ -171,6 +172,7 @@ public:
 		, Unkillable { false }
 		, LaserTrail_Type { -1 }
 		, Groups {}
+		, NeedCalculate { false }
 	{};
 
 	bool HasTint() const
