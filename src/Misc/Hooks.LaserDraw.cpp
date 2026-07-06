@@ -216,12 +216,6 @@ DEFINE_HOOK(0x6FD210, TechnoClass_LaserZap_SetTrackingContext, 0x7)
 DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_Tracking, 0x7)
 {
 	GET(WeaponTypeClass*, pWeapon, ECX);
-	const auto pShooter = std::exchange(LaserRT::Shooter, nullptr);
-	const auto pTarget = std::exchange(LaserRT::Target, nullptr);
-	const int weaponIdx = std::exchange(LaserRT::WeaponIndex, 0);
-	const CoordStruct localFLH = std::exchange(LaserRT::SavedLocalFLH, CoordStruct::Empty);
-	const int burstIndex = std::exchange(LaserRT::SavedBurstIndex, 0);
-
 	GET(LaserDrawClass*, pLaser, EAX);
 	const auto it = LaserRT::TrackingMap.find(pLaser);
 
@@ -231,8 +225,16 @@ DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_Tracking, 0x7)
 	const auto mode = WeaponTypeExt::ExtMap.Find(pWeapon)->LaserPositionUpdate.Get();
 
 	if (mode == PositionFollow::None)
+	{
+		LaserRT::TrackingMap.erase(it);
 		return 0;
+	}
 
+	const auto pShooter = std::exchange(LaserRT::Shooter, nullptr);
+	const auto pTarget = std::exchange(LaserRT::Target, nullptr);
+	const int weaponIdx = std::exchange(LaserRT::WeaponIndex, 0);
+	const CoordStruct localFLH = std::exchange(LaserRT::SavedLocalFLH, CoordStruct::Empty);
+	const int burstIndex = std::exchange(LaserRT::SavedBurstIndex, 0);
 	const bool stopOnFirerConvert = WeaponTypeExt::ExtMap.Find(pWeapon)->LaserPositionUpdate_StopOnFirerConvert.Get(RulesExt::Global()->LaserPositionUpdate_StopOnFirerConvert);
 
 	it->second.Initialize(pShooter, pTarget, weaponIdx, mode, pLaser->Source, localFLH, burstIndex, stopOnFirerConvert);
