@@ -282,6 +282,9 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	if (!pTypeExt->AutoDeath_Behavior.isset())
 		return false;
 
+	if (isInLimbo && !pTypeExt->AutoDeath_AllowLimboed)
+		return false;
+
 	auto const pThis = this->OwnerObject();
 
 	// Self-destruction must be enabled

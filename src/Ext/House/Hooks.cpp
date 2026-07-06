@@ -217,24 +217,28 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 
 	if (pTypeExt->AutoDeath_Behavior.isset())
 	{
-		const bool humanToComputer = pTypeExt->AutoDeath_OnOwnerChange_HumanToComputer.Get(pTypeExt->AutoDeath_OnOwnerChange);
-		const bool computerToHuman = pTypeExt->AutoDeath_OnOwnerChange_ComputerToHuman.Get(pTypeExt->AutoDeath_OnOwnerChange);
-
-		if (humanToComputer && computerToHuman)
+		const bool isInLimbo = !pThis->IsInLogic && pThis->IsAlive;
+		if (!(isInLimbo && !pTypeExt->AutoDeath_AllowLimboed))
 		{
-			TechnoExt::KillSelf(pThis, pTypeExt->AutoDeath_Behavior, pTypeExt->AutoDeath_VanishAnimation, !pThis->IsInLogic && pThis->IsAlive);
-			return 0;
-		}
-		else if (humanToComputer || computerToHuman)
-		{
-			const bool I_am_human = pThis->Owner->IsControlledByHuman();
+			const bool humanToComputer = pTypeExt->AutoDeath_OnOwnerChange_HumanToComputer.Get(pTypeExt->AutoDeath_OnOwnerChange);
+			const bool computerToHuman = pTypeExt->AutoDeath_OnOwnerChange_ComputerToHuman.Get(pTypeExt->AutoDeath_OnOwnerChange);
 
-			if (I_am_human != pNewOwner->IsControlledByHuman())
+			if (humanToComputer && computerToHuman)
 			{
-				if ((I_am_human && humanToComputer) || (!I_am_human && computerToHuman))
+				TechnoExt::KillSelf(pThis, pTypeExt->AutoDeath_Behavior, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
+				return 0x701881;
+			}
+			else if (humanToComputer || computerToHuman)
+			{
+				const bool I_am_human = pThis->Owner->IsControlledByHuman();
+
+				if (I_am_human != pNewOwner->IsControlledByHuman())
 				{
-					TechnoExt::KillSelf(pThis, pTypeExt->AutoDeath_Behavior, pTypeExt->AutoDeath_VanishAnimation, !pThis->IsInLogic && pThis->IsAlive);
-					return 0;
+					if ((I_am_human && humanToComputer) || (!I_am_human && computerToHuman))
+					{
+						TechnoExt::KillSelf(pThis, pTypeExt->AutoDeath_Behavior, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
+						return 0x701881;
+					}
 				}
 			}
 		}

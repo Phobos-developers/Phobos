@@ -695,6 +695,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize the step limit of the credits indicator
   - Disable the credits indicator smooth transition
   - Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn`
+  - Add a definition flag for whether AutoDeath can trigger in Limbo state
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

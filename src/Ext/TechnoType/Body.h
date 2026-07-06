@@ -91,6 +91,7 @@ public:
 		Valueable<int> Ammo_DeployUnlockMaximumAmount;
 
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
+		Valueable<bool> AutoDeath_AllowLimboed;
 		ValueableVector<AnimTypeClass*> AutoDeath_VanishAnimation;
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
 		Valueable<bool> AutoDeath_OnOwnerChange;
@@ -647,6 +648,7 @@ public:
 			, Ammo_DeployUnlockMaximumAmount { -1 }
 
 			, AutoDeath_Behavior { }
+			, AutoDeath_AllowLimboed { true }
 			, AutoDeath_VanishAnimation {}
 			, AutoDeath_OnAmmoDepletion { false }
 			, AutoDeath_OnOwnerChange { false }
