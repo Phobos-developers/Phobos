@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-28 19:11+0800\n"
+"POT-Creation-Date: 2026-07-03 22:16+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -891,8 +891,7 @@ msgid "Animation theater/tile palette toggle"
 msgstr "动画使用气候／地块色盘的开关"
 
 msgid "Tank Bunker improvements"
-msgstr ""
-"坦克碉堡改进"
+msgstr "坦克碉堡改进"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
@@ -2333,6 +2332,20 @@ msgstr "允许了步兵使用 `Convert.Deploy` 而无需 `IsSimpleDeployer=true`
 msgid "Allow infantry to perform type conversion when deploying and undeploying"
 msgstr "允许步兵在部署与反部署时执行类型转换"
 
+msgid "Custom cruise missiles"
+msgstr "自定义巡航导弹"
+
+msgid "Add a toggle for disabling `SecondaryFire` / `SecondaryProne` on water"
+msgstr "为水上禁用  `SecondaryFire` / `SecondaryProne` 添加开关"
+
+msgid "Customize the step limit of the credits indicator"
+msgstr ""
+"自定义资金示数器步长上限"
+
+msgid "Disable the credits indicator smooth transition"
+msgstr ""
+"禁用资金示数器平滑渐变"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
@@ -2784,6 +2797,9 @@ msgstr "为 AE 系统添加目标过滤选项"
 
 msgid "Add veterancy-based target filtering for weapons and warheads"
 msgstr "为武器和弹头添加基于经验等级的目标过滤"
+
+msgid "Recipient-specific message and EVA on superweapon activation"
+msgstr "针对特定接收者的超武激活消息与 EVA 语音"
 
 msgid "**tyuah8**:"
 msgstr "**tyuah8**："
