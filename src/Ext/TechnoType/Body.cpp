@@ -1473,7 +1473,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ShowCameo_OverlapXY.Read(exINI, pSection, "ShowCameo.OverlapXY");
 	this->ShowCameo_OffsetXY.Read(exINI, pSection, "ShowCameo.OffsetXY");
 	this->ShowCameo_OverlapPrimary.Read(exINI, pSection, "ShowCameo.OverlapPrimary");
-
 	this->CameoPalette.LoadFromINI(pArtINI, pArtSection, "CameoPalette");
 }
 
@@ -1997,7 +1996,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowCameo_OverlapPrimary)
 		.Process(this->CameoPalette)
 		.Process(this->ShowCameo_CustomPalette)
-		.Process(this->ShowCameo_CustomShape)	;
+		.Process(this->ShowCameo_CustomShape)
+		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {

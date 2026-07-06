@@ -980,8 +980,8 @@ void TechnoExt::DrawCameos(TechnoClass* pThis)
 	const bool overlapPrimary = pTypeExt->ShowCameo_OverlapPrimary.isset()
 		? pTypeExt->ShowCameo_OverlapPrimary.Get()
 		: pRulesExt->ShowCameo_OverlapPrimary.Get();
-	// overlapPrimary=true: primary (earlier) covers secondary (later) (前面覆盖后面)
-	// overlapPrimary=false: secondary (later) covers primary (earlier) (后面覆盖前面)
+	// overlapPrimary=true: primary (earlier) covers secondary (later)
+	// overlapPrimary=false: secondary (later) covers primary (earlier)
 
 	// Pre-compute canvas sizes for each cameo (standard 60x48, or custom SHP dimensions)
 	struct CameoCanvas { int width; int height; };
