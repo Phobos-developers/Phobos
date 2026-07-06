@@ -450,8 +450,8 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 		if (pTransportFoot->IsAttackedByLocomotor && !pTypeExt->OpenTopped_AllowFiringIfAttackedByLocomotor.Get(RulesExt::Global()->OpenTopped_AllowFiringIfAttackedByLocomotor))
 			return Illegal;
 
-		if (!pTypeExt->OpenTopped_OpportunityFire.Get(RulesExt::Global()->OpenTopped_OpportunityFire)
-			|| !TechnoExt::ExtMap.Find(pThis)->TypeExtData->OpenTransport_OpportunityFire.Get(RulesExt::Global()->OpenTransport_OpportunityFire)
+		if (!pTypeExt->OpenTopped_FireWhileMoving.Get(RulesExt::Global()->OpenTopped_FireWhileMoving)
+			|| !TechnoExt::ExtMap.Find(pThis)->TypeExtData->OpenTransport_FireWhileMoving.Get(RulesExt::Global()->OpenTransport_FireWhileMoving)
 			|| (pWeapon && !pWeapon->FireWhileMoving))
 		{
 			const auto pLoco = pTransportFoot->Locomotor;

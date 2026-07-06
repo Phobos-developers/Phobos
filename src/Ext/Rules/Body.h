@@ -305,9 +305,9 @@ public:
 		Valueable<bool> FallingDownTargetingFix;
 		Valueable<bool> AIAirTargetingFix;
 		Valueable<bool> OpenTopped_DecloakToFire;
-		Valueable<bool> OpenTopped_OpportunityFire;
+		Valueable<bool> OpenTopped_FireWhileMoving;
 		Valueable<bool> OpenTopped_AllowFiringIfAttackedByLocomotor;
-		Valueable<bool> OpenTransport_OpportunityFire;
+		Valueable<bool> OpenTransport_FireWhileMoving;
 
 		Valueable<bool> SortCameoByName;
 
@@ -631,9 +631,9 @@ public:
 			, FallingDownTargetingFix { false }
 			, AIAirTargetingFix { false }
 			, OpenTopped_DecloakToFire { false }
-			, OpenTopped_OpportunityFire { true }
+			, OpenTopped_FireWhileMoving { true }
 			, OpenTopped_AllowFiringIfAttackedByLocomotor { true }
-			, OpenTransport_OpportunityFire { true }
+			, OpenTransport_FireWhileMoving { true }
 
 			, SortCameoByName { false }
 

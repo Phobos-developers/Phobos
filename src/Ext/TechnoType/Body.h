@@ -169,10 +169,10 @@ public:
 		Valueable<bool> OpenTopped_UseTransportRangeModifiers;
 		Valueable<bool> OpenTopped_CheckTransportDisableWeapons;
 		Nullable<bool> OpenTopped_DecloakToFire;
-		Nullable<bool> OpenTopped_OpportunityFire;
+		Nullable<bool> OpenTopped_FireWhileMoving;
 		Valueable<int> OpenTransport_RangeBonus;
 		Valueable<float> OpenTransport_DamageMultiplier;
-		Nullable<bool> OpenTransport_OpportunityFire;
+		Nullable<bool> OpenTransport_FireWhileMoving;
 
 		Valueable<bool> AutoTargetOwnPosition;
 		Valueable<bool> AutoTargetOwnPosition_Self;
@@ -619,10 +619,10 @@ public:
 			, OpenTopped_UseTransportRangeModifiers { false }
 			, OpenTopped_CheckTransportDisableWeapons { false }
 			, OpenTopped_DecloakToFire {}
-			, OpenTopped_OpportunityFire {}
+			, OpenTopped_FireWhileMoving {}
 			, OpenTransport_RangeBonus { 0 }
 			, OpenTransport_DamageMultiplier { 1.0f }
-			, OpenTransport_OpportunityFire {}
+			, OpenTransport_FireWhileMoving {}
 
 			, AutoTargetOwnPosition { false }
 			, AutoTargetOwnPosition_Self { false }

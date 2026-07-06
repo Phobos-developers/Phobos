@@ -1648,15 +1648,15 @@ DrainMoneyDisplay.OnTarget.UseDisplayIncome=        ; boolean
 - `OpenTopped.ShareTransportTarget` controls whether or not the current target of the transport itself is passed to the passengers as well.
 - You can also customize range bonus and damage multiplier for passenger inside the transport with `OpenTransport.RangeBonus/DamageMultiplier`, which works independently from transport's `OpenTopped.RangeBonus/DamageMultiplier`.
 - `OpenTopped.DecloakToFire` can customize if a transport has to uncloak to have passengers fireout if transport is also OpenTopped.
-- `OpenTopped/OpenTransport.OpportunityFire` can be used to customize whether or not passengers can fire out when the transport is moving, for transport and passenger respectively. Both of them need to be true to allow firing out when moving.
+- `OpenTopped/OpenTransport.FireWhileMoving` can be used to customize whether or not passengers can fire out when the transport is moving, for transport and passenger respectively. Both of them and the weapon's `FireWhileMoving` toggle need to be set to true to allow firing out when moving.
 
 In `rulesmd.ini`:
 ```ini
 [General]
 OpenTopped.AllowFiringIfAttackedByLocomotor=true  ; boolean
 OpenTopped.DecloakToFire=true                     ; boolean
-OpenTopped.OpportunityFire=true                   ; boolean
-OpenTransport.OpportunityFire=true                ; boolean
+OpenTopped.FireWhileMoving=true                   ; boolean
+OpenTransport.FireWhileMoving=true                ; boolean
 
 [SOMETECHNO]                                      ; TechnoType, transport with OpenTopped=yes
 OpenTopped.RangeBonus=                            ; integer, default to [CombatDamage] -> OpenToppedRangeBonus
@@ -1667,12 +1667,12 @@ OpenTopped.AllowFiringIfDeactivated=true          ; boolean
 OpenTopped.AllowFiringIfAttackedByLocomotor=      ; boolean, defaults to [General] -> OpenTopped.AllowFiringIfAttackedByLocomotor
 OpenTopped.ShareTransportTarget=true              ; boolean
 OpenTopped.DecloakToFire=                         ; boolean, defaults to [General] -> OpenTopped.DecloakToFire
-OpenTopped.OpportunityFire=                       ; boolean, defaults to [General] -> OpenTopped.OpportunityFire
+OpenTopped.FireWhileMoving=                       ; boolean, defaults to [General] -> OpenTopped.FireWhileMoving
 
 [SOMETECHNO]                                      ; TechnoType, passenger
 OpenTransport.RangeBonus=0                        ; integer
 OpenTransport.DamageMultiplier=1.0                ; floating point value
-OpenTransport.OpportunityFire=                    ; boolean, defaults to [General] -> OpenTransport.OpportunityFire
+OpenTransport.FireWhileMoving=                    ; boolean, defaults to [General] -> OpenTransport.FireWhileMoving
 ```
 
 ```{note}
