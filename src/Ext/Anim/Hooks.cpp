@@ -374,7 +374,7 @@ DEFINE_HOOK(0x423654, AnimClass_DrawIt_Tiled_Interval, 0x5)
 {
 	GET(AnimClass*, pThis, ESI);
 	GET(RectangleStruct*, pBounds, EAX);
-	GET(int*, pValue, EDI);
+	GET(const int*, pValue, EDI);
 
 	int height = pBounds->Height;
 
@@ -390,7 +390,7 @@ DEFINE_HOOK(0x423654, AnimClass_DrawIt_Tiled_Interval, 0x5)
 DEFINE_HOOK(0x423660, AnimClass_DrawIt_Tiled_Center, 0x5)
 {
 	GET(AnimClass*, pThis, ESI);
-	GET(int, height, EAX); 
+	GET(const int, height, EAX); 
 	R->EDX(VTable::Get(pThis)); // Restore overriden instruction
 
 	const auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
@@ -485,8 +485,8 @@ DEFINE_HOOK(0x423061, AnimClass_DrawIt_Visibility, 0x6)
 			pTechno = pExt->Invoker;
 	}
 
-	if (pTypeExt->RestrictVisibilityIfCloaked && !HouseClass::IsCurrentPlayerObserver()
-		&& pTechno && (pTechno->CloakState == CloakState::Cloaked || pTechno->CloakState == CloakState::Cloaking)
+	if (pTypeExt->RestrictVisibilityIfCloaked && pTechno && !HouseClass::IsCurrentPlayerObserver()
+		&& (pTechno->CloakState == CloakState::Cloaked || pTechno->CloakState == CloakState::Cloaking)
 		&& !pTechno->Owner->IsAlliedWith(pCurrentHouse)
 		&& !pTechno->GetCell()->Sensors_InclHouse(pCurrentHouse->ArrayIndex))
 	{
@@ -520,13 +520,13 @@ DEFINE_HOOK(0x42308D, AnimClass_DrawIt_Transparency, 0x6)
 	GET(BlitterFlags, flags, EBX);
 
 	auto const pType = pThis->Type;
-	int translucencyLevel = pThis->TranslucencyLevel; // Used by building animations when building needs to be drawn partially transparent. >= 15 means animation skips drawing.
+	const int translucencyLevel = pThis->TranslucencyLevel; // Used by building animations when building needs to be drawn partially transparent. >= 15 means animation skips drawing.
 
 	if (translucencyLevel >= 15)
 		return ReturnFromFunction;
 
-	int currentFrame = pThis->Animation.Value;
-	int frames = pType->End;
+	const int currentFrame = pThis->Animation.Value;
+	const int frames = pType->End;
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pType);
 
 	if (!pType->Translucent)
@@ -677,9 +677,9 @@ DEFINE_HOOK(0x6FF42B, TechnoClass_Fire_Anim, 0x7)
 	GET(TechnoClass*, pThis, ESI);
 	GET(AnimClass*, pAnim, EDI);
 	GET(WeaponTypeClass*, pWeapon, EBX);
-	GET_BASE(int, wpIdx, 0xC);
+	GET_BASE(const int, wpIdx, 0xC);
 
-	auto pAnimExt = AnimExt::ExtMap.Find(pAnim);
+	const auto pAnimExt = AnimExt::ExtMap.Find(pAnim);
 
 	if (WeaponTypeExt::ExtMap.Find(pWeapon)->Anim_Update.Get(RulesExt::Global()->FiringAnim_Update))
 	{

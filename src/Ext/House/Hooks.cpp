@@ -693,8 +693,8 @@ DEFINE_HOOK(0x43131B, BeaconManagerClass_DeleteBeacon_RecordOrder, 0x5)
 	if (!RulesExt::Global()->AutoRemoveEarliestBeacon)
 		return 0;
 
-	GET(int, beaconIdx, EBX);
-	GET(int, houseIdx, ECX);
+	GET(const int, beaconIdx, EBX);
+	GET(const int, houseIdx, ECX);
 
 	const auto pHouse = HouseClass::Array.GetItem(houseIdx);
 	const auto pExt = HouseExt::ExtMap.Find(pHouse);
@@ -719,8 +719,8 @@ DEFINE_HOOK(0x430C64, BeaconManagerClass_PlaceBeacon_RecordOrder, 0x5)
 	if (!RulesExt::Global()->AutoRemoveEarliestBeacon)
 		return 0;
 
-	GET(int, beaconIdx, EAX);
-	GET(int, houseIdx, EBX);
+	GET(const int, beaconIdx, EAX);
+	GET(const int, houseIdx, EBX);
 
 	const auto pHouse = HouseClass::Array.GetItem(houseIdx);
 	const auto pExt = HouseExt::ExtMap.Find(pHouse);
@@ -735,7 +735,7 @@ DEFINE_HOOK(0x4AC9B2, MouseClass_ToggleBeaconMode_AllUsed, 0x6)
 {
 	enum { RET = 0x4AC9B8 };
 
-	GET(bool, canPlace, EAX);
+	GET(const bool, canPlace, EAX);
 
 	if (canPlace)
 		return RET;
@@ -753,8 +753,8 @@ DEFINE_HOOK(0x4AC9B2, MouseClass_ToggleBeaconMode_AllUsed, 0x6)
 	{
 		if (pExt->BeaconsPlacedOrder[i] == 1)
 		{
-			auto pManager = &BeaconManagerClass::Instance;
-			auto pBeacon = pManager->Beacons[pHouse->ArrayIndex][i];
+			const auto pManager = &BeaconManagerClass::Instance;
+			const auto pBeacon = pManager->Beacons[pHouse->ArrayIndex][i];
 			// Select and delete beacon.
 			// If you don't select the beacon, the game will not send the IPX packet.
 			MapClass::UnselectAll();

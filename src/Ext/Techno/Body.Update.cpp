@@ -2043,7 +2043,7 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 		{
 			pAEWithAnim = attachEffect.get();
 		}
-		else if (attachEffect->CanShowAnim())
+		else if (attachEffect->CanShowAnim(true))
 		{
 			const int currentDuration = attachEffect->GetRemainingDuration();
 
