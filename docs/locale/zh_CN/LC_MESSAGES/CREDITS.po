@@ -2346,6 +2346,7 @@ msgstr "禁用资金示数器平滑渐变"
 
 msgid "Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn`"
 msgstr ""
+"为 `DiscardOn` 添加 `selling`、`undeploying` 和 `harvesting` 条件"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
