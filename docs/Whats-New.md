@@ -137,7 +137,6 @@ This serves as a changelog for when you just need to drop the new version in wit
 CampaignDefaultGameSpeed=4       ; integer
 ShowBriefing=true                ; boolean
 DigitalDisplay.Enable=false      ; boolean
-ShowCameo.Enable=true            ; boolean
 ShowDesignatorRange=false        ; boolean
 PrioritySelectionFiltering=true  ; boolean
 PriorityDeployFiltering=true     ; boolean
@@ -693,7 +692,6 @@ HideShakeEffects=false           ; boolean
 - Fixed the bug that low-air taking off / landing objects will receive twice damage (by NetsuNegi)
 - Fixed voxel projectile and animation lighting issues (by TaranDahl)
 - Fixed the bug that techno will get stuck if change owner in tunnel (by NetsuNegi)
-- Show Cameo feature to display passenger/occupant cameos above selected vehicles/buildings (see [User Interface](User-Interface.md#show-cameo))
 
 #### Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

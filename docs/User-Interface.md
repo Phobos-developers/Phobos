@@ -632,15 +632,15 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
 - Switches on/off [Task subtitles' label in the middle of the screen](#task-subtitles-display-in-the-middle-of-the-screen).
 - For localization add `TXT_TOGGLE_MESSAGE` and `TXT_TOGGLE_MESSAGE_DESC` into your `.csf` file.
 
-### `[ ]` Toggle Cameos
-
-- Switches on/off [cameo display](#show-cameo) in toggleable mode. Has no effect in permanent mode.
-- For localization add `TXT_SHOWCAMEO` and `TXT_SHOWCAMEO_DESC` into your `.csf` file.
-
 ### `[ ]` Deselect Object(s)
 
 - Deselect 1 or 5 object(s) from current selected objects.
 - For localization add `TXT_DESELECT`, `TXT_DESELECT_DESC`, `TXT_DESELECT5` and `TXT_DESELECT5_DESC` into your `.csf` file.
+
+### `[ ]` Toggle Cameos
+
+- Switches on/off [cameo display](#show-cameo) in toggleable mode. Has no effect in permanent mode.
+- For localization add `TXT_SHOWCAMEO` and `TXT_SHOWCAMEO_DESC` into your `.csf` file.
 
 ## Loading screen
 
