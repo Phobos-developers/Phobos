@@ -282,6 +282,8 @@ public:
 		Nullable<Point2D> SpawnsPipSize;
 		Valueable<Point2D> SpawnsPipOffset;
 
+		Valueable<bool> SpawnFromClosestEdge;
+		Valueable<bool> RetreatToClosestEdge;
 		Nullable<Leptons> SpawnDistanceFromTarget;
 		Nullable<int> SpawnHeight;
 		Nullable<int> LandingDir;
@@ -777,6 +779,8 @@ public:
 			, SpawnsPipSize {}
 			, SpawnsPipOffset { { 0,0 } }
 
+			, SpawnFromClosestEdge { false }
+			, RetreatToClosestEdge { false }
 			, SpawnDistanceFromTarget {}
 			, SpawnHeight {}
 			, LandingDir {}

@@ -47,25 +47,30 @@ void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 	}
 }
 
-// Spy plane, airstrike etc.
-bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CellStruct edgeCell)
+// Paradrop, spy plane, airstrike.
+bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CoordStruct edgeCoords)
 {
 	auto const pType = pThis->Type;
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	auto coords = CellClass::Cell2Coord(edgeCell);
+	auto dir = DirType::North;
+	auto coords = edgeCoords;
 	coords.Z = 0;
-	AbstractClass* pTarget = nullptr;
+	AbstractClass* pTarget = pThis->Target ? pThis->Target : pThis->Destination;
 
-	if (pTypeExt->SpawnDistanceFromTarget.isset())
+	if (pTarget)
 	{
-		pTarget = pThis->Target ? pThis->Target : pThis->Destination;
+		auto const pTargetCoords = pTarget->GetCoords();
 
-		if (pTarget)
-			coords = GeneralUtils::CalculateCoordsFromDistance(CellClass::Cell2Coord(edgeCell), pTarget->GetCoords(), pTypeExt->SpawnDistanceFromTarget.Get());
+		if (pTypeExt->SpawnDistanceFromTarget.isset())
+			coords = GeneralUtils::CalculateCoordsFromDistance(edgeCoords, pTargetCoords, pTypeExt->SpawnDistanceFromTarget.Get());
+
+		dir = GeneralUtils::GetDirectionBetweenCoords(coords, pTargetCoords).GetDir();
 	}
 
+	bool result = false;
+
 	++Unsorted::ScenarioInit;
-	const bool result = pThis->Unlimbo(coords, DirType::North);
+	result = pThis->Unlimbo(coords, dir);
 	--Unsorted::ScenarioInit;
 
 	pThis->SetHeight(pTypeExt->SpawnHeight.isset() ? pTypeExt->SpawnHeight.Get() : pType->GetFlightLevel());
@@ -74,6 +79,31 @@ bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CellStruct ed
 		pThis->PrimaryFacing.SetDesired(pThis->GetTargetDirection(pTarget));
 
 	return result;
+}
+
+CellStruct AircraftExt::PickEdgeCellForPlane(AircraftTypeClass* pPlaneType, CellStruct destCell, Edge edge, bool isOnRetreat)
+{
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pPlaneType);
+	bool const useClosestEdge = !isOnRetreat ? pTypeExt->SpawnFromClosestEdge : pTypeExt->RetreatToClosestEdge;
+	auto useEdge = edge;
+	auto refCell = CellStruct::Empty;
+
+	if (useClosestEdge && destCell != CellStruct::Empty)
+	{
+		useEdge = Edge::None;
+		refCell = destCell;
+
+		// Scatter the coords a bit to randomize spawn cell a little - otherwise multiple planes sent at same target
+		// from same source might end up overlapping - still a possibility, just less likely.
+		int randomRange = 5;
+		short randomX = static_cast<short>(ScenarioClass::Instance->Random.RandomRanged(-randomRange, randomRange));
+		short randomY = static_cast<short>(ScenarioClass::Instance->Random.RandomRanged(-randomRange, randomRange));
+		refCell += CellStruct { randomX, randomY };
+	}
+
+	auto cell = MapClass::Instance.PickCellOnEdge(useEdge, refCell, CellStruct::Empty, SpeedType::Winged, true, MovementZone::Normal);
+
+	return cell;
 }
 
 DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
