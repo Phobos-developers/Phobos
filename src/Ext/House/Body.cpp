@@ -932,12 +932,25 @@ CanBuildResult HouseExt::BuildLimitGroupUpgradeCheck(const HouseClass* pThis, co
 	if (limits.size() == 1)
 	{
 		int sum = 0;
+		bool inside = false;
 
-		for (int c : contributions) sum += c;
+		for (size_t i = 0; i < buildLimit.size(); ++i)
+		{
+			sum += contributions[i];
+
+			if (buildLimit[i] == pItem)
+				inside = true;
+		}
 
 		if (sum >= limits[0] + 1 - factor)
 		{
-			RemoveProduction(pThis, pItem, (sum + factor - 1) / factor);
+			const int num = sum - limits[0];
+
+			if (inside)
+				RemoveProduction(pThis, pItem, (num + factor - 1) / factor);
+			else if (num >= 1 - factor || notBuildable)
+				RemoveProduction(pThis, pItem, -1);
+
 			return CanBuildResult::TemporarilyUnbuildable;
 		}
 	}
