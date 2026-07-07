@@ -1190,7 +1190,7 @@ DEFINE_HOOK(0x737086, UnitClass_FiringAI_Gattling, 0x9)
 	enum { SkipGameCode = 0x7370AE };
 
 	GET(UnitClass*, pThis, ESI);
-	GET(FireError, fireError, EBP);
+	GET(const FireError, fireError, EBP);
 
 	if (fireError == FireError::REARM && TechnoExt::HasWeaponsDisabled(pThis))
 		pThis->GattlingRateDown(1);

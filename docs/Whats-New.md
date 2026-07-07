@@ -599,12 +599,13 @@ HideShakeEffects=false           ; boolean
 - [Tank Bunker foundation and state update delay improvements](Fixed-or-Improved-Logics.md#tank-bunker-improvements) (by Starkku)
 - [Custom cruise missiles](New-or-Enhanced-Logics.md#custom-cruise-missiles) (by Noble_Fish)
 - [Allow chat box in singleplayer](User-Interface.md#allow-chat-box-in-singleplayer) (by TaranDahl)
-- [Firer-only message and EVA on superweapon activated](New-or-Enhanced-Logics.md#recipient-specific-message-and-eva-on-superweapon-activation) (by Flactine)
+- [Recipient-specific message and EVA on superweapon activation](New-or-Enhanced-Logics.md#recipient-specific-message-and-eva-on-superweapon-activation) (by Flactine)
 - [Add a toggle for disabling `SecondaryFire` / `SecondaryProne` on water](Fixed-or-Improved-Logics.md#ensure-infantry-use-correct-firing-sequences-on-water) (by Noble_Fish)
 - [Allow beacon placement hotkey in single player](Fixed-or-Improved-Logics.md#allow-beacon-placement-hotkey-in-single-player) (by TaranDahl)
 - [Auto-remove earliest beacon](Fixed-or-Improved-Logics.md#auto-remove-earliest-beacon) (by TaranDahl)
 - [Customize the step limit of the credits indicator](User-Interface.md#customize-the-step-limit-of-the-credits-indicator) (by Noble_Fish)
 - [Disable the credits indicator smooth transition](User-Interface.md#disable-the-credits-indicator-smooth-transition) (by Noble_Fish)
+- Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn` (by Noble_Fish)
 - [AutoDeath based on player power status and player credits](New-or-Enhanced-Logics.md#kill-object-automatically) (by Flactine)
 
 #### Vanilla fixes:
@@ -784,7 +785,7 @@ HideShakeEffects=false           ; boolean
 - Fixed AttachEffect with `RecreationDelay` of 0 checking `Delay` as well instead of immediately refreshing duration when possible (by Starkku)
 - Fixed building interceptors being able to pick targets during construction and selling (by Starkku)
 - Fixed the bug that the vanilla `SecondSpawnOffset` no longer takes effect (by NetsuNegi)
-- Fixed an issue where some percentage format floating point numbers were not being parsed correctly (by Starkku)
+- Fixed a bug introduced in v0.4.0.1 where some floating-point values using percentage form were incorrectly multiplied by an additional 0.01 (by Starkku)
 ```
 
 ### 0.4.0.2

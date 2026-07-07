@@ -276,8 +276,8 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 	GET(WeaponTypeClass*, pShrapnelWeapon, ESI);
 
 	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
-	bool isBuilding = pObject->WhatAmI() == AbstractType::Building;
-	bool ignorePreviouslyHit = pTypeExt->Shrapnel_IgnoreHitBuildings.Get(RulesExt::Global()->Shrapnel_IgnoreHitBuildings);
+	const bool isBuilding = pObject->WhatAmI() == AbstractType::Building;
+	const bool ignorePreviouslyHit = pTypeExt->Shrapnel_IgnoreHitBuildings.Get(RulesExt::Global()->Shrapnel_IgnoreHitBuildings);
 
 	if (isBuilding)
 	{
