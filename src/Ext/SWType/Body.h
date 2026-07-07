@@ -28,6 +28,8 @@ public:
 		Valueable<bool> SW_ManualFire;
 		Valueable<bool> SW_ShowCameo;
 		Valueable<bool> SW_Unstoppable;
+		Valueable<bool> SW_AllowPlayer;
+		Valueable<bool> SW_AllowAI;
 		ValueableVector<TechnoTypeClass*> SW_Inhibitors;
 		Valueable<bool> SW_AnyInhibitor;
 		ValueableVector<TechnoTypeClass*> SW_Designators;
@@ -40,6 +42,9 @@ public:
 		DWORD SW_ForbiddenHouses;
 		ValueableVector<BuildingTypeClass*> SW_AuxBuildings;
 		ValueableVector<BuildingTypeClass*> SW_NegBuildings;
+		ValueableVector<TechnoTypeClass*> SW_AuxTechnos;
+		ValueableVector<TechnoTypeClass*> SW_NegTechnos;
+		Valueable<int> SW_TechLevel;
 		Valueable<bool> SW_InitialReady;
 		ValueableIdx<SuperWeaponTypeClass> SW_PostDependent;
 		Valueable<int> SW_MaxCount;
@@ -107,6 +112,12 @@ public:
 		ValueableVector<float> SW_Link_RollChances;
 		Valueable<CSFText> Message_LinkedSWAcquired;
 		NullableIdx<VoxClass> EVA_LinkedSWAcquired;
+		Valueable<CSFText> Message_Activated_Owner;
+		Valueable<CSFText> Message_Activated_Allies;
+		Valueable<CSFText> Message_Activated_Enemies;
+		ValueableIdx<VoxClass> EVA_Activated_Owner;
+		ValueableIdx<VoxClass> EVA_Activated_Allies;
+		ValueableIdx<VoxClass> EVA_Activated_Enemies;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, TypeID { "" }
@@ -119,6 +130,8 @@ public:
 			, SW_ManualFire { true }
 			, SW_ShowCameo { true }
 			, SW_Unstoppable { false }
+			, SW_AllowPlayer { true }
+			, SW_AllowAI { true }
 			, SW_Inhibitors {}
 			, SW_AnyInhibitor { false }
 			, SW_Designators { }
@@ -129,6 +142,9 @@ public:
 			, SW_ForbiddenHouses { 0u }
 			, SW_AuxBuildings {}
 			, SW_NegBuildings {}
+			, SW_AuxTechnos {}
+			, SW_NegTechnos {}
+			, SW_TechLevel { 0 }
 			, SW_InitialReady { false }
 			, SW_PostDependent {}
 			, SW_MaxCount { -1 }
@@ -185,6 +201,12 @@ public:
 			, SW_Link_RandomWeightsData {}
 			, Message_LinkedSWAcquired {}
 			, EVA_LinkedSWAcquired {}
+			, Message_Activated_Owner {}
+			, Message_Activated_Allies {}
+			, Message_Activated_Enemies {}
+			, EVA_Activated_Owner { -1 }
+			, EVA_Activated_Allies { -1 }
+			, EVA_Activated_Enemies { -1 }
 		{ }
 
 		// Ares 0.A functions
@@ -210,6 +232,9 @@ public:
 		std::pair<double, double> GetEMPulseCannonRange(BuildingClass* pBuilding) const;
 
 		void ApplyLinkedSW(SuperClass* pSW);
+
+		void ApplyActivatedMessage(SuperClass* pSW) const;
+		void ApplyActivatedEva(SuperClass* pSW) const;
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual void Initialize() override;
@@ -242,5 +267,6 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static bool Activate(SuperClass* pSuper, CellStruct cell, bool isPlayer);
+	static SuperClass* __stdcall IsSuperAvailable(int swIdx, HouseClass* pHouse);
 
 };

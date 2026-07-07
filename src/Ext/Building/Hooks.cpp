@@ -573,11 +573,11 @@ DEFINE_HOOK(0x44C836, BuildingClass_Mission_Repair_UnitReload, 0x6)
 			{
 				UnitRepairTemp::SeparateRepair = true;
 
-				for (auto i = 0; i < pThis->RadioLinks.Capacity; ++i)
+				for (int i = 0; i < pThis->RadioLinks.Capacity; ++i)
 				{
 					if (auto const pLink = pThis->GetNthLink(i))
 					{
-						if (!pLink->IsInAir() && pLink->Health < pLink->GetTechnoType()->Strength && pThis->SendCommand(RadioCommand::QueryMoving, pLink) == RadioCommand::AnswerPositive)
+						if (!pLink->IsInAir() && pLink->Health < pLink->GetType()->Strength && pThis->SendCommand(RadioCommand::QueryMoving, pLink) == RadioCommand::AnswerPositive)
 							pThis->SendCommand(RadioCommand::RequestRepair, pLink);
 					}
 				}
@@ -1087,3 +1087,216 @@ DEFINE_HOOK(0x45670D, BuildingClass_GetRadialIndicatorRange_Extras, 0x7)
 	R->EAX(pThis->TechnoClass::GetTurretWeapon());
 	return ApplyTurretWeapon;
 }
+
+#pragma region Mission_Guard_Attack
+
+static int HandleArmedBuildingGuard(BuildingClass* pThis)
+{
+	auto const pType = pThis->Type;
+	pThis->IsReadyToCommence = true;
+
+	// May 29, 2026 - Starkku: The EMPulseCannon and SW checks are most likely superfluous,
+	// but kept them here just in case removing them would break something.
+	if (pType->EMPulseCannon || pThis->FirstActiveSWIdx() >= 0 || (pType->CanBeOccupied && pThis->Occupants.Count <= 0) || !pThis->Target)
+	{
+		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+		auto const& delay = pTypeExt->GuardRetryDelay.isset() ? pTypeExt->GuardRetryDelay : RulesExt::Global()->BuildingGuardRetryDelay;
+
+		if (delay.isset())
+			return GeneralUtils::GetRangedRandomOrSingleValue(delay);
+
+		return static_cast<int>(MissionControlClass::Array[(int)pThis->CurrentMission].AARate * 900 + ScenarioClass::Instance->Random(0, 2));
+	}
+	else
+	{
+		pThis->QueueMission(Mission::Attack, false);
+		pThis->NextMission();
+
+		return 1;
+	}
+}
+
+DEFINE_HOOK(0x4496FB, BuildingClass_Mission_Guard_Armed, 0x6)
+{
+	enum { ReturnFromFunction = 0x4497A7 };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	R->EAX(HandleArmedBuildingGuard(pThis));
+	return ReturnFromFunction;
+}
+
+#pragma endregion
+
+#pragma region TurretAnim
+
+DEFINE_HOOK(0x451242, BuildingClass_AnimationAI_TurretAnim, 0xA)
+{
+	enum { SkipGameCode = 0x451296 };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	if (auto const pAnim = pThis->Anims[(int)BuildingAnimSlot::Turret])
+	{
+		pAnim->Animation.Value = BuildingExt::GetTurretFrame(pThis);
+		pAnim->Animation.Step = 0;
+	}
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x44B6C7, BuildingClass_Mission_Attack_TurretAnim, 0x6)
+{
+	enum { SkipFiring = 0x44B6FE };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	if (pThis->HasTurret())
+	{
+		if (auto const pAnim = pThis->Anims[(int)BuildingAnimSlot::Turret])
+		{
+			auto const pExt = BuildingExt::ExtMap.Find(pThis);
+			auto const pTypeExt = pExt->TypeExtData;
+			const bool isLowPower = !pThis->StuffEnabled || !pThis->IsPowerOnline();
+			const int firingFrames = isLowPower ? pTypeExt->TurretAnim_LowPowerFiringFrames : pTypeExt->TurretAnim_FiringFrames;
+
+			if (firingFrames > 0 && pExt->TurretAnimFiringFrame == -1)
+			{
+				pExt->TurretAnimFiringFrame = 0;
+				pExt->TurretAnimRateTick = 0;
+			}
+		}
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
+#pragma region TankBunker
+
+// Jun 23, 2026 - Starkku: Vanilla tank bunker code assumes
+// even-sized foundation. The approach used for even-sized
+// foundations and those that have discrete center cell are
+// mutually exclusive due to pathfinding constraints.
+
+// Handle docking offset calculations.
+DEFINE_HOOK(0x447BE3, BuildingClass_DockingCoord_TankBunker, 0x6)
+{
+	enum { SkipGameCode = 0x447CE1 };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	// Discrete center cell: Docking coord is building center instead of cell closest to approach.
+	if (pThis->Type->GetFoundationWidth() % 2)
+	{
+		const auto coords = pThis->GetCenterCoords();
+
+		// Cleaner hook return at function return is causing problems
+		// due to stack offsets, which is why we're doing it like this.
+		R->ECX(coords.X);
+		R->EDX(coords.Y);
+		R->EAX(&coords);
+
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+// Remove now unnecessary (and in fact interfering) rotation code in BuildingClass::UpdateTankBunker().
+DEFINE_HOOK(0x459069, BuildingClass_UpdateTankBunker_CheckOccupants, 0x7)
+{
+	enum { SkipGameCode = 0x4590EF };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	// Discrete center cell: No need to change facing at this stage.
+	if (pThis->Type->GetFoundationWidth() % 2)
+		return SkipGameCode;
+
+	return 0;
+}
+
+// Handle force moving unit to center of bunker.
+DEFINE_HOOK(0x459101, BuildingClass_UpdateTankBunker_RotateToTrack, 0x6)
+{
+	enum { ReturnFromFunction = 0x4591CE };
+
+	GET(BuildingClass*, pThis, ESI);
+	GET(UnitClass*, pUnit, EBP);
+
+	// Discrete center cell: Skip straight to rotating in bunker once finished moving instead of forcing track to center.
+	if (pThis->Type->GetFoundationWidth() % 2)
+	{
+		if (!pUnit->Locomotor->Is_Moving())
+		{
+			pUnit->PrimaryFacing.SetDesired(DirStruct(DirType::South));
+			pThis->TankBunkerState = TankBunkerState::RotateInBunker;
+		}
+
+		return ReturnFromFunction;
+	}
+
+	return 0;
+}
+
+inline void EjectBunkeredUnit(BuildingClass* pThis, UnitClass* pUnit)
+{
+	auto const pType = pUnit->Type;
+	auto const cell = pThis->GetMapCoords() + CellStruct(-1, 1);
+	auto const pNearbyCell = MapClass::Instance.NearByLocation(cell, pType->SpeedType, -1, pType->MovementZone, false, 1, 1, false, false, false, true, cell, false, false);
+	pUnit->SetDestination(MapClass::Instance.GetCellAt(pNearbyCell), false);
+	pUnit->QueueMission(Mission::Move, false);
+}
+
+// Bunker was destroyed, sold or warped away.
+DEFINE_HOOK(0x4593C7, BuildingClass_DestroyTankBunker, 0x6)
+{
+	enum { SkipGameCode = 0x459450 };
+
+	GET(BuildingClass*, pThis, EDI);
+	GET(UnitClass*, pUnit, ESI);
+
+	// Discrete center cell: Send unit out to a nearby cell without forcing drive track.
+	if (pThis->Type->GetFoundationWidth() % 2)
+	{
+		EjectBunkeredUnit(pThis, pUnit);
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+// Manual unload of the bunker.
+DEFINE_HOOK(0x4596EC, BuildingClass_UnloadTankBunker, 0x6)
+{
+	enum { SkipGameCode = 0x45980D };
+
+	GET(BuildingClass*, pThis, EDI);
+	GET(UnitClass*, pUnit, ESI);
+
+	// Discrete center cell: Send unit out to a nearby cell without forcing drive track.
+	if (pThis->Type->GetFoundationWidth() % 2)
+	{
+		EjectBunkeredUnit(pThis, pUnit);
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+// Add customization for tank bunker logic update delay.
+DEFINE_HOOK(0x44C976, BuildingClass_Mission_Repair_TankBunker, 0x5)
+{
+	GET(BuildingClass*, pThis, EBP);
+
+	auto const pType = pThis->Type;
+
+	if (pType->Bunker && (pThis->TankBunkerState > TankBunkerState::Idle && pThis->TankBunkerState < TankBunkerState::Bunkered))
+		R->EAX(BuildingTypeExt::ExtMap.Find(pType)->BunkerStateUpdateDelay.Get(RulesExt::Global()->BunkerStateUpdateDelay));
+
+	return 0;
+}
+
+#pragma endregion

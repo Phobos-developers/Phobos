@@ -289,6 +289,7 @@ public:
 		Nullable<bool> CurleyShuffle;
 
 		Valueable<TechnoTypeClass*> Convert_Deploy; // Ares
+		Valueable<TechnoTypeClass*> Convert_Undeploy;
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
 		Valueable<bool> Convert_ResetMindControl;
@@ -395,6 +396,7 @@ public:
 
 		std::vector<LaserTrailDataEntry> LaserTrailData;
 		Valueable<bool> OnlyUseLandSequences;
+		Nullable<bool> SecondaryFireSequenceLandOnly;
 		Nullable<CoordStruct> PronePrimaryFireFLH;
 		Nullable<CoordStruct> ProneSecondaryFireFLH;
 		Nullable<CoordStruct> DeployedPrimaryFireFLH;
@@ -506,6 +508,19 @@ public:
 		Nullable<bool> Unsellable; // Ares 3.0
 
 		SHPStruct* TurretShape;
+
+		Nullable<int> HarvesterLoadRate;
+		Nullable<double> HarvesterDumpRate;
+
+		Nullable<bool> Parasite_AllowWaterExit;
+
+		Nullable<bool> FlyNoWobbles;
+
+		Nullable<AnimTypeClass*> LandingAnim;
+
+		Valueable<bool> Missile_Cruise;
+		Valueable<AnimTypeClass*> Missile_TakeOffAnim;
+		Valueable<int> Missile_TakeOffSeparation;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -694,6 +709,7 @@ public:
 			, Passengers_SyncOwner_RevertOnExit { true }
 
 			, OnlyUseLandSequences { false }
+			, SecondaryFireSequenceLandOnly {}
 
 			, PronePrimaryFireFLH {}
 			, ProneSecondaryFireFLH {}
@@ -768,6 +784,7 @@ public:
 			, CurleyShuffle {}
 
 			, Convert_Deploy { }
+			, Convert_Undeploy { }
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
 			, Convert_ResetMindControl { false }
@@ -966,11 +983,24 @@ public:
 			, ExtraThreatCoefficient_InRangeDistance {}
 			, ExtraThreatCoefficient_Facing {}
 			, ExtraThreatCoefficient_DistanceToLastTarget {}
+
+			, HarvesterLoadRate {}
+			, HarvesterDumpRate {}
+				
+			, Parasite_AllowWaterExit {}
+
+			, FlyNoWobbles {}
+
+			, LandingAnim {}
+
+			, Missile_Cruise { false }
+			, Missile_TakeOffAnim { nullptr }
+			, Missile_TakeOffSeparation { 24 }
 		{ }
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
-		virtual void Initialize() override { }
+		virtual void Initialize() override;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 

@@ -42,6 +42,7 @@ public:
 		Valueable<bool> Grinding_PlayDieSound;
 
 		Nullable<bool> DisplayIncome;
+		Nullable<int> DisplayIncome_Delay;
 		Nullable<AffectedHouse> DisplayIncome_Houses;
 		Valueable<Point2D> DisplayIncome_Offset;
 
@@ -93,6 +94,7 @@ public:
 		Nullable<float> BuildingBunkerROFMult;
 		NullableIdx<VocClass> BunkerWallsUpSound;
 		NullableIdx<VocClass> BunkerWallsDownSound;
+		Nullable<int> BunkerStateUpdateDelay;
 
 		NullableIdx<VocClass> BuildingRepairedSound;
 
@@ -103,6 +105,15 @@ public:
 		Valueable<bool> UndeploysInto_Sellable;
 
 		Nullable<bool> BuildingRadioLink_SyncOwner;
+
+		Nullable<PartialVector2D<int>> GuardRetryDelay;
+
+		Valueable<int> TurretAnim_IdleFrames;
+		Valueable<int> TurretAnim_LowPowerIdleFrames;
+		Valueable<int> TurretAnim_FiringFrames;
+		Valueable<int> TurretAnim_LowPowerFiringFrames;
+		Valueable<int> TurretAnim_IdleRate;
+		Valueable<int> TurretAnim_FiringRate;
 
 		// Ares 0.2
 		Valueable<bool> CloningFacility;
@@ -138,6 +149,7 @@ public:
 			, Grinding_Weapon {}
 			, Grinding_Weapon_RequiredCredits { 0 }
 			, DisplayIncome { }
+			, DisplayIncome_Delay { }
 			, DisplayIncome_Houses { }
 			, DisplayIncome_Offset { { 0,0 } }
 			, PlacementPreview { true }
@@ -178,11 +190,19 @@ public:
 			, BuildingBunkerROFMult {}
 			, BunkerWallsUpSound {}
 			, BunkerWallsDownSound {}
+			, BunkerStateUpdateDelay {}
 			, BuildingRepairedSound {}
 			, Refinery_UseNormalActiveAnim { false }
 			, HasPowerUpAnim {}
 			, UndeploysInto_Sellable { false }
 			, BuildingRadioLink_SyncOwner {}
+			, GuardRetryDelay {}
+			, TurretAnim_IdleFrames { 1 }
+			, TurretAnim_LowPowerIdleFrames { 0 }
+			, TurretAnim_FiringFrames { 0 }
+			, TurretAnim_LowPowerFiringFrames { 0 }
+			, TurretAnim_IdleRate { 1 }
+			, TurretAnim_FiringRate { 1 }
 
 			// Ares 0.2
 			, CloningFacility { false }

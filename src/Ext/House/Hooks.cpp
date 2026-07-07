@@ -6,7 +6,11 @@
 #include "Ext/Building/Body.h"
 #include <Ext/Event/Body.h>
 
+#include <BeaconManagerClass.h>
+
 #include <unordered_map>
+#include <algorithm>
+#include <utility>
 
 // Trigger power recalculation on gain/loss of any techno, not just buildings.
 DEFINE_HOOK_AGAIN(0x5025F0, HouseClass_RegisterGain, 0x5) // RegisterLoss
@@ -125,7 +129,7 @@ DEFINE_HOOK(0x4AC534, DisplayClass_ComputeStartPosition_IllegalCoords, 0x6)
 namespace LimboTrackingTemp
 {
 	bool Enabled = false;
-	bool IsBeingDeleted = false;
+	int IsBeingDeleted = 0;
 }
 
 DEFINE_HOOK(0x687B18, ScenarioClass_ReadINI_StartTracking, 0x7)
@@ -157,9 +161,9 @@ static void __fastcall TechnoClass_UnInit_Wrapper(TechnoClass* pThis)
 			HouseExt::ExtMap.Find(pThis->Owner)->RemoveFromLimboTracking(pType);
 	}
 
-	LimboTrackingTemp::IsBeingDeleted = true;
+	++LimboTrackingTemp::IsBeingDeleted;
 	pThis->ObjectClass::UnInit();
-	LimboTrackingTemp::IsBeingDeleted = false;
+	--LimboTrackingTemp::IsBeingDeleted;
 }
 
 DEFINE_FUNCTION_JUMP(CALL, 0x4DE60B, TechnoClass_UnInit_Wrapper);   // FootClass
@@ -271,6 +275,9 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 			if (!I_am_human)
 				TechnoExt::ChangeOwnerMissionFix(pMe);
 		}
+
+		pThis->Owner->RecheckTechTree = true;
+		pNewOwner->RecheckTechTree = true;
 	}
 
 	for (const auto& pTrail : pExt->LaserTrails)
@@ -455,12 +462,72 @@ DEFINE_HOOK(0x4F8ACC, HouseClass_Update_ResetTeamDelay, 0x6)
 
 	GET(HouseClass*, pThis, ESI);
 
-	const int teamDelay = HouseExt::ExtMap.Find(pThis)->TeamDelay;
+	const auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	const int teamDelay = pHouseExt->TeamDelay;
 
 	if (teamDelay >= 0)
 	{
 		R->ECX(teamDelay);
 		return ResetTeamDelay;
+	}
+
+	const auto teamDelayType = RulesExt::Global()->TeamDelays_DynamicType;
+
+	if (teamDelayType == DynamicTeamDelayType::None)
+		return 0;
+
+	int playerCount = ScenarioClass::Instance->NumberStartingPoints;
+
+	if (playerCount >= 2 && !SessionClass::IsCampaign())
+	{
+		if (teamDelayType != DynamicTeamDelayType::StartingPoint)
+		{
+			playerCount = 0;
+			const bool checkAlive = teamDelayType == DynamicTeamDelayType::AliveCount
+				|| teamDelayType == DynamicTeamDelayType::AliveAllies
+				|| teamDelayType == DynamicTeamDelayType::AliveEnemies;
+			const bool checkAllies = teamDelayType == DynamicTeamDelayType::Allies
+				|| teamDelayType == DynamicTeamDelayType::AliveAllies;
+			const bool checkEnemies = teamDelayType == DynamicTeamDelayType::Enemies
+				|| teamDelayType == DynamicTeamDelayType::AliveEnemies;
+
+			for (auto const pHouse : HouseClass::Array)
+			{
+				if ((!checkAlive || !pHouse->Defeated)
+					&& !pHouse->IsObserver()
+					&& !pHouse->Type->MultiplayPassive
+					&& (!checkAllies || (pThis != pHouse && pThis->IsAlliedWith(pHouse)))
+					&& (!checkEnemies || !pThis->IsAlliedWith(pHouse)))
+				{
+					playerCount += 1;
+				}
+			}
+		}
+
+		if (playerCount < 1 || playerCount > 8)
+			return 0;
+
+		const int AIDifficulty = pThis->GetAIDifficultyIndex();
+		int delay = 0;
+
+		switch (AIDifficulty)
+		{
+		case 0:
+			delay = RulesExt::Global()->TeamDelays_Count[playerCount - 1].Get().X;
+			break;
+		case 1:
+			delay = RulesExt::Global()->TeamDelays_Count[playerCount - 1].Get().Y;
+			break;
+		case 2:
+			delay = RulesExt::Global()->TeamDelays_Count[playerCount - 1].Get().Z;
+			break;
+		}
+
+		if (delay > 0)
+		{
+			R->ECX(delay);
+			return ResetTeamDelay;
+		}
 	}
 
 	return 0;
@@ -615,6 +682,89 @@ DEFINE_HOOK(0x45063F, BuildingClass_UpdateRepairSell_PlayerAutoRepair, 0x6)
 			pThis->SetRepairState(0);
 		return CanNotAutoRepair;
 	}
+}
+
+#pragma endregion
+
+#pragma region BeaconOrder
+
+DEFINE_HOOK(0x43131B, BeaconManagerClass_DeleteBeacon_RecordOrder, 0x5)
+{
+	if (!RulesExt::Global()->AutoRemoveEarliestBeacon)
+		return 0;
+
+	GET(const int, beaconIdx, EBX);
+	GET(const int, houseIdx, ECX);
+
+	const auto pHouse = HouseClass::Array.GetItem(houseIdx);
+	const auto pExt = HouseExt::ExtMap.Find(pHouse);
+
+	const int oldValue = std::exchange(pExt->BeaconsPlacedOrder[beaconIdx], 0);
+
+	if (oldValue != 0)
+	{
+		for (int i = 0; i < 3; ++i)
+		{
+			if (i != beaconIdx && pExt->BeaconsPlacedOrder[i] > oldValue)
+				--pExt->BeaconsPlacedOrder[i];
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x430E5D, BeaconManagerClass_PlaceBeacon_RecordOrder, 0x5)
+DEFINE_HOOK(0x430C64, BeaconManagerClass_PlaceBeacon_RecordOrder, 0x5)
+{
+	if (!RulesExt::Global()->AutoRemoveEarliestBeacon)
+		return 0;
+
+	GET(const int, beaconIdx, EAX);
+	GET(const int, houseIdx, EBX);
+
+	const auto pHouse = HouseClass::Array.GetItem(houseIdx);
+	const auto pExt = HouseExt::ExtMap.Find(pHouse);
+
+	const int maxVal = std::max({ pExt->BeaconsPlacedOrder[0], pExt->BeaconsPlacedOrder[1], pExt->BeaconsPlacedOrder[2] });
+	pExt->BeaconsPlacedOrder[beaconIdx] = maxVal + 1;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4AC9B2, MouseClass_ToggleBeaconMode_AllUsed, 0x6)
+{
+	enum { RET = 0x4AC9B8 };
+
+	GET(const bool, canPlace, EAX);
+
+	if (canPlace)
+		return RET;
+
+	if (!RulesExt::Global()->AutoRemoveEarliestBeacon)
+	{
+		R->BL(0);
+		return RET;
+	}
+
+	const auto pHouse = HouseClass::CurrentPlayer;
+	const auto pExt = HouseExt::ExtMap.Find(pHouse);
+
+	for (int i = 0; i < 3; ++i)
+	{
+		if (pExt->BeaconsPlacedOrder[i] == 1)
+		{
+			const auto pManager = &BeaconManagerClass::Instance;
+			const auto pBeacon = pManager->Beacons[pHouse->ArrayIndex][i];
+			// Select and delete beacon.
+			// If you don't select the beacon, the game will not send the IPX packet.
+			MapClass::UnselectAll();
+			pBeacon->Bitfield |= 2;
+			pManager->DeleteBeacon(-1, -1);
+			break;
+		}
+	}
+
+	return RET;
 }
 
 #pragma endregion

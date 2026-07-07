@@ -14,6 +14,7 @@ public:
 	Nullable<ColorStruct> Bolt_Color[3];
 	Valueable<bool> Bolt_Disable[3];
 	Valueable<int> Bolt_Arcs;
+	Valueable<int> Bolt_ZAdjust;
 	Nullable<ColorStruct> Beam_Color;
 	Valueable<double> Beam_Amplitude;
 	Nullable<int> FadeDuration;
@@ -34,6 +35,7 @@ public:
 		, Bolt_Color {}
 		, Bolt_Disable { Valueable<bool>(false) }
 		, Bolt_Arcs { 8 }
+		, Bolt_ZAdjust { 0 }
 		, Beam_Color {}
 		, Beam_Amplitude { 40.0 }
 		, FadeDuration {}

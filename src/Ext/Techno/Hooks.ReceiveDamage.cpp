@@ -22,7 +22,10 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	// AffectsAbove/BelowPercent & AffectsNeutral can ignore IgnoreDefenses like AffectsAllies/Enmies/Owner
 	// They should be checked here to cover all cases that directly use ReceiveDamage to deal damage
-	if (!pWHExt->IsHealthInThreshold(pThis) || !pWHExt->IsVeterancyInThreshold(pThis) || (!pWHExt->AffectsNeutral && pThis->Owner->IsNeutral()))
+	if (!pWHExt->IsHealthInThreshold(pThis)
+	|| !pWHExt->IsVeterancyInThreshold(pThis)
+	|| (!pWHExt->AffectsNeutral && pThis->Owner->IsNeutral())
+	|| !pWHExt->IsInvokerAllowed(pThis, args->Attacker))
 	{
 		damage = 0;
 		return 0;
@@ -34,7 +37,11 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	// Apply warhead effects
 	if (damage && !pWHExt->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate))
-		pWHExt->DetonateOnOneUnit(args->SourceHouse, pThis, CoordStruct { 0, 0, 0 }, damage, args->Attacker, args->DistanceToEpicenter);
+	{
+		const auto pOldInvoker = std::exchange(pWHExt->DamageAreaInvoker, args->Attacker);
+		pWHExt->DetonateOnOneUnit(args->SourceHouse, pThis, CoordStruct { 0, 0, 0 }, damage, args->Attacker, nullptr, args->DistanceToEpicenter);
+		pWHExt->DamageAreaInvoker = pOldInvoker;
+	}
 
 	// Calculate Damage Multiplier
 	if (!args->IgnoreDefenses && damage)
@@ -447,20 +454,38 @@ DEFINE_HOOK(0x5F5480, ObjectClass_ReceiveDamage_FlashDuration, 0x6)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x701CFC, TechnoClass_ReceiveDamage_AllowBerzerkOnAllies, 0x5)
+// Remove the YR Psychedelic ally check before our hook incase Phobos is ran without Ares.
+DEFINE_JUMP(LJMP, 0x701CE5, 0x701D0B);
+
+// Check houses for Psychedelic at the address Ares returns to after immunity checks.
+DEFINE_HOOK(0x701D2E, TechnoClass_ReceiveDamage_AllowBerzerkOnAllies, 0x6)
 {
-	enum { SkipCodeYR = 0x701D0B, SkipCodeAres = 0x701D2E };
+	enum { DisallowBerzerk = 0x701D3E };
 
-	// If AllowBerzerkOnAllies not enabled, just return from function
-	// and don't apply berzerk.
-	if (!RulesExt::Global()->AllowBerzerkOnAllies)
-		return 0;
+	GET(TechnoClass*, pThis, ESI);
+	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFSET(0xC4, 0x4));
 
-	// Ares already checked immunities by this point if it is enabled.
-	// Rechecking them causes issues, so only check ImmuneToPsionics
-	// again if Ares is not present.
-	return AresHelper::CanUseAres ? SkipCodeAres : SkipCodeYR;
+	if (!RulesExt::Global()->AllowBerzerkOnAllies && pThis->Owner->IsAlliedWith(receiveDamageArgs.SourceHouse))
+		return DisallowBerzerk;
+
+	return 0;
 }
+
+#pragma region BerzerkBehavior
+
+DEFINE_HOOK(0x701DAE, TechnoClass_ReceiveDamage_Berzerk, 0x6)
+{
+	enum { SkipQueueMission = 0x701DBA };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	pThis->SetDestination(0, false);
+	pThis->QueueMission(RulesExt::Global()->BerzerkMission, false);
+
+	return SkipQueueMission;
+}
+
+#pragma endregion
 
 DEFINE_HOOK(0x702823, TechnoClass_ReceiveDamage_SkipDamagedParticle, 0x7)
 {

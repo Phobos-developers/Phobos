@@ -29,6 +29,8 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_ManualFire)
 		.Process(this->SW_ShowCameo)
 		.Process(this->SW_Unstoppable)
+		.Process(this->SW_AllowPlayer)
+		.Process(this->SW_AllowAI)
 		.Process(this->SW_Inhibitors)
 		.Process(this->SW_AnyInhibitor)
 		.Process(this->SW_Designators)
@@ -39,6 +41,9 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_ForbiddenHouses)
 		.Process(this->SW_AuxBuildings)
 		.Process(this->SW_NegBuildings)
+		.Process(this->SW_AuxTechnos)
+		.Process(this->SW_NegTechnos)
+		.Process(this->SW_TechLevel)
 		.Process(this->SW_InitialReady)
 		.Process(this->SW_PostDependent)
 		.Process(this->SW_MaxCount)
@@ -95,6 +100,12 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_Link_RollChances)
 		.Process(this->Message_LinkedSWAcquired)
 		.Process(this->EVA_LinkedSWAcquired)
+		.Process(this->Message_Activated_Owner)
+		.Process(this->Message_Activated_Allies)
+		.Process(this->Message_Activated_Enemies)
+		.Process(this->EVA_Activated_Owner)
+		.Process(this->EVA_Activated_Allies)
+		.Process(this->EVA_Activated_Enemies)
 		;
 }
 
@@ -116,6 +127,8 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_ManualFire.Read(exINI, pSection, "SW.ManualFire");
 	this->SW_ShowCameo.Read(exINI, pSection, "SW.ShowCameo");
 	this->SW_Unstoppable.Read(exINI, pSection, "SW.Unstoppable");
+	this->SW_AllowPlayer.Read(exINI, pSection, "SW.AllowPlayer");
+	this->SW_AllowAI.Read(exINI, pSection, "SW.AllowAI");
 	this->SW_Inhibitors.Read(exINI, pSection, "SW.Inhibitors");
 	this->SW_AnyInhibitor.Read(exINI, pSection, "SW.AnyInhibitor");
 	this->SW_Designators.Read(exINI, pSection, "SW.Designators");
@@ -126,6 +139,9 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_ForbiddenHouses = pINI->ReadHouseTypesList(pSection, "SW.ForbiddenHouses", this->SW_ForbiddenHouses);
 	this->SW_AuxBuildings.Read(exINI, pSection, "SW.AuxBuildings");
 	this->SW_NegBuildings.Read(exINI, pSection, "SW.NegBuildings");
+	this->SW_AuxTechnos.Read(exINI, pSection, "SW.AuxTechnos");
+	this->SW_NegTechnos.Read(exINI, pSection, "SW.NegTechnos");
+	this->SW_TechLevel.Read(exINI, pSection, "SW.TechLevel");
 	this->SW_InitialReady.Read(exINI, pSection, "SW.InitialReady");
 	this->SW_PostDependent.Read(exINI, pSection, "SW.PostDependent");
 	this->SW_MaxCount.Read(exINI, pSection, "SW.MaxCount");
@@ -225,6 +241,13 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Message_LinkedSWAcquired.Read(exINI, pSection, "Message.LinkedSWAcquired");
 	this->EVA_LinkedSWAcquired.Read(exINI, pSection, "EVA.LinkedSWAcquired");
 	this->SW_Link_RollChances.Read(exINI, pSection, "SW.Link.RollChances");
+
+	this->Message_Activated_Owner.Read(exINI, pSection, "Message.Activated.Owner");
+	this->Message_Activated_Allies.Read(exINI, pSection, "Message.Activated.Allies");
+	this->Message_Activated_Enemies.Read(exINI, pSection, "Message.Activated.Enemies");
+	this->EVA_Activated_Owner.Read(exINI, pSection, "EVA.Activated.Owner");
+	this->EVA_Activated_Allies.Read(exINI, pSection, "EVA.Activated.Allies");
+	this->EVA_Activated_Enemies.Read(exINI, pSection, "EVA.Activated.Enemies");
 
 	// SW.Link.RandomWeights
 	for (size_t i = 0; ; ++i)

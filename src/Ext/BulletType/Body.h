@@ -34,6 +34,8 @@ public:
 		Valueable<bool> Shrapnel_AffectsGround;
 		Valueable<bool> Shrapnel_AffectsBuildings;
 		Valueable<bool> Shrapnel_UseWeaponTargeting;
+		Nullable<bool> Shrapnel_IgnoreHitBuildings;
+		Nullable<bool> Shrapnel_ObeyWarheadTriggerConditions;
 		Nullable<bool> SubjectToLand;
 		Valueable<bool> SubjectToLand_Detonate;
 		Nullable<bool> SubjectToWater;
@@ -68,6 +70,8 @@ public:
 		Valueable<Leptons> AirburstWeapon_SourceScatterMin;
 		Valueable<Leptons> AirburstWeapon_SourceScatterMax;
 		Valueable<bool> AirburstWeapon_UseFiringEffects;
+		Valueable<bool> AirburstWeapon_HeadToTarget;
+		Valueable<int> AirburstWeapon_RadialFireSegments;
 
 		Valueable<bool> Parachuted;
 		Valueable<int> Parachuted_FallRate;
@@ -93,6 +97,8 @@ public:
 			, Shrapnel_AffectsGround { false }
 			, Shrapnel_AffectsBuildings { false }
 			, Shrapnel_UseWeaponTargeting { false }
+			, Shrapnel_IgnoreHitBuildings {}
+			, Shrapnel_ObeyWarheadTriggerConditions {}
 			, ClusterScatter_Min { Leptons(256) }
 			, ClusterScatter_Max { Leptons(512) }
 			, BallisticScatter_Min {}
@@ -125,6 +131,8 @@ public:
 			, AirburstWeapon_SourceScatterMin { Leptons(0) }
 			, AirburstWeapon_SourceScatterMax { Leptons(0) }
 			, AirburstWeapon_UseFiringEffects { false }
+			, AirburstWeapon_HeadToTarget { false }
+			, AirburstWeapon_RadialFireSegments { 0 }
 			, Parachuted { false }
 			, Parachuted_FallRate { 1 }
 			, Parachuted_MaxFallRate {}

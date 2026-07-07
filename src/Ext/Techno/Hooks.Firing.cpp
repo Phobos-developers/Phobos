@@ -395,18 +395,18 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 DEFINE_HOOK(0x6FC0C5, TechnoClass_CanFire_DisableWeapons, 0x6)
 {
-	enum { OutOfRange = 0x6FC0DF, Illegal = 0x6FC86A, Continue = 0x6FC0D3 };
+	enum { FireErrorRearm = 0x6FC0DF, FireErrorIllegal = 0x6FC86A, Continue = 0x6FC0D3 };
 
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(const int, weaponIndex, STACK_OFFSET(0x20, 0x8));
 
 	if (pThis->SlaveOwner)
-		return Illegal;
+		return FireErrorIllegal;
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (pExt->AE.DisableWeapons && pThis->GetWeapon(weaponIndex)->WeaponType)
-		return OutOfRange;
+		return FireErrorRearm;
 
 	return Continue;
 }
@@ -445,7 +445,7 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 	if (pTransport->Transporter)
 		return Illegal;
 
-	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons && TechnoExt::ExtMap.Find(pTransport)->AE.DisableWeapons && pThis->GetWeapon(weaponIndex)->WeaponType)
+	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons && TechnoExt::HasWeaponsDisabled(pTransport) && pThis->GetWeapon(weaponIndex)->WeaponType)
 		return OutOfRange;
 
 	return Continue;
@@ -962,7 +962,7 @@ CoordStruct* GetFLHTemp::UnitClassFake::_GetFLH(CoordStruct* outBuffer, int weap
 		}
 
 		auto TechnoClass_GetFLH = reinterpret_cast<CoordStruct*(__thiscall*)(TechnoClass*, CoordStruct*, int, CoordStruct)>(0x6F3AD0);
-		TechnoClass_GetFLH(pThis, outBuffer, weaponIdx, CoordStruct::Empty);
+		TechnoClass_GetFLH(pThis, outBuffer, weaponIdx, offset);
 	}
 	while (false);
 
@@ -979,6 +979,7 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 	GET(TechnoTypeClass*, pType, EAX);
 	GET(const int, weaponIndex, ESI);
 	GET_STACK(CoordStruct*, pCoords, STACK_OFFSET(0xD8, 0x4));
+	REF_STACK(CoordStruct, offset, STACK_OFFSET(0xD8, 0xC));
 
 	bool allowOnTurret = true;
 	CoordStruct flh = CoordStruct::Empty;
@@ -1012,6 +1013,7 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 			allowOnTurret = false;
 	}
 
+	flh += offset;
 	*pCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, allowOnTurret);
 	R->EAX(pCoords);
 
@@ -1164,3 +1166,38 @@ DEFINE_HOOK(0x6F755A, TechnoClass_IsCloseEnough_CylinderRangefinding, 0x7)
 	R->EAX(pCoord->X);
 	return (cylinder || pThis->WhatAmI() == AbstractType::Aircraft) ? 0x6F75B2 : 0x6F7568;
 }
+
+#pragma region Gattling+DisableWeapons
+
+DEFINE_HOOK(0x44B214, BuildingClass_Mission_Attack_Gattling, 0x6)
+{
+	enum { SkipGameCode = 0x44B228 };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	if (TechnoExt::HasWeaponsDisabled(pThis))
+	{
+		pThis->GattlingRateDown(pThis->MissionAccumulateTime);
+		pThis->MissionAccumulateTime = 0;
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x737086, UnitClass_FiringAI_Gattling, 0x9)
+{
+	enum { SkipGameCode = 0x7370AE };
+
+	GET(UnitClass*, pThis, ESI);
+	GET(const FireError, fireError, EBP);
+
+	if (fireError == FireError::REARM && TechnoExt::HasWeaponsDisabled(pThis))
+		pThis->GattlingRateDown(1);
+	else
+		pThis->GattlingRateUp(1);
+
+	return SkipGameCode;
+}
+
+#pragma endregion
