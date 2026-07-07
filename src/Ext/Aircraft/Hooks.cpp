@@ -1263,8 +1263,15 @@ DEFINE_HOOK(0x415A00, AircraftClass_Mission_Paradrop_Overfly_Delay, 0x5)
 {
 	GET(AircraftClass*, pThis, ESI);
 
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-	R->EAX(pTypeExt->ParadropDelay.Get(RulesExt::Global()->ParadropDelay));
+	if (pThis->Passengers.NumPassengers)
+	{
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+		R->EAX(pTypeExt->ParadropDelay.Get(RulesExt::Global()->ParadropDelay));
+	}
+	else
+	{
+		R->EAX(5);
+	}
 
 	return 0x415A05;
 }
