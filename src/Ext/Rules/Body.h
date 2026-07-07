@@ -368,6 +368,7 @@ public:
 		Valueable<bool> Temporal_ApplyMultiplier;
 
 		Valueable<bool> DiscardOn_MoveBasedOnDestination;
+		Valueable<bool> DiscardOn_ConsiderHarvestingAsStationary;
 		Valueable<bool> RemoveMindControl_Silent;
 		Valueable<bool> MindControl_Permanent_ReplaceSilent;
 		Nullable<bool> FlyNoWobbles;
@@ -382,6 +383,12 @@ public:
 		Valueable<Mission> BerzerkMission;
 
 		Valueable<int> BunkerStateUpdateDelay;
+
+		Valueable<bool> AllowChatBoxInSinglePlayer;
+
+		Valueable<bool> SecondaryFireSequenceLandOnly;
+		Valueable<bool> AutoRemoveEarliestBeacon;
+		Valueable<bool> AllowBeaconHotKeyInSinglePlayer;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -690,6 +697,7 @@ public:
 			, Temporal_ApplyVersus { false }
 			, Temporal_ApplyMultiplier { false }
 			, DiscardOn_MoveBasedOnDestination { false }
+			, DiscardOn_ConsiderHarvestingAsStationary { true }
 			, RemoveMindControl_Silent { false }
 			, MindControl_Permanent_ReplaceSilent { false }
 
@@ -701,9 +709,18 @@ public:
 
 			, TeamDelays_DynamicType { DynamicTeamDelayType::StartingPoint }
 			, TeamDelays_Count {}
+
 			, BerzerkMission { Mission::Hunt }
 
 			, BunkerStateUpdateDelay { 15 }
+				
+			, AllowChatBoxInSinglePlayer { false }
+
+			, SecondaryFireSequenceLandOnly { true }
+
+			, AutoRemoveEarliestBeacon { false }
+
+			, AllowBeaconHotKeyInSinglePlayer { false }
 		{ }
 
 		virtual ~ExtData() = default;

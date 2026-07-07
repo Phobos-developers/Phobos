@@ -206,6 +206,10 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	{
 		this->SkipWeaponPicking = false;
 	}
+	else
+	{
+		this->SkipWeaponPicking = true;
+	}
 }
 
 template <typename T>

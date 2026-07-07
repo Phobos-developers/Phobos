@@ -100,6 +100,12 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_Link_RollChances)
 		.Process(this->Message_LinkedSWAcquired)
 		.Process(this->EVA_LinkedSWAcquired)
+		.Process(this->Message_Activated_Owner)
+		.Process(this->Message_Activated_Allies)
+		.Process(this->Message_Activated_Enemies)
+		.Process(this->EVA_Activated_Owner)
+		.Process(this->EVA_Activated_Allies)
+		.Process(this->EVA_Activated_Enemies)
 		;
 }
 
@@ -235,6 +241,13 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Message_LinkedSWAcquired.Read(exINI, pSection, "Message.LinkedSWAcquired");
 	this->EVA_LinkedSWAcquired.Read(exINI, pSection, "EVA.LinkedSWAcquired");
 	this->SW_Link_RollChances.Read(exINI, pSection, "SW.Link.RollChances");
+
+	this->Message_Activated_Owner.Read(exINI, pSection, "Message.Activated.Owner");
+	this->Message_Activated_Allies.Read(exINI, pSection, "Message.Activated.Allies");
+	this->Message_Activated_Enemies.Read(exINI, pSection, "Message.Activated.Enemies");
+	this->EVA_Activated_Owner.Read(exINI, pSection, "EVA.Activated.Owner");
+	this->EVA_Activated_Allies.Read(exINI, pSection, "EVA.Activated.Allies");
+	this->EVA_Activated_Enemies.Read(exINI, pSection, "EVA.Activated.Enemies");
 
 	// SW.Link.RandomWeights
 	for (size_t i = 0; ; ++i)

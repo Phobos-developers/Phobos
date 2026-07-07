@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-20 10:13+0800\n"
+"POT-Creation-Date: 2026-07-03 22:16+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -890,6 +890,9 @@ msgstr "建筑炮塔的闲置／开火／断电动画"
 msgid "Animation theater/tile palette toggle"
 msgstr "动画使用气候／地块色盘的开关"
 
+msgid "Tank Bunker improvements"
+msgstr "坦克碉堡改进"
+
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
 
@@ -1297,13 +1300,11 @@ msgid ""
 "bunker"
 msgstr "修复了矿车离开坦克碉堡后无法移动的问题"
 
-#, fuzzy
 msgid ""
 "Fix the bug in AI scripts 56 and 57 that forced the launch of "
 "superweapons with index numbers 3 and 4"
 msgstr "修复了 56 和 57 号 AI 动作脚本强制发射注册索引 3 和 4 的超武的 Bug"
 
-#, fuzzy
 msgid ""
 "Fix an issue where parachute units would die upon landing if bridges were"
 " destroyed during their descent"
@@ -1802,6 +1803,9 @@ msgstr "允许 `Temporal` 弹头应用比率和加成"
 
 msgid "Fix the bug that techno will get stuck if change owner in tunnel"
 msgstr "修复了科技类型在隧道中变更所属方会导致卡住的 Bug"
+
+msgid "Fix the bug that the vanilla `SecondSpawnOffset` no longer takes effect"
+msgstr "修复了原版 `SecondSpawnOffset` 不再生效的 Bug"
 
 msgid "Crush level system"
 msgstr "碾压等级系统"
@@ -2323,6 +2327,28 @@ msgstr "自定义 `Locomotor=Fly` 的单位是否上下浮动"
 msgid "Customize the landing animation of technos that have `Locomotor=Fly`"
 msgstr "自定义 `Locomotor=Fly` 单位的降落动画"
 
+msgid ""
+"Allow infantry to use `Convert.Deploy` without requiring "
+"`IsSimpleDeployer=true`"
+msgstr "允许了步兵使用 `Convert.Deploy` 而无需 `IsSimpleDeployer=true`"
+
+msgid "Allow infantry to perform type conversion when deploying and undeploying"
+msgstr "允许步兵在部署与反部署时执行类型转换"
+
+msgid "Custom cruise missiles"
+msgstr "自定义巡航导弹"
+
+msgid "Add a toggle for disabling `SecondaryFire` / `SecondaryProne` on water"
+msgstr "为水上禁用  `SecondaryFire` / `SecondaryProne` 添加开关"
+
+msgid "Customize the step limit of the credits indicator"
+msgstr ""
+"自定义资金示数器步长上限"
+
+msgid "Disable the credits indicator smooth transition"
+msgstr ""
+"禁用资金示数器平滑渐变"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
@@ -2703,6 +2729,9 @@ msgstr "额外威胁"
 msgid "Fix the incorrect mission switching in infantry EnterIdleMode"
 msgstr "修复了步兵进入闲置状态时的错误任务切换"
 
+msgid "Customizable Berzerk mission"
+msgstr "可自定义的混乱任务"
+
 msgid ""
 "Fix the issue that `BombSight` not being updated correctly in techno "
 "conversion"
@@ -2745,6 +2774,15 @@ msgstr "修复了 Voxel 抛射体和动画的光照问题"
 msgid "Export interface for external call"
 msgstr "用于外部调用的导出接口"
 
+msgid "Allow chat box in singleplayer"
+msgstr "允许在单人模式使用聊天框"
+
+msgid "Auto-remove earliest beacon"
+msgstr "自动移除最早的信标"
+
+msgid "Allow beacon placement hotkey in single player"
+msgstr "允许在单人模式下使用信标放置快捷键"
+
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
 
@@ -2762,6 +2800,9 @@ msgstr "为 AE 系统添加目标过滤选项"
 
 msgid "Add veterancy-based target filtering for weapons and warheads"
 msgstr "为武器和弹头添加基于经验等级的目标过滤"
+
+msgid "Recipient-specific message and EVA on superweapon activation"
+msgstr "针对特定接收者的超武激活消息与 EVA 语音"
 
 msgid "**tyuah8**:"
 msgstr "**tyuah8**："
@@ -2948,13 +2989,11 @@ msgstr "修复了 `Locomotor` 为 `Fly`、`Jumpjet` 或 `Rocket` 的单位在地
 msgid "**Chang_zhi**:"
 msgstr "**Chang_zhi**："
 
-msgid ""
-"Interop export interface for accessing scenario "
-"local/global variables"
+msgid "Interop export interface for accessing scenario local/global variables"
 msgstr "用于访问扩展局部变量和全局变量的外部调用接口"
 
 msgid ""
 "Add `ClampToScreen` tag for `BannerType` to control whether banner "
 "position is clamped to the visible area"
-msgstr ""
-"为 `BannerType` 添加了 `ClampToScreen` 标签以控制横幅位置是否被限制在可视化区域内"
+msgstr "为 `BannerType` 添加了 `ClampToScreen` 标签以控制横幅位置是否被限制在可视化区域内"
+

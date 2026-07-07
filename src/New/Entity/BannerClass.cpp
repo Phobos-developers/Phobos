@@ -74,8 +74,8 @@ void BannerClass::RenderPCX(Point2D position)
 	// preventing it from being drawn partially off-screen.
 	if(pType->ClampToScreen)
 	{
-		int maxX = std::max(0, DSurface::ViewBounds.Width - pcx->Width);
-		int maxY = std::max(0, DSurface::ViewBounds.Height - pcx->Height);
+		const int maxX = std::max(0, DSurface::ViewBounds.Width - pcx->Width);
+		const int maxY = std::max(0, DSurface::ViewBounds.Height - pcx->Height);
 		position.X = std::clamp(position.X, 0, maxX);
 		position.Y = std::clamp(position.Y, 0, maxY);
 	}
@@ -96,8 +96,8 @@ void BannerClass::RenderSHP(Point2D position)
 	// preventing it from being drawn partially off-screen.
 	if (pType->ClampToScreen)
 	{
-		int maxX = std::max(0, DSurface::ViewBounds.Width - shape->Width);
-		int maxY = std::max(0, DSurface::ViewBounds.Height - shape->Height);
+		const int maxX = std::max(0, DSurface::ViewBounds.Width - shape->Width);
+		const int maxY = std::max(0, DSurface::ViewBounds.Height - shape->Height);
 		position.X = std::clamp(position.X, 0, maxX);
 		position.Y = std::clamp(position.Y, 0, maxY);
 	}

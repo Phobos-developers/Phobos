@@ -85,7 +85,7 @@ DEFINE_HOOK(0x4D6D34, FootClass_MissionAreaGuard_Miner, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x73D508, UnitClass_Harvesting_HarvesterLoadRate, 6)
+DEFINE_HOOK_AGAIN(0x73D515, UnitClass_Harvesting_HarvesterLoadRate, 6)
 DEFINE_HOOK(0x73D5D5, UnitClass_Harvesting_HarvesterLoadRate, 6)
 {
 	GET(UnitClass* const, pThis, ESI);
@@ -93,7 +93,7 @@ DEFINE_HOOK(0x73D5D5, UnitClass_Harvesting_HarvesterLoadRate, 6)
 
 	R->EAX(pTypeExt->HarvesterLoadRate.Get(RulesClass::Instance->HarvesterLoadRate));
 
-	return R->Origin() == 0x73D508 ? 0x73D50E : 0x73D5DB;
+	return R->Origin() + 0x6;
 }
 
 DEFINE_HOOK(0x73E361, UnitClass_Harvesting_HarvesterDumpRate, 6)
@@ -189,7 +189,7 @@ DEFINE_HOOK(0x4DCF86, FootClass_FindTiberium_SubterraneanHarvester, 0x5)
 {
 	enum { SkipGameCode = 0x4DCF9B };
 
-	GET(MovementZone, mZone, ECX);
+	GET(const MovementZone, mZone, ECX);
 
 	if (mZone == MovementZone::Subterrannean)
 		R->ECX(MovementZone::Fly);
@@ -202,7 +202,7 @@ DEFINE_HOOK(0x4DDB23, FootClass_FindWeeds_SubterraneanHarvester, 0x5)
 {
 	enum { SkipGameCode = 0x4DCF9B };
 
-	GET(MovementZone, mZone, EAX);
+	GET(const MovementZone, mZone, EAX);
 
 	if (mZone == MovementZone::Subterrannean)
 		R->EAX(MovementZone::Fly);
@@ -281,12 +281,12 @@ DEFINE_HOOK(0x73EEA6, UnitClass_MissionHarvest_AllOreGathered, 0x6)
 
 	GET(UnitClass*, pThis, EBP);
 
-	auto pBuilding = MapClass::Instance.GetCellAt(pThis->GetCoords())->GetBuilding();
+	const auto pBuilding = MapClass::Instance.GetCellAt(pThis->GetCoords())->GetBuilding();
 	if (pBuilding && (pBuilding->Type->Refinery || pBuilding->Type->Weeder))
 	{
 		CellStruct buffer = CellStruct::Empty;
 		pThis->NearbyLocation(&buffer, pBuilding);
-		auto pDest = MapClass::Instance.GetCellAt(buffer);
+		const auto pDest = MapClass::Instance.GetCellAt(buffer);
 		pThis->SetDestination(pDest, false);
 		R->EAX(15);
 	}

@@ -399,6 +399,7 @@ public:
 
 		std::vector<LaserTrailDataEntry> LaserTrailData;
 		Valueable<bool> OnlyUseLandSequences;
+		Nullable<bool> SecondaryFireSequenceLandOnly;
 		Nullable<CoordStruct> PronePrimaryFireFLH;
 		Nullable<CoordStruct> ProneSecondaryFireFLH;
 		Nullable<CoordStruct> DeployedPrimaryFireFLH;
@@ -519,6 +520,10 @@ public:
 		Nullable<bool> FlyNoWobbles;
 
 		Nullable<AnimTypeClass*> LandingAnim;
+
+		Valueable<bool> Missile_Cruise;
+		Valueable<AnimTypeClass*> Missile_TakeOffAnim;
+		Valueable<int> Missile_TakeOffSeparation;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -707,6 +712,7 @@ public:
 			, Passengers_SyncOwner_RevertOnExit { true }
 
 			, OnlyUseLandSequences { false }
+			, SecondaryFireSequenceLandOnly {}
 
 			, PronePrimaryFireFLH {}
 			, ProneSecondaryFireFLH {}
@@ -993,11 +999,15 @@ public:
 			, FlyNoWobbles {}
 
 			, LandingAnim {}
+
+			, Missile_Cruise { false }
+			, Missile_TakeOffAnim { nullptr }
+			, Missile_TakeOffSeparation { 24 }
 		{ }
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
-		virtual void Initialize() override { }
+		virtual void Initialize() override;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
