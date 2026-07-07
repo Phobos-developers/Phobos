@@ -384,6 +384,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->ParadropMission.Read(exINI, GameStrings::General, "ParadropMission");
 	this->AIParadropMission.Read(exINI, GameStrings::General, "AIParadropMission");
+	this->ParadropDelay.Read(exINI, GameStrings::General, "ParadropDelay");
 
 	this->CylinderRangefinding.Read(exINI, GameStrings::General, "CylinderRangefinding");
 
@@ -763,6 +764,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AutoTargetAI_NoThreatBuildings)
 		.Process(this->ParadropMission)
 		.Process(this->AIParadropMission)
+		.Process(this->ParadropDelay)
 		.Process(this->DefaultToGuardArea)
 		.Process(this->CylinderRangefinding)
 		.Process(this->PenetratesTransport_Level)
