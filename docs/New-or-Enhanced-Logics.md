@@ -2011,6 +2011,10 @@ AutoDeath.TechnosExist.Houses=owner            ; Affected House Enumeration (non
 Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option **if you are not using Ares 3.0+**.
 ```
 
+```{note}
+Currently, the scenario where the unit is a passenger in a transport with `OpenTopped=false` can only trigger AutoDeath when the owner changes. This may change in future.
+```
+
 ### Low priority for deploy
 
 - You can now set lower priority for TechnoType deploying which means it will be excluded from deploy command if selected together with other units. This will not affect the cursor action which requires no other objects to be selected in the first place.
