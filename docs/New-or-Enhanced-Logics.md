@@ -1991,6 +1991,7 @@ In `rulesmd.ini`:
 [SOMETECHNO]                                   ; TechnoType
 AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell), default not set
 AutoDeath.AllowLimboed=true                    ; boolean
+AutoDeath.AllowPassenger=true                  ; boolean
 AutoDeath.VanishAnimation=                     ; List of AnimationTypes
 AutoDeath.OnAmmoDepletion=false                ; boolean
 AutoDeath.OnOwnerChange=false                  ; boolean
