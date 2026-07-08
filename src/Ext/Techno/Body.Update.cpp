@@ -293,6 +293,13 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	// Self-destruction must be enabled
 	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
 
+	// You're already dead
+	if (this->ShouldBeDead)
+	{
+		TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
+		return true;
+	}
+
 	// Death if no ammo
 	if (pTypeExt->OwnerObject()->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
 	{

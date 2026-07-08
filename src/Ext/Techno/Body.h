@@ -108,6 +108,7 @@ public:
 
 		bool HasDeployConverted;
 		bool HasUndeployConverted;
+		bool ShouldBeDead;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -182,6 +183,7 @@ public:
 			, LastTargetCrdClearTimer {}
 			, HasDeployConverted { false }
 			, HasUndeployConverted { false }
+			, ShouldBeDead { false }
 		{ }
 
 		void OnEarlyUpdate();
