@@ -642,22 +642,6 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 
 void TechnoExt::ExtData::UpdateShield()
 {
-	// Set current shield type if it is not set.
-	if (!this->CurrentShieldType || this->CurrentShieldType->Strength <= 0)
-	{
-		auto const pTypeExt = this->TypeExtData;
-
-		if (pTypeExt->ShieldType && pTypeExt->ShieldType->Strength > 0)
-			this->CurrentShieldType = pTypeExt->ShieldType;
-	}
-
-	// Create shield class instance if it does not exist.
-	if (this->CurrentShieldType && this->CurrentShieldType->Strength > 0 && !this->Shield)
-	{
-		this->Shield = std::make_unique<ShieldClass>(this->OwnerObject());
-		this->Shield->UpdateTint();
-	}
-
 	if (const auto pShieldData = this->Shield.get())
 		pShieldData->AI();
 }
@@ -728,8 +712,8 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		pShield->ConvertCheck(pCurrentType);
 
 	// Recalculate and redraw
-	this->UpdateTintValues();
 	pThis->MarkForRedraw();
+	this->UpdateTintValues();
 
 	// Recreate Laser Trails
 	if (const size_t trailCount = this->LaserTrails.size())
@@ -1922,6 +1906,9 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			auto const pType = attachEffect->GetType();
 			attachEffect->ShouldBeDiscarded = false;
 
+			if (pType->NeedCalculate)
+				altered = true;
+
 			if (pType->HasTint())
 				markForRedraw = true;
 
@@ -1948,12 +1935,10 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			if (shouldDiscard && attachEffect->ResetIfRecreatable())
 			{
 				++it;
-				altered = true;
 				continue;
 			}
 
 			it = this->AttachedEffects.erase(it);
-			altered = true;
 		}
 		else
 		{
@@ -1965,7 +1950,10 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 		this->RecalculateStatMultipliers();
 
 	if (markForRedraw)
+	{
 		pThis->MarkForRedraw();
+		this->UpdateTintValues();
+	}
 
 	auto const coords = pThis->GetCoords();
 
@@ -1997,6 +1985,9 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 
 		if (remove)
 		{
+			if (pType->NeedCalculate)
+				altered = true;
+
 			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
 			{
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
@@ -2014,7 +2005,6 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 			}
 
 			it = this->AttachedEffects.erase(it);
-			altered = true;
 		}
 		else
 		{
@@ -2053,7 +2043,7 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 		{
 			pAEWithAnim = attachEffect.get();
 		}
-		else if (attachEffect->CanShowAnim())
+		else if (attachEffect->CanShowAnim(true))
 		{
 			const int currentDuration = attachEffect->GetRemainingDuration();
 
@@ -2109,7 +2099,6 @@ bool TechnoExt::ExtData::RecalculateStatMultipliers(AttachEffectClass* pAttachEf
 		return pAE.ForceDecloak;
 	}
 
-	const bool wasTint = pAE.HasTint;
 	double firepower = 1.0;
 	double armor = 1.0;
 	double speed = 1.0;
@@ -2168,9 +2157,6 @@ bool TechnoExt::ExtData::RecalculateStatMultipliers(AttachEffectClass* pAttachEf
 
 	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
 		pThis->Uncloak(true);
-
-	if (wasTint || hasTint)
-		this->UpdateTintValues();
 
 	return false;
 }

@@ -23,10 +23,12 @@ public:
 	void UpdateCumulativeAnim();
 	void TransferCumulativeAnim(AttachEffectClass* pSource);
 
-	bool CanShowAnim() const
+	bool CanShowAnim(bool skipAnimCheck = false) const
 	{
-		return (this->IsOnline || this->Type->Animation_OfflineAction != AttachedAnimFlag::Hides)
-			&& (!this->IsUnderTemporal || this->Type->Animation_TemporalAction != AttachedAnimFlag::Hides)
+		const auto pType = this->Type;
+		return (pType->Animation || skipAnimCheck || this->HasCumulativeAnim)
+			&& (this->IsOnline || pType->Animation_OfflineAction != AttachedAnimFlag::Hides)
+			&& (!this->IsUnderTemporal || pType->Animation_TemporalAction != AttachedAnimFlag::Hides)
 			&& !this->IsAnimHidden && !this->IsInTunnel;
 	}
 

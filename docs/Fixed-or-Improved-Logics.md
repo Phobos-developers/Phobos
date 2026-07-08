@@ -376,6 +376,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `DisableWeapons.Duration` now makes `Gattling=yes` rate tick down and stops the sounds from playing, no longer interferes with target acquisition and works together with Phobos' `OpenTopped.CheckTransportDisableWeapons`.
 - Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
 - Allowed infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true`.
+- Allowed adding custom cruise missiles, so that Ares' `Missile.RaiseRate` is no longer meaningless.
 
 ## Newly added global settings
 
@@ -785,6 +786,19 @@ In `rulesmd.ini`:
 CurleyShuffle=            ; boolean, default to [General] -> CurleyShuffle
 ```
 
+### Customizable paradrop delay
+
+- By default paradrop planes have delay of 5 game frames between parachuting units. This can now be customized globally and per paradrop plane type via `ParadropDelay`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ParadropDelay=5  ; integer, game frames
+
+[SOMEAIRCRAFT]   ; AircraftType
+ParadropDelay=   ; integer, game frames
+```
+
 ### Customize the scatter caused by aircraft attack mission
 
 - In vanilla, when an aircraft attacks, it forces the target's cell to trigger a scatter. Now you can disable this behavior by setting the following flag to `false`.
@@ -942,7 +956,7 @@ ExtraShadow=true              ; boolean
 
 ### Customize `Tiled` drawing interval and centering
 
-- In vanilla, the drawing interval of an animation with `Tiled=yes` is determined by the height of the rectangle formed by the non-transparent pixels of the first frame in the Shape resource file. Now you can customize it.
+- In vanilla, the drawing interval of an animation with `Tiled=yes` is determined by the height of the rectangle formed by the non-transparent pixels of the first frame in the Shape resource file. Now you can customize it.
   - If `Tiled.Interval` is greater than `0`, the specified value is used; otherwise, the default rule applies.
   - `Tiled.AlignToCenter` can be used to change the alignment of the Shape resource file coordinates from the bottom center to the canvas center for the Animation entity's center.
 

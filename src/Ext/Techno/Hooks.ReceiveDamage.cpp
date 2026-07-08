@@ -38,7 +38,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	// Apply warhead effects
 	if (damage && !pWHExt->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate))
 	{
-		auto pOldInvoker = std::exchange(pWHExt->DamageAreaInvoker, args->Attacker);
+		const auto pOldInvoker = std::exchange(pWHExt->DamageAreaInvoker, args->Attacker);
 		pWHExt->DetonateOnOneUnit(args->SourceHouse, pThis, CoordStruct { 0, 0, 0 }, damage, args->Attacker, nullptr, args->DistanceToEpicenter);
 		pWHExt->DamageAreaInvoker = pOldInvoker;
 	}

@@ -163,7 +163,7 @@ namespace FindBuildLocationTemp
 static bool __fastcall MapClass_IsAreaFree_Wrapper(MapClass* pThis, void* _, RectangleStruct* pRect, int houseID)
 {
 	FindBuildLocationTemp::EvaluatingBuildLocation = true;
-	bool result = pThis->IsAreaFree(pRect, houseID);
+	const bool result = pThis->IsAreaFree(pRect, houseID);
 	FindBuildLocationTemp::EvaluatingBuildLocation = false;
 	return result;
 }
@@ -177,9 +177,9 @@ DEFINE_HOOK(0x586780, MapClass_IsAreaFree, 0x7)
 
 	GET(MapClass*, pThis, ECX);
 	GET_STACK(RectangleStruct*, pRect, 0x4);
-	GET_STACK(int, houseID, 0x8);
+	GET_STACK(const int, houseID, 0x8);
 
-	int mask = houseID >= 0 ? 1 << houseID : 0;
+	const int mask = houseID >= 0 ? 1 << houseID : 0;
 
 	for (int x = pRect->X; x < pRect->X + pRect->Width; x++)
 	{

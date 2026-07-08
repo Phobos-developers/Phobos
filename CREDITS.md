@@ -288,7 +288,7 @@ This page lists all the individual contributions to the project by their author.
   - Subterranean harvester pathfinding fix
   - Toggle to exclude technos from base center calculations
   - Deploy priority filtering
-  - Customizable paradrop missions
+  - Customizable paradrop missions and delay
   - Guard range customizations
   - Wall overlay unit sell exploit fix
   - Fix vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't
@@ -694,6 +694,7 @@ This page lists all the individual contributions to the project by their author.
   - Add a toggle for disabling `SecondaryFire` / `SecondaryProne` on water
   - Customize the step limit of the credits indicator
   - Disable the credits indicator smooth transition
+  - Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
