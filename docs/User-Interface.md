@@ -528,7 +528,7 @@ ShowPowerPlantEnhancerRange=false  ; boolean
 
 ### Show Cameo
 
-- You can now configure the game to display cameo icons and their counts above a selected vehicle or building, showing both passengers (`Passengers=`) and garrisoned occupants (`Occupy=`). Only shown when a single unit is selected (not box-selection).
+- You can now configure the game to display cameo icons and their counts above a selected vehicle or building, showing both passengers (`Passengers=`) and garrisoned occupants (`Occupier=`). Only shown when a single unit is selected (not box-selection).
 - Two activation modes are available:
   - **Permanent mode**: Set `ShowCameo=true` (globally or per-unit) to always display cameos. Per-unit setting overrides the global setting. If a per-unit `ShowCameo` is explicitly set to `false`, cameos are never shown for that unit.
   - **Toggleable mode**: Set `ShowCameo=false` (global) and `ShowCameo.Toggleable=true` (global), then use the [Toggle Cameos](#toggle-cameos) hotkey to switch the display on/off. The master switch `ShowCameo.Enable` in `RA2MD.INI` controls the toggle state.
