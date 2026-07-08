@@ -606,6 +606,7 @@ HideShakeEffects=false           ; boolean
 - [Auto-remove earliest beacon](Fixed-or-Improved-Logics.md#auto-remove-earliest-beacon) (by TaranDahl)
 - [Customize the step limit of the credits indicator](User-Interface.md#customize-the-step-limit-of-the-credits-indicator) (by Noble_Fish)
 - [Disable the credits indicator smooth transition](User-Interface.md#disable-the-credits-indicator-smooth-transition) (by Noble_Fish)
+- Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn` (by Noble_Fish)
 - [Show Cameo feature to display passenger/occupant cameos above selected vehicles/buildings](User-Interface.md#show-cameo) (by ABCZ)
 - Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn` (by Noble_Fish)
 
