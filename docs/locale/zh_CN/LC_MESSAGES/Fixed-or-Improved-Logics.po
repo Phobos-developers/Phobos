@@ -2521,12 +2521,14 @@ msgstr ""
 
 msgid "Customizable paradrop delay"
 msgstr ""
+"自定义空降间隔"
 
 msgid ""
 "By default paradrop planes have delay of 5 game frames between "
 "parachuting units. This can now be customized globally and per paradrop "
 "plane type via `ParadropDelay`."
 msgstr ""
+"默认情况下伞兵飞机有一个 1 游戏帧的单位空投间隔。现在这可以通过 `ParadropDelay` 在全局或每种伞兵飞机上自定义。"
 
 msgid ""
 "`ParadropEndDelay` customizes the delay after final unit has been "
@@ -2534,6 +2536,7 @@ msgid ""
 " case and will cause the aircraft to fly in straight line off the map "
 "after parachuting all units, ignoring normal edge rules."
 msgstr ""
+"`ParadropEndDelay` 自定义最后一个单位被空投后的间隔，该间隔与常规间隔分离设置。负值是一种让飞机在空投所有单位后直线飞出地图并忽略常规边界规则的特殊情况"
 
 msgid "Customize the scatter caused by aircraft attack mission"
 msgstr "自定义战机攻击任务引发分散"

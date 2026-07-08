@@ -1686,6 +1686,8 @@ msgid ""
 "[Customizable paradrop delay](Fixed-or-Improved-Logics.md#customizable-"
 "paradrop-delay) (by Starkku)"
 msgstr ""
+"[自定义空降间隔](Fixed-or-Improved-Logics.md#customizable-"
+"paradrop-delay)（by Starkku）"
 
 msgid ""
 "Option to scale `PowerSurplus` setting if enabled to current power drain "
