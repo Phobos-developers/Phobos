@@ -382,7 +382,7 @@ static inline bool IsAThreatToMe(TechnoClass* const pTechno, AbstractClass* cons
 {
 	if (const auto pTechnoTarget = abstract_cast<TechnoClass*>(pTarget))
 	{
-		auto pTypeExt = TechnoExt::ExtMap.Find(pTechnoTarget)->TypeExtData;
+		const auto pTypeExt = TechnoExt::ExtMap.Find(pTechnoTarget)->TypeExtData;
 
 		if (pTypeExt->AlwaysConsideredThreat)
 			return true;
@@ -432,15 +432,15 @@ DEFINE_HOOK(0x70CF87, TechnoClass_ThreatCoefficient_CanAttackMeThreatBonus, 0x9)
 	GET(TechnoClass* const, pTarget, ESI);
 	REF_STACK(double, totalThreat, STACK_OFFSET(0x58, -0x48));
 
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-	auto pTypeExt = pExt->TypeExtData;
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pTypeExt = pExt->TypeExtData;
 
 	if (!pTypeExt->ExtraThreat_Enabled)
 		return 0;
 
 	auto ApplyIsThreatBonus = [pTypeExt, pThis, pTarget, &totalThreat]()
 		{
-			double bonus = pTypeExt->ExtraThreat_IsThreat.Get(RulesExt::Global()->ExtraThreat_IsThreat);
+			const double bonus = pTypeExt->ExtraThreat_IsThreat.Get(RulesExt::Global()->ExtraThreat_IsThreat);
 
 			if (bonus == 0.0)
 				return;
@@ -454,10 +454,10 @@ DEFINE_HOOK(0x70CF87, TechnoClass_ThreatCoefficient_CanAttackMeThreatBonus, 0x9)
 
 	auto ApplyInRangeBonus = [pTypeExt, pThis, pTarget, &totalThreat]()
 		{
-			double bonus1 = pTypeExt->ExtraThreat_InRange.Get(RulesExt::Global()->ExtraThreat_InRange);
-			double dist = pThis->DistanceFrom(pTarget) / 256.0;
-			double bonus2 = dist * pTypeExt->ExtraThreatCoefficient_InRangeDistance.Get(RulesExt::Global()->ExtraThreatCoefficient_InRangeDistance);
-			double bonus = bonus1 + bonus2;
+			const double bonus1 = pTypeExt->ExtraThreat_InRange.Get(RulesExt::Global()->ExtraThreat_InRange);
+			const double dist = pThis->DistanceFrom(pTarget) / 256.0;
+			const double bonus2 = dist * pTypeExt->ExtraThreatCoefficient_InRangeDistance.Get(RulesExt::Global()->ExtraThreatCoefficient_InRangeDistance);
+			const double bonus = bonus1 + bonus2;
 
 			if (bonus == 0.0)
 				return;
@@ -471,25 +471,25 @@ DEFINE_HOOK(0x70CF87, TechnoClass_ThreatCoefficient_CanAttackMeThreatBonus, 0x9)
 
 	auto ApplyFacingBonus = [pTypeExt, pThis, pTarget, &totalThreat]()
 		{
-			auto pFacing = GetFireFacing(pThis);
+			const auto pFacing = GetFireFacing(pThis);
 
 			if (!pFacing)
 				return;
 
-			double bonus = pTypeExt->ExtraThreatCoefficient_Facing.Get(RulesExt::Global()->ExtraThreatCoefficient_Facing);
+			const double bonus = pTypeExt->ExtraThreatCoefficient_Facing.Get(RulesExt::Global()->ExtraThreatCoefficient_Facing);
 
 			if (bonus == 0.0)
 				return;
 
 			DirStruct dir = DirStruct();
-			int deltaFacing = 32768 - std::abs(std::abs(pThis->GetTargetDirection(&dir, pTarget)->Raw - pFacing->Current().Raw) - 32768);
+			const int deltaFacing = 32768 - std::abs(std::abs(pThis->GetTargetDirection(&dir, pTarget)->Raw - pFacing->Current().Raw) - 32768);
 			totalThreat += deltaFacing * bonus;
 		};
 	ApplyFacingBonus();
 
 	auto ApplyLastTargetDistanceBonus = [pExt, pTypeExt, pThis, pTarget, &totalThreat]()
 		{
-			double bonus = pTypeExt->ExtraThreatCoefficient_DistanceToLastTarget.Get(RulesExt::Global()->ExtraThreatCoefficient_DistanceToLastTarget);
+			const double bonus = pTypeExt->ExtraThreatCoefficient_DistanceToLastTarget.Get(RulesExt::Global()->ExtraThreatCoefficient_DistanceToLastTarget);
 
 			if (bonus == 0.0)
 				return;
@@ -497,7 +497,7 @@ DEFINE_HOOK(0x70CF87, TechnoClass_ThreatCoefficient_CanAttackMeThreatBonus, 0x9)
 			if (pExt->LastTargetCrd == CoordStruct::Empty)
 				return;
 
-			double distToLastTarget = pTarget->GetCoords().DistanceFrom(pExt->LastTargetCrd) / 256.0;
+			const double distToLastTarget = pTarget->GetCoords().DistanceFrom(pExt->LastTargetCrd) / 256.0;
 			totalThreat += distToLastTarget * bonus;
 		};
 	ApplyLastTargetDistanceBonus();

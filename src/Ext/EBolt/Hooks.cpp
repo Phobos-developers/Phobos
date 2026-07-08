@@ -190,7 +190,7 @@ DEFINE_HOOK(0x6FD4E4, TechnoClass_FireEBolt_Building_ClampPositive, 0x9)
 {
 	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x30, 0x8));
 	GET(CoordStruct*, pV13, EAX);
-	GET(int, Y, ESI);
+	GET(const int, Y, ESI);
 
 	int zAdjust = Y - pV13->Y;
 
