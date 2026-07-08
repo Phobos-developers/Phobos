@@ -1183,6 +1183,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ParadropMission.Read(exINI, pSection, "ParadropMission");
 	this->AIParadropMission.Read(exINI, pSection, "AIParadropMission");
 	this->ParadropDelay.Read(exINI, pSection, "ParadropDelay");
+	this->ParadropEndDelay.Read(exINI, pSection, "ParadropEndDelay");
 
 	this->PenetratesTransport_Level.Read(exINI, pSection, "PenetratesTransport.Level");
 	this->PenetratesTransport_PassThroughMultiplier.Read(exINI, pSection, "PenetratesTransport.PassThroughMultiplier");
@@ -1940,6 +1941,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ParadropMission)
 		.Process(this->AIParadropMission)
 		.Process(this->ParadropDelay)
+		.Process(this->ParadropEndDelay)
 
 		.Process(this->PenetratesTransport_Level)
 		.Process(this->PenetratesTransport_PassThroughMultiplier)
