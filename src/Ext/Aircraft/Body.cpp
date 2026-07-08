@@ -84,26 +84,43 @@ bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CoordStruct e
 CellStruct AircraftExt::PickEdgeCellForPlane(AircraftTypeClass* pPlaneType, CellStruct destCell, Edge edge, bool isOnRetreat)
 {
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pPlaneType);
-	bool const useClosestEdge = !isOnRetreat ? pTypeExt->SpawnFromClosestEdge : pTypeExt->RetreatToClosestEdge;
-	auto useEdge = edge;
+	auto const edgeMode = !isOnRetreat ? pTypeExt->SpawnFromEdge : pTypeExt->RetreatToEdge;
+	auto spawnEdge = edge;
 	auto refCell = CellStruct::Empty;
 
-	if (useClosestEdge && destCell != CellStruct::Empty)
+	switch (edgeMode)
 	{
-		useEdge = Edge::None;
-		refCell = destCell;
+	case EdgeType::Closest:
+	{
+		if (destCell != CellStruct::Empty)
+		{
+			spawnEdge = Edge::None;
+			refCell = destCell;
 
-		// Scatter the coords a bit to randomize spawn cell a little - otherwise multiple planes sent at same target
-		// from same source might end up overlapping - still a possibility, just less likely.
-		int randomRange = 5;
-		short randomX = static_cast<short>(ScenarioClass::Instance->Random.RandomRanged(-randomRange, randomRange));
-		short randomY = static_cast<short>(ScenarioClass::Instance->Random.RandomRanged(-randomRange, randomRange));
-		refCell += CellStruct { randomX, randomY };
+			// Scatter the coords a bit to randomize spawn cell a little - otherwise multiple planes sent at same target
+			// from same source might end up overlapping - still a possibility, just less likely.
+			// The edge cell picking function itself will do no randomization on Edge::None + waypoint cell set mode.
+			int const randomRange = 5;
+			short const randomX = static_cast<short>(ScenarioClass::Instance->Random.RandomRanged(-randomRange, randomRange));
+			short const randomY = static_cast<short>(ScenarioClass::Instance->Random.RandomRanged(-randomRange, randomRange));
+			refCell += CellStruct { randomX, randomY };
+		}
+		break;
+	}
+	case EdgeType::Random:
+	{
+		int const min = static_cast<int>(Edge::North);
+		int const max = static_cast<int>(Edge::West);
+		spawnEdge = static_cast<Edge>(ScenarioClass::Instance->Random.RandomRanged(min, max));
+		break;
+	}
+	default:
+	{
+		break;
+	}
 	}
 
-	auto cell = MapClass::Instance.PickCellOnEdge(useEdge, refCell, CellStruct::Empty, SpeedType::Winged, true, MovementZone::Normal);
-
-	return cell;
+	return MapClass::Instance.PickCellOnEdge(spawnEdge, refCell, CellStruct::Empty, SpeedType::Winged, true, MovementZone::Normal);
 }
 
 DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)

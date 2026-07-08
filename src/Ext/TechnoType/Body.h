@@ -282,8 +282,8 @@ public:
 		Nullable<Point2D> SpawnsPipSize;
 		Valueable<Point2D> SpawnsPipOffset;
 
-		Valueable<bool> SpawnFromClosestEdge;
-		Valueable<bool> RetreatToClosestEdge;
+		Valueable<EdgeType> SpawnFromEdge;
+		Valueable<EdgeType> RetreatToEdge;
 		Nullable<Leptons> SpawnDistanceFromTarget;
 		Nullable<int> SpawnHeight;
 		Nullable<int> LandingDir;
@@ -779,8 +779,8 @@ public:
 			, SpawnsPipSize {}
 			, SpawnsPipOffset { { 0,0 } }
 
-			, SpawnFromClosestEdge { false }
-			, RetreatToClosestEdge { false }
+			, SpawnFromEdge { EdgeType::Owner }
+			, RetreatToEdge { EdgeType::Owner }
 			, SpawnDistanceFromTarget {}
 			, SpawnHeight {}
 			, LandingDir {}

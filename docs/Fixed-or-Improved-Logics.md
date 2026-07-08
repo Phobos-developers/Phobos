@@ -859,19 +859,18 @@ LandingDir=     ; Direction type (integers from 0-255). Accepts negative values 
 ### Reinforcement aircraft spawn settings
 
 - A number of new settings are available for AircraftTypes spawned from `(Elite)AirstrikeTeamType` or `Type=SpyPlane/Paradrop/AmerParadrop` superweapons.
-  - If `SpawnFromClosestEdge` is set to true, closest edge to target is picked instead of one determined based on the target position and owner's base location etc.
-    - `RetreatToClosestEdge` does same but for the return destination of the aircraft.
+  - `SpawnFromEdge` and `RetreatToEdge` can be used to customize the edge of map from where the aircraft spawns and where it retreats to, respectively. Defaults to the owner's edge of the map which is determined based on base location and other factors.
   - `SpawnDistanceFromTarget` can be used to set fixed spawn distance from target instead of at edge of map. The approach direction is still determined by the edge where it would've otherwise spawned. Negative values will invert the direction.
   - `SpawnHeight` can be used to override the initial height of the aircraft, which defaults to `FlightLevel`, or if not set then `[General] -> FlightLevel`.
   - Additionally, these aircraft now spawn facing the target's direction instead of always facing north.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEAIRCRAFT]              ; AircraftType
-SpawnFromClosestEdge=false  ; boolean
-RetreatToClosestEdge=false  ; boolean
-SpawnDistanceFromTarget=    ; floating point value, distance in cells
-SpawnHeight=                ; integer, height in leptons
+[SOMEAIRCRAFT]            ; AircraftType
+SpawnFromEdge=owner       ; Edge type enumeration (owner|closest|random)
+RetreatToEdge=owner       ; Edge type enumeration (owner|closest|random)
+SpawnDistanceFromTarget=  ; floating point value, distance in cells
+SpawnHeight=              ; integer, height in leptons
 ```
 
 ## Animations
