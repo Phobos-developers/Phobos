@@ -789,7 +789,7 @@ CurleyShuffle=            ; boolean, default to [General] -> CurleyShuffle
 ### Customizable paradrop delay
 
 - By default paradrop planes have delay of 5 game frames between parachuting units. This can now be customized globally and per paradrop plane type via `ParadropDelay`.
-  - `ParadropEndDelay` customizes the delay after final unit has been parachuted separately from the regular delay.
+  - `ParadropEndDelay` customizes the delay after final unit has been parachuted separately from the regular delay. Negative values are special case and will cause the aircraft to fly in straight line off the map after parachuting all units, ignoring normal edge rules.
 
 In `rulesmd.ini`:
 ```ini

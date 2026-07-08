@@ -1259,16 +1259,46 @@ DEFINE_HOOK(0x418782, AircraftClass_CurleyShuffle_Default, 0x6)
 
 #pragma endregion
 
+#pragma region ParadropDelay
+
 DEFINE_HOOK(0x415A00, AircraftClass_Mission_Paradrop_Overfly_Delay, 0x5)
 {
 	GET(AircraftClass*, pThis, ESI);
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	int delay;
 
 	if (pThis->Passengers.NumPassengers)
-		R->EAX(pTypeExt->ParadropDelay.Get(RulesExt::Global()->ParadropDelay));
+	{
+		delay = pTypeExt->ParadropDelay.Get(RulesExt::Global()->ParadropDelay);
+	}
 	else
-		R->EAX(pTypeExt->ParadropEndDelay.Get(RulesExt::Global()->ParadropEndDelay));
+	{
+		delay = pTypeExt->ParadropEndDelay.Get(RulesExt::Global()->ParadropEndDelay);
 
+		if (delay < 0)
+			delay = INT32_MAX;
+	}
+
+	R->EAX(delay);
 	return 0x415A05;
 }
+
+// Allow edge of the map processing on Paradrop_Overfly mission if paradrop end delay is infinite.
+DEFINE_HOOK(0x4CD54C, FlyLocomotionClass_EdgeOfTheWorldAI_Paradrop, 0x8)
+{
+	enum { Continue = 0x4CD55D, ReturnFromFunction = 0x4CD5F7 };
+
+	GET(AircraftClass*, pLinkedTo, ECX);
+
+	if (pLinkedTo->CurrentMission == Mission::Retreat || (pLinkedTo->CurrentMission == Mission::ParadropOverfly
+		&& TechnoTypeExt::ExtMap.Find(pLinkedTo->Type)->ParadropEndDelay.Get(RulesExt::Global()->ParadropEndDelay) < 0
+		&& !pLinkedTo->Passengers.NumPassengers))
+	{
+		return Continue;
+	}
+
+	return ReturnFromFunction;
+}
+
+#pragma endregion
