@@ -535,7 +535,7 @@ ShowPowerPlantEnhancerRange=false  ; boolean
 - Cameos are arranged in horizontal rows, centered above the selection bracket. When the number of cameo types exceeds `ShowCameo.PerRow`, additional rows are stacked above the bottom row. The first-entered unit is displayed at the top.
 - Translucency can be set via `ShowCameo.Translucency` (0/25/50/75, default 0). SHP cameos are affected; PCX cameos are not.
 - `ShowCameo.OverlapXY` and `ShowCameo.OffsetXY` control overlap between adjacent cameos. `ShowCameo.OverlapPrimary` (default true) determines whether the earlier cameo covers the later one. On the same row, only X overlap applies; when wrapping to a new row, only Y overlap applies.
-- A custom cameo shape (SHP) can be specified per passenger/occupant type via `ShowCameo.CustomShape` in `artmd.ini`. Animated SHPs are supported. A custom palette can be specified via `ShowCameo.CustomPalette`; if not set, the palette falls back to `CameoPalette` or the default `cameo.pal`.
+- A custom cameo shape (SHP) can be specified per passenger/occupant type via `ShowCameo.CustomShape` in `artmd.ini`. Animated SHPs are supported. A custom PCX can be specified via `ShowCameo.CustomPCX`. A custom palette can be specified via `ShowCameo.CustomPalette`; if not set, the palette falls back to `CameoPalette` or the default `cameo.pal`.
 
 ```{hint}
 For example, with `ShowCameo.PerRow=1` (vertical stacking), `ShowCameo.OverlapPrimary=true` means the bottom cameo covers the one above it, preserving the bottom cameo's text label from being hidden.
@@ -575,6 +575,7 @@ In `artmd.ini`:
 ```ini
 [SOMETECHNO]                        ; TechnoType
 ShowCameo.CustomShape=              ; SHP filename
+ShowCameo.CustomPCX=                ; PCX filename
 ShowCameo.CustomPalette=            ; PAL filename
 ```
 

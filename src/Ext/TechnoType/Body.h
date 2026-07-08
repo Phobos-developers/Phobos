@@ -534,6 +534,7 @@ public:
 		CustomPalette CameoPalette;
 		CustomPalette ShowCameo_CustomPalette;
 		TheaterSpecificSHP ShowCameo_CustomShape;
+		PhobosPCXFile ShowCameo_CustomPCX;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -1022,6 +1023,7 @@ public:
 			, CameoPalette {}
 			, ShowCameo_CustomPalette {}
 			, ShowCameo_CustomShape {}
+			, ShowCameo_CustomPCX {}
 		{ }
 
 		virtual ~ExtData() = default;

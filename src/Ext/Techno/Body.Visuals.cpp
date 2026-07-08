@@ -997,6 +997,11 @@ void TechnoExt::DrawCameos(TechnoClass* pThis)
 			w = pCustomCameo->Width;
 			h = pCustomCameo->Height;
 		}
+		else if (auto pCustomPCX = pCameoTypeExt->ShowCameo_CustomPCX.GetSurface())
+		{
+			w = pCustomPCX->GetWidth();
+			h = pCustomPCX->GetHeight();
+		}
 		canvases.push_back({ w, h });
 	}
 
@@ -1151,6 +1156,16 @@ void TechnoExt::DrawCameos(TechnoClass* pThis)
 				1000, 0, nullptr, 0, 0, 0
 			);
 			drawn = true;
+		}
+
+		if (!drawn)
+		{
+			if (const auto pCustomPCX = pCameoTypeExt->ShowCameo_CustomPCX.GetSurface())
+			{
+				RectangleStruct pcxBounds = { iconPos.X, iconPos.Y, curW, curH };
+				PCX::Instance.BlitToSurface(&pcxBounds, pSurface, pCustomPCX);
+				drawn = true;
+			}
 		}
 
 		if (!drawn)

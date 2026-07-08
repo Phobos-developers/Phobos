@@ -1347,6 +1347,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AltCameoPCX.Read(pArtINI, pArtSection, "AltCameoPCX");
 	this->ShowCameo_CustomPalette.LoadFromINI(pArtINI, pArtSection, "ShowCameo.CustomPalette");
 	this->ShowCameo_CustomShape.Read(exArtINI, pArtSection, "ShowCameo.CustomShape");
+	this->ShowCameo_CustomPCX.Read(pArtINI, pArtSection, "ShowCameo.CustomPCX");
 
 	this->LaserTrailData.clear();
 	for (size_t i = 0; ; ++i)
@@ -1548,6 +1549,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AltCameoPCX)
 		.Process(this->ShowCameo_CustomPalette)
 		.Process(this->ShowCameo_CustomShape)
+		.Process(this->ShowCameo_CustomPCX)
 		.Process(this->NoManualMove)
 		.Process(this->InitialStrength)
 		.Process(this->ReloadInTransport)
@@ -1999,6 +2001,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CameoPalette)
 		.Process(this->ShowCameo_CustomPalette)
 		.Process(this->ShowCameo_CustomShape)
+		.Process(this->ShowCameo_CustomPCX)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
