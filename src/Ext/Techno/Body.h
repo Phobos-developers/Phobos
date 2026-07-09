@@ -321,6 +321,8 @@ public:
 	static bool EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool select);
 	static bool __fastcall ApplyKillDriver(TechnoClass** pData, void*, HouseClass* pToHouse, TechnoClass* pKiller, bool resetVeterancy);
 
+	static void DrawCameos(TechnoClass* pThis);
+
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);

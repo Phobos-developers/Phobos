@@ -526,6 +526,59 @@ In `RA2MD.INI`:
 ShowPowerPlantEnhancerRange=false  ; boolean
 ```
 
+### Show Cameo
+
+- You can now configure the game to display cameo icons and their counts above a selected vehicle or building, showing both passengers (`Passengers=`) and garrisoned occupants (`Occupier=`). Only shown when a single unit is selected (not box-selection).
+- Two activation modes are available:
+  - **Permanent mode**: Set `ShowCameo=true` (globally or per-unit) to always display cameos. Per-unit setting overrides the global setting. If a per-unit `ShowCameo` is explicitly set to `false`, cameos are never shown for that unit.
+  - **Toggleable mode**: Set `ShowCameo=false` (global) and `ShowCameo.Toggleable=true` (global), then use the [Toggle Cameos](#toggle-cameos) hotkey to switch the display on/off. The master switch `ShowCameo.Enable` in `RA2MD.INI` controls the toggle state.
+- Cameos are arranged in horizontal rows, centered above the selection bracket. When the number of cameo types exceeds `ShowCameo.PerRow`, additional rows are stacked above the bottom row. The first-entered unit is displayed at the top.
+- Translucency can be set via `ShowCameo.Translucency` (0/25/50/75, default 0). SHP cameos are affected; PCX cameos are not.
+- `ShowCameo.OverlapXY` and `ShowCameo.OffsetXY` control overlap between adjacent cameos. `ShowCameo.OverlapPrimary` (default true) determines whether the earlier cameo covers the later one. On the same row, only X overlap applies; when wrapping to a new row, only Y overlap applies.
+- A custom cameo shape (SHP) can be specified per passenger/occupant type via `ShowCameo.CustomShape` in `artmd.ini`. Animated SHPs are supported. A custom PCX can be specified via `ShowCameo.CustomPCX`. A custom palette can be specified via `ShowCameo.CustomPalette`; if not set, the palette falls back to `CameoPalette` or the default `cameo.pal`.
+
+```{hint}
+For example, with `ShowCameo.PerRow=1` (vertical stacking), `ShowCameo.OverlapPrimary=true` means the bottom cameo covers the one above it, preserving the bottom cameo's text label from being hidden.
+```
+
+- When toggled via the hotkey, messages are shown from CSF labels `MSG:ShowCameoEnabled` (fallback: "Cameos Display: Enabled") and `MSG:ShowCameoDisabled` (fallback: "Cameos Display: Disabled").
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ShowCameo.Enable=true               ; boolean
+```
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+ShowCameo=false                     ; boolean
+ShowCameo.Toggleable=false          ; boolean
+ShowCameo.PerRow=5                  ; integer
+ShowCameo.BottomOffset=0,0          ; X,Y
+ShowCameo.Translucency=0            ; translucency level (0/25/50/75)
+ShowCameo.OverlapXY=0,0             ; X,Y overlap percentage
+ShowCameo.OffsetXY=0,0              ; X,Y pixel offset
+ShowCameo.OverlapPrimary=true       ; boolean
+
+[SOMETECHNO]                        ; TechnoType
+ShowCameo=                          ; boolean, default true
+ShowCameo.PerRow=                   ; integer, defaults to [AudioVisual]
+ShowCameo.BottomOffset=             ; X,Y, defaults to [AudioVisual]
+ShowCameo.Translucency=             ; translucency level (0/25/50/75), defaults to [AudioVisual]
+ShowCameo.OverlapXY=                ; X,Y, defaults to [AudioVisual]
+ShowCameo.OffsetXY=                 ; X,Y, defaults to [AudioVisual]
+ShowCameo.OverlapPrimary=           ; boolean, defaults to [AudioVisual]
+```
+
+In `artmd.ini`:
+```ini
+[SOMETECHNO]                        ; TechnoType
+ShowCameo.CustomShape=              ; SHP filename
+ShowCameo.CustomPCX=                ; PCX filename
+ShowCameo.CustomPalette=            ; PAL filename
+```
+
 ## Hotkey Commands
 
 ### `[ ]` Display Damage Numbers
@@ -584,6 +637,11 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
 
 - Deselect 1 or 5 object(s) from current selected objects.
 - For localization add `TXT_DESELECT`, `TXT_DESELECT_DESC`, `TXT_DESELECT5` and `TXT_DESELECT5_DESC` into your `.csf` file.
+
+### `[ ]` Toggle Cameos
+
+- Switches on/off [cameo display](#show-cameo) in toggleable mode. Has no effect in permanent mode.
+- For localization add `TXT_SHOWCAMEO` and `TXT_SHOWCAMEO_DESC` into your `.csf` file.
 
 ## Loading screen
 

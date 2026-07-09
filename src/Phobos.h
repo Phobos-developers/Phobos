@@ -116,6 +116,7 @@ public:
 		static bool ShowFlashOnSelecting;
 		static bool UnitPowerDrain;
 		static int SuperWeaponSidebar_RequiredSignificance;
+		static bool ShowCameo_Enable;
 	};
 
 	class Misc

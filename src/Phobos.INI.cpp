@@ -80,6 +80,7 @@ bool Phobos::Config::HideShakeEffects = true;
 bool Phobos::Config::ShowFlashOnSelecting = false;
 bool Phobos::Config::UnitPowerDrain = false;
 int Phobos::Config::SuperWeaponSidebar_RequiredSignificance = 0;
+bool Phobos::Config::ShowCameo_Enable = true;
 
 bool Phobos::Misc::CustomGS = false;
 int Phobos::Misc::CustomGS_ChangeInterval[7] = { -1, -1, -1, -1, -1, -1, -1 };
@@ -115,6 +116,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::HideShakeEffects = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "HideShakeEffects", false);
 	Phobos::Config::ShowFlashOnSelecting = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowFlashOnSelecting", false);
 	Phobos::Config::SuperWeaponSidebar_RequiredSignificance = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "SuperWeaponSidebar.RequiredSignificance", 0);
+	Phobos::Config::ShowCameo_Enable = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowCameo.Enable", true);
 
 	// Custom game speeds, 6 - i so that GS6 is index 0, just like in the engine
 	Phobos::Config::CampaignDefaultGameSpeed = 6 - CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "CampaignDefaultGameSpeed", 4);

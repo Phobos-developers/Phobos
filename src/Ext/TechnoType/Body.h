@@ -66,6 +66,7 @@ public:
 		Valueable<bool> ImmuneToCrit;
 		Valueable<bool> MultiMindControl_ReleaseVictim;
 		Valueable<int> CameoPriority;
+		PhobosPCXFile CameoPCX;
 		PhobosPCXFile AltCameoPCX;
 		Valueable<bool> NoManualMove;
 		Nullable<int> InitialStrength;
@@ -524,6 +525,18 @@ public:
 		Valueable<AnimTypeClass*> Missile_TakeOffAnim;
 		Valueable<int> Missile_TakeOffSeparation;
 
+		Nullable<bool> ShowCameo;
+		Nullable<int> ShowCameo_PerRow;
+		Nullable<Point2D> ShowCameo_BottomOffset;
+		Nullable<TranslucencyLevel> ShowCameo_Translucency;
+		Nullable<Point2D> ShowCameo_OverlapXY;
+		Nullable<Point2D> ShowCameo_OffsetXY;
+		Nullable<bool> ShowCameo_OverlapPrimary;
+		CustomPalette CameoPalette;
+		CustomPalette ShowCameo_CustomPalette;
+		TheaterSpecificSHP ShowCameo_CustomShape;
+		PhobosPCXFile ShowCameo_CustomPCX;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, HealthBar_HidePips { false }
@@ -565,6 +578,7 @@ public:
 			, ImmuneToCrit { false }
 			, MultiMindControl_ReleaseVictim { false }
 			, CameoPriority { 0 }
+			, CameoPCX {}
 			, AltCameoPCX {}
 			, NoManualMove { false }
 			, InitialStrength {}
@@ -1000,6 +1014,18 @@ public:
 			, Missile_Cruise { false }
 			, Missile_TakeOffAnim { nullptr }
 			, Missile_TakeOffSeparation { 24 }
+
+			, ShowCameo {}
+			, ShowCameo_PerRow {}
+			, ShowCameo_BottomOffset {}
+			, ShowCameo_Translucency {}
+			, ShowCameo_OverlapXY {}
+			, ShowCameo_OffsetXY {}
+			, ShowCameo_OverlapPrimary {}
+			, CameoPalette {}
+			, ShowCameo_CustomPalette {}
+			, ShowCameo_CustomShape {}
+			, ShowCameo_CustomPCX {}
 		{ }
 
 		virtual ~ExtData() = default;

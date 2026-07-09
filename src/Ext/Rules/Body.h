@@ -385,6 +385,15 @@ public:
 		Valueable<bool> AutoRemoveEarliestBeacon;
 		Valueable<bool> AllowBeaconHotKeyInSinglePlayer;
 
+		Valueable<bool> ShowCameo;
+		Valueable<bool> ShowCameo_Toggleable;
+		Valueable<int> ShowCameo_PerRow;
+		Valueable<Point2D> ShowCameo_BottomOffset;
+		TranslucencyLevel ShowCameo_Translucency;
+		Valueable<Point2D> ShowCameo_OverlapXY;
+		Valueable<Point2D> ShowCameo_OffsetXY;
+		Valueable<bool> ShowCameo_OverlapPrimary;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -710,6 +719,15 @@ public:
 			, AutoRemoveEarliestBeacon { false }
 
 			, AllowBeaconHotKeyInSinglePlayer { false }
+
+			, ShowCameo { false }
+			, ShowCameo_Toggleable { false }
+			, ShowCameo_PerRow { 5 }
+			, ShowCameo_BottomOffset { { 0, 0 } }
+			, ShowCameo_Translucency { 0 }
+			, ShowCameo_OverlapXY { { 0, 0 } }
+			, ShowCameo_OffsetXY { { 0, 0 } }
+			, ShowCameo_OverlapPrimary { true }
 		{ }
 
 		virtual ~ExtData() = default;
