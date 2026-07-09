@@ -546,6 +546,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow `Temporal` warhead to apply ratio and bonus
   - Fix the bug that techno will get stuck if change owner in tunnel
   - Fix the bug that the vanilla `SecondSpawnOffset` no longer takes effect
+  - Fix the issue that `NoQueueUpToEnter` will clear passenger's planning tokens when entered transport
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

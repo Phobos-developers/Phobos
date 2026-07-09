@@ -730,6 +730,7 @@ HideShakeEffects=false           ; boolean
 - Fixed cells with `CanBeBuiltOn=true` TerrainTypes on them not being considered valid build locations by AI (by Starkku)
 - Fixed a bug where stationary vehicles would also block movement caused by external factors (by Noble_Fish)
 - Fixed `src/Interop/Version.cpp` not being compiled into the project (by Chang_zhi)
+- Fixed the issue that `NoQueueUpToEnter` will clear passenger's planning tokens when entered transport (by NetsuNegi)
 
 #### Fixes / interactions with other extensions:
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
