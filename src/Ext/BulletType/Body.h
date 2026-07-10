@@ -80,6 +80,8 @@ public:
 
 		Valueable<bool> AU;
 
+		Valueable<int> ZAdjust;
+
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
 		Nullable<Leptons> BallisticScatter_Max;
@@ -138,6 +140,7 @@ public:
 			, Parachuted_MaxFallRate {}
 			, BombParachute {}
 			, AU { false }
+			, ZAdjust { 0 }
 		{ }
 
 		virtual ~ExtData() = default;
