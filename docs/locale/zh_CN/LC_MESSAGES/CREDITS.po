@@ -702,6 +702,9 @@ msgstr "Attach Effect"
 msgid "Air unit tracking fix for large range / `CellSpread`"
 msgstr "大范围目标检索和 `CellSpread` 对空中单位的追踪"
 
+msgid "`ZAdjust` for OverlayTypes"
+msgstr "覆盖物的 `ZAdjust`"
+
 msgid "Extra tint intensity for Iron Curtain & Force Shield"
 msgstr "铁幕和力场护盾的额外染色强度"
 

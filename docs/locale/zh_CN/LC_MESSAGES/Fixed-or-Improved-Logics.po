@@ -758,11 +758,6 @@ msgid ""
 msgstr "现在具有大范围的目标检索和大 `CellSpread` 的弹头爆炸范围可靠的包含了空中单位。"
 
 msgid ""
-"OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini`"
-" entry."
-msgstr "现在如果被指定那么覆盖物可以正常读取并使用它们在 `artmd.ini` 条目中的 `ZAdjust`。"
-
-msgid ""
 "Weapons with `AA=true` Projectile can now correctly fire at air units "
 "when both firer and target are over a bridge."
 msgstr "现在当开火者和目标都在桥上时拥有 `AA=true` 抛射体的武器可以正确的对空中单位射击。"
@@ -2304,6 +2299,17 @@ msgid ""
 "`Units.UseRepairCost` can be used to customize if repair cost is applied "
 "at all. Defaults to false for infantry, true for everything else."
 msgstr "`Units.UseRepairCost` 可以用于自定义是否使用维修成本。步兵默认为 false，其他默认为 true。"
+
+msgid "Overlays"
+msgstr "覆盖物"
+
+msgid "`ZAdjust` for OverlayTypes"
+msgstr "覆盖物的 Z 深校正值"
+
+msgid ""
+"OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini`"
+" entry."
+msgstr "现在如果被指定那么覆盖物可以正常读取并使用它们在 `artmd.ini` 条目中的 `ZAdjust`。"
 
 msgid "Particle systems"
 msgstr "粒子系统"

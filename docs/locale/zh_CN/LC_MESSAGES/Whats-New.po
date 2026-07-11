@@ -1236,7 +1236,7 @@ msgid ""
 msgstr "子机生成后是否等待集结的开关（by Starkku）"
 
 msgid "`ZAdjust` for OverlayTypes (by Starkku)"
-msgstr "让覆盖物可以读取 `ZAdjust` 标签的值（by Starkku）"
+msgstr "覆盖物的 `ZAdjust`（by Starkku）"
 
 msgid ""
 "Allow customizing extra tint intensity for Iron Curtain & Force Shield "

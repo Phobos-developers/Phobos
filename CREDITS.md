@@ -238,6 +238,7 @@ This page lists all the individual contributions to the project by their author.
   - Revenge weapons
   - AttachEffect
   - Air unit tracking fix for large range / `CellSpread`
+  - `ZAdjust` for OverlayTypes
   - Extra tint intensity for Iron Curtain & Force Shield
   - Option to enable parsing 8-bit RGB values from `[ColorAdd]` instead of RGB565
   - Customizing height and speed at which subterranean units travel
