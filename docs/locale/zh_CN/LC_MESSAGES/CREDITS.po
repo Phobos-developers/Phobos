@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-12 05:47+0800\n"
+"POT-Creation-Date: 2026-07-12 06:19+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -754,6 +754,9 @@ msgstr "Attach Effect"
 
 msgid "Air unit tracking fix for large range / `CellSpread`"
 msgstr "大范围目标检索和 `CellSpread` 对空中单位的追踪"
+
+msgid "`ZAdjust` for OverlayTypes"
+msgstr "覆盖物的 `ZAdjust`"
 
 msgid "Extra tint intensity for Iron Curtain & Force Shield"
 msgstr "铁幕和力场护盾的额外染色强度"
@@ -2353,8 +2356,7 @@ msgid "Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn`"
 msgstr "为 `DiscardOn` 添加 `selling`、`undeploying` 和 `harvesting` 条件"
 
 msgid "`ZAdjust` for Projectiles"
-msgstr ""
-"抛射体的 `ZAdjust`"
+msgstr "抛射体的 `ZAdjust`"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
