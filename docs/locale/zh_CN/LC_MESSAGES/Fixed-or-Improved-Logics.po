@@ -3899,6 +3899,7 @@ msgstr ""
 
 msgid "`ZAdjust` for Projectiles"
 msgstr ""
+"抛射体的 Z 深校正值"
 
 msgid ""
 "In vanilla, the Z‑depth of projectiles is automatically calculated, but "
@@ -3907,6 +3908,7 @@ msgid ""
 "building. Now you can manually set a correction value, similar to "
 "animations."
 msgstr ""
+"在原版中，抛射体的 Z 深是自动计算的，但这一计算并非总是可靠，例如从某个建筑中竖直发射导弹时抛射体会被建筑挡住。现在你可以像动画那样手动设置一个校正值。"
 
 msgid ""
 "Unlike those using Shape, projectiles that use Voxel resource files as "
@@ -3914,6 +3916,7 @@ msgid ""
 "Likewise, they cannot be simply adjusted via this INI flag—this feature "
 "only works on projectiles that use Shape assets as images."
 msgstr ""
+"不同于使用 Shape 的那些，使用 Voxel 资源文件作为图像的抛射体会使用另一套复杂的逐像素动态映射计算。同样地，它们也无法简单地通过这一 INI 标志调节——本功能仅在使用 Shape 资源文件作为图像的抛射体上工作。"
 
 msgid "Technos"
 msgstr "科技类型"

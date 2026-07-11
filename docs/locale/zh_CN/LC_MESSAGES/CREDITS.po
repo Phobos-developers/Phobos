@@ -2354,6 +2354,7 @@ msgstr "为 `DiscardOn` 添加 `selling`、`undeploying` 和 `harvesting` 条件
 
 msgid "`ZAdjust` for Projectiles"
 msgstr ""
+"抛射体的 `ZAdjust`"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
