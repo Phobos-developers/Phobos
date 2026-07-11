@@ -2,6 +2,7 @@
 #include <Utilities/AresFunctions.h>
 #include <Utilities/Helpers.Alex.h>
 
+#include <Ext/Aircraft/Body.h>
 #include <Ext/Building/Body.h>
 #include <Ext/Sidebar/Body.h>
 #include <Ext/EBolt/Body.h>
@@ -121,6 +122,35 @@ static void __fastcall UnitDeliveryStateMachine_Update_Wrapper(void* pThis)
 	UnitDeliveryTemp::Placing = false;
 }
 
+#pragma region AresParadrop
+
+namespace ParadropTemp
+{
+	AircraftTypeClass* pPlaneType = nullptr;
+	CellClass* pDestination = nullptr;
+}
+
+static void SendPDPlane(HouseClass* pOwner, CellClass* pDestination, AircraftTypeClass* pPlaneType, Iterator<TechnoTypeClass*> Types, Iterator<int> Nums)
+{
+	ParadropTemp::pPlaneType = pPlaneType;
+	ParadropTemp::pDestination = pDestination;
+	AresFunctions::SendPDPlane(pOwner, pDestination, pPlaneType, Types, Nums);
+}
+
+static CellStruct* __fastcall ParadropPickCellOnEdge(MapClass* pThis, void* _, CellStruct& buffer, Edge edge,
+	const CellStruct& waypointCell, const CellStruct& fallbackCell, SpeedType speedType, bool validate, MovementZone mZone)
+{
+	buffer = AircraftExt::PickEdgeCellForPlane(ParadropTemp::pPlaneType, ParadropTemp::pDestination->MapCoords, edge);
+	return &buffer;
+}
+
+static bool __fastcall ParadropPlaneUnlimbo(AircraftClass* pThis, void* _, const CoordStruct& coords, DirType direction)
+{
+	return AircraftExt::PlaceReinforcementAircraft(pThis, coords);
+}
+
+#pragma endregion
+
 DEFINE_HOOK(0x440580, BuildingClass_Unlimbo_UnitDeliveryFix, 0x5)
 {
 	if (UnitDeliveryTemp::Placing)
@@ -217,6 +247,15 @@ void Apply_Ares3_0_Patches()
 
 	// Fix building direction of Ares's UnitDelivery
 	Patch::Apply_VTABLE(AresHelper::AresBaseAddress + 0xA8D94, &UnitDeliveryStateMachine_Update_Wrapper);
+
+	// Replace Ares paradrop plane send function call with our wrapper.
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x745B8, &SendPDPlane);
+
+	// Replace Ares paradrop plane edge cell picker with our wrapper.
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x74242, &ParadropPickCellOnEdge);
+
+	// Replace Ares paradrop plane Unlimbo call with our wrapper.
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x742AC, &ParadropPlaneUnlimbo);
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -307,4 +346,13 @@ void Apply_Ares3_0p1_Patches()
 
 	// Fix building direction of Ares's UnitDelivery
 	Patch::Apply_VTABLE(AresHelper::AresBaseAddress + 0xA9F28, &UnitDeliveryStateMachine_Update_Wrapper);
+
+	// Replace Ares paradrop plane send function call with our wrapper.
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x75668, &SendPDPlane);
+
+	// Replace Ares paradrop plane edge cell picker with our wrapper.
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x752F2, &ParadropPickCellOnEdge);
+
+	// Replace Ares paradrop plane Unlimbo call with our wrapper.
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x7535C, &ParadropPlaneUnlimbo);
 }

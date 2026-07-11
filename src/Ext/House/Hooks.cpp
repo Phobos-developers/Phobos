@@ -291,16 +291,54 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 
 #pragma endregion
 
-DEFINE_HOOK(0x65EB8D, HouseClass_SendSpyPlanes_PlaceAircraft, 0x6)
+#pragma region Reinforcement_Planes
+
+DEFINE_HOOK(0x65EB2D, HouseClass_SendSpyPlane_PickEdgeCell, 0x6)
+{
+	enum { SkipGameCode = 0x65EB4D };
+
+	GET(AircraftClass* const, pAircraft, ESI);
+	GET(Edge const, edge, EAX);
+	GET(AbstractClass* const, navCom, EBX);
+	GET_STACK(AbstractClass* const, tarCom, STACK_OFFSET(0x28, 0xC));
+	REF_STACK(CellStruct, edgeCell, STACK_OFFSET(0x28, -0x10));
+
+	const auto pTarget = tarCom ? tarCom : navCom;
+	const auto targetCell = pTarget ? CellClass::Coord2Cell(pTarget->GetCoords()) : CellStruct::Empty;
+	edgeCell = AircraftExt::PickEdgeCellForPlane(pAircraft->Type, targetCell, edge);
+
+	R->EAX(&edgeCell);
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x65EB8D, HouseClass_SendSpyPlane_PlaceAircraft, 0x6)
 {
 	enum { SkipGameCode = 0x65EBE5, SkipGameCodeNoSuccess = 0x65EC12 };
 
 	GET(AircraftClass* const, pAircraft, ESI);
 	GET(CellStruct const, edgeCell, EDI);
 
-	const bool result = AircraftExt::PlaceReinforcementAircraft(pAircraft, edgeCell);
+	const bool result = AircraftExt::PlaceReinforcementAircraft(pAircraft, CellClass::Cell2Coord(edgeCell));
 
 	return result ? SkipGameCode : SkipGameCodeNoSuccess;
+}
+
+DEFINE_HOOK(0x65E881, HouseClass_SendAirstrike_PickEdgeCell, 0x5)
+{
+	enum { SkipGameCode = 0x65E8A0 };
+
+	GET(AircraftTypeClass* const, pAircraftType, EBP);
+	GET(Edge const, edge, EAX);
+	GET_STACK(AbstractClass* const, navCom, STACK_OFFSET(0x38, 0x10));
+	GET_STACK(AbstractClass* const, tarCom, STACK_OFFSET(0x38, 0xC));
+	REF_STACK(CellStruct, edgeCell, STACK_OFFSET(0x38, -0x1C));
+
+	const auto pTarget = tarCom ? tarCom : navCom;
+	const auto targetCell = pTarget ? CellClass::Coord2Cell(pTarget->GetCoords()) : CellStruct::Empty;
+	edgeCell = AircraftExt::PickEdgeCellForPlane(pAircraftType, targetCell, edge);
+
+	R->EAX(&edgeCell);
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x65E997, HouseClass_SendAirstrike_PlaceAircraft, 0x6)
@@ -310,10 +348,56 @@ DEFINE_HOOK(0x65E997, HouseClass_SendAirstrike_PlaceAircraft, 0x6)
 	GET(AircraftClass* const, pAircraft, ESI);
 	GET(CellStruct const, edgeCell, EDI);
 
-	const bool result = AircraftExt::PlaceReinforcementAircraft(pAircraft, edgeCell);
+	const bool result = AircraftExt::PlaceReinforcementAircraft(pAircraft, CellClass::Cell2Coord(edgeCell));
 
 	return result ? SkipGameCode : SkipGameCodeNoSuccess;
 }
+
+DEFINE_HOOK(0x65E6DB, HouseClass_SendParadrop_PickEdgeCell, 0x6)
+{
+	enum { SkipGameCode = 0x65E6FB };
+
+	GET(AircraftClass* const, pAircraft, ESI);
+	GET(Edge const, edge, EAX);
+	GET_STACK(AbstractClass* const, navCom, STACK_OFFSET(0x30, 0x10));
+	GET_STACK(AbstractClass* const, tarCom, STACK_OFFSET(0x30, 0xC));
+	REF_STACK(CellStruct, edgeCell, STACK_OFFSET(0x30, -0x10));
+
+	const auto pTarget = tarCom ? tarCom : navCom;
+	const auto targetCell = pTarget ? CellClass::Coord2Cell(pTarget->GetCoords()) : CellStruct::Empty;
+	edgeCell = AircraftExt::PickEdgeCellForPlane(pAircraft->Type, targetCell, edge);
+
+	R->EAX(&edgeCell);
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x65E73A, HouseClass_SendParadrop_PlaceAircraft, 0x5)
+{
+	enum { SkipGameCode = 0x65E79B, SkipGameCodeNoSuccess = 0x65E82C };
+
+	GET(AircraftClass* const, pAircraft, ESI);
+	GET(CellStruct const, edgeCell, EDI);
+
+	const bool result = AircraftExt::PlaceReinforcementAircraft(pAircraft, CellClass::Cell2Coord(edgeCell));
+
+	return result ? SkipGameCode : SkipGameCodeNoSuccess;
+}
+
+DEFINE_HOOK(0x415A7A, AircraftClass_Mission_Retreat_PickEdgeCell, 0x6)
+{
+	enum { SkipGameCode = 0x415A9A };
+
+	GET(AircraftClass* const, pThis, ESI);
+	GET(Edge const, edge, EAX);
+	REF_STACK(CellStruct, edgeCell, STACK_OFFSET(0xC, -0x4));
+
+	edgeCell = AircraftExt::PickEdgeCellForPlane(pThis->Type, pThis->GetMapCoords(), edge, true);
+
+	R->EAX(&edgeCell);
+	return SkipGameCode;
+}
+
+#pragma endregion
 
 // Vanilla and Ares all only hardcoded to find factory with BuildCat::DontCare...
 static inline bool CheckShouldDisableDefensesCameo(HouseClass* pHouse, TechnoTypeClass* pType)
