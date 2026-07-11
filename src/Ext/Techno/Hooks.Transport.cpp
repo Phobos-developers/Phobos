@@ -910,7 +910,6 @@ DEFINE_HOOK(0x4D9510, FootClass_SetDestination_OpenToppedFireWhileMoving, 0x6)
 		{
 			bool canfire = fireWhileMoving && TechnoExt::ExtMap.Find(pPassenger)->TypeExtData->OpenTransport_FireWhileMoving.Get(RulesExt::Global()->OpenTransport_FireWhileMoving);
 
-			// assuming Locomotor, Temporal and Airstrike can't be used in the same time
 			if (auto const pLocoTarget = pPassenger->LocomotorTarget)
 			{
 				auto const pWeapon = pPassenger->GetWeapon(pPassenger->SelectWeapon(pLocoTarget))->WeaponType;
@@ -921,7 +920,8 @@ DEFINE_HOOK(0x4D9510, FootClass_SetDestination_OpenToppedFireWhileMoving, 0x6)
 				if (!canfire)
 					pPassenger->ReleaseLocomotor(true);
 			}
-			else if (auto const pTemporal = pPassenger->TemporalImUsing)
+
+			if (auto const pTemporal = pPassenger->TemporalImUsing)
 			{
 				if (auto const pTarget = pTemporal->Target)
 				{
@@ -934,7 +934,8 @@ DEFINE_HOOK(0x4D9510, FootClass_SetDestination_OpenToppedFireWhileMoving, 0x6)
 						pTemporal->LetGo();
 				}
 			}
-			else if (auto const pAirstrike = TechnoExt::ExtMap.Find(pPassenger)->AirstrikeTargetingMe)
+
+			if (auto const pAirstrike = TechnoExt::ExtMap.Find(pPassenger)->AirstrikeTargetingMe)
 			{
 				if (auto const pTarget = pAirstrike->Target)
 				{
