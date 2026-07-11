@@ -844,7 +844,7 @@ DEFINE_HOOK(0x519776, InfantryClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x739FA2, UnitClassClass_UpdatePosition_NoQueueUpToEnter, 0x5)
+DEFINE_HOOK(0x739FA2, UnitClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 {
 	GET(UnitClass*, pThis, EBP);
 	GET(BuildingClass*, pBuilding, EBX);
@@ -885,3 +885,72 @@ DEFINE_HOOK(0x739FA2, UnitClassClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x4D9510, FootClass_SetDestination_OpenToppedFireWhileMoving, 0x6)
+{
+	GET(FootClass*, pThis, EBP);
+	GET(void*, moving, ESI);
+
+	if (!moving)
+		return 0;
+
+	auto const pUnit = abstract_cast<UnitClass*, true>(pThis);
+
+	if (!pUnit)
+		return 0;
+
+	auto const pType = pUnit->Type;
+
+	if (pType->OpenTopped && pUnit->Passengers.NumPassengers > 0)
+	{
+		const bool fireWhileMoving = TechnoTypeExt::ExtMap.Find(pType)->OpenTopped_FireWhileMoving.Get(RulesExt::Global()->OpenTopped_FireWhileMoving);
+		auto pPassenger = pUnit->Passengers.GetFirstPassenger();
+
+		while (pPassenger)
+		{
+			bool canfire = fireWhileMoving && TechnoExt::ExtMap.Find(pPassenger)->TypeExtData->OpenTransport_FireWhileMoving.Get(RulesExt::Global()->OpenTransport_FireWhileMoving);
+
+			// assuming Locomotor, Temporal and Airstrike can't be used in the same time
+			if (auto const pLocoTarget = pPassenger->LocomotorTarget)
+			{
+				auto const pWeapon = pPassenger->GetWeapon(pPassenger->SelectWeapon(pLocoTarget))->WeaponType;
+
+				if (pWeapon && pWeapon->Warhead->IsLocomotor)
+					canfire &= pWeapon->FireWhileMoving;
+
+				if (!canfire)
+					pPassenger->ReleaseLocomotor(true);
+			}
+			else if (auto const pTemporal = pPassenger->TemporalImUsing)
+			{
+				if (auto const pTarget = pTemporal->Target)
+				{
+					auto const pWeapon = pPassenger->GetWeapon(pPassenger->SelectWeapon(pTarget))->WeaponType;
+
+					if (pWeapon && pWeapon->Warhead->Temporal)
+						canfire &= pWeapon->FireWhileMoving;
+
+					if (!canfire)
+						pTemporal->LetGo();
+				}
+			}
+			else if (auto const pAirstrike = TechnoExt::ExtMap.Find(pPassenger)->AirstrikeTargetingMe)
+			{
+				if (auto const pTarget = pAirstrike->Target)
+				{
+					auto const pWeapon = pPassenger->GetWeapon(pPassenger->SelectWeapon(pTarget))->WeaponType;
+
+					if (pWeapon && pWeapon->Warhead->Temporal)
+						canfire &= pWeapon->FireWhileMoving;
+
+					if (!canfire)
+						pAirstrike->ResetTarget(nullptr);
+				}
+			}
+
+			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
+		}
+	}
+
+	return 0;
+}
