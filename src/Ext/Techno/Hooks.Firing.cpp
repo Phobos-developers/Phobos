@@ -5,7 +5,6 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <JumpjetLocomotionClass.h>
 
 #pragma region TechnoClass_SelectWeapon
 

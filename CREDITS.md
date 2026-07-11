@@ -241,7 +241,7 @@ This page lists all the individual contributions to the project by their author.
   - Warhead animation improvements
   - Reloading ammo in transports
   - Straight projectile trajectory additions
-  - Airstrike & spy plane fixed spawn distance & height
+  - Reinforcement plane (paradrop, spy plane, airstrike) spawn customizations
   - Negative damage `Verses/PercentAtMax` toggle
   - Misc. singleplayer mission improvements
   - Weapon effect obstacle interaction fix
@@ -288,7 +288,7 @@ This page lists all the individual contributions to the project by their author.
   - Subterranean harvester pathfinding fix
   - Toggle to exclude technos from base center calculations
   - Deploy priority filtering
-  - Customizable paradrop missions
+  - Customizable paradrop missions and delay
   - Guard range customizations
   - Wall overlay unit sell exploit fix
   - Fix vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't
@@ -546,6 +546,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow `Temporal` warhead to apply ratio and bonus
   - Fix the bug that techno will get stuck if change owner in tunnel
   - Fix the bug that the vanilla `SecondSpawnOffset` no longer takes effect
+  - Fix the issue that `NoQueueUpToEnter` will clear passenger's planning tokens when entered transport
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -695,6 +696,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize the step limit of the credits indicator
   - Disable the credits indicator smooth transition
   - Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn`
+  - `ZAdjust` for Projectiles
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

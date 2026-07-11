@@ -36,7 +36,8 @@ public:
 	static bool ApplyTheaterSuffixToString(char* str);
 	static std::string IntToDigits(int num);
 	static int CountDigitsInNumber(int number);
-	static CoordStruct CalculateCoordsFromDistance(CoordStruct currentCoords, CoordStruct targetCoords, int distance);
+	static DirStruct GetDirectionBetweenCoords(const CoordStruct& currentCoords, const CoordStruct& targetCoords);
+	static CoordStruct CalculateCoordsFromDistance(const CoordStruct& currentCoords, const CoordStruct& targetCoords, int distance);
 	static void DisplayDamageNumberString(int damage, DamageDisplayType type, CoordStruct coords, int& offset);
 	static int GetColorFromColorAdd(int colorIndex);
 	static int SafeMultiply(int value, int mult);

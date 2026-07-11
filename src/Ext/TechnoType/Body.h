@@ -284,6 +284,8 @@ public:
 		Nullable<Point2D> SpawnsPipSize;
 		Valueable<Point2D> SpawnsPipOffset;
 
+		Valueable<EdgeType> SpawnFromEdge;
+		Valueable<EdgeType> RetreatToEdge;
 		Nullable<Leptons> SpawnDistanceFromTarget;
 		Nullable<int> SpawnHeight;
 		Nullable<int> LandingDir;
@@ -490,6 +492,8 @@ public:
 
 		Nullable<Mission> ParadropMission;
 		Nullable<Mission> AIParadropMission;
+		Nullable<int> ParadropDelay;
+		Nullable<int> ParadropEndDelay;
 
 		Nullable<int> PenetratesTransport_Level;
 		Valueable<double> PenetratesTransport_PassThroughMultiplier;
@@ -779,6 +783,8 @@ public:
 			, SpawnsPipSize {}
 			, SpawnsPipOffset { { 0,0 } }
 
+			, SpawnFromEdge { EdgeType::Owner }
+			, RetreatToEdge { EdgeType::Owner }
 			, SpawnDistanceFromTarget {}
 			, SpawnHeight {}
 			, LandingDir {}
@@ -967,6 +973,8 @@ public:
 
 			, ParadropMission {}
 			, AIParadropMission {}
+			, ParadropDelay {}
+			, ParadropEndDelay {}
 
 			, PenetratesTransport_Level {}
 			, PenetratesTransport_PassThroughMultiplier { 1.0 }
