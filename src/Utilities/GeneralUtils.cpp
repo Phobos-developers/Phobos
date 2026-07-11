@@ -199,14 +199,22 @@ int GeneralUtils::CountDigitsInNumber(int number)
 	return digits;
 }
 
-// Calculates a new coordinates based on current & target coordinates within specified distance (can be negative to switch the direction) in leptons.
-CoordStruct GeneralUtils::CalculateCoordsFromDistance(CoordStruct currentCoords, CoordStruct targetCoords, int distance)
+// Calculates direction between two coordinates.
+DirStruct GeneralUtils::GetDirectionBetweenCoords(const CoordStruct& currentCoords, const CoordStruct& targetCoords)
 {
-	const int deltaX = currentCoords.X - targetCoords.X;
-	const int deltaY = targetCoords.Y - currentCoords.Y;
-
+	const int deltaX = targetCoords.X - currentCoords.X;
+	const int deltaY = currentCoords.Y - targetCoords.Y;
 	const double atan = Math::atan2(deltaY, deltaX);
 	const double radians = (((atan - Math::HalfPi) * (1.0 / Math::GameDegreesToRadiansCoefficient)) - Math::GameDegrees90) * Math::GameDegreesToRadiansCoefficient;
+	DirStruct dir {};
+	dir.SetRadian<65536>(radians);
+	return dir;
+}
+
+// Calculates a new coordinates based on current & target coordinates within specified distance (can be negative to switch the direction) in leptons.
+CoordStruct GeneralUtils::CalculateCoordsFromDistance(const CoordStruct& currentCoords, const CoordStruct& targetCoords, int distance)
+{
+	const double radians = GeneralUtils::GetDirectionBetweenCoords(currentCoords, targetCoords).GetRadian<65536>() + Math::Pi;
 	const int x = static_cast<int>(targetCoords.X + Math::cos(radians) * distance);
 	const int y = static_cast<int>(targetCoords.Y - Math::sin(radians) * distance);
 
