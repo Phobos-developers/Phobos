@@ -696,6 +696,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize the step limit of the credits indicator
   - Disable the credits indicator smooth transition
   - Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn`
+  - `ZAdjust` for Projectiles
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
