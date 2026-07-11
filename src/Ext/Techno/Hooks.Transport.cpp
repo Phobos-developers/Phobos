@@ -908,16 +908,18 @@ DEFINE_HOOK(0x4D9510, FootClass_SetDestination_OpenToppedFireWhileMoving, 0x6)
 
 		while (pPassenger)
 		{
-			bool canfire = fireWhileMoving && TechnoExt::ExtMap.Find(pPassenger)->TypeExtData->OpenTransport_FireWhileMoving.Get(RulesExt::Global()->OpenTransport_FireWhileMoving);
+			const bool canFire = fireWhileMoving && TechnoExt::ExtMap.Find(pPassenger)->TypeExtData->OpenTransport_FireWhileMoving.Get(RulesExt::Global()->OpenTransport_FireWhileMoving);
 
+			// Technically these 3 can't exist in the same time, but just in case
 			if (auto const pLocoTarget = pPassenger->LocomotorTarget)
 			{
 				auto const pWeapon = pPassenger->GetWeapon(pPassenger->SelectWeapon(pLocoTarget))->WeaponType;
+				bool canFireLocomotor = canFire;
 
 				if (pWeapon && pWeapon->Warhead->IsLocomotor)
-					canfire &= pWeapon->FireWhileMoving;
+					canFireLocomotor &= pWeapon->FireWhileMoving;
 
-				if (!canfire)
+				if (!canFireLocomotor)
 					pPassenger->ReleaseLocomotor(true);
 			}
 
@@ -926,11 +928,12 @@ DEFINE_HOOK(0x4D9510, FootClass_SetDestination_OpenToppedFireWhileMoving, 0x6)
 				if (auto const pTarget = pTemporal->Target)
 				{
 					auto const pWeapon = pPassenger->GetWeapon(pPassenger->SelectWeapon(pTarget))->WeaponType;
+					bool canFireTemporal = canFire;
 
 					if (pWeapon && pWeapon->Warhead->Temporal)
-						canfire &= pWeapon->FireWhileMoving;
+						canFireTemporal &= pWeapon->FireWhileMoving;
 
-					if (!canfire)
+					if (!canFireTemporal)
 						pTemporal->LetGo();
 				}
 			}
@@ -940,11 +943,12 @@ DEFINE_HOOK(0x4D9510, FootClass_SetDestination_OpenToppedFireWhileMoving, 0x6)
 				if (auto const pTarget = pAirstrike->Target)
 				{
 					auto const pWeapon = pPassenger->GetWeapon(pPassenger->SelectWeapon(pTarget))->WeaponType;
+					bool canFireAirstrike = canFire;
 
 					if (pWeapon && pWeapon->Warhead->Temporal)
-						canfire &= pWeapon->FireWhileMoving;
+						canFireAirstrike &= pWeapon->FireWhileMoving;
 
-					if (!canfire)
+					if (!canFireAirstrike)
 						pAirstrike->ResetTarget(nullptr);
 				}
 			}
