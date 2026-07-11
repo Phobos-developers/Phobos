@@ -241,7 +241,7 @@ This page lists all the individual contributions to the project by their author.
   - Warhead animation improvements
   - Reloading ammo in transports
   - Straight projectile trajectory additions
-  - Airstrike & spy plane fixed spawn distance & height
+  - Reinforcement plane (paradrop, spy plane, airstrike) spawn customizations
   - Negative damage `Verses/PercentAtMax` toggle
   - Misc. singleplayer mission improvements
   - Weapon effect obstacle interaction fix

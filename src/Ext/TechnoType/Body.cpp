@@ -1011,6 +1011,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnsPipSize.Read(exINI, pSection, "SpawnsPipSize");
 	this->SpawnsPipOffset.Read(exINI, pSection, "SpawnsPipOffset");
 
+	this->SpawnFromEdge.Read(exINI, pSection, "SpawnFromEdge");
+	this->RetreatToEdge.Read(exINI, pSection, "RetreatToEdge");
 	this->SpawnDistanceFromTarget.Read(exINI, pSection, "SpawnDistanceFromTarget");
 	this->SpawnHeight.Read(exINI, pSection, "SpawnHeight");
 	this->LandingDir.Read(exINI, pSection, "LandingDir");
@@ -1751,6 +1753,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpawnsPipSize)
 		.Process(this->SpawnsPipOffset)
 
+		.Process(this->SpawnFromEdge)
+		.Process(this->RetreatToEdge)
 		.Process(this->SpawnDistanceFromTarget)
 		.Process(this->SpawnHeight)
 		.Process(this->LandingDir)
