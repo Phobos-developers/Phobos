@@ -2655,12 +2655,14 @@ msgstr "对于 `AirportBound=false` 的战机允许使用负值以使其降落�
 
 msgid "Reinforcement aircraft spawn settings"
 msgstr ""
+"援军战机创建的设置项"
 
 msgid ""
 "A number of new settings are available for AircraftTypes spawned from "
 "`(Elite)AirstrikeTeamType` or `Type=SpyPlane/Paradrop/AmerParadrop` "
 "superweapons."
 msgstr ""
+"一系列可用于由 `(Elite)AirstrikeTeamType` 或 `Type=SpyPlane/Paradrop/AmerParadrop` 超武所创建战机的新设置项"
 
 msgid ""
 "`SpawnFromEdge` and `RetreatToEdge` can be used to customize the edge of "
@@ -2668,6 +2670,7 @@ msgid ""
 "respectively. Defaults to the owner's edge of the map which is determined"
 " based on base location and other factors."
 msgstr ""
+"`SpawnFromEdge` 和 `RetreatToEdge` 可用于自定义战机生成和撤离的地图边界。默认地图中由其所属方基地位置和其他因素决定的边界。"
 
 msgid ""
 "`SpawnDistanceFromTarget` can be used to set fixed spawn distance from "
@@ -2675,17 +2678,20 @@ msgid ""
 "determined by the edge where it would've otherwise spawned. Negative "
 "values will invert the direction."
 msgstr ""
+"`SpawnDistanceFromTarget` 可用于设置相较于目标处的固定生成距离而替代地图边界。接近方向仍然由原定生成位置所在边界决定。负值将反转方向。"
 
 msgid ""
 "`SpawnHeight` can be used to override the initial height of the aircraft,"
 " which defaults to `FlightLevel`, or if not set then `[General] -> "
 "FlightLevel`."
 msgstr ""
+"`SpawnHeight` 可用于覆盖战机的初始高度，默认为 `FlightLevel`，如果没有设置则使用 `[General] -> FlightLevel`。"
 
 msgid ""
 "Additionally, these aircraft now spawn facing the target's direction "
 "instead of always facing north."
 msgstr ""
+"此外，这些战机现在生成时会面向目标方向而不再总是面向北方。"
 
 msgid "Animations"
 msgstr "动画类型"

@@ -2127,6 +2127,7 @@ msgid ""
 "spawn customizations](Fixed-or-Improved-Logics.md#reinforcement-aircraft-"
 "spawn-settings) (by Starkku)"
 msgstr ""
+"[援军飞机（伞兵、间谍飞机、空袭）创建的额外自定义](Fixed-or-Improved-Logics.md#reinforcement-aircraft-spawn-settings)（by Starkku）"
 
 msgid ""
 "[`ZAdjust` for Projectiles](Fixed-or-Improved-Logics.md#zadjust-for-"
