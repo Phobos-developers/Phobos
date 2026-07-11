@@ -239,7 +239,9 @@ public:
 	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer);
 	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer, int range);
 	static int GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFirer, bool isMinimum);
-
-	// Misc/Hooks.LaserDraw.cpp
-	static void LaserTrackingPointerExpired(void* ptr, bool removed);
 };
+// Misc/Hooks.LaserDraw.cpp
+namespace LaserRT
+{
+	void OnObjectRemoved(ObjectClass* pObject);
+}

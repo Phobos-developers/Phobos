@@ -254,7 +254,11 @@ DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
 	GET(bool const, removed, EDX);
 
 	PhobosTypeRegistry::InvalidatePointer(pInvalid, removed);
-	WeaponTypeExt::LaserTrackingPointerExpired(pInvalid, removed);
+	if (removed)
+	{
+		if (auto const pObject = abstract_cast<ObjectClass*>(static_cast<AbstractClass*>(pInvalid)))
+			LaserRT::OnObjectRemoved(pObject);
+	}
 
 	return 0;
 }
