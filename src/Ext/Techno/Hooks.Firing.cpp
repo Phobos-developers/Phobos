@@ -425,7 +425,7 @@ DEFINE_HOOK(0x6FC3AE, TechnoClass_CanFire_TankInBunker_LocomotorWarhead, 0x6)
 
 DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 {
-	enum { Illegal = 0x6FC86A, OutOfRange = 0x6FC0DF, Continue = 0x6FC5D5, Other = 0x6FCD29 };
+	enum { Illegal = 0x6FC86A, OutOfRange = 0x6FC0DF, Continue = 0x6FC5D5 };
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(TechnoClass*, pTransport, EAX);
@@ -456,15 +456,11 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 			if (pTypeExt->OwnerObject()->BalloonHover)
 			{
 				if (pTransportFoot->Locomotor->Is_Moving_Now())
-				{
-					R->EAX(FireError::MOVING);
-					return Other;
-				}
+					return Illegal;
 			}
 			else if (pTransportFoot->Destination)
 			{
-				R->EAX(FireError::MOVING);
-				return Other;
+				return Illegal;
 			}
 		}
 	}
