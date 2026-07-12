@@ -87,11 +87,11 @@ DEFINE_HOOK(0x4A2729, CreditClass_AI_CreditsStepClamp, 0x5)
 {
 	enum { Continue = 0x4A2735 };
 
-    int maxStep = Phobos::UI::CreditsIndicator_MaxStep;
+    const int maxStep = Phobos::UI::CreditsIndicator_MaxStep;
     if (maxStep <= 0)
         return Continue;
 
-    GET(int, current, EAX);
+    GET(const int, current, EAX);
 
     R->EAX(Math::min(current, maxStep));
 

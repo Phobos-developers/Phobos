@@ -121,7 +121,7 @@ void SyncLogger::WriteSyncLog(const char* logFilename)
 
 		fprintf(pLogFile, "\nPhobos synchronization log:\n\n");
 
-		int frameDigits = GeneralUtils::CountDigitsInNumber(Unsorted::CurrentFrame);
+		const int frameDigits = GeneralUtils::CountDigitsInNumber(Unsorted::CurrentFrame);
 
 		WriteRNGCalls(pLogFile, frameDigits);
 		WriteFacingChanges(pLogFile, frameDigits);
@@ -239,9 +239,9 @@ void SyncLogger::WriteMissionOverrides(FILE* const pLogFile, int frameDigits)
 
 void SyncLogger::WriteAnimCreations(FILE* const pLogFile, int frameDigits)
 {
-	int xDigits = GeneralUtils::CountDigitsInNumber(SyncLogger::AnimCreations_HighestX);
-	int yDigits = GeneralUtils::CountDigitsInNumber(SyncLogger::AnimCreations_HighestY);
-	int zDigits = GeneralUtils::CountDigitsInNumber(SyncLogger::AnimCreations_HighestZ);
+	const int xDigits = GeneralUtils::CountDigitsInNumber(SyncLogger::AnimCreations_HighestX);
+	const int yDigits = GeneralUtils::CountDigitsInNumber(SyncLogger::AnimCreations_HighestY);
+	const int zDigits = GeneralUtils::CountDigitsInNumber(SyncLogger::AnimCreations_HighestZ);
 
 	fprintf(pLogFile, "Animation creations:\n");
 
@@ -625,20 +625,20 @@ static void ComputeGameCRC()
 
 	for (auto const pInf : InfantryClass::Array)
 	{
-		int primaryFacing = pInf->PrimaryFacing.Current().GetValue<8>();
+		const int primaryFacing = pInf->PrimaryFacing.Current().GetValue<8>();
 		AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pInf->Location) + primaryFacing);
 	}
 
 	for (auto const pUnit : UnitClass::Array)
 	{
-		int primaryFacing = pUnit->PrimaryFacing.Current().GetValue<8>();
-		int secondaryFacing = pUnit->SecondaryFacing.Current().GetValue<8>();
+		const int primaryFacing = pUnit->PrimaryFacing.Current().GetValue<8>();
+		const int secondaryFacing = pUnit->SecondaryFacing.Current().GetValue<8>();
 		AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pUnit->Location) + primaryFacing + secondaryFacing);
 	}
 
 	for (auto const pBuilding : BuildingClass::Array)
 	{
-		int primaryFacing = pBuilding->PrimaryFacing.Current().GetValue<8>();
+		const int primaryFacing = pBuilding->PrimaryFacing.Current().GetValue<8>();
 		AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pBuilding->Location) + primaryFacing);
 	}
 

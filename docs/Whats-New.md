@@ -537,6 +537,7 @@ HideShakeEffects=false           ; boolean
 - [Customize whether weapon can be used to targeting ironcurtained technos or not](New-or-Enhanced-Logics.md#customize-whether-weapon-can-target-iron-curtained-technos) (by NetsuNegi)
 - [Customizable disk drain logic](New-or-Enhanced-Logics.md#customizable-disk-drain-logic) (by NetsuNegi)
 - [Customizable paradropped unit missions](Fixed-or-Improved-Logics.md#customizable-paradrop-missions) (by Starkku)
+- [Customizable paradrop delay](Fixed-or-Improved-Logics.md#customizable-paradrop-delay) (by Starkku)
 - Option to scale `PowerSurplus` setting if enabled to current power drain with `PowerSurplus.ScaleToDrainAmount` (by Starkku)
 - Global default value for `DefaultToGuardArea` (by TaranDahl)
 - [Weapon range finding in cylinder](New-or-Enhanced-Logics.md#range-finding-in-cylinder) (by TaranDahl)
@@ -606,6 +607,8 @@ HideShakeEffects=false           ; boolean
 - [Customize the step limit of the credits indicator](User-Interface.md#customize-the-step-limit-of-the-credits-indicator) (by Noble_Fish)
 - [Disable the credits indicator smooth transition](User-Interface.md#disable-the-credits-indicator-smooth-transition) (by Noble_Fish)
 - Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn` (by Noble_Fish)
+- [Additional reinforcement aircraft (airstrike, paradrop and spy plane) spawn customizations](Fixed-or-Improved-Logics.md#reinforcement-aircraft-spawn-settings) (by Starkku)
+- [`ZAdjust` for Projectiles](Fixed-or-Improved-Logics.md#zadjust-for-projectiles) (by Noble_Fish)
 - [Allow Laser drawing position update](New-or-Enhanced-Logics.md#allow-laser-drawing-position-update) (by Noble_Fish)
 
 #### Vanilla fixes:
@@ -730,6 +733,7 @@ HideShakeEffects=false           ; boolean
 - Fixed cells with `CanBeBuiltOn=true` TerrainTypes on them not being considered valid build locations by AI (by Starkku)
 - Fixed a bug where stationary vehicles would also block movement caused by external factors (by Noble_Fish)
 - Fixed `src/Interop/Version.cpp` not being compiled into the project (by Chang_zhi)
+- Fixed the issue that `NoQueueUpToEnter` will clear passenger's planning tokens when entered transport (by NetsuNegi)
 
 #### Fixes / interactions with other extensions:
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
@@ -757,7 +761,6 @@ HideShakeEffects=false           ; boolean
 - [Export interface for accessing scenario local/global variables](Interoperability.md#scenarioext) (by Chang_zhi)
 - Allowed infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true` (by Noble_Fish)
 - Added the scenario where `Missile.Raise` can be applied by custom missiles (by Noble_Fish)
-
 ```
 
 ### 0.4.0.3

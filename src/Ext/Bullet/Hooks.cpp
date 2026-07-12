@@ -276,8 +276,8 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 	GET(WeaponTypeClass*, pShrapnelWeapon, ESI);
 
 	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
-	bool isBuilding = pObject->WhatAmI() == AbstractType::Building;
-	bool ignorePreviouslyHit = pTypeExt->Shrapnel_IgnoreHitBuildings.Get(RulesExt::Global()->Shrapnel_IgnoreHitBuildings);
+	const bool isBuilding = pObject->WhatAmI() == AbstractType::Building;
+	const bool ignorePreviouslyHit = pTypeExt->Shrapnel_IgnoreHitBuildings.Get(RulesExt::Global()->Shrapnel_IgnoreHitBuildings);
 
 	if (isBuilding)
 	{
@@ -605,3 +605,15 @@ DEFINE_HOOK(0x467AB2, BulletClass_AI_Parabomb, 0x7)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x4683F2, BulletClass_Draw_ZAdjust, 0x5)
+{
+	GET(BulletClass*, pThis, ESI);
+	GET(int, height, ECX);
+
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+
+	R->EAX(TacticalClass::AdjustForZ(height) - pTypeExt->ZAdjust);
+
+	return 0x4683F7;
+}

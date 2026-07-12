@@ -329,6 +329,8 @@ public:
 
 		Valueable<Mission> ParadropMission;
 		Valueable<Mission> AIParadropMission;
+		Valueable<int> ParadropDelay;
+		Valueable<int> ParadropEndDelay;
 
 		Valueable<bool> DefaultToGuardArea;
 
@@ -653,6 +655,8 @@ public:
 
 			, ParadropMission { Mission::Guard }
 			, AIParadropMission { Mission::Hunt }
+			, ParadropDelay { 5 }
+			, ParadropEndDelay { 5 }
 
 			, DefaultToGuardArea { false }
 

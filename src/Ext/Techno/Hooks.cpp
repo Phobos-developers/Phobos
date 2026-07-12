@@ -2104,7 +2104,7 @@ DEFINE_HOOK(0x4CEB59, FlyLocomotionClass_ProcessLanding_ForceDropship, 0x6)
 {
 	GET(FlyLocomotionClass*, pLoco, ESI);
 	auto const pType = pLoco->LinkedTo->GetTechnoType();
-	bool force = TechnoTypeExt::ExtMap.Find(pType)->LandingAnim.isset() || RulesExt::Global()->DefaultLandingAnim != nullptr;
+	const bool force = TechnoTypeExt::ExtMap.Find(pType)->LandingAnim.isset() || RulesExt::Global()->DefaultLandingAnim != nullptr;
 
 	R->CL(force || pType->IsDropship);
 	return 0x4CEB5F;

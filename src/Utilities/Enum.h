@@ -421,3 +421,10 @@ enum class InterpolationMode : BYTE
 	None = 0,
 	Linear = 1
 };
+
+enum class EdgeType : BYTE
+{
+	Owner = 0,
+	Closest = 1,
+	Random = 2
+};

@@ -638,7 +638,7 @@ static bool SplitsProjectileCheck(BulletTypeClass* pProjectile, WeaponTypeClass*
 		return pProjectile->AA || !pTarget->IsInAir();
 
 	auto const pType = pWeapon->Projectile;
-	bool inAir = pTarget->IsInAir();
+	const bool inAir = pTarget->IsInAir();
 
 	if (!pType->AA && inAir)
 		return false;
