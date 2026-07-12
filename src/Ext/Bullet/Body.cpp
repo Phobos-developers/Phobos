@@ -515,6 +515,7 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->ParabombFallRate)
 		.Process(this->IsInstantDetonation)
 		.Process(this->FirepowerMult)
+		.Process(this->IsSplitFromAirburst)
 
 		.Process(this->Trajectory) // Keep this shit at last
 		;
