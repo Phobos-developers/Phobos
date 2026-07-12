@@ -257,7 +257,7 @@ DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
 	if (removed)
 	{
 		if (auto const pObject = abstract_cast<ObjectClass*>(static_cast<AbstractClass*>(pInvalid)))
-			LaserRT::OnObjectRemoved(pObject);
+			WeaponTypeExt::OnObjectRemoved(pObject);
 	}
 
 	return 0;

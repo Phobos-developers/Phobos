@@ -146,49 +146,6 @@ namespace LaserRT
 		}
 	}
 
-	void OnObjectRemoved(ObjectClass* pObject)
-	{
-		auto shooterRange = ShooterToLasers.equal_range(pObject);
-		for (auto it = shooterRange.first; it != shooterRange.second; ++it)
-		{
-			LaserDrawClass* pLaser = it->second;
-			auto dataIt = TrackingMap.find(pLaser);
-			if (dataIt != TrackingMap.end())
-			{
-				auto& data = dataIt->second;
-				if (data.Shooter == pObject)
-					data.Shooter = nullptr;
-
-				if (!data.Shooter && !data.Target)
-				{
-					UnregisterTracking(pLaser, data);
-					TrackingMap.erase(dataIt);
-				}
-			}
-		}
-		ShooterToLasers.erase(pObject);
-
-		auto targetRange = TargetToLasers.equal_range(pObject);
-		for (auto it = targetRange.first; it != targetRange.second; ++it)
-		{
-			LaserDrawClass* pLaser = it->second;
-			auto dataIt = TrackingMap.find(pLaser);
-			if (dataIt != TrackingMap.end())
-			{
-				auto& data = dataIt->second;
-				if (data.Target == pObject)
-					data.Target = nullptr;
-
-				if (!data.Shooter && !data.Target)
-				{
-					UnregisterTracking(pLaser, data);
-					TrackingMap.erase(dataIt);
-				}
-			}
-		}
-		TargetToLasers.erase(pObject);
-	}
-
 	void SetLaserTrackingData(LaserDrawClass* pLaser, TechnoClass* pShooter, AbstractClass* pTarget, int weaponIdx, PositionFollow mode, bool ignoreShooter)
 	{
 		CoordStruct localFLH;
@@ -248,6 +205,49 @@ DEFINE_HOOK(0x54FFB0, LaserDrawClass_DTOR_Tracking, 0x7) // LaserDrawClass::DTOR
 	}
 
 	return 0;
+}
+
+void WeaponTypeExt::OnObjectRemoved(ObjectClass* pObject)
+{
+	auto shooterRange = LaserRT::ShooterToLasers.equal_range(pObject);
+	for (auto it = shooterRange.first; it != shooterRange.second; ++it)
+	{
+		LaserDrawClass* pLaser = it->second;
+		auto dataIt = LaserRT::TrackingMap.find(pLaser);
+		if (dataIt != LaserRT::TrackingMap.end())
+		{
+			auto& data = dataIt->second;
+			if (data.Shooter == pObject)
+				data.Shooter = nullptr;
+
+			if (!data.Shooter && !data.Target)
+			{
+				LaserRT::UnregisterTracking(pLaser, data);
+				LaserRT::TrackingMap.erase(dataIt);
+			}
+		}
+	}
+	LaserRT::ShooterToLasers.erase(pObject);
+
+	auto targetRange = LaserRT::TargetToLasers.equal_range(pObject);
+	for (auto it = targetRange.first; it != targetRange.second; ++it)
+	{
+		LaserDrawClass* pLaser = it->second;
+		auto dataIt = LaserRT::TrackingMap.find(pLaser);
+		if (dataIt != LaserRT::TrackingMap.end())
+		{
+			auto& data = dataIt->second;
+			if (data.Target == pObject)
+				data.Target = nullptr;
+
+			if (!data.Shooter && !data.Target)
+			{
+				LaserRT::UnregisterTracking(pLaser, data);
+				LaserRT::TrackingMap.erase(dataIt);
+			}
+		}
+	}
+	LaserRT::TargetToLasers.erase(pObject);
 }
 
 // hooks
