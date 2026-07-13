@@ -913,28 +913,30 @@ DEFINE_HOOK(0x4D9510, FootClass_SetDestination_OpenToppedFireWhileMoving, 0x6)
 			// Technically these 3 can't exist in the same time, but just in case
 			if (auto const pLocoTarget = pPassenger->LocomotorTarget)
 			{
-				auto const pWeapon = pPassenger->GetWeapon(pPassenger->SelectWeapon(pLocoTarget))->WeaponType;
-				bool canFireLocomotor = canFire;
-
-				if (pWeapon && pWeapon->Warhead->IsLocomotor)
-					canFireLocomotor &= pWeapon->FireWhileMoving;
-
-				if (!canFireLocomotor)
+				if (!canFire)
+				{
 					pPassenger->ReleaseLocomotor(true);
+				}
+				else if (auto const pWeapon = pPassenger->GetWeapon(pPassenger->SelectWeapon(pLocoTarget))->WeaponType)
+				{
+					if (pWeapon->Warhead->IsLocomotor && !pWeapon->FireWhileMoving)
+						pPassenger->ReleaseLocomotor(true);
+				}
 			}
 
 			if (auto const pTemporal = pPassenger->TemporalImUsing)
 			{
 				if (auto const pTarget = pTemporal->Target)
 				{
-					auto const pWeapon = pPassenger->GetWeapon(pPassenger->SelectWeapon(pTarget))->WeaponType;
-					bool canFireTemporal = canFire;
-
-					if (pWeapon && pWeapon->Warhead->Temporal)
-						canFireTemporal &= pWeapon->FireWhileMoving;
-
-					if (!canFireTemporal)
+					if (!canFire)
+					{
 						pTemporal->LetGo();
+					}
+					else if (auto const pWeapon = pPassenger->GetWeapon(pPassenger->SelectWeapon(pTarget))->WeaponType)
+					{
+						if (pWeapon->Warhead->Temporal && !pWeapon->FireWhileMoving)
+							pTemporal->LetGo();
+					}
 				}
 			}
 
@@ -942,14 +944,15 @@ DEFINE_HOOK(0x4D9510, FootClass_SetDestination_OpenToppedFireWhileMoving, 0x6)
 			{
 				if (auto const pTarget = pAirstrike->Target)
 				{
-					auto const pWeapon = pPassenger->GetWeapon(pPassenger->SelectWeapon(pTarget))->WeaponType;
-					bool canFireAirstrike = canFire;
-
-					if (pWeapon && pWeapon->Warhead->Temporal)
-						canFireAirstrike &= pWeapon->FireWhileMoving;
-
-					if (!canFireAirstrike)
+					if (!canFire)
+					{
 						pAirstrike->ResetTarget(nullptr);
+					}
+					else if (auto const pWeapon = pPassenger->GetWeapon(pPassenger->SelectWeapon(pTarget))->WeaponType)
+					{
+						if (pWeapon->Warhead->Airstrike && !pWeapon->FireWhileMoving)
+							pAirstrike->ResetTarget(nullptr);
+					}
 				}
 			}
 
