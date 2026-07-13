@@ -1679,6 +1679,10 @@ OpenTransport.FireWhileMoving=                    ; boolean, defaults to [Genera
 Range of passive acquiring of passengers in an OpenTopped transport won't be affected by these RangeBonus values.
 ```
 
+```{note}
+Due to technical issues, the behaviors of `OpenTopped/OpenTransport.FireWhileMoving` and `FireWhileMoving` for opentopped transport are somewhat different from `FireWhileMoving` for regular techno. This might be changed in the future.
+```
+
 ### Customizable spawns queue
 - It is now possible to spawn multiple types of spawnees from a spawner with `Spawns.Queue`. The order of spawnees in this queue is the order of their respawn.
   - `Spawns` still needs to be set to enable the spawner logic and act as a default spawnee.
