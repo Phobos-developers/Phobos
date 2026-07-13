@@ -1266,6 +1266,98 @@ FireError TechnoExt::GetFireErrorIgnoreDisableWeapons(TechnoClass* pThis, Abstra
 	return fireError;
 }
 
+void TechnoExt::ExtData::InitPassiveAcquireMode()
+{
+	this->PassiveAquireMode = this->TypeExtData->PassiveAcquireMode.Get();
+}
+
+PassiveAcquireMode TechnoExt::ExtData::GetPassiveAcquireMode() const
+{
+	// if this is a passenger then obey the configuration of the transport
+	if (auto pTransport = this->OwnerObject()->Transporter)
+		return TechnoExt::ExtMap.Find(pTransport)->GetPassiveAcquireMode();
+
+	return this->PassiveAquireMode;
+}
+
+void TechnoExt::ExtData::TogglePassiveAcquireMode(PassiveAcquireMode newMode)
+{
+	auto previousMode = this->PassiveAquireMode;
+	this->PassiveAquireMode = newMode;
+
+	if (newMode == previousMode)
+		return;
+
+	const auto pThis = this->OwnerObject();
+	const auto pTechnoType = this->TypeExtData->OwnerObject();
+	int voiceIndex;
+
+	if (newMode == PassiveAcquireMode::Normal)
+	{
+		if (previousMode == PassiveAcquireMode::Ceasefire)
+		{
+			voiceIndex = this->TypeExtData->VoiceExitCeasefireMode.Get();
+
+			if (voiceIndex < 0)
+			{
+				const auto& voiceList = pTechnoType->VoiceAttack.Count ? pTechnoType->VoiceAttack : pTechnoType->VoiceMove;
+
+				if (const auto count = voiceList.Count)
+					voiceIndex = voiceList.GetItem(Randomizer::Global.Random() % count);
+			}
+		}
+		else
+		{
+			pThis->SetTarget(nullptr);
+			voiceIndex = this->TypeExtData->VoiceExitAggressiveMode.Get();
+
+			if (voiceIndex < 0)
+			{
+				const auto& voiceList = pTechnoType->VoiceMove.Count ? pTechnoType->VoiceMove : pTechnoType->VoiceSelect;
+
+				if (const auto count = voiceList.Count)
+					voiceIndex = voiceList.GetItem(Randomizer::Global.Random() % count);
+			}
+		}
+	}
+	else if (newMode == PassiveAcquireMode::Ceasefire)
+	{
+		pThis->SetTarget(nullptr);
+		voiceIndex = this->TypeExtData->VoiceEnterCeasefireMode.Get();
+
+		if (voiceIndex < 0)
+		{
+			const auto& voiceList = pTechnoType->VoiceSelect.Count ? pTechnoType->VoiceSelect : pTechnoType->VoiceMove;
+
+			if (const auto count = voiceList.Count)
+				voiceIndex = voiceList.GetItem(Randomizer::Global.Random() % count);
+		}
+	}
+	else
+	{
+		voiceIndex = this->TypeExtData->VoiceEnterAggressiveMode.Get();
+
+		if (voiceIndex < 0)
+		{
+			const auto& voiceList = pTechnoType->VoiceAttack.Count ? pTechnoType->VoiceAttack : pTechnoType->VoiceMove;
+
+			if (const auto count = voiceList.Count)
+				voiceIndex = voiceList.GetItem(Randomizer::Global.Random() % count);
+		}
+	}
+
+	pThis->QueueVoice(voiceIndex);
+}
+
+bool TechnoExt::ExtData::CanTogglePassiveAcquireMode()
+{
+	if (!RulesExt::Global()->EnablePassiveAcquireMode)
+		return false;
+
+	return this->TypeExtData->PassiveAcquireMode_Togglable;
+}
+
+
 // =============================
 // load / save
 
@@ -1342,6 +1434,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->HoverShutdown)
 		.Process(this->LastTargetCrd)
 		.Process(this->LastTargetCrdClearTimer)
+		.Process(this->PassiveAquireMode)
 		;
 }
 

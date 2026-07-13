@@ -25,6 +25,9 @@ void EventExt::RespondEvent()
 	case EventTypeExt::TogglePlayerAutoRepair:
 		this->RespondToTogglePlayerAutoRepair();
 		break;
+	case EventTypeExt::TogglePassiveAcquireMode:
+		this->RespondToTogglePassiveAcquireMode();
+		break;
 	default:
 		break;
 	}
@@ -40,6 +43,17 @@ void EventExt::RaiseTogglePlayerAutoRepair()
 	Debug::LogGame("Adding event TOGGLE_PLAYER_AUTOREPAIR\n");
 }
 
+void EventExt::RaiseTogglePassiveAcquireMode(TechnoClass* pTechno, PassiveAcquireMode mode)
+{
+	EventExt eventExt {};
+	eventExt.Type = EventTypeExt::TogglePassiveAcquireMode;
+	eventExt.HouseIndex = static_cast<char>(pTechno->Owner->ArrayIndex);
+	eventExt.Frame = Unsorted::CurrentFrame;
+	eventExt.TogglePassiveAcquireMode.Who = TargetClass(pTechno);
+	eventExt.TogglePassiveAcquireMode.Mode = mode;
+	eventExt.AddEvent();
+}
+
 size_t EventExt::GetDataSize(EventTypeExt type)
 {
 	switch (type)
@@ -48,6 +62,8 @@ size_t EventExt::GetDataSize(EventTypeExt type)
 		return sizeof(EventExt::ApproachObject);
 	case EventTypeExt::TogglePlayerAutoRepair:
 		return sizeof(EventExt::TogglePlayerAutoRepair);
+	case EventTypeExt::TogglePassiveAcquireMode:
+		return sizeof(EventExt::TogglePassiveAcquireMode);
 	default:
 		break;
 	}
@@ -131,6 +147,20 @@ void EventExt::RespondToTogglePlayerAutoRepair()
 			SidebarClass::ToggleRepairButton.TurnOn();
 		else
 			SidebarClass::ToggleRepairButton.TurnOff();
+	}
+}
+
+void EventExt::RespondToTogglePassiveAcquireMode()
+{
+	if (const auto pTechno = this->TogglePassiveAcquireMode.Who.As_Techno())
+	{
+		if (pTechno->IsAlive && !pTechno->Berzerk)
+		{
+			const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+
+			if (pTechnoExt->CanTogglePassiveAcquireMode())
+				pTechnoExt->TogglePassiveAcquireMode(this->TogglePassiveAcquireMode.Mode);
+		}
 	}
 }
 

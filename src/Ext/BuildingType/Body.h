@@ -115,6 +115,8 @@ public:
 		Valueable<int> TurretAnim_IdleRate;
 		Valueable<int> TurretAnim_FiringRate;
 
+		Valueable<bool> AggressiveModeExempt;
+		
 		// Ares 0.2
 		Valueable<bool> CloningFacility;
 
@@ -203,6 +205,7 @@ public:
 			, TurretAnim_LowPowerFiringFrames { 0 }
 			, TurretAnim_IdleRate { 1 }
 			, TurretAnim_FiringRate { 1 }
+			, AggressiveModeExempt{}
 
 			// Ares 0.2
 			, CloningFacility { false }
