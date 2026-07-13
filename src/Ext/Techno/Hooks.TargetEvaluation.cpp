@@ -533,8 +533,9 @@ DEFINE_HOOK(0x6F8E1F, TechnoClass_SelectAutoTarget_CeasefireMode, 0x6)
 {
 	GET(TechnoTypeClass*, pType, EAX);
 	GET(TechnoClass*, pThis, ESI);
-	R->CL(pType->NoAutoFire || (TechnoExt::ExtMap.Find(pThis)->GetPassiveAcquireMode()) == PassiveAcquireMode::Ceasefire);
-	return R->Origin() + 0x6;
+	return pType->NoAutoFire && pThis->Owner->IsControlledByHuman() || 
+	  (TechnoExt::ExtMap.Find(pThis)->GetPassiveAcquireMode()) == PassiveAcquireMode::Ceasefire 
+	  ? 0x6F8E38 : 0x6F8E44;
 }
 
 DEFINE_HOOK(0x7087DD, TechnoClass_CanRetaliateToAttacker_CeasefireMode, 0x6)
