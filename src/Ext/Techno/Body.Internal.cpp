@@ -195,11 +195,13 @@ void TechnoExt::ExtData::InitializeRecoilData()
 	if (!pType->TurretRecoil)
 		return;
 
+	// Always resize to match the current type's count so that type conversions
+	// (e.g. 9 turrets -> 2) do not leave stale elements that waste memory and
+	// inflate the save file.
+	this->ExtraTurretRecoil.resize(pTypeExt->ExtraTurretCount);
+
 	if (pTypeExt->ExtraTurretCount)
 	{
-		if (static_cast<int>(this->ExtraTurretRecoil.size()) < pTypeExt->ExtraTurretCount)
-			this->ExtraTurretRecoil.resize(pTypeExt->ExtraTurretCount);
-
 		const auto& refData = pType->TurretAnimData;
 
 		for (auto& data : this->ExtraTurretRecoil)
@@ -215,13 +217,11 @@ void TechnoExt::ExtData::InitializeRecoilData()
 		}
 	}
 
-	if (pTypeExt->ExtraTurretCount || pTypeExt->ExtraBarrelCount)
+	const auto dataCount = (pTypeExt->ExtraBarrelCount + 1) * (pTypeExt->ExtraTurretCount + 1) - 1;
+	this->ExtraBarrelRecoil.resize(dataCount);
+
+	if (dataCount)
 	{
-		const auto dataCount = (pTypeExt->ExtraBarrelCount + 1) * (pTypeExt->ExtraTurretCount + 1) - 1;
-
-		if (static_cast<int>(this->ExtraBarrelRecoil.size()) < dataCount)
-			this->ExtraBarrelRecoil.resize(dataCount);
-
 		const auto& refData = pType->BarrelAnimData;
 
 		for (auto& data : this->ExtraBarrelRecoil)
