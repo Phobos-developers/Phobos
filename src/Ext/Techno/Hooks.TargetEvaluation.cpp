@@ -1,5 +1,6 @@
 #include "Body.h"
 #include <Interop/TechnoExt.h>
+#include <Ext/BuildingType/Body.h>
 
 // Cursor & target acquisition stuff not directly tied to other features can go here.
 
