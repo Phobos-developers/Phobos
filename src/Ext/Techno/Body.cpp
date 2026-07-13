@@ -1282,68 +1282,53 @@ PassiveAcquireMode TechnoExt::ExtData::GetPassiveAcquireMode() const
 
 void TechnoExt::ExtData::TogglePassiveAcquireMode(PassiveAcquireMode newMode)
 {
-	auto previousMode = this->PassiveAquireMode;
-	this->PassiveAquireMode = newMode;
+	const auto previousMode = this->PassiveAquireMode;
 
 	if (newMode == previousMode)
 		return;
 
+	this->PassiveAquireMode = newMode;
+
 	const auto pThis = this->OwnerObject();
 	const auto pTechnoType = this->TypeExtData->OwnerObject();
-	int voiceIndex;
+
+	// Resolve the voice index for the mode transition, falling back to a random entry from the
+	// primary voice list (or the fallback list when the primary is empty) when none is configured.
+	const auto ResolveVoice = [this, pTechnoType](int configuredIndex, const auto& primary, const auto& fallback) -> int
+		{
+			if (configuredIndex >= 0)
+				return configuredIndex;
+
+			const auto& voiceList = primary.Count ? primary : fallback;
+
+			if (const auto count = voiceList.Count)
+				return voiceList.GetItem(Randomizer::Global.Random() % count);
+
+			return -1;
+		};
+
+	int voiceIndex = -1;
 
 	if (newMode == PassiveAcquireMode::Normal)
 	{
 		if (previousMode == PassiveAcquireMode::Ceasefire)
 		{
-			voiceIndex = this->TypeExtData->VoiceExitCeasefireMode.Get();
-
-			if (voiceIndex < 0)
-			{
-				const auto& voiceList = pTechnoType->VoiceAttack.Count ? pTechnoType->VoiceAttack : pTechnoType->VoiceMove;
-
-				if (const auto count = voiceList.Count)
-					voiceIndex = voiceList.GetItem(Randomizer::Global.Random() % count);
-			}
+			voiceIndex = ResolveVoice(this->TypeExtData->VoiceExitCeasefireMode.Get(), pTechnoType->VoiceAttack, pTechnoType->VoiceMove);
 		}
 		else
 		{
 			pThis->SetTarget(nullptr);
-			voiceIndex = this->TypeExtData->VoiceExitAggressiveMode.Get();
-
-			if (voiceIndex < 0)
-			{
-				const auto& voiceList = pTechnoType->VoiceMove.Count ? pTechnoType->VoiceMove : pTechnoType->VoiceSelect;
-
-				if (const auto count = voiceList.Count)
-					voiceIndex = voiceList.GetItem(Randomizer::Global.Random() % count);
-			}
+			voiceIndex = ResolveVoice(this->TypeExtData->VoiceExitAggressiveMode.Get(), pTechnoType->VoiceMove, pTechnoType->VoiceSelect);
 		}
 	}
 	else if (newMode == PassiveAcquireMode::Ceasefire)
 	{
 		pThis->SetTarget(nullptr);
-		voiceIndex = this->TypeExtData->VoiceEnterCeasefireMode.Get();
-
-		if (voiceIndex < 0)
-		{
-			const auto& voiceList = pTechnoType->VoiceSelect.Count ? pTechnoType->VoiceSelect : pTechnoType->VoiceMove;
-
-			if (const auto count = voiceList.Count)
-				voiceIndex = voiceList.GetItem(Randomizer::Global.Random() % count);
-		}
+		voiceIndex = ResolveVoice(this->TypeExtData->VoiceEnterCeasefireMode.Get(), pTechnoType->VoiceSelect, pTechnoType->VoiceMove);
 	}
 	else
 	{
-		voiceIndex = this->TypeExtData->VoiceEnterAggressiveMode.Get();
-
-		if (voiceIndex < 0)
-		{
-			const auto& voiceList = pTechnoType->VoiceAttack.Count ? pTechnoType->VoiceAttack : pTechnoType->VoiceMove;
-
-			if (const auto count = voiceList.Count)
-				voiceIndex = voiceList.GetItem(Randomizer::Global.Random() % count);
-		}
+		voiceIndex = ResolveVoice(this->TypeExtData->VoiceEnterAggressiveMode.Get(), pTechnoType->VoiceAttack, pTechnoType->VoiceMove);
 	}
 
 	pThis->QueueVoice(voiceIndex);

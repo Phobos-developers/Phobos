@@ -53,7 +53,6 @@ void AggressiveModeClass::Execute(WWKey eInput) const
 				isAllSelectedUnitAggressiveMode = false;
 				TechnoVectorNonAggressive.push_back(pTechno);
 			}
-			return;
 		};
 
 	for (const auto& pUnit : ObjectClass::CurrentObjects)
@@ -156,7 +155,6 @@ void CeasefireModeClass::Execute(WWKey eInput) const
 				isAllSelectedUnitCeasefireMode = false;
 				TechnoVectorNonCeasefire.push_back(pTechno);
 			}
-			return;
 		};
 
 	for (const auto& pUnit : ObjectClass::CurrentObjects)
