@@ -938,7 +938,7 @@ DEFINE_HOOK(0x4D9510, FootClass_SetDestination_OpenToppedFireWhileMoving, 0x6)
 				}
 			}
 
-			if (auto const pAirstrike = TechnoExt::ExtMap.Find(pPassenger)->AirstrikeTargetingMe)
+			if (auto const pAirstrike = pPassenger->Airstrike)
 			{
 				if (auto const pTarget = pAirstrike->Target)
 				{
