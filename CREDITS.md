@@ -652,6 +652,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow the aircraft to enter area guard mission and not crash immediately without any airport
   - Allow merging AOE damage to buildings into one
   - Fix the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health
+  - Distribution click action mode
 - **Noble Fish**:
   - Documentation maintenance
   - Chinese documentation maintenance and translation

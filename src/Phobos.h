@@ -116,6 +116,18 @@ public:
 		static bool ShowFlashOnSelecting;
 		static bool UnitPowerDrain;
 		static int SuperWeaponSidebar_RequiredSignificance;
+		static bool AllowSwitchNoMoveCommand;
+		static bool AllowDistributionCommand;
+		static bool AllowDistributionCommand_SpreadMode;
+		static bool AllowDistributionCommand_SpreadModeScroll;
+		static bool AllowDistributionCommand_FilterMode;
+		static bool AllowDistributionCommand_AffectsAllies;
+		static bool AllowDistributionCommand_AffectsEnemies;
+		static bool AllowDistributionCommand_AffectsNeutral;
+		static bool ApplyNoMoveCommand;
+		static unsigned int DistributionSpreadRange;
+		static unsigned int DistributionSpreadScrollStep;
+		static int DistributionFilterMode;
 	};
 
 	class Misc
