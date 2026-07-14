@@ -609,6 +609,7 @@ HideShakeEffects=false           ; boolean
 - Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn` (by Noble_Fish)
 - [Additional reinforcement aircraft (airstrike, paradrop and spy plane) spawn customizations](Fixed-or-Improved-Logics.md#reinforcement-aircraft-spawn-settings) (by Starkku)
 - [`ZAdjust` for Projectiles](Fixed-or-Improved-Logics.md#zadjust-for-projectiles) (by Noble_Fish)
+- Passive acquire mode (by TaranDahl & Aephiex)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

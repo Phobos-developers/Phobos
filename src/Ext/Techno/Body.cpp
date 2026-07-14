@@ -1266,6 +1266,83 @@ FireError TechnoExt::GetFireErrorIgnoreDisableWeapons(TechnoClass* pThis, Abstra
 	return fireError;
 }
 
+void TechnoExt::ExtData::InitPassiveAcquireMode()
+{
+	this->PassiveAquireMode = this->TypeExtData->PassiveAcquireMode.Get();
+}
+
+PassiveAcquireMode TechnoExt::ExtData::GetPassiveAcquireMode() const
+{
+	// if this is a passenger then obey the configuration of the transport
+	if (auto pTransport = this->OwnerObject()->Transporter)
+		return TechnoExt::ExtMap.Find(pTransport)->GetPassiveAcquireMode();
+
+	return this->PassiveAquireMode;
+}
+
+void TechnoExt::ExtData::TogglePassiveAcquireMode(PassiveAcquireMode newMode)
+{
+	const auto previousMode = this->PassiveAquireMode;
+
+	if (newMode == previousMode)
+		return;
+
+	this->PassiveAquireMode = newMode;
+
+	const auto pThis = this->OwnerObject();
+	const auto pTechnoType = this->TypeExtData->OwnerObject();
+
+	// Resolve the voice index for the mode transition, falling back to a random entry from the
+	// primary voice list (or the fallback list when the primary is empty) when none is configured.
+	const auto ResolveVoice = [this, pTechnoType](int configuredIndex, const auto& primary, const auto& fallback) -> int
+		{
+			if (configuredIndex >= 0)
+				return configuredIndex;
+
+			const auto& voiceList = primary.Count ? primary : fallback;
+
+			if (const auto count = voiceList.Count)
+				return voiceList.GetItem(Randomizer::Global.Random() % count);
+
+			return -1;
+		};
+
+	int voiceIndex = -1;
+
+	if (newMode == PassiveAcquireMode::Normal)
+	{
+		if (previousMode == PassiveAcquireMode::Ceasefire)
+		{
+			voiceIndex = ResolveVoice(this->TypeExtData->VoiceExitCeasefireMode.Get(), pTechnoType->VoiceAttack, pTechnoType->VoiceMove);
+		}
+		else
+		{
+			pThis->SetTarget(nullptr);
+			voiceIndex = ResolveVoice(this->TypeExtData->VoiceExitAggressiveMode.Get(), pTechnoType->VoiceMove, pTechnoType->VoiceSelect);
+		}
+	}
+	else if (newMode == PassiveAcquireMode::Ceasefire)
+	{
+		pThis->SetTarget(nullptr);
+		voiceIndex = ResolveVoice(this->TypeExtData->VoiceEnterCeasefireMode.Get(), pTechnoType->VoiceSelect, pTechnoType->VoiceMove);
+	}
+	else
+	{
+		voiceIndex = ResolveVoice(this->TypeExtData->VoiceEnterAggressiveMode.Get(), pTechnoType->VoiceAttack, pTechnoType->VoiceMove);
+	}
+
+	pThis->QueueVoice(voiceIndex);
+}
+
+bool TechnoExt::ExtData::CanTogglePassiveAcquireMode()
+{
+	if (!RulesExt::Global()->EnablePassiveAcquireMode)
+		return false;
+
+	return this->TypeExtData->PassiveAcquireMode_Togglable;
+}
+
+
 // =============================
 // load / save
 
@@ -1342,6 +1419,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->HoverShutdown)
 		.Process(this->LastTargetCrd)
 		.Process(this->LastTargetCrdClearTimer)
+		.Process(this->PassiveAquireMode)
 		;
 }
 

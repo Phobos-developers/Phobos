@@ -13,6 +13,13 @@
 #include <New/Type/Affiliated/TiberiumEaterTypeClass.h>
 #include <New/Type/Affiliated/CreateUnitTypeClass.h>
 
+enum class PassiveAcquireMode : BYTE
+{
+	Normal = 0,
+	Aggressive = 1,
+	Ceasefire = 2,
+};
+
 class Matrix3D;
 class ParticleSystemTypeClass;
 class TechnoTypeExt
@@ -525,6 +532,13 @@ public:
 		Valueable<bool> Missile_Cruise;
 		Valueable<AnimTypeClass*> Missile_TakeOffAnim;
 		Valueable<int> Missile_TakeOffSeparation;
+		
+		Valueable<PassiveAcquireMode> PassiveAcquireMode;
+		Valueable<bool> PassiveAcquireMode_Togglable;
+		ValueableIdx<VocClass> VoiceEnterAggressiveMode;
+		ValueableIdx<VocClass> VoiceExitAggressiveMode;
+		ValueableIdx<VocClass> VoiceEnterCeasefireMode;
+		ValueableIdx<VocClass> VoiceExitCeasefireMode;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -1004,6 +1018,14 @@ public:
 			, Missile_Cruise { false }
 			, Missile_TakeOffAnim { nullptr }
 			, Missile_TakeOffSeparation { 24 }
+				
+			, PassiveAcquireMode { PassiveAcquireMode::Normal }
+			, PassiveAcquireMode_Togglable { true }
+			, VoiceEnterAggressiveMode { -1 }
+			, VoiceExitAggressiveMode { -1 }
+			, VoiceEnterCeasefireMode { -1 }
+			, VoiceExitCeasefireMode { -1 }
+
 		{ }
 
 		virtual ~ExtData() = default;

@@ -294,6 +294,8 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 
 	if (pThis->AbstractFlags & AbstractFlags::Foot)
 		pThis->Owner->RecheckTechTree = true; // for SW.AuxTechons and SW.NegTechnos
+	
+		pExt->InitPassiveAcquireMode();
 
 	return 0;
 }

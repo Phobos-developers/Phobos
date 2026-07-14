@@ -1219,6 +1219,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Missile_Cruise.Read(exINI, pSection, "Missile.Cruise");
 	this->Missile_TakeOffSeparation.Read(exINI, pSection, "Missile.TakeOffSeparation");
 
+	this->PassiveAcquireMode.Read(exINI, pSection, "PassiveAcquireMode");
+	this->PassiveAcquireMode_Togglable.Read(exINI, pSection, "PassiveAcquireMode.Togglable");
+	this->VoiceEnterAggressiveMode.Read(exINI, pSection, "VoiceEnterAggressiveMode");
+	this->VoiceExitAggressiveMode.Read(exINI, pSection, "VoiceExitAggressiveMode");
+	this->VoiceEnterCeasefireMode.Read(exINI, pSection, "VoiceEnterCeasefireMode");
+	this->VoiceExitCeasefireMode.Read(exINI, pSection, "VoiceExitCeasefireMode");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1979,6 +1986,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Missile_Cruise)
 		.Process(this->Missile_TakeOffAnim)
 		.Process(this->Missile_TakeOffSeparation)
+			
+		.Process(this->PassiveAcquireMode)
+		.Process(this->PassiveAcquireMode_Togglable)
+		.Process(this->VoiceEnterAggressiveMode)
+		.Process(this->VoiceExitAggressiveMode)
+		.Process(this->VoiceEnterCeasefireMode)
+		.Process(this->VoiceExitCeasefireMode)
+
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -2083,4 +2098,35 @@ DEFINE_HOOK(0x747E90, UnitTypeClass_LoadFromINI, 0x5)
 	}
 
 	return 0;
+}
+
+namespace detail
+{
+	template <>
+	inline bool read<PassiveAcquireMode>(PassiveAcquireMode& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "Normal") == 0)
+			{
+				value = PassiveAcquireMode::Normal;
+			}
+			else if (_strcmpi(str, "Aggressive") == 0)
+			{
+				value = PassiveAcquireMode::Aggressive;
+			}
+			else if (_strcmpi(str, "Ceasefire") == 0)
+			{
+				value = PassiveAcquireMode::Ceasefire;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Expected passive acquire mode.");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
 }

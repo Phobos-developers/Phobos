@@ -108,6 +108,8 @@ public:
 
 		bool HasDeployConverted;
 		bool HasUndeployConverted;
+		
+		PassiveAcquireMode PassiveAquireMode;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -182,6 +184,7 @@ public:
 			, LastTargetCrdClearTimer {}
 			, HasDeployConverted { false }
 			, HasUndeployConverted { false }
+			, PassiveAquireMode{ PassiveAcquireMode::Normal }
 		{ }
 
 		void OnEarlyUpdate();
@@ -229,6 +232,11 @@ public:
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+
+		void InitPassiveAcquireMode();
+		PassiveAcquireMode GetPassiveAcquireMode() const;
+		void TogglePassiveAcquireMode(PassiveAcquireMode mode);
+		bool CanTogglePassiveAcquireMode();
 
 	private:
 		template <typename T>

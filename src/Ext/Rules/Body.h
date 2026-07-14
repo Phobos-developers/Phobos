@@ -247,6 +247,7 @@ public:
 		Valueable<bool> RepairBaseNodes;
 
 		Valueable<bool> FixRepairStepCost;
+		Valueable<bool> EnablePassiveAcquireMode;
 
 		Valueable<bool> WarheadParticleAlphaImageIsLightFlash;
 		Valueable<int> CombatLightDetailLevel;
@@ -582,6 +583,7 @@ public:
 			, AIAllToHunt { true }
 			, RepairBaseNodes { false }
 			, FixRepairStepCost { false }
+			, EnablePassiveAcquireMode { false }
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
 			, CombatLightDetailLevel_CheckColored { false }

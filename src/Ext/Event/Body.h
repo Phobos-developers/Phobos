@@ -5,6 +5,9 @@
 #include <stdint.h>
 
 #include <HouseClass.h>
+#include <TechnoClass.h>
+
+#include <Ext/Techno/Body.h>
 
 enum class EventTypeExt : uint8_t
 {
@@ -14,9 +17,10 @@ enum class EventTypeExt : uint8_t
 
 	ApproachObject = 0x40,
 	TogglePlayerAutoRepair = 0x41,
+	TogglePassiveAcquireMode = 0x42,
 
 	FIRST = ApproachObject,
-	LAST = TogglePlayerAutoRepair
+	LAST = TogglePassiveAcquireMode,
 };
 
 #pragma pack(push, 1)
@@ -36,8 +40,15 @@ public:
 			TargetClass Whom;
 			TargetClass Target;
 		} ApproachObject;
+
 		struct TogglePlayerAutoRepair
 		{ } TogglePlayerAutoRepair;
+		
+		struct TogglePassiveAcquireMode
+		{
+			TargetClass Who;
+			PassiveAcquireMode Mode;
+		} TogglePassiveAcquireMode;
 	};
 
 	bool AddEvent();
@@ -46,6 +57,8 @@ public:
 	void RespondApproachObject();
 	static void RaiseTogglePlayerAutoRepair();
 	void RespondToTogglePlayerAutoRepair();
+	static void RaiseTogglePassiveAcquireMode(TechnoClass* pTechno, PassiveAcquireMode mode);
+	void RespondToTogglePassiveAcquireMode();
 
 	static size_t GetDataSize(EventTypeExt type);
 	static bool IsValidType(EventTypeExt type);

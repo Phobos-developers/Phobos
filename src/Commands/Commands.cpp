@@ -14,6 +14,7 @@
 #include "ToggleMessageList.h"
 #include "DeselectObject.h"
 #include "DeselectObject5.h"
+#include "PassiveAcquireMode.h"
 
 #include <CCINIClass.h>
 
@@ -29,6 +30,8 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<ToggleDigitalDisplayCommandClass>();
 	MakeCommand<ToggleDesignatorRangeCommandClass>();
 	MakeCommand<ToggleMessageListCommandClass>();
+	MakeCommand<AggressiveModeClass>();
+	MakeCommand<CeasefireModeClass>();
 	MakeCommand<ToggleSWSidebar>();
 	MakeCommand<DeselectObjectCommandClass>();
 	MakeCommand<DeselectObject5CommandClass>();
