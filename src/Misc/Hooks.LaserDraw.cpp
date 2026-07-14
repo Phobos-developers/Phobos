@@ -298,6 +298,11 @@ DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_Tracking, 0x7)
 static LaserDrawClass* __fastcall Shrapnel_CreateLaser_Wrapper(TechnoClass* pShooter, void*, ObjectClass* pTarget
 	, int weaponIdx, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords)
 {
+	const auto mode = WeaponTypeExt::ExtMap.Find(pWeapon)->LaserPositionUpdate.Get();
+
+	if (mode == PositionFollow::None)
+		return pShooter->CreateLaser(pTarget, weaponIdx, pWeapon, sourceCoords);
+
 	LaserRT::IgnoreShooter = true;
 	const auto pLaser = pShooter->CreateLaser(pTarget, weaponIdx, pWeapon, sourceCoords);
 	LaserRT::IgnoreShooter = false;
@@ -335,6 +340,9 @@ DEFINE_HOOK(0x4A7696, DiskLaser_Update_ActivateMainBeam_Tracking, 0x6)
 // Per‑frame coordinate update
 DEFINE_HOOK(0x550173, LaserDrawClass_Update_Tracking, 0x6)
 {
+	if (LaserRT::TrackingMap.empty())
+		return 0;
+
 	GET(LaserDrawClass*, pLaser, ESI);
 	const auto it = LaserRT::TrackingMap.find(pLaser);
 
