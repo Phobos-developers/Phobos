@@ -910,7 +910,7 @@ DEFINE_HOOK(0x4D9510, FootClass_SetDestination_OpenToppedFireWhileMoving, 0x6)
 		{
 			const bool canFire = fireWhileMoving && TechnoExt::ExtMap.Find(pPassenger)->TypeExtData->OpenTransport_FireWhileMoving.Get(RulesExt::Global()->OpenTransport_FireWhileMoving);
 
-			// Technically these 3 can't exist in the same time, but just in case
+			// Technically these 2 can't exist in the same time, but just in case
 			if (auto const pLocoTarget = pPassenger->LocomotorTarget)
 			{
 				if (!canFire)
@@ -936,22 +936,6 @@ DEFINE_HOOK(0x4D9510, FootClass_SetDestination_OpenToppedFireWhileMoving, 0x6)
 					{
 						if (pWeapon->Warhead->Temporal && !pWeapon->FireWhileMoving)
 							pTemporal->LetGo();
-					}
-				}
-			}
-
-			if (auto const pAirstrike = pPassenger->Airstrike)
-			{
-				if (auto const pTarget = pAirstrike->Target)
-				{
-					if (!canFire)
-					{
-						pAirstrike->ResetTarget(nullptr);
-					}
-					else if (auto const pWeapon = pPassenger->GetWeapon(pPassenger->SelectWeapon(pTarget))->WeaponType)
-					{
-						if (pWeapon->Warhead->Airstrike && !pWeapon->FireWhileMoving)
-							pAirstrike->ResetTarget(nullptr);
 					}
 				}
 			}
