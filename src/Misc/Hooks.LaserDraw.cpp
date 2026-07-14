@@ -190,6 +190,14 @@ namespace LaserRT
 
 // container hooks
 
+// IsLaser this is no longer necessary, but the handling of DiskLaser is more complex, and keeping the CTOR is currently the most cost-effective solution.
+DEFINE_HOOK(0x54FE60, LaserDrawClass_CTOR_Update, 0x5)
+{
+	GET(LaserDrawClass*, pLaser, ECX);
+	LaserRT::TrackingMap[pLaser] = LaserRT::TrackingData {};
+	return 0;
+}
+
 DEFINE_HOOK_AGAIN(0x5501D7, LaserDrawClass_DTOR_Tracking, 0x5)
 DEFINE_HOOK_AGAIN(0x5500EF, LaserDrawClass_DTOR_Tracking, 0x5)
 DEFINE_HOOK_AGAIN(0x550016, LaserDrawClass_DTOR_Tracking, 0x6)
@@ -288,8 +296,10 @@ DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_Tracking, 0x7)
 	const auto pShooter = std::exchange(LaserRT::Shooter, nullptr);
 	const auto pTarget = std::exchange(LaserRT::Target, nullptr);
 	const int weaponIdx = std::exchange(LaserRT::WeaponIndex, 0);
-	const CoordStruct localFLH = std::exchange(LaserRT::SavedLocalFLH, CoordStruct::Empty);
-	const int burstIndex = std::exchange(LaserRT::SavedBurstIndex, 0);
+
+	// The current implementation no longer requires storing into a variable, but resetting operations still need to be handled.
+	std::exchange(LaserRT::SavedLocalFLH, CoordStruct::Empty);
+	std::exchange(LaserRT::SavedBurstIndex, 0);
 
 	LaserRT::SetLaserTrackingData(pLaser, pShooter, pTarget, weaponIdx, mode, false);
 	return 0;
