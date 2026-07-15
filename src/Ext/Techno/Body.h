@@ -15,7 +15,7 @@ public:
 	using base_type = TechnoClass;
 
 	static constexpr DWORD Canary = 0x55555555;
-	static constexpr size_t ExtPointerOffset = 0x34C;
+	static constexpr size_t ExtPointerOffset = 0x18;
 	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
 	class ExtData final : public Extension<TechnoClass>

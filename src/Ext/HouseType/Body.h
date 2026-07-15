@@ -13,7 +13,7 @@ public:
 	using base_type = HouseTypeClass;
 
 	static constexpr DWORD Canary = 0xAFFEAFFE;
-	static constexpr size_t ExtPointerOffset = 0x1AC;
+	static constexpr size_t ExtPointerOffset = 0x18;
 
 	class ExtData final : public Extension<HouseTypeClass>
 	{

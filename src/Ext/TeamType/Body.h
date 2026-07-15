@@ -10,7 +10,7 @@ public:
 	using base_type = TeamTypeClass;
 
 	static constexpr DWORD Canary = 0xABCDEF01;
-	static constexpr size_t ExtPointerOffset = 0xBC;
+	static constexpr size_t ExtPointerOffset = 0x18;
 
 	class ExtData final : public Extension<TeamTypeClass>
 	{

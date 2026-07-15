@@ -9,7 +9,7 @@ public:
 	using base_type = AnimClass;
 
 	static constexpr DWORD Canary = 0xAAAAAAAA;
-	static constexpr size_t ExtPointerOffset = 0xD0;
+	static constexpr size_t ExtPointerOffset = 0x18;
 	static constexpr bool ShouldConsiderInvalidatePointer = false; // Sheer volume of animations in an average game makes a bespoke solution for pointer invalidation worthwhile.
 
 	class ExtData final : public Extension<AnimClass>
