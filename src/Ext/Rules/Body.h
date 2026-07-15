@@ -177,6 +177,7 @@ public:
 		Valueable<bool> ShowPowerPlantEnhancerRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
 		Valueable<int> SelectionFlashDuration;
+		Valueable<int> SetRecruitableOnLiberate;
 		Nullable<AnimTypeClass*> DropPodTrailer;
 		AnimTypeClass* DropPodDefaultTrailer;
 		SHPStruct* PodImage;
@@ -306,7 +307,9 @@ public:
 		Valueable<bool> FallingDownTargetingFix;
 		Valueable<bool> AIAirTargetingFix;
 		Valueable<bool> OpenTopped_DecloakToFire;
+		Valueable<bool> OpenTopped_FireWhileMoving;
 		Valueable<bool> OpenTopped_AllowFiringIfAttackedByLocomotor;
+		Valueable<bool> OpenTransport_FireWhileMoving;
 
 		Valueable<bool> SortCameoByName;
 
@@ -512,6 +515,7 @@ public:
 			, DrawTurretShadow { false }
 			, IsVoiceCreatedGlobal { false }
 			, SelectionFlashDuration { 0 }
+			, SetRecruitableOnLiberate { -1 }
 			, DrawInsignia_OnlyOnSelected { false }
 			, DrawInsignia_AdjustPos_Infantry { { 5, 2 } }
 			, DrawInsignia_AdjustPos_Buildings { { 10, 6 } }
@@ -633,7 +637,9 @@ public:
 			, FallingDownTargetingFix { false }
 			, AIAirTargetingFix { false }
 			, OpenTopped_DecloakToFire { false }
+			, OpenTopped_FireWhileMoving { true }
 			, OpenTopped_AllowFiringIfAttackedByLocomotor { true }
+			, OpenTransport_FireWhileMoving { true }
 
 			, SortCameoByName { false }
 

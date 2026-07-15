@@ -143,7 +143,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Units & buildings with `DecloakToFire=false` weapons now cloak while targeting & reloading.
 - Units with `Sensors=true` will no longer reveal ally buildings.
 - Air units are now reliably included by target scan with large range and Warhead detonation by large `CellSpread`.
-- OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini` entry.
 - Weapons with `AA=true` Projectile can now correctly fire at air units when both firer and target are over a bridge.
 - Fixed disguised units not using the correct palette if target has custom palette.
 - Building upgrades now consistently use building's `PowerUpN` animation settings corresponding to the upgrade's `PowersUpToLevel` where possible.
@@ -288,7 +287,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where mining vehicles could not move after leaving a tank bunker.
 - `ProductionAnim` is now available for `Factory=InfantryType` as well as non-`ConstructionYard=true` `Factory=BuildingType` buildings. `IdleAnim` will cease to play for its duration normally as well.
 - Fixed the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon.
-- Fixed the issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team.
 - Allow the default value of `DefaultToGuardArea` to be defined by `[General] -> DefaultToGuardArea`.
 - Fixed the bug that cause technos teleport to cell 0,0 by ChronoSphere superweapon.
 - Fixed the bug that techno in attack move will move to target if it cannot attack it.
@@ -325,6 +323,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed voxel projectile and animation lighting issues.
 - Fixed the bug that techno will get stuck if change owner in tunnel.
 - Restored the original Tiberian Sun behavior of playing the `[AudioVisual] -> DeploySound=` sound effect when clicking the sidebar to execute `Deploy`.
+- Whether or not a passenger's weapon can fire out from an `OpenTopped=yes` transport will now respect the weapon's `FireWhileMoving` setting.
 
 ## Fixes / interactions with other extensions
 
@@ -1407,9 +1406,17 @@ ProneSpeed.NoCrawls=1.5       ; floating point value, multiplier
 ProneSpeed=                   ; floating point value, multiplier, by default, use the corresponding global value according to Crawls
 ```
 
-<!--
 ## Overlays
--->
+
+### `ZAdjust` for OverlayTypes
+
+- OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini` entry.
+
+In `artmd.ini`:
+```ini
+[SOMEOVERLAY]  ; OverlayType Image
+ZAdjust=0      ; integer
+```
 
 ## Particle systems
 

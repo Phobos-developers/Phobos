@@ -47,7 +47,8 @@ public:
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
-			AnnounceInvalidPointer(RadInvoker, ptr);
+			if (bRemoved)
+				AnnounceInvalidPointer(this->RadInvoker, ptr);
 		}
 
 	private:
