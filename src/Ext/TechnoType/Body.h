@@ -1,4 +1,5 @@
 #pragma once
+#include <Ext/ObjectType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -23,9 +24,15 @@ public:
 	static constexpr DWORD Canary = 0x11111111;
 	static constexpr size_t ExtPointerOffset = 0xDF4;
 
-	class ExtData : public Extension<TechnoTypeClass>
+	class ExtData : public ObjectTypeClassExtension
 	{
 	public:
+		// typed owner accessor (the base chain stores the owner as ObjectTypeClass*)
+		TechnoTypeClass* OwnerObject() const
+		{
+			return static_cast<TechnoTypeClass*>(this->GetAttachedObject());
+		}
+
 		Valueable<bool> HealthBar_Hide;
 		Valueable<bool> HealthBar_HidePips;
 		Valueable<bool> HealthBar_Permanent;
@@ -528,7 +535,7 @@ public:
 		Valueable<AnimTypeClass*> Missile_TakeOffAnim;
 		Valueable<int> Missile_TakeOffSeparation;
 
-		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
+		ExtData(TechnoTypeClass* OwnerObject) : ObjectTypeClassExtension(OwnerObject)
 			, HealthBar_Hide { false }
 			, HealthBar_HidePips { false }
 			, HealthBar_Permanent { false }

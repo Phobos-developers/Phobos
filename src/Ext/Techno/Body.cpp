@@ -1353,13 +1353,13 @@ void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 
 void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<TechnoClass>::LoadFromStream(Stm);
+	RadioClassExtension::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
 void TechnoExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<TechnoClass>::SaveToStream(Stm);
+	RadioClassExtension::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 

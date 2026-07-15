@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Ext/TechnoType/Body.h>
+#include <Ext/Radio/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 #include <New/Entity/ShieldClass.h>
@@ -18,9 +19,15 @@ public:
 	static constexpr size_t ExtPointerOffset = 0x18;
 	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
-	class ExtData : public Extension<TechnoClass>
+	class ExtData : public RadioClassExtension
 	{
 	public:
+		// typed owner accessor (the base chain stores the owner as RadioClass*)
+		TechnoClass* OwnerObject() const
+		{
+			return static_cast<TechnoClass*>(this->GetAttachedObject());
+		}
+
 		TechnoTypeExt::ExtData* TypeExtData;
 		std::unique_ptr<ShieldClass> Shield;
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
@@ -109,7 +116,7 @@ public:
 		bool HasDeployConverted;
 		bool HasUndeployConverted;
 
-		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
+		ExtData(TechnoClass* OwnerObject) : RadioClassExtension(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
 			, LaserTrails {}
