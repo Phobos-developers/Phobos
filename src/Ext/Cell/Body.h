@@ -62,3 +62,6 @@ public:
 
 	static ExtContainer ExtMap;
 };
+
+// top-level name for the CellExt extension
+using CellClassExtension = CellExt::ExtData;

@@ -51,3 +51,6 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 };
+
+// top-level name for the OverlayTypeExt extension
+using OverlayTypeClassExtension = OverlayTypeExt::ExtData;

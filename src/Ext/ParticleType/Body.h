@@ -48,3 +48,6 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 };
+
+// top-level name for the ParticleTypeExt extension
+using ParticleTypeClassExtension = ParticleTypeExt::ExtData;

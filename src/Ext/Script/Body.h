@@ -233,3 +233,6 @@ private:
 	static bool MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, FootClass* pLeader = nullptr, int mode = 0);
 	static void ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLeader, AbstractClass* pTarget);
 };
+
+// top-level name for the ScriptExt extension
+using ScriptClassExtension = ScriptExt::ExtData;

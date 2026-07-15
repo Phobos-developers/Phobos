@@ -82,3 +82,6 @@ public:
 
 	static ExtContainer ExtMap;
 };
+
+// top-level name for the RadSiteExt extension
+using RadSiteClassExtension = RadSiteExt::ExtData;

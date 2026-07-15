@@ -83,3 +83,6 @@ public:
 	static ExtContainer ExtMap;
 
 };
+
+// top-level name for the TeamExt extension
+using TeamClassExtension = TeamExt::ExtData;

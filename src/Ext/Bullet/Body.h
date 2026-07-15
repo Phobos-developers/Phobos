@@ -93,3 +93,6 @@ public:
 	static inline void SimulatedFiringParticleSystem(BulletClass* pBullet, HouseClass* pHouse);
 	static inline BulletVelocity ApplyRadialFireVelocityWarp(BulletVelocity velocity, const RadialFireStruct& radialFire);
 };
+
+// top-level name for the BulletExt extension
+using BulletClassExtension = BulletExt::ExtData;

@@ -211,3 +211,6 @@ public:
 
 	static void CalculatePowerSurplus(HouseClass* pThis);
 };
+
+// top-level name for the HouseExt extension
+using HouseClassExtension = HouseExt::ExtData;

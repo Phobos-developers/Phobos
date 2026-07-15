@@ -101,3 +101,6 @@ public:
 
 	static ExtContainer ExtMap;
 };
+
+// top-level name for the TActionExt extension
+using TActionClassExtension = TActionExt::ExtData;

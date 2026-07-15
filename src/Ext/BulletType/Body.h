@@ -172,3 +172,6 @@ public:
 	static double GetAdjustedGravity(BulletTypeClass* pType);
 	static BulletTypeClass* GetDefaultBulletType();
 };
+
+// top-level name for the BulletTypeExt extension
+using BulletTypeClassExtension = BulletTypeExt::ExtData;

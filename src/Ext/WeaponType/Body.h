@@ -236,3 +236,6 @@ public:
 	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer, int range);
 	static int GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFirer, bool isMinimum);
 };
+
+// top-level name for the WeaponTypeExt extension
+using WeaponTypeClassExtension = WeaponTypeExt::ExtData;

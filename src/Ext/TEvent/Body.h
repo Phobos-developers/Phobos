@@ -110,3 +110,6 @@ public:
 
 	static ExtContainer ExtMap;
 };
+
+// top-level name for the TEventExt extension
+using TEventClassExtension = TEventExt::ExtData;

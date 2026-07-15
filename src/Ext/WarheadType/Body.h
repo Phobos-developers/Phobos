@@ -596,3 +596,6 @@ public:
 	static void DetonateAt(WarheadTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
 	static void DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr, AbstractClass* pTarget = nullptr);
 };
+
+// top-level name for the WarheadTypeExt extension
+using WarheadTypeClassExtension = WarheadTypeExt::ExtData;

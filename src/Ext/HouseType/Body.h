@@ -50,3 +50,6 @@ public:
 
 	static ExtContainer ExtMap;
 };
+
+// top-level name for the HouseTypeExt extension
+using HouseTypeClassExtension = HouseTypeExt::ExtData;

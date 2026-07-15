@@ -45,3 +45,6 @@ public:
 
 	static ExtContainer ExtMap;
 };
+
+// top-level name for the TeamTypeExt extension
+using TeamTypeClassExtension = TeamTypeExt::ExtData;

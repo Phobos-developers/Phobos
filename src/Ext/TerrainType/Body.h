@@ -84,3 +84,6 @@ public:
 
 	static void Remove(TerrainClass* pTerrain);
 };
+
+// top-level name for the TerrainTypeExt extension
+using TerrainTypeClassExtension = TerrainTypeExt::ExtData;

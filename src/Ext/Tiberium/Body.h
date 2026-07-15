@@ -47,3 +47,6 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 };
+
+// top-level name for the TiberiumExt extension
+using TiberiumClassExtension = TiberiumExt::ExtData;

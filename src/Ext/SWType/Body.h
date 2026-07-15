@@ -270,3 +270,6 @@ public:
 	static SuperClass* __stdcall IsSuperAvailable(int swIdx, HouseClass* pHouse);
 
 };
+
+// top-level name for the SWTypeExt extension
+using SuperWeaponTypeClassExtension = SWTypeExt::ExtData;

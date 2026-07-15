@@ -138,3 +138,6 @@ public:
 
 	static void ProcessDestroyAnims(UnitClass* pThis, HouseClass* pKiller = nullptr);
 };
+
+// top-level name for the AnimTypeExt extension
+using AnimTypeClassExtension = AnimTypeExt::ExtData;

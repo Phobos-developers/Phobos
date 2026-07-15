@@ -104,3 +104,6 @@ public:
 	static void InvalidateParticleSystemPointers(ParticleSystemClass* pParticleSystem);
 	static void CreateRandomAnim(const std::vector<AnimTypeClass*>& AnimList, CoordStruct coords, TechnoClass* pTechno = nullptr, HouseClass* pHouse = nullptr, bool invoker = false, bool ownedObject = false);
 };
+
+// top-level name for the AnimExt extension
+using AnimClassExtension = AnimExt::ExtData;
