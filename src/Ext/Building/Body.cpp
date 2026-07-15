@@ -603,9 +603,7 @@ DEFINE_HOOK(0x43BCBD, BuildingClass_CTOR, 0x6)
 {
 	GET(BuildingClass*, pItem, ESI);
 
-	// The TechnoClass constructor already created a plain TechnoClassExtension for this object;
-	// upgrade it to a BuildingClassExtension leaf, still owned by the TechnoClass container.
-	TechnoExt::ExtMap.Remove(pItem);
+	// A building's extension is a concrete BuildingClassExtension leaf, owned by the TechnoClass container.
 	auto const pExt = static_cast<BuildingExt::ExtData*>(TechnoExt::ExtMap.Adopt(new BuildingExt::ExtData(pItem)));
 
 	if (pExt)

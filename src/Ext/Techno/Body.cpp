@@ -1386,14 +1386,8 @@ TechnoExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
-DEFINE_HOOK(0x6F3260, TechnoClass_CTOR, 0x5)
-{
-	GET(TechnoClass*, pItem, ESI);
-
-	TechnoExt::ExtMap.TryAllocate(pItem);
-
-	return 0;
-}
+// The extension is allocated by the concrete leaf constructors (UnitClass/InfantryClass/
+// BuildingClass/AircraftClass), not here at the abstract TechnoClass level.
 
 DEFINE_HOOK(0x6F4500, TechnoClass_DTOR, 0x5)
 {

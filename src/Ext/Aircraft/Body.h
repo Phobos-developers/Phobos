@@ -1,5 +1,20 @@
 #pragma once
 #include <Ext/Techno/Body.h>
+#include <Ext/Foot/Body.h>
+#include <AircraftClass.h>
+
+// Concrete leaf extension for AircraftClass (empty; techno data lives in TechnoClassExtension).
+class AircraftClassExtension : public FootClassExtension
+{
+public:
+	explicit AircraftClassExtension(AircraftClass* const OwnerObject) : FootClassExtension(OwnerObject)
+	{ }
+
+	AircraftClass* OwnerObject() const
+	{
+		return static_cast<AircraftClass*>(this->GetAttachedObject());
+	}
+};
 
 // TODO: Implement proper extended AircraftClass.
 

@@ -469,9 +469,7 @@ DEFINE_HOOK(0x45E50C, BuildingTypeClass_CTOR, 0x6)
 {
 	GET(BuildingTypeClass*, pItem, EAX);
 
-	// The TechnoTypeClass constructor already created a plain TechnoTypeClassExtension; upgrade
-	// it to a BuildingTypeClassExtension leaf owned by the TechnoTypeClass container.
-	TechnoTypeExt::ExtMap.Remove(pItem);
+	// A building type's extension is a concrete BuildingTypeClassExtension leaf, owned by the TechnoTypeClass container.
 	TechnoTypeExt::ExtMap.Adopt(new BuildingTypeExt::ExtData(pItem));
 
 	return 0;

@@ -61,6 +61,11 @@
     <ClCompile Include="src\Ext\Beacon\Hooks.cpp" />
     <!-- src\Ext\Building -->
     <ClCompile Include="src\Ext\Building\Body.cpp" />
+    <ClCompile Include="src\Ext\Unit\Body.cpp" />
+    <ClCompile Include="src\Ext\Infantry\Body.cpp" />
+    <ClCompile Include="src\Ext\UnitType\Body.cpp" />
+    <ClCompile Include="src\Ext\InfantryType\Body.cpp" />
+    <ClCompile Include="src\Ext\AircraftType\Body.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.Grinding.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.Production.cpp" />
@@ -317,6 +322,17 @@
     <ClInclude Include="src\Ext\Anim\Body.h" />
     <ClInclude Include="src\Ext\AnimType\Body.h" />
     <ClInclude Include="src\Ext\Building\Body.h" />
+    <ClInclude Include="src\Ext\Object\Body.h" />
+    <ClInclude Include="src\Ext\Mission\Body.h" />
+    <ClInclude Include="src\Ext\Radio\Body.h" />
+    <ClInclude Include="src\Ext\Foot\Body.h" />
+    <ClInclude Include="src\Ext\AbstractType\Body.h" />
+    <ClInclude Include="src\Ext\ObjectType\Body.h" />
+    <ClInclude Include="src\Ext\Unit\Body.h" />
+    <ClInclude Include="src\Ext\Infantry\Body.h" />
+    <ClInclude Include="src\Ext\UnitType\Body.h" />
+    <ClInclude Include="src\Ext\InfantryType\Body.h" />
+    <ClInclude Include="src\Ext\AircraftType\Body.h" />
     <ClInclude Include="src\Ext\BuildingType\Body.h" />
     <ClInclude Include="src\Ext\Bullet\Body.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\BombardTrajectory.h" />
