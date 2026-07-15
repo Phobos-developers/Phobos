@@ -87,12 +87,12 @@ public:
 	class ExtMapFacade
 	{
 	public:
-		ExtData* Find(BuildingClass* key) const
+		ExtData* Find(const BuildingClass* key) const
 		{
 			return static_cast<ExtData*>(TechnoExt::ExtMap.Find(key));
 		}
 
-		ExtData* TryFind(BuildingClass* key) const
+		ExtData* TryFind(const BuildingClass* key) const
 		{
 			return static_cast<ExtData*>(TechnoExt::ExtMap.TryFind(key));
 		}

@@ -23,7 +23,7 @@ public:
 	static constexpr DWORD Canary = 0x11111111;
 	static constexpr size_t ExtPointerOffset = 0xDF4;
 
-	class ExtData final : public Extension<TechnoTypeClass>
+	class ExtData : public Extension<TechnoTypeClass>
 	{
 	public:
 		Valueable<bool> HealthBar_Hide;

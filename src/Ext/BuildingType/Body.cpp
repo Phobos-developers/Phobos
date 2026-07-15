@@ -3,7 +3,7 @@
 #include <Ext/House/Body.h>
 #include <Ext/SWType/Body.h>
 
-BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
+BuildingTypeExt::ExtMapFacade BuildingTypeExt::ExtMap;
 
 // Assuming SuperWeapon & SuperWeapon2 are used (for the moment)
 int BuildingTypeExt::ExtData::GetSuperWeaponCount() const
@@ -148,13 +148,17 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 
 
 void BuildingTypeExt::ExtData::Initialize()
-{ }
+{
+	TechnoTypeExt::ExtData::Initialize();
+}
 
 // =============================
 // load / save
 
 void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
+	TechnoTypeExt::ExtData::LoadFromINIFile(pINI);
+
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
 	const char* pArtSection = pThis->ImageFile;
@@ -433,22 +437,15 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 
 void BuildingTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<BuildingTypeClass>::LoadFromStream(Stm);
+	TechnoTypeExt::ExtData::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
 void BuildingTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<BuildingTypeClass>::SaveToStream(Stm);
+	TechnoTypeExt::ExtData::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
-
-bool BuildingTypeExt::ExtContainer::Load(BuildingTypeClass* pThis, IStream* pStm)
-{
-	BuildingTypeExt::ExtData* pData = this->LoadKey(pThis, pStm);
-
-	return pData != nullptr;
-};
 
 bool BuildingTypeExt::LoadGlobals(PhobosStreamReader& Stm)
 {
@@ -463,9 +460,7 @@ bool BuildingTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 // =============================
 // container
 
-BuildingTypeExt::ExtContainer::ExtContainer() : Container("BuildingTypeClass") { }
-
-BuildingTypeExt::ExtContainer::~ExtContainer() = default;
+// container facade defined at the top of this file
 
 // =============================
 // container hooks
@@ -474,48 +469,13 @@ DEFINE_HOOK(0x45E50C, BuildingTypeClass_CTOR, 0x6)
 {
 	GET(BuildingTypeClass*, pItem, EAX);
 
-	BuildingTypeExt::ExtMap.TryAllocate(pItem);
+	// The TechnoTypeClass constructor already created a plain TechnoTypeClassExtension; upgrade
+	// it to a BuildingTypeClassExtension leaf owned by the TechnoTypeClass container.
+	TechnoTypeExt::ExtMap.Remove(pItem);
+	TechnoTypeExt::ExtMap.Adopt(new BuildingTypeExt::ExtData(pItem));
 
 	return 0;
 }
 
-DEFINE_HOOK(0x45E707, BuildingTypeClass_DTOR, 0x6)
-{
-	GET(BuildingTypeClass*, pItem, ESI);
-
-	BuildingTypeExt::ExtMap.Remove(pItem);
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x465300, BuildingTypeClass_SaveLoad_Prefix, 0x5)
-DEFINE_HOOK(0x465010, BuildingTypeClass_SaveLoad_Prefix, 0x5)
-{
-	GET_STACK(BuildingTypeClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	BuildingTypeExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x4652ED, BuildingTypeClass_Load_Suffix, 0x7)
-{
-	BuildingTypeExt::ExtMap.LoadStatic();
-	return 0;
-}
-
-DEFINE_HOOK(0x46536A, BuildingTypeClass_Save_Suffix, 0x7)
-{
-	BuildingTypeExt::ExtMap.SaveStatic();
-	return 0;
-}
-
-//DEFINE_HOOK_AGAIN(0x464A56, BuildingTypeClass_LoadFromINI, 0xA)// Section dont exist!
-DEFINE_HOOK(0x464A49, BuildingTypeClass_LoadFromINI, 0xA)
-{
-	GET(BuildingTypeClass*, pItem, EBP);
-	GET_STACK(CCINIClass*, pINI, 0x364);
-
-	BuildingTypeExt::ExtMap.LoadFromINI(pItem, pINI);
-	return 0;
-}
+// BuildingTypeClass destruction, save, load and INI parsing of the extension are handled by
+// the TechnoTypeClass container hooks now that a building type has a single extension at 0x18.

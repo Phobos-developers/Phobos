@@ -1,4 +1,5 @@
 #pragma once
+#include <Ext/TechnoType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -10,7 +11,8 @@ public:
 	static constexpr DWORD Canary = 0x11111111;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<BuildingTypeClass>
+	// BuildingTypeClassExtension is a leaf of the TechnoTypeClass extension hierarchy.
+	class ExtData final : public TechnoTypeExt::ExtData
 	{
 	public:
 		Valueable<AffectedHouse> PowersUp_Owner;
@@ -125,7 +127,7 @@ public:
 		// Ares 3.0
 		Nullable<bool> UnitSell;
 
-		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
+		ExtData(BuildingTypeClass* OwnerObject) : TechnoTypeExt::ExtData(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
 			, PowerPlant_DamageFactor { 1.0 }
@@ -215,6 +217,12 @@ public:
 			, UnitSell {}
 		{ }
 
+		// typed owner accessor (shadows the TechnoTypeClass one from the base)
+		BuildingTypeClass* OwnerObject() const
+		{
+			return static_cast<BuildingTypeClass*>(this->TechnoTypeExt::ExtData::OwnerObject());
+		}
+
 		// Ares 0.A functions
 		int GetSuperWeaponCount() const;
 		int GetSuperWeaponIndex(int index, HouseClass* pHouse) const;
@@ -226,7 +234,10 @@ public:
 		virtual void Initialize() override;
 		virtual void CompleteInitialization();
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
+		{
+			TechnoTypeExt::ExtData::InvalidatePointer(ptr, bRemoved);
+		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -236,16 +247,22 @@ public:
 		void Serialize(T& Stm);
 	};
 
-	class ExtContainer final : public Container<BuildingTypeExt>
+	// BuildingTypeClassExtension lives in the TechnoTypeClass container; thin accessor facade.
+	class ExtMapFacade
 	{
 	public:
-		ExtContainer();
-		~ExtContainer();
+		ExtData* Find(const BuildingTypeClass* key) const
+		{
+			return static_cast<ExtData*>(TechnoTypeExt::ExtMap.Find(key));
+		}
 
-		virtual bool Load(BuildingTypeClass* pThis, IStream* pStm) override;
+		ExtData* TryFind(const BuildingTypeClass* key) const
+		{
+			return static_cast<ExtData*>(TechnoTypeExt::ExtMap.TryFind(key));
+		}
 	};
 
-	static ExtContainer ExtMap;
+	static ExtMapFacade ExtMap;
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
