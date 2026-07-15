@@ -39,7 +39,8 @@ void TeamExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 
 void TeamExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 {
-	AnnounceInvalidPointer(TeamLeader, ptr);
+	if (bRemoved)
+		AnnounceInvalidPointer(this->TeamLeader, ptr);
 }
 
 // =============================
