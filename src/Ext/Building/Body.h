@@ -116,3 +116,6 @@ public:
 	static void __fastcall KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, void*, BuildingClass* pFactory);
 	static int GetTurretFrame(BuildingClass* pThis);
 };
+
+// top-level name for the BuildingClass extension leaf (derives from TechnoClassExtension)
+using BuildingClassExtension = BuildingExt::ExtData;

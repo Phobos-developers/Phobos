@@ -1066,3 +1066,6 @@ public:
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
 	static bool HasSelectionGroupID(ObjectTypeClass* pType, const char* pID);
 };
+
+// top-level name for the TechnoTypeClass extension (the base of the techno-type extension hierarchy)
+using TechnoTypeClassExtension = TechnoTypeExt::ExtData;

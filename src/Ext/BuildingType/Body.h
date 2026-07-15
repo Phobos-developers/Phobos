@@ -273,3 +273,6 @@ public:
 	static int CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pBuilding, HouseClass* pHouse);
 	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);
 };
+
+// top-level name for the BuildingTypeClass extension leaf (derives from TechnoTypeClassExtension)
+using BuildingTypeClassExtension = BuildingTypeExt::ExtData;

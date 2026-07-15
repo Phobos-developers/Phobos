@@ -338,3 +338,6 @@ public:
 	static bool HasWeaponsDisabled(TechnoClass* pThis);
 	static FireError GetFireErrorIgnoreDisableWeapons(TechnoClass* pThis, AbstractClass* pTarget, int weaponIndex, bool ignoreRange);
 };
+
+// top-level name for the TechnoClass extension (the base of the techno extension hierarchy)
+using TechnoClassExtension = TechnoExt::ExtData;
