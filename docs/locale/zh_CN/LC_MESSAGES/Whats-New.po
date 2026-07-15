@@ -2149,6 +2149,7 @@ msgid ""
 "Customize whether or not passenger can fire out when the transport is "
 "moving (by Ollerus)"
 msgstr ""
+"自定义乘客能否在运输工具移动时向外开火（by Ollerus）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："

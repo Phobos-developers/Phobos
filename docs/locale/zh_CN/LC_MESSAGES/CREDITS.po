@@ -2438,6 +2438,7 @@ msgid ""
 "Customize whether or not passenger can fire out when the transport is "
 "moving"
 msgstr ""
+"自定义乘客能否在运输工具移动时向外开火"
 
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"

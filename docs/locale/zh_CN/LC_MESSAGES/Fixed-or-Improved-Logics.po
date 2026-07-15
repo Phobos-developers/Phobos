@@ -1664,6 +1664,7 @@ msgid ""
 "Whether or not a passenger's weapon can fire out from an `OpenTopped=yes`"
 " transport will now respect the weapon's `FireWhileMoving` setting."
 msgstr ""
+"现在乘客的武器能否在 `OpenTopped=yes` 的运输工具中向外开火将尊重武器的 `FireWhileMoving` 设置。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
