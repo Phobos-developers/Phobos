@@ -2690,12 +2690,6 @@ msgid ""
 "multiple targets with the same amount of threat"
 msgstr "修复了反击行为会让单位在多个相同威胁值的目标间不断切换的问题"
 
-msgid ""
-"Fix an issue where units recruited by a team with "
-"`AreTeamMembersRecruitable=false` cannot be recruited even if they have "
-"been liberated by that team"
-msgstr "修复了单位被 `AreTeamMembersRecruitable=false` 的小队招募过则即便原小队解散也无法再被其他小队招募的 Bug"
-
 msgid "Global default value for `DefaultToGuardArea`"
 msgstr "`DefaultToGuardArea` 的全局默认值"
 
@@ -2791,6 +2785,9 @@ msgstr "自动移除最早的信标"
 
 msgid "Allow beacon placement hotkey in single player"
 msgstr "允许在单人模式下使用信标放置快捷键"
+
+msgid "Adjust recruitable status on team member discharge"
+msgstr "小队成员解散时调整可招募性"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"

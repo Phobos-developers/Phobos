@@ -797,7 +797,6 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies
   - `AllowBerzerkOnAllies`
   - Fix an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat
-  - Fix an issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team
   - Global default value for `DefaultToGuardArea`
   - Weapon range finding in cylinder
   - Allow jumpjet climbing ignore building height
@@ -825,6 +824,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow chat box in singleplayer
   - Auto-remove earliest beacon
   - Allow beacon placement hotkey in single player
+  - Adjust recruitable status on team member discharge
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
