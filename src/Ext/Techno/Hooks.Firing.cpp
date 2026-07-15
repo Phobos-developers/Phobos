@@ -436,17 +436,34 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 	if (pTransport->Deactivated && !pTypeExt->OpenTopped_AllowFiringIfDeactivated)
 		return Illegal;
 
-	if (const auto pTransportFoot = abstract_cast<FootClass*>(pTransport))
-	{
-		if (pTransportFoot->IsAttackedByLocomotor && !pTypeExt->OpenTopped_AllowFiringIfAttackedByLocomotor.Get(RulesExt::Global()->OpenTopped_AllowFiringIfAttackedByLocomotor))
-			return Illegal;
-	}
-
 	if (pTransport->Transporter)
 		return Illegal;
 
-	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons && TechnoExt::HasWeaponsDisabled(pTransport) && pThis->GetWeapon(weaponIndex)->WeaponType)
+	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+
+	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons && TechnoExt::HasWeaponsDisabled(pTransport) && pWeapon)
 		return OutOfRange;
+
+	if (auto const pTransportFoot = abstract_cast<FootClass*>(pTransport))
+	{
+		if (pTransportFoot->IsAttackedByLocomotor && !pTypeExt->OpenTopped_AllowFiringIfAttackedByLocomotor.Get(RulesExt::Global()->OpenTopped_AllowFiringIfAttackedByLocomotor))
+			return Illegal;
+
+		if (!pTypeExt->OpenTopped_FireWhileMoving.Get(RulesExt::Global()->OpenTopped_FireWhileMoving)
+			|| !TechnoExt::ExtMap.Find(pThis)->TypeExtData->OpenTransport_FireWhileMoving.Get(RulesExt::Global()->OpenTransport_FireWhileMoving)
+			|| (pWeapon && !pWeapon->FireWhileMoving))
+		{
+			if (pTypeExt->OwnerObject()->BalloonHover)
+			{
+				if (pTransportFoot->Locomotor->Is_Moving_Now())
+					return Illegal;
+			}
+			else if (pTransportFoot->Destination)
+			{
+				return Illegal;
+			}
+		}
+	}
 
 	return Continue;
 }

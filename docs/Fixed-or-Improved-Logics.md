@@ -323,6 +323,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed voxel projectile and animation lighting issues.
 - Fixed the bug that techno will get stuck if change owner in tunnel.
 - Restored the original Tiberian Sun behavior of playing the `[AudioVisual] -> DeploySound=` sound effect when clicking the sidebar to execute `Deploy`.
+- Whether or not a passenger's weapon can fire out from an `OpenTopped=yes` transport will now respect the weapon's `FireWhileMoving` setting.
 
 ## Fixes / interactions with other extensions
 
