@@ -16,7 +16,7 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 	const auto pBuildingExt = BuildingExt::ExtMap.Find(pThis);
 	pBuildingExt->DisplayIncomeString();
 
-	const auto pTechnoExt = pBuildingExt->TechnoExtData;
+	TechnoExt::ExtData* const pTechnoExt = pBuildingExt; // the building extension is a TechnoClassExtension
 	pTechnoExt->UpdateLaserTrails(); // Mainly for on turret trails
 
 	// Force airstrike targets to redraw every frame to account for tint intensity fluctuations.

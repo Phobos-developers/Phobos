@@ -62,6 +62,7 @@ public:
 	using base_type = TEventClass;
 
 	static constexpr DWORD Canary = 0x91919191;
+	static constexpr size_t ExtPointerOffset = 0x18;
 
 	class ExtData final : public Extension<TEventClass>
 	{

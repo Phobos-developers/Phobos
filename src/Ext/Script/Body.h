@@ -152,6 +152,7 @@ public:
 	using base_type = ScriptClass;
 
 	static constexpr DWORD Canary = 0x3B3B3B3B;
+	static constexpr size_t ExtPointerOffset = 0x18;
 
 	class ExtData final : public Extension<ScriptClass>
 	{

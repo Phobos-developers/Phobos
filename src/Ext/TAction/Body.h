@@ -37,6 +37,7 @@ public:
 	using base_type = TActionClass;
 
 	static constexpr DWORD Canary = 0x91919191;
+	static constexpr size_t ExtPointerOffset = 0x18;
 
 	class ExtData final : public Extension<TActionClass>
 	{
