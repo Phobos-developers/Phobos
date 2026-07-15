@@ -50,28 +50,23 @@ enum class InitState
  *
  */
 
-template <typename T>
-class Extension
+// the non-template root of every extension, mirroring Vinifera's AbstractClassExtension.
+// it owns the back-pointer and the staged init state, so all extensions share a common base.
+class AbstractClassExtension
 {
-	T* AttachedToObject;
+	void* AttachedToObject;
 	InitState Initialized;
 
 public:
 
-	Extension(T* const OwnerObject) : AttachedToObject { OwnerObject }, Initialized { InitState::Blank }
+	explicit AbstractClassExtension(void* const OwnerObject) : AttachedToObject { OwnerObject }, Initialized { InitState::Blank }
 	{ }
 
-	Extension(const Extension& other) = delete;
+	AbstractClassExtension(const AbstractClassExtension& other) = delete;
 
-	void operator=(const Extension& RHS) = delete;
+	void operator=(const AbstractClassExtension& RHS) = delete;
 
-	virtual ~Extension() = default;
-
-	// the object this Extension expands
-	T* const& OwnerObject() const
-	{
-		return this->AttachedToObject;
-	}
+	virtual ~AbstractClassExtension() = default;
 
 	void EnsureConstanted()
 	{
@@ -122,6 +117,11 @@ public:
 	}
 
 protected:
+	void* GetAttachedObject() const
+	{
+		return this->AttachedToObject;
+	}
+
 	// right after construction. only basic initialization tasks possible;
 	// owner object is only partially constructed! do not use global state!
 	virtual void InitializeConstants() { }
@@ -136,6 +136,22 @@ protected:
 
 	// load any ini file: rules, game mode, scenario or map
 	virtual void LoadFromINIFile(CCINIClass* pINI) { }
+};
+
+// the typed layer over AbstractClassExtension: gives a strongly-typed owner accessor.
+template <typename T>
+class Extension : public AbstractClassExtension
+{
+public:
+
+	explicit Extension(T* const OwnerObject) : AbstractClassExtension(OwnerObject)
+	{ }
+
+	// the object this Extension expands
+	T* OwnerObject() const
+	{
+		return static_cast<T*>(this->GetAttachedObject());
+	}
 };
 
 // a non-virtual base class for a pointer to pointer map.
