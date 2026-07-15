@@ -24,6 +24,7 @@
 #include <Ext/SWType/NewSWType/NewSWType.h>
 #include <Ext/TAction/Body.h>
 #include <Ext/Team/Body.h>
+#include <Ext/TeamType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/TerrainType/Body.h>
@@ -225,6 +226,7 @@ using PhobosTypeRegistry = TypeRegistry <
 	SWTypeExt,
 	TActionExt,
 	TeamExt,
+	TeamTypeExt,
 	TechnoExt,
 	TechnoTypeExt,
 	TerrainTypeExt,

@@ -1827,3 +1827,33 @@ msgid ""
 "same type of attached effect to the techno."
 msgstr "外源 AE：赋予时、对同一单位赋予同一 AE 使其刷新时。"
 
+msgid "Teams"
+msgstr "小队"
+
+msgid "Adjust recruitable status on team member liberate"
+msgstr "小队成员释放时调整可招募性"
+
+msgid ""
+"In vanilla, when a unit is added to a team, its `RecruitableB` flag is "
+"overwritten by the team's `AreTeamMembersRecruitable` setting. When the "
+"unit is liberated from the team, the flag is not restored. The following"
+" settings allow a team to reset this flag when liberating its members."
+msgstr ""
+"在原版游戏中，当单位被加入到小队中时，其 `RecruitableB` 字段会被小队的设置 `AreTeamMembersRecruitable`"
+" 覆写。单位被小队释放时，该字段也不会被恢复。以下设置允许小队在释放时重新设置该字段。"
+
+msgid ""
+"If set to a value **greater than 0**, the liberated unit is forcibly "
+"marked as recruitable."
+msgstr "如果值大于 0，释放的单位会被强制标记为可招募。"
+
+msgid ""
+"If set to **0**, the liberated unit is forcibly marked as not "
+"recruitable."
+msgstr "如果值为 0，释放的单位会被强制标记为不可招募。"
+
+msgid ""
+"If set to a value **less than 0** (default: `-1`), the original game "
+"behavior is preserved."
+msgstr "如果值小于 0（默认值：-1），则保留原版游戏行为。"
+

@@ -61,7 +61,8 @@ public:
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
-			AnnounceInvalidPointer(CurrentAirFactory, ptr);
+			if (bRemoved)
+				AnnounceInvalidPointer(this->CurrentAirFactory, ptr);
 		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
