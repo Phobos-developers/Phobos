@@ -1845,15 +1845,15 @@ msgstr ""
 msgid ""
 "If set to a value **greater than 0**, the liberated unit is forcibly "
 "marked as recruitable."
-msgstr "如果值大于 0，释放的单位会被强制标记为可招募。"
+msgstr "如果值 **大于 0**，释放的单位会被强制标记为可招募。"
 
 msgid ""
 "If set to **0**, the liberated unit is forcibly marked as not "
 "recruitable."
-msgstr "如果值为 0，释放的单位会被强制标记为不可招募。"
+msgstr "如果值为 **0**，释放的单位会被强制标记为不可招募。"
 
 msgid ""
 "If set to a value **less than 0** (default: `-1`), the original game "
 "behavior is preserved."
-msgstr "如果值小于 0（默认值：-1），则保留原版游戏行为。"
+msgstr "如果值 **小于 0**（默认值：`-1`），则保留原版游戏行为。"
 
