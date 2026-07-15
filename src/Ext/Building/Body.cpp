@@ -4,7 +4,7 @@
 #include <Misc/FlyingStrings.h>
 #include <Utilities/AresHelper.h>
 
-BuildingExt::ExtContainer BuildingExt::ExtMap;
+BuildingExt::ExtMapFacade BuildingExt::ExtMap;
 
 void BuildingExt::ExtData::DisplayIncomeString()
 {
@@ -552,7 +552,6 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->TypeExtData)
-		.Process(this->TechnoExtData)
 		.Process(this->DeployedTechno)
 		.Process(this->IsCreatedFromMapFile)
 		.Process(this->LimboID)
@@ -572,13 +571,13 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 
 void BuildingExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<BuildingClass>::LoadFromStream(Stm);
+	TechnoExt::ExtData::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
 void BuildingExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<BuildingClass>::SaveToStream(Stm);
+	TechnoExt::ExtData::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
@@ -595,11 +594,7 @@ bool BuildingExt::SaveGlobals(PhobosStreamWriter& Stm)
 }
 
 // =============================
-// container
-
-BuildingExt::ExtContainer::ExtContainer() : Container("BuildingClass") {}
-
-BuildingExt::ExtContainer::~ExtContainer() = default;
+// container facade defined at the top of this file
 
 // =============================
 // container hooks
@@ -608,36 +603,19 @@ DEFINE_HOOK(0x43BCBD, BuildingClass_CTOR, 0x6)
 {
 	GET(BuildingClass*, pItem, ESI);
 
-	auto const pExt = BuildingExt::ExtMap.TryAllocate(pItem);
+	// The TechnoClass constructor already created a plain TechnoClassExtension for this object;
+	// upgrade it to a BuildingClassExtension leaf, still owned by the TechnoClass container.
+	TechnoExt::ExtMap.Remove(pItem);
+	auto const pExt = static_cast<BuildingExt::ExtData*>(TechnoExt::ExtMap.Adopt(new BuildingExt::ExtData(pItem)));
 
 	if (pExt)
-	{
 		pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pItem->Type);
-		pExt->TechnoExtData = TechnoExt::ExtMap.Find(pItem);
-	}
 
 	return 0;
 }
 
-DEFINE_HOOK(0x43C022, BuildingClass_DTOR, 0x6)
-{
-	GET(BuildingClass*, pItem, ESI);
-
-	BuildingExt::ExtMap.Remove(pItem);
-
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x454190, BuildingClass_SaveLoad_Prefix, 0x5)
-DEFINE_HOOK(0x453E20, BuildingClass_SaveLoad_Prefix, 0x5)
-{
-	GET_STACK(BuildingClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	BuildingExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
+// BuildingClass destruction, save and load of the extension are handled by the TechnoClass
+// container hooks now that a building has a single TechnoClass-derived extension at 0x18.
 
 DEFINE_HOOK(0x454174, BuildingClass_Load_LightSource, 0xA)
 {
@@ -647,23 +625,6 @@ DEFINE_HOOK(0x454174, BuildingClass_Load_LightSource, 0xA)
 
 	return 0x45417E;
 }
-
-DEFINE_HOOK(0x45417E, BuildingClass_Load_Suffix, 0x5)
-{
-	BuildingExt::ExtMap.LoadStatic();
-
-	return 0;
-}
-
-DEFINE_HOOK(0x454244, BuildingClass_Save_Suffix, 0x7)
-{
-	BuildingExt::ExtMap.SaveStatic();
-
-	return 0;
-}
-
-// Removes setting otherwise unused field (0x6FC) in BuildingClass when building has airstrike applied on it so that it can safely be used to store BuildingExt pointer.
-DEFINE_JUMP(LJMP, 0x41D9FB, 0x41DA05);
 
 static void __fastcall BuildingClass_InfiltratedBy_Wrapper(BuildingClass* pThis, void*, HouseClass* pInfiltratorHouse)
 {

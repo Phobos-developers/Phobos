@@ -376,6 +376,22 @@ public:
 		return val;
 	}
 
+	// Registers an already-constructed extension (possibly of a derived leaf type)
+	// into this container: stores the inline pointer and tracks it for iteration.
+	extension_type_ptr Adopt(extension_type_ptr val)
+	{
+		val->EnsureConstanted();
+
+		if constexpr (HasOffset<T>)
+			SetExtensionPointer(val->OwnerObject(), val);
+		else
+			this->MappedItems.insert(val->OwnerObject(), val);
+
+		Items.emplace_back(val);
+
+		return val;
+	}
+
 	extension_type_ptr TryAllocate(base_type_ptr key, bool bCond, const std::string_view& nMessage)
 	{
 		if (!key || (!bCond && !nMessage.empty()))

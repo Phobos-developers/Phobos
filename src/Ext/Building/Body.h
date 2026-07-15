@@ -8,10 +8,11 @@ public:
 	using base_type = BuildingClass;
 
 	static constexpr DWORD Canary = 0x87654321;
-	static constexpr size_t ExtPointerOffset = 0x6FC;
 	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
-	class ExtData final : public Extension<BuildingClass>
+	// BuildingClassExtension is a leaf of the TechnoClass extension hierarchy: one extension
+	// per object, stored inline in the shared 0x18 slot and owned by the TechnoClass container.
+	class ExtData final : public TechnoExt::ExtData
 	{
 	public:
 		BuildingTypeExt::ExtData* TypeExtData;
@@ -31,9 +32,9 @@ public:
 		int TurretAnimFiringFrame;
 		int TurretAnimRateTick;
 
-		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
+		ExtData(BuildingClass* OwnerObject) : TechnoExt::ExtData(OwnerObject)
 			, TypeExtData { nullptr }
-			, TechnoExtData { nullptr }
+			, TechnoExtData { this }
 			, DeployedTechno { false }
 			, IsCreatedFromMapFile { false }
 			, LimboID { -1 }
@@ -50,6 +51,12 @@ public:
 			, TurretAnimRateTick { 0 }
 		{ }
 
+		// typed owner accessor (shadows the TechnoClass one from the base)
+		BuildingClass* OwnerObject() const
+		{
+			return static_cast<BuildingClass*>(this->TechnoExt::ExtData::OwnerObject());
+		}
+
 		void DisplayIncomeString();
 		void ApplyPoweredKillSpawns();
 		bool HasSuperWeapon(int index) const;
@@ -61,6 +68,8 @@ public:
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
+			TechnoExt::ExtData::InvalidatePointer(ptr, bRemoved);
+
 			if (bRemoved)
 				AnnounceInvalidPointer(this->CurrentAirFactory, ptr);
 		}
@@ -73,27 +82,23 @@ public:
 		void Serialize(T& Stm);
 	};
 
-	class ExtContainer final : public Container<BuildingExt>
+	// BuildingClassExtension lives in the TechnoClass container (single 0x18 slot), so this
+	// is a thin typed accessor facade over that container instead of an owning container.
+	class ExtMapFacade
 	{
 	public:
-		ExtContainer();
-		~ExtContainer();
-
-		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
+		ExtData* Find(BuildingClass* key) const
 		{
-			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+			return static_cast<ExtData*>(TechnoExt::ExtMap.Find(key));
+		}
 
-			switch (abs)
-			{
-			case AbstractType::Building:
-				return false;
-			default:
-				return true;
-			}
+		ExtData* TryFind(BuildingClass* key) const
+		{
+			return static_cast<ExtData*>(TechnoExt::ExtMap.TryFind(key));
 		}
 	};
 
-	static ExtContainer ExtMap;
+	static ExtMapFacade ExtMap;
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);

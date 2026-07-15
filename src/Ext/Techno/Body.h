@@ -18,7 +18,7 @@ public:
 	static constexpr size_t ExtPointerOffset = 0x18;
 	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
-	class ExtData final : public Extension<TechnoClass>
+	class ExtData : public Extension<TechnoClass>
 	{
 	public:
 		TechnoTypeExt::ExtData* TypeExtData;
@@ -248,6 +248,7 @@ public:
 			switch (abs)
 			{
 			case AbstractType::Airstrike:
+			case AbstractType::Building: // BuildingClassExtension leaves live in this container now
 				return false;
 			default:
 				return true;
