@@ -2162,6 +2162,17 @@ In `rulesmd.ini`:
 RadarInvisibleToHouse=               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to enemy if RadarInvisible=true, none otherwise
 ```
 
+### Stop immediately if the target enters the range during ApproachTarget
+
+- In vanilla, the ApproachTarget will simply exit and do nothing if the target is in range. This will cause your units to approach the target unnecessarily.
+- Now you can change this behavior by the following flag.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ApproachTarget.StopWhenInRange=false  ; boolean
+```
+
 ### Subterranean unit travel height and speed
 
 - It is now possible to control the height at which units with subterranean (Tunnel) `Locomotor` travel, globally or per TechnoType.

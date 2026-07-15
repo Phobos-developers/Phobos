@@ -59,6 +59,7 @@
 #include <ParticleTypeClass.h>
 #include <CRT.h>
 #include <LocomotionClass.h>
+#include <JumpjetLocomotionClass.h>
 #include <Locomotion/TestLocomotionClass.h>
 
 #include <unordered_set>

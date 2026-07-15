@@ -285,7 +285,6 @@ public:
 		Valueable<bool> AllowBerzerkOnAllies;
 
 		Valueable<bool> AttackMove_IgnoreWeaponCheck;
-		Nullable<bool> AttackMove_StopWhenTargetAcquired;
 
 		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
 		Nullable<bool> Parasite_AllowWaterExit;
@@ -387,6 +386,8 @@ public:
 		Valueable<bool> SecondaryFireSequenceLandOnly;
 		Valueable<bool> AutoRemoveEarliestBeacon;
 		Valueable<bool> AllowBeaconHotKeyInSinglePlayer;
+		
+		Valueable<bool> ApproachTarget_StopWhenInRange;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -621,7 +622,6 @@ public:
 			, TintColorBerserk { 0 }
 
 			, AttackMove_IgnoreWeaponCheck { false }
-			, AttackMove_StopWhenTargetAcquired { }
 
 			, Parasite_GrappleAnim {}
 			, Parasite_AllowWaterExit {}
@@ -716,6 +716,8 @@ public:
 			, AutoRemoveEarliestBeacon { false }
 
 			, AllowBeaconHotKeyInSinglePlayer { false }
+			
+			, ApproachTarget_StopWhenInRange { false }
 		{ }
 
 		virtual ~ExtData() = default;

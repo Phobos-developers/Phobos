@@ -1218,3 +1218,17 @@ DEFINE_HOOK(0x737086, UnitClass_FiringAI_Gattling, 0x9)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x4D5A34, FootClass_ApproachTarget_StopWhenInRange, 0x6)
+{
+	GET_STACK(bool, closeEnough, STACK_OFFSET(0x158, -0x146));
+
+	if (RulesExt::Global()->ApproachTarget_StopWhenInRange && closeEnough)
+	{
+		GET(FootClass*, pThis, EBX);
+		pThis->StopMoving();
+		pThis->SetDestination(nullptr, true);
+	}
+
+	return 0;
+}
