@@ -637,7 +637,7 @@ DEFINE_FUNCTION_JUMP(CALL, 0x51A00B, BuildingClass_InfiltratedBy_Wrapper);
 
 // Late in every destructor body of the class, right before it chains into the
 // base destructor: the last point where the extension is no longer used.
-DEFINE_HOOK(0x43C0B6, BuildingClass_DTOR, 0x2)
+DEFINE_HOOK(0x43C0B6, BuildingClass_DTOR, 0x9)
 {
 	GET(BuildingClass*, pItem, ESI);
 

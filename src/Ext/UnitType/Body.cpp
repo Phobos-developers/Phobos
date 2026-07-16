@@ -14,10 +14,9 @@ DEFINE_HOOK(0x7470E3, UnitTypeClass_CTOR, 0x6)
 	return 0;
 }
 
-// Late in every destructor body of the class, right before it chains into the
-// base destructor: the last point where the extension is no longer used.
-DEFINE_HOOK_AGAIN(0x7481FF, UnitTypeClass_DTOR, 0x2)
-DEFINE_HOOK(0x74735F, UnitTypeClass_DTOR, 0x2)
+// Hooked after the base destructor call in the twin destructor body the vtable
+// points at (the standalone destructor body has no callers and no hookable window).
+DEFINE_HOOK(0x748206, UnitTypeClass_DTOR, 0x5)
 {
 	GET(UnitTypeClass*, pItem, ESI);
 

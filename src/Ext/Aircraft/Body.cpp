@@ -184,8 +184,8 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 
 // Late in every destructor body of the class, right before it chains into the
 // base destructor: the last point where the extension is no longer used.
-DEFINE_HOOK_AGAIN(0x41426D, AircraftClass_DTOR, 0x2)
-DEFINE_HOOK(0x4141FA, AircraftClass_DTOR, 0x2)
+DEFINE_HOOK_AGAIN(0x41426D, AircraftClass_DTOR, 0x9)
+DEFINE_HOOK(0x4141FA, AircraftClass_DTOR, 0x9)
 {
 	GET(AircraftClass*, pItem, EDI);
 

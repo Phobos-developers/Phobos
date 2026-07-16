@@ -14,10 +14,9 @@ DEFINE_HOOK(0x41C8C0, AircraftTypeClass_CTOR, 0x5)
 	return 0;
 }
 
-// Late in every destructor body of the class, right before it chains into the
-// base destructor: the last point where the extension is no longer used.
-DEFINE_HOOK_AGAIN(0x41D04F, AircraftTypeClass_DTOR, 0x2)
-DEFINE_HOOK(0x41CA8F, AircraftTypeClass_DTOR, 0x2)
+// Hooked after the base destructor call in the twin destructor body the vtable
+// points at (the standalone destructor body has no callers and no hookable window).
+DEFINE_HOOK(0x41D056, AircraftTypeClass_DTOR, 0x5)
 {
 	GET(AircraftTypeClass*, pItem, ESI);
 

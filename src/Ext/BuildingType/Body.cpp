@@ -481,7 +481,7 @@ DEFINE_HOOK(0x45E50C, BuildingTypeClass_CTOR, 0x6)
 
 // Late in every destructor body of the class, right before it chains into the
 // base destructor: the last point where the extension is no longer used.
-DEFINE_HOOK(0x45E732, BuildingTypeClass_DTOR, 0x2)
+DEFINE_HOOK(0x45E732, BuildingTypeClass_DTOR, 0xE)
 {
 	GET(BuildingTypeClass*, pItem, ESI);
 
