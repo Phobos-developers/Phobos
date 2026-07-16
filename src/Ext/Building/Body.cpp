@@ -14,11 +14,11 @@ void BuildingExt::DisplayIncomeString()
 {
 	if (this->AccumulatedIncome)
 	{
-		int const delay = this->TypeExtData->DisplayIncome_Delay.Get(RulesExt::Global()->DisplayIncome_Delay.Get());
+		int const delay = this->GetTypeExtData()->DisplayIncome_Delay.Get(RulesExt::Global()->DisplayIncome_Delay.Get());
 		if (Unsorted::CurrentFrame % delay == 0)
 		{
 			auto const pThis = this->OwnerObject();
-			auto const pTypeExt = this->TypeExtData;
+			auto const pTypeExt = this->GetTypeExtData();
 
 			if ((RulesExt::Global()->DisplayIncome_AllowAI || pThis->Owner->IsControlledByHuman())
 				&& pTypeExt->DisplayIncome.Get(RulesExt::Global()->DisplayIncome))
@@ -267,7 +267,7 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 {
 	if (auto const pExt = BuildingExt::TryFetch(pBuilding))
 	{
-		auto const pTypeExt = pExt->TypeExtData;
+		auto const pTypeExt = pExt->GetTypeExtData();
 
 		pExt->AccumulatedIncome += refund;
 		pExt->GrindingWeapon_AccumulatedCredits += refund;
@@ -295,7 +295,7 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 void BuildingExt::ApplyPoweredKillSpawns()
 {
 	auto const pThis = this->OwnerObject();
-	auto const pTypeExt = this->TypeExtData;
+	auto const pTypeExt = this->GetTypeExtData();
 
 	if (pTypeExt->Powered_KillSpawns && !pThis->IsPowerOnline())
 	{
@@ -319,7 +319,7 @@ bool BuildingExt::HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefor
 {
 	const auto pThis = this->OwnerObject();
 	const auto pVictimHouse = pThis->Owner;
-	const auto pTypeExt = this->TypeExtData;
+	const auto pTypeExt = this->GetTypeExtData();
 	this->AccumulatedIncome += pVictimHouse->Available_Money() - moneybefore;
 
 	if (!pVictimHouse->IsControlledByHuman() && !RulesExt::Global()->DisplayIncome_AllowAI)
@@ -468,7 +468,7 @@ void BuildingExt::KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, v
 int BuildingExt::GetTurretFrame(BuildingClass* pThis)
 {
 	auto const pExt = BuildingExt::Fetch(pThis);
-	auto const pTypeExt = pExt->TypeExtData;
+	auto const pTypeExt = pExt->GetTypeExtData();
 	const int facing = pThis->PrimaryFacing.Current().GetValue<5>();
 	const int shapeFacing = ObjectClass::BodyShape[facing];
 
@@ -555,7 +555,6 @@ template <typename T>
 void BuildingExt::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->TypeExtData)
 		.Process(this->DeployedTechno)
 		.Process(this->IsCreatedFromMapFile)
 		.Process(this->LimboID)

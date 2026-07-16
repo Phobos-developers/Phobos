@@ -1156,7 +1156,7 @@ DEFINE_HOOK(0x44B6C7, BuildingClass_Mission_Attack_TurretAnim, 0x6)
 		if (auto const pAnim = pThis->Anims[(int)BuildingAnimSlot::Turret])
 		{
 			auto const pExt = BuildingExt::Fetch(pThis);
-			auto const pTypeExt = pExt->TypeExtData;
+			auto const pTypeExt = pExt->GetTypeExtData();
 			const bool isLowPower = !pThis->StuffEnabled || !pThis->IsPowerOnline();
 			const int firingFrames = isLowPower ? pTypeExt->TurretAnim_LowPowerFiringFrames : pTypeExt->TurretAnim_FiringFrames;
 

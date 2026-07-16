@@ -214,7 +214,7 @@ DEFINE_HOOK(0x440988, BuildingClass_Unlimbo_UpgradeAnims, 0x7)
 	auto const animData = &pTarget->Type->BuildingAnim[animIndex];
 
 	// Only copy image name to BuildingType anim struct if theres no explicit PowersUpAnim for this level.
-	if (!pTargetExt->TypeExtData->HasPowerUpAnim[animIndex])
+	if (!pTargetExt->GetTypeExtData()->HasPowerUpAnim[animIndex])
 		strncpy(animData->Anim, pType->ImageFile, 16u);
 
 	return SkipGameCode;

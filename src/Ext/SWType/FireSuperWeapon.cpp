@@ -126,13 +126,13 @@ static inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int
 		auto const pBuildingExt = BuildingExt::Fetch(pBuilding);
 		auto const pOwnerExt = HouseExt::Fetch(pOwner);
 
-		if (!pBuildingExt->TypeExtData->PowerPlantEnhancer_Buildings.empty()
-			&& (pBuildingExt->TypeExtData->PowerPlantEnhancer_Amount != 0 || pBuildingExt->TypeExtData->PowerPlantEnhancer_Factor != 1.0f))
+		if (!pBuildingExt->GetTypeExtData()->PowerPlantEnhancer_Buildings.empty()
+			&& (pBuildingExt->GetTypeExtData()->PowerPlantEnhancer_Amount != 0 || pBuildingExt->GetTypeExtData()->PowerPlantEnhancer_Factor != 1.0f))
 			pOwnerExt->PowerPlantEnhancers.push_back(pBuilding);
 
 		if (pType->FactoryPlant)
 		{
-			if (pBuildingExt->TypeExtData->FactoryPlant_AllowTypes.size() > 0 || pBuildingExt->TypeExtData->FactoryPlant_DisallowTypes.size() > 0)
+			if (pBuildingExt->GetTypeExtData()->FactoryPlant_AllowTypes.size() > 0 || pBuildingExt->GetTypeExtData()->FactoryPlant_DisallowTypes.size() > 0)
 			{
 				pOwnerExt->RestrictedFactoryPlants.push_back(pBuilding);
 			}

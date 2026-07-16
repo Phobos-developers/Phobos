@@ -6,11 +6,9 @@ class BuildingExt final : public TechnoExt, public Detach::Listener<BuildingClas
 {
 public:
 	using base_type = BuildingClass;
-	using ExtData = BuildingExt;
 
 	static constexpr DWORD Canary = 0x87654321;
 
-	BuildingTypeExt* TypeExtData;
 	bool DeployedTechno;
 	bool IsCreatedFromMapFile;
 	int LimboID;
@@ -27,7 +25,6 @@ public:
 	int TurretAnimRateTick;
 
 	BuildingExt(BuildingClass* OwnerObject) : TechnoExt(OwnerObject)
-		, TypeExtData { nullptr }
 		, DeployedTechno { false }
 		, IsCreatedFromMapFile { false }
 		, LimboID { -1 }
@@ -48,6 +45,12 @@ public:
 	BuildingClass* OwnerObject() const
 	{
 		return static_cast<BuildingClass*>(this->TechnoExt::OwnerObject());
+	}
+
+	// a building's type extension is always the BuildingTypeExt leaf
+	BuildingTypeExt* GetTypeExtData() const
+	{
+		return static_cast<BuildingTypeExt*>(this->TypeExtData);
 	}
 
 	void DisplayIncomeString();
