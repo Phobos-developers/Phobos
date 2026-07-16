@@ -4,7 +4,7 @@
 
 class AbstractClass;
 
-// Typed pointer-invalidation registry, mirroring Vinifera's detach listener system.
+// Typed pointer-invalidation registry.
 // An extension (or a static aggregate for high-volume types) subscribes to deletions
 // of a game type T by inheriting Detach::Listener<T> and overriding OnDetach.
 // The game's Detach_This_From_All funnel (hook at 0x7258D0) dispatches the dying

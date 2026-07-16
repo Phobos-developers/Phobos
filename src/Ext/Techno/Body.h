@@ -20,7 +20,7 @@ public:
 	static constexpr DWORD Canary = 0x55555555;
 
 public:
-	// typed owner accessor (the base chain stores the owner as RadioClass*)
+	// typed owner accessor
 	TechnoClass* OwnerObject() const
 	{
 		return static_cast<TechnoClass*>(this->GetAttachedObject());

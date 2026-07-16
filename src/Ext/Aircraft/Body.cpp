@@ -8,7 +8,6 @@ AircraftExt::ExtContainer::~ExtContainer() = default;
 #include <Ext/BuildingType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
-// An aircraft's extension is a concrete AircraftExt leaf, owned by the TechnoClass container.
 DEFINE_HOOK(0x413D30, AircraftClass_CTOR, 0x7)
 {
 	GET(AircraftClass*, pItem, ESI);

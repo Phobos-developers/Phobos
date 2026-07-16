@@ -612,9 +612,6 @@ DEFINE_HOOK(0x43B750, BuildingClass_CTOR, 0x6)
 	return 0;
 }
 
-// BuildingClass destruction, save and load of the extension are handled by the TechnoClass
-// container hooks now that a building has a single TechnoClass-derived extension at 0x18.
-
 DEFINE_HOOK(0x454174, BuildingClass_Load_LightSource, 0xA)
 {
 	GET(BuildingClass*, pThis, EDI);

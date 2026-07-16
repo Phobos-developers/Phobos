@@ -2007,7 +2007,7 @@ DEFINE_HOOK(0x711835, TechnoTypeClass_CTOR, 0x5)
 	GET(TechnoTypeClass*, pItem, ESI);
 
 	// The extension is allocated by the concrete type leaf constructors
-	// (UnitType/InfantryType/Building/AircraftType), not here at the TechnoType level.
+	// (UnitType/InfantryType/BuildingType/AircraftType), not here at the TechnoTypeClass level.
 	pItem->DefaultToGuardArea = RulesExt::Global()->DefaultToGuardArea;
 
 	return 0;

@@ -24,7 +24,7 @@ public:
 	static constexpr DWORD Canary = 0x11111111;
 
 public:
-	// typed owner accessor (the base chain stores the owner as ObjectTypeClass*)
+	// typed owner accessor
 	TechnoTypeClass* OwnerObject() const
 	{
 		return static_cast<TechnoTypeClass*>(this->GetAttachedObject());

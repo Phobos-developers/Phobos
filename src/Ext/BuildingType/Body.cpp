@@ -476,9 +476,6 @@ DEFINE_HOOK(0x45E50C, BuildingTypeClass_CTOR, 0x6)
 	return 0;
 }
 
-// BuildingTypeClass destruction, save, load and INI parsing of the extension are handled by
-// the TechnoTypeClass container hooks now that a building type has a single extension at 0x18.
-
 // Late in every destructor body of the class, right before it chains into the
 // base destructor: the last point where the extension is no longer used.
 DEFINE_HOOK(0x45E732, BuildingTypeClass_DTOR, 0xE)
