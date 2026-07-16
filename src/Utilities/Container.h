@@ -52,21 +52,21 @@ enum class InitState
 
 // the non-template root of every extension, mirroring Vinifera's AbstractClassExtension.
 // it owns the back-pointer and the staged init state, so all extensions share a common base.
-class AbstractClassExtension
+class AbstractExt
 {
 	void* AttachedToObject;
 	InitState Initialized;
 
 public:
 
-	explicit AbstractClassExtension(void* const OwnerObject) : AttachedToObject { OwnerObject }, Initialized { InitState::Blank }
+	explicit AbstractExt(void* const OwnerObject) : AttachedToObject { OwnerObject }, Initialized { InitState::Blank }
 	{ }
 
-	AbstractClassExtension(const AbstractClassExtension& other) = delete;
+	AbstractExt(const AbstractExt& other) = delete;
 
-	void operator=(const AbstractClassExtension& RHS) = delete;
+	void operator=(const AbstractExt& RHS) = delete;
 
-	virtual ~AbstractClassExtension() = default;
+	virtual ~AbstractExt() = default;
 
 	void EnsureConstanted()
 	{
@@ -138,13 +138,13 @@ protected:
 	virtual void LoadFromINIFile(CCINIClass* pINI) { }
 };
 
-// the typed layer over AbstractClassExtension: gives a strongly-typed owner accessor.
+// the typed layer over AbstractExt: gives a strongly-typed owner accessor.
 template <typename T>
-class Extension : public AbstractClassExtension
+class Extension : public AbstractExt
 {
 public:
 
-	explicit Extension(T* const OwnerObject) : AbstractClassExtension(OwnerObject)
+	explicit Extension(T* const OwnerObject) : AbstractExt(OwnerObject)
 	{ }
 
 	// the object this Extension expands
