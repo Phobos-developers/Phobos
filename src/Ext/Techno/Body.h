@@ -16,7 +16,6 @@ class TechnoExt : public RadioExt, public Detach::Listener<AirstrikeClass>
 {
 public:
 	using base_type = TechnoClass;
-	using ExtData = TechnoExt;
 
 	static constexpr DWORD Canary = 0x55555555;
 

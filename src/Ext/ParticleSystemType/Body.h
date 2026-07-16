@@ -9,7 +9,6 @@ class ParticleSystemTypeExt final : public ObjectTypeExt
 {
 public:
 	using base_type = ParticleSystemTypeClass;
-	using ExtData = ParticleSystemTypeExt;
 
 	static constexpr DWORD Canary = 0xF9984EFE;
 

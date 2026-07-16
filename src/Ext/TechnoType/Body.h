@@ -20,7 +20,6 @@ class TechnoTypeExt : public ObjectTypeExt
 {
 public:
 	using base_type = TechnoTypeClass;
-	using ExtData = TechnoTypeExt;
 
 	static constexpr DWORD Canary = 0x11111111;
 

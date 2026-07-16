@@ -10,7 +10,6 @@ class WeaponTypeExt final : public AbstractTypeExt
 {
 public:
 	using base_type = WeaponTypeClass;
-	using ExtData = WeaponTypeExt;
 
 	static constexpr DWORD Canary = 0x22222222;
 

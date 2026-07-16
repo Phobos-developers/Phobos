@@ -8,7 +8,6 @@ class AnimExt final : public ObjectExt
 {
 public:
 	using base_type = AnimClass;
-	using ExtData = AnimExt;
 
 	static constexpr DWORD Canary = 0xAAAAAAAA;
 

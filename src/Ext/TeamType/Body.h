@@ -9,7 +9,6 @@ class TeamTypeExt final : public AbstractTypeExt
 {
 public:
 	using base_type = TeamTypeClass;
-	using ExtData = TeamTypeExt;
 
 	static constexpr DWORD Canary = 0xABCDEF01;
 

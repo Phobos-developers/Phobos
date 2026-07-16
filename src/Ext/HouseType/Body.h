@@ -12,7 +12,6 @@ class HouseTypeExt final : public AbstractTypeExt
 {
 public:
 	using base_type = HouseTypeClass;
-	using ExtData = HouseTypeExt;
 
 	static constexpr DWORD Canary = 0xAFFEAFFE;
 

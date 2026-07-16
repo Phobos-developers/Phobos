@@ -8,7 +8,6 @@ class AircraftExt final : public FootExt
 {
 public:
 	using base_type = AircraftClass;
-	using ExtData = AircraftExt;
 
 	static constexpr DWORD Canary = 0xA1A2A3A4;
 

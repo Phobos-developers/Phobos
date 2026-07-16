@@ -35,7 +35,6 @@ class TActionExt final : public AbstractExt
 {
 public:
 	using base_type = TActionClass;
-	using ExtData = TActionExt;
 
 	static constexpr DWORD Canary = 0x91919191;
 

@@ -9,7 +9,6 @@ class TiberiumExt final : public AbstractTypeExt
 {
 public:
 	using base_type = TiberiumClass;
-	using ExtData = TiberiumExt;
 
 	static constexpr DWORD Canary = 0xAABBCCDD;
 

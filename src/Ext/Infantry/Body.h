@@ -8,7 +8,6 @@ class InfantryExt final : public FootExt
 {
 public:
 	using base_type = InfantryClass;
-	using ExtData = InfantryExt;
 
 	static constexpr DWORD Canary = 0xF1F2F3F4;
 

@@ -9,7 +9,6 @@ class TeamExt final : public AbstractExt, public Detach::Listener<FootClass>
 {
 public:
 	using base_type = TeamClass;
-	using ExtData = TeamExt;
 
 	static constexpr DWORD Canary = 0x414B4B41;
 

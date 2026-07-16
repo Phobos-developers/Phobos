@@ -11,7 +11,6 @@ class VoxelAnimTypeExt final : public ObjectTypeExt
 {
 public:
 	using base_type = VoxelAnimTypeClass;
-	using ExtData = VoxelAnimTypeExt;
 
 	static constexpr DWORD Canary = 0xAAAEEEEE;
 

@@ -381,12 +381,20 @@ private:
 template <class T>
 concept HasOffset = requires(T) { T::ExtPointerOffset; };
 
+// resolves the data class of an extension: the extension class itself for the
+// flattened hierarchy, or the nested ExtData class of the legacy shells (EBolt).
+template <typename T>
+struct ExtensionDataType { using type = T; };
+
+template <typename T> requires requires { typename T::ExtData; }
+struct ExtensionDataType<T> { using type = typename T::ExtData; };
+
 template <typename T>
 class Container
 {
 private:
 	using base_type = typename T::base_type;
-	using extension_type = typename T::ExtData;
+	using extension_type = typename ExtensionDataType<T>::type;
 	using base_type_ptr = base_type*;
 	using const_base_type_ptr = const base_type*;
 	using extension_type_ptr = extension_type*;

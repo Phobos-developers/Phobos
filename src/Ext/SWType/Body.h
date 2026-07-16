@@ -9,7 +9,6 @@ class SWTypeExt final : public AbstractTypeExt
 {
 public:
 	using base_type = SuperWeaponTypeClass;
-	using ExtData = SWTypeExt;
 
 	static constexpr DWORD Canary = 0x11111111;
 

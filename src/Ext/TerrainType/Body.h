@@ -9,7 +9,6 @@ class TerrainTypeExt final : public ObjectTypeExt
 {
 public:
 	using base_type = TerrainTypeClass;
-	using ExtData = TerrainTypeExt;
 
 	static constexpr DWORD Canary = 0xBEE78007;
 

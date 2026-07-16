@@ -8,7 +8,6 @@ class CellExt final : public AbstractExt
 {
 public:
 	using base_type = CellClass;
-	using ExtData = CellExt;
 
 	static constexpr DWORD Canary = 0x13371337;
 

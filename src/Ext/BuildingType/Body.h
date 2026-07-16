@@ -7,7 +7,6 @@ class BuildingTypeExt final : public TechnoTypeExt
 {
 public:
 	using base_type = BuildingTypeClass;
-	using ExtData = BuildingTypeExt;
 
 	static constexpr DWORD Canary = 0x11111111;
 

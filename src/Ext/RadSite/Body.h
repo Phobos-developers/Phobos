@@ -14,7 +14,6 @@ class RadSiteExt final : public AbstractExt, public Detach::Listener<TechnoClass
 {
 public:
 	using base_type = RadSiteClass;
-	using ExtData = RadSiteExt;
 
 	static constexpr DWORD Canary = 0x88446622;
 

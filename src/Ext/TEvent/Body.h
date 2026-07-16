@@ -60,7 +60,6 @@ class TEventExt final : public AbstractExt
 {
 public:
 	using base_type = TEventClass;
-	using ExtData = TEventExt;
 
 	static constexpr DWORD Canary = 0x91919191;
 

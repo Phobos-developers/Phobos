@@ -13,7 +13,6 @@ class BulletTypeExt final : public ObjectTypeExt
 {
 public:
 	using base_type = BulletTypeClass;
-	using ExtData = BulletTypeExt;
 
 	static constexpr DWORD Canary = 0xF00DF00D;
 

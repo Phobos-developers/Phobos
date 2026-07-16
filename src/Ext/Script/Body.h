@@ -150,7 +150,6 @@ class ScriptExt final : public AbstractExt
 {
 public:
 	using base_type = ScriptClass;
-	using ExtData = ScriptExt;
 
 	static constexpr DWORD Canary = 0x3B3B3B3B;
 

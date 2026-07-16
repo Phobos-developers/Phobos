@@ -10,7 +10,6 @@ class UnitExt final : public FootExt
 {
 public:
 	using base_type = UnitClass;
-	using ExtData = UnitExt;
 
 	static constexpr DWORD Canary = 0xE1E2E3E4;
 

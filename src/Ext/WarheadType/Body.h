@@ -11,7 +11,6 @@ class WarheadTypeExt final : public AbstractTypeExt
 {
 public:
 	using base_type = WarheadTypeClass;
-	using ExtData = WarheadTypeExt;
 
 	static constexpr DWORD Canary = 0x22222222;
 

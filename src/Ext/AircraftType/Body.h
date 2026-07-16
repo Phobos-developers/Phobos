@@ -8,7 +8,6 @@ class AircraftTypeExt final : public TechnoTypeExt
 {
 public:
 	using base_type = AircraftTypeClass;
-	using ExtData = AircraftTypeExt;
 
 	static constexpr DWORD Canary = 0xA5A6A7A8;
 

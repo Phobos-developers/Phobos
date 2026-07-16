@@ -10,7 +10,6 @@ class ParticleTypeExt final : public ObjectTypeExt
 {
 public:
 	using base_type = ParticleTypeClass;
-	using ExtData = ParticleTypeExt;
 
 	static constexpr DWORD Canary = 0xEAFEEAFE;
 

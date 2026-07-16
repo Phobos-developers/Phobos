@@ -8,7 +8,6 @@ class UnitTypeExt final : public TechnoTypeExt
 {
 public:
 	using base_type = UnitTypeClass;
-	using ExtData = UnitTypeExt;
 
 	static constexpr DWORD Canary = 0xE5E6E7E8;
 

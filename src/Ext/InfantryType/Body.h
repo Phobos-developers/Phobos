@@ -8,7 +8,6 @@ class InfantryTypeExt final : public TechnoTypeExt
 {
 public:
 	using base_type = InfantryTypeClass;
-	using ExtData = InfantryTypeExt;
 
 	static constexpr DWORD Canary = 0xF5F6F7F8;
 

@@ -9,7 +9,6 @@ class SideExt final : public AbstractTypeExt
 {
 public:
 	using base_type = SideClass;
-	using ExtData = SideExt;
 
 	static constexpr DWORD Canary = 0x05B10501;
 

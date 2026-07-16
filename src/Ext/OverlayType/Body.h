@@ -9,7 +9,6 @@ class OverlayTypeExt final : public ObjectTypeExt
 {
 public:
 	using base_type = OverlayTypeClass;
-	using ExtData = OverlayTypeExt;
 
 	static constexpr DWORD Canary = 0xADF48498;
 

@@ -10,7 +10,6 @@ class VoxelAnimExt final : public ObjectExt
 {
 public:
 	using base_type = VoxelAnimClass;
-	using ExtData = VoxelAnimExt;
 
 	static constexpr DWORD Canary = 0xAAAAAACC;
 

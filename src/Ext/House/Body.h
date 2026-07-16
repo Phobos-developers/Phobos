@@ -11,7 +11,6 @@ class HouseExt final : public AbstractExt, public Detach::Listener<BuildingClass
 {
 public:
 	using base_type = HouseClass;
-	using ExtData = HouseExt;
 
 	static constexpr DWORD Canary = 0x11111111;
 
