@@ -429,13 +429,11 @@ private:
 		(*(uintptr_t*)((char*)key + T::ExtPointerOffset)) = 0;
 	}
 
-public:
-	extension_type_ptr Allocate(base_type_ptr key)
+protected:
+	// the unguarded allocation core, also used by load-time fixups that run while
+	// Phobos::IsLoadingSaveGame is still set
+	extension_type_ptr AllocateUnchecked(base_type_ptr key)
 	{
-		// during savegame load extensions are restored from the stream instead
-		if (Phobos::IsLoadingSaveGame)
-			return nullptr;
-
 		if constexpr (HasOffset<T>)
 			ResetExtensionPointer(key);
 
@@ -456,6 +454,49 @@ public:
 		Items.emplace_back(val);
 
 		return val;
+	}
+
+	// deletes every tracked extension whose owner pointer is null and returns how
+	// many were dropped; used by load-time fixups for owners the game omits from
+	// the savegame (their owner cannot be remapped by the swizzle manager)
+	size_t RemoveNullOwnerItems()
+	{
+		if constexpr (HasOffset<T>)
+		{
+			size_t removed = 0;
+			auto& vec = this->Items;
+
+			for (size_t i = vec.size(); i-- > 0;)
+			{
+				if (!vec[i]->OwnerObject())
+				{
+					delete vec[i];
+					vec[i] = vec.back();
+					vec.pop_back();
+
+					if (i < vec.size())
+						vec[i]->ContainerIndex = i;
+
+					++removed;
+				}
+			}
+
+			return removed;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+public:
+	extension_type_ptr Allocate(base_type_ptr key)
+	{
+		// during savegame load extensions are restored from the stream instead
+		if (Phobos::IsLoadingSaveGame)
+			return nullptr;
+
+		return this->AllocateUnchecked(key);
 	}
 
 
@@ -606,6 +647,9 @@ public:
 
 			for (const auto& item : this->Items)
 			{
+				if (!item->OwnerObject())
+					Debug::FatalErrorAndExit("SaveAllToStream - '%s' extension has no owner!\n", this->Name);
+
 				PhobosByteStream saver(sizeof(*item));
 				PhobosStreamWriter writer(saver);
 

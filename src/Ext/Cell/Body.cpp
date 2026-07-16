@@ -56,6 +56,34 @@ bool CellExt::RadLevel::Serialize(T& stm)
 CellExt::ExtContainer::ExtContainer() : Container("CellClass") { }
 CellExt::ExtContainer::~ExtContainer() = default;
 
+// The game only saves cells that its cell iterator reaches inside the map array;
+// any other live cell is recreated as a default-initialized one on load. Mirror
+// that: drop stream extensions whose owner could not be remapped, and allocate
+// fresh extensions for cells the load recreated outside the stream.
+void CellExt::ExtContainer::RelinkExtensionPointers()
+{
+	if (const size_t orphans = this->RemoveNullOwnerItems())
+		Debug::Log("CellClass - dropped %u extensions of cells absent from the savegame.\n", orphans);
+
+	this->Container<CellExt>::RelinkExtensionPointers();
+
+	size_t added = 0;
+
+	for (int i = 0; i < MapClass::MaxCells; ++i)
+	{
+		auto const pCell = MapClass::Instance.Cells[i];
+
+		if (pCell && !AbstractExt::Fetch(pCell))
+		{
+			this->AllocateUnchecked(pCell);
+			++added;
+		}
+	}
+
+	if (added)
+		Debug::Log("CellClass - allocated %u extensions for cells absent from the savegame.\n", added);
+}
+
 // =============================
 // container hooks
 

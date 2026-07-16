@@ -58,6 +58,8 @@ public:
 		ExtContainer();
 		~ExtContainer();
 
+		// cells the game omits from the savegame need special handling on load
+		void RelinkExtensionPointers();
 	};
 
 	static ExtContainer ExtMap;
