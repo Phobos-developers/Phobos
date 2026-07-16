@@ -98,21 +98,21 @@ DEFINE_HOOK(0x6B72FE, SpawnerManagerClass_AI_MissileCheck, 0x9)
 DEFINE_HOOK_AGAIN(0x6B73A8, SpawnManagerClass_AI_SpawnTimer, 0x5)
 DEFINE_HOOK(0x6B73B9, SpawnManagerClass_AI_SpawnTimer, 0x5)
 {
-	GET(SpawnManagerClass*, pThis, ESI);
+	GET(SpawnManagerClass* const, pThis, ESI);
 
-	int delay = pThis->Owner->GetTechnoType()->MissileSpawn ? 9 : 20;
 	if (auto const pOwner = pThis->Owner)
 	{
-		auto const pExt = TechnoExt::ExtMap.Find(pOwner);
-		if (pExt && pExt->TypeExtData)
+		auto const pTypeExt = TechnoExt::ExtMap.Find(pOwner)->TypeExtData;
+
+		if (pTypeExt->Spawner_DelayFrames.isset())
 		{
-			auto const pTypeExt = pExt->TypeExtData;
-			if (pTypeExt->Spawner_DelayFrames.isset())
-				delay = pTypeExt->Spawner_DelayFrames.Get();
+			pThis->SpawnTimer.Start(pTypeExt->Spawner_DelayFrames.Get());
+			return 0x6B73C4;
 		}
 	}
-	pThis->SpawnTimer.Start(delay);
-	return 0x6B73C4;
+
+	R->ECX(pThis->Owner->GetTechnoType()->MissileSpawn ? 9 : 20);
+	return 0;
 }
 
 DEFINE_HOOK_AGAIN(0x6B769F, SpawnManagerClass_AI_InitDestination, 0x7)
