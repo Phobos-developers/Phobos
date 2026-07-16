@@ -1,8 +1,8 @@
 #include "Body.h"
 
-DEFINE_HOOK(0x5236A4, InfantryTypeClass_CTOR, 0x5)
+DEFINE_HOOK(0x5236B3, InfantryTypeClass_CTOR, 0xA)
 {
-	GET(InfantryTypeClass*, pItem, ECX);
+	GET(InfantryTypeClass*, pItem, ESI);
 
 	TechnoTypeExt::ExtMap.Adopt(new InfantryTypeClassExtension(pItem));
 

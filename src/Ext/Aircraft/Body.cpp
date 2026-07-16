@@ -4,9 +4,9 @@
 #include <Ext/WeaponType/Body.h>
 
 // An aircraft's extension is a concrete AircraftClassExtension leaf, owned by the TechnoClass container.
-DEFINE_HOOK(0x413D24, AircraftClass_CTOR, 0x6)
+DEFINE_HOOK(0x413D30, AircraftClass_CTOR, 0x7)
 {
-	GET(AircraftClass*, pItem, ECX);
+	GET(AircraftClass*, pItem, ESI);
 
 	TechnoExt::ExtMap.Adopt(new AircraftClassExtension(pItem));
 

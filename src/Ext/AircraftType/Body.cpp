@@ -1,8 +1,8 @@
 #include "Body.h"
 
-DEFINE_HOOK(0x41C8B4, AircraftTypeClass_CTOR, 0x6)
+DEFINE_HOOK(0x41C8C0, AircraftTypeClass_CTOR, 0x5)
 {
-	GET(AircraftTypeClass*, pItem, ECX);
+	GET(AircraftTypeClass*, pItem, ESI);
 
 	TechnoTypeExt::ExtMap.Adopt(new AircraftTypeClassExtension(pItem));
 
