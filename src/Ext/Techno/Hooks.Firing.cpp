@@ -1041,6 +1041,7 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 	if (pTypeExt->BurstPerTurret > 0)
 		turIdx = ((pThis->CurrentBurstIndex / pTypeExt->BurstPerTurret) % (pTypeExt->ExtraTurretCount + 1)) - 1;
 
+	flh += offset;
 	*pCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, allowOnTurret, turIdx);
 	R->EAX(pCoords);
 
