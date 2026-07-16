@@ -2,6 +2,7 @@
 #include <AnimClass.h>
 #include <ParticleSystemClass.h>
 #include <Ext/AnimType/Body.h>
+#include <Ext/Object/Body.h>
 
 class AnimExt
 {
@@ -12,9 +13,15 @@ public:
 	static constexpr size_t ExtPointerOffset = 0x18;
 	static constexpr bool ShouldConsiderInvalidatePointer = false; // Sheer volume of animations in an average game makes a bespoke solution for pointer invalidation worthwhile.
 
-	class ExtData final : public Extension<AnimClass>
+	class ExtData final : public ObjectClassExtension
 	{
 	public:
+		// typed owner accessor
+		AnimClass* OwnerObject() const
+		{
+			return static_cast<AnimClass*>(this->GetAttachedObject());
+		}
+
 		DirType DeathUnitFacing;
 		DirStruct DeathUnitTurretFacing;
 		bool FromDeathUnit;
@@ -34,7 +41,7 @@ public:
 		CoordStruct FiringAnim_LastCoords;
 		double FirepowerMult;
 
-		ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
+		ExtData(AnimClass* OwnerObject) : ObjectClassExtension(OwnerObject)
 			, DeathUnitFacing { 0 }
 			, DeathUnitTurretFacing {}
 			, FromDeathUnit { false }

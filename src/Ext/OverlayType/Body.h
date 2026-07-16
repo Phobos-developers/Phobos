@@ -1,6 +1,7 @@
 #pragma once
 #include <OverlayTypeClass.h>
 
+#include <Ext/ObjectType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -12,14 +13,20 @@ public:
 	static constexpr DWORD Canary = 0xADF48498;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<OverlayTypeClass>
+	class ExtData final : public ObjectTypeClassExtension
 	{
 	public:
+		// typed owner accessor
+		OverlayTypeClass* OwnerObject() const
+		{
+			return static_cast<OverlayTypeClass*>(this->GetAttachedObject());
+		}
+
 		Valueable<int> ZAdjust;
 		PhobosFixedString<32u> PaletteFile;
 		DynamicVectorClass<ColorScheme*>* Palette; // Intentionally not serialized - rebuilt from the palette file on load.
 
-		ExtData(OverlayTypeClass* OwnerObject) : Extension<OverlayTypeClass>(OwnerObject)
+		ExtData(OverlayTypeClass* OwnerObject) : ObjectTypeClassExtension(OwnerObject)
 			, ZAdjust { 0 }
 			, PaletteFile {}
 			, Palette {}

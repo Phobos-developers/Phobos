@@ -1,6 +1,7 @@
 #pragma once
 #include <TeamTypeClass.h>
 
+#include <Ext/AbstractType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -12,10 +13,16 @@ public:
 	static constexpr DWORD Canary = 0xABCDEF01;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<TeamTypeClass>
+	class ExtData final : public AbstractTypeClassExtension
 	{
 	public:
-		ExtData(TeamTypeClass* OwnerObject) : Extension<TeamTypeClass>(OwnerObject)
+		// typed owner accessor
+		TeamTypeClass* OwnerObject() const
+		{
+			return static_cast<TeamTypeClass*>(this->GetAttachedObject());
+		}
+
+		ExtData(TeamTypeClass* OwnerObject) : AbstractTypeClassExtension(OwnerObject)
 			, SetRecruitableOnLiberate { }
 		{ }
 

@@ -2,6 +2,7 @@
 
 #include <HouseTypeClass.h>
 
+#include <Ext/AbstractType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -15,12 +16,18 @@ public:
 	static constexpr DWORD Canary = 0xAFFEAFFE;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<HouseTypeClass>
+	class ExtData final : public AbstractTypeClassExtension
 	{
 	public:
+		// typed owner accessor
+		HouseTypeClass* OwnerObject() const
+		{
+			return static_cast<HouseTypeClass*>(this->GetAttachedObject());
+		}
+
 		EVAType EVATag;
 
-		ExtData(HouseTypeClass* OwnerObject) : Extension<HouseTypeClass>(OwnerObject)
+		ExtData(HouseTypeClass* OwnerObject) : AbstractTypeClassExtension(OwnerObject)
 			, EVATag { -2 }
 		{ }
 

@@ -1,5 +1,6 @@
 #pragma once
 #include <Ext/Bullet/Body.h>
+#include <Ext/AbstractType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 #include <New/Type/ShieldTypeClass.h>
@@ -14,9 +15,15 @@ public:
 	static constexpr DWORD Canary = 0x22222222;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<WarheadTypeClass>
+	class ExtData final : public AbstractTypeClassExtension
 	{
 	public:
+		// typed owner accessor
+		WarheadTypeClass* OwnerObject() const
+		{
+			return static_cast<WarheadTypeClass*>(this->GetAttachedObject());
+		}
+
 
 		Valueable<int> Reveal;
 		Valueable<int> CreateGap;
@@ -282,7 +289,7 @@ public:
 		Valueable<double> Shield_SelfHealing_Rate_InMinutes;
 
 	public:
-		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject)
+		ExtData(WarheadTypeClass* OwnerObject) : AbstractTypeClassExtension(OwnerObject)
 			, Reveal { 0 }
 			, CreateGap { 0 }
 			, TransactMoney { 0 }

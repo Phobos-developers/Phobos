@@ -21,13 +21,13 @@ void TActionExt::ExtData::Serialize(T& Stm)
 
 void TActionExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<TActionClass>::LoadFromStream(Stm);
+	AbstractExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
 void TActionExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<TActionClass>::SaveToStream(Stm);
+	AbstractExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 

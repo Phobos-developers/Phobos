@@ -154,12 +154,18 @@ public:
 	static constexpr DWORD Canary = 0x3B3B3B3B;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<ScriptClass>
+	class ExtData final : public AbstractExt
 	{
 	public:
+		// typed owner accessor
+		ScriptClass* OwnerObject() const
+		{
+			return static_cast<ScriptClass*>(this->GetAttachedObject());
+		}
+
 		// Nothing yet
 
-		ExtData(ScriptClass* OwnerObject) : Extension<ScriptClass>(OwnerObject)
+		ExtData(ScriptClass* OwnerObject) : AbstractExt(OwnerObject)
 			// Nothing yet
 		{ }
 

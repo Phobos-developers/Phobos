@@ -17,13 +17,13 @@ void CellExt::ExtData::Serialize(T& Stm)
 
 void CellExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<CellClass>::LoadFromStream(Stm);
+	AbstractExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
 void CellExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<CellClass>::SaveToStream(Stm);
+	AbstractExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 

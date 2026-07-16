@@ -29,14 +29,20 @@ public:
 		bool Serialize(T& stm);
 	};
 
-	class ExtData final : public Extension<CellClass>
+	class ExtData final : public AbstractExt
 	{
 	public:
+		// typed owner accessor
+		CellClass* OwnerObject() const
+		{
+			return static_cast<CellClass*>(this->GetAttachedObject());
+		}
+
 		std::vector<RadSiteClass*> RadSites {};
 		std::vector<RadLevel> RadLevels { };
 		int InfantryCount{ 0 };
 
-		ExtData(CellClass* OwnerObject) : Extension<CellClass>(OwnerObject)
+		ExtData(CellClass* OwnerObject) : AbstractExt(OwnerObject)
 		{ }
 
 		virtual ~ExtData() = default;

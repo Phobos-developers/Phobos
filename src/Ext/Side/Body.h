@@ -1,6 +1,7 @@
 #pragma once
 #include <SideClass.h>
 
+#include <Ext/AbstractType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -12,9 +13,15 @@ public:
 	static constexpr DWORD Canary = 0x05B10501;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<SideClass>
+	class ExtData final : public AbstractTypeClassExtension
 	{
 	public:
+		// typed owner accessor
+		SideClass* OwnerObject() const
+		{
+			return static_cast<SideClass*>(this->GetAttachedObject());
+		}
+
 		Valueable<int> ArrayIndex;
 		Valueable<bool> Sidebar_GDIPositions;
 		Valueable<int> IngameScore_WinTheme;
@@ -45,7 +52,7 @@ public:
 		PhobosPCXFile SuperWeaponSidebar_CenterPCX;
 		PhobosPCXFile SuperWeaponSidebar_BottomPCX;
 
-		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject)
+		ExtData(SideClass* OwnerObject) : AbstractTypeClassExtension(OwnerObject)
 			, ArrayIndex { -1 }
 			, Sidebar_GDIPositions { false }
 			, IngameScore_WinTheme { -2 }

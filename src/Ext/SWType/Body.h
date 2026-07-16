@@ -1,5 +1,6 @@
 #pragma once
 #include <Ext/Building/Body.h>
+#include <Ext/AbstractType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 #include <New/Type/Affiliated/TypeConvertGroup.h>
@@ -12,9 +13,15 @@ public:
 	static constexpr DWORD Canary = 0x11111111;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<SuperWeaponTypeClass>
+	class ExtData final : public AbstractTypeClassExtension
 	{
 	public:
+		// typed owner accessor
+		SuperWeaponTypeClass* OwnerObject() const
+		{
+			return static_cast<SuperWeaponTypeClass*>(this->GetAttachedObject());
+		}
+
 
 		PhobosFixedString<0x20> TypeID;
 
@@ -119,7 +126,7 @@ public:
 		ValueableIdx<VoxClass> EVA_Activated_Allies;
 		ValueableIdx<VoxClass> EVA_Activated_Enemies;
 
-		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
+		ExtData(SuperWeaponTypeClass* OwnerObject) : AbstractTypeClassExtension(OwnerObject)
 			, TypeID { "" }
 			, Money_Amount { 0 }
 			, EVA_Impatient { -1 }

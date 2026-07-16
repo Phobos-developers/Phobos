@@ -24,13 +24,13 @@ void ParticleSystemTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 void ParticleSystemTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<ParticleSystemTypeClass>::LoadFromStream(Stm);
+	ObjectTypeClassExtension::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
 void ParticleSystemTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<ParticleSystemTypeClass>::SaveToStream(Stm);
+	ObjectTypeClassExtension::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 

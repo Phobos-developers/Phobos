@@ -15,9 +15,15 @@ public:
 	static constexpr size_t ExtPointerOffset = 0x18;
 	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
-	class ExtData final : public Extension<HouseClass>
+	class ExtData final : public AbstractExt
 	{
 	public:
+		// typed owner accessor
+		HouseClass* OwnerObject() const
+		{
+			return static_cast<HouseClass*>(this->GetAttachedObject());
+		}
+
 		std::vector<BuildingClass*> PowerPlantEnhancers;
 		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
 		std::vector<TechnoClass*> OwnedCountedHarvesters;
@@ -73,7 +79,7 @@ public:
 
 		std::array<int, 3> BeaconsPlacedOrder;
 
-		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
+		ExtData(HouseClass* OwnerObject) : AbstractExt(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
 			, OwnedCountedHarvesters {}

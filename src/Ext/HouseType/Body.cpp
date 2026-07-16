@@ -30,13 +30,13 @@ void HouseTypeExt::ExtData::Serialize(T& Stm)
 
 void HouseTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<HouseTypeClass>::LoadFromStream(Stm);
+	AbstractTypeClassExtension::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
 void HouseTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<HouseTypeClass>::SaveToStream(Stm);
+	AbstractTypeClassExtension::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 

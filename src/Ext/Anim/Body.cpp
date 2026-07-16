@@ -459,7 +459,7 @@ void AnimExt::ExtData::Serialize(T& Stm)
 
 void AnimExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<AnimClass>::LoadFromStream(Stm);
+	ObjectClassExtension::LoadFromStream(Stm);
 	this->Serialize(Stm);
 
 	if (this->AttachedSystem)
@@ -468,7 +468,7 @@ void AnimExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 
 void AnimExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<AnimClass>::SaveToStream(Stm);
+	ObjectClassExtension::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 

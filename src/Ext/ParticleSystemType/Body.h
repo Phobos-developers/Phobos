@@ -1,6 +1,7 @@
 #pragma once
 #include <ParticleSystemTypeClass.h>
 
+#include <Ext/ObjectType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -12,12 +13,18 @@ public:
 	static constexpr DWORD Canary = 0xF9984EFE;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<ParticleSystemTypeClass>
+	class ExtData final : public ObjectTypeClassExtension
 	{
 	public:
+		// typed owner accessor
+		ParticleSystemTypeClass* OwnerObject() const
+		{
+			return static_cast<ParticleSystemTypeClass*>(this->GetAttachedObject());
+		}
+
 		Valueable<bool> AdjustTargetCoordsOnRotation;
 
-		ExtData(ParticleSystemTypeClass* OwnerObject) : Extension<ParticleSystemTypeClass>(OwnerObject)
+		ExtData(ParticleSystemTypeClass* OwnerObject) : ObjectTypeClassExtension(OwnerObject)
 			, AdjustTargetCoordsOnRotation { true }
 		{ }
 

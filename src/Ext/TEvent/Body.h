@@ -64,10 +64,16 @@ public:
 	static constexpr DWORD Canary = 0x91919191;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<TEventClass>
+	class ExtData final : public AbstractExt
 	{
 	public:
-		ExtData(TEventClass* const OwnerObject) : Extension<TEventClass>(OwnerObject)
+		// typed owner accessor
+		TEventClass* OwnerObject() const
+		{
+			return static_cast<TEventClass*>(this->GetAttachedObject());
+		}
+
+		ExtData(TEventClass* const OwnerObject) : AbstractExt(OwnerObject)
 		{ }
 
 		virtual ~ExtData() = default;

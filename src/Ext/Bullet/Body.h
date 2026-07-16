@@ -4,6 +4,7 @@
 #include <Ext/BulletType/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <New/Entity/LaserTrailClass.h>
+#include <Ext/Object/Body.h>
 
 struct RadialFireStruct
 {
@@ -20,9 +21,15 @@ public:
 	static constexpr DWORD Canary = 0x2A2A2A2A;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<BulletClass>
+	class ExtData final : public ObjectClassExtension
 	{
 	public:
+		// typed owner accessor
+		BulletClass* OwnerObject() const
+		{
+			return static_cast<BulletClass*>(this->GetAttachedObject());
+		}
+
 		BulletTypeExt::ExtData* TypeExtData;
 		HouseClass* FirerHouse;
 		int CurrentStrength;
@@ -38,7 +45,7 @@ public:
 
 		TrajectoryPointer Trajectory;
 
-		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
+		ExtData(BulletClass* OwnerObject) : ObjectClassExtension(OwnerObject)
 			, TypeExtData { nullptr }
 			, FirerHouse { nullptr }
 			, CurrentStrength { 0 }

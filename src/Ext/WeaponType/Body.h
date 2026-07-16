@@ -1,4 +1,5 @@
 #pragma once
+#include <Ext/AbstractType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -13,9 +14,15 @@ public:
 	static constexpr DWORD Canary = 0x22222222;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<WeaponTypeClass>
+	class ExtData final : public AbstractTypeClassExtension
 	{
 	public:
+		// typed owner accessor
+		WeaponTypeClass* OwnerObject() const
+		{
+			return static_cast<WeaponTypeClass*>(this->GetAttachedObject());
+		}
+
 
 		Valueable<double> DiskLaser_Radius;
 		Valueable<Leptons> ProjectileRange;
@@ -107,7 +114,7 @@ public:
 
 		Nullable<bool> CylinderRangefinding;
 		
-		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
+		ExtData(WeaponTypeClass* OwnerObject) : AbstractTypeClassExtension(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
 			, ProjectileRange { Leptons(100000) }
 			, RadType {}

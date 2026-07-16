@@ -310,13 +310,13 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<SuperWeaponTypeClass>::LoadFromStream(Stm);
+	AbstractTypeClassExtension::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
 void SWTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<SuperWeaponTypeClass>::SaveToStream(Stm);
+	AbstractTypeClassExtension::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 

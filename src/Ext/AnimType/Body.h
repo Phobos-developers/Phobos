@@ -2,6 +2,7 @@
 
 #include <AnimTypeClass.h>
 
+#include <Ext/ObjectType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -22,9 +23,15 @@ public:
 	static constexpr DWORD Canary = 0xEEEEEEEE;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<AnimTypeClass>
+	class ExtData final : public ObjectTypeClassExtension
 	{
 	public:
+		// typed owner accessor
+		AnimTypeClass* OwnerObject() const
+		{
+			return static_cast<AnimTypeClass*>(this->GetAttachedObject());
+		}
+
 		CustomPalette Palette;
 		std::unique_ptr<CreateUnitTypeClass> CreateUnitType;
 		Valueable<int> XDrawOffset;
@@ -68,7 +75,7 @@ public:
 		Valueable<int> Tiled_Interval;
 		Valueable<bool> Tiled_AlignToCenter;
 
-		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
+		ExtData(AnimTypeClass* OwnerObject) : ObjectTypeClassExtension(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
 			, CreateUnitType { nullptr }
 			, XDrawOffset { 0 }

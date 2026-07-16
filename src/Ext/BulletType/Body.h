@@ -1,6 +1,7 @@
 #pragma once
 #include <BulletTypeClass.h>
 
+#include <Ext/ObjectType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -16,9 +17,15 @@ public:
 	static constexpr DWORD Canary = 0xF00DF00D;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<BulletTypeClass>
+	class ExtData final : public ObjectTypeClassExtension
 	{
 	public:
+		// typed owner accessor
+		BulletTypeClass* OwnerObject() const
+		{
+			return static_cast<BulletTypeClass*>(this->GetAttachedObject());
+		}
+
 		// Valueable<int> Strength; //Use OwnerObject()->ObjectTypeClass::Strength
 		Nullable<ArmorType> Armor;
 		Valueable<bool> Interceptable;
@@ -86,7 +93,7 @@ public:
 		Nullable<Leptons> BallisticScatter_Min;
 		Nullable<Leptons> BallisticScatter_Max;
 
-		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject)
+		ExtData(BulletTypeClass* OwnerObject) : ObjectTypeClassExtension(OwnerObject)
 			, Armor {}
 			, Interceptable { false }
 			, Interceptable_DeleteOnIntercept { false }

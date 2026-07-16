@@ -39,10 +39,16 @@ public:
 	static constexpr DWORD Canary = 0x91919191;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<TActionClass>
+	class ExtData final : public AbstractExt
 	{
 	public:
-		ExtData(TActionClass* const OwnerObject) : Extension<TActionClass>(OwnerObject)
+		// typed owner accessor
+		TActionClass* OwnerObject() const
+		{
+			return static_cast<TActionClass*>(this->GetAttachedObject());
+		}
+
+		ExtData(TActionClass* const OwnerObject) : AbstractExt(OwnerObject)
 		{ }
 
 		virtual ~ExtData() = default;

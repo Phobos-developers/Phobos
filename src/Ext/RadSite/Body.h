@@ -18,15 +18,21 @@ public:
 	static constexpr size_t ExtPointerOffset = 0x18;
 	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
-	class ExtData final : public Extension<RadSiteClass>
+	class ExtData final : public AbstractExt
 	{
 	public:
+		// typed owner accessor
+		RadSiteClass* OwnerObject() const
+		{
+			return static_cast<RadSiteClass*>(this->GetAttachedObject());
+		}
+
 		WeaponTypeClass* Weapon;
 		RadTypeClass* Type;
 		HouseClass* RadHouse;
 		TechnoClass* RadInvoker;
 
-		ExtData(RadSiteClass* OwnerObject) : Extension<RadSiteClass>(OwnerObject)
+		ExtData(RadSiteClass* OwnerObject) : AbstractExt(OwnerObject)
 			, RadHouse { nullptr }
 			, RadInvoker { nullptr }
 			, Type {}

@@ -1,6 +1,7 @@
 #pragma once
 #include <TerrainTypeClass.h>
 
+#include <Ext/ObjectType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -12,9 +13,15 @@ public:
 	static constexpr DWORD Canary = 0xBEE78007;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<TerrainTypeClass>
+	class ExtData final : public ObjectTypeClassExtension
 	{
 	public:
+		// typed owner accessor
+		TerrainTypeClass* OwnerObject() const
+		{
+			return static_cast<TerrainTypeClass*>(this->GetAttachedObject());
+		}
+
 		Valueable<int> SpawnsTiberium_Type;
 		Valueable<int> SpawnsTiberium_Range;
 		Valueable<PartialVector2D<int>> SpawnsTiberium_GrowthStage;
@@ -33,7 +40,7 @@ public:
 		PhobosFixedString<32u> PaletteFile;
 		DynamicVectorClass<ColorScheme*>* Palette; // Intentionally not serialized - rebuilt from the palette file on load.
 
-		ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
+		ExtData(TerrainTypeClass* OwnerObject) : ObjectTypeClassExtension(OwnerObject)
 			, SpawnsTiberium_Type { 0 }
 			, SpawnsTiberium_Range { 1 }
 			, SpawnsTiberium_GrowthStage { { 3 } }

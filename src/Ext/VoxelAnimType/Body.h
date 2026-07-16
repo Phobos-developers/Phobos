@@ -1,6 +1,7 @@
 #pragma once
 #include <VoxelAnimTypeClass.h>
 
+#include <Ext/ObjectType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -14,9 +15,15 @@ public:
 	static constexpr DWORD Canary = 0xAAAEEEEE;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<VoxelAnimTypeClass>
+	class ExtData final : public ObjectTypeClassExtension
 	{
 	public:
+		// typed owner accessor
+		VoxelAnimTypeClass* OwnerObject() const
+		{
+			return static_cast<VoxelAnimTypeClass*>(this->GetAttachedObject());
+		}
+
 
 		ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
 		Valueable<bool> ExplodeOnWater;
@@ -26,7 +33,7 @@ public:
 		Valueable<bool> SplashAnims_PickRandom;
 		Valueable<int> Trailer_SpawnDelay;
 
-		ExtData(VoxelAnimTypeClass* OwnerObject) : Extension<VoxelAnimTypeClass>(OwnerObject)
+		ExtData(VoxelAnimTypeClass* OwnerObject) : ObjectTypeClassExtension(OwnerObject)
 			, LaserTrail_Types()
 			, ExplodeOnWater { false }
 			, Warhead_Detonate { false }

@@ -1,6 +1,7 @@
 #pragma once
 #include <TiberiumClass.h>
 
+#include <Ext/AbstractType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -12,12 +13,18 @@ public:
 	static constexpr DWORD Canary = 0xAABBCCDD;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<TiberiumClass>
+	class ExtData final : public AbstractTypeClassExtension
 	{
 	public:
+		// typed owner accessor
+		TiberiumClass* OwnerObject() const
+		{
+			return static_cast<TiberiumClass*>(this->GetAttachedObject());
+		}
+
 		Nullable<ColorStruct> MinimapColor;
 
-		ExtData(TiberiumClass* OwnerObject) : Extension<TiberiumClass>(OwnerObject)
+		ExtData(TiberiumClass* OwnerObject) : AbstractTypeClassExtension(OwnerObject)
 			, MinimapColor {}
 		{ }
 

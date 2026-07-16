@@ -4,6 +4,7 @@
 
 #include <Ext/VoxelAnimType/Body.h>
 #include <New/Entity/LaserTrailClass.h>
+#include <Ext/Object/Body.h>
 
 class VoxelAnimExt
 {
@@ -13,14 +14,20 @@ public:
 	static constexpr DWORD Canary = 0xAAAAAACC;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<VoxelAnimClass>
+	class ExtData final : public ObjectClassExtension
 	{
 	public:
+		// typed owner accessor
+		VoxelAnimClass* OwnerObject() const
+		{
+			return static_cast<VoxelAnimClass*>(this->GetAttachedObject());
+		}
+
 
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		CDTimerClass TrailerSpawnTimer;
 
-		ExtData(VoxelAnimClass* OwnerObject) : Extension<VoxelAnimClass>(OwnerObject)
+		ExtData(VoxelAnimClass* OwnerObject) : ObjectClassExtension(OwnerObject)
 			, LaserTrails()
 			, TrailerSpawnTimer()
 		{ }
