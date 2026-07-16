@@ -20,11 +20,6 @@ public:
 		return static_cast<AircraftTypeClass*>(this->GetAttachedObject());
 	}
 
-	virtual ~AircraftTypeExt() override
-	{
-		ExtMap.Unregister(this);
-	}
-
 	class ExtContainer final : public Container<AircraftTypeExt>
 	{
 	public:

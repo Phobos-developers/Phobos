@@ -1384,14 +1384,14 @@ bool TechnoExt::SaveGlobals(PhobosStreamWriter& Stm)
 // The extension is allocated by the concrete leaf constructors (UnitClass/InfantryClass/
 // BuildingClass/AircraftClass), not here at the abstract TechnoClass level.
 
+// The extension is removed by the concrete leaf destructor hooks; this only
+// keeps the tech tree recheck side effect at the shared base destructor.
 DEFINE_HOOK(0x6F4500, TechnoClass_DTOR, 0x5)
 {
 	GET(TechnoClass*, pItem, ECX);
 
 	if (pItem->AbstractFlags & AbstractFlags::Foot)
 		pItem->Owner->RecheckTechTree = true; // for SW.AuxTechons and SW.NegTechnos
-
-	TechnoExt::Destroy(pItem);
 
 	return 0;
 }

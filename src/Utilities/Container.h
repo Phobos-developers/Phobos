@@ -432,19 +432,6 @@ public:
 		return val;
 	}
 
-	// Removes a dying extension from the tracking list without touching the owner or
-	// deleting it; leaf extension destructors call this on their own container.
-	void Unregister(extension_type_ptr val)
-	{
-		auto& vec = this->Items;
-		auto it = std::find(vec.begin(), vec.end(), val);
-
-		if (it != vec.end())
-		{
-			*it = vec.back();
-			vec.pop_back();
-		}
-	}
 
 	extension_type_ptr TryAllocate(base_type_ptr key, bool bCond, const std::string_view& nMessage)
 	{

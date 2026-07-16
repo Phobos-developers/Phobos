@@ -255,17 +255,6 @@ public:
 		return pThis ? Fetch(pThis) : nullptr;
 	}
 
-	// deletes the leaf extension of a dying object; the leaf destructor
-	// unregisters itself from its own container
-	static void Destroy(TechnoClass* pThis)
-	{
-		if (auto const pExt = Fetch(pThis))
-		{
-			delete pExt;
-			*reinterpret_cast<uintptr_t*>(reinterpret_cast<char*>(pThis) + ExtPointerOffset) = 0;
-		}
-	}
-
 	static UnitClass* Deployer;
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);

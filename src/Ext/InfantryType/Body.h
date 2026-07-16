@@ -20,11 +20,6 @@ public:
 		return static_cast<InfantryTypeClass*>(this->GetAttachedObject());
 	}
 
-	virtual ~InfantryTypeExt() override
-	{
-		ExtMap.Unregister(this);
-	}
-
 	class ExtContainer final : public Container<InfantryTypeExt>
 	{
 	public:

@@ -25,11 +25,6 @@ public:
 	static CellStruct PickEdgeCellForPlane(AircraftTypeClass* pPlaneType, CellStruct destCell, Edge edge, bool isOnRetreat = false);
 	static DirType GetLandingDir(AircraftClass* pThis, BuildingClass* pDock = nullptr);
 
-	virtual ~AircraftExt() override
-	{
-		ExtMap.Unregister(this);
-	}
-
 	class ExtContainer final : public Container<AircraftExt>
 	{
 	public:

@@ -226,10 +226,7 @@ public:
 	int GetSuperWeaponIndex(int index, HouseClass* pHouse) const;
 	int GetSuperWeaponIndex(int index) const;
 
-	virtual ~BuildingTypeExt() override
-	{
-		ExtMap.Unregister(this);
-	}
+	virtual ~BuildingTypeExt() = default;
 
 	virtual void LoadFromINIFile(CCINIClass* pINI) override;
 	virtual void Initialize() override;

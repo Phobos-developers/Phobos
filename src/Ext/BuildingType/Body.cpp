@@ -480,3 +480,12 @@ DEFINE_HOOK(0x45E50C, BuildingTypeClass_CTOR, 0x6)
 
 // BuildingTypeClass destruction, save, load and INI parsing of the extension are handled by
 // the TechnoTypeClass container hooks now that a building type has a single extension at 0x18.
+
+DEFINE_HOOK(0x45E707, BuildingTypeClass_DTOR, 0x6)
+{
+	GET(BuildingTypeClass*, pItem, ESI);
+
+	BuildingTypeExt::ExtMap.Remove(pItem);
+
+	return 0;
+}

@@ -13,3 +13,12 @@ DEFINE_HOOK(0x517A60, InfantryClass_CTOR, 0xE)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x517D90, InfantryClass_DTOR, 0x5)
+{
+	GET(InfantryClass*, pItem, ECX);
+
+	InfantryExt::ExtMap.Remove(pItem);
+
+	return 0;
+}

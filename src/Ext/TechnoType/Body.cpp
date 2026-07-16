@@ -2013,14 +2013,6 @@ DEFINE_HOOK(0x711835, TechnoTypeClass_CTOR, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x711AE0, TechnoTypeClass_DTOR, 0x5)
-{
-	GET(TechnoTypeClass*, pItem, ECX);
-
-	TechnoTypeExt::Destroy(pItem);
-
-	return 0;
-}
 
 //DEFINE_HOOK_AGAIN(0x716132, TechnoTypeClass_LoadFromINI, 0x5)// Section dont exist!
 DEFINE_HOOK(0x716123, TechnoTypeClass_LoadFromINI, 0x5)

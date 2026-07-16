@@ -1060,17 +1060,6 @@ public:
 	{
 		return pThis ? Fetch(pThis) : nullptr;
 	}
-
-	// deletes the leaf extension of a dying type object; the leaf destructor
-	// unregisters itself from its own container
-	static void Destroy(TechnoTypeClass* pThis)
-	{
-		if (auto const pExt = Fetch(pThis))
-		{
-			delete pExt;
-			*reinterpret_cast<uintptr_t*>(reinterpret_cast<char*>(pThis) + ExtPointerOffset) = 0;
-		}
-	}
 	static bool SelectWeaponMutex;
 
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);

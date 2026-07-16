@@ -637,3 +637,12 @@ static void __fastcall BuildingClass_InfiltratedBy_Wrapper(BuildingClass* pThis,
 }
 
 DEFINE_FUNCTION_JUMP(CALL, 0x51A00B, BuildingClass_InfiltratedBy_Wrapper);
+
+DEFINE_HOOK(0x43C022, BuildingClass_DTOR, 0x6)
+{
+	GET(BuildingClass*, pItem, ESI);
+
+	BuildingExt::ExtMap.Remove(pItem);
+
+	return 0;
+}

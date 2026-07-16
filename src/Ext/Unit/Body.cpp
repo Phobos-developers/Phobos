@@ -14,3 +14,12 @@ DEFINE_HOOK(0x7353D3, UnitClass_CTOR, 0x7)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x735780, UnitClass_DTOR, 0x6)
+{
+	GET(UnitClass*, pItem, ECX);
+
+	UnitExt::ExtMap.Remove(pItem);
+
+	return 0;
+}

@@ -22,11 +22,6 @@ public:
 		return static_cast<UnitClass*>(this->GetAttachedObject());
 	}
 
-	virtual ~UnitExt() override
-	{
-		ExtMap.Unregister(this);
-	}
-
 	class ExtContainer final : public Container<UnitExt>
 	{
 	public:

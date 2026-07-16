@@ -55,10 +55,7 @@ public:
 	bool HasSuperWeapon(int index) const;
 	bool HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore);
 	void UpdatePrimaryFactoryAI();
-	virtual ~BuildingExt() override
-	{
-		ExtMap.Unregister(this);
-	}
+	virtual ~BuildingExt() = default;
 
 	// virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
