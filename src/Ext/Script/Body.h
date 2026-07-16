@@ -153,7 +153,6 @@ public:
 	using ExtData = ScriptExt;
 
 	static constexpr DWORD Canary = 0x3B3B3B3B;
-	static constexpr size_t ExtPointerOffset = 0x18;
 
 public:
 	// typed owner accessor

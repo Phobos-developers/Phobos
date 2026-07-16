@@ -13,7 +13,6 @@ public:
 	using ExtData = WeaponTypeExt;
 
 	static constexpr DWORD Canary = 0x22222222;
-	static constexpr size_t ExtPointerOffset = 0x18;
 
 public:
 	// typed owner accessor

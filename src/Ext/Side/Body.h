@@ -12,7 +12,6 @@ public:
 	using ExtData = SideExt;
 
 	static constexpr DWORD Canary = 0x05B10501;
-	static constexpr size_t ExtPointerOffset = 0x18;
 
 public:
 	// typed owner accessor

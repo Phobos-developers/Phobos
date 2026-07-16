@@ -12,7 +12,6 @@ public:
 	using ExtData = TeamExt;
 
 	static constexpr DWORD Canary = 0x414B4B41;
-	static constexpr size_t ExtPointerOffset = 0x18;
 
 public:
 	// typed owner accessor

@@ -12,7 +12,6 @@ public:
 	using ExtData = ParticleSystemTypeExt;
 
 	static constexpr DWORD Canary = 0xF9984EFE;
-	static constexpr size_t ExtPointerOffset = 0x18;
 
 public:
 	// typed owner accessor

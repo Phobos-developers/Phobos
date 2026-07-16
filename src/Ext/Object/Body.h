@@ -16,4 +16,14 @@ public:
 	{
 		return static_cast<ObjectClass*>(this->GetAttachedObject());
 	}
+
+	static ObjectExt* Fetch(const ObjectClass* pThis)
+	{
+		return static_cast<ObjectExt*>(AbstractExt::Fetch(pThis));
+	}
+
+	static ObjectExt* TryFetch(const ObjectClass* pThis)
+	{
+		return pThis ? Fetch(pThis) : nullptr;
+	}
 };

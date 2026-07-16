@@ -23,7 +23,6 @@ public:
 	using ExtData = TechnoTypeExt;
 
 	static constexpr DWORD Canary = 0x11111111;
-	static constexpr size_t ExtPointerOffset = 0x18;
 
 public:
 	// typed owner accessor (the base chain stores the owner as ObjectTypeClass*)
@@ -1053,7 +1052,7 @@ public:
 	// tracked by their own containers. The polymorphic fetch reads the inline slot directly.
 	static TechnoTypeExt* Fetch(const TechnoTypeClass* pThis)
 	{
-		return *reinterpret_cast<TechnoTypeExt* const*>(reinterpret_cast<const char*>(pThis) + ExtPointerOffset);
+		return static_cast<TechnoTypeExt*>(AbstractExt::Fetch(pThis));
 	}
 
 	static TechnoTypeExt* TryFetch(const TechnoTypeClass* pThis)

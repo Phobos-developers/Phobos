@@ -63,7 +63,6 @@ public:
 	using ExtData = TEventExt;
 
 	static constexpr DWORD Canary = 0x91919191;
-	static constexpr size_t ExtPointerOffset = 0x18;
 
 public:
 	// typed owner accessor

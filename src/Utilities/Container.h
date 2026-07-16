@@ -60,6 +60,20 @@ class AbstractExt
 	InitState Initialized;
 
 public:
+	// every extension pointer lives in the unused AbstractClass::unknown_18 field
+	static constexpr size_t ExtPointerOffset = 0x18;
+
+	// reads the inline extension slot of any AbstractClass-derived object; returns
+	// null for objects of unextended types (the slot is zeroed by the game's ctor)
+	static AbstractExt* Fetch(const AbstractClass* pThis)
+	{
+		return *reinterpret_cast<AbstractExt* const*>(reinterpret_cast<const char*>(pThis) + ExtPointerOffset);
+	}
+
+	static AbstractExt* TryFetch(const AbstractClass* pThis)
+	{
+		return pThis ? Fetch(pThis) : nullptr;
+	}
 
 	explicit AbstractExt(AbstractClass* const OwnerObject) : AttachedToObject { OwnerObject }, Initialized { InitState::Blank }
 	{ }

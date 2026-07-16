@@ -14,4 +14,14 @@ public:
 	{
 		return static_cast<MissionClass*>(this->GetAttachedObject());
 	}
+
+	static MissionExt* Fetch(const MissionClass* pThis)
+	{
+		return static_cast<MissionExt*>(AbstractExt::Fetch(pThis));
+	}
+
+	static MissionExt* TryFetch(const MissionClass* pThis)
+	{
+		return pThis ? Fetch(pThis) : nullptr;
+	}
 };

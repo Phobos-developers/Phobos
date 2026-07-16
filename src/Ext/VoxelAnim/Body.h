@@ -13,7 +13,6 @@ public:
 	using ExtData = VoxelAnimExt;
 
 	static constexpr DWORD Canary = 0xAAAAAACC;
-	static constexpr size_t ExtPointerOffset = 0x18;
 
 public:
 	// typed owner accessor

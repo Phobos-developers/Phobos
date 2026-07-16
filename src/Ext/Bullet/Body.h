@@ -20,7 +20,6 @@ public:
 	using ExtData = BulletExt;
 
 	static constexpr DWORD Canary = 0x2A2A2A2A;
-	static constexpr size_t ExtPointerOffset = 0x18;
 
 public:
 	// typed owner accessor

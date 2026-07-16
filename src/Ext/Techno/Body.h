@@ -19,7 +19,6 @@ public:
 	using ExtData = TechnoExt;
 
 	static constexpr DWORD Canary = 0x55555555;
-	static constexpr size_t ExtPointerOffset = 0x18;
 
 public:
 	// typed owner accessor (the base chain stores the owner as RadioClass*)
@@ -247,7 +246,7 @@ public:
 	// own containers. The polymorphic fetch reads the inline slot directly.
 	static TechnoExt* Fetch(const TechnoClass* pThis)
 	{
-		return *reinterpret_cast<TechnoExt* const*>(reinterpret_cast<const char*>(pThis) + ExtPointerOffset);
+		return static_cast<TechnoExt*>(AbstractExt::Fetch(pThis));
 	}
 
 	static TechnoExt* TryFetch(const TechnoClass* pThis)

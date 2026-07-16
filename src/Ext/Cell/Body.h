@@ -11,7 +11,6 @@ public:
 	using ExtData = CellExt;
 
 	static constexpr DWORD Canary = 0x13371337;
-	static constexpr size_t ExtPointerOffset = 0x18;
 
 	struct RadLevel
 	{
