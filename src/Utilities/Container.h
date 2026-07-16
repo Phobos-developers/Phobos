@@ -104,15 +104,23 @@ public:
 
 	virtual inline void SaveToStream(PhobosStreamWriter& Stm)
 	{
-		//Stm.Save(this->AttachedToObject);
 		Stm.Save(this->Initialized);
 	}
 
 	virtual inline void LoadFromStream(PhobosStreamReader& Stm)
 	{
-		//Stm.Load(this->AttachedToObject);
 		Stm.Load(this->Initialized);
 	}
+
+	// on load the extension is constructed with the save-time owner pointer;
+	// this queues it for remapping when the swizzle manager resolves pointers.
+	void RegisterOwnerForChange()
+	{
+		PhobosSwizzle::RegisterForChange(&this->AttachedToObject);
+	}
+
+	// called after loading once all pointers (including the owner) have been remapped
+	virtual void PostLoad() { }
 
 protected:
 	void* GetAttachedObject() const
@@ -300,17 +308,12 @@ private:
 	map_type MappedItems;
 	std::vector<extension_type_ptr> Items;
 
-	base_type* SavingObject;
-	extension_type_ptr SavingExtPointer;
-	IStream* SavingStream;
 	const char* Name;
 
 public:
 	explicit Container(const char* pName) :
 		MappedItems(),
 		Items(),
-		SavingObject(nullptr),
-		SavingStream(nullptr),
 		Name(pName)
 	{ }
 
@@ -335,6 +338,10 @@ private:
 public:
 	extension_type_ptr Allocate(base_type_ptr key)
 	{
+		// during savegame load extensions are restored from the stream instead
+		if (Phobos::IsLoadingSaveGame)
+			return nullptr;
+
 		if constexpr (HasOffset<T>)
 			ResetExtensionPointer(key);
 
@@ -356,6 +363,13 @@ public:
 	// into this container: stores the inline pointer and tracks it for iteration.
 	extension_type_ptr Adopt(extension_type_ptr val)
 	{
+		// during savegame load extensions are restored from the stream instead
+		if (Phobos::IsLoadingSaveGame)
+		{
+			delete val;
+			return nullptr;
+		}
+
 		val->EnsureConstanted();
 
 		if constexpr (HasOffset<T>)
@@ -475,56 +489,138 @@ public:
 			ptr->LoadFromINI(pINI);
 	}
 
-	void PrepareStream(base_type_ptr key, IStream* pStm)
+	// Writes every live extension of this container into the savegame stream:
+	// a header block (canary + count), then one length-prefixed block per extension
+	// carrying its save-time address (for pointer swizzling), its owner's identity
+	// and the serialized members.
+	bool SaveAllToStream(IStream* pStm)
 	{
-		//Debug::Log("[PrepareStream] Next is %p of type '%s'\n", key, this->Name);
+		if constexpr (!HasOffset<T>)
+		{
+			return true; // map-mode extensions (EBolt) are not serialized
+		}
+		else
+		{
+			PhobosByteStream headerStm(sizeof(DWORD) * 2);
+			PhobosStreamWriter headerWriter(headerStm);
+			headerWriter.Save(T::Canary);
+			headerWriter.Save(this->Items.size());
 
-		this->SavingObject = key;
-		this->SavingStream = pStm;
+			if (!headerStm.WriteBlockToStream(pStm))
+			{
+				Debug::Log("SaveAllToStream - Failed to save header for '%s'.\n", this->Name);
+				return false;
+			}
 
-		// Loading the base type data might override the ext pointer stored on it so it needs to be saved.
+			for (const auto& item : this->Items)
+			{
+				PhobosByteStream saver(sizeof(*item));
+				PhobosStreamWriter writer(saver);
+
+				// the extension's own save-time address, so pointers to it can be remapped
+				writer.RegisterChange(item);
+				// which concrete leaf to construct on load
+				writer.Save(item->OwnerObject()->WhatAmI());
+				// the save-time owner address, remapped to the loaded owner by the swizzle manager
+				writer.Save(static_cast<void*>(item->OwnerObject()));
+
+				item->SaveToStream(writer);
+
+				if (!saver.WriteBlockToStream(pStm))
+				{
+					Debug::Log("SaveAllToStream - Failed to save an item of '%s'.\n", this->Name);
+					return false;
+				}
+			}
+
+			return true;
+		}
+	}
+
+	// Recreates every extension of this container from the savegame stream. Owners do
+	// not exist yet; each extension holds the save-time owner pointer until the swizzle
+	// manager remaps it, and the owners' inline pointers are restored by
+	// RelinkExtensionPointers afterwards.
+	bool LoadAllFromStream(IStream* pStm)
+	{
+		if constexpr (!HasOffset<T>)
+		{
+			return true;
+		}
+		else
+		{
+			PhobosByteStream headerStm(0);
+			if (!headerStm.ReadBlockFromStream(pStm))
+			{
+				Debug::Log("LoadAllFromStream - Failed to read header for '%s'.\n", this->Name);
+				return false;
+			}
+
+			PhobosStreamReader headerReader(headerStm);
+			size_t count = 0;
+
+			if (!headerReader.Expect(T::Canary) || !headerReader.Load(count) || !headerReader.ExpectEndOfBlock())
+			{
+				Debug::Log("LoadAllFromStream - Invalid header for '%s'.\n", this->Name);
+				return false;
+			}
+
+			this->Items.reserve(count);
+
+			for (size_t i = 0; i < count; ++i)
+			{
+				PhobosByteStream loader(0);
+				if (!loader.ReadBlockFromStream(pStm))
+				{
+					Debug::Log("LoadAllFromStream - Failed to read an item of '%s'.\n", this->Name);
+					return false;
+				}
+
+				PhobosStreamReader reader(loader);
+
+				void* oldPtr = nullptr;
+				AbstractType tag = AbstractType::None;
+				void* oldOwner = nullptr;
+
+				if (!reader.Load(oldPtr) || !reader.Load(tag) || !reader.Load(oldOwner))
+				{
+					Debug::Log("LoadAllFromStream - Invalid item header in '%s'.\n", this->Name);
+					return false;
+				}
+
+				auto const buffer = this->CreateExtData(tag, static_cast<base_type_ptr>(oldOwner));
+				buffer->RegisterOwnerForChange();
+				PhobosSwizzle::RegisterChange(oldPtr, buffer);
+				this->Items.emplace_back(buffer);
+
+				buffer->LoadFromStream(reader);
+
+				if (!reader.ExpectEndOfBlock())
+					return false;
+			}
+
+			return true;
+		}
+	}
+
+	// After the swizzle manager has remapped all pointers, write each extension back
+	// into its owner's inline slot (the owner's loaded bytes still hold the stale
+	// save-time value).
+	void RelinkExtensionPointers()
+	{
 		if constexpr (HasOffset<T>)
-			this->SavingExtPointer = GetExtensionPointer(key);
-	}
-
-	void SaveStatic()
-	{
-		if (this->SavingObject && this->SavingStream)
 		{
-			//Debug::Log("[SaveStatic] Saving object %p as '%s'\n", this->SavingObject, this->Name);
-			if (!this->Save(this->SavingObject, this->SavingStream))
-				Debug::FatalErrorAndExit("SaveStatic - Saving object %p as '%s' failed!\n", this->SavingObject, this->Name);
-		}
-		else
-		{
-			Debug::Log("SaveStatic - Object or Stream not set for '%s': %p, %p\n",
-				this->Name, this->SavingObject, this->SavingStream);
-		}
+			for (const auto& item : this->Items)
+			{
+				auto const key = item->OwnerObject();
 
-		this->SavingObject = nullptr;
-		this->SavingStream = nullptr;
-	}
+				if (!key)
+					Debug::FatalErrorAndExit("RelinkExtensionPointers - '%s' extension has no owner!\n", this->Name);
 
-	void LoadStatic()
-	{
-		if (this->SavingObject && this->SavingStream)
-		{
-			// Restore stored ext pointer data.
-			if constexpr (HasOffset<T>)
-				SetExtensionPointer(this->SavingObject, this->SavingExtPointer);
-
-			//Debug::Log("[LoadStatic] Loading object %p as '%s'\n", this->SavingObject, this->Name);
-			if (!this->Load(this->SavingObject, this->SavingStream))
-				Debug::FatalErrorAndExit("LoadStatic - Loading object %p as '%s' failed!\n", this->SavingObject, this->Name);
+				SetExtensionPointer(key, item);
+				item->PostLoad();
+			}
 		}
-		else
-		{
-			Debug::Log("LoadStatic - Object or Stream not set for '%s': %p, %p\n",
-				this->Name, this->SavingObject, this->SavingStream);
-		}
-
-		this->SavingObject = nullptr;
-		this->SavingStream = nullptr;
 	}
 
 	decltype(auto) begin() const = delete;
@@ -537,90 +633,11 @@ public:
 	}
 
 protected:
-	// override this method to do type-specific stuff
-	virtual bool Save(base_type_ptr key, IStream* pStm)
+	// constructs the concrete extension on load; containers whose base class has
+	// multiple concrete leaves override this to pick the leaf matching the tag
+	virtual extension_type_ptr CreateExtData(AbstractType tag, base_type_ptr pOwner) const
 	{
-		return this->SaveKey(key, pStm) != nullptr;
-	}
-
-	// override this method to do type-specific stuff
-	virtual bool Load(base_type_ptr key, IStream* pStm)
-	{
-		return this->LoadKey(key, pStm) != nullptr;
-	}
-
-	extension_type_ptr SaveKey(base_type_ptr key, IStream* pStm)
-	{
-		// this really shouldn't happen
-		if (!key)
-		{
-			Debug::Log("SaveKey - Attempted for a null pointer! WTF!\n");
-			return nullptr;
-		}
-
-		// get the value data
-		auto buffer = this->Find(key);
-		if (!buffer)
-		{
-			Debug::Log("SaveKey - Could not find value.\n");
-			return nullptr;
-		}
-
-		// write the current pointer, the size of the block, and the canary
-		PhobosByteStream saver(sizeof(*buffer));
-		PhobosStreamWriter writer(saver);
-
-		writer.Save(T::Canary);
-		writer.Save(buffer);
-
-		// save the data
-		buffer->SaveToStream(writer);
-
-		// save the block
-		if (!saver.WriteBlockToStream(pStm))
-		{
-			Debug::Log("SaveKey - Failed to save data.\n");
-			return nullptr;
-		}
-
-		//Debug::Log("[SaveKey] Save used up 0x%X bytes\n", saver.Size());
-
-		return buffer;
-	}
-
-	extension_type_ptr LoadKey(base_type_ptr key, IStream* pStm)
-	{
-		// this really shouldn't happen
-		if (!key)
-		{
-			Debug::Log("LoadKey - Attempted for a null pointer! WTF!\n");
-			return nullptr;
-		}
-
-		// get or allocate the value data
-		extension_type_ptr buffer = this->FindOrAllocate(key);
-		if (!buffer)
-		{
-			Debug::Log("LoadKey - Could not find or allocate value.\n");
-			return nullptr;
-		}
-
-		PhobosByteStream loader(0);
-		if (!loader.ReadBlockFromStream(pStm))
-		{
-			Debug::Log("LoadKey - Failed to read data from save stream?!\n");
-			return nullptr;
-		}
-
-		PhobosStreamReader reader(loader);
-		if (reader.Expect(T::Canary) && reader.RegisterChange(buffer))
-		{
-			buffer->LoadFromStream(reader);
-			if (reader.ExpectEndOfBlock())
-				return buffer;
-		}
-
-		return nullptr;
+		return new extension_type(pOwner);
 	}
 
 private:

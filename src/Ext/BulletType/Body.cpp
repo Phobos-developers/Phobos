@@ -233,29 +233,6 @@ DEFINE_HOOK(0x46C8B6, BulletTypeClass_SDDTOR, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x46C730, BulletTypeClass_SaveLoad_Prefix, 0x8)
-DEFINE_HOOK(0x46C6A0, BulletTypeClass_SaveLoad_Prefix, 0x5)
-{
-	GET_STACK(BulletTypeClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	BulletTypeExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x46C722, BulletTypeClass_Load_Suffix, 0x4)
-{
-	BulletTypeExt::ExtMap.LoadStatic();
-	return 0;
-}
-
-DEFINE_HOOK(0x46C74A, BulletTypeClass_Save_Suffix, 0x3)
-{
-	BulletTypeExt::ExtMap.SaveStatic();
-	return 0;
-}
-
 //DEFINE_HOOK_AGAIN(0x46C429, BulletTypeClass_LoadFromINI, 0xA)// Section dont exist!
 DEFINE_HOOK(0x46C41C, BulletTypeClass_LoadFromINI, 0xA)
 {

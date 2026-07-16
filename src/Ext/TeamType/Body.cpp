@@ -62,31 +62,6 @@ DEFINE_HOOK(0x6F20D0, TeamTypeClass_DTOR, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x6F1BB0, TeamTypeClass_SaveLoad_Prefix, 0x5)
-DEFINE_HOOK(0x6F1B90, TeamTypeClass_SaveLoad_Prefix, 0x8)
-{
-	GET_STACK(TeamTypeClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	TeamTypeExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6F1C35, TeamTypeClass_Load_Suffix, 0x5)
-{
-	TeamTypeExt::ExtMap.LoadStatic();
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6F1BAA, TeamTypeClass_Save_Suffix, 0x5)
-{
-	TeamTypeExt::ExtMap.SaveStatic();
-
-	return 0;
-}
-
 DEFINE_HOOK_AGAIN(0x6F1535, TeamTypeClass_LoadFromINI, 0xA)
 DEFINE_HOOK(0x6F1528, TeamTypeClass_LoadFromINI, 0xA)
 {

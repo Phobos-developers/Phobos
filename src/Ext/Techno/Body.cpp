@@ -1,8 +1,12 @@
 #include "Body.h"
 
+#include <Ext/Aircraft/Body.h>
 #include <Ext/Anim/Body.h>
+#include <Ext/Building/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
+#include <Ext/Infantry/Body.h>
+#include <Ext/Unit/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Event/Body.h>
@@ -1382,6 +1386,24 @@ TechnoExt::ExtContainer::ExtContainer() : Container("TechnoClass") { }
 
 TechnoExt::ExtContainer::~ExtContainer() = default;
 
+TechnoExt::ExtData* TechnoExt::ExtContainer::CreateExtData(AbstractType tag, TechnoClass* pOwner) const
+{
+	switch (tag)
+	{
+	case AbstractType::Unit:
+		return new UnitClassExtension(static_cast<UnitClass*>(pOwner));
+	case AbstractType::Infantry:
+		return new InfantryClassExtension(static_cast<InfantryClass*>(pOwner));
+	case AbstractType::Aircraft:
+		return new AircraftClassExtension(static_cast<AircraftClass*>(pOwner));
+	case AbstractType::Building:
+		return new BuildingExt::ExtData(static_cast<BuildingClass*>(pOwner));
+	default:
+		Debug::FatalErrorAndExit("TechnoExt - unexpected extension tag %d in the save stream!\n", static_cast<int>(tag));
+		return nullptr;
+	}
+}
+
 
 // =============================
 // container hooks
@@ -1397,31 +1419,6 @@ DEFINE_HOOK(0x6F4500, TechnoClass_DTOR, 0x5)
 		pItem->Owner->RecheckTechTree = true; // for SW.AuxTechons and SW.NegTechnos
 
 	TechnoExt::ExtMap.Remove(pItem);
-
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x70C250, TechnoClass_SaveLoad_Prefix, 0x8)
-DEFINE_HOOK(0x70BF50, TechnoClass_SaveLoad_Prefix, 0x5)
-{
-	GET_STACK(TechnoClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	TechnoExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x70C249, TechnoClass_Load_Suffix, 0x5)
-{
-	TechnoExt::ExtMap.LoadStatic();
-
-	return 0;
-}
-
-DEFINE_HOOK(0x70C264, TechnoClass_Save_Suffix, 0x5)
-{
-	TechnoExt::ExtMap.SaveStatic();
 
 	return 0;
 }

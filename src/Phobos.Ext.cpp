@@ -155,6 +155,48 @@ struct SaveGlobalsAction
 	}
 };
 
+// calls:
+// T::ExtMap.SaveAllToStream(IStream*)
+struct SaveExtensionsAction
+{
+	template <typename T>
+	static bool Process(IStream* pStm)
+	{
+		if constexpr (HasExtMap<T>)
+			return T::ExtMap.SaveAllToStream(pStm);
+		else
+			return true;
+	}
+};
+
+// calls:
+// T::ExtMap.LoadAllFromStream(IStream*)
+struct LoadExtensionsAction
+{
+	template <typename T>
+	static bool Process(IStream* pStm)
+	{
+		if constexpr (HasExtMap<T>)
+			return T::ExtMap.LoadAllFromStream(pStm);
+		else
+			return true;
+	}
+};
+
+// calls:
+// T::ExtMap.RelinkExtensionPointers()
+struct RelinkExtensionsAction
+{
+	template <typename T>
+	static bool Process()
+	{
+		if constexpr (HasExtMap<T>)
+			T::ExtMap.RelinkExtensionPointers();
+
+		return true;
+	}
+};
+
 // this is a complicated thing that calls methods on classes. add types to the
 // instantiation of this type, and the most appropriate method for each type
 // will be called with no overhead of virtual functions.
@@ -179,6 +221,21 @@ struct TypeRegistry
 	__forceinline static bool SaveGlobals(IStream* pStm)
 	{
 		return dispatch_mass_action<SaveGlobalsAction>(pStm);
+	}
+
+	__forceinline static bool SaveExtensions(IStream* pStm)
+	{
+		return dispatch_mass_action<SaveExtensionsAction>(pStm);
+	}
+
+	__forceinline static bool LoadExtensions(IStream* pStm)
+	{
+		return dispatch_mass_action<LoadExtensionsAction>(pStm);
+	}
+
+	__forceinline static void RelinkExtensions()
+	{
+		dispatch_mass_action<RelinkExtensionsAction>();
 	}
 
 private:
@@ -268,14 +325,29 @@ DEFINE_HOOK(0x685659, Scenario_ClearClasses, 0xa)
 DEFINE_HOOK(0x67D32C, SaveGame_Phobos, 0x5)
 {
 	GET(IStream*, pStm, ESI);
-	PhobosTypeRegistry::SaveGlobals(pStm);
+
+	if (!PhobosTypeRegistry::SaveGlobals(pStm) || !PhobosTypeRegistry::SaveExtensions(pStm))
+		Debug::FatalErrorAndExit("SaveGame - Failed to save Phobos data!\n");
+
 	return 0;
 }
 
 DEFINE_HOOK(0x67E826, LoadGame_Phobos, 0x6)
 {
 	GET(IStream*, pStm, ESI);
-	PhobosTypeRegistry::LoadGlobals(pStm);
+
+	if (!PhobosTypeRegistry::LoadGlobals(pStm) || !PhobosTypeRegistry::LoadExtensions(pStm))
+		Debug::FatalErrorAndExit("LoadGame - Failed to load Phobos data!\n");
+
+	return 0;
+}
+
+// First instruction after SwizzleManagerClass::Process has remapped every registered
+// pointer: extension owners are valid again, restore the owners' inline ext pointers
+// (their loaded bytes still hold the stale save-time values).
+DEFINE_HOOK(0x67E685, LoadGame_PostSwizzle_Phobos, 0x5)
+{
+	PhobosTypeRegistry::RelinkExtensions();
 	return 0;
 }
 

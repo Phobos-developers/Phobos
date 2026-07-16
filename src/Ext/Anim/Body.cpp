@@ -461,7 +461,10 @@ void AnimExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	ObjectClassExtension::LoadFromStream(Stm);
 	this->Serialize(Stm);
+}
 
+void AnimExt::ExtData::PostLoad()
+{
 	if (this->AttachedSystem)
 		AnimExt::AnimsWithAttachedParticles.push_back(this->OwnerObject());
 }
@@ -547,15 +550,6 @@ DEFINE_HOOK(0x422126, AnimClass_CTOR_NullType, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x4228D2, AnimClass_CTOR_Load, 0x5)
-{
-	GET(AnimClass*, pItem, ESI);
-
-	AnimExt::ExtMap.Allocate(pItem);
-
-	return 0;
-}
-
 DEFINE_HOOK(0x4226F6, AnimClass_CTOR, 0x6)
 {
 	GET(AnimClass*, pItem, ESI);
@@ -590,31 +584,6 @@ DEFINE_HOOK(0x426598, AnimClass_SDDTOR, 0x7)
 	return 0;
 }
 */
-
-DEFINE_HOOK_AGAIN(0x425280, AnimClass_SaveLoad_Prefix, 0x5)
-DEFINE_HOOK(0x4253B0, AnimClass_SaveLoad_Prefix, 0x5)
-{
-	GET_STACK(AnimClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	AnimExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x425391, AnimClass_Load_Suffix, 0x7)
-DEFINE_HOOK_AGAIN(0x4253A2, AnimClass_Load_Suffix, 0x7)
-DEFINE_HOOK(0x425358, AnimClass_Load_Suffix, 0x7)
-{
-	AnimExt::ExtMap.LoadStatic();
-	return 0;
-}
-
-DEFINE_HOOK(0x4253FF, AnimClass_Save_Suffix, 0x5)
-{
-	AnimExt::ExtMap.SaveStatic();
-	return 0;
-}
 
 // Field D0 in AnimClass is mostly unused so by removing the few uses it has it can be used to store AnimExt pointer.
 DEFINE_JUMP(LJMP, 0x42543A, 0x425448)

@@ -73,25 +73,3 @@ DEFINE_HOOK(0x47BB60, CellClass_DTOR, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x483C10, CellClass_SaveLoad_Prefix, 0x5)
-DEFINE_HOOK(0x4839F0, CellClass_SaveLoad_Prefix, 0x7)
-{
-	GET_STACK(CellClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	CellExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x483C00, CellClass_Load_Suffix, 5)
-{
-	CellExt::ExtMap.LoadStatic();
-	return 0;
-}
-
-DEFINE_HOOK(0x483C79, CellClass_Save_Suffix, 0x6)
-{
-	CellExt::ExtMap.SaveStatic();
-	return 0;
-}

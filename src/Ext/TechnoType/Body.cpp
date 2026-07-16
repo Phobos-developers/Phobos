@@ -2,10 +2,13 @@
 
 #include <JumpjetLocomotionClass.h>
 
+#include <Ext/AircraftType/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
+#include <Ext/InfantryType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/UnitType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <New/Type/InsigniaTypeClass.h>
 
@@ -2003,6 +2006,24 @@ void TechnoTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 TechnoTypeExt::ExtContainer::ExtContainer() : Container("TechnoTypeClass") { }
 TechnoTypeExt::ExtContainer::~ExtContainer() = default;
 
+TechnoTypeExt::ExtData* TechnoTypeExt::ExtContainer::CreateExtData(AbstractType tag, TechnoTypeClass* pOwner) const
+{
+	switch (tag)
+	{
+	case AbstractType::UnitType:
+		return new UnitTypeClassExtension(static_cast<UnitTypeClass*>(pOwner));
+	case AbstractType::InfantryType:
+		return new InfantryTypeClassExtension(static_cast<InfantryTypeClass*>(pOwner));
+	case AbstractType::AircraftType:
+		return new AircraftTypeClassExtension(static_cast<AircraftTypeClass*>(pOwner));
+	case AbstractType::BuildingType:
+		return new BuildingTypeExt::ExtData(static_cast<BuildingTypeClass*>(pOwner));
+	default:
+		Debug::FatalErrorAndExit("TechnoTypeExt - unexpected extension tag %d in the save stream!\n", static_cast<int>(tag));
+		return nullptr;
+	}
+}
+
 // =============================
 // container hooks
 
@@ -2022,31 +2043,6 @@ DEFINE_HOOK(0x711AE0, TechnoTypeClass_DTOR, 0x5)
 	GET(TechnoTypeClass*, pItem, ECX);
 
 	TechnoTypeExt::ExtMap.Remove(pItem);
-
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x716DC0, TechnoTypeClass_SaveLoad_Prefix, 0x5)
-DEFINE_HOOK(0x7162F0, TechnoTypeClass_SaveLoad_Prefix, 0x6)
-{
-	GET_STACK(TechnoTypeClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	TechnoTypeExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x716DAC, TechnoTypeClass_Load_Suffix, 0xA)
-{
-	TechnoTypeExt::ExtMap.LoadStatic();
-
-	return 0;
-}
-
-DEFINE_HOOK(0x717094, TechnoTypeClass_Save_Suffix, 0x5)
-{
-	TechnoTypeExt::ExtMap.SaveStatic();
 
 	return 0;
 }

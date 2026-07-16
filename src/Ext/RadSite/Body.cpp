@@ -237,27 +237,3 @@ DEFINE_HOOK(0x65B2F4, RadSiteClass_DTOR, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x65B3D0, RadSiteClass_SaveLoad_Prefix, 0x5)
-DEFINE_HOOK(0x65B450, RadSiteClass_SaveLoad_Prefix, 0x8)
-{
-	GET_STACK(RadSiteClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	RadSiteExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x65B43F, RadSiteClass_Load_Suffix, 0x7)
-{
-	RadSiteExt::ExtMap.LoadStatic();
-
-	return 0;
-}
-
-DEFINE_HOOK(0x65B464, RadSiteClass_Save_Suffix, 0x5)
-{
-	RadSiteExt::ExtMap.SaveStatic();
-
-	return 0;
-}

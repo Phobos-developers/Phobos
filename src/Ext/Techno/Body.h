@@ -248,6 +248,9 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
+
+	protected:
+		virtual ExtData* CreateExtData(AbstractType tag, TechnoClass* pOwner) const override;
 	};
 
 	static ExtContainer ExtMap;
