@@ -2173,6 +2173,9 @@ msgid ""
 "techno lose 1 health"
 msgstr "修复了 `DeploysInto` 和 `UndeploysInto` 会让受损单位失去 1 点生命的 Bug"
 
+msgid "RA1-Style multi-turret and multi-barrel"
+msgstr "RA1 风格多炮塔与多炮管"
+
 msgid "**Noble Fish**:"
 msgstr "**Noble_Fish**："
 
