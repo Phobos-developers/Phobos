@@ -594,6 +594,7 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
 - `AllowDistributionCommand.SpreadMode` allows you to set spread range by hotkey. There're 4 tiers of range that can be selected by this hotkey which are identical to 0, 4, 8 and 16 cells.
   - When the range is 0, it is the original default behavior of the game.
 - You can also adjust spread range by using the mouse wheel while holding down the specific hotkey if `AllowDistributionCommand.SpreadModeScroll` set to true. This allows a more precise control of spread range that each step will increase/decrease it by `DistributionSpreadScrollStep`, with 20 cells as its maximum value.
+- `AllowDistributionCommand.SpreadModeDrag` allows you to adjust the spread range by pressing and dragging the mouse while holding down the specific hotkey. The drag distance from the starting point determines the spread range. This can naturally co-exist with `SpreadModeScroll`.
 - `AllowDistributionCommand.FilterMode` allows you to set target filter by hotkey, which default to `DefaultDistributionFilterMode`.
   - When the filter is `None`, it is the default behavior of the game. If the range is not zero at this time, a green ring will be displayed. You can adjust the filter mode to:
     - `Like` - only targets with the same armor type (Completely identical `Armor`) will be selected among the targets allocated in the range. At this time, a blue ring will be displayed.
@@ -628,7 +629,7 @@ In `ra2md.ini`:
 [Phobos]
 DefaultApplyNoMoveCommand=true                      ; boolean
 DefaultDistributionSpreadRange=2048                 ; integer between 0 and 5120
-DistributionSpreadScrollStep=16                     ; integer between 16 and 512
+DistributionSpreadScrollStep=256                    ; integer, minimum 16
 DefaultDistributionFilterMode=2                     ; integer, 0 - None , 1 - Like , 2 - Type , 3 - Name
 ```
 

@@ -22,7 +22,6 @@ namespace
 {
 	constexpr unsigned int DistributionSpreadRangeMax = 5120;     // 20 cells (x LeptonsPerCell)
 	constexpr unsigned int DistributionSpreadScrollStepMin = 16;
-	constexpr unsigned int DistributionSpreadScrollStepMax = 512;
 	constexpr unsigned int DistributionSpreadHotkeySteps[] = { 0, 1024, 2048, 4096 };
 	constexpr size_t DistributionSpreadHotkeyStepsCount = std::size(DistributionSpreadHotkeySteps);
 }
@@ -209,7 +208,7 @@ void DistributionModeHoldDownCommandClass::DistributionModeOff()
 void DistributionModeHoldDownCommandClass::DistributionSpreadModeExpand()
 {
 	auto& range = Phobos::Config::DistributionSpreadRange;
-	const auto step = std::max(DistributionSpreadScrollStepMin, std::min(Phobos::Config::DistributionSpreadScrollStep, DistributionSpreadScrollStepMax));
+	const auto step = std::max(DistributionSpreadScrollStepMin, Phobos::Config::DistributionSpreadScrollStep);
 	range = (range >= DistributionSpreadRangeMax - step) ? DistributionSpreadRangeMax : range + step;
 	DistributionModeHoldDownCommandClass::ShowTime = SystemTimer::GetTime();
 }
@@ -217,7 +216,7 @@ void DistributionModeHoldDownCommandClass::DistributionSpreadModeExpand()
 void DistributionModeHoldDownCommandClass::DistributionSpreadModeReduce()
 {
 	auto& range = Phobos::Config::DistributionSpreadRange;
-	const auto step = std::max(DistributionSpreadScrollStepMin, std::min(Phobos::Config::DistributionSpreadScrollStep, DistributionSpreadScrollStepMax));
+	const auto step = std::max(DistributionSpreadScrollStepMin, Phobos::Config::DistributionSpreadScrollStep);
 	range = (range <= step) ? 0 : range - step;
 	DistributionModeHoldDownCommandClass::ShowTime = SystemTimer::GetTime();
 }
@@ -549,7 +548,7 @@ DEFINE_HOOK(0x4AC4B9, DisplayClass_LeftPressAndDragging_DistributionDragStart, 0
 {
 	enum { SkipGameCode = 0x4AC4DF };
 
-	if (!DistributionModeHoldDownCommandClass::Enabled)
+	if (!DistributionModeHoldDownCommandClass::Enabled || !Phobos::Config::AllowDistributionCommand_SpreadModeDrag)
 		return 0;
 
 	const int count = ObjectClass::CurrentObjects.Count;

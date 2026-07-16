@@ -84,13 +84,14 @@ bool Phobos::Config::AllowSwitchNoMoveCommand = false;
 bool Phobos::Config::AllowDistributionCommand = false;
 bool Phobos::Config::AllowDistributionCommand_SpreadMode = true;
 bool Phobos::Config::AllowDistributionCommand_SpreadModeScroll = true;
+bool Phobos::Config::AllowDistributionCommand_SpreadModeDrag = true;
 bool Phobos::Config::AllowDistributionCommand_FilterMode = true;
 bool Phobos::Config::AllowDistributionCommand_AffectsAllies = true;
 bool Phobos::Config::AllowDistributionCommand_AffectsEnemies = true;
 bool Phobos::Config::AllowDistributionCommand_AffectsNeutral = true;
 bool Phobos::Config::ApplyNoMoveCommand = true;
 unsigned int Phobos::Config::DistributionSpreadRange = 2048;
-unsigned int Phobos::Config::DistributionSpreadScrollStep = 16;
+unsigned int Phobos::Config::DistributionSpreadScrollStep = 256;
 int Phobos::Config::DistributionFilterMode = 2;
 
 bool Phobos::Misc::CustomGS = false;
@@ -131,8 +132,8 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::ApplyNoMoveCommand = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "DefaultApplyNoMoveCommand", true);
 	Phobos::Config::DistributionSpreadRange = static_cast<unsigned int>(CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "DefaultDistributionSpreadRange", 2048));
 	Phobos::Config::DistributionSpreadRange = std::clamp(Phobos::Config::DistributionSpreadRange, 0u, 5120u);
-	Phobos::Config::DistributionSpreadScrollStep = static_cast<unsigned int>(CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "DistributionSpreadScrollStep", 16));
-	Phobos::Config::DistributionSpreadScrollStep = std::clamp(Phobos::Config::DistributionSpreadScrollStep, 16u, 512u);
+	Phobos::Config::DistributionSpreadScrollStep = static_cast<unsigned int>(CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "DistributionSpreadScrollStep", 256));
+	Phobos::Config::DistributionSpreadScrollStep = std::max(Phobos::Config::DistributionSpreadScrollStep, 16u);
 	Phobos::Config::DistributionFilterMode = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "DefaultDistributionFilterMode", 2);
 	Phobos::Config::DistributionFilterMode = std::clamp(Phobos::Config::DistributionFilterMode, 0, 3);
 
@@ -323,6 +324,7 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 	Phobos::Config::AllowDistributionCommand = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommand", Phobos::Config::AllowDistributionCommand);
 	Phobos::Config::AllowDistributionCommand_SpreadMode = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommand.SpreadMode", Phobos::Config::AllowDistributionCommand_SpreadMode);
 	Phobos::Config::AllowDistributionCommand_SpreadModeScroll = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommand.SpreadModeScroll", Phobos::Config::AllowDistributionCommand_SpreadModeScroll);
+	Phobos::Config::AllowDistributionCommand_SpreadModeDrag = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommand.SpreadModeDrag", Phobos::Config::AllowDistributionCommand_SpreadModeDrag);
 	Phobos::Config::AllowDistributionCommand_FilterMode = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommand.FilterMode", Phobos::Config::AllowDistributionCommand_FilterMode);
 	Phobos::Config::AllowDistributionCommand_AffectsAllies = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommand.AffectsAllies", Phobos::Config::AllowDistributionCommand_AffectsAllies);
 	Phobos::Config::AllowDistributionCommand_AffectsEnemies = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommand.AffectsEnemies", Phobos::Config::AllowDistributionCommand_AffectsEnemies);
