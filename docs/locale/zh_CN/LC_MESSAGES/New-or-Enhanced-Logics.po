@@ -3518,8 +3518,9 @@ msgstr "`Spawner.ExtraLimitRange` 是追击范围相对于武器射程进行调�
 msgid ""
 "`Spawner.DelayFrames` can be used to set the minimum number of game "
 "frames in between each spawn ejecting from the spawner. By default this "
-"is 9 frames for missiles and 20 for everything else."
-msgstr "`Spawner.DelayFrames` 可用于设置每次从子机发射器中生成单位的最小游戏帧数。对于导弹默认是 9 帧，其他默认是 20 帧。"
+"is 10 frames for launchers with `MissileSpawn=true` and 20 for everything"
+" else."
+msgstr "`Spawner.DelayFrames` 可用于设置每次从子机发射器中生成单位的最小游戏帧数。对于 `MissileSpawn=true` 的发射车默认是 10 帧，其他默认是 20 帧。"
 
 msgid ""
 "If `Spawner.AttackImmediately` is set to true, spawned aircraft will "
