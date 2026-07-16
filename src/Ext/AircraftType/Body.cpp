@@ -14,8 +14,10 @@ DEFINE_HOOK(0x41C8C0, AircraftTypeClass_CTOR, 0x5)
 	return 0;
 }
 
-// Hooked after the base destructor call in the twin destructor body the vtable
-// points at (the standalone destructor body has no callers and no hookable window).
+// Hooked after the base destructor call in both destructor bodies; the second site
+// is the tail of the standalone body (pop/pop/retn, safe to steal - the bytes after
+// it are alignment padding that is never executed).
+DEFINE_HOOK_AGAIN(0x41CA96, AircraftTypeClass_DTOR, 0x3)
 DEFINE_HOOK(0x41D056, AircraftTypeClass_DTOR, 0x5)
 {
 	GET(AircraftTypeClass*, pItem, ESI);
