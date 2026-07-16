@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <unordered_map>
 
 #include <CCINIClass.h>
@@ -23,41 +24,32 @@ enum class InitState
 };
 
 /*
- * ==========================
- *	It's a kind of magic
- * ==========================
-
- * These two templates are the basis of the new class extension standard.
-
- * ==========================
-
- * Extension<T> is the parent class for the data you want to link with this instance of T
-	( for example, [Warhead]MindControl.Permanent= should be stored in WarheadClassExt::ExtData
-	which itself should be a derivate of Extension<WarheadTypeClass> )
-
- * ==========================
-
-	Container<TX> is the storage for all the Extension<T> which share the same T,
-	where TX is the containing class of the relevant derivate of Extension<T>. // complex, huh?
-	( for example, there is Container<WarheadTypeExt>
-	which contains all the custom data for all WarheadTypeClass instances,
-	and WarheadTypeExt itself contains just statics like the Container itself )
-
-	Requires:
-	using base_type = T;
-	const DWORD Extension<T>::Canary = (any dword value easily identifiable in a byte stream)
-	class TX::ExtData : public Extension<T> { custom_data; }
-
-	Complex? Yes. That's partially why you should be happy these are premade for you.
+ * Extension classes form an inheritance hierarchy that mirrors the game's own class
+ * tree, rooted at AbstractExt. Every game object of an extended type carries exactly
+ * one extension instance of the most derived matching type, cached inside the object
+ * at AbstractExt::ExtPointerOffset and fetched through the static Fetch/TryFetch
+ * accessors of any level of the hierarchy.
  *
+ * Container<TX> tracks all live extension instances of one concrete class for the
+ * bulk operations: allocation, removal, centralized savegame streaming, post-load
+ * relinking and scenario clearing. TX must provide:
+ *   using base_type = T;  (the extended game class)
+ *   static constexpr DWORD Canary = (any dword value easily identifiable in a byte stream)
  */
 
-// the non-template root of every extension, mirroring Vinifera's AbstractClassExtension.
-// it owns the back-pointer and the staged init state, so all extensions share a common base.
+// The non-template root of every extension of an AbstractClass-derived game class.
+// It owns the back-pointer and the staged init state, so all extensions share a common base.
 class AbstractExt
 {
+	template <typename T>
+	friend class Container;
+
 	AbstractClass* AttachedToObject;
 	InitState Initialized;
+
+	// position within the owning container's item list, kept up to date on removal
+	// so single removals don't have to search the list; never serialized
+	size_t ContainerIndex { SIZE_MAX };
 
 public:
 	// every extension pointer lives in the unused AbstractClass::unknown_18 field
@@ -73,6 +65,13 @@ public:
 	static AbstractExt* TryFetch(const AbstractClass* pThis)
 	{
 		return pThis ? Fetch(pThis) : nullptr;
+	}
+
+	// writes the inline extension slot directly, for extensions that are not
+	// managed by a container (the static working cell)
+	static void Attach(AbstractClass* pThis, AbstractExt* pExt)
+	{
+		*reinterpret_cast<AbstractExt**>(reinterpret_cast<char*>(pThis) + ExtPointerOffset) = pExt;
 	}
 
 	explicit AbstractExt(AbstractClass* const OwnerObject) : AttachedToObject { OwnerObject }, Initialized { InitState::Blank }
@@ -445,9 +444,14 @@ public:
 		val->EnsureConstanted();
 
 		if constexpr (HasOffset<T>)
+		{
 			SetExtensionPointer(key, val);
+			val->ContainerIndex = Items.size();
+		}
 		else
+		{
 			this->MappedItems.insert(key, val);
+		}
 
 		Items.emplace_back(val);
 
@@ -500,21 +504,52 @@ public:
 	{
 		if (auto Item = Find(key))
 		{
-			if constexpr (HasOffset<T>)
-				ResetExtensionPointer(key);
-			else
-				this->MappedItems.remove(key);
-
 			auto& vec = this->Items;
-			auto it = std::find(vec.begin(), vec.end(), Item);
 
-			if (it != vec.end())
+			if constexpr (HasOffset<T>)
 			{
-				*it = vec.back();
+				ResetExtensionPointer(key);
+
+				// untracked extensions (index out of range) only detach from the owner
+				const size_t index = Item->ContainerIndex;
+
+				if (index >= vec.size() || vec[index] != Item)
+					return;
+
+				vec[index] = vec.back();
+				vec[index]->ContainerIndex = index;
 				vec.pop_back();
+			}
+			else
+			{
+				this->MappedItems.remove(key);
+				auto it = std::find(vec.begin(), vec.end(), Item);
+
+				if (it != vec.end())
+				{
+					*it = vec.back();
+					vec.pop_back();
+				}
 			}
 
 			delete Item;
+		}
+	}
+
+	// Deletes every tracked extension and detaches it from its owner. Unlike Clear,
+	// this is regular teardown for owners the game re-initializes in place without
+	// destroying them (cells).
+	void RemoveAll()
+	{
+		if constexpr (HasOffset<T>)
+		{
+			for (const auto& item : this->Items)
+			{
+				ResetExtensionPointer(item->OwnerObject());
+				delete item;
+			}
+
+			this->Items.clear();
 		}
 	}
 
@@ -645,6 +680,7 @@ public:
 				auto const buffer = new extension_type(static_cast<base_type_ptr>(oldOwner));
 				buffer->RegisterOwnerForChange();
 				PhobosSwizzle::RegisterChange(oldPtr, buffer);
+				buffer->ContainerIndex = this->Items.size();
 				this->Items.emplace_back(buffer);
 
 				buffer->LoadFromStream(reader);
