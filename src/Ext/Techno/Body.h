@@ -3,11 +3,13 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Radio/Body.h>
 #include <Utilities/Container.h>
+#include <Utilities/Detach.h>
 #include <Utilities/TemplateDef.h>
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Entity/AttachEffectClass.h>
 
+class AirstrikeClass;
 class BulletClass;
 
 class TechnoExt
@@ -17,9 +19,8 @@ public:
 
 	static constexpr DWORD Canary = 0x55555555;
 	static constexpr size_t ExtPointerOffset = 0x18;
-	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
-	class ExtData : public RadioClassExtension
+	class ExtData : public RadioClassExtension, public Detach::Listener<AirstrikeClass>
 	{
 	public:
 		// typed owner accessor (the base chain stores the owner as RadioClass*)
@@ -233,7 +234,7 @@ public:
 		int GetSight();
 
 		virtual ~ExtData() override;
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
+		virtual void OnDetach(AirstrikeClass* pTarget, bool removed) override;
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
@@ -247,20 +248,6 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
-
-		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
-		{
-			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-
-			switch (abs)
-			{
-			case AbstractType::Airstrike:
-			case AbstractType::Building: // BuildingClassExtension leaves live in this container now
-				return false;
-			default:
-				return true;
-			}
-		}
 	};
 
 	static ExtContainer ExtMap;

@@ -3,6 +3,7 @@
 #include <RadSiteClass.h>
 
 #include <Utilities/Container.h>
+#include <Utilities/Detach.h>
 #include <Utilities/TemplateDef.h>
 
 #include <Ext/WeaponType/Body.h>
@@ -16,9 +17,8 @@ public:
 
 	static constexpr DWORD Canary = 0x88446622;
 	static constexpr size_t ExtPointerOffset = 0x18;
-	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
-	class ExtData final : public AbstractExt
+	class ExtData final : public AbstractExt, public Detach::Listener<TechnoClass>
 	{
 	public:
 		// typed owner accessor
@@ -51,10 +51,10 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 		virtual void Initialize() override;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
+		virtual void OnDetach(TechnoClass* pTarget, bool removed) override
 		{
-			if (bRemoved)
-				AnnounceInvalidPointer(this->RadInvoker, ptr);
+			if (removed)
+				AnnounceInvalidPointer(this->RadInvoker, pTarget);
 		}
 
 	private:
@@ -70,20 +70,6 @@ public:
 		ExtContainer();
 		~ExtContainer();
 
-		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
-		{
-			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-			switch (abs)
-			{
-			case AbstractType::Aircraft:
-			case AbstractType::Building:
-			case AbstractType::Infantry:
-			case AbstractType::Unit:
-				return false;
-			default:
-				return true;
-			}
-		}
 	};
 
 	static ExtContainer ExtMap;

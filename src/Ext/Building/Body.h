@@ -8,11 +8,10 @@ public:
 	using base_type = BuildingClass;
 
 	static constexpr DWORD Canary = 0x87654321;
-	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
 	// BuildingClassExtension is a leaf of the TechnoClass extension hierarchy: one extension
 	// per object, stored inline in the shared 0x18 slot and owned by the TechnoClass container.
-	class ExtData final : public TechnoExt::ExtData
+	class ExtData final : public TechnoExt::ExtData, public Detach::Listener<BuildingClass>
 	{
 	public:
 		BuildingTypeExt::ExtData* TypeExtData;
@@ -64,12 +63,10 @@ public:
 
 		// virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
+		virtual void OnDetach(BuildingClass* pTarget, bool removed) override
 		{
-			TechnoExt::ExtData::InvalidatePointer(ptr, bRemoved);
-
-			if (bRemoved)
-				AnnounceInvalidPointer(this->CurrentAirFactory, ptr);
+			if (removed)
+				AnnounceInvalidPointer(this->CurrentAirFactory, pTarget);
 		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;

@@ -234,11 +234,6 @@ public:
 		virtual void Initialize() override;
 		virtual void CompleteInitialization();
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
-		{
-			TechnoTypeExt::ExtData::InvalidatePointer(ptr, bRemoved);
-		}
-
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 

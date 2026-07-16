@@ -740,35 +740,32 @@ bool HouseExt::SaveGlobals(PhobosStreamWriter& Stm)
 		.Success();
 }
 
-void HouseExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
+void HouseExt::ExtData::OnDetach(BuildingClass* pTarget, bool removed)
 {
-	if (bRemoved)
+	if (removed)
 	{
-		AnnounceInvalidPointer(this->Factory_BuildingType, ptr);
-		AnnounceInvalidPointer(this->Factory_InfantryType, ptr);
-		AnnounceInvalidPointer(this->Factory_VehicleType, ptr);
-		AnnounceInvalidPointer(this->Factory_NavyType, ptr);
-		AnnounceInvalidPointer(this->Factory_AircraftType, ptr);
+		AnnounceInvalidPointer(this->Factory_BuildingType, pTarget);
+		AnnounceInvalidPointer(this->Factory_InfantryType, pTarget);
+		AnnounceInvalidPointer(this->Factory_VehicleType, pTarget);
+		AnnounceInvalidPointer(this->Factory_NavyType, pTarget);
+		AnnounceInvalidPointer(this->Factory_AircraftType, pTarget);
 
-		if (ptr != nullptr)
+		if (!this->PowerPlantEnhancers.empty())
 		{
-			if (!this->PowerPlantEnhancers.empty())
-			{
-				auto& vec = this->PowerPlantEnhancers;
-				vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
-			}
+			auto& vec = this->PowerPlantEnhancers;
+			vec.erase(std::remove(vec.begin(), vec.end(), pTarget), vec.end());
+		}
 
-			if (!this->OwnedLimboDeliveredBuildings.empty())
-			{
-				auto& vec = this->OwnedLimboDeliveredBuildings;
-				vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
-			}
+		if (!this->OwnedLimboDeliveredBuildings.empty())
+		{
+			auto& vec = this->OwnedLimboDeliveredBuildings;
+			vec.erase(std::remove(vec.begin(), vec.end(), pTarget), vec.end());
+		}
 
-			if (!this->RestrictedFactoryPlants.empty())
-			{
-				auto& vec = this->RestrictedFactoryPlants;
-				vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
-			}
+		if (!this->RestrictedFactoryPlants.empty())
+		{
+			auto& vec = this->RestrictedFactoryPlants;
+			vec.erase(std::remove(vec.begin(), vec.end(), pTarget), vec.end());
 		}
 	}
 }

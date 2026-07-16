@@ -11,7 +11,6 @@ public:
 
 	static constexpr DWORD Canary = 0xAAAAAAAA;
 	static constexpr size_t ExtPointerOffset = 0x18;
-	static constexpr bool ShouldConsiderInvalidatePointer = false; // Sheer volume of animations in an average game makes a bespoke solution for pointer invalidation worthwhile.
 
 	class ExtData final : public ObjectClassExtension
 	{
@@ -70,8 +69,6 @@ public:
 		void UpdateAsFiringAnim();
 
 		virtual ~ExtData() override;
-
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void InitializeConstants() override;
 

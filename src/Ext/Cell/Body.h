@@ -47,8 +47,6 @@ public:
 
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool removed) override;
-
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
@@ -63,7 +61,6 @@ public:
 		ExtContainer();
 		~ExtContainer();
 
-		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override;
 	};
 
 	static ExtContainer ExtMap;

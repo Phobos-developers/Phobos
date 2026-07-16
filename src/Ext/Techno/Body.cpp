@@ -1345,10 +1345,10 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
+void TechnoExt::ExtData::OnDetach(AirstrikeClass* pTarget, bool removed)
 {
-	if (bRemoved)
-		AnnounceInvalidPointer(this->AirstrikeTargetingMe, ptr);
+	if (removed)
+		AnnounceInvalidPointer(this->AirstrikeTargetingMe, pTarget);
 }
 
 void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

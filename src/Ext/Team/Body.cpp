@@ -37,10 +37,10 @@ void TeamExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
-void TeamExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
+void TeamExt::ExtData::OnDetach(FootClass* pTarget, bool removed)
 {
-	if (bRemoved)
-		AnnounceInvalidPointer(this->TeamLeader, ptr);
+	if (removed)
+		AnnounceInvalidPointer(this->TeamLeader, pTarget);
 }
 
 // =============================

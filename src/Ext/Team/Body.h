@@ -2,6 +2,7 @@
 #include <TeamClass.h>
 
 #include <Utilities/Container.h>
+#include <Utilities/Detach.h>
 #include <Utilities/TemplateDef.h>
 
 class TeamExt
@@ -11,9 +12,8 @@ public:
 
 	static constexpr DWORD Canary = 0x414B4B41;
 	static constexpr size_t ExtPointerOffset = 0x18;
-	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
-	class ExtData final : public AbstractExt
+	class ExtData final : public AbstractExt, public Detach::Listener<FootClass>
 	{
 	public:
 		// typed owner accessor
@@ -54,7 +54,7 @@ public:
 
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
+		virtual void OnDetach(FootClass* pTarget, bool removed) override;
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -69,21 +69,6 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
-
-		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
-		{
-			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-
-			switch (abs)
-			{
-			case AbstractType::Infantry:
-			case AbstractType::Unit:
-			case AbstractType::Aircraft:
-				return false;
-			}
-
-			return true;
-		}
 	};
 
 	static ExtContainer ExtMap;

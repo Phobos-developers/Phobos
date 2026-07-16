@@ -27,9 +27,6 @@ void CellExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
-void CellExt::ExtData::InvalidatePointer(void* ptr, bool removed)
-{ }
-
 bool CellExt::RadLevel::Load(PhobosStreamReader& stm, bool registerForChange)
 {
 	return this->Serialize(stm);
@@ -54,11 +51,6 @@ bool CellExt::RadLevel::Serialize(T& stm)
 
 CellExt::ExtContainer::ExtContainer() : Container("CellClass") { }
 CellExt::ExtContainer::~ExtContainer() = default;
-
-bool CellExt::ExtContainer::InvalidateExtDataIgnorable(void* const ptr) const
-{
-	return true;
-}
 
 // =============================
 // container hooks

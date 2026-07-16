@@ -42,6 +42,8 @@
 #include <New/Entity/BannerClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
 
+#include <Utilities/Detach.h>
+
 #include <utility>
 
 #pragma region Implementation details
@@ -58,11 +60,6 @@ concept DerivedFromSpecializationOf =
 
 template<typename TExt>
 concept HasExtMap = requires { { TExt::ExtMap } -> DerivedFromSpecializationOf<Container>; };
-
-template<typename TExt>
-concept ExtDataConsiderPointerInvalidation = HasExtMap<TExt> && requires{
-	{ TExt::ShouldConsiderInvalidatePointer }->std::convertible_to<const bool>;
-}&& TExt::ShouldConsiderInvalidatePointer == true;
 
 template <typename T>
 concept Clearable = requires { T::Clear(); };
@@ -103,7 +100,6 @@ struct ClearAction
 
 // calls:
 // T::PointerGotInvalid(void*, bool)
-// T::ExtMap.PointerGotInvalid(void*, bool)
 struct InvalidatePointerAction
 {
 	template <typename T>
@@ -111,8 +107,6 @@ struct InvalidatePointerAction
 	{
 		if constexpr (PointerInvalidationSubscribable<T>)
 			T::PointerGotInvalid(ptr, removed);
-		else if constexpr (ExtDataConsiderPointerInvalidation<T>)
-			T::ExtMap.PointerGotInvalid(ptr, removed);
 
 		return true;
 	}
@@ -255,6 +249,7 @@ DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
 	GET(AbstractClass* const, pInvalid, ECX);
 	GET(bool const, removed, EDX);
 
+	Detach::NotifyAbstract(pInvalid, removed);
 	PhobosTypeRegistry::InvalidatePointer(pInvalid, removed);
 
 	return 0;

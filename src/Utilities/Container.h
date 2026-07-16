@@ -102,8 +102,6 @@ public:
 		}
 	}
 
-	virtual void InvalidatePointer(void* ptr, bool bRemoved) = 0;
-
 	virtual inline void SaveToStream(PhobosStreamWriter& Stm)
 	{
 		//Stm.Save(this->AttachedToObject);
@@ -317,28 +315,6 @@ public:
 	{ }
 
 	virtual ~Container() = default;
-
-	void PointerGotInvalid(void* ptr, bool bRemoved)
-	{
-		//this->InvalidatePointer(ptr, bRemoved);
-
-		if (!this->InvalidateExtDataIgnorable(ptr))
-			this->InvalidateExtDataPointer(ptr, bRemoved);
-	}
-
-protected:
-	//virtual void InvalidatePointer(void* ptr, bool bRemoved) { }
-
-	virtual bool InvalidateExtDataIgnorable(void* const ptr) const
-	{
-		return true;
-	}
-
-	void InvalidateExtDataPointer(void* const ptr, bool bRemoved) const
-	{
-		for (const auto& i : this->Items)
-			i->InvalidatePointer(ptr, bRemoved);
-	}
 
 private:
 	extension_type_ptr GetExtensionPointer(const_base_type_ptr key) const

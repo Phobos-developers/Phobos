@@ -2,6 +2,7 @@
 #include <HouseClass.h>
 
 #include <Utilities/Container.h>
+#include <Utilities/Detach.h>
 #include <Utilities/TemplateDef.h>
 
 #include <array>
@@ -13,9 +14,8 @@ public:
 
 	static constexpr DWORD Canary = 0x11111111;
 	static constexpr size_t ExtPointerOffset = 0x18;
-	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
-	class ExtData final : public AbstractExt
+	class ExtData final : public AbstractExt, public Detach::Listener<BuildingClass>
 	{
 	public:
 		// typed owner accessor
@@ -131,7 +131,7 @@ public:
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		//virtual void Initialize() override;
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
+		virtual void OnDetach(BuildingClass* pTarget, bool removed) override;
 
 		void UpdateVehicleProduction();
 
@@ -149,19 +149,6 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
-
-		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
-		{
-			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-
-			switch (abs)
-			{
-			case AbstractType::Building:
-				return false;
-			}
-
-			return true;
-		}
 	};
 
 	static ExtContainer ExtMap;

@@ -282,6 +282,7 @@
     <ClCompile Include="src\Utilities\AresHelper.cpp" />
     <ClCompile Include="src\Utilities\Constructs.cpp" />
     <ClCompile Include="src\Utilities\Debug.cpp" />
+    <ClCompile Include="src\Utilities\Detach.cpp" />
     <ClCompile Include="src\Utilities\EnumFunctions.cpp" />
     <ClCompile Include="src\Utilities\GeneralUtils.cpp" />
     <ClCompile Include="src\Utilities\Patch.cpp" />
@@ -419,6 +420,7 @@
     <ClInclude Include="src\Utilities\AresHelper.h" />
     <ClInclude Include="src\Utilities\Interpolation.h" />
     <ClInclude Include="src\Utilities\Constructs.h" />
+    <ClInclude Include="src\Utilities\Detach.h" />
     <ClInclude Include="src\Utilities\Container.h" />
     <ClInclude Include="src\Utilities\Debug.h" />
     <ClInclude Include="src\Utilities\Enum.h" />

@@ -67,19 +67,11 @@ bool EBoltExt::SaveGlobals(PhobosStreamWriter& Stm)
 	return Stm.Success();
 }
 
-void EBoltExt::ExtData::InvalidatePointer(void* ptr, bool removed)
-{ }
-
 // =============================
 // container
 
 EBoltExt::ExtContainer::ExtContainer() : Container("EBolt") { }
 EBoltExt::ExtContainer::~ExtContainer() = default;
-
-bool EBoltExt::ExtContainer::InvalidateExtDataIgnorable(void* const ptr) const
-{
-	return true;
-}
 
 // =============================
 // container hooks
