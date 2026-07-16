@@ -700,6 +700,7 @@ This page lists all the individual contributions to the project by their author.
   - Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn`
   - `ZAdjust` for Projectiles
   - Allow Laser drawing position update
+  - Customize the distance for `NoQueueUpToEnter` transport units to board passengers
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
