@@ -266,7 +266,11 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	if (!pType) // Critical sanity check in s/l
 		return 0;
 
-	auto const pExt = TechnoExt::Fetch(pThis);
+	auto const pExt = TechnoExt::TryFetch(pThis);
+
+	if (!pExt) // constructed during savegame load; state comes from the stream instead
+		return 0;
+
 	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 	pExt->TypeExtData = pTypeExt;
 

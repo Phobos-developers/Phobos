@@ -603,14 +603,14 @@ bool BuildingExt::SaveGlobals(PhobosStreamWriter& Stm)
 // =============================
 // container hooks
 
-DEFINE_HOOK(0x43BCBD, BuildingClass_CTOR, 0x6)
+// Right after the TechnoClass base constructor returns: the extension must exist
+// before the Init call further down this constructor (0x43BB29), which fills in
+// TypeExtData and the rest of the per-object state.
+DEFINE_HOOK(0x43B750, BuildingClass_CTOR, 0x6)
 {
 	GET(BuildingClass*, pItem, ESI);
 
-	auto const pExt = BuildingExt::ExtMap.Allocate(pItem);
-
-	if (pExt)
-		pExt->TypeExtData = BuildingTypeExt::Fetch(pItem->Type);
+	BuildingExt::ExtMap.Allocate(pItem);
 
 	return 0;
 }
