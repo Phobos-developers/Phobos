@@ -4,17 +4,17 @@
 
 TerrainTypeExt::ExtContainer TerrainTypeExt::ExtMap;
 
-int TerrainTypeExt::ExtData::GetTiberiumGrowthStage()
+int TerrainTypeExt::GetTiberiumGrowthStage()
 {
 	return GeneralUtils::GetRangedRandomOrSingleValue(this->SpawnsTiberium_GrowthStage.Get());
 }
 
-int TerrainTypeExt::ExtData::GetCellsPerAnim()
+int TerrainTypeExt::GetCellsPerAnim()
 {
 	return GeneralUtils::GetRangedRandomOrSingleValue(this->SpawnsTiberium_CellsPerAnim.Get());
 }
 
-void TerrainTypeExt::ExtData::PlayDestroyEffects(const CoordStruct& coords)
+void TerrainTypeExt::PlayDestroyEffects(const CoordStruct& coords)
 {
 	VocClass::PlayIndexAtPos(this->DestroySound, coords);
 	AnimExt::CreateRandomAnim(this->DestroyAnim, coords);
@@ -36,7 +36,7 @@ void TerrainTypeExt::Remove(TerrainClass* pTerrain)
 // load / save
 
 template <typename T>
-void TerrainTypeExt::ExtData::Serialize(T& Stm)
+void TerrainTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->SpawnsTiberium_Type)
@@ -57,7 +57,7 @@ void TerrainTypeExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void TerrainTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -92,16 +92,16 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pThis->ImageFile, this->PaletteFile.data());
 }
 
-void TerrainTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void TerrainTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	ObjectTypeClassExtension::LoadFromStream(Stm);
+	ObjectTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
 }
 
-void TerrainTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void TerrainTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	ObjectTypeClassExtension::SaveToStream(Stm);
+	ObjectTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 

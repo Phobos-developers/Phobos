@@ -12,7 +12,7 @@ EBolt* EBoltExt::CreateEBolt(WeaponTypeClass* pWeapon)
 	const int alternateIdx = pWeapon->IsAlternateColor ? 5 : 10;
 	const int defaultAlternate = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, alternateIdx);
 	const int defaultWhite = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, 15);
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const auto pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 	const auto& boltDisable = pWeaponExt->Bolt_Disable;
 	const auto& boltColor = pWeaponExt->Bolt_Color;
 

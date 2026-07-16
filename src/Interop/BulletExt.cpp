@@ -6,7 +6,7 @@ DEFINE_EXPORT(HRESULT, Bullet_SetFirerOwner, BulletClass* pBullet, HouseClass* p
 	if (!pBullet)
 		return E_POINTER;
 
-	const auto pBulletExt = BulletExt::ExtMap.TryFind(pBullet);
+	const auto pBulletExt = BulletExt::TryFetch(pBullet);
 
 	if (!pBulletExt)
 		return E_UNEXPECTED;

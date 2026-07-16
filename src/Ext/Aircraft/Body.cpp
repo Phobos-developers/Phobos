@@ -3,12 +3,12 @@
 #include <Ext/BuildingType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
-// An aircraft's extension is a concrete AircraftClassExtension leaf, owned by the TechnoClass container.
+// An aircraft's extension is a concrete AircraftExt leaf, owned by the TechnoClass container.
 DEFINE_HOOK(0x413D30, AircraftClass_CTOR, 0x7)
 {
 	GET(AircraftClass*, pItem, ESI);
 
-	TechnoExt::ExtMap.Adopt(new AircraftClassExtension(pItem));
+	TechnoExt::ExtMap.Adopt(new AircraftExt(pItem));
 
 	return 0;
 }
@@ -17,10 +17,10 @@ DEFINE_HOOK(0x413D30, AircraftClass_CTOR, 0x7)
 
 void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 {
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pExt = TechnoExt::Fetch(pThis);
 	const int weaponIndex = pExt->CurrentAircraftWeaponIndex;
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	auto const pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 	const int burstCount = pWeapon->Burst;
 	const bool isStrafe = pThis->Is_Strafe();
 
@@ -61,7 +61,7 @@ void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CoordStruct edgeCoords)
 {
 	auto const pType = pThis->Type;
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 	auto dir = DirType::North;
 	auto coords = edgeCoords;
 	coords.Z = 0;
@@ -93,7 +93,7 @@ bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CoordStruct e
 
 CellStruct AircraftExt::PickEdgeCellForPlane(AircraftTypeClass* pPlaneType, CellStruct destCell, Edge edge, bool isOnRetreat)
 {
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pPlaneType);
+	auto const pTypeExt = TechnoTypeExt::Fetch(pPlaneType);
 	auto const edgeMode = !isOnRetreat ? pTypeExt->SpawnFromEdge : pTypeExt->RetreatToEdge;
 	auto spawnEdge = edge;
 	auto refCell = CellStruct::Empty;
@@ -153,7 +153,7 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 		if (auto const pBuilding = pDock ? pDock : abstract_cast<BuildingClass*, true>(pLink))
 		{
 			auto const pBuildingType = pBuilding->Type;
-			auto const pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
+			auto const pBuildingTypeExt = BuildingTypeExt::Fetch(pBuildingType);
 			const int docks = pBuildingType->NumberOfDocks;
 			const int linkIndex = pBuilding->FindLinkIndex(pThis);
 
@@ -169,7 +169,7 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 			return pLink->PrimaryFacing.Current().GetDir();
 	}
 
-	const int landingDir = TechnoTypeExt::ExtMap.Find(pType)->LandingDir.Get((int)poseDir);
+	const int landingDir = TechnoTypeExt::Fetch(pType)->LandingDir.Get((int)poseDir);
 
 	if (!pType->AirportBound && landingDir < 0)
 		return pThis->PrimaryFacing.Current().GetDir();

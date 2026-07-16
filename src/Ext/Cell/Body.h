@@ -4,10 +4,11 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
-class CellExt
+class CellExt final : public AbstractExt
 {
 public:
 	using base_type = CellClass;
+	using ExtData = CellExt;
 
 	static constexpr DWORD Canary = 0x13371337;
 	static constexpr size_t ExtPointerOffset = 0x18;
@@ -29,32 +30,30 @@ public:
 		bool Serialize(T& stm);
 	};
 
-	class ExtData final : public AbstractExt
+public:
+	// typed owner accessor
+	CellClass* OwnerObject() const
 	{
-	public:
-		// typed owner accessor
-		CellClass* OwnerObject() const
-		{
-			return static_cast<CellClass*>(this->GetAttachedObject());
-		}
+		return static_cast<CellClass*>(this->GetAttachedObject());
+	}
 
-		std::vector<RadSiteClass*> RadSites {};
-		std::vector<RadLevel> RadLevels { };
-		int InfantryCount{ 0 };
+	std::vector<RadSiteClass*> RadSites {};
+	std::vector<RadLevel> RadLevels { };
+	int InfantryCount{ 0 };
 
-		ExtData(CellClass* OwnerObject) : AbstractExt(OwnerObject)
-		{ }
+	CellExt(CellClass* OwnerObject) : AbstractExt(OwnerObject)
+	{ }
 
-		virtual ~ExtData() = default;
+	virtual ~CellExt() = default;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 
+public:
 	class ExtContainer final : public Container<CellExt>
 	{
 	public:
@@ -64,7 +63,15 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static CellExt* Fetch(const CellClass* pThis)
+	{
+		return ExtMap.Find(pThis);
+	}
+
+	static CellExt* TryFetch(const CellClass* pThis)
+	{
+		return ExtMap.TryFind(pThis);
+	}
 };
 
-// top-level name for the CellExt extension
-using CellClassExtension = CellExt::ExtData;

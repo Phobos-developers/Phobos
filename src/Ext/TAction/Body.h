@@ -31,35 +31,35 @@ enum class PhobosTriggerAction : unsigned int
 	DeleteBanner = 802,
 };
 
-class TActionExt
+class TActionExt final : public AbstractExt
 {
 public:
 	using base_type = TActionClass;
+	using ExtData = TActionExt;
 
 	static constexpr DWORD Canary = 0x91919191;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public AbstractExt
+public:
+	// typed owner accessor
+	TActionClass* OwnerObject() const
 	{
-	public:
-		// typed owner accessor
-		TActionClass* OwnerObject() const
-		{
-			return static_cast<TActionClass*>(this->GetAttachedObject());
-		}
+		return static_cast<TActionClass*>(this->GetAttachedObject());
+	}
 
-		ExtData(TActionClass* const OwnerObject) : AbstractExt(OwnerObject)
-		{ }
+	TActionExt(TActionClass* const OwnerObject) : AbstractExt(OwnerObject)
+	{ }
 
-		virtual ~ExtData() = default;
+	virtual ~TActionExt() = default;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+private:
+	template <typename T>
+	void Serialize(T& Stm);
+
+public:
 
 	static bool Execute(TActionClass* pThis, HouseClass* pHouse,
 			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location, bool& bHandled);
@@ -96,6 +96,7 @@ public:
 #undef ACTION_FUNC
 #pragma pop_macro("ACTION_FUNC")
 
+public:
 	class ExtContainer final : public Container<TActionExt>
 	{
 	public:
@@ -104,7 +105,15 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static TActionExt* Fetch(const TActionClass* pThis)
+	{
+		return ExtMap.Find(pThis);
+	}
+
+	static TActionExt* TryFetch(const TActionClass* pThis)
+	{
+		return ExtMap.TryFind(pThis);
+	}
 };
 
-// top-level name for the TActionExt extension
-using TActionClassExtension = TActionExt::ExtData;

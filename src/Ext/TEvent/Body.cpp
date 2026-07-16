@@ -10,18 +10,18 @@ TEventExt::ExtContainer TEventExt::ExtMap;
 // load / save
 
 template <typename T>
-void TEventExt::ExtData::Serialize(T& Stm)
+void TEventExt::Serialize(T& Stm)
 {
 	//Stm;
 }
 
-void TEventExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void TEventExt::LoadFromStream(PhobosStreamReader& Stm)
 {
 	AbstractExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void TEventExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void TEventExt::SaveToStream(PhobosStreamWriter& Stm)
 {
 	AbstractExt::SaveToStream(Stm);
 	this->Serialize(Stm);
@@ -333,7 +333,7 @@ bool TEventExt::AttachedIsUnderAttachedEffectTEvent(TEventClass* pThis, ObjectCl
 		return false;
 	}
 
-	if (TechnoExt::ExtMap.Find(pTechno)->HasAttachedEffects({ pDesiredType }, false, false, nullptr, nullptr, nullptr, nullptr))
+	if (TechnoExt::Fetch(pTechno)->HasAttachedEffects({ pDesiredType }, false, false, nullptr, nullptr, nullptr, nullptr))
 		return true;
 
 	return false;

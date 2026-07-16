@@ -6,7 +6,7 @@ TeamExt::ExtContainer TeamExt::ExtMap;
 // load / save
 
 template <typename T>
-void TeamExt::ExtData::Serialize(T& Stm)
+void TeamExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->WaitNoTargetAttempts)
@@ -25,19 +25,19 @@ void TeamExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void TeamExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void TeamExt::LoadFromStream(PhobosStreamReader& Stm)
 {
 	AbstractExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void TeamExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void TeamExt::SaveToStream(PhobosStreamWriter& Stm)
 {
 	AbstractExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
-void TeamExt::ExtData::OnDetach(FootClass* pTarget, bool removed)
+void TeamExt::OnDetach(FootClass* pTarget, bool removed)
 {
 	if (removed)
 		AnnounceInvalidPointer(this->TeamLeader, pTarget);

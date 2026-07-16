@@ -7,7 +7,7 @@
 
 static __forceinline bool HasDeployingAnim(TechnoTypeClass* pType)
 {
-	return pType->DeployingAnim || TechnoTypeExt::ExtMap.Find(pType)->DeployingAnims.size() > 0;
+	return pType->DeployingAnim || TechnoTypeExt::Fetch(pType)->DeployingAnims.size() > 0;
 }
 
 static inline bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
@@ -33,7 +33,7 @@ static inline bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 	}
 
 	// Facing restrictions.
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pUnit)->TypeExtData;
+	auto const pTypeExt = TechnoExt::Fetch(pUnit)->TypeExtData;
 	auto const defaultFacing = (FacingType)(RulesClass::Instance->DeployDir >> 5);
 	auto const facing = pTypeExt->DeployDir.Get(defaultFacing);
 
@@ -70,7 +70,7 @@ static inline void CreateDeployingAnim(UnitClass* pUnit, bool isDeploying)
 	if (!pUnit->DeployAnim)
 	{
 		auto const pType = pUnit->Type;
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 		auto pAnimType = pType->DeployingAnim;
 
 		if (pTypeExt->DeployingAnims.size() > 0)
@@ -82,8 +82,8 @@ static inline void CreateDeployingAnim(UnitClass* pUnit, bool isDeploying)
 		pUnit->DeployAnim = pAnim;
 		pAnim->SetOwnerObject(pUnit);
 		AnimExt::SetAnimOwnerHouseKind(pAnim, pUnit->Owner, nullptr, false, true);
-		AnimExt::ExtMap.Find(pAnim)->SetInvoker(pUnit);
-		auto const pExt = TechnoExt::ExtMap.Find(pUnit);
+		AnimExt::Fetch(pAnim)->SetInvoker(pUnit);
+		auto const pExt = TechnoExt::Fetch(pUnit);
 
 		if (pTypeExt->DeployingAnim_UseUnitDrawer)
 		{
@@ -127,7 +127,7 @@ DEFINE_HOOK(0x739AC0, UnitClass_SimpleDeployer_Deploy, 0x6)
 
 		if (pThis->Deploying && pThis->DeployAnim)
 		{
-			auto const pExt = TechnoExt::ExtMap.Find(pThis);
+			auto const pExt = TechnoExt::Fetch(pThis);
 			auto& timer = pExt->SimpleDeployerAnimationTimer;
 
 			if (timer.Completed())
@@ -158,7 +158,7 @@ DEFINE_HOOK(0x739AC0, UnitClass_SimpleDeployer_Deploy, 0x6)
 	if (pThis->Deployed)
 	{
 		int maxAmmo = -1;
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+		auto const pTypeExt = TechnoTypeExt::Fetch(pThis->Type);
 
 		if (AresFunctions::ConvertTypeTo && pTypeExt->Convert_Deploy)
 			maxAmmo = pTypeExt->Convert_Deploy->Ammo;
@@ -188,7 +188,7 @@ DEFINE_HOOK(0x739CD0, UnitClass_SimpleDeployer_Undeploy, 0x6)
 	{
 		if (pThis->Undeploying && pThis->DeployAnim)
 		{
-			auto const pExt = TechnoExt::ExtMap.Find(pThis);
+			auto const pExt = TechnoExt::Fetch(pThis);
 			auto& timer = pExt->SimpleDeployerAnimationTimer;
 
 			if (timer.Completed())
@@ -383,7 +383,7 @@ DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
 
 	if (pThis->Deploying || pThis->Undeploying)
 	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+		const auto pTypeExt = TechnoTypeExt::Fetch(pThis->Type);
 
 		if (pTypeExt->DeployingAnim_KeepUnitVisible || (pThis->Deploying && !pThis->DeployAnim))
 			return Continue;

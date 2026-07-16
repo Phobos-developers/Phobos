@@ -4,10 +4,10 @@
 #include <InfantryTypeClass.h>
 
 // Concrete leaf extension for InfantryTypeClass (empty).
-class InfantryTypeClassExtension : public TechnoTypeClassExtension
+class InfantryTypeExt : public TechnoTypeExt
 {
 public:
-	explicit InfantryTypeClassExtension(InfantryTypeClass* const OwnerObject) : TechnoTypeClassExtension(OwnerObject)
+	explicit InfantryTypeExt(InfantryTypeClass* const OwnerObject) : TechnoTypeExt(OwnerObject)
 	{ }
 
 	InfantryTypeClass* OwnerObject() const

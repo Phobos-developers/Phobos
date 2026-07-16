@@ -5,41 +5,40 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
-class TiberiumExt
+class TiberiumExt final : public AbstractTypeExt
 {
 public:
 	using base_type = TiberiumClass;
+	using ExtData = TiberiumExt;
 
 	static constexpr DWORD Canary = 0xAABBCCDD;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public AbstractTypeClassExtension
+public:
+	// typed owner accessor
+	TiberiumClass* OwnerObject() const
 	{
-	public:
-		// typed owner accessor
-		TiberiumClass* OwnerObject() const
-		{
-			return static_cast<TiberiumClass*>(this->GetAttachedObject());
-		}
+		return static_cast<TiberiumClass*>(this->GetAttachedObject());
+	}
 
-		Nullable<ColorStruct> MinimapColor;
+	Nullable<ColorStruct> MinimapColor;
 
-		ExtData(TiberiumClass* OwnerObject) : AbstractTypeClassExtension(OwnerObject)
-			, MinimapColor {}
-		{ }
+	TiberiumExt(TiberiumClass* OwnerObject) : AbstractTypeExt(OwnerObject)
+		, MinimapColor {}
+	{ }
 
-		virtual ~ExtData() = default;
+	virtual ~TiberiumExt() = default;
 
-		virtual void LoadFromINIFile(CCINIClass* pINI) override;
+	virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 
+public:
 	class ExtContainer final : public Container<TiberiumExt>
 	{
 	public:
@@ -49,9 +48,17 @@ public:
 
 	static ExtContainer ExtMap;
 
+	static TiberiumExt* Fetch(const TiberiumClass* pThis)
+	{
+		return ExtMap.Find(pThis);
+	}
+
+	static TiberiumExt* TryFetch(const TiberiumClass* pThis)
+	{
+		return ExtMap.TryFind(pThis);
+	}
+
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 };
 
-// top-level name for the TiberiumExt extension
-using TiberiumClassExtension = TiberiumExt::ExtData;

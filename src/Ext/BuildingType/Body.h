@@ -3,261 +3,253 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
-class BuildingTypeExt
+class BuildingTypeExt final : public TechnoTypeExt
 {
 public:
 	using base_type = BuildingTypeClass;
+	using ExtData = BuildingTypeExt;
 
 	static constexpr DWORD Canary = 0x11111111;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	// BuildingTypeClassExtension is a leaf of the TechnoTypeClass extension hierarchy.
-	class ExtData final : public TechnoTypeExt::ExtData
-	{
-	public:
-		Valueable<AffectedHouse> PowersUp_Owner;
-		ValueableVector<BuildingTypeClass*> PowersUp_Buildings;
-		ValueableIdxVector<SuperWeaponTypeClass> SuperWeapons;
+public:
+	Valueable<AffectedHouse> PowersUp_Owner;
+	ValueableVector<BuildingTypeClass*> PowersUp_Buildings;
+	ValueableIdxVector<SuperWeaponTypeClass> SuperWeapons;
 
-		Valueable<double> PowerPlant_DamageFactor;
-		ValueableVector<BuildingTypeClass*> PowerPlantEnhancer_Buildings;
-		Valueable<Leptons> PowerPlantEnhancer_Range;
-		Valueable<int> PowerPlantEnhancer_Amount;
-		Nullable<float> PowerPlantEnhancer_Factor;
-		Valueable<int> PowerPlantEnhancer_MaxCount;
+	Valueable<double> PowerPlant_DamageFactor;
+	ValueableVector<BuildingTypeClass*> PowerPlantEnhancer_Buildings;
+	Valueable<Leptons> PowerPlantEnhancer_Range;
+	Valueable<int> PowerPlantEnhancer_Amount;
+	Nullable<float> PowerPlantEnhancer_Factor;
+	Valueable<int> PowerPlantEnhancer_MaxCount;
 
-		std::vector<Point2D> OccupierMuzzleFlashes;
-		Valueable<bool> Powered_KillSpawns;
-		Valueable<bool> CanC4_AllowZeroDamage;
-		Valueable<bool> Refinery_UseStorage;
-		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
-		Valueable<bool> Cloning_Powered { true };
-		Valueable<bool> ExcludeFromMultipleFactoryBonus;
+	std::vector<Point2D> OccupierMuzzleFlashes;
+	Valueable<bool> Powered_KillSpawns;
+	Valueable<bool> CanC4_AllowZeroDamage;
+	Valueable<bool> Refinery_UseStorage;
+	Valueable<PartialVector2D<double>> InitialStrength_Cloning;
+	Valueable<bool> Cloning_Powered { true };
+	Valueable<bool> ExcludeFromMultipleFactoryBonus;
 
-		ValueableIdx<VocClass> Grinding_Sound;
-		Valueable<WeaponTypeClass*> Grinding_Weapon;
-		Valueable<int> Grinding_Weapon_RequiredCredits;
-		ValueableVector<TechnoTypeClass*> Grinding_AllowTypes;
-		ValueableVector<TechnoTypeClass*> Grinding_DisallowTypes;
-		Valueable<bool> Grinding_AllowAllies;
-		Valueable<bool> Grinding_AllowOwner;
-		Valueable<bool> Grinding_PlayDieSound;
+	ValueableIdx<VocClass> Grinding_Sound;
+	Valueable<WeaponTypeClass*> Grinding_Weapon;
+	Valueable<int> Grinding_Weapon_RequiredCredits;
+	ValueableVector<TechnoTypeClass*> Grinding_AllowTypes;
+	ValueableVector<TechnoTypeClass*> Grinding_DisallowTypes;
+	Valueable<bool> Grinding_AllowAllies;
+	Valueable<bool> Grinding_AllowOwner;
+	Valueable<bool> Grinding_PlayDieSound;
 
-		Nullable<bool> DisplayIncome;
-		Nullable<int> DisplayIncome_Delay;
-		Nullable<AffectedHouse> DisplayIncome_Houses;
-		Valueable<Point2D> DisplayIncome_Offset;
+	Nullable<bool> DisplayIncome;
+	Nullable<int> DisplayIncome_Delay;
+	Nullable<AffectedHouse> DisplayIncome_Houses;
+	Valueable<Point2D> DisplayIncome_Offset;
 
-		Valueable<bool> PlacementPreview;
-		TheaterSpecificSHP PlacementPreview_Shape;
-		Nullable<int> PlacementPreview_ShapeFrame;
-		Valueable<CoordStruct> PlacementPreview_Offset;
-		Valueable<bool> PlacementPreview_Remap;
-		CustomPalette PlacementPreview_Palette;
-		Nullable<TranslucencyLevel> PlacementPreview_Translucency;
+	Valueable<bool> PlacementPreview;
+	TheaterSpecificSHP PlacementPreview_Shape;
+	Nullable<int> PlacementPreview_ShapeFrame;
+	Valueable<CoordStruct> PlacementPreview_Offset;
+	Valueable<bool> PlacementPreview_Remap;
+	CustomPalette PlacementPreview_Palette;
+	Nullable<TranslucencyLevel> PlacementPreview_Translucency;
 
-		Valueable<bool> SpyEffect_Custom;
-		ValueableIdx<SuperWeaponTypeClass> SpyEffect_VictimSuperWeapon;
-		ValueableIdx<SuperWeaponTypeClass> SpyEffect_InfiltratorSuperWeapon;
+	Valueable<bool> SpyEffect_Custom;
+	ValueableIdx<SuperWeaponTypeClass> SpyEffect_VictimSuperWeapon;
+	ValueableIdx<SuperWeaponTypeClass> SpyEffect_InfiltratorSuperWeapon;
 
-		Nullable<bool> ConsideredVehicle;
-		Valueable<bool> ZShapePointMove_OnBuildup;
-		Valueable<int> SellBuildupLength;
-		Valueable<bool> IsDestroyableObstacle;
+	Nullable<bool> ConsideredVehicle;
+	Valueable<bool> ZShapePointMove_OnBuildup;
+	Valueable<int> SellBuildupLength;
+	Valueable<bool> IsDestroyableObstacle;
 
-		Valueable<bool> IsAnimDelayedBurst;
+	Valueable<bool> IsAnimDelayedBurst;
 
-		std::vector<std::optional<DirType>> AircraftDockingDirs;
+	std::vector<std::optional<DirType>> AircraftDockingDirs;
 
-		ValueableVector<TechnoTypeClass*> FactoryPlant_AllowTypes;
-		ValueableVector<TechnoTypeClass*> FactoryPlant_DisallowTypes;
-		Valueable<int> FactoryPlant_MaxCount;
+	ValueableVector<TechnoTypeClass*> FactoryPlant_AllowTypes;
+	ValueableVector<TechnoTypeClass*> FactoryPlant_DisallowTypes;
+	Valueable<int> FactoryPlant_MaxCount;
 
-		Nullable<double> Units_RepairRate;
-		Nullable<int> Units_RepairStep;
-		Nullable<double> Units_RepairPercent;
-		Nullable<bool> Units_UseRepairCost;
+	Nullable<double> Units_RepairRate;
+	Nullable<int> Units_RepairStep;
+	Nullable<double> Units_RepairPercent;
+	Nullable<bool> Units_UseRepairCost;
 
-		Valueable<bool> NoBuildAreaOnBuildup;
-		ValueableVector<BuildingTypeClass*> Adjacent_Allowed;
-		ValueableVector<BuildingTypeClass*> Adjacent_Disallowed;
-		Valueable<bool> Adjacent_Disallowed_Prohibit;
-		Valueable<int> Adjacent_Disallowed_ProhibitDistance;
+	Valueable<bool> NoBuildAreaOnBuildup;
+	ValueableVector<BuildingTypeClass*> Adjacent_Allowed;
+	ValueableVector<BuildingTypeClass*> Adjacent_Disallowed;
+	Valueable<bool> Adjacent_Disallowed_Prohibit;
+	Valueable<int> Adjacent_Disallowed_ProhibitDistance;
 
-		Nullable<Point2D> BarracksExitCell;
+	Nullable<Point2D> BarracksExitCell;
 
-		Valueable<int> Overpower_KeepOnline;
-		Valueable<int> Overpower_ChargeWeapon;
+	Valueable<int> Overpower_KeepOnline;
+	Valueable<int> Overpower_ChargeWeapon;
 
-		Valueable<bool> DisableDamageSound;
-		Nullable<float> BuildingOccupyDamageMult;
-		Nullable<float> BuildingOccupyROFMult;
-		Nullable<float> BuildingBunkerDamageMult;
-		Nullable<float> BuildingBunkerROFMult;
-		NullableIdx<VocClass> BunkerWallsUpSound;
-		NullableIdx<VocClass> BunkerWallsDownSound;
-		Nullable<int> BunkerStateUpdateDelay;
+	Valueable<bool> DisableDamageSound;
+	Nullable<float> BuildingOccupyDamageMult;
+	Nullable<float> BuildingOccupyROFMult;
+	Nullable<float> BuildingBunkerDamageMult;
+	Nullable<float> BuildingBunkerROFMult;
+	NullableIdx<VocClass> BunkerWallsUpSound;
+	NullableIdx<VocClass> BunkerWallsDownSound;
+	Nullable<int> BunkerStateUpdateDelay;
 
-		NullableIdx<VocClass> BuildingRepairedSound;
+	NullableIdx<VocClass> BuildingRepairedSound;
 
-		Valueable<bool> Refinery_UseNormalActiveAnim;
+	Valueable<bool> Refinery_UseNormalActiveAnim;
 
-		ValueableVector<bool> HasPowerUpAnim;
+	ValueableVector<bool> HasPowerUpAnim;
 
-		Valueable<bool> UndeploysInto_Sellable;
+	Valueable<bool> UndeploysInto_Sellable;
 
-		Nullable<bool> BuildingRadioLink_SyncOwner;
+	Nullable<bool> BuildingRadioLink_SyncOwner;
 
-		Nullable<PartialVector2D<int>> GuardRetryDelay;
+	Nullable<PartialVector2D<int>> GuardRetryDelay;
 
-		Valueable<int> TurretAnim_IdleFrames;
-		Valueable<int> TurretAnim_LowPowerIdleFrames;
-		Valueable<int> TurretAnim_FiringFrames;
-		Valueable<int> TurretAnim_LowPowerFiringFrames;
-		Valueable<int> TurretAnim_IdleRate;
-		Valueable<int> TurretAnim_FiringRate;
+	Valueable<int> TurretAnim_IdleFrames;
+	Valueable<int> TurretAnim_LowPowerIdleFrames;
+	Valueable<int> TurretAnim_FiringFrames;
+	Valueable<int> TurretAnim_LowPowerFiringFrames;
+	Valueable<int> TurretAnim_IdleRate;
+	Valueable<int> TurretAnim_FiringRate;
+
+	// Ares 0.2
+	Valueable<bool> CloningFacility;
+
+	// Ares 0.A
+	Valueable<BuildingTypeClass*> RubbleIntact;
+	Valueable<bool> RubbleIntactRemove;
+
+	// Ares 3.0
+	Nullable<bool> UnitSell;
+
+	BuildingTypeExt(BuildingTypeClass* OwnerObject) : TechnoTypeExt(OwnerObject)
+		, PowersUp_Owner { AffectedHouse::Owner }
+		, PowersUp_Buildings {}
+		, PowerPlant_DamageFactor { 1.0 }
+		, PowerPlantEnhancer_Buildings {}
+		, PowerPlantEnhancer_Range { Leptons(0) }
+		, PowerPlantEnhancer_Amount { 0 }
+		, PowerPlantEnhancer_Factor { 1.0f }
+		, PowerPlantEnhancer_MaxCount { -1 }
+		, OccupierMuzzleFlashes()
+		, Powered_KillSpawns { false }
+		, CanC4_AllowZeroDamage { false }
+		, InitialStrength_Cloning { { 1.0 } }
+		, ExcludeFromMultipleFactoryBonus { false }
+		, Refinery_UseStorage { false }
+		, Grinding_AllowAllies { false }
+		, Grinding_AllowOwner { true }
+		, Grinding_AllowTypes {}
+		, Grinding_DisallowTypes {}
+		, Grinding_Sound {}
+		, Grinding_PlayDieSound { true }
+		, Grinding_Weapon {}
+		, Grinding_Weapon_RequiredCredits { 0 }
+		, DisplayIncome { }
+		, DisplayIncome_Delay { }
+		, DisplayIncome_Houses { }
+		, DisplayIncome_Offset { { 0,0 } }
+		, PlacementPreview { true }
+		, PlacementPreview_Shape {}
+		, PlacementPreview_ShapeFrame {}
+		, PlacementPreview_Remap { true }
+		, PlacementPreview_Offset { {0,-15,1} }
+		, PlacementPreview_Palette {}
+		, PlacementPreview_Translucency {}
+		, SpyEffect_Custom { false }
+		, SpyEffect_VictimSuperWeapon {}
+		, SpyEffect_InfiltratorSuperWeapon {}
+		, ConsideredVehicle {}
+		, ZShapePointMove_OnBuildup { false }
+		, SellBuildupLength { 23 }
+		, AircraftDockingDirs {}
+		, FactoryPlant_AllowTypes {}
+		, FactoryPlant_DisallowTypes {}
+		, FactoryPlant_MaxCount { -1 }
+		, IsAnimDelayedBurst { true }
+		, IsDestroyableObstacle { false }
+		, Units_RepairRate {}
+		, Units_RepairStep {}
+		, Units_RepairPercent {}
+		, Units_UseRepairCost {}
+		, NoBuildAreaOnBuildup { false }
+		, Adjacent_Allowed {}
+		, Adjacent_Disallowed {}
+		, Adjacent_Disallowed_Prohibit { false }
+		, Adjacent_Disallowed_ProhibitDistance { 0 }
+		, BarracksExitCell {}
+		, Overpower_KeepOnline { 2 }
+		, Overpower_ChargeWeapon { 1 }
+		, DisableDamageSound { false }
+		, BuildingOccupyDamageMult {}
+		, BuildingOccupyROFMult {}
+		, BuildingBunkerDamageMult {}
+		, BuildingBunkerROFMult {}
+		, BunkerWallsUpSound {}
+		, BunkerWallsDownSound {}
+		, BunkerStateUpdateDelay {}
+		, BuildingRepairedSound {}
+		, Refinery_UseNormalActiveAnim { false }
+		, HasPowerUpAnim {}
+		, UndeploysInto_Sellable { false }
+		, BuildingRadioLink_SyncOwner {}
+		, GuardRetryDelay {}
+		, TurretAnim_IdleFrames { 1 }
+		, TurretAnim_LowPowerIdleFrames { 0 }
+		, TurretAnim_FiringFrames { 0 }
+		, TurretAnim_LowPowerFiringFrames { 0 }
+		, TurretAnim_IdleRate { 1 }
+		, TurretAnim_FiringRate { 1 }
 
 		// Ares 0.2
-		Valueable<bool> CloningFacility;
+		, CloningFacility { false }
 
 		// Ares 0.A
-		Valueable<BuildingTypeClass*> RubbleIntact;
-		Valueable<bool> RubbleIntactRemove;
+		, RubbleIntact { nullptr }
+		, RubbleIntactRemove { false }
 
 		// Ares 3.0
-		Nullable<bool> UnitSell;
+		, UnitSell {}
+	{ }
 
-		ExtData(BuildingTypeClass* OwnerObject) : TechnoTypeExt::ExtData(OwnerObject)
-			, PowersUp_Owner { AffectedHouse::Owner }
-			, PowersUp_Buildings {}
-			, PowerPlant_DamageFactor { 1.0 }
-			, PowerPlantEnhancer_Buildings {}
-			, PowerPlantEnhancer_Range { Leptons(0) }
-			, PowerPlantEnhancer_Amount { 0 }
-			, PowerPlantEnhancer_Factor { 1.0f }
-			, PowerPlantEnhancer_MaxCount { -1 }
-			, OccupierMuzzleFlashes()
-			, Powered_KillSpawns { false }
-			, CanC4_AllowZeroDamage { false }
-			, InitialStrength_Cloning { { 1.0 } }
-			, ExcludeFromMultipleFactoryBonus { false }
-			, Refinery_UseStorage { false }
-			, Grinding_AllowAllies { false }
-			, Grinding_AllowOwner { true }
-			, Grinding_AllowTypes {}
-			, Grinding_DisallowTypes {}
-			, Grinding_Sound {}
-			, Grinding_PlayDieSound { true }
-			, Grinding_Weapon {}
-			, Grinding_Weapon_RequiredCredits { 0 }
-			, DisplayIncome { }
-			, DisplayIncome_Delay { }
-			, DisplayIncome_Houses { }
-			, DisplayIncome_Offset { { 0,0 } }
-			, PlacementPreview { true }
-			, PlacementPreview_Shape {}
-			, PlacementPreview_ShapeFrame {}
-			, PlacementPreview_Remap { true }
-			, PlacementPreview_Offset { {0,-15,1} }
-			, PlacementPreview_Palette {}
-			, PlacementPreview_Translucency {}
-			, SpyEffect_Custom { false }
-			, SpyEffect_VictimSuperWeapon {}
-			, SpyEffect_InfiltratorSuperWeapon {}
-			, ConsideredVehicle {}
-			, ZShapePointMove_OnBuildup { false }
-			, SellBuildupLength { 23 }
-			, AircraftDockingDirs {}
-			, FactoryPlant_AllowTypes {}
-			, FactoryPlant_DisallowTypes {}
-			, FactoryPlant_MaxCount { -1 }
-			, IsAnimDelayedBurst { true }
-			, IsDestroyableObstacle { false }
-			, Units_RepairRate {}
-			, Units_RepairStep {}
-			, Units_RepairPercent {}
-			, Units_UseRepairCost {}
-			, NoBuildAreaOnBuildup { false }
-			, Adjacent_Allowed {}
-			, Adjacent_Disallowed {}
-			, Adjacent_Disallowed_Prohibit { false }
-			, Adjacent_Disallowed_ProhibitDistance { 0 }
-			, BarracksExitCell {}
-			, Overpower_KeepOnline { 2 }
-			, Overpower_ChargeWeapon { 1 }
-			, DisableDamageSound { false }
-			, BuildingOccupyDamageMult {}
-			, BuildingOccupyROFMult {}
-			, BuildingBunkerDamageMult {}
-			, BuildingBunkerROFMult {}
-			, BunkerWallsUpSound {}
-			, BunkerWallsDownSound {}
-			, BunkerStateUpdateDelay {}
-			, BuildingRepairedSound {}
-			, Refinery_UseNormalActiveAnim { false }
-			, HasPowerUpAnim {}
-			, UndeploysInto_Sellable { false }
-			, BuildingRadioLink_SyncOwner {}
-			, GuardRetryDelay {}
-			, TurretAnim_IdleFrames { 1 }
-			, TurretAnim_LowPowerIdleFrames { 0 }
-			, TurretAnim_FiringFrames { 0 }
-			, TurretAnim_LowPowerFiringFrames { 0 }
-			, TurretAnim_IdleRate { 1 }
-			, TurretAnim_FiringRate { 1 }
-
-			// Ares 0.2
-			, CloningFacility { false }
-
-			// Ares 0.A
-			, RubbleIntact { nullptr }
-			, RubbleIntactRemove { false }
-
-			// Ares 3.0
-			, UnitSell {}
-		{ }
-
-		// typed owner accessor (shadows the TechnoTypeClass one from the base)
-		BuildingTypeClass* OwnerObject() const
-		{
-			return static_cast<BuildingTypeClass*>(this->TechnoTypeExt::ExtData::OwnerObject());
-		}
-
-		// Ares 0.A functions
-		int GetSuperWeaponCount() const;
-		int GetSuperWeaponIndex(int index, HouseClass* pHouse) const;
-		int GetSuperWeaponIndex(int index) const;
-
-		virtual ~ExtData() = default;
-
-		virtual void LoadFromINIFile(CCINIClass* pINI) override;
-		virtual void Initialize() override;
-		virtual void CompleteInitialization();
-
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
-
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
-
-	// BuildingTypeClassExtension lives in the TechnoTypeClass container; thin accessor facade.
-	class ExtMapFacade
+	// typed owner accessor (shadows the TechnoTypeClass one from the base)
+	BuildingTypeClass* OwnerObject() const
 	{
-	public:
-		ExtData* Find(const BuildingTypeClass* key) const
-		{
-			return static_cast<ExtData*>(TechnoTypeExt::ExtMap.Find(key));
-		}
+		return static_cast<BuildingTypeClass*>(this->TechnoTypeExt::OwnerObject());
+	}
 
-		ExtData* TryFind(const BuildingTypeClass* key) const
-		{
-			return static_cast<ExtData*>(TechnoTypeExt::ExtMap.TryFind(key));
-		}
-	};
+	// Ares 0.A functions
+	int GetSuperWeaponCount() const;
+	int GetSuperWeaponIndex(int index, HouseClass* pHouse) const;
+	int GetSuperWeaponIndex(int index) const;
 
-	static ExtMapFacade ExtMap;
+	virtual ~BuildingTypeExt() = default;
+
+	virtual void LoadFromINIFile(CCINIClass* pINI) override;
+	virtual void Initialize() override;
+	virtual void CompleteInitialization();
+
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+
+private:
+	template <typename T>
+	void Serialize(T& Stm);
+
+public:
+
+	static BuildingTypeExt* Fetch(const BuildingTypeClass* pThis)
+	{
+		return static_cast<BuildingTypeExt*>(TechnoTypeExt::Fetch(pThis));
+	}
+
+	static BuildingTypeExt* TryFetch(const BuildingTypeClass* pThis)
+	{
+		return static_cast<BuildingTypeExt*>(TechnoTypeExt::TryFetch(pThis));
+	}
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
@@ -269,5 +261,3 @@ public:
 	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);
 };
 
-// top-level name for the BuildingTypeClass extension leaf (derives from TechnoTypeClassExtension)
-using BuildingTypeClassExtension = BuildingTypeExt::ExtData;

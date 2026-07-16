@@ -16,7 +16,7 @@ void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, HouseClass* pKiller)
 	{
 		auto const facing = pThis->PrimaryFacing.Current().GetDir();
 		AnimTypeClass* pAnimType = nullptr;
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 
 		if (!pTypeExt->DestroyAnim_Random.Get())
 		{
@@ -46,8 +46,8 @@ void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, HouseClass* pKiller)
 			//auto VictimOwner = pThis->IsMindControlled() && pThis->GetOriginalOwner()
 			//	? pThis->GetOriginalOwner() : pThis->Owner;
 
-			auto const pAnimTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
-			auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+			auto const pAnimTypeExt = AnimTypeExt::Fetch(pAnim->Type);
+			auto const pAnimExt = AnimExt::Fetch(pAnim);
 
 			AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pThis->Owner);
 
@@ -72,7 +72,7 @@ void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, HouseClass* pKiller)
 	}
 }
 
-void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
+void AnimTypeExt::LoadFromINIFile(CCINIClass* pINI)
 {
 	const char* pID = this->OwnerObject()->ID;
 
@@ -138,7 +138,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 }
 
 template <typename T>
-void AnimTypeExt::ExtData::Serialize(T& Stm)
+void AnimTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Palette)
@@ -186,15 +186,15 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void AnimTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void AnimTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	ObjectTypeClassExtension::LoadFromStream(Stm);
+	ObjectTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void AnimTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void AnimTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	ObjectTypeClassExtension::SaveToStream(Stm);
+	ObjectTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 

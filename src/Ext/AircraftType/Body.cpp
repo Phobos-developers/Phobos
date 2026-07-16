@@ -4,7 +4,7 @@ DEFINE_HOOK(0x41C8C0, AircraftTypeClass_CTOR, 0x5)
 {
 	GET(AircraftTypeClass*, pItem, ESI);
 
-	TechnoTypeExt::ExtMap.Adopt(new AircraftTypeClassExtension(pItem));
+	TechnoTypeExt::ExtMap.Adopt(new AircraftTypeExt(pItem));
 
 	return 0;
 }

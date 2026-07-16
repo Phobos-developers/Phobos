@@ -6,14 +6,14 @@ ParticleSystemTypeExt::ExtContainer ParticleSystemTypeExt::ExtMap;
 // load / save
 
 template <typename T>
-void ParticleSystemTypeExt::ExtData::Serialize(T& Stm)
+void ParticleSystemTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->AdjustTargetCoordsOnRotation)
 		;
 }
 
-void ParticleSystemTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void ParticleSystemTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -22,15 +22,15 @@ void ParticleSystemTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AdjustTargetCoordsOnRotation.Read(exINI, pSection, "AdjustTargetCoordsOnRotation");
 }
 
-void ParticleSystemTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void ParticleSystemTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	ObjectTypeClassExtension::LoadFromStream(Stm);
+	ObjectTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void ParticleSystemTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void ParticleSystemTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	ObjectTypeClassExtension::SaveToStream(Stm);
+	ObjectTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 

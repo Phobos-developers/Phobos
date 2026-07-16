@@ -8,41 +8,40 @@
 
 #include <New/Type/EVATypeClass.h>
 
-class HouseTypeExt
+class HouseTypeExt final : public AbstractTypeExt
 {
 public:
 	using base_type = HouseTypeClass;
+	using ExtData = HouseTypeExt;
 
 	static constexpr DWORD Canary = 0xAFFEAFFE;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public AbstractTypeClassExtension
+public:
+	// typed owner accessor
+	HouseTypeClass* OwnerObject() const
 	{
-	public:
-		// typed owner accessor
-		HouseTypeClass* OwnerObject() const
-		{
-			return static_cast<HouseTypeClass*>(this->GetAttachedObject());
-		}
+		return static_cast<HouseTypeClass*>(this->GetAttachedObject());
+	}
 
-		EVAType EVATag;
+	EVAType EVATag;
 
-		ExtData(HouseTypeClass* OwnerObject) : AbstractTypeClassExtension(OwnerObject)
-			, EVATag { -2 }
-		{ }
+	HouseTypeExt(HouseTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
+		, EVATag { -2 }
+	{ }
 
-		virtual ~ExtData() = default;
+	virtual ~HouseTypeExt() = default;
 
-		virtual void LoadFromINIFile(CCINIClass* pINI) override;
-		virtual void Initialize() override;
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void LoadFromINIFile(CCINIClass* pINI) override;
+	virtual void Initialize() override;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 
+public:
 	class ExtContainer final : public Container<HouseTypeExt>
 	{
 	public:
@@ -54,7 +53,15 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static ExtContainer ExtMap;
+
+	static HouseTypeExt* Fetch(const HouseTypeClass* pThis)
+	{
+		return ExtMap.Find(pThis);
+	}
+
+	static HouseTypeExt* TryFetch(const HouseTypeClass* pThis)
+	{
+		return ExtMap.TryFind(pThis);
+	}
 };
 
-// top-level name for the HouseTypeExt extension
-using HouseTypeClassExtension = HouseTypeExt::ExtData;

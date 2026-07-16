@@ -17,7 +17,7 @@
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
 bool TechnoTypeExt::SelectWeaponMutex = false;
 
-void TechnoTypeExt::ExtData::Initialize()
+void TechnoTypeExt::Initialize()
 {
 	auto pThis = this->OwnerObject();
 
@@ -25,7 +25,7 @@ void TechnoTypeExt::ExtData::Initialize()
 		this->Missile_TakeOffAnim = AnimTypeClass::Find("V3TAKOFF");
 }
 
-void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
+void TechnoTypeExt::ApplyTurretOffset(Matrix3D* mtx, double factor)
 {
 	// Does not verify if the offset actually has all values parsed as it makes no difference, it will be 0 for the unparsed ones either way.
 	const auto offset = this->TurretOffset.GetEx();
@@ -36,7 +36,7 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 	mtx->Translate(x, y, z);
 }
 
-int TechnoTypeExt::ExtData::SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget) const
+int TechnoTypeExt::SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget) const
 {
 	if (TechnoTypeExt::SelectWeaponMutex || !this->ForceWeapon_Check || !pTarget) // In theory, pTarget must exist
 		return -1;
@@ -78,7 +78,7 @@ int TechnoTypeExt::ExtData::SelectForceWeapon(TechnoClass* pThis, AbstractClass*
 		&& (!this->ForceWeapon_InRange.empty() || !this->ForceAAWeapon_InRange.empty()))
 	{
 		TechnoTypeExt::SelectWeaponMutex = true;
-		forceWeaponIndex = TechnoExt::ExtMap.Find(pThis)->ApplyForceWeaponInRange(pTarget);
+		forceWeaponIndex = TechnoExt::Fetch(pThis)->ApplyForceWeaponInRange(pTarget);
 		TechnoTypeExt::SelectWeaponMutex = false;
 	}
 
@@ -128,7 +128,7 @@ int TechnoTypeExt::ExtData::SelectForceWeapon(TechnoClass* pThis, AbstractClass*
 	return forceWeaponIndex;
 }
 
-bool TechnoTypeExt::ExtData::IsSecondary(int nWeaponIndex) const
+bool TechnoTypeExt::IsSecondary(int nWeaponIndex) const
 {
 	const auto pThis = this->OwnerObject();
 
@@ -144,7 +144,7 @@ bool TechnoTypeExt::ExtData::IsSecondary(int nWeaponIndex) const
 	return nWeaponIndex != 0;
 }
 
-int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget) const
+int TechnoTypeExt::SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget) const
 {
 	if (!pTarget || !this->MultiWeapon)
 		return -1;
@@ -263,7 +263,7 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 }
 
 // Ares 0.A source
-bool TechnoTypeExt::ExtData::CameoIsVeteran(HouseClass* pHouse) const
+bool TechnoTypeExt::CameoIsVeteran(HouseClass* pHouse) const
 {
 	const auto pThis = this->OwnerObject();;
 
@@ -332,14 +332,14 @@ bool TechnoTypeExt::ExtData::CameoIsVeteran(HouseClass* pHouse) const
 	return false;
 }
 
-const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
+const char* TechnoTypeExt::GetSelectionGroupID() const
 {
 	return GeneralUtils::IsValidString(this->GroupAs) ? this->GroupAs : this->OwnerObject()->ID;
 }
 
 const char* TechnoTypeExt::GetSelectionGroupID(ObjectTypeClass* pType)
 {
-	if (const auto pExt = TechnoTypeExt::ExtMap.TryFind(static_cast<TechnoTypeClass*>(pType)))
+	if (const auto pExt = TechnoTypeExt::TryFetch(static_cast<TechnoTypeClass*>(pType)))
 		return pExt->GetSelectionGroupID();
 
 	return pType->ID;
@@ -352,7 +352,7 @@ bool TechnoTypeExt::HasSelectionGroupID(ObjectTypeClass* pType, const char* pID)
 	return (_strcmpi(id, pID) == 0);
 }
 
-void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSection,
+void TechnoTypeExt::ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSection,
 	std::vector<std::vector<CoordStruct>>& nFLH, std::vector<std::vector<CoordStruct>>& nEFlh, const char* pPrefixTag)
 {
 	char tempBuffer[32];
@@ -390,7 +390,7 @@ void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSe
 	}
 }
 
-void TechnoTypeExt::ExtData::ParseVoiceWeaponAttacks(INI_EX& exINI, const char* pSection, ValueableVector<int>& voice, ValueableVector<int>& voiceElite)
+void TechnoTypeExt::ParseVoiceWeaponAttacks(INI_EX& exINI, const char* pSection, ValueableVector<int>& voice, ValueableVector<int>& voiceElite)
 {
 	if (!this->ReadMultiWeapon)
 	{
@@ -434,7 +434,7 @@ void TechnoTypeExt::ExtData::ParseVoiceWeaponAttacks(INI_EX& exINI, const char* 
 	}
 }
 
-void TechnoTypeExt::ExtData::UpdateAdditionalAttributes()
+void TechnoTypeExt::UpdateAdditionalAttributes()
 {
 	int num = 0;
 	int eliteNum = 0;
@@ -468,7 +468,7 @@ void TechnoTypeExt::ExtData::UpdateAdditionalAttributes()
 			eliteNum++;
 
 			if (!this->AttackFriendlies.Y
-				&& WeaponTypeExt::ExtMap.Find(pWeapon)->AttackFriendlies.Get(false))
+				&& WeaponTypeExt::Fetch(pWeapon)->AttackFriendlies.Get(false))
 			{
 				this->AttackFriendlies.Y = true;
 			}
@@ -482,7 +482,7 @@ void TechnoTypeExt::ExtData::UpdateAdditionalAttributes()
 			num++;
 
 			if (!this->AttackFriendlies.X
-				&& WeaponTypeExt::ExtMap.Find(pWeapon)->AttackFriendlies.Get(false))
+				&& WeaponTypeExt::Fetch(pWeapon)->AttackFriendlies.Get(false))
 			{
 				this->AttackFriendlies.X = true;
 			}
@@ -508,7 +508,7 @@ void TechnoTypeExt::ExtData::UpdateAdditionalAttributes()
 		this->CombatDamages.Y /= eliteNum;
 }
 
-void TechnoTypeExt::ExtData::CalculateSpawnerRange()
+void TechnoTypeExt::CalculateSpawnerRange()
 {
 	const auto pThis = this->OwnerObject();
 	const int weaponRangeExtra = this->Spawner_ExtraLimitRange * Unsorted::LeptonsPerCell;
@@ -663,7 +663,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 								// Order BalloonHover jumpjets to ascend.
 								pJJLoco->IsMoving = true;
 								pJJLoco->DestinationCoords = pTechno->GetCoords();
-								TechnoExt::ExtMap.Find(pTechno)->JumpjetStraightAscend = true;
+								TechnoExt::Fetch(pTechno)->JumpjetStraightAscend = true;
 							}
 							else if (inAir)
 							{
@@ -674,7 +674,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 						else if (inAir && !parachuted)
 						{
 							pTechno->IsFallingDown = true;
-							TechnoExt::ExtMap.Find(pTechno)->OnParachuted = true;
+							TechnoExt::Fetch(pTechno)->OnParachuted = true;
 						}
 					}
 
@@ -722,7 +722,7 @@ WeaponTypeClass* TechnoTypeExt::GetWeaponType(TechnoTypeClass* pThis, int weapon
 // =============================
 // load / save
 
-void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -1473,7 +1473,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ParseVoiceWeaponAttacks(exINI, pSection, this->VoiceWeaponAttacks, this->VoiceEliteWeaponAttacks);
 }
 
-void TechnoTypeExt::ExtData::LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSection, INI_EX& exArtINI, const char* pArtSection)
+void TechnoTypeExt::LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSection, INI_EX& exArtINI, const char* pArtSection)
 {
 	AbstractType abs = this->OwnerObject()->WhatAmI();
 
@@ -1497,7 +1497,7 @@ void TechnoTypeExt::ExtData::LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSe
 }
 
 template <typename T>
-void TechnoTypeExt::ExtData::Serialize(T& Stm)
+void TechnoTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->HealthBar_Hide)
@@ -1988,15 +1988,15 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Missile_TakeOffSeparation)
 		;
 }
-void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void TechnoTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	ObjectTypeClassExtension::LoadFromStream(Stm);
+	ObjectTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void TechnoTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void TechnoTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	ObjectTypeClassExtension::SaveToStream(Stm);
+	ObjectTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
@@ -2006,18 +2006,18 @@ void TechnoTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 TechnoTypeExt::ExtContainer::ExtContainer() : Container("TechnoTypeClass") { }
 TechnoTypeExt::ExtContainer::~ExtContainer() = default;
 
-TechnoTypeExt::ExtData* TechnoTypeExt::ExtContainer::CreateExtData(AbstractType tag, TechnoTypeClass* pOwner) const
+TechnoTypeExt* TechnoTypeExt::ExtContainer::CreateExtData(AbstractType tag, TechnoTypeClass* pOwner) const
 {
 	switch (tag)
 	{
 	case AbstractType::UnitType:
-		return new UnitTypeClassExtension(static_cast<UnitTypeClass*>(pOwner));
+		return new UnitTypeExt(static_cast<UnitTypeClass*>(pOwner));
 	case AbstractType::InfantryType:
-		return new InfantryTypeClassExtension(static_cast<InfantryTypeClass*>(pOwner));
+		return new InfantryTypeExt(static_cast<InfantryTypeClass*>(pOwner));
 	case AbstractType::AircraftType:
-		return new AircraftTypeClassExtension(static_cast<AircraftTypeClass*>(pOwner));
+		return new AircraftTypeExt(static_cast<AircraftTypeClass*>(pOwner));
 	case AbstractType::BuildingType:
-		return new BuildingTypeExt::ExtData(static_cast<BuildingTypeClass*>(pOwner));
+		return new BuildingTypeExt(static_cast<BuildingTypeClass*>(pOwner));
 	default:
 		Debug::FatalErrorAndExit("TechnoTypeExt - unexpected extension tag %d in the save stream!\n", static_cast<int>(tag));
 		return nullptr;
@@ -2076,7 +2076,7 @@ DEFINE_HOOK(0x747E90, UnitTypeClass_LoadFromINI, 0x5)
 {
 	GET(UnitTypeClass*, pItem, ESI);
 
-	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pItem))
+	if (auto pTypeExt = TechnoTypeExt::Fetch(pItem))
 	{
 		if (!pTypeExt->Harvester_Counted.isset() && pItem->Harvester)
 			pTypeExt->Harvester_Counted = true;

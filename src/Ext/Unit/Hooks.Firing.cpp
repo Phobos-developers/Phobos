@@ -15,7 +15,7 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 	if (pType->Turret || pType->Voxel || pThis->InLimbo)
 		return 0;
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pExt = TechnoExt::Fetch(pThis);
 	const auto pTypeExt = pExt->TypeExtData;
 
 	// SHP vehicles have no secondary action frames, so it does not need SecondaryFire.
@@ -58,7 +58,7 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 	{
 		int cumulativeDelay = 0;
 		int projectedDelay = 0;
-		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+		auto const pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 		const bool allowBurst = pWeaponExt->Burst_FireWithinSequence;
 		const int currentBurstIndex = pThis->CurrentBurstIndex;
 		auto& random = ScenarioClass::Instance->Random;
@@ -119,7 +119,7 @@ DEFINE_HOOK(0x736F67, UnitClass_UpdateFiring_BurstNoDelay, 0x6)
 	{
 		if (pWeapon->Burst > 1)
 		{
-			const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+			const auto pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 
 			if (pWeaponExt->Burst_NoDelay && (!pWeaponExt->DelayedFire_Duration.isset() || pWeaponExt->DelayedFire_OnlyOnInitialBurst))
 			{

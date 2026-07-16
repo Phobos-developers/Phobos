@@ -3,10 +3,9 @@
 #include <Ext/House/Body.h>
 #include <Ext/SWType/Body.h>
 
-BuildingTypeExt::ExtMapFacade BuildingTypeExt::ExtMap;
 
 // Assuming SuperWeapon & SuperWeapon2 are used (for the moment)
-int BuildingTypeExt::ExtData::GetSuperWeaponCount() const
+int BuildingTypeExt::GetSuperWeaponCount() const
 {
 	// The user should only use SuperWeapon and SuperWeapon2 if the attached sw count isn't bigger than 2
 	const auto pThis = this->OwnerObject();
@@ -15,13 +14,13 @@ int BuildingTypeExt::ExtData::GetSuperWeaponCount() const
 	return count + this->SuperWeapons.size();
 }
 
-int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index, HouseClass* pHouse) const
+int BuildingTypeExt::GetSuperWeaponIndex(const int index, HouseClass* pHouse) const
 {
 	const int idxSW = this->GetSuperWeaponIndex(index);
 
 	if (const auto pSuper = pHouse->Supers.GetItemOrDefault(idxSW))
 	{
-		const auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+		const auto pExt = SWTypeExt::Fetch(pSuper->Type);
 
 		if (!pExt->IsAvailable(pHouse))
 			return -1;
@@ -30,7 +29,7 @@ int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index, HouseClass* p
 	return idxSW;
 }
 
-int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
+int BuildingTypeExt::GetSuperWeaponIndex(const int index) const
 {
 	const auto pThis = this->OwnerObject();
 
@@ -45,7 +44,7 @@ int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
 
 std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse, BuildingClass* pPowerPlant)
 {
-	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	const auto pHouseExt = HouseExt::Fetch(pHouse);
 	int amount = 0;
 	float factor = 1.0f;
 	std::map<int, int> applied; // index, count
@@ -56,7 +55,7 @@ std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuildi
 			continue;
 
 		const auto pEnhancerType = pEnhancer->Type;
-		const auto pEnhancerTypeExt = BuildingTypeExt::ExtMap.Find(pEnhancerType);
+		const auto pEnhancerTypeExt = BuildingTypeExt::Fetch(pEnhancerType);
 
 		if (!pEnhancerTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding))
 			continue;
@@ -86,7 +85,7 @@ std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuildi
 
 void BuildingTypeExt::PlayBunkerSound(BuildingClass const* pThis, bool buildUp)
 {
-	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	auto const pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 	auto const nSound = buildUp
 		? pTypeExt->BunkerWallsUpSound.Get(RulesClass::Instance->BunkerWallsUpSound)
 		: pTypeExt->BunkerWallsDownSound.Get(RulesClass::Instance->BunkerWallsDownSound);
@@ -140,24 +139,24 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 			checkUpgrade(pTPowersUp);
 	}*/
 
-	for (auto const pTPowersUp : BuildingTypeExt::ExtMap.Find(pBuilding)->PowersUp_Buildings)
+	for (auto const pTPowersUp : BuildingTypeExt::Fetch(pBuilding)->PowersUp_Buildings)
 		checkUpgrade(pTPowersUp);
 
 	return isUpgrade ? result : -1;
 }
 
 
-void BuildingTypeExt::ExtData::Initialize()
+void BuildingTypeExt::Initialize()
 {
-	TechnoTypeExt::ExtData::Initialize();
+	TechnoTypeExt::Initialize();
 }
 
 // =============================
 // load / save
 
-void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
-	TechnoTypeExt::ExtData::LoadFromINIFile(pINI);
+	TechnoTypeExt::LoadFromINIFile(pINI);
 
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -333,14 +332,14 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->UnitSell.Read(exINI, pSection, "UnitSell");
 }
 
-void BuildingTypeExt::ExtData::CompleteInitialization()
+void BuildingTypeExt::CompleteInitialization()
 {
 	auto const pThis = this->OwnerObject();
 	UNREFERENCED_PARAMETER(pThis);
 }
 
 template <typename T>
-void BuildingTypeExt::ExtData::Serialize(T& Stm)
+void BuildingTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->PowersUp_Owner)
@@ -435,15 +434,15 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void BuildingTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void BuildingTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	TechnoTypeExt::ExtData::LoadFromStream(Stm);
+	TechnoTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void BuildingTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void BuildingTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	TechnoTypeExt::ExtData::SaveToStream(Stm);
+	TechnoTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
@@ -469,8 +468,8 @@ DEFINE_HOOK(0x45E50C, BuildingTypeClass_CTOR, 0x6)
 {
 	GET(BuildingTypeClass*, pItem, EAX);
 
-	// A building type's extension is a concrete BuildingTypeClassExtension leaf, owned by the TechnoTypeClass container.
-	TechnoTypeExt::ExtMap.Adopt(new BuildingTypeExt::ExtData(pItem));
+	// A building type's extension is a concrete BuildingTypeExt leaf, owned by the TechnoTypeClass container.
+	TechnoTypeExt::ExtMap.Adopt(new BuildingTypeExt(pItem));
 
 	return 0;
 }

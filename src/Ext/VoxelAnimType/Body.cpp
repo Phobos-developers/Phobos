@@ -2,9 +2,9 @@
 
 VoxelAnimTypeExt::ExtContainer VoxelAnimTypeExt::ExtMap;
 
-void VoxelAnimTypeExt::ExtData::Initialize() { }
+void VoxelAnimTypeExt::Initialize() { }
 
-void VoxelAnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
+void VoxelAnimTypeExt::LoadFromINIFile(CCINIClass* pINI)
 {
 	const char* pID = this->OwnerObject()->ID;
 	INI_EX exINI(pINI);
@@ -21,7 +21,7 @@ void VoxelAnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 // =============================
 // load / save
 template <typename T>
-void VoxelAnimTypeExt::ExtData::Serialize(T& Stm)
+void VoxelAnimTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(LaserTrail_Types)
@@ -34,15 +34,15 @@ void VoxelAnimTypeExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void VoxelAnimTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void VoxelAnimTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	ObjectTypeClassExtension::LoadFromStream(Stm);
+	ObjectTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void VoxelAnimTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void VoxelAnimTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	ObjectTypeClassExtension::SaveToStream(Stm);
+	ObjectTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 

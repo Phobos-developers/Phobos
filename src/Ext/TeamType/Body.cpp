@@ -5,7 +5,7 @@ TeamTypeExt::ExtContainer TeamTypeExt::ExtMap;
 // =============================
 // load / save
 
-void TeamTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void TeamTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -15,22 +15,22 @@ void TeamTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 }
 
 template <typename T>
-void TeamTypeExt::ExtData::Serialize(T& Stm)
+void TeamTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->SetRecruitableOnLiberate)
 		;
 }
 
-void TeamTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void TeamTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	AbstractTypeClassExtension::LoadFromStream(Stm);
+	AbstractTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void TeamTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void TeamTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	AbstractTypeClassExtension::SaveToStream(Stm);
+	AbstractTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 

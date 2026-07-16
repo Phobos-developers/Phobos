@@ -4,7 +4,7 @@
 
 SWTypeExt::ExtContainer SWTypeExt::ExtMap;
 
-void SWTypeExt::ExtData::Initialize()
+void SWTypeExt::Initialize()
 {
 	this->EVA_InsufficientFunds = VoxClass::FindIndex(GameStrings::EVA_InsufficientFunds);
 	this->EVA_SelectTarget = VoxClass::FindIndex("EVA_SelectTarget");
@@ -16,7 +16,7 @@ void SWTypeExt::ExtData::Initialize()
 // load / save
 
 template <typename T>
-void SWTypeExt::ExtData::Serialize(T& Stm)
+void SWTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->TypeID)
@@ -109,7 +109,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void SWTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -303,20 +303,20 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (newidx != -1)
 	{
 		NewSWType* pNewSWType = NewSWType::GetNthItem(newidx);
-		pNewSWType->Initialize(const_cast<SWTypeExt::ExtData*>(this), OwnerObject());
-		pNewSWType->LoadFromINI(const_cast<SWTypeExt::ExtData*>(this), OwnerObject(), pINI);
+		pNewSWType->Initialize(const_cast<SWTypeExt*>(this), OwnerObject());
+		pNewSWType->LoadFromINI(const_cast<SWTypeExt*>(this), OwnerObject(), pINI);
 	}
 }
 
-void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void SWTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	AbstractTypeClassExtension::LoadFromStream(Stm);
+	AbstractTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void SWTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void SWTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	AbstractTypeClassExtension::SaveToStream(Stm);
+	AbstractTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
@@ -334,7 +334,7 @@ bool SWTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 
 bool SWTypeExt::Activate(SuperClass* pSuper, CellStruct cell, bool isPlayer)
 {
-	const auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+	const auto pSWTypeExt = SWTypeExt::Fetch(pSuper->Type);
 	const int newIdx = NewSWType::GetNewSWTypeIdx(pSWTypeExt->TypeID.data());
 
 	Debug::Log("[Phobos::SW::Active] %s\n", pSWTypeExt->TypeID.data());

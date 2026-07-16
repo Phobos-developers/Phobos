@@ -11,7 +11,7 @@ DEFINE_REFERENCE(double, Pixel_Per_Lepton, 0xB1D008)
 
 void TechnoTypeExt::ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor)
 {
-	TechnoTypeExt::ExtMap.Find(pType)->ApplyTurretOffset(mtx, factor);
+	TechnoTypeExt::Fetch(pType)->ApplyTurretOffset(mtx, factor);
 }
 
 DEFINE_HOOK(0x6F3E6E, TechnoClass_ActionLines_TurretMultiOffset, 0x0)
@@ -28,7 +28,7 @@ DEFINE_HOOK(0x73B780, UnitClass_DrawVXL_TurretMultiOffset, 0x0)
 {
 	GET(TechnoTypeClass*, technoType, EAX);
 
-	auto const pTypeData = TechnoTypeExt::ExtMap.Find(technoType);
+	auto const pTypeData = TechnoTypeExt::Fetch(technoType);
 
 	if (*pTypeData->TurretOffset.GetEx() == CoordStruct { 0, 0, 0 })
 		return 0x73B78A;
@@ -78,7 +78,7 @@ DEFINE_HOOK(0x73BA12, UnitClass_DrawAsVXL_RewriteTurretDrawing, 0x6)
 	// base matrix
 	const auto mtx = Matrix3D::VoxelDefaultMatrix * drawMatrix;
 
-	const auto pDrawTypeExt = TechnoTypeExt::ExtMap.Find(pDrawType);
+	const auto pDrawTypeExt = TechnoTypeExt::Fetch(pDrawType);
 	const bool notChargeTurret = pThis->Type->TurretCount <= 0 || pThis->Type->IsGattling;
 
 	auto getTurretVoxel = [pDrawType, notChargeTurret, currentTurretNumber]() -> VoxelStruct*
@@ -344,7 +344,7 @@ static Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco
 	}
 	else
 	{
-		const auto pTypeExt = TechnoExt::ExtMap.Find(linked)->TypeExtData;
+		const auto pTypeExt = TechnoExt::Fetch(linked)->TypeExtData;
 
 		if (pTypeExt->JumpjetTilt
 			&& !onGround
@@ -567,7 +567,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	// This is not necessarily pThis->Type : UnloadingClass or WaterImage
 	// This is the very reason I need to do this here, there's no less hacky way to get this Type from those inner calls
 
-	const auto pDrawTypeExt = TechnoTypeExt::ExtMap.Find(pDrawType);
+	const auto pDrawTypeExt = TechnoTypeExt::Fetch(pDrawType);
 	const auto jjloco = locomotion_cast<JumpjetLocomotionClass*>(loco);
 	const auto height = pThis->GetHeight();
 	const double baseScale_log = RulesExt::Global()->AirShadowBaseScale_log;
@@ -849,7 +849,7 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 	pAircraftType = TechnoExt::GetAircraftTypeExtra(pThis);
 
 	auto shadow_mtx = loco->Shadow_Matrix(&key);
-	const auto aTypeExt = TechnoTypeExt::ExtMap.Find(pAircraftType);
+	const auto aTypeExt = TechnoTypeExt::Fetch(pAircraftType);
 
 	if (auto const flyLoco = locomotion_cast<FlyLocomotionClass*>(loco))
 	{
@@ -950,7 +950,7 @@ DEFINE_HOOK(0x7072A1, cyka707280_WhichMatrix, 0x6)
 
 	REF_STACK(Matrix3D, matRet, STACK_OFFSET(0xE8, -0x60));
 
-	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 	auto pType = pTypeExt->OwnerObject();
 
 	const auto hva = pVXL->HVA;

@@ -5,65 +5,64 @@
 #include <Utilities/Detach.h>
 #include <Utilities/TemplateDef.h>
 
-class TeamExt
+class TeamExt final : public AbstractExt, public Detach::Listener<FootClass>
 {
 public:
 	using base_type = TeamClass;
+	using ExtData = TeamExt;
 
 	static constexpr DWORD Canary = 0x414B4B41;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public AbstractExt, public Detach::Listener<FootClass>
+public:
+	// typed owner accessor
+	TeamClass* OwnerObject() const
 	{
-	public:
-		// typed owner accessor
-		TeamClass* OwnerObject() const
-		{
-			return static_cast<TeamClass*>(this->GetAttachedObject());
-		}
+		return static_cast<TeamClass*>(this->GetAttachedObject());
+	}
 
-		int WaitNoTargetAttempts;
-		double NextSuccessWeightAward;
-		int IdxSelectedObjectFromAIList;
-		double CloseEnough;
-		int Countdown_RegroupAtLeader;
-		int MoveMissionEndMode;
-		int WaitNoTargetCounter;
-		CDTimerClass WaitNoTargetTimer;
-		CDTimerClass ForceJump_Countdown;
-		int ForceJump_InitialCountdown;
-		bool ForceJump_RepeatMode;
-		FootClass* TeamLeader;
-		std::vector<ScriptClass*> PreviousScriptList;
+	int WaitNoTargetAttempts;
+	double NextSuccessWeightAward;
+	int IdxSelectedObjectFromAIList;
+	double CloseEnough;
+	int Countdown_RegroupAtLeader;
+	int MoveMissionEndMode;
+	int WaitNoTargetCounter;
+	CDTimerClass WaitNoTargetTimer;
+	CDTimerClass ForceJump_Countdown;
+	int ForceJump_InitialCountdown;
+	bool ForceJump_RepeatMode;
+	FootClass* TeamLeader;
+	std::vector<ScriptClass*> PreviousScriptList;
 
-		ExtData(TeamClass* OwnerObject) : AbstractExt(OwnerObject)
-			, WaitNoTargetAttempts { 0 }
-			, NextSuccessWeightAward { 0 }
-			, IdxSelectedObjectFromAIList { -1 }
-			, CloseEnough { -1 }
-			, Countdown_RegroupAtLeader { -1 }
-			, MoveMissionEndMode { 0 }
-			, WaitNoTargetCounter { 0 }
-			, WaitNoTargetTimer { }
-			, ForceJump_Countdown { }
-			, ForceJump_InitialCountdown { -1 }
-			, ForceJump_RepeatMode { false }
-			, TeamLeader { nullptr }
-			, PreviousScriptList { }
-		{ }
+	TeamExt(TeamClass* OwnerObject) : AbstractExt(OwnerObject)
+		, WaitNoTargetAttempts { 0 }
+		, NextSuccessWeightAward { 0 }
+		, IdxSelectedObjectFromAIList { -1 }
+		, CloseEnough { -1 }
+		, Countdown_RegroupAtLeader { -1 }
+		, MoveMissionEndMode { 0 }
+		, WaitNoTargetCounter { 0 }
+		, WaitNoTargetTimer { }
+		, ForceJump_Countdown { }
+		, ForceJump_InitialCountdown { -1 }
+		, ForceJump_RepeatMode { false }
+		, TeamLeader { nullptr }
+		, PreviousScriptList { }
+	{ }
 
-		virtual ~ExtData() = default;
+	virtual ~TeamExt() = default;
 
-		virtual void OnDetach(FootClass* pTarget, bool removed) override;
+	virtual void OnDetach(FootClass* pTarget, bool removed) override;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 
+public:
 	class ExtContainer final : public Container<TeamExt>
 	{
 	public:
@@ -73,7 +72,15 @@ public:
 
 	static ExtContainer ExtMap;
 
+	static TeamExt* Fetch(const TeamClass* pThis)
+	{
+		return ExtMap.Find(pThis);
+	}
+
+	static TeamExt* TryFetch(const TeamClass* pThis)
+	{
+		return ExtMap.TryFind(pThis);
+	}
+
 };
 
-// top-level name for the TeamExt extension
-using TeamClassExtension = TeamExt::ExtData;

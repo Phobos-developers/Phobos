@@ -30,8 +30,8 @@ public:
 		std::map<int, CellStruct> Waypoints;
 		std::map<int, ExtendedVariable> Variables[2]; // 0 for local, 1 for global
 
-		std::vector<TechnoExt::ExtData*> AutoDeathObjects;
-		std::vector<TechnoExt::ExtData*> TransportReloaders; // Objects that can reload ammo in limbo
+		std::vector<TechnoExt*> AutoDeathObjects;
+		std::vector<TechnoExt*> TransportReloaders; // Objects that can reload ammo in limbo
 
 		bool SWSidebar_Enable;
 		std::vector<int> SWSidebar_Indices;
@@ -42,7 +42,7 @@ public:
 		PhobosFixedString<64u> DefaultLS800BkgdName;
 		PhobosFixedString<64u> DefaultLS800BkgdPal;
 
-		std::vector<TechnoExt::ExtData*> LimboLaunchers;
+		std::vector<TechnoExt*> LimboLaunchers;
 
 		DynamicVectorClass<TechnoClass*> UndergroundTracker; // Technos that are underground.
 		DynamicVectorClass<TechnoClass*> SpecialTracker; // For special purposes, like tracking technos that are forced moving. Currently unused.

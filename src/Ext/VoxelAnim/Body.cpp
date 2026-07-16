@@ -4,12 +4,12 @@ VoxelAnimExt::ExtContainer VoxelAnimExt::ExtMap;
 
 void VoxelAnimExt::InitializeLaserTrails(VoxelAnimClass* pThis)
 {
-	const auto pThisExt = VoxelAnimExt::ExtMap.Find(pThis);
+	const auto pThisExt = VoxelAnimExt::Fetch(pThis);
 
 	if (pThisExt->LaserTrails.size())
 		return;
 
-	const auto pTypeExt = VoxelAnimTypeExt::ExtMap.Find(pThis->Type);
+	const auto pTypeExt = VoxelAnimTypeExt::Fetch(pThis->Type);
 	const auto pOwner = pThis->OwnerHouse;
 	pThisExt->LaserTrails.reserve(pTypeExt->LaserTrail_Types.size());
 
@@ -17,12 +17,12 @@ void VoxelAnimExt::InitializeLaserTrails(VoxelAnimClass* pThis)
 		pThisExt->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(LaserTrailTypeClass::Array[idxTrail].get(), pOwner));
 }
 
-void VoxelAnimExt::ExtData::Initialize() { }
+void VoxelAnimExt::Initialize() { }
 
 // =============================
 // load / save
 template <typename T>
-void VoxelAnimExt::ExtData::Serialize(T& Stm)
+void VoxelAnimExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->LaserTrails)
@@ -30,15 +30,15 @@ void VoxelAnimExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void VoxelAnimExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void VoxelAnimExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	ObjectClassExtension::LoadFromStream(Stm);
+	ObjectExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void VoxelAnimExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void VoxelAnimExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	ObjectClassExtension::SaveToStream(Stm);
+	ObjectExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 

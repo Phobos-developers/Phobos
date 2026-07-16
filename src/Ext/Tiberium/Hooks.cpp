@@ -17,7 +17,7 @@ DEFINE_HOOK(0x47C210, CellClass_CellColor_TiberiumRadarColor, 0x6)
 
 	const auto pTiberium = TiberiumClass::Array.GetItem(tiberiumType);
 
-	if (const auto pTiberiumExt = TiberiumExt::ExtMap.TryFind(pTiberium))
+	if (const auto pTiberiumExt = TiberiumExt::TryFetch(pTiberium))
 	{
 		if (pTiberiumExt->MinimapColor.isset())
 		{

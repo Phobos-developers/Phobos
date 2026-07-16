@@ -3,11 +3,11 @@
 #include <Ext/Foot/Body.h>
 #include <InfantryClass.h>
 
-// Concrete leaf extension for InfantryClass (empty; techno data lives in TechnoClassExtension).
-class InfantryClassExtension : public FootClassExtension
+// Concrete leaf extension for InfantryClass (empty; techno data lives in TechnoExt).
+class InfantryExt : public FootExt
 {
 public:
-	explicit InfantryClassExtension(InfantryClass* const OwnerObject) : FootClassExtension(OwnerObject)
+	explicit InfantryExt(InfantryClass* const OwnerObject) : FootExt(OwnerObject)
 	{ }
 
 	InfantryClass* OwnerObject() const

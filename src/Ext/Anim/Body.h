@@ -4,83 +4,82 @@
 #include <Ext/AnimType/Body.h>
 #include <Ext/Object/Body.h>
 
-class AnimExt
+class AnimExt final : public ObjectExt
 {
 public:
 	using base_type = AnimClass;
+	using ExtData = AnimExt;
 
 	static constexpr DWORD Canary = 0xAAAAAAAA;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public ObjectClassExtension
+public:
+	// typed owner accessor
+	AnimClass* OwnerObject() const
 	{
-	public:
-		// typed owner accessor
-		AnimClass* OwnerObject() const
-		{
-			return static_cast<AnimClass*>(this->GetAttachedObject());
-		}
+		return static_cast<AnimClass*>(this->GetAttachedObject());
+	}
 
-		DirType DeathUnitFacing;
-		DirStruct DeathUnitTurretFacing;
-		bool FromDeathUnit;
-		bool DeathUnitHasTurret;
-		TechnoClass* Invoker;
-		HouseClass* InvokerHouse;
-		ParticleSystemClass* AttachedSystem;
-		BuildingClass* ParentBuilding; // Only set on building anims, used for tinting the anims etc. especially when not on same cell as building
-		bool IsTechnoTrailerAnim;
-		bool DelayedFireRemoveOnNoDelay;
-		bool IsAttachedEffectAnim;
-		bool IsShieldIdleAnim;
-		WeaponTypeClass* FiringAnim_Weapon;
-		int FiringAnim_WeaponIndex;
-		int FiringAnim_BurstIndex;
-		DirStruct FiringAnim_LastFacing;
-		CoordStruct FiringAnim_LastCoords;
-		double FirepowerMult;
+	DirType DeathUnitFacing;
+	DirStruct DeathUnitTurretFacing;
+	bool FromDeathUnit;
+	bool DeathUnitHasTurret;
+	TechnoClass* Invoker;
+	HouseClass* InvokerHouse;
+	ParticleSystemClass* AttachedSystem;
+	BuildingClass* ParentBuilding; // Only set on building anims, used for tinting the anims etc. especially when not on same cell as building
+	bool IsTechnoTrailerAnim;
+	bool DelayedFireRemoveOnNoDelay;
+	bool IsAttachedEffectAnim;
+	bool IsShieldIdleAnim;
+	WeaponTypeClass* FiringAnim_Weapon;
+	int FiringAnim_WeaponIndex;
+	int FiringAnim_BurstIndex;
+	DirStruct FiringAnim_LastFacing;
+	CoordStruct FiringAnim_LastCoords;
+	double FirepowerMult;
 
-		ExtData(AnimClass* OwnerObject) : ObjectClassExtension(OwnerObject)
-			, DeathUnitFacing { 0 }
-			, DeathUnitTurretFacing {}
-			, FromDeathUnit { false }
-			, DeathUnitHasTurret { false }
-			, Invoker {}
-			, InvokerHouse {}
-			, AttachedSystem {}
-			, ParentBuilding {}
-			, IsTechnoTrailerAnim { false }
-			, DelayedFireRemoveOnNoDelay { false }
-			, IsAttachedEffectAnim { false }
-			, IsShieldIdleAnim { false }
-			, FiringAnim_Weapon {}
-			, FiringAnim_WeaponIndex {}
-			, FiringAnim_BurstIndex {}
-			, FiringAnim_LastFacing {}
-			, FiringAnim_LastCoords {}
-			, FirepowerMult { 1.0 }
-		{ }
+	AnimExt(AnimClass* OwnerObject) : ObjectExt(OwnerObject)
+		, DeathUnitFacing { 0 }
+		, DeathUnitTurretFacing {}
+		, FromDeathUnit { false }
+		, DeathUnitHasTurret { false }
+		, Invoker {}
+		, InvokerHouse {}
+		, AttachedSystem {}
+		, ParentBuilding {}
+		, IsTechnoTrailerAnim { false }
+		, DelayedFireRemoveOnNoDelay { false }
+		, IsAttachedEffectAnim { false }
+		, IsShieldIdleAnim { false }
+		, FiringAnim_Weapon {}
+		, FiringAnim_WeaponIndex {}
+		, FiringAnim_BurstIndex {}
+		, FiringAnim_LastFacing {}
+		, FiringAnim_LastCoords {}
+		, FirepowerMult { 1.0 }
+	{ }
 
-		void SetInvoker(TechnoClass* pInvoker);
-		void SetInvoker(TechnoClass* pInvoker, HouseClass* pInvokerHouse);
-		void CreateAttachedSystem();
-		void DeleteAttachedSystem();
+	void SetInvoker(TechnoClass* pInvoker);
+	void SetInvoker(TechnoClass* pInvoker, HouseClass* pInvokerHouse);
+	void CreateAttachedSystem();
+	void DeleteAttachedSystem();
 
-		void UpdateAsFiringAnim();
+	void UpdateAsFiringAnim();
 
-		virtual ~ExtData() override;
+	virtual ~AnimExt() override;
 
-		virtual void InitializeConstants() override;
+	virtual void InitializeConstants() override;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
-		virtual void PostLoad() override;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void PostLoad() override;
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 
+public:
 	class ExtContainer final : public Container<AnimExt>
 	{
 	public:
@@ -96,6 +95,16 @@ public:
 	static std::vector<AnimClass*> AnimsWithAttachedParticles;
 	static ExtContainer ExtMap;
 
+	static AnimExt* Fetch(const AnimClass* pThis)
+	{
+		return ExtMap.Find(pThis);
+	}
+
+	static AnimExt* TryFetch(const AnimClass* pThis)
+	{
+		return ExtMap.TryFind(pThis);
+	}
+
 	static bool SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner = false, bool defaultToInvokerOwner = false);
 	static HouseClass* GetOwnerHouse(AnimClass* pAnim, HouseClass* pDefaultOwner = nullptr);
 	static void VeinAttackAI(AnimClass* pAnim);
@@ -110,5 +119,3 @@ public:
 	static void CreateRandomAnim(const std::vector<AnimTypeClass*>& AnimList, CoordStruct coords, TechnoClass* pTechno = nullptr, HouseClass* pHouse = nullptr, bool invoker = false, bool ownedObject = false);
 };
 
-// top-level name for the AnimExt extension
-using AnimClassExtension = AnimExt::ExtData;

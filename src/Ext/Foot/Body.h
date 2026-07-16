@@ -4,11 +4,11 @@
 #include <FootClass.h>
 
 // Empty intermediate base mirroring FootClass in the extension hierarchy.
-// UnitClassExtension / InfantryClassExtension / AircraftClassExtension derive from this.
-class FootClassExtension : public TechnoClassExtension
+// UnitExt / InfantryExt / AircraftExt derive from this.
+class FootExt : public TechnoExt
 {
 public:
-	explicit FootClassExtension(FootClass* const OwnerObject) : TechnoClassExtension(OwnerObject)
+	explicit FootExt(FootClass* const OwnerObject) : TechnoExt(OwnerObject)
 	{ }
 
 	FootClass* OwnerObject() const

@@ -5,9 +5,9 @@
 
 HouseTypeExt::ExtContainer HouseTypeExt::ExtMap;
 
-void HouseTypeExt::ExtData::Initialize() { }
+void HouseTypeExt::Initialize() { }
 
-void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
+void HouseTypeExt::LoadFromINIFile(CCINIClass* pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -21,22 +21,22 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 }
 
 template <typename T>
-void HouseTypeExt::ExtData::Serialize(T& Stm)
+void HouseTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->EVATag)
 		;
 }
 
-void HouseTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void HouseTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	AbstractTypeClassExtension::LoadFromStream(Stm);
+	AbstractTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void HouseTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void HouseTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	AbstractTypeClassExtension::SaveToStream(Stm);
+	AbstractTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 

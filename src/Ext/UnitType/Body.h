@@ -3,11 +3,11 @@
 #include <Ext/TechnoType/Body.h>
 #include <UnitTypeClass.h>
 
-// Concrete leaf extension for UnitTypeClass (empty; techno-type data lives in TechnoTypeClassExtension).
-class UnitTypeClassExtension : public TechnoTypeClassExtension
+// Concrete leaf extension for UnitTypeClass (empty; techno-type data lives in TechnoTypeExt).
+class UnitTypeExt : public TechnoTypeExt
 {
 public:
-	explicit UnitTypeClassExtension(UnitTypeClass* const OwnerObject) : TechnoTypeClassExtension(OwnerObject)
+	explicit UnitTypeExt(UnitTypeClass* const OwnerObject) : TechnoTypeExt(OwnerObject)
 	{ }
 
 	UnitTypeClass* OwnerObject() const

@@ -59,5 +59,4 @@ public:
 	static DWORD _cdecl _EBolt_Draw_Colors(REGISTERS* R);
 };
 
-// top-level name for the EBoltExt extension
 using EBoltExtension = EBoltExt::ExtData;

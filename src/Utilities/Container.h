@@ -11,6 +11,8 @@
 #include "Swizzle.h"
 #include "Phobos.h"
 
+class AbstractClass;
+
 enum class InitState
 {
 	Blank = 0x0,	  // CTOR'd
@@ -54,12 +56,12 @@ enum class InitState
 // it owns the back-pointer and the staged init state, so all extensions share a common base.
 class AbstractExt
 {
-	void* AttachedToObject;
+	AbstractClass* AttachedToObject;
 	InitState Initialized;
 
 public:
 
-	explicit AbstractExt(void* const OwnerObject) : AttachedToObject { OwnerObject }, Initialized { InitState::Blank }
+	explicit AbstractExt(AbstractClass* const OwnerObject) : AttachedToObject { OwnerObject }, Initialized { InitState::Blank }
 	{ }
 
 	AbstractExt(const AbstractExt& other) = delete;
@@ -116,14 +118,14 @@ public:
 	// this queues it for remapping when the swizzle manager resolves pointers.
 	void RegisterOwnerForChange()
 	{
-		PhobosSwizzle::RegisterForChange(&this->AttachedToObject);
+		PhobosSwizzle::RegisterPointerForChange(this->AttachedToObject);
 	}
 
 	// called after loading once all pointers (including the owner) have been remapped
 	virtual void PostLoad() { }
 
 protected:
-	void* GetAttachedObject() const
+	AbstractClass* GetAttachedObject() const
 	{
 		return this->AttachedToObject;
 	}
@@ -144,20 +146,91 @@ protected:
 	virtual void LoadFromINIFile(CCINIClass* pINI) { }
 };
 
-// the typed layer over AbstractExt: gives a strongly-typed owner accessor.
+// legacy standalone base for extensions whose owners are not AbstractClass-derived
+// (the Rules/Scenario/Sidebar singletons and EBolt); AbstractClass-derived owners use
+// the AbstractExt hierarchy instead.
 template <typename T>
-class Extension : public AbstractExt
+class Extension
 {
+	T* AttachedToObject;
+	InitState Initialized;
+
 public:
 
-	explicit Extension(T* const OwnerObject) : AbstractExt(OwnerObject)
+	explicit Extension(T* const OwnerObject) : AttachedToObject { OwnerObject }, Initialized { InitState::Blank }
 	{ }
+
+	Extension(const Extension& other) = delete;
+
+	void operator=(const Extension& RHS) = delete;
+
+	virtual ~Extension() = default;
 
 	// the object this Extension expands
 	T* OwnerObject() const
 	{
-		return static_cast<T*>(this->GetAttachedObject());
+		return this->AttachedToObject;
 	}
+
+	void EnsureConstanted()
+	{
+		if (this->Initialized < InitState::Constanted)
+		{
+			this->InitializeConstants();
+			this->Initialized = InitState::Constanted;
+		}
+	}
+
+	void LoadFromINI(CCINIClass* pINI)
+	{
+		if (!pINI)
+			return;
+
+		switch (this->Initialized)
+		{
+		case InitState::Blank:
+			this->EnsureConstanted();
+		case InitState::Constanted:
+			this->InitializeRuled();
+			this->Initialized = InitState::Ruled;
+		case InitState::Ruled:
+			this->Initialize();
+			this->Initialized = InitState::Inited;
+		case InitState::Inited:
+		case InitState::Completed:
+			if (pINI == CCINIClass::INI_Rules)
+				this->LoadFromRulesFile(pINI);
+
+			this->LoadFromINIFile(pINI);
+			this->Initialized = InitState::Completed;
+		}
+	}
+
+	virtual inline void SaveToStream(PhobosStreamWriter& Stm)
+	{
+		Stm.Save(this->Initialized);
+	}
+
+	virtual inline void LoadFromStream(PhobosStreamReader& Stm)
+	{
+		Stm.Load(this->Initialized);
+	}
+
+protected:
+	// right after construction. only basic initialization tasks possible;
+	// owner object is only partially constructed! do not use global state!
+	virtual void InitializeConstants() { }
+
+	virtual void InitializeRuled() { }
+
+	// called before the first ini file is read
+	virtual void Initialize() { }
+
+	// for things that only logically work in rules - countries, sides, etc
+	virtual void LoadFromRulesFile(CCINIClass* pINI) { }
+
+	// load any ini file: rules, game mode, scenario or map
+	virtual void LoadFromINIFile(CCINIClass* pINI) { }
 };
 
 // a non-virtual base class for a pointer to pointer map.
@@ -421,22 +494,6 @@ public:
 			return GetExtensionPointer(key);
 		else
 			return this->MappedItems.find(key);
-	}
-
-	// Only used on loading, does not check if key is nullptr.
-	extension_type_ptr FindOrAllocate(base_type_ptr key)
-	{
-		extension_type_ptr value = nullptr;
-
-		if constexpr (HasOffset<T>)
-			value = GetExtensionPointer(key);
-		else
-			value = this->MappedItems.find(key);
-
-		if (!value)
-			value = Allocate(key);
-
-		return value;
 	}
 
 	void Remove(base_type_ptr key)

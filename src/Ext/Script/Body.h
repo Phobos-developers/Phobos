@@ -146,36 +146,35 @@ enum class PhobosScripts : unsigned int
 	// Range 19000-19999 are miscellanous/uncategorized actions
 };
 
-class ScriptExt
+class ScriptExt final : public AbstractExt
 {
 public:
 	using base_type = ScriptClass;
+	using ExtData = ScriptExt;
 
 	static constexpr DWORD Canary = 0x3B3B3B3B;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public AbstractExt
+public:
+	// typed owner accessor
+	ScriptClass* OwnerObject() const
 	{
-	public:
-		// typed owner accessor
-		ScriptClass* OwnerObject() const
-		{
-			return static_cast<ScriptClass*>(this->GetAttachedObject());
-		}
+		return static_cast<ScriptClass*>(this->GetAttachedObject());
+	}
 
+	// Nothing yet
+
+	ScriptExt(ScriptClass* OwnerObject) : AbstractExt(OwnerObject)
 		// Nothing yet
+	{ }
 
-		ExtData(ScriptClass* OwnerObject) : AbstractExt(OwnerObject)
-			// Nothing yet
-		{ }
+	virtual ~ScriptExt() = default;
 
-		virtual ~ExtData() = default;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	};
-
+public:
 	class ExtContainer final : public Container<ScriptExt>
 	{
 	public:
@@ -184,6 +183,16 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static ScriptExt* Fetch(const ScriptClass* pThis)
+	{
+		return ExtMap.Find(pThis);
+	}
+
+	static ScriptExt* TryFetch(const ScriptClass* pThis)
+	{
+		return ExtMap.TryFind(pThis);
+	}
 
 	static void ProcessAction(TeamClass* pTeam);
 	static void ExecuteTimedAreaGuardAction(TeamClass* pTeam);
@@ -238,5 +247,3 @@ private:
 	static void ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLeader, AbstractClass* pTarget);
 };
 
-// top-level name for the ScriptExt extension
-using ScriptClassExtension = ScriptExt::ExtData;

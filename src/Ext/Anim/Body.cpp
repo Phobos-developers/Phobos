@@ -10,40 +10,40 @@
 AnimExt::ExtContainer AnimExt::ExtMap;
 std::vector<AnimClass*> AnimExt::AnimsWithAttachedParticles;
 
-AnimExt::ExtData::~ExtData()
+AnimExt::~AnimExt()
 {
 	this->DeleteAttachedSystem();
 
 	if (this->Invoker)
-		TechnoExt::ExtMap.Find(this->Invoker)->AnimRefCount--;
+		TechnoExt::Fetch(this->Invoker)->AnimRefCount--;
 
 	if (this->ParentBuilding)
-		TechnoExt::ExtMap.Find(this->ParentBuilding)->AnimRefCount--;
+		TechnoExt::Fetch(this->ParentBuilding)->AnimRefCount--;
 }
 
-void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker)
+void AnimExt::SetInvoker(TechnoClass* pInvoker)
 {
 	this->SetInvoker(pInvoker, pInvoker ? pInvoker->Owner : nullptr);
 }
 
-void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker, HouseClass* pInvokerHouse)
+void AnimExt::SetInvoker(TechnoClass* pInvoker, HouseClass* pInvokerHouse)
 {
 	if (pInvoker && this->Invoker != pInvoker)
 	{
 		if (this->Invoker)
-			TechnoExt::ExtMap.Find(this->Invoker)->AnimRefCount--;
+			TechnoExt::Fetch(this->Invoker)->AnimRefCount--;
 
-		TechnoExt::ExtMap.Find(pInvoker)->AnimRefCount++;
+		TechnoExt::Fetch(pInvoker)->AnimRefCount++;
 	}
 
 	this->Invoker = pInvoker;
 	this->InvokerHouse = pInvokerHouse;
 }
 
-void AnimExt::ExtData::CreateAttachedSystem()
+void AnimExt::CreateAttachedSystem()
 {
 	const auto pThis = this->OwnerObject();
-	const auto pTypeExt = AnimTypeExt::ExtMap.TryFind(pThis->Type);
+	const auto pTypeExt = AnimTypeExt::TryFetch(pThis->Type);
 
 	if (pTypeExt && pTypeExt->AttachedSystem && !this->AttachedSystem)
 	{
@@ -52,7 +52,7 @@ void AnimExt::ExtData::CreateAttachedSystem()
 	}
 }
 
-void AnimExt::ExtData::DeleteAttachedSystem()
+void AnimExt::DeleteAttachedSystem()
 {
 	if (this->AttachedSystem)
 	{
@@ -65,7 +65,7 @@ void AnimExt::ExtData::DeleteAttachedSystem()
 	}
 }
 
-void AnimExt::ExtData::UpdateAsFiringAnim()
+void AnimExt::UpdateAsFiringAnim()
 {
 	if (!this->FiringAnim_Weapon)
 		return;
@@ -106,7 +106,7 @@ void AnimExt::ExtData::UpdateAsFiringAnim()
 bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner, bool defaultToInvokerOwner)
 {
 	auto const pType = pAnim->Type;
-	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pType);
+	auto const pTypeExt = AnimTypeExt::Fetch(pType);
 	const bool makeInf = pType->MakeInfantry > -1;
 	const bool createUnit = pTypeExt->CreateUnitType != nullptr;
 	auto ownerKind = OwnerHouseKind::Default;
@@ -307,8 +307,8 @@ void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, const std::vector<A
 void AnimExt::SpawnFireAnims(AnimClass* pThis)
 {
 	auto const pType = pThis->Type;
-	auto const pExt = AnimExt::ExtMap.Find(pThis);
-	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pType);
+	auto const pExt = AnimExt::Fetch(pThis);
+	auto const pTypeExt = AnimTypeExt::Fetch(pType);
 	auto const coords = pThis->GetCoords();
 	auto random = ScenarioClass::Instance->Random;
 
@@ -330,7 +330,7 @@ void AnimExt::SpawnFireAnims(AnimClass* pThis)
 			auto const loopCount = random.RandomRanged(1, 2);
 			auto const pAnim = GameCreate<AnimClass>(pType, newCoords, 0, loopCount, 0x600u, 0, false);
 			AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
-			auto const pExtNew = AnimExt::ExtMap.Find(pAnim);
+			auto const pExtNew = AnimExt::Fetch(pAnim);
 			pExtNew->SetInvoker(pExt->Invoker, pExt->InvokerHouse);
 
 			if (attach && pThis->OwnerObject)
@@ -420,7 +420,7 @@ void AnimExt::CreateRandomAnim(const std::vector<AnimTypeClass*>& AnimList, Coor
 
 	if (invoker)
 	{
-		auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+		auto const pAnimExt = AnimExt::Fetch(pAnim);
 
 		if (pHouse)
 			pAnimExt->SetInvoker(pTechno, pHouse);
@@ -433,7 +433,7 @@ void AnimExt::CreateRandomAnim(const std::vector<AnimTypeClass*>& AnimList, Coor
 // load / save
 
 template <typename T>
-void AnimExt::ExtData::Serialize(T& Stm)
+void AnimExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->DeathUnitFacing)
@@ -457,25 +457,25 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void AnimExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void AnimExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	ObjectClassExtension::LoadFromStream(Stm);
+	ObjectExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void AnimExt::ExtData::PostLoad()
+void AnimExt::PostLoad()
 {
 	if (this->AttachedSystem)
 		AnimExt::AnimsWithAttachedParticles.push_back(this->OwnerObject());
 }
 
-void AnimExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void AnimExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	ObjectClassExtension::SaveToStream(Stm);
+	ObjectExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
-void AnimExt::ExtData::InitializeConstants()
+void AnimExt::InitializeConstants()
 {
 	// Something about creating this in constructor messes with debris anims, so it has to be done for them later.
 	if (!this->OwnerObject()->HasExtras)
@@ -486,7 +486,7 @@ void AnimExt::InvalidateTechnoPointers(TechnoClass* pTechno)
 {
 	for (auto const& pAnim : AnimClass::Array)
 	{
-		auto const pExt = AnimExt::ExtMap.TryFind(pAnim);
+		auto const pExt = AnimExt::TryFetch(pAnim);
 
 		if (!pExt)
 			continue; // Skip animation, chances are it is a null type anim in process of being removed.
@@ -503,7 +503,7 @@ void AnimExt::InvalidateParticleSystemPointers(ParticleSystemClass* pParticleSys
 {
 	for (auto const& pAnim : AnimExt::AnimsWithAttachedParticles)
 	{
-		auto const pExt = AnimExt::ExtMap.TryFind(pAnim);
+		auto const pExt = AnimExt::TryFetch(pAnim);
 
 		if (!pExt)
 			continue; // Skip animation, chances are it is a null type anim in process of being removed.
@@ -559,7 +559,7 @@ DEFINE_HOOK(0x4226F6, AnimClass_CTOR, 0x6)
 		SyncLogger::AddAnimCreationSyncLogEvent(CTORTemp::coords, CTORTemp::callerAddress);
 
 	AnimExt::ExtMap.Allocate(pItem);
-	pItem->UseCellLightConvert = AnimTypeExt::ExtMap.Find(pItem->Type)->TheaterPalette.Get(false);
+	pItem->UseCellLightConvert = AnimTypeExt::Fetch(pItem->Type)->TheaterPalette.Get(false);
 
 	return 0;
 }
@@ -578,7 +578,7 @@ DEFINE_HOOK(0x426598, AnimClass_SDDTOR, 0x7)
 {
 	GET(AnimClass*, pItem, ESI);
 
-	if(AnimExt::ExtMap.Find(pItem))
+	if(AnimExt::Fetch(pItem))
 	AnimExt::ExtMap.Remove(pItem);
 
 	return 0;

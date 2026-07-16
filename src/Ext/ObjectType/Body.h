@@ -4,10 +4,10 @@
 #include <ObjectTypeClass.h>
 
 // Empty intermediate base mirroring ObjectTypeClass in the extension hierarchy.
-class ObjectTypeClassExtension : public AbstractTypeClassExtension
+class ObjectTypeExt : public AbstractTypeExt
 {
 public:
-	explicit ObjectTypeClassExtension(ObjectTypeClass* const OwnerObject) : AbstractTypeClassExtension(OwnerObject)
+	explicit ObjectTypeExt(ObjectTypeClass* const OwnerObject) : AbstractTypeExt(OwnerObject)
 	{ }
 
 	ObjectTypeClass* OwnerObject() const

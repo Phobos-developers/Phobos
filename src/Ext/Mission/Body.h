@@ -4,10 +4,10 @@
 #include <MissionClass.h>
 
 // Empty intermediate base mirroring MissionClass in the extension hierarchy.
-class MissionClassExtension : public ObjectClassExtension
+class MissionExt : public ObjectExt
 {
 public:
-	explicit MissionClassExtension(MissionClass* const OwnerObject) : ObjectClassExtension(OwnerObject)
+	explicit MissionExt(MissionClass* const OwnerObject) : ObjectExt(OwnerObject)
 	{ }
 
 	MissionClass* OwnerObject() const

@@ -4,12 +4,12 @@
 #include <UnitClass.h>
 
 // Concrete leaf extension for UnitClass. Empty for now: all techno-level data lives
-// in TechnoClassExtension; this leaf only exists so a unit's extension has its own
-// concrete type (TechnoClassExtension itself is never instantiated).
-class UnitClassExtension : public FootClassExtension
+// in TechnoExt; this leaf only exists so a unit's extension has its own
+// concrete type (TechnoExt itself is never instantiated).
+class UnitExt : public FootExt
 {
 public:
-	explicit UnitClassExtension(UnitClass* const OwnerObject) : FootClassExtension(OwnerObject)
+	explicit UnitExt(UnitClass* const OwnerObject) : FootExt(OwnerObject)
 	{ }
 
 	UnitClass* OwnerObject() const

@@ -6,14 +6,14 @@ ParticleTypeExt::ExtContainer ParticleTypeExt::ExtMap;
 // load / save
 
 template <typename T>
-void ParticleTypeExt::ExtData::Serialize(T& Stm)
+void ParticleTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Gas_MaxDriftSpeed)
 		;
 }
 
-void ParticleTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void ParticleTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -29,15 +29,15 @@ void ParticleTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 }
 
-void ParticleTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void ParticleTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	ObjectTypeClassExtension::LoadFromStream(Stm);
+	ObjectTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void ParticleTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void ParticleTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	ObjectTypeClassExtension::SaveToStream(Stm);
+	ObjectTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 

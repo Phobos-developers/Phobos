@@ -6,14 +6,14 @@ TiberiumExt::ExtContainer TiberiumExt::ExtMap;
 // load / save
 
 template <typename T>
-void TiberiumExt::ExtData::Serialize(T& Stm)
+void TiberiumExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->MinimapColor)
 		;
 }
 
-void TiberiumExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void TiberiumExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -22,15 +22,15 @@ void TiberiumExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->MinimapColor.Read(exINI, pSection, "MinimapColor");
 }
 
-void TiberiumExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void TiberiumExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	AbstractTypeClassExtension::LoadFromStream(Stm);
+	AbstractTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void TiberiumExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void TiberiumExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	AbstractTypeClassExtension::SaveToStream(Stm);
+	AbstractTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 

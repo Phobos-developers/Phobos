@@ -2,7 +2,7 @@
 
 SideExt::ExtContainer SideExt::ExtMap;
 
-void SideExt::ExtData::Initialize()
+void SideExt::Initialize()
 {
 	const char* pID = this->OwnerObject()->ID;
 
@@ -18,7 +18,7 @@ void SideExt::ExtData::Initialize()
 		this->MessageTextColor = 21;
 };
 
-void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
+void SideExt::LoadFromINIFile(CCINIClass* pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -61,7 +61,7 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 // load / save
 
 template <typename T>
-void SideExt::ExtData::Serialize(T& Stm)
+void SideExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->ArrayIndex)
@@ -96,15 +96,15 @@ void SideExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void SideExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void SideExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	AbstractTypeClassExtension::LoadFromStream(Stm);
+	AbstractTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void SideExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void SideExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	AbstractTypeClassExtension::SaveToStream(Stm);
+	AbstractTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
@@ -150,7 +150,7 @@ DEFINE_HOOK(0x679A10, SideClass_LoadAllFromINI, 0x5)
 	GET_STACK(CCINIClass*, pINI, 0x4);
 
 	for (auto const pSide : SideClass::Array)
-		SideExt::ExtMap.Find(pSide)->LoadFromINI(pINI);
+		SideExt::Fetch(pSide)->LoadFromINI(pINI);
 
 	return 0;
 }

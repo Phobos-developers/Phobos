@@ -5,41 +5,40 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
-class ParticleSystemTypeExt
+class ParticleSystemTypeExt final : public ObjectTypeExt
 {
 public:
 	using base_type = ParticleSystemTypeClass;
+	using ExtData = ParticleSystemTypeExt;
 
 	static constexpr DWORD Canary = 0xF9984EFE;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public ObjectTypeClassExtension
+public:
+	// typed owner accessor
+	ParticleSystemTypeClass* OwnerObject() const
 	{
-	public:
-		// typed owner accessor
-		ParticleSystemTypeClass* OwnerObject() const
-		{
-			return static_cast<ParticleSystemTypeClass*>(this->GetAttachedObject());
-		}
+		return static_cast<ParticleSystemTypeClass*>(this->GetAttachedObject());
+	}
 
-		Valueable<bool> AdjustTargetCoordsOnRotation;
+	Valueable<bool> AdjustTargetCoordsOnRotation;
 
-		ExtData(ParticleSystemTypeClass* OwnerObject) : ObjectTypeClassExtension(OwnerObject)
-			, AdjustTargetCoordsOnRotation { true }
-		{ }
+	ParticleSystemTypeExt(ParticleSystemTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
+		, AdjustTargetCoordsOnRotation { true }
+	{ }
 
-		virtual ~ExtData() = default;
+	virtual ~ParticleSystemTypeExt() = default;
 
-		virtual void LoadFromINIFile(CCINIClass* pINI) override;
+	virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 
+public:
 	class ExtContainer final : public Container<ParticleSystemTypeExt>
 	{
 	public:
@@ -49,9 +48,17 @@ public:
 
 	static ExtContainer ExtMap;
 
+	static ParticleSystemTypeExt* Fetch(const ParticleSystemTypeClass* pThis)
+	{
+		return ExtMap.Find(pThis);
+	}
+
+	static ParticleSystemTypeExt* TryFetch(const ParticleSystemTypeClass* pThis)
+	{
+		return ExtMap.TryFind(pThis);
+	}
+
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 };
 
-// top-level name for the ParticleSystemTypeExt extension
-using ParticleSystemTypeClassExtension = ParticleSystemTypeExt::ExtData;

@@ -56,35 +56,35 @@ enum PhobosTriggerEvent
 	_DummyMaximum,
 };
 
-class TEventExt
+class TEventExt final : public AbstractExt
 {
 public:
 	using base_type = TEventClass;
+	using ExtData = TEventExt;
 
 	static constexpr DWORD Canary = 0x91919191;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public AbstractExt
+public:
+	// typed owner accessor
+	TEventClass* OwnerObject() const
 	{
-	public:
-		// typed owner accessor
-		TEventClass* OwnerObject() const
-		{
-			return static_cast<TEventClass*>(this->GetAttachedObject());
-		}
+		return static_cast<TEventClass*>(this->GetAttachedObject());
+	}
 
-		ExtData(TEventClass* const OwnerObject) : AbstractExt(OwnerObject)
-		{ }
+	TEventExt(TEventClass* const OwnerObject) : AbstractExt(OwnerObject)
+	{ }
 
-		virtual ~ExtData() = default;
+	virtual ~TEventExt() = default;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+private:
+	template <typename T>
+	void Serialize(T& Stm);
+
+public:
 
 	static int GetFlags(int iEvent);
 
@@ -105,6 +105,7 @@ public:
 	static bool AttachedIsUnderAttachedEffectTEvent(TEventClass* pThis, ObjectClass* pObject);
 
 
+public:
 	class ExtContainer final : public Container<TEventExt>
 	{
 	public:
@@ -113,7 +114,15 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static TEventExt* Fetch(const TEventClass* pThis)
+	{
+		return ExtMap.Find(pThis);
+	}
+
+	static TEventExt* TryFetch(const TEventClass* pThis)
+	{
+		return ExtMap.TryFind(pThis);
+	}
 };
 
-// top-level name for the TEventExt extension
-using TEventClassExtension = TEventExt::ExtData;

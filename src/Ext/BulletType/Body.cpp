@@ -4,7 +4,7 @@ BulletTypeExt::ExtContainer BulletTypeExt::ExtMap;
 
 double BulletTypeExt::GetAdjustedGravity(BulletTypeClass* pType)
 {
-	auto const pData = BulletTypeExt::ExtMap.Find(pType);
+	auto const pData = BulletTypeExt::Fetch(pType);
 	auto const nGravity = pData->Gravity.Get(RulesClass::Instance->Gravity);
 	return pType->Floater ? nGravity * 0.5 : nGravity;
 }
@@ -22,7 +22,7 @@ BulletTypeClass* BulletTypeExt::GetDefaultBulletType()
 // =============================
 // load / save
 
-void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void BulletTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -98,7 +98,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TrajectoryValidation();
 }
 
-void BulletTypeExt::ExtData::TrajectoryValidation() const
+void BulletTypeExt::TrajectoryValidation() const
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -133,7 +133,7 @@ void BulletTypeExt::ExtData::TrajectoryValidation() const
 }
 
 template <typename T>
-void BulletTypeExt::ExtData::Serialize(T& Stm)
+void BulletTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Armor)
@@ -194,15 +194,15 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void BulletTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void BulletTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	ObjectTypeClassExtension::LoadFromStream(Stm);
+	ObjectTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void BulletTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void BulletTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	ObjectTypeClassExtension::SaveToStream(Stm);
+	ObjectTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 

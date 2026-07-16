@@ -4,9 +4,8 @@
 #include <Misc/FlyingStrings.h>
 #include <Utilities/AresHelper.h>
 
-BuildingExt::ExtMapFacade BuildingExt::ExtMap;
 
-void BuildingExt::ExtData::DisplayIncomeString()
+void BuildingExt::DisplayIncomeString()
 {
 	if (this->AccumulatedIncome)
 	{
@@ -33,10 +32,10 @@ void BuildingExt::ExtData::DisplayIncomeString()
 	}
 }
 
-bool BuildingExt::ExtData::HasSuperWeapon(const int index) const
+bool BuildingExt::HasSuperWeapon(const int index) const
 {
 	const auto pThis = this->OwnerObject();
-	const auto pExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	const auto pExt = BuildingTypeExt::Fetch(pThis->Type);
 	const auto pOwner = pThis->Owner;
 
 	const int count = pExt->GetSuperWeaponCount();
@@ -53,7 +52,7 @@ bool BuildingExt::ExtData::HasSuperWeapon(const int index) const
 	{
 		for (auto const& pUpgrade : pThis->Upgrades)
 		{
-			if (const auto pUpgradeExt = BuildingTypeExt::ExtMap.TryFind(pUpgrade))
+			if (const auto pUpgradeExt = BuildingTypeExt::TryFetch(pUpgrade))
 			{
 				const int countUpgrade = pUpgradeExt->GetSuperWeaponCount();
 
@@ -79,7 +78,7 @@ void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiber
 
 	if (amount > 0.0f)
 	{
-		auto const pExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+		auto const pExt = BuildingTypeExt::Fetch(pThis->Type);
 
 		if (pExt->Refinery_UseStorage)
 		{
@@ -90,7 +89,7 @@ void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiber
 	}
 }
 
-void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
+void BuildingExt::UpdatePrimaryFactoryAI()
 {
 	auto const pOwner = this->OwnerObject()->Owner;
 
@@ -237,7 +236,7 @@ bool BuildingExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
 		return false;
 	}
 
-	auto const pExt = BuildingTypeExt::ExtMap.Find(pBldType);
+	auto const pExt = BuildingTypeExt::Fetch(pBldType);
 
 	if (pBuilding->Owner == pTechno->Owner && !pExt->Grinding_AllowOwner)
 		return false;
@@ -261,7 +260,7 @@ bool BuildingExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
 
 bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno, int refund)
 {
-	if (auto const pExt = BuildingExt::ExtMap.TryFind(pBuilding))
+	if (auto const pExt = BuildingExt::TryFetch(pBuilding))
 	{
 		auto const pTypeExt = pExt->TypeExtData;
 
@@ -288,7 +287,7 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 }
 
 // Building only or allow units too?
-void BuildingExt::ExtData::ApplyPoweredKillSpawns()
+void BuildingExt::ApplyPoweredKillSpawns()
 {
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
@@ -311,7 +310,7 @@ void BuildingExt::ExtData::ApplyPoweredKillSpawns()
 	}
 }
 
-bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore)
+bool BuildingExt::HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore)
 {
 	const auto pThis = this->OwnerObject();
 	const auto pVictimHouse = pThis->Owner;
@@ -442,7 +441,7 @@ const std::vector<CellStruct> BuildingExt::GetFoundationCells(BuildingClass* con
 
 WeaponStruct* BuildingExt::GetLaserWeapon(BuildingClass* pThis)
 {
-	auto const pExt = BuildingExt::ExtMap.Find(pThis);
+	auto const pExt = BuildingExt::Fetch(pThis);
 
 	if (pExt->CurrentLaserWeaponIndex.has_value())
 		return pThis->GetWeapon(pExt->CurrentLaserWeaponIndex.value());
@@ -452,7 +451,7 @@ WeaponStruct* BuildingExt::GetLaserWeapon(BuildingClass* pThis)
 
 void BuildingExt::KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, void*, BuildingClass* pFactory)
 {
-	if (!pFactory->IsAlive || pFactory->InLimbo || (BuildingTypeExt::ExtMap.Find(pFactory->Type)->Cloning_Powered && !pFactory->IsPowerOnline()) || pFactory->IsBeingWarpedOut())
+	if (!pFactory->IsAlive || pFactory->InLimbo || (BuildingTypeExt::Fetch(pFactory->Type)->Cloning_Powered && !pFactory->IsPowerOnline()) || pFactory->IsBeingWarpedOut())
 		return;
 
 	const auto pClone = static_cast<TechnoClass*>(info.first->CreateObject(info.second));
@@ -463,7 +462,7 @@ void BuildingExt::KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, v
 
 int BuildingExt::GetTurretFrame(BuildingClass* pThis)
 {
-	auto const pExt = BuildingExt::ExtMap.Find(pThis);
+	auto const pExt = BuildingExt::Fetch(pThis);
 	auto const pTypeExt = pExt->TypeExtData;
 	const int facing = pThis->PrimaryFacing.Current().GetValue<5>();
 	const int shapeFacing = ObjectClass::BodyShape[facing];
@@ -548,7 +547,7 @@ int BuildingExt::GetTurretFrame(BuildingClass* pThis)
 // load / save
 
 template <typename T>
-void BuildingExt::ExtData::Serialize(T& Stm)
+void BuildingExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->TypeExtData)
@@ -569,15 +568,15 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void BuildingExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void BuildingExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	TechnoExt::ExtData::LoadFromStream(Stm);
+	TechnoExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void BuildingExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void BuildingExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	TechnoExt::ExtData::SaveToStream(Stm);
+	TechnoExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
@@ -603,11 +602,11 @@ DEFINE_HOOK(0x43BCBD, BuildingClass_CTOR, 0x6)
 {
 	GET(BuildingClass*, pItem, ESI);
 
-	// A building's extension is a concrete BuildingClassExtension leaf, owned by the TechnoClass container.
-	auto const pExt = static_cast<BuildingExt::ExtData*>(TechnoExt::ExtMap.Adopt(new BuildingExt::ExtData(pItem)));
+	// A building's extension is a concrete BuildingExt leaf, owned by the TechnoClass container.
+	auto const pExt = static_cast<BuildingExt*>(TechnoExt::ExtMap.Adopt(new BuildingExt(pItem)));
 
 	if (pExt)
-		pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pItem->Type);
+		pExt->TypeExtData = BuildingTypeExt::Fetch(pItem->Type);
 
 	return 0;
 }
@@ -630,7 +629,7 @@ static void __fastcall BuildingClass_InfiltratedBy_Wrapper(BuildingClass* pThis,
 	// explicitly call because Ares rewrote it
 	reinterpret_cast<void(__thiscall*)(BuildingClass*, HouseClass*)>(0x4571E0)(pThis, pInfiltratorHouse);
 
-	BuildingExt::ExtMap.Find(pThis)->HandleInfiltrate(pInfiltratorHouse, oldBalance);
+	BuildingExt::Fetch(pThis)->HandleInfiltrate(pInfiltratorHouse, oldBalance);
 }
 
 DEFINE_FUNCTION_JUMP(CALL, 0x51A00B, BuildingClass_InfiltratedBy_Wrapper);

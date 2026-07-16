@@ -4,10 +4,10 @@
 #include <Utilities/Container.h>
 
 // Empty intermediate base mirroring AbstractTypeClass in the extension hierarchy.
-class AbstractTypeClassExtension : public AbstractExt
+class AbstractTypeExt : public AbstractExt
 {
 public:
-	explicit AbstractTypeClassExtension(AbstractTypeClass* const OwnerObject) : AbstractExt(OwnerObject)
+	explicit AbstractTypeExt(AbstractTypeClass* const OwnerObject) : AbstractExt(OwnerObject)
 	{ }
 
 	AbstractTypeClass* OwnerObject() const

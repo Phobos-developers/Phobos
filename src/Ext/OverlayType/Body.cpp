@@ -6,7 +6,7 @@ OverlayTypeExt::ExtContainer OverlayTypeExt::ExtMap;
 // load / save
 
 template <typename T>
-void OverlayTypeExt::ExtData::Serialize(T& Stm)
+void OverlayTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->ZAdjust)
@@ -14,7 +14,7 @@ void OverlayTypeExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void OverlayTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void OverlayTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 
@@ -36,16 +36,16 @@ void OverlayTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pArtSection, this->PaletteFile.data());
 }
 
-void OverlayTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void OverlayTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	ObjectTypeClassExtension::LoadFromStream(Stm);
+	ObjectTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
 }
 
-void OverlayTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void OverlayTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	ObjectTypeClassExtension::SaveToStream(Stm);
+	ObjectTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 

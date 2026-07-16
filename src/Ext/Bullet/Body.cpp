@@ -9,11 +9,11 @@
 
 BulletExt::ExtContainer BulletExt::ExtMap;
 
-void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, BulletClass* pInterceptor)
+void BulletExt::InterceptBullet(TechnoClass* pSource, BulletClass* pInterceptor)
 {
 	const auto pThis = this->OwnerObject();
 	auto pTypeExt = this->TypeExtData;
-	const auto pInterceptorType = BulletExt::ExtMap.Find(pInterceptor)->InterceptorTechnoType->InterceptorType.get();
+	const auto pInterceptorType = BulletExt::Fetch(pInterceptor)->InterceptorTechnoType->InterceptorType.get();
 
 	if (!pTypeExt->Armor.isset())
 	{
@@ -57,7 +57,7 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, BulletClass* pInt
 		{
 			pThis->Speed = pWeaponOverride->Speed;
 			pThis->Type = pWeaponOverride->Projectile;
-			pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+			pTypeExt = BulletTypeExt::Fetch(pThis->Type);
 			this->TypeExtData = pTypeExt;
 
 			if (this->LaserTrails.size())
@@ -73,7 +73,7 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, BulletClass* pInt
 	}
 }
 
-void BulletExt::ExtData::ApplyRadiationToCell(CellStruct cell, int spread, int radLevel)
+void BulletExt::ApplyRadiationToCell(CellStruct cell, int spread, int radLevel)
 {
 	const auto pCell = MapClass::Instance.TryGetCellAt(cell);
 
@@ -82,14 +82,14 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct cell, int spread, int r
 
 	const auto pThis = this->OwnerObject();
 	const auto pWeapon = pThis->GetWeaponType();
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const auto pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 	const auto pRadType = pWeaponExt->RadType;
-	const auto pCellExt = CellExt::ExtMap.Find(pCell);
+	const auto pCellExt = CellExt::Fetch(pCell);
 
 	const auto it = std::find_if(pCellExt->RadSites.cbegin(), pCellExt->RadSites.cend(),
 		[=](const auto pSite)
 		{
-			const auto pRadExt = RadSiteExt::ExtMap.Find(pSite);
+			const auto pRadExt = RadSiteExt::Fetch(pSite);
 
 			if (pRadExt->Type != pRadType || spread != pSite->Spread)
 				return false;
@@ -103,7 +103,7 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct cell, int spread, int r
 
 	if (it != pCellExt->RadSites.cend())
 	{
-		const auto pRadExt = RadSiteExt::ExtMap.Find(*it);
+		const auto pRadExt = RadSiteExt::Fetch(*it);
 		// Handle It
 		pRadExt->Add(std::min(radLevel, pRadType->GetLevelMax() - (*it)->GetRadLevel()));
 		return;
@@ -113,13 +113,13 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct cell, int spread, int r
 	RadSiteExt::CreateInstance(cell, spread, radLevel, pWeaponExt, pThisHouse, pThis->Owner);
 }
 
-void BulletExt::ExtData::InitializeLaserTrails()
+void BulletExt::InitializeLaserTrails()
 {
 	if (this->LaserTrails.size())
 		return;
 
 	auto const pThis = this->OwnerObject();
-	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	auto const pTypeExt = BulletTypeExt::Fetch(pThis->Type);
 	auto const pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
 	this->LaserTrails.reserve(pTypeExt->LaserTrail_Types.size());
 
@@ -165,7 +165,7 @@ inline void BulletExt::SimulatedFiringAnim(BulletClass* pBullet, HouseClass* pHo
 	const auto pAnim = GameCreate<AnimClass>(pAnimType, pBullet->SourceCoords);
 
 	AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, nullptr, false, true);
-	AnimExt::ExtMap.Find(pAnim)->SetInvoker(pFirer, pHouse);
+	AnimExt::Fetch(pAnim)->SetInvoker(pFirer, pHouse);
 
 	if (pAttach)
 	{
@@ -202,7 +202,7 @@ inline void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pH
 	if (!pWeapon->IsLaser)
 		return;
 
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const auto pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 
 	if (pWeapon->IsHouseColor || pWeaponExt->Laser_IsSingleColor)
 	{
@@ -238,7 +238,7 @@ inline void BulletExt::SimulatedFiringElectricBolt(BulletClass* pBullet)
 	pBolt->AlternateColor = pWeapon->IsAlternateColor;
 
 	const auto targetCoords = BulletExt::GetTargetCoordsForFiring(pBullet);
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const auto pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 	int zAdjust = pWeaponExt->EBoltZAdjust.Get(RulesExt::Global()->EBoltZAdjust);
 
 	const auto pOwner = pBullet->Owner;
@@ -251,7 +251,7 @@ inline void BulletExt::SimulatedFiringElectricBolt(BulletClass* pBullet)
 
 	pBolt->Fire(pBullet->SourceCoords, targetCoords, zAdjust);
 
-	if (const auto particle = WeaponTypeExt::ExtMap.Find(pWeapon)->Bolt_ParticleSystem.Get(RulesClass::Instance->DefaultSparkSystem))
+	if (const auto particle = WeaponTypeExt::Fetch(pWeapon)->Bolt_ParticleSystem.Get(RulesClass::Instance->DefaultSparkSystem))
 		GameCreate<ParticleSystemClass>(particle, targetCoords, nullptr, nullptr, CoordStruct::Empty, nullptr);
 }
 
@@ -270,7 +270,7 @@ inline void BulletExt::SimulatedFiringRadBeam(BulletClass* pBullet, HouseClass* 
 	pRadBeam->SetCoordsSource(pBullet->SourceCoords);
 	pRadBeam->SetCoordsTarget(BulletExt::GetTargetCoordsForFiring(pBullet));
 
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const auto pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 
 	pRadBeam->Color = (pWeaponExt->Beam_IsHouseColor && pHouse) ? pHouse->LaserColor
 		: pWeaponExt->Beam_Color.Get(isTemporal ? RulesClass::Instance->ChronoBeamColor : RulesClass::Instance->RadColor);
@@ -293,11 +293,11 @@ void BulletExt::SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse,
 {
 	// Initialize bullet characteristics such as weapon type, range, house etc.
 	const auto pType = pBullet->Type;
-	const int projectileRange = WeaponTypeExt::ExtMap.Find(pWeapon)->ProjectileRange.Get();
+	const int projectileRange = WeaponTypeExt::Fetch(pWeapon)->ProjectileRange.Get();
 	auto velocity = BulletVelocity::Empty;
 	pBullet->WeaponType = pWeapon;
 	pBullet->Range = projectileRange;
-	BulletExt::ExtMap.Find(pBullet)->FirerHouse = pHouse;
+	BulletExt::Fetch(pBullet)->FirerHouse = pHouse;
 
 	if (pType->FirersPalette)
 		pBullet->InheritedColor = pHouse->ColorSchemeIndex;
@@ -457,7 +457,7 @@ void BulletExt::Detonate(const CoordStruct& coords, TechnoClass* pOwner, int dam
 	auto const pBullet = pType->CreateBullet(pTarget, pOwner, damage, pWarhead, 100, isBright);
 	pBullet->WeaponType = pWeapon;
 
-	auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	auto const pBulletExt = BulletExt::Fetch(pBullet);
 	pBulletExt->IsInstantDetonation = true;
 
 	if (pFiringHouse)
@@ -472,7 +472,7 @@ void BulletExt::Detonate(const CoordStruct& coords, TechnoClass* pOwner, int dam
 // load / save
 
 template <typename T>
-void BulletExt::ExtData::Serialize(T& Stm)
+void BulletExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->TypeExtData)
@@ -492,15 +492,15 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void BulletExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void BulletExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	ObjectClassExtension::LoadFromStream(Stm);
+	ObjectExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void BulletExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void BulletExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	ObjectClassExtension::SaveToStream(Stm);
+	ObjectExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 

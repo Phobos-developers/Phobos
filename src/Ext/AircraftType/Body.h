@@ -4,10 +4,10 @@
 #include <AircraftTypeClass.h>
 
 // Concrete leaf extension for AircraftTypeClass (empty).
-class AircraftTypeClassExtension : public TechnoTypeClassExtension
+class AircraftTypeExt : public TechnoTypeExt
 {
 public:
-	explicit AircraftTypeClassExtension(AircraftTypeClass* const OwnerObject) : TechnoTypeClassExtension(OwnerObject)
+	explicit AircraftTypeExt(AircraftTypeClass* const OwnerObject) : TechnoTypeExt(OwnerObject)
 	{ }
 
 	AircraftTypeClass* OwnerObject() const

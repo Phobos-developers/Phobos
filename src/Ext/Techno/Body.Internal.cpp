@@ -2,7 +2,7 @@
 
 // Unsorted methods
 
-void TechnoExt::ExtData::InitializeLaserTrails()
+void TechnoExt::InitializeLaserTrails()
 {
 	if (this->LaserTrails.size())
 		return;
@@ -24,7 +24,7 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 	{
 		if (auto const pFootKiller = generic_cast<FootClass*, true>(pObjectKiller))
 		{
-			auto const pKillerTechnoData = TechnoExt::ExtMap.Find(pObjectKiller);
+			auto const pKillerTechnoData = TechnoExt::Fetch(pObjectKiller);
 			pKillerTechnoData->LastKillWasTeamTarget = pFootKiller->Team->Focus == pVictim;
 		}
 	}
@@ -72,7 +72,7 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	FLHFound = false;
 	CoordStruct FLH = CoordStruct::Empty;
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto const pExt = TechnoExt::Fetch(pThis)->TypeExtData;
 
 	auto const pInf = abstract_cast<InfantryClass*, true>(pThis);
 	std::span<std::vector<CoordStruct>> pickedFLHs = pExt->WeaponBurstFLHs;
@@ -114,7 +114,7 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 	FLHFound = false;
 	CoordStruct FLH = CoordStruct::Empty;
 
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	auto const pTypeExt = TechnoTypeExt::Fetch(pThis->Type);
 	Nullable<CoordStruct> pickedFLH;
 
 	if (pThis->IsDeployed())
@@ -144,7 +144,7 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 	return FLH;
 }
 
-void TechnoExt::ExtData::InitializeDisplayInfo()
+void TechnoExt::InitializeDisplayInfo()
 {
 	const auto pThis = this->OwnerObject();
 	const auto pPrimary = pThis->GetWeapon(0)->WeaponType;
@@ -157,7 +157,7 @@ void TechnoExt::ExtData::InitializeDisplayInfo()
 	pThis->RearmTimer.StartTime = Math::min(-2, -pThis->RearmTimer.TimeLeft);
 }
 
-void TechnoExt::ExtData::InitializeAttachEffects()
+void TechnoExt::InitializeAttachEffects()
 {
 	auto const pTypeExt = this->TypeExtData;
 
@@ -182,11 +182,11 @@ int TechnoExt::GetTintColor(TechnoClass* pThis, bool invulnerability, bool airst
 
 		if (airstrike)
 		{
-			auto const pExt =  TechnoExt::ExtMap.Find(pThis);
+			auto const pExt =  TechnoExt::Fetch(pThis);
 
 			if (auto const pAirstrike = pExt->AirstrikeTargetingMe)
 			{
-				auto const pTypeExt = TechnoExt::ExtMap.Find(pAirstrike->Owner)->TypeExtData;
+				auto const pTypeExt = TechnoExt::Fetch(pAirstrike->Owner)->TypeExtData;
 				tintColor |= pTypeExt->TintColorAirstrike;
 			}
 		}
@@ -221,7 +221,7 @@ int TechnoExt::GetCustomTintIntensity(TechnoClass* pThis)
 // Applies custom tint color and intensity from TechnoTypes and any AttachEffects and shields it might have on provided values.
 void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& intensity)
 {
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pExt = TechnoExt::Fetch(pThis);
 	auto const pOwner = pThis->Owner;
 
 	if (pOwner == HouseClass::CurrentPlayer)

@@ -6,7 +6,7 @@ CellExt::ExtContainer CellExt::ExtMap;
 // load / save
 
 template <typename T>
-void CellExt::ExtData::Serialize(T& Stm)
+void CellExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->RadSites)
@@ -15,13 +15,13 @@ void CellExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void CellExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void CellExt::LoadFromStream(PhobosStreamReader& Stm)
 {
 	AbstractExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void CellExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void CellExt::SaveToStream(PhobosStreamWriter& Stm)
 {
 	AbstractExt::SaveToStream(Stm);
 	this->Serialize(Stm);

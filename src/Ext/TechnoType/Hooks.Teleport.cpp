@@ -10,7 +10,7 @@
 	TeleportLocomotionClass *pLocomotor = static_cast<TeleportLocomotionClass*>(Loco); \
 	FootClass* pLinked = pLocomotor->LinkedTo;\
 	TechnoTypeClass const*pType = pLinked->GetTechnoType(); \
-	TechnoTypeExt::ExtData const*pExt = TechnoTypeExt::ExtMap.Find(pType);
+	TechnoTypeExt const*pExt = TechnoTypeExt::Fetch(pType);
 
 DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0x6)
 {
@@ -30,7 +30,7 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 		WeaponTypeExt::DetonateAt(pExt->WarpOutWeapon, pLinked, pLinked);
 
 	const int distance = (int)Math::sqrt(pLinked->Location.DistanceFromSquared(pLocomotor->LastCoords));
-	const auto linkedExt = TechnoExt::ExtMap.Find(pLinked);
+	const auto linkedExt = TechnoExt::Fetch(pLinked);
 	linkedExt->LastWarpDistance = distance;
 
 	if (const auto pImage = pType->AlphaImage)
@@ -87,7 +87,7 @@ DEFINE_HOOK(0x719742, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 0x
 		AnimExt::SetAnimOwnerHouseKind(pAnim, pLinked->Owner, nullptr, false, true);
 	}
 
-	auto const lastWarpDistance = TechnoExt::ExtMap.Find(pLinked)->LastWarpDistance;
+	auto const lastWarpDistance = TechnoExt::Fetch(pLinked)->LastWarpDistance;
 	const bool isInMinRange = lastWarpDistance < pExt->ChronoRangeMinimum.Get(RulesClass::Instance->ChronoRangeMinimum);
 
 	if (auto const weaponType = isInMinRange ? pExt->WarpInMinRangeWeapon.Get(pExt->WarpInWeapon) : pExt->WarpInWeapon)
@@ -157,7 +157,7 @@ DEFINE_HOOK(0x7197E4, TeleportLocomotionClass_Process_ChronospherePreDelay, 0x6)
 {
 	GET(TeleportLocomotionClass*, pThis, ESI);
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis->Owner);
+	auto const pExt = TechnoExt::Fetch(pThis->Owner);
 	pExt->IsBeingChronoSphered = true;
 	R->ECX(pExt->TypeExtData->ChronoSpherePreDelay.Get(RulesExt::Global()->ChronoSpherePreDelay));
 
@@ -168,7 +168,7 @@ DEFINE_HOOK(0x719BD9, TeleportLocomotionClass_Process_ChronosphereDelay2, 0x6)
 {
 	GET(TeleportLocomotionClass*, pThis, ESI);
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis->Owner);
+	auto const pExt = TechnoExt::Fetch(pThis->Owner);
 
 	if (!pExt->IsBeingChronoSphered)
 		return 0;

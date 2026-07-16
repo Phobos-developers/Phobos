@@ -6,41 +6,40 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
-class ParticleTypeExt
+class ParticleTypeExt final : public ObjectTypeExt
 {
 public:
 	using base_type = ParticleTypeClass;
+	using ExtData = ParticleTypeExt;
 
 	static constexpr DWORD Canary = 0xEAFEEAFE;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public ObjectTypeClassExtension
+public:
+	// typed owner accessor
+	ParticleTypeClass* OwnerObject() const
 	{
-	public:
-		// typed owner accessor
-		ParticleTypeClass* OwnerObject() const
-		{
-			return static_cast<ParticleTypeClass*>(this->GetAttachedObject());
-		}
+		return static_cast<ParticleTypeClass*>(this->GetAttachedObject());
+	}
 
-		Valueable<int> Gas_MaxDriftSpeed;
+	Valueable<int> Gas_MaxDriftSpeed;
 
-		ExtData(ParticleTypeClass* OwnerObject) : ObjectTypeClassExtension(OwnerObject)
-			, Gas_MaxDriftSpeed { 2 }
-		{ }
+	ParticleTypeExt(ParticleTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
+		, Gas_MaxDriftSpeed { 2 }
+	{ }
 
-		virtual ~ExtData() = default;
+	virtual ~ParticleTypeExt() = default;
 
-		virtual void LoadFromINIFile(CCINIClass* pINI) override;
+	virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 
+public:
 	class ExtContainer final : public Container<ParticleTypeExt>
 	{
 	public:
@@ -50,9 +49,17 @@ public:
 
 	static ExtContainer ExtMap;
 
+	static ParticleTypeExt* Fetch(const ParticleTypeClass* pThis)
+	{
+		return ExtMap.Find(pThis);
+	}
+
+	static ParticleTypeExt* TryFetch(const ParticleTypeClass* pThis)
+	{
+		return ExtMap.TryFind(pThis);
+	}
+
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 };
 
-// top-level name for the ParticleTypeExt extension
-using ParticleTypeClassExtension = ParticleTypeExt::ExtData;

@@ -5,42 +5,41 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
-class TeamTypeExt
+class TeamTypeExt final : public AbstractTypeExt
 {
 public:
 	using base_type = TeamTypeClass;
+	using ExtData = TeamTypeExt;
 
 	static constexpr DWORD Canary = 0xABCDEF01;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public AbstractTypeClassExtension
+public:
+	// typed owner accessor
+	TeamTypeClass* OwnerObject() const
 	{
-	public:
-		// typed owner accessor
-		TeamTypeClass* OwnerObject() const
-		{
-			return static_cast<TeamTypeClass*>(this->GetAttachedObject());
-		}
+		return static_cast<TeamTypeClass*>(this->GetAttachedObject());
+	}
 
-		ExtData(TeamTypeClass* OwnerObject) : AbstractTypeClassExtension(OwnerObject)
-			, SetRecruitableOnLiberate { }
-		{ }
+	TeamTypeExt(TeamTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
+		, SetRecruitableOnLiberate { }
+	{ }
 
-		virtual ~ExtData() = default;
+	virtual ~TeamTypeExt() = default;
 
-		virtual void LoadFromINIFile(CCINIClass* pINI) override;
-		// virtual void Initialize() override;
+	virtual void LoadFromINIFile(CCINIClass* pINI) override;
+	// virtual void Initialize() override;
 
-		Nullable<int> SetRecruitableOnLiberate;
+	Nullable<int> SetRecruitableOnLiberate;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 
+public:
 	class ExtContainer final : public Container<TeamTypeExt>
 	{
 	public:
@@ -49,7 +48,15 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static TeamTypeExt* Fetch(const TeamTypeClass* pThis)
+	{
+		return ExtMap.Find(pThis);
+	}
+
+	static TeamTypeExt* TryFetch(const TeamTypeClass* pThis)
+	{
+		return ExtMap.TryFind(pThis);
+	}
 };
 
-// top-level name for the TeamTypeExt extension
-using TeamTypeClassExtension = TeamTypeExt::ExtData;

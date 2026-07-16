@@ -4,10 +4,10 @@
 #include <RadioClass.h>
 
 // Empty intermediate base mirroring RadioClass in the extension hierarchy.
-class RadioClassExtension : public MissionClassExtension
+class RadioExt : public MissionExt
 {
 public:
-	explicit RadioClassExtension(RadioClass* const OwnerObject) : MissionClassExtension(OwnerObject)
+	explicit RadioExt(RadioClass* const OwnerObject) : MissionExt(OwnerObject)
 	{ }
 
 	RadioClass* OwnerObject() const

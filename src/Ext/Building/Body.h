@@ -2,98 +2,86 @@
 #include <Ext/Techno/Body.h>
 #include <Ext/BuildingType/Body.h>
 
-class BuildingExt
+class BuildingExt final : public TechnoExt, public Detach::Listener<BuildingClass>
 {
 public:
 	using base_type = BuildingClass;
+	using ExtData = BuildingExt;
 
 	static constexpr DWORD Canary = 0x87654321;
 
-	// BuildingClassExtension is a leaf of the TechnoClass extension hierarchy: one extension
-	// per object, stored inline in the shared 0x18 slot and owned by the TechnoClass container.
-	class ExtData final : public TechnoExt::ExtData, public Detach::Listener<BuildingClass>
+	BuildingTypeExt* TypeExtData;
+	bool DeployedTechno;
+	bool IsCreatedFromMapFile;
+	int LimboID;
+	int GrindingWeapon_LastFiredFrame;
+	int GrindingWeapon_AccumulatedCredits;
+	BuildingClass* CurrentAirFactory;
+	int AccumulatedIncome;
+	std::optional<int> CurrentLaserWeaponIndex;
+	int PoweredUpToLevel; // Distinct from UpgradeLevel, and set to highest PowersUpToLevel out of applied upgrades regardless of how many are currently applied to this building.
+	SuperClass* CurrentEMPulseSW;
+	bool IsFiringNow;
+	int TurretAnimIdleFrame;
+	int TurretAnimFiringFrame;
+	int TurretAnimRateTick;
+
+	BuildingExt(BuildingClass* OwnerObject) : TechnoExt(OwnerObject)
+		, TypeExtData { nullptr }
+		, DeployedTechno { false }
+		, IsCreatedFromMapFile { false }
+		, LimboID { -1 }
+		, GrindingWeapon_LastFiredFrame { 0 }
+		, GrindingWeapon_AccumulatedCredits { 0 }
+		, CurrentAirFactory { nullptr }
+		, AccumulatedIncome { 0 }
+		, CurrentLaserWeaponIndex {}
+		, PoweredUpToLevel { 0 }
+		, CurrentEMPulseSW {}
+		, IsFiringNow { false }
+		, TurretAnimIdleFrame { 0 }
+		, TurretAnimFiringFrame { -1 }
+		, TurretAnimRateTick { 0 }
+	{ }
+
+	// typed owner accessor (shadows the TechnoClass one from the base)
+	BuildingClass* OwnerObject() const
 	{
-	public:
-		BuildingTypeExt::ExtData* TypeExtData;
-		bool DeployedTechno;
-		bool IsCreatedFromMapFile;
-		int LimboID;
-		int GrindingWeapon_LastFiredFrame;
-		int GrindingWeapon_AccumulatedCredits;
-		BuildingClass* CurrentAirFactory;
-		int AccumulatedIncome;
-		std::optional<int> CurrentLaserWeaponIndex;
-		int PoweredUpToLevel; // Distinct from UpgradeLevel, and set to highest PowersUpToLevel out of applied upgrades regardless of how many are currently applied to this building.
-		SuperClass* CurrentEMPulseSW;
-		bool IsFiringNow;
-		int TurretAnimIdleFrame;
-		int TurretAnimFiringFrame;
-		int TurretAnimRateTick;
+		return static_cast<BuildingClass*>(this->TechnoExt::OwnerObject());
+	}
 
-		ExtData(BuildingClass* OwnerObject) : TechnoExt::ExtData(OwnerObject)
-			, TypeExtData { nullptr }
-			, DeployedTechno { false }
-			, IsCreatedFromMapFile { false }
-			, LimboID { -1 }
-			, GrindingWeapon_LastFiredFrame { 0 }
-			, GrindingWeapon_AccumulatedCredits { 0 }
-			, CurrentAirFactory { nullptr }
-			, AccumulatedIncome { 0 }
-			, CurrentLaserWeaponIndex {}
-			, PoweredUpToLevel { 0 }
-			, CurrentEMPulseSW {}
-			, IsFiringNow { false }
-			, TurretAnimIdleFrame { 0 }
-			, TurretAnimFiringFrame { -1 }
-			, TurretAnimRateTick { 0 }
-		{ }
+	void DisplayIncomeString();
+	void ApplyPoweredKillSpawns();
+	bool HasSuperWeapon(int index) const;
+	bool HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore);
+	void UpdatePrimaryFactoryAI();
+	virtual ~BuildingExt() = default;
 
-		// typed owner accessor (shadows the TechnoClass one from the base)
-		BuildingClass* OwnerObject() const
-		{
-			return static_cast<BuildingClass*>(this->TechnoExt::ExtData::OwnerObject());
-		}
+	// virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
-		void DisplayIncomeString();
-		void ApplyPoweredKillSpawns();
-		bool HasSuperWeapon(int index) const;
-		bool HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore);
-		void UpdatePrimaryFactoryAI();
-		virtual ~ExtData() = default;
-
-		// virtual void LoadFromINIFile(CCINIClass* pINI) override;
-
-		virtual void OnDetach(BuildingClass* pTarget, bool removed) override
-		{
-			if (removed)
-				AnnounceInvalidPointer(this->CurrentAirFactory, pTarget);
-		}
-
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
-
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
-
-	// BuildingClassExtension lives in the TechnoClass container (single 0x18 slot), so this
-	// is a thin typed accessor facade over that container instead of an owning container.
-	class ExtMapFacade
+	virtual void OnDetach(BuildingClass* pTarget, bool removed) override
 	{
-	public:
-		ExtData* Find(const BuildingClass* key) const
-		{
-			return static_cast<ExtData*>(TechnoExt::ExtMap.Find(key));
-		}
+		if (removed)
+			AnnounceInvalidPointer(this->CurrentAirFactory, pTarget);
+	}
 
-		ExtData* TryFind(const BuildingClass* key) const
-		{
-			return static_cast<ExtData*>(TechnoExt::ExtMap.TryFind(key));
-		}
-	};
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	static ExtMapFacade ExtMap;
+private:
+	template <typename T>
+	void Serialize(T& Stm);
+
+public:
+	static BuildingExt* Fetch(const BuildingClass* pThis)
+	{
+		return static_cast<BuildingExt*>(TechnoExt::Fetch(pThis));
+	}
+
+	static BuildingExt* TryFetch(const BuildingClass* pThis)
+	{
+		return static_cast<BuildingExt*>(TechnoExt::TryFetch(pThis));
+	}
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
@@ -112,5 +100,3 @@ public:
 	static int GetTurretFrame(BuildingClass* pThis);
 };
 
-// top-level name for the BuildingClass extension leaf (derives from TechnoClassExtension)
-using BuildingClassExtension = BuildingExt::ExtData;
