@@ -8,7 +8,6 @@ BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
 BuildingTypeExt::ExtContainer::ExtContainer() : Container("BuildingTypeClass") { }
 BuildingTypeExt::ExtContainer::~ExtContainer() = default;
 
-
 // Assuming SuperWeapon & SuperWeapon2 are used (for the moment)
 int BuildingTypeExt::GetSuperWeaponCount() const
 {
@@ -149,7 +148,6 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 
 	return isUpgrade ? result : -1;
 }
-
 
 void BuildingTypeExt::Initialize()
 {
@@ -481,7 +479,9 @@ DEFINE_HOOK(0x45E50C, BuildingTypeClass_CTOR, 0x6)
 // BuildingTypeClass destruction, save, load and INI parsing of the extension are handled by
 // the TechnoTypeClass container hooks now that a building type has a single extension at 0x18.
 
-DEFINE_HOOK(0x45E707, BuildingTypeClass_DTOR, 0x6)
+// Late in every destructor body of the class, right before it chains into the
+// base destructor: the last point where the extension is no longer used.
+DEFINE_HOOK(0x45E732, BuildingTypeClass_DTOR, 0x2)
 {
 	GET(BuildingTypeClass*, pItem, ESI);
 

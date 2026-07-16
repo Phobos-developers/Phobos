@@ -15,9 +15,12 @@ DEFINE_HOOK(0x7353D3, UnitClass_CTOR, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x735780, UnitClass_DTOR, 0x6)
+// Late in every destructor body of the class, right before it chains into the
+// base destructor: the last point where the extension is no longer used.
+DEFINE_HOOK_AGAIN(0x7359DA, UnitClass_DTOR, 0x2)
+DEFINE_HOOK(0x735967, UnitClass_DTOR, 0x2)
 {
-	GET(UnitClass*, pItem, ECX);
+	GET(UnitClass*, pItem, ESI);
 
 	UnitExt::ExtMap.Remove(pItem);
 

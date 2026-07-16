@@ -14,11 +14,12 @@ DEFINE_HOOK(0x5236B3, InfantryTypeClass_CTOR, 0xA)
 	return 0;
 }
 
-// the second address is the twin destructor body the vtable actually points at
-DEFINE_HOOK_AGAIN(0x524D70, InfantryTypeClass_DTOR, 0x6)
-DEFINE_HOOK(0x5239D0, InfantryTypeClass_DTOR, 0x5)
+// Late in every destructor body of the class, right before it chains into the
+// base destructor: the last point where the extension is no longer used.
+DEFINE_HOOK_AGAIN(0x524E90, InfantryTypeClass_DTOR, 0x2)
+DEFINE_HOOK(0x523AF0, InfantryTypeClass_DTOR, 0x2)
 {
-	GET(InfantryTypeClass*, pItem, ECX);
+	GET(InfantryTypeClass*, pItem, ESI);
 
 	InfantryTypeExt::ExtMap.Remove(pItem);
 

@@ -9,7 +9,6 @@ BuildingExt::ExtContainer BuildingExt::ExtMap;
 BuildingExt::ExtContainer::ExtContainer() : Container("BuildingClass") { }
 BuildingExt::ExtContainer::~ExtContainer() = default;
 
-
 void BuildingExt::DisplayIncomeString()
 {
 	if (this->AccumulatedIncome)
@@ -258,7 +257,6 @@ bool BuildingExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
 
 	if (disallowTypes.size() > 0 && disallowTypes.Contains(pType))
 		return false;
-
 
 	return true;
 }
@@ -637,7 +635,9 @@ static void __fastcall BuildingClass_InfiltratedBy_Wrapper(BuildingClass* pThis,
 
 DEFINE_FUNCTION_JUMP(CALL, 0x51A00B, BuildingClass_InfiltratedBy_Wrapper);
 
-DEFINE_HOOK(0x43C022, BuildingClass_DTOR, 0x6)
+// Late in every destructor body of the class, right before it chains into the
+// base destructor: the last point where the extension is no longer used.
+DEFINE_HOOK(0x43C0B6, BuildingClass_DTOR, 0x2)
 {
 	GET(BuildingClass*, pItem, ESI);
 

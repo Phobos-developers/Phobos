@@ -14,11 +14,12 @@ DEFINE_HOOK(0x41C8C0, AircraftTypeClass_CTOR, 0x5)
 	return 0;
 }
 
-// the second address is the twin destructor body the vtable actually points at
-DEFINE_HOOK_AGAIN(0x41CFE0, AircraftTypeClass_DTOR, 0x6)
-DEFINE_HOOK(0x41CA20, AircraftTypeClass_DTOR, 0x6)
+// Late in every destructor body of the class, right before it chains into the
+// base destructor: the last point where the extension is no longer used.
+DEFINE_HOOK_AGAIN(0x41D04F, AircraftTypeClass_DTOR, 0x2)
+DEFINE_HOOK(0x41CA8F, AircraftTypeClass_DTOR, 0x2)
 {
-	GET(AircraftTypeClass*, pItem, ECX);
+	GET(AircraftTypeClass*, pItem, ESI);
 
 	AircraftTypeExt::ExtMap.Remove(pItem);
 

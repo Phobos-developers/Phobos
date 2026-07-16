@@ -182,9 +182,12 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 	return static_cast<DirType>(std::clamp(landingDir, 0, 255));
 }
 
-DEFINE_HOOK(0x414080, AircraftClass_DTOR, 0x5)
+// Late in every destructor body of the class, right before it chains into the
+// base destructor: the last point where the extension is no longer used.
+DEFINE_HOOK_AGAIN(0x41426D, AircraftClass_DTOR, 0x2)
+DEFINE_HOOK(0x4141FA, AircraftClass_DTOR, 0x2)
 {
-	GET(AircraftClass*, pItem, ECX);
+	GET(AircraftClass*, pItem, EDI);
 
 	AircraftExt::ExtMap.Remove(pItem);
 

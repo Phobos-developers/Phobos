@@ -14,9 +14,11 @@ DEFINE_HOOK(0x517A60, InfantryClass_CTOR, 0xE)
 	return 0;
 }
 
-DEFINE_HOOK(0x517D90, InfantryClass_DTOR, 0x5)
+// Late in every destructor body of the class, right before it chains into the
+// base destructor: the last point where the extension is no longer used.
+DEFINE_HOOK(0x517F81, InfantryClass_DTOR, 0x2)
 {
-	GET(InfantryClass*, pItem, ECX);
+	GET(InfantryClass*, pItem, ESI);
 
 	InfantryExt::ExtMap.Remove(pItem);
 
