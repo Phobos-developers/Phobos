@@ -226,7 +226,10 @@ public:
 	int GetSuperWeaponIndex(int index, HouseClass* pHouse) const;
 	int GetSuperWeaponIndex(int index) const;
 
-	virtual ~BuildingTypeExt() = default;
+	virtual ~BuildingTypeExt() override
+	{
+		ExtMap.Unregister(this);
+	}
 
 	virtual void LoadFromINIFile(CCINIClass* pINI) override;
 	virtual void Initialize() override;
@@ -241,14 +244,23 @@ private:
 
 public:
 
+	class ExtContainer final : public Container<BuildingTypeExt>
+	{
+	public:
+		ExtContainer();
+		~ExtContainer();
+	};
+
+	static ExtContainer ExtMap;
+
 	static BuildingTypeExt* Fetch(const BuildingTypeClass* pThis)
 	{
-		return static_cast<BuildingTypeExt*>(TechnoTypeExt::Fetch(pThis));
+		return ExtMap.Find(pThis);
 	}
 
 	static BuildingTypeExt* TryFetch(const BuildingTypeClass* pThis)
 	{
-		return static_cast<BuildingTypeExt*>(TechnoTypeExt::TryFetch(pThis));
+		return ExtMap.TryFind(pThis);
 	}
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);

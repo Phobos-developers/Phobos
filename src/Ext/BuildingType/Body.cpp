@@ -3,6 +3,11 @@
 #include <Ext/House/Body.h>
 #include <Ext/SWType/Body.h>
 
+BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
+
+BuildingTypeExt::ExtContainer::ExtContainer() : Container("BuildingTypeClass") { }
+BuildingTypeExt::ExtContainer::~ExtContainer() = default;
+
 
 // Assuming SuperWeapon & SuperWeapon2 are used (for the moment)
 int BuildingTypeExt::GetSuperWeaponCount() const
@@ -468,8 +473,7 @@ DEFINE_HOOK(0x45E50C, BuildingTypeClass_CTOR, 0x6)
 {
 	GET(BuildingTypeClass*, pItem, EAX);
 
-	// A building type's extension is a concrete BuildingTypeExt leaf, owned by the TechnoTypeClass container.
-	TechnoTypeExt::ExtMap.Adopt(new BuildingTypeExt(pItem));
+	BuildingTypeExt::ExtMap.Allocate(pItem);
 
 	return 0;
 }

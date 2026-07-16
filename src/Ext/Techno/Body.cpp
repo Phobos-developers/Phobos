@@ -15,7 +15,6 @@
 #include <Utilities/AresHelper.h>
 #include <Interop/TechnoExt.h>
 
-TechnoExt::ExtContainer TechnoExt::ExtMap;
 UnitClass* TechnoExt::Deployer = nullptr;
 
 TechnoExt::~TechnoExt()
@@ -1380,32 +1379,6 @@ bool TechnoExt::SaveGlobals(PhobosStreamWriter& Stm)
 }
 
 // =============================
-// container
-
-TechnoExt::ExtContainer::ExtContainer() : Container("TechnoClass") { }
-
-TechnoExt::ExtContainer::~ExtContainer() = default;
-
-TechnoExt* TechnoExt::ExtContainer::CreateExtData(AbstractType tag, TechnoClass* pOwner) const
-{
-	switch (tag)
-	{
-	case AbstractType::Unit:
-		return new UnitExt(static_cast<UnitClass*>(pOwner));
-	case AbstractType::Infantry:
-		return new InfantryExt(static_cast<InfantryClass*>(pOwner));
-	case AbstractType::Aircraft:
-		return new AircraftExt(static_cast<AircraftClass*>(pOwner));
-	case AbstractType::Building:
-		return new BuildingExt(static_cast<BuildingClass*>(pOwner));
-	default:
-		Debug::FatalErrorAndExit("TechnoExt - unexpected extension tag %d in the save stream!\n", static_cast<int>(tag));
-		return nullptr;
-	}
-}
-
-
-// =============================
 // container hooks
 
 // The extension is allocated by the concrete leaf constructors (UnitClass/InfantryClass/
@@ -1418,7 +1391,7 @@ DEFINE_HOOK(0x6F4500, TechnoClass_DTOR, 0x5)
 	if (pItem->AbstractFlags & AbstractFlags::Foot)
 		pItem->Owner->RecheckTechTree = true; // for SW.AuxTechons and SW.NegTechnos
 
-	TechnoExt::ExtMap.Remove(pItem);
+	TechnoExt::Destroy(pItem);
 
 	return 0;
 }

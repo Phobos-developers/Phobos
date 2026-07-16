@@ -4,14 +4,43 @@
 #include <UnitTypeClass.h>
 
 // Concrete leaf extension for UnitTypeClass (empty; techno-type data lives in TechnoTypeExt).
-class UnitTypeExt : public TechnoTypeExt
+class UnitTypeExt final : public TechnoTypeExt
 {
 public:
+	using base_type = UnitTypeClass;
+	using ExtData = UnitTypeExt;
+
+	static constexpr DWORD Canary = 0xE5E6E7E8;
+
 	explicit UnitTypeExt(UnitTypeClass* const OwnerObject) : TechnoTypeExt(OwnerObject)
 	{ }
 
 	UnitTypeClass* OwnerObject() const
 	{
 		return static_cast<UnitTypeClass*>(this->GetAttachedObject());
+	}
+
+	virtual ~UnitTypeExt() override
+	{
+		ExtMap.Unregister(this);
+	}
+
+	class ExtContainer final : public Container<UnitTypeExt>
+	{
+	public:
+		ExtContainer();
+		~ExtContainer();
+	};
+
+	static ExtContainer ExtMap;
+
+	static UnitTypeExt* Fetch(const UnitTypeClass* pThis)
+	{
+		return ExtMap.Find(pThis);
+	}
+
+	static UnitTypeExt* TryFetch(const UnitTypeClass* pThis)
+	{
+		return ExtMap.TryFind(pThis);
 	}
 };

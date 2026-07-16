@@ -4,6 +4,11 @@
 #include <Misc/FlyingStrings.h>
 #include <Utilities/AresHelper.h>
 
+BuildingExt::ExtContainer BuildingExt::ExtMap;
+
+BuildingExt::ExtContainer::ExtContainer() : Container("BuildingClass") { }
+BuildingExt::ExtContainer::~ExtContainer() = default;
+
 
 void BuildingExt::DisplayIncomeString()
 {
@@ -602,8 +607,7 @@ DEFINE_HOOK(0x43BCBD, BuildingClass_CTOR, 0x6)
 {
 	GET(BuildingClass*, pItem, ESI);
 
-	// A building's extension is a concrete BuildingExt leaf, owned by the TechnoClass container.
-	auto const pExt = static_cast<BuildingExt*>(TechnoExt::ExtMap.Adopt(new BuildingExt(pItem)));
+	auto const pExt = BuildingExt::ExtMap.Allocate(pItem);
 
 	if (pExt)
 		pExt->TypeExtData = BuildingTypeExt::Fetch(pItem->Type);

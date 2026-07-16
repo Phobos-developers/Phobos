@@ -3,8 +3,13 @@
 #include <LoadOptionsClass.h>
 
 #include <Ext/Aircraft/Body.h>
+#include <Ext/AircraftType/Body.h>
 #include <Ext/AnimType/Body.h>
 #include <Ext/Anim/Body.h>
+#include <Ext/Infantry/Body.h>
+#include <Ext/InfantryType/Body.h>
+#include <Ext/Unit/Body.h>
+#include <Ext/UnitType/Body.h>
 #include <Ext/Building/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Bullet/Body.h>
@@ -254,9 +259,11 @@ private:
 #pragma endregion
 
 // Add more class names as you like
+// NOTE: the order of extension classes with containers is the savegame stream order - append-only!
 using PhobosTypeRegistry = TypeRegistry <
 	// Ext classes
 	AircraftExt,
+	AircraftTypeExt,
 	AnimTypeExt,
 	AnimExt,
 	BuildingExt,
@@ -267,6 +274,8 @@ using PhobosTypeRegistry = TypeRegistry <
 	EBoltExt,
 	HouseExt,
 	HouseTypeExt,
+	InfantryExt,
+	InfantryTypeExt,
 	OverlayTypeExt,
 	ParticleSystemTypeExt,
 	RadSiteExt,
@@ -282,6 +291,8 @@ using PhobosTypeRegistry = TypeRegistry <
 	TechnoTypeExt,
 	TerrainTypeExt,
 	TiberiumExt,
+	UnitExt,
+	UnitTypeExt,
 	VoxelAnimExt,
 	VoxelAnimTypeExt,
 	WarheadTypeExt,

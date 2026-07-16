@@ -14,7 +14,6 @@
 
 #include <Utilities/AresHelper.h>
 
-TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
 bool TechnoTypeExt::SelectWeaponMutex = false;
 
 void TechnoTypeExt::Initialize()
@@ -2001,30 +2000,6 @@ void TechnoTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 }
 
 // =============================
-// container
-
-TechnoTypeExt::ExtContainer::ExtContainer() : Container("TechnoTypeClass") { }
-TechnoTypeExt::ExtContainer::~ExtContainer() = default;
-
-TechnoTypeExt* TechnoTypeExt::ExtContainer::CreateExtData(AbstractType tag, TechnoTypeClass* pOwner) const
-{
-	switch (tag)
-	{
-	case AbstractType::UnitType:
-		return new UnitTypeExt(static_cast<UnitTypeClass*>(pOwner));
-	case AbstractType::InfantryType:
-		return new InfantryTypeExt(static_cast<InfantryTypeClass*>(pOwner));
-	case AbstractType::AircraftType:
-		return new AircraftTypeExt(static_cast<AircraftTypeClass*>(pOwner));
-	case AbstractType::BuildingType:
-		return new BuildingTypeExt(static_cast<BuildingTypeClass*>(pOwner));
-	default:
-		Debug::FatalErrorAndExit("TechnoTypeExt - unexpected extension tag %d in the save stream!\n", static_cast<int>(tag));
-		return nullptr;
-	}
-}
-
-// =============================
 // container hooks
 
 DEFINE_HOOK(0x711835, TechnoTypeClass_CTOR, 0x5)
@@ -2042,7 +2017,7 @@ DEFINE_HOOK(0x711AE0, TechnoTypeClass_DTOR, 0x5)
 {
 	GET(TechnoTypeClass*, pItem, ECX);
 
-	TechnoTypeExt::ExtMap.Remove(pItem);
+	TechnoTypeExt::Destroy(pItem);
 
 	return 0;
 }
@@ -2053,7 +2028,8 @@ DEFINE_HOOK(0x716123, TechnoTypeClass_LoadFromINI, 0x5)
 	GET(TechnoTypeClass*, pItem, EBP);
 	GET_STACK(CCINIClass*, pINI, 0x380);
 
-	TechnoTypeExt::ExtMap.LoadFromINI(pItem, pINI);
+	if (auto const pExt = TechnoTypeExt::TryFetch(pItem))
+		pExt->LoadFromINI(pINI);
 
 	return 0;
 }

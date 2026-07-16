@@ -1,5 +1,10 @@
 #include "Body.h"
 
+AircraftExt::ExtContainer AircraftExt::ExtMap;
+
+AircraftExt::ExtContainer::ExtContainer() : Container("AircraftClass") { }
+AircraftExt::ExtContainer::~ExtContainer() = default;
+
 #include <Ext/BuildingType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
@@ -8,7 +13,7 @@ DEFINE_HOOK(0x413D30, AircraftClass_CTOR, 0x7)
 {
 	GET(AircraftClass*, pItem, ESI);
 
-	TechnoExt::ExtMap.Adopt(new AircraftExt(pItem));
+	AircraftExt::ExtMap.Allocate(pItem);
 
 	return 0;
 }

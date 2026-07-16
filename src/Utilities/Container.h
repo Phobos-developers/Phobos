@@ -432,27 +432,18 @@ public:
 		return val;
 	}
 
-	// Registers an already-constructed extension (possibly of a derived leaf type)
-	// into this container: stores the inline pointer and tracks it for iteration.
-	extension_type_ptr Adopt(extension_type_ptr val)
+	// Removes a dying extension from the tracking list without touching the owner or
+	// deleting it; leaf extension destructors call this on their own container.
+	void Unregister(extension_type_ptr val)
 	{
-		// during savegame load extensions are restored from the stream instead
-		if (Phobos::IsLoadingSaveGame)
+		auto& vec = this->Items;
+		auto it = std::find(vec.begin(), vec.end(), val);
+
+		if (it != vec.end())
 		{
-			delete val;
-			return nullptr;
+			*it = vec.back();
+			vec.pop_back();
 		}
-
-		val->EnsureConstanted();
-
-		if constexpr (HasOffset<T>)
-			SetExtensionPointer(val->OwnerObject(), val);
-		else
-			this->MappedItems.insert(val->OwnerObject(), val);
-
-		Items.emplace_back(val);
-
-		return val;
 	}
 
 	extension_type_ptr TryAllocate(base_type_ptr key, bool bCond, const std::string_view& nMessage)
@@ -576,8 +567,6 @@ public:
 
 				// the extension's own save-time address, so pointers to it can be remapped
 				writer.RegisterChange(item);
-				// which concrete leaf to construct on load
-				writer.Save(item->OwnerObject()->WhatAmI());
 				// the save-time owner address, remapped to the loaded owner by the swizzle manager
 				writer.Save(static_cast<void*>(item->OwnerObject()));
 
@@ -636,16 +625,15 @@ public:
 				PhobosStreamReader reader(loader);
 
 				void* oldPtr = nullptr;
-				AbstractType tag = AbstractType::None;
 				void* oldOwner = nullptr;
 
-				if (!reader.Load(oldPtr) || !reader.Load(tag) || !reader.Load(oldOwner))
+				if (!reader.Load(oldPtr) || !reader.Load(oldOwner))
 				{
 					Debug::Log("LoadAllFromStream - Invalid item header in '%s'.\n", this->Name);
 					return false;
 				}
 
-				auto const buffer = this->CreateExtData(tag, static_cast<base_type_ptr>(oldOwner));
+				auto const buffer = new extension_type(static_cast<base_type_ptr>(oldOwner));
 				buffer->RegisterOwnerForChange();
 				PhobosSwizzle::RegisterChange(oldPtr, buffer);
 				this->Items.emplace_back(buffer);
@@ -687,14 +675,6 @@ public:
 	size_t size() const
 	{
 		return this->Items.size();
-	}
-
-protected:
-	// constructs the concrete extension on load; containers whose base class has
-	// multiple concrete leaves override this to pick the leaf matching the tag
-	virtual extension_type_ptr CreateExtData(AbstractType tag, base_type_ptr pOwner) const
-	{
-		return new extension_type(pOwner);
 	}
 
 private:

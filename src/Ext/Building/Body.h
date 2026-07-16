@@ -55,7 +55,10 @@ public:
 	bool HasSuperWeapon(int index) const;
 	bool HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore);
 	void UpdatePrimaryFactoryAI();
-	virtual ~BuildingExt() = default;
+	virtual ~BuildingExt() override
+	{
+		ExtMap.Unregister(this);
+	}
 
 	// virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
@@ -73,14 +76,23 @@ private:
 	void Serialize(T& Stm);
 
 public:
+	class ExtContainer final : public Container<BuildingExt>
+	{
+	public:
+		ExtContainer();
+		~ExtContainer();
+	};
+
+	static ExtContainer ExtMap;
+
 	static BuildingExt* Fetch(const BuildingClass* pThis)
 	{
-		return static_cast<BuildingExt*>(TechnoExt::Fetch(pThis));
+		return ExtMap.Find(pThis);
 	}
 
 	static BuildingExt* TryFetch(const BuildingClass* pThis)
 	{
-		return static_cast<BuildingExt*>(TechnoExt::TryFetch(pThis));
+		return ExtMap.TryFind(pThis);
 	}
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);

@@ -23,7 +23,7 @@ public:
 	using ExtData = TechnoTypeExt;
 
 	static constexpr DWORD Canary = 0x11111111;
-	static constexpr size_t ExtPointerOffset = 0xDF4;
+	static constexpr size_t ExtPointerOffset = 0x18;
 
 public:
 	// typed owner accessor (the base chain stores the owner as ObjectTypeClass*)
@@ -1048,26 +1048,28 @@ private:
 	void ParseVoiceWeaponAttacks(INI_EX& exINI, const char* pSection, ValueableVector<int>& n, ValueableVector<int>& nE);
 
 public:
-	class ExtContainer final : public Container<TechnoTypeExt>
-	{
-	public:
-		ExtContainer();
-		~ExtContainer();
-
-	protected:
-		virtual ExtData* CreateExtData(AbstractType tag, TechnoTypeClass* pOwner) const override;
-	};
-
-	static ExtContainer ExtMap;
-
+	// TechnoTypeExt is never instantiated and has no container of its own: instances are
+	// concrete leaves (UnitTypeExt/InfantryTypeExt/AircraftTypeExt/BuildingTypeExt)
+	// tracked by their own containers. The polymorphic fetch reads the inline slot directly.
 	static TechnoTypeExt* Fetch(const TechnoTypeClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return *reinterpret_cast<TechnoTypeExt* const*>(reinterpret_cast<const char*>(pThis) + ExtPointerOffset);
 	}
 
 	static TechnoTypeExt* TryFetch(const TechnoTypeClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return pThis ? Fetch(pThis) : nullptr;
+	}
+
+	// deletes the leaf extension of a dying type object; the leaf destructor
+	// unregisters itself from its own container
+	static void Destroy(TechnoTypeClass* pThis)
+	{
+		if (auto const pExt = Fetch(pThis))
+		{
+			delete pExt;
+			*reinterpret_cast<uintptr_t*>(reinterpret_cast<char*>(pThis) + ExtPointerOffset) = 0;
+		}
 	}
 	static bool SelectWeaponMutex;
 
