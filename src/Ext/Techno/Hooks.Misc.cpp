@@ -109,9 +109,12 @@ DEFINE_HOOK(0x6B73B9, SpawnManagerClass_AI_SpawnTimer, 0x5)
 			pThis->SpawnTimer.Start(pTypeExt->Spawner_DelayFrames.Get());
 			return 0x6B73C4;
 		}
+
+		R->ECX(pOwner->GetTechnoType()->MissileSpawn ? 9 : 20);
+		return 0;
 	}
 
-	R->ECX(pThis->Owner->GetTechnoType()->MissileSpawn ? 9 : 20);
+	R->ECX(20);
 	return 0;
 }
 
