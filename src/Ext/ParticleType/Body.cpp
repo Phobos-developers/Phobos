@@ -71,6 +71,16 @@ DEFINE_HOOK(0x644DBB, ParticleTypeClass_CTOR, 0x5)
 	return 0;
 }
 
+// Late in the destructor body, right before it chains into the base destructor.
+DEFINE_HOOK(0x645A39, ParticleTypeClass_DTOR, 0x13)
+{
+	GET(ParticleTypeClass*, pItem, ESI);
+
+	ParticleTypeExt::ExtMap.Remove(pItem);
+
+	return 0;
+}
+
 DEFINE_HOOK(0x6453FF, ParticleTypeClass_LoadFromINI, 0x6)
 {
 	GET(ParticleTypeClass*, pItem, ESI);
