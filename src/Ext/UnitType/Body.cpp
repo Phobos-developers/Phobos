@@ -14,6 +14,8 @@ DEFINE_HOOK(0x7470E3, UnitTypeClass_CTOR, 0x6)
 	return 0;
 }
 
+// the second address is the twin destructor body the vtable actually points at
+DEFINE_HOOK_AGAIN(0x748190, UnitTypeClass_DTOR, 0x6)
 DEFINE_HOOK(0x7472F0, UnitTypeClass_DTOR, 0x6)
 {
 	GET(UnitTypeClass*, pItem, ECX);
