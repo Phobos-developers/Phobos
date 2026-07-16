@@ -611,6 +611,7 @@ HideShakeEffects=false           ; boolean
 - [`ZAdjust` for Projectiles](Fixed-or-Improved-Logics.md#zadjust-for-projectiles) (by Noble_Fish)
 - [Adjust recruitable status on team member discharge](AI-Scripting-and-Mapping.md#adjust-recruitable-status-on-team-member-discharge) (by TaranDahl)
 - Customize whether or not passenger can fire out when the transport is moving (by Ollerus)
+- [RA1-Style Multi-Turret and Multi-Barrel](New-or-Enhanced-Logics.md#ra1-style-multi-turret-and-multi-barrel) (by TaranDahl & CrimRecya)
 - [Allow Laser drawing position update](New-or-Enhanced-Logics.md#allow-laser-drawing-position-update) (by Noble_Fish)
 
 #### Vanilla fixes:
