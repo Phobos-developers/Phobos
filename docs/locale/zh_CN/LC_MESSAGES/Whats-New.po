@@ -2157,6 +2157,12 @@ msgstr ""
 "[RA1 风格的多炮塔与多炮管](New-or-Enhanced-Logics.md#ra1-style-multi-turret-and-"
 "multi-barrel)（by TaranDahl 与 CrimRecya）"
 
+msgid ""
+"[Allow Laser drawing position update](New-or-Enhanced-Logics.md#allow-"
+"laser-drawing-position-update) (by Noble_Fish)"
+msgstr ""
+"[允许激光绘制位置更新](New-or-Enhanced-Logics.md#allow-laser-drawing-position-update)（by Noble_Fish）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
