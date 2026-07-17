@@ -136,42 +136,6 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 	Debug::Log("ExceptionHandler is %s\n", dontSetExceptionHandler ? "not present" : "present");
 }
 
-// The game process is not DPI-aware (gamemd.exe has no manifest), so on
-// scaled displays Windows bitmap-stretches every window - blurry, chunky
-// dialogs and console. Vinifera gets this from SDL_Init; do it explicitly.
-static void SetDpiAwareness()
-{
-	// This runs before the game parses its command line, so check the raw one.
-	char cmdLine[1024];
-	strncpy_s(cmdLine, GetCommandLineA(), _TRUNCATE);
-	_strlwr_s(cmdLine);
-	if (strstr(cmdLine, "-dpiaware=false") || strstr(cmdLine, "-dpiaware=no") || strstr(cmdLine, "-dpiaware=0"))
-		return;
-
-	using SetProcessDpiAwarenessContext_t = BOOL(WINAPI*)(HANDLE);
-	using SetProcessDpiAwareness_t = HRESULT(WINAPI*)(int);
-
-	// Windows 10 1703+, then Windows 8.1, then Vista.
-	if (auto const pSetContext = reinterpret_cast<SetProcessDpiAwarenessContext_t>(
-		GetProcAddress(GetModuleHandleA("user32.dll"), "SetProcessDpiAwarenessContext")))
-	{
-		if (pSetContext(reinterpret_cast<HANDLE>(-4) /* DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 */))
-			return;
-	}
-
-	if (HMODULE const shcore = LoadLibraryA("shcore.dll"))
-	{
-		if (auto const pSetAwareness = reinterpret_cast<SetProcessDpiAwareness_t>(
-			GetProcAddress(shcore, "SetProcessDpiAwareness")))
-		{
-			if (SUCCEEDED(pSetAwareness(2 /* PROCESS_PER_MONITOR_DPI_AWARE */)))
-				return;
-		}
-	}
-
-	SetProcessDPIAware();
-}
-
 // gamemd.exe has no manifest, so its windows bind the ancient Common Controls
 // v5 and render Win9x-style. Activating Phobos' embedded manifest (resource 2,
 // carrying the comctl32 v6 dependency - see ExceptionHandler.rc) for the rest
@@ -211,7 +175,6 @@ static void ActivateCommonControls6()
 
 void Phobos::ExeRun()
 {
-	SetDpiAwareness();
 	ActivateCommonControls6();
 
 	Patch::ApplyStatic();

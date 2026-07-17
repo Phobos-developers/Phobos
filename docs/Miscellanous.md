@@ -295,11 +295,9 @@ The exception handler is enabled by default in all builds, including debug build
 The CnCNet 5 spawner uses the main loop exception handler for fixes. If you get any issues (crashes, bugs) in combination with that then please first test with the exception handler enabled.
 ```
 
-### DPI awareness and visual styles
+### Visual styles
 
-The game process is now made DPI-aware (matching what Vinifera does for Tiberian Sun), and Phobos's embedded Common Controls v6 manifest is activated for the lifetime of the process. This makes windows created by the game and Phobos - dialogs, message boxes, the debug console - render crisp on scaled displays and with modern visual styles instead of the Windows 9x look.
-
-DPI awareness can be turned off with the `-DPIAware=boolean` command line arg (`false|no|0` to disable) in case a setup relies on Windows bitmap-stretching the game window.
+gamemd.exe ships without an application manifest, so its windows bind the old Common Controls v5 and render in the Windows 9x style. Phobos now activates its embedded Common Controls v6 manifest for the lifetime of the process, so windows created by the game and Phobos - dialogs, message boxes and the crash dialog - render with modern visual styles.
 
 ## Player colors
 
