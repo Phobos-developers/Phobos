@@ -7,6 +7,7 @@
 #include <Surface.h>
 #include <MouseClass.h>
 #include <WWMouseClass.h>
+#include <YRDDraw.h>
 
 #include <Utilities/Debug.h>
 
@@ -41,6 +42,15 @@ namespace
 			DSurface::Sidebar->Fill(0);
 		if (DSurface::Tile != nullptr)
 			DSurface::Tile->Fill(0);
+
+		// Leave DirectDraw exclusive fullscreen and restore the desktop
+		// display mode - inside a 16-bit exclusive mode the dialog would
+		// render uncomposited (classic frames) at the game's resolution.
+		if (DirectDrawWrap::lpDD != nullptr)
+		{
+			DirectDrawWrap::lpDD->SetCooperativeLevel(Game::hWnd, eDDCoopLevel::DDSCL_NORMAL);
+			DirectDrawWrap::lpDD->RestoreDisplayMode();
+		}
 
 		ShowCursor(TRUE);
 	}
