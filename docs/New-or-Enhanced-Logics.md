@@ -2460,6 +2460,35 @@ JumpjetTilt.SidewaysRotationFactor=1.0  ; floating point value
 JumpjetTilt.SidewaysSpeedFactor=1.0     ; floating point value
 ```
 
+### RA1-Style Multi-Turret and Multi-Barrel
+
+![image](_static/images/multiTurretAndMultiBarrel.gif)
+*Shogun Battleship in [Project Rush - Conquer](https://www.moddb.com/mods/project-rush-conquer)*
+
+- Vehicles can now draw and fire the same turret at multiple positions (RA1-style multi-turret) and draw multiple barrels for each turret, only supports regular VXL vehicles.
+  - `ExtraTurretCount` controls how many extra turret positions a unit has. `ExtraTurretOffsetX` controls the offset of the X-th turret position relative to the center of the unit. X is 0-based.
+  - `ExtraBarrelCount` controls how many extra barrels each turret draws. `BarrelOffset` controls the offset distance of the main barrel relative to the center of the turret in the left-right direction (positive values shift left). `ExtraBarrelOffsetX` controls the offset distance of the X-th extra barrel of each turret relative to the center of the turret in the left-right direction (positive values shift left). X is 0-based.
+  - `BarrelOverTurret` controls whether the barrel layer is always above the turret layer. Otherwise, the layer relationship will be judged according to the direction of the turret.
+  - When a unit fires, it will first use the original turret to fire `BurstPerTurret` times, then switch to the 0th additional turret position to fire `BurstPerTurret` times, then switch to the 1st, and so on.
+- The firing FLH is also calculated relative to the firing turret's position. If the unit's turret or barrel has recoil effects set, the turret/barrel index will be automatically calculated based on `Burst`.
+- The firing position is essentially determined by the current `Burst`. If you want the rear turrets to fire, you need weapons with high `Burst`. For example, a battleship with 2 additional turret positions (3 turrets total) and `BurstPerTurret=3` would need at least `Burst=9` to allow all turrets to fire completely once. The same applies to barrels on each turret.
+
+In `artmd.ini`:
+```ini
+[SOMEVEHICLE]               ; VehicleType
+BarrelOverTurret=           ; boolean
+BarrelOffset=0              ; integer
+ExtraBarrelCount=0          ; integer
+ExtraBarrelOffsetX=0        ; integer
+ExtraTurretCount=0          ; integer
+ExtraTurretOffsetX=0,0,0    ; integer - Forward,Lateral,Height
+BurstPerTurret=0            ; integer
+```
+
+```{note}
+This is essentially designed to restore multi-turrets in RA1, not to help you make a Zantos. Therefore, features like different turrets using different weapons/targeting separately/calculating cooldown separately/having separate health are not within the scope of this function. Please use techno attachment for such requirements.
+```
+
 ### Turret Response
 
 - When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body.
@@ -3089,6 +3118,36 @@ UnlimboDetonate.KeepSelected=true      ; boolean
 ```
 
 ## Weapons
+
+### Allow Laser drawing position update
+
+- Now you can define via `LaserPositionUpdate` whether the endpoints of a laser drawing are updated during its duration.
+  - `None`: No update.
+  - `Firer`: The start point follows the firer's FLH; if the firer dies, the update stops.
+    - Since the FLH of `DiskLaser` actually determines the center of the ring, in this scenario, during the update process, the direction of the line connecting the beam's starting point to the center is fixed relative to the ground and the distance is constant - that is, the starting point will still remain on the ring.
+  - `Target`: The end point follows the target; if the target object dies, the update stops.
+  - `All`: Equivalent to specifying both `Firer` and `Target`.
+- `LaserPositionUpdate.StopOnFirerConvert` determines whether the laser source stops updating when the firer transforms. If set to false (default), the laser will continue to update using the transformed unit's corresponding parameters.
+
+```{note}
+For a sub-weapon created by `ShrapnelWeapon` or `AirburstWeapon`, its start point is the position where the parent weapon detonates, not the firer's FLH.
+- If `Firer` is set, it will be treated as `None`.
+- If `All` is set, it will be treated as `Target`.
+```
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+LaserPositionUpdate.StopOnFirerConvert=false ; boolean
+
+[SOMEWEAPON]                                 ; WeaponType with IsLaser=yes or DiskLaser=yes
+LaserPositionUpdate=none                     ; Position Follow Enumeration (none|firer|target|all)
+LaserPositionUpdate.StopOnFirerConvert=false ; boolean, default to [AudioVisual] -> LaserPositionUpdate.StopOnFirerConvert
+```
+
+```{warning}
+If the weapon sets this logic to a non-`None` value while also using other logics that change the drawing position, such as `FlakScatter` and `VisualScatter`, then after initially drawing the laser according to those other logics, the drawing position will be forced to change due to the update rules.
+```
 
 ### AreaFire target customization
 
