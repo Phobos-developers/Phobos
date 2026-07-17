@@ -56,17 +56,60 @@ bool CellExt::RadLevel::Serialize(T& stm)
 CellExt::ExtContainer::ExtContainer() : Container("CellClass") { }
 CellExt::ExtContainer::~ExtContainer() = default;
 
+// Writes a cell's extension into the cell's own savegame block, right after the
+// game's data. The block is length-prefixed and carries the extension's save-time
+// address, so pointers to it could be remapped like any other.
+void CellExt::ExtContainer::SaveInline(CellClass* pCell, IStream* pStm)
+{
+	auto const pExt = CellExt::TryFetch(pCell);
+
+	if (!pExt)
+		Debug::FatalErrorAndExit("SaveInline - saved cell has no extension!\n");
+
+	PhobosByteStream saver(sizeof(CellExt));
+	PhobosStreamWriter writer(saver);
+
+	writer.Save(CellExt::Canary);
+	writer.RegisterChange(pExt);
+
+	pExt->SaveToStream(writer);
+
+	if (!saver.WriteBlockToStream(pStm))
+		Debug::FatalErrorAndExit("SaveInline - failed to save a cell extension!\n");
+}
+
+// Recreates a cell's extension from the cell's own savegame block. Unlike the
+// centralized stream, the owner is the live cell being loaded, so no owner
+// remapping is needed.
+void CellExt::ExtContainer::LoadInline(CellClass* pCell, IStream* pStm)
+{
+	PhobosByteStream loader(0);
+
+	if (!loader.ReadBlockFromStream(pStm))
+		Debug::FatalErrorAndExit("LoadInline - failed to read a cell extension block!\n");
+
+	PhobosStreamReader reader(loader);
+	void* oldPtr = nullptr;
+
+	if (!reader.Expect(CellExt::Canary) || !reader.Load(oldPtr))
+		Debug::FatalErrorAndExit("LoadInline - invalid cell extension block!\n");
+
+	// the loaded cell carries no extension: its constructor ran with allocation
+	// suppressed and the loaded image's slot was cleared
+	auto const pExt = this->AllocateUnchecked(pCell);
+	PhobosSwizzle::RegisterChange(oldPtr, pExt);
+
+	pExt->LoadFromStream(reader);
+
+	if (!reader.ExpectEndOfBlock())
+		Debug::FatalErrorAndExit("LoadInline - cell extension block size mismatch!\n");
+}
+
 // The game only saves cells that its cell iterator reaches inside the map array;
-// any other live cell is recreated as a default-initialized one on load. Mirror
-// that: drop stream extensions whose owner could not be remapped, and allocate
-// fresh extensions for cells the load recreated outside the stream.
+// any other live cell is recreated as a default placeholder on load, while
+// extension allocation is suppressed. Give those cells extensions now.
 void CellExt::ExtContainer::RelinkExtensionPointers()
 {
-	if (const size_t orphans = this->RemoveNullOwnerItems())
-		Debug::Log("CellClass - dropped %u extensions of cells absent from the savegame.\n", orphans);
-
-	this->Container<CellExt>::RelinkExtensionPointers();
-
 	size_t added = 0;
 
 	for (int i = 0; i < MapClass::MaxCells; ++i)
@@ -122,6 +165,38 @@ DEFINE_HOOK(0x47BB60, CellClass_DTOR, 0x6)
 		InvalidCellExt.reset();
 	else
 		CellExt::ExtMap.Remove(pItem);
+
+	return 0;
+}
+
+// =============================
+// inline save/load hooks
+
+static CellClass* PersistCell = nullptr;
+static IStream* PersistStream = nullptr;
+
+DEFINE_HOOK_AGAIN(0x483C10, CellClass_SaveLoad_Prefix, 0x5) // Save
+DEFINE_HOOK(0x4839F0, CellClass_SaveLoad_Prefix, 0x7)       // Load
+{
+	GET_STACK(CellClass*, pItem, 0x4);
+	GET_STACK(IStream*, pStm, 0x8);
+
+	PersistCell = pItem;
+	PersistStream = pStm;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x483C00, CellClass_Load_Suffix, 0x5)
+{
+	CellExt::ExtMap.LoadInline(PersistCell, PersistStream);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x483C79, CellClass_Save_Suffix, 0x6)
+{
+	CellExt::ExtMap.SaveInline(PersistCell, PersistStream);
 
 	return 0;
 }

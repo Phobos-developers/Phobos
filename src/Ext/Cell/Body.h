@@ -58,7 +58,16 @@ public:
 		ExtContainer();
 		~ExtContainer();
 
-		// cells the game omits from the savegame need special handling on load
+		// cell extension data is persisted inline within each cell's own savegame
+		// block instead of the centralized extension stream: the owner is known at
+		// load time, so no owner remapping is needed
+		bool SaveAllToStream(IStream*) { return true; }
+		bool LoadAllFromStream(IStream*) { return true; }
+
+		void SaveInline(CellClass* pCell, IStream* pStm);
+		void LoadInline(CellClass* pCell, IStream* pStm);
+
+		// cells the game omits from the savegame need extensions allocated on load
 		void RelinkExtensionPointers();
 	};
 

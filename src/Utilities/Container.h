@@ -456,39 +456,6 @@ protected:
 		return val;
 	}
 
-	// deletes every tracked extension whose owner pointer is null and returns how
-	// many were dropped; used by load-time fixups for owners the game omits from
-	// the savegame (their owner cannot be remapped by the swizzle manager)
-	size_t RemoveNullOwnerItems()
-	{
-		if constexpr (HasOffset<T>)
-		{
-			size_t removed = 0;
-			auto& vec = this->Items;
-
-			for (size_t i = vec.size(); i-- > 0;)
-			{
-				if (!vec[i]->OwnerObject())
-				{
-					delete vec[i];
-					vec[i] = vec.back();
-					vec.pop_back();
-
-					if (i < vec.size())
-						vec[i]->ContainerIndex = i;
-
-					++removed;
-				}
-			}
-
-			return removed;
-		}
-		else
-		{
-			return 0;
-		}
-	}
-
 public:
 	extension_type_ptr Allocate(base_type_ptr key)
 	{
