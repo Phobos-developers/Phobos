@@ -3119,6 +3119,36 @@ UnlimboDetonate.KeepSelected=true      ; boolean
 
 ## Weapons
 
+### Allow Laser drawing position update
+
+- Now you can define via `LaserPositionUpdate` whether the endpoints of a laser drawing are updated during its duration.
+  - `None`: No update.
+  - `Firer`: The start point follows the firer's FLH; if the firer dies, the update stops.
+    - Since the FLH of `DiskLaser` actually determines the center of the ring, in this scenario, during the update process, the direction of the line connecting the beam's starting point to the center is fixed relative to the ground and the distance is constant - that is, the starting point will still remain on the ring.
+  - `Target`: The end point follows the target; if the target object dies, the update stops.
+  - `All`: Equivalent to specifying both `Firer` and `Target`.
+- `LaserPositionUpdate.StopOnFirerConvert` determines whether the laser source stops updating when the firer transforms. If set to false (default), the laser will continue to update using the transformed unit's corresponding parameters.
+
+```{note}
+For a sub-weapon created by `ShrapnelWeapon` or `AirburstWeapon`, its start point is the position where the parent weapon detonates, not the firer's FLH.
+- If `Firer` is set, it will be treated as `None`.
+- If `All` is set, it will be treated as `Target`.
+```
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+LaserPositionUpdate.StopOnFirerConvert=false ; boolean
+
+[SOMEWEAPON]                                 ; WeaponType with IsLaser=yes or DiskLaser=yes
+LaserPositionUpdate=none                     ; Position Follow Enumeration (none|firer|target|all)
+LaserPositionUpdate.StopOnFirerConvert=false ; boolean, default to [AudioVisual] -> LaserPositionUpdate.StopOnFirerConvert
+```
+
+```{warning}
+If the weapon sets this logic to a non-`None` value while also using other logics that change the drawing position, such as `FlakScatter` and `VisualScatter`, then after initially drawing the laser according to those other logics, the drawing position will be forced to change due to the update rules.
+```
+
 ### AreaFire target customization
 
 - You can now specify how AreaFire weapon picks its target. By default it targets the base cell the firer is currently on, but this can now be changed to fire on the firer itself or at a random cell within the radius of the weapon's `Range` by setting `AreaFire.Target` to `self` or `random` respectively.

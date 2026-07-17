@@ -901,6 +901,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 					}
 
 					BulletExt::ExtMap.Find(pBullet)->FirepowerMult = pBulletExt->FirepowerMult;
+					BulletExt::ExtMap.Find(pBullet)->IsSplitFromAirburst = true;
 					BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, coords, headToTarget, radialFire);
 					BulletExt::SimulatedFiringEffects(pBullet, pOwner, nullptr, useFiringEffects, true);
 				}
