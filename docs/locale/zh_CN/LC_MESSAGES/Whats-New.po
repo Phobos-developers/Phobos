@@ -2150,6 +2150,12 @@ msgstr ""
 "[RA1 风格的多炮塔与多炮管](New-or-Enhanced-Logics.md#ra1-style-multi-turret-and-"
 "multi-barrel)（by TaranDahl 与 CrimRecya）"
 
+msgid ""
+"[Allow the unit to stop immediately if the target enters the range during"
+" ApproachTarget](Fixed-or-Improved-Logics.md#stop-immediately-if-the-"
+"target-enters-the-range-during-approachtarget) (by TaranDahl)"
+msgstr ""
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 

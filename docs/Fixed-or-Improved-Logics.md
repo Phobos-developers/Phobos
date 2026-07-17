@@ -627,6 +627,17 @@ AIAllToHunt=true          ; boolean
 GatherWhenMCVDeploy=true  ; boolean
 ```
 
+### Stop immediately if the target enters the range during ApproachTarget
+
+- In vanilla, the ApproachTarget will simply exit and do nothing if the target is in range. This will cause your units to approach the target unnecessarily.
+  - Now you can change this behavior by the following flag.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ApproachTarget.StopWhenInRange=false  ; boolean
+```
+
 ### Use 8-bit RGB parameters for `[ColorAdd]`
 
 - In vanilla, the values in the `[ColorAdd]` entry are used as RGB565 (0-31 for red & blue, 0-63 for green). Now, with this setting, you can use the more user-friendly 8-bit RGB (0-255) for input.
@@ -2160,17 +2171,6 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                         ; TechnoType
 RadarInvisibleToHouse=               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to enemy if RadarInvisible=true, none otherwise
-```
-
-### Stop immediately if the target enters the range during ApproachTarget
-
-- In vanilla, the ApproachTarget will simply exit and do nothing if the target is in range. This will cause your units to approach the target unnecessarily.
-- Now you can change this behavior by the following flag.
-
-In `rulesmd.ini`:
-```ini
-[General]
-ApproachTarget.StopWhenInRange=false  ; boolean
 ```
 
 ### Subterranean unit travel height and speed

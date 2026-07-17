@@ -2792,6 +2792,11 @@ msgstr "允许在单人模式下使用信标放置快捷键"
 msgid "Adjust recruitable status on team member discharge"
 msgstr "小队成员解散时调整可招募性"
 
+msgid ""
+"Allow the unit to stop immediately if the target enters the range during "
+"ApproachTarget"
+msgstr ""
+
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
 

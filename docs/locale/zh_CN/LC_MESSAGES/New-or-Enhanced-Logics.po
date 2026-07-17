@@ -3393,28 +3393,6 @@ msgid ""
 " select a higher threat target when in attack move mission (Ctrl+Shift)."
 msgstr "`AttackMove.UpdateTarget` 允许你的单位在执行移动攻击（Ctrl+Shift）任务时自动切换威胁值更高的目标。"
 
-msgid "Attack move - behavior when target acquired"
-msgstr "移动攻击 - 获取目标时的行为"
-
-msgid ""
-"This feature is used to prevent units from charging forward and taking "
-"more damage during an attack move command."
-msgstr "此功能用于避免单位在执行移动攻击命令时冲锋过猛而暴毙。"
-
-msgid ""
-"You can also make them keep chasing on the spotted target using "
-"`AttackMove.PursuitTarget`."
-msgstr "你也可以使用 `AttackMove.PursuitTarget` 来让它们继续追击已锁定的单个目标。"
-
-msgid "This feature should be useful for close range units like ZEP."
-msgstr "此功能对于基洛夫空艇这样的近战单位很有用。"
-
-msgid ""
-"Some units (f.ex. jumpjets) will not fire correctly under the vanilla "
-"attack move command. The exact reason is not clear, but this feature can "
-"fix this problem."
-msgstr "一些单位（例如 Jumpjet 类）在原版移动攻击命令下无法正常开火。具体原因不明，但该功能可以解决此问题。"
-
 msgid "Attack move - follow"
 msgstr "移动攻击 - 跟随"
 
