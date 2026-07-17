@@ -27,12 +27,17 @@ enum class InitState
  * Extension classes form an inheritance hierarchy that mirrors the game's own class
  * tree, rooted at AbstractExt. Every game object of an extended type carries exactly
  * one extension instance of the most derived matching type, cached inside the object
- * at AbstractExt::ExtPointerOffset and fetched through the static Fetch/TryFetch
- * accessors of any level of the hierarchy.
+ * at AbstractExt::ExtPointerOffset.
+ *
+ * The static Fetch/TryFetch accessors of any level of the hierarchy are the one
+ * lookup API: Fetch fatals when the object has no extension attached, TryFetch is
+ * the null-tolerant form (also for objects that legitimately have none, e.g. during
+ * the savegame load window).
  *
  * Container<TX> tracks all live extension instances of one concrete class for the
  * bulk operations: allocation, removal, centralized savegame streaming, post-load
- * relinking and scenario clearing. TX must provide:
+ * relinking and scenario clearing. Its Find/TryFind lookups are deprecated in favor
+ * of the accessors above. TX must provide:
  *   using base_type = T;  (the extended game class)
  *   static constexpr DWORD Canary = (any dword value easily identifiable in a byte stream)
  */
@@ -65,6 +70,25 @@ public:
 	static AbstractExt* TryFetch(const AbstractClass* pThis)
 	{
 		return pThis ? Fetch(pThis) : nullptr;
+	}
+
+	// the typed accessors behind every extension class's own Fetch/TryFetch;
+	// select them with an explicit template argument
+	template <typename TExt>
+	static TExt* TryFetch(const AbstractClass* pThis)
+	{
+		return static_cast<TExt*>(TryFetch(pThis));
+	}
+
+	template <typename TExt>
+	static TExt* Fetch(const AbstractClass* pThis)
+	{
+		auto const pExt = TryFetch<TExt>(pThis);
+
+		if (!pExt)
+			Debug::FatalErrorAndExit("%s - object %p has no extension attached!\n", typeid(TExt).name(), pThis);
+
+		return pExt;
 	}
 
 	// writes the inline extension slot directly, for extensions that are not
@@ -157,6 +181,26 @@ protected:
 
 	// load any ini file: rules, game mode, scenario or map
 	virtual void LoadFromINIFile(CCINIClass* pINI) { }
+};
+
+// compatibility stand-in for classes whose single container was split into
+// per-leaf containers by the extension rework (TechnoExt, TechnoTypeExt):
+// lookup-only, forwards the old ExtMap calls to the Fetch/TryFetch accessors.
+// TBase is passed explicitly because TExt is incomplete at the declaration site.
+template <typename TExt, typename TBase>
+struct CompatExtMap
+{
+	[[deprecated("use the extension class's Fetch instead")]]
+	auto Find(const TBase* pThis) const
+	{
+		return TExt::Fetch(pThis);
+	}
+
+	[[deprecated("use the extension class's TryFetch instead")]]
+	auto TryFind(const TBase* pThis) const
+	{
+		return TExt::TryFetch(pThis);
+	}
 };
 
 // legacy standalone base for extensions whose owners are not AbstractClass-derived
@@ -429,6 +473,19 @@ private:
 		(*(uintptr_t*)((char*)key + T::ExtPointerOffset)) = 0;
 	}
 
+	extension_type_ptr FindRaw(const_base_type_ptr key) const
+	{
+		if constexpr (HasOffset<T>)
+			return GetExtensionPointer(key);
+		else
+			return this->MappedItems.find(key);
+	}
+
+	extension_type_ptr TryFindRaw(const_base_type_ptr key) const
+	{
+		return key ? FindRaw(key) : nullptr;
+	}
+
 protected:
 	// the unguarded allocation core, also used by load-time fixups that run while
 	// Phobos::IsLoadingSaveGame is still set
@@ -488,28 +545,34 @@ public:
 		return Allocate(key);
 	}
 
-	extension_type_ptr TryFind(const_base_type_ptr key) const
+	// lookups belong to the extension classes' own Fetch/TryFetch accessors; the
+	// container lookups remain only so pre-rework code keeps compiling. Map-mode
+	// containers (EBolt) have no accessors and keep using these legitimately.
+	[[deprecated("use the extension class's TryFetch instead")]]
+	extension_type_ptr TryFind(const_base_type_ptr key) const requires HasOffset<T>
 	{
-		if (!key)
-			return nullptr;
-
-		if constexpr (HasOffset<T>)
-			return GetExtensionPointer(key);
-		else
-			return this->MappedItems.find(key);
+		return TryFindRaw(key);
 	}
 
-	extension_type_ptr Find(const_base_type_ptr key) const
+	extension_type_ptr TryFind(const_base_type_ptr key) const requires (!HasOffset<T>)
 	{
-		if constexpr (HasOffset<T>)
-			return GetExtensionPointer(key);
-		else
-			return this->MappedItems.find(key);
+		return TryFindRaw(key);
+	}
+
+	[[deprecated("use the extension class's Fetch instead")]]
+	extension_type_ptr Find(const_base_type_ptr key) const requires HasOffset<T>
+	{
+		return FindRaw(key);
+	}
+
+	extension_type_ptr Find(const_base_type_ptr key) const requires (!HasOffset<T>)
+	{
+		return FindRaw(key);
 	}
 
 	void Remove(base_type_ptr key)
 	{
-		if (auto Item = Find(key))
+		if (auto Item = FindRaw(key))
 		{
 			auto& vec = this->Items;
 
@@ -597,7 +660,7 @@ public:
 
 	void LoadFromINI(const_base_type_ptr key, CCINIClass* pINI)
 	{
-		if (auto ptr = this->Find(key))
+		if (auto ptr = this->FindRaw(key))
 			ptr->LoadFromINI(pINI);
 	}
 
