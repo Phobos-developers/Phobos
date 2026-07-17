@@ -29,7 +29,6 @@ This serves as a changelog for when you just need to drop the new version in wit
 
 ### Version TBD (develop branch nightly builds)
 
-- The extension system has been reworked to follow the game's own class model. Savegames made with earlier Phobos builds are incompatible with this version.
 - `Splits.TargetCellRange` < 0 now applies special behaviour where the projectile does not consider nearby cells as additional targets if there are not enough techno targets to match `Cluster` count at all.
 - Combat light customizations introduced a bug that removed vanilla behaviour of ignoring detail level / framerate checks for colored combat light. This bug has been fixed but the previous behaviour can be restored by setting `CombatLightDetailLevel.CheckColored` on Warhead or globally under `[AudioVisual]`.
 - `[TechnoType] -> WarpAway=` has now been changed to set the animation when units are erased to maintain semantic consistency with `[General] -> WarpAway=`. The animation that was originally controlled by `[TechnoType] -> WarpAway=`, which played instead of `[General] -> WarpOut=` when a Techno is chronowarped by chronosphere, now needs to be specified using `[TechnoType] -> Chronoshift.WarpOut=`, which defaults to the value of `[TechnoType] -> WarpOut=`.
@@ -53,6 +52,7 @@ This serves as a changelog for when you just need to drop the new version in wit
   - `[WarheadType] -> KillWeapon.OnFirer.AffectsHouses` -> `[WarheadType] -> KillWeapon.OnFirer.AffectsHouse`
   - `[WarheadType/SuperWeaponType] -> Convert(N).AffectedHouses` -> `[WarheadType/SuperWeaponType] -> Convert(N).AffectsHouse`
   - `[SuperWeaponType] -> LimboKill.Affected` -> `[SuperWeaponType] -> LimboKill.AffectsHouse`
+- The extension system has been reworked to follow the game's own class model. Savegames made with earlier Phobos builds are incompatible with this version.
 
 ```{note}
 - If it is detected that you are using the old INI flags, a warning will be outputted to `debug.log`.
@@ -386,7 +386,6 @@ HideShakeEffects=false           ; boolean
 :open:
 
 #### New:
-- Reworked the extension system internals to form a class hierarchy mirroring the game's own, with centralized savegame serialization (by ZivDero)
 - [Allow using waypoints, area guard and attack move with aircraft](Fixed-or-Improved-Logics.md#extended-aircraft-missions) (by CrimRecya)
 - [Enhanced Straight trajectory](New-or-Enhanced-Logics.md#straight-trajectory) (by CrimRecya)
 - [Enable building production queue](User-Interface.md#building-production-queue) (by CrimRecya)
@@ -613,6 +612,7 @@ HideShakeEffects=false           ; boolean
 - [`ZAdjust` for Projectiles](Fixed-or-Improved-Logics.md#zadjust-for-projectiles) (by Noble_Fish)
 - [Adjust recruitable status on team member discharge](AI-Scripting-and-Mapping.md#adjust-recruitable-status-on-team-member-discharge) (by TaranDahl)
 - Customize whether or not passenger can fire out when the transport is moving (by Ollerus)
+- Reworked the extension system internals to form a class hierarchy mirroring the game's own, with centralized savegame serialization (by ZivDero)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
