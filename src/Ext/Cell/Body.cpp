@@ -87,10 +87,11 @@ void CellExt::ExtContainer::RelinkExtensionPointers()
 // =============================
 // container hooks
 
-// The static working cell (MapClass::InvalidCell) is re-initialized in place at the
-// end of every MapClass::SetMapDimensions call and never enters the game's savegame
-// stream (only cells installed in the map array do). It keeps a single untracked,
-// process-lifetime extension instead of a container-managed one.
+// The static working cell (MapClass::InvalidCell) is re-initialized in place by
+// MapClass::ReadBinary and at the end of every MapClass::SetMapDimensions call, and
+// never enters the game's savegame stream (only cells installed in the map array
+// do). It keeps a single untracked, process-lifetime extension instead of a
+// container-managed one.
 static std::unique_ptr<CellExt> InvalidCellExt;
 
 DEFINE_HOOK(0x47BDA1, CellClass_CTOR, 0x5)
@@ -147,5 +148,21 @@ DEFINE_HOOK(0x5663FC, MapClass_SetMapDimensions_ReinitCell, 0x5)
 	R->EAX(reinterpret_cast<CellClass*(__thiscall*)(CellClass*)>(0x47BBF0)(pItem));
 
 	return 0x566401;
+}
+
+// MapClass::SetMapDimensions value-copies whole cells around: it snapshots the old
+// map's cells into a temporary buffer, re-initializes the cells of the new map rect,
+// then copies the snapshot back into the shifted cells (or into the working cell) via
+// AbstractClass::operator=, which copies the extension slot too, leaving the slots
+// pointing at stale extensions. The container is the source of truth and the slots
+// are only a cache: rebuild them right after the copy-back, before the boundary cells
+// are deleted and their destructors read the slots again.
+DEFINE_HOOK(0x566AB7, MapClass_SetMapDimensions_PostRestore, 0x6)
+{
+	CellExt::ExtMap.ReattachAll();
+
+	AbstractExt::Attach(&MapClass::InvalidCell, InvalidCellExt.get());
+
+	return 0;
 }
 

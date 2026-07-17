@@ -577,6 +577,19 @@ public:
 		}
 	}
 
+	// Rewrites every tracked extension into its owner's inline slot. For owners the
+	// game value-copies or re-initializes in place (cells), the container is the
+	// source of truth and the slots are only a cache that has to be rebuilt after
+	// the game shuffles the objects around.
+	void ReattachAll()
+	{
+		if constexpr (HasOffset<T>)
+		{
+			for (const auto& item : this->Items)
+				SetExtensionPointer(item->OwnerObject(), item);
+		}
+	}
+
 	// Deletes every tracked extension and detaches it from its owner. Unlike Clear,
 	// this is regular teardown for owners the game re-initializes in place without
 	// destroying them (cells).
