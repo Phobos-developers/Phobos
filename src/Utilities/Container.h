@@ -466,7 +466,6 @@ public:
 		return this->AllocateUnchecked(key);
 	}
 
-
 	extension_type_ptr TryAllocate(base_type_ptr key, bool bCond, const std::string_view& nMessage)
 	{
 		if (!key || (!bCond && !nMessage.empty()))
@@ -718,8 +717,7 @@ public:
 	}
 
 	// After the swizzle manager has remapped all pointers, write each extension back
-	// into its owner's inline slot (the owner's loaded bytes still hold the stale
-	// save-time value).
+	// into its owner's inline slot (cleared when the owner was loaded).
 	void RelinkExtensionPointers()
 	{
 		if constexpr (HasOffset<T>)

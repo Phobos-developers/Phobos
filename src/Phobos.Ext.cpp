@@ -367,8 +367,8 @@ DEFINE_HOOK(0x4103D0, AbstractClass_Load_ClearExtensionSlot, 0x5)
 }
 
 // First instruction after SwizzleManagerClass::Process has remapped every registered
-// pointer: extension owners are valid again, restore the owners' inline ext pointers
-// (their loaded bytes still hold the stale save-time values).
+// pointer: extension owners are valid again, write the extensions back into their
+// owners' inline slots (cleared when the owners were loaded).
 DEFINE_HOOK(0x67E685, LoadGame_PostSwizzle_Phobos, 0x5)
 {
 	PhobosTypeRegistry::RelinkExtensions();
