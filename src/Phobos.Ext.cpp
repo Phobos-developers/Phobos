@@ -320,6 +320,12 @@ DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
 	Detach::NotifyAbstract(pInvalid, removed);
 	PhobosTypeRegistry::InvalidatePointer(pInvalid, removed);
 
+	if (removed)
+	{
+		if (auto const pObject = abstract_cast<ObjectClass*>(static_cast<AbstractClass*>(pInvalid)))
+			WeaponTypeExt::OnObjectRemoved(pObject);
+	}
+
 	return 0;
 }
 

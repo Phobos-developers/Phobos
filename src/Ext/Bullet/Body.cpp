@@ -7,6 +7,11 @@
 #include <Ext/EBolt/Body.h>
 #include <New/Entity/LaserTrailClass.h>
 
+namespace LaserRT
+{
+	void SetLaserTrackingData(LaserDrawClass* pLaser, TechnoClass* pShooter, AbstractClass* pTarget, int weaponIdx, PositionFollow mode, bool ignoreShooter);
+}
+
 BulletExt::ExtContainer BulletExt::ExtMap;
 
 void BulletExt::InterceptBullet(TechnoClass* pSource, BulletClass* pInterceptor)
@@ -204,10 +209,12 @@ inline void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pH
 
 	const auto pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 
+	LaserDrawClass* pLaser = nullptr;
+
 	if (pWeapon->IsHouseColor || pWeaponExt->Laser_IsSingleColor)
 	{
 		const auto black = ColorStruct { 0, 0, 0 };
-		const auto pLaser = GameCreate<LaserDrawClass>(pBullet->SourceCoords, BulletExt::GetTargetCoordsForFiring(pBullet),
+		pLaser = GameCreate<LaserDrawClass>(pBullet->SourceCoords, BulletExt::GetTargetCoordsForFiring(pBullet),
 			((pWeapon->IsHouseColor && pHouse) ? pHouse->LaserColor : pWeapon->LaserInnerColor), black, black, pWeapon->LaserDuration);
 
 		pLaser->IsHouseColor = true;
@@ -216,12 +223,33 @@ inline void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pH
 	}
 	else
 	{
-		const auto pLaser = GameCreate<LaserDrawClass>(pBullet->SourceCoords, BulletExt::GetTargetCoordsForFiring(pBullet),
+		pLaser = GameCreate<LaserDrawClass>(pBullet->SourceCoords, BulletExt::GetTargetCoordsForFiring(pBullet),
 			pWeapon->LaserInnerColor, pWeapon->LaserOuterColor, pWeapon->LaserOuterSpread, pWeapon->LaserDuration);
 
 		pLaser->IsHouseColor = false;
 		pLaser->Thickness = 3;
 		pLaser->IsSupported = false;
+	}
+
+	// LaserPositionUpdate
+	if (pLaser)
+	{
+		auto mode = pWeaponExt->LaserPositionUpdate;
+		const bool isSplit = BulletExt::Fetch(pBullet)->IsSplitFromAirburst;
+
+		if (isSplit)
+		{
+			if (mode == PositionFollow::Firer)
+				mode = PositionFollow::None;
+			else if (mode == PositionFollow::All)
+				mode = PositionFollow::Target;
+		}
+
+		if (mode != PositionFollow::None)
+		{
+			auto const pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
+			LaserRT::SetLaserTrackingData(pLaser, pBullet->Owner, pTarget, 0, mode, isSplit);
+		}
 	}
 }
 
@@ -487,6 +515,7 @@ void BulletExt::Serialize(T& Stm)
 		.Process(this->ParabombFallRate)
 		.Process(this->IsInstantDetonation)
 		.Process(this->FirepowerMult)
+		.Process(this->IsSplitFromAirburst)
 
 		.Process(this->Trajectory) // Keep this shit at last
 		;

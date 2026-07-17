@@ -900,7 +900,9 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 						radialFireCounter = (radialFireCounter + 1) % radialFireSegments;
 					}
 
-					BulletExt::Fetch(pBullet)->FirepowerMult = pBulletExt->FirepowerMult;
+					auto const pNewBulletExt = BulletExt::Fetch(pBullet);
+					pNewBulletExt->FirepowerMult = pBulletExt->FirepowerMult;
+					pNewBulletExt->IsSplitFromAirburst = true;
 					BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, coords, headToTarget, radialFire);
 					BulletExt::SimulatedFiringEffects(pBullet, pOwner, nullptr, useFiringEffects, true);
 				}
