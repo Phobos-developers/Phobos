@@ -390,6 +390,7 @@ public:
 		Valueable<bool> AllowBeaconHotKeyInSinglePlayer;
 
 		Valueable<int> StartFacing;
+		Valueable<bool> StartFacing_Random;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -722,6 +723,7 @@ public:
 			, AllowBeaconHotKeyInSinglePlayer { false }
 
 			, StartFacing { 0 }
+			, StartFacing_Random { false }
 		{ }
 
 		virtual ~ExtData() = default;

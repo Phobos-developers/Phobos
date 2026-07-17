@@ -1249,10 +1249,12 @@ Ares' [Battery Super Weapon](https://ares-developers.github.io/Ares-docs/new/sup
 In `rulesmd.ini`:
 ```ini
 [General]
-BuildingStartFacing=0  ; integer
+BuildingStartFacing=0             ; integer
+BuildingStartFacing.Random=false  ; boolean
 
-[SOMEBUILDING]         ; BuildingType
-StartFacing=           ; integer, defaults to [General] -> BuildingStartFacing
+[SOMEBUILDING]                    ; BuildingType
+StartFacing=                      ; integer, defaults to [General] -> BuildingStartFacing
+StartFacing.Random=               ; boolean, defaults to [General] -> BuildingStartFacing.Random
 ```
 
 ```{note}

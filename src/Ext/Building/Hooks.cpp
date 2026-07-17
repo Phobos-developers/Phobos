@@ -1301,9 +1301,20 @@ DEFINE_HOOK(0x44C976, BuildingClass_Mission_Repair_TankBunker, 0x5)
 
 #pragma endregion
 
+#pragma region BuildingStartFacing
+
 static int GetBuildingStartFacing(BuildingClass* pThis)
 {
 	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->StartFacing_Random.Get(RulesExt::Global()->StartFacing_Random))
+	{
+		auto pExt = BuildingExt::ExtMap.Find(pThis);
+		if (pExt->ConstructionStartFacing < 0)
+			pExt->ConstructionStartFacing = ScenarioClass::Instance->Random.RandomRanged(0, 255);
+		return pExt->ConstructionStartFacing;
+	}
+
 	return pTypeExt->StartFacing.Get(RulesExt::Global()->StartFacing);
 }
 
@@ -1330,3 +1341,5 @@ DEFINE_HOOK(0x449DE9, BuildingClass_Mission_Selling_StartFacing_Set, 0x6)
 	R->CH(static_cast<BYTE>(facing));
 	return 0x449DEF;
 }
+
+#pragma endregion

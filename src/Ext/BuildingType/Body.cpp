@@ -243,6 +243,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TurretAnim_FiringRate.Read(exINI, pSection, "TurretAnim.FiringRate");
 
 	this->StartFacing.Read(exINI, pSection, "StartFacing");
+	this->StartFacing_Random.Read(exINI, pSection, "StartFacing.Random");
 
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
 	{
@@ -421,6 +422,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TurretAnim_IdleRate)
 		.Process(this->TurretAnim_FiringFrames)
 		.Process(this->StartFacing)
+		.Process(this->StartFacing_Random)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)
