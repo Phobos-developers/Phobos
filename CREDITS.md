@@ -586,6 +586,7 @@ This page lists all the individual contributions to the project by their author.
   - Replace `BLOWFISH.DLL` using Red Alert source code
   - Adjust the dehardcoding of the 255 `OverlayType` limit to a different format
   - Voxel drawing invisible sections skip
+  - Extension system rework
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft
