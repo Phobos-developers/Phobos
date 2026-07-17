@@ -6,12 +6,16 @@
 #include <Utilities/Debug.h>
 #include <Utilities/AresHelper.h>
 
+#include <cctype>
 #include <cmath>
 #include <cstdarg>
 #include <cstdio>
+#include <cstdlib>
 #include <iterator>
 #include <dbghelp.h>
 #include <tlhelp32.h>
+
+std::vector<ExceptionHandler::ExceptionDatabaseEntry> ExceptionHandler::ExceptionDatabase;
 
 namespace
 {
@@ -549,6 +553,30 @@ bool ExceptionHandler::InitSymbols()
 		// which is where Phobos.pdb lives; gamemd addresses simply resolve to
 		// module+offset.
 		SymbolsInitialized = SymInitialize(GetCurrentProcess(), nullptr, TRUE) != FALSE;
+
+		// gamemd.exe carries no CodeView debug record, so dbghelp will never
+		// find a pdb for it on its own. If the user dropped one into the game
+		// directory, force-load it over the module - SYMOPT_LOAD_ANYTHING
+		// skips the signature checks.
+		if (SymbolsInitialized && GetFileAttributesA("gamemd.pdb") != INVALID_FILE_ATTRIBUTES)
+		{
+			const HMODULE hGame = GetModuleHandleA(nullptr);
+			const uintptr_t base = reinterpret_cast<uintptr_t>(hGame);
+			const auto pDosHeader = reinterpret_cast<const IMAGE_DOS_HEADER*>(hGame);
+			const auto pNtHeaders = reinterpret_cast<const IMAGE_NT_HEADERS*>(base + pDosHeader->e_lfanew);
+
+			SymUnloadModule64(GetCurrentProcess(), base);
+
+			if (SymLoadModuleEx(GetCurrentProcess(), nullptr, "gamemd.pdb", nullptr,
+				base, pNtHeaders->OptionalHeader.SizeOfImage, nullptr, 0))
+			{
+				Debug::Log("ExceptionHandler: loaded gamemd.pdb for symbol resolution.\n");
+			}
+			else
+			{
+				Debug::Log("ExceptionHandler: failed to load gamemd.pdb (error %u).\n", GetLastError());
+			}
+		}
 	}
 
 	const bool result = SymbolsInitialized;
@@ -557,6 +585,48 @@ bool ExceptionHandler::InitSymbols()
 		LeaveCriticalSection(&DbgHelpLock);
 
 	return result;
+}
+
+void ExceptionHandler::LoadExceptionDatabase()
+{
+	FILE* pFile = nullptr;
+	if (fopen_s(&pFile, "gamemd.edb", "r") != 0 || pFile == nullptr)
+		return;
+
+	char line[1200];
+
+	while (fgets(line, sizeof(line), pFile) != nullptr)
+	{
+		char* pCursor = line;
+		while (std::isspace(static_cast<unsigned char>(*pCursor)))
+			++pCursor;
+
+		if (*pCursor == '\0' || *pCursor == ';')
+			continue;
+
+		// Format (shared with Vinifera): 0xADDRESS,canContinue,ignore,description
+		char* pContext = nullptr;
+		char* pToken = strtok_s(pCursor, ",", &pContext);
+		if (pToken == nullptr || pToken[0] != '0' || (pToken[1] != 'x' && pToken[1] != 'X'))
+			continue;
+
+		const unsigned int address = std::strtoul(pToken + 2, nullptr, 16);
+
+		// CanContinue and Ignore are part of the format but not consulted.
+		if (strtok_s(nullptr, ",", &pContext) == nullptr || strtok_s(nullptr, ",", &pContext) == nullptr)
+			continue;
+
+		char* pDescription = strtok_s(nullptr, "\r\n", &pContext);
+		if (pDescription == nullptr)
+			continue;
+
+		ExceptionDatabase.push_back({ address, pDescription });
+	}
+
+	fclose(pFile);
+
+	Debug::Log("ExceptionHandler: loaded %u entries from gamemd.edb.\n",
+		static_cast<unsigned int>(ExceptionDatabase.size()));
 }
 
 bool ExceptionHandler::ModuleFromAddress(uintptr_t address, char* pNameOut, size_t nameSize, uintptr_t* pBaseOut)
@@ -685,6 +755,16 @@ void ExceptionHandler::BuildReport(unsigned int code, EXCEPTION_POINTERS* pExs)
 	}
 
 	GuardedCrashSite(pContext);
+
+	for (const auto& entry : ExceptionDatabase)
+	{
+		if (entry.Address == pContext->Eip)
+		{
+			Append("\r\nAdditional information:\r\n  %s\r\n", entry.Description.c_str());
+			break;
+		}
+	}
+
 	Append("\r\n");
 
 	// A symbol-free EBP-chain backtrace first (always works, even if dbghelp

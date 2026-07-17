@@ -296,6 +296,8 @@ void ExceptionHandler::Init()
 	// suspended and one of them might hold the loader lock.
 	InitSymbols();
 
+	LoadExceptionDatabase();
+
 	StartDumperThread();
 
 	Debug::Log("ExceptionHandler initialized.\n");
@@ -440,6 +442,13 @@ LONG __fastcall ExceptionHandler::Handle(int code, EXCEPTION_POINTERS* pExs)
 // 0x4C8FE0 itself leaves Syringe's hook bookkeeping alone and takes
 // precedence over Ares, whose noreturn hook at 0x4C8FE0 would otherwise
 // starve a Phobos hook chained after it.
+//
+// yrpp-spawner (CnCNet-Spawner.dll) pre-filters at the funclet ENTRY with
+// DEFINE_HOOK(0x6BE068, ..., 0x7): it recovers a few known crash EIPs by
+// returning through the funclet's retn at 0x6BE074 and falls through to
+// 0x6BE06F for everything else - so it keeps working, and unrecovered
+// crashes land here. This patch must stay exactly 5 bytes (0x6BE06F-0x6BE073)
+// so the retn at 0x6BE074 survives.
 
 // WinMain's __except filter funclet around Main_Game.
 DEFINE_FUNCTION_JUMP(LJMP, 0x6BE06F, ExceptionHandler::Handle);

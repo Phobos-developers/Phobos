@@ -277,6 +277,16 @@ When the exception handler is enabled, Phobos replaces the game's own crash hand
 
 Crash artifacts older than 5 days are cleaned up automatically. The `-FullCrashDump` command line arg makes the automatically written minidump a full memory dump (useful for unattended setups).
 
+Crash reports can be enriched with extra information:
+- If a `gamemd.pdb` file is present in the game directory, it is used to resolve game addresses to symbol names in the call stacks. `Phobos.pdb` (shipped with devbuilds and nightlies) is picked up automatically for Phobos's own addresses.
+- If a `gamemd.edb` exception database file is present in the game directory, its description for the faulting address (if any) is included in the report under "Additional information". The format is shared with Vinifera: one entry per line, `;` starts a comment.
+
+```text
+; address,can-continue,ignore,description (the two flags are parsed but not used)
+0x7BAEA1,0,0,A common crash in DSurface::GetPixel.
+0x5D6C21,0,0,The map is likely missing waypoint 90.
+```
+
 ```{note}
 The exception handler is enabled by default in all builds, including debug builds. An attached debugger still receives exceptions first, so this does not interfere with debugging; pass `-ExceptionHandler=false` if you want crashes to bypass the handler entirely.
 ```

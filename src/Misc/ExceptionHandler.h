@@ -2,6 +2,9 @@
 
 #include <Windows.h>
 
+#include <string>
+#include <vector>
+
 // Custom exception handler with a crash dialog, ported from Vinifera.
 // Replaces the game's Exception_Handler (0x4C8FE0) by patching its two
 // callsites, so it also takes precedence over Ares' hook at that address.
@@ -45,7 +48,17 @@ public:
 	static bool DbgHelpLockReady;
 	static bool SymbolsInitialized;
 
+	// Known-crash-address database (gamemd.edb, Vinifera-compatible format):
+	// matched against the faulting EIP to annotate the report.
+	struct ExceptionDatabaseEntry
+	{
+		unsigned int Address;
+		std::string Description;
+	};
+	static std::vector<ExceptionDatabaseEntry> ExceptionDatabase;
+
 	static void Append(const char* pFormat, ...);
+	static void LoadExceptionDatabase();
 	static bool InitSymbols();
 	static void EnsureDebugDirectory();
 	static void BuildReport(unsigned int code, EXCEPTION_POINTERS* pExs);
