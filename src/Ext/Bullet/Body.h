@@ -35,6 +35,7 @@ public:
 		int ParabombFallRate;
 		bool IsInstantDetonation;
 		double FirepowerMult;
+		bool IsSplitFromAirburst;
 
 		TrajectoryPointer Trajectory;
 
@@ -52,6 +53,7 @@ public:
 			, ParabombFallRate { 0 }
 			, IsInstantDetonation { false }
 			, FirepowerMult { 1.0 }
+			, IsSplitFromAirburst { false }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -144,6 +144,7 @@ public:
 		Valueable<ColorStruct> AirstrikeLineColor;
 		Valueable<int> AirstrikeLineZAdjust;
 
+		Valueable<bool> LaserPositionUpdate_StopOnFirerConvert;
 		Valueable<int> LaserZAdjust;
 		Valueable<int> EBoltZAdjust;
 		Valueable<bool> EBoltZAdjust_ClampInitialDepthForBuilding;
@@ -491,6 +492,7 @@ public:
 			, ColorAddUse8BitRGB { false }
 			, AirstrikeLineColor { { 255, 0, 0 } }
 			, AirstrikeLineZAdjust { 0 }
+			, LaserPositionUpdate_StopOnFirerConvert { false }
 			, LaserZAdjust { 0 }
 			, EBoltZAdjust { 0 }
 			, EBoltZAdjust_ClampInitialDepthForBuilding { true }
