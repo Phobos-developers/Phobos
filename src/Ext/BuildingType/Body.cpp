@@ -242,6 +242,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TurretAnim_IdleRate.Read(exINI, pSection, "TurretAnim.IdleRate");
 	this->TurretAnim_FiringRate.Read(exINI, pSection, "TurretAnim.FiringRate");
 
+	this->StartFacing.Read(exINI, pSection, "StartFacing");
+
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
 	{
 		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
@@ -418,6 +420,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TurretAnim_LowPowerFiringFrames)
 		.Process(this->TurretAnim_IdleRate)
 		.Process(this->TurretAnim_FiringFrames)
+		.Process(this->StartFacing)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)

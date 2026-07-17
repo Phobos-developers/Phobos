@@ -699,6 +699,7 @@ This page lists all the individual contributions to the project by their author.
   - Disable the credits indicator smooth transition
   - Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn`
   - `ZAdjust` for Projectiles
+  - Customize the initial facing of buildings
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

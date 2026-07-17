@@ -1300,3 +1300,15 @@ DEFINE_HOOK(0x44C976, BuildingClass_Mission_Repair_TankBunker, 0x5)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x449AFE, BuildingClass_MissionConstruction_StartFacing, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+	auto const pType = pThis->Type;
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+
+	int facing = pTypeExt->StartFacing.Get(RulesExt::Global()->StartFacing);
+
+	R->CH(static_cast<BYTE>(facing));
+	return 0x449B04;
+}

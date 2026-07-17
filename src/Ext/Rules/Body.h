@@ -388,6 +388,8 @@ public:
 		Valueable<bool> AutoRemoveEarliestBeacon;
 		Valueable<bool> AllowBeaconHotKeyInSinglePlayer;
 
+		Valueable<int> StartFacing;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -716,6 +718,8 @@ public:
 			, AutoRemoveEarliestBeacon { false }
 
 			, AllowBeaconHotKeyInSinglePlayer { false }
+
+			, StartFacing { 0 }
 		{ }
 
 		virtual ~ExtData() = default;
