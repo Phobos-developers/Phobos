@@ -63,12 +63,12 @@ public:
 
 	static VoxelAnimTypeExt* Fetch(const VoxelAnimTypeClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<VoxelAnimTypeExt>(pThis);
 	}
 
 	static VoxelAnimTypeExt* TryFetch(const VoxelAnimTypeClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<VoxelAnimTypeExt>(pThis);
 	}
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);

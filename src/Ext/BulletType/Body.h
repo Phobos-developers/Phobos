@@ -173,12 +173,12 @@ public:
 
 	static BulletTypeExt* Fetch(const BulletTypeClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<BulletTypeExt>(pThis);
 	}
 
 	static BulletTypeExt* TryFetch(const BulletTypeClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<BulletTypeExt>(pThis);
 	}
 
 	static double GetAdjustedGravity(BulletTypeClass* pType);

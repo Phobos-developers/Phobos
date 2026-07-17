@@ -52,12 +52,12 @@ public:
 
 	static OverlayTypeExt* Fetch(const OverlayTypeClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<OverlayTypeExt>(pThis);
 	}
 
 	static OverlayTypeExt* TryFetch(const OverlayTypeClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<OverlayTypeExt>(pThis);
 	}
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);

@@ -232,12 +232,12 @@ public:
 
 	static WeaponTypeExt* Fetch(const WeaponTypeClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<WeaponTypeExt>(pThis);
 	}
 
 	static WeaponTypeExt* TryFetch(const WeaponTypeClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<WeaponTypeExt>(pThis);
 	}
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);

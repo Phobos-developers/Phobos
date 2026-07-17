@@ -50,12 +50,12 @@ public:
 
 	static VoxelAnimExt* Fetch(const VoxelAnimClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<VoxelAnimExt>(pThis);
 	}
 
 	static VoxelAnimExt* TryFetch(const VoxelAnimClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<VoxelAnimExt>(pThis);
 	}
 	static void InitializeLaserTrails(VoxelAnimClass* pThis);
 	static bool LoadGlobals(PhobosStreamReader& Stm);

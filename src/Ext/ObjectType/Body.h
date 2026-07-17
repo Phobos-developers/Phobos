@@ -17,11 +17,11 @@ public:
 
 	static ObjectTypeExt* Fetch(const ObjectTypeClass* pThis)
 	{
-		return static_cast<ObjectTypeExt*>(AbstractExt::Fetch(pThis));
+		return AbstractExt::Fetch<ObjectTypeExt>(pThis);
 	}
 
 	static ObjectTypeExt* TryFetch(const ObjectTypeClass* pThis)
 	{
-		return pThis ? Fetch(pThis) : nullptr;
+		return AbstractExt::TryFetch<ObjectTypeExt>(pThis);
 	}
 };

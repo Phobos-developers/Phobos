@@ -18,11 +18,11 @@ public:
 
 	static FootExt* Fetch(const FootClass* pThis)
 	{
-		return static_cast<FootExt*>(AbstractExt::Fetch(pThis));
+		return AbstractExt::Fetch<FootExt>(pThis);
 	}
 
 	static FootExt* TryFetch(const FootClass* pThis)
 	{
-		return pThis ? Fetch(pThis) : nullptr;
+		return AbstractExt::TryFetch<FootExt>(pThis);
 	}
 };

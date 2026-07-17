@@ -104,12 +104,12 @@ public:
 
 	static SideExt* Fetch(const SideClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<SideExt>(pThis);
 	}
 
 	static SideExt* TryFetch(const SideClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<SideExt>(pThis);
 	}
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);

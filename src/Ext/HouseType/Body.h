@@ -54,12 +54,12 @@ public:
 
 	static HouseTypeExt* Fetch(const HouseTypeClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<HouseTypeExt>(pThis);
 	}
 
 	static HouseTypeExt* TryFetch(const HouseTypeClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<HouseTypeExt>(pThis);
 	}
 };
 

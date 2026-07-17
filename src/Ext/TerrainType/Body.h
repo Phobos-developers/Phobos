@@ -83,12 +83,12 @@ public:
 
 	static TerrainTypeExt* Fetch(const TerrainTypeClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<TerrainTypeExt>(pThis);
 	}
 
 	static TerrainTypeExt* TryFetch(const TerrainTypeClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<TerrainTypeExt>(pThis);
 	}
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);

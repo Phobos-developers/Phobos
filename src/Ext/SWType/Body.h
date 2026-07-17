@@ -268,12 +268,12 @@ public:
 
 	static SWTypeExt* Fetch(const SuperWeaponTypeClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<SWTypeExt>(pThis);
 	}
 
 	static SWTypeExt* TryFetch(const SuperWeaponTypeClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<SWTypeExt>(pThis);
 	}
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);

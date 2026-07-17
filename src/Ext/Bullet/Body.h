@@ -85,12 +85,12 @@ public:
 
 	static BulletExt* Fetch(const BulletClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<BulletExt>(pThis);
 	}
 
 	static BulletExt* TryFetch(const BulletClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<BulletExt>(pThis);
 	}
 
 	static void Detonate(const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse, AbstractClass* pTarget, bool isBright, WeaponTypeClass* pWeapon, WarheadTypeClass* pWarhead);

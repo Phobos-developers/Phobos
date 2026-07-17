@@ -106,12 +106,12 @@ public:
 
 	static TActionExt* Fetch(const TActionClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<TActionExt>(pThis);
 	}
 
 	static TActionExt* TryFetch(const TActionClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<TActionExt>(pThis);
 	}
 };
 

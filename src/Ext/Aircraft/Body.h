@@ -35,11 +35,11 @@ public:
 
 	static AircraftExt* Fetch(const AircraftClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<AircraftExt>(pThis);
 	}
 
 	static AircraftExt* TryFetch(const AircraftClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<AircraftExt>(pThis);
 	}
 };

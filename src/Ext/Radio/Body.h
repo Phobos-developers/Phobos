@@ -17,11 +17,11 @@ public:
 
 	static RadioExt* Fetch(const RadioClass* pThis)
 	{
-		return static_cast<RadioExt*>(AbstractExt::Fetch(pThis));
+		return AbstractExt::Fetch<RadioExt>(pThis);
 	}
 
 	static RadioExt* TryFetch(const RadioClass* pThis)
 	{
-		return pThis ? Fetch(pThis) : nullptr;
+		return AbstractExt::TryFetch<RadioExt>(pThis);
 	}
 };

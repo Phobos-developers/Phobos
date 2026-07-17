@@ -152,12 +152,12 @@ public:
 
 	static HouseExt* Fetch(const HouseClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<HouseExt>(pThis);
 	}
 
 	static HouseExt* TryFetch(const HouseClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<HouseExt>(pThis);
 	}
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);

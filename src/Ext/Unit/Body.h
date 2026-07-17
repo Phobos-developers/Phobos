@@ -32,11 +32,11 @@ public:
 
 	static UnitExt* Fetch(const UnitClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<UnitExt>(pThis);
 	}
 
 	static UnitExt* TryFetch(const UnitClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<UnitExt>(pThis);
 	}
 };

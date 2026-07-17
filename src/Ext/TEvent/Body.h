@@ -115,12 +115,12 @@ public:
 
 	static TEventExt* Fetch(const TEventClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<TEventExt>(pThis);
 	}
 
 	static TEventExt* TryFetch(const TEventClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<TEventExt>(pThis);
 	}
 };
 

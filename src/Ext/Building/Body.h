@@ -87,12 +87,12 @@ public:
 
 	static BuildingExt* Fetch(const BuildingClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<BuildingExt>(pThis);
 	}
 
 	static BuildingExt* TryFetch(const BuildingClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<BuildingExt>(pThis);
 	}
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);

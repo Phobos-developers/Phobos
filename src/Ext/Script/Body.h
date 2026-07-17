@@ -184,12 +184,12 @@ public:
 
 	static ScriptExt* Fetch(const ScriptClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<ScriptExt>(pThis);
 	}
 
 	static ScriptExt* TryFetch(const ScriptClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<ScriptExt>(pThis);
 	}
 
 	static void ProcessAction(TeamClass* pTeam);

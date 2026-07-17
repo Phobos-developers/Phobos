@@ -140,12 +140,12 @@ public:
 
 	static AnimTypeExt* Fetch(const AnimTypeClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<AnimTypeExt>(pThis);
 	}
 
 	static AnimTypeExt* TryFetch(const AnimTypeClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<AnimTypeExt>(pThis);
 	}
 
 	static void ProcessDestroyAnims(UnitClass* pThis, HouseClass* pKiller = nullptr);

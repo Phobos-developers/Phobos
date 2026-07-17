@@ -1065,13 +1065,16 @@ public:
 	// tracked by their own containers. The polymorphic fetch reads the inline slot directly.
 	static TechnoTypeExt* Fetch(const TechnoTypeClass* pThis)
 	{
-		return static_cast<TechnoTypeExt*>(AbstractExt::Fetch(pThis));
+		return AbstractExt::Fetch<TechnoTypeExt>(pThis);
 	}
 
 	static TechnoTypeExt* TryFetch(const TechnoTypeClass* pThis)
 	{
-		return pThis ? Fetch(pThis) : nullptr;
+		return AbstractExt::TryFetch<TechnoTypeExt>(pThis);
 	}
+
+	// deprecated stand-in for the pre-rework container of all TechnoTypeClass extensions
+	static inline CompatExtMap<TechnoTypeExt, TechnoTypeClass> ExtMap {};
 	static bool SelectWeaponMutex;
 
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0, int turIdx = -1);

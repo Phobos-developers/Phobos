@@ -30,11 +30,11 @@ public:
 
 	static InfantryExt* Fetch(const InfantryClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<InfantryExt>(pThis);
 	}
 
 	static InfantryExt* TryFetch(const InfantryClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<InfantryExt>(pThis);
 	}
 };

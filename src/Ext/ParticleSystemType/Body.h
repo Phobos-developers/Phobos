@@ -48,12 +48,12 @@ public:
 
 	static ParticleSystemTypeExt* Fetch(const ParticleSystemTypeClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<ParticleSystemTypeExt>(pThis);
 	}
 
 	static ParticleSystemTypeExt* TryFetch(const ParticleSystemTypeClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<ParticleSystemTypeExt>(pThis);
 	}
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);

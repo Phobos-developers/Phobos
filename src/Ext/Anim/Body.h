@@ -95,12 +95,12 @@ public:
 
 	static AnimExt* Fetch(const AnimClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<AnimExt>(pThis);
 	}
 
 	static AnimExt* TryFetch(const AnimClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<AnimExt>(pThis);
 	}
 
 	static bool SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner = false, bool defaultToInvokerOwner = false);

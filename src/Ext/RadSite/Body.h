@@ -75,12 +75,12 @@ public:
 
 	static RadSiteExt* Fetch(const RadSiteClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<RadSiteExt>(pThis);
 	}
 
 	static RadSiteExt* TryFetch(const RadSiteClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<RadSiteExt>(pThis);
 	}
 };
 

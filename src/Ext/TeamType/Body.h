@@ -49,12 +49,12 @@ public:
 
 	static TeamTypeExt* Fetch(const TeamTypeClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<TeamTypeExt>(pThis);
 	}
 
 	static TeamTypeExt* TryFetch(const TeamTypeClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<TeamTypeExt>(pThis);
 	}
 };
 

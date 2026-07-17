@@ -75,12 +75,12 @@ public:
 
 	static CellExt* Fetch(const CellClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<CellExt>(pThis);
 	}
 
 	static CellExt* TryFetch(const CellClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<CellExt>(pThis);
 	}
 };
 

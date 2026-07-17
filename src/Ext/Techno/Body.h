@@ -252,13 +252,16 @@ public:
 	// own containers. The polymorphic fetch reads the inline slot directly.
 	static TechnoExt* Fetch(const TechnoClass* pThis)
 	{
-		return static_cast<TechnoExt*>(AbstractExt::Fetch(pThis));
+		return AbstractExt::Fetch<TechnoExt>(pThis);
 	}
 
 	static TechnoExt* TryFetch(const TechnoClass* pThis)
 	{
-		return pThis ? Fetch(pThis) : nullptr;
+		return AbstractExt::TryFetch<TechnoExt>(pThis);
 	}
+
+	// deprecated stand-in for the pre-rework container of all TechnoClass extensions
+	static inline CompatExtMap<TechnoExt, TechnoClass> ExtMap {};
 
 	static UnitClass* Deployer;
 

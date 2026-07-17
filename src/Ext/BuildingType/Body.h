@@ -250,12 +250,12 @@ public:
 
 	static BuildingTypeExt* Fetch(const BuildingTypeClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<BuildingTypeExt>(pThis);
 	}
 
 	static BuildingTypeExt* TryFetch(const BuildingTypeClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<BuildingTypeExt>(pThis);
 	}
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);

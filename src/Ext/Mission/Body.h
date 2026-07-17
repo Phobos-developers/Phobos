@@ -17,11 +17,11 @@ public:
 
 	static MissionExt* Fetch(const MissionClass* pThis)
 	{
-		return static_cast<MissionExt*>(AbstractExt::Fetch(pThis));
+		return AbstractExt::Fetch<MissionExt>(pThis);
 	}
 
 	static MissionExt* TryFetch(const MissionClass* pThis)
 	{
-		return pThis ? Fetch(pThis) : nullptr;
+		return AbstractExt::TryFetch<MissionExt>(pThis);
 	}
 };

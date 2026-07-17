@@ -594,12 +594,12 @@ public:
 
 	static WarheadTypeExt* Fetch(const WarheadTypeClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<WarheadTypeExt>(pThis);
 	}
 
 	static WarheadTypeExt* TryFetch(const WarheadTypeClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<WarheadTypeExt>(pThis);
 	}
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);

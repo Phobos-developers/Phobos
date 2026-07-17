@@ -61,10 +61,7 @@ CellExt::ExtContainer::~ExtContainer() = default;
 // address, so pointers to it could be remapped like any other.
 void CellExt::ExtContainer::SaveInline(CellClass* pCell, IStream* pStm)
 {
-	auto const pExt = CellExt::TryFetch(pCell);
-
-	if (!pExt)
-		Debug::FatalErrorAndExit("SaveInline - saved cell has no extension!\n");
+	auto const pExt = CellExt::Fetch(pCell);
 
 	PhobosByteStream saver(sizeof(CellExt));
 	PhobosStreamWriter writer(saver);

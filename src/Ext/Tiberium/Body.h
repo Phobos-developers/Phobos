@@ -48,12 +48,12 @@ public:
 
 	static TiberiumExt* Fetch(const TiberiumClass* pThis)
 	{
-		return ExtMap.Find(pThis);
+		return AbstractExt::Fetch<TiberiumExt>(pThis);
 	}
 
 	static TiberiumExt* TryFetch(const TiberiumClass* pThis)
 	{
-		return ExtMap.TryFind(pThis);
+		return AbstractExt::TryFetch<TiberiumExt>(pThis);
 	}
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
