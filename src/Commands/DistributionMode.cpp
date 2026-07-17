@@ -465,6 +465,9 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 
 	const int count = ObjectClass::CurrentObjects.Count;
 
+	if (!Phobos::Config::AllowDistributionCommand_UseClick)
+		return 0;
+
 	if (count > 0)
 	{
 		GET_STACK(int, idxPath, STACK_OFFSET(0x18, -0x8));
@@ -501,8 +504,12 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 
 DEFINE_HOOK(0x6DBE74, TacticalClass_DrawAllRadialIndicators_DrawDistributionRange, 0x7)
 {
-	if (!DistributionModeHoldDownCommandClass::Enabled && SystemTimer::GetTime() - DistributionModeHoldDownCommandClass::ShowTime > 30)
+	if (!DistributionModeHoldDownCommandClass::IsDragDistributing
+		&& (!Phobos::Config::AllowDistributionCommand_UseClick
+			|| (!DistributionModeHoldDownCommandClass::Enabled && SystemTimer::GetTime() - DistributionModeHoldDownCommandClass::ShowTime > 30)))
+	{
 		return 0;
+	}
 
 	const float spreadRange = Phobos::Config::DistributionSpreadRange * Unsorted::CellWidthInPixels / Unsorted::LeptonsPerCell / Math::Sqrt2;
 	const auto filterMode = Phobos::Config::DistributionFilterMode;

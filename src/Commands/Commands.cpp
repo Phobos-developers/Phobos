@@ -56,7 +56,7 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 
 	if (Phobos::Config::AllowDistributionCommand)
 	{
-		if (Phobos::Config::AllowDistributionCommand_SpreadMode)
+		if (Phobos::Config::AllowDistributionCommand_SpreadModeHotKey)
 			MakeCommand<DistributionModeSpreadCommandClass>();
 
 		if (Phobos::Config::AllowDistributionCommand_FilterMode)

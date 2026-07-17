@@ -591,8 +591,9 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
 - Now you can also change the click action when hold down the specific hotkey if enabled `AllowDistributionCommand`. The new behavior is like using the selected objects one by one to click on each target within the spread range.
   - The targets within the spread range will be allocated equally to the selected technos. Only when the behavior to be performed by the current techno is the same as that displayed by the mouse will it be allocated. Otherwise, it will return to the original default behavior of the game (it will not be effective for technos in the air). This will display a range ring.
   - `DefaultDistributionSpreadRange` controls the initial spread range, which is a number that's corresponding to the amount of cell radius * 512.
-- `AllowDistributionCommand.SpreadMode` allows you to set spread range by hotkey. There're 4 tiers of range that can be selected by this hotkey which are identical to 0, 4, 8 and 16 cells.
+- `AllowDistributionCommand.SpreadModeHotKey` allows you to cycle through preset spread ranges by hotkey. There're 4 tiers of range that can be selected by this hotkey which are identical to 0, 4, 8 and 16 cells.
   - When the range is 0, it is the original default behavior of the game.
+- `AllowDistributionCommand.UseClick` controls whether distribution mode is activated by clicking on a target. When set to false, distribution mode only works via press-and-drag, and the range ring will only be shown while dragging.
 - You can also adjust spread range by using the mouse wheel while holding down the specific hotkey if `AllowDistributionCommand.SpreadModeScroll` set to true. This allows a more precise control of spread range that each step will increase/decrease it by `DistributionSpreadScrollStep`, with 20 cells as its maximum value.
 - `AllowDistributionCommand.SpreadModeDrag` allows you to adjust the spread range by pressing and dragging the mouse while holding down the specific hotkey. The drag distance from the starting point determines the spread range. This can naturally co-exist with `SpreadModeScroll`.
 - `AllowDistributionCommand.FilterMode` allows you to set target filter by hotkey, which default to `DefaultDistributionFilterMode`.
@@ -611,8 +612,10 @@ In `rulesmd.ini`:
 [GlobalControls]
 AllowSwitchNoMoveCommand=false                      ; boolean
 AllowDistributionCommand=false                      ; boolean
-AllowDistributionCommand.SpreadMode=true            ; boolean
+AllowDistributionCommand.SpreadModeHotKey=true       ; boolean
 AllowDistributionCommand.SpreadModeScroll=true      ; boolean
+AllowDistributionCommand.SpreadModeDrag=true        ; boolean
+AllowDistributionCommand.UseClick=true              ; boolean
 AllowDistributionCommand.FilterMode=true            ; boolean
 AllowDistributionCommand.AffectsAllies=true         ; boolean
 AllowDistributionCommand.AffectsEnemies=true        ; boolean

@@ -82,9 +82,10 @@ bool Phobos::Config::UnitPowerDrain = false;
 int Phobos::Config::SuperWeaponSidebar_RequiredSignificance = 0;
 bool Phobos::Config::AllowSwitchNoMoveCommand = false;
 bool Phobos::Config::AllowDistributionCommand = false;
-bool Phobos::Config::AllowDistributionCommand_SpreadMode = true;
+bool Phobos::Config::AllowDistributionCommand_SpreadModeHotKey = true;
 bool Phobos::Config::AllowDistributionCommand_SpreadModeScroll = true;
 bool Phobos::Config::AllowDistributionCommand_SpreadModeDrag = true;
+bool Phobos::Config::AllowDistributionCommand_UseClick = true;
 bool Phobos::Config::AllowDistributionCommand_FilterMode = true;
 bool Phobos::Config::AllowDistributionCommand_AffectsAllies = true;
 bool Phobos::Config::AllowDistributionCommand_AffectsEnemies = true;
@@ -322,9 +323,10 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 
 	Phobos::Config::AllowSwitchNoMoveCommand = pINI_RULESMD->ReadBool("GlobalControls", "AllowSwitchNoMoveCommand", Phobos::Config::AllowDistributionCommand);
 	Phobos::Config::AllowDistributionCommand = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommand", Phobos::Config::AllowDistributionCommand);
-	Phobos::Config::AllowDistributionCommand_SpreadMode = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommand.SpreadMode", Phobos::Config::AllowDistributionCommand_SpreadMode);
+	Phobos::Config::AllowDistributionCommand_SpreadModeHotKey = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommand.SpreadModeHotKey", Phobos::Config::AllowDistributionCommand_SpreadModeHotKey);
 	Phobos::Config::AllowDistributionCommand_SpreadModeScroll = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommand.SpreadModeScroll", Phobos::Config::AllowDistributionCommand_SpreadModeScroll);
 	Phobos::Config::AllowDistributionCommand_SpreadModeDrag = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommand.SpreadModeDrag", Phobos::Config::AllowDistributionCommand_SpreadModeDrag);
+	Phobos::Config::AllowDistributionCommand_UseClick = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommand.UseClick", Phobos::Config::AllowDistributionCommand_UseClick);
 	Phobos::Config::AllowDistributionCommand_FilterMode = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommand.FilterMode", Phobos::Config::AllowDistributionCommand_FilterMode);
 	Phobos::Config::AllowDistributionCommand_AffectsAllies = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommand.AffectsAllies", Phobos::Config::AllowDistributionCommand_AffectsAllies);
 	Phobos::Config::AllowDistributionCommand_AffectsEnemies = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommand.AffectsEnemies", Phobos::Config::AllowDistributionCommand_AffectsEnemies);
