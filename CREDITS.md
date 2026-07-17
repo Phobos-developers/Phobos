@@ -652,6 +652,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow the aircraft to enter area guard mission and not crash immediately without any airport
   - Allow merging AOE damage to buildings into one
   - Fix the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health
+  - RA1-Style multi-turret and multi-barrel
 - **Noble Fish**:
   - Documentation maintenance
   - Chinese documentation maintenance and translation
@@ -698,6 +699,7 @@ This page lists all the individual contributions to the project by their author.
   - Disable the credits indicator smooth transition
   - Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn`
   - `ZAdjust` for Projectiles
+  - Allow Laser drawing position update
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -826,6 +828,7 @@ This page lists all the individual contributions to the project by their author.
   - Auto-remove earliest beacon
   - Allow beacon placement hotkey in single player
   - Adjust recruitable status on team member discharge
+  - RA1-Style multi-turret and multi-barrel
   - Allow the unit to stop immediately if the target enters the range during ApproachTarget
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)

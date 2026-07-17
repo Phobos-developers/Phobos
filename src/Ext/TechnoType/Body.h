@@ -525,6 +525,13 @@ public:
 		Valueable<bool> Missile_Cruise;
 		Valueable<AnimTypeClass*> Missile_TakeOffAnim;
 		Valueable<int> Missile_TakeOffSeparation;
+		Nullable<bool> BarrelOverTurret;
+		Valueable<int> BarrelOffset;
+		Valueable<int> ExtraBarrelCount;
+		std::vector<int> ExtraBarrelOffsets;
+		Valueable<int> ExtraTurretCount;
+		std::vector<CoordStruct> ExtraTurretOffsets;
+		Valueable<int> BurstPerTurret;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -1004,6 +1011,15 @@ public:
 			, Missile_Cruise { false }
 			, Missile_TakeOffAnim { nullptr }
 			, Missile_TakeOffSeparation { 24 }
+				
+			, BarrelOverTurret { }
+			, BarrelOffset { 0 }
+			, ExtraBarrelCount { 0 }
+			, ExtraBarrelOffsets { }
+			, ExtraTurretCount { 0 }
+			, ExtraTurretOffsets { }
+			, BurstPerTurret { 0 }
+
 		{ }
 
 		virtual ~ExtData() = default;
@@ -1017,7 +1033,7 @@ public:
 
 		void LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSection, INI_EX& exArtINI, const char* pArtSection);
 
-		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
+		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0, int turIdx = -1);
 		void CalculateSpawnerRange();
 		bool IsSecondary(int nWeaponIndex) const;
 
@@ -1050,7 +1066,7 @@ public:
 	static ExtContainer ExtMap;
 	static bool SelectWeaponMutex;
 
-	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
+	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0, int turIdx = -1);
 	static TechnoTypeClass* GetTechnoType(ObjectTypeClass* pType);
 
 	static TechnoClass* CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType facing, DirType* secondaryFacing,
