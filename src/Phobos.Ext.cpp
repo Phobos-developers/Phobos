@@ -353,6 +353,19 @@ DEFINE_HOOK(0x67E826, LoadGame_Phobos, 0x6)
 	return 0;
 }
 
+// AbstractClass::Load restores the object image from the savegame as-is, including the
+// save-time extension pointer in the inline slot. Clear the slot right after the image
+// is read, so anything fetching an extension during the load window (before the
+// post-swizzle relink below) sees "no extension" instead of a stale pointer.
+DEFINE_HOOK(0x4103D0, AbstractClass_Load_ClearExtensionSlot, 0x5)
+{
+	GET(AbstractClass*, pThis, ESI);
+
+	AbstractExt::Attach(pThis, nullptr);
+
+	return 0;
+}
+
 // First instruction after SwizzleManagerClass::Process has remapped every registered
 // pointer: extension owners are valid again, restore the owners' inline ext pointers
 // (their loaded bytes still hold the stale save-time values).
