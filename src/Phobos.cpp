@@ -4,6 +4,8 @@
 #include <SessionClass.h>
 #include <Unsorted.h>
 
+#include <commctrl.h>
+
 #include <Misc/ExceptionHandler.h>
 
 #include <Utilities/Debug.h>
@@ -134,8 +136,84 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 	Debug::Log("ExceptionHandler is %s\n", dontSetExceptionHandler ? "not present" : "present");
 }
 
+// The game process is not DPI-aware (gamemd.exe has no manifest), so on
+// scaled displays Windows bitmap-stretches every window - blurry, chunky
+// dialogs and console. Vinifera gets this from SDL_Init; do it explicitly.
+static void SetDpiAwareness()
+{
+	// This runs before the game parses its command line, so check the raw one.
+	char cmdLine[1024];
+	strncpy_s(cmdLine, GetCommandLineA(), _TRUNCATE);
+	_strlwr_s(cmdLine);
+	if (strstr(cmdLine, "-dpiaware=false") || strstr(cmdLine, "-dpiaware=no") || strstr(cmdLine, "-dpiaware=0"))
+		return;
+
+	using SetProcessDpiAwarenessContext_t = BOOL(WINAPI*)(HANDLE);
+	using SetProcessDpiAwareness_t = HRESULT(WINAPI*)(int);
+
+	// Windows 10 1703+, then Windows 8.1, then Vista.
+	if (auto const pSetContext = reinterpret_cast<SetProcessDpiAwarenessContext_t>(
+		GetProcAddress(GetModuleHandleA("user32.dll"), "SetProcessDpiAwarenessContext")))
+	{
+		if (pSetContext(reinterpret_cast<HANDLE>(-4) /* DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 */))
+			return;
+	}
+
+	if (HMODULE const shcore = LoadLibraryA("shcore.dll"))
+	{
+		if (auto const pSetAwareness = reinterpret_cast<SetProcessDpiAwareness_t>(
+			GetProcAddress(shcore, "SetProcessDpiAwareness")))
+		{
+			if (SUCCEEDED(pSetAwareness(2 /* PROCESS_PER_MONITOR_DPI_AWARE */)))
+				return;
+		}
+	}
+
+	SetProcessDPIAware();
+}
+
+// gamemd.exe has no manifest, so its windows bind the ancient Common Controls
+// v5 and render Win9x-style. Activating Phobos' embedded manifest (resource 2,
+// carrying the comctl32 v6 dependency - see ExceptionHandler.rc) for the rest
+// of the process' lifetime makes every window created on the main thread use
+// modern visual styles: game dialogs, message boxes and the crash dialog.
+static void ActivateCommonControls6()
+{
+	char modulePath[MAX_PATH] = { };
+	GetModuleFileNameA(static_cast<HMODULE>(Phobos::hInstance), modulePath, sizeof(modulePath));
+
+	ACTCTXA actCtx = { };
+	actCtx.cbSize = sizeof(actCtx);
+	actCtx.dwFlags = ACTCTX_FLAG_RESOURCE_NAME_VALID;
+	actCtx.lpSource = modulePath;
+	actCtx.lpResourceName = MAKEINTRESOURCEA(2); // ISOLATIONAWARE_MANIFEST_RESOURCE_ID
+
+	HANDLE const hActCtx = CreateActCtxA(&actCtx);
+	ULONG_PTR cookie = 0;
+	if (hActCtx != INVALID_HANDLE_VALUE)
+		ActivateActCtx(hActCtx, &cookie); // deliberately never deactivated
+
+	// gamemd.exe has no manifest, so it loaded Common Controls v5 at startup
+	// and the v6 theming subclasses were never installed. With the context
+	// now active, loading comctl32 resolves to the v6 side-by-side assembly;
+	// InitCommonControlsEx then registers its themed classes. Without this,
+	// activating the manifest alone leaves controls rendering unthemed.
+	if (HMODULE const comctl = LoadLibraryA("comctl32.dll"))
+	{
+		using InitCommonControlsEx_t = BOOL(WINAPI*)(const INITCOMMONCONTROLSEX*);
+		if (auto const pInit = reinterpret_cast<InitCommonControlsEx_t>(GetProcAddress(comctl, "InitCommonControlsEx")))
+		{
+			INITCOMMONCONTROLSEX icc = { sizeof(icc), ICC_STANDARD_CLASSES | ICC_WIN95_CLASSES };
+			pInit(&icc);
+		}
+	}
+}
+
 void Phobos::ExeRun()
 {
+	SetDpiAwareness();
+	ActivateCommonControls6();
+
 	Patch::ApplyStatic();
 
 #ifdef DEBUG
