@@ -271,8 +271,14 @@ This feature may noticeably increase game loading time, depending on the size of
 
 You can turn on/off the exception handler of the game's main loop using the following command line arg: `-ExceptionHandler=boolean` where `boolean` is `(true|false|yes|no|1|0)`.
 
+When the exception handler is enabled, Phobos replaces the game's own crash handling (and Ares', if present) with its own exception handler, ported from [Vinifera](https://github.com/Vinifera-Developers/Vinifera). When the game crashes, it will:
+- write a minidump (`CRASHDUMP_*.DMP`) and a detailed crash report (`EXCEPT_*.TXT`) with registers, call stacks, a stack dump and the list of loaded modules to the game's `debug` subfolder (plus a copy of the debug log, if one is found);
+- show a dialog displaying the crash report, with buttons to quit, break into an attached debugger, or additionally save a full memory dump (`FULLDUMP_*.DMP`) - large, but the most useful to developers.
+
+Crash artifacts older than 5 days are cleaned up automatically. The `-FullCrashDump` command line arg makes the automatically written minidump a full memory dump (useful for unattended setups).
+
 ```{note}
-In **debug** builds the in-game exception handler is **turned off** by default.
+The exception handler is enabled by default in all builds, including debug builds. An attached debugger still receives exceptions first, so this does not interfere with debugging; pass `-ExceptionHandler=false` if you want crashes to bypass the handler entirely.
 ```
 
 ```{warning}

@@ -4,6 +4,8 @@
 #include <SessionClass.h>
 #include <Unsorted.h>
 
+#include <Misc/ExceptionHandler.h>
+
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
 #include <Utilities/Macro.h>
@@ -42,12 +44,9 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
 	bool foundInheritance = false;
 	bool foundInclude = false;
-	bool dontSetExceptionHandler =
-#ifdef DEBUG
-		true;
-#else
-		false;
-#endif // DEBUG
+	// Enabled by default in all builds: an attached debugger receives
+	// exceptions first, so the handler does not get in the way of debugging.
+	bool dontSetExceptionHandler = false;
 	Parser<bool> boolParser { };
 
 	// > 1 because the exe path itself counts as an argument, too!
@@ -82,6 +81,10 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 			bool v = dontSetExceptionHandler;
 			if (boolParser.TryParse(value.c_str(), &v))
 				dontSetExceptionHandler = !v;
+		}
+		if (_stricmp(pArg, "-FullCrashDump") == 0)
+		{
+			ExceptionHandler::GenerateFullCrashDump = true;
 		}
 	}
 
@@ -120,6 +123,12 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 	}
 
 	Game::DontSetExceptionHandler = dontSetExceptionHandler;
+
+	// Phobos replaces the game's exception handler with its own (see
+	// ExceptionHandler.cpp); it is reachable exactly when the game's main
+	// loop handler is armed, so it shares the -ExceptionHandler toggle.
+	if (!dontSetExceptionHandler)
+		ExceptionHandler::Init();
 
 	Debug::Log("Initialized version: " PRODUCT_VERSION "\n");
 	Debug::Log("ExceptionHandler is %s\n", dontSetExceptionHandler ? "not present" : "present");
