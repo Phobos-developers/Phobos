@@ -8,6 +8,11 @@ InfantryExt::ExtContainer InfantryExt::ExtMap;
 template <typename T>
 void InfantryExt::Serialize(T& Stm)
 {
+	Stm
+		.Process(this->SkipTargetChangeResetSequence)
+		.Process(this->HasDeployConverted)
+		.Process(this->HasUndeployConverted)
+		;
 }
 
 void InfantryExt::LoadFromStream(PhobosStreamReader& Stm)

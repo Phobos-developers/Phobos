@@ -53,7 +53,6 @@ public:
 	bool IsBurrowed;
 	bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
 	CDTimerClass DeployFireTimer;
-	bool SkipTargetChangeResetSequence;
 	bool ForceFullRearmDelay;
 	bool LastRearmWasFullDelay;
 	bool CanCloakDuringRearm; // Current rearm timer was started by DecloakToFire=no weapon.
@@ -111,8 +110,6 @@ public:
 	CoordStruct LastTargetCrd;
 	CDTimerClass LastTargetCrdClearTimer;
 
-	bool HasDeployConverted;
-	bool HasUndeployConverted;
 	std::vector<RecoilData> ExtraTurretRecoil;
 	std::vector<RecoilData> ExtraBarrelRecoil;
 
@@ -141,7 +138,6 @@ public:
 		, IsBurrowed { false }
 		, HasBeenPlacedOnMap { false }
 		, DeployFireTimer {}
-		, SkipTargetChangeResetSequence { false }
 		, ForceFullRearmDelay { false }
 		, LastRearmWasFullDelay { false }
 		, CanCloakDuringRearm { false }
@@ -184,8 +180,6 @@ public:
 		, HoverShutdown { false }
 		, LastTargetCrd { CoordStruct::Empty }
 		, LastTargetCrdClearTimer {}
-		, HasDeployConverted { false }
-		, HasUndeployConverted { false }
 		, ExtraTurretRecoil {}
 		, ExtraBarrelRecoil {}
 	{ }

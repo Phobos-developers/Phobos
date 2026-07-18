@@ -5,6 +5,7 @@
 #include <JumpjetLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
+#include <Ext/Infantry/Body.h>
 
 #pragma region SlaveManagerClass
 
@@ -803,7 +804,7 @@ DEFINE_HOOK(0x51B20E, InfantryClass_AssignTarget_FireOnce, 0x6)
 
 	if (!pTarget)
 	{
-		auto const pExt = TechnoExt::Fetch(pThis);
+		auto const pExt = InfantryExt::Fetch(pThis);
 
 		if (pExt->SkipTargetChangeResetSequence)
 		{

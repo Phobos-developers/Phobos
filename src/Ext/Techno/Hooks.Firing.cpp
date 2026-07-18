@@ -3,6 +3,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>
 #include <Ext/Bullet/Body.h>
+#include <Ext/Infantry/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
@@ -809,7 +810,7 @@ DEFINE_HOOK(0x6FF905, TechnoClass_FireAt_FireOnce, 0x6)
 	if (auto const pInf = abstract_cast<InfantryClass*, true>(pThis))
 	{
 		if (!WeaponTypeExt::Fetch(pWeapon)->FireOnce_ResetSequence)
-			TechnoExt::Fetch(pInf)->SkipTargetChangeResetSequence = true;
+			InfantryExt::Fetch(pInf)->SkipTargetChangeResetSequence = true;
 	}
 
 	return 0;

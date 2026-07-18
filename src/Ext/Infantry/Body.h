@@ -3,7 +3,7 @@
 #include <Ext/Foot/Body.h>
 #include <InfantryClass.h>
 
-// Concrete leaf extension for InfantryClass (empty; techno data lives in TechnoExt).
+// Concrete leaf extension for InfantryClass.
 class InfantryExt final : public FootExt
 {
 public:
@@ -11,7 +11,14 @@ public:
 
 	static constexpr DWORD Canary = 0xF1F2F3F4;
 
+	bool SkipTargetChangeResetSequence;
+	bool HasDeployConverted;
+	bool HasUndeployConverted;
+
 	explicit InfantryExt(InfantryClass* const OwnerObject) : FootExt(OwnerObject)
+		, SkipTargetChangeResetSequence { false }
+		, HasDeployConverted { false }
+		, HasUndeployConverted { false }
 	{ }
 
 	InfantryClass* OwnerObject() const
