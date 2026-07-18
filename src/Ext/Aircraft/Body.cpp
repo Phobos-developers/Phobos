@@ -5,9 +5,6 @@
 
 AircraftExt::ExtContainer AircraftExt::ExtMap;
 
-AircraftExt::ExtContainer::ExtContainer() : Container("AircraftClass") { }
-AircraftExt::ExtContainer::~ExtContainer() = default;
-
 // TODO: Implement proper extended AircraftClass.
 
 void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
@@ -171,6 +168,15 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 
 	return static_cast<DirType>(std::clamp(landingDir, 0, 255));
 }
+
+// =============================
+// container
+
+AircraftExt::ExtContainer::ExtContainer() : Container("AircraftClass") { }
+AircraftExt::ExtContainer::~ExtContainer() = default;
+
+// =============================
+// container hooks
 
 DEFINE_HOOK(0x413D30, AircraftClass_CTOR, 0x7)
 {

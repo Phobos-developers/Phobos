@@ -2,8 +2,14 @@
 
 InfantryTypeExt::ExtContainer InfantryTypeExt::ExtMap;
 
+// =============================
+// container
+
 InfantryTypeExt::ExtContainer::ExtContainer() : Container("InfantryTypeClass") { }
 InfantryTypeExt::ExtContainer::~ExtContainer() = default;
+
+// =============================
+// container hooks
 
 DEFINE_HOOK(0x5236B3, InfantryTypeClass_CTOR, 0xA)
 {

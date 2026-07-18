@@ -2,8 +2,14 @@
 
 AircraftTypeExt::ExtContainer AircraftTypeExt::ExtMap;
 
+// =============================
+// container
+
 AircraftTypeExt::ExtContainer::ExtContainer() : Container("AircraftTypeClass") { }
 AircraftTypeExt::ExtContainer::~ExtContainer() = default;
+
+// =============================
+// container hooks
 
 DEFINE_HOOK(0x41C8C0, AircraftTypeClass_CTOR, 0x5)
 {

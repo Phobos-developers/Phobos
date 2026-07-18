@@ -2,8 +2,14 @@
 
 UnitExt::ExtContainer UnitExt::ExtMap;
 
+// =============================
+// container
+
 UnitExt::ExtContainer::ExtContainer() : Container("UnitClass") { }
 UnitExt::ExtContainer::~ExtContainer() = default;
+
+// =============================
+// container hooks
 
 DEFINE_HOOK(0x7353D3, UnitClass_CTOR, 0x7)
 {
