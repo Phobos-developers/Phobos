@@ -19,6 +19,7 @@ bool ExceptionHandler::GenerateFullCrashDump = false;
 
 DWORD ExceptionHandler::MainThreadId = 0;
 char ExceptionHandler::DebugDirectory[MAX_PATH] = { '\0' };
+char ExceptionHandler::SnapshotDirectory[MAX_PATH] = { '\0' };
 
 char ExceptionHandler::ReportBuffer[ExceptionHandler::ReportBufferSize] = { '\0' };
 size_t ExceptionHandler::ReportLength = 0;
@@ -197,10 +198,43 @@ namespace
 			CloseHandle(reinterpret_cast<HANDLE>(thread));
 	}
 
-	void DeleteFilesOlderThan(int days, const char* pPattern)
+	void RemoveDirectoryRecursive(const char* pDir)
 	{
 		char search[MAX_PATH];
-		_snprintf_s(search, _TRUNCATE, "%s\\%s", ExceptionHandler::DebugDirectory, pPattern);
+		_snprintf_s(search, _TRUNCATE, "%s\\*", pDir);
+
+		WIN32_FIND_DATAA data;
+		HANDLE find = FindFirstFileA(search, &data);
+		if (find != INVALID_HANDLE_VALUE)
+		{
+			do
+			{
+				if (strcmp(data.cFileName, ".") == 0 || strcmp(data.cFileName, "..") == 0)
+					continue;
+
+				char child[MAX_PATH];
+				_snprintf_s(child, _TRUNCATE, "%s\\%s", pDir, data.cFileName);
+
+				if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+					RemoveDirectoryRecursive(child);
+				else
+					DeleteFileA(child);
+			}
+			while (FindNextFileA(find, &data));
+
+			FindClose(find);
+		}
+
+		RemoveDirectoryA(pDir);
+	}
+
+	// Remove crash snapshot folders (debug\snapshot-*) older than `days`. The
+	// CnCNet client also prunes debug\ (at 7 days), so this is a shorter-horizon
+	// cleanup for standalone runs.
+	void DeleteOldSnapshots(int days)
+	{
+		char search[MAX_PATH];
+		_snprintf_s(search, _TRUNCATE, "%s\\snapshot-*", ExceptionHandler::DebugDirectory);
 
 		FILETIME nowFt;
 		GetSystemTimeAsFileTime(&nowFt);
@@ -216,7 +250,7 @@ namespace
 
 		do
 		{
-			if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			if (!(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 				continue;
 
 			ULARGE_INTEGER written;
@@ -227,7 +261,7 @@ namespace
 			{
 				char path[MAX_PATH];
 				_snprintf_s(path, _TRUNCATE, "%s\\%s", ExceptionHandler::DebugDirectory, data.cFileName);
-				DeleteFileA(path);
+				RemoveDirectoryRecursive(path);
 			}
 		}
 		while (FindNextFileA(find, &data));
@@ -274,6 +308,23 @@ void ExceptionHandler::EnsureDebugDirectory()
 	CreateDirectoryA(DebugDirectory, nullptr);
 }
 
+void ExceptionHandler::EnsureSnapshotDirectory()
+{
+	EnsureDebugDirectory();
+
+	// One snapshot-<timestamp> folder per crash, named like Ares' so the
+	// CnCNet client picks it up. Built once from the crash time and reused
+	// for every artifact of the same crash (report, dumps, game log).
+	if (SnapshotDirectory[0] == '\0')
+	{
+		_snprintf_s(SnapshotDirectory, _TRUNCATE, "%s\\snapshot-%04u%02u%02u-%02u%02u%02u",
+			DebugDirectory, CrashTime.wYear, CrashTime.wMonth, CrashTime.wDay,
+			CrashTime.wHour, CrashTime.wMinute, CrashTime.wSecond);
+	}
+
+	CreateDirectoryA(SnapshotDirectory, nullptr);
+}
+
 void ExceptionHandler::Init()
 {
 	if (InitDone.exchange(true))
@@ -287,10 +338,7 @@ void ExceptionHandler::Init()
 	DbgHelpLockReady = true;
 
 	EnsureDebugDirectory();
-	DeleteFilesOlderThan(ArtifactMaxAgeDays, "EXCEPT_*.TXT");
-	DeleteFilesOlderThan(ArtifactMaxAgeDays, "CRASHDUMP_*.DMP");
-	DeleteFilesOlderThan(ArtifactMaxAgeDays, "FULLDUMP_*.DMP");
-	DeleteFilesOlderThan(ArtifactMaxAgeDays, "DEBUGLOG_*.LOG");
+	DeleteOldSnapshots(ArtifactMaxAgeDays);
 
 	// Load dbghelp and the symbol tables now - during a crash, threads are
 	// suspended and one of them might hold the loader lock.

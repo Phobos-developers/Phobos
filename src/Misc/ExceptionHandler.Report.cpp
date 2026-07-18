@@ -503,10 +503,7 @@ namespace
 				continue;
 
 			char destination[MAX_PATH];
-			_snprintf_s(destination, _TRUNCATE, "%s\\DEBUGLOG_%02u-%02u-%04u_%02u-%02u-%02u.LOG",
-				ExceptionHandler::DebugDirectory,
-				ExceptionHandler::CrashTime.wDay, ExceptionHandler::CrashTime.wMonth, ExceptionHandler::CrashTime.wYear,
-				ExceptionHandler::CrashTime.wHour, ExceptionHandler::CrashTime.wMinute, ExceptionHandler::CrashTime.wSecond);
+			_snprintf_s(destination, _TRUNCATE, "%s\\debug.log", ExceptionHandler::SnapshotDirectory);
 
 			CopyFileA(pCandidate, destination, FALSE);
 			break;
@@ -657,12 +654,10 @@ bool ExceptionHandler::ModuleFromAddress(uintptr_t address, char* pNameOut, size
 
 bool ExceptionHandler::WriteMinidump(EXCEPTION_POINTERS* pExs, DWORD crashedTid, bool fullMemory, char* pPathOut, size_t pathOutSize)
 {
-	EnsureDebugDirectory();
+	EnsureSnapshotDirectory();
 
-	_snprintf_s(pPathOut, pathOutSize, _TRUNCATE, "%s\\%s_%02u-%02u-%04u_%02u-%02u-%02u.DMP",
-		DebugDirectory, fullMemory ? "FULLDUMP" : "CRASHDUMP",
-		CrashTime.wDay, CrashTime.wMonth, CrashTime.wYear,
-		CrashTime.wHour, CrashTime.wMinute, CrashTime.wSecond);
+	_snprintf_s(pPathOut, pathOutSize, _TRUNCATE, "%s\\%s",
+		SnapshotDirectory, fullMemory ? "fulldump.dmp" : "crashdump.dmp");
 
 	HANDLE file = CreateFileA(pPathOut, GENERIC_WRITE, FILE_SHARE_READ, nullptr,
 		CREATE_ALWAYS, FILE_FLAG_WRITE_THROUGH, nullptr);
@@ -785,15 +780,15 @@ void ExceptionHandler::BuildReport(unsigned int code, EXCEPTION_POINTERS* pExs)
 	Append("Stack dump (* indicates possible code address):\r\n");
 	GuardedRawStackScan(pContext);
 
-	Append("\r\nA minidump has been saved to \"%s\".\r\n", MinidumpPath);
-	Append("When reporting this crash, please include this file, the minidump and your debug.log.\r\n");
+	Append("\r\nCrash artifacts have been saved to:\r\n  %s\r\n", SnapshotDirectory);
+	Append("When reporting this crash, please include that whole folder (report, minidump and logs).\r\n");
 
 	ReportFinished = true;
 }
 
 void ExceptionHandler::WriteCrashArtifacts(EXCEPTION_POINTERS* pExs, unsigned int code, DWORD crashedTid)
 {
-	EnsureDebugDirectory();
+	EnsureSnapshotDirectory();
 
 	// Minidump first - anything after this can fault, but the key artifact
 	// is already on disk.
@@ -801,9 +796,7 @@ void ExceptionHandler::WriteCrashArtifacts(EXCEPTION_POINTERS* pExs, unsigned in
 
 	BuildReport(code, pExs);
 
-	_snprintf_s(ReportPath, _TRUNCATE, "%s\\EXCEPT_%02u-%02u-%04u_%02u-%02u-%02u.TXT",
-		DebugDirectory, CrashTime.wDay, CrashTime.wMonth, CrashTime.wYear,
-		CrashTime.wHour, CrashTime.wMinute, CrashTime.wSecond);
+	_snprintf_s(ReportPath, _TRUNCATE, "%s\\except.txt", SnapshotDirectory);
 
 	HANDLE file = CreateFileA(ReportPath, GENERIC_WRITE, FILE_SHARE_READ, nullptr,
 		CREATE_ALWAYS, FILE_FLAG_WRITE_THROUGH, nullptr);

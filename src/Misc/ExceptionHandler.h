@@ -24,6 +24,9 @@ public:
 
 	static DWORD MainThreadId;
 	static char DebugDirectory[MAX_PATH];
+	// Per-crash Ares-style folder: debug\snapshot-<timestamp>\. The CnCNet
+	// client recognizes these and folds debug.log / syringe.log into them.
+	static char SnapshotDirectory[MAX_PATH];
 
 	static char ReportBuffer[ReportBufferSize];
 	static size_t ReportLength;
@@ -61,6 +64,7 @@ public:
 	static void LoadExceptionDatabase();
 	static bool InitSymbols();
 	static void EnsureDebugDirectory();
+	static void EnsureSnapshotDirectory();
 	static void BuildReport(unsigned int code, EXCEPTION_POINTERS* pExs);
 	static void WriteCrashArtifacts(EXCEPTION_POINTERS* pExs, unsigned int code, DWORD crashedTid);
 	static bool WriteMinidump(EXCEPTION_POINTERS* pExs, DWORD crashedTid, bool fullMemory, char* pPathOut, size_t pathOutSize);
