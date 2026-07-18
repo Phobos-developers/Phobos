@@ -3,6 +3,26 @@
 UnitExt::ExtContainer UnitExt::ExtMap;
 
 // =============================
+// load / save
+
+template <typename T>
+void UnitExt::Serialize(T& Stm)
+{
+}
+
+void UnitExt::LoadFromStream(PhobosStreamReader& Stm)
+{
+	FootExt::LoadFromStream(Stm);
+	this->Serialize(Stm);
+}
+
+void UnitExt::SaveToStream(PhobosStreamWriter& Stm)
+{
+	FootExt::SaveToStream(Stm);
+	this->Serialize(Stm);
+}
+
+// =============================
 // container
 
 UnitExt::ExtContainer::ExtContainer() : Container("UnitClass") { }

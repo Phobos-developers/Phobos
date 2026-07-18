@@ -168,6 +168,26 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 }
 
 // =============================
+// load / save
+
+template <typename T>
+void AircraftExt::Serialize(T& Stm)
+{
+}
+
+void AircraftExt::LoadFromStream(PhobosStreamReader& Stm)
+{
+	FootExt::LoadFromStream(Stm);
+	this->Serialize(Stm);
+}
+
+void AircraftExt::SaveToStream(PhobosStreamWriter& Stm)
+{
+	FootExt::SaveToStream(Stm);
+	this->Serialize(Stm);
+}
+
+// =============================
 // container
 
 AircraftExt::ExtContainer::ExtContainer() : Container("AircraftClass") { }

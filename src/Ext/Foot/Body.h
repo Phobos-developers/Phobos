@@ -3,7 +3,8 @@
 #include <Ext/Techno/Body.h>
 #include <FootClass.h>
 
-// Empty intermediate base mirroring FootClass in the extension hierarchy.
+// Intermediate base mirroring FootClass in the extension hierarchy; holds the
+// data shared by units, infantry and aircraft (but not buildings).
 // UnitExt / InfantryExt / AircraftExt derive from this.
 class FootExt : public TechnoExt
 {
@@ -25,4 +26,11 @@ public:
 	{
 		return AbstractExt::TryFetch<FootExt>(pThis);
 	}
+
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 };

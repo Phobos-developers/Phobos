@@ -3,6 +3,26 @@
 InfantryTypeExt::ExtContainer InfantryTypeExt::ExtMap;
 
 // =============================
+// load / save
+
+template <typename T>
+void InfantryTypeExt::Serialize(T& Stm)
+{
+}
+
+void InfantryTypeExt::LoadFromStream(PhobosStreamReader& Stm)
+{
+	TechnoTypeExt::LoadFromStream(Stm);
+	this->Serialize(Stm);
+}
+
+void InfantryTypeExt::SaveToStream(PhobosStreamWriter& Stm)
+{
+	TechnoTypeExt::SaveToStream(Stm);
+	this->Serialize(Stm);
+}
+
+// =============================
 // container
 
 InfantryTypeExt::ExtContainer::ExtContainer() : Container("InfantryTypeClass") { }

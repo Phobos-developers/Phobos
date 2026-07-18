@@ -3,6 +3,26 @@
 AircraftTypeExt::ExtContainer AircraftTypeExt::ExtMap;
 
 // =============================
+// load / save
+
+template <typename T>
+void AircraftTypeExt::Serialize(T& Stm)
+{
+}
+
+void AircraftTypeExt::LoadFromStream(PhobosStreamReader& Stm)
+{
+	TechnoTypeExt::LoadFromStream(Stm);
+	this->Serialize(Stm);
+}
+
+void AircraftTypeExt::SaveToStream(PhobosStreamWriter& Stm)
+{
+	TechnoTypeExt::SaveToStream(Stm);
+	this->Serialize(Stm);
+}
+
+// =============================
 // container
 
 AircraftTypeExt::ExtContainer::ExtContainer() : Container("AircraftTypeClass") { }
