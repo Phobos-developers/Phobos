@@ -8,6 +8,7 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/Foot/Body.h>
 #include <Ext/House/Body.h>
+#include <Ext/UnitType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Misc/FlyingStrings.h>
@@ -152,7 +153,7 @@ void TechnoExt::ApplyInterceptor()
 
 void TechnoExt::DepletedAmmoActions()
 {
-	auto const pTypeExt = this->TypeExtData;
+	auto const pTypeExt = static_cast<UnitTypeExt*>(this->TypeExtData);
 	const int min = pTypeExt->Ammo_AutoDeployMinimumAmount;
 	const int max = pTypeExt->Ammo_AutoDeployMaximumAmount;
 

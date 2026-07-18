@@ -89,13 +89,7 @@ public:
 	std::unique_ptr<DroppodTypeClass> DroppodType;
 	std::unique_ptr<TiberiumEaterTypeClass> TiberiumEaterType;
 
-	Nullable<float> HarvesterDumpAmount;
 
-	Valueable<int> Ammo_AddOnDeploy;
-	Valueable<int> Ammo_AutoDeployMinimumAmount;
-	Valueable<int> Ammo_AutoDeployMaximumAmount;
-	Valueable<int> Ammo_DeployUnlockMinimumAmount;
-	Valueable<int> Ammo_DeployUnlockMaximumAmount;
 
 	Nullable<AutoDeathBehavior> AutoDeath_Behavior;
 	ValueableVector<AnimTypeClass*> AutoDeath_VanishAnimation;
@@ -143,12 +137,7 @@ public:
 	Valueable<WeaponTypeClass*> WarpOutWeapon;
 	Valueable<bool> WarpInWeapon_UseDistanceAsDamage;
 
-	int SubterraneanSpeed;
-	Nullable<int> SubterraneanHeight;
 
-	ValueableVector<AnimTypeClass*> OreGathering_Anims;
-	ValueableVector<int> OreGathering_Tiberiums;
-	ValueableVector<int> OreGathering_FramesPerDir;
 
 	std::vector<std::vector<CoordStruct>> WeaponBurstFLHs;
 	std::vector<std::vector<CoordStruct>> EliteWeaponBurstFLHs;
@@ -158,7 +147,6 @@ public:
 
 	Valueable<bool> DestroyAnim_Random;
 
-	NullableVector<TerrainTypeClass*> DefaultMirageDisguises;
 	Valueable<bool> UseDisguiseMovementSpeed;
 
 	Nullable<int> OpenTopped_RangeBonus;
@@ -189,13 +177,6 @@ public:
 	Valueable<bool> JumpjetRotateOnCrash;
 	Nullable<int> ShadowSizeCharacteristicHeight;
 
-	Valueable<bool> IsSimpleDeployer_ConsiderPathfinding;
-	Nullable<LandTypeFlags> IsSimpleDeployer_DisallowedLandTypes;
-	Nullable<FacingType> DeployDir;
-	ValueableVector<AnimTypeClass*> DeployingAnims;
-	Valueable<bool> DeployingAnim_KeepUnitVisible;
-	Valueable<bool> DeployingAnim_ReverseForUndeploy;
-	Valueable<bool> DeployingAnim_UseUnitDrawer;
 
 	Valueable<CSFText> EnemyUIName;
 
@@ -255,18 +236,7 @@ public:
 	std::vector<Promotable<int>> InsigniaFrame_Passengers;
 	std::vector<Valueable<Vector3D<int>>> InsigniaFrames_Passengers;
 
-	Valueable<bool> JumpjetTilt;
-	Valueable<double> JumpjetTilt_ForwardAccelFactor;
-	Valueable<double> JumpjetTilt_ForwardSpeedFactor;
-	Valueable<double> JumpjetTilt_SidewaysRotationFactor;
-	Valueable<double> JumpjetTilt_SidewaysSpeedFactor;
 
-	Nullable<bool> TiltsWhenCrushes_Vehicles;
-	Nullable<bool> TiltsWhenCrushes_Overlays;
-	Nullable<double> CrushForwardTiltPerFrame;
-	Valueable<double> CrushOverlayExtraForwardTilt;
-	Valueable<double> CrushSlowdownMultiplier;
-	Valueable<bool> SkipCrushSlowdown;
 
 	Valueable<bool> DigitalDisplay_Disable;
 	ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
@@ -293,7 +263,6 @@ public:
 	Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
 	Valueable<bool> Convert_ResetMindControl;
 
-	Valueable<double> CrateGoodie_RerollChance;
 
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
@@ -332,7 +301,6 @@ public:
 	Nullable<bool> NoRearm_Temporal;
 	Nullable<bool> NoReload_UnderEMP;
 	Nullable<bool> NoReload_Temporal;
-	Nullable<bool> NoTurret_TrackTarget;
 
 	Nullable<AnimTypeClass*> Wake;
 	Nullable<AnimTypeClass*> Wake_Grapple;
@@ -362,8 +330,6 @@ public:
 
 	Nullable<TechnoTypeClass*> Image_ConditionYellow;
 	Nullable<TechnoTypeClass*> Image_ConditionRed;
-	Nullable<UnitTypeClass*> WaterImage_ConditionYellow;
-	Nullable<UnitTypeClass*> WaterImage_ConditionRed;
 	bool NeedDamagedImage;
 
 	Nullable<int> InitialSpawnsNumber;
@@ -374,11 +340,7 @@ public:
 	Valueable<CoordStruct> Spawner_RecycleCoord;
 	Valueable<bool> Spawner_RecycleOnTurret;
 
-	Nullable<bool> Sinkable;
-	Valueable<bool> Sinkable_SquidGrab;
-	Valueable<int> SinkSpeed;
 
-	Nullable<double> DamagedSpeed;
 
 	ValueableVector<AnimTypeClass*> Promote_VeteranAnimation;
 	ValueableVector<AnimTypeClass*> Promote_EliteAnimation;
@@ -407,9 +369,6 @@ public:
 	Nullable<ParticleSystemTypeClass*> Overload_ParticleSys;
 	Valueable<int> Overload_ParticleSysCount;
 
-	Valueable<bool> Harvester_CanGuardArea;
-	Valueable<bool> Harvester_CanGuardArea_RequireTarget;
-	Nullable<bool> HarvesterScanAfterUnload;
 
 
 	Valueable<double> FallingDownDamage;
@@ -422,8 +381,6 @@ public:
 
 	Valueable<bool> FiringForceScatter;
 
-	Valueable<int> FireUp;
-	Valueable<bool> FireUp_ResetInRetarget;
 	//Nullable<int> SecondaryFire;
 
 	Nullable<bool> DebrisTypes_Limit;
@@ -451,13 +408,9 @@ public:
 
 	ValueableVector<TechnoTypeClass*> TeamMember_ConsideredAs;
 
-	Nullable<bool> TurretResponse;
 
 	Vector2D<bool> AttackFriendlies;
 
-	Valueable<bool> Deploy_SkipPassengerUnload;
-	Valueable<bool> Deploy_NoPassenger;
-	Valueable<bool> Deploy_NoTiberium;
 
 	Nullable<int> DrainMoneyFrameDelay;
 	Nullable<int> DrainMoneyAmount;
@@ -480,7 +433,6 @@ public:
 
 	Nullable<bool> JumpjetClimbIgnoreBuilding;
 
-	Valueable<bool> HoverDrownable;
 	bool ExtraThreat_Enabled;
 	Nullable<double> ExtraThreat_IsThreat;
 	Valueable<bool> AlwaysConsideredThreat;
@@ -491,12 +443,8 @@ public:
 
 	Nullable<bool> Unsellable; // Ares 3.0
 
-	SHPStruct* TurretShape;
 
-	Nullable<int> HarvesterLoadRate;
-	Nullable<double> HarvesterDumpRate;
 
-	Nullable<bool> Parasite_AllowWaterExit;
 
 	Nullable<bool> BarrelOverTurret;
 	Valueable<int> BarrelOffset;
@@ -576,12 +524,7 @@ public:
 		, WarpOutWeapon {}
 		, WarpInWeapon_UseDistanceAsDamage { false }
 
-		, SubterraneanSpeed { -1 }
-		, SubterraneanHeight {}
 
-		, OreGathering_Anims {}
-		, OreGathering_Tiberiums {}
-		, OreGathering_FramesPerDir {}
 		, LaserTrailData {}
 		, AlternateFLH_OnTurret { true }
 		, AlternateFLH_ApplyVehicle { false }
@@ -614,21 +557,8 @@ public:
 		, JumpjetRotateOnCrash { true }
 		, ShadowSizeCharacteristicHeight { }
 
-		, IsSimpleDeployer_ConsiderPathfinding { false }
-		, IsSimpleDeployer_DisallowedLandTypes {}
-		, DeployDir {}
-		, DeployingAnims {}
-		, DeployingAnim_KeepUnitVisible { false }
-		, DeployingAnim_ReverseForUndeploy { true }
-		, DeployingAnim_UseUnitDrawer { true }
 
-		, HarvesterDumpAmount {}
 
-		, Ammo_AddOnDeploy { 0 }
-		, Ammo_AutoDeployMinimumAmount { -1 }
-		, Ammo_AutoDeployMaximumAmount { -1 }
-		, Ammo_DeployUnlockMinimumAmount { -1 }
-		, Ammo_DeployUnlockMaximumAmount { -1 }
 
 		, AutoDeath_Behavior { }
 		, AutoDeath_VanishAnimation {}
@@ -717,18 +647,7 @@ public:
 		, InsigniaFrame_Passengers {}
 		, InsigniaFrames_Passengers {}
 
-		, JumpjetTilt { false }
-		, JumpjetTilt_ForwardAccelFactor { 1.0 }
-		, JumpjetTilt_ForwardSpeedFactor { 1.0 }
-		, JumpjetTilt_SidewaysRotationFactor { 1.0 }
-		, JumpjetTilt_SidewaysSpeedFactor { 1.0 }
 
-		, TiltsWhenCrushes_Vehicles {}
-		, TiltsWhenCrushes_Overlays {}
-		, CrushSlowdownMultiplier { 0.2 }
-		, CrushForwardTiltPerFrame {}
-		, CrushOverlayExtraForwardTilt { 0.02 }
-		, SkipCrushSlowdown { false }
 
 		, DigitalDisplay_Disable { false }
 		, DigitalDisplayTypes {}
@@ -757,7 +676,6 @@ public:
 		, Convert_ComputerToHuman { }
 		, Convert_ResetMindControl { false }
 
-		, CrateGoodie_RerollChance { 0.0 }
 
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
@@ -796,7 +714,6 @@ public:
 		, NoRearm_Temporal {}
 		, NoReload_UnderEMP {}
 		, NoReload_Temporal {}
-		, NoTurret_TrackTarget {}
 
 		, Wake { }
 		, Wake_Grapple { }
@@ -828,8 +745,6 @@ public:
 
 		, Image_ConditionYellow { }
 		, Image_ConditionRed { }
-		, WaterImage_ConditionYellow { }
-		, WaterImage_ConditionRed { }
 		, NeedDamagedImage { false }
 
 		, InitialSpawnsNumber { }
@@ -840,11 +755,7 @@ public:
 		, Spawner_RecycleCoord { {0,0,0} }
 		, Spawner_RecycleOnTurret { false }
 
-		, Sinkable { }
-		, Sinkable_SquidGrab { true }
-		, SinkSpeed { 5 }
 
-		, DamagedSpeed { }
 
 		, SuppressKillWeapons { false }
 		, SuppressKillWeapons_Types { }
@@ -861,9 +772,6 @@ public:
 		, Overload_ParticleSys {}
 		, Overload_ParticleSysCount { 5 }
 
-		, Harvester_CanGuardArea { false }
-		, Harvester_CanGuardArea_RequireTarget { false }
-		, HarvesterScanAfterUnload {}
 
 
 		, FallingDownDamage { 1.0 }
@@ -875,8 +783,6 @@ public:
 		, Ammo_AutoConvertType { nullptr }
 
 
-		, FireUp { -1 }
-		, FireUp_ResetInRetarget { true }
 		//, SecondaryFire {}
 
 		, DebrisTypes_Limit {}
@@ -903,13 +809,9 @@ public:
 
 		, TeamMember_ConsideredAs {}
 
-		, TurretResponse {}
 
 		, AttackFriendlies { false,false }
 
-		, Deploy_SkipPassengerUnload { false }
-		, Deploy_NoPassenger { false }
-		, Deploy_NoTiberium { false }
 
 		, DrainMoneyFrameDelay {}
 		, DrainMoneyAmount {}
@@ -930,11 +832,9 @@ public:
 
 		, JumpjetClimbIgnoreBuilding {}
 
-		, HoverDrownable { true }
 
 		, Unsellable {}
 
-		, TurretShape { nullptr }
 		, ExtraThreat_Enabled { false }
 		, ExtraThreat_IsThreat {}
 		, AlwaysConsideredThreat { false }
@@ -943,10 +843,7 @@ public:
 		, ExtraThreatCoefficient_Facing {}
 		, ExtraThreatCoefficient_DistanceToLastTarget {}
 
-		, HarvesterLoadRate {}
-		, HarvesterDumpRate {}
 			
-		, Parasite_AllowWaterExit {}
 
 		, BarrelOverTurret { }
 		, BarrelOffset { 0 }
@@ -963,8 +860,6 @@ public:
 
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
-
-	void LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSection, INI_EX& exArtINI, const char* pArtSection);
 
 	void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0, int turIdx = -1);
 	void CalculateSpawnerRange();

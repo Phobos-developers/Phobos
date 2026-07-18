@@ -8,6 +8,7 @@
 #include <Ext/Infantry/Body.h>
 #include <Ext/InfantryType/Body.h>
 #include <Ext/Unit/Body.h>
+#include <Ext/UnitType/Body.h>
 
 #pragma region SlaveManagerClass
 
@@ -479,7 +480,7 @@ DEFINE_HOOK(0x728F89, TunnelLocomotionClass_Process_SubterraneanHeight1, 0x5)
 	GET(TechnoClass*, pLinkedTo, ECX);
 	GET(const int, height, EAX);
 
-	auto const pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
+	auto const pTypeExt = static_cast<UnitTypeExt*>(TechnoExt::Fetch(pLinkedTo)->TypeExtData);
 
 	if (height == pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight))
 		return Continue;
@@ -494,7 +495,7 @@ DEFINE_HOOK(0x728FC6, TunnelLocomotionClass_Process_SubterraneanHeight2, 0x5)
 	GET(TechnoClass*, pLinkedTo, ECX);
 	GET(const int, height, EAX);
 
-	auto const pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
+	auto const pTypeExt = static_cast<UnitTypeExt*>(TechnoExt::Fetch(pLinkedTo)->TypeExtData);
 
 	if (height <= pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight))
 		return Continue;
@@ -510,7 +511,7 @@ DEFINE_HOOK(0x728FF2, TunnelLocomotionClass_Process_SubterraneanHeight3, 0x6)
 	GET(const int, heightOffset, EAX);
 	REF_STACK(int, height, 0x14);
 
-	auto const pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
+	auto const pTypeExt = static_cast<UnitTypeExt*>(TechnoExt::Fetch(pLinkedTo)->TypeExtData);
 	const int subtHeight = pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight);
 	height -= heightOffset;
 
@@ -527,7 +528,7 @@ DEFINE_HOOK(0x7295E2, TunnelLocomotionClass_ProcessStateDigging_SubterraneanHeig
 	GET(TechnoClass*, pLinkedTo, EAX);
 	REF_STACK(int, height, STACK_OFFSET(0x44, -0x8));
 
-	auto const pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
+	auto const pTypeExt = static_cast<UnitTypeExt*>(TechnoExt::Fetch(pLinkedTo)->TypeExtData);
 	height = pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight);
 
 	return SkipGameCode;
@@ -560,7 +561,7 @@ DEFINE_HOOK(0x746A30, UnitClass_UpdateDisguise_DefaultMirageDisguises, 0x5)
 	enum { Apply = 0x746A6C };
 
 	GET(UnitClass*, pThis, ESI);
-	const auto& disguises = TechnoTypeExt::Fetch(pThis->Type)->DefaultMirageDisguises.GetElements(RulesClass::Instance->DefaultMirageDisguises);
+	const auto& disguises = UnitTypeExt::Fetch(pThis->Type)->DefaultMirageDisguises.GetElements(RulesClass::Instance->DefaultMirageDisguises);
 	TerrainTypeClass* pDisguiseAs = nullptr;
 
 	if (const int size = static_cast<int>(disguises.size()))
@@ -749,7 +750,7 @@ DEFINE_HOOK(0x7410BB, UnitClass_GetFireError_CheckFacingError, 0x8)
 
 	const auto pType = pThis->Type;
 
-	if (!TechnoTypeExt::Fetch(pType)->NoTurret_TrackTarget.Get(RulesExt::Global()->NoTurret_TrackTarget))
+	if (!UnitTypeExt::Fetch(pType)->NoTurret_TrackTarget.Get(RulesExt::Global()->NoTurret_TrackTarget))
 		return NoNeedToCheck;
 
 	return (fireError == FireError::REARM && !pType->Turret && !pThis->IsWarpingIn()) ? ContinueCheck : NoNeedToCheck;

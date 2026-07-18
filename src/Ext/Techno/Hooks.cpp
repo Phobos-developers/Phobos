@@ -11,6 +11,7 @@
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/Unit/Body.h>
+#include <Ext/UnitType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Utilities/Helpers.Alex.h>
@@ -813,7 +814,7 @@ DEFINE_HOOK_AGAIN(0x6A343F, LocomotionClass_Process_DamagedSpeedMultiplier, 0x6)
 DEFINE_HOOK(0x4B3DF0, LocomotionClass_Process_DamagedSpeedMultiplier, 0x6)// Drive
 {
 	GET(FootClass*, pLinkedTo, ECX);
-	const auto pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
+	const auto pTypeExt = static_cast<UnitTypeExt*>(TechnoExt::Fetch(pLinkedTo)->TypeExtData);
 
 	const double multiplier = pTypeExt->DamagedSpeed.Get(RulesExt::Global()->DamagedSpeed);
 	__asm fmul multiplier;
@@ -869,7 +870,7 @@ DEFINE_HOOK(0x62AB69, ParasiteClass_CanExistOnVictimCell_AllowWaterExit, 0x6)
 
 	GET(TechnoTypeClass*, pType, EAX);
 
-	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+	auto const pTypeExt = static_cast<UnitTypeExt*>(TechnoTypeExt::Fetch(pType));
 	const auto& globalVal = RulesExt::Global()->Parasite_AllowWaterExit;
 
 	if (pTypeExt->Parasite_AllowWaterExit.isset())
@@ -941,7 +942,7 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 
 			if (hoverShutdown)
 			{
-				if (pExt->TypeExtData->HoverDrownable)
+				if (static_cast<UnitTypeExt*>(pExt->TypeExtData)->HoverDrownable)
 				{
 					int damage = pThis->Health;
 					pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
@@ -1091,7 +1092,7 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 	{
 		if (!pUnit->Type->Turret && pUnit->CurrentFiringFrame != -1)
 		{
-			if (pExt->TypeExtData->FireUp_ResetInRetarget || !pThis->IsCloseEnough(pTarget, pThis->SelectWeapon(pTarget)))
+			if (static_cast<UnitTypeExt*>(pExt->TypeExtData)->FireUp_ResetInRetarget || !pThis->IsCloseEnough(pTarget, pThis->SelectWeapon(pTarget)))
 			{
 				pUnit->CurrentFiringFrame = -1;
 			}

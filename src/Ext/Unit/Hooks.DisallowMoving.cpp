@@ -2,6 +2,7 @@
 // Author: Starkku
 
 #include <Ext/Techno/Body.h>
+#include <Ext/UnitType/Body.h>
 
 DEFINE_HOOK(0x740A93, UnitClass_Mission_Move_DisallowMoving, 0x6)
 {
@@ -70,7 +71,7 @@ DEFINE_HOOK(0x736B60, UnitClass_Rotation_AI_DisallowMoving, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
-	const auto pTypeExt = TechnoTypeExt::Fetch(pThis->Type);
+	const auto pTypeExt = UnitTypeExt::Fetch(pThis->Type);
 	return (pTypeExt->TurretResponse.isset() ? !pTypeExt->TurretResponse.Get() : TechnoExt::CannotMove(pThis)) ? 0x736AFB : 0;
 }
 

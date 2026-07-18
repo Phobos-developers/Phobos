@@ -266,8 +266,8 @@ public:
 	static UnitTypeClass* GetUnitTypeExtra(UnitClass* pUnit, TechnoTypeExt* pData);
 	static AircraftTypeClass* GetAircraftTypeExtra(AircraftClass* pAircraft);
 	static bool CannotMove(UnitClass* pThis);
-	static bool HasAmmoToDeploy(TechnoClass* pThis);
-	static void HandleOnDeployAmmoChange(TechnoClass* pThis, int maxAmmoOverride = -1);
+	static bool HasAmmoToDeploy(UnitClass* pThis);
+	static void HandleOnDeployAmmoChange(UnitClass* pThis, int maxAmmoOverride = -1);
 	static bool SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue, bool alwaysCheckLandTypes);
 	static void ShowPromoteAnim(TechnoClass* pThis);
 	static void ClickedApproachObject(FootClass* pThis, ObjectClass* pObject);

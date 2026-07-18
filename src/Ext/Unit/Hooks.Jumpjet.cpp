@@ -2,6 +2,7 @@
 
 #include <Ext/Techno/Body.h>
 #include <Ext/Foot/Body.h>
+#include <Ext/UnitType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
 
@@ -69,7 +70,7 @@ DEFINE_HOOK(0x736E6E, UnitClass_UpdateFiring_OmniFireTurnToTarget, 0x9)
 	if ((pType->DeployFire || pType->DeployFireWeapon == wpIdx) && pThis->CurrentMission == Mission::Unload)
 		return 0;
 
-	if (err == FireError::REARM && !TechnoTypeExt::Fetch(pType)->NoTurret_TrackTarget.Get(RulesExt::Global()->NoTurret_TrackTarget))
+	if (err == FireError::REARM && !UnitTypeExt::Fetch(pType)->NoTurret_TrackTarget.Get(RulesExt::Global()->NoTurret_TrackTarget))
 		return 0;
 
 	auto const pWpn = pThis->GetWeapon(wpIdx)->WeaponType;

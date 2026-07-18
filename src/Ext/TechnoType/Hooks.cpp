@@ -1,6 +1,7 @@
 #include "Body.h"
 #include <Ext/House/Body.h>
 #include <Ext/AnimType/Body.h>
+#include <Ext/UnitType/Body.h>
 
 DEFINE_HOOK(0x73D223, UnitClass_DrawIt_OreGath, 0x6)
 {
@@ -10,7 +11,7 @@ DEFINE_HOOK(0x73D223, UnitClass_DrawIt_OreGath, 0x6)
 	LEA_STACK(Point2D*, pLocation, STACK_OFFSET(0x50, -0x18));
 	GET_STACK(const int, nBrightness, STACK_OFFSET(0x50, 0x4));
 
-	auto const pData = TechnoTypeExt::Fetch(pThis->Type);
+	auto const pData = UnitTypeExt::Fetch(pThis->Type);
 
 	ConvertClass* pDrawer = FileSystem::ANIM_PAL;
 	SHPStruct* pSHP = FileSystem::OREGATH_SHP;
@@ -148,7 +149,7 @@ DEFINE_HOOK(0x747A2E, UnitTypeClass_ReadINI_TurretShape, 0x6)
 		}
 
 		if (const auto pShape = FileSystem::LoadSHPFile(Buffer))
-			TechnoTypeExt::Fetch(pType)->TurretShape = pShape;
+			UnitTypeExt::Fetch(pType)->TurretShape = pShape;
 	}
 
 	return 0;

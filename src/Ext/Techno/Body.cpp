@@ -7,6 +7,7 @@
 #include <Ext/House/Body.h>
 #include <Ext/Infantry/Body.h>
 #include <Ext/Unit/Body.h>
+#include <Ext/UnitType/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Event/Body.h>
@@ -618,7 +619,7 @@ UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit, TechnoTypeExt* pDat
 	{
 		if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
 		{
-			if (auto const imageYellow = pData->WaterImage_ConditionYellow)
+			if (auto const imageYellow = static_cast<UnitTypeExt*>(pData)->WaterImage_ConditionYellow)
 				return imageYellow;
 		}
 		else if (auto const imageYellow = pData->Image_ConditionYellow)
@@ -630,9 +631,9 @@ UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit, TechnoTypeExt* pDat
 	{
 		if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
 		{
-			if (auto const imageRed = pData->WaterImage_ConditionRed)
+			if (auto const imageRed = static_cast<UnitTypeExt*>(pData)->WaterImage_ConditionRed)
 				return imageRed;
-			else if (auto const imageYellow = pData->WaterImage_ConditionYellow)
+			else if (auto const imageYellow = static_cast<UnitTypeExt*>(pData)->WaterImage_ConditionYellow)
 				return imageYellow;
 		}
 		else if (auto const imageRed = pData->Image_ConditionRed)
@@ -804,9 +805,9 @@ bool TechnoExt::CannotMove(UnitClass* pThis)
 	return false;
 }
 
-bool TechnoExt::HasAmmoToDeploy(TechnoClass* pThis)
+bool TechnoExt::HasAmmoToDeploy(UnitClass* pThis)
 {
-	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+	const auto pTypeExt = UnitTypeExt::Fetch(pThis->Type);
 
 	const int min = pTypeExt->Ammo_DeployUnlockMinimumAmount;
 	const int max = pTypeExt->Ammo_DeployUnlockMaximumAmount;
@@ -822,9 +823,9 @@ bool TechnoExt::HasAmmoToDeploy(TechnoClass* pThis)
 	return false;
 }
 
-void TechnoExt::HandleOnDeployAmmoChange(TechnoClass* pThis, int maxAmmoOverride)
+void TechnoExt::HandleOnDeployAmmoChange(UnitClass* pThis, int maxAmmoOverride)
 {
-	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+	const auto pTypeExt = UnitTypeExt::Fetch(pThis->Type);
 
 	if (const int add = pTypeExt->Ammo_AddOnDeploy)
 	{
@@ -847,7 +848,7 @@ bool TechnoExt::SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValu
 	if (!pType->IsSimpleDeployer)
 		return defaultValue;
 
-	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+	auto const pTypeExt = UnitTypeExt::Fetch(pType);
 
 	if (alwaysCheckLandTypes || pTypeExt->IsSimpleDeployer_ConsiderPathfinding)
 	{

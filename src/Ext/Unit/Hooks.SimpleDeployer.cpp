@@ -4,11 +4,12 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/Unit/Body.h>
+#include <Ext/UnitType/Body.h>
 #include <Utilities/AresFunctions.h>
 
 static __forceinline bool HasDeployingAnim(TechnoTypeClass* pType)
 {
-	return pType->DeployingAnim || TechnoTypeExt::Fetch(pType)->DeployingAnims.size() > 0;
+	return pType->DeployingAnim || static_cast<UnitTypeExt*>(TechnoTypeExt::Fetch(pType))->DeployingAnims.size() > 0;
 }
 
 static inline bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
@@ -34,7 +35,7 @@ static inline bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 	}
 
 	// Facing restrictions.
-	auto const pTypeExt = TechnoExt::Fetch(pUnit)->TypeExtData;
+	auto const pTypeExt = static_cast<UnitTypeExt*>(TechnoExt::Fetch(pUnit)->TypeExtData);
 	auto const defaultFacing = (FacingType)(RulesClass::Instance->DeployDir >> 5);
 	auto const facing = pTypeExt->DeployDir.Get(defaultFacing);
 
@@ -71,7 +72,7 @@ static inline void CreateDeployingAnim(UnitClass* pUnit, bool isDeploying)
 	if (!pUnit->DeployAnim)
 	{
 		auto const pType = pUnit->Type;
-		auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+		auto const pTypeExt = UnitTypeExt::Fetch(pType);
 		auto pAnimType = pType->DeployingAnim;
 
 		if (pTypeExt->DeployingAnims.size() > 0)
@@ -384,7 +385,7 @@ DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
 
 	if (pThis->Deploying || pThis->Undeploying)
 	{
-		const auto pTypeExt = TechnoTypeExt::Fetch(pThis->Type);
+		const auto pTypeExt = UnitTypeExt::Fetch(pThis->Type);
 
 		if (pTypeExt->DeployingAnim_KeepUnitVisible || (pThis->Deploying && !pThis->DeployAnim))
 			return Continue;

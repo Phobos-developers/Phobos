@@ -1,11 +1,12 @@
 #include <Ext/Techno/Body.h>
+#include <Ext/UnitType/Body.h>
 
 DEFINE_HOOK(0x7364DC, UnitClass_Update_SinkSpeed, 0x7)
 {
 	GET(UnitClass* const, pThis, ESI);
 	GET(const int, CoordZ, EDX);
 
-	auto const pTypeExt = TechnoTypeExt::Fetch(pThis->Type);
+	auto const pTypeExt = UnitTypeExt::Fetch(pThis->Type);
 	R->EDX(CoordZ - (pTypeExt->SinkSpeed - 5));
 	return 0;
 }
@@ -16,7 +17,7 @@ DEFINE_HOOK(0x737DE2, UnitClass_ReceiveDamage_Sinkable, 0x6)
 
 	GET(UnitTypeClass*, pType, EAX);
 
-	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+	auto const pTypeExt = UnitTypeExt::Fetch(pType);
 	const bool shouldSink = pType->Weight > RulesClass::Instance->ShipSinkingWeight && pType->Naval && !pType->Underwater && !pType->Organic;
 
 	return pTypeExt->Sinkable.Get(shouldSink) ? GoOtherChecks : NoSink;
@@ -31,8 +32,9 @@ DEFINE_HOOK(0x629C67, ParasiteClass_UpdateSquid_SinkableBySquid, 0x9)
 
 	const auto pVictimTypeExt = TechnoExt::Fetch(pVictim)->TypeExtData;
 	const auto pOwner = pThis->Owner;
+	const bool isUnit = pVictim->WhatAmI() == AbstractType::Unit;
 
-	if (pVictimTypeExt->Sinkable_SquidGrab || pVictim->WhatAmI() != AbstractType::Unit)
+	if ((isUnit && static_cast<UnitTypeExt*>(pVictimTypeExt)->Sinkable_SquidGrab) || !isUnit)
 	{
 		pVictim->IsSinking = true;
 		pVictim->Destroyed(pOwner);
