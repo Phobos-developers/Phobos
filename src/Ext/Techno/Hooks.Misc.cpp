@@ -95,8 +95,8 @@ DEFINE_HOOK(0x6B72FE, SpawnerManagerClass_AI_MissileCheck, 0x9)
 		? NoSpawn : SpawnMissile;
 }
 
-DEFINE_HOOK_AGAIN(0x6B73BE, SpawnManagerClass_AI_SpawnTimer, 0x6)
-DEFINE_HOOK(0x6B73AD, SpawnManagerClass_AI_SpawnTimer, 0x5)
+DEFINE_HOOK_AGAIN(0x6B73A8, SpawnManagerClass_AI_SpawnTimer, 0x5)
+DEFINE_HOOK(0x6B73B9, SpawnManagerClass_AI_SpawnTimer, 0x5)
 {
 	GET(SpawnManagerClass* const, pThis, ESI);
 
@@ -105,7 +105,10 @@ DEFINE_HOOK(0x6B73AD, SpawnManagerClass_AI_SpawnTimer, 0x5)
 		auto const pTypeExt = TechnoExt::ExtMap.Find(pOwner)->TypeExtData;
 
 		if (pTypeExt->Spawner_DelayFrames.isset())
-			R->ECX(pTypeExt->Spawner_DelayFrames.Get());
+		{
+			pThis->SpawnTimer.Start(pTypeExt->Spawner_DelayFrames.Get());
+			return 0x6B73C4;
+		}
 	}
 
 	return 0;
