@@ -198,35 +198,6 @@ void AnimTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
-AnimTypeExt::ExtContainer::ExtContainer() : Container("AnimTypeClass") { }
-AnimTypeExt::ExtContainer::~ExtContainer() = default;
-
-DEFINE_HOOK(0x42784B, AnimTypeClass_CTOR, 0x5)
-{
-	GET(AnimTypeClass*, pItem, EAX);
-
-	AnimTypeExt::ExtMap.TryAllocate(pItem);
-	return 0;
-}
-
-DEFINE_HOOK(0x428EA8, AnimTypeClass_SDDTOR, 0x5)
-{
-	GET(AnimTypeClass*, pItem, ECX);
-
-	AnimTypeExt::ExtMap.Remove(pItem);
-	return 0;
-}
-
-//DEFINE_HOOK_AGAIN(0x4287E9, AnimTypeClass_LoadFromINI, 0xA)// Section dont exist!
-DEFINE_HOOK(0x4287DC, AnimTypeClass_LoadFromINI, 0xA)
-{
-	GET(AnimTypeClass*, pItem, ESI);
-	GET_STACK(CCINIClass*, pINI, 0xBC);
-
-	AnimTypeExt::ExtMap.LoadFromINI(pItem, pINI);
-	return 0;
-}
-
 namespace detail
 {
 	template <>
@@ -256,4 +227,39 @@ namespace detail
 		}
 		return false;
 	}
+}
+
+// =============================
+// container
+
+AnimTypeExt::ExtContainer::ExtContainer() : Container("AnimTypeClass") { }
+AnimTypeExt::ExtContainer::~ExtContainer() = default;
+
+// =============================
+// container hooks
+
+DEFINE_HOOK(0x42784B, AnimTypeClass_CTOR, 0x5)
+{
+	GET(AnimTypeClass*, pItem, EAX);
+
+	AnimTypeExt::ExtMap.TryAllocate(pItem);
+	return 0;
+}
+
+DEFINE_HOOK(0x428EA8, AnimTypeClass_SDDTOR, 0x5)
+{
+	GET(AnimTypeClass*, pItem, ECX);
+
+	AnimTypeExt::ExtMap.Remove(pItem);
+	return 0;
+}
+
+//DEFINE_HOOK_AGAIN(0x4287E9, AnimTypeClass_LoadFromINI, 0xA)// Section dont exist!
+DEFINE_HOOK(0x4287DC, AnimTypeClass_LoadFromINI, 0xA)
+{
+	GET(AnimTypeClass*, pItem, ESI);
+	GET_STACK(CCINIClass*, pINI, 0xBC);
+
+	AnimTypeExt::ExtMap.LoadFromINI(pItem, pINI);
+	return 0;
 }

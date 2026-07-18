@@ -783,6 +783,3 @@ TActionExt::ExtContainer::ExtContainer() : Container("TActionClass") { }
 
 TActionExt::ExtContainer::~ExtContainer() = default;
 
-// =============================
-// container hooks
-

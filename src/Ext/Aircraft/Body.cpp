@@ -1,21 +1,12 @@
 #include "Body.h"
 
+#include <Ext/BuildingType/Body.h>
+#include <Ext/WeaponType/Body.h>
+
 AircraftExt::ExtContainer AircraftExt::ExtMap;
 
 AircraftExt::ExtContainer::ExtContainer() : Container("AircraftClass") { }
 AircraftExt::ExtContainer::~ExtContainer() = default;
-
-#include <Ext/BuildingType/Body.h>
-#include <Ext/WeaponType/Body.h>
-
-DEFINE_HOOK(0x413D30, AircraftClass_CTOR, 0x7)
-{
-	GET(AircraftClass*, pItem, ESI);
-
-	AircraftExt::ExtMap.Allocate(pItem);
-
-	return 0;
-}
 
 // TODO: Implement proper extended AircraftClass.
 
@@ -179,6 +170,15 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 		return pThis->PrimaryFacing.Current().GetDir();
 
 	return static_cast<DirType>(std::clamp(landingDir, 0, 255));
+}
+
+DEFINE_HOOK(0x413D30, AircraftClass_CTOR, 0x7)
+{
+	GET(AircraftClass*, pItem, ESI);
+
+	AircraftExt::ExtMap.Allocate(pItem);
+
+	return 0;
 }
 
 // Late in every destructor body of the class, right before it chains into the

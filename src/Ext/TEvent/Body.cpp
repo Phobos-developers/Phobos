@@ -346,6 +346,3 @@ TEventExt::ExtContainer::ExtContainer() : Container("TEventClass") { }
 
 TEventExt::ExtContainer::~ExtContainer() = default;
 
-// =============================
-// container hooks
-

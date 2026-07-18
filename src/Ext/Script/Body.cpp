@@ -17,14 +17,6 @@ void ScriptExt::SaveToStream(PhobosStreamWriter& Stm)
 	// Nothing yet
 }
 
-// =============================
-// container
-
-ScriptExt::ExtContainer::ExtContainer() : Container("ScriptClass")
-{ }
-
-ScriptExt::ExtContainer::~ExtContainer() = default;
-
 void ScriptExt::ProcessAction(TeamClass* pTeam)
 {
 	const int action = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Action;
@@ -1259,3 +1251,11 @@ void ScriptExt::Log(const char* pFormat, ...)
 	Debug::LogWithVArgs(pFormat, args);
 	va_end(args);
 }
+
+// =============================
+// container
+
+ScriptExt::ExtContainer::ExtContainer() : Container("ScriptClass")
+{ }
+
+ScriptExt::ExtContainer::~ExtContainer() = default;

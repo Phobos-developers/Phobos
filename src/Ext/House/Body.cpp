@@ -770,45 +770,6 @@ void HouseExt::OnDetach(BuildingClass* pTarget, bool removed)
 	}
 }
 
-// =============================
-// container
-
-HouseExt::ExtContainer::ExtContainer() : Container("HouseClass")
-{ }
-
-HouseExt::ExtContainer::~ExtContainer() = default;
-
-// =============================
-// container hooks
-
-DEFINE_HOOK(0x4F6532, HouseClass_CTOR, 0x5)
-{
-	GET(HouseClass*, pItem, EAX);
-
-	HouseExt::ExtMap.TryAllocate(pItem);
-	HouseExt::CalculatePowerSurplus(pItem);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x4F7371, HouseClass_DTOR, 0x6)
-{
-	GET(HouseClass*, pItem, ESI);
-
-	HouseExt::ExtMap.Remove(pItem);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x50114D, HouseClass_InitFromINI, 0x5)
-{
-	GET(HouseClass* const, pThis, EBX);
-	GET(CCINIClass* const, pINI, ESI);
-
-	HouseExt::ExtMap.LoadFromINI(pThis, pINI);
-
-	return 0;
-}
 #pragma region BuildLimitGroup
 static int CountOwnedIncludeDeploy(const HouseClass* pThis, const TechnoTypeClass* pItem)
 {
@@ -1139,3 +1100,43 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 	return false;
 }
 #pragma endregion
+
+// =============================
+// container
+
+HouseExt::ExtContainer::ExtContainer() : Container("HouseClass")
+{ }
+
+HouseExt::ExtContainer::~ExtContainer() = default;
+
+// =============================
+// container hooks
+
+DEFINE_HOOK(0x4F6532, HouseClass_CTOR, 0x5)
+{
+	GET(HouseClass*, pItem, EAX);
+
+	HouseExt::ExtMap.TryAllocate(pItem);
+	HouseExt::CalculatePowerSurplus(pItem);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4F7371, HouseClass_DTOR, 0x6)
+{
+	GET(HouseClass*, pItem, ESI);
+
+	HouseExt::ExtMap.Remove(pItem);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x50114D, HouseClass_InitFromINI, 0x5)
+{
+	GET(HouseClass* const, pThis, EBX);
+	GET(CCINIClass* const, pINI, ESI);
+
+	HouseExt::ExtMap.LoadFromINI(pThis, pINI);
+
+	return 0;
+}
