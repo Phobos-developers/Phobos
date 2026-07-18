@@ -3,7 +3,7 @@
 #include <Ext/Foot/Body.h>
 #include <AircraftClass.h>
 
-// Concrete leaf extension for AircraftClass (empty; techno data lives in TechnoExt).
+// Concrete leaf extension for AircraftClass.
 class AircraftExt final : public FootExt
 {
 public:
@@ -11,7 +11,14 @@ public:
 
 	static constexpr DWORD Canary = 0xA1A2A3A4;
 
+	int Strafe_BombsDroppedThisRound;
+	CellClass* Strafe_TargetCell;
+	int CurrentAircraftWeaponIndex;
+
 	explicit AircraftExt(AircraftClass* const OwnerObject) : FootExt(OwnerObject)
+		, Strafe_BombsDroppedThisRound { 0 }
+		, Strafe_TargetCell { nullptr }
+		, CurrentAircraftWeaponIndex {}
 	{ }
 
 	AircraftClass* OwnerObject() const

@@ -7,7 +7,7 @@ AircraftExt::ExtContainer AircraftExt::ExtMap;
 
 void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 {
-	auto const pExt = TechnoExt::Fetch(pThis);
+	auto const pExt = AircraftExt::Fetch(pThis);
 	const int weaponIndex = pExt->CurrentAircraftWeaponIndex;
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 	auto const pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
@@ -173,6 +173,11 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 template <typename T>
 void AircraftExt::Serialize(T& Stm)
 {
+	Stm
+		.Process(this->Strafe_BombsDroppedThisRound)
+		.Process(this->Strafe_TargetCell)
+		.Process(this->CurrentAircraftWeaponIndex)
+		;
 }
 
 void AircraftExt::LoadFromStream(PhobosStreamReader& Stm)

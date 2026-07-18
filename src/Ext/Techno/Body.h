@@ -49,9 +49,6 @@ public:
 	CDTimerClass AutoDeathTimer;
 	AnimTypeClass* MindControlRingAnimType;
 	int DamageNumberOffset;
-	int Strafe_BombsDroppedThisRound;
-	CellClass* Strafe_TargetCell;
-	int CurrentAircraftWeaponIndex;
 	bool IsInTunnel;
 	bool IsBurrowed;
 	bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
@@ -140,9 +137,6 @@ public:
 		, AutoDeathTimer {}
 		, MindControlRingAnimType { nullptr }
 		, DamageNumberOffset { INT32_MIN }
-		, Strafe_BombsDroppedThisRound { 0 }
-		, Strafe_TargetCell { nullptr }
-		, CurrentAircraftWeaponIndex {}
 		, IsInTunnel { false }
 		, IsBurrowed { false }
 		, HasBeenPlacedOnMap { false }

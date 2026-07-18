@@ -13,7 +13,7 @@ DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
 {
 	GET(AircraftClass*, pThis, ESI);
 
-	auto const pExt = TechnoExt::Fetch(pThis);
+	auto const pExt = AircraftExt::Fetch(pThis);
 	AirAttackStatus const state = (AirAttackStatus)pThis->MissionStatus;
 
 	// Re-evaluate weapon choice due to potentially changing targeting conditions here
@@ -57,7 +57,7 @@ DEFINE_HOOK(0x4197FC, AircraftClass_GetFireLocation_WeaponRange, 0x6)
 
 	GET(AircraftClass*, pThis, EDI);
 
-	auto const pExt = TechnoExt::Fetch(pThis);
+	auto const pExt = AircraftExt::Fetch(pThis);
 	R->EAX(pThis->GetWeaponRange(pExt->CurrentAircraftWeaponIndex));
 
 	return SkipGameCode;
@@ -75,7 +75,7 @@ DEFINE_HOOK(0x4197F3, AircraftClass_GetFireLocation_Strafing, 0x5)
 	if (!pObject || !pObject->IsInAir())
 		return 0;
 
-	auto const fireError = pThis->GetFireError(pTarget, TechnoExt::Fetch(pThis)->CurrentAircraftWeaponIndex, false);
+	auto const fireError = pThis->GetFireError(pTarget, AircraftExt::Fetch(pThis)->CurrentAircraftWeaponIndex, false);
 
 	if (fireError == FireError::ILLEGAL || fireError == FireError::CANT)
 		return 0;
@@ -90,7 +90,7 @@ static long __stdcall AircraftClass_IFlyControl_IsStrafe(IFlyControl const* ifly
 	__assume(ifly != nullptr);
 
 	auto const pThis = static_cast<AircraftClass const*>(ifly);
-	auto const pExt = TechnoExt::Fetch(pThis);
+	auto const pExt = AircraftExt::Fetch(pThis);
 	WeaponTypeClass* pWeapon = nullptr;
 
 	pWeapon = pThis->GetWeapon(pExt->CurrentAircraftWeaponIndex)->WeaponType;
@@ -113,7 +113,7 @@ DEFINE_HOOK(0x4180F4, AircraftClass_Mission_Attack_WeaponRange, 0x5)
 
 	GET(AircraftClass*, pThis, ESI);
 
-	R->EAX(pThis->GetWeapon(TechnoExt::Fetch(pThis)->CurrentAircraftWeaponIndex));
+	R->EAX(pThis->GetWeapon(AircraftExt::Fetch(pThis)->CurrentAircraftWeaponIndex));
 
 	return SkipGameCode;
 }
@@ -176,7 +176,7 @@ DEFINE_HOOK(0x418B1F, AircraftClass_Mission_Attack_FireAtTarget5Strafe_BurstFix,
 
 static int __fastcall AircraftClass_SelectWeapon_Wrapper(AircraftClass* pThis, void* _, AbstractClass* pTarget)
 {
-	auto const pExt = TechnoExt::Fetch(pThis);
+	auto const pExt = AircraftExt::Fetch(pThis);
 
 	// Re-evaluate weapon selection only if not mid-strafing run before firing.
 	if (!pExt->Strafe_BombsDroppedThisRound)
@@ -209,7 +209,7 @@ DEFINE_HOOK(0x418544, AircraftClass_Mission_Attack_StrafingDestinationFix, 0x6)
 
 static inline int GetDelay(AircraftClass* pThis, bool isLastShot)
 {
-	auto const pExt = TechnoExt::Fetch(pThis);
+	auto const pExt = AircraftExt::Fetch(pThis);
 	auto const pWeapon = pThis->GetWeapon(pExt->CurrentAircraftWeaponIndex)->WeaponType;
 	auto const pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 	int delay = pWeapon->ROF;
@@ -228,7 +228,7 @@ DEFINE_HOOK(0x4184CC, AircraftClass_Mission_Attack_Delay1A, 0x6)
 {
 	GET(AircraftClass*, pThis, ESI);
 
-	auto const pExt = TechnoExt::Fetch(pThis);
+	auto const pExt = AircraftExt::Fetch(pThis);
 
 	if (WeaponTypeExt::Fetch(pThis->GetWeapon(pExt->CurrentAircraftWeaponIndex)->WeaponType)->Strafing_TargetCell)
 		pExt->Strafe_TargetCell = MapClass::Instance.GetCellAt(pThis->Target->GetCoords());
@@ -303,7 +303,7 @@ DEFINE_HOOK(0x41879D, AircraftClass_Mission_Attack_StrafeCell, 0x6)
 
 	GET(AircraftClass*, pThis, ESI);
 
-	const auto pExt = TechnoExt::Fetch(pThis);
+	const auto pExt = AircraftExt::Fetch(pThis);
 
 	if (const auto pTargetCell = pExt->Strafe_TargetCell)
 	{
@@ -1167,7 +1167,7 @@ static __forceinline bool CheckSpyPlaneCameraCount(AircraftClass* pThis)
 	if (!pWeaponExt->Strafing_Shots.isset())
 		return true;
 
-	auto const pExt = TechnoExt::Fetch(pThis);
+	auto const pExt = AircraftExt::Fetch(pThis);
 
 	if (pExt->Strafe_BombsDroppedThisRound >= pWeaponExt->Strafing_Shots)
 		return false;
