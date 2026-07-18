@@ -29,7 +29,7 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 	if (pExt->WarpOutWeapon)
 		WeaponTypeExt::DetonateAt(pExt->WarpOutWeapon, pLinked, pLinked);
 
-	const int distance = (int)Math::sqrt(pLinked->Location.DistanceFromSquared(pLocomotor->LastCoords));
+	const double distance = Math::sqrt(pLinked->Location.DistanceFromSquared(pLocomotor->LastCoords));
 	const auto linkedExt = TechnoExt::Fetch(pLinked);
 	linkedExt->LastWarpDistance = distance;
 
@@ -47,11 +47,11 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 
 	int duree = pExt->ChronoMinimumDelay.Get(RulesClass::Instance->ChronoMinimumDelay);
 
-	if (distance >= pExt->ChronoRangeMinimum.Get(RulesClass::Instance->ChronoRangeMinimum)
+	if (distance >= (double)pExt->ChronoRangeMinimum.Get(RulesClass::Instance->ChronoRangeMinimum)
 		&& pExt->ChronoTrigger.Get(RulesClass::Instance->ChronoTrigger))
 	{
 		const int factor = std::max(pExt->ChronoDistanceFactor.Get(RulesClass::Instance->ChronoDistanceFactor), 1);
-		duree = std::max(distance / factor, duree);
+		duree = std::max((int)(distance / factor), duree);
 
 	}
 
@@ -87,12 +87,12 @@ DEFINE_HOOK(0x719742, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 0x
 		AnimExt::SetAnimOwnerHouseKind(pAnim, pLinked->Owner, nullptr, false, true);
 	}
 
-	auto const lastWarpDistance = TechnoExt::Fetch(pLinked)->LastWarpDistance;
+	const double lastWarpDistance = TechnoExt::Fetch(pLinked)->LastWarpDistance;
 	const bool isInMinRange = lastWarpDistance < pExt->ChronoRangeMinimum.Get(RulesClass::Instance->ChronoRangeMinimum);
 
 	if (auto const weaponType = isInMinRange ? pExt->WarpInMinRangeWeapon.Get(pExt->WarpInWeapon) : pExt->WarpInWeapon)
 	{
-		const int damage = pExt->WarpInWeapon_UseDistanceAsDamage ? lastWarpDistance / Unsorted::LeptonsPerCell : weaponType->Damage;
+		const int damage = pExt->WarpInWeapon_UseDistanceAsDamage ? (int)(lastWarpDistance / Unsorted::LeptonsPerCell) : weaponType->Damage;
 		WeaponTypeExt::DetonateAt(weaponType, pLinked, pLinked, damage);
 	}
 

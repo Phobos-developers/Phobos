@@ -40,7 +40,7 @@ public:
 	bool LastKillWasTeamTarget;
 	CDTimerClass PassengerDeletionTimer;
 	ShieldTypeClass* CurrentShieldType;
-	int LastWarpDistance;
+	double LastWarpDistance;
 	int JumpjetSpeed;
 	CDTimerClass ChargeTurretTimer; // Used for charge turrets instead of RearmTimer if weapon has ChargeTurret.Delays set.
 	CDTimerClass AutoDeathTimer;

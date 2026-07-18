@@ -333,7 +333,7 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 			}
 
 			const double distanceSq = pCell->GetCoordsWithBridge().DistanceFromSquared(pTarget->GetCenterCoords());
-			const int range = pWeapon->Range;
+			const double range = (double)pWeapon->Range;
 
 			if (distanceSq > range * range)
 				return false;

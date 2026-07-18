@@ -74,7 +74,7 @@ bool SWTypeExt::IsInhibitorEligible(HouseClass* pOwner, const CellStruct& coords
 		const auto center = pTechno->GetCenterCoords();
 
 		// has to be closer than the inhibitor range (which defaults to Sight)
-		const int range = pExt->InhibitorRange.Get(pType->Sight);
+		const double range = (double)pExt->InhibitorRange.Get(pType->Sight);
 		return coords.DistanceFromSquared(CellClass::Coord2Cell(center)) <= range * range;
 	}
 
@@ -113,7 +113,7 @@ bool SWTypeExt::IsDesignatorEligible(HouseClass* pOwner, const CellStruct& coord
 		const auto center = pTechno->GetCenterCoords();
 
 		// has to be closer than the designator range (which defaults to Sight)
-		const int range = pExt->DesignatorRange.Get(pType->Sight);
+		const double range = (double)pExt->DesignatorRange.Get(pType->Sight);
 		return coords.DistanceFromSquared(CellClass::Coord2Cell(center)) <= range * range;
 	}
 
@@ -251,11 +251,11 @@ std::vector<BuildingClass*> SWTypeExt::GetEMPulseCannons(HouseClass* pOwner, con
 
 		if (eligible)
 		{
-			auto range = this->GetEMPulseCannonRange(pBuilding);
-			auto const& minRange = range.first;
-			auto const& maxRange = range.second;
-			auto const center = CellClass::Coord2Cell(pBuilding->GetCenterCoords());
-			auto const distanceSq = cell.DistanceFromSquared(center);
+			const auto range = this->GetEMPulseCannonRange(pBuilding);
+			const double& minRange = range.first;
+			const double& maxRange = range.second;
+			const auto center = CellClass::Coord2Cell(pBuilding->GetCenterCoords());
+			const double distanceSq = cell.DistanceFromSquared(center);
 
 			if ((minRange < 0.0 || distanceSq >= minRange * minRange)
 				&& (maxRange < 0.0 || distanceSq <= maxRange * maxRange))

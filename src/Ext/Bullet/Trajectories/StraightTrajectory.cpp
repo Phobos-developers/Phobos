@@ -922,8 +922,8 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 	{
 		std::sort(&validTargets[0], &validTargets[targetsSize],[pBullet](TechnoClass* pTechnoA, TechnoClass* pTechnoB)
 		{
-			const auto distanceA = pTechnoA->GetCoords().DistanceFromSquared(pBullet->SourceCoords);
-			const auto distanceB = pTechnoB->GetCoords().DistanceFromSquared(pBullet->SourceCoords);
+			const double distanceA = pTechnoA->GetCoords().DistanceFromSquared(pBullet->SourceCoords);
+			const double distanceB = pTechnoB->GetCoords().DistanceFromSquared(pBullet->SourceCoords);
 
 			// Distance priority
 			if (distanceA < distanceB)

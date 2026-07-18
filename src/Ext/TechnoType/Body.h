@@ -328,6 +328,7 @@ public:
 	Nullable<bool> AmphibiousEnter;
 	Nullable<bool> AmphibiousUnload;
 	Nullable<bool> NoQueueUpToEnter;
+	Nullable<int> NoQueueUpToEnter_BoardDistance;
 	Nullable<bool> NoQueueUpToUnload;
 	Valueable<bool> Passengers_BySize;
 
@@ -836,6 +837,7 @@ public:
 		, AmphibiousEnter {}
 		, AmphibiousUnload {}
 		, NoQueueUpToEnter {}
+		, NoQueueUpToEnter_BoardDistance {}
 		, NoQueueUpToUnload {}
 		, Passengers_BySize { true }
 
