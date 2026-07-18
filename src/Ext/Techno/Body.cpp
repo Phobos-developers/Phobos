@@ -60,9 +60,6 @@ TechnoExt::~TechnoExt()
 
 	this->ElectricBolts.clear();
 
-	if (this->UndergroundTracked)
-		ScenarioExt::Global()->UndergroundTracker.Remove(pThis);
-
 	if (this->SpecialTracked)
 		ScenarioExt::Global()->SpecialTracker.Remove(pThis);
 
@@ -1293,7 +1290,6 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->DamageNumberOffset)
 		.Process(this->IsInTunnel)
-		.Process(this->IsBurrowed)
 		.Process(this->HasBeenPlacedOnMap)
 		.Process(this->ForceFullRearmDelay)
 		.Process(this->LastRearmWasFullDelay)
@@ -1327,7 +1323,6 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->TintIntensityAllies)
 		.Process(this->TintIntensityEnemies)
 		.Process(this->AttackMoveFollowerTempCount)
-		.Process(this->UndergroundTracked)
 		.Process(this->SpecialTracked)
 		.Process(this->FallingDownTracked)
 		.Process(this->JumpjetStraightAscend)

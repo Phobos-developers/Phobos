@@ -434,7 +434,7 @@ DEFINE_HOOK(0x728F74, TunnelLocomotionClass_Process_KillAnims, 0x5)
 	GET(ILocomotion*, pThis, ESI);
 
 	const auto pLoco = static_cast<TunnelLocomotionClass*>(pThis);
-	const auto pExt = TechnoExt::Fetch(pLoco->LinkedTo);
+	const auto pExt = UnitExt::Fetch(static_cast<UnitClass*>(pLoco->LinkedTo));
 	pExt->IsBurrowed = true;
 
 	if (const auto pShieldData = pExt->Shield.get())
@@ -456,7 +456,7 @@ DEFINE_HOOK(0x728E5F, TunnelLocomotionClass_Process_RestoreAnims, 0x7)
 
 	if (pLoco->State == TunnelLocomotionClass::State::PreDigOut)
 	{
-		const auto pExt = TechnoExt::Fetch(pLoco->LinkedTo);
+		const auto pExt = UnitExt::Fetch(static_cast<UnitClass*>(pLoco->LinkedTo));
 		pExt->IsBurrowed = false;
 
 		if (const auto pShieldData = pExt->Shield.get())

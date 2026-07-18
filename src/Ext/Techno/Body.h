@@ -47,7 +47,6 @@ public:
 	AnimTypeClass* MindControlRingAnimType;
 	int DamageNumberOffset;
 	bool IsInTunnel;
-	bool IsBurrowed;
 	bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
 	bool ForceFullRearmDelay;
 	bool LastRearmWasFullDelay;
@@ -90,7 +89,6 @@ public:
 
 	int AttackMoveFollowerTempCount;
 
-	bool UndergroundTracked;
 	bool SpecialTracked;
 	bool FallingDownTracked;
 
@@ -123,7 +121,6 @@ public:
 		, MindControlRingAnimType { nullptr }
 		, DamageNumberOffset { INT32_MIN }
 		, IsInTunnel { false }
-		, IsBurrowed { false }
 		, HasBeenPlacedOnMap { false }
 		, ForceFullRearmDelay { false }
 		, LastRearmWasFullDelay { false }
@@ -157,7 +154,6 @@ public:
 		, TintIntensityAllies { 0 }
 		, TintIntensityEnemies { 0 }
 		, AttackMoveFollowerTempCount { 0 }
-		, UndergroundTracked { false }
 		, SpecialTracked { false }
 		, FallingDownTracked { false }
 		, JumpjetStraightAscend { false }
@@ -170,6 +166,10 @@ public:
 	{ }
 
 	void OnEarlyUpdate();
+
+	// True while the object is hidden underground (subterranean units); false for
+	// everything else. Overridden by UnitExt, which owns the burrow state.
+	virtual bool IsBurrowedState() const { return false; }
 
 	void ApplyInterceptor();
 	bool CheckDeathConditions(bool isInLimbo = false);

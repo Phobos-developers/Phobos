@@ -1,6 +1,14 @@
 #include "Body.h"
 
+#include <Ext/Scenario/Body.h>
+
 UnitExt::ExtContainer UnitExt::ExtMap;
+
+UnitExt::~UnitExt()
+{
+	if (this->UndergroundTracked)
+		ScenarioExt::Global()->UndergroundTracker.Remove(this->OwnerObject());
+}
 
 // =============================
 // load / save
@@ -15,6 +23,8 @@ void UnitExt::Serialize(T& Stm)
 		.Process(this->DeployFireTimer)
 		.Process(this->KeepTargetOnMove)
 		.Process(this->SimpleDeployerAnimationTimer)
+		.Process(this->IsBurrowed)
+		.Process(this->UndergroundTracked)
 		;
 }
 

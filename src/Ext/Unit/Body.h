@@ -19,6 +19,8 @@ public:
 	CDTimerClass DeployFireTimer;
 	bool KeepTargetOnMove;
 	CDTimerClass SimpleDeployerAnimationTimer;
+	bool IsBurrowed;
+	bool UndergroundTracked;
 
 	explicit UnitExt(UnitClass* const OwnerObject) : FootExt(OwnerObject)
 		, SubterraneanHarvStatus { 0 }
@@ -27,7 +29,13 @@ public:
 		, DeployFireTimer {}
 		, KeepTargetOnMove { false }
 		, SimpleDeployerAnimationTimer {}
+		, IsBurrowed { false }
+		, UndergroundTracked { false }
 	{ }
+
+	virtual ~UnitExt() override;
+
+	virtual bool IsBurrowedState() const override { return this->IsBurrowed; }
 
 	void UpdateSubterraneanHarvester();
 	void UpdateKeepTargetOnMove();

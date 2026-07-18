@@ -54,7 +54,7 @@ void TechnoExt::ApplyInterceptor()
 
 	const auto pThis = this->OwnerObject();
 
-	if (!BulletClass::Array.Count || this->IsBurrowed || !pThis->IsArmed())
+	if (!BulletClass::Array.Count || this->IsBurrowedState() || !pThis->IsArmed())
 		return;
 
 	const auto pTarget = pThis->Target;
@@ -1768,7 +1768,7 @@ void TechnoExt::UpdateAttachEffects()
 		return;
 
 	auto const pThis = this->OwnerObject();
-	const bool inTunnel = this->IsInTunnel || this->IsBurrowed;
+	const bool inTunnel = this->IsInTunnel || this->IsBurrowedState();
 	bool markForRedraw = false;
 	bool altered = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
