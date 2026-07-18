@@ -2,8 +2,6 @@
 
 #include <Ext/Bullet/Trajectories/PhobosActualTrajectory.h>
 
-#include <Ext/Bullet/Trajectories/PhobosActualTrajectory.h>
-
 BulletTypeExt::ExtContainer BulletTypeExt::ExtMap;
 
 double BulletTypeExt::GetAdjustedGravity(BulletTypeClass* pType)
@@ -233,6 +231,8 @@ void BulletTypeExt::Serialize(T& Stm)
 		.Process(this->Vertical_AircraftFix)
 		.Process(this->VerticalInitialFacing)
 
+		.Process(this->TrajectoryType)
+
 		.Process(this->LifeDuration)
 		.Process(this->NoTargetLifeTime)
 		.Process(this->CreateCapacity)
@@ -359,7 +359,7 @@ void BulletTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 // =============================
 // container
 
-BulletTypeExt::ExtContainer::ExtContainer() : Container("BulletTypeClass") { }
+BulletTypeExt::ExtContainer::ExtContainer() : Container("BulletTypeClass") {}
 
 BulletTypeExt::ExtContainer::~ExtContainer() = default;
 

@@ -78,7 +78,7 @@ void ActualTrajectory::OnUnlimbo()
 
 	// Actual
 	const auto pBullet = this->Bullet;
-	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	const auto pBulletExt = BulletExt::Fetch(pBullet);
 	const auto pBulletTypeExt = pBulletExt->TypeExtData;
 	this->LastTargetCoord = pBullet->TargetCoords;
 
@@ -121,7 +121,7 @@ void ActualTrajectory::OnPreDetonate()
 		// Whether to snap to target?
 		if (coords.DistanceFrom(pBullet->Location) <= targetSnapDistance)
 		{
-			const auto pExt = BulletExt::ExtMap.Find(pBullet);
+			const auto pExt = BulletExt::Fetch(pBullet);
 			pExt->SnappedToTarget = true;
 			pBullet->SetLocation(coords);
 		}
@@ -169,7 +169,7 @@ CoordStruct ActualTrajectory::GetInaccurateTargetCoords(const CoordStruct& baseC
 {
 	const auto pBullet = this->Bullet;
 	const auto pWeapon = pBullet->WeaponType;
-	const auto pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+	const auto pTypeExt = BulletTypeExt::Fetch(pBullet->Type);
 
 	// Don't know whether the weapon is correctly set, if not, a fixed value of 10 will be used
 	const double offsetMult = distance / (pWeapon ? pWeapon->Range : (10.0 * Unsorted::LeptonsPerCell));

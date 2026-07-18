@@ -499,9 +499,6 @@ DEFINE_HOOK(0x4687F8, BulletClass_Unlimbo_FlakScatter, 0x6)
 	if (pThis->WeaponType)
 	{
 		auto const pTypeExt = BulletTypeExt::Fetch(pThis->Type);
-		const int defaultValue = RulesClass::Instance->BallisticScatter;
-		const int min = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
-		const int max = pTypeExt->BallisticScatter_Max.Get(Leptons(defaultValue));
 
 		if (!(ScenarioClass::Instance->Random.RandomRanged(0, 100) <= pTypeExt->BallisticScatter_Chance * 100))
 		{

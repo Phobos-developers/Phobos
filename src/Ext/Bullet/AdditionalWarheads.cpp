@@ -1,11 +1,11 @@
-﻿#include "Body.h"
+#include "Body.h"
 
 #include <AircraftTrackerClass.h>
 
 #include <Ext/WarheadType/Body.h>
 
 // A rectangular shape with a custom width from the current frame to the next frame in length.
-std::vector<CellClass*> BulletExt::ExtData::GetCellsInProximityRadius()
+std::vector<CellClass*> BulletExt::GetCellsInProximityRadius()
 {
 	const auto pBullet = this->OwnerObject();
 	const auto pTraj = this->Trajectory.get();
@@ -320,7 +320,7 @@ std::vector<CellStruct> BulletExt::GetCellsInRectangle(const CellStruct bottomSt
 	return recCells;
 }
 
-bool BulletExt::ExtData::CheckThroughAndSubjectInCell(CellClass* pCell, HouseClass* pOwner)
+bool BulletExt::CheckThroughAndSubjectInCell(CellClass* pCell, HouseClass* pOwner)
 {
 	const auto pTarget = this->OwnerObject()->Target;
 	const auto pType = this->TypeExtData;
@@ -361,7 +361,7 @@ bool BulletExt::ExtData::CheckThroughAndSubjectInCell(CellClass* pCell, HouseCla
 	return false;
 }
 
-void BulletExt::ExtData::CalculateNewDamage()
+void BulletExt::CalculateNewDamage()
 {
 	const auto pBullet = this->OwnerObject();
 	const double ratio = this->TypeExtData->DamageCountAttenuation.Get();
@@ -385,7 +385,7 @@ void BulletExt::ExtData::CalculateNewDamage()
 	}
 }
 
-void BulletExt::ExtData::PassWithDetonateAt()
+void BulletExt::PassWithDetonateAt()
 {
 	if (!this->PassDetonateTimer.Completed())
 		return;
@@ -486,7 +486,7 @@ static inline bool TargetInRange(TechnoClass* pTechno, BulletClass* pBullet, con
 }
 
 template<bool allies, bool sphere>
-std::vector<TechnoClass*> BulletExt::ExtData::GetTargetsInProximityRadius(HouseClass* pOwner)
+std::vector<TechnoClass*> BulletExt::GetTargetsInProximityRadius(HouseClass* pOwner)
 {
 	const auto pType = this->TypeExtData;
 	const auto pBullet = this->OwnerObject();
@@ -497,7 +497,7 @@ std::vector<TechnoClass*> BulletExt::ExtData::GetTargetsInProximityRadius(HouseC
 	if (!pWH)
 		pWH = pBullet->WH;
 
-	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	const auto pWHExt = WarheadTypeExt::Fetch(pWH);
 
 	// Step 1: Find valid targets on the ground within range.
 	std::vector<CellClass*> recCellClass = this->GetCellsInProximityRadius();
@@ -577,7 +577,7 @@ std::vector<TechnoClass*> BulletExt::ExtData::GetTargetsInProximityRadius(HouseC
 }
 
 // Select suitable targets and choose the closer targets then attack each target only once.
-void BulletExt::ExtData::PrepareForDetonateAt()
+void BulletExt::PrepareForDetonateAt()
 {
 	const auto pType = this->TypeExtData;
 	const auto pBullet = this->OwnerObject();
@@ -678,7 +678,7 @@ void BulletExt::ExtData::PrepareForDetonateAt()
 	}
 }
 
-void BulletExt::ExtData::ProximityDetonateAt(HouseClass* pOwner, TechnoClass* pTarget)
+void BulletExt::ProximityDetonateAt(HouseClass* pOwner, TechnoClass* pTarget)
 {
 	const auto pBullet = this->OwnerObject();
 	const auto pType = this->TypeExtData;
@@ -699,7 +699,7 @@ void BulletExt::ExtData::ProximityDetonateAt(HouseClass* pOwner, TechnoClass* pT
 	this->CalculateNewDamage();
 }
 
-int BulletExt::ExtData::GetTrueDamage(int damage, bool self)
+int BulletExt::GetTrueDamage(int damage, bool self)
 {
 	if (damage == 0)
 		return 0;
@@ -732,7 +732,7 @@ int BulletExt::ExtData::GetTrueDamage(int damage, bool self)
 	return damage;
 }
 
-double BulletExt::ExtData::GetExtraDamageMultiplier()
+double BulletExt::GetExtraDamageMultiplier()
 {
 	const auto pBullet = this->OwnerObject();
 	const double distance = pBullet->Location.DistanceFrom(pBullet->SourceCoords);

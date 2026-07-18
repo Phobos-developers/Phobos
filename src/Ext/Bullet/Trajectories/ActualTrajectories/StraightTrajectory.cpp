@@ -79,7 +79,7 @@ void StraightTrajectory::OnUnlimbo()
 
 	// Straight
 	const auto pBullet = this->Bullet;
-	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	const auto pBulletExt = BulletExt::Fetch(pBullet);
 
 	// Calculate range bonus
 	if (pBulletExt->TypeExtData->ApplyRangeModifiers)
@@ -143,7 +143,7 @@ void StraightTrajectory::OnPreDetonate()
 	const auto pType = this->Type;
 
 	// Whether to detonate at ground level?
-	if (BulletTypeExt::ExtMap.Find(pBullet->Type)->PassDetonateLocal)
+	if (BulletTypeExt::Fetch(pBullet->Type)->PassDetonateLocal)
 		pBullet->SetLocation(CoordStruct { pBullet->Location.X, pBullet->Location.Y, MapClass::Instance.GetCellFloorHeight(pBullet->Location) });
 
 	if (!pType->PassThrough)
@@ -195,11 +195,11 @@ void StraightTrajectory::FireTrajectory()
 	// Determine the firing velocity vector of the bullet
 	this->MovingVelocity.X = static_cast<double>(target.X - source.X);
 	this->MovingVelocity.Y = static_cast<double>(target.Y - source.Y);
-	this->MovingVelocity.Z = (pType->Speed < static_cast<double>(Unsorted::LeptonsPerCell) && pType->ConfineAtHeight > 0 && BulletTypeExt::ExtMap.Find(pBullet->Type)->PassDetonateLocal) ? 0 : static_cast<double>(this->GetVelocityZ());
+	this->MovingVelocity.Z = (pType->Speed < static_cast<double>(Unsorted::LeptonsPerCell) && pType->ConfineAtHeight > 0 && BulletTypeExt::Fetch(pBullet->Type)->PassDetonateLocal) ? 0 : static_cast<double>(this->GetVelocityZ());
 
 	// Substitute the speed to calculate velocity
 	if (this->CalculateBulletVelocity(pType->Speed))
-		BulletExt::ExtMap.Find(pBullet)->Status |= TrajectoryStatus::Detonate;
+		BulletExt::Fetch(pBullet)->Status |= TrajectoryStatus::Detonate;
 
 	// Rotate the selected angle
 	if (std::abs(pType->RotateCoord) > BulletExt::Epsilon && this->CountOfBurst > 1)
@@ -354,7 +354,7 @@ bool StraightTrajectory::PassAndConfineAtHeight()
 
 	this->MovingVelocity.Z += static_cast<double>(checkDifference + pType->ConfineAtHeight);
 
-	if (BulletTypeExt::ExtMap.Find(pBullet->Type)->PassDetonateLocal)
+	if (BulletTypeExt::Fetch(pBullet->Type)->PassDetonateLocal)
 	{
 		// In this case, the vertical speed will not be limited, and the horizontal speed will not be affected
 		this->MovingSpeed = this->MovingVelocity.Magnitude();

@@ -6,6 +6,7 @@
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Cell/Body.h>
 #include <Ext/EBolt/Body.h>
+#include <Ext/Techno/Body.h>
 #include <New/Entity/LaserTrailClass.h>
 
 namespace LaserRT
@@ -15,7 +16,7 @@ namespace LaserRT
 
 BulletExt::ExtContainer BulletExt::ExtMap;
 
-~BulletExt()
+BulletExt::~BulletExt()
 {
 	if (this->GroupIndex != -1)
 	{
@@ -43,10 +44,10 @@ BulletExt::ExtContainer BulletExt::ExtMap;
 	}
 }
 
-void BulletExt::ExtData::InitializeOnUnlimbo()
+void BulletExt::InitializeOnUnlimbo()
 {
 	const auto pBullet = this->OwnerObject();
-	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	const auto pBulletExt = BulletExt::Fetch(pBullet);
 	const auto pBulletTypeExt = pBulletExt->TypeExtData;
 
 	// Without a target, the game will inevitably crash before, so no need to check here
@@ -82,8 +83,6 @@ void BulletExt::ExtData::InitializeOnUnlimbo()
 	// Record some information of firer
 	if (pFirer)
 	{
-		pBulletExt->FirepowerMult = TechnoExt::GetCurrentFirepowerMultiplier(pFirer);
-
 		// Obtain the launch location
 		pBulletExt->GetTechnoFLHCoord();
 
@@ -111,7 +110,7 @@ void BulletExt::ExtData::InitializeOnUnlimbo()
 	}
 }
 
-bool BulletExt::ExtData::CheckOnEarlyUpdate()
+bool BulletExt::CheckOnEarlyUpdate()
 {
 	// Update group index for members by themselves
 	if (this->TrajectoryGroup)
@@ -150,7 +149,7 @@ bool BulletExt::ExtData::CheckOnEarlyUpdate()
 	return false;
 }
 
-void BulletExt::ExtData::CheckOnPreDetonate()
+void BulletExt::CheckOnPreDetonate()
 {
 	const auto pBullet = this->OwnerObject();
 	const auto pBulletTypeExt = this->TypeExtData;
@@ -178,7 +177,7 @@ void BulletExt::ExtData::CheckOnPreDetonate()
 }
 
 // Launch additional weapons and warheads
-bool BulletExt::ExtData::FireAdditionals()
+bool BulletExt::FireAdditionals()
 {
 	const auto pType = this->TypeExtData;
 
@@ -207,7 +206,7 @@ bool BulletExt::ExtData::FireAdditionals()
 }
 
 // Detonate a extra warhead on the obstacle then detonate bullet itself
-void BulletExt::ExtData::DetonateOnObstacle()
+void BulletExt::DetonateOnObstacle()
 {
 	const auto pDetonateAt = this->ExtraCheck;
 
@@ -240,12 +239,12 @@ void BulletExt::ExtData::DetonateOnObstacle()
 
 	// Detonate extra warhead
 	const auto pFirer = pBullet->Owner;
-	const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
+	const auto pOwner = pFirer ? pFirer->Owner : BulletExt::Fetch(pBullet)->FirerHouse;
 	this->ProximityDetonateAt(pOwner, pDetonateAt);
 }
 
 // Synchronization target inspection
-bool BulletExt::ExtData::CheckSynchronize()
+bool BulletExt::CheckSynchronize()
 {
 	const auto pBullet = this->OwnerObject();
 	const auto pType = this->TypeExtData;
@@ -274,7 +273,7 @@ bool BulletExt::ExtData::CheckSynchronize()
 }
 
 // Tolerance timer inspection
-bool BulletExt::ExtData::CheckNoTargetLifeTime()
+bool BulletExt::CheckNoTargetLifeTime()
 {
 	const auto pBullet = this->OwnerObject();
 	const auto pType = this->TypeExtData;
@@ -300,7 +299,7 @@ bool BulletExt::ExtData::CheckNoTargetLifeTime()
 }
 
 // Update trajectory capacity group index
-void BulletExt::ExtData::UpdateGroupIndex()
+void BulletExt::UpdateGroupIndex()
 {
 	const auto pBullet = this->OwnerObject();
 	auto& groupData = (*this->TrajectoryGroup)[pBullet->Type];
@@ -333,9 +332,9 @@ void BulletExt::ExtData::UpdateGroupIndex()
 }
 
 // Check and set the group
-bool BulletExt::CheckExceededCapacity(TechnoClass* pTechno, BulletTypeClass* pBulletType, BulletExt::ExtData* pBulletExt)
+bool BulletExt::CheckExceededCapacity(TechnoClass* pTechno, BulletTypeClass* pBulletType, BulletExt* pBulletExt)
 {
-	const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+	const auto pTechnoExt = TechnoExt::Fetch(pTechno);
 
 	if (!pTechnoExt->TrajectoryGroup)
 		pTechnoExt->TrajectoryGroup = std::make_shared<PhobosMap<BulletTypeClass*, BulletGroupData>>();
@@ -345,7 +344,7 @@ bool BulletExt::CheckExceededCapacity(TechnoClass* pTechno, BulletTypeClass* pBu
 	const auto size = static_cast<int>(group.size());
 
 	if (!pBulletExt)
-		return size >= BulletTypeExt::ExtMap.Find(pBulletType)->CreateCapacity;
+		return size >= BulletTypeExt::Fetch(pBulletType)->CreateCapacity;
 
 	pBulletExt->TrajectoryGroup = pTechnoExt->TrajectoryGroup;
 
@@ -502,19 +501,19 @@ inline void BulletExt::SimulatedFiringAnim(BulletClass* pBullet, HouseClass* pHo
 	if (animCounts <= 0)
 		return;
 
-	const auto pTraj = BulletExt::ExtMap.Find(pBullet)->Trajectory.get();
-	const auto velocityRadian = pTraj ? Math::atan2(pTraj->MovingVelocity.Y , pTraj->MovingVelocity.X) : Math::atan2(pBullet->Velocity.Y , pBullet->Velocity.X);
+	const auto pTraj = BulletExt::Fetch(pBullet)->Trajectory.get();
+	const auto velocityRadian = pTraj ? Math::atan2(pTraj->MovingVelocity.Y, pTraj->MovingVelocity.X) : Math::atan2(pBullet->Velocity.Y, pBullet->Velocity.X);
 	const auto pFirer = pBullet->Owner;
 	const auto pAnimType = pWeapon->Anim[(animCounts % 8 == 0) // Have direction
 		? (static_cast<int>((velocityRadian / Math::TwoPi + 1.5) * animCounts - (animCounts / 8) + 0.5) % animCounts) // Calculate direction
-		: ScenarioClass::Instance->Random.RandomRanged(0 , animCounts - 1)]; // Simple random;
-/*
-	const auto ratioOfRotateAngle = velocityRadian / Math::TwoPi;
-	const auto correctRatioOfRotateAngle = ratioOfRotateAngle + 1.5; // Correct the Y-axis in reverse and ensure that the ratio is a positive number
-	const auto animIndex = correctRatioOfRotateAngle * animCounts;
-	const auto correctAnimIndex = animIndex - (animCounts / 8); // A multiple of 8 greater than 8 will have an additional offset
-	const auto trueAnimIndex = static_cast<int>(correctAnimIndex + 0.5) % animCounts; // Round down and prevent exceeding the scope
-*/
+		: ScenarioClass::Instance->Random.RandomRanged(0, animCounts - 1)]; // Simple random;
+	/*
+		const auto ratioOfRotateAngle = velocityRadian / Math::TwoPi;
+		const auto correctRatioOfRotateAngle = ratioOfRotateAngle + 1.5; // Correct the Y-axis in reverse and ensure that the ratio is a positive number
+		const auto animIndex = correctRatioOfRotateAngle * animCounts;
+		const auto correctAnimIndex = animIndex - (animCounts / 8); // A multiple of 8 greater than 8 will have an additional offset
+		const auto trueAnimIndex = static_cast<int>(correctAnimIndex + 0.5) % animCounts; // Round down and prevent exceeding the scope
+	*/
 
 	if (!pAnimType)
 		return;
@@ -559,7 +558,7 @@ inline void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pH
 	if (!pWeapon->IsLaser)
 		return;
 
-	if (const auto pTrajType = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->TrajectoryType.get())
+	if (const auto pTrajType = BulletTypeExt::Fetch(pWeapon->Projectile)->TrajectoryType.get())
 	{
 		const auto flag = pTrajType->Flag();
 
@@ -882,7 +881,6 @@ void BulletExt::Serialize(T& Stm)
 		.Process(this->LifeDurationTimer)
 		.Process(this->NoTargetLifeTimer)
 		.Process(this->RetargetTimer)
-		.Process(this->FirepowerMult)
 		.Process(this->AttenuationRange)
 		.Process(this->TargetIsInAir)
 		.Process(this->TargetIsTechno)
@@ -939,7 +937,7 @@ bool BulletGroupData::Serialize(T& stm)
 // =============================
 // container
 
-BulletExt::ExtContainer::ExtContainer() : Container("BulletClass") { }
+BulletExt::ExtContainer::ExtContainer() : Container("BulletClass") {}
 
 BulletExt::ExtContainer::~ExtContainer() = default;
 

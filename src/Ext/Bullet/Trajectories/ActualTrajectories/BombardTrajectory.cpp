@@ -131,7 +131,7 @@ void BombardTrajectory::OnUnlimbo()
 	}
 
 	// Waiting for launch trigger
-	if (!BulletExt::ExtMap.Find(pBullet)->DispersedTrajectory)
+	if (!BulletExt::Fetch(pBullet)->DispersedTrajectory)
 		this->OpenFire();
 }
 
@@ -196,7 +196,7 @@ void BombardTrajectory::FireTrajectory()
 		this->MovingVelocity = BulletExt::Coord2Vector(middleLocation - pBullet->SourceCoords);
 
 		if (this->CalculateBulletVelocity(pType->Speed))
-			BulletExt::ExtMap.Find(pBullet)->Status |= TrajectoryStatus::Detonate;
+			BulletExt::Fetch(pBullet)->Status |= TrajectoryStatus::Detonate;
 
 		// Rotate the selected angle
 		if (std::abs(pType->RotateCoord) > BulletExt::Epsilon && this->CountOfBurst > 1)
@@ -204,7 +204,7 @@ void BombardTrajectory::FireTrajectory()
 	}
 	else
 	{
-		const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+		const auto pBulletExt = BulletExt::Fetch(pBullet);
 		this->ToFalling = true;
 		this->IsFalling = true;
 		auto middleLocation = CoordStruct::Empty;
@@ -260,7 +260,7 @@ void BombardTrajectory::MultiplyBulletVelocity(const double ratio, const bool sh
 
 	// Only be truly detonated during the descent phase
 	if (shouldDetonate && this->IsFalling)
-		BulletExt::ExtMap.Find(this->Bullet)->Status |= TrajectoryStatus::Detonate;
+		BulletExt::Fetch(this->Bullet)->Status |= TrajectoryStatus::Detonate;
 }
 
 CoordStruct BombardTrajectory::CalculateMiddleCoords()
@@ -447,7 +447,7 @@ bool BombardTrajectory::BulletVelocityChange()
 				this->RemainingDistance += pBullet->Location.Z - MapClass::Instance.GetCellFloorHeight(middleLocation);
 			}
 
-			const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+			const auto pBulletExt = BulletExt::Fetch(pBullet);
 
 			if (pBulletExt->LaserTrails.size())
 			{

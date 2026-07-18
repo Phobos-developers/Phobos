@@ -1031,7 +1031,7 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 				flh.Y = -flh.Y;
 		}
 
-		TechnoExt::ExtMap.Find(pThis)->LastWeaponFLH = flh;
+		TechnoExt::Fetch(pThis)->LastWeaponFLH = flh;
 	}
 	else
 	{
@@ -1049,7 +1049,7 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 			pCurrentPassenger = abstract_cast<FootClass*>(pCurrentPassenger->NextObject);
 
 		if (pCurrentPassenger)
-			TechnoExt::ExtMap.Find(pCurrentPassenger)->LastWeaponFLH = flh;
+			TechnoExt::Fetch(pCurrentPassenger)->LastWeaponFLH = flh;
 	}
 
 	auto turIdx = -1;

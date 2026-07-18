@@ -80,7 +80,7 @@ bool EngraveTrajectory::OnVelocityCheck()
 	if (pType->AttachToTarget || pType->UpdateDirection)
 		this->ChangeVelocity();
 
-	if (!BulletExt::ExtMap.Find(this->Bullet)->TargetIsInAir && this->PlaceOnCorrectHeight())
+	if (!BulletExt::Fetch(this->Bullet)->TargetIsInAir && this->PlaceOnCorrectHeight())
 		return true;
 
 	return this->PhobosTrajectory::OnVelocityCheck();
@@ -89,7 +89,7 @@ bool EngraveTrajectory::OnVelocityCheck()
 void EngraveTrajectory::OpenFire()
 {
 	const auto pBullet = this->Bullet;
-	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	const auto pBulletExt = BulletExt::Fetch(pBullet);
 	const auto pType = this->Type;
 	const auto pFirer = pBullet->Owner;
 	auto virtualSource = BulletExt::Coord2Point(pType->VirtualSourceCoord.Get());
@@ -139,7 +139,7 @@ bool EngraveTrajectory::CalculateBulletVelocity(const double speed)
 		return true;
 
 	const auto pBullet = this->Bullet;
-	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	const auto pBulletExt = BulletExt::Fetch(pBullet);
 	const auto pBulletTypeExt = pBulletExt->TypeExtData;
 	const auto pType = this->Type;
 	const auto pFirer = pBullet->Owner;
@@ -179,7 +179,7 @@ int EngraveTrajectory::GetFloorCoordHeight(const CoordStruct& coord)
 void EngraveTrajectory::ChangeVelocity()
 {
 	const auto pBullet = this->Bullet;
-	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	const auto pBulletExt = BulletExt::Fetch(pBullet);
 	const auto pType = this->Type;
 
 	// The center is located on the target

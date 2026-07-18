@@ -1,13 +1,12 @@
-﻿#include "Body.h"
+#include "Body.h"
 
 #include <AircraftTrackerClass.h>
 
-#include <Ext/Bullet/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Utilities/EnumFunctions.h>
 
-bool BulletExt::ExtData::BulletRetargetTechno()
+bool BulletExt::BulletRetargetTechno()
 {
 	const auto pBullet = this->OwnerObject();
 	const auto pType = this->TypeExtData;
@@ -37,7 +36,7 @@ bool BulletExt::ExtData::BulletRetargetTechno()
 		return false;
 
 	const auto pFirer = pBullet->Owner;
-	auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
+	auto pOwner = pFirer ? pFirer->Owner : BulletExt::Fetch(pBullet)->FirerHouse;
 
 	// Replace with neutral house when the firer house does not exist
 	if (!pOwner || pOwner->Defeated)
@@ -53,7 +52,7 @@ bool BulletExt::ExtData::BulletRetargetTechno()
 	const auto retargetCoords = pTraj ? pTraj->GetRetargetCenter() : pBullet->TargetCoords;
 	const double retargetRange = pType->RetargetRadius * Unsorted::LeptonsPerCell;
 	const auto pWeapon = pBullet->WeaponType;
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon);
+	const auto pWeaponExt = WeaponTypeExt::TryFetch(pWeapon);
 
 	// Find the first target
 	if (!this->TargetIsInAir) // Only get same type (on ground / in air)
@@ -103,11 +102,11 @@ bool BulletExt::ExtData::BulletRetargetTechno()
 	return false;
 }
 
-void BulletExt::ExtData::GetTechnoFLHCoord()
+void BulletExt::GetTechnoFLHCoord()
 {
 	const auto pBullet = this->OwnerObject();
 	const auto pTechno = pBullet->Owner;
-	const auto pExt = TechnoExt::ExtMap.TryFind(pTechno);
+	const auto pExt = TechnoExt::TryFetch(pTechno);
 
 	// Record the launch location, the building has an additional offset
 	if (!pExt || !pExt->LastWeaponType || pExt->LastWeaponType->Projectile != pBullet->Type)
@@ -116,7 +115,7 @@ void BulletExt::ExtData::GetTechnoFLHCoord()
 		this->FLHCoord = pExt->LastWeaponFLH;
 }
 
-CoordStruct BulletExt::ExtData::GetDisperseWeaponFireCoord(TechnoClass* pTechno)
+CoordStruct BulletExt::GetDisperseWeaponFireCoord(TechnoClass* pTechno)
 {
 	const auto pBullet = this->OwnerObject();
 	const auto pType = this->TypeExtData;
@@ -146,7 +145,7 @@ CoordStruct BulletExt::ExtData::GetDisperseWeaponFireCoord(TechnoClass* pTechno)
 	return pBullet->Location + fireOffsetCoord;
 }
 
-bool BulletExt::ExtData::PrepareDisperseWeapon()
+bool BulletExt::PrepareDisperseWeapon()
 {
 	const auto pBullet = this->OwnerObject();
 	const auto pType = this->TypeExtData;
@@ -157,7 +156,7 @@ bool BulletExt::ExtData::PrepareDisperseWeapon()
 	if (this->DisperseCount)
 	{
 		const auto pFirer = pBullet->Owner;
-		auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
+		auto pOwner = pFirer ? pFirer->Owner : BulletExt::Fetch(pBullet)->FirerHouse;
 
 		// Replace with neutral house when the firer house does not exist
 		if (!pOwner || pOwner->Defeated)
@@ -209,7 +208,7 @@ bool BulletExt::ExtData::PrepareDisperseWeapon()
 	return pType->DisperseSuicide;
 }
 
-bool BulletExt::ExtData::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct& sourceCoord, HouseClass* pOwner)
+bool BulletExt::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct& sourceCoord, HouseClass* pOwner)
 {
 	const auto pBullet = this->OwnerObject();
 	const auto pType = this->TypeExtData;
@@ -262,7 +261,7 @@ bool BulletExt::ExtData::FireDisperseWeapon(TechnoClass* pFirer, const CoordStru
 		}
 
 		const auto pWeapon = pType->DisperseWeapons[curIndex];
-		const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+		const auto pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 		const int burstCount = pType->DisperseBursts[(curIndex < validBursts) ? curIndex : (validBursts - 1)];
 
 		if (burstCount <= 0)
@@ -405,11 +404,11 @@ bool BulletExt::ExtData::FireDisperseWeapon(TechnoClass* pFirer, const CoordStru
 				}
 			}
 
-			if (checkObjects && BulletExt::ExtMap.Find(pBullet)->InterceptorTechnoType)
+			if (checkObjects && BulletExt::Fetch(pBullet)->InterceptorTechnoType)
 			{
 				for (const auto& pObject : BulletClass::Array)
 				{
-					const auto pBulletExt = BulletExt::ExtMap.Find(pObject);
+					const auto pBulletExt = BulletExt::Fetch(pObject);
 					const auto pBulletTypeExt = pBulletExt->TypeExtData;
 
 					if (pBulletTypeExt->Interceptable
@@ -510,13 +509,13 @@ bool BulletExt::ExtData::FireDisperseWeapon(TechnoClass* pFirer, const CoordStru
 }
 
 // Simulate the launch of weapons with burst.
-void BulletExt::ExtData::CreateDisperseBullets(TechnoClass* pTechno, const CoordStruct& sourceCoord, WeaponTypeClass* pWeapon, AbstractClass* pTarget, HouseClass* pOwner, int curBurst, int maxBurst)
+void BulletExt::CreateDisperseBullets(TechnoClass* pTechno, const CoordStruct& sourceCoord, WeaponTypeClass* pWeapon, AbstractClass* pTarget, HouseClass* pOwner, int curBurst, int maxBurst)
 {
 	const auto finalDamage = static_cast<int>(pWeapon->Damage * this->FirepowerMult);
 
 	if (const auto pBullet = pWeapon->Projectile->CreateBullet(pTarget, pTechno, finalDamage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 	{
-		const auto pExt = BulletExt::ExtMap.Find(pBullet);
+		const auto pExt = BulletExt::Fetch(pBullet);
 
 		// Record basic information
 		pExt->DispersedTrajectory = true;
@@ -543,7 +542,7 @@ void BulletExt::ExtData::CreateDisperseBullets(TechnoClass* pTechno, const Coord
 
 		if (pTarget->WhatAmI() == AbstractType::Bullet)
 		{
-			if (const auto pTypeExt = BulletExt::ExtMap.Find(this->OwnerObject())->InterceptorTechnoType)
+			if (const auto pTypeExt = BulletExt::Fetch(this->OwnerObject())->InterceptorTechnoType)
 			{
 				pExt->InterceptorTechnoType = pTypeExt;
 				pExt->InterceptedStatus |= InterceptedStatus::Targeted;

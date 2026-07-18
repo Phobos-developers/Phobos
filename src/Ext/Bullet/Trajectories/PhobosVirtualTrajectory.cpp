@@ -79,14 +79,14 @@ void VirtualTrajectory::OnUnlimbo()
 		this->SurfaceFirerID = pFirer->UniqueID;
 
 	// Waiting for launch trigger
-	if (!BulletExt::ExtMap.Find(this->Bullet)->DispersedTrajectory)
+	if (!BulletExt::Fetch(this->Bullet)->DispersedTrajectory)
 		this->OpenFire();
 }
 
 bool VirtualTrajectory::OnEarlyUpdate()
 {
 	const auto pBullet = this->Bullet;
-	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	const auto pBulletExt = BulletExt::Fetch(pBullet);
 
 	if (!pBulletExt->NotMainWeapon && this->InvalidFireCondition(pBullet->Owner))
 		return true;
@@ -150,8 +150,8 @@ void VirtualTrajectory::DrawTrackingLaser()
 	if (!pWeapon || !pWeapon->IsLaser)
 		return;
 
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	const auto pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
+	const auto pBulletExt = BulletExt::Fetch(pBullet);
 	auto pFirer = pBullet->Owner;
 	const auto pOwner = pFirer ? pFirer->Owner : pBulletExt->FirerHouse;
 	auto fireCoord = pBullet->SourceCoords;
@@ -200,7 +200,7 @@ void VirtualTrajectory::UpdateTrackingLaser()
 	}
 
 	const auto pBullet = this->Bullet;
-	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	const auto pBulletExt = BulletExt::Fetch(pBullet);
 
 	// Find the outermost transporter
 	const auto pOwner = pBullet->Owner;
@@ -208,7 +208,7 @@ void VirtualTrajectory::UpdateTrackingLaser()
 
 	// Considering that the CurrentBurstIndex may be different, it is not possible to call existing functions
 	if (!pBulletExt->NotMainWeapon && pFirer && !pFirer->InLimbo)
-		pLaser->Source = TechnoExt::GetFLHAbsoluteCoords(pFirer, pBulletExt->FLHCoord, (!pOwner->InOpenToppedTransport || TechnoExt::ExtMap.Find(pFirer)->TypeExtData->AlternateFLH_OnTurret));
+		pLaser->Source = TechnoExt::GetFLHAbsoluteCoords(pFirer, pBulletExt->FLHCoord, (!pOwner->InOpenToppedTransport || TechnoExt::Fetch(pFirer)->TypeExtData->AlternateFLH_OnTurret));
 
 	pLaser->Target = pBullet->Location;
 	pLaser->Progress.Value = 0;

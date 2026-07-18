@@ -158,7 +158,7 @@ void TracingTrajectory::OpenFire()
 
 	this->PhobosTrajectory::OpenFire();
 
-	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	const auto pBulletExt = BulletExt::Fetch(pBullet);
 	const int duration = pBulletExt->TypeExtData->LifeDuration.Get();
 
 	// Calculate survival time
@@ -175,7 +175,7 @@ void TracingTrajectory::OpenFire()
 bool TracingTrajectory::ChangeVelocity()
 {
 	const auto pBullet = this->Bullet;
-	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	const auto pBulletExt = BulletExt::Fetch(pBullet);
 	const auto pType = this->Type;
 
 	// Find the outermost transporter

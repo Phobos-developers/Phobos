@@ -150,7 +150,7 @@ void ParabolaTrajectory::OnUnlimbo()
 	}
 
 	// Waiting for launch trigger
-	if (!BulletExt::ExtMap.Find(pBullet)->DispersedTrajectory)
+	if (!BulletExt::Fetch(pBullet)->DispersedTrajectory)
 		this->OpenFire();
 }
 
@@ -174,7 +174,7 @@ bool ParabolaTrajectory::OnVelocityCheck()
 
 	VelocityCheckType velocityCheck = VelocityCheckType::SkipCheck;
 
-	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	const auto pBulletExt = BulletExt::Fetch(pBullet);
 	const auto pBulletTypeExt = pBulletExt->TypeExtData;
 	const bool checkThrough = (!pBulletTypeExt->ThroughBuilding || !pBulletTypeExt->ThroughVehicles);
 	const double velocity = BulletExt::Get2DVelocity(this->MovingVelocity);
@@ -362,7 +362,7 @@ TrajectoryCheckReturnType ParabolaTrajectory::OnDetonateUpdate(const CoordStruct
 	const auto pCell = MapClass::Instance.TryGetCellAt(position);
 
 	// Bounce
-	if (!pCell || ((BulletExt::ExtMap.Find(pBullet)->Status & TrajectoryStatus::Bounce) && this->CalculateBulletVelocityAfterBounce(pCell, position)))
+	if (!pCell || ((BulletExt::Fetch(pBullet)->Status & TrajectoryStatus::Bounce) && this->CalculateBulletVelocityAfterBounce(pCell, position)))
 		return TrajectoryCheckReturnType::Detonate;
 
 	return TrajectoryCheckReturnType::SkipGameCheck;
@@ -419,7 +419,7 @@ void ParabolaTrajectory::FireTrajectory()
 
 	if (gravity <= BulletExt::Epsilon)
 	{
-		BulletExt::ExtMap.Find(pBullet)->Status |= TrajectoryStatus::Detonate;
+		BulletExt::Fetch(pBullet)->Status |= TrajectoryStatus::Detonate;
 		return;
 	}
 
@@ -445,7 +445,7 @@ void ParabolaTrajectory::MultiplyBulletVelocity(const double ratio, const bool s
 	}
 
 	// Is it detonating or bouncing?
-	BulletExt::ExtMap.Find(this->Bullet)->Status |= (shouldDetonate || this->BounceTimes <= 0) ? TrajectoryStatus::Detonate : TrajectoryStatus::Bounce;
+	BulletExt::Fetch(this->Bullet)->Status |= (shouldDetonate || this->BounceTimes <= 0) ? TrajectoryStatus::Detonate : TrajectoryStatus::Bounce;
 }
 
 void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& source, const double gravity)
@@ -662,7 +662,7 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(const CoordStruct& sour
 
 	if (distance <= BulletExt::Epsilon)
 	{
-		BulletExt::ExtMap.Find(pBullet)->Status |= TrajectoryStatus::Detonate;
+		BulletExt::Fetch(pBullet)->Status |= TrajectoryStatus::Detonate;
 		return;
 	}
 
@@ -970,7 +970,7 @@ bool ParabolaTrajectory::CalculateBulletVelocityAfterBounce(CellClass* const pCe
 
 	// Check can truely bounce on techno
 	const auto pBullet = this->Bullet;
-	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	const auto pBulletExt = BulletExt::Fetch(pBullet);
 	const auto pFirer = pBullet->Owner;
 	const auto pOwner = pFirer ? pFirer->Owner : pBulletExt->FirerHouse;
 

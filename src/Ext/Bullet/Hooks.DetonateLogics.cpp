@@ -10,16 +10,16 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 {
 	enum { SkipShaking = 0x469130, GoToExtras = 0x469AA4 };
 
-	GET(BulletClass*, pThis, ESI);
+	GET(BulletClass*, pBullet, ESI);
 	GET(WarheadTypeClass*, pWarhead, EAX);
 	GET_BASE(CoordStruct const* const, pCoords, 0x8);
 
-	if (BulletExt::ExtMap.Find(pThis)->Status & TrajectoryStatus::Vanish)
+	if (BulletExt::Fetch(pBullet)->Status & TrajectoryStatus::Vanish)
 		return GoToExtras;
 
 	auto const pExt = WarheadTypeExt::Fetch(pWarhead);
 
-	if (auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target))
+	if (auto const pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
 	{
 		// Check if the WH should affect the techno target or skip it
 		if (BulletTypeExt::Fetch(pBullet->Type)->Shrapnel_ObeyWarheadTriggerConditions.Get(RulesExt::Global()->Shrapnel_ObeyWarheadTriggerConditions))

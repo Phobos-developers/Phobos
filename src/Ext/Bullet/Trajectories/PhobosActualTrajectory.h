@@ -89,7 +89,7 @@ public:
 			pBullet->Range -= Game::F2I(this->MovingSpeed);
 
 			if (pBullet->Range <= 0)
-				BulletExt::ExtMap.Find(pBullet)->Status |= TrajectoryStatus::Detonate;
+				BulletExt::Fetch(pBullet)->Status |= TrajectoryStatus::Detonate;
 		}
 	}
 	inline double GetLeadTime(const double defaultTime)
