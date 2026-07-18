@@ -135,7 +135,6 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock, b
 		return pOwner->PrimaryFacing.Current().GetDir();
 
 	auto const pType = pThis->Type;
-	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 
 	const bool hasDockOrLink = (pDock || pThis->HasAnyLink());
 
@@ -167,6 +166,8 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock, b
 		else if (!pType->AirportBound)
 			return pLink->PrimaryFacing.Current().GetDir();
 	}
+
+	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 
 	if (pTypeExt->LandingDir.isset())
 	{
