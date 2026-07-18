@@ -37,9 +37,6 @@ public:
 	TechnoTypeClass* PreviousType; // Type change registered in TechnoClass::AI on current frame and used in FootClass::AI on same frame and reset after.
 	std::vector<EBolt*> ElectricBolts; // EBolts are not serialized so do not serialize this either.
 	int AnimRefCount; // Used to keep track of how many times this techno is referenced in anims f.ex Invoker, ParentBuilding etc., for pointer invalidation.
-	int SubterraneanHarvStatus; // 0 = none, 1 = created, 2 = out from factory
-	AbstractClass* SubterraneanHarvRallyPoint;
-	bool ReceiveDamage;
 	bool LastKillWasTeamTarget;
 	CDTimerClass PassengerDeletionTimer;
 	ShieldTypeClass* CurrentShieldType;
@@ -52,7 +49,6 @@ public:
 	bool IsInTunnel;
 	bool IsBurrowed;
 	bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
-	CDTimerClass DeployFireTimer;
 	bool ForceFullRearmDelay;
 	bool LastRearmWasFullDelay;
 	bool CanCloakDuringRearm; // Current rearm timer was started by DecloakToFire=no weapon.
@@ -72,7 +68,6 @@ public:
 	bool HasRemainingWarpInDelay;          // Converted from object with Teleport Locomotor to one with a different Locomotor while still phasing in OR set if ChronoSphereDelay > 0.
 	int LastWarpInDelay;                   // Last-warp in delay for this unit, used by HasCarryoverWarpInDelay.
 	bool IsBeingChronoSphered;             // Set to true on units currently being ChronoSphered, does not apply to Ares-ChronoSphere'd buildings or Chrono reinforcements.
-	bool KeepTargetOnMove;
 	CellStruct LastSensorsMapCoords;
 	CDTimerClass TiberiumEater_Timer;
 	bool DelayedFireSequencePaused;
@@ -84,10 +79,6 @@ public:
 
 	bool IsSelected;
 	bool ResetLocomotor;
-
-	// Replaces use of TechnoClass->Animation StageClass timer for IsSimpleDeployer to simplify
-	// the deploy animation timer calcs and eliminate possibility of outside interference.
-	CDTimerClass SimpleDeployerAnimationTimer;
 
 	// cache tint values
 	int TintColorOwner;
@@ -122,9 +113,6 @@ public:
 		, PreviousType { nullptr }
 		, ElectricBolts {}
 		, AnimRefCount { 0 }
-		, SubterraneanHarvStatus { 0 }
-		, SubterraneanHarvRallyPoint { nullptr }
-		, ReceiveDamage { false }
 		, LastKillWasTeamTarget { false }
 		, PassengerDeletionTimer {}
 		, CurrentShieldType { nullptr }
@@ -137,7 +125,6 @@ public:
 		, IsInTunnel { false }
 		, IsBurrowed { false }
 		, HasBeenPlacedOnMap { false }
-		, DeployFireTimer {}
 		, ForceFullRearmDelay { false }
 		, LastRearmWasFullDelay { false }
 		, CanCloakDuringRearm { false }
@@ -153,11 +140,9 @@ public:
 		, HasRemainingWarpInDelay { false }
 		, LastWarpInDelay { 0 }
 		, IsBeingChronoSphered { false }
-		, KeepTargetOnMove { false }
 		, LastSensorsMapCoords { CellStruct::Empty }
 		, TiberiumEater_Timer {}
 		, AirstrikeTargetingMe { nullptr }
-		, SimpleDeployerAnimationTimer {}
 		, DelayedFireSequencePaused { false }
 		, DelayedFireWeaponIndex { -1 }
 		, DelayedFireTimer {}
@@ -189,7 +174,6 @@ public:
 	void ApplyInterceptor();
 	bool CheckDeathConditions(bool isInLimbo = false);
 	void DepletedAmmoActions();
-	void UpdateSubterraneanHarvester();
 	void EatPassengers();
 	void UpdateTiberiumEater();
 	void UpdateShield();
@@ -201,7 +185,6 @@ public:
 	void UpdateLaserTrails();
 	void UpdateAttachEffects();
 	void UpdateGattlingRateDownReset();
-	void UpdateKeepTargetOnMove();
 	void UpdateWarpInDelay();
 	void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, AttachEffectClass* pRemoved = nullptr);
 	bool RecalculateStatMultipliers(AttachEffectClass* pAttachEffect = nullptr);

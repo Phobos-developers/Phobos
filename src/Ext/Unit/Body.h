@@ -13,8 +13,24 @@ public:
 
 	static constexpr DWORD Canary = 0xE1E2E3E4;
 
+	int SubterraneanHarvStatus; // 0 = none, 1 = created, 2 = out from factory
+	AbstractClass* SubterraneanHarvRallyPoint;
+	bool ReceiveDamage;
+	CDTimerClass DeployFireTimer;
+	bool KeepTargetOnMove;
+	CDTimerClass SimpleDeployerAnimationTimer;
+
 	explicit UnitExt(UnitClass* const OwnerObject) : FootExt(OwnerObject)
+		, SubterraneanHarvStatus { 0 }
+		, SubterraneanHarvRallyPoint { nullptr }
+		, ReceiveDamage { false }
+		, DeployFireTimer {}
+		, KeepTargetOnMove { false }
+		, SimpleDeployerAnimationTimer {}
 	{ }
+
+	void UpdateSubterraneanHarvester();
+	void UpdateKeepTargetOnMove();
 
 	UnitClass* OwnerObject() const
 	{

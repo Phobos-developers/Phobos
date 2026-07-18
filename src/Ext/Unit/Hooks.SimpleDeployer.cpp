@@ -3,6 +3,7 @@
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/Unit/Body.h>
 #include <Utilities/AresFunctions.h>
 
 static __forceinline bool HasDeployingAnim(TechnoTypeClass* pType)
@@ -83,7 +84,7 @@ static inline void CreateDeployingAnim(UnitClass* pUnit, bool isDeploying)
 		pAnim->SetOwnerObject(pUnit);
 		AnimExt::SetAnimOwnerHouseKind(pAnim, pUnit->Owner, nullptr, false, true);
 		AnimExt::Fetch(pAnim)->SetInvoker(pUnit);
-		auto const pExt = TechnoExt::Fetch(pUnit);
+		auto const pExt = UnitExt::Fetch(pUnit);
 
 		if (pTypeExt->DeployingAnim_UseUnitDrawer)
 		{
@@ -127,7 +128,7 @@ DEFINE_HOOK(0x739AC0, UnitClass_SimpleDeployer_Deploy, 0x6)
 
 		if (pThis->Deploying && pThis->DeployAnim)
 		{
-			auto const pExt = TechnoExt::Fetch(pThis);
+			auto const pExt = UnitExt::Fetch(pThis);
 			auto& timer = pExt->SimpleDeployerAnimationTimer;
 
 			if (timer.Completed())
@@ -188,7 +189,7 @@ DEFINE_HOOK(0x739CD0, UnitClass_SimpleDeployer_Undeploy, 0x6)
 	{
 		if (pThis->Undeploying && pThis->DeployAnim)
 		{
-			auto const pExt = TechnoExt::Fetch(pThis);
+			auto const pExt = UnitExt::Fetch(pThis);
 			auto& timer = pExt->SimpleDeployerAnimationTimer;
 
 			if (timer.Completed())

@@ -6,6 +6,7 @@
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Infantry/Body.h>
+#include <Ext/Unit/Body.h>
 
 #pragma region SlaveManagerClass
 
@@ -945,7 +946,7 @@ DEFINE_HOOK(0x4C7512, EventClass_Execute_StopCommand, 0x6)
 		}
 
 		// Explicit stop command should reset subterranean harvester state machine.
-		auto const pExt = TechnoExt::Fetch(pUnit);
+		auto const pExt = UnitExt::Fetch(pUnit);
 		pExt->SubterraneanHarvStatus = 0;
 		pExt->SubterraneanHarvRallyPoint = nullptr;
 	}
@@ -964,7 +965,7 @@ DEFINE_HOOK(0x4C7462, EventClass_Execute_MegaMission_MoveCommand, 0x5)
 
 	GET(EventClass*, pThis, ESI);
 	auto const mission = static_cast<Mission>(pThis->MegaMission.Mission);
-	auto const pExt = TechnoExt::Fetch(pTechno);
+	auto const pExt = UnitExt::Fetch(static_cast<UnitClass*>(pTechno));
 
 	if (mission == Mission::Move)
 	{

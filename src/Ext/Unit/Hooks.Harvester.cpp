@@ -1,4 +1,5 @@
 #include <Ext/Techno/Body.h>
+#include <Ext/Unit/Body.h>
 
 #pragma region EnterRefineryFix
 
@@ -221,7 +222,7 @@ DEFINE_HOOK(0x44459A, BuildingClass_ExitObject_SubterraneanHarvester, 0x5)
 
 		if ((pType->Harvester || pType->Weeder) && pType->MovementZone == MovementZone::Subterrannean)
 		{
-			auto const pExt = TechnoExt::Fetch(pUnit);
+			auto const pExt = UnitExt::Fetch(pUnit);
 			pExt->SubterraneanHarvStatus = 1;
 			pExt->SubterraneanHarvRallyPoint = pThis->ArchiveTarget;
 			pThis->ArchiveTarget = nullptr;
