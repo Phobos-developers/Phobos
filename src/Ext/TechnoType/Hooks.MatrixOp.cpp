@@ -4,6 +4,7 @@
 #include <TunnelLocomotionClass.h>
 #include <Utilities/AresHelper.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/Unit/Body.h>
 #include <Ext/Aircraft/Body.h>
 #include <Ext/UnitType/Body.h>
 
@@ -444,7 +445,7 @@ static Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco
 	}
 	else
 	{
-		const auto pTypeExt = static_cast<UnitTypeExt*>(TechnoExt::Fetch(linked)->TypeExtData);
+		const auto pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(linked))->GetTypeExtData();
 
 		if (linked->WhatAmI() == AbstractType::Unit
 			&& pTypeExt->JumpjetTilt

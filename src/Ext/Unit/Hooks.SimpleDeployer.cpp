@@ -35,7 +35,7 @@ static inline bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 	}
 
 	// Facing restrictions.
-	auto const pTypeExt = static_cast<UnitTypeExt*>(TechnoExt::Fetch(pUnit)->TypeExtData);
+	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pUnit))->GetTypeExtData();
 	auto const defaultFacing = (FacingType)(RulesClass::Instance->DeployDir >> 5);
 	auto const facing = pTypeExt->DeployDir.Get(defaultFacing);
 

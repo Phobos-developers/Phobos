@@ -1,6 +1,6 @@
 #include "Body.h"
 
-#include <Ext/BuildingType/Body.h>
+#include <Ext/Building/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/InfantryType/Body.h>
 #include <Ext/TEvent/Body.h>
@@ -233,15 +233,15 @@ DEFINE_HOOK(0x702603, TechnoClass_ReceiveDamage_Explodes, 0x6)
 
 	GET(TechnoClass*, pThis, ESI);
 
-	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+	const auto pExt = TechnoExt::Fetch(pThis);
 
 	if (pThis->WhatAmI() == AbstractType::Building)
 	{
-		if (!static_cast<BuildingTypeExt*>(pTypeExt)->Explodes_DuringBuildup && (pThis->CurrentMission == Mission::Construction || pThis->CurrentMission == Mission::Selling))
+		if (!static_cast<BuildingExt*>(pExt)->GetTypeExtData()->Explodes_DuringBuildup && (pThis->CurrentMission == Mission::Construction || pThis->CurrentMission == Mission::Selling))
 			return SkipExploding;
 	}
 
-	if (!pTypeExt->Explodes_KillPassengers)
+	if (!pExt->TypeExtData->Explodes_KillPassengers)
 		return SkipKillingPassengers;
 
 	return 0;

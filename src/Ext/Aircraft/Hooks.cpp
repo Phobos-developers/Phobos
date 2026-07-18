@@ -911,7 +911,7 @@ DEFINE_HOOK(0x7001B0, TechnoClass_MouseOverObject_EnableGuardObject, 0x7)
 	GET(TechnoClass* const, pThis, ESI);
 
 	return pThis->WhatAmI() == AbstractType::Aircraft
-		&& !static_cast<AircraftTypeExt*>(TechnoExt::Fetch(pThis)->TypeExtData)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)
+		&& !static_cast<AircraftExt*>(TechnoExt::Fetch(pThis))->GetTypeExtData()->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)
 		? SkipCheckCanGuard : ContinueCheckCanGuard;
 }
 
@@ -940,7 +940,7 @@ DEFINE_HOOK(0x6FA68B, TechnoClass_Update_AttackMovePaused, 0xA) // To make aircr
 	GET(TechnoClass* const, pThis, ESI);
 
 	const bool skip = pThis->WhatAmI() == AbstractType::Aircraft
-		&& static_cast<AircraftTypeExt*>(TechnoExt::Fetch(pThis)->TypeExtData)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)
+		&& static_cast<AircraftExt*>(TechnoExt::Fetch(pThis))->GetTypeExtData()->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)
 		&& (!pThis->Ammo || !pThis->IsInAir());
 
 	return skip ? SkipGameCode : 0;
@@ -954,7 +954,7 @@ DEFINE_HOOK(0x4DF3BA, FootClass_UpdateAttackMove_AircraftHoldAttackMoveTarget1, 
 
 	// The aircraft is constantly moving, which may cause its target to constantly enter and leave its range, so it is fixed to hold the target.
 	if (pThis->WhatAmI() == AbstractType::Aircraft
-		&& static_cast<AircraftTypeExt*>(TechnoExt::Fetch(pThis)->TypeExtData)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions))
+		&& static_cast<AircraftExt*>(TechnoExt::Fetch(pThis))->GetTypeExtData()->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions))
 	{
 		return HoldTarget;
 	}
@@ -970,7 +970,7 @@ DEFINE_HOOK(0x4DF42A, FootClass_UpdateAttackMove_AircraftHoldAttackMoveTarget2, 
 
 	// Although if the target selected by CS is an object rather than cell.
 	return (pThis->WhatAmI() == AbstractType::Aircraft
-		&& static_cast<AircraftTypeExt*>(TechnoExt::Fetch(pThis)->TypeExtData)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions))
+		&& static_cast<AircraftExt*>(TechnoExt::Fetch(pThis))->GetTypeExtData()->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions))
 		? HoldTarget : ContinueCheck;
 }
 
@@ -1119,7 +1119,7 @@ DEFINE_HOOK(0x4C7403, EventClass_Execute_AircraftAreaGuard, 0x6)
 	GET(TechnoClass* const, pTechno, EDI);
 
 	if (pTechno->WhatAmI() == AbstractType::Aircraft
-		&& static_cast<AircraftTypeExt*>(TechnoExt::Fetch(pTechno)->TypeExtData)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)
+		&& static_cast<AircraftExt*>(TechnoExt::Fetch(pTechno))->GetTypeExtData()->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)
 		&& !pTechno->Ammo)
 	{
 		// Skip assigning destination / target here.
@@ -1139,7 +1139,7 @@ DEFINE_HOOK(0x4C72F2, EventClass_Execute_AircraftAreaGuard_Unlink, 0x6)
 	GET(TechnoClass* const, pTechno, EDI);
 
 	if (pTechno->WhatAmI() == AbstractType::Aircraft
-		&& static_cast<AircraftTypeExt*>(TechnoExt::Fetch(pTechno)->TypeExtData)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)
+		&& static_cast<AircraftExt*>(TechnoExt::Fetch(pTechno))->GetTypeExtData()->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)
 		&& pThis->MegaMission.Mission == (char)Mission::Area_Guard
 		&& !pTechno->Ammo)
 	{

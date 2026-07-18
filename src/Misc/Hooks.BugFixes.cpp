@@ -997,7 +997,7 @@ DEFINE_HOOK(0x72958E, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x8
 
 	// Nov 27, 2024 - Starkku: The movement speed was actually also hardcoded here to 19, so the distance check made sense
 	// It can now be customized globally or per TechnoType however
-	auto const pTypeExt = static_cast<UnitTypeExt*>(TechnoExt::Fetch(pLinkedTo)->TypeExtData);
+	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
 	auto const pType = pTypeExt->OwnerObject();
 	int speed = pTypeExt->SubterraneanSpeed >= 0 ? pTypeExt->SubterraneanSpeed : RulesExt::Global()->SubterraneanSpeed;
 

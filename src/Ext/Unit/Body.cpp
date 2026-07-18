@@ -149,7 +149,7 @@ void UnitExt::UpdateKeepTargetOnMove()
 // Queues or cancels auto-deploy depending on the unit's remaining ammo.
 void UnitExt::DepletedAmmoActions()
 {
-	auto const pTypeExt = static_cast<UnitTypeExt*>(this->TypeExtData);
+	auto const pTypeExt = this->GetTypeExtData();
 	const int min = pTypeExt->Ammo_AutoDeployMinimumAmount;
 	const int max = pTypeExt->Ammo_AutoDeployMaximumAmount;
 

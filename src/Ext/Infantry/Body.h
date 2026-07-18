@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Ext/Foot/Body.h>
+#include <Ext/InfantryType/Body.h>
 #include <InfantryClass.h>
 
 // Concrete leaf extension for InfantryClass.
@@ -24,6 +25,12 @@ public:
 	InfantryClass* OwnerObject() const
 	{
 		return static_cast<InfantryClass*>(this->GetAttachedObject());
+	}
+
+	// an infantry's type extension is always the InfantryTypeExt leaf
+	InfantryTypeExt* GetTypeExtData() const
+	{
+		return static_cast<InfantryTypeExt*>(this->TypeExtData);
 	}
 
 	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);

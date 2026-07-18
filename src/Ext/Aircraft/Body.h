@@ -1,6 +1,7 @@
 #pragma once
 #include <Ext/Techno/Body.h>
 #include <Ext/Foot/Body.h>
+#include <Ext/AircraftType/Body.h>
 #include <AircraftClass.h>
 
 // Concrete leaf extension for AircraftClass.
@@ -24,6 +25,12 @@ public:
 	AircraftClass* OwnerObject() const
 	{
 		return static_cast<AircraftClass*>(this->GetAttachedObject());
+	}
+
+	// an aircraft's type extension is always the AircraftTypeExt leaf
+	AircraftTypeExt* GetTypeExtData() const
+	{
+		return static_cast<AircraftTypeExt*>(this->TypeExtData);
 	}
 
 	static void FireWeapon(AircraftClass* pThis, AbstractClass* pTarget);

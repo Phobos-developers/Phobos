@@ -480,7 +480,7 @@ DEFINE_HOOK(0x728F89, TunnelLocomotionClass_Process_SubterraneanHeight1, 0x5)
 	GET(TechnoClass*, pLinkedTo, ECX);
 	GET(const int, height, EAX);
 
-	auto const pTypeExt = static_cast<UnitTypeExt*>(TechnoExt::Fetch(pLinkedTo)->TypeExtData);
+	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
 
 	if (height == pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight))
 		return Continue;
@@ -495,7 +495,7 @@ DEFINE_HOOK(0x728FC6, TunnelLocomotionClass_Process_SubterraneanHeight2, 0x5)
 	GET(TechnoClass*, pLinkedTo, ECX);
 	GET(const int, height, EAX);
 
-	auto const pTypeExt = static_cast<UnitTypeExt*>(TechnoExt::Fetch(pLinkedTo)->TypeExtData);
+	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
 
 	if (height <= pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight))
 		return Continue;
@@ -511,7 +511,7 @@ DEFINE_HOOK(0x728FF2, TunnelLocomotionClass_Process_SubterraneanHeight3, 0x6)
 	GET(const int, heightOffset, EAX);
 	REF_STACK(int, height, 0x14);
 
-	auto const pTypeExt = static_cast<UnitTypeExt*>(TechnoExt::Fetch(pLinkedTo)->TypeExtData);
+	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
 	const int subtHeight = pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight);
 	height -= heightOffset;
 
@@ -528,7 +528,7 @@ DEFINE_HOOK(0x7295E2, TunnelLocomotionClass_ProcessStateDigging_SubterraneanHeig
 	GET(TechnoClass*, pLinkedTo, EAX);
 	REF_STACK(int, height, STACK_OFFSET(0x44, -0x8));
 
-	auto const pTypeExt = static_cast<UnitTypeExt*>(TechnoExt::Fetch(pLinkedTo)->TypeExtData);
+	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
 	height = pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight);
 
 	return SkipGameCode;

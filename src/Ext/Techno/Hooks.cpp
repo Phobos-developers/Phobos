@@ -814,7 +814,7 @@ DEFINE_HOOK_AGAIN(0x6A343F, LocomotionClass_Process_DamagedSpeedMultiplier, 0x6)
 DEFINE_HOOK(0x4B3DF0, LocomotionClass_Process_DamagedSpeedMultiplier, 0x6)// Drive
 {
 	GET(FootClass*, pLinkedTo, ECX);
-	const auto pTypeExt = static_cast<UnitTypeExt*>(TechnoExt::Fetch(pLinkedTo)->TypeExtData);
+	const auto pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
 
 	const double multiplier = pTypeExt->DamagedSpeed.Get(RulesExt::Global()->DamagedSpeed);
 	__asm fmul multiplier;
@@ -942,7 +942,7 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 
 			if (hoverShutdown)
 			{
-				if (static_cast<UnitTypeExt*>(pExt->TypeExtData)->HoverDrownable)
+				if (static_cast<UnitExt*>(pExt)->GetTypeExtData()->HoverDrownable)
 				{
 					int damage = pThis->Health;
 					pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
@@ -1092,7 +1092,7 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 	{
 		if (!pUnit->Type->Turret && pUnit->CurrentFiringFrame != -1)
 		{
-			if (static_cast<UnitTypeExt*>(pExt->TypeExtData)->FireUp_ResetInRetarget || !pThis->IsCloseEnough(pTarget, pThis->SelectWeapon(pTarget)))
+			if (UnitExt::Fetch(pUnit)->GetTypeExtData()->FireUp_ResetInRetarget || !pThis->IsCloseEnough(pTarget, pThis->SelectWeapon(pTarget)))
 			{
 				pUnit->CurrentFiringFrame = -1;
 			}

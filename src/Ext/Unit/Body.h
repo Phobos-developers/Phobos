@@ -1,9 +1,8 @@
 #pragma once
 
 #include <Ext/Foot/Body.h>
+#include <Ext/UnitType/Body.h>
 #include <UnitClass.h>
-
-class UnitTypeExt;
 
 // Concrete leaf extension for UnitClass. Empty for now: all techno-level data lives
 // in TechnoExt; this leaf only exists so a unit's extension has its own
@@ -55,6 +54,12 @@ public:
 	UnitClass* OwnerObject() const
 	{
 		return static_cast<UnitClass*>(this->GetAttachedObject());
+	}
+
+	// a unit's type extension is always the UnitTypeExt leaf
+	UnitTypeExt* GetTypeExtData() const
+	{
+		return static_cast<UnitTypeExt*>(this->TypeExtData);
 	}
 
 	class ExtContainer final : public Container<UnitExt>

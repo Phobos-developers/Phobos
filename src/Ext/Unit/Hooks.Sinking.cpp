@@ -1,4 +1,5 @@
 #include <Ext/Techno/Body.h>
+#include <Ext/Unit/Body.h>
 #include <Ext/UnitType/Body.h>
 
 DEFINE_HOOK(0x7364DC, UnitClass_Update_SinkSpeed, 0x7)
@@ -30,11 +31,11 @@ DEFINE_HOOK(0x629C67, ParasiteClass_UpdateSquid_SinkableBySquid, 0x9)
 	GET(ParasiteClass*, pThis, ESI);
 	GET(FootClass*, pVictim, EDI);
 
-	const auto pVictimTypeExt = TechnoExt::Fetch(pVictim)->TypeExtData;
+	const auto pVictimExt = TechnoExt::Fetch(pVictim);
 	const auto pOwner = pThis->Owner;
 	const bool isUnit = pVictim->WhatAmI() == AbstractType::Unit;
 
-	if ((isUnit && static_cast<UnitTypeExt*>(pVictimTypeExt)->Sinkable_SquidGrab) || !isUnit)
+	if ((isUnit && static_cast<UnitExt*>(pVictimExt)->GetTypeExtData()->Sinkable_SquidGrab) || !isUnit)
 	{
 		pVictim->IsSinking = true;
 		pVictim->Destroyed(pOwner);
@@ -42,7 +43,7 @@ DEFINE_HOOK(0x629C67, ParasiteClass_UpdateSquid_SinkableBySquid, 0x9)
 	}
 	else
 	{
-		auto damage = pVictimTypeExt->OwnerObject()->Strength;
+		auto damage = pVictimExt->TypeExtData->OwnerObject()->Strength;
 		pVictim->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, pOwner, true, false, pOwner->Owner);
 	}
 
