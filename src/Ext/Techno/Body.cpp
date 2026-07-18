@@ -7,7 +7,6 @@
 #include <Ext/House/Body.h>
 #include <Ext/Infantry/Body.h>
 #include <Ext/Unit/Body.h>
-#include <Ext/UnitType/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Event/Body.h>
@@ -15,8 +14,6 @@
 #include <Utilities/AresFunctions.h>
 #include <Utilities/AresHelper.h>
 #include <Interop/TechnoExt.h>
-
-UnitClass* TechnoExt::Deployer = nullptr;
 
 TechnoExt::~TechnoExt()
 {
@@ -473,30 +470,6 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 }
 
 // Checks if vehicle can deploy into a building at its current location. If unit has no DeploysInto set returns noDeploysIntoDefaultValue (def = false) instead.
-bool TechnoExt::CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultValue)
-{
-	if (!pThis)
-		return false;
-
-	auto const pDeployType = pThis->Type->DeploysInto;
-
-	if (!pDeployType)
-		return noDeploysIntoDefaultValue;
-
-	auto mapCoords = CellClass::Coord2Cell(pThis->GetCoords());
-
-	if (pDeployType->GetFoundationWidth() > 2 || pDeployType->GetFoundationHeight(false) > 2)
-		mapCoords += CellStruct { -1, -1 };
-
-	// The vanilla game used an inappropriate approach here, resulting in potential risk of desync.
-	// Now, through additional checks, we can directly exclude the unit who want to deploy.
-	TechnoExt::Deployer = pThis;
-	const bool canDeploy = pDeployType->CanCreateHere(mapCoords, pThis->Owner);
-	TechnoExt::Deployer = nullptr;
-
-	return canDeploy;
-}
-
 bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
 {
 	if (!pThis || !pSource)
@@ -609,72 +582,6 @@ int TechnoExt::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEf
 	return foundCount;
 }
 
-UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit, TechnoTypeExt* pData)
-{
-	if (pUnit->IsGreenHP())
-	{
-		return nullptr;
-	}
-	else if (pUnit->IsYellowHP())
-	{
-		if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
-		{
-			if (auto const imageYellow = static_cast<UnitTypeExt*>(pData)->WaterImage_ConditionYellow)
-				return imageYellow;
-		}
-		else if (auto const imageYellow = pData->Image_ConditionYellow)
-		{
-			return abstract_cast<UnitTypeClass*, true>(imageYellow);
-		}
-	}
-	else
-	{
-		if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
-		{
-			if (auto const imageRed = static_cast<UnitTypeExt*>(pData)->WaterImage_ConditionRed)
-				return imageRed;
-			else if (auto const imageYellow = static_cast<UnitTypeExt*>(pData)->WaterImage_ConditionYellow)
-				return imageYellow;
-		}
-		else if (auto const imageRed = pData->Image_ConditionRed)
-		{
-			return abstract_cast<UnitTypeClass*, true>(imageRed);
-		}
-		else if (auto const imageYellow = pData->Image_ConditionYellow)
-		{
-			return abstract_cast<UnitTypeClass*, true>(imageYellow);
-		}
-	}
-
-	return nullptr;
-}
-
-AircraftTypeClass* TechnoExt::GetAircraftTypeExtra(AircraftClass* pAircraft)
-{
-	auto const pType = pAircraft->Type;
-	auto const pData = TechnoTypeExt::Fetch(pType);
-
-	if (!pData->NeedDamagedImage || pAircraft->IsGreenHP())
-	{
-		return pType;
-	}
-	else if (pAircraft->IsYellowHP())
-	{
-		if (auto const imageYellow = pData->Image_ConditionYellow)
-			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
-	}
-	else
-	{
-		if (auto const imageRed = pData->Image_ConditionRed)
-			return abstract_cast<AircraftTypeClass*, true>(imageRed);
-		else if (auto const imageYellow = pData->Image_ConditionYellow)
-			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
-	}
-
-	return pType;
-
-}
-
 void TechnoExt::ResetDelayedFireTimer()
 {
 	this->DelayedFireTimer.Stop();
@@ -774,131 +681,6 @@ bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max
 
 	const double hp = pObject->GetHealthPercentage();
 	return (hp > 0 ? hp > min : hp >= min) && hp <= max;
-}
-
-bool TechnoExt::CannotMove(UnitClass* pThis)
-{
-	if (pThis->LocomotorSource)
-		return false;
-
-	const auto pType = pThis->Type;
-
-	if (pType->Speed == 0)
-		return true;
-
-	const auto movementRestrictedTo = pType->MovementRestrictedTo;
-
-	if (movementRestrictedTo == LandType::None)
-		return false;
-
-	auto landType = pThis->GetCell()->LandType;
-
-	if (landType == LandType::Tunnel)
-		return false;
-
-	if (pThis->OnBridge && (landType == LandType::Water || landType == LandType::Beach))
-		landType = LandType::Road;
-
-	if (movementRestrictedTo != landType)
-		return true;
-
-	return false;
-}
-
-bool TechnoExt::HasAmmoToDeploy(UnitClass* pThis)
-{
-	const auto pTypeExt = UnitTypeExt::Fetch(pThis->Type);
-
-	const int min = pTypeExt->Ammo_DeployUnlockMinimumAmount;
-	const int max = pTypeExt->Ammo_DeployUnlockMaximumAmount;
-
-	if (min < 0 && max < 0)
-		return true;
-
-	const int ammo = pThis->Ammo;
-
-	if ((min < 0 || ammo >= min) && (max < 0 || ammo <= max))
-		return true;
-
-	return false;
-}
-
-void TechnoExt::HandleOnDeployAmmoChange(UnitClass* pThis, int maxAmmoOverride)
-{
-	const auto pTypeExt = UnitTypeExt::Fetch(pThis->Type);
-
-	if (const int add = pTypeExt->Ammo_AddOnDeploy)
-	{
-		const int maxAmmo = maxAmmoOverride >= 0 ? maxAmmoOverride : pTypeExt->OwnerObject()->Ammo;
-		const int originalAmmo = pThis->Ammo;
-		pThis->Ammo = std::clamp(originalAmmo + add, 0, maxAmmo);
-
-		if (originalAmmo != pThis->Ammo)
-		{
-			pThis->StartReloading();
-			pThis->Mark(MarkType::Change);
-		}
-	}
-}
-
-bool TechnoExt::SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue, bool alwaysCheckLandTypes)
-{
-	auto const pType = pThis->Type;
-
-	if (!pType->IsSimpleDeployer)
-		return defaultValue;
-
-	auto const pTypeExt = UnitTypeExt::Fetch(pType);
-
-	if (alwaysCheckLandTypes || pTypeExt->IsSimpleDeployer_ConsiderPathfinding)
-	{
-		LandTypeFlags disallowedLandTypes;
-
-		if (pTypeExt->IsSimpleDeployer_DisallowedLandTypes.isset())
-		{
-			disallowedLandTypes = pTypeExt->IsSimpleDeployer_DisallowedLandTypes.Get();
-		}
-		else
-		{
-			const bool isHover = pType->Locomotor == LocomotionClass::CLSIDs::Hover;
-			const bool isJumpjet = pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet;
-			const bool isLander = pType->DeployToLand && (isJumpjet || isHover);
-			disallowedLandTypes = isLander ? (LandTypeFlags)(LandTypeFlags::Water | LandTypeFlags::Beach) : LandTypeFlags::None;
-		}
-
-		if (IsLandTypeInFlags(disallowedLandTypes, pThis->GetCell()->LandType))
-			return false;
-
-		if (alwaysCheckLandTypes && !pTypeExt->IsSimpleDeployer_ConsiderPathfinding)
-			return true;
-	}
-	else
-	{
-		return defaultValue;
-	}
-
-	auto const pTypeConvert = pTypeExt->Convert_Deploy;
-	SpeedType speed = SpeedType::None;
-	MovementZone mZone = MovementZone::None;
-
-	if (AresFunctions::ConvertTypeTo && pTypeConvert)
-	{
-		speed = pTypeConvert->SpeedType;
-		mZone = pTypeConvert->MovementZone;
-	}
-	else
-	{
-		speed = pType->SpeedType;
-		mZone = pType->MovementZone;
-	}
-
-	if (speed != SpeedType::None && mZone != MovementZone::None)
-	{
-		auto const pCell = pThis->GetCell();
-		return pCell->IsClearToMove(speed, true, true, -1, mZone, -1, pCell->ContainsBridge());
-	}
-
-	return true;
 }
 
 void TechnoExt::ClickedApproachObject(FootClass* pThis, ObjectClass* pObject)

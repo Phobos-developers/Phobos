@@ -1017,7 +1017,7 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 		if (!found)
 		{
 			if (auto const pInf = abstract_cast<InfantryClass*, true>(pThis))
-				flh = TechnoExt::GetSimpleFLH(pInf, weaponIndex, found);
+				flh = InfantryExt::GetSimpleFLH(pInf, weaponIndex, found);
 
 			if (!found)
 				flh = pThis->GetWeapon(weaponIndex)->FLH;

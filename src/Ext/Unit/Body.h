@@ -3,6 +3,8 @@
 #include <Ext/Foot/Body.h>
 #include <UnitClass.h>
 
+class UnitTypeExt;
+
 // Concrete leaf extension for UnitClass. Empty for now: all techno-level data lives
 // in TechnoExt; this leaf only exists so a unit's extension has its own
 // concrete type (TechnoExt itself is never instantiated).
@@ -39,6 +41,16 @@ public:
 
 	void UpdateSubterraneanHarvester();
 	void UpdateKeepTargetOnMove();
+	void DepletedAmmoActions();
+
+	static UnitClass* Deployer;
+
+	static bool CannotMove(UnitClass* pThis);
+	static bool HasAmmoToDeploy(UnitClass* pThis);
+	static void HandleOnDeployAmmoChange(UnitClass* pThis, int maxAmmoOverride = -1);
+	static bool SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue, bool alwaysCheckLandTypes);
+	static bool CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultValue = false);
+	static UnitTypeClass* GetUnitTypeExtra(UnitClass* pUnit, UnitTypeExt* pData);
 
 	UnitClass* OwnerObject() const
 	{

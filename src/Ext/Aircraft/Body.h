@@ -30,6 +30,7 @@ public:
 	static bool PlaceReinforcementAircraft(AircraftClass* pThis, CoordStruct edgeCoords);
 	static CellStruct PickEdgeCellForPlane(AircraftTypeClass* pPlaneType, CellStruct destCell, Edge edge, bool isOnRetreat = false);
 	static DirType GetLandingDir(AircraftClass* pThis, BuildingClass* pDock = nullptr);
+	static AircraftTypeClass* GetAircraftTypeExtra(AircraftClass* pAircraft);
 
 	class ExtContainer final : public Container<AircraftExt>
 	{

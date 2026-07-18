@@ -135,41 +135,6 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	return FLH;
 }
 
-CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound)
-{
-	FLHFound = false;
-	CoordStruct FLH = CoordStruct::Empty;
-
-	auto const pTypeExt = InfantryTypeExt::Fetch(pThis->Type);
-	Nullable<CoordStruct> pickedFLH;
-
-	if (pThis->IsDeployed())
-	{
-		if (weaponIndex == 0)
-			pickedFLH = pTypeExt->DeployedPrimaryFireFLH;
-		else if (weaponIndex == 1)
-			pickedFLH = pTypeExt->DeployedSecondaryFireFLH;
-	}
-	else
-	{
-		if (pThis->Crawling)
-		{
-			if (weaponIndex == 0)
-				pickedFLH = pTypeExt->PronePrimaryFireFLH;
-			else if (weaponIndex == 1)
-				pickedFLH = pTypeExt->ProneSecondaryFireFLH;
-		}
-	}
-
-	if (pickedFLH.isset())
-	{
-		FLH = pickedFLH.Get();
-		FLHFound = true;
-	}
-
-	return FLH;
-}
-
 void TechnoExt::InitializeDisplayInfo()
 {
 	const auto pThis = this->OwnerObject();

@@ -150,7 +150,6 @@ public:
 
 	void ApplyInterceptor();
 	bool CheckDeathConditions(bool isInLimbo = false);
-	void DepletedAmmoActions();
 	void EatPassengers();
 	void UpdateShield();
 	void ApplySpawnLimitRange();
@@ -209,8 +208,6 @@ public:
 	// deprecated stand-in for the pre-rework container of all TechnoClass extensions
 	static inline CompatExtMap<TechnoExt, TechnoClass> ExtMap {};
 
-	static UnitClass* Deployer;
-
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
@@ -228,7 +225,6 @@ public:
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, const CoordStruct& flh, bool isOnTurret = false, int turIdx = -1);
 
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
-	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
 
 	static void ChangeOwnerMissionFix(FootClass* pThis);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, const std::vector<AnimTypeClass*>& pVanishAnimation, bool isInLimbo = false);
@@ -246,7 +242,6 @@ public:
 	static bool AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, TargetZoneScanType zoneScanType, WeaponTypeClass* pWeapon = nullptr, bool useZone = false, int zone = -1);
 	static void UpdateAttachedAnimLayers(TechnoClass* pThis);
 	static bool ConvertToType(FootClass* pThis, TechnoTypeClass* toType);
-	static bool CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultValue = false);
 	static bool IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource);
 	static int GetTintColor(TechnoClass* pThis, bool invulnerability, bool airstrike, bool berserk);
 	static int GetCustomTintColor(TechnoClass* pThis);
@@ -263,12 +258,6 @@ public:
 	static bool HandleDelayedFireWithPauseSequence(TechnoClass* pThis, WeaponTypeClass* pWeapon, int weaponIndex, int frame, int firingFrame);
 	static bool IsHealthInThreshold(TechnoClass* pObject, double min, double max);
 	static bool IsVeterancyInThreshold(TechnoClass* pObject, double min, double max);
-	static UnitTypeClass* GetUnitTypeExtra(UnitClass* pUnit, TechnoTypeExt* pData);
-	static AircraftTypeClass* GetAircraftTypeExtra(AircraftClass* pAircraft);
-	static bool CannotMove(UnitClass* pThis);
-	static bool HasAmmoToDeploy(UnitClass* pThis);
-	static void HandleOnDeployAmmoChange(UnitClass* pThis, int maxAmmoOverride = -1);
-	static bool SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue, bool alwaysCheckLandTypes);
 	static void ShowPromoteAnim(TechnoClass* pThis);
 	static void ClickedApproachObject(FootClass* pThis, ObjectClass* pObject);
 	static bool CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse);

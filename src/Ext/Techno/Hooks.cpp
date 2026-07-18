@@ -742,11 +742,11 @@ DEFINE_HOOK(0x73B4DA, UnitClass_DrawVXL_WaterType_Extra, 0x6)
 
 	GET(UnitClass*, pThis, EBP);
 
-	const auto pTypeExt = TechnoTypeExt::Fetch(pThis->Type);
+	const auto pTypeExt = UnitTypeExt::Fetch(pThis->Type);
 
 	if (pTypeExt->NeedDamagedImage && pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
 	{
-		if (const auto pCustomType = TechnoExt::GetUnitTypeExtra(pThis, pTypeExt))
+		if (const auto pCustomType = UnitExt::GetUnitTypeExtra(pThis, pTypeExt))
 			R->EBX<ObjectTypeClass*>(pCustomType);
 	}
 
@@ -760,11 +760,11 @@ DEFINE_HOOK(0x73C602, UnitClass_DrawSHP_WaterType_Extra, 0x6)
 	GET(UnitClass*, pThis, EBP);
 
 	const auto pType = pThis->Type;
-	const auto pTypeExt = TechnoTypeExt::Fetch(pType);
+	const auto pTypeExt = UnitTypeExt::Fetch(pType);
 
 	if (pTypeExt->NeedDamagedImage && pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
 	{
-		if (const auto pCustomType = TechnoExt::GetUnitTypeExtra(pThis, pTypeExt))
+		if (const auto pCustomType = UnitExt::GetUnitTypeExtra(pThis, pTypeExt))
 		{
 			if (const auto Image = pCustomType->GetImage())
 				R->EAX<SHPStruct*>(Image);
@@ -781,7 +781,7 @@ DEFINE_HOOK(0x414987, AircraftClass_Draw_Extra, 0x6)
 
 	GET(AircraftClass*, pThis, EBP);
 
-	R->ESI<AircraftTypeClass*>(TechnoExt::GetAircraftTypeExtra(pThis));
+	R->ESI<AircraftTypeClass*>(AircraftExt::GetAircraftTypeExtra(pThis));
 
 	return Continue;
 }
@@ -792,7 +792,7 @@ DEFINE_HOOK(0x414665, AircraftClass_Draw_ExtraSHP, 0x6)
 
 	GET(AircraftClass*, pThis, EBP);
 
-	R->EAX<AircraftTypeClass*>(TechnoExt::GetAircraftTypeExtra(pThis));
+	R->EAX<AircraftTypeClass*>(AircraftExt::GetAircraftTypeExtra(pThis));
 
 	return Continue;
 }
@@ -1352,7 +1352,7 @@ DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
 	{
 		auto const pUnit = static_cast<UnitClass*>(pThis);
 
-		if (TechnoExt::CannotMove(pUnit))
+		if (UnitExt::CannotMove(pUnit))
 			return SkipResponse;
 	}
 
@@ -1374,11 +1374,11 @@ DEFINE_HOOK(0x7010C1, TechnoClass_CanShowDeployCursor_UnitsAndAircraft, 0x5)
 			return 0;
 
 		// Ammo-based deploy blocking.
-		if (!TechnoExt::HasAmmoToDeploy(pUnit))
+		if (!UnitExt::HasAmmoToDeploy(pUnit))
 			return DoNotAllowDeploy;
 
 		// IsSimpleDeployer and type conversion
-		if (!TechnoExt::SimpleDeployerAllowedToDeploy(pUnit, true, false))
+		if (!UnitExt::SimpleDeployerAllowedToDeploy(pUnit, true, false))
 			return DoNotAllowDeploy;
 	}
 

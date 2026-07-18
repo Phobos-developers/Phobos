@@ -168,6 +168,31 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 	return static_cast<DirType>(std::clamp(landingDir, 0, 255));
 }
 
+AircraftTypeClass* AircraftExt::GetAircraftTypeExtra(AircraftClass* pAircraft)
+{
+	auto const pType = pAircraft->Type;
+	auto const pData = AircraftTypeExt::Fetch(pType);
+
+	if (!pData->NeedDamagedImage || pAircraft->IsGreenHP())
+	{
+		return pType;
+	}
+	else if (pAircraft->IsYellowHP())
+	{
+		if (auto const imageYellow = pData->Image_ConditionYellow)
+			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
+	}
+	else
+	{
+		if (auto const imageRed = pData->Image_ConditionRed)
+			return abstract_cast<AircraftTypeClass*, true>(imageRed);
+		else if (auto const imageYellow = pData->Image_ConditionYellow)
+			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
+	}
+
+	return pType;
+}
+
 // =============================
 // load / save
 

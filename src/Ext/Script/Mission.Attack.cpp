@@ -3,6 +3,7 @@
 #include <Ext/Building/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Foot/Body.h>
+#include <Ext/Unit/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 // Contains ScriptExt::Mission_Attack and its helper functions.
@@ -240,7 +241,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 
 						// If the vehicle cannot be moved, perhaps it is better this way.
 						if (whatAmI == AbstractType::Unit
-							&& TechnoExt::CannotMove(static_cast<UnitClass*>(pFoot))
+							&& UnitExt::CannotMove(static_cast<UnitClass*>(pFoot))
 							&& !pFoot->IsCloseEnough(pSelectedTarget, pFoot->SelectWeapon(pSelectedTarget)))
 						{
 							continue;

@@ -4,6 +4,7 @@
 #include <TunnelLocomotionClass.h>
 #include <Utilities/AresHelper.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/Aircraft/Body.h>
 #include <Ext/UnitType/Body.h>
 
 DEFINE_REFERENCE(double, Pixel_Per_Lepton, 0xB1D008)
@@ -945,7 +946,7 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 	if (!loco->Is_To_Have_Shadow())
 		return FinishDrawing;
 
-	pAircraftType = TechnoExt::GetAircraftTypeExtra(pThis);
+	pAircraftType = AircraftExt::GetAircraftTypeExtra(pThis);
 
 	auto shadow_mtx = loco->Shadow_Matrix(&key);
 	const auto aTypeExt = TechnoTypeExt::Fetch(pAircraftType);

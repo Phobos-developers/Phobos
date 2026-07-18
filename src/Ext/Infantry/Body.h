@@ -26,6 +26,8 @@ public:
 		return static_cast<InfantryClass*>(this->GetAttachedObject());
 	}
 
+	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
+
 	class ExtContainer final : public Container<InfantryExt>
 	{
 	public:

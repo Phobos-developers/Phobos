@@ -1,8 +1,14 @@
 #include "Body.h"
 
+#include <JumpjetLocomotionClass.h>
+
 #include <Ext/Scenario/Body.h>
+#include <Ext/UnitType/Body.h>
+#include <Utilities/AresFunctions.h>
 
 UnitExt::ExtContainer UnitExt::ExtMap;
+
+UnitClass* UnitExt::Deployer = nullptr;
 
 UnitExt::~UnitExt()
 {
@@ -138,6 +144,239 @@ void UnitExt::UpdateKeepTargetOnMove()
 
 		pWeapon->Range = range;
 	}
+}
+
+// Queues or cancels auto-deploy depending on the unit's remaining ammo.
+void UnitExt::DepletedAmmoActions()
+{
+	auto const pTypeExt = static_cast<UnitTypeExt*>(this->TypeExtData);
+	const int min = pTypeExt->Ammo_AutoDeployMinimumAmount;
+	const int max = pTypeExt->Ammo_AutoDeployMaximumAmount;
+
+	if (min < 0 && max < 0)
+		return;
+
+	auto const pType = pTypeExt->OwnerObject();
+
+	if (pType->Ammo <= 0)
+		return;
+
+	auto const pThis = this->OwnerObject();
+	auto const pUnitType = pThis->Type;
+
+	if (!pUnitType->IsSimpleDeployer && !pUnitType->DeploysInto && !pUnitType->DeployFire
+		&& pUnitType->Passengers < 1 && pThis->Passengers.NumPassengers < 1)
+	{
+		return;
+	}
+
+	const int ammo = pThis->Ammo;
+	const bool canDeploy = UnitExt::HasAmmoToDeploy(pThis) && (min < 0 || ammo >= min) && (max < 0 || ammo <= max);
+	const bool isDeploying = pThis->CurrentMission == Mission::Unload || pThis->QueuedMission == Mission::Unload;
+
+	if (canDeploy && !isDeploying)
+	{
+		pThis->QueueMission(Mission::Unload, true);
+	}
+	else if (!canDeploy && isDeploying)
+	{
+		pThis->QueueMission(Mission::Guard, true);
+
+		if (pUnitType->IsSimpleDeployer && pThis->InAir)
+		{
+			if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+				pJJLoco->State = JumpjetLocomotionClass::State::Ascending;
+		}
+	}
+}
+
+bool UnitExt::CannotMove(UnitClass* pThis)
+{
+	if (pThis->LocomotorSource)
+		return false;
+
+	const auto pType = pThis->Type;
+
+	if (pType->Speed == 0)
+		return true;
+
+	const auto movementRestrictedTo = pType->MovementRestrictedTo;
+
+	if (movementRestrictedTo == LandType::None)
+		return false;
+
+	auto landType = pThis->GetCell()->LandType;
+
+	if (landType == LandType::Tunnel)
+		return false;
+
+	if (pThis->OnBridge && (landType == LandType::Water || landType == LandType::Beach))
+		landType = LandType::Road;
+
+	if (movementRestrictedTo != landType)
+		return true;
+
+	return false;
+}
+
+bool UnitExt::HasAmmoToDeploy(UnitClass* pThis)
+{
+	const auto pTypeExt = UnitTypeExt::Fetch(pThis->Type);
+
+	const int min = pTypeExt->Ammo_DeployUnlockMinimumAmount;
+	const int max = pTypeExt->Ammo_DeployUnlockMaximumAmount;
+
+	if (min < 0 && max < 0)
+		return true;
+
+	const int ammo = pThis->Ammo;
+
+	if ((min < 0 || ammo >= min) && (max < 0 || ammo <= max))
+		return true;
+
+	return false;
+}
+
+void UnitExt::HandleOnDeployAmmoChange(UnitClass* pThis, int maxAmmoOverride)
+{
+	const auto pTypeExt = UnitTypeExt::Fetch(pThis->Type);
+
+	if (const int add = pTypeExt->Ammo_AddOnDeploy)
+	{
+		const int maxAmmo = maxAmmoOverride >= 0 ? maxAmmoOverride : pTypeExt->OwnerObject()->Ammo;
+		const int originalAmmo = pThis->Ammo;
+		pThis->Ammo = std::clamp(originalAmmo + add, 0, maxAmmo);
+
+		if (originalAmmo != pThis->Ammo)
+		{
+			pThis->StartReloading();
+			pThis->Mark(MarkType::Change);
+		}
+	}
+}
+
+bool UnitExt::SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue, bool alwaysCheckLandTypes)
+{
+	auto const pType = pThis->Type;
+
+	if (!pType->IsSimpleDeployer)
+		return defaultValue;
+
+	auto const pTypeExt = UnitTypeExt::Fetch(pType);
+
+	if (alwaysCheckLandTypes || pTypeExt->IsSimpleDeployer_ConsiderPathfinding)
+	{
+		LandTypeFlags disallowedLandTypes;
+
+		if (pTypeExt->IsSimpleDeployer_DisallowedLandTypes.isset())
+		{
+			disallowedLandTypes = pTypeExt->IsSimpleDeployer_DisallowedLandTypes.Get();
+		}
+		else
+		{
+			const bool isHover = pType->Locomotor == LocomotionClass::CLSIDs::Hover;
+			const bool isJumpjet = pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet;
+			const bool isLander = pType->DeployToLand && (isJumpjet || isHover);
+			disallowedLandTypes = isLander ? (LandTypeFlags)(LandTypeFlags::Water | LandTypeFlags::Beach) : LandTypeFlags::None;
+		}
+
+		if (IsLandTypeInFlags(disallowedLandTypes, pThis->GetCell()->LandType))
+			return false;
+
+		if (alwaysCheckLandTypes && !pTypeExt->IsSimpleDeployer_ConsiderPathfinding)
+			return true;
+	}
+	else
+	{
+		return defaultValue;
+	}
+
+	auto const pTypeConvert = pTypeExt->Convert_Deploy;
+	SpeedType speed = SpeedType::None;
+	MovementZone mZone = MovementZone::None;
+
+	if (AresFunctions::ConvertTypeTo && pTypeConvert)
+	{
+		speed = pTypeConvert->SpeedType;
+		mZone = pTypeConvert->MovementZone;
+	}
+	else
+	{
+		speed = pType->SpeedType;
+		mZone = pType->MovementZone;
+	}
+
+	if (speed != SpeedType::None && mZone != MovementZone::None)
+	{
+		auto const pCell = pThis->GetCell();
+		return pCell->IsClearToMove(speed, true, true, -1, mZone, -1, pCell->ContainsBridge());
+	}
+
+	return true;
+}
+
+bool UnitExt::CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultValue)
+{
+	if (!pThis)
+		return false;
+
+	auto const pDeployType = pThis->Type->DeploysInto;
+
+	if (!pDeployType)
+		return noDeploysIntoDefaultValue;
+
+	auto mapCoords = CellClass::Coord2Cell(pThis->GetCoords());
+
+	if (pDeployType->GetFoundationWidth() > 2 || pDeployType->GetFoundationHeight(false) > 2)
+		mapCoords += CellStruct { -1, -1 };
+
+	// The vanilla game used an inappropriate approach here, resulting in potential risk of desync.
+	// Now, through additional checks, we can directly exclude the unit who want to deploy.
+	UnitExt::Deployer = pThis;
+	const bool canDeploy = pDeployType->CanCreateHere(mapCoords, pThis->Owner);
+	UnitExt::Deployer = nullptr;
+
+	return canDeploy;
+}
+
+UnitTypeClass* UnitExt::GetUnitTypeExtra(UnitClass* pUnit, UnitTypeExt* pData)
+{
+	if (pUnit->IsGreenHP())
+	{
+		return nullptr;
+	}
+	else if (pUnit->IsYellowHP())
+	{
+		if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
+		{
+			if (auto const imageYellow = pData->WaterImage_ConditionYellow)
+				return imageYellow;
+		}
+		else if (auto const imageYellow = pData->Image_ConditionYellow)
+		{
+			return abstract_cast<UnitTypeClass*, true>(imageYellow);
+		}
+	}
+	else
+	{
+		if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
+		{
+			if (auto const imageRed = pData->WaterImage_ConditionRed)
+				return imageRed;
+			else if (auto const imageYellow = pData->WaterImage_ConditionYellow)
+				return imageYellow;
+		}
+		else if (auto const imageRed = pData->Image_ConditionRed)
+		{
+			return abstract_cast<UnitTypeClass*, true>(imageRed);
+		}
+		else if (auto const imageYellow = pData->Image_ConditionYellow)
+		{
+			return abstract_cast<UnitTypeClass*, true>(imageYellow);
+		}
+	}
+
+	return nullptr;
 }
 
 void UnitExt::LoadFromStream(PhobosStreamReader& Stm)

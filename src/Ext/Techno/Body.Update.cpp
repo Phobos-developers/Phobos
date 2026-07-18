@@ -8,7 +8,6 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/Foot/Body.h>
 #include <Ext/House/Body.h>
-#include <Ext/UnitType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Misc/FlyingStrings.h>
@@ -147,49 +146,6 @@ void TechnoExt::ApplyInterceptor()
 		{
 			pThis->QueueMission(Mission::Attack, false);
 			pThis->NextMission();
-		}
-	}
-}
-
-void TechnoExt::DepletedAmmoActions()
-{
-	auto const pTypeExt = static_cast<UnitTypeExt*>(this->TypeExtData);
-	const int min = pTypeExt->Ammo_AutoDeployMinimumAmount;
-	const int max = pTypeExt->Ammo_AutoDeployMaximumAmount;
-
-	if (min < 0 && max < 0)
-		return;
-
-	auto const pType = pTypeExt->OwnerObject();
-
-	if (pType->Ammo <= 0)
-		return;
-
-	auto const pThis = static_cast<UnitClass*>(this->OwnerObject());
-	auto const pUnitType = pThis->Type;
-
-	if (!pUnitType->IsSimpleDeployer && !pUnitType->DeploysInto && !pUnitType->DeployFire
-		&& pUnitType->Passengers < 1 && pThis->Passengers.NumPassengers < 1)
-	{
-		return;
-	}
-
-	const int ammo = pThis->Ammo;
-	const bool canDeploy = TechnoExt::HasAmmoToDeploy(pThis) && (min < 0 || ammo >= min) && (max < 0 || ammo <= max);
-	const bool isDeploying = pThis->CurrentMission == Mission::Unload || pThis->QueuedMission == Mission::Unload;
-
-	if (canDeploy && !isDeploying)
-	{
-		pThis->QueueMission(Mission::Unload, true);
-	}
-	else if (!canDeploy && isDeploying)
-	{
-		pThis->QueueMission(Mission::Guard, true);
-
-		if (pUnitType->IsSimpleDeployer && pThis->InAir)
-		{
-			if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
-				pJJLoco->State = JumpjetLocomotionClass::State::Ascending;
 		}
 	}
 }
