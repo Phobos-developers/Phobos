@@ -459,6 +459,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AutoRemoveEarliestBeacon.Read(exINI, GameStrings::General, "AutoRemoveEarliestBeacon");
 	this->AllowBeaconHotKeyInSinglePlayer.Read(exINI, GameStrings::General, "AllowBeaconHotKeyInSinglePlayer");
 
+	this->AircraftDockingDir_DefaultToPoseDir.Read(exINI, GameStrings::AudioVisual, "AircraftDockingDir.DefaultToPoseDir");
+	this->PoseDir_Production.Read(exINI, GameStrings::AudioVisual, "PoseDir.Production");
+	this->PoseDir_Field.Read(exINI, GameStrings::AudioVisual, "PoseDir.Field");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -816,6 +820,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->SecondaryFireSequenceLandOnly)
 		.Process(this->AutoRemoveEarliestBeacon)
 		.Process(this->AllowBeaconHotKeyInSinglePlayer)
+		.Process(this->AircraftDockingDir_DefaultToPoseDir)
+		.Process(this->PoseDir_Production)
+		.Process(this->PoseDir_Field)
 		;
 }
 
