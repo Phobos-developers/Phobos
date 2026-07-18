@@ -450,6 +450,17 @@ BuildingTypeSelectable=false  ; boolean
 Due to technical limitations, this feature is forcibly disabled without Ares.
 ```
 
+### Type selection by multi-click
+
+- Double-clicking a unit selects every unit of the same selection group currently on screen; triple-clicking selects every unit of that group across the whole map. This complements the vanilla type-select hotkey (hold `T` and click) with the double/triple-click gesture common to modern RTS games. Only your own selectable units are affected, and the selection group is the same one used by the type-select hotkey (the `[TechnoType] -> GroupAs` tag, falling back to the type's ID).
+- Enable it with `TypeSelectByMultiClick=true`.
+
+In `RA2MD.ini`:
+```ini
+[Phobos]
+TypeSelectByMultiClick=false  ; boolean
+```
+
 ### Visual effects toggling
 
 - It is possible to toggle certain light flash effects off. These light flash effects include:

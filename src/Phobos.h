@@ -85,6 +85,7 @@ public:
 		static bool PrioritySelectionFiltering;
 		static bool PriorityDeployFiltering;
 		static bool TypeSelectUseIFVMode;
+		static bool TypeSelectByMultiClick;
 		static bool DevelopmentCommands;
 		static bool SuperWeaponSidebarCommands;
 		static bool ArtImageSwap;

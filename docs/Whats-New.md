@@ -150,6 +150,7 @@ ShowWeedsCounter=true            ; boolean
 ToolTipDescriptions=true         ; boolean
 ToolTipBlur=false                ; boolean
 SaveGameOnScenarioStart=true     ; boolean
+TypeSelectByMultiClick=false     ; boolean
 HideLightFlashEffects=false      ; boolean
 HideLaserTrailEffects=false      ; boolean
 HideShakeEffects=false           ; boolean
@@ -386,6 +387,7 @@ HideShakeEffects=false           ; boolean
 :open:
 
 #### New:
+- [Type selection by double/triple-click](User-Interface.md#type-selection-by-multi-click) (by leosnake2208)
 - [Allow using waypoints, area guard and attack move with aircraft](Fixed-or-Improved-Logics.md#extended-aircraft-missions) (by CrimRecya)
 - [Enhanced Straight trajectory](New-or-Enhanced-Logics.md#straight-trajectory) (by CrimRecya)
 - [Enable building production queue](User-Interface.md#building-production-queue) (by CrimRecya)
