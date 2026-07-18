@@ -9,7 +9,7 @@ class BulletObstacleHelper
 public:
 
 	static CellClass* GetObstacle(CellClass* pSourceCell, CellClass* pTargetCell, CellClass* pCurrentCell, CoordStruct currentCoords, AbstractClass const* const pSource,
-		AbstractClass const* const pTarget, HouseClass* pOwner, BulletTypeClass* pBulletType, BulletTypeExt::ExtData*& pBulletTypeExt, bool isTargetingCheck = false)
+		AbstractClass const* const pTarget, HouseClass* pOwner, BulletTypeClass* pBulletType, BulletTypeExt*& pBulletTypeExt, bool isTargetingCheck = false)
 	{
 		CellClass* pObstacleCell = nullptr;
 
@@ -25,7 +25,7 @@ public:
 	static CellClass* FindFirstObstacle(CoordStruct const& pSourceCoords, CoordStruct const& pTargetCoords, AbstractClass const* const pSource,
 		AbstractClass const* const pTarget, HouseClass* pOwner, BulletTypeClass* pBulletType, bool isTargetingCheck = false, bool subjectToGround = false)
 	{
-		BulletTypeExt::ExtData* pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
+		BulletTypeExt* pBulletTypeExt = BulletTypeExt::Fetch(pBulletType);
 
 		if (SubjectToObstacles(pBulletType, pBulletTypeExt) || subjectToGround)
 		{
@@ -64,14 +64,14 @@ public:
 		return FindFirstObstacle(pSourceCoords, pTargetCoords, pSource, pTarget, pOwner, pWeapon->Projectile, isTargetingCheck, subjectToGround);
 	}
 
-	static bool SubjectToObstacles(BulletTypeClass* pBulletType, BulletTypeExt::ExtData*& pBulletTypeExt)
+	static bool SubjectToObstacles(BulletTypeClass* pBulletType, BulletTypeExt*& pBulletTypeExt)
 	{
 		bool subjectToTerrain = pBulletTypeExt->SubjectToLand.isset() || pBulletTypeExt->SubjectToWater.isset();
 
 		return subjectToTerrain ? true : pBulletType->Level;
 	}
 
-	static bool SubjectToTerrain(CellClass* pCurrentCell, BulletTypeClass* pBulletType, BulletTypeExt::ExtData*& pBulletTypeExt, bool isTargetingCheck)
+	static bool SubjectToTerrain(CellClass* pCurrentCell, BulletTypeClass* pBulletType, BulletTypeExt*& pBulletTypeExt, bool isTargetingCheck)
 	{
 		const bool isCellWater = pCurrentCell->LandType == LandType::Water || pCurrentCell->LandType == LandType::Beach;
 		const bool isLevel = pBulletType->Level ? pCurrentCell->IsOnFloor() : false;
@@ -144,7 +144,7 @@ DEFINE_HOOK(0x4688A9, BulletClass_Unlimbo_Obstacles, 0x6)
 	if (pType->Inviso)
 	{
 		auto const pThisOwner = pThis->Owner;
-		auto const pOwner = pThisOwner ? pThisOwner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+		auto const pOwner = pThisOwner ? pThisOwner->Owner : BulletExt::Fetch(pThis)->FirerHouse;
 		const auto pObstacleCell = BulletObstacleHelper::FindFirstObstacle(*sourceCoords, targetCoords, pThisOwner, pThis->Target, pOwner, pType, false, false);
 
 		if (pObstacleCell)
@@ -170,14 +170,14 @@ DEFINE_HOOK(0x468C86, BulletClass_ShouldExplode_Obstacles, 0xA)
 	GET(BulletClass*, pThis, ESI);
 
 	auto const pType = pThis->Type;
-	auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pType);
+	auto pBulletTypeExt = BulletTypeExt::Fetch(pType);
 
 	if (BulletObstacleHelper::SubjectToObstacles(pType, pBulletTypeExt))
 	{
 		auto const pCellSource = MapClass::Instance.GetCellAt(pThis->SourceCoords);
 		auto const pCellTarget = MapClass::Instance.GetCellAt(pThis->TargetCoords);
 		auto const pCellCurrent = MapClass::Instance.GetCellAt(pThis->LastMapCoords);
-		auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+		auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::Fetch(pThis)->FirerHouse;
 		auto const pObstacleCell = BulletObstacleHelper::GetObstacle(pCellSource, pCellTarget, pCellCurrent, pThis->Location, pThis->Owner, pThis->Target, pOwner, pType, pBulletTypeExt, false);
 
 		if (pObstacleCell)
@@ -232,7 +232,7 @@ DEFINE_HOOK(0x6F7647, TechnoClass_InRange_Obstacles, 0x5)
 
 	if (!pObstacleCell)
 	{
-		bool subjectToGround = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->SubjectToGround.Get();
+		bool subjectToGround = BulletTypeExt::Fetch(pWeapon->Projectile)->SubjectToGround.Get();
 		const auto newSourceCoords = subjectToGround ? BulletObstacleHelper::AddFLHToSourceCoords(*pSourceCoords, targetCoords, pTechno, pTarget, pWeapon, subjectToGround) : *pSourceCoords;
 		pObstacleCell = BulletObstacleHelper::FindFirstImpenetrableObstacle(newSourceCoords, targetCoords, pTechno, pTarget, pTechno->Owner, pWeapon, true, subjectToGround);
 	}

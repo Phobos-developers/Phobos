@@ -5,7 +5,7 @@ TeamTypeExt::ExtContainer TeamTypeExt::ExtMap;
 // =============================
 // load / save
 
-void TeamTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void TeamTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -15,22 +15,22 @@ void TeamTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 }
 
 template <typename T>
-void TeamTypeExt::ExtData::Serialize(T& Stm)
+void TeamTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->SetRecruitableOnLiberate)
 		;
 }
 
-void TeamTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void TeamTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<TeamTypeClass>::LoadFromStream(Stm);
+	AbstractTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void TeamTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void TeamTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<TeamTypeClass>::SaveToStream(Stm);
+	AbstractTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
@@ -58,31 +58,6 @@ DEFINE_HOOK(0x6F20D0, TeamTypeClass_DTOR, 0x6)
 	GET(TeamTypeClass*, pItem, ECX);
 
 	TeamTypeExt::ExtMap.Remove(pItem);
-
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x6F1BB0, TeamTypeClass_SaveLoad_Prefix, 0x5)
-DEFINE_HOOK(0x6F1B90, TeamTypeClass_SaveLoad_Prefix, 0x8)
-{
-	GET_STACK(TeamTypeClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	TeamTypeExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6F1C35, TeamTypeClass_Load_Suffix, 0x5)
-{
-	TeamTypeExt::ExtMap.LoadStatic();
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6F1BAA, TeamTypeClass_Save_Suffix, 0x5)
-{
-	TeamTypeExt::ExtMap.SaveStatic();
 
 	return 0;
 }

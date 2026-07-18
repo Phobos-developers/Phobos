@@ -52,6 +52,7 @@ This serves as a changelog for when you just need to drop the new version in wit
   - `[WarheadType] -> KillWeapon.OnFirer.AffectsHouses` -> `[WarheadType] -> KillWeapon.OnFirer.AffectsHouse`
   - `[WarheadType/SuperWeaponType] -> Convert(N).AffectedHouses` -> `[WarheadType/SuperWeaponType] -> Convert(N).AffectsHouse`
   - `[SuperWeaponType] -> LimboKill.Affected` -> `[SuperWeaponType] -> LimboKill.AffectsHouse`
+- The extension system has been reworked to follow the game's own class model. Savegames made with earlier Phobos builds are incompatible with this version.
 
 ```{note}
 - If it is detected that you are using the old INI flags, a warning will be outputted to `debug.log`.
@@ -614,6 +615,7 @@ HideShakeEffects=false           ; boolean
 - [RA1-Style Multi-Turret and Multi-Barrel](New-or-Enhanced-Logics.md#ra1-style-multi-turret-and-multi-barrel) (by TaranDahl & CrimRecya)
 - [Allow Laser drawing position update](New-or-Enhanced-Logics.md#allow-laser-drawing-position-update) (by Noble_Fish)
 - Customize the distance for `NoQueueUpToEnter` transport units to board passengers (by Noble_Fish)
+- Reworked the extension system internals to form a class hierarchy mirroring the game's own, with centralized savegame serialization (by ZivDero)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

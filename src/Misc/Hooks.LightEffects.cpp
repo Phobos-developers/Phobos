@@ -13,7 +13,7 @@ DEFINE_HOOK(0x48A444, AreaDamage_Particle_LightFlashSet, 0x5)
 {
 	GET(WarheadTypeClass*, pWH, EDI);
 
-	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	auto const pWHExt = WarheadTypeExt::Fetch(pWH);
 
 	if (pWHExt->Particle_AlphaImageIsLightFlash.Get(RulesExt::Global()->WarheadParticleAlphaImageIsLightFlash))
 		LightEffectsTemp::AlphaIsLightFlash = true;
@@ -68,7 +68,7 @@ DEFINE_HOOK(0x48A62E, DoFlash_CombatLightOptions, 0x6)
 
 	if (pWH)
 	{
-		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+		auto const pWHExt = WarheadTypeExt::Fetch(pWH);
 
 		if (pWHExt->CombatLightChance < Randomizer::Global.RandomDouble())
 			return SkipFlash;

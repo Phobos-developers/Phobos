@@ -731,8 +731,6 @@ public:
 		void InitializeAfterTypeData(RulesClass* pThis);
 		void InitializeAfterAllLoaded();
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
-
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
@@ -764,10 +762,5 @@ public:
 	static void Clear()
 	{
 		Allocate(RulesClass::Instance);
-	}
-
-	static void PointerGotInvalid(void* ptr, bool removed)
-	{
-		Global()->InvalidatePointer(ptr, removed);
 	}
 };

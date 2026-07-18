@@ -2,18 +2,21 @@
 
 #include <JumpjetLocomotionClass.h>
 
+#include <Ext/AircraftType/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
+#include <Ext/InfantryType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/UnitType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <New/Type/InsigniaTypeClass.h>
 
 #include <Utilities/AresHelper.h>
 
-TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
 bool TechnoTypeExt::SelectWeaponMutex = false;
-void TechnoTypeExt::ExtData::Initialize()
+
+void TechnoTypeExt::Initialize()
 {
 	auto pThis = this->OwnerObject();
 
@@ -21,7 +24,7 @@ void TechnoTypeExt::ExtData::Initialize()
 		this->Missile_TakeOffAnim = AnimTypeClass::Find("V3TAKOFF");
 }
 
-void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor, int turIdx)
+void TechnoTypeExt::ApplyTurretOffset(Matrix3D* mtx, double factor, int turIdx)
 {
 	// Does not verify if the offset actually has all values parsed as it makes no difference, it will be 0 for the unparsed ones either way.
 	const auto offset = turIdx < 0 ? static_cast<CoordStruct*>(this->TurretOffset.GetEx()) : &this->ExtraTurretOffsets[turIdx];
@@ -32,7 +35,7 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor, int
 	mtx->Translate(x, y, z);
 }
 
-int TechnoTypeExt::ExtData::SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget) const
+int TechnoTypeExt::SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget) const
 {
 	if (TechnoTypeExt::SelectWeaponMutex || !this->ForceWeapon_Check || !pTarget) // In theory, pTarget must exist
 		return -1;
@@ -74,7 +77,7 @@ int TechnoTypeExt::ExtData::SelectForceWeapon(TechnoClass* pThis, AbstractClass*
 		&& (!this->ForceWeapon_InRange.empty() || !this->ForceAAWeapon_InRange.empty()))
 	{
 		TechnoTypeExt::SelectWeaponMutex = true;
-		forceWeaponIndex = TechnoExt::ExtMap.Find(pThis)->ApplyForceWeaponInRange(pTarget);
+		forceWeaponIndex = TechnoExt::Fetch(pThis)->ApplyForceWeaponInRange(pTarget);
 		TechnoTypeExt::SelectWeaponMutex = false;
 	}
 
@@ -124,7 +127,7 @@ int TechnoTypeExt::ExtData::SelectForceWeapon(TechnoClass* pThis, AbstractClass*
 	return forceWeaponIndex;
 }
 
-bool TechnoTypeExt::ExtData::IsSecondary(int nWeaponIndex) const
+bool TechnoTypeExt::IsSecondary(int nWeaponIndex) const
 {
 	const auto pThis = this->OwnerObject();
 
@@ -140,7 +143,7 @@ bool TechnoTypeExt::ExtData::IsSecondary(int nWeaponIndex) const
 	return nWeaponIndex != 0;
 }
 
-int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget) const
+int TechnoTypeExt::SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget) const
 {
 	if (!pTarget || !this->MultiWeapon)
 		return -1;
@@ -259,7 +262,7 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 }
 
 // Ares 0.A source
-bool TechnoTypeExt::ExtData::CameoIsVeteran(HouseClass* pHouse) const
+bool TechnoTypeExt::CameoIsVeteran(HouseClass* pHouse) const
 {
 	const auto pThis = this->OwnerObject();;
 
@@ -328,14 +331,14 @@ bool TechnoTypeExt::ExtData::CameoIsVeteran(HouseClass* pHouse) const
 	return false;
 }
 
-const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
+const char* TechnoTypeExt::GetSelectionGroupID() const
 {
 	return GeneralUtils::IsValidString(this->GroupAs) ? this->GroupAs : this->OwnerObject()->ID;
 }
 
 const char* TechnoTypeExt::GetSelectionGroupID(ObjectTypeClass* pType)
 {
-	if (const auto pExt = TechnoTypeExt::ExtMap.TryFind(static_cast<TechnoTypeClass*>(pType)))
+	if (const auto pExt = TechnoTypeExt::TryFetch(static_cast<TechnoTypeClass*>(pType)))
 		return pExt->GetSelectionGroupID();
 
 	return pType->ID;
@@ -348,7 +351,7 @@ bool TechnoTypeExt::HasSelectionGroupID(ObjectTypeClass* pType, const char* pID)
 	return (_strcmpi(id, pID) == 0);
 }
 
-void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSection,
+void TechnoTypeExt::ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSection,
 	std::vector<std::vector<CoordStruct>>& nFLH, std::vector<std::vector<CoordStruct>>& nEFlh, const char* pPrefixTag)
 {
 	char tempBuffer[32];
@@ -386,7 +389,7 @@ void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSe
 	}
 }
 
-void TechnoTypeExt::ExtData::ParseVoiceWeaponAttacks(INI_EX& exINI, const char* pSection, ValueableVector<int>& voice, ValueableVector<int>& voiceElite)
+void TechnoTypeExt::ParseVoiceWeaponAttacks(INI_EX& exINI, const char* pSection, ValueableVector<int>& voice, ValueableVector<int>& voiceElite)
 {
 	if (!this->ReadMultiWeapon)
 	{
@@ -430,7 +433,7 @@ void TechnoTypeExt::ExtData::ParseVoiceWeaponAttacks(INI_EX& exINI, const char* 
 	}
 }
 
-void TechnoTypeExt::ExtData::UpdateAdditionalAttributes()
+void TechnoTypeExt::UpdateAdditionalAttributes()
 {
 	int num = 0;
 	int eliteNum = 0;
@@ -464,7 +467,7 @@ void TechnoTypeExt::ExtData::UpdateAdditionalAttributes()
 			eliteNum++;
 
 			if (!this->AttackFriendlies.Y
-				&& WeaponTypeExt::ExtMap.Find(pWeapon)->AttackFriendlies.Get(false))
+				&& WeaponTypeExt::Fetch(pWeapon)->AttackFriendlies.Get(false))
 			{
 				this->AttackFriendlies.Y = true;
 			}
@@ -478,7 +481,7 @@ void TechnoTypeExt::ExtData::UpdateAdditionalAttributes()
 			num++;
 
 			if (!this->AttackFriendlies.X
-				&& WeaponTypeExt::ExtMap.Find(pWeapon)->AttackFriendlies.Get(false))
+				&& WeaponTypeExt::Fetch(pWeapon)->AttackFriendlies.Get(false))
 			{
 				this->AttackFriendlies.X = true;
 			}
@@ -504,7 +507,7 @@ void TechnoTypeExt::ExtData::UpdateAdditionalAttributes()
 		this->CombatDamages.Y /= eliteNum;
 }
 
-void TechnoTypeExt::ExtData::CalculateSpawnerRange()
+void TechnoTypeExt::CalculateSpawnerRange()
 {
 	const auto pThis = this->OwnerObject();
 	const int weaponRangeExtra = this->Spawner_ExtraLimitRange * Unsorted::LeptonsPerCell;
@@ -659,7 +662,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 								// Order BalloonHover jumpjets to ascend.
 								pJJLoco->IsMoving = true;
 								pJJLoco->DestinationCoords = pTechno->GetCoords();
-								TechnoExt::ExtMap.Find(pTechno)->JumpjetStraightAscend = true;
+								TechnoExt::Fetch(pTechno)->JumpjetStraightAscend = true;
 							}
 							else if (inAir)
 							{
@@ -670,7 +673,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 						else if (inAir && !parachuted)
 						{
 							pTechno->IsFallingDown = true;
-							TechnoExt::ExtMap.Find(pTechno)->OnParachuted = true;
+							TechnoExt::Fetch(pTechno)->OnParachuted = true;
 						}
 					}
 
@@ -718,7 +721,7 @@ WeaponTypeClass* TechnoTypeExt::GetWeaponType(TechnoTypeClass* pThis, int weapon
 // =============================
 // load / save
 
-void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -1508,7 +1511,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ParseVoiceWeaponAttacks(exINI, pSection, this->VoiceWeaponAttacks, this->VoiceEliteWeaponAttacks);
 }
 
-void TechnoTypeExt::ExtData::LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSection, INI_EX& exArtINI, const char* pArtSection)
+void TechnoTypeExt::LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSection, INI_EX& exArtINI, const char* pArtSection)
 {
 	AbstractType abs = this->OwnerObject()->WhatAmI();
 
@@ -1532,7 +1535,7 @@ void TechnoTypeExt::ExtData::LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSe
 }
 
 template <typename T>
-void TechnoTypeExt::ExtData::Serialize(T& Stm)
+void TechnoTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->HealthBar_Hide)
@@ -2022,7 +2025,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Missile_Cruise)
 		.Process(this->Missile_TakeOffAnim)
 		.Process(this->Missile_TakeOffSeparation)
-			
 		.Process(this->BarrelOverTurret)
 		.Process(this->BarrelOffset)
 		.Process(this->ExtraBarrelCount)
@@ -2032,23 +2034,17 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BurstPerTurret)
 		;
 }
-void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void TechnoTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<TechnoTypeClass>::LoadFromStream(Stm);
+	ObjectTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void TechnoTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void TechnoTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<TechnoTypeClass>::SaveToStream(Stm);
+	ObjectTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
-
-// =============================
-// container
-
-TechnoTypeExt::ExtContainer::ExtContainer() : Container("TechnoTypeClass") { }
-TechnoTypeExt::ExtContainer::~ExtContainer() = default;
 
 // =============================
 // container hooks
@@ -2057,46 +2053,13 @@ DEFINE_HOOK(0x711835, TechnoTypeClass_CTOR, 0x5)
 {
 	GET(TechnoTypeClass*, pItem, ESI);
 
-	TechnoTypeExt::ExtMap.TryAllocate(pItem);
-
+	// The extension is allocated by the concrete type leaf constructors
+	// (UnitType/InfantryType/BuildingType/AircraftType), not here at the TechnoTypeClass level.
 	pItem->DefaultToGuardArea = RulesExt::Global()->DefaultToGuardArea;
 
 	return 0;
 }
 
-DEFINE_HOOK(0x711AE0, TechnoTypeClass_DTOR, 0x5)
-{
-	GET(TechnoTypeClass*, pItem, ECX);
-
-	TechnoTypeExt::ExtMap.Remove(pItem);
-
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x716DC0, TechnoTypeClass_SaveLoad_Prefix, 0x5)
-DEFINE_HOOK(0x7162F0, TechnoTypeClass_SaveLoad_Prefix, 0x6)
-{
-	GET_STACK(TechnoTypeClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	TechnoTypeExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x716DAC, TechnoTypeClass_Load_Suffix, 0xA)
-{
-	TechnoTypeExt::ExtMap.LoadStatic();
-
-	return 0;
-}
-
-DEFINE_HOOK(0x717094, TechnoTypeClass_Save_Suffix, 0x5)
-{
-	TechnoTypeExt::ExtMap.SaveStatic();
-
-	return 0;
-}
 
 //DEFINE_HOOK_AGAIN(0x716132, TechnoTypeClass_LoadFromINI, 0x5)// Section dont exist!
 DEFINE_HOOK(0x716123, TechnoTypeClass_LoadFromINI, 0x5)
@@ -2104,7 +2067,8 @@ DEFINE_HOOK(0x716123, TechnoTypeClass_LoadFromINI, 0x5)
 	GET(TechnoTypeClass*, pItem, EBP);
 	GET_STACK(CCINIClass*, pINI, 0x380);
 
-	TechnoTypeExt::ExtMap.LoadFromINI(pItem, pINI);
+	if (auto const pExt = TechnoTypeExt::TryFetch(pItem))
+		pExt->LoadFromINI(pINI);
 
 	return 0;
 }
@@ -2127,7 +2091,7 @@ DEFINE_HOOK(0x747E90, UnitTypeClass_LoadFromINI, 0x5)
 {
 	GET(UnitTypeClass*, pItem, ESI);
 
-	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pItem))
+	if (auto pTypeExt = TechnoTypeExt::TryFetch(pItem))
 	{
 		if (!pTypeExt->Harvester_Counted.isset() && pItem->Harvester)
 			pTypeExt->Harvester_Counted = true;
