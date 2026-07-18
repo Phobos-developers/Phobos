@@ -8,7 +8,7 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode, bool pickAlli
 {
 	bool noWaitLoop = false;
 	bool bAircraftsWithoutAmmo = false;
-	const auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	const auto pTeamData = TeamExt::Fetch(pTeam);
 	auto& waitNoTargetCounter = pTeamData->WaitNoTargetCounter;
 	auto& waitNoTargetTimer = pTeamData->WaitNoTargetTimer;
 	auto& waitNoTargetAttempts = pTeamData->WaitNoTargetAttempts;
@@ -251,7 +251,7 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 		if (const auto pFoot = abstract_cast<FootClass*>(pTechno))
 		{
 			const auto pTeam = pFoot->Team;
-			const auto pHouseExt = HouseExt::ExtMap.Find(pTeam->Owner);
+			const auto pHouseExt = HouseExt::Fetch(pTeam->Owner);
 			const int enemyHouseIndex = pTeam->FirstUnit->Owner->EnemyHouseIndex;
 			bool onlyTargetHouseEnemy = pFoot->Team->Type->OnlyTargetHouseEnemy;
 
@@ -414,7 +414,7 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 
 void ScriptExt::Mission_Move_List(TeamClass* pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType)
 {
-	const auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	const auto pTeamData = TeamExt::Fetch(pTeam);
 	pTeamData->IdxSelectedObjectFromAIList = -1;
 
 	if (attackAITargetType < 0)
@@ -435,7 +435,7 @@ void ScriptExt::Mission_Move_List1Random(TeamClass* pTeam, int calcThreatMode, b
 	bool selected = false;
 	int idxSelectedObject = -1;
 	std::vector<int> validIndexes;
-	const auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	const auto pTeamData = TeamExt::Fetch(pTeam);
 
 	if (pTeamData->IdxSelectedObjectFromAIList >= 0)
 	{

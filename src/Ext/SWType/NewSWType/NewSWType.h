@@ -16,8 +16,8 @@ public:
 
 	// selectable override
 
-	virtual void Initialize(SWTypeExt::ExtData* pData, SuperWeaponTypeClass* pSW) { }
-	virtual void LoadFromINI(SWTypeExt::ExtData* pData, SuperWeaponTypeClass* pSW, CCINIClass* pINI) { }
+	virtual void Initialize(SWTypeExt* pData, SuperWeaponTypeClass* pSW) { }
+	virtual void LoadFromINI(SWTypeExt* pData, SuperWeaponTypeClass* pSW, CCINIClass* pINI) { }
 
 	// must be override
 

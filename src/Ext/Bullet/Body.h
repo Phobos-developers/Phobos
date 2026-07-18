@@ -4,6 +4,7 @@
 #include <Ext/BulletType/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <New/Entity/LaserTrailClass.h>
+#include <Ext/Object/Body.h>
 
 struct BulletGroupData
 {
@@ -37,136 +38,148 @@ private:
 	bool Serialize(T& stm);
 };
 
-class BulletExt
+struct RadialFireStruct
+{
+	int Segments = 0;
+	int Index = 0;
+	DirStruct Direction {};
+};
+
+class BulletExt final : public ObjectExt
 {
 public:
 	using base_type = BulletClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = BulletExt;
+
 	static constexpr DWORD Canary = 0x2A2A2A2A;
-	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<BulletClass>
+public:
+	// typed owner accessor
+	BulletClass* OwnerObject() const
 	{
-	public:
-		BulletTypeExt::ExtData* TypeExtData;
-		HouseClass* FirerHouse;
-		int CurrentStrength;
-		TechnoTypeExt::ExtData* InterceptorTechnoType;
-		InterceptedStatus InterceptedStatus;
-		bool DetonateOnInterception;
-		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
-		bool SnappedToTarget; // Used for custom trajectory projectile target snap checks
-		int DamageNumberOffset;
-		int ParabombFallRate;
-		bool IsInstantDetonation;
-		double FirepowerMult;
+		return static_cast<BulletClass*>(this->GetAttachedObject());
+	}
 
-		TrajectoryPointer Trajectory;
-		bool DispersedTrajectory;
-		CDTimerClass LifeDurationTimer;
-		CDTimerClass NoTargetLifeTimer;
-		CDTimerClass RetargetTimer;
-		int AttenuationRange;
-		bool TargetIsInAir;
-		bool TargetIsTechno;
-		bool NotMainWeapon;
-		TrajectoryStatus Status;
-		CoordStruct FLHCoord;
-		std::shared_ptr<PhobosMap<BulletTypeClass*, BulletGroupData>> TrajectoryGroup;
-		int GroupIndex;
-		int PassDetonateDamage;
-		CDTimerClass PassDetonateTimer;
-		int ProximityImpact;
-		int ProximityDamage;
-		TechnoClass* ExtraCheck;
-		std::map<DWORD, int> Casualty;
-		int DisperseIndex;
-		int DisperseCount;
-		int DisperseCycle;
-		CDTimerClass DisperseTimer;
+	BulletTypeExt* TypeExtData;
+	HouseClass* FirerHouse;
+	int CurrentStrength;
+	TechnoTypeExt* InterceptorTechnoType;
+	InterceptedStatus InterceptedStatus;
+	bool DetonateOnInterception;
+	std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
+	bool SnappedToTarget; // Used for custom trajectory projectile target snap checks
+	int DamageNumberOffset;
+	int ParabombFallRate;
+	bool IsInstantDetonation;
+	double FirepowerMult;
+	bool IsSplitFromAirburst;
 
-		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
-			, TypeExtData { nullptr }
-			, FirerHouse { nullptr }
-			, CurrentStrength { 0 }
-			, InterceptorTechnoType { nullptr }
-			, InterceptedStatus { InterceptedStatus::None }
-			, DetonateOnInterception { true }
-			, LaserTrails {}
-			, SnappedToTarget { false }
-			, DamageNumberOffset { INT32_MIN }
-			, ParabombFallRate { 0 }
-			, IsInstantDetonation { false }
-			, FirepowerMult { 1.0 }
+	TrajectoryPointer Trajectory;
+	bool DispersedTrajectory;
+	CDTimerClass LifeDurationTimer;
+	CDTimerClass NoTargetLifeTimer;
+	CDTimerClass RetargetTimer;
+	int AttenuationRange;
+	bool TargetIsInAir;
+	bool TargetIsTechno;
+	bool NotMainWeapon;
+	TrajectoryStatus Status;
+	CoordStruct FLHCoord;
+	std::shared_ptr<PhobosMap<BulletTypeClass*, BulletGroupData>> TrajectoryGroup;
+	int GroupIndex;
+	int PassDetonateDamage;
+	CDTimerClass PassDetonateTimer;
+	int ProximityImpact;
+	int ProximityDamage;
+	TechnoClass* ExtraCheck;
+	std::map<DWORD, int> Casualty;
+	int DisperseIndex;
+	int DisperseCount;
+	int DisperseCycle;
+	CDTimerClass DisperseTimer;
 
-			, Trajectory { nullptr }
-			, DispersedTrajectory { false }
-			, LifeDurationTimer {}
-			, NoTargetLifeTimer {}
-			, RetargetTimer {}
-			, AttenuationRange { 0 }
-			, TargetIsInAir { false }
-			, TargetIsTechno { false }
-			, NotMainWeapon { false }
-			, Status { TrajectoryStatus::None }
-			, FLHCoord { CoordStruct::Empty }
-			, TrajectoryGroup {}
-			, GroupIndex { -1 }
-			, PassDetonateDamage { 0 }
-			, PassDetonateTimer {}
-			, ProximityImpact { 0 }
-			, ProximityDamage { 0 }
-			, ExtraCheck { nullptr }
-			, Casualty {}
-			, DisperseIndex { 0 }
-			, DisperseCount { 0 }
-			, DisperseCycle { 0 }
-			, DisperseTimer {}
-		{ }
+	BulletExt(BulletClass* OwnerObject) : ObjectExt(OwnerObject)
+		, TypeExtData { nullptr }
+		, FirerHouse { nullptr }
+		, CurrentStrength { 0 }
+		, InterceptorTechnoType { nullptr }
+		, InterceptedStatus { InterceptedStatus::None }
+		, DetonateOnInterception { true }
+		, LaserTrails {}
+		, SnappedToTarget { false }
+		, DamageNumberOffset { INT32_MIN }
+		, ParabombFallRate { 0 }
+		, IsInstantDetonation { false }
+		, FirepowerMult { 1.0 }
 
-		virtual ~ExtData() override;
+		, Trajectory { nullptr }
+		, DispersedTrajectory { false }
+		, LifeDurationTimer {}
+		, NoTargetLifeTimer {}
+		, RetargetTimer {}
+		, AttenuationRange { 0 }
+		, TargetIsInAir { false }
+		, TargetIsTechno { false }
+		, NotMainWeapon { false }
+		, Status { TrajectoryStatus::None }
+		, FLHCoord { CoordStruct::Empty }
+		, TrajectoryGroup {}
+		, GroupIndex { -1 }
+		, PassDetonateDamage { 0 }
+		, PassDetonateTimer {}
+		, ProximityImpact { 0 }
+		, ProximityDamage { 0 }
+		, ExtraCheck { nullptr }
+		, Casualty {}
+		, DisperseIndex { 0 }
+		, DisperseCount { 0 }
+		, DisperseCycle { 0 }
+		, DisperseTimer {}
+	{ }
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+	virtual ~BulletExt() = default;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-		void InterceptBullet(TechnoClass* pSource, BulletClass* pInterceptor);
-		void ApplyRadiationToCell(CellStruct cell, int spread, int radLevel);
-		void InitializeLaserTrails();
+	void InterceptBullet(TechnoClass* pSource, BulletClass* pInterceptor);
+	void ApplyRadiationToCell(CellStruct cell, int spread, int radLevel);
+	void InitializeLaserTrails();
 
-		void InitializeOnUnlimbo();
-		bool CheckOnEarlyUpdate();
-		void CheckOnPreDetonate();
-		bool FireAdditionals();
-		void DetonateOnObstacle();
-		bool CheckSynchronize();
-		bool CheckNoTargetLifeTime();
-		void UpdateGroupIndex();
+	void InitializeOnUnlimbo();
+	bool CheckOnEarlyUpdate();
+	void CheckOnPreDetonate();
+	bool FireAdditionals();
+	void DetonateOnObstacle();
+	bool CheckSynchronize();
+	bool CheckNoTargetLifeTime();
+	void UpdateGroupIndex();
 
-		std::vector<CellClass*> GetCellsInProximityRadius();
-		bool CheckThroughAndSubjectInCell(CellClass* pCell, HouseClass* pOwner);
-		void CalculateNewDamage();
-		void PassWithDetonateAt();
-		template<bool allies, bool sphere>
-		std::vector<TechnoClass*> GetTargetsInProximityRadius(HouseClass* pOwner);
-		void PrepareForDetonateAt();
-		void ProximityDetonateAt(HouseClass* pOwner, TechnoClass* pTarget);
-		int GetTrueDamage(int damage, bool self);
-		double GetExtraDamageMultiplier();
+	std::vector<CellClass*> GetCellsInProximityRadius();
+	bool CheckThroughAndSubjectInCell(CellClass* pCell, HouseClass* pOwner);
+	void CalculateNewDamage();
+	void PassWithDetonateAt();
+	template<bool allies, bool sphere>
+	std::vector<TechnoClass*> GetTargetsInProximityRadius(HouseClass* pOwner);
+	void PrepareForDetonateAt();
+	void ProximityDetonateAt(HouseClass* pOwner, TechnoClass* pTarget);
+	int GetTrueDamage(int damage, bool self);
+	double GetExtraDamageMultiplier();
 
-		bool BulletRetargetTechno();
-		void GetTechnoFLHCoord();
-		CoordStruct GetDisperseWeaponFireCoord(TechnoClass* pTechno);
-		bool PrepareDisperseWeapon();
-		bool FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct& sourceCoord, HouseClass* pOwner);
-		void CreateDisperseBullets(TechnoClass* pTechno, const CoordStruct& sourceCoord, WeaponTypeClass* pWeapon, AbstractClass* pTarget, HouseClass* pOwner, int curBurst, int maxBurst);
+	bool BulletRetargetTechno();
+	void GetTechnoFLHCoord();
+	CoordStruct GetDisperseWeaponFireCoord(TechnoClass* pTechno);
+	bool PrepareDisperseWeapon();
+	bool FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct& sourceCoord, HouseClass* pOwner);
+	void CreateDisperseBullets(TechnoClass* pTechno, const CoordStruct& sourceCoord, WeaponTypeClass* pWeapon, AbstractClass* pTarget, HouseClass* pOwner, int curBurst, int maxBurst);
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 
+public:
 	class ExtContainer final : public Container<BulletExt>
 	{
 	public:
@@ -178,11 +191,21 @@ public:
 
 	static constexpr double Epsilon = 1e-10;
 
+	static BulletExt* Fetch(const BulletClass* pThis)
+	{
+		return AbstractExt::Fetch<BulletExt>(pThis);
+	}
+
+	static BulletExt* TryFetch(const BulletClass* pThis)
+	{
+		return AbstractExt::TryFetch<BulletExt>(pThis);
+	}
+
 	static void Detonate(const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse, AbstractClass* pTarget, bool isBright, WeaponTypeClass* pWeapon, WarheadTypeClass* pWarhead);
 	static void ApplyArcingFix(BulletClass* pThis, const CoordStruct& sourceCoords, const CoordStruct& targetCoords, BulletVelocity& velocity);
 	static CoordStruct GetTargetCoordsForFiring(BulletClass* pBullet);
 
-	static void SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords, bool randomVelocity);
+	static void SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords, bool headToTarget, const RadialFireStruct& radialFire = {});
 	static void SimulatedFiringEffects(BulletClass* pBullet, HouseClass* pHouse, ObjectClass* pAttach, bool firingEffect, bool visualEffect);
 	static inline void SimulatedFiringAnim(BulletClass* pBullet, HouseClass* pHouse, ObjectClass* pAttach);
 	static inline void SimulatedFiringReport(BulletClass* pBullet);
@@ -307,4 +330,6 @@ public:
 	}
 	static bool CheckExceededCapacity(TechnoClass* pTechno, BulletTypeClass* pBulletType, BulletExt::ExtData* pBulletExt = nullptr);
 	static std::vector<CellStruct> GetCellsInRectangle(const CellStruct bottomStaCell, const CellStruct leftMidCell, const CellStruct rightMidCell, const CellStruct topEndCell);
+	static inline BulletVelocity ApplyRadialFireVelocityWarp(BulletVelocity velocity, const RadialFireStruct& radialFire);
 };
+

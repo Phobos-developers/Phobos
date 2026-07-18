@@ -181,6 +181,16 @@ enum class SlaveChangeOwnerType
 	Neutral = 4,
 };
 
+enum class PositionFollow : BYTE
+{
+	None = 0x0,
+	Firer = 0x1,
+	Target = 0x2,
+	All = Firer | Target
+};
+
+MAKE_ENUM_FLAGS(PositionFollow)
+
 enum class AutoDeathBehavior
 {
 	Kill = 0,     // default death option
@@ -275,7 +285,6 @@ enum class VerticalPosition : BYTE
 	Center = 1,
 	Bottom = 2
 };
-
 //hexagon
 enum class BuildingSelectBracketPosition :BYTE
 {
@@ -331,6 +340,18 @@ enum class BannerNumberType : int
 	Variable = 1,
 	Prefixed = 2,
 	Suffixed = 3
+};
+
+enum class DynamicTeamDelayType : int
+{
+	StartingPoint = 0,
+	PlayerCount = 1,
+	Allies = 2,
+	Enemies = 3,
+	AliveCount = 4,
+	AliveAllies = 5,
+	AliveEnemies = 6,
+	None = 7
 };
 
 class MouseCursorHotSpotX
@@ -393,4 +414,17 @@ public:
 		}
 		return false;
 	}
+};
+
+enum class InterpolationMode : BYTE
+{
+	None = 0,
+	Linear = 1
+};
+
+enum class EdgeType : BYTE
+{
+	Owner = 0,
+	Closest = 1,
+	Random = 2
 };

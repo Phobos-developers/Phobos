@@ -16,7 +16,7 @@
 
 // TechnoClass_AI_0x6F9E50
 // It's not recommended to do anything more here it could have a better place for performance consideration
-void TechnoExt::ExtData::OnEarlyUpdate()
+void TechnoExt::OnEarlyUpdate()
 {
 	auto const pType = this->OwnerObject()->GetTechnoType();
 
@@ -25,24 +25,26 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	if (!this->TypeExtData || this->TypeExtData->OwnerObject() != pType)
 		this->UpdateTypeData(pType);
 
-	if (this->CheckDeathConditions())
-		return;
-
 	this->UpdateShield();
 	this->UpdateAttachEffects();
-	this->ApplyInterceptor();
 	this->EatPassengers();
 	this->ApplySpawnLimitRange();
 	this->ApplyMindControlRangeLimit();
 	this->UpdateRecountBurst();
 	this->UpdateRearmInEMPState();
 	this->UpdateLastTargetCrd();
+	this->UpdateRecoilData();
 
 	if (this->AttackMoveFollowerTempCount)
 		this->AttackMoveFollowerTempCount--;
+
+	if (this->CheckDeathConditions())
+		return;
+
+	this->ApplyInterceptor();
 }
 
-void TechnoExt::ExtData::ApplyInterceptor()
+void TechnoExt::ApplyInterceptor()
 {
 	const auto pTypeExt = this->TypeExtData;
 	const auto pInterceptorType = pTypeExt->InterceptorType.get();
@@ -62,7 +64,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 		if (pTarget->WhatAmI() != AbstractType::Bullet)
 			return;
 
-		const auto pTargetExt = BulletExt::ExtMap.Find(static_cast<BulletClass*>(pTarget));
+		const auto pTargetExt = BulletExt::Fetch(static_cast<BulletClass*>(pTarget));
 
 		if ((pTargetExt->InterceptedStatus & InterceptedStatus::Locked) == InterceptedStatus::None)
 			return;
@@ -86,7 +88,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 
 	for (auto const pBullet : BulletClass::Array)
 	{
-		const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+		const auto pBulletExt = BulletExt::Fetch(pBullet);
 		const auto pBulletTypeExt = pBulletExt->TypeExtData;
 
 		if (!pBulletTypeExt->Interceptable || pBullet->SpawnNextAnim)
@@ -147,7 +149,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	}
 }
 
-void TechnoExt::ExtData::DepletedAmmoActions()
+void TechnoExt::DepletedAmmoActions()
 {
 	auto const pTypeExt = this->TypeExtData;
 	const int min = pTypeExt->Ammo_AutoDeployMinimumAmount;
@@ -190,7 +192,7 @@ void TechnoExt::ExtData::DepletedAmmoActions()
 	}
 }
 
-void TechnoExt::ExtData::AmmoAutoConvertActions()
+void TechnoExt::AmmoAutoConvertActions()
 {
 	const auto pTypeExt = this->TypeExtData;
 
@@ -217,7 +219,7 @@ void TechnoExt::ExtData::AmmoAutoConvertActions()
 }
 
 // Subterranean harvester factory exit state machine.
-void TechnoExt::ExtData::UpdateSubterraneanHarvester()
+void TechnoExt::UpdateSubterraneanHarvester()
 {
 	auto const pThis = static_cast<UnitClass*>(this->OwnerObject());
 
@@ -274,7 +276,7 @@ void TechnoExt::ExtData::UpdateSubterraneanHarvester()
 }
 
 // TODO : Merge into new AttachEffects
-bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
+bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 {
 	auto const pTypeExt = this->TypeExtData;
 
@@ -314,12 +316,12 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 			auto existSingleType = [pOwner, affectedHouse, allowLimbo](TechnoTypeClass* pType)
 				{
 					if (affectedHouse == AffectedHouse::Owner)
-						return allowLimbo ? HouseExt::ExtMap.Find(pOwner)->CountOwnedPresentAndLimboed(pType) > 0 : pOwner->CountOwnedAndPresent(pType) > 0;
+						return allowLimbo ? HouseExt::Fetch(pOwner)->CountOwnedPresentAndLimboed(pType) > 0 : pOwner->CountOwnedAndPresent(pType) > 0;
 
 					for (auto const pHouse : HouseClass::Array)
 					{
 						if (EnumFunctions::CanTargetHouse(affectedHouse, pOwner, pHouse)
-							&& (allowLimbo ? HouseExt::ExtMap.Find(pHouse)->CountOwnedPresentAndLimboed(pType) > 0 : pHouse->CountOwnedAndPresent(pType) > 0))
+							&& (allowLimbo ? HouseExt::Fetch(pHouse)->CountOwnedPresentAndLimboed(pType) > 0 : pHouse->CountOwnedAndPresent(pType) > 0))
 							return true;
 					}
 
@@ -356,7 +358,7 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	return false;
 }
 
-void TechnoExt::ExtData::EatPassengers()
+void TechnoExt::EatPassengers()
 {
 	auto const pTypeExt = this->TypeExtData;
 
@@ -538,7 +540,7 @@ void TechnoExt::ExtData::EatPassengers()
 	}
 }
 
-void TechnoExt::ExtData::UpdateTiberiumEater()
+void TechnoExt::UpdateTiberiumEater()
 {
 	const auto pEaterType = this->TypeExtData->TiberiumEaterType.get();
 
@@ -639,29 +641,13 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 		this->TiberiumEater_Timer.Start(pEaterType->TransDelay);
 }
 
-void TechnoExt::ExtData::UpdateShield()
+void TechnoExt::UpdateShield()
 {
-	// Set current shield type if it is not set.
-	if (!this->CurrentShieldType || this->CurrentShieldType->Strength <= 0)
-	{
-		auto const pTypeExt = this->TypeExtData;
-
-		if (pTypeExt->ShieldType && pTypeExt->ShieldType->Strength > 0)
-			this->CurrentShieldType = pTypeExt->ShieldType;
-	}
-
-	// Create shield class instance if it does not exist.
-	if (this->CurrentShieldType && this->CurrentShieldType->Strength > 0 && !this->Shield)
-	{
-		this->Shield = std::make_unique<ShieldClass>(this->OwnerObject());
-		this->Shield->UpdateTint();
-	}
-
 	if (const auto pShieldData = this->Shield.get())
 		pShieldData->AI();
 }
 
-void TechnoExt::ExtData::UpdateOnTunnelEnter()
+void TechnoExt::UpdateOnTunnelEnter()
 {
 	if (!this->IsInTunnel)
 	{
@@ -678,7 +664,7 @@ void TechnoExt::ExtData::UpdateOnTunnelEnter()
 	}
 }
 
-void TechnoExt::ExtData::UpdateOnTunnelExit()
+void TechnoExt::UpdateOnTunnelExit()
 {
 	this->IsInTunnel = false;
 
@@ -686,7 +672,7 @@ void TechnoExt::ExtData::UpdateOnTunnelExit()
 		pShieldData->SetAnimationVisibility(true);
 }
 
-void TechnoExt::ExtData::ApplySpawnLimitRange()
+void TechnoExt::ApplySpawnLimitRange()
 {
 	auto const pTypeExt = this->TypeExtData;
 
@@ -704,11 +690,11 @@ void TechnoExt::ExtData::ApplySpawnLimitRange()
 	}
 }
 
-void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
+void TechnoExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 {
 	auto const pThis = this->OwnerObject();
 	auto const pOldType = this->TypeExtData->OwnerObject();
-	auto const pOldTypeExt = TechnoTypeExt::ExtMap.Find(pOldType);
+	auto const pOldTypeExt = TechnoTypeExt::Fetch(pOldType);
 	auto const pOwner = pThis->Owner;
 	auto& pSlaveManager = pThis->SlaveManager;
 	auto& pSpawnManager = pThis->SpawnManager;
@@ -718,7 +704,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 	// Cache the new type data
 	this->PreviousType = pOldType;
-	auto const pNewTypeExt = TechnoTypeExt::ExtMap.Find(pCurrentType);
+	auto const pNewTypeExt = TechnoTypeExt::Fetch(pCurrentType);
 	this->TypeExtData = pNewTypeExt;
 
 	this->UpdateSelfOwnedAttachEffects();
@@ -727,8 +713,8 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		pShield->ConvertCheck(pCurrentType);
 
 	// Recalculate and redraw
-	this->UpdateTintValues();
 	pThis->MarkForRedraw();
+	this->UpdateTintValues();
 
 	// Recreate Laser Trails
 	if (const size_t trailCount = this->LaserTrails.size())
@@ -779,14 +765,14 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	{
 		if (!pNewTypeExt->Harvester_Counted)
 		{
-			auto& vec = HouseExt::ExtMap.Find(pOwner)->OwnedCountedHarvesters;
+			auto& vec = HouseExt::Fetch(pOwner)->OwnedCountedHarvesters;
 			vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
 		}
 	}
 	// Add to harvesters list if it's a harvester.
 	else if (pNewTypeExt->Harvester_Counted)
 	{
-		HouseExt::ExtMap.Find(pOwner)->OwnedCountedHarvesters.push_back(pThis);
+		HouseExt::Fetch(pOwner)->OwnedCountedHarvesters.push_back(pThis);
 	}
 
 	// Remove from limbo reloaders if no longer applicable
@@ -1126,6 +1112,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	pThis->BarrelFacing.SetCurrent(DirStruct(0x4000 - (pCurrentType->FireAngle << 8)));
 
 	// Reset recoil data
+	this->InitializeRecoilData();
 	{
 		auto& turretRecoil = pThis->TurretRecoil.Turret;
 		const auto& turretAnimData = pCurrentType->TurretAnimData;
@@ -1185,13 +1172,13 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	}
 }
 
-void TechnoExt::ExtData::UpdateTypeData_Foot()
+void TechnoExt::UpdateTypeData_Foot()
 {
 	auto const pThis = static_cast<FootClass*>(this->OwnerObject());
 	auto const pOldType = this->PreviousType;
 	auto const pCurrentType = this->TypeExtData->OwnerObject();
 	auto const abs = pThis->WhatAmI();
-	//auto const pOldTypeExt = TechnoTypeExt::ExtMap.Find(pOldType);
+	//auto const pOldTypeExt = TechnoTypeExt::Fetch(pOldType);
 
 	// Update movement sound if still moving while type changed.
 	if (pThis->IsMoveSoundPlaying && pThis->Locomotor->Is_Moving())
@@ -1379,7 +1366,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 	this->PreviousType = nullptr;
 }
 
-void TechnoExt::ExtData::UpdateLaserTrails()
+void TechnoExt::UpdateLaserTrails()
 {
 	if (this->LaserTrails.size() <= 0)
 		return;
@@ -1425,7 +1412,7 @@ void TechnoExt::ExtData::UpdateLaserTrails()
 	}
 }
 
-void TechnoExt::ExtData::UpdateMindControlAnim()
+void TechnoExt::UpdateMindControlAnim()
 {
 	auto const pThis = this->OwnerObject();
 
@@ -1460,7 +1447,7 @@ void TechnoExt::ExtData::UpdateMindControlAnim()
 	}
 }
 
-void TechnoExt::ExtData::UpdateRecountBurst()
+void TechnoExt::UpdateRecountBurst()
 {
 	const auto pThis = this->OwnerObject();
 
@@ -1484,7 +1471,7 @@ void TechnoExt::ExtData::UpdateRecountBurst()
 	}
 }
 
-void TechnoExt::ExtData::UpdateGattlingRateDownReset()
+void TechnoExt::UpdateGattlingRateDownReset()
 {
 	const auto pTypeExt = this->TypeExtData;
 
@@ -1512,7 +1499,7 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 	if (!RulesExt::Global()->GainSelfHealAllowMultiplayPassive && pThis->Owner->Type->MultiplayPassive)
 		return;
 
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto const pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 	auto const pType = pTypeExt->OwnerObject();
 	const int healthDeficit = pType->Strength - pThis->Health;
 
@@ -1619,13 +1606,13 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 	return;
 }
 
-void TechnoExt::ExtData::ApplyMindControlRangeLimit()
+void TechnoExt::ApplyMindControlRangeLimit()
 {
 	auto const pThis = this->OwnerObject();
 
 	if (auto const pCapturer = pThis->MindControlledBy)
 	{
-		auto const pCapturerExt = TechnoExt::ExtMap.Find(pCapturer)->TypeExtData;
+		auto const pCapturerExt = TechnoExt::Fetch(pCapturer)->TypeExtData;
 
 		if (pCapturerExt->MindControlRangeLimit.Get() > 0
 			&& pCapturer->DistanceFrom(pThis) > pCapturerExt->MindControlRangeLimit.Get())
@@ -1652,7 +1639,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, cons
 			auto const pBldType = pBuilding->Type;
 
 			if (!pBuilding->InLimbo && !pBldType->Insignificant && !pBldType->DontScore)
-				HouseExt::ExtMap.Find(pBuilding->Owner)->RemoveFromLimboTracking(pBldType);
+				HouseExt::Fetch(pBuilding->Owner)->RemoveFromLimboTracking(pBldType);
 		}
 
 		auto const pTransport = pThis->Transporter;
@@ -1743,7 +1730,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, cons
 
 void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 {
-	const auto pExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	const auto pExt = TechnoExt::Fetch(pThis)->TypeExtData;
 
 	if (pExt->Ammo_Shared)
 	{
@@ -1753,7 +1740,7 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 		{
 			for (auto pPassenger = pThis->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
 			{
-				const auto pPassengerExt = TechnoExt::ExtMap.Find(pPassenger)->TypeExtData;
+				const auto pPassengerExt = TechnoExt::Fetch(pPassenger)->TypeExtData;
 
 				if (pPassengerExt->Ammo_Shared)
 				{
@@ -1771,7 +1758,7 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::ExtData::UpdateTemporal()
+void TechnoExt::UpdateTemporal()
 {
 	if (const auto pShieldData = this->Shield.get())
 	{
@@ -1785,7 +1772,7 @@ void TechnoExt::ExtData::UpdateTemporal()
 	this->UpdateRearmInTemporal();
 }
 
-void TechnoExt::ExtData::UpdateRearmInEMPState()
+void TechnoExt::UpdateRearmInEMPState()
 {
 	const auto pThis = this->OwnerObject();
 
@@ -1801,7 +1788,7 @@ void TechnoExt::ExtData::UpdateRearmInEMPState()
 		pThis->ReloadTimer.StartTime++;
 }
 
-void TechnoExt::ExtData::UpdateRearmInTemporal()
+void TechnoExt::UpdateRearmInTemporal()
 {
 	const auto pThis = this->OwnerObject();
 	const auto pTypeExt = this->TypeExtData;
@@ -1814,7 +1801,7 @@ void TechnoExt::ExtData::UpdateRearmInTemporal()
 }
 
 // Resets target if KeepTargetOnMove unit moves beyond weapon range.
-void TechnoExt::ExtData::UpdateKeepTargetOnMove()
+void TechnoExt::UpdateKeepTargetOnMove()
 {
 	if (!this->KeepTargetOnMove)
 		return;
@@ -1868,7 +1855,7 @@ void TechnoExt::ExtData::UpdateKeepTargetOnMove()
 	}
 }
 
-void TechnoExt::ExtData::UpdateWarpInDelay()
+void TechnoExt::UpdateWarpInDelay()
 {
 	if (this->HasRemainingWarpInDelay)
 	{
@@ -1886,7 +1873,7 @@ void TechnoExt::ExtData::UpdateWarpInDelay()
 }
 
 // Updates state of all AttachEffects on techno.
-void TechnoExt::ExtData::UpdateAttachEffects()
+void TechnoExt::UpdateAttachEffects()
 {
 	if (!this->AttachedEffects.size())
 		return;
@@ -1921,6 +1908,9 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			auto const pType = attachEffect->GetType();
 			attachEffect->ShouldBeDiscarded = false;
 
+			if (pType->NeedCalculate)
+				altered = true;
+
 			if (pType->HasTint())
 				markForRedraw = true;
 
@@ -1947,12 +1937,10 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			if (shouldDiscard && attachEffect->ResetIfRecreatable())
 			{
 				++it;
-				altered = true;
 				continue;
 			}
 
 			it = this->AttachedEffects.erase(it);
-			altered = true;
 		}
 		else
 		{
@@ -1964,7 +1952,10 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 		this->RecalculateStatMultipliers();
 
 	if (markForRedraw)
+	{
 		pThis->MarkForRedraw();
+		this->UpdateTintValues();
+	}
 
 	auto const coords = pThis->GetCoords();
 
@@ -1976,7 +1967,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 }
 
 // Updates self-owned (defined on TechnoType) AttachEffects, called on type conversion.
-void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
+void TechnoExt::UpdateSelfOwnedAttachEffects()
 {
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
@@ -1996,6 +1987,9 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 
 		if (remove)
 		{
+			if (pType->NeedCalculate)
+				altered = true;
+
 			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
 			{
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
@@ -2013,7 +2007,6 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 			}
 
 			it = this->AttachedEffects.erase(it);
-			altered = true;
 		}
 		else
 		{
@@ -2037,7 +2030,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 }
 
 // Updates CumulativeAnimations AE's on techno.
-void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, AttachEffectClass* pRemoved)
+void TechnoExt::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, AttachEffectClass* pRemoved)
 {
 	AttachEffectClass* pAELargestDuration = nullptr;
 	AttachEffectClass* pAEWithAnim = nullptr;
@@ -2052,7 +2045,7 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 		{
 			pAEWithAnim = attachEffect.get();
 		}
-		else if (attachEffect->CanShowAnim())
+		else if (attachEffect->CanShowAnim(true))
 		{
 			const int currentDuration = attachEffect->GetRemainingDuration();
 
@@ -2079,7 +2072,7 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 }
 
 // Recalculates AttachEffect stat multipliers and other bonuses.
-bool TechnoExt::ExtData::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
+bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 {
 	auto const pThis = this->OwnerObject();
 	auto& pAE = this->AE;
@@ -2108,7 +2101,6 @@ bool TechnoExt::ExtData::RecalculateStatMultipliers(AttachEffectClass* pAttachEf
 		return pAE.ForceDecloak;
 	}
 
-	const bool wasTint = pAE.HasTint;
 	double firepower = 1.0;
 	double armor = 1.0;
 	double speed = 1.0;
@@ -2168,14 +2160,11 @@ bool TechnoExt::ExtData::RecalculateStatMultipliers(AttachEffectClass* pAttachEf
 	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
 		pThis->Uncloak(true);
 
-	if (wasTint || hasTint)
-		this->UpdateTintValues();
-
 	return false;
 }
 
 // Recalculates tint values.
-void TechnoExt::ExtData::UpdateTintValues()
+void TechnoExt::UpdateTintValues()
 {
 	// reset values
 	this->TintColorOwner = 0;
@@ -2237,7 +2226,7 @@ void TechnoExt::ExtData::UpdateTintValues()
 	}
 }
 
-void TechnoExt::ExtData::UpdateLastTargetCrd()
+void TechnoExt::UpdateLastTargetCrd()
 {
 	if (!this->TypeExtData->ExtraThreat_Enabled)
 		return;
@@ -2261,4 +2250,58 @@ void TechnoExt::ExtData::UpdateLastTargetCrd()
 			pTimer->Stop();
 		}
 	}
+}
+
+void TechnoExt::RecordRecoilData()
+{
+	const auto pThis = this->OwnerObject();
+	const auto pTypeExt = this->TypeExtData;
+
+	if (auto turretIndex = pTypeExt->BurstPerTurret
+		? ((pThis->CurrentBurstIndex / pTypeExt->BurstPerTurret) % (pTypeExt->ExtraTurretCount + 1))
+		: 0)
+	{
+		turretIndex -= 1;
+		this->ExtraTurretRecoil[turretIndex].TravelSoFar = 0.0;
+		this->ExtraTurretRecoil[turretIndex].Fire();
+	}
+	else
+	{
+		pThis->TurretRecoil.TravelSoFar = 0.0;
+		pThis->TurretRecoil.Fire();
+	}
+
+	if (auto barrelIndex = (pTypeExt->ExtraTurretCount || pTypeExt->ExtraBarrelCount)
+		? (pThis->CurrentBurstIndex % ((pTypeExt->ExtraBarrelCount + 1) * (pTypeExt->ExtraTurretCount + 1)))
+		: 0)
+	{
+		barrelIndex -= 1;
+		this->ExtraBarrelRecoil[barrelIndex].TravelSoFar = 0.0;
+		this->ExtraBarrelRecoil[barrelIndex].Fire();
+	}
+	else
+	{
+		pThis->BarrelRecoil.TravelSoFar = 0.0;
+		pThis->BarrelRecoil.Fire();
+	}
+}
+
+// Skip vanilla recoil update
+DEFINE_JUMP(LJMP, 0x6FA4D1, 0x6FA4FB);
+
+void TechnoExt::UpdateRecoilData()
+{
+	if (!this->TypeExtData->OwnerObject()->TurretRecoil)
+		return;
+
+	const auto pThis = this->OwnerObject();
+
+	pThis->TurretRecoil.Update();
+	pThis->BarrelRecoil.Update();
+
+	for (auto& data : this->ExtraTurretRecoil)
+		data.Update();
+
+	for (auto& data : this->ExtraBarrelRecoil)
+		data.Update();
 }

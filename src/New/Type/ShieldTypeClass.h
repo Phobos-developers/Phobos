@@ -129,13 +129,16 @@ public:
 
 	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio) const
 	{
+		const double conditionYellow = this->GetConditionYellow();
+		const double conditionRed = this->GetConditionRed();
+
 		if (isDamaged)
 		{
-			if (const auto damagedAnim = this->IdleAnimDamaged.Get(healthRatio))
+			if (const auto damagedAnim = this->IdleAnimDamaged.Get(healthRatio, conditionYellow, conditionRed))
 				return damagedAnim;
 		}
 
-		return this->IdleAnim.Get(healthRatio, this->GetConditionYellow(), this->GetConditionRed());
+		return this->IdleAnim.Get(healthRatio, conditionYellow, conditionRed);
 	}
 
 	double GetConditionYellow() const { return this->ConditionYellow.Get(RulesExt::Global()->Shield_ConditionYellow.Get(RulesClass::Instance->ConditionYellow)); }
