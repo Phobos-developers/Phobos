@@ -100,8 +100,12 @@ AttachEffectClass::~AttachEffectClass()
 
 	this->KillAnim();
 
+	// the invoker may be mid-destruction with its extension already removed
 	if (this->Invoker)
-		TechnoExt::Fetch(this->Invoker)->AttachedEffectInvokerCount--;
+	{
+		if (auto const pInvokerExt = TechnoExt::TryFetch(this->Invoker))
+			pInvokerExt->AttachedEffectInvokerCount--;
+	}
 }
 
 void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
@@ -113,17 +117,18 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 
 	if (auto const pAnim = abstract_cast<AnimClass*, true>(abs))
 	{
-		if (auto const pAnimExt = AnimExt::TryFetch(pAnim))
+		auto const pAnimExt = AnimExt::TryFetch(pAnim);
+
+		// the flag is only a fast-path gate: during scenario teardown the anim's
+		// extension is already gone, and the references must still be dropped
+		if (!pAnimExt || pAnimExt->IsAttachedEffectAnim)
 		{
-			if (pAnimExt->IsAttachedEffectAnim)
+			for (auto const pEffect : AttachEffectClass::Array)
 			{
-				for (auto const pEffect : AttachEffectClass::Array)
+				if (pAnim == pEffect->Animation)
 				{
-					if (pAnim == pEffect->Animation)
-					{
-						pEffect->Animation = nullptr;
-						break; // one anim must be used by less than one AE
-					}
+					pEffect->Animation = nullptr;
+					break; // one anim must be used by less than one AE
 				}
 			}
 		}
@@ -133,16 +138,19 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 		auto const pTechno = abstract_cast<TechnoClass*, true>(abs);
 		auto const pTechnoExt = TechnoExt::TryFetch(pTechno);
 
-		if (int count = pTechnoExt ? pTechnoExt->AttachedEffectInvokerCount : 0)
+		// the counter is only a fast-path gate: during scenario teardown the techno's
+		// extension is already gone, and the invoker references must still be dropped
+		int count = pTechnoExt ? pTechnoExt->AttachedEffectInvokerCount : -1;
+
+		if (count != 0)
 		{
 			for (auto const pEffect : AttachEffectClass::Array)
 			{
 				if (pTechno == pEffect->Invoker)
 				{
 					AnnounceInvalidPointer(pEffect->Invoker, ptr);
-					count--;
 
-					if (count <= 0)
+					if (--count == 0)
 						break;
 				}
 			}

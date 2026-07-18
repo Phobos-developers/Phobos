@@ -53,17 +53,18 @@ void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
 
 	if (auto const pAnim = abstract_cast<AnimClass*, true>(abs))
 	{
-		if (auto const pAnimExt = AnimExt::TryFetch(pAnim))
+		auto const pAnimExt = AnimExt::TryFetch(pAnim);
+
+		// the flag is only a fast-path gate: during scenario teardown the anim's
+		// extension is already gone, and the references must still be dropped
+		if (!pAnimExt || pAnimExt->IsShieldIdleAnim)
 		{
-			if (pAnimExt->IsShieldIdleAnim)
+			for (auto const pShield : ShieldClass::Array)
 			{
-				for (auto const pShield : ShieldClass::Array)
+				if (pAnim == pShield->IdleAnim)
 				{
-					if (pAnim == pShield->IdleAnim)
-					{
-						pShield->IdleAnim = nullptr;
-						break; // one anim must be used by less than one shield
-					}
+					pShield->IdleAnim = nullptr;
+					break; // one anim must be used by less than one shield
 				}
 			}
 		}
