@@ -262,6 +262,22 @@ In `RA2MD.INI`:
 PrioritySelectionFiltering=true  ; boolean
 ```
 
+### Modern control scheme
+
+- An optional control scheme matching modern RTS games: the **right mouse button** issues orders to the current selection (move, attack, enter, capture, etc.), while the **left mouse button** only selects, box-selects and self-deploys, and deselects when clicking empty ground. It reuses the game's own command dispatch, so all order and network logic is unchanged.
+  - Special left-click modes are preserved on both buttons: while placing a building, repairing, selling, toggling power, planting a beacon, planning a path or targeting a superweapon, the left button performs that action and the right button cancels it, exactly as in vanilla.
+- Enable it with `ModernControls=true`.
+
+```{note}
+This only changes mouse behaviour; keyboard hotkeys are unaffected. It does not rebind any keys.
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ModernControls=false  ; boolean
+```
+
 ### Placement preview
 
 ![placepreview](_static/images/placepreview.png)
