@@ -72,7 +72,9 @@ DEFINE_HOOK(0x644DBB, ParticleTypeClass_CTOR, 0x5)
 }
 
 // Late in the destructor body, right before it chains into the base destructor.
-DEFINE_HOOK(0x645A39, ParticleTypeClass_DTOR, 0x13)
+// Deliberately stacked on the exact address and size of Ares' own hook: any other
+// placement in this stretch would overlap its 5-byte JMP and corrupt the patch.
+DEFINE_HOOK(0x645A3B, ParticleTypeClass_DTOR, 0x7)
 {
 	GET(ParticleTypeClass*, pItem, ESI);
 
