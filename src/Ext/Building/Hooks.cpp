@@ -1342,7 +1342,7 @@ DEFINE_HOOK(0x449DE9, BuildingClass_Mission_Selling_StartFacing_Set, 0x6)
 	return 0x449DEF;
 }
 
-DEFINE_HOOK(0x6F6D9E, TechnoClass_Unimbo_BuildingStartFacing, 0x7)
+DEFINE_HOOK(0x6F6D9E, TechnoClass_Unlimbo_BuildingStartFacing, 0x7)
 {
 	GET(TechnoClass*, pThis, ESI);
 
