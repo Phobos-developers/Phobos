@@ -929,7 +929,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->ForceShield_KillWarhead.Read<true>(exINI, pSection, "ForceShield.KillWarhead");
 
 	this->Explodes_KillPassengers.Read(exINI, pSection, "Explodes.KillPassengers");
-	this->Explodes_DuringBuildup.Read(exINI, pSection, "Explodes.DuringBuildup");
 	this->DriverKilled_KeptPassengers.Read(exINI, pSection, "DriverKilled.KeptPassengers");
 	this->DriverKilled_KillPassengers.Read(exINI, pSection, "DriverKilled.KillPassengers");
 	this->DeployFireWeapon.Read(exINI, pSection, "DeployFireWeapon");
@@ -1602,7 +1601,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->ForceShield_KillWarhead)
 
 		.Process(this->Explodes_KillPassengers)
-		.Process(this->Explodes_DuringBuildup)
 		.Process(this->DriverKilled_KeptPassengers)
 		.Process(this->DriverKilled_KillPassengers)
 		.Process(this->DeployFireWeapon)

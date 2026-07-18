@@ -205,6 +205,7 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->ConsideredVehicle.Read(exINI, pSection, "ConsideredVehicle");
 	this->SellBuildupLength.Read(exINI, pSection, "SellBuildupLength");
 	this->IsDestroyableObstacle.Read(exINI, pSection, "IsDestroyableObstacle");
+	this->Explodes_DuringBuildup.Read(exINI, pSection, "Explodes.DuringBuildup");
 
 	this->FactoryPlant_AllowTypes.Read(exINI, pSection, "FactoryPlant.AllowTypes");
 	this->FactoryPlant_DisallowTypes.Read(exINI, pSection, "FactoryPlant.DisallowTypes");
@@ -392,6 +393,7 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->FactoryPlant_MaxCount)
 		.Process(this->IsAnimDelayedBurst)
 		.Process(this->IsDestroyableObstacle)
+		.Process(this->Explodes_DuringBuildup)
 		.Process(this->Units_RepairRate)
 		.Process(this->Units_RepairStep)
 		.Process(this->Units_RepairPercent)

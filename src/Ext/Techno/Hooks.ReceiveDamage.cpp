@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/InfantryType/Body.h>
 #include <Ext/TEvent/Body.h>
@@ -236,7 +237,7 @@ DEFINE_HOOK(0x702603, TechnoClass_ReceiveDamage_Explodes, 0x6)
 
 	if (pThis->WhatAmI() == AbstractType::Building)
 	{
-		if (!pTypeExt->Explodes_DuringBuildup && (pThis->CurrentMission == Mission::Construction || pThis->CurrentMission == Mission::Selling))
+		if (!static_cast<BuildingTypeExt*>(pTypeExt)->Explodes_DuringBuildup && (pThis->CurrentMission == Mission::Construction || pThis->CurrentMission == Mission::Selling))
 			return SkipExploding;
 	}
 
