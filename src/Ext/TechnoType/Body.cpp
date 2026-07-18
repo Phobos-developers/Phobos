@@ -806,8 +806,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->AutoDeath_TechnosExist_AllowLimboed.Read(exINI, pSection, "AutoDeath.TechnosExist.AllowLimboed");
 	this->AutoDeath_TechnosExist_Houses.Read(exINI, pSection, "AutoDeath.TechnosExist.Houses");
 
-	this->Slaved_OwnerWhenMasterKilled.Read(exINI, pSection, "Slaved.OwnerWhenMasterKilled");
-	this->SlavesFreeSound.Read(exINI, pSection, "SlavesFreeSound");
 	this->SellSound.Read(exINI, pSection, "SellSound");
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
@@ -848,9 +846,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->OreGathering_FramesPerDir.Read(exINI, pSection, "OreGathering.FramesPerDir");
 
 	this->DestroyAnim_Random.Read(exINI, pSection, "DestroyAnim.Random");
-	this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
 
-	this->DefaultDisguise.Read(exINI, pSection, "DefaultDisguise");
 	this->DefaultMirageDisguises.Read(exINI, pSection, "DefaultMirageDisguises");
 	this->UseDisguiseMovementSpeed.Read(exINI, pSection, "UseDisguiseMovementSpeed");
 
@@ -1112,7 +1108,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->SinkSpeed.Read(exINI, pSection, "SinkSpeed");
 
 	this->DamagedSpeed.Read(exINI, pSection, "DamagedSpeed");
-	this->ProneSpeed.Read(exINI, pSection, "ProneSpeed");
 
 	this->SuppressKillWeapons.Read(exINI, pSection, "SuppressKillWeapons");
 	this->SuppressKillWeapons_Types.Read(exINI, pSection, "SuppressKillWeapons.Types");
@@ -1157,7 +1152,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	if (this->Ammo_AutoConvertMinimumAmount > this->Ammo_AutoConvertMaximumAmount)
 		Debug::Log("[Developer warning][%s] Ammo.AutoConvertMinimumAmount is greater than Ammo.AutoConvertMaximumAmount, resulting in no conversion.\n", pSection);
 
-	this->InfantryAutoDeploy.Read(exINI, pSection, "InfantryAutoDeploy");
 
 	this->TeamMember_ConsideredAs.Read(exINI, pSection, "TeamMember.ConsideredAs");
 
@@ -1351,16 +1345,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->ParseBurstFLHs(exArtINI, pArtSection, this->WeaponBurstFLHs, this->EliteWeaponBurstFLHs, "");
-	this->ParseBurstFLHs(exArtINI, pArtSection, this->DeployedWeaponBurstFLHs, this->EliteDeployedWeaponBurstFLHs, "Deployed");
-	this->ParseBurstFLHs(exArtINI, pArtSection, this->CrouchedWeaponBurstFLHs, this->EliteCrouchedWeaponBurstFLHs, "Prone");
 
-	this->OnlyUseLandSequences.Read(exArtINI, pArtSection, "OnlyUseLandSequences");
-	this->SecondaryFireSequenceLandOnly.Read(exArtINI, pArtSection, "SecondaryFireSequenceLandOnly");
-
-	this->PronePrimaryFireFLH.Read(exArtINI, pArtSection, "PronePrimaryFireFLH");
-	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
-	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
-	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
 	this->AlternateFLH_OnTurret.Read(exArtINI, pArtSection, "AlternateFLH.OnTurret");
 	this->AlternateFLH_ApplyVehicle.Read(exArtINI, pArtSection, "AlternateFLH.ApplyVehicle");
 
@@ -1590,8 +1575,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->AutoDeath_TechnosExist_AllowLimboed)
 		.Process(this->AutoDeath_TechnosExist_Houses)
 
-		.Process(this->Slaved_OwnerWhenMasterKilled)
-		.Process(this->SlavesFreeSound)
 		.Process(this->SellSound)
 		.Process(this->EVA_Sold)
 
@@ -1629,8 +1612,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->OreGathering_FramesPerDir)
 		.Process(this->LaserTrailData)
 		.Process(this->DestroyAnim_Random)
-		.Process(this->NotHuman_RandomDeathSequence)
-		.Process(this->DefaultDisguise)
 		.Process(this->DefaultMirageDisguises)
 		.Process(this->UseDisguiseMovementSpeed)
 		.Process(this->WeaponBurstFLHs)
@@ -1701,18 +1682,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->SelfHealGainType)
 		.Process(this->Passengers_SyncOwner)
 		.Process(this->Passengers_SyncOwner_RevertOnExit)
-
-		.Process(this->OnlyUseLandSequences)
-		.Process(this->SecondaryFireSequenceLandOnly)
-
-		.Process(this->PronePrimaryFireFLH)
-		.Process(this->ProneSecondaryFireFLH)
-		.Process(this->DeployedPrimaryFireFLH)
-		.Process(this->DeployedSecondaryFireFLH)
-		.Process(this->CrouchedWeaponBurstFLHs)
-		.Process(this->EliteCrouchedWeaponBurstFLHs)
-		.Process(this->DeployedWeaponBurstFLHs)
-		.Process(this->EliteDeployedWeaponBurstFLHs)
 
 		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->IronCurtain_Effect)
@@ -1871,7 +1840,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->SinkSpeed)
 
 		.Process(this->DamagedSpeed)
-		.Process(this->ProneSpeed)
 
 		.Process(this->SuppressKillWeapons)
 		.Process(this->SuppressKillWeapons_Types)
@@ -1928,7 +1896,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->VoiceWeaponAttacks)
 		.Process(this->VoiceEliteWeaponAttacks)
 
-		.Process(this->InfantryAutoDeploy)
 
 		.Process(this->TeamMember_ConsideredAs)
 

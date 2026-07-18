@@ -113,8 +113,6 @@ public:
 	Valueable<bool> AutoDeath_TechnosExist_AllowLimboed;
 	Valueable<AffectedHouse> AutoDeath_TechnosExist_Houses;
 
-	Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
-	NullableIdx<VocClass> SlavesFreeSound;
 	NullableIdx<VocClass> SellSound;
 	NullableIdx<VoxClass> EVA_Sold;
 
@@ -159,9 +157,7 @@ public:
 	Valueable<bool> AlternateFLH_ApplyVehicle;
 
 	Valueable<bool> DestroyAnim_Random;
-	Valueable<bool> NotHuman_RandomDeathSequence;
 
-	Valueable<InfantryTypeClass*> DefaultDisguise;
 	NullableVector<TerrainTypeClass*> DefaultMirageDisguises;
 	Valueable<bool> UseDisguiseMovementSpeed;
 
@@ -382,7 +378,6 @@ public:
 	Valueable<bool> Sinkable_SquidGrab;
 	Valueable<int> SinkSpeed;
 
-	Nullable<double> ProneSpeed;
 	Nullable<double> DamagedSpeed;
 
 	ValueableVector<AnimTypeClass*> Promote_VeteranAnimation;
@@ -399,16 +394,6 @@ public:
 	};
 
 	std::vector<LaserTrailDataEntry> LaserTrailData;
-	Valueable<bool> OnlyUseLandSequences;
-	Nullable<bool> SecondaryFireSequenceLandOnly;
-	Nullable<CoordStruct> PronePrimaryFireFLH;
-	Nullable<CoordStruct> ProneSecondaryFireFLH;
-	Nullable<CoordStruct> DeployedPrimaryFireFLH;
-	Nullable<CoordStruct> DeployedSecondaryFireFLH;
-	std::vector<std::vector<CoordStruct>> CrouchedWeaponBurstFLHs;
-	std::vector<std::vector<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
-	std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
-	std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
 	Valueable<bool> SuppressKillWeapons;
 	ValueableVector<WeaponTypeClass*> SuppressKillWeapons_Types;
@@ -463,7 +448,6 @@ public:
 	ValueableVector<int> VoiceWeaponAttacks;
 	ValueableVector<int> VoiceEliteWeaponAttacks;
 
-	Nullable<bool> InfantryAutoDeploy;
 
 	ValueableVector<TechnoTypeClass*> TeamMember_ConsideredAs;
 
@@ -602,9 +586,7 @@ public:
 		, AlternateFLH_OnTurret { true }
 		, AlternateFLH_ApplyVehicle { false }
 		, DestroyAnim_Random { true }
-		, NotHuman_RandomDeathSequence { false }
 
-		, DefaultDisguise {}
 		, UseDisguiseMovementSpeed {}
 
 		, OpenTopped_RangeBonus {}
@@ -664,8 +646,6 @@ public:
 		, AutoDeath_TechnosExist_AllowLimboed { true }
 		, AutoDeath_TechnosExist_Houses { AffectedHouse::Owner }
 
-		, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
-		, SlavesFreeSound {}
 		, SellSound {}
 		, EVA_Sold {}
 
@@ -708,14 +688,6 @@ public:
 		, SelfHealGainType {}
 		, Passengers_SyncOwner { false }
 		, Passengers_SyncOwner_RevertOnExit { true }
-
-		, OnlyUseLandSequences { false }
-		, SecondaryFireSequenceLandOnly {}
-
-		, PronePrimaryFireFLH {}
-		, ProneSecondaryFireFLH {}
-		, DeployedPrimaryFireFLH {}
-		, DeployedSecondaryFireFLH {}
 
 		, IronCurtain_KeptOnDeploy {}
 		, IronCurtain_Effect {}
@@ -872,7 +844,6 @@ public:
 		, Sinkable_SquidGrab { true }
 		, SinkSpeed { 5 }
 
-		, ProneSpeed { }
 		, DamagedSpeed { }
 
 		, SuppressKillWeapons { false }
@@ -929,8 +900,6 @@ public:
 		, VoiceIFVRepair { -1 }
 		, VoiceWeaponAttacks {}
 		, VoiceEliteWeaponAttacks {}
-
-		, InfantryAutoDeploy {}
 
 		, TeamMember_ConsideredAs {}
 
@@ -1012,11 +981,15 @@ public:
 	// Ares 0.A
 	const char* GetSelectionGroupID() const;
 
+protected:
+	// callable from the concrete leaf type exts (e.g. InfantryTypeExt) that read
+	// their own art-INI burst FLHs through this shared parser
+	void ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSection, std::vector<std::vector<CoordStruct>>& nFLH, std::vector<std::vector<CoordStruct>>& nEFlh, const char* pPrefixTag);
+
 private:
 	template <typename T>
 	void Serialize(T& Stm);
 
-	void ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSection, std::vector<std::vector<CoordStruct>>& nFLH, std::vector<std::vector<CoordStruct>>& nEFlh, const char* pPrefixTag);
 	void ParseVoiceWeaponAttacks(INI_EX& exINI, const char* pSection, ValueableVector<int>& n, ValueableVector<int>& nE);
 
 public:

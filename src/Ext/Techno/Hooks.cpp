@@ -6,6 +6,7 @@
 #include <Ext/Aircraft/Body.h>
 #include <Ext/AircraftType/Body.h>
 #include <Ext/Anim/Body.h>
+#include <Ext/InfantryType/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
@@ -310,15 +311,18 @@ DEFINE_HOOK(0x6F421C, TechnoClass_Init_DefaultDisguise, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	auto const pExt = TechnoTypeExt::Fetch(pThis->GetTechnoType());
-
 	// mirage is not here yet
-	if (pThis->WhatAmI() == AbstractType::Infantry && pExt->DefaultDisguise)
+	if (auto const pInf = abstract_cast<InfantryClass*, true>(pThis))
 	{
-		pThis->Disguise = pExt->DefaultDisguise;
-		pThis->DisguisedAsHouse = pThis->Owner;
-		pThis->Disguised = true;
-		return 0x6F4277;
+		auto const pExt = InfantryTypeExt::Fetch(pInf->Type);
+
+		if (pExt->DefaultDisguise)
+		{
+			pThis->Disguise = pExt->DefaultDisguise;
+			pThis->DisguisedAsHouse = pThis->Owner;
+			pThis->Disguised = true;
+			return 0x6F4277;
+		}
 	}
 
 	pThis->Disguised = false;
@@ -798,7 +802,7 @@ DEFINE_HOOK(0x521D94, InfantryClass_CurrentSpeed_ProneSpeed, 0x6)
 	GET(int, currentSpeed, ECX);
 
 	const auto pType = pThis->Type;
-	const auto pTypeExt = TechnoTypeExt::Fetch(pType);
+	const auto pTypeExt = InfantryTypeExt::Fetch(pType);
 	const double multiplier = pTypeExt->ProneSpeed.Get(pType->Crawls ? RulesExt::Global()->ProneSpeed_Crawls : RulesExt::Global()->ProneSpeed_NoCrawls);
 	currentSpeed = static_cast<int>(static_cast<double>(currentSpeed) * multiplier);
 	R->ECX(currentSpeed);

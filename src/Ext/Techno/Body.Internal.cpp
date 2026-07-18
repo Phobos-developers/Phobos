@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <Ext/Foot/Body.h>
+#include <Ext/InfantryType/Body.h>
 
 // Unsorted methods
 
@@ -102,10 +103,12 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	{
 		if (pInf)
 		{
-			if (pInf->IsDeployed() && pExt->EliteDeployedWeaponBurstFLHs.size() > 0)
-				pickedFLHs = pExt->EliteDeployedWeaponBurstFLHs;
-			else if (pInf->Crawling && pExt->EliteCrouchedWeaponBurstFLHs.size() > 0)
-				pickedFLHs = pExt->EliteCrouchedWeaponBurstFLHs;
+			auto const pInfTypeExt = InfantryTypeExt::Fetch(pInf->Type);
+
+			if (pInf->IsDeployed() && pInfTypeExt->EliteDeployedWeaponBurstFLHs.size() > 0)
+				pickedFLHs = pInfTypeExt->EliteDeployedWeaponBurstFLHs;
+			else if (pInf->Crawling && pInfTypeExt->EliteCrouchedWeaponBurstFLHs.size() > 0)
+				pickedFLHs = pInfTypeExt->EliteCrouchedWeaponBurstFLHs;
 			else
 				pickedFLHs = pExt->EliteWeaponBurstFLHs;
 		}
@@ -116,10 +119,12 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	}
 	else if (pInf)
 	{
-		if (pInf->IsDeployed() && pExt->DeployedWeaponBurstFLHs.size() > 0)
-			pickedFLHs = pExt->DeployedWeaponBurstFLHs;
-		else if (pInf->Crawling && pExt->CrouchedWeaponBurstFLHs.size() > 0)
-			pickedFLHs = pExt->CrouchedWeaponBurstFLHs;
+		auto const pInfTypeExt = InfantryTypeExt::Fetch(pInf->Type);
+
+		if (pInf->IsDeployed() && pInfTypeExt->DeployedWeaponBurstFLHs.size() > 0)
+			pickedFLHs = pInfTypeExt->DeployedWeaponBurstFLHs;
+		else if (pInf->Crawling && pInfTypeExt->CrouchedWeaponBurstFLHs.size() > 0)
+			pickedFLHs = pInfTypeExt->CrouchedWeaponBurstFLHs;
 	}
 	if ((int)pickedFLHs[weaponIndex].size() > pThis->CurrentBurstIndex)
 	{
@@ -135,7 +140,7 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 	FLHFound = false;
 	CoordStruct FLH = CoordStruct::Empty;
 
-	auto const pTypeExt = TechnoTypeExt::Fetch(pThis->Type);
+	auto const pTypeExt = InfantryTypeExt::Fetch(pThis->Type);
 	Nullable<CoordStruct> pickedFLH;
 
 	if (pThis->IsDeployed())

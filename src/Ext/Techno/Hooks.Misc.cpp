@@ -6,6 +6,7 @@
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Infantry/Body.h>
+#include <Ext/InfantryType/Body.h>
 #include <Ext/Unit/Body.h>
 
 #pragma region SlaveManagerClass
@@ -16,7 +17,7 @@ DEFINE_HOOK(0x6B0C2C, SlaveManagerClass_FreeSlaves_SlavesFreeSound, 0x5)
 {
 	GET(TechnoClass*, pSlave, EDI);
 
-	const auto pTypeExt = TechnoExt::Fetch(pSlave)->TypeExtData;
+	const auto pTypeExt = InfantryTypeExt::Fetch(static_cast<InfantryClass*>(pSlave)->Type);
 	const int sound = pTypeExt->SlavesFreeSound.Get(RulesClass::Instance->SlavesFreeSound);
 	if (sound != -1)
 		VocClass::PlayAt(sound, pSlave->Location);
@@ -30,7 +31,7 @@ DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 
 	GET(InfantryClass*, pSlave, ESI);
 
-	const auto pTypeExt = TechnoTypeExt::Fetch(pSlave->Type);
+	const auto pTypeExt = InfantryTypeExt::Fetch(pSlave->Type);
 
 	switch (pTypeExt->Slaved_OwnerWhenMasterKilled.Get())
 	{
@@ -539,7 +540,7 @@ DEFINE_HOOK(0x7295E2, TunnelLocomotionClass_ProcessStateDigging_SubterraneanHeig
 DEFINE_HOOK(0x522790, InfantryClass_ClearDisguise_DefaultDisguise, 0x6)
 {
 	GET(InfantryClass*, pThis, ECX);
-	auto const pExt = TechnoTypeExt::Fetch(pThis->Type);
+	auto const pExt = InfantryTypeExt::Fetch(pThis->Type);
 
 	if (pExt->DefaultDisguise)
 	{
@@ -842,7 +843,7 @@ DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
 
 	R->EBP(0); // Restore overridden instructions.
 
-	const auto pTypeExt = TechnoTypeExt::Fetch(pThis->Type);
+	const auto pTypeExt = InfantryTypeExt::Fetch(pThis->Type);
 	if (pTypeExt->OnlyUseLandSequences)
 		return SkipWaterSequences;
 

@@ -2,6 +2,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/Infantry/Body.h>
+#include <Ext/InfantryType/Body.h>
 
 #include <InputManagerClass.h>
 
@@ -192,7 +193,7 @@ DEFINE_HOOK(0x522373, InfantryClass_ApproachTarget_InfantryAutoDeploy, 0x5)
 {
 	enum { Deploy = 0x522378 };
 	GET(InfantryClass*, pThis, ESI);
-	return TechnoTypeExt::Fetch(pThis->Type)->InfantryAutoDeploy.Get(RulesExt::Global()->InfantryAutoDeploy) ? Deploy : 0;
+	return InfantryTypeExt::Fetch(pThis->Type)->InfantryAutoDeploy.Get(RulesExt::Global()->InfantryAutoDeploy) ? Deploy : 0;
 }
 
 DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_InfiltrateBuilding, 0x6)

@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <Ext/House/Body.h>
+#include <Ext/InfantryType/Body.h>
 #include <Ext/TEvent/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -288,7 +289,7 @@ DEFINE_HOOK(0x518505, InfantryClass_ReceiveDamage_NotHuman, 0x4)
 	constexpr auto Die = [](int x) { return x + 10; };
 
 	int resultSequence = Die(1);
-	auto const pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+	auto const pTypeExt = InfantryTypeExt::Fetch(pThis->Type);
 
 	if (pTypeExt->NotHuman_RandomDeathSequence.Get())
 		resultSequence = ScenarioClass::Instance->Random.RandomRanged(Die(1), Die(5));
