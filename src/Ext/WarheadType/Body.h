@@ -12,6 +12,9 @@ class WarheadTypeExt final : public AbstractTypeExt
 public:
 	using base_type = WarheadTypeClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = WarheadTypeExt;
+
 	static constexpr DWORD Canary = 0x22222222;
 
 public:

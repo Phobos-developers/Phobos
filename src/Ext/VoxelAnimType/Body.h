@@ -12,6 +12,9 @@ class VoxelAnimTypeExt final : public ObjectTypeExt
 public:
 	using base_type = VoxelAnimTypeClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = VoxelAnimTypeExt;
+
 	static constexpr DWORD Canary = 0xAAAEEEEE;
 
 public:

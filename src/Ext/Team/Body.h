@@ -10,6 +10,9 @@ class TeamExt final : public AbstractExt, public Detach::Listener<FootClass>
 public:
 	using base_type = TeamClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = TeamExt;
+
 	static constexpr DWORD Canary = 0x414B4B41;
 
 public:

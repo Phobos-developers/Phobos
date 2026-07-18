@@ -10,6 +10,9 @@ class TiberiumExt final : public AbstractTypeExt
 public:
 	using base_type = TiberiumClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = TiberiumExt;
+
 	static constexpr DWORD Canary = 0xAABBCCDD;
 
 public:

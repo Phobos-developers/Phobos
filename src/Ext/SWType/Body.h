@@ -10,6 +10,9 @@ class SWTypeExt final : public AbstractTypeExt
 public:
 	using base_type = SuperWeaponTypeClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = SWTypeExt;
+
 	static constexpr DWORD Canary = 0x11111111;
 
 public:

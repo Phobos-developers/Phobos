@@ -61,6 +61,9 @@ class TEventExt final : public AbstractExt
 public:
 	using base_type = TEventClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = TEventExt;
+
 	static constexpr DWORD Canary = 0x91919191;
 
 public:

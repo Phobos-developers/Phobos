@@ -11,6 +11,9 @@ class WeaponTypeExt final : public AbstractTypeExt
 public:
 	using base_type = WeaponTypeClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = WeaponTypeExt;
+
 	static constexpr DWORD Canary = 0x22222222;
 
 public:

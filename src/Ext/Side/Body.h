@@ -10,6 +10,9 @@ class SideExt final : public AbstractTypeExt
 public:
 	using base_type = SideClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = SideExt;
+
 	static constexpr DWORD Canary = 0x05B10501;
 
 public:

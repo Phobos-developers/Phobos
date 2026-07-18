@@ -10,6 +10,9 @@ class TerrainTypeExt final : public ObjectTypeExt
 public:
 	using base_type = TerrainTypeClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = TerrainTypeExt;
+
 	static constexpr DWORD Canary = 0xBEE78007;
 
 public:

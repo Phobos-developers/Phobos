@@ -151,6 +151,9 @@ class ScriptExt final : public AbstractExt
 public:
 	using base_type = ScriptClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = ScriptExt;
+
 	static constexpr DWORD Canary = 0x3B3B3B3B;
 
 public:

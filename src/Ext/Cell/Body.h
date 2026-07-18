@@ -9,6 +9,9 @@ class CellExt final : public AbstractExt
 public:
 	using base_type = CellClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = CellExt;
+
 	static constexpr DWORD Canary = 0x13371337;
 
 	struct RadLevel

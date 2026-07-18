@@ -9,6 +9,9 @@ class AnimExt final : public ObjectExt
 public:
 	using base_type = AnimClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = AnimExt;
+
 	static constexpr DWORD Canary = 0xAAAAAAAA;
 
 public:

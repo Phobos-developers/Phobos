@@ -7,6 +7,9 @@ class BuildingExt final : public TechnoExt, public Detach::Listener<BuildingClas
 public:
 	using base_type = BuildingClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = BuildingExt;
+
 	static constexpr DWORD Canary = 0x87654321;
 
 	bool DeployedTechno;

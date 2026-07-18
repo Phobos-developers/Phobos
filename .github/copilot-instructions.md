@@ -96,7 +96,7 @@ Each extension lives in `src/Ext/<ClassName>/` with:
 - **`Body.cpp`**: Implements constructor, `LoadFromINIFile`, serialization (`Serialize`), and common hooks.
 - **`Hooks.cpp` / `Hooks.*.cpp`**: `DEFINE_HOOK(address, Name, size)` macros for Syringe code injection.
 
-Look extensions up only through the typed static accessors available at every level of the hierarchy: `<Name>Ext::Fetch(pThis)` (fatals if the object has no extension attached) or `<Name>Ext::TryFetch(pThis)` (returns null instead — also the right choice while a savegame is loading). The container lookups `ExtMap.Find`/`ExtMap.TryFind` are deprecated compatibility forwards; `ExtMap`'s remaining role is lifecycle and persistence machinery (`Allocate`/`Remove`/`LoadFromINI` plus the centralized streaming driven from `Phobos.Ext.cpp`).
+Look extensions up only through the typed static accessors available at every level of the hierarchy: `<Name>Ext::Fetch(pThis)` (fatals if the object has no extension attached) or `<Name>Ext::TryFetch(pThis)` (returns null instead — also the right choice while a savegame is loading). The container lookups `ExtMap.Find`/`ExtMap.TryFind` are deprecated compatibility forwards, as is each pre-rework class's `ExtData` alias (the extension class itself replaced the old nested data class); `ExtMap`'s remaining role is lifecycle and persistence machinery (`Allocate`/`Remove`/`LoadFromINI` plus the centralized streaming driven from `Phobos.Ext.cpp`).
 
 After creating a new extension class, **always register it** in `src/Phobos.Ext.cpp` inside the `PhobosTypeRegistry` alias (the `using PhobosTypeRegistry = TypeRegistry<...>` declaration).
 

@@ -10,6 +10,9 @@ class TeamTypeExt final : public AbstractTypeExt
 public:
 	using base_type = TeamTypeClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = TeamTypeExt;
+
 	static constexpr DWORD Canary = 0xABCDEF01;
 
 public:

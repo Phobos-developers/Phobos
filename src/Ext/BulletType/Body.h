@@ -14,6 +14,9 @@ class BulletTypeExt final : public ObjectTypeExt
 public:
 	using base_type = BulletTypeClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = BulletTypeExt;
+
 	static constexpr DWORD Canary = 0xF00DF00D;
 
 public:

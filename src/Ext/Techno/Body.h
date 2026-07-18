@@ -17,6 +17,9 @@ class TechnoExt : public RadioExt, public Detach::Listener<AirstrikeClass>
 public:
 	using base_type = TechnoClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = TechnoExt;
+
 	static constexpr DWORD Canary = 0x55555555;
 
 public:

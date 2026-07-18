@@ -8,6 +8,9 @@ class BuildingTypeExt final : public TechnoTypeExt
 public:
 	using base_type = BuildingTypeClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = BuildingTypeExt;
+
 	static constexpr DWORD Canary = 0x11111111;
 
 public:

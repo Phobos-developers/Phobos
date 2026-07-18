@@ -13,6 +13,9 @@ class HouseTypeExt final : public AbstractTypeExt
 public:
 	using base_type = HouseTypeClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = HouseTypeExt;
+
 	static constexpr DWORD Canary = 0xAFFEAFFE;
 
 public:

@@ -15,6 +15,9 @@ class RadSiteExt final : public AbstractExt, public Detach::Listener<TechnoClass
 public:
 	using base_type = RadSiteClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = RadSiteExt;
+
 	static constexpr DWORD Canary = 0x88446622;
 
 public:

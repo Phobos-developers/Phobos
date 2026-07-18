@@ -11,6 +11,9 @@ class ParticleTypeExt final : public ObjectTypeExt
 public:
 	using base_type = ParticleTypeClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = ParticleTypeExt;
+
 	static constexpr DWORD Canary = 0xEAFEEAFE;
 
 public:

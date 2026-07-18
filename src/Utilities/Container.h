@@ -426,10 +426,14 @@ concept HasOffset = requires(T) { T::ExtPointerOffset; };
 
 // resolves the data class of an extension: the extension class itself for the
 // flattened hierarchy, or the nested ExtData class of the legacy shells (EBolt).
+// slot-mode extensions are their own data class and are resolved directly: their
+// ExtData is only a deprecated, class-local compatibility alias of themselves and
+// must never be consulted here (it would warn, and a derived class that does not
+// redeclare it would inherit its parent's alias).
 template <typename T>
 struct ExtensionDataType { using type = T; };
 
-template <typename T> requires requires { typename T::ExtData; }
+template <typename T> requires (!HasOffset<T> && requires { typename T::ExtData; })
 struct ExtensionDataType<T> { using type = typename T::ExtData; };
 
 template <typename T>
