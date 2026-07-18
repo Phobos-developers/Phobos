@@ -1342,4 +1342,20 @@ DEFINE_HOOK(0x449DE9, BuildingClass_Mission_Selling_StartFacing_Set, 0x6)
 	return 0x449DEF;
 }
 
+DEFINE_HOOK(0x6F6D9E, TechnoClass_Unimbo_BuildingStartFacing, 0x7)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (abstract_cast<FootClass*>(pThis))
+		return 0;
+
+	const auto pBuilding = static_cast<BuildingClass*>(pThis);
+
+	if (BuildingExt::ExtMap.Find(pBuilding)->IsCreatedFromMapFile)
+		return 0;
+
+	R->AH(static_cast<BYTE>(GetBuildingStartFacing(pBuilding)));
+	return 0;
+}
+
 #pragma endregion
