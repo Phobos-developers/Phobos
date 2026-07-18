@@ -9,7 +9,32 @@
 class FootExt : public TechnoExt
 {
 public:
+	bool LastKillWasTeamTarget;
+	double LastWarpDistance;
+	int JumpjetSpeed;
+	bool IsInTunnel;
+	HouseClass* OriginalPassengerOwner;
+	bool HasRemainingWarpInDelay;          // Converted from object with Teleport Locomotor to one with a different Locomotor while still phasing in OR set if ChronoSphereDelay > 0.
+	int LastWarpInDelay;                   // Last-warp in delay for this unit, used by HasCarryoverWarpInDelay.
+	bool IsBeingChronoSphered;             // Set to true on units currently being ChronoSphered, does not apply to Ares-ChronoSphere'd buildings or Chrono reinforcements.
+	CellStruct LastSensorsMapCoords;
+	CDTimerClass TiberiumEater_Timer;
+	bool ResetLocomotor;
+	bool JumpjetStraightAscend; // Is set to true jumpjet units will ascend straight and do not adjust rotation or position during it.
+
 	explicit FootExt(FootClass* const OwnerObject) : TechnoExt(OwnerObject)
+		, LastKillWasTeamTarget { false }
+		, LastWarpDistance {}
+		, JumpjetSpeed { 14 } // 0x7115B8
+		, IsInTunnel { false }
+		, OriginalPassengerOwner {}
+		, HasRemainingWarpInDelay { false }
+		, LastWarpInDelay { 0 }
+		, IsBeingChronoSphered { false }
+		, LastSensorsMapCoords { CellStruct::Empty }
+		, TiberiumEater_Timer {}
+		, ResetLocomotor { false }
+		, JumpjetStraightAscend { false }
 	{ }
 
 	FootClass* OwnerObject() const
@@ -26,6 +51,14 @@ public:
 	{
 		return AbstractExt::TryFetch<FootExt>(pThis);
 	}
+
+	virtual bool IsInTunnelState() const override { return this->IsInTunnel; }
+
+	void UpdateTiberiumEater();
+	void UpdateWarpInDelay();
+	void UpdateOnTunnelEnter();
+	void UpdateOnTunnelExit();
+	void UpdateTypeData_Foot();
 
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;

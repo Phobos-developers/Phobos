@@ -6,6 +6,7 @@
 
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/Foot/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/WarheadType/Body.h>
@@ -443,7 +444,7 @@ DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
 	const double multiplier = TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
-	pThis->Speed = static_cast<int>(TechnoExt::Fetch(pThis->LinkedTo)->JumpjetSpeed * multiplier);
+	pThis->Speed = static_cast<int>(FootExt::Fetch(pThis->LinkedTo)->JumpjetSpeed * multiplier);
 
 	return 0;
 }
@@ -1521,7 +1522,7 @@ DEFINE_HOOK(0x4DE839, FootClass_AddSensorsAt_Record, 0x6)
 {
 	GET(FootClass*, pThis, ESI);
 	LEA_STACK(CellStruct*, cell, STACK_OFFSET(0x34, 0x4));
-	const auto pExt = TechnoExt::Fetch(pThis);
+	const auto pExt = FootExt::Fetch(pThis);
 	pExt->LastSensorsMapCoords = *cell;
 
 	return 0;
@@ -1532,7 +1533,7 @@ DEFINE_HOOK(0x4D8606, FootClass_UpdatePosition_Sensors, 0x6)
 	enum { SkipGameCode = 0x4D8627 };
 
 	GET(FootClass*, pThis, ESI);
-	const auto pExt = TechnoExt::Fetch(pThis);
+	const auto pExt = FootExt::Fetch(pThis);
 	const auto currentCell = pThis->GetMapCoords();
 
 	if (pExt->LastSensorsMapCoords != currentCell)
@@ -1549,7 +1550,7 @@ DEFINE_HOOK(0x4DB36C, FootClass_Limbo_RemoveSensors, 0x5)
 	enum { SkipGameCode = 0x4DB37C };
 
 	GET(FootClass*, pThis, EDI);
-	const auto pExt = TechnoExt::Fetch(pThis);
+	const auto pExt = FootExt::Fetch(pThis);
 
 	pThis->RemoveSensorsAt(pExt->LastSensorsMapCoords);
 
@@ -1561,7 +1562,7 @@ DEFINE_HOOK(0x4DBEE7, FootClass_SetOwningHouse_RemoveSensors, 0x6)
 	enum { SkipGameCode = 0x4DBF01 };
 
 	GET(FootClass*, pThis, ESI);
-	const auto pExt = TechnoExt::Fetch(pThis);
+	const auto pExt = FootExt::Fetch(pThis);
 
 	pThis->RemoveSensorsAt(pExt->LastSensorsMapCoords);
 
@@ -1577,7 +1578,7 @@ DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_UpdateSensors, 0x7)
 	// Copied from FootClass::UpdatePosition
 	if (pLinkedTo->GetTechnoType()->SensorsSight)
 	{
-		const auto pExt = TechnoExt::Fetch(pLinkedTo);
+		const auto pExt = FootExt::Fetch(pLinkedTo);
 		CellStruct const lastCell = pExt->LastSensorsMapCoords;
 
 		if (lastCell != currentCell)
@@ -1597,7 +1598,7 @@ DEFINE_HOOK(0x54D06F, JumpjetLocomotionClass_ProcessCrashing_RemoveSensors, 0x5)
 
 	if (pLinkedTo->GetTechnoType()->SensorsSight)
 	{
-		const auto pExt = TechnoExt::Fetch(pLinkedTo);
+		const auto pExt = FootExt::Fetch(pLinkedTo);
 		pLinkedTo->RemoveSensorsAt(pExt->LastSensorsMapCoords);
 	}
 

@@ -42,7 +42,7 @@ DEFINE_HOOK(0x4DA54E, FootClass_AI, 0x6)
 {
 	GET(FootClass*, pThis, ESI);
 
-	auto const pExt = TechnoExt::Fetch(pThis);
+	auto const pExt = FootExt::Fetch(pThis);
 
 	if (pExt->PreviousType)
 		pExt->UpdateTypeData_Foot();
@@ -107,7 +107,7 @@ DEFINE_HOOK(0x735A26, FootClass_TunnelAI_Enter, 0x6)       // UnitClass_TunnelAI
 {
 	GET(FootClass*, pThis, ESI);
 
-	auto const pExt = TechnoExt::Fetch(pThis);
+	auto const pExt = FootExt::Fetch(pThis);
 	pExt->UpdateOnTunnelEnter();
 
 	const auto pType = pThis->GetTechnoType();
@@ -137,7 +137,7 @@ DEFINE_HOOK(0x736005, FootClass_TunnelAI_Exit, 0x6)       // UnitClass_TunnelAI
 {
 	GET(FootClass*, pThis, ESI);
 
-	auto const pExt = TechnoExt::Fetch(pThis);
+	auto const pExt = FootExt::Fetch(pThis);
 	pExt->UpdateOnTunnelExit();
 
 	return 0;

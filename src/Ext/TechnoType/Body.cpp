@@ -8,6 +8,7 @@
 #include <Ext/BulletType/Body.h>
 #include <Ext/InfantryType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/Foot/Body.h>
 #include <Ext/UnitType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <New/Type/InsigniaTypeClass.h>
@@ -662,7 +663,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 								// Order BalloonHover jumpjets to ascend.
 								pJJLoco->IsMoving = true;
 								pJJLoco->DestinationCoords = pTechno->GetCoords();
-								TechnoExt::Fetch(pTechno)->JumpjetStraightAscend = true;
+								FootExt::Fetch(pTechno)->JumpjetStraightAscend = true;
 							}
 							else if (inAir)
 							{

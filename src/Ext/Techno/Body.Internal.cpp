@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <Ext/Foot/Body.h>
+
 // Unsorted methods
 
 void TechnoExt::InitializeLaserTrails()
@@ -24,7 +26,7 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 	{
 		if (auto const pFootKiller = generic_cast<FootClass*, true>(pObjectKiller))
 		{
-			auto const pKillerTechnoData = TechnoExt::Fetch(pObjectKiller);
+			auto const pKillerTechnoData = FootExt::Fetch(pFootKiller);
 			pKillerTechnoData->LastKillWasTeamTarget = pFootKiller->Team->Focus == pVictim;
 		}
 	}

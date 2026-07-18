@@ -37,16 +37,12 @@ public:
 	TechnoTypeClass* PreviousType; // Type change registered in TechnoClass::AI on current frame and used in FootClass::AI on same frame and reset after.
 	std::vector<EBolt*> ElectricBolts; // EBolts are not serialized so do not serialize this either.
 	int AnimRefCount; // Used to keep track of how many times this techno is referenced in anims f.ex Invoker, ParentBuilding etc., for pointer invalidation.
-	bool LastKillWasTeamTarget;
 	CDTimerClass PassengerDeletionTimer;
 	ShieldTypeClass* CurrentShieldType;
-	double LastWarpDistance;
-	int JumpjetSpeed;
 	CDTimerClass ChargeTurretTimer; // Used for charge turrets instead of RearmTimer if weapon has ChargeTurret.Delays set.
 	CDTimerClass AutoDeathTimer;
 	AnimTypeClass* MindControlRingAnimType;
 	int DamageNumberOffset;
-	bool IsInTunnel;
 	bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
 	bool ForceFullRearmDelay;
 	bool LastRearmWasFullDelay;
@@ -61,14 +57,6 @@ public:
 	bool ShouldUpdateGattlingValue;
 	int AttachedEffectInvokerCount;
 
-	// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
-	// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
-	HouseClass* OriginalPassengerOwner;
-	bool HasRemainingWarpInDelay;          // Converted from object with Teleport Locomotor to one with a different Locomotor while still phasing in OR set if ChronoSphereDelay > 0.
-	int LastWarpInDelay;                   // Last-warp in delay for this unit, used by HasCarryoverWarpInDelay.
-	bool IsBeingChronoSphered;             // Set to true on units currently being ChronoSphered, does not apply to Ares-ChronoSphere'd buildings or Chrono reinforcements.
-	CellStruct LastSensorsMapCoords;
-	CDTimerClass TiberiumEater_Timer;
 	bool DelayedFireSequencePaused;
 	int DelayedFireWeaponIndex;
 	CDTimerClass DelayedFireTimer;
@@ -77,7 +65,6 @@ public:
 	AirstrikeClass* AirstrikeTargetingMe;
 
 	bool IsSelected;
-	bool ResetLocomotor;
 
 	// cache tint values
 	int TintColorOwner;
@@ -91,8 +78,6 @@ public:
 
 	bool SpecialTracked;
 	bool FallingDownTracked;
-
-	bool JumpjetStraightAscend; // Is set to true jumpjet units will ascend straight and do not adjust rotation or position during it.
 
 	bool OnParachuted; // This is just a temporary patch. TODO: fully check HasParachuted and correct its maintenance method.
 	bool HoverShutdown;
@@ -111,16 +96,12 @@ public:
 		, PreviousType { nullptr }
 		, ElectricBolts {}
 		, AnimRefCount { 0 }
-		, LastKillWasTeamTarget { false }
 		, PassengerDeletionTimer {}
 		, CurrentShieldType { nullptr }
-		, LastWarpDistance {}
-		, JumpjetSpeed { 14 } // 0x7115B8
 		, ChargeTurretTimer {}
 		, AutoDeathTimer {}
 		, MindControlRingAnimType { nullptr }
 		, DamageNumberOffset { INT32_MIN }
-		, IsInTunnel { false }
 		, HasBeenPlacedOnMap { false }
 		, ForceFullRearmDelay { false }
 		, LastRearmWasFullDelay { false }
@@ -133,12 +114,6 @@ public:
 		, LastTargetID { 0xFFFFFFFF }
 		, AccumulatedGattlingValue { 0 }
 		, ShouldUpdateGattlingValue { false }
-		, OriginalPassengerOwner {}
-		, HasRemainingWarpInDelay { false }
-		, LastWarpInDelay { 0 }
-		, IsBeingChronoSphered { false }
-		, LastSensorsMapCoords { CellStruct::Empty }
-		, TiberiumEater_Timer {}
 		, AirstrikeTargetingMe { nullptr }
 		, DelayedFireSequencePaused { false }
 		, DelayedFireWeaponIndex { -1 }
@@ -146,7 +121,6 @@ public:
 		, CurrentDelayedFireAnim { nullptr }
 		, AttachedEffectInvokerCount { 0 }
 		, IsSelected { false }
-		, ResetLocomotor { false }
 		, TintColorOwner { 0 }
 		, TintColorAllies { 0 }
 		, TintColorEnemies { 0 }
@@ -156,7 +130,6 @@ public:
 		, AttackMoveFollowerTempCount { 0 }
 		, SpecialTracked { false }
 		, FallingDownTracked { false }
-		, JumpjetStraightAscend { false }
 		, OnParachuted { false }
 		, HoverShutdown { false }
 		, LastTargetCrd { CoordStruct::Empty }
@@ -171,21 +144,20 @@ public:
 	// everything else. Overridden by UnitExt, which owns the burrow state.
 	virtual bool IsBurrowedState() const { return false; }
 
+	// True while the object is inside a tunnel (foot units); false for everything
+	// else. Overridden by FootExt, which owns the tunnel state.
+	virtual bool IsInTunnelState() const { return false; }
+
 	void ApplyInterceptor();
 	bool CheckDeathConditions(bool isInLimbo = false);
 	void DepletedAmmoActions();
 	void EatPassengers();
-	void UpdateTiberiumEater();
 	void UpdateShield();
-	void UpdateOnTunnelEnter();
-	void UpdateOnTunnelExit();
 	void ApplySpawnLimitRange();
 	void UpdateTypeData(TechnoTypeClass* pCurrentType);
-	void UpdateTypeData_Foot();
 	void UpdateLaserTrails();
 	void UpdateAttachEffects();
 	void UpdateGattlingRateDownReset();
-	void UpdateWarpInDelay();
 	void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, AttachEffectClass* pRemoved = nullptr);
 	bool RecalculateStatMultipliers(AttachEffectClass* pAttachEffect = nullptr);
 	void UpdateTemporal();

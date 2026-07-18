@@ -357,9 +357,11 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	{
 		if (AresFunctions::ConvertTypeTo(pThis, pToType))
 		{
-			auto const pTypeExt = TechnoExt::Fetch(pThis);
-			pTypeExt->UpdateTypeData(pToType);
-			pTypeExt->UpdateTypeData_Foot();
+			TechnoExt::Fetch(pThis)->UpdateTypeData(pToType);
+
+			if (auto const pFootExt = FootExt::TryFetch(abstract_cast<FootClass*, true>(pThis)))
+				pFootExt->UpdateTypeData_Foot();
+
 			return true;
 		}
 
@@ -461,9 +463,11 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	if (pToType->BalloonHover && pToType->DeployToLand && prevType->Locomotor != jjLoco && toLoco == jjLoco)
 		pThis->Locomotor->Move_To(pThis->Location);
 
-	auto const pTypeExt = TechnoExt::Fetch(pThis);
-	pTypeExt->UpdateTypeData(pToType);
-	pTypeExt->UpdateTypeData_Foot();
+	TechnoExt::Fetch(pThis)->UpdateTypeData(pToType);
+
+	if (auto const pFootExt = FootExt::TryFetch(abstract_cast<FootClass*, true>(pThis)))
+		pFootExt->UpdateTypeData_Foot();
+
 	return true;
 }
 
@@ -1280,16 +1284,12 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->AE)
 		.Process(this->PreviousType)
 		.Process(this->AnimRefCount)
-		.Process(this->LastKillWasTeamTarget)
 		.Process(this->PassengerDeletionTimer)
 		.Process(this->CurrentShieldType)
-		.Process(this->LastWarpDistance)
-		.Process(this->JumpjetSpeed)
 		.Process(this->ChargeTurretTimer)
 		.Process(this->AutoDeathTimer)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->DamageNumberOffset)
-		.Process(this->IsInTunnel)
 		.Process(this->HasBeenPlacedOnMap)
 		.Process(this->ForceFullRearmDelay)
 		.Process(this->LastRearmWasFullDelay)
@@ -1302,12 +1302,6 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->LastTargetID)
 		.Process(this->AccumulatedGattlingValue)
 		.Process(this->ShouldUpdateGattlingValue)
-		.Process(this->OriginalPassengerOwner)
-		.Process(this->HasRemainingWarpInDelay)
-		.Process(this->LastWarpInDelay)
-		.Process(this->IsBeingChronoSphered)
-		.Process(this->LastSensorsMapCoords)
-		.Process(this->TiberiumEater_Timer)
 		.Process(this->AirstrikeTargetingMe)
 		.Process(this->DelayedFireSequencePaused)
 		.Process(this->DelayedFireTimer)
@@ -1315,7 +1309,6 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->CurrentDelayedFireAnim)
 		.Process(this->AttachedEffectInvokerCount)
 		.Process(this->IsSelected)
-		.Process(this->ResetLocomotor)
 		.Process(this->TintColorOwner)
 		.Process(this->TintColorAllies)
 		.Process(this->TintColorEnemies)
@@ -1325,7 +1318,6 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->AttackMoveFollowerTempCount)
 		.Process(this->SpecialTracked)
 		.Process(this->FallingDownTracked)
-		.Process(this->JumpjetStraightAscend)
 		.Process(this->OnParachuted)
 		.Process(this->HoverShutdown)
 		.Process(this->LastTargetCrd)

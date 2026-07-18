@@ -6,6 +6,7 @@
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
+#include <Ext/Foot/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Scenario/Body.h>
@@ -483,7 +484,7 @@ void TechnoExt::EatPassengers()
 	}
 }
 
-void TechnoExt::UpdateTiberiumEater()
+void FootExt::UpdateTiberiumEater()
 {
 	const auto pEaterType = this->TypeExtData->TiberiumEaterType.get();
 
@@ -590,7 +591,7 @@ void TechnoExt::UpdateShield()
 		pShieldData->AI();
 }
 
-void TechnoExt::UpdateOnTunnelEnter()
+void FootExt::UpdateOnTunnelEnter()
 {
 	if (!this->IsInTunnel)
 	{
@@ -607,7 +608,7 @@ void TechnoExt::UpdateOnTunnelEnter()
 	}
 }
 
-void TechnoExt::UpdateOnTunnelExit()
+void FootExt::UpdateOnTunnelExit()
 {
 	this->IsInTunnel = false;
 
@@ -1115,9 +1116,9 @@ void TechnoExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	}
 }
 
-void TechnoExt::UpdateTypeData_Foot()
+void FootExt::UpdateTypeData_Foot()
 {
-	auto const pThis = static_cast<FootClass*>(this->OwnerObject());
+	auto const pThis = this->OwnerObject();
 	auto const pOldType = this->PreviousType;
 	auto const pCurrentType = this->TypeExtData->OwnerObject();
 	auto const abs = pThis->WhatAmI();
@@ -1343,7 +1344,7 @@ void TechnoExt::UpdateLaserTrails()
 				pTrail->Cloaked = true;
 		}
 
-		if (!this->IsInTunnel)
+		if (!this->IsInTunnelState())
 			pTrail->Visible = true;
 
 		auto const trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, pTrail->FLH, pTrail->IsOnTurret);
@@ -1744,7 +1745,7 @@ void TechnoExt::UpdateRearmInTemporal()
 }
 
 
-void TechnoExt::UpdateWarpInDelay()
+void FootExt::UpdateWarpInDelay()
 {
 	if (this->HasRemainingWarpInDelay)
 	{
@@ -1768,7 +1769,7 @@ void TechnoExt::UpdateAttachEffects()
 		return;
 
 	auto const pThis = this->OwnerObject();
-	const bool inTunnel = this->IsInTunnel || this->IsBurrowedState();
+	const bool inTunnel = this->IsInTunnelState() || this->IsBurrowedState();
 	bool markForRedraw = false;
 	bool altered = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
