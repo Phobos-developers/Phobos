@@ -5,8 +5,6 @@
 
 AircraftExt::ExtContainer AircraftExt::ExtMap;
 
-// TODO: Implement proper extended AircraftClass.
-
 void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 {
 	auto const pExt = TechnoExt::Fetch(pThis);
