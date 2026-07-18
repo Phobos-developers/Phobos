@@ -455,7 +455,7 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 DEFINE_HOOK(0x46703E, BulletClass_AI_SkipBridgeCheck1, 0x6)
 {
 	GET(BulletClass*, pThis, EBP);
-	auto const pExt = BulletExt::Fetch(pThis);
+	auto const pExt = BulletExt::TryFetch(pThis);
 	if (pExt && pExt->Trajectory)
 		return 0x467B7A;
 	return 0;
@@ -465,7 +465,7 @@ DEFINE_HOOK(0x46703E, BulletClass_AI_SkipBridgeCheck1, 0x6)
 DEFINE_HOOK(0x4674D4, BulletClass_AI_SkipBridgeCheck2, 0x6)
 {
 	GET(BulletClass*, pThis, EBP);
-	auto const pExt = BulletExt::Fetch(pThis);
+	auto const pExt = BulletExt::TryFetch(pThis);
 	if (pExt && pExt->Trajectory && pExt->Trajectory->ShouldSkipBridgeCheck())
 		return 0x467519;
 	return 0;

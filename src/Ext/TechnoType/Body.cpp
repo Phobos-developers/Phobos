@@ -2091,7 +2091,7 @@ DEFINE_HOOK(0x747E90, UnitTypeClass_LoadFromINI, 0x5)
 {
 	GET(UnitTypeClass*, pItem, ESI);
 
-	if (auto pTypeExt = TechnoTypeExt::Fetch(pItem))
+	if (auto pTypeExt = TechnoTypeExt::TryFetch(pItem))
 	{
 		if (!pTypeExt->Harvester_Counted.isset() && pItem->Harvester)
 			pTypeExt->Harvester_Counted = true;

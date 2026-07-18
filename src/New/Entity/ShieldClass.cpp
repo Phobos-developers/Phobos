@@ -53,7 +53,7 @@ void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
 
 	if (auto const pAnim = abstract_cast<AnimClass*, true>(abs))
 	{
-		if (auto const pAnimExt = AnimExt::Fetch(pAnim))
+		if (auto const pAnimExt = AnimExt::TryFetch(pAnim))
 		{
 			if (pAnimExt->IsShieldIdleAnim)
 			{

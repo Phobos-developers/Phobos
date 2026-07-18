@@ -113,7 +113,7 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 
 	if (auto const pAnim = abstract_cast<AnimClass*, true>(abs))
 	{
-		if (auto const pAnimExt = AnimExt::Fetch(pAnim))
+		if (auto const pAnimExt = AnimExt::TryFetch(pAnim))
 		{
 			if (pAnimExt->IsAttachedEffectAnim)
 			{
@@ -131,8 +131,9 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 	else if ((abs->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 	{
 		auto const pTechno = abstract_cast<TechnoClass*, true>(abs);
+		auto const pTechnoExt = TechnoExt::TryFetch(pTechno);
 
-		if (int count = TechnoExt::Fetch(pTechno)->AttachedEffectInvokerCount)
+		if (int count = pTechnoExt ? pTechnoExt->AttachedEffectInvokerCount : 0)
 		{
 			for (auto const pEffect : AttachEffectClass::Array)
 			{
