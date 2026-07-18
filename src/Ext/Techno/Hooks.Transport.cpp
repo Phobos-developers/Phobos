@@ -218,8 +218,11 @@ DEFINE_HOOK(0x710552, TechnoClass_SetOpenTransportCargoTarget_ShareTarget, 0x6)
 // Use a square range because it doesn't seem necessary to calculate the circular range
 static inline bool IsCloseEnoughToEnter(UnitClass* pTransport, FootClass* pPassenger)
 {
-	return (std::abs(pPassenger->Location.X - pTransport->Location.X) < 384
-		&& std::abs(pPassenger->Location.Y - pTransport->Location.Y) < 384
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->Type);
+	const int boardDistance = pTypeExt->NoQueueUpToEnter_BoardDistance.Get(RulesExt::Global()->NoQueueUpToEnter_BoardDistance.Get());
+
+	return (std::abs(pPassenger->Location.X - pTransport->Location.X) < boardDistance
+		&& std::abs(pPassenger->Location.Y - pTransport->Location.Y) < boardDistance
 		&& std::abs(pPassenger->Location.Z - pTransport->Location.Z) < Unsorted::CellHeight);
 }
 
