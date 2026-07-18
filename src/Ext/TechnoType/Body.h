@@ -89,8 +89,6 @@ public:
 	std::unique_ptr<DroppodTypeClass> DroppodType;
 	std::unique_ptr<TiberiumEaterTypeClass> TiberiumEaterType;
 
-
-
 	Nullable<AutoDeathBehavior> AutoDeath_Behavior;
 	ValueableVector<AnimTypeClass*> AutoDeath_VanishAnimation;
 	Valueable<bool> AutoDeath_OnAmmoDepletion;
@@ -137,8 +135,6 @@ public:
 	Valueable<WeaponTypeClass*> WarpOutWeapon;
 	Valueable<bool> WarpInWeapon_UseDistanceAsDamage;
 
-
-
 	std::vector<std::vector<CoordStruct>> WeaponBurstFLHs;
 	std::vector<std::vector<CoordStruct>> EliteWeaponBurstFLHs;
 	std::vector<CoordStruct> AlternateFLHs;
@@ -176,7 +172,6 @@ public:
 
 	Valueable<bool> JumpjetRotateOnCrash;
 	Nullable<int> ShadowSizeCharacteristicHeight;
-
 
 	Valueable<CSFText> EnemyUIName;
 
@@ -235,8 +230,6 @@ public:
 	std::vector<Promotable<int>> InsigniaFrame_Passengers;
 	std::vector<Valueable<Vector3D<int>>> InsigniaFrames_Passengers;
 
-
-
 	Valueable<bool> DigitalDisplay_Disable;
 	ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
 
@@ -255,13 +248,11 @@ public:
 	Nullable<Point2D> SpawnsPipSize;
 	Valueable<Point2D> SpawnsPipOffset;
 
-
 	Valueable<TechnoTypeClass*> Convert_Deploy; // Ares
 	Valueable<TechnoTypeClass*> Convert_Undeploy;
 	Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 	Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
 	Valueable<bool> Convert_ResetMindControl;
-
 
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
@@ -339,8 +330,6 @@ public:
 	Valueable<CoordStruct> Spawner_RecycleCoord;
 	Valueable<bool> Spawner_RecycleOnTurret;
 
-
-
 	ValueableVector<AnimTypeClass*> Promote_VeteranAnimation;
 	ValueableVector<AnimTypeClass*> Promote_EliteAnimation;
 
@@ -367,8 +356,6 @@ public:
 	NullableIdx<VocClass> Overload_DeathSound;
 	Nullable<ParticleSystemTypeClass*> Overload_ParticleSys;
 	Valueable<int> Overload_ParticleSysCount;
-
-
 
 	Valueable<double> FallingDownDamage;
 	Nullable<double> FallingDownDamage_Water;
@@ -404,12 +391,9 @@ public:
 	ValueableVector<int> VoiceWeaponAttacks;
 	ValueableVector<int> VoiceEliteWeaponAttacks;
 
-
 	ValueableVector<TechnoTypeClass*> TeamMember_ConsideredAs;
 
-
 	Vector2D<bool> AttackFriendlies;
-
 
 	Nullable<int> DrainMoneyFrameDelay;
 	Nullable<int> DrainMoneyAmount;
@@ -441,9 +425,6 @@ public:
 	Nullable<double> ExtraThreatCoefficient_DistanceToLastTarget;
 
 	Nullable<bool> Unsellable; // Ares 3.0
-
-
-
 
 	Nullable<bool> BarrelOverTurret;
 	Valueable<int> BarrelOffset;
@@ -523,7 +504,6 @@ public:
 		, WarpOutWeapon {}
 		, WarpInWeapon_UseDistanceAsDamage { false }
 
-
 		, LaserTrailData {}
 		, AlternateFLH_OnTurret { true }
 		, AlternateFLH_ApplyVehicle { false }
@@ -555,9 +535,6 @@ public:
 		, NoAmmoAmount { 0 }
 		, JumpjetRotateOnCrash { true }
 		, ShadowSizeCharacteristicHeight { }
-
-
-
 
 		, AutoDeath_Behavior { }
 		, AutoDeath_VanishAnimation {}
@@ -645,8 +622,6 @@ public:
 		, InsigniaFrame_Passengers {}
 		, InsigniaFrames_Passengers {}
 
-
-
 		, DigitalDisplay_Disable { false }
 		, DigitalDisplayTypes {}
 
@@ -673,7 +648,6 @@ public:
 		, Convert_HumanToComputer { }
 		, Convert_ComputerToHuman { }
 		, Convert_ResetMindControl { false }
-
 
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
@@ -753,8 +727,6 @@ public:
 		, Spawner_RecycleCoord { {0,0,0} }
 		, Spawner_RecycleOnTurret { false }
 
-
-
 		, SuppressKillWeapons { false }
 		, SuppressKillWeapons_Types { }
 
@@ -770,8 +742,6 @@ public:
 		, Overload_ParticleSys {}
 		, Overload_ParticleSysCount { 5 }
 
-
-
 		, FallingDownDamage { 1.0 }
 		, FallingDownDamage_Water {}
 		, FallingDownDamage_AllowEMP { true }
@@ -779,7 +749,6 @@ public:
 		, Ammo_AutoConvertMinimumAmount { -1 }
 		, Ammo_AutoConvertMaximumAmount { -1 }
 		, Ammo_AutoConvertType { nullptr }
-
 
 		//, SecondaryFire {}
 
@@ -807,9 +776,7 @@ public:
 
 		, TeamMember_ConsideredAs {}
 
-
 		, AttackFriendlies { false,false }
-
 
 		, DrainMoneyFrameDelay {}
 		, DrainMoneyAmount {}
@@ -830,7 +797,6 @@ public:
 
 		, JumpjetClimbIgnoreBuilding {}
 
-
 		, Unsellable {}
 
 		, ExtraThreat_Enabled { false }
@@ -840,8 +806,6 @@ public:
 		, ExtraThreatCoefficient_InRangeDistance {}
 		, ExtraThreatCoefficient_Facing {}
 		, ExtraThreatCoefficient_DistanceToLastTarget {}
-
-			
 
 		, BarrelOverTurret { }
 		, BarrelOffset { 0 }
@@ -854,7 +818,6 @@ public:
 
 	virtual ~TechnoTypeExt() = default;
 	virtual void LoadFromINIFile(CCINIClass* pINI) override;
-	virtual void Initialize() override;
 
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;

@@ -17,10 +17,6 @@
 
 bool TechnoTypeExt::SelectWeaponMutex = false;
 
-void TechnoTypeExt::Initialize()
-{
-}
-
 void TechnoTypeExt::ApplyTurretOffset(Matrix3D* mtx, double factor, int turIdx)
 {
 	// Does not verify if the offset actually has all values parsed as it makes no difference, it will be 0 for the unparsed ones either way.
@@ -782,8 +778,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ShieldType.Read<true>(exINI, pSection, "ShieldType");
 
-
-
 	this->AutoDeath_Behavior.Read(exINI, pSection, "AutoDeath.Behavior");
 	this->AutoDeath_VanishAnimation.Read(exINI, pSection, "AutoDeath.VanishAnimation");
 	this->AutoDeath_OnAmmoDepletion.Read(exINI, pSection, "AutoDeath.OnAmmoDepletion");
@@ -832,8 +826,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->WarpOutWeapon.Read<true>(exINI, pSection, "WarpOutWeapon");
 	this->WarpInWeapon_UseDistanceAsDamage.Read(exINI, pSection, "WarpInWeapon.UseDistanceAsDamage");
 
-
-
 	this->DestroyAnim_Random.Read(exINI, pSection, "DestroyAnim.Random");
 
 	this->UseDisguiseMovementSpeed.Read(exINI, pSection, "UseDisguiseMovementSpeed");
@@ -872,7 +864,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->JumpjetRotateOnCrash.Read(exINI, pSection, "JumpjetRotateOnCrash");
 	this->ShadowSizeCharacteristicHeight.Read(exINI, pSection, "ShadowSizeCharacteristicHeight");
-
 
 	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
 
@@ -956,8 +947,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Insignia_ShowEnemy.Read(exINI, pSection, "Insignia.ShowEnemy");
 
-
-
 	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
 	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
 
@@ -976,14 +965,11 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnsPipSize.Read(exINI, pSection, "SpawnsPipSize");
 	this->SpawnsPipOffset.Read(exINI, pSection, "SpawnsPipOffset");
 
-
-
 	this->Convert_Deploy.Read(exINI, pSection, "Convert.Deploy");
 	this->Convert_Undeploy.Read(exINI, pSection, "Convert.Undeploy");
 	this->Convert_HumanToComputer.Read(exINI, pSection, "Convert.HumanToComputer");
 	this->Convert_ComputerToHuman.Read(exINI, pSection, "Convert.ComputerToHuman");
 	this->Convert_ResetMindControl.Read(exINI, pSection, "Convert.ResetMindControl");
-
 
 	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
 	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
@@ -1067,8 +1053,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Spawner_RecycleCoord.Read(exINI, pSection, "Spawner.RecycleCoord");
 	this->Spawner_RecycleOnTurret.Read(exINI, pSection, "Spawner.RecycleOnTurret");
 
-
-
 	this->SuppressKillWeapons.Read(exINI, pSection, "SuppressKillWeapons");
 	this->SuppressKillWeapons_Types.Read(exINI, pSection, "SuppressKillWeapons.Types");
 
@@ -1084,12 +1068,9 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Overload_ParticleSys.Read(exINI, pSection, "Overload.ParticleSys");
 	this->Overload_ParticleSysCount.Read(exINI, pSection, "Overload.ParticleSysCount");
 
-
-
 	this->FallingDownDamage.Read(exINI, pSection, "FallingDownDamage");
 	this->FallingDownDamage_Water.Read(exINI, pSection, "FallingDownDamage.Water");
 	this->FallingDownDamage_AllowEMP.Read(exINI, pSection, "FallingDownDamage.AllowEMP");
-
 
 	this->EngineerRepairAmount.Read(exINI, pSection, "EngineerRepairAmount");
 
@@ -1108,7 +1089,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	if (this->Ammo_AutoConvertMinimumAmount > this->Ammo_AutoConvertMaximumAmount)
 		Debug::Log("[Developer warning][%s] Ammo.AutoConvertMinimumAmount is greater than Ammo.AutoConvertMaximumAmount, resulting in no conversion.\n", pSection);
-
 
 	this->TeamMember_ConsideredAs.Read(exINI, pSection, "TeamMember.ConsideredAs");
 
@@ -1130,7 +1110,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->PenetratesTransport_DamageMultiplier.Read(exINI, pSection, "PenetratesTransport.DamageMultiplier");
 
 	this->JumpjetClimbIgnoreBuilding.Read(exINI, pSection, "JumpjetClimbIgnoreBuilding");
-	
 
 	this->ExtraThreat_IsThreat.Read(exINI, pSection, "ExtraThreat.IsThreat");
 	this->AlwaysConsideredThreat.Read(exINI, pSection, "AlwaysConsideredThreat");
@@ -1143,11 +1122,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		|| ExtraThreatCoefficient_InRangeDistance.Get(RulesExt::Global()->ExtraThreatCoefficient_InRangeDistance) != 0.0
 		|| ExtraThreatCoefficient_Facing.Get(RulesExt::Global()->ExtraThreatCoefficient_Facing) != 0.0
 		|| ExtraThreatCoefficient_DistanceToLastTarget.Get(RulesExt::Global()->ExtraThreatCoefficient_DistanceToLastTarget) != 0.0;
-
-
-
-
-
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -1480,8 +1454,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->ShieldType)
 		.Process(this->PassengerDeletionType)
 
-
-
 		.Process(this->AutoDeath_Behavior)
 		.Process(this->AutoDeath_VanishAnimation)
 		.Process(this->AutoDeath_OnAmmoDepletion)
@@ -1527,7 +1499,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->WarpOutWeapon)
 		.Process(this->WarpInWeapon_UseDistanceAsDamage)
 
-
 		.Process(this->LaserTrailData)
 		.Process(this->DestroyAnim_Random)
 		.Process(this->UseDisguiseMovementSpeed)
@@ -1561,7 +1532,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->NoAmmoAmount)
 		.Process(this->JumpjetRotateOnCrash)
 		.Process(this->ShadowSizeCharacteristicHeight)
-
 
 		.Process(this->EnemyUIName)
 
@@ -1620,8 +1590,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->InsigniaFrame_Passengers)
 		.Process(this->InsigniaFrames_Passengers)
 
-
-
 		.Process(this->DigitalDisplay_Disable)
 		.Process(this->DigitalDisplayTypes)
 
@@ -1649,7 +1617,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
 		.Process(this->Convert_ResetMindControl)
-
 
 		.Process(this->Tint_Color)
 		.Process(this->Tint_Intensity)
@@ -1729,8 +1696,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Spawner_RecycleCoord)
 		.Process(this->Spawner_RecycleOnTurret)
 
-
-
 		.Process(this->SuppressKillWeapons)
 		.Process(this->SuppressKillWeapons_Types)
 
@@ -1746,8 +1711,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Overload_ParticleSys)
 		.Process(this->Overload_ParticleSysCount)
 
-
-
 		.Process(this->FallingDownDamage)
 		.Process(this->FallingDownDamage_Water)
 		.Process(this->FallingDownDamage_AllowEMP)
@@ -1755,7 +1718,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Ammo_AutoConvertMinimumAmount)
 		.Process(this->Ammo_AutoConvertMaximumAmount)
 		.Process(this->Ammo_AutoConvertType)
-
 
 		//.Process(this->SecondaryFire)
 
@@ -1781,12 +1743,9 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->VoiceWeaponAttacks)
 		.Process(this->VoiceEliteWeaponAttacks)
 
-
 		.Process(this->TeamMember_ConsideredAs)
 
-
 		.Process(this->AttackFriendlies)
-
 
 		.Process(this->DrainMoneyFrameDelay)
 		.Process(this->DrainMoneyAmount)
@@ -1806,7 +1765,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->PenetratesTransport_DamageMultiplier)
 
 		.Process(this->JumpjetClimbIgnoreBuilding)
-			
 
 		.Process(this->Unsellable)
 
@@ -1817,8 +1775,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->ExtraThreatCoefficient_InRangeDistance)
 		.Process(this->ExtraThreatCoefficient_Facing)
 		.Process(this->ExtraThreatCoefficient_DistanceToLastTarget)
-
-
 
 		.Process(this->BarrelOverTurret)
 		.Process(this->BarrelOffset)
@@ -1854,7 +1810,6 @@ DEFINE_HOOK(0x711835, TechnoTypeClass_CTOR, 0x5)
 
 	return 0;
 }
-
 
 //DEFINE_HOOK_AGAIN(0x716132, TechnoTypeClass_LoadFromINI, 0x5)// Section dont exist!
 DEFINE_HOOK(0x716123, TechnoTypeClass_LoadFromINI, 0x5)
