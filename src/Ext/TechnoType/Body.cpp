@@ -19,10 +19,6 @@ bool TechnoTypeExt::SelectWeaponMutex = false;
 
 void TechnoTypeExt::Initialize()
 {
-	auto pThis = this->OwnerObject();
-
-	if (pThis->WhatAmI() == AircraftTypeClass::AbsID)
-		this->Missile_TakeOffAnim = AnimTypeClass::Find("V3TAKOFF");
 }
 
 void TechnoTypeExt::ApplyTurretOffset(Matrix3D* mtx, double factor, int turIdx)
@@ -823,7 +819,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->CombatAlert_EVA.Read(exINI, pSection, "CombatAlert.EVA");
 
 	this->VoiceCreated.Read(exINI, pSection, "VoiceCreated");
-	this->VoicePickup.Read(exINI, pSection, "VoicePickup");
 
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 
@@ -1016,13 +1011,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnsPipSize.Read(exINI, pSection, "SpawnsPipSize");
 	this->SpawnsPipOffset.Read(exINI, pSection, "SpawnsPipOffset");
 
-	this->SpawnFromEdge.Read(exINI, pSection, "SpawnFromEdge");
-	this->RetreatToEdge.Read(exINI, pSection, "RetreatToEdge");
-	this->SpawnDistanceFromTarget.Read(exINI, pSection, "SpawnDistanceFromTarget");
-	this->SpawnHeight.Read(exINI, pSection, "SpawnHeight");
-	this->LandingDir.Read(exINI, pSection, "LandingDir");
 
-	this->CurleyShuffle.Read(exINI, pSection, "CurleyShuffle");
 
 	this->Convert_Deploy.Read(exINI, pSection, "Convert.Deploy");
 	this->Convert_Undeploy.Read(exINI, pSection, "Convert.Undeploy");
@@ -1144,18 +1133,11 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Harvester_CanGuardArea_RequireTarget.Read(exINI, pSection, "Harvester.CanGuardArea.RequireTarget");
 	this->HarvesterScanAfterUnload.Read(exINI, pSection, "HarvesterScanAfterUnload");
 
-	this->ExtendedAircraftMissions.Read(exINI, pSection, "ExtendedAircraftMissions");
-	this->ExtendedAircraftMissions_SmoothMoving.Read(exINI, pSection, "ExtendedAircraftMissions.SmoothMoving");
-	this->ExtendedAircraftMissions_EarlyDescend.Read(exINI, pSection, "ExtendedAircraftMissions.EarlyDescend");
-	this->ExtendedAircraftMissions_RearApproach.Read(exINI, pSection, "ExtendedAircraftMissions.RearApproach");
-	this->ExtendedAircraftMissions_FastScramble.Read(exINI, pSection, "ExtendedAircraftMissions.FastScramble");
-	this->ExtendedAircraftMissions_UnlandDamage.Read(exINI, pSection, "ExtendedAircraftMissions.UnlandDamage");
 
 	this->FallingDownDamage.Read(exINI, pSection, "FallingDownDamage");
 	this->FallingDownDamage_Water.Read(exINI, pSection, "FallingDownDamage.Water");
 	this->FallingDownDamage_AllowEMP.Read(exINI, pSection, "FallingDownDamage.AllowEMP");
 
-	this->FiringForceScatter.Read(exINI, pSection, "FiringForceScatter");
 
 	this->EngineerRepairAmount.Read(exINI, pSection, "EngineerRepairAmount");
 
@@ -1190,8 +1172,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ParadropMission.Read(exINI, pSection, "ParadropMission");
 	this->AIParadropMission.Read(exINI, pSection, "AIParadropMission");
-	this->ParadropDelay.Read(exINI, pSection, "ParadropDelay");
-	this->ParadropEndDelay.Read(exINI, pSection, "ParadropEndDelay");
 
 	this->PenetratesTransport_Level.Read(exINI, pSection, "PenetratesTransport.Level");
 	this->PenetratesTransport_PassThroughMultiplier.Read(exINI, pSection, "PenetratesTransport.PassThroughMultiplier");
@@ -1218,18 +1198,13 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Parasite_AllowWaterExit.Read(exINI, pSection, "Parasite.AllowWaterExit");
 
-	this->FlyNoWobbles.Read(exINI, pSection, "FlyNoWobbles");
 
-	this->LandingAnim.Read(exINI, pSection, "LandingAnim");
 
-	this->Missile_Cruise.Read(exINI, pSection, "Missile.Cruise");
-	this->Missile_TakeOffSeparation.Read(exINI, pSection, "Missile.TakeOffSeparation");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
 	// Ares 0.3
-	this->Missile_TakeOffAnim.Read(exINI, pSection, "Missile.TakeOffAnim");
 
 	// Ares 0.9
 	this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
@@ -1628,7 +1603,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->CombatAlert_EVA)
 
 		.Process(this->VoiceCreated)
-		.Process(this->VoicePickup)
 
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
@@ -1799,14 +1773,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->SpawnsPipSize)
 		.Process(this->SpawnsPipOffset)
 
-		.Process(this->SpawnFromEdge)
-		.Process(this->RetreatToEdge)
-		.Process(this->SpawnDistanceFromTarget)
-		.Process(this->SpawnHeight)
-		.Process(this->LandingDir)
 		.Process(this->DroppodType)
-			
-		.Process(this->CurleyShuffle)
 
 		.Process(this->TiberiumEaterType)
 
@@ -1925,12 +1892,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Harvester_CanGuardArea_RequireTarget)
 		.Process(this->HarvesterScanAfterUnload)
 
-		.Process(this->ExtendedAircraftMissions)
-		.Process(this->ExtendedAircraftMissions_SmoothMoving)
-		.Process(this->ExtendedAircraftMissions_EarlyDescend)
-		.Process(this->ExtendedAircraftMissions_RearApproach)
-		.Process(this->ExtendedAircraftMissions_FastScramble)
-		.Process(this->ExtendedAircraftMissions_UnlandDamage)
 
 		.Process(this->FallingDownDamage)
 		.Process(this->FallingDownDamage_Water)
@@ -1940,7 +1901,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Ammo_AutoConvertMaximumAmount)
 		.Process(this->Ammo_AutoConvertType)
 
-		.Process(this->FiringForceScatter)
 
 		.Process(this->FireUp)
 		.Process(this->FireUp_ResetInRetarget)
@@ -1991,8 +1951,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->ParadropMission)
 		.Process(this->AIParadropMission)
-		.Process(this->ParadropDelay)
-		.Process(this->ParadropEndDelay)
 
 		.Process(this->PenetratesTransport_Level)
 		.Process(this->PenetratesTransport_PassThroughMultiplier)
@@ -2019,13 +1977,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->Parasite_AllowWaterExit)
 
-		.Process(this->FlyNoWobbles)
-
-		.Process(this->LandingAnim)
-
-		.Process(this->Missile_Cruise)
-		.Process(this->Missile_TakeOffAnim)
-		.Process(this->Missile_TakeOffSeparation)
 		.Process(this->BarrelOverTurret)
 		.Process(this->BarrelOffset)
 		.Process(this->ExtraBarrelCount)

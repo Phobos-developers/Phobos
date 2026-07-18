@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/AircraftType/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
@@ -51,7 +52,7 @@ void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CoordStruct edgeCoords)
 {
 	auto const pType = pThis->Type;
-	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+	auto const pTypeExt = AircraftTypeExt::Fetch(pType);
 	auto dir = DirType::North;
 	auto coords = edgeCoords;
 	coords.Z = 0;
@@ -83,7 +84,7 @@ bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CoordStruct e
 
 CellStruct AircraftExt::PickEdgeCellForPlane(AircraftTypeClass* pPlaneType, CellStruct destCell, Edge edge, bool isOnRetreat)
 {
-	auto const pTypeExt = TechnoTypeExt::Fetch(pPlaneType);
+	auto const pTypeExt = AircraftTypeExt::Fetch(pPlaneType);
 	auto const edgeMode = !isOnRetreat ? pTypeExt->SpawnFromEdge : pTypeExt->RetreatToEdge;
 	auto spawnEdge = edge;
 	auto refCell = CellStruct::Empty;
@@ -159,7 +160,7 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 			return pLink->PrimaryFacing.Current().GetDir();
 	}
 
-	const int landingDir = TechnoTypeExt::Fetch(pType)->LandingDir.Get((int)poseDir);
+	const int landingDir = AircraftTypeExt::Fetch(pType)->LandingDir.Get((int)poseDir);
 
 	if (!pType->AirportBound && landingDir < 0)
 		return pThis->PrimaryFacing.Current().GetDir();

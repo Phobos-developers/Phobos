@@ -3,6 +3,8 @@
 #include <TunnelLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
 
+#include <Ext/Aircraft/Body.h>
+#include <Ext/AircraftType/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
@@ -1330,7 +1332,7 @@ DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
 		if (pType->Carryall && pAircraft->HasAnyLink()
 			&& generic_cast<FootClass*>(pAircraft->Destination))
 		{
-			auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+			auto const pTypeExt = AircraftTypeExt::Fetch(pType);
 
 			if (pTypeExt->VoicePickup.isset())
 			{
@@ -2083,7 +2085,7 @@ DEFINE_HOOK(0x70AFEF, TechnoClass_UpdateSight_DynamicSight2, 0x6)
 static AnimTypeClass* GetLandingAnim(TechnoClass* pTechno)
 {
 	auto const pType = pTechno->GetTechnoType();
-	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+	auto const pTypeExt = AircraftTypeExt::Fetch(static_cast<AircraftTypeClass*>(pType));
 
 	if (pTypeExt->LandingAnim.isset())
 		return pTypeExt->LandingAnim.Get();
@@ -2110,7 +2112,7 @@ DEFINE_HOOK(0x4CEB59, FlyLocomotionClass_ProcessLanding_ForceDropship, 0x6)
 {
 	GET(FlyLocomotionClass*, pLoco, ESI);
 	auto const pType = pLoco->LinkedTo->GetTechnoType();
-	const bool force = TechnoTypeExt::Fetch(pType)->LandingAnim.isset() || RulesExt::Global()->DefaultLandingAnim != nullptr;
+	const bool force = AircraftTypeExt::Fetch(static_cast<AircraftTypeClass*>(pType))->LandingAnim.isset() || RulesExt::Global()->DefaultLandingAnim != nullptr;
 
 	R->CL(force || pType->IsDropship);
 	return 0x4CEB5F;
@@ -2137,7 +2139,7 @@ DEFINE_HOOK(0x4CF8B1, FlyLocomotionClass_Draw_Point_NoWobbles, 0x6)
     enum { Continue = 0x4CF8B7 };
     GET(TechnoTypeClass*, pType, EAX);
 
-	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+	auto const pTypeExt = AircraftTypeExt::Fetch(static_cast<AircraftTypeClass*>(pType));
     R->CL(pTypeExt->FlyNoWobbles.Get(RulesExt::Global()->FlyNoWobbles.Get(pType->IsDropship)));
 
 	return Continue;
@@ -2154,7 +2156,7 @@ DEFINE_HOOK(0x662354, RocketLocomotionClass_Process_CruiseMissileCheck, 0x6)
 	if (!pLinkedTo)
 		return 0;
 
-	const auto pTypeExt = TechnoTypeExt::Fetch(pLinkedTo->Type);
+	const auto pTypeExt = AircraftTypeExt::Fetch(pLinkedTo->Type);
 	if (pTypeExt->Missile_Cruise)
 		return 0x662369;
 
@@ -2170,7 +2172,7 @@ DEFINE_HOOK(0x6623FC, RocketLocomotionClass_Process_CustomSmokeInterval, 0x5)
 	if (!pLinkedTo)
 		return 0;
 
-	const auto pTypeExt = TechnoTypeExt::Fetch(pLinkedTo->Type);
+	const auto pTypeExt = AircraftTypeExt::Fetch(pLinkedTo->Type);
 
 	R->ECX(pTypeExt->Missile_TakeOffSeparation);
 	return 0x662401;
@@ -2190,7 +2192,7 @@ DEFINE_HOOK(0x6624FB, RocketLocomotionClass_Process_CustomMissileTakeoff, 0x5)
 	if (pLoco->TrailerTimer.HasTimeLeft())
 		return SkipAnimation;
 
-	const auto pTypeExt = TechnoTypeExt::Fetch(pLinkedTo->Type);
+	const auto pTypeExt = AircraftTypeExt::Fetch(pLinkedTo->Type);
 
 	if (pTypeExt->Missile_TakeOffAnim)
 	{
@@ -2211,7 +2213,7 @@ DEFINE_HOOK(0x662720, RocketLocomotionClass_Process_CruiseMissileRaise, 0x6)
 	if (!pLinkedTo)
 		return 0;
 
-	const auto pTypeExt = TechnoTypeExt::Fetch(pLinkedTo->Type);
+	const auto pTypeExt = AircraftTypeExt::Fetch(pLinkedTo->Type);
 	if (pTypeExt->Missile_Cruise)
 		return 0x6624C8;
 

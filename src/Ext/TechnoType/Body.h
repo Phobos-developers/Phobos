@@ -126,7 +126,6 @@ public:
 	NullableIdx<VoxClass> CombatAlert_EVA;
 
 	NullableIdx<VocClass> VoiceCreated;
-	NullableIdx<VocClass> VoicePickup; // Used by carryalls instead of VoiceMove if set.
 
 	ValueableVector<AnimTypeClass*> WarpOut;
 	ValueableVector<AnimTypeClass*> WarpIn;
@@ -291,13 +290,6 @@ public:
 	Nullable<Point2D> SpawnsPipSize;
 	Valueable<Point2D> SpawnsPipOffset;
 
-	Valueable<EdgeType> SpawnFromEdge;
-	Valueable<EdgeType> RetreatToEdge;
-	Nullable<Leptons> SpawnDistanceFromTarget;
-	Nullable<int> SpawnHeight;
-	Nullable<int> LandingDir;
-
-	Nullable<bool> CurleyShuffle;
 
 	Valueable<TechnoTypeClass*> Convert_Deploy; // Ares
 	Valueable<TechnoTypeClass*> Convert_Undeploy;
@@ -434,12 +426,6 @@ public:
 	Valueable<bool> Harvester_CanGuardArea_RequireTarget;
 	Nullable<bool> HarvesterScanAfterUnload;
 
-	Nullable<bool> ExtendedAircraftMissions;
-	Nullable<bool> ExtendedAircraftMissions_SmoothMoving;
-	Nullable<bool> ExtendedAircraftMissions_EarlyDescend;
-	Nullable<bool> ExtendedAircraftMissions_RearApproach;
-	Nullable<bool> ExtendedAircraftMissions_FastScramble;
-	Nullable<int> ExtendedAircraftMissions_UnlandDamage;
 
 	Valueable<double> FallingDownDamage;
 	Nullable<double> FallingDownDamage_Water;
@@ -528,13 +514,6 @@ public:
 
 	Nullable<bool> Parasite_AllowWaterExit;
 
-	Nullable<bool> FlyNoWobbles;
-
-	Nullable<AnimTypeClass*> LandingAnim;
-
-	Valueable<bool> Missile_Cruise;
-	Valueable<AnimTypeClass*> Missile_TakeOffAnim;
-	Valueable<int> Missile_TakeOffSeparation;
 	Nullable<bool> BarrelOverTurret;
 	Valueable<int> BarrelOffset;
 	Valueable<int> ExtraBarrelCount;
@@ -700,7 +679,6 @@ public:
 		, EnemyUIName {}
 
 		, VoiceCreated {}
-		, VoicePickup {}
 
 		, ForceWeapon_Check { false }
 		, ForceWeapon_Naval_Decloaked { -1 }
@@ -798,15 +776,8 @@ public:
 		, SpawnsPipSize {}
 		, SpawnsPipOffset { { 0,0 } }
 
-		, SpawnFromEdge { EdgeType::Owner }
-		, RetreatToEdge { EdgeType::Owner }
-		, SpawnDistanceFromTarget {}
-		, SpawnHeight {}
-		, LandingDir {}
 		, DroppodType {}
 		, TiberiumEaterType {}
-
-		, CurleyShuffle {}
 
 		, Convert_Deploy { }
 		, Convert_Undeploy { }
@@ -923,12 +894,6 @@ public:
 		, Harvester_CanGuardArea_RequireTarget { false }
 		, HarvesterScanAfterUnload {}
 
-		, ExtendedAircraftMissions {}
-		, ExtendedAircraftMissions_SmoothMoving {}
-		, ExtendedAircraftMissions_EarlyDescend {}
-		, ExtendedAircraftMissions_RearApproach {}
-		, ExtendedAircraftMissions_FastScramble {}
-		, ExtendedAircraftMissions_UnlandDamage {}
 
 		, FallingDownDamage { 1.0 }
 		, FallingDownDamage_Water {}
@@ -938,7 +903,6 @@ public:
 		, Ammo_AutoConvertMaximumAmount { -1 }
 		, Ammo_AutoConvertType { nullptr }
 
-		, FiringForceScatter { true }
 
 		, FireUp { -1 }
 		, FireUp_ResetInRetarget { true }
@@ -989,8 +953,6 @@ public:
 
 		, ParadropMission {}
 		, AIParadropMission {}
-		, ParadropDelay {}
-		, ParadropEndDelay {}
 
 		, PenetratesTransport_Level {}
 		, PenetratesTransport_PassThroughMultiplier { 1.0 }
@@ -1017,13 +979,6 @@ public:
 			
 		, Parasite_AllowWaterExit {}
 
-		, FlyNoWobbles {}
-
-		, LandingAnim {}
-
-		, Missile_Cruise { false }
-		, Missile_TakeOffAnim { nullptr }
-		, Missile_TakeOffSeparation { 24 }
 		, BarrelOverTurret { }
 		, BarrelOffset { 0 }
 		, ExtraBarrelCount { 0 }
