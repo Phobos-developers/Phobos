@@ -583,7 +583,7 @@ void WarheadTypeExt::ExtData::ApplyReturnWarhead(HouseClass* pHouse, TechnoClass
 
 void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, BulletClass* pInterceptor, const CoordStruct& coords)
 {
-	const float cellSpread = this->OwnerObject()->CellSpread;
+	const double cellSpread = (double)this->OwnerObject()->CellSpread;
 
 	if (cellSpread == 0.0)
 	{
