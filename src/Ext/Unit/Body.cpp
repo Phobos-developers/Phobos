@@ -315,6 +315,7 @@ bool UnitExt::SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue,
 	return true;
 }
 
+// Checks if vehicle can deploy into a building at its current location. If unit has no DeploysInto set returns noDeploysIntoDefaultValue (def = false) instead.
 bool UnitExt::CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultValue)
 {
 	if (!pThis)
