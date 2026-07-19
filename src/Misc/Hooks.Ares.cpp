@@ -68,12 +68,12 @@ static EBolt* __stdcall CreateEBolt2(WeaponTypeClass* pWeapon)
 
 static bool __fastcall CameoIsVeteran(TechnoTypeClass** pTypeExt_Ares, void*, HouseClass* pHouse)
 {
-	return TechnoTypeExt::ExtMap.Find(*pTypeExt_Ares)->CameoIsVeteran(pHouse);
+	return TechnoTypeExt::Fetch(*pTypeExt_Ares)->CameoIsVeteran(pHouse);
 }
 
 static bool __fastcall SW_IsAvailable(SuperWeaponTypeClass** pExt_Ares, void*, HouseClass* pHouse)
 {
-	return SWTypeExt::ExtMap.Find(*pExt_Ares)->IsAvailable(pHouse);
+	return SWTypeExt::Fetch(*pExt_Ares)->IsAvailable(pHouse);
 }
 
 namespace PermaMCTemp
@@ -93,7 +93,7 @@ static bool __fastcall ApplyPermaMC_Wrapper(WarheadTypeClass** pExt_Ares, void*,
 static bool __fastcall PermaMC_FreeUnit_SetContext(CaptureManagerClass* pManager, void*, TechnoClass* pTechno)
 {
 	PermaMCTemp::Selected = pTechno->IsSelected;
-	return CaptureManagerExt::FreeUnit(pManager, pTechno, WarheadTypeExt::ExtMap.Find(PermaMCTemp::Warhead)->RemoveMindControl_Silent.Get(RulesExt::Global()->MindControl_Permanent_ReplaceSilent));
+	return CaptureManagerExt::FreeUnit(pManager, pTechno, WarheadTypeExt::Fetch(PermaMCTemp::Warhead)->RemoveMindControl_Silent.Get(RulesExt::Global()->MindControl_Permanent_ReplaceSilent));
 }
 
 static bool __fastcall PermaMC_SetOwningHouse_Select(TechnoClass* pTechno, void*, HouseClass* pHouse, bool announce)
@@ -224,10 +224,10 @@ void Apply_Ares3_0_Patches()
 	// Redirect Ares's function to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x112D0, &BuildingExt::KickOutClone);
 
-	// Redirect Ares's TechnoTypeExt::ExtData::CameoIsElite() to our implementation:
+	// Redirect Ares's TechnoTypeExt::CameoIsElite() to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3D800, &CameoIsVeteran);
 
-	// Redirect Ares's SWTypeExt::ExtData::IsAvailable to our implementation:
+	// Redirect Ares's SWTypeExt::IsAvailable to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x32BE0, &SW_IsAvailable);
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x329E0, &SWTypeExt::IsSuperAvailable);
 
@@ -323,10 +323,10 @@ void Apply_Ares3_0p1_Patches()
 	// Redirect Ares's function to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x11860, &BuildingExt::KickOutClone);
 
-	// Redirect Ares's TechnoTypeExt::ExtData::CameoIsElite() to our implementation:
+	// Redirect Ares's TechnoTypeExt::CameoIsElite() to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3E210, &CameoIsVeteran);
 
-	// Redirect Ares's SWTypeExt::ExtData::IsAvailable to our implementation:
+	// Redirect Ares's SWTypeExt::IsAvailable to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x335E0, &SW_IsAvailable);
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x333E0, &SWTypeExt::IsSuperAvailable);
 

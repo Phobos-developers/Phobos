@@ -3,14 +3,14 @@
 #include <Ext/BuildingType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
-// TODO: Implement proper extended AircraftClass.
+AircraftExt::ExtContainer AircraftExt::ExtMap;
 
 void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 {
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pExt = TechnoExt::Fetch(pThis);
 	const int weaponIndex = pExt->CurrentAircraftWeaponIndex;
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	auto const pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 	const int burstCount = pWeapon->Burst;
 	const bool isStrafe = pThis->Is_Strafe();
 
@@ -51,7 +51,7 @@ void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CoordStruct edgeCoords)
 {
 	auto const pType = pThis->Type;
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 	auto dir = DirType::North;
 	auto coords = edgeCoords;
 	coords.Z = 0;
@@ -83,7 +83,7 @@ bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CoordStruct e
 
 CellStruct AircraftExt::PickEdgeCellForPlane(AircraftTypeClass* pPlaneType, CellStruct destCell, Edge edge, bool isOnRetreat)
 {
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pPlaneType);
+	auto const pTypeExt = TechnoTypeExt::Fetch(pPlaneType);
 	auto const edgeMode = !isOnRetreat ? pTypeExt->SpawnFromEdge : pTypeExt->RetreatToEdge;
 	auto spawnEdge = edge;
 	auto refCell = CellStruct::Empty;
@@ -143,7 +143,7 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 		if (auto const pBuilding = pDock ? pDock : abstract_cast<BuildingClass*, true>(pLink))
 		{
 			auto const pBuildingType = pBuilding->Type;
-			auto const pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
+			auto const pBuildingTypeExt = BuildingTypeExt::Fetch(pBuildingType);
 			const int docks = pBuildingType->NumberOfDocks;
 			const int linkIndex = pBuilding->FindLinkIndex(pThis);
 
@@ -159,10 +159,40 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 			return pLink->PrimaryFacing.Current().GetDir();
 	}
 
-	const int landingDir = TechnoTypeExt::ExtMap.Find(pType)->LandingDir.Get((int)poseDir);
+	const int landingDir = TechnoTypeExt::Fetch(pType)->LandingDir.Get((int)poseDir);
 
 	if (!pType->AirportBound && landingDir < 0)
 		return pThis->PrimaryFacing.Current().GetDir();
 
 	return static_cast<DirType>(std::clamp(landingDir, 0, 255));
+}
+
+// =============================
+// container
+
+AircraftExt::ExtContainer::ExtContainer() : Container("AircraftClass") { }
+AircraftExt::ExtContainer::~ExtContainer() = default;
+
+// =============================
+// container hooks
+
+DEFINE_HOOK(0x413D30, AircraftClass_CTOR, 0x7)
+{
+	GET(AircraftClass*, pItem, ESI);
+
+	AircraftExt::ExtMap.Allocate(pItem);
+
+	return 0;
+}
+
+// Late in every destructor body of the class, right before it chains into the
+// base destructor: the last point where the extension is no longer used.
+DEFINE_HOOK_AGAIN(0x41426D, AircraftClass_DTOR, 0x9)
+DEFINE_HOOK(0x4141FA, AircraftClass_DTOR, 0x9)
+{
+	GET(AircraftClass*, pItem, EDI);
+
+	AircraftExt::ExtMap.Remove(pItem);
+
+	return 0;
 }

@@ -99,6 +99,7 @@ public:
 		Valueable<bool> AmphibiousEnter;
 		Valueable<bool> AmphibiousUnload;
 		Valueable<bool> NoQueueUpToEnter;
+		Valueable<int> NoQueueUpToEnter_BoardDistance;
 		Valueable<bool> NoQueueUpToUnload;
 		Nullable<bool> NoQueueUpToEnter_Buildings;
 		Nullable<bool> NoQueueUpToUnload_Buildings;
@@ -463,6 +464,7 @@ public:
 			, AmphibiousEnter { false }
 			, AmphibiousUnload { false }
 			, NoQueueUpToEnter { false }
+			, NoQueueUpToEnter_BoardDistance { 384 }
 			, NoQueueUpToUnload { false }
 			, NoQueueUpToEnter_Buildings {}
 			, NoQueueUpToUnload_Buildings {}
@@ -735,8 +737,6 @@ public:
 		void InitializeAfterTypeData(RulesClass* pThis);
 		void InitializeAfterAllLoaded();
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
-
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
@@ -768,10 +768,5 @@ public:
 	static void Clear()
 	{
 		Allocate(RulesClass::Instance);
-	}
-
-	static void PointerGotInvalid(void* ptr, bool removed)
-	{
-		Global()->InvalidatePointer(ptr, removed);
 	}
 };

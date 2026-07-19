@@ -62,7 +62,7 @@ void AresFunctions::InitAres3_0()
 
 	NOTE_ARES_FUN(AlphaExtMap, 0xC1924);
 
-	// BuildingTypeExt::ExtData
+	// BuildingTypeExt
 	NOTE_ARES_FUN(AresFunctions::GetTunnel, 0x0D740);
 	NOTE_ARES_FUN(AresFunctions::AddPassengerFromTunnel, 0x09000);
 
@@ -109,7 +109,7 @@ void AresFunctions::InitAres3_0p1()
 
 	NOTE_ARES_FUN(AlphaExtMap, 0xC2988);
 
-	// BuildingTypeExt::ExtData
+	// BuildingTypeExt
 	NOTE_ARES_FUN(AresFunctions::GetTunnel, 0x0DA30);
 	NOTE_ARES_FUN(AresFunctions::AddPassengerFromTunnel, 0x09040);
 

@@ -70,7 +70,7 @@ DEFINE_HOOK(0x736B60, UnitClass_Rotation_AI_DisallowMoving, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	const auto pTypeExt = TechnoTypeExt::Fetch(pThis->Type);
 	return (pTypeExt->TurretResponse.isset() ? !pTypeExt->TurretResponse.Get() : TechnoExt::CannotMove(pThis)) ? 0x736AFB : 0;
 }
 
