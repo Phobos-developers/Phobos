@@ -2371,6 +2371,7 @@ msgid ""
 "Customize the distance for `NoQueueUpToEnter` transport units to board "
 "passengers"
 msgstr ""
+"自定义 `NoQueueUpToEnter` 运输工具搭载乘客的距离"
 
 msgid ""
 "Fix the bug that `MissileSpawn=true` causes the spawnee launcher to crash"

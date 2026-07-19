@@ -2174,6 +2174,7 @@ msgid ""
 "Customize the distance for `NoQueueUpToEnter` transport units to board "
 "passengers (by Noble_Fish)"
 msgstr ""
+"自定义 `NoQueueUpToEnter` 运输工具搭载乘客的距离（by Noble_Fish）"
 
 msgid ""
 "Reworked the extension system internals to form a class hierarchy "
