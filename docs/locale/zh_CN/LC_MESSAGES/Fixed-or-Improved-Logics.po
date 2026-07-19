@@ -3349,14 +3349,17 @@ msgstr ""
 
 msgid "Customize the initial facing of buildings"
 msgstr ""
+"自定义建筑初始方向"
 
 msgid "In vanilla, buildings always face due north (0). Now you can customize it."
 msgstr ""
+"在原版中，建筑初始方向总是面向正北方（0），现在你可以自定义了。"
 
 msgid ""
 "Unlike the identically named INI flag in Tiberian Sun, this flag uses a "
 "256-point circle rather than an 8-point circle."
 msgstr ""
+"不同于《泰伯利亚之日》中的同名语句，此处语句使用 256 分圆而不是 8 分圆。"
 
 msgid "Disable `DamageSound`"
 msgstr "禁用 `DamageSound`"

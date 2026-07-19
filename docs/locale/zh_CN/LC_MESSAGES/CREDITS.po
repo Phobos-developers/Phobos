@@ -2381,6 +2381,7 @@ msgstr ""
 
 msgid "Customize the initial facing of buildings"
 msgstr ""
+"自定义建筑初始方向"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
