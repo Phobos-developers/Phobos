@@ -326,6 +326,8 @@ public:
 		Valueable<bool> AffectsInvokerOnly_IgnoreInvokerState;
 
 		Valueable<bool> FiringAnim_Update;
+		int FiringAnimUpdateCount;
+
 		Valueable<bool> ExtendedPlayerRepair;
 		
 		Valueable<bool> AutoTarget_NoThreatBuildings;
@@ -692,6 +694,7 @@ public:
 			, HoverLocomotorMakesWake { true }
 			, ShipLocomotorMakesWake { true }
 			, FiringAnim_Update { false }
+			, FiringAnimUpdateCount { 0 }
 			, ExtendedPlayerRepair { false }
 			, Shrapnel_IgnoreHitBuildings { false }
 			, Shrapnel_ObeyWarheadTriggerConditions { true }
