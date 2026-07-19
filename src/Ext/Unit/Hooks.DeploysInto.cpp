@@ -93,6 +93,9 @@ DEFINE_HOOK(0x739956, UnitClass_Deploy_Transfer, 0x6)
 	TechnoExt::SyncInvulnerability(pUnit, pStructure);
 	AttachEffectClass::TransferAttachedEffects(pUnit, pStructure);
 
+	// update type data at last
+	TechnoExt::Fetch(pStructure)->UpdateTypeData(pStructure->Type);
+
 	return 0;
 }
 
@@ -105,6 +108,11 @@ DEFINE_HOOK(0x44A03C, BuildingClass_Mi_Selling_Transfer, 0x6)
 	ShieldClass::SyncShieldToAnother(pStructure, pUnit);
 	TechnoExt::SyncInvulnerability(pStructure, pUnit);
 	AttachEffectClass::TransferAttachedEffects(pStructure, pUnit);
+
+	// update type data at last
+	auto const pExt = TechnoExt::Fetch(pUnit);
+	pExt->UpdateTypeData(pUnit->Type);
+	pExt->UpdateTypeData_Foot();
 
 	// This line will break the bahavior of UnDeploysInto buildings. However, it might serve a purpose that no one knows yet
 	// Comment out the line instead of removing it for now, so we can turn to it if something related goes wrong in the future

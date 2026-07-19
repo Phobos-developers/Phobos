@@ -42,10 +42,6 @@ DEFINE_HOOK(0x4DA54E, FootClass_AI, 0x6)
 	GET(FootClass*, pThis, ESI);
 
 	auto const pExt = TechnoExt::Fetch(pThis);
-
-	if (pExt->PreviousType)
-		pExt->UpdateTypeData_Foot();
-
 	pExt->UpdateWarpInDelay();
 	pExt->UpdateTiberiumEater();
 	pExt->AmmoAutoConvertActions();
