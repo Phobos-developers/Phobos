@@ -616,6 +616,7 @@ HideShakeEffects=false           ; boolean
 - [Allow Laser drawing position update](New-or-Enhanced-Logics.md#allow-laser-drawing-position-update) (by Noble_Fish)
 - Customize the distance for `NoQueueUpToEnter` transport units to board passengers (by Noble_Fish)
 - Reworked the extension system internals to form a class hierarchy mirroring the game's own, with centralized savegame serialization (by ZivDero)
+- [Customize the initial facing of buildings](Fixed-or-Improved-Logics.md#customize-the-initial-facing-of-buildings) (by Noble_Fish)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
