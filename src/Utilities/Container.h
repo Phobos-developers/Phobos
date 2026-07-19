@@ -83,12 +83,7 @@ public:
 	template <typename TExt>
 	static TExt* Fetch(const AbstractClass* pThis)
 	{
-		auto const pExt = TryFetch<TExt>(pThis);
-
-		if (!pExt)
-			Debug::FatalErrorAndExit("%s - object %p has no extension attached!\n", typeid(TExt).name(), pThis);
-
-		return pExt;
+		return static_cast<TExt*>(Fetch(pThis));
 	}
 
 	// writes the inline extension slot directly, for extensions that are not
