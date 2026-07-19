@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-18 04:06+0800\n"
+"POT-Creation-Date: 2026-07-19 21:50+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1919,6 +1919,9 @@ msgid ""
 "format"
 msgstr "将 255 种覆盖物数量限制解编码方式调整为使用一种不同的格式"
 
+msgid "Extension system rework"
+msgstr ""
+
 msgid "**CrimRecya**:"
 msgstr "**CrimRecya**："
 
@@ -2362,8 +2365,20 @@ msgid "`ZAdjust` for Projectiles"
 msgstr "抛射体的 `ZAdjust`"
 
 msgid "Allow Laser drawing position update"
+msgstr "允许激光绘制位置更新"
+
+msgid ""
+"Customize the distance for `NoQueueUpToEnter` transport units to board "
+"passengers"
 msgstr ""
-"允许激光绘制位置更新"
+
+msgid ""
+"Fix the bug that `MissileSpawn=true` causes the spawnee launcher to crash"
+" immediately when attacking"
+msgstr ""
+
+msgid "Customize the initial facing of buildings"
+msgstr ""
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："

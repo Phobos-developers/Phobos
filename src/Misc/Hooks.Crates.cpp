@@ -82,7 +82,7 @@ DEFINE_HOOK(0x4821BD, CellClass_GoodieCheck_CrateGoodie, 0x6)
 
 	if (crateGoodie)
 	{
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pUnitType);
+		auto const pTypeExt = TechnoTypeExt::Fetch(pUnitType);
 
 		if (pTypeExt->CrateGoodie_RerollChance > 0.0)
 			crateGoodie = pTypeExt->CrateGoodie_RerollChance < ScenarioClass::Instance->Random.RandomDouble();

@@ -52,6 +52,7 @@ This serves as a changelog for when you just need to drop the new version in wit
   - `[WarheadType] -> KillWeapon.OnFirer.AffectsHouses` -> `[WarheadType] -> KillWeapon.OnFirer.AffectsHouse`
   - `[WarheadType/SuperWeaponType] -> Convert(N).AffectedHouses` -> `[WarheadType/SuperWeaponType] -> Convert(N).AffectsHouse`
   - `[SuperWeaponType] -> LimboKill.Affected` -> `[SuperWeaponType] -> LimboKill.AffectsHouse`
+- The extension system has been reworked to follow the game's own class model. Savegames made with earlier Phobos builds are incompatible with this version.
 
 ```{note}
 - If it is detected that you are using the old INI flags, a warning will be outputted to `debug.log`.
@@ -613,6 +614,9 @@ HideShakeEffects=false           ; boolean
 - Customize whether or not passenger can fire out when the transport is moving (by Ollerus)
 - [RA1-Style Multi-Turret and Multi-Barrel](New-or-Enhanced-Logics.md#ra1-style-multi-turret-and-multi-barrel) (by TaranDahl & CrimRecya)
 - [Allow Laser drawing position update](New-or-Enhanced-Logics.md#allow-laser-drawing-position-update) (by Noble_Fish)
+- Customize the distance for `NoQueueUpToEnter` transport units to board passengers (by Noble_Fish)
+- Reworked the extension system internals to form a class hierarchy mirroring the game's own, with centralized savegame serialization (by ZivDero)
+- [Customize the initial facing of buildings](Fixed-or-Improved-Logics.md#customize-the-initial-facing-of-buildings) (by Noble_Fish)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -736,6 +740,7 @@ HideShakeEffects=false           ; boolean
 - Fixed a bug where stationary vehicles would also block movement caused by external factors (by Noble_Fish)
 - Fixed `src/Interop/Version.cpp` not being compiled into the project (by Chang_zhi)
 - Fixed the issue that `NoQueueUpToEnter` will clear passenger's planning tokens when entered transport (by NetsuNegi)
+- Fixed the bug that `MissileSpawn=true` causes the spawnee launcher to crash immediately when attacking (by Noble_Fish)
 
 #### Fixes / interactions with other extensions:
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)

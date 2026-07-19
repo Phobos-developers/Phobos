@@ -7,7 +7,7 @@ DEFINE_HOOK(0x5047D0, HouseClass_UpdateAngerNodes_SetForceEnemy, 0x6)
 
 	if (pThis)
 	{
-		const int forceIndex = HouseExt::ExtMap.Find(pThis)->GetForceEnemyIndex();
+		const int forceIndex = HouseExt::Fetch(pThis)->GetForceEnemyIndex();
 
 		if (forceIndex >= 0 || forceIndex == -2)
 		{
@@ -31,7 +31,7 @@ DEFINE_HOOK(0x4FD772, HouseClass_ClearForceEnemy, 0xA)			// HouseClass_UpdateAI
 
 	if (pThis)
 	{
-		HouseExt::ExtMap.Find(pThis)->SetForceEnemyIndex(-1);
+		HouseExt::Fetch(pThis)->SetForceEnemyIndex(-1);
 		pThis->UpdateAngerNodes(0, pThis);
 		return R->Origin() + 0xA;
 	}

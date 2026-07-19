@@ -6,7 +6,7 @@ TeamExt::ExtContainer TeamExt::ExtMap;
 // load / save
 
 template <typename T>
-void TeamExt::ExtData::Serialize(T& Stm)
+void TeamExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->WaitNoTargetAttempts)
@@ -25,22 +25,22 @@ void TeamExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void TeamExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void TeamExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<TeamClass>::LoadFromStream(Stm);
+	AbstractExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void TeamExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void TeamExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<TeamClass>::SaveToStream(Stm);
+	AbstractExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
-void TeamExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
+void TeamExt::OnDetach(FootClass* pTarget, bool removed)
 {
-	if (bRemoved)
-		AnnounceInvalidPointer(this->TeamLeader, ptr);
+	if (removed)
+		AnnounceInvalidPointer(this->TeamLeader, pTarget);
 }
 
 // =============================
@@ -72,26 +72,3 @@ DEFINE_HOOK(0x6E8EC6, TeamClass_DTOR, 0x9)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x6EC450, TeamClass_SaveLoad_Prefix, 0x5)
-DEFINE_HOOK(0x6EC540, TeamClass_SaveLoad_Prefix, 0x8)
-{
-	GET_STACK(TeamClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	TeamExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6EC52F, TeamClass_Load_Suffix, 0x6)
-{
-	TeamExt::ExtMap.LoadStatic();
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6EC55A, TeamClass_Save_Suffix, 0x5)
-{
-	TeamExt::ExtMap.SaveStatic();
-	return 0;
-}

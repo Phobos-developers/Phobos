@@ -29,7 +29,7 @@ DEFINE_HOOK(0x6FD55F, TechnoClass_FireEBolt_ParticleSystem, 0x5)
 	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x30, 0x8));
 	GET_STACK(EBolt*, pBolt, STACK_OFFSET(0x30, -0x20));
 
-	if (const auto particle = WeaponTypeExt::ExtMap.Find(pWeapon)->Bolt_ParticleSystem.Get(RulesClass::Instance->DefaultSparkSystem))
+	if (const auto particle = WeaponTypeExt::Fetch(pWeapon)->Bolt_ParticleSystem.Get(RulesClass::Instance->DefaultSparkSystem))
 		GameCreate<ParticleSystemClass>(particle, pBolt->Point2, nullptr, nullptr, CoordStruct::Empty, nullptr);
 
 	return 0;
@@ -108,7 +108,7 @@ void EBoltFake::_SetOwner(TechnoClass* pTechno, int weaponIndex)
 	if (pTechno && pTechno->IsAlive)
 	{
 		auto const pWeapon = pTechno->GetWeapon(weaponIndex)->WeaponType;
-		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+		auto const pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 
 		if (!pWeaponExt->Bolt_FollowFLH.Get(pTechno->WhatAmI() == AbstractType::Unit))
 			return;
@@ -116,14 +116,14 @@ void EBoltFake::_SetOwner(TechnoClass* pTechno, int weaponIndex)
 		this->Owner = pTechno;
 		this->WeaponSlot = weaponIndex;
 
-		auto const pExt = TechnoExt::ExtMap.Find(pTechno);
+		auto const pExt = TechnoExt::Fetch(pTechno);
 		pExt->ElectricBolts.push_back(this);
 	}
 }
 
 void EBoltFake::_RemoveFromOwner()
 {
-	auto const pExt = TechnoExt::ExtMap.Find(this->Owner);
+	auto const pExt = TechnoExt::Fetch(this->Owner);
 	auto& vec = pExt->ElectricBolts;
 	vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	this->Owner = nullptr;
@@ -194,7 +194,7 @@ DEFINE_HOOK(0x6FD4E4, TechnoClass_FireEBolt_Building_ClampPositive, 0x9)
 
 	int zAdjust = Y - pV13->Y;
 
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const auto pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 	const bool clamp = pWeaponExt->EBoltZAdjust_ClampInitialDepthForBuilding.Get(RulesExt::Global()->EBoltZAdjust_ClampInitialDepthForBuilding);
 
 	if (clamp && zAdjust > 0)
@@ -211,7 +211,7 @@ DEFINE_HOOK(0x6FD4ED, TechnoClass_FireEBolt_ZAdjust, 0x7)
 	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x30, 0x8));
 	GET(int, zAdjust, ESI);
 
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const auto pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 	zAdjust += pWeaponExt->EBoltZAdjust.Get(RulesExt::Global()->EBoltZAdjust);
 
 	R->ESI(zAdjust);

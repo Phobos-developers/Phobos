@@ -20,7 +20,7 @@ static inline void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoC
 {
 	const auto pAnimType = pTechnoFrom->MindControlRingAnim
 		? pTechnoFrom->MindControlRingAnim->Type
-		: TechnoExt::ExtMap.Find(pTechnoFrom)->MindControlRingAnimType;
+		: TechnoExt::Fetch(pTechnoFrom)->MindControlRingAnimType;
 
 	if (const auto Controller = pTechnoFrom->MindControlledBy)
 	{
@@ -120,7 +120,7 @@ DEFINE_HOOK(0x449E2E, BuildingClass_Mi_Selling_CreateUnit, 0x6)
 	// Remember MC ring animation.
 	if (pStructure->IsMindControlled())
 	{
-		auto const pTechnoExt = TechnoExt::ExtMap.Find(pStructure);
+		auto const pTechnoExt = TechnoExt::Fetch(pStructure);
 		pTechnoExt->UpdateMindControlAnim();
 	}
 
@@ -178,7 +178,7 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 			}
 			else if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
 			{
-				if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+				if (!TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn)
 					return CanNotExistHere;
 			}
 		}
@@ -192,7 +192,7 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 		{
 			if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
 			{
-				if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+				if (!TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn)
 					return CanNotExistHere;
 
 				builtOnCanBeBuiltOn = true;
@@ -248,7 +248,7 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 			}
 			else if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
 			{
-				if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+				if (!TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn)
 					return CanNotExistHere;
 
 				builtOnCanBeBuiltOn = true;
@@ -271,7 +271,7 @@ DEFINE_HOOK(0x7396D2, UnitClass_TryToDeploy_Transfer, 0x5)
 	if (pUnit->Type->DeployToFire && pUnit->Target)
 		pStructure->LastTarget = pUnit->Target;
 
-	const auto pStructureExt = BuildingExt::ExtMap.Find(pStructure);
+	const auto pStructureExt = BuildingExt::Fetch(pStructure);
 	pStructureExt->DeployedTechno = true;
 
 	return 0;

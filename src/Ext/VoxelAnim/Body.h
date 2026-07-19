@@ -4,38 +4,44 @@
 
 #include <Ext/VoxelAnimType/Body.h>
 #include <New/Entity/LaserTrailClass.h>
+#include <Ext/Object/Body.h>
 
-class VoxelAnimExt
+class VoxelAnimExt final : public ObjectExt
 {
 public:
 	using base_type = VoxelAnimClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = VoxelAnimExt;
+
 	static constexpr DWORD Canary = 0xAAAAAACC;
-	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<VoxelAnimClass>
+public:
+	// typed owner accessor
+	VoxelAnimClass* OwnerObject() const
 	{
-	public:
+		return static_cast<VoxelAnimClass*>(this->GetAttachedObject());
+	}
 
-		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
-		CDTimerClass TrailerSpawnTimer;
 
-		ExtData(VoxelAnimClass* OwnerObject) : Extension<VoxelAnimClass>(OwnerObject)
-			, LaserTrails()
-			, TrailerSpawnTimer()
-		{ }
+	std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
+	CDTimerClass TrailerSpawnTimer;
 
-		virtual ~ExtData() = default;
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
-		virtual void LoadFromStream(PhobosStreamReader& Stm)override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm)override;
-		virtual void Initialize() override;
+	VoxelAnimExt(VoxelAnimClass* OwnerObject) : ObjectExt(OwnerObject)
+		, LaserTrails()
+		, TrailerSpawnTimer()
+	{ }
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+	virtual ~VoxelAnimExt() = default;
+	virtual void LoadFromStream(PhobosStreamReader& Stm)override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm)override;
+	virtual void Initialize() override;
 
+private:
+	template <typename T>
+	void Serialize(T& Stm);
+
+public:
 	class ExtContainer final : public Container<VoxelAnimExt>
 	{
 	public:
@@ -44,7 +50,18 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static VoxelAnimExt* Fetch(const VoxelAnimClass* pThis)
+	{
+		return AbstractExt::Fetch<VoxelAnimExt>(pThis);
+	}
+
+	static VoxelAnimExt* TryFetch(const VoxelAnimClass* pThis)
+	{
+		return AbstractExt::TryFetch<VoxelAnimExt>(pThis);
+	}
 	static void InitializeLaserTrails(VoxelAnimClass* pThis);
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 };
+

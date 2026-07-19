@@ -45,7 +45,7 @@ DEFINE_HOOK(0x4FD538, HouseClass_AIHouseUpdate_CheckAIBaseCenter, 0x7)
 					{
 						if (pBuilding->IsAlive && pBuilding->Health > 0 && !pBuilding->InLimbo)
 						{
-							const auto newDistanceSquared = pBuilding->GetMapCoords().DistanceFromSquared(center);
+							const double newDistanceSquared = pBuilding->GetMapCoords().DistanceFromSquared(center);
 
 							if (newDistanceSquared < distanceSquared)
 							{
