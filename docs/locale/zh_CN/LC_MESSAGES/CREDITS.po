@@ -1920,7 +1920,7 @@ msgid ""
 msgstr "将 255 种覆盖物数量限制解编码方式调整为使用一种不同的格式"
 
 msgid "Extension system rework"
-msgstr ""
+msgstr "扩展系统重置"
 
 msgid "**CrimRecya**:"
 msgstr "**CrimRecya**："
