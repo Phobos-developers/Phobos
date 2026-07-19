@@ -455,10 +455,16 @@ namespace
 		}
 	}
 
-	void AppendHeader()
+	void AppendHeader(const char* pKnownCrash)
 	{
 		ExceptionHandler::Append("Yuri's Revenge has encountered a fatal error - Phobos exception report\r\n");
 		ExceptionHandler::Append("=======================================================================\r\n\r\n");
+
+		if (pKnownCrash != nullptr)
+		{
+			ExceptionHandler::Append("Additional information:\r\n  %s\r\n", pKnownCrash);
+			ExceptionHandler::Append("-----------------------------------------------------------------------\r\n\r\n");
+		}
 
 		ExceptionHandler::Append("Phobos version: " PRODUCT_VERSION "\r\n");
 #ifdef STR_GIT_COMMIT
@@ -706,7 +712,22 @@ void ExceptionHandler::BuildReport(unsigned int code, EXCEPTION_POINTERS* pExs)
 
 	InitSymbols();
 
-	AppendHeader();
+	// Surface a known-crash description from the EDB right under the title,
+	// where a user pasting just the top of the report still includes it.
+	const char* pKnownCrash = nullptr;
+	if (pExs != nullptr && pExs->ContextRecord != nullptr)
+	{
+		for (const auto& entry : ExceptionDatabase)
+		{
+			if (entry.Address == pExs->ContextRecord->Eip)
+			{
+				pKnownCrash = entry.Description.c_str();
+				break;
+			}
+		}
+	}
+
+	AppendHeader(pKnownCrash);
 
 	const char* pDescription = ExceptionText[std::size(ExceptionText) - 1];
 	for (size_t i = 0; i < std::size(ExceptionCodes); ++i)
@@ -750,15 +771,6 @@ void ExceptionHandler::BuildReport(unsigned int code, EXCEPTION_POINTERS* pExs)
 	}
 
 	GuardedCrashSite(pContext);
-
-	for (const auto& entry : ExceptionDatabase)
-	{
-		if (entry.Address == pContext->Eip)
-		{
-			Append("\r\nAdditional information:\r\n  %s\r\n", entry.Description.c_str());
-			break;
-		}
-	}
 
 	Append("\r\n");
 
