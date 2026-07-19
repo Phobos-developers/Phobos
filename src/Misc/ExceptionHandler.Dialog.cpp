@@ -43,14 +43,14 @@ namespace
 		if (DSurface::Tile != nullptr)
 			DSurface::Tile->Fill(0);
 
-		// Leave DirectDraw exclusive fullscreen and restore the desktop
-		// display mode - inside a 16-bit exclusive mode the dialog would
-		// render uncomposited (classic frames) at the game's resolution.
+		// Restore the desktop display mode so the dialog isn't shown on a
+		// mode-switched 16-bit screen. Deliberately without dropping the
+		// cooperative level first: the engine's own Reset_Video_Mode calls
+		// RestoreDisplayMode alone, and a second SetCooperativeLevel makes
+		// ts-ddraw re-save its own WndProc as the game's, recursing to a
+		// stack overflow on the next window message.
 		if (DirectDrawWrap::lpDD != nullptr)
-		{
-			DirectDrawWrap::lpDD->SetCooperativeLevel(Game::hWnd, eDDCoopLevel::DDSCL_NORMAL);
 			DirectDrawWrap::lpDD->RestoreDisplayMode();
-		}
 
 		ShowCursor(TRUE);
 	}
