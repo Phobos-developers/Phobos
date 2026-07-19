@@ -1,6 +1,8 @@
 #include "Body.h"
 
+#include <Ext/Building/Body.h>
 #include <Ext/House/Body.h>
+#include <Ext/InfantryType/Body.h>
 #include <Ext/TEvent/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -231,15 +233,15 @@ DEFINE_HOOK(0x702603, TechnoClass_ReceiveDamage_Explodes, 0x6)
 
 	GET(TechnoClass*, pThis, ESI);
 
-	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+	const auto pExt = TechnoExt::Fetch(pThis);
 
 	if (pThis->WhatAmI() == AbstractType::Building)
 	{
-		if (!pTypeExt->Explodes_DuringBuildup && (pThis->CurrentMission == Mission::Construction || pThis->CurrentMission == Mission::Selling))
+		if (!static_cast<BuildingExt*>(pExt)->GetTypeExtData()->Explodes_DuringBuildup && (pThis->CurrentMission == Mission::Construction || pThis->CurrentMission == Mission::Selling))
 			return SkipExploding;
 	}
 
-	if (!pTypeExt->Explodes_KillPassengers)
+	if (!pExt->TypeExtData->Explodes_KillPassengers)
 		return SkipKillingPassengers;
 
 	return 0;
@@ -288,7 +290,7 @@ DEFINE_HOOK(0x518505, InfantryClass_ReceiveDamage_NotHuman, 0x4)
 	constexpr auto Die = [](int x) { return x + 10; };
 
 	int resultSequence = Die(1);
-	auto const pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+	auto const pTypeExt = InfantryTypeExt::Fetch(pThis->Type);
 
 	if (pTypeExt->NotHuman_RandomDeathSequence.Get())
 		resultSequence = ScenarioClass::Instance->Random.RandomRanged(Die(1), Die(5));
