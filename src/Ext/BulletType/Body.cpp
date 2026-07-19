@@ -4,7 +4,7 @@ BulletTypeExt::ExtContainer BulletTypeExt::ExtMap;
 
 double BulletTypeExt::GetAdjustedGravity(BulletTypeClass* pType)
 {
-	auto const pData = BulletTypeExt::ExtMap.Find(pType);
+	auto const pData = BulletTypeExt::Fetch(pType);
 	auto const nGravity = pData->Gravity.Get(RulesClass::Instance->Gravity);
 	return pType->Floater ? nGravity * 0.5 : nGravity;
 }
@@ -22,7 +22,7 @@ BulletTypeClass* BulletTypeExt::GetDefaultBulletType()
 // =============================
 // load / save
 
-void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void BulletTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -98,7 +98,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TrajectoryValidation();
 }
 
-void BulletTypeExt::ExtData::TrajectoryValidation() const
+void BulletTypeExt::TrajectoryValidation() const
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -133,7 +133,7 @@ void BulletTypeExt::ExtData::TrajectoryValidation() const
 }
 
 template <typename T>
-void BulletTypeExt::ExtData::Serialize(T& Stm)
+void BulletTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Armor)
@@ -194,15 +194,15 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void BulletTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void BulletTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<BulletTypeClass>::LoadFromStream(Stm);
+	ObjectTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void BulletTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void BulletTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<BulletTypeClass>::SaveToStream(Stm);
+	ObjectTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
@@ -230,29 +230,6 @@ DEFINE_HOOK(0x46C8B6, BulletTypeClass_SDDTOR, 0x6)
 {
 	GET(BulletTypeClass*, pItem, ESI);
 	BulletTypeExt::ExtMap.Remove(pItem);
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x46C730, BulletTypeClass_SaveLoad_Prefix, 0x8)
-DEFINE_HOOK(0x46C6A0, BulletTypeClass_SaveLoad_Prefix, 0x5)
-{
-	GET_STACK(BulletTypeClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	BulletTypeExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x46C722, BulletTypeClass_Load_Suffix, 0x4)
-{
-	BulletTypeExt::ExtMap.LoadStatic();
-	return 0;
-}
-
-DEFINE_HOOK(0x46C74A, BulletTypeClass_Save_Suffix, 0x3)
-{
-	BulletTypeExt::ExtMap.SaveStatic();
 	return 0;
 }
 

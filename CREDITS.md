@@ -586,6 +586,7 @@ This page lists all the individual contributions to the project by their author.
   - Replace `BLOWFISH.DLL` using Red Alert source code
   - Adjust the dehardcoding of the 255 `OverlayType` limit to a different format
   - Voxel drawing invisible sections skip
+  - Extension system rework
   - New exception handler with a crash dialog, crash report and minidumps (ported from Vinifera)
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
@@ -701,6 +702,9 @@ This page lists all the individual contributions to the project by their author.
   - Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn`
   - `ZAdjust` for Projectiles
   - Allow Laser drawing position update
+  - Customize the distance for `NoQueueUpToEnter` transport units to board passengers
+  - Fix the bug that `MissileSpawn=true` causes the spawnee launcher to crash immediately when attacking
+  - Customize the initial facing of buildings
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

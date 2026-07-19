@@ -6,7 +6,7 @@ DEFINE_HOOK(0x62BE30, ParticleClass_Gas_AI_DriftSpeed, 0x5)
 
 	GET(ParticleClass*, pParticle, EBP);
 
-	const auto pExt = ParticleTypeExt::ExtMap.Find(pParticle->Type);
+	const auto pExt = ParticleTypeExt::Fetch(pParticle->Type);
 	const int maxDriftSpeed = pExt->Gas_MaxDriftSpeed;
 	const int minDriftSpeed = -maxDriftSpeed;
 

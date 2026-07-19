@@ -570,7 +570,7 @@ bool ObjectFake::_IsCRCHashable()
 		{
 			// If animation type has logic that affects game simulation, don't ignore.
 			if (pType->Damage != 0.0 || pType->Bouncer || pType->IsMeteor || pType->IsTiberium || pType->TiberiumChainReaction
-				|| pType->IsAnimatedTiberium || pType->MakeInfantry != -1 || AnimTypeExt::ExtMap.Find(pType)->CreateUnitType.get())
+				|| pType->IsAnimatedTiberium || pType->MakeInfantry != -1 || AnimTypeExt::Fetch(pType)->CreateUnitType.get())
 			{
 				return true;
 			}

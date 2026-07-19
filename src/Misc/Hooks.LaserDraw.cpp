@@ -50,7 +50,7 @@ DEFINE_HOOK(0x6FD3FD, TechnoClass_LaserZap_ZAdjust, 0x5)
 	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x6C, 0xC));
 	GET(int, zAdjust, EAX);
 
-	zAdjust += WeaponTypeExt::ExtMap.Find(pWeapon)->LaserZAdjust.Get(RulesExt::Global()->LaserZAdjust);
+	zAdjust += WeaponTypeExt::Fetch(pWeapon)->LaserZAdjust.Get(RulesExt::Global()->LaserZAdjust);
 	R->EAX(zAdjust);
 
 	return 0;
@@ -164,7 +164,7 @@ namespace LaserRT
 
 			if (const auto pWeapon = pShooter->GetWeapon(weaponIdx)->WeaponType)
 			{
-				const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+				const auto pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 				stopOnFirerConvert = pWeaponExt->LaserPositionUpdate_StopOnFirerConvert.Get(RulesExt::Global()->LaserPositionUpdate_StopOnFirerConvert);
 			}
 		}
@@ -288,7 +288,7 @@ DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_Tracking, 0x7)
 {
 	GET(WeaponTypeClass*, pWeapon, ECX);
 	GET(LaserDrawClass*, pLaser, EAX);
-	const auto mode = WeaponTypeExt::ExtMap.Find(pWeapon)->LaserPositionUpdate.Get();
+	const auto mode = WeaponTypeExt::Fetch(pWeapon)->LaserPositionUpdate.Get();
 
 	if (mode == PositionFollow::None)
 		return 0;
@@ -308,7 +308,7 @@ DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_Tracking, 0x7)
 static LaserDrawClass* __fastcall Shrapnel_CreateLaser_Wrapper(TechnoClass* pShooter, void*, ObjectClass* pTarget
 	, int weaponIdx, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords)
 {
-	const auto mode = WeaponTypeExt::ExtMap.Find(pWeapon)->LaserPositionUpdate.Get();
+	const auto mode = WeaponTypeExt::Fetch(pWeapon)->LaserPositionUpdate.Get();
 
 	if (mode == PositionFollow::None)
 		return pShooter->CreateLaser(pTarget, weaponIdx, pWeapon, sourceCoords);
@@ -335,7 +335,7 @@ DEFINE_HOOK(0x4A7696, DiskLaser_Update_ActivateMainBeam_Tracking, 0x6)
 	if (!pWeapon)
 		return 0;
 
-	const auto mode = WeaponTypeExt::ExtMap.Find(pWeapon)->LaserPositionUpdate.Get();
+	const auto mode = WeaponTypeExt::Fetch(pWeapon)->LaserPositionUpdate.Get();
 
 	if (mode == PositionFollow::None)
 		return 0;
