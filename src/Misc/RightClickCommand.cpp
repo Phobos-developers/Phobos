@@ -7,9 +7,9 @@
 #include <Ext/Techno/Body.h> // pulls in the complete FootClass/TechnoClass definitions that
                              // MapClass/DisplayClass inline abstract_casts require
 
-// Modern control scheme: the right mouse button issues orders, the left mouse button only
+// Right-click to command: the right mouse button issues orders, the left mouse button only
 // selects / deploys (and deselects when clicking empty ground), matching the control style
-// of modern RTS games. Off by default; enable with [Phobos] -> ModernControls.
+// of modern RTS games. Off by default; enable with [Phobos] -> RightClickCommand.
 //
 // The tactical mouse message handler is MouseClass method 0x6930A0, which dispatches Windows
 // mouse messages through a jump table (0x693410). Relevant cases (reverse-engineered):
@@ -24,7 +24,7 @@
 // 0x69323E, reusing 100% of the game's command (and network) logic - no argument
 // reconstruction is needed.
 
-namespace ModernControls
+namespace RightClickCommand
 {
 	// A special LEFT-click mode is active - RMB must keep its vanilla "cancel" behaviour
 	// (cancel building placement, leave repair/sell/power/beacon/superweapon targeting) and
@@ -64,13 +64,13 @@ namespace ModernControls
 		}
 	}
 
-	// If modern controls are on and no special left-click mode is active, downgrade the
+	// If right-click-to-command is on and no special left-click mode is active, downgrade the
 	// command action (in EAX, freshly returned by DecideAction) to None so the left button
 	// only selects/deploys. Returns true if a command was actually neutralised (the click
 	// landed on empty ground / an enemy - a command target, not a selectable own unit).
 	static bool NeutraliseLeftCommand(REGISTERS* R)
 	{
-		if (Phobos::Config::ModernControls && !InSpecialLeftClickMode())
+		if (Phobos::Config::RightClickCommand && !InSpecialLeftClickMode())
 		{
 			if (!IsLeftClickAllowed(static_cast<Action>(R->EAX())))
 			{
@@ -92,11 +92,11 @@ namespace ModernControls
 // values but only passes them to 0x63AB00 without storing them, so we populate the slots
 // ourselves before jumping (otherwise ProcessClickCoords reads stale stack and the order
 // lands on the wrong cell).
-DEFINE_HOOK(0x693397, TacticalMsgHandler_RButtonUp_ModernCommand, 0x6)
+DEFINE_HOOK(0x693397, TacticalMsgHandler_RButtonUp_RightClickCommand, 0x6)
 {
-	if (Phobos::Config::ModernControls
+	if (Phobos::Config::RightClickCommand
 		&& ObjectClass::CurrentObjects.Count > 0
-		&& !ModernControls::InSpecialLeftClickMode())
+		&& !RightClickCommand::InSpecialLeftClickMode())
 	{
 		// Raw packed window xy stashed by the RMB prologue at [esp+0x34].
 		const int packed = R->Stack<int>(0x34);
@@ -111,7 +111,7 @@ DEFINE_HOOK(0x693397, TacticalMsgHandler_RButtonUp_ModernCommand, 0x6)
 		R->Stack(0x14, rawY - originY);
 
 		// Tell the LBUTTONUP neutralise hook to leave this (RMB-issued) command alone.
-		ModernControls::RmbCommandInProgress = true;
+		RightClickCommand::RmbCommandInProgress = true;
 
 		// Issue the order to the current selection instead of deselecting.
 		return 0x69323E;
@@ -124,9 +124,9 @@ DEFINE_HOOK(0x693397, TacticalMsgHandler_RButtonUp_ModernCommand, 0x6)
 // LBUTTONDOWN: neutralise a command action right after DecideAction so button-down does not
 // preview/issue a command. Stolen bytes: mov reg,[esp+..] + push eax (the possibly-modified
 // EAX is what the following push forwards to the applier).
-DEFINE_HOOK(0x6931B4, TacticalMsgHandler_LButtonDown_ModernSelectOnly, 0x5)
+DEFINE_HOOK(0x6931B4, TacticalMsgHandler_LButtonDown_RightClickSelectOnly, 0x5)
 {
-	ModernControls::NeutraliseLeftCommand(R);
+	RightClickCommand::NeutraliseLeftCommand(R);
 	return 0;
 }
 
@@ -135,16 +135,16 @@ DEFINE_HOOK(0x6931B4, TacticalMsgHandler_LButtonDown_ModernSelectOnly, 0x5)
 // (Self_Deploy) is not neutralised, so it selects/deploys as normal - no deselect there.
 // Completed band-selects never reach here (0x63A8E0 consumes them and early-exits at
 // 0x693408), so deselecting on a neutralised command is always correct.
-DEFINE_HOOK(0x693276, TacticalMsgHandler_LButtonUp_ModernSelectOnly, 0x5)
+DEFINE_HOOK(0x693276, TacticalMsgHandler_LButtonUp_RightClickSelectOnly, 0x5)
 {
 	// If we arrived here via the RMB command redirect (0x69323E), let the order stand.
-	if (ModernControls::RmbCommandInProgress)
+	if (RightClickCommand::RmbCommandInProgress)
 	{
-		ModernControls::RmbCommandInProgress = false;
+		RightClickCommand::RmbCommandInProgress = false;
 		return 0;
 	}
 
-	if (ModernControls::NeutraliseLeftCommand(R))
+	if (RightClickCommand::NeutraliseLeftCommand(R))
 		MapClass::UnselectAll();
 
 	return 0;

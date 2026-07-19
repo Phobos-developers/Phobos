@@ -889,4 +889,4 @@ This page lists all the individual contributions to the project by their author.
   - Interop export interface for accessing scenario local/global variables
   - Add `ClampToScreen` tag for `BannerType` to control whether banner position is clamped to the visible area
 - **Igor Kolchinskii (leosnake2208)**:
-  - Modern control scheme (right-click to command)
+  - Right-click to command
