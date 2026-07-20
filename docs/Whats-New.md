@@ -617,6 +617,8 @@ HideShakeEffects=false           ; boolean
 - Customize the distance for `NoQueueUpToEnter` transport units to board passengers (by Noble_Fish)
 - Reworked the extension system internals to form a class hierarchy mirroring the game's own, with centralized savegame serialization (by ZivDero)
 - [Customize the initial facing of buildings](Fixed-or-Improved-Logics.md#customize-the-initial-facing-of-buildings) (by Noble_Fish)
+- [New exception handler with a crash dialog, crash report and minidumps](Miscellanous.md#turning-offon-in-game-exception-handling) (by ZivDero, ported from Vinifera)
+- [Common Controls v6 visual styles for the game process](Miscellanous.md#visual-styles) (by ZivDero)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
