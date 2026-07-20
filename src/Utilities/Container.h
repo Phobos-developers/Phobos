@@ -646,10 +646,14 @@ public:
 				for (const auto& item : this->Items)
 				{
 					ResetExtensionPointer(item->OwnerObject());
+					delete item;
 				}
 			}
 			else
 			{
+				for (const auto& item : this->Items)
+					delete item;
+
 				this->MappedItems.clear();
 			}
 
