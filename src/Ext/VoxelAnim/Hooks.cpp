@@ -6,8 +6,8 @@ DEFINE_HOOK(0x74A70E, VoxelAnimClass_AI_Additional, 0xC)
 {
 	GET(VoxelAnimClass* const, pThis, EBX);
 
-	//auto pTypeExt = VoxelAnimTypeExt::ExtMap.Find(pThis->Type);
-	const auto pThisExt = VoxelAnimExt::ExtMap.Find(pThis);
+	//auto pTypeExt = VoxelAnimTypeExt::Fetch(pThis->Type);
+	const auto pThisExt = VoxelAnimExt::Fetch(pThis);
 
 	if (!pThisExt->LaserTrails.empty())
 	{
@@ -35,7 +35,7 @@ DEFINE_HOOK(0x74A027, VoxelAnimClass_AI_Expired, 0x6)
 
 	const bool heightFlag = flag & 0xFF;
 	auto const pType = pThis->Type;
-	auto const pTypeExt = VoxelAnimTypeExt::ExtMap.Find(pType);
+	auto const pTypeExt = VoxelAnimTypeExt::Fetch(pType);
 	auto const splashAnims = pTypeExt->SplashAnims.GetElements(RulesClass::Instance->SplashList);
 
 	AnimExt::HandleDebrisImpact(pType->ExpireAnim, pTypeExt->WakeAnim, splashAnims, pThis->OwnerHouse, pType->Warhead, pType->Damage,
@@ -54,11 +54,11 @@ DEFINE_HOOK(0x74A70E, VoxelAnimClass_AI_Trailer, 0x6)
 
 	if (const auto pAnimType = pType->TrailerAnim)
 	{
-		const auto pExt = VoxelAnimExt::ExtMap.Find(pThis);
+		const auto pExt = VoxelAnimExt::Fetch(pThis);
 
 		if (pExt->TrailerSpawnTimer.Expired())
 		{
-			pExt->TrailerSpawnTimer.Start(VoxelAnimTypeExt::ExtMap.Find(pType)->Trailer_SpawnDelay.Get());
+			pExt->TrailerSpawnTimer.Start(VoxelAnimTypeExt::Fetch(pType)->Trailer_SpawnDelay.Get());
 			auto const pTrailerAnim = GameCreate<AnimClass>(pAnimType, pThis->Location, 1, 1);
 			AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pThis->OwnerHouse, nullptr, false, true);
 		}

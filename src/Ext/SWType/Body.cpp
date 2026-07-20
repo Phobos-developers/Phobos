@@ -4,7 +4,7 @@
 
 SWTypeExt::ExtContainer SWTypeExt::ExtMap;
 
-void SWTypeExt::ExtData::Initialize()
+void SWTypeExt::Initialize()
 {
 	this->EVA_InsufficientFunds = VoxClass::FindIndex(GameStrings::EVA_InsufficientFunds);
 	this->EVA_SelectTarget = VoxClass::FindIndex("EVA_SelectTarget");
@@ -16,7 +16,7 @@ void SWTypeExt::ExtData::Initialize()
 // load / save
 
 template <typename T>
-void SWTypeExt::ExtData::Serialize(T& Stm)
+void SWTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->TypeID)
@@ -109,7 +109,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void SWTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -303,20 +303,20 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (newidx != -1)
 	{
 		NewSWType* pNewSWType = NewSWType::GetNthItem(newidx);
-		pNewSWType->Initialize(const_cast<SWTypeExt::ExtData*>(this), OwnerObject());
-		pNewSWType->LoadFromINI(const_cast<SWTypeExt::ExtData*>(this), OwnerObject(), pINI);
+		pNewSWType->Initialize(const_cast<SWTypeExt*>(this), OwnerObject());
+		pNewSWType->LoadFromINI(const_cast<SWTypeExt*>(this), OwnerObject(), pINI);
 	}
 }
 
-void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void SWTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<SuperWeaponTypeClass>::LoadFromStream(Stm);
+	AbstractTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void SWTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void SWTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<SuperWeaponTypeClass>::SaveToStream(Stm);
+	AbstractTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
@@ -334,7 +334,7 @@ bool SWTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 
 bool SWTypeExt::Activate(SuperClass* pSuper, CellStruct cell, bool isPlayer)
 {
-	const auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+	const auto pSWTypeExt = SWTypeExt::Fetch(pSuper->Type);
 	const int newIdx = NewSWType::GetNewSWTypeIdx(pSWTypeExt->TypeID.data());
 
 	Debug::Log("[Phobos::SW::Active] %s\n", pSWTypeExt->TypeID.data());
@@ -370,29 +370,6 @@ DEFINE_HOOK(0x6CEFE0, SuperWeaponTypeClass_SDDTOR, 0x8)
 	GET(SuperWeaponTypeClass*, pItem, ECX);
 
 	SWTypeExt::ExtMap.Remove(pItem);
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x6CE8D0, SuperWeaponTypeClass_SaveLoad_Prefix, 0x8)
-DEFINE_HOOK(0x6CE800, SuperWeaponTypeClass_SaveLoad_Prefix, 0xA)
-{
-	GET_STACK(SuperWeaponTypeClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	SWTypeExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6CE8BE, SuperWeaponTypeClass_Load_Suffix, 0x7)
-{
-	SWTypeExt::ExtMap.LoadStatic();
-	return 0;
-}
-
-DEFINE_HOOK(0x6CE8EA, SuperWeaponTypeClass_Save_Suffix, 0x3)
-{
-	SWTypeExt::ExtMap.SaveStatic();
 	return 0;
 }
 

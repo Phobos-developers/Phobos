@@ -527,7 +527,7 @@ void MessageColumnClass::InitIO()
 		this->Scroll_Board = pButton;
 	}
 
-	const int color = SideExt::ExtMap.Find(SideClass::Array.Items[ScenarioClass::Instance->PlayerSideIndex])->MessageTextColor;
+	const int color = SideExt::Fetch(SideClass::Array.Items[ScenarioClass::Instance->PlayerSideIndex])->MessageTextColor;
 
 	// 0x72A4C5
 	if (const auto pScheme = ColorScheme::Array.Items[(color < 0 || color >= ColorScheme::Array.Count) ? 0 : color])

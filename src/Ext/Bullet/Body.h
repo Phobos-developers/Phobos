@@ -4,6 +4,7 @@
 #include <Ext/BulletType/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <New/Entity/LaserTrailClass.h>
+#include <Ext/Object/Body.h>
 
 struct RadialFireStruct
 {
@@ -12,64 +13,70 @@ struct RadialFireStruct
 	DirStruct Direction {};
 };
 
-class BulletExt
+class BulletExt final : public ObjectExt
 {
 public:
 	using base_type = BulletClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = BulletExt;
+
 	static constexpr DWORD Canary = 0x2A2A2A2A;
-	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<BulletClass>
+public:
+	// typed owner accessor
+	BulletClass* OwnerObject() const
 	{
-	public:
-		BulletTypeExt::ExtData* TypeExtData;
-		HouseClass* FirerHouse;
-		int CurrentStrength;
-		TechnoTypeExt::ExtData* InterceptorTechnoType;
-		InterceptedStatus InterceptedStatus;
-		bool DetonateOnInterception;
-		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
-		bool SnappedToTarget; // Used for custom trajectory projectile target snap checks
-		int DamageNumberOffset;
-		int ParabombFallRate;
-		bool IsInstantDetonation;
-		double FirepowerMult;
+		return static_cast<BulletClass*>(this->GetAttachedObject());
+	}
 
-		TrajectoryPointer Trajectory;
+	BulletTypeExt* TypeExtData;
+	HouseClass* FirerHouse;
+	int CurrentStrength;
+	TechnoTypeExt* InterceptorTechnoType;
+	InterceptedStatus InterceptedStatus;
+	bool DetonateOnInterception;
+	std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
+	bool SnappedToTarget; // Used for custom trajectory projectile target snap checks
+	int DamageNumberOffset;
+	int ParabombFallRate;
+	bool IsInstantDetonation;
+	double FirepowerMult;
+	bool IsSplitFromAirburst;
 
-		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
-			, TypeExtData { nullptr }
-			, FirerHouse { nullptr }
-			, CurrentStrength { 0 }
-			, InterceptorTechnoType { nullptr }
-			, InterceptedStatus { InterceptedStatus::None }
-			, DetonateOnInterception { true }
-			, LaserTrails {}
-			, Trajectory { nullptr }
-			, SnappedToTarget { false }
-			, DamageNumberOffset { INT32_MIN }
-			, ParabombFallRate { 0 }
-			, IsInstantDetonation { false }
-			, FirepowerMult { 1.0 }
-		{ }
+	TrajectoryPointer Trajectory;
 
-		virtual ~ExtData() = default;
+	BulletExt(BulletClass* OwnerObject) : ObjectExt(OwnerObject)
+		, TypeExtData { nullptr }
+		, FirerHouse { nullptr }
+		, CurrentStrength { 0 }
+		, InterceptorTechnoType { nullptr }
+		, InterceptedStatus { InterceptedStatus::None }
+		, DetonateOnInterception { true }
+		, LaserTrails {}
+		, Trajectory { nullptr }
+		, SnappedToTarget { false }
+		, DamageNumberOffset { INT32_MIN }
+		, ParabombFallRate { 0 }
+		, IsInstantDetonation { false }
+		, FirepowerMult { 1.0 }
+		, IsSplitFromAirburst { false }
+	{ }
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+	virtual ~BulletExt() = default;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-		void InterceptBullet(TechnoClass* pSource, BulletClass* pInterceptor);
-		void ApplyRadiationToCell(CellStruct cell, int spread, int radLevel);
-		void InitializeLaserTrails();
+	void InterceptBullet(TechnoClass* pSource, BulletClass* pInterceptor);
+	void ApplyRadiationToCell(CellStruct cell, int spread, int radLevel);
+	void InitializeLaserTrails();
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 
+public:
 	class ExtContainer final : public Container<BulletExt>
 	{
 	public:
@@ -78,6 +85,16 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static BulletExt* Fetch(const BulletClass* pThis)
+	{
+		return AbstractExt::Fetch<BulletExt>(pThis);
+	}
+
+	static BulletExt* TryFetch(const BulletClass* pThis)
+	{
+		return AbstractExt::TryFetch<BulletExt>(pThis);
+	}
 
 	static void Detonate(const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse, AbstractClass* pTarget, bool isBright, WeaponTypeClass* pWeapon, WarheadTypeClass* pWarhead);
 	static void ApplyArcingFix(BulletClass* pThis, const CoordStruct& sourceCoords, const CoordStruct& targetCoords, BulletVelocity& velocity);
@@ -93,3 +110,4 @@ public:
 	static inline void SimulatedFiringParticleSystem(BulletClass* pBullet, HouseClass* pHouse);
 	static inline BulletVelocity ApplyRadialFireVelocityWarp(BulletVelocity velocity, const RadialFireStruct& radialFire);
 };
+
