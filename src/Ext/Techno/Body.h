@@ -151,7 +151,6 @@ public:
 	void EatPassengers();
 	void UpdateShield();
 	void ApplySpawnLimitRange();
-	void UpdateTypeData(TechnoTypeClass* pCurrentType);
 	void UpdateLaserTrails();
 	void UpdateAttachEffects();
 	void UpdateGattlingRateDownReset();
