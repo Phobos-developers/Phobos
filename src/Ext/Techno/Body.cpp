@@ -360,13 +360,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	{
 		if (AresFunctions::ConvertTypeTo(pThis, pToType))
 		{
-			auto const pTypeExt = TechnoExt::Fetch(pThis);
-
-			if (auto const pShield = pTypeExt->Shield.get())
-				pShield->ConvertCheck(pToType);
-
-			pTypeExt->UpdateTypeData(pToType);
-			pTypeExt->UpdateTypeData_Foot();
+			TechnoExt::Fetch(pThis)->UpdateTypeData(pToType);
 			return true;
 		}
 
@@ -468,13 +462,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	if (pToType->BalloonHover && pToType->DeployToLand && prevType->Locomotor != jjLoco && toLoco == jjLoco)
 		pThis->Locomotor->Move_To(pThis->Location);
 
-	auto const pTypeExt = TechnoExt::Fetch(pThis);
-
-	if (auto const pShield = pTypeExt->Shield.get())
-		pShield->ConvertCheck(pToType);
-
-	pTypeExt->UpdateTypeData(pToType);
-	pTypeExt->UpdateTypeData_Foot();
+	TechnoExt::Fetch(pThis)->UpdateTypeData(pToType);
 	return true;
 }
 
@@ -1289,7 +1277,6 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->LaserTrails)
 		.Process(this->AttachedEffects)
 		.Process(this->AE)
-		.Process(this->PreviousType)
 		.Process(this->AnimRefCount)
 		.Process(this->SubterraneanHarvStatus)
 		.Process(this->SubterraneanHarvRallyPoint)

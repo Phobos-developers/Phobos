@@ -695,12 +695,13 @@ void TechnoExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	auto& pTemporalImUsing = pThis->TemporalImUsing;
 	auto& pAirstrike = pThis->Airstrike;
 
-	// Cache the new type data
-	this->PreviousType = pOldType;
 	auto const pNewTypeExt = TechnoTypeExt::Fetch(pCurrentType);
 	this->TypeExtData = pNewTypeExt;
 
 	this->UpdateSelfOwnedAttachEffects();
+
+	if (auto const pShield = this->Shield.get())
+		pShield->ConvertCheck(pCurrentType);
 
 	// Recalculate and redraw
 	pThis->MarkForRedraw();
@@ -1148,6 +1149,191 @@ void TechnoExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			GameDelete(pParasiteImUsing);
 			pParasiteImUsing = nullptr;
 		}
+
+		auto const abs = pFoot->WhatAmI();
+
+		// Update movement sound if still moving while type changed.
+		if (pFoot->IsMoveSoundPlaying && pFoot->Locomotor->Is_Moving())
+		{
+			if (pCurrentType->MoveSound != pOldType->MoveSound)
+			{
+				// End the old sound.
+				pFoot->MoveSoundAudioController.End();
+
+				if (auto const count = pCurrentType->MoveSound.Count)
+				{
+					// Play a new sound.
+					const int soundIndex = pCurrentType->MoveSound[Randomizer::Global.Random() % count];
+					VocClass::PlayAt(soundIndex, pFoot->Location, &pFoot->MoveSoundAudioController);
+					pFoot->IsMoveSoundPlaying = true;
+				}
+				else
+				{
+					pFoot->IsMoveSoundPlaying = false;
+				}
+
+				pFoot->MoveSoundDelay = 0;
+			}
+		}
+
+		if (abs == AbstractType::Infantry)
+		{
+			auto const pInf = static_cast<InfantryClass*>(pFoot);
+
+			// It's still not recommended to have such idea, please avoid using this
+			if (static_cast<InfantryTypeClass*>(pOldType)->Deployer && !static_cast<InfantryTypeClass*>(pCurrentType)->Deployer)
+			{
+				switch (pInf->SequenceAnim)
+				{
+				case Sequence::Deploy:
+				case Sequence::Deployed:
+				case Sequence::DeployedIdle:
+					pInf->PlayAnim(Sequence::Ready, true);
+					break;
+				case Sequence::DeployedFire:
+					pInf->PlayAnim(Sequence::FireUp, true);
+					break;
+				default:
+					break;
+				}
+			}
+		}
+
+		if (pOldType->Locomotor == LocomotionClass::CLSIDs::Teleport && pCurrentType->Locomotor != LocomotionClass::CLSIDs::Teleport && pFoot->WarpingOut)
+			this->HasRemainingWarpInDelay = true;
+
+		// Update open topped state of potential passengers if transport's OpenTopped value changes.
+		// OpenTopped does not work properly with buildings to begin with which is why this is here rather than in the Techno update one.
+		if (pFoot->Passengers.NumPassengers > 0)
+		{
+			const bool toOpenTopped = pCurrentType->OpenTopped;
+			FootClass* pFirstPassenger = pFoot->Passengers.GetFirstPassenger();
+
+			while (true)
+			{
+				if (toOpenTopped)
+				{
+					pFirstPassenger->SetLocation(pFoot->Location);
+					// Add passengers to the logic layer.
+					pFoot->EnteredOpenTopped(pFirstPassenger);
+				}
+				else
+				{
+					// Lose target & destination
+					pFirstPassenger->SetTarget(nullptr);
+					pFirstPassenger->SetCurrentWeaponStage(0);
+					pFirstPassenger->AbortMotion();
+					pFoot->ExitedOpenTopped(pFirstPassenger);
+
+					// OpenTopped adds passengers to logic layer when enabled. Under normal conditions this does not need to be removed since
+					// OpenTopped state does not change while passengers are still in transport but in case of type conversion that can happen.
+					LogicClass::Instance.RemoveObject(pFirstPassenger);
+				}
+
+				pFirstPassenger->Transporter = pFoot;
+
+				if (const auto pNextPassenger = abstract_cast<FootClass*>(pFirstPassenger->NextObject))
+					pFirstPassenger = pNextPassenger;
+				else
+					break;
+			}
+
+			if (pCurrentType->Gunner)
+				pFoot->ReceiveGunner(pFirstPassenger);
+		}
+		else if (pCurrentType->Gunner)
+		{
+			pFoot->RemoveGunner(nullptr);
+		}
+
+		if (!pCurrentType->CanDisguise || (!pFoot->Disguise && pCurrentType->PermaDisguise))
+		{
+			// When it can't disguise or has lost its disguise, update its disguise.
+			pFoot->ClearDisguise();
+		}
+
+		if (abs != AbstractType::Aircraft)
+		{
+			auto const pLocomotorType = pCurrentType->Locomotor;
+
+			// The Hover movement pattern allows for self-landing.
+			if (pLocomotorType != LocomotionClass::CLSIDs::Fly && pLocomotorType != LocomotionClass::CLSIDs::Hover)
+			{
+				const bool isinAir = pFoot->IsInAir() && !pFoot->LocomotorSource;
+
+				if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+				{
+					const int turnrate = pCurrentType->JumpjetTurnRate >= 127 ? 127 : pCurrentType->JumpjetTurnRate;
+					pJJLoco->Speed = pCurrentType->JumpjetSpeed;
+					pJJLoco->Climb = pCurrentType->JumpjetClimb;
+					pJJLoco->Accel = pCurrentType->JumpjetAccel;
+					pJJLoco->Crash = pCurrentType->JumpjetCrash;
+					pJJLoco->Deviation = pCurrentType->JumpjetDeviation;
+					pJJLoco->NoWobbles = pCurrentType->JumpjetNoWobbles;
+					pJJLoco->Wobbles = pCurrentType->JumpjetWobbles;
+					pJJLoco->TurnRate = turnrate;
+					pJJLoco->CurrentHeight = pCurrentType->JumpjetHeight;
+					pJJLoco->Height = pCurrentType->JumpjetHeight;
+					pJJLoco->LocomotionFacing.SetROT(turnrate);
+
+					if (isinAir)
+					{
+						if (pCurrentType->BalloonHover)
+						{
+							// Makes the jumpjet think it is hovering without actually moving.
+							pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+							pJJLoco->IsMoving = true;
+
+							if (!pJJLoco->Is_Moving_Now())
+								pJJLoco->DestinationCoords = pFoot->Location;
+						}
+						else if (!pJJLoco->Is_Moving_Now())
+						{
+							pJJLoco->Move_To(pFoot->Location);
+						}
+					}
+				}
+				else if (isinAir)
+				{
+					// Let it go into free fall.
+					pFoot->IsFallingDown = true;
+
+					const auto pCell = MapClass::Instance.TryGetCellAt(pFoot->Location);
+
+					if (pCell && !pCell->IsClearToMove(pCurrentType->SpeedType, true, true,
+						-1, pCurrentType->MovementZone, pCell->GetLevel(), pCell->ContainsBridge()))
+					{
+						// If it's landing position cannot be moved, then it is granted a crash death.
+						pFoot->IsABomb = true;
+					}
+					else
+					{
+						// If it's gonna land on the bridge, then it needs this.
+						pFoot->OnBridge = pCell ? pCell->ContainsBridge() : false;
+						this->OnParachuted = true;
+					}
+
+					if (abs == AbstractType::Infantry)
+					{
+						// Infantry changed to parachute status (not required).
+						static_cast<InfantryClass*>(pFoot)->PlayAnim(Sequence::Paradrop, true, false);
+					}
+				}
+			}
+
+			if (abs == AbstractType::Unit)
+			{
+				// Yes, synchronize its turret facing or it will turn strangely.
+				if (pOldType->Turret != pCurrentType->Turret)
+				{
+					const auto primaryFacing = pFoot->PrimaryFacing.Current();
+					auto& secondaryFacing = pFoot->SecondaryFacing;
+
+					secondaryFacing.SetCurrent(primaryFacing);
+					secondaryFacing.SetDesired(primaryFacing);
+				}
+			}
+		}
 	}
 
 	// handle AutoTargetOwnPosition
@@ -1160,200 +1346,6 @@ void TechnoExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		if (const auto pAlpha = pAlphaMap->get_or_default(pThis))
 			GameDelete(pAlpha);
 	}
-}
-
-void TechnoExt::UpdateTypeData_Foot()
-{
-	auto const pThis = static_cast<FootClass*>(this->OwnerObject());
-	auto const pOldType = this->PreviousType;
-	auto const pCurrentType = this->TypeExtData->OwnerObject();
-	auto const abs = pThis->WhatAmI();
-	//auto const pOldTypeExt = TechnoTypeExt::Fetch(pOldType);
-
-	// Update movement sound if still moving while type changed.
-	if (pThis->IsMoveSoundPlaying && pThis->Locomotor->Is_Moving())
-	{
-		if (pCurrentType->MoveSound != pOldType->MoveSound)
-		{
-			// End the old sound.
-			pThis->MoveSoundAudioController.End();
-
-			if (auto const count = pCurrentType->MoveSound.Count)
-			{
-				// Play a new sound.
-				const int soundIndex = pCurrentType->MoveSound[Randomizer::Global.Random() % count];
-				VocClass::PlayAt(soundIndex, pThis->Location, &pThis->MoveSoundAudioController);
-				pThis->IsMoveSoundPlaying = true;
-			}
-			else
-			{
-				pThis->IsMoveSoundPlaying = false;
-			}
-
-			pThis->MoveSoundDelay = 0;
-		}
-	}
-
-	if (abs == AbstractType::Infantry)
-	{
-		auto const pInf = static_cast<InfantryClass*>(pThis);
-
-		// It's still not recommended to have such idea, please avoid using this
-		if (static_cast<InfantryTypeClass*>(pOldType)->Deployer && !static_cast<InfantryTypeClass*>(pCurrentType)->Deployer)
-		{
-			switch (pInf->SequenceAnim)
-			{
-			case Sequence::Deploy:
-			case Sequence::Deployed:
-			case Sequence::DeployedIdle:
-				pInf->PlayAnim(Sequence::Ready, true);
-				break;
-			case Sequence::DeployedFire:
-				pInf->PlayAnim(Sequence::FireUp, true);
-				break;
-			default:
-				break;
-			}
-		}
-	}
-
-	if (pOldType->Locomotor == LocomotionClass::CLSIDs::Teleport && pCurrentType->Locomotor != LocomotionClass::CLSIDs::Teleport && pThis->WarpingOut)
-		this->HasRemainingWarpInDelay = true;
-
-	// Update open topped state of potential passengers if transport's OpenTopped value changes.
-	// OpenTopped does not work properly with buildings to begin with which is why this is here rather than in the Techno update one.
-	if (pThis->Passengers.NumPassengers > 0)
-	{
-		const bool toOpenTopped = pCurrentType->OpenTopped;
-		FootClass* pFirstPassenger = pThis->Passengers.GetFirstPassenger();
-
-		while (true)
-		{
-			if (toOpenTopped)
-			{
-				pFirstPassenger->SetLocation(pThis->Location);
-				// Add passengers to the logic layer.
-				pThis->EnteredOpenTopped(pFirstPassenger);
-			}
-			else
-			{
-				// Lose target & destination
-				pFirstPassenger->SetTarget(nullptr);
-				pFirstPassenger->SetCurrentWeaponStage(0);
-				pFirstPassenger->AbortMotion();
-				pThis->ExitedOpenTopped(pFirstPassenger);
-
-				// OpenTopped adds passengers to logic layer when enabled. Under normal conditions this does not need to be removed since
-				// OpenTopped state does not change while passengers are still in transport but in case of type conversion that can happen.
-				LogicClass::Instance.RemoveObject(pFirstPassenger);
-			}
-
-			pFirstPassenger->Transporter = pThis;
-
-			if (const auto pNextPassenger = abstract_cast<FootClass*>(pFirstPassenger->NextObject))
-				pFirstPassenger = pNextPassenger;
-			else
-				break;
-		}
-
-		if (pCurrentType->Gunner)
-			pThis->ReceiveGunner(pFirstPassenger);
-	}
-	else if (pCurrentType->Gunner)
-	{
-		pThis->RemoveGunner(nullptr);
-	}
-
-	if (!pCurrentType->CanDisguise || (!pThis->Disguise && pCurrentType->PermaDisguise))
-	{
-		// When it can't disguise or has lost its disguise, update its disguise.
-		pThis->ClearDisguise();
-	}
-
-	if (abs != AbstractType::Aircraft)
-	{
-		auto const pLocomotorType = pCurrentType->Locomotor;
-
-		// The Hover movement pattern allows for self-landing.
-		if (pLocomotorType != LocomotionClass::CLSIDs::Fly && pLocomotorType != LocomotionClass::CLSIDs::Hover)
-		{
-			const bool isinAir = pThis->IsInAir() && !pThis->LocomotorSource;
-
-			if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
-			{
-				const int turnrate = pCurrentType->JumpjetTurnRate >= 127 ? 127 : pCurrentType->JumpjetTurnRate;
-				pJJLoco->Speed = pCurrentType->JumpjetSpeed;
-				pJJLoco->Climb = pCurrentType->JumpjetClimb;
-				pJJLoco->Accel = pCurrentType->JumpjetAccel;
-				pJJLoco->Crash = pCurrentType->JumpjetCrash;
-				pJJLoco->Deviation = pCurrentType->JumpjetDeviation;
-				pJJLoco->NoWobbles = pCurrentType->JumpjetNoWobbles;
-				pJJLoco->Wobbles = pCurrentType->JumpjetWobbles;
-				pJJLoco->TurnRate = turnrate;
-				pJJLoco->CurrentHeight = pCurrentType->JumpjetHeight;
-				pJJLoco->Height = pCurrentType->JumpjetHeight;
-				pJJLoco->LocomotionFacing.SetROT(turnrate);
-
-				if (isinAir)
-				{
-					if (pCurrentType->BalloonHover)
-					{
-						// Makes the jumpjet think it is hovering without actually moving.
-						pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
-						pJJLoco->IsMoving = true;
-
-						if (!pJJLoco->Is_Moving_Now())
-							pJJLoco->DestinationCoords = pThis->Location;
-					}
-					else if (!pJJLoco->Is_Moving_Now())
-					{
-						pJJLoco->Move_To(pThis->Location);
-					}
-				}
-			}
-			else if (isinAir)
-			{
-				// Let it go into free fall.
-				pThis->IsFallingDown = true;
-
-				const auto pCell = MapClass::Instance.TryGetCellAt(pThis->Location);
-
-				if (pCell && !pCell->IsClearToMove(pCurrentType->SpeedType, true, true,
-					-1, pCurrentType->MovementZone, pCell->GetLevel(), pCell->ContainsBridge()))
-				{
-					// If it's landing position cannot be moved, then it is granted a crash death.
-					pThis->IsABomb = true;
-				}
-				else
-				{
-					// If it's gonna land on the bridge, then it needs this.
-					pThis->OnBridge = pCell ? pCell->ContainsBridge() : false;
-					this->OnParachuted = true;
-				}
-
-				if (abs == AbstractType::Infantry)
-				{
-					// Infantry changed to parachute status (not required).
-					static_cast<InfantryClass*>(pThis)->PlayAnim(Sequence::Paradrop, true, false);
-				}
-			}
-		}
-
-		if (abs == AbstractType::Unit)
-		{
-			// Yes, synchronize its turret facing or it will turn strangely.
-			if (pOldType->Turret != pCurrentType->Turret)
-			{
-				const auto primaryFacing = pThis->PrimaryFacing.Current();
-				auto& secondaryFacing = pThis->SecondaryFacing;
-
-				secondaryFacing.SetCurrent(primaryFacing);
-				secondaryFacing.SetDesired(primaryFacing);
-			}
-		}
-	}
-
-	this->PreviousType = nullptr;
 }
 
 void TechnoExt::UpdateLaserTrails()
