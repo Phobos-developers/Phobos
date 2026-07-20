@@ -1,7 +1,6 @@
 #include "Body.h"
 #include <Utilities/AresHelper.h>
 #include <Ext/Techno/Body.h>
-#include <Ext/TeamType/Body.h>
 
 // Bugfix: TAction 7,80,107.
 DEFINE_HOOK(0x65DF67, TeamTypeClass_CreateMembers_LoadOntoTransport, 0x6)

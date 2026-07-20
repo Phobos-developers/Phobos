@@ -1,7 +1,6 @@
 #include "Body.h"
 
 #include <Ext/Anim/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/Foot/Body.h>
 #include <Ext/WeaponType/Body.h>
 

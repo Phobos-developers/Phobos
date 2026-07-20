@@ -5,10 +5,7 @@
 #include <FileFormats/HVA.h>
 
 #include <Ext/BuildingType/Body.h>
-#include <Ext/Techno/Body.h>
-#include <Ext/Foot/Body.h>
 #include <Ext/Unit/Body.h>
-#include <Ext/UnitType/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/WarheadType/Body.h>

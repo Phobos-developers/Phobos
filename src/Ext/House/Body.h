@@ -1,6 +1,8 @@
 #pragma once
 #include <HouseClass.h>
 
+#include <Ext/HouseType/Body.h>
+
 #include <Utilities/Container.h>
 #include <Utilities/Detach.h>
 #include <Utilities/TemplateDef.h>

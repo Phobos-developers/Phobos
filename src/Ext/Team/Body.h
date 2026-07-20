@@ -1,6 +1,8 @@
 #pragma once
 #include <TeamClass.h>
 
+#include <Ext/TeamType/Body.h>
+
 #include <Utilities/Container.h>
 #include <Utilities/Detach.h>
 #include <Utilities/TemplateDef.h>

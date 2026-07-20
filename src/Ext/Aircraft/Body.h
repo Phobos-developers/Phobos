@@ -1,5 +1,4 @@
 #pragma once
-#include <Ext/Techno/Body.h>
 #include <Ext/Foot/Body.h>
 #include <Ext/AircraftType/Body.h>
 #include <AircraftClass.h>

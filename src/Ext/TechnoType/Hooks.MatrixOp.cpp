@@ -3,10 +3,8 @@
 #include <JumpjetLocomotionClass.h>
 #include <TunnelLocomotionClass.h>
 #include <Utilities/AresHelper.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/Unit/Body.h>
 #include <Ext/Aircraft/Body.h>
-#include <Ext/UnitType/Body.h>
 
 DEFINE_REFERENCE(double, Pixel_Per_Lepton, 0xB1D008)
 

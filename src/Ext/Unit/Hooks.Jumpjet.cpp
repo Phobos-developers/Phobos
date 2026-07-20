@@ -1,6 +1,5 @@
 #include <JumpjetLocomotionClass.h>
 
-#include <Ext/Techno/Body.h>
 #include <Ext/Foot/Body.h>
 #include <Ext/UnitType/Body.h>
 #include <Ext/WeaponType/Body.h>

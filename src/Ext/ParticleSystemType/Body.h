@@ -1,7 +1,7 @@
 #pragma once
 #include <ParticleSystemTypeClass.h>
 
-#include <Ext/ObjectType/Body.h>
+#include <Ext/ParticleType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 

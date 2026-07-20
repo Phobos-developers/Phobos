@@ -1,6 +1,5 @@
 #pragma once
 #include <Ext/Bullet/Body.h>
-#include <Ext/AbstractType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 #include <New/Type/ShieldTypeClass.h>

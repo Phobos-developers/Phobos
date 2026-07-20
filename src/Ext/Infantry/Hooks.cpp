@@ -1,8 +1,5 @@
 #include <Ext/BuildingType/Body.h>
-#include <Ext/TechnoType/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/Infantry/Body.h>
-#include <Ext/InfantryType/Body.h>
 
 #include <InputManagerClass.h>
 
