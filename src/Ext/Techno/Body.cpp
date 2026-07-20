@@ -361,6 +361,10 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 		if (AresFunctions::ConvertTypeTo(pThis, pToType))
 		{
 			auto const pTypeExt = TechnoExt::Fetch(pThis);
+
+			if (auto const pShield = pTypeExt->Shield.get())
+				pShield->ConvertCheck(pToType);
+
 			pTypeExt->UpdateTypeData(pToType);
 			pTypeExt->UpdateTypeData_Foot();
 			return true;
@@ -465,6 +469,10 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 		pThis->Locomotor->Move_To(pThis->Location);
 
 	auto const pTypeExt = TechnoExt::Fetch(pThis);
+
+	if (auto const pShield = pTypeExt->Shield.get())
+		pShield->ConvertCheck(pToType);
+
 	pTypeExt->UpdateTypeData(pToType);
 	pTypeExt->UpdateTypeData_Foot();
 	return true;

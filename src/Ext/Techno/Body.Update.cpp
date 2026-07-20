@@ -702,9 +702,6 @@ void TechnoExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 	this->UpdateSelfOwnedAttachEffects();
 
-	if (auto const pShield = this->Shield.get())
-		pShield->ConvertCheck(pCurrentType);
-
 	// Recalculate and redraw
 	pThis->MarkForRedraw();
 	this->UpdateTintValues();
