@@ -63,6 +63,7 @@ public:
 	Valueable<bool> ZShapePointMove_OnBuildup;
 	Valueable<int> SellBuildupLength;
 	Valueable<bool> IsDestroyableObstacle;
+	Valueable<bool> Explodes_DuringBuildup;
 
 	Valueable<bool> IsAnimDelayedBurst;
 
@@ -116,6 +117,9 @@ public:
 	Valueable<int> TurretAnim_LowPowerFiringFrames;
 	Valueable<int> TurretAnim_IdleRate;
 	Valueable<int> TurretAnim_FiringRate;
+
+	Nullable<int> StartFacing;
+	Nullable<bool> StartFacing_Random;
 
 	// Ares 0.2
 	Valueable<bool> CloningFacility;
@@ -173,6 +177,7 @@ public:
 		, FactoryPlant_MaxCount { -1 }
 		, IsAnimDelayedBurst { true }
 		, IsDestroyableObstacle { false }
+		, Explodes_DuringBuildup { true }
 		, Units_RepairRate {}
 		, Units_RepairStep {}
 		, Units_RepairPercent {}
@@ -205,6 +210,8 @@ public:
 		, TurretAnim_LowPowerFiringFrames { 0 }
 		, TurretAnim_IdleRate { 1 }
 		, TurretAnim_FiringRate { 1 }
+		, StartFacing{}
+		, StartFacing_Random{}
 
 		// Ares 0.2
 		, CloningFacility { false }

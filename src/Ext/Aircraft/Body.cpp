@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/AircraftType/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
@@ -7,7 +8,7 @@ AircraftExt::ExtContainer AircraftExt::ExtMap;
 
 void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 {
-	auto const pExt = TechnoExt::Fetch(pThis);
+	auto const pExt = AircraftExt::Fetch(pThis);
 	const int weaponIndex = pExt->CurrentAircraftWeaponIndex;
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 	auto const pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
@@ -51,7 +52,7 @@ void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CoordStruct edgeCoords)
 {
 	auto const pType = pThis->Type;
-	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+	auto const pTypeExt = AircraftTypeExt::Fetch(pType);
 	auto dir = DirType::North;
 	auto coords = edgeCoords;
 	coords.Z = 0;
@@ -83,7 +84,7 @@ bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CoordStruct e
 
 CellStruct AircraftExt::PickEdgeCellForPlane(AircraftTypeClass* pPlaneType, CellStruct destCell, Edge edge, bool isOnRetreat)
 {
-	auto const pTypeExt = TechnoTypeExt::Fetch(pPlaneType);
+	auto const pTypeExt = AircraftTypeExt::Fetch(pPlaneType);
 	auto const edgeMode = !isOnRetreat ? pTypeExt->SpawnFromEdge : pTypeExt->RetreatToEdge;
 	auto spawnEdge = edge;
 	auto refCell = CellStruct::Empty;
@@ -167,7 +168,7 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock, b
 			return pLink->PrimaryFacing.Current().GetDir();
 	}
 
-	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+	auto const pTypeExt = AircraftTypeExt::Fetch(pType);
 
 	if (pTypeExt->LandingDir.isset())
 	{
@@ -188,6 +189,56 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock, b
 
 	int fieldDir = RulesExt::Global()->PoseDir_Field.Get((int)poseDir * 32);
 	return static_cast<DirType>(fieldDir & 0xFF);
+}
+
+AircraftTypeClass* AircraftExt::GetAircraftTypeExtra(AircraftClass* pAircraft)
+{
+	auto const pType = pAircraft->Type;
+	auto const pData = AircraftTypeExt::Fetch(pType);
+
+	if (!pData->NeedDamagedImage || pAircraft->IsGreenHP())
+	{
+		return pType;
+	}
+	else if (pAircraft->IsYellowHP())
+	{
+		if (auto const imageYellow = pData->Image_ConditionYellow)
+			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
+	}
+	else
+	{
+		if (auto const imageRed = pData->Image_ConditionRed)
+			return abstract_cast<AircraftTypeClass*, true>(imageRed);
+		else if (auto const imageYellow = pData->Image_ConditionYellow)
+			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
+	}
+
+	return pType;
+}
+
+// =============================
+// load / save
+
+template <typename T>
+void AircraftExt::Serialize(T& Stm)
+{
+	Stm
+		.Process(this->Strafe_BombsDroppedThisRound)
+		.Process(this->Strafe_TargetCell)
+		.Process(this->CurrentAircraftWeaponIndex)
+		;
+}
+
+void AircraftExt::LoadFromStream(PhobosStreamReader& Stm)
+{
+	FootExt::LoadFromStream(Stm);
+	this->Serialize(Stm);
+}
+
+void AircraftExt::SaveToStream(PhobosStreamWriter& Stm)
+{
+	FootExt::SaveToStream(Stm);
+	this->Serialize(Stm);
 }
 
 // =============================

@@ -15,7 +15,9 @@ DEFINE_HOOK(0x423B95, AnimClass_AI_Early, 0x8)
 {
 	GET(AnimClass* const, pThis, ESI);
 
-	AnimExt::Fetch(pThis)->UpdateAsFiringAnim();
+	if (RulesExt::Global()->FiringAnimUpdateCount > 0)
+		AnimExt::Fetch(pThis)->UpdateAsFiringAnim();
+
 	auto const pType = pThis->Type;
 
 	AnimLoggingTemp::UniqueID = pThis->UniqueID;
@@ -679,13 +681,13 @@ DEFINE_HOOK(0x6FF42B, TechnoClass_Fire_Anim, 0x7)
 	GET(WeaponTypeClass*, pWeapon, EBX);
 	GET_BASE(const int, wpIdx, 0xC);
 
-	const auto pAnimExt = AnimExt::Fetch(pAnim);
-
-	if (WeaponTypeExt::Fetch(pWeapon)->Anim_Update.Get(RulesExt::Global()->FiringAnim_Update))
+	if (pWeapon->Anim.Count > 0 && WeaponTypeExt::Fetch(pWeapon)->Anim_Update.Get(RulesExt::Global()->FiringAnim_Update))
 	{
+		const auto pAnimExt = AnimExt::Fetch(pAnim);
 		pAnimExt->FiringAnim_Weapon = pWeapon;
 		pAnimExt->FiringAnim_WeaponIndex = wpIdx;
 		pAnimExt->FiringAnim_BurstIndex = pThis->CurrentBurstIndex;
+		RulesExt::Global()->FiringAnimUpdateCount++;
 		return SkipBuildingCheck;
 	}
 

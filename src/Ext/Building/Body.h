@@ -26,6 +26,7 @@ public:
 	int TurretAnimIdleFrame;
 	int TurretAnimFiringFrame;
 	int TurretAnimRateTick;
+	int ConstructionStartFacing;
 
 	BuildingExt(BuildingClass* OwnerObject) : TechnoExt(OwnerObject)
 		, DeployedTechno { false }

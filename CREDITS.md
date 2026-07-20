@@ -703,6 +703,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow Laser drawing position update
   - Customize the distance for `NoQueueUpToEnter` transport units to board passengers
   - Fix the bug that `MissileSpawn=true` causes the spawnee launcher to crash immediately when attacking
+  - Customize the initial facing of buildings
   - Provide a toggle for whether the landing direction in default scenarios does not use the building direction but follows `[AudioVisual] -> PoseDir`
   - Separate the definitions of default direction for aircraft production and landing in the field
   - Fix the bug where incorrect calculation of `[AudioVisual] -> PoseDir` caused the landing direction of aircraft to behave incorrectly under vanilla configuration

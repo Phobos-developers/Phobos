@@ -89,14 +89,6 @@ public:
 	std::unique_ptr<DroppodTypeClass> DroppodType;
 	std::unique_ptr<TiberiumEaterTypeClass> TiberiumEaterType;
 
-	Nullable<float> HarvesterDumpAmount;
-
-	Valueable<int> Ammo_AddOnDeploy;
-	Valueable<int> Ammo_AutoDeployMinimumAmount;
-	Valueable<int> Ammo_AutoDeployMaximumAmount;
-	Valueable<int> Ammo_DeployUnlockMinimumAmount;
-	Valueable<int> Ammo_DeployUnlockMaximumAmount;
-
 	Nullable<AutoDeathBehavior> AutoDeath_Behavior;
 	ValueableVector<AnimTypeClass*> AutoDeath_VanishAnimation;
 	Valueable<bool> AutoDeath_OnAmmoDepletion;
@@ -113,8 +105,6 @@ public:
 	Valueable<bool> AutoDeath_TechnosExist_AllowLimboed;
 	Valueable<AffectedHouse> AutoDeath_TechnosExist_Houses;
 
-	Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
-	NullableIdx<VocClass> SlavesFreeSound;
 	NullableIdx<VocClass> SellSound;
 	NullableIdx<VoxClass> EVA_Sold;
 
@@ -126,7 +116,6 @@ public:
 	NullableIdx<VoxClass> CombatAlert_EVA;
 
 	NullableIdx<VocClass> VoiceCreated;
-	NullableIdx<VocClass> VoicePickup; // Used by carryalls instead of VoiceMove if set.
 
 	ValueableVector<AnimTypeClass*> WarpOut;
 	ValueableVector<AnimTypeClass*> WarpIn;
@@ -146,13 +135,6 @@ public:
 	Valueable<WeaponTypeClass*> WarpOutWeapon;
 	Valueable<bool> WarpInWeapon_UseDistanceAsDamage;
 
-	int SubterraneanSpeed;
-	Nullable<int> SubterraneanHeight;
-
-	ValueableVector<AnimTypeClass*> OreGathering_Anims;
-	ValueableVector<int> OreGathering_Tiberiums;
-	ValueableVector<int> OreGathering_FramesPerDir;
-
 	std::vector<std::vector<CoordStruct>> WeaponBurstFLHs;
 	std::vector<std::vector<CoordStruct>> EliteWeaponBurstFLHs;
 	std::vector<CoordStruct> AlternateFLHs;
@@ -160,10 +142,7 @@ public:
 	Valueable<bool> AlternateFLH_ApplyVehicle;
 
 	Valueable<bool> DestroyAnim_Random;
-	Valueable<bool> NotHuman_RandomDeathSequence;
 
-	Valueable<InfantryTypeClass*> DefaultDisguise;
-	NullableVector<TerrainTypeClass*> DefaultMirageDisguises;
 	Valueable<bool> UseDisguiseMovementSpeed;
 
 	Nullable<int> OpenTopped_RangeBonus;
@@ -193,14 +172,6 @@ public:
 
 	Valueable<bool> JumpjetRotateOnCrash;
 	Nullable<int> ShadowSizeCharacteristicHeight;
-
-	Valueable<bool> IsSimpleDeployer_ConsiderPathfinding;
-	Nullable<LandTypeFlags> IsSimpleDeployer_DisallowedLandTypes;
-	Nullable<FacingType> DeployDir;
-	ValueableVector<AnimTypeClass*> DeployingAnims;
-	Valueable<bool> DeployingAnim_KeepUnitVisible;
-	Valueable<bool> DeployingAnim_ReverseForUndeploy;
-	Valueable<bool> DeployingAnim_UseUnitDrawer;
 
 	Valueable<CSFText> EnemyUIName;
 
@@ -240,7 +211,6 @@ public:
 	Nullable<IronCurtainEffect> ForceShield_Effect;
 	Nullable<WarheadTypeClass*> ForceShield_KillWarhead;
 	Valueable<bool> Explodes_KillPassengers;
-	Valueable<bool> Explodes_DuringBuildup;
 	Valueable<bool> DriverKilled_KeptPassengers;
 	Nullable<bool> DriverKilled_KillPassengers;
 	Nullable<int> DeployFireWeapon;
@@ -260,19 +230,6 @@ public:
 	std::vector<Promotable<int>> InsigniaFrame_Passengers;
 	std::vector<Valueable<Vector3D<int>>> InsigniaFrames_Passengers;
 
-	Valueable<bool> JumpjetTilt;
-	Valueable<double> JumpjetTilt_ForwardAccelFactor;
-	Valueable<double> JumpjetTilt_ForwardSpeedFactor;
-	Valueable<double> JumpjetTilt_SidewaysRotationFactor;
-	Valueable<double> JumpjetTilt_SidewaysSpeedFactor;
-
-	Nullable<bool> TiltsWhenCrushes_Vehicles;
-	Nullable<bool> TiltsWhenCrushes_Overlays;
-	Nullable<double> CrushForwardTiltPerFrame;
-	Valueable<double> CrushOverlayExtraForwardTilt;
-	Valueable<double> CrushSlowdownMultiplier;
-	Valueable<bool> SkipCrushSlowdown;
-
 	Valueable<bool> DigitalDisplay_Disable;
 	ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
 
@@ -291,21 +248,11 @@ public:
 	Nullable<Point2D> SpawnsPipSize;
 	Valueable<Point2D> SpawnsPipOffset;
 
-	Valueable<EdgeType> SpawnFromEdge;
-	Valueable<EdgeType> RetreatToEdge;
-	Nullable<Leptons> SpawnDistanceFromTarget;
-	Nullable<int> SpawnHeight;
-	Nullable<int> LandingDir;
-
-	Nullable<bool> CurleyShuffle;
-
 	Valueable<TechnoTypeClass*> Convert_Deploy; // Ares
 	Valueable<TechnoTypeClass*> Convert_Undeploy;
 	Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 	Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
 	Valueable<bool> Convert_ResetMindControl;
-
-	Valueable<double> CrateGoodie_RerollChance;
 
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
@@ -344,7 +291,6 @@ public:
 	Nullable<bool> NoRearm_Temporal;
 	Nullable<bool> NoReload_UnderEMP;
 	Nullable<bool> NoReload_Temporal;
-	Nullable<bool> NoTurret_TrackTarget;
 
 	Nullable<AnimTypeClass*> Wake;
 	Nullable<AnimTypeClass*> Wake_Grapple;
@@ -374,8 +320,6 @@ public:
 
 	Nullable<TechnoTypeClass*> Image_ConditionYellow;
 	Nullable<TechnoTypeClass*> Image_ConditionRed;
-	Nullable<UnitTypeClass*> WaterImage_ConditionYellow;
-	Nullable<UnitTypeClass*> WaterImage_ConditionRed;
 	bool NeedDamagedImage;
 
 	Nullable<int> InitialSpawnsNumber;
@@ -385,13 +329,6 @@ public:
 	ValueableVector<AnimTypeClass*> Spawner_RecycleAnim;
 	Valueable<CoordStruct> Spawner_RecycleCoord;
 	Valueable<bool> Spawner_RecycleOnTurret;
-
-	Nullable<bool> Sinkable;
-	Valueable<bool> Sinkable_SquidGrab;
-	Valueable<int> SinkSpeed;
-
-	Nullable<double> ProneSpeed;
-	Nullable<double> DamagedSpeed;
 
 	ValueableVector<AnimTypeClass*> Promote_VeteranAnimation;
 	ValueableVector<AnimTypeClass*> Promote_EliteAnimation;
@@ -407,16 +344,6 @@ public:
 	};
 
 	std::vector<LaserTrailDataEntry> LaserTrailData;
-	Valueable<bool> OnlyUseLandSequences;
-	Nullable<bool> SecondaryFireSequenceLandOnly;
-	Nullable<CoordStruct> PronePrimaryFireFLH;
-	Nullable<CoordStruct> ProneSecondaryFireFLH;
-	Nullable<CoordStruct> DeployedPrimaryFireFLH;
-	Nullable<CoordStruct> DeployedSecondaryFireFLH;
-	std::vector<std::vector<CoordStruct>> CrouchedWeaponBurstFLHs;
-	std::vector<std::vector<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
-	std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
-	std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
 	Valueable<bool> SuppressKillWeapons;
 	ValueableVector<WeaponTypeClass*> SuppressKillWeapons_Types;
@@ -430,17 +357,6 @@ public:
 	Nullable<ParticleSystemTypeClass*> Overload_ParticleSys;
 	Valueable<int> Overload_ParticleSysCount;
 
-	Valueable<bool> Harvester_CanGuardArea;
-	Valueable<bool> Harvester_CanGuardArea_RequireTarget;
-	Nullable<bool> HarvesterScanAfterUnload;
-
-	Nullable<bool> ExtendedAircraftMissions;
-	Nullable<bool> ExtendedAircraftMissions_SmoothMoving;
-	Nullable<bool> ExtendedAircraftMissions_EarlyDescend;
-	Nullable<bool> ExtendedAircraftMissions_RearApproach;
-	Nullable<bool> ExtendedAircraftMissions_FastScramble;
-	Nullable<int> ExtendedAircraftMissions_UnlandDamage;
-
 	Valueable<double> FallingDownDamage;
 	Nullable<double> FallingDownDamage_Water;
 	Valueable<bool> FallingDownDamage_AllowEMP;
@@ -451,8 +367,6 @@ public:
 
 	Valueable<bool> FiringForceScatter;
 
-	Valueable<int> FireUp;
-	Valueable<bool> FireUp_ResetInRetarget;
 	//Nullable<int> SecondaryFire;
 
 	Nullable<bool> DebrisTypes_Limit;
@@ -477,17 +391,9 @@ public:
 	ValueableVector<int> VoiceWeaponAttacks;
 	ValueableVector<int> VoiceEliteWeaponAttacks;
 
-	Nullable<bool> InfantryAutoDeploy;
-
 	ValueableVector<TechnoTypeClass*> TeamMember_ConsideredAs;
 
-	Nullable<bool> TurretResponse;
-
 	Vector2D<bool> AttackFriendlies;
-
-	Valueable<bool> Deploy_SkipPassengerUnload;
-	Valueable<bool> Deploy_NoPassenger;
-	Valueable<bool> Deploy_NoTiberium;
 
 	Nullable<int> DrainMoneyFrameDelay;
 	Nullable<int> DrainMoneyAmount;
@@ -510,7 +416,6 @@ public:
 
 	Nullable<bool> JumpjetClimbIgnoreBuilding;
 
-	Valueable<bool> HoverDrownable;
 	bool ExtraThreat_Enabled;
 	Nullable<double> ExtraThreat_IsThreat;
 	Valueable<bool> AlwaysConsideredThreat;
@@ -521,20 +426,6 @@ public:
 
 	Nullable<bool> Unsellable; // Ares 3.0
 
-	SHPStruct* TurretShape;
-
-	Nullable<int> HarvesterLoadRate;
-	Nullable<double> HarvesterDumpRate;
-
-	Nullable<bool> Parasite_AllowWaterExit;
-
-	Nullable<bool> FlyNoWobbles;
-
-	Nullable<AnimTypeClass*> LandingAnim;
-
-	Valueable<bool> Missile_Cruise;
-	Valueable<AnimTypeClass*> Missile_TakeOffAnim;
-	Valueable<int> Missile_TakeOffSeparation;
 	Nullable<bool> BarrelOverTurret;
 	Valueable<int> BarrelOffset;
 	Valueable<int> ExtraBarrelCount;
@@ -613,19 +504,11 @@ public:
 		, WarpOutWeapon {}
 		, WarpInWeapon_UseDistanceAsDamage { false }
 
-		, SubterraneanSpeed { -1 }
-		, SubterraneanHeight {}
-
-		, OreGathering_Anims {}
-		, OreGathering_Tiberiums {}
-		, OreGathering_FramesPerDir {}
 		, LaserTrailData {}
 		, AlternateFLH_OnTurret { true }
 		, AlternateFLH_ApplyVehicle { false }
 		, DestroyAnim_Random { true }
-		, NotHuman_RandomDeathSequence { false }
 
-		, DefaultDisguise {}
 		, UseDisguiseMovementSpeed {}
 
 		, OpenTopped_RangeBonus {}
@@ -653,22 +536,6 @@ public:
 		, JumpjetRotateOnCrash { true }
 		, ShadowSizeCharacteristicHeight { }
 
-		, IsSimpleDeployer_ConsiderPathfinding { false }
-		, IsSimpleDeployer_DisallowedLandTypes {}
-		, DeployDir {}
-		, DeployingAnims {}
-		, DeployingAnim_KeepUnitVisible { false }
-		, DeployingAnim_ReverseForUndeploy { true }
-		, DeployingAnim_UseUnitDrawer { true }
-
-		, HarvesterDumpAmount {}
-
-		, Ammo_AddOnDeploy { 0 }
-		, Ammo_AutoDeployMinimumAmount { -1 }
-		, Ammo_AutoDeployMaximumAmount { -1 }
-		, Ammo_DeployUnlockMinimumAmount { -1 }
-		, Ammo_DeployUnlockMaximumAmount { -1 }
-
 		, AutoDeath_Behavior { }
 		, AutoDeath_VanishAnimation {}
 		, AutoDeath_OnAmmoDepletion { false }
@@ -685,8 +552,6 @@ public:
 		, AutoDeath_TechnosExist_AllowLimboed { true }
 		, AutoDeath_TechnosExist_Houses { AffectedHouse::Owner }
 
-		, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
-		, SlavesFreeSound {}
 		, SellSound {}
 		, EVA_Sold {}
 
@@ -700,7 +565,6 @@ public:
 		, EnemyUIName {}
 
 		, VoiceCreated {}
-		, VoicePickup {}
 
 		, ForceWeapon_Check { false }
 		, ForceWeapon_Naval_Decloaked { -1 }
@@ -731,14 +595,6 @@ public:
 		, Passengers_SyncOwner { false }
 		, Passengers_SyncOwner_RevertOnExit { true }
 
-		, OnlyUseLandSequences { false }
-		, SecondaryFireSequenceLandOnly {}
-
-		, PronePrimaryFireFLH {}
-		, ProneSecondaryFireFLH {}
-		, DeployedPrimaryFireFLH {}
-		, DeployedSecondaryFireFLH {}
-
 		, IronCurtain_KeptOnDeploy {}
 		, IronCurtain_Effect {}
 		, IronCurtain_KillWarhead {}
@@ -747,7 +603,6 @@ public:
 		, ForceShield_KillWarhead {}
 
 		, Explodes_KillPassengers { true }
-		, Explodes_DuringBuildup { true }
 		, DriverKilled_KeptPassengers { false }
 		, DriverKilled_KillPassengers {}
 		, DeployFireWeapon {}
@@ -767,19 +622,6 @@ public:
 		, InsigniaFrame_Passengers {}
 		, InsigniaFrames_Passengers {}
 
-		, JumpjetTilt { false }
-		, JumpjetTilt_ForwardAccelFactor { 1.0 }
-		, JumpjetTilt_ForwardSpeedFactor { 1.0 }
-		, JumpjetTilt_SidewaysRotationFactor { 1.0 }
-		, JumpjetTilt_SidewaysSpeedFactor { 1.0 }
-
-		, TiltsWhenCrushes_Vehicles {}
-		, TiltsWhenCrushes_Overlays {}
-		, CrushSlowdownMultiplier { 0.2 }
-		, CrushForwardTiltPerFrame {}
-		, CrushOverlayExtraForwardTilt { 0.02 }
-		, SkipCrushSlowdown { false }
-
 		, DigitalDisplay_Disable { false }
 		, DigitalDisplayTypes {}
 
@@ -798,23 +640,14 @@ public:
 		, SpawnsPipSize {}
 		, SpawnsPipOffset { { 0,0 } }
 
-		, SpawnFromEdge { EdgeType::Owner }
-		, RetreatToEdge { EdgeType::Owner }
-		, SpawnDistanceFromTarget {}
-		, SpawnHeight {}
-		, LandingDir {}
 		, DroppodType {}
 		, TiberiumEaterType {}
-
-		, CurleyShuffle {}
 
 		, Convert_Deploy { }
 		, Convert_Undeploy { }
 		, Convert_HumanToComputer { }
 		, Convert_ComputerToHuman { }
 		, Convert_ResetMindControl { false }
-
-		, CrateGoodie_RerollChance { 0.0 }
 
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
@@ -853,7 +686,6 @@ public:
 		, NoRearm_Temporal {}
 		, NoReload_UnderEMP {}
 		, NoReload_Temporal {}
-		, NoTurret_TrackTarget {}
 
 		, Wake { }
 		, Wake_Grapple { }
@@ -885,8 +717,6 @@ public:
 
 		, Image_ConditionYellow { }
 		, Image_ConditionRed { }
-		, WaterImage_ConditionYellow { }
-		, WaterImage_ConditionRed { }
 		, NeedDamagedImage { false }
 
 		, InitialSpawnsNumber { }
@@ -896,13 +726,6 @@ public:
 		, Spawner_RecycleAnim { }
 		, Spawner_RecycleCoord { {0,0,0} }
 		, Spawner_RecycleOnTurret { false }
-
-		, Sinkable { }
-		, Sinkable_SquidGrab { true }
-		, SinkSpeed { 5 }
-
-		, ProneSpeed { }
-		, DamagedSpeed { }
 
 		, SuppressKillWeapons { false }
 		, SuppressKillWeapons_Types { }
@@ -919,17 +742,6 @@ public:
 		, Overload_ParticleSys {}
 		, Overload_ParticleSysCount { 5 }
 
-		, Harvester_CanGuardArea { false }
-		, Harvester_CanGuardArea_RequireTarget { false }
-		, HarvesterScanAfterUnload {}
-
-		, ExtendedAircraftMissions {}
-		, ExtendedAircraftMissions_SmoothMoving {}
-		, ExtendedAircraftMissions_EarlyDescend {}
-		, ExtendedAircraftMissions_RearApproach {}
-		, ExtendedAircraftMissions_FastScramble {}
-		, ExtendedAircraftMissions_UnlandDamage {}
-
 		, FallingDownDamage { 1.0 }
 		, FallingDownDamage_Water {}
 		, FallingDownDamage_AllowEMP { true }
@@ -938,10 +750,6 @@ public:
 		, Ammo_AutoConvertMaximumAmount { -1 }
 		, Ammo_AutoConvertType { nullptr }
 
-		, FiringForceScatter { true }
-
-		, FireUp { -1 }
-		, FireUp_ResetInRetarget { true }
 		//, SecondaryFire {}
 
 		, DebrisTypes_Limit {}
@@ -966,17 +774,9 @@ public:
 		, VoiceWeaponAttacks {}
 		, VoiceEliteWeaponAttacks {}
 
-		, InfantryAutoDeploy {}
-
 		, TeamMember_ConsideredAs {}
 
-		, TurretResponse {}
-
 		, AttackFriendlies { false,false }
-
-		, Deploy_SkipPassengerUnload { false }
-		, Deploy_NoPassenger { false }
-		, Deploy_NoTiberium { false }
 
 		, DrainMoneyFrameDelay {}
 		, DrainMoneyAmount {}
@@ -989,8 +789,6 @@ public:
 
 		, ParadropMission {}
 		, AIParadropMission {}
-		, ParadropDelay {}
-		, ParadropEndDelay {}
 
 		, PenetratesTransport_Level {}
 		, PenetratesTransport_PassThroughMultiplier { 1.0 }
@@ -999,11 +797,8 @@ public:
 
 		, JumpjetClimbIgnoreBuilding {}
 
-		, HoverDrownable { true }
-
 		, Unsellable {}
 
-		, TurretShape { nullptr }
 		, ExtraThreat_Enabled { false }
 		, ExtraThreat_IsThreat {}
 		, AlwaysConsideredThreat { false }
@@ -1012,18 +807,6 @@ public:
 		, ExtraThreatCoefficient_Facing {}
 		, ExtraThreatCoefficient_DistanceToLastTarget {}
 
-		, HarvesterLoadRate {}
-		, HarvesterDumpRate {}
-			
-		, Parasite_AllowWaterExit {}
-
-		, FlyNoWobbles {}
-
-		, LandingAnim {}
-
-		, Missile_Cruise { false }
-		, Missile_TakeOffAnim { nullptr }
-		, Missile_TakeOffSeparation { 24 }
 		, BarrelOverTurret { }
 		, BarrelOffset { 0 }
 		, ExtraBarrelCount { 0 }
@@ -1035,12 +818,9 @@ public:
 
 	virtual ~TechnoTypeExt() = default;
 	virtual void LoadFromINIFile(CCINIClass* pINI) override;
-	virtual void Initialize() override;
 
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
-
-	void LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSection, INI_EX& exArtINI, const char* pArtSection);
 
 	void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0, int turIdx = -1);
 	void CalculateSpawnerRange();
@@ -1057,11 +837,15 @@ public:
 	// Ares 0.A
 	const char* GetSelectionGroupID() const;
 
+protected:
+	// callable from the concrete leaf type exts (e.g. InfantryTypeExt) that read
+	// their own art-INI burst FLHs through this shared parser
+	void ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSection, std::vector<std::vector<CoordStruct>>& nFLH, std::vector<std::vector<CoordStruct>>& nEFlh, const char* pPrefixTag);
+
 private:
 	template <typename T>
 	void Serialize(T& Stm);
 
-	void ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSection, std::vector<std::vector<CoordStruct>>& nFLH, std::vector<std::vector<CoordStruct>>& nEFlh, const char* pPrefixTag);
 	void ParseVoiceWeaponAttacks(INI_EX& exINI, const char* pSection, ValueableVector<int>& n, ValueableVector<int>& nE);
 
 public:
