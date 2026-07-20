@@ -462,7 +462,7 @@ namespace
 
 		if (pKnownCrash != nullptr)
 		{
-			ExceptionHandler::Append("Additional information:\r\n  %s\r\n", pKnownCrash);
+			ExceptionHandler::Append("Known information:\r\n  %s\r\n", pKnownCrash);
 			ExceptionHandler::Append("-----------------------------------------------------------------------\r\n\r\n");
 		}
 
