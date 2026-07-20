@@ -59,7 +59,7 @@ public:
 	static int Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachInfoTypeClass const& attachEffectInfo);
 	static int Detach(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo);
 	static int DetachByGroups(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo);
-	static void TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget);
+	static void TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget, bool needRetint = true);
 
 private:
 	void OnlineCheck();

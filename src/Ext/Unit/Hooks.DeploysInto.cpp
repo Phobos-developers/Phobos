@@ -91,7 +91,7 @@ DEFINE_HOOK(0x739956, UnitClass_Deploy_Transfer, 0x6)
 	TransferMindControlOnDeploy(pUnit, pStructure);
 	ShieldClass::SyncShieldToAnother(pUnit, pStructure);
 	TechnoExt::SyncInvulnerability(pUnit, pStructure);
-	AttachEffectClass::TransferAttachedEffects(pUnit, pStructure);
+	AttachEffectClass::TransferAttachedEffects(pUnit, pStructure, false);
 
 	// update type data at last
 	TechnoExt::Fetch(pStructure)->UpdateTypeData(pStructure->Type);
@@ -107,7 +107,7 @@ DEFINE_HOOK(0x44A03C, BuildingClass_Mi_Selling_Transfer, 0x6)
 	TransferMindControlOnDeploy(pStructure, pUnit);
 	ShieldClass::SyncShieldToAnother(pStructure, pUnit);
 	TechnoExt::SyncInvulnerability(pStructure, pUnit);
-	AttachEffectClass::TransferAttachedEffects(pStructure, pUnit);
+	AttachEffectClass::TransferAttachedEffects(pStructure, pUnit, false);
 
 	// update type data at last
 	auto const pExt = TechnoExt::Fetch(pUnit);

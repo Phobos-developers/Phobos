@@ -1050,7 +1050,7 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 /// </summary>
 /// <param name="pSource">Source techno.</param>
 /// <param name="pTarget">Target techno.</param>
-void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget)
+void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget, bool needRetint)
 {
 	bool markForRedraw = false;
 	bool altered = false;
@@ -1136,7 +1136,7 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 		if (altered)
 			pExt->RecalculateStatMultipliers();
 
-		if (markForRedraw)
+		if (needRetint && markForRedraw)
 		{
 			pTarget->MarkForRedraw();
 			pExt->UpdateTintValues();
