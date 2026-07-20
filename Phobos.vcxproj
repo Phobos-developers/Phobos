@@ -76,6 +76,7 @@
     <ClCompile Include="src\Ext\Beacon\Hooks.cpp" />
     <!-- src\Ext\Building -->
     <ClCompile Include="src\Ext\Building\Body.cpp" />
+    <ClCompile Include="src\Ext\Foot\Body.cpp" />
     <ClCompile Include="src\Ext\Unit\Body.cpp" />
     <ClCompile Include="src\Ext\Infantry\Body.cpp" />
     <ClCompile Include="src\Ext\UnitType\Body.cpp" />

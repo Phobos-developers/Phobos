@@ -1,6 +1,8 @@
 #include <Ext/BuildingType/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/Infantry/Body.h>
+#include <Ext/InfantryType/Body.h>
 
 #include <InputManagerClass.h>
 
@@ -16,7 +18,7 @@ DEFINE_HOOK(0x51B2BD, InfantryClass_UpdateTarget_IsControlledByHuman, 0x6)
 DEFINE_HOOK(0x520B3E, InfantryClass_DoingAI_DeployConvert_Deploy, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);
-	auto const pExt = TechnoExt::Fetch(pThis);
+	auto const pExt = InfantryExt::Fetch(pThis);
 	auto const pTypeExt = pExt->TypeExtData;
 
 	if (pTypeExt->Convert_Deploy && !pExt->HasDeployConverted)
@@ -33,7 +35,7 @@ DEFINE_HOOK(0x520B3E, InfantryClass_DoingAI_DeployConvert_Deploy, 0x6)
 DEFINE_HOOK(0x520B99, InfantryClass_DoingAI_DeployConvert_Undeploy, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);
-	auto const pExt = TechnoExt::Fetch(pThis);
+	auto const pExt = InfantryExt::Fetch(pThis);
 	auto const pTypeExt = pExt->TypeExtData;
 
 	if (pTypeExt->Convert_Undeploy && !pExt->HasUndeployConverted)
@@ -54,7 +56,7 @@ DEFINE_HOOK(0x520E75, InfantryClass_DoingAI_DeployConvert_ResetFlags, 0x6)
 
 	if (curSeq != Sequence::Deploy && curSeq != Sequence::Undeploy)
 	{
-		auto const pExt = TechnoExt::Fetch(pThis);
+		auto const pExt = InfantryExt::Fetch(pThis);
 		pExt->HasDeployConverted = false;
 		pExt->HasUndeployConverted = false;
 	}
@@ -191,7 +193,7 @@ DEFINE_HOOK(0x522373, InfantryClass_ApproachTarget_InfantryAutoDeploy, 0x5)
 {
 	enum { Deploy = 0x522378 };
 	GET(InfantryClass*, pThis, ESI);
-	return TechnoTypeExt::Fetch(pThis->Type)->InfantryAutoDeploy.Get(RulesExt::Global()->InfantryAutoDeploy) ? Deploy : 0;
+	return InfantryTypeExt::Fetch(pThis->Type)->InfantryAutoDeploy.Get(RulesExt::Global()->InfantryAutoDeploy) ? Deploy : 0;
 }
 
 DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_InfiltrateBuilding, 0x6)

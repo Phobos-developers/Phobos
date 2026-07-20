@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/Foot/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Utilities/AresHelper.h>
 #include <Utilities/AresFunctions.h>
@@ -72,7 +73,7 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 	if (pPassenger)
 	{
 		auto const pType = pPassenger->GetTechnoType();
-		auto const pExt = TechnoExt::Fetch(pPassenger);
+		auto const pExt = FootExt::Fetch(pPassenger);
 		auto const whatAmI = pPassenger->WhatAmI();
 		auto const pTransTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 
@@ -97,7 +98,7 @@ DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 	if (pPassenger)
 	{
 		auto const pType = pPassenger->GetTechnoType();
-		auto const pExt = TechnoExt::Fetch(pPassenger);
+		auto const pExt = FootExt::Fetch(pPassenger);
 		auto const whatAmI = pPassenger->WhatAmI();
 		auto const pTransTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 
@@ -133,7 +134,7 @@ DEFINE_HOOK(0x737F80, UnitClass_ReceiveDamage_Cargo_SyncOwner, 0x6)
 		{
 			do
 			{
-				auto const pExt = TechnoExt::Fetch(pPassenger);
+				auto const pExt = FootExt::Fetch(pPassenger);
 
 				if (pExt->OriginalPassengerOwner)
 					pPassenger->SetOwningHouse(pExt->OriginalPassengerOwner, false);
@@ -280,7 +281,7 @@ static inline bool CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 }
 
 // Rewrite from 0x51A21B/0x73A6D1
-static inline void DoEnterNow(UnitClass* pTransport, FootClass* pPassenger, TechnoExt* pExt)
+static inline void DoEnterNow(UnitClass* pTransport, FootClass* pPassenger, FootExt* pExt)
 {
 	// Vanilla only for infantry, but why
 	if (const auto pTag = pTransport->AttachedTag)
@@ -320,7 +321,7 @@ DEFINE_HOOK(0x4DA8A0, FootClass_Update_AfterLocomotorProcess, 0x6)
 	GET(FootClass* const, pThis, ESI);
 
 	// Update laser trails after locomotor process, to ensure that the updated position is not the previous frame's position
-	const auto pExt = TechnoExt::Fetch(pThis);
+	const auto pExt = FootExt::Fetch(pThis);
 	pExt->UpdateLaserTrails();
 
 	// The core part of the fast enter action
@@ -868,7 +869,7 @@ DEFINE_HOOK(0x739FA2, UnitClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 				pTag->RaiseEvent(TriggerEvent::EnteredBy, pThis, CellStruct::Empty);
 
 			// This might fix a bug where hover vehicles enter tunnels.
-			TechnoExt::Fetch(pThis)->ResetLocomotor = true;
+			FootExt::Fetch(pThis)->ResetLocomotor = true;
 
 			if (pTunnel)
 			{

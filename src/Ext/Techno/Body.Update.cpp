@@ -2,10 +2,10 @@
 #include "Body.h"
 
 #include <Kamikaze.h>
-#include <JumpjetLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
+#include <Ext/Foot/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Scenario/Body.h>
@@ -47,7 +47,7 @@ void TechnoExt::ApplyInterceptor()
 
 	const auto pThis = this->OwnerObject();
 
-	if (!BulletClass::Array.Count || this->IsBurrowed || !pThis->IsArmed())
+	if (!BulletClass::Array.Count || this->IsBurrowedState() || !pThis->IsArmed())
 		return;
 
 	const auto pTarget = pThis->Target;
@@ -142,49 +142,6 @@ void TechnoExt::ApplyInterceptor()
 	}
 }
 
-void TechnoExt::DepletedAmmoActions()
-{
-	auto const pTypeExt = this->TypeExtData;
-	const int min = pTypeExt->Ammo_AutoDeployMinimumAmount;
-	const int max = pTypeExt->Ammo_AutoDeployMaximumAmount;
-
-	if (min < 0 && max < 0)
-		return;
-
-	auto const pType = pTypeExt->OwnerObject();
-
-	if (pType->Ammo <= 0)
-		return;
-
-	auto const pThis = static_cast<UnitClass*>(this->OwnerObject());
-	auto const pUnitType = pThis->Type;
-
-	if (!pUnitType->IsSimpleDeployer && !pUnitType->DeploysInto && !pUnitType->DeployFire
-		&& pUnitType->Passengers < 1 && pThis->Passengers.NumPassengers < 1)
-	{
-		return;
-	}
-
-	const int ammo = pThis->Ammo;
-	const bool canDeploy = TechnoExt::HasAmmoToDeploy(pThis) && (min < 0 || ammo >= min) && (max < 0 || ammo <= max);
-	const bool isDeploying = pThis->CurrentMission == Mission::Unload || pThis->QueuedMission == Mission::Unload;
-
-	if (canDeploy && !isDeploying)
-	{
-		pThis->QueueMission(Mission::Unload, true);
-	}
-	else if (!canDeploy && isDeploying)
-	{
-		pThis->QueueMission(Mission::Guard, true);
-
-		if (pUnitType->IsSimpleDeployer && pThis->InAir)
-		{
-			if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
-				pJJLoco->State = JumpjetLocomotionClass::State::Ascending;
-		}
-	}
-}
-
 void TechnoExt::AmmoAutoConvertActions()
 {
 	const auto pTypeExt = this->TypeExtData;
@@ -208,63 +165,6 @@ void TechnoExt::AmmoAutoConvertActions()
 	{
 		const auto pFoot = abstract_cast<FootClass*, true>(pThis);
 		TechnoExt::ConvertToType(pFoot, pTypeExt->Ammo_AutoConvertType);
-	}
-}
-
-// Subterranean harvester factory exit state machine.
-void TechnoExt::UpdateSubterraneanHarvester()
-{
-	auto const pThis = static_cast<UnitClass*>(this->OwnerObject());
-
-	// Unnecessary for AI players.
-	if (!pThis->Owner->IsControlledByHuman())
-		return;
-
-	switch (this->SubterraneanHarvStatus)
-	{
-	case 0: // No state to handle.
-		break;
-	case 1: // Unit has been created.
-		// If we're still in the factory do not advance.
-		if (pThis->HasAnyLink())
-			break;
-
-		pThis->ClearNavigationList();
-
-		// If we have rally point available, move to it and advance to next state, otherwise end here.
-		if (this->SubterraneanHarvRallyPoint)
-		{
-			pThis->SetDestination(this->SubterraneanHarvRallyPoint, false);
-			pThis->QueueMission(Mission::Move, true);
-			this->SubterraneanHarvRallyPoint = nullptr;
-			this->SubterraneanHarvStatus = 2;
-			break;
-		}
-		else
-		{
-			this->SubterraneanHarvStatus = 0;
-		}
-
-		break;
-	case 2: // Out of factory and on move.
-		// If we're still moving don't start harvesting.
-		if (pThis->Destination || pThis->CurrentMission == Mission::Move)
-			break;
-
-		// If harvester stops moving and becomes anything except idle, reset the state machine.
-		if (pThis->CurrentMission != Mission::Guard)
-		{
-			this->SubterraneanHarvStatus = 0;
-			break;
-		}
-
-		// Go harvest ore.
-		pThis->ClearNavigationList();
-		pThis->QueueMission(Mission::Harvest, true);
-		this->SubterraneanHarvStatus = 0;
-		break;
-	default:
-		break;
 	}
 }
 
@@ -533,136 +433,10 @@ void TechnoExt::EatPassengers()
 	}
 }
 
-void TechnoExt::UpdateTiberiumEater()
-{
-	const auto pEaterType = this->TypeExtData->TiberiumEaterType.get();
-
-	if (!pEaterType)
-		return;
-
-	const int transDelay = pEaterType->TransDelay;
-
-	if (transDelay && this->TiberiumEater_Timer.InProgress())
-		return;
-
-	const auto pThis = this->OwnerObject();
-	const auto pOwner = pThis->Owner;
-	bool active = false;
-	const bool displayCash = pEaterType->Display && pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer);
-	int facing = pThis->PrimaryFacing.Current().GetFacing<8>();
-
-	if (facing >= 7)
-		facing = 0;
-	else
-		facing++;
-
-	const int cellCount = static_cast<int>(pEaterType->Cells.size());
-	const int locationZ = pThis->Location.Z;
-	const int numOrePurifiers = pOwner->NumOrePurifiers;
-	const float cashMultiplier = pEaterType->CashMultiplier;
-	const float purifierBonus = RulesClass::Instance->PurifierBonus;
-	const bool animMove = pEaterType->AnimMove;
-	const auto displayToHouse = pEaterType->DisplayToHouse;
-	const auto amountPerCell = pEaterType->AmountPerCell;
-	const auto displayOffset = pEaterType->DisplayOffset;
-	const auto& animsAll = pEaterType->Anims;
-	auto* scenarioRandom = &ScenarioClass::Instance->Random;
-
-	for (int idx = 0; idx < cellCount; idx++)
-	{
-		const auto& cellOffset = pEaterType->Cells[idx];
-		const auto pos = TechnoExt::GetFLHAbsoluteCoords(pThis, CoordStruct { cellOffset.X, cellOffset.Y, 0 }, false);
-		const auto pCell = MapClass::Instance.TryGetCellAt(pos);
-
-		if (!pCell)
-			continue;
-
-		if (const int contained = pCell->GetContainedTiberiumValue())
-		{
-			const int tiberiumIdx = pCell->GetContainedTiberiumIndex();
-			const int tiberiumValue = TiberiumClass::Array[tiberiumIdx]->Value;
-			const int tiberiumAmount = static_cast<int>(static_cast<double>(contained) / tiberiumValue);
-			const int amount = amountPerCell > 0 ? std::min(amountPerCell.Get(), tiberiumAmount) : tiberiumAmount;
-			pCell->ReduceTiberium(amount);
-			const float multiplier = cashMultiplier * (1.0f + numOrePurifiers * purifierBonus);
-			const int value = static_cast<int>(std::round(amount * tiberiumValue * multiplier));
-			pOwner->TransactMoney(value);
-			active = true;
-
-			if (displayCash)
-			{
-				auto cellCoords = pCell->GetCoords();
-				cellCoords.Z = std::max(locationZ, cellCoords.Z);
-				FlyingStrings::AddMoneyString(value, pThis, pOwner, displayToHouse, cellCoords, displayOffset);
-			}
-
-			const auto& anims = pEaterType->Anims_Tiberiums[tiberiumIdx].GetElements(animsAll);
-			const int animCount = static_cast<int>(anims.size());
-
-			if (animCount == 0)
-				continue;
-
-			AnimTypeClass* pAnimType = nullptr;
-
-			switch (animCount)
-			{
-			case 1:
-				pAnimType = anims[0];
-				break;
-
-			case 8:
-				pAnimType = anims[facing];
-				break;
-
-			default:
-				pAnimType = anims[scenarioRandom->RandomRanged(0, animCount - 1)];
-				break;
-			}
-
-			if (pAnimType)
-			{
-				const auto pAnim = GameCreate<AnimClass>(pAnimType, pos);
-				AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
-
-				if (animMove)
-					pAnim->SetOwnerObject(pThis);
-			}
-		}
-	}
-
-	if (active && transDelay)
-		this->TiberiumEater_Timer.Start(pEaterType->TransDelay);
-}
-
 void TechnoExt::UpdateShield()
 {
 	if (const auto pShieldData = this->Shield.get())
 		pShieldData->AI();
-}
-
-void TechnoExt::UpdateOnTunnelEnter()
-{
-	if (!this->IsInTunnel)
-	{
-		if (const auto pShieldData = this->Shield.get())
-			pShieldData->SetAnimationVisibility(false);
-
-		for (const auto& pTrail : this->LaserTrails)
-		{
-			pTrail->Visible = false;
-			pTrail->LastLocation = { };
-		}
-
-		this->IsInTunnel = true;
-	}
-}
-
-void TechnoExt::UpdateOnTunnelExit()
-{
-	this->IsInTunnel = false;
-
-	if (const auto pShieldData = this->Shield.get())
-		pShieldData->SetAnimationVisibility(true);
 }
 
 void TechnoExt::ApplySpawnLimitRange()
@@ -1382,7 +1156,7 @@ void TechnoExt::UpdateLaserTrails()
 				pTrail->Cloaked = true;
 		}
 
-		if (!this->IsInTunnel)
+		if (!this->IsInTunnelState())
 			pTrail->Visible = true;
 
 		auto const trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, pTrail->FLH, pTrail->IsOnTurret);
@@ -1782,77 +1556,6 @@ void TechnoExt::UpdateRearmInTemporal()
 		pThis->ReloadTimer.StartTime++;
 }
 
-// Resets target if KeepTargetOnMove unit moves beyond weapon range.
-void TechnoExt::UpdateKeepTargetOnMove()
-{
-	if (!this->KeepTargetOnMove)
-		return;
-
-	auto const pThis = this->OwnerObject();
-
-	if (!pThis->Target)
-	{
-		this->KeepTargetOnMove = false;
-		return;
-	}
-
-	const auto pTypeExt = this->TypeExtData;
-
-	if (!pTypeExt->KeepTargetOnMove)
-	{
-		pThis->SetTarget(nullptr);
-		this->KeepTargetOnMove = false;
-		return;
-	}
-
-	if (pThis->CurrentMission == Mission::Guard)
-	{
-		if (!pTypeExt->KeepTargetOnMove_NoMorePursuit)
-		{
-			pThis->QueueMission(Mission::Attack, false);
-			this->KeepTargetOnMove = false;
-			return;
-		}
-	}
-	else if (pThis->CurrentMission != Mission::Move)
-	{
-		return;
-	}
-
-	const int weaponIndex = pTypeExt->KeepTargetOnMove_Weapon >= 0 ? pTypeExt->KeepTargetOnMove_Weapon : pThis->SelectWeapon(pThis->Target);
-
-	if (auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType)
-	{
-		const int extraDistance = static_cast<int>(pTypeExt->KeepTargetOnMove_ExtraDistance.Get());
-		const int range = pWeapon->Range;
-		pWeapon->Range += extraDistance; // Temporarily adjust weapon range based on the extra distance.
-
-		if (!pThis->IsCloseEnough(pThis->Target, weaponIndex))
-		{
-			pThis->SetTarget(nullptr);
-			this->KeepTargetOnMove = false;
-		}
-
-		pWeapon->Range = range;
-	}
-}
-
-void TechnoExt::UpdateWarpInDelay()
-{
-	if (this->HasRemainingWarpInDelay)
-	{
-		if (this->LastWarpInDelay)
-		{
-			this->LastWarpInDelay--;
-		}
-		else
-		{
-			this->HasRemainingWarpInDelay = false;
-			this->IsBeingChronoSphered = false;
-			this->OwnerObject()->WarpingOut = false;
-		}
-	}
-}
 
 // Updates state of all AttachEffects on techno.
 void TechnoExt::UpdateAttachEffects()
@@ -1861,7 +1564,7 @@ void TechnoExt::UpdateAttachEffects()
 		return;
 
 	auto const pThis = this->OwnerObject();
-	const bool inTunnel = this->IsInTunnel || this->IsBurrowed;
+	const bool inTunnel = this->IsInTunnelState() || this->IsBurrowedState();
 	bool markForRedraw = false;
 	bool altered = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
