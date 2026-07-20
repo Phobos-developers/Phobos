@@ -81,6 +81,9 @@ void UnitTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->FireUp.Read(exArtINI, pArtSection, "FireUp");
 	this->FireUp_ResetInRetarget.Read(exArtINI, pArtSection, "FireUp.ResetInRetarget");
+
+	if (!this->Harvester_Counted.isset() && pThis->Harvester)
+		this->Harvester_Counted = true;
 }
 
 template <typename T>
@@ -168,6 +171,19 @@ DEFINE_HOOK(0x7470E3, UnitTypeClass_CTOR, 0x6)
 	GET(UnitTypeClass*, pItem, ESI);
 
 	UnitTypeExt::ExtMap.Allocate(pItem);
+
+	return 0;
+}
+
+// The extension chain is read at the end of each concrete type class's LoadFromINI,
+// once every native field - inherited and own alike - has been parsed.
+DEFINE_HOOK(0x747E90, UnitTypeClass_LoadFromINI, 0x5)
+{
+	GET(UnitTypeClass*, pItem, ESI);
+	GET_STACK(CCINIClass*, pINI, 0x154);
+
+	if (auto const pExt = UnitTypeExt::TryFetch(pItem))
+		pExt->LoadFromINI(pINI);
 
 	return 0;
 }

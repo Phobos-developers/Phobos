@@ -1811,18 +1811,6 @@ DEFINE_HOOK(0x711835, TechnoTypeClass_CTOR, 0x5)
 	return 0;
 }
 
-//DEFINE_HOOK_AGAIN(0x716132, TechnoTypeClass_LoadFromINI, 0x5)// Section dont exist!
-DEFINE_HOOK(0x716123, TechnoTypeClass_LoadFromINI, 0x5)
-{
-	GET(TechnoTypeClass*, pItem, EBP);
-	GET_STACK(CCINIClass*, pINI, 0x380);
-
-	if (auto const pExt = TechnoTypeExt::TryFetch(pItem))
-		pExt->LoadFromINI(pINI);
-
-	return 0;
-}
-
 #if ANYONE_ACTUALLY_USE_THIS
 DEFINE_HOOK(0x679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 0x5)
 {
@@ -1837,15 +1825,3 @@ DEFINE_HOOK(0x679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 0x5)
 }
 #endif
 
-DEFINE_HOOK(0x747E90, UnitTypeClass_LoadFromINI, 0x5)
-{
-	GET(UnitTypeClass*, pItem, ESI);
-
-	if (auto pTypeExt = TechnoTypeExt::TryFetch(pItem))
-	{
-		if (!pTypeExt->Harvester_Counted.isset() && pItem->Harvester)
-			pTypeExt->Harvester_Counted = true;
-	}
-
-	return 0;
-}
