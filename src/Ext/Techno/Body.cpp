@@ -355,11 +355,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	{
 		if (AresFunctions::ConvertTypeTo(pThis, pToType))
 		{
-			TechnoExt::Fetch(pThis)->UpdateTypeData(pToType);
-
-			if (auto const pFootExt = FootExt::TryFetch(abstract_cast<FootClass*, true>(pThis)))
-				pFootExt->UpdateTypeData_Foot();
-
+			FootExt::Fetch(pThis)->UpdateTypeData(pToType);
 			return true;
 		}
 
@@ -461,11 +457,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	if (pToType->BalloonHover && pToType->DeployToLand && prevType->Locomotor != jjLoco && toLoco == jjLoco)
 		pThis->Locomotor->Move_To(pThis->Location);
 
-	TechnoExt::Fetch(pThis)->UpdateTypeData(pToType);
-
-	if (auto const pFootExt = FootExt::TryFetch(abstract_cast<FootClass*, true>(pThis)))
-		pFootExt->UpdateTypeData_Foot();
-
+	FootExt::Fetch(pThis)->UpdateTypeData(pToType);
 	return true;
 }
 
@@ -1064,7 +1056,6 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->LaserTrails)
 		.Process(this->AttachedEffects)
 		.Process(this->AE)
-		.Process(this->PreviousType)
 		.Process(this->AnimRefCount)
 		.Process(this->PassengerDeletionTimer)
 		.Process(this->CurrentShieldType)

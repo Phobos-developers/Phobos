@@ -34,7 +34,6 @@ public:
 	std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 	std::vector<std::unique_ptr<AttachEffectClass>> AttachedEffects;
 	AttachEffectTechnoProperties AE;
-	TechnoTypeClass* PreviousType; // Type change registered in TechnoClass::AI on current frame and used in FootClass::AI on same frame and reset after.
 	std::vector<EBolt*> ElectricBolts; // EBolts are not serialized so do not serialize this either.
 	int AnimRefCount; // Used to keep track of how many times this techno is referenced in anims f.ex Invoker, ParentBuilding etc., for pointer invalidation.
 	CDTimerClass PassengerDeletionTimer;
@@ -93,7 +92,6 @@ public:
 		, LaserTrails {}
 		, AttachedEffects {}
 		, AE {}
-		, PreviousType { nullptr }
 		, ElectricBolts {}
 		, AnimRefCount { 0 }
 		, PassengerDeletionTimer {}
@@ -153,7 +151,6 @@ public:
 	void EatPassengers();
 	void UpdateShield();
 	void ApplySpawnLimitRange();
-	void UpdateTypeData(TechnoTypeClass* pCurrentType);
 	void UpdateLaserTrails();
 	void UpdateAttachEffects();
 	void UpdateGattlingRateDownReset();
