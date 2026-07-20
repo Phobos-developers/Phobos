@@ -101,6 +101,19 @@ DEFINE_HOOK(0x41C8C0, AircraftTypeClass_CTOR, 0x5)
 	return 0;
 }
 
+// The extension chain is read at the end of each concrete type class's LoadFromINI,
+// once every native field - inherited and own alike - has been parsed.
+DEFINE_HOOK(0x41CD82, AircraftTypeClass_LoadFromINI, 0x7)
+{
+	GET(AircraftTypeClass*, pItem, ESI);
+	GET_STACK(CCINIClass*, pINI, 0x98);
+
+	if (auto const pExt = AircraftTypeExt::TryFetch(pItem))
+		pExt->LoadFromINI(pINI);
+
+	return 0;
+}
+
 // Hooked after the base destructor call in both destructor bodies; the second site
 // is the tail of the standalone body (pop/pop/retn, safe to steal - the bytes after
 // it are alignment padding that is never executed).

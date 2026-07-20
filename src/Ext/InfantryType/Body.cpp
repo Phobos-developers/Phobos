@@ -88,6 +88,19 @@ DEFINE_HOOK(0x5236B3, InfantryTypeClass_CTOR, 0xA)
 	return 0;
 }
 
+// The extension chain is read at the end of each concrete type class's LoadFromINI,
+// once every native field - inherited and own alike - has been parsed.
+DEFINE_HOOK(0x52473F, InfantryTypeClass_LoadFromINI, 0x5)
+{
+	GET(InfantryTypeClass*, pItem, ESI);
+	GET_STACK(CCINIClass*, pINI, 0xD0);
+
+	if (auto const pExt = InfantryTypeExt::TryFetch(pItem))
+		pExt->LoadFromINI(pINI);
+
+	return 0;
+}
+
 // Late in every destructor body of the class, right before it chains into the
 // base destructor: the last point where the extension is no longer used.
 DEFINE_HOOK_AGAIN(0x524E90, InfantryTypeClass_DTOR, 0xE)
