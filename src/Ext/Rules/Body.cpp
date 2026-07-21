@@ -363,9 +363,16 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->FallingDownTargetingFix.Read(exINI, GameStrings::General, "FallingDownTargetingFix");
 	this->AIAirTargetingFix.Read(exINI, GameStrings::General, "AIAirTargetingFix");
+	this->OpenTopped_IgnoreRangefinding.Read(exINI, GameStrings::General, "OpenTopped.IgnoreRangefinding");
+	this->OpenTopped_AllowFiringIfDeactivated.Read(exINI, GameStrings::General, "OpenTopped.AllowFiringIfDeactivated");
+	this->OpenTopped_AllowFiringIfAttackedByLocomotor.Read(exINI, GameStrings::General, "OpenTopped.AllowFiringIfAttackedByLocomotor");
+	this->OpenTopped_ShareTransportTarget.Read(exINI, GameStrings::General, "OpenTopped.ShareTransportTarget");
+	this->OpenTopped_UseTransportRangeModifiers.Read(exINI, GameStrings::General, "OpenTopped.UseTransportRangeModifiers");
+	this->OpenTopped_CheckTransportDisableWeapons.Read(exINI, GameStrings::General, "OpenTopped.CheckTransportDisableWeapons");
 	this->OpenTopped_DecloakToFire.Read(exINI, GameStrings::General, "OpenTopped.DecloakToFire");
 	this->OpenTopped_FireWhileMoving.Read(exINI, GameStrings::General, "OpenTopped.FireWhileMoving");
-	this->OpenTopped_AllowFiringIfAttackedByLocomotor.Read(exINI, GameStrings::General, "OpenTopped.AllowFiringIfAttackedByLocomotor");
+	this->OpenTransport_RangeBonus.Read(exINI, GameStrings::CombatDamage, "OpenTransport.RangeBonus");
+	this->OpenTransport_DamageMultiplier.Read(exINI, GameStrings::CombatDamage, "OpenTransport.DamageMultiplier");
 	this->OpenTransport_FireWhileMoving.Read(exINI, GameStrings::General, "OpenTransport.FireWhileMoving");
 
 	this->SortCameoByName.Read(exINI, GameStrings::General, "SortCameoByName");
@@ -759,9 +766,16 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->IvanBombAttachToCenter)
 		.Process(this->FallingDownTargetingFix)
 		.Process(this->AIAirTargetingFix)
+		.Process(this->OpenTopped_IgnoreRangefinding)
+		.Process(this->OpenTopped_AllowFiringIfDeactivated)
+		.Process(this->OpenTopped_AllowFiringIfAttackedByLocomotor)
+		.Process(this->OpenTopped_ShareTransportTarget)
+		.Process(this->OpenTopped_UseTransportRangeModifiers)
+		.Process(this->OpenTopped_CheckTransportDisableWeapons)
 		.Process(this->OpenTopped_DecloakToFire)
 		.Process(this->OpenTopped_FireWhileMoving)
-		.Process(this->OpenTopped_AllowFiringIfAttackedByLocomotor)
+		.Process(this->OpenTransport_RangeBonus)
+		.Process(this->OpenTransport_DamageMultiplier)
 		.Process(this->OpenTransport_FireWhileMoving)
 		.Process(this->SortCameoByName)
 		.Process(this->MergeBuildingDamage)

@@ -221,7 +221,7 @@ double TechnoExt::GetCurrentFirepowerMultiplier(TechnoClass* pThis)
 	{
 		const auto pTransporterTypeExt = TechnoExt::Fetch(pThis->Transporter)->TypeExtData;
 		mult *= pTransporterTypeExt->OpenTopped_DamageMultiplier.Get(RulesClass::Instance->OpenToppedDamageMultiplier);
-		mult *= TechnoExt::Fetch(pThis)->TypeExtData->OpenTransport_DamageMultiplier;
+		mult *= TechnoExt::Fetch(pThis)->TypeExtData->OpenTransport_DamageMultiplier.Get(RulesExt::Global()->OpenTransport_DamageMultiplier);
 	}
 
 	return mult;

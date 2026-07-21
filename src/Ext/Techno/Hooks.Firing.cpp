@@ -435,7 +435,7 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 
 	auto const pTypeExt = TechnoExt::Fetch(pTransport)->TypeExtData;
 
-	if (pTransport->Deactivated && !pTypeExt->OpenTopped_AllowFiringIfDeactivated)
+	if (pTransport->Deactivated && !pTypeExt->OpenTopped_AllowFiringIfDeactivated.Get(RulesExt::Global()->OpenTopped_AllowFiringIfDeactivated))
 		return Illegal;
 
 	if (pTransport->Transporter)
@@ -443,13 +443,15 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 
-	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons && TechnoExt::HasWeaponsDisabled(pTransport) && pWeapon)
+	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons.Get(RulesExt::Global()->OpenTopped_CheckTransportDisableWeapons) && TechnoExt::HasWeaponsDisabled(pTransport) && pWeapon)
 		return OutOfRange;
 
 	if (auto const pTransportFoot = abstract_cast<FootClass*>(pTransport))
 	{
 		if (pTransportFoot->IsAttackedByLocomotor && !pTypeExt->OpenTopped_AllowFiringIfAttackedByLocomotor.Get(RulesExt::Global()->OpenTopped_AllowFiringIfAttackedByLocomotor))
+		{
 			return Illegal;
+		}
 
 		if (!pTypeExt->OpenTopped_FireWhileMoving.Get(RulesExt::Global()->OpenTopped_FireWhileMoving)
 			|| !TechnoExt::Fetch(pThis)->TypeExtData->OpenTransport_FireWhileMoving.Get(RulesExt::Global()->OpenTransport_FireWhileMoving)
@@ -701,7 +703,7 @@ DEFINE_HOOK(0x6FE43B, TechnoClass_FireAt_OpenToppedDmgMult, 0x8)
 			nDamageMult = pExt->OpenTopped_DamageMultiplier.Get(nDamageMult);
 		}
 
-		nDamageMult *= TechnoExt::Fetch(pThis)->TypeExtData->OpenTransport_DamageMultiplier;
+		nDamageMult *= TechnoExt::Fetch(pThis)->TypeExtData->OpenTransport_DamageMultiplier.Get(RulesExt::Global()->OpenTransport_DamageMultiplier);
 
 		R->EAX(static_cast<int>(nDamage * nDamageMult));
 		return ApplyDamageMult;

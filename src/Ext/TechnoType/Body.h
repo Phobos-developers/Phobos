@@ -148,16 +148,16 @@ public:
 	Nullable<int> OpenTopped_RangeBonus;
 	Nullable<float> OpenTopped_DamageMultiplier;
 	Nullable<int> OpenTopped_WarpDistance;
-	Valueable<bool> OpenTopped_IgnoreRangefinding;
-	Valueable<bool> OpenTopped_AllowFiringIfDeactivated;
+	Nullable<bool> OpenTopped_IgnoreRangefinding;
+	Nullable<bool> OpenTopped_AllowFiringIfDeactivated;
 	Nullable<bool> OpenTopped_AllowFiringIfAttackedByLocomotor;
-	Valueable<bool> OpenTopped_ShareTransportTarget;
-	Valueable<bool> OpenTopped_UseTransportRangeModifiers;
-	Valueable<bool> OpenTopped_CheckTransportDisableWeapons;
+	Nullable<bool> OpenTopped_ShareTransportTarget;
+	Nullable<bool> OpenTopped_UseTransportRangeModifiers;
+	Nullable<bool> OpenTopped_CheckTransportDisableWeapons;
 	Nullable<bool> OpenTopped_DecloakToFire;
 	Nullable<bool> OpenTopped_FireWhileMoving;
-	Valueable<int> OpenTransport_RangeBonus;
-	Valueable<float> OpenTransport_DamageMultiplier;
+	Nullable<int> OpenTransport_RangeBonus;
+	Nullable<float> OpenTransport_DamageMultiplier;
 	Nullable<bool> OpenTransport_FireWhileMoving;
 
 	Valueable<bool> AutoTargetOwnPosition;
@@ -506,16 +506,16 @@ public:
 		, OpenTopped_RangeBonus {}
 		, OpenTopped_DamageMultiplier {}
 		, OpenTopped_WarpDistance {}
-		, OpenTopped_IgnoreRangefinding { false }
+		, OpenTopped_IgnoreRangefinding {}
 		, OpenTopped_AllowFiringIfAttackedByLocomotor {}
-		, OpenTopped_AllowFiringIfDeactivated { true }
-		, OpenTopped_ShareTransportTarget { true }
-		, OpenTopped_UseTransportRangeModifiers { false }
-		, OpenTopped_CheckTransportDisableWeapons { false }
+		, OpenTopped_AllowFiringIfDeactivated {}
+		, OpenTopped_ShareTransportTarget {}
+		, OpenTopped_UseTransportRangeModifiers {}
+		, OpenTopped_CheckTransportDisableWeapons {}
 		, OpenTopped_DecloakToFire {}
 		, OpenTopped_FireWhileMoving {}
-		, OpenTransport_RangeBonus { 0 }
-		, OpenTransport_DamageMultiplier { 1.0f }
+		, OpenTransport_RangeBonus {}
+		, OpenTransport_DamageMultiplier {}
 		, OpenTransport_FireWhileMoving {}
 
 		, AutoTargetOwnPosition { false }
