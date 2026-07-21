@@ -46,7 +46,7 @@ DEFINE_HOOK(0x65DF67, TeamTypeClass_CreateMembers_LoadOntoTransport, 0x6)
 		if (isTransportOpenTopped)
 			pTransport->EnteredOpenTopped(pNext);
 
-		if (auto const pExt = TechnoExt::ExtMap.Find(pNext))
+		if (auto const pExt = TechnoExt::Fetch(pNext))
 		{
 			if (pExt->TypeExtData->AutoDeath_Behavior.isset())
 			{

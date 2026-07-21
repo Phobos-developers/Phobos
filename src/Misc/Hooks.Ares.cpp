@@ -29,7 +29,7 @@ static void __fastcall InitialPayload_OpenToppedFix(TechnoClass* pThis)
 {
 	pThis->IsInPlayfield = true;
 
-	if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+	if (auto const pExt = TechnoExt::Fetch(pThis))
 	{
 		if (pExt->TypeExtData->AutoDeath_Behavior.isset())
 		{
