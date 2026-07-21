@@ -216,7 +216,7 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 	auto const pTypeExt = pExt->TypeExtData;
 	const bool isInLimbo = !pThis->IsInLogic && pThis->IsAlive;
 
-	if (pTypeExt->AutoDeath_Behavior.isset() && !(isInLimbo && !pTypeExt->AutoDeath_AllowLimboed.Get(RulesExt::Global()->AutoDeath_AllowLimboed)) && !(pThis->Transporter && !pTypeExt->AutoDeath_AllowPassenger.Get(RulesExt::Global()->AutoDeath_AllowPassenger)))
+	if (pTypeExt->AutoDeath_Behavior.isset())
 	{
 		const bool humanToComputer = pTypeExt->AutoDeath_OnOwnerChange_HumanToComputer.Get(pTypeExt->AutoDeath_OnOwnerChange);
 		const bool computerToHuman = pTypeExt->AutoDeath_OnOwnerChange_ComputerToHuman.Get(pTypeExt->AutoDeath_OnOwnerChange);
