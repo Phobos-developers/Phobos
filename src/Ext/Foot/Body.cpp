@@ -833,6 +833,7 @@ void FootExt::Serialize(T& Stm)
 		.Process(this->TiberiumEater_Timer)
 		.Process(this->ResetLocomotor)
 		.Process(this->JumpjetStraightAscend)
+		.Process(this->AttackMoveFollowerTempCount)
 		;
 }
 

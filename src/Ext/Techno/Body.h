@@ -73,8 +73,6 @@ public:
 	int TintIntensityAllies;
 	int TintIntensityEnemies;
 
-	int AttackMoveFollowerTempCount;
-
 	bool SpecialTracked;
 	bool FallingDownTracked;
 
@@ -125,7 +123,6 @@ public:
 		, TintIntensityOwner { 0 }
 		, TintIntensityAllies { 0 }
 		, TintIntensityEnemies { 0 }
-		, AttackMoveFollowerTempCount { 0 }
 		, SpecialTracked { false }
 		, FallingDownTracked { false }
 		, OnParachuted { false }

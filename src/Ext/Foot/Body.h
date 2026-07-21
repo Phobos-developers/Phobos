@@ -21,6 +21,7 @@ public:
 	CDTimerClass TiberiumEater_Timer;
 	bool ResetLocomotor;
 	bool JumpjetStraightAscend; // Is set to true jumpjet units will ascend straight and do not adjust rotation or position during it.
+	int AttackMoveFollowerTempCount;
 
 	explicit FootExt(FootClass* const OwnerObject) : TechnoExt(OwnerObject)
 		, LastKillWasTeamTarget { false }
@@ -35,6 +36,7 @@ public:
 		, TiberiumEater_Timer {}
 		, ResetLocomotor { false }
 		, JumpjetStraightAscend { false }
+		, AttackMoveFollowerTempCount { 0 }
 	{ }
 
 	FootClass* OwnerObject() const

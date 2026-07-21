@@ -51,6 +51,9 @@ DEFINE_HOOK(0x4DA54E, FootClass_AI, 0x6)
 	pExt->UpdateTiberiumEater();
 	pExt->AmmoAutoConvertActions();
 
+	if (pExt->AttackMoveFollowerTempCount)
+		pExt->AttackMoveFollowerTempCount--;
+
 	return 0;
 }
 
@@ -1258,7 +1261,7 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 		auto const& pTechnoVectors = Helpers::Alex::getCellSpreadItems(pThis->GetCoords(),
 			pThis->GetGuardRange(2) / (double)Unsorted::LeptonsPerCell, pTypeExt->AttackMove_Follow_IncludeAir);
 
-		TechnoClass* pClosestTarget = nullptr;
+		FootClass* pClosestTarget = nullptr;
 		int closestRange = 65536;
 		const auto pMegaMissionTarget = pThis->MegaDestination ? pThis->MegaDestination : (pThis->MegaTarget ? pThis->MegaTarget : pThis);
 		const auto pOwner = pThis->Owner;
@@ -1269,7 +1272,8 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 				&& pTechno != pThis && pTechno->Owner == pOwner
 				&& pTechno->MegaMissionIsAttackMove())
 			{
-				auto const pTargetExt = TechnoExt::Fetch(pTechno);
+				auto const pFoot = static_cast<FootClass*>(pTechno);
+				auto const pTargetExt = FootExt::Fetch(pFoot);
 
 				// Check this to prevent the followed techno from being surrounded
 				if (pTargetExt->AttackMoveFollowerTempCount >= 6)
@@ -1279,11 +1283,11 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 
 				if (!pTargetTypeExt->AttackMove_Follow)
 				{
-					auto const dist = pTechno->DistanceFrom(pMegaMissionTarget);
+					auto const dist = pFoot->DistanceFrom(pMegaMissionTarget);
 
 					if (dist < closestRange)
 					{
-						pClosestTarget = pTechno;
+						pClosestTarget = pFoot;
 						closestRange = dist;
 					}
 				}
@@ -1292,7 +1296,7 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 
 		if (pClosestTarget)
 		{
-			auto const pTargetExt = TechnoExt::Fetch(pClosestTarget);
+			auto const pTargetExt = FootExt::Fetch(pClosestTarget);
 			pTargetExt->AttackMoveFollowerTempCount += pThis->WhatAmI() == AbstractType::Infantry ? 1 : 3;
 			pThis->SetDestination(pClosestTarget, false);
 			pThis->SetArchiveTarget(pClosestTarget);

@@ -25,9 +25,6 @@ void TechnoExt::OnEarlyUpdate()
 	this->UpdateLastTargetCrd();
 	this->UpdateRecoilData();
 
-	if (this->AttackMoveFollowerTempCount)
-		this->AttackMoveFollowerTempCount--;
-
 	if (this->CheckDeathConditions())
 		return;
 
