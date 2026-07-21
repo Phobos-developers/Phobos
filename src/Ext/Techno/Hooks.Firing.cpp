@@ -797,7 +797,9 @@ DEFINE_HOOK(0x6FF0DD, TechnoClass_FireAt_TurretRecoil, 0x6)
 	if (!WeaponTypeExt::Fetch(pWeapon)->TurretRecoil_Suppress)
 	{
 		GET(TechnoClass* const, pThis, ESI);
-		TechnoExt::Fetch(pThis)->RecordRecoilData();
+
+		if (auto const pUnit = abstract_cast<UnitClass*, true>(pThis))
+			UnitExt::Fetch(pUnit)->RecordRecoilData();
 	}
 
 	return SkipGameCode;
@@ -1038,10 +1040,15 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 			allowOnTurret = false;
 	}
 
-	auto turIdx = -1;
+	int turIdx = -1;
 
-	if (pTypeExt->BurstPerTurret > 0)
-		turIdx = ((pThis->CurrentBurstIndex / pTypeExt->BurstPerTurret) % (pTypeExt->ExtraTurretCount + 1)) - 1;
+	if (auto const pUnitType = abstract_cast<UnitTypeClass*, true>(pType))
+	{
+		const int burstPerTurret = UnitTypeExt::Fetch(pUnitType)->BurstPerTurret;
+
+		if (burstPerTurret > 0)
+			turIdx = ((pThis->CurrentBurstIndex / burstPerTurret) % (burstPerTurret + 1)) - 1;
+	}
 
 	flh += offset;
 	*pCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, allowOnTurret, turIdx);

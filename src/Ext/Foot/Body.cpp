@@ -7,6 +7,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
+#include <Ext/Unit/Body.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/AresFunctions.h>
 
@@ -569,26 +570,6 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		pThis->LocomotorTarget = nullptr;
 	}
 
-	// FireAngle
-	pThis->BarrelFacing.SetCurrent(DirStruct(0x4000 - (pCurrentType->FireAngle << 8)));
-
-	// Reset recoil data
-	this->InitializeRecoilData();
-	{
-		auto& turretRecoil = pThis->TurretRecoil.Turret;
-		const auto& turretAnimData = pCurrentType->TurretAnimData;
-		turretRecoil.Travel = turretAnimData.Travel;
-		turretRecoil.CompressFrames = turretAnimData.CompressFrames;
-		turretRecoil.RecoverFrames = turretAnimData.RecoverFrames;
-		turretRecoil.HoldFrames = turretAnimData.HoldFrames;
-		auto& barrelRecoil = pThis->BarrelRecoil.Turret;
-		const auto& barrelAnimData = pCurrentType->BarrelAnimData;
-		barrelRecoil.Travel = barrelAnimData.Travel;
-		barrelRecoil.CompressFrames = barrelAnimData.CompressFrames;
-		barrelRecoil.RecoverFrames = barrelAnimData.RecoverFrames;
-		barrelRecoil.HoldFrames = barrelAnimData.HoldFrames;
-	}
-
 	if (pOldType->BombSight && !pCurrentType->BombSight)
 		BombListClass::Instance.RemoveDetector(pThis);
 	else if (!pOldType->BombSight && pCurrentType->BombSight)
@@ -798,6 +779,26 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 				secondaryFacing.SetCurrent(primaryFacing);
 				secondaryFacing.SetDesired(primaryFacing);
+			}
+
+			// FireAngle
+			pThis->BarrelFacing.SetCurrent(DirStruct(0x4000 - (pCurrentType->FireAngle << 8)));
+
+			// Reset recoil data
+			static_cast<UnitExt*>(this)->InitializeRecoilData();
+			{
+				auto& turretRecoil = pThis->TurretRecoil.Turret;
+				const auto& turretAnimData = pCurrentType->TurretAnimData;
+				turretRecoil.Travel = turretAnimData.Travel;
+				turretRecoil.CompressFrames = turretAnimData.CompressFrames;
+				turretRecoil.RecoverFrames = turretAnimData.RecoverFrames;
+				turretRecoil.HoldFrames = turretAnimData.HoldFrames;
+				auto& barrelRecoil = pThis->BarrelRecoil.Turret;
+				const auto& barrelAnimData = pCurrentType->BarrelAnimData;
+				barrelRecoil.Travel = barrelAnimData.Travel;
+				barrelRecoil.CompressFrames = barrelAnimData.CompressFrames;
+				barrelRecoil.RecoverFrames = barrelAnimData.RecoverFrames;
+				barrelRecoil.HoldFrames = barrelAnimData.HoldFrames;
 			}
 		}
 	}

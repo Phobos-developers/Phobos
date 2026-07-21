@@ -23,6 +23,9 @@ public:
 	bool IsBurrowed;
 	bool UndergroundTracked;
 
+	std::vector<RecoilData> ExtraTurretRecoil;
+	std::vector<RecoilData> ExtraBarrelRecoil;
+
 	explicit UnitExt(UnitClass* const OwnerObject) : FootExt(OwnerObject)
 		, SubterraneanHarvStatus { 0 }
 		, SubterraneanHarvRallyPoint { nullptr }
@@ -32,6 +35,8 @@ public:
 		, SimpleDeployerAnimationTimer {}
 		, IsBurrowed { false }
 		, UndergroundTracked { false }
+		, ExtraTurretRecoil {}
+		, ExtraBarrelRecoil {}
 	{ }
 
 	virtual ~UnitExt() override;
@@ -41,6 +46,9 @@ public:
 	void UpdateSubterraneanHarvester();
 	void UpdateKeepTargetOnMove();
 	void DepletedAmmoActions();
+	void InitializeRecoilData();
+	void UpdateRecoilData();
+	void RecordRecoilData();
 
 	static UnitClass* Deployer;
 

@@ -69,6 +69,7 @@ DEFINE_HOOK(0x736480, UnitClass_AI, 0x6)
 	pExt->UpdateKeepTargetOnMove();
 	pExt->DepletedAmmoActions();
 	pExt->UpdateSubterraneanHarvester();
+	pExt->UpdateRecoilData();
 
 	// Replace vanilla animation counter code in UnitClass::AI.
 	if (pThis->IsAlive && !pExt->DelayedFireSequencePaused && !((pThis->IsWarpingIn() && pThis->TemporalTargetingMe) || pThis->IsBeingWarpedOut()))
@@ -287,7 +288,9 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	pExt->InitializeAttachEffects();
 	pExt->InitializeDisplayInfo();
 	pExt->InitializeLaserTrails();
-	pExt->InitializeRecoilData();
+
+	if (pType->WhatAmI() == AbstractType::UnitType)
+		static_cast<UnitExt*>(pExt)->InitializeRecoilData();
 
 	if (!pExt->AE.HasTint) // already updated when initializing attach effect
 		pExt->UpdateTintValues();

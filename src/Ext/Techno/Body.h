@@ -81,9 +81,6 @@ public:
 	CoordStruct LastTargetCrd;
 	CDTimerClass LastTargetCrdClearTimer;
 
-	std::vector<RecoilData> ExtraTurretRecoil;
-	std::vector<RecoilData> ExtraBarrelRecoil;
-
 	TechnoExt(TechnoClass* OwnerObject) : RadioExt(OwnerObject)
 		, TypeExtData { nullptr }
 		, Shield {}
@@ -129,8 +126,6 @@ public:
 		, HoverShutdown { false }
 		, LastTargetCrd { CoordStruct::Empty }
 		, LastTargetCrdClearTimer {}
-		, ExtraTurretRecoil {}
-		, ExtraBarrelRecoil {}
 	{ }
 
 	void OnEarlyUpdate();
@@ -168,9 +163,6 @@ public:
 	int ApplyForceWeaponInRange(AbstractClass* pTarget);
 	void ResetDelayedFireTimer();
 	void UpdateTintValues();
-	void InitializeRecoilData();
-	void UpdateRecoilData();
-	void RecordRecoilData();
 
 	void AmmoAutoConvertActions();
 	void UpdateLastTargetCrd();

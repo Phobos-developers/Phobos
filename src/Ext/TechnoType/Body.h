@@ -426,14 +426,6 @@ public:
 
 	Nullable<bool> Unsellable; // Ares 3.0
 
-	Nullable<bool> BarrelOverTurret;
-	Valueable<int> BarrelOffset;
-	Valueable<int> ExtraBarrelCount;
-	std::vector<int> ExtraBarrelOffsets;
-	Valueable<int> ExtraTurretCount;
-	std::vector<CoordStruct> ExtraTurretOffsets;
-	Valueable<int> BurstPerTurret;
-
 	TechnoTypeExt(TechnoTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
 		, HealthBar_Hide { false }
 		, HealthBar_HidePips { false }
@@ -806,14 +798,6 @@ public:
 		, ExtraThreatCoefficient_InRangeDistance {}
 		, ExtraThreatCoefficient_Facing {}
 		, ExtraThreatCoefficient_DistanceToLastTarget {}
-
-		, BarrelOverTurret { }
-		, BarrelOffset { 0 }
-		, ExtraBarrelCount { 0 }
-		, ExtraBarrelOffsets { }
-		, ExtraTurretCount { 0 }
-		, ExtraTurretOffsets { }
-		, BurstPerTurret { 0 }
 	{ }
 
 	virtual ~TechnoTypeExt() = default;
@@ -822,7 +806,7 @@ public:
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0, int turIdx = -1);
+	void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 	void CalculateSpawnerRange();
 	bool IsSecondary(int nWeaponIndex) const;
 

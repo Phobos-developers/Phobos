@@ -1094,8 +1094,6 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->HoverShutdown)
 		.Process(this->LastTargetCrd)
 		.Process(this->LastTargetCrdClearTimer)
-		.Process(this->ExtraTurretRecoil)
-		.Process(this->ExtraBarrelRecoil)
 		;
 }
 
