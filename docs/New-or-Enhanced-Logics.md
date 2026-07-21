@@ -2011,15 +2011,19 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
 
 ```{hint}
 Here, the logic has been simplified at the INI writing level:
-- passengers only check their own `AutoDeath.AllowPassenger` and do not check `AutoDeath.AllowLimboed`, regardless of what the `OpenTopped` of the transport they are riding is.
+- Passengers only check their own `AutoDeath.AllowPassenger` and do not check `AutoDeath.AllowLimboed`, regardless of what the `OpenTopped` of the transport they are riding is.
 ```
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                                   ; TechnoType
-AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell), default not set
+[CombatDamage]
 AutoDeath.AllowLimboed=true                    ; boolean
 AutoDeath.AllowPassenger=true                  ; boolean
+
+[SOMETECHNO]                                   ; TechnoType
+AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell), default not set
+AutoDeath.AllowLimboed=true                    ; boolean, defaults to [CombatDamage] -> AutoDeath.AllowLimboed
+AutoDeath.AllowPassenger=true                  ; boolean, defaults to [CombatDamage] -> AutoDeath.AllowPassenger
 AutoDeath.VanishAnimation=                     ; List of AnimationTypes
 AutoDeath.OnAmmoDepletion=false                ; boolean
 AutoDeath.OnOwnerChange=false                  ; boolean

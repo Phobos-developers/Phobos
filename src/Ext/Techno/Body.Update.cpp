@@ -1,6 +1,7 @@
 // methods used in TechnoClass_AI hooks or anything similar
 #include "Body.h"
 
+#include <Ext/Rules/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/Foot/Body.h>
@@ -173,13 +174,13 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 
 	if (pThis->Transporter)
 	{
-		if (!pTypeExt->AutoDeath_AllowPassenger)
+		if (!pTypeExt->AutoDeath_AllowPassenger.Get(RulesExt::Global()->AutoDeath_AllowPassenger))
 			return false;
 
 		// For passengers in OpenTopped transport
 		isInLimbo = true;
 	}
-	else if (isInLimbo && !pTypeExt->AutoDeath_AllowLimboed)
+	else if (isInLimbo && !pTypeExt->AutoDeath_AllowLimboed.Get(RulesExt::Global()->AutoDeath_AllowLimboed))
 	{
 		return false;
 	}
