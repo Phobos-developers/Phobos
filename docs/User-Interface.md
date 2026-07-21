@@ -30,6 +30,16 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 
 ## Battle screen UI/UX
 
+### Allow chat box in singleplayer
+
+- In vanilla, the in-game chat box is disabled in singleplayer scenarios. You can now enable it by setting `[General] -> AllowChatBoxInSinglePlayer` to true.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AllowChatBoxInSinglePlayer=false  ; boolean
+```
+
 ### Allow draw SuperWeapon timer as percentage
 
 - Superweapon cd timer can now draw as percentage.
@@ -60,6 +70,21 @@ HealthBar.Hide=false                 ; boolean
 HealthBar.HidePips=false             ; boolean
 HealthBar.Permanent=false            ; boolean
 HealthBar.Permanent.PipScale=false   ; boolean
+```
+
+### Customize the step limit of the credits indicator
+
+- In vanilla, the Credits Indicator in the sidebar increases by at most 143 points per frame, and now you can customize this limit.
+  - If set to a value less than or equal to 0, the upper limit will be removed.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+CreditsIndicator.MaxStep=143  ; integer
+```
+
+```{note}
+The game first takes the absolute value of the difference between the actual credits and the current value, then divides it by 8, and then clamps this value to the limit set here. If you wish to disable this smoothing effect, set [`CreditsIndicator.Smooth=false`](User-Interface.md#disable-the-credits-indicator-smooth-transition).
 ```
 
 ### Digital display
@@ -184,6 +209,20 @@ The arrangement of static images on the plane is entirely up to you to draw free
 
 Of course, this is just the implementation method. To balance freedom with efficiency - that is, how to efficiently draw the patterns you need - you still need to independently explore a workflow that suits you.
 ````
+
+### Disable the credits indicator smooth transition
+
+- In vanilla, the Credits Indicator has a smooth transition effect when the displayed credit value approaches the actual credit value. Now you can disable this effect, allowing the change step to always follow the value of [`CreditsIndicator.MaxStep`](User-Interface.md#customize-the-step-limit-of-the-credits-indicator).
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+CreditsIndicator.Smooth=true  ; boolean
+```
+
+```{hint}
+For example, if you want to make the credits update immediately without a transition process by setting `CreditsIndicator.MaxStep=0`, then you should also set `CreditsIndicator.Smooth=false`; otherwise, the displayed credit value will still change in the form of an exponential approximation function.
+```
 
 ### Flashing Technos on selecting
 

@@ -8,7 +8,7 @@ namespace CloakTemp
 
 static bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
 {
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pExt = TechnoExt::Fetch(pThis);
 	const bool cloakable = pThis->Cloakable;
 	int rearm = -1;
 	pThis->Cloakable |= pExt->AE.Cloakable;
@@ -36,7 +36,7 @@ static bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
 
 static bool __fastcall TechnoClass_ShouldNotCloak_Wrapper(TechnoClass* pThis)
 {
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pExt = TechnoExt::Fetch(pThis);
 	const bool cloakable = pThis->Cloakable;
 	pThis->Cloakable |= pExt->AE.Cloakable;
 
@@ -96,7 +96,7 @@ DEFINE_HOOK(0x703789, TechnoClass_Cloak_BeforeDetach, 0x6)        // TechnoClass
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (auto const pExt = TechnoExt::ExtMap.TryFind(pThis))
+	if (auto const pExt = TechnoExt::TryFetch(pThis))
 	{
 		if (!pExt->MindControlRingAnimType)
 			pExt->UpdateMindControlAnim();
@@ -112,7 +112,7 @@ DEFINE_HOOK(0x703799, TechnoClass_Cloak_AfterDetach, 0xA)        // TechnoClass_
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (auto const pExt = TechnoExt::ExtMap.TryFind(pThis))
+	if (auto const pExt = TechnoExt::TryFetch(pThis))
 		pExt->IsDetachingForCloak = false;
 
 	return 0;
@@ -122,7 +122,7 @@ DEFINE_HOOK(0x6FB9D7, TechnoClass_Cloak_RestoreMCAnim, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (auto const pExt = TechnoExt::ExtMap.TryFind(pThis))
+	if (auto const pExt = TechnoExt::TryFetch(pThis))
 		pExt->UpdateMindControlAnim();
 
 	return 0;
@@ -190,7 +190,7 @@ DEFINE_HOOK(0x6FCA26, TechnoClass_CanFire_RevertAresOpenTopCloakFix, 0x6)
 
 	if (pThis->InOpenToppedTransport && pThis->Transporter)
 	{
-		auto const pTransporterTypeExt = TechnoExt::ExtMap.Find(pThis->Transporter)->TypeExtData;
+		auto const pTransporterTypeExt = TechnoExt::Fetch(pThis->Transporter)->TypeExtData;
 		if (pTransporterTypeExt->OpenTopped_DecloakToFire.Get(RulesExt::Global()->OpenTopped_DecloakToFire))
 			return NotApplicable;
 	}
@@ -206,7 +206,7 @@ DEFINE_HOOK(0x6FCD1D, TechnoClass_CanFire_OpenTopCloakFix, 0x5)
 
 	if (checkIfTargetInRange && pThis->InOpenToppedTransport && pThis->Transporter)
 	{
-		auto const pTransporterTypeExt = TechnoExt::ExtMap.Find(pThis->Transporter)->TypeExtData;
+		auto const pTransporterTypeExt = TechnoExt::Fetch(pThis->Transporter)->TypeExtData;
 		if (pTransporterTypeExt->OpenTopped_DecloakToFire.Get(RulesExt::Global()->OpenTopped_DecloakToFire))
 			pThis->Transporter->Uncloak(true);
 	}

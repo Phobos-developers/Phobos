@@ -9,7 +9,7 @@ DEFINE_HOOK(0x71C110, TerrainClass_SetOccupyBit_PassableTerrain, 0x6)
 
 	GET(TerrainClass*, pThis, ECX);
 
-	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type);
+	auto const pTypeExt = TerrainTypeExt::Fetch(pThis->Type);
 
 	if (pTypeExt->IsPassable.Get(RulesExt::Global()->Terrain_IsPassable))
 		return Skip;
@@ -31,7 +31,7 @@ DEFINE_HOOK(0x7002E9, TechnoClass_WhatAction_PassableTerrain, 0x5)
 
 	if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pTarget))
 	{
-		if (!isForceFire && TerrainTypeExt::ExtMap.Find(pTerrain->Type)->IsPassable.Get(RulesExt::Global()->Terrain_IsPassable))
+		if (!isForceFire && TerrainTypeExt::Fetch(pTerrain->Type)->IsPassable.Get(RulesExt::Global()->Terrain_IsPassable))
 		{
 			R->EBP(Action::Move);
 			return ReturnAction;
@@ -49,7 +49,7 @@ DEFINE_HOOK(0x483DDF, CellClass_CheckPassability_PassableTerrain, 0x6)
 	GET(CellClass*, pThis, EDI);
 	GET(TerrainClass*, pTerrain, ESI);
 
-	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
+	auto const pTypeExt = TerrainTypeExt::Fetch(pTerrain->Type);
 
 	if (pTypeExt->IsPassable.Get(RulesExt::Global()->Terrain_IsPassable))
 	{
@@ -69,7 +69,7 @@ DEFINE_HOOK(0x73FB71, UnitClass_CanEnterCell_PassableTerrain, 0x6)
 
 	if (auto const pTerrain = abstract_cast<TerrainClass*>(pTarget))
 	{
-		auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
+		auto const pTypeExt = TerrainTypeExt::Fetch(pTerrain->Type);
 
 		if (pTypeExt->IsPassable.Get(RulesExt::Global()->Terrain_IsPassable))
 			return SkipTerrainChecks;
@@ -89,7 +89,7 @@ DEFINE_HOOK(0x6D57C1, TacticalClass_DrawLaserFencePlacement_BuildableTerrain, 0x
 	GET(CellClass*, pCell, ESI);
 
 	if (auto const pTerrain = pCell->GetTerrain(false))
-		return TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn) ? ContinueChecks : DontDraw;
+		return TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn) ? ContinueChecks : DontDraw;
 
 	return ContinueChecks;
 }
@@ -104,7 +104,7 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableTerrain, 0x6)
 	{
 		if (auto const pTerrain = pCell->GetTerrain(false))
 		{
-			if (TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn))
+			if (TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn))
 			{
 				pCell->RemoveContent(pTerrain, false);
 				TerrainTypeExt::Remove(pTerrain);
@@ -127,7 +127,7 @@ DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
 
 	if (auto const pTerrain = pCell->GetTerrain(false))
 	{
-		if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn))
+		if (!TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn))
 			return NoUnlimbo;
 
 		pCell->RemoveContent(pTerrain, false);
@@ -146,7 +146,7 @@ DEFINE_HOOK(0x45EF3A, BuildingTypeClass_FlushForPlacement_BuildableTerrain, 0x7)
 
 	if (auto const pTerrain = abstract_cast<TerrainClass*>(pObject))
 	{
-		if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn))
+		if (!TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn))
 			return Disallow;
 	}
 
@@ -164,7 +164,7 @@ namespace FindBuildLocationTemp
 static bool __fastcall MapClass_IsAreaFree_Wrapper(MapClass* pThis, void* _, RectangleStruct* pRect, int houseID)
 {
 	FindBuildLocationTemp::EvaluatingBuildLocation = true;
-	bool result = pThis->IsAreaFree(pRect, houseID);
+	const bool result = pThis->IsAreaFree(pRect, houseID);
 	FindBuildLocationTemp::EvaluatingBuildLocation = false;
 	return result;
 }
@@ -178,9 +178,9 @@ DEFINE_HOOK(0x586780, MapClass_IsAreaFree, 0x7)
 
 	GET(MapClass*, pThis, ECX);
 	GET_STACK(RectangleStruct*, pRect, 0x4);
-	GET_STACK(int, houseID, 0x8);
+	GET_STACK(const int, houseID, 0x8);
 
-	int mask = houseID >= 0 ? 1 << houseID : 0;
+	const int mask = houseID >= 0 ? 1 << houseID : 0;
 
 	for (int x = pRect->X; x < pRect->X + pRect->Width; x++)
 	{
@@ -192,7 +192,7 @@ DEFINE_HOOK(0x586780, MapClass_IsAreaFree, 0x7)
 
 			if (pTerrain)
 			{
-				if (!FindBuildLocationTemp::EvaluatingBuildLocation || !TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+				if (!FindBuildLocationTemp::EvaluatingBuildLocation || !TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn)
 				{
 					R->EAX(false);
 					return ReturnFromFunction;

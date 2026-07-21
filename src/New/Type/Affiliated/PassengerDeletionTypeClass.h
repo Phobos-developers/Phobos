@@ -8,10 +8,6 @@ public:
 
 	PassengerDeletionTypeClass() = default;
 
-	PassengerDeletionTypeClass(TechnoTypeClass* pOwnerType);
-
-	TechnoTypeClass* OwnerType;
-
 	Valueable<int> Rate;
 	Valueable<bool> Rate_SizeMultiply;
 	Valueable<bool> UseCostAsRate;

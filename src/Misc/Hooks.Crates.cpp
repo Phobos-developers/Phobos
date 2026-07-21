@@ -1,4 +1,4 @@
-#include <Ext/TechnoType/Body.h>
+#include <Ext/UnitType/Body.h>
 
 DEFINE_HOOK(0x56BD8B, MapClass_PlaceRandomCrate_Sampling, 0x5)
 {
@@ -82,7 +82,7 @@ DEFINE_HOOK(0x4821BD, CellClass_GoodieCheck_CrateGoodie, 0x6)
 
 	if (crateGoodie)
 	{
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pUnitType);
+		auto const pTypeExt = UnitTypeExt::Fetch(pUnitType);
 
 		if (pTypeExt->CrateGoodie_RerollChance > 0.0)
 			crateGoodie = pTypeExt->CrateGoodie_RerollChance < ScenarioClass::Instance->Random.RandomDouble();

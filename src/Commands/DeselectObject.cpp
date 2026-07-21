@@ -24,10 +24,8 @@ const wchar_t* DeselectObjectCommandClass::GetUIDescription() const
 
 void DeselectObjectCommandClass::Execute(WWKey eInput) const
 {
-	int nCount = ObjectClass::CurrentObjects.Count;
+	const int nCount = ObjectClass::CurrentObjects.Count;
 
 	if (nCount > 0)
-	{
 		ObjectClass::CurrentObjects.GetItem(0)->Deselect();
-	}
 }

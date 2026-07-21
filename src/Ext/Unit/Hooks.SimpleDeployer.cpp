@@ -2,12 +2,12 @@
 #include <JumpjetLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
-#include <Ext/Techno/Body.h>
+#include <Ext/Unit/Body.h>
 #include <Utilities/AresFunctions.h>
 
-static __forceinline bool HasDeployingAnim(TechnoTypeClass* pType)
+static __forceinline bool HasDeployingAnim(UnitTypeClass* pType)
 {
-	return pType->DeployingAnim || TechnoTypeExt::ExtMap.Find(pType)->DeployingAnims.size() > 0;
+	return pType->DeployingAnim || UnitTypeExt::Fetch(pType)->DeployingAnims.size() > 0;
 }
 
 static inline bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
@@ -33,7 +33,7 @@ static inline bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 	}
 
 	// Facing restrictions.
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pUnit)->TypeExtData;
+	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pUnit))->GetTypeExtData();
 	auto const defaultFacing = (FacingType)(RulesClass::Instance->DeployDir >> 5);
 	auto const facing = pTypeExt->DeployDir.Get(defaultFacing);
 
@@ -70,7 +70,7 @@ static inline void CreateDeployingAnim(UnitClass* pUnit, bool isDeploying)
 	if (!pUnit->DeployAnim)
 	{
 		auto const pType = pUnit->Type;
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		auto const pTypeExt = UnitTypeExt::Fetch(pType);
 		auto pAnimType = pType->DeployingAnim;
 
 		if (pTypeExt->DeployingAnims.size() > 0)
@@ -82,8 +82,8 @@ static inline void CreateDeployingAnim(UnitClass* pUnit, bool isDeploying)
 		pUnit->DeployAnim = pAnim;
 		pAnim->SetOwnerObject(pUnit);
 		AnimExt::SetAnimOwnerHouseKind(pAnim, pUnit->Owner, nullptr, false, true);
-		AnimExt::ExtMap.Find(pAnim)->SetInvoker(pUnit);
-		auto const pExt = TechnoExt::ExtMap.Find(pUnit);
+		AnimExt::Fetch(pAnim)->SetInvoker(pUnit);
+		auto const pExt = UnitExt::Fetch(pUnit);
 
 		if (pTypeExt->DeployingAnim_UseUnitDrawer)
 		{
@@ -127,7 +127,7 @@ DEFINE_HOOK(0x739AC0, UnitClass_SimpleDeployer_Deploy, 0x6)
 
 		if (pThis->Deploying && pThis->DeployAnim)
 		{
-			auto const pExt = TechnoExt::ExtMap.Find(pThis);
+			auto const pExt = UnitExt::Fetch(pThis);
 			auto& timer = pExt->SimpleDeployerAnimationTimer;
 
 			if (timer.Completed())
@@ -158,12 +158,12 @@ DEFINE_HOOK(0x739AC0, UnitClass_SimpleDeployer_Deploy, 0x6)
 	if (pThis->Deployed)
 	{
 		int maxAmmo = -1;
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+		auto const pTypeExt = TechnoTypeExt::Fetch(pThis->Type);
 
 		if (AresFunctions::ConvertTypeTo && pTypeExt->Convert_Deploy)
 			maxAmmo = pTypeExt->Convert_Deploy->Ammo;
 
-		TechnoExt::HandleOnDeployAmmoChange(pThis, maxAmmo);
+		UnitExt::HandleOnDeployAmmoChange(pThis, maxAmmo);
 
 		if (pType->DeploySound != -1)
 			VocClass::PlayAt(pType->DeploySound, pThis->Location);
@@ -188,7 +188,7 @@ DEFINE_HOOK(0x739CD0, UnitClass_SimpleDeployer_Undeploy, 0x6)
 	{
 		if (pThis->Undeploying && pThis->DeployAnim)
 		{
-			auto const pExt = TechnoExt::ExtMap.Find(pThis);
+			auto const pExt = UnitExt::Fetch(pThis);
 			auto& timer = pExt->SimpleDeployerAnimationTimer;
 
 			if (timer.Completed())
@@ -220,7 +220,7 @@ DEFINE_HOOK(0x739CD0, UnitClass_SimpleDeployer_Undeploy, 0x6)
 
 		if (!pThis->Deployed)
 		{
-			TechnoExt::HandleOnDeployAmmoChange(pThis);
+			UnitExt::HandleOnDeployAmmoChange(pThis);
 
 			if (pType->UndeploySound != -1)
 				VocClass::PlayAt(pType->UndeploySound, pThis->Location);
@@ -254,7 +254,7 @@ DEFINE_HOOK(0x54C58E, JumpjetLocomotionClass_Descending_PathfindingChecks, 0x7)
 
 	auto const pUnit = abstract_cast<UnitClass*>(pThis->LinkedTo);
 
-	if (pUnit && pUnit->CurrentMission == Mission::Unload && TechnoExt::SimpleDeployerAllowedToDeploy(pUnit, false, true))
+	if (pUnit && pUnit->CurrentMission == Mission::Unload && UnitExt::SimpleDeployerAllowedToDeploy(pUnit, false, true))
 		return SkipGameCode;
 
 	return 0;
@@ -319,7 +319,7 @@ DEFINE_HOOK(0x514A2A, HoverLocomotionClass_Process_DeployToLand, 0x8)
 
 		if (pType->DeployToLand)
 		{
-			if (!TechnoExt::SimpleDeployerAllowedToDeploy(pUnit, false, true))
+			if (!UnitExt::SimpleDeployerAllowedToDeploy(pUnit, false, true))
 			{
 				pUnit->InAir = false;
 				pLinkedTo->QueueMission(Mission::Guard, true);
@@ -383,7 +383,7 @@ DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
 
 	if (pThis->Deploying || pThis->Undeploying)
 	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+		const auto pTypeExt = UnitTypeExt::Fetch(pThis->Type);
 
 		if (pTypeExt->DeployingAnim_KeepUnitVisible || (pThis->Deploying && !pThis->DeployAnim))
 			return Continue;

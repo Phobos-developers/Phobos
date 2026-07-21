@@ -3,7 +3,7 @@
 
 #include "Body.h"
 
-#include <Ext/Techno/Body.h>
+#include <Ext/Unit/Body.h>
 
 DEFINE_HOOK(0x737F6D, UnitClass_TakeDamage_Destroy, 0x7)
 {
@@ -11,7 +11,7 @@ DEFINE_HOOK(0x737F6D, UnitClass_TakeDamage_Destroy, 0x7)
 	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFSET(0x44, 0x4));
 
 	R->ECX(R->ESI());
-	TechnoExt::ExtMap.Find(pThis)->ReceiveDamage = true;
+	UnitExt::Fetch(pThis)->ReceiveDamage = true;
 	auto pAttacker = receiveDamageArgs.Attacker;
 	AnimTypeExt::ProcessDestroyAnims(pThis, pAttacker ? pAttacker->Owner : receiveDamageArgs.SourceHouse);
 	pThis->Destroy();
@@ -23,7 +23,7 @@ DEFINE_HOOK(0x738807, UnitClass_Destroy_DestroyAnim, 0x8)
 {
 	GET(UnitClass* const, pThis, ESI);
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pExt = UnitExt::Fetch(pThis);
 
 	if (!pExt->ReceiveDamage)
 		AnimTypeExt::ProcessDestroyAnims(pThis);
@@ -37,7 +37,7 @@ DEFINE_HOOK(0x4226F0, AnimClass_CTOR_CreateUnit_MarkOccupationBits, 0x6)
 {
 	GET(AnimClass* const, pThis, ESI);
 
-	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+	auto const pTypeExt = AnimTypeExt::Fetch(pThis->Type);
 
 	if (pTypeExt->CreateUnitType)
 		pThis->MarkAllOccupationBits(pThis->GetCell()->GetCoordsWithBridge());
@@ -50,12 +50,12 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualEffects, 0x6)
 	GET(AnimClass* const, pThis, ESI);
 
 	auto const pType = pThis->Type;
-	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pType);
+	auto const pTypeExt = AnimTypeExt::Fetch(pType);
 
 	if (auto const pCreateUnit = pTypeExt->CreateUnitType.get())
 	{
 		auto const pUnitType = pCreateUnit->Type;
-		auto const pExt = AnimExt::ExtMap.Find(pThis);
+		auto const pExt = AnimExt::Fetch(pThis);
 		pThis->UnmarkAllOccupationBits(pThis->GetCell()->GetCoordsWithBridge());
 
 		auto const facing = pCreateUnit->RandomFacing
