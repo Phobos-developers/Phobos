@@ -81,8 +81,6 @@ public:
 	CoordStruct LastTargetCrd;
 	CDTimerClass LastTargetCrdClearTimer;
 
-	bool HasDeployConverted;
-	bool HasUndeployConverted;
 	bool ShouldBeDead;
 
 	TechnoExt(TechnoClass* OwnerObject) : RadioExt(OwnerObject)
@@ -130,8 +128,6 @@ public:
 		, HoverShutdown { false }
 		, LastTargetCrd { CoordStruct::Empty }
 		, LastTargetCrdClearTimer {}
-		, HasDeployConverted { false }
-		, HasUndeployConverted { false }
 		, ShouldBeDead { false }
 	{ }
 
