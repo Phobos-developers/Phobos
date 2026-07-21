@@ -2839,7 +2839,7 @@ SplashList.CreationInterval=0   ; integer
 SplashList.ScatterMin=0.0       ; floating point value, distance in cells
 SplashList.ScatterMax=0.0       ; floating point value, distance in cells
 CreateAnimsOnZeroDamage=        ; boolean, default to [General] -> CreateAnimsOnZeroDamage
-Conventional.IgnoreUnits=false  ; boolean, default to [General] -> Conventional.IgnoreUnits
+Conventional.IgnoreUnits=       ; boolean, default to [General] -> Conventional.IgnoreUnits
 ```
 
 ### Customizable Warhead trigger conditions

@@ -443,7 +443,7 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 
-	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons.Get(RulesExt::Global()->OpenTopped_CheckTransportDisableWeapons && TechnoExt::HasWeaponsDisabled(pTransport) && pWeapon))
+	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons.Get(RulesExt::Global()->OpenTopped_CheckTransportDisableWeapons) && TechnoExt::HasWeaponsDisabled(pTransport) && pWeapon)
 		return OutOfRange;
 
 	if (auto const pTransportFoot = abstract_cast<FootClass*>(pTransport))
