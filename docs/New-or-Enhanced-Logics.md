@@ -2005,12 +2005,13 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
   - `vanish`: The object will be directly removed from the game peacefully instead of actually getting killed.
   - `sell`: If the object is a **building** with buildup, it will be sold instead of destroyed.
 - If this option is not set, the self-destruction logic will not be enabled. `AutoDeath.VanishAnimation` can be set to animation to play at object's location if `vanish` behaviour is chosen. If more than one animation is listed, a random one is selected.
-- `AutoDeath.AllowLimboed` can be used to define whether AutoDeath is triggered when the unit is in limbo state.
-- `AutoDeath.AllowPassenger` can be used to define whether the unit triggers AutoDeath when it is a passenger.
+- `AutoDeath.AllowLimboed` can be used to define whether the auto death effect is triggered when the unit is in limbo state.
+- `AutoDeath.AllowPassenger` can be used to define whether the unit triggers the auto death effect when it is a passenger.
 - This logic also supports buildings delivered by [LimboDelivery](#limbodelivery). However in this case, all `AutoDeath.Behavior` values produce identical result where the building is simply deleted.
 
 ```{hint}
-If the unit is a passenger in a transport with `OpenTopped=false`, then self-destruction will only be triggered when both `AutoDeath.AllowLimboed` and `AutoDeath.AllowPassenger` are `true`.
+Here, the logic has been simplified at the INI writing level:
+- passengers only check their own `AutoDeath.AllowPassenger` and do not check `AutoDeath.AllowLimboed`, regardless of what the `OpenTopped` of the transport they are riding is.
 ```
 
 In `rulesmd.ini`:
@@ -2037,10 +2038,6 @@ AutoDeath.TechnosExist.Houses=owner            ; Affected House Enumeration (non
 
 ```{note}
 Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option **if you are not using Ares 3.0+**.
-```
-
-```{note}
-Currently, the scenario where the unit is a passenger in a transport with `OpenTopped=false` can only trigger AutoDeath when the owner changes. This may change in future.
 ```
 
 ### Low priority for deploy

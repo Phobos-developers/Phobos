@@ -8,6 +8,7 @@
 #include <Ext/EBolt/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/CaptureManager/Body.h>
+#include <Ext/Scenario/Body.h>
 
 #include <New/Entity/Ares/RadarJammerClass.h>
 
@@ -27,6 +28,17 @@ static ObjectClass* __fastcall CreateInitialPayload(TechnoTypeClass* type, void*
 static void __fastcall InitialPayload_OpenToppedFix(TechnoClass* pThis)
 {
 	pThis->IsInPlayfield = true;
+
+	if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		if (pExt->TypeExtData->AutoDeath_Behavior.isset())
+		{
+			auto& vec = ScenarioExt::Global()->AutoDeathObjects;
+			if (std::find(vec.begin(), vec.end(), pExt) == vec.end())
+				vec.push_back(pExt);
+		}
+	}
+
 	pThis->Limbo();
 }
 
