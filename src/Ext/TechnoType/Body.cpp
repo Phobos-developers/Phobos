@@ -1300,7 +1300,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	auto [canParse, resetValue] = PassengerDeletionTypeClass::CanParse(exINI, pSection);
 
 	if (canParse && !this->PassengerDeletionType)
-		this->PassengerDeletionType = std::make_unique<PassengerDeletionTypeClass>(pThis);
+		this->PassengerDeletionType = std::make_unique<PassengerDeletionTypeClass>();
 
 	if (this->PassengerDeletionType)
 	{
@@ -1330,7 +1330,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	if (isInterceptor)
 	{
 		if (this->InterceptorType == nullptr)
-			this->InterceptorType = std::make_unique<InterceptorTypeClass>(pThis);
+			this->InterceptorType = std::make_unique<InterceptorTypeClass>();
 
 		this->InterceptorType->LoadFromINI(pINI, pSection);
 	}

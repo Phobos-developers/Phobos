@@ -247,16 +247,15 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 void TechnoExt::EatPassengers()
 {
 	auto const pTypeExt = this->TypeExtData;
+	auto const pDelType = pTypeExt->PassengerDeletionType.get();
 
-	if (!pTypeExt->PassengerDeletionType)
+	if (!pDelType)
 		return;
 
 	auto const pThis = this->OwnerObject();
 
 	if (!TechnoExt::IsActiveIgnoreEMP(pThis))
 		return;
-
-	auto const pDelType = pTypeExt->PassengerDeletionType.get();
 
 	if (!pDelType->UnderEMP && (pThis->Deactivated || pThis->IsUnderEMP()))
 	{

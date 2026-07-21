@@ -12,25 +12,6 @@ std::pair<bool, bool> PassengerDeletionTypeClass::CanParse(INI_EX exINI, const c
 	return std::make_pair(canParse, shouldResetValue);
 }
 
-PassengerDeletionTypeClass::PassengerDeletionTypeClass(TechnoTypeClass* pOwnerType)
-	: OwnerType(pOwnerType)
-	, Rate { 0 }
-	, Rate_SizeMultiply { true }
-	, UseCostAsRate { false }
-	, CostMultiplier { 1.0 }
-	, CostRateCap {}
-	, AllowedHouses { AffectedHouse::All }
-	, DontScore { false }
-	, Soylent { false }
-	, SoylentMultiplier { 1.0 }
-	, SoylentAllowedHouses { AffectedHouse::Enemies }
-	, DisplaySoylent { false }
-	, DisplaySoylentToHouses { AffectedHouse::All }
-	, DisplaySoylentOffset { { 0, 0 } }
-	, ReportSound {}
-	, Anim {}
-	, UnderEMP { false }
-{ }
 void PassengerDeletionTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 {
 	INI_EX exINI(pINI);
@@ -59,7 +40,6 @@ template <class T>
 bool PassengerDeletionTypeClass::Serialize(T& stm)
 {
 	return stm
-		.Process(this->OwnerType)
 		.Process(this->Rate)
 		.Process(this->Rate_SizeMultiply)
 		.Process(this->UseCostAsRate)
