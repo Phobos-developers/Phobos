@@ -744,11 +744,8 @@ void HouseExt::OnDetach(BuildingClass* pTarget, bool removed)
 {
 	if (removed)
 	{
-		AnnounceInvalidPointer(this->Factory_BuildingType, pTarget);
-		AnnounceInvalidPointer(this->Factory_InfantryType, pTarget);
-		AnnounceInvalidPointer(this->Factory_VehicleType, pTarget);
-		AnnounceInvalidPointer(this->Factory_NavyType, pTarget);
-		AnnounceInvalidPointer(this->Factory_AircraftType, pTarget);
+		// Factory_* fields are GameHandle<BuildingClass> and self-invalidate on
+		// pointee destruction, so they no longer need AnnounceInvalidPointer here.
 
 		if (!this->PowerPlantEnhancers.empty())
 		{

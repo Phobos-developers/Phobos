@@ -4,10 +4,10 @@
 #include <Ext/TeamType/Body.h>
 
 #include <Utilities/Container.h>
-#include <Utilities/Detach.h>
+#include <Utilities/GameHandle.h>
 #include <Utilities/TemplateDef.h>
 
-class TeamExt final : public AbstractExt, public Detach::Listener<FootClass>
+class TeamExt final : public AbstractExt
 {
 public:
 	using base_type = TeamClass;
@@ -35,7 +35,7 @@ public:
 	CDTimerClass ForceJump_Countdown;
 	int ForceJump_InitialCountdown;
 	bool ForceJump_RepeatMode;
-	FootClass* TeamLeader;
+	GameHandle<FootClass> TeamLeader;
 	std::vector<ScriptClass*> PreviousScriptList;
 
 	TeamExt(TeamClass* OwnerObject) : AbstractExt(OwnerObject)
@@ -50,13 +50,11 @@ public:
 		, ForceJump_Countdown { }
 		, ForceJump_InitialCountdown { -1 }
 		, ForceJump_RepeatMode { false }
-		, TeamLeader { nullptr }
+		, TeamLeader {}
 		, PreviousScriptList { }
 	{ }
 
 	virtual ~TeamExt() = default;
-
-	virtual void OnDetach(FootClass* pTarget, bool removed) override;
 
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;

@@ -5,6 +5,7 @@
 
 #include <Utilities/Container.h>
 #include <Utilities/Detach.h>
+#include <Utilities/GameHandle.h>
 #include <Utilities/TemplateDef.h>
 
 #include <array>
@@ -37,11 +38,11 @@ public:
 	CounterClass LimboInfantry;  // Currently owned infantry in limbo
 	CounterClass LimboVehicles;  // Currently owned vehicles in limbo
 
-	BuildingClass* Factory_BuildingType;
-	BuildingClass* Factory_InfantryType;
-	BuildingClass* Factory_VehicleType;
-	BuildingClass* Factory_NavyType;
-	BuildingClass* Factory_AircraftType;
+	GameHandle<BuildingClass> Factory_BuildingType;
+	GameHandle<BuildingClass> Factory_InfantryType;
+	GameHandle<BuildingClass> Factory_VehicleType;
+	GameHandle<BuildingClass> Factory_NavyType;
+	GameHandle<BuildingClass> Factory_AircraftType;
 
 	CDTimerClass CombatAlertTimer;
 	CDTimerClass AISuperWeaponDelayTimer;
@@ -89,11 +90,11 @@ public:
 		, LimboBuildings {}
 		, LimboInfantry {}
 		, LimboVehicles {}
-		, Factory_BuildingType { nullptr }
-		, Factory_InfantryType { nullptr }
-		, Factory_VehicleType { nullptr }
-		, Factory_NavyType { nullptr }
-		, Factory_AircraftType { nullptr }
+		, Factory_BuildingType {}
+		, Factory_InfantryType {}
+		, Factory_VehicleType {}
+		, Factory_NavyType {}
+		, Factory_AircraftType {}
 		, AISuperWeaponDelayTimer {}
 		, RepairBaseNodes { }
 		, RestrictedFactoryPlants {}

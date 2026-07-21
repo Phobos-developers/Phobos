@@ -11,6 +11,7 @@
 #include "Stream.h"
 #include "Swizzle.h"
 #include "Phobos.h"
+#include "GameHandle.h"
 
 class AbstractClass;
 
@@ -56,6 +57,11 @@ class AbstractExt
 	// so single removals don't have to search the list; never serialized
 	size_t ContainerIndex { SIZE_MAX };
 
+	// index into GameHandleTable reserved for this extension's owner, used by
+	// GameHandle<T> to resolve back to the owner without holding a raw pointer
+	// that could outlive the pointee. Serialized so handles survive save/load.
+	uint32_t SlotIndex { GameHandleTable::INVALID_SLOT };
+
 public:
 	// every extension pointer lives in the unused AbstractClass::unknown_18 field
 	static constexpr size_t ExtPointerOffset = 0x18;
@@ -93,14 +99,54 @@ public:
 		*reinterpret_cast<AbstractExt**>(reinterpret_cast<char*>(pThis) + ExtPointerOffset) = pExt;
 	}
 
+	// the object this extension expands; exposed so GameHandleTable::RebuildPointers
+	// can read every owner back without going through the typed OwnerObject() shadow
+	AbstractClass* GetAttachedObject() const
+	{
+		return this->AttachedToObject;
+	}
+
+	// index into GameHandleTable reserved for this extension's owner; read by
+	// GameHandle<T> and GameHandleTable::RebuildPointers to resolve handles back
+	// to the owner without holding a raw pointer that could outlive the pointee
+	uint32_t GetSlotIndex() const noexcept
+	{
+		return this->SlotIndex;
+	}
+
 	explicit AbstractExt(AbstractClass* const OwnerObject) : AttachedToObject { OwnerObject }, Initialized { InitState::Blank }
-	{ }
+	{
+		// Diagnostic: confirm ctor runs and see why Allocate is skipped
+		auto* const dbgTable = GameHandleTable::TryInstance();
+		Debug::Log("[GameHandle] AbstractExt ctor ptr=%p loading=%d table=%p\n",
+			static_cast<void*>(OwnerObject),
+			static_cast<int>(Phobos::IsLoadingSaveGame),
+			static_cast<void*>(dbgTable));
+		// during savegame load the extension is recreated from the stream and its
+		// SlotIndex is restored by LoadFromStream; allocating here would corrupt
+		// the freshly rebuilt table with throwaway slots
+		if (!Phobos::IsLoadingSaveGame)
+		{
+			// ScenarioExt (and therefore the table) may not exist yet during early
+			// game init; those extensions get INVALID_SLOT and are never referenced
+			// by GameHandle, so skipping them is safe.
+			if (auto* const table = GameHandleTable::TryInstance())
+				this->SlotIndex = table->Allocate(OwnerObject);
+		}
+	}
 
 	AbstractExt(const AbstractExt& other) = delete;
 
 	void operator=(const AbstractExt& RHS) = delete;
 
-	virtual ~AbstractExt() = default;
+	virtual ~AbstractExt()
+	{
+		if (this->SlotIndex != GameHandleTable::INVALID_SLOT)
+		{
+			if (auto* const table = GameHandleTable::TryInstance())
+				table->Release(this->SlotIndex);
+		}
+	}
 
 	void EnsureConstanted()
 	{
@@ -139,11 +185,13 @@ public:
 	virtual inline void SaveToStream(PhobosStreamWriter& Stm)
 	{
 		Stm.Save(this->Initialized);
+		Stm.Save(this->SlotIndex);
 	}
 
 	virtual inline void LoadFromStream(PhobosStreamReader& Stm)
 	{
 		Stm.Load(this->Initialized);
+		Stm.Load(this->SlotIndex);
 	}
 
 	// on load the extension is constructed with the save-time owner pointer;
@@ -157,11 +205,6 @@ public:
 	virtual void PostLoad() { }
 
 protected:
-	AbstractClass* GetAttachedObject() const
-	{
-		return this->AttachedToObject;
-	}
-
 	// right after construction. only basic initialization tasks possible;
 	// owner object is only partially constructed! do not use global state!
 	virtual void InitializeConstants() { }
@@ -798,6 +841,21 @@ public:
 				SetExtensionPointer(key, item);
 				item->PostLoad();
 			}
+		}
+	}
+
+	// Visits every live extension of this container, handing each one to the
+	// callback as an AbstractExt*. Used by GameHandleTable::RebuildPointers to
+	// rewrite each slot's pointer after a savegame load. No-op for containers
+	// whose extension type does not derive from AbstractExt (the map-mode EBolt
+	// container).
+	template <typename Fn>
+	void ForEachExtension(Fn callback) const
+	{
+		if constexpr (std::is_base_of_v<AbstractExt, extension_type>)
+		{
+			for (const auto& item : this->Items)
+				callback(static_cast<AbstractExt*>(item));
 		}
 	}
 

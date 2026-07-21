@@ -2,7 +2,9 @@
 #include <Ext/Techno/Body.h>
 #include <Ext/BuildingType/Body.h>
 
-class BuildingExt final : public TechnoExt, public Detach::Listener<BuildingClass>
+#include <Utilities/GameHandle.h>
+
+class BuildingExt final : public TechnoExt
 {
 public:
 	using base_type = BuildingClass;
@@ -17,7 +19,7 @@ public:
 	int LimboID;
 	int GrindingWeapon_LastFiredFrame;
 	int GrindingWeapon_AccumulatedCredits;
-	BuildingClass* CurrentAirFactory;
+	GameHandle<BuildingClass> CurrentAirFactory;
 	int AccumulatedIncome;
 	std::optional<int> CurrentLaserWeaponIndex;
 	int PoweredUpToLevel; // Distinct from UpgradeLevel, and set to highest PowersUpToLevel out of applied upgrades regardless of how many are currently applied to this building.
@@ -34,7 +36,7 @@ public:
 		, LimboID { -1 }
 		, GrindingWeapon_LastFiredFrame { 0 }
 		, GrindingWeapon_AccumulatedCredits { 0 }
-		, CurrentAirFactory { nullptr }
+		, CurrentAirFactory {}
 		, AccumulatedIncome { 0 }
 		, CurrentLaserWeaponIndex {}
 		, PoweredUpToLevel { 0 }
@@ -65,12 +67,6 @@ public:
 	virtual ~BuildingExt() = default;
 
 	// virtual void LoadFromINIFile(CCINIClass* pINI) override;
-
-	virtual void OnDetach(BuildingClass* pTarget, bool removed) override
-	{
-		if (removed)
-			AnnounceInvalidPointer(this->CurrentAirFactory, pTarget);
-	}
 
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;

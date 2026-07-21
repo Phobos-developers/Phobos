@@ -46,7 +46,7 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode, bool pickAlli
 	}
 
 	// Find the Leader
-	auto pLeaderUnit = pTeamData->TeamLeader;
+	auto pLeaderUnit = pTeamData->TeamLeader.Get();
 
 	if (!ScriptExt::IsUnitAvailable(pLeaderUnit, true))
 	{

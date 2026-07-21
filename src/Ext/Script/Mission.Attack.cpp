@@ -143,7 +143,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 	}
 
 	// Find the Leader
-	auto pLeaderUnit = pTeamData->TeamLeader;
+	auto pLeaderUnit = pTeamData->TeamLeader.Get();
 
 	if (!ScriptExt::IsUnitAvailable(pLeaderUnit, true))
 	{

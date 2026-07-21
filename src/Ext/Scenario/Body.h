@@ -3,6 +3,7 @@
 #include <ScenarioClass.h>
 
 #include <Utilities/Container.h>
+#include <Utilities/GameHandle.h>
 #include <Utilities/TemplateDef.h>
 
 #include <Ext/Techno/Body.h>
@@ -50,6 +51,11 @@ public:
 
 		int EVAIndex;
 
+		// Slot-generation table backing every GameHandle<T>. Not serialized:
+		// rebuilt by GameHandleTable::RebuildPointers after savegame load from
+		// each AbstractExt's persisted SlotIndex.
+		GameHandleTable SlotTable;
+
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
 			, BriefingTheme { -1 }
@@ -67,8 +73,9 @@ public:
 			, UndergroundTracker {}
 			, SpecialTracker {}
 			, FallingDownTracker {}
-			, EVAIndex { -2 }
-		{ }
+		, EVAIndex { -2 }
+		, SlotTable {}
+	{ }
 
 		static void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
 		static void GetVariableStateByID(bool bIsGlobal, int nIndex, char* pOut);

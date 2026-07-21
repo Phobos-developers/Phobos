@@ -309,6 +309,7 @@
     <ClCompile Include="src\Utilities\ShapeTextPrinter.cpp" />
     <ClCompile Include="src\Utilities\SpawnerHelper.cpp" />
     <ClCompile Include="src\Utilities\Stream.cpp" />
+    <ClCompile Include="src\Utilities\GameHandle.cpp" />
   </ItemGroup>
   <!-- Header files -->
   <ItemGroup>
@@ -444,6 +445,7 @@
     <ClInclude Include="src\Utilities\Constructs.h" />
     <ClInclude Include="src\Utilities\Detach.h" />
     <ClInclude Include="src\Utilities\Container.h" />
+    <ClInclude Include="src\Utilities\GameHandle.h" />
     <ClInclude Include="src\Utilities\Debug.h" />
     <ClInclude Include="src\Utilities\Enum.h" />
     <ClInclude Include="src\Utilities\Enumerable.h" />

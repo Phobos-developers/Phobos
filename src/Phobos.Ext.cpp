@@ -30,7 +30,9 @@
 #include <New/Type/SelectBoxTypeClass.h>
 
 #include <Utilities/Detach.h>
+#include <Utilities/GameHandle.h>
 
+#include <functional>
 #include <utility>
 
 #pragma region Implementation details
@@ -184,6 +186,23 @@ struct RelinkExtensionsAction
 	}
 };
 
+// calls:
+// T::ExtMap.ForEachExtension(callback)
+// Used by GameHandleTable::RebuildPointers to walk every loaded extension
+// across all registered containers, since the game has no single global array
+// of every AbstractClass instance.
+struct ForEachExtensionAction
+{
+	template <typename T>
+	static bool Process(std::function<void(AbstractExt*)>& callback)
+	{
+		if constexpr (HasExtMap<T>)
+			T::ExtMap.ForEachExtension(callback);
+
+		return true;
+	}
+};
+
 // this is a complicated thing that calls methods on classes. add types to the
 // instantiation of this type, and the most appropriate method for each type
 // will be called with no overhead of virtual functions.
@@ -223,6 +242,14 @@ struct TypeRegistry
 	__forceinline static void RelinkExtensions()
 	{
 		dispatch_mass_action<RelinkExtensionsAction>();
+	}
+
+	// Hands the callback every live AbstractExt across all registered containers,
+	// in registration order. Used once after a savegame load so GameHandleTable
+	// can rewrite each slot's pointer from its extension's SlotIndex.
+	__forceinline static void ForEachExtension(std::function<void(AbstractExt*)> callback)
+	{
+		dispatch_mass_action<ForEachExtensionAction>(callback);
 	}
 
 private:
@@ -294,6 +321,30 @@ using PhobosTypeRegistry = TypeRegistry <
 	// other classes
 > ;
 
+// Rebuilds the GameHandleTable from scratch after a savegame load. The table is
+// not serialized, so it starts empty here; we walk every live extension via
+// PhobosTypeRegistry::ForEachExtension (the game has no single global array of
+// all AbstractClass instances, so we go through each container's item list),
+// read each extension's persisted SlotIndex and write its owner pointer into
+// that slot. Generation is reset to 0 to match the freshly loaded GameHandle
+// fields, which also reset their Generation to 0 on load.
+void GameHandleTable::RebuildPointers()
+{
+	PhobosTypeRegistry::ForEachExtension([this](AbstractExt* pExt)
+	{
+		const auto slot = pExt->GetSlotIndex();
+
+		if (slot == INVALID_SLOT)
+			return;
+
+		if (slot >= this->Entries.size())
+			this->Entries.resize(slot + 1);
+
+		this->Entries[slot].Pointer = pExt->GetAttachedObject();
+		this->Entries[slot].Generation = 0;
+	});
+}
+
 DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
 {
 	GET(AbstractClass* const, pInvalid, ECX);
@@ -356,10 +407,15 @@ DEFINE_HOOK(0x4103D0, AbstractClass_Load_ClearExtensionSlot, 0x5)
 
 // First instruction after SwizzleManagerClass::Process has remapped every registered
 // pointer: extension owners are valid again, write the extensions back into their
-// owners' inline slots (cleared when the owners were loaded).
+// owners' inline slots (cleared when the owners were loaded), then rebuild the
+// GameHandleTable from each extension's persisted SlotIndex.
 DEFINE_HOOK(0x67E685, LoadGame_PostSwizzle_Phobos, 0x5)
 {
 	PhobosTypeRegistry::RelinkExtensions();
+
+	if (auto* const scenario = ScenarioExt::Global())
+		scenario->SlotTable.RebuildPointers();
+
 	return 0;
 }
 

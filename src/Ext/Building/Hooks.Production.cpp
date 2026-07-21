@@ -41,7 +41,7 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 		auto const pOwnerExt = HouseExt::Fetch(pOwner);
 		auto const pFactory = pThis->Type->Factory;
 		const bool naval = pThis->Type->Naval;
-		BuildingClass** currFactory = nullptr;
+		GameHandle<BuildingClass>* currFactory = nullptr;
 
 		switch (pFactory)
 		{

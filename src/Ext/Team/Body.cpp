@@ -37,12 +37,6 @@ void TeamExt::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
-void TeamExt::OnDetach(FootClass* pTarget, bool removed)
-{
-	if (removed)
-		AnnounceInvalidPointer(this->TeamLeader, pTarget);
-}
-
 // =============================
 // container
 

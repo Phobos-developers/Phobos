@@ -112,7 +112,7 @@ void BuildingExt::UpdatePrimaryFactoryAI()
 		if (const auto pFactoryType = this->CurrentAirFactory->Type)
 			nDocks = pFactoryType->NumberOfDocks;
 
-		const int nOccupiedDocks = BuildingExt::CountOccupiedDocks(this->CurrentAirFactory);
+		const int nOccupiedDocks = BuildingExt::CountOccupiedDocks(this->CurrentAirFactory.Get());
 
 		if (nOccupiedDocks < nDocks)
 			currFactory = this->CurrentAirFactory->Factory;
@@ -132,7 +132,7 @@ void BuildingExt::UpdatePrimaryFactoryAI()
 		}
 	}
 
-	if (auto const pCurrent = this->CurrentAirFactory)
+	if (auto const pCurrent = this->CurrentAirFactory.Get())
 	{
 		for (auto const pBuilding : airFactoryBuilding)
 		{

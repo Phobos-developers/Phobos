@@ -410,7 +410,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown)
 		double closeEnough;
 
 		// Find the Leader
-		pLeaderUnit = pExt->TeamLeader;
+		pLeaderUnit = pExt->TeamLeader.Get();
 
 		if (!ScriptExt::IsUnitAvailable(pLeaderUnit, true))
 		{
