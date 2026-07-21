@@ -834,6 +834,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow beacon placement hotkey in single player
   - Adjust recruitable status on team member discharge
   - RA1-Style multi-turret and multi-barrel
+  - `GameHandle` infrastructure for replacing `PointerExpired` broadcasts and improving performance
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

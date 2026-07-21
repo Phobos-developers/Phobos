@@ -805,6 +805,13 @@ msgstr ""
 "Ollerus，基于 NaotoYuuki 的知识）"
 
 msgid ""
+"New `GameHandle` infrastructure for replacing `PointerExpired` broadcasts "
+"and improving performance (by TaranDahl)"
+msgstr ""
+"新的 `GameHandle` 基础设施，用于替代 `PointerExpired` 广播并提升性能（by "
+"TaranDahl）"
+
+msgid ""
 "[Toggle waypoint for building](Fixed-or-Improved-Logics.md#waypoints-for-"
 "buildings) (by TaranDahl)"
 msgstr ""

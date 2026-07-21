@@ -2179,6 +2179,9 @@ msgstr "修复了 `DeploysInto` 和 `UndeploysInto` 会让受损单位失去 1 �
 msgid "RA1-Style multi-turret and multi-barrel"
 msgstr "RA1 风格多炮塔与多炮管"
 
+msgid "`GameHandle` infrastructure for replacing `PointerExpired` broadcasts and improving performance"
+msgstr "`GameHandle` 基础设施，用于替代 `PointerExpired` 广播并提升性能"
+
 msgid "**Noble Fish**:"
 msgstr "**Noble_Fish**："
 
