@@ -1760,6 +1760,8 @@ DEFINE_HOOK(0x711835, TechnoTypeClass_CTOR, 0x5)
 	// The extension is allocated by the concrete type leaf constructors
 	// (UnitType/InfantryType/BuildingType/AircraftType), not here at the TechnoTypeClass level.
 	pItem->DefaultToGuardArea = RulesExt::Global()->DefaultToGuardArea;
+	pItem->LeptonMindControlOffset = RulesExt::Global()->LeptonMindControlOffset;
+	pItem->MindControlRingOffset = RulesExt::Global()->MindControlRingOffset;
 
 	return 0;
 }
