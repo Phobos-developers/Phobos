@@ -192,7 +192,7 @@ DEFINE_HOOK(0x586780, MapClass_IsAreaFree, 0x7)
 
 			if (pTerrain)
 			{
-				if (!FindBuildLocationTemp::EvaluatingBuildLocation || !TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn)
+				if (!FindBuildLocationTemp::EvaluatingBuildLocation || !TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn))
 				{
 					R->EAX(false);
 					return ReturnFromFunction;

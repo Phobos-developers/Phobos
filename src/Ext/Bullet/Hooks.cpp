@@ -258,7 +258,7 @@ DEFINE_HOOK(0x46A3D6, BulletClass_Shrapnel_Forced, 0xA)
 			return Shrapnel;
 		}
 	}
-	else if (pTypeExt->Shrapnel_AffectsGround)
+	else if (pTypeExt->Shrapnel_AffectsGround.Get(RulesExt::Global()->Shrapnel_AffectsGround))
 	{
 		return Shrapnel;
 	}
