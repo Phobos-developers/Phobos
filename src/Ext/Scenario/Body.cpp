@@ -94,7 +94,7 @@ void ScenarioExt::LoadFromINIFile(ScenarioClass* pThis, CCINIClass* pINI)
 
 	for (auto const pHouse : HouseClass::Array)
 	{
-		HouseExt::ExtMap.Find(pHouse)->FreeRadar = ScenarioClass::Instance->FreeRadar;
+		HouseExt::Fetch(pHouse)->FreeRadar = ScenarioClass::Instance->FreeRadar;
 	}
 }
 

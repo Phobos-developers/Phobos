@@ -25,7 +25,7 @@ DEFINE_HOOK(0x73E4D0, UnitClass_Mission_Unload_CheckBalanceAfter, 0xA)
 	GET(HouseClass* const, pHouse, EBX);
 	GET(BuildingClass* const, pDock, EDI);
 
-	if (auto const pBldExt = BuildingExt::ExtMap.TryFind(pDock))
+	if (auto const pBldExt = BuildingExt::TryFetch(pDock))
 	{
 		pBldExt->AccumulatedIncome += pHouse->Available_Money() - OwnerBalanceBefore::HarversterUnloads;
 	}
@@ -48,10 +48,10 @@ DEFINE_HOOK(0x522E4F, InfantryClass_SlaveGiveMoney_CheckBalanceAfter, 0x6)
 
 	if (auto const pBld = abstract_cast<BuildingClass*>(slaveMiner))
 	{
-		auto const pBldExt = BuildingExt::ExtMap.Find(pBld);
+		auto const pBldExt = BuildingExt::Fetch(pBld);
 		pBldExt->AccumulatedIncome += money;
 	}
-	else if (auto const pBldTypeExt = BuildingTypeExt::ExtMap.TryFind(slaveMiner->GetTechnoType()->DeploysInto))
+	else if (auto const pBldTypeExt = BuildingTypeExt::TryFetch(slaveMiner->GetTechnoType()->DeploysInto))
 	{
 		if (pBldTypeExt->DisplayIncome.Get(RulesExt::Global()->DisplayIncome.Get()))
 			FlyingStrings::AddMoneyString(money, slaveMiner, slaveMiner->Owner, RulesExt::Global()->DisplayIncome_Houses.Get(), slaveMiner->Location);
@@ -64,12 +64,12 @@ DEFINE_HOOK(0x445FE4, BuildingClass_Place_RefineryActiveAnim, 0x6)
 {
 	GET(BuildingTypeClass*, pType, ESI);
 
-	return BuildingTypeExt::ExtMap.Find(pType)->Refinery_UseNormalActiveAnim ? 0x446183 : 0;
+	return BuildingTypeExt::Fetch(pType)->Refinery_UseNormalActiveAnim ? 0x446183 : 0;
 }
 
 DEFINE_HOOK(0x450DAA, BuildingClass_UpdateAnimations_RefineryActiveAnim, 0x6)
 {
 	GET(BuildingTypeClass*, pType, EDX);
 
-	return BuildingTypeExt::ExtMap.Find(pType)->Refinery_UseNormalActiveAnim ? 0x450F9E : 0;
+	return BuildingTypeExt::Fetch(pType)->Refinery_UseNormalActiveAnim ? 0x450F9E : 0;
 }

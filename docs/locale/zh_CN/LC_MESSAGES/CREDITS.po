@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-03 22:16+0800\n"
+"POT-Creation-Date: 2026-07-19 21:50+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -713,8 +713,8 @@ msgstr "在运输工具内重装填弹药"
 msgid "Straight projectile trajectory additions"
 msgstr "直线抛射体弹道补充"
 
-msgid "Airstrike & spy plane fixed spawn distance & height"
-msgstr "空袭与间谍飞机固定生成距离与高度"
+msgid "Reinforcement plane (paradrop, spy plane, airstrike) spawn customizations"
+msgstr "援军飞机（伞兵、间谍飞机、空袭）创建的自定义"
 
 msgid "Negative damage `Verses/PercentAtMax` toggle"
 msgstr "负值伤害 `Verses/PercentAtMax` 开关"
@@ -754,6 +754,9 @@ msgstr "Attach Effect"
 
 msgid "Air unit tracking fix for large range / `CellSpread`"
 msgstr "大范围目标检索和 `CellSpread` 对空中单位的追踪"
+
+msgid "`ZAdjust` for OverlayTypes"
+msgstr "覆盖物的 `ZAdjust`"
 
 msgid "Extra tint intensity for Iron Curtain & Force Shield"
 msgstr "铁幕和力场护盾的额外染色强度"
@@ -858,8 +861,8 @@ msgstr "定义单位是否不参与基地中心计算"
 msgid "Deploy priority filtering"
 msgstr "低优先级部署"
 
-msgid "Customizable paradrop missions"
-msgstr "自定义空降单位任务"
+msgid "Customizable paradrop missions and delay"
+msgstr "自定义空降的任务和间隔"
 
 msgid "Guard range customizations"
 msgstr "自定义警戒范围"
@@ -1807,6 +1810,11 @@ msgstr "修复了科技类型在隧道中变更所属方会导致卡住的 Bug"
 msgid "Fix the bug that the vanilla `SecondSpawnOffset` no longer takes effect"
 msgstr "修复了原版 `SecondSpawnOffset` 不再生效的 Bug"
 
+msgid ""
+"Fix the issue that `NoQueueUpToEnter` will clear passenger's planning "
+"tokens when entered transport"
+msgstr "修复了 `NoQueueUpToEnter` 会在乘客进入载具时清除计划节点的问题"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
@@ -1910,6 +1918,9 @@ msgid ""
 "Adjust the dehardcoding of the 255 `OverlayType` limit to a different "
 "format"
 msgstr "将 255 种覆盖物数量限制解编码方式调整为使用一种不同的格式"
+
+msgid "Extension system rework"
+msgstr "扩展系统重置"
 
 msgid "**CrimRecya**:"
 msgstr "**CrimRecya**："
@@ -2165,6 +2176,9 @@ msgid ""
 "techno lose 1 health"
 msgstr "修复了 `DeploysInto` 和 `UndeploysInto` 会让受损单位失去 1 点生命的 Bug"
 
+msgid "RA1-Style multi-turret and multi-barrel"
+msgstr "RA1 风格多炮塔与多炮管"
+
 msgid "**Noble Fish**:"
 msgstr "**Noble_Fish**："
 
@@ -2339,12 +2353,35 @@ msgid "Add a toggle for disabling `SecondaryFire` / `SecondaryProne` on water"
 msgstr "为水上禁用  `SecondaryFire` / `SecondaryProne` 添加开关"
 
 msgid "Customize the step limit of the credits indicator"
-msgstr ""
-"自定义资金示数器步长上限"
+msgstr "自定义资金示数器步长上限"
 
 msgid "Disable the credits indicator smooth transition"
+msgstr "禁用资金示数器平滑渐变"
+
+msgid "Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn`"
+msgstr "为 `DiscardOn` 添加 `selling`、`undeploying` 和 `harvesting` 条件"
+
+msgid "`ZAdjust` for Projectiles"
+msgstr "抛射体的 `ZAdjust`"
+
+msgid "Allow Laser drawing position update"
+msgstr "允许激光绘制位置更新"
+
+msgid ""
+"Customize the distance for `NoQueueUpToEnter` transport units to board "
+"passengers"
 msgstr ""
-"禁用资金示数器平滑渐变"
+"自定义 `NoQueueUpToEnter` 运输工具搭载乘客的距离"
+
+msgid ""
+"Fix the bug that `MissileSpawn=true` causes the spawnee launcher to crash"
+" immediately when attacking"
+msgstr ""
+"修复了 `MissileSpawn=true` 会导致子机发射者攻击立即崩溃的 Bug"
+
+msgid "Customize the initial facing of buildings"
+msgstr ""
+"自定义建筑初始方向"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
@@ -2421,6 +2458,11 @@ msgstr "`ElectricAssault` 武器现在可以自动索敌盟友的可过载防御
 
 msgid "Dynamic team delays"
 msgstr "动态 `TeamDelays`"
+
+msgid ""
+"Customize whether or not passenger can fire out when the transport is "
+"moving"
+msgstr "自定义乘客能否在运输工具移动时向外开火"
 
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
@@ -2678,12 +2720,6 @@ msgid ""
 "multiple targets with the same amount of threat"
 msgstr "修复了反击行为会让单位在多个相同威胁值的目标间不断切换的问题"
 
-msgid ""
-"Fix an issue where units recruited by a team with "
-"`AreTeamMembersRecruitable=false` cannot be recruited even if they have "
-"been liberated by that team"
-msgstr "修复了单位被 `AreTeamMembersRecruitable=false` 的小队招募过则即便原小队解散也无法再被其他小队招募的 Bug"
-
 msgid "Global default value for `DefaultToGuardArea`"
 msgstr "`DefaultToGuardArea` 的全局默认值"
 
@@ -2779,6 +2815,9 @@ msgstr "自动移除最早的信标"
 
 msgid "Allow beacon placement hotkey in single player"
 msgstr "允许在单人模式下使用信标放置快捷键"
+
+msgid "Adjust recruitable status on team member discharge"
+msgstr "小队成员解散时调整可招募性"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
