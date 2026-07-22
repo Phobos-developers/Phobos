@@ -135,6 +135,20 @@ void UnitTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	{
 		this->ExtraTurretCount = 0;
 	}
+
+	// Jumpjet Carryall system
+	this->JumpjetCarryall.Read(exINI, pSection, "JumpjetCarryall");
+	this->JumpjetCarryall_CanLift.Read(exINI, pSection, "JumpjetCarryall.Types");
+	this->JumpjetCarryall_Capacity.Read(exINI, pSection, "JumpjetCarryall.Capacity");
+	this->JumpjetCarryall_SizeLimit.Read(exINI, pSection, "JumpjetCarryall.SizeLimit");
+	this->JumpjetCarryall_VoicePickup.Read(exINI, pSection, "JumpjetCarryall.VoicePickup");
+	this->JumpjetCarryall_VoiceDropoff.Read(exINI, pSection, "JumpjetCarryall.VoiceDropoff");
+	this->JumpjetCarryall_CargoOffset.Read(exINI, pSection, "JumpjetCarryall.CargoOffset");
+	this->JumpjetCarryall_DrawCargo.Read(exINI, pSection, "JumpjetCarryall.DrawCargo");
+	this->JumpjetCarryall_SpeedMultiplier.Read(exINI, pSection, "JumpjetCarryall.SpeedMultiplier");
+	this->JumpjetCarryall_PickupRange.Read(exINI, pSection, "JumpjetCarryall.PickupRange");
+	this->JumpjetCarryall_AllowInfantry.Read(exINI, pSection, "JumpjetCarryall.AllowInfantry");
+	this->JumpjetCarryall_AllowVehicles.Read(exINI, pSection, "JumpjetCarryall.AllowVehicles");
 }
 
 template <typename T>
@@ -200,6 +214,18 @@ void UnitTypeExt::Serialize(T& Stm)
 		.Process(this->ExtraTurretCount)
 		.Process(this->ExtraTurretOffsets)
 		.Process(this->BurstPerTurret)
+		.Process(this->JumpjetCarryall)
+		.Process(this->JumpjetCarryall_CanLift)
+		.Process(this->JumpjetCarryall_Capacity)
+		.Process(this->JumpjetCarryall_SizeLimit)
+		.Process(this->JumpjetCarryall_VoicePickup)
+		.Process(this->JumpjetCarryall_VoiceDropoff)
+		.Process(this->JumpjetCarryall_CargoOffset)
+		.Process(this->JumpjetCarryall_DrawCargo)
+		.Process(this->JumpjetCarryall_SpeedMultiplier)
+		.Process(this->JumpjetCarryall_PickupRange)
+		.Process(this->JumpjetCarryall_AllowInfantry)
+		.Process(this->JumpjetCarryall_AllowVehicles)
 		;
 }
 
