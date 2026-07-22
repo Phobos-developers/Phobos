@@ -214,7 +214,6 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 
 	auto const pExt = TechnoExt::Fetch(pThis);
 	auto const pTypeExt = pExt->TypeExtData;
-	const bool isInLimbo = !pThis->IsInLogic && pThis->IsAlive;
 
 	if (pTypeExt->AutoDeath_Behavior.isset())
 	{
