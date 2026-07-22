@@ -2533,6 +2533,47 @@ FireUp=                         ; integer
 FireUp.ResetInRetarget=true     ; boolean
 ```
 
+### Jumpjet Vehicle Carryall System
+
+![Jumpjet Carryall](_static/images/jumpjet-carryall-example.png)
+*Jumpjet vehicle carrying units (example)*
+
+- Allows jumpjet vehicles (particularly those with `BalloonHover=yes`) to act as carryalls, picking up and transporting infantry or other vehicles.
+- This system is vehicle-specific and complements the existing aircraft carryall functionality with additional features tailored to jumpjet locomotor behavior.
+  - `JumpjetCarryall` enables the carryall functionality for the vehicle. Must be a jumpjet vehicle (`JumpJet=yes`).
+  - `JumpjetCarryall.SizeLimit` controls the maximum `Size=` of units that can be picked up. Use `-1` to allow any size. This is compatible with [Ares' `Carryall.SizeLimit`](https://ares-developers.github.io/Ares-docs/new/carryalls.html) system.
+  - `JumpjetCarryall.Types` can be used to restrict pickup to specific unit/infantry types. If not set or empty, any eligible unit can be picked up (subject to other filters).
+  - `JumpjetCarryall.AllowInfantry` and `JumpjetCarryall.AllowVehicles` control whether infantry and vehicles can be carried, respectively.
+  - `JumpjetCarryall.Capacity` sets the maximum number of units that can be carried simultaneously. Currently only `1` is supported.
+  - `JumpjetCarryall.PickupRange` sets the maximum distance (in leptons) for picking up units. Defaults to 256 leptons (~1 cell).
+  - `JumpjetCarryall.SpeedMultiplier` applies a speed penalty when carrying cargo. For example, `0.8` means 20% slower.
+  - `JumpjetCarryall.VoicePickup` and `JumpjetCarryall.VoiceDropoff` set custom voice lines for pickup and dropoff actions.
+  - `JumpjetCarryall.DrawCargo` (not yet implemented) would enable visual rendering of cargo beneath the carrier.
+  - `JumpjetCarryall.CargoOffset` (not yet implemented) would control the visual offset for cargo rendering.
+- Cargo is automatically released if the carrier dies, and dropped units are placed at the carrier's position.
+- Filters are applied in this order: infantry/vehicle type check → `AllowInfantry`/`AllowVehicles` → `SizeLimit` → `Types` whitelist → other restrictions (water, height, mind control, etc.).
+
+```{note}
+Jumpjet carryalls use a separate code path from aircraft carryalls, but both systems respect the vanilla `Size=` property and can work together in the same mod. The main differences from aircraft carryalls are: hover-based pickup/dropoff (no landing required), vehicle-specific restrictions (no water pickup), and expanded filtering options.
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                               ; VehicleType, with JumpJet=yes
+JumpjetCarryall=false                       ; boolean
+JumpjetCarryall.SizeLimit=-1                ; integer, maximum Size that can be lifted (-1 for any)
+JumpjetCarryall.Types=                      ; List of TechnoTypes, specific types allowed (empty for all)
+JumpjetCarryall.AllowInfantry=true          ; boolean
+JumpjetCarryall.AllowVehicles=true          ; boolean
+JumpjetCarryall.Capacity=1                  ; integer, currently only 1 supported
+JumpjetCarryall.PickupRange=256             ; integer, leptons
+JumpjetCarryall.SpeedMultiplier=1.0         ; floating point value
+JumpjetCarryall.VoicePickup=                ; VocType, defaults to VoiceMove
+JumpjetCarryall.VoiceDropoff=               ; VocType
+JumpjetCarryall.DrawCargo=false             ; boolean (not yet implemented)
+JumpjetCarryall.CargoOffset=0,0,-128        ; integer - Forward,Lateral,Height (not yet implemented)
+```
+
 ## Warheads
 
 ```{hint}
