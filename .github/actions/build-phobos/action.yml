@@ -24,6 +24,11 @@ runs:
     run: msbuild /m /p:Configuration=${{inputs.build-config}} /p:GitCommit=${{github.sha}} /p:GitBranch=${{github.ref}} ${{inputs.sln-path}}
     shell: cmd
 
+  - name: Stage exception database
+    if: ${{success()}}
+    run: Copy-Item ${{inputs.sln-path}}/gamemd.edb ${{inputs.sln-path}}/${{inputs.build-config}}/gamemd.edb
+    shell: pwsh
+
   - name: Upload Artifact
     if: ${{success()}}
     uses: actions/upload-artifact@v4
@@ -32,3 +37,4 @@ runs:
       path: |
         ${{inputs.sln-path}}/${{inputs.build-config}}/Phobos.dll
         ${{inputs.sln-path}}/${{inputs.build-config}}/Phobos.pdb
+        ${{inputs.sln-path}}/${{inputs.build-config}}/gamemd.edb
