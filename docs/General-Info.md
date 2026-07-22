@@ -25,7 +25,7 @@ Phobos fully supports saving and loading thanks to prototype code from publicly 
 
 ## Compatibility
 
-Phobos requires [SyringeEx](https://github.com/Phobos-developers/SyringeEx) as the launcher - it relies on capabilities (signalled via SyringeEx feature flags) that older Syringe versions do not provide, and will show an error and exit on startup without them.
+Phobos requires [SyringeEx](https://github.com/Phobos-developers/SyringeEx) (v0.1.0.2 or newer) as the launcher - it relies on capabilities (signalled via SyringeEx feature flags) that older Syringe versions do not provide, and will show an error and exit on startup without them.
 
 While Phobos is standalone, it is designed to be used alongside [Ares](https://ares.strategy-x.com) and [CnCNet5 spawner](https://github.com/CnCNet/cncnet-for-ares). Adding new features or improving existing ones is done with compatibility with those in mind.
 
