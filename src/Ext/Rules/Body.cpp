@@ -72,6 +72,8 @@ void RulesExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->DefaultToGuardArea.Read(exINI, GameStrings::General, "DefaultToGuardArea");
+	this->LeptonMindControlOffset.Read(exINI, GameStrings::AudioVisual, "LeptonMindControlOffset");
+	this->MindControlRingOffset.Read(exINI, GameStrings::AudioVisual, "MindControlRingOffset");
 }
 
 void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
@@ -794,6 +796,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ParadropDelay)
 		.Process(this->ParadropEndDelay)
 		.Process(this->DefaultToGuardArea)
+		.Process(this->LeptonMindControlOffset)
+		.Process(this->MindControlRingOffset)
 		.Process(this->CylinderRangefinding)
 		.Process(this->PenetratesTransport_Level)
 		.Process(this->UnitsUnsellable)

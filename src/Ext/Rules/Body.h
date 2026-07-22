@@ -346,6 +346,8 @@ public:
 		Valueable<int> ParadropEndDelay;
 
 		Valueable<bool> DefaultToGuardArea;
+		Valueable<int> LeptonMindControlOffset;
+		Valueable<int> MindControlRingOffset;
 
 		Valueable<bool> DisableOveroptimizationInTargeting;
     
@@ -686,6 +688,8 @@ public:
 			, ParadropEndDelay { 5 }
 
 			, DefaultToGuardArea { false }
+			, LeptonMindControlOffset { 70 }
+			, MindControlRingOffset { 140 }
 
 			, CylinderRangefinding { false }
 
