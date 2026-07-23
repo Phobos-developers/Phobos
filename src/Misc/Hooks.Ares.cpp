@@ -42,10 +42,32 @@ static void __fastcall InitialPayloadFix(TechnoClass* pThis)
 	pThis->Limbo();
 }
 
-static void __fastcall InitialPayloadFix_Building(FootClass* pPassenger)
+static void __fastcall InitialPayloadFix_Building(FootClass* pPassenger, BuildingClass* pBld)
 {
-	InitialPayloadFix(pPassenger);
+	if (pBld)
+		pPassenger->Transporter = pBld;
+
+	if (auto const pExt = TechnoExt::Fetch(pPassenger))
+	{
+		if (pExt->TypeExtData->AutoDeath_Behavior.isset())
+		{
+			auto& vec = ScenarioExt::Global()->AutoDeathObjects;
+			if (std::find(vec.begin(), vec.end(), pExt) == vec.end())
+				vec.push_back(pExt);
+		}
+	}
 	pPassenger->AbortMotion();
+}
+
+__declspec(naked) void InitialPayloadFix_Building_Stub()
+{
+	__asm
+	{
+		mov  ecx, esi 
+		mov  edx, ebp
+		call InitialPayloadFix_Building
+		ret
+	}
 }
 
 static void __fastcall UpdateThreatInCell_InitOccupant(TechnoClass* pBuilding, void*, CellClass* pCell)
@@ -231,7 +253,7 @@ void Apply_Ares3_0_Patches()
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x43D5D, &CreateInitialPayload);
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x43E4F, GET_OFFSET(InitialPayloadFix));
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x43DBC, &UpdateThreatInCell_InitOccupant);
-	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x43E33, &InitialPayloadFix_Building);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x43E33, GET_OFFSET(InitialPayloadFix_Building_Stub));
 
 	// Replace the TemporalClass::Detach call by LetGo in convert function:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x436DA, &LetGo);
@@ -332,7 +354,7 @@ void Apply_Ares3_0p1_Patches()
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x4483D, &CreateInitialPayload);
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x4492F, GET_OFFSET(InitialPayloadFix));
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4489C, &UpdateThreatInCell_InitOccupant);
-	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x44913, &InitialPayloadFix_Building);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x44913, GET_OFFSET(InitialPayloadFix_Building_Stub));
 
 	// Replace the TemporalClass::Detach call by LetGo in convert function:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x441BA, &LetGo);
