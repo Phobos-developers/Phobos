@@ -707,6 +707,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize the initial facing of buildings
   - Global default value for `LeptonMindControlOffset` and `MindControlRingOffset`
   - Add a defining for the auto death effect on whether it can trigger when in Limbo state or as a passenger
+  - Customize whether `Passengers.SyncOwner.RevertOnExit` triggers `AutoDeath.OnOwnerChange`
   - Fix a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to execute the auto death logic
 - **Ollerus**:
   - Build limit group enhancement

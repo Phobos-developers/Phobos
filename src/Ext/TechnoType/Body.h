@@ -95,6 +95,7 @@ public:
 	ValueableVector<AnimTypeClass*> AutoDeath_VanishAnimation;
 	Valueable<bool> AutoDeath_OnAmmoDepletion;
 	Valueable<bool> AutoDeath_OnOwnerChange;
+	Nullable<bool> AutoDeath_OnOwnerChange_IgnoreRevertOnExit;
 	Nullable<bool> AutoDeath_OnOwnerChange_HumanToComputer;
 	Nullable<bool> AutoDeath_OnOwnerChange_ComputerToHuman;
 	Valueable<int> AutoDeath_AfterDelay;
@@ -536,6 +537,7 @@ public:
 		, AutoDeath_VanishAnimation {}
 		, AutoDeath_OnAmmoDepletion { false }
 		, AutoDeath_OnOwnerChange { false }
+		, AutoDeath_OnOwnerChange_IgnoreRevertOnExit { false }
 		, AutoDeath_OnOwnerChange_HumanToComputer {}
 		, AutoDeath_OnOwnerChange_ComputerToHuman {}
 		, AutoDeath_AfterDelay { 0 }

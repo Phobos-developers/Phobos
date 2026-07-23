@@ -217,10 +217,14 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 
 	if (pTypeExt->AutoDeath_Behavior.isset())
 	{
+		const auto pFoot = generic_cast<FootClass*>(pThis);
+		const bool IgnoreRevertOnExit = pFoot ? FootExt::Fetch(pFoot)->IsOwnerChangeFromRevertOnExit : false;
 		const bool humanToComputer = pTypeExt->AutoDeath_OnOwnerChange_HumanToComputer.Get(pTypeExt->AutoDeath_OnOwnerChange);
 		const bool computerToHuman = pTypeExt->AutoDeath_OnOwnerChange_ComputerToHuman.Get(pTypeExt->AutoDeath_OnOwnerChange);
 
-		if (humanToComputer && computerToHuman)
+		if (pTypeExt->AutoDeath_OnOwnerChange_IgnoreRevertOnExit.Get(RulesExt::Global()->AutoDeath_OnOwnerChange_IgnoreRevertOnExit) && IgnoreRevertOnExit)
+			pExt->ShouldBeDead = false;
+		else if (humanToComputer && computerToHuman)
 		{
 			pExt->ShouldBeDead = true;
 		}

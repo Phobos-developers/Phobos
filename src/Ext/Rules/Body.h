@@ -406,6 +406,7 @@ public:
 
 		Valueable<bool> AutoDeath_AllowLimboed;
 		Valueable<bool> AutoDeath_AllowPassenger;
+		Valueable<bool> AutoDeath_OnOwnerChange_IgnoreRevertOnExit;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -753,6 +754,7 @@ public:
 
 			, AutoDeath_AllowLimboed { true }
 			, AutoDeath_AllowPassenger { true }
+			, AutoDeath_OnOwnerChange_IgnoreRevertOnExit { false }
 		{ }
 
 		virtual ~ExtData() = default;

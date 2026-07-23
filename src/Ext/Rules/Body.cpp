@@ -472,6 +472,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->AutoDeath_AllowLimboed.Read(exINI, GameStrings::CombatDamage, "AutoDeath.AllowLimboed");
 	this->AutoDeath_AllowPassenger.Read(exINI, GameStrings::CombatDamage, "AutoDeath.AllowPassenger");
+	this->AutoDeath_OnOwnerChange_IgnoreRevertOnExit.Read(exINI, GameStrings::CombatDamage, "AutoDeath.OnOwnerChange.IgnoreRevertOnExit");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -844,6 +845,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->StartFacing_Random)
 		.Process(this->AutoDeath_AllowLimboed)
 		.Process(this->AutoDeath_AllowPassenger)
+		.Process(this->AutoDeath_OnOwnerChange_IgnoreRevertOnExit)
 		;
 }
 
