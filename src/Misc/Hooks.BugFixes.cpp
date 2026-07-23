@@ -461,7 +461,7 @@ DEFINE_HOOK(0x73B2A2, UnitClass_DrawObject_DrawerBlitterFix, 0x6)
 }
 
 // Set all bullet params (Bright) from weapon for nuke carrier weapon.
-DEFINE_HOOK(0x44CABA, BuildingClass_Mission_Missile_BulletParams, 0x7)
+DEFINE_HOOK(0x44CABA, BuildingClass_Mission_Missile_BulletParams, 0x0)
 {
 	enum { SkipGameCode = 0x44CAF2 };
 
