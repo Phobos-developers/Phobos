@@ -537,7 +537,7 @@ public:
 		, AutoDeath_VanishAnimation {}
 		, AutoDeath_OnAmmoDepletion { false }
 		, AutoDeath_OnOwnerChange { false }
-		, AutoDeath_OnOwnerChange_IgnoreRevertOnExit { false }
+		, AutoDeath_OnOwnerChange_IgnoreRevertOnExit {}
 		, AutoDeath_OnOwnerChange_HumanToComputer {}
 		, AutoDeath_OnOwnerChange_ComputerToHuman {}
 		, AutoDeath_AfterDelay { 0 }
