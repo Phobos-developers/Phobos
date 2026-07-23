@@ -438,7 +438,7 @@ static inline bool CheckShouldDisableDefensesCameo(HouseClass* pHouse, TechnoTyp
 	return false;
 }
 
-DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo_GreyCameo, 0x5)
+DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo_GreyCameo, 0x3)
 {
 	GET(HouseClass*, pThis, ECX);
 	GET_STACK(TechnoTypeClass*, pType, 0x4);
