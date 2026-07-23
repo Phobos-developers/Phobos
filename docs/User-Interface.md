@@ -412,6 +412,10 @@ ShowGameTime=false             ; boolean
 ShowGameTime.BoardOpacity=40   ; integer
 ```
 
+```{note}
+This will replace the Phobos version text on top right of the screen for Debug or DevBuild, if enabled, since they take the same place.
+```
+
 ### SuperWeapon ShowTimer sorting
 
 - You can now sort the timers of superweapons in ascending order from top to bottom according to a given priority value.

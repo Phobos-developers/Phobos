@@ -110,13 +110,6 @@ DEFINE_HOOK(0x6D4CD9, PrintTimerOnTactical_BlinkColor, 0x6)
 	return SkipGameCode;
 }
 
-#pragma region ShowGameTime
-
-static const wchar_t* GetUIName()
-{
-	return GeneralUtils::LoadStringUnlessMissing("TXT_GAMETIME", L"Time");
-}
-
 DEFINE_HOOK(0x4F4573, GScreenClass_Draw_GameTime, 0x5)
 {
 	if (!Phobos::Config::ShowGameTime || HouseClass::CurrentPlayer->IsObserver()) // already has a timer
@@ -128,14 +121,15 @@ DEFINE_HOOK(0x4F4573, GScreenClass_Draw_GameTime, 0x5)
 	const int hours = total_seconds / 3600;
 	const int minutes = (total_seconds / 60) % 60;
 	const int seconds = total_seconds % 60;
+	const auto text = GeneralUtils::LoadStringUnlessMissing("TXT_GAMETIME", L"Time");
 
 	if (hours > 0)
 	{
-		swprintf(buffer, std::size(buffer), L"%ls %d:%02d:%02d", GetUIName(), hours, minutes, seconds);
+		swprintf(buffer, std::size(buffer), L"%ls %d:%02d:%02d", text, hours, minutes, seconds);
 	}
 	else
 	{
-		swprintf(buffer, std::size(buffer), L"%ls %02d:%02d", GetUIName(), minutes, seconds);
+		swprintf(buffer, std::size(buffer), L"%ls %02d:%02d", text, minutes, seconds);
 	}
 
 	auto wanted = Drawing::GetTextDimensions(buffer, { 0,0 }, 0, 2, 0);
@@ -157,5 +151,3 @@ DEFINE_HOOK(0x4F4573, GScreenClass_Draw_GameTime, 0x5)
 	R->ECX(*(int*)0x887640);
 	return 0x4F4589;
 }
-
-#pragma endregion
