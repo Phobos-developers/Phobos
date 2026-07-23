@@ -109,3 +109,53 @@ DEFINE_HOOK(0x6D4CD9, PrintTimerOnTactical_BlinkColor, 0x6)
 
 	return SkipGameCode;
 }
+
+#pragma region ShowGameTime
+
+static const wchar_t* GetUIName()
+{
+	return GeneralUtils::LoadStringUnlessMissing("TXT_GAMETIME", L"Time");
+}
+
+DEFINE_HOOK(0x4F4573, GScreenClass_Draw_GameTime, 0x5)
+{
+	if (!Phobos::Config::ShowGameTime || HouseClass::CurrentPlayer->IsObserver()) // already has a timer
+		return 0;
+
+	wchar_t buffer[0x20] {};
+	const int total_seconds = Unsorted::CurrentFrame / 15;
+
+	const int hours = total_seconds / 3600;
+	const int minutes = (total_seconds / 60) % 60;
+	const int seconds = total_seconds % 60;
+
+	if (hours > 0)
+	{
+		swprintf(buffer, std::size(buffer), L"%ls %d:%02d:%02d", GetUIName(), hours, minutes, seconds);
+	}
+	else
+	{
+		swprintf(buffer, std::size(buffer), L"%ls %02d:%02d", GetUIName(), minutes, seconds);
+	}
+
+	auto wanted = Drawing::GetTextDimensions(buffer, { 0,0 }, 0, 2, 0);
+
+	RectangleStruct rect = {
+		DSurface::Composite->GetWidth() - wanted.Width - 30,
+		0,
+		wanted.Width + 10,
+		wanted.Height + 10
+	};
+
+	Point2D location { rect.X + 5 ,5 };
+	ColorStruct color { 0x0, 0x0 ,0x0 };
+	DSurface::Composite->FillRectTrans(&rect, &color, Phobos::Config::ShowGameTime_BoardOpacity);
+	//DSurface::Composite->DrawRect(&rect, COLOR_WHITE);
+	DSurface::Composite->DrawText(buffer, &location, COLOR_WHITE);
+
+	//Phobos' extended tooltips interferred
+	R->ECX(*(int*)0x887640);
+	return 0x4F4589;
+}
+
+#pragma endregion
