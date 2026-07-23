@@ -1665,6 +1665,11 @@ msgid ""
 " transport will now respect the weapon's `FireWhileMoving` setting."
 msgstr "现在乘客的武器能否在 `OpenTopped=yes` 的运输工具中向外开火将尊重武器的 `FireWhileMoving` 设置。"
 
+msgid ""
+"Fixed the bug where if a non-aircraft techno has `Locomotor=Fly`, "
+"it's shadow will draw at wrong position."
+msgstr "修复了具有 `Locomotor=Fly` 的非Aircraft科技类型的影子会绘制在错误位置的 Bug。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 

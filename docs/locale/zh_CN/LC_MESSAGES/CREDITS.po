@@ -1815,6 +1815,11 @@ msgid ""
 "tokens when entered transport"
 msgstr "修复了 `NoQueueUpToEnter` 会在乘客进入载具时清除计划节点的问题"
 
+msgid ""
+"Fix the bug where if a non-aircraft techno has `Locomotor=Fly`, "
+"it's shadow will draw at wrong position"
+msgstr "修复了具有 `Locomotor=Fly` 的非Aircraft科技类型的影子会绘制在错误位置的 Bug"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 

@@ -2643,6 +2643,11 @@ msgid ""
 "NetsuNegi)"
 msgstr "修复了科技类型在隧道中变更所属方会导致卡住的 Bug（by NetsuNegi）"
 
+msgid ""
+"Fixed the bug where if a non-aircraft techno has `Locomotor=Fly`, "
+"it's shadow will draw at wrong position (by NetsuNegi)"
+msgstr "修复了具有 `Locomotor=Fly` 的非Aircraft科技类型的影子会绘制在错误位置的 Bug（by NetsuNegi）"
+
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
 
