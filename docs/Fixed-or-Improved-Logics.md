@@ -1912,6 +1912,14 @@ FallingDownDamage.Water=            ; integer / percentage
 FallingDownDamage.AllowEMP=true     ; boolean
 ```
 
+### Customize crash spin multiplier
+
+In `rulesmd.ini`
+```ini
+[SOMETECHNO]                      ; TechnoType with Locomotor=Fly
+CrashSpin.Multiplier=1.0          ; floating point value
+```
+
 ### Customize the landing animation of technos that have `Locomotor=Fly`
 
 - In vanilla, if a techno has `Locomotor=Fly` and `IsDropship=true`, it plays the `[DROPLAND]` animation when landing; if `IsDropship=false` but it is an aircraft with `Carryall=true`, it will play the `[CARYLAND]` animation when landing. Now you can customize this logic.
@@ -2285,14 +2293,6 @@ HeightShadowScaling.MinScale=0.0  ; floating point value
 
 [SOMETECHNO]                      ; TechnoType
 ShadowSizeCharacteristicHeight=   ; integer, height in leptons
-```
-
-### Customize crash spin multiplier
-
-In `rulesmd.ini`
-```ini
-[SOMETECHNO]                      ; TechnoType
-CrashSpin.Multiplier=1.0          ; floating point value
 ```
 
 ## Terrains
