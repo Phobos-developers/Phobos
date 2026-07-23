@@ -2191,6 +2191,11 @@ msgstr ""
 "[自定义建筑初始方向](Fixed-or-Improved-Logics.md"
 "#customize-the-initial-facing-of-buildings)（by Noble_Fish）"
 
+msgid ""
+"Customize crash spin multiplier (by NetsuNegi)"
+msgstr ""
+"自定义坠毁旋转倍率（by NetsuNegi）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 

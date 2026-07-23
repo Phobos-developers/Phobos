@@ -4944,6 +4944,9 @@ msgstr ""
 "是一个可覆盖的值，默认为最大巡航高度（`JumpjetHeight`、`FlightLevel` 等），而 "
 "`HeightShadowScaling.MinScale` 设置了缩放的下限。"
 
+msgid "Customize crash spin multiplier"
+msgstr "自定义坠毁旋转倍率"
+
 msgid "Terrains"
 msgstr "地形对象"
 

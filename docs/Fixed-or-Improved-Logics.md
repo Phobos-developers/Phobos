@@ -2287,6 +2287,14 @@ HeightShadowScaling.MinScale=0.0  ; floating point value
 ShadowSizeCharacteristicHeight=   ; integer, height in leptons
 ```
 
+### Customize crash spin multiplier
+
+In `rulesmd.ini`
+```ini
+[SOMETECHNO]                      ; TechnoType
+CrashSpin.Multiplier=1.0          ; floating point value
+```
+
 ## Terrains
 
 ### Animated TerrainTypes

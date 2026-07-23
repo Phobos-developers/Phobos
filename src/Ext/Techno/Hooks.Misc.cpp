@@ -929,6 +929,29 @@ DEFINE_HOOK(0x730D1F, ProcessDeployCommand_VoiceDeploy, 0x5)
 	return 0;
 }
 
+// rotation when crashing made optional
+DEFINE_HOOK(0x4DECBB, FootClass_Crash_Spin, 0x5)
+{
+	enum { SkipGameCode = 0x4DED4B };
+
+	GET(FootClass*, pThis, ESI);
+	const auto pTypeExt = TechnoTypeExt::Fetch(pThis->GetTechnoType());
+	const float multiplier = pTypeExt->CrashSpin_Multiplier;
+
+	if (multiplier > 0.0f)
+	{
+		const auto pScenario = ScenarioClass::Instance;
+		pThis->RockingSidewaysPerFrame = static_cast<float>((pScenario->Random(0, 2147483646) * 4.656612877414201e-10 * 0.15 + 0.1) * multiplier);
+
+		if (!pScenario->Random(0, 1))
+			pThis->RockingSidewaysPerFrame *= -1.0f;
+
+		pThis->RockingForwardsPerFrame = static_cast<float>(pScenario->Random(0, 2147483646) * 4.656612877414201e-10 * 0.1 * multiplier);
+	}
+
+	return SkipGameCode;
+}
+
 #pragma endregion
 
 #pragma region Events

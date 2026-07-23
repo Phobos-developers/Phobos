@@ -548,6 +548,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that techno will get stuck if change owner in tunnel
   - Fix the bug that the vanilla `SecondSpawnOffset` no longer takes effect
   - Fix the issue that `NoQueueUpToEnter` will clear passenger's planning tokens when entered transport
+  - Customize crash spin multiplier
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
