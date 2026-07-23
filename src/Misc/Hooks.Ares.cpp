@@ -50,18 +50,18 @@ static void __fastcall InitialPayloadFix_Building(FootClass* pPassenger)
 
 static void __fastcall UpdateThreatInCell_InitOccupant(TechnoClass* pBuilding, void*, CellClass* pCell)
 {
-    pBuilding->UpdateThreatInCell(pCell);
+	pBuilding->UpdateThreatInCell(pCell);
 
-    if (auto* pBld = abstract_cast<BuildingClass*>(pBuilding))
-    {
-        const int count = pBld->GetOccupantCount();
-        if (count > 0)
-        {
-            FootClass* pLast = pBld->Occupants.GetItem(count - 1);
-            if (pLast)
-                InitialPayloadFix(pLast);
-        }
-    }
+	if (auto* pBld = abstract_cast<BuildingClass*>(pBuilding))
+	{
+		const int count = pBld->GetOccupantCount();
+		if (count > 0)
+		{
+			FootClass* pLast = pBld->Occupants.GetItem(count - 1);
+			if (pLast)
+				InitialPayloadFix(pLast);
+		}
+	}
 }
 
 static void __fastcall LetGo(TemporalClass* pTemporal)
