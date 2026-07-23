@@ -400,7 +400,7 @@ ShowDesignatorRange=false             ; boolean
 ```
 
 ### Show game time
-- A timer can be displayed to show how many time has passed since game starts.
+- A timer can be displayed to show how many time has passed since game starts. This will show the ingame time instead of real time.
   - The timer will be shown in the format of `TXT_GAMETIME hh:mm:ss`. For localization add `TXT_GAMETIME` into your `.csf` file.
   - `ShowGameTime.BoardOpacity` can be used to set the opacitiy of background for game time display.
   - Observer can't see this timer since they've already gotten one on the top of sidebar.
@@ -410,10 +410,6 @@ In `RA2MD.INI`:
 [Phobos]
 ShowGameTime=false             ; boolean
 ShowGameTime.BoardOpacity=40   ; integer
-```
-
-```{note}
-This will replace the Phobos version text on top right of the screen for Debug or DevBuild, if enabled, since they take the same place.
 ```
 
 ### SuperWeapon ShowTimer sorting

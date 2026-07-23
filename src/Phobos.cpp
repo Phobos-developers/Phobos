@@ -1,6 +1,7 @@
 #include "Phobos.h"
 
 #include <Drawing.h>
+#include <HouseClass.h>
 #include <SessionClass.h>
 #include <Unsorted.h>
 
@@ -12,6 +13,7 @@
 #include <Utilities/Patch.h>
 #include <Utilities/Macro.h>
 #include "Utilities/AresHelper.h"
+#include "Utilities/GeneralUtils.h"
 #include "Utilities/Parser.h"
 
 #ifndef IS_RELEASE_VER
@@ -301,14 +303,16 @@ DEFINE_HOOK(0x683E7F, ScenarioClass_Start_Optimizations, 0x7)
 	return 0;
 }
 
-#ifndef IS_RELEASE_VER
 DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 {
+	int coordY = 0;
+
+#ifndef IS_RELEASE_VER
 #ifndef STR_GIT_COMMIT
 	if (!HideWarning)
 #endif // !STR_GIT_COMMIT
 	{
-		auto wanted = Drawing::GetTextDimensions(Phobos::VersionDescription, { 0,0 }, 0, 2, 0);
+		auto wanted = Drawing::GetTextDimensions(Phobos::VersionDescription, { 0, 0 }, 0, 2, 0);
 
 		RectangleStruct rect = {
 			DSurface::Composite->GetWidth() - wanted.Width - 10,
@@ -317,14 +321,51 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 			wanted.Height + 10
 		};
 
-		Point2D location { rect.X + 5,5 };
-
+		Point2D location { rect.X + 5, 5 };
 		DSurface::Composite->FillRect(&rect, COLOR_BLACK);
 		DSurface::Composite->DrawText(Phobos::VersionDescription, &location, COLOR_RED);
+
+		// add margin for next text
+		coordY = rect.Height;
 	}
+#endif // !IS_RELEASE_VER
+
+	if (!Phobos::Config::ShowGameTime || HouseClass::CurrentPlayer->IsObserver()) // already has a timer
+		return 0;
+
+	wchar_t buffer[0x20] {};
+	const int total_seconds = Unsorted::CurrentFrame / 15;
+
+	const int hours = total_seconds / 3600;
+	const int minutes = (total_seconds / 60) % 60;
+	const int seconds = total_seconds % 60;
+	const auto text = GeneralUtils::LoadStringUnlessMissing("TXT_GAMETIME", L"Time:");
+
+	if (hours > 0)
+	{
+		swprintf(buffer, std::size(buffer), L"%ls %d:%02d:%02d", text, hours, minutes, seconds);
+	}
+	else
+	{
+		swprintf(buffer, std::size(buffer), L"%ls %02d:%02d", text, minutes, seconds);
+	}
+
+	auto wantedB = Drawing::GetTextDimensions(buffer, { 0, 0 }, 0, 2, 0);
+
+	RectangleStruct rectB = {
+		DSurface::Composite->GetWidth() - wantedB.Width - 10,
+		coordY,
+		wantedB.Width + 10,
+		wantedB.Height + 10
+	};
+
+	Point2D locationB { rectB.X + 5, rectB.Y + 5 };
+	ColorStruct color { 0x0, 0x0 ,0x0 };
+	DSurface::Composite->FillRectTrans(&rectB, &color, Phobos::Config::ShowGameTime_BoardOpacity);
+	DSurface::Composite->DrawText(buffer, &locationB, COLOR_WHITE);
+
 	return 0;
 }
-#endif
 
 // Mainly used to disable hooks for optimization.
 // Called after loading saved game and at end of scenario start after all INI data etc has been initialized.
