@@ -1916,7 +1916,7 @@ FallingDownDamage.AllowEMP=true     ; boolean
 
 In `rulesmd.ini`
 ```ini
-[SOMETECHNO]                      ; TechnoType with Locomotor=Fly
+[SOMETECHNO]                      ; TechnoType, with Locomotor=Fly
 CrashSpin.Multiplier=1.0          ; floating point value
 ```
 
