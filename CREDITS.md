@@ -241,7 +241,7 @@ This page lists all the individual contributions to the project by their author.
   - Warhead animation improvements
   - Reloading ammo in transports
   - Straight projectile trajectory additions
-  - Airstrike & spy plane fixed spawn distance & height
+  - Reinforcement plane (paradrop, spy plane, airstrike) spawn customizations
   - Negative damage `Verses/PercentAtMax` toggle
   - Misc. singleplayer mission improvements
   - Weapon effect obstacle interaction fix
@@ -255,6 +255,7 @@ This page lists all the individual contributions to the project by their author.
   - Revenge weapons
   - AttachEffect
   - Air unit tracking fix for large range / `CellSpread`
+  - `ZAdjust` for OverlayTypes
   - Extra tint intensity for Iron Curtain & Force Shield
   - Option to enable parsing 8-bit RGB values from `[ColorAdd]` instead of RGB565
   - Customizing height and speed at which subterranean units travel
@@ -288,7 +289,7 @@ This page lists all the individual contributions to the project by their author.
   - Subterranean harvester pathfinding fix
   - Toggle to exclude technos from base center calculations
   - Deploy priority filtering
-  - Customizable paradrop missions
+  - Customizable paradrop missions and delay
   - Guard range customizations
   - Wall overlay unit sell exploit fix
   - Fix vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't
@@ -546,6 +547,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow `Temporal` warhead to apply ratio and bonus
   - Fix the bug that techno will get stuck if change owner in tunnel
   - Fix the bug that the vanilla `SecondSpawnOffset` no longer takes effect
+  - Fix the issue that `NoQueueUpToEnter` will clear passenger's planning tokens when entered transport
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -584,6 +586,8 @@ This page lists all the individual contributions to the project by their author.
   - Replace `BLOWFISH.DLL` using Red Alert source code
   - Adjust the dehardcoding of the 255 `OverlayType` limit to a different format
   - Voxel drawing invisible sections skip
+  - Extension system rework
+  - New exception handler with a crash dialog, crash report and minidumps (ported from Vinifera)
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft
@@ -650,6 +654,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow the aircraft to enter area guard mission and not crash immediately without any airport
   - Allow merging AOE damage to buildings into one
   - Fix the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health
+  - RA1-Style multi-turret and multi-barrel
 - **Noble Fish**:
   - Documentation maintenance
   - Chinese documentation maintenance and translation
@@ -695,6 +700,12 @@ This page lists all the individual contributions to the project by their author.
   - Customize the step limit of the credits indicator
   - Disable the credits indicator smooth transition
   - Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn`
+  - `ZAdjust` for Projectiles
+  - Allow Laser drawing position update
+  - Customize the distance for `NoQueueUpToEnter` transport units to board passengers
+  - Fix the bug that `MissileSpawn=true` causes the spawnee launcher to crash immediately when attacking
+  - Customize the initial facing of buildings
+  - Global default value for `LeptonMindControlOffset` and `MindControlRingOffset`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -724,6 +735,7 @@ This page lists all the individual contributions to the project by their author.
   - `ElectricAssault` weapons can now auto acquire allies' overpowerable defenses
   - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
   - Dynamic team delays
+  - Customize whether or not passenger can fire out when the transport is moving
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`
@@ -794,7 +806,6 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the AI would look for the first house in the array as an enemy instead of the nearest one when there were no enemies
   - `AllowBerzerkOnAllies`
   - Fix an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat
-  - Fix an issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team
   - Global default value for `DefaultToGuardArea`
   - Weapon range finding in cylinder
   - Allow jumpjet climbing ignore building height
@@ -822,6 +833,8 @@ This page lists all the individual contributions to the project by their author.
   - Allow chat box in singleplayer
   - Auto-remove earliest beacon
   - Allow beacon placement hotkey in single player
+  - Adjust recruitable status on team member discharge
+  - RA1-Style multi-turret and multi-barrel
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

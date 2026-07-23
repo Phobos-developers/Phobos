@@ -143,7 +143,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Units & buildings with `DecloakToFire=false` weapons now cloak while targeting & reloading.
 - Units with `Sensors=true` will no longer reveal ally buildings.
 - Air units are now reliably included by target scan with large range and Warhead detonation by large `CellSpread`.
-- OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini` entry.
 - Weapons with `AA=true` Projectile can now correctly fire at air units when both firer and target are over a bridge.
 - Fixed disguised units not using the correct palette if target has custom palette.
 - Building upgrades now consistently use building's `PowerUpN` animation settings corresponding to the upgrade's `PowersUpToLevel` where possible.
@@ -288,8 +287,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where mining vehicles could not move after leaving a tank bunker.
 - `ProductionAnim` is now available for `Factory=InfantryType` as well as non-`ConstructionYard=true` `Factory=BuildingType` buildings. `IdleAnim` will cease to play for its duration normally as well.
 - Fixed the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon.
-- Fixed the issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team.
-- Allow the default value of `DefaultToGuardArea` to be defined by `[General] -> DefaultToGuardArea`.
 - Fixed the bug that cause technos teleport to cell 0,0 by ChronoSphere superweapon.
 - Fixed the bug that techno in attack move will move to target if it cannot attack it.
 - Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4.
@@ -325,6 +322,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed voxel projectile and animation lighting issues.
 - Fixed the bug that techno will get stuck if change owner in tunnel.
 - Restored the original Tiberian Sun behavior of playing the `[AudioVisual] -> DeploySound=` sound effect when clicking the sidebar to execute `Deploy`.
+- Whether or not a passenger's weapon can fire out from an `OpenTopped=yes` transport will now respect the weapon's `FireWhileMoving` setting.
 
 ## Fixes / interactions with other extensions
 
@@ -504,6 +502,24 @@ In `rulesmd.ini`:
 ```ini
 [CombatDamage]
 AdjacentWallDamage=200  ; integer
+```
+
+### Customize the global default values of some vanilla flags
+
+- The following flags supplement definitions for flags that do not have global default values in vanilla.
+
+```{hint}
+Unless otherwise specified, the definition is the same as the name of the micro-level definition flag.
+```
+
+In `rulesmd.ini`:
+```ini
+[General]
+DefaultToGuardArea=false    ; boolean
+
+[AudioVisual]
+LeptonMindControlOffset=70  ; integer, in leptons
+MindControlRingOffset=140   ; integer, in leptons
 ```
 
 ### Customizing effect of level lighting on air units
@@ -786,6 +802,22 @@ In `rulesmd.ini`:
 CurleyShuffle=            ; boolean, default to [General] -> CurleyShuffle
 ```
 
+### Customizable paradrop delay
+
+- By default paradrop planes have delay of 5 game frames between parachuting units. This can now be customized globally and per paradrop plane type via `ParadropDelay`.
+  - `ParadropEndDelay` customizes the delay after final unit has been parachuted separately from the regular delay. Negative values are special case and will cause the aircraft to fly in straight line off the map after parachuting all units, ignoring normal edge rules.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ParadropDelay=5     ; integer, game frames
+ParadropEndDelay=5  ; integer, game frames
+
+[SOMEAIRCRAFT]      ; AircraftType
+ParadropDelay=      ; integer, game frames
+ParadropEndDelay=   ; integer, game frames
+```
+
 ### Customize the scatter caused by aircraft attack mission
 
 - In vanilla, when an aircraft attacks, it forces the target's cell to trigger a scatter. Now you can disable this behavior by setting the following flag to `false`.
@@ -829,18 +861,6 @@ ExtendedAircraftMissions.UnlandDamage=    ; integer, default to [General] -> Ext
 And now when `ExtendedAircraftMissions` is enabled, aircraft that can land at the airport will check at any time to see if they have a dock. Therefore, if there are aircraft in your mission that require dock and you have not provided enough or not disabled the feature, they will crash immediately
 ```
 
-### Fixed spawn distance & spawn height for airstrike / SpyPlane aircraft
-
-- It is now possible to have aircraft spawned from `(Elite)AirstrikeTeamType` or `Type=SpyPlane` superweapons to be created at fixed distance from their intended target/destination instead of from edge of the map by setting `SpawnDistanceFromTarget`.
-- `SpawnHeight` can also be used to override the initial height of the aircraft, which defaults to `FlightLevel`, or if not set then `[General] -> FlightLevel`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEAIRCRAFT]            ; AircraftType
-SpawnDistanceFromTarget=  ; floating point value, distance in cells
-SpawnHeight=              ; integer, height in leptons
-```
-
 ### Landing direction
 
 - By default aircraft land facing the direction specified by `[AudioVisual] -> PoseDir`. This can now be customized per AircraftType via `LandingDir`, defaults to `[AudioVisual] -> PoseDir`. If the building the aircraft is docking to has [aircraft docking direction](#aircraft-docking-direction) set, that setting takes priority over this.
@@ -850,6 +870,23 @@ In `rulesmd.ini`:
 ```ini
 [SOMEAIRCRAFT]  ; AircraftType
 LandingDir=     ; Direction type (integers from 0-255). Accepts negative values as a special case.
+```
+
+### Reinforcement aircraft spawn settings
+
+- A number of new settings are available for AircraftTypes spawned from `(Elite)AirstrikeTeamType` or `Type=SpyPlane/Paradrop/AmerParadrop` superweapons.
+  - `SpawnFromEdge` and `RetreatToEdge` can be used to customize the edge of map from where the aircraft spawns and where it retreats to, respectively. Defaults to the owner's edge of the map which is determined based on base location and other factors.
+  - `SpawnDistanceFromTarget` can be used to set fixed spawn distance from target instead of at edge of map. The approach direction is still determined by the edge where it would've otherwise spawned. Negative values will invert the direction.
+  - `SpawnHeight` can be used to override the initial height of the aircraft, which defaults to `FlightLevel`, or if not set then `[General] -> FlightLevel`.
+  - Additionally, these aircraft now spawn facing the target's direction instead of always facing north.
+
+In `rulesmd.ini`:
+```ini
+[SOMEAIRCRAFT]            ; AircraftType
+SpawnFromEdge=owner       ; Edge type enumeration (owner|closest|random)
+RetreatToEdge=owner       ; Edge type enumeration (owner|closest|random)
+SpawnDistanceFromTarget=  ; floating point value, distance in cells
+SpawnHeight=              ; integer, height in leptons
 ```
 
 ## Animations
@@ -1222,6 +1259,25 @@ Overpower.ChargeWeapon=1  ; integer, negative values mean that weapons can never
 Ares' [Battery Super Weapon](https://ares-developers.github.io/Ares-docs/new/superweapons/types/battery.html) won't be affected by this.
 ```
 
+### Customize the initial facing of buildings
+
+- In vanilla, buildings always face due north (0). Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[General]
+BuildingStartFacing=0             ; integer
+BuildingStartFacing.Random=false  ; boolean
+
+[SOMEBUILDING]                    ; BuildingType
+StartFacing=                      ; integer, defaults to [General] -> BuildingStartFacing
+StartFacing.Random=               ; boolean, defaults to [General] -> BuildingStartFacing.Random
+```
+
+```{note}
+Unlike the identically named INI flag in Tiberian Sun, this flag uses a 256-point circle rather than an 8-point circle.
+```
+
 ### Disable `DamageSound`
 
 - Now you can disable `DamageSound` of a building.
@@ -1386,9 +1442,17 @@ ProneSpeed.NoCrawls=1.5       ; floating point value, multiplier
 ProneSpeed=                   ; floating point value, multiplier, by default, use the corresponding global value according to Crawls
 ```
 
-<!--
 ## Overlays
--->
+
+### `ZAdjust` for OverlayTypes
+
+- OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini` entry.
+
+In `artmd.ini`:
+```ini
+[SOMEOVERLAY]  ; OverlayType Image
+ZAdjust=0      ; integer
+```
 
 ## Particle systems
 
@@ -1539,6 +1603,20 @@ Shrapnel.AffectsBuildings=false             ; boolean
 Shrapnel.UseWeaponTargeting=false           ; boolean
 Shrapnel.IgnoreHitBuildings=                ; boolean
 Shrapnel.ObeyWarheadTriggerConditions=      ; boolean, defaults to [CombatDamage] -> Shrapnel.ObeyWarheadTriggerConditions
+```
+
+### `ZAdjust` for Projectiles
+
+- In vanilla, the Z‑depth of projectiles is automatically calculated, but this calculation is not foolproof. For example, when launching a missile straight up from a building, the projectile will be blocked by the building. Now you can manually set a correction value, similar to animations.
+
+In `artmd.ini`:
+```ini
+[SOMEPROJECTILE]  ; Projectile Image
+ZAdjust=0         ; integer
+```
+
+```{note}
+Unlike those using Shape, projectiles that use Voxel resource files as images will use another complex per-pixel dynamic mapping calculation. Likewise, they cannot be simply adjusted via this INI flag—this feature only works on projectiles that use Shape assets as images.
 ```
 
 ## Technos

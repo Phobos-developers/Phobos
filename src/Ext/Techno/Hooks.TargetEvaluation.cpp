@@ -9,7 +9,7 @@ DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	const auto pExt = TechnoExt::Fetch(pThis)->TypeExtData;
 
 	if (pExt->AutoTargetOwnPosition)
 	{
@@ -44,7 +44,7 @@ DEFINE_HOOK(0x6F9C67, TechnoClass_GreatestThreat_MapZoneSetContext, 0x5)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto const pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 	MapZoneTemp::zoneScanType = pTypeExt->TargetZoneScanType;
 
 	return 0;
@@ -180,7 +180,7 @@ DEFINE_HOOK(0x4DF3A0, FootClass_UpdateAttackMove_SelectNewTarget, 0x6)
 {
 	GET(FootClass* const, pThis, ECX);
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pExt = TechnoExt::Fetch(pThis);
 
 	if (pExt->TypeExtData->AttackMove_UpdateTarget.Get(RulesExt::Global()->AttackMove_UpdateTarget)
 		&& CheckAttackMoveCanResetTarget(pThis))
@@ -207,7 +207,7 @@ DEFINE_HOOK(0x6F85AB, TechnoClass_CanAutoTargetObject_AggressiveAttackMove, 0x6)
 	if (!pThis->MegaMissionIsAttackMove())
 		return ContinueCheck;
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pExt = TechnoExt::Fetch(pThis);
 
 	return pExt->TypeExtData->AttackMove_Aggressive.Get(RulesExt::Global()->AttackMove_Aggressive) ? CanTarget : ContinueCheck;
 }
@@ -238,7 +238,7 @@ static double __fastcall HealthRatio_Wrapper(TechnoClass* pTechno)
 
 	if (result >= 1.0)
 	{
-		const auto pExt = TechnoExt::ExtMap.Find(pTechno);
+		const auto pExt = TechnoExt::Fetch(pTechno);
 
 		if (const auto pShieldData = pExt->Shield.get())
 		{
@@ -277,7 +277,7 @@ public:
 
 		if (const auto pTechno = abstract_cast<TechnoClass*>(pObj))
 		{
-			const auto pExt = TechnoExt::ExtMap.Find(pTechno);
+			const auto pExt = TechnoExt::Fetch(pTechno);
 
 			if (const auto pShieldData = pExt->Shield.get())
 			{
@@ -382,7 +382,7 @@ static inline bool IsAThreatToMe(TechnoClass* const pTechno, AbstractClass* cons
 {
 	if (const auto pTechnoTarget = abstract_cast<TechnoClass*>(pTarget))
 	{
-		const auto pTypeExt = TechnoExt::ExtMap.Find(pTechnoTarget)->TypeExtData;
+		const auto pTypeExt = TechnoExt::Fetch(pTechnoTarget)->TypeExtData;
 
 		if (pTypeExt->AlwaysConsideredThreat)
 			return true;
@@ -432,7 +432,7 @@ DEFINE_HOOK(0x70CF87, TechnoClass_ThreatCoefficient_CanAttackMeThreatBonus, 0x9)
 	GET(TechnoClass* const, pTarget, ESI);
 	REF_STACK(double, totalThreat, STACK_OFFSET(0x58, -0x48));
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pExt = TechnoExt::Fetch(pThis);
 	const auto pTypeExt = pExt->TypeExtData;
 
 	if (!pTypeExt->ExtraThreat_Enabled)

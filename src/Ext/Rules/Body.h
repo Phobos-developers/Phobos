@@ -99,6 +99,7 @@ public:
 		Valueable<bool> AmphibiousEnter;
 		Valueable<bool> AmphibiousUnload;
 		Valueable<bool> NoQueueUpToEnter;
+		Valueable<int> NoQueueUpToEnter_BoardDistance;
 		Valueable<bool> NoQueueUpToUnload;
 		Nullable<bool> NoQueueUpToEnter_Buildings;
 		Nullable<bool> NoQueueUpToUnload_Buildings;
@@ -144,6 +145,7 @@ public:
 		Valueable<ColorStruct> AirstrikeLineColor;
 		Valueable<int> AirstrikeLineZAdjust;
 
+		Valueable<bool> LaserPositionUpdate_StopOnFirerConvert;
 		Valueable<int> LaserZAdjust;
 		Valueable<int> EBoltZAdjust;
 		Valueable<bool> EBoltZAdjust_ClampInitialDepthForBuilding;
@@ -176,6 +178,7 @@ public:
 		Valueable<bool> ShowPowerPlantEnhancerRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
 		Valueable<int> SelectionFlashDuration;
+		Valueable<int> SetRecruitableOnLiberate;
 		Nullable<AnimTypeClass*> DropPodTrailer;
 		AnimTypeClass* DropPodDefaultTrailer;
 		SHPStruct* PodImage;
@@ -304,8 +307,17 @@ public:
 
 		Valueable<bool> FallingDownTargetingFix;
 		Valueable<bool> AIAirTargetingFix;
-		Valueable<bool> OpenTopped_DecloakToFire;
+		Valueable<bool> OpenTopped_IgnoreRangefinding;
+		Valueable<bool> OpenTopped_AllowFiringIfDeactivated;
 		Valueable<bool> OpenTopped_AllowFiringIfAttackedByLocomotor;
+		Valueable<bool> OpenTopped_ShareTransportTarget;
+		Valueable<bool> OpenTopped_UseTransportRangeModifiers;
+		Valueable<bool> OpenTopped_CheckTransportDisableWeapons;
+		Valueable<bool> OpenTopped_DecloakToFire;
+		Valueable<bool> OpenTopped_FireWhileMoving;
+		Valueable<int> OpenTransport_RangeBonus;
+		Valueable<float> OpenTransport_DamageMultiplier;
+		Valueable<bool> OpenTransport_FireWhileMoving;
 
 		Valueable<bool> SortCameoByName;
 
@@ -321,6 +333,8 @@ public:
 		Valueable<bool> AffectsInvokerOnly_IgnoreInvokerState;
 
 		Valueable<bool> FiringAnim_Update;
+		int FiringAnimUpdateCount;
+
 		Valueable<bool> ExtendedPlayerRepair;
 		
 		Valueable<bool> AutoTarget_NoThreatBuildings;
@@ -328,8 +342,12 @@ public:
 
 		Valueable<Mission> ParadropMission;
 		Valueable<Mission> AIParadropMission;
+		Valueable<int> ParadropDelay;
+		Valueable<int> ParadropEndDelay;
 
 		Valueable<bool> DefaultToGuardArea;
+		Valueable<int> LeptonMindControlOffset;
+		Valueable<int> MindControlRingOffset;
 
 		Valueable<bool> DisableOveroptimizationInTargeting;
     
@@ -382,6 +400,9 @@ public:
 		Valueable<bool> SecondaryFireSequenceLandOnly;
 		Valueable<bool> AutoRemoveEarliestBeacon;
 		Valueable<bool> AllowBeaconHotKeyInSinglePlayer;
+
+		Valueable<int> StartFacing;
+		Valueable<bool> StartFacing_Random;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -454,6 +475,7 @@ public:
 			, AmphibiousEnter { false }
 			, AmphibiousUnload { false }
 			, NoQueueUpToEnter { false }
+			, NoQueueUpToEnter_BoardDistance { 384 }
 			, NoQueueUpToUnload { false }
 			, NoQueueUpToEnter_Buildings {}
 			, NoQueueUpToUnload_Buildings {}
@@ -486,6 +508,7 @@ public:
 			, ColorAddUse8BitRGB { false }
 			, AirstrikeLineColor { { 255, 0, 0 } }
 			, AirstrikeLineZAdjust { 0 }
+			, LaserPositionUpdate_StopOnFirerConvert { false }
 			, LaserZAdjust { 0 }
 			, EBoltZAdjust { 0 }
 			, EBoltZAdjust_ClampInitialDepthForBuilding { true }
@@ -508,6 +531,7 @@ public:
 			, DrawTurretShadow { false }
 			, IsVoiceCreatedGlobal { false }
 			, SelectionFlashDuration { 0 }
+			, SetRecruitableOnLiberate { -1 }
 			, DrawInsignia_OnlyOnSelected { false }
 			, DrawInsignia_AdjustPos_Infantry { { 5, 2 } }
 			, DrawInsignia_AdjustPos_Buildings { { 10, 6 } }
@@ -628,8 +652,17 @@ public:
 
 			, FallingDownTargetingFix { false }
 			, AIAirTargetingFix { false }
-			, OpenTopped_DecloakToFire { false }
+			, OpenTopped_IgnoreRangefinding { false }
+			, OpenTopped_AllowFiringIfDeactivated { true }
 			, OpenTopped_AllowFiringIfAttackedByLocomotor { true }
+			, OpenTopped_ShareTransportTarget { true }
+			, OpenTopped_UseTransportRangeModifiers { false }
+			, OpenTopped_CheckTransportDisableWeapons { false }
+			, OpenTopped_DecloakToFire { false }
+			, OpenTopped_FireWhileMoving { true }
+			, OpenTransport_RangeBonus { 0 }
+			, OpenTransport_DamageMultiplier { 1.0f }
+			, OpenTransport_FireWhileMoving { true }
 
 			, SortCameoByName { false }
 
@@ -651,8 +684,12 @@ public:
 
 			, ParadropMission { Mission::Guard }
 			, AIParadropMission { Mission::Hunt }
+			, ParadropDelay { 5 }
+			, ParadropEndDelay { 5 }
 
 			, DefaultToGuardArea { false }
+			, LeptonMindControlOffset { 70 }
+			, MindControlRingOffset { 140 }
 
 			, CylinderRangefinding { false }
 
@@ -675,6 +712,7 @@ public:
 			, HoverLocomotorMakesWake { true }
 			, ShipLocomotorMakesWake { true }
 			, FiringAnim_Update { false }
+			, FiringAnimUpdateCount { 0 }
 			, ExtendedPlayerRepair { false }
 			, Shrapnel_IgnoreHitBuildings { false }
 			, Shrapnel_ObeyWarheadTriggerConditions { true }
@@ -706,6 +744,9 @@ public:
 			, AutoRemoveEarliestBeacon { false }
 
 			, AllowBeaconHotKeyInSinglePlayer { false }
+
+			, StartFacing { 0 }
+			, StartFacing_Random { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -716,8 +757,6 @@ public:
 		virtual void InitializeConstants() override;
 		void InitializeAfterTypeData(RulesClass* pThis);
 		void InitializeAfterAllLoaded();
-
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -750,10 +789,5 @@ public:
 	static void Clear()
 	{
 		Allocate(RulesClass::Instance);
-	}
-
-	static void PointerGotInvalid(void* ptr, bool removed)
-	{
-		Global()->InvalidatePointer(ptr, removed);
 	}
 };

@@ -950,6 +950,33 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<PositionFollow>(PositionFollow& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			static const std::pair<const char*, PositionFollow> Names[] =
+			{
+				{"none", PositionFollow::None},
+				{"firer", PositionFollow::Firer},
+				{"target", PositionFollow::Target},
+				{"all", PositionFollow::All},
+			};
+
+			for (auto const& [name, val] : Names)
+			{
+				if (_strcmpi(parser.value(), name) == 0)
+				{
+					value = val;
+					return true;
+				}
+			}
+
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a position follow mode (None, Firer, Target, All)");
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<SelfHealGainType>(SelfHealGainType& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
@@ -1264,6 +1291,34 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 			else
 			{
 				Debug::INIParseFailed(pSection, pKey, str, "Expected an interpolation mode");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<EdgeType>(EdgeType& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "owner") == 0)
+			{
+				value = EdgeType::Owner;
+			}
+			else if (_strcmpi(str, "closest") == 0)
+			{
+				value = EdgeType::Closest;
+			}
+			else if (_strcmpi(str, "random") == 0)
+			{
+				value = EdgeType::Random;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Expected an edge type");
 				return false;
 			}
 			return true;

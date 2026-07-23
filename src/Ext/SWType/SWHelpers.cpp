@@ -4,7 +4,7 @@
 #include <Ext/House/Body.h>
 
 // Universal handler of the rolls-weights system
-std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>* rolls, std::vector<ValueableVector<int>>* weights, size_t size)
+std::vector<int> SWTypeExt::WeightedRollsHandler(ValueableVector<float>* rolls, std::vector<ValueableVector<int>>* weights, size_t size)
 {
 	bool rollOnce = false;
 	size_t rollsSize = rolls->size();
@@ -44,7 +44,7 @@ std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>
 // =============================
 // Ares 0.A helpers
 // Inhibitors check
-bool SWTypeExt::ExtData::IsInhibitor(HouseClass* pOwner, TechnoClass* pTechno) const
+bool SWTypeExt::IsInhibitor(HouseClass* pOwner, TechnoClass* pTechno) const
 {
 	if (pTechno->IsAlive && pTechno->Health && !pTechno->InLimbo && !pTechno->Deactivated)
 	{
@@ -63,25 +63,25 @@ bool SWTypeExt::ExtData::IsInhibitor(HouseClass* pOwner, TechnoClass* pTechno) c
 	return false;
 }
 
-bool SWTypeExt::ExtData::IsInhibitorEligible(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno) const
+bool SWTypeExt::IsInhibitorEligible(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno) const
 {
 	if (this->IsInhibitor(pOwner, pTechno))
 	{
 		const auto pType = pTechno->GetTechnoType();
-		const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
+		const auto pExt = TechnoTypeExt::Fetch(pType);
 
 		// get the inhibitor's center
 		const auto center = pTechno->GetCenterCoords();
 
 		// has to be closer than the inhibitor range (which defaults to Sight)
-		const int range = pExt->InhibitorRange.Get(pType->Sight);
+		const double range = (double)pExt->InhibitorRange.Get(pType->Sight);
 		return coords.DistanceFromSquared(CellClass::Coord2Cell(center)) <= range * range;
 	}
 
 	return false;
 }
 
-bool SWTypeExt::ExtData::HasInhibitor(HouseClass* pOwner, const CellStruct& coords) const
+bool SWTypeExt::HasInhibitor(HouseClass* pOwner, const CellStruct& coords) const
 {
 	// does not allow inhibitors
 	if (this->SW_Inhibitors.empty() && !this->SW_AnyInhibitor)
@@ -94,7 +94,7 @@ bool SWTypeExt::ExtData::HasInhibitor(HouseClass* pOwner, const CellStruct& coor
 }
 
 // Designators check
-bool SWTypeExt::ExtData::IsDesignator(HouseClass* pOwner, TechnoClass* pTechno) const
+bool SWTypeExt::IsDesignator(HouseClass* pOwner, TechnoClass* pTechno) const
 {
 	if (pTechno->Owner == pOwner && pTechno->IsAlive && pTechno->Health && !pTechno->InLimbo && !pTechno->Deactivated)
 		return this->SW_AnyDesignator || this->SW_Designators.Contains(pTechno->GetTechnoType());
@@ -102,25 +102,25 @@ bool SWTypeExt::ExtData::IsDesignator(HouseClass* pOwner, TechnoClass* pTechno) 
 	return false;
 }
 
-bool SWTypeExt::ExtData::IsDesignatorEligible(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno) const
+bool SWTypeExt::IsDesignatorEligible(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno) const
 {
 	if (this->IsDesignator(pOwner, pTechno))
 	{
 		const auto pType = pTechno->GetTechnoType();
-		const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
+		const auto pExt = TechnoTypeExt::Fetch(pType);
 
 		// get the designator's center
 		const auto center = pTechno->GetCenterCoords();
 
 		// has to be closer than the designator range (which defaults to Sight)
-		const int range = pExt->DesignatorRange.Get(pType->Sight);
+		const double range = (double)pExt->DesignatorRange.Get(pType->Sight);
 		return coords.DistanceFromSquared(CellClass::Coord2Cell(center)) <= range * range;
 	}
 
 	return false;
 }
 
-bool SWTypeExt::ExtData::HasDesignator(HouseClass* pOwner, const CellStruct& coords) const
+bool SWTypeExt::HasDesignator(HouseClass* pOwner, const CellStruct& coords) const
 {
 	// does not require designators
 	if (this->SW_Designators.empty() && !this->SW_AnyDesignator)
@@ -131,7 +131,7 @@ bool SWTypeExt::ExtData::HasDesignator(HouseClass* pOwner, const CellStruct& coo
 		{ return this->IsDesignatorEligible(pOwner, coords, pTechno); });
 }
 
-bool SWTypeExt::ExtData::IsLaunchSiteEligible(const CellStruct& Coords, BuildingClass* pBuilding, bool ignoreRange) const
+bool SWTypeExt::IsLaunchSiteEligible(const CellStruct& Coords, BuildingClass* pBuilding, bool ignoreRange) const
 {
 	if (!this->IsLaunchSite(pBuilding))
 		return false;
@@ -153,23 +153,23 @@ bool SWTypeExt::ExtData::IsLaunchSiteEligible(const CellStruct& Coords, Building
 		&& (maxRange < 0.0 || (double)distance <= maxRange);
 }
 
-bool SWTypeExt::ExtData::IsLaunchSite(BuildingClass* pBuilding) const
+bool SWTypeExt::IsLaunchSite(BuildingClass* pBuilding) const
 {
 	if (pBuilding->IsAlive && pBuilding->Health && !pBuilding->InLimbo && pBuilding->IsPowerOnline())
 	{
-		auto const pExt = BuildingExt::ExtMap.Find(pBuilding);
+		auto const pExt = BuildingExt::Fetch(pBuilding);
 		return pExt->HasSuperWeapon(this->OwnerObject()->ArrayIndex);
 	}
 
 	return false;
 }
 
-std::pair<double, double> SWTypeExt::ExtData::GetLaunchSiteRange(BuildingClass* pBuilding) const
+std::pair<double, double> SWTypeExt::GetLaunchSiteRange(BuildingClass* pBuilding) const
 {
 	return std::make_pair(this->SW_RangeMinimum.Get(), this->SW_RangeMaximum.Get());
 }
 
-bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
+bool SWTypeExt::IsAvailable(HouseClass* pHouse) const
 {
 	if (pHouse->TechLevel < this->SW_TechLevel)
 		return false;
@@ -177,7 +177,7 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 	const auto pThis = this->OwnerObject();
 	const int shots = this->SW_Shots;
 
-	if (shots >= 0 && HouseExt::ExtMap.Find(pHouse)->SuperExts[pThis->ArrayIndex].ShotCount >= shots)
+	if (shots >= 0 && HouseExt::Fetch(pHouse)->SuperExts[pThis->ArrayIndex].ShotCount >= shots)
 		return false;
 
 	if (pHouse->IsControlledByHuman() ? (!this->SW_AllowPlayer) : (!this->SW_AllowAI))
@@ -195,10 +195,10 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 
 			// June 7, 2026 - Starkku: PowersUpBuilding is now put in PowersUp_Buildings
 			// so removed  BuildingTypeClass::Find(pBuildingType->PowersUpBuilding check here.
-			if (pBuildingType && !BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.empty())
+			if (pBuildingType && !BuildingTypeExt::Fetch(pBuildingType)->PowersUp_Buildings.empty())
 				return BuildingTypeExt::GetUpgradesAmount(pBuildingType, pHouse) > 0;
 
-			return HouseExt::ExtMap.Find(pHouse)->CountOwnedPresentAndLimboed(pType) > 0;
+			return HouseExt::Fetch(pHouse)->CountOwnedPresentAndLimboed(pType) > 0;
 		};
 
 	// check whether the optional aux building exists
@@ -230,7 +230,7 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 	return true;
 }
 
-std::vector<BuildingClass*> SWTypeExt::ExtData::GetEMPulseCannons(HouseClass* pOwner, const CellStruct& cell) const
+std::vector<BuildingClass*> SWTypeExt::GetEMPulseCannons(HouseClass* pOwner, const CellStruct& cell) const
 {
 	std::vector<BuildingClass*> emCannons;
 
@@ -251,11 +251,11 @@ std::vector<BuildingClass*> SWTypeExt::ExtData::GetEMPulseCannons(HouseClass* pO
 
 		if (eligible)
 		{
-			auto range = this->GetEMPulseCannonRange(pBuilding);
-			auto const& minRange = range.first;
-			auto const& maxRange = range.second;
-			auto const center = CellClass::Coord2Cell(pBuilding->GetCenterCoords());
-			auto const distanceSq = cell.DistanceFromSquared(center);
+			const auto range = this->GetEMPulseCannonRange(pBuilding);
+			const double& minRange = range.first;
+			const double& maxRange = range.second;
+			const auto center = CellClass::Coord2Cell(pBuilding->GetCenterCoords());
+			const double distanceSq = cell.DistanceFromSquared(center);
 
 			if ((minRange < 0.0 || distanceSq >= minRange * minRange)
 				&& (maxRange < 0.0 || distanceSq <= maxRange * maxRange))
@@ -268,7 +268,7 @@ std::vector<BuildingClass*> SWTypeExt::ExtData::GetEMPulseCannons(HouseClass* pO
 	return emCannons;
 }
 
-std::pair<double, double> SWTypeExt::ExtData::GetEMPulseCannonRange(BuildingClass* pBuilding) const
+std::pair<double, double> SWTypeExt::GetEMPulseCannonRange(BuildingClass* pBuilding) const
 {
 	if (this->EMPulse_TargetSelf)
 		return std::make_pair(-1.0, -1.0);
@@ -294,7 +294,7 @@ std::pair<double, double> SWTypeExt::ExtData::GetEMPulseCannonRange(BuildingClas
 	return std::make_pair(this->SW_RangeMinimum.Get(), this->SW_RangeMaximum.Get());
 }
 
-void SWTypeExt::ExtData::PrintMessage(const CSFText& message, HouseClass* pFirer) const
+void SWTypeExt::PrintMessage(const CSFText& message, HouseClass* pFirer) const
 {
 	if (message.empty())
 		return;
@@ -330,7 +330,7 @@ SuperClass* __stdcall SWTypeExt::IsSuperAvailable(int swIdx, HouseClass* pHouse)
 {
 	if (const auto pSuper = pHouse->Supers.GetItemOrDefault(swIdx))
 	{
-		const auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+		const auto pExt = SWTypeExt::Fetch(pSuper->Type);
 
 		if (pExt->IsAvailable(pHouse))
 			return pSuper;

@@ -16,7 +16,7 @@ void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, HouseClass* pKiller)
 	{
 		auto const facing = pThis->PrimaryFacing.Current().GetDir();
 		AnimTypeClass* pAnimType = nullptr;
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 
 		if (!pTypeExt->DestroyAnim_Random.Get())
 		{
@@ -46,8 +46,8 @@ void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, HouseClass* pKiller)
 			//auto VictimOwner = pThis->IsMindControlled() && pThis->GetOriginalOwner()
 			//	? pThis->GetOriginalOwner() : pThis->Owner;
 
-			auto const pAnimTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
-			auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+			auto const pAnimTypeExt = AnimTypeExt::Fetch(pAnim->Type);
+			auto const pAnimExt = AnimExt::Fetch(pAnim);
 
 			AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pThis->Owner);
 
@@ -72,7 +72,7 @@ void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, HouseClass* pKiller)
 	}
 }
 
-void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
+void AnimTypeExt::LoadFromINIFile(CCINIClass* pINI)
 {
 	const char* pID = this->OwnerObject()->ID;
 
@@ -138,7 +138,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 }
 
 template <typename T>
-void AnimTypeExt::ExtData::Serialize(T& Stm)
+void AnimTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Palette)
@@ -186,69 +186,16 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void AnimTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void AnimTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<AnimTypeClass>::LoadFromStream(Stm);
+	ObjectTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void AnimTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void AnimTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<AnimTypeClass>::SaveToStream(Stm);
+	ObjectTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
-}
-
-AnimTypeExt::ExtContainer::ExtContainer() : Container("AnimTypeClass") { }
-AnimTypeExt::ExtContainer::~ExtContainer() = default;
-
-DEFINE_HOOK(0x42784B, AnimTypeClass_CTOR, 0x5)
-{
-	GET(AnimTypeClass*, pItem, EAX);
-
-	AnimTypeExt::ExtMap.TryAllocate(pItem);
-	return 0;
-}
-
-DEFINE_HOOK(0x428EA8, AnimTypeClass_SDDTOR, 0x5)
-{
-	GET(AnimTypeClass*, pItem, ECX);
-
-	AnimTypeExt::ExtMap.Remove(pItem);
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x428970, AnimTypeClass_SaveLoad_Prefix, 0x8)
-DEFINE_HOOK(0x428800, AnimTypeClass_SaveLoad_Prefix, 0xA)
-{
-	GET_STACK(AnimTypeClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	AnimTypeExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x42892C, AnimTypeClass_Load_Suffix, 0x6)
-DEFINE_HOOK(0x428958, AnimTypeClass_Load_Suffix, 0x6)
-{
-	AnimTypeExt::ExtMap.LoadStatic();
-	return 0;
-}
-
-DEFINE_HOOK(0x42898A, AnimTypeClass_Save_Suffix, 0x3)
-{
-	AnimTypeExt::ExtMap.SaveStatic();
-	return 0;
-}
-
-//DEFINE_HOOK_AGAIN(0x4287E9, AnimTypeClass_LoadFromINI, 0xA)// Section dont exist!
-DEFINE_HOOK(0x4287DC, AnimTypeClass_LoadFromINI, 0xA)
-{
-	GET(AnimTypeClass*, pItem, ESI);
-	GET_STACK(CCINIClass*, pINI, 0xBC);
-
-	AnimTypeExt::ExtMap.LoadFromINI(pItem, pINI);
-	return 0;
 }
 
 namespace detail
@@ -280,4 +227,39 @@ namespace detail
 		}
 		return false;
 	}
+}
+
+// =============================
+// container
+
+AnimTypeExt::ExtContainer::ExtContainer() : Container("AnimTypeClass") { }
+AnimTypeExt::ExtContainer::~ExtContainer() = default;
+
+// =============================
+// container hooks
+
+DEFINE_HOOK(0x42784B, AnimTypeClass_CTOR, 0x5)
+{
+	GET(AnimTypeClass*, pItem, EAX);
+
+	AnimTypeExt::ExtMap.TryAllocate(pItem);
+	return 0;
+}
+
+DEFINE_HOOK(0x428EA8, AnimTypeClass_SDDTOR, 0x5)
+{
+	GET(AnimTypeClass*, pItem, ECX);
+
+	AnimTypeExt::ExtMap.Remove(pItem);
+	return 0;
+}
+
+//DEFINE_HOOK_AGAIN(0x4287E9, AnimTypeClass_LoadFromINI, 0xA)// Section dont exist!
+DEFINE_HOOK(0x4287DC, AnimTypeClass_LoadFromINI, 0xA)
+{
+	GET(AnimTypeClass*, pItem, ESI);
+	GET_STACK(CCINIClass*, pINI, 0xBC);
+
+	AnimTypeExt::ExtMap.LoadFromINI(pItem, pINI);
+	return 0;
 }
