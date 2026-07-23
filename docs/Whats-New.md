@@ -747,7 +747,6 @@ HideShakeEffects=false           ; boolean
 - Fixed `src/Interop/Version.cpp` not being compiled into the project (by Chang_zhi)
 - Fixed the issue that `NoQueueUpToEnter` will clear passenger's planning tokens when entered transport (by NetsuNegi)
 - Fixed the bug that `MissileSpawn=true` causes the spawnee launcher to crash immediately when attacking (by Noble_Fish)
-- Fixed a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to execute the auto death logic (by Noble_Fish)
 
 #### Fixes / interactions with other extensions:
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
@@ -775,6 +774,7 @@ HideShakeEffects=false           ; boolean
 - [Export interface for accessing scenario local/global variables](Interoperability.md#scenarioext) (by Chang_zhi)
 - Allowed infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true` (by Noble_Fish)
 - Added the scenario where `Missile.Raise` can be applied by custom missiles (by Noble_Fish)
+- Fixed a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to execute the auto death logic (by Noble_Fish)
 ```
 
 ### 0.4.0.3
