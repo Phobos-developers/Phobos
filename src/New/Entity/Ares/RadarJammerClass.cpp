@@ -5,7 +5,7 @@
 void RadarJammerClass::Update()
 {
 	const auto pTechno = this->Techno;
-	const auto pTypeExt = TechnoExt::ExtMap.Find(pTechno)->TypeExtData;
+	const auto pTypeExt = TechnoExt::Fetch(pTechno)->TypeExtData;
 
 	if (Unsorted::CurrentFrame - this->LastScan < pTypeExt->RadarJamDelay)
 		return;

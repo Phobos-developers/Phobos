@@ -21,6 +21,13 @@ This page describes all the engine features that are either new and introduced b
     - `inrange`: Discard if within weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
     - `outofrange`: Discard if outside weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
     - `firing`: Discard when firing a weapon. This counts special weapons that are not actually fired such as ones with `Spawner=true` or `DrainWeapon=true`.
+    - `selling`: Discard when the building to which the effect is attached is sold.
+    - `undeploying`: Discard when the building to which the effect is attached performs undeploy.
+    - `harvesting`: Discard when the object the effect is attached is harvesting ore. This can only be used when `DiscardOn.ConsiderHarvestingAsStationary=false`.
+  - `DiscardOn.MoveBasedOnDestination` defines whether to determine the movement state according to the presence or absence of a destination. It treats Jumpjet units hovering in the air as movement, and units that have no destination but are turning as stationary.
+    - If used for an AE that has `DiscardOn=harvesting`, in order for it to judge correctly, this should be set to `true`.
+  - `DiscardOn.ConsiderHarvestingAsStationary` defines whether to treat `harvesting` as `stationary`. When this flag is set to `false`, `DiscardOn=harvesting` can be used and it will not be considered `stationary` while `harvesting`.
+    - In other words, the original `DiscardOn=stationary` is equivalent to `DiscardOn=harvesting,stationary` when this flag is set to `false`.
   - If `DiscardOn.CumulativeCount` is greater than 0, the effect is discarded when it has `Cumulative=yes` and been attached to the object more than this amount of times.
   - If `DiscardOn.AbovePercent` or `DiscardOn.BelowPercent` is set, the effect is discarded when the object's health percentage is above/below that value.
   - If `AffectAbovePercent` or `AffectBelowPercent` is set, the effect can be applied only when the object's health percentage is above/below that value.
@@ -116,6 +123,10 @@ This page describes all the engine features that are either new and introduced b
 
 In `rulesmd.ini`:
 ```ini
+[General]
+DiscardOn.MoveBasedOnDestination=false             ; boolean
+DiscardOn.ConsiderHarvestingAsStationary=true      ; boolean
+
 [AttachEffectTypes]
 0=SOMEATTACHEFFECT
 
@@ -129,6 +140,8 @@ Cumulative.MaxCount=-1                             ; integer
 Powered=false                                      ; boolean
 DiscardOn=none                                     ; List of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange)
 DiscardOn.RangeOverride=                           ; floating point value, distance in cells
+DiscardOn.MoveBasedOnDestination=                  ; boolean, default to [General] -> DiscardOn.MoveBasedOnDestination
+DiscardOn.ConsiderHarvestingAsStationary=          ; boolean, default to [General] -> DiscardOn.ConsiderHarvestingAsStationary
 DiscardOn.CumulativeCount=-1                       ; integer
 DiscardOn.AbovePercent=                            ; floating point value, percents or absolute (0.0-1.0)
 DiscardOn.BelowPercent=                            ; floating point value, percents or absolute (0.0-1.0)
@@ -169,7 +182,7 @@ AuxWeapon.Retarget.AroundFirer=false               ; boolean
 AuxWeapon.UseInvokerAsOwner=false                  ; boolean
 FeedbackWeapon=                                    ; WeaponType
 FeedbackWeapon.UseInvokerAsOwner=false             ; boolean
-Tint.Color=                                        ; integer - R,G,B
+Tint.Color=                                        ; integer - Red,Green,Blue
 Tint.Intensity=                                    ; floating point value
 Tint.VisibleToHouses=all                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 FirepowerMultiplier=1.0                            ; floating point value
@@ -215,14 +228,18 @@ NegativeDamage.Multiplier=1.0                      ; floating point value
 LaserTrail.Type=                                   ; LaserTrailType
 Groups=                                            ; comma-separated list of strings (group IDs)
 
+[General]
+OpenTopped.UseTransportRangeModifiers=false        ; boolean
+OpenTopped.CheckTransportDisableWeapons=false      ; boolean
+
 [SOMETECHNO]                                       ; TechnoType
 AttachEffect.AttachTypes=                          ; List of AttachEffectTypes
 AttachEffect.DurationOverrides=                    ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
 AttachEffect.Delays=                               ; integer - delays (comma-separated) for AttachTypes in order from first to last.
 AttachEffect.InitialDelays=                        ; integer - initial delays (comma-separated) for AttachTypes in order from first to last.
 AttachEffect.RecreationDelays=                     ; integer - recreation delays (comma-separated) for AttachTypes in order from first to last.
-OpenTopped.UseTransportRangeModifiers=false        ; boolean
-OpenTopped.CheckTransportDisableWeapons=false      ; boolean
+OpenTopped.UseTransportRangeModifiers=             ; boolean, default to [General] -> OpenTopped.UseTransportRangeModifiers
+OpenTopped.CheckTransportDisableWeapons=           ; boolean, default to [General] -> OpenTopped.CheckTransportDisableWeapons
 
 [SOMEWEAPON]                                       ; WeaponType
 AttachEffect.RequiredTypes=                        ; List of AttachEffectTypes
@@ -287,7 +304,7 @@ RadLightDelay=90                   ; integer
 RadLevelFactor=0.2                 ; floating point value
 RadLightFactor=0.1                 ; floating point value
 RadTintFactor=1.0                  ; floating point value
-RadColor=0,255,0                   ; integer - R,G,B
+RadColor=0,255,0                   ; integer - Red,Green,Blue
 RadSiteWarhead=RadSite             ; WarheadType
 RadSiteWarhead.Detonate=false      ; boolean
 RadSiteWarhead.Detonate.Full=true  ; boolean
@@ -313,7 +330,7 @@ In `artmd.ini`:
 [LaserTrailTypes]
 0=SOMETRAIL
 
-[SOMETRAIL]                      ; LaserTrailType name
+[SOMETRAIL]                      ; LaserTrailType
 DrawType=laser                   ; laser trail type (laser | ebolt | radbeam)
 FadeDuration=                    ; integer, default to 64 for laser, 17 for ebolt, 15 for radbeam
 SegmentLength=128                ; integer, minimal length of each trail segment
@@ -321,20 +338,22 @@ IgnoreVertical=false             ; boolean, whether the trail won't be drawn on 
 CloakVisible=false               ; boolean, whether the laser is visible when the attached unit is cloaked
 CloakVisible.DetectedOnly=false  ; boolean, whether CloakVisible=true laser is visible only to those who can detect the attached unit
 ; laser
-Color=255,0,0                    ; integer - R,G,B
+Color=255,0,0                    ; integer - Red,Green,Blue
 IsHouseColor=false               ; boolean
 Thickness=4                      ; integer
 IsIntense=false                  ; boolean, whether the laser is "supported" (AKA prism forwarding)
 ; ebolt
 IsAlternateColor=false           ; boolean
-Bolt.Color1=                     ; integer - R,G,B
+Bolt.Color1=                     ; integer - Red,Green,Blue
 Bolt.Disable1=false              ; boolean
-Bolt.Color2=                     ; integer - R,G,B
+Bolt.Color2=                     ; integer - Red,Green,Blue
 Bolt.Disable2=false              ; boolean
-Bolt.Color3=                     ; integer - R,G,B
+Bolt.Color3=                     ; integer - Red,Green,Blue
 Bolt.Disable3=false              ; boolean
+Bolt.Arcs=8                      ; integer
+Bolt.ZAdjust=0                   ; integer
 ; radbeam
-Beam.Color=                      ; integer - R,G,B
+Beam.Color=                      ; integer - Red,Green,Blue
 Beam.Amplitude=40.0              ; floating point value
 
 [SOMEPROJECTILE]                 ; Projectile Image
@@ -367,6 +386,9 @@ Laser trails are very resource intensive! Due to the game not utilizing GPU havi
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+ShieldApplyArmorMult=false                  ; boolean
+
 [AudioVisual]
 Shield.ConditionYellow=                     ; floating point value, percents or absolute
 Shield.ConditionRed=                        ; floating point value, percents or absolute
@@ -378,7 +400,7 @@ Pips.Shield.Building.Empty=0                ; integer, frame of pips.shp (zero-b
 [ShieldTypes]
 0=SOMESHIELDTYPE
 
-[SOMESHIELDTYPE]                            ; ShieldType name
+[SOMESHIELDTYPE]                            ; ShieldType
 Strength=0                                  ; integer
 InitialStrength=0                           ; integer
 ConditionYellow=                            ; floating point value, percents or absolute
@@ -387,6 +409,7 @@ Armor=none                                  ; ArmorType
 InheritArmorFromTechno=false                ; boolean
 InheritArmor.Allowed=                       ; List of TechnoTypes
 InheritArmor.Disallowed=                    ; List of TechnoTypes
+ApplyArmorMult=                             ; boolean, default to [CombatDamage] -> ShieldApplyArmorMult
 Powered=false                               ; boolean
 AbsorbOverDamage=false                      ; boolean
 SelfHealing=0.0                             ; floating point value, percents or absolute
@@ -430,7 +453,7 @@ ReceivedDamage.Maximum=2147483647           ; integer
 AllowTransfer=                              ; boolean
 ImmuneToBerserk=no                          ; boolean
 ImmuneToCrit=no                             ; boolean
-Tint.Color=                                 ; integer - R,G,B
+Tint.Color=                                 ; integer - Red,Green,Blue
 Tint.Intensity=0.0                          ; floating point value
 Tint.VisibleToHouses=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 
@@ -487,6 +510,7 @@ Shield.InheritStateOnReplace=false          ; boolean
     - `InheritArmorFromTechno` can be set to true to override this so that `[TechnoType] -> Armor` is used even if shield is active and `[ShieldType] -> Armor` is ignored.
     - `InheritArmor.Allowed` lists TechnoTypes whose armor can be overridden. If empty, any TechnoType not listed in `InheritArmor.Disallowed` is okay.
     - `InheritArmor.Disallowed` lists TechnoTypes whose armor can't be overridden. If empty, any TechnoTypes are okay as long as `InheritArmor.Allowed` is empty or they are listed on it.
+    - `ApplyArmorMult` can be set to true to allow the shield to benefit from the armor multiplier.
   - `InitialStrength` can be used to set a different initial strength value from maximum.
   - `ConditionYellow` and `ConditionRed` can be used to set the thresholds for shield damage states, defaulting to `[AudioVisual] -> Shield.ConditionYellow & Shield.ConditionRed` respectively which in turn default to just `ConditionYellow & ConditionRed`.
 - When executing `DeploysInto` or `UndeploysInto`, if both of the TechnoTypes have shields, the transformed unit/building would keep relative shield health (in percents), same as with `Strength`. If one of the TechnoTypes doesn't have shields, it's shield's state on conversion will be preserved until converted back.
@@ -548,11 +572,32 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `Shield.AttachTypes` & `Shield.RemoveTypes` allows listing ShieldTypes that are attached or removed, respectively from any targets affected by the warhead (positive `Verses` values). Normally only first listed ShieldType in `Shield.AttachTypes` is applied.
     - If `Shield.ReplaceOnly` is set, shields from `Shield.AttachTypes` are only applied to affected targets from which shields were simultaneously removed, matching the order listed in `Shield.RemoveTypes`. If `Shield.AttachTypes` contains less items than `Shield.RemoveTypes`, last item from the former is used for any remaining removed shields.
     - If `Shield.ReplaceNonRespawning` is set, shield from `Shield.AttachTypes` replaces existing shields that have been broken and cannot respawn on their own.
-    - If `Shield.RemoveAll` is set, all shield types are removed from the affected targets, even those that are not listed in `Shield.RemoveTypes`. If `Shield.ReplaceOnly` is set, first type listed in `Shield.AttachTypes` is used to replace any removed types not listed in `Shield.RemoveTypes`.
+    - If `Shield.RemoveAll` is set, all shield types are removed from the affected targets, even those that are not listed in `Shield.RemoveTypes`. If `Shield.ReplaceOnly` is set, first type listed in `Shield.AttachTypes` is used to replace any removed types not listed in `Shield.RemoveTypes`. Notice that the techno's own `ShieldType` will be permanantly removed by this.
     - `Shield.MinimumReplaceDelay` can be used to control how long after the shield has been broken (in game frames) can it be replaced. If not enough frames have passed, it won't be replaced.
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
 
 ## Aircraft
+
+### Custom cruise missiles
+
+- From RockPatch to Ares, custom missiles have never had a way to enter cruise missile mode, so neither RP's `MissileRaiseRate` nor Ares' `Missile.RaiseRate` have ever been effective, and modders cannot create another type of cruise missile beyond the type set in `[General] -> CMislType=`. Now, you can customize whether a custom missile is a cruise missile.
+  - The take-off animation of a cruise missile is actually the continuously created trail smoke during the ascent phase, rather than the animation created only once at launch like a conventional missile. Now, the creation interval of this animation can be customized via `Missile.TakeOffSeparation`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEAIRCRAFT]                ; AircraftType, with Locomotor=Rocket
+Missile.Cruise=false          ; boolean
+Missile.TakeOffSeparation=24  ; integer
+```
+
+```{note}
+Like Ares' `Missile.TrailerSeparation`, `Missile.TakeOffSeparation` also works without requiring `Missile.Custom=true`, which means it can be directly applied to the unit specified by `[General] -> CMislType=` without completely rewriting it as a custom missile.
+```
+
+```{seealso}
+- [MissileSpawn Control on ModEnc](https://modenc.renegadeprojects.com/MissileSpawn_Control)
+- [Custom Missiles - Ares documentation](http://ares-developers.github.io/Ares-docs/new/custommissiles.html)
+```
 
 ### Damaged aircraft image changes
 
@@ -658,17 +703,18 @@ DetachedReport=  ; Sound entry
 
 - There are now additional customizations available for building placement next to other buildings.
   - `Adjacent.Allowed` lists BuildingTypes this BuildingType can be placed off (within distance defined by `Adjacent`). If empty, any BuildingType not listed in `Adjacent.Disallowed` is okay.
-  - `Adjacent.Disallowed` lists BuildingTypes this BuildingType cannot be placed next to. If empty, any BuildingTypes are okay as long as `Adjacent.Allowed` is empty or they are listed on it.
-    - If `Adjacent.Disallowed.ExtraDistance` is set to value other than 0, this value is added to `Adjacent` value when checking for disallowed buildings.
+  - `Adjacent.Disallowed` lists BuildingTypes this BuildingType cannot be placed off from. If empty, any BuildingTypes are okay as long as `Adjacent.Allowed` is empty or they are listed on it.
+    - `Adjacent.Disallowed.Prohibit` if set to true makes this behaviour strict and disallows placement even if there are eligible buildings around if the placement is within range of a disallowed one. `Adjacent.Disallowed.ProhibitDistance` can be used to override `Adjacent` for this check if set to value higher than 0.
   - If `NoBuildAreaOnBuildup` is set to true, no building can be built next to this building regardless of any other settings if it is currently displaying its buildup animation.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEBUILDING]                       ; BuildingType
-Adjacent.Allowed=                    ; List of BuildingTypes
-Adjacent.Disallowed=                 ; List of BuildingTypes
-Adjacent.Disallowed.ExtraDistance=0  ; integer, cell offset
-NoBuildAreaOnBuildup=false           ; boolean
+[SOMEBUILDING]                          ; BuildingType
+Adjacent.Allowed=                       ; List of BuildingTypes
+Adjacent.Disallowed=                    ; List of BuildingTypes
+Adjacent.Disallowed.Prohibit=false      ; boolean
+Adjacent.Disallowed.ProhibitDistance=0  ; integer, cell offset
+NoBuildAreaOnBuildup=false              ; boolean
 ```
 
 ### Destroyable pathfinding obstacles
@@ -723,13 +769,16 @@ Due to technical limitations, with Ares, upgrades placed through `PowersUp.Build
 
 - When it exists, it can increase the power amount generated by the power plants.
   - When enchancing structures are sold or destroyed, the power amount returns to normal.
+  - `PowerPlantEnhancer.MaxCount` determines the maximum amount of this type of building that can be used for power plant enhancement. Negative value means no limitation.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]                     ; BuildingType
 PowerPlantEnhancer.PowerPlants=    ; List of BuildingTypes
+PowerPlantEnhancer.Range=0         ; floating point value, distance in cells
 PowerPlantEnhancer.Amount=0        ; integer
 PowerPlantEnhancer.Factor=1.0      ; floating point value
+PowerPlantEnhancer.MaxCount=-1     ; integer
 ```
 
 ### Spy effects
@@ -747,6 +796,17 @@ SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 ```
 
 ## Infantry
+
+### Allow infantry to perform type conversion when deploying and undeploying
+
+- Now infantry can perform type conversion immediately after the `Deploy` or `Undeploy` sequence action has been executed.
+
+In `rulesmd.ini`:
+```ini
+[SOMEINFANTRY]             ; InfantryType
+Convert.Deploy=            ; InfantryType
+Convert.Undeploy=          ; InfantryType
+```
 
 ### Customizable FLH when infantry is prone or deployed
 
@@ -766,7 +826,6 @@ DeployedSecondaryFireFLH=  ; integer - Forward,Lateral,Height
 - `SlavesFreeSound` can now be set individually for each enslavable infantry type.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMEINFANTRY]        ; InfantryType, with Slaved=yes
 SlavesFreeSound=      ; Sound entry, default to [AudioVisual] -> SlavesFreeSound
@@ -865,6 +924,7 @@ BombParachute=           ; AnimationType, default to [General] -> BombParachute
   - `Interceptor.CanTargetHouses` controls which houses the projectiles (or rather their firers) can belong to be eligible for interception.
   - `Interceptor.GuardRange` (and `Interceptor.(Rookie|Veteran|EliteGuardRange)`) is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
   - `Interceptor.MinimumGuardRange` (and `Interceptor.(Rookie|Veteran|EliteMinimumGuardRange)`) is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
+  - `Interceptor.GuardRange.IsCylindrical`, if set to true, makes it so that all range checks ignore height/elevation differences.
   - `Interceptor.ApplyFirepowerMult` determines whether or not the intercepting weapon's damage should multiply the TechnoType's firepower multipliers.
   - `Interceptable.DeleteOnIntercept` determines whether or not the projectile will simply be deleted on detonation upon interception, or if it will properly detonate. Will be overridden by `Interceptor.DeleteOnIntercept` setting on the interceptor.
   - `Interceptable.WeaponOverride` can be set to a WeaponType that will be used to override characteristics such as `Damage` and `Warhead` of the current projectile for detonation after interception. Will be overridden by `Interceptor.WeaponOverride` setting on the interceptor.
@@ -874,30 +934,31 @@ BombParachute=           ; AnimationType, default to [General] -> BombParachute
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                               ; TechnoType
-Interceptor=false                          ; boolean
-Interceptor.Weapon=0                       ; integer, weapon slot index (0 or 1)
-Interceptor.TargetingDelay=1               ; integer, game frames
-Interceptor.CanTargetHouses=enemies        ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-Interceptor.GuardRange=0.0                 ; floating point value
-Interceptor.VeteranGuardRange=             ; floating point value
-Interceptor.EliteGuardRange=               ; floating point value
-Interceptor.MinimumGuardRange=0.0          ; floating point value
-Interceptor.VeteranMinimumGuardRange=      ; floating point value
-Interceptor.EliteMinimumGuardRange=        ; floating point value
-Interceptor.ApplyFirepowerMult=true        ; boolean
-Interceptor.DeleteOnIntercept=false        ; boolean
-Interceptor.WeaponOverride=                ; WeaponType
-Interceptor.WeaponReplaceProjectile=false  ; boolean
-Interceptor.WeaponCumulativeDamage=false   ; boolean
-Interceptor.KeepIntact=false               ; boolean
+[SOMETECHNO]                                ; TechnoType
+Interceptor=false                           ; boolean
+Interceptor.Weapon=0                        ; integer, weapon slot index (0 or 1)
+Interceptor.TargetingDelay=1                ; integer, game frames
+Interceptor.CanTargetHouses=enemies         ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Interceptor.GuardRange=0.0                  ; floating point value
+Interceptor.VeteranGuardRange=              ; floating point value
+Interceptor.EliteGuardRange=                ; floating point value
+Interceptor.MinimumGuardRange=0.0           ; floating point value
+Interceptor.GuardRange.IsCylindrical=false  ; boolean
+Interceptor.VeteranMinimumGuardRange=       ; floating point value
+Interceptor.EliteMinimumGuardRange=         ; floating point value
+Interceptor.ApplyFirepowerMult=true         ; boolean
+Interceptor.DeleteOnIntercept=false         ; boolean
+Interceptor.WeaponOverride=                 ; WeaponType
+Interceptor.WeaponReplaceProjectile=false   ; boolean
+Interceptor.WeaponCumulativeDamage=false    ; boolean
+Interceptor.KeepIntact=false                ; boolean
 
-[SOMEPROJECTILE]                           ; Projectile
-Interceptable=false                        ; boolean
-Interceptable.DeleteOnIntercept=false      ; boolean
-Interceptable.WeaponOverride=              ; WeaponType
-Strength=0                                 ; integer
-Armor=                                     ; ArmorType
+[SOMEPROJECTILE]                            ; Projectile
+Interceptable=false                         ; boolean
+Interceptable.DeleteOnIntercept=false       ; boolean
+Interceptable.WeaponOverride=               ; WeaponType
+Strength=0                                  ; integer
+Armor=                                      ; ArmorType
 ```
 
 ```{note}
@@ -1141,6 +1202,24 @@ In `rulesmd.ini`:
 AISuperWeaponDelay=  ; integer, game frames
 ```
 
+### Aux technos and TechLevel requirement of superweapon
+
+- `SW.AuxTechnos` specifies the auxiliary technos without which this super weapon cannot become available. The player has to own at least one techno of any of these types to get access to this super weapon.
+- `SW.NegTechnos` specifies the negative auxiliary technos whose presence will cause the super weapon to become unavailable. This super weapon can become available only if the player does not own any techno of any of these types.
+- `SW.TechLevel` specifies the TechLevel that the owner must not fall below in order to use this super weapon. The super weapon becomes available only if the player's TechLevel reaches that level.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]        ; SuperWeaponType
+SW.AuxTechnos=  ; List of TechnoTypes
+SW.NegTechnos=  ; List of TechnoTypes
+SW.TechLevel=0  ; integer
+```
+
+```{note}
+`SW.TechLevel` does not treat `-1` as a special value. If you want to restrict a super weapon to be available only to AI players, please use `SW.AllowPlayer` and `SW.AllowAI`.
+```
+
 ### Convert TechnoType
 
 - Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft).
@@ -1217,6 +1296,7 @@ EMPulse.SuspendOthers=false  ; boolean
 - Created buildings are not affected by any on-map threats. The only way to remove them from the game is by using a Superweapon with `LimboKill.IDs` set.
   - `LimboKill.AffectsHouse` sets which houses are affected by this feature.
   - `LimboKill.IDs` lists IDs that will be targeted. Buildings with these IDs will be removed from the game instantly.
+  - `LimboKill.Counts` sets how many buildings of each type will be removed. Value from position matching the position from `LimboKill.IDs` is used if found, or no limitation if not found. If list is empty, there's no limitation for all types.
 
 - Delivery can be made random with these optional tags. The game will randomly choose only a single building from the list for each roll chance provided.
   - `LimboDelivery.RollChances` lists chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
@@ -1238,11 +1318,12 @@ In `rulesmd.ini`:
 ```ini
 [SOMESW]                        ; SuperWeaponType
 LimboDelivery.Types=            ; List of BuildingTypes
-LimboDelivery.IDs=              ; List of numeric IDs. -1 cannot be used.
-LimboDelivery.RollChances=      ; List of percentages.
-LimboDelivery.RandomWeightsN=   ; List of integers.
+LimboDelivery.IDs=              ; List of numeric IDs, -1 cannot be used
+LimboDelivery.RollChances=      ; List of percentages
+LimboDelivery.RandomWeightsN=   ; List of integers
 LimboKill.AffectsHouse=self     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-LimboKill.IDs=                  ; List of numeric IDs.
+LimboKill.IDs=                  ; List of numeric IDs
+LimboKill.Counts=               ; List of integers
 ```
 
 ```{warning}
@@ -1300,6 +1381,25 @@ SW.Next.IgnoreInhibitors=false  ; boolean
 SW.Next.IgnoreDesignators=true  ; boolean
 SW.Next.RollChances=            ; List of percentages.
 SW.Next.RandomWeightsN=         ; List of integers.
+```
+
+### Recipient-specific message and EVA on superweapon activation
+
+- Superweapons can now display messages and play EVA voices for specific recipient groups when activated.
+  - `Message.Activated.Owner` and `EVA.Activated.Owner` are shown / played only for the player who activates the superweapon.
+  - `Message.Activated.Allies` and `EVA.Activated.Allies` are shown / played only for allies of the player who activates the superweapon, excluding the activating player.
+  - `Message.Activated.Enemies` and `EVA.Activated.Enemies` are shown / played only for enemies of the player who activates the superweapon.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]                        ; SuperWeaponType
+Message.Activated.Owner=        ; CSF entry key
+Message.Activated.Allies=       ; CSF entry key
+Message.Activated.Enemies=      ; CSF entry key
+
+EVA.Activated.Owner=            ; EVA entry
+EVA.Activated.Allies=           ; EVA entry
+EVA.Activated.Enemies=          ; EVA entry
 ```
 
 ### Warhead or Weapon detonation at target cell
@@ -1408,7 +1508,7 @@ AutoTargetAI.NoThreatBuildings=true     ; boolean
 
 - If `Spawner.LimitRange` is set, the spawned units will abort their pursuit if the enemy is out of the range of the largest weapon `Range` of a `Spawner=true` weapon of the spawner.
   - `Spawner.ExtraLimitRange` adds extra pursuit range on top of the weapon range.
-- `Spawner.DelayFrames` can be used to set the minimum number of game frames in between each spawn ejecting from the spawner. By default this is 9 frames for missiles and 20 for everything else.
+- `Spawner.DelayFrames` can be used to set the minimum number of game frames in between each spawn ejecting from the spawner. By default this is 10 frames for launchers with `MissileSpawn=true` and 20 for everything else.
 - If `Spawner.AttackImmediately` is set to true, spawned aircraft will assume attack mission immediately after being spawned instead of waiting for the remaining aircraft to spawn first.
 - `Spawner.UseTurretFacing`, if set, makes spawned aircraft face the same way as turret does upon being created if the spawner has a turret.
 - `Spawner.RecycleRange` defines the range (in cell) that the spawned is considered close enough to the spawner to be recycled.
@@ -1424,7 +1524,7 @@ Spawner.ExtraLimitRange=0          ; integer, range in cells
 Spawner.DelayFrames=               ; integer, game frames
 Spawner.AttackImmediately=false    ; boolean
 Spawner.UseTurretFacing=false      ; boolean
-Spawner.RecycleRange=-1            ; float, range in cells
+Spawner.RecycleRange=-1            ; floating point value, range in cells
 Spawner.RecycleAnim=               ; List of AnimationTypes
 Spawner.RecycleCoord=0,0,0         ; integer - Forward,Lateral,Height
 Spawner.RecycleOnTurret=false      ; boolean
@@ -1486,7 +1586,7 @@ PassengerDeletion.CostRateCap=                  ; integer, game frames
 PassengerDeletion.AllowedHouses=all             ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 PassengerDeletion.DontScore=false               ; boolean
 PassengerDeletion.Soylent=false                 ; boolean
-PassengerDeletion.SoylentMultiplier=1.0         ; float, percents or absolute
+PassengerDeletion.SoylentMultiplier=1.0         ; floating point value, percents or absolute
 PassengerDeletion.SoylentAllowedHouses=enemies  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 PassengerDeletion.DisplaySoylent=false          ; boolean
 PassengerDeletion.DisplaySoylentToHouses=All    ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
@@ -1575,9 +1675,36 @@ Convert.ComputerToHuman=    ; TechnoType
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]              ; TechnoType
-Tint.Color=               ; integer - R,G,B
+Tint.Color=               ; integer - Red,Green,Blue
 Tint.Intensity=0.0        ; floating point value
 Tint.VisibleToHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
+### Customizable disk drain logic
+
+- It is possible to set properties of drain logic per technotypes.
+  - `DrainMoneyDisplay` and `DrainMoneyDisplay.OnTarget` determine whether drain money will be displayed at firer and target respectively.
+  - `DrainMoneyDisplay.Houses` determines which houses can see the credits display on firer.
+  - `DrainMoneyDisplay.Offset` is additional pixel offset for the center of the credits display, by default `0,0` at firer's center.
+  - `DrainMoneyDisplay.OnTarget.UseDisplayIncome` determines whether drain money display on target will use its `DisplayIncome.Houses` and `DisplayIncome.Offset` settings. If set to false, it'll respect the firer's `DrainMoneyDisplay.Houses` and `DrainMoneyDisplay.Offset` settings instead.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+DrainMoneyDisplay=false                             ; boolean
+DrainMoneyDisplay.Houses=all                        ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DrainMoneyDisplay.OnTarget=false                    ; boolean
+DrainMoneyDisplay.OnTarget.UseDisplayIncome=true    ; boolean
+
+[SOMETECHNO]                                        ; TechnoType
+DrainMoneyFrameDelay=                               ; integer, default to [CombatDamage] -> DrainMoneyFrameDelay
+DrainMoneyAmount=                                   ; integer, default to [CombatDamage] -> DrainMoneyAmount
+DrainAnimationType=                                 ; AnimationType, default to [CombatDamage] -> DrainAnimationType
+DrainMoneyDisplay=                                  ; boolean, default to [AudioVisual] -> DrainMoneyDisplay
+DrainMoneyDisplay.Houses=                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to [AudioVisual] -> DrainMoneyDisplay.Houses
+DrainMoneyDisplay.Offset=0,0                        ; X,Y, pixels relative to default
+DrainMoneyDisplay.OnTarget=                         ; boolean, default to [AudioVisual] -> DrainMoneyDisplay.OnTarget
+DrainMoneyDisplay.OnTarget.UseDisplayIncome=        ; boolean
 ```
 
 ### Customizable OpenTopped properties
@@ -1587,23 +1714,47 @@ Tint.VisibleToHouses=all  ; List of Affected House Enumeration (none|owner/self|
 - `OpenTopped.AllowFiringIfDeactivated` can be used to customize whether or not passengers can fire out when the transport is deactivated (EMP, powered unit etc).
 - `OpenTopped.ShareTransportTarget` controls whether or not the current target of the transport itself is passed to the passengers as well.
 - You can also customize range bonus and damage multiplier for passenger inside the transport with `OpenTransport.RangeBonus/DamageMultiplier`, which works independently from transport's `OpenTopped.RangeBonus/DamageMultiplier`.
+- `OpenTopped.DecloakToFire` can customize if a transport has to uncloak to have passengers fireout if transport is also OpenTopped.
+- `OpenTopped/OpenTransport.FireWhileMoving` can be used to customize whether or not passengers can fire out when the transport is moving, for transport and passenger respectively. Both of them and the weapon's `FireWhileMoving` toggle need to be set to true to allow firing out when moving.
 
+In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                              ; TechnoType, transport with OpenTopped=yes
-OpenTopped.RangeBonus=                    ; integer, default to [CombatDamage] -> OpenToppedRangeBonus
-OpenTopped.DamageMultiplier=              ; floating point value, default to [CombatDamage] -> OpenToppedDamageMultiplier
-OpenTopped.WarpDistance=                  ; integer, default to [CombatDamage] -> OpenToppedWarpDistance
-OpenTopped.IgnoreRangefinding=false       ; boolean
-OpenTopped.AllowFiringIfDeactivated=true  ; boolean
-OpenTopped.ShareTransportTarget=true      ; boolean
+[General]
+OpenTopped.IgnoreRangefinding=false               ; boolean
+OpenTopped.AllowFiringIfDeactivated=true          ; boolean
+OpenTopped.AllowFiringIfAttackedByLocomotor=true  ; boolean
+OpenTopped.ShareTransportTarget=true              ; boolean
+OpenTopped.DecloakToFire=true                     ; boolean
+OpenTopped.FireWhileMoving=true                   ; boolean
+OpenTransport.FireWhileMoving=true                ; boolean
 
-[SOMETECHNO]                              ; TechnoType, passenger
-OpenTransport.RangeBonus=0                ; integer
-OpenTransport.DamageMultiplier=1.0        ; floating point value
+[CombatDamage]
+OpenTransport.RangeBonus=0                        ; integer
+OpenTransport.DamageMultiplier=1.0                ; floating point value
+
+[SOMETECHNO]                                      ; TechnoType, transport with OpenTopped=yes
+OpenTopped.RangeBonus=                            ; integer, default to [CombatDamage] -> OpenToppedRangeBonus
+OpenTopped.DamageMultiplier=                      ; floating point value, default to [CombatDamage] -> OpenToppedDamageMultiplier
+OpenTopped.WarpDistance=                          ; integer, default to [CombatDamage] -> OpenToppedWarpDistance
+OpenTopped.IgnoreRangefinding=false               ; boolean, default to [General] -> OpenTopped.IgnoreRangefinding
+OpenTopped.AllowFiringIfDeactivated=              ; boolean, default to [General] -> OpenTopped.AllowFiringIfDeactivated
+OpenTopped.AllowFiringIfAttackedByLocomotor=      ; boolean, default to [General] -> OpenTopped.AllowFiringIfAttackedByLocomotor
+OpenTopped.ShareTransportTarget=                  ; boolean, default to [General] -> OpenTopped.ShareTransportTarget
+OpenTopped.DecloakToFire=                         ; boolean, default to [General] -> OpenTopped.DecloakToFire
+OpenTopped.FireWhileMoving=                       ; boolean, default to [General] -> OpenTopped.FireWhileMoving
+
+[SOMETECHNO]                                      ; TechnoType, passenger
+OpenTransport.RangeBonus=                         ; integer, default to [CombatDamage] -> OpenTransport.RangeBonus
+OpenTransport.DamageMultiplier=                   ; floating point value, default to [CombatDamage] -> OpenTransport.DamageMultiplier
+OpenTransport.FireWhileMoving=                    ; boolean, default to [General] -> OpenTransport.FireWhileMoving
 ```
 
 ```{note}
 Range of passive acquiring of passengers in an OpenTopped transport won't be affected by these RangeBonus values.
+```
+
+```{note}
+Due to technical issues, the behaviors of `OpenTopped/OpenTransport.FireWhileMoving` and `FireWhileMoving` for opentopped transport are somewhat different from `FireWhileMoving` for regular techno. This might be changed in the future.
 ```
 
 ### Customizable spawns queue
@@ -1637,6 +1788,30 @@ RadarJamHouses=enemies            ; List of Affected House Enumeration (none|own
 RadarJamDelay=30                  ; integer
 RadarJamAffect=                   ; List of BuildingTypes
 RadarJamIgnore=                   ; List of BuildingTypes
+```
+
+### Customize whether transport can kept or kill passengers when driver has been killed
+
+- It is now possible to customize whether transport can kept or kill passengers when [driver has been killed](http://ares-developers.github.io/Ares-docs/new/killingdrivers.html).
+
+```{note}
+When `DriverKilled.KeptPassengers=true` is set, passengers will always be retained regardless of the `DriverKilled.KillPassengers` setting. If the transport also has `OpenTopped=true` and [`OpenTopped.AllowFiringIfDeactivated=false`](New-or-Enhanced-Logics.md#customizable-opentopped-properties) is not set, then passengers will continue attacking the target they were originally attacking, whether that target is inherited from the transport or acquired by themselves.
+```
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+DriverKilled.KillPassengers=false   ; boolean
+
+[SOMETECHNO]                        ; TechnoType, transport
+DriverKilled.KeptPassengers=false   ; boolean
+DriverKilled.KillPassengers=        ; boolean, defaults to [CombatDamage] -> DriverKilled.KillPassengers
+```
+
+```{warning}
+If `DriverKilled.KeptPassengers=true` is set, even if there are other passengers that can be matched by `Operator` besides the killed driver, the transport unit will still change its owner to `Special House` and change its mission to `Harmless`, but it will not be disabled or have its brightness adjusted.
+- If a new passenger enters the transport unit and can be matched by `Operator`, then the owner will be changed normally.
+- This feature was originally designed for some special `OpenTopped` units, and has not yet been fully adapted to situations outside the design.
 ```
 
 ### Customize EVA voice and `SellSound` when selling units
@@ -1721,6 +1896,40 @@ RateDown.Cover.Value=0        ; integer
 RateDown.Cover.AmmoBelow=-2   ; integer
 ```
 
+### Extra threat
+
+- Now you can adjust the techno's evaluation of the threat posed by the target in more ways. This will help the techno in auto - targeting.
+  - When the target poses a threat to the techno, it will receive an additional threat value defined by `ExtraThreat.IsThreat`.
+    - Generally speaking, "Posing a threat" means the target can fire at the techno.
+    - Using `AlwaysConsideredThreat` makes the target always considered to be a threat.
+  - When the target is within the techno's range, it will receive an additional threat value defined by `ExtraThreat.InRange`.
+  - When the target is within the techno's range, it will receive an additional threat value equal to `ExtraThreatCoefficient.InRangeDistance` multiplied by the distance (in cells) from the target to the techno.
+    - Only considering in-range is because the vanilla flag `TargetDistanceCoefficientDefault` only considers outside-range. This flag is complementary to that.
+  - The target will receive an additional threat value equal to `ExtraThreatCoefficient.Facing` multiplied by the difference in facing from the techno's current firing-facing to the target's facing.
+    - "Firing-facing" refers to the facing the techno uses to check if it "is already facing the target and can fire". Infantry doesn't check the facing when firing, so this is also invalid for infantry.
+    - The unit of facing is the in-game internal numerical scale. A full circle corresponds to 65536.
+  - The target will receive an additional threat value equal to `ExtraThreatCoefficient.DistanceToLastTarget` multiplied by the distance (in cells) from the target to the techno's last target.
+    - Each techno will record its current target as the "last target" per frame. This record will be retained for at most 15 frames after the target becomes invalid.
+    - If the techno doesn't have a "last target", then this will not take effect.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ExtraThreat.IsThreat=0.0                            ; double
+ExtraThreat.InRange=0.0                             ; double
+ExtraThreatCoefficient.InRangeDistance=0.0          ; double
+ExtraThreatCoefficient.Facing=0.0                   ; double
+ExtraThreatCoefficient.DistanceToLastTarget=0.0     ; double
+
+[SOMETECHNO]                                        ; TechnoType
+AlwaysConsideredThreat=false                        ; boolean
+ExtraThreat.IsThreat=                               ; double, default to the flag in [General] with same name
+ExtraThreat.InRange=                                ; double, default to the flag in [General] with same name
+ExtraThreatCoefficient.InRangeDistance=             ; double, default to the flag in [General] with same name
+ExtraThreatCoefficient.Facing=                      ; double, default to the flag in [General] with same name
+ExtraThreatCoefficient.DistanceToLastTarget=        ; double, default to the flag in [General] with same name
+```
+
 ### Firing offsets for specific Burst shots
 
 - You can now specify separate firing offsets for each of the shots fired by weapon with `Burst` via using `(Elite)(Prone/Deployed)PrimaryFire|SecondaryFire|WeaponX|FLH.BurstN` keys, depending on which weapons your TechnoType makes use of. *N* in `BurstN` is zero-based burst shot index, and the values are parsed sequentially until no value for either regular or elite weapon is present, with elite weapon defaulting to regular weapon FLH if only it is missing. If no burst-index specific value is available, value from the base key (f.ex `PrimaryFireFLH`) is used.
@@ -1787,22 +1996,29 @@ Specifically, if a position has `Force(AA)Weapon.InRange` set to -1 and `Force(A
 ### Fast access vehicle/structure
 
 - Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles/structures without queuing.
+  - `NoQueueUpToEnter.BoardDistance` can be used to define the minimum distance that passengers must reach to enter the transport.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-NoQueueUpToEnter=false          ; boolean
-NoQueueUpToUnload=false         ; boolean
-NoQueueUpToEnter.Buildings=     ; boolean, default to NoQueueUpToEnter
-NoQueueUpToUnload.Buildings=    ; boolean, default to NoQueueUpToUnload
+NoQueueUpToEnter=false              ; boolean
+NoQueueUpToUnload=false             ; boolean
+NoQueueUpToEnter.BoardDistance=384  ; integer, distance in leptons (1/256th of a cell)
+NoQueueUpToEnter.Buildings=         ; boolean, default to NoQueueUpToEnter
+NoQueueUpToUnload.Buildings=        ; boolean, default to NoQueueUpToUnload
 
-[SOMEVEHICLE/SOMEBUILDING]      ; VehicleType/BuildingType, transport
-NoQueueUpToEnter=               ; boolean, default to [General] -> NoQueueUpToEnter(.Buildings)
-NoQueueUpToUnload=              ; boolean, default to [General] -> NoQueueUpToUnload(.Buildings)
+[SOMEVEHICLE/SOMEBUILDING]          ; VehicleType/BuildingType, transport
+NoQueueUpToEnter=                   ; boolean, default to [General] -> NoQueueUpToEnter(.Buildings)
+NoQueueUpToEnter.BoardDistance=     ; integer, distance in leptons (1/256th of a cell), default to [General] -> NoQueueUpToEnter.BoardDistance
+NoQueueUpToUnload=                  ; boolean, default to [General] -> NoQueueUpToUnload(.Buildings)
 ```
 
 ```{note}
 Note that this logic is used for [Passenger](https://modenc.renegadeprojects.com/Passengers) logic, which is different from [Occupier](https://modenc.renegadeprojects.com/Occupier).
+```
+
+```{warning}
+If `NoQueueUpToEnter.BoardDistance` is set to a too small value, the passenger units may be blocked by other units and fail to reach the required distance before successfully entering the transport, in which case they will continue trying to get closer and keep moving.
 ```
 
 ### Initial spawns number
@@ -1904,18 +2120,20 @@ PriorityDeployFiltering=true  ; boolean
 *Multiple Mind Control unit auto-releases the first victim in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 - Mind controllers now can have the upper limit of the control distance. Tag values greater than 0 will activate this feature.
-- Mind controlled targets can have size of control, like passengers in transport.
+- Mind controlled *targets* can have size of control, like passengers in transport.
 - Mind controllers now can decide which house can see the link drawn between itself and the controlled units.
 - Mind controllers with multiple controlling slots can now release the first controlled unit when they have reached the control limit and are ordered to control a new target.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                          ; TechnoType
+[SOMETECHNO]                          ; TechnoType, as Mind controllers
 MindControlRangeLimit=-1.0            ; floating point value
 MindControl.IgnoreSize=true           ; boolean
-MindControlSize=1                     ; integer
 MindControlLink.VisibleToHouse=all    ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 MultiMindControl.ReleaseVictim=false  ; boolean
+
+[SOMETECHNO]                          ; TechnoType, as Mind controlled targets
+MindControlSize=1                     ; integer
 ```
 
 ### Multi Weapon
@@ -2261,6 +2479,16 @@ Ammo.DeployUnlockMinimumAmount=-1  ; integer
 Ammo.DeployUnlockMaximumAmount=-1  ; integer
 ```
 
+### Custom hover vehicles shutdown drowning death
+
+- `HoverDrownable` allows customization of whether hover vehicles will drown and die when deactivated on water zone.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]           ; VehicleType
+HoverDrownable=true     ; boolean
+```
+
 ### Damaged unit image changes
 
 - When a unit is damaged (health points percentage is lower than `[AudioVisual] -> ConditionYellow` percentage), it now may use different image set by `Image.ConditionYellow` VehicleType.
@@ -2280,21 +2508,22 @@ WaterImage.ConditionRed=              ; VehicleType entry
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
 ```
 
-### Deployment Enhancement
+### Default mirage disguise for individual VehicleTypes
 
-- When a vehicle has `Passengers` and possesses `DeployFire/IsSimpleDeployer/DeploysInto`, it can perform custom deployment actions beyond merely releasing passengers.
-  - `Deploy.SkipPassengerUnload` allows vehicles to bypass the passenger release process and perform other deployment actions.
-  - `Deploy.NoPassenger` allows vehicles to perform other deployment actions after losing all passengers.
-- Harvester can now perform other deployment operations. Can't deploy when it's unloading minerals.
-  - `Deploy.NoTiberium` controls whether the deployment actions can only be performed when the harvester carries no mineral. If set to false, the harvester can deploy regardless of carrying minerals or not.
+- Vehicle can now have its `DefaultMirageDisguises` overridden per-type.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]                       ; VehicleType
-Deploy.SkipPassengerUnload=false    ; boolean
-Deploy.NoPassenger=false            ; boolean
-Deploy.NoTiberium=false             ; boolean
+[SOMEVEHICLE]              ; VehicleType
+DefaultMirageDisguises=    ; List of TerrainTypes
 ```
+
+### Independent SHP Vehicle Turret Files
+
+- SHP turret vehicles support the use of `*tur.shp` files.
+  - If the SHP vehicle has a Shape file named `*tur.shp` when drawing the turret, the turret starts from frame 0 of that file; otherwise, it starts from the frame at index `WalkFrames * Facings` (0-based) within the vehicle's main body shape.
+  - If you want to split the existing shape file in two, simply extract the 32 frames of the turret image along with their corresponding 32 frames of shadow from the source file, and combine them into a new shape file.
+  - When you need to change the turret used by a vehicle, splitting it into two files can simplify the process.
 
 ### Jumpjet Tilts While Moving
 
@@ -2314,6 +2543,35 @@ JumpjetTilt.ForwardAccelFactor=1.0      ; floating point value
 JumpjetTilt.ForwardSpeedFactor=1.0      ; floating point value
 JumpjetTilt.SidewaysRotationFactor=1.0  ; floating point value
 JumpjetTilt.SidewaysSpeedFactor=1.0     ; floating point value
+```
+
+### RA1-Style Multi-Turret and Multi-Barrel
+
+![image](_static/images/multiTurretAndMultiBarrel.gif)
+*Shogun Battleship in [Project Rush - Conquer](https://www.moddb.com/mods/project-rush-conquer)*
+
+- Vehicles can now draw and fire the same turret at multiple positions (RA1-style multi-turret) and draw multiple barrels for each turret, only supports regular VXL vehicles.
+  - `ExtraTurretCount` controls how many extra turret positions a unit has. `ExtraTurretOffsetX` controls the offset of the X-th turret position relative to the center of the unit. X is 0-based.
+  - `ExtraBarrelCount` controls how many extra barrels each turret draws. `BarrelOffset` controls the offset distance of the main barrel relative to the center of the turret in the left-right direction (positive values shift left). `ExtraBarrelOffsetX` controls the offset distance of the X-th extra barrel of each turret relative to the center of the turret in the left-right direction (positive values shift left). X is 0-based.
+  - `BarrelOverTurret` controls whether the barrel layer is always above the turret layer. Otherwise, the layer relationship will be judged according to the direction of the turret.
+  - When a unit fires, it will first use the original turret to fire `BurstPerTurret` times, then switch to the 0th additional turret position to fire `BurstPerTurret` times, then switch to the 1st, and so on.
+- The firing FLH is also calculated relative to the firing turret's position. If the unit's turret or barrel has recoil effects set, the turret/barrel index will be automatically calculated based on `Burst`.
+- The firing position is essentially determined by the current `Burst`. If you want the rear turrets to fire, you need weapons with high `Burst`. For example, a battleship with 2 additional turret positions (3 turrets total) and `BurstPerTurret=3` would need at least `Burst=9` to allow all turrets to fire completely once. The same applies to barrels on each turret.
+
+In `artmd.ini`:
+```ini
+[SOMEVEHICLE]               ; VehicleType
+BarrelOverTurret=           ; boolean
+BarrelOffset=0              ; integer
+ExtraBarrelCount=0          ; integer
+ExtraBarrelOffsetX=0        ; integer
+ExtraTurretCount=0          ; integer
+ExtraTurretOffsetX=0,0,0    ; integer - Forward,Lateral,Height
+BurstPerTurret=0            ; integer
+```
+
+```{note}
+This is essentially designed to restore multi-turrets in RA1, not to help you make a Zantos. Therefore, features like different turrets using different weapons/targeting separately/calculating cooldown separately/having separate health are not within the scope of this function. Please use techno attachment for such requirements.
 ```
 
 ### Turret Response
@@ -2370,17 +2628,48 @@ MergeBuildingDamage=         ; boolean
 - Due to the rounding of damage, there may be a slight increase in damage.
 ```
 
+### Allow warhead to only affect invoker
+
+- In the past, modders used many methods such as `Dropping` and extremely small `CellSpread` to prevent a weapon fired by a unit from affecting others, thereby achieving complex combination logic. However, existing methods merely reduced the range of affected objects through various means. Now, you can directly use the following flag to check whether the victim is the unit itself:
+  - `AffectsInvokerOnly` can be used to make the affected object only the unit itself.
+  - `AffectsInvokerOnly.Reverse` can be used to exclude the unit from the affected objects.
+  - `AffectsInvokerOnly.IgnoreInvokerState` can be used to determine whether to consistently avoid affecting other objects regardless of the unit's state.
+
+```ini
+[CombatDamage]
+AffectsInvokerOnly.IgnoreInvokerState=true  ; boolean
+
+[SOMEWARHEAD]                               ; WarheadType
+AffectsInvokerOnly=false                    ; boolean
+AffectsInvokerOnly.Reverse=false            ; boolean
+AffectsInvokerOnly.IgnoreInvokerState=      ; boolean, default to [CombatDamage] -> AffectsInvokerOnly.IgnoreInvokerState
+```
+
+```{hint}
+When pure damage effects use `AffectsInvokerOnly`, it still checks settings such as `DamageSelf` and [`AllowDamageOnSelf`](Fixed-or-Improved-Logics.md#allowing-damage-dealt-to-firer)—they default to false; if left unchanged, this will produce a scenario where `AffectsInvokerOnly` builds a set containing only the invoker, while `DamageSelf` and `AllowDamageOnSelf` build a set excluding the invoker object, and the intersection of these two sets is empty—so ultimately it still will not deal damage to the invoker. Warhead effects will follow the damage transfer when [`ApplyPerTargetEffectsOnDetonate=false`](New-or-Enhanced-Logics.md#toggle-per-target-warhead-effects-apply-timing), and at that time they also follow this same rule.
+```
+
 ### Break Mind Control on impact
 
 ![image](_static/images/remove-mc.gif)
 *Mind control break warhead being utilized in [RA2: Reboot](https://www.moddb.com/mods/reboot)*
 
 - Warheads can now break mind control (doesn't apply to perma-MC-ed objects).
+- Both `RemoveMindControl` and `MindControl.Permanent` will remove the target's original conventional mind control effect and play the `MindClearedSound` sound effect. This can now be configured via `RemoveMindControl.Silent`, which defaults to `[AudioVisual] -> RemoveMindControl.Silent` for removing conventional mind control, and defaults to `[AudioVisual] -> MindControl.Permanent.ReplaceSilent` for cases where permanent mind control replaces conventional mind control.
+
+```{hint}
+You can simply use this flag to reduce some noise, or play another sound effect at the same time when muting the original sound effect...
+```
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]            ; WarheadType
-RemoveMindControl=false  ; boolean
+[AudioVisual]
+RemoveMindControl.Silent=false             ; boolean
+MindControl.Permanent.ReplaceSilent=false  ; boolean
+
+[SOMEWARHEAD]                              ; WarheadType
+RemoveMindControl=false                    ; boolean
+RemoveMindControl.Silent=                  ; boolean, normal removal defaults to [AudioVisual] -> RemoveMindControl.Silent, permanent replacement defaults to [AudioVisual] -> MindControl.Permanent.ReplaceSilent
 ```
 
 ### CellSpread enhancement
@@ -2677,11 +2966,45 @@ Due to the nature of some superweapon types, not all superweapons are suitable f
 ### Parasite removal
 
 - By default if unit takes negative damage from a Warhead (before `Verses` are calculated), any parasites infecting it are removed and deleted. This behaviour can now be customized to disable the removal for negative damage, or enable it for any arbitrary warhead.
+- `RemoveParasite.Allow` can be used to define which parasites can be removed.
+- `RemoveParasite.Disallow` can be used to define which parasites cannot be removed.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]     ; WarheadType
-RemoveParasite=   ; boolean
+[SOMEWARHEAD]             ; WarheadType
+RemoveParasite=           ; boolean
+RemoveParasite.Allow=     ; List of TechnoTypes
+RemoveParasite.Disallow=  ; List of TechnoTypes
+```
+
+### Penetrates damage on transporter
+
+- Warheads can now damage passenger on impact.
+  - If `PenetratesTransport.Level` of warhead larger than `PenetratesTransport.Level` of target and it's passengers, it will enable penetrates damage logic on passenger.
+  - `PenetratesTransport.PassThrough` is the chance of penetration, actual chance will multiply by `PenetratesTransport.PassThroughMultiplier` of target.
+  - `PenetratesTransport.FatalRate` is the chance of one hit kill passenger, actual change will multiply by `PenetratesTransport.FatalRateMultiplier` of target.
+  - `PenetratesTransport.DamageAll` control whether it will damage all passengers or random one passenger in transport.
+  - `PenetratesTransport.DamageMultiplier` is multiplier of damage on passenger.
+  - `PenetratesTransport.CleanSound` will play when all passengers has been killed.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+PenetratesTransport.Level=10                    ; integer, default value of [TechnoType] -> PenetratesTransport.Level
+
+[SOMEWARHEAD]                                   ; WarheadType
+PenetratesTransport.Level=0                     ; integer
+PenetratesTransport.PassThrough=1.0             ; double
+PenetratesTransport.FatalRate=0.0               ; double
+PenetratesTransport.DamageMultiplier=1.0        ; double
+PenetratesTransport.DamageAll=false             ; boolean
+PenetratesTransport.CleanSound=                 ; sound entry
+
+[SOMETECHNO]                                    ; TechnoType
+PenetratesTransport.Level=                      ; integer, default to [CombatDamage] -> PenetratesTransport.Level
+PenetratesTransport.PassThroughMultiplier=1.0   ; double
+PenetratesTransport.FatalRateMultiplier=1.0     ; double
+PenetratesTransport.DamageMultiplier=1.0        ; double
 ```
 
 ### Remove disguise on impact
@@ -2694,6 +3017,32 @@ In `rulesmd.ini`:
 RemoveDisguise=false  ; boolean
 ```
 
+### Return warhead
+
+- For each techno affected by this warhead, a warhead owned by the target techno will be detonated at the owner of the original warhead.
+  - `ReturnWarhead` determines the warhead that'll 'return' to the original owner from the target.
+  - `ReturnWarhead.Damage` determines the damage dealt by the return warhead.
+  - `ReturnWarhead.Chance` determines chance for a return warhead to occur. By default this is checked once when the original warhead is detonated and every target that is susceptible to triggering a return warhead will be affected. If `ReturnWarhead.ApplyChancePerTarget` is set, then whether or not the chance roll is successful is determined individually for each target.
+  - `ReturnWarhead.FullDetonation` controls whether or not the return warhead is detonated fully on the original owner (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
+  - `ReturnWarhead.AffectsTarget` can be used to customize types of targets that original warhead can trigger a return warhead. Return warhead cannot affect empty cells or cells containing only TerrainTypes, overlays etc.
+  - `ReturnWarhead.AffectsHouse` can be used to customize houses that original warhead can trigger a return warhead.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                               ; WarheadType
+ReturnWarhead=                              ; WarheadType
+ReturnWarhead.Damage=0                      ; integer
+ReturnWarhead.Chance=0.0                    ; floating point value, percents or absolute (0.0-1.0)
+ReturnWarhead.ApplyChancePerTarget=false    ; boolean
+ReturnWarhead.FullDetonation=true           ; boolean
+ReturnWarhead.AffectsTarget=all             ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
+ReturnWarhead.AffectsHouse=all              ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
+```{warning}
+If you set `ReturnWarhead` to the same Warhead it is defined on, or create a chain of Warheads with it that loops back to the first one there is a possibility for the game to get stuck in a loop and freeze or crash afterwards.
+```
+
 ### Reveal map for owner on impact
 
 - Warheads can now reveal an area or the entire map on impact.
@@ -2702,7 +3051,11 @@ RemoveDisguise=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; WarheadType
-Reveal=0       ; integer - cell radius, negative values mean reveal the entire map
+Reveal=0       ; integer, range in cells
+```
+
+```{note}
+Negative values mean reveal the entire map.
 ```
 
 ### Reverse engineer warhead
@@ -2743,7 +3096,11 @@ BuildingUndeploy.Leave=false         ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; WarheadType
-CreateGap=0    ; integer - cell radius, negative values mean shroud the entire map
+CreateGap=0    ; integer, range in cells
+```
+
+```{note}
+Negative values mean shroud the entire map.
 ```
 
 ### Spawn powerup crate
@@ -2758,6 +3115,18 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]            ; WarheadType
 SpawnsCrate(N).Type=     ; Powerup crate type enum (money|unit|healbase|cloak|explosion|napalm|squad|reveal|armor|speed|firepower|icbm|invulnerability|veteran|ionstorm|gas|tiberium|pod)
 SpawnsCrate(N).Weight=1  ; integer
+```
+
+### Taunt warhead
+
+- Now you can use the following tags to make the warhead "taunt" the target, override its current mission, and force it to attack the source of the damage.
+  - The taunted target will behaves like doing retaliation.
+  - If there is no source unit for the damage, the taunt will not take effect.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]    ; WarheadType
+Taunt=false      ; boolean
 ```
 
 ### Toggle per-target warhead effects apply timing
@@ -2826,8 +3195,8 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]                          ; WarheadType
 UnlimboDetonate=false                  ; boolean
 UnlimboDetonate.ForceLocation=false    ; boolean
-UnlimboDetonate.KeepTarget=false       ; boolean
-UnlimboDetonate.KeepSelected=false     ; boolean
+UnlimboDetonate.KeepTarget=true        ; boolean
+UnlimboDetonate.KeepSelected=true      ; boolean
 ```
 
 ```{warning}
@@ -2835,6 +3204,36 @@ UnlimboDetonate.KeepSelected=false     ; boolean
 ```
 
 ## Weapons
+
+### Allow Laser drawing position update
+
+- Now you can define via `LaserPositionUpdate` whether the endpoints of a laser drawing are updated during its duration.
+  - `None`: No update.
+  - `Firer`: The start point follows the firer's FLH; if the firer dies, the update stops.
+    - Since the FLH of `DiskLaser` actually determines the center of the ring, in this scenario, during the update process, the direction of the line connecting the beam's starting point to the center is fixed relative to the ground and the distance is constant - that is, the starting point will still remain on the ring.
+  - `Target`: The end point follows the target; if the target object dies, the update stops.
+  - `All`: Equivalent to specifying both `Firer` and `Target`.
+- `LaserPositionUpdate.StopOnFirerConvert` determines whether the laser source stops updating when the firer transforms. If set to false (default), the laser will continue to update using the transformed unit's corresponding parameters.
+
+```{note}
+For a sub-weapon created by `ShrapnelWeapon` or `AirburstWeapon`, its start point is the position where the parent weapon detonates, not the firer's FLH.
+- If `Firer` is set, it will be treated as `None`.
+- If `All` is set, it will be treated as `Target`.
+```
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+LaserPositionUpdate.StopOnFirerConvert=false ; boolean
+
+[SOMEWEAPON]                                 ; WeaponType with IsLaser=yes or DiskLaser=yes
+LaserPositionUpdate=none                     ; Position Follow Enumeration (none|firer|target|all)
+LaserPositionUpdate.StopOnFirerConvert=false ; boolean, default to [AudioVisual] -> LaserPositionUpdate.StopOnFirerConvert
+```
+
+```{warning}
+If the weapon sets this logic to a non-`None` value while also using other logics that change the drawing position, such as `FlakScatter` and `VisualScatter`, then after initially drawing the laser according to those other logics, the drawing position will be forced to change due to the update rules.
+```
 
 ### AreaFire target customization
 
@@ -2890,6 +3289,24 @@ Burst.NoDelay=false   ; boolean
 - This will ignore `Burst.Delays` setting.
 ```
 
+### Customize whether weapon can target iron-curtained technos
+
+- In vanilla, computer players always don't attack iron-curtained technos. Now you can customize it.
+  - `CanTarget.IronCurtained` affects human player, `CanTargetAI.IronCurtained` affects computer.
+  - `AutoTarget.IronCurtained` determines whether player-controlled technos can fire at iron-curtained objects positively. Computer will ignore this setting while only following `CanTarget.IronCurtained`.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+CanTarget.IronCurtained=true        ; boolean
+CanTargetAI.IronCurtained=false     ; boolean
+AutoTarget.IronCurtained=true       ; boolean
+
+[SOMEWEAPON]                        ; WeaponType
+CanTarget.IronCurtained=            ; boolean, default to [CombatDamage] -> CanTarget.IronCurtained for human player and CanTargetAI.IronCurtained for computer
+AutoTarget.IronCurtained=           ; boolean, default to [CombatDamage] -> AutoTarget.IronCurtained
+```
+
 ### Delayed firing
 
 - It is possible to have any weapon fire with a delay by setting `DelayedFire.Duration` on a WeaponType - it supports a single integer or two comma-separated ones for a random range to pick value from.
@@ -2939,16 +3356,16 @@ AircraftTypes, due to their different attack patterns, will not wait for the del
 In `rulesmd.ini`:
 ```ini
 [General]
-ExtraRange.TargetMoving=0.0                     ; float, range in cells
+ExtraRange.TargetMoving=0.0                     ; floating point value, range in cells
 ExtraRange.TargetMoving.CloseRangeOnly=false    ; boolean
-ExtraRange.FirerMoving=0.0                      ; float, range in cells
-ExtraRange.Prefiring=0.0                        ; float, range in cells
+ExtraRange.FirerMoving=0.0                      ; floating point value, range in cells
+ExtraRange.Prefiring=0.0                        ; floating point value, range in cells
 ExtraRange.Prefiring.IncludeBurst=true          ; boolean
 
 [SOMEWEAPON]                                    ; WeaponType
-ExtraRange.TargetMoving=                        ; float, range in cells, the default values refer to the descriptions above
-ExtraRange.FirerMoving=                         ; float, range in cells, default to [General] -> ExtraRange.FirerMoving
-ExtraRange.Prefiring=                           ; float, range in cells, default to [General] -> ExtraRange.Prefiring
+ExtraRange.TargetMoving=                        ; floating point value, range in cells, the default values refer to the descriptions above
+ExtraRange.FirerMoving=                         ; floating point value, range in cells, default to [General] -> ExtraRange.FirerMoving
+ExtraRange.Prefiring=                           ; floating point value, range in cells, default to [General] -> ExtraRange.Prefiring
 ExtraRange.Prefiring.IncludeBurst=              ; boolean, default to [General] -> ExtraRange.Prefiring.IncludeBurst
 ```
 
@@ -2966,6 +3383,9 @@ ExtraRange.Prefiring.IncludeBurst=              ; boolean, default to [General] 
   - `ExtraWarheads.FullDetonation` can be used to customize whether or not each individual Warhead is detonated fully (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, defaults to true.
   - `ExtraWarheads.ApplyFirepowerMult` determines whether or not the extra warheads' damage should multiply the firer's firepower multipliers. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, every extra Warhead detonation is guaranteed to occur.
   - Note that the listed Warheads must be listed in `[Warheads]` for them to work.
+- These warheads can be made random with these optional tags. The game will randomly choose only a single warhead from the list for each roll chance provided.
+  - `ExtraWarheads.RollChances` lists chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
+  - `ExtraWarheads.RandomWeightsN` lists the weights for each "dice roll" that increase the probability of picking a specific warhead. Valid values are 0 (don't pick) and above (the higher value, the bigger the likelyhood). `RandomWeights` are a valid alias for `RandomWeights0`. If a roll attempt doesn't have weights specified, the last weights will be used.
 
 In `rulesmd.ini`:
 ```ini
@@ -2975,6 +3395,8 @@ ExtraWarheads.DamageOverrides=      ; List of integers
 ExtraWarheads.DetonationChances=    ; List of floating-point values (percentage or absolute)
 ExtraWarheads.FullDetonation=       ; List of booleans
 ExtraWarheads.ApplyFirepowerMult=   ; List of booleans
+ExtraWarheads.RollChances=          ; List of percentages
+ExtraWarheads.RandomWeightsN=       ; List of integers
 ```
 
 ### Auxiliary weapon
@@ -3042,6 +3464,21 @@ OmniFire.TurnToTarget=no  ; boolean
 ### Radiation enhancements
 
 - In addition to allowing custom radiation types, several enhancements are also available to the default radiation type defined in `[Radiation]`, such as ability to set owner & invoker or deal damage against buildings. See [Custom Radiation Types](#custom-radiation-types) for more details.
+
+### Range finding in cylinder
+
+- In vanilla, technos in air will ignore the distance in Z axis when checking if the target is in range. Now you can use the following flags to make technos always range finding like that.
+- `[General] -> CylinderRangefinding` controls this globally, and can be customized per weapon type.
+- Mind that set the flags to `false` meaning "use default" rather than "disable". Technos in air will always range finding in cylinder like vanilla, despite what you set.
+
+In `rulesmd.ini`:
+```ini
+[General]
+CylinderRangefinding=false        ; boolean
+
+[SOMEWEAPON]                      ; WeaponType
+CylinderRangefinding=             ; boolean
+```
 
 ### Strafing aircraft weapon customization
 

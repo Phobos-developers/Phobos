@@ -56,6 +56,13 @@ void TypeConvertGroup::Parse(std::vector<TypeConvertGroup>& list, INI_EX& exINI,
 		convertFrom.Read(exINI, pSection, tempBuffer);
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.To", i);
 		convertTo.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.AffectedHouses", i); // Temporary solution for the INI tags renaming issue, see #2093
+		convertAffectsHouse.Read(exINI, pSection, tempBuffer);
+		if (convertAffectsHouse.isset())
+		{
+			Debug::Log("[Developer warning][%s] %s is deprecated and has been replaced by Convert%d.AffectsHouse! If both are set, the latter will be used.\n",
+				pSection, tempBuffer, i);
+		}
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.AffectsHouse", i);
 		convertAffectsHouse.Read(exINI, pSection, tempBuffer);
 
@@ -72,6 +79,11 @@ void TypeConvertGroup::Parse(std::vector<TypeConvertGroup>& list, INI_EX& exINI,
 	Nullable<AffectedHouse> convertAffectsHouse;
 	convertFrom.Read(exINI, pSection, "Convert.From");
 	convertTo.Read(exINI, pSection, "Convert.To");
+	convertAffectsHouse.Read(exINI, pSection, "Convert.AffectedHouses"); // Temporary solution for the INI tags renaming issue, see #2093
+	if (convertAffectsHouse.isset())
+	{
+		Debug::Log("[Developer warning][%s] Convert.AffectedHouses is deprecated and has been replaced by Convert.AffectsHouse! If both are set, the latter will be used.\n", pSection);
+	}
 	convertAffectsHouse.Read(exINI, pSection, "Convert.AffectsHouse");
 	if (convertTo.isset())
 	{

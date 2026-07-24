@@ -8,14 +8,11 @@ public:
 
 	InterceptorTypeClass() = default;
 
-	InterceptorTypeClass(TechnoTypeClass* OwnedBy);
-
-	TechnoTypeClass* OwnerType;
-
 	Valueable<int> TargetingDelay;
 	Valueable<AffectedHouse> CanTargetHouses;
 	Promotable<Leptons> GuardRange;
 	Promotable<Leptons> MinimumGuardRange;
+	Valueable<bool> GuardRange_IsCylindrical;
 	Valueable<int> Weapon;
 	Nullable<WeaponTypeClass*> WeaponOverride;
 	Valueable<bool> WeaponReplaceProjectile;

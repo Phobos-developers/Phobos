@@ -1,156 +1,169 @@
 #pragma once
 #include <HouseClass.h>
 
+#include <Ext/HouseType/Body.h>
+
 #include <Utilities/Container.h>
+#include <Utilities/Detach.h>
 #include <Utilities/TemplateDef.h>
 
-class HouseExt
+#include <array>
+
+class HouseExt final : public AbstractExt, public Detach::Listener<BuildingClass>
 {
 public:
 	using base_type = HouseClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = HouseExt;
+
 	static constexpr DWORD Canary = 0x11111111;
-	static constexpr size_t ExtPointerOffset = 0x16098;
-	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
-	class ExtData final : public Extension<HouseClass>
+public:
+	// typed owner accessor
+	HouseClass* OwnerObject() const
 	{
-	public:
-		std::map<int, int> PowerPlantEnhancers;
-		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
-		std::vector<TechnoClass*> OwnedCountedHarvesters;
-		bool ForceOnlyTargetHouseEnemy;
-		int ForceOnlyTargetHouseEnemyMode;
+		return static_cast<HouseClass*>(this->GetAttachedObject());
+	}
 
-		CounterClass LimboAircraft;  // Currently owned aircraft in limbo
-		CounterClass LimboBuildings; // Currently owned buildings in limbo
-		CounterClass LimboInfantry;  // Currently owned infantry in limbo
-		CounterClass LimboVehicles;  // Currently owned vehicles in limbo
+	std::vector<BuildingClass*> PowerPlantEnhancers;
+	std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
+	std::vector<TechnoClass*> OwnedCountedHarvesters;
+	bool ForceOnlyTargetHouseEnemy;
+	int ForceOnlyTargetHouseEnemyMode;
 
-		BuildingClass* Factory_BuildingType;
-		BuildingClass* Factory_InfantryType;
-		BuildingClass* Factory_VehicleType;
-		BuildingClass* Factory_NavyType;
-		BuildingClass* Factory_AircraftType;
+	CounterClass LimboAircraft;  // Currently owned aircraft in limbo
+	CounterClass LimboBuildings; // Currently owned buildings in limbo
+	CounterClass LimboInfantry;  // Currently owned infantry in limbo
+	CounterClass LimboVehicles;  // Currently owned vehicles in limbo
 
-		CDTimerClass CombatAlertTimer;
-		CDTimerClass AISuperWeaponDelayTimer;
-		CDTimerClass AIFireSaleDelayTimer;
+	BuildingClass* Factory_BuildingType;
+	BuildingClass* Factory_InfantryType;
+	BuildingClass* Factory_VehicleType;
+	BuildingClass* Factory_NavyType;
+	BuildingClass* Factory_AircraftType;
 
-		//Read from INI
-		Nullable<bool> RepairBaseNodes[3];
+	CDTimerClass CombatAlertTimer;
+	CDTimerClass AISuperWeaponDelayTimer;
+	CDTimerClass AIFireSaleDelayTimer;
 
-		// FactoryPlants with Allow/DisallowTypes set.
-		std::vector<BuildingClass*> RestrictedFactoryPlants;
+	//Read from INI
+	Nullable<bool> RepairBaseNodes[3];
 
-		int LastBuiltNavalVehicleType;
-		int ProducingNavalUnitTypeIndex;
+	// FactoryPlants with Allow/DisallowTypes set.
+	std::vector<BuildingClass*> RestrictedFactoryPlants;
 
-		// Factories that exist but don't count towards multiple factory bonus.
-		int NumAirpads_NonMFB;
-		int NumBarracks_NonMFB;
-		int NumWarFactories_NonMFB;
-		int NumConYards_NonMFB;
-		int NumShipyards_NonMFB;
+	int LastBuiltNavalVehicleType;
+	int ProducingNavalUnitTypeIndex;
 
-		std::map<int, std::vector<int>> SuspendedEMPulseSWs;
+	// Factories that exist but don't count towards multiple factory bonus.
+	int NumAirpads_NonMFB;
+	int NumBarracks_NonMFB;
+	int NumWarFactories_NonMFB;
+	int NumConYards_NonMFB;
+	int NumShipyards_NonMFB;
 
-		// standalone? no need and not a good idea
-		struct SWExt
-		{
-			int ShotCount;
-		};
-		std::vector<SWExt> SuperExts;
+	std::map<int, std::vector<int>> SuspendedEMPulseSWs;
 
-		int ForceEnemyIndex;
-		int TeamDelay;
-		bool FreeRadar;
-		bool ForceRadar;
-
-		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
-			, PowerPlantEnhancers {}
-			, OwnedLimboDeliveredBuildings {}
-			, OwnedCountedHarvesters {}
-			, LimboAircraft {}
-			, LimboBuildings {}
-			, LimboInfantry {}
-			, LimboVehicles {}
-			, Factory_BuildingType { nullptr }
-			, Factory_InfantryType { nullptr }
-			, Factory_VehicleType { nullptr }
-			, Factory_NavyType { nullptr }
-			, Factory_AircraftType { nullptr }
-			, AISuperWeaponDelayTimer {}
-			, RepairBaseNodes { }
-			, RestrictedFactoryPlants {}
-			, LastBuiltNavalVehicleType { -1 }
-			, ProducingNavalUnitTypeIndex { -1 }
-			, CombatAlertTimer {}
-			, NumAirpads_NonMFB { 0 }
-			, NumBarracks_NonMFB { 0 }
-			, NumWarFactories_NonMFB { 0 }
-			, NumConYards_NonMFB { 0 }
-			, NumShipyards_NonMFB { 0 }
-			, AIFireSaleDelayTimer {}
-			, SuspendedEMPulseSWs {}
-			, SuperExts(SuperWeaponTypeClass::Array.Count)
-			, ForceEnemyIndex(-1)
-			, ForceOnlyTargetHouseEnemy { false }
-			, ForceOnlyTargetHouseEnemyMode { -1 }
-			, TeamDelay(-1)
-			, FreeRadar(false)
-			, ForceRadar(false)
-		{ }
-
-		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;
-		void AddToLimboTracking(TechnoTypeClass* pTechnoType);
-		void RemoveFromLimboTracking(TechnoTypeClass* pTechnoType);
-		int CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType) const;
-		void UpdateNonMFBFactoryCounts(AbstractType rtti, bool remove, bool isNaval);
-		int GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNaval) const;
-		float GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoType) const;
-
-		int GetForceEnemyIndex();
-		void SetForceEnemyIndex(int EnemyIndex);
-
-		virtual ~ExtData() = default;
-
-		virtual void LoadFromINIFile(CCINIClass* pINI) override;
-		//virtual void Initialize() override;
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
-
-		void UpdateVehicleProduction();
-
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
-
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-		bool UpdateHarvesterProduction();
+	// standalone? no need and not a good idea
+	struct SWExt
+	{
+		int ShotCount;
 	};
+	std::vector<SWExt> SuperExts;
 
+	int ForceEnemyIndex;
+	int TeamDelay;
+	bool FreeRadar;
+	bool ForceRadar;
+
+	bool PlayerAutoRepair;
+
+	std::array<int, 3> BeaconsPlacedOrder;
+
+	HouseExt(HouseClass* OwnerObject) : AbstractExt(OwnerObject)
+		, PowerPlantEnhancers {}
+		, OwnedLimboDeliveredBuildings {}
+		, OwnedCountedHarvesters {}
+		, LimboAircraft {}
+		, LimboBuildings {}
+		, LimboInfantry {}
+		, LimboVehicles {}
+		, Factory_BuildingType { nullptr }
+		, Factory_InfantryType { nullptr }
+		, Factory_VehicleType { nullptr }
+		, Factory_NavyType { nullptr }
+		, Factory_AircraftType { nullptr }
+		, AISuperWeaponDelayTimer {}
+		, RepairBaseNodes { }
+		, RestrictedFactoryPlants {}
+		, LastBuiltNavalVehicleType { -1 }
+		, ProducingNavalUnitTypeIndex { -1 }
+		, CombatAlertTimer {}
+		, NumAirpads_NonMFB { 0 }
+		, NumBarracks_NonMFB { 0 }
+		, NumWarFactories_NonMFB { 0 }
+		, NumConYards_NonMFB { 0 }
+		, NumShipyards_NonMFB { 0 }
+		, AIFireSaleDelayTimer {}
+		, SuspendedEMPulseSWs {}
+		, SuperExts(SuperWeaponTypeClass::Array.Count)
+		, ForceEnemyIndex(-1)
+		, ForceOnlyTargetHouseEnemy { false }
+		, ForceOnlyTargetHouseEnemyMode { -1 }
+		, TeamDelay(-1)
+		, FreeRadar(false)
+		, ForceRadar(false)
+		, PlayerAutoRepair(true)
+		, BeaconsPlacedOrder { 0, 0, 0 }
+	{ }
+
+	bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;
+	void AddToLimboTracking(TechnoTypeClass* pTechnoType);
+	void RemoveFromLimboTracking(TechnoTypeClass* pTechnoType);
+	int CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType) const;
+	void UpdateNonMFBFactoryCounts(AbstractType rtti, bool remove, bool isNaval);
+	int GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNaval) const;
+	float GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoType) const;
+
+	int GetForceEnemyIndex();
+	void SetForceEnemyIndex(int EnemyIndex);
+
+	virtual ~HouseExt() = default;
+
+	virtual void LoadFromINIFile(CCINIClass* pINI) override;
+	//virtual void Initialize() override;
+	virtual void OnDetach(BuildingClass* pTarget, bool removed) override;
+
+	void UpdateVehicleProduction();
+
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+
+private:
+	template <typename T>
+	void Serialize(T& Stm);
+	bool UpdateHarvesterProduction();
+
+public:
 	class ExtContainer final : public Container<HouseExt>
 	{
 	public:
 		ExtContainer();
 		~ExtContainer();
-
-		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
-		{
-			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-
-			switch (abs)
-			{
-			case AbstractType::Building:
-				return false;
-			}
-
-			return true;
-		}
 	};
 
 	static ExtContainer ExtMap;
+
+	static HouseExt* Fetch(const HouseClass* pThis)
+	{
+		return AbstractExt::Fetch<HouseExt>(pThis);
+	}
+
+	static HouseExt* TryFetch(const HouseClass* pThis)
+	{
+		return AbstractExt::TryFetch<HouseExt>(pThis);
+	}
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
@@ -161,7 +174,7 @@ public:
 	static CellClass* GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass* pCurrentHouse, CoordStruct defaultCurrentCoords, SpeedType speedTypeZone, int extraDistance = 0);
 	static void GetAIChronoshiftSupers(HouseClass* pThis, SuperClass*& pSuperCSphere, SuperClass*& pSuperCWarp);
 
-	static void ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode = -1);
+	static void SetForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode = -1);
 	static void SetSkirmishHouseName(HouseClass* pHouse);
 
 	static bool IsDisabledFromShell(
@@ -200,4 +213,7 @@ public:
 
 	static CanBuildResult BuildLimitGroupCheck(const HouseClass* pThis, const TechnoTypeClass* pItem, bool buildLimitOnly, bool includeQueued);
 	static bool ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* pType, bool ignoreQueued);
+
+	static void CalculatePowerSurplus(HouseClass* pThis);
 };
+

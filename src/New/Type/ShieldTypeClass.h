@@ -15,6 +15,7 @@ public:
 	Valueable<bool> InheritArmorFromTechno;
 	ValueableVector<TechnoTypeClass*> InheritArmor_Allowed;
 	ValueableVector<TechnoTypeClass*> InheritArmor_Disallowed;
+	Nullable<bool> ApplyArmorMult;
 	Valueable<bool> Powered;
 	Valueable<double> Respawn;
 	Valueable<int> Respawn_Rate;
@@ -72,6 +73,7 @@ public:
 		, InheritArmorFromTechno { false }
 		, InheritArmor_Allowed { }
 		, InheritArmor_Disallowed { }
+		, ApplyArmorMult {}
 		, Powered { false }
 		, Respawn { 0.0 }
 		, Respawn_Rate { 0 }
@@ -127,13 +129,16 @@ public:
 
 	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio) const
 	{
+		const double conditionYellow = this->GetConditionYellow();
+		const double conditionRed = this->GetConditionRed();
+
 		if (isDamaged)
 		{
-			if (const auto damagedAnim = this->IdleAnimDamaged.Get(healthRatio))
+			if (const auto damagedAnim = this->IdleAnimDamaged.Get(healthRatio, conditionYellow, conditionRed))
 				return damagedAnim;
 		}
 
-		return this->IdleAnim.Get(healthRatio, this->GetConditionYellow(), this->GetConditionRed());
+		return this->IdleAnim.Get(healthRatio, conditionYellow, conditionRed);
 	}
 
 	double GetConditionYellow() const { return this->ConditionYellow.Get(RulesExt::Global()->Shield_ConditionYellow.Get(RulesClass::Instance->ConditionYellow)); }

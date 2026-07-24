@@ -92,6 +92,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 		return;
 
 	INI_EX exINI(pINI);
+	char tempBuffer[0x40];
 
 	this->Duration.Read(exINI, pSection, "Duration");
 	this->Duration_ApplyVersus_Warhead.Read(exINI, pSection, "Duration.ApplyVersus.Warhead");
@@ -102,6 +103,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Powered.Read(exINI, pSection, "Powered");
 	this->DiscardOn.Read(exINI, pSection, "DiscardOn");
 	this->DiscardOn_RangeOverride.Read(exINI, pSection, "DiscardOn.RangeOverride");
+	this->DiscardOn_MoveBasedOnDestination.Read(exINI, pSection, "DiscardOn.MoveBasedOnDestination");
+	this->DiscardOn_ConsiderHarvestingAsStationary.Read(exINI, pSection, "DiscardOn.ConsiderHarvestingAsStationary");
 	this->DiscardOn_AbovePercent.Read(exINI, pSection, "DiscardOn.AbovePercent");
 	this->DiscardOn_BelowPercent.Read(exINI, pSection, "DiscardOn.BelowPercent");
 	this->DiscardOn_CumulativeCount.Read(exINI, pSection, "DiscardOn.CumulativeCount");
@@ -117,6 +120,11 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->PenetratesForceShield.Read(exINI, pSection, "PenetratesForceShield");
 	this->AffectTypes.Read(exINI, pSection, "AffectTypes");
 	this->IgnoreTypes.Read(exINI, pSection, "IgnoreTypes");
+	if (exINI.ReadString(pSection, "AffectTargets") > 0)
+	{
+		Debug::Log("[Developer warning][%s] AffectTargets is deprecated and has been replaced by AffectsTarget! If both are set, the latter will be used.\n", pSection);
+	}
+	this->AffectsTarget.Read(exINI, pSection, "AffectTargets"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->AffectsTarget.Read(exINI, pSection, "AffectsTarget");
 
 	this->Animation.Read(exINI, pSection, "Animation");
@@ -136,6 +144,30 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ExtraWarheads.Read(exINI, pSection, "ExtraWarheads");
 	this->ExtraWarheads_DamageOverrides.Read(exINI, pSection, "ExtraWarheads.DamageOverrides");
 	this->ExtraWarheads_DetonationChances.Read(exINI, pSection, "ExtraWarheads.DetonationChances");
+	this->ExtraWarheads_RollChances.Read(exINI, pSection, "ExtraWarheads.RollChances");
+
+	// ExtraWarheads.RandomWeights
+	for (size_t i = 0; ; ++i)
+	{
+		ValueableVector<int> weights3;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "ExtraWarheads.RandomWeights%d", i);
+		weights3.Read(exINI, pSection, tempBuffer);
+
+		if (!weights3.size())
+			break;
+
+		this->ExtraWarheads_WeightsData.emplace_back(std::move(weights3));
+	}
+	ValueableVector<int> weights3;
+	weights3.Read(exINI, pSection, "ExtraWarheads.RandomWeights");
+	if (weights3.size())
+	{
+		if (this->ExtraWarheads_WeightsData.size())
+			this->ExtraWarheads_WeightsData[0] = std::move(weights3);
+		else
+			this->ExtraWarheads_WeightsData.emplace_back(std::move(weights3));
+	}
+
 	this->ExtraWarheads_FullDetonation.Read(exINI, pSection, "ExtraWarheads.FullDetonation");
 	this->ExtraWarheads_ApplyFirepowerMult.Read(exINI, pSection, "ExtraWarheads.ApplyFirepowerMult");
 	this->ExtraWarheads_UseInvokerAsOwner.Read(exINI, pSection, "ExtraWarheads.UseInvokerAsOwner");
@@ -188,6 +220,11 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->KillWeapon_OnFirer_RealLaunch.Read(exINI, pSection, "KillWeapon.OnFirer.RealLaunch");
 
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
+	if (exINI.ReadString(pSection, "RevengeWeapon.AffectsHouses") > 0)
+	{
+		Debug::Log("[Developer warning][%s] RevengeWeapon.AffectsHouses is deprecated and has been replaced by RevengeWeapon.AffectsHouse! If both are set, the latter will be used.\n", pSection);
+	}
+	this->RevengeWeapon_AffectsHouse.Read(exINI, pSection, "RevengeWeapon.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->RevengeWeapon_AffectsHouse.Read(exINI, pSection, "RevengeWeapon.AffectsHouse");
 	this->RevengeWeapon_RealLaunch.Read(exINI, pSection, "RevengeWeapon.RealLaunch");
 	this->RevengeWeapon_UseWeaponTargeting.Read(exINI, pSection, "RevengeWeapon.UseWeaponTargeting");
@@ -197,6 +234,11 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ReflectDamage_Warhead.Read(exINI, pSection, "ReflectDamage.Warhead");
 	this->ReflectDamage_Warhead_Detonate.Read(exINI, pSection, "ReflectDamage.Warhead.Detonate");
 	this->ReflectDamage_Multiplier.Read(exINI, pSection, "ReflectDamage.Multiplier");
+	if (exINI.ReadString(pSection, "ReflectDamage.AffectsHouses") > 0)
+	{
+		Debug::Log("[Developer warning][%s] ReflectDamage.AffectsHouses is deprecated and has been replaced by ReflectDamage.AffectsHouse! If both are set, the latter will be used.\n", pSection);
+	}
+	this->ReflectDamage_AffectsHouse.Read(exINI, pSection, "ReflectDamage.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->ReflectDamage_AffectsHouse.Read(exINI, pSection, "ReflectDamage.AffectsHouse");
 	this->ReflectDamage_Chance.Read(exINI, pSection, "ReflectDamage.Chance");
 	this->ReflectDamage_Override.Read(exINI, pSection, "ReflectDamage.Override");
@@ -210,6 +252,19 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	// Groups
 	exINI.ParseStringList(this->Groups, pSection, "Groups");
 	AddToGroupsMap();
+
+	// NeedCalculate
+	if (this->FirepowerMultiplier != 1.0 || this->ArmorMultiplier != 1.0 || this->SpeedMultiplier != 1.0 || this->ROFMultiplier != 1.0
+		|| this->WeaponRange_Multiplier != 1.0 || this->WeaponRange_ExtraRange != 0.0 || this->Crit_Multiplier != 1.0 || this->Crit_ExtraChance != 0.0
+		|| this->DisableWeapons || this->Unkillable || this->ReflectDamage || this->Cloakable || this->ForceDecloak
+		|| this->HasTint() || (this->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None)
+	{
+		this->NeedCalculate = true;
+	}
+	else
+	{
+		this->NeedCalculate = false;
+	}
 }
 
 template <typename T>
@@ -225,6 +280,8 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Powered)
 		.Process(this->DiscardOn)
 		.Process(this->DiscardOn_RangeOverride)
+		.Process(this->DiscardOn_MoveBasedOnDestination)
+		.Process(this->DiscardOn_ConsiderHarvestingAsStationary)
 		.Process(this->DiscardOn_AbovePercent)
 		.Process(this->DiscardOn_BelowPercent)
 		.Process(this->DiscardOn_CumulativeCount)
@@ -310,6 +367,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->NegativeDamage_Multiplier)
 		.Process(this->LaserTrail_Type)
 		.Process(this->Groups)
+		.Process(this->NeedCalculate)
 		;
 }
 
@@ -369,6 +427,18 @@ namespace detail
 				else if (!_strcmpi(cur, "firing"))
 				{
 					parsed |= DiscardCondition::Firing;
+				}
+				else if (!_strcmpi(cur, "selling"))
+				{
+					parsed |= DiscardCondition::Selling;
+				}
+				else if (!_strcmpi(cur, "undeploying"))
+				{
+					parsed |= DiscardCondition::Undeploying;
+				}
+				else if (!_strcmpi(cur, "harvesting"))
+				{
+					parsed |= DiscardCondition::Harvesting;
 				}
 				else
 				{

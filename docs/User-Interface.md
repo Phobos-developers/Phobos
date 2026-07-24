@@ -30,6 +30,63 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 
 ## Battle screen UI/UX
 
+### Allow chat box in singleplayer
+
+- In vanilla, the in-game chat box is disabled in singleplayer scenarios. You can now enable it by setting `[General] -> AllowChatBoxInSinglePlayer` to true.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AllowChatBoxInSinglePlayer=false  ; boolean
+```
+
+### Allow draw SuperWeapon timer as percentage
+
+- Superweapon cd timer can now draw as percentage.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+SuperWeaponTimer.Percentage=false  ; boolean
+
+[SOMESW]                           ; SuperWeaponType, with ShowTimer=yes
+ShowTimer.Percentage=              ; boolean
+```
+
+### Custom health bars display
+
+![image](_static/images/healthbar.hide-01.png)
+*Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
+
+- Health bar display can now be turned off as needed, hiding both the health bar box and health pips.
+  - `HealthBar.HidePips` only hides the health bar without affecting anything else.
+  - `HealthBar.Permanent` will display health points at all times.
+  - `HealthBar.Permanent.PipScale` will always display additional pips and group numbers.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                         ; TechnoType
+HealthBar.Hide=false                 ; boolean
+HealthBar.HidePips=false             ; boolean
+HealthBar.Permanent=false            ; boolean
+HealthBar.Permanent.PipScale=false   ; boolean
+```
+
+### Customize the step limit of the credits indicator
+
+- In vanilla, the Credits Indicator in the sidebar increases by at most 143 points per frame, and now you can customize this limit.
+  - If set to a value less than or equal to 0, the upper limit will be removed.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+CreditsIndicator.MaxStep=143  ; integer
+```
+
+```{note}
+The game first takes the absolute value of the difference between the actual credits and the current value, then divides it by 8, and then clamps this value to the limit set here. If you wish to disable this smoothing effect, set [`CreditsIndicator.Smooth=false`](User-Interface.md#disable-the-credits-indicator-smooth-transition).
+```
+
 ### Digital display
 
 ![image](_static/images/digital_display_shapes.png)
@@ -122,7 +179,7 @@ Palette=palette.pal                            ; filename with .pal extension
 Shape.Spacing=                                 ; integers - horizontal, vertical spacing between digits
 Shape.PercentageFrame=false                    ; boolean
 
-[SOMETECHNOTYPE]                               ; TechnoType
+[SOMETECHNO]                                   ; TechnoType
 DigitalDisplay.Disable=false                   ; boolean
 DigitalDisplayTypes=                           ; List of DigitalDisplayTypes
 DigitalDisplay.Health.FakeAtDisguise=true      ; boolean
@@ -150,8 +207,22 @@ You can create a circular health bar for technos, where the different frames of 
 The arrangement of static images on the plane is entirely up to you to draw freely, without being constrained by pre-established frameworks (e.g., the original rule for health bars was to start at a fixed coordinate, fetch a pip from a fixed frame of a fixed file at fixed intervals, and then arrange them horizontally), choosing from inherently limited options.
 ```
 
-Of course, this is just the implementation method. To balance freedom with efficiency—that is, how to efficiently draw the patterns you need—you still need to independently explore a workflow that suits you.
+Of course, this is just the implementation method. To balance freedom with efficiency - that is, how to efficiently draw the patterns you need - you still need to independently explore a workflow that suits you.
 ````
+
+### Disable the credits indicator smooth transition
+
+- In vanilla, the Credits Indicator has a smooth transition effect when the displayed credit value approaches the actual credit value. Now you can disable this effect, allowing the change step to always follow the value of [`CreditsIndicator.MaxStep`](User-Interface.md#customize-the-step-limit-of-the-credits-indicator).
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+CreditsIndicator.Smooth=true  ; boolean
+```
+
+```{hint}
+For example, if you want to make the credits update immediately without a transition process by setting `CreditsIndicator.MaxStep=0`, then you should also set `CreditsIndicator.Smooth=false`; otherwise, the displayed credit value will still change in the form of an exponential approximation function.
+```
 
 ### Flashing Technos on selecting
 
@@ -168,59 +239,6 @@ In `RA2MD.INI`:
 ```ini
 [Phobos]
 ShowFlashOnSelecting=false  ; boolean
-```
-
-### Custom health bars display
-
-![image](_static/images/healthbar.hide-01.png)
-*Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
-
-- Health bar display can now be turned off as needed, hiding both the health bar box and health pips.
-  - `HealthBar.HidePips` only hides the health bar without affecting anything else.
-  - `HealthBar.Permanent` will display health points at all times.
-  - `HealthBar.Permanent.PipScale` will always display additional pips and group numbers.
-
-In `rulesmd.ini`:
-```ini
-[SOMENAME]                           ; TechnoType
-HealthBar.Hide=false                 ; boolean
-HealthBar.HidePips=false             ; boolean
-HealthBar.Permanent=false            ; boolean
-HealthBar.Permanent.PipScale=false   ; boolean
-```
-
-### Visual effects toggling
-
-- It is possible to toggle certain light flash effects off. These light flash effects include:
-  - Combat light effects (`Bright=true`) and everything that uses same functionality e.g Iron Curtain / Force Field impact flashes.
-  - Alpha images attached to ParticleSystems or Particles that are generated through a Warhead's `Particle` if `[AudioVisual] -> WarheadParticleAlphaImageIsLightFlash` or on Warhead `Particle.AlphaImageIsLightFlash` is set to true, latter defaults to former.
-    - Additionally these alpha images are not created if `[AudioVisual] -> LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting.
-- It is possible to toggle shake screen effects (`ShakeX/Ylo/hi`) off by setting `HideShakeEffects=true`.
-- Phobos's [Laser Trail effects](New-or-Enhanced-Logics.md#laser-trails) can also be toggled off.
-  - If a LaserTrailType has `IsHideable=false`, it can't be toggled off by setting `HideLaserTrailEffects=true`.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-WarheadParticleAlphaImageIsLightFlash=false  ; boolean
-LightFlashAlphaImageDetailLevel=0            ; integer
-
-[SOMEWARHEAD]                                ; WarheadType
-Particle.AlphaImageIsLightFlash=             ; boolean
-```
-
-In `artmd.ini`:
-```ini
-[SOMETRAIL]                  ; LaserTrailType name
-IsHideable=true              ; boolean
-```
-
-In `RA2MD.INI`:
-```ini
-[Phobos]
-HideLightFlashEffects=false  ; boolean
-HideLaserTrailEffects=false  ; boolean
-HideShakeEffects=false       ; boolean
 ```
 
 ### Low priority for box selection
@@ -324,7 +342,7 @@ DefaultInfantrySelectBox=               ; Select box for infantry
 DefaultUnitSelectBox=                   ; Select box for vehicle and aircraft
 
 [SOMESELECTBOXTYPE]                     ; Select box Type name
-Shape=select.shp                        ; filename with .shp extension
+Shape=                                  ; filename with .shp extension
 Palette=palette.pal                     ; filename with .pal extension
 Frames=                                 ; List of integer, default 1,1,1 for infantry, 0,0,0 for vehicle and aircraft
 Offset=0,0                              ; integers - horizontal, vertical
@@ -432,10 +450,46 @@ BuildingTypeSelectable=false  ; boolean
 Due to technical limitations, this feature is forcibly disabled without Ares.
 ```
 
+### Visual effects toggling
+
+- It is possible to toggle certain light flash effects off. These light flash effects include:
+  - Combat light effects (`Bright=true`) and everything that uses same functionality e.g Iron Curtain / Force Field impact flashes.
+  - Alpha images attached to ParticleSystems or Particles that are generated through a Warhead's `Particle` if `[AudioVisual] -> WarheadParticleAlphaImageIsLightFlash` or on Warhead `Particle.AlphaImageIsLightFlash` is set to true, latter defaults to former.
+    - Additionally these alpha images are not created if `[AudioVisual] -> LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting.
+- It is possible to toggle shake screen effects (`ShakeX/Ylo/hi`) off by setting `HideShakeEffects=true`.
+- Phobos's [Laser Trail effects](New-or-Enhanced-Logics.md#laser-trails) can also be toggled off.
+  - If a LaserTrailType has `IsHideable=false`, it can't be toggled off by setting `HideLaserTrailEffects=true`.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+WarheadParticleAlphaImageIsLightFlash=false  ; boolean
+LightFlashAlphaImageDetailLevel=0            ; integer
+
+[SOMEWARHEAD]                                ; WarheadType
+Particle.AlphaImageIsLightFlash=             ; boolean
+```
+
+In `artmd.ini`:
+```ini
+[SOMETRAIL]                  ; LaserTrailType name
+IsHideable=true              ; boolean
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+HideLightFlashEffects=false  ; boolean
+HideLaserTrailEffects=false  ; boolean
+HideShakeEffects=false       ; boolean
+```
+
 ### Visual indication of income from grinders and refineries
 
 - `DisplayIncome` can be set to display the amount of credits acquired when a building is grinding units / receiving ore dump from harvesters or slaves.
-- Multiple income within less than one in-game second have their amounts coalesced into single display.
+  - `DisplayIncome.Delay` is the interval in frames between two consecutive income displays, defaults to 15 (one in-game second on middle speed).
+    - Multiple income within less than the time defined by `DisplayIncome.Delay` have their amounts coalesced into single display.
+    - Delay cannot be set to 0, this will change the delay to 1 and outputs a developer warning to log.
   - `DisplayIncome.Houses` determines which houses can see the credits display.
     - If you don't want players to see how AI cheats with `VirtualPurifiers` for example, `DisplayIncome.AllowAI` can be set to false to disable the display. It overrides the previous option.
   - `DisplayIncome.Offset` is additional pixel offset for the center of the credits display, by default `0,0` at building's center.
@@ -445,13 +499,31 @@ In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 DisplayIncome=false       ; boolean
+DisplayIncome.Delay=15    ; integer
 DisplayIncome.Houses=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 DisplayIncome.AllowAI=yes ; boolean
 
 [SOMEBUILDING]            ; BuildingType
 DisplayIncome=            ; boolean, defaults to [AudioVisual] -> DisplayIncome
+DisplayIncome.Delay=15    ; integer, defaults to [AudioVisual] -> DisplayIncome.Delay
 DisplayIncome.Houses=     ; Affected House Enumeration, defaults to [AudioVisual] -> DisplayIncome.Houses
 DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
+```
+
+### Show power plant enhancer range
+
+- It is possible to show range of power plant enhancer when placing a building.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+ShowPowerPlantEnhancerRange=true   ; boolean
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ShowPowerPlantEnhancerRange=false  ; boolean
 ```
 
 ## Hotkey Commands
@@ -508,6 +580,11 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
 - Switches on/off [Task subtitles' label in the middle of the screen](#task-subtitles-display-in-the-middle-of-the-screen).
 - For localization add `TXT_TOGGLE_MESSAGE` and `TXT_TOGGLE_MESSAGE_DESC` into your `.csf` file.
 
+### `[ ]` Deselect Object(s)
+
+- Deselect 1 or 5 object(s) from current selected objects.
+- For localization add `TXT_DESELECT`, `TXT_DESELECT_DESC`, `TXT_DESELECT5` and `TXT_DESELECT5_DESC` into your `.csf` file.
+
 ## Loading screen
 
 - PCX files can now be used as loadscreen images.
@@ -540,6 +617,18 @@ SaveGameOnScenarioStart=true ; boolean
 ## Sidebar / Battle UI
 
 
+### Allow replacing vanilla repairing with togglable auto repairing
+
+- Now you can replace the vanilla repair method with a togglable auto-repair.
+  - Pressing repair button or hotkey will no longer change your mouse, but will toggle your auto-repair state on/off.
+  - When auto-repair state is toggled off, buildings will stop repairing.
+
+  In `rulesmd.ini`:
+```ini
+[General]
+ExtendedPlayerRepair=false    ; boolean
+```
+
 ### Building Production Queue
 
 ![Building Production Queue](_static/images/buildingQueue.png)
@@ -569,7 +658,7 @@ In `rulesmd.ini`:
 [General]
 SortCameoByName=false  ; boolean
 
-[SOMENAME]             ; TechnoType / SuperWeaponType
+[SOMETECHNO/SOMESW]    ; TechnoType / SuperWeaponType
 CameoPriority=0        ; integer
 ```
 
@@ -603,16 +692,18 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
     - Can be set to true on buildings with `ProduceCashAmount` to count them as active 'harvesters' while generating credits.
   - The counter is displayed with the format of `Label(Active Harvesters)/(Total Harvesters)`. The label is `⛏ U+26CF` by default.
   - You can adjust counter position by `Sidebar.HarvesterCounter.Offset`, negative means left/up, positive means right/down.
+  - You can use `Sidebar.HarvesterCounter.HideMaxValue` to allow the counter to display only the number of active harvesters. If this value is `false`, you can use `Sidebar.HarvesterCounter.OnlyMaxValue` to allow the counter to display only the number of total harvesters.
+    - This does not disable the color change of the counter text; to adapt accordingly, you need to configure the counter color yourself for the side that uses this feature.
   - By setting `HarvesterCounter.ConditionYellow` and `HarvesterCounter.ConditionRed`, the game will warn player by changing the color of counter whenever the active percentage of harvesters less than or equals to them, like HP changing with `ConditionYellow` and `ConditionRed`.
   - The feature can be toggled on/off by user if enabled in mod via `ShowHarvesterCounter` setting in `RA2MD.INI`.
 
 In `uimd.ini`:
 ```ini
 [Sidebar]
-HarvesterCounter.Show=false           ; boolean
-HarvesterCounter.Label=<none>         ; CSF entry key
-HarvesterCounter.ConditionYellow=99%  ; floating point value, percents
-HarvesterCounter.ConditionRed=50%     ; floating point value, percents
+HarvesterCounter.Show=false                     ; boolean
+HarvesterCounter.Label=<none>                   ; CSF entry key
+HarvesterCounter.ConditionYellow=99%            ; floating point value, percents
+HarvesterCounter.ConditionRed=50%               ; floating point value, percents
 ```
 
 In `rulesmd.ini`:
@@ -622,8 +713,11 @@ Harvester.Counted=                              ; boolean
 
 [SOMESIDE]                                      ; Side
 Sidebar.HarvesterCounter.Offset=0,0             ; X,Y, pixels relative to default
-Sidebar.HarvesterCounter.ColorYellow=255,255,0  ; integer - R,G,B
-Sidebar.HarvesterCounter.ColorRed=255,0,0       ; integer - R,G,B
+Sidebar.HarvesterCounter.HideMaxValue=false     ; boolean
+Sidebar.HarvesterCounter.OnlyMaxValue=false     ; boolean
+Sidebar.HarvesterCounter.ColorGreen=            ; integer - Red,Green,Blue, default to [Side] -> ToolTipColor=
+Sidebar.HarvesterCounter.ColorYellow=255,255,0  ; integer - Red,Green,Blue
+Sidebar.HarvesterCounter.ColorRed=255,0,0       ; integer - Red,Green,Blue
 ```
 
 In `RA2MD.INI`:
@@ -664,10 +758,10 @@ In `rulesmd.ini`:
 ```ini
 [SOMESIDE]                                ; Side
 Sidebar.PowerDelta.Offset=0,0             ; X,Y, pixels relative to default
-Sidebar.PowerDelta.ColorGreen=0,255,0     ; integer - R,G,B
-Sidebar.PowerDelta.ColorYellow=255,255,0  ; integer - R,G,B
-Sidebar.PowerDelta.ColorRed=255,0,0       ; integer - R,G,B
-Sidebar.PowerDelta.ColorGrey=128,128,128  ; integer - R,G,B
+Sidebar.PowerDelta.ColorGreen=0,255,0     ; integer - Red,Green,Blue
+Sidebar.PowerDelta.ColorYellow=255,255,0  ; integer - Red,Green,Blue
+Sidebar.PowerDelta.ColorRed=255,0,0       ; integer - Red,Green,Blue
+Sidebar.PowerDelta.ColorGrey=128,128,128  ; integer - Red,Green,Blue
 Sidebar.PowerDelta.Align=left             ; Alignment enumeration - left | center/centre | right
 ```
 
@@ -802,7 +896,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMESIDE]                       ; Side
 Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default
-Sidebar.WeedsCounter.Color=      ; integer - R,G,B
+Sidebar.WeedsCounter.Color=      ; integer - Red,Green,Blue
 ```
 
 In `RA2MD.INI`:
@@ -843,8 +937,8 @@ MaxWidth=0                 ; integer, pixels
 ```
 In `rulesmd.ini`:
 ```ini
-[SOMENAME]            ; TechnoType or SWType
-UIDescription=<none>  ; CSF entry key
+[SOMETECHNO/SOMESW]        ; TechnoType or SWType
+UIDescription=<none>       ; CSF entry key
 ```
 
 - The descriptions are designed to be toggleable by users. For now you can only do that externally via client or manually.
@@ -864,9 +958,9 @@ Same as with harvester counter, you can download the improved font (v4 and highe
 In `rulesmd.ini`:
 ```ini
 [SOMESIDE]                          ; Side
-ToolTip.Background.Color=0,0,0      ; integer - R,G,B, defaults to [AudioVisual] -> ToolTip.Background.Color, which defaults to 0,0,0
+ToolTip.Background.Color=0,0,0      ; integer - Red,Green,Blue, defaults to [AudioVisual] -> ToolTip.Background.Color, which defaults to 0,0,0
 ToolTip.Background.Opacity=100      ; integer, ranged in [0, 100], defaults to [AudioVisual] -> ToolTip.Background.Opacity, which defaults to 100
-ToolTip.Background.BlurSize=0.0     ; float, defaults to [AudioVisual] -> ToolTip.Background.BlurSize, which defaults to 0.0
+ToolTip.Background.BlurSize=0.0     ; floating point value, defaults to [AudioVisual] -> ToolTip.Background.BlurSize, which defaults to 0.0
 ```
 
 ```{note}

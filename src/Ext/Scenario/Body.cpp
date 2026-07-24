@@ -94,7 +94,7 @@ void ScenarioExt::LoadFromINIFile(ScenarioClass* pThis, CCINIClass* pINI)
 
 	for (auto const pHouse : HouseClass::Array)
 	{
-		HouseExt::ExtMap.Find(pHouse)->FreeRadar = ScenarioClass::Instance->FreeRadar;
+		HouseExt::Fetch(pHouse)->FreeRadar = ScenarioClass::Instance->FreeRadar;
 	}
 }
 
@@ -177,6 +177,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->UndergroundTracker)
 		.Process(this->SpecialTracker)
 		.Process(this->FallingDownTracker)
+		.Process(this->EVAIndex)
 		;
 }
 
@@ -188,6 +189,8 @@ void ScenarioExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 
 void ScenarioExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
+	Global()->EVAIndex = VoxClass::EVAIndex;
+
 	Extension<ScenarioClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }

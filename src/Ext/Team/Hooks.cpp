@@ -38,8 +38,9 @@ DEFINE_HOOK(0x65DF67, TeamTypeClass_CreateMembers_LoadOntoTransport, 0x6)
 		pNext && pNext != pTransport && pNext->Team == pTeam;
 		pNext = abstract_cast<FootClass*>(pNext->NextObject))
 	{
-		pPayload->Transporter = pTransport;
 		pGunner = pNext;
+		pNext->IsInPlayfield = true;
+		pNext->Transporter = pTransport;
 
 		if (isTransportOpenTopped)
 			pTransport->EnteredOpenTopped(pNext);
@@ -62,7 +63,7 @@ DEFINE_HOOK(0x6EA6BE, TeamClass_CanAddMember_Consideration, 0x6)
 	GET(TeamClass*, pTeam, EBP);
 	GET(FootClass*, pFoot, ESI);
 	GET(int*, idx, EBX);
-	const auto pFootTypeExt = TechnoExt::ExtMap.Find(pFoot)->TypeExtData;
+	const auto pFootTypeExt = TechnoExt::Fetch(pFoot)->TypeExtData;
 	const auto pFootType = pFootTypeExt->OwnerObject();
 	const auto pTaskForce = pTeam->Type->TaskForce;
 
@@ -87,7 +88,7 @@ DEFINE_HOOK(0x6EA8E7, TeamClass_LiberateMember_Consideration, 0x5)
 	GET(TeamClass*, pTeam, EDI);
 	GET(FootClass*, pMember, EBP);
 	int idx = 0;
-	const auto pMemberTypeExt = TechnoExt::ExtMap.Find(pMember)->TypeExtData;
+	const auto pMemberTypeExt = TechnoExt::Fetch(pMember)->TypeExtData;
 	const auto pMemberType = pMemberTypeExt->OwnerObject();
 	const auto pTaskForce = pTeam->Type->TaskForce;
 
@@ -117,7 +118,7 @@ DEFINE_HOOK(0x6EAD73, TeamClass_RecruitMember_Consideration, 0x7)
 	const auto pTaskForce = pTeam->Type->TaskForce;
 	const auto pSearchType = pTaskForce->Entries[idx].Type;
 
-	return pSearchType == pMemberType || TechnoTypeExt::ExtMap.Find(pMemberType)->TeamMember_ConsideredAs.Contains(pSearchType) ? ContinueCheck : SkipThisMember;
+	return pSearchType == pMemberType || TechnoTypeExt::Fetch(pMemberType)->TeamMember_ConsideredAs.Contains(pSearchType) ? ContinueCheck : SkipThisMember;
 }
 
 DEFINE_HOOK(0x6EF57F, TeamClass_GetTaskForceMissingMemberTypes_Consideration, 0x5)
@@ -131,7 +132,7 @@ DEFINE_HOOK(0x6EF57F, TeamClass_GetTaskForceMissingMemberTypes_Consideration, 0x
 
 	GET(DynamicVectorClass<TechnoTypeClass*>*, vector, ESI);
 	GET(FootClass*, pMember, EDI);
-	const auto pMemberTypeExt = TechnoExt::ExtMap.Find(pMember)->TypeExtData;
+	const auto pMemberTypeExt = TechnoExt::Fetch(pMember)->TypeExtData;
 
 	for (const auto pConsideType : pMemberTypeExt->TeamMember_ConsideredAs)
 	{
@@ -145,4 +146,20 @@ DEFINE_HOOK(0x6EF57F, TeamClass_GetTaskForceMissingMemberTypes_Consideration, 0x
 	}
 
 	return SkipThisMember;
+}
+
+DEFINE_HOOK(0x6EA870, TeamClass_LiberateMember_Start, 0x6)
+{
+	GET_STACK(FootClass*, pMember, 0x4);
+	GET(TeamClass*, pTeam, ECX);
+
+	const auto pTeamTypeExt = TeamTypeExt::Fetch(pTeam->Type);
+	const int value = pTeamTypeExt->SetRecruitableOnLiberate.Get(RulesExt::Global()->SetRecruitableOnLiberate);
+
+	if (value > 0)
+		pMember->RecruitableB = true;
+	else if (value == 0)
+		pMember->RecruitableB = false;
+
+	return 0;
 }

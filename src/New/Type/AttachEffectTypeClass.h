@@ -8,7 +8,7 @@
 #include "LaserTrailTypeClass.h"
 
 // AE discard condition
-enum class DiscardCondition : unsigned char
+enum class DiscardCondition : unsigned short
 {
 	None = 0x0,
 	Entry = 0x1,
@@ -17,7 +17,10 @@ enum class DiscardCondition : unsigned char
 	Drain = 0x8,
 	InRange = 0x10,
 	OutOfRange = 0x20,
-	Firing = 0x40
+	Firing = 0x40,
+	Selling = 0x80,
+	Undeploying = 0x100,
+	Harvesting = 0x200
 };
 
 MAKE_ENUM_FLAGS(DiscardCondition);
@@ -50,6 +53,8 @@ public:
 	Valueable<bool> Powered;
 	Valueable<DiscardCondition> DiscardOn;
 	Nullable<Leptons> DiscardOn_RangeOverride;
+	Nullable<bool> DiscardOn_MoveBasedOnDestination;
+	Nullable<bool> DiscardOn_ConsiderHarvestingAsStationary;
 	Valueable<double> DiscardOn_AbovePercent;
 	Valueable<double> DiscardOn_BelowPercent;
 	Valueable<int> DiscardOn_CumulativeCount;
@@ -75,6 +80,8 @@ public:
 	ValueableVector<WarheadTypeClass*> ExtraWarheads;
 	ValueableVector<int> ExtraWarheads_DamageOverrides;
 	ValueableVector<double> ExtraWarheads_DetonationChances;
+	ValueableVector<float> ExtraWarheads_RollChances;
+	std::vector<ValueableVector<int>> ExtraWarheads_WeightsData;
 	ValueableVector<bool> ExtraWarheads_FullDetonation;
 	ValueableVector<bool> ExtraWarheads_ApplyFirepowerMult;
 	ValueableVector<bool> ExtraWarheads_UseInvokerAsOwner;
@@ -136,6 +143,7 @@ public:
 	ValueableIdx<LaserTrailTypeClass> LaserTrail_Type;
 
 	std::vector<std::string> Groups;
+	bool NeedCalculate;
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, Duration { 0 }
@@ -147,6 +155,8 @@ public:
 		, Powered { false }
 		, DiscardOn { DiscardCondition::None }
 		, DiscardOn_RangeOverride {}
+		, DiscardOn_MoveBasedOnDestination {}
+		, DiscardOn_ConsiderHarvestingAsStationary {}
 		, DiscardOn_AbovePercent { 0.0 }
 		, DiscardOn_BelowPercent { 1.0 }
 		, DiscardOn_CumulativeCount { -1 }
@@ -172,6 +182,8 @@ public:
 		, ExtraWarheads {}
 		, ExtraWarheads_DamageOverrides {}
 		, ExtraWarheads_DetonationChances {}
+		, ExtraWarheads_RollChances {}
+		, ExtraWarheads_WeightsData {}
 		, ExtraWarheads_FullDetonation {}
 		, ExtraWarheads_ApplyFirepowerMult {}
 		, ExtraWarheads_UseInvokerAsOwner {}
@@ -232,6 +244,7 @@ public:
 		, NegativeDamage_Multiplier { 1.0 }
 		, LaserTrail_Type { -1 }
 		, Groups {}
+		, NeedCalculate { false }
 	{};
 
 	bool HasTint() const

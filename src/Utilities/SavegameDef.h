@@ -22,20 +22,6 @@
 
 namespace Savegame
 {
-	template <typename T>
-	concept ImplementsUpperCaseSaveLoad = requires (PhobosStreamWriter & stmWriter, PhobosStreamReader & stmReader, T & value, bool registerForChange)
-	{
-		value.Save(stmWriter);
-		value.Load(stmReader, registerForChange);
-	};
-
-	template <typename T>
-	concept ImplementsLowerCaseSaveLoad = requires (PhobosStreamWriter & stmWriter, PhobosStreamReader & stmReader, T & value, bool registerForChange)
-	{
-		value.save(stmWriter);
-		value.load(stmReader, registerForChange);
-	};
-
 	#pragma warning(push)
 	#pragma warning(disable: 4702) // MSVC isn't smart enough and yells about unreachable code
 
@@ -367,10 +353,12 @@ namespace Savegame
 				return false;
 
 			if (hasValue)
+			{
+				Value.emplace();
 				return Savegame::ReadPhobosStream(Stm, *Value, RegisterForChange);
-			else
-				Value.reset();
+			}
 
+			Value.reset();
 			return true;
 		}
 

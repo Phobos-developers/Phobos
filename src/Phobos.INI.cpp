@@ -40,6 +40,8 @@ int Phobos::UI::SuperWeaponSidebar_LeftOffset = 0;
 int Phobos::UI::SuperWeaponSidebar_CameoHeight = 48;
 int Phobos::UI::SuperWeaponSidebar_Max = 0;
 int Phobos::UI::SuperWeaponSidebar_MaxColumns = INT32_MAX;
+int Phobos::UI::CreditsIndicator_MaxStep = 143;
+bool Phobos::UI::CreditsIndicator_Smooth = true;
 bool Phobos::UI::WeedsCounter_Show = false;
 bool Phobos::UI::AnchoredToolTips = false;
 
@@ -47,6 +49,7 @@ bool Phobos::Config::ToolTipDescriptions = true;
 bool Phobos::Config::ToolTipBlur = false;
 bool Phobos::Config::PrioritySelectionFiltering = true;
 bool Phobos::Config::PriorityDeployFiltering = true;
+bool Phobos::Config::TypeSelectUseIFVMode = true;
 bool Phobos::Config::DevelopmentCommands = true;
 bool Phobos::Config::SuperWeaponSidebarCommands = false;
 bool Phobos::Config::ShowPlanningPath = false;
@@ -64,6 +67,7 @@ bool Phobos::Config::RealTimeTimers_Adaptive = false;
 int Phobos::Config::CampaignDefaultGameSpeed = 2;
 bool Phobos::Config::SkirmishUnlimitedColors = false;
 bool Phobos::Config::ShowDesignatorRange = false;
+bool Phobos::Config::ShowPowerPlantEnhancerRange = false;
 bool Phobos::Config::SaveVariablesOnScenarioEnd = false;
 bool Phobos::Config::SaveGameOnScenarioStart = true;
 bool Phobos::Config::ShowBriefing = true;
@@ -90,6 +94,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::ToolTipBlur = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ToolTipBlur", false);
 	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "PrioritySelectionFiltering", true);
 	Phobos::Config::PriorityDeployFiltering = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "PriorityDeployFiltering", true);
+	Phobos::Config::TypeSelectUseIFVMode = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "TypeSelectUseIFVMode", true);
 	Phobos::Config::ShowPlacementPreview = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowPlacementPreview", true);
 	Phobos::Config::MessageApplyHoverState = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "MessageApplyHoverState", false);
 	Phobos::Config::MessageDisplayInCenter = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "MessageDisplayInCenter", false);
@@ -126,6 +131,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	}
 
 	Phobos::Config::ShowDesignatorRange = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowDesignatorRange", false);
+	Phobos::Config::ShowPowerPlantEnhancerRange = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowPowerPlantEnhancerRange", false);
 
 	CCINIClass ini_uimd {};
 	ini_uimd.LoadFromFile(GameStrings::UIMD_INI);
@@ -227,6 +233,12 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 		Phobos::UI::SuperWeaponSidebar_MaxColumns =
 			ini_uimd.ReadInteger(SIDEBAR_SECTION, "SuperWeaponSidebar.MaxColumns", Phobos::UI::SuperWeaponSidebar_MaxColumns);
+
+		Phobos::UI::CreditsIndicator_MaxStep =
+			ini_uimd.ReadInteger(SIDEBAR_SECTION, "CreditsIndicator.MaxStep", Phobos::UI::CreditsIndicator_MaxStep);
+
+		Phobos::UI::CreditsIndicator_Smooth =
+			ini_uimd.ReadBool(SIDEBAR_SECTION, "CreditsIndicator.Smooth", Phobos::UI::CreditsIndicator_Smooth);
 	}
 
 	// UISettings

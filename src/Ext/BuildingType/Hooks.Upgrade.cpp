@@ -5,19 +5,24 @@
 
 bool BuildingTypeExt::CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner)
 {
-	auto const pUpgradeExt = BuildingTypeExt::ExtMap.TryFind(pUpgradeType);
+	auto const pUpgradeExt = BuildingTypeExt::TryFetch(pUpgradeType);
 	if (pUpgradeExt && EnumFunctions::CanTargetHouse(pUpgradeExt->PowersUp_Owner, pUpgradeOwner, pBuilding->Owner))
 	{
-		auto const idx = pBuilding->Type->ID;
+		auto const pType = pBuilding->Type;
+
+		// June 7, 2026 - Starkku: PowersUpBuilding is now put in PowersUp_Buildings
+		/*
+		auto const idx = pType->ID;
 
 		// PowersUpBuilding
 		if (_stricmp(idx, pUpgradeType->PowersUpBuilding) == 0)
 			return true;
+		*/
 
 		// PowersUp.Buildings
 		for (auto const pPowerUpBuilding : pUpgradeExt->PowersUp_Buildings)
 		{
-			if (_stricmp(idx, pPowerUpBuilding->ID) == 0)
+			if (pPowerUpBuilding == pType)
 				return true;
 		}
 	}
@@ -87,7 +92,7 @@ static int CheckBuildLimit(HouseClass const* const pHouse, BuildingTypeClass con
 
 }
 
-DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x5)
+DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x3)
 {
 	GET(HouseClass const* const, pThis, ECX);
 	GET_STACK(TechnoTypeClass const* const, pItem, 0x4);
@@ -97,7 +102,7 @@ DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x5)
 
 	if (auto const pBuilding = abstract_cast<BuildingTypeClass const* const>(pItem))
 	{
-		if (resultOfAres == CanBuildResult::Buildable && BuildingTypeExt::ExtMap.Find(pBuilding)->PowersUp_Buildings.size() > 0)
+		if (resultOfAres == CanBuildResult::Buildable && BuildingTypeExt::Fetch(pBuilding)->PowersUp_Buildings.size() > 0)
 			R->EAX(CheckBuildLimit(pThis, pBuilding, includeInProduction));
 	}
 
@@ -138,7 +143,7 @@ DEFINE_HOOK(0x464749, BuildingTypeClass_ReadINI_PowerUpAnims, 0x6)
 
 	GET(BuildingTypeClass*, pThis, EBP);
 
-	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis);
+	auto const pTypeExt = BuildingTypeExt::Fetch(pThis);
 	auto const pINI = &CCINIClass::INI_Art;
 
 	int index = 1;
@@ -195,7 +200,7 @@ DEFINE_HOOK(0x440988, BuildingClass_Unlimbo_UpgradeAnims, 0x7)
 	GET(BuildingClass*, pThis, ESI);
 	GET(BuildingClass*, pTarget, EDI);
 
-	auto const pTargetExt = BuildingExt::ExtMap.Find(pTarget);
+	auto const pTargetExt = BuildingExt::Fetch(pTarget);
 	auto const pType = pThis->Type;
 	pTargetExt->PoweredUpToLevel = pTarget->UpgradeLevel + 1;
 	int animIndex = pTarget->UpgradeLevel;
@@ -209,7 +214,7 @@ DEFINE_HOOK(0x440988, BuildingClass_Unlimbo_UpgradeAnims, 0x7)
 	auto const animData = &pTarget->Type->BuildingAnim[animIndex];
 
 	// Only copy image name to BuildingType anim struct if theres no explicit PowersUpAnim for this level.
-	if (!pTargetExt->TypeExtData->HasPowerUpAnim[animIndex])
+	if (!pTargetExt->GetTypeExtData()->HasPowerUpAnim[animIndex])
 		strncpy(animData->Anim, pType->ImageFile, 16u);
 
 	return SkipGameCode;
@@ -221,7 +226,7 @@ DEFINE_HOOK(0x451630, BuildingClass_CreateUpgradeAnims_AnimIndex, 0x7)
 
 	GET(BuildingClass*, pThis, EBP);
 
-	const int animIndex = BuildingExt::ExtMap.Find(pThis)->PoweredUpToLevel - 1;
+	const int animIndex = BuildingExt::Fetch(pThis)->PoweredUpToLevel - 1;
 
 	if (animIndex)
 	{
@@ -239,7 +244,7 @@ static __forceinline bool AllowUpgradeAnim(BuildingClass* pBuilding, BuildingAni
 
 	if (pType->Upgrades != 0 && anim >= BuildingAnimSlot::Upgrade1 && anim <= BuildingAnimSlot::Upgrade3 && !pBuilding->Anims[int(anim)])
 	{
-		const int animIndex = BuildingExt::ExtMap.Find(pBuilding)->PoweredUpToLevel - 1;
+		const int animIndex = BuildingExt::Fetch(pBuilding)->PoweredUpToLevel - 1;
 
 		if (animIndex < 0 || (int)anim != animIndex)
 			return false;

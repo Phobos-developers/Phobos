@@ -36,7 +36,7 @@ bool SWButtonClass::Draw(bool forced)
 	const auto pCurrent = HouseClass::CurrentPlayer;
 	const auto pSuper = pCurrent->Supers[this->SuperIndex];
 	const auto pType = pSuper->Type;
-	const auto pSWExt = SWTypeExt::ExtMap.Find(pType);
+	const auto pSWExt = SWTypeExt::Fetch(pType);
 
 	// support for pcx cameos
 	if (const auto pPCXCameo = pSWExt->SidebarPCX.GetSurface())
@@ -163,7 +163,7 @@ bool SWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier)
 	if (flags & GadgetFlag::LeftPress)
 	{
 		MouseClass::Instance.UpdateCursor(MouseCursorType::Default, false);
-		VocClass::PlayGlobal(RulesClass::Instance->GUIBuildSound, 0x2000, 1.0);
+		VocClass::PlayGlobal(RulesClass::Instance->GUIBuildSound, 0x2000, 1.0f);
 		this->LaunchSuper();
 	}
 
@@ -181,7 +181,7 @@ bool SWButtonClass::LaunchSuper() const
 	const auto pCurrent = HouseClass::CurrentPlayer;
 	const auto pSuper = pCurrent->Supers[this->SuperIndex];
 	const auto pType = pSuper->Type;
-	const auto pSWExt = SWTypeExt::ExtMap.Find(pType);
+	const auto pSWExt = SWTypeExt::Fetch(pType);
 	const bool manual = !pSWExt->SW_ManualFire && pSWExt->SW_AutoFire;
 	const bool unstoppable = pType->UseChargeDrain && pSuper->ChargeDrainState == ChargeDrainState::Draining && pSWExt->SW_Unstoppable;
 

@@ -1,9 +1,5 @@
 #include "Body.h"
 
-constexpr bool IS_CELL_OCCUPIED(CellClass* pCell)
-{
-	return pCell->OccupationFlags & 0x20 || pCell->OccupationFlags & 0x40 || pCell->OccupationFlags & 0x80 || pCell->GetInfantry(false);
-}
 
 // Passable TerrainTypes Hook #1 - Do not set occupy bits.
 DEFINE_HOOK(0x71C110, TerrainClass_SetOccupyBit_PassableTerrain, 0x6)
@@ -12,7 +8,7 @@ DEFINE_HOOK(0x71C110, TerrainClass_SetOccupyBit_PassableTerrain, 0x6)
 
 	GET(TerrainClass*, pThis, ECX);
 
-	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type);
+	auto const pTypeExt = TerrainTypeExt::Fetch(pThis->Type);
 
 	if (pTypeExt->IsPassable)
 		return Skip;
@@ -34,7 +30,7 @@ DEFINE_HOOK(0x7002E9, TechnoClass_WhatAction_PassableTerrain, 0x5)
 
 	if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pTarget))
 	{
-		if (!isForceFire && TerrainTypeExt::ExtMap.Find(pTerrain->Type)->IsPassable)
+		if (!isForceFire && TerrainTypeExt::Fetch(pTerrain->Type)->IsPassable)
 		{
 			R->EBP(Action::Move);
 			return ReturnAction;
@@ -52,7 +48,7 @@ DEFINE_HOOK(0x483DDF, CellClass_CheckPassability_PassableTerrain, 0x6)
 	GET(CellClass*, pThis, EDI);
 	GET(TerrainClass*, pTerrain, ESI);
 
-	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
+	auto const pTypeExt = TerrainTypeExt::Fetch(pTerrain->Type);
 
 	if (pTypeExt->IsPassable)
 	{
@@ -72,7 +68,7 @@ DEFINE_HOOK(0x73FB71, UnitClass_CanEnterCell_PassableTerrain, 0x6)
 
 	if (auto const pTerrain = abstract_cast<TerrainClass*>(pTarget))
 	{
-		auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
+		auto const pTypeExt = TerrainTypeExt::Fetch(pTerrain->Type);
 
 		if (pTypeExt->IsPassable)
 			return SkipTerrainChecks;
@@ -92,7 +88,7 @@ DEFINE_HOOK(0x6D57C1, TacticalClass_DrawLaserFencePlacement_BuildableTerrain, 0x
 	GET(CellClass*, pCell, ESI);
 
 	if (auto const pTerrain = pCell->GetTerrain(false))
-		return TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn ? ContinueChecks : DontDraw;
+		return TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn ? ContinueChecks : DontDraw;
 
 	return ContinueChecks;
 }
@@ -107,7 +103,7 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableTerrain, 0x6)
 	{
 		if (auto const pTerrain = pCell->GetTerrain(false))
 		{
-			if (TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+			if (TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn)
 			{
 				pCell->RemoveContent(pTerrain, false);
 				TerrainTypeExt::Remove(pTerrain);
@@ -130,7 +126,7 @@ DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
 
 	if (auto const pTerrain = pCell->GetTerrain(false))
 	{
-		if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+		if (!TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn)
 			return NoUnlimbo;
 
 		pCell->RemoveContent(pTerrain, false);
@@ -139,3 +135,90 @@ DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
 
 	return Unlimbo;
 }
+
+// Buildable-upon TerrainTypes Hook #5 -> Ignore when flushing building foundations for placement.
+DEFINE_HOOK(0x45EF3A, BuildingTypeClass_FlushForPlacement_BuildableTerrain, 0x7)
+{
+	enum { Disallow = 0x45F00B, Continue = 0x45EF4A };
+
+	GET(ObjectClass* const, pObject, ESI);
+
+	if (auto const pTerrain = abstract_cast<TerrainClass*>(pObject))
+	{
+		if (!TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn)
+			return Disallow;
+	}
+
+	return Continue;
+}
+
+#pragma region FindBuildLocation
+
+namespace FindBuildLocationTemp
+{
+	bool EvaluatingBuildLocation = false;
+}
+
+// Set the global flag when calling this from evaluating building locations for AI.
+static bool __fastcall MapClass_IsAreaFree_Wrapper(MapClass* pThis, void* _, RectangleStruct* pRect, int houseID)
+{
+	FindBuildLocationTemp::EvaluatingBuildLocation = true;
+	const bool result = pThis->IsAreaFree(pRect, houseID);
+	FindBuildLocationTemp::EvaluatingBuildLocation = false;
+	return result;
+}
+
+DEFINE_FUNCTION_JUMP(CALL, 0x5069DB, MapClass_IsAreaFree_Wrapper);
+
+// Ignore buildable terrain when evaluating building locations for AI. Replaces the vanilla function.
+DEFINE_HOOK(0x586780, MapClass_IsAreaFree, 0x7)
+{
+	enum { ReturnFromFunction = 0x586887 };
+
+	GET(MapClass*, pThis, ECX);
+	GET_STACK(RectangleStruct*, pRect, 0x4);
+	GET_STACK(const int, houseID, 0x8);
+
+	const int mask = houseID >= 0 ? 1 << houseID : 0;
+
+	for (int x = pRect->X; x < pRect->X + pRect->Width; x++)
+	{
+		for (int y = pRect->Y; y < pRect->Y + pRect->Height; y++)
+		{
+			CellClass* pCell = pThis->GetCellAt(CellStruct { static_cast<short>(x), static_cast<short>(y) });
+			auto const pTerrain = pCell->GetTerrain(false);
+			bool altPassability = false;
+
+			if (pTerrain)
+			{
+				if (!FindBuildLocationTemp::EvaluatingBuildLocation || !TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn)
+				{
+					R->EAX(false);
+					return ReturnFromFunction;
+				}
+
+				altPassability = true;
+			}
+
+			// If we're evaluating a cell with buildable TerrainType on it, passability check needs some alterations.
+			const bool invalidPassability = altPassability
+				? (pCell->Passability != PassabilityType::Passable && pCell->Passability != PassabilityType::HasFreeSpots)
+				: (pCell->Passability != PassabilityType::Passable);
+
+			if ((pCell->BaseSpacerOfHouses & mask) != 0
+				|| pCell->OverlayTypeIndex != -1
+				|| invalidPassability
+				|| pCell->SlopeIndex
+				|| pCell->GetBuilding())
+			{
+				R->EAX(false);
+				return ReturnFromFunction;
+			}
+		}
+	}
+
+	R->EAX(pThis->InLocalRadar(pRect, true));
+	return ReturnFromFunction;
+}
+
+#pragma endregion

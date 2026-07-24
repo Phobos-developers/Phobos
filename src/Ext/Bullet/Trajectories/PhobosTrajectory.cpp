@@ -439,7 +439,7 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 
 	GET(BulletClass*, pThis, EBP);
 
-	auto const pExt = BulletExt::ExtMap.Find(pThis);
+	auto const pExt = BulletExt::Fetch(pThis);
 	bool detonate = false;
 
 	if (auto const pTraj = pExt->Trajectory.get())
@@ -451,11 +451,31 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 	return 0;
 }
 
+/* ROT > 0. We temporarily do not need to make changes to the Bridge interaction for this scenario, but we will leave it here for now, as it may be used later.
+DEFINE_HOOK(0x46703E, BulletClass_AI_SkipBridgeCheck1, 0x6)
+{
+	GET(BulletClass*, pThis, EBP);
+	auto const pExt = BulletExt::TryFetch(pThis);
+	if (pExt && pExt->Trajectory)
+		return 0x467B7A;
+	return 0;
+}
+*/
+
+DEFINE_HOOK(0x4674D4, BulletClass_AI_SkipBridgeCheck2, 0x6)
+{
+	GET(BulletClass*, pThis, EBP);
+	auto const pExt = BulletExt::TryFetch(pThis);
+	if (pExt && pExt->Trajectory && pExt->Trajectory->ShouldSkipBridgeCheck())
+		return 0x467519;
+	return 0;
+}
+
 DEFINE_HOOK(0x467E53, BulletClass_AI_PreDetonation_Trajectories, 0x6)
 {
 	GET(BulletClass*, pThis, EBP);
 
-	auto const pExt = BulletExt::ExtMap.Find(pThis);
+	auto const pExt = BulletExt::Fetch(pThis);
 
 	if (auto const pTraj = pExt->Trajectory.get())
 		pTraj->OnAIPreDetonate(pThis);
@@ -469,7 +489,7 @@ DEFINE_HOOK(0x46745C, BulletClass_AI_Position_Trajectories, 0x7)
 	LEA_STACK(BulletVelocity*, pSpeed, STACK_OFFSET(0x1AC, -0x11C));
 	LEA_STACK(BulletVelocity*, pPosition, STACK_OFFSET(0x1AC, -0x144));
 
-	auto const pExt = BulletExt::ExtMap.Find(pThis);
+	auto const pExt = BulletExt::Fetch(pThis);
 
 	if (auto const pTraj = pExt->Trajectory.get())
 		pTraj->OnAIVelocity(pThis, pSpeed, pPosition);
@@ -503,7 +523,7 @@ DEFINE_HOOK(0x4677D3, BulletClass_AI_TargetCoordCheck_Trajectories, 0x5)
 
 	GET(BulletClass*, pThis, EBP);
 
-	auto const pExt = BulletExt::ExtMap.Find(pThis);
+	auto const pExt = BulletExt::Fetch(pThis);
 
 	if (auto const pTraj = pExt->Trajectory.get())
 	{
@@ -533,7 +553,7 @@ DEFINE_HOOK(0x467927, BulletClass_AI_TechnoCheck_Trajectories, 0x5)
 	GET(BulletClass*, pThis, EBP);
 	GET(TechnoClass*, pTechno, ESI);
 
-	auto const pExt = BulletExt::ExtMap.Find(pThis);
+	auto const pExt = BulletExt::Fetch(pThis);
 
 	if (auto const pTraj = pExt->Trajectory.get())
 	{
@@ -559,7 +579,7 @@ DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_Trajectories, 0x5)
 	GET_STACK(CoordStruct*, pCoord, STACK_OFFSET(0x54, 0x4));
 	GET_STACK(BulletVelocity*, pVelocity, STACK_OFFSET(0x54, 0x8));
 
-	auto const pExt = BulletExt::ExtMap.Find(pThis);
+	auto const pExt = BulletExt::Fetch(pThis);
 	auto const pTypeExt = pExt->TypeExtData;
 
 	if (pTypeExt->TrajectoryType)
