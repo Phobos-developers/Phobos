@@ -161,7 +161,7 @@ void WarheadTypeExt::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt
 		if (!this->Crit_ApplyChancePerTarget)
 			this->Crit_RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
 
-		if (!this->ReturnWarhead_ApplyChancePerTarget)
+		if (!this->ReturnWarhead_ApplyChancePerTarget.Get(RulesExt::Global()->ReturnWarhead_ApplyChancePerTarget))
 			this->ReturnWarhead_RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
 
 		if (this->Crit_ActiveChanceAnims.size() > 0 && this->Crit_CurrentChance > 0.0)
@@ -238,7 +238,7 @@ void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget,
 		this->ApplyAttachEffects(pTarget, pHouse, pOwner);
 
 	// Put Crit at last since it might kill the target
-	if (this->Crit_CurrentChance > 0.0 && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
+	if (this->Crit_CurrentChance > 0.0 && (!this->Crit_SuppressWhenIntercepted.Get(RulesExt::Global()->Crit_SuppressWhenIntercepted) || !bulletWasIntercepted))
 		this->ApplyCrit(pHouse, pTarget, pOwner, pBulletExt);
 
 #ifdef LOCO_TEST_WARHEADS
@@ -517,7 +517,7 @@ void WarheadTypeExt::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoC
 
 	this->Crit_Active = true;
 
-	if (this->Crit_AnimOnAffectedTargets && this->Crit_AnimList.size())
+	if (this->Crit_AnimOnAffectedTargets.Get(RulesExt::Global()->Crit_AnimOnAffectedTargets) && this->Crit_AnimList.size())
 	{
 		if (!this->Crit_AnimList_CreateAll.Get(false))
 		{
@@ -562,7 +562,8 @@ void WarheadTypeExt::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoC
 
 void WarheadTypeExt::ApplyReturnWarhead(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
 {
-	const double dice = this->ReturnWarhead_ApplyChancePerTarget || !this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate) ? ScenarioClass::Instance->Random.RandomDouble() : this->ReturnWarhead_RandomBuffer;
+	const double dice = this->ReturnWarhead_ApplyChancePerTarget.Get(RulesExt::Global()->ReturnWarhead_ApplyChancePerTarget)
+		|| !this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate) ? ScenarioClass::Instance->Random.RandomDouble() : this->ReturnWarhead_RandomBuffer;
 
 	if (this->ReturnWarhead_Chance < dice)
 		return;

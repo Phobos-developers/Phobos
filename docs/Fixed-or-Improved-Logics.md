@@ -117,7 +117,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false`, default to `[CombatDamage] -> Arcing.AllowElevationInaccuracy`.
 - Wall overlays are now drawn with the custom palette defined in `Palette` in `artmd.ini` if possible.
 - Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport. Can also be defined at `[General] -> ReloadInTransport` for a global default value.
-- It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead.
+- It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead, default to `[General] -> ApplyModifiersOnNegativeDamage`.
 - Attached animations on flying units now have their layer updated immediately after the parent unit, if on same layer they always draw above the parent.
 - Fixed an issue where the powered anims of `Powered` / `PoweredSpecial` buildings cease to update when being captured by enemies.
 - Fixed a glitch related to incorrect target setting for missiles.
@@ -2763,8 +2763,11 @@ Temporal.ApplyMultiplier=       ; boolean, default to [CombatDamage] -> Temporal
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]            ; WarheadType
+[General]
 AllowDamageOnSelf=false  ; boolean
+
+[SOMEWARHEAD]            ; WarheadType
+AllowDamageOnSelf=       ; boolean, default to [General] -> AllowDamageOnSelf
 ```
 
 ### Berzerk on allies
@@ -2808,9 +2811,12 @@ CLIsBlack=false                            ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[General]
+Debris.Conventional=false  ; boolean
+
 [SOMEWARHEAD]              ; WarheadType
 DebrisAnims=               ; List of AnimationTypes
-Debris.Conventional=false  ; boolean
+Debris.Conventional=       ; boolean, default to [General] -> Debris.Conventional
 ```
 
 ### Custom debris voxel animations limitation
@@ -2926,12 +2932,15 @@ JumpjetDeviation=                       ; Integer, default to [TechnoType] -> Ju
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+Parasite.DisableParticleSystem=false    ; boolean
+
 [AudioVisual]
 Parasite.GrappleAnim=SQDG               ; AnimationType
 
 [SOMEWARHEAD]                           ; WarheadType
 Parasite.ParticleSystem=                ; ParticleSystemType, default to [CombatDamage] -> DefaultSparkSystem
-Parasite.DisableParticleSystem=false    ; boolean
+Parasite.DisableParticleSystem=         ; boolean, default to [CombatDamage] -> Parasite.DisableParticleSystem
 Parasite.CullingTarget=infantry         ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
 Parasite.GrappleAnim=                   ; AnimationType, default to [AudioVisual] -> Parasite.GrappleAnim
 ```
@@ -2988,8 +2997,11 @@ Due to technical constraints, this does not suppress warnings from Ares' EMP eff
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]       ; WarheadType
+[General]
 ShakeIsLocal=false  ; boolean
+
+[SOMEWARHEAD]       ; WarheadType
+ShakeIsLocal=       ; boolean, default to [General] -> ShakeIsLocal
 ```
 
 ## Weapons

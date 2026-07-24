@@ -51,8 +51,8 @@ public:
 	ValueableVector<TechnoTypeClass*> RemoveParasite_Allow;
 	ValueableVector<TechnoTypeClass*> RemoveParasite_Disallow;
 	Nullable<bool> DecloakDamagedTargets;
-	Valueable<bool> ShakeIsLocal;
-	Valueable<bool> ApplyModifiersOnNegativeDamage;
+	Nullable<bool> ShakeIsLocal;
+	Nullable<bool> ApplyModifiersOnNegativeDamage;
 	Valueable<bool> PenetratesIronCurtain;
 	Nullable<bool> PenetratesForceShield;
 	Valueable<double> Rocker_AmplitudeMultiplier;
@@ -72,15 +72,15 @@ public:
 	Nullable<bool> Crit_AnimList_PickRandom;
 	Nullable<bool> Crit_AnimList_CreateAll;
 	ValueableVector<AnimTypeClass*> Crit_ActiveChanceAnims;
-	Valueable<bool> Crit_AnimOnAffectedTargets;
+	Nullable<bool> Crit_AnimOnAffectedTargets;
 	Valueable<double> Crit_AffectsBelowPercent;
 	Valueable<double> Crit_AffectsAbovePercent;
-	Valueable<bool> Crit_SuppressWhenIntercepted;
+	Nullable<bool> Crit_SuppressWhenIntercepted;
 
 	Valueable<WarheadTypeClass*> ReturnWarhead;
 	Valueable<int> ReturnWarhead_Damage;
 	Valueable<double> ReturnWarhead_Chance;
-	Valueable<bool> ReturnWarhead_ApplyChancePerTarget;
+	Nullable<bool> ReturnWarhead_ApplyChancePerTarget;
 	Valueable<bool> ReturnWarhead_FullDetonation;
 	Valueable<AffectedTarget> ReturnWarhead_AffectsTarget;
 	Valueable<AffectedHouse> ReturnWarhead_AffectsHouse;
@@ -143,9 +143,9 @@ public:
 	Valueable<AffectedHouse> LaunchSW_DisplayMoney_Houses;
 	Valueable<Point2D> LaunchSW_DisplayMoney_Offset;
 
-	Valueable<bool> AllowDamageOnSelf;
+	Nullable<bool> AllowDamageOnSelf;
 	NullableVector<AnimTypeClass*> DebrisAnims;
-	Valueable<bool> Debris_Conventional;
+	Nullable<bool> Debris_Conventional;
 	Nullable<bool> DebrisTypes_Limit;
 	ValueableVector<int> DebrisMinimums;
 
@@ -159,12 +159,12 @@ public:
 
 	std::vector<TypeConvertGroup> Convert_Pairs;
 	AEAttachInfoTypeClass AttachEffects;
-
+#ifdef LOCO_TEST_WARHEADS // Enable warheads parsing
 	Valueable<bool> InflictLocomotor;
 	Valueable<bool> RemoveInflictedLocomotor;
-
+#endif
 	Nullable<ParticleSystemTypeClass*> Parasite_ParticleSystem;
-	Valueable<bool> Parasite_DisableParticleSystem;
+	Nullable<bool> Parasite_DisableParticleSystem;
 	Valueable<AffectedTarget> Parasite_CullingTarget;
 	NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
 
@@ -316,8 +316,8 @@ public:
 		, RemoveParasite_Allow {}
 		, RemoveParasite_Disallow {}
 		, DecloakDamagedTargets {}
-		, ShakeIsLocal { false }
-		, ApplyModifiersOnNegativeDamage { false }
+		, ShakeIsLocal {}
+		, ApplyModifiersOnNegativeDamage {}
 		, PenetratesIronCurtain { false }
 		, PenetratesForceShield {}
 		, Rocker_AmplitudeMultiplier { 1.0 }
@@ -337,15 +337,15 @@ public:
 		, Crit_AnimList_PickRandom {}
 		, Crit_AnimList_CreateAll {}
 		, Crit_ActiveChanceAnims {}
-		, Crit_AnimOnAffectedTargets { false }
+		, Crit_AnimOnAffectedTargets {}
 		, Crit_AffectsBelowPercent { 1.0 }
 		, Crit_AffectsAbovePercent { 0.0 }
-		, Crit_SuppressWhenIntercepted { false }
+		, Crit_SuppressWhenIntercepted {}
 
 		, ReturnWarhead {}
 		, ReturnWarhead_Damage { 0 }
 		, ReturnWarhead_Chance { 1.0 }
-		, ReturnWarhead_ApplyChancePerTarget { false }
+		, ReturnWarhead_ApplyChancePerTarget {}
 		, ReturnWarhead_FullDetonation { true }
 		, ReturnWarhead_AffectsTarget { AffectedTarget::All }
 		, ReturnWarhead_AffectsHouse { AffectedHouse::All }
@@ -408,9 +408,9 @@ public:
 		, LaunchSW_DisplayMoney_Houses { AffectedHouse::All }
 		, LaunchSW_DisplayMoney_Offset { { 0, 0 } }
 
-		, AllowDamageOnSelf { false }
+		, AllowDamageOnSelf {}
 		, DebrisAnims {}
-		, Debris_Conventional { false }
+		, Debris_Conventional {}
 		, DebrisTypes_Limit {}
 		, DebrisMinimums {}
 
@@ -424,12 +424,12 @@ public:
 
 		, Convert_Pairs {}
 		, AttachEffects {}
-
+#ifdef LOCO_TEST_WARHEADS // Enable warheads parsing
 		, InflictLocomotor { false }
 		, RemoveInflictedLocomotor { false }
-
+#endif
 		, Parasite_ParticleSystem {}
-		, Parasite_DisableParticleSystem { false }
+		, Parasite_DisableParticleSystem {}
 		, Parasite_CullingTarget { AffectedTarget::Infantry }
 		, Parasite_GrappleAnim {}
 

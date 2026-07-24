@@ -216,7 +216,8 @@ DEFINE_HOOK(0x48A5B3, SelectDamageAnimation_CritAnim, 0x6)
 
 	auto const pWHExt = WarheadTypeExt::Fetch(pThis);
 
-	if (pWHExt->Crit_Active && pWHExt->Crit_AnimList.size() && !pWHExt->Crit_AnimOnAffectedTargets)
+	if (pWHExt->Crit_Active && pWHExt->Crit_AnimList.size()
+		&& !pWHExt->Crit_AnimOnAffectedTargets.Get(RulesExt::Global()->Crit_AnimOnAffectedTargets))
 	{
 		const int idx = pThis->EMEffect || pWHExt->Crit_AnimList_PickRandom.Get(pWHExt->AnimList_PickRandom)
 			? ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->Crit_AnimList.size() - 1)
@@ -237,8 +238,12 @@ DEFINE_HOOK(0x4896EC, Explosion_Damage_DamageSelf, 0x6)
 
 	if (auto const pWHExt = WarheadTypeExt::TryFetch(pWarhead))
 	{
-		if (pWHExt->AllowDamageOnSelf)
+		if (pWHExt->AllowDamageOnSelf.Get(RulesExt::Global()->AllowDamageOnSelf))
 			return SkipCheck;
+	}
+	else if (RulesExt::Global()->AllowDamageOnSelf)
+	{
+		return SkipCheck;
 	}
 
 	return 0;
@@ -252,8 +257,12 @@ DEFINE_HOOK(0x44224F, BuildingClass_ReceiveDamage_DamageSelf, 0x5)
 
 	if (auto const pWHExt = WarheadTypeExt::TryFetch(receiveDamageArgs.WH))
 	{
-		if (pWHExt->AllowDamageOnSelf)
+		if (pWHExt->AllowDamageOnSelf.Get(RulesExt::Global()->AllowDamageOnSelf))
 			return SkipCheck;
+	}
+	else if (RulesExt::Global()->AllowDamageOnSelf)
+	{
+		return SkipCheck;
 	}
 
 	return 0;
@@ -331,7 +340,7 @@ DEFINE_HOOK(0x4891AF, GetTotalDamage_NegativeDamageModifiers1, 0x6)
 
 	auto const pWHExt = WarheadTypeExt::Fetch(pWarhead);
 
-	if (damage < 0 && pWHExt->ApplyModifiersOnNegativeDamage)
+	if (damage < 0 && pWHExt->ApplyModifiersOnNegativeDamage.Get(RulesExt::Global()->ApplyModifiersOnNegativeDamage))
 	{
 		NegativeDamageTemp::ApplyNegativeDamageModifiers = true;
 		return ApplyModifiers;

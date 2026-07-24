@@ -173,7 +173,7 @@ DEFINE_HOOK(0x469D1A, BulletClass_Logics_Debris, 0x6)
 	const auto pWH = pThis->WH;
 	const auto pWHExt = WarheadTypeExt::Fetch(pWH);
 
-	if (pWHExt->Debris_Conventional && pThis->GetCell()->LandType == LandType::Water)
+	if (pWHExt->Debris_Conventional.Get(RulesExt::Global()->Debris_Conventional) && pThis->GetCell()->LandType == LandType::Water)
 		return SkipGameCode;
 
 	// Fix the debris count to be in range of Min, Max instead of Min, Max-1.
@@ -313,7 +313,8 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 			{
 				bool createAll = pWHExt->AnimList_CreateAll;
 
-				if (pWHExt->Crit_Active && pWHExt->Crit_AnimList.size() > 0 && !pWHExt->Crit_AnimOnAffectedTargets)
+				if (pWHExt->Crit_Active && pWHExt->Crit_AnimList.size() > 0
+					&& !pWHExt->Crit_AnimOnAffectedTargets.Get(RulesExt::Global()->Crit_AnimOnAffectedTargets))
 				{
 					createAll = pWHExt->Crit_AnimList_CreateAll.Get(createAll);
 

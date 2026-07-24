@@ -401,6 +401,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->CreateAnimsOnZeroDamage.Read(exINI, GameStrings::General, "CreateAnimsOnZeroDamage");
 	this->Conventional_IgnoreUnits.Read(exINI, GameStrings::General, "Conventional.IgnoreUnits");
 	this->DecloakDamagedTargets.Read(exINI, GameStrings::General, "DecloakDamagedTargets");
+	this->ShakeIsLocal.Read(exINI, GameStrings::General, "ShakeIsLocal");
+	this->ApplyModifiersOnNegativeDamage.Read(exINI, GameStrings::General, "ApplyModifiersOnNegativeDamage");
+	this->AllowDamageOnSelf.Read(exINI, GameStrings::General, "AllowDamageOnSelf");
+	this->Debris_Conventional.Read(exINI, GameStrings::General, "Debris.Conventional");
+	this->Parasite_DisableParticleSystem.Read(exINI, GameStrings::CombatDamage, "Parasite.DisableParticleSystem");
 
 	this->ProjectileInterceptable.Read(exINI, GameStrings::CombatDamage, "ProjectileInterceptable");
 	this->Interceptor_GuardRange_IsCylindrical.Read(exINI, GameStrings::CombatDamage, "Interceptor.GuardRange.IsCylindrical");
@@ -475,6 +480,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->Crit_ApplyChancePerTarget.Read(exINI, GameStrings::CombatDamage, "Crit.ApplyChancePerTarget");
 	this->Crit_ExtraDamage_ApplyFirepowerMult.Read(exINI, GameStrings::CombatDamage, "Crit.ExtraDamage.ApplyFirepowerMult");
+	this->Crit_AnimOnAffectedTargets.Read(exINI, GameStrings::CombatDamage, "Crit.AnimOnAffectedTargets");
+	this->Crit_SuppressWhenIntercepted.Read(exINI, GameStrings::CombatDamage, "Crit.SuppressWhenIntercepted");
+	this->ReturnWarhead_ApplyChancePerTarget.Read(exINI, GameStrings::CombatDamage, "ReturnWarhead.ApplyChancePerTarget");
 
 	this->BuildingGuardRetryDelay.Read(exINI, GameStrings::General, "BuildingGuardRetryDelay");
 
@@ -845,6 +853,11 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CreateAnimsOnZeroDamage)
 		.Process(this->Conventional_IgnoreUnits)
 		.Process(this->DecloakDamagedTargets)
+		.Process(this->ShakeIsLocal)
+		.Process(this->ApplyModifiersOnNegativeDamage)
+		.Process(this->AllowDamageOnSelf)
+		.Process(this->Debris_Conventional)
+		.Process(this->Parasite_DisableParticleSystem)
 		.Process(this->ProjectileInterceptable)
 		.Process(this->Interceptor_GuardRange_IsCylindrical)
 		.Process(this->Interceptor_ApplyFirepowerMult)
@@ -901,6 +914,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AnimDamage_ApplyFirepowerMult)
 		.Process(this->Crit_ApplyChancePerTarget)
 		.Process(this->Crit_ExtraDamage_ApplyFirepowerMult)
+		.Process(this->Crit_AnimOnAffectedTargets)
+		.Process(this->Crit_SuppressWhenIntercepted)
+		.Process(this->ReturnWarhead_ApplyChancePerTarget)
 		.Process(this->BuildingGuardRetryDelay)
 		.Process(this->Vertical_AircraftFix)
 		.Process(this->Temporal_ApplyVersus)

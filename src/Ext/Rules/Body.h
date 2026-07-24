@@ -343,6 +343,11 @@ public:
 		Valueable<bool> CreateAnimsOnZeroDamage;
 		Valueable<bool> Conventional_IgnoreUnits;
 		Valueable<bool> DecloakDamagedTargets;
+		Valueable<bool> ShakeIsLocal;
+		Valueable<bool> ApplyModifiersOnNegativeDamage;
+		Valueable<bool> AllowDamageOnSelf;
+		Valueable<bool> Debris_Conventional;
+		Valueable<bool> Parasite_DisableParticleSystem;
 
 		Valueable<bool> ProjectileInterceptable;
 		Valueable<bool> Interceptor_GuardRange_IsCylindrical;
@@ -419,6 +424,9 @@ public:
 
 		Valueable<bool> Crit_ApplyChancePerTarget;
 		Valueable<bool> Crit_ExtraDamage_ApplyFirepowerMult;
+		Valueable<bool> Crit_AnimOnAffectedTargets;
+		Valueable<bool> Crit_SuppressWhenIntercepted;
+		Valueable<bool> ReturnWarhead_ApplyChancePerTarget;
 
 		Nullable<PartialVector2D<int>> BuildingGuardRetryDelay;
 
@@ -737,6 +745,11 @@ public:
 			, CreateAnimsOnZeroDamage { false }
 			, Conventional_IgnoreUnits { false }
 			, DecloakDamagedTargets { true }
+			, ShakeIsLocal { false }
+			, ApplyModifiersOnNegativeDamage { false }
+			, AllowDamageOnSelf { false }
+			, Debris_Conventional { false }
+			, Parasite_DisableParticleSystem { false }
 
 			, ProjectileInterceptable { false }
 			, Interceptor_GuardRange_IsCylindrical { false }
@@ -808,6 +821,9 @@ public:
 			, AnimDamage_ApplyFirepowerMult { false }
 			, Crit_ApplyChancePerTarget { false }
 			, Crit_ExtraDamage_ApplyFirepowerMult { false }
+			, Crit_AnimOnAffectedTargets { false }
+			, Crit_SuppressWhenIntercepted { false }
+			, ReturnWarhead_ApplyChancePerTarget { false }
 			, BuildingGuardRetryDelay {}
 			, Vertical_AircraftFix { true }
 			, Temporal_ApplyVersus { false }

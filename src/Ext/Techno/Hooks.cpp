@@ -843,7 +843,7 @@ DEFINE_HOOK(0x62A0D3, ParasiteClass_AI_ParticleSystem, 0x5)
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x4C, -0x2C));
 	const auto pWHExt = WarheadTypeExt::Fetch(pWarhead);
 
-	if (pWHExt->Parasite_DisableParticleSystem)
+	if (pWHExt->Parasite_DisableParticleSystem.Get(RulesExt::Global()->Parasite_DisableParticleSystem))
 		return SkipGameCode;
 
 	if (const auto pParticleSysType = pWHExt->Parasite_ParticleSystem.Get(RulesClass::Instance->DefaultSparkSystem))

@@ -2980,11 +2980,14 @@ RemoveDisguise=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+ReturnWarhead.ApplyChancePerTarget=false    ; boolean
+
 [SOMEWARHEAD]                               ; WarheadType
 ReturnWarhead=                              ; WarheadType
 ReturnWarhead.Damage=0                      ; integer
 ReturnWarhead.Chance=0.0                    ; floating point value, percents or absolute (0.0-1.0)
-ReturnWarhead.ApplyChancePerTarget=false    ; boolean
+ReturnWarhead.ApplyChancePerTarget=         ; boolean, default to [CombatDamage] -> ReturnWarhead.ApplyChancePerTarget
 ReturnWarhead.FullDetonation=true           ; boolean
 ReturnWarhead.AffectsTarget=all             ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
 ReturnWarhead.AffectsHouse=all              ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
