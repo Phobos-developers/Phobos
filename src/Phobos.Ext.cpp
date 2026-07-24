@@ -10,6 +10,7 @@
 #include <Ext/EBolt/Body.h>
 #include <Ext/OverlayType/Body.h>
 #include <Ext/ParticleSystemType/Body.h>
+#include <Ext/ParticleType/Body.h>
 #include <Ext/RadSite/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/Script/Body.h>
@@ -279,6 +280,7 @@ using PhobosTypeRegistry = TypeRegistry <
 	VoxelAnimTypeExt,
 	WarheadTypeExt,
 	WeaponTypeExt,
+	ParticleTypeExt,
 	// New classes
 	ShieldTypeClass,
 	LaserTrailTypeClass,
