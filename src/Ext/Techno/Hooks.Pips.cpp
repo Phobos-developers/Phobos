@@ -184,7 +184,7 @@ DEFINE_HOOK(0x709B2E, TechnoClass_DrawPips_Sizes, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x709B8B, TechnoClass_DrawPips_Spawns, 0x5)
+DEFINE_HOOK(0x709B8B, TechnoClass_DrawPips_Spawns, 0x0)
 {
 	enum { SkipGameDrawing = 0x709C27 };
 

@@ -705,6 +705,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize the distance for `NoQueueUpToEnter` transport units to board passengers
   - Fix the bug that `MissileSpawn=true` causes the spawnee launcher to crash immediately when attacking
   - Customize the initial facing of buildings
+  - Global default value for `LeptonMindControlOffset` and `MindControlRingOffset`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

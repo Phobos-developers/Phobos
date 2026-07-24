@@ -718,7 +718,7 @@ DEFINE_HOOK(0x44F62B, BuildingClass_CanPlayerMove_NoManualMove, 0x6)
 
 #pragma endregion
 
-DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
+DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x0)
 {
 	enum { SkipGameCode = 0x70EFF2 };
 

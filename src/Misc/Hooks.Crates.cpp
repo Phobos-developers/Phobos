@@ -60,7 +60,7 @@ DEFINE_HOOK(0x481BB8, CellClass_GoodieCheck_FreeMCV, 0x6)
 	return SkipForcedMCV;
 }
 
-DEFINE_HOOK(0x481C27, CellClass_GoodieCheck_UnitCrateVehicleCap, 0x5)
+DEFINE_HOOK(0x481C27, CellClass_GoodieCheck_UnitCrateVehicleCap, 0x0)
 {
 	enum { Capped = 0x481C44, NotCapped = 0x481C4A };
 
