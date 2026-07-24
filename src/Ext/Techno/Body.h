@@ -163,6 +163,7 @@ public:
 	int ApplyForceWeaponInRange(AbstractClass* pTarget);
 	void ResetDelayedFireTimer();
 	void UpdateTintValues();
+	void ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractClass* pTarget, const CoordStruct& offset, int range, const double& accuracy, bool onTurret, bool retarget, bool aroundFirer, bool useWeaponTargeting, bool firepowerMult, TechnoClass* pInvoker = nullptr);
 
 	void AmmoAutoConvertActions();
 	void UpdateLastTargetCrd();

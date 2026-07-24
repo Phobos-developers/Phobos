@@ -71,6 +71,7 @@ public:
 	void InterceptBullet(TechnoClass* pSource, BulletClass* pInterceptor);
 	void ApplyRadiationToCell(CellStruct cell, int spread, int radLevel);
 	void InitializeLaserTrails();
+	void ApplyExtraWarheads(const std::vector<WarheadTypeClass*>& exWH, const std::vector<int>& override, const std::vector<double>& chance, const std::vector<bool>& full, const std::vector<bool>& owner, const std::vector<bool>& mult, const std::vector<float>& rollChance, const std::vector<std::vector<int>>& weight, const CoordStruct& coords, HouseClass* pOwner, TechnoClass* pInvoker = nullptr);
 
 private:
 	template <typename T>
@@ -98,6 +99,8 @@ public:
 
 	static void Detonate(const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse, AbstractClass* pTarget, bool isBright, WeaponTypeClass* pWeapon, WarheadTypeClass* pWarhead);
 	static void ApplyArcingFix(BulletClass* pThis, const CoordStruct& sourceCoords, const CoordStruct& targetCoords, BulletVelocity& velocity);
+	static void RealLaunch(WeaponTypeClass* pWeapon, TechnoClass* pSource, TechnoClass* pTarget, bool applyFirepowerMult = true, TechnoClass* pFirer = nullptr);
+	static bool IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, WeaponTypeClass* pWeapon, TechnoClass* pTarget, bool useWeaponTargeting = true, bool useWarheadTargeting = true);
 	static CoordStruct GetTargetCoordsForFiring(BulletClass* pBullet);
 
 	static void SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords, bool headToTarget, const RadialFireStruct& radialFire = {});

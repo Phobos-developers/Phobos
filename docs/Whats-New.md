@@ -621,6 +621,9 @@ HideShakeEffects=false           ; boolean
 - [New exception handler with a crash dialog, crash report and minidumps](Miscellanous.md#turning-offon-in-game-exception-handling) (by ZivDero, ported from Vinifera)
 - [Common Controls v6 visual styles for the game process](Miscellanous.md#visual-styles) (by ZivDero)
 - Global default value for `LeptonMindControlOffset` and `MindControlRingOffset` (by Noble_Fish)
+- Attached effect attach/discard by health (by Ollerus)
+- Attached effect with `ExtraWarheads`, `KillWeapon` and `FeedbackWeapon` (by Ollerus)
+- [AuxWeapon](New-or-Enhanced-Logics.md#auxiliary-weapon) (by Ollerus)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

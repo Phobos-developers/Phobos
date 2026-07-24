@@ -2,7 +2,9 @@
 
 #include <Ext/Anim/Body.h>
 #include <Ext/RadSite/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
 #include <Ext/EBolt/Body.h>
 #include <New/Entity/LaserTrailClass.h>
@@ -130,6 +132,176 @@ void BulletExt::InitializeLaserTrails()
 
 	for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
 		this->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(LaserTrailTypeClass::Array[idxTrail].get(), pOwner));
+}
+
+void BulletExt::RealLaunch(WeaponTypeClass* pWeapon, TechnoClass* pSource, TechnoClass* pTarget, bool applyFirepowerMult, TechnoClass* pFirer)
+{
+	int damage = pWeapon->Damage;
+
+	if (applyFirepowerMult)
+		damage = static_cast<int>(damage * TechnoExt::GetCurrentFirepowerMultiplier(pSource));
+
+	if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pTarget, pSource,
+		damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
+	{
+		if (!pFirer)
+			pFirer = pSource;
+
+		BulletExt::SimulatedFiringUnlimbo(pBullet, pSource->Owner, pWeapon, pFirer->Location, true);
+		BulletExt::SimulatedFiringEffects(pBullet, pSource->Owner, nullptr, false, true);
+	}
+}
+
+bool BulletExt::IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, WeaponTypeClass* pWeapon, TechnoClass* pTarget, bool useWeaponTargeting, bool useWarheadTargeting)
+{
+	auto const pWH = pWeapon->Warhead;
+
+	if (useWeaponTargeting)
+	{
+		auto const pType = pTarget->GetTechnoType();
+
+		if (!pType->LegalTarget || GeneralUtils::GetWarheadVersusArmor(pWH, pType->Armor) == 0.0)
+			return false;
+
+		auto const pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
+
+		if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTarget->Owner)
+			|| !EnumFunctions::IsCellEligible(pTarget->GetCell(), pWeaponExt->CanTarget, true, true)
+			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget)
+			|| !pWeaponExt->IsHealthInThreshold(pTarget))
+		{
+			return false;
+		}
+
+		if (!pWeaponExt->HasRequiredAttachedEffects(pTarget, pSource))
+			return false;
+	}
+	else if (useWarheadTargeting)
+	{
+		auto const pWHExt = WarheadTypeExt::Fetch(pWH);
+
+		if (!pWHExt->CanTargetHouse(pOwner, pTarget) || !pWHExt->IsHealthInThreshold(pTarget))
+			return false;
+	}
+
+	return true;
+}
+
+void BulletExt::ExtData::ApplyExtraWarheads(const std::vector<WarheadTypeClass*>& exWH, const std::vector<int>& override, const std::vector<double>& chance, const std::vector<bool>& full, const std::vector<bool>& owner, const std::vector<bool>& mult, const std::vector<float>& rollChance, const std::vector<std::vector<int>>& weight, const CoordStruct& coords, HouseClass* pOwner, TechnoClass* pInvoker)
+{
+	auto const pThis = this->OwnerObject();
+	const int defaultDamage = pThis->WeaponType ? pThis->WeaponType->Damage : 0;
+	auto& random = ScenarioClass::Instance->Random;
+	auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target);
+
+	auto detonateWarhead = [&](int index)
+		{
+			if (index < 0 || index >= static_cast<int>(exWH.size()))
+				return;
+
+			auto const pWH = exWH[index];
+			auto const pWHExt = WarheadTypeExt::Fetch(pWH);
+
+			bool useInvoker = false;
+			size_t size = override.size();
+
+			if (pInvoker)
+			{
+				size = owner.size();
+
+				if (size > static_cast<size_t>(index))
+					useInvoker = owner[index];
+				else if (size > 0)
+					useInvoker = owner[size - 1];
+			}
+
+			auto const pFirer = useInvoker ? pInvoker : pThis->Owner;
+			auto const pHouse = useInvoker ? pInvoker->Owner : pOwner;
+
+			if (pTarget && (!pWHExt->IsHealthInThreshold(pTarget)
+				|| !pWHExt->IsVeterancyInThreshold(pTarget)
+				|| !pWHExt->IsInvokerAllowed(pTarget, pFirer)))
+				return;
+
+			int damage = defaultDamage;
+			if (size > static_cast<size_t>(index))
+				damage = override[index];
+			else if (size > 0)
+				damage = override[size - 1];
+
+			bool fireMult = false;
+			size = mult.size();
+
+			if (size > static_cast<size_t>(index))
+				fireMult = mult[index];
+			else if (size > 0)
+				fireMult = mult[size - 1];
+
+			if (fireMult)
+				damage = static_cast<int>(damage * TechnoExt::GetCurrentFirepowerMultiplier(pFirer));
+
+			size = full.size();
+			bool isFull = true;
+			if (size > static_cast<size_t>(index))
+				isFull = full[index];
+			else if (size > 0)
+				isFull = full[size - 1];
+
+			if (isFull)
+				WarheadTypeExt::DetonateAt(pWH, coords, pFirer, damage, pHouse, pThis->Target);
+			else
+				pWHExt->DamageAreaWithTarget(coords, damage, pFirer, pWH, true, pHouse, pTarget);
+		};
+
+	if (weight.size() > 0)
+	{
+		size_t rollCount = rollChance.size();
+		if (rollCount == 0)
+			rollCount = 1;
+
+		for (size_t i = 0; i < rollCount; i++)
+		{
+			double dice = random.RandomDouble();
+			if (rollChance.size() > 0 && dice > rollChance[i])
+				continue;
+
+			const size_t weightIndex = std::min(i, weight.size() - 1);
+			const auto& weights = weight[weightIndex];
+
+			int selectedIndex = GeneralUtils::ChooseOneWeighted(dice, &weights);
+
+			bool detonate = true;
+			size_t chanceSize = chance.size();
+			if (chanceSize > 0)
+			{
+				double chanceDice = random.RandomDouble();
+				if (chanceSize > static_cast<size_t>(selectedIndex))
+					detonate = chance[selectedIndex] >= chanceDice;
+				else
+					detonate = chance[chanceSize - 1] >= chanceDice;
+			}
+
+			if (detonate)
+				detonateWarhead(selectedIndex);
+		}
+	}
+	else
+	{
+		for (size_t i = 0; i < exWH.size(); i++)
+		{
+			size_t size = chance.size();
+			bool detonate = true;
+			if (size > i)
+				detonate = chance[i] >= random.RandomDouble();
+			else if (size > 0)
+				detonate = chance[size - 1] >= random.RandomDouble();
+
+			if (!detonate)
+				continue;
+
+			detonateWarhead(static_cast<int>(i));
+		}
+	}
 }
 
 static inline int SetBuildingFireAnimZAdjust(BuildingClass* pBuilding, int animY)

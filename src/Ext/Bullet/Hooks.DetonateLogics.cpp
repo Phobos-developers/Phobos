@@ -6,6 +6,11 @@
 #include <Ext/Scenario/Body.h>
 #include <Utilities/Helpers.Alex.h>
 
+namespace ExtraWarheadsTemp
+{
+	bool AttachedExtraWarheads = false;
+}
+
 DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 {
 	enum { SkipShaking = 0x469130, GoToExtras = 0x469AA4 };
@@ -374,136 +379,71 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 	GET(BulletClass*, pThis, ESI);
 	GET_BASE(CoordStruct const* const, coords, 0x8);
 
-	auto const pTechno = pThis->Owner;
 	auto const pBulletExt = BulletExt::Fetch(pThis);
+	auto const pTechno = pThis->Owner;
 	auto const pOwner = pTechno ? pTechno->Owner : pBulletExt->FirerHouse;
+	auto const pWH = pThis->WH;
+	auto const pWHExt = WarheadTypeExt::Fetch(pWH);
+	pWHExt->InDamageArea = true;
 
 	// Extra warheads
-	if (auto const pWeapon = pThis->WeaponType)
+	if (auto const pWeaponExt = WeaponTypeExt::TryFetch(pThis->WeaponType))
 	{
-		auto const pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
-		auto const& extraWarheads = pWeaponExt->ExtraWarheads;
-		auto const& damageOverrides = pWeaponExt->ExtraWarheads_DamageOverrides;
-		auto const& detonationChances = pWeaponExt->ExtraWarheads_DetonationChances;
-		auto const& rollChances = pWeaponExt->ExtraWarheads_RollChances;
-		auto const& fullDetonation = pWeaponExt->ExtraWarheads_FullDetonation;
-		const int defaultDamage = pWeapon->Damage;
-		auto& random = ScenarioClass::Instance->Random;
-
-		auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target);
-
-		auto detonateWarhead = [&](int index)
-			{
-				if (index < 0 || index >= static_cast<int>(extraWarheads.size()))
-					return;
-
-				auto const pWH = extraWarheads[index];
-				auto const pWHExt = WarheadTypeExt::Fetch(pWH);
-
-				if (pTarget && (!pWHExt->IsHealthInThreshold(pTarget)
-					|| !pWHExt->IsVeterancyInThreshold(pTarget)
-					|| !pWHExt->IsInvokerAllowed(pTarget, pTechno)))
-					return;
-
-				int damage = defaultDamage;
-				size_t size = damageOverrides.size();
-				if (size > static_cast<size_t>(index))
-					damage = damageOverrides[index];
-				else if (size > 0)
-					damage = damageOverrides[size - 1];
-
-				size = fullDetonation.size();
-				bool isFull = true;
-				if (size > static_cast<size_t>(index))
-					isFull = fullDetonation[index];
-				else if (size > 0)
-					isFull = fullDetonation[size - 1];
-
-				if (isFull)
-					WarheadTypeExt::DetonateAt(pWH, *coords, pTechno, damage, pOwner, pThis->Target);
-				else
-					pWHExt->DamageAreaWithTarget(*coords, damage, pTechno, pWH, true, pOwner, pTarget);
-			};
-
-		if (pWeaponExt->ExtraWarheads_WeightsData.size() > 0)
+		if (pWeaponExt->ExtraWarheads.size() > 0)
 		{
-			size_t rollCount = rollChances.size();
-			if (rollCount == 0)
-				rollCount = 1;
+			std::vector<bool> vec;
+			std::vector<std::vector<int>> weight;
+			weight.reserve(pWeaponExt->ExtraWarheads_WeightsData.size());
 
-			for (size_t i = 0; i < rollCount; i++)
+			for (const auto& data : pWeaponExt->ExtraWarheads_WeightsData)
 			{
-				double dice = random.RandomDouble();
-				if (rollChances.size() > 0 && dice > rollChances[i])
-					continue;
+				weight.push_back(data);
+			}
 
-				const size_t weightIndex = std::min(i, pWeaponExt->ExtraWarheads_WeightsData.size() - 1);
-				const auto& weights = pWeaponExt->ExtraWarheads_WeightsData[weightIndex];
+			pBulletExt->ApplyExtraWarheads(pWeaponExt->ExtraWarheads, pWeaponExt->ExtraWarheads_DamageOverrides, pWeaponExt->ExtraWarheads_DetonationChances,
+				pWeaponExt->ExtraWarheads_FullDetonation, vec, pWeaponExt->ExtraWarheads_ApplyFirepowerMult, pWeaponExt->ExtraWarheads_RollChances, weight, *coords, pOwner);
+		}
+	}
+	
+	if (!pTechno)
+		return 0;
+	
+	auto const pTechnoExt = TechnoExt::Fetch(pTechno);
 
-				int selectedIndex = GeneralUtils::ChooseOneWeighted(dice, &weights);
+	if (pTechnoExt->AE.HasExtraWarheads && !ExtraWarheadsTemp::AttachedExtraWarheads)
+	{
+		ExtraWarheadsTemp::AttachedExtraWarheads = true;
 
-				bool detonate = true;
-				size_t chanceSize = detonationChances.size();
-				if (chanceSize > 0)
+		for (auto const& pAE : pTechnoExt->AttachedEffects)
+		{
+			auto const pType = pAE->GetType();
+
+			if (pType->ExtraWarheads.size() > 0)
+			{
+				std::vector<std::vector<int>> weight;
+				weight.reserve(pType->ExtraWarheads_WeightsData.size());
+
+				for (const auto& data : pType->ExtraWarheads_WeightsData)
 				{
-					double chanceDice = random.RandomDouble();
-					if (chanceSize > static_cast<size_t>(selectedIndex))
-						detonate = detonationChances[selectedIndex] >= chanceDice;
-					else
-						detonate = detonationChances[chanceSize - 1] >= chanceDice;
+					weight.push_back(data);
 				}
 
-				if (detonate)
-					detonateWarhead(selectedIndex);
+				pBulletExt->ApplyExtraWarheads(pType->ExtraWarheads, pType->ExtraWarheads_DamageOverrides, pType->ExtraWarheads_DetonationChances, pType->ExtraWarheads_FullDetonation,
+					pType->ExtraWarheads_UseInvokerAsOwner, pType->ExtraWarheads_ApplyFirepowerMult, pType->ExtraWarheads_RollChances, weight, *coords, pOwner, pAE->GetInvoker());
 			}
 		}
-		else
-		{
-			for (size_t i = 0; i < extraWarheads.size(); i++)
-			{
-				size_t size = detonationChances.size();
-				bool detonate = true;
-				if (size > i)
-					detonate = detonationChances[i] >= random.RandomDouble();
-				else if (size > 0)
-					detonate = detonationChances[size - 1] >= random.RandomDouble();
 
-				if (!detonate)
-					continue;
-
-				detonateWarhead(static_cast<int>(i));
-			}
-		}
+		ExtraWarheadsTemp::AttachedExtraWarheads = false;
 	}
 
 	// Return to sender
-	if (pTechno)
-	{
-		auto const pTypeExt = BulletTypeExt::Fetch(pThis->Type);
+	auto const pBulletTypeExt = BulletTypeExt::Fetch(pThis->Type);
 
-		if (auto const pWeapon = pTypeExt->ReturnWeapon)
-		{
-			int damage = pWeapon->Damage;
-
-			if (pTypeExt->ReturnWeapon_ApplyFirepowerMult)
-				damage = static_cast<int>(damage * pBulletExt->FirepowerMult);
-
-			if (auto const pBullet = pWeapon->Projectile->CreateBullet(pTechno, pTechno,
-				damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
-			{
-				BulletExt::Fetch(pBullet)->FirepowerMult = pBulletExt->FirepowerMult;
-				BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, pThis->Location, true);
-				BulletExt::SimulatedFiringEffects(pBullet, pOwner, nullptr, false, true);
-			}
-		}
-	}
+	if (auto const pWeapon = pBulletTypeExt->ReturnWeapon)
+		BulletExt::RealLaunch(pWeapon, pTechno, pTechno, pBulletTypeExt->ReturnWeapon_ApplyFirepowerMult);
 
 	// Unlimbo Detonate
-	const auto pWH = pThis->WH;
-	const auto pWHExt = WarheadTypeExt::Fetch(pWH);
-	pWHExt->InDamageArea = true;
-
-	if (pTechno && pTechno->InLimbo && !pWH->Parasite && pWHExt->UnlimboDetonate)
+	if (pTechno->InLimbo && !pWH->Parasite && pWHExt->UnlimboDetonate)
 	{
 		CoordStruct location = *coords;
 		const auto pTarget = pThis->Target;
@@ -548,14 +488,12 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			--Unsorted::ScenarioInit;
 		}
 
-		const auto pTechnoExt = TechnoExt::Fetch(pTechno);
-
 		if (success)
 		{
 			if (isInAir)
 			{
 				pTechno->IsFallingDown = true;
-				TechnoExt::Fetch(pTechno)->OnParachuted = true;
+				pTechnoExt->OnParachuted = true;
 			}
 
 			if (pWHExt->UnlimboDetonate_KeepTarget
@@ -586,7 +524,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			}
 
 			pTechno->SetLocation(location);
-			pTechno->ReceiveDamage(&pTechno->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pTechno->Owner);
+			pTechno->ReceiveDamage(&pTechno->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pOwner);
 		}
 	}
 

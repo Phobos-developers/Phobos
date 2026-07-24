@@ -116,6 +116,15 @@ void WeaponTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Burst_NoDelay.Read(exINI, pSection, "Burst.NoDelay");
 	this->AreaFire_Target.Read(exINI, pSection, "AreaFire.Target");
 	this->FeedbackWeapon.Read<true>(exINI, pSection, "FeedbackWeapon");
+	this->AuxWeapon.Read<true>(exINI, pSection, "AuxWeapon");
+	this->AuxWeapon_Offset.Read(exINI, pSection, "AuxWeapon.Offset");
+	this->AuxWeapon_FireOnTurret.Read(exINI, pSection, "AuxWeapon.FireOnTurret");
+	this->AuxWeapon_UseWeaponTargeting.Read(exINI, pSection, "AuxWeapon.UseWeaponTargeting");
+	this->AuxWeapon_ApplyFirepowerMult.Read(exINI, pSection, "AuxWeapon.ApplyFirepowerMult");
+	this->AuxWeapon_Retarget.Read(exINI, pSection, "AuxWeapon.Retarget");
+	this->AuxWeapon_Retarget_AroundFirer.Read(exINI, pSection, "AuxWeapon.Retarget.AroundFirer");
+	this->AuxWeapon_Retarget_Range.Read(exINI, pSection, "AuxWeapon.Retarget.Range");
+	this->AuxWeapon_Retarget_Accuracy.Read(exINI, pSection, "AuxWeapon.Retarget.Accuracy");
 	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
 	this->LaserPositionUpdate.Read(exINI, pSection, "LaserPositionUpdate");
 	this->LaserPositionUpdate_StopOnFirerConvert.Read(exINI, pSection, "LaserPositionUpdate.StopOnFirerConvert");
@@ -156,6 +165,7 @@ void WeaponTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->ExtraWarheads_FullDetonation.Read(exINI, pSection, "ExtraWarheads.FullDetonation");
+	this->ExtraWarheads_ApplyFirepowerMult.Read(exINI, pSection, "ExtraWarheads.ExtraWarheads_ApplyFirepowerMult");
 	this->AmbientDamage_Warhead.Read<true>(exINI, pSection, "AmbientDamage.Warhead");
 	this->AmbientDamage_IgnoreTarget.Read(exINI, pSection, "AmbientDamage.IgnoreTarget");
 	this->AttachEffect_RequiredTypes.Read(exINI, pSection, "AttachEffect.RequiredTypes");
@@ -245,6 +255,15 @@ void WeaponTypeExt::Serialize(T& Stm)
 		.Process(this->Burst_NoDelay)
 		.Process(this->AreaFire_Target)
 		.Process(this->FeedbackWeapon)
+		.Process(this->AuxWeapon)
+		.Process(this->AuxWeapon_Offset)
+		.Process(this->AuxWeapon_FireOnTurret)
+		.Process(this->AuxWeapon_UseWeaponTargeting)
+		.Process(this->AuxWeapon_ApplyFirepowerMult)
+		.Process(this->AuxWeapon_Retarget)
+		.Process(this->AuxWeapon_Retarget_AroundFirer)
+		.Process(this->AuxWeapon_Retarget_Range)
+		.Process(this->AuxWeapon_Retarget_Accuracy)
 		.Process(this->Laser_IsSingleColor)
 		.Process(this->LaserPositionUpdate)
 		.Process(this->LaserPositionUpdate_StopOnFirerConvert)
@@ -263,6 +282,7 @@ void WeaponTypeExt::Serialize(T& Stm)
 		.Process(this->ExtraWarheads_RollChances)
 		.Process(this->ExtraWarheads_WeightsData)
 		.Process(this->ExtraWarheads_FullDetonation)
+		.Process(this->ExtraWarheads_ApplyFirepowerMult)
 		.Process(this->AmbientDamage_Warhead)
 		.Process(this->AmbientDamage_IgnoreTarget)
 		.Process(this->AttachEffect_RequiredTypes)

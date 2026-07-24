@@ -736,6 +736,9 @@ This page lists all the individual contributions to the project by their author.
   - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
   - Dynamic team delays
   - Customize whether or not passenger can fire out when the transport is moving
+  - Attached effect attach/discard by health
+  - Attached effect with `ExtraWarheads`, `KillWeapon` and `FeedbackWeapon`
+  - `AuxWeapon`
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`

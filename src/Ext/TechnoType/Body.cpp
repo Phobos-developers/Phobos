@@ -981,6 +981,8 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	}
 	this->RevengeWeapon_AffectsHouse.Read(exINI, pSection, "RevengeWeapon.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->RevengeWeapon_AffectsHouse.Read(exINI, pSection, "RevengeWeapon.AffectsHouse");
+	this->RevengeWeapon_RealLaunch.Read(exINI, pSection, "RevengeWeapon.RealLaunch");
+	this->RevengeWeapon_UseWeaponTargeting.Read(exINI, pSection, "RevengeWeapon.UseWeaponTargeting");
 
 	this->RecountBurst.Read(exINI, pSection, "RecountBurst");
 
@@ -1585,6 +1587,8 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->RevengeWeapon)
 		.Process(this->RevengeWeapon_AffectsHouse)
+		.Process(this->RevengeWeapon_RealLaunch)
+		.Process(this->RevengeWeapon_UseWeaponTargeting)
 
 		.Process(this->AttachEffects)
 

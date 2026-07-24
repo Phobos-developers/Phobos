@@ -52,13 +52,24 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	}
 
 	int& duration = this->Duration;
-
 	duration = this->DurationOverride != 0 ? this->DurationOverride : pType->Duration;
+	const auto pTechnoExt = TechnoExt::Fetch(pTechno);
+
+	if (pType->Duration_ApplyVersus_Warhead && duration > 0)
+	{
+		auto armor = pTechno->GetTechnoType()->Armor;
+
+		if (auto const pShieldData = pTechnoExt->Shield.get())
+		{
+			if (pShieldData->IsActive())
+				armor = pShieldData->GetArmorType();
+		}
+
+		duration = Math::max(MapClass::GetTotalDamage(duration, pType->Duration_ApplyVersus_Warhead, armor, 0), 0);
+	}
 
 	if (pType->Duration_ApplyFirepowerMult && duration > 0 && pInvoker)
 		duration = Math::max(static_cast<int>(duration * TechnoExt::GetCurrentFirepowerMultiplier(pInvoker)), 0);
-
-	const auto pTechnoExt = TechnoExt::Fetch(pTechno);
 
 	if (pType->Duration_ApplyArmorMultOnTarget && duration > 0) // count its own ArmorMultiplier as well
 	{
@@ -501,12 +512,27 @@ void AttachEffectClass::SetAnimationTunnelState(bool visible)
 void AttachEffectClass::RefreshDuration(int durationOverride)
 {
 	int& duration = this->Duration;
+	auto const pTechno = this->Techno;
 	auto const pType = this->Type;
 
 	if (durationOverride)
 		duration = durationOverride;
 	else
 		duration = this->DurationOverride ? this->DurationOverride : pType->Duration;
+
+	if (pType->Duration_ApplyVersus_Warhead && duration > 0)
+	{
+		const auto pTechnoExt = TechnoExt::Fetch(this->Techno);
+		auto armor = pTechno->GetTechnoType()->Armor;
+
+		if (auto const pShieldData = pTechnoExt->Shield.get())
+		{
+			if (pShieldData->IsActive())
+				armor = pShieldData->GetArmorType();
+		}
+
+		duration = Math::max(MapClass::GetTotalDamage(duration, pType->Duration_ApplyVersus_Warhead, armor, 0), 0);
+	}
 
 	if (pType->Duration_ApplyFirepowerMult && duration > 0 && this->Invoker)
 		duration = Math::max(static_cast<int>(duration * TechnoExt::GetCurrentFirepowerMultiplier(this->Invoker)), 0);
@@ -554,6 +580,20 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 	}
 
 	auto const pType = this->Type;
+	auto const pTechno = this->Techno;
+
+	if (TechnoExt::IsHealthInThreshold(pTechno, pType->DiscardOn_AbovePercent, pType->DiscardOn_BelowPercent))
+	{
+		this->LastDiscardCheckValue = true;
+		return true;
+	}
+
+	if (pType->DiscardOn_CumulativeCount > 0 && pType->DiscardOn_CumulativeCount <= TechnoExt::Fetch(pTechno)->GetAttachedEffectCumulativeCount(pType))
+	{
+		this->LastDiscardCheckValue = true;
+		return true;
+	}
+
 	auto const discardOn = pType->DiscardOn;
 
 	if (discardOn == DiscardCondition::None)
@@ -561,8 +601,6 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 		this->LastDiscardCheckValue = false;
 		return false;
 	}
-
-	auto const pTechno = this->Techno;
 
 	if (auto const pFoot = abstract_cast<FootClass*, true>(pTechno))
 	{
@@ -769,6 +807,9 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 	HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachParams const& attachParams, bool checkCumulative)
 {
 	if (!pType)
+		return nullptr;
+
+	if (TechnoExt::IsHealthInThreshold(pTarget, pType->AffectAbovePercent, pType->AffectBelowPercent))
 		return nullptr;
 
 	if (pTarget->IsIronCurtained())

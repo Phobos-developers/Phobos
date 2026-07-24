@@ -260,6 +260,8 @@ public:
 
 	Valueable<WeaponTypeClass*> RevengeWeapon;
 	Valueable<AffectedHouse> RevengeWeapon_AffectsHouse;
+	Valueable<bool> RevengeWeapon_RealLaunch;
+	Valueable<bool> RevengeWeapon_UseWeaponTargeting;
 
 	AEAttachInfoTypeClass AttachEffects;
 
@@ -647,6 +649,8 @@ public:
 
 		, RevengeWeapon {}
 		, RevengeWeapon_AffectsHouse { AffectedHouse::All }
+		, RevengeWeapon_RealLaunch { false }
+		, RevengeWeapon_UseWeaponTargeting { false }
 
 		, AttachEffects {}
 

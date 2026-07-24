@@ -216,6 +216,7 @@ public:
 	Valueable<AffectedHouse> KillWeapon_OnFirer_AffectsHouse;
 	Valueable<AffectedTarget> KillWeapon_AffectsTarget;
 	Valueable<AffectedTarget> KillWeapon_OnFirer_AffectsTarget;
+	Valueable<bool> KillWeapon_OnFirer_RealLaunch;
 
 	Valueable<int> ElectricAssaultLevel;
 
@@ -526,6 +527,7 @@ public:
 		, KillWeapon_OnFirer_AffectsHouse { AffectedHouse::All }
 		, KillWeapon_AffectsTarget { AffectedTarget::All }
 		, KillWeapon_OnFirer_AffectsTarget { AffectedTarget::All }
+		, KillWeapon_OnFirer_RealLaunch { false }
 
 		, ReverseEngineer { false }
 

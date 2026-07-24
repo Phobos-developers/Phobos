@@ -23,7 +23,6 @@ public:
 		return static_cast<WeaponTypeClass*>(this->GetAttachedObject());
 	}
 
-
 	Valueable<double> DiskLaser_Radius;
 	Valueable<Leptons> ProjectileRange;
 	Valueable<RadTypeClass*> RadType;
@@ -51,6 +50,15 @@ public:
 	Valueable<bool> Burst_NoDelay;
 	Valueable<AreaFireTarget> AreaFire_Target;
 	Valueable<WeaponTypeClass*> FeedbackWeapon;
+	Valueable<WeaponTypeClass*> AuxWeapon;
+	Valueable<CoordStruct> AuxWeapon_Offset;
+	Valueable<bool> AuxWeapon_FireOnTurret;
+	Valueable<bool> AuxWeapon_UseWeaponTargeting;
+	Valueable<bool> AuxWeapon_ApplyFirepowerMult;
+	Valueable<bool> AuxWeapon_Retarget;
+	Valueable<bool> AuxWeapon_Retarget_AroundFirer;
+	Valueable<int> AuxWeapon_Retarget_Range;
+	Valueable<double> AuxWeapon_Retarget_Accuracy;
 	Valueable<bool> Laser_IsSingleColor;
 	Valueable<PositionFollow> LaserPositionUpdate;
 	Nullable<bool> LaserPositionUpdate_StopOnFirerConvert;
@@ -69,6 +77,7 @@ public:
 	ValueableVector<float> ExtraWarheads_RollChances;
 	std::vector<ValueableVector<int>> ExtraWarheads_WeightsData;
 	ValueableVector<bool> ExtraWarheads_FullDetonation;
+	ValueableVector<bool> ExtraWarheads_ApplyFirepowerMult;
 	Nullable<WarheadTypeClass*> AmbientDamage_Warhead;
 	Valueable<bool> AmbientDamage_IgnoreTarget;
 	ValueableVector<AttachEffectTypeClass*> AttachEffect_RequiredTypes;
@@ -144,6 +153,15 @@ public:
 		, Burst_NoDelay { false }
 		, AreaFire_Target { AreaFireTarget::Base }
 		, FeedbackWeapon {}
+		, AuxWeapon {}
+		, AuxWeapon_Offset { {0, 0, 0} }
+		, AuxWeapon_FireOnTurret { false }
+		, AuxWeapon_UseWeaponTargeting { false }
+		, AuxWeapon_ApplyFirepowerMult { true }
+		, AuxWeapon_Retarget { false }
+		, AuxWeapon_Retarget_AroundFirer { false }
+		, AuxWeapon_Retarget_Range { 0 }
+		, AuxWeapon_Retarget_Accuracy { 1.0 }
 		, Laser_IsSingleColor { false }
 		, LaserPositionUpdate { PositionFollow::None }
 		, LaserPositionUpdate_StopOnFirerConvert {}
@@ -162,6 +180,7 @@ public:
 		, ExtraWarheads_RollChances {}
 		, ExtraWarheads_WeightsData {}
 		, ExtraWarheads_FullDetonation {}
+		, ExtraWarheads_ApplyFirepowerMult {}
 		, AmbientDamage_Warhead {}
 		, AmbientDamage_IgnoreTarget { false }
 		, AttachEffect_RequiredTypes {}

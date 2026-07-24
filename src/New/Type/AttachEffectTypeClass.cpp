@@ -92,8 +92,10 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 		return;
 
 	INI_EX exINI(pINI);
+	char tempBuffer[0x40];
 
 	this->Duration.Read(exINI, pSection, "Duration");
+	this->Duration_ApplyVersus_Warhead.Read(exINI, pSection, "Duration.ApplyVersus.Warhead");
 	this->Duration_ApplyFirepowerMult.Read(exINI, pSection, "Duration.ApplyFirepowerMult");
 	this->Duration_ApplyArmorMultOnTarget.Read(exINI, pSection, "Duration.ApplyArmorMultOnTarget");
 	this->Cumulative.Read(exINI, pSection, "Cumulative");
@@ -103,6 +105,17 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->DiscardOn_RangeOverride.Read(exINI, pSection, "DiscardOn.RangeOverride");
 	this->DiscardOn_MoveBasedOnDestination.Read(exINI, pSection, "DiscardOn.MoveBasedOnDestination");
 	this->DiscardOn_ConsiderHarvestingAsStationary.Read(exINI, pSection, "DiscardOn.ConsiderHarvestingAsStationary");
+	this->DiscardOn_AbovePercent.Read(exINI, pSection, "DiscardOn.AbovePercent");
+	this->DiscardOn_BelowPercent.Read(exINI, pSection, "DiscardOn.BelowPercent");
+	this->DiscardOn_CumulativeCount.Read(exINI, pSection, "DiscardOn.CumulativeCount");
+	if (this->DiscardOn_AbovePercent > this->DiscardOn_BelowPercent)
+		Debug::Log("[Developer warning][%s] DiscardOn.AbovePercent is bigger than DiscardOn.BelowPercent, crit will never activate!\n", pSection);
+
+	this->AffectAbovePercent.Read(exINI, pSection, "AffectAbovePercent");
+	this->AffectBelowPercent.Read(exINI, pSection, "AffectBelowPercent");
+	if (this->AffectAbovePercent > this->AffectBelowPercent)
+		Debug::Log("[Developer warning][%s] AffectAbovePercent is bigger than AffectBelowPercent, crit will never activate!\n", pSection);
+
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
 	this->PenetratesForceShield.Read(exINI, pSection, "PenetratesForceShield");
 	this->AffectTypes.Read(exINI, pSection, "AffectTypes");
@@ -127,6 +140,51 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ExpireWeapon_TriggerOn.Read(exINI, pSection, "ExpireWeapon.TriggerOn");
 	this->ExpireWeapon_CumulativeOnlyOnce.Read(exINI, pSection, "ExpireWeapon.CumulativeOnlyOnce");
 	this->ExpireWeapon_UseInvokerAsOwner.Read(exINI, pSection, "ExpireWeapon.UseInvokerAsOwner");
+
+	this->ExtraWarheads.Read(exINI, pSection, "ExtraWarheads");
+	this->ExtraWarheads_DamageOverrides.Read(exINI, pSection, "ExtraWarheads.DamageOverrides");
+	this->ExtraWarheads_DetonationChances.Read(exINI, pSection, "ExtraWarheads.DetonationChances");
+	this->ExtraWarheads_RollChances.Read(exINI, pSection, "ExtraWarheads.RollChances");
+
+	// ExtraWarheads.RandomWeights
+	for (size_t i = 0; ; ++i)
+	{
+		ValueableVector<int> weights3;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "ExtraWarheads.RandomWeights%d", i);
+		weights3.Read(exINI, pSection, tempBuffer);
+
+		if (!weights3.size())
+			break;
+
+		this->ExtraWarheads_WeightsData.emplace_back(std::move(weights3));
+	}
+	ValueableVector<int> weights3;
+	weights3.Read(exINI, pSection, "ExtraWarheads.RandomWeights");
+	if (weights3.size())
+	{
+		if (this->ExtraWarheads_WeightsData.size())
+			this->ExtraWarheads_WeightsData[0] = std::move(weights3);
+		else
+			this->ExtraWarheads_WeightsData.emplace_back(std::move(weights3));
+	}
+
+	this->ExtraWarheads_FullDetonation.Read(exINI, pSection, "ExtraWarheads.FullDetonation");
+	this->ExtraWarheads_ApplyFirepowerMult.Read(exINI, pSection, "ExtraWarheads.ApplyFirepowerMult");
+	this->ExtraWarheads_UseInvokerAsOwner.Read(exINI, pSection, "ExtraWarheads.UseInvokerAsOwner");
+
+	this->FeedbackWeapon.Read<true>(exINI, pSection, "FeedbackWeapon");
+	this->FeedbackWeapon_UseInvokerAsOwner.Read(exINI, pSection, "FeedbackWeapon.UseInvokerAsOwner");
+
+	this->AuxWeapon.Read<true>(exINI, pSection, "AuxWeapon");
+	this->AuxWeapon_Offset.Read(exINI, pSection, "AuxWeapon.Offset");
+	this->AuxWeapon_FireOnTurret.Read(exINI, pSection, "AuxWeapon.FireOnTurret");
+	this->AuxWeapon_UseWeaponTargeting.Read(exINI, pSection, "AuxWeapon.UseWeaponTargeting");
+	this->AuxWeapon_ApplyFirepowerMult.Read(exINI, pSection, "AuxWeapon.ApplyFirepowerMult");
+	this->AuxWeapon_Retarget.Read(exINI, pSection, "AuxWeapon.Retarget");
+	this->AuxWeapon_Retarget_AroundFirer.Read(exINI, pSection, "AuxWeapon.Retarget.AroundFirer");
+	this->AuxWeapon_Retarget_Range.Read(exINI, pSection, "AuxWeapon.Retarget.Range");
+	this->AuxWeapon_Retarget_Accuracy.Read(exINI, pSection, "AuxWeapon.Retarget.Accuracy");
+	this->AuxWeapon_UseInvokerAsOwner.Read(exINI, pSection, "AuxWeapon.UseInvokerAsOwner");
 
 	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
 	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
@@ -153,6 +211,14 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Crit_AllowWarheads.Read(exINI, pSection, "Crit.AllowWarheads");
 	this->Crit_DisallowWarheads.Read(exINI, pSection, "Crit.DisallowWarheads");
 
+	this->KillWeapon.Read(exINI, pSection, "KillWeapon");
+	this->KillWeapon_OnFirer.Read(exINI, pSection, "KillWeapon.OnFirer");
+	this->KillWeapon_AffectsHouses.Read(exINI, pSection, "KillWeapon.AffectsHouses");
+	this->KillWeapon_OnFirer_AffectsHouses.Read(exINI, pSection, "KillWeapon.OnFirer.AffectsHouses");
+	this->KillWeapon_Affects.Read(exINI, pSection, "KillWeapon.Affects");
+	this->KillWeapon_OnFirer_Affects.Read(exINI, pSection, "KillWeapon.OnFirer.Affects");
+	this->KillWeapon_OnFirer_RealLaunch.Read(exINI, pSection, "KillWeapon.OnFirer.RealLaunch");
+
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
 	if (exINI.ReadString(pSection, "RevengeWeapon.AffectsHouses") > 0)
 	{
@@ -160,6 +226,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	}
 	this->RevengeWeapon_AffectsHouse.Read(exINI, pSection, "RevengeWeapon.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->RevengeWeapon_AffectsHouse.Read(exINI, pSection, "RevengeWeapon.AffectsHouse");
+	this->RevengeWeapon_RealLaunch.Read(exINI, pSection, "RevengeWeapon.RealLaunch");
+	this->RevengeWeapon_UseWeaponTargeting.Read(exINI, pSection, "RevengeWeapon.UseWeaponTargeting");
 	this->RevengeWeapon_UseInvokerAsOwner.Read(exINI, pSection, "RevengeWeapon.UseInvokerAsOwner");
 
 	this->ReflectDamage.Read(exINI, pSection, "ReflectDamage");
@@ -178,6 +246,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->DisableWeapons.Read(exINI, pSection, "DisableWeapons");
 	this->Unkillable.Read(exINI, pSection, "Unkillable");
+	this->NegativeDamage_Multiplier.Read(exINI, pSection, "NegativeDamage.Multiplier");
 	this->LaserTrail_Type.Read(exINI, pSection, "LaserTrail.Type");
 
 	// Groups
@@ -203,6 +272,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Duration)
+		.Process(this->Duration_ApplyVersus_Warhead)
 		.Process(this->Duration_ApplyFirepowerMult)
 		.Process(this->Duration_ApplyArmorMultOnTarget)
 		.Process(this->Cumulative)
@@ -212,6 +282,11 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->DiscardOn_RangeOverride)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
 		.Process(this->DiscardOn_ConsiderHarvestingAsStationary)
+		.Process(this->DiscardOn_AbovePercent)
+		.Process(this->DiscardOn_BelowPercent)
+		.Process(this->DiscardOn_CumulativeCount)
+		.Process(this->AffectAbovePercent)
+		.Process(this->AffectBelowPercent)
 		.Process(this->PenetratesIronCurtain)
 		.Process(this->PenetratesForceShield)
 		.Process(this->AffectTypes)
@@ -229,6 +304,24 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ExpireWeapon_TriggerOn)
 		.Process(this->ExpireWeapon_CumulativeOnlyOnce)
 		.Process(this->ExpireWeapon_UseInvokerAsOwner)
+		.Process(this->ExtraWarheads)
+		.Process(this->ExtraWarheads_DamageOverrides)
+		.Process(this->ExtraWarheads_DetonationChances)
+		.Process(this->ExtraWarheads_FullDetonation)
+		.Process(this->ExtraWarheads_ApplyFirepowerMult)
+		.Process(this->ExtraWarheads_UseInvokerAsOwner)
+		.Process(this->FeedbackWeapon)
+		.Process(this->FeedbackWeapon_UseInvokerAsOwner)
+		.Process(this->AuxWeapon)
+		.Process(this->AuxWeapon_Offset)
+		.Process(this->AuxWeapon_FireOnTurret)
+		.Process(this->AuxWeapon_UseWeaponTargeting)
+		.Process(this->AuxWeapon_ApplyFirepowerMult)
+		.Process(this->AuxWeapon_Retarget)
+		.Process(this->AuxWeapon_Retarget_AroundFirer)
+		.Process(this->AuxWeapon_Retarget_Range)
+		.Process(this->AuxWeapon_Retarget_Accuracy)
+		.Process(this->AuxWeapon_UseInvokerAsOwner)
 		.Process(this->Tint_Color)
 		.Process(this->Tint_Intensity)
 		.Process(this->Tint_VisibleToHouses)
@@ -249,8 +342,17 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Crit_ExtraChance)
 		.Process(this->Crit_AllowWarheads)
 		.Process(this->Crit_DisallowWarheads)
+		.Process(this->KillWeapon)
+		.Process(this->KillWeapon_OnFirer)
+		.Process(this->KillWeapon_AffectsHouses)
+		.Process(this->KillWeapon_OnFirer_AffectsHouses)
+		.Process(this->KillWeapon_Affects)
+		.Process(this->KillWeapon_OnFirer_Affects)
+		.Process(this->KillWeapon_OnFirer_RealLaunch)
 		.Process(this->RevengeWeapon)
 		.Process(this->RevengeWeapon_AffectsHouse)
+		.Process(this->RevengeWeapon_RealLaunch)
+		.Process(this->RevengeWeapon_UseWeaponTargeting)
 		.Process(this->RevengeWeapon_UseInvokerAsOwner)
 		.Process(this->ReflectDamage)
 		.Process(this->ReflectDamage_Warhead)
@@ -262,6 +364,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ReflectDamage_UseInvokerAsOwner)
 		.Process(this->DisableWeapons)
 		.Process(this->Unkillable)
+		.Process(this->NegativeDamage_Multiplier)
 		.Process(this->LaserTrail_Type)
 		.Process(this->Groups)
 		.Process(this->NeedCalculate)

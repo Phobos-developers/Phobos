@@ -1117,6 +1117,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 	double armor = 1.0;
 	double speed = 1.0;
 	double ROF = 1.0;
+	double negativeDamage = 1.0;
 	bool cloak = false;
 	bool forceDecloak = false;
 	bool disableWeapons = false;
@@ -1127,6 +1128,8 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 	bool hasOnFireDiscardables = false;
 	bool hasRestrictedArmorMultipliers = false;
 	bool hasCritModifiers = false;
+	bool hasExtraWarheads = false;
+	bool hasFeedbackOrAuxWeapon = false;
 
 	for (const auto& attachEffect : this->AttachedEffects)
 	{
@@ -1143,6 +1146,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 			armor *= type->ArmorMultiplier;
 
 		ROF *= type->ROFMultiplier;
+		negativeDamage *= type->NegativeDamage_Multiplier;
 		cloak |= type->Cloakable;
 		forceDecloak |= type->ForceDecloak;
 		disableWeapons |= type->DisableWeapons;
@@ -1152,12 +1156,15 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 		reflectsDamage |= type->ReflectDamage;
 		hasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
 		hasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
+		hasExtraWarheads |= type->ExtraWarheads.size() > 0;
+		hasFeedbackOrAuxWeapon |= type->FeedbackWeapon != nullptr || type->AuxWeapon != nullptr;
 	}
 
 	pAE.FirepowerMultiplier = firepower;
 	pAE.ArmorMultiplier = armor;
 	pAE.SpeedMultiplier = speed;
 	pAE.ROFMultiplier = ROF;
+	pAE.NegativeDamageMultiplier = negativeDamage;
 	pAE.Cloakable = cloak;
 	pAE.ForceDecloak = forceDecloak;
 	pAE.DisableWeapons = disableWeapons;
@@ -1168,6 +1175,8 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 	pAE.HasOnFireDiscardables = hasOnFireDiscardables;
 	pAE.HasRestrictedArmorMultipliers = hasRestrictedArmorMultipliers;
 	pAE.HasCritModifiers = hasCritModifiers;
+	pAE.HasExtraWarheads = hasExtraWarheads;
+	pAE.HasFeedbackOrAuxWeapon = hasFeedbackOrAuxWeapon;
 
 	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
 		pThis->Uncloak(true);

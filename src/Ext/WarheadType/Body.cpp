@@ -394,6 +394,7 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	}
 	this->KillWeapon_OnFirer_AffectsTarget.Read(exINI, pSection, "KillWeapon.OnFirer.Affects"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->KillWeapon_OnFirer_AffectsTarget.Read(exINI, pSection, "KillWeapon.OnFirer.AffectsTarget");
+	this->KillWeapon_OnFirer_RealLaunch.Read(exINI, pSection, "KillWeapon.OnFirer.RealLaunch");
 
 	this->ElectricAssaultLevel.Read(exINI, pSection, "ElectricAssaultLevel");
 
@@ -754,6 +755,7 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->KillWeapon_OnFirer_AffectsHouse)
 		.Process(this->KillWeapon_AffectsTarget)
 		.Process(this->KillWeapon_OnFirer_AffectsTarget)
+		.Process(this->KillWeapon_OnFirer_RealLaunch)
 
 		.Process(this->ElectricAssaultLevel)
 
