@@ -487,7 +487,8 @@ HouseClass* WarheadTypeExt::ApplyRemoveMindControl(HouseClass* pHouse, TechnoCla
 
 void WarheadTypeExt::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, BulletExt* pBulletExt)
 {
-	const double dice = this->Crit_ApplyChancePerTarget || !this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate) ? ScenarioClass::Instance->Random.RandomDouble() : this->Crit_RandomBuffer;
+	const double dice = this->Crit_ApplyChancePerTarget.Get(RulesExt::Global()->Crit_ApplyChancePerTarget)
+		|| !this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate) ? ScenarioClass::Instance->Random.RandomDouble() : this->Crit_RandomBuffer;
 
 	if (this->Crit_CurrentChance < dice)
 		return;
@@ -540,7 +541,7 @@ void WarheadTypeExt::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoC
 
 	int damage = this->Crit_ExtraDamage.Get();
 
-	if (this->Crit_ExtraDamage_ApplyFirepowerMult)
+	if (this->Crit_ExtraDamage_ApplyFirepowerMult.Get(RulesExt::Global()->Crit_ExtraDamage_ApplyFirepowerMult))
 	{
 		if (pBulletExt)
 			damage = static_cast<int>(damage * pBulletExt->FirepowerMult);
@@ -591,7 +592,7 @@ void WarheadTypeExt::InterceptBullets(TechnoClass* pOwner, BulletClass* pInterce
 		{
 			const auto pBulletExt = BulletExt::Fetch(pBullet);
 
-			if (!pBulletExt->TypeExtData->Interceptable.Get(RulesExt::Global()->Interceptable))
+			if (!pBulletExt->TypeExtData->Interceptable.Get(RulesExt::Global()->ProjectileInterceptable))
 				return;
 
 			// 1/8th of a cell as a margin of error if not Inviso interceptor.
@@ -608,7 +609,7 @@ void WarheadTypeExt::InterceptBullets(TechnoClass* pOwner, BulletClass* pInterce
 			const auto pBulletExt = BulletExt::Fetch(pBullet);
 
 			// Cells don't know about bullets that may or may not be located on them so it has to be this way.
-			if (!pBulletExt->TypeExtData->Interceptable.Get(RulesExt::Global()->Interceptable) || pBullet->SpawnNextAnim)
+			if (!pBulletExt->TypeExtData->Interceptable.Get(RulesExt::Global()->ProjectileInterceptable) || pBullet->SpawnNextAnim)
 				continue;
 
 			if (pBullet->Location.DistanceFromSquared(coords) <= cellSpreadSq)

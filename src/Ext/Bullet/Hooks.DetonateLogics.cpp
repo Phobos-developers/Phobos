@@ -485,7 +485,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 		{
 			int damage = pWeapon->Damage;
 
-			if (pTypeExt->ReturnWeapon_ApplyFirepowerMult)
+			if (pTypeExt->ReturnWeapon_ApplyFirepowerMult.Get(RulesExt::Global()->ReturnWeapon_ApplyFirepowerMult))
 				damage = static_cast<int>(damage * pBulletExt->FirepowerMult);
 
 			if (auto const pBullet = pWeapon->Projectile->CreateBullet(pTechno, pTechno,
@@ -710,7 +710,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 
 		auto const coordsTarget = pTypeExt->AroundTarget.Get(pTypeExt->Splits) ? pThis->GetTargetCoords() : pThis->GetCoords();
 		auto const cellTarget = CellClass::Coord2Cell(coordsTarget);
-		bool const allowRepeatTargets = pTypeExt->Splits_AllowRepeatTargets;
+		bool const allowRepeatTargets = pTypeExt->Splits_AllowRepeatTargets.Get(RulesExt::Global()->Splits_AllowRepeatTargets);
 		DynamicVectorClass<AbstractClass*> targets;
 
 		if (!pTypeExt->Splits)
@@ -765,8 +765,8 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 		{
 			const double cellSpread = static_cast<double>(pTypeExt->Splits_TargetingDistance.Get()) / (double)Unsorted::LeptonsPerCell;
 			const bool retargetSelf = pTypeExt->RetargetSelf;
-			const bool useWeaponTargeting = pTypeExt->Splits_UseWeaponTargeting;
-			const bool cylindrical = pTypeExt->Splits_TargetingDistance_Cylindrical;
+			const bool useWeaponTargeting = pTypeExt->Splits_UseWeaponTargeting.Get(RulesExt::Global()->Splits_UseWeaponTargeting);
+			const bool cylindrical = pTypeExt->Splits_TargetingDistance_Cylindrical.Get(RulesExt::Global()->Splits_TargetingDistance_Cylindrical);
 			auto const& technos = Helpers::Alex::getCellSpreadItemsExt(coordsTarget, cellSpread, true, cylindrical);
 
 			for (auto const pTechno : technos)
@@ -802,7 +802,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 		auto const pTypeSplits = pWeapon->Projectile;
 		int damage = pWeapon->Damage;
 
-		if (pTypeExt->AirburstWeapon_ApplyFirepowerMult)
+		if (pTypeExt->AirburstWeapon_ApplyFirepowerMult.Get(RulesExt::Global()->AirburstWeapon_ApplyFirepowerMult))
 			damage = static_cast<int>(damage * pBulletExt->FirepowerMult);
 
 		// Cache all pointer variables before the loop
@@ -820,8 +820,8 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 		int const speed = pWeapon->Speed;
 		int const scatterMin = pTypeExt->AirburstWeapon_SourceScatterMin.Get();
 		int const scatterMax = pTypeExt->AirburstWeapon_SourceScatterMax.Get();
-		bool const useFiringEffects = pTypeExt->AirburstWeapon_UseFiringEffects;
-		bool const headToTarget = pTypeExt->AirburstWeapon_HeadToTarget;
+		bool const useFiringEffects = pTypeExt->AirburstWeapon_UseFiringEffects.Get(RulesExt::Global()->AirburstWeapon_UseFiringEffects);
+		bool const headToTarget = pTypeExt->AirburstWeapon_HeadToTarget.Get(RulesExt::Global()->AirburstWeapon_HeadToTarget);
 		int const radialFireSegments = pTypeExt->AirburstWeapon_RadialFireSegments;
 		int cycledTargetIndex = 0;
 		int radialFireCounter = 0;

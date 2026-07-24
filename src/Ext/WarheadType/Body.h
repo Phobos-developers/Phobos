@@ -61,9 +61,9 @@ public:
 	Nullable<bool> Temporal_ApplyMultiplier;
 
 	Valueable<double> Crit_Chance;
-	Valueable<bool> Crit_ApplyChancePerTarget;
+	Nullable<bool> Crit_ApplyChancePerTarget;
 	Valueable<int> Crit_ExtraDamage;
-	Valueable<bool> Crit_ExtraDamage_ApplyFirepowerMult;
+	Nullable<bool> Crit_ExtraDamage_ApplyFirepowerMult;
 	Valueable<WarheadTypeClass*> Crit_Warhead;
 	Valueable<bool> Crit_Warhead_FullDetonation;
 	Valueable<AffectedTarget> Crit_AffectsTarget;
@@ -326,9 +326,9 @@ public:
 		, Temporal_ApplyMultiplier {}
 
 		, Crit_Chance { 0.0 }
-		, Crit_ApplyChancePerTarget { false }
+		, Crit_ApplyChancePerTarget {}
 		, Crit_ExtraDamage { 0 }
-		, Crit_ExtraDamage_ApplyFirepowerMult { false }
+		, Crit_ExtraDamage_ApplyFirepowerMult {}
 		, Crit_Warhead {}
 		, Crit_Warhead_FullDetonation { true }
 		, Crit_AffectsTarget { AffectedTarget::All }

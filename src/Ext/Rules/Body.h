@@ -344,7 +344,9 @@ public:
 		Valueable<bool> Conventional_IgnoreUnits;
 		Valueable<bool> DecloakDamagedTargets;
 
-		Valueable<bool> Interceptable;
+		Valueable<bool> ProjectileInterceptable;
+		Valueable<bool> Interceptor_GuardRange_IsCylindrical;
+		Valueable<bool> Interceptor_ApplyFirepowerMult;
 
 		Valueable<bool> SortCameoByName;
 
@@ -400,6 +402,21 @@ public:
 		Valueable<bool> Shrapnel_UseWeaponTargeting;
 		Valueable<bool> Shrapnel_IgnoreHitBuildings;
 		Valueable<bool> Shrapnel_ObeyWarheadTriggerConditions;
+
+		Valueable<bool> ReturnWeapon_ApplyFirepowerMult;
+
+		Valueable<bool> Splits_TargetingDistance_Cylindrical;
+		Valueable<bool> Splits_AllowRepeatTargets;
+		Valueable<bool> Splits_UseWeaponTargeting;
+		Valueable<bool> AirburstWeapon_ApplyFirepowerMult;
+		Valueable<bool> AirburstWeapon_UseFiringEffects;
+		Valueable<bool> AirburstWeapon_HeadToTarget;
+
+		Valueable<bool> AnimDamage_DealtByInvoker;
+		Valueable<bool> AnimDamage_ApplyFirepowerMult;
+
+		Valueable<bool> Crit_ApplyChancePerTarget;
+		Valueable<bool> Crit_ExtraDamage_ApplyFirepowerMult;
 
 		Nullable<PartialVector2D<int>> BuildingGuardRetryDelay;
 
@@ -719,7 +736,9 @@ public:
 			, Conventional_IgnoreUnits { false }
 			, DecloakDamagedTargets { true }
 
-			, Interceptable { false }
+			, ProjectileInterceptable { false }
+			, Interceptor_GuardRange_IsCylindrical { false }
+			, Interceptor_ApplyFirepowerMult { true }
 
 			, SortCameoByName { false }
 
@@ -774,6 +793,17 @@ public:
 			, Shrapnel_UseWeaponTargeting { false }
 			, Shrapnel_IgnoreHitBuildings { false }
 			, Shrapnel_ObeyWarheadTriggerConditions { true }
+			, ReturnWeapon_ApplyFirepowerMult { false }
+			, Splits_TargetingDistance_Cylindrical { false }
+			, Splits_AllowRepeatTargets { false }
+			, Splits_UseWeaponTargeting { false }
+			, AirburstWeapon_ApplyFirepowerMult { false }
+			, AirburstWeapon_UseFiringEffects { false }
+			, AirburstWeapon_HeadToTarget { false }
+			, AnimDamage_DealtByInvoker { false }
+			, AnimDamage_ApplyFirepowerMult { false }
+			, Crit_ApplyChancePerTarget { false }
+			, Crit_ExtraDamage_ApplyFirepowerMult { false }
 			, BuildingGuardRetryDelay {}
 			, Vertical_AircraftFix { true }
 			, Temporal_ApplyVersus { false }

@@ -907,12 +907,16 @@ TheaterPalette=                 ; boolean
 
 In `artmd.ini`:
 ```ini
-[SOMEANIM]                      ; AnimationType
-Weapon=                         ; WeaponType
-Damage.Delay=0                  ; integer, animation frames
-Damage.DealtByInvoker=false     ; boolean
-Damage.ApplyOncePerLoop=false   ; boolean
-Damage.ApplyFirepowerMult=false ; boolean
+[CombatDamage]
+AnimDamage.DealtByInvoker=false     ; boolean
+AnimDamage.ApplyFirepowerMult=false ; boolean
+
+[SOMEANIM]                          ; AnimationType
+Weapon=                             ; WeaponType
+Damage.Delay=0                      ; integer, animation frames
+Damage.DealtByInvoker=              ; boolean, default to [CombatDamage] -> AnimDamage.DealtByInvoker
+Damage.ApplyOncePerLoop=false       ; boolean
+Damage.ApplyFirepowerMult=          ; boolean, default to [CombatDamage] -> AnimDamage.ApplyFirepowerMult
 ```
 
 ```{note}
@@ -1495,27 +1499,35 @@ Gas.MaxDriftSpeed=2    ; integer (TS default is 5)
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+Splits.TargetingDistance.Cylindrical=false  ; boolean
+Splits.AllowRepeatTargets=false             ; boolean
+Splits.UseWeaponTargeting=false             ; boolean
+AirburstWeapon.ApplyFirepowerMult=false     ; boolean
+AirburstWeapon.UseFiringEffects=false       ; boolean
+AirburstWeapon.HeadToTarget=false           ; boolean
+
 [SOMEPROJECTILE]                            ; Projectile
 Splits=false                                ; boolean
 RetargetAccuracy=0.0                        ; floating point value, percents or absolute (0.0-1.0)
 RetargetSelf=true                           ; boolean
 RetargetSelf.Probability=0.5                ; floating point value, percents or absolute (0.0-1.0)
 Splits.TargetingDistance=5.0                ; floating point value, distance in cells
-Splits.TargetingDistance.Cylindrical=false  ; boolean
+Splits.TargetingDistance.Cylindrical=       ; boolean, default to [CombatDamage] -> Splits.TargetingDistance.Cylindrical
 Splits.TargetCellRange=3                    ; integer, cell offset
-Splits.AllowRepeatTargets=false             ; boolean
-Splits.UseWeaponTargeting=false             ; boolean
+Splits.AllowRepeatTargets=                  ; boolean, default to [CombatDamage] -> Splits.AllowRepeatTargets
+Splits.UseWeaponTargeting=                  ; boolean, default to [CombatDamage] -> Splits.UseWeaponTargeting
 AirburstSpread=1.5                          ; floating point value, distance in cells
 Airburst.UseCluster=false                   ; boolean
 Airburst.RandomClusters=false               ; boolean
 Airburst.TargetAsSource=false               ; boolean
 Airburst.TargetAsSource.SkipHeight=false    ; boolean
 AroundTarget=                               ; boolean
-AirburstWeapon.ApplyFirepowerMult=false     ; boolean
+AirburstWeapon.ApplyFirepowerMult=          ; boolean, default to [CombatDamage] -> AirburstWeapon.ApplyFirepowerMult
 AirburstWeapon.SourceScatterMin=0.0         ; floating point value, distance in cells
 AirburstWeapon.SourceScatterMax=0.0         ; floating point value, distance in cells
-AirburstWeapon.UseFiringEffects=false       ; boolean
-AirburstWeapon.HeadToTarget=false           ; boolean
+AirburstWeapon.UseFiringEffects=            ; boolean, default to [CombatDamage] -> AirburstWeapon.UseFiringEffects
+AirburstWeapon.HeadToTarget=                ; boolean, default to [CombatDamage] -> AirburstWeapon.HeadToTarget
 AirburstWeapon.RadialFireSegments=0         ; integer
 ```
 

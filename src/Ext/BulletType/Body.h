@@ -54,7 +54,7 @@ public:
 	Valueable<bool> AAOnly;
 	Nullable<bool> Arcing_AllowElevationInaccuracy;
 	Valueable<WeaponTypeClass*> ReturnWeapon;
-	Valueable<bool> ReturnWeapon_ApplyFirepowerMult;
+	Nullable<bool> ReturnWeapon_ApplyFirepowerMult;
 
 	Valueable<bool> SubjectToGround;
 
@@ -69,15 +69,15 @@ public:
 	Valueable<bool> Airburst_TargetAsSource;
 	Valueable<bool> Airburst_TargetAsSource_SkipHeight;
 	Valueable<Leptons> Splits_TargetingDistance;
-	Valueable<bool> Splits_TargetingDistance_Cylindrical;
-	Valueable<bool> Splits_AllowRepeatTargets;
+	Nullable<bool> Splits_TargetingDistance_Cylindrical;
+	Nullable<bool> Splits_AllowRepeatTargets;
 	Valueable<int> Splits_TargetCellRange;
-	Valueable<bool> Splits_UseWeaponTargeting;
-	Valueable<bool> AirburstWeapon_ApplyFirepowerMult;
+	Nullable<bool> Splits_UseWeaponTargeting;
+	Nullable<bool> AirburstWeapon_ApplyFirepowerMult;
 	Valueable<Leptons> AirburstWeapon_SourceScatterMin;
 	Valueable<Leptons> AirburstWeapon_SourceScatterMax;
-	Valueable<bool> AirburstWeapon_UseFiringEffects;
-	Valueable<bool> AirburstWeapon_HeadToTarget;
+	Nullable<bool> AirburstWeapon_UseFiringEffects;
+	Nullable<bool> AirburstWeapon_HeadToTarget;
 	Valueable<int> AirburstWeapon_RadialFireSegments;
 
 	Valueable<bool> Parachuted;

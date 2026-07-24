@@ -871,8 +871,10 @@ BombParachute=           ; AnimationType, default to [General] -> BombParachute
 
 In `rulesmd.ini`:
 ```ini
-[General]
-Interceptable=false                         ; boolean
+[CombatDamage]
+ProjectileInterceptable=false               ; boolean
+Interceptor.GuardRange.IsCylindrical=false  ; boolean
+Interceptor.ApplyFirepowerMult=true         ; boolean
 
 [SOMETECHNO]                                ; TechnoType
 Interceptor=false                           ; boolean
@@ -883,10 +885,10 @@ Interceptor.GuardRange=0.0                  ; floating point value
 Interceptor.VeteranGuardRange=              ; floating point value
 Interceptor.EliteGuardRange=                ; floating point value
 Interceptor.MinimumGuardRange=0.0           ; floating point value
-Interceptor.GuardRange.IsCylindrical=false  ; boolean
+Interceptor.GuardRange.IsCylindrical=       ; boolean, default to [CombatDamage] -> Interceptor.GuardRange.IsCylindrical
 Interceptor.VeteranMinimumGuardRange=       ; floating point value
 Interceptor.EliteMinimumGuardRange=         ; floating point value
-Interceptor.ApplyFirepowerMult=true         ; boolean
+Interceptor.ApplyFirepowerMult=             ; boolean, default to [CombatDamage] -> Interceptor.ApplyFirepowerMult
 Interceptor.DeleteOnIntercept=false         ; boolean
 Interceptor.WeaponOverride=                 ; WeaponType
 Interceptor.WeaponReplaceProjectile=false   ; boolean
@@ -894,7 +896,7 @@ Interceptor.WeaponCumulativeDamage=false    ; boolean
 Interceptor.KeepIntact=false                ; boolean
 
 [SOMEPROJECTILE]                            ; Projectile
-Interceptable=false                         ; boolean, default to [General] -> Interceptable
+Interceptable=false                         ; boolean, default to [CombatDamage] -> ProjectileInterceptable
 Interceptable.DeleteOnIntercept=false       ; boolean
 Interceptable.WeaponOverride=               ; WeaponType
 Strength=0                                  ; integer
@@ -1125,9 +1127,12 @@ SubjectToGround=false         ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+ReturnWeapon.ApplyFirepowerMult=false   ; boolean
+
 [SOMEPROJECTILE]                        ; Projectile
 ReturnWeapon=                           ; WeaponType
-ReturnWeapon.ApplyFirepowerMult=false   ; boolean
+ReturnWeapon.ApplyFirepowerMult=        ; boolean, default to [CombatDamage] -> ReturnWeapon.ApplyFirepowerMult
 ```
 
 ## Super Weapons
@@ -2653,11 +2658,15 @@ AffectsGround=true         ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+Crit.ApplyChancePerTarget=false            ; boolean
+Crit.ExtraDamage.ApplyFirepowerMult=false  ; boolean
+
 [SOMEWARHEAD]                              ; WarheadType
 Crit.Chance=0.0                            ; floating point value, percents or absolute (0.0-1.0)
-Crit.ApplyChancePerTarget=false            ; boolean
+Crit.ApplyChancePerTarget=                 ; boolean, default to [CombatDamage] -> Crit.ApplyChancePerTarget
 Crit.ExtraDamage=0                         ; integer
-Crit.ExtraDamage.ApplyFirepowerMult=false  ; boolean
+Crit.ExtraDamage.ApplyFirepowerMult=       ; boolean, default to [CombatDamage] -> Crit.ExtraDamage.ApplyFirepowerMult
 Crit.Warhead=                              ; WarheadType
 Crit.Warhead.FullDetonation=true           ; boolean
 Crit.AffectsTarget=all                     ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)

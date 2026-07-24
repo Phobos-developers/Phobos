@@ -400,7 +400,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Conventional_IgnoreUnits.Read(exINI, GameStrings::General, "Conventional.IgnoreUnits");
 	this->DecloakDamagedTargets.Read(exINI, GameStrings::General, "DecloakDamagedTargets");
 
-	this->Interceptable.Read(exINI, GameStrings::General, "Interceptable");
+	this->ProjectileInterceptable.Read(exINI, GameStrings::CombatDamage, "ProjectileInterceptable");
+	this->Interceptor_GuardRange_IsCylindrical.Read(exINI, GameStrings::CombatDamage, "Interceptor.GuardRange.IsCylindrical");
+	this->Interceptor_ApplyFirepowerMult.Read(exINI, GameStrings::CombatDamage, "Interceptor.ApplyFirepowerMult");
 
 	this->SortCameoByName.Read(exINI, GameStrings::General, "SortCameoByName");
 
@@ -456,6 +458,21 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Shrapnel_UseWeaponTargeting.Read(exINI, GameStrings::CombatDamage, "Shrapnel.UseWeaponTargeting");
 	this->Shrapnel_IgnoreHitBuildings.Read(exINI, GameStrings::CombatDamage, "Shrapnel.IgnoreHitBuildings");
 	this->Shrapnel_ObeyWarheadTriggerConditions.Read(exINI, GameStrings::CombatDamage, "Shrapnel.ObeyWarheadTriggerConditions");
+
+	this->ReturnWeapon_ApplyFirepowerMult.Read(exINI, GameStrings::CombatDamage, "ReturnWeapon.ApplyFirepowerMult");
+
+	this->Splits_TargetingDistance_Cylindrical.Read(exINI, GameStrings::CombatDamage, "Splits.TargetingDistance.Cylindrical");
+	this->Splits_AllowRepeatTargets.Read(exINI, GameStrings::CombatDamage, "Splits.AllowRepeatTargets");
+	this->Splits_UseWeaponTargeting.Read(exINI, GameStrings::CombatDamage, "Splits.UseWeaponTargeting");
+	this->AirburstWeapon_ApplyFirepowerMult.Read(exINI, GameStrings::CombatDamage, "AirburstWeapon.ApplyFirepowerMult");
+	this->AirburstWeapon_UseFiringEffects.Read(exINI, GameStrings::CombatDamage, "AirburstWeapon.UseFiringEffects");
+	this->AirburstWeapon_HeadToTarget.Read(exINI, GameStrings::CombatDamage, "AirburstWeapon.HeadToTarget");
+
+	this->AnimDamage_DealtByInvoker.Read(exINI, GameStrings::CombatDamage, "Damage.DealtByInvoker");
+	this->AnimDamage_ApplyFirepowerMult.Read(exINI, GameStrings::CombatDamage, "Damage.ApplyFirepowerMult");
+
+	this->Crit_ApplyChancePerTarget.Read(exINI, GameStrings::CombatDamage, "Crit.ApplyChancePerTarget");
+	this->Crit_ExtraDamage_ApplyFirepowerMult.Read(exINI, GameStrings::CombatDamage, "Crit.ExtraDamage.ApplyFirepowerMult");
 
 	this->BuildingGuardRetryDelay.Read(exINI, GameStrings::General, "BuildingGuardRetryDelay");
 
@@ -826,7 +843,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CreateAnimsOnZeroDamage)
 		.Process(this->Conventional_IgnoreUnits)
 		.Process(this->DecloakDamagedTargets)
-		.Process(this->Interceptable)
+		.Process(this->ProjectileInterceptable)
+		.Process(this->Interceptor_GuardRange_IsCylindrical)
+		.Process(this->Interceptor_ApplyFirepowerMult)
 		.Process(this->SortCameoByName)
 		.Process(this->MergeBuildingDamage)
 		.Process(this->BuildingRadioLink_SyncOwner)
@@ -867,6 +886,17 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shrapnel_UseWeaponTargeting)
 		.Process(this->Shrapnel_IgnoreHitBuildings)
 		.Process(this->Shrapnel_ObeyWarheadTriggerConditions)
+		.Process(this->ReturnWeapon_ApplyFirepowerMult)
+		.Process(this->Splits_TargetingDistance_Cylindrical)
+		.Process(this->Splits_AllowRepeatTargets)
+		.Process(this->Splits_UseWeaponTargeting)
+		.Process(this->AirburstWeapon_ApplyFirepowerMult)
+		.Process(this->AirburstWeapon_UseFiringEffects)
+		.Process(this->AirburstWeapon_HeadToTarget)
+		.Process(this->AnimDamage_DealtByInvoker)
+		.Process(this->AnimDamage_ApplyFirepowerMult)
+		.Process(this->Crit_ApplyChancePerTarget)
+		.Process(this->Crit_ExtraDamage_ApplyFirepowerMult)
 		.Process(this->BuildingGuardRetryDelay)
 		.Process(this->Vertical_AircraftFix)
 		.Process(this->Temporal_ApplyVersus)

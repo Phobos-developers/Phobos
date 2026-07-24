@@ -861,7 +861,7 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_LateLogic, 0x6)
 			pBulletExt->InterceptorTechnoType = pTypeExt;
 			pBulletExt->InterceptedStatus |= InterceptedStatus::Targeted;
 
-			if (!pInterceptorType->ApplyFirepowerMult)
+			if (!pInterceptorType->ApplyFirepowerMult.Get(RulesExt::Global()->Interceptor_ApplyFirepowerMult))
 				pBullet->Health = pWeapon->Damage;
 		}
 	}
