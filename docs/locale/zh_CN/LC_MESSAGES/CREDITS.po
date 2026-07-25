@@ -2401,6 +2401,7 @@ msgid ""
 "Global default value for `LeptonMindControlOffset` and "
 "`MindControlRingOffset`"
 msgstr ""
+"`LeptonMindControlOffset` 和 `MindControlRingOffset` 的全局默认值"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："

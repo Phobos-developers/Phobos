@@ -2215,6 +2215,7 @@ msgid ""
 "Global default value for `LeptonMindControlOffset` and "
 "`MindControlRingOffset` (by Noble_Fish)"
 msgstr ""
+"`LeptonMindControlOffset` 和 `MindControlRingOffset` 的全局默认值（by Noble_Fish）"
 
 msgid ""
 "[Customize crash spin multiplier](Fixed-or-Improved-Logics.md#customize-"

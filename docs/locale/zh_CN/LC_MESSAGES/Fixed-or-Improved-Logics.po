@@ -2125,16 +2125,19 @@ msgstr "现在你可以使用下面的标签自定义这个杀伤值。"
 
 msgid "Customize the global default values of some vanilla flags"
 msgstr ""
+"自定义部分原版语句的全局默认值"
 
 msgid ""
 "The following flags supplement definitions for flags that do not have "
 "global default values in vanilla."
 msgstr ""
+"以下语句为原版中没有全局默认值的语句补充了默认值定义。"
 
 msgid ""
 "Unless otherwise specified, the definition is the same as the name of the"
 " micro-level definition flag."
 msgstr ""
+"除非特别说明，默认与微观定义语句名称相同。"
 
 msgid "Customizing effect of level lighting on air units"
 msgstr "自定义光照等级对空中单位的影响"
