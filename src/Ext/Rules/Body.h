@@ -333,7 +333,6 @@ public:
 		Valueable<bool> AffectsInvokerOnly_IgnoreInvokerState;
 
 		Valueable<bool> FiringAnim_Update;
-		int FiringAnimUpdateCount;
 
 		Valueable<bool> ExtendedPlayerRepair;
 		
@@ -719,7 +718,6 @@ public:
 			, HoverLocomotorMakesWake { true }
 			, ShipLocomotorMakesWake { true }
 			, FiringAnim_Update { false }
-			, FiringAnimUpdateCount { 0 }
 			, ExtendedPlayerRepair { false }
 			, Shrapnel_IgnoreHitBuildings { false }
 			, Shrapnel_ObeyWarheadTriggerConditions { true }

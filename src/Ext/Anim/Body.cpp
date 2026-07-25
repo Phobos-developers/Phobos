@@ -3,6 +3,7 @@
 #include <GameOptionsClass.h>
 
 #include <Ext/House/Body.h>
+#include <Ext/Scenario/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Misc/SyncLogging.h>
@@ -21,7 +22,7 @@ AnimExt::~AnimExt()
 		TechnoExt::Fetch(this->ParentBuilding)->AnimRefCount--;
 
 	if (this->FiringAnim_Weapon)
-		RulesExt::Global()->FiringAnimUpdateCount--;
+		ScenarioExt::Global()->FiringAnimUpdateCount--;
 }
 
 void AnimExt::SetInvoker(TechnoClass* pInvoker)
