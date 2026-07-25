@@ -305,6 +305,7 @@ DEFINE_HOOK(0x683E7F, ScenarioClass_Start_Optimizations, 0x7)
 
 DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 {
+	const int marginX = Phobos::Config::MessageDisplayInCenter ? 28 : 10;
 	int coordY = 0;
 
 #ifndef IS_RELEASE_VER
@@ -315,7 +316,7 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 		auto wanted = Drawing::GetTextDimensions(Phobos::VersionDescription, { 0, 0 }, 0, 2, 0);
 
 		RectangleStruct rect = {
-			DSurface::Composite->GetWidth() - wanted.Width - 30,
+			DSurface::Composite->GetWidth() - wanted.Width - marginX,
 			0,
 			wanted.Width + 10,
 			wanted.Height + 10
@@ -358,7 +359,7 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 	auto wantedB = Drawing::GetTextDimensions(buffer, { 0, 0 }, 0, 2, 0);
 
 	RectangleStruct rectB = {
-		DSurface::Composite->GetWidth() - wantedB.Width - 30,
+		DSurface::Composite->GetWidth() - wantedB.Width - marginX,
 		coordY,
 		wantedB.Width + 10,
 		wantedB.Height + 10
