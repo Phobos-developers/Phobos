@@ -1,10 +1,9 @@
-#include <TerrainClass.h>
 #include <IsometricTileTypeClass.h>
 
 #include <Ext/TerrainType/Body.h>
 #include <Ext/CaptureManager/Body.h>
-#include <Ext/WarheadType/Body.h>
 #include <Ext/Building/Body.h>
+#include <Ext/Unit/Body.h>
 
 #pragma region AllowDeployControlledMCV
 
@@ -22,7 +21,7 @@ static inline void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoC
 {
 	const auto pAnimType = pTechnoFrom->MindControlRingAnim
 		? pTechnoFrom->MindControlRingAnim->Type
-		: TechnoExt::ExtMap.Find(pTechnoFrom)->MindControlRingAnimType;
+		: TechnoExt::Fetch(pTechnoFrom)->MindControlRingAnimType;
 
 	if (const auto Controller = pTechnoFrom->MindControlledBy)
 	{
@@ -122,7 +121,7 @@ DEFINE_HOOK(0x449E2E, BuildingClass_Mi_Selling_CreateUnit, 0x6)
 	// Remember MC ring animation.
 	if (pStructure->IsMindControlled())
 	{
-		auto const pTechnoExt = TechnoExt::ExtMap.Find(pStructure);
+		auto const pTechnoExt = TechnoExt::Fetch(pStructure);
 		pTechnoExt->UpdateMindControlAnim();
 	}
 
@@ -151,7 +150,7 @@ DEFINE_HOOK(0x73FEC1, UnitClass_WhatAction_DeploysIntoDesyncFix, 0x6)
 	GET(UnitClass* const, pThis, ESI);
 	REF_STACK(Action, action, STACK_OFFSET(0x20, 0x8));
 
-	if (!TechnoExt::CanDeployIntoBuilding(pThis))
+	if (!UnitExt::CanDeployIntoBuilding(pThis))
 		action = Action::NoDeploy;
 
 	return SkipGameCode;
@@ -180,28 +179,28 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 			}
 			else if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
 			{
-				if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+				if (!TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn)
 					return CanNotExistHere;
 			}
 		}
 	}
 	else if (pBuildingType->LaserFencePost || pBuildingType->Gate)
 	{
-		bool skipFlag = TechnoExt::Deployer ? TechnoExt::Deployer->CurrentMapCoords == pCell->MapCoords : false;
+		bool skipFlag = UnitExt::Deployer ? UnitExt::Deployer->CurrentMapCoords == pCell->MapCoords : false;
 		bool builtOnCanBeBuiltOn = false;
 
 		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
 			if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
 			{
-				if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+				if (!TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn)
 					return CanNotExistHere;
 
 				builtOnCanBeBuiltOn = true;
 			}
 			else if (pObject->AbstractFlags & AbstractFlags::Techno)
 			{
-				if (pObject == TechnoExt::Deployer)
+				if (pObject == UnitExt::Deployer)
 				{
 					skipFlag = true;
 				}
@@ -236,21 +235,21 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 	}
 	else
 	{
-		bool skipFlag = TechnoExt::Deployer ? TechnoExt::Deployer->CurrentMapCoords == pCell->MapCoords : false;
+		bool skipFlag = UnitExt::Deployer ? UnitExt::Deployer->CurrentMapCoords == pCell->MapCoords : false;
 		bool builtOnCanBeBuiltOn = false;
 
 		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
 			if (pObject->AbstractFlags & AbstractFlags::Techno)
 			{
-				if (pObject == TechnoExt::Deployer)
+				if (pObject == UnitExt::Deployer)
 					skipFlag = true;
 				else
 					return CanNotExistHere;
 			}
 			else if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
 			{
-				if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+				if (!TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn)
 					return CanNotExistHere;
 
 				builtOnCanBeBuiltOn = true;
@@ -273,7 +272,7 @@ DEFINE_HOOK(0x7396D2, UnitClass_TryToDeploy_Transfer, 0x5)
 	if (pUnit->Type->DeployToFire && pUnit->Target)
 		pStructure->LastTarget = pUnit->Target;
 
-	const auto pStructureExt = BuildingExt::ExtMap.Find(pStructure);
+	const auto pStructureExt = BuildingExt::Fetch(pStructure);
 	pStructureExt->DeployedTechno = true;
 
 	return 0;

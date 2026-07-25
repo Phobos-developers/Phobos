@@ -1,14 +1,10 @@
 #include "Body.h"
 
-#include <Helpers\Macro.h>
-
 #include <HouseClass.h>
 #include <BuildingClass.h>
 #include <InfantryClass.h>
 #include <OverlayTypeClass.h>
 #include <VocClass.h>
-
-#include <Utilities/Macro.h>
 
 DEFINE_HOOK(0x71E940, TEventClass_Execute, 0x5)
 {

@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Phobos'
-copyright = '2025, The Phobos Contributors'
+copyright = '2026, The Phobos Contributors'
 author = 'The Phobos Contributors'
 
 # -- General configuration ---------------------------------------------------
@@ -38,7 +38,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 locale_dirs = ['locale/']
 gettext_compact = False
-gettext_additional_targets = ["literal-block"]
+gettext_location = False
 
 # -- Options for HTML output -------------------------------------------------
 

@@ -1,7 +1,5 @@
 #include "Body.h"
 
-#include <Ext/House/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/Scenario/Body.h>
 
 ScriptExt::ExtContainer ScriptExt::ExtMap;
@@ -9,23 +7,23 @@ ScriptExt::ExtContainer ScriptExt::ExtMap;
 // =============================
 // load / save
 
-void ScriptExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+template <typename T>
+void ScriptExt::Serialize(T& Stm)
 {
-	// Nothing yet
+	//Stm;
 }
 
-void ScriptExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void ScriptExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	// Nothing yet
+	AbstractExt::LoadFromStream(Stm);
+	this->Serialize(Stm);
 }
 
-// =============================
-// container
-
-ScriptExt::ExtContainer::ExtContainer() : Container("ScriptClass")
-{ }
-
-ScriptExt::ExtContainer::~ExtContainer() = default;
+void ScriptExt::SaveToStream(PhobosStreamWriter& Stm)
+{
+	AbstractExt::SaveToStream(Stm);
+	this->Serialize(Stm);
+}
 
 void ScriptExt::ProcessAction(TeamClass* pTeam)
 {
@@ -325,7 +323,7 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 			return;
 	}
 
-	auto const pExt = TeamExt::ExtMap.Find(pTeam);
+	auto const pExt = TeamExt::Fetch(pTeam);
 	auto const pLeaderUnit = ScriptExt::FindTheTeamLeader(pTeam);
 	pExt->TeamLeader = pLeaderUnit;
 
@@ -344,7 +342,7 @@ void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 			if (pUnitType->Ammo > 0 && pUnit->Ammo < pUnitType->Ammo)
 			{
 				// If an aircraft object have AirportBound it must be evaluated
-				if (auto const pAircraft = abstract_cast<AircraftClass*>(pUnit))
+				if (auto const pAircraft = abstract_cast<AircraftClass*, true>(pUnit))
 				{
 					if (pAircraft->Type->AirportBound)
 					{
@@ -376,7 +374,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown)
 	const auto currentMission = pScript->CurrentMission;
 	const auto initialCountdown = scriptActions[currentMission].Argument;
 	bool gatherUnits = false;
-	auto const pExt = TeamExt::ExtMap.Find(pTeam);
+	auto const pExt = TeamExt::Fetch(pTeam);
 
 	// Load countdown
 	if (pExt->Countdown_RegroupAtLeader >= 0)
@@ -499,7 +497,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown)
 					const auto mission = pUnit->GetCurrentMission();
 
 					// Is near of the leader, then protect the area
-					if (mission != Mission::Area_Guard || mission != Mission::Attack)
+					if (mission != Mission::Area_Guard && mission != Mission::Attack)
 						pUnit->QueueMission(Mission::Area_Guard, true);
 
 					nTogether++;
@@ -600,7 +598,7 @@ void ScriptExt::WaitIfNoTarget(TeamClass* pTeam, int attempts)
 	if (attempts < 0)
 		attempts = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
-	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto const pTeamData = TeamExt::Fetch(pTeam);
 
 	if (attempts <= 0)
 		pTeamData->WaitNoTargetAttempts = -1; // Infinite waits if no target
@@ -618,7 +616,7 @@ void ScriptExt::TeamWeightReward(TeamClass* pTeam, double award)
 	if (award <= 0)
 		award = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
-	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto const pTeamData = TeamExt::Fetch(pTeam);
 
 	if (award > 0)
 		pTeamData->NextSuccessWeightAward = award;
@@ -650,7 +648,7 @@ void ScriptExt::PickRandomScript(TeamClass* pTeam, int idxScriptsList)
 				if (pNewScript->ActionsCount > 0)
 				{
 					changeFailed = false;
-					TeamExt::ExtMap.Find(pTeam)->PreviousScriptList.push_back(pTeam->CurrentScript);
+					TeamExt::Fetch(pTeam)->PreviousScriptList.push_back(pTeam->CurrentScript);
 					pTeam->CurrentScript = nullptr;
 					pTeam->CurrentScript = GameCreate<ScriptClass>(pNewScript);
 
@@ -685,7 +683,7 @@ void ScriptExt::SetCloseEnoughDistance(TeamClass* pTeam, double distance)
 	if (distance <= 0)
 		distance = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
-	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto const pTeamData = TeamExt::Fetch(pTeam);
 
 	if (distance > 0)
 		pTeamData->CloseEnough = distance;
@@ -711,7 +709,7 @@ void ScriptExt::SetMoveMissionEndMode(TeamClass* pTeam, int mode)
 	if (mode < 0 || mode > 2)
 		mode = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
-	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto const pTeamData = TeamExt::Fetch(pTeam);
 
 	if (mode >= 0 && mode <= 2)
 		pTeamData->MoveMissionEndMode = mode;
@@ -728,7 +726,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 		return false;
 
 	double closeEnough = RulesClass::Instance->CloseEnough;
-	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto const pTeamData = TeamExt::Fetch(pTeam);
 
 	if (pTeamData->CloseEnough > 0)
 		closeEnough = pTeamData->CloseEnough * (double)Unsorted::LeptonsPerCell;
@@ -1081,7 +1079,7 @@ bool ScriptExt::IsExtVariableAction(int action)
 
 void ScriptExt::Set_ForceJump_Countdown(TeamClass* pTeam, bool repeatLine, int count)
 {
-	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto const pTeamData = TeamExt::Fetch(pTeam);
 	//auto const pScript = pTeam->CurrentScript;
 
 	if (count <= 0)
@@ -1107,7 +1105,7 @@ void ScriptExt::Set_ForceJump_Countdown(TeamClass* pTeam, bool repeatLine, int c
 
 void ScriptExt::Stop_ForceJump_Countdown(TeamClass* pTeam)
 {
-	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto const pTeamData = TeamExt::Fetch(pTeam);
 	//auto const pScript = pTeam->CurrentScript;
 	pTeamData->ForceJump_InitialCountdown = -1;
 	pTeamData->ForceJump_Countdown.Stop();
@@ -1120,7 +1118,7 @@ void ScriptExt::Stop_ForceJump_Countdown(TeamClass* pTeam)
 
 void ScriptExt::JumpBackToPreviousScript(TeamClass* pTeam)
 {
-	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto const pTeamData = TeamExt::Fetch(pTeam);
 
 	if (!pTeamData->PreviousScriptList.empty())
 	{
@@ -1199,7 +1197,7 @@ void ScriptExt::ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLead
 
 	if (!pSuperCSphere->IsReady || (pSuperCSphere->IsPowered() && !pOwner->Is_Powered()))
 	{
-		if (pSuperCSphere->IsPresent && 1.0 - RulesClass::Instance->AIMinorSuperReadyPercent < pSuperCSphere->RechargeTimer.GetTimeLeft() / pSuperCSphere->GetRechargeTime())
+		if (pSuperCSphere->IsPresent && 1.0f - RulesClass::Instance->AIMinorSuperReadyPercent < pSuperCSphere->RechargeTimer.GetTimeLeft() / pSuperCSphere->GetRechargeTime())
 		{
 			ScriptExt::Log(logTextBase, "ChronoSphere superweapon [%s] charge not at AIMinorSuperReadyPercent yet, not jumping to next line yet");
 			return;
@@ -1235,7 +1233,7 @@ void ScriptExt::ForceGlobalOnlyTargetHouseEnemy(TeamClass* pTeam, int mode)
 	if (mode < 0 || mode > 2)
 		mode = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
-	HouseExt::ForceOnlyTargetHouseEnemy(pTeam->Owner, mode);
+	HouseExt::SetForceOnlyTargetHouseEnemy(pTeam->Owner, mode);
 
 	// This action finished
 	pTeam->StepCompleted = true;
@@ -1261,3 +1259,11 @@ void ScriptExt::Log(const char* pFormat, ...)
 	Debug::LogWithVArgs(pFormat, args);
 	va_end(args);
 }
+
+// =============================
+// container
+
+ScriptExt::ExtContainer::ExtContainer() : Container("ScriptClass")
+{ }
+
+ScriptExt::ExtContainer::~ExtContainer() = default;

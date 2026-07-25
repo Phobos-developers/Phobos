@@ -1,26 +1,20 @@
 #include "Body.h"
 
-#include <AnimClass.h>
-#include <TacticalClass.h>
-#include <TerrainClass.h>
-#include <TerrainTypeClass.h>
-
 #include <Ext/Anim/Body.h>
-#include <Utilities/GeneralUtils.h>
 
 TerrainTypeExt::ExtContainer TerrainTypeExt::ExtMap;
 
-int TerrainTypeExt::ExtData::GetTiberiumGrowthStage()
+int TerrainTypeExt::GetTiberiumGrowthStage()
 {
 	return GeneralUtils::GetRangedRandomOrSingleValue(this->SpawnsTiberium_GrowthStage.Get());
 }
 
-int TerrainTypeExt::ExtData::GetCellsPerAnim()
+int TerrainTypeExt::GetCellsPerAnim()
 {
 	return GeneralUtils::GetRangedRandomOrSingleValue(this->SpawnsTiberium_CellsPerAnim.Get());
 }
 
-void TerrainTypeExt::ExtData::PlayDestroyEffects(const CoordStruct& coords)
+void TerrainTypeExt::PlayDestroyEffects(const CoordStruct& coords)
 {
 	VocClass::PlayIndexAtPos(this->DestroySound, coords);
 	AnimExt::CreateRandomAnim(this->DestroyAnim, coords);
@@ -42,13 +36,14 @@ void TerrainTypeExt::Remove(TerrainClass* pTerrain)
 // load / save
 
 template <typename T>
-void TerrainTypeExt::ExtData::Serialize(T& Stm)
+void TerrainTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->SpawnsTiberium_Type)
 		.Process(this->SpawnsTiberium_Range)
 		.Process(this->SpawnsTiberium_GrowthStage)
 		.Process(this->SpawnsTiberium_CellsPerAnim)
+		.Process(this->SpawnsTiberium_Particle)
 		.Process(this->DestroyAnim)
 		.Process(this->DestroySound)
 		.Process(this->MinimapColor)
@@ -62,7 +57,7 @@ void TerrainTypeExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void TerrainTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -72,6 +67,7 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnsTiberium_Range.Read(exINI, pSection, "SpawnsTiberium.Range");
 	this->SpawnsTiberium_GrowthStage.Read(exINI, pSection, "SpawnsTiberium.GrowthStage");
 	this->SpawnsTiberium_CellsPerAnim.Read(exINI, pSection, "SpawnsTiberium.CellsPerAnim");
+	this->SpawnsTiberium_Particle.Read(exINI, pSection, "SpawnsTiberium.Particle");
 
 	this->DestroyAnim.Read(exINI, pSection, "DestroyAnim");
 	this->DestroySound.Read(exINI, pSection, "DestroySound");
@@ -96,16 +92,16 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pThis->ImageFile, this->PaletteFile.data());
 }
 
-void TerrainTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void TerrainTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<TerrainTypeClass>::LoadFromStream(Stm);
+	ObjectTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
 }
 
-void TerrainTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void TerrainTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<TerrainTypeClass>::SaveToStream(Stm);
+	ObjectTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
@@ -147,31 +143,6 @@ DEFINE_HOOK(0x71E364, TerrainTypeClass_SDDTOR, 0x6)
 	GET(TerrainTypeClass*, pItem, ECX);
 
 	TerrainTypeExt::ExtMap.Remove(pItem);
-
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x71E1D0, TerrainTypeClass_SaveLoad_Prefix, 0x5)
-DEFINE_HOOK(0x71E240, TerrainTypeClass_SaveLoad_Prefix, 0x8)
-{
-	GET_STACK(TerrainTypeClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	TerrainTypeExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x71E235, TerrainTypeClass_Load_Suffix, 0x5)
-{
-	TerrainTypeExt::ExtMap.LoadStatic();
-
-	return 0;
-}
-
-DEFINE_HOOK(0x71E25A, TerrainTypeClass_Save_Suffix, 0x5)
-{
-	TerrainTypeExt::ExtMap.SaveStatic();
 
 	return 0;
 }

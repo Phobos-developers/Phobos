@@ -1,7 +1,8 @@
 #include "Body.h"
 
-#include <SessionClass.h>
 #include <VeinholeMonsterClass.h>
+
+#include <Ext/House/Body.h>
 
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
@@ -90,6 +91,11 @@ void ScenarioExt::Remove(ScenarioClass* pThis)
 void ScenarioExt::LoadFromINIFile(ScenarioClass* pThis, CCINIClass* pINI)
 {
 	Data->LoadFromINI(pINI);
+
+	for (auto const pHouse : HouseClass::Array)
+	{
+		HouseExt::Fetch(pHouse)->FreeRadar = ScenarioClass::Instance->FreeRadar;
+	}
 }
 
 void ScenarioExt::ExtData::UpdateAutoDeathObjectsInLimbo()
@@ -111,6 +117,19 @@ void ScenarioExt::ExtData::UpdateTransportReloaders()
 
 		if (pTechno->IsAlive && pTechno->Transporter && pTechno->Transporter->IsInLogic)
 			pTechno->Reload();
+	}
+}
+
+void ScenarioExt::ExtData::RegisterAutoDeath(TechnoClass* pTechno)
+{
+	if (auto const pExt = TechnoExt::Fetch(pTechno))
+	{
+		if (pExt->TypeExtData->AutoDeath_Behavior.isset())
+		{
+			auto& vec = this->AutoDeathObjects;
+			if (std::find(vec.begin(), vec.end(), pExt) == vec.end())
+				vec.push_back(pExt);
+		}
 	}
 }
 
@@ -171,6 +190,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->UndergroundTracker)
 		.Process(this->SpecialTracker)
 		.Process(this->FallingDownTracker)
+		.Process(this->EVAIndex)
 		;
 }
 
@@ -182,6 +202,8 @@ void ScenarioExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 
 void ScenarioExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
+	Global()->EVAIndex = VoxClass::EVAIndex;
+
 	Extension<ScenarioClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }

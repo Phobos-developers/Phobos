@@ -1,15 +1,11 @@
 #pragma once
 
 #include <ScenarioClass.h>
-#include <MessageListClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
 #include <Ext/Techno/Body.h>
-
-#include <map>
 
 struct ExtendedVariable
 {
@@ -34,8 +30,8 @@ public:
 		std::map<int, CellStruct> Waypoints;
 		std::map<int, ExtendedVariable> Variables[2]; // 0 for local, 1 for global
 
-		std::vector<TechnoExt::ExtData*> AutoDeathObjects;
-		std::vector<TechnoExt::ExtData*> TransportReloaders; // Objects that can reload ammo in limbo
+		std::vector<TechnoExt*> AutoDeathObjects;
+		std::vector<TechnoExt*> TransportReloaders; // Objects that can reload ammo in limbo
 
 		bool SWSidebar_Enable;
 		std::vector<int> SWSidebar_Indices;
@@ -46,11 +42,13 @@ public:
 		PhobosFixedString<64u> DefaultLS800BkgdName;
 		PhobosFixedString<64u> DefaultLS800BkgdPal;
 
-		std::vector<TechnoExt::ExtData*> LimboLaunchers;
+		std::vector<TechnoExt*> LimboLaunchers;
 
 		DynamicVectorClass<TechnoClass*> UndergroundTracker; // Technos that are underground.
 		DynamicVectorClass<TechnoClass*> SpecialTracker; // For special purposes, like tracking technos that are forced moving. Currently unused.
 		DynamicVectorClass<TechnoClass*> FallingDownTracker; // Technos that are falling down, parachutes and land technos falling from bridge.
+
+		int EVAIndex;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
@@ -69,6 +67,7 @@ public:
 			, UndergroundTracker {}
 			, SpecialTracker {}
 			, FallingDownTracker {}
+			, EVAIndex { -2 }
 		{ }
 
 		static void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
@@ -80,13 +79,12 @@ public:
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
-
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void UpdateAutoDeathObjectsInLimbo();
 		void UpdateTransportReloaders();
+		void RegisterAutoDeath(TechnoClass* pTechno);
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
@@ -114,10 +112,4 @@ public:
 	{
 		Allocate(ScenarioClass::Instance);
 	}
-
-	static void PointerGotInvalid(void* ptr, bool removed)
-	{
-		Global()->InvalidatePointer(ptr, removed);
-	}
-
 };
