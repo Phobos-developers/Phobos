@@ -1937,6 +1937,7 @@ msgid ""
 "New exception handler with a crash dialog, crash report and minidumps "
 "(ported from Vinifera)"
 msgstr ""
+"带有崩溃对话框、崩溃报告和小型转储的新版异常处理程序（移植自 Vinifera）"
 
 msgid "**CrimRecya**:"
 msgstr "**CrimRecya**："
